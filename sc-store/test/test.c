@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include "sc_store.h"
-#include "sc_store/sc_segment.h"
+#include "sc_segment.h"
 
 #define nodes_append_count 10000000
 #define nodes_remove_count 10000000
