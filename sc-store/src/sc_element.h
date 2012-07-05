@@ -15,10 +15,10 @@ struct _sc_content
 
 struct _sc_incident_info
 {
-  sc_uri begin_uri;
-  sc_uri end_uri;
-  sc_uri next_out_arc; // uri of next output arc in list
-  sc_uri next_in_arc; // uri of next input arc in list
+  sc_addr begin;
+  sc_addr end;
+  sc_addr next_out_arc; // uri of next output arc in list
+  sc_addr next_in_arc; // uri of next input arc in list
 };
 
 /* Structure to store information for sc-elements.
@@ -37,11 +37,11 @@ struct _sc_incident_info
  * Each list of arcs contains pointer to array of arcs pointers.
  * Size of each array is fixed and equivalent to ARC_SEG_SIZE value.
  * 
- * All arcs have next_arc and prev_arc uri's. Each element store uri of begin and end arcs.
+ * All arcs have next_arc and prev_arc addr's. Each element store addr of begin and end arcs.
  * Arcs values: next_out_arc and next_in_arc store next arcs in output and input arcs list.
  * So if you need to iterate all output arcs for specified element, then you need to use such code:
  * sc_element *arc = sc_storage_get_element(el->first_output_arc);
- * while (!uri_empty(arc->incident->next_out_arc))
+ * while (!addr_empty(arc->incident->next_out_arc))
  * {
  *     <you code>
  *     arc = sc_storage_get_element(arc->incident->next_out_arc);
@@ -57,8 +57,8 @@ struct _sc_element
 #else
   gboolean is_dead;
 #endif
-  sc_uri first_out_arc;
-  sc_uri first_in_arc;
+  sc_addr first_out_arc;
+  sc_addr first_in_arc;
   union
   {
     sc_content content;

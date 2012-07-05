@@ -2,7 +2,7 @@
 #define _sc_types_h_
 
 //! Structure to store element uri
-struct _sc_uri
+struct _sc_addr
 {
   unsigned int seg;
   unsigned int id;
@@ -37,7 +37,7 @@ typedef struct _sc_content sc_content;
 typedef struct _sc_incident_info sc_incident_info;
 typedef struct _sc_element sc_element;
 typedef struct _sc_segment sc_segment;
-typedef struct _sc_uri sc_uri;
+typedef struct _sc_addr sc_addr;
 typedef struct _sc_elements_stat sc_elements_stat;
 typedef struct _sc_iterator_param sc_iterator_param;
 typedef struct _sc_iterator sc_iterator;

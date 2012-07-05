@@ -23,39 +23,39 @@ void print_storage_statistics()
 	 stat.node_count, stat.arc_count, stat.empty_count);
 }
 
-sc_uri get_random_uri(sc_type type)
+sc_addr get_random_addr(sc_type type)
 {
-  sc_uri uri;
+  sc_addr addr;
   sc_segment *segment = 0 ;
 
-  uri.seg = g_random_int() % segments->len;
-  uri.id = 0;
+  addr.seg = g_random_int() % segments->len;
+  addr.id = 0;
 
-  segment = g_ptr_array_index(segments, uri.seg);
+  segment = g_ptr_array_index(segments, addr.seg);
 
   //if (segment->type & type)
   //{
-  uri.id = g_random_int() % SEGMENT_SIZE;
+  addr.id = g_random_int() % SEGMENT_SIZE;
     //}
 
-  return uri;
+  return addr;
 }
 
 sc_element* get_random_element(sc_type type)
 {
   sc_element *el = 0;
-  sc_uri uri, uri2;
+  sc_addr id, id2;
   sc_segment *segment = 0 ;
 
-  uri.seg = g_random_int() % segments->len;
+  id.seg = g_random_int() % segments->len;
 
-  segment = g_ptr_array_index(segments, uri.seg);
+  segment = g_ptr_array_index(segments, id.seg);
 
   //if (segment->type & type)
   //{
     //    uri.seg = segment->id;
-    uri.id = g_random_int() % SEGMENT_SIZE;
-    return sc_storage_get_element(uri, FALSE);
+    id.id = g_random_int() % SEGMENT_SIZE;
+    return sc_storage_get_element(id, FALSE);
   //}
   
   //  return (sc_element*)0;
@@ -66,7 +66,7 @@ void test1()
   guint idx = 0;
   sc_element *el1, *el2;
   sc_segment *segment = 0;
-  sc_uri uri, uri2;
+  sc_addr id, id2;
  
   sc_storage_initialize("repo");
 
@@ -78,7 +78,7 @@ void test1()
   g_timer_start(timer);
   for (idx = 0; idx < nodes_append_count; idx++)
   {
-    uri = sc_storage_element_new(sc_type_node);
+    id = sc_storage_element_new(sc_type_node);
     //g_printf("uri: %d\t%d\n", uri.seg, uri.id);
   }
   g_timer_stop(timer);
@@ -94,9 +94,9 @@ void test1()
   {
     if (idx % 10 < 7)
     {
-      uri = get_random_uri(sc_type_node);
-      if (sc_storage_is_element(uri))
-	sc_storage_element_free(uri);
+      id = get_random_addr(sc_type_node);
+      if (sc_storage_is_element(id))
+	sc_storage_element_free(id);
     }else
       sc_storage_node_new(0);
   }
@@ -113,8 +113,8 @@ void test1()
   g_timer_start(timer);
   for (idx = 0; idx < arcs_append_count; idx++)
   {
-    uri = get_random_uri(0);
-    uri2 = get_random_uri(0);
+    id = get_random_addr(0);
+    id2 = get_random_addr(0);
     //el1 = get_random_element(sc_type_node | sc_type_arc);
     //el2 = get_random_element(sc_type_node | sc_type_arc);
     //if (el1 == (sc_element*)0 || el2 == (sc_element*)0) continue;
@@ -123,9 +123,9 @@ void test1()
 
     //if (!sc_storage_get_element(uri2, TRUE) || !sc_storage_get_element(uri, TRUE)) continue;
     //if (sc_storage_get_element(uri2, TRUE)->type == 0 || sc_storage_get_element(uri, TRUE)->type == 0) continue;
-    if (!sc_storage_is_element(uri) || !sc_storage_is_element(uri2)) continue;
+    if (!sc_storage_is_element(id) || !sc_storage_is_element(id2)) continue;
 
-    sc_storage_arc_new(0, uri, uri2);//, uri, uri2);
+    sc_storage_arc_new(0, id, id2);//, uri, uri2);
   }
 
   g_timer_stop(timer);

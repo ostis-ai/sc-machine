@@ -18,7 +18,7 @@ struct _sc_iterator_param
   gboolean is_type;
   union
   {
-    sc_uri uri;
+    sc_addr addr;
     sc_type type;
   };
 };
@@ -30,7 +30,7 @@ struct _sc_iterator
   sc_iterator_type type; // iterator type (search template)
   guint params_count; // number of parameters
   sc_iterator_param *params; // pointer to parameters array
-  sc_uri *results;
+  sc_addr* results;
 #if USE_PARALLEL_SEARCH
   guint time_stamp;
 #endif
@@ -60,6 +60,6 @@ gboolean sc_iterator_next(sc_iterator *it);
 /*! Get iterator value
  * @param it Pointer to iterator for getting value
  * @param vid Value id (can't be more that 3 for sc-iterator3)
- * @return Return sc-uri of search result value
+ * @return Return sc-addr of search result value
  */
-sc_uri sc_iterator_value(sc_iterator *it, guint vid);
+sc_addr sc_iterator_value(sc_iterator *it, guint vid);

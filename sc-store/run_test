@@ -1,5 +1,3 @@
-cmake ./
-make
 cd test
 ./test
 cd ..

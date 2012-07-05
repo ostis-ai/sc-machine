@@ -23,7 +23,7 @@ sc_iterator* sc_iterator3_new(sc_iterator_type type, sc_iterator_param p1, sc_it
 
   it->params_count = 3;
   it->params = g_new0(sc_iterator_param, 3);
-  //  it->results = g_new0(sc_uri, 3);
+  //  it->results = g_new0(sc_id, 3);
 
   return it;
 }
@@ -37,14 +37,14 @@ void sc_iterator_free(sc_iterator *it)
   g_free(it);
 }
 
-gboolean sc_iterator_param_compare(sc_element *el, sc_uri uri, sc_iterator_param param)
+gboolean sc_iterator_param_compare(sc_element *el, sc_addr addr, sc_iterator_param param)
 {
   g_assert(el != 0);
 
   if (param.is_type)
     return el->type & param.type;
   else
-    return uri_eq(uri, param.uri);
+    return uri_eq(addr, param.addr);
 
   return FALSE;
 }
@@ -60,7 +60,7 @@ gboolean sc_iterator_next(sc_iterator *it)
   return FALSE;
 }
 
-sc_uri sc_iterator_value(sc_iterator *it, guint vid)
+sc_addr sc_iterator_value(sc_iterator *it, guint vid)
 {
   g_assert(it != 0);
   g_assert(vid < it->params_count);
