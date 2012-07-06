@@ -10,7 +10,7 @@
 struct _sc_content
 {
   char path[CONTENT_PATH_LEN];
-  unsigned int size;
+  guint32 size;
 };
 
 struct _sc_incident_info
@@ -54,11 +54,11 @@ struct _sc_element
 #if USE_PARALLEL_SEARCH
   guint create_time_stamp;
   guint delete_time_stamp;
-#else
-  gboolean is_dead;
 #endif
   sc_addr first_out_arc;
   sc_addr first_in_arc;
+  guint32 out_count;
+  guint32 in_count;
   union
   {
     sc_content content;

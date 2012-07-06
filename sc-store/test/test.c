@@ -29,13 +29,13 @@ sc_addr get_random_addr(sc_type type)
   sc_segment *segment = 0 ;
 
   addr.seg = g_random_int() % segments->len;
-  addr.id = 0;
+  addr.offset = 0;
 
   segment = g_ptr_array_index(segments, addr.seg);
 
   //if (segment->type & type)
   //{
-  addr.id = g_random_int() % SEGMENT_SIZE;
+  addr.offset = g_random_int() % SEGMENT_SIZE;
     //}
 
   return addr;
@@ -54,7 +54,7 @@ sc_element* get_random_element(sc_type type)
   //if (segment->type & type)
   //{
     //    uri.seg = segment->id;
-    id.id = g_random_int() % SEGMENT_SIZE;
+    id.offset = g_random_int() % SEGMENT_SIZE;
     return sc_storage_get_element(id, FALSE);
   //}
   

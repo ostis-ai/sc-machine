@@ -41,7 +41,7 @@ gboolean sc_segment_have_empty_slot(sc_segment *segment);
  */
 gboolean sc_segment_append_element(sc_segment *segment,
 				   sc_element *element,
-				   guint *id);
+				   guint16 *id);
 
 /*! Get sc-element pointer by id
  * @param seg Pointer to segment where we need to get element

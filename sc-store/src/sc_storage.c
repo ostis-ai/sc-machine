@@ -120,7 +120,7 @@ sc_element* sc_storage_get_element(sc_addr addr, gboolean force_load)
       return (sc_element*)0;
   }else
   {
-    res = sc_segment_get_element(segment, addr.id);
+    res = sc_segment_get_element(segment, addr.offset);
   }
 
   return res;//sc_segment_get_element(segment, uri.id);
@@ -153,7 +153,7 @@ sc_addr sc_storage_append_el_into_segments(sc_element *element)
     //  uri.seg = seg_queue[--seg_queue_heap];
     addr.seg = _sc_storage_get_segment_from_queue();
     segment = sc_storage_get_segment(addr.seg);
-    if (sc_segment_append_element(segment, element, &addr.id) == TRUE)
+    if (sc_segment_append_element(segment, element, &addr.offset) == TRUE)
       return addr;
   }
 
@@ -161,7 +161,7 @@ sc_addr sc_storage_append_el_into_segments(sc_element *element)
   segment = sc_segment_new(element->type & sc_type_node ? sc_type_node : sc_type_arc);
   addr.seg = segments->len;
   g_ptr_array_add(segments, (gpointer)segment);
-  g_assert( sc_segment_append_element(segment, element, &addr.id) );
+  g_assert( sc_segment_append_element(segment, element, &addr.offset) );
 
   return addr;
 }
@@ -185,7 +185,7 @@ void sc_storage_element_free(sc_addr addr)
   sc_element *el = 0;
 
   g_assert( addr.seg < segments->len );
-  g_assert( addr.id < SEGMENT_SIZE );
+  g_assert( addr.offset < SEGMENT_SIZE );
 
   el = sc_storage_get_element(addr, TRUE);
 
@@ -194,6 +194,7 @@ void sc_storage_element_free(sc_addr addr)
 #if USE_PARALLEL_SEARCH
   el->delete_time_stamp = time_stamp;
 #endif
+  
   
   //_sc_storage_append_segment_to_queue(el_uri.seg);
   //if (seg_queue_heap <= SEGS_QUEUE_SIZE)  

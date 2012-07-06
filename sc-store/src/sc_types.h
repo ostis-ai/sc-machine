@@ -1,18 +1,23 @@
 #ifndef _sc_types_h_
 #define _sc_types_h_
 
+#include <glib.h>
+
 //! Structure to store element uri
 struct _sc_addr
 {
-  unsigned int seg;
-  unsigned int id;
+#if USE_NETWORK_SCALE
+  guint32 net_addr;
+#endif
+  guint16 seg;
+  guint16 offset;
 };
 
-#define uri_empty(uri) ((uri.seg == -1) && (uri.id == -1))
+#define uri_empty(uri) ((uri.seg == -1) && (uri.offset == -1))
 
-#define uri_eq(uri1, uri2) ((uri1.seg == uri2.seg) && (uri1.id == uri2.id))
+#define uri_eq(uri1, uri2) ((uri1.seg == uri2.seg) && (uri1.offset == uri2.offset))
 
-typedef unsigned int sc_type;
+typedef guint16 sc_type;
 
 //! sc-element types
 #define sc_type_node 1

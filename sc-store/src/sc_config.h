@@ -2,7 +2,7 @@
 #define _sc_config_h_
 
 //! Parallel search using flag
-#define USE_PARALLEL_SEARCH  0
+#define USE_PARALLEL_SEARCH  1
 
 /*! Bound empty slot serach
  *
@@ -12,6 +12,9 @@
 
 //! Use empty slots buffering for segment
 #define USE_SEGMENT_EMPTY_SLOT_BUFFER 0
+
+//! Enable network scaling
+#define USE_NETWORK_SCALE 0
 
 #endif
 
