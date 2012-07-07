@@ -70,7 +70,8 @@ void test1()
  
   sc_storage_initialize("repo");
 
-  printf("Element size: %d\n", sizeof(sc_element));
+  printf("Element size: %d bytes\n", sizeof(sc_element));
+  printf("Segment size: %d elements\n", SEGMENT_SIZE);
 
   timer = g_timer_new();
   print_storage_statistics();
@@ -140,6 +141,41 @@ void test1()
   g_timer_destroy(timer);
 }
 
+void test2()
+{
+  guint passed = 0;
+  guint idx = 0;
+  guint32 packed;
+  sc_addr addr, addr2;
+
+  printf("Test sc-addr packing\n");
+  passed = 0;
+  for (idx = 0; idx < 100000; idx++)
+  {
+    // make random addr
+    addr.seg = g_random_int() % SC_ADDR_SEG_MAX;
+    addr.offset = g_random_int() % SC_ADDR_OFFSET_MAX;
+
+    // pack
+    packed = SC_ADDR_LOCAL_TO_INT(addr);
+
+    // unpack
+    addr2.seg = SC_ADDR_LOCAL_SEG_FROM_INT(packed);
+    addr2.offset = SC_ADDR_LOCAL_OFFSET_FROM_INT(packed);
+
+    if (SC_ADDR_IS_NOT_EQUAL(addr, addr2))
+    {
+      printf("Error!\n");
+      printf("Source seg=%d, offset=%d\n", addr.seg, addr.offset);
+      printf("Packed=%d\n", packed);
+      printf("Unpacked seg=%d, offset=%d", addr2.seg, addr2.offset);
+    }else
+      passed++;
+  }
+
+  printf("Passed %d of %d tests\n", passed, idx);
+}
+
 int main(int argc, char *argv[])
 {
   guint item = 1;
@@ -149,6 +185,7 @@ int main(int argc, char *argv[])
     printf("Commands:\n"
 	   "0 - exit\n"
 	   "1 - test allocation\n"
+	   "2 - test sc-addr utilities\n"
 	   "\nCommand: ");
     scanf("%d", &item);
 
@@ -158,6 +195,10 @@ int main(int argc, char *argv[])
     {
     case 1:
       test1();
+      break;
+
+    case 2:
+      test2();
       break;
     };
 

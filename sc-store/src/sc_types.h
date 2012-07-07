@@ -3,7 +3,14 @@
 
 #include <glib.h>
 
-//! Structure to store element uri
+#define SC_ADDR_SEG_MAX G_MAXUINT16
+#define SC_ADDR_OFFSET_MAX G_MAXUINT16
+
+#define SC_ADDR_SEG_EMPTY 0
+#define SC_ADDR_OFFSET_EMPTY G_MAXUINT16
+#define SEGMENT_SIZE G_MAXUINT16    // number of elements in segment
+
+//! Structure to store sc-element address
 struct _sc_addr
 {
 #if USE_NETWORK_SCALE
@@ -13,9 +20,20 @@ struct _sc_addr
   guint16 offset;
 };
 
-#define uri_empty(uri) ((uri.seg == -1) && (uri.offset == -1))
+//! Make sc-addr empty
+#define SC_ADDR_MAKE_EMPTY(addr) addr.seg = SC_ADDR_SEG_EMPTY;
+//! Check if specified sc-addr is empty
+#define SC_ADDR_IS_EMPTY(addr) (addr.seg == SC_ADDR_SEG_EMPTY)
+//! Check if two sc-addr's are equivalent
+#define SC_ADDR_IS_EQUAL(addr, addr2) ((addr.seg == addr.seg) && (addr.offset == addr.offset))
+#define SC_ADDR_IS_NOT_EQUAL(addr, addr2) (!SC_ADDR_IS_EQUAL(addr, addr2))
 
-#define uri_eq(uri1, uri2) ((uri1.seg == uri2.seg) && (uri1.offset == uri2.offset))
+/*! Next defines help to pack local part of sc-addr (segment and offset) into int value
+ * and get them back from int
+ */
+#define SC_ADDR_LOCAL_TO_INT(addr) (guint32)((addr.seg << 16) | (addr.offset & 0xffff))
+#define SC_ADDR_LOCAL_SEG_FROM_INT(v) (guint16)(v & 0xffff0000)
+#define SC_ADDR_LOCAL_OFFSET_FROM_INT(v) (guint16)(v & 0x0000ffff)
 
 typedef guint16 sc_type;
 

@@ -44,7 +44,7 @@ gboolean sc_iterator_param_compare(sc_element *el, sc_addr addr, sc_iterator_par
   if (param.is_type)
     return el->type & param.type;
   else
-    return uri_eq(addr, param.addr);
+    return SC_ADDR_IS_EQUAL(addr, param.addr);
 
   return FALSE;
 }

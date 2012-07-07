@@ -169,6 +169,7 @@ sc_addr sc_storage_append_el_into_segments(sc_element *element)
 sc_addr sc_storage_element_new(sc_type type)
 {
   sc_element el;
+  memset(&el, 0, sizeof(el));
   el.type = type;
 #if USE_PARALLEL_SEARCH
   el.create_time_stamp = time_stamp;
@@ -183,17 +184,37 @@ void sc_storage_element_free(sc_addr addr)
   sc_type type;
   sc_segment *segment = 0;
   sc_element *el = 0;
+  sc_addr _addr;
+  guint addr_int;
+
+  GSList *remove_list = 0;
 
   g_assert( addr.seg < segments->len );
   g_assert( addr.offset < SEGMENT_SIZE );
 
-  el = sc_storage_get_element(addr, TRUE);
+  remove_list = g_slist_append(remove_list, GUINT_TO_POINTER(SC_ADDR_LOCAL_TO_INT(addr)));
 
-  g_assert(el != 0 && el->type != 0);
+  while (remove_list != 0)
+  {
+    // get sc-addr for removing
+    addr_int = GPOINTER_TO_UINT(remove_list->data);
+    _addr.seg = SC_ADDR_LOCAL_SEG_FROM_INT(addr_int);
+    _addr.offset = SC_ADDR_LOCAL_OFFSET_FROM_INT(addr_int);
+
+    // go to next sc-addr in list
+    remove_list = g_slist_delete_link(remove_list, remove_list);
+
+    el = sc_storage_get_element(_addr, TRUE);
+    g_assert(el != 0 && el->type != 0);
 
 #if USE_PARALLEL_SEARCH
-  el->delete_time_stamp = time_stamp;
+    el->delete_time_stamp = time_stamp;
 #endif
+
+    SC_ADDR_MAKE_EMPTY(_addr);
+
+    
+  }
   
   
   //_sc_storage_append_segment_to_queue(el_uri.seg);
@@ -203,6 +224,7 @@ void sc_storage_element_free(sc_addr addr)
   // just mark element, that it's dead
 
   //  sc_segment_remove_element(sc_storage_get_segment(el_uri.seg), el_uri.id);
+  
 }
 
 sc_addr sc_storage_node_new(sc_type type )
