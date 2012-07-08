@@ -1,13 +1,12 @@
 #ifndef _sc_types_h_
 #define _sc_types_h_
 
+#include "sc_config.h"
 #include <glib.h>
 
 #define SC_ADDR_SEG_MAX G_MAXUINT16
 #define SC_ADDR_OFFSET_MAX G_MAXUINT16
 
-#define SC_ADDR_SEG_EMPTY 0
-#define SC_ADDR_OFFSET_EMPTY G_MAXUINT16
 #define SEGMENT_SIZE G_MAXUINT16    // number of elements in segment
 
 //! Structure to store sc-element address
@@ -18,12 +17,19 @@ struct _sc_addr
 #endif
   guint16 seg;
   guint16 offset;
+  guint8 attrs; // special field, that store attributes of sc-addr
 };
 
+// sc-addr attributes 
+#define SC_ADDR_ATTR_NOT_EMPTY 1
+// ...
+// place for 7 other attributes
+
 //! Make sc-addr empty
-#define SC_ADDR_MAKE_EMPTY(addr) addr.seg = SC_ADDR_SEG_EMPTY;
+#define SC_ADDR_MAKE_EMPTY(addr) {addr.attrs |= ~SC_ADDR_ATTR_NOT_EMPTY; }
 //! Check if specified sc-addr is empty
-#define SC_ADDR_IS_EMPTY(addr) (addr.seg == SC_ADDR_SEG_EMPTY)
+#define SC_ADDR_IS_NOT_EMPTY(addr) (addr.attrs & SC_ADDR_ATTR_NOT_EMPTY)
+#define SC_ADDR_IS_EMPTY(addr) (!SC_ADDR_IS_NOT_EMPTY(addr))
 //! Check if two sc-addr's are equivalent
 #define SC_ADDR_IS_EQUAL(addr, addr2) ((addr.seg == addr.seg) && (addr.offset == addr.offset))
 #define SC_ADDR_IS_NOT_EQUAL(addr, addr2) (!SC_ADDR_IS_EQUAL(addr, addr2))
@@ -32,8 +38,8 @@ struct _sc_addr
  * and get them back from int
  */
 #define SC_ADDR_LOCAL_TO_INT(addr) (guint32)((addr.seg << 16) | (addr.offset & 0xffff))
-#define SC_ADDR_LOCAL_SEG_FROM_INT(v) (guint16)(v & 0xffff0000)
-#define SC_ADDR_LOCAL_OFFSET_FROM_INT(v) (guint16)(v & 0x0000ffff)
+#define SC_ADDR_LOCAL_OFFSET_FROM_INT(v) (guint16)((v) & 0x0000ffff)
+#define SC_ADDR_LOCAL_SEG_FROM_INT(v) SC_ADDR_LOCAL_OFFSET_FROM_INT(v >> 16)
 
 typedef guint16 sc_type;
 
@@ -57,7 +63,7 @@ typedef guint16 sc_type;
 
 typedef struct _sc_arc  sc_arc;
 typedef struct _sc_content sc_content;
-typedef struct _sc_incident_info sc_incident_info;
+typedef struct _sc_arc_info sc_arc_info;
 typedef struct _sc_element sc_element;
 typedef struct _sc_segment sc_segment;
 typedef struct _sc_addr sc_addr;

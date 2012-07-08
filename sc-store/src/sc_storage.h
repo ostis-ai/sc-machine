@@ -10,9 +10,12 @@ extern GPtrArray *segments;
 
 struct _sc_elements_stat
 {
-  guint node_count;
-  guint arc_count;
-  guint empty_count;
+  guint32 node_count;
+  guint32 arc_count;
+  guint32 empty_count;
+
+  guint32 node_deleted;
+  guint32 arc_deleted;
 };
 
 //! Initialize sc storage in specified path

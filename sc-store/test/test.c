@@ -5,7 +5,7 @@
 #define nodes_append_count 10000000
 #define nodes_remove_count 10000000
 #define arcs_append_count  10000000
-#define arcs_remove_count  1
+#define arcs_remove_count  10000
 
 const char* repo_path = "repo";
 GTimer *timer = 0;
@@ -14,13 +14,10 @@ void print_storage_statistics()
 {
   sc_elements_stat stat;
   
-  //  printf("Get elements statistic\n");
-  g_timer_reset(timer);
   sc_storage_get_elements_stat(&stat);
-  g_timer_stop(timer);
-  //  printf("Timer: %f\n", g_timer_elapsed(timer, 0));
-  printf("--- Storage statistics: ---\n \tNodes: %u\n\tArcs: %u\n\tEmpty: %u\n---\n", 
-	 stat.node_count, stat.arc_count, stat.empty_count);
+ 
+  printf("--- Storage statistics: ---\n \tNodes: %u (%u deleted)\n\tArcs: %u (%u deleted)\n\tEmpty: %u\n---\n", 
+	 stat.node_count, stat.node_deleted, stat.arc_count, stat.arc_deleted, stat.empty_count);
 }
 
 sc_addr get_random_addr(sc_type type)
@@ -32,11 +29,7 @@ sc_addr get_random_addr(sc_type type)
   addr.offset = 0;
 
   segment = g_ptr_array_index(segments, addr.seg);
-
-  //if (segment->type & type)
-  //{
   addr.offset = g_random_int() % SEGMENT_SIZE;
-    //}
 
   return addr;
 }
@@ -68,8 +61,6 @@ void test1()
   sc_segment *segment = 0;
   sc_addr id, id2;
  
-  sc_storage_initialize("repo");
-
   printf("Element size: %d bytes\n", sizeof(sc_element));
   printf("Segment size: %d elements\n", SEGMENT_SIZE);
 
@@ -93,7 +84,7 @@ void test1()
   g_timer_start(timer);
   for (idx = 0; idx < nodes_remove_count; idx++)
   {
-    if (idx % 10 < 7)
+    if (idx % 10 < 5)
     {
       id = get_random_addr(sc_type_node);
       if (sc_storage_is_element(id))
@@ -136,8 +127,6 @@ void test1()
   
   print_storage_statistics();
 
-  sc_storage_shutdown();
-
   g_timer_destroy(timer);
 }
 
@@ -150,7 +139,7 @@ void test2()
 
   printf("Test sc-addr packing\n");
   passed = 0;
-  for (idx = 0; idx < 100000; idx++)
+  for (idx = 0; idx < 10000000; idx++)
   {
     // make random addr
     addr.seg = g_random_int() % SC_ADDR_SEG_MAX;
@@ -176,9 +165,33 @@ void test2()
   printf("Passed %d of %d tests\n", passed, idx);
 }
 
+void test3()
+{
+  sc_addr node[10], arc[10][10];
+  guint32 i, j;
+
+  printf("Create 10 nodes and 100 arcs, that connect nodes each other\n");
+  for (i = 0; i < 10; i++)
+    node[i] = sc_storage_element_new(sc_type_node);
+
+  for (i = 0; i < 10; i++)
+    for (j = 0; j < 10; j++)
+      arc[i][j] = sc_storage_arc_new(0, node[i], node[j]);
+  
+  print_storage_statistics();
+
+  printf("Delete 5 nodes\n");
+  for (i = 0; i < 5; i++)
+    sc_storage_element_free(node[i * 2]);
+
+  print_storage_statistics();
+}
+
 int main(int argc, char *argv[])
 {
   guint item = 1;
+
+  sc_storage_initialize("repo");
 
   while (item != 0)
   {
@@ -186,6 +199,7 @@ int main(int argc, char *argv[])
 	   "0 - exit\n"
 	   "1 - test allocation\n"
 	   "2 - test sc-addr utilities\n"
+	   "3 - test arc deletion\n"
 	   "\nCommand: ");
     scanf("%d", &item);
 
@@ -200,10 +214,15 @@ int main(int argc, char *argv[])
     case 2:
       test2();
       break;
+    case 3:
+      test3();
+      break;
     };
 
     printf("\n----- Finished -----\n");
   }
+
+  sc_storage_shutdown();
 
   return 0;
 }

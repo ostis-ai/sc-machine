@@ -31,9 +31,7 @@ struct _sc_iterator
   guint params_count; // number of parameters
   sc_iterator_param *params; // pointer to parameters array
   sc_addr* results;
-#if USE_PARALLEL_SEARCH
-  guint time_stamp;
-#endif
+  guint32 time_stamp;
 };
 
 /*! Create new sc-iterator-3

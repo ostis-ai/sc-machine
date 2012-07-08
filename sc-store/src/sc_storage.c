@@ -95,10 +95,10 @@ void sc_storage_shutdown()
   segments = (GPtrArray*)0;
 }
 
-sc_segment* sc_storage_get_segment(guint id)
+sc_segment* sc_storage_get_segment(guint offset)
 {
-  g_assert( id >= 0 && id < segments->len );
-  return (sc_segment*)g_ptr_array_index(segments, id);
+  g_assert( offset >= 0 && offset < segments->len );
+  return (sc_segment*)g_ptr_array_index(segments, offset);
 }
 
 sc_element* sc_storage_get_element(sc_addr addr, gboolean force_load)
@@ -108,7 +108,6 @@ sc_element* sc_storage_get_element(sc_addr addr, gboolean force_load)
 
   if (addr.seg > segments->len) return (sc_element*)0;
   
-  // note that segment id starts with 1
   segment = (sc_segment*)g_ptr_array_index(segments, addr.seg);
   
   if (segment == 0)
@@ -147,10 +146,6 @@ sc_addr sc_storage_append_el_into_segments(sc_element *element)
   sc_addr addr;
   if (segments->len > 0)
   {
-    //if (seg_queue_heap == 0)
-    //  uri.seg = segments->len - 1;
-    //else
-    //  uri.seg = seg_queue[--seg_queue_heap];
     addr.seg = _sc_storage_get_segment_from_queue();
     segment = sc_storage_get_segment(addr.seg);
     if (sc_segment_append_element(segment, element, &addr.offset) == TRUE)
@@ -171,10 +166,7 @@ sc_addr sc_storage_element_new(sc_type type)
   sc_element el;
   memset(&el, 0, sizeof(el));
   el.type = type;
-#if USE_PARALLEL_SEARCH
   el.create_time_stamp = time_stamp;
-  el.delete_time_stamp = 0;
-#endif
 
   return sc_storage_append_el_into_segments(&el);
 }
@@ -207,23 +199,36 @@ void sc_storage_element_free(sc_addr addr)
     el = sc_storage_get_element(_addr, TRUE);
     g_assert(el != 0 && el->type != 0);
 
-#if USE_PARALLEL_SEARCH
     el->delete_time_stamp = time_stamp;
-#endif
 
-    SC_ADDR_MAKE_EMPTY(_addr);
+    // Iterate all connectors for deleted element and append them into remove_list
+    _addr = el->first_out_arc;
+    while (SC_ADDR_IS_NOT_EMPTY(_addr))
+    {
+      el = sc_storage_get_element(_addr, TRUE);
 
-    
+      // do not append elements, that have delete_time_stamp != 0
+      if (el->delete_time_stamp > 0)
+	remove_list = g_slist_append(remove_list, GUINT_TO_POINTER(SC_ADDR_LOCAL_TO_INT(_addr)));
+
+      _addr = el->arc.next_out_arc;
+    }
+
+    _addr = el->first_in_arc;
+    while (SC_ADDR_IS_NOT_EMPTY(_addr))
+    {
+      el = sc_storage_get_element(_addr, TRUE);
+
+      // do not append elements, that have delete_time_stamp != 0
+      if (el->delete_time_stamp > 0)
+	remove_list = g_slist_append(remove_list, GUINT_TO_POINTER(SC_ADDR_LOCAL_TO_INT(_addr)));
+
+      _addr = el->arc.next_in_arc;
+    }
+
+    // clean temp addr
+    SC_ADDR_MAKE_EMPTY(_addr);    
   }
-  
-  
-  //_sc_storage_append_segment_to_queue(el_uri.seg);
-  //if (seg_queue_heap <= SEGS_QUEUE_SIZE)  
-  //  seg_queue[seg_queue_heap++] = el_uri.seg;
-
-  // just mark element, that it's dead
-
-  //  sc_segment_remove_element(sc_storage_get_segment(el_uri.seg), el_uri.id);
   
 }
 
@@ -232,6 +237,7 @@ sc_addr sc_storage_node_new(sc_type type )
   sc_element el;
 
   g_assert( !(sc_type_arc & type) );
+  memset(&el, 0, sizeof(el));
 
   el.type = sc_type_node | type;
 
@@ -245,11 +251,12 @@ sc_addr sc_storage_arc_new(sc_type type,
   sc_addr addr;
   sc_element el, *beg_el, *end_el, *tmp_el;
 
+  memset(&el, 0, sizeof(el));
   g_assert( !(sc_type_node & type) );
   el.type = sc_type_arc | type;
 
-  el.incident.begin = beg;
-  el.incident.end = end;
+  el.arc.begin = beg;
+  el.arc.end = end;
 
   // get ne element uri
   addr =  sc_storage_append_el_into_segments(&el);  
@@ -262,8 +269,8 @@ sc_addr sc_storage_arc_new(sc_type type,
   g_assert(beg_el != 0 && end_el != 0 && beg_el->type != 0 && end_el->type != 0);
 
   // set next output arc for our created arc
-  el.incident.next_out_arc = beg_el->first_out_arc;
-  el.incident.next_in_arc = end_el->first_in_arc;
+  el.arc.next_out_arc = beg_el->first_out_arc;
+  el.arc.next_in_arc = end_el->first_in_arc;
 
   // set our arc as first output/input at begin/end elements
   beg_el->first_out_arc = addr;
@@ -275,9 +282,12 @@ void sc_storage_get_elements_stat(sc_elements_stat *stat)
   guint s_idx, e_idx;
   sc_segment *segment;
   sc_type type;
+  guint32 delete_stamp;
   g_assert( stat != (sc_elements_stat*)0 );
 
   memset(stat, 0, sizeof(sc_elements_stat));
+
+  //! TODO: add loading of segment
 
   // iterate all elements and calculate statistics
   for (s_idx = 0; s_idx < segments->len; s_idx++)
@@ -287,14 +297,23 @@ void sc_storage_get_elements_stat(sc_elements_stat *stat)
     for (e_idx = 0; e_idx < SEGMENT_SIZE; e_idx++)
     {
       type = segment->elements[e_idx].type;
+      delete_stamp = segment->elements[e_idx].delete_time_stamp;
       if (type == 0)
 	stat->empty_count++;
       else
 	if (type & sc_type_node)
+	{
 	  stat->node_count++;
+	  if (delete_stamp > 0)
+	    stat->node_deleted++;
+	}
 	else
 	  if (type & sc_type_arc)
+	  {
 	    stat->arc_count++;
+	    if (delete_stamp > 0)
+	      stat->arc_deleted++;
+	  }
     }
   }
 }

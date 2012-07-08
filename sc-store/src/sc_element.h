@@ -5,20 +5,31 @@
 #include "sc_types.h"
 #include "sc_defines.h"
 
+struct _sc_arc_info
+{
+  sc_addr begin;
+  sc_addr end;
+  sc_addr next_out_arc; // sc-addr of next output arc in list
+  sc_addr next_in_arc; // sc-addr of next input arc in list
+#if USE_TWO_ORIENTED_ARC_LIST
+  sc_addr prev_out_arc; // sc-addr of pevious output arc in list
+  sc_addr prev_in_arc; // sc-addr of previous input arc in list
+#endif
+};
+
+#if USE_TWO_ORIENTED_ARC_LIST
+#define CONTENT_DATA_LEN (sizeof(sc_arc_info) - sizeof(guint32))
+#else
+#define CONTENT_DATA_LEN 16
+#endif
+
+
 //! Structure to store content information
 //typedef struct _sc_content sc_content;
 struct _sc_content
 {
-  char path[CONTENT_PATH_LEN];
+  char path[CONTENT_DATA_LEN];
   guint32 size;
-};
-
-struct _sc_incident_info
-{
-  sc_addr begin;
-  sc_addr end;
-  sc_addr next_out_arc; // uri of next output arc in list
-  sc_addr next_in_arc; // uri of next input arc in list
 };
 
 /* Structure to store information for sc-elements.
@@ -51,10 +62,9 @@ struct _sc_incident_info
 struct _sc_element
 {
   sc_type type; // sc-element type
-#if USE_PARALLEL_SEARCH
-  guint create_time_stamp;
-  guint delete_time_stamp;
-#endif
+  guint32 create_time_stamp;
+  guint32 delete_time_stamp;
+
   sc_addr first_out_arc;
   sc_addr first_in_arc;
   guint32 out_count;
@@ -62,7 +72,7 @@ struct _sc_element
   union
   {
     sc_content content;
-    sc_incident_info incident;
+    sc_arc_info arc;
   };
 };
 

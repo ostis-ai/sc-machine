@@ -1,9 +1,6 @@
 #ifndef _sc_config_h_
 #define _sc_config_h_
 
-//! Parallel search using flag
-#define USE_PARALLEL_SEARCH  1
-
 /*! Bound empty slot serach
  *
  * Can be used just with USE_SEGMENT_EMPTY_SLOT_BUFFER = 0
@@ -15,6 +12,9 @@
 
 //! Enable network scaling
 #define USE_NETWORK_SCALE 0
+
+//! Use two oriented arc list
+#define USE_TWO_ORIENTED_ARC_LIST 1
 
 #endif
 
