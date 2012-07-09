@@ -19,12 +19,13 @@ struct _sc_segment
 #else
   guint empty_slot; // index empty slot in segment
 #endif
+  sc_addr_seg num; // number of this segment in memory
 };
 
 /*! Create new segment with specified size.
- * @param size Number of preserved segment elements.
+ * @param num Number of created intance in sc-memory
  */
-sc_segment* sc_segment_new();
+sc_segment* sc_segment_new(sc_addr_seg num);
 
 void sc_segment_free(sc_segment *segment);
 

@@ -9,27 +9,25 @@
 
 #define SEGMENT_SIZE G_MAXUINT16    // number of elements in segment
 
+// Types for segment and offset
+typedef guint16 sc_addr_seg;
+typedef guint16 sc_addr_offset;
+
 //! Structure to store sc-element address
 struct _sc_addr
 {
 #if USE_NETWORK_SCALE
   guint32 net_addr;
 #endif
-  guint16 seg;
-  guint16 offset;
-  guint8 attrs; // special field, that store attributes of sc-addr
+  sc_addr_seg seg;
+  sc_addr_offset offset;
 };
 
-// sc-addr attributes 
-#define SC_ADDR_ATTR_NOT_EMPTY 1
-// ...
-// place for 7 other attributes
-
 //! Make sc-addr empty
-#define SC_ADDR_MAKE_EMPTY(addr) {addr.attrs |= ~SC_ADDR_ATTR_NOT_EMPTY; }
+#define SC_ADDR_MAKE_EMPTY(addr) { addr.seg = 0; addr.offset = 0; }
 //! Check if specified sc-addr is empty
-#define SC_ADDR_IS_NOT_EMPTY(addr) (addr.attrs & SC_ADDR_ATTR_NOT_EMPTY)
-#define SC_ADDR_IS_EMPTY(addr) (!SC_ADDR_IS_NOT_EMPTY(addr))
+#define SC_ADDR_IS_EMPTY(addr) ((addr.seg == 0) && (addr.offset == 0))
+#define SC_ADDR_IS_NOT_EMPTY(addr) (!SC_ADDR_IS_EMPTY(addr))
 //! Check if two sc-addr's are equivalent
 #define SC_ADDR_IS_EQUAL(addr, addr2) ((addr.seg == addr.seg) && (addr.offset == addr.offset))
 #define SC_ADDR_IS_NOT_EQUAL(addr, addr2) (!SC_ADDR_IS_EQUAL(addr, addr2))

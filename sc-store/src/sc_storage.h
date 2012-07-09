@@ -33,7 +33,7 @@ sc_addr sc_storage_append_el_into_segments(sc_element *element);
  * 
  * @return Pointer to segment with specified id
  */
-sc_segment* sc_storage_get_segment(guint id);
+sc_segment* sc_storage_get_segment(sc_addr_seg seg);
 
 /*! Get element by sc-addr
  * @param addr sc-addr of element
@@ -47,6 +47,7 @@ sc_element* sc_storage_get_element(sc_addr addr, gboolean force_load);
 /*! Check if sc-element with specified sc-addr exist
  * @param addr sc-addr of element
  * @return Returns TRUE, if sc-element with \p addr exist; otherwise return false.
+ * If element deleted, then return FALSE.
  */
 gboolean sc_storage_is_element(sc_addr addr);
 

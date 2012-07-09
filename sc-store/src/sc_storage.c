@@ -95,10 +95,10 @@ void sc_storage_shutdown()
   segments = (GPtrArray*)0;
 }
 
-sc_segment* sc_storage_get_segment(guint offset)
+sc_segment* sc_storage_get_segment(sc_addr_seg seg)
 {
-  g_assert( offset >= 0 && offset < segments->len );
-  return (sc_segment*)g_ptr_array_index(segments, offset);
+  g_assert( seg >= 0 && seg < segments->len );
+  return (sc_segment*)g_ptr_array_index(segments, seg);
 }
 
 sc_element* sc_storage_get_element(sc_addr addr, gboolean force_load)
@@ -129,8 +129,8 @@ gboolean sc_storage_is_element(sc_addr addr)
 {
   sc_element *el = sc_storage_get_element(addr, TRUE);
   if (el == 0) return FALSE;
-
   if (el->type == 0) return FALSE;
+  if (el->delete_time_stamp > 0) return FALSE;
 
   return TRUE;
 }
@@ -153,7 +153,7 @@ sc_addr sc_storage_append_el_into_segments(sc_element *element)
   }
 
   // if element still not added, then create new segment and append element into it
-  segment = sc_segment_new(element->type & sc_type_node ? sc_type_node : sc_type_arc);
+  segment = sc_segment_new(segments->len);
   addr.seg = segments->len;
   g_ptr_array_add(segments, (gpointer)segment);
   g_assert( sc_segment_append_element(segment, element, &addr.offset) );
@@ -208,7 +208,7 @@ void sc_storage_element_free(sc_addr addr)
       el = sc_storage_get_element(_addr, TRUE);
 
       // do not append elements, that have delete_time_stamp != 0
-      if (el->delete_time_stamp > 0)
+      if (el->delete_time_stamp == 0)
 	remove_list = g_slist_append(remove_list, GUINT_TO_POINTER(SC_ADDR_LOCAL_TO_INT(_addr)));
 
       _addr = el->arc.next_out_arc;
@@ -220,7 +220,7 @@ void sc_storage_element_free(sc_addr addr)
       el = sc_storage_get_element(_addr, TRUE);
 
       // do not append elements, that have delete_time_stamp != 0
-      if (el->delete_time_stamp > 0)
+      if (el->delete_time_stamp == 0)
 	remove_list = g_slist_append(remove_list, GUINT_TO_POINTER(SC_ADDR_LOCAL_TO_INT(_addr)));
 
       _addr = el->arc.next_in_arc;
@@ -259,7 +259,10 @@ sc_addr sc_storage_arc_new(sc_type type,
   el.arc.end = end;
 
   // get ne element uri
-  addr =  sc_storage_append_el_into_segments(&el);  
+  addr =  sc_storage_append_el_into_segments(&el);
+  tmp_el = sc_storage_get_element(addr, TRUE);
+  
+  g_assert(tmp_el != 0);
 
   // get begin and end elements
   beg_el = sc_storage_get_element(beg, TRUE);
@@ -269,8 +272,8 @@ sc_addr sc_storage_arc_new(sc_type type,
   g_assert(beg_el != 0 && end_el != 0 && beg_el->type != 0 && end_el->type != 0);
 
   // set next output arc for our created arc
-  el.arc.next_out_arc = beg_el->first_out_arc;
-  el.arc.next_in_arc = end_el->first_in_arc;
+  tmp_el->arc.next_out_arc = beg_el->first_out_arc;
+  tmp_el->arc.next_in_arc = end_el->first_in_arc;
 
   // set our arc as first output/input at begin/end elements
   beg_el->first_out_arc = addr;

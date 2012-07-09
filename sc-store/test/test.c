@@ -5,7 +5,7 @@
 #define nodes_append_count 10000000
 #define nodes_remove_count 10000000
 #define arcs_append_count  10000000
-#define arcs_remove_count  10000
+#define arcs_remove_count  10000000
 
 const char* repo_path = "repo";
 GTimer *timer = 0;
@@ -60,6 +60,7 @@ void test1()
   sc_element *el1, *el2;
   sc_segment *segment = 0;
   sc_addr id, id2;
+  guint32 count = 0;
  
   printf("Element size: %d bytes\n", sizeof(sc_element));
   printf("Segment size: %d elements\n", SEGMENT_SIZE);
@@ -81,6 +82,7 @@ void test1()
 
   g_timer_reset(timer);
   printf("--- Node segmentation ---\n");
+  count = 0;
   g_timer_start(timer);
   for (idx = 0; idx < nodes_remove_count; idx++)
   {
@@ -88,7 +90,10 @@ void test1()
     {
       id = get_random_addr(sc_type_node);
       if (sc_storage_is_element(id))
+      {
 	sc_storage_element_free(id);
+	count++;
+      }
     }else
       sc_storage_node_new(0);
   }
@@ -97,8 +102,9 @@ void test1()
   printf("Time: %f s\n", g_timer_elapsed(timer, 0));
   printf("Elements per second: %f\n", (float)nodes_remove_count / g_timer_elapsed(timer, 0));
   printf("Segments count: %d\n", (guint)segments->len);
+  printf("Element free calls: %u\n", count);
   print_storage_statistics();
-  //  g_mem_profile();
+  
 
   g_timer_reset(timer);
   printf("--- Arcs creation ---\n");
@@ -107,14 +113,7 @@ void test1()
   {
     id = get_random_addr(0);
     id2 = get_random_addr(0);
-    //el1 = get_random_element(sc_type_node | sc_type_arc);
-    //el2 = get_random_element(sc_type_node | sc_type_arc);
-    //if (el1 == (sc_element*)0 || el2 == (sc_element*)0) continue;
-    //sc_element_get_uri(el1, &uri);
-    //sc_element_get_uri(el2, &uri2);
 
-    //if (!sc_storage_get_element(uri2, TRUE) || !sc_storage_get_element(uri, TRUE)) continue;
-    //if (sc_storage_get_element(uri2, TRUE)->type == 0 || sc_storage_get_element(uri, TRUE)->type == 0) continue;
     if (!sc_storage_is_element(id) || !sc_storage_is_element(id2)) continue;
 
     sc_storage_arc_new(0, id, id2);//, uri, uri2);
@@ -127,6 +126,40 @@ void test1()
   
   print_storage_statistics();
 
+
+  g_timer_reset(timer);
+  printf("--- Arcs segmentation ---\n");
+  g_timer_start(timer);
+  count = 0;
+  for (idx = 0; idx < arcs_remove_count; idx++)
+  {
+    if (idx % 10 < 5)
+    {
+      id = get_random_addr(sc_type_arc);
+      if (sc_storage_is_element(id))
+      {
+	sc_storage_element_free(id);
+	count++;
+      }
+    }else
+     {
+       id = get_random_addr(0);
+       id2 = get_random_addr(0);
+
+       if (!sc_storage_is_element(id) || !sc_storage_is_element(id2)) continue;
+
+       sc_storage_arc_new(0, id, id2);
+     }
+  }
+
+  g_timer_stop(timer);
+  printf("Timer: %fs\n", g_timer_elapsed(timer, 0));
+  printf("Arcs per second: %f\n", (float)arcs_remove_count / g_timer_elapsed(timer, 0));
+  printf("Segments count: %d\n", (guint)segments->len);
+  printf("Element free calls: %u\n", count);
+  
+  print_storage_statistics();
+
   g_timer_destroy(timer);
 }
 
@@ -135,11 +168,18 @@ void test2()
   guint passed = 0;
   guint idx = 0;
   guint32 packed;
+  guint32 test_count = 10000000;
   sc_addr addr, addr2;
 
   printf("Test sc-addr packing\n");
   passed = 0;
-  for (idx = 0; idx < 10000000; idx++)
+
+  timer = g_timer_new();
+
+  g_timer_reset(timer);
+  g_timer_start(timer);
+
+  for (idx = 0; idx < test_count; idx++)
   {
     // make random addr
     addr.seg = g_random_int() % SC_ADDR_SEG_MAX;
@@ -162,7 +202,12 @@ void test2()
       passed++;
   }
 
+  g_timer_stop(timer);
+
   printf("Passed %d of %d tests\n", passed, idx);
+  printf("Pack/Unpack operations per second: %f", test_count / g_timer_elapsed(timer, 0));
+
+  g_timer_destroy(timer);
 }
 
 void test3()

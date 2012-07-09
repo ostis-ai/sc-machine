@@ -47,7 +47,7 @@ void _get_segment_path(const gchar *path,
 
 sc_segment* sc_fs_storage_load_segment(guint id)
 {
-  sc_segment *segment = sc_segment_new();
+  sc_segment *segment = sc_segment_new(id);
   gchar file_name[MAX_PATH_LENGTH + 1];
   guint length;
 
