@@ -227,7 +227,7 @@ void test3()
 
   printf("Delete 5 nodes\n");
   for (i = 0; i < 5; i++)
-    sc_storage_element_free(node[i * 2]);
+    sc_storage_element_free(node[i]);
 
   print_storage_statistics();
 }

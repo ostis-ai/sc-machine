@@ -175,11 +175,13 @@ void sc_storage_element_free(sc_addr addr)
 {
   sc_type type;
   sc_segment *segment = 0;
-  sc_element *el = 0;
+  sc_element *el, *el2;
   sc_addr _addr;
   guint addr_int;
 
   GSList *remove_list = 0;
+
+  el = el2 = 0;
 
   g_assert( addr.seg < segments->len );
   g_assert( addr.offset < SEGMENT_SIZE );
@@ -205,25 +207,25 @@ void sc_storage_element_free(sc_addr addr)
     _addr = el->first_out_arc;
     while (SC_ADDR_IS_NOT_EMPTY(_addr))
     {
-      el = sc_storage_get_element(_addr, TRUE);
+      el2 = sc_storage_get_element(_addr, TRUE);
 
       // do not append elements, that have delete_time_stamp != 0
-      if (el->delete_time_stamp == 0)
+      if (el2->delete_time_stamp == 0)
 	remove_list = g_slist_append(remove_list, GUINT_TO_POINTER(SC_ADDR_LOCAL_TO_INT(_addr)));
 
-      _addr = el->arc.next_out_arc;
+      _addr = el2->arc.next_out_arc;
     }
 
     _addr = el->first_in_arc;
     while (SC_ADDR_IS_NOT_EMPTY(_addr))
     {
-      el = sc_storage_get_element(_addr, TRUE);
+      el2 = sc_storage_get_element(_addr, TRUE);
 
       // do not append elements, that have delete_time_stamp != 0
-      if (el->delete_time_stamp == 0)
+      if (el2->delete_time_stamp == 0)
 	remove_list = g_slist_append(remove_list, GUINT_TO_POINTER(SC_ADDR_LOCAL_TO_INT(_addr)));
 
-      _addr = el->arc.next_in_arc;
+      _addr = el2->arc.next_in_arc;
     }
 
     // clean temp addr
