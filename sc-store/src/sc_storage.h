@@ -25,15 +25,18 @@ gboolean sc_storage_initialize(const gchar *path);
 void sc_storage_shutdown();
 
 /*! Append sc-element to segments pool
+ * @param element Pointer to structure, that contains element information
+ * @param addr Pointer to sc-addr structure, that will contains sc-addr of appended sc-element
+ * @return Return pointer to created sc-element data. If sc-element wasn't appended, then return 0.
  */
-sc_addr sc_storage_append_el_into_segments(sc_element *element);
+sc_element* sc_storage_append_el_into_segments(sc_element *element, sc_addr *addr);
 
-/*! Get segment by id
- * @param id Segment id
- * 
- * @return Pointer to segment with specified id
+/*! Get segment by index
+ * @param seg Segment index
+ * @param force_load Flag to force load into memory, if segment isn't loaded.
+ * @return Pointer to segment with specified index
  */
-sc_segment* sc_storage_get_segment(sc_addr_seg seg);
+sc_segment* sc_storage_get_segment(sc_addr_seg seg, gboolean force_load);
 
 /*! Get element by sc-addr
  * @param addr sc-addr of element

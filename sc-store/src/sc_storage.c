@@ -9,32 +9,42 @@
 GPtrArray *segments = 0;
 guint seg_id = 0;
 guint seg_queue[SEGS_QUEUE_SIZE];
-guint seg_queue_heap = 0;
+gint seg_queue_heap = -1;
 guint time_stamp = 1;
 
 GStaticMutex seg_queue_mutex = G_STATIC_MUTEX_INIT;
 
 // ----------------------------------- SEGMENTS QUEUE --------------------------
-guint _sc_storage_get_segment_from_queue()
+gboolean _sc_storage_get_segment_from_queue(sc_addr_seg *seg)
 {
-  guint res;
+  gboolean res = FALSE;
+  sc_segment *segment = 0;
 
   g_static_mutex_lock(&seg_queue_mutex);
 
-  res = segments->len - 1;
-  if (seg_queue_heap != 0)
-    res = seg_queue[--seg_queue_heap];
+  if (seg_queue_heap > -1)
+  {
+    *seg = seg_queue[seg_queue_heap];
+    segment = sc_storage_get_segment(*seg, TRUE);
+    g_assert( segment != 0 );
+ 
+    if (sc_segment_have_empty_slot(segment) == TRUE)
+      res = TRUE;
+    else
+      seg_queue_heap--;
+  }
 
   g_static_mutex_unlock(&seg_queue_mutex);
   
   return res;
 }
 
-void _sc_storage_append_segment_to_queue(guint id)
+void _sc_storage_append_segment_to_queue(sc_addr_seg seg)
 {
   g_static_mutex_lock( &seg_queue_mutex );
-  if (seg_queue_heap <= SEGS_QUEUE_SIZE)
-    seg_queue[seg_queue_heap++] = id;
+  if (seg_queue_heap < (SEGS_QUEUE_SIZE - 1))
+    seg_queue[++seg_queue_heap] = seg;
+
   g_static_mutex_unlock( &seg_queue_mutex );
 }
 
@@ -43,10 +53,10 @@ void _sc_storage_update_segment_queue_impl(gpointer data,
 {
   //! TODO: make synhronization on case, when segment removed, or unloaded
   sc_segment *segment;
-  guint idx = 0;
+  sc_addr_seg idx = 0;
   while ( (seg_queue_heap <= SEGS_QUEUE_SIZE) && (idx < segments->len) )
   {
-    segment = sc_storage_get_segment(idx);
+    segment = sc_storage_get_segment(idx, TRUE);
     g_assert( segment != (sc_segment*)0 );
     if (sc_segment_have_empty_slot(segment) == TRUE)
       _sc_storage_append_segment_to_queue(idx);
@@ -95,8 +105,9 @@ void sc_storage_shutdown()
   segments = (GPtrArray*)0;
 }
 
-sc_segment* sc_storage_get_segment(sc_addr_seg seg)
+sc_segment* sc_storage_get_segment(sc_addr_seg seg, gboolean force_load)
 {
+  //! TODO: Make support of force loading
   g_assert( seg >= 0 && seg < segments->len );
   return (sc_segment*)g_ptr_array_index(segments, seg);
 }
@@ -140,35 +151,39 @@ void sc_storage_update_segment_queue()
   
 }
 
-sc_addr sc_storage_append_el_into_segments(sc_element *element)
+sc_element* sc_storage_append_el_into_segments(sc_element *element, sc_addr *addr)
 {
   sc_segment *segment = 0;
-  sc_addr addr;
-  if (segments->len > 0)
+
+  g_assert( addr != 0 );
+
+  if (_sc_storage_get_segment_from_queue(&addr->seg) == TRUE)
   {
-    addr.seg = _sc_storage_get_segment_from_queue();
-    segment = sc_storage_get_segment(addr.seg);
-    if (sc_segment_append_element(segment, element, &addr.offset) == TRUE)
-      return addr;
+    segment = sc_storage_get_segment(addr->seg, TRUE);
+    return sc_segment_append_element(segment, element, &addr->offset);
   }
 
   // if element still not added, then create new segment and append element into it
   segment = sc_segment_new(segments->len);
-  addr.seg = segments->len;
+  addr->seg = segments->len;
   g_ptr_array_add(segments, (gpointer)segment);
-  g_assert( sc_segment_append_element(segment, element, &addr.offset) );
 
-  return addr;
+  _sc_storage_append_segment_to_queue(addr->seg);
+
+  return sc_segment_append_element(segment, element, &addr->offset);
 }
 
 sc_addr sc_storage_element_new(sc_type type)
 {
   sc_element el;
+  sc_addr addr;
+
   memset(&el, 0, sizeof(el));
   el.type = type;
   el.create_time_stamp = time_stamp;
 
-  return sc_storage_append_el_into_segments(&el);
+  g_assert( sc_storage_append_el_into_segments(&el, &addr) != 0);
+  return addr;
 }
 
 void sc_storage_element_free(sc_addr addr)
@@ -237,13 +252,15 @@ void sc_storage_element_free(sc_addr addr)
 sc_addr sc_storage_node_new(sc_type type )
 {
   sc_element el;
+  sc_addr addr;
 
   g_assert( !(sc_type_arc & type) );
   memset(&el, 0, sizeof(el));
 
   el.type = sc_type_node | type;
 
-  return sc_storage_append_el_into_segments(&el);
+  g_assert( sc_storage_append_el_into_segments(&el, &addr) != 0 );
+  return addr;
 }
 
 sc_addr sc_storage_arc_new(sc_type type,
@@ -260,9 +277,8 @@ sc_addr sc_storage_arc_new(sc_type type,
   el.arc.begin = beg;
   el.arc.end = end;
 
-  // get ne element uri
-  addr =  sc_storage_append_el_into_segments(&el);
-  tmp_el = sc_storage_get_element(addr, TRUE);
+  // get new element
+  tmp_el  =  sc_storage_append_el_into_segments(&el, &addr);
   
   g_assert(tmp_el != 0);
 

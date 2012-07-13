@@ -38,13 +38,13 @@ gboolean sc_segment_have_empty_slot(sc_segment *segment)
 #if USE_SEGMENT_EMPTY_SLOT_BUFFER
   return segment->have_empty_slots;
 #else
-  return segment->empty_slot != SEGMENT_SIZE;
+  return segment->empty_slot < SEGMENT_SIZE;
 #endif
 }
 
-gboolean sc_segment_append_element(sc_segment *segment,
-				   sc_element *element,
-				   guint16 *id)
+sc_element* sc_segment_append_element(sc_segment *segment,
+				      sc_element *element,
+				      guint16 *offset)
 {
   guint slot = SEGMENT_SIZE;
   g_assert( segment != 0 );
@@ -55,25 +55,20 @@ gboolean sc_segment_append_element(sc_segment *segment,
     slot = segment->empty_slot_buff[--segment->empty_slot_buff_head];
   else
   {
-    if (segment->have_empty_slots == TRUE)
-    {
-      sc_segment_update_empty_slot(segment);
-      if (segment->empty_slot_buff_head > 0)
+    g_assert (segment->have_empty_slots == TRUE);
 
-	slot = segment->empty_slot_buff[--segment->empty_slot_buff_head];
-    }
-    else 
-      return FALSE;
+    sc_segment_update_empty_slot(segment);
+    if (segment->empty_slot_buff_head > 0)
+      slot = segment->empty_slot_buff[--segment->empty_slot_buff_head];
   }
 #else
   slot = segment->empty_slot;
 #endif
 
-  if (slot >= SEGMENT_SIZE)
-    return FALSE;
+  g_assert(slot < SEGMENT_SIZE);
 
   segment->elements[slot] = *element;
-  *id = slot;
+  *offset = slot;
 
 #if USE_SEGMENT_EMPTY_SLOT
   g_print("\n%u", segment->empty_slot_buff_head);
@@ -81,7 +76,7 @@ gboolean sc_segment_append_element(sc_segment *segment,
 #endif
   sc_segment_update_empty_slot(segment);
 
-  return TRUE;
+  return &(segment->elements[slot]);
 }
 
 sc_element* sc_segment_get_element(sc_segment *seg, guint id)
@@ -172,18 +167,12 @@ void sc_segment_update_empty_slot_value(sc_segment *segment)
     }
 
   // search back
-  if (segment->empty_slot == (segment->num == 0 ? 1 : 0))
-  {
-    segment->empty_slot = SEGMENT_SIZE;
-    return;
-  }
-
   v = (segment->num == 0) ? 1 : G_MAXUINT;
 #if BOUND_EMPTY_SLOT_SEARCH
   len = 0;
-  for (idx = segment->empty_slot - 1; (idx != v) && (len < SEGMENT_EMPTY_SEARCH_LEN); --idx, ++len)
+  for (idx = v; (idx < segment->empty_slot) && (len < SEGMENT_EMPTY_SEARCH_LEN); ++idx, ++len)
 #else
-  for (idx = segment->empty_slot - 1; idx != v; --idx)
+  for (idx = v; idx < segment->empty_slot; ++idx)
 #endif
     if (segment->elements[idx].type == 0)
     {

@@ -223,12 +223,14 @@ void test3()
     for (j = 0; j < 10; j++)
       arc[i][j] = sc_storage_arc_new(0, node[i], node[j]);
   
+  printf("Segments count: %d\n", (guint)segments->len);
   print_storage_statistics();
 
   printf("Delete 5 nodes\n");
   for (i = 0; i < 5; i++)
     sc_storage_element_free(node[i]);
 
+  printf("Segments count: %d\n", (guint)segments->len);
   print_storage_statistics();
 }
 

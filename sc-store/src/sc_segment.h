@@ -37,12 +37,14 @@ void sc_segment_free(sc_segment *segment);
 gboolean sc_segment_have_empty_slot(sc_segment *segment);
 
 /*! Append element into segment at first empty position.
- * @param id Pointer to store element id in segment.
- * @return Return true, if element appended into segment, else - return false.
+ * @param segment Pointer to segment, that will be contains element
+ * @param element Pointer to sc-element data (will be just copied)
+ * @param offset Pointer that used to return offset in segment for appended element
+ * @return Return pointer to created sc-element data. If element wasn't append into segment, then return 0.
  */
-gboolean sc_segment_append_element(sc_segment *segment,
-				   sc_element *element,
-				   guint16 *id);
+sc_element* sc_segment_append_element(sc_segment *segment,
+				      sc_element *element,
+				      guint16 *offset);
 
 /*! Get sc-element pointer by id
  * @param seg Pointer to segment where we need to get element
