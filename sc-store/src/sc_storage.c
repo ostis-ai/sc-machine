@@ -268,7 +268,7 @@ sc_addr sc_storage_arc_new(sc_type type,
 			   sc_addr end)
 {
   sc_addr addr;
-  sc_element el, *beg_el, *end_el, *tmp_el;
+  sc_element el, *beg_el, *end_el, *tmp_el, *tmp_arc;
 
   memset(&el, 0, sizeof(el));
   g_assert( !(sc_type_node & type) );
@@ -278,7 +278,7 @@ sc_addr sc_storage_arc_new(sc_type type,
   el.arc.end = end;
 
   // get new element
-  tmp_el  =  sc_storage_append_el_into_segments(&el, &addr);
+  tmp_el = sc_storage_append_el_into_segments(&el, &addr);
   
   g_assert(tmp_el != 0);
 
@@ -292,6 +292,22 @@ sc_addr sc_storage_arc_new(sc_type type,
   // set next output arc for our created arc
   tmp_el->arc.next_out_arc = beg_el->first_out_arc;
   tmp_el->arc.next_in_arc = end_el->first_in_arc;
+
+#if USE_TWO_ORIENTED_ARC_LIST
+  if (SC_ADDR_IS_NOT_EMPTY(beg_el->first_out_arc))
+  {
+    tmp_arc = sc_storage_get_element(beg_el->first_out_arc, TRUE);
+    tmp_arc->arc.prev_out_arc = addr;
+  }
+
+  if (SC_ADDR_IS_NOT_EMPTY(end_el->first_in_arc))
+  {
+    tmp_arc = sc_storage_get_element(end_el->first_in_arc, TRUE);
+    tmp_arc->arc.prev_in_arc = addr;
+  }
+
+#endif
+
 
   // set our arc as first output/input at begin/end elements
   beg_el->first_out_arc = addr;
