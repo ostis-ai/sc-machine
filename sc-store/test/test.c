@@ -135,7 +135,7 @@ void test1()
   {
     if (idx % 10 < 5)
     {
-      id = get_random_addr(sc_type_arc);
+      id = get_random_addr(sc_type_arc_common);
       if (sc_storage_is_element(id))
       {
 	sc_storage_element_free(id);

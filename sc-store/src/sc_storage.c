@@ -254,7 +254,7 @@ sc_addr sc_storage_node_new(sc_type type )
   sc_element el;
   sc_addr addr;
 
-  g_assert( !(sc_type_arc & type) );
+  g_assert( !(sc_type_arc_mask & type) );
   memset(&el, 0, sizeof(el));
 
   el.type = sc_type_node | type;
@@ -272,7 +272,7 @@ sc_addr sc_storage_arc_new(sc_type type,
 
   memset(&el, 0, sizeof(el));
   g_assert( !(sc_type_node & type) );
-  el.type = sc_type_arc | type;
+  el.type = (type & sc_type_arc_mask) ? type : (sc_type_arc_common | type);
 
   el.arc.begin = beg;
   el.arc.end = end;
@@ -345,7 +345,7 @@ void sc_storage_get_elements_stat(sc_elements_stat *stat)
 	    stat->node_deleted++;
 	}
 	else
-	  if (type & sc_type_arc)
+	  if (type & sc_type_arc_mask)
 	  {
 	    stat->arc_count++;
 	    if (delete_stamp > 0)
