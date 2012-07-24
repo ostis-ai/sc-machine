@@ -16,6 +16,7 @@ const char* repo_path = "repo";
 GTimer *timer = 0;
 
 std::vector<sc_addr> segment_node_del;
+std::vector<sc_addr> arc_creation_vector;
 
 void print_storage_statistics()
 {
@@ -126,6 +127,9 @@ void test1()
     sc_storage_node_new(0);
 
   g_timer_stop(timer);
+
+  segment_node_del.clear();
+
   printf("Time: %f s\n", g_timer_elapsed(timer, 0));
   printf("Elements per second: %f\n", (float)nodes_remove_count / g_timer_elapsed(timer, 0));
   printf("Segments count: %d\n", (guint)segments->len);
@@ -136,56 +140,36 @@ void test1()
   g_timer_reset(timer);
   printf("--- Arcs creation ---\n");
   count = 0;
-  g_timer_start(timer);
+
+  printf("Prepare...\n");
   for (idx = 0; idx < arcs_append_count; idx++)
   {
-    id = get_random_addr(0);
-    id2 = get_random_addr(0);
-
-    if (!sc_storage_is_element(id) || !sc_storage_is_element(id2)) continue;
-
-    sc_storage_arc_new(0, id, id2);//, uri, uri2);
-    count++;
-  }
-
-  g_timer_stop(timer);
-  printf("Timer: %fs\n", g_timer_elapsed(timer, 0));
-  printf("Arcs per second: %f\n", (float)count / g_timer_elapsed(timer, 0));
-  printf("Segments count: %d\n", (guint)segments->len);
-  
-  print_storage_statistics();
-
-
-  g_timer_reset(timer);
-  printf("--- Arcs segmentation ---\n");
-  g_timer_start(timer);
-  count = 0;
-  for (idx = 0; idx < arcs_remove_count; idx++)
-  {
-    if (idx % 10 < 5)
+    do
     {
-      id = get_random_addr(sc_type_arc_common);
-      if (sc_storage_is_element(id))
-      {
-	sc_storage_element_free(id);
-	count++;
-      }
-    }else
-     {
-       id = get_random_addr(0);
-       id2 = get_random_addr(0);
+      id = get_random_addr(0);
+    }while (!sc_storage_is_element(id));
 
-       if (!sc_storage_is_element(id) || !sc_storage_is_element(id2)) continue;
+    do
+    {
+      id2 = get_random_addr(0);
+    }while (!sc_storage_is_element(id2));
 
-       sc_storage_arc_new(0, id, id2);
-     }
+    arc_creation_vector.push_back(id);
+    arc_creation_vector.push_back(id2);
+  }
+
+  printf("Run...\n");
+  g_timer_start(timer);
+  n = arc_creation_vector.size() / 2;
+  for (guint32 i = 0; i < n; ++i)
+  {
+    sc_storage_arc_new(0, arc_creation_vector[i], arc_creation_vector[i + n]);
   }
 
   g_timer_stop(timer);
   printf("Timer: %fs\n", g_timer_elapsed(timer, 0));
-  printf("Arcs per second: %f\n", (float)arcs_remove_count / g_timer_elapsed(timer, 0));
+  printf("Arcs per second: %f\n", (float)n / g_timer_elapsed(timer, 0));
   printf("Segments count: %d\n", (guint)segments->len);
-  printf("Element free calls: %u\n", count);
   
   print_storage_statistics();
 

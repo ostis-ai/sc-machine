@@ -5,14 +5,17 @@
 #include <libsc/segment_utils.h>
 #include <libsc/sc_segment.h>
 
-#define NODE_ALLOC_COUNT   10000000
-#define NODE_SEGMENT_COUNT 10000000
+#define NODE_ALLOC_COUNT   5000000
+#define NODE_SEGMENT_COUNT 5000000
+#define ARC_ALLOC_COUNT    5000000
 
 GTimer *timer = 0;
 sc_session *s = 0;
 sc_segment *seg = 0;
 
 std::vector<sc_addr> segment_node_del;
+std::vector<sc_addr> nodes_vector;
+std::vector<sc_addr> arcs_vector;
 
 double profile_func( void(*testFunc)(void) )
 {
@@ -70,7 +73,7 @@ void testNodeSegmentation()
   printf("Test node segmentation\n");
   printf("Number of process nodes: %d\n", NODE_SEGMENT_COUNT);
 
-sc_segment::iterator *it = seg->create_iterator_on_elements();
+  sc_segment::iterator *it = seg->create_iterator_on_elements();
   guint32 deleted = 0;
   guint32 iterated = 0;
   while (!it->is_over())
@@ -97,6 +100,46 @@ sc_segment::iterator *it = seg->create_iterator_on_elements();
   printf("Nodes per second: %f\n", (float)(NODE_SEGMENT_COUNT) / res);
 }
 
+void _allocate_arcs()
+{
+  guint32 n = arcs_vector.size() / 2;
+  for (guint32 i = 0; i < n; ++i)
+  {
+    sc_addr addr = s->create_el(seg, SC_ARC);
+    s->set_beg(addr, arcs_vector[i]);
+    s->set_end(addr, arcs_vector[i + n]);
+  }
+}
+
+void testArcsCreation()
+{
+  printf("Test arcs creation\n");
+  printf("Number of arcs: %d\n", NODE_SEGMENT_COUNT);
+
+  sc_segment::iterator *it = seg->create_iterator_on_elements();
+  while (!it->is_over())
+  {
+    sc_addr_ll addr_ll = it->next();
+    // skip links
+    if (!seg->is_link(addr_ll))
+    {
+      sc_addr addr = seg->get_element_addr(addr_ll);
+      nodes_vector.push_back(addr);
+    }
+  }
+
+  guint32 n = nodes_vector.size();
+  for (guint32 i = 0; i < ARC_ALLOC_COUNT; ++i)
+  {
+    arcs_vector.push_back(nodes_vector[g_random_int() % n]);
+    arcs_vector.push_back(nodes_vector[g_random_int() % n]);
+  }
+
+  double res = profile_func(&_allocate_arcs);
+
+  printf("Arcs per second: %f\n", (float)(ARC_ALLOC_COUNT) / res);
+}
+
 int main(int argc, char** argv)
 {
   timer = g_timer_new();
@@ -112,6 +155,8 @@ int main(int argc, char** argv)
   testNodeAllocation();
   printf("---\n");
   testNodeSegmentation();
+  printf("---\n");
+  testArcsCreation();
 
   printf("\nPress any key...\n");
   getchar();
