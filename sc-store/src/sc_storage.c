@@ -95,8 +95,7 @@ void sc_storage_shutdown()
 		      TRUE, FALSE);
   seg_queue_update_pool = (GThreadPool*)0;
   */
- // sc_fs_storage_write_to_path(segments);
-  sc_fs_storage_shutdown();
+  sc_fs_storage_shutdown(segments);
 
   for (idx = 0; idx < segments->len; idx++)
     g_free(g_ptr_array_index(segments, idx));

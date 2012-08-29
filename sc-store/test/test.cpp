@@ -112,8 +112,8 @@ void test1()
 	id = get_random_addr(sc_type_node);
       }
       while(!sc_storage_is_element(id) && is_sc_addr_in_segment_node_vector(id));*/
-      g_assert(sc_storage_is_element(id));
-      segment_node_del.push_back(id);
+      if (sc_storage_is_element(id))
+	segment_node_del.push_back(id);
     }
   }
 
@@ -347,7 +347,12 @@ int main(int argc, char *argv[])
 {
   guint item = 1;
 
+  timer = g_timer_new();
+  g_timer_start(timer);
+
   sc_storage_initialize("repo");
+  g_timer_stop(timer);
+  printf("Segment loading speed: %f seg/sec\n", segments->len / g_timer_elapsed(timer, 0));
 
   while (item != 0)
   {
@@ -384,7 +389,13 @@ int main(int argc, char *argv[])
     printf("\n----- Finished -----\n");
   }
 
+  item = segments->len;
+  g_timer_reset(timer); // crash when uncomment
+
   sc_storage_shutdown();
+  g_timer_stop(timer);
+  printf("Segments save speed: %f seg/sec\n", item / g_timer_elapsed(timer, 0));
+  g_timer_destroy(timer);
 
   return 0;
 }

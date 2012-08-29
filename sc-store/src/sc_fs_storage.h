@@ -13,7 +13,7 @@ gboolean sc_fs_storage_initialize(const gchar *path);
 
 /*! Shutdown file system storage
  */
-gboolean sc_fs_storage_shutdown();
+gboolean sc_fs_storage_shutdown(GPtrArray *segments);
 
 /*! Load segment from file system
  *

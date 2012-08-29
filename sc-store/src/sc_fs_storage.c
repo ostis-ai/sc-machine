@@ -29,10 +29,11 @@ gboolean sc_fs_storage_initialize(const gchar *path)
   g_stpcpy(repo_path, path);
 }
 
-gboolean sc_fs_storage_shutdown()
+gboolean sc_fs_storage_shutdown(GPtrArray *segments)
 {
   g_message("Shutdown sc-storage\n");
   g_message("Write storage into %s", repo_path);
+  sc_fs_storage_write_to_path(segments);
 
   g_free( repo_path );
 }
