@@ -3,6 +3,7 @@ extern "C"
 {
 #include "sc_store.h"
 #include "sc_segment.h"
+#include "sc_iterator.h"
 }
 #include <vector>
 
@@ -11,6 +12,7 @@ extern "C"
 #define nodes_remove_count 10000000
 #define arcs_append_count  10000000
 #define arcs_remove_count  0
+#define iterator_alloc_count 10000000
 
 const char* repo_path = "repo";
 GTimer *timer = 0;
@@ -247,6 +249,100 @@ void test3()
   print_storage_statistics();
 }
 
+void test4()
+{
+  sc_addr node[10], arc[10][10];
+  guint32 i, j;
+  sc_iterator3 *it = 0;
+  sc_addr addr1, addr2, addr3;
+ 
+  printf("Create 10 nodes and 100 arcs, that connect nodes each other\n");
+  for (i = 0; i < 10; i++)
+    node[i] = sc_storage_element_new(sc_type_node);
+
+  for (i = 0; i < 10; i++)
+    for (j = 0; j < 10; j++)
+      arc[i][j] = sc_storage_arc_new(0, node[i], node[j]);
+
+  print_storage_statistics();
+  printf("---\nTest iterator3_f_a_a\n");
+  for (i = 0; i < 10; i++)
+  {
+    it = sc_iterator3_f_a_a_new(node[i], 0, 0);
+    g_assert(it != 0);
+
+    printf("Node %d:\n", i);
+    while (sc_iterator3_next(it))
+    {
+      addr1 = sc_iterator3_value(it, 0);
+      addr2 = sc_iterator3_value(it, 1);
+      addr3 = sc_iterator3_value(it, 2);
+
+      printf("\t%u, %u; %u, %u; %u, %u\n", addr1.seg, addr1.offset, addr2.seg, addr2.offset, addr3.seg, addr3.offset);
+    }
+
+    sc_iterator3_free(it);
+  }
+
+  printf("---\nTest iterator3_a_a_f\n");
+  for (i = 0; i < 10; i++)
+  {
+    it = sc_iterator3_a_a_f_new(0, 0, node[i]);
+    g_assert(it != 0);
+
+    printf("Node %d:\n", i);
+    while (sc_iterator3_next(it))
+    {
+      addr1 = sc_iterator3_value(it, 0);
+      addr2 = sc_iterator3_value(it, 1);
+      addr3 = sc_iterator3_value(it, 2);
+
+      printf("\t%u, %u; %u, %u; %u, %u\n", addr1.seg, addr1.offset, addr2.seg, addr2.offset, addr3.seg, addr3.offset);
+    }
+
+    sc_iterator3_free(it);
+  }
+
+  printf("---\nTest iterator3_f_a_f\n");
+  for (i = 0; i < 10; i++)
+  {
+    it = sc_iterator3_f_a_f_new(node[i], 0, node[9 - i]);
+    g_assert(it != 0);
+
+    printf("Node %d:\n", i);
+    while (sc_iterator3_next(it))
+    {
+      addr1 = sc_iterator3_value(it, 0);
+      addr2 = sc_iterator3_value(it, 1);
+      addr3 = sc_iterator3_value(it, 2);
+
+      printf("\t%u, %u; %u, %u; %u, %u\n", addr1.seg, addr1.offset, addr2.seg, addr2.offset, addr3.seg, addr3.offset);
+    }
+
+    sc_iterator3_free(it);
+  }
+
+  // iterator allocations
+  printf("---\nTest iterator allocation(dealocation) speed...\n");
+
+  timer = g_timer_new();
+
+  g_timer_reset(timer);
+  g_timer_start(timer);
+
+  for (i = 0; i < iterator_alloc_count; i++)
+  {
+    it = sc_iterator3_f_a_a_new(node[0], 0, 0);
+    sc_iterator3_free(it);
+  }
+
+  printf("Allocated iterators: %d\n", iterator_alloc_count);
+  printf("Allocation/deallocation per second: %f\n", iterator_alloc_count / g_timer_elapsed(timer, 0));
+
+  g_timer_destroy(timer);
+
+}
+
 int main(int argc, char *argv[])
 {
   guint item = 1;
@@ -260,6 +356,7 @@ int main(int argc, char *argv[])
 	   "1 - test allocation\n"
 	   "2 - test sc-addr utilities\n"
 	   "3 - test arc deletion\n"
+	   "4 - test iterators\n"
 	   "\nCommand: ");
     scanf("%d", &item);
 
@@ -274,8 +371,13 @@ int main(int argc, char *argv[])
     case 2:
       test2();
       break;
+
     case 3:
       test3();
+      break;
+
+    case 4:
+      test4();
       break;
     };
 

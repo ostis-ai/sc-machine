@@ -81,10 +81,15 @@ sc_addr sc_storage_arc_new(sc_type type,
 			  sc_addr beg,
 			  sc_addr end);
 
-#endif
-
 
 /*! Get statistics information about elements
  * @param stat Pointer to structure to write statistics
  */
 void sc_storage_get_elements_stat(sc_elements_stat *stat);
+
+
+//! Returns time stamp value
+guint sc_storage_get_time_stamp();
+
+#endif
+

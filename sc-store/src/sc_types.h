@@ -29,7 +29,7 @@ struct _sc_addr
 #define SC_ADDR_IS_EMPTY(addr) ((addr.seg == 0) && (addr.offset == 0))
 #define SC_ADDR_IS_NOT_EMPTY(addr) (!SC_ADDR_IS_EMPTY(addr))
 //! Check if two sc-addr's are equivalent
-#define SC_ADDR_IS_EQUAL(addr, addr2) ((addr.seg == addr.seg) && (addr.offset == addr.offset))
+#define SC_ADDR_IS_EQUAL(addr, addr2) ((addr.seg == addr2.seg) && (addr.offset == addr2.offset))
 #define SC_ADDR_IS_NOT_EQUAL(addr, addr2) (!SC_ADDR_IS_EQUAL(addr, addr2))
 
 /*! Next defines help to pack local part of sc-addr (segment and offset) into int value
@@ -89,7 +89,7 @@ typedef struct _sc_segment sc_segment;
 typedef struct _sc_addr sc_addr;
 typedef struct _sc_elements_stat sc_elements_stat;
 typedef struct _sc_iterator_param sc_iterator_param;
-typedef struct _sc_iterator sc_iterator;
+typedef struct _sc_iterator3 sc_iterator3;
 
 
 #endif
