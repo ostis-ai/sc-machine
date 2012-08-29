@@ -19,5 +19,12 @@ HEADERS  += mainwindow.h \
 
 FORMS    += mainwindow.ui
 
+INCLUDEPATH += ../../sc-store/src
+unix: LIBS += $$quote(-L$$DESTDIR) -lsc_store
+
+CONFIG += link_pkgconfig
+PKGCONFIG += glib-2.0
+
+
 OBJECTS_DIR = obj
 MOC_DIR = moc

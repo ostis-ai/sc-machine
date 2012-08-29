@@ -3,11 +3,13 @@
 
 #include <QMainWindow>
 
-namespace Ui {
-class MainWindow;
-}
-
 class QListWidget;
+class SegmentView;
+
+namespace Ui
+{
+    class MainWindow;
+}
 
 class MainWindow : public QMainWindow
 {
@@ -16,13 +18,25 @@ class MainWindow : public QMainWindow
 public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
-    
+
+    //! Create central widgets
+    void createMainWidgets();
+
+    //! Setup action slots
+    void setupActions();
+
+
+protected slots:
+    void openRepository();
+
 private:
+
     Ui::MainWindow *ui;
 
     //! List of segments
     QListWidget *mSegmentsList;
     //! Widget that visualize segment
+    SegmentView *mSegmentView;
 
 };
 

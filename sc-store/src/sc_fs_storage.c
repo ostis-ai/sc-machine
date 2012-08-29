@@ -27,6 +27,8 @@ gboolean sc_fs_storage_initialize(const gchar *path)
 
   repo_path = g_malloc0(sizeof(gchar) * (strlen(path) + 1));
   g_stpcpy(repo_path, path);
+
+  return TRUE;
 }
 
 gboolean sc_fs_storage_shutdown(GPtrArray *segments)
@@ -36,6 +38,8 @@ gboolean sc_fs_storage_shutdown(GPtrArray *segments)
   sc_fs_storage_write_to_path(segments);
 
   g_free( repo_path );
+
+  return TRUE;
 }
 
 void _get_segment_path(const gchar *path, 
