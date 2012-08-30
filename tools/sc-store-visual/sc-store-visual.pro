@@ -12,10 +12,14 @@ TEMPLATE = app
 
 SOURCES += main.cpp\
         mainwindow.cpp \
-    segmentview.cpp
+    segmentview.cpp \
+    segmentscene.cpp \
+    segmentitem.cpp
 
 HEADERS  += mainwindow.h \
-    segmentview.h
+    segmentview.h \
+    segmentscene.h \
+    segmentitem.h
 
 FORMS    += mainwindow.ui
 
