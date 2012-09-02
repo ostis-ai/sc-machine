@@ -2,6 +2,8 @@
 #include "sc_element.h"
 #include "sc_storage.h"
 
+#include <glib.h>
+
 sc_iterator3* sc_iterator3_f_a_a_new(sc_addr el, sc_type arc_type, sc_type end_type)
 {
     sc_iterator_param p1, p2, p3;

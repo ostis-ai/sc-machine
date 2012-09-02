@@ -3,6 +3,8 @@
 
 #include "sc_types.h"
 #include "sc_defines.h"
+#include <glib.h>
+
 
 /*! Initialize file system storage in specified path
  *

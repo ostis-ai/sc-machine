@@ -69,6 +69,10 @@ void sc_storage_element_free(sc_addr addr);
  */
 sc_addr sc_storage_node_new(sc_type type);
 
+/*! Create new sc-link
+ */
+sc_addr sc_storage_link_new();
+
 /*! Create new sc-arc.
  * @param type Type of new sc-arc
  * @param beg sc-addr of begin sc-element
@@ -80,10 +84,29 @@ sc_addr sc_storage_arc_new(sc_type type,
                            sc_addr beg,
                            sc_addr end);
 
-/*! Return type of sc-element with specified sc-addr
+/*! Get type of sc-element with specified sc-addr
  * @param addr sc-addr of element to get type
+ * @param result Pointer to result container
+ * @return If input params are correct and type resolved, then return SC_TRUE;
+ * otherwise return SC_FALSE
  */
-sc_type sc_storage_get_element_type(sc_addr addr);
+sc_bool sc_storage_get_element_type(sc_addr addr, sc_type *result);
+
+/*! Returns sc-addr of begin element of specified arc
+ * @param addr sc-addr of arc to get begin element
+ * @param result Pointer to result container
+ * @return If input params are correct and begin element resolved, then return SC_TRUE;
+ * otherwise return SC_FALSE
+ */
+sc_bool sc_storage_get_arc_begin(sc_addr addr, sc_addr *result);
+
+/*! Returns sc-addr of end element of specified arc
+ * @param addr sc-addr of arc to get end element
+ * @param result PoOinter to result container
+ * @return If input params are correct and end element resolved, then return SC_TRUE;
+ * otherwise return SC_FALSE
+ */
+sc_bool sc_storage_get_arc_end(sc_addr addr, sc_addr *result);
 
 //! Returns number of segments
 sc_uint sc_storage_get_segments_count();

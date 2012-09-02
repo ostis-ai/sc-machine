@@ -4,7 +4,9 @@
 #include "sc_segment.h"
 #include "sc_element.h"
 #include "sc_fs_storage.h"
+
 #include <memory.h>
+#include <glib.h>
 
 GPtrArray *segments = 0;
 sc_uint seg_id = 0;
@@ -166,6 +168,7 @@ sc_element* sc_storage_append_el_into_segments(sc_element *element, sc_addr *add
     sc_segment *segment = 0;
 
     g_assert( addr != 0 );
+    SC_ADDR_MAKE_EMPTY(*addr);
 
     if (_sc_storage_get_segment_from_queue(&addr->seg) == SC_TRUE)
     {
@@ -269,7 +272,18 @@ sc_addr sc_storage_node_new(sc_type type )
 
     el.type = sc_type_node | type;
 
-    g_assert( sc_storage_append_el_into_segments(&el, &addr) != 0 );
+    sc_storage_append_el_into_segments(&el, &addr);
+    return addr;
+}
+
+sc_addr sc_storage_link_new()
+{
+    sc_element el;
+    sc_addr addr;
+
+    memset(&el, 0, sizeof(el));
+    el.type = sc_type_link;
+    sc_storage_append_el_into_segments(&el, &addr);
     return addr;
 }
 
@@ -375,8 +389,39 @@ unsigned int sc_storage_get_segments_count()
     return segments->len;
 }
 
-sc_type sc_storage_get_element_type(sc_addr addr)
+sc_bool sc_storage_get_element_type(sc_addr addr, sc_type *result)
 {
     sc_element *el = sc_storage_get_element(addr, SC_TRUE);
-    return el->type;
+    if (el == 0)
+        return SC_FALSE;
+
+    *result = el->type;
+
+    return SC_TRUE;
 }
+
+sc_bool sc_storage_get_arc_begin(sc_addr addr, sc_addr *result)
+{
+    sc_element *el = sc_storage_get_element(addr, SC_TRUE);
+    if (el->type & sc_type_arc_mask)
+    {
+        *result = el->arc.begin;
+        return SC_TRUE;
+    }
+
+    return SC_FALSE;
+}
+
+sc_bool sc_storage_get_arc_end(sc_addr addr, sc_addr *result)
+{
+    sc_element *el = sc_storage_get_element(addr, SC_TRUE);
+    if (el->type & sc_type_arc_mask)
+    {
+        *result = el->arc.end;
+        return SC_TRUE;
+    }
+
+    return SC_FALSE;
+}
+
+

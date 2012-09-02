@@ -6,10 +6,11 @@ extern "C"
 #include "sc_iterator.h"
 }
 #include <vector>
+#include <glib.h>
 
-#define nodes_append_count 1000000
-#define nodes_remove_count 1000000
-#define arcs_append_count  1000000
+#define nodes_append_count 5000000
+#define nodes_remove_count 5000000
+#define arcs_append_count  5000000
 #define arcs_remove_count  0
 #define iterator_alloc_count 10000000
 
@@ -344,6 +345,10 @@ int main(int argc, char *argv[])
     timer = g_timer_new();
     g_timer_start(timer);
 
+    printf("MD5: %d\n", g_checksum_type_get_length(G_CHECKSUM_MD5) );
+    printf("SHA1: %d\n", g_checksum_type_get_length(G_CHECKSUM_SHA1) );
+    printf("SHA256: %d\n", g_checksum_type_get_length(G_CHECKSUM_SHA256) );
+
     sc_storage_initialize("repo");
     g_timer_stop(timer);
     printf("Segment loading speed: %f seg/sec\n", sc_storage_get_segments_count() / g_timer_elapsed(timer, 0));
@@ -391,6 +396,7 @@ int main(int argc, char *argv[])
     g_timer_stop(timer);
     printf("Segments save speed: %f seg/sec\n", item / g_timer_elapsed(timer, 0));
     g_timer_destroy(timer);
+
 
     return 0;
 }

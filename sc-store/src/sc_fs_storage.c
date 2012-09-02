@@ -1,6 +1,5 @@
 #include "sc_fs_storage.h"
 #include "sc_segment.h"
-
 #include <memory.h>
 
 gchar *repo_path = 0;

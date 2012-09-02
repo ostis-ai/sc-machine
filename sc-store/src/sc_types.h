@@ -2,7 +2,6 @@
 #define _sc_types_h_
 
 #include "sc_config.h"
-#include <glib.h>
 
 // base types
 typedef signed char sc_int8;
@@ -51,12 +50,12 @@ struct _sc_addr
 };
 
 //! Make sc-addr empty
-#define SC_ADDR_MAKE_EMPTY(addr) { addr.seg = 0; addr.offset = 0; }
+#define SC_ADDR_MAKE_EMPTY(addr) { (addr).seg = 0; (addr).offset = 0; }
 //! Check if specified sc-addr is empty
-#define SC_ADDR_IS_EMPTY(addr) ((addr.seg == 0) && (addr.offset == 0))
+#define SC_ADDR_IS_EMPTY(addr) (((addr).seg == 0) && ((addr).offset == 0))
 #define SC_ADDR_IS_NOT_EMPTY(addr) (!SC_ADDR_IS_EMPTY(addr))
 //! Check if two sc-addr's are equivalent
-#define SC_ADDR_IS_EQUAL(addr, addr2) ((addr.seg == addr2.seg) && (addr.offset == addr2.offset))
+#define SC_ADDR_IS_EQUAL(addr, addr2) (((addr).seg == (addr2).seg) && ((addr).offset == (addr2).offset))
 #define SC_ADDR_IS_NOT_EQUAL(addr, addr2) (!SC_ADDR_IS_EQUAL(addr, addr2))
 
 /*! Next defines help to pack local part of sc-addr (segment and offset) into int value

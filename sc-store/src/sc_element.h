@@ -19,16 +19,23 @@ struct _sc_arc_info
 #if USE_TWO_ORIENTED_ARC_LIST
 #define CONTENT_DATA_LEN (sizeof(sc_arc_info) - sizeof(sc_uint32))
 #else
-#define CONTENT_DATA_LEN 16
+#define CONTENT_DATA_LEN 32
 #endif
 
 
-//! Structure to store content information
-//typedef struct _sc_content sc_content;
+/*! Structure to store content information
+ * First byte of structure store special inforamtion. This information
+ * contains type of stored data. There are two possible types of stored data:
+ * - sc_content_type_data - This type means, that data of content stores in this structure. That allows
+ * to prevent file creation for data, that has size less then CONTENT_DATA_LEN.
+ * - sc_content_type_checksum - This type means, that structure store just checksum of content data. Real data
+ * can be founded in content directory by checksum.
+ * Type of stored data is a first bit of \p info.
+ */
 struct _sc_content
 {
-    char path[CONTENT_DATA_LEN];
-    sc_uint32 size;
+    char info;  // content type
+    char data[CONTENT_DATA_LEN];
 };
 
 /* Structure to store information for sc-elements.

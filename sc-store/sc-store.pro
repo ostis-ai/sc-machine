@@ -18,13 +18,15 @@ HEADERS += \
     src/sc_fs_storage.h \
     src/sc_element.h \
     src/sc_defines.h \
-    src/sc_config.h
+    src/sc_config.h \
+    src/sc_link_helpers.h
 
 SOURCES += \
     src/sc_storage.c \
     src/sc_segment.c \
     src/sc_iterator.c \
     src/sc_fs_storage.c \
-    src/sc_element.c
+    src/sc_element.c \
+    src/sc_link_helpers.c
 
 

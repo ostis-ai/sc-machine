@@ -1,7 +1,8 @@
 #include "sc_segment.h"
-
 #include "sc_element.h"
 #include "sc_storage.h"
+
+#include <glib.h>
 
 sc_segment* sc_segment_new(sc_addr_seg num)
 {

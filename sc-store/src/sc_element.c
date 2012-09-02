@@ -3,6 +3,8 @@
 #include "sc_types.h"
 #include "sc_segment.h"
 
+#include <glib.h>
+
 void sc_element_set_type(sc_element *element,
                          sc_type type)
 {
