@@ -5,7 +5,11 @@
 #include <QGraphicsTextItem>
 #include <QFontMetrics>
 
+extern "C"
+{
 #include "sc_store.h"
+#include "sc_element.h"
+}
 
 SegmentView::SegmentView(QWidget *parent) :
     QGraphicsView(parent),
@@ -14,32 +18,32 @@ SegmentView::SegmentView(QWidget *parent) :
     setScene(new SegmentScene(this));
 
     // test --->
-    updateSegmentItems();
-    SegmentItem *item = 0;
-    foreach(item, mSegmentItems)
-    {
-        switch (qrand() % 6)
-        {
-        case 0:
-            item->setScType(sc_type_node);
-            break;
-        case 1:
-            item->setScType(sc_type_link);
-            break;
+//    updateSegmentItems();
+//    SegmentItem *item = 0;
+//    foreach(item, mSegmentItems)
+//    {
+//        switch (qrand() % 6)
+//        {
+//        case 0:
+//            item->setScType(sc_type_node);
+//            break;
+//        case 1:
+//            item->setScType(sc_type_link);
+//            break;
 
-        case 2:
-            item->setScType(sc_type_edge_common);
-            break;
+//        case 2:
+//            item->setScType(sc_type_edge_common);
+//            break;
 
-        case 3:
-            item->setScType(sc_type_arc_common);
-            break;
+//        case 3:
+//            item->setScType(sc_type_arc_common);
+//            break;
 
-        case 4:
-            item->setScType(sc_type_arc_access);
-            break;
-        };
-    }
+//        case 4:
+//            item->setScType(sc_type_arc_access);
+//            break;
+//        };
+//    }
 
     // < ---
 }
@@ -88,6 +92,11 @@ void SegmentView::updateSegmentItems()
         sc_addr addr;
         addr.seg = mSegmentId;
         addr.offset = i++;
+
+        sc_element *el = sc_storage_get_element(addr, true);
+
+        item->setScType(el->type);
+        item->setDeletionTimeStamp(el->delete_time_stamp);
         item->setScAddr(addr);
     }
 }
@@ -101,4 +110,9 @@ void SegmentView::setSegmentId(quint32 segId)
 quint32 SegmentView::segmentId() const
 {
     return mSegmentId;
+}
+
+void SegmentView::reset()
+{
+
 }

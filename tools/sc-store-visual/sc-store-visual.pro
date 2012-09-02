@@ -8,7 +8,7 @@ QT       += core gui
 
 TARGET = sc-store-visual
 TEMPLATE = app
-
+DESTDIR = ../../bin
 
 SOURCES += main.cpp\
         mainwindow.cpp \
@@ -26,8 +26,8 @@ FORMS    += mainwindow.ui
 INCLUDEPATH += ../../sc-store/src
 unix: LIBS += $$quote(-L$$DESTDIR) -lsc_store
 
-CONFIG += link_pkgconfig
-PKGCONFIG += glib-2.0
+#CONFIG += link_pkgconfig
+#PKGCONFIG += glib-2.0
 
 
 OBJECTS_DIR = obj

@@ -6,31 +6,31 @@
 //! sc-iterator types
 typedef enum
 {
-  sc_iterator3_f_a_a = 0, // output arcs
-  sc_iterator3_a_a_f,     // input arcs
-  sc_iterator3_f_a_f      // arcs between two elements
+    sc_iterator3_f_a_a = 0, // output arcs
+    sc_iterator3_a_a_f,     // input arcs
+    sc_iterator3_f_a_f      // arcs between two elements
 } sc_iterator_type;
 
 /*! Iterator parameter
  */
 struct _sc_iterator_param
 {
-  gboolean is_type;
-  union
-  {
-    sc_addr addr;
-    sc_type type;
-  };
+    sc_bool is_type;
+    union
+    {
+        sc_addr addr;
+        sc_type type;
+    };
 };
 
 /*! Structure to store iterator information
  */
 struct _sc_iterator3
 {
-  sc_iterator_type type; // iterator type (search template)
-  sc_iterator_param params[3]; // parameters array
-  sc_addr results[3]; // results array (same size as params)
-  guint32 time_stamp; // iterator creation time stamp
+    sc_iterator_type type; // iterator type (search template)
+    sc_iterator_param params[3]; // parameters array
+    sc_addr results[3]; // results array (same size as params)
+    sc_uint32 time_stamp; // iterator creation time stamp
 };
 
 /*! Create iterator to find output arcs for specified element
@@ -62,7 +62,7 @@ sc_iterator3* sc_iterator3_f_a_f_new(sc_addr el_beg, sc_type arc_type, sc_addr e
  * @param p1 First iterator parameter
  * @param p2 Second iterator parameter
  * @param p3 Third iterator parameter
- * @return Pointer to created iterator. If parameters invalid for specified iterator type, or type is not a sc-iterator-3, then return 0 
+ * @return Pointer to created iterator. If parameters invalid for specified iterator type, or type is not a sc-iterator-3, then return 0
  */
 sc_iterator3* sc_iterator3_new(sc_iterator_type type, sc_iterator_param p1, sc_iterator_param p2, sc_iterator_param p3);
 
@@ -73,14 +73,14 @@ void sc_iterator3_free(sc_iterator3 *it);
 
 /*! Go to next iterator result
  * @param it Pointer to iterator that we need to go next result
- * @return Return TRUE, if iterator moved to new results; otherwise return FALSE.
+ * @return Return SC_TRUE, if iterator moved to new results; otherwise return SC_FALSE.
  * example: while(sc_iterator_next(it)) { <your code> }
  */
-gboolean sc_iterator3_next(sc_iterator3 *it);
+sc_bool sc_iterator3_next(sc_iterator3 *it);
 
 /*! Get iterator value
  * @param it Pointer to iterator for getting value
  * @param vid Value id (can't be more that 3 for sc-iterator3)
  * @return Return sc-addr of search result value
  */
-sc_addr sc_iterator3_value(sc_iterator3 *it, guint vid);
+sc_addr sc_iterator3_value(sc_iterator3 *it, sc_uint vid);

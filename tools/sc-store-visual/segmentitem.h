@@ -1,7 +1,10 @@
 #ifndef SEGMENTITEM_H
 #define SEGMENTITEM_H
 
+extern "C"
+{
 #include "sc_types.h"
+}
 #include <QGraphicsRectItem>
 
 class SegmentItem : public QGraphicsRectItem
@@ -21,12 +24,16 @@ public:
     //! Return sc-add of showed sc-element
     const sc_addr& scAddr() const;
 
+    void setDeletionTimeStamp(quint32 value);
+    quint32 deletionTimeStamp() const;
 
 private:
     //! Sc-type of element showed with item
     sc_type mScType;
     //! Sc-addr of element showed with this item
     sc_addr mScAddr;
+    //! Deletion time stamp
+    quint32 mDeleteTimeStamp;
     
 signals:
     

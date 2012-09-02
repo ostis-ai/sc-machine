@@ -4,23 +4,50 @@
 #include "sc_config.h"
 #include <glib.h>
 
-#define SC_ADDR_SEG_MAX G_MAXUINT16
-#define SC_ADDR_OFFSET_MAX G_MAXUINT16
+// base types
+typedef signed char sc_int8;
+typedef unsigned char sc_uint8;
+typedef signed short sc_int16;
+typedef unsigned short sc_uint16;
+typedef signed int sc_int32;
+typedef unsigned int sc_uint32;
+typedef sc_uint32 sc_uint;
+typedef sc_uint32 sc_bool;
 
-#define SEGMENT_SIZE G_MAXUINT16    // number of elements in segment
+// booleans
+#define SC_FALSE (0)
+#define SC_TRUE (!SC_FALSE)
+
+// types limits
+#define SC_MININT8	((sc_int8)  0x80)
+#define SC_MAXINT8	((sc_int8)  0x7f)
+#define SC_MAXUINT8	((sc_uint8) 0xff)
+
+#define SC_MININT16     ((sc_int16)  0x8000)
+#define SC_MAXINT16     ((sc_int16)  0x7fff)
+#define SC_MAXUINT16	((sc_uint16) 0xffff)
+
+#define SC_MININT32     ((sc_int32)  0x80000000)
+#define SC_MAXINT32     ((sc_int32)  0x7fffffff)
+#define SC_MAXUINT32	((sc_uint32) 0xffffffff)
+
+#define SC_ADDR_SEG_MAX     SC_MAXUINT16
+#define SC_ADDR_OFFSET_MAX  SC_MAXUINT16
+
+#define SEGMENT_SIZE        SC_MAXUINT16    // number of elements in segment
 
 // Types for segment and offset
-typedef guint16 sc_addr_seg;
-typedef guint16 sc_addr_offset;
+typedef sc_uint16 sc_addr_seg;
+typedef sc_uint16 sc_addr_offset;
 
 //! Structure to store sc-element address
 struct _sc_addr
 {
 #if USE_NETWORK_SCALE
-  guint32 net_addr;
+    sc_uint32 net_addr;
 #endif
-  sc_addr_seg seg;
-  sc_addr_offset offset;
+    sc_addr_seg seg;
+    sc_addr_offset offset;
 };
 
 //! Make sc-addr empty
@@ -35,11 +62,11 @@ struct _sc_addr
 /*! Next defines help to pack local part of sc-addr (segment and offset) into int value
  * and get them back from int
  */
-#define SC_ADDR_LOCAL_TO_INT(addr) (guint32)((addr.seg << 16) | (addr.offset & 0xffff))
-#define SC_ADDR_LOCAL_OFFSET_FROM_INT(v) (guint16)((v) & 0x0000ffff)
+#define SC_ADDR_LOCAL_TO_INT(addr) (sc_uint32)((addr.seg << 16) | (addr.offset & 0xffff))
+#define SC_ADDR_LOCAL_OFFSET_FROM_INT(v) (sc_uint16)((v) & 0x0000ffff)
 #define SC_ADDR_LOCAL_SEG_FROM_INT(v) SC_ADDR_LOCAL_OFFSET_FROM_INT(v >> 16)
 
-typedef guint16 sc_type;
+typedef sc_uint16 sc_type;
 
 // sc-element types
 #define sc_type_node        0x1

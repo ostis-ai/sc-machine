@@ -5,7 +5,8 @@
 
 SegmentItem::SegmentItem() :
     QGraphicsRectItem(),
-    mScType(0)
+    mScType(0),
+    mDeleteTimeStamp(0)
 {
     setRect(0, 0, 10, 10);
     setScType(0);
@@ -20,9 +21,7 @@ void SegmentItem::setScType(const sc_type &type)
 {
     mScType = type;
 
-    // update colors
-    QPen pen(QBrush(Qt::black), 1.f);
-
+    // update brush color
     QColor brushColor(255, 255, 255);
 
     if (mScType & sc_type_link)
@@ -38,8 +37,7 @@ void SegmentItem::setScType(const sc_type &type)
 
 
     setBrush(QBrush(brushColor));
-    setPen(pen);
-
+    setOpacity(0.6f);
 }
 
 const sc_type& SegmentItem::scType() const
@@ -55,4 +53,21 @@ void SegmentItem::setScAddr(const sc_addr &addr)
 const sc_addr& SegmentItem::scAddr() const
 {
     return mScAddr;
+}
+
+void SegmentItem::setDeletionTimeStamp(quint32 value)
+{
+    mDeleteTimeStamp = value;
+
+    QBrush brush(Qt::black);
+
+    if (mDeleteTimeStamp > 0)
+        brush.setColor(Qt::red);
+
+    setPen(QPen(brush, 1.f));
+}
+
+quint32 SegmentItem::deletionTimeStamp() const
+{
+    return mDeleteTimeStamp;
 }

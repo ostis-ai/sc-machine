@@ -4,6 +4,7 @@
 #include <QMainWindow>
 
 class QListWidget;
+class QLabel;
 class SegmentView;
 
 namespace Ui
@@ -23,11 +24,16 @@ public:
     void createMainWidgets();
 
     //! Setup action slots
-    void setupActions();
+    void setupMenuActions();
+
+private:
+    void updateSegmentsList();
 
 
 protected slots:
     void openRepository();
+
+    void segmentSelectionChanged(QString strId);
 
 private:
 
@@ -37,6 +43,10 @@ private:
     QListWidget *mSegmentsList;
     //! Widget that visualize segment
     SegmentView *mSegmentView;
+
+    QLabel *mLabelNodeCount;
+    QLabel *mLabelArcsCount;
+    QLabel *mLabelEmptyCount;
 
 };
 

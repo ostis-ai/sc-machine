@@ -22,6 +22,9 @@ public:
     //! Return currently visualized segment id
     quint32 segmentId() const;
 
+    //! Reset view
+    void reset();
+
 protected:
     //! Updates segment items
     void updateSegmentItems();
