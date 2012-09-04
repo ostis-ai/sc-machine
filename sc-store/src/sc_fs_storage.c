@@ -1,5 +1,7 @@
 #include "sc_fs_storage.h"
 #include "sc_segment.h"
+
+#include <stdlib.h>
 #include <memory.h>
 
 gchar *repo_path = 0;
@@ -8,7 +10,8 @@ const gchar *seg_dir = "segments";
 const gchar *content_dir = "contents";
 gchar segments_path[MAX_PATH_LENGTH + 1];
 gchar contents_path[MAX_PATH_LENGTH + 1];
-#define dir_permissions -1
+
+#define SC_DIR_PERMISSIONS -1
 
 sc_bool sc_fs_storage_initialize(const gchar *path)
 {
@@ -19,7 +22,7 @@ sc_bool sc_fs_storage_initialize(const gchar *path)
 
     if (!g_file_test(contents_path, G_FILE_TEST_IS_DIR))
     {
-        if (g_mkdir_with_parents(contents_path, dir_permissions) < 0)
+        if (g_mkdir_with_parents(contents_path, SC_DIR_PERMISSIONS) < 0)
             g_error("Can't create '%s' directory.", contents_path);
         return SC_FALSE;
     }
@@ -125,7 +128,7 @@ sc_bool sc_fs_storage_write_to_path(GPtrArray *segments)
     g_snprintf(segments_path, MAX_PATH_LENGTH, "%s/%s", repo_path, seg_dir);
     if (!g_file_test(segments_path, G_FILE_TEST_IS_DIR))
     {
-        if (g_mkdir_with_parents(segments_path, dir_permissions) < 0)
+        if (g_mkdir_with_parents(segments_path, SC_DIR_PERMISSIONS) < 0)
             return SC_FALSE;
     }
 
@@ -147,3 +150,69 @@ sc_bool sc_fs_storage_write_to_path(GPtrArray *segments)
     return SC_TRUE;
 }
 
+
+sc_result sc_fs_storage_write_content(sc_addr addr, const sc_check_sum *check_sum, const sc_uint8 *data, sc_uint32 data_len)
+{
+    sc_uint8 *path = sc_fs_storage_make_checksum_path(check_sum);
+    gchar abs_path[MAX_PATH_LENGTH];
+    gchar data_path[MAX_PATH_LENGTH];
+
+    // make absolute path to content directory
+    g_snprintf(abs_path, MAX_PATH_LENGTH, "%s/%s", contents_path, path);
+    g_snprintf(data_path, MAX_PATH_LENGTH, "%sdata", abs_path);
+
+    // check if specified path exist
+    if (g_file_test(data_path, G_FILE_TEST_EXISTS))
+    {
+        g_message("Content data file '%s' already exist", data_path);
+        free(path);
+        return SC_OK; // do nothing, file saved
+    }
+
+    // file doesn't exist, so we need to save it
+    if (g_mkdir_with_parents(abs_path, SC_DIR_PERMISSIONS) < 0)
+    {
+        g_message("Eorror while creating '%s' directory", abs_path);
+        free(path);
+        return SC_IO_ERROR;
+    }
+
+    // write content into file
+    if (g_file_set_contents(data_path, data, data_len, 0) == TRUE)
+    {
+
+        //! @todo add storage of sc-addr, to find sc-links by content
+
+        free(path);
+        return SC_OK;
+    }
+
+    return SC_IO_ERROR;
+}
+
+sc_uint8* sc_fs_storage_make_checksum_path(const sc_check_sum *check_sum)
+{
+    // calculate output string length and create it
+    sc_uint div = (check_sum->len % 8 == 0) ? 8 : 4;
+    sc_uint len = check_sum->len + check_sum->len / div + 1;
+    sc_uint8 *result = malloc(sizeof(sc_uint8) * len);
+    sc_uint idx = 0;
+    sc_uint j = 0;
+
+    g_assert(check_sum != 0);
+    g_assert(check_sum->len != 0);
+    g_assert(check_sum->len % 4 == 0);
+
+    for (idx = 0; idx < check_sum->len; idx++)
+    {
+        result[j++] = check_sum->data[idx];
+        if ((idx + 1 ) % div == 0)
+            result[j++] = '/';
+    }
+
+    g_assert(j == (len - 1));
+
+    result[len - 1] = 0;
+
+    return result;
+}

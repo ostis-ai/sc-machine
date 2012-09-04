@@ -11,11 +11,15 @@ typedef unsigned short sc_uint16;
 typedef signed int sc_int32;
 typedef unsigned int sc_uint32;
 typedef sc_uint32 sc_uint;
-typedef sc_uint32 sc_bool;
 
 // booleans
-#define SC_FALSE (0)
-#define SC_TRUE (!SC_FALSE)
+enum _sc_bool
+{
+    SC_FALSE = 0,
+    SC_TRUE = 1
+};
+
+typedef enum _sc_bool sc_bool;
 
 // types limits
 #define SC_MININT8	((sc_int8)  0x80)
@@ -106,6 +110,27 @@ typedef sc_uint16 sc_type;
 #define sc_type_node_struct_mask (sc_type_node_tuple | sc_type_node_struct | sc_type_node_role | sc_type_node_norole | sc_type_node_class | sc_type_node_abstract | sc_type_node_material)
 #define sc_type_arc_mask         (sc_type_arc_access | sc_type_arc_common | sc_type_edge_common)
 
+// results
+enum _sc_result
+{
+    SC_ERROR = 0,
+    SC_OK = 1,
+    SC_INVALID_PARAMS,
+    SC_INVALID_TYPE,
+    SC_IO_ERROR
+};
+
+// contents
+#define SC_MAX_CHECKSUM_LEN     32
+//! Structure to store checksum informaiton
+struct _sc_check_sum
+{
+    char data[SC_MAX_CHECKSUM_LEN];  // maximum checksum length
+    sc_uint8 len;    // checksum length
+};
+
+typedef struct _sc_check_sum sc_check_sum;
+
 
 typedef struct _sc_arc  sc_arc;
 typedef struct _sc_content sc_content;
@@ -116,6 +141,7 @@ typedef struct _sc_addr sc_addr;
 typedef struct _sc_elements_stat sc_elements_stat;
 typedef struct _sc_iterator_param sc_iterator_param;
 typedef struct _sc_iterator3 sc_iterator3;
+typedef enum _sc_result sc_result;
 
 
 #endif

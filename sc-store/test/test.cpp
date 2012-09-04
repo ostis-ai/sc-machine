@@ -12,6 +12,7 @@ extern "C"
 #define nodes_remove_count 5000000
 #define arcs_append_count  5000000
 #define arcs_remove_count  0
+#define link_append_count 2000
 #define iterator_alloc_count 10000000
 
 const char* repo_path = "repo";
@@ -331,11 +332,45 @@ void test4()
         sc_iterator3_free(it);
     }
 
+    g_timer_stop(timer);
     printf("Allocated iterators: %d\n", iterator_alloc_count);
     printf("Allocation/deallocation per second: %f\n", iterator_alloc_count / g_timer_elapsed(timer, 0));
 
     g_timer_destroy(timer);
 
+}
+
+void test5()
+{
+    sc_uint32 i, len;
+    sc_addr addr;
+    gchar data[10];
+
+    printf("Segments count: %d\n", sc_storage_get_segments_count());
+    print_storage_statistics();
+
+    timer = g_timer_new();
+
+    printf("Create %d links\n", link_append_count);
+
+    g_timer_reset(timer);
+    g_timer_start(timer);
+    for (i = 0; i < link_append_count; i++)
+    {
+        addr = sc_storage_link_new();
+        len = g_snprintf(data, 10, "%d", i);
+        sc_storage_set_link_content(addr, (sc_uint8*)data, len);
+    }
+
+    g_timer_stop(timer);
+
+    printf("Created links: %d\n", link_append_count);
+    printf("Links per second: %f\n", link_append_count / g_timer_elapsed(timer, 0));
+
+    printf("Segments count: %d\n", sc_storage_get_segments_count());
+    print_storage_statistics();
+
+    g_timer_destroy(timer);
 }
 
 int main(int argc, char *argv[])
@@ -361,6 +396,7 @@ int main(int argc, char *argv[])
                "2 - test sc-addr utilities\n"
                "3 - test arc deletion\n"
                "4 - test iterators\n"
+               "5 - test contents\n"
                "\nCommand: ");
         scanf("%d", &item);
 
@@ -382,6 +418,10 @@ int main(int argc, char *argv[])
 
         case 4:
             test4();
+            break;
+
+        case 5:
+            test5();
             break;
         };
 

@@ -4,6 +4,7 @@
 #include "sc_segment.h"
 #include "sc_element.h"
 #include "sc_fs_storage.h"
+#include "sc_link_helpers.h"
 
 #include <memory.h>
 #include <glib.h>
@@ -338,6 +339,61 @@ sc_addr sc_storage_arc_new(sc_type type,
     end_el->first_in_arc = addr;
 }
 
+sc_result sc_storage_get_element_type(sc_addr addr, sc_type *result)
+{
+    sc_element *el = sc_storage_get_element(addr, SC_TRUE);
+    if (el == 0)
+        return SC_ERROR;
+
+    *result = el->type;
+
+    return SC_OK;
+}
+
+sc_result sc_storage_get_arc_begin(sc_addr addr, sc_addr *result)
+{
+    sc_element *el = sc_storage_get_element(addr, SC_TRUE);
+    if (el->type & sc_type_arc_mask)
+    {
+        *result = el->arc.begin;
+        return SC_OK;
+    }
+
+    return SC_INVALID_TYPE;
+}
+
+sc_result sc_storage_get_arc_end(sc_addr addr, sc_addr *result)
+{
+    sc_element *el = sc_storage_get_element(addr, SC_TRUE);
+    if (el->type & sc_type_arc_mask)
+    {
+        *result = el->arc.end;
+        return SC_OK;
+    }
+
+    return SC_INVALID_TYPE;
+}
+
+sc_result sc_storage_set_link_content(sc_addr addr, const sc_uint8 *data, sc_uint32 data_len)
+{
+    sc_element *el = sc_storage_get_element(addr, SC_TRUE);
+    sc_check_sum check_sum;
+
+    if (!(el->type & sc_type_link))
+        return SC_INVALID_TYPE;
+
+    // calculate checksum for data
+    if (sc_link_calculate_checksum_from_memory(data, data_len, &check_sum) == SC_TRUE)
+    {
+        sc_fs_storage_write_content(addr, &check_sum, data, data_len);
+        return SC_OK;
+    }
+
+    return SC_ERROR;
+}
+
+
+
 void sc_storage_get_elements_stat(sc_elements_stat *stat)
 {
     sc_uint s_idx, e_idx;
@@ -388,40 +444,4 @@ unsigned int sc_storage_get_segments_count()
 {
     return segments->len;
 }
-
-sc_bool sc_storage_get_element_type(sc_addr addr, sc_type *result)
-{
-    sc_element *el = sc_storage_get_element(addr, SC_TRUE);
-    if (el == 0)
-        return SC_FALSE;
-
-    *result = el->type;
-
-    return SC_TRUE;
-}
-
-sc_bool sc_storage_get_arc_begin(sc_addr addr, sc_addr *result)
-{
-    sc_element *el = sc_storage_get_element(addr, SC_TRUE);
-    if (el->type & sc_type_arc_mask)
-    {
-        *result = el->arc.begin;
-        return SC_TRUE;
-    }
-
-    return SC_FALSE;
-}
-
-sc_bool sc_storage_get_arc_end(sc_addr addr, sc_addr *result)
-{
-    sc_element *el = sc_storage_get_element(addr, SC_TRUE);
-    if (el->type & sc_type_arc_mask)
-    {
-        *result = el->arc.end;
-        return SC_TRUE;
-    }
-
-    return SC_FALSE;
-}
-
 

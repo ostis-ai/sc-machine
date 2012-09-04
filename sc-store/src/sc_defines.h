@@ -8,6 +8,6 @@
 #define SEGMENT_EMPTY_MAX_UPDATE_THREADS 8 // number of maximum threads to update empty slots
 
 #define SEGS_QUEUE_SIZE 24
-#define MAX_PATH_LENGTH 128
+#define MAX_PATH_LENGTH 1024
 
 #endif
