@@ -8,6 +8,8 @@ gchar *repo_path = 0;
 
 const gchar *seg_dir = "segments";
 const gchar *content_dir = "contents";
+const gchar *addr_key_group = "addrs";
+
 gchar segments_path[MAX_PATH_LENGTH + 1];
 gchar contents_path[MAX_PATH_LENGTH + 1];
 
@@ -38,8 +40,6 @@ sc_bool sc_fs_storage_shutdown(GPtrArray *segments)
     g_message("Shutdown sc-storage\n");
     g_message("Write storage into %s", repo_path);
     sc_fs_storage_write_to_path(segments);
-
-    g_free( repo_path );
 
     return SC_TRUE;
 }
@@ -164,7 +164,8 @@ sc_result sc_fs_storage_write_content(sc_addr addr, const sc_check_sum *check_su
     // check if specified path exist
     if (g_file_test(data_path, G_FILE_TEST_EXISTS))
     {
-        g_message("Content data file '%s' already exist", data_path);
+        //g_message("Content data file '%s' already exist", data_path);
+        sc_fs_storage_add_content_addr(addr, check_sum);
         free(path);
         return SC_OK; // do nothing, file saved
     }
@@ -180,14 +181,76 @@ sc_result sc_fs_storage_write_content(sc_addr addr, const sc_check_sum *check_su
     // write content into file
     if (g_file_set_contents(data_path, data, data_len, 0) == TRUE)
     {
-
-        //! @todo add storage of sc-addr, to find sc-links by content
-
+        sc_fs_storage_add_content_addr(addr, check_sum);
         free(path);
         return SC_OK;
     }
 
     return SC_IO_ERROR;
+}
+
+sc_result sc_fs_storage_add_content_addr(sc_addr addr, const sc_check_sum *check_sum)
+{
+    sc_uint8 *path = sc_fs_storage_make_checksum_path(check_sum);
+    gchar abs_path[MAX_PATH_LENGTH];
+    gchar addr_path[MAX_PATH_LENGTH];
+    gchar *content = 0;
+    gchar *content2 = 0;
+    gsize content_len = 0;
+    sc_uint32 addrs_num = 0;
+
+    // make absolute path to content directory
+    g_snprintf(abs_path, MAX_PATH_LENGTH, "%s/%s", contents_path, path);
+    g_snprintf(addr_path, MAX_PATH_LENGTH, "%saddrs", abs_path);
+
+    // try to load existing file
+    if (g_file_test(addr_path, G_FILE_TEST_EXISTS))
+    {
+        if (g_file_get_contents(addr_path, &content, &content_len, 0) == FALSE)
+        {
+            if (content != 0)
+                free(content);
+            free(path);
+            return SC_IO_ERROR;
+        }
+    }
+
+    // append addr into content
+    if (content == 0)
+    {
+        content_len = sizeof(sc_addr) + sizeof(sc_uint32);
+        content = g_new0(gchar, content_len);
+
+        addrs_num = 1;
+        memcpy(content, &addrs_num, sizeof(addrs_num));
+        memcpy(content + sizeof(addrs_num), &addr, sizeof(addr));
+    }else
+    {
+        content2 = content;
+        (*(sc_uint32*)content)++;
+
+        content = g_new0(gchar, content_len + sizeof(addr));
+        memcpy(content, content2, content_len);
+        memcpy(content + content_len, &addr, sizeof(addr));
+        content_len += sizeof(addr);
+
+        // old content doesn't need
+        g_free(content2);
+    }
+
+    // write content to file
+    if (g_file_set_contents(addr_path, content, content_len, 0) == TRUE)
+    {
+        g_free(content);
+        free(path);
+
+        return SC_OK;
+    }
+
+    g_free(content);
+    free(path);
+
+    return SC_ERROR;
 }
 
 sc_uint8* sc_fs_storage_make_checksum_path(const sc_check_sum *check_sum)

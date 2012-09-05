@@ -47,6 +47,12 @@ sc_bool sc_fs_storage_write_to_path(GPtrArray *segments);
  */
 sc_result sc_fs_storage_write_content(sc_addr addr, const sc_check_sum *check_sum, const sc_uint8 *data, sc_uint32 data_len);
 
+/*! Add new sc-addr to content backward links
+ * @param addr sc-addr to append to backward links
+ * @param check_sum Checksum of content
+ * @return If sc-addr has been written to backward links file, then return SC_OK; otherwise return error code
+ */
+sc_result sc_fs_storage_add_content_addr(sc_addr addr, const sc_check_sum *check_sum);
 
 /*! Make directory path from checksum
  * @param check_sum Checksum pointer to make path
