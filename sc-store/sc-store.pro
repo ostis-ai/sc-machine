@@ -19,7 +19,10 @@ HEADERS += \
     src/sc_element.h \
     src/sc_defines.h \
     src/sc_config.h \
-    src/sc_link_helpers.h
+    src/sc_link_helpers.h \
+    src/sc_stream.h \
+    src/sc_stream_private.h \
+    src/sc_stream_file.h
 
 SOURCES += \
     src/sc_storage.c \
@@ -27,6 +30,8 @@ SOURCES += \
     src/sc_iterator.c \
     src/sc_fs_storage.c \
     src/sc_element.c \
-    src/sc_link_helpers.c
+    src/sc_link_helpers.c \
+    src/sc_stream.c \
+    src/sc_stream_file.c
 
 

@@ -1,3 +1,6 @@
+#ifndef _sc_iterator_h_
+#define _sc_iterator_h_
+
 #include "sc_config.h"
 #include "sc_types.h"
 #include "sc_element.h"
@@ -84,3 +87,5 @@ sc_bool sc_iterator3_next(sc_iterator3 *it);
  * @return Return sc-addr of search result value
  */
 sc_addr sc_iterator3_value(sc_iterator3 *it, sc_uint vid);
+
+#endif
