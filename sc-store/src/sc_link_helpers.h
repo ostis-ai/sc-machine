@@ -2,17 +2,16 @@
 #define _sc_link_helpers_h_
 
 #include "sc_types.h"
+#include "sc_stream.h"
 
 
-/*! Caclulates checksum for data in memory
- * @param data Data pointer to calculate checksum
- * @param data_len Length of data in bytes
+/*! Caclulates checksum for data in stream
+ * @param stream Pointer to data stream for checksum calculation
  * @param check_sum Pointer to stucture, that contains calculated checksum
  *
  * @return If checksum calculated, then return SC_TRUE; otherwise return SC_FALSE
  */
-sc_bool sc_link_calculate_checksum_from_memory(const sc_uint8 *data, const sc_uint32 data_len, sc_check_sum *check_sum);
-
+sc_bool sc_link_calculate_checksum(const sc_stream *stream, sc_check_sum *check_sum);
 
 
 #endif

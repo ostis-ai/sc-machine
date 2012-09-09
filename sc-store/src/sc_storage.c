@@ -374,7 +374,7 @@ sc_result sc_storage_get_arc_end(sc_addr addr, sc_addr *result)
     return SC_INVALID_TYPE;
 }
 
-sc_result sc_storage_set_link_content(sc_addr addr, const sc_uint8 *data, sc_uint32 data_len)
+sc_result sc_storage_set_link_content(sc_addr addr, const sc_stream *stream)
 {
     sc_element *el = sc_storage_get_element(addr, SC_TRUE);
     sc_check_sum check_sum;
@@ -383,9 +383,9 @@ sc_result sc_storage_set_link_content(sc_addr addr, const sc_uint8 *data, sc_uin
         return SC_INVALID_TYPE;
 
     // calculate checksum for data
-    if (sc_link_calculate_checksum_from_memory(data, data_len, &check_sum) == SC_TRUE)
+    if (sc_link_calculate_checksum(stream, &check_sum) == SC_TRUE)
     {
-        sc_fs_storage_write_content(addr, &check_sum, data, data_len);
+        sc_fs_storage_write_content(addr, &check_sum, stream);
         return SC_OK;
     }
 

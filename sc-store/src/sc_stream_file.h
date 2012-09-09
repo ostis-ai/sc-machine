@@ -8,7 +8,9 @@
  * @param flags Data stream flags
  * @remarks Allocate and create file data stream. The returned stream pointer should be freed
  * with sc_stream_free function, when done using it.
+ * @return Returns stream pointer if the stream was successfully created, or NULL if an error occurred
  */
 sc_stream* sc_stream_file_new(sc_char *file_name, sc_uint8 flags);
+
 
 #endif

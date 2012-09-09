@@ -3,6 +3,7 @@
 
 #include "sc_types.h"
 #include "sc_config.h"
+#include "sc_stream.h"
 
 struct _sc_elements_stat
 {
@@ -110,8 +111,7 @@ sc_result sc_storage_get_arc_end(sc_addr addr, sc_addr *result);
 
 /*! Setup content data for specified sc-link
  * @param addr sc-addr of sc-link to setup content
- * @param data Pointer to data
- * @param data_len Data length in bytes
+ * @param stream Pointer to stream
  * @return If content of specified link changed without any errors, then return SC_OK; otherwise
  * returns on of error codes:
  * <ul>
@@ -119,7 +119,7 @@ sc_result sc_storage_get_arc_end(sc_addr addr, sc_addr *result);
  * <li>SC_ERROR - unknown error</li>
  * </ul>
  */
-sc_result sc_storage_set_link_content(sc_addr addr, const sc_uint8 *data, sc_uint32 data_len);
+sc_result sc_storage_set_link_content(sc_addr addr, const sc_stream *stream);
 
 //! Returns number of segments
 sc_uint sc_storage_get_segments_count();

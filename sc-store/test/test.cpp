@@ -12,7 +12,7 @@ extern "C"
 #define nodes_remove_count 5000000
 #define arcs_append_count  5000000
 #define arcs_remove_count  0
-#define link_append_count 2000
+#define link_append_count 200
 #define iterator_alloc_count 10000000
 
 const char* repo_path = "repo";
@@ -345,6 +345,8 @@ void test5()
     sc_uint32 i, len;
     sc_addr addr;
     gchar data[10];
+    sc_stream *stream = 0;
+    gchar test[1024];
 
     printf("Segments count: %d\n", sc_storage_get_segments_count());
     print_storage_statistics();
@@ -353,13 +355,17 @@ void test5()
 
     printf("Create %d links\n", link_append_count);
 
+    g_snprintf(test, 1024, "test.cpp");
     g_timer_reset(timer);
     g_timer_start(timer);
     for (i = 0; i < link_append_count; i++)
     {
         addr = sc_storage_link_new();
-        len = g_snprintf(data, 10, "%d", i);
-        sc_storage_set_link_content(addr, (sc_uint8*)data, len);
+//        len = g_snprintf(data, 10, "%d", i);
+
+        stream = sc_stream_file_new(test, SC_STREAM_READ);
+        sc_storage_set_link_content(addr, stream);
+        sc_stream_free(stream);
     }
 
     g_timer_stop(timer);

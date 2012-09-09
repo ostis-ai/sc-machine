@@ -4,28 +4,71 @@
 #include <glib.h>
 
 
-sc_result sc_stream_read_data(sc_stream *stream, sc_char *data, sc_uint32 data_len, sc_uint32 *read_bytes)
+sc_result sc_stream_free(sc_stream *stream)
 {
     g_assert(stream != 0);
 
-    if (stream->read_func == 0)
-    {
-        g_message("Null pointer to read function in stream");
+    if (stream->free_func == 0)
         return SC_ERROR;
-    }
+
+    stream->free_func(stream);
+    g_free(stream);
+
+    return SC_OK;
+}
+
+sc_result sc_stream_read_data(const sc_stream *stream, sc_char *data, sc_uint32 data_len, sc_uint32 *read_bytes)
+{
+    g_assert(stream != 0);
 
     if (sc_stream_check_flag(stream, SC_STREAM_READ) == SC_FALSE)
-    {
-        g_message("Stream doesn't support SC_STREAM_READ flag");
         return SC_ERROR;
-    }
+
+    if (stream->read_func == 0)
+        return SC_ERROR;
 
     return stream->read_func(stream, data, data_len, read_bytes);
 }
 
+sc_result sc_stream_write_data(const sc_stream *stream, sc_char *data, sc_uint32 data_len, sc_uint32 *written_bytes)
+{
+    g_assert(stream != 0);
+
+    if (sc_stream_check_flag(stream, SC_STREAM_WRITE) == SC_FALSE)
+        return SC_ERROR;
+
+    if (stream->write_func == 0)
+        return SC_ERROR;
+
+    return stream->write_func(stream, data, data_len, written_bytes);
+}
+
+sc_result sc_stream_seek(const sc_stream *stream, sc_stream_seek_origin seek_origin, sc_uint32 offset)
+{
+    g_assert(stream != 0);
+
+    if (sc_stream_check_flag(stream, SC_STREAM_SEEK) == FALSE)
+        return SC_ERROR;
 
 
-sc_result sc_stream_get_length(sc_stream *stream, sc_uint32 *length)
+    if (stream->seek_func == 0)
+        return SC_ERROR;
+
+    return stream->seek_func(stream, seek_origin, offset);
+}
+
+
+sc_bool sc_stream_eof(const sc_stream *stream)
+{
+    g_assert(stream != 0);
+
+    if (stream->eof_func == 0)
+        return SC_TRUE;
+
+    return stream->eof_func(stream);
+}
+
+sc_result sc_stream_get_length(const sc_stream *stream, sc_uint32 *length)
 {
     sc_uint32 old_pos = 0;
     sc_result res = SC_ERROR;
@@ -33,16 +76,10 @@ sc_result sc_stream_get_length(sc_stream *stream, sc_uint32 *length)
     g_assert(stream != 0);
 
     if (stream->tell_func == 0 || stream->seek_func == 0)
-    {
-        g_message("Can't calculate stream size. There are no tell or seek function");
         return SC_ERROR;
-    }
 
     if (sc_stream_check_flag(stream, SC_STREAM_SEEK | SC_STREAM_TELL) == FALSE)
-    {
-        g_message("Stream doesn't support SC_STREAM_SEEK or SC_STREAM_TELL");
         return SC_ERROR;
-    }
 
     if (stream->tell_func(stream, &old_pos) == SC_ERROR)
         return SC_ERROR;
@@ -63,7 +100,7 @@ sc_result sc_stream_get_length(sc_stream *stream, sc_uint32 *length)
     return res;
 }
 
-sc_result sc_stream_get_position(sc_stream *stream, sc_uint32 *position)
+sc_result sc_stream_get_position(const sc_stream *stream, sc_uint32 *position)
 {
     g_assert(stream != 0);
 
@@ -77,7 +114,7 @@ sc_result sc_stream_get_position(sc_stream *stream, sc_uint32 *position)
 }
 
 
-sc_bool sc_stream_check_flag(sc_stream *stream, sc_uint8 flag)
+sc_bool sc_stream_check_flag(const sc_stream *stream, sc_uint8 flag)
 {
     g_assert(stream != 0);
     return (stream->flags & flag) ? SC_TRUE : SC_FALSE;

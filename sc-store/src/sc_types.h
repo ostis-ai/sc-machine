@@ -11,7 +11,7 @@ typedef unsigned short sc_uint16;
 typedef signed int sc_int32;
 typedef unsigned int sc_uint32;
 typedef sc_uint32 sc_uint;
-typedef signed char sc_char;
+typedef char sc_char;
 typedef unsigned char sc_uchar;
 
 // booleans

@@ -3,5 +3,7 @@
 
 #include "sc_storage.h"
 #include "sc_defines.h"
+#include "sc_stream.h"
+#include "sc_stream_file.h"
 
 #endif

@@ -93,7 +93,7 @@ void SegmentView::updateSegmentItems()
         addr.seg = mSegmentId;
         addr.offset = i++;
 
-        sc_element *el = sc_storage_get_element(addr, true);
+        sc_element *el = sc_storage_get_element(addr, SC_TRUE);
 
         item->setScType(el->type);
         item->setDeletionTimeStamp(el->delete_time_stamp);

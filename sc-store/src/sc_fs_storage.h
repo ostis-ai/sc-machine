@@ -3,6 +3,7 @@
 
 #include "sc_types.h"
 #include "sc_defines.h"
+#include "sc_stream.h"
 #include <glib.h>
 
 
@@ -38,14 +39,13 @@ sc_bool sc_fs_storage_read_from_path(GPtrArray *segments);
  */
 sc_bool sc_fs_storage_write_to_path(GPtrArray *segments);
 
-/*! Write specified data as content
+/*! Write specified stream as content
  * @param addr sc-addr of sc-link that contains data
  * @param check_sum Pointer to checksum data
- * @param data Pointer to data
- * @param data_len Data length in bytes
+ * @param stream Pointer to stream that contains data for saving
  * @return If content saved, then return SC_OK; otherwise return one of error code
  */
-sc_result sc_fs_storage_write_content(sc_addr addr, const sc_check_sum *check_sum, const sc_uint8 *data, sc_uint32 data_len);
+sc_result sc_fs_storage_write_content(sc_addr addr, const sc_check_sum *check_sum, const sc_stream *stream);
 
 /*! Add new sc-addr to content backward links
  * @param addr sc-addr to append to backward links

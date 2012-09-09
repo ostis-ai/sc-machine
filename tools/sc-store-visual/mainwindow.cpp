@@ -88,7 +88,7 @@ void MainWindow::updateSegmentsList()
     quint32 segmentsCount = sc_storage_get_segments_count();
     for (quint32 seg = 0; seg < segmentsCount; seg++)
     {
-        sc_segment *segment = sc_storage_get_segment(seg, true);
+        sc_segment *segment = sc_storage_get_segment(seg, SC_TRUE);
         Q_ASSERT(segment != 0);
 
         mSegmentsList->addItem(QString("%1").arg(seg));

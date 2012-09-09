@@ -1,5 +1,6 @@
 #include "sc_fs_storage.h"
 #include "sc_segment.h"
+#include "sc_stream_file.h"
 
 #include <stdlib.h>
 #include <memory.h>
@@ -151,11 +152,14 @@ sc_bool sc_fs_storage_write_to_path(GPtrArray *segments)
 }
 
 
-sc_result sc_fs_storage_write_content(sc_addr addr, const sc_check_sum *check_sum, const sc_uint8 *data, sc_uint32 data_len)
+sc_result sc_fs_storage_write_content(sc_addr addr, const sc_check_sum *check_sum, const sc_stream *stream)
 {
     sc_uint8 *path = sc_fs_storage_make_checksum_path(check_sum);
     gchar abs_path[MAX_PATH_LENGTH];
     gchar data_path[MAX_PATH_LENGTH];
+    sc_char buffer[1024];
+    sc_uint32 data_read, data_write;
+    sc_stream *out_stream = 0;
 
     // make absolute path to content directory
     g_snprintf(abs_path, MAX_PATH_LENGTH, "%s/%s", contents_path, path);
@@ -179,10 +183,33 @@ sc_result sc_fs_storage_write_content(sc_addr addr, const sc_check_sum *check_su
     }
 
     // write content into file
-    if (g_file_set_contents(data_path, data, data_len, 0) == TRUE)
+    out_stream = sc_stream_file_new(data_path, SC_STREAM_WRITE);
+    if (out_stream != 0)
     {
-        sc_fs_storage_add_content_addr(addr, check_sum);
-        free(path);
+        // reset input stream positon to begin
+        sc_stream_seek(stream, SC_STREAM_SEEK_SET, 0);
+
+        while (sc_stream_eof(stream) == SC_FALSE)
+        {
+            if (sc_stream_read_data(stream, buffer, 1024, &data_read) == SC_ERROR)
+            {
+                sc_stream_free(out_stream);
+                return SC_ERROR;
+            }
+
+            if (sc_stream_write_data(out_stream, buffer, data_read, &data_write) == SC_ERROR)
+            {
+                sc_stream_free(out_stream);
+                return SC_ERROR;
+            }
+
+            if (data_read != data_write)
+            {
+                sc_stream_free(out_stream);
+                return SC_ERROR;
+            }
+        }
+        sc_stream_free(out_stream);
         return SC_OK;
     }
 
