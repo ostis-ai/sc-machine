@@ -70,5 +70,5 @@ sc_result sc_memory_get_arc_end(sc_addr addr, sc_addr *result)
 sc_result sc_memory_set_link_content(sc_addr addr, const sc_stream *stream)
 {
     //! @todo make it thread-safe
-    return sc_memory_set_link_content(addr, stream);
+    return sc_storage_set_link_content(addr, stream);
 }
