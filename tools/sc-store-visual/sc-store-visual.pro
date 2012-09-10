@@ -23,7 +23,7 @@ HEADERS  += mainwindow.h \
 
 FORMS    += mainwindow.ui
 
-INCLUDEPATH += ../../sc-store/src
+INCLUDEPATH += ../../sc-memory/src
 unix: LIBS += $$quote(-L$$DESTDIR) -lsc_store
 
 #CONFIG += link_pkgconfig

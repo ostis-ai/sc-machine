@@ -10,30 +10,31 @@ CONFIG += link_pkgconfig
 PKGCONFIG += glib-2.0
 
 HEADERS += \
-    src/sc_types.h \
-    src/sc_store.h \
-    src/sc_storage.h \
-    src/sc_segment.h \
-    src/sc_iterator.h \
-    src/sc_fs_storage.h \
-    src/sc_element.h \
-    src/sc_defines.h \
-    src/sc_config.h \
-    src/sc_link_helpers.h \
-    src/sc_stream.h \
-    src/sc_stream_private.h \
-    src/sc_stream_file.h \
-    src/sc_memory.h
+    src/sc_memory.h \
+    src/sc-store/sc_link_helpers.h \
+    src/sc-store/sc_iterator.h \
+    src/sc-store/sc_fs_storage.h \
+    src/sc-store/sc_element.h \
+    src/sc-store/sc_defines.h \
+    src/sc-store/sc_config.h \
+    src/sc-store/sc_types.h \
+    src/sc-store/sc_stream_private.h \
+    src/sc-store/sc_stream_file.h \
+    src/sc-store/sc_stream.h \
+    src/sc-store/sc_store.h \
+    src/sc-store/sc_storage.h \
+    src/sc-store/sc_segment.h
 
 SOURCES += \
-    src/sc_storage.c \
-    src/sc_segment.c \
-    src/sc_iterator.c \
-    src/sc_fs_storage.c \
-    src/sc_element.c \
-    src/sc_link_helpers.c \
-    src/sc_stream.c \
-    src/sc_stream_file.c \
-    src/sc_memory.c
+    src/sc_memory.c \
+    src/sc-store/sc_link_helpers.c \
+    src/sc-store/sc_iterator.c \
+    src/sc-store/sc_fs_storage.c \
+    src/sc-store/sc_element.c \
+    src/sc-store/sc_stream_file.c \
+    src/sc-store/sc_stream.c \
+    src/sc-store/sc_storage.c \
+    src/sc-store/sc_segment.c
+
 
 

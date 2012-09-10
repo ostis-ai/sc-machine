@@ -7,8 +7,8 @@
 
 extern "C"
 {
-#include "sc_store.h"
-#include "sc_element.h"
+#include "sc-store/sc_store.h"
+#include "sc-store/sc_element.h"
 }
 
 SegmentView::SegmentView(QWidget *parent) :

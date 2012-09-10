@@ -11,7 +11,7 @@
 
 extern "C"
 {
-#include "sc_store.h"
+#include "sc-store/sc_store.h"
 }
 
 MainWindow::MainWindow(QWidget *parent) :
