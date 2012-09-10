@@ -6,7 +6,7 @@ set(SC_MACHINE_ROOT ${CMAKE_SOURCE_DIR})
 
 set(CMAKE_BUILD_TYPE Debug)
 
-add_subdirectory(sc-store)
+add_subdirectory(sc-memory)
 
 if(${CMAKE_SYSTEM_NAME} STREQUAL Windows)
 	if(MSVC)
