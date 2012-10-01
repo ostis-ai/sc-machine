@@ -30,10 +30,13 @@ class ScAddr:
         self.offset = 0
         
     def unpack(self, data):
-        self.segment, self.offset = struct.unpack('HH', data)
+        self.segment, self.offset = struct.unpack('!HH', data)
         
     def pack(self):
-        return struct.pack('HH', self.segment, self.offset)
+        return struct.pack('!HH', self.segment, self.offset)
+    
+    def __str__(self):
+        return "(seg: %s, offset: %s)" % (str(self.segment), str(self.offset))
     
 class CommandId:
     size        =   4
@@ -48,3 +51,8 @@ class CommandType:
     arc_new             =   0x06    # create new sc-arc
     arc_get_begin       =   0x07    # get begin element of specified sc-arc
     arc_get_end         =   0x08    # get end element of specified sc-arc
+    
+class ResultCode:
+    
+    Ok                  =   0x00    # there are no any error
+    InvalidScAddr       =   0x01    # element with specified sc-addr doesn't exist
