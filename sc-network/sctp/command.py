@@ -36,10 +36,9 @@ class SctpCommand:
     def unpack(self, data):
         """Unpack command from binary data
         @param data: String that contains packed data
-        @attention: Do not re-implement this function
+        @attention: Do not override this function
         """
         h_size = self.header_size()
-        print struct.calcsize('!2BI')
         code, self.flags, self.id = struct.unpack('!BBI', data[:h_size])        
         assert code == self.code()
         
@@ -48,7 +47,7 @@ class SctpCommand:
     def pack(self):
         """Pack command into binary data
         @return: Returns string that contains packed data
-        @attention: Do not rei-mplement this function
+        @attention: Do not override this function
         """
         args = self.pack_arguments()
         res = struct.pack('!BBI', self.code(), self.flags, self.id)
@@ -65,20 +64,20 @@ class SctpCommand:
         """Pack arguments of specified command into binary data
         @return: Returns string that contains packed arguments. If there
         are no arguments for specified command, then this function must return None
-        @note: This function must be re-implemented for each type of command
+        @note: This function must be override for each type of command
         """
         return None
     
     def unpack_arguments(self, data):
         """Unpack command arguments from binary data
         @param data: String that contains packed arguments
-        @note: This function must be re-implemented for each type of command
+        @note: This function must be override for each type of command
         """
         pass
     
     def size_arguments(self):
         """Returns size of arguments (in bytes)
-        @note: This function must be re-implemented for each type of command
+        @note: This function must be override for each type of command
         """
         return 0
     
@@ -95,7 +94,7 @@ class SctpCommand:
     
     def __str__(self):
         return "Type: %s, Flags: %s, Id: %s" % (hex(self.code()), bin(self.flags), str(self.id))
-    
+        
     
 class SctpCommandElementCheck(SctpCommand):
     

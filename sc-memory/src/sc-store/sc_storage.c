@@ -130,7 +130,7 @@ sc_element* sc_storage_get_element(sc_addr addr, sc_bool force_load)
     sc_segment *segment = 0;
     sc_element *res = 0;
 
-    if (addr.seg > segments->len) return (sc_element*)0;
+    if (addr.seg >= segments->len) return (sc_element*)0;
 
     segment = (sc_segment*)g_ptr_array_index(segments, addr.seg);
 
@@ -312,7 +312,8 @@ sc_addr sc_storage_arc_new(sc_type type,
     end_el = sc_storage_get_element(end, SC_TRUE);
 
     // check values
-    g_assert(beg_el != 0 && end_el != 0 && beg_el->type != 0 && end_el->type != 0);
+    g_assert(beg_el != 0 && end_el != 0);
+    g_assert(beg_el->type != 0 && end_el->type != 0);
 
     // set next output arc for our created arc
     tmp_el->arc.next_out_arc = beg_el->first_out_arc;
@@ -337,6 +338,8 @@ sc_addr sc_storage_arc_new(sc_type type,
     // set our arc as first output/input at begin/end elements
     beg_el->first_out_arc = addr;
     end_el->first_in_arc = addr;
+
+    return addr;
 }
 
 sc_result sc_storage_get_element_type(sc_addr addr, sc_type *result)

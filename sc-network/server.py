@@ -23,37 +23,67 @@ along with OSTIS.  If not, see <http://www.gnu.org/licenses/>.
 from sc_memory import *
 import socket
 import threading
+import SocketServer
 import sctp.command
+import sctp.result
 import struct
+from sctp.types import ResultCode
+import sc_memory
+from sctp.command import SctpCommand
 
-HOST    =   ''
-PORT    =   50987
-serversocket  =   None
+HOST = ''
+PORT = 50987
+server = None
 
-# map that contains information about all clients
-clients = {}
 
-class ClientThread(threading.Thread):
+
+def make_sc_addr(addr):
+    _addr = sc_memory._sc_addr()
     
-    def __init__(self, client_socket):
-        
-        self.socket = client_socket
-        self.workable = True
+    _addr.seg = addr.seg
+    _addr.offset = addr.offset
     
-    def run(self):
-        
+    return _addr            
+
+def start_server():
+    """Starts sc-memory network server
+    """
+    sc_memory_initialize("repo")
+    
+    
+def stop_server():
+    """Stops sc-memory server
+    """
+    global clients
+    for sock in clients.keys():
+        sock.close()
+    
+    sc_memory_shutdown()
+    
+class ForkableTCPRequestHandler(SocketServer.BaseRequestHandler):
+    
+    def setup(self):
+        print self.client_address, ' connected'
+    
+    def finish(self):
+        print self.client_address, ' disconnected'
+    
+    def handle(self):
         data = ''
         
+        self.workable = True
+        self.cmd_funcs = {sctp.types.CommandType.element_check: self.do_element_check,
+                          }
+        
         while self.workable:
-            data += self.socket.recv(4096)
-            data = self.process_data(data) 
-            
+            data += self.request.recv(4096)
+            data = self.process_data(data)
+        
     def process_data(self, data):
-        """Process recieved data, and return non-processed buffer
+        """Process recieved command, and return response
         """
         can_process = True
         while len(data) > 0 and can_process:
-            
             data_len = len(data)
             # determine command and check if there are all data we need to process it
             cmd_id = struct.unpack('B', data[0])[0]
@@ -67,7 +97,7 @@ class ClientThread(threading.Thread):
                     can_process = False
                 else:
                     cmd.unpack(data[:cmd_size])
-                    print str(cmd)
+                    self.run_command(cmd)
                     data = data[cmd_size:]
             else:
                 print 'Unknown command type %s' % hex(cmd_id)
@@ -75,39 +105,67 @@ class ClientThread(threading.Thread):
                 break
             
         return data
-
-def start_server():
-    """Starts sc-memory network server
-    """
-    sc_memory_initialize("repo")
     
-    global serversocket
-    serversocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    serversocket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-    serversocket.bind((HOST, PORT))
-    serversocket.listen(5)
-    
-    global clients
-    
-    print "Listen clients..."
-    while 1:
-        #accept connections from outside
-        (clientsocket, address) = serversocket.accept()
-        print "Accept client connection from %s" % str(address)
+    def run_command(self, cmd):
+        """Run specified command
+        """
+        cmd_type = cmd.code()
+        result = None
         
-        assert not clients.has_key(clientsocket)
-        th = ClientThread(clientsocket)
-        clients[clientsocket] = th
-        th.run()
+        if self.cmd_funcs.has_key(cmd_type):
+            result = self.cmd_funcs[cmd_type](cmd)
+        else:
+            print "Command isn't implemented:\n%s" % str(cmd)
+            
+        # send result
+        res_data = result.pack()
+        res_data_len = len(res_data)
+        total_send = 0
+        self.request.sendall(res_data[total_send:])
     
-def stop_server():
-    """Stops sc-memory server
-    """
-    global clients
-    for sock in clients.keys():
-        sock.close()
+    def do_element_check(self, cmd):
+        
+        if sc_memory_is_element(make_sc_addr(cmd.addr)) == SC_TRUE:
+            return sctp.result.SctpResultElementCheck(cmd.id, ResultCode.Yes)
+        
+        return sctp.result.SctpResultElementCheck(cmd.id, ResultCode.No)
     
-    sc_memory_shutdown()
-
+class ForkableTCPServer(SocketServer.ForkingMixIn, SocketServer.TCPServer):
+    
+    def __init__(self, host, RequestHandler):
+        SocketServer.TCPServer.allow_reuse_address = True
+        SocketServer.TCPServer.request_queue_size = 10
+        SocketServer.TCPServer.socket_type = socket.SOCK_STREAM
+    
+        SocketServer.TCPServer.__init__(self, host, RequestHandler)
+    
+    def server_activate(self):
+        sc_memory_initialize("repo")
+        
+        return SocketServer.TCPServer.server_activate(self)
+    
+    def shutdown(self):
+        
+        res = SocketServer.TCPServer.shutdown(self)
+        
+        sc_memory_shutdown()
+        return res
+    
 if __name__ == "__main__":
-    start_server()
+    
+    global server
+        
+    server = ForkableTCPServer((HOST, PORT), ForkableTCPRequestHandler)
+    ip, port = server.server_address
+    
+    # Start a thread with the server -- that thread will then start one
+    # more thread for each request
+    #server_thread = threading.Thread(target = server.serve_forever)
+    # Exit the server thread when the main thread terminates
+    #server_thread.daemon = True
+    #server_thread.start()
+    
+    print "Sctp-server start on %s:%s" % (str(ip), str(port))
+    server.serve_forever()
+    server.shutdown()
+    

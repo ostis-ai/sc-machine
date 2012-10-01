@@ -26,17 +26,17 @@ class ScAddr:
     size        =   4
     
     def __init__(self):
-        self.segment = 0
+        self.seg = 0
         self.offset = 0
         
     def unpack(self, data):
-        self.segment, self.offset = struct.unpack('!HH', data)
+        self.seg, self.offset = struct.unpack('!HH', data)
         
     def pack(self):
-        return struct.pack('!HH', self.segment, self.offset)
+        return struct.pack('!HH', self.seg, self.offset)
     
     def __str__(self):
-        return "(seg: %s, offset: %s)" % (str(self.segment), str(self.offset))
+        return "(seg: %s, offset: %s)" % (str(self.seg), str(self.offset))
     
 class CommandId:
     size        =   4
@@ -52,7 +52,11 @@ class CommandType:
     arc_get_begin       =   0x07    # get begin element of specified sc-arc
     arc_get_end         =   0x08    # get end element of specified sc-arc
     
+    close_connection    =   0xFE    # close client connection
+    
 class ResultCode:
     
-    Ok                  =   0x00    # there are no any error
-    InvalidScAddr       =   0x01    # element with specified sc-addr doesn't exist
+    No                  =   0x00
+    Ok                  =   0x01    # there are no any error
+    Yes                 =   Ok
+    InvalidScAddr       =   0x02    # element with specified sc-addr doesn't exist
