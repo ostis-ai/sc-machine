@@ -8,13 +8,16 @@ QT       -= gui
 
 TARGET = sctp
 TEMPLATE = lib
+VERSION = 0.1.0
 
 DEFINES += SCTP_LIBRARY
 
-SOURCES += sctp.cpp
+SOURCES += sctp.cpp \
+           sctpCommand.cpp
 
 HEADERS += sctp.h\
-        sctp_global.h
+        sctp_global.h \
+        sctpCommand.h
 
 CONFIG (debug, debug|release) {
     DESTDIR = ../bin

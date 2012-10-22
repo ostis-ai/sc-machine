@@ -27,6 +27,7 @@ along with OSTIS.  If not, see <http://www.gnu.org/licenses/>.
 
 
 class QTcpSocket;
+class sctpCommand;
 
 class sctpClient : public QObject
 {
@@ -49,6 +50,8 @@ public slots:
 private:
     //! Pointer to client socket
     QTcpSocket *mSocket;
+    //! Pointer to command processing class
+    sctpCommand *mCommand;
     
 };
 

@@ -25,6 +25,8 @@ CONFIG (debug, debug|release) {
     DESTDIR = ../bin
 }
 
+INCLUDEPATH += ../
+
 unix {
     POST_TARGETDEPS += $$DESTDIR/libsctp.so
     LIBS += $$DESTDIR/libsctp.so

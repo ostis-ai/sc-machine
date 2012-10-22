@@ -21,6 +21,7 @@ along with OSTIS.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include "sctpclient.h"
+#include "sctp/sctpCommand.h"
 
 #include <QTcpSocket>
 #include <QHostAddress>
@@ -30,10 +31,12 @@ sctpClient::sctpClient(QObject *parent)
     : QObject(parent)
     , mSocket(0)
 {
+    mCommand = new sctpCommand(this);
 }
 
 sctpClient::~sctpClient()
 {
+    delete mCommand;
 }
 
 void sctpClient::setSocketDescriptor(int socketDescriptor)
@@ -55,9 +58,14 @@ void sctpClient::connected()
 
 void sctpClient::disconnected()
 {
+    qDebug() << "Disconnected client with adress: " << mSocket->peerAddress().toString();
 }
 
 void sctpClient::readyRead()
 {
-
+    while (mSocket->bytesAvailable() >= mCommand->cmdHeaderSize())
+    {
+        if (mCommand->processCommand(mSocket, mSocket) != sctpCommand::SCTP_RESULT_OK)
+            mSocket->close();
+    }
 }

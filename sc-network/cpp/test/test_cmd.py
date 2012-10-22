@@ -4,7 +4,8 @@ import struct
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 s.connect(('localhost', 55770))
 
-data = struct.pack('!BBII', 0x01, 0, 1, 1)
-s.send(data)
+for cmd in xrange(10):
+	data = struct.pack('!BBII', cmd, 0, 1, 0)
+	s.send(data)
 
 #print s.recv(1024)
