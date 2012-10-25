@@ -16,25 +16,30 @@ CONFIG   -= app_bundle
 TEMPLATE = app
 
 SOURCES += main.cpp \
-    sctpclient.cpp \
-    sctpserver.cpp
+    sctpClient.cpp \
+    sctpServer.cpp  \
+    sctpCommand.cpp
+
+HEADERS += \
+    sctpClient.h \
+    sctpServer.h \
+    sctpCommand.h \
+    sctpTypes.h
 
 CONFIG (debug, debug|release) {
-    DESTDIR = ../bin
+    DESTDIR = ../../../bin
 } else {
-    DESTDIR = ../bin
+    DESTDIR = ../../../bin
 }
 
-INCLUDEPATH += ../
+INCLUDEPATH += ../../../sc-memory/src
 
 unix {
-    POST_TARGETDEPS += $$DESTDIR/libsctp.so
-    LIBS += $$DESTDIR/libsctp.so
+
+    POST_TARGETDEPS += $$DESTDIR/libsc_memory.so
+    LIBS += $$DESTDIR/libsc_memory.so
 }
 
 OBJECTS_DIR = obj
 MOC_DIR = moc
 
-HEADERS += \
-    sctpclient.h \
-    sctpserver.h

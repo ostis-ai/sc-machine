@@ -1,5 +1,4 @@
 TEMPLATE = subdirs
 CONFIG += ordered
 
-SUBDIRS = sctp \
-          sctp_server
+SUBDIRS = sctp_server

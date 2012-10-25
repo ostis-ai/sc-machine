@@ -20,8 +20,8 @@ along with OSTIS.  If not, see <http://www.gnu.org/licenses/>.
 -----------------------------------------------------------------------------
 */
 
-#include "sctpclient.h"
-#include "sctp/sctpCommand.h"
+#include "sctpClient.h"
+#include "sctpCommand.h"
 
 #include <QTcpSocket>
 #include <QHostAddress>
@@ -65,7 +65,7 @@ void sctpClient::readyRead()
 {
     while (mSocket->bytesAvailable() >= mCommand->cmdHeaderSize())
     {
-        if (mCommand->processCommand(mSocket, mSocket) != sctpCommand::SCTP_RESULT_OK)
+        if (mCommand->processCommand(mSocket, mSocket) != SCTP_ERROR_NO)
             mSocket->close();
     }
 }

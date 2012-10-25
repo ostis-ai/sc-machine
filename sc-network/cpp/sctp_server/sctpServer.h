@@ -20,15 +20,37 @@ along with OSTIS.  If not, see <http://www.gnu.org/licenses/>.
 -----------------------------------------------------------------------------
 */
 
-#ifndef SCTP_GLOBAL_H
-#define SCTP_GLOBAL_H
+#ifndef SERVER_H
+#define SERVER_H
 
-#include <QtCore/qglobal.h>
+#include <QTcpServer>
+#include <QList>
 
-#if defined(SCTP_LIBRARY)
-#  define SCTPSHARED_EXPORT Q_DECL_EXPORT
-#else
-#  define SCTPSHARED_EXPORT Q_DECL_IMPORT
-#endif
+class sctpClient;
 
-#endif // SCTP_GLOBAL_H
+class sctpServer : public QTcpServer
+{
+    Q_OBJECT
+public:
+    explicit sctpServer(QObject *parent = 0);
+    virtual ~sctpServer();
+
+    //! Starts server
+    void start();
+
+
+protected:
+    void incomingConnection(int socketDescriptor);
+
+private:
+    //! List of connected clients
+    QList<sctpClient*> mClientsList;
+
+signals:
+    
+public slots:
+    void stop();
+
+};
+
+#endif // SERVER_H
