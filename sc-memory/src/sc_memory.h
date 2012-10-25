@@ -26,7 +26,7 @@ sc_bool sc_memory_is_initialized();
 sc_bool sc_memory_is_element(sc_addr addr);
 
 //! Remove sc-element from sc-memory
-void sc_memory_element_free(sc_addr addr);
+sc_result sc_memory_element_free(sc_addr addr);
 
 /*! Create new sc-node
  * @param type Type of new sc-node

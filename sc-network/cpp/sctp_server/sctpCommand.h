@@ -74,6 +74,7 @@ private:
     // ------- processing functions ----------
     sctpErrorCode processCheckElement(quint32 cmdFlags, quint32 cmdId, QDataStream *params, QIODevice *outDevice);
     sctpErrorCode processGetElementType(quint32 cmdFlags, quint32 cmdId, QDataStream *params, QIODevice *outDevice);
+    sctpErrorCode processElementErase(quint32 cmdFlags, quint32 cmdId, QDataStream *params, QIODevice *outDevice);
 
 signals:
     

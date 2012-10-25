@@ -60,8 +60,12 @@ sc_bool sc_storage_is_element(sc_addr addr);
  */
 sc_addr sc_storage_element_new(sc_type type);
 
-//! Remove sc-element from storage
-void sc_storage_element_free(sc_addr addr);
+/*! Remove sc-element from storage
+ * @param addr sc-addr of element to erase
+ * @return If input params are correct and element erased, then return SC_OK;
+ * otherwise return SC_ERROR
+ */
+sc_result sc_storage_element_free(sc_addr addr);
 
 /*! Create new sc-node
  * @param type Type of new sc-node

@@ -200,7 +200,7 @@ sc_addr sc_storage_element_new(sc_type type)
     return addr;
 }
 
-void sc_storage_element_free(sc_addr addr)
+sc_result sc_storage_element_free(sc_addr addr)
 {
     sc_type type;
     sc_segment *segment = 0;
@@ -212,8 +212,8 @@ void sc_storage_element_free(sc_addr addr)
 
     el = el2 = 0;
 
-    g_assert( addr.seg < segments->len );
-    g_assert( addr.offset < SEGMENT_SIZE );
+    if (sc_storage_is_element(addr) == SC_FALSE)
+        return SC_ERROR;
 
     remove_list = g_slist_append(remove_list, GUINT_TO_POINTER(SC_ADDR_LOCAL_TO_INT(addr)));
 
@@ -261,6 +261,7 @@ void sc_storage_element_free(sc_addr addr)
         SC_ADDR_MAKE_EMPTY(_addr);
     }
 
+    return SC_OK;
 }
 
 sc_addr sc_storage_node_new(sc_type type )

@@ -25,10 +25,10 @@ sc_bool sc_memory_is_element(sc_addr addr)
     return sc_storage_is_element(addr);
 }
 
-void sc_memory_element_free(sc_addr addr)
+sc_result sc_memory_element_free(sc_addr addr)
 {
     //! @todo make it thread-safe
-    sc_storage_element_free(addr);
+    return sc_storage_element_free(addr);
 }
 
 sc_addr sc_memory_node_new(sc_type type)

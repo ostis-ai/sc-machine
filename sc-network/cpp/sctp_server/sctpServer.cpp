@@ -43,7 +43,7 @@ void sctpServer::start()
 {
     if (!listen(QHostAddress::Any, 55770))
     {
-        qCritical(QObject::tr("Unable to start the server: %1").arg(errorString()).toUtf8().constData());
+        qCritical() << QObject::tr("Unable to start the server: %1").arg(errorString());
         return;
     }
 

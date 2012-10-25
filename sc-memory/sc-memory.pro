@@ -1,5 +1,5 @@
 TEMPLATE = lib
-TARGET = $$qtLibraryTarget(sc_store)
+TARGET = $$qtLibraryTarget(sc_memory)
 
 DESTDIR = ../bin
 

@@ -74,11 +74,12 @@ sctpErrorCode sctpCommand::processCommand(QIODevice *inDevice, QIODevice *outDev
     {
     case SCTP_CMD_CHECK_ELEMENT:
         return processCheckElement(cmdFlags, cmdId, &paramsStream, outDevice);
-        break;
 
     case SCTP_CMD_GET_ELEMENT_TYPE:
         return processGetElementType(cmdFlags, cmdId, &paramsStream, outDevice);
-        break;
+
+    case SCTP_CMD_ERASE_ELEMENT:
+        return processElementErase(cmdFlags, cmdId, &paramsStream, outDevice);
 
     case SCTP_CMD_SHUTDOWN:
         QCoreApplication::quit();
@@ -162,6 +163,24 @@ sctpErrorCode sctpCommand::processGetElementType(quint32 cmdFlags, quint32 cmdId
     writeResultHeader(SCTP_CMD_GET_ELEMENT_TYPE, cmdId, resCode, resSize, outDevice);
     if (resCode == SCTP_RESULT_TRUE)
         outDevice->write((const char*)&type, sizeof(type));
+
+    return SCTP_ERROR_NO;
+}
+
+sctpErrorCode sctpCommand::processElementErase(quint32 cmdFlags, quint32 cmdId, QDataStream *params, QIODevice *outDevice)
+{
+    sc_addr addr;
+    Q_UNUSED(cmdFlags);
+
+    Q_ASSERT(params != 0);
+
+    // read sc-addr of sc-element from parameters
+    if (params->readRawData((char*)&addr, sizeof(addr)) != sizeof(addr))
+        return SCTP_ERROR_CMD_READ_PARAMS;
+
+    sctpResultCode resCode = (sc_memory_element_free(addr) == SC_OK) ? SCTP_RESULT_TRUE : SCTP_RESULT_FALSE;
+    // send result
+    writeResultHeader(SCTP_CMD_CHECK_ELEMENT, cmdId, resCode, 0, outDevice);
 
     return SCTP_ERROR_NO;
 }

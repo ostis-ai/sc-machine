@@ -24,7 +24,7 @@ HEADERS  += mainwindow.h \
 FORMS    += mainwindow.ui
 
 INCLUDEPATH += ../../sc-memory/src
-unix: LIBS += $$quote(-L$$DESTDIR) -lsc_store
+unix: LIBS += $$quote(-L$$DESTDIR) -lsc_memory
 
 #CONFIG += link_pkgconfig
 #PKGCONFIG += glib-2.0
