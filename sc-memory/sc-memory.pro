@@ -33,7 +33,7 @@ SOURCES += \
     src/sc-store/sc_stream.c \
     src/sc-store/sc_storage.c \
     src/sc-store/sc_segment.c \
-    src/sc-store/sc_stream_memory.cpp
+    src/sc-store/sc_stream_memory.c
 
 win32 {
     INCLUDEPATH += "../glib/include/glib-2.0"
