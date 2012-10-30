@@ -1,3 +1,25 @@
+/*
+-----------------------------------------------------------------------------
+This source file is part of OSTIS (Open Semantic Technology for Intelligent Systems)
+For the latest info, see http://www.ostis.net
+
+Copyright (c) 2010 OSTIS
+
+OSTIS is free software: you can redistribute it and/or modify
+it under the terms of the GNU Lesser General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+OSTIS is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public License
+along with OSTIS.  If not, see <http://www.gnu.org/licenses/>.
+-----------------------------------------------------------------------------
+*/
+
 #include "sc_storage.h"
 
 #include "sc_defines.h"
@@ -363,7 +385,7 @@ sc_result sc_storage_get_arc_begin(sc_addr addr, sc_addr *result)
         return SC_OK;
     }
 
-    return SC_INVALID_TYPE;
+    return SC_ERROR_INVALID_TYPE;
 }
 
 sc_result sc_storage_get_arc_end(sc_addr addr, sc_addr *result)
@@ -375,7 +397,7 @@ sc_result sc_storage_get_arc_end(sc_addr addr, sc_addr *result)
         return SC_OK;
     }
 
-    return SC_INVALID_TYPE;
+    return SC_ERROR_INVALID_TYPE;
 }
 
 sc_result sc_storage_set_link_content(sc_addr addr, const sc_stream *stream)
@@ -384,7 +406,7 @@ sc_result sc_storage_set_link_content(sc_addr addr, const sc_stream *stream)
     sc_check_sum check_sum;
 
     if (!(el->type & sc_type_link))
-        return SC_INVALID_TYPE;
+        return SC_ERROR_INVALID_TYPE;
 
     // calculate checksum for data
     if (sc_link_calculate_checksum(stream, &check_sum) == SC_TRUE)

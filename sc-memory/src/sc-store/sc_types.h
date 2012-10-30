@@ -1,3 +1,25 @@
+/*
+-----------------------------------------------------------------------------
+This source file is part of OSTIS (Open Semantic Technology for Intelligent Systems)
+For the latest info, see http://www.ostis.net
+
+Copyright (c) 2010 OSTIS
+
+OSTIS is free software: you can redistribute it and/or modify
+it under the terms of the GNU Lesser General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+OSTIS is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public License
+along with OSTIS.  If not, see <http://www.gnu.org/licenses/>.
+-----------------------------------------------------------------------------
+*/
+
 #ifndef _sc_types_h_
 #define _sc_types_h_
 
@@ -115,11 +137,11 @@ typedef sc_uint16 sc_type;
 // results
 enum _sc_result
 {
-    SC_ERROR = 0,
-    SC_OK = 1,
-    SC_INVALID_PARAMS,
-    SC_INVALID_TYPE,
-    SC_IO_ERROR
+    SC_ERROR = 0,               // unknown error
+    SC_OK = 1,                  // no any error
+    SC_ERROR_INVALID_PARAMS,    // invalid function parameters error
+    SC_ERROR_INVALID_TYPE,      // invalied type error
+    SC_ERROR_IO                 // input/output error
 };
 
 // contents

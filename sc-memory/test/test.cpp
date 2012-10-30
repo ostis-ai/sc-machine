@@ -6,6 +6,7 @@ extern "C"
 #include "sc_iterator.h"
 }
 #include <vector>
+#include <limits>
 #include <glib.h>
 
 #define nodes_append_count 5000000
@@ -381,14 +382,16 @@ void test5()
 
 int main(int argc, char *argv[])
 {
-    sc_uint item = 1;
+    sc_uint item = -1;
 
+    fflush(stdout);
     timer = g_timer_new();
     g_timer_start(timer);
 
     printf("MD5: %d\n", g_checksum_type_get_length(G_CHECKSUM_MD5) );
     printf("SHA1: %d\n", g_checksum_type_get_length(G_CHECKSUM_SHA1) );
     printf("SHA256: %d\n", g_checksum_type_get_length(G_CHECKSUM_SHA256) );
+
 
     sc_storage_initialize("repo");
     g_timer_stop(timer);
