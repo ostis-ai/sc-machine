@@ -34,7 +34,7 @@ struct _sc_memory_buffer
     sc_bool data_owner; // ownership on data buffer
 };
 
-typedef _sc_memory_buffer sc_memory_buffer;
+typedef struct _sc_memory_buffer sc_memory_buffer;
 
 
 
