@@ -35,7 +35,6 @@ void print_storage_statistics()
 sc_addr get_random_addr(sc_type type)
 {
     sc_addr addr;
-    sc_segment *segment = 0 ;
 
     addr.seg = g_random_int() % sc_storage_get_segments_count();
     addr.offset = 0;
@@ -46,9 +45,7 @@ sc_addr get_random_addr(sc_type type)
 
 sc_element* get_random_element(sc_type type)
 {
-    sc_element *el = 0;
-    sc_addr id, id2;
-    sc_segment *segment = 0 ;
+    sc_addr id;
 
     id.seg = g_random_int() % sc_storage_get_segments_count();
     id.offset = g_random_int() % SEGMENT_SIZE;
@@ -70,8 +67,6 @@ bool is_sc_addr_in_segment_node_vector(sc_addr addr)
 void test1()
 {
     sc_uint idx = 0;
-    sc_element *el1, *el2;
-    sc_segment *segment = 0;
     sc_addr id, id2;
     sc_uint32 count = 0;
 
@@ -343,11 +338,9 @@ void test4()
 
 void test5()
 {
-    sc_uint32 i, len;
+    sc_uint32 i;
     sc_addr addr;
-    gchar data[10];
     sc_stream *stream = 0;
-    gchar test[1024];
 
     printf("Segments count: %d\n", sc_storage_get_segments_count());
     print_storage_statistics();
@@ -356,16 +349,66 @@ void test5()
 
     printf("Create %d links\n", link_append_count);
 
-    g_snprintf(test, 1024, "test.cpp");
+    //g_snprintf(test, 1024, "../CMakeLists.txt");
     g_timer_reset(timer);
     g_timer_start(timer);
     for (i = 0; i < link_append_count; i++)
     {
         addr = sc_storage_link_new();
-//        len = g_snprintf(data, 10, "%d", i);
 
-        stream = sc_stream_file_new(test, SC_STREAM_READ);
+        printf("Created sc-link: seg=%d, offset=%d, content=%d\n", addr.seg, addr.offset, i);
+
+        stream = sc_stream_memory_new((char*)&i, sizeof(i), SC_STREAM_READ, SC_FALSE);
         sc_storage_set_link_content(addr, stream);
+        sc_stream_free(stream);
+    }
+
+    g_timer_stop(timer);
+
+    printf("Created links: %d\n", link_append_count);
+    printf("Links per second: %f\n", link_append_count / g_timer_elapsed(timer, 0));
+
+    printf("Segments count: %d\n", sc_storage_get_segments_count());
+    print_storage_statistics();
+
+    g_timer_destroy(timer);
+}
+
+
+void test6()
+{
+    sc_uint32 i, j;
+    sc_addr addr;
+    sc_stream *stream = 0;
+    sc_addr *results = 0;
+    sc_uint32 results_count = 0;
+
+    printf("Segments count: %d\n", sc_storage_get_segments_count());
+    print_storage_statistics();
+
+    timer = g_timer_new();
+
+    //g_snprintf(test, 1024, "../CMakeLists.txt");
+    g_timer_reset(timer);
+    g_timer_start(timer);
+
+    for (i = 0; i < link_append_count; i++)
+    {
+        //addr = sc_storage_link_new();
+        printf("Find addrs for content %d\t", i);
+
+        stream = sc_stream_memory_new((char*)&i, sizeof(i), SC_STREAM_READ, SC_FALSE);
+
+        if (sc_storage_find_links_with_content(stream, &results, &results_count) == SC_OK)
+        {
+            printf("founded: \n");
+            for (j = 0; j < results_count; j++)
+                printf("seg=%d, offset=%d\n", results[j].seg, results[j].offset);
+            g_free(results);
+            results = 0;
+        }else
+            printf("error\n");
+
         sc_stream_free(stream);
     }
 
@@ -392,10 +435,12 @@ int main(int argc, char *argv[])
     printf("SHA1: %d\n", g_checksum_type_get_length(G_CHECKSUM_SHA1) );
     printf("SHA256: %d\n", g_checksum_type_get_length(G_CHECKSUM_SHA256) );
 
-
     sc_storage_initialize("repo");
     g_timer_stop(timer);
     printf("Segment loading speed: %f seg/sec\n", sc_storage_get_segments_count() / g_timer_elapsed(timer, 0));
+
+    //test5();
+    //test6();
 
     while (item != 0)
     {
@@ -406,6 +451,7 @@ int main(int argc, char *argv[])
                "3 - test arc deletion\n"
                "4 - test iterators\n"
                "5 - test contents\n"
+               "6 - test content finding\n"
                "\nCommand: ");
         scanf("%d", &item);
 
@@ -432,6 +478,10 @@ int main(int argc, char *argv[])
         case 5:
             test5();
             break;
+
+        case 6:
+            test6();
+            break;
         };
 
         printf("\n----- Finished -----\n");
@@ -445,7 +495,6 @@ int main(int argc, char *argv[])
     g_timer_stop(timer);
     printf("Segments save speed: %f seg/sec\n", item / g_timer_elapsed(timer, 0));
     g_timer_destroy(timer);
-
 
     return 0;
 }

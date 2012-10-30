@@ -43,7 +43,7 @@ sc_bool sc_memory_is_initialized();
  * @param addr sc-addr of element
  * @return Returns SC_TRUE, if sc-element with \p addr exist; otherwise return SC_FALSE.
  * If element deleted, then return SC_FALSE.
- * @note This function is thread safe
+ * @note This function is a thread safe
  */
 sc_bool sc_memory_is_element(sc_addr addr);
 
@@ -53,12 +53,12 @@ sc_result sc_memory_element_free(sc_addr addr);
 /*! Create new sc-node
  * @param type Type of new sc-node
  * @return Return sc-addr of created sc-node
- * @note This function is thread safe
+ * @note This function is a thread safe
  */
 sc_addr sc_memory_node_new(sc_type type);
 
 /*! Create new sc-link
- * @note This function is thread safe
+ * @note This function is a thread safe
  */
 sc_addr sc_memory_link_new();
 
@@ -68,7 +68,7 @@ sc_addr sc_memory_link_new();
  * @param end sc-addr of end sc-element
  *
  * @return Return sc-addr of created sc-arc
- * @note This function is thread safe
+ * @note This function is a thread safe
  */
 sc_addr sc_memory_arc_new(sc_type type,
                           sc_addr beg,
@@ -79,7 +79,7 @@ sc_addr sc_memory_arc_new(sc_type type,
  * @param result Pointer to result container
  * @return If input params are correct and type resolved, then return SC_OK;
  * otherwise return SC_ERROR
- * @note This function is thread safe
+ * @note This function is a thread safe
  */
 sc_result sc_memory_get_element_type(sc_addr addr, sc_type *result);
 
@@ -88,16 +88,16 @@ sc_result sc_memory_get_element_type(sc_addr addr, sc_type *result);
  * @param result Pointer to result container
  * @return If input params are correct and begin element resolved, then return SC_OK.
  * If element with specified addr isn't an arc, then return SC_INVALID_TYPE
- * @note This function is thread safe
+ * @note This function is a thread safe
  */
 sc_result sc_memory_get_arc_begin(sc_addr addr, sc_addr *result);
 
 /*! Returns sc-addr of end element of specified arc
  * @param addr sc-addr of arc to get end element
- * @param result PoOinter to result container
+ * @param result Pointer to result container
  * @return If input params are correct and end element resolved, then return SC_OK.
  * If element with specified addr isn't an arc, then return SC_INVALID_TYPE
- * @note This function is thread safe
+ * @note This function is a thread safe
  */
 sc_result sc_memory_get_arc_end(sc_addr addr, sc_addr *result);
 
@@ -110,8 +110,21 @@ sc_result sc_memory_get_arc_end(sc_addr addr, sc_addr *result);
  * <li>SC_INVALID_TYPE - element with \p addr isn't a sc-link</li>
  * <li>SC_ERROR - unknown error</li>
  * </ul>
- * @note This function is thread safe
+ * @note This function is a thread safe
  */
 sc_result sc_memory_set_link_content(sc_addr addr, const sc_stream *stream);
+
+
+/*! Search sc-link addrs by specified checksum
+ * @param stream Pointert to stream that contains data for search
+ * @param result Pointer to result container
+ * @param result_count Container for results count
+ * @return If sc-links with specified checksum founded, then sc-addrs of founded link
+ * writes into \p result array and function returns SC_OK; otherwise \p result will contain
+ * empty sc-addr and function returns SC_OK. In any case \p result_count contains number of founded
+ * sc-addrs
+ * @attention \p result array need to be free after usage
+ */
+sc_result sc_memory_find_links_with_content(const sc_stream *stream, sc_addr **result, sc_uint32 *result_count);
 
 #endif

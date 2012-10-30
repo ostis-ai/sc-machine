@@ -49,7 +49,6 @@ sc_bool sc_fs_storage_initialize(const gchar *path)
     {
         if (g_mkdir_with_parents(contents_path, SC_DIR_PERMISSIONS) < 0)
             g_error("Can't create '%s' directory.", contents_path);
-        return SC_FALSE;
     }
 
     repo_path = g_malloc0(sizeof(gchar) * (strlen(path) + 1));
@@ -232,7 +231,8 @@ sc_result sc_fs_storage_write_content(sc_addr addr, const sc_check_sum *check_su
             }
         }
         sc_stream_free(out_stream);
-        return SC_OK;
+
+        return sc_fs_storage_add_content_addr(addr, check_sum);
     }
 
     return SC_ERROR_IO;
@@ -276,7 +276,7 @@ sc_result sc_fs_storage_add_content_addr(sc_addr addr, const sc_check_sum *check
     }else
     {
         content2 = content;
-        (*(sc_uint32*)content)++;
+        (*(sc_uint32*)content2)++;
 
         content = g_new0(gchar, content_len + sizeof(addr));
         memcpy(content, content2, content_len);
@@ -300,6 +300,57 @@ sc_result sc_fs_storage_add_content_addr(sc_addr addr, const sc_check_sum *check
     free(path);
 
     return SC_ERROR;
+}
+
+sc_result sc_fs_storage_find_links_with_content(const sc_check_sum *check_sum, sc_addr **result, sc_uint32 *result_count)
+{
+
+    sc_uint8 *path = sc_fs_storage_make_checksum_path(check_sum);
+    gchar abs_path[MAX_PATH_LENGTH];
+    gchar addr_path[MAX_PATH_LENGTH];
+    gchar *content = 0;
+    gsize content_len = 0;
+    sc_uint32 result_size = 0;
+
+    // make absolute path to content directory
+    g_snprintf(abs_path, MAX_PATH_LENGTH, "%s/%s", contents_path, path);
+    g_snprintf(addr_path, MAX_PATH_LENGTH, "%saddrs", abs_path);
+
+    // must be a null pointer
+    g_assert(*result == 0);
+
+    // try to load existing file
+    if (g_file_test(addr_path, G_FILE_TEST_EXISTS))
+    {
+        if (g_file_get_contents(addr_path, &content, &content_len, 0) == FALSE)
+        {
+            if (content != 0)
+                free(content);
+            free(path);
+            return SC_ERROR_IO;
+        }
+
+    }
+
+    // append addr into content
+    if (content == 0)
+    {
+        *result = 0;
+        *result_count = 0;
+    }else
+    {
+        *result_count = *((sc_uint32*)content);
+        content += sizeof(sc_uint32);
+        result_size = sizeof(sc_addr) * (*result_count);
+
+        *result = g_new0(char, result_size);
+        memcpy(*result, content, result_size);
+    }
+
+    g_free(content);
+    free(path);
+
+    return SC_OK;
 }
 
 sc_uint8* sc_fs_storage_make_checksum_path(const sc_check_sum *check_sum)
@@ -328,3 +379,5 @@ sc_uint8* sc_fs_storage_make_checksum_path(const sc_check_sum *check_sum)
 
     return result;
 }
+
+

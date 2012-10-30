@@ -8,6 +8,8 @@ unix {
     PKGCONFIG += glib-2.0
 }
 
+DEFINES += QT_COMPILATION
+
 SOURCES += \
     test.cpp
 

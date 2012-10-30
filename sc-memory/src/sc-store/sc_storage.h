@@ -147,6 +147,18 @@ sc_result sc_storage_get_arc_end(sc_addr addr, sc_addr *result);
  */
 sc_result sc_storage_set_link_content(sc_addr addr, const sc_stream *stream);
 
+/*! Search sc-link addrs by specified data
+ * @param stream Pointert to stream that contains data for search
+ * @param result Pointer to result container
+ * @param result_count Container for results count
+ * @return If sc-links with specified checksum founded, then sc-addrs of founded link
+ * writes into \p result array and function returns SC_OK; otherwise \p result will contain
+ * empty sc-addr and function returns SC_OK. In any case \p result_count contains number of founded
+ * sc-addrs
+ * @attention \p result array need to be free after usage
+ */
+sc_result sc_storage_find_links_with_content(const sc_stream *stream, sc_addr **result, sc_uint32 *result_count);
+
 //! Returns number of segments
 sc_uint sc_storage_get_segments_count();
 

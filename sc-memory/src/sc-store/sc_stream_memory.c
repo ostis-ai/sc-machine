@@ -47,9 +47,12 @@ sc_result sc_stream_memory_read(const sc_stream *stream, sc_char *data, sc_uint3
         return SC_ERROR;
 
     if (length > (buffer->size - buffer->pos))
+    {
         *bytes_read = buffer->size - buffer->pos;
-
-    memcpy(data, buffer->data, *bytes_read);
+        memcpy(data, buffer->data, *bytes_read);
+        buffer->pos += *bytes_read;
+    }else
+        return SC_ERROR;
 
     return SC_OK;
 }

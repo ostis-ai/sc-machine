@@ -39,6 +39,8 @@ sc_bool sc_link_calculate_checksum(const sc_stream *stream, sc_check_sum *check_
     g_assert(check_sum != 0);
     g_checksum_reset(checksum);
 
+    sc_stream_seek(stream, SC_STREAM_SEEK_SET, 0);
+
     while (sc_stream_eof(stream) == SC_FALSE)
     {
         if (sc_stream_read_data(stream, buffer, 1024, &data_read) == SC_ERROR)
@@ -56,6 +58,8 @@ sc_bool sc_link_calculate_checksum(const sc_stream *stream, sc_check_sum *check_
     memcpy(&(check_sum->data[0]), result, check_sum->len);
 
     g_checksum_free(checksum);
+
+    sc_stream_seek(stream, SC_STREAM_SEEK_SET, 0);
 
     return SC_TRUE;
 }

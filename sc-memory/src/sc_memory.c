@@ -94,3 +94,9 @@ sc_result sc_memory_set_link_content(sc_addr addr, const sc_stream *stream)
     //! @todo make it thread-safe
     return sc_storage_set_link_content(addr, stream);
 }
+
+sc_result sc_memory_find_links_with_content(const sc_stream *stream, sc_addr **result, sc_uint32 *result_count)
+{
+    //! @todo make it thread-safe
+    return sc_storage_find_links_with_content(stream, result, result_count);
+}

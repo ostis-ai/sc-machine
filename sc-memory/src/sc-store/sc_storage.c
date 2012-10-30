@@ -224,8 +224,6 @@ sc_addr sc_storage_element_new(sc_type type)
 
 sc_result sc_storage_element_free(sc_addr addr)
 {
-    sc_type type;
-    sc_segment *segment = 0;
     sc_element *el, *el2;
     sc_addr _addr;
     sc_uint addr_int;
@@ -410,14 +408,20 @@ sc_result sc_storage_set_link_content(sc_addr addr, const sc_stream *stream)
 
     // calculate checksum for data
     if (sc_link_calculate_checksum(stream, &check_sum) == SC_TRUE)
-    {
-        sc_fs_storage_write_content(addr, &check_sum, stream);
-        return SC_OK;
-    }
+        return sc_fs_storage_write_content(addr, &check_sum, stream);
 
     return SC_ERROR;
 }
 
+sc_result sc_storage_find_links_with_content(const sc_stream *stream, sc_addr **result, sc_uint32 *result_count)
+{
+    g_assert(stream != 0);
+    sc_check_sum check_sum;
+    if (sc_link_calculate_checksum(stream, &check_sum) == SC_TRUE)
+        return sc_fs_storage_find_links_with_content(&check_sum, result, result_count);
+
+    return SC_ERROR;
+}
 
 
 void sc_storage_get_elements_stat(sc_elements_stat *stat)

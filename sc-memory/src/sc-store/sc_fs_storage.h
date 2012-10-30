@@ -76,6 +76,18 @@ sc_result sc_fs_storage_write_content(sc_addr addr, const sc_check_sum *check_su
  */
 sc_result sc_fs_storage_add_content_addr(sc_addr addr, const sc_check_sum *check_sum);
 
+/*! Search sc-link addrs by specified checksum
+ * @param check_sum Checksum for search
+ * @param result Pointer to result container
+ * @param result_count Container for results count
+ * @return If sc-links with specified checksum founded, then sc-addrs of founded link
+ * writes into \p result array and function returns SC_OK; otherwise \p result will contain
+ * empty sc-addr and function returns SC_OK. In any case \p result_count contains number of founded
+ * sc-addrs
+ * @attention \p result array need to be free after usage
+ */
+sc_result sc_fs_storage_find_links_with_content(const sc_check_sum *check_sum, sc_addr **result, sc_uint32 *result_count);
+
 /*! Make directory path from checksum
  * @param check_sum Checksum pointer to make path
  * @return Returns null terminated string that contains directory path (relative to contents directory). The
@@ -83,5 +95,6 @@ sc_result sc_fs_storage_add_content_addr(sc_addr addr, const sc_check_sum *check
  * If there are any errors, then return null.
  */
 sc_uint8* sc_fs_storage_make_checksum_path(const sc_check_sum *check_sum);
+
 
 #endif
