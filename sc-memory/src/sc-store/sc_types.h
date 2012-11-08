@@ -153,6 +153,16 @@ struct _sc_check_sum
     sc_uint8 len;    // checksum length
 };
 
+// events
+enum _sc_event_type
+{
+    SC_EVENT_ADD_OUTPUT_ARC,        // calls after adding
+    SC_EVENT_ADD_INPUT_ARC,         // calls after adding
+    SC_EVENT_REMOVE_OUTPUT_ARC,     // calls before removing
+    SC_EVENT_REMOVE_INPUT_ARC,      // calls before removing
+    SC_EVENT_CHANGE_LINK_CONTENT    // calls after adding
+};
+
 typedef struct _sc_check_sum sc_check_sum;
 
 
@@ -165,7 +175,9 @@ typedef struct _sc_addr sc_addr;
 typedef struct _sc_elements_stat sc_elements_stat;
 typedef struct _sc_iterator_param sc_iterator_param;
 typedef struct _sc_iterator3 sc_iterator3;
+typedef struct _sc_event sc_event;
 typedef enum _sc_result sc_result;
+typedef enum _sc_event_type sc_event_type;
 
 
 #endif

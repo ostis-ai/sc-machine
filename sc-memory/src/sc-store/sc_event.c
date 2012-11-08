@@ -19,3 +19,44 @@ You should have received a copy of the GNU Lesser General Public License
 along with OSTIS.  If not, see <http://www.gnu.org/licenses/>.
 -----------------------------------------------------------------------------
 */
+#include <glib.h>
+#include "sc_event.h"
+
+sc_event* sc_event_new(sc_addr el, sc_event_type type, sc_uint32 id, fEventCallback callback, fEventCallback delete_callback)
+{
+    sc_event *event = g_new0(sc_event, 1);
+    event->element = el;
+    event->type = type;
+    event->id = id;
+    event->callback = callback;
+    event->delete_callback = delete_callback;
+
+    // register created event
+
+    return event;
+}
+
+sc_result sc_event_emit_add_output_arc(sc_addr el, sc_addr arc_addr)
+{
+    return SC_ERROR;
+}
+
+sc_result sc_event_emit_add_input_arc(sc_addr el, sc_addr arc_addr)
+{
+    return SC_ERROR;
+}
+
+sc_result sc_event_emit_remove_output_arc(sc_addr el, sc_addr arc_addr)
+{
+    return SC_ERROR;
+}
+
+sc_result sc_event_emit_remove_input_arc(sc_addr el, sc_addr arc_addr)
+{
+    return SC_ERROR;
+}
+
+sc_result sc_event_emit_change_link_content(sc_addr el)
+{
+    return SC_ERROR;
+}
