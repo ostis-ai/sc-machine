@@ -110,4 +110,12 @@ sc_bool sc_iterator3_next(sc_iterator3 *it);
  */
 sc_addr sc_iterator3_value(sc_iterator3 *it, sc_uint vid);
 
+/*! Check if specified element type passed into
+ * iterator selection.
+ * @param el_type Compared element type
+ * @param it_type Template type from iterator parameter
+ * @return If el_type passed checking, then return SC_TRUE, else return SC_FALSE
+ */
+sc_bool sc_iterator_compare_type(sc_type el_type, sc_type it_type);
+
 #endif

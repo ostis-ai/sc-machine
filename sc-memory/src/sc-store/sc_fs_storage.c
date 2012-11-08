@@ -308,9 +308,8 @@ sc_result sc_fs_storage_find_links_with_content(const sc_check_sum *check_sum, s
     sc_uint8 *path = sc_fs_storage_make_checksum_path(check_sum);
     gchar abs_path[MAX_PATH_LENGTH];
     gchar addr_path[MAX_PATH_LENGTH];
-    gchar *content = 0;
+    gchar *content, *content2 = 0;
     gsize content_len = 0;
-    sc_uint32 result_size = 0;
 
     // make absolute path to content directory
     g_snprintf(abs_path, MAX_PATH_LENGTH, "%s/%s", contents_path, path);
@@ -332,7 +331,7 @@ sc_result sc_fs_storage_find_links_with_content(const sc_check_sum *check_sum, s
 
     }
 
-    // append addr into content
+    // store result
     if (content == 0)
     {
         *result = 0;
@@ -340,14 +339,15 @@ sc_result sc_fs_storage_find_links_with_content(const sc_check_sum *check_sum, s
     }else
     {
         *result_count = *((sc_uint32*)content);
-        content += sizeof(sc_uint32);
-        result_size = sizeof(sc_addr) * (*result_count);
+        content2 = content;
+        content2 += sizeof(sc_uint32);
 
-        *result = g_new0(char, result_size);
-        memcpy(*result, content, result_size);
+        *result = g_new0(sc_addr, *result_count);
+        memcpy(*result, content2, sizeof(sc_addr) * (*result_count));
     }
 
-    g_free(content);
+    if (content != 0)
+        g_free(content);
     free(path);
 
     return SC_OK;

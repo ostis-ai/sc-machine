@@ -127,6 +127,7 @@ sc_bool _sc_iterator3_f_a_a_next(sc_iterator3 *it)
     sc_addr arc_addr;
     sc_element *el1, *el2;
     sc_element *arc_element;
+    sc_type arc_type, el_type;
 
     el1 = el2 = arc_element = 0;
     SC_ADDR_MAKE_EMPTY(arc_addr);
@@ -148,11 +149,15 @@ sc_bool _sc_iterator3_f_a_a_next(sc_iterator3 *it)
     while (SC_ADDR_IS_NOT_EMPTY(arc_addr))
     {
         arc_element = sc_storage_get_element(arc_addr, SC_TRUE);
+        sc_storage_get_element_type(arc_addr, &arc_type);
+        sc_storage_get_element_type(arc_element->arc.end, &el_type);
 
-        if (arc_element->create_time_stamp < it->time_stamp &&
-                (arc_element->delete_time_stamp == 0 || arc_element->delete_time_stamp > it->time_stamp))
+        if ((arc_element->create_time_stamp < it->time_stamp) &&
+            (arc_element->delete_time_stamp == 0 || arc_element->delete_time_stamp > it->time_stamp) &&
+            (sc_iterator_compare_type(arc_type, it->params[1].type)) &&
+            (sc_iterator_compare_type(el_type, it->params[2].type))
+           )
         {
-            //! @todo Check types
             // store founded result
             it->results[1] = arc_addr;
             it->results[2] = arc_element->arc.end;
@@ -172,6 +177,7 @@ sc_bool _sc_iterator3_f_a_f_next(sc_iterator3 *it)
     sc_addr arc_addr;
     sc_element *el1, *el2;
     sc_element *arc_element;
+    sc_type arc_type;
 
     el1 = el2 = arc_element = 0;
     SC_ADDR_MAKE_EMPTY(arc_addr);
@@ -194,12 +200,14 @@ sc_bool _sc_iterator3_f_a_f_next(sc_iterator3 *it)
     while (SC_ADDR_IS_NOT_EMPTY(arc_addr))
     {
         arc_element = sc_storage_get_element(arc_addr, SC_TRUE);
+        sc_storage_get_element_type(arc_addr, &arc_type);
 
-        if (arc_element->create_time_stamp < it->time_stamp &&
-                (arc_element->delete_time_stamp == 0 || arc_element->delete_time_stamp > it->time_stamp) &&
-                SC_ADDR_IS_EQUAL(it->params[2].addr, arc_element->arc.end))
+        if ((arc_element->create_time_stamp < it->time_stamp) &&
+            (arc_element->delete_time_stamp == 0 || arc_element->delete_time_stamp > it->time_stamp) &&
+            SC_ADDR_IS_EQUAL(it->params[2].addr, arc_element->arc.end) &&
+            (sc_iterator_compare_type(arc_type, it->params[1].type))
+           )
         {
-            //! @todo Check types
             // store founded result
             it->results[1] = arc_addr;
             return SC_TRUE;
@@ -217,6 +225,7 @@ sc_bool _sc_iterator3_a_a_f_next(sc_iterator3 *it)
     sc_addr arc_addr;
     sc_element *el1, *el2;
     sc_element *arc_element;
+    sc_type arc_type, el_type;
 
     el1 = el2 = arc_element = 0;
     SC_ADDR_MAKE_EMPTY(arc_addr);
@@ -238,11 +247,15 @@ sc_bool _sc_iterator3_a_a_f_next(sc_iterator3 *it)
     while (SC_ADDR_IS_NOT_EMPTY(arc_addr))
     {
         arc_element = sc_storage_get_element(arc_addr, SC_TRUE);
+        sc_storage_get_element_type(arc_addr, &arc_type);
+        sc_storage_get_element_type(arc_element->arc.begin, &el_type);
 
-        if (arc_element->create_time_stamp < it->time_stamp &&
-                (arc_element->delete_time_stamp == 0 || arc_element->delete_time_stamp > it->time_stamp))
+        if ((arc_element->create_time_stamp < it->time_stamp) &&
+            (arc_element->delete_time_stamp == 0 || arc_element->delete_time_stamp > it->time_stamp) &&
+            (sc_iterator_compare_type(arc_type, it->params[1].type)) &&
+            (sc_iterator_compare_type(el_type, it->params[0].type))
+            )
         {
-            //! @todo Check types
             // store founded result
             it->results[1] = arc_addr;
             it->results[0] = arc_element->arc.begin;
@@ -284,4 +297,12 @@ sc_addr sc_iterator3_value(sc_iterator3 *it, sc_uint vid)
     g_assert(it->results != 0);
 
     return it->results[vid];
+}
+
+sc_bool sc_iterator_compare_type(sc_type el_type, sc_type it_type)
+{
+    if (it_type & el_type == it_type)
+        return SC_TRUE;
+
+    return SC_FALSE;
 }
