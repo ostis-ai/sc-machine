@@ -27,6 +27,7 @@ along with OSTIS.  If not, see <http://www.gnu.org/licenses/>.
 #include "sc_element.h"
 #include "sc_fs_storage.h"
 #include "sc_link_helpers.h"
+#include "sc_event.h"
 
 #include <memory.h>
 #include <glib.h>
@@ -250,6 +251,9 @@ sc_result sc_storage_element_free(sc_addr addr)
         el = sc_storage_get_element(_addr, SC_TRUE);
         g_assert(el != 0 && el->type != 0);
 
+        // remove registered events before deletion
+        sc_event_notify_element_deleted(_addr);
+
         el->delete_time_stamp = time_stamp;
 
         // Iterate all connectors for deleted element and append them into remove_list
@@ -260,7 +264,11 @@ sc_result sc_storage_element_free(sc_addr addr)
 
             // do not append elements, that have delete_time_stamp != 0
             if (el2->delete_time_stamp == 0)
+            {
                 remove_list = g_slist_append(remove_list, GUINT_TO_POINTER(SC_ADDR_LOCAL_TO_INT(_addr)));
+                sc_event_emit(el2->arc.begin, SC_EVENT_REMOVE_OUTPUT_ARC, _addr);
+                sc_event_emit(el2->arc.end, SC_EVENT_REMOVE_INPUT_ARC, _addr);
+            }
 
             _addr = el2->arc.next_out_arc;
         }
@@ -272,7 +280,11 @@ sc_result sc_storage_element_free(sc_addr addr)
 
             // do not append elements, that have delete_time_stamp != 0
             if (el2->delete_time_stamp == 0)
+            {
                 remove_list = g_slist_append(remove_list, GUINT_TO_POINTER(SC_ADDR_LOCAL_TO_INT(_addr)));
+                sc_event_emit(el2->arc.begin, SC_EVENT_REMOVE_OUTPUT_ARC, _addr);
+                sc_event_emit(el2->arc.end, SC_EVENT_REMOVE_INPUT_ARC, _addr);
+            }
 
             _addr = el2->arc.next_in_arc;
         }
@@ -331,6 +343,15 @@ sc_addr sc_storage_arc_new(sc_type type,
     // get begin and end elements
     beg_el = sc_storage_get_element(beg, SC_TRUE);
     end_el = sc_storage_get_element(end, SC_TRUE);
+
+    // emit events
+    sc_event_emit(beg, SC_EVENT_ADD_OUTPUT_ARC, addr);
+    sc_event_emit(end, SC_EVENT_ADD_INPUT_ARC, addr);
+//    if (type & sc_type_edge_common)
+//    {
+//        sc_event_emit(end, SC_EVENT_ADD_OUTPUT_ARC, addr);
+//        sc_event_emit(beg, SC_EVENT_ADD_INPUT_ARC, addr);
+//    }
 
     // check values
     g_assert(beg_el != 0 && end_el != 0);
@@ -402,15 +423,19 @@ sc_result sc_storage_set_link_content(sc_addr addr, const sc_stream *stream)
 {
     sc_element *el = sc_storage_get_element(addr, SC_TRUE);
     sc_check_sum check_sum;
+    sc_result result = SC_ERROR;
 
     if (!(el->type & sc_type_link))
         return SC_ERROR_INVALID_TYPE;
 
     // calculate checksum for data
     if (sc_link_calculate_checksum(stream, &check_sum) == SC_TRUE)
-        return sc_fs_storage_write_content(addr, &check_sum, stream);
+    {
+        result = sc_fs_storage_write_content(addr, &check_sum, stream);
+        sc_event_emit(addr, SC_EVENT_CHANGE_LINK_CONTENT, addr);
+    }
 
-    return SC_ERROR;
+    return result;
 }
 
 sc_result sc_storage_find_links_with_content(const sc_stream *stream, sc_addr **result, sc_uint32 *result_count)

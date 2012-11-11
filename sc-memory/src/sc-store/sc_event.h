@@ -25,8 +25,15 @@ along with OSTIS.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "sc_types.h"
 
-//! Event callback function type
-typedef sc_result (*fEventCallback)(sc_event *event);
+/*! Event callback function type.
+ * It takes 3 parameters:
+ * - pointer to emited event description
+ * - sc-addr event argument (output/intput arc for example). It depends on event type.
+ * So it can be empty.
+ */
+typedef sc_result (*fEventCallback)(sc_event *event, sc_addr arg);
+//! Delete listened element callback function type
+typedef sc_result (*fDeleteCallback)(sc_event *event);
 
 /*! Structure that contains information about event
  */
@@ -41,7 +48,7 @@ struct _sc_event
     //! Pointer to callback function, that calls, when event emited
     fEventCallback callback;
     //! Pointer to callback function, that calls, when subscribed sc-element deleted
-    fEventCallback delete_callback;
+    fDeleteCallback delete_callback;
 };
 
 /*! Subscribe for events from specified sc-element
@@ -54,41 +61,29 @@ struct _sc_event
  * @return Returns pointer to created sc-event
  * @remarks Callback functions can be called from any thred, so they need to be a thread safe
  */
-sc_event* sc_event_new(sc_addr el, sc_event_type type, sc_uint32 id, fEventCallback callback, fEventCallback delete_callback);
+sc_event* sc_event_new(sc_addr el, sc_event_type type, sc_uint32 id, fEventCallback callback, fDeleteCallback delete_callback);
 
-/*! Emit output arc adding event
- * @param el sc-addr of subscribed sc-element
- * @param arc_addr sc-addr of added output arc
- * @returns If there are no any errors, then return SC_OK; otherwise return error code
+/*! Destroys specified sc-event
+ * @param event Poitner to sc-event, that need to be destroyed
+ * @return If event destoyed correctly, then return SC_OK; otherwise return SC_ERROR code.
  */
-sc_result sc_event_emit_add_output_arc(sc_addr el, sc_addr arc_addr);
+sc_result sc_event_destroy(sc_event *event);
 
-/*! Emit input arc adding event
- * @param el sc-addr of subscribed sc-element
- * @param arc_addr sc-addr of added input arc
- * @returns If there are no any errors, then return SC_OK; otherwise return error code
+/*! Notificate about sc-element deletion.
+ * @param element sc-addr of deleted sc-element
+ * @remarks This function call deletion callback function for event.
+ * And destroy all events for deleted sc-element
  */
-sc_result sc_event_emit_add_input_arc(sc_addr el, sc_addr arc_addr);
+sc_result sc_event_notify_element_deleted(sc_addr element);
 
-/*! Emit output arc removing event
- * @param el sc-addr of subscribed sc-element
- * @param arc_addr sc-addr of removing output arc
- * @returns If there are no any errors, then return SC_OK; otherwise return error code
+/*! Emit event with \p type for sc-element \p el with argument \p arg
+ * @param el sc-addr of element that emitting event
+ * @param type emitting event type
+ * @param arg argument of emitting event (depend of event type)
+ * @return If event emitted without any errors, then return SC_OK; otherwise return SC_ERROR code
  */
-sc_result sc_event_emit_remove_output_arc(sc_addr el, sc_addr arc_addr);
+sc_result sc_event_emit(sc_addr el, sc_event_type type, sc_addr arg);
 
-/*! Emit input arc removing event
- * @param el sc-addr of subscribed sc-element
- * @param arc_addr sc-addr of removing input arc
- * @returns If there are no any errors, then return SC_OK; otherwise return error code
- */
-sc_result sc_event_emit_remove_input_arc(sc_addr el, sc_addr arc_addr);
-
-/*! Emit link content changing event
- * @param el sc-addr of sc-link, that has changed content
- * @returns If there are no any errors, then return SC_OK; otherwise return error code
- */
-sc_result sc_event_emit_change_link_content(sc_addr el);
 
 
 #endif // SC_EVENT_H

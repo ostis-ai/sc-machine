@@ -25,6 +25,8 @@ along with OSTIS.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "sc_config.h"
 
+#define nullptr ((void*)0)
+
 // base types
 typedef signed char sc_int8;
 typedef unsigned char sc_uint8;
@@ -89,7 +91,7 @@ struct _sc_addr
 /*! Next defines help to pack local part of sc-addr (segment and offset) into int value
  * and get them back from int
  */
-#define SC_ADDR_LOCAL_TO_INT(addr) (sc_uint32)((addr.seg << 16) | (addr.offset & 0xffff))
+#define SC_ADDR_LOCAL_TO_INT(addr) (sc_uint32)(((addr).seg << 16) | ((addr).offset & 0xffff))
 #define SC_ADDR_LOCAL_OFFSET_FROM_INT(v) (sc_uint16)((v) & 0x0000ffff)
 #define SC_ADDR_LOCAL_SEG_FROM_INT(v) SC_ADDR_LOCAL_OFFSET_FROM_INT(v >> 16)
 
