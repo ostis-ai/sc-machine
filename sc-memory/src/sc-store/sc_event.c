@@ -45,7 +45,7 @@ sc_result insert_event_into_table(sc_event *event)
 
     // first of all, if table doesn't exist, then create it
     if (events_table == nullptr)
-        g_hash_table_new(events_table_hash_func, events_table_equal_func);
+        events_table = g_hash_table_new(events_table_hash_func, events_table_equal_func);
 
     // if there are no events for specified sc-element, then create new events list
     element_events_list = (GSList*)g_hash_table_lookup(events_table, (gconstpointer)&event->element);

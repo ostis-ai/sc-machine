@@ -256,6 +256,12 @@ sc_result sc_storage_element_free(sc_addr addr)
 
         el->delete_time_stamp = time_stamp;
 
+        if (el->type & sc_type_arc_mask)
+        {
+            sc_event_emit(el->arc.begin, SC_EVENT_REMOVE_OUTPUT_ARC, _addr);
+            sc_event_emit(el->arc.end, SC_EVENT_REMOVE_INPUT_ARC, _addr);
+        }
+
         // Iterate all connectors for deleted element and append them into remove_list
         _addr = el->first_out_arc;
         while (SC_ADDR_IS_NOT_EMPTY(_addr))
@@ -264,11 +270,7 @@ sc_result sc_storage_element_free(sc_addr addr)
 
             // do not append elements, that have delete_time_stamp != 0
             if (el2->delete_time_stamp == 0)
-            {
                 remove_list = g_slist_append(remove_list, GUINT_TO_POINTER(SC_ADDR_LOCAL_TO_INT(_addr)));
-                sc_event_emit(el2->arc.begin, SC_EVENT_REMOVE_OUTPUT_ARC, _addr);
-                sc_event_emit(el2->arc.end, SC_EVENT_REMOVE_INPUT_ARC, _addr);
-            }
 
             _addr = el2->arc.next_out_arc;
         }
@@ -280,11 +282,8 @@ sc_result sc_storage_element_free(sc_addr addr)
 
             // do not append elements, that have delete_time_stamp != 0
             if (el2->delete_time_stamp == 0)
-            {
                 remove_list = g_slist_append(remove_list, GUINT_TO_POINTER(SC_ADDR_LOCAL_TO_INT(_addr)));
-                sc_event_emit(el2->arc.begin, SC_EVENT_REMOVE_OUTPUT_ARC, _addr);
-                sc_event_emit(el2->arc.end, SC_EVENT_REMOVE_INPUT_ARC, _addr);
-            }
+
 
             _addr = el2->arc.next_in_arc;
         }
@@ -354,7 +353,7 @@ sc_addr sc_storage_arc_new(sc_type type,
 //    }
 
     // check values
-    g_assert(beg_el != 0 && end_el != 0);
+    g_assert(beg_el != nullptr && end_el != nullptr);
     g_assert(beg_el->type != 0 && end_el->type != 0);
 
     // set next output arc for our created arc

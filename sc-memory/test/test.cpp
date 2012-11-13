@@ -4,6 +4,7 @@ extern "C"
 #include "sc_store.h"
 #include "sc_segment.h"
 #include "sc_iterator.h"
+#include "sc_event.h"
 }
 #include <vector>
 #include <limits>
@@ -423,6 +424,79 @@ void test6()
     g_timer_destroy(timer);
 }
 
+sc_result event_callback(sc_event *event, sc_addr arg)
+{
+    printf("Event type: ");
+    switch (event->type)
+    {
+    case SC_EVENT_ADD_INPUT_ARC:
+        printf("Add intput arc");
+        break;
+
+    case SC_EVENT_ADD_OUTPUT_ARC:
+        printf("Add output arc");
+        break;
+
+    case SC_EVENT_REMOVE_INPUT_ARC:
+        printf("Remove input arc");
+        break;
+
+    case SC_EVENT_REMOVE_OUTPUT_ARC:
+        printf("Remove output arc");
+        break;
+
+    case SC_EVENT_CHANGE_LINK_CONTENT:
+        printf("Change link content");
+        break;
+    }
+    printf(", Id: %d", event->id);
+    printf(", Argument = seg: %d, offset: %d\n", arg.seg, arg.offset);
+    return SC_OK;
+}
+
+void test7()
+{
+    sc_uint32 i, j;
+    sc_addr addr, addr1, addr2;
+    sc_addr new_addr;
+    sc_event *event1, *event2, *event3, *event4;
+
+    printf("Segments count: %d\n", sc_storage_get_segments_count());
+    print_storage_statistics();
+
+    timer = g_timer_new();
+
+    g_timer_reset(timer);
+    g_timer_start(timer);
+
+    addr = sc_storage_node_new(0);
+    addr1 = sc_storage_node_new(0);
+    printf("Register events\n");
+    event1 = sc_event_new(addr, SC_EVENT_ADD_OUTPUT_ARC, 0, &event_callback, 0);
+    event2 = sc_event_new(addr1, SC_EVENT_ADD_INPUT_ARC, 1, &event_callback, 0);
+    event3 = sc_event_new(addr, SC_EVENT_REMOVE_OUTPUT_ARC, 2, &event_callback, 0);
+    event4 = sc_event_new(addr1, SC_EVENT_REMOVE_INPUT_ARC, 3, &event_callback, 0);
+
+    addr2 = sc_storage_arc_new(0, addr, addr1);
+    sc_storage_element_free(addr2);
+
+    printf("Unregister events\n");
+    sc_event_destroy(event1);
+    sc_event_destroy(event2);
+    sc_event_destroy(event3);
+    sc_event_destroy(event4);
+
+    addr2 = sc_storage_arc_new(0, addr, addr1);
+    sc_storage_element_free(addr2);
+
+    g_timer_stop(timer);
+
+    printf("Segments count: %d\n", sc_storage_get_segments_count());
+    print_storage_statistics();
+
+    g_timer_destroy(timer);
+}
+
 int main(int argc, char *argv[])
 {
     sc_uint item = -1;
@@ -442,6 +516,8 @@ int main(int argc, char *argv[])
     //test5();
     //test6();
 
+    //test7();
+
     while (item != 0)
     {
         printf("Commands:\n"
@@ -452,6 +528,7 @@ int main(int argc, char *argv[])
                "4 - test iterators\n"
                "5 - test contents\n"
                "6 - test content finding\n"
+               "7 - test events\n"
                "\nCommand: ");
         scanf("%d", &item);
 
@@ -481,6 +558,10 @@ int main(int argc, char *argv[])
 
         case 6:
             test6();
+            break;
+
+        case 7:
+            test7();
             break;
         };
 
