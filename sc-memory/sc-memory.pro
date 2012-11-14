@@ -9,7 +9,6 @@ MOC_DIR = moc
 HEADERS += \
     src/sc_memory.h \
     src/sc-store/sc_link_helpers.h \
-    src/sc-store/sc_iterator.h \
     src/sc-store/sc_fs_storage.h \
     src/sc-store/sc_element.h \
     src/sc-store/sc_defines.h \
@@ -22,12 +21,14 @@ HEADERS += \
     src/sc-store/sc_storage.h \
     src/sc-store/sc_segment.h \
     src/sc-store/sc_stream_memory.h \
-    src/sc-store/sc_event.h
+    src/sc-store/sc_event.h \
+    src/sc-store/sc_iterator3.h \
+    src/sc-store/sc_iterator5.h \
+    src/sc-store/sc_iterator.h
 
 SOURCES += \
     src/sc_memory.c \
     src/sc-store/sc_link_helpers.c \
-    src/sc-store/sc_iterator.c \
     src/sc-store/sc_fs_storage.c \
     src/sc-store/sc_element.c \
     src/sc-store/sc_stream_file.c \
@@ -35,7 +36,9 @@ SOURCES += \
     src/sc-store/sc_storage.c \
     src/sc-store/sc_segment.c \
     src/sc-store/sc_stream_memory.c \
-    src/sc-store/sc_event.c
+    src/sc-store/sc_event.c \
+    src/sc-store/sc_iterator3.c \
+    src/sc-store/sc_iterator5.c
 
 win32 {
     INCLUDEPATH += "../glib/include/glib-2.0"

@@ -20,7 +20,7 @@ along with OSTIS.  If not, see <http://www.gnu.org/licenses/>.
 -----------------------------------------------------------------------------
 */
 
-#include "sc_iterator.h"
+#include "sc_iterator3.h"
 #include "sc_element.h"
 #include "sc_storage.h"
 
@@ -130,7 +130,7 @@ sc_bool _sc_iterator3_f_a_a_next(sc_iterator3 *it)
     sc_type arc_type, el_type;
 
     el1 = el2 = arc_element = 0;
-    SC_ADDR_MAKE_EMPTY(arc_addr);
+    SC_ADDR_MAKE_EMPTY(arc_addr)
 
     it->results[0] = it->params[0].addr;
 
@@ -180,7 +180,7 @@ sc_bool _sc_iterator3_f_a_f_next(sc_iterator3 *it)
     sc_type arc_type;
 
     el1 = el2 = arc_element = 0;
-    SC_ADDR_MAKE_EMPTY(arc_addr);
+    SC_ADDR_MAKE_EMPTY(arc_addr)
 
     it->results[0] = it->params[0].addr;
     it->results[2] = it->params[2].addr;
@@ -228,7 +228,7 @@ sc_bool _sc_iterator3_a_a_f_next(sc_iterator3 *it)
     sc_type arc_type, el_type;
 
     el1 = el2 = arc_element = 0;
-    SC_ADDR_MAKE_EMPTY(arc_addr);
+    SC_ADDR_MAKE_EMPTY(arc_addr)
 
     it->results[2] = it->params[2].addr;
 
@@ -288,13 +288,14 @@ sc_bool sc_iterator3_next(sc_iterator3 *it)
         return _sc_iterator3_a_a_f_next(it);
     };
 
-    return SC_TRUE;
+    return SC_FALSE;
 }
 
 sc_addr sc_iterator3_value(sc_iterator3 *it, sc_uint vid)
 {
     g_assert(it != 0);
     g_assert(it->results != 0);
+    g_assert(vid < 3);
 
     return it->results[vid];
 }
