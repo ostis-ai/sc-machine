@@ -3,7 +3,7 @@
 This source file is part of OSTIS (Open Semantic Technology for Intelligent Systems)
 For the latest info, see http://www.ostis.net
 
-Copyright (c) 2010 OSTIS
+Copyright (c) 2012 OSTIS
 
 OSTIS is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as published by
@@ -143,7 +143,8 @@ enum _sc_result
     SC_OK = 1,                  // no any error
     SC_ERROR_INVALID_PARAMS,    // invalid function parameters error
     SC_ERROR_INVALID_TYPE,      // invalied type error
-    SC_ERROR_IO                 // input/output error
+    SC_ERROR_IO,                // input/output error
+    SC_ERROR_INVALID_STATE      // invalid state of processed object
 };
 
 // contents

@@ -24,7 +24,9 @@ HEADERS += \
     src/sc-store/sc_event.h \
     src/sc-store/sc_iterator3.h \
     src/sc-store/sc_iterator5.h \
-    src/sc-store/sc_iterator.h
+    src/sc-store/sc_iterator.h \
+    src/sc_helper.h \
+    src/sc_memory_headers.h
 
 SOURCES += \
     src/sc_memory.c \
@@ -38,7 +40,8 @@ SOURCES += \
     src/sc-store/sc_stream_memory.c \
     src/sc-store/sc_event.c \
     src/sc-store/sc_iterator3.c \
-    src/sc-store/sc_iterator5.c
+    src/sc-store/sc_iterator5.c \
+    src/sc_helper.c
 
 win32 {
     INCLUDEPATH += "../glib/include/glib-2.0"

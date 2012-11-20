@@ -20,19 +20,15 @@ along with OSTIS.  If not, see <http://www.gnu.org/licenses/>.
 -----------------------------------------------------------------------------
 */
 
-#include "sc_element.h"
-#include "sc_defines.h"
-#include "sc_types.h"
-#include "sc_segment.h"
 
-#include <glib.h>
+#ifndef _sc_memory_headers_h_
+#define _sc_memory_headers_h_
 
-void sc_element_set_type(sc_element *element,
-                         sc_type type)
-{
-    g_assert(element != 0);
-    element->type = type;
-}
+#include "sc_memory.h"
+#include "sc-store/sc_event.h"
+#include "sc-store/sc_iterator.h"
+#include "sc-store/sc_stream.h"
+#include "sc-store/sc_stream_file.h"
+#include "sc-store/sc_stream_memory.h"
 
-
-
+#endif
