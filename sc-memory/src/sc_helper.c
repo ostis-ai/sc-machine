@@ -176,6 +176,7 @@ sc_result sc_helper_set_system_identifier(sc_addr addr, sc_char* data, sc_uint32
     sc_addr idtf_addr, arc_addr;
 
     SC_ADDR_MAKE_EMPTY(idtf_addr)
+    g_assert(keynodes != 0);
 
     // try to find sc-links with that contains system identifier value
     stream = sc_stream_memory_new(data, sizeof(sc_char) * len, SC_STREAM_READ, SC_FALSE);

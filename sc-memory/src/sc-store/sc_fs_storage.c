@@ -308,7 +308,7 @@ sc_result sc_fs_storage_find_links_with_content(const sc_check_sum *check_sum, s
     sc_uint8 *path = sc_fs_storage_make_checksum_path(check_sum);
     gchar abs_path[MAX_PATH_LENGTH];
     gchar addr_path[MAX_PATH_LENGTH];
-    gchar *content, *content2 = 0;
+    gchar *content = 0, *content2 = 0;
     gsize content_len = 0;
 
     // make absolute path to content directory
