@@ -318,6 +318,8 @@ sc_result sc_fs_storage_find_links_with_content(const sc_check_sum *check_sum, s
     // must be a null pointer
     g_assert(*result == 0);
 
+    *result_count = 0;
+
     // try to load existing file
     if (g_file_test(addr_path, G_FILE_TEST_EXISTS))
     {

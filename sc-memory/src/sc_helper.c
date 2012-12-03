@@ -27,8 +27,8 @@ sc_result resolve_nrel_system_identifier()
     {
         for (i = 0; i < results_count; i++)
         {
-            it = sc_iterator5_a_a_f_a_a_new(sc_type_const | sc_type_node_norole,
-                                            sc_type_arc_pos_const_perm,
+            it = sc_iterator5_a_a_f_a_a_new(sc_type_node | sc_type_const | sc_type_node_norole,
+                                            sc_type_arc_common | sc_type_const,
                                             results[i],
                                             sc_type_arc_pos_const_perm,
                                             sc_type_const | sc_type_node_norole);
@@ -98,7 +98,11 @@ void _destroy_keynodes_str()
 
 sc_result sc_helper_init()
 {
+    g_message("Initialize sc-helper");
+
     _init_keynodes_str();
+
+    keynodes = g_new0(sc_addr, SC_KEYNODE_COUNT);
 
     if (resolve_nrel_system_identifier() != SC_OK)
     {
@@ -113,6 +117,9 @@ sc_result sc_helper_init()
 
 void sc_helper_shutdown()
 {
+    g_message("Shutdown sc-helper");
+
+    g_free(keynodes);
     _destroy_keynodes_str();
 }
 

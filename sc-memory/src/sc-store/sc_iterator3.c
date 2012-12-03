@@ -302,7 +302,7 @@ sc_addr sc_iterator3_value(sc_iterator3 *it, sc_uint vid)
 
 sc_bool sc_iterator_compare_type(sc_type el_type, sc_type it_type)
 {
-    if ((it_type & el_type) == it_type)
+    if ((it_type & el_type) == el_type)
          return SC_TRUE;
 
     return SC_FALSE;

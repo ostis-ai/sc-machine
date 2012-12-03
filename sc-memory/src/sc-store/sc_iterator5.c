@@ -202,8 +202,6 @@ void sc_iterator5_free(sc_iterator5 *it)
 
 sc_bool _sc_iterator5_a_a_f_a_f_next(sc_iterator5 *it)
 {
-    if (it->type != sc_iterator5_a_a_f_a_f)
-        return SC_FALSE;
 
     SC_ADDR_MAKE_EMPTY(it->results[0])
     SC_ADDR_MAKE_EMPTY(it->results[1])
@@ -220,7 +218,10 @@ sc_bool _sc_iterator5_a_a_f_a_f_next(sc_iterator5 *it)
         while( it->it_attr == nullptr || !sc_iterator3_next(it->it_attr))
         {
             if (it->it_attr != nullptr)
+            {
                 sc_iterator3_free(it->it_attr);
+                it->it_attr = nullptr;
+            }
 
             if (!sc_iterator3_next(it->it_main))
                 return SC_FALSE;
@@ -242,9 +243,6 @@ sc_bool _sc_iterator5_a_a_f_a_f_next(sc_iterator5 *it)
 
 sc_bool _sc_iterator5_f_a_a_a_f_next(sc_iterator5 *it)
 {
-    if (it->type != sc_iterator5_f_a_a_a_f)
-        return SC_FALSE;
-
     SC_ADDR_MAKE_EMPTY(it->results[1])
     SC_ADDR_MAKE_EMPTY(it->results[2])
     SC_ADDR_MAKE_EMPTY(it->results[3])
@@ -260,7 +258,11 @@ sc_bool _sc_iterator5_f_a_a_a_f_next(sc_iterator5 *it)
         while( it->it_attr == nullptr || !sc_iterator3_next(it->it_attr))
         {
             if (it->it_attr != nullptr)
+            {
                 sc_iterator3_free(it->it_attr);
+                it->it_attr = nullptr;
+            }
+
             if (!sc_iterator3_next(it->it_main))
                 return SC_FALSE;
 
@@ -281,9 +283,6 @@ sc_bool _sc_iterator5_f_a_a_a_f_next(sc_iterator5 *it)
 
 sc_bool _sc_iterator5_f_a_f_a_f_next(sc_iterator5 *it)
 {
-    if (it->type != sc_iterator5_f_a_f_a_f)
-        return SC_FALSE;
-
     SC_ADDR_MAKE_EMPTY(it->results[1])
     SC_ADDR_MAKE_EMPTY(it->results[3])
 
@@ -297,7 +296,11 @@ sc_bool _sc_iterator5_f_a_f_a_f_next(sc_iterator5 *it)
         while( it->it_attr == nullptr || !sc_iterator3_next(it->it_attr))
         {
             if (it->it_attr != nullptr)
+            {
                 sc_iterator3_free(it->it_attr);
+                it->it_attr = nullptr;
+            }
+
             if (!sc_iterator3_next(it->it_main))
                 return SC_FALSE;
 
@@ -317,9 +320,6 @@ sc_bool _sc_iterator5_f_a_f_a_f_next(sc_iterator5 *it)
 
 sc_bool _sc_iterator5_f_a_f_a_a_next(sc_iterator5 *it)
 {
-    if (it->type!=sc_iterator5_f_a_f_a_a)
-        return SC_FALSE;
-
     SC_ADDR_MAKE_EMPTY(it->results[1])
     SC_ADDR_MAKE_EMPTY(it->results[3])
     SC_ADDR_MAKE_EMPTY(it->results[4])
@@ -335,7 +335,10 @@ sc_bool _sc_iterator5_f_a_f_a_a_next(sc_iterator5 *it)
         while( it->it_attr == nullptr || !sc_iterator3_next(it->it_attr))
         {
             if (it->it_attr != nullptr)
+            {
                 sc_iterator3_free(it->it_attr);
+                it->it_attr = nullptr;
+            }
 
             if (!sc_iterator3_next(it->it_main))
                 return SC_FALSE;
@@ -357,9 +360,6 @@ sc_bool _sc_iterator5_f_a_f_a_a_next(sc_iterator5 *it)
 
 sc_bool _sc_iterator5_f_a_a_a_a_next(sc_iterator5 *it)
 {
-    if (it->type != sc_iterator5_f_a_a_a_a)
-        return SC_FALSE;
-
     SC_ADDR_MAKE_EMPTY(it->results[1])
     SC_ADDR_MAKE_EMPTY(it->results[2])
     SC_ADDR_MAKE_EMPTY(it->results[3])
@@ -377,7 +377,11 @@ sc_bool _sc_iterator5_f_a_a_a_a_next(sc_iterator5 *it)
         while(it->it_attr == nullptr || !sc_iterator3_next(it->it_attr))
         {
             if (it->it_attr != nullptr)
+            {
                 sc_iterator3_free(it->it_attr);
+                it->it_attr = nullptr;
+            }
+
             if (!sc_iterator3_next(it->it_main))
                 return SC_FALSE;
 
@@ -399,8 +403,6 @@ sc_bool _sc_iterator5_f_a_a_a_a_next(sc_iterator5 *it)
 
 sc_bool _sc_iterator5_a_a_f_a_a_next(sc_iterator5 *it)
 {
-    if (it->type != sc_iterator5_a_a_f_a_a)
-        return SC_FALSE;
 
     SC_ADDR_MAKE_EMPTY(it->results[1])
     SC_ADDR_MAKE_EMPTY(it->results[0])
@@ -419,7 +421,10 @@ sc_bool _sc_iterator5_a_a_f_a_a_next(sc_iterator5 *it)
         while(it->it_attr == nullptr || !sc_iterator3_next(it->it_attr))
         {
             if (it->it_attr != nullptr)
+            {
                 sc_iterator3_free(it->it_attr);
+                it->it_attr = nullptr;
+            }
             if (!sc_iterator3_next(it->it_main))
                 return SC_FALSE;
 
