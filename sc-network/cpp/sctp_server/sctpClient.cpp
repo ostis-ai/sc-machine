@@ -65,7 +65,13 @@ void sctpClient::readyRead()
 {
     while (mSocket->bytesAvailable() >= mCommand->cmdHeaderSize())
     {
-        if (mCommand->processCommand(mSocket, mSocket) != SCTP_ERROR_NO)
-            mSocket->close();
+        sctpErrorCode errCode = mCommand->processCommand(mSocket, mSocket);
+        if (errCode != SCTP_ERROR_NO)
+        {
+            qDebug() << "Error: " << errCode << "; while process request from clien " << mSocket->peerAddress().toString();
+//            mSocket->close();
+        }
+
+        mSocket->flush();
     }
 }

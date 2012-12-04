@@ -81,6 +81,9 @@ sctpErrorCode sctpCommand::processCommand(QIODevice *inDevice, QIODevice *outDev
     case SCTP_CMD_ERASE_ELEMENT:
         return processElementErase(cmdFlags, cmdId, &paramsStream, outDevice);
 
+       case SCTP_CMD_GET_LINK_CONTENT:
+        return processGetLinkContent(cmdFlags, cmdId, &paramsStream, outDevice);
+
     case SCTP_CMD_SHUTDOWN:
         QCoreApplication::quit();
         break;
@@ -136,7 +139,7 @@ sctpErrorCode sctpCommand::processCheckElement(quint32 cmdFlags, quint32 cmdId, 
     if (params->readRawData((char*)&addr, sizeof(addr)) != sizeof (addr))
         return SCTP_ERROR_CMD_READ_PARAMS;
 
-    sctpResultCode resCode = sc_memory_is_element(addr) ? SCTP_RESULT_TRUE : SCTP_RESULT_FALSE;
+    sctpResultCode resCode = sc_memory_is_element(addr) ? SCTP_RESULT_OK : SCTP_RESULT_FAIL;
 
     // send result
     writeResultHeader(SCTP_CMD_CHECK_ELEMENT, cmdId, resCode, 0, outDevice);
@@ -156,12 +159,12 @@ sctpErrorCode sctpCommand::processGetElementType(quint32 cmdFlags, quint32 cmdId
         return SCTP_ERROR_CMD_READ_PARAMS;
 
     sc_type type = 0;
-    sctpResultCode resCode = (sc_memory_get_element_type(addr, &type) == SC_OK) ? SCTP_RESULT_TRUE : SCTP_RESULT_FALSE;
-    quint32 resSize = (resCode == SCTP_RESULT_TRUE) ? sizeof(type) : 0;
+    sctpResultCode resCode = (sc_memory_get_element_type(addr, &type) == SC_OK) ? SCTP_RESULT_OK : SCTP_RESULT_FAIL;
+    quint32 resSize = (resCode == SCTP_RESULT_OK) ? sizeof(type) : 0;
 
     // send result
     writeResultHeader(SCTP_CMD_GET_ELEMENT_TYPE, cmdId, resCode, resSize, outDevice);
-    if (resCode == SCTP_RESULT_TRUE)
+    if (resCode == SCTP_RESULT_OK)
         outDevice->write((const char*)&type, sizeof(type));
 
     return SCTP_ERROR_NO;
@@ -178,9 +181,82 @@ sctpErrorCode sctpCommand::processElementErase(quint32 cmdFlags, quint32 cmdId, 
     if (params->readRawData((char*)&addr, sizeof(addr)) != sizeof(addr))
         return SCTP_ERROR_CMD_READ_PARAMS;
 
-    sctpResultCode resCode = (sc_memory_element_free(addr) == SC_OK) ? SCTP_RESULT_TRUE : SCTP_RESULT_FALSE;
+    sctpResultCode resCode = (sc_memory_element_free(addr) == SC_OK) ? SCTP_RESULT_OK : SCTP_RESULT_FAIL;
     // send result
     writeResultHeader(SCTP_CMD_CHECK_ELEMENT, cmdId, resCode, 0, outDevice);
+
+    return SCTP_ERROR_NO;
+}
+
+
+sctpErrorCode sctpCommand::processGetLinkContent(quint32 cmdFlags, quint32 cmdId, QDataStream *params, QIODevice *outDevice)
+{
+    sc_addr addr;
+    sc_stream *stream = (sc_stream*)nullptr;
+    sc_char data_buffer[1024];
+    sc_uint32 data_len = 0;
+    sc_uint32 data_written = 0;
+    sc_uint32 data_read = 0;
+
+    Q_UNUSED(cmdFlags);
+    Q_ASSERT(params != 0);
+
+    // read sc-addr of sc-element from parameters
+    if (params->readRawData((char*)&addr, sizeof(addr)) != sizeof(addr))
+        return SCTP_ERROR_CMD_READ_PARAMS;
+
+    sctpResultCode resCode = (sc_memory_get_link_content(addr, &stream) == SC_OK) ? SCTP_RESULT_OK : SCTP_RESULT_FAIL;
+
+
+    if (resCode == SCTP_RESULT_OK)
+    {
+        if (sc_stream_get_length(stream, &data_len) != SC_OK)
+        {
+            resCode = SCTP_RESULT_FAIL;
+            sc_stream_free(stream);
+            stream = (sc_stream*)nullptr;
+        }
+    }
+    // send result
+    writeResultHeader(SCTP_CMD_GET_LINK_CONTENT, cmdId, resCode, data_len, outDevice);
+
+    if (resCode == SCTP_RESULT_FAIL)
+    {
+        if (stream != nullptr)
+            sc_stream_free(stream);
+
+        return SCTP_ERROR;
+    }
+
+    // write content data
+    while (sc_stream_eof(stream) != SC_TRUE)
+    {
+        // if there are any error to read data, then
+        // write null into output
+        if (sc_stream_read_data(stream, data_buffer, 1024, &data_read) != SC_OK)
+        {
+            if (data_written < data_len)
+            {
+                quint32 len = data_len - data_written;
+                sc_char *data = new sc_char[len];
+                memset(data, 0, len);
+                outDevice->write(data, len);
+                delete []data;
+
+                sc_stream_free(stream);
+                return SCTP_ERROR;
+            }
+        }
+
+        outDevice->write(data_buffer, data_read);
+        data_written += data_read;
+    }
+
+    Q_ASSERT(data_written == data_len);
+
+    if (resCode == SCTP_RESULT_OK)
+        sc_stream_free(stream);
+
 
     return SCTP_ERROR_NO;
 }

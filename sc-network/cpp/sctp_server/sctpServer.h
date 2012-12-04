@@ -36,7 +36,11 @@ public:
     virtual ~sctpServer();
 
     //! Starts server
-    void start();
+    void start(const QString &config);
+
+protected:
+    //! Parse configuration file
+    void parseConfig(const QString &config_path);
 
 
 protected:
@@ -45,6 +49,10 @@ protected:
 private:
     //! List of connected clients
     QList<sctpClient*> mClientsList;
+    //! Port number
+    quint16 mPort;
+    //! Path to repository
+    QString mRepoPath;
 
 signals:
     

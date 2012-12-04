@@ -76,6 +76,8 @@ private:
     sctpErrorCode processGetElementType(quint32 cmdFlags, quint32 cmdId, QDataStream *params, QIODevice *outDevice);
     sctpErrorCode processElementErase(quint32 cmdFlags, quint32 cmdId, QDataStream *params, QIODevice *outDevice);
 
+    sctpErrorCode processGetLinkContent(quint32 cmdFlags, quint32 cmdId, QDataStream *params, QIODevice *outDevice);
+
 signals:
     
 public slots:

@@ -23,6 +23,9 @@ along with OSTIS.  If not, see <http://www.gnu.org/licenses/>.
 #include "sctpServer.h"
 #include "sctpClient.h"
 
+#include <QSettings>
+#include <QDebug>
+
 extern "C"
 {
 #include "sc_memory.h"
@@ -30,8 +33,9 @@ extern "C"
 
 #include <QNetworkInterface>
 
-sctpServer::sctpServer(QObject *parent) :
-    QTcpServer(parent)
+sctpServer::sctpServer(QObject *parent)
+  : QTcpServer(parent)
+  , mPort(0)
 {
 }
 
@@ -39,9 +43,11 @@ sctpServer::~sctpServer()
 {
 }
 
-void sctpServer::start()
+void sctpServer::start(const QString &config)
 {
-    if (!listen(QHostAddress::Any, 55770))
+    parseConfig(config);
+
+    if (!listen(QHostAddress::Any, mPort))
     {
         qCritical() << QObject::tr("Unable to start the server: %1").arg(errorString());
         return;
@@ -67,7 +73,24 @@ void sctpServer::start()
 
     // initialize sc-memory
     qDebug() << "Initialize sc-memory\n";
-    sc_memory_initialize("repo");
+    sc_memory_initialize(mRepoPath.toStdString().c_str());
+}
+
+void sctpServer::parseConfig(const QString &config_path)
+{
+    QSettings settings(config_path, QSettings::IniFormat);
+
+    bool result = false;
+    qDebug() << settings.value("Network/Port").toString();
+    mPort = settings.value("Network/Port").toUInt(&result);
+
+    if (!result)
+    {
+        qDebug() << "Can't parse port number from configuration file\n";
+        exit(0);
+    }
+
+    mRepoPath = settings.value("Repo/Path").toString();
 }
 
 void sctpServer::incomingConnection(int socketDescriptor)

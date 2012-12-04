@@ -27,8 +27,12 @@ int main(int argc, char *argv[])
 {
     QCoreApplication a(argc, argv);
 
+    QString config("config.ini");
+    if (argc > 1)
+        config = argv[1];
+
     sctpServer server;
-    server.start();
+    server.start(config);
 
     QObject::connect(&a, SIGNAL(aboutToQuit()), &server, SLOT(stop()));
     

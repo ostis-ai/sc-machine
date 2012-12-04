@@ -75,9 +75,40 @@ def erase_elements():
 		cmdCode, cmdId, resCode, resSize = struct.unpack('=BIBI', data)
 		print "code: %s, id: %d, resCode: %s, resSize: %d" % (hex(cmdCode), cmdId, hex(resCode), resSize)
 
+
+def get_contents():
+	print "Test sc-link get content"
+
+	seg = 0
+
+	alldata = ''
+
+	for i in xrange(0, 100):
+		seg = 0
+		offset = i + 1
+
+		print "get data for: %d, %d" % (seg, offset)
+		params = struct.pack('=HH', seg, offset)
+
+		data = struct.pack('=BBII', 0x09, 0, i, len(params))
+
+		alldata += data + params
+
+	s.send(alldata)
+
+	for i in xrange(0, 100):
+		data = s.recv(10)
+		cmdCode, cmdId, resCode, resSize = struct.unpack('=BIBI', data)
+		print "code: %s, id: %d, resCode: %s, resSize: %d\n" % (hex(cmdCode), cmdId, hex(resCode), resSize)
+		content_data = None
+		if resSize > 0:
+			content_data = s.recv(resSize)
+			print "Data: %s\n" % str(content_data)
+
 check_elements()
 get_element_type()
 erase_elements()
+get_contents()
 
 
 # sutdown server

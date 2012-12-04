@@ -12,6 +12,7 @@ typedef enum
     SCTP_CMD_CREATE_ARC         = 0x06, // create new sc-arc
     SCTP_CMD_GET_ARC_BEGIN      = 0x07, // return begin element of sc-arc
     SCTP_CMD_GET_ARC_END        = 0x08, // return end element of sc-arc
+    SCTP_CMD_GET_LINK_CONTENT   = 0x09, // return content of sc-link
 
     SCTP_CMD_SHUTDOWN           = 0xfe // disconnect client from server
 
@@ -19,8 +20,8 @@ typedef enum
 
 typedef enum
 {
-    SCTP_RESULT_TRUE            = 0x00, //
-    SCTP_RESULT_FALSE           = 0x01, //
+    SCTP_RESULT_OK              = 0x00, //
+    SCTP_RESULT_FAIL            = 0x01, //
     SCTP_RESULT_ERROR_NO_ELEMENT= 0x02  // sc-element wasn't founded
 
 } sctpResultCode;
