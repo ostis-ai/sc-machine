@@ -88,6 +88,14 @@ sc_result sc_fs_storage_add_content_addr(sc_addr addr, const sc_check_sum *check
  */
 sc_result sc_fs_storage_find_links_with_content(const sc_check_sum *check_sum, sc_addr **result, sc_uint32 *result_count);
 
+/*! Returns stream that contains content with specified checksum
+ * @param check_sum Pointer to checksum for content data returning
+ * @param stream Pointer to returned stream
+ * @attention Returned pointer to stream need to be free after usage
+ * @return If data by specified checksum founded, then return SC_OK; otherwise return SC_ERROR
+ */
+sc_result sc_fs_storage_get_checksum_content(const sc_check_sum *check_sum, sc_stream **stream);
+
 /*! Make directory path from checksum
  * @param check_sum Checksum pointer to make path
  * @return Returns null terminated string that contains directory path (relative to contents directory). The

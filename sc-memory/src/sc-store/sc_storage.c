@@ -424,6 +424,11 @@ sc_result sc_storage_set_link_content(sc_addr addr, const sc_stream *stream)
     sc_check_sum check_sum;
     sc_result result = SC_ERROR;
 
+    g_assert(stream != nullptr);
+
+    if (el == nullptr)
+        return SC_ERROR_INVALID_PARAMS;
+
     if (!(el->type & sc_type_link))
         return SC_ERROR_INVALID_TYPE;
 
@@ -431,10 +436,34 @@ sc_result sc_storage_set_link_content(sc_addr addr, const sc_stream *stream)
     if (sc_link_calculate_checksum(stream, &check_sum) == SC_TRUE)
     {
         result = sc_fs_storage_write_content(addr, &check_sum, stream);
+        memcpy(el->content.data, check_sum.data, check_sum.len);
+        el->content.len = check_sum.len;
+
         sc_event_emit(addr, SC_EVENT_CHANGE_LINK_CONTENT, addr);
     }
 
+    g_assert(result == SC_OK);
+
     return result;
+}
+
+sc_result sc_storage_get_link_content(sc_addr addr, sc_stream **stream)
+{
+    sc_element *el = sc_storage_get_element(addr, SC_TRUE);
+    sc_check_sum checksum;
+
+    if (el == nullptr)
+        return SC_ERROR_INVALID_PARAMS;
+
+    if (!(el->type & sc_type_link))
+        return SC_ERROR_INVALID_TYPE;
+
+
+    // prepare checksum
+    checksum.len = el->content.len;
+    memcpy(checksum.data, el->content.data, checksum.len);
+
+    return sc_fs_storage_get_checksum_content(&checksum, stream);
 }
 
 sc_result sc_storage_find_links_with_content(const sc_stream *stream, sc_addr **result, sc_uint32 *result_count)

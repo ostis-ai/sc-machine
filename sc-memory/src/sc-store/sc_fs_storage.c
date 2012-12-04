@@ -355,6 +355,29 @@ sc_result sc_fs_storage_find_links_with_content(const sc_check_sum *check_sum, s
     return SC_OK;
 }
 
+sc_result sc_fs_storage_get_checksum_content(const sc_check_sum *check_sum, sc_stream **stream)
+{
+    sc_uint8 *path = sc_fs_storage_make_checksum_path(check_sum);
+    gchar abs_path[MAX_PATH_LENGTH];
+    gchar data_path[MAX_PATH_LENGTH];
+
+    // make absolute path to content directory
+    g_snprintf(abs_path, MAX_PATH_LENGTH, "%s/%s", contents_path, path);
+    g_snprintf(data_path, MAX_PATH_LENGTH, "%sdata", abs_path);
+
+    printf("%s\n", data_path);
+
+    // check if specified path exist
+    if (g_file_test(data_path, G_FILE_TEST_EXISTS))
+    {
+        *stream = sc_stream_file_new(data_path, SC_STREAM_READ);
+        free(path);
+        return SC_OK; // do nothing, file saved
+    }
+
+    return SC_ERROR;
+}
+
 sc_uint8* sc_fs_storage_make_checksum_path(const sc_check_sum *check_sum)
 {
     // calculate output string length and create it

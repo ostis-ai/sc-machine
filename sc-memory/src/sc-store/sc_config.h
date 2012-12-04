@@ -36,7 +36,7 @@ along with OSTIS.  If not, see <http://www.gnu.org/licenses/>.
 #define USE_NETWORK_SCALE 0
 
 //! Use two oriented arc list
-#define USE_TWO_ORIENTED_ARC_LIST 1
+#define USE_TWO_ORIENTED_ARC_LIST 0
 
 #endif
 

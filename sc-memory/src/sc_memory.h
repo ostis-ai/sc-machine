@@ -70,9 +70,7 @@ sc_addr sc_memory_link_new();
  * @return Return sc-addr of created sc-arc
  * @note This function is a thread safe
  */
-sc_addr sc_memory_arc_new(sc_type type,
-                          sc_addr beg,
-                          sc_addr end);
+sc_addr sc_memory_arc_new(sc_type type, sc_addr beg, sc_addr end);
 
 /*! Get type of sc-element with specified sc-addr
  * @param addr sc-addr of element to get type
@@ -113,6 +111,20 @@ sc_result sc_memory_get_arc_end(sc_addr addr, sc_addr *result);
  * @note This function is a thread safe
  */
 sc_result sc_memory_set_link_content(sc_addr addr, const sc_stream *stream);
+
+/*! Returns content of specified sc-link
+ * @param addr sc-addr of sc-link to return content data
+ * @param stream Pointer to returned stream.
+ * @attention New stream will be allocated, so it would be need to free stream after using.
+ * @return If content of specified link content returned without any errors, then return SC_OK; otherwise
+ * returns on of error codes:
+ * <ul>
+ * <li>SC_INVALID_TYPE - element with \p addr isn't a sc-link</li>
+ * <li>SC_ERROR - unknown error</li>
+ * </ul>
+ * @note This function is a thread safe
+ */
+sc_result sc_memory_get_link_content(sc_addr addr, sc_stream **stream);
 
 
 /*! Search sc-link addrs by specified checksum
