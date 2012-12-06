@@ -34,6 +34,9 @@ extern "C"
 
 #define SCTP_READ_TIMEOUT   10000
 
+#define READ_PARAM(val)  if (params->readRawData((char*)&val, sizeof(val)) != sizeof(val)) \
+                            return SCTP_ERROR_CMD_READ_PARAMS;
+
 sctpCommand::sctpCommand(QObject *parent) :
     QObject(parent)
 {
@@ -81,7 +84,13 @@ sctpErrorCode sctpCommand::processCommand(QIODevice *inDevice, QIODevice *outDev
     case SCTP_CMD_ERASE_ELEMENT:
         return processElementErase(cmdFlags, cmdId, &paramsStream, outDevice);
 
-       case SCTP_CMD_GET_LINK_CONTENT:
+    case SCTP_CMD_CREATE_NODE:
+        return processCreateNode(cmdFlags, cmdId, &paramsStream, outDevice);
+
+    case SCTP_CMD_CREAET_LINK:
+        return processCreateLink(cmdFlags, cmdId, &paramsStream, outDevice);
+
+    case SCTP_CMD_GET_LINK_CONTENT:
         return processGetLinkContent(cmdFlags, cmdId, &paramsStream, outDevice);
 
     case SCTP_CMD_SHUTDOWN:
@@ -136,8 +145,7 @@ sctpErrorCode sctpCommand::processCheckElement(quint32 cmdFlags, quint32 cmdId, 
     Q_ASSERT(params != 0);
 
     // read sc-add from parameters
-    if (params->readRawData((char*)&addr, sizeof(addr)) != sizeof (addr))
-        return SCTP_ERROR_CMD_READ_PARAMS;
+    READ_PARAM(addr);
 
     sctpResultCode resCode = sc_memory_is_element(addr) ? SCTP_RESULT_OK : SCTP_RESULT_FAIL;
 
@@ -155,8 +163,7 @@ sctpErrorCode sctpCommand::processGetElementType(quint32 cmdFlags, quint32 cmdId
     Q_ASSERT(params != 0);
 
     // read sc-addr of sc-element from parameters
-    if (params->readRawData((char*)&addr, sizeof(addr)) != sizeof(addr))
-        return SCTP_ERROR_CMD_READ_PARAMS;
+    READ_PARAM(addr);
 
     sc_type type = 0;
     sctpResultCode resCode = (sc_memory_get_element_type(addr, &type) == SC_OK) ? SCTP_RESULT_OK : SCTP_RESULT_FAIL;
@@ -178,14 +185,98 @@ sctpErrorCode sctpCommand::processElementErase(quint32 cmdFlags, quint32 cmdId, 
     Q_ASSERT(params != 0);
 
     // read sc-addr of sc-element from parameters
-    if (params->readRawData((char*)&addr, sizeof(addr)) != sizeof(addr))
-        return SCTP_ERROR_CMD_READ_PARAMS;
+    READ_PARAM(addr);
 
     sctpResultCode resCode = (sc_memory_element_free(addr) == SC_OK) ? SCTP_RESULT_OK : SCTP_RESULT_FAIL;
     // send result
     writeResultHeader(SCTP_CMD_CHECK_ELEMENT, cmdId, resCode, 0, outDevice);
 
     return SCTP_ERROR_NO;
+}
+
+sctpErrorCode sctpCommand::processCreateNode(quint32 cmdFlags, quint32 cmdId, QDataStream *params, QIODevice *outDevice)
+{
+    Q_UNUSED(cmdFlags);
+
+    Q_ASSERT(params != 0);
+
+    sc_type type;
+    // read type of node
+    READ_PARAM(type);
+
+    sc_addr addr = sc_memory_node_new(type);
+
+    // send result
+    sctpErrorCode result;
+    if (SC_ADDR_IS_NOT_EMPTY(addr))
+    {
+        writeResultHeader(SCTP_CMD_CREATE_NODE, cmdId, SCTP_RESULT_OK, sizeof(addr), outDevice);
+        outDevice->write((const char*)&addr, sizeof(addr));
+
+        result = SCTP_ERROR_NO;
+    }else
+    {
+        writeResultHeader(SCTP_CMD_CREATE_NODE, cmdId, SCTP_RESULT_FAIL, 0, outDevice);
+        result = SCTP_ERROR;
+    }
+
+    return result;
+}
+
+sctpErrorCode sctpCommand::processCreateLink(quint32 cmdFlags, quint32 cmdId, QDataStream *params, QIODevice *outDevice)
+{
+    Q_UNUSED(cmdFlags);
+
+    sc_addr addr = sc_memory_link_new();
+
+    // send result
+    sctpErrorCode result;
+    if (SC_ADDR_IS_NOT_EMPTY(addr))
+    {
+        writeResultHeader(SCTP_CMD_CREATE_NODE, cmdId, SCTP_RESULT_OK, sizeof(addr), outDevice);
+        outDevice->write((const char*)&addr, sizeof(addr));
+
+        result = SCTP_ERROR_NO;
+    }else
+    {
+        writeResultHeader(SCTP_CMD_CREATE_NODE, cmdId, SCTP_RESULT_FAIL, 0, outDevice);
+        result = SCTP_ERROR;
+    }
+
+    return result;
+}
+
+sctpErrorCode sctpCommand::processCreateArc(quint32 cmdFlags, quint32 cmdId, QDataStream *params, QIODevice *outDevice)
+{
+    Q_UNUSED(cmdFlags);
+
+    Q_ASSERT(params != 0);
+
+    sc_type type;
+    sc_addr begin_addr, end_addr;
+
+    // read type of sc-arc
+    READ_PARAM(type);
+
+    // read sc-addr of begin and end elements
+    READ_PARAM(begin_addr);
+    READ_PARAM(end_addr);
+
+    sc_addr addr = sc_memory_arc_new(type, begin_addr, end_addr);
+    sctpErrorCode result;
+    if (SC_ADDR_IS_NOT_EMPTY(addr))
+    {
+        writeResultHeader(SCTP_CMD_CREATE_ARC, cmdId, SCTP_RESULT_OK, 0, outDevice);
+        outDevice->write((const char*)&addr, sizeof(addr));
+
+        result = SCTP_ERROR_NO;
+    }else
+    {
+        writeResultHeader(SCTP_CMD_CREAET_LINK, cmdId, SCTP_RESULT_FAIL, 0, outDevice);
+        result = SCTP_ERROR;
+    }
+
+    return result;
 }
 
 
