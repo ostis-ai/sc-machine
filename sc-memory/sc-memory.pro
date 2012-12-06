@@ -26,7 +26,8 @@ HEADERS += \
     src/sc-store/sc_iterator5.h \
     src/sc-store/sc_iterator.h \
     src/sc_helper.h \
-    src/sc_memory_headers.h
+    src/sc_memory_headers.h \
+    src/sc_memory_ext.h
 
 SOURCES += \
     src/sc_memory.c \
@@ -41,7 +42,8 @@ SOURCES += \
     src/sc-store/sc_event.c \
     src/sc-store/sc_iterator3.c \
     src/sc-store/sc_iterator5.c \
-    src/sc_helper.c
+    src/sc_helper.c \
+    src/sc_memory_ext.c
 
 win32 {
     INCLUDEPATH += "../glib/include/glib-2.0"
@@ -54,4 +56,5 @@ win32 {
 unix {
     CONFIG += link_pkgconfig
     PKGCONFIG += glib-2.0
+    PKGCONFIG += gmodule-2.0
 }

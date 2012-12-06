@@ -44,7 +44,7 @@ sc_result sc_stream_memory_read(const sc_stream *stream, sc_char *data, sc_uint3
     g_assert(buffer != 0);
 
     if (buffer->size == 0)
-        return SC_ERROR;
+        return SC_RESULT_ERROR;
 
     if (length > (buffer->size - buffer->pos))
         *bytes_read = buffer->size - buffer->pos;
@@ -55,12 +55,12 @@ sc_result sc_stream_memory_read(const sc_stream *stream, sc_char *data, sc_uint3
     buffer->pos += *bytes_read;
 
 
-    return SC_OK;
+    return SC_RESULT_OK;
 }
 
 sc_result sc_stream_memory_write(const sc_stream *stream, sc_char *data, sc_uint32 length, sc_uint32 *bytes_written)
 {
-    return SC_ERROR;
+    return SC_RESULT_ERROR;
 }
 
 sc_result sc_stream_memory_seek(const sc_stream *stream, sc_stream_seek_origin origin, sc_uint32 offset)
@@ -72,24 +72,24 @@ sc_result sc_stream_memory_seek(const sc_stream *stream, sc_stream_seek_origin o
     {
     case SC_STREAM_SEEK_END:
         if (offset > buffer->size)
-            return SC_ERROR_INVALID_PARAMS;
+            return SC_RESULT_ERROR_INVALID_PARAMS;
         buffer->pos = buffer->size - offset;
         break;
 
     case SC_STREAM_SEEK_CUR:
         if (offset > (buffer->size - buffer->pos))
-            return SC_ERROR_INVALID_PARAMS;
+            return SC_RESULT_ERROR_INVALID_PARAMS;
         buffer->pos += offset;
         break;
 
     case SC_STREAM_SEEK_SET:
         if (offset > buffer->size)
-            return SC_ERROR_INVALID_PARAMS;
+            return SC_RESULT_ERROR_INVALID_PARAMS;
         buffer->pos = offset;
         break;
     };
 
-    return SC_OK;
+    return SC_RESULT_OK;
 }
 
 sc_result sc_stream_memory_tell(const sc_stream *stream, sc_uint32 *position)
@@ -99,7 +99,7 @@ sc_result sc_stream_memory_tell(const sc_stream *stream, sc_uint32 *position)
 
     *position = buffer->pos;
 
-    return SC_OK;
+    return SC_RESULT_OK;
 }
 
 sc_result sc_stream_memory_free_handler(const sc_stream *stream)
@@ -115,7 +115,7 @@ sc_result sc_stream_memory_free_handler(const sc_stream *stream)
 
     g_free(buffer);
 
-    return SC_OK;
+    return SC_RESULT_OK;
 }
 
 sc_bool sc_stream_memory_eof(const sc_stream *stream)

@@ -139,12 +139,12 @@ typedef sc_uint16 sc_type;
 // results
 enum _sc_result
 {
-    SC_ERROR = 0,               // unknown error
-    SC_OK = 1,                  // no any error
-    SC_ERROR_INVALID_PARAMS,    // invalid function parameters error
-    SC_ERROR_INVALID_TYPE,      // invalied type error
-    SC_ERROR_IO,                // input/output error
-    SC_ERROR_INVALID_STATE      // invalid state of processed object
+    SC_RESULT_ERROR = 0,               // unknown error
+    SC_RESULT_OK = 1,                  // no any error
+    SC_RESULT_ERROR_INVALID_PARAMS,    // invalid function parameters error
+    SC_RESULT_ERROR_INVALID_TYPE,      // invalied type error
+    SC_RESULT_ERROR_IO,                // input/output error
+    SC_RESULT_ERROR_INVALID_STATE      // invalid state of processed object
 };
 
 // contents

@@ -73,7 +73,7 @@ void sctpServer::start(const QString &config)
 
     // initialize sc-memory
     qDebug() << "Initialize sc-memory\n";
-    sc_memory_initialize(mRepoPath.toStdString().c_str());
+    sc_memory_initialize(mRepoPath.toStdString().c_str(), mExtPath.toStdString().c_str());
 }
 
 void sctpServer::parseConfig(const QString &config_path)
@@ -91,6 +91,7 @@ void sctpServer::parseConfig(const QString &config_path)
     }
 
     mRepoPath = settings.value("Repo/Path").toString();
+    mExtPath = settings.value("Extensions/Directory").toString();
 }
 
 void sctpServer::incomingConnection(int socketDescriptor)

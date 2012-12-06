@@ -53,6 +53,8 @@ private:
     quint16 mPort;
     //! Path to repository
     QString mRepoPath;
+    //! Path to extensions directory
+    QString mExtPath;
 
 signals:
     

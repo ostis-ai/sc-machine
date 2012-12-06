@@ -192,7 +192,7 @@ sc_result sc_fs_storage_write_content(sc_addr addr, const sc_check_sum *check_su
         //g_message("Content data file '%s' already exist", data_path);
         sc_fs_storage_add_content_addr(addr, check_sum);
         free(path);
-        return SC_OK; // do nothing, file saved
+        return SC_RESULT_OK; // do nothing, file saved
     }
 
     // file doesn't exist, so we need to save it
@@ -200,7 +200,7 @@ sc_result sc_fs_storage_write_content(sc_addr addr, const sc_check_sum *check_su
     {
         g_message("Eorror while creating '%s' directory", abs_path);
         free(path);
-        return SC_ERROR_IO;
+        return SC_RESULT_ERROR_IO;
     }
 
     // write content into file
@@ -212,22 +212,22 @@ sc_result sc_fs_storage_write_content(sc_addr addr, const sc_check_sum *check_su
 
         while (sc_stream_eof(stream) == SC_FALSE)
         {
-            if (sc_stream_read_data(stream, buffer, 1024, &data_read) == SC_ERROR)
+            if (sc_stream_read_data(stream, buffer, 1024, &data_read) == SC_RESULT_ERROR)
             {
                 sc_stream_free(out_stream);
-                return SC_ERROR;
+                return SC_RESULT_ERROR;
             }
 
-            if (sc_stream_write_data(out_stream, buffer, data_read, &data_write) == SC_ERROR)
+            if (sc_stream_write_data(out_stream, buffer, data_read, &data_write) == SC_RESULT_ERROR)
             {
                 sc_stream_free(out_stream);
-                return SC_ERROR;
+                return SC_RESULT_ERROR;
             }
 
             if (data_read != data_write)
             {
                 sc_stream_free(out_stream);
-                return SC_ERROR;
+                return SC_RESULT_ERROR;
             }
         }
         sc_stream_free(out_stream);
@@ -235,7 +235,7 @@ sc_result sc_fs_storage_write_content(sc_addr addr, const sc_check_sum *check_su
         return sc_fs_storage_add_content_addr(addr, check_sum);
     }
 
-    return SC_ERROR_IO;
+    return SC_RESULT_ERROR_IO;
 }
 
 sc_result sc_fs_storage_add_content_addr(sc_addr addr, const sc_check_sum *check_sum)
@@ -260,7 +260,7 @@ sc_result sc_fs_storage_add_content_addr(sc_addr addr, const sc_check_sum *check
             if (content != 0)
                 free(content);
             free(path);
-            return SC_ERROR_IO;
+            return SC_RESULT_ERROR_IO;
         }
     }
 
@@ -293,13 +293,13 @@ sc_result sc_fs_storage_add_content_addr(sc_addr addr, const sc_check_sum *check
         g_free(content);
         free(path);
 
-        return SC_OK;
+        return SC_RESULT_OK;
     }
 
     g_free(content);
     free(path);
 
-    return SC_ERROR;
+    return SC_RESULT_ERROR;
 }
 
 sc_result sc_fs_storage_find_links_with_content(const sc_check_sum *check_sum, sc_addr **result, sc_uint32 *result_count)
@@ -328,7 +328,7 @@ sc_result sc_fs_storage_find_links_with_content(const sc_check_sum *check_sum, s
             if (content != 0)
                 free(content);
             free(path);
-            return SC_ERROR_IO;
+            return SC_RESULT_ERROR_IO;
         }
 
     }
@@ -352,7 +352,7 @@ sc_result sc_fs_storage_find_links_with_content(const sc_check_sum *check_sum, s
         g_free(content);
     free(path);
 
-    return SC_OK;
+    return SC_RESULT_OK;
 }
 
 sc_result sc_fs_storage_get_checksum_content(const sc_check_sum *check_sum, sc_stream **stream)
@@ -372,10 +372,10 @@ sc_result sc_fs_storage_get_checksum_content(const sc_check_sum *check_sum, sc_s
     {
         *stream = sc_stream_file_new(data_path, SC_STREAM_READ);
         free(path);
-        return SC_OK; // do nothing, file saved
+        return SC_RESULT_OK; // do nothing, file saved
     }
 
-    return SC_ERROR;
+    return SC_RESULT_ERROR;
 }
 
 sc_uint8* sc_fs_storage_make_checksum_path(const sc_check_sum *check_sum)

@@ -52,7 +52,7 @@ sc_result insert_event_into_table(sc_event *event)
     element_events_list = g_slist_append(element_events_list, (gpointer)event);
     g_hash_table_insert(events_table, (gpointer)&event->element, (gpointer)element_events_list);
 
-    return SC_OK;
+    return SC_RESULT_OK;
 }
 
 //! Remove specified sc-event from events table
@@ -63,7 +63,7 @@ sc_result remove_event_from_table(sc_event *event)
 
     element_events_list = (GSList*)g_hash_table_lookup(events_table, (gconstpointer)&event->element);
     if (element_events_list == nullptr)
-        return SC_ERROR_INVALID_PARAMS;
+        return SC_RESULT_ERROR_INVALID_PARAMS;
 
     // remove event from list of events for specified sc-element
     element_events_list = g_slist_remove(element_events_list, (gconstpointer)event);
@@ -79,7 +79,7 @@ sc_result remove_event_from_table(sc_event *event)
         events_table = nullptr;
     }
 
-    return SC_OK;
+    return SC_RESULT_OK;
 }
 
 
@@ -95,7 +95,7 @@ sc_event* sc_event_new(sc_addr el, sc_event_type type, sc_uint32 id, fEventCallb
     g_assert(callback != nullptr);
 
     // register created event
-    if (insert_event_into_table(event) != SC_OK)
+    if (insert_event_into_table(event) != SC_RESULT_OK)
     {
         g_free(event);
         return nullptr;
@@ -106,12 +106,12 @@ sc_event* sc_event_new(sc_addr el, sc_event_type type, sc_uint32 id, fEventCallb
 
 sc_result sc_event_destroy(sc_event *event)
 {
-    if (remove_event_from_table(event) != SC_OK)
-        return SC_ERROR;
+    if (remove_event_from_table(event) != SC_RESULT_OK)
+        return SC_RESULT_ERROR;
 
     g_free(event);
 
-    return SC_OK;
+    return SC_RESULT_OK;
 }
 
 sc_result sc_event_notify_element_deleted(sc_addr element)
@@ -121,7 +121,7 @@ sc_result sc_event_notify_element_deleted(sc_addr element)
 
     // do nothing, if there are no registered events
     if (events_table == nullptr)
-        return SC_OK;
+        return SC_RESULT_OK;
 
     // lookup for all registered to specified sc-elemen events
     element_events_list = (GSList*)g_hash_table_lookup(events_table, (gconstpointer)&element);
@@ -136,7 +136,7 @@ sc_result sc_event_notify_element_deleted(sc_addr element)
     }
 
 
-    return SC_OK;
+    return SC_RESULT_OK;
 }
 
 sc_result sc_event_emit(sc_addr el, sc_event_type type, sc_addr arg)
@@ -146,7 +146,7 @@ sc_result sc_event_emit(sc_addr el, sc_event_type type, sc_addr arg)
 
     // if table is empty, then do nothing
     if (events_table == nullptr)
-        return SC_OK;
+        return SC_RESULT_OK;
 
     // lookup for all registered to specified sc-elemen events
     element_events_list = (GSList*)g_hash_table_lookup(events_table, (gconstpointer)&el);
@@ -163,6 +163,6 @@ sc_result sc_event_emit(sc_addr el, sc_event_type type, sc_addr arg)
         element_events_list = element_events_list->next;
     }
 
-    return SC_OK;
+    return SC_RESULT_OK;
 }
 

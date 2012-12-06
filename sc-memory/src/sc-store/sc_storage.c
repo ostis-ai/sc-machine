@@ -234,7 +234,7 @@ sc_result sc_storage_element_free(sc_addr addr)
     el = el2 = 0;
 
     if (sc_storage_is_element(addr) == SC_FALSE)
-        return SC_ERROR;
+        return SC_RESULT_ERROR;
 
     remove_list = g_slist_append(remove_list, GUINT_TO_POINTER(SC_ADDR_LOCAL_TO_INT(addr)));
 
@@ -292,7 +292,7 @@ sc_result sc_storage_element_free(sc_addr addr)
         SC_ADDR_MAKE_EMPTY(_addr);
     }
 
-    return SC_OK;
+    return SC_RESULT_OK;
 }
 
 sc_addr sc_storage_node_new(sc_type type )
@@ -387,11 +387,11 @@ sc_result sc_storage_get_element_type(sc_addr addr, sc_type *result)
 {
     sc_element *el = sc_storage_get_element(addr, SC_TRUE);
     if (el == 0)
-        return SC_ERROR;
+        return SC_RESULT_ERROR;
 
     *result = el->type;
 
-    return SC_OK;
+    return SC_RESULT_OK;
 }
 
 sc_result sc_storage_get_arc_begin(sc_addr addr, sc_addr *result)
@@ -400,10 +400,10 @@ sc_result sc_storage_get_arc_begin(sc_addr addr, sc_addr *result)
     if (el->type & sc_type_arc_mask)
     {
         *result = el->arc.begin;
-        return SC_OK;
+        return SC_RESULT_OK;
     }
 
-    return SC_ERROR_INVALID_TYPE;
+    return SC_RESULT_ERROR_INVALID_TYPE;
 }
 
 sc_result sc_storage_get_arc_end(sc_addr addr, sc_addr *result)
@@ -412,25 +412,25 @@ sc_result sc_storage_get_arc_end(sc_addr addr, sc_addr *result)
     if (el->type & sc_type_arc_mask)
     {
         *result = el->arc.end;
-        return SC_OK;
+        return SC_RESULT_OK;
     }
 
-    return SC_ERROR_INVALID_TYPE;
+    return SC_RESULT_ERROR_INVALID_TYPE;
 }
 
 sc_result sc_storage_set_link_content(sc_addr addr, const sc_stream *stream)
 {
     sc_element *el = sc_storage_get_element(addr, SC_TRUE);
     sc_check_sum check_sum;
-    sc_result result = SC_ERROR;
+    sc_result result = SC_RESULT_ERROR;
 
     g_assert(stream != nullptr);
 
     if (el == nullptr)
-        return SC_ERROR_INVALID_PARAMS;
+        return SC_RESULT_ERROR_INVALID_PARAMS;
 
     if (!(el->type & sc_type_link))
-        return SC_ERROR_INVALID_TYPE;
+        return SC_RESULT_ERROR_INVALID_TYPE;
 
     // calculate checksum for data
     if (sc_link_calculate_checksum(stream, &check_sum) == SC_TRUE)
@@ -442,7 +442,7 @@ sc_result sc_storage_set_link_content(sc_addr addr, const sc_stream *stream)
         sc_event_emit(addr, SC_EVENT_CHANGE_LINK_CONTENT, addr);
     }
 
-    g_assert(result == SC_OK);
+    g_assert(result == SC_RESULT_OK);
 
     return result;
 }
@@ -453,10 +453,10 @@ sc_result sc_storage_get_link_content(sc_addr addr, sc_stream **stream)
     sc_check_sum checksum;
 
     if (el == nullptr)
-        return SC_ERROR_INVALID_PARAMS;
+        return SC_RESULT_ERROR_INVALID_PARAMS;
 
     if (!(el->type & sc_type_link))
-        return SC_ERROR_INVALID_TYPE;
+        return SC_RESULT_ERROR_INVALID_TYPE;
 
 
     // prepare checksum
@@ -473,7 +473,7 @@ sc_result sc_storage_find_links_with_content(const sc_stream *stream, sc_addr **
     if (sc_link_calculate_checksum(stream, &check_sum) == SC_TRUE)
         return sc_fs_storage_find_links_with_content(&check_sum, result, result_count);
 
-    return SC_ERROR;
+    return SC_RESULT_ERROR;
 }
 
 

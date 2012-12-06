@@ -400,7 +400,7 @@ void test6()
 
         stream = sc_stream_memory_new((char*)&i, sizeof(i), SC_STREAM_READ, SC_FALSE);
 
-        if (sc_storage_find_links_with_content(stream, &results, &results_count) == SC_OK)
+        if (sc_storage_find_links_with_content(stream, &results, &results_count) == SC_RESULT_OK)
         {
             printf("founded: \n");
             for (j = 0; j < results_count; j++)
@@ -451,7 +451,7 @@ sc_result event_callback(sc_event *event, sc_addr arg)
     }
     printf(", Id: %d", event->id);
     printf(", Argument = seg: %d, offset: %d\n", arg.seg, arg.offset);
-    return SC_OK;
+    return SC_RESULT_OK;
 }
 
 void test7()

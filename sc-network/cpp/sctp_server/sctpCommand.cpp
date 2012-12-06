@@ -166,7 +166,7 @@ sctpErrorCode sctpCommand::processGetElementType(quint32 cmdFlags, quint32 cmdId
     READ_PARAM(addr);
 
     sc_type type = 0;
-    sctpResultCode resCode = (sc_memory_get_element_type(addr, &type) == SC_OK) ? SCTP_RESULT_OK : SCTP_RESULT_FAIL;
+    sctpResultCode resCode = (sc_memory_get_element_type(addr, &type) == SC_RESULT_OK) ? SCTP_RESULT_OK : SCTP_RESULT_FAIL;
     quint32 resSize = (resCode == SCTP_RESULT_OK) ? sizeof(type) : 0;
 
     // send result
@@ -187,7 +187,7 @@ sctpErrorCode sctpCommand::processElementErase(quint32 cmdFlags, quint32 cmdId, 
     // read sc-addr of sc-element from parameters
     READ_PARAM(addr);
 
-    sctpResultCode resCode = (sc_memory_element_free(addr) == SC_OK) ? SCTP_RESULT_OK : SCTP_RESULT_FAIL;
+    sctpResultCode resCode = (sc_memory_element_free(addr) == SC_RESULT_OK) ? SCTP_RESULT_OK : SCTP_RESULT_FAIL;
     // send result
     writeResultHeader(SCTP_CMD_CHECK_ELEMENT, cmdId, resCode, 0, outDevice);
 
@@ -296,12 +296,12 @@ sctpErrorCode sctpCommand::processGetLinkContent(quint32 cmdFlags, quint32 cmdId
     if (params->readRawData((char*)&addr, sizeof(addr)) != sizeof(addr))
         return SCTP_ERROR_CMD_READ_PARAMS;
 
-    sctpResultCode resCode = (sc_memory_get_link_content(addr, &stream) == SC_OK) ? SCTP_RESULT_OK : SCTP_RESULT_FAIL;
+    sctpResultCode resCode = (sc_memory_get_link_content(addr, &stream) == SC_RESULT_OK) ? SCTP_RESULT_OK : SCTP_RESULT_FAIL;
 
 
     if (resCode == SCTP_RESULT_OK)
     {
-        if (sc_stream_get_length(stream, &data_len) != SC_OK)
+        if (sc_stream_get_length(stream, &data_len) != SC_RESULT_OK)
         {
             resCode = SCTP_RESULT_FAIL;
             sc_stream_free(stream);
@@ -324,7 +324,7 @@ sctpErrorCode sctpCommand::processGetLinkContent(quint32 cmdFlags, quint32 cmdId
     {
         // if there are any error to read data, then
         // write null into output
-        if (sc_stream_read_data(stream, data_buffer, 1024, &data_read) != SC_OK)
+        if (sc_stream_read_data(stream, data_buffer, 1024, &data_read) != SC_RESULT_OK)
         {
             if (data_written < data_len)
             {
