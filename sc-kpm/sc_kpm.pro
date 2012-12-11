@@ -3,4 +3,5 @@ TEMPLATE = subdirs
 CONFIG += ordered
 DESTDIR = ./bin
 
-SUBDIRS = ui
+SUBDIRS = ui \
+            questions

@@ -29,6 +29,7 @@ along with OSTIS.  If not, see <http://www.gnu.org/licenses/>.
 extern "C"
 {
 #include "sc_memory.h"
+#include "sc_helper.h"
 }
 
 #include <QNetworkInterface>
@@ -73,7 +74,9 @@ void sctpServer::start(const QString &config)
 
     // initialize sc-memory
     qDebug() << "Initialize sc-memory\n";
-    sc_memory_initialize(mRepoPath.toStdString().c_str(), mExtPath.toStdString().c_str());
+    sc_memory_initialize(mRepoPath.toStdString().c_str());
+    sc_helper_init();
+    sc_memory_initialize_ext(mExtPath.toStdString().c_str());
 }
 
 void sctpServer::parseConfig(const QString &config_path)
@@ -105,6 +108,8 @@ void sctpServer::incomingConnection(int socketDescriptor)
 
 void sctpServer::stop()
 {
-    close();
+    sc_memory_shutdown_ext();
+    sc_helper_shutdown();
     sc_memory_shutdown();
+    close();
 }

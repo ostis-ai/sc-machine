@@ -23,34 +23,46 @@ along with OSTIS.  If not, see <http://www.gnu.org/licenses/>.
 #include "sc_memory.h"
 #include "sc-store/sc_storage.h"
 #include "sc_memory_ext.h"
+#include "sc_helper.h"
 
 #include <glib.h>
 
-sc_bool sc_memory_initialize(const sc_char *repo_path, const sc_char *ext_path)
+sc_bool sc_memory_initialize(const sc_char *repo_path)
 {
     sc_bool res = sc_storage_initialize(repo_path);
 
-    sc_result ext_res = sc_ext_initialize(ext_path);
+    return res;
+}
+
+sc_bool sc_memory_initialize_ext(const sc_char *path)
+{
+    sc_result ext_res = sc_ext_initialize(path);
 
     switch (ext_res)
     {
     case SC_RESULT_OK:
         g_message("Modules initializetion finished");
-        break;
+        return SC_TRUE;
+
     case SC_RESULT_ERROR_INVALID_PARAMS:
-        g_warning("Extensions directory '%s'' doesn't exist", ext_path);
+        g_warning("Extensions directory '%s'' doesn't exist",path);
         break;
 
     default:
         g_warning("Unknown error while initialize extensions");
+        break;
     }
 
-    return res;
+    return SC_FALSE;
+}
+
+void sc_memory_shutdown_ext()
+{
+    sc_ext_shutdown();
 }
 
 void sc_memory_shutdown()
 {
-    sc_ext_shutdown();
     sc_storage_shutdown();
 }
 

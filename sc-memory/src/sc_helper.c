@@ -8,7 +8,7 @@
 sc_bool sc_helper_is_initialized = SC_FALSE;
 
 sc_char **keynodes_str = 0;
-sc_addr *keynodes = 0;
+sc_addr *sc_keynodes = 0;
 
 sc_result resolve_nrel_system_identifier()
 {
@@ -43,7 +43,7 @@ sc_result resolve_nrel_system_identifier()
                 {
                     if (founded == SC_FALSE)
                     {
-                        keynodes[SC_KEYNODE_NREL_SYSTEM_IDENTIFIER] = addr1;
+                        sc_keynodes[SC_KEYNODE_NREL_SYSTEM_IDENTIFIER] = addr1;
                         founded = SC_TRUE;
                     }else
                     {
@@ -65,7 +65,7 @@ sc_result resolve_nrel_system_identifier()
 
     sc_stream_free(stream);
 
-    return SC_RESULT_OK;
+    return founded == SC_TRUE ? SC_RESULT_OK : SC_RESULT_ERROR;
 }
 
 void _init_keynodes_str()
@@ -102,7 +102,7 @@ sc_result sc_helper_init()
 
     _init_keynodes_str();
 
-    keynodes = g_new0(sc_addr, SC_KEYNODE_COUNT);
+    sc_keynodes = g_new0(sc_addr, SC_KEYNODE_COUNT);
 
     if (resolve_nrel_system_identifier() != SC_RESULT_OK)
     {
@@ -119,7 +119,7 @@ void sc_helper_shutdown()
 {
     g_message("Shutdown sc-helper");
 
-    g_free(keynodes);
+    g_free(sc_keynodes);
     _destroy_keynodes_str();
 }
 
@@ -133,7 +133,7 @@ sc_result sc_helper_find_element_by_system_identifier(sc_char* data, sc_uint32 l
     sc_bool founded = SC_FALSE;
 
     g_assert(sc_helper_is_initialized == SC_TRUE);
-    g_assert(keynodes != 0);
+    g_assert(sc_keynodes != 0);
 
     // try to find sc-links with that contains system identifier value
     stream = sc_stream_memory_new(data, sizeof(sc_char) * len, SC_STREAM_READ, SC_FALSE);
@@ -142,10 +142,10 @@ sc_result sc_helper_find_element_by_system_identifier(sc_char* data, sc_uint32 l
         for (i = 0; i < results_count; i++)
         {
             it = sc_iterator5_a_a_f_a_f_new(0,
-                                            sc_type_arc_pos_const_perm,
+                                            sc_type_arc_common | sc_type_const,
                                             results[i],
                                             sc_type_arc_pos_const_perm,
-                                            keynodes[SC_KEYNODE_NREL_SYSTEM_IDENTIFIER]);
+                                            sc_keynodes[SC_KEYNODE_NREL_SYSTEM_IDENTIFIER]);
             if (sc_iterator5_next(it))
             {
                 if (founded == SC_FALSE)
@@ -170,7 +170,7 @@ sc_result sc_helper_find_element_by_system_identifier(sc_char* data, sc_uint32 l
 
     sc_stream_free(stream);
 
-    return SC_RESULT_OK;
+    return founded == SC_TRUE ? SC_RESULT_OK : SC_RESULT_ERROR;
 }
 
 sc_result sc_helper_set_system_identifier(sc_addr addr, sc_char* data, sc_uint32 len)
@@ -183,7 +183,7 @@ sc_result sc_helper_set_system_identifier(sc_addr addr, sc_char* data, sc_uint32
     sc_addr idtf_addr, arc_addr;
 
     SC_ADDR_MAKE_EMPTY(idtf_addr)
-    g_assert(keynodes != 0);
+    g_assert(sc_keynodes != 0);
 
     // try to find sc-links with that contains system identifier value
     stream = sc_stream_memory_new(data, sizeof(sc_char) * len, SC_STREAM_READ, SC_FALSE);
@@ -195,7 +195,7 @@ sc_result sc_helper_set_system_identifier(sc_addr addr, sc_char* data, sc_uint32
                                             sc_type_arc_pos_const_perm,
                                             results[i],
                                             sc_type_arc_pos_const_perm,
-                                            keynodes[SC_KEYNODE_NREL_SYSTEM_IDENTIFIER]);
+                                            sc_keynodes[SC_KEYNODE_NREL_SYSTEM_IDENTIFIER]);
             if (sc_iterator5_next(it5))
             {
                 idtf_addr = results[i];
@@ -232,7 +232,7 @@ sc_result sc_helper_set_system_identifier(sc_addr addr, sc_char* data, sc_uint32
                                      0,
                                      sc_type_link,
                                      sc_type_arc_pos_const_perm,
-                                     keynodes[SC_KEYNODE_NREL_SYSTEM_IDENTIFIER]);
+                                     sc_keynodes[SC_KEYNODE_NREL_SYSTEM_IDENTIFIER]);
 
     // if specified sc-element already have system identifier, then change it
     if (sc_iterator5_next(it5) == SC_TRUE)
@@ -243,7 +243,7 @@ sc_result sc_helper_set_system_identifier(sc_addr addr, sc_char* data, sc_uint32
     if (SC_ADDR_IS_EMPTY(arc_addr))
         return SC_RESULT_ERROR;
 
-    arc_addr = sc_memory_arc_new(sc_type_arc_pos_const_perm, keynodes[SC_KEYNODE_NREL_SYSTEM_IDENTIFIER], arc_addr);
+    arc_addr = sc_memory_arc_new(sc_type_arc_pos_const_perm, sc_keynodes[SC_KEYNODE_NREL_SYSTEM_IDENTIFIER], arc_addr);
     if (SC_ADDR_IS_EMPTY(arc_addr))
         return SC_RESULT_ERROR;
 
@@ -252,10 +252,10 @@ sc_result sc_helper_set_system_identifier(sc_addr addr, sc_char* data, sc_uint32
 
 sc_result sc_helper_get_keynode(sc_keynode keynode, sc_addr *keynode_addr)
 {
-    if ((sc_helper_is_initialized == SC_FALSE) || (keynodes == nullptr))
+    if ((sc_helper_is_initialized == SC_FALSE) || (sc_keynodes == nullptr))
         return SC_RESULT_ERROR;
 
-    *keynode_addr = keynodes[(sc_uint32)keynode];
+    *keynode_addr = sc_keynodes[(sc_uint32)keynode];
 
     return SC_TRUE;
 }

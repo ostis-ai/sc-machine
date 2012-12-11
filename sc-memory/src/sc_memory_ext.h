@@ -24,6 +24,7 @@ along with OSTIS.  If not, see <http://www.gnu.org/licenses/>.
 #define _sc_memory_h_
 
 #include "sc-store/sc_types.h"
+#include <gmodule.h>
 
 /*! Initialize extensions from specified directory.
  * This function find all available extensions in specified directory and try to load them.

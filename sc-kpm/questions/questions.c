@@ -19,32 +19,14 @@ You should have received a copy of the GNU Lesser General Public License
 along with OSTIS.  If not, see <http://www.gnu.org/licenses/>.
 -----------------------------------------------------------------------------
 */
+#include "questions.h"
 
-#ifndef _ui_h_
-#define _ui_h_
-
-#include "sc_memory_headers.h"
-
-typedef enum
+sc_result initialize()
 {
-    UI_KEYNODE_COMMAND_INITIATED = 0,
-    UI_KEYNODE_COMMAND_TRANSLATE_FROM_SC,
-    UI_KEYNODE_COMMAND_TRANSLATE_TO_SC,
+    return SC_RESULT_OK;
+}
 
-    UI_KEYNODE_COUNT
-
-} ui_keynodes_enum;
-
-//! Module initialization function
-sc_result initialize();
-
-//! Module shutdown function
-sc_result shutdown();
-
-/*! Get sc-addr of keynode by it code
- * @param keynode Keynode code (one of ui_keynodes value)
- * @return Returns sc-addr of specified \p keynode.
- */
-sc_addr ui_get_keynode(ui_keynodes_enum keynode);
-
-#endif
+sc_result shutdown()
+{
+    return SC_RESULT_OK;
+}

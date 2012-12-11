@@ -20,31 +20,13 @@ along with OSTIS.  If not, see <http://www.gnu.org/licenses/>.
 -----------------------------------------------------------------------------
 */
 
-#ifndef _ui_h_
-#define _ui_h_
+#ifndef _ui_command_h_
+#define _ui_command_h_
 
-#include "sc_memory_headers.h"
+//! Setup event handler for command operations
+void ui_initialize_commands();
 
-typedef enum
-{
-    UI_KEYNODE_COMMAND_INITIATED = 0,
-    UI_KEYNODE_COMMAND_TRANSLATE_FROM_SC,
-    UI_KEYNODE_COMMAND_TRANSLATE_TO_SC,
+//! Destroy event handlers for command operations
+void ui_shutdown_commands();
 
-    UI_KEYNODE_COUNT
-
-} ui_keynodes_enum;
-
-//! Module initialization function
-sc_result initialize();
-
-//! Module shutdown function
-sc_result shutdown();
-
-/*! Get sc-addr of keynode by it code
- * @param keynode Keynode code (one of ui_keynodes value)
- * @return Returns sc-addr of specified \p keynode.
- */
-sc_addr ui_get_keynode(ui_keynodes_enum keynode);
-
-#endif
+#endif // _ui_command_h_

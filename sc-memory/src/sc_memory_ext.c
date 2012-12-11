@@ -77,7 +77,7 @@ sc_result sc_ext_initialize(const sc_char *ext_dir_path)
         module_path = g_module_build_path(ext_dir_path, file_name);
 
         // open module
-        module = g_module_open(module_path, G_MODULE_BIND_LAZY & G_MODULE_BIND_LOCAL);
+        module = g_module_open(module_path, G_MODULE_BIND_LOCAL);
 
         // skip non module files
         if (g_str_has_suffix(file_name, G_MODULE_SUFFIX) == TRUE)

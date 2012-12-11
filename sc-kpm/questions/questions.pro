@@ -2,10 +2,10 @@ TEMPLATE = lib
 BINDIR = ../../bin
 DESTDIR = $$quote($$BINDIR)/extensions
 
-INCLUDEPATH += ../../sc-memory/src
-
 OBJECTS_DIR = obj
 MOC_DIR = moc
+
+INCLUDEPATH += ../../sc-memory/src
 
 unix {
     LIBS += $$quote(-L$$BINDIR) -lsc_memory
@@ -14,13 +14,7 @@ unix {
 }
 
 HEADERS += \
-    ui.h \
-    translators/ui_translator_sc2scs.h \
-    ui_translators.h \
-    ui_commands.h
+    questions.h
 
 SOURCES += \
-    ui.c \
-    translators/ui_translator_sc2scs.c \
-    ui_translators.c \
-    ui_commands.c
+    questions.c
