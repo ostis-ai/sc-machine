@@ -29,7 +29,8 @@ along with OSTIS.  If not, see <http://www.gnu.org/licenses/>.
 
 extern "C"
 {
-#include "sc_memory.h"
+#include "sc_memory_headers.h"
+#include "sc_helper.h"
 }
 
 #define SCTP_READ_TIMEOUT   10000
@@ -90,8 +91,18 @@ sctpErrorCode sctpCommand::processCommand(QIODevice *inDevice, QIODevice *outDev
     case SCTP_CMD_CREAET_LINK:
         return processCreateLink(cmdFlags, cmdId, &paramsStream, outDevice);
 
+    case SCTP_CMD_CREATE_ARC:
+        return processCreateArc(cmdFlags, cmdId, &paramsStream, outDevice);
+
     case SCTP_CMD_GET_LINK_CONTENT:
         return processGetLinkContent(cmdFlags, cmdId, &paramsStream, outDevice);
+
+    case SCTP_CMD_FIND_LINKS:
+        return processFindLinks(cmdFlags, cmdId, &paramsStream, outDevice);
+
+
+    case SCTP_CMD_FIND_ELEMENT_BY_SYSITDF:
+        return processFindElementBySysIdtf(cmdFlags, cmdId, &paramsStream, outDevice);
 
     case SCTP_CMD_SHUTDOWN:
         QCoreApplication::quit();
@@ -348,6 +359,75 @@ sctpErrorCode sctpCommand::processGetLinkContent(quint32 cmdFlags, quint32 cmdId
     if (resCode == SCTP_RESULT_OK)
         sc_stream_free(stream);
 
+
+    return SCTP_ERROR_NO;
+}
+
+sctpErrorCode sctpCommand::processFindLinks(quint32 cmdFlags, quint32 cmdId, QDataStream *params, QIODevice *outDevice)
+{
+
+    sc_addr addr;
+    sc_uint32 data_len = 0;
+    sc_char *data = 0;
+
+    Q_UNUSED(cmdFlags);
+
+    Q_ASSERT(params != 0);
+
+    // read length of content data
+    READ_PARAM(data_len);
+    Q_ASSERT(data_len > 0);
+
+    data = new sc_char[data_len];
+    if (params->readRawData(data, data_len) != data_len)
+        return SCTP_ERROR_CMD_READ_PARAMS;
+
+    sc_stream *stream = sc_stream_memory_new(data, data_len, SC_STREAM_READ, SC_FALSE);
+    sc_uint32 result_count = 0;
+    sc_addr *result = 0;
+
+    if (sc_memory_find_links_with_content(stream, &result, &result_count) != SC_RESULT_OK)
+        writeResultHeader(SCTP_CMD_FIND_LINKS, cmdId, SCTP_RESULT_FAIL, 0, outDevice);
+    else
+    {
+        writeResultHeader(SCTP_CMD_FIND_LINKS, cmdId, SCTP_RESULT_OK, result_count * sizeof(sc_addr) + sizeof(result_count), outDevice);
+        outDevice->write((const char*)&result_count, sizeof(result_count));
+        outDevice->write((const char*)result, sizeof(sc_addr) * result_count);
+    }
+
+    sc_stream_free(stream);
+
+    return SCTP_ERROR_NO;
+}
+
+
+sctpErrorCode sctpCommand::processFindElementBySysIdtf(quint32 cmdFlags, quint32 cmdId, QDataStream *params, QIODevice *outDevice)
+{
+    sc_addr addr;
+    sc_uint32 data_len = 0;
+    sc_char *data = 0;
+
+    Q_UNUSED(cmdFlags);
+
+    Q_ASSERT(params != 0);
+
+    // read length of content data
+    READ_PARAM(data_len);
+    Q_ASSERT(data_len > 0);
+
+    data = new sc_char[data_len];
+    if (params->readRawData(data, data_len) != data_len)
+        return SCTP_ERROR_CMD_READ_PARAMS;
+
+    sc_addr result;
+
+    if (sc_helper_find_element_by_system_identifier(data, data_len, &result) != SC_RESULT_OK)
+        writeResultHeader(SCTP_CMD_FIND_ELEMENT_BY_SYSITDF, cmdId, SCTP_RESULT_FAIL, 0, outDevice);
+    else
+    {
+        writeResultHeader(SCTP_CMD_FIND_ELEMENT_BY_SYSITDF, cmdId, SCTP_RESULT_OK, sizeof(sc_addr), outDevice);
+        outDevice->write((const char*)&result, sizeof(sc_addr));
+    }
 
     return SCTP_ERROR_NO;
 }

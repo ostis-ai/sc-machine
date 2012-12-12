@@ -259,3 +259,27 @@ sc_result sc_helper_get_keynode(sc_keynode keynode, sc_addr *keynode_addr)
 
     return SC_TRUE;
 }
+
+
+sc_bool sc_helper_resolve_system_identifier(const char *system_idtf, sc_addr *result)
+{
+    gchar *keynode_idtf = 0;
+    gsize bytes_written = 0;
+
+    keynode_idtf = g_locale_to_utf8(system_idtf, -1, 0, &bytes_written, 0);
+    if (keynode_idtf == nullptr)
+    {
+        g_warning("Error while trying to convert %s to utd-8", system_idtf);
+        return SC_FALSE;
+    }
+
+    if (sc_helper_find_element_by_system_identifier(keynode_idtf, bytes_written, result) != SC_RESULT_OK)
+    {
+        g_warning("Can't find element with system identifier: %s", system_idtf);
+        return SC_FALSE;
+    }
+
+    g_free(keynode_idtf);
+
+    return SC_TRUE;
+}

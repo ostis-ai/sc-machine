@@ -23,4 +23,13 @@ along with OSTIS.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef _ui_translator_sc2scs_h_
 #define _ui_translator_sc2scs_h_
 
+#include "sc_memory.h"
+
+sc_result ui_translate_sc2scs(sc_event *event, sc_addr arg)
+{
+    printf("Run translator from sc to scs\n");
+
+    return SC_RESULT_OK;
+}
+
 #endif

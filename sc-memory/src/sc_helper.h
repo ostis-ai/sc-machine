@@ -75,4 +75,11 @@ sc_result sc_helper_set_system_identifier(sc_addr addr, sc_char* data, sc_uint32
  */
 sc_result sc_helper_get_keynode(sc_keynode keynode, sc_addr *keynode_addr);
 
+/*! Resolve sc-elemen by specified string system identifier
+ * @param system_idtf String that represents system identifier (it will be converted into utf-8)
+ * @param result Pointer to result sc-addr container
+ * @return If sc-element was founded, then return SC_TRUE; otherwise return SC_FALSE.
+ */
+sc_bool sc_helper_resolve_system_identifier(const char *system_idtf, sc_addr *result);
+
 #endif // IDENTIFICATION_H

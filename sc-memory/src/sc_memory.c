@@ -41,7 +41,7 @@ sc_bool sc_memory_initialize_ext(const sc_char *path)
     switch (ext_res)
     {
     case SC_RESULT_OK:
-        g_message("Modules initializetion finished");
+        g_message("Modules initialization finished");
         return SC_TRUE;
 
     case SC_RESULT_ERROR_INVALID_PARAMS:
