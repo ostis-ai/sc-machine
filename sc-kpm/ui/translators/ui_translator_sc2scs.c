@@ -23,3 +23,9 @@ along with OSTIS.  If not, see <http://www.gnu.org/licenses/>.
 #include "ui_translator_sc2scs.h"
 
 
+sc_result ui_translate_sc2scs(sc_event *event, sc_addr arg)
+{
+
+
+    return SC_RESULT_OK;
+}

@@ -283,3 +283,19 @@ sc_bool sc_helper_resolve_system_identifier(const char *system_idtf, sc_addr *re
 
     return SC_TRUE;
 }
+
+sc_bool sc_helper_check_arc(sc_addr beg_el, sc_addr end_el, sc_type arc_type)
+{
+    sc_iterator3 *it = 0;
+    sc_bool res = SC_FALSE;
+
+    it = sc_iterator3_f_a_f_new(beg_el, arc_type, end_el);
+    if (it == nullptr)
+        return SC_FALSE;
+
+    if (sc_iterator3_next(it) == SC_TRUE)
+        res = SC_TRUE;
+
+    sc_iterator3_free(it);
+    return res;
+}

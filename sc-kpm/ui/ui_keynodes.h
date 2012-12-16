@@ -20,21 +20,21 @@ along with OSTIS.  If not, see <http://www.gnu.org/licenses/>.
 -----------------------------------------------------------------------------
 */
 
-#include "ui_translators.h"
-#include "ui_keynodes.h"
+#ifndef _ui_keynodes_h_
+#define _ui_keynodes_h_
 
-#include "translators/ui_translator_sc2scs.h"
+#include "sc_memory_headers.h"
 
-sc_event *ui_translator_sc2scs_event = nullptr;
+extern sc_addr keynode_ui_user;
+extern sc_addr keynode_ui_command_translate_from_sc;
+extern sc_addr keynode_ui_nrel_user_answer_formats;
+extern sc_addr keynode_ui_rrel_source_sc_construction;
+extern sc_addr keynode_ui_rrel_output_format;
 
-void ui_initialize_translators()
-{
-    ui_translator_sc2scs_event = sc_event_new(keynode_ui_command_translate_from_sc, SC_EVENT_ADD_OUTPUT_ARC, 0, ui_translate_sc2scs, 0);
-    if (ui_translator_sc2scs_event == nullptr)
-        return SC_RESULT_ERROR;
-}
+extern sc_addr keynode_question_nrel_answer;
+extern sc_addr keynode_nrel_author;
 
-void ui_shutdown_translators()
-{
+//! Initialize all keynodes, that will be used in extension
+sc_bool initialize_keynodes();
 
-}
+#endif

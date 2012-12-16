@@ -24,10 +24,10 @@ along with OSTIS.  If not, see <http://www.gnu.org/licenses/>.
 #include "sc_helper.h"
 
 const char keynode_question_initiated_str[] = "question_initiated";
-const char keynode_nrel_answer_str[] = "nrel_answer";
+const char keynode_question_nrel_answer_str[] = "question_nrel_answer";
 
 sc_addr keynode_question_initiated;
-sc_addr keynode_nrel_answer;
+sc_addr keynode_question_nrel_answer;
 
 
 // --------------------- Events -----------------------
@@ -72,7 +72,7 @@ sc_result question_search_all_output_arcs(sc_event *event, sc_addr arg)
 
     // connect question with answer
     value = sc_memory_arc_new(sc_type_arc_common | sc_type_const, question_node, answer_node);
-    sc_memory_arc_new(sc_type_arc_pos_const_perm, keynode_nrel_answer, value);
+    sc_memory_arc_new(sc_type_arc_pos_const_perm, keynode_question_nrel_answer, value);
 
     return SC_RESULT_OK;
 }
@@ -85,7 +85,7 @@ sc_result initialize()
     if (sc_helper_resolve_system_identifier(keynode_question_initiated_str, &keynode_question_initiated) == SC_FALSE)
         return SC_RESULT_ERROR;
 
-    if (sc_helper_resolve_system_identifier(keynode_nrel_answer_str, &keynode_nrel_answer) == SC_FALSE)
+    if (sc_helper_resolve_system_identifier(keynode_question_nrel_answer_str, &keynode_question_nrel_answer) == SC_FALSE)
         return SC_RESULT_ERROR;
 
 

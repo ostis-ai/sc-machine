@@ -25,11 +25,6 @@ along with OSTIS.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "sc_memory.h"
 
-sc_result ui_translate_sc2scs(sc_event *event, sc_addr arg)
-{
-    printf("Run translator from sc to scs\n");
-
-    return SC_RESULT_OK;
-}
+sc_result ui_translate_sc2scs(sc_event *event, sc_addr arg);
 
 #endif

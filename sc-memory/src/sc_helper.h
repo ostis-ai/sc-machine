@@ -82,4 +82,13 @@ sc_result sc_helper_get_keynode(sc_keynode keynode, sc_addr *keynode_addr);
  */
 sc_bool sc_helper_resolve_system_identifier(const char *system_idtf, sc_addr *result);
 
+/*! Check if specified arc type exist between two objects
+ * @param beg_el sc-addr of begin element
+ * @param end_el sc-addr of end element
+ * @param arc_type Type of sc-arc to check
+ * @return If arc with specified type between beg_el and end_el exist, then return SC_TRUE;
+ * otherwise return SC_FALSE
+ */
+sc_bool sc_helper_check_arc(sc_addr beg_el, sc_addr end_el, sc_type arc_type);
+
 #endif // IDENTIFICATION_H

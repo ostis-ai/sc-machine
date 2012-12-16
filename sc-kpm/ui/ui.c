@@ -25,23 +25,12 @@ along with OSTIS.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "ui_translators.h"
 #include "ui_commands.h"
+#include "ui_keynodes.h"
 
 #include <glib.h>
 
-sc_addr *ui_keynodes = 0;
 
-sc_bool initialize_keynodes()
-{
-    sc_bool result = SC_TRUE;
-    ui_keynodes = g_new0(sc_addr, UI_KEYNODE_COUNT);
-
-    if (sc_helper_resolve_system_identifier("ui_command_initiated", &(ui_keynodes[UI_KEYNODE_COMMAND_INITIATED])) == SC_FALSE)
-        result = SC_FALSE;
-
-
-    return SC_TRUE;
-}
-
+// ------------------- Module ------------------------------
 sc_result initialize()
 {
 
@@ -66,8 +55,3 @@ sc_result shutdown()
     return SC_RESULT_OK;
 }
 
-sc_addr ui_get_keynode(ui_keynodes_enum keynode)
-{
-    g_assert(ui_keynodes != nullptr);
-    return ui_keynodes[keynode];
-}
