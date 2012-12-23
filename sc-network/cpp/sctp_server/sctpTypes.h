@@ -14,12 +14,30 @@ typedef enum
     SCTP_CMD_GET_ARC_END        = 0x08, // return end element of sc-arc
     SCTP_CMD_GET_LINK_CONTENT   = 0x09, // return content of sc-link
     SCTP_CMD_FIND_LINKS         = 0x0a, // return sc-links with specified content
+    SCTP_CMD_ITERATE_ELEMENTS   = 0x0b, // return base teamplate iteration result
 
     SCTP_CMD_FIND_ELEMENT_BY_SYSITDF = 0xa0, // return sc-element by it system identifier
 
     SCTP_CMD_SHUTDOWN           = 0xfe // disconnect client from server
 
 } sctpCommandCode;
+
+typedef enum
+{
+
+    SCTP_ITERATOR_3F_A_A = 0,
+    SCTP_ITERATOR_3A_A_F,
+    SCTP_ITERATOR_3F_A_F,
+    SCTP_ITERATOR_5F_A_A_A_F,
+    SCTP_ITERATOR_5_A_A_F_A_F,
+    SCTP_ITERATOR_5_F_A_F_A_F,
+    SCTP_ITERATOR_5_F_A_F_A_A,
+    SCTP_ITERATOR_5_F_A_A_A_A,
+    SCTP_ITERATOR_5_A_A_F_A_A,
+
+    SCTP_ITERATOR_COUNT
+
+} sctpIteratorType;
 
 typedef enum
 {

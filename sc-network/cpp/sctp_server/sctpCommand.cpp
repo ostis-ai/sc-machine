@@ -25,6 +25,7 @@ along with OSTIS.  If not, see <http://www.gnu.org/licenses/>.
 #include <QIODevice>
 #include <QDataStream>
 #include <QDebug>
+#include <QDataStream>
 #include <QCoreApplication>
 
 extern "C"
@@ -99,6 +100,9 @@ sctpErrorCode sctpCommand::processCommand(QIODevice *inDevice, QIODevice *outDev
 
     case SCTP_CMD_FIND_LINKS:
         return processFindLinks(cmdFlags, cmdId, &paramsStream, outDevice);
+
+    case SCTP_CMD_ITERATE_ELEMENTS:
+        return processIterateElements(cmdFlags, cmdId, &paramsStream, outDevice);
 
 
     case SCTP_CMD_FIND_ELEMENT_BY_SYSITDF:
@@ -396,6 +400,168 @@ sctpErrorCode sctpCommand::processFindLinks(quint32 cmdFlags, quint32 cmdId, QDa
     }
 
     sc_stream_free(stream);
+
+    return SCTP_ERROR_NO;
+}
+
+sctpErrorCode sctpCommand::processIterateElements(quint32 cmdFlags, quint32 cmdId, QDataStream *params, QIODevice *outDevice)
+{
+    sc_uchar iterator_type = 0;
+    sc_type type1, type2, type3, type4;
+    sc_addr addr1, addr2, addr3;
+
+    Q_UNUSED(cmdFlags);
+
+    Q_ASSERT(params != nullptr);
+
+    // read iterator type
+    READ_PARAM(iterator_type);
+
+    Q_ASSERT(iterator_type < SCTP_ITERATOR_COUNT);
+
+    // 3-elements iterators
+    if (iterator_type <= SCTP_ITERATOR_3F_A_F)
+    {
+        sc_iterator3 *it = (sc_iterator3*)nullptr;
+
+        switch (iterator_type)
+        {
+        case SCTP_ITERATOR_3A_A_F:
+            READ_PARAM(type1);
+            READ_PARAM(type2);
+            READ_PARAM(addr1);
+            it = sc_iterator3_a_a_f_new(type1, type2, addr1);
+            break;
+
+        case SCTP_ITERATOR_3F_A_A:
+            READ_PARAM(addr1);
+            READ_PARAM(type1);
+            READ_PARAM(type2);
+            it = sc_iterator3_f_a_a_new(addr1, type1, type2);
+            break;
+
+        case SCTP_ITERATOR_3F_A_F:
+            READ_PARAM(addr1);
+            READ_PARAM(type1);
+            READ_PARAM(addr2);
+            it = sc_iterator3_f_a_f_new(addr1, type1, addr2);
+            break;
+
+        default:
+            return SCTP_ERROR;
+        }
+
+        Q_ASSERT(it != nullptr);
+
+        // create results data
+        QByteArray results;
+        QDataStream stream(results);
+        sc_uint32 results_count = 0;
+        sc_addr addr;
+        while (sc_iterator3_next(it) == SC_TRUE)
+        {
+            results_count++;
+            for (sc_uint i = 0; i < 3; i++)
+            {
+                addr = sc_iterator3_value(it, i);
+                stream.writeBytes((const char*)&addr, sizeof(addr));
+            }
+        }
+
+        // write result
+        writeResultHeader(SCTP_CMD_ITERATE_ELEMENTS, cmdId, SCTP_RESULT_OK, results.size() + sizeof(results_count), outDevice);
+        outDevice->write((const char*)&results_count, sizeof(results_count));
+        if (results_count > 0)
+            outDevice->write((const char*)results.constData(), results.size());
+
+    }else
+    {
+        // 5-elements iterators
+        sc_iterator5 *it = (sc_iterator5*)nullptr;
+
+        switch (iterator_type)
+        {
+        case SCTP_ITERATOR_5F_A_A_A_F:
+            READ_PARAM(addr1);
+            READ_PARAM(type1);
+            READ_PARAM(type2);
+            READ_PARAM(type3);
+            READ_PARAM(addr2);
+            it = sc_iterator5_f_a_a_a_f_new(addr1, type1, type2, type3, addr2);
+            break;
+
+        case SCTP_ITERATOR_5_A_A_F_A_A:
+            READ_PARAM(type1);
+            READ_PARAM(type2);
+            READ_PARAM(addr1);
+            READ_PARAM(type3);
+            READ_PARAM(type4);
+            it = sc_iterator5_a_a_f_a_a_new(type1, type2, addr1, type3, type4);
+            break;
+
+        case SCTP_ITERATOR_5_A_A_F_A_F:
+            READ_PARAM(type1);
+            READ_PARAM(type2);
+            READ_PARAM(addr1);
+            READ_PARAM(type3);
+            READ_PARAM(addr2);
+            it = sc_iterator5_a_a_f_a_f_new(type1, type2, addr1, type3, addr2);
+            break;
+
+        case SCTP_ITERATOR_5_F_A_A_A_A:
+            READ_PARAM(addr1);
+            READ_PARAM(type1);
+            READ_PARAM(type2);
+            READ_PARAM(type3);
+            READ_PARAM(type4);
+            it = sc_iterator5_f_a_a_a_a_new(addr1, type1, type2, type3, type4);
+            break;
+
+        case SCTP_ITERATOR_5_F_A_F_A_A:
+            READ_PARAM(addr1);
+            READ_PARAM(type1);
+            READ_PARAM(addr2);
+            READ_PARAM(type2);
+            READ_PARAM(type3);
+            it = sc_iterator5_f_a_f_a_a_new(addr1, type1, addr2, type2, type3);
+            break;
+
+        case SCTP_ITERATOR_5_F_A_F_A_F:
+            READ_PARAM(addr1);
+            READ_PARAM(type1);
+            READ_PARAM(addr2);
+            READ_PARAM(type2);
+            READ_PARAM(addr3);
+            it = sc_iterator5_f_a_f_a_f_new(addr1, type1, addr2, type2, addr3);
+            break;
+
+        default:
+            return SCTP_ERROR;
+        }
+
+        Q_ASSERT(it != nullptr);
+
+        // create results data
+        QByteArray results;
+        QDataStream stream(results);
+        sc_uint32 results_count = 0;
+        sc_addr addr;
+        while (sc_iterator5_next(it) == SC_TRUE)
+        {
+            results_count++;
+            for (sc_uint i = 0; i < 5; i++)
+            {
+                addr = sc_iterator5_value(it, i);
+                stream.writeBytes((const char*)&addr, sizeof(addr));
+            }
+        }
+
+        // write result
+        writeResultHeader(SCTP_CMD_ITERATE_ELEMENTS, cmdId, SCTP_RESULT_OK, results.size() + sizeof(results_count), outDevice);
+        outDevice->write((const char*)&results_count, sizeof(results_count));
+        if (results_count > 0)
+            outDevice->write((const char*)results.constData(), results.size());
+    }
 
     return SCTP_ERROR_NO;
 }
