@@ -25,7 +25,7 @@ along with OSTIS.  If not, see <http://www.gnu.org/licenses/>.
 #include <QIODevice>
 #include <QDataStream>
 #include <QDebug>
-#include <QDataStream>
+#include <QBuffer>
 #include <QCoreApplication>
 
 extern "C"
@@ -299,7 +299,7 @@ sctpErrorCode sctpCommand::processGetLinkContent(quint32 cmdFlags, quint32 cmdId
 {
     sc_addr addr;
     sc_stream *stream = (sc_stream*)nullptr;
-    sc_char data_buffer[1024];
+    sc_char data_buffer[32];
     sc_uint32 data_len = 0;
     sc_uint32 data_written = 0;
     sc_uint32 data_read = 0;
@@ -339,7 +339,7 @@ sctpErrorCode sctpCommand::processGetLinkContent(quint32 cmdFlags, quint32 cmdId
     {
         // if there are any error to read data, then
         // write null into output
-        if (sc_stream_read_data(stream, data_buffer, 1024, &data_read) != SC_RESULT_OK)
+        if (sc_stream_read_data(stream, data_buffer, 32, &data_read) != SC_RESULT_OK)
         {
             if (data_written < data_len)
             {
@@ -455,18 +455,21 @@ sctpErrorCode sctpCommand::processIterateElements(quint32 cmdFlags, quint32 cmdI
 
         // create results data
         QByteArray results;
-        QDataStream stream(results);
+        QBuffer buffer(&results);
         sc_uint32 results_count = 0;
         sc_addr addr;
+
+        buffer.open(QBuffer::WriteOnly);
         while (sc_iterator3_next(it) == SC_TRUE)
         {
             results_count++;
             for (sc_uint i = 0; i < 3; i++)
             {
                 addr = sc_iterator3_value(it, i);
-                stream.writeBytes((const char*)&addr, sizeof(addr));
+                buffer.write((const char*)&addr, sizeof(addr));
             }
         }
+        buffer.close();
 
         // write result
         writeResultHeader(SCTP_CMD_ITERATE_ELEMENTS, cmdId, SCTP_RESULT_OK, results.size() + sizeof(results_count), outDevice);
@@ -543,18 +546,21 @@ sctpErrorCode sctpCommand::processIterateElements(quint32 cmdFlags, quint32 cmdI
 
         // create results data
         QByteArray results;
-        QDataStream stream(results);
+        QBuffer buffer(&results);
         sc_uint32 results_count = 0;
         sc_addr addr;
+
+        buffer.open(QBuffer::WriteOnly);
         while (sc_iterator5_next(it) == SC_TRUE)
         {
             results_count++;
             for (sc_uint i = 0; i < 5; i++)
             {
                 addr = sc_iterator5_value(it, i);
-                stream.writeBytes((const char*)&addr, sizeof(addr));
+                buffer.write((const char*)&addr, sizeof(addr));
             }
         }
+        buffer.close();
 
         // write result
         writeResultHeader(SCTP_CMD_ITERATE_ELEMENTS, cmdId, SCTP_RESULT_OK, results.size() + sizeof(results_count), outDevice);

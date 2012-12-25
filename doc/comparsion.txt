@@ -114,6 +114,92 @@ Command: 0
 
 
 ============================
+
+---------- 25.12.12 ------------
+# simple mutex synchronization (lock, unlock recursive mutex in sc_memory functions)
+
+MD5: 16
+SHA1: 20
+SHA256: 32
+** Message: Initialize sc-storage from path: repo
+
+** Message: There are no segments directory in repo
+Segment loading speed: 0.000000 seg/sec
+Commands:
+0 - exit
+1 - test allocation
+2 - test sc-addr utilities
+3 - test arc deletion
+4 - test iterators
+5 - test contents
+6 - test content finding
+7 - test events
+
+Command: 1
+
+----- Test 1 -----
+Element size: 64 bytes
+Segment size: 65535 elements
+--- Storage statistics: ---
+ 	Nodes: 0 (0 deleted)
+	Arcs: 0 (0 deleted)
+	Empty: 0
+---
+--- Node creation ---
+Time: 0.999375 s
+Nodes per second: 5003126.954346
+Segments count: 77
+--- Storage statistics: ---
+ 	Nodes: 5000000 (0 deleted)
+	Arcs: 0 (0 deleted)
+	Empty: 46195
+---
+--- Node segmentation ---
+Prepare test...
+Run test...
+Time: 0.851788 s
+Elements per second: 5870005.212565
+Segments count: 115
+Element free calls: 0
+--- Storage statistics: ---
+ 	Nodes: 7500000 (2500000 deleted)
+	Arcs: 0 (0 deleted)
+	Empty: 36525
+---
+--- Arcs creation ---
+Prepare...
+Run...
+Timer: 2.349745s
+Arcs per second: 2127890.473222
+Segments count: 191
+--- Storage statistics: ---
+ 	Nodes: 7500000 (2500000 deleted)
+	Arcs: 5000000 (0 deleted)
+	Empty: 17185
+---
+
+----- Finished -----
+Commands:
+0 - exit
+1 - test allocation
+2 - test sc-addr utilities
+3 - test arc deletion
+4 - test iterators
+5 - test contents
+6 - test content finding
+7 - test events
+
+Command: 0
+
+----- Test 0 -----
+
+----- Finished -----
+** Message: Shutdown sc-storage
+
+** Message: Write storage into repo
+Segments save speed: 10.245190 seg/sec
+
+
 ---------- dd.mm.yy ------------
 
 

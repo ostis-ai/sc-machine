@@ -159,11 +159,11 @@ struct _sc_check_sum
 // events
 enum _sc_event_type
 {
-    SC_EVENT_ADD_OUTPUT_ARC,        // calls after adding
+    SC_EVENT_ADD_OUTPUT_ARC = 0,        // calls after adding
     SC_EVENT_ADD_INPUT_ARC,         // calls after adding
     SC_EVENT_REMOVE_OUTPUT_ARC,     // calls before removing
     SC_EVENT_REMOVE_INPUT_ARC,      // calls before removing
-    SC_EVENT_CHANGE_LINK_CONTENT    // calls after adding
+    SC_EVENT_CHANGE_LINK_CONTENT
 };
 
 typedef struct _sc_check_sum sc_check_sum;

@@ -20,38 +20,27 @@ along with OSTIS.  If not, see <http://www.gnu.org/licenses/>.
 -----------------------------------------------------------------------------
 */
 
-#include "ui.h"
-#include "sc_helper.h"
+#ifndef _ui_keynodes_h_
+#define _ui_keynodes_h_
 
-#include "ui_translators.h"
-#include "ui_commands.h"
-#include "ui_keynodes.h"
-
-#include <glib.h>
-
-
-// ------------------- Module ------------------------------
-sc_result initialize()
+extern "C"
 {
-
-    if (!initialize_keynodes())
-    {
-        g_warning("Some errors, while initialize ui keynodes");
-        return SC_RESULT_ERROR;
-    }
-
-    ui_initialize_commands();
-    ui_initialize_translators();
-
-    return SC_RESULT_OK;
+#include "sc_memory_headers.h"
 }
 
-sc_result shutdown()
-{
+extern sc_addr ui_keynode_ui_user;
+extern sc_addr ui_keynode_ui_command_translate_from_sc;
+extern sc_addr ui_keynode_ui_nrel_user_answer_formats;
+extern sc_addr ui_keynode_ui_rrel_source_sc_construction;
+extern sc_addr ui_keynode_ui_rrel_output_format;
 
-    ui_shutdown_translators();
-    ui_shutdown_commands();
+extern sc_addr ui_keynode_question_nrel_answer;
+extern sc_addr ui_keynode_nrel_author;
+extern sc_addr ui_keynode_nrel_translation;
 
-    return SC_RESULT_OK;
-}
+extern sc_addr ui_keynode_format_scs;
 
+//! Initialize all keynodes, that will be used in extension
+sc_bool initialize_keynodes();
+
+#endif

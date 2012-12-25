@@ -19,8 +19,9 @@ You should have received a copy of the GNU Lesser General Public License
 along with OSTIS.  If not, see <http://www.gnu.org/licenses/>.
 -----------------------------------------------------------------------------
 */
-#include "ui_keynodes.h"
 
+#include "uiPrecompiled.h"
+#include "uiKeynodes.h"
 
 
 // ------------- Keynodes ----------------------
@@ -33,38 +34,51 @@ const char keynode_ui_rrel_output_format_str[] = "ui_rrel_output_format";
 
 const char keynode_question_nrel_answer_str[] = "question_nrel_answer";
 const char keynode_nrel_author_str[] = "nrel_author";
+const char keynode_nrel_translation_str[] = "nrel_translation";
+
+const char keynode_format_scs_str[] = "format_scs";
 
 
-sc_addr keynode_ui_user;
-sc_addr keynode_ui_command_translate_from_sc;
-sc_addr keynode_ui_nrel_user_answer_formats;
-sc_addr keynode_ui_rrel_source_sc_construction;
-sc_addr keynode_ui_rrel_output_format;
+sc_addr ui_keynode_ui_user;
+sc_addr ui_keynode_ui_command_translate_from_sc;
+sc_addr ui_keynode_ui_nrel_user_answer_formats;
+sc_addr ui_keynode_ui_rrel_source_sc_construction;
+sc_addr ui_keynode_ui_rrel_output_format;
 
-sc_addr keynode_question_nrel_answer;
-sc_addr keynode_nrel_author;
+sc_addr ui_keynode_question_nrel_answer;
+sc_addr ui_keynode_nrel_author;
+sc_addr ui_keynode_nrel_translation;
+
+sc_addr ui_keynode_format_scs;
 
 sc_bool initialize_keynodes()
 {
-    if (sc_helper_resolve_system_identifier(keynode_ui_user_str, &keynode_ui_user) == SC_FALSE)
+    if (sc_helper_resolve_system_identifier(keynode_ui_user_str, &ui_keynode_ui_user) == SC_FALSE)
         return SC_FALSE;
 
-    if (sc_helper_resolve_system_identifier(keynode_question_nrel_answer_str, &keynode_question_nrel_answer) == SC_FALSE)
+    if (sc_helper_resolve_system_identifier(keynode_question_nrel_answer_str, &ui_keynode_question_nrel_answer) == SC_FALSE)
         return SC_FALSE;
 
-    if (sc_helper_resolve_system_identifier(keynode_ui_command_translate_from_sc_str, &keynode_ui_command_translate_from_sc) == SC_FALSE)
+    if (sc_helper_resolve_system_identifier(keynode_ui_command_translate_from_sc_str, &ui_keynode_ui_command_translate_from_sc) == SC_FALSE)
         return SC_FALSE;
 
-    if (sc_helper_resolve_system_identifier(keynode_nrel_author_str, &keynode_nrel_author) == SC_FALSE)
+    if (sc_helper_resolve_system_identifier(keynode_nrel_author_str, &ui_keynode_nrel_author) == SC_FALSE)
         return SC_FALSE;
 
-    if (sc_helper_resolve_system_identifier(keynode_ui_nrel_user_answer_formats_str, &keynode_ui_nrel_user_answer_formats) == SC_FALSE)
+    if (sc_helper_resolve_system_identifier(keynode_ui_nrel_user_answer_formats_str, &ui_keynode_ui_nrel_user_answer_formats) == SC_FALSE)
         return SC_FALSE;
 
-    if (sc_helper_resolve_system_identifier(keynode_ui_rrel_source_sc_construction_str, &keynode_ui_rrel_source_sc_construction) == SC_FALSE)
+    if (sc_helper_resolve_system_identifier(keynode_ui_rrel_source_sc_construction_str, &ui_keynode_ui_rrel_source_sc_construction) == SC_FALSE)
         return SC_FALSE;
 
-    if (sc_helper_resolve_system_identifier(keynode_ui_rrel_output_format_str, &keynode_ui_rrel_output_format) == SC_FALSE)
+    if (sc_helper_resolve_system_identifier(keynode_ui_rrel_output_format_str, &ui_keynode_ui_rrel_output_format) == SC_FALSE)
+        return SC_FALSE;
+
+    if (sc_helper_resolve_system_identifier(keynode_nrel_translation_str, &ui_keynode_nrel_translation) == SC_FALSE)
+        return SC_FALSE;
+
+
+    if (sc_helper_resolve_system_identifier(keynode_format_scs_str, &ui_keynode_format_scs) == SC_FALSE)
         return SC_FALSE;
 
     return SC_TRUE;

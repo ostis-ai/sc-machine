@@ -27,9 +27,16 @@ along with OSTIS.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <glib.h>
 
+GStaticRecMutex mutex;
+
+#define LOCK g_static_rec_mutex_lock(&mutex);
+#define UNLOCK g_static_rec_mutex_unlock(&mutex);
+
 sc_bool sc_memory_initialize(const sc_char *repo_path)
 {
     sc_bool res = sc_storage_initialize(repo_path);
+
+    g_static_rec_mutex_init(&mutex);
 
     return res;
 }
@@ -63,77 +70,114 @@ void sc_memory_shutdown_ext()
 
 void sc_memory_shutdown()
 {
+    g_static_rec_mutex_free(&mutex);
     sc_storage_shutdown();
 }
 
 sc_bool sc_memory_is_initialized()
 {
-    //! @todo make it thread-safe
-    return sc_storage_is_initialized();
+    sc_bool res;
+    LOCK;
+    res = sc_storage_is_initialized();
+    UNLOCK;
+    return res;
 }
 
 sc_bool sc_memory_is_element(sc_addr addr)
 {
-    //! @todo make it thread-safe
-    return sc_storage_is_element(addr);
+    sc_bool res;
+    LOCK;
+    res = sc_storage_is_element(addr);
+    UNLOCK;
+    return res;
 }
 
 sc_result sc_memory_element_free(sc_addr addr)
 {
-    //! @todo make it thread-safe
-    return sc_storage_element_free(addr);
+    sc_result res;
+    LOCK;
+    res = sc_storage_element_free(addr);
+    UNLOCK;
+    return res;
 }
 
 sc_addr sc_memory_node_new(sc_type type)
 {
-    //! @todo make it thread-safe
-    return sc_storage_node_new(type);
+    sc_addr res;
+    LOCK;
+    res = sc_storage_node_new(type);
+    UNLOCK;
+    return res;
 }
 
 sc_addr sc_memory_link_new()
 {
-    //! @todo make it thread-safe
-    return sc_storage_link_new();
+    sc_addr res;
+    LOCK;
+    res = sc_storage_link_new();
+    UNLOCK;
+    return res;
 }
 
 sc_addr sc_memory_arc_new(sc_type type, sc_addr beg, sc_addr end)
 {
-    //! @todo make it thread-safe
-    return sc_storage_arc_new(type, beg, end);
+    sc_addr res;
+    LOCK;
+    res = sc_storage_arc_new(type, beg, end);
+    UNLOCK;
+    return res;
 }
 
 sc_result sc_memory_get_element_type(sc_addr addr, sc_type *result)
 {
-    //! @todo make it thread-safe
-    return sc_storage_get_element_type(addr, result);
+    sc_result res;
+    LOCK;
+    res = sc_storage_get_element_type(addr, result);
+    UNLOCK;
+    return res;
 }
 
 sc_result sc_memory_get_arc_begin(sc_addr addr, sc_addr *result)
 {
-    //! @todo make it thread-safe
-    return sc_storage_get_arc_begin(addr, result);
+    sc_result res;
+    LOCK;
+    res = sc_storage_get_arc_begin(addr, result);
+    UNLOCK;
+    return res;
 }
 
 sc_result sc_memory_get_arc_end(sc_addr addr, sc_addr *result)
 {
-    //! @todo make it thread-safe
-    return sc_storage_get_arc_end(addr, result);
+    sc_result res;
+    LOCK;
+    res = sc_storage_get_arc_end(addr, result);
+    UNLOCK;
+    return res;
 }
 
 sc_result sc_memory_set_link_content(sc_addr addr, const sc_stream *stream)
 {
-    //! @todo make it thread-safe
-    return sc_storage_set_link_content(addr, stream);
+    sc_result res;
+    LOCK;
+    res = sc_storage_set_link_content(addr, stream);
+    UNLOCK;
+    return res;
 }
 
 sc_result sc_memory_get_link_content(sc_addr addr, sc_stream **stream)
 {
-    //! @todo make it thread-safe
-    return sc_storage_get_link_content(addr, stream);
+    sc_result res;
+    LOCK;
+    res = sc_storage_get_link_content(addr, stream);
+    UNLOCK;
+    return res;
 }
 
 sc_result sc_memory_find_links_with_content(const sc_stream *stream, sc_addr **result, sc_uint32 *result_count)
 {
-    //! @todo make it thread-safe
-    return sc_storage_find_links_with_content(stream, result, result_count);
+    sc_result res;
+    LOCK;
+    res = sc_storage_find_links_with_content(stream, result, result_count);
+    UNLOCK;
+    return res;
 }

@@ -20,21 +20,18 @@ along with OSTIS.  If not, see <http://www.gnu.org/licenses/>.
 -----------------------------------------------------------------------------
 */
 
-#ifndef _ui_keynodes_h_
-#define _ui_keynodes_h_
+#ifndef _ui_command_h_
+#define _ui_command_h_
 
-#include "sc_memory_headers.h"
+extern "C"
+{
+#include "sc_memory.h"
+}
 
-extern sc_addr keynode_ui_user;
-extern sc_addr keynode_ui_command_translate_from_sc;
-extern sc_addr keynode_ui_nrel_user_answer_formats;
-extern sc_addr keynode_ui_rrel_source_sc_construction;
-extern sc_addr keynode_ui_rrel_output_format;
+//! Setup event handler for command operations
+sc_result ui_initialize_commands();
 
-extern sc_addr keynode_question_nrel_answer;
-extern sc_addr keynode_nrel_author;
+//! Destroy event handlers for command operations
+void ui_shutdown_commands();
 
-//! Initialize all keynodes, that will be used in extension
-sc_bool initialize_keynodes();
-
-#endif
+#endif // _ui_command_h_

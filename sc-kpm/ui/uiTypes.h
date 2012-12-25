@@ -20,13 +20,26 @@ along with OSTIS.  If not, see <http://www.gnu.org/licenses/>.
 -----------------------------------------------------------------------------
 */
 
-#ifndef _ui_translators_h_
-#define _ui_translators_h_
+#ifndef _ui_types_h_
+#define _ui_types_h_
 
-//! Initialize all translator operations
-void ui_initialize_translators();
+extern "C"
+{
+#include "sc_memory_headers.h"
+}
 
-//! Shutdown all translator operations
-void ui_shutdown_translators();
+#include <string>
+#include <sstream>
+#include <map>
+#include <list>
 
-#endif // _ui_translators_h_
+typedef std::string String;
+typedef std::stringstream StringStream;
+
+typedef std::list<sc_addr> tScAddrList;
+typedef std::map<sc_addr, sc_type> tScAddrToScTypeMap;
+
+// --- operators ---
+bool operator < (const sc_addr &addr1, const sc_addr &addr2);
+
+#endif

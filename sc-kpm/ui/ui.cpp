@@ -20,21 +20,40 @@ along with OSTIS.  If not, see <http://www.gnu.org/licenses/>.
 -----------------------------------------------------------------------------
 */
 
-#include "ui_translators.h"
-#include "ui_keynodes.h"
+#include "uiPrecompiled.h"
+#include "ui.h"
 
-#include "translators/ui_translator_sc2scs.h"
+#include "uiTranslators.h"
+#include "uiCommands.h"
+#include "uiKeynodes.h"
 
-sc_event *ui_translator_sc2scs_event = nullptr;
-
-void ui_initialize_translators()
+extern "C"
 {
-    ui_translator_sc2scs_event = sc_event_new(keynode_ui_command_translate_from_sc, SC_EVENT_ADD_OUTPUT_ARC, 0, ui_translate_sc2scs, 0);
-    if (ui_translator_sc2scs_event == nullptr)
+#include <glib.h>
+}
+
+// ------------------- Module ------------------------------
+sc_result initialize()
+{
+
+    if (!initialize_keynodes())
+    {
+        g_warning("Some errors, while initialize ui keynodes");
         return SC_RESULT_ERROR;
+    }
+
+    ui_initialize_commands();
+    ui_initialize_translators();
+
+    return SC_RESULT_OK;
 }
 
-void ui_shutdown_translators()
+sc_result shutdown()
 {
 
+    ui_shutdown_translators();
+    ui_shutdown_commands();
+
+    return SC_RESULT_OK;
 }
+

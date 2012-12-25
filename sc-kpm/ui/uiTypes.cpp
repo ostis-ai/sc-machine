@@ -20,11 +20,10 @@ along with OSTIS.  If not, see <http://www.gnu.org/licenses/>.
 -----------------------------------------------------------------------------
 */
 
-#ifndef _ui_translator_sc2scs_h_
-#define _ui_translator_sc2scs_h_
+#include "uiPrecompiled.h"
+#include "uiTypes.h"
 
-#include "sc_memory.h"
-
-sc_result ui_translate_sc2scs(sc_event *event, sc_addr arg);
-
-#endif
+bool operator < (const sc_addr &addr1, const sc_addr &addr2)
+{
+    return (addr1.seg < addr2.seg || addr1.offset < addr2.offset);
+}

@@ -250,6 +250,27 @@ sc_result sc_helper_set_system_identifier(sc_addr addr, sc_char* data, sc_uint32
     return SC_RESULT_OK;
 }
 
+sc_result sc_helper_get_system_identifier(sc_addr el, sc_addr *sys_idtf_addr)
+{
+    sc_iterator5 *it = 0;
+    sc_result res = SC_RESULT_ERROR;
+
+    it = sc_iterator5_f_a_a_a_f_new(el,
+                                    sc_type_arc_common | sc_type_const,
+                                    sc_type_link,
+                                    sc_type_arc_pos_const_perm,
+                                    sc_keynodes[SC_KEYNODE_NREL_SYSTEM_IDENTIFIER]);
+    g_assert(it != nullptr);
+
+    while (sc_iterator5_next(it) == SC_TRUE)
+    {
+        *sys_idtf_addr = sc_iterator5_value(it, 2);
+        res = SC_RESULT_OK;
+    }
+
+    return res;
+}
+
 sc_result sc_helper_get_keynode(sc_keynode keynode, sc_addr *keynode_addr)
 {
     if ((sc_helper_is_initialized == SC_FALSE) || (sc_keynodes == nullptr))
@@ -257,7 +278,7 @@ sc_result sc_helper_get_keynode(sc_keynode keynode, sc_addr *keynode_addr)
 
     *keynode_addr = sc_keynodes[(sc_uint32)keynode];
 
-    return SC_TRUE;
+    return SC_RESULT_OK;
 }
 
 

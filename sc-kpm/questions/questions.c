@@ -27,7 +27,7 @@ const char keynode_question_initiated_str[] = "question_initiated";
 const char keynode_question_nrel_answer_str[] = "question_nrel_answer";
 
 sc_addr keynode_question_initiated;
-sc_addr keynode_question_nrel_answer;
+sc_addr ui_keynode_question_nrel_answer;
 
 
 // --------------------- Events -----------------------
@@ -41,6 +41,7 @@ sc_result question_search_all_output_arcs(sc_event *event, sc_addr arg)
     sc_addr value;
     sc_bool arg_exist = SC_FALSE;
     sc_iterator3 *it = 0;
+    sc_uint32 i = 0;
 
     if (sc_memory_get_arc_end(arg, &question_node) != SC_RESULT_OK)
         return SC_RESULT_ERROR;
@@ -64,15 +65,18 @@ sc_result question_search_all_output_arcs(sc_event *event, sc_addr arg)
         it = sc_iterator3_f_a_a_new(question_argument, 0, 0);
         while (sc_iterator3_next(it))
         {
-            value = sc_iterator3_value(it, 2);
-            sc_memory_arc_new(sc_type_arc_pos_const_perm, answer_node, value);
+            for (i = 0; i < 3; ++i)
+            {
+                value = sc_iterator3_value(it, i);
+                sc_memory_arc_new(sc_type_arc_pos_const_perm, answer_node, value);
+            }
         }
         sc_iterator3_free(it);
     }
 
     // connect question with answer
     value = sc_memory_arc_new(sc_type_arc_common | sc_type_const, question_node, answer_node);
-    sc_memory_arc_new(sc_type_arc_pos_const_perm, keynode_question_nrel_answer, value);
+    sc_memory_arc_new(sc_type_arc_pos_const_perm, ui_keynode_question_nrel_answer, value);
 
     return SC_RESULT_OK;
 }
@@ -85,7 +89,7 @@ sc_result initialize()
     if (sc_helper_resolve_system_identifier(keynode_question_initiated_str, &keynode_question_initiated) == SC_FALSE)
         return SC_RESULT_ERROR;
 
-    if (sc_helper_resolve_system_identifier(keynode_question_nrel_answer_str, &keynode_question_nrel_answer) == SC_FALSE)
+    if (sc_helper_resolve_system_identifier(keynode_question_nrel_answer_str, &ui_keynode_question_nrel_answer) == SC_FALSE)
         return SC_RESULT_ERROR;
 
 

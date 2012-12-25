@@ -20,12 +20,14 @@ along with OSTIS.  If not, see <http://www.gnu.org/licenses/>.
 -----------------------------------------------------------------------------
 */
 
-#include "ui_translator_sc2scs.h"
+#ifndef _ui_precompiled_h_
+#define _ui_precompiled_h_
 
+#include "uiTypes.h"
 
-sc_result ui_translate_sc2scs(sc_event *event, sc_addr arg)
+extern "C"
 {
-
-
-    return SC_RESULT_OK;
+#include "sc_helper.h"
 }
+
+#endif // UI_PRECOMPILED_H

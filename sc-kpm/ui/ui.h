@@ -23,14 +23,19 @@ along with OSTIS.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef _ui_h_
 #define _ui_h_
 
+extern "C"
+{
 #include "sc_memory_headers.h"
+}
 
-
+extern "C"
+{
 // --------------- Module ----------------
 //! Module initialization function
 sc_result initialize();
 
 //! Module shutdown function
 sc_result shutdown();
+}
 
 #endif
