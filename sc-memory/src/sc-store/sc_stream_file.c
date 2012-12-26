@@ -111,8 +111,9 @@ sc_stream* sc_stream_file_new(sc_char *file_name, sc_uint8 flags)
 
     if (flags & SC_STREAM_READ)
     {
-        g_assert(!(flags & SC_STREAM_APPEND)); // coldn't support append in read mode
+        g_assert(!(flags & SC_STREAM_APPEND)); // couldn't support append in read mode
         fd = fopen(file_name, "r");
+        g_assert(fd != 0);
     }else
     {
         if (flags & SC_STREAM_WRITE)

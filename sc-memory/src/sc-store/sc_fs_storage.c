@@ -365,12 +365,11 @@ sc_result sc_fs_storage_get_checksum_content(const sc_check_sum *check_sum, sc_s
     g_snprintf(abs_path, MAX_PATH_LENGTH, "%s/%s", contents_path, path);
     g_snprintf(data_path, MAX_PATH_LENGTH, "%sdata", abs_path);
 
-    printf("%s\n", data_path);
-
     // check if specified path exist
     if (g_file_test(data_path, G_FILE_TEST_EXISTS))
     {
         *stream = sc_stream_file_new(data_path, SC_STREAM_READ);
+        g_assert(*stream != nullptr);
         free(path);
         return SC_RESULT_OK; // do nothing, file saved
     }

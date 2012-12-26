@@ -103,6 +103,7 @@ sc_bool ui_translate_resolve_system_identifier(sc_addr el, String &sys_idtf)
                 sc_stream_read_data(idtf_stream, buffer, idtf_length, &read_bytes);
                 sys_idtf.append(buffer, read_bytes);
             }
+            sc_stream_free(idtf_stream);
 
             result = SC_TRUE;
         }
