@@ -138,8 +138,8 @@ void Sc2ScsTranslator::run()
             continue; //! TODO logging
 
         String begin_idtf, end_idtf;
-        ui_translate_resolve_system_identifier(arc_beg, begin_idtf);
-        ui_translate_resolve_system_identifier(arc_end, end_idtf);
+        resolveSystemIdentifier(arc_beg, begin_idtf);
+        resolveSystemIdentifier(arc_end, end_idtf);
 
         // determine arc type
         String arc_connector = "<>";
@@ -150,6 +150,19 @@ void Sc2ScsTranslator::run()
         mOutputData += begin_idtf + " " + arc_connector + " " + end_idtf + ";;\n";
     }
 
+}
+
+void Sc2ScsTranslator::resolveSystemIdentifier(const sc_addr &addr, String &idtf)
+{
+    tSystemIdentifiersMap::iterator it = mSystemIdentifiers.find(addr);
+    if (it != mSystemIdentifiers.end())
+    {
+        idtf = it->second;
+        return;
+    }
+
+    ui_translate_resolve_system_identifier(addr, idtf);
+    mSystemIdentifiers[addr] = idtf;
 }
 
 bool Sc2ScsTranslator::isNeedToTranslate(const sc_addr &addr) const
@@ -177,8 +190,11 @@ sc_result Sc2ScsTranslator::ui_translate_sc2scs(sc_event *event, sc_addr arg)
     if (ui_translate_command_resolve_arguments(cmd_addr, &format_addr, &input_addr) != SC_RESULT_OK)
         return SC_RESULT_ERROR;
 
-    Sc2ScsTranslator translator;
-    translator.translate(input_addr, format_addr);
+    if (format_addr == ui_keynode_format_scs)
+    {
+        Sc2ScsTranslator translator;
+        translator.translate(input_addr, format_addr);
+    }
 
     return SC_RESULT_OK;
 }

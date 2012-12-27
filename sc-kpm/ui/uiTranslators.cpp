@@ -25,17 +25,21 @@ along with OSTIS.  If not, see <http://www.gnu.org/licenses/>.
 #include "uiKeynodes.h"
 
 #include "translators/uiSc2ScsTranslator.h"
+#include "translators/uiSc2SCgJsonTranslator.h"
 
 sc_event *ui_translator_sc2scs_event = (sc_event*)nullptr;
+sc_event *ui_translator_sc2scg_json_event = (sc_event*)nullptr;
 
 void ui_initialize_translators()
 {
     ui_translator_sc2scs_event = sc_event_new(ui_keynode_ui_command_translate_from_sc, SC_EVENT_ADD_OUTPUT_ARC, 0, Sc2ScsTranslator::ui_translate_sc2scs, 0);
+    ui_translator_sc2scg_json_event = sc_event_new(ui_keynode_ui_command_translate_from_sc, SC_EVENT_ADD_OUTPUT_ARC, 0, Sc2SCgJsonTranslator::ui_translate_sc2scg_json, 0);
 }
 
 void ui_shutdown_translators()
 {
-
+    sc_event_destroy(ui_translator_sc2scs_event);
+    sc_event_destroy(ui_translator_sc2scg_json_event);
 }
 
 sc_result ui_translate_command_resolve_arguments(sc_addr cmd_addr, sc_addr *output_fmt_addr, sc_addr *source_addr)

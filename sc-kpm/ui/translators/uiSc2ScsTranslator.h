@@ -53,6 +53,9 @@ protected:
     //! Check if sc-element need to be translated
     bool isNeedToTranslate(const sc_addr &addr) const;
 
+    //! Resolve system identifier for specified sc-addr
+    void resolveSystemIdentifier(const sc_addr &addr, String &idtf);
+
 protected:
     //! Sc-addr of input construction
     sc_addr mInputConstructionAddr;
@@ -63,6 +66,10 @@ protected:
     tScAddrToScTypeMap mArcs;
     tScAddrToScTypeMap mNodes;
     tScAddrToScTypeMap mLinks;
+
+    //! Map of resolved system identifiers
+    typedef std::map<sc_addr, String> tSystemIdentifiersMap;
+    tSystemIdentifiersMap mSystemIdentifiers;
 
     //! Output scs
     String mOutputData;

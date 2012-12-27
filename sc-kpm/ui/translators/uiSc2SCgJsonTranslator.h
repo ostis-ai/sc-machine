@@ -20,28 +20,41 @@ along with OSTIS.  If not, see <http://www.gnu.org/licenses/>.
 -----------------------------------------------------------------------------
 */
 
-#ifndef _ui_keynodes_h_
-#define _ui_keynodes_h_
+#ifndef _ui_Sc2SCgJsonTranslator_h_
+#define _ui_Sc2SCgJsonTranslator_h_
 
-extern "C"
+#include "uiTypes.h"
+
+/*!
+ * \brief Class that translates sc-construction into
+ * SCs-code.
+ */
+class Sc2SCgJsonTranslator
 {
-#include "sc_memory_headers.h"
-}
+public:
+    explicit Sc2SCgJsonTranslator();
+    virtual ~Sc2SCgJsonTranslator();
 
-extern sc_addr ui_keynode_ui_user;
-extern sc_addr ui_keynode_ui_command_translate_from_sc;
-extern sc_addr ui_keynode_ui_nrel_user_answer_formats;
-extern sc_addr ui_keynode_ui_rrel_source_sc_construction;
-extern sc_addr ui_keynode_ui_rrel_output_format;
+    /*! Run translation.
+     * @param input_addr sc-addr of sc-construction, that need to be translated
+     * @param format_addr sc-addr of output format
+     */
+    void translate(const sc_addr &input_addr, const sc_addr &format_addr);
 
-extern sc_addr ui_keynode_question_nrel_answer;
-extern sc_addr ui_keynode_nrel_author;
-extern sc_addr ui_keynode_nrel_translation;
+    static sc_result ui_translate_sc2scg_json(sc_event *event, sc_addr arg);
 
-extern sc_addr ui_keynode_format_scs;
-extern sc_addr ui_keynode_format_scg_json;
+private:
+    //! Build id from specified sc-addr
+    String buildId(const sc_addr &addr) const;
 
-//! Initialize all keynodes, that will be used in extension
-sc_bool initialize_keynodes();
+protected:
+    //! Sc-addr of input construction
+    sc_addr mInputConstructionAddr;
+    //! Sc-addr of output format
+    sc_addr mOutputFormatAddr;
 
-#endif
+    //! Output json string
+    String mOutputJson;
+};
+
+#endif // _ui_Sc2SCgJsonTranslator_h_

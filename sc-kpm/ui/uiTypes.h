@@ -38,8 +38,10 @@ typedef std::stringstream StringStream;
 
 typedef std::list<sc_addr> tScAddrList;
 typedef std::map<sc_addr, sc_type> tScAddrToScTypeMap;
+typedef std::map<String, String> tStringStringMap;
 
 // --- operators ---
 bool operator < (const sc_addr &addr1, const sc_addr &addr2);
+bool operator == (const sc_addr &addr1, const sc_addr &addr2);
 
 #endif
