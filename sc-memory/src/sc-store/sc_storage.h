@@ -24,7 +24,7 @@ along with OSTIS.  If not, see <http://www.gnu.org/licenses/>.
 #define _sc_storage_h_
 
 #include "sc_types.h"
-#include "sc_config.h"
+#include "sc_defines.h"
 #include "sc_stream.h"
 
 struct _sc_elements_stat
@@ -165,9 +165,9 @@ sc_result sc_storage_get_link_content(sc_addr addr, sc_stream **stream);
  * @param stream Pointert to stream that contains data for search
  * @param result Pointer to result container
  * @param result_count Container for results count
- * @return If sc-links with specified checksum founded, then sc-addrs of founded link
+ * @return If sc-links with specified checksum found, then sc-addrs of found link
  * writes into \p result array and function returns SC_OK; otherwise \p result will contain
- * empty sc-addr and function returns SC_OK. In any case \p result_count contains number of founded
+ * empty sc-addr and function returns SC_OK. In any case \p result_count contains number of found
  * sc-addrs
  * @attention \p result array need to be free after usage
  */

@@ -64,7 +64,7 @@ sctpErrorCode sctpCommand::processCommand(QIODevice *inDevice, QIODevice *outDev
     inDevice->read((char*)&cmdId, sizeof(cmdId));
     inDevice->read((char*)&cmdParamSize, sizeof(cmdParamSize));
 
-    qDebug() << "command code: " << cmdCode << "; params size: " << cmdParamSize << "\n";
+    //qDebug() << "command code: " << cmdCode << "; params size: " << cmdParamSize << "\n";
 
     // read params data
     QByteArray paramsData(cmdParamSize, 0);

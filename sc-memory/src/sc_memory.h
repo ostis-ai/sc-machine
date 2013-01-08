@@ -31,7 +31,7 @@ along with OSTIS.  If not, see <http://www.gnu.org/licenses/>.
 /*! Initialize sc-memory with specified path to repository
  * @param repo_path Path to repository on file system
  */
-sc_bool sc_memory_initialize(const sc_char *repo_path);
+sc_bool sc_memory_initialize(const sc_char *repo_path, const sc_char *config_file);
 
 /*! Initialize sc-memory extensions from specified \p path
  * @param path Path to directory, that contains extensions
@@ -139,9 +139,9 @@ sc_result sc_memory_get_link_content(sc_addr addr, sc_stream **stream);
  * @param stream Pointert to stream that contains data for search
  * @param result Pointer to result container
  * @param result_count Container for results count
- * @return If sc-links with specified checksum founded, then sc-addrs of founded link
+ * @return If sc-links with specified checksum found, then sc-addrs of found link
  * writes into \p result array and function returns SC_OK; otherwise \p result will contain
- * empty sc-addr and function returns SC_OK. In any case \p result_count contains number of founded
+ * empty sc-addr and function returns SC_OK. In any case \p result_count contains number of found
  * sc-addrs
  * @attention \p result array need to be free after usage
  */

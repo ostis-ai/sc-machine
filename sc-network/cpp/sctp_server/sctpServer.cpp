@@ -74,7 +74,7 @@ void sctpServer::start(const QString &config)
 
     // initialize sc-memory
     qDebug() << "Initialize sc-memory\n";
-    sc_memory_initialize(mRepoPath.toStdString().c_str());
+    sc_memory_initialize(mRepoPath.toStdString().c_str(), config.toStdString().c_str());
     sc_helper_init();
     sc_memory_initialize_ext(mExtPath.toStdString().c_str());
 }

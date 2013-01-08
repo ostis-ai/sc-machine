@@ -19,7 +19,7 @@ sc_result resolve_nrel_system_identifier()
                                              SC_STREAM_READ, SC_FALSE);
     sc_uint32 i = 0;
     sc_iterator5 *it = 0;
-    sc_bool founded = SC_FALSE;
+    sc_bool found = SC_FALSE;
     sc_addr addr1, addr2;
 
     // try to find nrel_system_dentifier strings
@@ -41,10 +41,10 @@ sc_result resolve_nrel_system_identifier()
                 // comare begin sc-element and attribute, they must be equivalent
                 if (SC_ADDR_IS_EQUAL(addr1, addr2))
                 {
-                    if (founded == SC_FALSE)
+                    if (found == SC_FALSE)
                     {
                         sc_keynodes[SC_KEYNODE_NREL_SYSTEM_IDENTIFIER] = addr1;
-                        founded = SC_TRUE;
+                        found = SC_TRUE;
                     }else
                     {
                         sc_iterator5_free(it);
@@ -65,7 +65,7 @@ sc_result resolve_nrel_system_identifier()
 
     sc_stream_free(stream);
 
-    return founded == SC_TRUE ? SC_RESULT_OK : SC_RESULT_ERROR;
+    return found == SC_TRUE ? SC_RESULT_OK : SC_RESULT_ERROR;
 }
 
 void _init_keynodes_str()
@@ -130,7 +130,7 @@ sc_result sc_helper_find_element_by_system_identifier(sc_char* data, sc_uint32 l
     sc_stream *stream = 0;
     sc_uint32 i = 0;
     sc_iterator5 *it = 0;
-    sc_bool founded = SC_FALSE;
+    sc_bool found = SC_FALSE;
 
     g_assert(sc_helper_is_initialized == SC_TRUE);
     g_assert(sc_keynodes != 0);
@@ -148,9 +148,9 @@ sc_result sc_helper_find_element_by_system_identifier(sc_char* data, sc_uint32 l
                                             sc_keynodes[SC_KEYNODE_NREL_SYSTEM_IDENTIFIER]);
             if (sc_iterator5_next(it))
             {
-                if (founded == SC_FALSE)
+                if (found == SC_FALSE)
                 {
-                    founded = SC_TRUE;
+                    found = SC_TRUE;
                     *result_addr = sc_iterator5_value(it, 0);
                 }else
                 {
@@ -170,7 +170,7 @@ sc_result sc_helper_find_element_by_system_identifier(sc_char* data, sc_uint32 l
 
     sc_stream_free(stream);
 
-    return founded == SC_TRUE ? SC_RESULT_OK : SC_RESULT_ERROR;
+    return found == SC_TRUE ? SC_RESULT_OK : SC_RESULT_ERROR;
 }
 
 sc_result sc_helper_set_system_identifier(sc_addr addr, sc_char* data, sc_uint32 len)

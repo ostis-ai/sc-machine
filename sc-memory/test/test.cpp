@@ -402,7 +402,7 @@ void test6()
 
         if (sc_storage_find_links_with_content(stream, &results, &results_count) == SC_RESULT_OK)
         {
-            printf("founded: \n");
+            printf("found: \n");
             for (j = 0; j < results_count; j++)
                 printf("seg=%d, offset=%d\n", results[j].seg, results[j].offset);
             g_free(results);

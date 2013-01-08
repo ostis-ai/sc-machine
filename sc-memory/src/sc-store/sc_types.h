@@ -23,7 +23,7 @@ along with OSTIS.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef _sc_types_h_
 #define _sc_types_h_
 
-#include "sc_config.h"
+#include "sc_defines.h"
 
 #define nullptr ((void*)0)
 

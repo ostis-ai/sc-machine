@@ -23,7 +23,7 @@ along with OSTIS.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef _sc_iterator3_h_
 #define _sc_iterator3_h_
 
-#include "sc_config.h"
+#include "sc_defines.h"
 #include "sc_types.h"
 #include "sc_element.h"
 

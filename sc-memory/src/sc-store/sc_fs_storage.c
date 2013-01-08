@@ -120,7 +120,7 @@ sc_bool sc_fs_storage_read_from_path(GPtrArray *segments)
         fname = g_dir_read_name(dir);
     }
 
-    g_message("Segments founded: %u", files_count);
+    g_message("Segments found: %u", files_count);
 
     // load segments
     for (idx = 0; idx < files_count; idx++)

@@ -45,8 +45,8 @@ void ui_shutdown_translators()
 sc_result ui_translate_command_resolve_arguments(sc_addr cmd_addr, sc_addr *output_fmt_addr, sc_addr *source_addr)
 {
     sc_iterator5 *it = (sc_iterator5*)nullptr;
-    sc_bool fmt_founded = SC_FALSE;
-    sc_bool source_founded = SC_FALSE;
+    sc_bool fmt_found = SC_FALSE;
+    sc_bool source_found = SC_FALSE;
 
     // resolve output format
     it = sc_iterator5_f_a_a_a_f_new(cmd_addr,
@@ -58,12 +58,12 @@ sc_result ui_translate_command_resolve_arguments(sc_addr cmd_addr, sc_addr *outp
     while (sc_iterator5_next(it) == SC_TRUE)
     {
         *output_fmt_addr = sc_iterator5_value(it, 2);
-        fmt_founded = SC_TRUE;
+        fmt_found = SC_TRUE;
     }
 
     sc_iterator5_free(it);
 
-    if (fmt_founded == SC_FALSE)
+    if (fmt_found == SC_FALSE)
         return SC_RESULT_ERROR;
 
     // resolve input construction
@@ -76,12 +76,12 @@ sc_result ui_translate_command_resolve_arguments(sc_addr cmd_addr, sc_addr *outp
     while (sc_iterator5_next(it) == SC_TRUE)
     {
         *source_addr = sc_iterator5_value(it, 2);
-        source_founded = SC_TRUE;
+        source_found = SC_TRUE;
     }
 
     sc_iterator5_free(it);
 
-    if (source_founded == SC_FALSE)
+    if (source_found == SC_FALSE)
         return SC_RESULT_ERROR;
 
     return SC_RESULT_OK;

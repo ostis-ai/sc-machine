@@ -43,7 +43,8 @@ SOURCES += \
     src/sc-store/sc_iterator3.c \
     src/sc-store/sc_iterator5.c \
     src/sc_helper.c \
-    src/sc_memory_ext.c
+    src/sc_memory_ext.c \
+    src/sc-store/sc_config.c
 
 win32 {
     INCLUDEPATH += "../glib/include/glib-2.0"

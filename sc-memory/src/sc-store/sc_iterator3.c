@@ -158,7 +158,7 @@ sc_bool _sc_iterator3_f_a_a_next(sc_iterator3 *it)
             (sc_iterator_compare_type(el_type, it->params[2].type))
            )
         {
-            // store founded result
+            // store founderesult
             it->results[1] = arc_addr;
             it->results[2] = arc_element->arc.end;
 
@@ -208,7 +208,7 @@ sc_bool _sc_iterator3_f_a_f_next(sc_iterator3 *it)
             (sc_iterator_compare_type(arc_type, it->params[1].type))
            )
         {
-            // store founded result
+            // store found result
             it->results[1] = arc_addr;
             return SC_TRUE;
         }
@@ -256,7 +256,7 @@ sc_bool _sc_iterator3_a_a_f_next(sc_iterator3 *it)
             (sc_iterator_compare_type(el_type, it->params[0].type))
             )
         {
-            // store founded result
+            // store found result
             it->results[1] = arc_addr;
             it->results[0] = arc_element->arc.begin;
 

@@ -24,19 +24,25 @@ along with OSTIS.  If not, see <http://www.gnu.org/licenses/>.
 #include "sc-store/sc_storage.h"
 #include "sc_memory_ext.h"
 #include "sc_helper.h"
+#include "sc-store/sc_config.h"
 
 #include <glib.h>
 
-GStaticRecMutex mutex;
+GRecMutex mutex;
 
-#define LOCK g_static_rec_mutex_lock(&mutex);
-#define UNLOCK g_static_rec_mutex_unlock(&mutex);
+#define LOCK g_rec_mutex_lock(&mutex);
+#define UNLOCK g_rec_mutex_unlock(&mutex);
 
-sc_bool sc_memory_initialize(const sc_char *repo_path)
+sc_bool sc_memory_initialize(const sc_char *repo_path, const sc_char *config_file)
 {
-    sc_bool res = sc_storage_initialize(repo_path);
+    sc_bool res = SC_FALSE;
 
-    g_static_rec_mutex_init(&mutex);
+    sc_config_initialize(config_file);
+
+    g_message("Run with configuration.\n\tmax_loaded_segments: %d\n", sc_config_get_max_loaded_segments());
+
+    res = sc_storage_initialize(repo_path);
+    g_rec_mutex_init(&mutex);
 
     return res;
 }
@@ -66,11 +72,12 @@ sc_bool sc_memory_initialize_ext(const sc_char *path)
 void sc_memory_shutdown_ext()
 {
     sc_ext_shutdown();
+    sc_config_shutdown();
 }
 
 void sc_memory_shutdown()
 {
-    g_static_rec_mutex_free(&mutex);
+    g_rec_mutex_clear(&mutex);
     sc_storage_shutdown();
 }
 

@@ -23,7 +23,20 @@ along with OSTIS.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef _sc_defines_h_
 #define _sc_defines_h_
 
-#include "sc_config.h"
+/*! Bound empty slot serach
+ *
+ * Can be used just with USE_SEGMENT_EMPTY_SLOT_BUFFER = 0
+ */
+#define BOUND_EMPTY_SLOT_SEARCH 0
+
+//! Use empty slots buffering for segment
+#define USE_SEGMENT_EMPTY_SLOT_BUFFER 0
+
+//! Enable network scaling
+#define USE_NETWORK_SCALE 0
+
+//! Use two oriented arc list
+#define USE_TWO_ORIENTED_ARC_LIST 0
 
 #define SEGMENT_EMPTY_SEARCH_LEN 1024 // number of element in two directions to search next empty slot in segment
 #define SEGMENT_EMPTY_BUFFER_SIZE 8 // number of empty slot buffer for segment

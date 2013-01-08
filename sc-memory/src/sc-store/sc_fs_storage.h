@@ -80,9 +80,9 @@ sc_result sc_fs_storage_add_content_addr(sc_addr addr, const sc_check_sum *check
  * @param check_sum Checksum for search
  * @param result Pointer to result container
  * @param result_count Container for results count
- * @return If sc-links with specified checksum founded, then sc-addrs of founded link
+ * @return If sc-links with specified checksum found, then sc-addrs of found link
  * writes into \p result array and function returns SC_OK; otherwise \p result will contain
- * empty sc-addr and function returns SC_OK. In any case \p result_count contains number of founded
+ * empty sc-addr and function returns SC_OK. In any case \p result_count contains number of found
  * sc-addrs
  * @attention \p result array need to be free after usage
  */
@@ -92,7 +92,7 @@ sc_result sc_fs_storage_find_links_with_content(const sc_check_sum *check_sum, s
  * @param check_sum Pointer to checksum for content data returning
  * @param stream Pointer to returned stream
  * @attention Returned pointer to stream need to be free after usage
- * @return If data by specified checksum founded, then return SC_OK; otherwise return SC_ERROR
+ * @return If data by specified checksum found, then return SC_OK; otherwise return SC_ERROR
  */
 sc_result sc_fs_storage_get_checksum_content(const sc_check_sum *check_sum, sc_stream **stream);
 
