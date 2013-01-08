@@ -32,7 +32,11 @@ along with OSTIS.  If not, see <http://www.gnu.org/licenses/>.
 #include <memory.h>
 #include <glib.h>
 
-GPtrArray *segments = 0;
+// segments array
+sc_segment **segments = 0;
+// number of segments
+sc_uint16 segments_num = 0;
+
 sc_uint seg_id = 0;
 sc_uint seg_queue[SEGS_QUEUE_SIZE];
 gint seg_queue_heap = -1;
@@ -79,15 +83,15 @@ void _sc_storage_update_segment_queue_impl(gpointer data,
                                            gpointer user_data)
 {
     //! TODO: make synhronization on case, when segment removed, or unloaded
-    sc_segment *segment;
-    sc_addr_seg idx = 0;
-    while ( (seg_queue_heap <= SEGS_QUEUE_SIZE) && (idx < segments->len) )
-    {
-        segment = sc_storage_get_segment(idx, SC_TRUE);
-        g_assert( segment != (sc_segment*)0 );
-        if (sc_segment_have_empty_slot(segment) == SC_TRUE)
-            _sc_storage_append_segment_to_queue(idx);
-    }
+//    sc_segment *segment;
+//    sc_addr_seg idx = 0;
+//    while ( (seg_queue_heap <= SEGS_QUEUE_SIZE) && (idx < segments->len) )
+//    {
+//        segment = sc_storage_get_segment(idx, SC_TRUE);
+//        g_assert( segment != (sc_segment*)0 );
+//        if (sc_segment_have_empty_slot(segment) == SC_TRUE)
+//            _sc_storage_append_segment_to_queue(idx);
+//    }
 }
 
 // -----------------------------------------------------------------------------
@@ -95,13 +99,13 @@ void _sc_storage_update_segment_queue_impl(gpointer data,
 
 sc_bool sc_storage_initialize(const char *path)
 {
-    g_assert( segments == (GPtrArray*)0 );
+    g_assert( segments == (sc_segment**)0 );
     g_assert( !is_initialized );
 
-    segments = g_ptr_array_new();
+    segments = g_new0(sc_segment*, SC_ADDR_SEG_MAX);
 
     sc_fs_storage_initialize(path);
-    sc_fs_storage_read_from_path(segments);
+    sc_fs_storage_read_from_path(segments, &segments_num);
 
     time_stamp = 1;
 
@@ -119,7 +123,7 @@ sc_bool sc_storage_initialize(const char *path)
 void sc_storage_shutdown()
 {
     sc_uint idx = 0;
-    g_assert( segments != (GPtrArray*)0 );
+    g_assert( segments != (sc_segment**)0 );
 
     /*g_thread_pool_free( seg_queue_update_pool,
               SC_TRUE, SC_FALSE);
@@ -127,11 +131,14 @@ void sc_storage_shutdown()
   */
     sc_fs_storage_shutdown(segments);
 
-    for (idx = 0; idx < segments->len; idx++)
-        g_free(g_ptr_array_index(segments, idx));
+    for (idx = 0; idx < SC_ADDR_SEG_MAX; idx++)
+    {
+        if (segments[idx] == nullptr) continue; // skip segments, that are not loaded
+        g_free(segments[idx]);
+    }
 
-    g_ptr_array_free(segments, SC_TRUE);
-    segments = (GPtrArray*)0;
+    g_free(segments);
+    segments = (sc_segment**)0;
 
     is_initialized = SC_FALSE;
 }
@@ -144,8 +151,8 @@ sc_bool sc_storage_is_initialized()
 sc_segment* sc_storage_get_segment(sc_addr_seg seg, sc_bool force_load)
 {
     //! TODO: Make support of force loading
-    g_assert( seg >= 0 && seg < segments->len );
-    return (sc_segment*)g_ptr_array_index(segments, seg);
+    g_assert( seg < SC_ADDR_SEG_MAX );
+    return segments[seg];
 }
 
 sc_element* sc_storage_get_element(sc_addr addr, sc_bool force_load)
@@ -153,9 +160,9 @@ sc_element* sc_storage_get_element(sc_addr addr, sc_bool force_load)
     sc_segment *segment = 0;
     sc_element *res = 0;
 
-    if (addr.seg >= segments->len) return (sc_element*)0;
+    if (addr.seg >= SC_ADDR_SEG_MAX) return (sc_element*)0;
 
-    segment = (sc_segment*)g_ptr_array_index(segments, addr.seg);
+    segment = segments[addr.seg];
 
     if (segment == 0)
     {
@@ -201,9 +208,9 @@ sc_element* sc_storage_append_el_into_segments(sc_element *element, sc_addr *add
     }
 
     // if element still not added, then create new segment and append element into it
-    segment = sc_segment_new(segments->len);
-    addr->seg = segments->len;
-    g_ptr_array_add(segments, (gpointer)segment);
+    segment = sc_segment_new(segments_num);
+    addr->seg = segments_num;
+    segments[segments_num++] = segment;
 
     _sc_storage_append_segment_to_queue(addr->seg);
 
@@ -325,7 +332,7 @@ sc_addr sc_storage_arc_new(sc_type type,
                            sc_addr end)
 {
     sc_addr addr;
-    sc_element el, *beg_el, *end_el, *tmp_el, *tmp_arc;
+    sc_element el, *beg_el, *end_el, *tmp_el;
 
     memset(&el, 0, sizeof(el));
     g_assert( !(sc_type_node & type) );
@@ -490,9 +497,9 @@ void sc_storage_get_elements_stat(sc_elements_stat *stat)
     //! TODO: add loading of segment
 
     // iterate all elements and calculate statistics
-    for (s_idx = 0; s_idx < segments->len; s_idx++)
+    for (s_idx = 0; s_idx < segments_num; s_idx++)
     {
-        segment = (sc_segment*)g_ptr_array_index(segments, s_idx);
+        segment = segments[s_idx];
         g_assert( segment != (sc_segment*)0 );
         for (e_idx = 0; e_idx < SEGMENT_SIZE; e_idx++)
         {
@@ -525,6 +532,6 @@ sc_uint sc_storage_get_time_stamp()
 
 unsigned int sc_storage_get_segments_count()
 {
-    return segments->len;
+    return segments_num;
 }
 

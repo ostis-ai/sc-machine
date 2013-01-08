@@ -26,7 +26,6 @@ along with OSTIS.  If not, see <http://www.gnu.org/licenses/>.
 #include "sc_types.h"
 #include "sc_defines.h"
 #include "sc_stream.h"
-#include <glib.h>
 
 
 /*! Initialize file system storage in specified path
@@ -37,7 +36,7 @@ sc_bool sc_fs_storage_initialize(const char *path);
 
 /*! Shutdown file system storage
  */
-sc_bool sc_fs_storage_shutdown(GPtrArray *segments);
+sc_bool sc_fs_storage_shutdown(sc_segment **segments);
 
 /*! Load segment from file system
  *
@@ -51,15 +50,16 @@ sc_segment* sc_fs_storage_load_segment(sc_uint id);
 /*! Load segments from file system storage
  *
  * @param segments Pointer to segments array.
+ * @param segments_num Pointer to container for number of segments
  * It will be contain pointers to loaded segments.
  */
-sc_bool sc_fs_storage_read_from_path(GPtrArray *segments);
+sc_bool sc_fs_storage_read_from_path(sc_segment **segments, sc_uint16 *segments_num);
 
 /*! Save segments to file system
  *
  * @param segments Pointer to array that contains segment pointers to save.
  */
-sc_bool sc_fs_storage_write_to_path(GPtrArray *segments);
+sc_bool sc_fs_storage_write_to_path(sc_segment **segments);
 
 /*! Write specified stream as content
  * @param addr sc-addr of sc-link that contains data

@@ -20,8 +20,8 @@ along with OSTIS.  If not, see <http://www.gnu.org/licenses/>.
 -----------------------------------------------------------------------------
 */
 
-#ifndef _sc_memory_h_
-#define _sc_memory_h_
+#ifndef _sc_memory_ext_h_
+#define _sc_memory_ext_h_
 
 #include "sc-store/sc_types.h"
 #include <gmodule.h>

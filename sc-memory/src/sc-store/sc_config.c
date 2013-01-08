@@ -40,7 +40,6 @@ void sc_config_initialize(const sc_char *file_path)
     if ((file_path != nullptr) && (g_key_file_load_from_file(key_file, file_path, G_KEY_FILE_NONE, 0) == TRUE))
     {
         // parse settings
-
         if (g_key_file_has_key(key_file, str_group_memory, str_key_max_loaded_segments, 0) == TRUE)
             config_max_loaded_segments = g_key_file_get_integer(key_file, str_group_memory, str_key_max_loaded_segments, 0);
 

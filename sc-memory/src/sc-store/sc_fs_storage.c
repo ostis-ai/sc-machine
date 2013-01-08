@@ -23,9 +23,11 @@ along with OSTIS.  If not, see <http://www.gnu.org/licenses/>.
 #include "sc_fs_storage.h"
 #include "sc_segment.h"
 #include "sc_stream_file.h"
+#include "sc_config.h"
 
 #include <stdlib.h>
 #include <memory.h>
+#include <glib.h>
 
 gchar *repo_path = 0;
 
@@ -57,7 +59,7 @@ sc_bool sc_fs_storage_initialize(const gchar *path)
     return SC_TRUE;
 }
 
-sc_bool sc_fs_storage_shutdown(GPtrArray *segments)
+sc_bool sc_fs_storage_shutdown(sc_segment **segments)
 {
     g_message("Shutdown sc-storage\n");
     g_message("Write storage into %s", repo_path);
@@ -87,13 +89,10 @@ sc_segment* sc_fs_storage_load_segment(sc_uint id)
     return segment;
 }
 
-sc_bool sc_fs_storage_read_from_path(GPtrArray *segments)
+sc_bool sc_fs_storage_read_from_path(sc_segment **segments, sc_uint16 *segments_num)
 {
     const gchar *fname = 0;
-    gchar file_name[MAX_PATH_LENGTH + 1];
-    gsize length = 0;
-    sc_uint files_count = 0, idx;
-    sc_segment *segment = 0;
+    sc_uint files_count = 0, idx, to_load;
     GDir *dir = 0;
 
     if (!g_file_test(repo_path, G_FILE_TEST_IS_DIR))
@@ -121,22 +120,23 @@ sc_bool sc_fs_storage_read_from_path(GPtrArray *segments)
     }
 
     g_message("Segments found: %u", files_count);
+    *segments_num = files_count;
 
+    to_load = MIN(files_count, sc_config_get_max_loaded_segments());
     // load segments
-    for (idx = 0; idx < files_count; idx++)
-        g_ptr_array_add( segments, (gpointer)sc_fs_storage_load_segment(idx) );
+    for (idx = 0; idx < to_load; idx++)
+        segments[idx] = (gpointer)sc_fs_storage_load_segment(idx);
 
-    g_message("Segments loaded: %u", segments->len);
+    g_message("Segments loaded: %u", idx);
 
     g_dir_close(dir);
     return SC_TRUE;
 }
 
-sc_bool sc_fs_storage_write_to_path(GPtrArray *segments)
+sc_bool sc_fs_storage_write_to_path(sc_segment **segments)
 {
     sc_uint idx = 0;
-    sc_segment *segment = 0;
-    GMappedFile *file = 0;
+    const sc_segment *segment = 0;
     gchar file_name[MAX_PATH_LENGTH + 1];
     gchar segments_path[MAX_PATH_LENGTH + 1];
 
@@ -154,9 +154,11 @@ sc_bool sc_fs_storage_write_to_path(GPtrArray *segments)
             return SC_FALSE;
     }
 
-    for (idx = 0; idx < segments->len; idx++)
+    for (idx = 0; idx < SC_ADDR_SEG_MAX; idx++)
     {
-        segment = (sc_segment*)g_ptr_array_index(segments, idx);
+        segment = segments[idx];
+        if (segment == nullptr) continue; // skip null segments
+
         _get_segment_path(segments_path, idx, MAX_PATH_LENGTH, file_name);
         g_file_set_contents(file_name, (gchar*)segment, sizeof(sc_segment), 0);
     }

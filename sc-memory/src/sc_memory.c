@@ -49,7 +49,9 @@ sc_bool sc_memory_initialize(const sc_char *repo_path, const sc_char *config_fil
 
 sc_bool sc_memory_initialize_ext(const sc_char *path)
 {
-    sc_result ext_res = sc_ext_initialize(path);
+    sc_result ext_res;
+
+    ext_res = sc_ext_initialize(path);
 
     switch (ext_res)
     {
