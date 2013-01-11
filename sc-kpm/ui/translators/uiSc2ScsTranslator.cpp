@@ -19,14 +19,15 @@ You should have received a copy of the GNU Lesser General Public License
 along with OSTIS.  If not, see <http://www.gnu.org/licenses/>.
 -----------------------------------------------------------------------------
 */
+
 #include "uiPrecompiled.h"
 #include "uiSc2ScsTranslator.h"
 
-#include "uiKeynodes.h"
 #include "uiTranslators.h"
+#include "uiKeynodes.h"
 
 // --------------------
-Sc2ScsTranslator::Sc2ScsTranslator()
+uiSc2ScsTranslator::uiSc2ScsTranslator()
 {
     mTypeToConnector[sc_type_arc_common] = ">";
     mTypeToConnector[sc_type_arc_pos_const_perm] = "->";
@@ -49,69 +50,12 @@ Sc2ScsTranslator::Sc2ScsTranslator()
     mTypeToConnector[sc_type_arc_access | sc_type_var | sc_type_arc_fuz | sc_type_arc_temp] = "_~/>";
 }
 
-Sc2ScsTranslator::~Sc2ScsTranslator()
+uiSc2ScsTranslator::~uiSc2ScsTranslator()
 {
 
 }
 
-void Sc2ScsTranslator::translate(const sc_addr &input_addr, const sc_addr &format_addr)
-{
-    mInputConstructionAddr = input_addr;
-    mOutputFormatAddr = format_addr;
-
-    collectObjects();
-
-    run();
-
-    // write into sc-link
-    sc_stream *result_data_stream = 0;
-    result_data_stream = sc_stream_memory_new(mOutputData.c_str(), mOutputData.size(), SC_STREAM_READ, SC_FALSE);
-
-    sc_addr result_addr = sc_memory_link_new();
-    sc_memory_set_link_content(result_addr, result_data_stream);
-
-    sc_stream_free(result_data_stream);
-
-    // generate translation
-    sc_addr arc_addr = sc_memory_arc_new(sc_type_arc_common | sc_type_const, mInputConstructionAddr, result_addr);
-    sc_memory_arc_new(sc_type_arc_pos_const_perm, ui_keynode_nrel_translation, arc_addr);
-}
-
-void Sc2ScsTranslator::collectObjects()
-{
-    sc_iterator3 *it = sc_iterator3_f_a_a_new(mInputConstructionAddr, sc_type_arc_pos_const_perm, 0);
-    while (sc_iterator3_next(it) == SC_TRUE)
-    {
-        sc_type el_type = 0;
-        sc_addr addr = sc_iterator3_value(it, 2);
-
-        //! TODO add error logging
-        if (sc_memory_get_element_type(addr, &el_type) != SC_RESULT_OK)
-            continue;
-
-        if (el_type & sc_type_node)
-        {
-            mNodes[addr] = el_type;
-            continue;
-        }
-
-        if (el_type & sc_type_arc_mask)
-        {
-            mArcs[addr] = el_type;
-            continue;
-        }
-
-        if (el_type & sc_type_link)
-        {
-            mLinks[addr] = el_type;
-            continue;
-        }
-
-    }
-    sc_iterator3_free(it);
-}
-
-void Sc2ScsTranslator::run()
+void uiSc2ScsTranslator::runImpl()
 {
     //! TODO logging sc-element, that can't be translated
 
@@ -152,7 +96,7 @@ void Sc2ScsTranslator::run()
 
 }
 
-void Sc2ScsTranslator::resolveSystemIdentifier(const sc_addr &addr, String &idtf)
+void uiSc2ScsTranslator::resolveSystemIdentifier(const sc_addr &addr, String &idtf)
 {
     tSystemIdentifiersMap::iterator it = mSystemIdentifiers.find(addr);
     if (it != mSystemIdentifiers.end())
@@ -165,22 +109,9 @@ void Sc2ScsTranslator::resolveSystemIdentifier(const sc_addr &addr, String &idtf
     mSystemIdentifiers[addr] = idtf;
 }
 
-bool Sc2ScsTranslator::isNeedToTranslate(const sc_addr &addr) const
-{
-    if (mNodes.find(addr) != mNodes.end())
-        return true;
-
-    if (mArcs.find(addr) != mArcs.end())
-        return true;
-
-    if (mLinks.find(addr) != mLinks.end())
-        return true;
-
-    return false;
-}
 
 // -------------------------------------------------------
-sc_result Sc2ScsTranslator::ui_translate_sc2scs(sc_event *event, sc_addr arg)
+sc_result uiSc2ScsTranslator::ui_translate_sc2scs(sc_event *event, sc_addr arg)
 {
     sc_addr cmd_addr, input_addr, format_addr;
 
@@ -192,7 +123,7 @@ sc_result Sc2ScsTranslator::ui_translate_sc2scs(sc_event *event, sc_addr arg)
 
     if (format_addr == ui_keynode_format_scs)
     {
-        Sc2ScsTranslator translator;
+        uiSc2ScsTranslator translator;
         translator.translate(input_addr, format_addr);
     }
 

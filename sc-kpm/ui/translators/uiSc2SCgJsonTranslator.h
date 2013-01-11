@@ -23,38 +23,29 @@ along with OSTIS.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef _ui_Sc2SCgJsonTranslator_h_
 #define _ui_Sc2SCgJsonTranslator_h_
 
-#include "uiTypes.h"
+#include "uiTranslatorFromSc.h"
 
 /*!
  * \brief Class that translates sc-construction into
  * SCs-code.
  */
-class Sc2SCgJsonTranslator
+class uiSc2SCgJsonTranslator : public uiTranslateFromSc
 {
 public:
-    explicit Sc2SCgJsonTranslator();
-    virtual ~Sc2SCgJsonTranslator();
+    explicit uiSc2SCgJsonTranslator();
+    virtual ~uiSc2SCgJsonTranslator();
 
-    /*! Run translation.
-     * @param input_addr sc-addr of sc-construction, that need to be translated
-     * @param format_addr sc-addr of output format
-     */
-    void translate(const sc_addr &input_addr, const sc_addr &format_addr);
 
     static sc_result ui_translate_sc2scg_json(sc_event *event, sc_addr arg);
+
+protected:
+    //! @copydoc uiTranslateFromSc::runImpl
+    void runImpl();
 
 private:
     //! Build id from specified sc-addr
     String buildId(const sc_addr &addr) const;
 
-protected:
-    //! Sc-addr of input construction
-    sc_addr mInputConstructionAddr;
-    //! Sc-addr of output format
-    sc_addr mOutputFormatAddr;
-
-    //! Output json string
-    String mOutputJson;
 };
 
 #endif // _ui_Sc2SCgJsonTranslator_h_

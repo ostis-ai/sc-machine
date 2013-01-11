@@ -20,20 +20,45 @@ along with OSTIS.  If not, see <http://www.gnu.org/licenses/>.
 -----------------------------------------------------------------------------
 */
 
-#ifndef SC_STREAM_MEMORY_H
-#define SC_STREAM_MEMORY_H
+#include "uiPrecompiled.h"
+#include "uiSc2SCnJsonTranslator.h"
 
-#include "sc_stream.h"
+#include "uiTranslators.h"
+#include "uiKeynodes.h"
 
-/*! Create memory data stream
- * @param buffer Pointer to memory buffer with data
- * @param buffer_size Size of data in buffer
- * @param flags Data stream flags
- * @param data_owner Flag that point to take ownership om data buffer by stream. Another words,
- * it means, that data will be free with stream.
- * @remarks The returned stream pointer should be freed with sc_stream_free function, when done using it.
- * @return Returns stream pointer if the stream was successfully created, or NULL if an error occurred
- */
-sc_stream* sc_stream_memory_new(const sc_char *buffer, sc_uint buffer_size, sc_uint8 flags, sc_bool data_owner);
+uiSc2SCnJsonTranslator::uiSc2SCnJsonTranslator()
+{
 
-#endif // SC_STREAM_MEMORY_H
+}
+
+uiSc2SCnJsonTranslator::~uiSc2SCnJsonTranslator()
+{
+
+}
+
+void uiSc2SCnJsonTranslator::runImpl()
+{
+
+}
+
+// -------------------------------------
+sc_result uiSc2SCnJsonTranslator::ui_translate_sc2scn(sc_event *event, sc_addr arg)
+{
+    sc_addr cmd_addr, input_addr, format_addr;
+
+    if (sc_memory_get_arc_end(arg, &cmd_addr) != SC_RESULT_OK)
+        return SC_RESULT_ERROR;
+
+    if (ui_translate_command_resolve_arguments(cmd_addr, &format_addr, &input_addr) != SC_RESULT_OK)
+        return SC_RESULT_ERROR;
+
+    if (format_addr == ui_keynode_format_scn_json)
+    {
+        uiSc2SCnJsonTranslator translator;
+        translator.translate(input_addr, format_addr);
+    }
+
+    return SC_RESULT_OK;
+}
+
+

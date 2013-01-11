@@ -23,56 +23,31 @@ along with OSTIS.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef _ui_translator_sc2scs_h_
 #define _ui_translator_sc2scs_h_
 
-#include "uiTypes.h"
+#include "uiTranslatorFromSc.h"
 
 /*!
  * \brief Class that translates sc-construction into
  * SCs-code.
  */
-class Sc2ScsTranslator
+class uiSc2ScsTranslator : public uiTranslateFromSc
 {
 public:
-    explicit Sc2ScsTranslator();
-    virtual ~Sc2ScsTranslator();
-
-    /*! Run translation.
-     * @param input_addr sc-addr of sc-construction, that need to be translated
-     * @param format_addr sc-addr of output format
-     */
-    void translate(const sc_addr &input_addr, const sc_addr &format_addr);
+    explicit uiSc2ScsTranslator();
+    virtual ~uiSc2ScsTranslator();
 
     static sc_result ui_translate_sc2scs(sc_event *event, sc_addr arg);
 
 protected:
-    //! Collect objects that need to be translated
-    void collectObjects();
-
-    //! Process input data and generate output
-    void run();
-
-    //! Check if sc-element need to be translated
-    bool isNeedToTranslate(const sc_addr &addr) const;
+    //! @copydoc uiTranslateFromSc::runImpl
+    void runImpl();
 
     //! Resolve system identifier for specified sc-addr
     void resolveSystemIdentifier(const sc_addr &addr, String &idtf);
 
 protected:
-    //! Sc-addr of input construction
-    sc_addr mInputConstructionAddr;
-    //! Sc-addr of output format
-    sc_addr mOutputFormatAddr;
-
-    // Maps of elements to translate
-    tScAddrToScTypeMap mArcs;
-    tScAddrToScTypeMap mNodes;
-    tScAddrToScTypeMap mLinks;
-
     //! Map of resolved system identifiers
     typedef std::map<sc_addr, String> tSystemIdentifiersMap;
     tSystemIdentifiersMap mSystemIdentifiers;
-
-    //! Output scs
-    String mOutputData;
 
     typedef std::map<sc_type, String> tScTypeToSCsConnectorMap;
     tScTypeToSCsConnectorMap mTypeToConnector;

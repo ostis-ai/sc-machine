@@ -20,20 +20,32 @@ along with OSTIS.  If not, see <http://www.gnu.org/licenses/>.
 -----------------------------------------------------------------------------
 */
 
-#ifndef SC_STREAM_MEMORY_H
-#define SC_STREAM_MEMORY_H
+#ifndef _uiSc2SCnJsonTranslator_h_
+#define _uiSc2SCnJsonTranslator_h_
 
-#include "sc_stream.h"
+#include "uiTranslatorFromSc.h"
 
-/*! Create memory data stream
- * @param buffer Pointer to memory buffer with data
- * @param buffer_size Size of data in buffer
- * @param flags Data stream flags
- * @param data_owner Flag that point to take ownership om data buffer by stream. Another words,
- * it means, that data will be free with stream.
- * @remarks The returned stream pointer should be freed with sc_stream_free function, when done using it.
- * @return Returns stream pointer if the stream was successfully created, or NULL if an error occurred
+/*!
+ * \brief Class that translates sc-construction into
+ * SCn-code (json representation)
  */
-sc_stream* sc_stream_memory_new(const sc_char *buffer, sc_uint buffer_size, sc_uint8 flags, sc_bool data_owner);
+class uiSc2SCnJsonTranslator : public uiTranslateFromSc
+{
+public:
+    explicit uiSc2SCnJsonTranslator();
+    virtual ~uiSc2SCnJsonTranslator();
 
-#endif // SC_STREAM_MEMORY_H
+
+    static sc_result ui_translate_sc2scn(sc_event *event, sc_addr arg);
+
+protected:
+    //! @copydoc uiTranslateFromSc::runImpl
+    void runImpl();
+
+protected:
+
+};
+
+
+
+#endif // _uiSc2SCnJsonTranslator_h_

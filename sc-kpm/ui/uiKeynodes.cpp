@@ -38,6 +38,7 @@ const char keynode_nrel_translation_str[] = "nrel_translation";
 
 const char keynode_format_scs_str[] = "format_scs";
 const char keynode_format_scg_json_str[] = "format_scg_json";
+const char keynode_format_scn_json_str[] = "format_scn_json";
 
 
 sc_addr ui_keynode_ui_user;
@@ -52,6 +53,7 @@ sc_addr ui_keynode_nrel_translation;
 
 sc_addr ui_keynode_format_scs;
 sc_addr ui_keynode_format_scg_json;
+sc_addr ui_keynode_format_scn_json;
 
 
 // -------------------------------------------------
@@ -86,6 +88,9 @@ sc_bool initialize_keynodes()
         return SC_FALSE;
 
     if (sc_helper_resolve_system_identifier(keynode_format_scg_json_str, &ui_keynode_format_scg_json) == SC_FALSE)
+        return SC_FALSE;
+
+    if (sc_helper_resolve_system_identifier(keynode_format_scn_json_str, &ui_keynode_format_scn_json) == SC_FALSE)
         return SC_FALSE;
 
     return SC_TRUE;

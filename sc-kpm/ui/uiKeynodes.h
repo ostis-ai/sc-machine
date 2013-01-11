@@ -40,6 +40,7 @@ extern sc_addr ui_keynode_nrel_translation;
 
 extern sc_addr ui_keynode_format_scs;
 extern sc_addr ui_keynode_format_scg_json;
+extern sc_addr ui_keynode_format_scn_json;
 
 //! Initialize all keynodes, that will be used in extension
 sc_bool initialize_keynodes();

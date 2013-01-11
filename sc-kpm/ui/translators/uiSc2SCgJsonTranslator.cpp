@@ -28,38 +28,40 @@ along with OSTIS.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <QDebug>
 
-Sc2SCgJsonTranslator::Sc2SCgJsonTranslator()
+uiSc2SCgJsonTranslator::uiSc2SCgJsonTranslator()
 {
 
 }
 
-Sc2SCgJsonTranslator::~Sc2SCgJsonTranslator()
+uiSc2SCgJsonTranslator::~uiSc2SCgJsonTranslator()
 {
 
 }
 
-void Sc2SCgJsonTranslator::translate(const sc_addr &input_addr, const sc_addr &format_addr)
+void uiSc2SCgJsonTranslator::runImpl()
 {
-    mInputConstructionAddr = input_addr;
-    mOutputFormatAddr = format_addr;
-
-    mOutputJson = "[";
     bool first = true;
+    bool idtf_exist = false;
+    sc_type el_type = 0;
+    sc_addr addr;
+    String sys_idtf;
+    tStringStringMap attrs;
+
+    mOutputData = "[";
 
     sc_iterator3 *it = sc_iterator3_f_a_a_new(mInputConstructionAddr, sc_type_arc_pos_const_perm, 0);
     while (sc_iterator3_next(it) == SC_TRUE)
     {
-        sc_type el_type = 0;
-        sc_addr addr = sc_iterator3_value(it, 2);
+        el_type = 0;
+        addr = sc_iterator3_value(it, 2);
 
         //! TODO add error logging
         if (sc_memory_get_element_type(addr, &el_type) != SC_RESULT_OK)
             continue;
 
-        tStringStringMap attrs;
+        attrs.clear();
 
-        String sys_idtf;
-        bool idtf_exist = ui_translate_resolve_system_identifier(addr, sys_idtf);
+        idtf_exist = ui_translate_resolve_system_identifier(addr, sys_idtf);
 
         attrs["id"] = buildId(addr);
         if (idtf_exist)
@@ -91,46 +93,28 @@ void Sc2SCgJsonTranslator::translate(const sc_addr &input_addr, const sc_addr &f
             attrs["type"] = "link";
         }
 
-
         if (!first)
-            mOutputJson += ", ";
+            mOutputData += ", ";
 
-        mOutputJson += "{ ";
-        tStringStringMap::iterator it, itEnd = attrs.end();
-        for (it = attrs.begin(); it != itEnd; ++it)
+        mOutputData += "{ ";
+        tStringStringMap::iterator itAttrs, itAttrsEnd = attrs.end();
+        for (itAttrs = attrs.begin(); itAttrs != itAttrsEnd; ++itAttrs)
         {
-            if (it != attrs.begin())
-                mOutputJson += ", ";
-            mOutputJson += "\"" + it->first + "\": ";
-            mOutputJson += "\"" + it->second + "\"";
+            if (itAttrs != attrs.begin())
+                mOutputData += ", ";
+            mOutputData += "\"" + itAttrs->first + "\": ";
+            mOutputData += "\"" + itAttrs->second + "\"";
         }
-        mOutputJson += " }";
+        mOutputData += " }";
 
         first = false;
-
-
     }
     sc_iterator3_free(it);
 
-    mOutputJson += "]";
-
-    qDebug() << mOutputJson.c_str();
-
-    // write into sc-link
-    sc_stream *result_data_stream = 0;
-    result_data_stream = sc_stream_memory_new(mOutputJson.c_str(), mOutputJson.size(), SC_STREAM_READ, SC_FALSE);
-
-    sc_addr result_addr = sc_memory_link_new();
-    sc_memory_set_link_content(result_addr, result_data_stream);
-
-    sc_stream_free(result_data_stream);
-
-    // generate translation
-    sc_addr arc_addr = sc_memory_arc_new(sc_type_arc_common | sc_type_const, mInputConstructionAddr, result_addr);
-    sc_memory_arc_new(sc_type_arc_pos_const_perm, ui_keynode_nrel_translation, arc_addr);
+    mOutputData += "]";
 }
 
-String Sc2SCgJsonTranslator::buildId(const sc_addr &addr) const
+String uiSc2SCgJsonTranslator::buildId(const sc_addr &addr) const
 {
     StringStream ss;
     ss << addr.seg << "_" << addr.offset;
@@ -138,7 +122,7 @@ String Sc2SCgJsonTranslator::buildId(const sc_addr &addr) const
 }
 
 // ------------------------------------------------------------------------------
-sc_result Sc2SCgJsonTranslator::ui_translate_sc2scg_json(sc_event *event, sc_addr arg)
+sc_result uiSc2SCgJsonTranslator::ui_translate_sc2scg_json(sc_event *event, sc_addr arg)
 {
     sc_addr cmd_addr, input_addr, format_addr;
 
@@ -150,7 +134,7 @@ sc_result Sc2SCgJsonTranslator::ui_translate_sc2scg_json(sc_event *event, sc_add
 
     if (format_addr == ui_keynode_format_scg_json)
     {
-        Sc2SCgJsonTranslator translator;
+        uiSc2SCgJsonTranslator translator;
         translator.translate(input_addr, format_addr);
     }
 

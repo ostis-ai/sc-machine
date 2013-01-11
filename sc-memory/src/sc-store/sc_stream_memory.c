@@ -130,7 +130,7 @@ sc_bool sc_stream_memory_eof(const sc_stream *stream)
 }
 
 
-sc_stream* sc_stream_memory_new(sc_char *buffer, sc_uint buffer_size, sc_uint8 flags, sc_bool data_owner)
+sc_stream* sc_stream_memory_new(const sc_char *buffer, sc_uint buffer_size, sc_uint8 flags, sc_bool data_owner)
 {
     if (flags & SC_STREAM_WRITE || flags & SC_STREAM_APPEND)
     {
