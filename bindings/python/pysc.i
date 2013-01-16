@@ -13,7 +13,7 @@
 %apply (char *STRING, int LENGTH) { (char *data, int size) };
 
 /* -------- Memory -------- */
-sc_bool sc_memory_initialize(const sc_char *repo_path);
+sc_bool sc_memory_initialize(const sc_char *repo_path, const sc_char *config_file);
 void sc_memory_shutdown();
 sc_bool sc_memory_is_initialized();
 sc_bool sc_memory_is_element(sc_addr addr);
