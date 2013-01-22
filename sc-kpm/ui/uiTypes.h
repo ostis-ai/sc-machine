@@ -32,11 +32,13 @@ extern "C"
 #include <sstream>
 #include <map>
 #include <list>
+#include <vector>
 
 typedef std::string String;
 typedef std::stringstream StringStream;
 
 typedef std::list<sc_addr> tScAddrList;
+typedef std::vector<sc_addr> tScAddrVector;
 typedef std::map<sc_addr, sc_type> tScAddrToScTypeMap;
 typedef std::map<String, String> tStringStringMap;
 

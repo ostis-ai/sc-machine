@@ -36,51 +36,71 @@ const char keynode_question_nrel_answer_str[] = "question_nrel_answer";
 const char keynode_nrel_author_str[] = "nrel_author";
 const char keynode_nrel_translation_str[] = "nrel_translation";
 
+const char keynode_ui_command_generate_instance[] = "ui_command_generate_instance";
+const char keynode_ui_command_initiated[] = "ui_command_initiated";
+const char keynode_ui_rrel_command_arguments[] = "ui_rrel_command_arguments";
+
 const char keynode_format_scs_str[] = "format_scs";
 const char keynode_format_scg_json_str[] = "format_scg_json";
 const char keynode_format_scn_json_str[] = "format_scn_json";
 
 
-sc_addr ui_keynode_ui_user;
-sc_addr ui_keynode_ui_command_translate_from_sc;
-sc_addr ui_keynode_ui_nrel_user_answer_formats;
-sc_addr ui_keynode_ui_rrel_source_sc_construction;
-sc_addr ui_keynode_ui_rrel_output_format;
+sc_addr ui_keynode_user;
+sc_addr ui_keynode_command_translate_from_sc;
+sc_addr ui_keynode_nrel_user_answer_formats;
+sc_addr ui_keynode_rrel_source_sc_construction;
+sc_addr ui_keynode_rrel_output_format;
 
 sc_addr ui_keynode_question_nrel_answer;
 sc_addr ui_keynode_nrel_author;
 sc_addr ui_keynode_nrel_translation;
 
+sc_addr ui_keynode_command_generate_instance;
+sc_addr ui_keynode_command_initiated;
+sc_addr ui_keynode_rrel_command_arguments;
+
 sc_addr ui_keynode_format_scs;
 sc_addr ui_keynode_format_scg_json;
 sc_addr ui_keynode_format_scn_json;
+
+sc_addr ui_keynode_rrel_order[RREL_ORDER_COUNT];
 
 
 // -------------------------------------------------
 sc_bool initialize_keynodes()
 {
-    if (sc_helper_resolve_system_identifier(keynode_ui_user_str, &ui_keynode_ui_user) == SC_FALSE)
+    if (sc_helper_resolve_system_identifier(keynode_ui_user_str, &ui_keynode_user) == SC_FALSE)
         return SC_FALSE;
 
     if (sc_helper_resolve_system_identifier(keynode_question_nrel_answer_str, &ui_keynode_question_nrel_answer) == SC_FALSE)
         return SC_FALSE;
 
-    if (sc_helper_resolve_system_identifier(keynode_ui_command_translate_from_sc_str, &ui_keynode_ui_command_translate_from_sc) == SC_FALSE)
+    if (sc_helper_resolve_system_identifier(keynode_ui_command_translate_from_sc_str, &ui_keynode_command_translate_from_sc) == SC_FALSE)
         return SC_FALSE;
 
     if (sc_helper_resolve_system_identifier(keynode_nrel_author_str, &ui_keynode_nrel_author) == SC_FALSE)
         return SC_FALSE;
 
-    if (sc_helper_resolve_system_identifier(keynode_ui_nrel_user_answer_formats_str, &ui_keynode_ui_nrel_user_answer_formats) == SC_FALSE)
+    if (sc_helper_resolve_system_identifier(keynode_ui_nrel_user_answer_formats_str, &ui_keynode_nrel_user_answer_formats) == SC_FALSE)
         return SC_FALSE;
 
-    if (sc_helper_resolve_system_identifier(keynode_ui_rrel_source_sc_construction_str, &ui_keynode_ui_rrel_source_sc_construction) == SC_FALSE)
+    if (sc_helper_resolve_system_identifier(keynode_ui_rrel_source_sc_construction_str, &ui_keynode_rrel_source_sc_construction) == SC_FALSE)
         return SC_FALSE;
 
-    if (sc_helper_resolve_system_identifier(keynode_ui_rrel_output_format_str, &ui_keynode_ui_rrel_output_format) == SC_FALSE)
+    if (sc_helper_resolve_system_identifier(keynode_ui_rrel_output_format_str, &ui_keynode_rrel_output_format) == SC_FALSE)
         return SC_FALSE;
 
     if (sc_helper_resolve_system_identifier(keynode_nrel_translation_str, &ui_keynode_nrel_translation) == SC_FALSE)
+        return SC_FALSE;
+
+
+    if (sc_helper_resolve_system_identifier(keynode_ui_command_generate_instance, &ui_keynode_command_generate_instance) == SC_FALSE)
+        return SC_FALSE;
+
+    if (sc_helper_resolve_system_identifier(keynode_ui_command_initiated, &ui_keynode_command_initiated) == SC_FALSE)
+        return SC_FALSE;
+
+    if (sc_helper_resolve_system_identifier(keynode_ui_rrel_command_arguments, &ui_keynode_rrel_command_arguments) == SC_FALSE)
         return SC_FALSE;
 
 
@@ -92,6 +112,14 @@ sc_bool initialize_keynodes()
 
     if (sc_helper_resolve_system_identifier(keynode_format_scn_json_str, &ui_keynode_format_scn_json) == SC_FALSE)
         return SC_FALSE;
+
+    for (sc_uint32 i = 0; i < RREL_ORDER_COUNT; ++i)
+    {
+        std::stringstream ss;
+        ss << "rrel_" << (i + 1);
+        if (sc_helper_resolve_system_identifier(ss.str().c_str(), &(ui_keynode_rrel_order[i])) == SC_FALSE)
+            return SC_FALSE;
+    }
 
     return SC_TRUE;
 }

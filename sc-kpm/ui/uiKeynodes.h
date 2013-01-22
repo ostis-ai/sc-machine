@@ -28,19 +28,26 @@ extern "C"
 #include "sc_memory_headers.h"
 }
 
-extern sc_addr ui_keynode_ui_user;
-extern sc_addr ui_keynode_ui_command_translate_from_sc;
-extern sc_addr ui_keynode_ui_nrel_user_answer_formats;
-extern sc_addr ui_keynode_ui_rrel_source_sc_construction;
-extern sc_addr ui_keynode_ui_rrel_output_format;
+extern sc_addr ui_keynode_user;
+extern sc_addr ui_keynode_command_translate_from_sc;
+extern sc_addr ui_keynode_nrel_user_answer_formats;
+extern sc_addr ui_keynode_rrel_source_sc_construction;
+extern sc_addr ui_keynode_rrel_output_format;
 
 extern sc_addr ui_keynode_question_nrel_answer;
 extern sc_addr ui_keynode_nrel_author;
 extern sc_addr ui_keynode_nrel_translation;
 
+extern sc_addr ui_keynode_command_generate_instance;
+extern sc_addr ui_keynode_command_initiated;
+extern sc_addr ui_keynode_rrel_command_arguments;
+
 extern sc_addr ui_keynode_format_scs;
 extern sc_addr ui_keynode_format_scg_json;
 extern sc_addr ui_keynode_format_scn_json;
+
+#define RREL_ORDER_COUNT 10
+extern sc_addr ui_keynode_rrel_order[RREL_ORDER_COUNT];
 
 //! Initialize all keynodes, that will be used in extension
 sc_bool initialize_keynodes();

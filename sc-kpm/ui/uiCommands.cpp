@@ -27,8 +27,58 @@ along with OSTIS.  If not, see <http://www.gnu.org/licenses/>.
 
 // -------------------- Events ----------------------
 sc_event *event_ui_start_answer_translation = 0;
+sc_event *event_ui_command_generate_instance = 0;
 
 // -------------------- Event handlers --------------
+sc_result ui_command_generate_instance(sc_event *event, sc_addr arg)
+{
+    sc_addr command_addr;
+    sc_addr args_addr;
+    sc_iterator5 *it5 = (sc_iterator5*)nullptr;
+    sc_iterator3 *it3 = (sc_iterator3*)nullptr;
+    tScAddrVector arguments;
+
+    if (sc_memory_get_arc_end(arg, &command_addr) != SC_RESULT_OK)
+        return SC_RESULT_ERROR;
+
+    // first of all we need to find command arguments
+    it5 = sc_iterator5_f_a_a_a_f_new(command_addr,
+                                     sc_type_arc_pos_const_perm,
+                                     sc_type_node | sc_type_const,
+                                     sc_type_arc_pos_const_perm,
+                                     ui_keynode_rrel_command_arguments);
+
+    if (sc_iterator5_next(it5) == SC_TRUE)
+    {
+        args_addr = sc_iterator5_value(it5, 2);
+        sc_iterator5_free(it5);
+
+        int idx = 0;
+        bool found = true;
+
+        while (found)
+        {
+            found = false;
+            // iterate arguments and append them into vector
+            it5 = sc_iterator5_f_a_a_a_f_new(args_addr,
+                                             sc_type_arc_pos_const_perm,
+                                             0,
+                                             sc_type_arc_pos_const_perm,
+                                             ui_keynode_rrel_order[idx]);
+
+            if (sc_iterator5_next(it5) == SC_TRUE)
+            {
+                arguments.push_back(sc_iterator5_value(it5, 2));
+                found = true;
+            }
+            sc_iterator5_free(it5);
+            ++idx;
+        }
+    }
+
+    return SC_RESULT_ERROR;
+}
+
 sc_result ui_start_answer_translation(sc_event *event, sc_addr arg)
 {
     sc_addr answer_arc_addr;
@@ -69,14 +119,14 @@ sc_result ui_start_answer_translation(sc_event *event, sc_addr arg)
         sc_iterator5_free(it5);
 
         // check if author is an user
-        if (sc_helper_check_arc(ui_keynode_ui_user, author_addr, sc_type_arc_pos_const_perm) == SC_TRUE)
+        if (sc_helper_check_arc(ui_keynode_user, author_addr, sc_type_arc_pos_const_perm) == SC_TRUE)
         {
             // get answer output formats
             it5 = sc_iterator5_f_a_a_a_f_new(question_addr,
                                             sc_type_arc_common | sc_type_const,
                                             sc_type_node | sc_type_const,
                                             sc_type_arc_pos_const_perm,
-                                            ui_keynode_ui_nrel_user_answer_formats);
+                                            ui_keynode_nrel_user_answer_formats);
             if (it5 == nullptr)
                 return SC_RESULT_ERROR;
 
@@ -100,13 +150,13 @@ sc_result ui_start_answer_translation(sc_event *event, sc_addr arg)
                     trans_command_addr = sc_memory_node_new(sc_type_const);
 
                     arc_addr = sc_memory_arc_new(sc_type_arc_pos_const_perm, trans_command_addr, answer_addr);
-                    sc_memory_arc_new(sc_type_arc_pos_const_perm, ui_keynode_ui_rrel_source_sc_construction, arc_addr);
+                    sc_memory_arc_new(sc_type_arc_pos_const_perm, ui_keynode_rrel_source_sc_construction, arc_addr);
 
                     arc_addr = sc_memory_arc_new(sc_type_arc_pos_const_perm, trans_command_addr, format_addr);
-                    sc_memory_arc_new(sc_type_arc_pos_const_perm, ui_keynode_ui_rrel_output_format, arc_addr);
+                    sc_memory_arc_new(sc_type_arc_pos_const_perm, ui_keynode_rrel_output_format, arc_addr);
 
                     // add into translation command set
-                    sc_memory_arc_new(sc_type_arc_pos_const_perm, ui_keynode_ui_command_translate_from_sc, trans_command_addr);
+                    sc_memory_arc_new(sc_type_arc_pos_const_perm, ui_keynode_command_translate_from_sc, trans_command_addr);
                 }
                 sc_iterator3_free(it3);
 
@@ -130,10 +180,17 @@ sc_result ui_initialize_commands()
     if (event_ui_start_answer_translation == nullptr)
         return SC_RESULT_ERROR;
 
+    event_ui_command_generate_instance = sc_event_new(ui_keynode_command_initiated, SC_EVENT_ADD_OUTPUT_ARC, 0, ui_command_generate_instance, 0);
+    if (event_ui_command_generate_instance == nullptr)
+        return SC_RESULT_ERROR;
+
     return SC_RESULT_OK;
 }
 
 void ui_shutdown_commands()
 {
+    sc_event_destroy(event_ui_start_answer_translation);
+    event_ui_start_answer_translation = (sc_event*)nullptr;
+
 
 }
