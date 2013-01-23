@@ -4,4 +4,5 @@ CONFIG += ordered
 DESTDIR = ./bin
 
 SUBDIRS = ui \
-            questions
+        questions \
+        utils

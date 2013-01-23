@@ -33,6 +33,7 @@ extern "C"
 #include <map>
 #include <list>
 #include <vector>
+#include <assert.h>
 
 typedef std::string String;
 typedef std::stringstream StringStream;
@@ -40,6 +41,9 @@ typedef std::stringstream StringStream;
 typedef std::list<sc_addr> tScAddrList;
 typedef std::vector<sc_addr> tScAddrVector;
 typedef std::map<sc_addr, sc_type> tScAddrToScTypeMap;
+typedef std::map<sc_addr, sc_addr> tScAddrToScAddrMap;
+typedef std::pair<sc_addr, sc_addr> tScAddrPair;
+typedef std::list< tScAddrPair > tScAddrPairList;
 typedef std::map<String, String> tStringStringMap;
 
 // --- operators ---

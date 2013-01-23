@@ -35,12 +35,17 @@ extern sc_addr ui_keynode_rrel_source_sc_construction;
 extern sc_addr ui_keynode_rrel_output_format;
 
 extern sc_addr ui_keynode_question_nrel_answer;
+extern sc_addr ui_keynode_question_finished;
 extern sc_addr ui_keynode_nrel_author;
 extern sc_addr ui_keynode_nrel_translation;
 
 extern sc_addr ui_keynode_command_generate_instance;
 extern sc_addr ui_keynode_command_initiated;
+extern sc_addr ui_keynode_command_finished;
 extern sc_addr ui_keynode_rrel_command_arguments;
+extern sc_addr ui_keynode_rrel_command;
+extern sc_addr ui_keynode_nrel_command_template;
+extern sc_addr ui_keynode_nrel_command_result;
 
 extern sc_addr ui_keynode_format_scs;
 extern sc_addr ui_keynode_format_scg_json;
@@ -48,6 +53,8 @@ extern sc_addr ui_keynode_format_scn_json;
 
 #define RREL_ORDER_COUNT 10
 extern sc_addr ui_keynode_rrel_order[RREL_ORDER_COUNT];
+#define UI_ARG_COUNT 10
+extern sc_addr ui_keynode_arg[UI_ARG_COUNT];
 
 //! Initialize all keynodes, that will be used in extension
 sc_bool initialize_keynodes();
