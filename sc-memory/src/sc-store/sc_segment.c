@@ -150,7 +150,7 @@ void sc_segment_update_empty_slot_buffer(sc_segment *segment)
     if (idx > 0)
     {
         // backward search
-        v = (segment->num == 0) ? 1 : G_MAXUINT);
+        v = (segment->num == 0) ? 1 : G_MAXUINT;
         while ((idx != v) && (segment->empty_slot_buff_head < SEGMENT_EMPTY_BUFFER_SIZE))
         {
             if (segment->elements[idx].type == 0)
@@ -205,5 +205,61 @@ void sc_segment_update_empty_slot_value(sc_segment *segment)
 
     segment->empty_slot = SEGMENT_SIZE;
 }
-
 #endif // USE_SEGMENT_EMPTY_SLOT_BUFFER
+
+sc_uint32 sc_segment_get_elements_count(sc_segment *seg)
+{
+    sc_uint32 count = 0;
+    sc_uint32 idx = 0;
+
+    for (idx = 0; idx < SEGMENT_SIZE; ++idx)
+    {
+        if (seg->elements[idx].type != 0)
+            count++;
+    }
+
+    return count;
+}
+
+sc_uint32 sc_segment_free_garbage(sc_segment *seg, sc_uint32 oldest_time_stamp)
+{
+    sc_uint32 free_count = 0;
+    sc_uint32 idx = 0;
+    sc_uint32 newest_time_stamp = sc_storage_get_time_stamp();
+    sc_element *el = 0;
+    sc_addr prev_arc, current_arc;
+
+#if USE_SEGMENT_EMPTY_SLOT_BUFFER
+    segment->empty_slot_buff_head = 0;
+#endif
+
+    for (idx = 0; idx < SEGMENT_SIZE; ++idx)
+    {
+        el = &(seg->elements[idx]);
+
+        // skip element that wasn't deleted
+        if (el->delete_time_stamp > 0)
+        {
+            // delete arcs from output and intpu lists
+            // @todo two oriented lists support
+            if (el->type & sc_type_arc_mask)
+            {
+
+            }
+
+        }
+
+
+        // collect empty cells
+        if (el->type == 0)
+        {
+#if USE_SEGMENT_EMPTY_SLOT_BUFFER
+            seg->empty_slot_buff[seg->empty_slot_buff_head++] = idx;
+#else
+            seg->empty_slot = idx;
+#endif
+        }
+    }
+}
+
+

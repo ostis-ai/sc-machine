@@ -36,6 +36,8 @@ along with OSTIS.  If not, see <http://www.gnu.org/licenses/>.
 sc_segment **segments = 0;
 // number of segments
 sc_uint16 segments_num = 0;
+// number of stored sc-elements
+sc_uint32 stored_elements_count = 0;
 
 sc_uint seg_id = 0;
 sc_uint seg_queue[SEGS_QUEUE_SIZE];
@@ -92,6 +94,27 @@ void _sc_storage_update_segment_queue_impl(gpointer data,
 //        if (sc_segment_have_empty_slot(segment) == SC_TRUE)
 //            _sc_storage_append_segment_to_queue(idx);
 //    }
+}
+
+// -----------------------------------------------------------------------------
+
+/* Updates segment information:
+ * - Calculate number of stored sc-elements
+ * - Free unused cells in segments
+ */
+void sc_storage_update_segments()
+{
+    sc_uint32 idx = 0;
+    sc_segment *seg = 0;
+
+    stored_elements_count = 0;
+
+    for (idx = 0; idx < segments_num; ++idx)
+    {
+        seg = segments[idx];
+        if (seg == 0) continue; // @todo segments load
+        stored_elements_count += sc_segment_get_elements_count(seg);
+    }
 }
 
 // -----------------------------------------------------------------------------

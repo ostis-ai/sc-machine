@@ -79,6 +79,17 @@ sc_element* sc_segment_get_element(sc_segment *seg, sc_uint id);
 void sc_segment_remove_element(sc_segment *segment,
                                sc_uint el_id);
 
+//! Returns number of stored sc-elements in segment
+sc_uint32 sc_segment_get_elements_count(sc_segment *seg);
+
+/*! Deletes garbage in specified segment
+ * @param oldet_time_stamp Oldest timestamp, that can be used
+ * @param seg Poitnet to segment to delete garbage
+ * @returns Returns number of freed cells
+ */
+sc_uint32 sc_segment_free_garbage(sc_segment *seg, sc_uint32 oldest_time_stamp);
+
+
 //! Update information in segment about first empty slot
 void sc_segment_update_empty_slot(sc_segment *segment);
 
