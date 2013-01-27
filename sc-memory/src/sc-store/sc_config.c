@@ -30,7 +30,7 @@ const char str_key_max_loaded_segments[] = "max_loaded_segments";
 
 
 // Maximum number of segments, that can be loaded into memory at one moment
-sc_uint config_max_loaded_segments = 0;
+sc_uint config_max_loaded_segments = G_MAXUINT16;
 
 void sc_config_initialize(const sc_char *file_path)
 {

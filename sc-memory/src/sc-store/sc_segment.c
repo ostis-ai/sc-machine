@@ -225,33 +225,70 @@ sc_uint32 sc_segment_free_garbage(sc_segment *seg, sc_uint32 oldest_time_stamp)
 {
     sc_uint32 free_count = 0;
     sc_uint32 idx = 0;
-    sc_uint32 newest_time_stamp = sc_storage_get_time_stamp();
-    sc_element *el = 0;
+    //sc_uint32 newest_time_stamp = sc_storage_get_time_stamp();
+    sc_element *el = 0, *el2 = 0, *el_arc = 0, *prev_el_arc = 0;
     sc_addr prev_arc, current_arc;
+    sc_addr self_addr;
 
 #if USE_SEGMENT_EMPTY_SLOT_BUFFER
     segment->empty_slot_buff_head = 0;
 #endif
+    self_addr.seg = seg->num;
 
     for (idx = 0; idx < SEGMENT_SIZE; ++idx)
     {
         el = &(seg->elements[idx]);
+        self_addr.offset = idx;
 
         // skip element that wasn't deleted
-        if (el->delete_time_stamp > 0)
+        if (el->delete_time_stamp < oldest_time_stamp && el->delete_time_stamp != 0)
         {
             // delete arcs from output and intpu lists
             // @todo two oriented lists support
             if (el->type & sc_type_arc_mask)
             {
+                SC_ADDR_MAKE_EMPTY(prev_arc);
+                // output list
+                el2 = sc_storage_get_element(el->arc.begin, SC_TRUE);
+                current_arc = el2->first_out_arc;
+                while (SC_ADDR_IS_NOT_EMPTY(current_arc) && SC_ADDR_IS_NOT_EQUAL(self_addr, current_arc))
+                {
+                    prev_arc = current_arc;
+                    prev_el_arc = el_arc;
+                    el_arc = sc_storage_get_element(current_arc, SC_TRUE);
+                    current_arc = el->arc.next_out_arc;
+                }
 
+                if (SC_ADDR_IS_NOT_EMPTY(prev_arc) && SC_ADDR_IS_NOT_EMPTY(current_arc))
+                    prev_el_arc->arc.next_out_arc = el_arc->arc.next_out_arc;
+
+                prev_el_arc = 0;
+                el_arc = 0;
+                SC_ADDR_MAKE_EMPTY(prev_arc);
+
+                // input list
+                el2 = sc_storage_get_element(el->arc.end, SC_TRUE);
+                current_arc = el2->first_in_arc;
+                while (SC_ADDR_IS_NOT_EMPTY(current_arc) && SC_ADDR_IS_NOT_EQUAL(self_addr, current_arc))
+                {
+                    prev_arc = current_arc;
+                    prev_el_arc = el_arc;
+
+                    el_arc = sc_storage_get_element(current_arc, SC_TRUE);
+                    current_arc = el->arc.next_in_arc;
+                }
+
+                if (SC_ADDR_IS_NOT_EMPTY(prev_arc) && SC_ADDR_IS_NOT_EMPTY(current_arc))
+                    prev_el_arc->arc.next_in_arc = el_arc->arc.next_in_arc;
             }
 
+            el->type = 0;
+            free_count ++;
         }
 
 
         // collect empty cells
-        if (el->type == 0)
+        if (el->type == 0 && !(idx == 0 && seg->num == 0))
         {
 #if USE_SEGMENT_EMPTY_SLOT_BUFFER
             seg->empty_slot_buff[seg->empty_slot_buff_head++] = idx;
@@ -260,6 +297,8 @@ sc_uint32 sc_segment_free_garbage(sc_segment *seg, sc_uint32 oldest_time_stamp)
 #endif
         }
     }
+
+    return free_count;
 }
 
 

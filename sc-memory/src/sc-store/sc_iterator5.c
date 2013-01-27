@@ -1,5 +1,27 @@
-#include "search.h"
-#include "sc_iterator5.h"
+/*
+-----------------------------------------------------------------------------
+This source file is part of OSTIS (Open Semantic Technology for Intelligent Systems)
+For the latest info, see http://www.ostis.net
+
+Copyright (c) 2012 OSTIS
+
+OSTIS is free software: you can redistribute it and/or modify
+it under the terms of the GNU Lesser General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+OSTIS is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public License
+along with OSTIS.  If not, see <http://www.gnu.org/licenses/>.
+-----------------------------------------------------------------------------
+*/
+
+#include "sc_iterator.h"
+#include "sc_storage.h"
 
 #include <glib.h>
 
@@ -44,6 +66,7 @@ sc_iterator5* sc_iterator5_new(sc_iterator5_type type, sc_iterator_param p1, sc_
     it->params[4] = p5;
 
     it->type = type;
+    it->time_stamp = sc_storage_get_time_stamp();
 
     // create main cycle iterator
     switch (type)
@@ -84,6 +107,8 @@ sc_iterator5* sc_iterator5_new(sc_iterator5_type type, sc_iterator_param p1, sc_
         it->results[0] = p1.addr;
         break;
     };
+
+    sc_iterator_add_used_timestamp(it->time_stamp);
 
     return it;
 }
@@ -193,6 +218,9 @@ sc_iterator5* sc_iterator5_a_a_f_a_a_new(sc_type p1, sc_type p2, sc_addr p3, sc_
 
 void sc_iterator5_free(sc_iterator5 *it)
 {
+    g_assert(it != 0);
+    sc_iterator_remove_used_timestamp(it->time_stamp);
+
     if (it->it_attr != nullptr)
         sc_iterator3_free(it->it_attr);
     if (it->it_main != nullptr)

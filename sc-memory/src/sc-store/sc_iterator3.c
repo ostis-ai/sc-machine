@@ -20,7 +20,7 @@ along with OSTIS.  If not, see <http://www.gnu.org/licenses/>.
 -----------------------------------------------------------------------------
 */
 
-#include "sc_iterator3.h"
+#include "sc_iterator.h"
 #include "sc_element.h"
 #include "sc_storage.h"
 
@@ -102,11 +102,15 @@ sc_iterator3* sc_iterator3_new(sc_iterator_type type, sc_iterator_param p1, sc_i
     it->type = type;
     it->time_stamp = sc_storage_get_time_stamp();
 
+    sc_iterator_add_used_timestamp(it->time_stamp);
+
     return it;
 }
 
 void sc_iterator3_free(sc_iterator3 *it)
 {
+    g_assert(it != 0);
+    sc_iterator_remove_used_timestamp(it->time_stamp);
     g_free(it);
 }
 

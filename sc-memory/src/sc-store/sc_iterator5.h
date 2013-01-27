@@ -45,6 +45,7 @@ struct _sc_iterator5
     sc_addr results[5]; // results array (same size as params)
     sc_iterator3* it_main; //iterator for main cycle
     sc_iterator3* it_attr; //iterator for attribute cycle
+    sc_uint32 time_stamp;
 };
 
 typedef struct _sc_iterator5 sc_iterator5;
