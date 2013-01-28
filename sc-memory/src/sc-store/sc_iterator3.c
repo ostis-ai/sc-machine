@@ -162,7 +162,7 @@ sc_bool _sc_iterator3_f_a_a_next(sc_iterator3 *it)
             (sc_iterator_compare_type(el_type, it->params[2].type))
            )
         {
-            // store founderesult
+            // store found result
             it->results[1] = arc_addr;
             it->results[2] = arc_element->arc.end;
 

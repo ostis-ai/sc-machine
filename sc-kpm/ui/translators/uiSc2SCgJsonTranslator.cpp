@@ -114,13 +114,6 @@ void uiSc2SCgJsonTranslator::runImpl()
     mOutputData += "]";
 }
 
-String uiSc2SCgJsonTranslator::buildId(const sc_addr &addr) const
-{
-    StringStream ss;
-    ss << addr.seg << "_" << addr.offset;
-    return ss.str();
-}
-
 // ------------------------------------------------------------------------------
 sc_result uiSc2SCgJsonTranslator::ui_translate_sc2scg_json(sc_event *event, sc_addr arg)
 {

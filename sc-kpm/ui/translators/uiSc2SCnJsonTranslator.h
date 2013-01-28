@@ -42,8 +42,17 @@ protected:
     //! @copydoc uiTranslateFromSc::runImpl
     void runImpl();
 
-protected:
+    //! Translate one keyword semantic square
+    void translateKeyword(sc_addr keyword_addr);
 
+    //! Check if specified sc-element is translated
+    bool isTranslated(sc_addr element) const;
+
+protected:
+    //! List of stranslated sc-elements
+    tScAddrList mTranslatedAddrsList;
+    //! List of keywords
+    tScAddrList mKeywordsList;
 };
 
 

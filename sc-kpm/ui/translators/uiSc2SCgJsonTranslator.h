@@ -43,8 +43,7 @@ protected:
     void runImpl();
 
 private:
-    //! Build id from specified sc-addr
-    String buildId(const sc_addr &addr) const;
+
 
 };
 

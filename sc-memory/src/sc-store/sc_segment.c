@@ -237,7 +237,7 @@ sc_uint32 sc_segment_free_garbage(sc_segment *seg, sc_uint32 oldest_time_stamp)
 #endif
 
 #if USE_SEGMENT_EMPTY_SLOT_BUFFER
-    segment->empty_slot_buff_head = 0;
+    seg->empty_slot_buff_head = 0;
 #endif
     self_addr.seg = seg->num;
 
@@ -314,7 +314,8 @@ sc_uint32 sc_segment_free_garbage(sc_segment *seg, sc_uint32 oldest_time_stamp)
         if (el->type == 0 && !(idx == 0 && seg->num == 0))
         {
 #if USE_SEGMENT_EMPTY_SLOT_BUFFER
-            seg->empty_slot_buff[seg->empty_slot_buff_head++] = idx;
+            if (seg->empty_slot_buff_head < SEGMENT_EMPTY_BUFFER_SIZE)
+                seg->empty_slot_buff[seg->empty_slot_buff_head++] = idx;
 #else
             seg->empty_slot = idx;
 #endif

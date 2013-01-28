@@ -49,5 +49,6 @@ typedef std::map<String, String> tStringStringMap;
 // --- operators ---
 bool operator < (const sc_addr &addr1, const sc_addr &addr2);
 bool operator == (const sc_addr &addr1, const sc_addr &addr2);
+bool operator != (const sc_addr &addr1, const sc_addr &addr2);
 
 #endif

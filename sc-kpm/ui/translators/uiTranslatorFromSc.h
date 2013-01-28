@@ -50,6 +50,9 @@ protected:
     //! Check if sc-element need to be translated
     bool isNeedToTranslate(const sc_addr &addr) const;
 
+    //! Build id from specified sc-addr
+    String buildId(const sc_addr &addr) const;
+
 protected:
     //! Sc-addr of input construction
     sc_addr mInputConstructionAddr;

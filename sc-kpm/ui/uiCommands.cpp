@@ -97,7 +97,7 @@ sc_result ui_command_generate_instance(sc_event *event, sc_addr arg)
         ++idx;
     }
 
-    // get class of command
+    // get command class
     it5 = sc_iterator5_f_a_a_a_f_new(command_addr,
                                      sc_type_arc_pos_const_perm,
                                      sc_type_node | sc_type_const,
@@ -161,7 +161,7 @@ sc_result ui_command_generate_instance(sc_event *event, sc_addr arg)
             {
                 if (templ_item_type & sc_type_node)
                 {
-                    templ_to_inst[templ_item_addr] = sc_memory_node_new((templ_item_type & ~sc_type_var) & sc_type_const);
+                    templ_to_inst[templ_item_addr] = sc_memory_node_new((templ_item_type & ~sc_type_var) | sc_type_const);
                 }else
                 {
                     if (templ_item_type & sc_type_link)
@@ -211,7 +211,7 @@ sc_result ui_command_generate_instance(sc_event *event, sc_addr arg)
             if (it_arc_beg != templ_to_inst.end() && it_arc_end != templ_to_inst.end())
             {
                 created = true;
-                new_arc_addr = sc_memory_arc_new((arc_type & ~sc_type_var) | sc_type_const, arc_beg_addr, arc_end_addr);
+                new_arc_addr = sc_memory_arc_new((arc_type & ~sc_type_var) | sc_type_const, (*it_arc_beg).second, (*it_arc_end).second);
                 templ_to_inst[arc_addr] = new_arc_addr;
 
                 it = templ_arcs.erase(it);
@@ -236,7 +236,7 @@ sc_result ui_command_generate_instance(sc_event *event, sc_addr arg)
     sc_memory_element_free(arg);
     sc_memory_arc_new(sc_type_arc_pos_const_perm, ui_keynode_command_finished, command_addr);
 
-    return SC_RESULT_ERROR;
+    return SC_RESULT_OK;
 }
 
 sc_result ui_start_answer_translation(sc_event *event, sc_addr arg)

@@ -36,7 +36,7 @@ struct _sc_segment
 #if USE_SEGMENT_EMPTY_SLOT_BUFFER
     sc_uint empty_slot_buff[SEGMENT_EMPTY_BUFFER_SIZE]; // works like a stack
     sc_uint empty_slot_buff_head;
-    sc_boolean have_empty_slots;
+    sc_bool have_empty_slots;
 #else
     sc_uint empty_slot; // index empty slot in segment
 #endif

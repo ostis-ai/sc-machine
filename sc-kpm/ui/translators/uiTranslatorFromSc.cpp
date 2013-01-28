@@ -104,3 +104,10 @@ bool uiTranslateFromSc::isNeedToTranslate(const sc_addr &addr) const
 
     return false;
 }
+
+String uiTranslateFromSc::buildId(const sc_addr &addr) const
+{
+    StringStream ss;
+    ss << addr.seg << "_" << addr.offset;
+    return ss.str();
+}
