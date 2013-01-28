@@ -70,10 +70,12 @@ void uiSc2SCnJsonTranslator::translateKeyword(sc_addr keyword_addr)
 {
     tStringStringMap attrs;
 
+    if (mTranslatedAddrsList.size() > 0)
+        mOutputData += ", ";
     mTranslatedAddrsList.push_back(keyword_addr);
 
     attrs["id"] = buildId(keyword_addr);
-    attrs["keywrod"] = "true";
+    attrs["keyword"] = "true";
 
 
     mOutputData += "{";
@@ -87,8 +89,7 @@ void uiSc2SCnJsonTranslator::translateKeyword(sc_addr keyword_addr)
     }
     mOutputData += "}";
 
-    if (keyword_addr != mKeywordsList.back())
-        mOutputData += ", ";
+
 }
 
 bool uiSc2SCnJsonTranslator::isTranslated(sc_addr element) const
