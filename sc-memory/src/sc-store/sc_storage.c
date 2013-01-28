@@ -384,6 +384,9 @@ sc_addr sc_storage_arc_new(sc_type type,
 {
     sc_addr addr;
     sc_element el, *beg_el, *end_el, *tmp_el;
+#if USE_TWO_ORIENTED_ARC_LIST
+    sc_element *tmp_arc;
+#endif
 
     memset(&el, 0, sizeof(el));
     g_assert( !(sc_type_node & type) );

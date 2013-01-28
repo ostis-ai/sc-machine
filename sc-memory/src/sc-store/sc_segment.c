@@ -226,9 +226,15 @@ sc_uint32 sc_segment_free_garbage(sc_segment *seg, sc_uint32 oldest_time_stamp)
     sc_uint32 free_count = 0;
     sc_uint32 idx = 0;
     //sc_uint32 newest_time_stamp = sc_storage_get_time_stamp();
+#if USE_TWO_ORIENTED_ARC_LIST
+    sc_element *el = 0, *el2 = 0, *el_arc = 0, *next_el_arc = 0, *prev_el_arc = 0;
+    sc_addr prev_arc, next_arc;
+    sc_addr self_addr;
+#else
     sc_element *el = 0, *el2 = 0, *el_arc = 0, *prev_el_arc = 0;
     sc_addr prev_arc, current_arc;
     sc_addr self_addr;
+#endif
 
 #if USE_SEGMENT_EMPTY_SLOT_BUFFER
     segment->empty_slot_buff_head = 0;
@@ -241,12 +247,28 @@ sc_uint32 sc_segment_free_garbage(sc_segment *seg, sc_uint32 oldest_time_stamp)
         self_addr.offset = idx;
 
         // skip element that wasn't deleted
-        if (el->delete_time_stamp < oldest_time_stamp && el->delete_time_stamp != 0)
+        if (el->delete_time_stamp <= oldest_time_stamp && el->delete_time_stamp != 0)
         {
             // delete arcs from output and intpu lists
             // @todo two oriented lists support
             if (el->type & sc_type_arc_mask)
             {
+#if USE_TWO_ORIENTED_ARC_LIST
+                prev_arc = el->arc.prev_out_arc;
+                next_arc = el->arc.next_out_arc;
+
+                if (SC_ADDR_IS_NOT_EMPTY(prev_arc))
+                {
+                    prev_el_arc = sc_storage_get_element(prev_arc, SC_TRUE);
+                    prev_el_arc->arc.next_out_arc = next_arc;
+                }
+
+                if (SC_ADDR_IS_NOT_EMPTY(next_arc))
+                {
+                    next_el_arc = sc_storage_get_element(next_arc, SC_TRUE);
+                    next_el_arc->arc.prev_out_arc = prev_arc;
+                }
+#else
                 SC_ADDR_MAKE_EMPTY(prev_arc);
                 // output list
                 el2 = sc_storage_get_element(el->arc.begin, SC_TRUE);
@@ -280,6 +302,7 @@ sc_uint32 sc_segment_free_garbage(sc_segment *seg, sc_uint32 oldest_time_stamp)
 
                 if (SC_ADDR_IS_NOT_EMPTY(prev_arc) && SC_ADDR_IS_NOT_EMPTY(current_arc))
                     prev_el_arc->arc.next_in_arc = el_arc->arc.next_in_arc;
+#endif
             }
 
             el->type = 0;

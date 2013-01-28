@@ -36,7 +36,7 @@ along with OSTIS.  If not, see <http://www.gnu.org/licenses/>.
 #define USE_NETWORK_SCALE 0
 
 //! Use two oriented arc list
-#define USE_TWO_ORIENTED_ARC_LIST 0
+#define USE_TWO_ORIENTED_ARC_LIST 1
 
 #define SEGMENT_EMPTY_SEARCH_LEN 1024 // number of element in two directions to search next empty slot in segment
 #define SEGMENT_EMPTY_BUFFER_SIZE 8 // number of empty slot buffer for segment

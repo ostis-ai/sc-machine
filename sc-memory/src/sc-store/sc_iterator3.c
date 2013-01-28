@@ -156,8 +156,8 @@ sc_bool _sc_iterator3_f_a_a_next(sc_iterator3 *it)
         sc_storage_get_element_type(arc_addr, &arc_type);
         sc_storage_get_element_type(arc_element->arc.end, &el_type);
 
-        if ((arc_element->create_time_stamp < it->time_stamp) &&
-            (arc_element->delete_time_stamp == 0 || arc_element->delete_time_stamp > it->time_stamp) &&
+        if ((arc_element->create_time_stamp <= it->time_stamp) &&
+            (arc_element->delete_time_stamp == 0 || arc_element->delete_time_stamp >= it->time_stamp) &&
             (sc_iterator_compare_type(arc_type, it->params[1].type)) &&
             (sc_iterator_compare_type(el_type, it->params[2].type))
            )
@@ -206,8 +206,8 @@ sc_bool _sc_iterator3_f_a_f_next(sc_iterator3 *it)
         arc_element = sc_storage_get_element(arc_addr, SC_TRUE);
         sc_storage_get_element_type(arc_addr, &arc_type);
 
-        if ((arc_element->create_time_stamp < it->time_stamp) &&
-            (arc_element->delete_time_stamp == 0 || arc_element->delete_time_stamp > it->time_stamp) &&
+        if ((arc_element->create_time_stamp <= it->time_stamp) &&
+            (arc_element->delete_time_stamp == 0 || arc_element->delete_time_stamp >= it->time_stamp) &&
             SC_ADDR_IS_EQUAL(it->params[2].addr, arc_element->arc.end) &&
             (sc_iterator_compare_type(arc_type, it->params[1].type))
            )
@@ -254,8 +254,8 @@ sc_bool _sc_iterator3_a_a_f_next(sc_iterator3 *it)
         sc_storage_get_element_type(arc_addr, &arc_type);
         sc_storage_get_element_type(arc_element->arc.begin, &el_type);
 
-        if ((arc_element->create_time_stamp < it->time_stamp) &&
-            (arc_element->delete_time_stamp == 0 || arc_element->delete_time_stamp > it->time_stamp) &&
+        if ((arc_element->create_time_stamp <= it->time_stamp) &&
+            (arc_element->delete_time_stamp == 0 || arc_element->delete_time_stamp >= it->time_stamp) &&
             (sc_iterator_compare_type(arc_type, it->params[1].type)) &&
             (sc_iterator_compare_type(el_type, it->params[0].type))
             )

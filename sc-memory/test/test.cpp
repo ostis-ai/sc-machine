@@ -497,6 +497,96 @@ void test7()
     g_timer_destroy(timer);
 }
 
+void test8()
+{
+    sc_addr node[10], arc[10][10], addr_arc;
+    sc_uint32 i, j;
+    sc_iterator3 *it = 0;
+
+    printf("Segments count: %d\n", sc_storage_get_segments_count());
+    print_storage_statistics();
+
+    timer = g_timer_new();
+
+    printf("Create 10 nodes and 100 arcs, that connect nodes each other\n");
+    for (i = 0; i < 10; i++)
+        node[i] = sc_storage_element_new(sc_type_node);
+
+    for (i = 0; i < 10; i++)
+        for (j = 0; j < 10; j++)
+            arc[i][j] = sc_storage_arc_new(0, node[i], node[j]);
+
+    printf("Segments count: %d\n", sc_storage_get_segments_count());
+    print_storage_statistics();
+
+    printf("Delete 5 nodes\n");
+    for (i = 0; i < 5; i++)
+        sc_storage_element_free(node[i]);
+
+    // iterate element for check
+    it = sc_iterator3_f_a_a_new(node[9], 0, 0);
+    while (sc_iterator3_next(it) == SC_TRUE)
+    {
+        addr_arc = sc_iterator3_value(it, 1);
+        printf("Arc: %d, %d\n", addr_arc.seg, addr_arc.offset);
+    }
+    sc_iterator3_free(it);
+
+    printf("Segments count: %d\n", sc_storage_get_segments_count());
+    print_storage_statistics();
+
+    g_timer_stop(timer);
+
+    printf("Collect and delete garbage...\n");
+    g_timer_reset(timer);
+    g_timer_start(timer);
+
+    sc_storage_update_segments();
+
+    g_timer_stop(timer);
+
+    // iterate element for check
+    it = sc_iterator3_f_a_a_new(node[9], 0, 0);
+    while (sc_iterator3_next(it) == SC_TRUE)
+    {
+        addr_arc = sc_iterator3_value(it, 1);
+        printf("Arc: %d, %d\n", addr_arc.seg, addr_arc.offset);
+    }
+    sc_iterator3_free(it);
+
+    printf("Elapsed time: %f\n", g_timer_elapsed(timer, 0));
+    printf("Segments count: %d\n", sc_storage_get_segments_count());
+    print_storage_statistics();
+
+    g_timer_destroy(timer);
+
+}
+
+void test9()
+{
+    printf("Segments count: %d\n", sc_storage_get_segments_count());
+    print_storage_statistics();
+
+    timer = g_timer_new();
+
+    printf("Collect and delete garbage...\n");
+    g_timer_reset(timer);
+    g_timer_start(timer);
+
+    sc_storage_update_segments();
+
+    g_timer_stop(timer);
+
+
+
+    printf("Elapsed time: %f\n", g_timer_elapsed(timer, 0));
+    printf("Segments count: %d\n", sc_storage_get_segments_count());
+    print_storage_statistics();
+
+    g_timer_destroy(timer);
+
+}
+
 int main(int argc, char *argv[])
 {
     sc_uint item = -1;
@@ -508,6 +598,7 @@ int main(int argc, char *argv[])
     printf("MD5: %d\n", g_checksum_type_get_length(G_CHECKSUM_MD5) );
     printf("SHA1: %d\n", g_checksum_type_get_length(G_CHECKSUM_SHA1) );
     printf("SHA256: %d\n", g_checksum_type_get_length(G_CHECKSUM_SHA256) );
+    printf("Element size: %d\n", sizeof(sc_element));
 
     sc_storage_initialize("repo");
     g_timer_stop(timer);
@@ -517,6 +608,7 @@ int main(int argc, char *argv[])
     //test6();
 
     //test7();
+    //test8();
 
     while (item != 0)
     {
@@ -529,6 +621,8 @@ int main(int argc, char *argv[])
                "5 - test contents\n"
                "6 - test content finding\n"
                "7 - test events\n"
+               "8 - test garbage deletion\n"
+               "9 - run grabage collection\n"
                "\nCommand: ");
         scanf("%d", &item);
 
@@ -562,6 +656,14 @@ int main(int argc, char *argv[])
 
         case 7:
             test7();
+            break;
+
+        case 8:
+            test8();
+            break;
+
+        case 9:
+            test9();
             break;
         };
 

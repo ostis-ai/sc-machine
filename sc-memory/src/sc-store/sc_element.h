@@ -39,7 +39,7 @@ struct _sc_arc_info
 };
 
 #if USE_TWO_ORIENTED_ARC_LIST
-#define CONTENT_DATA_LEN //(sizeof(sc_arc_info) - sizeof(sc_uint32))
+#define CONTENT_DATA_LEN 32//(sizeof(sc_arc_info) - sizeof(sc_uint32))
 #else
 #define CONTENT_DATA_LEN 32
 #endif

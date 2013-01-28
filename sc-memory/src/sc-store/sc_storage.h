@@ -184,5 +184,11 @@ void sc_storage_get_elements_stat(sc_elements_stat *stat);
 //! Returns time stamp value
 sc_uint sc_storage_get_time_stamp();
 
+/*! Updates segments.
+ * Calculate empty slots. Delete garbage
+ * @note Only for internal usage
+ */
+void sc_storage_update_segments();
+
 #endif
 
