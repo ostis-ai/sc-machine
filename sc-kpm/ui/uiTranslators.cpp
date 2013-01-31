@@ -24,7 +24,7 @@ along with OSTIS.  If not, see <http://www.gnu.org/licenses/>.
 #include "uiTranslators.h"
 #include "uiKeynodes.h"
 
-#include "translators/uiSc2ScsTranslator.h"
+#include "translators/uiSc2ScsJsonTranslator.h"
 #include "translators/uiSc2SCgJsonTranslator.h"
 #include "translators/uiSc2SCnJsonTranslator.h"
 
