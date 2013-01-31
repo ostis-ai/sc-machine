@@ -21,7 +21,7 @@ along with OSTIS.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include "uiPrecompiled.h"
-#include "uiSc2ScsTranslator.h"
+#include "uiSc2ScsJsonTranslator.h"
 
 #include "uiTranslators.h"
 #include "uiKeynodes.h"
@@ -62,6 +62,8 @@ void uiSc2ScsTranslator::runImpl()
     // iterate all arcs and translate them
     tScAddrToScTypeMap::iterator it, itEnd = mArcs.end();
 
+    mOutputData = "[";
+
     for (it = mArcs.begin(); it != itEnd; ++it)
     {
         const sc_addr &arc_addr = it->first;
@@ -87,12 +89,16 @@ void uiSc2ScsTranslator::runImpl()
 
         // determine arc type
         String arc_connector = "<>";
-        tScTypeToSCsConnectorMap::const_iterator it = mTypeToConnector.find(arc_type);
-        if (it != mTypeToConnector.end())
-            arc_connector = it->second;
+        tScTypeToSCsConnectorMap::const_iterator itCon = mTypeToConnector.find(arc_type);
+        if (itCon != mTypeToConnector.end())
+            arc_connector = itCon->second;
 
-        mOutputData += begin_idtf + " " + arc_connector + " " + end_idtf + ";;\n";
+        if (it != mArcs.begin())
+            mOutputData += ",";
+        mOutputData += "{\"1\": \"" + begin_idtf + "\", \"2\": \"" + arc_connector + "\", \"3\": \"" + end_idtf + "\"}";
     }
+
+    mOutputData += "]";
 
 }
 
@@ -121,7 +127,7 @@ sc_result uiSc2ScsTranslator::ui_translate_sc2scs(sc_event *event, sc_addr arg)
     if (ui_translate_command_resolve_arguments(cmd_addr, &format_addr, &input_addr) != SC_RESULT_OK)
         return SC_RESULT_ERROR;
 
-    if (format_addr == ui_keynode_format_scs)
+    if (format_addr == ui_keynode_format_scs_json)
     {
         uiSc2ScsTranslator translator;
         translator.translate(input_addr, format_addr);

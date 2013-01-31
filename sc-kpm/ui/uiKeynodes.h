@@ -47,7 +47,7 @@ extern sc_addr ui_keynode_rrel_command;
 extern sc_addr ui_keynode_nrel_command_template;
 extern sc_addr ui_keynode_nrel_command_result;
 
-extern sc_addr ui_keynode_format_scs;
+extern sc_addr ui_keynode_format_scs_json;
 extern sc_addr ui_keynode_format_scg_json;
 extern sc_addr ui_keynode_format_scn_json;
 

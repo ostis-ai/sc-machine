@@ -16,7 +16,6 @@ unix {
 
 HEADERS += \
     ui.h \
-    translators/uiSc2ScsTranslator.h \
     uiCommands.h \
     uiKeynodes.h \
     uiTypes.h \
@@ -24,15 +23,16 @@ HEADERS += \
     uiPrecompiled.h \
     translators/uiSc2SCgJsonTranslator.h \
     translators/uiSc2SCnJsonTranslator.h \
-    translators/uiTranslatorFromSc.h
+    translators/uiTranslatorFromSc.h \
+    translators/uiSc2ScsJsonTranslator.h
 
 SOURCES += \
     ui.cpp \
-    translators/uiSc2ScsTranslator.cpp \
     uiCommands.cpp \
     uiTranslators.cpp \
     uiKeynodes.cpp \
     uiTypes.cpp \
     translators/uiSc2SCgJsonTranslator.cpp \
     translators/uiSc2SCnJsonTranslator.cpp \
-    translators/uiTranslatorFromSc.cpp
+    translators/uiTranslatorFromSc.cpp \
+    translators/uiSc2ScsJsonTranslator.cpp

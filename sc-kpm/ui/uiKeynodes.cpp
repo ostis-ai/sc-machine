@@ -45,7 +45,7 @@ const char keynode_ui_rrel_command_str[] = "ui_rrel_command";
 const char keynode_ui_nrel_command_template_str[] = "ui_nrel_command_template";
 const char keynode_ui_nrel_command_result_str[] = "ui_nrel_command_result";
 
-const char keynode_format_scs_str[] = "format_scs";
+const char keynode_format_scs_json_str[] = "format_scs_json";
 const char keynode_format_scg_json_str[] = "format_scg_json";
 const char keynode_format_scn_json_str[] = "format_scn_json";
 
@@ -69,7 +69,7 @@ sc_addr ui_keynode_rrel_command;
 sc_addr ui_keynode_nrel_command_template;
 sc_addr ui_keynode_nrel_command_result;
 
-sc_addr ui_keynode_format_scs;
+sc_addr ui_keynode_format_scs_json;
 sc_addr ui_keynode_format_scg_json;
 sc_addr ui_keynode_format_scn_json;
 
@@ -130,7 +130,7 @@ sc_bool initialize_keynodes()
         return SC_FALSE;
 
 
-    if (sc_helper_resolve_system_identifier(keynode_format_scs_str, &ui_keynode_format_scs) == SC_FALSE)
+    if (sc_helper_resolve_system_identifier(keynode_format_scs_json_str, &ui_keynode_format_scs_json) == SC_FALSE)
         return SC_FALSE;
 
     if (sc_helper_resolve_system_identifier(keynode_format_scg_json_str, &ui_keynode_format_scg_json) == SC_FALSE)
