@@ -64,13 +64,13 @@ void uiSc2SCgJsonTranslator::runImpl()
         idtf_exist = ui_translate_resolve_system_identifier(addr, sys_idtf);
 
         attrs["id"] = buildId(addr);
+        StringStream ss;
+        ss << el_type;
+        attrs["el_type"] = ss.str();
         if (idtf_exist)
             attrs["identifier"] = sys_idtf;
         if (el_type & sc_type_node)
-        {
             attrs["type"] = "node";
-            attrs["el_type"] = "node/const/general_node";
-        }
 
         if (el_type & sc_type_arc_mask)
         {
@@ -85,7 +85,6 @@ void uiSc2SCgJsonTranslator::runImpl()
 
             attrs["begin"] = buildId(beg_addr);
             attrs["end"] = buildId(end_addr);
-            attrs["el_type"] = "arc/const/pos";
         }
 
         if (el_type & sc_type_link)
