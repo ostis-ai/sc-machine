@@ -108,7 +108,7 @@ sc_bool ui_translate_resolve_system_identifier(sc_addr el, String &sys_idtf)
             sc_stream_get_length(idtf_stream, &idtf_length);
             while (sc_stream_eof(idtf_stream) == SC_FALSE)
             {
-                sc_stream_read_data(idtf_stream, buffer, idtf_length, &read_bytes);
+                sc_stream_read_data(idtf_stream, buffer, 32, &read_bytes);
                 sys_idtf.append(buffer, read_bytes);
             }
             sc_stream_free(idtf_stream);
