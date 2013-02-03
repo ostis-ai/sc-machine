@@ -83,10 +83,6 @@ void uiSc2ScsTranslator::runImpl()
         if (isNeedToTranslate(arc_end) == false)
             continue; //! TODO logging
 
-        String begin_idtf, end_idtf;
-        resolveSystemIdentifier(arc_beg, begin_idtf);
-        resolveSystemIdentifier(arc_end, end_idtf);
-
         // determine arc type
         String arc_connector = "<>";
         tScTypeToSCsConnectorMap::const_iterator itCon = mTypeToConnector.find(arc_type);
@@ -95,7 +91,7 @@ void uiSc2ScsTranslator::runImpl()
 
         if (it != mArcs.begin())
             mOutputData += ",";
-        mOutputData += "{\"1\": \"" + begin_idtf + "\", \"2\": \"" + arc_connector + "\", \"3\": \"" + end_idtf + "\"}";
+        mOutputData += "[\"" + buildId(arc_beg) + "\", \"" + arc_connector + "\", \"" + buildId(arc_end) + "\"]";
     }
 
     mOutputData += "]";
