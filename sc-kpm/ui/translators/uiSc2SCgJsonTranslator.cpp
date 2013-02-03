@@ -41,10 +41,8 @@ uiSc2SCgJsonTranslator::~uiSc2SCgJsonTranslator()
 void uiSc2SCgJsonTranslator::runImpl()
 {
     bool first = true;
-    bool idtf_exist = false;
     sc_type el_type = 0;
     sc_addr addr;
-    String sys_idtf;
     tStringStringMap attrs;
 
     mOutputData = "[";
@@ -61,14 +59,10 @@ void uiSc2SCgJsonTranslator::runImpl()
 
         attrs.clear();
 
-        idtf_exist = ui_translate_resolve_system_identifier(addr, sys_idtf);
-
         attrs["id"] = buildId(addr);
         StringStream ss;
         ss << el_type;
         attrs["el_type"] = ss.str();
-        if (idtf_exist)
-            attrs["identifier"] = sys_idtf;
         if (el_type & sc_type_node)
             attrs["type"] = "node";
 

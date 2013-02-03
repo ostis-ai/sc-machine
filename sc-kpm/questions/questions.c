@@ -27,6 +27,7 @@ const char q_keynode_question_initiated_str[] = "question_initiated";
 const char q_keynode_question_finished_str[] = "question_finished";
 const char q_keynode_question_nrel_answer_str[] = "question_nrel_answer";
 
+
 sc_addr q_keynode_question_initiated;
 sc_addr q_keynode_question_finished;
 sc_addr q_keynode_question_nrel_answer;
@@ -47,6 +48,10 @@ sc_result question_search_all_output_arcs(sc_event *event, sc_addr arg)
 
     if (sc_memory_get_arc_end(arg, &question_node) != SC_RESULT_OK)
         return SC_RESULT_ERROR;
+
+    // check question type
+//    if (sc_helper_check_arc(question_) == SC_FALSE)
+//        return SC_RESULT_ERROR_INVALID_PARAMS;
 
     // get question argument
     it = sc_iterator3_f_a_a_new(question_node, sc_type_arc_pos_const_perm, 0);
@@ -102,9 +107,9 @@ sc_result initialize()
         return SC_RESULT_ERROR;
 
 
-    event_question_search_all_output_arcs = sc_event_new(q_keynode_question_initiated, SC_EVENT_ADD_OUTPUT_ARC, 0, question_search_all_output_arcs, 0);
+   /* event_question_search_all_output_arcs = sc_event_new(q_keynode_question_initiated, SC_EVENT_ADD_OUTPUT_ARC, 0, question_search_all_output_arcs, 0);
     if (event_question_search_all_output_arcs == nullptr)
-        return SC_RESULT_ERROR;
+        return SC_RESULT_ERROR;*/
 
     return SC_RESULT_OK;
 }

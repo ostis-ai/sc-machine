@@ -16,9 +16,11 @@ unix {
 HEADERS += \
     search.h \
     search_functions.h \
-    search_operations.h
+    search_operations.h \
+    search_keynodes.h
 
 SOURCES += \
     search.c \
     search_functions.c \
-    search_operations.c
+    search_operations.c \
+    search_keynodes.c

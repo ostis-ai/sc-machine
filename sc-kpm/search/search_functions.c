@@ -24,6 +24,8 @@ along with OSTIS. If not, see <http://www.gnu.org/licenses/>.
 #include "sc_helper.h"
 #include "sc_memory_headers.h"
 
+#include "search_keynodes.h"
+
 sc_bool search_all_const_pos_output_arc(sc_addr node, sc_addr answer)
 {
     sc_iterator3 *it = nullptr;
@@ -125,7 +127,7 @@ sc_bool search_all_const_pos_output_arc_with_rel(sc_addr node, sc_addr answer)
 {
 
     sc_iterator3 *it = nullptr;
-    sc_addr addr2, addr3;
+    sc_addr arc_end, arc;
 
     it = sc_iterator3_f_a_a_new(node, sc_type_arc_pos_const_perm, 0);
 
@@ -134,10 +136,10 @@ sc_bool search_all_const_pos_output_arc_with_rel(sc_addr node, sc_addr answer)
 
     while (sc_iterator3_next(it))
     {
-        addr2 = sc_iterator3_value(it, 2);
-        addr3 = sc_iterator3_value(it, 1);
-        sc_memory_arc_new(sc_type_arc_pos_const_perm, answer, addr2);
-        if (search_all_const_pos_input_arc(addr3, answer) == SC_FALSE)
+        arc_end = sc_iterator3_value(it, 2);
+        arc = sc_iterator3_value(it, 1);
+        sc_memory_arc_new(sc_type_arc_pos_const_perm, answer, arc_end);
+        if (search_all_const_pos_input_arc(arc, answer) == SC_FALSE)
             continue;
     }
     sc_memory_arc_new(sc_type_arc_pos_const_perm, answer, node);
@@ -160,7 +162,6 @@ sc_bool search_full_semantic_neighbourhood(sc_addr node, sc_addr answer)
     if (it == nullptr)
         return SC_FALSE;
 
-    sc_helper_resolve_system_identifier("class_quasybinary_relation", &quas);
     while (sc_iterator3_next(it))
     {
         addr3 = sc_iterator3_value(it, 0);
@@ -264,11 +265,13 @@ sc_bool get_question_single_param(sc_addr question_class, sc_addr question_node,
     it = sc_iterator3_f_a_a_new(question_node, sc_type_arc_pos_const_perm, 0);
     if (!sc_iterator3_next(it))
     {
+        sc_iterator3_free(it);
         return SC_FALSE;
     }
     else
     {
         *param = it->results[2];
+        sc_iterator3_free(it);
         return SC_TRUE;
     }
 }

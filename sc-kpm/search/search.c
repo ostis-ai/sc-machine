@@ -24,25 +24,8 @@ along with OSTIS. If not, see <http://www.gnu.org/licenses/>.
 #include "sc_helper.h"
 #include "sc_memory_headers.h"
 #include "search_operations.h"
+#include "search_keynodes.h"
 
-
-sc_addr class_question_all_output_const_pos_arc;
-sc_addr class_question_all_input_const_pos_arc;
-sc_addr class_question_all_output_const_pos_arc_with_rel;
-sc_addr class_question_all_input_const_pos_arc_with_rel;
-sc_addr class_question_full_semantic_neighbourhood;
-sc_addr question_initiated;
-sc_addr nrel_answer;
-sc_addr question_finished;
-
-const char class_question_all_output_const_pos_arc_str[] = "class_question_all_output_const_pos_arc";
-const char class_question_all_input_const_pos_arc_str[] = "class_question_all_input_const_pos_arc";
-const char class_question_all_output_const_pos_arc_with_rel_str[] = "class_question_all_output_const_pos_arc_with_rel";
-const char class_question_all_input_const_pos_arc_with_rel_str[] = "class_question_all_input_const_pos_arc_with_rel";
-const char class_question_full_semantic_neighbourhood_str[] = "class_question_full_semantic_neighbourhood";
-const char question_initiated_str[] = "question_initiated";
-const char nrel_answer_str[] = "question_nrel_answer";
-const char question_finished_str[] = "question_finished";
 
 sc_event* event_question_search_all_output_arcs;
 sc_event* event_question_search_all_input_arcs;
@@ -54,28 +37,7 @@ sc_event* event_question_full_semantic_neighbourhood;
 
 sc_result initialize()
 {
-    if (sc_helper_resolve_system_identifier(class_question_all_output_const_pos_arc_str, &class_question_all_output_const_pos_arc) == SC_FALSE)
-        return SC_RESULT_ERROR;
-
-    if (sc_helper_resolve_system_identifier(class_question_all_input_const_pos_arc_str, &class_question_all_input_const_pos_arc) == SC_FALSE)
-        return SC_RESULT_ERROR;
-
-    if (sc_helper_resolve_system_identifier(class_question_all_output_const_pos_arc_with_rel_str, &class_question_all_output_const_pos_arc_with_rel) == SC_FALSE)
-        return SC_RESULT_ERROR;
-
-    if (sc_helper_resolve_system_identifier(class_question_all_input_const_pos_arc_with_rel_str, &class_question_all_input_const_pos_arc_with_rel) == SC_FALSE)
-        return SC_RESULT_ERROR;
-
-    if (sc_helper_resolve_system_identifier(nrel_answer_str, &nrel_answer) == SC_FALSE)
-        return SC_RESULT_ERROR;
-
-    if (sc_helper_resolve_system_identifier(class_question_full_semantic_neighbourhood_str, &class_question_full_semantic_neighbourhood) == SC_FALSE)
-        return SC_RESULT_ERROR;
-
-    if (sc_helper_resolve_system_identifier(question_initiated_str, &question_initiated) == SC_FALSE)
-        return SC_RESULT_ERROR;
-
-    if (sc_helper_resolve_system_identifier(question_finished_str, &question_finished) == SC_FALSE)
+    if (search_keynodes_initialize() != SC_RESULT_OK)
         return SC_RESULT_ERROR;
 
     event_question_search_all_output_arcs = sc_event_new(question_initiated, SC_EVENT_ADD_OUTPUT_ARC, 0, operation_search_all_const_pos_output_arc, 0);

@@ -22,9 +22,10 @@ along with OSTIS. If not, see <http://www.gnu.org/licenses/>.
 
 #include "sc_helper.h"
 #include "sc_memory_headers.h"
+
 #include "search.h"
 #include "search_functions.h"
-#include <stdio.h>
+#include "search_keynodes.h"
 
 void finish_question(sc_addr quest)
 {
@@ -50,10 +51,10 @@ sc_result operation_search_all_const_pos_output_arc(sc_event *event, sc_addr arg
     if (!sc_memory_get_arc_end(arg, &quest))
         return SC_RESULT_ERROR_INVALID_PARAMS;
 
-    if (!get_question_single_param(class_question_all_output_const_pos_arc, quest, &param))
+    if (!get_question_single_param(question_all_output_const_pos_arc, quest, &param))
         return SC_RESULT_ERROR_INVALID_PARAMS;
 
-    answer = sc_memory_node_new(sc_type_node);
+    answer = sc_memory_node_new(sc_type_node | sc_type_const);
     search_all_const_pos_output_arc(param, answer);
 
     arc = sc_memory_arc_new(sc_type_arc_common | sc_type_const, quest, answer);
@@ -71,10 +72,10 @@ sc_result operation_search_all_const_pos_input_arc(sc_event *event, sc_addr arg)
     if (!sc_memory_get_arc_end(arg, &quest))
         return SC_RESULT_ERROR_INVALID_PARAMS;
 
-    if (!get_question_single_param(class_question_all_input_const_pos_arc, quest, &param))
+    if (!get_question_single_param(question_all_input_const_pos_arc, quest, &param))
         return SC_RESULT_ERROR_INVALID_PARAMS;
 
-    answer = sc_memory_node_new(sc_type_node);
+    answer = sc_memory_node_new(sc_type_node | sc_type_const);
     search_all_const_pos_input_arc(param, answer);
 
     arc = sc_memory_arc_new(sc_type_arc_common | sc_type_const, quest, answer);
@@ -92,10 +93,10 @@ sc_result operation_search_all_const_pos_output_arc_with_rel(sc_event *event, sc
     if (!sc_memory_get_arc_end(arg, &quest))
         return SC_RESULT_ERROR_INVALID_PARAMS;
 
-    if (!get_question_single_param(class_question_all_output_const_pos_arc_with_rel, quest, &param))
+    if (!get_question_single_param(question_all_output_const_pos_arc_with_rel, quest, &param))
         return SC_RESULT_ERROR_INVALID_PARAMS;
 
-    answer = sc_memory_node_new(sc_type_node);
+    answer = sc_memory_node_new(sc_type_node | sc_type_const);
     search_all_const_pos_output_arc_with_rel(param, answer);
 
     arc = sc_memory_arc_new(sc_type_arc_common | sc_type_const, quest, answer);
@@ -112,10 +113,10 @@ sc_result operation_search_all_const_pos_input_arc_with_rel(sc_event *event, sc_
     if (!sc_memory_get_arc_end(arg, &quest))
         return SC_RESULT_ERROR_INVALID_PARAMS;
 
-    if (!get_question_single_param(class_question_all_input_const_pos_arc_with_rel, quest, &param))
+    if (!get_question_single_param(question_all_input_const_pos_arc_with_rel, quest, &param))
         return SC_RESULT_ERROR_INVALID_PARAMS;
 
-    answer = sc_memory_node_new(sc_type_node);
+    answer = sc_memory_node_new(sc_type_node | sc_type_const);
     search_all_const_pos_input_arc_with_rel(param, answer);
 
     arc = sc_memory_arc_new(sc_type_arc_common | sc_type_const, quest, answer);
@@ -133,10 +134,10 @@ sc_result operation_search_full_semantic_neighbourhood(sc_event *event, sc_addr 
     if (!sc_memory_get_arc_end(arg, &quest))
         return SC_RESULT_ERROR_INVALID_PARAMS;
 
-    if (!get_question_single_param(class_question_full_semantic_neighbourhood, quest, &param))
+    if (!get_question_single_param(question_full_semantic_neighbourhood, quest, &param))
         return SC_RESULT_ERROR_INVALID_PARAMS;
 
-    answer = sc_memory_node_new(sc_type_node);
+    answer = sc_memory_node_new(sc_type_node | sc_type_const);
     search_full_semantic_neighbourhood(param, answer);
 
     arc = sc_memory_arc_new(sc_type_arc_common | sc_type_const, quest, answer);
