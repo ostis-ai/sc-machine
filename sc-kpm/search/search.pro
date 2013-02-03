@@ -12,3 +12,13 @@ unix {
     CONFIG += link_pkgconfig
     PKGCONFIG += glib-2.0
 }
+
+HEADERS += \
+    search.h \
+    search_functions.h \
+    search_operations.h
+
+SOURCES += \
+    search.c \
+    search_functions.c \
+    search_operations.c

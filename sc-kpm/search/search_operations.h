@@ -20,11 +20,10 @@ along with OSTIS. If not, see <http://www.gnu.org/licenses/>.
 -----------------------------------------------------------------------------
  */
 
-#ifndef SEARCH_OPERATIONS_H
-#define SEARCH_OPERATIONS_H
+#ifndef _search_operations_h_
+#define _search_operations_h_
 
 #include "sc_memory.h"
-#include "sc_event.h"
 
 /*! SC-operation to search all constant positive output arcs for given element
  * @return Returns SC_RESULT_ERROR, if system error appeared. Otherwise returns SC_RESULT_OK.
@@ -53,4 +52,4 @@ sc_result operation_search_all_const_pos_input_arc_with_rel(sc_event *event, sc_
  */
 sc_result operation_search_full_semantic_neighbourhood(sc_event *event, sc_addr arg);
 
-#endif // SEARCH_OPERATIONS_H
+#endif

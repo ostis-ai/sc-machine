@@ -20,8 +20,8 @@ along with OSTIS. If not, see <http://www.gnu.org/licenses/>.
 -----------------------------------------------------------------------------
  */
 
-#ifndef SC_SEARCH_BASIC_H
-#define SC_SEARCH_BASIC_H
+#ifndef _search_h_
+#define _search_h_
 
 #include "sc_memory.h"
 
@@ -40,4 +40,4 @@ sc_result initialize();
 //! Module shutdown function
 sc_result shutdown();
 
-#endif // SC_SEARCH_BASIC_H
+#endif

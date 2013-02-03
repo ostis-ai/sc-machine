@@ -22,8 +22,8 @@ along with OSTIS. If not, see <http://www.gnu.org/licenses/>.
 
 #include "sc_memory.h"
 
-#ifndef SC_SEARCH_FUNCTIONS_H
-#define SC_SEARCH_FUNCTIONS_H
+#ifndef _search_functions_h_
+#define _search_functions_h_
 
 /*! Search all constant positive permanent arcs, which outcome from given element
  * @param addr sc-addr of element
@@ -70,4 +70,4 @@ sc_bool search_full_semantic_neighbourhood(sc_addr node, sc_addr answer);
  */
 sc_bool get_question_single_param(sc_addr question_class, sc_addr question_node, sc_addr *param);
 
-#endif // SC_SEARCH_FUNCTIONS_H
+#endif

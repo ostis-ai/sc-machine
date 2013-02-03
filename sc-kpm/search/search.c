@@ -20,11 +20,11 @@ along with OSTIS. If not, see <http://www.gnu.org/licenses/>.
 -----------------------------------------------------------------------------
  */
 
-#include "sc_search_basic.h"
+#include "search.h"
 #include "sc_helper.h"
-#include "sc_event.h"
-#include "sc_search_basic_operations.h"
-#include <stdio.h>
+#include "sc_memory_headers.h"
+#include "search_operations.h"
+
 
 sc_addr class_question_all_output_const_pos_arc;
 sc_addr class_question_all_input_const_pos_arc;
@@ -52,9 +52,8 @@ sc_event* event_question_full_semantic_neighbourhood;
 
 // --------------------- Module ------------------------
 
-sc_result initialize() {
-    //printf("sc-search init done...\n");
-
+sc_result initialize()
+{
     if (sc_helper_resolve_system_identifier(class_question_all_output_const_pos_arc_str, &class_question_all_output_const_pos_arc) == SC_FALSE)
         return SC_RESULT_ERROR;
 
@@ -102,7 +101,8 @@ sc_result initialize() {
     return SC_RESULT_OK;
 }
 
-sc_result shutdown() {
+sc_result shutdown()
+{
     sc_event_destroy(event_question_search_all_output_arcs);
     sc_event_destroy(event_question_search_all_input_arcs);
     sc_event_destroy(event_question_search_all_output_arcs_with_rel);
