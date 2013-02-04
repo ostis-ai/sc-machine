@@ -20,22 +20,11 @@ along with OSTIS. If not, see <http://www.gnu.org/licenses/>.
 -----------------------------------------------------------------------------
  */
 
-#ifndef _search_keynodes_h_
-#define _search_keynodes_h_
+#ifndef _search_operations_h_
+#define _search_operations_h_
 
-#include "sc_memory.h"
-
-extern sc_addr search_keynode_question_all_output_const_pos_arc;
-extern sc_addr search_keynode_question_all_input_const_pos_arc;
-extern sc_addr search_keynode_question_all_output_const_pos_arc_with_rel;
-extern sc_addr search_keynode_question_all_input_const_pos_arc_with_rel;
-extern sc_addr search_keynode_question_full_semantic_neighborhood;
-extern sc_addr search_keynode_nrel_answer;
-extern sc_addr search_keynode_question_finished;
-extern sc_addr search_keynode_question_initiated;
-extern sc_addr search_keynode_quasybinary_relation;
-
-//! Initialie keynodes that used by search module
-sc_result search_keynodes_initialize();
+#include "agents/search_input_arcs.h"
+#include "agents/search_output_arcs.h"
+#include "agents/search_semantic_neighborhood.h"
 
 #endif

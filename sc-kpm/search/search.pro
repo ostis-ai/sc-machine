@@ -15,12 +15,17 @@ unix {
 
 HEADERS += \
     search.h \
-    search_functions.h \
-    search_operations.h \
-    search_keynodes.h
+    search_agents.h \
+    search_keynodes.h \
+    search_utils.h \
+    agents/search_output_arcs.h \
+    agents/search_input_arcs.h \
+    agents/search_semantic_neighborhood.h
 
 SOURCES += \
     search.c \
-    search_functions.c \
-    search_operations.c \
-    search_keynodes.c
+    search_keynodes.c \
+    search_utils.c \
+    agents/search_output_arcs.c \
+    agents/search_input_arcs.c \
+    agents/search_semantic_neighborhood.c

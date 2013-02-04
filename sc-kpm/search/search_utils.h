@@ -20,22 +20,30 @@ along with OSTIS. If not, see <http://www.gnu.org/licenses/>.
 -----------------------------------------------------------------------------
  */
 
-#ifndef _search_keynodes_h_
-#define _search_keynodes_h_
-
 #include "sc_memory.h"
 
-extern sc_addr search_keynode_question_all_output_const_pos_arc;
-extern sc_addr search_keynode_question_all_input_const_pos_arc;
-extern sc_addr search_keynode_question_all_output_const_pos_arc_with_rel;
-extern sc_addr search_keynode_question_all_input_const_pos_arc_with_rel;
-extern sc_addr search_keynode_question_full_semantic_neighborhood;
-extern sc_addr search_keynode_nrel_answer;
-extern sc_addr search_keynode_question_finished;
-extern sc_addr search_keynode_question_initiated;
-extern sc_addr search_keynode_quasybinary_relation;
+#ifndef _search_functions_h_
+#define _search_functions_h_
 
-//! Initialie keynodes that used by search module
-sc_result search_keynodes_initialize();
+/*! Search full semantic neighbourhood of given element
+ * @param addr sc-addr of element
+ * @param answer sc-addr of set, which will contain all the elements of answer.
+ * @return Returns SC_FALSE, if system error appeared. Otherwise returns SC_TRUE.
+ */
+sc_bool search_full_semantic_neighbourhood(sc_addr node, sc_addr answer);
+
+
+/*! Connect answer with question by specified releation
+ * @param question sc-addr of question node
+ * @param answer sc-addr of answer node
+ */
+void connect_answer_to_question(sc_addr question, sc_addr answer);
+
+/*!
+ * Remove question from question_initiated set and append it into
+ * question_finished set.
+ * @param question sc-add of question node
+ */
+void finish_question(sc_addr question);
 
 #endif

@@ -3,7 +3,7 @@
 This source file is part of OSTIS (Open Semantic Technology for Intelligent Systems)
 For the latest info, see http://www.ostis.net
 
-Copyright (c) 2012 OSTIS
+Copyright (c) 2013 OSTIS
 
 OSTIS is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as published by
@@ -20,22 +20,22 @@ along with OSTIS. If not, see <http://www.gnu.org/licenses/>.
 -----------------------------------------------------------------------------
  */
 
-#ifndef _search_keynodes_h_
-#define _search_keynodes_h_
+#ifndef _search_input_arcs_h_
+#define _search_input_arcs_h_
 
-#include "sc_memory.h"
+#include <sc_memory.h>
 
-extern sc_addr search_keynode_question_all_output_const_pos_arc;
-extern sc_addr search_keynode_question_all_input_const_pos_arc;
-extern sc_addr search_keynode_question_all_output_const_pos_arc_with_rel;
-extern sc_addr search_keynode_question_all_input_const_pos_arc_with_rel;
-extern sc_addr search_keynode_question_full_semantic_neighborhood;
-extern sc_addr search_keynode_nrel_answer;
-extern sc_addr search_keynode_question_finished;
-extern sc_addr search_keynode_question_initiated;
-extern sc_addr search_keynode_quasybinary_relation;
 
-//! Initialie keynodes that used by search module
-sc_result search_keynodes_initialize();
+/*!
+ * Function that implement sc-agent to search all positive, constant and permanent
+ * input arcs for specified sc-element
+ */
+sc_result operation_search_all_const_pos_input_arc(sc_event *event, sc_addr arg);
+
+/*!
+ * Function that implement sc-agent to search all positive, constant and permanent
+ * input arcs with relations for specified sc-element
+ */
+sc_result operation_search_all_const_pos_input_arc_with_rel(sc_event *event, sc_addr arg);
 
 #endif

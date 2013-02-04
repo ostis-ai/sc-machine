@@ -3,7 +3,7 @@
 This source file is part of OSTIS (Open Semantic Technology for Intelligent Systems)
 For the latest info, see http://www.ostis.net
 
-Copyright (c) 2012 OSTIS
+Copyright (c) 2013 OSTIS
 
 OSTIS is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as published by
@@ -19,23 +19,20 @@ You should have received a copy of the GNU Lesser General Public License
 along with OSTIS. If not, see <http://www.gnu.org/licenses/>.
 -----------------------------------------------------------------------------
  */
+#ifndef _seach_output_arcs_h_
+#define _seach_output_arcs_h_
 
-#ifndef _search_keynodes_h_
-#define _search_keynodes_h_
+#include <sc_memory.h>
 
-#include "sc_memory.h"
+/*!
+ * Function that implement sc-agent to search all positive, constant and permanent
+ * output arcs for specified sc-element
+ */
+sc_result operation_search_all_const_pos_output_arc(sc_event *event, sc_addr arg);
 
-extern sc_addr search_keynode_question_all_output_const_pos_arc;
-extern sc_addr search_keynode_question_all_input_const_pos_arc;
-extern sc_addr search_keynode_question_all_output_const_pos_arc_with_rel;
-extern sc_addr search_keynode_question_all_input_const_pos_arc_with_rel;
-extern sc_addr search_keynode_question_full_semantic_neighborhood;
-extern sc_addr search_keynode_nrel_answer;
-extern sc_addr search_keynode_question_finished;
-extern sc_addr search_keynode_question_initiated;
-extern sc_addr search_keynode_quasybinary_relation;
-
-//! Initialie keynodes that used by search module
-sc_result search_keynodes_initialize();
+/*! Function that implemets sc-agent to search all positive, constant and permanent
+ * output arcs with relations for specified sc-element
+ */
+sc_result operation_search_all_const_pos_output_arc_with_rel(sc_event *event, sc_addr arg);
 
 #endif
