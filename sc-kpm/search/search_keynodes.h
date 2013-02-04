@@ -30,7 +30,10 @@ extern sc_addr search_keynode_question_all_input_const_pos_arc;
 extern sc_addr search_keynode_question_all_output_const_pos_arc_with_rel;
 extern sc_addr search_keynode_question_all_input_const_pos_arc_with_rel;
 extern sc_addr search_keynode_question_full_semantic_neighborhood;
+extern sc_addr search_keynode_question_decomposition;
+
 extern sc_addr search_keynode_nrel_answer;
+extern sc_addr search_keynode_nrel_decomposition;
 extern sc_addr search_keynode_question_finished;
 extern sc_addr search_keynode_question_initiated;
 extern sc_addr search_keynode_quasybinary_relation;

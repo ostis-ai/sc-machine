@@ -30,8 +30,11 @@ sc_addr search_keynode_question_all_input_const_pos_arc;
 sc_addr search_keynode_question_all_output_const_pos_arc_with_rel;
 sc_addr search_keynode_question_all_input_const_pos_arc_with_rel;
 sc_addr search_keynode_question_full_semantic_neighborhood;
+sc_addr search_keynode_question_decomposition;
+
 sc_addr search_keynode_question_initiated;
 sc_addr search_keynode_nrel_answer;
+sc_addr search_keynode_nrel_decomposition;
 sc_addr search_keynode_question_finished;
 sc_addr search_keynode_quasybinary_relation;
 
@@ -40,8 +43,11 @@ const char search_keynode_question_all_input_const_pos_arc_str[] = "question_sea
 const char search_keynode_question_all_output_const_pos_arc_with_rel_str[] = "question_search_all_output_const_pos_arcs_with_rel";
 const char search_keynode_question_all_input_const_pos_arc_with_rel_str[] = "question_search_all_input_const_pos_arcs_with_rel";
 const char search_keynode_question_full_semantic_neighborhood_str[] = "question_search_full_semantic_neighborhood";
+const char search_keynode_question_decomposition_str[] = "question_search_decomposition";
+
 const char search_keynode_question_initiated_str[] = "question_initiated";
 const char search_keynode_nrel_answer_str[] = "question_nrel_answer";
+const char search_keynode_nrel_decomposition_str[] = "nrel_decomposition";
 const char search_keynode_question_finished_str[] = "question_finished";
 const char search_keynode_quasybinary_relation_str[] = "quasybinary_relation";
 
@@ -61,10 +67,16 @@ sc_result search_keynodes_initialize()
     if (sc_helper_resolve_system_identifier(search_keynode_question_all_input_const_pos_arc_with_rel_str, &search_keynode_question_all_input_const_pos_arc_with_rel) == SC_FALSE)
         return SC_RESULT_ERROR;
 
+    if (sc_helper_resolve_system_identifier(search_keynode_question_full_semantic_neighborhood_str, &search_keynode_question_full_semantic_neighborhood) == SC_FALSE)
+        return SC_RESULT_ERROR;
+
+    if (sc_helper_resolve_system_identifier(search_keynode_question_decomposition_str, &search_keynode_question_decomposition) == SC_FALSE)
+        return SC_RESULT_ERROR;
+
     if (sc_helper_resolve_system_identifier(search_keynode_nrel_answer_str, &search_keynode_nrel_answer) == SC_FALSE)
         return SC_RESULT_ERROR;
 
-    if (sc_helper_resolve_system_identifier(search_keynode_question_full_semantic_neighborhood_str, &search_keynode_question_full_semantic_neighborhood) == SC_FALSE)
+    if (sc_helper_resolve_system_identifier(search_keynode_nrel_decomposition_str, &search_keynode_nrel_decomposition) == SC_FALSE)
         return SC_RESULT_ERROR;
 
     if (sc_helper_resolve_system_identifier(search_keynode_question_initiated_str, &search_keynode_question_initiated) == SC_FALSE)

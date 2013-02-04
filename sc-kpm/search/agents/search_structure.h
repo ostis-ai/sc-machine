@@ -20,14 +20,14 @@ along with OSTIS. If not, see <http://www.gnu.org/licenses/>.
 -----------------------------------------------------------------------------
  */
 
-#ifndef _search_semantic_neighborhood_h_
-#define _search_semantic_neighborhood_h_
+#ifndef _search_structure_h_
+#define _search_structure_h_
 
 #include <sc_memory.h>
 
 /*!
- * Function that implements sc-agent to search full semantic neighborhood of specified sc-element
+ * Function, that implements sc-agent to search decomposition of specified sc-element
  */
-sc_result agent_search_full_semantic_neighborhood(sc_event *event, sc_addr arg);
+sc_result agent_search_decomposition(sc_event *event, sc_addr arg);
 
 #endif

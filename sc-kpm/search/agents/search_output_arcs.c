@@ -26,7 +26,7 @@ along with OSTIS. If not, see <http://www.gnu.org/licenses/>.
 #include <sc_helper.h>
 #include <sc_memory_headers.h>
 
-sc_result operation_search_all_const_pos_output_arc(sc_event *event, sc_addr arg)
+sc_result agent_search_all_const_pos_output_arc(sc_event *event, sc_addr arg)
 {
     sc_addr question, answer;
     sc_iterator3 *it1, *it2;
@@ -65,7 +65,7 @@ sc_result operation_search_all_const_pos_output_arc(sc_event *event, sc_addr arg
 }
 
 // ---------------------------------------------
-sc_result operation_search_all_const_pos_output_arc_with_rel(sc_event *event, sc_addr arg)
+sc_result agent_search_all_const_pos_output_arc_with_rel(sc_event *event, sc_addr arg)
 {
     sc_addr question, answer;
     sc_iterator3 *it1, *it2, *it3;
