@@ -27,13 +27,15 @@ along with OSTIS.  If not, see <http://www.gnu.org/licenses/>.
 #include "uiKeynodes.h"
 
 uiSc2SCnJsonTranslator::uiSc2SCnJsonTranslator()
+    : mScElementsInfoPool(0)
 {
 
 }
 
 uiSc2SCnJsonTranslator::~uiSc2SCnJsonTranslator()
 {
-
+    if (mScElementsInfoPool)
+        delete []mScElementsInfoPool;
 }
 
 void uiSc2SCnJsonTranslator::runImpl()
@@ -55,41 +57,99 @@ void uiSc2SCnJsonTranslator::runImpl()
     }
     sc_iterator5_free(it5);
 
+    collectScElementsInfo();
+
     mOutputData = "[";
 
     tScAddrList::iterator it, itEnd = mKeywordsList.end();
     for (it = mKeywordsList.begin(); it != itEnd; ++it)
-        translateKeyword(*it);
+    {
+        if (it != mKeywordsList.begin())
+            mOutputData += ",";
+        mOutputData += translateElement(*it, true);
+    }
 
     // @todo check if there are some nodes, that not translated
 
     mOutputData += "]";
 }
 
-void uiSc2SCnJsonTranslator::translateKeyword(sc_addr keyword_addr)
+String uiSc2SCnJsonTranslator::translateElement(sc_addr addr, bool isKeyword)
 {
     tStringStringMap attrs;
+    String result = "";
 
-    if (mTranslatedAddrsList.size() > 0)
-        mOutputData += ", ";
-    mTranslatedAddrsList.push_back(keyword_addr);
+    mTranslatedAddrsList.push_back(addr);
 
-    attrs["id"] = buildId(keyword_addr);
-    attrs["keyword"] = "true";
+    result += "{";
+    result += "\"id\": \"" + buildId(addr) + "\",";
+    result += "\"keyword\": ";
+    result += isKeyword ? "true" : "false";
+    result += ", \"SCArcs\" : [";
 
-
-    mOutputData += "{";
-    tStringStringMap::iterator itAttrs, itAttrsEnd = attrs.end();
-    for (itAttrs = attrs.begin(); itAttrs != itAttrsEnd; ++itAttrs)
+    sScElementInfo *elInfo = mScElementsInfo[addr];
+    sScElementInfo *arcInfo = 0;
+    // iterate input arcs
+    bool first = true;
+    tScAddrList::const_iterator it, itEnd = elInfo->input_arcs.end();
+    for (it = elInfo->input_arcs.begin(); it != itEnd; ++it)
     {
-        if (itAttrs != attrs.begin())
-            mOutputData += ", ";
-        mOutputData += "\"" + itAttrs->first + "\": ";
-        mOutputData += "\"" + itAttrs->second + "\"";
+        arcInfo = mScElementsInfo[*it];
+        if (isTranslated(arcInfo->beg_addr))
+            continue;
+
+        if (!first)
+            result += ",";
+        result += translateArc(arcInfo, true);
+        first = false;
     }
-    mOutputData += "}";
+    itEnd = elInfo->output_arcs.end();
+    for (it = elInfo->output_arcs.begin(); it != itEnd; ++it)
+    {
+        arcInfo = mScElementsInfo[*it];
+        if (isTranslated(arcInfo->end_addr))
+            continue;
+
+        if (!first)
+            result += ",";
+        result += translateArc(arcInfo, false);
+        first = false;
+    }
+
+    result += "],";
+    StringStream ss;
+    ss << elInfo->type;
+    result += "\"type\":" + ss.str();
+    result += "}";
+
+    return result;
+}
+
+String uiSc2SCnJsonTranslator::translateArc(sScElementInfo *arcInfo, bool isBackward)
+{
+    sc_addr elAddr = isBackward ? arcInfo->beg_addr : arcInfo->end_addr;
+    bool hasAttributes = arcInfo->input_arcs.size() > 0;
+    String result = "{";
+
+    if (hasAttributes)
+    {
+        result += "\"SCAttributes\" : [";
 
 
+        result += "],";
+    }
+
+    StringStream ss;
+    ss << arcInfo->type;
+
+    result += "\"id\": \"" + buildId(arcInfo->addr) + "\",";
+    result += "\"type\":" + ss.str();
+    result += ",\"backward\":";
+    result += isBackward ? "true" : "false";
+    result += ",\"SCNode\":" + translateElement(elAddr, false);
+    result += "}";
+
+    return result;
 }
 
 bool uiSc2SCnJsonTranslator::isTranslated(sc_addr element) const
@@ -102,6 +162,57 @@ bool uiSc2SCnJsonTranslator::isTranslated(sc_addr element) const
     }
 
     return false;
+}
+
+void uiSc2SCnJsonTranslator::collectScElementsInfo()
+{
+    sc_uint32 elementsCount = mObjects.size();
+    mScElementsInfoPool = new sScElementInfo[elementsCount];
+
+    sc_uint32 poolUsed = 0;
+    // first of all collect information about elements
+    tScAddrToScTypeMap::const_iterator it, itEnd = mObjects.end();
+    for (it = mObjects.begin(); it != itEnd; ++it)
+    {
+        if (mScElementsInfo.find(it->first) != mScElementsInfo.end())
+            continue;
+
+        mScElementsInfoPool[poolUsed].addr = it->first;
+        mScElementsInfoPool[poolUsed].type = it->second;
+        mScElementsInfo[it->first] = &(mScElementsInfoPool[poolUsed]);
+        poolUsed++;
+    }
+
+    // now we need to itarete all arcs and collect output/input arcs info
+    sc_type elType;
+    sc_addr begAddr, endAddr, arcAddr;
+    for (it = mObjects.begin(); it != itEnd; ++it)
+    {
+        elType = it->second;
+        // skip nodes and links
+        if (!(elType & sc_type_arc_mask))
+            continue;
+        arcAddr = it->first;
+
+        // get begin/end addrs
+        if (sc_memory_get_arc_begin(arcAddr, &begAddr) != SC_RESULT_OK)
+            continue; // @todo process errors
+        if (sc_memory_get_arc_end(arcAddr, &endAddr) != SC_RESULT_OK)
+            continue; // @todo process errors
+
+        sScElementInfo *elInfo = mScElementsInfo[arcAddr];
+        elInfo->beg_addr = begAddr;
+        elInfo->end_addr = endAddr;
+
+        sScElementInfo *begInfo = mScElementsInfo[begAddr];
+        sScElementInfo *endInfo = mScElementsInfo[endAddr];
+
+        // check if arc is not broken
+        if (begInfo == 0 || endInfo == 0)
+            continue;
+        endInfo->input_arcs.push_back(arcAddr);
+        begInfo->output_arcs.push_back(arcAddr);
+    }
 }
 
 // -------------------------------------

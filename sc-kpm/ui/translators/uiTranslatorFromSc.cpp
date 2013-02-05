@@ -69,23 +69,7 @@ void uiTranslateFromSc::collectObjects()
         if (sc_memory_get_element_type(addr, &el_type) != SC_RESULT_OK)
             continue;
 
-        if (el_type & sc_type_node)
-        {
-            mNodes[addr] = el_type;
-            continue;
-        }
-
-        if (el_type & sc_type_arc_mask)
-        {
-            mArcs[addr] = el_type;
-            continue;
-        }
-
-        if (el_type & sc_type_link)
-        {
-            mLinks[addr] = el_type;
-            continue;
-        }
+        mObjects[addr] = el_type;
 
     }
     sc_iterator3_free(it);
@@ -93,16 +77,7 @@ void uiTranslateFromSc::collectObjects()
 
 bool uiTranslateFromSc::isNeedToTranslate(const sc_addr &addr) const
 {
-    if (mNodes.find(addr) != mNodes.end())
-        return true;
-
-    if (mArcs.find(addr) != mArcs.end())
-        return true;
-
-    if (mLinks.find(addr) != mLinks.end())
-        return true;
-
-    return false;
+    return mObjects.find(addr) != mObjects.end();
 }
 
 String uiTranslateFromSc::buildId(const sc_addr &addr) const

@@ -60,14 +60,19 @@ void uiSc2ScsTranslator::runImpl()
     //! TODO logging sc-element, that can't be translated
 
     // iterate all arcs and translate them
-    tScAddrToScTypeMap::iterator it, itEnd = mArcs.end();
+    tScAddrToScTypeMap::iterator it, itEnd = mObjects.end();
 
     mOutputData = "[";
+    bool first = true;
 
-    for (it = mArcs.begin(); it != itEnd; ++it)
+    for (it = mObjects.begin(); it != itEnd; ++it)
     {
         const sc_addr &arc_addr = it->first;
         sc_type arc_type = it->second;
+
+        // skip non arc objects
+        if (!(arc_type & sc_type_arc_mask))
+            continue;
 
         sc_addr arc_beg, arc_end;
         // get begin and end arc elements
@@ -89,8 +94,10 @@ void uiSc2ScsTranslator::runImpl()
         if (itCon != mTypeToConnector.end())
             arc_connector = itCon->second;
 
-        if (it != mArcs.begin())
+        if (!first)
             mOutputData += ",";
+        else
+            first = true;
         mOutputData += "[\"" + buildId(arc_beg) + "\", \"" + arc_connector + "\", \"" + buildId(arc_end) + "\"]";
     }
 

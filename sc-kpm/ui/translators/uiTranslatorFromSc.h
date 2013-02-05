@@ -60,9 +60,7 @@ protected:
     sc_addr mOutputFormatAddr;
 
     // Maps of elements to translate
-    tScAddrToScTypeMap mArcs;
-    tScAddrToScTypeMap mNodes;
-    tScAddrToScTypeMap mLinks;
+    tScAddrToScTypeMap mObjects;
 
     //! Output scs
     String mOutputData;
