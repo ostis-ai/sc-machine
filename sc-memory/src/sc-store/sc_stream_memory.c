@@ -142,7 +142,7 @@ sc_stream* sc_stream_memory_new(const sc_char *buffer, sc_uint buffer_size, sc_u
 
     sc_memory_buffer *data_buffer = g_new0(sc_memory_buffer, 1);
 
-    data_buffer->data = buffer;
+    data_buffer->data = (char*)buffer;
     data_buffer->size = buffer_size;
     data_buffer->pos = 0;
     data_buffer->data_owner = data_owner;

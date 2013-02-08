@@ -35,7 +35,7 @@ const char keynode_ui_rrel_output_format_str[] = "ui_rrel_output_format";
 const char keynode_question_nrel_answer_str[] = "question_nrel_answer";
 const char keynode_question_finished_str[] = "question_finished";
 const char keynode_nrel_author_str[] = "nrel_author";
-const char keynode_nrel_translation_str[] = "nrel_translation";
+const char keynode_nrel_translation_str[] = "hypermedia_nrel_translation";
 
 const char keynode_ui_command_generate_instance_str[] = "ui_command_generate_instance";
 const char keynode_ui_command_initiated_str[] = "ui_command_initiated";

@@ -135,6 +135,25 @@ String uiSc2SCnJsonTranslator::translateArc(sScElementInfo *arcInfo, bool isBack
     {
         result += "\"SCAttributes\" : [";
 
+        // collect all input constant, positive arcs
+        tScAddrList::iterator it, itEnd = arcInfo->input_arcs.end();
+        for (it = arcInfo->input_arcs.begin(); it != itEnd; ++it)
+        {
+            sScElementInfo *inputArcInfo = mScElementsInfo[*it];
+            assert(inputArcInfo);
+            if (inputArcInfo == nullptr)
+            {
+                //printf("Error while get input arc information, when resolve attribute in SC2SCnJson translator");
+                continue; // we need stable server
+            }
+
+            if (inputArcInfo->type & sc_type_arc_pos_const_perm)
+            {
+                if (it != arcInfo->input_arcs.begin())
+                    result += ",";
+                result += "{ \"id\": \"" + buildId(inputArcInfo->beg_addr) + "\"}";
+            }
+        }
 
         result += "],";
     }
