@@ -33,6 +33,7 @@ sc_event* event_question_search_all_output_arcs_with_rel;
 sc_event* event_question_search_all_input_arcs_with_rel;
 sc_event* event_question_search_full_semantic_neighborhood;
 sc_event* event_question_search_decomposition;
+sc_event* event_question_search_all_identifiers;
 
 // --------------------- Module ------------------------
 
@@ -41,28 +42,32 @@ sc_result initialize()
     if (search_keynodes_initialize() != SC_RESULT_OK)
         return SC_RESULT_ERROR;
 
-    event_question_search_all_output_arcs = sc_event_new(search_keynode_question_initiated, SC_EVENT_ADD_OUTPUT_ARC, 0, agent_search_all_const_pos_output_arc, 0);
+    event_question_search_all_output_arcs = sc_event_new(keynode_question_initiated, SC_EVENT_ADD_OUTPUT_ARC, 0, agent_search_all_const_pos_output_arc, 0);
     if (event_question_search_all_output_arcs == nullptr)
         return SC_RESULT_ERROR;
 
-    event_question_search_all_input_arcs = sc_event_new(search_keynode_question_initiated, SC_EVENT_ADD_OUTPUT_ARC, 0, agent_search_all_const_pos_input_arc, 0);
+    event_question_search_all_input_arcs = sc_event_new(keynode_question_initiated, SC_EVENT_ADD_OUTPUT_ARC, 0, agent_search_all_const_pos_input_arc, 0);
     if (event_question_search_all_input_arcs == nullptr)
         return SC_RESULT_ERROR;
 
-    event_question_search_all_output_arcs_with_rel = sc_event_new(search_keynode_question_initiated, SC_EVENT_ADD_OUTPUT_ARC, 0, agent_search_all_const_pos_output_arc_with_rel, 0);
+    event_question_search_all_output_arcs_with_rel = sc_event_new(keynode_question_initiated, SC_EVENT_ADD_OUTPUT_ARC, 0, agent_search_all_const_pos_output_arc_with_rel, 0);
     if (event_question_search_all_input_arcs == nullptr)
         return SC_RESULT_ERROR;
 
-    event_question_search_all_input_arcs_with_rel = sc_event_new(search_keynode_question_initiated, SC_EVENT_ADD_OUTPUT_ARC, 0, agent_search_all_const_pos_input_arc_with_rel, 0);
+    event_question_search_all_input_arcs_with_rel = sc_event_new(keynode_question_initiated, SC_EVENT_ADD_OUTPUT_ARC, 0, agent_search_all_const_pos_input_arc_with_rel, 0);
     if (event_question_search_all_input_arcs == nullptr)
         return SC_RESULT_ERROR;
 
-    event_question_search_full_semantic_neighborhood = sc_event_new(search_keynode_question_initiated, SC_EVENT_ADD_OUTPUT_ARC, 0, agent_search_full_semantic_neighborhood, 0);
+    event_question_search_full_semantic_neighborhood = sc_event_new(keynode_question_initiated, SC_EVENT_ADD_OUTPUT_ARC, 0, agent_search_full_semantic_neighborhood, 0);
     if (event_question_search_full_semantic_neighborhood == nullptr)
         return SC_RESULT_ERROR;
 
-    event_question_search_decomposition = sc_event_new(search_keynode_question_initiated, SC_EVENT_ADD_OUTPUT_ARC, 0, agent_search_decomposition, 0);
+    event_question_search_decomposition = sc_event_new(keynode_question_initiated, SC_EVENT_ADD_OUTPUT_ARC, 0, agent_search_decomposition, 0);
     if (event_question_search_decomposition == nullptr)
+        return SC_RESULT_ERROR;
+
+    event_question_search_all_identifiers = sc_event_new(keynode_question_initiated, SC_EVENT_ADD_OUTPUT_ARC, 0, agent_search_all_identifiers, 0);
+    if (event_question_search_all_identifiers == nullptr)
         return SC_RESULT_ERROR;
 
     return SC_RESULT_OK;

@@ -31,17 +31,17 @@ void connect_answer_to_question(sc_addr question, sc_addr answer)
     sc_addr arc;
 
     arc = sc_memory_arc_new(sc_type_arc_common | sc_type_const, question, answer);
-    sc_memory_arc_new(sc_type_arc_pos_const_perm, search_keynode_nrel_answer, arc);
+    sc_memory_arc_new(sc_type_arc_pos_const_perm, keynode_nrel_answer, arc);
 }
 
 void finish_question(sc_addr question)
 {
     sc_iterator3 *it = nullptr;
 
-    it = sc_iterator3_f_a_f_new(search_keynode_question_initiated, sc_type_arc_pos_const_perm, question);
+    it = sc_iterator3_f_a_f_new(keynode_question_initiated, sc_type_arc_pos_const_perm, question);
     while (sc_iterator3_next(it))
         sc_memory_element_free(sc_iterator3_value(it, 1));
     sc_iterator3_free(it);
 
-    sc_memory_arc_new(sc_type_arc_pos_const_perm, search_keynode_question_finished, question);
+    sc_memory_arc_new(sc_type_arc_pos_const_perm, keynode_question_finished, question);
 }

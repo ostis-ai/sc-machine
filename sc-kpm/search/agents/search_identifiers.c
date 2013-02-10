@@ -19,25 +19,26 @@ You should have received a copy of the GNU Lesser General Public License
 along with OSTIS. If not, see <http://www.gnu.org/licenses/>.
 -----------------------------------------------------------------------------
  */
-#include "search_structure.h"
+#include "search_identifiers.h"
 #include "search_keynodes.h"
 #include "search_utils.h"
 
 #include <sc_helper.h>
 #include <sc_memory_headers.h>
 
-sc_result agent_search_decomposition(sc_event *event, sc_addr arg)
+sc_result agent_search_all_identifiers(sc_event *event, sc_addr arg)
 {
     sc_addr question, answer;
-    sc_iterator3 *it1, *it2;
+    sc_iterator3 *it1;
     sc_iterator5 *it5;
     sc_bool found = SC_FALSE;
+    sc_uint32 i;
 
     if (!sc_memory_get_arc_end(arg, &question))
         return SC_RESULT_ERROR_INVALID_PARAMS;
 
     // check question type
-    if (sc_helper_check_arc(keynode_question_decomposition, question, sc_type_arc_pos_const_perm) == SC_FALSE)
+    if (sc_helper_check_arc(keynode_question_all_identifiers, question, sc_type_arc_pos_const_perm) == SC_FALSE)
         return SC_RESULT_ERROR_INVALID_TYPE;
 
     answer = sc_memory_node_new(sc_type_node | sc_type_const);
@@ -49,26 +50,21 @@ sc_result agent_search_decomposition(sc_event *event, sc_addr arg)
         found = SC_TRUE;
         sc_memory_arc_new(sc_type_arc_pos_const_perm, answer, sc_iterator3_value(it1, 2));
 
-        // iterate decomposition
-        it5 = sc_iterator5_a_a_f_a_f_new(sc_type_node | sc_type_const,
+        // iterate all const arcs, that are no accessory, and go out from sc-element
+        it5 = sc_iterator5_f_a_a_a_a_new(sc_iterator3_value(it1, 2),
                                          sc_type_arc_common | sc_type_const,
-                                         sc_iterator3_value(it1, 2),
+                                         sc_type_link,
                                          sc_type_arc_pos_const_perm,
-                                         keynode_nrel_decomposition);
+                                         sc_type_node | sc_type_const);
         while (sc_iterator5_next(it5) == SC_TRUE)
         {
-            sc_memory_arc_new(sc_type_arc_pos_const_perm, answer, sc_iterator5_value(it5, 0));
-            sc_memory_arc_new(sc_type_arc_pos_const_perm, answer, sc_iterator5_value(it5, 1));
-            sc_memory_arc_new(sc_type_arc_pos_const_perm, answer, sc_iterator5_value(it5, 3));
-
-            // iterate decomposition set elements
-            it2 = sc_iterator3_f_a_a_new(sc_iterator5_value(it5, 0), sc_type_arc_pos_const_perm, 0);
-            while (sc_iterator3_next(it2) == SC_TRUE)
+            // check if this arc is an identification
+            if (sc_helper_check_arc(keynode_hypermedia_nrel_identification, sc_iterator5_value(it5, 4), sc_type_arc_pos_const_perm) == SC_TRUE)
             {
-                sc_memory_arc_new(sc_type_arc_pos_const_perm, answer, sc_iterator3_value(it2, 1));
-                sc_memory_arc_new(sc_type_arc_pos_const_perm, answer, sc_iterator3_value(it2, 2));
+                // append into result
+                for (i = 0;  i < 5; ++i)
+                    sc_memory_arc_new(sc_type_arc_pos_const_perm, answer, sc_iterator5_value(it5, i));
             }
-            sc_iterator3_free(it2);
         }
         sc_iterator5_free(it5);
     }

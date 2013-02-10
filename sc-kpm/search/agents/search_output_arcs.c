@@ -35,7 +35,7 @@ sc_result agent_search_all_const_pos_output_arc(sc_event *event, sc_addr arg)
         return SC_RESULT_ERROR_INVALID_PARAMS;
 
     // check question type
-    if (sc_helper_check_arc(search_keynode_question_all_output_const_pos_arc, question, sc_type_arc_pos_const_perm) == SC_FALSE)
+    if (sc_helper_check_arc(keynode_question_all_output_const_pos_arc, question, sc_type_arc_pos_const_perm) == SC_FALSE)
         return SC_RESULT_ERROR_INVALID_TYPE;
 
     answer = sc_memory_node_new(sc_type_node | sc_type_const);
@@ -74,7 +74,7 @@ sc_result agent_search_all_const_pos_output_arc_with_rel(sc_event *event, sc_add
         return SC_RESULT_ERROR_INVALID_PARAMS;
 
     // check question type
-    if (sc_helper_check_arc(search_keynode_question_all_output_const_pos_arc_with_rel, question, sc_type_arc_pos_const_perm) == SC_FALSE)
+    if (sc_helper_check_arc(keynode_question_all_output_const_pos_arc_with_rel, question, sc_type_arc_pos_const_perm) == SC_FALSE)
         return SC_RESULT_ERROR_INVALID_TYPE;
 
     answer = sc_memory_node_new(sc_type_node | sc_type_const);

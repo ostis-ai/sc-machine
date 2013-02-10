@@ -36,7 +36,7 @@ sc_result agent_search_full_semantic_neighborhood(sc_event *event, sc_addr arg)
         return SC_RESULT_ERROR_INVALID_PARAMS;
 
     // check question type
-    if (sc_helper_check_arc(search_keynode_question_full_semantic_neighborhood, question, sc_type_arc_pos_const_perm) == SC_FALSE)
+    if (sc_helper_check_arc(keynode_question_full_semantic_neighborhood, question, sc_type_arc_pos_const_perm) == SC_FALSE)
         return SC_RESULT_ERROR_INVALID_TYPE;
 
     answer = sc_memory_node_new(sc_type_node | sc_type_const);
@@ -62,7 +62,7 @@ sc_result agent_search_full_semantic_neighborhood(sc_event *event, sc_addr arg)
                 sc_memory_arc_new(sc_type_arc_pos_const_perm, answer, sc_iterator3_value(it3, 1));
 
                 // check if it's a quasy binary relation
-                if (sc_helper_check_arc(search_keynode_quasybinary_relation, sc_iterator3_value(it3, 0), sc_type_arc_pos_const_perm) == SC_TRUE)
+                if (sc_helper_check_arc(keynode_quasybinary_relation, sc_iterator3_value(it3, 0), sc_type_arc_pos_const_perm) == SC_TRUE)
                 {
                     // iterate elements of relation
                     it4 = sc_iterator3_f_a_a_new(sc_iterator3_value(it2, 0), sc_type_arc_pos_const_perm, 0);
@@ -93,7 +93,7 @@ sc_result agent_search_full_semantic_neighborhood(sc_event *event, sc_addr arg)
                 sc_memory_arc_new(sc_type_arc_pos_const_perm, answer, sc_iterator3_value(it3, 1));
 
                 // check if it's a quasy binary relation
-                if (sc_helper_check_arc(search_keynode_quasybinary_relation, sc_iterator3_value(it3, 0), sc_type_arc_pos_const_perm) == SC_TRUE)
+                if (sc_helper_check_arc(keynode_quasybinary_relation, sc_iterator3_value(it3, 0), sc_type_arc_pos_const_perm) == SC_TRUE)
                 {
                     // iterate elements of relation
                     it4 = sc_iterator3_f_a_a_new(sc_iterator3_value(it2, 0), sc_type_arc_pos_const_perm, 0);

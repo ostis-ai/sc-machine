@@ -21,7 +21,8 @@ HEADERS += \
     agents/search_output_arcs.h \
     agents/search_input_arcs.h \
     agents/search_semantic_neighborhood.h \
-    agents/search_structure.h
+    agents/search_structure.h \
+    agents/search_identifiers.h
 
 SOURCES += \
     search.c \
@@ -30,4 +31,5 @@ SOURCES += \
     agents/search_output_arcs.c \
     agents/search_input_arcs.c \
     agents/search_semantic_neighborhood.c \
-    agents/search_structure.c
+    agents/search_structure.c \
+    agents/search_identifiers.c

@@ -25,68 +25,57 @@ along with OSTIS. If not, see <http://www.gnu.org/licenses/>.
 #include "sc_memory_headers.h"
 
 
-sc_addr search_keynode_question_all_output_const_pos_arc;
-sc_addr search_keynode_question_all_input_const_pos_arc;
-sc_addr search_keynode_question_all_output_const_pos_arc_with_rel;
-sc_addr search_keynode_question_all_input_const_pos_arc_with_rel;
-sc_addr search_keynode_question_full_semantic_neighborhood;
-sc_addr search_keynode_question_decomposition;
+sc_addr keynode_question_all_output_const_pos_arc;
+sc_addr keynode_question_all_input_const_pos_arc;
+sc_addr keynode_question_all_output_const_pos_arc_with_rel;
+sc_addr keynode_question_all_input_const_pos_arc_with_rel;
+sc_addr keynode_question_full_semantic_neighborhood;
+sc_addr keynode_question_decomposition;
+sc_addr keynode_question_all_identifiers;
 
-sc_addr search_keynode_question_initiated;
-sc_addr search_keynode_nrel_answer;
-sc_addr search_keynode_nrel_decomposition;
-sc_addr search_keynode_question_finished;
-sc_addr search_keynode_quasybinary_relation;
+sc_addr keynode_question_initiated;
+sc_addr keynode_nrel_answer;
+sc_addr keynode_nrel_decomposition;
+sc_addr keynode_question_finished;
+sc_addr keynode_quasybinary_relation;
 
-const char search_keynode_question_all_output_const_pos_arc_str[] = "question_search_all_output_const_pos_arcs";
-const char search_keynode_question_all_input_const_pos_arc_str[] = "question_search_all_input_const_pos_arcs";
-const char search_keynode_question_all_output_const_pos_arc_with_rel_str[] = "question_search_all_output_const_pos_arcs_with_rel";
-const char search_keynode_question_all_input_const_pos_arc_with_rel_str[] = "question_search_all_input_const_pos_arcs_with_rel";
-const char search_keynode_question_full_semantic_neighborhood_str[] = "question_search_full_semantic_neighborhood";
-const char search_keynode_question_decomposition_str[] = "question_search_decomposition";
+sc_addr keynode_hypermedia_nrel_identification;
 
-const char search_keynode_question_initiated_str[] = "question_initiated";
-const char search_keynode_nrel_answer_str[] = "question_nrel_answer";
-const char search_keynode_nrel_decomposition_str[] = "nrel_decomposition";
-const char search_keynode_question_finished_str[] = "question_finished";
-const char search_keynode_quasybinary_relation_str[] = "quasybinary_relation";
+const char keynode_question_all_output_const_pos_arc_str[] = "question_search_all_output_const_pos_arcs";
+const char keynode_question_all_input_const_pos_arc_str[] = "question_search_all_input_const_pos_arcs";
+const char keynode_question_all_output_const_pos_arc_with_rel_str[] = "question_search_all_output_const_pos_arcs_with_rel";
+const char keynode_question_all_input_const_pos_arc_with_rel_str[] = "question_search_all_input_const_pos_arcs_with_rel";
+const char keynode_question_full_semantic_neighborhood_str[] = "question_search_full_semantic_neighborhood";
+const char keynode_question_decomposition_str[] = "question_search_decomposition";
+const char keynode_question_all_identifiers_str[] = "question_search_all_identifiers";
 
+const char keynode_question_initiated_str[] = "question_initiated";
+const char keynode_nrel_answer_str[] = "question_nrel_answer";
+const char keynode_nrel_decomposition_str[] = "nrel_decomposition";
+const char keynode_question_finished_str[] = "question_finished";
+const char keynode_quasybinary_relation_str[] = "quasybinary_relation";
+
+const char keynode_hypermedia_nrel_identification_str[] = "hypermedia_nrel_identification";
+
+#define resolve_keynode(keynode) if (sc_helper_resolve_system_identifier(keynode##_str, &keynode) == SC_FALSE) return SC_RESULT_ERROR;
 
 sc_result search_keynodes_initialize()
 {
 
-    if (sc_helper_resolve_system_identifier(search_keynode_question_all_output_const_pos_arc_str, &search_keynode_question_all_output_const_pos_arc) == SC_FALSE)
-        return SC_RESULT_ERROR;
+    resolve_keynode(keynode_question_all_output_const_pos_arc);
+    resolve_keynode(keynode_question_all_input_const_pos_arc);
+    resolve_keynode(keynode_question_all_output_const_pos_arc_with_rel);
+    resolve_keynode(keynode_question_all_input_const_pos_arc_with_rel);
+    resolve_keynode(keynode_question_full_semantic_neighborhood);
+    resolve_keynode(keynode_question_decomposition);
+    resolve_keynode(keynode_nrel_answer);
+    resolve_keynode(keynode_nrel_decomposition);
+    resolve_keynode(keynode_question_all_identifiers);
 
-    if (sc_helper_resolve_system_identifier(search_keynode_question_all_input_const_pos_arc_str, &search_keynode_question_all_input_const_pos_arc) == SC_FALSE)
-        return SC_RESULT_ERROR;
-
-    if (sc_helper_resolve_system_identifier(search_keynode_question_all_output_const_pos_arc_with_rel_str, &search_keynode_question_all_output_const_pos_arc_with_rel) == SC_FALSE)
-        return SC_RESULT_ERROR;
-
-    if (sc_helper_resolve_system_identifier(search_keynode_question_all_input_const_pos_arc_with_rel_str, &search_keynode_question_all_input_const_pos_arc_with_rel) == SC_FALSE)
-        return SC_RESULT_ERROR;
-
-    if (sc_helper_resolve_system_identifier(search_keynode_question_full_semantic_neighborhood_str, &search_keynode_question_full_semantic_neighborhood) == SC_FALSE)
-        return SC_RESULT_ERROR;
-
-    if (sc_helper_resolve_system_identifier(search_keynode_question_decomposition_str, &search_keynode_question_decomposition) == SC_FALSE)
-        return SC_RESULT_ERROR;
-
-    if (sc_helper_resolve_system_identifier(search_keynode_nrel_answer_str, &search_keynode_nrel_answer) == SC_FALSE)
-        return SC_RESULT_ERROR;
-
-    if (sc_helper_resolve_system_identifier(search_keynode_nrel_decomposition_str, &search_keynode_nrel_decomposition) == SC_FALSE)
-        return SC_RESULT_ERROR;
-
-    if (sc_helper_resolve_system_identifier(search_keynode_question_initiated_str, &search_keynode_question_initiated) == SC_FALSE)
-        return SC_RESULT_ERROR;
-
-    if (sc_helper_resolve_system_identifier(search_keynode_question_finished_str, &search_keynode_question_finished) == SC_FALSE)
-        return SC_RESULT_ERROR;
-
-    if (sc_helper_resolve_system_identifier(search_keynode_quasybinary_relation_str, &search_keynode_quasybinary_relation) == SC_FALSE)
-        return SC_RESULT_ERROR;
+    resolve_keynode(keynode_question_initiated);
+    resolve_keynode(keynode_question_finished);
+    resolve_keynode(keynode_quasybinary_relation);
+    resolve_keynode(keynode_hypermedia_nrel_identification);
 
     return SC_RESULT_OK;
 }

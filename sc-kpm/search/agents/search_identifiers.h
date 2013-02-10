@@ -3,7 +3,7 @@
 This source file is part of OSTIS (Open Semantic Technology for Intelligent Systems)
 For the latest info, see http://www.ostis.net
 
-Copyright (c) 2012 OSTIS
+Copyright (c) 2013 OSTIS
 
 OSTIS is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as published by
@@ -20,13 +20,16 @@ along with OSTIS. If not, see <http://www.gnu.org/licenses/>.
 -----------------------------------------------------------------------------
  */
 
-#ifndef _search_operations_h_
-#define _search_operations_h_
+#ifndef _search_identification_h_
+#define _search_identification_h_
 
-#include "agents/search_input_arcs.h"
-#include "agents/search_output_arcs.h"
-#include "agents/search_semantic_neighborhood.h"
-#include "agents/search_structure.h"
-#include "agents/search_identifiers.h"
+#include <sc_memory.h>
+
+
+/*!
+ * Function that implement sc-agent to search all identifiers of specified sc-elements
+ */
+sc_result agent_search_all_identifiers(sc_event *event, sc_addr arg);
+
 
 #endif
