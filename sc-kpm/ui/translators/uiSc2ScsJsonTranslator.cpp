@@ -88,17 +88,37 @@ void uiSc2ScsTranslator::runImpl()
         if (isNeedToTranslate(arc_end) == false)
             continue; //! TODO logging
 
+        sc_type beg_type, end_type;
+        tScAddrToScTypeMap::iterator itTmp = mObjects.find(arc_beg);
+        if (itTmp != mObjects.end())
+            beg_type = itTmp->second;
+        else
+            sc_memory_get_element_type(arc_beg, &beg_type);
+        itTmp = mObjects.find(arc_end);
+        if (itTmp != mObjects.end())
+            end_type = itTmp->second;
+        else
+            sc_memory_get_element_type(arc_end, &end_type);
+
         // determine arc type
         String arc_connector = "<>";
         tScTypeToSCsConnectorMap::const_iterator itCon = mTypeToConnector.find(arc_type);
         if (itCon != mTypeToConnector.end())
             arc_connector = itCon->second;
 
+
         if (!first)
             mOutputData += ",";
         else
-            first = true;
-        mOutputData += "[\"" + buildId(arc_beg) + "\", \"" + arc_connector + "\", \"" + buildId(arc_end) + "\"]";
+            first = false;
+
+        StringStream s1, s2;
+        s1 << beg_type;
+        s2 << end_type;
+        String beg_str = "{ \"addr\": \"" + buildId(arc_beg) +"\", \"type\":" + s1.str() + "}";
+        String end_str = "{ \"addr\": \"" + buildId(arc_end) +"\", \"type\":" + s2.str() + "}";
+
+        mOutputData += "[" + beg_str + ", \"" + arc_connector + "\"," + end_str + "]";
     }
 
     mOutputData += "]";
