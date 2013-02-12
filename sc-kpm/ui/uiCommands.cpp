@@ -63,7 +63,7 @@ sc_result ui_command_generate_instance(sc_event *event, sc_addr arg)
                                      sc_type_arc_pos_const_perm,
                                      sc_type_node | sc_type_const,
                                      sc_type_arc_pos_const_perm,
-                                     ui_keynode_rrel_command_arguments);
+                                     keynode_rrel_command_arguments);
 
     if (sc_iterator5_next(it5) != SC_TRUE)
     {
@@ -102,7 +102,7 @@ sc_result ui_command_generate_instance(sc_event *event, sc_addr arg)
                                      sc_type_arc_pos_const_perm,
                                      sc_type_node | sc_type_const,
                                      sc_type_arc_pos_const_perm,
-                                     ui_keynode_rrel_command);
+                                     keynode_rrel_command);
 
     if (sc_iterator5_next(it5) != SC_TRUE)
     {
@@ -119,7 +119,7 @@ sc_result ui_command_generate_instance(sc_event *event, sc_addr arg)
                                      sc_type_arc_common | sc_type_const,
                                      sc_type_node | sc_type_const,
                                      sc_type_arc_pos_const_perm,
-                                     ui_keynode_nrel_command_template);
+                                     keynode_nrel_command_template);
 
     if (sc_iterator5_next(it5) != SC_TRUE)
     {
@@ -230,11 +230,11 @@ sc_result ui_command_generate_instance(sc_event *event, sc_addr arg)
 
     // generate result for command
     arc_addr = sc_memory_arc_new(sc_type_arc_common | sc_type_const, command_addr, created_instance_addr);
-    sc_memory_arc_new(sc_type_arc_pos_const_perm, ui_keynode_nrel_command_result, arc_addr);
+    sc_memory_arc_new(sc_type_arc_pos_const_perm, keynode_nrel_command_result, arc_addr);
 
     // change command state
     sc_memory_element_free(arg);
-    sc_memory_arc_new(sc_type_arc_pos_const_perm, ui_keynode_command_finished, command_addr);
+    sc_memory_arc_new(sc_type_arc_pos_const_perm, keynode_command_finished, command_addr);
 
     return SC_RESULT_OK;
 }
@@ -259,7 +259,7 @@ sc_result ui_start_answer_translation(sc_event *event, sc_addr arg)
                                      sc_type_arc_common | sc_type_const,
                                      sc_type_node | sc_type_const,
                                      sc_type_arc_pos_const_perm,
-                                     ui_keynode_question_nrel_answer);
+                                     keynode_question_nrel_answer);
     if (sc_iterator5_next(it5) == SC_FALSE)
     {
         sc_iterator5_free(it5);
@@ -273,7 +273,7 @@ sc_result ui_start_answer_translation(sc_event *event, sc_addr arg)
                                     sc_type_arc_common | sc_type_const,
                                     sc_type_node | sc_type_const,
                                     sc_type_arc_pos_const_perm,
-                                    ui_keynode_nrel_author);
+                                    keynode_nrel_author);
     if (it5 == nullptr)
         return SC_RESULT_ERROR;
 
@@ -283,14 +283,14 @@ sc_result ui_start_answer_translation(sc_event *event, sc_addr arg)
         sc_iterator5_free(it5);
 
         // check if author is an user
-        if (sc_helper_check_arc(ui_keynode_user, author_addr, sc_type_arc_pos_const_perm) == SC_TRUE)
+        if (sc_helper_check_arc(keynode_user, author_addr, sc_type_arc_pos_const_perm) == SC_TRUE)
         {
             // get answer output formats
             it5 = sc_iterator5_f_a_a_a_f_new(question_addr,
                                             sc_type_arc_common | sc_type_const,
                                             sc_type_node | sc_type_const,
                                             sc_type_arc_pos_const_perm,
-                                            ui_keynode_nrel_user_answer_formats);
+                                            keynode_nrel_user_answer_formats);
             if (it5 == nullptr)
                 return SC_RESULT_ERROR;
 
@@ -314,13 +314,13 @@ sc_result ui_start_answer_translation(sc_event *event, sc_addr arg)
                     trans_command_addr = sc_memory_node_new(sc_type_const);
 
                     arc_addr = sc_memory_arc_new(sc_type_arc_pos_const_perm, trans_command_addr, answer_addr);
-                    sc_memory_arc_new(sc_type_arc_pos_const_perm, ui_keynode_rrel_source_sc_construction, arc_addr);
+                    sc_memory_arc_new(sc_type_arc_pos_const_perm, keynode_rrel_source_sc_construction, arc_addr);
 
                     arc_addr = sc_memory_arc_new(sc_type_arc_pos_const_perm, trans_command_addr, format_addr);
-                    sc_memory_arc_new(sc_type_arc_pos_const_perm, ui_keynode_rrel_output_format, arc_addr);
+                    sc_memory_arc_new(sc_type_arc_pos_const_perm, keynode_rrel_output_format, arc_addr);
 
                     // add into translation command set
-                    sc_memory_arc_new(sc_type_arc_pos_const_perm, ui_keynode_command_translate_from_sc, trans_command_addr);
+                    sc_memory_arc_new(sc_type_arc_pos_const_perm, keynode_command_translate_from_sc, trans_command_addr);
                 }
                 sc_iterator3_free(it3);
 
@@ -340,11 +340,11 @@ sc_result ui_start_answer_translation(sc_event *event, sc_addr arg)
 // -------------------- Module ----------------------
 sc_result ui_initialize_commands()
 {
-    event_ui_start_answer_translation = sc_event_new(ui_keynode_question_finished, SC_EVENT_ADD_OUTPUT_ARC, 0, ui_start_answer_translation, 0);
+    event_ui_start_answer_translation = sc_event_new(keynode_question_finished, SC_EVENT_ADD_OUTPUT_ARC, 0, ui_start_answer_translation, 0);
     if (event_ui_start_answer_translation == nullptr)
         return SC_RESULT_ERROR;
 
-    event_ui_command_generate_instance = sc_event_new(ui_keynode_command_initiated, SC_EVENT_ADD_OUTPUT_ARC, 0, ui_command_generate_instance, 0);
+    event_ui_command_generate_instance = sc_event_new(keynode_command_initiated, SC_EVENT_ADD_OUTPUT_ARC, 0, ui_command_generate_instance, 0);
     if (event_ui_command_generate_instance == nullptr)
         return SC_RESULT_ERROR;
 

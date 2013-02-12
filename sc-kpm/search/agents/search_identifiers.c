@@ -30,7 +30,7 @@ sc_result agent_search_all_identifiers(sc_event *event, sc_addr arg)
 {
     sc_addr question, answer;
     sc_iterator3 *it1;
-    sc_iterator5 *it5;
+    sc_iterator5 *it5, *it5Check;
     sc_bool found = SC_FALSE;
     sc_uint32 i;
 
@@ -59,12 +59,19 @@ sc_result agent_search_all_identifiers(sc_event *event, sc_addr arg)
         while (sc_iterator5_next(it5) == SC_TRUE)
         {
             // check if this arc is an identification
-            if (sc_helper_check_arc(keynode_hypermedia_nrel_identification, sc_iterator5_value(it5, 4), sc_type_arc_pos_const_perm) == SC_TRUE)
+            it5Check = sc_iterator5_f_a_f_a_f_new(keynode_hypermedia_nrel_identification,
+                                                  sc_type_arc_common | sc_type_const,
+                                                  sc_iterator5_value(it5, 4),
+                                                  sc_type_arc_pos_const_perm,
+                                                  keynode_set_nrel_inclusion);
+
+            if (sc_iterator5_next(it5Check) == SC_TRUE)
             {
                 // append into result
                 for (i = 0;  i < 5; ++i)
                     sc_memory_arc_new(sc_type_arc_pos_const_perm, answer, sc_iterator5_value(it5, i));
             }
+            sc_iterator5_free(it5Check);
         }
         sc_iterator5_free(it5);
     }

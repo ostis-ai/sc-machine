@@ -45,7 +45,7 @@ void uiSc2SCnJsonTranslator::runImpl()
                                                    sc_type_arc_common | sc_type_const,
                                                    mInputConstructionAddr,
                                                    sc_type_arc_pos_const_perm,
-                                                   ui_keynode_question_nrel_answer);
+                                                   keynode_question_nrel_answer);
     if (sc_iterator5_next(it5) == SC_TRUE)
     {
         sc_iterator3 *it3 = sc_iterator3_f_a_a_new(sc_iterator5_value(it5, 0),
@@ -95,7 +95,7 @@ String uiSc2SCnJsonTranslator::translateElement(sc_addr addr, bool isKeyword)
     for (it = elInfo->input_arcs.begin(); it != itEnd; ++it)
     {
         arcInfo = mScElementsInfo[*it];
-        if (isTranslated(arcInfo->beg_addr))
+        if (isTranslated(arcInfo->beg_addr) || isTranslated(arcInfo->addr))
             continue;
 
         if (!first)
@@ -107,7 +107,7 @@ String uiSc2SCnJsonTranslator::translateElement(sc_addr addr, bool isKeyword)
     for (it = elInfo->output_arcs.begin(); it != itEnd; ++it)
     {
         arcInfo = mScElementsInfo[*it];
-        if (isTranslated(arcInfo->end_addr))
+        if (isTranslated(arcInfo->end_addr) || isTranslated(arcInfo->addr))
             continue;
 
         if (!first)
@@ -245,7 +245,7 @@ sc_result uiSc2SCnJsonTranslator::ui_translate_sc2scn(sc_event *event, sc_addr a
     if (ui_translate_command_resolve_arguments(cmd_addr, &format_addr, &input_addr) != SC_RESULT_OK)
         return SC_RESULT_ERROR;
 
-    if (format_addr == ui_keynode_format_scn_json)
+    if (format_addr == keynode_format_scn_json)
     {
         uiSc2SCnJsonTranslator translator;
         translator.translate(input_addr, format_addr);

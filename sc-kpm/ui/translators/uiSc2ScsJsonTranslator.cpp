@@ -150,7 +150,7 @@ sc_result uiSc2ScsTranslator::ui_translate_sc2scs(sc_event *event, sc_addr arg)
     if (ui_translate_command_resolve_arguments(cmd_addr, &format_addr, &input_addr) != SC_RESULT_OK)
         return SC_RESULT_ERROR;
 
-    if (format_addr == ui_keynode_format_scs_json)
+    if (format_addr == keynode_format_scs_json)
     {
         uiSc2ScsTranslator translator;
         translator.translate(input_addr, format_addr);

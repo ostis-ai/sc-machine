@@ -118,7 +118,7 @@ sc_result uiSc2SCgJsonTranslator::ui_translate_sc2scg_json(sc_event *event, sc_a
     if (ui_translate_command_resolve_arguments(cmd_addr, &format_addr, &input_addr) != SC_RESULT_OK)
         return SC_RESULT_ERROR;
 
-    if (format_addr == ui_keynode_format_scg_json)
+    if (format_addr == keynode_format_scg_json)
     {
         uiSc2SCgJsonTranslator translator;
         translator.translate(input_addr, format_addr);

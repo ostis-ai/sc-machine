@@ -40,6 +40,7 @@ sc_addr keynode_question_finished;
 sc_addr keynode_quasybinary_relation;
 
 sc_addr keynode_hypermedia_nrel_identification;
+sc_addr keynode_set_nrel_inclusion;
 
 const char keynode_question_all_output_const_pos_arc_str[] = "question_search_all_output_const_pos_arcs";
 const char keynode_question_all_input_const_pos_arc_str[] = "question_search_all_input_const_pos_arcs";
@@ -56,6 +57,7 @@ const char keynode_question_finished_str[] = "question_finished";
 const char keynode_quasybinary_relation_str[] = "quasybinary_relation";
 
 const char keynode_hypermedia_nrel_identification_str[] = "hypermedia_nrel_identification";
+const char keynode_set_nrel_inclusion_str[] = "set_nrel_inclusion";
 
 #define resolve_keynode(keynode) if (sc_helper_resolve_system_identifier(keynode##_str, &keynode) == SC_FALSE) return SC_RESULT_ERROR;
 
@@ -76,6 +78,7 @@ sc_result search_keynodes_initialize()
     resolve_keynode(keynode_question_finished);
     resolve_keynode(keynode_quasybinary_relation);
     resolve_keynode(keynode_hypermedia_nrel_identification);
+    resolve_keynode(keynode_set_nrel_inclusion);
 
     return SC_RESULT_OK;
 }

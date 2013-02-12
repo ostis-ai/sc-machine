@@ -200,6 +200,87 @@ Command: 0
 Segments save speed: 10.245190 seg/sec
 
 
+---------- 12.02.13 ------------
+==== improved synchronization routines, disabled for internal ====
+denis@denis-HP-Pavilion-dv6-Notebook-PC:~/develop/sc-machine/bin$ ./test 
+MD5: 16
+SHA1: 20
+SHA256: 32
+Element size: 56
+** Message: Initialize sc-storage from path: repo
+
+** Message: There are no segments directory in repo
+Segment loading speed: 0.000000 seg/sec
+Commands:
+0 - exit
+1 - test allocation
+2 - test sc-addr utilities
+3 - test arc deletion
+4 - test iterators
+5 - test contents
+6 - test content finding
+7 - test events
+8 - test garbage deletion
+9 - run grabage collection
+
+Command: 1
+
+----- Test 1 -----
+Element size: 56 bytes
+Segment size: 65535 elements
+--- Storage statistics: ---
+ 	Nodes: 0 (0 deleted)
+	Arcs: 0 (0 deleted)
+	Empty: 0
+---
+--- Node creation ---
+Time: 0.602897 s
+Nodes per second: 8293290.562069
+Segments count: 77
+--- Storage statistics: ---
+ 	Nodes: 5000000 (0 deleted)
+	Arcs: 0 (0 deleted)
+	Empty: 46195
+---
+--- Node segmentation ---
+Prepare test...
+Run test...
+Time: 0.607835 s
+Elements per second: 8225916.572754
+Segments count: 115
+Element free calls: 0
+--- Storage statistics: ---
+ 	Nodes: 7500000 (2500000 deleted)
+	Arcs: 0 (0 deleted)
+	Empty: 36525
+---
+--- Arcs creation ---
+Prepare...
+Run...
+Timer: 2.372862s
+Arcs per second: 2107160.045548
+Segments count: 191
+--- Storage statistics: ---
+ 	Nodes: 7500000 (2500000 deleted)
+	Arcs: 5000000 (0 deleted)
+	Empty: 17185
+---
+
+----- Finished -----
+Commands:
+0 - exit
+1 - test allocation
+2 - test sc-addr utilities
+3 - test arc deletion
+4 - test iterators
+5 - test contents
+6 - test content finding
+7 - test events
+8 - test garbage deletion
+9 - run grabage collection
+
+Command: 
+
 ---------- dd.mm.yy ------------
 
 
