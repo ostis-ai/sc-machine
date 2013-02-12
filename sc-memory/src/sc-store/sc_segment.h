@@ -33,10 +33,10 @@ along with OSTIS.  If not, see <http://www.gnu.org/licenses/>.
 struct _sc_segment
 {
     sc_element elements[SEGMENT_SIZE];
+    sc_bool has_empty_slots;
 #if USE_SEGMENT_EMPTY_SLOT_BUFFER
     sc_uint empty_slot_buff[SEGMENT_EMPTY_BUFFER_SIZE]; // works like a stack
     sc_uint empty_slot_buff_head;
-    sc_bool have_empty_slots;
 #else
     sc_uint empty_slot; // index empty slot in segment
 #endif
@@ -50,12 +50,6 @@ sc_segment* sc_segment_new(sc_addr_seg num);
 
 void sc_segment_free(sc_segment *segment);
 
-/*! Check if there are any empty slots in segment
- *
- * @param segment Pointer to segment for checking.
- * @return SC_TRUE if there are any empty slots, else - return SC_FALSE.
- */
-sc_bool sc_segment_have_empty_slot(sc_segment *segment);
 
 /*! Append element into segment at first empty position.
  * @param segment Pointer to segment, that will be contains element
@@ -88,6 +82,12 @@ sc_uint32 sc_segment_get_elements_count(sc_segment *seg);
  * @returns Returns number of freed cells
  */
 sc_uint32 sc_segment_free_garbage(sc_segment *seg, sc_uint32 oldest_time_stamp);
+
+/*! Check if segment has any empty slots
+ * @param segment Pointer to segment for check
+ * @returns If \p segment has any empty slots, then return SC_TRUE; otherwise return SC_FALSE
+ */
+sc_bool sc_segment_has_empty_slot(sc_segment *segment);
 
 
 //! Update information in segment about first empty slot

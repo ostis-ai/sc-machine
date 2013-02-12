@@ -2,6 +2,7 @@ TEMPLATE = lib
 TARGET = $$qtLibraryTarget(sc_memory)
 
 DESTDIR = ../bin
+CONFIG -= DEBUG
 
 OBJECTS_DIR = obj
 MOC_DIR = moc

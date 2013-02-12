@@ -63,7 +63,7 @@ sc_bool _sc_storage_get_segment_from_queue(sc_addr_seg *seg)
         segment = sc_storage_get_segment(*seg, SC_TRUE);
         g_assert( segment != 0 );
 
-        if (sc_segment_have_empty_slot(segment) == SC_TRUE)
+        if (sc_segment_has_empty_slot(segment) == SC_TRUE)
             res = SC_TRUE;
         else
             seg_queue_heap--;

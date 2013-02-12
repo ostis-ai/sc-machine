@@ -39,7 +39,7 @@ sc_segment* sc_segment_new(sc_addr_seg num)
     for (idx = (num == 0) ? 1 : 0; idx < SEGMENT_EMPTY_BUFFER_SIZE; idx++)
         segment->empty_slot_buff[idx] = idx;
     segment->empty_slot_buff_head = SEGMENT_EMPTY_BUFFER_SIZE;
-    segment->have_empty_slots = SC_TRUE;
+    segment->has_empty_slots = SC_TRUE;
 #else
     segment->empty_slot = (num == 0) ? 1 : 0;
 #endif
@@ -55,16 +55,6 @@ void sc_segment_free(sc_segment *segment)
     g_free(segment);
 }
 
-sc_bool sc_segment_have_empty_slot(sc_segment *segment)
-{
-    g_assert( segment != (sc_segment*)0 );
-#if USE_SEGMENT_EMPTY_SLOT_BUFFER
-    return segment->have_empty_slots;
-#else
-    return segment->empty_slot < SEGMENT_SIZE;
-#endif
-}
-
 sc_element* sc_segment_append_element(sc_segment *segment,
                                       sc_element *element,
                                       sc_uint16 *offset)
@@ -76,16 +66,11 @@ sc_element* sc_segment_append_element(sc_segment *segment,
 #if USE_SEGMENT_EMPTY_SLOT_BUFFER
     if (segment->empty_slot_buff_head > 0)
         slot = segment->empty_slot_buff[--segment->empty_slot_buff_head];
-    else
-    {
-        g_assert (segment->have_empty_slots == SC_TRUE);
-
+    if (segment->empty_slot_buff_head == 0)
         sc_segment_update_empty_slot(segment);
-        if (segment->empty_slot_buff_head > 0)
-            slot = segment->empty_slot_buff[--segment->empty_slot_buff_head];
-    }
 #else
     slot = segment->empty_slot;
+    sc_segment_update_empty_slot(segment);
 #endif
 
     g_assert(slot < SEGMENT_SIZE);
@@ -96,8 +81,8 @@ sc_element* sc_segment_append_element(sc_segment *segment,
 #if USE_SEGMENT_EMPTY_SLOT
     g_print("\n%u", segment->empty_slot_buff_head);
     if (segment->empty_slot_buff_head == 0)
-#endif
         sc_segment_update_empty_slot(segment);
+#endif
 
     return &(segment->elements[slot]);
 }
@@ -114,14 +99,6 @@ void sc_segment_remove_element(sc_segment *segment,
     g_assert( segment != (sc_segment*)0 );
     g_assert( el_id < SEGMENT_SIZE );
     segment->elements[el_id].type = 0;
-
-#if USE_SEGMENT_EMPTY_SLOT_BUFFER
-    if (segment->empty_slot_buff_head < SEGMENT_EMPTY_BUFFER_SIZE)
-        segment->empty_slot_buff[segment->empty_slot_buff_head++] = el_id;
-    segment->have_empty_slots = SC_TRUE;
-#else
-    segment->empty_slot = el_id;
-#endif 
 }
 
 void sc_segment_update_empty_slot(sc_segment *segment)
@@ -136,31 +113,18 @@ void sc_segment_update_empty_slot(sc_segment *segment)
 #if USE_SEGMENT_EMPTY_SLOT_BUFFER
 void sc_segment_update_empty_slot_buffer(sc_segment *segment)
 {
-    sc_uint idx = segment->empty_slot_buff[0];
+    sc_uint idx = 0;
     sc_uint v = 0;
 
+    segment->empty_slot_buff_head = 0;
     // forward search
     while ((idx < SEGMENT_SIZE) && (segment->empty_slot_buff_head < SEGMENT_EMPTY_BUFFER_SIZE))
     {
         if (segment->elements[idx].type == 0)
             segment->empty_slot_buff[segment->empty_slot_buff_head++] = idx;
+        g_assert(idx < SEGMENT_SIZE);
         idx++;
     }
-
-    if (idx > 0)
-    {
-        // backward search
-        v = (segment->num == 0) ? 1 : G_MAXUINT;
-        while ((idx != v) && (segment->empty_slot_buff_head < SEGMENT_EMPTY_BUFFER_SIZE))
-        {
-            if (segment->elements[idx].type == 0)
-                segment->empty_slot_buff[segment->empty_slot_buff_head++] = idx;
-            idx--;
-        }
-    }
-
-    if (segment->empty_slot_buff_head == 0)
-        segment->have_empty_slots = SC_FALSE;
 }
 
 #else
@@ -323,6 +287,17 @@ sc_uint32 sc_segment_free_garbage(sc_segment *seg, sc_uint32 oldest_time_stamp)
     }
 
     return free_count;
+}
+
+sc_bool sc_segment_has_empty_slot(sc_segment *segment)
+{
+    g_assert(segment != nullptr);
+
+#if USE_SEGMENT_EMPTY_SLOT_BUFFER
+    return segment->empty_slot_buff_head > 0 ? SC_TRUE : SC_FALSE;
+#else
+    return segment->empty_slot < SEGMENT_SIZE ? SC_TRUE : SC_FALSE;
+#endif
 }
 
 
