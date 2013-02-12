@@ -89,8 +89,6 @@ struct _sc_element
 
     sc_addr first_out_arc;
     sc_addr first_in_arc;
-    sc_uint32 out_count;
-    sc_uint32 in_count;
     union
     {
         sc_content content;

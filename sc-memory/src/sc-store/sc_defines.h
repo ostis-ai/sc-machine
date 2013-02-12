@@ -45,4 +45,7 @@ along with OSTIS.  If not, see <http://www.gnu.org/licenses/>.
 #define SEGS_QUEUE_SIZE 24
 #define MAX_PATH_LENGTH 1024
 
+// flag to support internal threading
+#define SC_INTERNAL_THREADS_SUPPORT 0
+
 #endif

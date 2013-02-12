@@ -167,8 +167,6 @@ enum _sc_event_type
 };
 
 typedef struct _sc_check_sum sc_check_sum;
-
-
 typedef struct _sc_arc  sc_arc;
 typedef struct _sc_content sc_content;
 typedef struct _sc_arc_info sc_arc_info;

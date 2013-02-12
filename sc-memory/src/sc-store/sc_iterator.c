@@ -27,9 +27,14 @@ along with OSTIS.  If not, see <http://www.gnu.org/licenses/>.
 GSList *time_stamps_list = 0;
 sc_uint32 time_stamps_count = 0; // store cached value to prevent sequence length calculation
 
-GStaticMutex time_stamp_list_mutex = G_STATIC_MUTEX_INIT;
-#define TIMESTAMP_LIST_LOCK g_static_mutex_lock(&time_stamp_list_mutex);
-#define TIMESTAMP_LIST_UNLOCK g_static_mutex_unlock(&time_stamp_list_mutex);
+#if SC_INTERNAL_THREADS_SUPPORT
+    GStaticMutex time_stamp_list_mutex = G_STATIC_MUTEX_INIT;
+    #define TIMESTAMP_LIST_LOCK g_static_mutex_lock(&time_stamp_list_mutex);
+    #define TIMESTAMP_LIST_UNLOCK g_static_mutex_unlock(&time_stamp_list_mutex);
+#else
+    #define TIMESTAMP_LIST_LOCK
+    #define TIMESTAMP_LIST_UNLOCK
+#endif
 
 gint _list_compare(gconstpointer a, gconstpointer b)
 {
