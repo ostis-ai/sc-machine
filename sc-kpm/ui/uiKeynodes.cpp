@@ -34,7 +34,7 @@ const char keynode_rrel_output_format_str[] = "ui_rrel_output_format";
 
 const char keynode_question_nrel_answer_str[] = "question_nrel_answer";
 const char keynode_question_finished_str[] = "question_finished";
-const char keynode_nrel_author_str[] = "nrel_author";
+const char keynode_nrel_authors_str[] = "hypermedia_nrel_authors";
 const char keynode_nrel_translation_str[] = "hypermedia_nrel_translation";
 
 
@@ -50,6 +50,8 @@ const char keynode_format_scs_json_str[] = "format_scs_json";
 const char keynode_format_scg_json_str[] = "format_scg_json";
 const char keynode_format_scn_json_str[] = "format_scn_json";
 
+const char keynode_system_element_str[] = "system_element";
+
 
 sc_addr keynode_user;
 sc_addr keynode_command_translate_from_sc;
@@ -59,7 +61,7 @@ sc_addr keynode_rrel_output_format;
 
 sc_addr keynode_question_nrel_answer;
 sc_addr keynode_question_finished;
-sc_addr keynode_nrel_author;
+sc_addr keynode_nrel_authors;
 sc_addr keynode_nrel_translation;
 
 sc_addr keynode_command_generate_instance;
@@ -74,6 +76,8 @@ sc_addr keynode_format_scs_json;
 sc_addr keynode_format_scg_json;
 sc_addr keynode_format_scn_json;
 
+sc_addr keynode_system_element;
+
 sc_addr ui_keynode_rrel_order[RREL_ORDER_COUNT];
 sc_addr ui_keynode_arg[UI_ARG_COUNT];
 
@@ -87,7 +91,7 @@ sc_bool initialize_keynodes()
     resolve_keynode(keynode_question_nrel_answer);
     resolve_keynode(keynode_question_finished);
     resolve_keynode(keynode_command_translate_from_sc);
-    resolve_keynode(keynode_nrel_author);
+    resolve_keynode(keynode_nrel_authors);
     resolve_keynode(keynode_nrel_user_answer_formats);
     resolve_keynode(keynode_rrel_source_sc_construction);
     resolve_keynode(keynode_rrel_output_format);
@@ -105,6 +109,8 @@ sc_bool initialize_keynodes()
     resolve_keynode(keynode_format_scs_json);
     resolve_keynode(keynode_format_scg_json);
     resolve_keynode(keynode_format_scn_json);
+
+    resolve_keynode(keynode_system_element);
 
     for (sc_uint32 i = 0; i < RREL_ORDER_COUNT; ++i)
     {

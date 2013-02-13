@@ -25,19 +25,23 @@ along with OSTIS. If not, see <http://www.gnu.org/licenses/>.
 #ifndef _search_functions_h_
 #define _search_functions_h_
 
-/*! Search full semantic neighbourhood of given element
- * @param addr sc-addr of element
- * @param answer sc-addr of set, which will contain all the elements of answer.
- * @return Returns SC_FALSE, if system error appeared. Otherwise returns SC_TRUE.
+/*! Creates new answer node. It automaticaly appends into system elements set
+ * @returns Returns sc-addr of created node
  */
-sc_bool search_full_semantic_neighbourhood(sc_addr node, sc_addr answer);
-
+sc_addr create_answer_node();
 
 /*! Connect answer with question by specified releation
  * @param question sc-addr of question node
  * @param answer sc-addr of answer node
  */
 void connect_answer_to_question(sc_addr question, sc_addr answer);
+
+/*! Append element into answer. It mark accessory arc from answer node to
+ * appended element as system. Also it provides uniques inclusion of element into answer set
+ * @param answer sc-addr of answer node
+ * @param el sc-addr of sc-element to append into asnwer
+ */
+void appendIntoAnswer(sc_addr answer, sc_addr el);
 
 /*!
  * Remove question from question_initiated set and append it into

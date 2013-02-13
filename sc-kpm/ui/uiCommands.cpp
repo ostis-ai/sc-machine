@@ -23,6 +23,7 @@ along with OSTIS.  If not, see <http://www.gnu.org/licenses/>.
 #include "uiPrecompiled.h"
 #include "uiCommands.h"
 #include "uiKeynodes.h"
+#include "uiDefines.h"
 
 
 // -------------------- Events ----------------------
@@ -224,17 +225,24 @@ sc_result ui_command_generate_instance(sc_event *event, sc_addr arg)
 
     // create contour, that contains instance of command
     sc_addr created_instance_addr = sc_memory_node_new(sc_type_node_struct | sc_type_const);
+    SYSTEM_ELEMENT(created_instance_addr);
     tScAddrToScAddrMap::iterator it_res, it_res_end = templ_to_inst.end();
     for (it_res = templ_to_inst.begin(); it_res != it_res_end; ++it_res)
-        sc_memory_arc_new(sc_type_arc_pos_const_perm, created_instance_addr, (*it_res).second);
+    {
+        arc_addr = sc_memory_arc_new(sc_type_arc_pos_const_perm, created_instance_addr, (*it_res).second);
+        SYSTEM_ELEMENT(arc_addr);
+    }
 
     // generate result for command
     arc_addr = sc_memory_arc_new(sc_type_arc_common | sc_type_const, command_addr, created_instance_addr);
-    sc_memory_arc_new(sc_type_arc_pos_const_perm, keynode_nrel_command_result, arc_addr);
+    SYSTEM_ELEMENT(arc_addr);
+    arc_addr = sc_memory_arc_new(sc_type_arc_pos_const_perm, keynode_nrel_command_result, arc_addr);
+    SYSTEM_ELEMENT(arc_addr);
 
     // change command state
     sc_memory_element_free(arg);
-    sc_memory_arc_new(sc_type_arc_pos_const_perm, keynode_command_finished, command_addr);
+    arc_addr = sc_memory_arc_new(sc_type_arc_pos_const_perm, keynode_command_finished, command_addr);
+    SYSTEM_ELEMENT(arc_addr);
 
     return SC_RESULT_OK;
 }
@@ -273,7 +281,7 @@ sc_result ui_start_answer_translation(sc_event *event, sc_addr arg)
                                     sc_type_arc_common | sc_type_const,
                                     sc_type_node | sc_type_const,
                                     sc_type_arc_pos_const_perm,
-                                    keynode_nrel_author);
+                                    keynode_nrel_authors);
     if (it5 == nullptr)
         return SC_RESULT_ERROR;
 
@@ -312,15 +320,21 @@ sc_result ui_start_answer_translation(sc_event *event, sc_addr arg)
 
                     // init translation command
                     trans_command_addr = sc_memory_node_new(sc_type_const);
+                    SYSTEM_ELEMENT(trans_command_addr);
 
                     arc_addr = sc_memory_arc_new(sc_type_arc_pos_const_perm, trans_command_addr, answer_addr);
-                    sc_memory_arc_new(sc_type_arc_pos_const_perm, keynode_rrel_source_sc_construction, arc_addr);
+                    SYSTEM_ELEMENT(arc_addr);
+                    arc_addr = sc_memory_arc_new(sc_type_arc_pos_const_perm, keynode_rrel_source_sc_construction, arc_addr);
+                    SYSTEM_ELEMENT(arc_addr);
 
                     arc_addr = sc_memory_arc_new(sc_type_arc_pos_const_perm, trans_command_addr, format_addr);
-                    sc_memory_arc_new(sc_type_arc_pos_const_perm, keynode_rrel_output_format, arc_addr);
+                    SYSTEM_ELEMENT(arc_addr);
+                    arc_addr = sc_memory_arc_new(sc_type_arc_pos_const_perm, keynode_rrel_output_format, arc_addr);
+                    SYSTEM_ELEMENT(arc_addr);
 
                     // add into translation command set
-                    sc_memory_arc_new(sc_type_arc_pos_const_perm, keynode_command_translate_from_sc, trans_command_addr);
+                    arc_addr = sc_memory_arc_new(sc_type_arc_pos_const_perm, keynode_command_translate_from_sc, trans_command_addr);
+                    SYSTEM_ELEMENT(arc_addr);
                 }
                 sc_iterator3_free(it3);
 
@@ -356,5 +370,6 @@ void ui_shutdown_commands()
     sc_event_destroy(event_ui_start_answer_translation);
     event_ui_start_answer_translation = (sc_event*)nullptr;
 
-
+    sc_event_destroy(event_ui_command_generate_instance);
+    event_ui_command_generate_instance = (sc_event*)nullptr;
 }

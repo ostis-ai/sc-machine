@@ -32,7 +32,6 @@ sc_result agent_search_all_identifiers(sc_event *event, sc_addr arg)
     sc_iterator3 *it1;
     sc_iterator5 *it5, *it5Check;
     sc_bool found = SC_FALSE;
-    sc_uint32 i;
 
     if (!sc_memory_get_arc_end(arg, &question))
         return SC_RESULT_ERROR_INVALID_PARAMS;
@@ -41,14 +40,14 @@ sc_result agent_search_all_identifiers(sc_event *event, sc_addr arg)
     if (sc_helper_check_arc(keynode_question_all_identifiers, question, sc_type_arc_pos_const_perm) == SC_FALSE)
         return SC_RESULT_ERROR_INVALID_TYPE;
 
-    answer = sc_memory_node_new(sc_type_node | sc_type_const);
+    answer = create_answer_node();
 
     // get operation argument
     it1 = sc_iterator3_f_a_a_new(question, sc_type_arc_pos_const_perm, 0);
     if (sc_iterator3_next(it1) == SC_TRUE)
     {
         found = SC_TRUE;
-        sc_memory_arc_new(sc_type_arc_pos_const_perm, answer, sc_iterator3_value(it1, 2));
+        appendIntoAnswer(answer, sc_iterator3_value(it1, 2));
 
         // iterate all const arcs, that are no accessory, and go out from sc-element
         it5 = sc_iterator5_f_a_a_a_a_new(sc_iterator3_value(it1, 2),
@@ -68,8 +67,10 @@ sc_result agent_search_all_identifiers(sc_event *event, sc_addr arg)
             if (sc_iterator5_next(it5Check) == SC_TRUE)
             {
                 // append into result
-                for (i = 0;  i < 5; ++i)
-                    sc_memory_arc_new(sc_type_arc_pos_const_perm, answer, sc_iterator5_value(it5, i));
+                appendIntoAnswer(answer, sc_iterator5_value(it5, 1));
+                appendIntoAnswer(answer, sc_iterator5_value(it5, 2));
+                appendIntoAnswer(answer, sc_iterator5_value(it5, 3));
+                appendIntoAnswer(answer, sc_iterator5_value(it5, 4));
             }
             sc_iterator5_free(it5Check);
         }
@@ -78,7 +79,7 @@ sc_result agent_search_all_identifiers(sc_event *event, sc_addr arg)
     sc_iterator3_free(it1);
 
     if (found == SC_TRUE)
-        sc_memory_arc_new(sc_type_arc_pos_const_perm, answer, keynode_nrel_decomposition);
+        appendIntoAnswer(answer, keynode_hypermedia_nrel_identification);
 
     connect_answer_to_question(question, answer);
     finish_question(question);

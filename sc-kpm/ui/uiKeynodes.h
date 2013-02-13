@@ -36,7 +36,7 @@ extern sc_addr keynode_rrel_output_format;
 
 extern sc_addr keynode_question_nrel_answer;
 extern sc_addr keynode_question_finished;
-extern sc_addr keynode_nrel_author;
+extern sc_addr keynode_nrel_authors;
 extern sc_addr keynode_nrel_translation;
 
 extern sc_addr keynode_command_generate_instance;
@@ -50,6 +50,8 @@ extern sc_addr keynode_nrel_command_result;
 extern sc_addr keynode_format_scs_json;
 extern sc_addr keynode_format_scg_json;
 extern sc_addr keynode_format_scn_json;
+
+extern sc_addr keynode_system_element;
 
 #define RREL_ORDER_COUNT 10
 extern sc_addr ui_keynode_rrel_order[RREL_ORDER_COUNT];
