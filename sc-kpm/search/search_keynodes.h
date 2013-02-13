@@ -3,7 +3,7 @@
 This source file is part of OSTIS (Open Semantic Technology for Intelligent Systems)
 For the latest info, see http://www.ostis.net
 
-Copyright (c) 2012 OSTIS
+Copyright (c) 2010-2013 OSTIS
 
 OSTIS is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as published by
@@ -40,6 +40,7 @@ extern sc_addr keynode_question_initiated;
 extern sc_addr keynode_quasybinary_relation;
 extern sc_addr keynode_hypermedia_nrel_identification;
 extern sc_addr keynode_set_nrel_inclusion;
+extern sc_addr keynode_system_element;
 
 //! Initialie keynodes that used by search module
 sc_result search_keynodes_initialize();

@@ -12,23 +12,18 @@ the Free Software Foundation, either version 3 of the License, or
 
 OSTIS is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 GNU Lesser General Public License for more details.
 
 You should have received a copy of the GNU Lesser General Public License
-along with OSTIS.  If not, see <http://www.gnu.org/licenses/>.
+along with OSTIS. If not, see <http://www.gnu.org/licenses/>.
 -----------------------------------------------------------------------------
-*/
+ */
 
+#ifndef _search_defines_h_
+#define _search_defines_h_
 
-#ifndef _sc_memory_headers_h_
-#define _sc_memory_headers_h_
+#define SYSTEM_ELEMENT(el) if (sc_helper_check_arc(keynode_system_element,el, sc_type_arc_pos_const_perm) == SC_FALSE) \
+                                sc_memory_arc_new(sc_type_arc_pos_const_perm, keynode_system_element, el);
 
-#include "sc_memory.h"
-#include "sc-store/sc_event.h"
-#include "sc-store/sc_iterator.h"
-#include "sc-store/sc_stream.h"
-#include "sc-store/sc_stream_file.h"
-#include "sc-store/sc_stream_memory.h"
-
-#endif
+#endif // SEARCH_DEFINES_H

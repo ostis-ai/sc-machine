@@ -22,7 +22,8 @@ HEADERS += \
     agents/search_input_arcs.h \
     agents/search_semantic_neighborhood.h \
     agents/search_structure.h \
-    agents/search_identifiers.h
+    agents/search_identifiers.h \
+    search_defines.h
 
 SOURCES += \
     search.c \

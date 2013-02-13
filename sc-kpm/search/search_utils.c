@@ -22,6 +22,7 @@ along with OSTIS. If not, see <http://www.gnu.org/licenses/>.
 
 #include "search_utils.h"
 #include "search_keynodes.h"
+#include "search_defines.h"
 
 #include <sc_helper.h>
 #include <sc_memory_headers.h>
@@ -31,17 +32,21 @@ void connect_answer_to_question(sc_addr question, sc_addr answer)
     sc_addr arc;
 
     arc = sc_memory_arc_new(sc_type_arc_common | sc_type_const, question, answer);
-    sc_memory_arc_new(sc_type_arc_pos_const_perm, keynode_nrel_answer, arc);
+    SYSTEM_ELEMENT(arc);
+    arc = sc_memory_arc_new(sc_type_arc_pos_const_perm, keynode_nrel_answer, arc);
+    SYSTEM_ELEMENT(arc);
 }
 
 void finish_question(sc_addr question)
 {
     sc_iterator3 *it = nullptr;
+    sc_addr arc;
 
     it = sc_iterator3_f_a_f_new(keynode_question_initiated, sc_type_arc_pos_const_perm, question);
     while (sc_iterator3_next(it))
         sc_memory_element_free(sc_iterator3_value(it, 1));
     sc_iterator3_free(it);
 
-    sc_memory_arc_new(sc_type_arc_pos_const_perm, keynode_question_finished, question);
+    arc = sc_memory_arc_new(sc_type_arc_pos_const_perm, keynode_question_finished, question);
+    SYSTEM_ELEMENT(arc);
 }

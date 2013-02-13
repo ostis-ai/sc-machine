@@ -24,7 +24,8 @@ HEADERS += \
     translators/uiSc2SCgJsonTranslator.h \
     translators/uiSc2SCnJsonTranslator.h \
     translators/uiTranslatorFromSc.h \
-    translators/uiSc2ScsJsonTranslator.h
+    translators/uiSc2ScsJsonTranslator.h \
+    uiDefines.h
 
 SOURCES += \
     ui.cpp \
