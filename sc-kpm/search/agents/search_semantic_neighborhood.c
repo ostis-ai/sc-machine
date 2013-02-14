@@ -67,6 +67,9 @@ sc_result agent_search_full_semantic_neighborhood(sc_event *event, sc_addr arg)
                 if (!(el_type & (sc_type_node_norole | sc_type_node_role)))
                     continue;
 
+                if (IS_SYSTEM_ELEMENT(sc_iterator3_value(it3, 1)) || IS_SYSTEM_ELEMENT(sc_iterator3_value(it3, 0)))
+                    continue;
+
                 appendIntoAnswer(answer, sc_iterator3_value(it3, 0));
                 appendIntoAnswer(answer, sc_iterator3_value(it3, 1));
 
@@ -105,6 +108,9 @@ sc_result agent_search_full_semantic_neighborhood(sc_event *event, sc_addr arg)
                 if (!(el_type & (sc_type_node_norole | sc_type_node_role)))
                     continue;
 
+                if (IS_SYSTEM_ELEMENT(sc_iterator3_value(it3, 1)) || IS_SYSTEM_ELEMENT(sc_iterator3_value(it3, 0)))
+                    continue;
+
                 appendIntoAnswer(answer, sc_iterator3_value(it3, 0));
                 appendIntoAnswer(answer, sc_iterator3_value(it3, 1));
 
@@ -115,8 +121,10 @@ sc_result agent_search_full_semantic_neighborhood(sc_event *event, sc_addr arg)
                     it4 = sc_iterator3_f_a_a_new(sc_iterator3_value(it2, 0), sc_type_arc_pos_const_perm, 0);
                     while (sc_iterator3_next(it4) == SC_TRUE)
                     {
-                        appendIntoAnswer(answer, sc_iterator3_value(it4, 1));
-                        appendIntoAnswer(answer, sc_iterator3_value(it4, 2));
+                        if (!IS_SYSTEM_ELEMENT(sc_iterator3_value(it4, 1)))
+                            appendIntoAnswer(answer, sc_iterator3_value(it4, 1));
+                        if (!IS_SYSTEM_ELEMENT(sc_iterator3_value(it4, 2)))
+                            appendIntoAnswer(answer, sc_iterator3_value(it4, 2));
                     }
                     sc_iterator3_free(it4);
                 }
