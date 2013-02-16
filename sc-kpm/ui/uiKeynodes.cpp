@@ -46,9 +46,9 @@ const char keynode_rrel_command_str[] = "ui_rrel_command";
 const char keynode_nrel_command_template_str[] = "ui_nrel_command_template";
 const char keynode_nrel_command_result_str[] = "ui_nrel_command_result";
 
-const char keynode_format_scs_json_str[] = "format_scs_json";
-const char keynode_format_scg_json_str[] = "format_scg_json";
-const char keynode_format_scn_json_str[] = "format_scn_json";
+const char keynode_format_scs_json_str[] = "hypermedia_format_scs_json";
+const char keynode_format_scg_json_str[] = "hypermedia_format_scg_json";
+const char keynode_format_scn_json_str[] = "hypermedia_format_scn_json";
 
 const char keynode_system_element_str[] = "system_element";
 
