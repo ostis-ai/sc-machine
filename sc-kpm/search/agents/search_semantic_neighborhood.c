@@ -97,7 +97,7 @@ sc_result agent_search_full_semantic_neighborhood(sc_event *event, sc_addr arg)
             if (IS_SYSTEM_ELEMENT(sc_iterator3_value(it2, 1)) || IS_SYSTEM_ELEMENT(sc_iterator3_value(it2, 0)))
                 continue;
 
-            appendIntoAnswer(answer, sc_iterator3_value(it2, 0));
+            appendIntoAnswer(answer, sc_iterator3_value(it2, 2));
             appendIntoAnswer(answer, sc_iterator3_value(it2, 1));
 
             // iterate input arcs into found arc, to find relations
