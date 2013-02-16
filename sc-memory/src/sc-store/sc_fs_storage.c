@@ -200,7 +200,7 @@ sc_result sc_fs_storage_write_content(sc_addr addr, const sc_check_sum *check_su
     // file doesn't exist, so we need to save it
     if (g_mkdir_with_parents(abs_path, SC_DIR_PERMISSIONS) < 0)
     {
-        g_message("Eorror while creating '%s' directory", abs_path);
+        g_message("Error while creating '%s' directory", abs_path);
         free(path);
         return SC_RESULT_ERROR_IO;
     }

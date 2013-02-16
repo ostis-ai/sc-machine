@@ -510,6 +510,7 @@ sc_result sc_storage_set_link_content(sc_addr addr, const sc_stream *stream)
         result = sc_fs_storage_write_content(addr, &check_sum, stream);
         memcpy(el->content.data, check_sum.data, check_sum.len);
         el->content.len = check_sum.len;
+        g_assert(check_sum.len > 0);
 
         sc_event_emit(addr, SC_EVENT_CHANGE_LINK_CONTENT, addr);
     }
