@@ -46,6 +46,7 @@ extern sc_addr keynode_rrel_command_arguments;
 extern sc_addr keynode_rrel_command;
 extern sc_addr keynode_nrel_command_template;
 extern sc_addr keynode_nrel_command_result;
+extern sc_addr keynode_displayed_answer;
 
 extern sc_addr keynode_format_scs_json;
 extern sc_addr keynode_format_scg_json;

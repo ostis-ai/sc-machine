@@ -45,6 +45,7 @@ const char keynode_rrel_command_arguments_str[] = "ui_rrel_command_arguments";
 const char keynode_rrel_command_str[] = "ui_rrel_command";
 const char keynode_nrel_command_template_str[] = "ui_nrel_command_template";
 const char keynode_nrel_command_result_str[] = "ui_nrel_command_result";
+const char keynode_displayed_answer_str[] = "ui_displayed_answer";
 
 const char keynode_format_scs_json_str[] = "hypermedia_format_scs_json";
 const char keynode_format_scg_json_str[] = "hypermedia_format_scg_json";
@@ -71,6 +72,7 @@ sc_addr keynode_rrel_command_arguments;
 sc_addr keynode_rrel_command;
 sc_addr keynode_nrel_command_template;
 sc_addr keynode_nrel_command_result;
+sc_addr keynode_displayed_answer;
 
 sc_addr keynode_format_scs_json;
 sc_addr keynode_format_scg_json;
@@ -97,7 +99,6 @@ sc_bool initialize_keynodes()
     resolve_keynode(keynode_rrel_output_format);
     resolve_keynode(keynode_nrel_translation);
 
-
     resolve_keynode(keynode_command_generate_instance);
     resolve_keynode(keynode_command_initiated);
     resolve_keynode(keynode_command_finished);
@@ -105,6 +106,7 @@ sc_bool initialize_keynodes()
     resolve_keynode(keynode_rrel_command);
     resolve_keynode(keynode_nrel_command_template);
     resolve_keynode(keynode_nrel_command_result);
+    resolve_keynode(keynode_displayed_answer);
 
     resolve_keynode(keynode_format_scs_json);
     resolve_keynode(keynode_format_scg_json);

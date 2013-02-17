@@ -29,6 +29,7 @@ along with OSTIS.  If not, see <http://www.gnu.org/licenses/>.
 // -------------------- Events ----------------------
 sc_event *event_ui_start_answer_translation = 0;
 sc_event *event_ui_command_generate_instance = 0;
+sc_event *event_ui_remove_displayed_answer = 0;
 
 struct sArcInfo
 {
@@ -351,6 +352,62 @@ sc_result ui_start_answer_translation(sc_event *event, sc_addr arg)
     return SC_RESULT_OK;
 }
 
+sc_result ui_remove_displayed_answer(sc_event *event, sc_addr arg)
+{
+    sc_addr answer_addr;
+    sc_iterator5 *it5 = 0;
+    sc_iterator5 *it5Res = 0;
+    sc_iterator5 *it5Args = 0;
+
+    if (sc_memory_get_arc_end(arg, &answer_addr) != SC_RESULT_OK)
+        return SC_RESULT_ERROR;
+
+    // first of all delete translation command
+    it5 = sc_iterator5_a_a_f_a_f_new(sc_type_node | sc_type_const,
+                                     sc_type_arc_pos_const_perm,
+                                     answer_addr,
+                                     sc_type_arc_pos_const_perm,
+                                     keynode_rrel_source_sc_construction);
+    if (sc_iterator5_next(it5) == SC_TRUE)
+        sc_memory_element_free(sc_iterator5_value(it5, 0));
+    sc_iterator5_free(it5);
+
+    // find question, and remove all connected information
+    it5 = sc_iterator5_a_a_f_a_f_new(sc_type_node | sc_type_const,
+                                     sc_type_arc_common | sc_type_const,
+                                     answer_addr,
+                                     sc_type_arc_pos_const_perm,
+                                     keynode_question_nrel_answer);
+    if (sc_iterator5_next(it5) == SC_TRUE)
+    {
+        it5Res = sc_iterator5_a_a_f_a_f_new(sc_type_node | sc_type_const,
+                                            sc_type_arc_common | sc_type_const,
+                                            sc_iterator5_value(it5, 0),
+                                            sc_type_arc_pos_const_perm,
+                                            keynode_nrel_command_result);
+        if (sc_iterator5_next(it5Res) == SC_TRUE)
+        {
+            it5Args = sc_iterator5_f_a_a_a_f_new(sc_iterator5_value(it5Res, 0),
+                                                 sc_type_arc_pos_const_perm,
+                                                 sc_type_node | sc_type_const,
+                                                 sc_type_arc_pos_const_perm,
+                                                 keynode_rrel_command_arguments);
+            if (sc_iterator5_next(it5Args) == SC_TRUE)
+                sc_memory_element_free(sc_iterator5_value(it5Args, 2));
+            sc_iterator5_free(it5Args);
+
+            sc_memory_element_free(sc_iterator5_value(it5Res, 0));
+        }
+        sc_iterator5_free(it5Res);
+
+        sc_memory_element_free(sc_iterator5_value(it5, 0));
+    }
+    sc_iterator5_free(it5);
+
+
+    return SC_RESULT_OK;
+}
+
 // -------------------- Module ----------------------
 sc_result ui_initialize_commands()
 {
@@ -360,6 +417,10 @@ sc_result ui_initialize_commands()
 
     event_ui_command_generate_instance = sc_event_new(keynode_command_initiated, SC_EVENT_ADD_OUTPUT_ARC, 0, ui_command_generate_instance, 0);
     if (event_ui_command_generate_instance == nullptr)
+        return SC_RESULT_ERROR;
+
+    event_ui_remove_displayed_answer = sc_event_new(keynode_displayed_answer, SC_EVENT_ADD_OUTPUT_ARC, 0, ui_remove_displayed_answer, 0);
+    if (event_ui_remove_displayed_answer == nullptr)
         return SC_RESULT_ERROR;
 
     return SC_RESULT_OK;
@@ -372,4 +433,7 @@ void ui_shutdown_commands()
 
     sc_event_destroy(event_ui_command_generate_instance);
     event_ui_command_generate_instance = (sc_event*)nullptr;
+
+    sc_event_destroy(event_ui_remove_displayed_answer);
+    event_ui_remove_displayed_answer = (sc_event*)nullptr;
 }

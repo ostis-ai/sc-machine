@@ -388,6 +388,8 @@ sc_uint8* sc_fs_storage_make_checksum_path(const sc_check_sum *check_sum)
     sc_uint idx = 0;
     sc_uint j = 0;
 
+    g_assert(check_sum->len == 32);
+
     g_assert(check_sum != 0);
     g_assert(check_sum->len != 0);
     g_assert(check_sum->len % 4 == 0);
