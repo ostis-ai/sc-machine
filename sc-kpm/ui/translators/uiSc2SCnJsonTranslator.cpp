@@ -29,7 +29,7 @@ along with OSTIS.  If not, see <http://www.gnu.org/licenses/>.
 uiSc2SCnJsonTranslator::uiSc2SCnJsonTranslator()
     : mScElementsInfoPool(0)
 {
-
+    SC_ADDR_MAKE_EMPTY(mKeywordAddr);
 }
 
 uiSc2SCnJsonTranslator::~uiSc2SCnJsonTranslator()
@@ -66,6 +66,7 @@ void uiSc2SCnJsonTranslator::runImpl()
     {
         if (it != mKeywordsList.begin())
             mOutputData += ",";
+        mKeywordAddr = *it;
         mOutputData += translateElement(*it, true);
     }
 
@@ -95,7 +96,7 @@ String uiSc2SCnJsonTranslator::translateElement(sc_addr addr, bool isKeyword)
     for (it = elInfo->input_arcs.begin(); it != itEnd; ++it)
     {
         arcInfo = mScElementsInfo[*it];
-        if (isTranslated(arcInfo->beg_addr) || isTranslated(arcInfo->addr))
+        if (/*isTranslated(arcInfo->beg_addr) || */isTranslated(arcInfo->addr) || SC_ADDR_IS_EQUAL(arcInfo->beg_addr, mKeywordAddr))
             continue;
 
         if (!first)
@@ -107,7 +108,7 @@ String uiSc2SCnJsonTranslator::translateElement(sc_addr addr, bool isKeyword)
     for (it = elInfo->output_arcs.begin(); it != itEnd; ++it)
     {
         arcInfo = mScElementsInfo[*it];
-        if (isTranslated(arcInfo->end_addr) || isTranslated(arcInfo->addr))
+        if (/*isTranslated(arcInfo->end_addr) || */isTranslated(arcInfo->addr) || SC_ADDR_IS_EQUAL(arcInfo->end_addr, mKeywordAddr))
             continue;
 
         if (!first)
@@ -128,35 +129,40 @@ String uiSc2SCnJsonTranslator::translateElement(sc_addr addr, bool isKeyword)
 String uiSc2SCnJsonTranslator::translateArc(sScElementInfo *arcInfo, bool isBackward)
 {
     sc_addr elAddr = isBackward ? arcInfo->beg_addr : arcInfo->end_addr;
-    bool hasAttributes = arcInfo->input_arcs.size() > 0;
+    bool hasAttributes = false;
     String result = "{";
+    String attrs = "";
 
-    if (hasAttributes)
+    mTranslatedAddrsList.push_back(arcInfo->addr);
+
+
+    // collect all input constant, positive arcs
+    tScAddrList::iterator it, itEnd = arcInfo->input_arcs.end();
+    for (it = arcInfo->input_arcs.begin(); it != itEnd; ++it)
     {
-        result += "\"SCAttributes\" : [";
-
-        // collect all input constant, positive arcs
-        tScAddrList::iterator it, itEnd = arcInfo->input_arcs.end();
-        for (it = arcInfo->input_arcs.begin(); it != itEnd; ++it)
+        sScElementInfo *inputArcInfo = mScElementsInfo[*it];
+        sScElementInfo *begInfo = mScElementsInfo[inputArcInfo->beg_addr];
+        assert(inputArcInfo);
+        if (inputArcInfo == nullptr)
         {
-            sScElementInfo *inputArcInfo = mScElementsInfo[*it];
-            assert(inputArcInfo);
-            if (inputArcInfo == nullptr)
-            {
-                //printf("Error while get input arc information, when resolve attribute in SC2SCnJson translator");
-                continue; // we need stable server
-            }
-
-            if (inputArcInfo->type & sc_type_arc_pos_const_perm)
-            {
-                if (it != arcInfo->input_arcs.begin())
-                    result += ",";
-                result += "{ \"id\": \"" + buildId(inputArcInfo->beg_addr) + "\"}";
-            }
+            //printf("Error while get input arc information, when resolve attribute in SC2SCnJson translator");
+            continue; // we need stable server
         }
 
-        result += "],";
+        if ((inputArcInfo->type & sc_type_arc_pos_const_perm) &&
+            ((begInfo->type & sc_type_node_struct_mask) & (sc_type_node_norole | sc_type_node_role)) &&
+            (SC_ADDR_IS_NOT_EQUAL(mKeywordAddr, begInfo->addr)))
+        {
+            if (hasAttributes)
+                attrs += ",";
+            attrs += "{ \"id\": \"" + buildId(inputArcInfo->beg_addr) + "\"}";
+
+            hasAttributes = true;
+        }
     }
+
+    if (hasAttributes)
+        result += "\"SCAttributes\" : [" + attrs + "],";
 
     StringStream ss;
     ss << arcInfo->type;

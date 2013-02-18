@@ -82,6 +82,8 @@ protected:
     tScElemetsInfoMap mScElementsInfo;
     //! Pull of sc-elements information (used to prevent many memory allocations)
     sScElementInfo *mScElementsInfoPool;
+    //! Currently translated keyword
+    sc_addr mKeywordAddr;
 };
 
 

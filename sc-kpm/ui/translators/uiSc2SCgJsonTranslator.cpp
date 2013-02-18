@@ -30,7 +30,6 @@ along with OSTIS.  If not, see <http://www.gnu.org/licenses/>.
 
 uiSc2SCgJsonTranslator::uiSc2SCgJsonTranslator()
 {
-
 }
 
 uiSc2SCgJsonTranslator::~uiSc2SCgJsonTranslator()

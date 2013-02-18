@@ -44,7 +44,6 @@ protected:
 
 private:
 
-
 };
 
 #endif // _ui_Sc2SCgJsonTranslator_h_
