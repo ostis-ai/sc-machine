@@ -118,13 +118,13 @@ typedef sc_uint16 sc_type;
 #define sc_type_arc_perm        0x800
 
 // struct node types
-#define sc_type_node_tuple       (0x80 | sc_type_node)
-#define sc_type_node_struct      (0x100 | sc_type_node)
-#define sc_type_node_role        (0x200 | sc_type_node)
-#define sc_type_node_norole      (0x400 | sc_type_node)
-#define sc_type_node_class       (0x800 | sc_type_node)
-#define sc_type_node_abstract    (0x1000 | sc_type_node)
-#define sc_type_node_material    (0x2000 | sc_type_node)
+#define sc_type_node_tuple       (0x80)
+#define sc_type_node_struct      (0x100)
+#define sc_type_node_role        (0x200)
+#define sc_type_node_norole      (0x400)
+#define sc_type_node_class       (0x800)
+#define sc_type_node_abstract    (0x1000)
+#define sc_type_node_material    (0x2000)
 
 #define sc_type_arc_pos_const_perm (sc_type_arc_access | sc_type_const | sc_type_arc_pos | sc_type_arc_perm)
 

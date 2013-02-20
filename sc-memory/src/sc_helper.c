@@ -31,7 +31,7 @@ sc_result resolve_nrel_system_identifier()
                                             sc_type_arc_common | sc_type_const,
                                             results[i],
                                             sc_type_arc_pos_const_perm,
-                                            sc_type_const | sc_type_node_norole);
+                                            sc_type_const | sc_type_node | sc_type_node_norole);
 
             while (sc_iterator5_next(it))
             {

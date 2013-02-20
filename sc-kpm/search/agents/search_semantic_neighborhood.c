@@ -50,7 +50,9 @@ sc_result agent_search_full_semantic_neighborhood(sc_event *event, sc_addr arg)
         appendIntoAnswer(answer, sc_iterator3_value(it1, 2));
 
         // iterate input arcs
-        it2 = sc_iterator3_a_a_f_new(0, 0, sc_iterator3_value(it1, 2));
+        it2 = sc_iterator3_a_a_f_new(0,
+                                     0,
+                                     sc_iterator3_value(it1, 2));
         while (sc_iterator3_next(it2) == SC_TRUE)
         {
             if (IS_SYSTEM_ELEMENT(sc_iterator3_value(it2, 1)) || IS_SYSTEM_ELEMENT(sc_iterator3_value(it2, 0)))
@@ -60,7 +62,9 @@ sc_result agent_search_full_semantic_neighborhood(sc_event *event, sc_addr arg)
             appendIntoAnswer(answer, sc_iterator3_value(it2, 1));
 
             // iterate input arcs into found arc, to find relations
-            it3 = sc_iterator3_a_a_f_new(0, sc_type_arc_pos_const_perm, sc_iterator3_value(it2, 1));
+            it3 = sc_iterator3_a_a_f_new(sc_type_node,
+                                         sc_type_arc_pos_const_perm,
+                                         sc_iterator3_value(it2, 1));
             while (sc_iterator3_next(it3) == SC_TRUE)
             {
                 sc_memory_get_element_type(sc_iterator3_value(it3, 0), &el_type);
@@ -91,7 +95,9 @@ sc_result agent_search_full_semantic_neighborhood(sc_event *event, sc_addr arg)
         sc_iterator3_free(it2);
 
         // iterate output arcs
-        it2 = sc_iterator3_f_a_a_new(sc_iterator3_value(it1, 2), 0, 0);
+        it2 = sc_iterator3_f_a_a_new(sc_iterator3_value(it1, 2),
+                                     0,
+                                     0);
         while (sc_iterator3_next(it2) == SC_TRUE)
         {
             if (IS_SYSTEM_ELEMENT(sc_iterator3_value(it2, 1)) || IS_SYSTEM_ELEMENT(sc_iterator3_value(it2, 0)))
@@ -101,7 +107,9 @@ sc_result agent_search_full_semantic_neighborhood(sc_event *event, sc_addr arg)
             appendIntoAnswer(answer, sc_iterator3_value(it2, 1));
 
             // iterate input arcs into found arc, to find relations
-            it3 = sc_iterator3_a_a_f_new(0, sc_type_arc_pos_const_perm, sc_iterator3_value(it2, 1));
+            it3 = sc_iterator3_a_a_f_new(sc_type_node,
+                                         sc_type_arc_pos_const_perm,
+                                         sc_iterator3_value(it2, 1));
             while (sc_iterator3_next(it3) == SC_TRUE)
             {
                 sc_memory_get_element_type(sc_iterator3_value(it3, 0), &el_type);
