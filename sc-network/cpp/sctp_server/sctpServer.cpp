@@ -3,7 +3,7 @@
 This source file is part of OSTIS (Open Semantic Technology for Intelligent Systems)
 For the latest info, see http://www.ostis.net
 
-Copyright (c) 2010 OSTIS
+Copyright (c) 2010-2013 OSTIS
 
 OSTIS is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -22,11 +22,10 @@ along with OSTIS.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "sctpServer.h"
 #include "sctpClient.h"
+#include "sctpStatistic.h"
 
 #include <QSettings>
 #include <QDebug>
-#include <QTimer>
-#include <QDir>
 
 extern "C"
 {
@@ -39,14 +38,14 @@ extern "C"
 sctpServer::sctpServer(QObject *parent)
   : QTcpServer(parent)
   , mPort(0)
-  , mStatUpdatePeriod(0) // one hour
-  , mStatUpdateTimer(0)
-  , mStatInitUpdate(false)
+  , mStatistic(0)
 {
 }
 
 sctpServer::~sctpServer()
 {
+    if (mStatistic)
+        delete mStatistic;
 }
 
 bool sctpServer::start(const QString &config)
@@ -59,28 +58,10 @@ bool sctpServer::start(const QString &config)
         return false;
     }
 
-    // create statistics directory
     if (mStatUpdatePeriod > 0)
     {
-        // create directory, that would contain statistics
-        QDir dir(mStatPath);
-        if (!dir.isAbsolute())
-        {
-            qCritical() << "Path to statistics directory must to be an absolute\n";
-            return false;
-        }
-
-        if (!dir.exists())
-        {
-            if (!dir.mkpath(mStatPath))
-            {
-                qCritical() << QString("Can't create statistics path: '%1'").arg(mStatPath);
-                return false;
-            }
-        }
-
-        mStatUpdateTimer = new QTimer(this);
-        statUpdate();
+        mStatistic = new sctpStatistic(this);
+        mStatistic->initialize(mStatPath, mStatUpdatePeriod);
     }
 
     QString ipAddress;
@@ -167,12 +148,3 @@ void sctpServer::stop()
     close();
 }
 
-void sctpServer::statUpdate()
-{
-    if (!mStatInitUpdate)
-    {
-        //! @todo write startup statistics
-    }
-
-    mStatUpdateTimer->singleShot(mStatUpdatePeriod * 1000, this, SLOT(statUpdate()));
-}
