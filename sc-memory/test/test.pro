@@ -1,7 +1,7 @@
 TEMPLATE = app
 DESTDIR = ../../bin
 
-INCLUDEPATH += ../../sc-memory/src/sc-store
+INCLUDEPATH += ../../sc-memory/src
 unix {
     LIBS += $$quote(-L$$DESTDIR) -lsc_memory
     CONFIG += link_pkgconfig

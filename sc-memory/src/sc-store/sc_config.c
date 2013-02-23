@@ -46,7 +46,7 @@ void sc_config_initialize(const sc_char *file_path)
     }else
     {
         // setup default values
-        config_max_loaded_segments = 10;
+        config_max_loaded_segments = G_MAXUINT16;
     }
 
     g_key_file_free(key_file);

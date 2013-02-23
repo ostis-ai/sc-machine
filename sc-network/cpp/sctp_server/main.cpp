@@ -32,7 +32,8 @@ int main(int argc, char *argv[])
         config = argv[1];
 
     sctpServer server;
-    server.start(config);
+    if (!server.start(config))
+        exit(0);
 
     QObject::connect(&a, SIGNAL(aboutToQuit()), &server, SLOT(stop()));
     

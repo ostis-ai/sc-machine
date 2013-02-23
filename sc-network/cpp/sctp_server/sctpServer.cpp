@@ -25,6 +25,8 @@ along with OSTIS.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <QSettings>
 #include <QDebug>
+#include <QTimer>
+#include <QDir>
 
 extern "C"
 {
@@ -37,6 +39,9 @@ extern "C"
 sctpServer::sctpServer(QObject *parent)
   : QTcpServer(parent)
   , mPort(0)
+  , mStatUpdatePeriod(0) // one hour
+  , mStatUpdateTimer(0)
+  , mStatInitUpdate(false)
 {
 }
 
@@ -44,14 +49,38 @@ sctpServer::~sctpServer()
 {
 }
 
-void sctpServer::start(const QString &config)
+bool sctpServer::start(const QString &config)
 {
     parseConfig(config);
 
     if (!listen(QHostAddress::Any, mPort))
     {
         qCritical() << QObject::tr("Unable to start the server: %1").arg(errorString());
-        return;
+        return false;
+    }
+
+    // create statistics directory
+    if (mStatUpdatePeriod > 0)
+    {
+        // create directory, that would contain statistics
+        QDir dir(mStatPath);
+        if (!dir.isAbsolute())
+        {
+            qCritical() << "Path to statistics directory must to be an absolute\n";
+            return false;
+        }
+
+        if (!dir.exists())
+        {
+            if (!dir.mkpath(mStatPath))
+            {
+                qCritical() << QString("Can't create statistics path: '%1'").arg(mStatPath);
+                return false;
+            }
+        }
+
+        mStatUpdateTimer = new QTimer(this);
+        statUpdate();
     }
 
     QString ipAddress;
@@ -74,9 +103,14 @@ void sctpServer::start(const QString &config)
 
     // initialize sc-memory
     qDebug() << "Initialize sc-memory\n";
-    sc_memory_initialize(mRepoPath.toStdString().c_str(), config.toStdString().c_str());
-    sc_helper_init();
-    sc_memory_initialize_ext(mExtPath.toStdString().c_str());
+    if (sc_memory_initialize(mRepoPath.toStdString().c_str(), config.toStdString().c_str()) != SC_TRUE)
+        return false;
+    if (sc_helper_init() != SC_RESULT_OK)
+        return false;
+    if (sc_memory_initialize_ext(mExtPath.toStdString().c_str()) != SC_TRUE)
+        return false;
+
+    return true;
 }
 
 void sctpServer::parseConfig(const QString &config_path)
@@ -94,7 +128,26 @@ void sctpServer::parseConfig(const QString &config_path)
     }
 
     mRepoPath = settings.value("Repo/Path").toString();
+    if (mRepoPath.isEmpty())
+    {
+        qDebug() << "Path to repo is empty\n";
+        exit(0);
+    }
     mExtPath = settings.value("Extensions/Directory").toString();
+
+    mStatUpdatePeriod = settings.value("Stat/UpdatePeriod").toUInt(&result);
+    if (!result)
+        qWarning() << "Can't parse period statistic from configuration file\n";
+    if (mStatUpdatePeriod > 0 && mStatUpdatePeriod < 60)
+        qWarning() << "Statistics update period is very short, it would be take much processor time. Recomend to make it more long";
+
+    mStatPath = settings.value("Stat/Path").toString();
+    if (mStatPath.isEmpty() && mStatUpdatePeriod > 0)
+    {
+        qDebug() << "Path to store statistics is empty\n";
+        exit(0);
+    }
+
 }
 
 void sctpServer::incomingConnection(int socketDescriptor)
@@ -112,4 +165,14 @@ void sctpServer::stop()
     sc_helper_shutdown();
     sc_memory_shutdown();
     close();
+}
+
+void sctpServer::statUpdate()
+{
+    if (!mStatInitUpdate)
+    {
+        //! @todo write startup statistics
+    }
+
+    mStatUpdateTimer->singleShot(mStatUpdatePeriod * 1000, this, SLOT(statUpdate()));
 }
