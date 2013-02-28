@@ -75,11 +75,13 @@ public:
     explicit sctpStatistic(QObject *parent = 0);
     virtual ~sctpStatistic();
 
-
     //! Initialize statistics
     bool initialize(const QString &statDirPath, quint32 updatePeriod);
     //! Shutdown statistics
     void shutdown();
+
+    //! Returns pointer to singleton instance
+    static sctpStatistic* getInstance();
 
 protected:
     //! Path to directory to store statistics information
@@ -90,6 +92,9 @@ protected:
     QTimer *mStatUpdateTimer;
     //! Flag that determine, if statistics was updated on start
     bool mStatInitUpdate;
+
+private:
+    static sctpStatistic *mInstance;
 
 protected slots:
     void update();

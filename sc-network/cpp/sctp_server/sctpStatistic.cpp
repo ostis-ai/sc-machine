@@ -26,17 +26,27 @@ along with OSTIS.  If not, see <http://www.gnu.org/licenses/>.
 #include <QDateTime>
 #include <QDebug>
 
+
+sctpStatistic* sctpStatistic::mInstance = 0;
+
+sctpStatistic* sctpStatistic::getInstance()
+{
+    Q_ASSERT(mInstance != 0);
+    return mInstance;
+}
+
 sctpStatistic::sctpStatistic(QObject *parent)
     : QObject(parent)
     , mStatUpdatePeriod(0)
     , mStatUpdateTimer(0)
 {
-
+    Q_ASSERT(mInstance == 0);
+    mInstance = this;
 }
 
 sctpStatistic::~sctpStatistic()
 {
-
+    mInstance = 0;
 }
 
 bool sctpStatistic::initialize(const QString &statDirPath, quint32 updatePeriod)
@@ -82,6 +92,7 @@ void sctpStatistic::update()
     if (!mStatInitUpdate)
     {
         //! @todo write startup statistics
+        mStatInitUpdate = false;
     }
 
     // determine date
