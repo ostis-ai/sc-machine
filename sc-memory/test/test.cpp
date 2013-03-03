@@ -27,12 +27,17 @@ std::vector<sc_addr> arc_creation_vector;
 
 void print_storage_statistics()
 {
-    sc_elements_stat stat;
+    sc_stat stat;
 
-    sc_storage_get_elements_stat(&stat);
+    sc_memory_stat(&stat);
 
-    printf("--- Storage statistics: ---\n \tNodes: %u (%u deleted)\n\tArcs: %u (%u deleted)\n\tEmpty: %u\n---\n",
-           stat.node_count, stat.node_deleted, stat.arc_count, stat.arc_deleted, stat.empty_count);
+    sc_uint64 nodes = stat.node_count;
+    sc_uint64 nodes_del = nodes - stat.node_live_count;
+    sc_uint64 arcs = stat.arc_count;
+    sc_uint64 arcs_del = arcs - stat.arc_live_count;
+
+    printf("--- Storage statistics: ---\n \tNodes: %llu (%llu deleted)\n\tArcs: %llu (%llu deleted)\n\tEmpty: %llu\n---\n",
+           nodes, nodes_del, arcs, arcs_del, stat.empty_count);
 }
 
 sc_addr get_random_addr(sc_type type)
@@ -612,6 +617,8 @@ int main(int argc, char *argv[])
 
     //test7();
     //test8();
+    test3();
+    item = 0;
 
     while (item != 0)
     {
@@ -677,7 +684,7 @@ int main(int argc, char *argv[])
     item = sc_storage_get_segments_count();
     g_timer_reset(timer); // crash when uncomment
 
-    sc_memory_shutdown();
+    //sc_memory_shutdown();
     g_timer_stop(timer);
     printf("Segments save speed: %f seg/sec\n", item / g_timer_elapsed(timer, 0));
     g_timer_destroy(timer);

@@ -22,6 +22,7 @@ along with OSTIS.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "sctpClient.h"
 #include "sctpCommand.h"
+#include "sctpStatistic.h"
 
 #include <QTcpSocket>
 #include <QHostAddress>
@@ -50,6 +51,9 @@ void sctpClient::setSocketDescriptor(int socketDescriptor)
     mSocket->setSocketDescriptor(socketDescriptor);
 
     qDebug() << "Connected client from address: " << mSocket->peerAddress().toString();
+
+    // collect statistics information about clients
+    sctpStatistic::getInstance()->clientConnected();
 }
 
 void sctpClient::connected()
@@ -69,7 +73,10 @@ void sctpClient::readyRead()
         if (errCode != SCTP_ERROR_NO)
         {
             qDebug() << "Error: " << errCode << "; while process request from clien " << mSocket->peerAddress().toString();
-//            mSocket->close();
+            sctpStatistic::getInstance()->commandProcessed(true);
+        }else
+        {
+            sctpStatistic::getInstance()->commandProcessed(false);
         }
 
         mSocket->flush();

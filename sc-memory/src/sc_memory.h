@@ -83,8 +83,8 @@ sc_addr sc_memory_arc_new(sc_type type, sc_addr beg, sc_addr end);
 /*! Get type of sc-element with specified sc-addr
  * @param addr sc-addr of element to get type
  * @param result Pointer to result container
- * @return If input params are correct and type resolved, then return SC_OK;
- * otherwise return SC_ERROR
+ * @return If input params are correct and type resolved, then return SC_RESULT_OK;
+ * otherwise return SC_RESULT_ERROR
  * @note This function is a thread safe
  */
 sc_result sc_memory_get_element_type(sc_addr addr, sc_type *result);
@@ -92,8 +92,8 @@ sc_result sc_memory_get_element_type(sc_addr addr, sc_type *result);
 /*! Returns sc-addr of begin element of specified arc
  * @param addr sc-addr of arc to get begin element
  * @param result Pointer to result container
- * @return If input params are correct and begin element resolved, then return SC_OK.
- * If element with specified addr isn't an arc, then return SC_INVALID_TYPE
+ * @return If input params are correct and begin element resolved, then return SC_RESULT_OK.
+ * If element with specified addr isn't an arc, then return SC_RESULT_INVALID_TYPE
  * @note This function is a thread safe
  */
 sc_result sc_memory_get_arc_begin(sc_addr addr, sc_addr *result);
@@ -101,8 +101,8 @@ sc_result sc_memory_get_arc_begin(sc_addr addr, sc_addr *result);
 /*! Returns sc-addr of end element of specified arc
  * @param addr sc-addr of arc to get end element
  * @param result Pointer to result container
- * @return If input params are correct and end element resolved, then return SC_OK.
- * If element with specified addr isn't an arc, then return SC_INVALID_TYPE
+ * @return If input params are correct and end element resolved, then return SC_RESULT_OK.
+ * If element with specified addr isn't an arc, then return SC_RESULT_INVALID_TYPE
  * @note This function is a thread safe
  */
 sc_result sc_memory_get_arc_end(sc_addr addr, sc_addr *result);
@@ -110,11 +110,11 @@ sc_result sc_memory_get_arc_end(sc_addr addr, sc_addr *result);
 /*! Setup content data for specified sc-link
  * @param addr sc-addr of sc-link to setup content
  * @param stream Pointer to stream
- * @return If content of specified link changed without any errors, then return SC_OK; otherwise
+ * @return If content of specified link changed without any errors, then return SC_RESULT_OK; otherwise
  * returns on of error codes:
  * <ul>
- * <li>SC_INVALID_TYPE - element with \p addr isn't a sc-link</li>
- * <li>SC_ERROR - unknown error</li>
+ * <li>SC_RESULT_INVALID_TYPE - element with \p addr isn't a sc-link</li>
+ * <li>SC_RESULT_ERROR - unknown error</li>
  * </ul>
  * @note This function is a thread safe
  */
@@ -124,11 +124,11 @@ sc_result sc_memory_set_link_content(sc_addr addr, const sc_stream *stream);
  * @param addr sc-addr of sc-link to return content data
  * @param stream Pointer to returned stream.
  * @attention New stream will be allocated, so it would be need to free stream after using.
- * @return If content of specified link content returned without any errors, then return SC_OK; otherwise
+ * @return If content of specified link content returned without any errors, then return SC_RESULT_OK; otherwise
  * returns on of error codes:
  * <ul>
- * <li>SC_INVALID_TYPE - element with \p addr isn't a sc-link</li>
- * <li>SC_ERROR - unknown error</li>
+ * <li>SC_RESULT_INVALID_TYPE - element with \p addr isn't a sc-link</li>
+ * <li>SC_RESULT_ERROR - unknown error</li>
  * </ul>
  * @note This function is a thread safe
  */
@@ -140,11 +140,17 @@ sc_result sc_memory_get_link_content(sc_addr addr, sc_stream **stream);
  * @param result Pointer to result container
  * @param result_count Container for results count
  * @return If sc-links with specified checksum found, then sc-addrs of found link
- * writes into \p result array and function returns SC_OK; otherwise \p result will contain
- * empty sc-addr and function returns SC_OK. In any case \p result_count contains number of found
+ * writes into \p result array and function returns SC_RESULT_OK; otherwise \p result will contain
+ * empty sc-addr and function returns SC_RESULT_OK. In any case \p result_count contains number of found
  * sc-addrs
  * @attention \p result array need to be free after usage
  */
 sc_result sc_memory_find_links_with_content(const sc_stream *stream, sc_addr **result, sc_uint32 *result_count);
+
+/*! Collect statistic information about current state of sc-memory
+ * @param stat Pointer to structure, that will contains statistics info
+ * @return If info collected without errors, then return SC_RESULT_OK; otherwise return SC_RESULT_ERROR
+ */
+sc_result sc_memory_stat(sc_stat *stat);
 
 #endif

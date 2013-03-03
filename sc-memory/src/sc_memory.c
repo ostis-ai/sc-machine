@@ -190,3 +190,12 @@ sc_result sc_memory_find_links_with_content(const sc_stream *stream, sc_addr **r
     UNLOCK;
     return res;
 }
+
+sc_result sc_memory_stat(sc_stat *stat)
+{
+    sc_result res;
+    LOCK;
+    res = sc_storage_get_elements_stat(stat);
+    UNLOCK;
+    return res;
+}

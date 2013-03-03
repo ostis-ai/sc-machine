@@ -27,15 +27,6 @@ along with OSTIS.  If not, see <http://www.gnu.org/licenses/>.
 #include "sc_defines.h"
 #include "sc_stream.h"
 
-struct _sc_elements_stat
-{
-    sc_uint32 node_count;
-    sc_uint32 arc_count;
-    sc_uint32 empty_count;
-
-    sc_uint32 node_deleted;
-    sc_uint32 arc_deleted;
-};
 
 //! Initialize sc storage in specified path
 sc_bool sc_storage_initialize(const char *path);
@@ -177,9 +168,11 @@ sc_result sc_storage_find_links_with_content(const sc_stream *stream, sc_addr **
 sc_uint sc_storage_get_segments_count();
 
 /*! Get statistics information about elements
- * @param stat Pointer to structure to write statistics
+ * @param stat Pointer to structure that store statistic
+ * @return If statictics info collect without any errors, then return SC_OK;
+ * otherwise return SC_ERROR
  */
-void sc_storage_get_elements_stat(sc_elements_stat *stat);
+sc_result sc_storage_get_elements_stat(sc_stat *stat);
 
 //! Returns time stamp value
 sc_uint sc_storage_get_time_stamp();

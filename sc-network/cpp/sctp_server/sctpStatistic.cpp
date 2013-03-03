@@ -25,6 +25,12 @@ along with OSTIS.  If not, see <http://www.gnu.org/licenses/>.
 #include <QDir>
 #include <QDateTime>
 #include <QDebug>
+#include <QMutex>
+
+extern "C"
+{
+#include "sc_memory.h"
+}
 
 
 sctpStatistic* sctpStatistic::mInstance = 0;
@@ -53,6 +59,10 @@ bool sctpStatistic::initialize(const QString &statDirPath, quint32 updatePeriod)
 {
     mStatPath = statDirPath;
     mStatUpdatePeriod = updatePeriod;
+
+    memset(&mCurrentStat, 0, sizeof(mCurrentStat));
+
+    mMutex = new QMutex(QMutex::Recursive);
 
     // create statistics directory
     if (mStatUpdatePeriod > 0)
@@ -83,12 +93,15 @@ bool sctpStatistic::initialize(const QString &statDirPath, quint32 updatePeriod)
 
 void sctpStatistic::shutdown()
 {
-
+    delete mMutex;
+    mMutex = 0;
 }
 
 
 void sctpStatistic::update()
 {
+    QMutexLocker locker(mMutex);
+
     if (!mStatInitUpdate)
     {
         //! @todo write startup statistics
@@ -127,13 +140,26 @@ void sctpStatistic::update()
             qCritical() << "Can't open statistic file: " <<  statFilePath;
     }
 
-    //! @todo collect information
-    sStatItem item;
+    // collect information
+    mCurrentStat.mTime = dateTime.toMSecsSinceEpoch();
+    sc_stat mem_stat;
+    if (sc_memory_stat(&mem_stat) == SC_RESULT_OK)
+    {
+        mCurrentStat.mArcCount = mem_stat.arc_count;
+        mCurrentStat.mNodeCount = mem_stat.node_count;
+        mCurrentStat.mLinksCount = mem_stat.link_count;
+
+        mCurrentStat.mLiveArcCount = mem_stat.arc_live_count;
+        mCurrentStat.mLiveNodeCount = mem_stat.node_live_count;
+        mCurrentStat.mLiveLinkCount = mem_stat.link_live_count;
+
+        mCurrentStat.mEmptyCount = mem_stat.empty_count;
+    }
 
     // append new information
     if (stat.mItems == 0)
         stat.mItems = new sStatItem[stat.mCount + 1];
-    stat.mItems[stat.mCount] = item;
+    stat.mItems[stat.mCount] = mCurrentStat;
     stat.mCount++;
 
     // save to file
@@ -146,6 +172,21 @@ void sctpStatistic::update()
     }else
         qCritical() << "Can't write statistic file: " << statFilePath;
 
+    memset(&mCurrentStat, 0, sizeof(mCurrentStat));
 
     mStatUpdateTimer->singleShot(mStatUpdatePeriod * 1000, this, SLOT(update()));
+}
+
+void sctpStatistic::clientConnected()
+{
+    QMutexLocker locker(mMutex);
+    mCurrentStat.mConnectionsCount++;
+}
+
+void sctpStatistic::commandProcessed(bool error)
+{
+    QMutexLocker locker(mMutex);
+    mCurrentStat.mCommandsCount++;
+    if (error)
+        mCurrentStat.mCommandErrorsCount++;
 }

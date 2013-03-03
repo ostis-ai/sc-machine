@@ -37,8 +37,6 @@ CONFIG (debug, debug|release) {
 INCLUDEPATH += ../../../sc-memory/src
 
 unix {
-
-    POST_TARGETDEPS += $$DESTDIR/libsc_memory.so
     LIBS += $$DESTDIR/libsc_memory.so
 }
 

@@ -136,8 +136,6 @@ void sctpServer::incomingConnection(int socketDescriptor)
     // store client in clients list
     sctpClient *client = new sctpClient(this);
     client->setSocketDescriptor(socketDescriptor);
-
-    mClientsList.append(client);
 }
 
 void sctpServer::stop()

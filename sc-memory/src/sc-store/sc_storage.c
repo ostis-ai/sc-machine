@@ -552,15 +552,15 @@ sc_result sc_storage_find_links_with_content(const sc_stream *stream, sc_addr **
 }
 
 
-void sc_storage_get_elements_stat(sc_elements_stat *stat)
+sc_result sc_storage_get_elements_stat(sc_stat *stat)
 {
     sc_uint s_idx, e_idx;
     sc_segment *segment;
     sc_type type;
     sc_uint32 delete_stamp;
-    g_assert( stat != (sc_elements_stat*)0 );
+    g_assert( stat != (sc_stat*)0 );
 
-    memset(stat, 0, sizeof(sc_elements_stat));
+    memset(stat, 0, sizeof(sc_stat));
 
     //! TODO: add loading of segment
 
@@ -574,21 +574,35 @@ void sc_storage_get_elements_stat(sc_elements_stat *stat)
             type = segment->elements[e_idx].type;
             delete_stamp = segment->elements[e_idx].delete_time_stamp;
             if (type == 0)
+            {
                 stat->empty_count++;
+            }
             else
+            {
                 if (type & sc_type_node)
                 {
                     stat->node_count++;
-                    if (delete_stamp > 0)
-                        stat->node_deleted++;
+                    if (delete_stamp == 0)
+                        stat->node_live_count++;
                 }
                 else
+                {
                     if (type & sc_type_arc_mask)
                     {
                         stat->arc_count++;
-                        if (delete_stamp > 0)
-                            stat->arc_deleted++;
+                        if (delete_stamp == 0)
+                            stat->arc_live_count++;
+                    }else
+                    {
+                        if (type & sc_type_link)
+                        {
+                            stat->link_count++;
+                            if (delete_stamp == 0)
+                                stat->link_live_count++;
+                        }
                     }
+                }
+            }
         }
     }
 }

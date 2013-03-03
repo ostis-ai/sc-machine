@@ -48,8 +48,6 @@ protected:
     void incomingConnection(int socketDescriptor);
 
 private:
-    //! List of connected clients
-    QList<sctpClient*> mClientsList;
     //! Port number
     quint16 mPort;
     //! Path to repository
@@ -63,7 +61,8 @@ private:
 
 
 signals:
-    
+
+
 public slots:
     void stop();
 

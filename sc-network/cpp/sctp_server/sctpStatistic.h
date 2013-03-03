@@ -27,19 +27,22 @@ along with OSTIS.  If not, see <http://www.gnu.org/licenses/>.
 
 
 class QTimer;
+class QMutex;
 
 //! Structure to store statistic information for on time value
 struct sStatItem
 {
     quint64 mTime; // unix time
-    quint64 mNodeCount; // number of all nodes
-    quint64 mArcCount; // number of all arcs
-    quint64 mLiksCount; // number of all links
-    quint64 mLiveNodeCount; // number of live nodes
-    quint64 mLiveArcCount; // number of live arcs
-    quint64 mLiveLinkCount; // number of live links
-    quint64 mClientsCount;  // number of collected clients
-    quint64 mCommandsCount; // number of processed commands
+    quint64 mNodeCount; // amount of all nodes
+    quint64 mArcCount; // amount of all arcs
+    quint64 mLinksCount; // amount of all links
+    quint64 mLiveNodeCount; // amount of live nodes
+    quint64 mLiveArcCount; // amount of live arcs
+    quint64 mLiveLinkCount; // amount of live links
+    quint64 mEmptyCount; // amount of empty sc-elements
+    quint64 mConnectionsCount;  // amount of collected clients
+    quint64 mCommandsCount; // amount of processed commands (it includes commands with errors)
+    quint64 mCommandErrorsCount; // amount of command, that was processed with error
     bool mIsInitStat;   // flag on initial stat save
 };
 
@@ -83,6 +86,7 @@ public:
     //! Returns pointer to singleton instance
     static sctpStatistic* getInstance();
 
+
 protected:
     //! Path to directory to store statistics information
     QString mStatPath;
@@ -92,6 +96,14 @@ protected:
     QTimer *mStatUpdateTimer;
     //! Flag that determine, if statistics was updated on start
     bool mStatInitUpdate;
+    //! Current statistic info
+    sStatItem mCurrentStat;
+    //! Pointer to synchronization mutex
+    QMutex *mMutex;
+
+public:
+    void clientConnected();
+    void commandProcessed(bool error);
 
 private:
     static sctpStatistic *mInstance;

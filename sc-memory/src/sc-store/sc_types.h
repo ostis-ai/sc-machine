@@ -34,6 +34,9 @@ typedef signed short sc_int16;
 typedef unsigned short sc_uint16;
 typedef signed int sc_int32;
 typedef unsigned int sc_uint32;
+typedef long long sc_int64;
+typedef unsigned long long sc_uint64;
+
 typedef sc_uint32 sc_uint;
 typedef char sc_char;
 typedef unsigned char sc_uchar;
@@ -166,6 +169,20 @@ enum _sc_event_type
     SC_EVENT_CHANGE_LINK_CONTENT
 };
 
+// structure to store statistics info
+struct _sc_stat
+{
+    sc_uint64 node_count; // amount of all sc-nodes stored in memory
+    sc_uint64 arc_count; // amount of all sc-arcs stored in memory
+    sc_uint64 link_count; // amount of all sc-links stored in memory
+
+    sc_uint64 node_live_count; // amount of sc-nodes, that wasn't deleted
+    sc_uint64 arc_live_count; // amount of sc-arcs, that wasn't deleted
+    sc_uint64 link_live_count; // amount of sc-links, that wasn't deleted
+
+    sc_uint64 empty_count; // amount of empty sc-element cells
+};
+
 typedef struct _sc_check_sum sc_check_sum;
 typedef struct _sc_arc  sc_arc;
 typedef struct _sc_content sc_content;
@@ -179,6 +196,7 @@ typedef struct _sc_iterator3 sc_iterator3;
 typedef struct _sc_event sc_event;
 typedef enum _sc_result sc_result;
 typedef enum _sc_event_type sc_event_type;
+typedef struct _sc_stat sc_stat;
 
 
 #endif
