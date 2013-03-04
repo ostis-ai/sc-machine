@@ -62,7 +62,8 @@ bool sctpStatistic::initialize(const QString &statDirPath, quint32 updatePeriod)
 
     memset(&mCurrentStat, 0, sizeof(mCurrentStat));
 
-    mMutex = new QMutex(QMutex::Recursive);
+    mDataMutex = new QMutex(QMutex::Recursive);
+    mFsMutex = new QMutex(QMutex::Recursive);
 
     // create statistics directory
     if (mStatUpdatePeriod > 0)
@@ -93,14 +94,18 @@ bool sctpStatistic::initialize(const QString &statDirPath, quint32 updatePeriod)
 
 void sctpStatistic::shutdown()
 {
-    delete mMutex;
-    mMutex = 0;
+    delete mDataMutex;
+    mDataMutex = 0;
+
+    delete mFsMutex;
+    mFsMutex = 0;
 }
 
 
 void sctpStatistic::update()
 {
-    QMutexLocker locker(mMutex);
+    QMutexLocker dataLocker(mDataMutex);
+    QMutexLocker fsLocker(mFsMutex);
 
     if (!mStatInitUpdate)
     {
@@ -142,6 +147,8 @@ void sctpStatistic::update()
 
     // collect information
     mCurrentStat.mTime = dateTime.toMSecsSinceEpoch();
+    mCurrentStat.mIsInitStat = mStatInitUpdate ? 1 : 0;
+
     sc_stat mem_stat;
     if (sc_memory_stat(&mem_stat) == SC_RESULT_OK)
     {
@@ -177,15 +184,81 @@ void sctpStatistic::update()
     mStatUpdateTimer->singleShot(mStatUpdatePeriod * 1000, this, SLOT(update()));
 }
 
+void sctpStatistic::getStatisticsInTimeRange(quint64 beg_time, quint64 end_time, tStatItemVector &result)
+{
+    QMutexLocker fsLocker(mFsMutex);
+
+    QDateTime begDate, endDate;
+    begDate.setMSecsSinceEpoch(beg_time);
+    endDate.setMSecsSinceEpoch(end_time);
+
+    // collect all statistics files
+    QDir statDir(mStatPath);
+    QStringList statFileNames = statDir.entryList(QDir::Files);
+
+    QDateTime fileDate;
+    QString fileName, statFilePath;
+    foreach (fileName, statFileNames)
+    {
+        // build date from file name
+        QStringList values = fileName.split("_");
+        if (values.size() != 3) continue; //! TODO: error reports
+
+        fileDate.setDate(QDate(values[2].toInt(), values[1].toInt(), values[0].toInt()));
+
+        // check if time in range
+        if (fileDate >= begDate && fileDate <= endDate)
+        {
+            sStat stat;
+            statFilePath = statDir.absoluteFilePath(fileName);
+            // open file and read data from it
+            QFile file(statFilePath);
+            // read exist information in file
+            if (file.open(QFile::ReadOnly))
+            {
+                if (file.read((char*)&stat.mCount, sizeof(stat.mCount)) != sizeof(stat.mCount))
+                    stat.mCount = 0;
+
+                if (stat.mCount > 0)
+                {
+                    int bytesToRead = sizeof(sStatItem) * stat.mCount;
+                    stat.mItems = new sStatItem[stat.mCount];
+                    if (file.read((char*)&stat.mItems[0], bytesToRead) == bytesToRead)
+                    {
+                        // iterate internal data
+                        for (quint32 idx = 0; idx < stat.mCount; idx++)
+                        {
+                            if (stat.mItems[idx].mTime >= beg_time && stat.mItems[idx].mTime <= end_time)
+                            {
+                                result.push_back(stat.mItems[idx]);
+                            }
+                            else
+                            {
+                                if (stat.mItems[idx].mTime > end_time)
+                                    break; // do not process file, because we gone out of range
+                            }
+                        }
+                    }//! TODO report error
+                }
+
+                file.close();
+            }else
+                qCritical() << "Can't open statistic file: " <<  statFilePath;
+        }
+    }
+
+    qSort(result);
+}
+
 void sctpStatistic::clientConnected()
 {
-    QMutexLocker locker(mMutex);
+    QMutexLocker locker(mDataMutex);
     mCurrentStat.mConnectionsCount++;
 }
 
 void sctpStatistic::commandProcessed(bool error)
 {
-    QMutexLocker locker(mMutex);
+    QMutexLocker locker(mDataMutex);
     mCurrentStat.mCommandsCount++;
     if (error)
         mCurrentStat.mCommandErrorsCount++;

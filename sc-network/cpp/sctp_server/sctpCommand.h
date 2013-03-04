@@ -85,6 +85,7 @@ private:
     sctpErrorCode processIterateElements(quint32 cmdFlags, quint32 cmdId, QDataStream *params, QIODevice *outDevice);
 
     sctpErrorCode processFindElementBySysIdtf(quint32 cmdFlags, quint32 cmdId, QDataStream *params, QIODevice *outDevice);
+    sctpErrorCode processStatistics(quint32 cmdFlags, quint32 cmdId, QDataStream *params, QIODevice *outDevice);
 
 signals:
     

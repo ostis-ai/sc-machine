@@ -43,8 +43,15 @@ struct sStatItem
     quint64 mConnectionsCount;  // amount of collected clients
     quint64 mCommandsCount; // amount of processed commands (it includes commands with errors)
     quint64 mCommandErrorsCount; // amount of command, that was processed with error
-    bool mIsInitStat;   // flag on initial stat save
+    quint8 mIsInitStat;   // flag on initial stat save
+
+    bool operator < (const sStatItem &other) const
+    {
+        return mTime < other.mTime;
+    }
 };
+
+typedef QVector<sStatItem> tStatItemVector;
 
 /*! Structure to store statistics
  */
@@ -87,6 +94,15 @@ public:
     static sctpStatistic* getInstance();
 
 
+    /*! Collect statistics information in specified time range
+     * @param beg_time Begin range time
+     * @param end_time End range time
+     * @param result vector, that will be filled with statistics
+     */
+    void getStatisticsInTimeRange(quint64 beg_time, quint64 end_time, tStatItemVector &result);
+
+
+
 protected:
     //! Path to directory to store statistics information
     QString mStatPath;
@@ -98,8 +114,10 @@ protected:
     bool mStatInitUpdate;
     //! Current statistic info
     sStatItem mCurrentStat;
-    //! Pointer to synchronization mutex
-    QMutex *mMutex;
+    //! Pointer to mutex, that used to synchronize data
+    QMutex *mDataMutex;
+    //! Pointer to mutex, that used to synchronize filesystem routines
+    QMutex *mFsMutex;
 
 public:
     void clientConnected();

@@ -14,9 +14,10 @@ typedef enum
     SCTP_CMD_GET_ARC_END        = 0x08, // return end element of sc-arc
     SCTP_CMD_GET_LINK_CONTENT   = 0x09, // return content of sc-link
     SCTP_CMD_FIND_LINKS         = 0x0a, // return sc-links with specified content
-    SCTP_CMD_ITERATE_ELEMENTS   = 0x0b, // return base teamplate iteration result
+    SCTP_CMD_ITERATE_ELEMENTS   = 0x0b, // return base template iteration result
 
     SCTP_CMD_FIND_ELEMENT_BY_SYSITDF = 0xa0, // return sc-element by it system identifier
+    SCTP_CMD_STATISTICS         = 0xa1, // return usage statistics from server
 
     SCTP_CMD_SHUTDOWN           = 0xfe // disconnect client from server
 

@@ -21,6 +21,7 @@ along with OSTIS.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include "sctpCommand.h"
+#include "sctpStatistic.h"
 
 #include <QIODevice>
 #include <QDataStream>
@@ -107,6 +108,9 @@ sctpErrorCode sctpCommand::processCommand(QIODevice *inDevice, QIODevice *outDev
 
     case SCTP_CMD_FIND_ELEMENT_BY_SYSITDF:
         return processFindElementBySysIdtf(cmdFlags, cmdId, &paramsStream, outDevice);
+
+    case SCTP_CMD_STATISTICS:
+        return processStatistics(cmdFlags, cmdId, &paramsStream, outDevice);
 
     case SCTP_CMD_SHUTDOWN:
         QCoreApplication::quit();
@@ -600,6 +604,30 @@ sctpErrorCode sctpCommand::processFindElementBySysIdtf(quint32 cmdFlags, quint32
         writeResultHeader(SCTP_CMD_FIND_ELEMENT_BY_SYSITDF, cmdId, SCTP_RESULT_OK, sizeof(sc_addr), outDevice);
         outDevice->write((const char*)&result, sizeof(sc_addr));
     }
+
+    return SCTP_ERROR_NO;
+}
+
+sctpErrorCode sctpCommand::processStatistics(quint32 cmdFlags, quint32 cmdId, QDataStream *params, QIODevice *outDevice)
+{
+    quint64 begin_time;
+    quint64 end_time;
+
+    Q_UNUSED(cmdFlags);
+
+    Q_ASSERT(params != 0);
+    READ_PARAM(begin_time);
+    READ_PARAM(end_time);
+
+    tStatItemVector stat;
+    sctpStatistic::getInstance()->getStatisticsInTimeRange(begin_time, end_time, stat);
+
+    writeResultHeader(SCTP_CMD_STATISTICS, cmdId, SCTP_RESULT_OK, sizeof(quint32) + sizeof(sStatItem) * stat.size(), outDevice);
+    // write result
+    quint32 res_count = stat.size();
+    outDevice->write((const char*)&res_count, sizeof(res_count));
+    for (quint32 idx = 0; idx < res_count; ++idx)
+        outDevice->write((const char*)&(stat[idx]), sizeof(sStatItem));
 
     return SCTP_ERROR_NO;
 }
