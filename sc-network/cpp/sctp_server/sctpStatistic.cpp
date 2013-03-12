@@ -173,7 +173,7 @@ void sctpStatistic::update()
     if (file.open(QFile::WriteOnly))
     {
         file.write((char*)&stat.mCount, sizeof(stat.mCount));
-        file.write((char*)&stat.mItems, sizeof(sStatItem) * stat.mCount);
+        file.write((char*)stat.mItems, sizeof(sStatItem) * stat.mCount);
 
         file.close();
     }else
@@ -223,7 +223,7 @@ void sctpStatistic::getStatisticsInTimeRange(quint64 beg_time, quint64 end_time,
                 {
                     int bytesToRead = sizeof(sStatItem) * stat.mCount;
                     stat.mItems = new sStatItem[stat.mCount];
-                    if (file.read((char*)&stat.mItems[0], bytesToRead) == bytesToRead)
+                    if (file.read((char*)stat.mItems, bytesToRead) == bytesToRead)
                     {
                         // iterate internal data
                         for (quint32 idx = 0; idx < stat.mCount; idx++)
