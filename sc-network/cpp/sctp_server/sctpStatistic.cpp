@@ -45,6 +45,7 @@ sctpStatistic::sctpStatistic(QObject *parent)
     : QObject(parent)
     , mStatUpdatePeriod(0)
     , mStatUpdateTimer(0)
+    , mStatInitUpdate(true)
 {
     Q_ASSERT(mInstance == 0);
     mInstance = this;
@@ -85,8 +86,8 @@ bool sctpStatistic::initialize(const QString &statDirPath, quint32 updatePeriod)
             }
         }
 
-        update();
         mStatUpdateTimer = new QTimer(this);
+        update();
     }
 
     return true;

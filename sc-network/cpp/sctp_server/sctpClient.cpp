@@ -50,7 +50,7 @@ void sctpClient::setSocketDescriptor(int socketDescriptor)
 
     mSocket->setSocketDescriptor(socketDescriptor);
 
-    qDebug() << "Connected client from address: " << mSocket->peerAddress().toString();
+    //qDebug() << "Connected client from address: " << mSocket->peerAddress().toString();
 
     // collect statistics information about clients
     sctpStatistic::getInstance()->clientConnected();
@@ -62,7 +62,7 @@ void sctpClient::connected()
 
 void sctpClient::disconnected()
 {
-    qDebug() << "Disconnected client with adress: " << mSocket->peerAddress().toString();
+    //qDebug() << "Disconnected client with adress: " << mSocket->peerAddress().toString();
 }
 
 void sctpClient::readyRead()

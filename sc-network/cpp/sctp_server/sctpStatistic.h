@@ -74,7 +74,7 @@ struct sStat
     ~sStat()
     {
         if (mItems)
-            delete mItems;
+            delete []mItems;
     }
 };
 

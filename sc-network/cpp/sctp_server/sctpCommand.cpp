@@ -481,6 +481,8 @@ sctpErrorCode sctpCommand::processIterateElements(quint32 cmdFlags, quint32 cmdI
         if (results_count > 0)
             outDevice->write((const char*)results.constData(), results.size());
 
+        sc_iterator3_free(it);
+
     }else
     {
         // 5-elements iterators
@@ -571,6 +573,8 @@ sctpErrorCode sctpCommand::processIterateElements(quint32 cmdFlags, quint32 cmdI
         outDevice->write((const char*)&results_count, sizeof(results_count));
         if (results_count > 0)
             outDevice->write((const char*)results.constData(), results.size());
+
+        sc_iterator5_free(it);
     }
 
     return SCTP_ERROR_NO;
