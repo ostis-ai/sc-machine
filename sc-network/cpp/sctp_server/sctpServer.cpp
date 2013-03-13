@@ -58,12 +58,6 @@ bool sctpServer::start(const QString &config)
         return false;
     }
 
-    if (mStatUpdatePeriod > 0)
-    {
-        mStatistic = new sctpStatistic(this);
-        mStatistic->initialize(mStatPath, mStatUpdatePeriod);
-    }
-
     QString ipAddress;
     QList<QHostAddress> ipAddressesList = QNetworkInterface::allAddresses();
     // use the first non-localhost IPv4 address
@@ -90,6 +84,12 @@ bool sctpServer::start(const QString &config)
         return false;
     if (sc_memory_initialize_ext(mExtPath.toStdString().c_str()) != SC_TRUE)
         return false;
+
+    if (mStatUpdatePeriod > 0)
+    {
+        mStatistic = new sctpStatistic(this);
+        mStatistic->initialize(mStatPath, mStatUpdatePeriod);
+    }
 
     return true;
 }

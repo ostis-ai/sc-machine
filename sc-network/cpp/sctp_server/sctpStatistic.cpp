@@ -85,8 +85,8 @@ bool sctpStatistic::initialize(const QString &statDirPath, quint32 updatePeriod)
             }
         }
 
-        mStatUpdateTimer = new QTimer(this);
         update();
+        mStatUpdateTimer = new QTimer(this);
     }
 
     return true;
@@ -107,7 +107,7 @@ void sctpStatistic::update()
     QMutexLocker dataLocker(mDataMutex);
     QMutexLocker fsLocker(mFsMutex);
 
-    if (!mStatInitUpdate)
+    if (mStatInitUpdate)
     {
         //! @todo write startup statistics
         mStatInitUpdate = false;
