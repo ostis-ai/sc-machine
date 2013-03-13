@@ -605,6 +605,8 @@ sc_result sc_storage_get_elements_stat(sc_stat *stat)
             }
         }
     }
+
+    return SC_TRUE;
 }
 
 sc_uint sc_storage_get_time_stamp()
