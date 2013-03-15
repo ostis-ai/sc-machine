@@ -372,6 +372,16 @@ sc_result ui_remove_displayed_answer(sc_event *event, sc_addr arg)
         sc_memory_element_free(sc_iterator5_value(it5, 0));
     sc_iterator5_free(it5);
 
+    // remove translation result
+    it5 = sc_iterator5_f_a_a_a_f_new(answer_addr,
+                                     sc_type_arc_common | sc_type_const,
+                                     sc_type_link,
+                                     sc_type_arc_pos_const_perm,
+                                     keynode_nrel_translation);
+    if (sc_iterator5_next(it5) == SC_TRUE)
+        sc_memory_element_free(sc_iterator5_value(it5, 2));
+    sc_iterator5_free(it5);
+
     // find question, and remove all connected information
     it5 = sc_iterator5_a_a_f_a_f_new(sc_type_node | sc_type_const,
                                      sc_type_arc_common | sc_type_const,
@@ -385,6 +395,7 @@ sc_result ui_remove_displayed_answer(sc_event *event, sc_addr arg)
                                             sc_iterator5_value(it5, 0),
                                             sc_type_arc_pos_const_perm,
                                             keynode_nrel_command_result);
+
         if (sc_iterator5_next(it5Res) == SC_TRUE)
         {
             it5Args = sc_iterator5_f_a_a_a_f_new(sc_iterator5_value(it5Res, 0),
@@ -404,6 +415,8 @@ sc_result ui_remove_displayed_answer(sc_event *event, sc_addr arg)
     }
     sc_iterator5_free(it5);
 
+    // now we can remove answer node
+    sc_memory_element_free(answer_addr);
 
     return SC_RESULT_OK;
 }
