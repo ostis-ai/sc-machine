@@ -26,6 +26,7 @@ along with OSTIS.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <QSettings>
 #include <QDebug>
+#include <QThreadPool>
 
 extern "C"
 {
@@ -39,6 +40,7 @@ sctpServer::sctpServer(QObject *parent)
   : QTcpServer(parent)
   , mPort(0)
   , mStatistic(0)
+  , mThreadPool(0)
 {
 }
 
@@ -46,6 +48,9 @@ sctpServer::~sctpServer()
 {
     if (mStatistic)
         delete mStatistic;
+
+    if (mThreadPool)
+        delete mThreadPool;
 }
 
 bool sctpServer::start(const QString &config)
@@ -91,6 +96,8 @@ bool sctpServer::start(const QString &config)
         mStatistic->initialize(mStatPath, mStatUpdatePeriod);
     }
 
+    mThreadPool = new QThreadPool(this);
+
     return true;
 }
 
@@ -133,9 +140,9 @@ void sctpServer::parseConfig(const QString &config_path)
 
 void sctpServer::incomingConnection(int socketDescriptor)
 {
-    // store client in clients list
-    sctpClient *client = new sctpClient(this);
-    client->setSocketDescriptor(socketDescriptor);
+    sctpClient *client = new sctpClient(socketDescriptor);
+    client->setAutoDelete(true);
+    mThreadPool->start(client);
 }
 
 void sctpServer::stop()

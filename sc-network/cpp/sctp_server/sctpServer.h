@@ -29,6 +29,8 @@ along with OSTIS.  If not, see <http://www.gnu.org/licenses/>.
 class sctpClient;
 class sctpStatistic;
 
+class QThreadPool;
+
 class sctpServer : public QTcpServer
 {
     Q_OBJECT
@@ -58,6 +60,9 @@ private:
     QString mStatPath;
     quint32 mStatUpdatePeriod;
     sctpStatistic *mStatistic;
+
+    //! Worker threads pool
+    QThreadPool *mThreadPool;
 
 
 signals:

@@ -24,34 +24,30 @@ along with OSTIS.  If not, see <http://www.gnu.org/licenses/>.
 #define CLIENTTHREAD_H
 
 #include <QObject>
+#include <QRunnable>
 
 
 class QTcpSocket;
 class sctpCommand;
 
-class sctpClient : public QObject
+class sctpClient : public QRunnable
 {
-    Q_OBJECT
 public:
-    explicit sctpClient(QObject *parent = 0);
+    explicit sctpClient(int socketDescriptor);
     virtual ~sctpClient();
 
-    //! Setup client socket descriptor
-    void setSocketDescriptor(int socketDescriptor);
+    void run();
 
-signals:
-
-    
-public slots:
-    void connected();
-    void disconnected();
-    void readyRead();
+protected:
+    void processCommands();
 
 private:
     //! Pointer to client socket
     QTcpSocket *mSocket;
     //! Pointer to command processing class
     sctpCommand *mCommand;
+
+    int mSocketDescriptor;
     
 };
 

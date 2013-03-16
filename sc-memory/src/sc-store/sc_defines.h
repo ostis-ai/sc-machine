@@ -46,6 +46,6 @@ along with OSTIS.  If not, see <http://www.gnu.org/licenses/>.
 #define MAX_PATH_LENGTH 1024
 
 // flag to support internal threading
-#define SC_INTERNAL_THREADS_SUPPORT 0
+#define SC_INTERNAL_THREADS_SUPPORT 1
 
 #endif
