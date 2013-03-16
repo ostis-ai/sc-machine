@@ -23,6 +23,15 @@ along with OSTIS.  If not, see <http://www.gnu.org/licenses/>.
 #include <glib.h>
 #include "sc_event.h"
 
+#if SC_INTERNAL_THREADS_SUPPORT
+    GStaticMutex events_table_mutex = G_STATIC_MUTEX_INIT;
+    #define EVENTS_TABLE_LOCK g_static_mutex_lock(&events_table_mutex);
+    #define EVENTS_TABLE_UNLOCK g_static_mutex_unlock(&events_table_mutex);
+#else
+    #define EVENTS_TABLE_LOCK
+    #define EVENTS_TABLE_UNLOCK
+#endif
+
 // Pointer to hash table that contains events
 GHashTable *events_table = 0;
 
@@ -44,6 +53,8 @@ sc_result insert_event_into_table(sc_event *event)
 {
     GSList *element_events_list = 0;
 
+    EVENTS_TABLE_LOCK
+
     // first of all, if table doesn't exist, then create it
     if (events_table == nullptr)
         events_table = g_hash_table_new(events_table_hash_func, events_table_equal_func);
@@ -52,6 +63,8 @@ sc_result insert_event_into_table(sc_event *event)
     element_events_list = (GSList*)g_hash_table_lookup(events_table, (gconstpointer)&event->element);
     element_events_list = g_slist_append(element_events_list, (gpointer)event);
     g_hash_table_insert(events_table, (gpointer)&event->element, (gpointer)element_events_list);
+
+    EVENTS_TABLE_UNLOCK
 
     return SC_RESULT_OK;
 }
@@ -62,9 +75,14 @@ sc_result remove_event_from_table(sc_event *event)
     GSList *element_events_list = 0;
     g_assert(events_table != nullptr);
 
+    EVENTS_TABLE_LOCK
+
     element_events_list = (GSList*)g_hash_table_lookup(events_table, (gconstpointer)&event->element);
     if (element_events_list == nullptr)
+    {
+        EVENTS_TABLE_UNLOCK
         return SC_RESULT_ERROR_INVALID_PARAMS;
+    }
 
     // remove event from list of events for specified sc-element
     element_events_list = g_slist_remove(element_events_list, (gconstpointer)event);
@@ -79,6 +97,8 @@ sc_result remove_event_from_table(sc_event *event)
         g_hash_table_destroy(events_table);
         events_table = nullptr;
     }
+
+    EVENTS_TABLE_UNLOCK
 
     return SC_RESULT_OK;
 }
