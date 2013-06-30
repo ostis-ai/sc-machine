@@ -66,6 +66,12 @@ protected:
      */
     String translateArc(sScElementInfo *arcInfo, bool isBackward);
 
+    //! Check if specified sc-element is set
+    bool isSet(sc_addr element) const;
+
+    //! Check if specified sc-element included in output construction
+    bool isInOutputConstruction(sc_addr addr) const;
+
     //! Check if specified sc-element is translated
     bool isTranslated(sc_addr element) const;
 

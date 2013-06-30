@@ -390,10 +390,10 @@ sc_result ui_remove_displayed_answer(sc_event *event, sc_addr arg)
                                      keynode_question_nrel_answer);
     if (sc_iterator5_next(it5) == SC_TRUE)
     {
-        it5Res = sc_iterator5_a_a_f_a_f_new(sc_type_node | sc_type_const,
-                                            sc_type_arc_common | sc_type_const,
+        it5Res = sc_iterator5_a_a_f_a_f_new(0,
+                                            0,
                                             sc_iterator5_value(it5, 0),
-                                            sc_type_arc_pos_const_perm,
+                                            0,
                                             keynode_nrel_command_result);
 
         if (sc_iterator5_next(it5Res) == SC_TRUE)

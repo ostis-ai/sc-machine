@@ -25,6 +25,7 @@ along with OSTIS.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "uiTranslators.h"
 #include "uiKeynodes.h"
+#include "qdebug.h"
 
 uiSc2SCnJsonTranslator::uiSc2SCnJsonTranslator()
     : mScElementsInfoPool(0)
@@ -73,11 +74,11 @@ void uiSc2SCnJsonTranslator::runImpl()
     // @todo check if there are some nodes, that not translated
 
     mOutputData += "]";
+    qDebug() << "Result: " << QString().fromStdString(mOutputData);
 }
 
 String uiSc2SCnJsonTranslator::translateElement(sc_addr addr, bool isKeyword)
 {
-    tStringStringMap attrs;
     String result = "";
 
     mTranslatedAddrsList.push_back(addr);
@@ -86,38 +87,59 @@ String uiSc2SCnJsonTranslator::translateElement(sc_addr addr, bool isKeyword)
     result += "\"id\": \"" + buildId(addr) + "\",";
     result += "\"keyword\": ";
     result += isKeyword ? "true" : "false";
-    result += ", \"SCArcs\" : [";
+
+    if (!isKeyword && isSet(addr))
+    {
+        result += ", \"set\": ";
+        result += "true";
+    }
 
     sScElementInfo *elInfo = mScElementsInfo[addr];
-    sScElementInfo *arcInfo = 0;
-    // iterate input arcs
-    bool first = true;
-    tScAddrList::const_iterator it, itEnd = elInfo->input_arcs.end();
-    for (it = elInfo->input_arcs.begin(); it != itEnd; ++it)
+
+    if (!elInfo->input_arcs.empty() || !elInfo->output_arcs.empty())
     {
-        arcInfo = mScElementsInfo[*it];
-        if (/*isTranslated(arcInfo->beg_addr) || */isTranslated(arcInfo->addr) || SC_ADDR_IS_EQUAL(arcInfo->beg_addr, mKeywordAddr))
-            continue;
+        String arcsTranslationResult = "";
+        arcsTranslationResult += ", \"SCArcs\" : [";
 
-        if (!first)
-            result += ",";
-        result += translateArc(arcInfo, true);
-        first = false;
+        sScElementInfo *arcInfo = 0;
+
+        // iterate input arcs
+        bool first = true;
+
+        tScAddrList::const_iterator it, itEnd = elInfo->input_arcs.end();
+        for (it = elInfo->input_arcs.begin(); it != itEnd; ++it)
+        {
+            arcInfo = mScElementsInfo[*it];
+            if (/*isTranslated(arcInfo->beg_addr) || */isTranslated(arcInfo->addr) || SC_ADDR_IS_EQUAL(arcInfo->beg_addr, mKeywordAddr))
+                continue;
+
+            if (!first)
+                arcsTranslationResult += ",";
+            arcsTranslationResult += translateArc(arcInfo, true);
+            first = false;
+        }
+
+        itEnd = elInfo->output_arcs.end();
+        for (it = elInfo->output_arcs.begin(); it != itEnd; ++it)
+        {
+            arcInfo = mScElementsInfo[*it];
+            if (/*isTranslated(arcInfo->end_addr) || */isTranslated(arcInfo->addr) || SC_ADDR_IS_EQUAL(arcInfo->end_addr, mKeywordAddr))
+                continue;
+
+            if (!first)
+                arcsTranslationResult += ",";
+            arcsTranslationResult += translateArc(arcInfo, false);
+            first = false;
+        }
+
+        arcsTranslationResult += "],";
+        result += !first ? arcsTranslationResult : ",";
     }
-    itEnd = elInfo->output_arcs.end();
-    for (it = elInfo->output_arcs.begin(); it != itEnd; ++it)
+    else
     {
-        arcInfo = mScElementsInfo[*it];
-        if (/*isTranslated(arcInfo->end_addr) || */isTranslated(arcInfo->addr) || SC_ADDR_IS_EQUAL(arcInfo->end_addr, mKeywordAddr))
-            continue;
-
-        if (!first)
-            result += ",";
-        result += translateArc(arcInfo, false);
-        first = false;
+        result += ",";
     }
 
-    result += "],";
     StringStream ss;
     ss << elInfo->type;
     result += "\"type\":" + ss.str();
@@ -174,6 +196,48 @@ String uiSc2SCnJsonTranslator::translateArc(sScElementInfo *arcInfo, bool isBack
     result += ",\"SCNode\":" + translateElement(elAddr, false);
     result += "}";
 
+    return result;
+}
+
+bool uiSc2SCnJsonTranslator::isSet(sc_addr addr) const
+{
+    int arcsNumber = 0;
+
+    sc_iterator3 *it3 = sc_iterator3_f_a_a_new(addr, 0, 0);
+
+    while(sc_iterator3_next(it3) == SC_TRUE)
+    {
+        sc_type arcType = 0;
+        sc_addr arcAddr = sc_iterator3_value(it3, 1);
+
+        if (!(isInOutputConstruction(arcAddr) && isInOutputConstruction(sc_iterator3_value(it3, 2))))
+        {
+            sc_iterator3_free(it3);
+            return false;
+        }
+
+        //TODO: add error logging
+        if (sc_memory_get_element_type(arcAddr, &arcType) != SC_RESULT_OK)
+            continue;
+
+        if (!(arcType & sc_type_arc_pos_const_perm))
+        {
+            sc_iterator3_free(it3);
+            return false;
+        }
+        arcsNumber++;
+    }
+    sc_iterator3_free(it3);
+    return arcsNumber > 1;
+}
+
+bool uiSc2SCnJsonTranslator::isInOutputConstruction(sc_addr addr) const
+{
+    sc_iterator3 *it3 = sc_iterator3_f_a_f_new(mInputConstructionAddr,
+                                               sc_type_arc_pos_const_perm,
+                                               addr);
+    bool result = (sc_iterator3_next(it3) == SC_TRUE);
+    sc_iterator3_free(it3);
     return result;
 }
 

@@ -617,8 +617,8 @@ int main(int argc, char *argv[])
 
     //test7();
     //test8();
-    test3();
-    item = 0;
+    //test3();
+    //item = 0;
 
     while (item != 0)
     {

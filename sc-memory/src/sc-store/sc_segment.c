@@ -45,11 +45,19 @@ sc_segment* sc_segment_new(sc_addr_seg num)
 #endif
     segment->num = num;
 
+#if SC_INTERNAL_THREADS_SUPPORT
+    g_rw_lock_init(&segment->rw_lock);
+#endif
+
     return segment;
 }
 
 void sc_segment_free(sc_segment *segment)
 {
+#if SC_INTERNAL_THREADS_SUPPORT
+    g_rw_lock_clear(&segment->rw_lock);
+#endif
+
     g_assert( segment != 0);
 
     g_free(segment);
@@ -100,6 +108,41 @@ void sc_segment_remove_element(sc_segment *segment,
     g_assert( el_id < SEGMENT_SIZE );
     segment->elements[el_id].type = 0;
 }
+
+
+void sc_segment_write_lock(sc_segment *segment)
+{
+    g_assert(segment != nullptr);
+#if SC_INTERNAL_THREADS_SUPPORT
+    g_rw_lock_writer_lock(&segment->rw_lock);
+#endif
+}
+
+void sc_segment_write_unlock(sc_segment *segment)
+{
+    g_assert(segment != nullptr);
+#if SC_INTERNAL_THREADS_SUPPORT
+    g_rw_lock_writer_unlock(&segment->rw_lock);
+#endif
+}
+
+void sc_segment_read_lock(sc_segment *segment)
+{
+    g_assert(segment != nullptr);
+#if SC_INTERNAL_THREADS_SUPPORT
+    g_rw_lock_reader_lock(&segment->rw_lock);
+#endif
+
+}
+
+void sc_segment_read_unlock(sc_segment *segment)
+{
+    g_assert(segment != nullptr);
+#if SC_INTERNAL_THREADS_SUPPORT
+    g_rw_lock_reader_unlock(&segment->rw_lock);
+#endif
+}
+
 
 void sc_segment_update_empty_slot(sc_segment *segment)
 {

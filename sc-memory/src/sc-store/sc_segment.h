@@ -27,6 +27,8 @@ along with OSTIS.  If not, see <http://www.gnu.org/licenses/>.
 #include "sc_defines.h"
 #include "sc_element.h"
 
+#include <glib.h>
+
 /*! Structure for segment storing
  */
 //typedef struct _sc_array sc_array;
@@ -41,6 +43,10 @@ struct _sc_segment
     sc_uint empty_slot; // index empty slot in segment
 #endif
     sc_addr_seg num; // number of this segment in memory
+
+#if SC_INTERNAL_THREADS_SUPPORT
+    GRWLock rw_lock;
+#endif
 };
 
 /*! Create new segment with specified size.
@@ -92,6 +98,35 @@ sc_bool sc_segment_has_empty_slot(sc_segment *segment);
 
 //! Update information in segment about first empty slot
 void sc_segment_update_empty_slot(sc_segment *segment);
+
+/*! Locks segment for a writing
+ * @param segment Pointer to segment for locking
+ * @note Just one thread can change segment
+ * @see sc_segment_write_unlock
+ */
+void sc_segment_write_lock(sc_segment *segment);
+
+/*! Unlocks segment from writing lock
+ * @param segment Pointer to segment for unlocking
+ * @see sc_segment_write_lock
+ */
+void sc_segment_write_unlock(sc_segment *segment);
+
+/*! Locks segment for a reading
+ * @param segment Pointer to segment for locking
+ * @note Many threads can lock segment for reading and
+ * all of them wouldn't blocked if segment isn't locked for
+ * writing
+ * @see sc_segment_read_unlock
+ */
+void sc_segment_read_lock(sc_segment *segment);
+
+/*! Unlocks segment from reading lock
+ * @param segment Pointer to segment for unlocking
+ * @see sc_segment_read_lock
+ */
+void sc_segment_read_unlock(sc_segment *segment);
+
 
 #if USE_SEGMENT_EMPTY_SLOT_BUFFER
 void sc_segment_update_empty_slot_buffer(sc_segment *segment);
