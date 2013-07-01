@@ -536,6 +536,10 @@ sc_result sc_storage_get_link_content(sc_addr addr, sc_stream **stream)
 
     // prepare checksum
     checksum.len = el->content.len;
+
+    if (checksum.len == 0)
+        return SC_RESULT_ERROR;
+
     memcpy(checksum.data, el->content.data, checksum.len);
 
     return sc_fs_storage_get_checksum_content(&checksum, stream);
