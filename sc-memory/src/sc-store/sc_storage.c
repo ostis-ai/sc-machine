@@ -42,69 +42,51 @@ sc_uint16 segments_num = 0;
 sc_uint32 stored_elements_count = 0;
 
 sc_uint seg_id = 0;
-sc_uint seg_queue[SEGS_QUEUE_SIZE];
-gint seg_queue_heap = -1;
+sc_int32 seg_cache[SEGMENT_CACHE_SIZE];  // cache of segments, that has empty slots
+
 sc_uint storage_time_stamp = 1;
 sc_bool is_initialized = SC_FALSE;
 
-#if SC_INTERNAL_THREADS_SUPPORT
-    GStaticMutex seg_queue_mutex = G_STATIC_MUTEX_INIT;
-    #define LOCK_SEG_QUEUE g_static_mutex_lock(&seg_queue_mutex);
-    #define UNLOCK_SEG_QUEUE g_static_mutex_unlock(&seg_queue_mutex);
-#else
-    #define LOCK_SEG_QUEUE
-    #define UNLOCK_SEG_QUEUE
-#endif
 
-
-// ----------------------------------- SEGMENTS QUEUE --------------------------
-sc_bool _sc_storage_get_segment_from_queue(sc_addr_seg *seg)
+// ----------------------------------- SEGMENTS cache --------------------------
+void _sc_storage_segment_cache_init()
 {
-    sc_bool res = SC_FALSE;
+    memset(seg_cache, -1, sizeof(sc_int32) * SEGMENT_CACHE_SIZE);
+}
+
+void _sc_storage_segment_cache_destroy()
+{
+
+}
+
+sc_bool _sc_storage_get_segment_from_cache(sc_addr_seg *seg)
+{
+    sc_uint32 i = 0;
     sc_segment *segment = 0;
+    sc_addr_seg tmp_seg = 0;
 
-    LOCK_SEG_QUEUE;
-
-    if (seg_queue_heap > -1)
+    for (i = 0; i < SEGMENT_CACHE_SIZE; ++i)
     {
-        *seg = seg_queue[seg_queue_heap];
-        segment = sc_storage_get_segment(*seg, SC_TRUE);
-        g_assert( segment != 0 );
-
-        if (sc_segment_has_empty_slot(segment) == SC_TRUE)
-            res = SC_TRUE;
-        else
-            seg_queue_heap--;
+        if (seg_cache[i] != -1)
+        {
+            tmp_seg = seg_cache[i];
+            segment = sc_storage_get_segment(tmp_seg, SC_TRUE);
+            if (sc_segment_has_empty_slot(segment) == SC_TRUE)
+            {
+                *seg = tmp_seg;
+                return SC_TRUE;
+            }
+        }
     }
 
-    UNLOCK_SEG_QUEUE;
-
-    return res;
+    return SC_FALSE;
 }
 
-void _sc_storage_append_segment_to_queue(sc_addr_seg seg)
+void _sc_storage_append_segment_to_cache(sc_addr_seg seg)
 {
-    LOCK_SEG_QUEUE;
-    if (seg_queue_heap < (SEGS_QUEUE_SIZE - 1))
-        seg_queue[++seg_queue_heap] = seg;
-
-    UNLOCK_SEG_QUEUE;
+    seg_cache[seg % SEGMENT_CACHE_SIZE] = seg;
 }
 
-void _sc_storage_update_segment_queue_impl(gpointer data,
-                                           gpointer user_data)
-{
-    //! TODO: make synhronization on case, when segment removed, or unloaded
-//    sc_segment *segment;
-//    sc_addr_seg idx = 0;
-//    while ( (seg_queue_heap <= SEGS_QUEUE_SIZE) && (idx < segments->len) )
-//    {
-//        segment = sc_storage_get_segment(idx, SC_TRUE);
-//        g_assert( segment != (sc_segment*)0 );
-//        if (sc_segment_have_empty_slot(segment) == SC_TRUE)
-//            _sc_storage_append_segment_to_queue(idx);
-//    }
-}
 
 // -----------------------------------------------------------------------------
 
@@ -136,7 +118,7 @@ void sc_storage_update_segments()
         element_free_count = sc_segment_free_garbage(seg, oldest_time_stamp);
 
         if (elements_count < SEGMENT_SIZE || element_free_count > 0)
-            _sc_storage_append_segment_to_queue(idx);
+            _sc_storage_append_segment_to_cache(idx);
     }
 }
 
@@ -149,18 +131,13 @@ sc_bool sc_storage_initialize(const char *path)
     g_assert( !is_initialized );
 
     segments = g_new0(sc_segment*, SC_ADDR_SEG_MAX);
+    _sc_storage_segment_cache_init();
 
     sc_fs_storage_initialize(path);
     sc_fs_storage_read_from_path(segments, &segments_num);
 
     storage_time_stamp = 1;
 
-    /*  seg_queue_update_pool = g_thread_pool_new(_sc_storage_update_segment_queue_impl,
-                        (gpointer)0,
-                        SEG_QUEUE_UPDATE_THREADS_MAX,
-                        SC_FALSE,
-                        (GError**)0);
-  */
     is_initialized = SC_TRUE;
     sc_storage_update_segments();
 
@@ -172,10 +149,6 @@ void sc_storage_shutdown()
     sc_uint idx = 0;
     g_assert( segments != (sc_segment**)0 );
 
-    /*g_thread_pool_free( seg_queue_update_pool,
-              SC_TRUE, SC_FALSE);
-  seg_queue_update_pool = (GThreadPool*)0;
-  */
     sc_fs_storage_shutdown(segments);
 
     for (idx = 0; idx < SC_ADDR_SEG_MAX; idx++)
@@ -183,6 +156,8 @@ void sc_storage_shutdown()
         if (segments[idx] == nullptr) continue; // skip segments, that are not loaded
         g_free(segments[idx]);
     }
+
+    _sc_storage_segment_cache_destroy();
 
     g_free(segments);
     segments = (sc_segment**)0;
@@ -255,7 +230,7 @@ sc_element* sc_storage_append_el_into_segments(sc_element *element, sc_addr *add
     if (segments_num >= sc_config_get_max_loaded_segments())
         sc_storage_update_segments();
 
-    if (_sc_storage_get_segment_from_queue(&addr->seg) == SC_TRUE)
+    if (_sc_storage_get_segment_from_cache(&addr->seg) == SC_TRUE)
     {
         segment = sc_storage_get_segment(addr->seg, SC_TRUE);
         return sc_segment_append_element(segment, element, &addr->offset);
@@ -270,7 +245,7 @@ sc_element* sc_storage_append_el_into_segments(sc_element *element, sc_addr *add
     addr->seg = segments_num;
     segments[segments_num++] = segment;
 
-    _sc_storage_append_segment_to_queue(addr->seg);
+    _sc_storage_append_segment_to_cache(addr->seg);
 
     return sc_segment_append_element(segment, element, &addr->offset);
 }

@@ -30,7 +30,7 @@ along with OSTIS.  If not, see <http://www.gnu.org/licenses/>.
 #define BOUND_EMPTY_SLOT_SEARCH 0
 
 //! Use empty slots buffering for segment
-#define USE_SEGMENT_EMPTY_SLOT_BUFFER 0
+#define USE_SEGMENT_EMPTY_SLOT_BUFFER 0 // not fast
 
 //! Enable network scaling
 #define USE_NETWORK_SCALE 0
@@ -42,7 +42,7 @@ along with OSTIS.  If not, see <http://www.gnu.org/licenses/>.
 #define SEGMENT_EMPTY_BUFFER_SIZE 2048 // number of empty slot buffer for segment
 #define SEGMENT_EMPTY_MAX_UPDATE_THREADS 8 // number of maximum threads to update empty slots
 
-#define SEGS_QUEUE_SIZE 24
+#define SEGMENT_CACHE_SIZE      8  // size of segments cache (segments with empty slots)
 #define MAX_PATH_LENGTH 1024
 
 // flag to support internal threading
