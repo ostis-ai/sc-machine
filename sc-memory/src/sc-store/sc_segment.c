@@ -234,7 +234,7 @@ sc_uint32 sc_segment_free_garbage(sc_segment *seg, sc_uint32 oldest_time_stamp)
     sc_uint32 idx = 0;
     //sc_uint32 newest_time_stamp = sc_storage_get_time_stamp();
 #if USE_TWO_ORIENTED_ARC_LIST
-    sc_element *el = 0, *el2 = 0, *el_arc = 0, *next_el_arc = 0, *prev_el_arc = 0;
+    sc_element *el = 0, *el2 = 0, *el_arc = 0, *next_el_arc = 0, *prev_el_arc = 0, *b_el = 0, *e_el = 0;
     sc_addr prev_arc, next_arc;
     sc_addr self_addr;
 #else
@@ -275,6 +275,29 @@ sc_uint32 sc_segment_free_garbage(sc_segment *seg, sc_uint32 oldest_time_stamp)
                     next_el_arc = sc_storage_get_element(next_arc, SC_TRUE);
                     next_el_arc->arc.prev_out_arc = prev_arc;
                 }
+
+                b_el = sc_storage_get_element(el->arc.begin, SC_TRUE);
+                if (SC_ADDR_IS_EQUAL(self_addr, b_el->first_out_arc))
+                    b_el->first_out_arc = next_arc;
+
+                prev_arc = el->arc.prev_in_arc;
+                next_arc = el->arc.next_in_arc;
+
+                if (SC_ADDR_IS_NOT_EMPTY(prev_arc))
+                {
+                    prev_el_arc = sc_storage_get_element(prev_arc, SC_TRUE);
+                    prev_el_arc->arc.next_in_arc = next_arc;
+                }
+
+                if (SC_ADDR_IS_NOT_EMPTY(next_arc))
+                {
+                    next_el_arc = sc_storage_get_element(next_arc, SC_TRUE);
+                    next_el_arc->arc.prev_in_arc = prev_arc;
+                }
+
+                e_el = sc_storage_get_element(el->arc.end, SC_TRUE);
+                if (SC_ADDR_IS_EQUAL(self_addr, b_el->first_in_arc))
+                    e_el->first_in_arc = next_arc;
 #else
                 SC_ADDR_MAKE_EMPTY(prev_arc);
                 // output list
@@ -312,7 +335,6 @@ sc_uint32 sc_segment_free_garbage(sc_segment *seg, sc_uint32 oldest_time_stamp)
 #endif
             }
 
-            el->type = 0;
             free_count ++;
         }
 

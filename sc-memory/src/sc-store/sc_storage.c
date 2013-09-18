@@ -278,8 +278,8 @@ sc_result sc_storage_element_free(sc_addr addr)
     if (sc_storage_is_element(addr) == SC_FALSE)
         return SC_RESULT_ERROR;
 
-    if (sc_iterator_has_any_timestamp())
-        storage_time_stamp++;
+//    if (sc_iterator_has_any_timestamp())
+//        storage_time_stamp++;
 
     remove_list = g_slist_append(remove_list, GUINT_TO_POINTER(SC_ADDR_LOCAL_TO_INT(addr)));
 
@@ -336,6 +336,8 @@ sc_result sc_storage_element_free(sc_addr addr)
         // clean temp addr
         SC_ADDR_MAKE_EMPTY(_addr);
     }
+
+    storage_time_stamp++;
 
     return SC_RESULT_OK;
 }
