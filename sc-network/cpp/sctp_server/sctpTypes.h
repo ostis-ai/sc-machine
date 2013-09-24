@@ -14,10 +14,12 @@ typedef enum
     SCTP_CMD_GET_ARC_END        = 0x08, // return end element of sc-arc
     SCTP_CMD_GET_LINK_CONTENT   = 0x09, // return content of sc-link
     SCTP_CMD_FIND_LINKS         = 0x0a, // return sc-links with specified content
-    SCTP_CMD_ITERATE_ELEMENTS   = 0x0b, // return base template iteration result
+    SCTP_CMD_SET_LINK_CONTENT   = 0x0b, // setup new content for the link
+    SCTP_CMD_ITERATE_ELEMENTS   = 0x0c, // return base template iteration result
 
     SCTP_CMD_FIND_ELEMENT_BY_SYSITDF = 0xa0, // return sc-element by it system identifier
-    SCTP_CMD_STATISTICS         = 0xa1, // return usage statistics from server
+    SCTP_CMD_SET_SYSIDTF        = 0xa1,   // setup new system identifier for sc-element
+    SCTP_CMD_STATISTICS         = 0xa2, // return usage statistics from server
 
     SCTP_CMD_SHUTDOWN           = 0xfe // disconnect client from server
 
@@ -51,7 +53,7 @@ typedef enum
 //! Command processing result codes
 typedef enum
 {
-    SCTP_ERROR_NO = 0,                      // No any errors, command processed
+    SCTP_NO_ERROR = 0,                      // No any errors, command processed
     SCTP_ERROR,                             // There are any errors while processing command
     SCTP_ERROR_UNKNOWN_CMD,                 // Unknown command code
     SCTP_ERROR_CMD_READ_PARAMS,             // Error while read command parameters

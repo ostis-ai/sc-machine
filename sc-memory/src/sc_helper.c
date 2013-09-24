@@ -185,7 +185,7 @@ sc_result sc_helper_set_system_identifier(sc_addr addr, sc_char* data, sc_uint32
     SC_ADDR_MAKE_EMPTY(idtf_addr)
     g_assert(sc_keynodes != 0);
 
-    // try to find sc-links with that contains system identifier value
+    // check if specified system identifier already used
     stream = sc_stream_memory_new(data, sizeof(sc_char) * len, SC_STREAM_READ, SC_FALSE);
     if (sc_memory_find_links_with_content(stream, &results, &results_count) == SC_RESULT_OK)
     {
@@ -198,8 +198,6 @@ sc_result sc_helper_set_system_identifier(sc_addr addr, sc_char* data, sc_uint32
                                             sc_keynodes[SC_KEYNODE_NREL_SYSTEM_IDENTIFIER]);
             if (sc_iterator5_next(it5))
             {
-                idtf_addr = results[i];
-
                 // don't foget to free allocated memory before return error
                 sc_iterator5_free(it5);
                 sc_stream_free(stream);
@@ -213,33 +211,19 @@ sc_result sc_helper_set_system_identifier(sc_addr addr, sc_char* data, sc_uint32
         g_free(results);
     }
 
-    // if there are no sc-link that contains identifier, then create it
-    if (SC_ADDR_IS_EMPTY(idtf_addr))
+    // if there are no elements with specified system identitifier, then we can use it
+    idtf_addr = sc_memory_link_new();
+    if (sc_memory_set_link_content(idtf_addr, stream) != SC_RESULT_OK)
     {
-        idtf_addr = sc_memory_link_new();
-        if (sc_memory_set_link_content(idtf_addr, stream) != SC_RESULT_OK)
-        {
-            sc_stream_free(stream);
-            return SC_RESULT_ERROR;
-        }
+        sc_stream_free(stream);
+        return SC_RESULT_ERROR;
     }
 
     // we doesn't need link data anymore
     sc_stream_free(stream);
 
-    // first of all try to find if specified identifier is already used
-    it5 = sc_iterator5_f_a_a_a_f_new(addr,
-                                     0,
-                                     sc_type_link,
-                                     sc_type_arc_pos_const_perm,
-                                     sc_keynodes[SC_KEYNODE_NREL_SYSTEM_IDENTIFIER]);
-
-    // if specified sc-element already have system identifier, then change it
-    if (sc_iterator5_next(it5) == SC_TRUE)
-        sc_memory_element_free(sc_iterator5_value(it5, 1));
-
     // setup new system identifier
-    arc_addr = sc_memory_arc_new(sc_type_arc_common, addr, idtf_addr);
+    arc_addr = sc_memory_arc_new(sc_type_arc_common | sc_type_const, addr, idtf_addr);
     if (SC_ADDR_IS_EMPTY(arc_addr))
         return SC_RESULT_ERROR;
 
