@@ -25,6 +25,8 @@ along with OSTIS.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "uiTranslators.h"
 #include "uiKeynodes.h"
+#include "uiUtils.h"
+
 #include "qdebug.h"
 
 uiSc2SCnJsonTranslator::uiSc2SCnJsonTranslator()
@@ -310,6 +312,9 @@ sc_result uiSc2SCnJsonTranslator::ui_translate_sc2scn(sc_event *event, sc_addr a
     sc_addr cmd_addr, input_addr, format_addr;
 
     if (sc_memory_get_arc_end(arg, &cmd_addr) != SC_RESULT_OK)
+        return SC_RESULT_ERROR;
+
+    if (ui_check_cmd_type(cmd_addr, keynode_command_translate_from_sc) != SC_RESULT_OK)
         return SC_RESULT_ERROR;
 
     if (ui_translate_command_resolve_arguments(cmd_addr, &format_addr, &input_addr) != SC_RESULT_OK)

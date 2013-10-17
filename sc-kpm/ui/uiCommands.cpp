@@ -424,17 +424,17 @@ sc_result ui_remove_displayed_answer(sc_event *event, sc_addr arg)
 // -------------------- Module ----------------------
 sc_result ui_initialize_commands()
 {
-    event_ui_start_answer_translation = sc_event_new(keynode_question_finished, SC_EVENT_ADD_OUTPUT_ARC, 0, ui_start_answer_translation, 0);
+    /*event_ui_start_answer_translation = sc_event_new(keynode_question_finished, SC_EVENT_ADD_OUTPUT_ARC, 0, ui_start_answer_translation, 0);
     if (event_ui_start_answer_translation == nullptr)
-        return SC_RESULT_ERROR;
+        return SC_RESULT_ERROR;*/
 
     event_ui_command_generate_instance = sc_event_new(keynode_command_initiated, SC_EVENT_ADD_OUTPUT_ARC, 0, ui_command_generate_instance, 0);
     if (event_ui_command_generate_instance == nullptr)
         return SC_RESULT_ERROR;
 
-    event_ui_remove_displayed_answer = sc_event_new(keynode_displayed_answer, SC_EVENT_ADD_OUTPUT_ARC, 0, ui_remove_displayed_answer, 0);
+    /*event_ui_remove_displayed_answer = sc_event_new(keynode_displayed_answer, SC_EVENT_ADD_OUTPUT_ARC, 0, ui_remove_displayed_answer, 0);
     if (event_ui_remove_displayed_answer == nullptr)
-        return SC_RESULT_ERROR;
+        return SC_RESULT_ERROR;*/
 
     return SC_RESULT_OK;
 }

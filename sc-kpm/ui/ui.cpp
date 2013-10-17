@@ -56,4 +56,3 @@ sc_result shutdown()
 
     return SC_RESULT_OK;
 }
-

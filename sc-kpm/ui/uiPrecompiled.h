@@ -24,6 +24,9 @@ along with OSTIS.  If not, see <http://www.gnu.org/licenses/>.
 #define _ui_precompiled_h_
 
 #include "uiTypes.h"
+#include "ui.h"
+#include "uiKeynodes.h"
+#include "uiUtils.h"
 
 extern "C"
 {

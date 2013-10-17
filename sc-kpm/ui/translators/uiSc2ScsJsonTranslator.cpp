@@ -25,6 +25,7 @@ along with OSTIS.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "uiTranslators.h"
 #include "uiKeynodes.h"
+#include "uiUtils.h"
 
 // --------------------
 uiSc2ScsTranslator::uiSc2ScsTranslator()
@@ -145,6 +146,9 @@ sc_result uiSc2ScsTranslator::ui_translate_sc2scs(sc_event *event, sc_addr arg)
     sc_addr cmd_addr, input_addr, format_addr;
 
     if (sc_memory_get_arc_end(arg, &cmd_addr) != SC_RESULT_OK)
+        return SC_RESULT_ERROR;
+
+    if (ui_check_cmd_type(cmd_addr, keynode_command_translate_from_sc) != SC_RESULT_OK)
         return SC_RESULT_ERROR;
 
     if (ui_translate_command_resolve_arguments(cmd_addr, &format_addr, &input_addr) != SC_RESULT_OK)

@@ -52,6 +52,8 @@ void uiTranslateFromSc::translate(const sc_addr &input_addr, const sc_addr &form
 
     sc_stream_free(result_data_stream);
 
+    // generate format info
+
     // generate translation
     sc_addr arc_addr = sc_memory_arc_new(sc_type_arc_common | sc_type_const, mInputConstructionAddr, result_addr);
     sc_memory_arc_new(sc_type_arc_pos_const_perm, keynode_nrel_translation, arc_addr);
