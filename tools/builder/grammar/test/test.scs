@@ -1,0 +1,9 @@
+t | .a | "file://test.scs";;
+t -> g: 54;;
+t => g: h: (f -> (h <- dev)); post;;
+t -> "file://";;
+h => k: <h: g: y; t: i (* <- g;; *) >;;
+h=> { 1: l; 2:3: yt };;
+begin => 1: 2:: main; begin; test: t;;
+g -> t: h (* <- h: g: begin; p (* -> g;; *);; *); l;;
+g => [ content ] (* <- lang_ru;; *);;
