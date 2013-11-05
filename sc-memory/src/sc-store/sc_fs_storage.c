@@ -80,10 +80,12 @@ sc_segment* sc_fs_storage_load_segment(sc_uint id)
 {
     sc_segment *segment = sc_segment_new(id);
     gchar file_name[MAX_PATH_LENGTH + 1];
+    gboolean res;
     sc_uint length;
 
     _get_segment_path(segments_path, id, MAX_PATH_LENGTH, file_name);
-    g_assert( g_file_get_contents(file_name, (gchar**)(&segment), &length, 0) );
+    res = g_file_get_contents(file_name, (gchar**)(&segment), &length, 0);
+    g_assert( res );
     g_assert( length == sizeof(sc_segment) );
 
     return segment;

@@ -38,6 +38,7 @@ extern sc_addr keynode_question_nrel_answer;
 extern sc_addr keynode_question_finished;
 extern sc_addr keynode_nrel_authors;
 extern sc_addr keynode_nrel_translation;
+extern sc_addr keynode_nrel_format;
 
 extern sc_addr keynode_command_generate_instance;
 extern sc_addr keynode_command_initiated;

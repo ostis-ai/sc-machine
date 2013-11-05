@@ -5,6 +5,7 @@ options {
     //memoize=true;
     k=2;
     language=C;
+    output = AST;
     ASTLabelType = pANTLR3_BASE_TREE;
 }
 
@@ -24,6 +25,7 @@ tokens {
   SEP_RSET = '}';
   SEP_LCONTENT = '[';
   SEP_RCONTENT = ']';
+  SEP_ASSIGN = '=';
 }
 
 @lexer::includes
@@ -38,9 +40,13 @@ tokens {
 
 @parser::includes
 {
+#include "../parseutils.h"
 }
 
+@rulecatch
+{
 
+}
 
 /* Parser rules */
 syntax
@@ -50,6 +56,7 @@ syntax
 sentence
 	: sentence_level1
 	| sentence_level2_6
+	| sentence_assignment
 	;
 	
 sentence_level1
@@ -63,6 +70,10 @@ sentence_level2_6
 	
 sentence_internal_list
 	: SEP_LINT  (sentence_internal SEP_SENTENCE)* SEP_RINT
+	;
+	
+sentence_assignment
+	: idtf SEP_ASSIGN idtf
 	;
 	
 sentence_internal

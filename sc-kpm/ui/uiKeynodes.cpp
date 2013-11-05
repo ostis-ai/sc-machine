@@ -34,8 +34,9 @@ const char keynode_rrel_output_format_str[] = "ui_rrel_output_format";
 
 const char keynode_question_nrel_answer_str[] = "question_nrel_answer";
 const char keynode_question_finished_str[] = "question_finished";
-const char keynode_nrel_authors_str[] = "hypermedia_nrel_authors";
+const char keynode_nrel_authors_str[] = "nrel_authors";
 const char keynode_nrel_translation_str[] = "hypermedia_nrel_translation";
+const char keynode_nrel_format_str[] = "hypermedia_nrel_format";
 
 
 const char keynode_command_generate_instance_str[] = "ui_command_generate_instance";
@@ -64,6 +65,7 @@ sc_addr keynode_question_nrel_answer;
 sc_addr keynode_question_finished;
 sc_addr keynode_nrel_authors;
 sc_addr keynode_nrel_translation;
+sc_addr keynode_nrel_format;
 
 sc_addr keynode_command_generate_instance;
 sc_addr keynode_command_initiated;
@@ -98,6 +100,7 @@ sc_bool initialize_keynodes()
     resolve_keynode(keynode_rrel_source_sc_construction);
     resolve_keynode(keynode_rrel_output_format);
     resolve_keynode(keynode_nrel_translation);
+    resolve_keynode(keynode_nrel_format);
 
     resolve_keynode(keynode_command_generate_instance);
     resolve_keynode(keynode_command_initiated);

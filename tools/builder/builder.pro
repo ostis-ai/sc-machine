@@ -25,7 +25,8 @@ SOURCES += \
     src/builder.cpp \
     src/main.cpp \
     src/version.cpp \
-    src/utils.cpp
+    src/utils.cpp \
+    src/parseutils.cpp
 
 HEADERS += \
     src/parser/scsParser.h \
@@ -33,7 +34,8 @@ HEADERS += \
     src/builder.h \
     src/types.h \
     src/version.h \
-    src/utils.h
+    src/utils.h \
+    src/parseutils.h
 
 OTHER_FILES += \
     grammar/scs.g

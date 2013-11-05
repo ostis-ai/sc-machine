@@ -4,6 +4,9 @@
 #include "parser/scsLexer.h"
 #include "parser/scsParser.h"
 
+#include <fstream>
+#include <iostream>
+
 #include <boost/filesystem.hpp>
 
 Builder::Builder()
@@ -42,6 +45,27 @@ bool Builder::processString(const String &data)
     input = antlr3NewAsciiStringCopyStream((pANTLR3_UINT8)data.c_str(), data.length(), (pANTLR3_UINT8)"scs");
 #endif
 
+    pscsLexer lex;
+    pANTLR3_COMMON_TOKEN_STREAM tokens;
+    pscsParser parser;
+
+    lex = scsLexerNew(input);
+    tokens = antlr3CommonTokenStreamSourceNew(ANTLR3_SIZE_HINT,
+                                            TOKENSOURCE(lex));
+    parser = scsParserNew(tokens);
+
+
+    scsParser_syntax_return r = parser->syntax(parser);
+    pANTLR3_BASE_TREE tree = r.tree;
+
+    std::cout << tree->toStringTree(tree) << std::endl;
+    //pANTLR3_COMMON_TOKEN tok = tree->getToken(tree);
+    //printf("%d", tok->type);
+
+    parser->free(parser);
+    tokens->free(tokens);
+    lex->free(lex);
+
     input->close(input);
 }
 
@@ -50,8 +74,18 @@ bool Builder::processFile(const String &filename)
     std::cout << "Process: " << filename << std::endl;
 
     // open file and read data
+    bool result = true;
+    std::ifstream ifs(filename.c_str());
+    if (ifs.is_open())
+    {
+        String data((std::istreambuf_iterator<char>(ifs)), std::istreambuf_iterator<char>());
+        result = processString(data);
+    } else
+        return false;
 
-    return true;
+    ifs.close();
+
+    return result;
 }
 
 void Builder::collectFiles()
