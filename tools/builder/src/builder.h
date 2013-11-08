@@ -3,6 +3,15 @@
 
 #include "types.h"
 
+#include "parser/scsLexer.h"
+#include "parser/scsParser.h"
+
+extern "C"
+{
+#include "sc_memory.h"
+#include "sc_helper.h"
+}
+
 class Builder
 {
 public:
@@ -27,6 +36,16 @@ protected:
 
     //! Collecting files for process
     void collectFiles();
+
+
+    /*! Create sc-link with specified data string.
+     * String will be encoded into utf-8.
+     * @param text Text value to setup as content
+     */
+    sc_addr createLink(const std::string &str);
+
+    //! Dump antl tree to console
+    void dumpTree(pANTLR3_BASE_TREE tree, int level);
 
 private:
     //! Input directory path

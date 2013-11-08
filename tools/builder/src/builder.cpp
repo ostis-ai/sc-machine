@@ -1,8 +1,6 @@
 #include "builder.h"
 #include "utils.h"
 
-#include "parser/scsLexer.h"
-#include "parser/scsParser.h"
 
 #include <fstream>
 #include <iostream>
@@ -25,6 +23,25 @@ bool Builder::run(const String &inputPath, const String &outputPath, bool clearO
     mClearOutput = clearOutput;
 
     collectFiles();
+
+    if (clearOutput)
+    {
+        boost::filesystem::path path(outputPath);
+
+        if (boost::filesystem::exists(path) && boost::filesystem::is_directory(path) && !boost::filesystem::is_empty(path))
+        {
+            std::cout << "Clear output directory\n";
+            boost::filesystem::remove_all(outputPath);
+
+            boost::filesystem::create_directory(path);
+            assert(boost::filesystem::is_empty(path));
+        }
+
+    }
+
+    // initialize sc-memory
+    sc_memory_initialize(outputPath.c_str(), 0);
+    sc_helper_init();
 
     // print founded files
     tFileSet::iterator it, itEnd = mFileSet.end();
@@ -58,7 +75,8 @@ bool Builder::processString(const String &data)
     scsParser_syntax_return r = parser->syntax(parser);
     pANTLR3_BASE_TREE tree = r.tree;
 
-    std::cout << tree->toStringTree(tree) << std::endl;
+    //std::cout << tree->toStringTree(tree) << std::endl;
+    dumpTree(tree, 0);
     //pANTLR3_COMMON_TOKEN tok = tree->getToken(tree);
     //printf("%d", tok->type);
 
@@ -113,6 +131,44 @@ void Builder::collectFiles()
             it.no_push(); // 6.
             try { ++it; } catch(...) { std::cout << "!!" << std::endl; return; } // 7.
         }
+    }
+
+}
+
+sc_addr Builder::createLink(const std::string &str)
+{
+    boost::addable
+}
+
+void Builder::dumpTree(pANTLR3_BASE_TREE tree, int level)
+{
+    pANTLR3_COMMON_TOKEN tok = tree->getToken(tree);
+    if (tok)
+    {
+        switch(tok->type)
+        {
+        case ID_SYSTEM:
+            std::cout << "idtf";//tok->getText(tok);
+            break;
+        case SEP_SENTENCE:
+            std::cout << ";;";
+            break;
+        case CONNECTORS:
+            std::cout << "->";
+            break;
+        };
+    }
+
+    std::cout << "\n";
+    for (int i = 0; i < level; ++i)
+        std::cout << "- ";
+
+    std::cout << tree->getText(tree)->chars;
+
+    unsigned int nodesCount = tree->getChildCount(tree);
+    for (unsigned int i = 0; i < nodesCount; ++i)
+    {
+        dumpTree((pANTLR3_BASE_TREE)tree->getChild(tree, i), level + 1);
     }
 
 }

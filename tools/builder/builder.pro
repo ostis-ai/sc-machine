@@ -2,7 +2,7 @@ TEMPLATE = app
 CONFIG += console
 CONFIG -= qt
 
-DESTDIR = bin
+DESTDIR = ../../bin
 
 OBJECTS_DIR = obj
 MOC_DIR = moc
@@ -14,9 +14,12 @@ QMAKE_EXTRA_TARGETS += antrl
 
 PRE_TARGETDEPS += scsParser
 
+INCLUDEPATH += ../../sc-memory/src
+
 unix {
     CONFIG += link_pkgconfig
     LIBS += -lantlr3c -lboost_program_options -lboost_filesystem -lboost_system
+    LIBS += $$quote(-L$$DESTDIR) -lsc_memory
 }
 
 SOURCES += \

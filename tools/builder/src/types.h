@@ -11,4 +11,5 @@
 typedef std::string String;
 typedef std::stringstream StringStream;
 
+
 #endif // _types_h_
