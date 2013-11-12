@@ -1,11 +1,18 @@
 #include "builder.h"
 #include "utils.h"
+#include "translator.h"
 
-
-#include <fstream>
-#include <iostream>
+extern "C"
+{
+#include "sc_memory_headers.h"
+#include "sc_helper.h"
+}
 
 #include <boost/filesystem.hpp>
+#include <assert.h>
+
+#include "scs_translator.h"
+
 
 Builder::Builder()
     : mClearOutput(false)
@@ -14,6 +21,12 @@ Builder::Builder()
 
 Builder::~Builder()
 {
+}
+
+void Builder::initialize()
+{
+    // register translator factories
+    registerTranslator(new SCsTranslatorFactory());
 }
 
 bool Builder::run(const String &inputPath, const String &outputPath, bool clearOutput)
@@ -50,58 +63,44 @@ bool Builder::run(const String &inputPath, const String &outputPath, bool clearO
 
     return true;
 }
-bool Builder::processString(const String &data)
+
+void Builder::registerTranslator(iTranslatorFactory *factory)
 {
-    pANTLR3_INPUT_STREAM input;
+    assert(!hasTranslator(factory->getFileExt()));
+    mTranslatorFactories[factory->getFileExt()] = factory;
+}
 
-#if defined( __WIN32__ ) || defined( _WIN32 )
-    input = antlr3StringStreamNew((pANTLR3_UINT8)data.c_str(), ANTLR3_ENC_UTF8, data.length(), (pANTLR3_UINT8)"scs");
-#elif defined( __APPLE_CC__)
-    input = antlr3StringStreamNew((pANTLR3_UINT8)data.c_str(), ANTLR3_ENC_UTF8, data.length(), (pANTLR3_UINT8)"scs");
-#else
-    input = antlr3NewAsciiStringCopyStream((pANTLR3_UINT8)data.c_str(), data.length(), (pANTLR3_UINT8)"scs");
-#endif
-
-    pscsLexer lex;
-    pANTLR3_COMMON_TOKEN_STREAM tokens;
-    pscsParser parser;
-
-    lex = scsLexerNew(input);
-    tokens = antlr3CommonTokenStreamSourceNew(ANTLR3_SIZE_HINT,
-                                            TOKENSOURCE(lex));
-    parser = scsParserNew(tokens);
-
-
-    scsParser_syntax_return r = parser->syntax(parser);
-    pANTLR3_BASE_TREE tree = r.tree;
-
-    //std::cout << tree->toStringTree(tree) << std::endl;
-    dumpTree(tree, 0);
-    //pANTLR3_COMMON_TOKEN tok = tree->getToken(tree);
-    //printf("%d", tok->type);
-
-    parser->free(parser);
-    tokens->free(tokens);
-    lex->free(lex);
-
-    input->close(input);
+bool Builder::hasTranslator(const std::string &ext) const
+{
+    return mTranslatorFactories.find(ext) != mTranslatorFactories.end();
 }
 
 bool Builder::processFile(const String &filename)
 {
     std::cout << "Process: " << filename << std::endl;
 
-    // open file and read data
-    bool result = true;
-    std::ifstream ifs(filename.c_str());
-    if (ifs.is_open())
+    // get file extension
+    size_t n = filename.rfind(".");
+    if (n == std::string::npos)
     {
-        String data((std::istreambuf_iterator<char>(ifs)), std::istreambuf_iterator<char>());
-        result = processString(data);
-    } else
+        std::cout << "\tCan't determine file extension" << std::endl;
         return false;
+    }
 
-    ifs.close();
+    std::string ext = filename.substr(n + 1, std::string::npos);
+    // try to find translator factory
+    tTranslatorFactories::iterator it = mTranslatorFactories.find(ext);
+    if (it == mTranslatorFactories.end())
+    {
+        std::cout << "\tThere are no translators, that support " << ext << " extension" << std::endl;
+        return false;
+    }
+
+    iTranslator *translator = it->second->createInstance();
+    assert(translator);
+
+    bool result = translator->translate(filename);
+    delete translator;
 
     return result;
 }
@@ -135,40 +134,4 @@ void Builder::collectFiles()
 
 }
 
-sc_addr Builder::createLink(const std::string &str)
-{
-    boost::addable
-}
 
-void Builder::dumpTree(pANTLR3_BASE_TREE tree, int level)
-{
-    pANTLR3_COMMON_TOKEN tok = tree->getToken(tree);
-    if (tok)
-    {
-        switch(tok->type)
-        {
-        case ID_SYSTEM:
-            std::cout << "idtf";//tok->getText(tok);
-            break;
-        case SEP_SENTENCE:
-            std::cout << ";;";
-            break;
-        case CONNECTORS:
-            std::cout << "->";
-            break;
-        };
-    }
-
-    std::cout << "\n";
-    for (int i = 0; i < level; ++i)
-        std::cout << "- ";
-
-    std::cout << tree->getText(tree)->chars;
-
-    unsigned int nodesCount = tree->getChildCount(tree);
-    for (unsigned int i = 0; i < nodesCount; ++i)
-    {
-        dumpTree((pANTLR3_BASE_TREE)tree->getChild(tree, i), level + 1);
-    }
-
-}

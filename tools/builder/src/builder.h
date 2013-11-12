@@ -3,14 +3,8 @@
 
 #include "types.h"
 
-#include "parser/scsLexer.h"
-#include "parser/scsParser.h"
-
-extern "C"
-{
-#include "sc_memory.h"
-#include "sc_helper.h"
-}
+class iTranslator;
+class iTranslatorFactory;
 
 class Builder
 {
@@ -18,6 +12,8 @@ public:
     explicit Builder();
     virtual ~Builder();
 
+    //! Initialize builder. Create and register translator factories
+    void initialize();
 
     /*! Run building process
       * @param inputPath Path to source directory
@@ -27,9 +23,18 @@ public:
       */
     bool run(const String &inputPath, const String &outputPath, bool clearOutput);
 
+    /*! Register new translator factory
+     * @param factory Pointer to translator factory to register
+     */
+    void registerTranslator(iTranslatorFactory *factory);
+    /*! Check if translator for specified file extension exists
+     * @param ext File extension to check
+     * @param If translator for specified file extension registered, then returns true; otherwise returns false
+     */
+    bool hasTranslator(const std::string &ext) const;
+
 protected:
-    //! Process string data
-    bool processString(const String &data);
+
 
     //! Process specified file
     bool processFile(const String &filename);
@@ -37,15 +42,6 @@ protected:
     //! Collecting files for process
     void collectFiles();
 
-
-    /*! Create sc-link with specified data string.
-     * String will be encoded into utf-8.
-     * @param text Text value to setup as content
-     */
-    sc_addr createLink(const std::string &str);
-
-    //! Dump antl tree to console
-    void dumpTree(pANTLR3_BASE_TREE tree, int level);
 
 private:
     //! Input directory path
@@ -58,6 +54,11 @@ private:
     //! Set of files to process
     typedef std::set< String > tFileSet;
     tFileSet mFileSet;
+
+    //! Translator factories map
+    typedef std::map<std::string, iTranslatorFactory*> tTranslatorFactories;
+    tTranslatorFactories mTranslatorFactories;
+
 };
 
 #endif

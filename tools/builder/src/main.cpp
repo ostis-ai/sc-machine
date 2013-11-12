@@ -42,6 +42,7 @@ int main(int argc, char *argv[])
     }
 
     Builder builder;
+    builder.initialize();
     builder.run(inputPath, outputPath, clearOutput);
 
     return 0;
