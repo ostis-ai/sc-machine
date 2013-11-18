@@ -1,12 +1,11 @@
 grammar scs;
 
-options {
-    //backtrack=true;
-    //memoize=true;
-    k=2;
-    language=C;
+options 
+{
+    k = 2;
+    language = C;
     output = AST;
-    ASTLabelType = pANTLR3_BASE_TREE;
+    ASTLabelType=pANTLR3_BASE_TREE;
 }
 
 tokens {
@@ -26,6 +25,7 @@ tokens {
   SEP_LCONTENT = '[';
   SEP_RCONTENT = ']';
   SEP_ASSIGN = '=';
+  
 }
 
 @lexer::includes
@@ -50,7 +50,7 @@ tokens {
 
 /* Parser rules */
 syntax
-	: (sentence SEP_SENTENCE)* EOF
+	: (sentence SEP_SENTENCE!)* EOF
 	;
 	
 sentence
@@ -59,21 +59,22 @@ sentence
 	| sentence_assignment
 	;
 	
-sentence_level1
-	: idtf_level1 SEP_SIMPLE idtf_level1 SEP_SIMPLE idtf_level1
-	;
-	
+
 sentence_level2_6
 	:
-	| idtf CONNECTORS attrs_idtf_list
+	| idtf CONNECTORS attrs_idtf_list -> ^(CONNECTORS idtf attrs_idtf_list)
+	;
+sentence_level1
+	: idtf_level1 SEP_SIMPLE idtf_level1 SEP_SIMPLE idtf_level1 -> ^(SEP_SIMPLE idtf_level1+)
 	;
 	
+	
 sentence_internal_list
-	: SEP_LINT  (sentence_internal SEP_SENTENCE)* SEP_RINT
+	: SEP_LINT  (sentence_internal SEP_SENTENCE)* SEP_RINT!
 	;
 	
 sentence_assignment
-	: idtf SEP_ASSIGN idtf
+	: idtf SEP_ASSIGN idtf -> ^(SEP_ASSIGN idtf+)
 	;
 	
 sentence_internal
@@ -97,11 +98,11 @@ idtf_internal
 	;
 
 idtf_tuple
-	: SEP_LTUPLE attrs_idtf_list  SEP_RTUPLE
+	: SEP_LTUPLE attrs_idtf_list  SEP_RTUPLE!
 	;
 	
 idtf_set
-	: SEP_LSET attrs_idtf_list SEP_RSET
+	: SEP_LSET attrs_idtf_list SEP_RSET!
 	;
 
 idtf
@@ -120,7 +121,7 @@ idtf_level1
 
 
 idtf_edge
-	: SEP_LPAR idtf CONNECTORS idtf SEP_RPAR 
+	: SEP_LPAR idtf CONNECTORS idtf SEP_RPAR! 
 	;
 
 // --------------- separators -----------------

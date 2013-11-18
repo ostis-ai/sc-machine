@@ -56,7 +56,7 @@ void sc_helper_shutdown();
  * specified system identifier, then return SC_ERROR_INVALID_STATE, but result_addr will contains sc-addr
  * of firstly found sc-element.
  */
-sc_result sc_helper_find_element_by_system_identifier(sc_char* data, sc_uint32 len, sc_addr *result_addr);
+sc_result sc_helper_find_element_by_system_identifier(const sc_char* data, sc_uint32 len, sc_addr *result_addr);
 
 /*! Setup new system identifier for specified sc-element
  * @param addr sc-addr of sc-element to setup new system identifier

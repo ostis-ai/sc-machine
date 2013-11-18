@@ -2,11 +2,7 @@
 #include "utils.h"
 #include "translator.h"
 
-extern "C"
-{
-#include "sc_memory_headers.h"
-#include "sc_helper.h"
-}
+
 
 #include <boost/filesystem.hpp>
 #include <assert.h>
@@ -60,6 +56,20 @@ bool Builder::run(const String &inputPath, const String &outputPath, bool clearO
     tFileSet::iterator it, itEnd = mFileSet.end();
     for (it = mFileSet.begin(); it != itEnd; ++it)
         processFile(*it);
+
+    // print statistics
+    sc_stat stat;
+    sc_memory_stat(&stat);
+
+    unsigned int all_count = stat.arc_count + stat.node_count + stat.link_count;
+
+    std::cout << std::endl << "Statistics" << std::endl;
+    std::cout << "Nodes: " << stat.node_count << "(" << ((float)stat.node_count / (float)all_count) * 100 << "%)" << std::endl;
+    std::cout << "Arcs: " << stat.arc_count << "(" << ((float)stat.arc_count / (float)all_count) * 100 << "%)"  << std::endl;
+    std::cout << "Links: " << stat.link_count << "(" << ((float)stat.link_count / (float)all_count) * 100 << "%)"  << std::endl;
+    std::cout << "Total: " << all_count << std::endl;
+
+    sc_memory_shutdown();
 
     return true;
 }

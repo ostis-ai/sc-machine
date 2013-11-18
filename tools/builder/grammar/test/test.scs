@@ -1,4 +1,5 @@
 t | .a | "file://test.scs";;
+x = y;;
 t -> g: 54;;
 t => g: h: (f -> (h <- dev)); post;;
 t -> "file://";;

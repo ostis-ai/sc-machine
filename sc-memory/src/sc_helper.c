@@ -106,7 +106,19 @@ sc_result sc_helper_init()
 
     if (resolve_nrel_system_identifier() != SC_RESULT_OK)
     {
-        g_error("Can't resovle hypermedia_nrel_system_identifier node");
+        g_message("Can't resovle hypermedia_nrel_system_identifier node. Create the last one");
+
+        sc_addr addr = sc_memory_node_new(sc_type_const);
+        sc_addr link = sc_memory_link_new();
+        sc_stream *stream = sc_stream_memory_new(keynodes_str[SC_KEYNODE_NREL_SYSTEM_IDENTIFIER],
+                                                 sizeof(sc_uchar) * strlen(keynodes_str[SC_KEYNODE_NREL_SYSTEM_IDENTIFIER]),
+                                                 SC_STREAM_READ, SC_FALSE);
+        sc_memory_set_link_content(link, stream);
+        sc_stream_free(stream);
+
+        sc_addr arc = sc_memory_arc_new(sc_type_arc_common | sc_type_const, addr, link);
+        sc_memory_arc_new(sc_type_arc_pos_const_perm, addr, arc);
+
         return SC_RESULT_ERROR;
     }
 
@@ -123,7 +135,7 @@ void sc_helper_shutdown()
     _destroy_keynodes_str();
 }
 
-sc_result sc_helper_find_element_by_system_identifier(sc_char* data, sc_uint32 len, sc_addr *result_addr)
+sc_result sc_helper_find_element_by_system_identifier(const sc_char* data, sc_uint32 len, sc_addr *result_addr)
 {
     sc_addr *results = 0;
     sc_uint32 results_count = 0;

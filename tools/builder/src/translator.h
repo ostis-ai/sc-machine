@@ -3,6 +3,12 @@
 
 #include "types.h"
 
+extern "C"
+{
+#include "sc_memory_headers.h"
+#include "sc_helper.h"
+}
+
 /*! Interface for translators
  */
 class iTranslator
