@@ -21,6 +21,7 @@ struct sElement
 {
     uint32 id;
     sc_type type;
+    sc_addr addr;
     String idtf;
 
     // arc info
@@ -30,6 +31,19 @@ struct sElement
     // link info
     bool link_is_file;
     String link_data;
+
+    bool ignore;
+
+    sElement()
+        : id(0)
+        , type(0)
+        , arc_src(0)
+        , arc_trg(0)
+        , link_is_file(false)
+        , ignore(false)
+    {
+        SC_ADDR_MAKE_EMPTY(addr);
+    }
 };
 
 // ---------------------------------------------------------
@@ -69,18 +83,26 @@ private:
     void processSentenceLevel1(pANTLR3_BASE_TREE node);
     //! Process node as scs sentence level 2-6
     void processSentenceLevel2_7(pANTLR3_BASE_TREE node);
+    //! Process assignment sentence
+    void processSentenceAssign(pANTLR3_BASE_TREE node);
 
 
     // --------- helper functions -----------
     //! Function that resolve sc-addr for element with specified identifier
     sc_addr resolveScAddr(const String &idtf);
+    //! Create new sc-addr of element
+    sc_addr createScAddr(sElement *el);
+    //! Determines sc-type of element
+    void determineElementType(sElement *el);
 
+    //! Create new empty element
+    sElement* _createElement(const String &idtf);
 
     /*! Append new node into elements
      * @param idtf Identifier of element
      * @returns Returns id of element
      */
-    uint32 _addNode(const String &idtf);
+    sElement* _addNode(const String &idtf);
 
     /*! Append new edge into elements
      * @param source Pointer to source element
@@ -89,7 +111,7 @@ private:
      * @param idtf Identifier of element
      * @returns Returns id of element
      */
-    uint32 _addEdge(sElement *source, sElement *target, sc_type type, const String &idtf);
+    sElement* _addEdge(sElement *source, sElement *target, sc_type type, const String &idtf);
 
     /*! Append new link into elements
      * @param is_file Flag to determine data type. If this flag is true, then data is a file path; otherwise
@@ -97,27 +119,37 @@ private:
      * @param data Link data
      * @returns Returns id of created element
      */
-    uint32 _addLink(bool is_file, const String &data);
+    sElement* _addLink(bool is_file, const String &data);
 
+
+    //! Parse subtree of antrl tree, and returns pointer to created sc-element, that designate this subtree
+    sElement* parseElementTree(pANTLR3_BASE_TREE tree);
 
     //! Returns sc-type of arc, by preffix
     sc_type _getArcPreffixType(const String &preffix) const;
     //! Returns sc-type of element by type set identifier
     sc_type _getTypeBySetIdtf(const String &setIdtf) const;
+    //! Returns arc type by connector token
+    sc_type _getTypeByConnector(const String &connector);
 
     //! Dump to dot
     void dumpDot(pANTLR3_BASE_TREE tree);
     void dumpNode(pANTLR3_BASE_TREE node, std::ofstream &stream);
+    void dumpScs(const String &fileName);
 
 private:
     typedef std::set<sc_addr, sc_add_compare> tScAddrSet;
     typedef std::map<String, sc_addr> tStringAddrMap;
-    typedef std::map<uint32, sElement*> tElementIdMap;
+    typedef std::map<String, sElement*> tElementIdtfMap;
+    typedef std::set<sElement*> tElementSet;
+    typedef std::map<String, String> tAssignMap;
 
     //! Set of created elements
     tScAddrSet mScAddrs;
     //! Map of elements description
-    tElementIdMap mElementIds;
+    tElementIdtfMap mElementIdtf;
+    //! Set of elements
+    tElementSet mElementSet;
     //! Global counter of elements id's
     static uint32 msIdCounter;
     //! Map that contains global identifiers
@@ -126,6 +158,8 @@ private:
     tStringAddrMap mSysIdtfAddrs;
     //! Map that contains local identifiers
     tStringAddrMap mLocalIdtfAddrs;
+    //! Map to store assignments
+    tAssignMap mAssignments;
 
 };
 

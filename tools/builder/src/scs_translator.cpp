@@ -1,4 +1,5 @@
 #include "scs_translator.h"
+#include "utils.h"
 
 #include <fstream>
 #include <iostream>
@@ -6,6 +7,9 @@
 
 SCsTranslator::tStringAddrMap SCsTranslator::msGlobalIdtfAddrs = SCsTranslator::tStringAddrMap();
 uint32 SCsTranslator::msIdCounter = 1;
+
+
+#define GET_NODE_TEXT(node) String((const char*)node->getText(node)->chars)
 
 // ------------------------
 
@@ -16,10 +20,10 @@ SCsTranslator::SCsTranslator()
 SCsTranslator::~SCsTranslator()
 {
     // destroy element descrptions
-    tElementIdMap::iterator it, itEnd = mElementIds.end();
-    for (it = mElementIds.begin(); it != itEnd; ++it)
-        delete it->second;
-    mElementIds.clear();
+    tElementSet::iterator it, itEnd = mElementSet.end();
+    for (it = mElementSet.begin(); it != itEnd; ++it)
+        delete *it;
+    mElementSet.clear();
 }
 
 bool SCsTranslator::translate(const String &filename)
@@ -97,35 +101,64 @@ bool SCsTranslator::buildScText(pANTLR3_BASE_TREE tree)
             processSentenceLevel2_7(sentenceNode);
             break;
         case SentenceAssign:
+            processSentenceAssign(sentenceNode);
             break;
         default:
             std::cerr << "Unknown sentence type. Sentence " << i + 1 << std::endl;
             break;
         }
-
-        pANTLR3_COMMON_TOKEN tok = sentenceNode->getToken(sentenceNode);
-        std::cout << tok->type << std::endl;
     }
+
+
+    // now generate sc-text in memory
+    std::cout << "Determine element types" << std::endl;
+    tElementSet::iterator it, itEnd = mElementSet.end();
+    for (it = mElementSet.begin(); it != itEnd; ++it)
+    {
+        sElement *el = *it;
+        assert(el);
+
+        determineElementType(el);
+
+        if (el->type == sc_type_arc_pos_const_perm)
+        {
+            sc_type type = _getTypeBySetIdtf(el->arc_src->idtf);
+            if (type != 0)
+            {
+                el->ignore = true;
+                sc_type newType = el->type | type;
+                // TODO check conflicts in sc-type
+                if (type & sc_type_constancy_mask != 0)
+                    newType = (type & sc_type_constancy_mask) | (newType & ~sc_type_constancy_mask);
+                el->type = newType;
+            }
+        }
+
+        std::cout << el->idtf << ": " << el->type << std::endl;
+    }
+
+    dumpScs("test.pscs");
+
+    std::cout << "Generate sc-text" << std::endl;
+
+
 
     return true;
 }
 
 SCsTranslator::eSentenceType SCsTranslator::determineSentenceType(pANTLR3_BASE_TREE node)
 {
-    unsigned int nodesCount = node->getChildCount(node);
-    if (nodesCount == 5)
+    pANTLR3_COMMON_TOKEN tok = node->getToken(node);
+    assert(tok);
+
+    if (tok->type == SEP_SIMPLE)
         return SentenceLevel1;
 
-    if (nodesCount == 3)
-    {
-        pANTLR3_BASE_TREE sep = (pANTLR3_BASE_TREE)node->getChild(node, 1);
-        pANTLR3_COMMON_TOKEN tok = sep->getToken(sep);
-
-        if (tok->type == SEP_ASSIGN)
-            return SentenceAssign;
-
+    if (tok->type == CONNECTORS)
         return SentenceLevel2_7;
-    }
+
+    if (tok->type == SEP_ASSIGN)
+        return SentenceAssign;
 
     return SentenceUnknown;
 }
@@ -133,24 +166,44 @@ SCsTranslator::eSentenceType SCsTranslator::determineSentenceType(pANTLR3_BASE_T
 void SCsTranslator::processSentenceLevel1(pANTLR3_BASE_TREE node)
 {
     unsigned int nodesCount = node->getChildCount(node);
-    assert(nodesCount == 5);
+    assert(nodesCount == 3);
 
-    pANTLR3_BASE_TREE sep = (pANTLR3_BASE_TREE)node->getChild(node, 1);
-    pANTLR3_COMMON_TOKEN tok = sep->getToken(sep);
+    pANTLR3_BASE_TREE node_obj = (pANTLR3_BASE_TREE)node->getChild(node, 0);
+    pANTLR3_BASE_TREE node_pred = (pANTLR3_BASE_TREE)node->getChild(node, 1);
+    pANTLR3_BASE_TREE node_subj = (pANTLR3_BASE_TREE)node->getChild(node, 2);
 
-    assert(tok->type == SEP_SIMPLE);
+    pANTLR3_COMMON_TOKEN tok_pred = node_pred->getToken(node_pred);
 
-    sep = (pANTLR3_BASE_TREE)node->getChild(node, 3);
-    tok = sep->getToken(sep);
+    if (tok_pred->type != ID_SYSTEM)
+        std::cerr << "Invalid predicate '" << ((const char*) node_pred->getText(node_pred)->chars) << "' in simple sentence" << std::endl;
 
-    assert(tok->type == SEP_SIMPLE);
+    sElement *el_obj = parseElementTree(node_obj);
+    sElement *el_subj = parseElementTree(node_subj);
 
+    // determine arc type
+    sc_type type = sc_type_edge_common;
+    String pred = GET_NODE_TEXT(node_pred);
+    size_t n = pred.find_first_of("#");
+    if (n != pred.npos)
+        type = _getArcPreffixType(pred.substr(0, n));
 
+    _addEdge(el_obj, el_subj, type, pred);
 }
 
 void SCsTranslator::processSentenceLevel2_7(pANTLR3_BASE_TREE node)
 {
 
+}
+
+void SCsTranslator::processSentenceAssign(pANTLR3_BASE_TREE node)
+{
+    unsigned int nodesCount = node->getChildCount(node);
+    assert(nodesCount == 2);
+
+    pANTLR3_BASE_TREE node_left = (pANTLR3_BASE_TREE)node->getChild(node, 0);
+    pANTLR3_BASE_TREE node_right = (pANTLR3_BASE_TREE)node->getChild(node, 1);
+
+    mAssignments[GET_NODE_TEXT(node_left)] = GET_NODE_TEXT(node_right);
 }
 
 sc_addr SCsTranslator::resolveScAddr(const String &idtf)
@@ -179,56 +232,125 @@ sc_addr SCsTranslator::resolveScAddr(const String &idtf)
         return addr;
     }
 
+    SC_ADDR_MAKE_EMPTY(addr);
 
+    return addr;
 }
 
-
-uint32 SCsTranslator::_addNode(const String &idtf)
+sc_addr SCsTranslator::createScAddr(sElement *el)
 {
-    sElement *el = new sElement();
-    memset(el, 0, sizeof(sElement));
+    sc_addr addr;
 
-    el->idtf = idtf;
-    el->type = sc_type_node;
-    el->id = msIdCounter++;
+    if (el->type & sc_type_node)
+        addr = sc_memory_node_new(el->type);
+    else if (el->type & sc_type_link)
+        addr = sc_memory_link_new();
+    else
+    {
+        assert(el->arc_src && el->arc_trg);
+        assert(SC_ADDR_IS_NOT_EMPTY(el->arc_src->addr) && SC_ADDR_IS_NOT_EMPTY(el->arc_trg->addr));
+        addr = sc_memory_arc_new(el->type, el->arc_src->addr, el->arc_trg->addr);
+    }
 
-    assert(mElementIds.find(el->id) == mElementIds.end());
-    mElementIds[el->id] = el;
+    el->addr = addr;
+
+    // store in addrs map
+    if (!el->idtf.empty())
+    {
+        if (StringUtil::startsWith(el->idtf, "..", false))
+            mLocalIdtfAddrs[el->idtf] = addr;
+        else if (StringUtil::startsWith(el->idtf, ".", false))
+            msGlobalIdtfAddrs[el->idtf] = addr;
+        else
+            mSysIdtfAddrs[el->idtf] = addr;
+    }
+
+    return addr;
 }
 
-uint32 SCsTranslator::_addEdge(sElement *source, sElement *target, sc_type type, const String &idtf)
+void SCsTranslator::determineElementType(sElement *el)
+{
+    assert(el);
+    sc_type oldType = el->type;
+    sc_type newType = oldType;
+
+    newType = (newType & (~sc_type_constancy_mask)) | (StringUtil::startsWith(el->idtf, "_", false) ? sc_type_var : sc_type_const);
+
+    el->type = newType;
+}
+
+sElement* SCsTranslator::_createElement(const String &idtf)
+{
+    if (!idtf.empty())
+    {
+        tElementIdtfMap::iterator it = mElementIdtf.find(idtf);
+        if (it != mElementIdtf.end())
+            return it->second;
+    }
+
+    sElement *el = new sElement();
+
+    el->id = msIdCounter++;
+    el->idtf = idtf;
+    assert(mElementIdtf.find(idtf) == mElementIdtf.end());
+    if (!idtf.empty())
+        mElementIdtf[idtf] = el;
+    mElementSet.insert(el);
+
+    return el;
+}
+
+sElement* SCsTranslator::_addNode(const String &idtf)
+{
+    sElement *el = _createElement(idtf);
+
+    el->type = sc_type_node;
+
+    return el;
+}
+
+sElement* SCsTranslator::_addEdge(sElement *source, sElement *target, sc_type type, const String &idtf)
 {
     assert(source && target);
 
-    sElement *el = new sElement();
-    memset(el, 0, sizeof(sElement));
+    sElement *el = _createElement(idtf);
 
-    el->idtf = idtf;
     el->type = type;
-    el->id = msIdCounter++;
-
     el->arc_src = source;
     el->arc_trg = target;
 
-    assert(mElementIds.find(el->id) == mElementIds.end());
-    mElementIds[el->id] = el;
+    return el;
 }
 
-uint32 SCsTranslator::_addLink(bool is_file, const String &data)
+sElement* SCsTranslator::_addLink(bool is_file, const String &data)
 {
-    sElement *el = new sElement();
-    memset(el, 0, sizeof(sElement));
+    sElement *el = _createElement(is_file ? data : "");
 
     el->type = sc_type_link;
-    el->id = msIdCounter++;
-
     el->link_is_file = is_file;
     el->link_data = data;
 
-    assert(mElementIds.find(el->id) == mElementIds.end());
-    mElementIds[el->id] = el;
+    return el;
 }
 
+sElement* SCsTranslator::parseElementTree(pANTLR3_BASE_TREE tree)
+{
+    pANTLR3_COMMON_TOKEN tok = tree->getToken(tree);
+    assert(tok);
+
+    if (tok->type == ID_SYSTEM)
+        return _addNode(GET_NODE_TEXT(tree));
+
+    if (tok->type == SEP_LPAR)
+    {
+
+    }
+
+    if (tok->type == LINK)
+        return _addLink(true, GET_NODE_TEXT(tree));
+
+    return 0;
+}
 
 sc_type SCsTranslator::_getArcPreffixType(const String &preffix) const
 {
@@ -239,13 +361,10 @@ sc_type SCsTranslator::_getArcPreffixType(const String &preffix) const
     if (preffix == "sc_arc_main")
         return sc_type_arc_pos_const_perm;
 
-    if (preffix == "sc_edge")
-        return sc_type_edge_common;
-
     if (preffix == "sc_arc_access")
         return sc_type_arc_access;
 
-    return 0;
+    return sc_type_edge_common;
 }
 
 sc_type SCsTranslator::_getTypeBySetIdtf(const String &setIdtf) const
@@ -305,6 +424,51 @@ sc_type SCsTranslator::_getTypeBySetIdtf(const String &setIdtf) const
     return 0;
 }
 
+sc_type SCsTranslator::_getTypeByConnector(const String &connector)
+{
+    if (connector == ">" || connector == "<")
+        return sc_type_arc_common;
+    if (connector == "->" || connector == "<-")
+        return sc_type_arc_pos_const_perm;
+    if (connector == "<>")
+        return sc_type_edge_common;
+    if (connector == "..>" || connector == "<..")
+        return sc_type_arc_access;
+    if (connector == "<=>")
+        return sc_type_edge_common | sc_type_const;
+    if (connector == "_<=>")
+        return sc_type_edge_common | sc_type_var;
+
+    if (connector == "=>" || connector == "<=")
+        return sc_type_arc_common | sc_type_const;
+    if (connector == "_=>" || connector == "_<=")
+        return sc_type_arc_common | sc_type_var;
+    if (connector == "_->" || connector == "_<-")
+        return sc_type_arc_access | sc_type_arc_pos | sc_type_var | sc_type_arc_perm;
+    if (connector == "-|>" || connector == "<|-")
+        return sc_type_arc_access | sc_type_arc_neg | sc_type_const | sc_type_arc_perm;
+    if (connector == "_-|>" || connector == "_<|-")
+        return sc_type_arc_access | sc_type_arc_neg | sc_type_var | sc_type_arc_perm;
+    if (connector == "-/>" || connector == "</-")
+        return sc_type_arc_access | sc_type_arc_fuz | sc_type_const | sc_type_arc_perm;
+    if (connector == "_-/>" || connector == "_</-")
+        return sc_type_arc_access | sc_type_arc_fuz | sc_type_var | sc_type_arc_perm;
+    if (connector == "~>" || connector == "<~")
+        return sc_type_arc_access | sc_type_arc_pos | sc_type_const | sc_type_arc_temp;
+    if (connector == "_~>" || connector == "_<~")
+        return sc_type_arc_access | sc_type_arc_pos | sc_type_var | sc_type_arc_temp;
+    if (connector == "~|>" || connector == "<|~")
+        return sc_type_arc_access | sc_type_arc_neg | sc_type_const | sc_type_arc_temp;
+    if (connector == "_~|>" || connector == "_<|~")
+        return sc_type_arc_access | sc_type_arc_neg | sc_type_var | sc_type_arc_temp;
+    if (connector == "~/>" || connector == "</~")
+        return sc_type_arc_access | sc_type_arc_fuz | sc_type_const | sc_type_arc_temp;
+    if (connector == "_~/>" || connector == "_</~")
+        return sc_type_arc_access | sc_type_arc_fuz | sc_type_var | sc_type_arc_temp;
+
+    return 0;
+}
+
 void SCsTranslator::dumpDot(pANTLR3_BASE_TREE tree)
 {
     std::ofstream out("test.dot");
@@ -343,6 +507,22 @@ void SCsTranslator::dumpNode(pANTLR3_BASE_TREE node, std::ofstream &stream)
         stream << s_root << " -> " << s1.str().substr(3) << ";" << std::endl;
         dumpNode(child, stream);
     }
+}
+
+void SCsTranslator::dumpScs(const String &fileName)
+{
+    std::ofstream out(fileName.c_str());
+
+    tElementSet::iterator it, itEnd = mElementSet.end();
+    for (it = mElementSet.begin(); it != itEnd; ++it)
+    {
+        sElement *el = *it;
+
+        if (el->type & sc_type_arc_mask)
+            out << el->arc_src->idtf << " | " << el->idtf << " | " << el->arc_trg->idtf << ";" << std::endl;
+    }
+
+    out.close();
 }
 
 // -------------

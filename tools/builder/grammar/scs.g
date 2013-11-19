@@ -64,13 +64,14 @@ sentence_level2_6
 	:
 	| idtf CONNECTORS attrs_idtf_list -> ^(CONNECTORS idtf attrs_idtf_list)
 	;
+	
 sentence_level1
 	: idtf_level1 SEP_SIMPLE idtf_level1 SEP_SIMPLE idtf_level1 -> ^(SEP_SIMPLE idtf_level1+)
 	;
 	
 	
 sentence_internal_list
-	: SEP_LINT  (sentence_internal SEP_SENTENCE)* SEP_RINT!
+	: SEP_LINT  (sentence_internal SEP_SENTENCE)* SEP_RINT -> ^(SEP_LINT sentence_internal+)
 	;
 	
 sentence_assignment
@@ -78,11 +79,11 @@ sentence_assignment
 	;
 	
 sentence_internal
-	: CONNECTORS attrs_idtf_list
+	: CONNECTORS^ attrs_idtf_list
 	;
 	
 attrs_idtf_list
-	: idtf_attrs  (SEP_IDTF idtf_attrs)*
+	: idtf_attrs  (SEP_IDTF! idtf_attrs)*
 	;
 	
 idtf_attrs
@@ -90,19 +91,24 @@ idtf_attrs
 	;
 	
 attrs_list
-	: (idtf_level1 (SEP_ATTR_VAR | SEP_ATTR_CONST))*
+	: (attr_sep)* 
+	;
+	
+attr_sep
+	: idtf_level1 SEP_ATTR_VAR^
+	| idtf_level1 SEP_ATTR_CONST^
 	;
 	
 idtf_internal
-	 :idtf sentence_internal_list?
+	: idtf^ sentence_internal_list?
 	;
 
 idtf_tuple
-	: SEP_LTUPLE attrs_idtf_list  SEP_RTUPLE!
+	: SEP_LTUPLE^ attrs_idtf_list  SEP_RTUPLE!
 	;
 	
 idtf_set
-	: SEP_LSET attrs_idtf_list SEP_RSET!
+	: SEP_LSET^ attrs_idtf_list SEP_RSET!
 	;
 
 idtf
@@ -118,10 +124,8 @@ idtf_level1
 	| LINK
 	;
 
-
-
 idtf_edge
-	: SEP_LPAR idtf CONNECTORS idtf SEP_RPAR! 
+	: SEP_LPAR^ idtf CONNECTORS idtf SEP_RPAR! 
 	;
 
 // --------------- separators -----------------
