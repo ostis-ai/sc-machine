@@ -137,13 +137,14 @@ private:
     void dumpNode(pANTLR3_BASE_TREE node, std::ofstream &stream);
     void dumpScs(const String &fileName);
 
-private:
+public:
     typedef std::set<sc_addr, sc_add_compare> tScAddrSet;
     typedef std::map<String, sc_addr> tStringAddrMap;
     typedef std::map<String, sElement*> tElementIdtfMap;
     typedef std::set<sElement*> tElementSet;
     typedef std::map<String, String> tAssignMap;
 
+private:
     //! Set of created elements
     tScAddrSet mScAddrs;
     //! Map of elements description

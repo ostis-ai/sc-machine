@@ -190,9 +190,67 @@ void SCsTranslator::processSentenceLevel1(pANTLR3_BASE_TREE node)
     _addEdge(el_obj, el_subj, type, pred);
 }
 
+#define GENERATE_ATTRS \
+tElementSet::iterator itSubj, itSubjEnd = subjects.end(); \
+for (itSubj = subjects.begin(); itSubj != itSubjEnd; ++itSubj) \
+{ \
+    sElement *el_subj = *itSubj; \
+    sElement *el_arc = _addEdge(el_obj, el_subj, type_connector, ""); \
+    tElementSet::iterator itAttrs, itAttrsEnd = var_attrs.end(); \
+    for (itAttrs = var_attrs.begin(); itAttrs != itAttrsEnd; ++itAttrs) \
+        _addEdge(*itAttrs, el_arc, sc_type_arc_access | sc_type_var | sc_type_arc_pos | sc_type_arc_perm, ""); \
+    itAttrsEnd = const_attrs.end(); \
+    for (itAttrs = const_attrs.begin(); itAttrs != itAttrsEnd; ++itAttrs) \
+        _addEdge(*itAttrs, el_arc, sc_type_arc_pos_const_perm, ""); \
+}
+
 void SCsTranslator::processSentenceLevel2_7(pANTLR3_BASE_TREE node)
 {
+    String connector = GET_NODE_TEXT(node);
+    sc_type type_connector = _getTypeByConnector(connector);
 
+    // determine object
+    pANTLR3_BASE_TREE node_obj = (pANTLR3_BASE_TREE)node->getChild(node, 0);
+    sElement *el_obj = _createElement(GET_NODE_TEXT(node_obj));
+
+
+    // no we need to parse attributes and predicates
+    tElementSet var_attrs, const_attrs;
+    tElementSet subjects;
+    uint32 n = node->getChildCount(node);
+    for (uint32 i = 1; i < n; ++i)
+    {
+        pANTLR3_BASE_TREE child = (pANTLR3_BASE_TREE)node->getChild(node, i);
+        pANTLR3_COMMON_TOKEN tok = child->getToken(child);
+
+        assert(tok);
+
+        if (tok->type == SEP_ATTR_CONST || tok->type == SEP_ATTR_VAR)
+        {
+            // process stored subjects (new attributes starts)
+            if (!subjects.empty())
+            {
+                GENERATE_ATTRS
+
+                subjects.clear();
+                const_attrs.clear();
+                var_attrs.clear();
+            }
+
+            pANTLR3_BASE_TREE nd = (pANTLR3_BASE_TREE)child->getChild(child, 0);
+            sElement *el = _addNode(GET_NODE_TEXT(nd));
+            if (tok->type == SEP_ATTR_CONST)
+                const_attrs.insert(el);
+            else
+                var_attrs.insert(el);
+        } else
+        {
+            subjects.insert(parseElementTree(child));
+        }
+
+    }
+
+    GENERATE_ATTRS
 }
 
 void SCsTranslator::processSentenceAssign(pANTLR3_BASE_TREE node)
@@ -518,8 +576,11 @@ void SCsTranslator::dumpScs(const String &fileName)
     {
         sElement *el = *it;
 
+        StringStream ss;
+        ss << el;
+
         if (el->type & sc_type_arc_mask)
-            out << el->arc_src->idtf << " | " << el->idtf << " | " << el->arc_trg->idtf << ";" << std::endl;
+            out << el->arc_src->idtf << " | " << (el->idtf.empty() ? ss.str() : el->idtf) << " | " << el->arc_trg->idtf << ";" << std::endl;
     }
 
     out.close();
