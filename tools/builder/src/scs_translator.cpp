@@ -74,9 +74,10 @@ bool SCsTranslator::processString(const String &data)
     scsParser_syntax_return r = parser->syntax(parser);
     pANTLR3_BASE_TREE tree = r.tree;
 
+    dumpDot(tree);
     // translate
     buildScText(tree);
-    dumpDot(tree);
+
 
     parser->free(parser);
     tokens->free(tokens);
@@ -163,6 +164,62 @@ SCsTranslator::eSentenceType SCsTranslator::determineSentenceType(pANTLR3_BASE_T
     return SentenceUnknown;
 }
 
+#define GENERATE_ATTRS(idx) \
+tElementSet::iterator itSubj, itSubjEnd = subjects.end(); \
+for (itSubj = subjects.begin(); itSubj != itSubjEnd; ++itSubj) \
+{ \
+    sElement *el_subj = *itSubj; \
+    sElement *el_arc = _addEdge(el_obj, el_subj, type_connector, _isConnectorReversed(connector), ""); \
+    tElementSet::iterator itAttrs, itAttrsEnd = var_attrs.end(); \
+    for (itAttrs = var_attrs.begin(); itAttrs != itAttrsEnd; ++itAttrs) \
+        _addEdge(*itAttrs, el_arc, sc_type_arc_access | sc_type_var | sc_type_arc_pos | sc_type_arc_perm, false, ""); \
+    itAttrsEnd = const_attrs.end(); \
+    for (itAttrs = const_attrs.begin(); itAttrs != itAttrsEnd; ++itAttrs) \
+        _addEdge(*itAttrs, el_arc, sc_type_arc_pos_const_perm, false, ""); \
+    if (generate_order) \
+    { \
+        StringStream ss; \
+        ss << (idx) << "'"; \
+        _addEdge(_addNode(ss.str()), el_arc, sc_type_arc_pos_const_perm, false, ""); \
+    } \
+}
+
+void SCsTranslator::processAttrsIdtfList(bool ignore_first, pANTLR3_BASE_TREE node, sElement *el_obj, const String &connector, bool generate_order)
+{
+
+    sc_type type_connector = _getTypeByConnector(connector);
+
+    tElementSet var_attrs, const_attrs;
+    tElementSet subjects;
+    uint32 n = node->getChildCount(node);
+    for (uint32 i = ignore_first ? 1 : 0; i < n; ++i)
+    {
+        pANTLR3_BASE_TREE child = (pANTLR3_BASE_TREE)node->getChild(node, i);
+        pANTLR3_COMMON_TOKEN tok = child->getToken(child);
+        assert(tok);
+        if (tok->type == SEP_ATTR_CONST || tok->type == SEP_ATTR_VAR)
+        {
+            if (!subjects.empty())
+            {
+                GENERATE_ATTRS(i + 1)
+                subjects.clear();
+                const_attrs.clear();
+                var_attrs.clear();
+            }
+            pANTLR3_BASE_TREE nd = (pANTLR3_BASE_TREE)child->getChild(child, 0);
+            sElement *el = _addNode(GET_NODE_TEXT(nd));
+            if (tok->type == SEP_ATTR_CONST)
+                const_attrs.insert(el);
+            else
+                var_attrs.insert(el);
+        } else
+        {
+            subjects.insert(parseElementTree(child));
+        }
+    }
+    GENERATE_ATTRS(n)
+}
+
 void SCsTranslator::processSentenceLevel1(pANTLR3_BASE_TREE node)
 {
     unsigned int nodesCount = node->getChildCount(node);
@@ -187,70 +244,20 @@ void SCsTranslator::processSentenceLevel1(pANTLR3_BASE_TREE node)
     if (n != pred.npos)
         type = _getArcPreffixType(pred.substr(0, n));
 
-    _addEdge(el_obj, el_subj, type, pred);
-}
-
-#define GENERATE_ATTRS \
-tElementSet::iterator itSubj, itSubjEnd = subjects.end(); \
-for (itSubj = subjects.begin(); itSubj != itSubjEnd; ++itSubj) \
-{ \
-    sElement *el_subj = *itSubj; \
-    sElement *el_arc = _addEdge(el_obj, el_subj, type_connector, ""); \
-    tElementSet::iterator itAttrs, itAttrsEnd = var_attrs.end(); \
-    for (itAttrs = var_attrs.begin(); itAttrs != itAttrsEnd; ++itAttrs) \
-        _addEdge(*itAttrs, el_arc, sc_type_arc_access | sc_type_var | sc_type_arc_pos | sc_type_arc_perm, ""); \
-    itAttrsEnd = const_attrs.end(); \
-    for (itAttrs = const_attrs.begin(); itAttrs != itAttrsEnd; ++itAttrs) \
-        _addEdge(*itAttrs, el_arc, sc_type_arc_pos_const_perm, ""); \
+    _addEdge(el_obj, el_subj, type, false, pred);
 }
 
 void SCsTranslator::processSentenceLevel2_7(pANTLR3_BASE_TREE node)
 {
     String connector = GET_NODE_TEXT(node);
-    sc_type type_connector = _getTypeByConnector(connector);
+
 
     // determine object
     pANTLR3_BASE_TREE node_obj = (pANTLR3_BASE_TREE)node->getChild(node, 0);
     sElement *el_obj = _createElement(GET_NODE_TEXT(node_obj));
 
-
     // no we need to parse attributes and predicates
-    tElementSet var_attrs, const_attrs;
-    tElementSet subjects;
-    uint32 n = node->getChildCount(node);
-    for (uint32 i = 1; i < n; ++i)
-    {
-        pANTLR3_BASE_TREE child = (pANTLR3_BASE_TREE)node->getChild(node, i);
-        pANTLR3_COMMON_TOKEN tok = child->getToken(child);
-
-        assert(tok);
-
-        if (tok->type == SEP_ATTR_CONST || tok->type == SEP_ATTR_VAR)
-        {
-            // process stored subjects (new attributes starts)
-            if (!subjects.empty())
-            {
-                GENERATE_ATTRS
-
-                subjects.clear();
-                const_attrs.clear();
-                var_attrs.clear();
-            }
-
-            pANTLR3_BASE_TREE nd = (pANTLR3_BASE_TREE)child->getChild(child, 0);
-            sElement *el = _addNode(GET_NODE_TEXT(nd));
-            if (tok->type == SEP_ATTR_CONST)
-                const_attrs.insert(el);
-            else
-                var_attrs.insert(el);
-        } else
-        {
-            subjects.insert(parseElementTree(child));
-        }
-
-    }
-
-    GENERATE_ATTRS
+    processAttrsIdtfList(true, node, el_obj, connector, false);
 }
 
 void SCsTranslator::processSentenceAssign(pANTLR3_BASE_TREE node)
@@ -367,15 +374,22 @@ sElement* SCsTranslator::_addNode(const String &idtf)
     return el;
 }
 
-sElement* SCsTranslator::_addEdge(sElement *source, sElement *target, sc_type type, const String &idtf)
+sElement* SCsTranslator::_addEdge(sElement *source, sElement *target, sc_type type, bool is_reversed, const String &idtf)
 {
     assert(source && target);
 
     sElement *el = _createElement(idtf);
 
     el->type = type;
-    el->arc_src = source;
-    el->arc_trg = target;
+    if (is_reversed)
+    {
+        el->arc_src = target;
+        el->arc_trg = source;
+    } else
+    {
+        el->arc_src = source;
+        el->arc_trg = target;
+    }
 
     return el;
 }
@@ -396,18 +410,54 @@ sElement* SCsTranslator::parseElementTree(pANTLR3_BASE_TREE tree)
     pANTLR3_COMMON_TOKEN tok = tree->getToken(tree);
     assert(tok);
 
+    sElement *res = 0;
     if (tok->type == ID_SYSTEM)
-        return _addNode(GET_NODE_TEXT(tree));
+        res = _addNode(GET_NODE_TEXT(tree));
 
     if (tok->type == SEP_LPAR)
+    {
+        assert(tree->getChildCount(tree) >= 3);
+        pANTLR3_BASE_TREE node_obj = (pANTLR3_BASE_TREE)tree->getChild(tree, 0);
+        pANTLR3_BASE_TREE node_pred = (pANTLR3_BASE_TREE)tree->getChild(tree, 1);
+        pANTLR3_BASE_TREE node_subj = (pANTLR3_BASE_TREE)tree->getChild(tree, 2);
+
+        String pred = GET_NODE_TEXT(node_pred);
+        sElement *src = parseElementTree(node_obj);
+        sElement *trg = parseElementTree(node_subj);
+
+        assert(src && trg);
+
+        res = _addEdge(src, trg, _getTypeByConnector(pred), _isConnectorReversed(pred), "");
+    }
+
+    if (tok->type == LINK)
+        res = _addLink(true, GET_NODE_TEXT(tree));
+
+    if (tok->type == SEP_LTUPLE || tok->type == SEP_LSET)
     {
 
     }
 
-    if (tok->type == LINK)
-        return _addLink(true, GET_NODE_TEXT(tree));
+    // now process internal sentences
+    uint32 n = tree->getChildCount(tree);
+    for (uint32 i = 0; i < n; ++i)
+    {
+        pANTLR3_BASE_TREE internal = (pANTLR3_BASE_TREE)tree->getChild(tree, i);
+        pANTLR3_COMMON_TOKEN tok = internal->getToken(internal);
 
-    return 0;
+        if (tok->type != SEP_LINT) continue;
+
+        // process internal sentences
+        uint32 nc = internal->getChildCount(internal);
+        for (uint32 j = 0; j < nc; ++j)
+        {
+            pANTLR3_BASE_TREE node_pred = (pANTLR3_BASE_TREE)internal->getChild(internal, j);
+            String connector = GET_NODE_TEXT(node_pred);
+            processAttrsIdtfList(false, node_pred, res, connector, false);
+        }
+    }
+
+    return res;
 }
 
 sc_type SCsTranslator::_getArcPreffixType(const String &preffix) const
@@ -527,6 +577,17 @@ sc_type SCsTranslator::_getTypeByConnector(const String &connector)
     return 0;
 }
 
+bool SCsTranslator::_isConnectorReversed(const String &connector)
+{
+    if (connector == "<" || connector == "<-" || connector == "<.." || connector == "<=" ||
+        connector == "_<=" || connector == "_<-" || connector == "<|-" || connector == "_<|-" ||
+        connector == "</-" || connector == "_</-" || connector == "<~" || connector == "_<~" ||
+        connector == "<|~" || connector == "_<|~" || connector == "</~" || connector == "_</~")
+        return true;
+
+    return false;
+}
+
 void SCsTranslator::dumpDot(pANTLR3_BASE_TREE tree)
 {
     std::ofstream out("test.dot");
@@ -576,11 +637,14 @@ void SCsTranslator::dumpScs(const String &fileName)
     {
         sElement *el = *it;
 
-        StringStream ss;
-        ss << el;
+        StringStream s1, s2, s3;
+        s1 << el->arc_src;
+        s2 << el;
+        s3 << el->arc_trg;
+
 
         if (el->type & sc_type_arc_mask)
-            out << el->arc_src->idtf << " | " << (el->idtf.empty() ? ss.str() : el->idtf) << " | " << el->arc_trg->idtf << ";" << std::endl;
+            out << (el->arc_src->idtf.empty() ? s1.str() : el->arc_src->idtf) << " | " << (el->idtf.empty() ? s2.str() : el->idtf) << " | " << (el->arc_trg->idtf.empty() ? s3.str() : el->arc_trg->idtf) << ";" << std::endl;
     }
 
     out.close();

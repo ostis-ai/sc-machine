@@ -79,6 +79,9 @@ private:
     //! Determine sentence type
     eSentenceType determineSentenceType(pANTLR3_BASE_TREE node);
 
+    //! Process attrs idtf list
+    void processAttrsIdtfList(bool ignore_first, pANTLR3_BASE_TREE node, sElement *el_obj, const String &connector, bool generate_order);
+
     //! Process node as scs sentence level 1
     void processSentenceLevel1(pANTLR3_BASE_TREE node);
     //! Process node as scs sentence level 2-6
@@ -107,11 +110,12 @@ private:
     /*! Append new edge into elements
      * @param source Pointer to source element
      * @param target Pointer to target element
-     * @param type Type of adge
+     * @param type Type of edge
+     * @param is_reversed Flag to reverse edge direction
      * @param idtf Identifier of element
      * @returns Returns id of element
      */
-    sElement* _addEdge(sElement *source, sElement *target, sc_type type, const String &idtf);
+    sElement* _addEdge(sElement *source, sElement *target, sc_type type, bool is_reversed, const String &idtf);
 
     /*! Append new link into elements
      * @param is_file Flag to determine data type. If this flag is true, then data is a file path; otherwise
@@ -131,6 +135,8 @@ private:
     sc_type _getTypeBySetIdtf(const String &setIdtf) const;
     //! Returns arc type by connector token
     sc_type _getTypeByConnector(const String &connector);
+    //! If connector reversed, then returns true; otherwise returns false
+    bool _isConnectorReversed(const String &connector);
 
     //! Dump to dot
     void dumpDot(pANTLR3_BASE_TREE tree);
