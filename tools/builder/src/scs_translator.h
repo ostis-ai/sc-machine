@@ -103,9 +103,10 @@ private:
 
     /*! Append new node into elements
      * @param idtf Identifier of element
+     * @param type sc-type of node
      * @returns Returns id of element
      */
-    sElement* _addNode(const String &idtf);
+    sElement* _addNode(const String &idtf, sc_type type = 0);
 
     /*! Append new edge into elements
      * @param source Pointer to source element

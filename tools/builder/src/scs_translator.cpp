@@ -74,7 +74,7 @@ bool SCsTranslator::processString(const String &data)
     scsParser_syntax_return r = parser->syntax(parser);
     pANTLR3_BASE_TREE tree = r.tree;
 
-    dumpDot(tree);
+    //dumpDot(tree);
     // translate
     buildScText(tree);
 
@@ -138,7 +138,7 @@ bool SCsTranslator::buildScText(pANTLR3_BASE_TREE tree)
         std::cout << el->idtf << ": " << el->type << std::endl;
     }
 
-    dumpScs("test.pscs");
+    //dumpScs("test.pscs");
 
     std::cout << "Generate sc-text" << std::endl;
 
@@ -179,8 +179,8 @@ for (itSubj = subjects.begin(); itSubj != itSubjEnd; ++itSubj) \
     if (generate_order) \
     { \
         StringStream ss; \
-        ss << (idx) << "'"; \
-        _addEdge(_addNode(ss.str()), el_arc, sc_type_arc_pos_const_perm, false, ""); \
+        ss << "rrel_" << (idx++); \
+        _addEdge(_addNode(ss.str(), sc_type_node_role), el_arc, sc_type_arc_pos_const_perm, false, ""); \
     } \
 }
 
@@ -192,6 +192,7 @@ void SCsTranslator::processAttrsIdtfList(bool ignore_first, pANTLR3_BASE_TREE no
     tElementSet var_attrs, const_attrs;
     tElementSet subjects;
     uint32 n = node->getChildCount(node);
+    uint32 idx = 1;
     for (uint32 i = ignore_first ? 1 : 0; i < n; ++i)
     {
         pANTLR3_BASE_TREE child = (pANTLR3_BASE_TREE)node->getChild(node, i);
@@ -201,7 +202,7 @@ void SCsTranslator::processAttrsIdtfList(bool ignore_first, pANTLR3_BASE_TREE no
         {
             if (!subjects.empty())
             {
-                GENERATE_ATTRS(i + 1)
+                GENERATE_ATTRS(idx)
                 subjects.clear();
                 const_attrs.clear();
                 var_attrs.clear();
@@ -217,7 +218,7 @@ void SCsTranslator::processAttrsIdtfList(bool ignore_first, pANTLR3_BASE_TREE no
             subjects.insert(parseElementTree(child));
         }
     }
-    GENERATE_ATTRS(n)
+    GENERATE_ATTRS(idx)
 }
 
 void SCsTranslator::processSentenceLevel1(pANTLR3_BASE_TREE node)
@@ -365,11 +366,11 @@ sElement* SCsTranslator::_createElement(const String &idtf)
     return el;
 }
 
-sElement* SCsTranslator::_addNode(const String &idtf)
+sElement* SCsTranslator::_addNode(const String &idtf, sc_type type)
 {
     sElement *el = _createElement(idtf);
 
-    el->type = sc_type_node;
+    el->type = sc_type_node | type;
 
     return el;
 }
@@ -433,9 +434,23 @@ sElement* SCsTranslator::parseElementTree(pANTLR3_BASE_TREE tree)
     if (tok->type == LINK)
         res = _addLink(true, GET_NODE_TEXT(tree));
 
+    if (tok->type == CONTENT)
+    {
+        String content = GET_NODE_TEXT(tree);
+        content = content.substr(1, content.size() - 2);
+
+        if (StringUtil::startsWith(content, "*", false) && StringUtil::endsWith(content, "*", false))
+        {
+            // TODO support contours
+            res = _addNode("", sc_type_node_struct);
+        } else
+            res = _addLink(false, content);
+    }
+
     if (tok->type == SEP_LTUPLE || tok->type == SEP_LSET)
     {
-
+        res = _addNode("", sc_type_node_tuple);
+        processAttrsIdtfList(false, tree, res, "->", tok->type == SEP_LTUPLE);
     }
 
     // now process internal sentences
