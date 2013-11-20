@@ -65,7 +65,7 @@ sc_result sc_helper_find_element_by_system_identifier(const sc_char* data, sc_ui
  * @remarks If sc-element already has system identifier, then it would be replaced. If system identifier
  * already used for another sc-element, then function returns SC_ERROR_INVALID_PARAMS
  */
-sc_result sc_helper_set_system_identifier(sc_addr addr, sc_char* data, sc_uint32 len);
+sc_result sc_helper_set_system_identifier(sc_addr addr, const sc_char* data, sc_uint32 len);
 
 /*! Return sc-addr of system identifier for specified sc-element
  * @param el sc-addr of element to get it system identifier

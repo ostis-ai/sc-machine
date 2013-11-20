@@ -53,9 +53,14 @@ bool Builder::run(const String &inputPath, const String &outputPath, bool clearO
     sc_helper_init();
 
     // print founded files
+    uint32 done = 0;
     tFileSet::iterator it, itEnd = mFileSet.end();
     for (it = mFileSet.begin(); it != itEnd; ++it)
+    {
+        float progress = (float)++done / (float)mFileSet.size();
+        std::cout << "[" << (int) (progress * 100.f) << "%] " << *it << std::endl;
         processFile(*it);
+    }
 
     // print statistics
     sc_stat stat;
@@ -87,8 +92,6 @@ bool Builder::hasTranslator(const std::string &ext) const
 
 bool Builder::processFile(const String &filename)
 {
-    std::cout << "Process: " << filename << std::endl;
-
     // get file extension
     size_t n = filename.rfind(".");
     if (n == std::string::npos)

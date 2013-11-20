@@ -55,7 +55,8 @@ class SCsTranslator : public iTranslator
         SentenceUnknown = 0,
         SentenceLevel1 = 1,
         SentenceLevel2_7 = 2,
-        SentenceAssign = 3
+        SentenceAssign = 3,
+        SentenceEOF = 4
     } eSentenceType;
 
 public:
@@ -92,7 +93,7 @@ private:
 
     // --------- helper functions -----------
     //! Function that resolve sc-addr for element with specified identifier
-    sc_addr resolveScAddr(const String &idtf);
+    sc_addr resolveScAddr(sElement *el);
     //! Create new sc-addr of element
     sc_addr createScAddr(sElement *el);
     //! Determines sc-type of element

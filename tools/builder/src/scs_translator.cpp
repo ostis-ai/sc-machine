@@ -74,7 +74,7 @@ bool SCsTranslator::processString(const String &data)
     scsParser_syntax_return r = parser->syntax(parser);
     pANTLR3_BASE_TREE tree = r.tree;
 
-    //dumpDot(tree);
+    dumpDot(tree);
     // translate
     buildScText(tree);
 
@@ -104,6 +104,8 @@ bool SCsTranslator::buildScText(pANTLR3_BASE_TREE tree)
         case SentenceAssign:
             processSentenceAssign(sentenceNode);
             break;
+        case SentenceEOF:
+            break;
         default:
             std::cerr << "Unknown sentence type. Sentence " << i + 1 << std::endl;
             break;
@@ -112,7 +114,6 @@ bool SCsTranslator::buildScText(pANTLR3_BASE_TREE tree)
 
 
     // now generate sc-text in memory
-    std::cout << "Determine element types" << std::endl;
     tElementSet::iterator it, itEnd = mElementSet.end();
     for (it = mElementSet.begin(); it != itEnd; ++it)
     {
@@ -135,14 +136,54 @@ bool SCsTranslator::buildScText(pANTLR3_BASE_TREE tree)
             }
         }
 
-        std::cout << el->idtf << ": " << el->type << std::endl;
     }
 
-    //dumpScs("test.pscs");
+    tElementSet arcs;
+    for (it = mElementSet.begin(); it != itEnd; ++it)
+    {
+        sElement *el = *it;
+        assert(el);
 
-    std::cout << "Generate sc-text" << std::endl;
+        // skip processed triples
+        if (el->ignore) continue;
 
+        sc_addr addr = resolveScAddr(el);
 
+        if (SC_ADDR_IS_EMPTY(addr))
+        {
+            assert(el->type & sc_type_arc_mask);
+            arcs.insert(el);
+        }
+    }
+
+    bool created = true;
+    while (!arcs.empty() && created)
+    {
+        created = false;
+
+        tElementSet createdSet;
+        itEnd = arcs.end();
+        for (it = arcs.begin(); it != itEnd; ++it)
+        {
+            sElement *arc_el = *it;
+            assert(arc_el->type & sc_type_arc_mask);
+            sc_addr addr = resolveScAddr(arc_el);
+
+            if (SC_ADDR_IS_EMPTY(addr)) continue;
+
+            createdSet.insert(arc_el);
+        }
+
+        created = !createdSet.empty();
+        itEnd = createdSet.end();
+        for (it = createdSet.begin(); it != itEnd; ++it)
+            arcs.erase(*it);
+    }
+
+    // generate system identifiers
+    tStringAddrMap::iterator itIdtf, itIdtfEnd = mSysIdtfAddrs.end();
+    for (itIdtf = mSysIdtfAddrs.begin(); itIdtf != itIdtfEnd; ++itIdtf)
+        sc_helper_set_system_identifier(itIdtf->second, itIdtf->first.c_str(), itIdtf->first.size());
 
     return true;
 }
@@ -160,6 +201,9 @@ SCsTranslator::eSentenceType SCsTranslator::determineSentenceType(pANTLR3_BASE_T
 
     if (tok->type == SEP_ASSIGN)
         return SentenceAssign;
+
+    if (tok->type == EOF)
+        return SentenceEOF;
 
     return SentenceUnknown;
 }
@@ -198,6 +242,10 @@ void SCsTranslator::processAttrsIdtfList(bool ignore_first, pANTLR3_BASE_TREE no
         pANTLR3_BASE_TREE child = (pANTLR3_BASE_TREE)node->getChild(node, i);
         pANTLR3_COMMON_TOKEN tok = child->getToken(child);
         assert(tok);
+
+        // skip internal sentences
+        if (tok->type == SEP_LINT) continue;
+
         if (tok->type == SEP_ATTR_CONST || tok->type == SEP_ATTR_VAR)
         {
             if (!subjects.empty())
@@ -272,33 +320,37 @@ void SCsTranslator::processSentenceAssign(pANTLR3_BASE_TREE node)
     mAssignments[GET_NODE_TEXT(node_left)] = GET_NODE_TEXT(node_right);
 }
 
-sc_addr SCsTranslator::resolveScAddr(const String &idtf)
+sc_addr SCsTranslator::resolveScAddr(sElement *el)
 {
-    // try to find in system identifiers
-    tStringAddrMap::iterator it = mSysIdtfAddrs.find(idtf);
-    if (it != mSysIdtfAddrs.end())
-        return it->second;
-
-    // try to find in global identifiers
-    it = msGlobalIdtfAddrs.find(idtf);
-    if (it != msGlobalIdtfAddrs.end())
-        return it->second;
-
-    // try to find in local identifiers
-    it = mLocalIdtfAddrs.find(idtf);
-    if (it != mLocalIdtfAddrs.end())
-        return it->second;
-
-    // resolve system identifier
     sc_addr addr;
-    sc_result res = sc_helper_find_element_by_system_identifier(idtf.c_str(), idtf.size(), &addr);
-    if (res == SC_RESULT_OK)
+    if (!el->idtf.empty())
     {
-        mSysIdtfAddrs[idtf] = addr;
-        return addr;
+        // try to find in system identifiers
+        tStringAddrMap::iterator it = mSysIdtfAddrs.find(el->idtf);
+        if (it != mSysIdtfAddrs.end())
+            return it->second;
+
+        // try to find in global identifiers
+        it = msGlobalIdtfAddrs.find(el->idtf);
+        if (it != msGlobalIdtfAddrs.end())
+            return it->second;
+
+        // try to find in local identifiers
+        it = mLocalIdtfAddrs.find(el->idtf);
+        if (it != mLocalIdtfAddrs.end())
+            return it->second;
+
+        // resolve system identifier
+        sc_result res = sc_helper_find_element_by_system_identifier(el->idtf.c_str(), el->idtf.size(), &addr);
+        if (res == SC_RESULT_OK)
+        {
+            mSysIdtfAddrs[el->idtf] = addr;
+            return addr;
+        }
     }
 
-    SC_ADDR_MAKE_EMPTY(addr);
+    // generate addr
+    addr = createScAddr(el);
 
     return addr;
 }
@@ -306,6 +358,7 @@ sc_addr SCsTranslator::resolveScAddr(const String &idtf)
 sc_addr SCsTranslator::createScAddr(sElement *el)
 {
     sc_addr addr;
+    SC_ADDR_MAKE_EMPTY(addr);
 
     if (el->type & sc_type_node)
         addr = sc_memory_node_new(el->type);
@@ -314,7 +367,8 @@ sc_addr SCsTranslator::createScAddr(sElement *el)
     else
     {
         assert(el->arc_src && el->arc_trg);
-        assert(SC_ADDR_IS_NOT_EMPTY(el->arc_src->addr) && SC_ADDR_IS_NOT_EMPTY(el->arc_trg->addr));
+        if (SC_ADDR_IS_EMPTY(el->arc_src->addr) || SC_ADDR_IS_EMPTY(el->arc_trg->addr))
+            return addr;
         addr = sc_memory_arc_new(el->type, el->arc_src->addr, el->arc_trg->addr);
     }
 
@@ -340,6 +394,8 @@ void SCsTranslator::determineElementType(sElement *el)
     sc_type oldType = el->type;
     sc_type newType = oldType;
 
+    if ((newType & sc_type_element_mask) == 0)
+        newType = newType | sc_type_node;
     newType = (newType & (~sc_type_constancy_mask)) | (StringUtil::startsWith(el->idtf, "_", false) ? sc_type_var : sc_type_const);
 
     el->type = newType;

@@ -8,6 +8,7 @@
 #include <set>
 #include <algorithm>
 #include <sstream>
+#include <iomanip>
 
 typedef std::string String;
 typedef std::stringstream StringStream;

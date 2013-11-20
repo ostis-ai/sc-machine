@@ -118,8 +118,7 @@ sc_result sc_helper_init()
 
         sc_addr arc = sc_memory_arc_new(sc_type_arc_common | sc_type_const, addr, link);
         sc_memory_arc_new(sc_type_arc_pos_const_perm, addr, arc);
-
-        return SC_RESULT_ERROR;
+        sc_keynodes[SC_KEYNODE_NREL_SYSTEM_IDENTIFIER] = addr;
     }
 
     sc_helper_is_initialized = SC_TRUE;
@@ -185,7 +184,7 @@ sc_result sc_helper_find_element_by_system_identifier(const sc_char* data, sc_ui
     return found == SC_TRUE ? SC_RESULT_OK : SC_RESULT_ERROR;
 }
 
-sc_result sc_helper_set_system_identifier(sc_addr addr, sc_char* data, sc_uint32 len)
+sc_result sc_helper_set_system_identifier(sc_addr addr, const sc_char* data, sc_uint32 len)
 {
     sc_iterator5 *it5 = 0;
     sc_addr *results = 0;
