@@ -104,7 +104,7 @@ sc_bool sc_stream_file_eof(const sc_stream *stream)
 }
 
 
-sc_stream* sc_stream_file_new(sc_char *file_name, sc_uint8 flags)
+sc_stream* sc_stream_file_new(const sc_char *file_name, sc_uint8 flags)
 {
     sc_stream *stream = 0;
     FILE *fd = 0;
@@ -113,7 +113,6 @@ sc_stream* sc_stream_file_new(sc_char *file_name, sc_uint8 flags)
     {
         g_assert(!(flags & SC_STREAM_APPEND)); // couldn't support append in read mode
         fd = fopen(file_name, "r");
-        g_assert(fd != 0);
     }else
     {
         if (flags & SC_STREAM_WRITE)

@@ -15,6 +15,12 @@ public:
 
     //! Check if string ends with specified pattern
     static bool endsWith(const String &str, const String &pattern, bool lowerCase);
+
+    //! Split file name to path and name
+    static void splitFilename(const String& qualifiedName, String& outBasename, String& outPath);
+
+    //! Make file path normalized
+    static String normalizeFilePath(const String& init, bool makeLowerCase);
 };
 
 #endif // _utils_h_

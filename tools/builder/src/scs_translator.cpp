@@ -5,8 +5,9 @@
 #include <iostream>
 #include <assert.h>
 
+#include <boost/filesystem.hpp>
+
 SCsTranslator::tStringAddrMap SCsTranslator::msGlobalIdtfAddrs = SCsTranslator::tStringAddrMap();
-uint32 SCsTranslator::msIdCounter = 1;
 
 
 #define GET_NODE_TEXT(node) String((const char*)node->getText(node)->chars)
@@ -28,6 +29,8 @@ SCsTranslator::~SCsTranslator()
 
 bool SCsTranslator::translate(const String &filename)
 {
+    mFileName = filename;
+
     // open file and read data
     bool result = true;
     std::ifstream ifs(filename.c_str());
@@ -74,10 +77,12 @@ bool SCsTranslator::processString(const String &data)
     scsParser_syntax_return r = parser->syntax(parser);
     pANTLR3_BASE_TREE tree = r.tree;
 
-    dumpDot(tree);
+    //dumpDot(tree);
+
     // translate
     buildScText(tree);
 
+    //dumpScs("test.scsd");
 
     parser->free(parser);
     tokens->free(tokens);
@@ -180,10 +185,8 @@ bool SCsTranslator::buildScText(pANTLR3_BASE_TREE tree)
             arcs.erase(*it);
     }
 
-    // generate system identifiers
-    tStringAddrMap::iterator itIdtf, itIdtfEnd = mSysIdtfAddrs.end();
-    for (itIdtf = mSysIdtfAddrs.begin(); itIdtf != itIdtfEnd; ++itIdtf)
-        sc_helper_set_system_identifier(itIdtf->second, itIdtf->first.c_str(), itIdtf->first.size());
+    if (!arcs.empty())
+        std::cerr << " Arcs not created: " << arcs.size() << std::endl;
 
     return true;
 }
@@ -322,35 +325,58 @@ void SCsTranslator::processSentenceAssign(pANTLR3_BASE_TREE node)
 
 sc_addr SCsTranslator::resolveScAddr(sElement *el)
 {
+    assert(SC_ADDR_IS_EMPTY(el->addr));
+
     sc_addr addr;
+    SC_ADDR_MAKE_EMPTY(addr);
     if (!el->idtf.empty())
     {
         // try to find in system identifiers
         tStringAddrMap::iterator it = mSysIdtfAddrs.find(el->idtf);
         if (it != mSysIdtfAddrs.end())
-            return it->second;
+            addr = it->second;
 
         // try to find in global identifiers
         it = msGlobalIdtfAddrs.find(el->idtf);
         if (it != msGlobalIdtfAddrs.end())
-            return it->second;
+            addr = it->second;
 
         // try to find in local identifiers
         it = mLocalIdtfAddrs.find(el->idtf);
         if (it != mLocalIdtfAddrs.end())
-            return it->second;
+            addr = it->second;
 
         // resolve system identifier
         sc_result res = sc_helper_find_element_by_system_identifier(el->idtf.c_str(), el->idtf.size(), &addr);
         if (res == SC_RESULT_OK)
         {
             mSysIdtfAddrs[el->idtf] = addr;
-            return addr;
         }
+    }
+
+    if (SC_ADDR_IS_NOT_EMPTY(addr))
+    {
+        el->addr = addr;
+        return addr;
     }
 
     // generate addr
     addr = createScAddr(el);
+    // setup seystem identifier
+    if (!el->idtf.empty())
+    {
+        if (StringUtil::startsWith(el->idtf, "..", false))
+            mLocalIdtfAddrs[el->idtf] = addr;
+        else if (StringUtil::startsWith(el->idtf, ".", false))
+            msGlobalIdtfAddrs[el->idtf] = addr;
+        else
+        {
+            sc_helper_set_system_identifier(addr, el->idtf.c_str(), el->idtf.size());
+            mSysIdtfAddrs[el->idtf] = addr;
+        }
+    }
+
+
 
     return addr;
 }
@@ -363,7 +389,32 @@ sc_addr SCsTranslator::createScAddr(sElement *el)
     if (el->type & sc_type_node)
         addr = sc_memory_node_new(el->type);
     else if (el->type & sc_type_link)
+    {
         addr = sc_memory_link_new();
+
+        // setup link content
+        if (el->link_is_file)
+        {
+            String file_path;
+            if (_getAbsFilePath(el->link_data, file_path))
+            {
+                sc_stream *stream = sc_stream_file_new(file_path.c_str(), SC_STREAM_READ);
+                if (stream)
+                {
+                    sc_memory_set_link_content(addr, stream);
+                    sc_stream_free(stream);
+                } else
+                    std::cerr << "Can't open file " << el->link_data << std::endl;
+            } else
+                std::cerr << "Unsupported link type " << el->link_data << std::endl;
+
+        } else
+        {
+            sc_stream *stream = sc_stream_memory_new(el->link_data.c_str(), el->link_data.size(), SC_STREAM_READ, SC_FALSE);
+            sc_memory_set_link_content(addr, stream);
+            sc_stream_free(stream);
+        }
+    }
     else
     {
         assert(el->arc_src && el->arc_trg);
@@ -396,7 +447,10 @@ void SCsTranslator::determineElementType(sElement *el)
 
     if ((newType & sc_type_element_mask) == 0)
         newType = newType | sc_type_node;
-    newType = (newType & (~sc_type_constancy_mask)) | (StringUtil::startsWith(el->idtf, "_", false) ? sc_type_var : sc_type_const);
+
+    newType = (newType & (~sc_type_constancy_mask));
+    sc_type const_type = (StringUtil::startsWith(el->idtf, "_", false) ? sc_type_var : sc_type_const);
+    newType = newType | (const_type);
 
     el->type = newType;
 }
@@ -412,7 +466,6 @@ sElement* SCsTranslator::_createElement(const String &idtf)
 
     sElement *el = new sElement();
 
-    el->id = msIdCounter++;
     el->idtf = idtf;
     assert(mElementIdtf.find(idtf) == mElementIdtf.end());
     if (!idtf.empty())
@@ -453,7 +506,7 @@ sElement* SCsTranslator::_addEdge(sElement *source, sElement *target, sc_type ty
 
 sElement* SCsTranslator::_addLink(bool is_file, const String &data)
 {
-    sElement *el = _createElement(is_file ? data : "");
+    sElement *el = _createElement("");
 
     el->type = sc_type_link;
     el->link_is_file = is_file;
@@ -492,15 +545,72 @@ sElement* SCsTranslator::parseElementTree(pANTLR3_BASE_TREE tree)
 
     if (tok->type == CONTENT)
     {
+        res = _addNode("", sc_type_node_struct);
+
         String content = GET_NODE_TEXT(tree);
         content = content.substr(1, content.size() - 2);
 
         if (StringUtil::startsWith(content, "*", false) && StringUtil::endsWith(content, "*", false))
         {
-            // TODO support contours
-            res = _addNode("", sc_type_node_struct);
+            // parse contour data
+            String data = content.substr(1, content.size() - 2);
+
+            // check if link to file
+            if (StringUtil::startsWith(data, "^\"", false))
+            {
+                String filename;
+                bool result = false;
+                if (_getAbsFilePath(data.substr(1), filename))
+                {
+                    std::ifstream ifs(filename.c_str());
+                    if (ifs.is_open())
+                    {
+                        data = String((std::istreambuf_iterator<char>(ifs)), std::istreambuf_iterator<char>());
+                        ifs.close();
+                        result = true;
+                    }
+                }
+
+                if (!result)
+                {
+                    std::cerr << "Can't open file " << data << std::endl;
+                    data = "";
+                }
+            }
+
+            // parse data
+            if (!data.empty())
+            {
+                SCsTranslator translator;
+                translator.processString(data);
+
+                // now we need to get all created elements and create arcs to them
+                tElementSet::iterator it, itEnd = translator.mElementSet.end();
+                for (it = translator.mElementSet.begin(); it != itEnd; ++it)
+                {
+                    if ((*it)->ignore) continue;
+
+                    sElement *el = new sElement();
+                    el->ignore = true;
+                    el->addr = (*it)->addr;
+
+                    mElementSet.insert(el);
+                    _addEdge(res, el, sc_type_arc_pos_const_perm, false, "");
+                }
+
+                // merge identifiers map
+                mSysIdtfAddrs.insert(translator.mSysIdtfAddrs.begin(), translator.mSysIdtfAddrs.end());
+                mLocalIdtfAddrs.insert(translator.mLocalIdtfAddrs.begin(), translator.mLocalIdtfAddrs.end());
+            }
+
+
         } else
-            res = _addLink(false, content);
+        {
+            if (StringUtil::startsWith(content, "^\"", false))
+                res = _addLink(true, content.substr(1));
+            else
+                res = _addLink(false, content);
+        }
     }
 
     if (tok->type == SEP_LTUPLE || tok->type == SEP_LSET)
@@ -659,6 +769,31 @@ bool SCsTranslator::_isConnectorReversed(const String &connector)
     return false;
 }
 
+bool SCsTranslator::_getAbsFilePath(const String &url, String &abs_path)
+{
+    // split file name
+    String path, name;
+    StringUtil::splitFilename(mFileName, name, path);
+    String file_name = url.substr(1, url.size() - 2);
+    static String file_preffix = "file://";
+    if (StringUtil::startsWith(file_name, file_preffix, true))
+    {
+        String file_path = file_name.substr(file_preffix.size());
+        if (!StringUtil::startsWith(file_path, "/", false))
+        {
+            boost::filesystem::path dir (path);
+            boost::filesystem::path file (file_path);
+            boost::filesystem::path full_path = dir / file;
+            abs_path = full_path.string();
+        }
+
+        return true;
+    }
+
+    return false;
+
+}
+
 void SCsTranslator::dumpDot(pANTLR3_BASE_TREE tree)
 {
     std::ofstream out("test.dot");
@@ -715,7 +850,9 @@ void SCsTranslator::dumpScs(const String &fileName)
 
 
         if (el->type & sc_type_arc_mask)
-            out << (el->arc_src->idtf.empty() ? s1.str() : el->arc_src->idtf) << " | " << (el->idtf.empty() ? s2.str() : el->idtf) << " | " << (el->arc_trg->idtf.empty() ? s3.str() : el->arc_trg->idtf) << ";" << std::endl;
+            out << (el->arc_src->idtf.empty() ? s1.str() : el->arc_src->idtf) << "." << el->arc_src->type << " | " <<
+                   (el->idtf.empty() ? s2.str() : el->idtf) << "." << el->type << " | " <<
+                   (el->arc_trg->idtf.empty() ? s3.str() : el->arc_trg->idtf) << "." << el->arc_trg->type << ";" << std::endl;
     }
 
     out.close();

@@ -19,7 +19,6 @@ struct sc_add_compare
 
 struct sElement
 {
-    uint32 id;
     sc_type type;
     sc_addr addr;
     String idtf;
@@ -35,14 +34,29 @@ struct sElement
     bool ignore;
 
     sElement()
-        : id(0)
-        , type(0)
+        : type(0)
         , arc_src(0)
         , arc_trg(0)
         , link_is_file(false)
         , ignore(false)
     {
         SC_ADDR_MAKE_EMPTY(addr);
+    }
+
+    sElement* clone()
+    {
+        sElement *cl = new sElement();
+
+        cl->type = type;
+        cl->addr = addr;
+        cl->idtf = idtf;
+        cl->arc_src = arc_src;
+        cl->arc_trg = arc_trg;
+        cl->link_is_file = link_is_file;
+        cl->link_data = link_data;
+        cl->ignore = ignore;
+
+        return cl;
     }
 };
 
@@ -140,6 +154,9 @@ private:
     //! If connector reversed, then returns true; otherwise returns false
     bool _isConnectorReversed(const String &connector);
 
+    //! Get absolute file path from it url
+    bool _getAbsFilePath(const String &url, String &abs_path);
+
     //! Dump to dot
     void dumpDot(pANTLR3_BASE_TREE tree);
     void dumpNode(pANTLR3_BASE_TREE node, std::ofstream &stream);
@@ -159,8 +176,6 @@ private:
     tElementIdtfMap mElementIdtf;
     //! Set of elements
     tElementSet mElementSet;
-    //! Global counter of elements id's
-    static uint32 msIdCounter;
     //! Map that contains global identifiers
     static tStringAddrMap msGlobalIdtfAddrs;
     //! Map that contains system identifiers
@@ -169,7 +184,8 @@ private:
     tStringAddrMap mLocalIdtfAddrs;
     //! Map to store assignments
     tAssignMap mAssignments;
-
+    //! Processing file name
+    String mFileName;
 };
 
 // -----------------
