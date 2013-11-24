@@ -26,12 +26,13 @@ along with OSTIS. If not, see <http://www.gnu.org/licenses/>.
 
 #include <sc_helper.h>
 #include <sc_memory_headers.h>
-
+#include <stdio.h>
 
 sc_result agent_search_full_semantic_neighborhood(sc_event *event, sc_addr arg)
 {
     sc_addr question, answer;
     sc_iterator3 *it1, *it2, *it3, *it4;
+    sc_iterator5 *it5;
     sc_type el_type;
 
     if (!sc_memory_get_arc_end(arg, &question))
@@ -91,6 +92,32 @@ sc_result agent_search_full_semantic_neighborhood(sc_event *event, sc_addr arg)
                 }
             }
             sc_iterator3_free(it3);
+
+            // search all parents in quasybinary relation
+            it5 = sc_iterator5_f_a_a_a_a_new(sc_iterator3_value(it2, 0),
+                                             sc_type_arc_common | sc_type_const,
+                                             sc_type_node,
+                                             sc_type_arc_pos_const_perm,
+                                             sc_type_node);
+            while (sc_iterator5_next(it5) == SC_TRUE)
+            {
+                printf("HERE\n");
+                if (IS_SYSTEM_ELEMENT(sc_iterator5_value(it5, 1))
+                    || IS_SYSTEM_ELEMENT(sc_iterator5_value(it5, 2))
+                    || IS_SYSTEM_ELEMENT(sc_iterator5_value(it5, 3))
+                    || IS_SYSTEM_ELEMENT(sc_iterator5_value(it5, 4)))
+                    continue;
+
+                // check if it's a quasy binary relation
+                if (sc_helper_check_arc(keynode_quasybinary_relation, sc_iterator5_value(it5, 4), sc_type_arc_pos_const_perm) == SC_TRUE)
+                {
+                    appendIntoAnswer(answer, sc_iterator5_value(it5, 1));
+                    appendIntoAnswer(answer, sc_iterator5_value(it5, 2));
+                    appendIntoAnswer(answer, sc_iterator5_value(it5, 3));
+                    appendIntoAnswer(answer, sc_iterator5_value(it5, 4));
+                }
+            }
+            sc_iterator5_free(it5);
         }
         sc_iterator3_free(it2);
 
