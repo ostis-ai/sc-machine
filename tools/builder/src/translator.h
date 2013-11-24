@@ -51,6 +51,10 @@ protected:
     typedef std::map<String, sc_addr> tStringAddrMap;
     //! Map that contains global identifiers
     static tStringAddrMap msGlobalIdtfAddrs;
+    //! Map that contains system identifiers
+    tStringAddrMap mSysIdtfAddrs;
+    //! Map that contains local identifiers
+    tStringAddrMap mLocalIdtfAddrs;
 };
 
 /*! Interface for translators factory

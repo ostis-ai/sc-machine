@@ -71,11 +71,6 @@ bool Builder::run(const BuilderParams &params)
     std::cout << "Links: " << stat.link_count << "(" << ((float)stat.link_count / (float)all_count) * 100 << "%)"  << std::endl;
     std::cout << "Total: " << all_count << std::endl;
 
-    String s("format_png");
-    sc_addr addr;
-    if (sc_helper_find_element_by_system_identifier(s.c_str(), s.size(), &addr) == SC_RESULT_OK)
-        std::cout << "test " << addr.seg << "." << addr.offset;
-
     sc_memory_shutdown();
 
     return true;

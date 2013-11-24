@@ -115,7 +115,6 @@ bool SCsTranslator::buildScText(pANTLR3_BASE_TREE tree)
         }
     }
 
-
     // now generate sc-text in memory
     tElementSet::iterator it, itEnd = mElementSet.end();
     for (it = mElementSet.begin(); it != itEnd; ++it)
@@ -129,11 +128,11 @@ bool SCsTranslator::buildScText(pANTLR3_BASE_TREE tree)
             if (type != 0)
             {
                 el->ignore = true;
-                sc_type newType = el->type | type;
+                sc_type newType = el->arc_trg->type | type;
                 // TODO check conflicts in sc-type
                 if (type & sc_type_constancy_mask != 0)
                     newType = (type & sc_type_constancy_mask) | (newType & ~sc_type_constancy_mask);
-                el->type = newType;
+                el->arc_trg->type = newType;
             }
         }
 
@@ -333,23 +332,28 @@ sc_addr SCsTranslator::resolveScAddr(sElement *el)
         // try to find in system identifiers
         tStringAddrMap::iterator it = mSysIdtfAddrs.find(el->idtf);
         if (it != mSysIdtfAddrs.end())
-            addr = it->second;
-
-        // try to find in global identifiers
-        it = msGlobalIdtfAddrs.find(el->idtf);
-        if (it != msGlobalIdtfAddrs.end())
-            addr = it->second;
-
-        // try to find in local identifiers
-        it = mLocalIdtfAddrs.find(el->idtf);
-        if (it != mLocalIdtfAddrs.end())
-            addr = it->second;
-
-        // resolve system identifier
-        sc_result res = sc_helper_find_element_by_system_identifier(el->idtf.c_str(), el->idtf.size(), &addr);
-        if (res == SC_RESULT_OK)
         {
-            mSysIdtfAddrs[el->idtf] = addr;
+            addr = it->second;
+        } else
+        {
+            // try to find in global identifiers
+            it = msGlobalIdtfAddrs.find(el->idtf);
+            if (it != msGlobalIdtfAddrs.end())
+                addr = it->second;
+            else
+            {
+                // try to find in local identifiers
+                it = mLocalIdtfAddrs.find(el->idtf);
+                if (it != mLocalIdtfAddrs.end())
+                    addr = it->second;
+                else
+                {
+                    // resolve system identifier
+                    sc_result res = sc_helper_find_element_by_system_identifier(el->idtf.c_str(), el->idtf.size(), &addr);
+                    if (res == SC_RESULT_OK)
+                        mSysIdtfAddrs[el->idtf] = addr;
+                }
+            }
         }
     }
 

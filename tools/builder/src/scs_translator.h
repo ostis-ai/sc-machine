@@ -189,10 +189,6 @@ private:
     //! Set of elements
     tElementSet mElementSet;
 
-    //! Map that contains system identifiers
-    tStringAddrMap mSysIdtfAddrs;
-    //! Map that contains local identifiers
-    tStringAddrMap mLocalIdtfAddrs;
     //! Map to store assignments
     tAssignMap mAssignments;
 };

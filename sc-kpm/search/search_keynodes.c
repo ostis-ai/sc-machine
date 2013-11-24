@@ -57,7 +57,7 @@ const char keynode_nrel_decomposition_str[] = "nrel_decomposition";
 const char keynode_question_finished_str[] = "question_finished";
 const char keynode_quasybinary_relation_str[] = "quasybinary_relation";
 
-const char keynode_hypermedia_nrel_identification_str[] = "hypermedia_nrel_identification";
+const char keynode_hypermedia_nrel_identification_str[] = "nrel_identification";
 const char keynode_set_nrel_inclusion_str[] = "set_nrel_inclusion";
 const char keynode_system_element_str[] = "system_element";
 
