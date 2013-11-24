@@ -36,7 +36,7 @@ const char keynode_question_nrel_answer_str[] = "question_nrel_answer";
 const char keynode_question_finished_str[] = "question_finished";
 const char keynode_nrel_authors_str[] = "nrel_authors";
 const char keynode_nrel_translation_str[] = "hypermedia_nrel_translation";
-const char keynode_nrel_format_str[] = "hypermedia_nrel_format";
+const char keynode_nrel_format_str[] = "nrel_format";
 
 
 const char keynode_command_generate_instance_str[] = "ui_command_generate_instance";
@@ -48,9 +48,9 @@ const char keynode_nrel_command_template_str[] = "ui_nrel_command_template";
 const char keynode_nrel_command_result_str[] = "ui_nrel_command_result";
 const char keynode_displayed_answer_str[] = "ui_displayed_answer";
 
-const char keynode_format_scs_json_str[] = "hypermedia_format_scs_json";
-const char keynode_format_scg_json_str[] = "hypermedia_format_scg_json";
-const char keynode_format_scn_json_str[] = "hypermedia_format_scn_json";
+const char keynode_format_scs_json_str[] = "format_scs_json";
+const char keynode_format_scg_json_str[] = "format_scg_json";
+const char keynode_format_scn_json_str[] = "format_scn_json";
 
 const char keynode_system_element_str[] = "system_element";
 

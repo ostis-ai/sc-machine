@@ -7,7 +7,7 @@
 
 #include <boost/filesystem.hpp>
 
-SCsTranslator::tStringAddrMap SCsTranslator::msGlobalIdtfAddrs = SCsTranslator::tStringAddrMap();
+
 
 
 #define GET_NODE_TEXT(node) String((const char*)node->getText(node)->chars)
@@ -27,13 +27,11 @@ SCsTranslator::~SCsTranslator()
     mElementSet.clear();
 }
 
-bool SCsTranslator::translate(const String &filename)
+bool SCsTranslator::translateImpl()
 {
-    mFileName = filename;
-
     // open file and read data
     bool result = true;
-    std::ifstream ifs(filename.c_str());
+    std::ifstream ifs(mParams.fileName.c_str());
     if (ifs.is_open())
     {
         String data((std::istreambuf_iterator<char>(ifs)), std::istreambuf_iterator<char>());
@@ -125,8 +123,6 @@ bool SCsTranslator::buildScText(pANTLR3_BASE_TREE tree)
         sElement *el = *it;
         assert(el);
 
-        determineElementType(el);
-
         if (el->type == sc_type_arc_pos_const_perm)
         {
             sc_type type = _getTypeBySetIdtf(el->arc_src->idtf);
@@ -141,6 +137,9 @@ bool SCsTranslator::buildScText(pANTLR3_BASE_TREE tree)
             }
         }
 
+        // arcs already have types
+        if (!(el->type & sc_type_arc_mask))
+            determineElementType(el);
     }
 
     tElementSet arcs;
@@ -362,21 +361,26 @@ sc_addr SCsTranslator::resolveScAddr(sElement *el)
 
     // generate addr
     addr = createScAddr(el);
-    // setup seystem identifier
+
+
+    // store in addrs map
     if (!el->idtf.empty())
     {
-        if (StringUtil::startsWith(el->idtf, "..", false))
-            mLocalIdtfAddrs[el->idtf] = addr;
-        else if (StringUtil::startsWith(el->idtf, ".", false))
-            msGlobalIdtfAddrs[el->idtf] = addr;
-        else
+        switch (_getIdentifierVisibility(el->idtf))
         {
+        case IdtfSystem:
             sc_helper_set_system_identifier(addr, el->idtf.c_str(), el->idtf.size());
             mSysIdtfAddrs[el->idtf] = addr;
+            break;
+        case IdtfLocal:
+            mLocalIdtfAddrs[el->idtf] = addr;
+            break;
+        case IdtfGlobal:
+            msGlobalIdtfAddrs[el->idtf] = addr;
+            break;
         }
+
     }
-
-
 
     return addr;
 }
@@ -414,6 +418,19 @@ sc_addr SCsTranslator::createScAddr(sElement *el)
             sc_memory_set_link_content(addr, stream);
             sc_stream_free(stream);
         }
+
+
+        // generate format information
+        if (mParams.autoFormatInfo)
+        {
+            if (el->link_is_file)
+            {
+                String url = el->link_data.substr(1, el->link_data.size() - 2);
+                size_t n = url.find_last_of(".");
+                if (n != String::npos)
+                    generateFormatInfo(addr, url.substr(n + 1));
+            }
+        }
     }
     else
     {
@@ -424,17 +441,6 @@ sc_addr SCsTranslator::createScAddr(sElement *el)
     }
 
     el->addr = addr;
-
-    // store in addrs map
-    if (!el->idtf.empty())
-    {
-        if (StringUtil::startsWith(el->idtf, "..", false))
-            mLocalIdtfAddrs[el->idtf] = addr;
-        else if (StringUtil::startsWith(el->idtf, ".", false))
-            msGlobalIdtfAddrs[el->idtf] = addr;
-        else
-            mSysIdtfAddrs[el->idtf] = addr;
-    }
 
     return addr;
 }
@@ -449,7 +455,7 @@ void SCsTranslator::determineElementType(sElement *el)
         newType = newType | sc_type_node;
 
     newType = (newType & (~sc_type_constancy_mask));
-    sc_type const_type = (StringUtil::startsWith(el->idtf, "_", false) ? sc_type_var : sc_type_const);
+    sc_type const_type = _isIdentifierVar(el->idtf) ? sc_type_var : sc_type_const;
     newType = newType | (const_type);
 
     el->type = newType;
@@ -773,7 +779,7 @@ bool SCsTranslator::_getAbsFilePath(const String &url, String &abs_path)
 {
     // split file name
     String path, name;
-    StringUtil::splitFilename(mFileName, name, path);
+    StringUtil::splitFilename(mParams.fileName, name, path);
     String file_name = url.substr(1, url.size() - 2);
     static String file_preffix = "file://";
     if (StringUtil::startsWith(file_name, file_preffix, true))
@@ -792,6 +798,30 @@ bool SCsTranslator::_getAbsFilePath(const String &url, String &abs_path)
 
     return false;
 
+}
+
+SCsTranslator::eIdtfVisibility SCsTranslator::_getIdentifierVisibility(const String &idtf) const
+{
+    if (StringUtil::startsWith(idtf, "..", false))
+        return IdtfLocal;
+    else if (StringUtil::startsWith(idtf, ".", false))
+        return IdtfGlobal;
+
+    return IdtfSystem;
+}
+
+bool SCsTranslator::_isIdentifierVar(const String &idtf) const
+{
+    // remove visibility points
+    String s = idtf;
+    int i = 0;
+    while ((i < 2) && StringUtil::startsWith(s, ".", false))
+    {
+        s = s.substr(1);
+        ++i;
+    }
+
+    return StringUtil::startsWith(s, "_", false);
 }
 
 void SCsTranslator::dumpDot(pANTLR3_BASE_TREE tree)
