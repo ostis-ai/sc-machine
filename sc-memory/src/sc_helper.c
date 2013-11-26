@@ -22,7 +22,7 @@ sc_result resolve_nrel_system_identifier()
     sc_bool found = SC_FALSE;
     sc_addr addr1, addr2;
 
-    // try to find hypermedia_nrel_system_identifier strings
+    // try to find nrel_system_identifier strings
     if (sc_memory_find_links_with_content(stream, &results, &results_count) == SC_RESULT_OK)
     {
         for (i = 0; i < results_count; i++)
@@ -50,7 +50,7 @@ sc_result resolve_nrel_system_identifier()
                         sc_iterator5_free(it);
                         sc_stream_free(stream);
                         g_free(results);
-                        g_error("There are more then one sc-elements with system identifier hypermedia_nrel_system_identifier ");
+                        g_error("There are more then one sc-elements with system identifier nrel_system_identifier ");
                         return SC_RESULT_ERROR;
                     }
                 }
@@ -74,7 +74,7 @@ void _init_keynodes_str()
     sc_uint32 i = 0;
 
     keynodes_str = g_new0(gchar*, SC_KEYNODE_COUNT);
-    keynodes_str[SC_KEYNODE_NREL_SYSTEM_IDENTIFIER] = g_locale_to_utf8("hypermedia_nrel_system_identifier", -1, &bytes_read, &bytes_written, 0);
+    keynodes_str[SC_KEYNODE_NREL_SYSTEM_IDENTIFIER] = g_locale_to_utf8("nrel_system_identifier", -1, &bytes_read, &bytes_written, 0);
 
 
     // check for errors
@@ -106,7 +106,7 @@ sc_result sc_helper_init()
 
     if (resolve_nrel_system_identifier() != SC_RESULT_OK)
     {
-        g_message("Can't resovle hypermedia_nrel_system_identifier node. Create the last one");
+        g_message("Can't resovle nrel_system_identifier node. Create the last one");
 
         sc_addr addr = sc_memory_node_new(sc_type_const | sc_type_node_norole);
         sc_addr link = sc_memory_link_new();

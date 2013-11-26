@@ -11,7 +11,8 @@ int main(int argc, char *argv[])
             ("version", "Displays version number")
             ("input-path,i", boost::program_options::value<std::string>(), "Path to directory with sources")
             ("output-path,o", boost::program_options::value<std::string>(), "Path to output directory (repository)")
-            ("clear-output,c", "Clear output directory (repository) before build");
+            ("clear-output,c", "Clear output directory (repository) before build")
+            ("auto-formats,f", "Enable automatic formats info generation");
 
     boost::program_options::variables_map vm;
     boost::program_options::store(boost::program_options::command_line_parser(argc, argv).options(options_description).run(), vm);
@@ -23,27 +24,26 @@ int main(int argc, char *argv[])
         return 0;
     }
 
-    std::string inputPath, outputPath;
-    bool clearOutput = false;
+    BuilderParams params;
+    params.clearOutput = false;
+    params.autoFormatInfo = false;
 
     if (vm.count("input-path"))
-    {
-        inputPath = vm["input-path"].as<std::string>();
-    }
+        params.inputPath = vm["input-path"].as<std::string>();
 
     if (vm.count("output-path"))
-    {
-        outputPath = vm["output-path"].as<std::string>();
-    }
+        params.outputPath = vm["output-path"].as<std::string>();
 
     if (vm.count("clear-output"))
-    {
-        clearOutput = true;
-    }
+        params.clearOutput = true;
+
+    if (vm.count("auto-formats"))
+        params.autoFormatInfo = true;
+
 
     Builder builder;
     builder.initialize();
-    builder.run(inputPath, outputPath, clearOutput);
+    builder.run(params);
 
     return 0;
 }

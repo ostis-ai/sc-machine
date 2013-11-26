@@ -11,7 +11,6 @@
 
 
 Builder::Builder()
-    : mClearOutput(false)
 {
 }
 
@@ -25,22 +24,20 @@ void Builder::initialize()
     registerTranslator(new SCsTranslatorFactory());
 }
 
-bool Builder::run(const String &inputPath, const String &outputPath, bool clearOutput)
+bool Builder::run(const BuilderParams &params)
 {
-    mInputPath = inputPath;
-    mOutputPath = outputPath;
-    mClearOutput = clearOutput;
+    mParams = params;
 
     collectFiles();
 
-    if (clearOutput)
+    if (mParams.clearOutput)
     {
-        boost::filesystem::path path(outputPath);
+        boost::filesystem::path path(mParams.outputPath);
 
         if (boost::filesystem::exists(path) && boost::filesystem::is_directory(path) && !boost::filesystem::is_empty(path))
         {
             std::cout << "Clear output directory\n";
-            boost::filesystem::remove_all(outputPath);
+            boost::filesystem::remove_all(mParams.outputPath);
 
             boost::filesystem::create_directory(path);
             assert(boost::filesystem::is_empty(path));
@@ -49,7 +46,7 @@ bool Builder::run(const String &inputPath, const String &outputPath, bool clearO
     }
 
     // initialize sc-memory
-    sc_memory_initialize(outputPath.c_str(), 0);
+    sc_memory_initialize(mParams.outputPath.c_str(), 0);
     sc_helper_init();
 
     // print founded files
@@ -112,7 +109,11 @@ bool Builder::processFile(const String &filename)
     iTranslator *translator = it->second->createInstance();
     assert(translator);
 
-    bool result = translator->translate(filename);
+    TranslatorParams translateParams;
+    translateParams.fileName = filename;
+    translateParams.autoFormatInfo = mParams.autoFormatInfo;
+
+    bool result = translator->translate(translateParams);
     delete translator;
 
     return result;
@@ -120,7 +121,7 @@ bool Builder::processFile(const String &filename)
 
 void Builder::collectFiles()
 {
-    boost::filesystem::recursive_directory_iterator itEnd, it(mInputPath);
+    boost::filesystem::recursive_directory_iterator itEnd, it(mParams.inputPath);
     while (it != itEnd)
     {
         if (!boost::filesystem::is_directory(*it))

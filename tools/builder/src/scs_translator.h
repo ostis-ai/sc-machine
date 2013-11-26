@@ -73,12 +73,20 @@ class SCsTranslator : public iTranslator
         SentenceEOF = 4
     } eSentenceType;
 
+    typedef enum
+    {
+        IdtfSystem = 0,
+        IdtfLocal = 1,
+        IdtfGlobal = 2
+
+    } eIdtfVisibility;
+
 public:
     explicit SCsTranslator();
     virtual ~SCsTranslator();
 
-    //! @copydoc iTranslator::translate
-    bool translate(const String &filename);
+    //! @copydoc iTranslator::translateImpl
+    bool translateImpl();
     //! @copydoc iTranlstor::getFileExt
     const String& getFileExt() const;
 
@@ -157,6 +165,11 @@ private:
     //! Get absolute file path from it url
     bool _getAbsFilePath(const String &url, String &abs_path);
 
+    //! Determines visibility of identifier
+    eIdtfVisibility _getIdentifierVisibility(const String &idtf) const;
+    //! Check if identifier is variable
+    bool _isIdentifierVar(const String &idtf) const;
+
     //! Dump to dot
     void dumpDot(pANTLR3_BASE_TREE tree);
     void dumpNode(pANTLR3_BASE_TREE node, std::ofstream &stream);
@@ -164,7 +177,6 @@ private:
 
 public:
     typedef std::set<sc_addr, sc_add_compare> tScAddrSet;
-    typedef std::map<String, sc_addr> tStringAddrMap;
     typedef std::map<String, sElement*> tElementIdtfMap;
     typedef std::set<sElement*> tElementSet;
     typedef std::map<String, String> tAssignMap;
@@ -176,16 +188,9 @@ private:
     tElementIdtfMap mElementIdtf;
     //! Set of elements
     tElementSet mElementSet;
-    //! Map that contains global identifiers
-    static tStringAddrMap msGlobalIdtfAddrs;
-    //! Map that contains system identifiers
-    tStringAddrMap mSysIdtfAddrs;
-    //! Map that contains local identifiers
-    tStringAddrMap mLocalIdtfAddrs;
+
     //! Map to store assignments
     tAssignMap mAssignments;
-    //! Processing file name
-    String mFileName;
 };
 
 // -----------------

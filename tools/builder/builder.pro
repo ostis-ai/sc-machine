@@ -30,7 +30,8 @@ SOURCES += \
     src/version.cpp \
     src/utils.cpp \
     src/parseutils.cpp \
-    src/scs_translator.cpp
+    src/scs_translator.cpp \
+    src/translator.cpp
 
 HEADERS += \
     src/parser/scsParser.h \

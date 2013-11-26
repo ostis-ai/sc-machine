@@ -76,7 +76,7 @@ void uiSc2SCnJsonTranslator::runImpl()
     // @todo check if there are some nodes, that not translated
 
     mOutputData += "]";
-    qDebug() << "Result: " << QString().fromStdString(mOutputData);
+    //qDebug() << "Result: " << QString().fromStdString(mOutputData);
 }
 
 String uiSc2SCnJsonTranslator::translateElement(sc_addr addr, bool isKeyword)

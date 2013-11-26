@@ -6,6 +6,20 @@
 class iTranslator;
 class iTranslatorFactory;
 
+struct BuilderParams
+{
+    //! Input directory path
+    String inputPath;
+    //! Output directory path
+    String outputPath;
+    //! Flag to clear output
+    bool clearOutput;
+    //! Flag to generate format information based on file extensions
+    bool autoFormatInfo;
+
+
+};
+
 class Builder
 {
 public:
@@ -16,12 +30,10 @@ public:
     void initialize();
 
     /*! Run building process
-      * @param inputPath Path to source directory
-      * @param outputPath Path to output directory
-      * @param clearOutput Flag to clear output directory before build
+      * @param options Builder options
       * @returns If build finished, then returns ture; otherwise returns false
       */
-    bool run(const String &inputPath, const String &outputPath, bool clearOutput);
+    bool run(const BuilderParams &options);
 
     /*! Register new translator factory
      * @param factory Pointer to translator factory to register
@@ -44,13 +56,6 @@ protected:
 
 
 private:
-    //! Input directory path
-    String mInputPath;
-    //! Output directory path
-    String mOutputPath;
-    //! Flag to clear output
-    bool mClearOutput;
-
     //! Set of files to process
     typedef std::set< String > tFileSet;
     tFileSet mFileSet;
@@ -58,6 +63,9 @@ private:
     //! Translator factories map
     typedef std::map<std::string, iTranslatorFactory*> tTranslatorFactories;
     tTranslatorFactories mTranslatorFactories;
+
+    //! Builder parameters
+    BuilderParams mParams;
 
 };
 
