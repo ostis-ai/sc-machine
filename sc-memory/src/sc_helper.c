@@ -203,7 +203,7 @@ sc_result sc_helper_set_system_identifier(sc_addr addr, const sc_char* data, sc_
         for (i = 0; i < results_count; i++)
         {
             it5 = sc_iterator5_a_a_f_a_f_new(0,
-                                            sc_type_arc_pos_const_perm,
+                                            sc_type_arc_common | sc_type_const,
                                             results[i],
                                             sc_type_arc_pos_const_perm,
                                             sc_keynodes[SC_KEYNODE_NREL_SYSTEM_IDENTIFIER]);
