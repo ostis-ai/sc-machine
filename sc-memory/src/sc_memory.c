@@ -39,7 +39,8 @@ sc_bool sc_memory_initialize(const sc_char *repo_path, const sc_char *config_fil
 
     sc_config_initialize(config_file);
 
-    g_message("Run with configuration.\n\tmax_loaded_segments: %d\n", sc_config_get_max_loaded_segments());
+    g_message("Run with configuration");
+    g_message("\tmax_loaded_segments: %d", sc_config_get_max_loaded_segments());
 
     res = sc_storage_initialize(repo_path);
     g_rec_mutex_init(&mutex);

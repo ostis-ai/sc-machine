@@ -24,46 +24,111 @@ along with OSTIS.  If not, see <http://www.gnu.org/licenses/>.
 #include "sc_segment.h"
 #include "sc_stream_file.h"
 #include "sc_config.h"
+#include "sc_fm_engine.h"
 
 #include <stdlib.h>
 #include <memory.h>
 #include <glib.h>
+#include <gmodule.h>
 
 gchar *repo_path = 0;
+gchar segments_path[MAX_PATH_LENGTH + 1];
+sc_fm_engine *fm_engine = 0;
+#define SC_DIR_PERMISSIONS -1
 
 const gchar *seg_dir = "segments";
-const gchar *content_dir = "contents";
 const gchar *addr_key_group = "addrs";
 
-gchar segments_path[MAX_PATH_LENGTH + 1];
-gchar contents_path[MAX_PATH_LENGTH + 1];
+typedef sc_fm_engine* (*fFmEngineInitFunc)();
 
-#define SC_DIR_PERMISSIONS -1
+// ----------------------------------------------
 
 sc_bool sc_fs_storage_initialize(const gchar *path)
 {
-    g_message("Initialize sc-storage from path: %s\n", path);
-
+    g_message("Initialize sc-storage from path: %s", path);
     g_snprintf(segments_path, MAX_PATH_LENGTH, "%s/%s", path, seg_dir);
-    g_snprintf(contents_path, MAX_PATH_LENGTH, "%s/%s", path, content_dir);
+    repo_path = g_strdup(path);
 
-    if (!g_file_test(contents_path, G_FILE_TEST_IS_DIR))
+    g_message("\tFile memory engine: %s", sc_config_fm_engine());
+    // load engine extension
+    gchar module_path[MAX_PATH_LENGTH + 1];
+#ifdef WIN32
+    g_snprintf(module_path, MAX_PATH_LENGTH, "sc-fm-%s.dll", sc_config_fm_engine());
+#else
+    g_snprintf(module_path, MAX_PATH_LENGTH, "libsc-fm-%s.so", sc_config_fm_engine());
+#endif
+
+    // try to load engine extension
+    GModule *module = 0;
+    fFmEngineInitFunc func;
+    module = g_module_open(module_path, G_MODULE_BIND_LOCAL);
+
+    // skip non module files
+    if (g_str_has_suffix(module_path, G_MODULE_SUFFIX) == TRUE)
     {
-        if (g_mkdir_with_parents(contents_path, SC_DIR_PERMISSIONS) < 0)
-            g_error("Can't create '%s' directory.", contents_path);
+        if (module == nullptr)
+        {
+            g_warning("Can't load module: %s. Error: %s", module_path, g_module_error());
+        }else
+        {
+            g_message("Initialize file memory engine from: %s", module_path);
+            if (g_module_symbol(module, "initialize", (gpointer*) &func) == FALSE)
+            {
+                g_warning("Can't find 'initialize' symbol in module: %s", module_path);
+            }else
+            {
+                fm_engine = func(repo_path);
+                if (fm_engine == 0)
+                {
+                    g_warning("Can't create file memory engine from: %s", module_path);
+                    return SC_FALSE;
+                }
+            }
+        }
     }
 
-    repo_path = g_malloc0(sizeof(gchar) * (strlen(path) + 1));
-    g_stpcpy(repo_path, path);
+    /*g_message("Connect to redis server %s:%d", sc_config_redis_host(), sc_config_redis_port());
+    sc_uint32 timeout_val = sc_config_redis_timeout();
+    struct timeval timeout = {timeout_val / 1000, (timeout_val % 1000) * 1000};
+    redis_context = redisConnectWithTimeout(sc_config_redis_host(), sc_config_redis_port(), timeout);
+
+    if (redis_context == 0 || redis_context->err)
+    {
+        if (redis_context)
+        {
+            g_message("Connection error: %s", redis_context->errstr);
+            redisFree(redis_context);
+        } else {
+            g_message("Connection error: can't allocate redis context");
+        }
+        return SC_FALSE;
+    }
+
+    g_message("\tSwitch redis database");
+    redisReply *reply = redisCommand(redis_context, "SELECT 0");
+    if (reply->type == REDIS_REPLY_ERROR)
+    {
+        g_message("\tCan't switch database");
+        freeReplyObject(reply);
+        redisFree(redis_context);
+        return SC_FALSE;
+    }
+    freeReplyObject(reply);*/
 
     return SC_TRUE;
 }
 
 sc_bool sc_fs_storage_shutdown(sc_segment **segments)
-{
-    g_message("Shutdown sc-storage\n");
+{    
+    g_message("Shutdown sc-storage");
+
+//    g_message("Disconnect from redis");
+//    redisFree(redis_context);
+
     g_message("Write storage into %s", repo_path);
     sc_fs_storage_write_to_path(segments);
+
+    g_free(repo_path);
 
     return SC_TRUE;
 }
@@ -179,38 +244,14 @@ sc_bool sc_fs_storage_write_to_path(sc_segment **segments)
 
 sc_result sc_fs_storage_write_content(sc_addr addr, const sc_check_sum *check_sum, const sc_stream *stream)
 {
-    sc_uint8 *path = sc_fs_storage_make_checksum_path(check_sum);
-    gchar abs_path[MAX_PATH_LENGTH];
-    gchar data_path[MAX_PATH_LENGTH];
+    // write content into file
     sc_char buffer[1024];
     sc_uint32 data_read, data_write;
     sc_stream *out_stream = 0;
 
-    // make absolute path to content directory
-    g_snprintf(abs_path, MAX_PATH_LENGTH, "%s/%s", contents_path, path);
-    g_snprintf(data_path, MAX_PATH_LENGTH, "%sdata", abs_path);
-
-    // check if specified path exist
-    if (g_file_test(data_path, G_FILE_TEST_EXISTS))
+    if (sc_fm_stream_new(fm_engine, check_sum, SC_STREAM_WRITE, &out_stream) == SC_RESULT_OK)
     {
-        //g_message("Content data file '%s' already exist", data_path);
-        sc_fs_storage_add_content_addr(addr, check_sum);
-        free(path);
-        return SC_RESULT_OK; // do nothing, file saved
-    }
-
-    // file doesn't exist, so we need to save it
-    if (g_mkdir_with_parents(abs_path, SC_DIR_PERMISSIONS) < 0)
-    {
-        g_message("Error while creating '%s' directory", abs_path);
-        free(path);
-        return SC_RESULT_ERROR_IO;
-    }
-
-    // write content into file
-    out_stream = sc_stream_file_new(data_path, SC_STREAM_WRITE);
-    if (out_stream != 0)
-    {
+        g_assert(out_stream != 0);
         // reset input stream positon to begin
         sc_stream_seek(stream, SC_STREAM_SEEK_SET, 0);
 
@@ -244,170 +285,22 @@ sc_result sc_fs_storage_write_content(sc_addr addr, const sc_check_sum *check_su
 
 sc_result sc_fs_storage_add_content_addr(sc_addr addr, const sc_check_sum *check_sum)
 {
-    sc_uint8 *path = sc_fs_storage_make_checksum_path(check_sum);
-    gchar abs_path[MAX_PATH_LENGTH];
-    gchar addr_path[MAX_PATH_LENGTH];
-    gchar *content = 0;
-    gchar *content2 = 0;
-    gsize content_len = 0;
-    sc_uint32 addrs_num = 0;
-
-    // make absolute path to content directory
-    g_snprintf(abs_path, MAX_PATH_LENGTH, "%s/%s", contents_path, path);
-    g_snprintf(addr_path, MAX_PATH_LENGTH, "%saddrs", abs_path);
-
-    // try to load existing file
-    if (g_file_test(addr_path, G_FILE_TEST_EXISTS))
-    {
-        if (g_file_get_contents(addr_path, &content, &content_len, 0) == FALSE)
-        {
-            if (content != 0)
-                free(content);
-            free(path);
-            return SC_RESULT_ERROR_IO;
-        }
-    }
-
-    // append addr into content
-    if (content == 0)
-    {
-        content_len = sizeof(sc_addr) + sizeof(sc_uint32);
-        content = g_new0(gchar, content_len);
-
-        addrs_num = 1;
-        memcpy(content, &addrs_num, sizeof(addrs_num));
-        memcpy(content + sizeof(addrs_num), &addr, sizeof(addr));
-    }else
-    {
-        content2 = content;
-        (*(sc_uint32*)content2)++;
-
-        content = g_new0(gchar, content_len + sizeof(addr));
-        memcpy(content, content2, content_len);
-        memcpy(content + content_len, &addr, sizeof(addr));
-        content_len += sizeof(addr);
-
-        // old content doesn't need
-        g_free(content2);
-    }
-
-    // write content to file
-    if (g_file_set_contents(addr_path, content, content_len, 0) == TRUE)
-    {
-        g_free(content);
-        free(path);
-
-        return SC_RESULT_OK;
-    }
-
-    g_free(content);
-    free(path);
-
-    return SC_RESULT_ERROR;
+    g_assert(fm_engine != 0);
+    return sc_fm_addr_ref_append(fm_engine, addr, check_sum);
 }
 
 sc_result sc_fs_storage_find_links_with_content(const sc_check_sum *check_sum, sc_addr **result, sc_uint32 *result_count)
 {
-
-    sc_uint8 *path = sc_fs_storage_make_checksum_path(check_sum);
-    gchar abs_path[MAX_PATH_LENGTH];
-    gchar addr_path[MAX_PATH_LENGTH];
-    gchar *content = 0, *content2 = 0;
-    gsize content_len = 0;
-
-    // make absolute path to content directory
-    g_snprintf(abs_path, MAX_PATH_LENGTH, "%s/%s", contents_path, path);
-    g_snprintf(addr_path, MAX_PATH_LENGTH, "%saddrs", abs_path);
-
-    // must be a null pointer
-    g_assert(*result == 0);
-
-    *result_count = 0;
-
-    // try to load existing file
-    if (g_file_test(addr_path, G_FILE_TEST_EXISTS))
-    {
-        if (g_file_get_contents(addr_path, &content, &content_len, 0) == FALSE)
-        {
-            if (content != 0)
-                free(content);
-            free(path);
-            return SC_RESULT_ERROR_IO;
-        }
-
-    }
-
-    // store result
-    if (content == 0)
-    {
-        *result = 0;
-        *result_count = 0;
-    }else
-    {
-        *result_count = *((sc_uint32*)content);
-        content2 = content;
-        content2 += sizeof(sc_uint32);
-
-        *result = g_new0(sc_addr, *result_count);
-        memcpy(*result, content2, sizeof(sc_addr) * (*result_count));
-    }
-
-    if (content != 0)
-        g_free(content);
-    free(path);
-
-    return SC_RESULT_OK;
+    g_assert(fm_engine != 0);
+    return sc_fm_find(fm_engine, check_sum, result, result_count);
 }
 
 sc_result sc_fs_storage_get_checksum_content(const sc_check_sum *check_sum, sc_stream **stream)
 {
-    sc_uint8 *path = sc_fs_storage_make_checksum_path(check_sum);
-    gchar abs_path[MAX_PATH_LENGTH];
-    gchar data_path[MAX_PATH_LENGTH];
-
-    // make absolute path to content directory
-    g_snprintf(abs_path, MAX_PATH_LENGTH, "%s/%s", contents_path, path);
-    g_snprintf(data_path, MAX_PATH_LENGTH, "%sdata", abs_path);
-
-    // check if specified path exist
-    if (g_file_test(data_path, G_FILE_TEST_EXISTS))
-    {
-        *stream = sc_stream_file_new(data_path, SC_STREAM_READ);
-        g_assert(*stream != nullptr);
-        free(path);
-        return SC_RESULT_OK; // do nothing, file saved
-    }
-
-    return SC_RESULT_ERROR;
+    g_assert(fm_engine != 0);
+    return sc_fm_stream_new(fm_engine, check_sum, SC_STREAM_READ, stream);
 }
 
-sc_uint8* sc_fs_storage_make_checksum_path(const sc_check_sum *check_sum)
-{
-    // calculate output string length and create it
-    sc_uint div = (check_sum->len % 8 == 0) ? 8 : 4;
-    sc_uint len = check_sum->len + check_sum->len / div + 1;
-    sc_uint8 *result = malloc(sizeof(sc_uint8) * len);
-    sc_uint idx = 0;
-    sc_uint j = 0;
 
-    g_assert(check_sum->len == 32);
-
-    g_assert(check_sum != 0);
-    g_assert(check_sum->len != 0);
-    g_assert(check_sum->len % 4 == 0);
-
-    for (idx = 0; idx < check_sum->len; idx++)
-    {
-        result[j++] = check_sum->data[idx];
-        if ((idx + 1 ) % div == 0)
-            result[j++] = '/';
-    }
-
-    g_assert(j == (len - 1));
-
-    result[len - 1] = 0;
-
-    return result;
-}
 
 

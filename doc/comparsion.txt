@@ -327,6 +327,19 @@ Segments count: 191
 	Empty: 17185
 ---
 
+---------- 03.12.13 ------------
+Filesystem links storage
+
+Created links: 20000
+Links per second: 2987.992602
+Segments count: 1
+--- Storage statistics: ---
+ 	Nodes: 0 (0 deleted)
+	Arcs: 0 (0 deleted)
+	Links: 20000 (0 deleted)
+	Empty: 45535
+---
+
 ---------- dd.mm.yy ------------
 
 

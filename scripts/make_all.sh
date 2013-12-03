@@ -1,12 +1,12 @@
-echo -en '\E[47;31m'"\033[1mBuild sc-memory\033[0m\n"
+echo -en '\E[47;31m'"\033[1mBuild sc-machine\033[0m\n"
 tput sgr0
-cd ../sc-memory
-qmake sc-memory.pro
+cd ../
+qmake sc-machine.pro
 make
 
 echo -en '\E[47;31m'"\033[1mBuild KPM modules\033[0m\n"
 tput sgr0
-cd ../sc-kpm
+cd sc-kpm
 qmake sc_kpm.pro
 make
 

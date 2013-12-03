@@ -58,7 +58,7 @@ sc_result agent_search_all_identifiers(sc_event *event, sc_addr arg)
         while (sc_iterator5_next(it5) == SC_TRUE)
         {
             // check if this arc is an identification
-            it5Check = sc_iterator5_f_a_f_a_f_new(keynode_hypermedia_nrel_identification,
+            it5Check = sc_iterator5_f_a_f_a_f_new(keynode_nrel_identification,
                                                   sc_type_arc_common | sc_type_const,
                                                   sc_iterator5_value(it5, 4),
                                                   sc_type_arc_pos_const_perm,
@@ -79,7 +79,7 @@ sc_result agent_search_all_identifiers(sc_event *event, sc_addr arg)
     sc_iterator3_free(it1);
 
     if (found == SC_TRUE)
-        appendIntoAnswer(answer, keynode_hypermedia_nrel_identification);
+        appendIntoAnswer(answer, keynode_nrel_identification);
 
     connect_answer_to_question(question, answer);
     finish_question(question);

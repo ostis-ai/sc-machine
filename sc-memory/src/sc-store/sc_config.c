@@ -25,12 +25,30 @@ along with OSTIS.  If not, see <http://www.gnu.org/licenses/>.
 #include <glib.h>
 
 const char str_group_memory[] = "memory";
+const char str_group_redis[] = "redis";
+const char str_group_fm[] = "filememory";
 
 const char str_key_max_loaded_segments[] = "max_loaded_segments";
+const char str_key_redis_host[] = "host";
+const char str_key_redis_port[] = "port";
+const char str_key_redis_timeout[] = "timeout";
+const char str_key_fm_engine[] = "engine";
 
 
 // Maximum number of segments, that can be loaded into memory at one moment
 sc_uint config_max_loaded_segments = G_MAXUINT16;
+
+const char redis_hostname_default[] = "localhost";
+// Redis host name
+char *config_redis_host = redis_hostname_default;
+// Redis port
+sc_uint32 config_redis_port = 6379;
+// Redis timeout
+sc_uint32 config_redis_timeout = 1500;
+
+// --- file memory ---
+const char fm_default_engine[] = "filesystem";
+char *config_fm_engine = fm_default_engine;
 
 void sc_config_initialize(const sc_char *file_path)
 {
@@ -43,6 +61,17 @@ void sc_config_initialize(const sc_char *file_path)
         if (g_key_file_has_key(key_file, str_group_memory, str_key_max_loaded_segments, 0) == TRUE)
             config_max_loaded_segments = g_key_file_get_integer(key_file, str_group_memory, str_key_max_loaded_segments, 0);
 
+        // redis
+        if (g_key_file_has_key(key_file, str_group_redis, str_key_redis_host, 0) == TRUE)
+            config_redis_host = g_key_file_get_string(key_file, str_group_redis, str_key_redis_host, 0);
+        if (g_key_file_has_key(key_file, str_group_redis, str_key_redis_port, 0) == TRUE)
+            config_redis_port = g_key_file_get_integer(key_file, str_group_redis, str_key_redis_port, 0);
+        if (g_key_file_has_key(key_file, str_group_redis, str_key_redis_timeout, 0) == TRUE)
+            config_redis_timeout = g_key_file_get_integer(key_file, str_group_redis, str_key_redis_timeout, 0);
+
+        // file memory
+        if (g_key_file_has_key(key_file, str_group_fm, str_key_fm_engine, 0) == TRUE)
+            config_fm_engine = g_key_file_get_string(key_file, str_group_fm, str_key_fm_engine, 0);
     }else
     {
         // setup default values
@@ -60,4 +89,24 @@ void sc_config_shutdown()
 sc_uint sc_config_get_max_loaded_segments()
 {
     return config_max_loaded_segments;
+}
+
+const sc_char* sc_config_redis_host()
+{
+    return config_redis_host;
+}
+
+int sc_config_redis_port()
+{
+    return config_redis_port;
+}
+
+sc_uint32 sc_config_redis_timeout()
+{
+    return config_redis_timeout;
+}
+
+const sc_char* sc_config_fm_engine()
+{
+    return config_fm_engine;
 }

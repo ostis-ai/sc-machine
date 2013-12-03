@@ -35,9 +35,11 @@ void print_storage_statistics()
     sc_uint64 nodes_del = nodes - stat.node_live_count;
     sc_uint64 arcs = stat.arc_count;
     sc_uint64 arcs_del = arcs - stat.arc_live_count;
+    sc_uint64 links = stat.link_count;
+    sc_uint64 links_del = links - stat.link_live_count;
 
-    printf("--- Storage statistics: ---\n \tNodes: %llu (%llu deleted)\n\tArcs: %llu (%llu deleted)\n\tEmpty: %llu\n---\n",
-           nodes, nodes_del, arcs, arcs_del, stat.empty_count);
+    printf("--- Storage statistics: ---\n \tNodes: %llu (%llu deleted)\n\tArcs: %llu (%llu deleted)\n\tLinks: %llu (%llu deleted)\n\tEmpty: %llu\n---\n",
+           nodes, nodes_del, arcs, arcs_del, links, links_del, stat.empty_count);
 }
 
 sc_addr get_random_addr(sc_type type)
@@ -612,13 +614,13 @@ int main(int argc, char *argv[])
     printf("Segment loading speed: %f seg/sec\n", sc_storage_get_segments_count() / g_timer_elapsed(timer, 0));
 
     //test1();
-    //test5();
-    //test6();
+    test5();
+    test6();
 
     //test7();
     //test8();
     //test3();
-    //item = 0;
+    item = 0;
 
     while (item != 0)
     {
@@ -684,7 +686,7 @@ int main(int argc, char *argv[])
     item = sc_storage_get_segments_count();
     g_timer_reset(timer); // crash when uncomment
 
-    //sc_memory_shutdown();
+    sc_memory_shutdown();
     g_timer_stop(timer);
     printf("Segments save speed: %f seg/sec\n", item / g_timer_elapsed(timer, 0));
     g_timer_destroy(timer);

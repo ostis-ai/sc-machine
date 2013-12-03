@@ -27,7 +27,9 @@ HEADERS += \
     src/sc-store/sc_iterator.h \
     src/sc_helper.h \
     src/sc_memory_headers.h \
-    src/sc_memory_ext.h
+    src/sc_memory_ext.h \
+    src/sc-store/sc_fm_engine_private.h \
+    src/sc-store/sc_fm_engine.h
 
 SOURCES += \
     src/sc_memory.c \
@@ -45,7 +47,8 @@ SOURCES += \
     src/sc_helper.c \
     src/sc_memory_ext.c \
     src/sc-store/sc_config.c \
-    src/sc-store/sc_iterator.c
+    src/sc-store/sc_iterator.c \
+    src/sc-store/sc_fm_engine.c
 
 win32 {
     INCLUDEPATH += "../glib/include/glib-2.0"
@@ -53,6 +56,8 @@ win32 {
 
     POST_TARGETDEPS += ../glib/lib/glib-2.0.lib
     LIBS += ../glib/lib/glib-2.0.lib
+
+    DEFINES += WIN32
 }
 
 unix {

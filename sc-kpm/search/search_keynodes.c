@@ -39,7 +39,7 @@ sc_addr keynode_nrel_decomposition;
 sc_addr keynode_question_finished;
 sc_addr keynode_quasybinary_relation;
 
-sc_addr keynode_hypermedia_nrel_identification;
+sc_addr keynode_nrel_identification;
 sc_addr keynode_set_nrel_inclusion;
 sc_addr keynode_system_element;
 
@@ -57,7 +57,7 @@ const char keynode_nrel_decomposition_str[] = "nrel_decomposition";
 const char keynode_question_finished_str[] = "question_finished";
 const char keynode_quasybinary_relation_str[] = "quasybinary_relation";
 
-const char keynode_hypermedia_nrel_identification_str[] = "nrel_identification";
+const char keynode_nrel_identification_str[] = "nrel_identification";
 const char keynode_set_nrel_inclusion_str[] = "set_nrel_inclusion";
 const char keynode_system_element_str[] = "system_element";
 
@@ -79,7 +79,7 @@ sc_result search_keynodes_initialize()
     resolve_keynode(keynode_question_initiated);
     resolve_keynode(keynode_question_finished);
     resolve_keynode(keynode_quasybinary_relation);
-    resolve_keynode(keynode_hypermedia_nrel_identification);
+    resolve_keynode(keynode_nrel_identification);
     resolve_keynode(keynode_set_nrel_inclusion);
     resolve_keynode(keynode_system_element);
 
