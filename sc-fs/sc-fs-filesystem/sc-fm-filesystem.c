@@ -21,6 +21,7 @@ along with OSTIS.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include "sc_fm_engine_private.h"
+#include "sc_stream_file.h"
 #include <glib.h>
 
 gchar contents_path[MAX_PATH_LENGTH + 1];
@@ -62,9 +63,6 @@ sc_result sc_fs_engine_create_stream(const sc_fm_engine *engine, const sc_check_
     sc_uint8 *path = sc_fs_engine_make_checksum_path(check_sum);
     gchar abs_path[MAX_PATH_LENGTH];
     gchar data_path[MAX_PATH_LENGTH];
-    sc_char buffer[1024];
-    sc_uint32 data_read, data_write;
-    sc_stream *out_stream = 0;
 
     // make absolute path to content directory
     g_snprintf(abs_path, MAX_PATH_LENGTH, "%s/%s", contents_path, path);
