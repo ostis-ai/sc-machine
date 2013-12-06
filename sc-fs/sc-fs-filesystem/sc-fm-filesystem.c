@@ -155,7 +155,6 @@ sc_result sc_fs_engine_addr_ref_remove(const sc_fm_engine *engine, sc_addr addr,
     return SC_RESULT_ERROR_IO;
 }
 
-
 sc_result sc_fs_engine_find(const sc_fm_engine *engine, const sc_check_sum *check_sum, sc_addr **result, sc_uint32 *result_count)
 {
     sc_uint8 *path = sc_fs_engine_make_checksum_path(check_sum);

@@ -27,5 +27,6 @@ HEADERS += \
     sc_stream_redis.h
 
 SOURCES += \
-    sc_stream_redis.c
+    sc_stream_redis.c \
+    sc_fm_redis.c
 
