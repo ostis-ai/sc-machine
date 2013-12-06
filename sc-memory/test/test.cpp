@@ -609,7 +609,7 @@ int main(int argc, char *argv[])
     printf("SHA256: %d\n", g_checksum_type_get_length(G_CHECKSUM_SHA256) );
     printf("Element size: %d\n", sizeof(sc_element));
 
-    sc_memory_initialize("repo", 0);
+    sc_memory_initialize("repo", "test.ini");
     g_timer_stop(timer);
     printf("Segment loading speed: %f seg/sec\n", sc_storage_get_segments_count() / g_timer_elapsed(timer, 0));
 

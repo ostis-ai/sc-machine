@@ -24,5 +24,5 @@ unix {
 }
 
 SOURCES += \
-    sc-fm-filesystem.c
+    sc_fm_filesystem.c
 

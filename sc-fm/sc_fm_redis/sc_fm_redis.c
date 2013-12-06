@@ -23,8 +23,13 @@ along with OSTIS.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef _sc_fm_redis_h_
 #define _sc_fm_redis_h_
 
+#include "sc_fm_engine_private.h"
+#include "sc_stream_redis.h"
+#include <glib.h>
+
 sc_fm_engine* initialize(const sc_char* repo_path)
 {
+    return 0;
 }
 
 #endif

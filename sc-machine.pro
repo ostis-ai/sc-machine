@@ -4,6 +4,6 @@ CONFIG += ordered
 DESTDIR = ./bin
 
 SUBDIRS = sc-memory \
-          sc-fs \
+          sc-fm \
           sc-memory/test #\
           #tools/sc-store-visual
