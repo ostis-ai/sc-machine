@@ -413,7 +413,16 @@ void test6()
         {
             printf("found: \n");
             for (j = 0; j < results_count; j++)
-                printf("seg=%d, offset=%d\n", results[j].seg, results[j].offset);
+            {
+                sc_stream *stream_value= 0;
+                sc_memory_get_link_content(results[j], &stream_value);
+                sc_uint32 value, bytes;
+                sc_stream_read_data(stream_value, (char*)&value, sizeof(value), &bytes);
+
+                sc_stream_free(stream_value);
+
+                printf("seg=%d, offset=%d, value=%d\n", results[j].seg, results[j].offset, value);
+            }
             g_free(results);
             results = 0;
         }else

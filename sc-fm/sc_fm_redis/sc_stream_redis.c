@@ -41,6 +41,25 @@ sc_result sc_stream_redis_read(const sc_stream *stream, sc_char *data, sc_uint32
     sc_redis_handler *handler = (sc_redis_handler*)stream->handler;
     g_assert(handler != 0);
 
+    if (handler->size == 0)
+        return SC_RESULT_ERROR;
+
+    redisReply *reply = redisCommand(handler->context, "GETRANGE %s %d %d", handler->key, handler->pos, handler->pos + length - 1);
+    if (reply->type != REDIS_REPLY_STRING)
+    {
+        freeReplyObject(reply);
+        return SC_RESULT_ERROR_IO;
+    }
+
+    *bytes_read = reply->len;
+
+    memcpy(data, reply->str, reply->len);
+    handler->pos += reply->len;
+
+    freeReplyObject(reply);
+
+    g_assert(handler->pos <= handler->size);
+
     return SC_RESULT_OK;
 }
 
@@ -48,11 +67,8 @@ sc_result sc_stream_redis_write(const sc_stream *stream, sc_char *data, sc_uint3
 {
     sc_redis_handler *handler = (sc_redis_handler*)stream->handler;
     g_assert(handler != 0);
-    char *data_str = g_strndup(data, length);
 
-    redisReply *reply = redisCommand(handler->context, "APPEND %s \"%s\"", handler->key, data_str);
-    g_free(data_str);
-
+    redisReply *reply = redisCommand(handler->context, "APPEND %s %b", handler->key, data, length);
     if (reply->type != REDIS_REPLY_INTEGER)
     {
         freeReplyObject(reply);
@@ -113,6 +129,8 @@ sc_result sc_stream_redis_free_handler(const sc_stream *stream)
     sc_redis_handler *handler = (sc_redis_handler*)stream->handler;
     g_assert(handler != 0);
 
+    g_free(handler->key);
+
     g_free(handler);
 
     return SC_RESULT_OK;
@@ -141,7 +159,7 @@ sc_stream* sc_stream_redis_new(redisContext *context, const sc_char *key, sc_uin
     handler->size = 0;
 
     // determine size
-    if (flags | SC_STREAM_READ)
+    if (flags & SC_STREAM_READ)
     {
         redisReply *reply = redisCommand(handler->context, "STRLEN %s", key);
         if (reply->type != REDIS_REPLY_INTEGER)
@@ -153,6 +171,13 @@ sc_stream* sc_stream_redis_new(redisContext *context, const sc_char *key, sc_uin
 
         handler->size = reply->integer;
         freeReplyObject(reply);
+    } else
+    {
+        if (flags & SC_STREAM_WRITE)
+        {
+            redisReply *reply = redisCommand(handler->context, "DEL %s", key);
+            freeReplyObject(reply);
+        }
     }
 
     stream = g_new0(sc_stream, 1);

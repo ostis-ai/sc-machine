@@ -16,8 +16,8 @@ struct BuilderParams
     bool clearOutput;
     //! Flag to generate format information based on file extensions
     bool autoFormatInfo;
-
-
+    //! Path to configuration file
+    String configFile;
 };
 
 class Builder

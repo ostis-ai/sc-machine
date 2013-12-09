@@ -128,35 +128,6 @@ sc_bool sc_fs_storage_initialize(const gchar *path, sc_bool clear)
         }
     }
 
-
-    /*g_message("Connect to redis server %s:%d", sc_config_redis_host(), sc_config_redis_port());
-    sc_uint32 timeout_val = sc_config_redis_timeout();
-    struct timeval timeout = {timeout_val / 1000, (timeout_val % 1000) * 1000};
-    redis_context = redisConnectWithTimeout(sc_config_redis_host(), sc_config_redis_port(), timeout);
-
-    if (redis_context == 0 || redis_context->err)
-    {
-        if (redis_context)
-        {
-            g_message("Connection error: %s", redis_context->errstr);
-            redisFree(redis_context);
-        } else {
-            g_message("Connection error: can't allocate redis context");
-        }
-        return SC_FALSE;
-    }
-
-    g_message("\tSwitch redis database");
-    redisReply *reply = redisCommand(redis_context, "SELECT 0");
-    if (reply->type == REDIS_REPLY_ERROR)
-    {
-        g_message("\tCan't switch database");
-        freeReplyObject(reply);
-        redisFree(redis_context);
-        return SC_FALSE;
-    }
-    freeReplyObject(reply);*/
-
     return SC_TRUE;
 }
 
@@ -164,11 +135,12 @@ sc_bool sc_fs_storage_shutdown(sc_segment **segments)
 {    
     g_message("Shutdown sc-storage");
 
-//    g_message("Disconnect from redis");
-//    redisFree(redis_context);
-
-    g_message("Write storage into %s", repo_path);
+    g_message("Write segments");
     sc_fs_storage_write_to_path(segments);
+
+    g_message("Save file memory state");
+    if (sc_fm_save(fm_engine) != SC_RESULT_OK)
+        g_critical("Error while saves file memory");
 
     g_free(repo_path);
 

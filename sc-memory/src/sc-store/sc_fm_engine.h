@@ -58,11 +58,11 @@ sc_result sc_fm_addr_ref_append(const sc_fm_engine *engine, sc_addr addr, const 
 sc_result sc_fm_addr_ref_remove(const sc_fm_engine *engine, sc_addr addr, const sc_check_sum *check_sum);
 
 /*! Find all sc-link addrs by specified content data
- * @param engine Pointer to used file system engine
+ * @param engine Pointer to used file memory engine
  * @param check_sum Check sum of data
  * @param result Pointer to result container
  * @param result_count Container for results count
- * @return If sc-links with specified checksum found, then sc-addrs of found link
+ * @returns If sc-links with specified checksum found, then sc-addrs of found link
  * writes into \p result array and function returns SC_OK; otherwise \p result will contain
  * empty sc-addr and function returns SC_OK. In any case \p result_count contains number of found
  * sc-addrs
@@ -71,8 +71,16 @@ sc_result sc_fm_addr_ref_remove(const sc_fm_engine *engine, sc_addr addr, const 
 sc_result sc_fm_find(const sc_fm_engine *engine, const sc_check_sum *check_sum, sc_addr **result, sc_uint32 *result_count);
 
 /*! Clear file memory
+ * @param engine Pointer to used file memory engine
+ * @returns If there are any errors during file memory clear, then returns SC_RESULT_ERROR; othrwise returns SC_RESULT_OK
  */
 sc_result sc_fm_clear(const sc_fm_engine *engine);
+
+/*! Save state of file memory
+ * @param engine Pointer to used file memory engine
+ * @returns If there are any errors during file memory state save, then returns SC_RESULT_ERROR; othrwise returns SC_RESULT_OK
+ */
+sc_result sc_fm_save(const sc_fm_engine *engine);
 
 
 #endif // _sc_fm_engine_h_

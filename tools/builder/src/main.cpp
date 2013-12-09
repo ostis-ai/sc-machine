@@ -12,6 +12,7 @@ int main(int argc, char *argv[])
             ("input-path,i", boost::program_options::value<std::string>(), "Path to directory with sources")
             ("output-path,o", boost::program_options::value<std::string>(), "Path to output directory (repository)")
             ("clear-output,c", "Clear output directory (repository) before build")
+            ("settings,s", boost::program_options::value<std::string>(), "Path to configuration file for sc-memory")
             ("auto-formats,f", "Enable automatic formats info generation");
 
     boost::program_options::variables_map vm;
@@ -39,6 +40,9 @@ int main(int argc, char *argv[])
 
     if (vm.count("auto-formats"))
         params.autoFormatInfo = true;
+
+    if (vm.count("settings"))
+        params.configFile = vm["settings"].as<std::string>();
 
     Builder builder;
     builder.initialize();

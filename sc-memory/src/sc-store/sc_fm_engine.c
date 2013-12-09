@@ -61,3 +61,9 @@ sc_result sc_fm_clear(const sc_fm_engine *engine)
     g_assert(engine->funcClear);
     return engine->funcClear(engine);
 }
+
+sc_result sc_fm_save(const sc_fm_engine *engine)
+{
+    g_assert(engine->funcSave);
+    return engine->funcSave(engine);
+}

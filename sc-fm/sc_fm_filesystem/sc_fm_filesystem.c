@@ -257,11 +257,15 @@ sc_result sc_fs_engine_clear(const sc_fm_engine *engine)
     return _sc_fs_clear_delete_files(contents_path);
 }
 
-sc_result sc_fs_engine_destroy_data(const sc_fm_engine *engine)
+sc_result sc_fs_save(const sc_fm_engine *engine)
 {
     return SC_RESULT_OK;
 }
 
+sc_result sc_fs_engine_destroy_data(const sc_fm_engine *engine)
+{
+    return SC_RESULT_OK;
+}
 
 sc_fm_engine* initialize(const sc_char* repo_path)
 {
@@ -283,6 +287,7 @@ sc_fm_engine* initialize(const sc_char* repo_path)
     engine->funcAddrRefRemove = &sc_fs_engine_addr_ref_remove;
     engine->funcFind = &sc_fs_engine_find;
     engine->funcClear = &sc_fs_engine_clear;
+    engine->funcSave = &sc_fs_save;
     engine->funcDestroyData = &sc_fs_engine_destroy_data;
 
     return engine;

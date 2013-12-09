@@ -31,7 +31,7 @@ bool Builder::run(const BuilderParams &params)
     collectFiles();
 
     // initialize sc-memory
-    sc_memory_initialize(mParams.outputPath.c_str(), 0, mParams.clearOutput ? SC_TRUE : SC_FALSE);
+    sc_memory_initialize(mParams.outputPath.c_str(), mParams.configFile.empty() ? 0 : mParams.configFile.c_str(), mParams.clearOutput ? SC_TRUE : SC_FALSE);
     sc_helper_init();
 
     // print founded files
