@@ -70,5 +70,9 @@ sc_result sc_fm_addr_ref_remove(const sc_fm_engine *engine, sc_addr addr, const 
  */
 sc_result sc_fm_find(const sc_fm_engine *engine, const sc_check_sum *check_sum, sc_addr **result, sc_uint32 *result_count);
 
+/*! Clear file memory
+ */
+sc_result sc_fm_clear(const sc_fm_engine *engine);
+
 
 #endif // _sc_fm_engine_h_

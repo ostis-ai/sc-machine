@@ -43,7 +43,7 @@ typedef sc_fm_engine* (*fFmEngineInitFunc)();
 
 // ----------------------------------------------
 
-sc_bool sc_fs_storage_initialize(const gchar *path)
+sc_bool sc_fs_storage_initialize(const gchar *path, sc_bool clear)
 {
     g_message("Initialize sc-storage from path: %s", path);
     g_snprintf(segments_path, MAX_PATH_LENGTH, "%s/%s", path, seg_dir);
@@ -68,24 +68,66 @@ sc_bool sc_fs_storage_initialize(const gchar *path)
     {
         if (module == nullptr)
         {
-            g_warning("Can't load module: %s. Error: %s", module_path, g_module_error());
+            g_critical("Can't load module: %s. Error: %s", module_path, g_module_error());
         }else
         {
             g_message("Initialize file memory engine from: %s", module_path);
             if (g_module_symbol(module, "initialize", (gpointer*) &func) == FALSE)
             {
-                g_warning("Can't find 'initialize' symbol in module: %s", module_path);
+                g_critical("Can't find 'initialize' symbol in module: %s", module_path);
             }else
             {
                 fm_engine = func(repo_path);
                 if (fm_engine == 0)
                 {
-                    g_warning("Can't create file memory engine from: %s", module_path);
+                    g_critical("Can't create file memory engine from: %s", module_path);
                     return SC_FALSE;
                 }
             }
         }
     }
+
+    // clear repository if needs
+    if (clear == SC_TRUE)
+    {
+        g_message("Clear file memory");
+        if (g_file_test(segments_path, G_FILE_TEST_IS_DIR))
+        {
+            // remove all segments
+            GDir *dir = 0;
+            const gchar *fname = 0;
+            char path[MAX_PATH_LENGTH];
+
+            dir = g_dir_open(segments_path, 0, 0);
+            g_assert( dir != (GDir*)0 );
+            // calculate files
+            fname = g_dir_read_name(dir);
+            while (fname != 0)
+            {
+                g_snprintf(path, MAX_PATH_LENGTH, "%s/%s", segments_path, fname);
+
+                if (g_file_test(path, G_FILE_TEST_IS_REGULAR))
+                {
+                    if (g_remove(path) == -1)
+                    {
+                        g_critical("Can't remove segment: %s", path);
+                        g_dir_close(dir);
+                        return SC_FALSE;
+                    }
+                }
+                fname = g_dir_read_name(dir);
+            }
+
+            g_dir_close(dir);
+        }
+
+        if (sc_fm_clear(fm_engine) != SC_RESULT_OK)
+        {
+            g_critical("Can't clear file memory");
+            return SC_FALSE;
+        }
+    }
+
 
     /*g_message("Connect to redis server %s:%d", sc_config_redis_host(), sc_config_redis_port());
     sc_uint32 timeout_val = sc_config_redis_timeout();

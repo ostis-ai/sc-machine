@@ -33,7 +33,7 @@ GRecMutex mutex;
 #define LOCK g_rec_mutex_lock(&mutex);
 #define UNLOCK g_rec_mutex_unlock(&mutex);
 
-sc_bool sc_memory_initialize(const sc_char *repo_path, const sc_char *config_file)
+sc_bool sc_memory_initialize(const sc_char *repo_path, const sc_char *config_file, sc_bool clear)
 {
     sc_bool res = SC_FALSE;
 
@@ -42,7 +42,7 @@ sc_bool sc_memory_initialize(const sc_char *repo_path, const sc_char *config_fil
     g_message("Run with configuration");
     g_message("\tmax_loaded_segments: %d", sc_config_get_max_loaded_segments());
 
-    res = sc_storage_initialize(repo_path);
+    res = sc_storage_initialize(repo_path, clear);
     g_rec_mutex_init(&mutex);
 
     return res;

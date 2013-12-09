@@ -152,7 +152,7 @@ sc_result sc_fs_engine_addr_ref_append(const sc_fm_engine *engine, sc_addr addr,
 
 sc_result sc_fs_engine_addr_ref_remove(const sc_fm_engine *engine, sc_addr addr, const sc_check_sum *check_sum)
 {
-    return SC_RESULT_ERROR_IO;
+    return g_rmdir(contents_path) != -1 ? SC_RESULT_OK : SC_RESULT_ERROR;
 }
 
 sc_result sc_fs_engine_find(const sc_fm_engine *engine, const sc_check_sum *check_sum, sc_addr **result, sc_uint32 *result_count)
@@ -207,6 +207,56 @@ sc_result sc_fs_engine_find(const sc_fm_engine *engine, const sc_check_sum *chec
     return SC_RESULT_OK;
 }
 
+sc_result _sc_fs_clear_delete_files(const char *root_path)
+{
+    // remove all segments
+    GDir *dir = 0;
+    const gchar *fname = 0;
+    char path[MAX_PATH_LENGTH];
+
+    dir = g_dir_open(root_path, 0, 0);
+    g_assert( dir != (GDir*)0 );
+    // calculate files
+    fname = g_dir_read_name(dir);
+    while (fname != 0)
+    {
+        g_snprintf(path, MAX_PATH_LENGTH, "%s/%s", root_path, fname);
+
+        if (g_file_test(path, G_FILE_TEST_IS_REGULAR))
+        {
+            if (g_remove(path) == -1)
+            {
+                g_critical("Can't remove file: %s", path);
+                g_dir_close(dir);
+                return SC_RESULT_ERROR;
+            }
+        } else
+        {
+            if (g_file_test(path, G_FILE_TEST_IS_DIR))
+            {
+                sc_result res = _sc_fs_clear_delete_files(path);
+                if (res != SC_RESULT_OK)
+                {
+                    g_dir_close(dir);
+                    return SC_RESULT_ERROR;
+                }
+            }
+        }
+        fname = g_dir_read_name(dir);
+    }
+
+    g_dir_close(dir);
+    if (g_rmdir(root_path))
+        return SC_RESULT_ERROR;
+
+    return SC_RESULT_OK;
+}
+
+sc_result sc_fs_engine_clear(const sc_fm_engine *engine)
+{
+    return _sc_fs_clear_delete_files(contents_path);
+}
+
 sc_result sc_fs_engine_destroy_data(const sc_fm_engine *engine)
 {
     return SC_RESULT_OK;
@@ -232,6 +282,7 @@ sc_fm_engine* initialize(const sc_char* repo_path)
     engine->funcAddrRefAppend = &sc_fs_engine_addr_ref_append;
     engine->funcAddrRefRemove = &sc_fs_engine_addr_ref_remove;
     engine->funcFind = &sc_fs_engine_find;
+    engine->funcClear = &sc_fs_engine_clear;
     engine->funcDestroyData = &sc_fs_engine_destroy_data;
 
     return engine;

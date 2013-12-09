@@ -55,3 +55,9 @@ sc_result sc_fm_find(const sc_fm_engine *engine, const sc_check_sum *check_sum, 
     g_assert(engine->funcFind != 0);
     return engine->funcFind(engine, check_sum, result, result_count);
 }
+
+sc_result sc_fm_clear(const sc_fm_engine *engine)
+{
+    g_assert(engine->funcClear);
+    return engine->funcClear(engine);
+}

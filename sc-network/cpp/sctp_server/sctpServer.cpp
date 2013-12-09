@@ -83,7 +83,7 @@ bool sctpServer::start(const QString &config)
 
     // initialize sc-memory
     qDebug() << "Initialize sc-memory\n";
-    if (sc_memory_initialize(mRepoPath.toStdString().c_str(), config.toStdString().c_str()) != SC_TRUE)
+    if (sc_memory_initialize(mRepoPath.toStdString().c_str(), config.toStdString().c_str(), SC_FALSE) != SC_TRUE)
         return false;
     if (sc_helper_init() != SC_RESULT_OK)
         return false;

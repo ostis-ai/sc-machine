@@ -38,7 +38,7 @@ const char str_key_fm_engine[] = "engine";
 // Maximum number of segments, that can be loaded into memory at one moment
 sc_uint config_max_loaded_segments = G_MAXUINT16;
 
-const char redis_hostname_default[] = "localhost";
+const char redis_hostname_default[] = "127.0.0.1";
 // Redis host name
 char *config_redis_host = redis_hostname_default;
 // Redis port

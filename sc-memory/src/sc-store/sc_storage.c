@@ -125,7 +125,7 @@ void sc_storage_update_segments()
 // -----------------------------------------------------------------------------
 
 
-sc_bool sc_storage_initialize(const char *path)
+sc_bool sc_storage_initialize(const char *path, sc_bool clear)
 {
     g_assert( segments == (sc_segment**)0 );
     g_assert( !is_initialized );
@@ -133,8 +133,12 @@ sc_bool sc_storage_initialize(const char *path)
     segments = g_new0(sc_segment*, SC_ADDR_SEG_MAX);
     _sc_storage_segment_cache_init();
 
-    sc_fs_storage_initialize(path);
-    sc_fs_storage_read_from_path(segments, &segments_num);
+    sc_bool res = sc_fs_storage_initialize(path, clear);
+    if (res == SC_FALSE)
+        return SC_FALSE;
+
+    if (clear == SC_FALSE)
+        sc_fs_storage_read_from_path(segments, &segments_num);
 
     storage_time_stamp = 1;
 

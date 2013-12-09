@@ -147,7 +147,8 @@ enum _sc_result
     SC_RESULT_ERROR_INVALID_PARAMS,    // invalid function parameters error
     SC_RESULT_ERROR_INVALID_TYPE,      // invalied type error
     SC_RESULT_ERROR_IO,                // input/output error
-    SC_RESULT_ERROR_INVALID_STATE      // invalid state of processed object
+    SC_RESULT_ERROR_INVALID_STATE,     // invalid state of processed object
+    SC_RESULT_ERROR_NOT_FOUND          // item not found
 };
 
 // contents

@@ -30,8 +30,10 @@ along with OSTIS.  If not, see <http://www.gnu.org/licenses/>.
 
 /*! Initialize sc-memory with specified path to repository
  * @param repo_path Path to repository on file system
+ * @param config_file Path to configuration file. If it null, then default values will be used
+ * @param clear Flag to clear memory on initialization. This function destroys whole elements, that exists in memory
  */
-sc_bool sc_memory_initialize(const sc_char *repo_path, const sc_char *config_file);
+sc_bool sc_memory_initialize(const sc_char *repo_path, const sc_char *config_file, sc_bool clear);
 
 /*! Initialize sc-memory extensions from specified \p path
  * @param path Path to directory, that contains extensions

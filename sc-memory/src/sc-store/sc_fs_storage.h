@@ -29,10 +29,10 @@ along with OSTIS.  If not, see <http://www.gnu.org/licenses/>.
 
 
 /*! Initialize file system storage in specified path
- *
  * @param path Path to store on file system.
+ * @param clear Flag to initialize empty storage
  */
-sc_bool sc_fs_storage_initialize(const char *path);
+sc_bool sc_fs_storage_initialize(const char *path, sc_bool clear);
 
 /*! Shutdown file system storage
  */
