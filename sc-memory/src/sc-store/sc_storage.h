@@ -28,8 +28,11 @@ along with OSTIS.  If not, see <http://www.gnu.org/licenses/>.
 #include "sc_stream.h"
 
 
-//! Initialize sc storage in specified path
-sc_bool sc_storage_initialize(const char *path);
+/*! Initialize sc storage in specified path
+ * @param path Path to repository
+ * @param clear Flag to clear initialize empty storage
+ */
+sc_bool sc_storage_initialize(const char *path, sc_bool clear);
 
 //! Shutdown sc storage
 void sc_storage_shutdown();

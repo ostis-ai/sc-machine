@@ -18,7 +18,7 @@ int main(int argc, char *argv[])
     boost::program_options::store(boost::program_options::command_line_parser(argc, argv).options(options_description).run(), vm);
     boost::program_options::notify(vm);
 
-    if (vm.count("help"))
+    if (vm.count("help") || !vm.count("input-path") || !vm.count("output-path"))
     {
         std::cout << options_description;
         return 0;
@@ -39,7 +39,6 @@ int main(int argc, char *argv[])
 
     if (vm.count("auto-formats"))
         params.autoFormatInfo = true;
-
 
     Builder builder;
     builder.initialize();

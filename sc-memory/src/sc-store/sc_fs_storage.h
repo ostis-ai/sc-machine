@@ -29,10 +29,10 @@ along with OSTIS.  If not, see <http://www.gnu.org/licenses/>.
 
 
 /*! Initialize file system storage in specified path
- *
  * @param path Path to store on file system.
+ * @param clear Flag to initialize empty storage
  */
-sc_bool sc_fs_storage_initialize(const char *path);
+sc_bool sc_fs_storage_initialize(const char *path, sc_bool clear);
 
 /*! Shutdown file system storage
  */
@@ -61,6 +61,7 @@ sc_bool sc_fs_storage_read_from_path(sc_segment **segments, sc_uint16 *segments_
  */
 sc_bool sc_fs_storage_write_to_path(sc_segment **segments);
 
+// -------------------------------------------------
 /*! Write specified stream as content
  * @param addr sc-addr of sc-link that contains data
  * @param check_sum Pointer to checksum data
@@ -96,13 +97,7 @@ sc_result sc_fs_storage_find_links_with_content(const sc_check_sum *check_sum, s
  */
 sc_result sc_fs_storage_get_checksum_content(const sc_check_sum *check_sum, sc_stream **stream);
 
-/*! Make directory path from checksum
- * @param check_sum Checksum pointer to make path
- * @return Returns null terminated string that contains directory path (relative to contents directory). The
- * returned string should be freed with free, when done using it.
- * If there are any errors, then return null.
- */
-sc_uint8* sc_fs_storage_make_checksum_path(const sc_check_sum *check_sum);
+
 
 
 #endif

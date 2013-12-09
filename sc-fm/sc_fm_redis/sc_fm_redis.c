@@ -20,34 +20,17 @@ along with OSTIS.  If not, see <http://www.gnu.org/licenses/>.
 -----------------------------------------------------------------------------
 */
 
-#ifndef _sc_config_h_
-#define _sc_config_h_
+#ifndef _sc_fm_redis_h_
+#define _sc_fm_redis_h_
 
-#include "sc_types.h"
+#include "sc_fm_engine_private.h"
+#include "sc_stream_redis.h"
+#include <glib.h>
 
-/*! Iniitalize sc-memory configuration from specified configuration file
- * @param file_path Path to configuration file
- */
-void sc_config_initialize(const sc_char *file_path);
-
-/*! Shutdown sc-memory configuration. Free allocated data.
- */
-void sc_config_shutdown();
-
-/*! Return number of segments, that can be loaded into memory at one moment
- */
-sc_uint32 sc_config_get_max_loaded_segments();
-
-//! Returns redis host address
-const sc_char* sc_config_redis_host();
-//! Returns redis port
-int sc_config_redis_port();
-//! Returns redis response timeout in milliseconds
-sc_uint32 sc_config_redis_timeout();
-
-//! Returns file memory engine
-const sc_char* sc_config_fm_engine();
-
+sc_fm_engine* initialize(const sc_char* repo_path)
+{
+    return 0;
+}
 
 #endif
 

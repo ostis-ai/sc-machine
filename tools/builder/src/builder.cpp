@@ -30,23 +30,8 @@ bool Builder::run(const BuilderParams &params)
 
     collectFiles();
 
-    if (mParams.clearOutput)
-    {
-        boost::filesystem::path path(mParams.outputPath);
-
-        if (boost::filesystem::exists(path) && boost::filesystem::is_directory(path) && !boost::filesystem::is_empty(path))
-        {
-            std::cout << "Clear output directory\n";
-            boost::filesystem::remove_all(mParams.outputPath);
-
-            boost::filesystem::create_directory(path);
-            assert(boost::filesystem::is_empty(path));
-        }
-
-    }
-
     // initialize sc-memory
-    sc_memory_initialize(mParams.outputPath.c_str(), 0);
+    sc_memory_initialize(mParams.outputPath.c_str(), 0, mParams.clearOutput ? SC_TRUE : SC_FALSE);
     sc_helper_init();
 
     // print founded files
