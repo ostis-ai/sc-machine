@@ -16,7 +16,7 @@ extern "C"
 #define nodes_remove_count 5000000
 #define arcs_append_count  5000000
 #define arcs_remove_count  0
-#define link_append_count 200
+#define link_append_count 20000
 #define iterator_alloc_count 10000000
 
 const char* repo_path = "repo";
@@ -366,7 +366,7 @@ void test5()
     {
         addr = sc_memory_link_new();
 
-        printf("Created sc-link: seg=%d, offset=%d, content=%d\n", addr.seg, addr.offset, i);
+        //printf("Created sc-link: seg=%d, offset=%d, content=%d\n", addr.seg, addr.offset, i);
 
         stream = sc_stream_memory_new((char*)&i, sizeof(i), SC_STREAM_READ, SC_FALSE);
         sc_memory_set_link_content(addr, stream);
@@ -405,24 +405,24 @@ void test6()
     for (i = 0; i < link_append_count; i++)
     {
         //addr = sc_storage_link_new();
-        printf("Find addrs for content %d\t", i);
+       // printf("Find addrs for content %d\t", i);
 
         stream = sc_stream_memory_new((char*)&i, sizeof(i), SC_STREAM_READ, SC_FALSE);
 
         if (sc_memory_find_links_with_content(stream, &results, &results_count) == SC_RESULT_OK)
         {
-            printf("found: \n");
-            for (j = 0; j < results_count; j++)
-            {
-                sc_stream *stream_value= 0;
-                sc_memory_get_link_content(results[j], &stream_value);
-                sc_uint32 value, bytes;
-                sc_stream_read_data(stream_value, (char*)&value, sizeof(value), &bytes);
+//            printf("found: \n");
+//            for (j = 0; j < results_count; j++)
+//            {
+//                sc_stream *stream_value= 0;
+//                sc_memory_get_link_content(results[j], &stream_value);
+//                sc_uint32 value, bytes;
+//                sc_stream_read_data(stream_value, (char*)&value, sizeof(value), &bytes);
 
-                sc_stream_free(stream_value);
+//                sc_stream_free(stream_value);
 
-                printf("seg=%d, offset=%d, value=%d\n", results[j].seg, results[j].offset, value);
-            }
+//                printf("seg=%d, offset=%d, value=%d\n", results[j].seg, results[j].offset, value);
+//            }
             g_free(results);
             results = 0;
         }else
@@ -623,13 +623,13 @@ int main(int argc, char *argv[])
     printf("Segment loading speed: %f seg/sec\n", sc_storage_get_segments_count() / g_timer_elapsed(timer, 0));
 
     //test1();
-    test5();
-    test6();
+    //test5();
+    //test6();
 
     //test7();
     //test8();
     //test3();
-    item = 0;
+    //item = 0;
 
     while (item != 0)
     {

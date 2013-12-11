@@ -327,11 +327,34 @@ Segments count: 191
 	Empty: 17185
 ---
 
----------- 03.12.13 ------------
-Filesystem links storage
+---------- 12.12.13 ------------
 
+REDIS file memory
+MD5: 16
+SHA1: 20
+SHA256: 32
+Element size: 56
+** Message: Run with configuration
+** Message: 	max_loaded_segments: 20
+** Message: Initialize sc-storage from path: repo
+** Message: 	File memory engine: redis
+** Message: Initialize file memory engine from: libsc-fm-redis.so
+** Message: Connect to redis server 127.0.0.1:6379
+** Message: 	Switch redis database
+** Message: Clear file memory
+Segment loading speed: 0.000000 seg/sec
+test contents
+----- Test 5 -----
+Segments count: 0
+--- Storage statistics: ---
+ 	Nodes: 0 (0 deleted)
+	Arcs: 0 (0 deleted)
+	Links: 0 (0 deleted)
+	Empty: 0
+---
+Create 20000 links
 Created links: 20000
-Links per second: 2987.992602
+Links per second: 2881.149832
 Segments count: 1
 --- Storage statistics: ---
  	Nodes: 0 (0 deleted)
@@ -339,6 +362,32 @@ Segments count: 1
 	Links: 20000 (0 deleted)
 	Empty: 45535
 ---
+
+----- Finished -----
+
+test content finding
+
+----- Test 6 -----
+Segments count: 1
+--- Storage statistics: ---
+ 	Nodes: 0 (0 deleted)
+	Arcs: 0 (0 deleted)
+	Links: 20000 (0 deleted)
+	Empty: 45535
+---
+Created links: 20000
+Links per second: 10306.489223
+Segments count: 1
+--- Storage statistics: ---
+ 	Nodes: 0 (0 deleted)
+	Arcs: 0 (0 deleted)
+	Links: 20000 (0 deleted)
+	Empty: 45535
+---
+
+----- Finished -----
+
+
 
 ---------- dd.mm.yy ------------
 

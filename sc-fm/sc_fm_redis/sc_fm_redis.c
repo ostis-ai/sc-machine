@@ -30,12 +30,29 @@ along with OSTIS.  If not, see <http://www.gnu.org/licenses/>.
 #include <hiredis/hiredis.h>
 #include <memory.h>
 
+GMutex redis_mutex;
+
+
 struct _redis_data
 {
     redisContext *context;
 };
 
 typedef struct _redis_data redis_data;
+
+redisReply* engine_do_sync_redis_command(redisContext *context, const char *format, ...)
+{
+    va_list ap;
+    void *reply = NULL;
+    va_start(ap,format);
+
+    g_mutex_lock(&redis_mutex);
+    reply = redisvCommand(context,format,ap);
+    g_mutex_unlock(&redis_mutex);
+
+    va_end(ap);
+    return reply;
+}
 
 sc_result sc_redis_engine_create_stream(const sc_fm_engine *engine, const sc_check_sum *check_sum, sc_uint8 flags, sc_stream **stream)
 {
@@ -47,8 +64,10 @@ sc_result sc_redis_engine_create_stream(const sc_fm_engine *engine, const sc_che
     g_snprintf(key, 128, "link:%s:data", check_sum_str);
     g_free(check_sum_str);
 
-    *stream = sc_stream_redis_new(data->context, key, flags);
-    return SC_RESULT_OK;
+    *stream = 0;
+    *stream = sc_stream_redis_new(data->context, key, flags, &redis_mutex);
+
+    return *stream == 0 ? SC_RESULT_ERROR : SC_RESULT_OK;
 }
 
 sc_result sc_redis_engine_addr_ref_append(const sc_fm_engine *engine, sc_addr addr, const sc_check_sum *check_sum)
@@ -56,7 +75,7 @@ sc_result sc_redis_engine_addr_ref_append(const sc_fm_engine *engine, sc_addr ad
     redis_data *data = (redis_data*)engine->storage_info;
     g_assert(data);
 
-    redisReply *reply = redisCommand(data->context, "LLEN link:%b:addrs", check_sum->data, check_sum->len);
+    redisReply *reply = engine_do_sync_redis_command(data->context, "LLEN link:%b:addrs", check_sum->data, check_sum->len);
     if (reply->type == REDIS_REPLY_ERROR)
     {
         freeReplyObject(reply);
@@ -64,7 +83,7 @@ sc_result sc_redis_engine_addr_ref_append(const sc_fm_engine *engine, sc_addr ad
     }
 
     int old_size = reply->integer;
-    reply = redisCommand(data->context, "LPUSH link:%b:addrs %b", check_sum->data, check_sum->len, &addr, sizeof(addr));
+    reply = engine_do_sync_redis_command(data->context, "LPUSH link:%b:addrs %b", check_sum->data, check_sum->len, &addr, sizeof(addr));
     if ((reply->type == REDIS_REPLY_INTEGER) && (old_size < reply->integer))
     {
         freeReplyObject(reply);
@@ -81,7 +100,7 @@ sc_result sc_redis_engine_addr_ref_remove(const sc_fm_engine *engine, sc_addr ad
     redis_data *data = (redis_data*)engine->storage_info;
     g_assert(data);
 
-    redisReply *reply = redisCommand(data->context, "LREM link:%b:addrs 0 %b", check_sum->data, check_sum->len, &addr, sizeof(addr));
+    redisReply *reply = engine_do_sync_redis_command(data->context, "LREM link:%b:addrs 0 %b", check_sum->data, check_sum->len, &addr, sizeof(addr));
 
     if (reply->type == REDIS_REPLY_INTEGER)
     {
@@ -98,7 +117,9 @@ sc_result sc_redis_engine_find(const sc_fm_engine *engine, const sc_check_sum *c
     redis_data *data = (redis_data*)engine->storage_info;
     g_assert(data);
 
-    redisReply *reply = redisCommand(data->context, "LRANGE link:%b:addrs 0 -1", check_sum->data, check_sum->len);
+    redisReply *reply = engine_do_sync_redis_command(data->context, "LRANGE link:%b:addrs 0 -1", check_sum->data, check_sum->len);
+    if (reply == 0)
+        return SC_RESULT_ERROR;
 
     if (reply->type == REDIS_REPLY_ERROR)
     {
@@ -109,7 +130,7 @@ sc_result sc_redis_engine_find(const sc_fm_engine *engine, const sc_check_sum *c
     if ((reply->type == REDIS_REPLY_ARRAY) && (reply->elements > 0))
     {
         *result_count = reply->elements;
-        *result = g_new0(sc_addr, 1);
+        *result = g_new0(sc_addr, *result_count);
         size_t i;
         for (i = 0; i < reply->elements; ++i)
             memcpy(&((*result)[i]), reply->element[i]->str, sizeof(sc_addr));
@@ -127,7 +148,8 @@ sc_result sc_redis_engine_clear(const sc_fm_engine *engine)
     redis_data *data = (redis_data*)engine->storage_info;
     g_assert(data);
 
-    redisReply *reply = redisCommand(data->context, "FLUSHDB");
+    redisReply *reply = engine_do_sync_redis_command(data->context, "FLUSHDB");
+
     freeReplyObject(reply);
 
     return SC_RESULT_OK;
@@ -138,7 +160,8 @@ sc_result sc_redis_engine_save(const sc_fm_engine *engine)
     redis_data *data = (redis_data*)engine->storage_info;
     g_assert(data);
 
-    redisReply *reply = redisCommand(data->context, "SAVE");
+    redisReply *reply = engine_do_sync_redis_command(data->context, "SAVE");
+
     sc_result result = (reply->type == REDIS_REPLY_ERROR) ? SC_RESULT_ERROR : SC_RESULT_OK;
     freeReplyObject(reply);
 
@@ -160,6 +183,8 @@ sc_result sc_redis_engine_destroy_data(const sc_fm_engine *engine)
 sc_fm_engine* initialize(const sc_char* repo_path)
 {
     redis_data *data = g_new0(redis_data, 1);
+
+    g_mutex_init(&redis_mutex);
 
     g_message("Connect to redis server %s:%d", sc_config_redis_host(), sc_config_redis_port());
     sc_uint32 timeout_val = sc_config_redis_timeout();
@@ -183,7 +208,8 @@ sc_fm_engine* initialize(const sc_char* repo_path)
     }
 
     g_message("\tSwitch redis database");
-    redisReply *reply = redisCommand(data->context, "SELECT 0");
+
+    redisReply *reply = engine_do_sync_redis_command(data->context, "SELECT 0");
     if (reply->type == REDIS_REPLY_ERROR)
     {
         g_message("\tCan't switch database");
