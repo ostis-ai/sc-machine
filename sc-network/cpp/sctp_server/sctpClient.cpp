@@ -57,8 +57,11 @@ void sctpClient::run()
     {
         processCommands();
     }
-    mSocket->waitForBytesWritten();
-    mSocket->waitForDisconnected();
+    if (mSocket->state() == QTcpSocket::ConnectedState)
+    {
+        mSocket->waitForBytesWritten();
+        mSocket->waitForDisconnected();
+    }
     mSocket->close();
 
     delete mSocket;
