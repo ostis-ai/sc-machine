@@ -115,8 +115,6 @@ bool SCsTranslator::buildScText(pANTLR3_BASE_TREE tree)
         }
     }
 
-    dumpScs("test.scsf");
-
     // now generate sc-text in memory
     tElementSet::iterator it, itEnd = mElementSet.end();
     for (it = mElementSet.begin(); it != itEnd; ++it)
