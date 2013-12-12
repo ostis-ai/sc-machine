@@ -52,7 +52,7 @@ const char keynode_question_decomposition_str[] = "question_search_decomposition
 const char keynode_question_all_identifiers_str[] = "question_search_all_identifiers";
 
 const char keynode_question_initiated_str[] = "question_initiated";
-const char keynode_nrel_answer_str[] = "question_nrel_answer";
+const char keynode_nrel_answer_str[] = "nrel_answer";
 const char keynode_nrel_decomposition_str[] = "nrel_decomposition";
 const char keynode_question_finished_str[] = "question_finished";
 const char keynode_quasybinary_relation_str[] = "quasybinary_relation";

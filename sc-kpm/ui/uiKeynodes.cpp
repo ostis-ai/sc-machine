@@ -32,10 +32,10 @@ const char keynode_rrel_source_sc_construction_str[] = "ui_rrel_source_sc_constr
 const char keynode_rrel_output_format_str[] = "ui_rrel_output_format";
 
 
-const char keynode_question_nrel_answer_str[] = "question_nrel_answer";
+const char keynode_question_nrel_answer_str[] = "nrel_answer";
 const char keynode_question_finished_str[] = "question_finished";
 const char keynode_nrel_authors_str[] = "nrel_authors";
-const char keynode_nrel_translation_str[] = "hypermedia_nrel_translation";
+const char keynode_nrel_translation_str[] = "nrel_translation";
 const char keynode_nrel_format_str[] = "nrel_format";
 
 
