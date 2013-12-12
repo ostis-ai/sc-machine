@@ -1,7 +1,7 @@
 t | .a | "file://test.scs";;
 t <- "file://";;
 x = y;;
-t -> g: 54;;
+t -> g: 54; <- h: h (* => test;; *);;
 t => g:: h: (f -> (h <- dev)) (* <- d; g: gg;; => g: hh; h: jj;; *); post;;
 h => k: <h: g: 1; t: 2 (* <- g;; <= t: begin (* <- keynode;; *); end;; *) >;;
 h=> { 1: l; 2:3: yt };;

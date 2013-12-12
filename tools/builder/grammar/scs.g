@@ -62,7 +62,8 @@ sentence
 
 sentence_level2_6
 	:
-	| idtf CONNECTORS attrs_idtf_list -> ^(CONNECTORS idtf attrs_idtf_list)
+	| (idtf c1=CONNECTORS a1=attrs_idtf_list -> ^($c1 idtf $a1))
+	(SEP_IDTF c2=CONNECTORS a2=attrs_idtf_list -> $sentence_level2_6 ^($c2 idtf $a2))*
 	;
 	
 sentence_level1
