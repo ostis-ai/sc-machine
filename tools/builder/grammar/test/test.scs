@@ -1,4 +1,17 @@
-t | .a | "file://test.scs";;
+nrel_main_idtf
+<= nrel_inclusion: 
+	nrel_identification;
+=> nrel_main_idtf: 
+	[основной идентификатор*] 
+	(*
+	<- lang_ru;;
+	*);
+=> nrel_main_idtf: 
+	[main identifier*] 
+	(*
+	<- lang_en;; 
+	*);;
+/*file://test.scs";;
 t <- "file://";;
 x = y;;
 t -> g: 54; <- h: h (* => test;; *);;
@@ -7,6 +20,6 @@ h => k: <h: g: 1; t: 2 (* <- g;; <= t: begin (* <- keynode;; *); end;; *) >;;
 h=> { 1: l; 2:3: yt };;
 begin => 1: 2:: main; begin; test: t;;
 g -> t: h (* <- h: g: begin; p (* -> g;; *);; *); li;;
-g => [ content ] (* <- lang_ru;; *);;
+g => [ content ] (* <- lang_ru;; *);;*/
 
 

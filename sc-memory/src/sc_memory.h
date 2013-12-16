@@ -91,6 +91,14 @@ sc_addr sc_memory_arc_new(sc_type type, sc_addr beg, sc_addr end);
  */
 sc_result sc_memory_get_element_type(sc_addr addr, sc_type *result);
 
+/*! Change element sub-type
+ * @param addr sc-addr of element to set new type
+ * @param type New sub-type of sc-element (this type must be: type & sc_type_element_mask == 0)
+ * @return If sub-type changed, then returns SC_RESULT_OK; otherwise returns SC_RESULT_ERROR
+ * @note This function is a thread safe
+ */
+sc_result sc_memory_change_element_subtype(sc_addr addr, sc_type type);
+
 /*! Returns sc-addr of begin element of specified arc
  * @param addr sc-addr of arc to get begin element
  * @param result Pointer to result container

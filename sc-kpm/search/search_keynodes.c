@@ -58,7 +58,7 @@ const char keynode_question_finished_str[] = "question_finished";
 const char keynode_quasybinary_relation_str[] = "quasybinary_relation";
 
 const char keynode_nrel_identification_str[] = "nrel_identification";
-const char keynode_set_nrel_inclusion_str[] = "set_nrel_inclusion";
+const char keynode_set_nrel_inclusion_str[] = "nrel_inclusion";
 const char keynode_system_element_str[] = "system_element";
 
 #define resolve_keynode(keynode) if (sc_helper_resolve_system_identifier(keynode##_str, &keynode) == SC_FALSE) return SC_RESULT_ERROR;

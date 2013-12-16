@@ -447,6 +447,20 @@ sc_result sc_storage_get_element_type(sc_addr addr, sc_type *result)
     return SC_RESULT_OK;
 }
 
+sc_result sc_storage_change_element_subtype(sc_addr addr, sc_type type)
+{
+    if (type & sc_type_element_mask)
+        return SC_RESULT_ERROR_INVALID_PARAMS;
+
+    sc_element *el = sc_storage_get_element(addr, SC_TRUE);
+    if (el == 0)
+        return SC_RESULT_ERROR;
+
+    el->type = (el->type & sc_type_element_mask) | (type & ~sc_type_element_mask);
+
+    return SC_RESULT_OK;
+}
+
 sc_result sc_storage_get_arc_begin(sc_addr addr, sc_addr *result)
 {
     sc_element *el = sc_storage_get_element(addr, SC_TRUE);

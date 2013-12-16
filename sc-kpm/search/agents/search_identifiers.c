@@ -54,7 +54,7 @@ sc_result agent_search_all_identifiers(sc_event *event, sc_addr arg)
                                          sc_type_arc_common | sc_type_const,
                                          sc_type_link,
                                          sc_type_arc_pos_const_perm,
-                                         sc_type_node | sc_type_const);
+                                         sc_type_node | sc_type_const | sc_type_node_norole);
         while (sc_iterator5_next(it5) == SC_TRUE)
         {
             // check if this arc is an identification

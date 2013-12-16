@@ -359,6 +359,10 @@ sc_addr SCsTranslator::resolveScAddr(sElement *el)
 
     if (SC_ADDR_IS_NOT_EMPTY(addr))
     {
+        sc_type t = 0;
+        if (sc_memory_get_element_type(addr, &t) == SC_RESULT_OK)
+            sc_memory_change_element_subtype(addr, ~sc_type_element_mask & (el->type | t));
+
         el->addr = addr;
         return addr;
     }
