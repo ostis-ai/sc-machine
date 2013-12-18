@@ -5,4 +5,4 @@ add_library (sc-fm-filesystem SHARED ${SOURCES} ${HEADERS})
 
 include_directories("${SC_MEMORY_SRC}/sc-store" ${GLIB2_INCLUDE_DIRS})
 target_link_libraries(sc-fm-filesystem ${GLIB2_LIBRARIES})
-add_dependencies(sc-fm-filesystem sc_memory)
+add_dependencies(sc-fm-filesystem sc-memory)

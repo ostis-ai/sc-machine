@@ -1,7 +1,9 @@
 file(GLOB_RECURSE SOURCES "src/*.cpp")
 file(GLOB_RECURSE HEADERS "src/*.h")
 
-file(GLOB_RECURSE SOURCES_C "src/parser/*.c")
+file(GLOB_RECURSE SOURCES_C 
+	"src/parser/scsLexer.c"
+	"src/parser/scsParser.c")
 
 set (SC_BUILDER_DIR "${SC_TOOLS_DIR}/builder")
 
@@ -20,6 +22,7 @@ endif(${UNIX})
 
 add_executable(sc-builder ${SOURCES} ${SOURCES_C} ${HEADERS})
 include_directories(${SC_MEMORY_SRC} ${GLIB2_INCLUDE_DIRS})
-target_link_libraries(sc-builder sc_memory antlr3c boost_filesystem boost_program_options boost_system)
+target_link_libraries(sc-builder sc-memory antlr3c boost_filesystem boost_program_options boost_system)
 add_dependencies(sc-builder GenerateParser)
 
+install_targets("/bin" sc-builder)

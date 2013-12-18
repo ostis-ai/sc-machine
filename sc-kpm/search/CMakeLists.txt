@@ -5,6 +5,8 @@ add_library (search SHARED ${SOURCES} ${HEADERS})
 
 
 include_directories("${SC_KPM_ROOT}/search" ${SC_MEMORY_SRC} ${GLIB2_INCLUDE_DIRS})
-add_dependencies(search sc_memory)
+add_dependencies(search sc-memory)
+
+install_targets("/lib/sc-memory/extensions" search)
 
 
