@@ -1,5 +1,7 @@
 set (SC_BUILDER_DIR "${SC_TOOLS_DIR}/builder")
 
+file(MAKE_DIRECTORY "${SC_BUILDER_DIR}/src/parser")
+
 if (${UNIX})
 	add_custom_command(OUTPUT "${SC_BUILDER_DIR}/src/parser/scsLexer.c" 
 							"${SC_BUILDER_DIR}/src/parser/scsLexer.h" 
