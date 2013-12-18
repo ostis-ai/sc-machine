@@ -25,6 +25,8 @@ endif(${UNIX})
 add_subdirectory(sc-memory)
 add_subdirectory(sc-fm)
 add_subdirectory(sc-kpm)
+add_subdirectory(sc-network)
+add_subdirectory(tools)
 
 if (${CMAKE_SYSTEM_NAME} STREQUAL Windows)
 	if(MSVC)
