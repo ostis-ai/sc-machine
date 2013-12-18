@@ -1,12 +1,4 @@
+
 add_executable(test test.cpp)
-
-include(FindPkgConfig)
-
-pkg_check_modules (GLIB2 REQUIRED glib-2.0>=2.26)
-include_directories(${SC_STORE_ROOT} ${GLIB2_INCLUDE_DIRS})
+include_directories(${SC_MEMORY_SRC} ${GLIB2_INCLUDE_DIRS})
 target_link_libraries(test sc_memory)
-#target_link_libraries(test ${GLIB2_LIBRARIES})
-
-add_executable(sc_core_test sc_core_test.cpp)
-target_link_libraries(sc_core_test sc)
-target_link_libraries(sc_core_test ${GLIB2_LIBRARIES})

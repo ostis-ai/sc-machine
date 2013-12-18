@@ -27,8 +27,6 @@ along with OSTIS.  If not, see <http://www.gnu.org/licenses/>.
 #include "uiTranslators.h"
 #include "uiUtils.h"
 
-#include <QDebug>
-
 uiSc2SCgJsonTranslator::uiSc2SCgJsonTranslator()
 {
 }
