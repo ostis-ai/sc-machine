@@ -22,6 +22,7 @@ along with OSTIS.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "sc_stream_redis.h"
 #include "sc_stream_private.h"
+#include "sc_fm_redis.h"
 
 #include <glib.h>
 
@@ -36,19 +37,6 @@ struct _sc_redis_handler
 
 typedef struct _sc_redis_handler sc_redis_handler;
 
-redisReply* do_sync_redis_command(sc_redis_handler *handler, const char *format, ...)
-{
-    va_list ap;
-    void *reply = NULL;
-    va_start(ap,format);
-
-    g_mutex_lock(handler->mutex);
-    reply = redisvCommand(handler->context,format,ap);
-    g_mutex_unlock(handler->mutex);
-
-    va_end(ap);
-    return reply;
-}
 
 sc_result sc_stream_redis_read(const sc_stream *stream, sc_char *data, sc_uint32 length, sc_uint32 *bytes_read)
 {
@@ -58,7 +46,7 @@ sc_result sc_stream_redis_read(const sc_stream *stream, sc_char *data, sc_uint32
     if (handler->size == 0)
         return SC_RESULT_ERROR;
 
-    redisReply *reply = do_sync_redis_command(handler, "GETRANGE %s %d %d", handler->key, handler->pos, handler->pos + length - 1);
+    redisReply *reply = do_sync_redis_command(&handler->context, "GETRANGE %s %d %d", handler->key, handler->pos, handler->pos + length - 1);
     if (reply->type != REDIS_REPLY_STRING)
     {
         freeReplyObject(reply);
@@ -82,7 +70,7 @@ sc_result sc_stream_redis_write(const sc_stream *stream, sc_char *data, sc_uint3
     sc_redis_handler *handler = (sc_redis_handler*)stream->handler;
     g_assert(handler != 0);
 
-    redisReply *reply = do_sync_redis_command(handler, "APPEND %s %b", handler->key, data, length);
+    redisReply *reply = do_sync_redis_command(&handler->context, "APPEND %s %b", handler->key, data, length);
     if (reply->type != REDIS_REPLY_INTEGER)
     {
         freeReplyObject(reply);
@@ -176,7 +164,7 @@ sc_stream* sc_stream_redis_new(redisContext *context, const sc_char *key, sc_uin
     // determine size
     if (flags & SC_STREAM_READ)
     {
-        redisReply *reply = do_sync_redis_command(handler, "STRLEN %s", key);
+        redisReply *reply = do_sync_redis_command(&handler->context, "STRLEN %s", key);
         if (reply->type != REDIS_REPLY_INTEGER || (reply->type == REDIS_REPLY_INTEGER && reply->integer == 0))
         {
             freeReplyObject(reply);
@@ -190,7 +178,7 @@ sc_stream* sc_stream_redis_new(redisContext *context, const sc_char *key, sc_uin
     {
         if (flags & SC_STREAM_WRITE)
         {
-            redisReply *reply = do_sync_redis_command(handler, "DEL %s", key);
+            redisReply *reply = do_sync_redis_command(&handler->context, "DEL %s", key);
             freeReplyObject(reply);
         }
     }

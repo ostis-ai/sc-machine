@@ -20,14 +20,11 @@ along with OSTIS.  If not, see <http://www.gnu.org/licenses/>.
 -----------------------------------------------------------------------------
 */
 
-#ifndef _sc_fm_redis_h_
-#define _sc_fm_redis_h_
-
+#include "sc_fm_redis.h"
 #include "sc_fm_engine_private.h"
 #include "sc_stream_redis.h"
 #include "sc_config.h"
 #include <glib.h>
-#include <hiredis/hiredis.h>
 #include <memory.h>
 
 GMutex redis_mutex;
@@ -40,14 +37,35 @@ struct _redis_data
 
 typedef struct _redis_data redis_data;
 
-redisReply* engine_do_sync_redis_command(redisContext *context, const char *format, ...)
+redisContext* connectToRedis()
+{
+    g_message("Connect to redis server %s:%d", sc_config_redis_host(), sc_config_redis_port());
+
+    sc_uint32 timeout_val = sc_config_redis_timeout();
+    struct timeval timeout = {timeout_val / 1000, (timeout_val % 1000) * 1000};
+    return redisConnectWithTimeout(sc_config_redis_host(), sc_config_redis_port(), timeout);
+}
+
+
+redisReply* do_sync_redis_command(redisContext **context, const char *format, ...)
 {
     va_list ap;
-    void *reply = NULL;
+    void *reply = 0;
+    int tries = 0;
     va_start(ap,format);
 
     g_mutex_lock(&redis_mutex);
-    reply = redisvCommand(context,format,ap);
+    while (reply == 0 && tries < 5)
+    {
+        reply = redisvCommand(*context, format, ap);
+        if (reply == 0)
+        {
+            // restore connection
+            redisFree(*context);
+            *context = connectToRedis();
+        }
+        tries++;
+    }
     g_mutex_unlock(&redis_mutex);
 
     va_end(ap);
@@ -75,15 +93,19 @@ sc_result sc_redis_engine_addr_ref_append(const sc_fm_engine *engine, sc_addr ad
     redis_data *data = (redis_data*)engine->storage_info;
     g_assert(data);
 
-    redisReply *reply = engine_do_sync_redis_command(data->context, "LLEN link:%b:addrs", check_sum->data, check_sum->len);
-    if (reply->type == REDIS_REPLY_ERROR)
+    redisReply *reply = do_sync_redis_command(&data->context, "LLEN link:%b:addrs", check_sum->data, check_sum->len);
+    if (reply == 0 || reply->type == REDIS_REPLY_ERROR)
     {
         freeReplyObject(reply);
         return SC_RESULT_ERROR;
     }
 
     int old_size = reply->integer;
-    reply = engine_do_sync_redis_command(data->context, "LPUSH link:%b:addrs %b", check_sum->data, check_sum->len, &addr, sizeof(addr));
+    reply = do_sync_redis_command(&data->context, "LPUSH link:%b:addrs %b", check_sum->data, check_sum->len, &addr, sizeof(addr));
+
+    if (reply == 0)
+        return SC_RESULT_ERROR;
+
     if ((reply->type == REDIS_REPLY_INTEGER) && (old_size < reply->integer))
     {
         freeReplyObject(reply);
@@ -100,7 +122,10 @@ sc_result sc_redis_engine_addr_ref_remove(const sc_fm_engine *engine, sc_addr ad
     redis_data *data = (redis_data*)engine->storage_info;
     g_assert(data);
 
-    redisReply *reply = engine_do_sync_redis_command(data->context, "LREM link:%b:addrs 0 %b", check_sum->data, check_sum->len, &addr, sizeof(addr));
+    redisReply *reply = do_sync_redis_command(&data->context, "LREM link:%b:addrs 0 %b", check_sum->data, check_sum->len, &addr, sizeof(addr));
+
+    if (reply == 0)
+        return SC_RESULT_ERROR;
 
     if (reply->type == REDIS_REPLY_INTEGER)
     {
@@ -117,7 +142,7 @@ sc_result sc_redis_engine_find(const sc_fm_engine *engine, const sc_check_sum *c
     redis_data *data = (redis_data*)engine->storage_info;
     g_assert(data);
 
-    redisReply *reply = engine_do_sync_redis_command(data->context, "LRANGE link:%b:addrs 0 -1", check_sum->data, check_sum->len);
+    redisReply *reply = do_sync_redis_command(&data->context, "LRANGE link:%b:addrs 0 -1", check_sum->data, check_sum->len);
     if (reply == 0)
         return SC_RESULT_ERROR;
 
@@ -148,7 +173,10 @@ sc_result sc_redis_engine_clear(const sc_fm_engine *engine)
     redis_data *data = (redis_data*)engine->storage_info;
     g_assert(data);
 
-    redisReply *reply = engine_do_sync_redis_command(data->context, "FLUSHDB");
+    redisReply *reply = do_sync_redis_command(&data->context, "FLUSHDB");
+
+    if (reply == 0)
+        return SC_RESULT_ERROR;
 
     freeReplyObject(reply);
 
@@ -160,9 +188,9 @@ sc_result sc_redis_engine_save(const sc_fm_engine *engine)
     redis_data *data = (redis_data*)engine->storage_info;
     g_assert(data);
 
-    redisReply *reply = engine_do_sync_redis_command(data->context, "SAVE");
+    redisReply *reply = do_sync_redis_command(&data->context, "SAVE");
 
-    sc_result result = (reply->type == REDIS_REPLY_ERROR) ? SC_RESULT_ERROR : SC_RESULT_OK;
+    sc_result result = (reply == 0 || reply->type == REDIS_REPLY_ERROR) ? SC_RESULT_ERROR : SC_RESULT_OK;
     freeReplyObject(reply);
 
     return result;
@@ -185,11 +213,7 @@ sc_fm_engine* initialize(const sc_char* repo_path)
     redis_data *data = g_new0(redis_data, 1);
 
     g_mutex_init(&redis_mutex);
-
-    g_message("Connect to redis server %s:%d", sc_config_redis_host(), sc_config_redis_port());
-    sc_uint32 timeout_val = sc_config_redis_timeout();
-    struct timeval timeout = {timeout_val / 1000, (timeout_val % 1000) * 1000};
-    data->context = redisConnectWithTimeout(sc_config_redis_host(), sc_config_redis_port(), timeout);
+    data->context = connectToRedis();
 
     if (data->context == 0 || data->context->err)
     {
@@ -209,8 +233,8 @@ sc_fm_engine* initialize(const sc_char* repo_path)
 
     g_message("\tSwitch redis database");
 
-    redisReply *reply = engine_do_sync_redis_command(data->context, "SELECT 0");
-    if (reply->type == REDIS_REPLY_ERROR)
+    redisReply *reply = do_sync_redis_command(&data->context, "SELECT 0");
+    if (reply == 0 || reply->type == REDIS_REPLY_ERROR)
     {
         g_message("\tCan't switch database");
         freeReplyObject(reply);
@@ -233,6 +257,3 @@ sc_fm_engine* initialize(const sc_char* repo_path)
 
     return engine;
 }
-
-#endif
-
