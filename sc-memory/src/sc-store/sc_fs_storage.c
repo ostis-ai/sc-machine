@@ -144,17 +144,7 @@ sc_bool sc_fs_storage_shutdown(sc_segment **segments)
     g_message("Save file memory state");
     if (sc_fm_save(fm_engine) != SC_RESULT_OK)
         g_critical("Error while saves file memory");
-    g_message("Shutting down file memory engine: %s", fm_engine_module_path);
-    fFmEngineShutdownFunc func;
-    if (g_module_symbol(fm_engine_module, "shutdown", (gpointer*) &func) == FALSE)
-    {
-        g_critical("Can't find 'initialize' symbol in module: %s", fm_engine_module_path);
-    }else
-    {
-        func();
-    }
-    g_module_close(fm_engine_module);
-    fm_engine_module = 0;
+
 
     g_free(repo_path);
 

@@ -294,8 +294,3 @@ sc_fm_engine* initialize(const sc_char* repo_path)
 
     return engine;
 }
-
-void shutdown()
-{
-
-}

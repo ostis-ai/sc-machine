@@ -271,6 +271,8 @@ sc_result sc_redis_engine_destroy_data(const sc_fm_engine *engine)
     redisFree(data->context);
     g_free(data);
 
+    sc_redis_config_shutdown();
+
     return SC_RESULT_OK;
 }
 
@@ -311,9 +313,4 @@ sc_fm_engine* initialize(const sc_char* repo_path)
     engine->funcDestroyData = &sc_redis_engine_destroy_data;
 
     return engine;
-}
-
-void shutdown()
-{
-    sc_redis_config_shutdown();
 }

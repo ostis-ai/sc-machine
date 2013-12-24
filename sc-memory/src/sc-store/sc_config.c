@@ -52,7 +52,7 @@ void value_table_destroy_key_value(gpointer data)
 
 gchar* value_table_create_hash_key(const char *group, const char *key)
 {
-    return g_strdup_printf("%s/%s");
+    return g_strdup_printf("%s/%s", group, key);
 }
 
 
@@ -119,7 +119,7 @@ const char* sc_config_get_value_string(const char *group, const char *key)
     gchar *hash_key = value_table_create_hash_key(group, key);
     gconstpointer *res = g_hash_table_lookup(values_table, hash_key);
     g_free(hash_key);
-    return res;
+    return (const char*)res;
 }
 
 int sc_config_get_value_int(const char *group, const char *key)
