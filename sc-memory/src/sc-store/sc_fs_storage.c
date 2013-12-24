@@ -39,7 +39,10 @@ sc_fm_engine *fm_engine = 0;
 const gchar *seg_dir = "segments";
 const gchar *addr_key_group = "addrs";
 
+GModule *fm_engine_module = 0;
+gchar fm_engine_module_path[MAX_PATH_LENGTH + 1];
 typedef sc_fm_engine* (*fFmEngineInitFunc)();
+typedef void (*fFmEngineShutdownFunc)();
 
 // ----------------------------------------------
 
@@ -51,36 +54,36 @@ sc_bool sc_fs_storage_initialize(const gchar *path, sc_bool clear)
 
     g_message("\tFile memory engine: %s", sc_config_fm_engine());
     // load engine extension
-    gchar module_path[MAX_PATH_LENGTH + 1];
+
 #ifdef WIN32
-    g_snprintf(module_path, MAX_PATH_LENGTH, "sc-fm-%s.dll", sc_config_fm_engine());
+    g_snprintf(fm_engine_module_path, MAX_PATH_LENGTH, "sc-fm-%s.dll", sc_config_fm_engine());
 #else
-    g_snprintf(module_path, MAX_PATH_LENGTH, "libsc-fm-%s.so", sc_config_fm_engine());
+    g_snprintf(fm_engine_module_path, MAX_PATH_LENGTH, "libsc-fm-%s.so", sc_config_fm_engine());
 #endif
 
     // try to load engine extension
-    GModule *module = 0;
+
     fFmEngineInitFunc func;
-    module = g_module_open(module_path, G_MODULE_BIND_LOCAL);
+    fm_engine_module = g_module_open(fm_engine_module_path, G_MODULE_BIND_LOCAL);
 
     // skip non module files
-    if (g_str_has_suffix(module_path, G_MODULE_SUFFIX) == TRUE)
+    if (g_str_has_suffix(fm_engine_module_path, G_MODULE_SUFFIX) == TRUE)
     {
-        if (module == nullptr)
+        if (fm_engine_module == nullptr)
         {
-            g_critical("Can't load module: %s. Error: %s", module_path, g_module_error());
+            g_critical("Can't load module: %s. Error: %s", fm_engine_module_path, g_module_error());
         }else
         {
-            g_message("Initialize file memory engine from: %s", module_path);
-            if (g_module_symbol(module, "initialize", (gpointer*) &func) == FALSE)
+            g_message("Initialize file memory engine from: %s", fm_engine_module_path);
+            if (g_module_symbol(fm_engine_module, "initialize", (gpointer*) &func) == FALSE)
             {
-                g_critical("Can't find 'initialize' symbol in module: %s", module_path);
+                g_critical("Can't find 'initialize' symbol in module: %s", fm_engine_module_path);
             }else
             {
                 fm_engine = func(repo_path);
                 if (fm_engine == 0)
                 {
-                    g_critical("Can't create file memory engine from: %s", module_path);
+                    g_critical("Can't create file memory engine from: %s", fm_engine_module_path);
                     return SC_FALSE;
                 }
             }
@@ -141,6 +144,17 @@ sc_bool sc_fs_storage_shutdown(sc_segment **segments)
     g_message("Save file memory state");
     if (sc_fm_save(fm_engine) != SC_RESULT_OK)
         g_critical("Error while saves file memory");
+    g_message("Shutting down file memory engine: %s", fm_engine_module_path);
+    fFmEngineShutdownFunc func;
+    if (g_module_symbol(fm_engine_module, "shutdown", (gpointer*) &func) == FALSE)
+    {
+        g_critical("Can't find 'initialize' symbol in module: %s", fm_engine_module_path);
+    }else
+    {
+        func();
+    }
+    g_module_close(fm_engine_module);
+    fm_engine_module = 0;
 
     g_free(repo_path);
 

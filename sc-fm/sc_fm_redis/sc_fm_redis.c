@@ -23,12 +23,14 @@ along with OSTIS.  If not, see <http://www.gnu.org/licenses/>.
 #include "sc_fm_redis.h"
 #include "sc_fm_engine_private.h"
 #include "sc_stream_redis.h"
-#include "sc_config.h"
+#include "sc_fm_redis_config.h"
 #include <glib.h>
 #include <memory.h>
 
 GMutex redis_mutex;
 
+GThread *ping_thread;
+gboolean ping_thread_running;
 
 struct _redis_data
 {
@@ -37,13 +39,75 @@ struct _redis_data
 
 typedef struct _redis_data redis_data;
 
+
+// --- ping thread ---
+gpointer ping_thread_loop(gpointer context)
+{
+    g_mutex_lock(&redis_mutex);
+    ping_thread_running = TRUE;
+    g_mutex_unlock(&redis_mutex);
+
+    gboolean running = TRUE;
+
+    while (ping_thread_running)
+    {
+
+        g_mutex_lock(&redis_mutex);
+        redisReply *reply = redisCommand((redisContext*)context, "PING");
+        freeReplyObject(reply);
+
+        running = ping_thread_running;
+        g_mutex_unlock(&redis_mutex);
+
+        // wait on second
+        g_usleep(1000000);
+    }
+
+    return 0;
+}
+
+
 redisContext* connectToRedis()
 {
-    g_message("Connect to redis server %s:%d", sc_config_redis_host(), sc_config_redis_port());
+    g_message("Connect to redis server %s:%d", sc_redis_config_host(), sc_redis_config_port());
 
-    sc_uint32 timeout_val = sc_config_redis_timeout();
+    sc_uint32 timeout_val = sc_redis_config_timeout();
     struct timeval timeout = {timeout_val / 1000, (timeout_val % 1000) * 1000};
-    return redisConnectWithTimeout(sc_config_redis_host(), sc_config_redis_port(), timeout);
+
+    redisContext *c = redisConnectWithTimeout(sc_redis_config_host(), sc_redis_config_port(), timeout);
+
+    if (c == 0)
+    {
+        g_error("redis: Couldn't connect to server");
+        return 0;
+    }
+
+    if (c != 0 && c->err)
+    {
+        g_error("redis: %s", c->errstr);
+        redisFree(c);
+        return 0;
+    }
+
+    g_message("\tSwitch redis database");
+
+    redisReply *reply = redisCommand(c, "SELECT 0");
+    if (reply == 0 || reply->type == REDIS_REPLY_ERROR)
+    {
+        g_error("\tCan't switch database");
+        freeReplyObject(reply);
+        redisFree(c);
+        return 0;
+    }
+    freeReplyObject(reply);
+
+    // start ping thread
+
+    ping_thread = g_thread_new("redis_ping_thread", ping_thread_loop, c);
+
+
+
+    return c;
 }
 
 
@@ -51,7 +115,7 @@ redisReply* do_sync_redis_command(redisContext **context, const char *format, ..
 {
     va_list ap;
     void *reply = 0;
-    int tries = 0;
+    int tries = 0, context_tries = 0;
     va_start(ap,format);
 
     g_mutex_lock(&redis_mutex);
@@ -59,11 +123,7 @@ redisReply* do_sync_redis_command(redisContext **context, const char *format, ..
     {
         reply = redisvCommand(*context, format, ap);
         if (reply == 0)
-        {
-            // restore connection
-            redisFree(*context);
-            *context = connectToRedis();
-        }
+            g_error("redis: %s", (*context)->errstr);
         tries++;
     }
     g_mutex_unlock(&redis_mutex);
@@ -202,6 +262,12 @@ sc_result sc_redis_engine_destroy_data(const sc_fm_engine *engine)
 
     g_assert(data);
 
+    g_mutex_lock(&redis_mutex);
+    ping_thread_running = FALSE;
+    g_mutex_unlock(&redis_mutex);
+    g_thread_join(ping_thread);
+    ping_thread = 0;
+
     redisFree(data->context);
     g_free(data);
 
@@ -210,6 +276,8 @@ sc_result sc_redis_engine_destroy_data(const sc_fm_engine *engine)
 
 sc_fm_engine* initialize(const sc_char* repo_path)
 {
+    sc_redis_config_initialize();
+
     redis_data *data = g_new0(redis_data, 1);
 
     g_mutex_init(&redis_mutex);
@@ -231,19 +299,6 @@ sc_fm_engine* initialize(const sc_char* repo_path)
         return 0;
     }
 
-    g_message("\tSwitch redis database");
-
-    redisReply *reply = do_sync_redis_command(&data->context, "SELECT 0");
-    if (reply == 0 || reply->type == REDIS_REPLY_ERROR)
-    {
-        g_message("\tCan't switch database");
-        freeReplyObject(reply);
-        redisFree(data->context);
-        g_free(data);
-        return 0;
-    }
-    freeReplyObject(reply);
-
     sc_fm_engine *engine = g_new0(sc_fm_engine, 1);
 
     engine->storage_info = data;
@@ -256,4 +311,9 @@ sc_fm_engine* initialize(const sc_char* repo_path)
     engine->funcDestroyData = &sc_redis_engine_destroy_data;
 
     return engine;
+}
+
+void shutdown()
+{
+    sc_redis_config_shutdown();
 }

@@ -267,6 +267,8 @@ sc_result sc_fs_engine_destroy_data(const sc_fm_engine *engine)
     return SC_RESULT_OK;
 }
 
+
+// --- extension interface ---
 sc_fm_engine* initialize(const sc_char* repo_path)
 {
     // initialize file system storage
@@ -291,4 +293,9 @@ sc_fm_engine* initialize(const sc_char* repo_path)
     engine->funcDestroyData = &sc_fs_engine_destroy_data;
 
     return engine;
+}
+
+void shutdown()
+{
+
 }
