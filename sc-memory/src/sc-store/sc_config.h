@@ -38,15 +38,37 @@ void sc_config_shutdown();
  */
 sc_uint32 sc_config_get_max_loaded_segments();
 
-//! Returns redis host address
-const sc_char* sc_config_redis_host();
-//! Returns redis port
-int sc_config_redis_port();
-//! Returns redis response timeout in milliseconds
-sc_uint32 sc_config_redis_timeout();
-
 //! Returns file memory engine
 const sc_char* sc_config_fm_engine();
+
+
+// --- api for extensions ---
+/*!
+ * Returns string value of \p key in specified \p group
+ * @param group Name of configuration group
+ * @param key Name of key to return value
+ * @returns Returns the value associated with the key as string, or null if the key was not found of could not be parsed.
+ * @attention Returned value managed by sc_confing and shouldn't be freed
+ */
+const char* sc_config_get_value_string(const char *group, const char *key);
+
+/*!
+ * Returns the value associated with the key as an integer, or 0 if the key was not found or could not be parsed.
+ * @see sc_config_get_value_string
+ */
+int sc_config_get_value_int(const char *group, const char *key);
+
+/*!
+ * Returns the value associated with the key as a boolean, or SC_FALSE if the key was not found or could not be parsed.
+ * @see sc_config_get_value_string
+ */
+sc_bool sc_config_get_value_boolean(const char *group, const char *key);
+
+/*!
+ * Returns the value associated with the key as a float, or 0.0 if the key was not found or could not be parsed.
+ * @see sc_config_get_value_string
+ */
+float sc_config_get_value_float(const char *group, const char *key);
 
 
 #endif

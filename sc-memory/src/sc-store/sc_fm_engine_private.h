@@ -35,6 +35,8 @@ typedef sc_result (*fEngineAddrRefRemove)(const sc_fm_engine *engine, sc_addr ad
 typedef sc_result (*fEngineFind)(const sc_fm_engine *engine, const sc_check_sum *check_sum, sc_addr **result, sc_uint32 *result_count);
 //! Function to clear file memory
 typedef sc_result (*fEngineClear)(const sc_fm_engine *engine);
+//! Funciton to save file memory state
+typedef sc_result (*fEngineSave)(const sc_fm_engine *engine);
 //! Pointer to function, that destroys storage specified data
 typedef sc_result (*fEngineDestroyData)(const sc_fm_engine *engine);
 
@@ -51,6 +53,7 @@ struct _sc_fm_engine
     fEngineAddrRefRemove funcAddrRefRemove;
     fEngineFind funcFind;
     fEngineClear funcClear;
+    fEngineSave funcSave;
     fEngineDestroyData funcDestroyData;
 };
 

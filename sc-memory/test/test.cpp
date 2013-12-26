@@ -12,11 +12,11 @@ extern "C"
 #include <limits>
 #include <glib.h>
 
-#define nodes_append_count 5000000
-#define nodes_remove_count 5000000
-#define arcs_append_count  5000000
+#define nodes_append_count 25000000
+#define nodes_remove_count 25000000
+#define arcs_append_count  25000000
 #define arcs_remove_count  0
-#define link_append_count 200
+#define link_append_count 20000
 #define iterator_alloc_count 10000000
 
 const char* repo_path = "repo";
@@ -80,20 +80,18 @@ void test1()
     sc_addr id, id2;
     sc_uint32 count = 0;
 
-    printf("Element size: %d bytes\n", sizeof(sc_element));
-    printf("Segment size: %d elements\n", SEGMENT_SIZE);
+    printf("Element size: %d bytes\n", (int)sizeof(sc_element));
+    printf("Segment size: %d elements\n", (int)SEGMENT_SIZE);
 
     timer = g_timer_new();
     print_storage_statistics();
     printf("--- Node creation ---\n");
     g_timer_start(timer);
     for (idx = 0; idx < nodes_append_count; idx++)
-    {
         id = sc_memory_node_new(sc_type_const);
-        //g_printf("uri: %d\t%d\n", uri.seg, uri.id);
-    }
+
     g_timer_stop(timer);
-    printf("Time: %f s\n", g_timer_elapsed(timer, 0));
+    printf("Time: %f s\n", (float)g_timer_elapsed(timer, 0));
     printf("Nodes per second: %f\n", (float)nodes_append_count / g_timer_elapsed(timer, 0));
     printf("Segments count: %d\n", sc_storage_get_segments_count());
     print_storage_statistics();
@@ -137,7 +135,7 @@ void test1()
     printf("Time: %f s\n", g_timer_elapsed(timer, 0));
     printf("Elements per second: %f\n", (float)nodes_remove_count / g_timer_elapsed(timer, 0));
     printf("Segments count: %d\n", sc_storage_get_segments_count());
-    printf("Element free calls: %u\n", segment_node_del.size());
+    printf("Element free calls: %u\n", (unsigned int)segment_node_del.size());
     print_storage_statistics();
 
 
@@ -366,7 +364,7 @@ void test5()
     {
         addr = sc_memory_link_new();
 
-        printf("Created sc-link: seg=%d, offset=%d, content=%d\n", addr.seg, addr.offset, i);
+        //printf("Created sc-link: seg=%d, offset=%d, content=%d\n", addr.seg, addr.offset, i);
 
         stream = sc_stream_memory_new((char*)&i, sizeof(i), SC_STREAM_READ, SC_FALSE);
         sc_memory_set_link_content(addr, stream);
@@ -405,15 +403,24 @@ void test6()
     for (i = 0; i < link_append_count; i++)
     {
         //addr = sc_storage_link_new();
-        printf("Find addrs for content %d\t", i);
+       // printf("Find addrs for content %d\t", i);
 
         stream = sc_stream_memory_new((char*)&i, sizeof(i), SC_STREAM_READ, SC_FALSE);
 
         if (sc_memory_find_links_with_content(stream, &results, &results_count) == SC_RESULT_OK)
         {
-            printf("found: \n");
-            for (j = 0; j < results_count; j++)
-                printf("seg=%d, offset=%d\n", results[j].seg, results[j].offset);
+//            printf("found: \n");
+//            for (j = 0; j < results_count; j++)
+//            {
+//                sc_stream *stream_value= 0;
+//                sc_memory_get_link_content(results[j], &stream_value);
+//                sc_uint32 value, bytes;
+//                sc_stream_read_data(stream_value, (char*)&value, sizeof(value), &bytes);
+
+//                sc_stream_free(stream_value);
+
+//                printf("seg=%d, offset=%d, value=%d\n", results[j].seg, results[j].offset, value);
+//            }
             g_free(results);
             results = 0;
         }else
@@ -604,23 +611,23 @@ int main(int argc, char *argv[])
     timer = g_timer_new();
     g_timer_start(timer);
 
-    printf("MD5: %d\n", g_checksum_type_get_length(G_CHECKSUM_MD5) );
-    printf("SHA1: %d\n", g_checksum_type_get_length(G_CHECKSUM_SHA1) );
-    printf("SHA256: %d\n", g_checksum_type_get_length(G_CHECKSUM_SHA256) );
-    printf("Element size: %d\n", sizeof(sc_element));
+    printf("MD5: %d\n", (int)g_checksum_type_get_length(G_CHECKSUM_MD5) );
+    printf("SHA1: %d\n", (int)g_checksum_type_get_length(G_CHECKSUM_SHA1) );
+    printf("SHA256: %d\n", (int)g_checksum_type_get_length(G_CHECKSUM_SHA256) );
+    printf("Element size: %d\n", (int)sizeof(sc_element));
 
     sc_memory_initialize("repo", "sc-memory.ini", SC_TRUE);
     g_timer_stop(timer);
     printf("Segment loading speed: %f seg/sec\n", sc_storage_get_segments_count() / g_timer_elapsed(timer, 0));
 
     //test1();
-    test5();
-    test6();
+    //test5();
+    //test6();
 
     //test7();
     //test8();
     //test3();
-    item = 0;
+    //item = 0;
 
     while (item != 0)
     {

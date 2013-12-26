@@ -27,8 +27,6 @@ along with OSTIS.  If not, see <http://www.gnu.org/licenses/>.
 #include "uiKeynodes.h"
 #include "uiUtils.h"
 
-#include "qdebug.h"
-
 uiSc2SCnJsonTranslator::uiSc2SCnJsonTranslator()
     : mScElementsInfoPool(0)
 {

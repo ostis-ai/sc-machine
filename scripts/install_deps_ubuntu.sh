@@ -1,1 +1,1 @@
-sudo apt-get install libglib2.0-dev libantlr3c-dev libboost-system-dev libboost-filesystem-dev libboost-program-options-dev qt4-qmake make antlr
+sudo apt-get install libglib2.0-dev qt4-qmake libqt4-dev libantlr3c-dev libboost-system-dev libboost-filesystem-dev libboost-program-options-dev make cmake antlr redis-server libhiredis-dev gcc g++

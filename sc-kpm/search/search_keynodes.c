@@ -52,13 +52,13 @@ const char keynode_question_decomposition_str[] = "question_search_decomposition
 const char keynode_question_all_identifiers_str[] = "question_search_all_identifiers";
 
 const char keynode_question_initiated_str[] = "question_initiated";
-const char keynode_nrel_answer_str[] = "question_nrel_answer";
+const char keynode_nrel_answer_str[] = "nrel_answer";
 const char keynode_nrel_decomposition_str[] = "nrel_decomposition";
 const char keynode_question_finished_str[] = "question_finished";
 const char keynode_quasybinary_relation_str[] = "quasybinary_relation";
 
 const char keynode_nrel_identification_str[] = "nrel_identification";
-const char keynode_set_nrel_inclusion_str[] = "set_nrel_inclusion";
+const char keynode_set_nrel_inclusion_str[] = "nrel_inclusion";
 const char keynode_system_element_str[] = "system_element";
 
 #define resolve_keynode(keynode) if (sc_helper_resolve_system_identifier(keynode##_str, &keynode) == SC_FALSE) return SC_RESULT_ERROR;

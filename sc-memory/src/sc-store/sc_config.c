@@ -25,49 +25,46 @@ along with OSTIS.  If not, see <http://www.gnu.org/licenses/>.
 #include <glib.h>
 
 const char str_group_memory[] = "memory";
-const char str_group_redis[] = "redis";
 const char str_group_fm[] = "filememory";
 
 const char str_key_max_loaded_segments[] = "max_loaded_segments";
-const char str_key_redis_host[] = "host";
-const char str_key_redis_port[] = "port";
-const char str_key_redis_timeout[] = "timeout";
 const char str_key_fm_engine[] = "engine";
 
 
 // Maximum number of segments, that can be loaded into memory at one moment
 sc_uint config_max_loaded_segments = G_MAXUINT16;
 
-const char redis_hostname_default[] = "127.0.0.1";
-// Redis host name
-char *config_redis_host = redis_hostname_default;
-// Redis port
-sc_uint32 config_redis_port = 6379;
-// Redis timeout
-sc_uint32 config_redis_timeout = 1500;
+
+
+
+
+// Hash table, that contains all configuration options: ['<group>/<key>'] = <value>
+GHashTable *values_table = 0;
 
 // --- file memory ---
 const char fm_default_engine[] = "filesystem";
 char *config_fm_engine = fm_default_engine;
 
+void value_table_destroy_key_value(gpointer data)
+{
+    g_free(data);
+}
+
+gchar* value_table_create_hash_key(const char *group, const char *key)
+{
+    return g_strdup_printf("%s/%s", group, key);
+}
+
+
 void sc_config_initialize(const sc_char *file_path)
 {
     GKeyFile *key_file = 0;
-
     key_file = g_key_file_new();
     if ((file_path != nullptr) && (g_key_file_load_from_file(key_file, file_path, G_KEY_FILE_NONE, 0) == TRUE))
     {
         // parse settings
         if (g_key_file_has_key(key_file, str_group_memory, str_key_max_loaded_segments, 0) == TRUE)
             config_max_loaded_segments = g_key_file_get_integer(key_file, str_group_memory, str_key_max_loaded_segments, 0);
-
-        // redis
-        if (g_key_file_has_key(key_file, str_group_redis, str_key_redis_host, 0) == TRUE)
-            config_redis_host = g_key_file_get_string(key_file, str_group_redis, str_key_redis_host, 0);
-        if (g_key_file_has_key(key_file, str_group_redis, str_key_redis_port, 0) == TRUE)
-            config_redis_port = g_key_file_get_integer(key_file, str_group_redis, str_key_redis_port, 0);
-        if (g_key_file_has_key(key_file, str_group_redis, str_key_redis_timeout, 0) == TRUE)
-            config_redis_timeout = g_key_file_get_integer(key_file, str_group_redis, str_key_redis_timeout, 0);
 
         // file memory
         if (g_key_file_has_key(key_file, str_group_fm, str_key_fm_engine, 0) == TRUE)
@@ -78,12 +75,37 @@ void sc_config_initialize(const sc_char *file_path)
         config_max_loaded_segments = G_MAXUINT16;
     }
 
+    // load all values into hash table
+    values_table = g_hash_table_new_full(g_str_hash, g_str_equal, value_table_destroy_key_value, value_table_destroy_key_value);
+
+    gsize groups_len = 0, i, j;
+    gchar **groups = g_key_file_get_groups(key_file, &groups_len);
+    for (i = 0; i < groups_len; ++i)
+    {
+        // get all keys in group
+        gsize keys_len = 0;
+        gchar **keys = g_key_file_get_keys(key_file, groups[i], &keys_len, 0);
+        for (j = 0; j < keys_len; ++j)
+        {
+            // append keys into hash table
+            gchar *hash_key = value_table_create_hash_key(groups[i], keys[j]);
+            g_hash_table_insert(values_table, hash_key, g_key_file_get_string(key_file, groups[i], keys[j], 0));
+        }
+        g_strfreev(keys);
+
+    }
+    g_strfreev(groups);
+
+
     g_key_file_free(key_file);
 }
 
 void sc_config_shutdown()
 {
-
+    // empty memory allocated for values table
+    g_hash_table_remove_all(values_table);
+    g_hash_table_destroy(values_table);
+    values_table = 0;
 }
 
 sc_uint sc_config_get_max_loaded_segments()
@@ -91,19 +113,43 @@ sc_uint sc_config_get_max_loaded_segments()
     return config_max_loaded_segments;
 }
 
-const sc_char* sc_config_redis_host()
+
+const char* sc_config_get_value_string(const char *group, const char *key)
 {
-    return config_redis_host;
+    gchar *hash_key = value_table_create_hash_key(group, key);
+    gconstpointer *res = g_hash_table_lookup(values_table, hash_key);
+    g_free(hash_key);
+    return (const char*)res;
 }
 
-int sc_config_redis_port()
+int sc_config_get_value_int(const char *group, const char *key)
 {
-    return config_redis_port;
+    const char *str_value = sc_config_get_value_string(group, key);
+    if (str_value == 0)
+        return 0;
+
+    return atoi(str_value);
 }
 
-sc_uint32 sc_config_redis_timeout()
+sc_bool sc_config_get_value_boolean(const char *group, const char *key)
 {
-    return config_redis_timeout;
+    const char *str_value = sc_config_get_value_string(group, key);
+    if (str_value == 0)
+        return SC_FALSE;
+
+    if (g_str_equal(str_value, "true") || g_str_equal(str_value, "1"))
+        return SC_TRUE;
+
+    return SC_FALSE;
+}
+
+float sc_config_get_value_float(const char *group, const char *key)
+{
+    const char *str_value = sc_config_get_value_string(group, key);
+    if (str_value == 0)
+        return SC_FALSE;
+
+    return atof(str_value);
 }
 
 const sc_char* sc_config_fm_engine()

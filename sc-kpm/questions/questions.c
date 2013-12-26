@@ -25,7 +25,7 @@ along with OSTIS.  If not, see <http://www.gnu.org/licenses/>.
 
 const char q_keynode_question_initiated_str[] = "question_initiated";
 const char q_keynode_question_finished_str[] = "question_finished";
-const char q_keynode_question_nrel_answer_str[] = "question_nrel_answer";
+const char q_keynode_question_nrel_answer_str[] = "nrel_answer";
 
 
 sc_addr q_keynode_question_initiated;

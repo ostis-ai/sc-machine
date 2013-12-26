@@ -147,6 +147,15 @@ sc_result sc_memory_get_element_type(sc_addr addr, sc_type *result)
     return res;
 }
 
+sc_result sc_memory_change_element_subtype(sc_addr addr, sc_type type)
+{
+    sc_result res;
+    LOCK;
+    res = sc_storage_change_element_subtype(addr, type);
+    UNLOCK;
+    return res;
+}
+
 sc_result sc_memory_get_arc_begin(sc_addr addr, sc_addr *result)
 {
     sc_result res;

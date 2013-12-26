@@ -309,7 +309,7 @@ sctpErrorCode sctpCommand::processGetLinkContent(quint32 cmdFlags, quint32 cmdId
 {
     sc_addr addr;
     sc_stream *stream = (sc_stream*)nullptr;
-    sc_char data_buffer[32];
+    sc_char data_buffer[512];
     sc_uint32 data_len = 0;
     sc_uint32 data_written = 0;
     sc_uint32 data_read = 0;
@@ -349,7 +349,7 @@ sctpErrorCode sctpCommand::processGetLinkContent(quint32 cmdFlags, quint32 cmdId
     {
         // if there are any error to read data, then
         // write null into output
-        if (sc_stream_read_data(stream, data_buffer, 32, &data_read) != SC_RESULT_OK)
+        if (sc_stream_read_data(stream, data_buffer, 512, &data_read) != SC_RESULT_OK)
         {
             if (data_written < data_len)
             {

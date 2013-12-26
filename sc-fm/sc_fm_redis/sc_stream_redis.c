@@ -22,6 +22,7 @@ along with OSTIS.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "sc_stream_redis.h"
 #include "sc_stream_private.h"
+#include "sc_fm_redis.h"
 
 #include <glib.h>
 
@@ -31,6 +32,7 @@ struct _sc_redis_handler
     char *key;  // key to read/write value
     sc_uint32 pos;  // current seek position
     sc_uint32 size;  // size of value in bytes
+    GMutex *mutex;
 };
 
 typedef struct _sc_redis_handler sc_redis_handler;
@@ -41,6 +43,25 @@ sc_result sc_stream_redis_read(const sc_stream *stream, sc_char *data, sc_uint32
     sc_redis_handler *handler = (sc_redis_handler*)stream->handler;
     g_assert(handler != 0);
 
+    if (handler->size == 0)
+        return SC_RESULT_ERROR;
+
+    redisReply *reply = do_sync_redis_command(&handler->context, "GETRANGE %s %d %d", handler->key, handler->pos, handler->pos + length - 1);
+    if (reply->type != REDIS_REPLY_STRING)
+    {
+        freeReplyObject(reply);
+        return SC_RESULT_ERROR_IO;
+    }
+
+    *bytes_read = reply->len;
+
+    memcpy(data, reply->str, reply->len);
+    handler->pos += reply->len;
+
+    freeReplyObject(reply);
+
+    g_assert(handler->pos <= handler->size);
+
     return SC_RESULT_OK;
 }
 
@@ -48,11 +69,8 @@ sc_result sc_stream_redis_write(const sc_stream *stream, sc_char *data, sc_uint3
 {
     sc_redis_handler *handler = (sc_redis_handler*)stream->handler;
     g_assert(handler != 0);
-    char *data_str = g_strndup(data, length);
 
-    redisReply *reply = redisCommand(handler->context, "APPEND %s \"%s\"", handler->key, data_str);
-    g_free(data_str);
-
+    redisReply *reply = do_sync_redis_command(&handler->context, "APPEND %s %b", handler->key, data, length);
     if (reply->type != REDIS_REPLY_INTEGER)
     {
         freeReplyObject(reply);
@@ -113,6 +131,8 @@ sc_result sc_stream_redis_free_handler(const sc_stream *stream)
     sc_redis_handler *handler = (sc_redis_handler*)stream->handler;
     g_assert(handler != 0);
 
+    g_free(handler->key);
+
     g_free(handler);
 
     return SC_RESULT_OK;
@@ -130,7 +150,7 @@ sc_bool sc_stream_redis_eof(const sc_stream *stream)
 }
 
 
-sc_stream* sc_stream_redis_new(redisContext *context, const sc_char *key, sc_uint8 flags)
+sc_stream* sc_stream_redis_new(redisContext *context, const sc_char *key, sc_uint8 flags, GMutex *mutex)
 {
     sc_stream *stream = 0;
     sc_redis_handler *handler = g_new0(sc_redis_handler, 1);
@@ -139,12 +159,13 @@ sc_stream* sc_stream_redis_new(redisContext *context, const sc_char *key, sc_uin
     handler->key = g_strdup(key);
     handler->pos = 0;
     handler->size = 0;
+    handler->mutex = mutex;
 
     // determine size
-    if (flags | SC_STREAM_READ)
+    if (flags & SC_STREAM_READ)
     {
-        redisReply *reply = redisCommand(handler->context, "STRLEN %s", key);
-        if (reply->type != REDIS_REPLY_INTEGER)
+        redisReply *reply = do_sync_redis_command(&handler->context, "STRLEN %s", key);
+        if (reply->type != REDIS_REPLY_INTEGER || (reply->type == REDIS_REPLY_INTEGER && reply->integer == 0))
         {
             freeReplyObject(reply);
             g_free(handler);
@@ -153,6 +174,13 @@ sc_stream* sc_stream_redis_new(redisContext *context, const sc_char *key, sc_uin
 
         handler->size = reply->integer;
         freeReplyObject(reply);
+    } else
+    {
+        if (flags & SC_STREAM_WRITE)
+        {
+            redisReply *reply = do_sync_redis_command(&handler->context, "DEL %s", key);
+            freeReplyObject(reply);
+        }
     }
 
     stream = g_new0(sc_stream, 1);
@@ -167,5 +195,6 @@ sc_stream* sc_stream_redis_new(redisContext *context, const sc_char *key, sc_uin
     stream->free_func = &sc_stream_redis_free_handler;
     stream->eof_func = &sc_stream_redis_eof;
 
+    g_assert(stream->handler != 0);
     return stream;
 }

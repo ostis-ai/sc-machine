@@ -24,6 +24,8 @@ along with OSTIS.  If not, see <http://www.gnu.org/licenses/>.
 #define _sc_types_h_
 
 #include "sc_defines.h"
+#include <memory.h>
+#include <stdlib.h>
 
 #define nullptr ((void*)0)
 
