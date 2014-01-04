@@ -34,10 +34,12 @@ extern sc_addr keynode_question_decomposition;
 extern sc_addr keynode_question_all_identifiers;
 
 extern sc_addr keynode_nrel_answer;
-extern sc_addr keynode_nrel_decomposition;
+extern sc_addr keynode_quasybinary_relation;
+extern sc_addr keynode_decomposition_relation;
+extern sc_addr keynode_identification_relation;
+extern sc_addr keynode_order_relation;
 extern sc_addr keynode_question_finished;
 extern sc_addr keynode_question_initiated;
-extern sc_addr keynode_quasybinary_relation;
 extern sc_addr keynode_nrel_identification;
 extern sc_addr keynode_set_nrel_inclusion;
 extern sc_addr keynode_system_element;
