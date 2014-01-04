@@ -101,7 +101,6 @@ sc_result agent_search_full_semantic_neighborhood(sc_event *event, sc_addr arg)
                                              sc_type_node);
             while (sc_iterator5_next(it5) == SC_TRUE)
             {
-                printf("HERE\n");
                 if (IS_SYSTEM_ELEMENT(sc_iterator5_value(it5, 1))
                     || IS_SYSTEM_ELEMENT(sc_iterator5_value(it5, 2))
                     || IS_SYSTEM_ELEMENT(sc_iterator5_value(it5, 3))
