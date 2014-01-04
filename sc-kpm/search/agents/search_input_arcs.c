@@ -46,8 +46,6 @@ sc_result agent_search_all_const_pos_input_arc(sc_event *event, sc_addr arg)
     it1 = sc_iterator3_f_a_a_new(question, sc_type_arc_pos_const_perm, 0);
     if (sc_iterator3_next(it1) == SC_TRUE)
     {
-        appendIntoAnswer(answer, sc_iterator3_value(it1, 2));
-
         // iterate input arcs
         it2 = sc_iterator3_a_a_f_new(0, sc_type_arc_pos_const_perm, sc_iterator3_value(it1, 2));
         while (sc_iterator3_next(it2) == SC_TRUE)
@@ -56,6 +54,8 @@ sc_result agent_search_all_const_pos_input_arc(sc_event *event, sc_addr arg)
             appendIntoAnswer(answer, sc_iterator3_value(it2, 1));
         }
         sc_iterator3_free(it2);
+
+        appendIntoAnswer(answer, sc_iterator3_value(it1, 2));
     }
     sc_iterator3_free(it1);
 
@@ -85,15 +85,10 @@ sc_result agent_search_all_const_pos_input_arc_with_rel(sc_event *event, sc_addr
     it1 = sc_iterator3_f_a_a_new(question, sc_type_arc_pos_const_perm, 0);
     if (sc_iterator3_next(it1) == SC_TRUE)
     {
-        appendIntoAnswer(answer, sc_iterator3_value(it1, 2));
-
         // iterate input arcs
         it2 = sc_iterator3_a_a_f_new(0, sc_type_arc_pos_const_perm, sc_iterator3_value(it1, 2));
         while (sc_iterator3_next(it2) == SC_TRUE)
         {
-            appendIntoAnswer( answer, sc_iterator3_value(it2, 0));
-            appendIntoAnswer(answer, sc_iterator3_value(it2, 1));
-
             // iterate relations
             it3 = sc_iterator3_a_a_f_new(0, sc_type_arc_pos_const_perm, sc_iterator3_value(it2, 1));
             while (sc_iterator3_next(it3) == SC_TRUE)
@@ -102,8 +97,13 @@ sc_result agent_search_all_const_pos_input_arc_with_rel(sc_event *event, sc_addr
                 appendIntoAnswer(answer, sc_iterator3_value(it3, 1));
             }
             sc_iterator3_free(it3);
+
+            appendIntoAnswer(answer, sc_iterator3_value(it2, 0));
+            appendIntoAnswer(answer, sc_iterator3_value(it2, 1));
         }
         sc_iterator3_free(it2);
+
+        appendIntoAnswer(answer, sc_iterator3_value(it1, 2));
     }
     sc_iterator3_free(it1);
 
