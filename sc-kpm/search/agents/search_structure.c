@@ -132,7 +132,6 @@ void search_subclasses_rec(sc_addr elem, sc_addr answer)
             appendIntoAnswer(answer, sc_iterator3_value(it2, 1));
             appendIntoAnswer(answer, sc_iterator3_value(it2, 2));
 
-
             // iterate order relations between elements
             it_order = sc_iterator5_f_a_a_a_a_new(sc_iterator3_value(it2, 2),
                                                   sc_type_arc_common | sc_type_const,

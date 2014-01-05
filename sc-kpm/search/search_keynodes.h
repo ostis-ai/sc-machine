@@ -43,8 +43,10 @@ extern sc_addr keynode_order_relation;
 extern sc_addr keynode_question_finished;
 extern sc_addr keynode_question_initiated;
 extern sc_addr keynode_nrel_identification;
+extern sc_addr keynode_nrel_translation;
 extern sc_addr keynode_set_nrel_inclusion;
 extern sc_addr keynode_system_element;
+extern sc_addr keynode_languages;
 
 //! Initialie keynodes that used by search module
 sc_result search_keynodes_initialize();

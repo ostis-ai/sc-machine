@@ -44,8 +44,10 @@ sc_addr keynode_identification_relation;
 sc_addr keynode_order_relation;
 
 sc_addr keynode_nrel_identification;
+sc_addr keynode_nrel_translation;
 sc_addr keynode_set_nrel_inclusion;
 sc_addr keynode_system_element;
+sc_addr keynode_languages;
 
 const char keynode_question_all_output_const_pos_arc_str[] = "question_search_all_output_const_pos_arcs";
 const char keynode_question_all_input_const_pos_arc_str[] = "question_search_all_input_const_pos_arcs";
@@ -68,8 +70,10 @@ const char keynode_identification_relation_str[] = "identification_relation";
 const char keynode_order_relation_str[] = "order_relation";
 
 const char keynode_nrel_identification_str[] = "nrel_identification";
+const char keynode_nrel_translation_str[] = "nrel_translation";
 const char keynode_set_nrel_inclusion_str[] = "nrel_inclusion";
 const char keynode_system_element_str[] = "system_element";
+const char keynode_languages_str[] = "languages";
 
 #define resolve_keynode(keynode) if (sc_helper_resolve_system_identifier(keynode##_str, &keynode) == SC_FALSE) return SC_RESULT_ERROR;
 
@@ -95,8 +99,10 @@ sc_result search_keynodes_initialize()
     resolve_keynode(keynode_order_relation);
 
     resolve_keynode(keynode_nrel_identification);
+    resolve_keynode(keynode_nrel_translation);
     resolve_keynode(keynode_set_nrel_inclusion);
     resolve_keynode(keynode_system_element);
+    resolve_keynode(keynode_languages);
 
     return SC_RESULT_OK;
 }
