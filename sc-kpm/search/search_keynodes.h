@@ -32,6 +32,8 @@ extern sc_addr keynode_question_all_input_const_pos_arc_with_rel;
 extern sc_addr keynode_question_full_semantic_neighborhood;
 extern sc_addr keynode_question_decomposition;
 extern sc_addr keynode_question_all_identifiers;
+extern sc_addr keynode_question_search_all_superclasses_in_quasybinary_relation;
+extern sc_addr keynode_question_search_all_subclasses_in_quasybinary_relation;
 
 extern sc_addr keynode_nrel_answer;
 extern sc_addr keynode_quasybinary_relation;

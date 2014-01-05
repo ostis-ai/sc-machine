@@ -96,9 +96,9 @@ sc_result agent_search_full_semantic_neighborhood(sc_event *event, sc_addr arg)
             // search all parents in quasybinary relation
             it5 = sc_iterator5_f_a_a_a_a_new(sc_iterator3_value(it2, 0),
                                              sc_type_arc_common | sc_type_const,
-                                             sc_type_node,
+                                             sc_type_node | sc_type_const,
                                              sc_type_arc_pos_const_perm,
-                                             sc_type_node);
+                                             sc_type_node | sc_type_const);
             while (sc_iterator5_next(it5) == SC_TRUE)
             {
                 if (IS_SYSTEM_ELEMENT(sc_iterator5_value(it5, 1))
