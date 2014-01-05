@@ -40,6 +40,7 @@ extern sc_addr keynode_quasybinary_relation;
 extern sc_addr keynode_decomposition_relation;
 extern sc_addr keynode_identification_relation;
 extern sc_addr keynode_order_relation;
+extern sc_addr keynode_nonbinary_relation;
 extern sc_addr keynode_question_finished;
 extern sc_addr keynode_question_initiated;
 extern sc_addr keynode_nrel_identification;

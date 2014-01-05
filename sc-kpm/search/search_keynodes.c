@@ -42,6 +42,7 @@ sc_addr keynode_quasybinary_relation;
 sc_addr keynode_decomposition_relation;
 sc_addr keynode_identification_relation;
 sc_addr keynode_order_relation;
+sc_addr keynode_nonbinary_relation;
 
 sc_addr keynode_nrel_identification;
 sc_addr keynode_nrel_translation;
@@ -68,6 +69,7 @@ const char keynode_quasybinary_relation_str[] = "quasybinary_relation";
 const char keynode_decomposition_relation_str[] = "decomposition_relation";
 const char keynode_identification_relation_str[] = "identification_relation";
 const char keynode_order_relation_str[] = "order_relation";
+const char keynode_nonbinary_relation_str[] = "nonbinary_relation";
 
 const char keynode_nrel_identification_str[] = "nrel_identification";
 const char keynode_nrel_translation_str[] = "nrel_translation";
@@ -97,6 +99,7 @@ sc_result search_keynodes_initialize()
     resolve_keynode(keynode_decomposition_relation);
     resolve_keynode(keynode_identification_relation);
     resolve_keynode(keynode_order_relation);
+    resolve_keynode(keynode_nonbinary_relation);
 
     resolve_keynode(keynode_nrel_identification);
     resolve_keynode(keynode_nrel_translation);

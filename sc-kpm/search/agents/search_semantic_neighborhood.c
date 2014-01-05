@@ -76,6 +76,53 @@ void search_translation(sc_addr elem, sc_addr answer)
     sc_iterator5_free(it5);
 }
 
+void search_nonbinary_relation(sc_addr elem, sc_addr answer)
+{
+    sc_iterator3 *it1, *it2, *it3;
+    sc_type el_type;
+
+    // iterate input arcs for elem
+    it1 = sc_iterator3_a_a_f_new(sc_type_node,
+                                 sc_type_arc_pos_const_perm,
+                                 elem);
+    while (sc_iterator3_next(it1) == SC_TRUE)
+    {
+        // if elem is a link of non-binary relation
+        if (SC_TRUE == sc_helper_check_arc(keynode_nonbinary_relation, sc_iterator3_value(it1, 0), sc_type_arc_pos_const_perm))
+        {
+            // iterate other elements of link
+            it2 = sc_iterator3_f_a_a_new(elem,
+                                         sc_type_arc_pos_const_perm,
+                                         sc_type_node | sc_type_const);
+            while (sc_iterator3_next(it2) == SC_TRUE)
+            {
+                appendIntoAnswer(answer, sc_iterator3_value(it2, 1));
+                appendIntoAnswer(answer, sc_iterator3_value(it2, 2));
+
+                // iterate attributes of link
+                it3 = sc_iterator3_a_a_f_new(sc_type_node | sc_type_const,
+                                             sc_type_arc_pos_const_perm,
+                                             sc_iterator3_value(it2, 1));
+                while (sc_iterator3_next(it3) == SC_TRUE)
+                {
+                    sc_memory_get_element_type(sc_iterator3_value(it3, 0), &el_type);
+                    if (!(el_type & (sc_type_node_norole | sc_type_node_role)))
+                        continue;
+
+                    appendIntoAnswer(answer, sc_iterator3_value(it3, 0));
+                    appendIntoAnswer(answer, sc_iterator3_value(it3, 1));
+                }
+                sc_iterator3_free(it3);
+            }
+            sc_iterator3_free(it2);
+
+            appendIntoAnswer(answer, sc_iterator3_value(it1, 0));
+            appendIntoAnswer(answer, sc_iterator3_value(it1, 1));
+        }
+    }
+    sc_iterator3_free(it1);
+}
+
 sc_result agent_search_full_semantic_neighborhood(sc_event *event, sc_addr arg)
 {
     sc_addr question, answer;
@@ -168,6 +215,9 @@ sc_result agent_search_full_semantic_neighborhood(sc_event *event, sc_addr arg)
 
             // search translation for element
             search_translation(sc_iterator3_value(it2, 0), answer);
+
+            // search non-binary relation link
+            search_nonbinary_relation(sc_iterator3_value(it2, 0), answer);
         }
         sc_iterator3_free(it2);
 
