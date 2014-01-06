@@ -82,7 +82,7 @@ void search_nonbinary_relation(sc_addr elem, sc_addr answer)
     sc_type el_type;
 
     // iterate input arcs for elem
-    it1 = sc_iterator3_a_a_f_new(sc_type_node,
+    it1 = sc_iterator3_a_a_f_new(sc_type_node | sc_type_const,
                                  sc_type_arc_pos_const_perm,
                                  elem);
     while (sc_iterator3_next(it1) == SC_TRUE)
@@ -121,6 +121,25 @@ void search_nonbinary_relation(sc_addr elem, sc_addr answer)
         }
     }
     sc_iterator3_free(it1);
+}
+
+void search_typical_sc_neighborhood(sc_addr elem, sc_addr answer)
+{
+    sc_iterator3 *it1;
+
+    if (sc_helper_check_arc(keynode_typical_sc_neighborhood, elem, sc_type_arc_pos_const_perm) == SC_TRUE)
+    {
+        // iterate input arcs for elem
+        it1 = sc_iterator3_f_a_a_new(elem,
+                                     sc_type_arc_pos_const_perm,
+                                     0);
+        while (sc_iterator3_next(it1) == SC_TRUE)
+        {
+            appendIntoAnswer(answer, sc_iterator3_value(it1, 1));
+            appendIntoAnswer(answer, sc_iterator3_value(it1, 2));
+        }
+        sc_iterator3_free(it1);
+    }
 }
 
 sc_result agent_search_full_semantic_neighborhood(sc_event *event, sc_addr arg)
@@ -172,6 +191,12 @@ sc_result agent_search_full_semantic_neighborhood(sc_event *event, sc_addr arg)
 
                 appendIntoAnswer(answer, sc_iterator3_value(it3, 0));
                 appendIntoAnswer(answer, sc_iterator3_value(it3, 1));
+
+                // search typical sc-neighborhood if necessary
+                if (SC_ADDR_IS_EQUAL(keynode_rrel_key_sc_element, sc_iterator3_value(it3, 0)))
+                {
+                    search_typical_sc_neighborhood(sc_iterator3_value(it2, 0), answer);
+                }
 
                 // check if it's a quasy binary relation
                 if (sc_helper_check_arc(keynode_quasybinary_relation, sc_iterator3_value(it3, 0), sc_type_arc_pos_const_perm) == SC_TRUE)
