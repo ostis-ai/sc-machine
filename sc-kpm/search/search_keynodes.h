@@ -32,15 +32,22 @@ extern sc_addr keynode_question_all_input_const_pos_arc_with_rel;
 extern sc_addr keynode_question_full_semantic_neighborhood;
 extern sc_addr keynode_question_decomposition;
 extern sc_addr keynode_question_all_identifiers;
+extern sc_addr keynode_question_search_all_superclasses_in_quasybinary_relation;
+extern sc_addr keynode_question_search_all_subclasses_in_quasybinary_relation;
 
 extern sc_addr keynode_nrel_answer;
-extern sc_addr keynode_nrel_decomposition;
+extern sc_addr keynode_quasybinary_relation;
+extern sc_addr keynode_decomposition_relation;
+extern sc_addr keynode_identification_relation;
+extern sc_addr keynode_order_relation;
+extern sc_addr keynode_nonbinary_relation;
 extern sc_addr keynode_question_finished;
 extern sc_addr keynode_question_initiated;
-extern sc_addr keynode_quasybinary_relation;
 extern sc_addr keynode_nrel_identification;
+extern sc_addr keynode_nrel_translation;
 extern sc_addr keynode_set_nrel_inclusion;
 extern sc_addr keynode_system_element;
+extern sc_addr keynode_languages;
 
 //! Initialie keynodes that used by search module
 sc_result search_keynodes_initialize();
