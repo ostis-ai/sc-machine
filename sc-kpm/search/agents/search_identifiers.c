@@ -30,7 +30,7 @@ sc_result agent_search_all_identifiers(sc_event *event, sc_addr arg)
 {
     sc_addr question, answer;
     sc_iterator3 *it1, *it2;
-    sc_iterator5 *it5;//, *it5Check;
+    sc_iterator5 *it5;
     sc_bool found = SC_FALSE;
 
     if (!sc_memory_get_arc_end(arg, &question))
@@ -57,23 +57,6 @@ sc_result agent_search_all_identifiers(sc_event *event, sc_addr arg)
                                          sc_type_node | sc_type_const | sc_type_node_norole);
         while (sc_iterator5_next(it5) == SC_TRUE)
         {
-            /*// check if this arc is an identification
-            it5Check = sc_iterator5_f_a_f_a_f_new(keynode_nrel_identification,
-                                                  sc_type_arc_common | sc_type_const,
-                                                  sc_iterator5_value(it5, 4),
-                                                  sc_type_arc_pos_const_perm,
-                                                  keynode_set_nrel_inclusion);
-
-            if (sc_iterator5_next(it5Check) == SC_TRUE)
-            {
-                // append into result
-                appendIntoAnswer(answer, sc_iterator5_value(it5, 1));
-                appendIntoAnswer(answer, sc_iterator5_value(it5, 2));
-                appendIntoAnswer(answer, sc_iterator5_value(it5, 3));
-                appendIntoAnswer(answer, sc_iterator5_value(it5, 4));
-            }
-            sc_iterator5_free(it5Check);*/
-
             // check if this relation is an identification
             if (sc_helper_check_arc(keynode_identification_relation, sc_iterator5_value(it5, 4), sc_type_arc_pos_const_perm) == SC_TRUE)
             {
