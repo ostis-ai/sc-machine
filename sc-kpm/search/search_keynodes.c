@@ -43,9 +43,11 @@ sc_addr keynode_decomposition_relation;
 sc_addr keynode_identification_relation;
 sc_addr keynode_order_relation;
 sc_addr keynode_nonbinary_relation;
+sc_addr keynode_typical_sc_neighborhood;
 
 sc_addr keynode_nrel_identification;
 sc_addr keynode_nrel_translation;
+sc_addr keynode_rrel_key_sc_element;
 sc_addr keynode_set_nrel_inclusion;
 sc_addr keynode_system_element;
 sc_addr keynode_languages;
@@ -70,10 +72,12 @@ const char keynode_decomposition_relation_str[] = "decomposition_relation";
 const char keynode_identification_relation_str[] = "identification_relation";
 const char keynode_order_relation_str[] = "order_relation";
 const char keynode_nonbinary_relation_str[] = "nonbinary_relation";
+const char keynode_typical_sc_neighborhood_str[] = "typical_sc_neighborhood";
 
 const char keynode_nrel_identification_str[] = "nrel_identification";
 const char keynode_nrel_translation_str[] = "nrel_translation";
 const char keynode_set_nrel_inclusion_str[] = "nrel_inclusion";
+const char keynode_rrel_key_sc_element_str[] = "rrel_key_sc_element";
 const char keynode_system_element_str[] = "system_element";
 const char keynode_languages_str[] = "languages";
 
@@ -100,9 +104,11 @@ sc_result search_keynodes_initialize()
     resolve_keynode(keynode_identification_relation);
     resolve_keynode(keynode_order_relation);
     resolve_keynode(keynode_nonbinary_relation);
+    resolve_keynode(keynode_typical_sc_neighborhood);
 
     resolve_keynode(keynode_nrel_identification);
     resolve_keynode(keynode_nrel_translation);
+    resolve_keynode(keynode_rrel_key_sc_element);
     resolve_keynode(keynode_set_nrel_inclusion);
     resolve_keynode(keynode_system_element);
     resolve_keynode(keynode_languages);
