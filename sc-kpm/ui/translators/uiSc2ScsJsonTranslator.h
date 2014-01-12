@@ -48,10 +48,6 @@ protected:
     //! Map of resolved system identifiers
     typedef std::map<sc_addr, String> tSystemIdentifiersMap;
     tSystemIdentifiersMap mSystemIdentifiers;
-
-    typedef std::map<sc_type, String> tScTypeToSCsConnectorMap;
-    tScTypeToSCsConnectorMap mTypeToConnector;
-
 };
 
 #endif
