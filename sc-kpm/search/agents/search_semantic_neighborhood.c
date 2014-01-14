@@ -32,6 +32,7 @@ void search_translation(sc_addr elem, sc_addr answer)
 {
     sc_iterator5 *it5;
     sc_iterator3 *it3, *it4;
+    sc_bool found = SC_FALSE;
 
     // iterate translations of sc-element
     it5 = sc_iterator5_a_a_f_a_f_new(sc_type_node | sc_type_const,
@@ -41,6 +42,8 @@ void search_translation(sc_addr elem, sc_addr answer)
                                      keynode_nrel_translation);
     while (sc_iterator5_next(it5) == SC_TRUE)
     {
+        found = SC_TRUE;
+
         appendIntoAnswer(answer, sc_iterator5_value(it5, 0));
         appendIntoAnswer(answer, sc_iterator5_value(it5, 1));
         appendIntoAnswer(answer, sc_iterator5_value(it5, 3));
@@ -48,7 +51,7 @@ void search_translation(sc_addr elem, sc_addr answer)
         // iterate translation sc-links
         it3 = sc_iterator3_f_a_a_new(sc_iterator5_value(it5, 0),
                                      sc_type_arc_pos_const_perm,
-                                     sc_type_node | sc_type_const);
+                                     0);
         while (sc_iterator3_next(it3) == SC_TRUE)
         {
             // iterate input arcs for link
@@ -67,6 +70,20 @@ void search_translation(sc_addr elem, sc_addr answer)
             }
             sc_iterator3_free(it4);
 
+            // iterate input arcs for arc
+            it4 = sc_iterator3_a_a_f_new(sc_type_node,
+                                         sc_type_arc_pos_const_perm,
+                                         sc_iterator3_value(it3, 1));
+            while (sc_iterator3_next(it4) == SC_TRUE)
+            {
+                if (IS_SYSTEM_ELEMENT(sc_iterator3_value(it4, 0)) || IS_SYSTEM_ELEMENT(sc_iterator3_value(it4, 1)))
+                    continue;
+
+                appendIntoAnswer(answer, sc_iterator3_value(it4, 0));
+                appendIntoAnswer(answer, sc_iterator3_value(it4, 1));
+            }
+            sc_iterator3_free(it4);
+
             appendIntoAnswer(answer, sc_iterator3_value(it3, 1));
             appendIntoAnswer(answer, sc_iterator3_value(it3, 2));
         }
@@ -74,6 +91,11 @@ void search_translation(sc_addr elem, sc_addr answer)
 
     }
     sc_iterator5_free(it5);
+
+    if (found == SC_TRUE)
+    {
+        appendIntoAnswer(answer, keynode_nrel_translation);
+    }
 }
 
 void search_nonbinary_relation(sc_addr elem, sc_addr answer)
@@ -297,7 +319,7 @@ sc_result agent_search_full_semantic_neighborhood(sc_event *event, sc_addr arg)
                 appendIntoAnswer(answer, sc_iterator3_value(it3, 1));
 
                 // search translation for element
-                search_translation(sc_iterator3_value(it4, 2), answer);
+                search_translation(sc_iterator3_value(it3, 0), answer);
             }
             sc_iterator3_free(it3);
 
