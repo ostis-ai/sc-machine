@@ -207,6 +207,28 @@ sc_result agent_search_full_semantic_neighborhood(sc_event *event, sc_addr arg)
                     {
                         appendIntoAnswer(answer, sc_iterator3_value(it4, 1));
                         appendIntoAnswer(answer, sc_iterator3_value(it4, 2));
+
+                        // iterate order relations between elements
+                        it_order = sc_iterator5_f_a_a_a_a_new(sc_iterator3_value(it4, 2),
+                                                              sc_type_arc_common | sc_type_const,
+                                                              sc_type_node | sc_type_const,
+                                                              sc_type_arc_pos_const_perm,
+                                                              sc_type_node | sc_type_const);
+                        while (sc_iterator5_next(it_order) == SC_TRUE)
+                        {
+                            if (SC_FALSE == sc_helper_check_arc(keynode_order_relation, sc_iterator5_value(it_order, 4), sc_type_arc_pos_const_perm))
+                                continue;
+                            if (SC_FALSE == sc_helper_check_arc(sc_iterator3_value(it2, 0), sc_iterator5_value(it_order, 2), sc_type_arc_pos_const_perm))
+                                continue;
+
+                            appendIntoAnswer(answer, sc_iterator5_value(it_order, 1));
+                            appendIntoAnswer(answer, sc_iterator5_value(it_order, 2));
+                            appendIntoAnswer(answer, sc_iterator5_value(it_order, 3));
+                            appendIntoAnswer(answer, sc_iterator5_value(it_order, 4));
+
+                        }
+                        sc_iterator5_free(it_order);
+
                     }
                     sc_iterator3_free(it4);
                 }
@@ -274,45 +296,8 @@ sc_result agent_search_full_semantic_neighborhood(sc_event *event, sc_addr arg)
                 appendIntoAnswer(answer, sc_iterator3_value(it3, 0));
                 appendIntoAnswer(answer, sc_iterator3_value(it3, 1));
 
-                // check if it's a quasy binary relation
-                if (sc_helper_check_arc(keynode_quasybinary_relation, sc_iterator3_value(it3, 0), sc_type_arc_pos_const_perm) == SC_TRUE)
-                {
-                    // iterate elements of relation
-                    it4 = sc_iterator3_f_a_a_new(sc_iterator3_value(it2, 0), sc_type_arc_pos_const_perm, 0);
-                    while (sc_iterator3_next(it4) == SC_TRUE)
-                    {
-                        if (!IS_SYSTEM_ELEMENT(sc_iterator3_value(it4, 1)))
-                            appendIntoAnswer(answer, sc_iterator3_value(it4, 1));
-                        if (!IS_SYSTEM_ELEMENT(sc_iterator3_value(it4, 2)))
-                            appendIntoAnswer(answer, sc_iterator3_value(it4, 2));
-
-                        // iterate order relations between elements
-                        it_order = sc_iterator5_f_a_a_a_a_new(sc_iterator3_value(it4, 2),
-                                                              sc_type_arc_common | sc_type_const,
-                                                              sc_type_node | sc_type_const,
-                                                              sc_type_arc_pos_const_perm,
-                                                              sc_type_node | sc_type_const);
-                        while (sc_iterator5_next(it_order) == SC_TRUE)
-                        {
-                            if (SC_FALSE == sc_helper_check_arc(keynode_order_relation, sc_iterator5_value(it_order, 4), sc_type_arc_pos_const_perm))
-                                continue;
-                            if (SC_FALSE == sc_helper_check_arc(sc_iterator3_value(it2, 0), sc_iterator5_value(it_order, 2), sc_type_arc_pos_const_perm))
-                                continue;
-
-                            appendIntoAnswer(answer, sc_iterator5_value(it_order, 1));
-                            appendIntoAnswer(answer, sc_iterator5_value(it_order, 2));
-                            appendIntoAnswer(answer, sc_iterator5_value(it_order, 3));
-                            appendIntoAnswer(answer, sc_iterator5_value(it_order, 4));
-
-                        }
-                        sc_iterator5_free(it_order);
-
-                        // search translation for element
-                        search_translation(sc_iterator3_value(it4, 2), answer);
-
-                    }
-                    sc_iterator3_free(it4);
-                }
+                // search translation for element
+                search_translation(sc_iterator3_value(it4, 2), answer);
             }
             sc_iterator3_free(it3);
 

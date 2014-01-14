@@ -75,7 +75,7 @@ const char keynode_nonbinary_relation_str[] = "nonbinary_relation";
 const char keynode_typical_sc_neighborhood_str[] = "typical_sc_neighborhood";
 
 const char keynode_nrel_identification_str[] = "nrel_identification";
-const char keynode_nrel_translation_str[] = "nrel_translation";
+const char keynode_nrel_translation_str[] = "nrel_sc_text_translation";
 const char keynode_set_nrel_inclusion_str[] = "nrel_inclusion";
 const char keynode_rrel_key_sc_element_str[] = "rrel_key_sc_element";
 const char keynode_system_element_str[] = "system_element";
