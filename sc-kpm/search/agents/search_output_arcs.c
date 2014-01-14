@@ -22,6 +22,7 @@ along with OSTIS. If not, see <http://www.gnu.org/licenses/>.
 #include "search_output_arcs.h"
 #include "search_keynodes.h"
 #include "search_utils.h"
+#include "search_defines.h"
 
 #include <sc_helper.h>
 #include <sc_memory_headers.h>
@@ -30,6 +31,7 @@ sc_result agent_search_all_const_pos_output_arc(sc_event *event, sc_addr arg)
 {
     sc_addr question, answer;
     sc_iterator3 *it1, *it2;
+    sc_bool sys_off = SC_TRUE;
 
     if (!sc_memory_get_arc_end(arg, &question))
         return SC_RESULT_ERROR_INVALID_PARAMS;
@@ -44,15 +46,21 @@ sc_result agent_search_all_const_pos_output_arc(sc_event *event, sc_addr arg)
     it1 = sc_iterator3_f_a_a_new(question, sc_type_arc_pos_const_perm, 0);
     if (sc_iterator3_next(it1) == SC_TRUE)
     {
-        appendIntoAnswer(answer, sc_iterator3_value(it1, 2));
+        if (IS_SYSTEM_ELEMENT(sc_iterator3_value(it1, 2)))
+            sys_off = SC_FALSE;
 
         // iterate output arcs and append them into answer
         it2 = sc_iterator3_f_a_a_new(sc_iterator3_value(it1, 2), sc_type_arc_pos_const_perm, 0);
         while (sc_iterator3_next(it2) == SC_TRUE)
         {
+            if (sys_off == SC_TRUE && (IS_SYSTEM_ELEMENT(sc_iterator3_value(it2, 1)) || IS_SYSTEM_ELEMENT(sc_iterator3_value(it2, 2))))
+                continue;
+
             appendIntoAnswer(answer, sc_iterator3_value(it2, 1));
             appendIntoAnswer(answer, sc_iterator3_value(it2, 2));
         }
+
+        appendIntoAnswer(answer, sc_iterator3_value(it1, 2));
 
         sc_iterator3_free(it2);
     }
@@ -69,6 +77,7 @@ sc_result agent_search_all_const_pos_output_arc_with_rel(sc_event *event, sc_add
 {
     sc_addr question, answer;
     sc_iterator3 *it1, *it2, *it3;
+    sc_bool sys_off = SC_TRUE;
 
     if (!sc_memory_get_arc_end(arg, &question))
         return SC_RESULT_ERROR_INVALID_PARAMS;
@@ -83,16 +92,23 @@ sc_result agent_search_all_const_pos_output_arc_with_rel(sc_event *event, sc_add
     it1 = sc_iterator3_f_a_a_new(question, sc_type_arc_pos_const_perm, 0);
     if (sc_iterator3_next(it1) == SC_TRUE)
     {
+        if (IS_SYSTEM_ELEMENT(sc_iterator3_value(it1, 2)))
+            sys_off = SC_FALSE;
 
         // iterate output arcs and append them into answer
         it2 = sc_iterator3_f_a_a_new(sc_iterator3_value(it1, 2), sc_type_arc_pos_const_perm, 0);
         while (sc_iterator3_next(it2) == SC_TRUE)
         {
+            if (sys_off == SC_TRUE && (IS_SYSTEM_ELEMENT(sc_iterator3_value(it2, 1)) || IS_SYSTEM_ELEMENT(sc_iterator3_value(it2, 2))))
+                continue;
 
             // iterate relations
             it3 = sc_iterator3_a_a_f_new(sc_type_node, sc_type_arc_pos_const_perm, sc_iterator3_value(it2, 1));
             while (sc_iterator3_next(it3) == SC_TRUE)
             {
+                if (sys_off == SC_TRUE && (IS_SYSTEM_ELEMENT(sc_iterator3_value(it3, 0)) || IS_SYSTEM_ELEMENT(sc_iterator3_value(it3, 1))))
+                    continue;
+
                 appendIntoAnswer(answer, sc_iterator3_value(it3, 0));
                 appendIntoAnswer(answer, sc_iterator3_value(it3, 1));
             }
