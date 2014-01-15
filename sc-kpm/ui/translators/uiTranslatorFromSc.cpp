@@ -84,7 +84,7 @@ bool uiTranslateFromSc::isNeedToTranslate(const sc_addr &addr) const
     return mObjects.find(addr) != mObjects.end();
 }
 
-String uiTranslateFromSc::buildId(const sc_addr &addr) const
+String uiTranslateFromSc::buildId(const sc_addr &addr)
 {
     StringStream ss;
     ss << addr.seg << "_" << addr.offset;

@@ -192,6 +192,8 @@ sc_result agent_search_full_semantic_neighborhood(sc_event *event, sc_addr arg)
     sc_type el_type;
     sc_bool sys_off = SC_TRUE;
 
+    printf("test\n");
+
     if (!sc_memory_get_arc_end(arg, &question))
         return SC_RESULT_ERROR_INVALID_PARAMS;
 

@@ -22,7 +22,6 @@ along with OSTIS. If not, see <http://www.gnu.org/licenses/>.
 #include "search_identifiers.h"
 #include "search_keynodes.h"
 #include "search_utils.h"
-#include "search_defines.h"
 
 #include <sc_helper.h>
 #include <sc_memory_headers.h>
@@ -32,8 +31,7 @@ sc_result agent_search_all_identifiers(sc_event *event, sc_addr arg)
     sc_addr question, answer;
     sc_iterator3 *it1, *it2;
     sc_iterator5 *it5;
-    //sc_bool found = SC_FALSE;
-    sc_bool sys_off = SC_TRUE;
+    sc_bool found = SC_FALSE;
 
     if (!sc_memory_get_arc_end(arg, &question))
         return SC_RESULT_ERROR_INVALID_PARAMS;
@@ -48,9 +46,7 @@ sc_result agent_search_all_identifiers(sc_event *event, sc_addr arg)
     it1 = sc_iterator3_f_a_a_new(question, sc_type_arc_pos_const_perm, 0);
     if (sc_iterator3_next(it1) == SC_TRUE)
     {
-        if (IS_SYSTEM_ELEMENT(sc_iterator3_value(it1, 2)))
-            sys_off = SC_FALSE;
-
+        found = SC_TRUE;
         appendIntoAnswer(answer, sc_iterator3_value(it1, 2));
 
         // iterate all const arcs, that are no accessory, and go out from sc-element
@@ -64,11 +60,6 @@ sc_result agent_search_all_identifiers(sc_event *event, sc_addr arg)
             // check if this relation is an identification
             if (sc_helper_check_arc(keynode_identification_relation, sc_iterator5_value(it5, 4), sc_type_arc_pos_const_perm) == SC_TRUE)
             {
-                if (sys_off == SC_TRUE && (IS_SYSTEM_ELEMENT(sc_iterator5_value(it5, 1))
-                                           || IS_SYSTEM_ELEMENT(sc_iterator5_value(it5, 2))
-                                           || IS_SYSTEM_ELEMENT(sc_iterator5_value(it5, 3))
-                                           || IS_SYSTEM_ELEMENT(sc_iterator5_value(it5, 4))))
-                    continue;
 
                 // iterate input arcs for sc-link
                 it2 = sc_iterator3_a_a_f_new(sc_type_node | sc_type_const,
@@ -78,10 +69,6 @@ sc_result agent_search_all_identifiers(sc_event *event, sc_addr arg)
                 {
                     if (sc_helper_check_arc(keynode_languages, sc_iterator3_value(it2, 0), sc_type_arc_pos_const_perm) == SC_TRUE)
                     {
-                        if (sys_off == SC_TRUE && (IS_SYSTEM_ELEMENT(sc_iterator3_value(it2, 0))
-                                                   || IS_SYSTEM_ELEMENT(sc_iterator3_value(it2, 0))))
-                            continue;
-
                         appendIntoAnswer(answer, sc_iterator3_value(it2, 0));
                         appendIntoAnswer(answer, sc_iterator3_value(it2, 1));
                     }
@@ -97,6 +84,9 @@ sc_result agent_search_all_identifiers(sc_event *event, sc_addr arg)
         sc_iterator5_free(it5);
     }
     sc_iterator3_free(it1);
+
+    if (found == SC_TRUE)
+        appendIntoAnswer(answer, keynode_nrel_identification);
 
     connect_answer_to_question(question, answer);
     finish_question(question);

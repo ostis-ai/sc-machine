@@ -30,25 +30,6 @@ along with OSTIS.  If not, see <http://www.gnu.org/licenses/>.
 // --------------------
 uiSc2ScsTranslator::uiSc2ScsTranslator()
 {
-    mTypeToConnector[sc_type_arc_common] = ">";
-    mTypeToConnector[sc_type_arc_pos_const_perm] = "->";
-    mTypeToConnector[sc_type_edge_common] = "<>";
-    mTypeToConnector[sc_type_arc_access] = "..>";
-
-    mTypeToConnector[sc_type_edge_common | sc_type_const] = "<=>";
-    mTypeToConnector[sc_type_edge_common | sc_type_var] = "_<=>";
-    mTypeToConnector[sc_type_arc_common | sc_type_const] = "=>";
-    mTypeToConnector[sc_type_arc_common | sc_type_var] = "_=>";
-    mTypeToConnector[sc_type_arc_access | sc_type_const | sc_type_arc_neg | sc_type_arc_perm] = "-|>";
-    mTypeToConnector[sc_type_arc_access | sc_type_var | sc_type_arc_neg | sc_type_arc_perm] = "_-|>";
-    mTypeToConnector[sc_type_arc_access | sc_type_const | sc_type_arc_fuz | sc_type_arc_perm] = "-/>";
-    mTypeToConnector[sc_type_arc_access | sc_type_var | sc_type_arc_fuz | sc_type_arc_perm] = "_-/>";
-    mTypeToConnector[sc_type_arc_access | sc_type_const | sc_type_arc_pos | sc_type_arc_temp] = "~>";
-    mTypeToConnector[sc_type_arc_access | sc_type_var | sc_type_arc_pos | sc_type_arc_temp] = "_~>";
-    mTypeToConnector[sc_type_arc_access | sc_type_const | sc_type_arc_neg | sc_type_arc_temp] = "~|>";
-    mTypeToConnector[sc_type_arc_access | sc_type_var | sc_type_arc_neg | sc_type_arc_temp] = "_~|>";
-    mTypeToConnector[sc_type_arc_access | sc_type_const | sc_type_arc_fuz | sc_type_arc_temp] = "~/>";
-    mTypeToConnector[sc_type_arc_access | sc_type_var | sc_type_arc_fuz | sc_type_arc_temp] = "_~/>";
 }
 
 uiSc2ScsTranslator::~uiSc2ScsTranslator()
@@ -58,14 +39,44 @@ uiSc2ScsTranslator::~uiSc2ScsTranslator()
 
 void uiSc2ScsTranslator::runImpl()
 {
-    //! TODO logging sc-element, that can't be translated
+    StringStream ss;
+    ss << "{";
+    ss << "\"keywords\" : [";
 
+    bool first = true;
+    // get command arguments (keywords)
+    sc_iterator5 *it5 = sc_iterator5_a_a_f_a_f_new(sc_type_node | sc_type_const,
+                                                   sc_type_arc_common | sc_type_const,
+                                                   mInputConstructionAddr,
+                                                   sc_type_arc_pos_const_perm,
+                                                   keynode_question_nrel_answer);
+    if (sc_iterator5_next(it5) == SC_TRUE)
+    {
+        sc_iterator3 *it3 = sc_iterator3_f_a_a_new(sc_iterator5_value(it5, 0),
+                                                   sc_type_arc_pos_const_perm,
+                                                   0);
+        while (sc_iterator3_next(it3) == SC_TRUE)
+        {
+            sc_addr addr = sc_iterator3_value(it3, 2);
+            sc_type type;
+            sc_memory_get_element_type(addr, &type);
+
+            if (!first)
+                ss << ",";
+            else
+                first = false;
+
+            ss << "{ \"addr\": \"" << uiSc2ScsTranslator::buildId(addr) << "\", \"type\" : " << type << "}";
+        }
+        sc_iterator3_free(it3);
+    }
+    sc_iterator5_free(it5);
+
+    ss << "], \"triples\": [";
+
+    first = true;
     // iterate all arcs and translate them
     tScAddrToScTypeMap::iterator it, itEnd = mObjects.end();
-
-    mOutputData = "[";
-    bool first = true;
-
     for (it = mObjects.begin(); it != itEnd; ++it)
     {
         const sc_addr &arc_addr = it->first;
@@ -101,29 +112,19 @@ void uiSc2ScsTranslator::runImpl()
         else
             sc_memory_get_element_type(arc_end, &end_type);
 
-        // determine arc type
-        String arc_connector = "<>";
-        tScTypeToSCsConnectorMap::const_iterator itCon = mTypeToConnector.find(arc_type);
-        if (itCon != mTypeToConnector.end())
-            arc_connector = itCon->second;
-
-
         if (!first)
-            mOutputData += ",";
+            ss << ", ";
         else
             first = false;
 
-        StringStream s1, s2;
-        s1 << beg_type;
-        s2 << end_type;
-        String beg_str = "{ \"addr\": \"" + buildId(arc_beg) +"\", \"type\":" + s1.str() + "}";
-        String end_str = "{ \"addr\": \"" + buildId(arc_end) +"\", \"type\":" + s2.str() + "}";
+        ss << "[{ \"addr\": \"" << buildId(arc_beg) << "\", \"type\": " << beg_type << "}, ";
+        ss << "{ \"addr\": \"" << buildId(arc_addr) << "\", \"type\": " << arc_type << "}, ";
+        ss << "{ \"addr\": \"" << buildId(arc_end) << "\", \"type\": " << end_type << "}]";
 
-        mOutputData += "[" + beg_str + ", \"" + arc_connector + "\"," + end_str + "]";
     }
 
-    mOutputData += "]";
-
+    ss << "]}";
+    mOutputData = ss.str();
 }
 
 void uiSc2ScsTranslator::resolveSystemIdentifier(const sc_addr &addr, String &idtf)
