@@ -6,7 +6,10 @@ add_library (sc-fm-redis SHARED ${SOURCES} ${HEADERS})
 # find dependencies
 if (${UNIX})
 	include(FindPkgConfig)
-	pkg_check_modules (REDIS REQUIRED libhiredis)
+	pkg_check_modules(REDIS QUIET hiredis)
+    if (NOT DEFINED ${REDIS_INCLUDE_DIRS})
+        pkg_check_modules(REDIS REQUIRED libhiredis)
+    endif()
 	
 endif(${UNIX})
 
