@@ -187,7 +187,7 @@ void search_typical_sc_neighborhood(sc_addr elem, sc_addr answer, sc_bool sys_of
 sc_result agent_search_full_semantic_neighborhood(sc_event *event, sc_addr arg)
 {
     sc_addr question, answer;
-    sc_iterator3 *it1, *it2, *it3, *it4;
+    sc_iterator3 *it1, *it2, *it3, *it4, *it6;
     sc_iterator5 *it5, *it_order;
     sc_type el_type;
     sc_bool sys_off = SC_TRUE;
@@ -283,6 +283,25 @@ sc_result agent_search_full_semantic_neighborhood(sc_event *event, sc_addr arg)
 
                         }
                         sc_iterator5_free(it_order);
+
+                        // iterate roles of element in link
+                        it6 = sc_iterator3_a_a_f_new(sc_type_node | sc_type_const,
+                                                     sc_type_arc_pos_const_perm,
+                                                     sc_iterator3_value(it4, 1));
+                        while (sc_iterator3_next(it6) == SC_TRUE)
+                        {
+                            sc_memory_get_element_type(sc_iterator3_value(it6, 0), &el_type);
+                            if (!(el_type & sc_type_node_role))
+                                continue;
+
+                            if (sys_off == SC_TRUE && (IS_SYSTEM_ELEMENT(sc_iterator3_value(it6, 0))
+                                                       || IS_SYSTEM_ELEMENT(sc_iterator3_value(it6, 1))))
+                                continue;
+
+                            appendIntoAnswer(answer, sc_iterator3_value(it6, 0));
+                            appendIntoAnswer(answer, sc_iterator3_value(it6, 1));
+                        }
+                        sc_iterator3_free(it6);
 
                     }
                     sc_iterator3_free(it4);
