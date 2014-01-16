@@ -225,8 +225,8 @@ public:
 };
 
 #ifndef THROW_EXCEPT
-#define THROW_EXCEPT(num, desc, file, line) throw Ogre::ExceptionFactory::create( \
-    Ogre::ExceptionCodeType<num>(), desc, file, line);
+#define THROW_EXCEPT(num, desc, file, line) \
+    {StringStream ss; ss << desc; throw ExceptionFactory::create(ExceptionCodeType<num>(), ss.str(), file, line);}
 #endif
 
 #endif

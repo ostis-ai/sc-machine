@@ -86,6 +86,10 @@ private:
     typedef std::map<std::string, iTranslatorFactory*> tTranslatorFactories;
     tTranslatorFactories mTranslatorFactories;
 
+    //! List of errors
+    typedef std::list<std::string> tStringList;
+    tStringList mErrors;
+
     //! Builder parameters
     BuilderParams mParams;
 

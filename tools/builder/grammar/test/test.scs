@@ -1,4 +1,4 @@
-1 = [x->y;;];;
+z = [x->y;;];;
 /*nrel_main_idtf
 
 <= nrel_inclusion: 

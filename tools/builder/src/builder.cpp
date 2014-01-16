@@ -24,8 +24,6 @@ along with OSTIS.  If not, see <http://www.gnu.org/licenses/>.
 #include "utils.h"
 #include "translator.h"
 
-
-
 #include <boost/filesystem.hpp>
 #include <assert.h>
 
@@ -63,8 +61,22 @@ bool Builder::run(const BuilderParams &params)
     {
         float progress = (float)++done / (float)mFileSet.size();
         std::cout << "[" << (int) (progress * 100.f) << "%] " << *it << std::endl;
-        processFile(*it);
+        try
+        {
+            processFile(*it);
+        } catch(const Exception &e)
+        {
+            StringStream ss;
+            ss << e.getDescription() << " in " << e.getFileName() << " at line " << e.getLineNumber();
+            mErrors.push_back(ss.str());
+        }
     }
+
+    // print errors
+    std::cout << "Erorrs:" << std::endl;
+    tStringList::iterator itErr, itErrEnd = mErrors.end();
+    for (itErr = mErrors.begin(); itErr != itErrEnd; ++itErr)
+        std::cout << *itErr << std::endl;
 
     // print statistics
     sc_stat stat;

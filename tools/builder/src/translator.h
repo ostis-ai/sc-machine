@@ -24,6 +24,7 @@ along with OSTIS.  If not, see <http://www.gnu.org/licenses/>.
 #define _translator_h_
 
 #include "types.h"
+#include "exception.h"
 
 extern "C"
 {
