@@ -5,3 +5,4 @@ set(SC_KPM_ROOT "${CMAKE_SOURCE_DIR}/sc-kpm")
 
 add_subdirectory(ui)
 add_subdirectory(search)
+add_subdirectory(merge)

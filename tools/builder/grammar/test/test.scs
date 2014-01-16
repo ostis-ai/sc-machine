@@ -1,4 +1,6 @@
-nrel_main_idtf
+1 = [x->y;;];;
+/*nrel_main_idtf
+
 <= nrel_inclusion: 
 	nrel_identification;
 => nrel_main_idtf: 
@@ -10,7 +12,7 @@ nrel_main_idtf
 	[main identifier*] 
 	(*
 	<- lang_en;; 
-	*);;
+	*);;*/
 /*file://test.scs";;
 t <- "file://";;
 x = y;;
