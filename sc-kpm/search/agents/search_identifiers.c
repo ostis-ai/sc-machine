@@ -93,3 +93,54 @@ sc_result agent_search_all_identifiers(sc_event *event, sc_addr arg)
 
     return SC_RESULT_OK;
 }
+
+sc_result agent_search_all_identified_elements(sc_event *event, sc_addr arg)
+{
+    sc_addr question, answer, begin, end;
+    sc_iterator3 *it1;
+    sc_bool found = SC_FALSE;
+
+    if (!sc_memory_get_arc_end(arg, &question))
+        return SC_RESULT_ERROR_INVALID_PARAMS;
+
+    printf("HERE0\n");
+    printf("K=%u|%u\n", keynode_question_all_identified_elements.seg, keynode_question_all_identified_elements.offset);
+    printf("Q=%u|%u\n", keynode_question.seg, keynode_question.offset);
+
+    it1 = sc_iterator3_a_a_f_new(0, sc_type_arc_pos_const_perm, question);
+    while (sc_iterator3_next(it1) == SC_TRUE)
+    {
+        printf("INP=%u|%u\n", sc_iterator3_value(it1, 0).seg, sc_iterator3_value(it1, 0).offset);
+    }
+    sc_iterator3_free(it1);
+
+    // check question type
+    if (sc_helper_check_arc(keynode_question_all_identified_elements, question, sc_type_arc_pos_const_perm) == SC_FALSE)
+        return SC_RESULT_ERROR_INVALID_TYPE;
+
+    printf("HERE1\n");
+
+    answer = create_answer_node();
+
+    it1 = sc_iterator3_f_a_a_new(keynode_nrel_main_idtf, sc_type_arc_pos_const_perm, sc_type_arc_common | sc_type_const);
+    while (sc_iterator3_next(it1) == SC_TRUE)
+    {
+        found = SC_TRUE;
+        sc_memory_get_arc_begin(sc_iterator3_value(it1, 2), &begin);
+        sc_memory_get_arc_end(sc_iterator3_value(it1, 2), &end);
+
+        appendIntoAnswer(answer, sc_iterator3_value(it1, 1));
+        appendIntoAnswer(answer, sc_iterator3_value(it1, 2));
+        appendIntoAnswer(answer, begin);
+        appendIntoAnswer(answer, end);
+    }
+    sc_iterator3_free(it1);
+
+    if (found == SC_TRUE)
+        appendIntoAnswer(answer, keynode_nrel_main_idtf);
+
+    connect_answer_to_question(question, answer);
+    finish_question(question);
+
+    return SC_RESULT_OK;
+}

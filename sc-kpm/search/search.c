@@ -36,6 +36,7 @@ sc_event *event_question_search_search_all_subclasses_in_quasybinary_relation;
 sc_event *event_question_search_search_all_superclasses_in_quasybinary_relation;
 sc_event *event_question_search_decomposition;
 sc_event *event_question_search_all_identifiers;
+sc_event *event_question_search_all_identified_elements;
 
 // --------------------- Module ------------------------
 
@@ -72,6 +73,10 @@ sc_result initialize()
     if (event_question_search_all_identifiers == nullptr)
         return SC_RESULT_ERROR;
 
+    event_question_search_all_identified_elements = sc_event_new(keynode_question_initiated, SC_EVENT_ADD_OUTPUT_ARC, 0, agent_search_all_identified_elements, 0);
+    if (event_question_search_all_identified_elements == nullptr)
+        return SC_RESULT_ERROR;
+
     event_question_search_search_all_subclasses_in_quasybinary_relation = sc_event_new(keynode_question_initiated, SC_EVENT_ADD_OUTPUT_ARC, 0, agent_search_all_subclasses_in_quasybinary_relation, 0);
     if (event_question_search_search_all_subclasses_in_quasybinary_relation == nullptr)
         return SC_RESULT_ERROR;
@@ -90,6 +95,8 @@ sc_result shutdown()
     sc_event_destroy(event_question_search_all_output_arcs_with_rel);
     sc_event_destroy(event_question_search_all_input_arcs_with_rel);
     sc_event_destroy(event_question_search_full_semantic_neighborhood);
+    sc_event_destroy(event_question_search_all_identified_elements);
+    sc_event_destroy(event_question_search_all_identifiers);
     sc_event_destroy(event_question_search_decomposition);
     sc_event_destroy(event_question_search_search_all_subclasses_in_quasybinary_relation);
     sc_event_destroy(event_question_search_search_all_superclasses_in_quasybinary_relation);

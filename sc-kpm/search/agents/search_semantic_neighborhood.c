@@ -188,9 +188,10 @@ sc_result agent_search_full_semantic_neighborhood(sc_event *event, sc_addr arg)
 {
     sc_addr question, answer;
     sc_iterator3 *it1, *it2, *it3, *it4, *it6;
-    sc_iterator5 *it5, *it_order;
+    sc_iterator5 *it5, *it_order, *it_order2;
     sc_type el_type;
     sc_bool sys_off = SC_TRUE;
+    sc_bool key_order_found = SC_FALSE;
 
     printf("test\n");
 
@@ -369,6 +370,30 @@ sc_result agent_search_full_semantic_neighborhood(sc_event *event, sc_addr arg)
 
                 appendIntoAnswer(answer, sc_iterator3_value(it3, 0));
                 appendIntoAnswer(answer, sc_iterator3_value(it3, 1));
+
+                // search of key sc-elements order
+                if (SC_ADDR_IS_EQUAL(sc_iterator3_value(it3, 0), keynode_rrel_key_sc_element))
+                {
+                    it_order2 = sc_iterator5_f_a_a_a_f_new(sc_iterator3_value(it2, 1),
+                                                           sc_type_arc_common | sc_type_const,
+                                                           sc_type_arc_pos_const_perm,
+                                                           sc_type_arc_pos_const_perm,
+                                                           keynode_nrel_key_sc_element_base_order);
+                    while (sc_iterator5_next(it_order2) == SC_TRUE)
+                    {
+                        if (sys_off == SC_TRUE && (IS_SYSTEM_ELEMENT(sc_iterator5_value(it_order2, 1)) || IS_SYSTEM_ELEMENT(sc_iterator5_value(it_order2, 3))))
+                            continue;
+
+                        appendIntoAnswer(answer, sc_iterator5_value(it_order2, 1));
+                        appendIntoAnswer(answer, sc_iterator5_value(it_order2, 3));
+                        if (SC_FALSE == key_order_found)
+                        {
+                            key_order_found = SC_TRUE;
+                            appendIntoAnswer(answer, keynode_nrel_key_sc_element_base_order);
+                        }
+                    }
+                    sc_iterator5_free(it_order2);
+                }
 
                 // search translation for element
                 search_translation(sc_iterator3_value(it3, 0), answer, sys_off);
