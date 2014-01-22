@@ -103,22 +103,9 @@ sc_result agent_search_all_identified_elements(sc_event *event, sc_addr arg)
     if (!sc_memory_get_arc_end(arg, &question))
         return SC_RESULT_ERROR_INVALID_PARAMS;
 
-    printf("HERE0\n");
-    printf("K=%u|%u\n", keynode_question_all_identified_elements.seg, keynode_question_all_identified_elements.offset);
-    printf("Q=%u|%u\n", keynode_question.seg, keynode_question.offset);
-
-    it1 = sc_iterator3_a_a_f_new(0, sc_type_arc_pos_const_perm, question);
-    while (sc_iterator3_next(it1) == SC_TRUE)
-    {
-        printf("INP=%u|%u\n", sc_iterator3_value(it1, 0).seg, sc_iterator3_value(it1, 0).offset);
-    }
-    sc_iterator3_free(it1);
-
     // check question type
     if (sc_helper_check_arc(keynode_question_all_identified_elements, question, sc_type_arc_pos_const_perm) == SC_FALSE)
         return SC_RESULT_ERROR_INVALID_TYPE;
-
-    printf("HERE1\n");
 
     answer = create_answer_node();
 
