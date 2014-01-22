@@ -32,6 +32,7 @@ extern sc_addr keynode_question_all_input_const_pos_arc_with_rel;
 extern sc_addr keynode_question_full_semantic_neighborhood;
 extern sc_addr keynode_question_decomposition;
 extern sc_addr keynode_question_all_identifiers;
+extern sc_addr keynode_question_all_identified_elements;
 extern sc_addr keynode_question_search_all_superclasses_in_quasybinary_relation;
 extern sc_addr keynode_question_search_all_subclasses_in_quasybinary_relation;
 
@@ -44,10 +45,13 @@ extern sc_addr keynode_nonbinary_relation;
 extern sc_addr keynode_typical_sc_neighborhood;
 extern sc_addr keynode_question_finished;
 extern sc_addr keynode_question_initiated;
+extern sc_addr keynode_question;
 extern sc_addr keynode_nrel_identification;
 extern sc_addr keynode_nrel_translation;
+extern sc_addr keynode_nrel_main_idtf;
 extern sc_addr keynode_set_nrel_inclusion;
 extern sc_addr keynode_rrel_key_sc_element;
+extern sc_addr keynode_nrel_key_sc_element_base_order;
 extern sc_addr keynode_system_element;
 extern sc_addr keynode_languages;
 

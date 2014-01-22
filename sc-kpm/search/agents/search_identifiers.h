@@ -31,5 +31,9 @@ along with OSTIS. If not, see <http://www.gnu.org/licenses/>.
  */
 sc_result agent_search_all_identifiers(sc_event *event, sc_addr arg);
 
+/*!
+ * Function that implement sc-agent to search all sc-elements identified with main identifier
+ */
+sc_result agent_search_all_identified_elements(sc_event *event, sc_addr arg);
 
 #endif
