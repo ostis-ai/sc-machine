@@ -19,10 +19,12 @@ You should have received a copy of the GNU Lesser General Public License
 along with OSTIS. If not, see <http://www.gnu.org/licenses/>.
 -----------------------------------------------------------------------------
  */
-
-#include "merge_keynodes.h"
+#include "utils_keynodes.h"
 #include <glib.h>
 
+const char keynode_nrel_main_idtf_str[] = "nrel_main_idtf";
+
+sc_addr keynode_nrel_main_idtf;
 
 #define resolve_keynode(keynode) \
     if (sc_helper_resolve_system_identifier(keynode##_str, &keynode) == SC_FALSE) \
@@ -33,3 +35,10 @@ along with OSTIS. If not, see <http://www.gnu.org/licenses/>.
             return SC_RESULT_ERROR; \
         g_message("Created element with system identifier: %s", keynode##_str); \
     }
+
+sc_result utils_keynodes_initialize()
+{
+    resolve_keynode(keynode_nrel_main_idtf);
+
+    return SC_RESULT_OK;
+}

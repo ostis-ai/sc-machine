@@ -20,16 +20,13 @@ along with OSTIS. If not, see <http://www.gnu.org/licenses/>.
 -----------------------------------------------------------------------------
  */
 
-#include "merge_keynodes.h"
-#include <glib.h>
+#ifndef _utils_h_
+#define _utils_h_
 
+#include "sc_memory.h"
 
-#define resolve_keynode(keynode) \
-    if (sc_helper_resolve_system_identifier(keynode##_str, &keynode) == SC_FALSE) \
-    {\
-        g_warning("Can't find element with system identifier: %s", keynode##_str); \
-        keynode = sc_memory_node_new(0); \
-        if (sc_helper_set_system_identifier(keynode, keynode##_str, strlen(keynode##_str)) != SC_RESULT_OK) \
-            return SC_RESULT_ERROR; \
-        g_message("Created element with system identifier: %s", keynode##_str); \
-    }
+sc_result initialize();
+
+sc_result shutdown();
+
+#endif

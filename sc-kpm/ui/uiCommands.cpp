@@ -442,12 +442,15 @@ sc_result ui_initialize_commands()
 
 void ui_shutdown_commands()
 {
-    sc_event_destroy(event_ui_start_answer_translation);
+    if (event_ui_start_answer_translation)
+        sc_event_destroy(event_ui_start_answer_translation);
     event_ui_start_answer_translation = (sc_event*)nullptr;
 
-    sc_event_destroy(event_ui_command_generate_instance);
+    if (event_ui_command_generate_instance)
+        sc_event_destroy(event_ui_command_generate_instance);
     event_ui_command_generate_instance = (sc_event*)nullptr;
 
-    sc_event_destroy(event_ui_remove_displayed_answer);
+    if (event_ui_remove_displayed_answer)
+        sc_event_destroy(event_ui_remove_displayed_answer);
     event_ui_remove_displayed_answer = (sc_event*)nullptr;
 }

@@ -19,17 +19,25 @@ You should have received a copy of the GNU Lesser General Public License
 along with OSTIS. If not, see <http://www.gnu.org/licenses/>.
 -----------------------------------------------------------------------------
  */
+#include "utils.h"
+#include "utils_keynodes.h"
+#include "utils_collect_identifiers.h"
 
-#include "merge_keynodes.h"
-#include <glib.h>
+sc_result initialize()
+{
+    if (utils_keynodes_initialize() != SC_RESULT_OK)
+        return SC_RESULT_ERROR;
 
+    if (utils_collect_identifiers_initialize() != SC_RESULT_OK)
+        return SC_RESULT_ERROR;
 
-#define resolve_keynode(keynode) \
-    if (sc_helper_resolve_system_identifier(keynode##_str, &keynode) == SC_FALSE) \
-    {\
-        g_warning("Can't find element with system identifier: %s", keynode##_str); \
-        keynode = sc_memory_node_new(0); \
-        if (sc_helper_set_system_identifier(keynode, keynode##_str, strlen(keynode##_str)) != SC_RESULT_OK) \
-            return SC_RESULT_ERROR; \
-        g_message("Created element with system identifier: %s", keynode##_str); \
-    }
+    return SC_RESULT_OK;
+}
+
+sc_result shutdown()
+{
+    if (utils_collect_identifiers_shutdown() != SC_RESULT_OK)
+        return SC_RESULT_ERROR;
+
+    return SC_RESULT_OK;
+}

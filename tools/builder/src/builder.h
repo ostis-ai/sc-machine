@@ -34,6 +34,8 @@ struct BuilderParams
     String inputPath;
     //! Output directory path
     String outputPath;
+    //! Path to memory extensions
+    String extensionsPath;
     //! Flag to clear output
     bool clearOutput;
     //! Flag to generate format information based on file extensions

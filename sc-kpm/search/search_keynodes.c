@@ -23,6 +23,7 @@ along with OSTIS. If not, see <http://www.gnu.org/licenses/>.
 
 #include "sc_helper.h"
 #include "sc_memory_headers.h"
+#include <glib.h>
 
 
 sc_addr keynode_question_all_output_const_pos_arc;
@@ -89,7 +90,16 @@ const char keynode_nrel_key_sc_element_base_order_str[] = "nrel_key_sc_element_b
 const char keynode_system_element_str[] = "system_element";
 const char keynode_languages_str[] = "languages";
 
-#define resolve_keynode(keynode) if (sc_helper_resolve_system_identifier(keynode##_str, &keynode) == SC_FALSE) return SC_RESULT_ERROR;
+#define resolve_keynode(keynode) \
+    if (sc_helper_resolve_system_identifier(keynode##_str, &keynode) == SC_FALSE) \
+    {\
+        g_warning("Can't find element with system identifier: %s", keynode##_str); \
+        keynode = sc_memory_node_new(0); \
+        if (sc_helper_set_system_identifier(keynode, keynode##_str, strlen(keynode##_str)) != SC_RESULT_OK) \
+            return SC_RESULT_ERROR; \
+        g_message("Created element with system identifier: %s", keynode##_str); \
+    }
+
 
 sc_result search_keynodes_initialize()
 {

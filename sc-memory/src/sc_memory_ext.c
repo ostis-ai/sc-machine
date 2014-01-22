@@ -121,7 +121,7 @@ void module_table_unload_func(gpointer key, gpointer value, gpointer user_data)
     g_assert(module_name != nullptr);
     g_assert(module != nullptr);
 
-    if (g_module_symbol(module, module_name, (gpointer*)&func) == FALSE)
+    if (g_module_symbol(module, "shutdown", (gpointer*)&func) == FALSE)
     {
         g_warning("Can't find shutdown symbol in module: %s", module_name);
     }else
