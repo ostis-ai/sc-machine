@@ -19,13 +19,9 @@ You should have received a copy of the GNU Lesser General Public License
 along with OSTIS. If not, see <http://www.gnu.org/licenses/>.
 -----------------------------------------------------------------------------
  */
+#ifndef _merge_keynodes_h_
+#define _merge_keynodes_h_
 
-#ifndef _search_defines_h_
-#define _search_defines_h_
 
-#define SYSTEM_ELEMENT(el) if (sc_helper_check_arc(keynode_system_element,el, sc_type_arc_pos_const_perm) == SC_FALSE) \
-                                sc_memory_arc_new(sc_type_arc_pos_const_perm, keynode_system_element, el);
 
-#define IS_SYSTEM_ELEMENT(el) (sc_helper_check_arc(keynode_system_element, el, sc_type_arc_pos_const_perm) == SC_TRUE)
-
-#endif // SEARCH_DEFINES_H
+#endif

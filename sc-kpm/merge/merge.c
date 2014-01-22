@@ -20,12 +20,15 @@ along with OSTIS. If not, see <http://www.gnu.org/licenses/>.
 -----------------------------------------------------------------------------
  */
 
-#ifndef _search_defines_h_
-#define _search_defines_h_
+#include "merge.h"
+#include "merge_keynodes.h"
 
-#define SYSTEM_ELEMENT(el) if (sc_helper_check_arc(keynode_system_element,el, sc_type_arc_pos_const_perm) == SC_FALSE) \
-                                sc_memory_arc_new(sc_type_arc_pos_const_perm, keynode_system_element, el);
+sc_result initialize()
+{
 
-#define IS_SYSTEM_ELEMENT(el) (sc_helper_check_arc(keynode_system_element, el, sc_type_arc_pos_const_perm) == SC_TRUE)
+}
 
-#endif // SEARCH_DEFINES_H
+sc_result shutdown()
+{
+
+}

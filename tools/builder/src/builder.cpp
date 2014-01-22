@@ -1,8 +1,28 @@
+/*
+-----------------------------------------------------------------------------
+This source file is part of OSTIS (Open Semantic Technology for Intelligent Systems)
+For the latest info, see http://www.ostis.net
+
+Copyright (c) 2010-2014 OSTIS
+
+OSTIS is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+OSTIS is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public License
+along with OSTIS.  If not, see <http://www.gnu.org/licenses/>.
+-----------------------------------------------------------------------------
+*/
+
 #include "builder.h"
 #include "utils.h"
 #include "translator.h"
-
-
 
 #include <boost/filesystem.hpp>
 #include <assert.h>
@@ -41,8 +61,22 @@ bool Builder::run(const BuilderParams &params)
     {
         float progress = (float)++done / (float)mFileSet.size();
         std::cout << "[" << (int) (progress * 100.f) << "%] " << *it << std::endl;
-        processFile(*it);
+        try
+        {
+            processFile(*it);
+        } catch(const Exception &e)
+        {
+            StringStream ss;
+            ss << e.getDescription() << " in " << e.getFileName() << " at line " << e.getLineNumber();
+            mErrors.push_back(ss.str());
+        }
     }
+
+    // print errors
+    std::cout << "Erorrs:" << std::endl;
+    tStringList::iterator itErr, itErrEnd = mErrors.end();
+    for (itErr = mErrors.begin(); itErr != itErrEnd; ++itErr)
+        std::cout << *itErr << std::endl;
 
     // print statistics
     sc_stat stat;

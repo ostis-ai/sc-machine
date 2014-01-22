@@ -6,7 +6,7 @@ For the latest info, see http://www.ostis.net
 Copyright (c) 2010-2014 OSTIS
 
 OSTIS is free software: you can redistribute it and/or modify
-it under the terms of the GNU Lesser General Public License as published by
+it under the terms of the GNU General Public License as published by
 the Free Software Foundation, either version 3 of the License, or
 (at your option) any later version.
 
@@ -19,24 +19,38 @@ You should have received a copy of the GNU Lesser General Public License
 along with OSTIS.  If not, see <http://www.gnu.org/licenses/>.
 -----------------------------------------------------------------------------
 */
+#include "exception.h"
 
-#ifndef _sc_memory_ext_h_
-#define _sc_memory_ext_h_
+Exception::Exception(Exception::eCodes code, const String &typeName, const String &descr, const String &fileName, int line)
+    : mTypeName(typeName)
+    , mDescription(descr)
+    , mFileName(fileName)
+    , mLine(line)
+    , mCode(code)
+{
+}
 
-#include "sc-store/sc_types.h"
-#include <gmodule.h>
+const String& Exception::getTypeName() const
+{
+    return mTypeName;
+}
 
-/*! Initialize extensions from specified directory.
- * This function find all available extensions in specified directory and try to load them.
- * @param ext_dir_path Path to directory, that contains extensions. This function doens't take
- * ownership on this parameter, so you need to free it after end using the last one.
- * @return If specified directory doesn't exist, then return SC_ERROR_INVALID_PARAMS. If
- * there are any other errors to load extensions, then return SC_ERROR
- */
-sc_result sc_ext_initialize(const sc_char *ext_dir_path);
+const String& Exception::getDescription() const
+{
+    return mDescription;
+}
 
-/*! Shutdown all loaded extensions
- */
-void sc_ext_shutdown();
+const String& Exception::getFileName() const
+{
+    return mFileName;
+}
 
-#endif // _sc_memory_h_
+int Exception::getLineNumber() const
+{
+    return mLine;
+}
+
+Exception::eCodes Exception::getCode() const
+{
+    return mCode;
+}

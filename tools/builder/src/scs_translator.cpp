@@ -1,3 +1,25 @@
+/*
+-----------------------------------------------------------------------------
+This source file is part of OSTIS (Open Semantic Technology for Intelligent Systems)
+For the latest info, see http://www.ostis.net
+
+Copyright (c) 2010-2014 OSTIS
+
+OSTIS is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+OSTIS is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public License
+along with OSTIS.  If not, see <http://www.gnu.org/licenses/>.
+-----------------------------------------------------------------------------
+*/
+
 #include "scs_translator.h"
 #include "utils.h"
 
@@ -318,7 +340,28 @@ void SCsTranslator::processSentenceAssign(pANTLR3_BASE_TREE node)
     pANTLR3_BASE_TREE node_left = (pANTLR3_BASE_TREE)node->getChild(node, 0);
     pANTLR3_BASE_TREE node_right = (pANTLR3_BASE_TREE)node->getChild(node, 1);
 
-    mAssignments[GET_NODE_TEXT(node_left)] = GET_NODE_TEXT(node_right);
+    pANTLR3_COMMON_TOKEN tok_left = node_left->getToken(node_left);
+    pANTLR3_COMMON_TOKEN tok_right = node_left->getToken(node_right);
+
+    assert(tok_left && tok_right);
+
+    if (tok_left->type != ID_SYSTEM)
+    {
+        THROW_EXCEPT(Exception::ERR_PARSE,
+                     "Unsupported type of tokens at the left side of assignment sentence",
+                     mParams.fileName,
+                     tok_left->getLine(tok_left));
+    }
+
+    if (tok_right->type == ID_SYSTEM)
+    {
+        mAssignments[GET_NODE_TEXT(node_left)] = GET_NODE_TEXT(node_right);
+    }
+    else
+    {
+        sElement *el = parseElementTree(node_right);
+        el->idtf = GET_NODE_TEXT(node_left);
+    }
 }
 
 sc_addr SCsTranslator::resolveScAddr(sElement *el)
@@ -582,13 +625,12 @@ sElement* SCsTranslator::parseElementTree(pANTLR3_BASE_TREE tree)
                         data = String((std::istreambuf_iterator<char>(ifs)), std::istreambuf_iterator<char>());
                         ifs.close();
                         result = true;
+                    } else {
+                        THROW_EXCEPT(Exception::ERR_PARSE,
+                                     "Can't open file " << filename,
+                                     mParams.fileName,
+                                     tok->getLine(tok));
                     }
-                }
-
-                if (!result)
-                {
-                    std::cerr << "Can't open file " << data << std::endl;
-                    data = "";
                 }
             }
 
