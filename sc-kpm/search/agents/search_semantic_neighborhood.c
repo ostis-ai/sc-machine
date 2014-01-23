@@ -209,8 +209,6 @@ sc_result agent_search_full_semantic_neighborhood(sc_event *event, sc_addr arg)
     sc_bool sys_off = SC_TRUE;
     sc_bool key_order_found = SC_FALSE;
 
-    printf("test\n");
-
     if (!sc_memory_get_arc_end(arg, &question))
         return SC_RESULT_ERROR_INVALID_PARAMS;
 
@@ -228,6 +226,8 @@ sc_result agent_search_full_semantic_neighborhood(sc_event *event, sc_addr arg)
             sys_off = SC_FALSE;
 
         appendIntoAnswer(answer, sc_iterator3_value(it1, 2));
+
+        search_translation(sc_iterator3_value(it1, 2), answer, sys_off);
 
         // iterate input arcs
         it2 = sc_iterator3_a_a_f_new(0,
