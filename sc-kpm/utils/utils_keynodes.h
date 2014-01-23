@@ -26,6 +26,7 @@ along with OSTIS. If not, see <http://www.gnu.org/licenses/>.
 #include "sc_memory.h"
 
 extern sc_addr keynode_nrel_main_idtf;
+extern sc_addr keynode_nrel_system_identifier;
 
 sc_result utils_keynodes_initialize();
 

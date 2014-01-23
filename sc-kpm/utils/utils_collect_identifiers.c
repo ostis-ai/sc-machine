@@ -28,6 +28,10 @@ const char str_key_redis_host[] = "host";
 const char str_key_redis_port[] = "port";
 const char str_key_redis_timeout[] = "timeout";
 
+
+const char str_sys_idtf_postfix[] = "sys";
+const char str_main_idtf_postfix[] = "main";
+
 char *utils_redis_host = 0;
 sc_uint32 utils_redis_port = 6379;
 sc_uint32 utils_redis_timeout = 1500;
@@ -39,6 +43,9 @@ gboolean ping_thread_running;
 
 // ---------------------
 sc_event *event_add_main_idtf = 0;
+sc_event *event_add_sys_idtf = 0;
+
+
 
 
 // --- ping thread ---
@@ -130,12 +137,15 @@ redisReply* do_sync_redis_command(redisContext *context, const char *format, ...
 // --------------------------------------------------
 sc_result agent_append_idtf(sc_event *event, sc_addr arg)
 {
-    sc_addr arc, el, link;
+    sc_addr arc, el, link, n;
     sc_stream *content = 0;
     sc_uint8 *data = 0;
     sc_uint32 data_len = 0, read_bytes = 0;
 
     if (sc_memory_get_arc_end(arg, &arc) != SC_RESULT_OK)
+        return SC_RESULT_ERROR;
+
+    if (sc_memory_get_arc_begin(arg, &n) != SC_RESULT_OK)
         return SC_RESULT_ERROR;
 
     // get element
@@ -166,7 +176,7 @@ sc_result agent_append_idtf(sc_event *event, sc_addr arg)
 
     }
     sc_result res = SC_RESULT_OK;
-    redisReply *reply = do_sync_redis_command(redisCtx, "SET idtf:%s %b", data, &el, sizeof(el));
+    redisReply *reply = do_sync_redis_command(redisCtx, "SET idtf:%s:%s %b", SC_ADDR_IS_EQUAL(n, keynode_nrel_main_idtf) ? str_main_idtf_postfix : str_sys_idtf_postfix, data, &el, sizeof(el));
     if (reply == 0 || reply->type == REDIS_REPLY_ERROR)
         res = SC_RESULT_ERROR;
 
@@ -205,6 +215,9 @@ sc_result utils_collect_identifiers_initialize()
     if (event_add_main_idtf == 0)
         return SC_RESULT_ERROR;
 
+    event_add_sys_idtf = sc_event_new(keynode_nrel_system_identifier, SC_EVENT_ADD_OUTPUT_ARC, 0, agent_append_idtf, 0);
+    if (event_add_sys_idtf == 0)
+        return SC_RESULT_ERROR;
 
 
     return SC_RESULT_OK;
@@ -212,6 +225,17 @@ sc_result utils_collect_identifiers_initialize()
 
 sc_result utils_collect_identifiers_shutdown()
 {
+    if (event_add_main_idtf)
+    {
+        sc_event_destroy(event_add_main_idtf);
+        event_add_main_idtf = 0;
+    }
+
+    if (event_add_sys_idtf)
+    {
+        sc_event_destroy(event_add_sys_idtf);
+        event_add_sys_idtf = 0;
+    }
 
     g_mutex_lock(&redis_mutex);
     ping_thread_running = FALSE;
