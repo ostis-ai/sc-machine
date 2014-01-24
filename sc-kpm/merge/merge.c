@@ -25,10 +25,10 @@ along with OSTIS. If not, see <http://www.gnu.org/licenses/>.
 
 sc_result initialize()
 {
-
+    return SC_RESULT_OK;
 }
 
 sc_result shutdown()
 {
-
+    return SC_RESULT_OK;
 }
