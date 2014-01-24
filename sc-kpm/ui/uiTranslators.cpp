@@ -41,9 +41,12 @@ void ui_initialize_translators()
 
 void ui_shutdown_translators()
 {
-    sc_event_destroy(ui_translator_sc2scs_event);
-    sc_event_destroy(ui_translator_sc2scg_json_event);
-    sc_event_destroy(ui_translator_sc2scn_json_event);
+    if (ui_translator_sc2scs_event)
+        sc_event_destroy(ui_translator_sc2scs_event);
+    if (ui_translator_sc2scg_json_event)
+        sc_event_destroy(ui_translator_sc2scg_json_event);
+    if (ui_translator_sc2scn_json_event)
+        sc_event_destroy(ui_translator_sc2scn_json_event);
 }
 
 sc_result ui_translate_command_resolve_arguments(sc_addr cmd_addr, sc_addr *output_fmt_addr, sc_addr *source_addr)

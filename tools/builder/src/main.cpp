@@ -33,6 +33,7 @@ int main(int argc, char *argv[])
             ("version", "Displays version number")
             ("input-path,i", boost::program_options::value<std::string>(), "Path to directory with sources")
             ("output-path,o", boost::program_options::value<std::string>(), "Path to output directory (repository)")
+            ("extension-path,e", boost::program_options::value<std::string>(), "Path to extensions directory")
             ("clear-output,c", "Clear output directory (repository) before build")
             ("settings,s", boost::program_options::value<std::string>(), "Path to configuration file for sc-memory")
             ("auto-formats,f", "Enable automatic formats info generation");
@@ -56,6 +57,9 @@ int main(int argc, char *argv[])
 
     if (vm.count("output-path"))
         params.outputPath = vm["output-path"].as<std::string>();
+
+    if (vm.count("extension-path"))
+        params.extensionsPath = vm["extension-path"].as<std::string>();
 
     if (vm.count("clear-output"))
         params.clearOutput = true;

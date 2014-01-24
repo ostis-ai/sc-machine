@@ -298,7 +298,6 @@ sc_result sc_helper_get_keynode(sc_keynode keynode, sc_addr *keynode_addr)
     return SC_RESULT_OK;
 }
 
-
 sc_bool sc_helper_resolve_system_identifier(const char *system_idtf, sc_addr *result)
 {
     gchar *keynode_idtf = 0;
@@ -311,11 +310,8 @@ sc_bool sc_helper_resolve_system_identifier(const char *system_idtf, sc_addr *re
         return SC_FALSE;
     }
 
-    if (sc_helper_find_element_by_system_identifier(keynode_idtf, bytes_written, result) != SC_RESULT_OK)
-    {
-        g_warning("Can't find element with system identifier: %s", system_idtf);
+    if (sc_helper_find_element_by_system_identifier(keynode_idtf, bytes_written, result) != SC_RESULT_OK)       
         return SC_FALSE;
-    }
 
     g_free(keynode_idtf);
 

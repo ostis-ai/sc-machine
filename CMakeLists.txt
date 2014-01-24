@@ -19,7 +19,13 @@ if (${UNIX})
 	
 	set (GLIB2_INCLUDE_DIRS "${GLIB2_INCLUDE_DIRS}" "/usr/lib/x86_64-linux-gnu/glib-2.0/include/" "${GLIB2_MODULE}")
 	set (GLIB2_LIBRARIES "${GLIB2_LIBRARIES}" "${GLIB2_MODULE_LIBRARIES}")
-	
+
+        pkg_check_modules(REDIS QUIET hiredis)
+        if (NOT DEFINED ${REDIS_INCLUDE_DIRS})
+            pkg_check_modules(REDIS REQUIRED libhiredis)
+        endif()
+
+
 endif(${UNIX})
 
 add_subdirectory(sc-memory)

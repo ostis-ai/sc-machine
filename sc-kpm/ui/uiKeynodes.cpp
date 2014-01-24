@@ -23,6 +23,11 @@ along with OSTIS.  If not, see <http://www.gnu.org/licenses/>.
 #include "uiPrecompiled.h"
 #include "uiKeynodes.h"
 
+extern "C"
+{
+#include <glib.h>
+}
+
 
 // ------------- Keynodes ----------------------
 const char keynode_user_str[] = "ui_user";
@@ -86,7 +91,15 @@ sc_addr ui_keynode_rrel_order[RREL_ORDER_COUNT];
 sc_addr ui_keynode_arg[UI_ARG_COUNT];
 
 
-#define resolve_keynode(keynode) if (sc_helper_resolve_system_identifier(keynode##_str, &keynode) == SC_FALSE) return SC_FALSE;
+#define resolve_keynode(keynode) \
+    if (sc_helper_resolve_system_identifier(keynode##_str, &keynode) == SC_FALSE) \
+    {\
+        g_warning("Can't find element with system identifier: %s", keynode##_str); \
+        keynode = sc_memory_node_new(0); \
+        if (sc_helper_set_system_identifier(keynode, keynode##_str, strlen(keynode##_str)) != SC_RESULT_OK) \
+            return SC_FALSE; \
+        g_message("Created element with system identifier: %s", keynode##_str); \
+    }
 
 // -------------------------------------------------
 sc_bool initialize_keynodes()
@@ -122,7 +135,11 @@ sc_bool initialize_keynodes()
         std::stringstream ss;
         ss << "rrel_" << (i + 1);
         if (sc_helper_resolve_system_identifier(ss.str().c_str(), &(ui_keynode_rrel_order[i])) == SC_FALSE)
-            return SC_FALSE;
+        {
+            ui_keynode_rrel_order[i] = sc_memory_node_new(0);
+            if (sc_helper_set_system_identifier(ui_keynode_rrel_order[i], ss.str().c_str(), ss.str().size()) != SC_RESULT_OK)
+                return SC_FALSE;
+        }
     }
 
     for (sc_uint32 i = 0; i < UI_ARG_COUNT; ++i)
@@ -130,7 +147,11 @@ sc_bool initialize_keynodes()
         std::stringstream ss;
         ss << "ui_arg_" << (i + 1);
         if (sc_helper_resolve_system_identifier(ss.str().c_str(), &(ui_keynode_arg[i])) == SC_FALSE)
-            return SC_FALSE;
+        {
+            ui_keynode_rrel_order[i] = sc_memory_node_new(0);
+            if (sc_helper_set_system_identifier(ui_keynode_rrel_order[i], ss.str().c_str(), ss.str().size()) != SC_RESULT_OK)
+                return SC_FALSE;
+        }
     }
 
     return SC_TRUE;

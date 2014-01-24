@@ -53,6 +53,8 @@ bool Builder::run(const BuilderParams &params)
     // initialize sc-memory
     sc_memory_initialize(mParams.outputPath.c_str(), mParams.configFile.empty() ? 0 : mParams.configFile.c_str(), mParams.clearOutput ? SC_TRUE : SC_FALSE);
     sc_helper_init();
+    if (mParams.extensionsPath.size() > 0)
+        sc_memory_initialize_ext(mParams.extensionsPath.c_str());
 
     // print founded files
     uint32 done = 0;
@@ -91,6 +93,8 @@ bool Builder::run(const BuilderParams &params)
     std::cout << "Total: " << all_count << std::endl;
 
     sc_memory_shutdown();
+    if (mParams.extensionsPath.size() > 0)
+        sc_memory_shutdown_ext();
 
     return true;
 }
