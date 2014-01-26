@@ -19,20 +19,12 @@ You should have received a copy of the GNU Lesser General Public License
 along with OSTIS. If not, see <http://www.gnu.org/licenses/>.
 -----------------------------------------------------------------------------
  */
-#ifndef _merge_keynodes_h_
-#define _merge_keynodes_h_
 
 #include "sc_memory.h"
 
-extern sc_addr keynode_question_set_cantorization;
+#ifndef _merge_agents_h_
+#define _merge_agents_h_
 
-extern sc_addr keynode_nrel_answer;
-extern sc_addr keynode_question_finished;
-extern sc_addr keynode_question_initiated;
-extern sc_addr keynode_question;
-extern sc_addr keynode_system_element;
-
-//! Initialie keynodes that used by merge module
-sc_result merge_keynodes_initialize();
+#include "agents/merge_set.h"
 
 #endif

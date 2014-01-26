@@ -14,7 +14,15 @@ unix {
 }
 
 HEADERS += \
-    merge.h
+    merge.h \
+    merge_keynodes.h \
+    merge_agents.h \
+    merge_defines.h \
+    merge_utils.h \
+    agents/merge_set.h
 
 SOURCES += \
-    merge.c
+    merge.c \
+    merge_keynodes.c \
+    merge_utils.c \
+    agents/merge_set.c
