@@ -107,6 +107,27 @@ void search_translation(sc_addr elem, sc_addr answer, sc_bool sys_off)
     }
 }
 
+void search_arc_components(sc_addr elem, sc_addr answer, sc_bool sys_off)
+{
+    sc_type type;
+    sc_addr begin, end;
+
+    if (SC_RESULT_OK != sc_memory_get_element_type(elem, &type))
+        return;
+    if (!(type & ~sc_type_node))
+        return;
+    if (SC_RESULT_OK != sc_memory_get_arc_begin(elem, &begin))
+        return;
+    if (SC_RESULT_OK != sc_memory_get_arc_end(elem, &end))
+        return;
+
+    appendIntoAnswer(answer, begin);
+    appendIntoAnswer(answer, end);
+
+    search_translation(begin, answer, sys_off);
+    search_translation(end, answer, sys_off);
+}
+
 void search_nonbinary_relation(sc_addr elem, sc_addr answer, sc_bool sys_off)
 {
     sc_iterator3 *it1, *it2, *it3;
@@ -136,6 +157,8 @@ void search_nonbinary_relation(sc_addr elem, sc_addr answer, sc_bool sys_off)
                 appendIntoAnswer(answer, sc_iterator3_value(it2, 1));
                 appendIntoAnswer(answer, sc_iterator3_value(it2, 2));
 
+                search_arc_components(sc_iterator3_value(it2, 2), answer, sys_off);
+
                 // iterate attributes of link
                 it3 = sc_iterator3_a_a_f_new(sc_type_node | sc_type_const,
                                              sc_type_arc_pos_const_perm,
@@ -150,7 +173,7 @@ void search_nonbinary_relation(sc_addr elem, sc_addr answer, sc_bool sys_off)
                         continue;
 
                     appendIntoAnswer(answer, sc_iterator3_value(it3, 0));
-                    appendIntoAnswer(answer, sc_iterator3_value(it3, 1));
+                    appendIntoAnswer(answer, sc_iterator3_value(it3, 1));                    
                 }
                 sc_iterator3_free(it3);
             }
@@ -242,6 +265,8 @@ sc_result agent_search_full_semantic_neighborhood(sc_event *event, sc_addr arg)
             appendIntoAnswer(answer, sc_iterator3_value(it2, 0));
             appendIntoAnswer(answer, sc_iterator3_value(it2, 1));
 
+            search_arc_components(sc_iterator3_value(it2, 0), answer, sys_off);
+
             // iterate input arcs into found arc, to find relations
             it3 = sc_iterator3_a_a_f_new(sc_type_node,
                                          sc_type_arc_pos_const_perm,
@@ -257,6 +282,8 @@ sc_result agent_search_full_semantic_neighborhood(sc_event *event, sc_addr arg)
 
                 appendIntoAnswer(answer, sc_iterator3_value(it3, 0));
                 appendIntoAnswer(answer, sc_iterator3_value(it3, 1));
+
+                search_arc_components(sc_iterator3_value(it3, 0), answer, sys_off);
 
                 // search typical sc-neighborhood if necessary
                 if (SC_ADDR_IS_EQUAL(keynode_rrel_key_sc_element, sc_iterator3_value(it3, 0)))
@@ -276,6 +303,8 @@ sc_result agent_search_full_semantic_neighborhood(sc_event *event, sc_addr arg)
 
                         appendIntoAnswer(answer, sc_iterator3_value(it4, 1));
                         appendIntoAnswer(answer, sc_iterator3_value(it4, 2));
+
+                        search_arc_components(sc_iterator3_value(it4, 2), answer, sys_off);
 
                         // iterate order relations between elements
                         it_order = sc_iterator5_f_a_a_a_a_new(sc_iterator3_value(it4, 2),
@@ -318,6 +347,8 @@ sc_result agent_search_full_semantic_neighborhood(sc_event *event, sc_addr arg)
 
                             appendIntoAnswer(answer, sc_iterator3_value(it6, 0));
                             appendIntoAnswer(answer, sc_iterator3_value(it6, 1));
+
+                            search_arc_components(sc_iterator3_value(it6, 0), answer, sys_off);
                         }
                         sc_iterator3_free(it6);
 
@@ -348,6 +379,8 @@ sc_result agent_search_full_semantic_neighborhood(sc_event *event, sc_addr arg)
                     appendIntoAnswer(answer, sc_iterator5_value(it5, 2));
                     appendIntoAnswer(answer, sc_iterator5_value(it5, 3));
                     appendIntoAnswer(answer, sc_iterator5_value(it5, 4));
+
+                    search_arc_components(sc_iterator5_value(it5, 2), answer, sys_off);
                 }
             }
             sc_iterator5_free(it5);
@@ -371,6 +404,8 @@ sc_result agent_search_full_semantic_neighborhood(sc_event *event, sc_addr arg)
 
             appendIntoAnswer(answer, sc_iterator3_value(it2, 1));
             appendIntoAnswer(answer, sc_iterator3_value(it2, 2));
+
+            search_arc_components(sc_iterator3_value(it2, 2), answer, sys_off);
 
             // iterate input arcs into found arc, to find relations
             it3 = sc_iterator3_a_a_f_new(sc_type_node,
@@ -437,6 +472,8 @@ sc_result agent_search_full_semantic_neighborhood(sc_event *event, sc_addr arg)
 
                         appendIntoAnswer(answer, sc_iterator3_value(it3, 0));
                         appendIntoAnswer(answer, sc_iterator3_value(it3, 1));
+
+                        search_arc_components(sc_iterator3_value(it3, 0), answer, sys_off);
                     }
                 }
                 sc_iterator3_free(it3);
@@ -524,6 +561,8 @@ sc_result agent_search_links_of_relation_connected_with_element(sc_event *event,
             appendIntoAnswer(answer, sc_iterator5_value(it5, 1));
             appendIntoAnswer(answer, sc_iterator5_value(it5, 3));
 
+            search_arc_components(sc_iterator5_value(it5, 0), answer, sys_off);
+
             // Iterate subclasses in quasybinary relation
             it1 = sc_iterator3_f_a_a_new(sc_iterator5_value(it5, 0),
                                          sc_type_arc_pos_const_perm,
@@ -536,6 +575,8 @@ sc_result agent_search_links_of_relation_connected_with_element(sc_event *event,
 
                 appendIntoAnswer(answer, sc_iterator3_value(it1, 1));
                 appendIntoAnswer(answer, sc_iterator3_value(it1, 2));
+
+                search_arc_components(sc_iterator3_value(it1, 2), answer, sys_off);
 
                 // iterate order relations between elements
                 it_order = sc_iterator5_f_a_a_a_a_new(sc_iterator3_value(it1, 2),
@@ -611,8 +652,12 @@ sc_result agent_search_links_of_relation_connected_with_element(sc_event *event,
                 appendIntoAnswer(answer, sc_iterator5_value(it5, 2));
                 appendIntoAnswer(answer, sc_iterator5_value(it5, 3));
 
+                search_arc_components(sc_iterator5_value(it5, 2), answer, sys_off);
+
                 appendIntoAnswer(answer, sc_iterator3_value(it1, 0));
                 appendIntoAnswer(answer, sc_iterator3_value(it1, 1));
+
+                search_arc_components(sc_iterator3_value(it1, 0), answer, sys_off);
             }
             sc_iterator5_free(it5);
         }
@@ -636,6 +681,8 @@ sc_result agent_search_links_of_relation_connected_with_element(sc_event *event,
             appendIntoAnswer(answer, sc_iterator5_value(it5, 1));
             appendIntoAnswer(answer, sc_iterator5_value(it5, 2));
             appendIntoAnswer(answer, sc_iterator5_value(it5, 3));
+
+            search_arc_components(sc_iterator5_value(it5, 2), answer, sys_off);
         }
         sc_iterator5_free(it5);
 
@@ -656,6 +703,7 @@ sc_result agent_search_links_of_relation_connected_with_element(sc_event *event,
             appendIntoAnswer(answer, sc_iterator5_value(it5, 1));
             appendIntoAnswer(answer, sc_iterator5_value(it5, 3));
 
+            search_arc_components(sc_iterator5_value(it5, 0), answer, sys_off);
         }
         sc_iterator5_free(it5);
 
@@ -694,6 +742,8 @@ sc_result agent_search_links_of_relation_connected_with_element(sc_event *event,
                     appendIntoAnswer(answer, sc_iterator3_value(it3, 1));
                     appendIntoAnswer(answer, sc_iterator3_value(it3, 2));
 
+                    search_arc_components(sc_iterator3_value(it3, 2), answer, sys_off);
+
                     // Iterate role relations
                     it4 = sc_iterator3_a_a_f_new(sc_type_const | sc_type_node,
                                                  sc_type_arc_pos_const_perm,
@@ -706,6 +756,8 @@ sc_result agent_search_links_of_relation_connected_with_element(sc_event *event,
 
                         appendIntoAnswer(answer, sc_iterator3_value(it4, 0));
                         appendIntoAnswer(answer, sc_iterator3_value(it4, 1));
+
+                        search_arc_components(sc_iterator3_value(it4, 0), answer, sys_off);
                     }
                     sc_iterator3_free(it4);
                 }
