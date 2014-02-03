@@ -75,7 +75,7 @@ bool Builder::run(const BuilderParams &params)
     }
 
     // print errors
-    std::cout << "Erorrs:" << std::endl;
+    std::cout << "Errors:" << std::endl;
     tStringList::iterator itErr, itErrEnd = mErrors.end();
     for (itErr = mErrors.begin(); itErr != itErrEnd; ++itErr)
         std::cout << *itErr << std::endl;
