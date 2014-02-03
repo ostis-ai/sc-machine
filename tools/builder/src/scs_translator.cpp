@@ -132,7 +132,10 @@ bool SCsTranslator::buildScText(pANTLR3_BASE_TREE tree)
         case SentenceEOF:
             break;
         default:
-            std::cerr << "Unknown sentence type. Sentence " << i + 1 << std::endl;
+            THROW_EXCEPT(Exception::ERR_PARSE,
+                        "Unknown sentence type.",
+                         mParams.fileName,
+                         sentenceNode->getLine(sentenceNode));
             break;
         }
     }
@@ -206,7 +209,14 @@ bool SCsTranslator::buildScText(pANTLR3_BASE_TREE tree)
     }
 
     if (!arcs.empty())
-        std::cerr << " Arcs not created: " << arcs.size() << std::endl;
+    {
+        StringStream ss;
+        ss << "Arcs not created: " << arcs.size();
+        THROW_EXCEPT(Exception::ERR_INVALID_STATE,
+                     ss.str(),
+                     mParams.fileName,
+                     -1);
+    }
 
     return true;
 }
@@ -304,7 +314,12 @@ void SCsTranslator::processSentenceLevel1(pANTLR3_BASE_TREE node)
     pANTLR3_COMMON_TOKEN tok_pred = node_pred->getToken(node_pred);
 
     if (tok_pred->type != ID_SYSTEM)
-        std::cerr << "Invalid predicate '" << ((const char*) node_pred->getText(node_pred)->chars) << "' in simple sentence" << std::endl;
+    {
+        THROW_EXCEPT(Exception::ERR_PARSE,
+                     String("Invalid predicate '") + ((const char*) node_pred->getText(node_pred)->chars) + "' in simple sentence",
+                     mParams.fileName,
+                     tok_pred->getLine(tok_pred));
+    }
 
     sElement *el_obj = parseElementTree(node_obj);
     sElement *el_subj = parseElementTree(node_subj);
@@ -459,9 +474,19 @@ sc_addr SCsTranslator::createScAddr(sElement *el)
                     sc_memory_set_link_content(addr, stream);
                     sc_stream_free(stream);
                 } else
-                    std::cerr << "Can't open file " << el->link_data << std::endl;
+                {
+                    THROW_EXCEPT(Exception::ERR_FILE_NOT_FOUND,
+                                 "Can't open file " + el->link_data,
+                                 mParams.fileName,
+                                 -1);
+                }
             } else
-                std::cerr << "Unsupported link type " << el->link_data << std::endl;
+            {
+                THROW_EXCEPT(Exception::ERR_INVALID_PARAMS,
+                             "Unsupported link type  " + el->link_data,
+                             mParams.fileName,
+                             -1);
+            }
 
         } else
         {
@@ -611,15 +636,18 @@ sElement* SCsTranslator::parseElementTree(pANTLR3_BASE_TREE tree)
         {
             // parse contour data
             String data = content.substr(1, content.size() - 2);
+            bool autoFormatInfo = mParams.autoFormatInfo;
+            String fileName = mParams.fileName;
 
             // check if link to file
             if (StringUtil::startsWith(data, "^\"", false))
             {
-                String filename;
+                String name;
                 bool result = false;
-                if (_getAbsFilePath(data.substr(1), filename))
+                if (_getAbsFilePath(data.substr(1), name))
                 {
-                    std::ifstream ifs(filename.c_str());
+                    fileName = name;
+                    std::ifstream ifs(name.c_str());
                     if (ifs.is_open())
                     {
                         data = String((std::istreambuf_iterator<char>(ifs)), std::istreambuf_iterator<char>());
@@ -627,7 +655,7 @@ sElement* SCsTranslator::parseElementTree(pANTLR3_BASE_TREE tree)
                         result = true;
                     } else {
                         THROW_EXCEPT(Exception::ERR_PARSE,
-                                     "Can't open file " << filename,
+                                     "Can't open file " << name,
                                      mParams.fileName,
                                      tok->getLine(tok));
                     }
@@ -638,6 +666,8 @@ sElement* SCsTranslator::parseElementTree(pANTLR3_BASE_TREE tree)
             if (!data.empty())
             {
                 SCsTranslator translator;
+                translator.mParams.autoFormatInfo = autoFormatInfo;
+                translator.mParams.fileName = fileName;
                 translator.processString(data);
 
                 // now we need to get all created elements and create arcs to them
