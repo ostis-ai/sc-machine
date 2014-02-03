@@ -636,15 +636,18 @@ sElement* SCsTranslator::parseElementTree(pANTLR3_BASE_TREE tree)
         {
             // parse contour data
             String data = content.substr(1, content.size() - 2);
+            bool autoFormatInfo = mParams.autoFormatInfo;
+            String fileName = mParams.fileName;
 
             // check if link to file
             if (StringUtil::startsWith(data, "^\"", false))
             {
-                String filename;
+                String name;
                 bool result = false;
-                if (_getAbsFilePath(data.substr(1), filename))
+                if (_getAbsFilePath(data.substr(1), name))
                 {
-                    std::ifstream ifs(filename.c_str());
+                    fileName = name;
+                    std::ifstream ifs(name.c_str());
                     if (ifs.is_open())
                     {
                         data = String((std::istreambuf_iterator<char>(ifs)), std::istreambuf_iterator<char>());
@@ -652,7 +655,7 @@ sElement* SCsTranslator::parseElementTree(pANTLR3_BASE_TREE tree)
                         result = true;
                     } else {
                         THROW_EXCEPT(Exception::ERR_PARSE,
-                                     "Can't open file " << filename,
+                                     "Can't open file " << name,
                                      mParams.fileName,
                                      tok->getLine(tok));
                     }
@@ -663,6 +666,8 @@ sElement* SCsTranslator::parseElementTree(pANTLR3_BASE_TREE tree)
             if (!data.empty())
             {
                 SCsTranslator translator;
+                translator.mParams.autoFormatInfo = autoFormatInfo;
+                translator.mParams.fileName = fileName;
                 translator.processString(data);
 
                 // now we need to get all created elements and create arcs to them
