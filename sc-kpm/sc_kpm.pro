@@ -7,4 +7,5 @@ SUBDIRS = ui \
         questions \
         utils \
         search \
+        merge \
         garbage

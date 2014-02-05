@@ -21,14 +21,27 @@ along with OSTIS. If not, see <http://www.gnu.org/licenses/>.
  */
 
 #include "merge.h"
+#include "sc_memory_headers.h"
 #include "merge_keynodes.h"
+#include "merge_agents.h"
+
+sc_event *event_question_set_cantorization;
 
 sc_result initialize()
 {
+    if (merge_keynodes_initialize() != SC_RESULT_OK)
+        return SC_RESULT_ERROR;
 
+    event_question_set_cantorization = sc_event_new(keynode_question_initiated, SC_EVENT_ADD_OUTPUT_ARC, 0, agent_set_cantorization, 0);
+    if (event_question_set_cantorization == nullptr)
+        return SC_RESULT_ERROR;
+
+    return SC_RESULT_OK;
 }
 
 sc_result shutdown()
 {
+    sc_event_destroy(event_question_set_cantorization);
 
+    return SC_RESULT_OK;
 }
