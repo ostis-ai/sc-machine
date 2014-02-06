@@ -1,5 +1,5 @@
-z = [x->y;;];;
-/*nrel_main_idtf
+/*z = [x->y;;];;
+nrel_main_idtf
 
 <= nrel_inclusion: 
 	nrel_identification;

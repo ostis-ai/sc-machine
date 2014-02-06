@@ -94,8 +94,18 @@ bool SCsTranslator::processString(const String &data)
     parser = scsParserNew(tokens);
 
 
-    scsParser_syntax_return r = parser->syntax(parser);
-    pANTLR3_BASE_TREE tree = r.tree;
+    scsParser_syntax_return r;
+    pANTLR3_BASE_TREE tree;
+
+    try
+    {
+        r = parser->syntax(parser);
+    } catch (const Exception &e)
+    {
+        THROW_EXCEPT(Exception::ERR_PARSE, e.getDescription(), mParams.fileName, e.getLineNumber());
+    }
+
+    tree = r.tree;
 
     //dumpDot(tree);
 

@@ -21,4 +21,13 @@ along with OSTIS.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include "parseutils.h"
+#include "exception.h"
 
+
+void parseError(const char* errorName, int line)
+{
+    THROW_EXCEPT(Exception::ERR_PARSE,
+                 String(errorName),
+                 "",
+                 line);
+}

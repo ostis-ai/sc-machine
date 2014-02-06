@@ -45,7 +45,10 @@ tokens {
 
 @rulecatch
 {
-
+    if (HASEXCEPTION())
+    {
+        parseError((const char*)EXCEPTION->name, EXCEPTION->line);
+    }
 }
 
 /* Parser rules */

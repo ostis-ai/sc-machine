@@ -29,7 +29,6 @@ along with OSTIS.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "scs_translator.h"
 
-
 Builder::Builder()
 {
 }
@@ -75,10 +74,11 @@ bool Builder::run(const BuilderParams &params)
     }
 
     // print errors
-    std::cout << "Errors:" << std::endl;
+    std::cout << std::endl << "-------" << std::endl << "Errors:" << std::endl;
+    int idx = 1;
     tStringList::iterator itErr, itErrEnd = mErrors.end();
     for (itErr = mErrors.begin(); itErr != itErrEnd; ++itErr)
-        std::cout << *itErr << std::endl;
+        std::cout << "[" << idx++ << "]\t" << *itErr << std::endl;
 
     // print statistics
     sc_stat stat;
