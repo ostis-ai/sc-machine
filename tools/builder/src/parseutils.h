@@ -23,6 +23,12 @@ along with OSTIS.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef _parseutils_h_
 #define _parseutils_h_
 
+#ifdef __cplusplus
+#define EXTERNC extern "C"
+#else
+#define EXTERNC
+#endif
 
+EXTERNC void parseError( const char* errorName, int line);
 
 #endif // _parseutils_h_
