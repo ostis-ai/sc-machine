@@ -173,7 +173,7 @@ void search_nonbinary_relation(sc_addr elem, sc_addr answer, sc_bool sys_off)
                         continue;
 
                     appendIntoAnswer(answer, sc_iterator3_value(it3, 0));
-                    appendIntoAnswer(answer, sc_iterator3_value(it3, 1));                    
+                    appendIntoAnswer(answer, sc_iterator3_value(it3, 1));
                 }
                 sc_iterator3_free(it3);
             }
@@ -252,6 +252,7 @@ sc_result agent_search_full_semantic_neighborhood(sc_event *event, sc_addr arg)
         appendIntoAnswer(answer, sc_iterator3_value(it1, 2));
 
         search_translation(sc_iterator3_value(it1, 2), answer, sys_off);
+        search_arc_components(sc_iterator3_value(it1, 2), answer, sys_off);
 
         // iterate input arcs
         it2 = sc_iterator3_a_a_f_new(0,
