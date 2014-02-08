@@ -1,3 +1,4 @@
+x = [*^"file://test.scsi"*];;
 ui_start_help <- lang_ru;;
 ui_start_help = "file://ui_start_help/text.html";;
 

@@ -639,7 +639,7 @@ sElement* SCsTranslator::parseElementTree(pANTLR3_BASE_TREE tree, const String *
 
     if (tok->type == CONTENT)
     {
-        res = _addNode("", sc_type_node_struct);
+        res = _addNode(assignIdtf ? *assignIdtf : "", sc_type_node_struct);
 
         String content = GET_NODE_TEXT(tree);
         content = content.substr(1, content.size() - 2);
