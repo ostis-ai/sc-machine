@@ -36,6 +36,7 @@ extern sc_addr keynode_question_all_identified_elements;
 extern sc_addr keynode_question_search_all_superclasses_in_quasybinary_relation;
 extern sc_addr keynode_question_search_all_subclasses_in_quasybinary_relation;
 extern sc_addr keynode_question_search_links_of_relation_connected_with_element;
+extern sc_addr keynode_question_search_full_pattern;
 
 extern sc_addr keynode_nrel_answer;
 extern sc_addr keynode_quasybinary_relation;

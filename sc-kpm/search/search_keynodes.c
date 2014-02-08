@@ -37,6 +37,7 @@ sc_addr keynode_question_all_identified_elements;
 sc_addr keynode_question_search_all_superclasses_in_quasybinary_relation;
 sc_addr keynode_question_search_all_subclasses_in_quasybinary_relation;
 sc_addr keynode_question_search_links_of_relation_connected_with_element;
+sc_addr keynode_question_search_full_pattern;
 
 sc_addr keynode_question;
 sc_addr keynode_question_initiated;
@@ -69,6 +70,7 @@ const char keynode_question_full_semantic_neighborhood_str[] = "question_search_
 const char keynode_question_decomposition_str[] = "question_search_decomposition";
 const char keynode_question_all_identifiers_str[] = "question_search_all_identifiers";
 const char keynode_question_all_identified_elements_str[] = "question_search_all_identified_elements";
+const char keynode_question_search_full_pattern_str[] = "question_full_pattern_search";
 
 const char keynode_question_search_all_subclasses_in_quasybinary_relation_str[] = "question_search_all_subclasses_in_quasybinary_relation";
 const char keynode_question_search_all_superclasses_in_quasybinary_relation_str[] = "question_search_all_superclasses_in_quasybinary_relation";
@@ -122,6 +124,7 @@ sc_result search_keynodes_initialize()
     resolve_keynode(keynode_question_search_all_subclasses_in_quasybinary_relation);
     resolve_keynode(keynode_question_search_all_superclasses_in_quasybinary_relation);
     resolve_keynode(keynode_question_search_links_of_relation_connected_with_element);
+    resolve_keynode(keynode_question_search_full_pattern);
 
     resolve_keynode(keynode_question_initiated);
     resolve_keynode(keynode_question);

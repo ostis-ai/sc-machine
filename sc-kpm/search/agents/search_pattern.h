@@ -20,14 +20,14 @@ along with OSTIS. If not, see <http://www.gnu.org/licenses/>.
 -----------------------------------------------------------------------------
  */
 
-#ifndef _search_operations_h_
-#define _search_operations_h_
+#ifndef SEARCH_PATTERN_H
+#define SEARCH_PATTERN_H
 
-#include "agents/search_input_arcs.h"
-#include "agents/search_output_arcs.h"
-#include "agents/search_semantic_neighborhood.h"
-#include "agents/search_structure.h"
-#include "agents/search_identifiers.h"
-#include "agents/search_pattern.h"
+#include <sc_memory.h>
 
-#endif
+/*!
+ * Function that implement sc-agent to search of all constructions, which are completely isomorphic to given pattern
+ */
+sc_result agent_full_pattern_search(sc_event *event, sc_addr arg);
+
+#endif // SEARCH_PATTERN_H
