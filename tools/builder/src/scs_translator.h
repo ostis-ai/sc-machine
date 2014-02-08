@@ -164,16 +164,17 @@ private:
     sElement* _addEdge(sElement *source, sElement *target, sc_type type, bool is_reversed, const String &idtf);
 
     /*! Append new link into elements
+     * @param idtf Link identifier if it exists
      * @param is_file Flag to determine data type. If this flag is true, then data is a file path; otherwise
      * \p data contains link data
      * @param data Link data
      * @returns Returns id of created element
      */
-    sElement* _addLink(bool is_file, const String &data);
+    sElement* _addLink(const String &idtf, bool is_file, const String &data);
 
 
     //! Parse subtree of antrl tree, and returns pointer to created sc-element, that designate this subtree
-    sElement* parseElementTree(pANTLR3_BASE_TREE tree);
+    sElement* parseElementTree(pANTLR3_BASE_TREE tree, const String *assignIdtf = 0);
 
     //! Returns sc-type of arc, by preffix
     sc_type _getArcPreffixType(const String &preffix) const;
@@ -202,6 +203,7 @@ public:
     typedef std::map<String, sElement*> tElementIdtfMap;
     typedef std::set<sElement*> tElementSet;
     typedef std::map<String, String> tAssignMap;
+    typedef std::map<String, sc_type> tScTypesMap;
 
 private:
     //! Set of created elements

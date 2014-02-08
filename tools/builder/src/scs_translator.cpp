@@ -384,8 +384,8 @@ void SCsTranslator::processSentenceAssign(pANTLR3_BASE_TREE node)
     }
     else
     {
-        sElement *el = parseElementTree(node_right);
-        el->idtf = GET_NODE_TEXT(node_left);
+        String left_idtf = (GET_NODE_TEXT(node_left));
+        sElement *el = parseElementTree(node_right, &left_idtf);
     }
 }
 
@@ -534,6 +534,7 @@ sc_addr SCsTranslator::createScAddr(sElement *el)
 void SCsTranslator::determineElementType(sElement *el)
 {
     assert(el);
+
     sc_type oldType = el->type;
     sc_type newType = oldType;
 
@@ -583,6 +584,7 @@ sElement* SCsTranslator::_addEdge(sElement *source, sElement *target, sc_type ty
     sElement *el = _createElement(idtf);
 
     el->type = type;
+
     if (is_reversed)
     {
         el->arc_src = target;
@@ -596,9 +598,9 @@ sElement* SCsTranslator::_addEdge(sElement *source, sElement *target, sc_type ty
     return el;
 }
 
-sElement* SCsTranslator::_addLink(bool is_file, const String &data)
+sElement* SCsTranslator::_addLink(const String &idtf, bool is_file, const String &data)
 {
-    sElement *el = _createElement("");
+    sElement *el = _createElement(idtf);
 
     el->type = sc_type_link;
     el->link_is_file = is_file;
@@ -607,7 +609,7 @@ sElement* SCsTranslator::_addLink(bool is_file, const String &data)
     return el;
 }
 
-sElement* SCsTranslator::parseElementTree(pANTLR3_BASE_TREE tree)
+sElement* SCsTranslator::parseElementTree(pANTLR3_BASE_TREE tree, const String *assignIdtf)
 {
     pANTLR3_COMMON_TOKEN tok = tree->getToken(tree);
     assert(tok);
@@ -633,7 +635,7 @@ sElement* SCsTranslator::parseElementTree(pANTLR3_BASE_TREE tree)
     }
 
     if (tok->type == LINK)
-        res = _addLink(true, GET_NODE_TEXT(tree));
+        res = _addLink(assignIdtf ? *assignIdtf : "", true, GET_NODE_TEXT(tree));
 
     if (tok->type == CONTENT)
     {
@@ -703,9 +705,9 @@ sElement* SCsTranslator::parseElementTree(pANTLR3_BASE_TREE tree)
         } else
         {
             if (StringUtil::startsWith(content, "^\"", false))
-                res = _addLink(true, content.substr(1));
+                res = _addLink("", true, content.substr(1));
             else
-                res = _addLink(false, content);
+                res = _addLink("", false, content);
         }
     }
 
