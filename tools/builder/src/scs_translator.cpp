@@ -28,6 +28,7 @@ along with OSTIS.  If not, see <http://www.gnu.org/licenses/>.
 #include <assert.h>
 
 #include <boost/filesystem.hpp>
+#include <boost/algorithm/string/replace.hpp>
 
 
 
@@ -707,7 +708,11 @@ sElement* SCsTranslator::parseElementTree(pANTLR3_BASE_TREE tree, const String *
             if (StringUtil::startsWith(content, "^\"", false))
                 res = _addLink("", true, content.substr(1));
             else
+            {
+                content = StringUtil::replaceAll(content, "\\[", "[");
+                 content = StringUtil::replaceAll(content, "\\]", "]");
                 res = _addLink("", false, content);
+            }
         }
     }
 

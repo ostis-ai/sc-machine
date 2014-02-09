@@ -1,10 +1,12 @@
-x = [*^"file://test.scsi"*];;
+x = [\[test\]];;
+
+/*x = [*^"file://test.scsi"*];;
 ui_start_help <- lang_ru;;
 ui_start_help = "file://ui_start_help/text.html";;
 
 ui_window_schema_image = "file://ui_start_help/help-window-schema.png";;
 
-/*z = [x->y;;];;
+z = [x->y;;];;
 nrel_main_idtf
 
 <= nrel_inclusion: 

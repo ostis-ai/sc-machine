@@ -175,3 +175,17 @@ String StringUtil::normalizeFilePath(const String& init, bool makeLowerCase)
 
     return normalized;
 }
+
+const String StringUtil::replaceAll(const String& source, const String& replaceWhat, const String& replaceWithWhat)
+{
+    String result = source;
+    String::size_type pos = 0;
+    while(1)
+    {
+        pos = result.find(replaceWhat,pos);
+        if (pos == String::npos) break;
+        result.replace(pos,replaceWhat.size(),replaceWithWhat);
+        pos += replaceWithWhat.size();
+    }
+    return result;
+}
