@@ -215,6 +215,8 @@ private:
 
     //! Map to store assignments
     tAssignMap mAssignments;
+    //! Counter of ... identifiers
+    static long long msAutoIdtfCount;
 };
 
 // -----------------

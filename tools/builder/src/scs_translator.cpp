@@ -35,6 +35,8 @@ along with OSTIS.  If not, see <http://www.gnu.org/licenses/>.
 
 #define GET_NODE_TEXT(node) String((const char*)node->getText(node)->chars)
 
+long long SCsTranslator::msAutoIdtfCount = 0;
+
 // ------------------------
 
 SCsTranslator::SCsTranslator()
@@ -551,19 +553,26 @@ void SCsTranslator::determineElementType(sElement *el)
 
 sElement* SCsTranslator::_createElement(const String &idtf)
 {
+    String newIdtf = idtf;
     if (!idtf.empty())
     {
-        tElementIdtfMap::iterator it = mElementIdtf.find(idtf);
-        if (it != mElementIdtf.end())
-            return it->second;
+        if (idtf == "...") {
+            StringStream ss;
+            ss << "..." << msAutoIdtfCount++;
+            newIdtf = ss.str();
+        } else {
+            tElementIdtfMap::iterator it = mElementIdtf.find(idtf);
+            if (it != mElementIdtf.end())
+                return it->second;
+        }
     }
 
     sElement *el = new sElement();
 
-    el->idtf = idtf;
-    assert(mElementIdtf.find(idtf) == mElementIdtf.end());
-    if (!idtf.empty())
-        mElementIdtf[idtf] = el;
+    el->idtf = newIdtf;
+    assert(mElementIdtf.find(newIdtf) == mElementIdtf.end());
+    if (!newIdtf.empty())
+        mElementIdtf[newIdtf] = el;
     mElementSet.insert(el);
 
     return el;
