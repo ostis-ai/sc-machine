@@ -78,7 +78,7 @@ void sctpClient::processCommands()
         sctpErrorCode errCode = mCommand->processCommand(mSocket, mSocket);
         if (errCode != SCTP_NO_ERROR)
         {
-            qDebug() << "Error: " << errCode << "; while process request from clien " << mSocket->peerAddress().toString();
+            qDebug() << "Error: " << errCode << "; while process request from client " << mSocket->peerAddress().toString();
             sctpStatistic::getInstance()->commandProcessed(true);
         }else
         {

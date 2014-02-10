@@ -28,11 +28,14 @@ along with OSTIS.  If not, see <http://www.gnu.org/licenses/>.
 #include <assert.h>
 
 #include <boost/filesystem.hpp>
+#include <boost/algorithm/string/replace.hpp>
 
 
 
 
 #define GET_NODE_TEXT(node) String((const char*)node->getText(node)->chars)
+
+long long SCsTranslator::msAutoIdtfCount = 0;
 
 // ------------------------
 
@@ -384,8 +387,8 @@ void SCsTranslator::processSentenceAssign(pANTLR3_BASE_TREE node)
     }
     else
     {
-        sElement *el = parseElementTree(node_right);
-        el->idtf = GET_NODE_TEXT(node_left);
+        String left_idtf = (GET_NODE_TEXT(node_left));
+        sElement *el = parseElementTree(node_right, &left_idtf);
     }
 }
 
@@ -534,6 +537,7 @@ sc_addr SCsTranslator::createScAddr(sElement *el)
 void SCsTranslator::determineElementType(sElement *el)
 {
     assert(el);
+
     sc_type oldType = el->type;
     sc_type newType = oldType;
 
@@ -549,19 +553,26 @@ void SCsTranslator::determineElementType(sElement *el)
 
 sElement* SCsTranslator::_createElement(const String &idtf)
 {
+    String newIdtf = idtf;
     if (!idtf.empty())
     {
-        tElementIdtfMap::iterator it = mElementIdtf.find(idtf);
-        if (it != mElementIdtf.end())
-            return it->second;
+        if (idtf == "...") {
+            StringStream ss;
+            ss << "..." << msAutoIdtfCount++;
+            newIdtf = ss.str();
+        } else {
+            tElementIdtfMap::iterator it = mElementIdtf.find(idtf);
+            if (it != mElementIdtf.end())
+                return it->second;
+        }
     }
 
     sElement *el = new sElement();
 
-    el->idtf = idtf;
-    assert(mElementIdtf.find(idtf) == mElementIdtf.end());
-    if (!idtf.empty())
-        mElementIdtf[idtf] = el;
+    el->idtf = newIdtf;
+    assert(mElementIdtf.find(newIdtf) == mElementIdtf.end());
+    if (!newIdtf.empty())
+        mElementIdtf[newIdtf] = el;
     mElementSet.insert(el);
 
     return el;
@@ -583,6 +594,7 @@ sElement* SCsTranslator::_addEdge(sElement *source, sElement *target, sc_type ty
     sElement *el = _createElement(idtf);
 
     el->type = type;
+
     if (is_reversed)
     {
         el->arc_src = target;
@@ -596,9 +608,9 @@ sElement* SCsTranslator::_addEdge(sElement *source, sElement *target, sc_type ty
     return el;
 }
 
-sElement* SCsTranslator::_addLink(bool is_file, const String &data)
+sElement* SCsTranslator::_addLink(const String &idtf, bool is_file, const String &data)
 {
-    sElement *el = _createElement("");
+    sElement *el = _createElement(idtf);
 
     el->type = sc_type_link;
     el->link_is_file = is_file;
@@ -607,7 +619,7 @@ sElement* SCsTranslator::_addLink(bool is_file, const String &data)
     return el;
 }
 
-sElement* SCsTranslator::parseElementTree(pANTLR3_BASE_TREE tree)
+sElement* SCsTranslator::parseElementTree(pANTLR3_BASE_TREE tree, const String *assignIdtf)
 {
     pANTLR3_COMMON_TOKEN tok = tree->getToken(tree);
     assert(tok);
@@ -633,11 +645,11 @@ sElement* SCsTranslator::parseElementTree(pANTLR3_BASE_TREE tree)
     }
 
     if (tok->type == LINK)
-        res = _addLink(true, GET_NODE_TEXT(tree));
+        res = _addLink(assignIdtf ? *assignIdtf : "", true, GET_NODE_TEXT(tree));
 
     if (tok->type == CONTENT)
     {
-        res = _addNode("", sc_type_node_struct);
+        res = _addNode(assignIdtf ? *assignIdtf : "", sc_type_node_struct);
 
         String content = GET_NODE_TEXT(tree);
         content = content.substr(1, content.size() - 2);
@@ -703,9 +715,13 @@ sElement* SCsTranslator::parseElementTree(pANTLR3_BASE_TREE tree)
         } else
         {
             if (StringUtil::startsWith(content, "^\"", false))
-                res = _addLink(true, content.substr(1));
+                res = _addLink("", true, content.substr(1));
             else
-                res = _addLink(false, content);
+            {
+                content = StringUtil::replaceAll(content, "\\[", "[");
+                 content = StringUtil::replaceAll(content, "\\]", "]");
+                res = _addLink("", false, content);
+            }
         }
     }
 

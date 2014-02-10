@@ -1,5 +1,5 @@
 
-	
+/*	
 section
 
 => nrel_main_idtf:
@@ -17,4 +17,4 @@ section
 	-> atomic_section;;
 	-> non_atomic_section;;
 	*);;
-		
+		*/
