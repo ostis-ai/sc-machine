@@ -558,7 +558,7 @@ sElement* SCsTranslator::_createElement(const String &idtf)
     {
         if (idtf == "...") {
             StringStream ss;
-            ss << "..." << msAutoIdtfCount++;
+            ss << "..." << msAutoIdtfCount++ << "...auto...";
             newIdtf = ss.str();
         } else {
             tElementIdtfMap::iterator it = mElementIdtf.find(idtf);
