@@ -31,7 +31,7 @@ extern "C" {
 #include <agents/search_pattern/search_pattern_functions.h>
 #include <agents/search_pattern/sc_system_search.h>
 
-extern "C" sc_result search_full_pattern(sc_addr pattern, sc_addr answer, sc_bool sys_off)
+sc_result search_full_pattern(sc_addr pattern, sc_addr answer, sc_bool sys_off)
 {
     sc_type_result params;
     sc_addr addr2, arc;
