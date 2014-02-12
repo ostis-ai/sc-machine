@@ -1,6 +1,7 @@
-x = [\[test\]];;
+x = [*^"file://test.scsi"*];;
 
-/*x = [*^"file://test.scsi"*];;
+t -> (x -> y);;
+/*
 ui_start_help <- lang_ru;;
 ui_start_help = "file://ui_start_help/text.html";;
 

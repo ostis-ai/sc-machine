@@ -144,7 +144,7 @@ private:
     void determineElementType(sElement *el);
 
     //! Create new empty element
-    sElement* _createElement(const String &idtf);
+    sElement* _createElement(const String &idtf, sc_type type);
 
     /*! Append new node into elements
      * @param idtf Identifier of element

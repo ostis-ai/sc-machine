@@ -354,7 +354,7 @@ void SCsTranslator::processSentenceLevel2_7(pANTLR3_BASE_TREE node)
 
     // determine object
     pANTLR3_BASE_TREE node_obj = (pANTLR3_BASE_TREE)node->getChild(node, 0);
-    sElement *el_obj = _createElement(GET_NODE_TEXT(node_obj));
+    sElement *el_obj = _createElement(GET_NODE_TEXT(node_obj), 0);
 
     // no we need to parse attributes and predicates
     processAttrsIdtfList(true, node, el_obj, connector, false);
@@ -551,7 +551,7 @@ void SCsTranslator::determineElementType(sElement *el)
     el->type = newType;
 }
 
-sElement* SCsTranslator::_createElement(const String &idtf)
+sElement* SCsTranslator::_createElement(const String &idtf, sc_type type)
 {
     String newIdtf = idtf;
     if (!idtf.empty())
@@ -563,13 +563,17 @@ sElement* SCsTranslator::_createElement(const String &idtf)
         } else {
             tElementIdtfMap::iterator it = mElementIdtf.find(idtf);
             if (it != mElementIdtf.end())
+            {
+                it->second->type = it->second->type | type;
                 return it->second;
+            }
         }
     }
 
     sElement *el = new sElement();
 
     el->idtf = newIdtf;
+    el->type = type;
     assert(mElementIdtf.find(newIdtf) == mElementIdtf.end());
     if (!newIdtf.empty())
         mElementIdtf[newIdtf] = el;
@@ -580,20 +584,14 @@ sElement* SCsTranslator::_createElement(const String &idtf)
 
 sElement* SCsTranslator::_addNode(const String &idtf, sc_type type)
 {
-    sElement *el = _createElement(idtf);
-
-    el->type = sc_type_node | type;
-
-    return el;
+    return _createElement(idtf, sc_type_node | type);
 }
 
 sElement* SCsTranslator::_addEdge(sElement *source, sElement *target, sc_type type, bool is_reversed, const String &idtf)
 {
     assert(source && target);
 
-    sElement *el = _createElement(idtf);
-
-    el->type = type;
+    sElement *el = _createElement(idtf, type);
 
     if (is_reversed)
     {
@@ -610,9 +608,8 @@ sElement* SCsTranslator::_addEdge(sElement *source, sElement *target, sc_type ty
 
 sElement* SCsTranslator::_addLink(const String &idtf, bool is_file, const String &data)
 {
-    sElement *el = _createElement(idtf);
+    sElement *el = _createElement(idtf, sc_type_link);
 
-    el->type = sc_type_link;
     el->link_is_file = is_file;
     el->link_data = data;
 
