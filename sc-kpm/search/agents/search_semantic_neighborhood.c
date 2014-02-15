@@ -189,6 +189,7 @@ void search_nonbinary_relation(sc_addr elem, sc_addr answer, sc_bool sys_off)
 void search_typical_sc_neighborhood(sc_addr elem, sc_addr answer, sc_bool sys_off)
 {
     sc_iterator3 *it1, *it0;
+    sc_iterator5 *it5;
     sc_bool found = SC_FALSE;
 
     // search for keynode_typical_sc_neighborhood
@@ -215,7 +216,30 @@ void search_typical_sc_neighborhood(sc_addr elem, sc_addr answer, sc_bool sys_of
             sc_iterator3_free(it1);
 
             appendIntoAnswer(answer, sc_iterator3_value(it0, 1));
+            appendIntoAnswer(answer, sc_iterator3_value(it0, 0));
+            continue;
         }
+
+        if (sys_off == SC_TRUE && (IS_SYSTEM_ELEMENT(sc_iterator3_value(it0, 0)) || IS_SYSTEM_ELEMENT(sc_iterator3_value(it0, 1))))
+            continue;
+
+        it5 = sc_iterator5_f_a_f_a_f_new(keynode_sc_neighborhood,
+                                         sc_type_arc_common | sc_type_const,
+                                         sc_iterator3_value(it0, 0),
+                                         sc_type_arc_pos_const_perm,
+                                         keynode_nrel_inclusion);
+        if (sc_iterator5_next(it5) == SC_TRUE)
+        {
+            if (sys_off == SC_TRUE && (IS_SYSTEM_ELEMENT(sc_iterator5_value(it5, 1)) || IS_SYSTEM_ELEMENT(sc_iterator5_value(it5, 3))))
+                continue;
+
+            appendIntoAnswer(answer, sc_iterator3_value(it0, 0));
+            appendIntoAnswer(answer, sc_iterator3_value(it0, 1));
+            appendIntoAnswer(answer, sc_iterator5_value(it5, 1));
+            appendIntoAnswer(answer, sc_iterator5_value(it5, 3));
+        }
+        sc_iterator5_free(it5);
+
     }
     sc_iterator3_free(it0);
     if (found == SC_TRUE)
