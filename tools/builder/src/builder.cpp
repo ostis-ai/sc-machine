@@ -45,6 +45,9 @@ void Builder::initialize()
 
 bool Builder::run(const BuilderParams &params)
 {
+
+    std::wcout << "User-preferred locale setting is " << std::locale("").name().c_str();
+
     mParams = params;
 
     collectFiles();

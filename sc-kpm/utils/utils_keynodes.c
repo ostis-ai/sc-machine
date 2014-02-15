@@ -22,9 +22,11 @@ along with OSTIS. If not, see <http://www.gnu.org/licenses/>.
 #include "utils_keynodes.h"
 #include <glib.h>
 
+const char keynode_nrel_idtf_str[] = "nrel_idtf";
 const char keynode_nrel_main_idtf_str[] = "nrel_main_idtf";
 const char keynode_nrel_system_identifier_str[] = "nrel_system_identifier";
 
+sc_addr keynode_nrel_idtf;
 sc_addr keynode_nrel_main_idtf;
 sc_addr keynode_nrel_system_identifier;
 
@@ -40,6 +42,7 @@ sc_addr keynode_nrel_system_identifier;
 
 sc_result utils_keynodes_initialize()
 {
+    resolve_keynode(keynode_nrel_idtf);
     resolve_keynode(keynode_nrel_main_idtf);
     resolve_keynode(keynode_nrel_system_identifier);
 
