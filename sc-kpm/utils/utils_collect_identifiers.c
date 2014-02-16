@@ -31,6 +31,7 @@ const char str_key_redis_timeout[] = "timeout";
 
 const char str_sys_idtf_postfix[] = "sys";
 const char str_main_idtf_postfix[] = "main";
+const char str_idtf_postfix[] = "common";
 
 char *utils_redis_host = 0;
 sc_uint32 utils_redis_port = 6379;
@@ -42,9 +43,9 @@ GThread *ping_thread;
 gboolean ping_thread_running;
 
 // ---------------------
+sc_event *event_add_idtf = 0;
 sc_event *event_add_main_idtf = 0;
 sc_event *event_add_sys_idtf = 0;
-
 
 
 
@@ -152,6 +153,9 @@ sc_result agent_append_idtf(sc_event *event, sc_addr arg)
     if (sc_memory_get_arc_begin(arc, &el) != SC_RESULT_OK)
         return SC_RESULT_ERROR;
 
+    if (sc_helper_check_arc(keynode_system_element, el, sc_type_arc_pos_const_perm) == SC_TRUE)
+        return SC_RESULT_OK;
+
     // get sc-link
     if (sc_memory_get_arc_end(arc, &link) != SC_RESULT_OK)
         return SC_RESULT_ERROR;
@@ -176,7 +180,14 @@ sc_result agent_append_idtf(sc_event *event, sc_addr arg)
 
     }
     sc_result res = SC_RESULT_OK;
-    redisReply *reply = do_sync_redis_command(redisCtx, "SET idtf:%s:%s %b", SC_ADDR_IS_EQUAL(n, keynode_nrel_main_idtf) ? str_main_idtf_postfix : str_sys_idtf_postfix, data, &el, sizeof(el));
+    sc_addr el_addr = el;
+
+    if (SC_ADDR_IS_EQUAL(n, keynode_nrel_idtf))
+        el_addr = link;
+
+    redisReply *reply = do_sync_redis_command(redisCtx, "SET idtf:%s:%s %b",
+                                              SC_ADDR_IS_EQUAL(n, keynode_nrel_main_idtf) ? str_main_idtf_postfix : (SC_ADDR_IS_EQUAL(n, keynode_nrel_idtf) ? str_idtf_postfix : str_sys_idtf_postfix),
+                                              data, &el_addr, sizeof(el_addr));
     if (reply == 0 || reply->type == REDIS_REPLY_ERROR)
         res = SC_RESULT_ERROR;
 
@@ -211,6 +222,10 @@ sc_result utils_collect_identifiers_initialize()
 
 
     // initialize agents
+    event_add_idtf = sc_event_new(keynode_nrel_idtf, SC_EVENT_ADD_OUTPUT_ARC, 0, agent_append_idtf, 0);
+    if (event_add_idtf == 0)
+        return SC_RESULT_ERROR;
+
     event_add_main_idtf = sc_event_new(keynode_nrel_main_idtf, SC_EVENT_ADD_OUTPUT_ARC, 0, agent_append_idtf, 0);
     if (event_add_main_idtf == 0)
         return SC_RESULT_ERROR;
@@ -225,6 +240,12 @@ sc_result utils_collect_identifiers_initialize()
 
 sc_result utils_collect_identifiers_shutdown()
 {
+    if (event_add_idtf)
+    {
+        sc_event_destroy(event_add_idtf);
+        event_add_idtf = 0;
+    }
+
     if (event_add_main_idtf)
     {
         sc_event_destroy(event_add_main_idtf);

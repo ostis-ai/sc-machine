@@ -45,6 +45,7 @@ void Builder::initialize()
 
 bool Builder::run(const BuilderParams &params)
 {
+
     mParams = params;
 
     collectFiles();
