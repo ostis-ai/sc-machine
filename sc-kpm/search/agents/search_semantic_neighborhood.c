@@ -522,7 +522,7 @@ sc_result agent_search_links_of_relation_connected_with_element(sc_event *event,
     sc_iterator5 *it5, *it_order;
     sc_type el_type;
     sc_bool sys_off = SC_TRUE;
-    sc_bool param_elem_found = SC_FALSE, param_rel_found = SC_FALSE;
+    sc_bool param_elem_found = SC_FALSE, param_rel_found = SC_FALSE, found = SC_FALSE;
 
     if (!sc_memory_get_arc_end(arg, &question))
         return SC_RESULT_ERROR_INVALID_PARAMS;
@@ -561,7 +561,6 @@ sc_result agent_search_links_of_relation_connected_with_element(sc_event *event,
     }
 
     appendIntoAnswer(answer, param_elem);
-    appendIntoAnswer(answer, param_rel);
 
     if (IS_SYSTEM_ELEMENT(param_elem) || IS_SYSTEM_ELEMENT(param_rel))
         sys_off = SC_FALSE;
@@ -581,6 +580,8 @@ sc_result agent_search_links_of_relation_connected_with_element(sc_event *event,
                                        || IS_SYSTEM_ELEMENT(sc_iterator5_value(it5, 1))
                                        || IS_SYSTEM_ELEMENT(sc_iterator5_value(it5, 3))))
                 continue;
+
+            found = SC_TRUE;
 
             appendIntoAnswer(answer, sc_iterator5_value(it5, 0));
             appendIntoAnswer(answer, sc_iterator5_value(it5, 1));
@@ -703,6 +704,8 @@ sc_result agent_search_links_of_relation_connected_with_element(sc_event *event,
                                        || IS_SYSTEM_ELEMENT(sc_iterator5_value(it5, 3))))
                 continue;
 
+            found = SC_TRUE;
+
             appendIntoAnswer(answer, sc_iterator5_value(it5, 1));
             appendIntoAnswer(answer, sc_iterator5_value(it5, 2));
             appendIntoAnswer(answer, sc_iterator5_value(it5, 3));
@@ -791,6 +794,12 @@ sc_result agent_search_links_of_relation_connected_with_element(sc_event *event,
             sc_iterator3_free(it2);
         }
         sc_iterator3_free(it1);
+    }
+
+    if (found == SC_TRUE)
+    {
+        printf("HERE\n");
+        appendIntoAnswer(answer, param_rel);
     }
 
     connect_answer_to_question(question, answer);
