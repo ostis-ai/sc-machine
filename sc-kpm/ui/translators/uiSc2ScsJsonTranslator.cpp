@@ -58,6 +58,10 @@ void uiSc2ScsTranslator::runImpl()
         while (sc_iterator3_next(it3) == SC_TRUE)
         {
             sc_addr addr = sc_iterator3_value(it3, 2);
+
+            if (sc_helper_check_arc(mInputConstructionAddr, addr, sc_type_arc_pos_const_perm) != SC_TRUE)
+                continue;
+
             sc_type type;
             sc_memory_get_element_type(addr, &type);
 

@@ -28,6 +28,7 @@ along with OSTIS. If not, see <http://www.gnu.org/licenses/>.
 extern sc_addr keynode_nrel_idtf;
 extern sc_addr keynode_nrel_main_idtf;
 extern sc_addr keynode_nrel_system_identifier;
+extern sc_addr keynode_system_element;
 
 sc_result utils_keynodes_initialize();
 

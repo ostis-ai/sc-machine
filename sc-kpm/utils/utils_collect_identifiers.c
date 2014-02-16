@@ -153,6 +153,9 @@ sc_result agent_append_idtf(sc_event *event, sc_addr arg)
     if (sc_memory_get_arc_begin(arc, &el) != SC_RESULT_OK)
         return SC_RESULT_ERROR;
 
+    if (sc_helper_check_arc(keynode_system_element, el, sc_type_arc_pos_const_perm) == SC_TRUE)
+        return SC_RESULT_OK;
+
     // get sc-link
     if (sc_memory_get_arc_end(arc, &link) != SC_RESULT_OK)
         return SC_RESULT_ERROR;
