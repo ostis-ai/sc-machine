@@ -95,17 +95,28 @@ sc_result initialize()
 
 sc_result shutdown()
 {
-    sc_event_destroy(event_question_search_all_output_arcs);
-    sc_event_destroy(event_question_search_all_input_arcs);
-    sc_event_destroy(event_question_search_all_output_arcs_with_rel);
-    sc_event_destroy(event_question_search_all_input_arcs_with_rel);
-    sc_event_destroy(event_question_search_full_semantic_neighborhood);
-    sc_event_destroy(event_question_search_all_identified_elements);
-    sc_event_destroy(event_question_search_all_identifiers);
-    sc_event_destroy(event_question_search_decomposition);
-    sc_event_destroy(event_question_search_all_subclasses_in_quasybinary_relation);
-    sc_event_destroy(event_question_search_all_superclasses_in_quasybinary_relation);
-    sc_event_destroy(event_question_search_links_of_relation_connected_with_element);
+    if (event_question_search_all_output_arcs)
+        sc_event_destroy(event_question_search_all_output_arcs);
+    if (event_question_search_all_input_arcs)
+        sc_event_destroy(event_question_search_all_input_arcs);
+    if (event_question_search_all_output_arcs_with_rel)
+        sc_event_destroy(event_question_search_all_output_arcs_with_rel);
+    if (event_question_search_all_input_arcs_with_rel)
+        sc_event_destroy(event_question_search_all_input_arcs_with_rel);
+    if (event_question_search_full_semantic_neighborhood)
+        sc_event_destroy(event_question_search_full_semantic_neighborhood);
+    if (event_question_search_all_identified_elements)
+        sc_event_destroy(event_question_search_all_identified_elements);
+    if (event_question_search_all_identifiers)
+        sc_event_destroy(event_question_search_all_identifiers);
+    if (event_question_search_decomposition)
+        sc_event_destroy(event_question_search_decomposition);
+    if (event_question_search_all_subclasses_in_quasybinary_relation)
+        sc_event_destroy(event_question_search_all_subclasses_in_quasybinary_relation);
+    if (event_question_search_all_superclasses_in_quasybinary_relation)
+        sc_event_destroy(event_question_search_all_superclasses_in_quasybinary_relation);
+    if (event_question_search_links_of_relation_connected_with_element)
+        sc_event_destroy(event_question_search_links_of_relation_connected_with_element);
 
     return SC_RESULT_OK;
 }
