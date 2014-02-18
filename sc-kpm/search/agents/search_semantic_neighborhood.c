@@ -798,7 +798,6 @@ sc_result agent_search_links_of_relation_connected_with_element(sc_event *event,
 
     if (found == SC_TRUE)
     {
-        printf("HERE\n");
         appendIntoAnswer(answer, param_rel);
     }
 

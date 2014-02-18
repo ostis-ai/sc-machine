@@ -1,7 +1,8 @@
-file(GLOB_RECURSE SOURCES "*.c")
+file(GLOB_RECURSE SOURCES_C "*.c")
+file(GLOB_RECURSE SOURCES_CPP "*.cpp")
 file(GLOB_RECURSE HEADERS "*.h")
 
-add_library (search SHARED ${SOURCES} ${HEADERS})
+add_library (search SHARED ${SOURCES_CPP} ${SOURCES_C} ${HEADERS})
 
 
 include_directories("${SC_KPM_ROOT}/search" ${SC_MEMORY_SRC} ${GLIB2_INCLUDE_DIRS})

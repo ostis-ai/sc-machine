@@ -44,9 +44,7 @@ typedef std::vector<sc_addr> sc_addr_vector;
 typedef std::pair<sc_addr, sc_addr> sc_addr_pair;
 typedef std::pair<int, sc_addr> sc_hash_pair;
 
-void print_hash(sc_type_hash table);
-void print_result(sc_type_result table);
-void print_result_set(sc_type_result_vector *table);
+
 sc_bool copy_set_into_hash(sc_addr set, sc_type arc_type, sc_type end_type, sc_type_hash *table, sc_uint *var_count);
 sc_bool find_result_pair_for_var(sc_type_result *set, sc_addr var_element, sc_addr *result);
 sc_bool find_result_pair_for_const(sc_type_result *set, sc_addr const_element, sc_addr *result);

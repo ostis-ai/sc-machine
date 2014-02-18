@@ -35,38 +35,6 @@ bool sc_result_comparator(sc_type_result *s1, sc_type_result *s2)
     return (s1->size() > s2->size());
 }
 
-void print_hash(sc_type_hash table)
-{
-    sc_type_hash::iterator it;
-    printf("HASHMAP:\n");
-    for (it = table.begin() ; it != table.end(); it++)
-    {
-        sc_addr addr = (*it).second;
-        std::cout << addr.seg << "|" << addr.offset << std::endl;
-    }
-}
-
-void print_result(sc_type_result table)
-{
-    sc_type_result::iterator it;
-    printf("RESULT (%d):\n", table.size());
-    for (it = table.begin() ; it != table.end(); it++)
-    {
-        sc_addr addr1 = (*it).first;
-        sc_addr addr2 = (*it).second;
-        std::cout << addr1.seg << "|" << addr1.offset << "=>" << addr2.seg << "|" << addr2.offset << std::endl;
-    }
-}
-
-void print_result_set(sc_type_result_vector *table)
-{
-    printf("RESULT COUNT:%d\n", table->size());
-    /*for (sc_uint i = 0; i < table->size(); i++)
-    {
-        print_result(*((*table)[i]));
-    }*/
-}
-
 sc_bool copy_set_into_hash(sc_addr set, sc_type arc_type, sc_type end_type, sc_type_hash *table, sc_uint *var_count)
 {
     sc_addr addr3;
