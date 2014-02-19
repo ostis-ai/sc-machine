@@ -189,18 +189,18 @@ sc_bool _sc_iterator3_f_a_f_next(sc_iterator3 *it)
     it->results[0] = it->params[0].addr;
     it->results[2] = it->params[2].addr;
 
-    // try to find first output arc
+    // try to find first input arc
     if (SC_ADDR_IS_EMPTY(it->results[1]))
     {
-        el1 = sc_storage_get_element(it->params[0].addr, SC_TRUE);
-        arc_addr = el1->first_out_arc;
+        el1 = sc_storage_get_element(it->params[2].addr, SC_TRUE);
+        arc_addr = el1->first_in_arc;
     }else
     {
         arc_element = sc_storage_get_element(it->results[1], SC_TRUE);
-        arc_addr = arc_element->arc.next_out_arc;
+        arc_addr = arc_element->arc.next_in_arc;
     }
 
-    // trying to find output arc, that created before iterator, and wasn't deleted
+    // trying to find input arc, that created before iterator, and wasn't deleted
     while (SC_ADDR_IS_NOT_EMPTY(arc_addr))
     {
         arc_element = sc_storage_get_element(arc_addr, SC_TRUE);
@@ -208,7 +208,7 @@ sc_bool _sc_iterator3_f_a_f_next(sc_iterator3 *it)
 
         if ((arc_element->create_time_stamp <= it->time_stamp) &&
             (arc_element->delete_time_stamp == 0 || arc_element->delete_time_stamp >= it->time_stamp) &&
-            SC_ADDR_IS_EQUAL(it->params[2].addr, arc_element->arc.end) &&
+            SC_ADDR_IS_EQUAL(it->params[0].addr, arc_element->arc.begin) &&
             (sc_iterator_compare_type(arc_type, it->params[1].type))
            )
         {
@@ -218,7 +218,7 @@ sc_bool _sc_iterator3_f_a_f_next(sc_iterator3 *it)
         }
 
         // go to next arc
-        arc_addr = arc_element->arc.next_out_arc;
+        arc_addr = arc_element->arc.next_in_arc;
     }
 
     return SC_FALSE;
