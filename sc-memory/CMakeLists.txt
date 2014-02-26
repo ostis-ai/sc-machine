@@ -6,7 +6,7 @@ file(GLOB_RECURSE HEADERS "src/*.h")
 
 add_library (sc-memory SHARED ${SOURCES} ${HEADERS})
 
-include_directories(${sc_storage_SOURCE_DIR}/sc_store ${GLIB2_INCLUDE_DIRS})
+include_directories(${SC_STORE_ROOT} ${GLIB2_INCLUDE_DIRS})
 target_link_libraries(sc-memory ${GLIB2_LIBRARIES})
 
 # install

@@ -22,6 +22,8 @@ along with OSTIS.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <glib.h>
 #include "sc_event.h"
+#include "sc_event/sc_event_private.h"
+#include "sc_event/sc_event_queue.h"
 
 #if SC_INTERNAL_THREADS_SUPPORT
     GStaticMutex events_table_mutex = G_STATIC_MUTEX_INIT;
@@ -156,7 +158,6 @@ sc_result sc_event_notify_element_deleted(sc_addr element)
         element_events_list = g_slist_delete_link(element_events_list, element_events_list);
     }
 
-
     return SC_RESULT_OK;
 }
 
@@ -187,3 +188,12 @@ sc_result sc_event_emit(sc_addr el, sc_event_type type, sc_addr arg)
     return SC_RESULT_OK;
 }
 
+// --------
+sc_bool sc_events_initialize()
+{
+    return SC_TRUE;
+}
+
+void sc_events_shutdown()
+{
+}

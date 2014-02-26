@@ -31,6 +31,8 @@ along with OSTIS.  If not, see <http://www.gnu.org/licenses/>.
 #include "sc_config.h"
 #include "sc_iterator.h"
 
+#include "sc_event/sc_event_private.h"
+
 #include <memory.h>
 #include <glib.h>
 
@@ -145,6 +147,12 @@ sc_bool sc_storage_initialize(const char *path, sc_bool clear)
     is_initialized = SC_TRUE;
     sc_storage_update_segments();
 
+    if (sc_events_initialize() == SC_FALSE)
+    {
+        g_error("Error while initialize events module");
+        return SC_FALSE;
+    }
+
     return SC_TRUE;
 }
 
@@ -152,6 +160,8 @@ void sc_storage_shutdown()
 {
     sc_uint idx = 0;
     g_assert( segments != (sc_segment**)0 );
+
+    sc_events_shutdown();
 
     sc_fs_storage_shutdown(segments);
 
