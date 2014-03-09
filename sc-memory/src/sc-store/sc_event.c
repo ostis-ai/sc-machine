@@ -36,6 +36,7 @@ along with OSTIS.  If not, see <http://www.gnu.org/licenses/>.
 
 // Pointer to hash table that contains events
 GHashTable *events_table = 0;
+sc_event_queue *event_queue = 0;
 
 guint events_table_hash_func(gconstpointer pointer)
 {
@@ -188,12 +189,28 @@ sc_result sc_event_emit(sc_addr el, sc_event_type type, sc_addr arg)
     return SC_RESULT_OK;
 }
 
+sc_event_type sc_event_get_type(sc_event *event)
+{
+    g_assert(event != 0);
+    return event->type;
+}
+
+sc_uint32 sc_event_get_id(sc_event *event)
+{
+    g_assert(event != 0);
+    return event->id;
+}
+
 // --------
 sc_bool sc_events_initialize()
 {
+    event_queue = sc_event_queue_new();
+
     return SC_TRUE;
 }
 
 void sc_events_shutdown()
 {
+    sc_event_queue_destroy_wait(event_queue);
+    event_queue = 0;
 }

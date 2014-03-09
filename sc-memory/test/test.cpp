@@ -443,7 +443,7 @@ void test6()
 sc_result event_callback(sc_event *event, sc_addr arg)
 {
     printf("Event type: ");
-    switch (event->type)
+    switch (sc_event_get_type(event))
     {
     case SC_EVENT_ADD_INPUT_ARC:
         printf("Add intput arc");
@@ -465,7 +465,7 @@ sc_result event_callback(sc_event *event, sc_addr arg)
         printf("Change link content");
         break;
     }
-    printf(", Id: %d", event->id);
+    printf(", Id: %d", sc_event_get_id(event));
     printf(", Argument = seg: %d, offset: %d\n", arg.seg, arg.offset);
     return SC_RESULT_OK;
 }

@@ -35,21 +35,6 @@ typedef sc_result (*fEventCallback)(sc_event *event, sc_addr arg);
 //! Delete listened element callback function type
 typedef sc_result (*fDeleteCallback)(sc_event *event);
 
-/*! Structure that contains information about event
- */
-struct _sc_event
-{
-    //! sc-addr of listened sc-element
-    sc_addr element;
-    //! Event type
-    sc_event_type type;
-    //! Event id
-    sc_uint32 id;
-    //! Pointer to callback function, that calls, when event emited
-    fEventCallback callback;
-    //! Pointer to callback function, that calls, when subscribed sc-element deleted
-    fDeleteCallback delete_callback;
-};
 
 /*! Subscribe for events from specified sc-element
  * @param el sc-addr of subscribed sc-element events
@@ -69,21 +54,11 @@ sc_event* sc_event_new(sc_addr el, sc_event_type type, sc_uint32 id, fEventCallb
  */
 sc_result sc_event_destroy(sc_event *event);
 
-/*! Notificate about sc-element deletion.
- * @param element sc-addr of deleted sc-element
- * @remarks This function call deletion callback function for event.
- * And destroy all events for deleted sc-element
+/*! Returns type of specified sc-event
  */
-sc_result sc_event_notify_element_deleted(sc_addr element);
+sc_event_type sc_event_get_type(sc_event *event);
 
-/*! Emit event with \p type for sc-element \p el with argument \p arg
- * @param el sc-addr of element that emitting event
- * @param type emitting event type
- * @param arg argument of emitting event (depend of event type)
- * @return If event emitted without any errors, then return SC_OK; otherwise return SC_ERROR code
- */
-sc_result sc_event_emit(sc_addr el, sc_event_type type, sc_addr arg);
-
-
+//! Returns id of specified sc-event
+sc_uint32 sc_event_get_id(sc_event *event);
 
 #endif // SC_EVENT_H
