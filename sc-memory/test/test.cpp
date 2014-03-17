@@ -493,8 +493,16 @@ void test7()
     event3 = sc_event_new(addr, SC_EVENT_REMOVE_OUTPUT_ARC, 2, &event_callback, 0);
     event4 = sc_event_new(addr1, SC_EVENT_REMOVE_INPUT_ARC, 3, &event_callback, 0);
 
-    addr2 = sc_memory_arc_new(0, addr, addr1);
-    sc_memory_element_free(addr2);
+    //addr2 = sc_memory_arc_new(0, addr, addr1);
+
+    for (int i = 0; i < 1000; ++i)
+    {
+        addr1 = sc_memory_node_new(0);
+        addr2 = sc_memory_arc_new(0, addr, addr1);
+    }
+    //sc_memory_element_free(addr2);
+    g_usleep(10000);
+
 
     printf("Unregister events\n");
     sc_event_destroy(event1);
