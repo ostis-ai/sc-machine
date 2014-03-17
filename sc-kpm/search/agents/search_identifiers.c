@@ -26,7 +26,7 @@ along with OSTIS. If not, see <http://www.gnu.org/licenses/>.
 #include <sc_helper.h>
 #include <sc_memory_headers.h>
 
-sc_result agent_search_all_identifiers(sc_event *event, sc_addr arg)
+sc_result agent_search_all_identifiers(const sc_event *event, sc_addr arg)
 {
     sc_addr question, answer;
     sc_iterator3 *it1, *it2;
@@ -94,7 +94,7 @@ sc_result agent_search_all_identifiers(sc_event *event, sc_addr arg)
     return SC_RESULT_OK;
 }
 
-sc_result agent_search_all_identified_elements(sc_event *event, sc_addr arg)
+sc_result agent_search_all_identified_elements(const sc_event *event, sc_addr arg)
 {
     sc_addr question, answer, begin, end;
     sc_iterator3 *it1;

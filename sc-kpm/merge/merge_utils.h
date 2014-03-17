@@ -20,7 +20,7 @@ along with OSTIS. If not, see <http://www.gnu.org/licenses/>.
 -----------------------------------------------------------------------------
  */
 
-#include "sc_memory.h"
+#include "sc_memory_headers.h"
 
 #include <glib.h>
 

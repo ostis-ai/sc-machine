@@ -35,7 +35,7 @@ public:
     explicit uiSc2ScsTranslator();
     virtual ~uiSc2ScsTranslator();
 
-    static sc_result ui_translate_sc2scs(sc_event *event, sc_addr arg);
+    static sc_result ui_translate_sc2scs(const sc_event *event, sc_addr arg);
 
 protected:
     //! @copydoc uiTranslateFromSc::runImpl

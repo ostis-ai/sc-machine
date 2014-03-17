@@ -28,6 +28,6 @@ along with OSTIS. If not, see <http://www.gnu.org/licenses/>.
 /*!
  * Function that implement sc-agent to search of all constructions, which are completely isomorphic to given pattern
  */
-sc_result agent_full_pattern_search(sc_event *event, sc_addr arg);
+sc_result agent_full_pattern_search(const sc_event *event, sc_addr arg);
 
 #endif // SEARCH_PATTERN_H

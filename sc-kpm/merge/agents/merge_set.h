@@ -28,6 +28,6 @@ along with OSTIS. If not, see <http://www.gnu.org/licenses/>.
 /*!
  * Function, that implements sc-agent to cantorize given set
  */
-sc_result agent_set_cantorization(sc_event *event, sc_addr arg);
+sc_result agent_set_cantorization(const sc_event *event, sc_addr arg);
 
 #endif

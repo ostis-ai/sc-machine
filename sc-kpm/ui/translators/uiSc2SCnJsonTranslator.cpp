@@ -369,7 +369,7 @@ void uiSc2SCnJsonTranslator::collectScElementsInfo()
 }
 
 // -------------------------------------
-sc_result uiSc2SCnJsonTranslator::ui_translate_sc2scn(sc_event *event, sc_addr arg)
+sc_result uiSc2SCnJsonTranslator::ui_translate_sc2scn(const sc_event *event, sc_addr arg)
 {
     sc_addr cmd_addr, input_addr, format_addr;
 

@@ -28,7 +28,7 @@ const char str_key_redis_host[] = "host";
 const char str_key_redis_port[] = "port";
 const char str_key_redis_timeout[] = "timeout";
 
-char *config_redis_host = 0;
+const char *config_redis_host = 0;
 sc_uint32 config_redis_port = 6379;
 sc_uint32 config_redis_timeout = 1500;
 
@@ -52,7 +52,7 @@ void sc_redis_config_initialize()
 
 void sc_redis_config_shutdown()
 {
-    g_free(config_redis_host);
+
 }
 
 const sc_uint8* sc_redis_config_host()

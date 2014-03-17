@@ -28,7 +28,7 @@ along with OSTIS. If not, see <http://www.gnu.org/licenses/>.
 #include <sc_helper.h>
 #include <sc_memory_headers.h>
 
-sc_result agent_full_pattern_search(sc_event *event, sc_addr arg)
+sc_result agent_full_pattern_search(const sc_event *event, sc_addr arg)
 {
     sc_addr question, answer;
     sc_iterator3 *it1, *it2;

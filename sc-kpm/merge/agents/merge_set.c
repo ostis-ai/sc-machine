@@ -28,7 +28,7 @@ along with OSTIS. If not, see <http://www.gnu.org/licenses/>.
 
 #define MAKE_SC_ADDR_HASH(elem) GINT_TO_POINTER(SC_ADDR_LOCAL_TO_INT(elem))
 
-sc_result agent_set_cantorization(sc_event *event, sc_addr arg)
+sc_result agent_set_cantorization(const sc_event *event, sc_addr arg)
 {
     sc_addr question, stored_arc;
     sc_iterator3 *it1, *it2;

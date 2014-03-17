@@ -51,7 +51,7 @@ struct sArcInfo
 };
 
 // -------------------- Event handlers --------------
-sc_result ui_command_generate_instance(sc_event *event, sc_addr arg)
+sc_result ui_command_generate_instance(const sc_event *event, sc_addr arg)
 {
     sc_addr command_addr;
     sc_addr args_addr;

@@ -31,9 +31,9 @@ along with OSTIS.  If not, see <http://www.gnu.org/licenses/>.
  * - sc-addr event argument (output/intput arc for example). It depends on event type.
  * So it can be empty.
  */
-typedef sc_result (*fEventCallback)(sc_event *event, sc_addr arg);
+typedef sc_result (*fEventCallback)(const sc_event *event, sc_addr arg);
 //! Delete listened element callback function type
-typedef sc_result (*fDeleteCallback)(sc_event *event);
+typedef sc_result (*fDeleteCallback)(const sc_event *event);
 
 
 /*! Subscribe for events from specified sc-element
@@ -56,9 +56,9 @@ sc_result sc_event_destroy(sc_event *event);
 
 /*! Returns type of specified sc-event
  */
-sc_event_type sc_event_get_type(sc_event *event);
+sc_event_type sc_event_get_type(const sc_event *event);
 
 //! Returns id of specified sc-event
-sc_uint32 sc_event_get_id(sc_event *event);
+sc_uint32 sc_event_get_id(const sc_event *event);
 
 #endif // SC_EVENT_H

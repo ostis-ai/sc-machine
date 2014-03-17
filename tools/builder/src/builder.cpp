@@ -93,9 +93,10 @@ bool Builder::run(const BuilderParams &params)
     std::cout << "Links: " << stat.link_count << "(" << ((float)stat.link_count / (float)all_count) * 100 << "%)"  << std::endl;
     std::cout << "Total: " << all_count << std::endl;
 
-    sc_memory_shutdown();
     if (mParams.extensionsPath.size() > 0)
         sc_memory_shutdown_ext();
+
+    sc_memory_shutdown();
 
     return true;
 }

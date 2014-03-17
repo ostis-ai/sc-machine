@@ -164,7 +164,7 @@ sc_segment* sc_fs_storage_load_segment(sc_uint id)
     sc_segment *segment = sc_segment_new(id);
     gchar file_name[MAX_PATH_LENGTH + 1];
     gboolean res;
-    sc_uint length;
+    gsize length;
 
     _get_segment_path(segments_path, id, MAX_PATH_LENGTH, file_name);
     res = g_file_get_contents(file_name, (gchar**)(&segment), &length, 0);

@@ -22,7 +22,7 @@ along with OSTIS. If not, see <http://www.gnu.org/licenses/>.
 #ifndef _utils_collect_identifiers_h_
 #define _utils_collect_identifiers_h_
 
-#include "sc_memory.h"
+#include "sc_memory_headers.h"
 #include <hiredis/hiredis.h>
 
 sc_result utils_collect_identifiers_initialize();

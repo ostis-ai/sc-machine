@@ -124,7 +124,7 @@ public:
     virtual ~uiSc2SCnJsonTranslator();
 
 
-    static sc_result ui_translate_sc2scn(sc_event *event, sc_addr arg);
+    static sc_result ui_translate_sc2scn(const sc_event *event, sc_addr arg);
 
 protected:
     //! @copydoc uiTranslateFromSc::runImpl

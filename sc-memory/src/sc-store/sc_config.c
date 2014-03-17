@@ -43,7 +43,7 @@ GHashTable *values_table = 0;
 
 // --- file memory ---
 const char fm_default_engine[] = "filesystem";
-char *config_fm_engine = fm_default_engine;
+const char *config_fm_engine = fm_default_engine;
 
 void value_table_destroy_key_value(gpointer data)
 {

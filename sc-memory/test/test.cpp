@@ -440,7 +440,7 @@ void test6()
     g_timer_destroy(timer);
 }
 
-sc_result event_callback(sc_event *event, sc_addr arg)
+sc_result event_callback(const sc_event *event, sc_addr arg)
 {
     printf("Event type: ");
     switch (sc_event_get_type(event))

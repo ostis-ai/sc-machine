@@ -133,6 +133,8 @@ sc_result sc_event_destroy(sc_event *event)
     if (remove_event_from_table(event) != SC_RESULT_OK)
         return SC_RESULT_ERROR;
 
+    sc_event_queue_remove(event_queue, event);
+
     g_free(event);
 
     return SC_RESULT_OK;
@@ -180,7 +182,7 @@ sc_result sc_event_emit(sc_addr el, sc_event_type type, sc_addr arg)
         if (event->type == type)
         {
             g_assert(event->callback != nullptr);
-            event->callback(event, arg);
+            sc_event_queue_append(event_queue, event, arg);
         }
 
         element_events_list = element_events_list->next;
@@ -189,13 +191,13 @@ sc_result sc_event_emit(sc_addr el, sc_event_type type, sc_addr arg)
     return SC_RESULT_OK;
 }
 
-sc_event_type sc_event_get_type(sc_event *event)
+sc_event_type sc_event_get_type(const sc_event *event)
 {
     g_assert(event != 0);
     return event->type;
 }
 
-sc_uint32 sc_event_get_id(sc_event *event)
+sc_uint32 sc_event_get_id(const sc_event *event)
 {
     g_assert(event != 0);
     return event->id;

@@ -248,7 +248,7 @@ void search_typical_sc_neighborhood(sc_addr elem, sc_addr answer, sc_bool sys_of
     }
 }
 
-sc_result agent_search_full_semantic_neighborhood(sc_event *event, sc_addr arg)
+sc_result agent_search_full_semantic_neighborhood(const sc_event *event, sc_addr arg)
 {
     sc_addr question, answer;
     sc_iterator3 *it1, *it2, *it3, *it4, *it6;
@@ -515,7 +515,7 @@ sc_result agent_search_full_semantic_neighborhood(sc_event *event, sc_addr arg)
     return SC_RESULT_OK;
 }
 
-sc_result agent_search_links_of_relation_connected_with_element(sc_event *event, sc_addr arg)
+sc_result agent_search_links_of_relation_connected_with_element(const sc_event *event, sc_addr arg)
 {
     sc_addr question, answer, param_elem, param_rel;
     sc_iterator3 *it1, *it2, *it3, *it4;

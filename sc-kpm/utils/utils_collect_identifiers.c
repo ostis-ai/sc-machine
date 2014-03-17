@@ -33,7 +33,7 @@ const char str_sys_idtf_postfix[] = "sys";
 const char str_main_idtf_postfix[] = "main";
 const char str_idtf_postfix[] = "common";
 
-char *utils_redis_host = 0;
+const char *utils_redis_host = 0;
 sc_uint32 utils_redis_port = 6379;
 sc_uint32 utils_redis_timeout = 1500;
 
@@ -136,7 +136,7 @@ redisReply* do_sync_redis_command(redisContext *context, const char *format, ...
 }
 
 // --------------------------------------------------
-sc_result agent_append_idtf(sc_event *event, sc_addr arg)
+sc_result agent_append_idtf(const sc_event *event, sc_addr arg)
 {
     sc_addr arc, el, link, n;
     sc_stream *content = 0;
@@ -205,9 +205,7 @@ sc_result utils_collect_identifiers_initialize()
 {
     utils_redis_host = sc_config_get_value_string(str_group_redis, str_key_redis_host);
     if (utils_redis_host == 0)
-        utils_redis_host = g_strdup_printf("127.0.0.1");
-    else
-        utils_redis_host = g_strdup(utils_redis_host);
+        utils_redis_host = "127.0.0.1";
 
     utils_redis_port = sc_config_get_value_int(str_group_redis, str_key_redis_port);
     if (utils_redis_port == 0)
@@ -222,15 +220,15 @@ sc_result utils_collect_identifiers_initialize()
 
 
     // initialize agents
-    event_add_idtf = sc_event_new(keynode_nrel_idtf, SC_EVENT_ADD_OUTPUT_ARC, 0, agent_append_idtf, 0);
+    event_add_idtf = sc_event_new(keynode_nrel_idtf, SC_EVENT_ADD_OUTPUT_ARC, 0, agent_append_idtf, (fDeleteCallback)0);
     if (event_add_idtf == 0)
         return SC_RESULT_ERROR;
 
-    event_add_main_idtf = sc_event_new(keynode_nrel_main_idtf, SC_EVENT_ADD_OUTPUT_ARC, 0, agent_append_idtf, 0);
+    event_add_main_idtf = sc_event_new(keynode_nrel_main_idtf, SC_EVENT_ADD_OUTPUT_ARC, 0, agent_append_idtf, (fDeleteCallback)0);
     if (event_add_main_idtf == 0)
         return SC_RESULT_ERROR;
 
-    event_add_sys_idtf = sc_event_new(keynode_nrel_system_identifier, SC_EVENT_ADD_OUTPUT_ARC, 0, agent_append_idtf, 0);
+    event_add_sys_idtf = sc_event_new(keynode_nrel_system_identifier, SC_EVENT_ADD_OUTPUT_ARC, 0, agent_append_idtf, (fDeleteCallback)0);
     if (event_add_sys_idtf == 0)
         return SC_RESULT_ERROR;
 

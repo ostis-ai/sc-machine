@@ -27,7 +27,7 @@ along with OSTIS. If not, see <http://www.gnu.org/licenses/>.
 #include <sc_helper.h>
 #include <sc_memory_headers.h>
 
-sc_result agent_search_decomposition(sc_event *event, sc_addr arg)
+sc_result agent_search_decomposition(const sc_event *event, sc_addr arg)
 {
     sc_addr question, answer;
     sc_iterator3 *it1, *it2, *it3;
@@ -235,7 +235,7 @@ void search_subclasses_rec(sc_addr elem, sc_addr answer, sc_bool sys_off)
     sc_iterator5_free(it5);
 }
 
-sc_result agent_search_all_subclasses_in_quasybinary_relation(sc_event *event, sc_addr arg)
+sc_result agent_search_all_subclasses_in_quasybinary_relation(const sc_event *event, sc_addr arg)
 {
     sc_addr question, answer;
     sc_iterator3 *it1;
@@ -317,7 +317,7 @@ void search_superclasses_rec(sc_addr elem, sc_addr answer, sc_bool sys_off)
     sc_iterator3_free(it3);
 }
 
-sc_result agent_search_all_superclasses_in_quasybinary_relation(sc_event *event, sc_addr arg)
+sc_result agent_search_all_superclasses_in_quasybinary_relation(const sc_event *event, sc_addr arg)
 {
     sc_addr question, answer;
     sc_iterator3 *it1;
