@@ -333,3 +333,11 @@ sc_bool sc_helper_check_arc(sc_addr beg_el, sc_addr end_el, sc_type arc_type)
     sc_iterator3_free(it);
     return res;
 }
+
+
+
+sc_bool sc_helper_check_version_equal(sc_uint8 major, sc_uint8 minor, sc_uint8 patch)
+{
+    sc_version v = {major, minor, patch, 0};
+    return sc_version_compare(&SC_VERSION, &v) == 0 ? SC_TRUE : SC_FALSE;
+}

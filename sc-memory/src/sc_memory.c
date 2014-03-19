@@ -21,6 +21,7 @@ along with OSTIS.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include "sc_memory.h"
+#include "sc_memory_version.h"
 #include "sc-store/sc_storage.h"
 #include "sc_memory_ext.h"
 #include "sc_helper.h"
@@ -39,7 +40,11 @@ sc_bool sc_memory_initialize(const sc_char *repo_path, const sc_char *config_fil
 
     sc_config_initialize(config_file);
 
-    g_message("Run with configuration");
+    char *v_str = sc_version_string_new(&SC_VERSION);
+    g_message("Version: %s", v_str);
+    sc_version_string_free(v_str);
+
+    g_message("Configuration:");
     g_message("\tmax_loaded_segments: %d", sc_config_get_max_loaded_segments());
 
     res = sc_storage_initialize(repo_path, clear);

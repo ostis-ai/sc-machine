@@ -98,4 +98,13 @@ sc_bool sc_helper_resolve_system_identifier(const char *system_idtf, sc_addr *re
  */
 sc_bool sc_helper_check_arc(sc_addr beg_el, sc_addr end_el, sc_type arc_type);
 
+
+/*! Check if current version equal to specified
+ * @return If version equal to current memory version, then function returns SC_TRUE;
+ * otherwise it returns SC_FALSE
+ */
+sc_bool sc_helper_check_version_equal(sc_uint8 major, sc_uint8 minor, sc_uint8 patch);
+
+
+
 #endif // IDENTIFICATION_H

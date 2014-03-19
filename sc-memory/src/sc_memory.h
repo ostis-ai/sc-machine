@@ -144,7 +144,6 @@ sc_result sc_memory_set_link_content(sc_addr addr, const sc_stream *stream);
  */
 sc_result sc_memory_get_link_content(sc_addr addr, sc_stream **stream);
 
-
 /*! Search sc-link addrs by specified checksum
  * @param stream Pointert to stream that contains data for search
  * @param result Pointer to result container
@@ -162,5 +161,7 @@ sc_result sc_memory_find_links_with_content(const sc_stream *stream, sc_addr **r
  * @return If info collected without errors, then return SC_RESULT_OK; otherwise return SC_RESULT_ERROR
  */
 sc_result sc_memory_stat(sc_stat *stat);
+
+
 
 #endif

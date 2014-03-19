@@ -32,9 +32,23 @@ extern "C"
 #include <glib.h>
 }
 
+const sc_version required_version = {0, 1, 0, ""};
+
 // ------------------- Module ------------------------------
 sc_result initialize()
 {
+    if (sc_version_compare(&SC_VERSION, &required_version) != 0)
+    {
+        char *req_str = sc_version_string_new(&required_version);
+        char *v_str = sc_version_string_new(&SC_VERSION);
+
+        g_error("Required version %s, but you use %s", req_str, v_str);
+
+        sc_version_string_free(req_str);
+        sc_version_string_free(v_str);
+
+        return SC_RESULT_ERROR;
+    }
 
     if (!initialize_keynodes())
     {
