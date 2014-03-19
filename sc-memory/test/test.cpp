@@ -495,7 +495,7 @@ void test7()
 
     //addr2 = sc_memory_arc_new(0, addr, addr1);
 
-    for (int i = 0; i < 1000; ++i)
+    for (int i = 0; i < 10; ++i)
     {
         addr1 = sc_memory_node_new(0);
         addr2 = sc_memory_arc_new(0, addr, addr1);
@@ -505,9 +505,9 @@ void test7()
 
 
     printf("Unregister events\n");
-    sc_event_destroy(event1);
+    //sc_event_destroy(event1);
     sc_event_destroy(event2);
-    sc_event_destroy(event3);
+    //sc_event_destroy(event3);
     sc_event_destroy(event4);
 
     addr2 = sc_memory_arc_new(0, addr, addr1);
@@ -701,6 +701,7 @@ int main(int argc, char *argv[])
     item = sc_storage_get_segments_count();
     g_timer_reset(timer); // crash when uncomment
 
+    printf("Shutting down memory\n Wait...\n");
     sc_memory_shutdown();
     g_timer_stop(timer);
     printf("Segments save speed: %f seg/sec\n", item / g_timer_elapsed(timer, 0));

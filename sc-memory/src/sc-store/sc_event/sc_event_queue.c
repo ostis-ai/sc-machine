@@ -37,7 +37,7 @@ gpointer sc_event_queue_thread_loop(gpointer data)
     sc_event *event = 0;
     sc_addr arg;
 
-    while (running)
+    while (running == SC_TRUE || g_queue_get_length(queue->queue) > 0)
     {
         g_rec_mutex_lock(&queue->mutex);
 
@@ -90,15 +90,16 @@ sc_event_queue* sc_event_queue_new()
     return queue;
 }
 
-void sc_event_queue_destroy(sc_event_queue *queue)
-{
-    g_assert(queue != 0);
-
-
-}
 
 void sc_event_queue_destroy_wait(sc_event_queue *queue)
 {
+    g_assert(queue != 0);
+
+    g_rec_mutex_lock(&queue->mutex);
+    queue->running = SC_FALSE;
+    g_rec_mutex_unlock(&queue->mutex);
+
+    g_thread_join(queue->thread);
 }
 
 void sc_event_queue_append(sc_event_queue *queue, sc_event *event, sc_addr arg)

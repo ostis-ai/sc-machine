@@ -49,9 +49,6 @@ typedef struct _sc_event_queue_item sc_event_queue_item;
 //! Create new sc-event queue
 sc_event_queue* sc_event_queue_new();
 
-//! Destroys event queue. This function doesn't wait while all events in queue will be processed.
-void sc_event_queue_destroy(sc_event_queue *queue);
-
 //! Destroys event queue. It waits until all events in queue will be processed
 void sc_event_queue_destroy_wait(sc_event_queue *queue);
 
