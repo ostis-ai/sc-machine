@@ -28,20 +28,25 @@ along with OSTIS.  If not, see <http://www.gnu.org/licenses/>.
 
 // Public functions that used by developer
 
+struct _sc_memory_params
+{
+    const sc_char *repo_path;
+    const sc_char *config_file;
+    const sc_char *ext_path;
+    sc_bool clear;
+
+};
+
+typedef struct _sc_memory_params sc_memory_params;
+
+//! Function to clear memory parameters
+void sc_memory_params_clear(sc_memory_params *params);
+
 /*! Initialize sc-memory with specified path to repository
- * @param repo_path Path to repository on file system
- * @param config_file Path to configuration file. If it null, then default values will be used
- * @param clear Flag to clear memory on initialization. This function destroys whole elements, that exists in memory
+ * @param params Pointer to initialization parameters
  */
-sc_bool sc_memory_initialize(const sc_char *repo_path, const sc_char *config_file, sc_bool clear);
+sc_bool sc_memory_initialize(const sc_memory_params *params);
 
-/*! Initialize sc-memory extensions from specified \p path
- * @param path Path to directory, that contains extensions
- */
-sc_bool sc_memory_initialize_ext(const sc_char *path);
-
-//! Shutdown extensions
-void sc_memory_shutdown_ext();
 
 //! Shutdown sc-memory (save repository to file system)
 void sc_memory_shutdown();

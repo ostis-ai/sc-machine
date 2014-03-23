@@ -45,6 +45,16 @@ struct TranslatorParams
 class iTranslator
 {
 public:
+
+
+    typedef enum
+    {
+        IdtfSystem = 0,
+        IdtfLocal = 1,
+        IdtfGlobal = 2
+
+    } eIdtfVisibility;
+
     explicit iTranslator();
     virtual ~iTranslator();
 
@@ -60,12 +70,19 @@ public:
     //! Returns supported file extension
     virtual const std::string& getFileExt() const = 0;
 
+
 protected:
     /*! Generates format relation in sc-memory by file extension
      * @param addr sc-addr of sc-link to create format relation
      * @param ext File extension
      */
     void generateFormatInfo(sc_addr addr, const String &ext);
+
+
+    //! Determines visibility of identifier
+    eIdtfVisibility _getIdentifierVisibility(const String &idtf) const;
+    //! Appends sc-addr to specified map by it identifier
+    void appendScAddr(sc_addr addr, const String &idtf);
 
 protected:
     //! Translator parameters

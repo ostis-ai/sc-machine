@@ -60,4 +60,5 @@ void sc_event_queue_append(sc_event_queue *queue, sc_event *event, sc_addr arg);
  */
 void sc_event_queue_remove(sc_event_queue *queue, sc_event *event);
 
+
 #endif

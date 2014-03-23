@@ -28,6 +28,7 @@ along with OSTIS.  If not, see <http://www.gnu.org/licenses/>.
 #include <assert.h>
 
 #include "scs_translator.h"
+#include "gwf_translator.h"
 
 Builder::Builder()
 {
@@ -41,6 +42,7 @@ void Builder::initialize()
 {
     // register translator factories
     registerTranslator(new SCsTranslatorFactory());
+    registerTranslator(new GwfTranslatorFactory());
 }
 
 bool Builder::run(const BuilderParams &params)
@@ -51,10 +53,14 @@ bool Builder::run(const BuilderParams &params)
     collectFiles();
 
     // initialize sc-memory
-    sc_memory_initialize(mParams.outputPath.c_str(), mParams.configFile.empty() ? 0 : mParams.configFile.c_str(), mParams.clearOutput ? SC_TRUE : SC_FALSE);
-    sc_helper_init();
-    if (mParams.extensionsPath.size() > 0)
-        sc_memory_initialize_ext(mParams.extensionsPath.c_str());
+    sc_memory_params mparams;
+    sc_memory_params_clear(&mparams);
+    mparams.clear = mParams.clearOutput ? SC_TRUE : SC_FALSE;
+    mparams.config_file = mParams.configFile.empty() ? 0 : mParams.configFile.c_str();
+    mparams.repo_path = mParams.outputPath.c_str();
+    mparams.ext_path = mParams.extensionsPath.size() > 0 ? mParams.extensionsPath.c_str() : 0;
+
+    sc_memory_initialize(&mparams);
 
     // print founded files
     uint32 done = 0;
@@ -92,9 +98,6 @@ bool Builder::run(const BuilderParams &params)
     std::cout << "Arcs: " << stat.arc_count << "(" << ((float)stat.arc_count / (float)all_count) * 100 << "%)"  << std::endl;
     std::cout << "Links: " << stat.link_count << "(" << ((float)stat.link_count / (float)all_count) * 100 << "%)"  << std::endl;
     std::cout << "Total: " << all_count << std::endl;
-
-    if (mParams.extensionsPath.size() > 0)
-        sc_memory_shutdown_ext();
 
     sc_memory_shutdown();
 

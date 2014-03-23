@@ -71,8 +71,7 @@ bool SCsTranslator::translateImpl()
 
 const String& SCsTranslator::getFileExt() const
 {
-    static String ext = "scs";
-    return ext;
+    return SCsTranslatorFactory::EXTENSION;
 }
 
 bool SCsTranslator::processString(const String &data)
@@ -556,7 +555,8 @@ sElement* SCsTranslator::_createElement(const String &idtf, sc_type type)
     String newIdtf = idtf;
     if (!idtf.empty())
     {
-        if (idtf == "...") {
+        if (idtf == "...")
+        {
             StringStream ss;
             ss << "..." << msAutoIdtfCount++ << "...auto...";
             newIdtf = ss.str();
@@ -903,16 +903,6 @@ bool SCsTranslator::_getAbsFilePath(const String &url, String &abs_path)
 
 }
 
-SCsTranslator::eIdtfVisibility SCsTranslator::_getIdentifierVisibility(const String &idtf) const
-{
-    if (StringUtil::startsWith(idtf, "..", false))
-        return IdtfLocal;
-    else if (StringUtil::startsWith(idtf, ".", false))
-        return IdtfGlobal;
-
-    return IdtfSystem;
-}
-
 bool SCsTranslator::_isIdentifierVar(const String &idtf) const
 {
     // remove visibility points
@@ -992,6 +982,8 @@ void SCsTranslator::dumpScs(const String &fileName)
 }
 
 // -------------
+const String SCsTranslatorFactory::EXTENSION = "scs";
+
 SCsTranslatorFactory::SCsTranslatorFactory()
 {
 
@@ -1009,6 +1001,5 @@ iTranslator* SCsTranslatorFactory::createInstance()
 
 const String& SCsTranslatorFactory::getFileExt() const
 {
-    static String ext = "scs";
-    return ext;
+    return EXTENSION;
 }

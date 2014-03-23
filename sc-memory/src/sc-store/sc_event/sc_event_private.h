@@ -49,6 +49,9 @@ sc_bool sc_events_initialize();
 //! Function to shutdown sc-events module
 void sc_events_shutdown();
 
+//! Waits while all emited events will be processed, then returns. After calling that function all new emited events will be ignored
+void sc_events_stop_processing();
+
 /*! Notificate about sc-element deletion.
  * @param element sc-addr of deleted sc-element
  * @remarks This function call deletion callback function for event.

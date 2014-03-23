@@ -624,7 +624,15 @@ int main(int argc, char *argv[])
     printf("SHA256: %d\n", (int)g_checksum_type_get_length(G_CHECKSUM_SHA256) );
     printf("Element size: %d\n", (int)sizeof(sc_element));
 
-    sc_memory_initialize("repo", "sc-memory.ini", SC_TRUE);
+    sc_memory_params params;
+    sc_memory_params_clear(&params);
+
+    params.clear = SC_TRUE;
+    params.repo_path = "repo";
+    params.config_file = "sc-memory.ini";
+    params.ext_path = 0;
+
+    sc_memory_initialize(&params);
     g_timer_stop(timer);
     printf("Segment loading speed: %f seg/sec\n", sc_storage_get_segments_count() / g_timer_elapsed(timer, 0));
 
@@ -632,10 +640,10 @@ int main(int argc, char *argv[])
     //test5();
     //test6();
 
-    //test7();
+    test7();
     //test8();
     //test3();
-    //item = 0;
+    item = 0;
 
     while (item != 0)
     {

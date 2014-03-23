@@ -83,11 +83,15 @@ bool sctpServer::start(const QString &config)
 
     // initialize sc-memory
     qDebug() << "Initialize sc-memory\n";
-    if (sc_memory_initialize(mRepoPath.toStdString().c_str(), config.toStdString().c_str(), SC_FALSE) != SC_TRUE)
-        return false;
-    if (sc_helper_init() != SC_RESULT_OK)
-        return false;
-    if (sc_memory_initialize_ext(mExtPath.toStdString().c_str()) != SC_TRUE)
+    sc_memory_params params;
+    sc_memory_params_clear(&params);
+
+    params.clear = SC_FALSE;
+    params.config_file = config.toStdString().c_str();
+    params.repo_path = mRepoPath.toStdString().c_str();
+    params.ext_path = mExtPath.toStdString().c_str();
+
+    if (sc_memory_initialize(&params) != SC_TRUE)
         return false;
 
     if (mStatUpdatePeriod > 0)
@@ -147,8 +151,6 @@ void sctpServer::incomingConnection(int socketDescriptor)
 
 void sctpServer::stop()
 {
-    sc_memory_shutdown_ext();
-    sc_helper_shutdown();
     sc_memory_shutdown();
     close();
 }

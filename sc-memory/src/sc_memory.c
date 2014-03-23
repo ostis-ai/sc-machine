@@ -26,6 +26,9 @@ along with OSTIS.  If not, see <http://www.gnu.org/licenses/>.
 #include "sc_memory_ext.h"
 #include "sc_helper.h"
 #include "sc-store/sc_config.h"
+#include "sc_helper_private.h"
+#include "sc-store/sc_event.h"
+#include "sc-store/sc_event/sc_event_private.h"
 
 #include <glib.h>
 
@@ -34,11 +37,19 @@ GRecMutex mutex;
 #define LOCK g_rec_mutex_lock(&mutex);
 #define UNLOCK g_rec_mutex_unlock(&mutex);
 
-sc_bool sc_memory_initialize(const sc_char *repo_path, const sc_char *config_file, sc_bool clear)
+void sc_memory_params_clear(sc_memory_params *params)
+{
+    params->clear = SC_FALSE;
+    params->config_file = 0;
+    params->ext_path = 0;
+    params->repo_path = 0;
+}
+
+sc_bool sc_memory_initialize(const sc_memory_params *params)
 {
     sc_bool res = SC_FALSE;
 
-    sc_config_initialize(config_file);
+    sc_config_initialize(params->config_file);
 
     char *v_str = sc_version_string_new(&SC_VERSION);
     g_message("Version: %s", v_str);
@@ -47,17 +58,14 @@ sc_bool sc_memory_initialize(const sc_char *repo_path, const sc_char *config_fil
     g_message("Configuration:");
     g_message("\tmax_loaded_segments: %d", sc_config_get_max_loaded_segments());
 
-    res = sc_storage_initialize(repo_path, clear);
+    res = sc_storage_initialize(params->repo_path, params->clear);
     g_rec_mutex_init(&mutex);
 
-    return res;
-}
+    if (sc_helper_init() != SC_RESULT_OK)
+        return SC_FALSE;
 
-sc_bool sc_memory_initialize_ext(const sc_char *path)
-{
     sc_result ext_res;
-
-    ext_res = sc_ext_initialize(path);
+    ext_res = sc_ext_initialize(params->ext_path);
 
     switch (ext_res)
     {
@@ -66,7 +74,7 @@ sc_bool sc_memory_initialize_ext(const sc_char *path)
         return SC_TRUE;
 
     case SC_RESULT_ERROR_INVALID_PARAMS:
-        g_warning("Extensions directory '%s'' doesn't exist",path);
+        g_warning("Extensions directory '%s'' doesn't exist", params->ext_path);
         break;
 
     default:
@@ -74,17 +82,20 @@ sc_bool sc_memory_initialize_ext(const sc_char *path)
         break;
     }
 
-    return SC_FALSE;
+    return res && (ext_res == SC_RESULT_OK);
 }
 
-void sc_memory_shutdown_ext()
-{
-    sc_ext_shutdown();
-    sc_config_shutdown();
-}
+
 
 void sc_memory_shutdown()
 {
+    sc_events_stop_processing();
+
+    sc_ext_shutdown();
+    sc_config_shutdown();
+
+    sc_helper_shutdown();
+
     g_rec_mutex_clear(&mutex);
     sc_storage_shutdown();
 }

@@ -95,14 +95,6 @@ class SCsTranslator : public iTranslator
         SentenceEOF = 4
     } eSentenceType;
 
-    typedef enum
-    {
-        IdtfSystem = 0,
-        IdtfLocal = 1,
-        IdtfGlobal = 2
-
-    } eIdtfVisibility;
-
 public:
     explicit SCsTranslator();
     virtual ~SCsTranslator();
@@ -188,8 +180,6 @@ private:
     //! Get absolute file path from it url
     bool _getAbsFilePath(const String &url, String &abs_path);
 
-    //! Determines visibility of identifier
-    eIdtfVisibility _getIdentifierVisibility(const String &idtf) const;
     //! Check if identifier is variable
     bool _isIdentifierVar(const String &idtf) const;
 
@@ -226,6 +216,8 @@ class SCsTranslatorFactory : public iTranslatorFactory
 public:
     explicit SCsTranslatorFactory();
     virtual ~SCsTranslatorFactory();
+
+    static const String EXTENSION;
 
     //! @copydoc iTranslatorFactory::createInstance
     iTranslator* createInstance();

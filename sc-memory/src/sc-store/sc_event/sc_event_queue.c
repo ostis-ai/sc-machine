@@ -95,11 +95,23 @@ void sc_event_queue_destroy_wait(sc_event_queue *queue)
 {
     g_assert(queue != 0);
 
+    sc_bool is_running = SC_FALSE;
+
     g_rec_mutex_lock(&queue->mutex);
-    queue->running = SC_FALSE;
+    is_running = queue->running;
     g_rec_mutex_unlock(&queue->mutex);
 
-    g_thread_join(queue->thread);
+    if (is_running)
+    {
+        g_rec_mutex_lock(&queue->mutex);
+        queue->running = SC_FALSE;
+        GThread *thread = queue->thread;
+        queue->thread = 0;
+        g_rec_mutex_unlock(&queue->mutex);
+
+        g_thread_join(thread);
+    }
+
 }
 
 void sc_event_queue_append(sc_event_queue *queue, sc_event *event, sc_addr arg)

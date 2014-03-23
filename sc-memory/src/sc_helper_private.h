@@ -6,7 +6,7 @@ For the latest info, see http://www.ostis.net
 Copyright (c) 2010-2014 OSTIS
 
 OSTIS is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
+it under the terms of the GNU Lesser General Public License as published by
 the Free Software Foundation, either version 3 of the License, or
 (at your option) any later version.
 
@@ -19,31 +19,22 @@ You should have received a copy of the GNU Lesser General Public License
 along with OSTIS.  If not, see <http://www.gnu.org/licenses/>.
 -----------------------------------------------------------------------------
 */
+#ifndef _sc_helper_private_h_
+#define _sc_helper_private_h_
 
-#ifndef _types_h_
-#define _types_h_
+#include "sc-store/sc_types.h"
 
-#include <string>
-#include <list>
-#include <vector>
-#include <map>
-#include <set>
-#include <algorithm>
-#include <sstream>
-#include <iomanip>
-#include <exception>
-#include <assert.h>
+/*! Initialize helper.
+ * @remarks Need to be called once at the beginning of sc-helper usage
+ * @return If sc-helper initialized without any errors, then return SC_OK;
+ * otherwise returns SC_ERROR
+ */
+sc_result sc_helper_init();
 
-typedef std::string String;
-typedef std::stringstream StringStream;
-
-typedef unsigned char uint8;
-typedef unsigned short uint16;
-typedef unsigned int uint32;
-
-typedef char int8;
-typedef short int16;
-typedef int int32;
+/*! Shuts down sc-helper.
+ * @remarks This function need to be called once at the end of sc-helper usage
+ */
+void sc_helper_shutdown();
 
 
-#endif // _types_h_
+#endif

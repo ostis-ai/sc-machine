@@ -35,18 +35,6 @@ enum _sc_keynode
 typedef enum _sc_keynode sc_keynode;
 
 
-/*! Initialize helper.
- * @remarks Need to be called once at the beginning of sc-helper usage
- * @return If sc-helper initialized without any errors, then return SC_OK;
- * otherwise returns SC_ERROR
- */
-sc_result sc_helper_init();
-
-/*! Shuts down sc-helper.
- * @remarks This function need to be called once at the end of sc-helper usage
- */
-void sc_helper_shutdown();
-
 /*! Finds sc-addr of element with specified system identifier
  * @param data Buffer that contains system identifier for sc-element (must be an UTF-8 encoded)
  * @param len Length of data buffer

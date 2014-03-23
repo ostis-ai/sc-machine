@@ -216,3 +216,8 @@ void sc_events_shutdown()
     sc_event_queue_destroy_wait(event_queue);
     event_queue = 0;
 }
+
+void sc_events_stop_processing()
+{
+    sc_event_queue_destroy_wait(event_queue);
+}

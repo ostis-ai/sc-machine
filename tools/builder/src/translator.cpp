@@ -21,6 +21,8 @@ along with OSTIS.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include "translator.h"
+#include "utils.h"
+
 
 #define NREL_FORMAT_STR     "nrel_format"
 
@@ -84,4 +86,36 @@ void iTranslator::generateFormatInfo(sc_addr addr, const String &ext)
     // connect sc-link with format
     sc_addr arc_addr = sc_memory_arc_new(sc_type_arc_common | sc_type_const, addr, fmt_addr);
     sc_memory_arc_new(sc_type_arc_pos_const_perm, nrel_format_addr, arc_addr);
+}
+
+
+iTranslator::eIdtfVisibility iTranslator::_getIdentifierVisibility(const String &idtf) const
+{
+    if (StringUtil::startsWith(idtf, "..", false))
+        return IdtfLocal;
+    else if (StringUtil::startsWith(idtf, ".", false))
+        return IdtfGlobal;
+
+    return IdtfSystem;
+}
+
+void iTranslator::appendScAddr(sc_addr addr, const String &idtf)
+{
+    switch (_getIdentifierVisibility(idtf))
+    {
+    case IdtfSystem:
+        assert(mSysIdtfAddrs.find(idtf) == mSysIdtfAddrs.end());
+        mSysIdtfAddrs[idtf] = addr;
+        break;
+
+    case IdtfLocal:
+        assert(mLocalIdtfAddrs.find(idtf) == mLocalIdtfAddrs.end());
+        mLocalIdtfAddrs[idtf] = addr;
+        break;
+
+    case IdtfGlobal:
+        assert(msGlobalIdtfAddrs.find(idtf) == msGlobalIdtfAddrs.end());
+        msGlobalIdtfAddrs[idtf] = addr;
+        break;
+    }
 }
