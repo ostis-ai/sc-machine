@@ -64,6 +64,13 @@ sc_bool sc_memory_initialize(const sc_memory_params *params)
     if (sc_helper_init() != SC_RESULT_OK)
         return SC_FALSE;
 
+
+    if (sc_events_initialize() == SC_FALSE)
+    {
+        g_error("Error while initialize events module");
+        return SC_FALSE;
+    }
+
     sc_result ext_res;
     ext_res = sc_ext_initialize(params->ext_path);
 
@@ -74,7 +81,7 @@ sc_bool sc_memory_initialize(const sc_memory_params *params)
         return SC_TRUE;
 
     case SC_RESULT_ERROR_INVALID_PARAMS:
-        g_warning("Extensions directory '%s'' doesn't exist", params->ext_path);
+        g_warning("Extensions directory '%s' doesn't exist", params->ext_path);
         break;
 
     default:
@@ -92,6 +99,8 @@ void sc_memory_shutdown()
     sc_events_stop_processing();
 
     sc_ext_shutdown();
+
+    sc_events_shutdown();
     sc_config_shutdown();
 
     sc_helper_shutdown();
