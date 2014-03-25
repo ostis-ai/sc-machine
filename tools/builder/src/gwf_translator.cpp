@@ -95,10 +95,12 @@ bool GwfTranslator::processString(const String &data)
     // collect elements
     std::vector<tinyxml2::XMLElement*> nodes;
     std::vector<tinyxml2::XMLElement*> edges;
+    std::vector<tinyxml2::XMLElement*> buses;
     std::vector<tinyxml2::XMLElement*> all;
 
     static std::string s_arc = "arc";
     static std::string s_pair = "pair";
+    static std::string s_bus = "bus";
 
     tinyxml2::XMLElement *el = root->FirstChildElement();
     while (el)
@@ -106,6 +108,8 @@ bool GwfTranslator::processString(const String &data)
         all.push_back(el);
         if (el->Name() == s_arc || el->Name() == s_pair)
             edges.push_back(el);
+        else if (el->Name() == s_bus)
+            buses.push_back(el);
         else
             nodes.push_back(el);
 
@@ -183,6 +187,19 @@ bool GwfTranslator::processString(const String &data)
             sc_helper_set_system_identifier(addr, idtf.c_str(), idtf.size());
 
         id_map[id] = addr;
+    }
+
+    // process buses
+    itEnd = buses.end();
+    for (it = buses.begin(); it != itEnd; ++it)
+    {
+        el = *it;
+
+        tStringAddrMap::iterator itOwner = id_map.find(el->Attribute("owner"));
+        if (itOwner == id_map.end())
+            continue;
+
+        id_map[el->Attribute("id")] = itOwner->second;
     }
 
     // now create edges
