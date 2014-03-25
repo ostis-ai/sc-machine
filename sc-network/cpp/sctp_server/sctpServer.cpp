@@ -86,10 +86,14 @@ bool sctpServer::start(const QString &config)
     sc_memory_params params;
     sc_memory_params_clear(&params);
 
+    std::string config_path = config.toStdString();
+    std::string repo_path = mRepoPath.toStdString();
+    std::string ext_path = mExtPath.toStdString();
+
     params.clear = SC_FALSE;
-    params.config_file = config.toStdString().c_str();
-    params.repo_path = mRepoPath.toStdString().c_str();
-    params.ext_path = mExtPath.toStdString().c_str();
+    params.config_file = config_path.c_str();
+    params.repo_path = repo_path.c_str();
+    params.ext_path = ext_path.c_str();
 
     if (sc_memory_initialize(&params) != SC_TRUE)
         return false;

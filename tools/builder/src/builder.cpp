@@ -156,8 +156,10 @@ void Builder::collectFiles()
         {
             boost::filesystem::path path = *it;
             String filename = path.string();
+            String ext = StringUtil::getFileExtension(filename);
+            StringUtil::toLowerCase(ext);
 
-            if (StringUtil::endsWith(filename, "scs", true))
+            if (mTranslatorFactories.find(ext) != mTranslatorFactories.end())
                 mFileSet.insert(filename);
         }
 

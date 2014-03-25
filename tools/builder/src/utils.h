@@ -41,6 +41,9 @@ public:
     //! Split file name to path and name
     static void splitFilename(const String& qualifiedName, String& outBasename, String& outPath);
 
+    //! Returns file extension
+    static String getFileExtension(const String &filename);
+
     //! Make file path normalized
     static String normalizeFilePath(const String& init, bool makeLowerCase);
 

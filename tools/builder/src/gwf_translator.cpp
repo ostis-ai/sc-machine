@@ -21,6 +21,8 @@ along with OSTIS.  If not, see <http://www.gnu.org/licenses/>.
 */
 #include "gwf_translator.h"
 #include "tinyxml/tinyxml2.h"
+#include "base64/base64.h"
+#include "utils.h"
 
 #include <fstream>
 #include <iostream>
@@ -93,6 +95,7 @@ bool GwfTranslator::processString(const String &data)
     // collect elements
     std::vector<tinyxml2::XMLElement*> nodes;
     std::vector<tinyxml2::XMLElement*> edges;
+    std::vector<tinyxml2::XMLElement*> all;
 
     static std::string s_arc = "arc";
     static std::string s_pair = "pair";
@@ -100,6 +103,7 @@ bool GwfTranslator::processString(const String &data)
     tinyxml2::XMLElement *el = root->FirstChildElement();
     while (el)
     {
+        all.push_back(el);
         if (el->Name() == s_arc || el->Name() == s_pair)
             edges.push_back(el);
         else
@@ -124,20 +128,22 @@ bool GwfTranslator::processString(const String &data)
         String id = el->Attribute("id");
         sc_addr addr;
 
+        itId = id_map.find(id);
+        if (itId != id_map.end())
+            continue;
+
         if (idtf.size() > 0)
         {
             if (getScAddr(idtf, addr))
+            {
+                id_map[id] = addr;
                 continue;    // skip elements that already exists
-        } else
-        {
-            itId = id_map.find(id);
-            if (itId != id_map.end())
-                continue;
+            }
         }
 
         if (el->Name() == s_contour)
         {
-            addr = sc_memory_node_new(sc_type_const);
+            addr = sc_memory_node_new(sc_type_const | sc_type_node_struct);
             appendScAddr(addr, idtf);
         } else
         {
@@ -152,12 +158,89 @@ bool GwfTranslator::processString(const String &data)
 
             if (content->IntAttribute("type") == 0)
             {
-
+                addr = sc_memory_node_new(convertType(el->Attribute("type")));
+                appendScAddr(addr, idtf);
             } else
             {
                 // need to create link
+                addr = sc_memory_link_new();
+                // setup content
+                String data = base64_decode(content->GetText());
+                sc_stream *stream = sc_stream_memory_new(data.c_str(), data.size(), SC_STREAM_READ, SC_FALSE);
+                sc_memory_set_link_content(addr, stream);
+                sc_stream_free(stream);
+
+                if (mParams.autoFormatInfo)
+                {
+                    String ext = StringUtil::getFileExtension(content->Attribute("file_name"));
+                    if (!ext.empty())
+                        generateFormatInfo(addr, ext);
+                }
             }
         }
+
+        if (!idtf.empty())
+            sc_helper_set_system_identifier(addr, idtf.c_str(), idtf.size());
+
+        id_map[id] = addr;
+    }
+
+    // now create edges
+    bool created = true;
+    while (created)
+    {
+        created = false;
+
+        itEnd = edges.end();
+        for (it = edges.begin(); it != itEnd; ++it)
+        {
+            el = *it;
+
+            sc_addr addr;
+            String id = el->Attribute("id");
+            String idtf = el->Attribute("idtf");
+
+            if (id_map.find(id) != id_map.end())
+                continue;
+
+            if (getScAddr(idtf, addr))
+                continue;
+
+            // get begin and end elements
+            tStringAddrMap::iterator itB = id_map.find(el->Attribute("id_b"));
+            if (itB == id_map.end())
+                continue;
+
+            tStringAddrMap::iterator itE = id_map.find(el->Attribute("id_e"));
+            if (itE == id_map.end())
+                continue;
+
+            // create arc
+            created = true;
+            addr = sc_memory_arc_new(convertType(el->Attribute("type")), itB->second, itE->second);
+            appendScAddr(addr, idtf);
+            id_map[id] = addr;
+
+            if (!idtf.empty())
+                sc_helper_set_system_identifier(addr, idtf.c_str(), idtf.size());
+        }
+    }
+
+    // now append elemnts into contours
+    itEnd = all.end();
+    for (it = all.begin(); it != itEnd; ++it)
+    {
+        el = *it;
+
+        tStringAddrMap::iterator itSelf = id_map.find(el->Attribute("id"));
+        if (itSelf == id_map.end())
+            continue;
+
+        tStringAddrMap::iterator itP = id_map.find(el->Attribute("parent"));
+        if (itP == id_map.end())
+            continue;
+
+        sc_memory_arc_new(sc_type_arc_pos_const_perm, itP->second, itSelf->second);
     }
 
     return false;
@@ -186,11 +269,17 @@ bool GwfTranslator::getScAddr(const String &idtf, sc_addr &addr)
         return true;
     }
 
+    if (sc_helper_find_element_by_system_identifier(idtf.c_str(), idtf.size(), &addr) == SC_RESULT_OK)
+        return true;
+
     return false;
 }
 
 sc_type GwfTranslator::convertType(const String &type)
 {
+    if (type == "node/-/not_define")
+        return sc_type_node;
+
     if (type == "node/const/general_node" || type == "node/const/general")
         return sc_type_node | sc_type_const;
 
@@ -198,22 +287,100 @@ sc_type GwfTranslator::convertType(const String &type)
         return sc_type_node | sc_type_var;
 
     if (type == "node/const/relation")
-        return sc_type_node | sc_type_node_tuple | sc_type_const;
-
-    if (type == "node/var/relation")
-        return sc_type_node | sc_type_node_tuple | sc_type_var;
-
-    if (type == "node/const/attribute")
         return sc_type_node | sc_type_node_norole | sc_type_const;
 
-    if (type == "node/var/attribute")
+    if (type == "node/var/relation")
         return sc_type_node | sc_type_node_norole | sc_type_var;
+
+    if (type == "node/const/attribute")
+        return sc_type_node | sc_type_node_role | sc_type_const;
+
+    if (type == "node/var/attribute")
+        return sc_type_node | sc_type_node_role | sc_type_var;
 
     if (type == "node/const/nopredmet")
         return sc_type_node | sc_type_node_struct | sc_type_const;
 
     if (type == "node/var/nopredmet")
         return sc_type_node | sc_type_node_struct | sc_type_var;
+
+    if (type == "node/const/predmet")
+        return sc_type_node | sc_type_node_abstract | sc_type_const;
+
+    if (type == "node/var/predmet")
+        return sc_type_node | sc_type_node_abstract | sc_type_var;
+
+    if (type == "node/const/group")
+        return sc_type_node | sc_type_node_class | sc_type_const;
+
+    if (type == "node/var/group")
+        return sc_type_node | sc_type_node_class | sc_type_var;
+
+    if (type == "node/const/asymmetry")
+        return sc_type_node | sc_type_node_tuple | sc_type_const;
+
+    if (type == "node/var/asymmetry")
+        return sc_type_node | sc_type_node_tuple | sc_type_var;
+
+
+
+    // -------
+    if (type == "arc/-/-")
+        return sc_type_arc_access;
+
+    if (type == "pair/orient")
+        return sc_type_arc_common;
+
+    if (type == "pair/noorient")
+        return sc_type_edge_common;
+
+    if (type == "pair/const/synonym")
+        return sc_type_edge_common | sc_type_const;
+
+    if (type == "pair/var/synonym")
+        return sc_type_edge_common | sc_type_var;
+
+    if (type == "pair/const/orient")
+        return sc_type_arc_common | sc_type_const;
+
+    if (type == "pair/var/orient")
+        return sc_type_arc_common | sc_type_var;
+
+    if (type == "arc/const/fuz")
+        return sc_type_arc_access | sc_type_const | sc_type_arc_fuz | sc_type_arc_perm;
+
+    if (type == "arc/var/fuz")
+        return sc_type_arc_access | sc_type_var | sc_type_arc_fuz | sc_type_arc_perm;
+
+    if (type == "arc/const/fuz/temp")
+        return sc_type_arc_access | sc_type_const | sc_type_arc_fuz | sc_type_arc_temp;
+
+    if (type == "arc/var/fuz/temp")
+        return sc_type_arc_access | sc_type_var | sc_type_arc_fuz | sc_type_arc_temp;
+
+    if (type == "arc/const/neg")
+        return sc_type_arc_access | sc_type_const | sc_type_arc_neg | sc_type_arc_perm;
+
+    if (type == "arc/var/neg")
+        return sc_type_arc_access | sc_type_var | sc_type_arc_neg | sc_type_arc_perm;
+
+    if (type == "arc/const/neg/temp")
+        return sc_type_arc_access | sc_type_const | sc_type_arc_neg | sc_type_arc_temp;
+
+    if (type == "arc/var/neg/temp")
+        return sc_type_arc_access | sc_type_var | sc_type_arc_neg | sc_type_arc_temp;
+
+    if (type == "arc/const/pos")
+        return sc_type_arc_access | sc_type_const | sc_type_arc_pos | sc_type_arc_perm;
+
+    if (type == "arc/var/pos")
+        return sc_type_arc_access | sc_type_var | sc_type_arc_pos | sc_type_arc_perm;
+
+    if (type == "arc/const/pos/temp")
+        return sc_type_arc_access | sc_type_const | sc_type_arc_pos | sc_type_arc_temp;
+
+    if (type == "arc/var/pos/temp")
+        return sc_type_arc_access | sc_type_var | sc_type_arc_pos | sc_type_arc_temp;
 
     return sc_type_node;
 }

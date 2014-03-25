@@ -70,6 +70,16 @@ bool StringUtil::endsWith(const std::string &str, const std::string &pattern, bo
     return (endOfThis == pattern);
 }
 
+String StringUtil::getFileExtension(const String &filename)
+{
+    // get file extension
+    size_t n = filename.rfind(".");
+    if (n == std::string::npos)
+        return String();
+
+    return filename.substr(n + 1, std::string::npos);
+}
+
 void StringUtil::splitFilename(const String& qualifiedName, String& outBasename, String& outPath)
 {
     String path = qualifiedName;

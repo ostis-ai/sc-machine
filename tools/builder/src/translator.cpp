@@ -101,6 +101,9 @@ iTranslator::eIdtfVisibility iTranslator::_getIdentifierVisibility(const String 
 
 void iTranslator::appendScAddr(sc_addr addr, const String &idtf)
 {
+    if (idtf.empty())
+        return;
+
     switch (_getIdentifierVisibility(idtf))
     {
     case IdtfSystem:
