@@ -264,6 +264,8 @@ sc_result agent_search_full_semantic_neighborhood(const sc_event *event, sc_addr
     if (sc_helper_check_arc(keynode_question_full_semantic_neighborhood, question, sc_type_arc_pos_const_perm) == SC_FALSE)
         return SC_RESULT_ERROR_INVALID_TYPE;
 
+    log_agent_started(keynode_sc_agent_of_search_of_full_semantic_neighborhood_c);
+
     answer = create_answer_node();
 
     // get question argument
@@ -509,6 +511,7 @@ sc_result agent_search_full_semantic_neighborhood(const sc_event *event, sc_addr
     }
     sc_iterator3_free(it1);
 
+    log_agent_finished_successfully(keynode_sc_agent_of_search_of_full_semantic_neighborhood_c);
     connect_answer_to_question(question, answer);
     finish_question(question);
 
@@ -531,6 +534,7 @@ sc_result agent_search_links_of_relation_connected_with_element(const sc_event *
     if (sc_helper_check_arc(keynode_question_search_links_of_relation_connected_with_element, question, sc_type_arc_pos_const_perm) == SC_FALSE)
         return SC_RESULT_ERROR_INVALID_TYPE;
 
+    log_agent_started(keynode_sc_agent_of_search_of_links_of_relation_connected_with_element_c);
     answer = create_answer_node();
 
     // get question arguments
@@ -798,7 +802,12 @@ sc_result agent_search_links_of_relation_connected_with_element(const sc_event *
 
     if (found == SC_TRUE)
     {
+        log_agent_finished_successfully(keynode_sc_agent_of_search_of_links_of_relation_connected_with_element_c);
         appendIntoAnswer(answer, param_rel);
+    }
+    else
+    {
+        log_agent_finished_unsuccessfully(keynode_sc_agent_of_search_of_links_of_relation_connected_with_element_c);
     }
 
     connect_answer_to_question(question, answer);

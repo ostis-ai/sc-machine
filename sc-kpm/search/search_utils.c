@@ -26,6 +26,7 @@ along with OSTIS. If not, see <http://www.gnu.org/licenses/>.
 
 #include <sc_helper.h>
 #include <sc_memory_headers.h>
+#include <glib.h>
 
 sc_addr create_answer_node()
 {
@@ -66,4 +67,38 @@ void finish_question(sc_addr question)
 
     arc = sc_memory_arc_new(sc_type_arc_pos_const_perm, keynode_question_finished, question);
     SYSTEM_ELEMENT(arc);
+}
+
+void log_agent_behavior(sc_char *format, sc_addr agent_keynode)
+{
+    sc_addr idtf;
+    if (SC_RESULT_OK == sc_helper_get_system_identifier(agent_keynode, &idtf))
+    {
+        sc_stream *stream;
+        sc_uint32 length = 0, read_length = 0;
+        sc_char *data;
+        sc_memory_get_link_content(idtf, &stream);
+        sc_stream_get_length(stream, &length);
+        data = calloc(length + 1, sizeof(sc_char));
+        sc_stream_read_data(stream, data, length, &read_length);
+        data[length] = '\0';
+        g_message(format, data);
+        sc_stream_free(stream);
+        free(data);
+    }
+}
+
+void log_agent_started(sc_addr agent_keynode)
+{
+    log_agent_behavior("sc-agent started: %s\n", agent_keynode);
+}
+
+void log_agent_finished_successfully(sc_addr agent_keynode)
+{
+    log_agent_behavior("sc-agent finished successfully: %s\n", agent_keynode);
+}
+
+void log_agent_finished_unsuccessfully(sc_addr agent_keynode)
+{
+    log_agent_behavior("sc-agent finished unsuccessfully: %s\n", agent_keynode);
 }

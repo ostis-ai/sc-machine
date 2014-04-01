@@ -42,6 +42,8 @@ sc_result agent_search_all_const_pos_input_arc(const sc_event *event, sc_addr ar
 
     answer = create_answer_node();
 
+    log_agent_started(keynode_sc_agent_of_search_of_all_input_arcs_c);
+
     // find argument
     it1 = sc_iterator3_f_a_a_new(question, sc_type_arc_pos_const_perm, 0);
     if (sc_iterator3_next(it1) == SC_TRUE)
@@ -65,6 +67,7 @@ sc_result agent_search_all_const_pos_input_arc(const sc_event *event, sc_addr ar
     }
     sc_iterator3_free(it1);
 
+    log_agent_finished_successfully(keynode_sc_agent_of_search_of_all_input_arcs_c);
     connect_answer_to_question(question, answer);
     finish_question(question);
 
@@ -88,6 +91,7 @@ sc_result agent_search_all_const_pos_input_arc_with_rel(const sc_event *event, s
 
     answer = create_answer_node();
 
+    log_agent_started(keynode_sc_agent_of_search_of_all_input_arcs_with_rel_c);
     // get question argument
     it1 = sc_iterator3_f_a_a_new(question, sc_type_arc_pos_const_perm, 0);
     if (sc_iterator3_next(it1) == SC_TRUE)
@@ -123,6 +127,7 @@ sc_result agent_search_all_const_pos_input_arc_with_rel(const sc_event *event, s
     }
     sc_iterator3_free(it1);
 
+    log_agent_finished_successfully(keynode_sc_agent_of_search_of_all_input_arcs_with_rel_c);
     connect_answer_to_question(question, answer);
     finish_question(question);
 

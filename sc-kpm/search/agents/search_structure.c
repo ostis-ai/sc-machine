@@ -42,6 +42,8 @@ sc_result agent_search_decomposition(const sc_event *event, sc_addr arg)
     if (sc_helper_check_arc(keynode_question_decomposition, question, sc_type_arc_pos_const_perm) == SC_FALSE)
         return SC_RESULT_ERROR_INVALID_TYPE;
 
+    log_agent_started(keynode_sc_agent_of_search_of_decomposition_agent_c);
+
     answer = create_answer_node();
 
     // get operation argument
@@ -137,6 +139,7 @@ sc_result agent_search_decomposition(const sc_event *event, sc_addr arg)
     }
     sc_iterator3_free(it1);
 
+    log_agent_finished_successfully(keynode_sc_agent_of_search_of_decomposition_agent_c);
     connect_answer_to_question(question, answer);
     finish_question(question);
 
@@ -248,6 +251,7 @@ sc_result agent_search_all_subclasses_in_quasybinary_relation(const sc_event *ev
     if (sc_helper_check_arc(keynode_question_search_all_subclasses_in_quasybinary_relation, question, sc_type_arc_pos_const_perm) == SC_FALSE)
         return SC_RESULT_ERROR_INVALID_TYPE;
 
+    log_agent_started(keynode_sc_agent_of_search_of_all_subclasses_in_quasybinary_relation_c);
     answer = create_answer_node();
 
     // get operation argument
@@ -263,6 +267,7 @@ sc_result agent_search_all_subclasses_in_quasybinary_relation(const sc_event *ev
     }
     sc_iterator3_free(it1);
 
+    log_agent_finished_successfully(keynode_sc_agent_of_search_of_all_subclasses_in_quasybinary_relation_c);
     connect_answer_to_question(question, answer);
     finish_question(question);
 
@@ -330,6 +335,7 @@ sc_result agent_search_all_superclasses_in_quasybinary_relation(const sc_event *
     if (sc_helper_check_arc(keynode_question_search_all_superclasses_in_quasybinary_relation, question, sc_type_arc_pos_const_perm) == SC_FALSE)
         return SC_RESULT_ERROR_INVALID_TYPE;
 
+    log_agent_started(keynode_sc_agent_of_search_of_all_superclasses_in_quasybinary_relation_c);
     answer = create_answer_node();
 
     // get operation argument
@@ -345,6 +351,7 @@ sc_result agent_search_all_superclasses_in_quasybinary_relation(const sc_event *
     }
     sc_iterator3_free(it1);
 
+    log_agent_finished_successfully(keynode_sc_agent_of_search_of_all_superclasses_in_quasybinary_relation_c);
     connect_answer_to_question(question, answer);
     finish_question(question);
 

@@ -50,4 +50,22 @@ void appendIntoAnswer(sc_addr answer, sc_addr el);
  */
 void finish_question(sc_addr question);
 
+/*!
+ * Prints in log information that sc-agent has started
+ * @param agent_keynode sc-element, which denotes given sc-agent
+ */
+void log_agent_started(sc_addr agent_keynode);
+
+/*!
+ * Prints in log information that sc-agent has finished successfully
+ * @param agent_keynode sc-element, which denotes given sc-agent
+ */
+void log_agent_finished_successfully(sc_addr agent_keynode);
+
+/*!
+ * Prints in log information that sc-agent has finished unsuccessfully
+ * @param agent_keynode sc-element, which denotes given sc-agent
+ */
+void log_agent_finished_unsuccessfully(sc_addr agent_keynode);
+
 #endif

@@ -40,6 +40,8 @@ sc_result agent_search_all_identifiers(const sc_event *event, sc_addr arg)
     if (sc_helper_check_arc(keynode_question_all_identifiers, question, sc_type_arc_pos_const_perm) == SC_FALSE)
         return SC_RESULT_ERROR_INVALID_TYPE;
 
+    log_agent_started(keynode_sc_agent_of_search_of_all_identifiers_agent_c);
+
     answer = create_answer_node();
 
     // get operation argument
@@ -86,9 +88,17 @@ sc_result agent_search_all_identifiers(const sc_event *event, sc_addr arg)
     sc_iterator3_free(it1);
 
     if (found == SC_TRUE)
+    {
+        log_agent_finished_successfully(keynode_sc_agent_of_search_of_all_identifiers_agent_c);
         appendIntoAnswer(answer, keynode_nrel_identification);
+    }
+    else
+    {
+        log_agent_finished_unsuccessfully(keynode_sc_agent_of_search_of_all_identifiers_agent_c);
+    }
 
     connect_answer_to_question(question, answer);
+
     finish_question(question);
 
     return SC_RESULT_OK;
@@ -107,6 +117,8 @@ sc_result agent_search_all_identified_elements(const sc_event *event, sc_addr ar
     if (sc_helper_check_arc(keynode_question_all_identified_elements, question, sc_type_arc_pos_const_perm) == SC_FALSE)
         return SC_RESULT_ERROR_INVALID_TYPE;
 
+    log_agent_started(keynode_sc_agent_of_search_of_all_identified_elements_agent_c);
+
     answer = create_answer_node();
 
     it1 = sc_iterator3_f_a_a_new(keynode_nrel_main_idtf, sc_type_arc_pos_const_perm, sc_type_arc_common | sc_type_const);
@@ -124,7 +136,14 @@ sc_result agent_search_all_identified_elements(const sc_event *event, sc_addr ar
     sc_iterator3_free(it1);
 
     if (found == SC_TRUE)
+    {
+        log_agent_finished_successfully(keynode_sc_agent_of_search_of_all_identified_elements_agent_c);
         appendIntoAnswer(answer, keynode_nrel_main_idtf);
+    }
+    else
+    {
+        log_agent_finished_unsuccessfully(keynode_sc_agent_of_search_of_all_identified_elements_agent_c);
+    }
 
     connect_answer_to_question(question, answer);
     finish_question(question);

@@ -63,6 +63,19 @@ sc_addr keynode_languages;
 sc_addr keynode_rrel_1;
 sc_addr keynode_rrel_2;
 
+sc_addr keynode_sc_agent_of_search_of_all_output_arcs_c;
+sc_addr keynode_sc_agent_of_search_of_all_output_arcs_with_rel_c;
+sc_addr keynode_sc_agent_of_search_of_all_input_arcs_c;
+sc_addr keynode_sc_agent_of_search_of_all_input_arcs_with_rel_c;
+sc_addr keynode_sc_agent_of_search_of_decomposition_agent_c;
+sc_addr keynode_sc_agent_of_search_of_all_subclasses_in_quasybinary_relation_c;
+sc_addr keynode_sc_agent_of_search_of_all_superclasses_in_quasybinary_relation_c;
+sc_addr keynode_sc_agent_of_search_of_all_identifiers_agent_c;
+sc_addr keynode_sc_agent_of_search_of_all_identified_elements_agent_c;
+sc_addr keynode_sc_agent_of_search_of_full_semantic_neighborhood_c;
+sc_addr keynode_sc_agent_of_search_of_links_of_relation_connected_with_element_c;
+sc_addr keynode_sc_agent_of_full_pattern_search_c;
+
 const char keynode_question_all_output_const_pos_arc_str[] = "question_search_all_output_const_pos_arcs";
 const char keynode_question_all_input_const_pos_arc_str[] = "question_search_all_input_const_pos_arcs";
 const char keynode_question_all_output_const_pos_arc_with_rel_str[] = "question_search_all_output_const_pos_arcs_with_rel";
@@ -100,6 +113,19 @@ const char keynode_system_element_str[] = "system_element";
 const char keynode_sc_neighborhood_str[] = "sc_neighborhood";
 const char keynode_languages_str[] = "languages";
 
+const char keynode_sc_agent_of_search_of_all_output_arcs_c_str[] = "sc_agent_of_search_of_all_output_arcs_c";
+const char keynode_sc_agent_of_search_of_all_output_arcs_with_rel_c_str[] = "sc_agent_of_search_of_all_output_arcs_with_rel_c";
+const char keynode_sc_agent_of_search_of_all_input_arcs_c_str[] = "sc_agent_of_search_of_all_input_arcs_c";
+const char keynode_sc_agent_of_search_of_all_input_arcs_with_rel_c_str[] = "sc_agent_of_search_of_all_input_arcs_with_rel_c";
+const char keynode_sc_agent_of_search_of_decomposition_agent_c_str[] = "sc_agent_of_search_of_decomposition_agent_c";
+const char keynode_sc_agent_of_search_of_all_subclasses_in_quasybinary_relation_c_str[] = "sc_agent_of_search_of_all_subclasses_in_quasybinary_relation_c";
+const char keynode_sc_agent_of_search_of_all_superclasses_in_quasybinary_relation_c_str[] = "sc_agent_of_search_of_all_superclasses_in_quasybinary_relation_c";
+const char keynode_sc_agent_of_search_of_all_identifiers_agent_c_str[] = "sc_agent_of_search_of_all_identifiers_agent_c";
+const char keynode_sc_agent_of_search_of_all_identified_elements_agent_c_str[] = "sc_agent_of_search_of_all_identified_elements_agent_c";
+const char keynode_sc_agent_of_search_of_full_semantic_neighborhood_c_str[] = "sc_agent_of_search_of_full_semantic_neighborhood_c";
+const char keynode_sc_agent_of_search_of_links_of_relation_connected_with_element_c_str[] = "sc_agent_of_search_of_links_of_relation_connected_with_element_c";
+const char keynode_sc_agent_of_full_pattern_search_c_str[] = "sc_agent_of_full_pattern_search_c";
+
 #define resolve_keynode(keynode) \
     if (sc_helper_resolve_system_identifier(keynode##_str, &keynode) == SC_FALSE) \
     {\
@@ -109,7 +135,6 @@ const char keynode_languages_str[] = "languages";
             return SC_RESULT_ERROR; \
         g_message("Created element with system identifier: %s", keynode##_str); \
     }
-
 
 sc_result search_keynodes_initialize()
 {
@@ -150,6 +175,19 @@ sc_result search_keynodes_initialize()
     resolve_keynode(keynode_nrel_inclusion);
     resolve_keynode(keynode_system_element);
     resolve_keynode(keynode_languages);
+
+    resolve_keynode(keynode_sc_agent_of_search_of_all_output_arcs_c);
+    resolve_keynode(keynode_sc_agent_of_search_of_all_output_arcs_with_rel_c);
+    resolve_keynode(keynode_sc_agent_of_search_of_all_input_arcs_c);
+    resolve_keynode(keynode_sc_agent_of_search_of_all_input_arcs_with_rel_c);
+    resolve_keynode(keynode_sc_agent_of_search_of_decomposition_agent_c);
+    resolve_keynode(keynode_sc_agent_of_search_of_all_subclasses_in_quasybinary_relation_c);
+    resolve_keynode(keynode_sc_agent_of_search_of_all_superclasses_in_quasybinary_relation_c);
+    resolve_keynode(keynode_sc_agent_of_search_of_all_identifiers_agent_c);
+    resolve_keynode(keynode_sc_agent_of_search_of_all_identified_elements_agent_c);
+    resolve_keynode(keynode_sc_agent_of_search_of_full_semantic_neighborhood_c);
+    resolve_keynode(keynode_sc_agent_of_search_of_links_of_relation_connected_with_element_c);
+    resolve_keynode(keynode_sc_agent_of_full_pattern_search_c);
 
     return SC_RESULT_OK;
 }

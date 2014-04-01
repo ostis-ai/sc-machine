@@ -40,6 +40,8 @@ sc_result agent_search_all_const_pos_output_arc(const sc_event *event, sc_addr a
     if (sc_helper_check_arc(keynode_question_all_output_const_pos_arc, question, sc_type_arc_pos_const_perm) == SC_FALSE)
         return SC_RESULT_ERROR_INVALID_TYPE;
 
+    log_agent_started(keynode_sc_agent_of_search_of_all_output_arcs_c);
+
     answer = create_answer_node();
 
     // get operation argument
@@ -66,6 +68,7 @@ sc_result agent_search_all_const_pos_output_arc(const sc_event *event, sc_addr a
     }
     sc_iterator3_free(it1);
 
+    log_agent_finished_successfully(keynode_sc_agent_of_search_of_all_output_arcs_c);
     connect_answer_to_question(question, answer);
     finish_question(question);
 
@@ -85,6 +88,8 @@ sc_result agent_search_all_const_pos_output_arc_with_rel(const sc_event *event, 
     // check question type
     if (sc_helper_check_arc(keynode_question_all_output_const_pos_arc_with_rel, question, sc_type_arc_pos_const_perm) == SC_FALSE)
         return SC_RESULT_ERROR_INVALID_TYPE;
+
+    log_agent_started(keynode_sc_agent_of_search_of_all_output_arcs_with_rel_c);
 
     answer = create_answer_node();
 
@@ -123,7 +128,7 @@ sc_result agent_search_all_const_pos_output_arc_with_rel(const sc_event *event, 
     }
     sc_iterator3_free(it1);
 
-
+    log_agent_finished_successfully(keynode_sc_agent_of_search_of_all_output_arcs_with_rel_c);
     connect_answer_to_question(question, answer);
     finish_question(question);
 
