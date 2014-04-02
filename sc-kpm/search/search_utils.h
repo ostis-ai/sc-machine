@@ -52,20 +52,15 @@ void finish_question(sc_addr question);
 
 /*!
  * Prints in log information that sc-agent has started
- * @param agent_keynode sc-element, which denotes given sc-agent
+ * @param agent_keynode system identifier of sc-element, which denotes given sc-agent
  */
-void log_agent_started(sc_addr agent_keynode);
+void log_agent_started(const sc_char *agent_keynode_str);
 
 /*!
- * Prints in log information that sc-agent has finished successfully
- * @param agent_keynode sc-element, which denotes given sc-agent
+ * Prints in log information that sc-agent has finished
+ * @param agent_keynode_str system identifier of sc-element, which denotes given sc-agent
+ * @param success if SC_TRUE then agents has finisehed successfully, otherwise unsuccessfully
  */
-void log_agent_finished_successfully(sc_addr agent_keynode);
-
-/*!
- * Prints in log information that sc-agent has finished unsuccessfully
- * @param agent_keynode sc-element, which denotes given sc-agent
- */
-void log_agent_finished_unsuccessfully(sc_addr agent_keynode);
+void log_agent_finished(const sc_char *agent_keynode_str, sc_bool success);
 
 #endif

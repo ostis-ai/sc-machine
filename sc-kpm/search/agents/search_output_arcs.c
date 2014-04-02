@@ -31,7 +31,8 @@ sc_result agent_search_all_const_pos_output_arc(const sc_event *event, sc_addr a
 {
     sc_addr question, answer;
     sc_iterator3 *it1, *it2;
-    sc_bool sys_off = SC_TRUE;
+    sc_bool sys_off = SC_TRUE, found = SC_FALSE;
+    const char keynode_sc_agent_of_search_of_all_output_arcs_c_str[] = "sc_agent_of_search_of_all_output_arcs_c";
 
     if (!sc_memory_get_arc_end(arg, &question))
         return SC_RESULT_ERROR_INVALID_PARAMS;
@@ -40,7 +41,7 @@ sc_result agent_search_all_const_pos_output_arc(const sc_event *event, sc_addr a
     if (sc_helper_check_arc(keynode_question_all_output_const_pos_arc, question, sc_type_arc_pos_const_perm) == SC_FALSE)
         return SC_RESULT_ERROR_INVALID_TYPE;
 
-    log_agent_started(keynode_sc_agent_of_search_of_all_output_arcs_c);
+    log_agent_started(keynode_sc_agent_of_search_of_all_output_arcs_c_str);
 
     answer = create_answer_node();
 
@@ -57,6 +58,8 @@ sc_result agent_search_all_const_pos_output_arc(const sc_event *event, sc_addr a
         {
             if (sys_off == SC_TRUE && (IS_SYSTEM_ELEMENT(sc_iterator3_value(it2, 1)) || IS_SYSTEM_ELEMENT(sc_iterator3_value(it2, 2))))
                 continue;
+
+            found = SC_TRUE;
 
             appendIntoAnswer(answer, sc_iterator3_value(it2, 1));
             appendIntoAnswer(answer, sc_iterator3_value(it2, 2));
@@ -68,7 +71,7 @@ sc_result agent_search_all_const_pos_output_arc(const sc_event *event, sc_addr a
     }
     sc_iterator3_free(it1);
 
-    log_agent_finished_successfully(keynode_sc_agent_of_search_of_all_output_arcs_c);
+    log_agent_finished(keynode_sc_agent_of_search_of_all_output_arcs_c_str, found);
     connect_answer_to_question(question, answer);
     finish_question(question);
 
@@ -80,7 +83,8 @@ sc_result agent_search_all_const_pos_output_arc_with_rel(const sc_event *event, 
 {
     sc_addr question, answer;
     sc_iterator3 *it1, *it2, *it3;
-    sc_bool sys_off = SC_TRUE;
+    sc_bool sys_off = SC_TRUE, found = SC_FALSE;
+    const char keynode_sc_agent_of_search_of_all_output_arcs_with_rel_c_str[] = "sc_agent_of_search_of_all_output_arcs_with_rel_c";
 
     if (!sc_memory_get_arc_end(arg, &question))
         return SC_RESULT_ERROR_INVALID_PARAMS;
@@ -89,7 +93,7 @@ sc_result agent_search_all_const_pos_output_arc_with_rel(const sc_event *event, 
     if (sc_helper_check_arc(keynode_question_all_output_const_pos_arc_with_rel, question, sc_type_arc_pos_const_perm) == SC_FALSE)
         return SC_RESULT_ERROR_INVALID_TYPE;
 
-    log_agent_started(keynode_sc_agent_of_search_of_all_output_arcs_with_rel_c);
+    log_agent_started(keynode_sc_agent_of_search_of_all_output_arcs_with_rel_c_str);
 
     answer = create_answer_node();
 
@@ -106,6 +110,8 @@ sc_result agent_search_all_const_pos_output_arc_with_rel(const sc_event *event, 
         {
             if (sys_off == SC_TRUE && (IS_SYSTEM_ELEMENT(sc_iterator3_value(it2, 1)) || IS_SYSTEM_ELEMENT(sc_iterator3_value(it2, 2))))
                 continue;
+
+            found = SC_TRUE;
 
             // iterate relations
             it3 = sc_iterator3_a_a_f_new(sc_type_node, sc_type_arc_pos_const_perm, sc_iterator3_value(it2, 1));
@@ -128,7 +134,7 @@ sc_result agent_search_all_const_pos_output_arc_with_rel(const sc_event *event, 
     }
     sc_iterator3_free(it1);
 
-    log_agent_finished_successfully(keynode_sc_agent_of_search_of_all_output_arcs_with_rel_c);
+    log_agent_finished(keynode_sc_agent_of_search_of_all_output_arcs_with_rel_c_str, found);
     connect_answer_to_question(question, answer);
     finish_question(question);
 
