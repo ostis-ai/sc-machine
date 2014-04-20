@@ -89,7 +89,7 @@ sc_result agent_search_all_identifiers(const sc_event *event, sc_addr arg)
     sc_iterator3_free(it1);
 
     if (found == SC_TRUE)
-        appendIntoAnswer(answer, keynode_nrel_identification);
+        appendIntoAnswer(answer, keynode_identification_relation);
 
     log_agent_finished(keynode_sc_agent_of_search_of_all_identifiers_agent_c_str, found);
 

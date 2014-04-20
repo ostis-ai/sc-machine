@@ -25,7 +25,6 @@ along with OSTIS. If not, see <http://www.gnu.org/licenses/>.
 #include "sc_memory_headers.h"
 #include <glib.h>
 
-
 sc_addr keynode_question_all_output_const_pos_arc;
 sc_addr keynode_question_all_input_const_pos_arc;
 sc_addr keynode_question_all_output_const_pos_arc_with_rel;
@@ -38,6 +37,7 @@ sc_addr keynode_question_search_all_superclasses_in_quasybinary_relation;
 sc_addr keynode_question_search_all_subclasses_in_quasybinary_relation;
 sc_addr keynode_question_search_links_of_relation_connected_with_element;
 sc_addr keynode_question_search_full_pattern;
+sc_addr keynode_question_search_full_pattern_with_full_result_gen;
 
 sc_addr keynode_question;
 sc_addr keynode_question_initiated;
@@ -51,7 +51,6 @@ sc_addr keynode_nonbinary_relation;
 sc_addr keynode_typical_sc_neighborhood;
 sc_addr keynode_sc_neighborhood;
 
-sc_addr keynode_nrel_identification;
 sc_addr keynode_nrel_translation;
 sc_addr keynode_nrel_main_idtf;
 sc_addr keynode_rrel_key_sc_element;
@@ -75,6 +74,7 @@ sc_addr keynode_sc_agent_of_search_of_all_identified_elements_agent_c;
 sc_addr keynode_sc_agent_of_search_of_full_semantic_neighborhood_c;
 sc_addr keynode_sc_agent_of_search_of_links_of_relation_connected_with_element_c;
 sc_addr keynode_sc_agent_of_full_pattern_search_c;
+sc_addr keynode_sc_agent_of_full_pattern_search_with_full_result_gen_c;
 
 const char keynode_question_all_output_const_pos_arc_str[] = "question_search_all_output_const_pos_arcs";
 const char keynode_question_all_input_const_pos_arc_str[] = "question_search_all_input_const_pos_arcs";
@@ -85,6 +85,7 @@ const char keynode_question_decomposition_str[] = "question_search_decomposition
 const char keynode_question_all_identifiers_str[] = "question_search_all_identifiers";
 const char keynode_question_all_identified_elements_str[] = "question_search_all_identified_elements";
 const char keynode_question_search_full_pattern_str[] = "question_full_pattern_search";
+const char keynode_question_search_full_pattern_with_full_result_gen_str[] = "question_full_pattern_search_with_full_result_gen";
 
 const char keynode_question_search_all_subclasses_in_quasybinary_relation_str[] = "question_search_all_subclasses_in_quasybinary_relation";
 const char keynode_question_search_all_superclasses_in_quasybinary_relation_str[] = "question_search_all_superclasses_in_quasybinary_relation";
@@ -125,6 +126,7 @@ const char keynode_sc_agent_of_search_of_all_identified_elements_agent_c_str[] =
 const char keynode_sc_agent_of_search_of_full_semantic_neighborhood_c_str[] = "sc_agent_of_search_of_full_semantic_neighborhood_c";
 const char keynode_sc_agent_of_search_of_links_of_relation_connected_with_element_c_str[] = "sc_agent_of_search_of_links_of_relation_connected_with_element_c";
 const char keynode_sc_agent_of_full_pattern_search_c_str[] = "sc_agent_of_full_pattern_search_c";
+const char keynode_sc_agent_of_full_pattern_search_with_full_result_gen_c_str[] = "sc_agent_of_full_pattern_search_with_full_result_gen_c";
 
 #define resolve_keynode(keynode) \
     if (sc_helper_resolve_system_identifier(keynode##_str, &keynode) == SC_FALSE) \
@@ -138,7 +140,6 @@ const char keynode_sc_agent_of_full_pattern_search_c_str[] = "sc_agent_of_full_p
 
 sc_result search_keynodes_initialize()
 {
-
     resolve_keynode(keynode_question_all_output_const_pos_arc);
     resolve_keynode(keynode_question_all_input_const_pos_arc);
     resolve_keynode(keynode_question_all_output_const_pos_arc_with_rel);
@@ -152,6 +153,7 @@ sc_result search_keynodes_initialize()
     resolve_keynode(keynode_question_search_all_superclasses_in_quasybinary_relation);
     resolve_keynode(keynode_question_search_links_of_relation_connected_with_element);
     resolve_keynode(keynode_question_search_full_pattern);
+    resolve_keynode(keynode_question_search_full_pattern_with_full_result_gen);
 
     resolve_keynode(keynode_question_initiated);
     resolve_keynode(keynode_question);
@@ -167,7 +169,6 @@ sc_result search_keynodes_initialize()
     resolve_keynode(keynode_rrel_1);
     resolve_keynode(keynode_rrel_2);
 
-    resolve_keynode(keynode_nrel_identification);
     resolve_keynode(keynode_nrel_translation);
     resolve_keynode(keynode_nrel_main_idtf);
     resolve_keynode(keynode_rrel_key_sc_element);
@@ -188,6 +189,7 @@ sc_result search_keynodes_initialize()
     resolve_keynode(keynode_sc_agent_of_search_of_full_semantic_neighborhood_c);
     resolve_keynode(keynode_sc_agent_of_search_of_links_of_relation_connected_with_element_c);
     resolve_keynode(keynode_sc_agent_of_full_pattern_search_c);
+    resolve_keynode(keynode_sc_agent_of_full_pattern_search_with_full_result_gen_c);
 
     return SC_RESULT_OK;
 }

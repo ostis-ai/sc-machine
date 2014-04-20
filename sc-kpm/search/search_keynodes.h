@@ -37,6 +37,7 @@ extern sc_addr keynode_question_search_all_superclasses_in_quasybinary_relation;
 extern sc_addr keynode_question_search_all_subclasses_in_quasybinary_relation;
 extern sc_addr keynode_question_search_links_of_relation_connected_with_element;
 extern sc_addr keynode_question_search_full_pattern;
+extern sc_addr keynode_question_search_full_pattern_with_full_result_gen;
 
 extern sc_addr keynode_nrel_answer;
 extern sc_addr keynode_quasybinary_relation;
@@ -49,7 +50,6 @@ extern sc_addr keynode_sc_neighborhood;
 extern sc_addr keynode_question_finished;
 extern sc_addr keynode_question_initiated;
 extern sc_addr keynode_question;
-extern sc_addr keynode_nrel_identification;
 extern sc_addr keynode_nrel_translation;
 extern sc_addr keynode_nrel_main_idtf;
 extern sc_addr keynode_nrel_inclusion;
@@ -73,6 +73,7 @@ extern sc_addr keynode_sc_agent_of_search_of_all_identified_elements_agent_c;
 extern sc_addr keynode_sc_agent_of_search_of_full_semantic_neighborhood_c;
 extern sc_addr keynode_sc_agent_of_search_of_links_of_relation_connected_with_element_c;
 extern sc_addr keynode_sc_agent_of_full_pattern_search_c;
+extern sc_addr keynode_sc_agent_of_full_pattern_search_with_full_result_gen_c;
 
 //! Initialie keynodes that used by search module
 sc_result search_keynodes_initialize();

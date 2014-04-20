@@ -30,4 +30,10 @@ along with OSTIS. If not, see <http://www.gnu.org/licenses/>.
  */
 sc_result agent_full_pattern_search(const sc_event *event, sc_addr arg);
 
+/*!
+ * Function that implement sc-agent to search of all constructions, which are completely isomorphic to given pattern.
+ * The second parameter of the question is a set of search results
+ */
+sc_result agent_full_pattern_search_with_full_result_gen(const sc_event *event, sc_addr arg);
+
 #endif // SEARCH_PATTERN_H
