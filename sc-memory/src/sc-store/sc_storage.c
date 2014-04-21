@@ -346,6 +346,8 @@ sc_result sc_storage_element_free(sc_addr addr)
 
     storage_time_stamp++;
 
+    sc_event_emit(addr, SC_EVENT_REMOVE_ELEMENT, addr);
+
     return SC_RESULT_OK;
 }
 
@@ -511,7 +513,7 @@ sc_result sc_storage_set_link_content(sc_addr addr, const sc_stream *stream)
 
         g_assert(check_sum.len > 0);
 
-        sc_event_emit(addr, SC_EVENT_CHANGE_LINK_CONTENT, addr);
+        //sc_event_emit(addr, SC_EVENT_CHANGE_LINK_CONTENT, addr);
         result = SC_RESULT_OK;
     }
 

@@ -461,9 +461,9 @@ sc_result event_callback(const sc_event *event, sc_addr arg)
         printf("Remove output arc");
         break;
 
-    case SC_EVENT_CHANGE_LINK_CONTENT:
-        printf("Change link content");
-        break;
+//    case SC_EVENT_CHANGE_LINK_CONTENT:
+//        printf("Change link content");
+//        break;
     }
     printf(", Id: %d", sc_event_get_id(event));
     printf(", Argument = seg: %d, offset: %d\n", arg.seg, arg.offset);
