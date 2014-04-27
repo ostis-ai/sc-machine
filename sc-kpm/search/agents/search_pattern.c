@@ -103,27 +103,32 @@ sc_result agent_full_pattern_search_with_full_result_gen(const sc_event *event, 
 
     // get operation argument
     it1 = sc_iterator3_f_a_a_new(question, sc_type_arc_pos_const_perm, 0);
-    if (sc_iterator3_next(it1) == SC_TRUE)
+    while (sc_iterator3_next(it1) == SC_TRUE)
     {
         if (IS_SYSTEM_ELEMENT(sc_iterator3_value(it1, 2)))
             sys_off = SC_FALSE;
 
-        if (sc_helper_check_arc(keynode_rrel_2, sc_iterator3_value(it1, 1), sc_type_arc_pos_const_perm))
+        if (sc_helper_check_arc(keynode_rrel_1, sc_iterator3_value(it1, 1), sc_type_arc_pos_const_perm))
         {
             pattern = sc_iterator3_value(it1, 2);
             pattern_found = SC_TRUE;
+            continue;
         }
-        if (sc_helper_check_arc(keynode_rrel_1, sc_iterator3_value(it1, 1), sc_type_arc_pos_const_perm))
+        if (sc_helper_check_arc(keynode_rrel_2, sc_iterator3_value(it1, 1), sc_type_arc_pos_const_perm))
         {
             result_set = sc_iterator3_value(it1, 2);
             result_set_found = SC_TRUE;
+            continue;
         }
     }
     sc_iterator3_free(it1);
-
-    if (SC_RESULT_OK != search_full_pattern_with_full_result_gen(sc_iterator3_value(it1, 2), answer, result_set, sys_off))
+    if (SC_FALSE == pattern_found || SC_FALSE == result_set_found)
     {
-        sc_iterator3_free(it1);
+        log_agent_finished(keynode_sc_agent_of_full_pattern_search_with_full_result_gen_c_str, SC_FALSE);
+    }
+
+    if (SC_RESULT_OK != search_full_pattern_with_full_result_gen(pattern, answer, result_set, sys_off))
+    {
         log_agent_finished(keynode_sc_agent_of_full_pattern_search_with_full_result_gen_c_str, SC_FALSE);
         connect_answer_to_question(question, answer);
         finish_question(question);
