@@ -169,7 +169,11 @@ bool GwfTranslator::processString(const String &data)
                 // need to create link
                 addr = sc_memory_link_new();
                 // setup content
-                String data = base64_decode(content->GetText());
+                String data = content->GetText();
+
+                if (content->IntAttribute("type") == 4)
+                    data = base64_decode(data);
+
                 sc_stream *stream = sc_stream_memory_new(data.c_str(), data.size(), SC_STREAM_READ, SC_FALSE);
                 sc_memory_set_link_content(addr, stream);
                 sc_stream_free(stream);
