@@ -61,4 +61,7 @@ sc_event_type sc_event_get_type(const sc_event *event);
 //! Returns id of specified sc-event
 sc_uint32 sc_event_get_id(const sc_event *event);
 
+//! Returns sc-addr of sc-element where event subscribed
+sc_addr sc_event_get_element(const sc_event *event);
+
 #endif // SC_EVENT_H

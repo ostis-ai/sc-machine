@@ -2,7 +2,7 @@ grammar scs;
 
 options 
 {
-    k = 2;
+    k = 3;
     language = C;
     output = AST;
     ASTLabelType=pANTLR3_BASE_TREE;

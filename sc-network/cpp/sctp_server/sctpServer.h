@@ -20,14 +20,15 @@ along with OSTIS.  If not, see <http://www.gnu.org/licenses/>.
 -----------------------------------------------------------------------------
 */
 
-#ifndef SERVER_H
-#define SERVER_H
+#ifndef _sctpServer_h_
+#define _sctpServer_h_
 
 #include <QTcpServer>
 #include <QList>
 
 class sctpClient;
 class sctpStatistic;
+class sctpEventManager;
 
 class QThreadPool;
 
@@ -63,6 +64,8 @@ private:
 
     //! Worker threads pool
     QThreadPool *mThreadPool;
+    //! Event manager instance
+    sctpEventManager *mEventManager;
 
 
 signals:

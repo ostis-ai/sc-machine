@@ -23,6 +23,12 @@ along with OSTIS.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef SCTPTYPES_H
 #define SCTPTYPES_H
 
+extern "C"
+{
+#include "sc_memory_headers.h"
+#include "sc_helper.h"
+}
+
 typedef enum
 {
     SCTP_CMD_UNKNOWN            = 0x00, // unkown command
@@ -37,15 +43,18 @@ typedef enum
     SCTP_CMD_GET_LINK_CONTENT   = 0x09, // return content of sc-link
     SCTP_CMD_FIND_LINKS         = 0x0a, // return sc-links with specified content
     SCTP_CMD_SET_LINK_CONTENT   = 0x0b, // setup new content for the link
-    SCTP_CMD_ITERATE_ELEMENTS   = 0x0c, // return base template iteration result
+    SCTP_CMD_ITERATE_ELEMENTS   = 0x0c, // return base template iteration results
+    SCTP_CMD_ITERATE_CONSTRUCTION = 0x0d, // return advanced template iteration results
+    SCTP_CMD_EVENT_CREATE       = 0x0e, // create subscription to specified event
+    SCTP_CMD_EVENT_DESTROY      = 0x0f, // destroys specified event subscription
+    SCPT_CMD_EVENT_EMIT         = 0x10, // emits specified event to client
 
     SCTP_CMD_FIND_ELEMENT_BY_SYSITDF = 0xa0, // return sc-element by it system identifier
     SCTP_CMD_SET_SYSIDTF        = 0xa1,   // setup new system identifier for sc-element
     SCTP_CMD_STATISTICS         = 0xa2, // return usage statistics from server
+    SCTP_CMD_VERSION            = 0xa3  // return version of used sctp protocol
 
-    SCTP_CMD_SHUTDOWN           = 0xfe // disconnect client from server
-
-} sctpCommandCode;
+} eSctpCommandCode;
 
 typedef enum
 {
@@ -62,7 +71,7 @@ typedef enum
 
     SCTP_ITERATOR_COUNT
 
-} sctpIteratorType;
+} eSctpIteratorType;
 
 typedef enum
 {
@@ -70,7 +79,7 @@ typedef enum
     SCTP_RESULT_FAIL            = 0x01, //
     SCTP_RESULT_ERROR_NO_ELEMENT= 0x02  // sc-element wasn't found
 
-} sctpResultCode;
+} eSctpResultCode;
 
 //! Command processing result codes
 typedef enum
@@ -82,6 +91,9 @@ typedef enum
     SCTP_ERROR_CMD_HEADER_READ_TIMEOUT,     // Timeout while waiting command header
     SCTP_ERROR_CMD_PARAM_READ_TIMEOUT       // Timeout while waiting command params
 
-} sctpErrorCode;
+} eSctpErrorCode;
+
+
+typedef sc_uint32 tEventId;
 
 #endif // SCTPTYPES_H

@@ -5,6 +5,7 @@ set (SOURCES
 	"sctpCommand.cpp"
 	"sctpServer.cpp"
 	"sctpStatistic.cpp"
+	"sctpEventManager.cpp"
 	)
 	
 set (HEADERS
@@ -12,6 +13,7 @@ set (HEADERS
 	"sctpCommand.h"
 	"sctpServer.h"
 	"sctpStatistic.h"
+	"sctpEventManager.h"
 	"sctpTypes.h"
 	)
 

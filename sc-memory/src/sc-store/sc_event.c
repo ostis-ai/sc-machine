@@ -203,6 +203,12 @@ sc_uint32 sc_event_get_id(const sc_event *event)
     return event->id;
 }
 
+sc_addr sc_event_get_element(const sc_event *event)
+{
+    g_assert(event != 0);
+    return event->element;
+}
+
 // --------
 sc_bool sc_events_initialize()
 {

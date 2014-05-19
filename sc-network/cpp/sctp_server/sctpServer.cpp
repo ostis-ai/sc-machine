@@ -23,6 +23,7 @@ along with OSTIS.  If not, see <http://www.gnu.org/licenses/>.
 #include "sctpServer.h"
 #include "sctpClient.h"
 #include "sctpStatistic.h"
+#include "sctpEventManager.h"
 
 #include <QSettings>
 #include <QDebug>
@@ -41,6 +42,7 @@ sctpServer::sctpServer(QObject *parent)
   , mPort(0)
   , mStatistic(0)
   , mThreadPool(0)
+  , mEventManager(0)
 {
 }
 
@@ -97,6 +99,9 @@ bool sctpServer::start(const QString &config)
 
     if (sc_memory_initialize(&params) != SC_TRUE)
         return false;
+
+    mEventManager = new sctpEventManager();
+    mEventManager->initialize();
 
     if (mStatUpdatePeriod > 0)
     {
@@ -156,6 +161,11 @@ void sctpServer::incomingConnection(int socketDescriptor)
 void sctpServer::stop()
 {
     sc_memory_shutdown();
+
+    mEventManager->shutdown();
+    delete mEventManager;
+    mEventManager = 0;
+
     close();
 }
 

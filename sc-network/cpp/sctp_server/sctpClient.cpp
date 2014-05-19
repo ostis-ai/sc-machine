@@ -52,11 +52,15 @@ void sctpClient::run()
     sctpStatistic::getInstance()->clientConnected();
 
     mCommand = new sctpCommand();
+    mCommand->init();
 
     while (mSocket->waitForReadyRead())
     {
         processCommands();
     }
+
+    mCommand->shutdown();
+
     if (mSocket->state() == QTcpSocket::ConnectedState)
     {
         mSocket->waitForBytesWritten();
@@ -75,7 +79,7 @@ void sctpClient::processCommands()
 {
     while (mSocket->bytesAvailable() >= mCommand->cmdHeaderSize())
     {
-        sctpErrorCode errCode = mCommand->processCommand(mSocket, mSocket);
+        eSctpErrorCode errCode = mCommand->processCommand(mSocket, mSocket);
         if (errCode != SCTP_NO_ERROR)
         {
             qDebug() << "Error: " << errCode << "; while process request from client " << mSocket->peerAddress().toString();
@@ -84,6 +88,8 @@ void sctpClient::processCommands()
         {
             sctpStatistic::getInstance()->commandProcessed(false);
         }
+
+        mCommand->processServerCommands(mSocket);
 
         mSocket->flush();
     }

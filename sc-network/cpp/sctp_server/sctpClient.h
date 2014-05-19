@@ -20,8 +20,8 @@ along with OSTIS.  If not, see <http://www.gnu.org/licenses/>.
 -----------------------------------------------------------------------------
 */
 
-#ifndef CLIENTTHREAD_H
-#define CLIENTTHREAD_H
+#ifndef _sctpClient_h_
+#define _sctpClient_h_
 
 #include <QObject>
 #include <QRunnable>

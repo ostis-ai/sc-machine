@@ -22,6 +22,7 @@ along with OSTIS.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "sctpCommand.h"
 #include "sctpStatistic.h"
+#include "sctpEventManager.h"
 
 #include <QIODevice>
 #include <QDataStream>
@@ -29,19 +30,18 @@ along with OSTIS.  If not, see <http://www.gnu.org/licenses/>.
 #include <QBuffer>
 #include <QCoreApplication>
 
-extern "C"
-{
-#include "sc_memory_headers.h"
-#include "sc_helper.h"
-}
+#include "limits"
+
 
 #define SCTP_READ_TIMEOUT   10000
 
 #define READ_PARAM(val)  if (params->readRawData((char*)&val, sizeof(val)) != sizeof(val)) \
                             return SCTP_ERROR_CMD_READ_PARAMS;
 
-sctpCommand::sctpCommand(QObject *parent) :
-    QObject(parent)
+// -----------------------------
+
+sctpCommand::sctpCommand(QObject *parent)
+    : QObject(parent)
 {
 }
 
@@ -49,7 +49,16 @@ sctpCommand::~sctpCommand()
 {
 }
 
-sctpErrorCode sctpCommand::processCommand(QIODevice *inDevice, QIODevice *outDevice)
+void sctpCommand::init()
+{
+}
+
+void sctpCommand::shutdown()
+{
+
+}
+
+eSctpErrorCode sctpCommand::processCommand(QIODevice *inDevice, QIODevice *outDevice)
 {
     quint8 cmdCode = SCTP_CMD_UNKNOWN;
     quint8 cmdFlags = 0;
@@ -64,8 +73,6 @@ sctpErrorCode sctpCommand::processCommand(QIODevice *inDevice, QIODevice *outDev
     inDevice->read((char*)&cmdFlags, sizeof(cmdFlags));
     inDevice->read((char*)&cmdId, sizeof(cmdId));
     inDevice->read((char*)&cmdParamSize, sizeof(cmdParamSize));
-
-    //qDebug() << "command code: " << cmdCode << "; params size: " << cmdParamSize << "\n";
 
     // read params data
     QByteArray paramsData(cmdParamSize, 0);
@@ -108,6 +115,12 @@ sctpErrorCode sctpCommand::processCommand(QIODevice *inDevice, QIODevice *outDev
     case SCTP_CMD_ITERATE_ELEMENTS:
         return processIterateElements(cmdFlags, cmdId, &paramsStream, outDevice);
 
+    case SCTP_CMD_EVENT_CREATE:
+        return processCreateEvent(cmdFlags, cmdId, &paramsStream, outDevice);
+
+    case SCTP_CMD_EVENT_DESTROY:
+        return processDestroyEvent(cmdFlags, cmdId, &paramsStream, outDevice);
+
 
     case SCTP_CMD_FIND_ELEMENT_BY_SYSITDF:
         return processFindElementBySysIdtf(cmdFlags, cmdId, &paramsStream, outDevice);
@@ -118,15 +131,19 @@ sctpErrorCode sctpCommand::processCommand(QIODevice *inDevice, QIODevice *outDev
     case SCTP_CMD_STATISTICS:
         return processStatistics(cmdFlags, cmdId, &paramsStream, outDevice);
 
-    case SCTP_CMD_SHUTDOWN:
-        QCoreApplication::quit();
-        break;
-
     default:
         return SCTP_ERROR_UNKNOWN_CMD;
     }
 
     return SCTP_ERROR;
+}
+
+void sctpCommand::processServerCommands(QIODevice *outDevice)
+{
+    QMutexLocker locker(&mSendMutex);
+
+    outDevice->write(mSendData);
+    mSendData.clear();
 }
 
 bool sctpCommand::waitAvailableBytes(QIODevice *stream, quint32 bytesNum)
@@ -142,7 +159,7 @@ bool sctpCommand::waitAvailableBytes(QIODevice *stream, quint32 bytesNum)
     return true;
 }
 
-void sctpCommand::writeResultHeader(sctpCommandCode cmdCode, quint32 cmdId, sctpResultCode resCode, quint32 resSize, QIODevice *outDevice)
+void sctpCommand::writeResultHeader(eSctpCommandCode cmdCode, quint32 cmdId, eSctpResultCode resCode, quint32 resSize, QIODevice *outDevice)
 {
     Q_ASSERT(outDevice != 0);
     quint8 code = cmdCode;
@@ -162,7 +179,7 @@ quint32 sctpCommand::cmdHeaderSize()
 
 
 // ----------- process commands -------------
-sctpErrorCode sctpCommand::processCheckElement(quint32 cmdFlags, quint32 cmdId, QDataStream *params, QIODevice *outDevice)
+eSctpErrorCode sctpCommand::processCheckElement(quint32 cmdFlags, quint32 cmdId, QDataStream *params, QIODevice *outDevice)
 {
     sc_addr addr;
     Q_UNUSED(cmdFlags);
@@ -172,7 +189,7 @@ sctpErrorCode sctpCommand::processCheckElement(quint32 cmdFlags, quint32 cmdId, 
     // read sc-add from parameters
     READ_PARAM(addr);
 
-    sctpResultCode resCode = sc_memory_is_element(addr) ? SCTP_RESULT_OK : SCTP_RESULT_FAIL;
+    eSctpResultCode resCode = sc_memory_is_element(addr) ? SCTP_RESULT_OK : SCTP_RESULT_FAIL;
 
     // send result
     writeResultHeader(SCTP_CMD_CHECK_ELEMENT, cmdId, resCode, 0, outDevice);
@@ -180,7 +197,7 @@ sctpErrorCode sctpCommand::processCheckElement(quint32 cmdFlags, quint32 cmdId, 
     return SCTP_NO_ERROR;
 }
 
-sctpErrorCode sctpCommand::processGetElementType(quint32 cmdFlags, quint32 cmdId, QDataStream *params, QIODevice *outDevice)
+eSctpErrorCode sctpCommand::processGetElementType(quint32 cmdFlags, quint32 cmdId, QDataStream *params, QIODevice *outDevice)
 {
     sc_addr addr;
     Q_UNUSED(cmdFlags);
@@ -191,7 +208,7 @@ sctpErrorCode sctpCommand::processGetElementType(quint32 cmdFlags, quint32 cmdId
     READ_PARAM(addr);
 
     sc_type type = 0;
-    sctpResultCode resCode = (sc_memory_get_element_type(addr, &type) == SC_RESULT_OK) ? SCTP_RESULT_OK : SCTP_RESULT_FAIL;
+    eSctpResultCode resCode = (sc_memory_get_element_type(addr, &type) == SC_RESULT_OK) ? SCTP_RESULT_OK : SCTP_RESULT_FAIL;
     quint32 resSize = (resCode == SCTP_RESULT_OK) ? sizeof(type) : 0;
 
     // send result
@@ -202,7 +219,7 @@ sctpErrorCode sctpCommand::processGetElementType(quint32 cmdFlags, quint32 cmdId
     return SCTP_NO_ERROR;
 }
 
-sctpErrorCode sctpCommand::processElementErase(quint32 cmdFlags, quint32 cmdId, QDataStream *params, QIODevice *outDevice)
+eSctpErrorCode sctpCommand::processElementErase(quint32 cmdFlags, quint32 cmdId, QDataStream *params, QIODevice *outDevice)
 {
     sc_addr addr;
     Q_UNUSED(cmdFlags);
@@ -212,14 +229,14 @@ sctpErrorCode sctpCommand::processElementErase(quint32 cmdFlags, quint32 cmdId, 
     // read sc-addr of sc-element from parameters
     READ_PARAM(addr);
 
-    sctpResultCode resCode = (sc_memory_element_free(addr) == SC_RESULT_OK) ? SCTP_RESULT_OK : SCTP_RESULT_FAIL;
+    eSctpResultCode resCode = (sc_memory_element_free(addr) == SC_RESULT_OK) ? SCTP_RESULT_OK : SCTP_RESULT_FAIL;
     // send result
     writeResultHeader(SCTP_CMD_CHECK_ELEMENT, cmdId, resCode, 0, outDevice);
 
     return SCTP_NO_ERROR;
 }
 
-sctpErrorCode sctpCommand::processCreateNode(quint32 cmdFlags, quint32 cmdId, QDataStream *params, QIODevice *outDevice)
+eSctpErrorCode sctpCommand::processCreateNode(quint32 cmdFlags, quint32 cmdId, QDataStream *params, QIODevice *outDevice)
 {
     Q_UNUSED(cmdFlags);
 
@@ -232,7 +249,7 @@ sctpErrorCode sctpCommand::processCreateNode(quint32 cmdFlags, quint32 cmdId, QD
     sc_addr addr = sc_memory_node_new(type);
 
     // send result
-    sctpErrorCode result;
+    eSctpErrorCode result;
     if (SC_ADDR_IS_NOT_EMPTY(addr))
     {
         writeResultHeader(SCTP_CMD_CREATE_NODE, cmdId, SCTP_RESULT_OK, sizeof(addr), outDevice);
@@ -248,14 +265,14 @@ sctpErrorCode sctpCommand::processCreateNode(quint32 cmdFlags, quint32 cmdId, QD
     return result;
 }
 
-sctpErrorCode sctpCommand::processCreateLink(quint32 cmdFlags, quint32 cmdId, QDataStream *params, QIODevice *outDevice)
+eSctpErrorCode sctpCommand::processCreateLink(quint32 cmdFlags, quint32 cmdId, QDataStream *params, QIODevice *outDevice)
 {
     Q_UNUSED(cmdFlags);
 
     sc_addr addr = sc_memory_link_new();
 
     // send result
-    sctpErrorCode result;
+    eSctpErrorCode result;
     if (SC_ADDR_IS_NOT_EMPTY(addr))
     {
         writeResultHeader(SCTP_CMD_CREATE_NODE, cmdId, SCTP_RESULT_OK, sizeof(addr), outDevice);
@@ -271,7 +288,7 @@ sctpErrorCode sctpCommand::processCreateLink(quint32 cmdFlags, quint32 cmdId, QD
     return result;
 }
 
-sctpErrorCode sctpCommand::processCreateArc(quint32 cmdFlags, quint32 cmdId, QDataStream *params, QIODevice *outDevice)
+eSctpErrorCode sctpCommand::processCreateArc(quint32 cmdFlags, quint32 cmdId, QDataStream *params, QIODevice *outDevice)
 {
     Q_UNUSED(cmdFlags);
 
@@ -288,7 +305,7 @@ sctpErrorCode sctpCommand::processCreateArc(quint32 cmdFlags, quint32 cmdId, QDa
     READ_PARAM(end_addr);
 
     sc_addr addr = sc_memory_arc_new(type, begin_addr, end_addr);
-    sctpErrorCode result;
+    eSctpErrorCode result;
     if (SC_ADDR_IS_NOT_EMPTY(addr))
     {
         writeResultHeader(SCTP_CMD_CREATE_ARC, cmdId, SCTP_RESULT_OK, 0, outDevice);
@@ -305,7 +322,7 @@ sctpErrorCode sctpCommand::processCreateArc(quint32 cmdFlags, quint32 cmdId, QDa
 }
 
 
-sctpErrorCode sctpCommand::processGetLinkContent(quint32 cmdFlags, quint32 cmdId, QDataStream *params, QIODevice *outDevice)
+eSctpErrorCode sctpCommand::processGetLinkContent(quint32 cmdFlags, quint32 cmdId, QDataStream *params, QIODevice *outDevice)
 {
     sc_addr addr;
     sc_stream *stream = (sc_stream*)nullptr;
@@ -321,7 +338,7 @@ sctpErrorCode sctpCommand::processGetLinkContent(quint32 cmdFlags, quint32 cmdId
     if (params->readRawData((char*)&addr, sizeof(addr)) != sizeof(addr))
         return SCTP_ERROR_CMD_READ_PARAMS;
 
-    sctpResultCode resCode = (sc_memory_get_link_content(addr, &stream) == SC_RESULT_OK) ? SCTP_RESULT_OK : SCTP_RESULT_FAIL;
+    eSctpResultCode resCode = (sc_memory_get_link_content(addr, &stream) == SC_RESULT_OK) ? SCTP_RESULT_OK : SCTP_RESULT_FAIL;
 
 
     if (resCode == SCTP_RESULT_OK)
@@ -377,7 +394,7 @@ sctpErrorCode sctpCommand::processGetLinkContent(quint32 cmdFlags, quint32 cmdId
     return SCTP_NO_ERROR;
 }
 
-sctpErrorCode sctpCommand::processFindLinks(quint32 cmdFlags, quint32 cmdId, QDataStream *params, QIODevice *outDevice)
+eSctpErrorCode sctpCommand::processFindLinks(quint32 cmdFlags, quint32 cmdId, QDataStream *params, QIODevice *outDevice)
 {
     sc_addr addr;
     sc_uint32 data_len = 0;
@@ -416,7 +433,7 @@ sctpErrorCode sctpCommand::processFindLinks(quint32 cmdFlags, quint32 cmdId, QDa
     return SCTP_NO_ERROR;
 }
 
-sctpErrorCode sctpCommand::processSetLinkContent(quint32 cmdFlags, quint32 cmdId, QDataStream *params, QIODevice *outDevice)
+eSctpErrorCode sctpCommand::processSetLinkContent(quint32 cmdFlags, quint32 cmdId, QDataStream *params, QIODevice *outDevice)
 {
     sc_addr addr;
     sc_uint32 data_len = 0;
@@ -448,7 +465,7 @@ sctpErrorCode sctpCommand::processSetLinkContent(quint32 cmdFlags, quint32 cmdId
     return SCTP_NO_ERROR;
 }
 
-sctpErrorCode sctpCommand::processIterateElements(quint32 cmdFlags, quint32 cmdId, QDataStream *params, QIODevice *outDevice)
+eSctpErrorCode sctpCommand::processIterateElements(quint32 cmdFlags, quint32 cmdId, QDataStream *params, QIODevice *outDevice)
 {
     sc_uchar iterator_type = 0;
     sc_type type1, type2, type3, type4;
@@ -621,7 +638,57 @@ sctpErrorCode sctpCommand::processIterateElements(quint32 cmdFlags, quint32 cmdI
 }
 
 
-sctpErrorCode sctpCommand::processFindElementBySysIdtf(quint32 cmdFlags, quint32 cmdId, QDataStream *params, QIODevice *outDevice)
+eSctpErrorCode sctpCommand::processCreateEvent(quint32 cmdFlags, quint32 cmdId, QDataStream *params, QIODevice *outDevice)
+{
+    sc_uint8 event_type;
+    sc_addr addr;
+
+    Q_UNUSED(cmdFlags);
+    Q_ASSERT(params != 0);
+
+    READ_PARAM(event_type);
+    READ_PARAM(addr);
+
+
+    tEventId event = 0;
+    if (!sctpEventManager::getSingleton()->createEvent((sc_event_type)event_type, addr, this, event))
+    {
+        writeResultHeader(SCTP_CMD_EVENT_CREATE, cmdId, SCTP_RESULT_FAIL, 0, outDevice);
+        return SCTP_ERROR;
+    }
+
+    if (mEventsSet.find(event) != mEventsSet.end())
+        return SCTP_ERROR;
+
+    mEventsSet.insert(event);
+
+    writeResultHeader(SCTP_CMD_EVENT_CREATE, cmdId, SCTP_RESULT_FAIL, sizeof(tEventId), outDevice);
+    outDevice->write((const char*)&event, sizeof(event));
+
+    return SCTP_NO_ERROR;
+}
+
+eSctpErrorCode sctpCommand::processDestroyEvent(quint32 cmdFlags, quint32 cmdId, QDataStream *params, QIODevice *outDevice)
+{
+    tEventId eventId = 0;
+
+    Q_UNUSED(cmdFlags);
+    Q_ASSERT(params != 0);
+
+    READ_PARAM(eventId);
+
+    if (sctpEventManager::getSingleton()->destroyEvent(eventId))
+    {
+        writeResultHeader(SCTP_CMD_EVENT_DESTROY, cmdId, SCTP_RESULT_OK, sizeof(eventId), outDevice);
+        outDevice->write((const char*)&eventId, sizeof(eventId));
+        return SCTP_NO_ERROR;
+    }
+
+    writeResultHeader(SCTP_CMD_EVENT_DESTROY, cmdId, SCTP_RESULT_FAIL, 0, outDevice);
+    return SCTP_ERROR;
+}
+
+eSctpErrorCode sctpCommand::processFindElementBySysIdtf(quint32 cmdFlags, quint32 cmdId, QDataStream *params, QIODevice *outDevice)
 {
     sc_addr addr;
     sc_uint32 data_len = 0;
@@ -655,7 +722,7 @@ sctpErrorCode sctpCommand::processFindElementBySysIdtf(quint32 cmdFlags, quint32
     return SCTP_NO_ERROR;
 }
 
-sctpErrorCode sctpCommand::processSetSysIdtf(quint32 cmdFlags, quint32 cmdId, QDataStream *params, QIODevice *outDevice)
+eSctpErrorCode sctpCommand::processSetSysIdtf(quint32 cmdFlags, quint32 cmdId, QDataStream *params, QIODevice *outDevice)
 {
     sc_addr addr;
     sc_uint32 data_len = 0;
@@ -684,7 +751,7 @@ sctpErrorCode sctpCommand::processSetSysIdtf(quint32 cmdFlags, quint32 cmdId, QD
     return SCTP_NO_ERROR;
 }
 
-sctpErrorCode sctpCommand::processStatistics(quint32 cmdFlags, quint32 cmdId, QDataStream *params, QIODevice *outDevice)
+eSctpErrorCode sctpCommand::processStatistics(quint32 cmdFlags, quint32 cmdId, QDataStream *params, QIODevice *outDevice)
 {
     quint64 begin_time;
     quint64 end_time;
@@ -706,4 +773,24 @@ sctpErrorCode sctpCommand::processStatistics(quint32 cmdFlags, quint32 cmdId, QD
         outDevice->write((const char*)&(stat[idx]), sStatItem::realSize());
 
     return SCTP_NO_ERROR;
+}
+
+sc_result sctpCommand::processEventEmit(quint32 eventId, sc_addr el_addr, sc_addr arg_addr)
+{    
+    QMutexLocker locker(&mSendMutex);
+
+    QDataStream stream(&mSendData, QIODevice::WriteOnly);
+
+    quint8 cmdCode = SCPT_CMD_EVENT_EMIT;
+    quint8 flags = 0;
+    quint32 argSize = sizeof(eventId) + sizeof(arg_addr) + sizeof(el_addr);
+
+    stream.writeBytes((char*)&cmdCode, sizeof(cmdCode));
+    stream.writeBytes((char*)&flags, sizeof(flags));
+    stream.writeBytes((char*)&eventId, sizeof(eventId));
+    stream.writeBytes((char*)&argSize, sizeof(argSize));
+
+    stream.writeBytes((char*)&eventId, sizeof(eventId));
+    stream.writeBytes((char*)&el_addr, sizeof(el_addr));
+    stream.writeBytes((char*)&arg_addr, sizeof(arg_addr));    
 }

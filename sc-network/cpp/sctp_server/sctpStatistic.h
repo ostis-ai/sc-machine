@@ -20,8 +20,8 @@ along with OSTIS.  If not, see <http://www.gnu.org/licenses/>.
 -----------------------------------------------------------------------------
 */
 
-#ifndef _sctpStat_h_
-#define _sctpStat_h_
+#ifndef _sctpStatistic_h_
+#define _sctpStatistic_h_
 
 #include <QObject>
 
