@@ -89,8 +89,6 @@ void sctpClient::processCommands()
             sctpStatistic::getInstance()->commandProcessed(false);
         }
 
-        mCommand->processServerCommands(mSocket);
-
         mSocket->flush();
     }
 }

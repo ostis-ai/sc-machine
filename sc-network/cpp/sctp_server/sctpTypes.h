@@ -47,7 +47,7 @@ typedef enum
     SCTP_CMD_ITERATE_CONSTRUCTION = 0x0d, // return advanced template iteration results
     SCTP_CMD_EVENT_CREATE       = 0x0e, // create subscription to specified event
     SCTP_CMD_EVENT_DESTROY      = 0x0f, // destroys specified event subscription
-    SCPT_CMD_EVENT_EMIT         = 0x10, // emits specified event to client
+    SCTP_CMD_EVENT_EMIT         = 0x10, // emits events to client
 
     SCTP_CMD_FIND_ELEMENT_BY_SYSITDF = 0xa0, // return sc-element by it system identifier
     SCTP_CMD_SET_SYSIDTF        = 0xa1,   // setup new system identifier for sc-element

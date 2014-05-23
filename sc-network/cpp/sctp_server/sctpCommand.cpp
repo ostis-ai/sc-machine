@@ -42,6 +42,7 @@ along with OSTIS.  If not, see <http://www.gnu.org/licenses/>.
 
 sctpCommand::sctpCommand(QObject *parent)
     : QObject(parent)
+    , mSendEventsCount(0)
 {
 }
 
@@ -55,7 +56,10 @@ void sctpCommand::init()
 
 void sctpCommand::shutdown()
 {
-
+    tEventsSet::iterator it, itEnd = mEventsSet.end();
+    for (it = mEventsSet.begin(); it != itEnd; ++it)
+        sctpEventManager::getSingleton()->destroyEvent(*it);
+    mEventsSet.clear();
 }
 
 eSctpErrorCode sctpCommand::processCommand(QIODevice *inDevice, QIODevice *outDevice)
@@ -121,6 +125,8 @@ eSctpErrorCode sctpCommand::processCommand(QIODevice *inDevice, QIODevice *outDe
     case SCTP_CMD_EVENT_DESTROY:
         return processDestroyEvent(cmdFlags, cmdId, &paramsStream, outDevice);
 
+    case SCTP_CMD_EVENT_EMIT:
+        return processEmitEvent(cmdFlags, cmdId, &paramsStream, outDevice);
 
     case SCTP_CMD_FIND_ELEMENT_BY_SYSITDF:
         return processFindElementBySysIdtf(cmdFlags, cmdId, &paramsStream, outDevice);
@@ -136,14 +142,6 @@ eSctpErrorCode sctpCommand::processCommand(QIODevice *inDevice, QIODevice *outDe
     }
 
     return SCTP_ERROR;
-}
-
-void sctpCommand::processServerCommands(QIODevice *outDevice)
-{
-    QMutexLocker locker(&mSendMutex);
-
-    outDevice->write(mSendData);
-    mSendData.clear();
 }
 
 bool sctpCommand::waitAvailableBytes(QIODevice *stream, quint32 bytesNum)
@@ -662,7 +660,7 @@ eSctpErrorCode sctpCommand::processCreateEvent(quint32 cmdFlags, quint32 cmdId, 
 
     mEventsSet.insert(event);
 
-    writeResultHeader(SCTP_CMD_EVENT_CREATE, cmdId, SCTP_RESULT_FAIL, sizeof(tEventId), outDevice);
+    writeResultHeader(SCTP_CMD_EVENT_CREATE, cmdId, SCTP_RESULT_OK, sizeof(tEventId), outDevice);
     outDevice->write((const char*)&event, sizeof(event));
 
     return SCTP_NO_ERROR;
@@ -686,6 +684,21 @@ eSctpErrorCode sctpCommand::processDestroyEvent(quint32 cmdFlags, quint32 cmdId,
 
     writeResultHeader(SCTP_CMD_EVENT_DESTROY, cmdId, SCTP_RESULT_FAIL, 0, outDevice);
     return SCTP_ERROR;
+}
+
+eSctpErrorCode sctpCommand::processEmitEvent(quint32 cmdFlags, quint32 cmdId, QDataStream *params, QIODevice *outDevice)
+{
+    QMutexLocker locker(&mSendMutex);
+
+    quint32 resSize = sizeof(mSendEventsCount) + mSendData.size();
+    writeResultHeader(SCTP_CMD_EVENT_EMIT, cmdId, SCTP_RESULT_OK, resSize, outDevice);
+    outDevice->write((const char*)&mSendEventsCount, sizeof(mSendEventsCount));
+    outDevice->write(mSendData);
+
+    mSendData.clear();
+    mSendEventsCount = 0;
+
+    return SCTP_NO_ERROR;
 }
 
 eSctpErrorCode sctpCommand::processFindElementBySysIdtf(quint32 cmdFlags, quint32 cmdId, QDataStream *params, QIODevice *outDevice)
@@ -779,18 +792,9 @@ sc_result sctpCommand::processEventEmit(quint32 eventId, sc_addr el_addr, sc_add
 {    
     QMutexLocker locker(&mSendMutex);
 
-    QDataStream stream(&mSendData, QIODevice::WriteOnly);
+    mSendData.append((char*)&eventId, sizeof(eventId));
+    mSendData.append((char*)&el_addr, sizeof(el_addr));
+    mSendData.append((char*)&arg_addr, sizeof(arg_addr));
 
-    quint8 cmdCode = SCPT_CMD_EVENT_EMIT;
-    quint8 flags = 0;
-    quint32 argSize = sizeof(eventId) + sizeof(arg_addr) + sizeof(el_addr);
-
-    stream.writeBytes((char*)&cmdCode, sizeof(cmdCode));
-    stream.writeBytes((char*)&flags, sizeof(flags));
-    stream.writeBytes((char*)&eventId, sizeof(eventId));
-    stream.writeBytes((char*)&argSize, sizeof(argSize));
-
-    stream.writeBytes((char*)&eventId, sizeof(eventId));
-    stream.writeBytes((char*)&el_addr, sizeof(el_addr));
-    stream.writeBytes((char*)&arg_addr, sizeof(arg_addr));    
+    ++mSendEventsCount;
 }

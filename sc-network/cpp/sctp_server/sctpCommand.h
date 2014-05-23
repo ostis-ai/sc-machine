@@ -59,9 +59,6 @@ public:
      */
     eSctpErrorCode processCommand(QIODevice *inDevice, QIODevice *outDevice);
 
-    //! Send server commands to client
-    void processServerCommands(QIODevice *outDevice);
-
     /*! Wait while specified number of bytes will be available in specified data stream
      * @param stream Pointer to data stream to wait available bytes
      * @param bytesNum Number of waiting bytes
@@ -103,6 +100,7 @@ private:
     // events
     eSctpErrorCode processCreateEvent(quint32 cmdFlags, quint32 cmdId, QDataStream *params, QIODevice *outDevice);
     eSctpErrorCode processDestroyEvent(quint32 cmdFlags, quint32 cmdId, QDataStream *params, QIODevice *outDevice);
+    eSctpErrorCode processEmitEvent(quint32 cmdFlags, quint32 cmdId, QDataStream *params, QIODevice *outDevice);
 
     eSctpErrorCode processFindElementBySysIdtf(quint32 cmdFlags, quint32 cmdId, QDataStream *params, QIODevice *outDevice);
     eSctpErrorCode processSetSysIdtf(quint32 cmdFlags, quint32 cmdId, QDataStream *params, QIODevice *outDevice);
@@ -116,6 +114,8 @@ private:
     QMutex mSendMutex;
     //! Array that contains server commands data to send to client
     QByteArray mSendData;
+    //! Number of events to send to client
+    quint32 mSendEventsCount;
 
     //! List of event created by this command handler
     typedef std::set<tEventId> tEventsSet;

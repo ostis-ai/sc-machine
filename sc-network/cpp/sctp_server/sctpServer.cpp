@@ -110,6 +110,7 @@ bool sctpServer::start(const QString &config)
     }
 
     mThreadPool = new QThreadPool(this);
+    mThreadPool->setMaxThreadCount(100);
 
     return true;
 }
