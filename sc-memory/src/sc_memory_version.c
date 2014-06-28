@@ -24,7 +24,7 @@ along with OSTIS.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <glib.h>
 
-const sc_version SC_VERSION = {0, 1, 0, 0};
+const sc_version SC_VERSION = {0, 1, 1, 0};
 
 
 sc_int32 sc_version_compare(const sc_version *a, const sc_version *b)

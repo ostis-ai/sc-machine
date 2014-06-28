@@ -44,9 +44,12 @@ struct _sc_segment
 #endif
     sc_addr_seg num; // number of this segment in memory
 
-#if SC_INTERNAL_THREADS_SUPPORT
-    GRWLock rw_lock;
+#ifdef G_ATOMIC_LOCK_FREE
+    sc_uint32 locks[SC_CONCURRENCY_LEVEL];
+#else
+    GMutex locks[SC_CONCURRENCY_LEVEL];
 #endif
+
 };
 
 /*! Create new segment with specified size.
@@ -99,34 +102,20 @@ sc_bool sc_segment_has_empty_slot(sc_segment *segment);
 //! Update information in segment about first empty slot
 void sc_segment_update_empty_slot(sc_segment *segment);
 
-/*! Locks segment for a writing
- * @param segment Pointer to segment for locking
- * @note Just one thread can change segment
- * @see sc_segment_write_unlock
+// ---------------------- locks --------------------------
+/*! Function to lock specified element in segment
+ * @param seg Pointer to segment to lock element
+ * @param offset Offset of element to lock
+ * @param lock_write Flag to lock element for write. It it has true value, then trying to lock for writing;
+ * otherwise locking for reading
  */
-void sc_segment_write_lock(sc_segment *segment);
+void sc_segment_lock_element(sc_segment *seg, sc_uint16 offset, sc_bool lock_write);
 
-/*! Unlocks segment from writing lock
- * @param segment Pointer to segment for unlocking
- * @see sc_segment_write_lock
+/*! Function to unlock specified element in segment
+ * @param seg Pointer to segment for element unlocking
+ * @param offset Offset of sc-element in segment
  */
-void sc_segment_write_unlock(sc_segment *segment);
-
-/*! Locks segment for a reading
- * @param segment Pointer to segment for locking
- * @note Many threads can lock segment for reading and
- * all of them wouldn't blocked if segment isn't locked for
- * writing
- * @see sc_segment_read_unlock
- */
-void sc_segment_read_lock(sc_segment *segment);
-
-/*! Unlocks segment from reading lock
- * @param segment Pointer to segment for unlocking
- * @see sc_segment_read_lock
- */
-void sc_segment_read_unlock(sc_segment *segment);
-
+void sc_segment_unlock_element(sc_segment *seg, sc_uint16 offset);
 
 #if USE_SEGMENT_EMPTY_SLOT_BUFFER
 void sc_segment_update_empty_slot_buffer(sc_segment *segment);

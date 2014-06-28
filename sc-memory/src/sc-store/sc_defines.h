@@ -45,7 +45,6 @@ along with OSTIS.  If not, see <http://www.gnu.org/licenses/>.
 #define SEGMENT_CACHE_SIZE      8  // size of segments cache (segments with empty slots)
 #define MAX_PATH_LENGTH 1024
 
-// flag to support internal threading
-#define SC_INTERNAL_THREADS_SUPPORT 1
+#define SC_CONCURRENCY_LEVEL   32  // max number of independent threads that can work in parallel with memory
 
 #endif
