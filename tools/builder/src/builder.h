@@ -24,6 +24,12 @@ along with OSTIS.  If not, see <http://www.gnu.org/licenses/>.
 #define _builder_h_
 
 #include "types.h"
+extern "C"
+{
+#include "sc_memory_headers.h"
+#include "sc_helper.h"
+}
+
 
 class iTranslator;
 class iTranslatorFactory;
@@ -94,6 +100,9 @@ private:
 
     //! Builder parameters
     BuilderParams mParams;
+
+    //! Memory context
+    sc_memory_context *mContext;
 
 };
 

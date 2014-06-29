@@ -96,7 +96,7 @@ class SCsTranslator : public iTranslator
     } eSentenceType;
 
 public:
-    explicit SCsTranslator();
+    explicit SCsTranslator(sc_memory_context *ctx);
     virtual ~SCsTranslator();
 
     //! @copydoc iTranslator::translateImpl
@@ -220,7 +220,7 @@ public:
     static const String EXTENSION;
 
     //! @copydoc iTranslatorFactory::createInstance
-    iTranslator* createInstance();
+    iTranslator* createInstance(sc_memory_context *ctx);
     //! @copydoc iTranslatorFactory::getFileExt
     const String& getFileExt() const;
 };

@@ -24,6 +24,7 @@ along with OSTIS. If not, see <http://www.gnu.org/licenses/>.
 #include "search_keynodes.h"
 #include "search_utils.h"
 #include "search_defines.h"
+#include "search.h"
 
 #include <sc_helper.h>
 #include <sc_memory_headers.h>
@@ -71,7 +72,7 @@ void search_translation(sc_addr elem, sc_addr answer, sc_bool sys_off)
             {
                 if (sys_off == SC_TRUE && (IS_SYSTEM_ELEMENT(sc_iterator3_value(it4, 1)) || IS_SYSTEM_ELEMENT(sc_iterator3_value(it4, 0))))
                     continue;
-                if (sc_helper_check_arc(keynode_languages, sc_iterator3_value(it4, 0), sc_type_arc_pos_const_perm) == SC_TRUE)
+                if (sc_helper_check_arc(s_default_ctx, keynode_languages, sc_iterator3_value(it4, 0), sc_type_arc_pos_const_perm) == SC_TRUE)
                 {
                     appendIntoAnswer(answer, sc_iterator3_value(it4, 0));
                     appendIntoAnswer(answer, sc_iterator3_value(it4, 1));
@@ -112,13 +113,13 @@ void search_arc_components(sc_addr elem, sc_addr answer, sc_bool sys_off)
     sc_type type;
     sc_addr begin, end;
 
-    if (SC_RESULT_OK != sc_memory_get_element_type(elem, &type))
+    if (SC_RESULT_OK != sc_memory_get_element_type(s_default_ctx, elem, &type))
         return;
     if (!(type & ~sc_type_node))
         return;
-    if (SC_RESULT_OK != sc_memory_get_arc_begin(elem, &begin))
+    if (SC_RESULT_OK != sc_memory_get_arc_begin(s_default_ctx, elem, &begin))
         return;
-    if (SC_RESULT_OK != sc_memory_get_arc_end(elem, &end))
+    if (SC_RESULT_OK != sc_memory_get_arc_end(s_default_ctx, elem, &end))
         return;
 
     appendIntoAnswer(answer, begin);
@@ -140,7 +141,7 @@ void search_nonbinary_relation(sc_addr elem, sc_addr answer, sc_bool sys_off)
     while (sc_iterator3_next(it1) == SC_TRUE)
     {
         // if elem is a link of non-binary relation
-        if (SC_TRUE == sc_helper_check_arc(keynode_nonbinary_relation, sc_iterator3_value(it1, 0), sc_type_arc_pos_const_perm))
+        if (SC_TRUE == sc_helper_check_arc(s_default_ctx, keynode_nonbinary_relation, sc_iterator3_value(it1, 0), sc_type_arc_pos_const_perm))
         {
             if (sys_off == SC_TRUE && (IS_SYSTEM_ELEMENT(sc_iterator3_value(it1, 0)) || IS_SYSTEM_ELEMENT(sc_iterator3_value(it1, 1))))
                 continue;
@@ -168,7 +169,7 @@ void search_nonbinary_relation(sc_addr elem, sc_addr answer, sc_bool sys_off)
                     if (sys_off == SC_TRUE && (IS_SYSTEM_ELEMENT(sc_iterator3_value(it3, 0)) || IS_SYSTEM_ELEMENT(sc_iterator3_value(it3, 1))))
                         continue;
 
-                    sc_memory_get_element_type(sc_iterator3_value(it3, 0), &el_type);
+                    sc_memory_get_element_type(s_default_ctx, sc_iterator3_value(it3, 0), &el_type);
                     if (!(el_type & (sc_type_node_norole | sc_type_node_role)))
                         continue;
 
@@ -257,11 +258,11 @@ sc_result agent_search_full_semantic_neighborhood(const sc_event *event, sc_addr
     sc_bool sys_off = SC_TRUE;
     sc_bool key_order_found = SC_FALSE;
 
-    if (!sc_memory_get_arc_end(arg, &question))
+    if (!sc_memory_get_arc_end(s_default_ctx, arg, &question))
         return SC_RESULT_ERROR_INVALID_PARAMS;
 
     // check question type
-    if (sc_helper_check_arc(keynode_question_full_semantic_neighborhood, question, sc_type_arc_pos_const_perm) == SC_FALSE)
+    if (sc_helper_check_arc(s_default_ctx, keynode_question_full_semantic_neighborhood, question, sc_type_arc_pos_const_perm) == SC_FALSE)
         return SC_RESULT_ERROR_INVALID_TYPE;
 
     answer = create_answer_node();
@@ -298,7 +299,7 @@ sc_result agent_search_full_semantic_neighborhood(const sc_event *event, sc_addr
                                          sc_iterator3_value(it2, 1));
             while (sc_iterator3_next(it3) == SC_TRUE)
             {
-                sc_memory_get_element_type(sc_iterator3_value(it3, 0), &el_type);
+                sc_memory_get_element_type(s_default_ctx, sc_iterator3_value(it3, 0), &el_type);
                 if (!(el_type & (sc_type_node_norole | sc_type_node_role)))
                     continue;
 
@@ -317,7 +318,7 @@ sc_result agent_search_full_semantic_neighborhood(const sc_event *event, sc_addr
                 }
 
                 // check if it's a quasy binary relation
-                if (sc_helper_check_arc(keynode_quasybinary_relation, sc_iterator3_value(it3, 0), sc_type_arc_pos_const_perm) == SC_TRUE)
+                if (sc_helper_check_arc(s_default_ctx, keynode_quasybinary_relation, sc_iterator3_value(it3, 0), sc_type_arc_pos_const_perm) == SC_TRUE)
                 {
                     // iterate elements of relation
                     it4 = sc_iterator3_f_a_a_new(sc_iterator3_value(it2, 0), sc_type_arc_pos_const_perm, 0);
@@ -343,9 +344,9 @@ sc_result agent_search_full_semantic_neighborhood(const sc_event *event, sc_addr
                                                        || IS_SYSTEM_ELEMENT(sc_iterator5_value(it_order, 3)) || IS_SYSTEM_ELEMENT(sc_iterator5_value(it_order, 4))))
                                 continue;
 
-                            if (SC_FALSE == sc_helper_check_arc(keynode_order_relation, sc_iterator5_value(it_order, 4), sc_type_arc_pos_const_perm))
+                            if (SC_FALSE == sc_helper_check_arc(s_default_ctx, keynode_order_relation, sc_iterator5_value(it_order, 4), sc_type_arc_pos_const_perm))
                                 continue;
-                            if (SC_FALSE == sc_helper_check_arc(sc_iterator3_value(it2, 0), sc_iterator5_value(it_order, 2), sc_type_arc_pos_const_perm))
+                            if (SC_FALSE == sc_helper_check_arc(s_default_ctx, sc_iterator3_value(it2, 0), sc_iterator5_value(it_order, 2), sc_type_arc_pos_const_perm))
                                 continue;
 
                             appendIntoAnswer(answer, sc_iterator5_value(it_order, 1));
@@ -362,7 +363,7 @@ sc_result agent_search_full_semantic_neighborhood(const sc_event *event, sc_addr
                                                      sc_iterator3_value(it4, 1));
                         while (sc_iterator3_next(it6) == SC_TRUE)
                         {
-                            sc_memory_get_element_type(sc_iterator3_value(it6, 0), &el_type);
+                            sc_memory_get_element_type(s_default_ctx, sc_iterator3_value(it6, 0), &el_type);
                             if (!(el_type & sc_type_node_role))
                                 continue;
 
@@ -392,7 +393,7 @@ sc_result agent_search_full_semantic_neighborhood(const sc_event *event, sc_addr
             while (sc_iterator5_next(it5) == SC_TRUE)
             {
                 // check if it's a quasy binary relation
-                if (sc_helper_check_arc(keynode_quasybinary_relation, sc_iterator5_value(it5, 4), sc_type_arc_pos_const_perm) == SC_TRUE)
+                if (sc_helper_check_arc(s_default_ctx, keynode_quasybinary_relation, sc_iterator5_value(it5, 4), sc_type_arc_pos_const_perm) == SC_TRUE)
                 {
                     if (sys_off == SC_TRUE && (IS_SYSTEM_ELEMENT(sc_iterator5_value(it5, 1))
                                                || IS_SYSTEM_ELEMENT(sc_iterator5_value(it5, 2))
@@ -438,7 +439,7 @@ sc_result agent_search_full_semantic_neighborhood(const sc_event *event, sc_addr
                                          sc_iterator3_value(it2, 1));
             while (sc_iterator3_next(it3) == SC_TRUE)
             {
-                sc_memory_get_element_type(sc_iterator3_value(it3, 0), &el_type);
+                sc_memory_get_element_type(s_default_ctx, sc_iterator3_value(it3, 0), &el_type);
                 if (!(el_type & (sc_type_node_norole | sc_type_node_role)))
                     continue;
 
@@ -481,7 +482,7 @@ sc_result agent_search_full_semantic_neighborhood(const sc_event *event, sc_addr
             search_translation(sc_iterator3_value(it2, 2), answer, sys_off);
 
             // check if element is an sc-link
-            if (SC_RESULT_OK == sc_memory_get_element_type(sc_iterator3_value(it2, 2), &el_type) &&
+            if (SC_RESULT_OK == sc_memory_get_element_type(s_default_ctx, sc_iterator3_value(it2, 2), &el_type) &&
                 (el_type | sc_type_link))
             {
                 // iterate input arcs for link
@@ -490,7 +491,7 @@ sc_result agent_search_full_semantic_neighborhood(const sc_event *event, sc_addr
                                              sc_iterator3_value(it2, 2));
                 while (sc_iterator3_next(it3) == SC_TRUE)
                 {
-                    if (sc_helper_check_arc(keynode_languages, sc_iterator3_value(it3, 0), sc_type_arc_pos_const_perm) == SC_TRUE)
+                    if (sc_helper_check_arc(s_default_ctx, keynode_languages, sc_iterator3_value(it3, 0), sc_type_arc_pos_const_perm) == SC_TRUE)
                     {
                         if (sys_off == SC_TRUE && (IS_SYSTEM_ELEMENT(sc_iterator3_value(it3, 1)) || IS_SYSTEM_ELEMENT(sc_iterator3_value(it3, 0))))
                             continue;
@@ -524,11 +525,11 @@ sc_result agent_search_links_of_relation_connected_with_element(const sc_event *
     sc_bool sys_off = SC_TRUE;
     sc_bool param_elem_found = SC_FALSE, param_rel_found = SC_FALSE, found = SC_FALSE;
 
-    if (!sc_memory_get_arc_end(arg, &question))
+    if (!sc_memory_get_arc_end(s_default_ctx, arg, &question))
         return SC_RESULT_ERROR_INVALID_PARAMS;
 
     // check question type
-    if (sc_helper_check_arc(keynode_question_search_links_of_relation_connected_with_element, question, sc_type_arc_pos_const_perm) == SC_FALSE)
+    if (sc_helper_check_arc(s_default_ctx, keynode_question_search_links_of_relation_connected_with_element, question, sc_type_arc_pos_const_perm) == SC_FALSE)
         return SC_RESULT_ERROR_INVALID_TYPE;
 
     answer = create_answer_node();
@@ -565,7 +566,7 @@ sc_result agent_search_links_of_relation_connected_with_element(const sc_event *
     if (IS_SYSTEM_ELEMENT(param_elem) || IS_SYSTEM_ELEMENT(param_rel))
         sys_off = SC_FALSE;
 
-    if (SC_TRUE == sc_helper_check_arc(keynode_quasybinary_relation, param_rel, sc_type_arc_pos_const_perm))
+    if (SC_TRUE == sc_helper_check_arc(s_default_ctx, keynode_quasybinary_relation, param_rel, sc_type_arc_pos_const_perm))
     {
         // Search subclasses in quasybinary relation
         // Iterate input arcs of quasybinary relation
@@ -616,9 +617,9 @@ sc_result agent_search_links_of_relation_connected_with_element(const sc_event *
                                                || IS_SYSTEM_ELEMENT(sc_iterator5_value(it_order, 3)) || IS_SYSTEM_ELEMENT(sc_iterator5_value(it_order, 4))))
                         continue;
 
-                    if (SC_FALSE == sc_helper_check_arc(keynode_order_relation, sc_iterator5_value(it_order, 4), sc_type_arc_pos_const_perm))
+                    if (SC_FALSE == sc_helper_check_arc(s_default_ctx, keynode_order_relation, sc_iterator5_value(it_order, 4), sc_type_arc_pos_const_perm))
                         continue;
-                    if (SC_FALSE == sc_helper_check_arc(sc_iterator5_value(it5, 0), sc_iterator5_value(it_order, 2), sc_type_arc_pos_const_perm))
+                    if (SC_FALSE == sc_helper_check_arc(s_default_ctx, sc_iterator5_value(it5, 0), sc_iterator5_value(it_order, 2), sc_type_arc_pos_const_perm))
                         continue;
 
                     appendIntoAnswer(answer, sc_iterator5_value(it_order, 1));
@@ -634,7 +635,7 @@ sc_result agent_search_links_of_relation_connected_with_element(const sc_event *
                                              sc_iterator3_value(it1, 1));
                 while (sc_iterator3_next(it2) == SC_TRUE)
                 {
-                    sc_memory_get_element_type(sc_iterator3_value(it2, 0), &el_type);
+                    sc_memory_get_element_type(s_default_ctx, sc_iterator3_value(it2, 0), &el_type);
                     if (!(el_type & sc_type_node_role))
                         continue;
 

@@ -212,7 +212,7 @@ sc_bool sc_storage_is_element(sc_addr addr)
 {
     sc_element *el = sc_storage_get_element(addr, SC_TRUE);
     if (el == 0) return SC_FALSE;
-    if (el->type == 0) return SC_FALSE;
+    if (el->flags.type == 0) return SC_FALSE;
     if (el->delete_time_stamp > 0) return SC_FALSE;
 
     return SC_TRUE;
@@ -264,7 +264,7 @@ sc_addr sc_storage_element_new(sc_type type)
     sc_element *res = 0;
 
     memset(&el, 0, sizeof(el));
-    el.type = type;
+    el.flags.type = type;
     el.create_time_stamp = storage_time_stamp;
 
     res = sc_storage_append_el_into_segments(&el, &addr);
@@ -301,14 +301,14 @@ sc_result sc_storage_element_free(sc_addr addr)
         remove_list = g_slist_delete_link(remove_list, remove_list);
 
         el = sc_storage_get_element(_addr, SC_TRUE);
-        g_assert(el != 0 && el->type != 0);
+        g_assert(el != 0 && el->flags.type != 0);
 
         // remove registered events before deletion
         sc_event_notify_element_deleted(_addr);
 
         el->delete_time_stamp = storage_time_stamp;
 
-        if (el->type & sc_type_arc_mask)
+        if (el->flags.type & sc_type_arc_mask)
         {
             sc_event_emit(el->arc.begin, SC_EVENT_REMOVE_OUTPUT_ARC, _addr);
             sc_event_emit(el->arc.end, SC_EVENT_REMOVE_INPUT_ARC, _addr);
@@ -359,7 +359,7 @@ sc_addr sc_storage_node_new(sc_type type )
     g_assert( !(sc_type_arc_mask & type) );
     memset(&el, 0, sizeof(el));
 
-    el.type = sc_type_node | type;
+    el.flags.type = sc_type_node | type;
 
     sc_storage_append_el_into_segments(&el, &addr);
     return addr;
@@ -371,7 +371,7 @@ sc_addr sc_storage_link_new()
     sc_addr addr;
 
     memset(&el, 0, sizeof(el));
-    el.type = sc_type_link;
+    el.flags.type = sc_type_link;
     sc_storage_append_el_into_segments(&el, &addr);
     return addr;
 }
@@ -388,7 +388,7 @@ sc_addr sc_storage_arc_new(sc_type type,
 
     memset(&el, 0, sizeof(el));
     g_assert( !(sc_type_node & type) );
-    el.type = (type & sc_type_arc_mask) ? type : (sc_type_arc_common | type);
+    el.flags.type = (type & sc_type_arc_mask) ? type : (sc_type_arc_common | type);
 
     el.arc.begin = beg;
     el.arc.end = end;
@@ -413,7 +413,7 @@ sc_addr sc_storage_arc_new(sc_type type,
 
     // check values
     g_assert(beg_el != nullptr && end_el != nullptr);
-    g_assert(beg_el->type != 0 && end_el->type != 0);
+    g_assert(beg_el->flags.type != 0 && end_el->flags.type != 0);
 
     // set next output arc for our created arc
     tmp_el->arc.next_out_arc = beg_el->first_out_arc;
@@ -447,7 +447,7 @@ sc_result sc_storage_get_element_type(sc_addr addr, sc_type *result)
     if (el == 0)
         return SC_RESULT_ERROR;
 
-    *result = el->type;
+    *result = el->flags.type;
 
     return SC_RESULT_OK;
 }
@@ -461,7 +461,7 @@ sc_result sc_storage_change_element_subtype(sc_addr addr, sc_type type)
     if (el == 0)
         return SC_RESULT_ERROR;
 
-    el->type = (el->type & sc_type_element_mask) | (type & ~sc_type_element_mask);
+    el->flags.type = (el->flags.type & sc_type_element_mask) | (type & ~sc_type_element_mask);
 
     return SC_RESULT_OK;
 }
@@ -469,7 +469,7 @@ sc_result sc_storage_change_element_subtype(sc_addr addr, sc_type type)
 sc_result sc_storage_get_arc_begin(sc_addr addr, sc_addr *result)
 {
     sc_element *el = sc_storage_get_element(addr, SC_TRUE);
-    if (el->type & sc_type_arc_mask)
+    if (el->flags.type & sc_type_arc_mask)
     {
         *result = el->arc.begin;
         return SC_RESULT_OK;
@@ -481,7 +481,7 @@ sc_result sc_storage_get_arc_begin(sc_addr addr, sc_addr *result)
 sc_result sc_storage_get_arc_end(sc_addr addr, sc_addr *result)
 {
     sc_element *el = sc_storage_get_element(addr, SC_TRUE);
-    if (el->type & sc_type_arc_mask)
+    if (el->flags.type & sc_type_arc_mask)
     {
         *result = el->arc.end;
         return SC_RESULT_OK;
@@ -501,7 +501,7 @@ sc_result sc_storage_set_link_content(sc_addr addr, const sc_stream *stream)
     if (el == nullptr)
         return SC_RESULT_ERROR_INVALID_PARAMS;
 
-    if (!(el->type & sc_type_link))
+    if (!(el->flags.type & sc_type_link))
         return SC_RESULT_ERROR_INVALID_TYPE;
 
     // calculate checksum for data
@@ -509,9 +509,6 @@ sc_result sc_storage_set_link_content(sc_addr addr, const sc_stream *stream)
     {
         result = sc_fs_storage_write_content(addr, &check_sum, stream);
         memcpy(el->content.data, check_sum.data, check_sum.len);
-        el->content.len = check_sum.len;
-
-        g_assert(check_sum.len > 0);
 
         //sc_event_emit(addr, SC_EVENT_CHANGE_LINK_CONTENT, addr);
         result = SC_RESULT_OK;
@@ -530,16 +527,11 @@ sc_result sc_storage_get_link_content(sc_addr addr, sc_stream **stream)
     if (el == nullptr)
         return SC_RESULT_ERROR_INVALID_PARAMS;
 
-    if (!(el->type & sc_type_link))
+    if (!(el->flags.type & sc_type_link))
         return SC_RESULT_ERROR_INVALID_TYPE;
 
 
     // prepare checksum
-    checksum.len = el->content.len;
-
-    if (checksum.len == 0)
-        return SC_RESULT_ERROR;
-
     memcpy(checksum.data, el->content.data, checksum.len);
 
     return sc_fs_storage_get_checksum_content(&checksum, stream);
@@ -575,7 +567,7 @@ sc_result sc_storage_get_elements_stat(sc_stat *stat)
         g_assert( segment != (sc_segment*)0 );
         for (e_idx = 0; e_idx < SEGMENT_SIZE; e_idx++)
         {
-            type = segment->elements[e_idx].type;
+            type = segment->elements[e_idx].flags.type;
             delete_stamp = segment->elements[e_idx].delete_time_stamp;
             if (type == 0)
             {

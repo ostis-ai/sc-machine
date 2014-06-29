@@ -24,6 +24,7 @@ along with OSTIS. If not, see <http://www.gnu.org/licenses/>.
 #include "search_keynodes.h"
 #include "search_defines.h"
 #include "search_utils.h"
+#include "search.h"
 
 #include <sc_helper.h>
 #include <sc_memory_headers.h>
@@ -34,11 +35,11 @@ sc_result agent_full_pattern_search(const sc_event *event, sc_addr arg)
     sc_iterator3 *it1, *it2;
     sc_bool sys_off = SC_TRUE;
 
-    if (!sc_memory_get_arc_end(arg, &question))
+    if (!sc_memory_get_arc_end(s_default_ctx, arg, &question))
         return SC_RESULT_ERROR_INVALID_PARAMS;
 
     // check question type
-    if (sc_helper_check_arc(keynode_question_search_full_pattern, question, sc_type_arc_pos_const_perm) == SC_FALSE)
+    if (sc_helper_check_arc(s_default_ctx, keynode_question_search_full_pattern, question, sc_type_arc_pos_const_perm) == SC_FALSE)
         return SC_RESULT_ERROR_INVALID_TYPE;
 
     answer = create_answer_node();

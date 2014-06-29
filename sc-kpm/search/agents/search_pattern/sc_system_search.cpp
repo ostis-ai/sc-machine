@@ -24,6 +24,7 @@ extern "C"
 #include "sc_memory_headers.h"
 }
 #include "sc_system_search.h"
+#include "search.h"
 
 #include <stdio.h>
 #include <iostream>
@@ -32,18 +33,18 @@ extern "C"
 sc_bool system_sys_search_recurse(sc_addr sc_pattern, sc_type_hash pattern, sc_addr curr_const_element, sc_addr curr_pattern_element, sc_type_result *inp_result, sc_type_result_vector *out_common_result, int element_number)
 {
     sc_type input_element_type;
-    if (sc_memory_get_element_type(curr_pattern_element, &input_element_type) != SC_RESULT_OK) {return SC_FALSE;}
+    if (sc_memory_get_element_type(s_default_ctx, curr_pattern_element, &input_element_type) != SC_RESULT_OK) {return SC_FALSE;}
     if (element_number == 2 && (sc_type_node & input_element_type) != sc_type_node)
     {
         //!Input element is arc
         sc_addr const_element, pattern_element, temp, end_pattern_element, end_const_element;
         sc_type pattern_element_type, end_pattern_element_type;
-        sc_memory_get_arc_begin(curr_const_element, &const_element);
-        sc_memory_get_arc_begin(curr_pattern_element, &pattern_element);
-        sc_memory_get_arc_end(curr_const_element, &end_const_element);
-        sc_memory_get_arc_end(curr_pattern_element, &end_pattern_element);
+        sc_memory_get_arc_begin(s_default_ctx, curr_const_element, &const_element);
+        sc_memory_get_arc_begin(s_default_ctx, curr_pattern_element, &pattern_element);
+        sc_memory_get_arc_end(s_default_ctx, curr_const_element, &end_const_element);
+        sc_memory_get_arc_end(s_default_ctx, curr_pattern_element, &end_pattern_element);
 
-        if (sc_memory_get_element_type(pattern_element, &pattern_element_type) != SC_RESULT_OK) {return SC_TRUE;}
+        if (sc_memory_get_element_type(s_default_ctx, pattern_element, &pattern_element_type) != SC_RESULT_OK) {return SC_TRUE;}
         if ((sc_type_const & pattern_element_type) == sc_type_const)
         {
             if (SC_ADDR_IS_NOT_EQUAL(const_element, pattern_element))
@@ -61,7 +62,7 @@ sc_bool system_sys_search_recurse(sc_addr sc_pattern, sc_type_hash pattern, sc_a
             }
         }
 
-        if (sc_memory_get_element_type(end_pattern_element, &end_pattern_element_type) != SC_RESULT_OK) {return SC_TRUE;}
+        if (sc_memory_get_element_type(s_default_ctx, end_pattern_element, &end_pattern_element_type) != SC_RESULT_OK) {return SC_TRUE;}
         if ((sc_type_const & end_pattern_element_type) == sc_type_const)
         {
             if (SC_ADDR_IS_NOT_EQUAL(end_const_element, end_pattern_element))
@@ -147,7 +148,7 @@ sc_bool system_sys_search_recurse(sc_addr sc_pattern, sc_type_hash pattern, sc_a
 
         //!check pattern_arc type
         sc_type pattern_arc_type;
-        if (sc_memory_get_element_type(pattern_arc, &pattern_arc_type) != SC_RESULT_OK)
+        if (sc_memory_get_element_type(s_default_ctx, pattern_arc, &pattern_arc_type) != SC_RESULT_OK)
             continue;
         if ((sc_type_const & pattern_arc_type) == sc_type_const)
             continue;
@@ -157,13 +158,13 @@ sc_bool system_sys_search_recurse(sc_addr sc_pattern, sc_type_hash pattern, sc_a
 
         if (out_arc_count > 0)
         {
-            if (SC_RESULT_OK != sc_memory_get_arc_end(pattern_arc, &next_pattern_element))
+            if (SC_RESULT_OK != sc_memory_get_arc_end(s_default_ctx, pattern_arc, &next_pattern_element))
                 continue;
             out_arc_count--;
         }
         else
         {
-            if (SC_RESULT_OK != sc_memory_get_arc_begin(pattern_arc, &next_pattern_element))
+            if (SC_RESULT_OK != sc_memory_get_arc_begin(s_default_ctx, pattern_arc, &next_pattern_element))
                 continue;
             out_arc_flag = SC_FALSE;
         }
@@ -180,19 +181,19 @@ sc_bool system_sys_search_recurse(sc_addr sc_pattern, sc_type_hash pattern, sc_a
             pattern_arc_is_const_or_has_value = SC_TRUE;
             if (out_arc_flag == SC_TRUE)
             {
-                if (SC_RESULT_OK != sc_memory_get_arc_end(const_arc, &next_const_element))
+                if (SC_RESULT_OK != sc_memory_get_arc_end(s_default_ctx, const_arc, &next_const_element))
                     continue;
             }
             else
             {
-                if (SC_RESULT_OK != sc_memory_get_arc_begin(const_arc, &next_const_element))
+                if (SC_RESULT_OK != sc_memory_get_arc_begin(s_default_ctx, const_arc, &next_const_element))
                     continue;
             }
         }
 
         //!check next_pattern_element type
         sc_type next_pattern_element_type;
-        if (sc_memory_get_element_type(next_pattern_element, &next_pattern_element_type) != SC_RESULT_OK) {continue;}
+        if (sc_memory_get_element_type(s_default_ctx, next_pattern_element, &next_pattern_element_type) != SC_RESULT_OK) {continue;}
         if ((sc_type_const & next_pattern_element_type) == sc_type_const)
         {
             if (pattern_arc_is_const_or_has_value == SC_TRUE)
@@ -289,12 +290,12 @@ sc_bool system_sys_search_recurse(sc_addr sc_pattern, sc_type_hash pattern, sc_a
             {
                 if (out_arc_flag == SC_TRUE)
                 {
-                    if (SC_RESULT_OK != sc_memory_get_arc_end(const_arc, &next_const_element))
+                    if (SC_RESULT_OK != sc_memory_get_arc_end(s_default_ctx, const_arc, &next_const_element))
                         continue;
                 }
                 else
                 {
-                    if (SC_RESULT_OK != sc_memory_get_arc_begin(const_arc, &next_const_element))
+                    if (SC_RESULT_OK != sc_memory_get_arc_begin(s_default_ctx, const_arc, &next_const_element))
                         continue;
                 }
             }

@@ -33,11 +33,14 @@ extern "C"
 }
 
 const sc_version required_version = {0, 1, 0, ""};
+sc_memory_context * s_default_ctx = 0;
 
 // ------------------- Module ------------------------------
 sc_result initialize()
 {
-    if (sc_version_compare(&SC_VERSION, &required_version) != 0)
+    s_default_ctx = sc_memory_context_new(sc_access_levels_make(8, 8));
+
+    if (sc_version_compare(&SC_VERSION, &required_version) < 0)
     {
         char *req_str = sc_version_string_new(&required_version);
         char *v_str = sc_version_string_new(&SC_VERSION);
@@ -67,6 +70,8 @@ sc_result shutdown()
 
     ui_shutdown_translators();
     ui_shutdown_commands();
+
+    sc_memory_context_free(s_default_ctx);
 
     return SC_RESULT_OK;
 }

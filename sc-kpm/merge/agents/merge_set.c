@@ -21,6 +21,7 @@ along with OSTIS. If not, see <http://www.gnu.org/licenses/>.
  */
 #include "merge_keynodes.h"
 #include "merge_utils.h"
+#include "merge.h"
 
 #include <sc_helper.h>
 #include <glib.h>
@@ -36,11 +37,11 @@ sc_result agent_set_cantorization(const sc_event *event, sc_addr arg)
     GHashTable *table;
     //sc_iterator5 *it5, *it_order;
 
-    if (!sc_memory_get_arc_end(arg, &question))
+    if (!sc_memory_get_arc_end(s_default_ctx, arg, &question))
         return SC_RESULT_ERROR_INVALID_PARAMS;
 
     // check question type
-    if (sc_helper_check_arc(keynode_question_set_cantorization, question, sc_type_arc_pos_const_perm) == SC_FALSE)
+    if (sc_helper_check_arc(s_default_ctx, keynode_question_set_cantorization, question, sc_type_arc_pos_const_perm) == SC_FALSE)
         return SC_RESULT_ERROR_INVALID_TYPE;
 
     // get operation argument

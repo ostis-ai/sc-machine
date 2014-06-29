@@ -119,7 +119,7 @@ sc_bool sc_iterator_param_compare(sc_element *el, sc_addr addr, sc_iterator_para
     g_assert(el != 0);
 
     if (param.is_type)
-        return el->type & param.type;
+        return el->flags.type & param.type;
     else
         return SC_ADDR_IS_EQUAL(addr, param.addr);
 

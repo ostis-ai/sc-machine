@@ -46,6 +46,7 @@ sctpStatistic::sctpStatistic(QObject *parent)
     , mStatUpdatePeriod(0)
     , mStatUpdateTimer(0)
     , mStatInitUpdate(true)
+    , mContext(0)
 {
     Q_ASSERT(mInstance == 0);
     mInstance = this;
@@ -56,10 +57,11 @@ sctpStatistic::~sctpStatistic()
     mInstance = 0;
 }
 
-bool sctpStatistic::initialize(const QString &statDirPath, quint32 updatePeriod)
+bool sctpStatistic::initialize(const QString &statDirPath, quint32 updatePeriod, sc_memory_context *context)
 {
     mStatPath = statDirPath;
     mStatUpdatePeriod = updatePeriod;
+    mContext = context;
 
     memset(&mCurrentStat, 0, sizeof(mCurrentStat));
 
@@ -95,6 +97,8 @@ bool sctpStatistic::initialize(const QString &statDirPath, quint32 updatePeriod)
 
 void sctpStatistic::shutdown()
 {
+    mContext = 0;
+
     delete mDataMutex;
     mDataMutex = 0;
 
@@ -151,7 +155,7 @@ void sctpStatistic::update()
     mCurrentStat.mIsInitStat = mStatInitUpdate ? 1 : 0;
 
     sc_stat mem_stat;
-    if (sc_memory_stat(&mem_stat) == SC_RESULT_OK)
+    if (sc_memory_stat(mContext, &mem_stat) == SC_RESULT_OK)
     {
         mCurrentStat.mArcCount = mem_stat.arc_count;
         mCurrentStat.mNodeCount = mem_stat.node_count;

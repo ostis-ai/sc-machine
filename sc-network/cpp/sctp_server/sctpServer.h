@@ -23,6 +23,8 @@ along with OSTIS.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef _sctpServer_h_
 #define _sctpServer_h_
 
+#include "sctpTypes.h"
+
 #include <QTcpServer>
 #include <QList>
 
@@ -67,6 +69,8 @@ private:
     //! Event manager instance
     sctpEventManager *mEventManager;
 
+    //! Pointer to default memory context
+    sc_memory_context *mContext;
 
 signals:
 

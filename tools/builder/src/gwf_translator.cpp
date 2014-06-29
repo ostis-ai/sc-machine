@@ -29,7 +29,8 @@ along with OSTIS.  If not, see <http://www.gnu.org/licenses/>.
 #include <assert.h>
 
 
-GwfTranslator::GwfTranslator()
+GwfTranslator::GwfTranslator(sc_memory_context *ctx)
+    : iTranslator(ctx)
 {
 
 }
@@ -147,7 +148,7 @@ bool GwfTranslator::processString(const String &data)
 
         if (el->Name() == s_contour)
         {
-            addr = sc_memory_node_new(sc_type_const | sc_type_node_struct);
+            addr = sc_memory_node_new(mContext, sc_type_const | sc_type_node_struct);
             appendScAddr(addr, idtf);
         } else
         {
@@ -162,12 +163,12 @@ bool GwfTranslator::processString(const String &data)
 
             if (content->IntAttribute("type") == 0)
             {
-                addr = sc_memory_node_new(convertType(el->Attribute("type")));
+                addr = sc_memory_node_new(mContext, convertType(el->Attribute("type")));
                 appendScAddr(addr, idtf);
             } else
             {
                 // need to create link
-                addr = sc_memory_link_new();
+                addr = sc_memory_link_new(mContext);
                 // setup content
                 String data = content->GetText();
 
@@ -175,7 +176,7 @@ bool GwfTranslator::processString(const String &data)
                     data = base64_decode(data);
 
                 sc_stream *stream = sc_stream_memory_new(data.c_str(), data.size(), SC_STREAM_READ, SC_FALSE);
-                sc_memory_set_link_content(addr, stream);
+                sc_memory_set_link_content(mContext, addr, stream);
                 sc_stream_free(stream);
 
                 if (mParams.autoFormatInfo)
@@ -188,7 +189,7 @@ bool GwfTranslator::processString(const String &data)
         }
 
         if (!idtf.empty())
-            sc_helper_set_system_identifier(addr, idtf.c_str(), idtf.size());
+            sc_helper_set_system_identifier(mContext, addr, idtf.c_str(), idtf.size());
 
         id_map[id] = addr;
     }
@@ -238,12 +239,12 @@ bool GwfTranslator::processString(const String &data)
 
             // create arc
             created = true;
-            addr = sc_memory_arc_new(convertType(el->Attribute("type")), itB->second, itE->second);
+            addr = sc_memory_arc_new(mContext, convertType(el->Attribute("type")), itB->second, itE->second);
             appendScAddr(addr, idtf);
             id_map[id] = addr;
 
             if (!idtf.empty())
-                sc_helper_set_system_identifier(addr, idtf.c_str(), idtf.size());
+                sc_helper_set_system_identifier(mContext, addr, idtf.c_str(), idtf.size());
         }
     }
 
@@ -261,7 +262,7 @@ bool GwfTranslator::processString(const String &data)
         if (itP == id_map.end())
             continue;
 
-        sc_memory_arc_new(sc_type_arc_pos_const_perm, itP->second, itSelf->second);
+        sc_memory_arc_new(mContext, sc_type_arc_pos_const_perm, itP->second, itSelf->second);
     }
 
     return false;
@@ -290,7 +291,7 @@ bool GwfTranslator::getScAddr(const String &idtf, sc_addr &addr)
         return true;
     }
 
-    if (sc_helper_find_element_by_system_identifier(idtf.c_str(), idtf.size(), &addr) == SC_RESULT_OK)
+    if (sc_helper_find_element_by_system_identifier(mContext, idtf.c_str(), idtf.size(), &addr) == SC_RESULT_OK)
         return true;
 
     return false;
@@ -417,9 +418,9 @@ GwfTranslatorFactory::~GwfTranslatorFactory()
 {
 }
 
-iTranslator* GwfTranslatorFactory::createInstance()
+iTranslator* GwfTranslatorFactory::createInstance(sc_memory_context *ctx)
 {
-    return new GwfTranslator();
+    return new GwfTranslator(ctx);
 }
 
 const String& GwfTranslatorFactory::getFileExt() const

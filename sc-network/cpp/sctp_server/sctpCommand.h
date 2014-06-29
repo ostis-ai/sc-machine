@@ -121,6 +121,9 @@ private:
     typedef std::set<tEventId> tEventsSet;
     tEventsSet mEventsSet;
 
+    //! Memory context
+    sc_memory_context *mContext;
+
 signals:
     
 public slots:

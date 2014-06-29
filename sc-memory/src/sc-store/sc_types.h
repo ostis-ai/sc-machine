@@ -26,7 +26,6 @@ along with OSTIS.  If not, see <http://www.gnu.org/licenses/>.
 #include "sc_defines.h"
 #include <memory.h>
 #include <stdlib.h>
-
 #define nullptr ((void*)0)
 
 // base types
@@ -77,9 +76,6 @@ typedef sc_uint16 sc_addr_offset;
 //! Structure to store sc-element address
 struct _sc_addr
 {
-#if USE_NETWORK_SCALE
-    sc_uint32 net_addr;
-#endif
     sc_addr_seg seg;
     sc_addr_offset offset;
 };
@@ -141,6 +137,25 @@ typedef sc_uint16 sc_type;
 #define sc_type_node_struct_mask (sc_type_node_tuple | sc_type_node_struct | sc_type_node_role | sc_type_node_norole | sc_type_node_class | sc_type_node_abstract | sc_type_node_material)
 #define sc_type_arc_mask         (sc_type_arc_access | sc_type_arc_common | sc_type_edge_common)
 
+
+// locks
+#define sc_lock_out_in      0x1
+#define sc_lock_del         0x2
+#define sc_lock_change      0x4
+#define sc_lock_read        0x8
+
+// access levels
+#define sc_access_level_max     16
+#define sc_access_level_min     0
+
+#define sc_access_level_read_mask   0x0f
+#define sc_access_level_write_mask  0xf0
+
+#define sc_access_levels_get_read(levels) (levels & sc_access_level_read_mask)
+#define sc_access_levels_get_write(levels) ((levels & sc_access_level_write_mask) >> 4)
+
+#define sc_access_levels_make(read, write) (sc_uint8)(((read) << 4) | (write))
+
 // results
 enum _sc_result
 {
@@ -186,10 +201,29 @@ struct _sc_stat
     sc_uint64 empty_count; // amount of empty sc-element cells
 };
 
+typedef struct _sc_access_levels_split
+{
+    sc_uint8 read:4;
+    sc_uint8 write:4;
+} sc_access_levels_split;
+
+struct _sc_access_levels
+{
+    union
+    {
+        sc_access_levels_split levels;
+        sc_uint8 value;
+    };
+};
+
+
 typedef struct _sc_check_sum sc_check_sum;
 typedef struct _sc_arc  sc_arc;
 typedef struct _sc_content sc_content;
 typedef struct _sc_arc_info sc_arc_info;
+typedef struct _sc_access_levels sc_access_levels;
+typedef struct _sc_element_locks sc_element_locks;
+typedef struct _sc_element_flags sc_element_flags;
 typedef struct _sc_element sc_element;
 typedef struct _sc_segment sc_segment;
 typedef struct _sc_addr sc_addr;

@@ -322,9 +322,9 @@ void uiSc2SCnJsonTranslator::collectScElementsInfo()
             continue;
 
         // get begin/end addrs
-        if (sc_memory_get_arc_begin(arcAddr, &begAddr) != SC_RESULT_OK)
+        if (sc_memory_get_arc_begin(s_default_ctx, arcAddr, &begAddr) != SC_RESULT_OK)
             continue; // @todo process errors
-        if (sc_memory_get_arc_end(arcAddr, &endAddr) != SC_RESULT_OK)
+        if (sc_memory_get_arc_end(s_default_ctx, arcAddr, &endAddr) != SC_RESULT_OK)
             continue; // @todo process errors
 
 
@@ -373,7 +373,7 @@ sc_result uiSc2SCnJsonTranslator::ui_translate_sc2scn(const sc_event *event, sc_
 {
     sc_addr cmd_addr, input_addr, format_addr;
 
-    if (sc_memory_get_arc_end(arg, &cmd_addr) != SC_RESULT_OK)
+    if (sc_memory_get_arc_end(s_default_ctx, arg, &cmd_addr) != SC_RESULT_OK)
         return SC_RESULT_ERROR;
 
     if (ui_check_cmd_type(cmd_addr, keynode_command_translate_from_sc) != SC_RESULT_OK)

@@ -25,6 +25,9 @@ along with OSTIS. If not, see <http://www.gnu.org/licenses/>.
 
 #include "sc_memory.h"
 
+extern sc_memory_context * s_default_ctx;
+
+
 //! Module initialization function
 sc_result initialize();
 

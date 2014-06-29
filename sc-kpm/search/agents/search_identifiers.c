@@ -22,6 +22,7 @@ along with OSTIS. If not, see <http://www.gnu.org/licenses/>.
 #include "search_identifiers.h"
 #include "search_keynodes.h"
 #include "search_utils.h"
+#include "search.h"
 
 #include <sc_helper.h>
 #include <sc_memory_headers.h>
@@ -33,11 +34,11 @@ sc_result agent_search_all_identifiers(const sc_event *event, sc_addr arg)
     sc_iterator5 *it5;
     sc_bool found = SC_FALSE;
 
-    if (!sc_memory_get_arc_end(arg, &question))
+    if (!sc_memory_get_arc_end(s_default_ctx, arg, &question))
         return SC_RESULT_ERROR_INVALID_PARAMS;
 
     // check question type
-    if (sc_helper_check_arc(keynode_question_all_identifiers, question, sc_type_arc_pos_const_perm) == SC_FALSE)
+    if (sc_helper_check_arc(s_default_ctx, keynode_question_all_identifiers, question, sc_type_arc_pos_const_perm) == SC_FALSE)
         return SC_RESULT_ERROR_INVALID_TYPE;
 
     answer = create_answer_node();
@@ -58,7 +59,7 @@ sc_result agent_search_all_identifiers(const sc_event *event, sc_addr arg)
         while (sc_iterator5_next(it5) == SC_TRUE)
         {
             // check if this relation is an identification
-            if (sc_helper_check_arc(keynode_identification_relation, sc_iterator5_value(it5, 4), sc_type_arc_pos_const_perm) == SC_TRUE)
+            if (sc_helper_check_arc(s_default_ctx, keynode_identification_relation, sc_iterator5_value(it5, 4), sc_type_arc_pos_const_perm) == SC_TRUE)
             {
 
                 // iterate input arcs for sc-link
@@ -67,7 +68,7 @@ sc_result agent_search_all_identifiers(const sc_event *event, sc_addr arg)
                                              sc_iterator5_value(it5, 2));
                 while (sc_iterator3_next(it2) == SC_TRUE)
                 {
-                    if (sc_helper_check_arc(keynode_languages, sc_iterator3_value(it2, 0), sc_type_arc_pos_const_perm) == SC_TRUE)
+                    if (sc_helper_check_arc(s_default_ctx, keynode_languages, sc_iterator3_value(it2, 0), sc_type_arc_pos_const_perm) == SC_TRUE)
                     {
                         appendIntoAnswer(answer, sc_iterator3_value(it2, 0));
                         appendIntoAnswer(answer, sc_iterator3_value(it2, 1));
@@ -100,11 +101,11 @@ sc_result agent_search_all_identified_elements(const sc_event *event, sc_addr ar
     sc_iterator3 *it1;
     sc_bool found = SC_FALSE;
 
-    if (!sc_memory_get_arc_end(arg, &question))
+    if (!sc_memory_get_arc_end(s_default_ctx, arg, &question))
         return SC_RESULT_ERROR_INVALID_PARAMS;
 
     // check question type
-    if (sc_helper_check_arc(keynode_question_all_identified_elements, question, sc_type_arc_pos_const_perm) == SC_FALSE)
+    if (sc_helper_check_arc(s_default_ctx, keynode_question_all_identified_elements, question, sc_type_arc_pos_const_perm) == SC_FALSE)
         return SC_RESULT_ERROR_INVALID_TYPE;
 
     answer = create_answer_node();
@@ -113,8 +114,8 @@ sc_result agent_search_all_identified_elements(const sc_event *event, sc_addr ar
     while (sc_iterator3_next(it1) == SC_TRUE)
     {
         found = SC_TRUE;
-        sc_memory_get_arc_begin(sc_iterator3_value(it1, 2), &begin);
-        sc_memory_get_arc_end(sc_iterator3_value(it1, 2), &end);
+        sc_memory_get_arc_begin(s_default_ctx, sc_iterator3_value(it1, 2), &begin);
+        sc_memory_get_arc_end(s_default_ctx, sc_iterator3_value(it1, 2), &end);
 
         appendIntoAnswer(answer, sc_iterator3_value(it1, 1));
         appendIntoAnswer(answer, sc_iterator3_value(it1, 2));

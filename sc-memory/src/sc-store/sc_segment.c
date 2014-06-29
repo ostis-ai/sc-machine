@@ -106,7 +106,7 @@ void sc_segment_remove_element(sc_segment *segment,
 {
     g_assert( segment != (sc_segment*)0 );
     g_assert( el_id < SEGMENT_SIZE );
-    segment->elements[el_id].type = 0;
+    segment->elements[el_id].flags.type = 0;
 }
 
 
@@ -190,7 +190,7 @@ void sc_segment_update_empty_slot_value(sc_segment *segment)
 #else
     for (idx = segment->empty_slot + 1; idx < SEGMENT_SIZE; ++idx)
 #endif
-        if (segment->elements[idx].type == 0)
+        if (segment->elements[idx].flags.type == 0)
         {
             segment->empty_slot = idx;
             return;
@@ -204,7 +204,7 @@ void sc_segment_update_empty_slot_value(sc_segment *segment)
 #else
     for (idx = v; idx < segment->empty_slot; ++idx)
 #endif
-        if (segment->elements[idx].type == 0)
+        if (segment->elements[idx].flags.type == 0)
         {
             segment->empty_slot = idx;
             return;
@@ -221,7 +221,7 @@ sc_uint32 sc_segment_get_elements_count(sc_segment *seg)
 
     for (idx = 0; idx < SEGMENT_SIZE; ++idx)
     {
-        if (seg->elements[idx].type != 0)
+        if (seg->elements[idx].flags.type != 0)
             count++;
     }
 
@@ -258,7 +258,7 @@ sc_uint32 sc_segment_free_garbage(sc_segment *seg, sc_uint32 oldest_time_stamp)
         {
             // delete arcs from output and intpu lists
             // @todo two oriented lists support
-            if (el->type & sc_type_arc_mask)
+            if (el->flags.type & sc_type_arc_mask)
             {
 #if USE_TWO_ORIENTED_ARC_LIST
                 prev_arc = el->arc.prev_out_arc;
@@ -340,7 +340,7 @@ sc_uint32 sc_segment_free_garbage(sc_segment *seg, sc_uint32 oldest_time_stamp)
 
 
         // collect empty cells
-        if (el->type == 0 && !(idx == 0 && seg->num == 0))
+        if (el->flags.type == 0 && !(idx == 0 && seg->num == 0))
         {
 #if USE_SEGMENT_EMPTY_SLOT_BUFFER
             if (seg->empty_slot_buff_head < SEGMENT_EMPTY_BUFFER_SIZE)

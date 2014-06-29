@@ -24,6 +24,7 @@ extern "C"
 #include "sc_memory_headers.h"
 }
 #include "sc_system_operators.h"
+#include "search.h"
 
 #include <stdio.h>
 #include <iostream>
@@ -49,7 +50,7 @@ sc_bool copy_set_into_hash(sc_addr set, sc_type arc_type, sc_type end_type, sc_t
         table->insert(sc_hash_pair(SC_ADDR_LOCAL_TO_INT(addr3), addr3));
 
         sc_type element_type;
-        if (sc_memory_get_element_type(addr3, &element_type) != SC_RESULT_OK) {continue;}
+        if (sc_memory_get_element_type(s_default_ctx, addr3, &element_type) != SC_RESULT_OK) {continue;}
         if ((sc_type_var & element_type) == sc_type_var)
         {
             (*var_count)++;

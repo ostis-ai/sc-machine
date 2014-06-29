@@ -52,7 +52,7 @@ void uiSc2SCgJsonTranslator::runImpl()
         addr = sc_iterator3_value(it, 2);
 
         //! TODO add error logging
-        if (sc_memory_get_element_type(addr, &el_type) != SC_RESULT_OK)
+        if (sc_memory_get_element_type(s_default_ctx, addr, &el_type) != SC_RESULT_OK)
             continue;
 
         attrs.clear();
@@ -69,10 +69,10 @@ void uiSc2SCgJsonTranslator::runImpl()
             attrs["type"] = "arc";
 
             sc_addr beg_addr;
-            if (sc_memory_get_arc_begin(addr, &beg_addr) != SC_RESULT_OK)
+            if (sc_memory_get_arc_begin(s_default_ctx, addr, &beg_addr) != SC_RESULT_OK)
                 continue; //! TODO error logging
             sc_addr end_addr;
-            if (sc_memory_get_arc_end(addr, &end_addr) != SC_RESULT_OK)
+            if (sc_memory_get_arc_end(s_default_ctx, addr, &end_addr) != SC_RESULT_OK)
                 continue; //! TODO error logging
 
             attrs["begin"] = buildId(beg_addr);
@@ -110,7 +110,7 @@ sc_result uiSc2SCgJsonTranslator::ui_translate_sc2scg_json(const sc_event *event
 {
     sc_addr cmd_addr, input_addr, format_addr;
 
-    if (sc_memory_get_arc_end(arg, &cmd_addr) != SC_RESULT_OK)
+    if (sc_memory_get_arc_end(s_default_ctx, arg, &cmd_addr) != SC_RESULT_OK)
         return SC_RESULT_ERROR;
 
     if (ui_check_cmd_type(cmd_addr, keynode_command_translate_from_sc) != SC_RESULT_OK)

@@ -44,7 +44,7 @@ typedef enum _sc_keynode sc_keynode;
  * specified system identifier, then return SC_ERROR_INVALID_STATE, but result_addr will contains sc-addr
  * of firstly found sc-element.
  */
-sc_result sc_helper_find_element_by_system_identifier(const sc_char* data, sc_uint32 len, sc_addr *result_addr);
+sc_result sc_helper_find_element_by_system_identifier(sc_memory_context const * ctx, const sc_char* data, sc_uint32 len, sc_addr *result_addr);
 
 /*! Setup new system identifier for specified sc-element
  * @param addr sc-addr of sc-element to setup new system identifier
@@ -53,14 +53,14 @@ sc_result sc_helper_find_element_by_system_identifier(const sc_char* data, sc_ui
  * @remarks If sc-element already has system identifier, then it would be replaced. If system identifier
  * already used for another sc-element, then function returns SC_ERROR_INVALID_PARAMS
  */
-sc_result sc_helper_set_system_identifier(sc_addr addr, const sc_char* data, sc_uint32 len);
+sc_result sc_helper_set_system_identifier(sc_memory_context const * ctx, sc_addr addr, const sc_char* data, sc_uint32 len);
 
 /*! Return sc-addr of system identifier for specified sc-element
  * @param el sc-addr of element to get it system identifier
  * @param sys_idtf_addr Pointer to found sc-addr of system identifier
  * @return If system identifier found, then return SC_RESULT_OK; otherwise return SC_RESULT_ERROR
  */
-sc_result sc_helper_get_system_identifier(sc_addr el, sc_addr *sys_idtf_addr);
+sc_result sc_helper_get_system_identifier(sc_memory_context const * ctx, sc_addr el, sc_addr *sys_idtf_addr);
 
 /*! Returns sc-addr of specified sc-keynode
  * @param keynode Code of specified sc-keynode
@@ -68,14 +68,14 @@ sc_result sc_helper_get_system_identifier(sc_addr el, sc_addr *sys_idtf_addr);
  * @return If specified keynode exist, then return SC_OK and keynode_addr contains sc-addr of this one;
  * otherwise return SC_ERROR
  */
-sc_result sc_helper_get_keynode(sc_keynode keynode, sc_addr *keynode_addr);
+sc_result sc_helper_get_keynode(sc_memory_context const * ctx, sc_keynode keynode, sc_addr *keynode_addr);
 
 /*! Resolve sc-elemen by specified string system identifier
  * @param system_idtf String that represents system identifier (it will be converted into utf-8)
  * @param result Pointer to result sc-addr container
  * @return If sc-element was founded, then return SC_TRUE; otherwise return SC_FALSE.
  */
-sc_bool sc_helper_resolve_system_identifier(const char *system_idtf, sc_addr *result);
+sc_bool sc_helper_resolve_system_identifier(sc_memory_context const * ctx, const char *system_idtf, sc_addr *result);
 
 /*! Check if specified arc type exist between two objects
  * @param beg_el sc-addr of begin element
@@ -84,7 +84,7 @@ sc_bool sc_helper_resolve_system_identifier(const char *system_idtf, sc_addr *re
  * @return If arc with specified type between beg_el and end_el exist, then return SC_TRUE;
  * otherwise return SC_FALSE
  */
-sc_bool sc_helper_check_arc(sc_addr beg_el, sc_addr end_el, sc_type arc_type);
+sc_bool sc_helper_check_arc(sc_memory_context const * ctx, sc_addr beg_el, sc_addr end_el, sc_type arc_type);
 
 
 /*! Check if current version equal to specified
