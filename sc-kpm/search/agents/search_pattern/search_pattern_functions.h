@@ -32,6 +32,13 @@ extern "C"
  * Function that performs search of all constructions, which are completely isomorphic to given pattern
  */
 sc_result search_full_pattern(sc_addr pattern, sc_addr answer, sc_bool sys_off);
+
+/*!
+ * Function that performs search of all constructions, which are completely isomorphic to given pattern.
+ * Result set is an set of correspondences, each of which discribes one search result.
+ */
+sc_result search_full_pattern_with_full_result_gen(sc_addr pattern, sc_addr answer, sc_addr result_set, sc_bool sys_off);
+
 }
 
 #endif // SEARCH_PATTERN_H

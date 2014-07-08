@@ -26,6 +26,7 @@ along with OSTIS. If not, see <http://www.gnu.org/licenses/>.
 
 #include <sc_helper.h>
 #include <sc_memory_headers.h>
+#include <glib.h>
 
 sc_addr create_answer_node()
 {
@@ -66,4 +67,21 @@ void finish_question(sc_addr question)
 
     arc = sc_memory_arc_new(sc_type_arc_pos_const_perm, keynode_question_finished, question);
     SYSTEM_ELEMENT(arc);
+}
+
+void log_agent_started(const sc_char *agent_keynode_str)
+{
+    g_message("sc-agent started: %s\n", agent_keynode_str);
+}
+
+void log_agent_finished(const sc_char *agent_keynode_str, sc_bool success)
+{
+    if (SC_TRUE == success)
+    {
+        g_message("sc-agent finished successfully: %s\n", agent_keynode_str);
+    }
+    else
+    {
+        g_message("sc-agent finished unsuccessfully: %s\n", agent_keynode_str);
+    }
 }

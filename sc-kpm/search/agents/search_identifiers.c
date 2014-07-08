@@ -32,6 +32,7 @@ sc_result agent_search_all_identifiers(const sc_event *event, sc_addr arg)
     sc_iterator3 *it1, *it2;
     sc_iterator5 *it5;
     sc_bool found = SC_FALSE;
+    const char keynode_sc_agent_of_search_of_all_identifiers_agent_c_str[] = "sc_agent_of_search_of_all_identifiers_agent_c";
 
     if (!sc_memory_get_arc_end(arg, &question))
         return SC_RESULT_ERROR_INVALID_PARAMS;
@@ -39,6 +40,8 @@ sc_result agent_search_all_identifiers(const sc_event *event, sc_addr arg)
     // check question type
     if (sc_helper_check_arc(keynode_question_all_identifiers, question, sc_type_arc_pos_const_perm) == SC_FALSE)
         return SC_RESULT_ERROR_INVALID_TYPE;
+
+    log_agent_started(keynode_sc_agent_of_search_of_all_identifiers_agent_c_str);
 
     answer = create_answer_node();
 
@@ -86,9 +89,12 @@ sc_result agent_search_all_identifiers(const sc_event *event, sc_addr arg)
     sc_iterator3_free(it1);
 
     if (found == SC_TRUE)
-        appendIntoAnswer(answer, keynode_nrel_identification);
+        appendIntoAnswer(answer, keynode_identification_relation);
+
+    log_agent_finished(keynode_sc_agent_of_search_of_all_identifiers_agent_c_str, found);
 
     connect_answer_to_question(question, answer);
+
     finish_question(question);
 
     return SC_RESULT_OK;
@@ -99,6 +105,7 @@ sc_result agent_search_all_identified_elements(const sc_event *event, sc_addr ar
     sc_addr question, answer, begin, end;
     sc_iterator3 *it1;
     sc_bool found = SC_FALSE;
+    const char keynode_sc_agent_of_search_of_all_identified_elements_agent_c_str[] = "sc_agent_of_search_of_all_identified_elements_agent_c";
 
     if (!sc_memory_get_arc_end(arg, &question))
         return SC_RESULT_ERROR_INVALID_PARAMS;
@@ -106,6 +113,8 @@ sc_result agent_search_all_identified_elements(const sc_event *event, sc_addr ar
     // check question type
     if (sc_helper_check_arc(keynode_question_all_identified_elements, question, sc_type_arc_pos_const_perm) == SC_FALSE)
         return SC_RESULT_ERROR_INVALID_TYPE;
+
+    log_agent_started(keynode_sc_agent_of_search_of_all_identified_elements_agent_c_str);
 
     answer = create_answer_node();
 
@@ -125,6 +134,7 @@ sc_result agent_search_all_identified_elements(const sc_event *event, sc_addr ar
 
     if (found == SC_TRUE)
         appendIntoAnswer(answer, keynode_nrel_main_idtf);
+    log_agent_finished(keynode_sc_agent_of_search_of_all_identified_elements_agent_c_str, found);
 
     connect_answer_to_question(question, answer);
     finish_question(question);

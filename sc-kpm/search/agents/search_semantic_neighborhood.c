@@ -256,6 +256,7 @@ sc_result agent_search_full_semantic_neighborhood(const sc_event *event, sc_addr
     sc_type el_type;
     sc_bool sys_off = SC_TRUE;
     sc_bool key_order_found = SC_FALSE;
+    const char keynode_sc_agent_of_search_of_full_semantic_neighborhood_c_str[] = "sc_agent_of_search_of_full_semantic_neighborhood_c";
 
     if (!sc_memory_get_arc_end(arg, &question))
         return SC_RESULT_ERROR_INVALID_PARAMS;
@@ -263,6 +264,8 @@ sc_result agent_search_full_semantic_neighborhood(const sc_event *event, sc_addr
     // check question type
     if (sc_helper_check_arc(keynode_question_full_semantic_neighborhood, question, sc_type_arc_pos_const_perm) == SC_FALSE)
         return SC_RESULT_ERROR_INVALID_TYPE;
+
+    log_agent_started(keynode_sc_agent_of_search_of_full_semantic_neighborhood_c_str);
 
     answer = create_answer_node();
 
@@ -509,6 +512,7 @@ sc_result agent_search_full_semantic_neighborhood(const sc_event *event, sc_addr
     }
     sc_iterator3_free(it1);
 
+    log_agent_finished(keynode_sc_agent_of_search_of_full_semantic_neighborhood_c_str, SC_TRUE);
     connect_answer_to_question(question, answer);
     finish_question(question);
 
@@ -523,6 +527,7 @@ sc_result agent_search_links_of_relation_connected_with_element(const sc_event *
     sc_type el_type;
     sc_bool sys_off = SC_TRUE;
     sc_bool param_elem_found = SC_FALSE, param_rel_found = SC_FALSE, found = SC_FALSE;
+    const char keynode_sc_agent_of_search_of_links_of_relation_connected_with_element_c_str[] = "sc_agent_of_search_of_links_of_relation_connected_with_element_c";
 
     if (!sc_memory_get_arc_end(arg, &question))
         return SC_RESULT_ERROR_INVALID_PARAMS;
@@ -531,6 +536,7 @@ sc_result agent_search_links_of_relation_connected_with_element(const sc_event *
     if (sc_helper_check_arc(keynode_question_search_links_of_relation_connected_with_element, question, sc_type_arc_pos_const_perm) == SC_FALSE)
         return SC_RESULT_ERROR_INVALID_TYPE;
 
+    log_agent_started(keynode_sc_agent_of_search_of_links_of_relation_connected_with_element_c_str);
     answer = create_answer_node();
 
     // get question arguments
@@ -797,9 +803,9 @@ sc_result agent_search_links_of_relation_connected_with_element(const sc_event *
     }
 
     if (found == SC_TRUE)
-    {
         appendIntoAnswer(answer, param_rel);
-    }
+
+    log_agent_finished(keynode_sc_agent_of_search_of_links_of_relation_connected_with_element_c_str, found);
 
     connect_answer_to_question(question, answer);
     finish_question(question);

@@ -78,3 +78,63 @@ sc_result search_full_pattern(sc_addr pattern, sc_addr answer, sc_bool sys_off)
     g_hash_table_destroy(table);
     return res;
 }
+
+sc_result search_full_pattern_with_full_result_gen(sc_addr pattern, sc_addr answer, sc_addr result_set, sc_bool sys_off)
+{
+    sc_type_result params;
+    sc_addr addr1, addr2, arc, curr_result, corr_arc;
+    sc_type_result_vector result;
+    sc_type_result::iterator it;
+    sc_uint i;
+    sc_result res = SC_RESULT_OK;
+    GHashTable *table;
+
+    if (SC_RESULT_OK != system_sys_search_only_full(pattern, params, &result))
+    {
+        return SC_RESULT_ERROR;
+    }
+    if (result.size() > 0)
+    {
+        res = SC_RESULT_OK;
+    }
+    else
+    {
+        free_result_vector(&result);
+        return SC_RESULT_ERROR;
+    }
+
+    table = g_hash_table_new(NULL, NULL);
+
+    for (i = 0; i < result.size(); i++)
+    {
+        curr_result = sc_memory_node_new(sc_type_node | sc_type_const);
+        sc_memory_arc_new(sc_type_arc_pos_const_perm, result_set, curr_result);
+        for (it = result[i]->begin() ; it != result[i]->end(); it++)
+        {            
+            addr1 = (*it).first;
+            addr2 = (*it).second;
+            if (IS_SYSTEM_ELEMENT(addr1))
+            {
+                sys_off = SC_TRUE;
+            }
+            if (!(sys_off == SC_TRUE && IS_SYSTEM_ELEMENT(addr2)))
+            {
+                corr_arc = sc_memory_arc_new(sc_type_arc_common | sc_type_const, addr1, addr2);
+                sc_memory_arc_new(sc_type_arc_pos_const_perm, curr_result, corr_arc);
+            }
+            if (FALSE == g_hash_table_contains(table, GINT_TO_POINTER(SC_ADDR_LOCAL_TO_INT(addr2))))
+            {
+                g_hash_table_add(table, GINT_TO_POINTER(SC_ADDR_LOCAL_TO_INT(addr2)));
+                if (sys_off == SC_TRUE && IS_SYSTEM_ELEMENT(addr2))
+                    continue;
+
+                arc = sc_memory_arc_new(sc_type_arc_pos_const_perm, answer, addr2);
+                SYSTEM_ELEMENT(arc);
+            }
+        }
+    }
+
+    free_result_vector(&result);
+    g_hash_table_destroy(table);
+    return res;
+}
