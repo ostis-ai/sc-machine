@@ -45,12 +45,18 @@ sc_result agent_set_cantorization(const sc_event *event, sc_addr arg)
         return SC_RESULT_ERROR_INVALID_TYPE;
 
     // get operation argument
-    it1 = sc_iterator3_f_a_a_new(question, sc_type_arc_pos_const_perm, 0);
+    it1 = sc_iterator3_f_a_a_new(s_default_ctx,
+                                 question,
+                                 sc_type_arc_pos_const_perm,
+                                 0);
     if (sc_iterator3_next(it1) == SC_TRUE)
     {
         table = g_hash_table_new(nullptr, nullptr);
         // iterate set elements
-        it2 = sc_iterator3_f_a_a_new(sc_iterator3_value(it1, 2), sc_type_arc_pos_const_perm, 0);
+        it2 = sc_iterator3_f_a_a_new(s_default_ctx,
+                                     sc_iterator3_value(it1, 2),
+                                     sc_type_arc_pos_const_perm,
+                                     0);
         while (sc_iterator3_next(it2) == SC_TRUE)
         {
             value = g_hash_table_lookup(table, MAKE_SC_ADDR_HASH(sc_iterator3_value(it2, 2)));

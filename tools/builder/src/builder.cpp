@@ -100,7 +100,7 @@ bool Builder::run(const BuilderParams &params)
     std::cout << "Links: " << stat.link_count << "(" << ((float)stat.link_count / (float)all_count) * 100 << "%)"  << std::endl;
     std::cout << "Total: " << all_count << std::endl;
 
-    sc_memory_shutdown();
+    sc_memory_shutdown(SC_TRUE);
 
     return true;
 }

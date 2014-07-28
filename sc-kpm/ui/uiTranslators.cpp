@@ -56,7 +56,8 @@ sc_result ui_translate_command_resolve_arguments(sc_addr cmd_addr, sc_addr *outp
     sc_bool source_found = SC_FALSE;
 
     // resolve output format
-    it = sc_iterator5_f_a_a_a_f_new(cmd_addr,
+    it = sc_iterator5_f_a_a_a_f_new(s_default_ctx,
+                                    cmd_addr,
                                     sc_type_arc_pos_const_perm,
                                     sc_type_node | sc_type_const,
                                     sc_type_arc_pos_const_perm,
@@ -74,7 +75,8 @@ sc_result ui_translate_command_resolve_arguments(sc_addr cmd_addr, sc_addr *outp
         return SC_RESULT_ERROR;
 
     // resolve input construction
-    it = sc_iterator5_f_a_a_a_f_new(cmd_addr,
+    it = sc_iterator5_f_a_a_a_f_new(s_default_ctx,
+                                    cmd_addr,
                                     sc_type_arc_pos_const_perm,
                                     sc_type_node | sc_type_const,
                                     sc_type_arc_pos_const_perm,

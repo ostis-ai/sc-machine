@@ -49,7 +49,8 @@ sc_result resolve_nrel_system_identifier(sc_memory_context const * ctx)
     {
         for (i = 0; i < results_count; i++)
         {
-            it = sc_iterator5_a_a_f_a_a_new(sc_type_node | sc_type_const | sc_type_node_norole,
+            it = sc_iterator5_a_a_f_a_a_new(ctx,
+                                            sc_type_node | sc_type_const | sc_type_node_norole,
                                             sc_type_arc_common | sc_type_const,
                                             results[i],
                                             sc_type_arc_pos_const_perm,
@@ -174,7 +175,8 @@ sc_result sc_helper_find_element_by_system_identifier(sc_memory_context const * 
     {
         for (i = 0; i < results_count; i++)
         {
-            it = sc_iterator5_a_a_f_a_f_new(0,
+            it = sc_iterator5_a_a_f_a_f_new(ctx,
+                                            0,
                                             sc_type_arc_common | sc_type_const,
                                             results[i],
                                             sc_type_arc_pos_const_perm,
@@ -224,11 +226,12 @@ sc_result sc_helper_set_system_identifier(sc_memory_context const * ctx, sc_addr
     {
         for (i = 0; i < results_count; i++)
         {
-            it5 = sc_iterator5_a_a_f_a_f_new(0,
-                                            sc_type_arc_common | sc_type_const,
-                                            results[i],
-                                            sc_type_arc_pos_const_perm,
-                                            sc_keynodes[SC_KEYNODE_NREL_SYSTEM_IDENTIFIER]);
+            it5 = sc_iterator5_a_a_f_a_f_new(ctx,
+                                             0,
+                                             sc_type_arc_common | sc_type_const,
+                                             results[i],
+                                             sc_type_arc_pos_const_perm,
+                                             sc_keynodes[SC_KEYNODE_NREL_SYSTEM_IDENTIFIER]);
             if (sc_iterator5_next(it5))
             {
                 // don't foget to free allocated memory before return error
@@ -272,7 +275,8 @@ sc_result sc_helper_get_system_identifier(sc_memory_context const * ctx, sc_addr
     sc_iterator5 *it = 0;
     sc_result res = SC_RESULT_ERROR;
 
-    it = sc_iterator5_f_a_a_a_f_new(el,
+    it = sc_iterator5_f_a_a_a_f_new(ctx,
+                                    el,
                                     sc_type_arc_common | sc_type_const,
                                     sc_type_link,
                                     sc_type_arc_pos_const_perm,
@@ -323,7 +327,7 @@ sc_bool sc_helper_check_arc(sc_memory_context const * ctx, sc_addr beg_el, sc_ad
     sc_iterator3 *it = 0;
     sc_bool res = SC_FALSE;
 
-    it = sc_iterator3_f_a_f_new(beg_el, arc_type, end_el);
+    it = sc_iterator3_f_a_f_new(ctx, beg_el, arc_type, end_el);
     if (it == nullptr)
         return SC_FALSE;
 

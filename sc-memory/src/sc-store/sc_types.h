@@ -26,7 +26,10 @@ along with OSTIS.  If not, see <http://www.gnu.org/licenses/>.
 #include "sc_defines.h"
 #include <memory.h>
 #include <stdlib.h>
+
+#ifndef nullptr
 #define nullptr ((void*)0)
+#endif
 
 // base types
 typedef signed char sc_int8;
@@ -38,18 +41,18 @@ typedef unsigned int sc_uint32;
 typedef long long sc_int64;
 typedef unsigned long long sc_uint64;
 
+typedef unsigned int sc_uint;
+typedef int sc_int;
+
 typedef sc_uint32 sc_uint;
 typedef char sc_char;
 typedef unsigned char sc_uchar;
 
 // booleans
-enum _sc_bool
-{
-    SC_FALSE = 0,
-    SC_TRUE = 1
-};
+#define SC_FALSE (0)
+#define SC_TRUE (!SC_FALSE)
 
-typedef enum _sc_bool sc_bool;
+typedef sc_int sc_bool;
 
 // types limits
 #define SC_MININT8	((sc_int8)  0x80)
@@ -67,7 +70,7 @@ typedef enum _sc_bool sc_bool;
 #define SC_ADDR_SEG_MAX     SC_MAXUINT16
 #define SC_ADDR_OFFSET_MAX  SC_MAXUINT16
 
-#define SEGMENT_SIZE        SC_MAXUINT16    // number of elements in segment
+#define SC_SEGMENT_ELEMENTS_COUNT        SC_MAXUINT16    // number of elements in segment
 
 // Types for segment and offset
 typedef sc_uint16 sc_addr_seg;
@@ -190,15 +193,12 @@ enum _sc_event_type
 // structure to store statistics info
 struct _sc_stat
 {
-    sc_uint64 node_count; // amount of all sc-nodes stored in memory
-    sc_uint64 arc_count; // amount of all sc-arcs stored in memory
-    sc_uint64 link_count; // amount of all sc-links stored in memory
+    sc_uint32 node_count; // amount of all sc-nodes stored in memory
+    sc_uint32 arc_count; // amount of all sc-arcs stored in memory
+    sc_uint32 link_count; // amount of all sc-links stored in memory
 
-    sc_uint64 node_live_count; // amount of sc-nodes, that wasn't deleted
-    sc_uint64 arc_live_count; // amount of sc-arcs, that wasn't deleted
-    sc_uint64 link_live_count; // amount of sc-links, that wasn't deleted
-
-    sc_uint64 empty_count; // amount of empty sc-element cells
+    sc_uint32 empty_count; // amount of empty sc-element cells
+    sc_uint32 segments_count;
 };
 
 typedef struct _sc_access_levels_split
@@ -224,6 +224,7 @@ typedef struct _sc_arc_info sc_arc_info;
 typedef struct _sc_access_levels sc_access_levels;
 typedef struct _sc_element_locks sc_element_locks;
 typedef struct _sc_element_flags sc_element_flags;
+typedef struct _sc_memory_context sc_memory_context;
 typedef struct _sc_element sc_element;
 typedef struct _sc_segment sc_segment;
 typedef struct _sc_addr sc_addr;

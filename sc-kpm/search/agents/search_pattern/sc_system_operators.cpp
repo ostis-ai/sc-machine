@@ -39,7 +39,10 @@ bool sc_result_comparator(sc_type_result *s1, sc_type_result *s2)
 sc_bool copy_set_into_hash(sc_addr set, sc_type arc_type, sc_type end_type, sc_type_hash *table, sc_uint *var_count)
 {
     sc_addr addr3;
-    sc_iterator3 *it = sc_iterator3_f_a_a_new(set, arc_type, end_type);
+    sc_iterator3 *it = sc_iterator3_f_a_a_new(s_default_ctx,
+                                              set,
+                                              arc_type,
+                                              end_type);
     if (it == 0)
     {
         return SC_FALSE;

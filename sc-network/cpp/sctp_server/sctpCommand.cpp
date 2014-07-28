@@ -494,21 +494,21 @@ eSctpErrorCode sctpCommand::processIterateElements(quint32 cmdFlags, quint32 cmd
             READ_PARAM(type1);
             READ_PARAM(type2);
             READ_PARAM(addr1);
-            it = sc_iterator3_a_a_f_new(type1, type2, addr1);
+            it = sc_iterator3_a_a_f_new(mContext, type1, type2, addr1);
             break;
 
         case SCTP_ITERATOR_3F_A_A:
             READ_PARAM(addr1);
             READ_PARAM(type1);
             READ_PARAM(type2);
-            it = sc_iterator3_f_a_a_new(addr1, type1, type2);
+            it = sc_iterator3_f_a_a_new(mContext, addr1, type1, type2);
             break;
 
         case SCTP_ITERATOR_3F_A_F:
             READ_PARAM(addr1);
             READ_PARAM(type1);
             READ_PARAM(addr2);
-            it = sc_iterator3_f_a_f_new(addr1, type1, addr2);
+            it = sc_iterator3_f_a_f_new(mContext, addr1, type1, addr2);
             break;
 
         default:
@@ -522,6 +522,9 @@ eSctpErrorCode sctpCommand::processIterateElements(quint32 cmdFlags, quint32 cmd
         QBuffer buffer(&results);
         sc_uint32 results_count = 0;
         sc_addr addr;
+
+        if (addr1.offset == 1593 && addr2.offset >= 33081)
+            printf("test");
 
         buffer.open(QBuffer::WriteOnly);
         while (sc_iterator3_next(it) == SC_TRUE)
@@ -556,7 +559,7 @@ eSctpErrorCode sctpCommand::processIterateElements(quint32 cmdFlags, quint32 cmd
             READ_PARAM(type2);
             READ_PARAM(type3);
             READ_PARAM(addr2);
-            it = sc_iterator5_f_a_a_a_f_new(addr1, type1, type2, type3, addr2);
+            it = sc_iterator5_f_a_a_a_f_new(mContext, addr1, type1, type2, type3, addr2);
             break;
 
         case SCTP_ITERATOR_5_A_A_F_A_A:
@@ -565,7 +568,7 @@ eSctpErrorCode sctpCommand::processIterateElements(quint32 cmdFlags, quint32 cmd
             READ_PARAM(addr1);
             READ_PARAM(type3);
             READ_PARAM(type4);
-            it = sc_iterator5_a_a_f_a_a_new(type1, type2, addr1, type3, type4);
+            it = sc_iterator5_a_a_f_a_a_new(mContext, type1, type2, addr1, type3, type4);
             break;
 
         case SCTP_ITERATOR_5_A_A_F_A_F:
@@ -574,7 +577,7 @@ eSctpErrorCode sctpCommand::processIterateElements(quint32 cmdFlags, quint32 cmd
             READ_PARAM(addr1);
             READ_PARAM(type3);
             READ_PARAM(addr2);
-            it = sc_iterator5_a_a_f_a_f_new(type1, type2, addr1, type3, addr2);
+            it = sc_iterator5_a_a_f_a_f_new(mContext, type1, type2, addr1, type3, addr2);
             break;
 
         case SCTP_ITERATOR_5_F_A_A_A_A:
@@ -583,7 +586,7 @@ eSctpErrorCode sctpCommand::processIterateElements(quint32 cmdFlags, quint32 cmd
             READ_PARAM(type2);
             READ_PARAM(type3);
             READ_PARAM(type4);
-            it = sc_iterator5_f_a_a_a_a_new(addr1, type1, type2, type3, type4);
+            it = sc_iterator5_f_a_a_a_a_new(mContext, addr1, type1, type2, type3, type4);
             break;
 
         case SCTP_ITERATOR_5_F_A_F_A_A:
@@ -592,7 +595,7 @@ eSctpErrorCode sctpCommand::processIterateElements(quint32 cmdFlags, quint32 cmd
             READ_PARAM(addr2);
             READ_PARAM(type2);
             READ_PARAM(type3);
-            it = sc_iterator5_f_a_f_a_a_new(addr1, type1, addr2, type2, type3);
+            it = sc_iterator5_f_a_f_a_a_new(mContext, addr1, type1, addr2, type2, type3);
             break;
 
         case SCTP_ITERATOR_5_F_A_F_A_F:
@@ -601,7 +604,7 @@ eSctpErrorCode sctpCommand::processIterateElements(quint32 cmdFlags, quint32 cmd
             READ_PARAM(addr2);
             READ_PARAM(type2);
             READ_PARAM(addr3);
-            it = sc_iterator5_f_a_f_a_f_new(addr1, type1, addr2, type2, addr3);
+            it = sc_iterator5_f_a_f_a_f_new(mContext, addr1, type1, addr2, type2, addr3);
             break;
 
         default:

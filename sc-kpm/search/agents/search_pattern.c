@@ -45,7 +45,10 @@ sc_result agent_full_pattern_search(const sc_event *event, sc_addr arg)
     answer = create_answer_node();
 
     // get operation argument
-    it1 = sc_iterator3_f_a_a_new(question, sc_type_arc_pos_const_perm, 0);
+    it1 = sc_iterator3_f_a_a_new(s_default_ctx,
+                                 question,
+                                 sc_type_arc_pos_const_perm,
+                                 0);
     if (sc_iterator3_next(it1) == SC_TRUE)
     {
         if (IS_SYSTEM_ELEMENT(sc_iterator3_value(it1, 2)))
@@ -58,7 +61,10 @@ sc_result agent_full_pattern_search(const sc_event *event, sc_addr arg)
         }
 
         // iterate output arcs and append them into answer
-        it2 = sc_iterator3_f_a_a_new(sc_iterator3_value(it1, 2), sc_type_arc_pos_const_perm, sc_type_const);
+        it2 = sc_iterator3_f_a_a_new(s_default_ctx,
+                                     sc_iterator3_value(it1, 2),
+                                     sc_type_arc_pos_const_perm,
+                                     sc_type_const);
         while (sc_iterator3_next(it2) == SC_TRUE)
         {
             if (sys_off == SC_TRUE && IS_SYSTEM_ELEMENT(sc_iterator3_value(it2, 2)))

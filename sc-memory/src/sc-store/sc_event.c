@@ -145,20 +145,26 @@ sc_result sc_event_notify_element_deleted(sc_addr element)
     GSList *element_events_list = 0;
     sc_event *event = 0;
 
+    EVENTS_TABLE_LOCK
     // do nothing, if there are no registered events
     if (events_table == nullptr)
-        return SC_RESULT_OK;
+        goto result;
 
     // lookup for all registered to specified sc-elemen events
     element_events_list = (GSList*)g_hash_table_lookup(events_table, (gconstpointer)&element);
 
-    // destoroy events
+    // destroy events
     while (element_events_list != nullptr)
     {
         event = (sc_event*)element_events_list->data;
         if (event->delete_callback != nullptr)
             event->delete_callback(event);
         element_events_list = g_slist_delete_link(element_events_list, element_events_list);
+    }
+
+    result:
+    {
+        EVENTS_TABLE_UNLOCK;
     }
 
     return SC_RESULT_OK;
@@ -169,9 +175,11 @@ sc_result sc_event_emit(sc_addr el, sc_event_type type, sc_addr arg)
     GSList *element_events_list = 0;
     sc_event *event = 0;
 
+    EVENTS_TABLE_LOCK;
+
     // if table is empty, then do nothing
     if (events_table == nullptr)
-        return SC_RESULT_OK;
+        goto result;
 
     // lookup for all registered to specified sc-elemen events
     element_events_list = (GSList*)g_hash_table_lookup(events_table, (gconstpointer)&el);
@@ -186,6 +194,11 @@ sc_result sc_event_emit(sc_addr el, sc_event_type type, sc_addr arg)
         }
 
         element_events_list = element_events_list->next;
+    }
+
+    result:
+    {
+        EVENTS_TABLE_UNLOCK;
     }
 
     return SC_RESULT_OK;

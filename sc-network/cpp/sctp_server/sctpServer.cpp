@@ -163,7 +163,7 @@ void sctpServer::incomingConnection(int socketDescriptor)
 
 void sctpServer::stop()
 {
-    sc_memory_shutdown();
+    sc_memory_shutdown(SC_TRUE);
     mContext = 0;
 
     mEventManager->shutdown();

@@ -38,9 +38,6 @@ struct sStatItem
     quint64 mNodeCount; // amount of all nodes
     quint64 mArcCount; // amount of all arcs
     quint64 mLinksCount; // amount of all links
-    quint64 mLiveNodeCount; // amount of live nodes
-    quint64 mLiveArcCount; // amount of live arcs
-    quint64 mLiveLinkCount; // amount of live links
     quint64 mEmptyCount; // amount of empty sc-elements
     quint64 mConnectionsCount;  // amount of collected clients
     quint64 mCommandsCount; // amount of processed commands (it includes commands with errors)

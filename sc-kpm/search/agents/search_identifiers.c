@@ -44,14 +44,18 @@ sc_result agent_search_all_identifiers(const sc_event *event, sc_addr arg)
     answer = create_answer_node();
 
     // get operation argument
-    it1 = sc_iterator3_f_a_a_new(question, sc_type_arc_pos_const_perm, 0);
+    it1 = sc_iterator3_f_a_a_new(s_default_ctx,
+                                 question,
+                                 sc_type_arc_pos_const_perm,
+                                 0);
     if (sc_iterator3_next(it1) == SC_TRUE)
     {
         found = SC_TRUE;
         appendIntoAnswer(answer, sc_iterator3_value(it1, 2));
 
         // iterate all const arcs, that are no accessory, and go out from sc-element
-        it5 = sc_iterator5_f_a_a_a_a_new(sc_iterator3_value(it1, 2),
+        it5 = sc_iterator5_f_a_a_a_a_new(s_default_ctx,
+                                         sc_iterator3_value(it1, 2),
                                          sc_type_arc_common | sc_type_const,
                                          sc_type_link,
                                          sc_type_arc_pos_const_perm,
@@ -63,7 +67,8 @@ sc_result agent_search_all_identifiers(const sc_event *event, sc_addr arg)
             {
 
                 // iterate input arcs for sc-link
-                it2 = sc_iterator3_a_a_f_new(sc_type_node | sc_type_const,
+                it2 = sc_iterator3_a_a_f_new(s_default_ctx,
+                                             sc_type_node | sc_type_const,
                                              sc_type_arc_pos_const_perm,
                                              sc_iterator5_value(it5, 2));
                 while (sc_iterator3_next(it2) == SC_TRUE)
@@ -110,7 +115,10 @@ sc_result agent_search_all_identified_elements(const sc_event *event, sc_addr ar
 
     answer = create_answer_node();
 
-    it1 = sc_iterator3_f_a_a_new(keynode_nrel_main_idtf, sc_type_arc_pos_const_perm, sc_type_arc_common | sc_type_const);
+    it1 = sc_iterator3_f_a_a_new(s_default_ctx,
+                                 keynode_nrel_main_idtf,
+                                 sc_type_arc_pos_const_perm,
+                                 sc_type_arc_common | sc_type_const);
     while (sc_iterator3_next(it1) == SC_TRUE)
     {
         found = SC_TRUE;

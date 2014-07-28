@@ -27,6 +27,10 @@ along with OSTIS.  If not, see <http://www.gnu.org/licenses/>.
 gchar contents_path[MAX_PATH_LENGTH + 1];
 const gchar *content_dir = "contents";
 
+GMutex fs_mutex;
+
+#define LOCK_FS()   { g_mutex_lock(&fs_mutex); }
+#define UNLOCK_FS() { g_mutex_unlock(&fs_mutex); }
 
 sc_uint8* sc_fs_engine_make_checksum_path(const sc_check_sum *check_sum)
 {
@@ -60,6 +64,8 @@ sc_uint8* sc_fs_engine_make_checksum_path(const sc_check_sum *check_sum)
 // --- implemntation of interface ---
 sc_result sc_fs_engine_create_stream(const sc_fm_engine *engine, const sc_check_sum *check_sum, sc_uint8 flags, sc_stream **stream)
 {
+    LOCK_FS();
+
     sc_uint8 *path = sc_fs_engine_make_checksum_path(check_sum);
     gchar abs_path[MAX_PATH_LENGTH];
     gchar data_path[MAX_PATH_LENGTH];
@@ -68,6 +74,8 @@ sc_result sc_fs_engine_create_stream(const sc_fm_engine *engine, const sc_check_
     g_snprintf(abs_path, MAX_PATH_LENGTH, "%s/%s", contents_path, path);
     g_snprintf(data_path, MAX_PATH_LENGTH, "%sdata", abs_path);
 
+    sc_result res = SC_RESULT_ERROR_IO;
+
     // check if specified path exist
     if (g_file_test(data_path, G_FILE_TEST_EXISTS) == FALSE)
     {
@@ -75,19 +83,27 @@ sc_result sc_fs_engine_create_stream(const sc_fm_engine *engine, const sc_check_
         if (g_mkdir_with_parents(abs_path, -1) < 0)
         {
             g_message("Error while creating '%s' directory", abs_path);
-            free(path);
-            return SC_RESULT_ERROR_IO;
+            goto clean;
         }
     }
 
     // write content into file
     *stream = sc_stream_file_new(data_path, flags);
+    res = (*stream != 0) ? SC_RESULT_OK : SC_RESULT_ERROR_IO;
 
-    return stream != 0 ? SC_RESULT_OK : SC_RESULT_ERROR_IO;
+    clean:
+    {
+        free(path);
+        UNLOCK_FS();
+    }
+
+    return res;
 }
 
 sc_result sc_fs_engine_addr_ref_append(const sc_fm_engine *engine, sc_addr addr, const sc_check_sum *check_sum)
 {
+    LOCK_FS();
+
     sc_uint8 *path = sc_fs_engine_make_checksum_path(check_sum);
     gchar abs_path[MAX_PATH_LENGTH];
     gchar addr_path[MAX_PATH_LENGTH];
@@ -100,16 +116,13 @@ sc_result sc_fs_engine_addr_ref_append(const sc_fm_engine *engine, sc_addr addr,
     g_snprintf(abs_path, MAX_PATH_LENGTH, "%s/%s", contents_path, path);
     g_snprintf(addr_path, MAX_PATH_LENGTH, "%saddrs", abs_path);
 
+    sc_result res = SC_RESULT_ERROR_IO;
+
     // try to load existing file
     if (g_file_test(addr_path, G_FILE_TEST_EXISTS))
     {
         if (g_file_get_contents(addr_path, &content, &content_len, 0) == FALSE)
-        {
-            if (content != 0)
-                free(content);
-            free(path);
-            return SC_RESULT_ERROR_IO;
-        }
+            goto clean;
     }
 
     // append addr into content
@@ -138,25 +151,33 @@ sc_result sc_fs_engine_addr_ref_append(const sc_fm_engine *engine, sc_addr addr,
     // write content to file
     if (g_file_set_contents(addr_path, content, content_len, 0) == TRUE)
     {
-        g_free(content);
-        free(path);
-
-        return SC_RESULT_OK;
+        res = SC_RESULT_OK;
+        goto clean;
     }
 
-    g_free(content);
-    free(path);
+    clean:
+    {
+        if (content)
+            g_free(content);
+        free(path);
+        UNLOCK_FS();
+    }
 
-    return SC_RESULT_ERROR;
+    return res;
 }
 
 sc_result sc_fs_engine_addr_ref_remove(const sc_fm_engine *engine, sc_addr addr, const sc_check_sum *check_sum)
 {
-    return g_rmdir(contents_path) != -1 ? SC_RESULT_OK : SC_RESULT_ERROR;
+    LOCK_FS();
+    sc_result res = g_rmdir(contents_path) != -1 ? SC_RESULT_OK : SC_RESULT_ERROR;
+    UNLOCK_FS();
+    return res;
 }
 
 sc_result sc_fs_engine_find(const sc_fm_engine *engine, const sc_check_sum *check_sum, sc_addr **result, sc_uint32 *result_count)
 {
+    LOCK_FS();
+
     sc_uint8 *path = sc_fs_engine_make_checksum_path(check_sum);
     gchar abs_path[MAX_PATH_LENGTH];
     gchar addr_path[MAX_PATH_LENGTH];
@@ -167,6 +188,8 @@ sc_result sc_fs_engine_find(const sc_fm_engine *engine, const sc_check_sum *chec
     g_snprintf(abs_path, MAX_PATH_LENGTH, "%s/%s", contents_path, path);
     g_snprintf(addr_path, MAX_PATH_LENGTH, "%saddrs", abs_path);
 
+    sc_result res = SC_RESULT_ERROR_IO;
+
     // must be a null pointer
     g_assert(*result == 0);
 
@@ -176,13 +199,7 @@ sc_result sc_fs_engine_find(const sc_fm_engine *engine, const sc_check_sum *chec
     if (g_file_test(addr_path, G_FILE_TEST_EXISTS))
     {
         if (g_file_get_contents(addr_path, &content, &content_len, 0) == FALSE)
-        {
-            if (content != 0)
-                free(content);
-            free(path);
-            return SC_RESULT_ERROR_IO;
-        }
-
+            goto clean;
     }
 
     // store result
@@ -200,11 +217,17 @@ sc_result sc_fs_engine_find(const sc_fm_engine *engine, const sc_check_sum *chec
         memcpy(*result, content2, sizeof(sc_addr) * (*result_count));
     }
 
-    if (content != 0)
-        g_free(content);
-    free(path);
+    res = SC_RESULT_OK;
 
-    return SC_RESULT_OK;
+    clean:
+    {
+        if (content != 0)
+            g_free(content);
+        free(path);
+        UNLOCK_FS();
+    }
+
+    return res;
 }
 
 sc_result _sc_fs_clear_delete_files(const char *root_path)
@@ -254,7 +277,10 @@ sc_result _sc_fs_clear_delete_files(const char *root_path)
 
 sc_result sc_fs_engine_clear(const sc_fm_engine *engine)
 {
-    return _sc_fs_clear_delete_files(contents_path);
+    LOCK_FS();
+    sc_result res = _sc_fs_clear_delete_files(contents_path);
+    UNLOCK_FS();
+    return res;
 }
 
 sc_result sc_fs_save(const sc_fm_engine *engine)
@@ -280,6 +306,7 @@ sc_fm_engine* initialize(const sc_char* repo_path)
             g_error("Can't create '%s' directory.", contents_path);
     }
 
+    g_mutex_init(&fs_mutex);
 
     sc_fm_engine *engine = g_new0(sc_fm_engine, 1);
 
@@ -293,4 +320,10 @@ sc_fm_engine* initialize(const sc_char* repo_path)
     engine->funcDestroyData = &sc_fs_engine_destroy_data;
 
     return engine;
+}
+
+sc_result shutdown()
+{
+    g_mutex_clear(&fs_mutex);
+    return SC_RESULT_OK;
 }

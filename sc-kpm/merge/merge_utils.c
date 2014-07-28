@@ -33,7 +33,9 @@ void finish_question(sc_addr question)
     sc_iterator3 *it = nullptr;
     sc_addr arc;
 
-    it = sc_iterator3_f_a_f_new(keynode_question_initiated, sc_type_arc_pos_const_perm, question);
+    it = sc_iterator3_f_a_f_new(s_default_ctx,
+                                keynode_question_initiated,
+                                sc_type_arc_pos_const_perm, question);
     while (sc_iterator3_next(it))
         sc_memory_element_free(s_default_ctx, sc_iterator3_value(it, 1));
     sc_iterator3_free(it);
@@ -49,7 +51,10 @@ void copy_incident_connectors(sc_addr dest, sc_addr source)
     sc_iterator3 *it;
 
     // Output connectors loop
-    it = sc_iterator3_f_a_a_new(source, 0, 0);
+    it = sc_iterator3_f_a_a_new(s_default_ctx,
+                                source,
+                                0,
+                                0);
     while (sc_iterator3_next(it))
     {
         if (SC_RESULT_OK != sc_memory_get_element_type(s_default_ctx, sc_iterator3_value(it, 1), &conn_type))
@@ -60,7 +65,10 @@ void copy_incident_connectors(sc_addr dest, sc_addr source)
     sc_iterator3_free(it);
 
     // Input connectors loop
-    it = sc_iterator3_a_a_f_new(0, 0, source);
+    it = sc_iterator3_a_a_f_new(s_default_ctx,
+                                0,
+                                0,
+                                source);
     while (sc_iterator3_next(it))
     {
         if (SC_RESULT_OK != sc_memory_get_element_type(s_default_ctx, sc_iterator3_value(it, 1), &conn_type))

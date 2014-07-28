@@ -161,10 +161,6 @@ void sctpStatistic::update()
         mCurrentStat.mNodeCount = mem_stat.node_count;
         mCurrentStat.mLinksCount = mem_stat.link_count;
 
-        mCurrentStat.mLiveArcCount = mem_stat.arc_live_count;
-        mCurrentStat.mLiveNodeCount = mem_stat.node_live_count;
-        mCurrentStat.mLiveLinkCount = mem_stat.link_live_count;
-
         mCurrentStat.mEmptyCount = mem_stat.empty_count;
     }
 

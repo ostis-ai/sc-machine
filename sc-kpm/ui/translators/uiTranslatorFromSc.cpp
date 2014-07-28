@@ -63,7 +63,7 @@ void uiTranslateFromSc::translate(const sc_addr &input_addr, const sc_addr &form
 
 void uiTranslateFromSc::collectObjects()
 {
-    sc_iterator3 *it = sc_iterator3_f_a_a_new(mInputConstructionAddr, sc_type_arc_pos_const_perm, 0);
+    sc_iterator3 *it = sc_iterator3_f_a_a_new(s_default_ctx, mInputConstructionAddr, sc_type_arc_pos_const_perm, 0);
     while (sc_iterator3_next(it) == SC_TRUE)
     {
         sc_type el_type = 0;

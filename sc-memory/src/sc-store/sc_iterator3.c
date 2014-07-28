@@ -26,7 +26,9 @@ along with OSTIS.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <glib.h>
 
-sc_iterator3* sc_iterator3_f_a_a_new(sc_addr el, sc_type arc_type, sc_type end_type)
+const sc_uint32 s_max_iterator_lock_attempts = 10;
+
+sc_iterator3* sc_iterator3_f_a_a_new(const sc_memory_context *ctx, sc_addr el, sc_type arc_type, sc_type end_type)
 {
     sc_iterator_param p1, p2, p3;
 
@@ -39,10 +41,10 @@ sc_iterator3* sc_iterator3_f_a_a_new(sc_addr el, sc_type arc_type, sc_type end_t
     p3.is_type = SC_TRUE;
     p3.type = end_type;
 
-    return sc_iterator3_new(sc_iterator3_f_a_a, p1, p2, p3);
+    return sc_iterator3_new(ctx, sc_iterator3_f_a_a, p1, p2, p3);
 }
 
-sc_iterator3* sc_iterator3_a_a_f_new(sc_type beg_type, sc_type arc_type, sc_addr el)
+sc_iterator3* sc_iterator3_a_a_f_new(const sc_memory_context *ctx, sc_type beg_type, sc_type arc_type, sc_addr el)
 {
     sc_iterator_param p1, p2, p3;
 
@@ -55,10 +57,10 @@ sc_iterator3* sc_iterator3_a_a_f_new(sc_type beg_type, sc_type arc_type, sc_addr
     p3.is_type = SC_FALSE;
     p3.addr = el;
 
-    return sc_iterator3_new(sc_iterator3_a_a_f, p1, p2, p3);
+    return sc_iterator3_new(ctx, sc_iterator3_a_a_f, p1, p2, p3);
 }
 
-sc_iterator3* sc_iterator3_f_a_f_new(sc_addr el_beg, sc_type arc_type, sc_addr el_end)
+sc_iterator3* sc_iterator3_f_a_f_new(const sc_memory_context *ctx, sc_addr el_beg, sc_type arc_type, sc_addr el_end)
 {
     sc_iterator_param p1, p2, p3;
 
@@ -71,10 +73,10 @@ sc_iterator3* sc_iterator3_f_a_f_new(sc_addr el_beg, sc_type arc_type, sc_addr e
     p3.is_type = SC_FALSE;
     p3.addr = el_end;
 
-    return sc_iterator3_new(sc_iterator3_f_a_f, p1, p2, p3);
+    return sc_iterator3_new(ctx, sc_iterator3_f_a_f, p1, p2, p3);
 }
 
-sc_iterator3* sc_iterator3_new(sc_iterator_type type, sc_iterator_param p1, sc_iterator_param p2, sc_iterator_param p3)
+sc_iterator3* sc_iterator3_new(const sc_memory_context *ctx, sc_iterator_type type, sc_iterator_param p1, sc_iterator_param p2, sc_iterator_param p3)
 {
     // check types
     if (type > sc_iterator3_f_a_f) return (sc_iterator3*)0;
@@ -101,6 +103,7 @@ sc_iterator3* sc_iterator3_new(sc_iterator_type type, sc_iterator_param p1, sc_i
 
     it->type = type;
     it->time_stamp = sc_storage_get_time_stamp();
+    it->ctx = ctx;
 
     sc_iterator_add_used_timestamp(it->time_stamp);
 
@@ -129,11 +132,6 @@ sc_bool sc_iterator_param_compare(sc_element *el, sc_addr addr, sc_iterator_para
 sc_bool _sc_iterator3_f_a_a_next(sc_iterator3 *it)
 {
     sc_addr arc_addr;
-    sc_element *el1, *el2;
-    sc_element *arc_element;
-    sc_type arc_type, el_type;
-
-    el1 = el2 = arc_element = 0;
     SC_ADDR_MAKE_EMPTY(arc_addr)
 
     it->results[0] = it->params[0].addr;
@@ -141,36 +139,53 @@ sc_bool _sc_iterator3_f_a_a_next(sc_iterator3 *it)
     // try to find first output arc
     if (SC_ADDR_IS_EMPTY(it->results[1]))
     {
-        el1 = sc_storage_get_element(it->params[0].addr, SC_TRUE);
-        arc_addr = el1->first_out_arc;
+        sc_element *el = 0;
+        STORAGE_CHECK_CALL(sc_storage_element_lock(it->ctx, it->params[0].addr, &el));
+        g_assert(el != nullptr);
+        arc_addr = el->first_out_arc;
+        STORAGE_CHECK_CALL(sc_storage_element_unlock(it->ctx, it->params[0].addr));
     }else
     {
-        arc_element = sc_storage_get_element(it->results[1], SC_TRUE);
-        arc_addr = arc_element->arc.next_out_arc;
+        sc_element *el = 0;
+        STORAGE_CHECK_CALL(sc_storage_element_lock(it->ctx, it->results[1], &el));
+        g_assert(el != nullptr);
+        arc_addr = el->arc.next_out_arc;
+        STORAGE_CHECK_CALL(sc_storage_element_unlock(it->ctx, it->results[1]));
     }
 
     // trying to find output arc, that created before iterator, and wasn't deleted
     while (SC_ADDR_IS_NOT_EMPTY(arc_addr))
     {
-        arc_element = sc_storage_get_element(arc_addr, SC_TRUE);
-        sc_storage_get_element_type(arc_addr, &arc_type);
-        sc_storage_get_element_type(arc_element->arc.end, &el_type);
+        sc_element *el = 0;
+        // lock required elements to prevent deadlock with deletion
+        while (el == nullptr)
+            STORAGE_CHECK_CALL(sc_storage_element_lock_try(it->ctx, arc_addr, s_max_iterator_lock_attempts, &el));
 
-        if ((arc_element->create_time_stamp <= it->time_stamp) &&
-            (arc_element->delete_time_stamp == 0 || arc_element->delete_time_stamp >= it->time_stamp) &&
+        sc_addr next_out_arc = el->arc.next_out_arc;
+        sc_addr arc_end = el->arc.end;
+        sc_type arc_type = el->flags.type;
+        sc_uint32 create_time = el->create_time_stamp;
+
+        STORAGE_CHECK_CALL(sc_storage_element_unlock(it->ctx, arc_addr));
+
+        sc_type el_type;
+        sc_storage_get_element_type(it->ctx, arc_end, &el_type);
+
+        /// @todo Add access levels
+        if ((create_time <= it->time_stamp) &&
             (sc_iterator_compare_type(arc_type, it->params[1].type)) &&
             (sc_iterator_compare_type(el_type, it->params[2].type))
            )
         {
             // store found result
             it->results[1] = arc_addr;
-            it->results[2] = arc_element->arc.end;
+            it->results[2] = arc_end;
 
             return SC_TRUE;
         }
 
         // go to next arc
-        arc_addr = arc_element->arc.next_out_arc;
+        arc_addr = next_out_arc;
     }
 
     return SC_FALSE;
@@ -179,11 +194,7 @@ sc_bool _sc_iterator3_f_a_a_next(sc_iterator3 *it)
 sc_bool _sc_iterator3_f_a_f_next(sc_iterator3 *it)
 {
     sc_addr arc_addr;
-    sc_element *el1, *el2;
-    sc_element *arc_element;
-    sc_type arc_type;
 
-    el1 = el2 = arc_element = 0;
     SC_ADDR_MAKE_EMPTY(arc_addr)
 
     it->results[0] = it->params[0].addr;
@@ -192,23 +203,36 @@ sc_bool _sc_iterator3_f_a_f_next(sc_iterator3 *it)
     // try to find first input arc
     if (SC_ADDR_IS_EMPTY(it->results[1]))
     {
-        el1 = sc_storage_get_element(it->params[2].addr, SC_TRUE);
-        arc_addr = el1->first_in_arc;
+        sc_element *el = 0;
+        STORAGE_CHECK_CALL(sc_storage_element_lock(it->ctx, it->params[2].addr, &el));
+        g_assert(el != nullptr);
+        arc_addr = el->first_in_arc;
+        STORAGE_CHECK_CALL(sc_storage_element_unlock(it->ctx, it->params[2].addr));
     }else
     {
-        arc_element = sc_storage_get_element(it->results[1], SC_TRUE);
-        arc_addr = arc_element->arc.next_in_arc;
+        sc_element *el = 0;
+        STORAGE_CHECK_CALL(sc_storage_element_lock(it->ctx, it->results[1], &el));
+        g_assert(el != nullptr);
+        arc_addr = el->arc.next_in_arc;
+        STORAGE_CHECK_CALL(sc_storage_element_unlock(it->ctx, it->results[1]));
     }
 
     // trying to find input arc, that created before iterator, and wasn't deleted
     while (SC_ADDR_IS_NOT_EMPTY(arc_addr))
     {
-        arc_element = sc_storage_get_element(arc_addr, SC_TRUE);
-        sc_storage_get_element_type(arc_addr, &arc_type);
+        sc_element *el = 0;
+        while (el == nullptr)
+            STORAGE_CHECK_CALL(sc_storage_element_lock_try(it->ctx, arc_addr, s_max_iterator_lock_attempts, &el));
+        sc_type arc_type = el->flags.type;
+        sc_uint32 create_time = el->create_time_stamp;
+        sc_addr arc_begin = el->arc.begin;
+        sc_addr next_in_arc = el->arc.next_in_arc;
 
-        if ((arc_element->create_time_stamp <= it->time_stamp) &&
-            (arc_element->delete_time_stamp == 0 || arc_element->delete_time_stamp >= it->time_stamp) &&
-            SC_ADDR_IS_EQUAL(it->params[0].addr, arc_element->arc.begin) &&
+        STORAGE_CHECK_CALL(sc_storage_element_unlock(it->ctx, arc_addr));
+
+        /// @todo Add access levels
+        if ((create_time <= it->time_stamp) &&
+            SC_ADDR_IS_EQUAL(it->params[0].addr, arc_begin) &&
             (sc_iterator_compare_type(arc_type, it->params[1].type))
            )
         {
@@ -218,7 +242,7 @@ sc_bool _sc_iterator3_f_a_f_next(sc_iterator3 *it)
         }
 
         // go to next arc
-        arc_addr = arc_element->arc.next_in_arc;
+        arc_addr = next_in_arc;
     }
 
     return SC_FALSE;
@@ -227,11 +251,6 @@ sc_bool _sc_iterator3_f_a_f_next(sc_iterator3 *it)
 sc_bool _sc_iterator3_a_a_f_next(sc_iterator3 *it)
 {
     sc_addr arc_addr;
-    sc_element *el1, *el2;
-    sc_element *arc_element;
-    sc_type arc_type, el_type;
-
-    el1 = el2 = arc_element = 0;
     SC_ADDR_MAKE_EMPTY(arc_addr)
 
     it->results[2] = it->params[2].addr;
@@ -239,36 +258,51 @@ sc_bool _sc_iterator3_a_a_f_next(sc_iterator3 *it)
     // try to find first input arc
     if (SC_ADDR_IS_EMPTY(it->results[1]))
     {
-        el1 = sc_storage_get_element(it->params[2].addr, SC_TRUE);
-        arc_addr = el1->first_in_arc;
+        sc_element *el = 0;
+        STORAGE_CHECK_CALL(sc_storage_element_lock(it->ctx, it->params[2].addr, &el));
+        g_assert(el != nullptr);
+        arc_addr = el->first_in_arc;
+        STORAGE_CHECK_CALL(sc_storage_element_unlock(it->ctx, it->params[2].addr));
     }else
     {
-        arc_element = sc_storage_get_element(it->results[1], SC_TRUE);
-        arc_addr = arc_element->arc.next_in_arc;
+        sc_element *el = 0;
+        STORAGE_CHECK_CALL(sc_storage_element_lock(it->ctx, it->results[1], &el));
+        g_assert(el != nullptr);
+        arc_addr = el->arc.next_in_arc;
+        STORAGE_CHECK_CALL(sc_storage_element_unlock(it->ctx, arc_addr));
     }
 
     // trying to find input arc, that created before iterator, and wasn't deleted
     while (SC_ADDR_IS_NOT_EMPTY(arc_addr))
     {
-        arc_element = sc_storage_get_element(arc_addr, SC_TRUE);
-        sc_storage_get_element_type(arc_addr, &arc_type);
-        sc_storage_get_element_type(arc_element->arc.begin, &el_type);
+        sc_element *el = 0;
+        while (el == nullptr)
+            STORAGE_CHECK_CALL(sc_storage_element_lock_try(it->ctx, arc_addr, s_max_iterator_lock_attempts, &el));
+        sc_type arc_type = el->flags.type;
+        sc_addr arc_begin = el->arc.begin;
+        sc_uint32 create_time = el->create_time_stamp;
+        sc_addr next_in_arc = el->arc.next_in_arc;
 
-        if ((arc_element->create_time_stamp <= it->time_stamp) &&
-            (arc_element->delete_time_stamp == 0 || arc_element->delete_time_stamp >= it->time_stamp) &&
+        STORAGE_CHECK_CALL(sc_storage_element_unlock(it->ctx, arc_addr));
+
+        sc_type el_type = 0;
+        sc_storage_get_element_type(it->ctx, arc_begin, &el_type);
+
+        /// @todo Add access levels
+        if ((create_time <= it->time_stamp) &&
             (sc_iterator_compare_type(arc_type, it->params[1].type)) &&
             (sc_iterator_compare_type(el_type, it->params[0].type))
             )
         {
             // store found result
             it->results[1] = arc_addr;
-            it->results[0] = arc_element->arc.begin;
+            it->results[0] = arc_begin;
 
             return SC_TRUE;
         }
 
         // go to next arc
-        arc_addr = arc_element->arc.next_in_arc;
+        arc_addr = next_in_arc;
     }
 
     return SC_FALSE;

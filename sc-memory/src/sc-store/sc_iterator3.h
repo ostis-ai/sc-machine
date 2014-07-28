@@ -52,10 +52,11 @@ struct _sc_iterator_param
  */
 struct _sc_iterator3
 {
-    sc_iterator_type type; // iterator type (search template)
-    sc_iterator_param params[3]; // parameters array
-    sc_addr results[3]; // results array (same size as params)
-    sc_uint32 time_stamp; // iterator creation time stamp
+    sc_iterator_type type;          // iterator type (search template)
+    sc_iterator_param params[3];    // parameters array
+    sc_addr results[3];             // results array (same size as params)
+    sc_uint32 time_stamp;           // iterator creation time stamp
+    const sc_memory_context *ctx;   // pointer to used memory context
 };
 
 /*! Create iterator to find output arcs for specified element
@@ -64,7 +65,7 @@ struct _sc_iterator3
  * @param end_type Type of end element for output arcs, to iterate
  * @return If iterator created, then return pointer to it; otherwise return null
  */
-sc_iterator3* sc_iterator3_f_a_a_new(sc_addr el, sc_type arc_type, sc_type end_type);
+sc_iterator3* sc_iterator3_f_a_a_new(const sc_memory_context *ctx, sc_addr el, sc_type arc_type, sc_type end_type);
 
 /*! Create iterator to find input arcs for specified element
  * @param beg_type Type of begin element for input arcs, to iterate
@@ -72,7 +73,7 @@ sc_iterator3* sc_iterator3_f_a_a_new(sc_addr el, sc_type arc_type, sc_type end_t
  * @param el sc-addr of element to iterate input arcs
  * @return If iterator created, then return pointer to it; otherwise return null
  */
-sc_iterator3* sc_iterator3_a_a_f_new(sc_type beg_type, sc_type arc_type, sc_addr el);
+sc_iterator3* sc_iterator3_a_a_f_new(const sc_memory_context *ctx, sc_type beg_type, sc_type arc_type, sc_addr el);
 
 /*! Create iterator to find arcs between two specified elements
  * @param el_beg sc-addr of begin element
@@ -80,7 +81,7 @@ sc_iterator3* sc_iterator3_a_a_f_new(sc_type beg_type, sc_type arc_type, sc_addr
  * @param el_end sc-addr of end element
  * @return If iterator created, then return pointer to it; otherwise return null
  */
-sc_iterator3* sc_iterator3_f_a_f_new(sc_addr el_beg, sc_type arc_type, sc_addr el_end);
+sc_iterator3* sc_iterator3_f_a_f_new(const sc_memory_context *ctx, sc_addr el_beg, sc_type arc_type, sc_addr el_end);
 
 /*! Create new sc-iterator-3
  * @param type Iterator type (search template)
@@ -89,7 +90,7 @@ sc_iterator3* sc_iterator3_f_a_f_new(sc_addr el_beg, sc_type arc_type, sc_addr e
  * @param p3 Third iterator parameter
  * @return Pointer to created iterator. If parameters invalid for specified iterator type, or type is not a sc-iterator-3, then return 0
  */
-sc_iterator3* sc_iterator3_new(sc_iterator_type type, sc_iterator_param p1, sc_iterator_param p2, sc_iterator_param p3);
+sc_iterator3* sc_iterator3_new(const sc_memory_context *ctx, sc_iterator_type type, sc_iterator_param p1, sc_iterator_param p2, sc_iterator_param p3);
 
 /*! Destroy iterator and free allocated memory
  * @param it Pointer to sc-iterator that need to be destroyed

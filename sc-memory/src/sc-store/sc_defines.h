@@ -29,22 +29,12 @@ along with OSTIS.  If not, see <http://www.gnu.org/licenses/>.
  */
 #define BOUND_EMPTY_SLOT_SEARCH 0
 
-//! Use empty slots buffering for segment
-#define USE_SEGMENT_EMPTY_SLOT_BUFFER 0 // not fast
-
 //! Enable network scaling
 #define USE_NETWORK_SCALE 0
 
-//! Use two oriented arc list
-#define USE_TWO_ORIENTED_ARC_LIST 1
-
-#define SEGMENT_EMPTY_SEARCH_LEN 1024 // number of element in two directions to search next empty slot in segment
-#define SEGMENT_EMPTY_BUFFER_SIZE 2048 // number of empty slot buffer for segment
-#define SEGMENT_EMPTY_MAX_UPDATE_THREADS 8 // number of maximum threads to update empty slots
-
-#define SEGMENT_CACHE_SIZE      8  // size of segments cache (segments with empty slots)
 #define MAX_PATH_LENGTH 1024
 
-#define SC_CONCURRENCY_LEVEL   32  // max number of independent threads that can work in parallel with memory
+#define SC_CONCURRENCY_LEVEL   32   // max number of independent threads that can work in parallel with memory
+#define SC_SEGMENT_CACHE_SIZE  32   // size of segments cache
 
 #endif

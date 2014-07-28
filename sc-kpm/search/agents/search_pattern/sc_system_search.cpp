@@ -100,7 +100,10 @@ sc_bool system_sys_search_recurse(sc_addr sc_pattern, sc_type_hash pattern, sc_a
 
     sc_addr_vector pattern_arc_set;
 
-    sc_iterator3 *it_pattern_arc = sc_iterator3_f_a_a_new(curr_pattern_element, 0, 0);
+    sc_iterator3 *it_pattern_arc = sc_iterator3_f_a_a_new(s_default_ctx,
+                                                          curr_pattern_element,
+                                                          0,
+                                                          0);
     if (it_pattern_arc == nullptr) {return SC_FALSE;}
     while (SC_TRUE == sc_iterator3_next(it_pattern_arc))
     {
@@ -113,7 +116,10 @@ sc_bool system_sys_search_recurse(sc_addr sc_pattern, sc_type_hash pattern, sc_a
     }
     sc_iterator3_free(it_pattern_arc);
 
-    it_pattern_arc = sc_iterator3_a_a_f_new(0, 0, curr_pattern_element);
+    it_pattern_arc = sc_iterator3_a_a_f_new(s_default_ctx,
+                                            0,
+                                            0,
+                                            curr_pattern_element);
     if (it_pattern_arc == nullptr) {return SC_FALSE;}
     while (SC_TRUE == sc_iterator3_next(it_pattern_arc))
     {
@@ -242,24 +248,36 @@ sc_bool system_sys_search_recurse(sc_addr sc_pattern, sc_type_hash pattern, sc_a
             {
                 if (pattern_is_const_or_has_value == SC_TRUE)
                 {
-                    it_const_arc = sc_iterator3_f_a_f_new(curr_const_element, const_arc_type, next_const_element);
+                    it_const_arc = sc_iterator3_f_a_f_new(s_default_ctx,
+                                                          curr_const_element,
+                                                          const_arc_type,
+                                                          next_const_element);
                 }
                 else
                 {
                     sc_type next_const_element_type = ((~sc_type_var & next_pattern_element_type) | sc_type_const);
-                    it_const_arc = sc_iterator3_f_a_a_new(curr_const_element, const_arc_type, next_const_element_type);
+                    it_const_arc = sc_iterator3_f_a_a_new(s_default_ctx,
+                                                          curr_const_element,
+                                                          const_arc_type,
+                                                          next_const_element_type);
                 }
             }
             else
             {
                 if (pattern_is_const_or_has_value == SC_TRUE)
                 {
-                    it_const_arc = sc_iterator3_f_a_f_new(next_const_element, const_arc_type, curr_const_element);
+                    it_const_arc = sc_iterator3_f_a_f_new(s_default_ctx,
+                                                          next_const_element,
+                                                          const_arc_type,
+                                                          curr_const_element);
                 }
                 else
                 {
                     sc_type next_const_element_type = ((~sc_type_var & next_pattern_element_type) | sc_type_const);
-                    it_const_arc = sc_iterator3_a_a_f_new(next_const_element_type, const_arc_type, curr_const_element);
+                    it_const_arc = sc_iterator3_a_a_f_new(s_default_ctx,
+                                                          next_const_element_type,
+                                                          const_arc_type,
+                                                          curr_const_element);
                 }
             }
             while (SC_TRUE == sc_iterator3_next(it_const_arc))
@@ -419,7 +437,10 @@ sc_bool system_sys_search_recurse(sc_addr sc_pattern, sc_type_hash pattern, sc_a
 */
 sc_bool get_const_element(sc_addr pattern, sc_addr *result)
 {
-    sc_iterator3 *it = sc_iterator3_f_a_a_new(pattern, sc_type_arc_pos_const_perm, sc_type_const);
+    sc_iterator3 *it = sc_iterator3_f_a_a_new(s_default_ctx,
+                                              pattern,
+                                              sc_type_arc_pos_const_perm,
+                                              sc_type_const);
     if (SC_TRUE == sc_iterator3_next(it))
     {
         *result = sc_iterator3_value(it, 2);

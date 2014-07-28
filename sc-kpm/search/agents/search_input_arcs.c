@@ -44,14 +44,20 @@ sc_result agent_search_all_const_pos_input_arc(const sc_event *event, sc_addr ar
     answer = create_answer_node();
 
     // find argument
-    it1 = sc_iterator3_f_a_a_new(question, sc_type_arc_pos_const_perm, 0);
+    it1 = sc_iterator3_f_a_a_new(s_default_ctx,
+                                 question,
+                                 sc_type_arc_pos_const_perm,
+                                 0);
     if (sc_iterator3_next(it1) == SC_TRUE)
     {
         if (IS_SYSTEM_ELEMENT(sc_iterator3_value(it1, 2)))
             sys_off = SC_FALSE;
 
         // iterate input arcs
-        it2 = sc_iterator3_a_a_f_new(0, sc_type_arc_pos_const_perm, sc_iterator3_value(it1, 2));
+        it2 = sc_iterator3_a_a_f_new(s_default_ctx,
+                                     0,
+                                     sc_type_arc_pos_const_perm,
+                                     sc_iterator3_value(it1, 2));
         while (sc_iterator3_next(it2) == SC_TRUE)
         {
             if (sys_off == SC_TRUE && (IS_SYSTEM_ELEMENT(sc_iterator3_value(it2, 0)) || IS_SYSTEM_ELEMENT(sc_iterator3_value(it2, 1))))
@@ -90,21 +96,30 @@ sc_result agent_search_all_const_pos_input_arc_with_rel(const sc_event *event, s
     answer = create_answer_node();
 
     // get question argument
-    it1 = sc_iterator3_f_a_a_new(question, sc_type_arc_pos_const_perm, 0);
+    it1 = sc_iterator3_f_a_a_new(s_default_ctx,
+                                 question,
+                                 sc_type_arc_pos_const_perm,
+                                 0);
     if (sc_iterator3_next(it1) == SC_TRUE)
     {
         if (IS_SYSTEM_ELEMENT(sc_iterator3_value(it1, 2)))
             sys_off = SC_FALSE;
 
         // iterate input arcs
-        it2 = sc_iterator3_a_a_f_new(0, sc_type_arc_pos_const_perm, sc_iterator3_value(it1, 2));
+        it2 = sc_iterator3_a_a_f_new(s_default_ctx,
+                                     0,
+                                     sc_type_arc_pos_const_perm,
+                                     sc_iterator3_value(it1, 2));
         while (sc_iterator3_next(it2) == SC_TRUE)
         {
             if (sys_off == SC_TRUE && (IS_SYSTEM_ELEMENT(sc_iterator3_value(it2, 0)) || IS_SYSTEM_ELEMENT(sc_iterator3_value(it2, 1))))
                 continue;
 
             // iterate relations
-            it3 = sc_iterator3_a_a_f_new(0, sc_type_arc_pos_const_perm, sc_iterator3_value(it2, 1));
+            it3 = sc_iterator3_a_a_f_new(s_default_ctx,
+                                         0,
+                                         sc_type_arc_pos_const_perm,
+                                         sc_iterator3_value(it2, 1));
             while (sc_iterator3_next(it3) == SC_TRUE)
             {
                 if (sys_off == SC_TRUE && (IS_SYSTEM_ELEMENT(sc_iterator3_value(it3, 0)) || IS_SYSTEM_ELEMENT(sc_iterator3_value(it3, 1))))
