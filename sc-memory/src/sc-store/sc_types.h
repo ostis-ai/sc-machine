@@ -41,12 +41,15 @@ typedef unsigned int sc_uint32;
 typedef long long sc_int64;
 typedef unsigned long long sc_uint64;
 
+typedef unsigned long sc_ulong;
 typedef unsigned int sc_uint;
 typedef int sc_int;
 
 typedef sc_uint32 sc_uint;
 typedef char sc_char;
 typedef unsigned char sc_uchar;
+
+typedef void* sc_pointer;
 
 // booleans
 #define SC_FALSE (0)
@@ -183,6 +186,7 @@ struct _sc_check_sum
 // events
 enum _sc_event_type
 {
+    SC_EVENT_UNKNOWN = -1,
     SC_EVENT_ADD_OUTPUT_ARC = 0,
     SC_EVENT_ADD_INPUT_ARC,
     SC_EVENT_REMOVE_OUTPUT_ARC,

@@ -29,6 +29,9 @@ extern "C"
 #include "sc_helper.h"
 }
 
+#define POINTER_TO_UINT(p)	((sc_uint) (sc_ulong) (p))
+#define UINT_TO_POINTER(u)	((sc_pointer) (sc_ulong) (u))
+
 typedef enum
 {
     SCTP_CMD_UNKNOWN            = 0x00, // unkown command

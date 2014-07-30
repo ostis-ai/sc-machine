@@ -207,7 +207,7 @@ int main(int argc, char *argv[])
     params.config_file = "sc-memory.ini";
     params.ext_path = 0;
 
-    printf("sc_element: %d, sc_addr: %d, sc_arc: %d, sc_content: %d\n", sizeof(sc_element), sizeof(sc_addr), sizeof(sc_arc_info), sizeof(sc_content));
+    printf("sc_element: %lu, sc_addr: %lu, sc_arc: %lu, sc_content: %lu\n", sizeof(sc_element), sizeof(sc_addr), sizeof(sc_arc_info), sizeof(sc_content));
 
     g_test_init(&argc, &argv, NULL);
     g_test_add_func("/threading/create_nodes", test_node_creation);

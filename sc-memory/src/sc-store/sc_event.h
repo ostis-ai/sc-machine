@@ -39,14 +39,13 @@ typedef sc_result (*fDeleteCallback)(const sc_event *event);
 /*! Subscribe for events from specified sc-element
  * @param el sc-addr of subscribed sc-element events
  * @param type Type of listening sc-events
- * @param id Event id, that will be used to determine event. Usualy need, when used one callback function
- * for many events.
+ * @param data Pointer to user data
  * @param callback Pointer to callback function. It would be calls, when event emited
- * @param delete_callback Pointer to callback function, that calls on subscribed sc-element deletion
+ * @param delete_callback Pointer to callback function, that calls on subscribed sc-element deletio
  * @return Returns pointer to created sc-event
  * @remarks Callback functions can be called from any thred, so they need to be a thread safe
  */
-sc_event* sc_event_new(sc_addr el, sc_event_type type, sc_uint32 id, fEventCallback callback, fDeleteCallback delete_callback);
+sc_event* sc_event_new(sc_addr el, sc_event_type type, sc_pointer data, fEventCallback callback, fDeleteCallback delete_callback);
 
 /*! Destroys specified sc-event
  * @param event Poitner to sc-event, that need to be destroyed
@@ -58,8 +57,8 @@ sc_result sc_event_destroy(sc_event *event);
  */
 sc_event_type sc_event_get_type(const sc_event *event);
 
-//! Returns id of specified sc-event
-sc_uint32 sc_event_get_id(const sc_event *event);
+//! Returns data of specified sc-event
+sc_pointer sc_event_get_data(const sc_event *event);
 
 //! Returns sc-addr of sc-element where event subscribed
 sc_addr sc_event_get_element(const sc_event *event);

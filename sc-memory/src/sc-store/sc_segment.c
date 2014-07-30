@@ -33,9 +33,6 @@ along with OSTIS.  If not, see <http://www.gnu.org/licenses/>.
 
 sc_segment* sc_segment_new(sc_addr_seg num)
 {
-#if USE_SEGMENT_EMPTY_SLOT_BUFFER
-    sc_uint idx;
-#endif
 
     sc_segment *segment = g_new0(sc_segment, 1);
 
@@ -238,7 +235,9 @@ void sc_segment_unlock_element(const sc_memory_context *ctx, sc_segment *seg, sc
 void sc_segment_section_lock(const sc_memory_context *ctx, sc_segment_section *section)
 {
     g_assert(section != nullptr);
-    while (g_atomic_pointer_compare_and_exchange(&section->ctx_lock, 0, ctx) == FALSE && g_atomic_pointer_get(&section->ctx_lock) != ctx || g_atomic_pointer_get(&section->lock_count) < 0)
+    while (g_atomic_pointer_compare_and_exchange(&section->ctx_lock, 0, ctx) == FALSE &&
+           g_atomic_pointer_get(&section->ctx_lock) != ctx ||
+           g_atomic_int_get(&section->lock_count) < 0)
     {
         LOCK_SLEEP();
     }
@@ -255,7 +254,9 @@ sc_bool sc_segment_section_lock_try(const sc_memory_context *ctx, sc_segment_sec
 {
     g_assert(section != nullptr);
     sc_uint16 attempt = 0;
-    while (g_atomic_pointer_compare_and_exchange(&section->ctx_lock, 0, ctx) == FALSE && g_atomic_pointer_get(&section->ctx_lock) != ctx || g_atomic_pointer_get(&section->lock_count) < 0)
+    while (g_atomic_pointer_compare_and_exchange(&section->ctx_lock, 0, ctx) == FALSE &&
+           g_atomic_pointer_get(&section->ctx_lock) != ctx ||
+           g_atomic_int_get(&section->lock_count) < 0)
     {
         if (++attempt >= max_attempts)
             return SC_FALSE;

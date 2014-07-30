@@ -73,7 +73,7 @@ bool sctpEventManager::createEvent(sc_event_type type, sc_addr addr, sctpCommand
 
     evt->cmd = cmd;
     evt->id = event;
-    evt->event = sc_event_new(addr, type, event, &sctpEventManager::_eventsCallback, 0);
+    evt->event = sc_event_new(addr, type, UINT_TO_POINTER(event), &sctpEventManager::_eventsCallback, 0);
 
     Q_ASSERT(mEvents.find(evt->id) == mEvents.end());
 
@@ -107,9 +107,15 @@ bool sctpEventManager::_getAvailableEventId(tEventId &eventId)
     eventId = start + 1;
 
     while (eventId != start && (mEvents.find(eventId) != mEvents.end()))
-        ++eventId;
+        eventId = eventId + 1;
 
-    return eventId != start;
+    if (eventId != start)
+    {
+        mLastEventId = eventId;
+        return true;
+    }
+
+    return false;
 }
 
 
@@ -119,7 +125,7 @@ sc_result sctpEventManager::_eventsCallback(const sc_event *event, sc_addr arg)
 
     Q_ASSERT(event != 0);
 
-    tScEventsMap::iterator it = sctpEventManager::msInstance->mEvents.find(sc_event_get_id(event));
+    tScEventsMap::iterator it = sctpEventManager::msInstance->mEvents.find(POINTER_TO_UINT(sc_event_get_data(event)));
     if (it == sctpEventManager::msInstance->mEvents.end())
         return SC_RESULT_ERROR_INVALID_STATE;
 

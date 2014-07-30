@@ -796,7 +796,7 @@ eSctpErrorCode sctpCommand::processStatistics(quint32 cmdFlags, quint32 cmdId, Q
     return SCTP_NO_ERROR;
 }
 
-sc_result sctpCommand::processEventEmit(quint32 eventId, sc_addr el_addr, sc_addr arg_addr)
+sc_result sctpCommand::processEventEmit(tEventId eventId, sc_addr el_addr, sc_addr arg_addr)
 {    
     QMutexLocker locker(&mSendMutex);
 

@@ -451,7 +451,7 @@ sc_result event_callback(const sc_event *event, sc_addr arg)
 //        printf("Change link content");
 //        break;
     }
-    printf(", Id: %d", sc_event_get_id(event));
+    //printf(", Id: %d", sc_event_get_id(event));
     printf(", Argument = seg: %d, offset: %d\n", arg.seg, arg.offset);
     return SC_RESULT_OK;
 }
@@ -475,9 +475,9 @@ void test7()
     addr1 = sc_memory_node_new(s_default_ctx, 0);
     printf("Register events\n");
     event1 = sc_event_new(addr, SC_EVENT_ADD_OUTPUT_ARC, 0, &event_callback, 0);
-    event2 = sc_event_new(addr1, SC_EVENT_ADD_INPUT_ARC, 1, &event_callback, 0);
-    event3 = sc_event_new(addr, SC_EVENT_REMOVE_OUTPUT_ARC, 2, &event_callback, 0);
-    event4 = sc_event_new(addr1, SC_EVENT_REMOVE_INPUT_ARC, 3, &event_callback, 0);
+    event2 = sc_event_new(addr1, SC_EVENT_ADD_INPUT_ARC, 0, &event_callback, 0);
+    event3 = sc_event_new(addr, SC_EVENT_REMOVE_OUTPUT_ARC, 0, &event_callback, 0);
+    event4 = sc_event_new(addr1, SC_EVENT_REMOVE_INPUT_ARC, 0, &event_callback, 0);
 
     //addr2 = sc_memory_arc_new(0, addr, addr1);
 

@@ -107,7 +107,7 @@ private:
     eSctpErrorCode processStatistics(quint32 cmdFlags, quint32 cmdId, QDataStream *params, QIODevice *outDevice);
 
 protected:
-    sc_result processEventEmit(quint32 eventId, sc_addr el_addr, sc_addr arg_addr);
+    sc_result processEventEmit(tEventId eventId, sc_addr el_addr, sc_addr arg_addr);
 
 private:
     //! Mutex to synchronize data sending to client read/writes
