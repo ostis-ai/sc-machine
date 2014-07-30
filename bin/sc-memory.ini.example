@@ -15,3 +15,6 @@ save_period = 30
 
 [filememory]
 engine = redis
+
+[kpm]
+max_threads = 32
