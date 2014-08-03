@@ -236,18 +236,10 @@ void sc_segment_section_lock(const sc_memory_context *ctx, sc_segment_section *s
 {
     g_assert(section != nullptr);
     while (g_atomic_pointer_compare_and_exchange(&section->ctx_lock, 0, ctx) == FALSE &&
-           g_atomic_pointer_get(&section->ctx_lock) != ctx ||
-           g_atomic_int_get(&section->lock_count) < 0)
+           g_atomic_pointer_get(&section->ctx_lock) != ctx)
     {
         LOCK_SLEEP();
     }
-
-    // not we need to change locks count
-    sc_int32 lock_count = 0;
-    do
-    {
-        lock_count = g_atomic_int_get(&section->lock_count);
-    } while(g_atomic_int_compare_and_exchange(&section->lock_count, lock_count, lock_count + 1) == FALSE);
 }
 
 sc_bool sc_segment_section_lock_try(const sc_memory_context *ctx, sc_segment_section *section, sc_uint16 max_attempts)
@@ -255,20 +247,12 @@ sc_bool sc_segment_section_lock_try(const sc_memory_context *ctx, sc_segment_sec
     g_assert(section != nullptr);
     sc_uint16 attempt = 0;
     while (g_atomic_pointer_compare_and_exchange(&section->ctx_lock, 0, ctx) == FALSE &&
-           g_atomic_pointer_get(&section->ctx_lock) != ctx ||
-           g_atomic_int_get(&section->lock_count) < 0)
+           g_atomic_pointer_get(&section->ctx_lock) != ctx)
     {
         if (++attempt >= max_attempts)
             return SC_FALSE;
         LOCK_SLEEP();
     }
-
-    // not we need to change locks count
-    sc_int lock_count = 0;
-    do
-    {
-        lock_count = g_atomic_int_get(&section->lock_count);
-    } while(g_atomic_int_compare_and_exchange(&section->lock_count, lock_count, lock_count + 1) == FALSE);
 
     return SC_TRUE;
 }
@@ -276,16 +260,6 @@ sc_bool sc_segment_section_lock_try(const sc_memory_context *ctx, sc_segment_sec
 void sc_segment_section_unlock(const sc_memory_context *ctx, sc_segment_section *section)
 {
     g_assert(section != nullptr);
-
-    sc_int lock_count = 0, new_val = 0;
-    do
-    {
-        lock_count = g_atomic_int_get(&section->lock_count);
-        if (lock_count == 1)
-            new_val = -1;
-        else
-            new_val = lock_count - 1;
-    } while(g_atomic_int_compare_and_exchange(&section->lock_count, lock_count, new_val) == FALSE);
-
+    g_assert(g_atomic_pointer_get(&section->ctx_lock) == ctx);
     g_atomic_pointer_set(&section->ctx_lock, 0);
 }

@@ -33,7 +33,6 @@ along with OSTIS.  If not, see <http://www.gnu.org/licenses/>.
 typedef struct _sc_segment_section
 {
     const sc_memory_context *ctx_lock;      // pointer to context, that locked section
-    sc_int lock_count;                      // count of locks made by the one thread
     sc_int empty_count;                     // use 32-bit value for atomic operations
     sc_int empty_offset;                    // use 32-bit value for atomic operations
 } sc_segment_section;

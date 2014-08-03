@@ -140,7 +140,7 @@ void test_creation(GThreadFunc f, sc_int32 count, sc_int thread_count)
 
 void test_node_creation()
 {
-    test_creation(create_node_thread, 1 << 18, 128);
+    test_creation(create_node_thread, 1 << 18, 1);
 }
 
 void test_arc_creation()
@@ -207,7 +207,7 @@ int main(int argc, char *argv[])
     params.config_file = "sc-memory.ini";
     params.ext_path = 0;
 
-    printf("sc_element: %lu, sc_addr: %lu, sc_arc: %lu, sc_content: %lu\n", sizeof(sc_element), sizeof(sc_addr), sizeof(sc_arc_info), sizeof(sc_content));
+    printf("sc_element: %zd, sc_addr: %zd, sc_arc: %zd, sc_content: %zd", sizeof(sc_element), sizeof(sc_addr), sizeof(sc_arc_info), sizeof(sc_content));
 
     g_test_init(&argc, &argv, NULL);
     g_test_add_func("/threading/create_nodes", test_node_creation);
