@@ -323,8 +323,6 @@ sc_fm_engine* initialize(const sc_char* repo_path)
 
     redis_data *data = g_new0(redis_data, 1);
 
-    g_mutex_init(&redis_mutex);
-    g_mutex_init(&redis_command_mutex);
     data->context = connectToRedis();
 
     if (data->context == 0 || data->context->err)
@@ -359,8 +357,5 @@ sc_fm_engine* initialize(const sc_char* repo_path)
 
 sc_result shutdown()
 {
-    g_mutex_clear(&redis_mutex);
-    g_mutex_clear(&redis_command_mutex);
-
     return SC_RESULT_OK;
 }

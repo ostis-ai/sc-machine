@@ -8,10 +8,11 @@ extern "C"
 #include <set>
 #include <limits>
 #include <glib.h>
+#include <mcheck.h>
 
-#define nodes_append_count 250000
-#define nodes_remove_count 250000
-#define arcs_append_count  250000
+#define nodes_append_count 5000000
+#define nodes_remove_count 2500000
+#define arcs_append_count  2500000
 #define arcs_remove_count  0
 #define link_append_count 20000
 #define iterator_alloc_count 10000000
@@ -110,7 +111,10 @@ void test1()
 
     sc_uint32 n = segment_node_del.size();
     for (ScAddrSetT::const_iterator it = segment_node_del.begin(); it != segment_node_del.end(); ++it)
+    {
+        g_assert(SC_ADDR_IS_NOT_EMPTY(*it));
         sc_memory_element_free(s_default_ctx, *it);
+    }
 
     n = nodes_remove_count - n;
     for (sc_uint32 i = 0; i < n; i++)
@@ -586,6 +590,9 @@ int main(int argc, char *argv[])
     fflush(stdout);
     timer = g_timer_new();
     g_timer_start(timer);
+
+
+    mcheck_check_all();
 
     printf("MD5: %d\n", (int)g_checksum_type_get_length(G_CHECKSUM_MD5) );
     printf("SHA1: %d\n", (int)g_checksum_type_get_length(G_CHECKSUM_SHA1) );

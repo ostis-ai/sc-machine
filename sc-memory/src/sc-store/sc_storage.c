@@ -281,7 +281,6 @@ sc_result sc_storage_element_free(const sc_memory_context *ctx, sc_addr addr)
     if (el == nullptr || el->flags.type == 0)
         return SC_RESULT_ERROR;
 
-    sc_result r;
     remove_table = g_hash_table_new(g_direct_hash, g_direct_equal);
     lock_table = g_hash_table_new(g_direct_hash, g_direct_equal);
     g_hash_table_insert(remove_table, GUINT_TO_POINTER(SC_ADDR_LOCAL_TO_INT(addr)), el);
@@ -532,6 +531,7 @@ sc_result sc_storage_element_free(const sc_memory_context *ctx, sc_addr addr)
 
     g_slist_free(remove_list);
     g_hash_table_destroy(remove_table);
+    g_hash_table_destroy(lock_table);
 
     g_atomic_int_inc(&storage_time_stamp);
 

@@ -35,6 +35,8 @@ typedef struct _sc_segment_section
     const sc_memory_context *ctx_lock;      // pointer to context, that locked section
     sc_int empty_count;                     // use 32-bit value for atomic operations
     sc_int empty_offset;                    // use 32-bit value for atomic operations
+    sc_int internal_lock;                   //
+    sc_int lock_count;                      // count of recursive locks
 } sc_segment_section;
 
 /*! Structure for segment storing

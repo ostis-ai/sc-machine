@@ -149,6 +149,8 @@ sc_bool sc_fs_storage_shutdown(sc_segment **segments, sc_bool save_segments)
     if (sc_fm_save(fm_engine) != SC_RESULT_OK)
         g_critical("Error while saves file memory");
 
+    sc_fm_free(fm_engine);
+
     fFmEngineShutdownFunc func;
     g_message("Shutting down file memory engine: %s", fm_engine_module_path);
     if (g_module_symbol(fm_engine_module, "shutdown", (gpointer*) &func) == FALSE)
@@ -161,6 +163,12 @@ sc_bool sc_fs_storage_shutdown(sc_segment **segments, sc_bool save_segments)
         else
             res = SC_TRUE;
     }
+
+    if (g_module_close(fm_engine_module) != TRUE)
+        g_critical("Error while close module: %s", fm_engine_module_path);
+
+    fm_engine = 0;
+    fm_engine_module = 0;
 
     g_free(repo_path);
 
