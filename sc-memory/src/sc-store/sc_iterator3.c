@@ -269,7 +269,7 @@ sc_bool _sc_iterator3_a_a_f_next(sc_iterator3 *it)
         STORAGE_CHECK_CALL(sc_storage_element_lock(it->ctx, it->results[1], &el));
         g_assert(el != nullptr);
         arc_addr = el->arc.next_in_arc;
-        STORAGE_CHECK_CALL(sc_storage_element_unlock(it->ctx, arc_addr));
+        STORAGE_CHECK_CALL(sc_storage_element_unlock(it->ctx, it->results[1]));
     }
 
     // trying to find input arc, that created before iterator, and wasn't deleted
