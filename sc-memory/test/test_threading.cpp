@@ -140,17 +140,17 @@ void test_creation(GThreadFunc f, sc_int32 count, sc_int thread_count)
 
 void test_node_creation()
 {
-    test_creation(create_node_thread, 1 << 20, 16);
+    test_creation(create_node_thread, 1 << 20, 4);
 }
 
 void test_arc_creation()
 {
-    test_creation(create_arc_thread, 1 << 20, 32);
+    test_creation(create_arc_thread, 1 << 20, 4);
 }
 
 void test_link_creation()
 {
-    test_creation(create_link_thread, 1 << 20, 128);
+    test_creation(create_link_thread, 1 << 20, 4);
 }
 
 void test_combined_creation()
