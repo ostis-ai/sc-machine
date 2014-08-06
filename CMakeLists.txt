@@ -11,6 +11,11 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${SC_MACHINE_ROOT}/bin)
 
 set(SC_MEMORY_SRC "${SC_MACHINE_ROOT}/sc-memory/src")
 
+if(CMAKE_COMPILER_IS_GNUCXX)
+    set(CMAKE_CXX_FLAGS_RELEASE "-O3")        ## Optimize
+    set(CMAKE_EXE_LINKER_FLAGS_RELEASE "-s")  ## Strip binary
+endif()
+
 # find dependencies
 if (${UNIX})
 	include(FindPkgConfig)
