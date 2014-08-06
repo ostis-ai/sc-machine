@@ -23,8 +23,12 @@ along with OSTIS. If not, see <http://www.gnu.org/licenses/>.
 #include "utils_keynodes.h"
 #include "utils_collect_identifiers.h"
 
+sc_memory_context * s_default_ctx = 0;
+
 sc_result initialize()
 {
+    s_default_ctx = sc_memory_context_new(sc_access_levels_make(8, 8));
+
     if (utils_keynodes_initialize() != SC_RESULT_OK)
         return SC_RESULT_ERROR;
 
@@ -36,8 +40,12 @@ sc_result initialize()
 
 sc_result shutdown()
 {
-    if (utils_collect_identifiers_shutdown() != SC_RESULT_OK)
-        return SC_RESULT_ERROR;
+    sc_result res = SC_RESULT_OK;
 
-    return SC_RESULT_OK;
+    if (utils_collect_identifiers_shutdown() != SC_RESULT_OK)
+        res = SC_RESULT_ERROR;
+
+    sc_memory_context_free(s_default_ctx);
+
+    return res;
 }

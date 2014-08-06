@@ -51,4 +51,6 @@ bool operator < (const sc_addr &addr1, const sc_addr &addr2);
 bool operator == (const sc_addr &addr1, const sc_addr &addr2);
 bool operator != (const sc_addr &addr1, const sc_addr &addr2);
 
+extern sc_memory_context * s_default_ctx;
+
 #endif

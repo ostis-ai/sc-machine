@@ -43,6 +43,7 @@ sctpServer::sctpServer(QObject *parent)
   , mStatistic(0)
   , mThreadPool(0)
   , mEventManager(0)
+  , mContext(0)
 {
 }
 
@@ -97,7 +98,8 @@ bool sctpServer::start(const QString &config)
     params.repo_path = repo_path.c_str();
     params.ext_path = ext_path.c_str();
 
-    if (sc_memory_initialize(&params) != SC_TRUE)
+    mContext = sc_memory_initialize(&params);
+    if (mContext == 0)
         return false;
 
     mEventManager = new sctpEventManager();
@@ -106,7 +108,7 @@ bool sctpServer::start(const QString &config)
     if (mStatUpdatePeriod > 0)
     {
         mStatistic = new sctpStatistic(this);
-        mStatistic->initialize(mStatPath, mStatUpdatePeriod);
+        mStatistic->initialize(mStatPath, mStatUpdatePeriod, mContext);
     }
 
     mThreadPool = new QThreadPool(this);
@@ -161,7 +163,8 @@ void sctpServer::incomingConnection(int socketDescriptor)
 
 void sctpServer::stop()
 {
-    sc_memory_shutdown();
+    sc_memory_shutdown(SC_TRUE);
+    mContext = 0;
 
     mEventManager->shutdown();
     delete mEventManager;

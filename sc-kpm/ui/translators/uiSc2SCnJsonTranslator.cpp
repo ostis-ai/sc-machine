@@ -212,14 +212,16 @@ uiSc2SCnJsonTranslator::~uiSc2SCnJsonTranslator()
 void uiSc2SCnJsonTranslator::runImpl()
 {
     // get command arguments
-    sc_iterator5 *it5 = sc_iterator5_a_a_f_a_f_new(sc_type_node | sc_type_const,
+    sc_iterator5 *it5 = sc_iterator5_a_a_f_a_f_new(s_default_ctx,
+                                                   sc_type_node | sc_type_const,
                                                    sc_type_arc_common | sc_type_const,
                                                    mInputConstructionAddr,
                                                    sc_type_arc_pos_const_perm,
                                                    keynode_question_nrel_answer);
     if (sc_iterator5_next(it5) == SC_TRUE)
     {
-        sc_iterator3 *it3 = sc_iterator3_f_a_a_new(sc_iterator5_value(it5, 0),
+        sc_iterator3 *it3 = sc_iterator3_f_a_a_new(s_default_ctx,
+                                                   sc_iterator5_value(it5, 0),
                                                    sc_type_arc_pos_const_perm,
                                                    0);
         while (sc_iterator3_next(it3) == SC_TRUE)
@@ -276,7 +278,8 @@ String uiSc2SCnJsonTranslator::translateElement(sc_addr addr, bool isKeyword)
 
 bool uiSc2SCnJsonTranslator::isInOutputConstruction(sc_addr addr) const
 {
-    sc_iterator3 *it3 = sc_iterator3_f_a_f_new(mInputConstructionAddr,
+    sc_iterator3 *it3 = sc_iterator3_f_a_f_new(s_default_ctx,
+                                               mInputConstructionAddr,
                                                sc_type_arc_pos_const_perm,
                                                addr);
     bool result = (sc_iterator3_next(it3) == SC_TRUE);
@@ -322,9 +325,9 @@ void uiSc2SCnJsonTranslator::collectScElementsInfo()
             continue;
 
         // get begin/end addrs
-        if (sc_memory_get_arc_begin(arcAddr, &begAddr) != SC_RESULT_OK)
+        if (sc_memory_get_arc_begin(s_default_ctx, arcAddr, &begAddr) != SC_RESULT_OK)
             continue; // @todo process errors
-        if (sc_memory_get_arc_end(arcAddr, &endAddr) != SC_RESULT_OK)
+        if (sc_memory_get_arc_end(s_default_ctx, arcAddr, &endAddr) != SC_RESULT_OK)
             continue; // @todo process errors
 
 
@@ -373,7 +376,7 @@ sc_result uiSc2SCnJsonTranslator::ui_translate_sc2scn(const sc_event *event, sc_
 {
     sc_addr cmd_addr, input_addr, format_addr;
 
-    if (sc_memory_get_arc_end(arg, &cmd_addr) != SC_RESULT_OK)
+    if (sc_memory_get_arc_end(s_default_ctx, arg, &cmd_addr) != SC_RESULT_OK)
         return SC_RESULT_ERROR;
 
     if (ui_check_cmd_type(cmd_addr, keynode_command_translate_from_sc) != SC_RESULT_OK)

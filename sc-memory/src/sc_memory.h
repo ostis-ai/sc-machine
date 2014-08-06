@@ -44,12 +44,26 @@ void sc_memory_params_clear(sc_memory_params *params);
 
 /*! Initialize sc-memory with specified path to repository
  * @param params Pointer to initialization parameters
+ * @returns Returns pointer to created sc-memory context
  */
-sc_bool sc_memory_initialize(const sc_memory_params *params);
+sc_memory_context* sc_memory_initialize(const sc_memory_params *params);
 
 
 //! Shutdown sc-memory (save repository to file system)
-void sc_memory_shutdown();
+void sc_memory_shutdown(sc_bool save_state);
+
+/*! Function that create memory context with specified params
+ * @param levels Access levels, you can create it with macros @see sc_access_level_make
+ * @returns Retursn pointer to create memory context. If there were any errors during
+ * context creation, then function returns 0
+ * @note Do not use one context in different threads.
+ */
+sc_memory_context* sc_memory_context_new(sc_uint8 levels);
+
+/*! Function that destroys created memory context. You can use that function
+ * just for contexts, that were created with @see sc_memory_context_new
+ */
+void sc_memory_context_free(sc_memory_context *ctx);
 
 //! Check if sc-memory is initialized
 sc_bool sc_memory_is_initialized();
@@ -58,24 +72,24 @@ sc_bool sc_memory_is_initialized();
  * @param addr sc-addr of element
  * @return Returns SC_TRUE, if sc-element with \p addr exist; otherwise return SC_FALSE.
  * If element deleted, then return SC_FALSE.
- * @note This function is a thread safe
+
  */
-sc_bool sc_memory_is_element(sc_addr addr);
+sc_bool sc_memory_is_element(sc_memory_context const * ctx, sc_addr addr);
 
 //! Remove sc-element from sc-memory
-sc_result sc_memory_element_free(sc_addr addr);
+sc_result sc_memory_element_free(sc_memory_context const * ctx, sc_addr addr);
 
 /*! Create new sc-node
  * @param type Type of new sc-node
  * @return Return sc-addr of created sc-node
  * @note This function is a thread safe
  */
-sc_addr sc_memory_node_new(sc_type type);
+sc_addr sc_memory_node_new(sc_memory_context const * ctx, sc_type type);
 
 /*! Create new sc-link
- * @note This function is a thread safe
+
  */
-sc_addr sc_memory_link_new();
+sc_addr sc_memory_link_new(sc_memory_context const * ctx);
 
 /*! Create new sc-arc.
  * @param type Type of new sc-arc
@@ -83,44 +97,44 @@ sc_addr sc_memory_link_new();
  * @param end sc-addr of end sc-element
  *
  * @return Return sc-addr of created sc-arc
- * @note This function is a thread safe
+
  */
-sc_addr sc_memory_arc_new(sc_type type, sc_addr beg, sc_addr end);
+sc_addr sc_memory_arc_new(sc_memory_context const * ctx, sc_type type, sc_addr beg, sc_addr end);
 
 /*! Get type of sc-element with specified sc-addr
  * @param addr sc-addr of element to get type
  * @param result Pointer to result container
  * @return If input params are correct and type resolved, then return SC_RESULT_OK;
  * otherwise return SC_RESULT_ERROR
- * @note This function is a thread safe
+
  */
-sc_result sc_memory_get_element_type(sc_addr addr, sc_type *result);
+sc_result sc_memory_get_element_type(sc_memory_context const * ctx, sc_addr addr, sc_type *result);
 
 /*! Change element sub-type
  * @param addr sc-addr of element to set new type
  * @param type New sub-type of sc-element (this type must be: type & sc_type_element_mask == 0)
  * @return If sub-type changed, then returns SC_RESULT_OK; otherwise returns SC_RESULT_ERROR
- * @note This function is a thread safe
+
  */
-sc_result sc_memory_change_element_subtype(sc_addr addr, sc_type type);
+sc_result sc_memory_change_element_subtype(sc_memory_context const * ctx, sc_addr addr, sc_type type);
 
 /*! Returns sc-addr of begin element of specified arc
  * @param addr sc-addr of arc to get begin element
  * @param result Pointer to result container
  * @return If input params are correct and begin element resolved, then return SC_RESULT_OK.
  * If element with specified addr isn't an arc, then return SC_RESULT_INVALID_TYPE
- * @note This function is a thread safe
+
  */
-sc_result sc_memory_get_arc_begin(sc_addr addr, sc_addr *result);
+sc_result sc_memory_get_arc_begin(sc_memory_context const * ctx, sc_addr addr, sc_addr *result);
 
 /*! Returns sc-addr of end element of specified arc
  * @param addr sc-addr of arc to get end element
  * @param result Pointer to result container
  * @return If input params are correct and end element resolved, then return SC_RESULT_OK.
  * If element with specified addr isn't an arc, then return SC_RESULT_INVALID_TYPE
- * @note This function is a thread safe
+
  */
-sc_result sc_memory_get_arc_end(sc_addr addr, sc_addr *result);
+sc_result sc_memory_get_arc_end(sc_memory_context const * ctx, sc_addr addr, sc_addr *result);
 
 /*! Setup content data for specified sc-link
  * @param addr sc-addr of sc-link to setup content
@@ -131,9 +145,9 @@ sc_result sc_memory_get_arc_end(sc_addr addr, sc_addr *result);
  * <li>SC_RESULT_INVALID_TYPE - element with \p addr isn't a sc-link</li>
  * <li>SC_RESULT_ERROR - unknown error</li>
  * </ul>
- * @note This function is a thread safe
+
  */
-sc_result sc_memory_set_link_content(sc_addr addr, const sc_stream *stream);
+sc_result sc_memory_set_link_content(sc_memory_context const * ctx, sc_addr addr, sc_stream const *stream);
 
 /*! Returns content of specified sc-link
  * @param addr sc-addr of sc-link to return content data
@@ -145,9 +159,9 @@ sc_result sc_memory_set_link_content(sc_addr addr, const sc_stream *stream);
  * <li>SC_RESULT_INVALID_TYPE - element with \p addr isn't a sc-link</li>
  * <li>SC_RESULT_ERROR - unknown error</li>
  * </ul>
- * @note This function is a thread safe
+
  */
-sc_result sc_memory_get_link_content(sc_addr addr, sc_stream **stream);
+sc_result sc_memory_get_link_content(sc_memory_context const * ctx, sc_addr addr, sc_stream **stream);
 
 /*! Search sc-link addrs by specified checksum
  * @param stream Pointert to stream that contains data for search
@@ -159,13 +173,13 @@ sc_result sc_memory_get_link_content(sc_addr addr, sc_stream **stream);
  * sc-addrs
  * @attention \p result array need to be free after usage
  */
-sc_result sc_memory_find_links_with_content(const sc_stream *stream, sc_addr **result, sc_uint32 *result_count);
+sc_result sc_memory_find_links_with_content(sc_memory_context const * ctx, sc_stream const * stream, sc_addr **result, sc_uint32 *result_count);
 
 /*! Collect statistic information about current state of sc-memory
  * @param stat Pointer to structure, that will contains statistics info
  * @return If info collected without errors, then return SC_RESULT_OK; otherwise return SC_RESULT_ERROR
  */
-sc_result sc_memory_stat(sc_stat *stat);
+sc_result sc_memory_stat(sc_memory_context const * ctx, sc_stat *stat);
 
 
 

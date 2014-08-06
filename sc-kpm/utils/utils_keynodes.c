@@ -20,6 +20,7 @@ along with OSTIS. If not, see <http://www.gnu.org/licenses/>.
 -----------------------------------------------------------------------------
  */
 #include "utils_keynodes.h"
+#include "utils.h"
 #include <glib.h>
 
 const char keynode_nrel_idtf_str[] = "nrel_idtf";
@@ -33,11 +34,11 @@ sc_addr keynode_nrel_system_identifier;
 sc_addr keynode_system_element;
 
 #define resolve_keynode(keynode) \
-    if (sc_helper_resolve_system_identifier(keynode##_str, &keynode) == SC_FALSE) \
+    if (sc_helper_resolve_system_identifier(s_default_ctx, keynode##_str, &keynode) == SC_FALSE) \
     {\
         g_warning("Can't find element with system identifier: %s", keynode##_str); \
-        keynode = sc_memory_node_new(0); \
-        if (sc_helper_set_system_identifier(keynode, keynode##_str, strlen(keynode##_str)) != SC_RESULT_OK) \
+        keynode = sc_memory_node_new(s_default_ctx, 0); \
+        if (sc_helper_set_system_identifier(s_default_ctx, keynode, keynode##_str, strlen(keynode##_str)) != SC_RESULT_OK) \
             return SC_RESULT_ERROR; \
         g_message("Created element with system identifier: %s", keynode##_str); \
     }

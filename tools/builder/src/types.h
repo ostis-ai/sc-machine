@@ -31,6 +31,7 @@ along with OSTIS.  If not, see <http://www.gnu.org/licenses/>.
 #include <algorithm>
 #include <sstream>
 #include <iomanip>
+#include <iostream>
 #include <exception>
 #include <assert.h>
 

@@ -28,8 +28,9 @@ extern "C" {
 #include <glib.h>
 }
 
-#include <agents/search_pattern/search_pattern_functions.h>
-#include <agents/search_pattern/sc_system_search.h>
+#include "search.h"
+#include "agents/search_pattern/search_pattern_functions.h"
+#include "agents/search_pattern/sc_system_search.h"
 
 sc_result search_full_pattern(sc_addr pattern, sc_addr answer, sc_bool sys_off)
 {
@@ -68,7 +69,7 @@ sc_result search_full_pattern(sc_addr pattern, sc_addr answer, sc_bool sys_off)
                 if (sys_off == SC_TRUE && IS_SYSTEM_ELEMENT(addr2))
                     continue;
 
-                arc = sc_memory_arc_new(sc_type_arc_pos_const_perm, answer, addr2);
+                arc = sc_memory_arc_new(s_default_ctx, sc_type_arc_pos_const_perm, answer, addr2);
                 SYSTEM_ELEMENT(arc);
             }
         }

@@ -31,6 +31,7 @@ along with OSTIS.  If not, see <http://www.gnu.org/licenses/>.
 #include "gwf_translator.h"
 
 Builder::Builder()
+    : mContext(0)
 {
 }
 
@@ -60,7 +61,7 @@ bool Builder::run(const BuilderParams &params)
     mparams.repo_path = mParams.outputPath.c_str();
     mparams.ext_path = mParams.extensionsPath.size() > 0 ? mParams.extensionsPath.c_str() : 0;
 
-    sc_memory_initialize(&mparams);
+    mContext = sc_memory_initialize(&mparams);
 
     // print founded files
     uint32 done = 0;
@@ -89,7 +90,7 @@ bool Builder::run(const BuilderParams &params)
 
     // print statistics
     sc_stat stat;
-    sc_memory_stat(&stat);
+    sc_memory_stat(mContext, &stat);
 
     unsigned int all_count = stat.arc_count + stat.node_count + stat.link_count;
 
@@ -99,7 +100,7 @@ bool Builder::run(const BuilderParams &params)
     std::cout << "Links: " << stat.link_count << "(" << ((float)stat.link_count / (float)all_count) * 100 << "%)"  << std::endl;
     std::cout << "Total: " << all_count << std::endl;
 
-    sc_memory_shutdown();
+    sc_memory_shutdown(SC_TRUE);
 
     return true;
 }
@@ -134,7 +135,7 @@ bool Builder::processFile(const String &filename)
         return false;
     }
 
-    iTranslator *translator = it->second->createInstance();
+    iTranslator *translator = it->second->createInstance(mContext);
     assert(translator);
 
     TranslatorParams translateParams;

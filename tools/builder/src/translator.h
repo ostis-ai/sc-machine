@@ -55,7 +55,7 @@ public:
 
     } eIdtfVisibility;
 
-    explicit iTranslator();
+    explicit iTranslator(sc_memory_context *context);
     virtual ~iTranslator();
 
     /*! Translate specified file into memory
@@ -95,6 +95,8 @@ protected:
     tStringAddrMap mSysIdtfAddrs;
     //! Map that contains local identifiers
     tStringAddrMap mLocalIdtfAddrs;
+    //! Pointer to memory context
+    sc_memory_context *mContext;
 };
 
 /*! Interface for translators factory
@@ -107,7 +109,7 @@ public:
 
     /*! Function to create translator instance
      */
-    virtual iTranslator* createInstance() = 0;
+    virtual iTranslator* createInstance(sc_memory_context *ctx) = 0;
 
     //! Returns supported file extension
     virtual const std::string& getFileExt() const = 0;

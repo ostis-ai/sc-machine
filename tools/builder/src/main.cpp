@@ -21,6 +21,7 @@ along with OSTIS.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include "builder.h"
+#include <iostream>
 
 #include <boost/program_options.hpp>
 

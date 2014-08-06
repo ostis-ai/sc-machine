@@ -29,7 +29,7 @@ along with OSTIS.  If not, see <http://www.gnu.org/licenses/>.
  * @return If sc-helper initialized without any errors, then return SC_OK;
  * otherwise returns SC_ERROR
  */
-sc_result sc_helper_init();
+sc_result sc_helper_init(sc_memory_context const * ctx);
 
 /*! Shuts down sc-helper.
  * @remarks This function need to be called once at the end of sc-helper usage

@@ -25,10 +25,14 @@ along with OSTIS. If not, see <http://www.gnu.org/licenses/>.
 #include "merge_keynodes.h"
 #include "merge_agents.h"
 
+sc_memory_context * s_default_ctx = 0;
+
 sc_event *event_question_set_cantorization;
 
 sc_result initialize()
 {
+    s_default_ctx = sc_memory_context_new(sc_access_levels_make(8, 8));
+
     if (merge_keynodes_initialize() != SC_RESULT_OK)
         return SC_RESULT_ERROR;
 
@@ -42,6 +46,7 @@ sc_result initialize()
 sc_result shutdown()
 {
     sc_event_destroy(event_question_set_cantorization);
+    sc_memory_context_free(s_default_ctx);
 
     return SC_RESULT_OK;
 }

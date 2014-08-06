@@ -26,6 +26,8 @@ along with OSTIS. If not, see <http://www.gnu.org/licenses/>.
 #include "search_agents.h"
 #include "search_keynodes.h"
 
+sc_memory_context * s_default_ctx = 0;
+
 
 sc_event *event_question_search_all_output_arcs;
 sc_event *event_question_search_all_input_arcs;
@@ -43,6 +45,8 @@ sc_event *event_question_search_links_of_relation_connected_with_element;
 
 sc_result initialize()
 {
+    s_default_ctx = sc_memory_context_new(sc_access_levels_make(8, 8));
+
     if (search_keynodes_initialize() != SC_RESULT_OK)
         return SC_RESULT_ERROR;
 
@@ -117,6 +121,8 @@ sc_result shutdown()
         sc_event_destroy(event_question_search_all_superclasses_in_quasybinary_relation);
     if (event_question_search_links_of_relation_connected_with_element)
         sc_event_destroy(event_question_search_links_of_relation_connected_with_element);
+
+    sc_memory_context_free(s_default_ctx);
 
     return SC_RESULT_OK;
 }

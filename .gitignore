@@ -1,0 +1,9 @@
+bin
+build
+scripts/redis*
+
+tools/builder/src/parser/
+
+sc-machine.json
+manifest.json
+*.user

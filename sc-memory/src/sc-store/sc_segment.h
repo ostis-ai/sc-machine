@@ -29,27 +29,24 @@ along with OSTIS.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <glib.h>
 
+//! Structure to store segment locks
+typedef struct _sc_segment_section
+{
+    const sc_memory_context *ctx_lock;      // pointer to context, that locked section
+    sc_int empty_count;                     // use 32-bit value for atomic operations
+    sc_int empty_offset;                    // use 32-bit value for atomic operations
+    sc_int internal_lock;                   //
+    sc_int lock_count;                      // count of recursive locks
+} sc_segment_section;
+
 /*! Structure for segment storing
  */
-//typedef struct _sc_array sc_array;
 struct _sc_segment
 {
-    sc_element elements[SEGMENT_SIZE];
-    sc_bool has_empty_slots;
-#if USE_SEGMENT_EMPTY_SLOT_BUFFER
-    sc_uint empty_slot_buff[SEGMENT_EMPTY_BUFFER_SIZE]; // works like a stack
-    sc_uint empty_slot_buff_head;
-#else
-    sc_uint empty_slot; // index empty slot in segment
-#endif
-    sc_addr_seg num; // number of this segment in memory
-
-#ifdef G_ATOMIC_LOCK_FREE
-    sc_uint32 locks[SC_CONCURRENCY_LEVEL];
-#else
-    GMutex locks[SC_CONCURRENCY_LEVEL];
-#endif
-
+    sc_element elements[SC_SEGMENT_ELEMENTS_COUNT];
+    sc_addr_seg num;            // number of this segment in memory
+    sc_segment_section sections[SC_CONCURRENCY_LEVEL];
+    sc_uint elements_count;   // number of sc-element in the segment
 };
 
 /*! Create new segment with specified size.
@@ -59,28 +56,8 @@ sc_segment* sc_segment_new(sc_addr_seg num);
 
 void sc_segment_free(sc_segment *segment);
 
-
-/*! Append element into segment at first empty position.
- * @param segment Pointer to segment, that will be contains element
- * @param element Pointer to sc-element data (will be just copied)
- * @param offset Pointer that used to return offset in segment for appended element
- * @return Return pointer to created sc-element data. If element wasn't append into segment, then return 0.
- */
-sc_element* sc_segment_append_element(sc_segment *segment,
-                                      sc_element *element,
-                                      sc_uint16 *offset);
-
-/*! Get sc-element pointer by id
- * @param seg Pointer to segment where we need to get element
- * @param id sc-element id in segment
- * @return Pointer to sc-element with specified id
- */
-sc_element* sc_segment_get_element(sc_segment *seg, sc_uint id);
-
-/*! Remove element from specified segment
- */
-void sc_segment_remove_element(sc_segment *segment,
-                               sc_uint el_id);
+//! Remove element from specified segment. @note sc-element need to be locked
+void sc_segment_erase_element(sc_segment *seg, sc_uint16 offset);
 
 //! Returns number of stored sc-elements in segment
 sc_uint32 sc_segment_get_elements_count(sc_segment *seg);
@@ -90,7 +67,7 @@ sc_uint32 sc_segment_get_elements_count(sc_segment *seg);
  * @param seg Poitnet to segment to delete garbage
  * @returns Returns number of freed cells
  */
-sc_uint32 sc_segment_free_garbage(sc_segment *seg, sc_uint32 oldest_time_stamp);
+//sc_uint32 sc_segment_free_garbage(sc_segment *seg, sc_uint32 oldest_time_stamp);
 
 /*! Check if segment has any empty slots
  * @param segment Pointer to segment for check
@@ -98,30 +75,43 @@ sc_uint32 sc_segment_free_garbage(sc_segment *seg, sc_uint32 oldest_time_stamp);
  */
 sc_bool sc_segment_has_empty_slot(sc_segment *segment);
 
+//! Collects segment elements statistics
+void sc_segment_collect_elements_stat(const sc_memory_context *ctx, sc_segment * seg, sc_stat * stat);
 
-//! Update information in segment about first empty slot
-void sc_segment_update_empty_slot(sc_segment *segment);
 
 // ---------------------- locks --------------------------
+/*! Function to lock any empty element
+ * @param seg Pointer to segment where to lock empty element
+ * @param offset Poitner to container for locked element offset
+ * @returns Returns pointer to locked empty element. If there are no any empty element found,
+ * then returns 0
+ */
+sc_element* sc_segment_lock_empty_element(const sc_memory_context *ctx, sc_segment *seg, sc_uint16 *offset);
+
 /*! Function to lock specified element in segment
  * @param seg Pointer to segment to lock element
  * @param offset Offset of element to lock
- * @param lock_write Flag to lock element for write. It it has true value, then trying to lock for writing;
- * otherwise locking for reading
+ * @returns Returns pointer to locked sc-element
  */
-void sc_segment_lock_element(sc_segment *seg, sc_uint16 offset, sc_bool lock_write);
+sc_element* sc_segment_lock_element(const sc_memory_context *ctx, sc_segment *seg, sc_uint16 offset);
+
+//! Try to lock sc-element with maximum attempts
+sc_element* sc_segment_lock_element_try(const sc_memory_context *ctx, sc_segment *seg, sc_uint16 offset, sc_uint16 max_attempts);
 
 /*! Function to unlock specified element in segment
  * @param seg Pointer to segment for element unlocking
  * @param offset Offset of sc-element in segment
  */
-void sc_segment_unlock_element(sc_segment *seg, sc_uint16 offset);
+void sc_segment_unlock_element(const sc_memory_context *ctx, sc_segment *seg, sc_uint16 offset);
 
-#if USE_SEGMENT_EMPTY_SLOT_BUFFER
-void sc_segment_update_empty_slot_buffer(sc_segment *segment);
-#else
-void sc_segment_update_empty_slot_value(sc_segment *segment);
-#endif
-
+//! Locks segment section. This funciton doesn't returns control, while part wouldn't be locked.
+void sc_segment_section_lock(const sc_memory_context *ctx, sc_segment_section *section);
+/*! Try to lock segment section. If section already locked, then this function returns false; otherwise it locks section and returns true
+ * @params section Pointer to segment section to lock
+ * @param max_attempts Maximum number of lock attempts
+ */
+sc_bool sc_segment_section_lock_try(const sc_memory_context *ctx, sc_segment_section *section, sc_uint16 max_attempts);
+//! Unlocks specified segment part
+void sc_segment_section_unlock(const sc_memory_context *ctx, sc_segment_section *section);
 
 #endif

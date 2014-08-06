@@ -25,6 +25,8 @@ along with OSTIS.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <QObject>
 
+#include "sctpTypes.h"
+
 
 class QTimer;
 class QMutex;
@@ -36,9 +38,6 @@ struct sStatItem
     quint64 mNodeCount; // amount of all nodes
     quint64 mArcCount; // amount of all arcs
     quint64 mLinksCount; // amount of all links
-    quint64 mLiveNodeCount; // amount of live nodes
-    quint64 mLiveArcCount; // amount of live arcs
-    quint64 mLiveLinkCount; // amount of live links
     quint64 mEmptyCount; // amount of empty sc-elements
     quint64 mConnectionsCount;  // amount of collected clients
     quint64 mCommandsCount; // amount of processed commands (it includes commands with errors)
@@ -91,7 +90,7 @@ public:
     virtual ~sctpStatistic();
 
     //! Initialize statistics
-    bool initialize(const QString &statDirPath, quint32 updatePeriod);
+    bool initialize(const QString &statDirPath, quint32 updatePeriod, sc_memory_context *context);
     //! Shutdown statistics
     void shutdown();
 
@@ -123,6 +122,9 @@ protected:
     QMutex *mDataMutex;
     //! Pointer to mutex, that used to synchronize filesystem routines
     QMutex *mFsMutex;
+
+    //! Pointer to default memory context
+    sc_memory_context *mContext;
 
 public:
     void clientConnected();

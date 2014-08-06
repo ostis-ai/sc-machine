@@ -34,8 +34,8 @@ struct _sc_event
     sc_addr element;
     //! Event type
     sc_event_type type;
-    //! Event id
-    sc_uint32 id;
+    //! Pointer to user data
+    sc_pointer data;
     //! Pointer to callback function, that calls, when event emited
     fEventCallback callback;
     //! Pointer to callback function, that calls, when subscribed sc-element deleted

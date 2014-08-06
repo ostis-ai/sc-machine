@@ -37,10 +37,10 @@ typedef struct _sc_version sc_version;
 
 extern const sc_version SC_VERSION;
 
-/*! Function compares to versions \p a and \p b.
- * @returns If version \p a less then version \p b, then returns -1.
- * If version \p a more then version \p b, then returns 1.
- * If version \p a and \p b equal, then returns 0.
+/*! Function compares to versions @p a and @p b.
+ * @returns If version @p a less then version @p b, then returns -1.
+ * If version @p a more then version @p b, then returns 1.
+ * If version @p a and @p b equal, then returns 0.
  * @note This function ignores suffixes
  */
 sc_int32 sc_version_compare(const sc_version *a, const sc_version *b);

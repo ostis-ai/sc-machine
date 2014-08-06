@@ -56,7 +56,8 @@ sc_result ui_translate_command_resolve_arguments(sc_addr cmd_addr, sc_addr *outp
     sc_bool source_found = SC_FALSE;
 
     // resolve output format
-    it = sc_iterator5_f_a_a_a_f_new(cmd_addr,
+    it = sc_iterator5_f_a_a_a_f_new(s_default_ctx,
+                                    cmd_addr,
                                     sc_type_arc_pos_const_perm,
                                     sc_type_node | sc_type_const,
                                     sc_type_arc_pos_const_perm,
@@ -74,7 +75,8 @@ sc_result ui_translate_command_resolve_arguments(sc_addr cmd_addr, sc_addr *outp
         return SC_RESULT_ERROR;
 
     // resolve input construction
-    it = sc_iterator5_f_a_a_a_f_new(cmd_addr,
+    it = sc_iterator5_f_a_a_a_f_new(s_default_ctx,
+                                    cmd_addr,
                                     sc_type_arc_pos_const_perm,
                                     sc_type_node | sc_type_const,
                                     sc_type_arc_pos_const_perm,
@@ -104,9 +106,9 @@ sc_bool ui_translate_resolve_system_identifier(sc_addr el, String &sys_idtf)
     sc_char buffer[32];
 
     sys_idtf = "";
-    if (sc_helper_get_system_identifier(el, &sys_idtf_addr) == SC_RESULT_OK)
+    if (sc_helper_get_system_identifier(s_default_ctx, el, &sys_idtf_addr) == SC_RESULT_OK)
     {
-        if (sc_memory_get_link_content(sys_idtf_addr, &idtf_stream) == SC_RESULT_OK)
+        if (sc_memory_get_link_content(s_default_ctx, sys_idtf_addr, &idtf_stream) == SC_RESULT_OK)
         {
             sc_stream_get_length(idtf_stream, &idtf_length);
             while (sc_stream_eof(idtf_stream) == SC_FALSE)

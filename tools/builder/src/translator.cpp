@@ -28,7 +28,8 @@ along with OSTIS.  If not, see <http://www.gnu.org/licenses/>.
 
 iTranslator::tStringAddrMap iTranslator::msGlobalIdtfAddrs = iTranslator::tStringAddrMap();
 
-iTranslator::iTranslator()
+iTranslator::iTranslator(sc_memory_context *context)
+    : mContext(context)
 {
 }
 
@@ -56,10 +57,10 @@ void iTranslator::generateFormatInfo(sc_addr addr, const String &ext)
     else
     {
         // try to find by system identifier
-        if (sc_helper_find_element_by_system_identifier(fmtStr.c_str(), fmtStr.size(), &fmt_addr) != SC_RESULT_OK)
+        if (sc_helper_find_element_by_system_identifier(mContext, fmtStr.c_str(), fmtStr.size(), &fmt_addr) != SC_RESULT_OK)
         {
-            fmt_addr = sc_memory_node_new(sc_type_node_class | sc_type_const);
-            sc_helper_set_system_identifier(fmt_addr, fmtStr.c_str(), fmtStr.size());
+            fmt_addr = sc_memory_node_new(mContext, sc_type_node_class | sc_type_const);
+            sc_helper_set_system_identifier(mContext, fmt_addr, fmtStr.c_str(), fmtStr.size());
             mSysIdtfAddrs[fmtStr] = fmt_addr;
         }
     }
@@ -75,17 +76,17 @@ void iTranslator::generateFormatInfo(sc_addr addr, const String &ext)
     else
     {
         // try to find by system identifier
-        if (sc_helper_find_element_by_system_identifier(nrel_format_str.c_str(), nrel_format_str.size(), &nrel_format_addr) != SC_RESULT_OK)
+        if (sc_helper_find_element_by_system_identifier(mContext, nrel_format_str.c_str(), nrel_format_str.size(), &nrel_format_addr) != SC_RESULT_OK)
         {
-            nrel_format_addr = sc_memory_node_new(sc_type_node_norole | sc_type_const);
-            sc_helper_set_system_identifier(nrel_format_addr, nrel_format_str.c_str(), nrel_format_str.size());
+            nrel_format_addr = sc_memory_node_new(mContext, sc_type_node_norole | sc_type_const);
+            sc_helper_set_system_identifier(mContext, nrel_format_addr, nrel_format_str.c_str(), nrel_format_str.size());
             mSysIdtfAddrs[nrel_format_str] = nrel_format_addr;
         }
     }
 
     // connect sc-link with format
-    sc_addr arc_addr = sc_memory_arc_new(sc_type_arc_common | sc_type_const, addr, fmt_addr);
-    sc_memory_arc_new(sc_type_arc_pos_const_perm, nrel_format_addr, arc_addr);
+    sc_addr arc_addr = sc_memory_arc_new(mContext, sc_type_arc_common | sc_type_const, addr, fmt_addr);
+    sc_memory_arc_new(mContext, sc_type_arc_pos_const_perm, nrel_format_addr, arc_addr);
 }
 
 

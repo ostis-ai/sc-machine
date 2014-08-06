@@ -29,7 +29,7 @@ class GwfTranslator : public iTranslator
     friend class GwfTranslatorFactory;
 
 protected:
-    explicit GwfTranslator();
+    explicit GwfTranslator(sc_memory_context *ctx);
     virtual ~GwfTranslator();
 
 
@@ -64,7 +64,7 @@ public:
     static const String EXTENSION;
 
     //! @copydoc iTranslatorFactory::createInstance
-    iTranslator* createInstance();
+    iTranslator* createInstance(sc_memory_context *ctx);
 
     //! @copydoc iTranslatorFactory::getFileExt
     const String& getFileExt() const;

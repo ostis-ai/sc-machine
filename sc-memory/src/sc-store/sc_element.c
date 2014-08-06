@@ -31,7 +31,7 @@ void sc_element_set_type(sc_element *element,
                          sc_type type)
 {
     g_assert(element != 0);
-    element->type = type;
+    element->flags.type = type;
 }
 
 

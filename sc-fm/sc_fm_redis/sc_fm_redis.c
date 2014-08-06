@@ -28,6 +28,7 @@ along with OSTIS.  If not, see <http://www.gnu.org/licenses/>.
 #include <memory.h>
 
 GMutex redis_mutex;
+GMutex redis_command_mutex;
 
 GThread *ping_thread;
 gboolean ping_thread_running;
@@ -38,6 +39,9 @@ struct _redis_data
 };
 
 typedef struct _redis_data redis_data;
+
+#define LOCK_COMMAND() { g_mutex_lock(&redis_command_mutex); }
+#define UNLOCK_COMMAND() { g_mutex_unlock(&redis_command_mutex); }
 
 
 // --- ping thread ---
@@ -134,6 +138,8 @@ redisReply* do_sync_redis_command(redisContext **context, const char *format, ..
 
 sc_result sc_redis_engine_create_stream(const sc_fm_engine *engine, const sc_check_sum *check_sum, sc_uint8 flags, sc_stream **stream)
 {
+    LOCK_COMMAND();
+
     redis_data *data = (redis_data*)engine->storage_info;
     g_assert(data);
 
@@ -145,72 +151,87 @@ sc_result sc_redis_engine_create_stream(const sc_fm_engine *engine, const sc_che
     *stream = 0;
     *stream = sc_stream_redis_new(data->context, key, flags, &redis_mutex);
 
+    UNLOCK_COMMAND();
+
     return *stream == 0 ? SC_RESULT_ERROR : SC_RESULT_OK;
 }
 
 sc_result sc_redis_engine_addr_ref_append(const sc_fm_engine *engine, sc_addr addr, const sc_check_sum *check_sum)
 {
+    LOCK_COMMAND();
+
     redis_data *data = (redis_data*)engine->storage_info;
     g_assert(data);
 
+    sc_result res = SC_RESULT_OK;
     redisReply *reply = do_sync_redis_command(&data->context, "LLEN link:%b:addrs", check_sum->data, check_sum->len);
     if (reply == 0 || reply->type == REDIS_REPLY_ERROR)
     {
-        freeReplyObject(reply);
-        return SC_RESULT_ERROR;
+        res = SC_RESULT_ERROR;
+        goto clean;
     }
 
     int old_size = reply->integer;
     reply = do_sync_redis_command(&data->context, "LPUSH link:%b:addrs %b", check_sum->data, check_sum->len, &addr, sizeof(addr));
 
     if (reply == 0)
-        return SC_RESULT_ERROR;
-
-    if ((reply->type == REDIS_REPLY_INTEGER) && (old_size < reply->integer))
     {
-        freeReplyObject(reply);
-        return SC_RESULT_OK;
+        res = SC_RESULT_ERROR;
+        goto clean;
     }
-    freeReplyObject(reply);
 
+    clean:
+    {
+        if (reply)
+            freeReplyObject(reply);
+        UNLOCK_COMMAND();
+    }
 
-    return SC_RESULT_ERROR;
+    return res;
 }
 
 sc_result sc_redis_engine_addr_ref_remove(const sc_fm_engine *engine, sc_addr addr, const sc_check_sum *check_sum)
 {
+    LOCK_COMMAND();
+
     redis_data *data = (redis_data*)engine->storage_info;
     g_assert(data);
 
     redisReply *reply = do_sync_redis_command(&data->context, "LREM link:%b:addrs 0 %b", check_sum->data, check_sum->len, &addr, sizeof(addr));
-
+    sc_result res = SC_RESULT_ERROR;
     if (reply == 0)
-        return SC_RESULT_ERROR;
+        goto clean;
 
     if (reply->type == REDIS_REPLY_INTEGER)
     {
-        freeReplyObject(reply);
-        return SC_RESULT_OK;
+        res = SC_RESULT_OK;
+        goto clean;
     }
-    freeReplyObject(reply);
 
-    return (reply->type != REDIS_REPLY_INTEGER) ? SC_RESULT_ERROR : SC_RESULT_OK;
+    clean:
+    {
+        if (reply)
+            freeReplyObject(reply);
+        UNLOCK_COMMAND();
+    }
+
+    return res;
 }
 
 sc_result sc_redis_engine_find(const sc_fm_engine *engine, const sc_check_sum *check_sum, sc_addr **result, sc_uint32 *result_count)
 {
+    LOCK_COMMAND();
+
     redis_data *data = (redis_data*)engine->storage_info;
     g_assert(data);
 
+    sc_result res = SC_RESULT_ERROR;
     redisReply *reply = do_sync_redis_command(&data->context, "LRANGE link:%b:addrs 0 -1", check_sum->data, check_sum->len);
     if (reply == 0)
-        return SC_RESULT_ERROR;
+        goto clean;
 
     if (reply->type == REDIS_REPLY_ERROR)
-    {
-        freeReplyObject(reply);
-        return SC_RESULT_ERROR;
-    }
+        goto clean;
 
     if ((reply->type == REDIS_REPLY_ARRAY) && (reply->elements > 0))
     {
@@ -220,44 +241,63 @@ sc_result sc_redis_engine_find(const sc_fm_engine *engine, const sc_check_sum *c
         for (i = 0; i < reply->elements; ++i)
             memcpy(&((*result)[i]), reply->element[i]->str, sizeof(sc_addr));
 
-        freeReplyObject(reply);
-        return SC_RESULT_OK;
+        res = SC_RESULT_OK;
+        goto clean;
     }
-    freeReplyObject(reply);
 
-    return SC_RESULT_ERROR;
+    clean:
+    {
+        if (reply)
+            freeReplyObject(reply);
+        UNLOCK_COMMAND();
+    }
+
+    return res;
 }
 
 sc_result sc_redis_engine_clear(const sc_fm_engine *engine)
 {
+    LOCK_COMMAND();
+
     redis_data *data = (redis_data*)engine->storage_info;
     g_assert(data);
 
     redisReply *reply = do_sync_redis_command(&data->context, "FLUSHDB");
-
+    sc_result res = SC_RESULT_OK;
     if (reply == 0)
-        return SC_RESULT_ERROR;
+    {
+        res = SC_RESULT_ERROR;
+        goto clean;
+    }
 
-    freeReplyObject(reply);
+    clean:
+    {
+        if (reply)
+            freeReplyObject(reply);
+        UNLOCK_COMMAND();
+    }
 
-    return SC_RESULT_OK;
+    return res;
 }
 
 sc_result sc_redis_engine_save(const sc_fm_engine *engine)
 {
+    LOCK_COMMAND();
     redis_data *data = (redis_data*)engine->storage_info;
     g_assert(data);
 
     redisReply *reply = do_sync_redis_command(&data->context, "SAVE");
-
     sc_result result = (reply == 0 || reply->type == REDIS_REPLY_ERROR) ? SC_RESULT_ERROR : SC_RESULT_OK;
     freeReplyObject(reply);
 
+    UNLOCK_COMMAND();
     return result;
 }
 
 sc_result sc_redis_engine_destroy_data(const sc_fm_engine *engine)
 {
+    LOCK_COMMAND();
+
     redis_data *data = (redis_data*)engine->storage_info;
 
     g_assert(data);
@@ -272,6 +312,7 @@ sc_result sc_redis_engine_destroy_data(const sc_fm_engine *engine)
     g_free(data);
 
     sc_redis_config_shutdown();
+    UNLOCK_COMMAND();
 
     return SC_RESULT_OK;
 }
@@ -282,7 +323,6 @@ sc_fm_engine* initialize(const sc_char* repo_path)
 
     redis_data *data = g_new0(redis_data, 1);
 
-    g_mutex_init(&redis_mutex);
     data->context = connectToRedis();
 
     if (data->context == 0 || data->context->err)
@@ -313,4 +353,9 @@ sc_fm_engine* initialize(const sc_char* repo_path)
     engine->funcDestroyData = &sc_redis_engine_destroy_data;
 
     return engine;
+}
+
+sc_result shutdown()
+{
+    return SC_RESULT_OK;
 }

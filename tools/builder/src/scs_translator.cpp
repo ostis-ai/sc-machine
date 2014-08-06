@@ -39,7 +39,8 @@ long long SCsTranslator::msAutoIdtfCount = 0;
 
 // ------------------------
 
-SCsTranslator::SCsTranslator()
+SCsTranslator::SCsTranslator(sc_memory_context *ctx)
+    : iTranslator(ctx)
 {
 }
 
@@ -419,7 +420,7 @@ sc_addr SCsTranslator::resolveScAddr(sElement *el)
                 else
                 {
                     // resolve system identifier
-                    sc_result res = sc_helper_find_element_by_system_identifier(el->idtf.c_str(), el->idtf.size(), &addr);
+                    sc_result res = sc_helper_find_element_by_system_identifier(mContext, el->idtf.c_str(), el->idtf.size(), &addr);
                     if (res == SC_RESULT_OK)
                         mSysIdtfAddrs[el->idtf] = addr;
                 }
@@ -430,8 +431,8 @@ sc_addr SCsTranslator::resolveScAddr(sElement *el)
     if (SC_ADDR_IS_NOT_EMPTY(addr))
     {
         sc_type t = 0;
-        if (sc_memory_get_element_type(addr, &t) == SC_RESULT_OK)
-            sc_memory_change_element_subtype(addr, ~sc_type_element_mask & (el->type | t));
+        if (sc_memory_get_element_type(mContext, addr, &t) == SC_RESULT_OK)
+            sc_memory_change_element_subtype(mContext, addr, ~sc_type_element_mask & (el->type | t));
 
         el->addr = addr;
         return addr;
@@ -447,7 +448,7 @@ sc_addr SCsTranslator::resolveScAddr(sElement *el)
         switch (_getIdentifierVisibility(el->idtf))
         {
         case IdtfSystem:
-            sc_helper_set_system_identifier(addr, el->idtf.c_str(), el->idtf.size());
+            sc_helper_set_system_identifier(mContext, addr, el->idtf.c_str(), el->idtf.size());
             mSysIdtfAddrs[el->idtf] = addr;
             break;
         case IdtfLocal:
@@ -469,10 +470,10 @@ sc_addr SCsTranslator::createScAddr(sElement *el)
     SC_ADDR_MAKE_EMPTY(addr);
 
     if (el->type & sc_type_node)
-        addr = sc_memory_node_new(el->type);
+        addr = sc_memory_node_new(mContext, el->type);
     else if (el->type & sc_type_link)
     {
-        addr = sc_memory_link_new();
+        addr = sc_memory_link_new(mContext);
 
         // setup link content
         if (el->link_is_file)
@@ -483,7 +484,7 @@ sc_addr SCsTranslator::createScAddr(sElement *el)
                 sc_stream *stream = sc_stream_file_new(file_path.c_str(), SC_STREAM_READ);
                 if (stream)
                 {
-                    sc_memory_set_link_content(addr, stream);
+                    sc_memory_set_link_content(mContext, addr, stream);
                     sc_stream_free(stream);
                 } else
                 {
@@ -503,7 +504,7 @@ sc_addr SCsTranslator::createScAddr(sElement *el)
         } else
         {
             sc_stream *stream = sc_stream_memory_new(el->link_data.c_str(), el->link_data.size(), SC_STREAM_READ, SC_FALSE);
-            sc_memory_set_link_content(addr, stream);
+            sc_memory_set_link_content(mContext, addr, stream);
             sc_stream_free(stream);
         }
 
@@ -525,7 +526,7 @@ sc_addr SCsTranslator::createScAddr(sElement *el)
         assert(el->arc_src && el->arc_trg);
         if (SC_ADDR_IS_EMPTY(el->arc_src->addr) || SC_ADDR_IS_EMPTY(el->arc_trg->addr))
             return addr;
-        addr = sc_memory_arc_new(el->type, el->arc_src->addr, el->arc_trg->addr);
+        addr = sc_memory_arc_new(mContext, el->type, el->arc_src->addr, el->arc_trg->addr);
     }
 
     el->addr = addr;
@@ -684,7 +685,7 @@ sElement* SCsTranslator::parseElementTree(pANTLR3_BASE_TREE tree, const String *
             // parse data
             if (!data.empty())
             {
-                SCsTranslator translator;
+                SCsTranslator translator(mContext);
                 translator.mParams.autoFormatInfo = autoFormatInfo;
                 translator.mParams.fileName = fileName;
                 translator.processString(data);
@@ -994,9 +995,9 @@ SCsTranslatorFactory::~SCsTranslatorFactory()
 
 }
 
-iTranslator* SCsTranslatorFactory::createInstance()
+iTranslator* SCsTranslatorFactory::createInstance(sc_memory_context *ctx)
 {
-    return new SCsTranslator();
+    return new SCsTranslator(ctx);
 }
 
 const String& SCsTranslatorFactory::getFileExt() const

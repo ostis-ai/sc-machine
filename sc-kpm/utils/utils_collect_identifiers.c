@@ -21,6 +21,8 @@ along with OSTIS. If not, see <http://www.gnu.org/licenses/>.
  */
 #include "utils_collect_identifiers.h"
 #include "utils_keynodes.h"
+#include "utils.h"
+
 #include <glib.h>
 
 const char str_group_redis[] = "redis";
@@ -143,25 +145,25 @@ sc_result agent_append_idtf(const sc_event *event, sc_addr arg)
     sc_uint8 *data = 0;
     sc_uint32 data_len = 0, read_bytes = 0;
 
-    if (sc_memory_get_arc_end(arg, &arc) != SC_RESULT_OK)
+    if (sc_memory_get_arc_end(s_default_ctx, arg, &arc) != SC_RESULT_OK)
         return SC_RESULT_ERROR;
 
-    if (sc_memory_get_arc_begin(arg, &n) != SC_RESULT_OK)
+    if (sc_memory_get_arc_begin(s_default_ctx, arg, &n) != SC_RESULT_OK)
         return SC_RESULT_ERROR;
 
     // get element
-    if (sc_memory_get_arc_begin(arc, &el) != SC_RESULT_OK)
+    if (sc_memory_get_arc_begin(s_default_ctx, arc, &el) != SC_RESULT_OK)
         return SC_RESULT_ERROR;
 
-    if (sc_helper_check_arc(keynode_system_element, el, sc_type_arc_pos_const_perm) == SC_TRUE)
+    if (sc_helper_check_arc(s_default_ctx, keynode_system_element, el, sc_type_arc_pos_const_perm) == SC_TRUE)
         return SC_RESULT_OK;
 
     // get sc-link
-    if (sc_memory_get_arc_end(arc, &link) != SC_RESULT_OK)
+    if (sc_memory_get_arc_end(s_default_ctx, arc, &link) != SC_RESULT_OK)
         return SC_RESULT_ERROR;
 
     // get content of sc-link
-    if (sc_memory_get_link_content(link, &content) != SC_RESULT_OK)
+    if (sc_memory_get_link_content(s_default_ctx, link, &content) != SC_RESULT_OK)
         return SC_RESULT_ERROR;
 
     // get length of data

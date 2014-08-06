@@ -1,0 +1,20 @@
+[Network]
+Port = 55770
+[Repo]
+Path = ~/develop/sc-machine/bin/repo
+[Extensions]
+Directory = ~/develop/sc-machine/bin/extensions
+[Stat]
+UpdatePeriod = 1800
+Path = /tmp/sctp_stat
+
+##### sc-memory
+[memory]
+max_loaded_segments = 10
+save_period = 30
+
+[filememory]
+engine = redis
+
+[kpm]
+max_threads = 32

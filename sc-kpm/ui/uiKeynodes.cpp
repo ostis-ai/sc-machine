@@ -92,11 +92,11 @@ sc_addr ui_keynode_arg[UI_ARG_COUNT];
 
 
 #define resolve_keynode(keynode) \
-    if (sc_helper_resolve_system_identifier(keynode##_str, &keynode) == SC_FALSE) \
+    if (sc_helper_resolve_system_identifier(s_default_ctx, keynode##_str, &keynode) == SC_FALSE) \
     {\
         g_warning("Can't find element with system identifier: %s", keynode##_str); \
-        keynode = sc_memory_node_new(0); \
-        if (sc_helper_set_system_identifier(keynode, keynode##_str, strlen(keynode##_str)) != SC_RESULT_OK) \
+        keynode = sc_memory_node_new(s_default_ctx, 0); \
+        if (sc_helper_set_system_identifier(s_default_ctx, keynode, keynode##_str, strlen(keynode##_str)) != SC_RESULT_OK) \
             return SC_FALSE; \
         g_message("Created element with system identifier: %s", keynode##_str); \
     }
@@ -134,10 +134,10 @@ sc_bool initialize_keynodes()
     {
         std::stringstream ss;
         ss << "rrel_" << (i + 1);
-        if (sc_helper_resolve_system_identifier(ss.str().c_str(), &(ui_keynode_rrel_order[i])) == SC_FALSE)
+        if (sc_helper_resolve_system_identifier(s_default_ctx, ss.str().c_str(), &(ui_keynode_rrel_order[i])) == SC_FALSE)
         {
-            ui_keynode_rrel_order[i] = sc_memory_node_new(0);
-            if (sc_helper_set_system_identifier(ui_keynode_rrel_order[i], ss.str().c_str(), ss.str().size()) != SC_RESULT_OK)
+            ui_keynode_rrel_order[i] = sc_memory_node_new(s_default_ctx, 0);
+            if (sc_helper_set_system_identifier(s_default_ctx, ui_keynode_rrel_order[i], ss.str().c_str(), ss.str().size()) != SC_RESULT_OK)
                 return SC_FALSE;
         }
     }
@@ -146,10 +146,10 @@ sc_bool initialize_keynodes()
     {
         std::stringstream ss;
         ss << "ui_arg_" << (i + 1);
-        if (sc_helper_resolve_system_identifier(ss.str().c_str(), &(ui_keynode_arg[i])) == SC_FALSE)
+        if (sc_helper_resolve_system_identifier(s_default_ctx, ss.str().c_str(), &(ui_keynode_arg[i])) == SC_FALSE)
         {
-            ui_keynode_rrel_order[i] = sc_memory_node_new(0);
-            if (sc_helper_set_system_identifier(ui_keynode_rrel_order[i], ss.str().c_str(), ss.str().size()) != SC_RESULT_OK)
+            ui_keynode_rrel_order[i] = sc_memory_node_new(s_default_ctx, 0);
+            if (sc_helper_set_system_identifier(s_default_ctx, ui_keynode_rrel_order[i], ss.str().c_str(), ss.str().size()) != SC_RESULT_OK)
                 return SC_FALSE;
         }
     }

@@ -136,6 +136,14 @@ void _sc_event_queue_item_remove(gpointer _item, gpointer _event)
         item->event = 0;
 }
 
+void _sc_event_queue_item_remove_by_addr(gpointer _item, gpointer _addr)
+{
+    sc_event_queue_item *item = (sc_event_queue_item*)_item;
+
+    if (SC_ADDR_LOCAL_TO_INT(item->arg) == GPOINTER_TO_UINT(_addr))
+        item->event = 0;
+}
+
 void sc_event_queue_remove(sc_event_queue *queue, sc_event *event)
 {
     g_assert(queue != 0);
@@ -150,4 +158,14 @@ void sc_event_queue_remove(sc_event_queue *queue, sc_event *event)
 
     g_rec_mutex_unlock(&queue->mutex);
 
+}
+
+void sc_event_queue_remove_element(sc_event_queue *queue, sc_addr addr)
+{
+    g_assert(queue != 0);
+    g_rec_mutex_lock(&queue->mutex);
+
+    g_queue_foreach(queue->queue, _sc_event_queue_item_remove_by_addr, (gpointer)SC_ADDR_LOCAL_TO_INT(addr));
+
+    g_rec_mutex_unlock(&queue->mutex);
 }

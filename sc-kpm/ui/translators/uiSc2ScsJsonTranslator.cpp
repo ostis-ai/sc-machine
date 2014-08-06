@@ -45,25 +45,27 @@ void uiSc2ScsTranslator::runImpl()
 
     bool first = true;
     // get command arguments (keywords)
-    sc_iterator5 *it5 = sc_iterator5_a_a_f_a_f_new(sc_type_node | sc_type_const,
+    sc_iterator5 *it5 = sc_iterator5_a_a_f_a_f_new(s_default_ctx,
+                                                   sc_type_node | sc_type_const,
                                                    sc_type_arc_common | sc_type_const,
                                                    mInputConstructionAddr,
                                                    sc_type_arc_pos_const_perm,
                                                    keynode_question_nrel_answer);
     if (sc_iterator5_next(it5) == SC_TRUE)
     {
-        sc_iterator3 *it3 = sc_iterator3_f_a_a_new(sc_iterator5_value(it5, 0),
+        sc_iterator3 *it3 = sc_iterator3_f_a_a_new(s_default_ctx,
+                                                   sc_iterator5_value(it5, 0),
                                                    sc_type_arc_pos_const_perm,
                                                    0);
         while (sc_iterator3_next(it3) == SC_TRUE)
         {
             sc_addr addr = sc_iterator3_value(it3, 2);
 
-            if (sc_helper_check_arc(mInputConstructionAddr, addr, sc_type_arc_pos_const_perm) != SC_TRUE)
+            if (sc_helper_check_arc(s_default_ctx, mInputConstructionAddr, addr, sc_type_arc_pos_const_perm) != SC_TRUE)
                 continue;
 
             sc_type type;
-            sc_memory_get_element_type(addr, &type);
+            sc_memory_get_element_type(s_default_ctx, addr, &type);
 
             if (!first)
                 ss << ",";
@@ -92,13 +94,13 @@ void uiSc2ScsTranslator::runImpl()
 
         sc_addr arc_beg, arc_end;
         // get begin and end arc elements
-        if (sc_memory_get_arc_begin(arc_addr, &arc_beg) != SC_RESULT_OK)
+        if (sc_memory_get_arc_begin(s_default_ctx, arc_addr, &arc_beg) != SC_RESULT_OK)
             continue; //! TODO logging
 
         if (isNeedToTranslate(arc_beg) == false)
             continue; //! TODO logging
 
-        if (sc_memory_get_arc_end(arc_addr, &arc_end) != SC_RESULT_OK)
+        if (sc_memory_get_arc_end(s_default_ctx, arc_addr, &arc_end) != SC_RESULT_OK)
             continue; //! TODO logging
 
         if (isNeedToTranslate(arc_end) == false)
@@ -109,12 +111,12 @@ void uiSc2ScsTranslator::runImpl()
         if (itTmp != mObjects.end())
             beg_type = itTmp->second;
         else
-            sc_memory_get_element_type(arc_beg, &beg_type);
+            sc_memory_get_element_type(s_default_ctx, arc_beg, &beg_type);
         itTmp = mObjects.find(arc_end);
         if (itTmp != mObjects.end())
             end_type = itTmp->second;
         else
-            sc_memory_get_element_type(arc_end, &end_type);
+            sc_memory_get_element_type(s_default_ctx, arc_end, &end_type);
 
         if (!first)
             ss << ", ";
@@ -150,7 +152,7 @@ sc_result uiSc2ScsTranslator::ui_translate_sc2scs(const sc_event *event, sc_addr
 {
     sc_addr cmd_addr, input_addr, format_addr;
 
-    if (sc_memory_get_arc_end(arg, &cmd_addr) != SC_RESULT_OK)
+    if (sc_memory_get_arc_end(s_default_ctx, arg, &cmd_addr) != SC_RESULT_OK)
         return SC_RESULT_ERROR;
 
     if (ui_check_cmd_type(cmd_addr, keynode_command_translate_from_sc) != SC_RESULT_OK)

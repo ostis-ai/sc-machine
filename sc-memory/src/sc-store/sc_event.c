@@ -25,14 +25,10 @@ along with OSTIS.  If not, see <http://www.gnu.org/licenses/>.
 #include "sc_event/sc_event_private.h"
 #include "sc_event/sc_event_queue.h"
 
-#if SC_INTERNAL_THREADS_SUPPORT
-    GStaticMutex events_table_mutex = G_STATIC_MUTEX_INIT;
-    #define EVENTS_TABLE_LOCK g_static_mutex_lock(&events_table_mutex);
-    #define EVENTS_TABLE_UNLOCK g_static_mutex_unlock(&events_table_mutex);
-#else
-    #define EVENTS_TABLE_LOCK
-    #define EVENTS_TABLE_UNLOCK
-#endif
+GMutex events_table_mutex;
+#define EVENTS_TABLE_LOCK g_mutex_lock(&events_table_mutex);
+#define EVENTS_TABLE_UNLOCK g_mutex_unlock(&events_table_mutex);
+
 
 // Pointer to hash table that contains events
 GHashTable *events_table = 0;
@@ -106,15 +102,14 @@ sc_result remove_event_from_table(sc_event *event)
     return SC_RESULT_OK;
 }
 
-
-sc_event* sc_event_new(sc_addr el, sc_event_type type, sc_uint32 id, fEventCallback callback, fDeleteCallback delete_callback)
+sc_event* sc_event_new(sc_addr el, sc_event_type type, sc_pointer data, fEventCallback callback, fDeleteCallback delete_callback)
 {
     sc_event *event = g_new0(sc_event, 1);
     event->element = el;
     event->type = type;
-    event->id = id;
     event->callback = callback;
     event->delete_callback = delete_callback;
+    event->data = data;
 
     g_assert(callback != nullptr);
 
@@ -145,20 +140,28 @@ sc_result sc_event_notify_element_deleted(sc_addr element)
     GSList *element_events_list = 0;
     sc_event *event = 0;
 
+    sc_event_queue_remove_element(event_queue, element);
+
+    EVENTS_TABLE_LOCK
     // do nothing, if there are no registered events
     if (events_table == nullptr)
-        return SC_RESULT_OK;
+        goto result;
 
     // lookup for all registered to specified sc-elemen events
     element_events_list = (GSList*)g_hash_table_lookup(events_table, (gconstpointer)&element);
 
-    // destoroy events
+    // destroy events
     while (element_events_list != nullptr)
     {
         event = (sc_event*)element_events_list->data;
         if (event->delete_callback != nullptr)
             event->delete_callback(event);
         element_events_list = g_slist_delete_link(element_events_list, element_events_list);
+    }
+
+    result:
+    {
+        EVENTS_TABLE_UNLOCK;
     }
 
     return SC_RESULT_OK;
@@ -169,9 +172,11 @@ sc_result sc_event_emit(sc_addr el, sc_event_type type, sc_addr arg)
     GSList *element_events_list = 0;
     sc_event *event = 0;
 
+    EVENTS_TABLE_LOCK;
+
     // if table is empty, then do nothing
     if (events_table == nullptr)
-        return SC_RESULT_OK;
+        goto result;
 
     // lookup for all registered to specified sc-elemen events
     element_events_list = (GSList*)g_hash_table_lookup(events_table, (gconstpointer)&el);
@@ -188,6 +193,11 @@ sc_result sc_event_emit(sc_addr el, sc_event_type type, sc_addr arg)
         element_events_list = element_events_list->next;
     }
 
+    result:
+    {
+        EVENTS_TABLE_UNLOCK;
+    }
+
     return SC_RESULT_OK;
 }
 
@@ -197,10 +207,10 @@ sc_event_type sc_event_get_type(const sc_event *event)
     return event->type;
 }
 
-sc_uint32 sc_event_get_id(const sc_event *event)
+sc_pointer sc_event_get_data(const sc_event *event)
 {
     g_assert(event != 0);
-    return event->id;
+    return event->data;
 }
 
 sc_addr sc_event_get_element(const sc_event *event)
@@ -212,6 +222,7 @@ sc_addr sc_event_get_element(const sc_event *event)
 // --------
 sc_bool sc_events_initialize()
 {
+    //g_mutex_init(&events_table_mutex);
     event_queue = sc_event_queue_new();
 
     return SC_TRUE;
@@ -220,6 +231,7 @@ sc_bool sc_events_initialize()
 void sc_events_shutdown()
 {
     sc_event_queue_destroy_wait(event_queue);
+    //g_mutex_clear(&events_table_mutex);
     event_queue = 0;
 }
 
