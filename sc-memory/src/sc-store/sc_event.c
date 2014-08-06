@@ -140,6 +140,8 @@ sc_result sc_event_notify_element_deleted(sc_addr element)
     GSList *element_events_list = 0;
     sc_event *event = 0;
 
+    sc_event_queue_remove_element(event_queue, element);
+
     EVENTS_TABLE_LOCK
     // do nothing, if there are no registered events
     if (events_table == nullptr)
