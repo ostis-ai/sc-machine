@@ -70,7 +70,7 @@ void sc_segment_erase_element(sc_segment *seg, sc_uint16 offset)
 
     g_assert( seg != (sc_segment*)0 );
     g_assert( offset < SC_SEGMENT_ELEMENTS_COUNT );
-    seg->elements[offset].flags.type = 0;
+    memset(&seg->elements[offset], 0, sizeof(sc_element));
 
     sc_segment_section *section = &(seg->sections[offset % SC_CONCURRENCY_LEVEL]);
     g_atomic_int_inc(&section->empty_count);

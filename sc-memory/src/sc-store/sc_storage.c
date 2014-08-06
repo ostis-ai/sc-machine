@@ -321,21 +321,23 @@ sc_result sc_storage_element_free(const sc_memory_context *ctx, sc_addr addr)
             // lock begin and end elements of arc
             sc_element *el2 = 0;
             p_addr = GUINT_TO_POINTER(SC_ADDR_LOCAL_TO_INT(el->arc.begin));
-            if (g_hash_table_lookup(lock_table, p_addr) == nullptr)
+            if ((el2 = g_hash_table_lookup(lock_table, p_addr)) == nullptr)
             {
                 STORAGE_CHECK_CALL(sc_storage_element_lock(ctx, el->arc.begin, &el2));
-                g_assert(el2 != 0);
                 g_hash_table_insert(lock_table, p_addr, el2);
             }
+            g_assert(el2 != 0);
+            el2->first_out_arc = el->arc.next_out_arc;
 
             p_addr = GUINT_TO_POINTER(SC_ADDR_LOCAL_TO_INT(el->arc.end));
-            if (g_hash_table_lookup(lock_table, p_addr) == nullptr)
+            if ((el2 = g_hash_table_lookup(lock_table, p_addr)) == nullptr)
             {
                 el2 = 0;
                 STORAGE_CHECK_CALL(sc_storage_element_lock(ctx, el->arc.end, &el2));
-                g_assert(el2 != 0);
                 g_hash_table_insert(lock_table, p_addr, el2);
             }
+            g_assert(el2 != 0);
+            el2->first_in_arc = el->arc.next_in_arc;
 
             // lock next/prev arcs in out/in lists
             if (SC_ADDR_IS_NOT_EMPTY(el->arc.prev_out_arc))
