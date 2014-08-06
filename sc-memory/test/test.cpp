@@ -611,14 +611,14 @@ int main(int argc, char *argv[])
     g_timer_stop(timer);
     printf("Segment loading speed: %f seg/sec\n", sc_storage_get_segments_count() / g_timer_elapsed(timer, 0));
 
-    test1();
+    //test1();
     //test5();
     //test6();
 
     //test7();
     //test8();
     //test3();
-    item = 0;
+    //item = 0;
 
     while (item != 0)
     {
