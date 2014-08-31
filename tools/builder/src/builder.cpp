@@ -70,6 +70,7 @@ bool Builder::run(const BuilderParams &params)
     {
         float progress = (float)++done / (float)mFileSet.size();
         std::cout << "[" << (int) (progress * 100.f) << "%] " << *it << std::endl;
+        std::cout.flush();
         try
         {
             processFile(*it);
