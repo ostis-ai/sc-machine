@@ -141,7 +141,7 @@ sc_element* sc_segment_lock_empty_element(const sc_memory_context *ctx, sc_segme
         sc_uint32 i;
         for (i = 0; i < SC_CONCURRENCY_LEVEL; ++i)
         {
-            sc_uint32 sec_id = (ctx->concurrency_index + i) % SC_CONCURRENCY_LEVEL;
+            sc_uint32 sec_id = (ctx->id + i) % SC_CONCURRENCY_LEVEL;
             sc_segment_section * section = &seg->sections[sec_id];
 
             if (g_atomic_int_get(&section->empty_count) == 0)

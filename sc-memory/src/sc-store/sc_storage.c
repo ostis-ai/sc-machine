@@ -66,7 +66,7 @@ void _sc_segment_cache_unlock(const sc_memory_context *ctx)
 
 void _sc_segment_cache_append(const sc_memory_context * ctx, sc_segment * seg)
 {
-    sc_int32 i, idx = CONCURRENCY_TO_CACHE_IDX(ctx->concurrency_index);
+    sc_int32 i, idx = CONCURRENCY_TO_CACHE_IDX(ctx->id);
     for (i = 0; i < SC_SEGMENT_CACHE_SIZE; ++i)
     {
         if (g_atomic_pointer_compare_and_exchange(&segments_cache[(idx + i) % SC_SEGMENT_CACHE_SIZE], 0, seg) == TRUE)
@@ -79,7 +79,7 @@ void _sc_segment_cache_append(const sc_memory_context * ctx, sc_segment * seg)
 
 void _sc_segment_cache_remove(const sc_memory_context *ctx, sc_segment *seg)
 {
-    sc_int32 i, idx = CONCURRENCY_TO_CACHE_IDX(ctx->concurrency_index);
+    sc_int32 i, idx = CONCURRENCY_TO_CACHE_IDX(ctx->id);
     for (i = 0; i < SC_SEGMENT_CACHE_SIZE; ++i)
     {
         if (g_atomic_pointer_compare_and_exchange(&segments_cache[(idx + i) % SC_SEGMENT_CACHE_SIZE], seg, 0) == TRUE)
@@ -123,7 +123,7 @@ sc_segment* _sc_segment_cache_get(const sc_memory_context *ctx)
     sc_segment *seg = 0;
     if (g_atomic_int_get(&segments_cache_count) > 0)
     {
-        sc_int32 i, idx = CONCURRENCY_TO_CACHE_IDX(ctx->concurrency_index);
+        sc_int32 i, idx = CONCURRENCY_TO_CACHE_IDX(ctx->id);
         for (i = 0; i < SC_SEGMENT_CACHE_SIZE; ++i)
         {
             seg = g_atomic_pointer_get(&segments_cache[(idx + i) % SC_SEGMENT_CACHE_SIZE]);
