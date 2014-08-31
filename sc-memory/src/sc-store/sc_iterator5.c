@@ -66,7 +66,6 @@ sc_iterator5* sc_iterator5_new(const sc_memory_context *ctx, sc_iterator5_type t
     it->params[4] = p5;
 
     it->type = type;
-    it->time_stamp = sc_storage_get_time_stamp();
     it->ctx = ctx;
 
     // create main cycle iterator
@@ -108,8 +107,6 @@ sc_iterator5* sc_iterator5_new(const sc_memory_context *ctx, sc_iterator5_type t
         it->results[0] = p1.addr;
         break;
     };
-
-    sc_iterator_add_used_timestamp(it->time_stamp);
 
     return it;
 }
@@ -220,7 +217,6 @@ sc_iterator5* sc_iterator5_a_a_f_a_a_new(const sc_memory_context *ctx, sc_type p
 void sc_iterator5_free(sc_iterator5 *it)
 {
     g_assert(it != 0);
-    sc_iterator_remove_used_timestamp(it->time_stamp);
 
     if (it->it_attr != nullptr)
         sc_iterator3_free(it->it_attr);

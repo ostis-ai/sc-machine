@@ -45,7 +45,6 @@ sc_uint32 segments_num = 0;
 const sc_uint16 s_max_storage_lock_attempts = 100;
 const sc_uint16 s_max_storage_cache_attempts = 10;
 
-sc_uint32 storage_time_stamp = 1;
 sc_bool is_initialized = SC_FALSE;
 
 sc_memory_context *segments_cache_lock_ctx = 0;
@@ -166,8 +165,6 @@ sc_bool sc_storage_initialize(const char *path, sc_bool clear)
     if (clear == SC_FALSE)
         sc_fs_storage_read_from_path(segments, &segments_num);
 
-    storage_time_stamp = 1;
-
     is_initialized = SC_TRUE;
 
     memset(&(segments_cache[0]), 0, sizeof(sc_segment*) * SC_SEGMENT_CACHE_SIZE);
@@ -224,9 +221,6 @@ sc_element* sc_storage_append_el_into_segments(const sc_memory_context *ctx, sc_
     g_assert( addr != 0 );
     SC_ADDR_MAKE_EMPTY(*addr);
 
-    if (sc_iterator_has_any_timestamp())
-        g_atomic_int_inc(&storage_time_stamp);
-
     if (g_atomic_int_get(&segments_num) >= sc_config_get_max_loaded_segments())
         return nullptr;
 
@@ -261,7 +255,6 @@ sc_addr sc_storage_element_new(const sc_memory_context *ctx, sc_type type)
 
     memset(&el, 0, sizeof(el));
     el.flags.type = type;
-    el.create_time_stamp = g_atomic_int_get(&storage_time_stamp);
 
     res = sc_storage_append_el_into_segments(ctx, &el, &addr);
     sc_storage_element_unlock(ctx, addr);
@@ -534,8 +527,6 @@ sc_result sc_storage_element_free(const sc_memory_context *ctx, sc_addr addr)
     g_slist_free(remove_list);
     g_hash_table_destroy(remove_table);
     g_hash_table_destroy(lock_table);
-
-    g_atomic_int_inc(&storage_time_stamp);
 
     sc_event_emit(addr, SC_EVENT_REMOVE_ELEMENT, addr);
 
@@ -836,11 +827,6 @@ sc_result sc_storage_get_elements_stat(const sc_memory_context *ctx, sc_stat *st
     }
 
     return SC_TRUE;
-}
-
-sc_uint sc_storage_get_time_stamp()
-{
-    return g_atomic_int_get(&storage_time_stamp);
 }
 
 unsigned int sc_storage_get_segments_count()

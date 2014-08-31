@@ -33,22 +33,4 @@ along with OSTIS.  If not, see <http://www.gnu.org/licenses/>.
  * iterators.
  */
 
-/*! Append timestamp, that used in iterator.
- * @param time_stamp Timestamp that need to be added
- */
-void sc_iterator_add_used_timestamp(sc_uint32 time_stamp);
-
-/*! Remove timestamp, that was used for iterator creation.
- * @param time_stamp Timestamp that need to be removed
- */
-void sc_iterator_remove_used_timestamp(sc_uint32 time_stamp);
-
-/*! Return oldest timestamp from list
- * This function return 0, when sequence is empty @see sc_iterator_has_any_timestamp
- */
-sc_uint32 sc_iterator_get_oldest_timestamp();
-
-//! Check if there are any used timestamp in list
-sc_bool sc_iterator_has_any_timestamp();
-
 #endif // SC_ITERATOR_H

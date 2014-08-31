@@ -168,9 +168,6 @@ sc_uint sc_storage_get_segments_count();
  */
 sc_result sc_storage_get_elements_stat(const sc_memory_context *ctx, sc_stat *stat);
 
-//! Returns time stamp value
-sc_uint sc_storage_get_time_stamp();
-
 /*! Updates segments.
  * Calculate empty slots. Delete garbage
  * @note Only for internal usage
