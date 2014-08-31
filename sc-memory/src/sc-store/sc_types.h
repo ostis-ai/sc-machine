@@ -51,6 +51,9 @@ typedef unsigned char sc_uchar;
 
 typedef void* sc_pointer;
 
+#define sc_min(a, b) ((a) < (b) ? (a) : (b))
+#define sc_max(a, b) ((a) > (b) ? (a) : (b))
+
 // booleans
 #define SC_FALSE (0)
 #define SC_TRUE (!SC_FALSE)
@@ -151,27 +154,34 @@ typedef sc_uint16 sc_type;
 #define sc_lock_read        0x8
 
 // access levels
-#define sc_access_level_max     16
-#define sc_access_level_min     0
+#define SC_ACCESS_LVL_MAX_VALUE     15
+#define SC_ACCESS_LVL_MIN_VALUE     0
 
-#define sc_access_level_read_mask   0x0f
-#define sc_access_level_write_mask  0xf0
+#define SC_ACCESS_LVL_RMASK   0xf0
+#define SC_ACCESS_LVL_WMASK   0x0f
 
-#define sc_access_levels_get_read(levels) (levels & sc_access_level_read_mask)
-#define sc_access_levels_get_write(levels) ((levels & sc_access_level_write_mask) >> 4)
+#define sc_access_lvl_get_read(levels) ((levels & SC_ACCESS_LVL_RMASK) >> 4)
+#define sc_access_lvl_get_write(levels) (levels & SC_ACCESS_LVL_WMASK)
 
-#define sc_access_levels_make(read, write) (sc_uint8)(((read) << 4) | (write))
+#define sc_access_lvl_make(read, write) (sc_uint8)((write) | ((read) << 4))
+#define sc_access_lvl_min(a, b)  (sc_min(((a) & SC_ACCESS_LVL_RMASK), ((b) & SC_ACCESS_LVL_RMASK)) | sc_min(((a) & SC_ACCESS_LVL_WMASK), ((b) & SC_ACCESS_LVL_WMASK)))
+#define sc_access_lvl_max(a, b)  (sc_max(((a) & SC_ACCESS_LVL_RMASK), ((b) & SC_ACCESS_LVL_RMASK)) | sc_max(((a) & SC_ACCESS_LVL_WMASK), ((b) & SC_ACCESS_LVL_WMASK)))
+#define sc_access_lvl_check_read(c, e) (sc_access_lvl_get_read(c) >= sc_access_lvl_get_read(e))
+#define sc_access_lvl_check_write(c, e) (sc_access_lvl_get_write(c) >= sc_access_lvl_get_write(e))
 
 // results
 enum _sc_result
 {
-    SC_RESULT_ERROR = 0,               // unknown error
-    SC_RESULT_OK = 1,                  // no any error
-    SC_RESULT_ERROR_INVALID_PARAMS,    // invalid function parameters error
-    SC_RESULT_ERROR_INVALID_TYPE,      // invalied type error
-    SC_RESULT_ERROR_IO,                // input/output error
-    SC_RESULT_ERROR_INVALID_STATE,     // invalid state of processed object
-    SC_RESULT_ERROR_NOT_FOUND          // item not found
+    SC_RESULT_ERROR = 0,                // unknown error
+    SC_RESULT_OK = 1,                   // no any error
+    SC_RESULT_ERROR_INVALID_PARAMS = 3, // invalid function parameters error
+    SC_RESULT_ERROR_INVALID_TYPE = 5,   // invalied type error
+    SC_RESULT_ERROR_IO = 7,             // input/output error
+    SC_RESULT_ERROR_INVALID_STATE = 9,  // invalid state of processed object
+    SC_RESULT_ERROR_NOT_FOUND = 11,     // item not found
+    SC_RESULT_ERROR_NO_WRITE_RIGHTS = 2,// no ritghs to change or delete object
+    SC_RESULT_ERROR_NO_READ_RIGHTS = 4, // no ritghs to read object
+    SC_RESULT_ERROR_NO_RIGHTS = SC_RESULT_ERROR_NO_WRITE_RIGHTS | SC_RESULT_ERROR_NO_READ_RIGHTS
 };
 
 // contents
@@ -205,27 +215,12 @@ struct _sc_stat
     sc_uint32 segments_count;
 };
 
-typedef struct _sc_access_levels_split
-{
-    sc_uint8 read:4;
-    sc_uint8 write:4;
-} sc_access_levels_split;
-
-struct _sc_access_levels
-{
-    union
-    {
-        sc_access_levels_split levels;
-        sc_uint8 value;
-    };
-};
-
 
 typedef struct _sc_check_sum sc_check_sum;
 typedef struct _sc_arc  sc_arc;
 typedef struct _sc_content sc_content;
 typedef struct _sc_arc_info sc_arc_info;
-typedef struct _sc_access_levels sc_access_levels;
+typedef sc_uint8 sc_access_levels;
 typedef struct _sc_element_locks sc_element_locks;
 typedef struct _sc_element_flags sc_element_flags;
 typedef struct _sc_memory_context sc_memory_context;

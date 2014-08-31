@@ -31,7 +31,7 @@ sc_event *event_question_set_cantorization;
 
 sc_result initialize()
 {
-    s_default_ctx = sc_memory_context_new(sc_access_levels_make(8, 8));
+    s_default_ctx = sc_memory_context_new(sc_access_lvl_make(8, 8));
 
     if (merge_keynodes_initialize() != SC_RESULT_OK)
         return SC_RESULT_ERROR;

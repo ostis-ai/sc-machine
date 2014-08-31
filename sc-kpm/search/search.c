@@ -45,7 +45,7 @@ sc_event *event_question_search_links_of_relation_connected_with_element;
 
 sc_result initialize()
 {
-    s_default_ctx = sc_memory_context_new(sc_access_levels_make(8, 8));
+    s_default_ctx = sc_memory_context_new(sc_access_lvl_make(8, 8));
 
     if (search_keynodes_initialize() != SC_RESULT_OK)
         return SC_RESULT_ERROR;

@@ -36,9 +36,10 @@ along with OSTIS.  If not, see <http://www.gnu.org/licenses/>.
 #include <glib.h>
 
 sc_memory_context * s_memory_default_ctx = 0;
-sc_uint32 s_concurrency_index = 0;
-
-GRecMutex mutex;
+sc_uint16 s_context_id_last = 0;
+sc_uint16 s_context_id_count = 0;
+GHashTable *s_context_hash_table = 0;
+GMutex s_concurrency_mutex;
 
 void sc_memory_params_clear(sc_memory_params *params)
 {
@@ -52,6 +53,8 @@ sc_memory_context* sc_memory_initialize(const sc_memory_params *params)
 {
     sc_config_initialize(params->config_file);
 
+    s_context_hash_table = g_hash_table_new(g_direct_hash, g_direct_equal);
+
     char *v_str = sc_version_string_new(&SC_VERSION);
     g_message("Version: %s", v_str);
     sc_version_string_free(v_str);
@@ -63,9 +66,7 @@ sc_memory_context* sc_memory_initialize(const sc_memory_params *params)
     if (sc_storage_initialize(params->repo_path, params->clear) != SC_TRUE)
         return 0;
 
-    g_rec_mutex_init(&mutex);
-
-    s_memory_default_ctx = sc_memory_context_new(sc_access_levels_make(16, 16));
+    s_memory_default_ctx = sc_memory_context_new(sc_access_lvl_make(16, 16));
 
     if (sc_helper_init(s_memory_default_ctx) != SC_RESULT_OK)
         goto error;
@@ -95,7 +96,9 @@ sc_memory_context* sc_memory_initialize(const sc_memory_params *params)
     }
 
     error:
-    sc_memory_context_free(s_memory_default_ctx);
+    {
+        sc_memory_context_free(s_memory_default_ctx);
+    }
     return s_memory_default_ctx = 0;
 }
 
@@ -103,8 +106,6 @@ sc_memory_context* sc_memory_initialize(const sc_memory_params *params)
 
 void sc_memory_shutdown(sc_bool save_state)
 {
-
-
     sc_events_stop_processing();
 
     sc_ext_shutdown();
@@ -114,25 +115,68 @@ void sc_memory_shutdown(sc_bool save_state)
 
     sc_helper_shutdown();
 
-    g_rec_mutex_clear(&mutex);
     sc_storage_shutdown(save_state);
 
     sc_memory_context_free(s_memory_default_ctx);
     s_memory_default_ctx = 0;
 
-    s_concurrency_index = 0;
+    /// todo: clear contexts
+    g_hash_table_destroy(s_context_hash_table);
+    s_context_hash_table = 0;
+    s_context_id_last = 0;
+    g_assert(s_context_id_count == 0);
 }
 
 sc_memory_context* sc_memory_context_new(sc_uint8 levels)
 {
     sc_memory_context *ctx = g_new0(sc_memory_context, 1);
-    ctx->access_levels.value = levels;
-    ctx->concurrency_index = s_concurrency_index++;
+    ctx->access_levels = levels;
+
+    // setup concurency id
+    g_mutex_lock(&s_concurrency_mutex);
+    if (s_context_id_count >= G_MAXUINT16)
+        goto error;
+
+    sc_uint32 index = (s_context_id_last + 1) % G_MAXUINT16;
+    while (index != s_context_id_last && g_hash_table_lookup(s_context_hash_table, GINT_TO_POINTER(index)))
+        index = (index + 1) % G_MAXUINT16;
+
+    if (index != s_context_id_last)
+    {
+        ctx->id = index;
+        s_context_id_last = index;
+        g_hash_table_insert(s_context_hash_table, GINT_TO_POINTER(ctx->id), (gpointer)ctx);
+    } else
+        goto error;
+
+    s_context_id_count++;
+    goto result;
+
+    error:
+    {
+        g_free(ctx);
+        ctx = 0;
+    }
+
+    result:
+    g_mutex_unlock(&s_concurrency_mutex);
+
     return ctx;
 }
 
 void sc_memory_context_free(sc_memory_context *ctx)
 {
+    g_assert(ctx != 0);
+
+    g_mutex_lock(&s_concurrency_mutex);
+
+    sc_memory_context *c = g_hash_table_lookup(s_context_hash_table, GINT_TO_POINTER(ctx->id));
+    g_assert(c == ctx);
+    g_hash_table_remove(s_context_hash_table, GINT_TO_POINTER(ctx->id));
+    s_context_id_count--;
+
+    g_mutex_unlock(&s_concurrency_mutex);
+
     g_free(ctx);
 }
 
@@ -199,6 +243,16 @@ sc_result sc_memory_get_link_content(sc_memory_context const * ctx, sc_addr addr
 sc_result sc_memory_find_links_with_content(sc_memory_context const * ctx, sc_stream const * stream, sc_addr **result, sc_uint32 *result_count)
 {
     return sc_storage_find_links_with_content(ctx, stream, result, result_count);
+}
+
+sc_result sc_memory_set_element_access_levels(sc_memory_context const * ctx, sc_addr addr, sc_access_levels access_levels, sc_access_levels * new_value)
+{
+    return sc_storage_set_access_levels(ctx, addr, access_levels, new_value);
+}
+
+sc_result sc_memory_get_element_access_levels(sc_memory_context const * ctx, sc_addr addr, sc_access_levels * result)
+{
+    return sc_storage_get_access_levels(ctx, addr, result);
 }
 
 sc_result sc_memory_stat(sc_memory_context const * ctx, sc_stat *stat)

@@ -28,7 +28,7 @@ along with OSTIS.  If not, see <http://www.gnu.org/licenses/>.
 
 struct _sc_memory_context
 {
-    sc_uint32 concurrency_index;
+    sc_uint16 id;
     sc_access_levels access_levels;
 };
 

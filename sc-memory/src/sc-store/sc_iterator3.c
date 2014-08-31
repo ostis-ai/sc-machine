@@ -102,10 +102,7 @@ sc_iterator3* sc_iterator3_new(const sc_memory_context *ctx, sc_iterator_type ty
     it->params[2] = p3;
 
     it->type = type;
-    it->time_stamp = sc_storage_get_time_stamp();
     it->ctx = ctx;
-
-    sc_iterator_add_used_timestamp(it->time_stamp);
 
     return it;
 }
@@ -113,7 +110,6 @@ sc_iterator3* sc_iterator3_new(const sc_memory_context *ctx, sc_iterator_type ty
 void sc_iterator3_free(sc_iterator3 *it)
 {
     g_assert(it != 0);
-    sc_iterator_remove_used_timestamp(it->time_stamp);
     g_free(it);
 }
 
@@ -164,7 +160,6 @@ sc_bool _sc_iterator3_f_a_a_next(sc_iterator3 *it)
         sc_addr next_out_arc = el->arc.next_out_arc;
         sc_addr arc_end = el->arc.end;
         sc_type arc_type = el->flags.type;
-        sc_uint32 create_time = el->create_time_stamp;
 
         STORAGE_CHECK_CALL(sc_storage_element_unlock(it->ctx, arc_addr));
 
@@ -172,8 +167,7 @@ sc_bool _sc_iterator3_f_a_a_next(sc_iterator3 *it)
         sc_storage_get_element_type(it->ctx, arc_end, &el_type);
 
         /// @todo Add access levels
-        if ((create_time <= it->time_stamp) &&
-            (sc_iterator_compare_type(arc_type, it->params[1].type)) &&
+        if ((sc_iterator_compare_type(arc_type, it->params[1].type)) &&
             (sc_iterator_compare_type(el_type, it->params[2].type))
            )
         {
@@ -224,15 +218,13 @@ sc_bool _sc_iterator3_f_a_f_next(sc_iterator3 *it)
         while (el == nullptr)
             STORAGE_CHECK_CALL(sc_storage_element_lock_try(it->ctx, arc_addr, s_max_iterator_lock_attempts, &el));
         sc_type arc_type = el->flags.type;
-        sc_uint32 create_time = el->create_time_stamp;
         sc_addr arc_begin = el->arc.begin;
         sc_addr next_in_arc = el->arc.next_in_arc;
 
         STORAGE_CHECK_CALL(sc_storage_element_unlock(it->ctx, arc_addr));
 
         /// @todo Add access levels
-        if ((create_time <= it->time_stamp) &&
-            SC_ADDR_IS_EQUAL(it->params[0].addr, arc_begin) &&
+        if (SC_ADDR_IS_EQUAL(it->params[0].addr, arc_begin) &&
             (sc_iterator_compare_type(arc_type, it->params[1].type))
            )
         {
@@ -280,7 +272,6 @@ sc_bool _sc_iterator3_a_a_f_next(sc_iterator3 *it)
             STORAGE_CHECK_CALL(sc_storage_element_lock_try(it->ctx, arc_addr, s_max_iterator_lock_attempts, &el));
         sc_type arc_type = el->flags.type;
         sc_addr arc_begin = el->arc.begin;
-        sc_uint32 create_time = el->create_time_stamp;
         sc_addr next_in_arc = el->arc.next_in_arc;
 
         STORAGE_CHECK_CALL(sc_storage_element_unlock(it->ctx, arc_addr));
@@ -289,8 +280,7 @@ sc_bool _sc_iterator3_a_a_f_next(sc_iterator3 *it)
         sc_storage_get_element_type(it->ctx, arc_begin, &el_type);
 
         /// @todo Add access levels
-        if ((create_time <= it->time_stamp) &&
-            (sc_iterator_compare_type(arc_type, it->params[1].type)) &&
+        if ((sc_iterator_compare_type(arc_type, it->params[1].type)) &&
             (sc_iterator_compare_type(el_type, it->params[0].type))
             )
         {

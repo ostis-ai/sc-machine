@@ -34,7 +34,7 @@ void print_storage_statistics()
 // simple test on node creation
 gpointer create_node_thread(gpointer data)
 {
-    sc_memory_context *ctx = sc_memory_context_new(sc_access_levels_make(8, 8));
+    sc_memory_context *ctx = sc_memory_context_new(sc_access_lvl_make(8, 8));
     int count = GPOINTER_TO_INT(data);
     int result = count;
     for (int i = 0; i < count; ++i)
@@ -54,7 +54,7 @@ gpointer create_node_thread(gpointer data)
 // simple arc creation test
 gpointer create_arc_thread(gpointer data)
 {
-    sc_memory_context *ctx = sc_memory_context_new(sc_access_levels_make(8, 8));
+    sc_memory_context *ctx = sc_memory_context_new(sc_access_lvl_make(8, 8));
     int count = GPOINTER_TO_INT(data);
     int result = count;
     for (int i = 0; i < count; ++i)
@@ -88,7 +88,7 @@ gpointer create_arc_thread(gpointer data)
 // simple sc-links creation
 gpointer create_link_thread(gpointer data)
 {
-    sc_memory_context *ctx = sc_memory_context_new(sc_access_levels_make(8, 8));
+    sc_memory_context *ctx = sc_memory_context_new(sc_access_lvl_make(8, 8));
     int count = GPOINTER_TO_INT(data);
     int result = count;
     for (int i = 0; i < count; ++i)

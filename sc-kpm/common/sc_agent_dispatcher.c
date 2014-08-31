@@ -51,7 +51,7 @@ void _thread_worker(gpointer data, gpointer user_data)
 
 sc_result sc_kpm_agent_dispatcher_init()
 {
-    s_context = sc_memory_context_new(sc_access_levels_make(sc_access_level_max, sc_access_level_max));
+    s_context = sc_memory_context_new(sc_access_lvl_make(SC_ACCESS_LVL_MAX_VALUE, SC_ACCESS_LVL_MAX_VALUE));
 
     resolve_keynode(s_context, keynode_abstract_agent);
 

@@ -140,7 +140,7 @@ void _sc_event_queue_item_remove_by_addr(gpointer _item, gpointer _addr)
 {
     sc_event_queue_item *item = (sc_event_queue_item*)_item;
 
-    if (SC_ADDR_LOCAL_TO_INT(item->arg) == GPOINTER_TO_UINT(_addr))
+    if ((SC_ADDR_LOCAL_TO_INT(item->arg) == GPOINTER_TO_UINT(_addr)) && (sc_event_get_type(item->event)!= SC_EVENT_REMOVE_ELEMENT))
         item->event = 0;
 }
 

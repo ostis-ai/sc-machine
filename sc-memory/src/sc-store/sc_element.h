@@ -96,7 +96,6 @@ struct _sc_element_flags
 struct _sc_element
 {
     volatile sc_element_flags flags;
-    sc_uint32 create_time_stamp;
 
     sc_addr first_out_arc;
     sc_addr first_in_arc;
