@@ -66,7 +66,7 @@ sc_memory_context* sc_memory_initialize(const sc_memory_params *params)
     if (sc_storage_initialize(params->repo_path, params->clear) != SC_TRUE)
         return 0;
 
-    s_memory_default_ctx = sc_memory_context_new(sc_access_levels_make(16, 16));
+    s_memory_default_ctx = sc_memory_context_new(sc_access_lvl_make(16, 16));
 
     if (sc_helper_init(s_memory_default_ctx) != SC_RESULT_OK)
         goto error;
@@ -130,7 +130,7 @@ void sc_memory_shutdown(sc_bool save_state)
 sc_memory_context* sc_memory_context_new(sc_uint8 levels)
 {
     sc_memory_context *ctx = g_new0(sc_memory_context, 1);
-    ctx->access_levels.value = levels;
+    ctx->access_levels = levels;
 
     // setup concurency id
     g_mutex_lock(&s_concurrency_mutex);
@@ -243,6 +243,16 @@ sc_result sc_memory_get_link_content(sc_memory_context const * ctx, sc_addr addr
 sc_result sc_memory_find_links_with_content(sc_memory_context const * ctx, sc_stream const * stream, sc_addr **result, sc_uint32 *result_count)
 {
     return sc_storage_find_links_with_content(ctx, stream, result, result_count);
+}
+
+sc_result sc_memory_set_element_access_levels(sc_memory_context const * ctx, sc_addr addr, sc_access_levels access_levels, sc_access_levels * new_value)
+{
+    return sc_storage_set_access_levels(ctx, addr, access_levels, new_value);
+}
+
+sc_result sc_memory_get_element_access_levels(sc_memory_context const * ctx, sc_addr addr, sc_access_levels * result)
+{
+    return sc_storage_get_access_levels(ctx, addr, result);
 }
 
 sc_result sc_memory_stat(sc_memory_context const * ctx, sc_stat *stat)

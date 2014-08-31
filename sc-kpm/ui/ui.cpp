@@ -38,7 +38,7 @@ sc_memory_context * s_default_ctx = 0;
 // ------------------- Module ------------------------------
 sc_result initialize()
 {
-    s_default_ctx = sc_memory_context_new(sc_access_levels_make(8, 8));
+    s_default_ctx = sc_memory_context_new(sc_access_lvl_make(8, 8));
 
     if (sc_version_compare(&SC_VERSION, &required_version) < 0)
     {

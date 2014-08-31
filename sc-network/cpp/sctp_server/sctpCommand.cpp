@@ -53,7 +53,7 @@ sctpCommand::~sctpCommand()
 
 void sctpCommand::init()
 {
-    mContext = sc_memory_context_new(sc_access_levels_make(8, 8));
+    mContext = sc_memory_context_new(sc_access_lvl_make(8, 8));
 }
 
 void sctpCommand::shutdown()
