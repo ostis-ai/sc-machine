@@ -164,6 +164,10 @@ typedef sc_uint16 sc_type;
 #define sc_access_lvl_get_write(levels) (levels & SC_ACCESS_LVL_WMASK)
 
 #define sc_access_lvl_make(read, write) (sc_uint8)((write) | ((read) << 4))
+
+#define sc_access_lvl_make_max sc_access_lvl_make(SC_ACCESS_LVL_MAX_VALUE, SC_ACCESS_LVL_MAX_VALUE)
+#define sc_access_lvl_make_min sc_access_lvl_make(SC_ACCESS_LVL_MIN_VALUE, SC_ACCESS_LVL_MIN_VALUE)
+
 #define sc_access_lvl_min(a, b)  (sc_min(((a) & SC_ACCESS_LVL_RMASK), ((b) & SC_ACCESS_LVL_RMASK)) | sc_min(((a) & SC_ACCESS_LVL_WMASK), ((b) & SC_ACCESS_LVL_WMASK)))
 #define sc_access_lvl_max(a, b)  (sc_max(((a) & SC_ACCESS_LVL_RMASK), ((b) & SC_ACCESS_LVL_RMASK)) | sc_max(((a) & SC_ACCESS_LVL_WMASK), ((b) & SC_ACCESS_LVL_WMASK)))
 #define sc_access_lvl_check_read(c, e) (sc_access_lvl_get_read(c) >= sc_access_lvl_get_read(e))
