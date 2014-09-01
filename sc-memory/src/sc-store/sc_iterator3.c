@@ -23,6 +23,7 @@ along with OSTIS.  If not, see <http://www.gnu.org/licenses/>.
 #include "sc_iterator.h"
 #include "sc_element.h"
 #include "sc_storage.h"
+#include "../sc_memory_private.h"
 
 #include <glib.h>
 
@@ -30,6 +31,10 @@ const sc_uint32 s_max_iterator_lock_attempts = 10;
 
 sc_iterator3* sc_iterator3_f_a_a_new(const sc_memory_context *ctx, sc_addr el, sc_type arc_type, sc_type end_type)
 {
+    sc_access_levels levels;
+    if (sc_storage_get_access_levels(ctx, el, &levels) != SC_RESULT_OK || !sc_access_lvl_check_read(ctx->access_levels, levels))
+        return 0;
+
     sc_iterator_param p1, p2, p3;
 
     p1.is_type = SC_FALSE;
@@ -46,6 +51,10 @@ sc_iterator3* sc_iterator3_f_a_a_new(const sc_memory_context *ctx, sc_addr el, s
 
 sc_iterator3* sc_iterator3_a_a_f_new(const sc_memory_context *ctx, sc_type beg_type, sc_type arc_type, sc_addr el)
 {
+    sc_access_levels levels;
+    if (sc_storage_get_access_levels(ctx, el, &levels) != SC_RESULT_OK || !sc_access_lvl_check_read(ctx->access_levels, levels))
+        return 0;
+
     sc_iterator_param p1, p2, p3;
 
     p1.is_type = SC_TRUE;
@@ -62,6 +71,13 @@ sc_iterator3* sc_iterator3_a_a_f_new(const sc_memory_context *ctx, sc_type beg_t
 
 sc_iterator3* sc_iterator3_f_a_f_new(const sc_memory_context *ctx, sc_addr el_beg, sc_type arc_type, sc_addr el_end)
 {
+    sc_access_levels levels;
+    if (sc_storage_get_access_levels(ctx, el_beg, &levels) != SC_RESULT_OK || !sc_access_lvl_check_read(ctx->access_levels, levels) ||
+        sc_storage_get_access_levels(ctx, el_end, &levels) != SC_RESULT_OK || !sc_access_lvl_check_read(ctx->access_levels, levels))
+    {
+        return 0;
+    }
+
     sc_iterator_param p1, p2, p3;
 
     p1.is_type = SC_FALSE;
@@ -80,18 +96,35 @@ sc_iterator3* sc_iterator3_new(const sc_memory_context *ctx, sc_iterator_type ty
 {
     // check types
     if (type > sc_iterator3_f_a_f) return (sc_iterator3*)0;
+    sc_access_levels levels;
 
     // check params with template
     switch (type)
     {
     case sc_iterator3_f_a_a:
-        if (p1.is_type || !p2.is_type || !p3.is_type) return (sc_iterator3*)0;
+        if (p1.is_type || !p2.is_type || !p3.is_type ||
+            sc_storage_get_access_levels(ctx, p1.addr, &levels) != SC_RESULT_OK || !sc_access_lvl_check_read(ctx->access_levels, levels)
+           )
+        {
+            return (sc_iterator3*)0;
+        }
         break;
     case sc_iterator3_a_a_f:
-        if (!p1.is_type || !p2.is_type || p3.is_type) return (sc_iterator3*)0;
+        if (!p1.is_type || !p2.is_type || p3.is_type ||
+            sc_storage_get_access_levels(ctx, p3.addr, &levels) != SC_RESULT_OK || !sc_access_lvl_check_read(ctx->access_levels, levels)
+           )
+        {
+            return (sc_iterator3*)0;
+        }
         break;
     case sc_iterator3_f_a_f:
-        if (p1.is_type || !p2.is_type || p3.is_type) return (sc_iterator3*)0;
+        if (p1.is_type || !p2.is_type || p3.is_type ||
+            sc_storage_get_access_levels(ctx, p1.addr, &levels) != SC_RESULT_OK || !sc_access_lvl_check_read(ctx->access_levels, levels) ||
+            sc_storage_get_access_levels(ctx, p3.addr, &levels) != SC_RESULT_OK || !sc_access_lvl_check_read(ctx->access_levels, levels)
+           )
+        {
+            return (sc_iterator3*)0;
+        }
         break;
     };
 
@@ -149,7 +182,7 @@ sc_bool _sc_iterator3_f_a_a_next(sc_iterator3 *it)
         STORAGE_CHECK_CALL(sc_storage_element_unlock(it->ctx, it->results[1]));
     }
 
-    // trying to find output arc, that created before iterator, and wasn't deleted
+    // iterate throught output arcs
     while (SC_ADDR_IS_NOT_EMPTY(arc_addr))
     {
         sc_element *el = 0;
@@ -160,15 +193,20 @@ sc_bool _sc_iterator3_f_a_a_next(sc_iterator3 *it)
         sc_addr next_out_arc = el->arc.next_out_arc;
         sc_addr arc_end = el->arc.end;
         sc_type arc_type = el->flags.type;
+        sc_access_levels arc_access = el->flags.access_levels;
+        sc_access_levels end_access;
+        if (sc_storage_get_access_levels(it->ctx, arc_end, &end_access) != SC_RESULT_OK)
+            end_access = sc_access_lvl_make_max;
 
         STORAGE_CHECK_CALL(sc_storage_element_unlock(it->ctx, arc_addr));
 
         sc_type el_type;
         sc_storage_get_element_type(it->ctx, arc_end, &el_type);
 
-        /// @todo Add access levels
-        if ((sc_iterator_compare_type(arc_type, it->params[1].type)) &&
-            (sc_iterator_compare_type(el_type, it->params[2].type))
+        if (sc_iterator_compare_type(arc_type, it->params[1].type) &&
+            sc_iterator_compare_type(el_type, it->params[2].type) &&
+            sc_access_lvl_check_read(it->ctx->access_levels, arc_access) &&
+            sc_access_lvl_check_read(it->ctx->access_levels, end_access)
            )
         {
             // store found result
@@ -220,12 +258,13 @@ sc_bool _sc_iterator3_f_a_f_next(sc_iterator3 *it)
         sc_type arc_type = el->flags.type;
         sc_addr arc_begin = el->arc.begin;
         sc_addr next_in_arc = el->arc.next_in_arc;
+        sc_access_levels arc_access = el->flags.access_levels;
 
         STORAGE_CHECK_CALL(sc_storage_element_unlock(it->ctx, arc_addr));
 
-        /// @todo Add access levels
         if (SC_ADDR_IS_EQUAL(it->params[0].addr, arc_begin) &&
-            (sc_iterator_compare_type(arc_type, it->params[1].type))
+            sc_iterator_compare_type(arc_type, it->params[1].type) &&
+            sc_access_lvl_check_read(it->ctx->access_levels, arc_access)
            )
         {
             // store found result
@@ -273,15 +312,20 @@ sc_bool _sc_iterator3_a_a_f_next(sc_iterator3 *it)
         sc_type arc_type = el->flags.type;
         sc_addr arc_begin = el->arc.begin;
         sc_addr next_in_arc = el->arc.next_in_arc;
+        sc_access_levels arc_access = el->flags.access_levels;
+        sc_access_levels begin_access;
+        if (sc_storage_get_access_levels(it->ctx, arc_begin, &begin_access) != SC_RESULT_OK)
+            begin_access = sc_access_lvl_make_max;
 
         STORAGE_CHECK_CALL(sc_storage_element_unlock(it->ctx, arc_addr));
 
         sc_type el_type = 0;
         sc_storage_get_element_type(it->ctx, arc_begin, &el_type);
 
-        /// @todo Add access levels
-        if ((sc_iterator_compare_type(arc_type, it->params[1].type)) &&
-            (sc_iterator_compare_type(el_type, it->params[0].type))
+        if (sc_iterator_compare_type(arc_type, it->params[1].type) &&
+            sc_iterator_compare_type(el_type, it->params[0].type) &&
+            sc_access_lvl_check_read(it->ctx->access_levels, arc_access) &&
+            sc_access_lvl_check_read(it->ctx->access_levels, begin_access)
             )
         {
             // store found result
