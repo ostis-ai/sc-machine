@@ -45,7 +45,7 @@ typedef sc_result (*fDeleteCallback)(const sc_event *event);
  * @return Returns pointer to created sc-event
  * @remarks Callback functions can be called from any thred, so they need to be a thread safe
  */
-sc_event* sc_event_new(sc_addr el, sc_event_type type, sc_pointer data, fEventCallback callback, fDeleteCallback delete_callback);
+sc_event* sc_event_new(sc_memory_context *ctx, sc_addr el, sc_event_type type, sc_pointer data, fEventCallback callback, fDeleteCallback delete_callback);
 
 /*! Destroys specified sc-event
  * @param event Poitner to sc-event, that need to be destroyed

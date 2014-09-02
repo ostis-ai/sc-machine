@@ -61,7 +61,7 @@ void sctpEventManager::shutdown()
     mEvents.clear();
 }
 
-bool sctpEventManager::createEvent(sc_event_type type, sc_addr addr, sctpCommand *cmd, tEventId &event)
+bool sctpEventManager::createEvent(sc_memory_context *ctx, sc_event_type type, sc_addr addr, sctpCommand *cmd, tEventId &event)
 {
     QMutexLocker locker(&mEventsMutex);
 
@@ -73,7 +73,7 @@ bool sctpEventManager::createEvent(sc_event_type type, sc_addr addr, sctpCommand
 
     evt->cmd = cmd;
     evt->id = event;
-    evt->event = sc_event_new(addr, type, UINT_TO_POINTER(event), &sctpEventManager::_eventsCallback, 0);
+    evt->event = sc_event_new(ctx, addr, type, UINT_TO_POINTER(event), &sctpEventManager::_eventsCallback, 0);
 
     Q_ASSERT(mEvents.find(evt->id) == mEvents.end());
 

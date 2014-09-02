@@ -22,8 +22,10 @@ along with OSTIS.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <glib.h>
 #include "sc_event.h"
+#include "sc_storage.h"
 #include "sc_event/sc_event_private.h"
 #include "sc_event/sc_event_queue.h"
+#include "../sc_memory_private.h"
 
 GMutex events_table_mutex;
 #define EVENTS_TABLE_LOCK g_mutex_lock(&events_table_mutex);
@@ -102,14 +104,19 @@ sc_result remove_event_from_table(sc_event *event)
     return SC_RESULT_OK;
 }
 
-sc_event* sc_event_new(sc_addr el, sc_event_type type, sc_pointer data, fEventCallback callback, fDeleteCallback delete_callback)
+sc_event* sc_event_new(sc_memory_context *ctx, sc_addr el, sc_event_type type, sc_pointer data, fEventCallback callback, fDeleteCallback delete_callback)
 {
+    sc_access_levels levels;
+    if (sc_storage_get_access_levels(ctx, el, &levels) != SC_RESULT_OK || !sc_access_lvl_check_read(ctx->access_levels, levels))
+        return 0;
+
     sc_event *event = g_new0(sc_event, 1);
     event->element = el;
     event->type = type;
     event->callback = callback;
     event->delete_callback = delete_callback;
     event->data = data;
+    event->ctx = ctx;
 
     g_assert(callback != nullptr);
 
@@ -172,6 +179,12 @@ sc_result sc_event_emit(sc_addr el, sc_event_type type, sc_addr arg)
     GSList *element_events_list = 0;
     sc_event *event = 0;
 
+    sc_access_levels el_access, arg_access;
+    if (sc_storage_get_access_levels(s_memory_default_ctx, el, &el_access) != SC_RESULT_OK)
+        el_access = sc_access_lvl_make_max;
+    if (sc_storage_get_access_levels(s_memory_default_ctx, arg, &arg_access) != SC_RESULT_OK)
+        arg_access = sc_access_lvl_make_max;
+
     EVENTS_TABLE_LOCK;
 
     // if table is empty, then do nothing
@@ -184,7 +197,7 @@ sc_result sc_event_emit(sc_addr el, sc_event_type type, sc_addr arg)
     {
         event = (sc_event*)element_events_list->data;
 
-        if (event->type == type)
+        if (event->type == type && sc_access_lvl_check_read(event->ctx->access_levels, el_access) && sc_access_lvl_check_read(event->ctx->access_levels, arg_access))
         {
             g_assert(event->callback != nullptr);
             sc_event_queue_append(event_queue, event, arg);

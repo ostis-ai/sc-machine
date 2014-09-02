@@ -75,7 +75,7 @@ public:
      * @returns If event created, then function returns true and id of a created event stores in \p eventId; otherwise
      * it returns false
      */
-    bool createEvent(sc_event_type type, sc_addr addr, sctpCommand *cmd, tEventId &event);
+    bool createEvent(sc_memory_context *ctx, sc_event_type type, sc_addr addr, sctpCommand *cmd, tEventId &event);
 
     /*! Destroys event
      * @param eventId Id of event, that need to be destroyed.

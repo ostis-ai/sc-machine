@@ -30,6 +30,8 @@ along with OSTIS.  If not, see <http://www.gnu.org/licenses/>.
  */
 struct _sc_event
 {
+    //! Pointer to context that create event
+    sc_memory_context * ctx;
     //! sc-addr of listened sc-element
     sc_addr element;
     //! Event type
