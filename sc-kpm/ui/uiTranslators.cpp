@@ -34,9 +34,9 @@ sc_event *ui_translator_sc2scn_json_event = (sc_event*)nullptr;
 
 void ui_initialize_translators()
 {
-    ui_translator_sc2scs_event = sc_event_new(keynode_command_initiated, SC_EVENT_ADD_OUTPUT_ARC, 0, uiSc2ScsTranslator::ui_translate_sc2scs, 0);
-    ui_translator_sc2scg_json_event = sc_event_new(keynode_command_initiated, SC_EVENT_ADD_OUTPUT_ARC, 0, uiSc2SCgJsonTranslator::ui_translate_sc2scg_json, 0);
-    ui_translator_sc2scn_json_event = sc_event_new(keynode_command_initiated, SC_EVENT_ADD_OUTPUT_ARC, 0, uiSc2SCnJsonTranslator::ui_translate_sc2scn, 0);
+    ui_translator_sc2scs_event = sc_event_new(s_default_ctx, keynode_command_initiated, SC_EVENT_ADD_OUTPUT_ARC, 0, uiSc2ScsTranslator::ui_translate_sc2scs, 0);
+    ui_translator_sc2scg_json_event = sc_event_new(s_default_ctx, keynode_command_initiated, SC_EVENT_ADD_OUTPUT_ARC, 0, uiSc2SCgJsonTranslator::ui_translate_sc2scg_json, 0);
+    ui_translator_sc2scn_json_event = sc_event_new(s_default_ctx, keynode_command_initiated, SC_EVENT_ADD_OUTPUT_ARC, 0, uiSc2SCnJsonTranslator::ui_translate_sc2scn, 0);
 }
 
 void ui_shutdown_translators()

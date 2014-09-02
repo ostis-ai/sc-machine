@@ -32,4 +32,6 @@ struct _sc_memory_context
     sc_access_levels access_levels;
 };
 
+extern sc_memory_context * s_memory_default_ctx;
+
 #endif

@@ -66,7 +66,7 @@ sc_memory_context* sc_memory_initialize(const sc_memory_params *params)
     if (sc_storage_initialize(params->repo_path, params->clear) != SC_TRUE)
         return 0;
 
-    s_memory_default_ctx = sc_memory_context_new(sc_access_lvl_make(16, 16));
+    s_memory_default_ctx = sc_memory_context_new(sc_access_lvl_make(SC_ACCESS_LVL_MAX_VALUE, SC_ACCESS_LVL_MAX_VALUE));
 
     if (sc_helper_init(s_memory_default_ctx) != SC_RESULT_OK)
         goto error;

@@ -222,15 +222,15 @@ sc_result utils_collect_identifiers_initialize()
 
 
     // initialize agents
-    event_add_idtf = sc_event_new(keynode_nrel_idtf, SC_EVENT_ADD_OUTPUT_ARC, 0, agent_append_idtf, (fDeleteCallback)0);
+    event_add_idtf = sc_event_new(s_default_ctx, keynode_nrel_idtf, SC_EVENT_ADD_OUTPUT_ARC, 0, agent_append_idtf, (fDeleteCallback)0);
     if (event_add_idtf == 0)
         return SC_RESULT_ERROR;
 
-    event_add_main_idtf = sc_event_new(keynode_nrel_main_idtf, SC_EVENT_ADD_OUTPUT_ARC, 0, agent_append_idtf, (fDeleteCallback)0);
+    event_add_main_idtf = sc_event_new(s_default_ctx, keynode_nrel_main_idtf, SC_EVENT_ADD_OUTPUT_ARC, 0, agent_append_idtf, (fDeleteCallback)0);
     if (event_add_main_idtf == 0)
         return SC_RESULT_ERROR;
 
-    event_add_sys_idtf = sc_event_new(keynode_nrel_system_identifier, SC_EVENT_ADD_OUTPUT_ARC, 0, agent_append_idtf, (fDeleteCallback)0);
+    event_add_sys_idtf = sc_event_new(s_default_ctx, keynode_nrel_system_identifier, SC_EVENT_ADD_OUTPUT_ARC, 0, agent_append_idtf, (fDeleteCallback)0);
     if (event_add_sys_idtf == 0)
         return SC_RESULT_ERROR;
 

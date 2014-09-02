@@ -81,6 +81,7 @@ void test_context()
 }
 
 // ---------------------------
+
 void test_access_levels()
 {
     sc_uint8 a = sc_access_lvl_make(SC_ACCESS_LVL_MIN_VALUE, SC_ACCESS_LVL_MIN_VALUE);
@@ -285,6 +286,8 @@ void test_access_levels()
     g_assert(!sc_iterator5_next(it5));
     sc_iterator5_free(it5);
 
+    /// @todo add test for access levels in events
+
     sc_memory_context_free(ctx1);
     sc_memory_context_free(ctx2);
 
@@ -306,7 +309,7 @@ int main(int argc, char *argv[])
     g_test_init(&argc, &argv, NULL);
     g_test_add_func("/common/context", test_context);
 
-    g_test_add_func("/common/access_levels", test_access_levels);
+    g_test_add_func("/common/access", test_access_levels);
     g_test_run();
 
 

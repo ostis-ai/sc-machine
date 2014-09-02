@@ -443,7 +443,7 @@ sc_result ui_initialize_commands()
     if (event_ui_start_answer_translation == nullptr)
         return SC_RESULT_ERROR;*/
 
-    event_ui_command_generate_instance = sc_event_new(keynode_command_initiated, SC_EVENT_ADD_OUTPUT_ARC, 0, ui_command_generate_instance, 0);
+    event_ui_command_generate_instance = sc_event_new(s_default_ctx, keynode_command_initiated, SC_EVENT_ADD_OUTPUT_ARC, 0, ui_command_generate_instance, 0);
     if (event_ui_command_generate_instance == nullptr)
         return SC_RESULT_ERROR;
 

@@ -657,7 +657,7 @@ eSctpErrorCode sctpCommand::processCreateEvent(quint32 cmdFlags, quint32 cmdId, 
 
 
     tEventId event = 0;
-    if (!sctpEventManager::getSingleton()->createEvent((sc_event_type)event_type, addr, this, event))
+    if (!sctpEventManager::getSingleton()->createEvent(mContext, (sc_event_type)event_type, addr, this, event))
     {
         writeResultHeader(SCTP_CMD_EVENT_CREATE, cmdId, SCTP_RESULT_FAIL, 0, outDevice);
         return SCTP_ERROR;
