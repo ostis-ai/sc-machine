@@ -174,16 +174,10 @@ sc_result sc_event_notify_element_deleted(sc_addr element)
     return SC_RESULT_OK;
 }
 
-sc_result sc_event_emit(sc_addr el, sc_event_type type, sc_addr arg)
+sc_result sc_event_emit(sc_addr el, sc_access_levels el_access, sc_event_type type, sc_addr arg)
 {
     GSList *element_events_list = 0;
     sc_event *event = 0;
-
-    sc_access_levels el_access, arg_access;
-    if (sc_storage_get_access_levels(s_memory_default_ctx, el, &el_access) != SC_RESULT_OK)
-        el_access = sc_access_lvl_make_max;
-    if (sc_storage_get_access_levels(s_memory_default_ctx, arg, &arg_access) != SC_RESULT_OK)
-        arg_access = sc_access_lvl_make_max;
 
     EVENTS_TABLE_LOCK;
 
@@ -197,7 +191,7 @@ sc_result sc_event_emit(sc_addr el, sc_event_type type, sc_addr arg)
     {
         event = (sc_event*)element_events_list->data;
 
-        if (event->type == type && sc_access_lvl_check_read(event->ctx->access_levels, el_access) && sc_access_lvl_check_read(event->ctx->access_levels, arg_access))
+        if (event->type == type && sc_access_lvl_check_read(event->ctx->access_levels, el_access))
         {
             g_assert(event->callback != nullptr);
             sc_event_queue_append(event_queue, event, arg);

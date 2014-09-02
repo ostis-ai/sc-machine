@@ -439,13 +439,11 @@ sc_result sc_storage_element_free(const sc_memory_context *ctx, sc_addr addr)
         gpointer p_addr;
         addr.offset = SC_ADDR_LOCAL_OFFSET_FROM_INT(uint_addr);
         addr.seg = SC_ADDR_LOCAL_SEG_FROM_INT(uint_addr);
+        sc_access_levels el_access = el->flags.access_levels;
 
         // delete arcs from output and input lists
         if (el->flags.type & sc_type_arc_mask)
         {
-            sc_event_emit(el->arc.begin, SC_EVENT_REMOVE_OUTPUT_ARC, addr);
-            sc_event_emit(el->arc.end, SC_EVENT_REMOVE_INPUT_ARC, addr);
-
             // output arcs
             sc_addr prev_arc = el->arc.prev_out_arc;
             sc_addr next_arc = el->arc.next_out_arc;
@@ -476,6 +474,8 @@ sc_result sc_storage_element_free(const sc_memory_context *ctx, sc_addr addr)
             }
             if (SC_ADDR_IS_EQUAL(addr, b_el->first_out_arc))
                 b_el->first_out_arc = next_arc;
+
+            sc_event_emit(el->arc.begin, b_el->flags.access_levels, SC_EVENT_REMOVE_OUTPUT_ARC, addr);
 
             if (need_unlock)
                 sc_storage_element_unlock(ctx, el->arc.begin);
@@ -509,6 +509,9 @@ sc_result sc_storage_element_free(const sc_memory_context *ctx, sc_addr addr)
             }
             if (SC_ADDR_IS_EQUAL(addr, b_el->first_in_arc))
                 e_el->first_in_arc = next_arc;
+
+            sc_event_emit(el->arc.end, e_el->flags.access_levels, SC_EVENT_REMOVE_INPUT_ARC, addr);
+
             if (need_unlock)
                 sc_storage_element_unlock(ctx, el->arc.end);
         }
@@ -516,7 +519,7 @@ sc_result sc_storage_element_free(const sc_memory_context *ctx, sc_addr addr)
         sc_segment_erase_element(g_atomic_pointer_get(&segments[addr.seg]), addr.offset);
         _sc_segment_cache_append(ctx, g_atomic_pointer_get(&segments[addr.seg]));
 
-        sc_event_emit(addr, SC_EVENT_REMOVE_ELEMENT, addr);
+        sc_event_emit(addr, el_access, SC_EVENT_REMOVE_ELEMENT, addr);
 
         // remove registered events before deletion
         sc_event_notify_element_deleted(addr);
@@ -623,9 +626,13 @@ sc_addr sc_storage_arc_new_ext(const sc_memory_context *ctx, sc_type type, sc_ad
         if (beg_el == nullptr)
             goto unlock;
 
+        sc_access_levels beg_access = beg_el->flags.access_levels;
+
         r = sc_storage_element_lock_try(ctx, end, s_max_storage_lock_attempts, &end_el);
         if (end_el == nullptr)
             goto unlock;
+
+        sc_access_levels end_access = end_el->flags.access_levels;
 
         // lock arcs to change output/input list
         sc_addr first_out_arc = beg_el->first_out_arc;
@@ -651,8 +658,8 @@ sc_addr sc_storage_arc_new_ext(const sc_memory_context *ctx, sc_type type, sc_ad
         g_assert(SC_ADDR_IS_NOT_EQUAL(addr, first_in_arc));
 
         // emit events
-        sc_event_emit(beg, SC_EVENT_ADD_OUTPUT_ARC, addr);
-        sc_event_emit(end, SC_EVENT_ADD_INPUT_ARC, addr);
+        sc_event_emit(beg, beg_access, SC_EVENT_ADD_OUTPUT_ARC, addr);
+        sc_event_emit(end, end_access, SC_EVENT_ADD_INPUT_ARC, addr);
 
         // check values
         g_assert(beg_el != nullptr && end_el != nullptr);
@@ -868,13 +875,14 @@ sc_result sc_storage_find_links_with_content(const sc_memory_context *ctx, const
 
     sc_result r = SC_RESULT_ERROR;
 
+    *result = 0;
     if (sc_link_calculate_checksum(stream, &check_sum) == SC_TRUE)
     {
         sc_addr * tmp_res = 0;
         sc_uint32 tmp_res_count = 0;
 
         r = sc_fs_storage_find_links_with_content(&check_sum, &tmp_res, &tmp_res_count);
-        if (r == SC_RESULT_OK)
+        if (r == SC_RESULT_OK && tmp_res_count > 0)
         {
             // check read rights
             sc_uint32 i, passed = 0;
@@ -886,6 +894,7 @@ sc_result sc_storage_find_links_with_content(const sc_memory_context *ctx, const
                 if (sc_storage_element_lock(ctx, tmp_res[i], &el) != SC_RESULT_OK || el == 0)
                 {
                     g_free(*result);
+                    *result = 0;
                     r = SC_RESULT_ERROR;
                     break;
                 }
@@ -900,7 +909,7 @@ sc_result sc_storage_find_links_with_content(const sc_memory_context *ctx, const
             }
 
             *result_count = passed;
-            if (*result_count == 0)
+            if (*result_count == 0 && *result)
             {
                 g_free(*result);
                 r = SC_RESULT_ERROR;

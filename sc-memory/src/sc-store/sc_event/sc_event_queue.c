@@ -23,6 +23,7 @@ along with OSTIS.  If not, see <http://www.gnu.org/licenses/>.
 #include "sc_event_queue.h"
 #include "sc_event.h"
 #include "sc_event_private.h"
+#include "../sc_memory_private.h"
 
 
 gpointer sc_event_queue_thread_loop(gpointer data)
@@ -54,6 +55,11 @@ gpointer sc_event_queue_thread_loop(gpointer data)
             {
                 event = item->event;
                 arg = item->arg;
+
+                sc_access_levels arg_access;
+                if (sc_storage_get_access_levels(s_memory_default_ctx, arg, &arg_access) != SC_RESULT_OK)
+                    arg_access = sc_access_lvl_make_max;
+
                 g_free(item);
                 break;
             }

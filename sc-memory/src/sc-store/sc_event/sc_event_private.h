@@ -63,10 +63,11 @@ sc_result sc_event_notify_element_deleted(sc_addr element);
 
 /*! Emit event with \p type for sc-element \p el with argument \p arg
  * @param el sc-addr of element that emitting event
- * @param type emitting event type
- * @param arg argument of emitting event (depend of event type)
+ * @param el_access Acces level of \p el
+ * @param type Emitting event type
+ * @param arg Argument of emitting event (depend of event type)
  * @return If event emitted without any errors, then return SC_OK; otherwise return SC_ERROR code
  */
-sc_result sc_event_emit(sc_addr el, sc_event_type type, sc_addr arg);
+sc_result sc_event_emit(sc_addr el, sc_access_levels el_acces, sc_event_type type, sc_addr arg);
 
 #endif
