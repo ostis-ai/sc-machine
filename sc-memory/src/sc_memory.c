@@ -67,9 +67,10 @@ sc_memory_context* sc_memory_initialize(const sc_memory_params *params)
         return 0;
 
     s_memory_default_ctx = sc_memory_context_new(sc_access_lvl_make(SC_ACCESS_LVL_MAX_VALUE, SC_ACCESS_LVL_MAX_VALUE));
-
-    if (sc_helper_init(s_memory_default_ctx) != SC_RESULT_OK)
+    sc_memory_context *helper_ctx = sc_memory_context_new(sc_access_lvl_make(SC_ACCESS_LVL_MIN_VALUE, SC_ACCESS_LVL_MAX_VALUE));
+    if (sc_helper_init(helper_ctx) != SC_RESULT_OK)
         goto error;
+    sc_memory_context_free(helper_ctx);
 
     if (sc_events_initialize() == SC_FALSE)
     {
@@ -97,6 +98,8 @@ sc_memory_context* sc_memory_initialize(const sc_memory_params *params)
 
     error:
     {
+        if (helper_ctx)
+            sc_memory_context_free(helper_ctx);
         sc_memory_context_free(s_memory_default_ctx);
     }
     return s_memory_default_ctx = 0;
