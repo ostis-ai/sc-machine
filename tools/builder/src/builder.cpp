@@ -61,7 +61,9 @@ bool Builder::run(const BuilderParams &params)
     mparams.repo_path = mParams.outputPath.c_str();
     mparams.ext_path = mParams.extensionsPath.size() > 0 ? mParams.extensionsPath.c_str() : 0;
 
-    mContext = sc_memory_initialize(&mparams);
+    sc_memory_initialize(&mparams);
+
+    mContext = sc_memory_context_new(sc_access_lvl_make_min);
 
     // print founded files
     uint32 done = 0;
@@ -101,6 +103,7 @@ bool Builder::run(const BuilderParams &params)
     std::cout << "Links: " << stat.link_count << "(" << ((float)stat.link_count / (float)all_count) * 100 << "%)"  << std::endl;
     std::cout << "Total: " << all_count << std::endl;
 
+    sc_memory_context_free(mContext);
     sc_memory_shutdown(SC_TRUE);
 
     return true;
