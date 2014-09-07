@@ -65,14 +65,28 @@ bool Builder::run(const BuilderParams &params)
 
     mContext = sc_memory_context_new(sc_access_lvl_make_min);
 
-    // print founded files
-    uint32 done = 0;
+    std::cout << "Build knowledge base from sources... " << std::endl;
+
+    // process founded files
+    uint32 done = 0, last_progress = -1;
     tFileSet::iterator it, itEnd = mFileSet.end();
     for (it = mFileSet.begin(); it != itEnd; ++it)
     {
-        float progress = (float)++done / (float)mFileSet.size();
-        std::cout << "[" << (int) (progress * 100.f) << "%] " << *it << std::endl;
-        std::cout.flush();
+        uint32 progress = ((float)++done / (float)mFileSet.size()) * 100;
+        if (last_progress != progress)
+        {
+            if (progress % 10 == 0)
+            {
+                std::cout << "[" << progress << "%]";
+                std::cout.flush();
+            } else
+            {
+                std::cout << ".";
+                std::cout.flush();
+            }
+            last_progress = progress;
+        }
+
         try
         {
             processFile(*it);
@@ -83,6 +97,7 @@ bool Builder::run(const BuilderParams &params)
             mErrors.push_back(ss.str());
         }
     }
+    std::cout << std::endl << "done" << std::endl;
 
     // print errors
     std::cout << std::endl << "-------" << std::endl << "Errors:" << std::endl;
@@ -126,7 +141,9 @@ bool Builder::processFile(const String &filename)
     size_t n = filename.rfind(".");
     if (n == std::string::npos)
     {
-        std::cout << "\tCan't determine file extension" << std::endl;
+        THROW_EXCEPT(Exception::ERR_FILE_NOT_FOUND,
+                    "Can't determine file extension " + filename,
+                     filename, 0);
         return false;
     }
 
@@ -135,7 +152,9 @@ bool Builder::processFile(const String &filename)
     tTranslatorFactories::iterator it = mTranslatorFactories.find(ext);
     if (it == mTranslatorFactories.end())
     {
-        std::cout << "\tThere are no translators, that support " << ext << " extension" << std::endl;
+        THROW_EXCEPT(Exception::ERR_ITEM_NOT_FOUND,
+                     "There are no translators, that support " + ext + " extension",
+                     filename, 0);
         return false;
     }
 
