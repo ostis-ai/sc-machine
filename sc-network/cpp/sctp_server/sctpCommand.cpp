@@ -112,6 +112,9 @@ eSctpErrorCode sctpCommand::processCommand(QIODevice *inDevice, QIODevice *outDe
     case SCTP_CMD_CREATE_ARC:
         return processCreateArc(cmdFlags, cmdId, &paramsStream, outDevice);
 
+    case SCTP_CMD_GET_ARC:
+        return processGetArc(cmdFlags, cmdId, &paramsStream, outDevice);
+
     case SCTP_CMD_GET_LINK_CONTENT:
         return processGetLinkContent(cmdFlags, cmdId, &paramsStream, outDevice);
 
@@ -311,7 +314,7 @@ eSctpErrorCode sctpCommand::processCreateArc(quint32 cmdFlags, quint32 cmdId, QD
     eSctpErrorCode result;
     if (SC_ADDR_IS_NOT_EMPTY(addr))
     {
-        writeResultHeader(SCTP_CMD_CREATE_ARC, cmdId, SCTP_RESULT_OK, 0, outDevice);
+        writeResultHeader(SCTP_CMD_CREATE_ARC, cmdId, SCTP_RESULT_OK, sizeof(addr), outDevice);
         outDevice->write((const char*)&addr, sizeof(addr));
 
         result = SCTP_NO_ERROR;
@@ -324,6 +327,28 @@ eSctpErrorCode sctpCommand::processCreateArc(quint32 cmdFlags, quint32 cmdId, QD
     return result;
 }
 
+eSctpErrorCode sctpCommand::processGetArc(quint32 cmdFlags, quint32 cmdId, QDataStream *params, QIODevice *outDevice)
+{
+    Q_UNUSED(cmdFlags);
+
+    Q_ASSERT(params != 0);
+
+    sc_addr arc, begin, end;
+
+    READ_PARAM(arc);
+
+    if (sc_memory_get_arc_begin(mContext, arc, &begin) != SC_RESULT_OK ||
+        sc_memory_get_arc_end(mContext, arc, &end) != SC_RESULT_OK)
+    {
+        writeResultHeader(SCTP_CMD_GET_ARC, cmdId, SCTP_RESULT_FAIL, 0, outDevice);
+        return SCTP_ERROR;
+    }
+
+    writeResultHeader(SCTP_CMD_GET_ARC, cmdId, SCTP_RESULT_OK, sizeof(sc_addr) * 2, outDevice);
+    outDevice->write((const char*)&begin, sizeof(begin));
+    outDevice->write((const char*)&end, sizeof(end));
+    return SCTP_NO_ERROR;
+}
 
 eSctpErrorCode sctpCommand::processGetLinkContent(quint32 cmdFlags, quint32 cmdId, QDataStream *params, QIODevice *outDevice)
 {
