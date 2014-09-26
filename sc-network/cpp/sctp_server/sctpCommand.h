@@ -92,6 +92,7 @@ private:
     eSctpErrorCode processCreateArc(quint32 cmdFlags, quint32 cmdId, QDataStream *params, QIODevice *outDevice);
 
 
+    eSctpErrorCode processGetArc(quint32 cmdFlags, quint32 cmdId, QDataStream *params, QIODevice *outDevice);
     eSctpErrorCode processGetLinkContent(quint32 cmdFlags, quint32 cmdId, QDataStream *params, QIODevice *outDevice);
     eSctpErrorCode processFindLinks(quint32 cmdFlags, quint32 cmdId, QDataStream *params, QIODevice *outDevice);
     eSctpErrorCode processSetLinkContent(quint32 cmdFlags, quint32 cmdId, QDataStream *params, QIODevice *outDevice);
