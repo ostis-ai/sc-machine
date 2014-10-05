@@ -47,7 +47,11 @@ sc_result sc_stream_file_write(const sc_stream *stream, sc_char *data, sc_uint32
 {
     SC_STREAM_FILE_FD_CHECK;
 
-    *bytes_written = fwrite(data, 1, length, fd);
+    if (bytes_written)
+        *bytes_written = fwrite(data, 1, length, fd);
+    else
+        fwrite(data, 1, length, fd);
+
     return SC_RESULT_OK;
 }
 

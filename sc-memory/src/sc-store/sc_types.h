@@ -76,7 +76,8 @@ typedef sc_int sc_bool;
 #define SC_ADDR_SEG_MAX     SC_MAXUINT16
 #define SC_ADDR_OFFSET_MAX  SC_MAXUINT16
 
-#define SC_SEGMENT_ELEMENTS_COUNT        SC_MAXUINT16    // number of elements in segment
+#define SC_SEGMENT_ELEMENTS_COUNT        SC_MAXUINT16   // number of elements in segment
+#define SC_SEGMENT_MAX                   SC_MAXUINT16   // max number of segments
 
 // Types for segment and offset
 typedef sc_uint16 sc_addr_seg;

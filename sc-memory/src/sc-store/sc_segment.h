@@ -114,4 +114,9 @@ sc_bool sc_segment_section_lock_try(const sc_memory_context *ctx, sc_segment_sec
 //! Unlocks specified segment part
 void sc_segment_section_unlock(const sc_memory_context *ctx, sc_segment_section *section);
 
+#if SC_PROFILE_MODE
+void sc_segment_reset_profile();
+void sc_segment_print_profile();
+#endif
+
 #endif

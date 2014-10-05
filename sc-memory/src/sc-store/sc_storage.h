@@ -27,7 +27,11 @@ along with OSTIS.  If not, see <http://www.gnu.org/licenses/>.
 #include "sc_defines.h"
 #include "sc_stream.h"
 
-#define STORAGE_CHECK_CALL(x) {sc_result __r = x; g_assert(__r == SC_RESULT_OK); }
+#if SC_DEBUG_MODE
+# define STORAGE_CHECK_CALL(x) {sc_result __r = x; g_assert(__r == SC_RESULT_OK); }
+#else
+# define STORAGE_CHECK_CALL(x) { x; }
+#endif
 
 /*! Initialize sc storage in specified path
  * @param path Path to repository
@@ -188,12 +192,6 @@ sc_uint sc_storage_get_segments_count();
  */
 sc_result sc_storage_get_elements_stat(const sc_memory_context *ctx, sc_stat *stat);
 
-/*! Updates segments.
- * Calculate empty slots. Delete garbage
- * @note Only for internal usage
- */
-void sc_storage_update_segments();
-
 
 // ----- Locks -----
 //! Locks specified sc-element. Pointer to locked sc-element stores in el
@@ -202,6 +200,11 @@ sc_result sc_storage_element_lock(const sc_memory_context *ctx, sc_addr addr, sc
 sc_result sc_storage_element_lock_try(const sc_memory_context *ctx, sc_addr addr, sc_uint16 max_attempts, sc_element **el);
 //! Unlocks specified sc-element
 sc_result sc_storage_element_unlock(const sc_memory_context *ctx, sc_addr addr);
+
+#if SC_PROFILE_MODE
+void sc_storage_reset_profile();
+void sc_storage_print_profile();
+#endif
 
 #endif
 

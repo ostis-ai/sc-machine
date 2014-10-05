@@ -36,7 +36,7 @@ along with OSTIS.  If not, see <http://www.gnu.org/licenses/>.
 #include <glib.h>
 
 sc_memory_context * s_memory_default_ctx = 0;
-sc_uint16 s_context_id_last = 0;
+sc_uint16 s_context_id_last = 1;
 sc_uint16 s_context_id_count = 0;
 GHashTable *s_context_hash_table = 0;
 GMutex s_concurrency_mutex;
@@ -51,6 +51,10 @@ void sc_memory_params_clear(sc_memory_params *params)
 
 sc_memory_context* sc_memory_initialize(const sc_memory_params *params)
 {
+#if SC_PROFILE_MODE
+    sc_storage_reset_profile();
+#endif
+
     sc_config_initialize(params->config_file);
 
     s_context_hash_table = g_hash_table_new(g_direct_hash, g_direct_equal);
@@ -111,6 +115,10 @@ void sc_memory_shutdown(sc_bool save_state)
 {
     sc_events_stop_processing();
 
+#if SC_PROFILE_MODE
+    sc_storage_print_profile();
+#endif
+
     sc_ext_shutdown();
 
     sc_events_shutdown();
@@ -141,7 +149,7 @@ sc_memory_context* sc_memory_context_new(sc_uint8 levels)
         goto error;
 
     sc_uint32 index = (s_context_id_last + 1) % G_MAXUINT16;
-    while (index != s_context_id_last && g_hash_table_lookup(s_context_hash_table, GINT_TO_POINTER(index)))
+    while (index == 0 || (index != s_context_id_last && g_hash_table_lookup(s_context_hash_table, GINT_TO_POINTER(index))))
         index = (index + 1) % G_MAXUINT16;
 
     if (index != s_context_id_last)
