@@ -41,9 +41,9 @@ gpointer sc_event_queue_thread_loop(gpointer data)
     while (running == SC_TRUE || g_queue_get_length(queue->queue) > 0)
     {
         g_rec_mutex_lock(&queue->mutex);
-
         running = queue->running;
         sc_event_queue_item *item = (sc_event_queue_item*)g_queue_pop_head(queue->queue);
+        g_rec_mutex_unlock(&queue->mutex);
 
         event = 0;
 
@@ -66,16 +66,19 @@ gpointer sc_event_queue_thread_loop(gpointer data)
             else
             {
                 g_free(item);
+                g_rec_mutex_lock(&queue->mutex);
                 item = (sc_event_queue_item*)g_queue_pop_head(queue->queue);
+                g_rec_mutex_unlock(&queue->mutex);
             }
         }
 
         g_rec_mutex_lock(&queue->proc_mutex);
         queue->event_process = event;
-        g_rec_mutex_unlock(&queue->mutex);
 
         if (queue->event_process)
             queue->event_process->callback(queue->event_process, arg);
+
+        queue->event_process = 0;
         g_rec_mutex_unlock(&queue->proc_mutex);
 
         g_usleep(1000); // sleep for an one millisecond

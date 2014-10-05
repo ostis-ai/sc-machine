@@ -39,7 +39,7 @@ const char *utils_redis_host = 0;
 sc_uint32 utils_redis_port = 6379;
 sc_uint32 utils_redis_timeout = 1500;
 
-GMutex redis_mutex;
+GMutex ci_redis_mutex;
 redisContext *redisCtx = 0;
 GThread *ping_thread;
 gboolean ping_thread_running;
@@ -54,21 +54,21 @@ sc_event *event_add_sys_idtf = 0;
 // --- ping thread ---
 gpointer ping_thread_loop(gpointer context)
 {
-    g_mutex_lock(&redis_mutex);
+    g_mutex_lock(&ci_redis_mutex);
     ping_thread_running = TRUE;
-    g_mutex_unlock(&redis_mutex);
+    g_mutex_unlock(&ci_redis_mutex);
 
     gboolean running = TRUE;
 
     while (ping_thread_running)
     {
 
-        g_mutex_lock(&redis_mutex);
+        g_mutex_lock(&ci_redis_mutex);
         redisReply *reply = redisCommand((redisContext*)context, "PING");
         freeReplyObject(reply);
 
         running = ping_thread_running;
-        g_mutex_unlock(&redis_mutex);
+        g_mutex_unlock(&ci_redis_mutex);
 
         // wait on second
         g_usleep(1000000);
@@ -123,7 +123,7 @@ redisReply* do_sync_redis_command(redisContext *context, const char *format, ...
     int tries = 0;
     va_start(ap,format);
 
-    g_mutex_lock(&redis_mutex);
+    g_mutex_lock(&ci_redis_mutex);
     while (reply == 0 && tries < 5)
     {
         reply = redisvCommand(context, format, ap);
@@ -131,7 +131,7 @@ redisReply* do_sync_redis_command(redisContext *context, const char *format, ...
             g_error("redis: %s", context->errstr);
         tries++;
     }
-    g_mutex_unlock(&redis_mutex);
+    g_mutex_unlock(&ci_redis_mutex);
 
     va_end(ap);
     return reply;
@@ -258,9 +258,9 @@ sc_result utils_collect_identifiers_shutdown()
         event_add_sys_idtf = 0;
     }
 
-    g_mutex_lock(&redis_mutex);
+    g_mutex_lock(&ci_redis_mutex);
     ping_thread_running = FALSE;
-    g_mutex_unlock(&redis_mutex);
+    g_mutex_unlock(&ci_redis_mutex);
     g_thread_join(ping_thread);
     ping_thread = 0;
 

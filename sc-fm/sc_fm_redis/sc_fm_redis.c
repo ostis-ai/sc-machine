@@ -171,7 +171,6 @@ sc_result sc_redis_engine_addr_ref_append(const sc_fm_engine *engine, sc_addr ad
         goto clean;
     }
 
-    int old_size = reply->integer;
     reply = do_sync_redis_command(&data->context, "LPUSH link:%b:addrs %b", check_sum->data, check_sum->len, &addr, sizeof(addr));
 
     if (reply == 0)
