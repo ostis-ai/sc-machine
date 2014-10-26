@@ -27,12 +27,35 @@ along with OSTIS.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <glib.h>
 
-void sc_element_set_type(sc_element *element,
-                         sc_type type)
+void sc_element_set_type(sc_element *element, sc_type type)
 {
     g_assert(element != 0);
-    element->flags.type = type;
+    element->flags.type = sc_flags_remove(type);
 }
 
+sc_bool sc_element_is_request_deletion(sc_element *element)
+{
+    return (element->flags.type & sc_flag_request_deletion) ? SC_TRUE : SC_FALSE;
+}
 
+sc_uint16 sc_element_get_iterator_refs(sc_element *element)
+{
+    return element->flags.refs.it;
+}
 
+sc_bool sc_element_itref_add(sc_element *element)
+{
+    if (element->flags.refs.it == G_MAXUINT16)
+        return SC_FALSE;
+
+    element->flags.refs.it++;
+    return SC_TRUE;
+}
+
+sc_bool sc_element_itref_dec(sc_element *element)
+{
+    g_assert(element->flags.refs.it > 0);
+    element->flags.refs.it--;
+
+    return (element->flags.refs.it == 0) ? SC_TRUE : SC_FALSE;
+}

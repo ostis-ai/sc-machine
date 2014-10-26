@@ -225,7 +225,7 @@ void test_access_levels()
     g_assert(sc_iterator3_next(it3) == SC_TRUE);
     g_assert(SC_ADDR_IS_EQUAL(sc_iterator3_value(it3, 0), addr1));
     g_assert(SC_ADDR_IS_EQUAL(sc_iterator3_value(it3, 1), arc1));
-    g_assert(sc_iterator3_next(it3) == SC_FALSE);
+    g_assert(!sc_iterator3_next(it3));
     sc_iterator3_free(it3);
 
     it3 = sc_iterator3_f_a_a_new(ctx1, addr1, 0, 0);
@@ -233,14 +233,14 @@ void test_access_levels()
     g_assert(sc_iterator3_next(it3) == SC_TRUE);
     g_assert(SC_ADDR_IS_EQUAL(sc_iterator3_value(it3, 1), arc1));
     g_assert(SC_ADDR_IS_EQUAL(sc_iterator3_value(it3, 2), addr2));
-    g_assert(sc_iterator3_next(it3) == SC_FALSE);
+    g_assert(!sc_iterator3_next(it3));
     sc_iterator3_free(it3);
 
     it3 = sc_iterator3_f_a_f_new(ctx1, addr1, 0, addr2);
     g_assert(it3 != 0);
     g_assert(sc_iterator3_next(it3) == SC_TRUE);
     g_assert(SC_ADDR_IS_EQUAL(sc_iterator3_value(it3, 1), arc1));
-    g_assert(sc_iterator3_next(it3) == SC_FALSE);
+    g_assert(!sc_iterator3_next(it3));
     sc_iterator3_free(it3);
 
     it3 = sc_iterator3_f_a_a_new(ctx2, el_addr, 0, 0);
@@ -251,7 +251,7 @@ void test_access_levels()
     g_assert(sc_iterator3_next(it3) == SC_TRUE);
     g_assert(SC_ADDR_IS_EQUAL(sc_iterator3_value(it3, 1), arc2));
     g_assert(SC_ADDR_IS_EQUAL(sc_iterator3_value(it3, 2), arc1));
-    g_assert(sc_iterator3_next(it3) == SC_FALSE);
+    g_assert(!sc_iterator3_next(it3));
     sc_iterator3_free(it3);
 
     it3 = sc_iterator3_a_a_f_new(ctx2, 0, 0, arc1);
@@ -271,7 +271,7 @@ void test_access_levels()
     g_assert(SC_ADDR_IS_EQUAL(sc_iterator5_value(it5, 1), arc1));
     g_assert(SC_ADDR_IS_EQUAL(sc_iterator5_value(it5, 3), arc2));
     g_assert(SC_ADDR_IS_EQUAL(sc_iterator5_value(it5, 4), el_addr));
-    g_assert(sc_iterator5_next(it5) == SC_FALSE);
+    g_assert(!sc_iterator5_next(it5));
     sc_iterator5_free(it5);
 
     it5 = sc_iterator5_a_a_f_a_f_new(ctx2, 0, 0, addr2, 0, el_addr);
@@ -283,7 +283,7 @@ void test_access_levels()
     g_assert(SC_ADDR_IS_EQUAL(sc_iterator5_value(it5, 0), addr1));
     g_assert(SC_ADDR_IS_EQUAL(sc_iterator5_value(it5, 1), arc1));
     g_assert(SC_ADDR_IS_EQUAL(sc_iterator5_value(it5, 3), arc2));
-    g_assert(sc_iterator5_next(it5) == SC_FALSE);
+    g_assert(!sc_iterator5_next(it5));
     sc_iterator5_free(it5);
 
     /// @todo add test for access levels in events
@@ -345,6 +345,114 @@ void test_deletion()
         g_assert(i == 0);
     }
 
+    // test deletion of currently pointed iterator elements
+    {
+        sc_addr node = sc_memory_node_new(ctx, 0);
+        sc_addr nodes[5];
+
+        for (sc_uint32 i = 0; i < 5; ++i)
+        {
+            nodes[i] = sc_memory_node_new(ctx, 0);
+            sc_memory_arc_new(ctx, sc_type_arc_pos_const_perm, node, nodes[i]);
+        }
+
+        // remove arc that used in iteration
+        sc_iterator3 *it = sc_iterator3_f_a_a_new(ctx,
+                                                  node,
+                                                  sc_type_arc_pos_const_perm,
+                                                  sc_type_node);
+
+        g_assert(sc_iterator3_next(it) == SC_TRUE);
+        g_assert(SC_ADDR_IS_EQUAL(sc_iterator3_value(it, 2), nodes[4]));
+        g_assert(sc_iterator3_next(it) == SC_TRUE);
+        g_assert(SC_ADDR_IS_EQUAL(sc_iterator3_value(it, 2), nodes[3]));
+
+        g_assert(sc_memory_element_free(ctx, sc_iterator3_value(it, 2)) == SC_RESULT_OK);
+        g_assert(sc_iterator3_next(it) == SC_TRUE);
+        g_assert(SC_ADDR_IS_EQUAL(sc_iterator3_value(it, 2), nodes[2]));
+        g_assert(sc_iterator3_next(it) == SC_TRUE);
+        g_assert(SC_ADDR_IS_EQUAL(sc_iterator3_value(it, 2), nodes[1]));
+        g_assert(sc_iterator3_next(it) == SC_TRUE);
+        g_assert(SC_ADDR_IS_EQUAL(sc_iterator3_value(it, 2), nodes[0]));
+        g_assert(sc_iterator3_next(it) == SC_FALSE);
+
+        sc_iterator3_free(it);
+
+        node = sc_memory_node_new(ctx, 0);
+        for (sc_uint32 i = 0; i < 5; ++i)
+        {
+            nodes[i] = sc_memory_node_new(ctx, 0);
+            sc_memory_arc_new(ctx, sc_type_arc_pos_const_perm, nodes[i], node);
+        }
+
+        it = sc_iterator3_a_a_f_new(ctx,
+                                    sc_type_node,
+                                    sc_type_arc_pos_const_perm,
+                                    node);
+
+        g_assert(sc_iterator3_next(it) == SC_TRUE);
+        g_assert(SC_ADDR_IS_EQUAL(sc_iterator3_value(it, 0), nodes[4]));
+        g_assert(sc_memory_element_free(ctx, sc_iterator3_value(it, 0)) == SC_RESULT_OK);
+        g_assert(sc_memory_element_free(ctx, nodes[0]) == SC_RESULT_OK);
+
+        g_assert(sc_iterator3_next(it) == SC_TRUE);
+        g_assert(SC_ADDR_IS_EQUAL(sc_iterator3_value(it, 0), nodes[3]));
+        g_assert(sc_iterator3_next(it) == SC_TRUE);
+        g_assert(SC_ADDR_IS_EQUAL(sc_iterator3_value(it, 0), nodes[2]));
+        g_assert(sc_iterator3_next(it) == SC_TRUE);
+        g_assert(SC_ADDR_IS_EQUAL(sc_iterator3_value(it, 0), nodes[1]));
+        g_assert(sc_iterator3_next(it) == SC_FALSE);
+
+        sc_iterator3_free(it);
+
+        // remove source node
+        node = sc_memory_node_new(ctx, 0);
+        for (sc_uint32 i = 0; i < 5; ++i)
+        {
+            nodes[i] = sc_memory_node_new(ctx, 0);
+            sc_memory_arc_new(ctx, sc_type_arc_pos_const_perm, node, nodes[i]);
+        }
+
+        it = sc_iterator3_f_a_a_new(ctx,
+                                    node,
+                                    sc_type_arc_pos_const_perm,
+                                    0);
+
+        g_assert(sc_memory_element_free(ctx, node) == SC_RESULT_OK);
+        g_assert(sc_iterator3_next(it) == SC_FALSE);
+
+        sc_iterator3_free(it);
+    }
+
+    // iterator 5
+    {
+        sc_addr node = sc_memory_node_new(ctx, 0);
+        sc_addr n1[3], n2[3];
+
+        for (sc_uint32 i = 0; i < 3; ++i)
+        {
+            n1[i] = sc_memory_node_new(ctx, 0);
+            n2[i] = sc_memory_node_new(ctx, 0);
+
+            sc_addr a = sc_memory_arc_new(ctx, sc_type_arc_pos_const_perm, node, n1[i]);
+            sc_memory_arc_new(ctx, sc_type_arc_pos_const_perm, n2[i], a);
+        }
+
+        sc_iterator5 *it = sc_iterator5_f_a_a_a_a_new(ctx, node, 0, 0, 0, 0);
+
+        g_assert(sc_iterator5_next(it) == SC_TRUE);
+        g_assert(SC_ADDR_IS_EQUAL(sc_iterator5_value(it, 2), n1[2]));
+        g_assert(SC_ADDR_IS_EQUAL(sc_iterator5_value(it, 4), n2[2]));
+
+        g_assert(sc_memory_element_free(ctx, n1[1]) == SC_RESULT_OK);
+        g_assert(sc_iterator5_next(it) == SC_TRUE);
+        g_assert(SC_ADDR_IS_EQUAL(sc_iterator5_value(it, 2), n1[0]));
+        g_assert(SC_ADDR_IS_EQUAL(sc_iterator5_value(it, 4), n2[0]));
+        g_assert(sc_iterator5_next(it) == SC_FALSE);
+
+        sc_iterator5_free(it);
+    }
+
     sc_memory_context_free(ctx);
     shutdown_memory();
 }
@@ -363,9 +471,10 @@ int main(int argc, char *argv[])
 
     g_test_init(&argc, &argv, NULL);
     g_test_add_func("/common/context", test_context);
-    g_test_add_func("/common/access", test_access_levels);
-    g_test_add_func("/common/deletion", test_deletion);
 
+    g_test_add_func("/common/access", test_access_levels);
+
+    g_test_add_func("/common/deletion", test_deletion);
     g_test_run();
 
 

@@ -244,8 +244,14 @@ sc_bool _sc_iterator5_a_a_f_a_f_next(sc_iterator5 *it)
         it->results[1]=it->it_main->results[1];
         it->results[3]=it->it_attr->results[1];
         return SC_TRUE;
-    }else
+    } else
     {
+        if (it->it_attr != nullptr)
+        {
+            sc_iterator3_free(it->it_attr);
+            it->it_attr = nullptr;
+        }
+
         while (it->it_attr == nullptr || !sc_iterator3_next(it->it_attr))
         {
             if (it->it_attr != nullptr)
@@ -285,8 +291,14 @@ sc_bool _sc_iterator5_f_a_a_a_f_next(sc_iterator5 *it)
         it->results[2] = it->it_main->results[2];
         it->results[3] = it->it_attr->results[1];
         return SC_TRUE;
-    }else
+    } else
     {
+        if (it->it_attr != nullptr)
+        {
+            sc_iterator3_free(it->it_attr);
+            it->it_attr = nullptr;
+        }
+
         while (it->it_attr == nullptr || !sc_iterator3_next(it->it_attr))
         {
             if (it->it_attr != nullptr)
@@ -324,8 +336,14 @@ sc_bool _sc_iterator5_f_a_f_a_f_next(sc_iterator5 *it)
         it->results[1] = it->it_main->results[1];
         it->results[3] = it->it_attr->results[1];
         return SC_TRUE;
-    }else
+    } else
     {
+        if (it->it_attr != nullptr)
+        {
+            sc_iterator3_free(it->it_attr);
+            it->it_attr = nullptr;
+        }
+
         while (it->it_attr == nullptr || !sc_iterator3_next(it->it_attr))
         {
             if (it->it_attr != nullptr)
@@ -364,8 +382,14 @@ sc_bool _sc_iterator5_f_a_f_a_a_next(sc_iterator5 *it)
         it->results[3] = it->it_attr->results[1];
         it->results[4] = it->it_attr->results[0];
         return SC_TRUE;
-    }else
+    } else
     {
+        if (it->it_attr != nullptr)
+        {
+            sc_iterator3_free(it->it_attr);
+            it->it_attr = nullptr;
+        }
+
         while (it->it_attr == nullptr || !sc_iterator3_next(it->it_attr))
         {
             if (it->it_attr != nullptr)
@@ -407,8 +431,14 @@ sc_bool _sc_iterator5_f_a_a_a_a_next(sc_iterator5 *it)
         it->results[3] = it->it_attr->results[1];
         it->results[4] = it->it_attr->results[0];
         return SC_TRUE;
-    }else
+    } else
     {
+        if (it->it_attr != nullptr)
+        {
+            sc_iterator3_free(it->it_attr);
+            it->it_attr = nullptr;
+        }
+
         while (it->it_attr == nullptr || !sc_iterator3_next(it->it_attr))
         {
             if (it->it_attr != nullptr)
@@ -452,8 +482,14 @@ sc_bool _sc_iterator5_a_a_f_a_a_next(sc_iterator5 *it)
         it->results[3] = it->it_attr->results[1];
         it->results[4] = it->it_attr->results[0];
         return SC_TRUE;
-    }else
+    } else
     {
+        if (it->it_attr != nullptr)
+        {
+            sc_iterator3_free(it->it_attr);
+            it->it_attr = nullptr;
+        }
+
         while (it->it_attr == nullptr || !sc_iterator3_next(it->it_attr))
         {
             if (it->it_attr != nullptr)

@@ -206,7 +206,7 @@ sc_bool sc_storage_is_element(const sc_memory_context *ctx, sc_addr addr)
         return SC_FALSE;
 
     sc_bool res = SC_TRUE;
-    if (el->flags.type == 0)
+    if (el->flags.type == 0 || (el->flags.type & sc_flag_request_deletion))
         res = SC_FALSE;
 
     sc_storage_element_unlock(ctx, addr);
@@ -272,7 +272,7 @@ sc_result sc_storage_element_free(const sc_memory_context *ctx, sc_addr addr)
     sc_element *el;
     if (sc_storage_element_lock(ctx, addr, &el) != SC_RESULT_OK)
         return SC_RESULT_ERROR;
-    if (el == nullptr || el->flags.type == 0)
+    if (el == nullptr || el->flags.type == 0 || el->flags.type & sc_flag_request_deletion)
         return SC_RESULT_ERROR;
 
     remove_table = g_hash_table_new(g_direct_hash, g_direct_equal);
@@ -308,6 +308,12 @@ sc_result sc_storage_element_free(const sc_memory_context *ctx, sc_addr addr)
             g_assert(el != 0 && el->flags.type != 0);
             g_hash_table_insert(remove_table, p_addr, el);
             g_hash_table_insert(lock_table, p_addr, el);
+        }
+
+        if (el->flags.type & sc_flag_request_deletion)
+        {
+            STORAGE_CHECK_CALL(sc_storage_element_unlock(ctx, _addr));
+            continue;
         }
 
         if (el->flags.type & sc_type_arc_mask)
@@ -512,8 +518,12 @@ sc_result sc_storage_element_free(const sc_memory_context *ctx, sc_addr addr)
                 sc_storage_element_unlock(ctx, el->arc.end);
         }
 
-        sc_segment_erase_element(g_atomic_pointer_get(&segments[addr.seg]), addr.offset);
-        _sc_segment_cache_append(ctx, g_atomic_pointer_get(&segments[addr.seg]));
+        if (sc_element_get_iterator_refs(el) == 0)
+        {
+            sc_storage_erase_element_from_segment(addr);
+            _sc_segment_cache_append(ctx, g_atomic_pointer_get(&segments[addr.seg]));
+        } else
+            el->flags.type |= sc_flag_request_deletion;
 
         sc_event_emit(addr, el_access, SC_EVENT_REMOVE_ELEMENT, addr);
 
@@ -554,7 +564,7 @@ sc_addr sc_storage_node_new_ext(const sc_memory_context *ctx, sc_type type, sc_a
     g_assert( !(sc_type_arc_mask & type) );
     memset(&el, 0, sizeof(el));
 
-    el.flags.type = sc_type_node | type;
+    el.flags.type = sc_flags_remove(sc_type_node | type);
     el.flags.access_levels = access_levels;
 
     sc_element *locked_el = sc_storage_append_el_into_segments(ctx, &el, &addr);
@@ -603,7 +613,7 @@ sc_addr sc_storage_arc_new_ext(const sc_memory_context *ctx, sc_type type, sc_ad
 
     memset(&el, 0, sizeof(el));
     g_assert( !(sc_type_node & type) );
-    el.flags.type = (type & sc_type_arc_mask) ? type : (sc_type_arc_common | type);
+    el.flags.type = sc_flags_remove((type & sc_type_arc_mask) ? type : (sc_type_arc_common | type));
 
     el.arc.begin = beg;
     el.arc.end = end;
@@ -713,7 +723,7 @@ sc_result sc_storage_get_element_type(const sc_memory_context *ctx, sc_addr addr
 
     sc_result r = SC_RESULT_OK;
     if (sc_access_lvl_check_read(ctx->access_levels, el->flags.access_levels))
-        *result = el->flags.type;
+        *result = sc_flags_remove(el->flags.type);
     else
         r = SC_RESULT_ERROR_NO_READ_RIGHTS;
 
@@ -977,6 +987,11 @@ sc_result sc_storage_get_elements_stat(const sc_memory_context *ctx, sc_stat *st
 unsigned int sc_storage_get_segments_count()
 {
     return g_atomic_int_get(&segments_num);
+}
+
+sc_result sc_storage_erase_element_from_segment(sc_addr addr)
+{
+    sc_segment_erase_element(g_atomic_pointer_get(&segments[addr.seg]), addr.offset);
 }
 
 sc_result sc_storage_element_lock(const sc_memory_context *ctx, sc_addr addr, sc_element **el)

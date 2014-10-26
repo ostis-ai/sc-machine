@@ -56,6 +56,7 @@ struct _sc_iterator3
     sc_iterator_param params[3];    // parameters array
     sc_addr results[3];             // results array (same size as params)
     const sc_memory_context *ctx;   // pointer to used memory context
+    sc_bool finished;
 };
 
 /*! Create iterator to find output arcs for specified element

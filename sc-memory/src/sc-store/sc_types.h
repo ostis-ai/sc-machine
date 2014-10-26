@@ -147,6 +147,9 @@ typedef sc_uint16 sc_type;
 #define sc_type_node_struct_mask (sc_type_node_tuple | sc_type_node_struct | sc_type_node_role | sc_type_node_norole | sc_type_node_class | sc_type_node_abstract | sc_type_node_material)
 #define sc_type_arc_mask         (sc_type_arc_access | sc_type_arc_common | sc_type_edge_common)
 
+// just for internal usage
+#define sc_flag_request_deletion    (0x4000)
+#define sc_flags_remove(x)          ((x) & (~sc_flag_request_deletion))
 
 // locks
 #define sc_lock_out_in      0x1
@@ -228,6 +231,7 @@ typedef struct _sc_arc_info sc_arc_info;
 typedef sc_uint8 sc_access_levels;
 typedef struct _sc_element_locks sc_element_locks;
 typedef struct _sc_element_flags sc_element_flags;
+typedef struct _sc_element_refs sc_element_refs;
 typedef struct _sc_memory_context sc_memory_context;
 typedef struct _sc_element sc_element;
 typedef struct _sc_segment sc_segment;

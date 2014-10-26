@@ -192,6 +192,7 @@ sc_uint sc_storage_get_segments_count();
  */
 sc_result sc_storage_get_elements_stat(const sc_memory_context *ctx, sc_stat *stat);
 
+sc_result sc_storage_erase_element_from_segment(sc_addr addr);
 
 // ----- Locks -----
 //! Locks specified sc-element. Pointer to locked sc-element stores in el

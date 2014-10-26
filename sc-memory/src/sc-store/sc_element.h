@@ -82,6 +82,15 @@ struct _sc_element_locks
     sc_uint8 read:1;
 };
 
+struct _sc_element_refs
+{
+    sc_uint16 it;
+    sc_uint16 id;
+};
+
+#define SC_ELID_REFS_MASK   0xffff
+#define SC_IT_REFS_MASK     (0xffff << 16)
+
 struct _sc_element_flags
 {
     sc_type type;
@@ -91,11 +100,17 @@ struct _sc_element_flags
         sc_element_locks locks; // bits access
         sc_uint8 locks_data; // one byte
     };
+    union
+    {
+        sc_element_refs refs;
+        sc_uint32 refs_data;
+    };
 };
+
 
 struct _sc_element
 {
-    volatile sc_element_flags flags;
+    sc_element_flags flags;
 
     sc_addr first_out_arc;
     sc_addr first_in_arc;
@@ -106,8 +121,13 @@ struct _sc_element
     };
 };
 
-void sc_element_set_type(sc_element *element,
-                         sc_type type);
+/// All functions must be called for locked sc-elements
+void sc_element_set_type(sc_element *element, sc_type type);
 
+sc_bool sc_element_is_request_deletion(sc_element *element);
+sc_uint16 sc_element_get_iterator_refs(sc_element *element);
+
+sc_bool sc_element_itref_add(sc_element *element);
+sc_bool sc_element_itref_dec(sc_element *element);
 
 #endif
