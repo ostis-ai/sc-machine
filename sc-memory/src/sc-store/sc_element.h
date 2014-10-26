@@ -126,6 +126,7 @@ void sc_element_set_type(sc_element *element, sc_type type);
 
 sc_bool sc_element_is_request_deletion(sc_element *element);
 sc_uint16 sc_element_get_iterator_refs(sc_element *element);
+sc_bool sc_element_is_valid(sc_element *element);
 
 sc_bool sc_element_itref_add(sc_element *element);
 sc_bool sc_element_itref_dec(sc_element *element);

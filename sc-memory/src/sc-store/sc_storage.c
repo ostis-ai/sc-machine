@@ -632,11 +632,23 @@ sc_addr sc_storage_arc_new_ext(const sc_memory_context *ctx, sc_type type, sc_ad
         if (beg_el == nullptr)
             goto unlock;
 
+        if (sc_element_is_valid(beg_el) == SC_FALSE)
+        {
+            r = SC_RESULT_ERROR_INVALID_STATE;
+            goto unlock;
+        }
+
         sc_access_levels beg_access = beg_el->flags.access_levels;
 
         r = sc_storage_element_lock_try(ctx, end, s_max_storage_lock_attempts, &end_el);
         if (end_el == nullptr)
             goto unlock;
+
+        if (sc_element_is_valid(end_el) == SC_FALSE)
+        {
+            r = SC_RESULT_ERROR_INVALID_STATE;
+            goto unlock;
+        }
 
         sc_access_levels end_access = end_el->flags.access_levels;
 
@@ -722,13 +734,21 @@ sc_result sc_storage_get_element_type(const sc_memory_context *ctx, sc_addr addr
         return SC_RESULT_ERROR;
 
     sc_result r = SC_RESULT_OK;
+    if (sc_element_is_valid(el) == SC_FALSE)
+    {
+        r = SC_RESULT_ERROR_INVALID_STATE;
+        goto unlock;
+    }
+
     if (sc_access_lvl_check_read(ctx->access_levels, el->flags.access_levels))
         *result = sc_flags_remove(el->flags.type);
     else
         r = SC_RESULT_ERROR_NO_READ_RIGHTS;
 
-    sc_storage_element_unlock(ctx, addr);
-
+    unlock:
+    {
+        sc_storage_element_unlock(ctx, addr);
+    }
     return r;
 }
 
@@ -745,12 +765,21 @@ sc_result sc_storage_change_element_subtype(const sc_memory_context *ctx, sc_add
         return SC_RESULT_ERROR;
 
     sc_result r = SC_RESULT_OK;
+    if (sc_element_is_valid(el) == SC_FALSE)
+    {
+        r = SC_RESULT_ERROR_INVALID_STATE;
+        goto unlock;
+    }
+
     if (sc_access_lvl_check_write(ctx->access_levels, el->flags.access_levels))
         el->flags.type = (el->flags.type & sc_type_element_mask) | (type & ~sc_type_element_mask);
     else
         r = SC_RESULT_ERROR_NO_WRITE_RIGHTS;
 
-    sc_storage_element_unlock(ctx, addr);
+    unlock:
+    {
+        sc_storage_element_unlock(ctx, addr);
+    }
     return r;
 }
 
@@ -761,6 +790,12 @@ sc_result sc_storage_get_arc_begin(const sc_memory_context *ctx, sc_addr addr, s
         return SC_RESULT_ERROR;
 
     sc_result res = SC_RESULT_ERROR_INVALID_TYPE;
+    if (sc_element_is_valid(el) == SC_FALSE)
+    {
+        res = SC_RESULT_ERROR_INVALID_STATE;
+        goto unlock;
+    }
+
     if (sc_access_lvl_check_read(ctx->access_levels, el->flags.access_levels))
     {
         if (el->flags.type & sc_type_arc_mask)
@@ -768,10 +803,13 @@ sc_result sc_storage_get_arc_begin(const sc_memory_context *ctx, sc_addr addr, s
             *result = el->arc.begin;
             res = SC_RESULT_OK;
         }
-    }else
+    } else
         res = SC_RESULT_ERROR_NO_READ_RIGHTS;
 
-    sc_storage_element_unlock(ctx, addr);
+    unlock:
+    {
+        sc_storage_element_unlock(ctx, addr);
+    }
     return res;
 }
 
@@ -782,6 +820,12 @@ sc_result sc_storage_get_arc_end(const sc_memory_context *ctx, sc_addr addr, sc_
         return SC_RESULT_ERROR;
 
     sc_result res = SC_RESULT_ERROR_INVALID_TYPE;
+    if (sc_element_is_valid(el) == SC_FALSE)
+    {
+        res = SC_RESULT_ERROR_INVALID_STATE;
+        goto unlock;
+    }
+
     if (sc_access_lvl_check_read(ctx->access_levels, el->flags.access_levels))
     {
         if (el->flags.type & sc_type_arc_mask)
@@ -789,10 +833,13 @@ sc_result sc_storage_get_arc_end(const sc_memory_context *ctx, sc_addr addr, sc_
             *result = el->arc.end;
             res = SC_RESULT_OK;
         }
-    }else
+    } else
         res = SC_RESULT_ERROR_NO_READ_RIGHTS;
 
-    sc_storage_element_unlock(ctx, addr);
+    unlock:
+    {
+        sc_storage_element_unlock(ctx, addr);
+    }
     return res;
 }
 
@@ -806,18 +853,24 @@ sc_result sc_storage_set_link_content(const sc_memory_context *ctx, sc_addr addr
     sc_check_sum check_sum;
     sc_result result = SC_RESULT_ERROR;
 
+    if (sc_element_is_valid(el) == SC_FALSE)
+    {
+        result = SC_RESULT_ERROR_INVALID_STATE;
+        goto unlock;
+    }
+
     g_assert(stream != nullptr);
 
     if (!sc_access_lvl_check_write(ctx->access_levels, el->flags.access_levels))
     {
         result = SC_RESULT_ERROR_NO_WRITE_RIGHTS;
-        goto clean;
+        goto unlock;
     }
 
     if (!(el->flags.type & sc_type_link))
     {
         result = SC_RESULT_ERROR_INVALID_TYPE;
-        goto clean;
+        goto unlock;
     }
 
     // calculate checksum for data
@@ -829,7 +882,7 @@ sc_result sc_storage_set_link_content(const sc_memory_context *ctx, sc_addr addr
     }
     g_assert(result == SC_RESULT_OK);
 
-    clean:
+    unlock:
     {
         if (el != nullptr)
             STORAGE_CHECK_CALL(sc_storage_element_unlock(ctx, addr));
@@ -846,16 +899,22 @@ sc_result sc_storage_get_link_content(const sc_memory_context *ctx, sc_addr addr
 
     sc_result res = SC_RESULT_ERROR;
 
+    if (sc_element_is_valid(el) == SC_FALSE)
+    {
+        res = SC_RESULT_ERROR_INVALID_STATE;
+        goto unlock;
+    }
+
     if (!sc_access_lvl_check_read(ctx->access_levels, el->flags.access_levels))
     {
         res = SC_RESULT_ERROR_NO_READ_RIGHTS;
-        goto clean;
+        goto unlock;
     }
 
     if (!(el->flags.type & sc_type_link))
     {
         res = SC_RESULT_ERROR_INVALID_TYPE;
-        goto clean;
+        goto unlock;
     }
 
     // prepare checksum
@@ -865,7 +924,7 @@ sc_result sc_storage_get_link_content(const sc_memory_context *ctx, sc_addr addr
 
     res = sc_fs_storage_get_checksum_content(&checksum, stream);
 
-    clean:
+    unlock:
     {
         if (el != nullptr)
             STORAGE_CHECK_CALL(sc_storage_element_unlock(ctx, addr));

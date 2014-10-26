@@ -43,6 +43,11 @@ sc_uint16 sc_element_get_iterator_refs(sc_element *element)
     return element->flags.refs.it;
 }
 
+sc_bool sc_element_is_valid(sc_element *element)
+{
+    return (element->flags.type == 0 || element->flags.type & sc_flag_request_deletion) ? SC_FALSE : SC_TRUE;
+}
+
 sc_bool sc_element_itref_add(sc_element *element)
 {
     if (element->flags.refs.it == G_MAXUINT16)
