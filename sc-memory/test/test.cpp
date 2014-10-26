@@ -294,6 +294,63 @@ void test_access_levels()
     shutdown_memory();
 }
 
+void test_deletion()
+{
+    initialize_memory();
+
+    sc_memory_context *ctx = sc_memory_context_new(sc_access_lvl_make_max);
+
+    // dest deletion of elements in iterator range (not current position of iterator)
+    {
+        sc_addr node = sc_memory_node_new(ctx, 0);
+
+        sc_addr arcs[5], nodes[5];
+
+        for (sc_uint32 i = 0; i < 5; ++i)
+        {
+            nodes[i] = sc_memory_node_new(ctx, 0);
+            arcs[i] = sc_memory_arc_new(ctx, sc_type_arc_pos_const_perm, node, nodes[i]);
+        }
+
+        sc_iterator3 *it = sc_iterator3_f_a_a_new(ctx,
+                                                  node,
+                                                  sc_type_arc_pos_const_perm,
+                                                  sc_type_node);
+        /// @todo reqrite test to don't depend on order of iterator results.
+        /// Now memory stores arcs in reverse to creation order
+        sc_uint32 i = 5;
+        while (sc_iterator3_next(it))
+        {
+            --i;
+            g_assert(SC_ADDR_IS_EQUAL(nodes[i], sc_iterator3_value(it, 2)));
+        }
+        g_assert(i == 0);
+
+        sc_iterator3_free(it);
+
+        // delete on of arcs, and check iterator
+        sc_memory_element_free(ctx, nodes[1]);
+        i = 5;
+        it = sc_iterator3_f_a_a_new(ctx,
+                                    node,
+                                    sc_type_arc_pos_const_perm,
+                                    sc_type_node);
+        while (sc_iterator3_next(it))
+        {
+            i--;
+            if (i == 1)
+                i--;
+            g_assert(SC_ADDR_IS_EQUAL(nodes[i], sc_iterator3_value(it, 2)));
+        }
+        g_assert(i == 0);
+    }
+
+
+
+    sc_memory_context_free(ctx);
+    shutdown_memory();
+}
+
 // ---------------------------
 int main(int argc, char *argv[])
 {
@@ -310,6 +367,8 @@ int main(int argc, char *argv[])
     g_test_add_func("/common/context", test_context);
 
     g_test_add_func("/common/access", test_access_levels);
+
+    g_test_add_func("/common/deletion", test_deletion);
     g_test_run();
 
 
