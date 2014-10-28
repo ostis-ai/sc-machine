@@ -194,8 +194,9 @@ const String StringUtil::replaceAll(const String& source, const String& replaceW
     {
         pos = result.find(replaceWhat,pos);
         if (pos == String::npos) break;
-        result.replace(pos,replaceWhat.size(),replaceWithWhat);
+        result.replace(pos, replaceWhat.size(), replaceWithWhat);
         pos += replaceWithWhat.size();
     }
     return result;
 }
+

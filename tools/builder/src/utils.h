@@ -49,6 +49,7 @@ public:
 
     //! Replace all substrings in string
     static const String replaceAll(const String& source, const String& replaceWhat, const String& replaceWithWhat);
+
 };
 
 #define PARSE_ERROR(source, line, description) {std::stringstream ss; ss << "Error: '" << (description) << "' in " << (source) << " at line " << (line); throw std::exception()};

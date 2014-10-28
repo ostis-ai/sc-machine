@@ -81,6 +81,8 @@ protected:
     //! Process specified file
     bool processFile(const String &filename);
 
+    //! Collect files in directory
+    void collectFiles(const String & path);
     //! Collecting files for process
     void collectFiles();
 
