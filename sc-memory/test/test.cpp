@@ -225,7 +225,7 @@ void test_access_levels()
     g_assert(sc_iterator3_next(it3) == SC_TRUE);
     g_assert(SC_ADDR_IS_EQUAL(sc_iterator3_value(it3, 0), addr1));
     g_assert(SC_ADDR_IS_EQUAL(sc_iterator3_value(it3, 1), arc1));
-    g_assert(!sc_iterator3_next(it3));
+    g_assert(sc_iterator3_next(it3) == SC_FALSE);
     sc_iterator3_free(it3);
 
     it3 = sc_iterator3_f_a_a_new(ctx1, addr1, 0, 0);
@@ -233,14 +233,14 @@ void test_access_levels()
     g_assert(sc_iterator3_next(it3) == SC_TRUE);
     g_assert(SC_ADDR_IS_EQUAL(sc_iterator3_value(it3, 1), arc1));
     g_assert(SC_ADDR_IS_EQUAL(sc_iterator3_value(it3, 2), addr2));
-    g_assert(!sc_iterator3_next(it3));
+    g_assert(sc_iterator3_next(it3) == SC_FALSE);
     sc_iterator3_free(it3);
 
     it3 = sc_iterator3_f_a_f_new(ctx1, addr1, 0, addr2);
     g_assert(it3 != 0);
     g_assert(sc_iterator3_next(it3) == SC_TRUE);
     g_assert(SC_ADDR_IS_EQUAL(sc_iterator3_value(it3, 1), arc1));
-    g_assert(!sc_iterator3_next(it3));
+    g_assert(sc_iterator3_next(it3) == SC_FALSE);
     sc_iterator3_free(it3);
 
     it3 = sc_iterator3_f_a_a_new(ctx2, el_addr, 0, 0);
@@ -251,7 +251,7 @@ void test_access_levels()
     g_assert(sc_iterator3_next(it3) == SC_TRUE);
     g_assert(SC_ADDR_IS_EQUAL(sc_iterator3_value(it3, 1), arc2));
     g_assert(SC_ADDR_IS_EQUAL(sc_iterator3_value(it3, 2), arc1));
-    g_assert(!sc_iterator3_next(it3));
+    g_assert(sc_iterator3_next(it3) == SC_FALSE);
     sc_iterator3_free(it3);
 
     it3 = sc_iterator3_a_a_f_new(ctx2, 0, 0, arc1);
@@ -271,7 +271,7 @@ void test_access_levels()
     g_assert(SC_ADDR_IS_EQUAL(sc_iterator5_value(it5, 1), arc1));
     g_assert(SC_ADDR_IS_EQUAL(sc_iterator5_value(it5, 3), arc2));
     g_assert(SC_ADDR_IS_EQUAL(sc_iterator5_value(it5, 4), el_addr));
-    g_assert(!sc_iterator5_next(it5));
+    g_assert(sc_iterator5_next(it5) == SC_FALSE);
     sc_iterator5_free(it5);
 
     it5 = sc_iterator5_a_a_f_a_f_new(ctx2, 0, 0, addr2, 0, el_addr);
@@ -283,7 +283,7 @@ void test_access_levels()
     g_assert(SC_ADDR_IS_EQUAL(sc_iterator5_value(it5, 0), addr1));
     g_assert(SC_ADDR_IS_EQUAL(sc_iterator5_value(it5, 1), arc1));
     g_assert(SC_ADDR_IS_EQUAL(sc_iterator5_value(it5, 3), arc2));
-    g_assert(!sc_iterator5_next(it5));
+    g_assert(sc_iterator5_next(it5) == SC_FALSE);
     sc_iterator5_free(it5);
 
     /// @todo add test for access levels in events
@@ -345,8 +345,6 @@ void test_deletion()
         g_assert(i == 0);
     }
 
-
-
     sc_memory_context_free(ctx);
     shutdown_memory();
 }
@@ -365,10 +363,9 @@ int main(int argc, char *argv[])
 
     g_test_init(&argc, &argv, NULL);
     g_test_add_func("/common/context", test_context);
-
     g_test_add_func("/common/access", test_access_levels);
-
     g_test_add_func("/common/deletion", test_deletion);
+
     g_test_run();
 
 

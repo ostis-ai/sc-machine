@@ -503,7 +503,7 @@ sc_result sc_storage_element_free(const sc_memory_context *ctx, sc_addr addr)
                 STORAGE_CHECK_CALL(sc_storage_element_lock(ctx, el->arc.end, &e_el));
                 need_unlock = SC_TRUE;
             }
-            if (SC_ADDR_IS_EQUAL(addr, b_el->first_in_arc))
+            if (SC_ADDR_IS_EQUAL(addr, e_el->first_in_arc))
                 e_el->first_in_arc = next_arc;
 
             sc_event_emit(el->arc.end, e_el->flags.access_levels, SC_EVENT_REMOVE_INPUT_ARC, addr);
