@@ -5,7 +5,7 @@ make
 sudo make install
 
 echo "Create upstart configuration file for redis server"
-sudo cat <<EOF > /etc/init/redis-server.conf
+sudo bash -c 'cat <<EOF > /etc/init/redis-server.conf
 start on runlevel [2345]
 stop on runlevel [016]
 
@@ -13,6 +13,6 @@ respawn
 script
         exec redis-server
 end script
-EOF
+EOF'
 
 sudo start redis-server
