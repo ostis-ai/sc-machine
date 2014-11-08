@@ -231,6 +231,7 @@ sc_element* sc_segment_lock_element_try(const sc_memory_context *ctx, sc_segment
 {
     g_assert(offset < SC_SEGMENT_ELEMENTS_COUNT && seg != nullptr);
     sc_segment_section *section = &seg->sections[offset % SC_CONCURRENCY_LEVEL];
+
     if (sc_segment_section_lock_try(ctx, section, max_attempts) == SC_TRUE)
         return &seg->elements[offset];
 
@@ -254,7 +255,7 @@ void sc_segment_section_lock(const sc_memory_context *ctx, sc_segment_section *s
         }
     }
 
-    if (section->ctx_lock != 0 && section->ctx_lock != ctx)
+    if (g_atomic_pointer_get(&section->ctx_lock) != 0 && g_atomic_pointer_get(&section->ctx_lock) != ctx)
     {
         g_atomic_int_set(&section->internal_lock, 0);
         goto lock;
@@ -281,7 +282,7 @@ sc_bool sc_segment_section_lock_try(const sc_memory_context *ctx, sc_segment_sec
         }
     }
 
-    if (section->ctx_lock != 0 && section->ctx_lock != ctx)
+    if (g_atomic_pointer_get(&section->ctx_lock) != 0 && g_atomic_pointer_get(&section->ctx_lock) != ctx)
     {
         g_atomic_int_set(&section->internal_lock, 0);
         if (++attempts >= max_attempts)
