@@ -356,10 +356,10 @@ sc_type GwfTranslator::convertType(const String &type)
     if (type == "pair/noorient")
         return sc_type_edge_common;
 
-    if (type == "pair/const/synonym")
+    if (type == "pair/const/synonym" || type == "pair/const/noorient")
         return sc_type_edge_common | sc_type_const;
 
-    if (type == "pair/var/synonym")
+    if (type == "pair/var/synonym" || type == "pair/var/noorient")
         return sc_type_edge_common | sc_type_var;
 
     if (type == "pair/const/orient")
@@ -404,7 +404,11 @@ sc_type GwfTranslator::convertType(const String &type)
     if (type == "arc/var/pos/temp")
         return sc_type_arc_access | sc_type_var | sc_type_arc_pos | sc_type_arc_temp;
 
-    return sc_type_node;
+    THROW_EXCEPT(Exception::ERR_ITEM_NOT_FOUND,
+                 "Can't determine type for " << type,
+                 mParams.fileName, -1);
+
+    return 0;
 }
 
 // -------------------
