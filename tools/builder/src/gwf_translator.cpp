@@ -338,10 +338,10 @@ sc_type GwfTranslator::convertType(const String &type)
     if (type == "node/var/group")
         return sc_type_node | sc_type_node_class | sc_type_var;
 
-    if (type == "node/const/symmetry" || type == "node/const/tuple")
+    if (type == "node/const/asymmetry" || type == "node/const/symmetry" || type == "node/const/tuple")
         return sc_type_node | sc_type_node_tuple | sc_type_const;
 
-    if (type == "node/var/symmetry" || type == "node/var/tuple")
+    if (type == "node/var/asymmetry" || type == "node/var/symmetry" || type == "node/var/tuple")
         return sc_type_node | sc_type_node_tuple | sc_type_var;
 
     // -------
