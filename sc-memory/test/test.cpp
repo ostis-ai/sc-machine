@@ -3,6 +3,7 @@ extern "C"
 {
 #include "sc_memory_headers.h"
 #include "sc-store/sc_store.h"
+#include "sc_helper.h"
 }
 #include <iostream>
 #include <vector>
@@ -453,6 +454,27 @@ void test_deletion()
         sc_iterator5_free(it);
     }
 
+    // links
+    {
+        sc_addr link = sc_memory_link_new(ctx);
+
+        char const *data = "test content";
+        sc_stream *stream = sc_stream_memory_new(data, strlen(data), SC_STREAM_READ, SC_FALSE);
+        g_assert(sc_memory_set_link_content(ctx, link, stream) == SC_RESULT_OK);
+
+        sc_addr *results = 0;
+        sc_uint32 count = 0;
+        g_assert(sc_memory_find_links_with_content(ctx, stream, &results, &count) == SC_RESULT_OK);
+        g_assert(count == 1);
+        g_assert(SC_ADDR_IS_EQUAL(link, results[0]));
+
+        g_assert(sc_memory_element_free(ctx, link) == SC_RESULT_OK);
+        g_assert(sc_memory_find_links_with_content(ctx, stream, &results, &count) == SC_RESULT_ERROR_NOT_FOUND);
+        g_assert(count == 0);
+
+        sc_stream_free(stream);
+    }
+
     sc_memory_context_free(ctx);
     shutdown_memory();
 }
@@ -475,6 +497,54 @@ void test_states()
     shutdown_memory();
 }
 
+void test_links()
+{
+    initialize_memory();
+    sc_memory_context *ctx = sc_memory_context_new(sc_access_lvl_make_max);
+
+    // check change of content
+    {
+        char const *data = "test content";
+        sc_stream *stream = sc_stream_memory_new(data, strlen(data), SC_STREAM_READ, SC_FALSE);
+        char const *data2 = "test content 2";
+        sc_stream *stream2 = sc_stream_memory_new(data2, strlen(data2), SC_STREAM_READ, SC_FALSE);
+
+        sc_addr link = sc_memory_link_new(ctx);
+        g_assert(sc_memory_set_link_content(ctx, link, stream) == SC_RESULT_OK);
+        g_assert(sc_memory_set_link_content(ctx, link, stream2) == SC_RESULT_OK);
+
+        sc_addr *result;
+        sc_uint32 count;
+        g_assert(sc_memory_find_links_with_content(ctx, stream, &result, &count) == SC_RESULT_ERROR_NOT_FOUND);
+        g_assert(count == 0);
+
+        g_assert(sc_memory_find_links_with_content(ctx, stream2, &result, &count) == SC_RESULT_OK);
+        g_assert(count == 1);
+
+        sc_stream *rstream;
+        g_assert(sc_memory_get_link_content(ctx, link, &rstream) == SC_RESULT_OK);
+        g_assert(rstream != nullptr);
+        sc_uint32 l2, lr;
+        g_assert(sc_stream_get_length(stream2, &l2) == SC_RESULT_OK);
+        g_assert(sc_stream_get_length(rstream, &lr) == SC_RESULT_OK);
+
+        sc_uint32 i, read;
+        char b2, br;
+        for (i = 0; i < lr; ++i)
+        {
+            g_assert(sc_stream_read_data(stream2, &b2, 1, &read) == SC_RESULT_OK);
+            g_assert(sc_stream_read_data(rstream, &br, 1, &read) == SC_RESULT_OK);
+            g_assert(b2 == br);
+        }
+
+        sc_stream_free(stream);
+        sc_stream_free(stream2);
+    }
+
+    sc_memory_context_free(ctx);
+    shutdown_memory();
+}
+
 // ---------------------------
 int main(int argc, char *argv[])
 {
@@ -492,6 +562,7 @@ int main(int argc, char *argv[])
     g_test_add_func("/common/access", test_access_levels);
     g_test_add_func("/common/deletion", test_deletion);
 	g_test_add_func("/common/states", test_states);
+    g_test_add_func("/common/links", test_links);
     g_test_run();
 
 

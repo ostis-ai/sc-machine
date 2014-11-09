@@ -21,6 +21,7 @@ along with OSTIS.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include "sc_link_helpers.h"
+#include "sc_element.h"
 
 #include <stdlib.h>
 #include <memory.h>
@@ -54,6 +55,8 @@ sc_bool sc_link_calculate_checksum(const sc_stream *stream, sc_check_sum *check_
 
     // store results
     check_sum->len = g_checksum_type_get_length(SC_DEFAULT_CHECKSUM);
+    g_assert(check_sum->len == SC_CHECKSUM_LEN);
+
     result = g_checksum_get_string(checksum);
     memcpy(&(check_sum->data[0]), result, check_sum->len);
 

@@ -124,6 +124,8 @@ struct _sc_element
 /// All functions must be called for locked sc-elements
 void sc_element_set_type(sc_element *element, sc_type type);
 
+sc_bool sc_element_is_checksum_empty(sc_element *element);
+
 sc_bool sc_element_is_request_deletion(sc_element *element);
 sc_uint16 sc_element_get_iterator_refs(sc_element *element);
 sc_bool sc_element_is_valid(sc_element *element);

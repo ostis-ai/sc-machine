@@ -242,7 +242,8 @@ sc_result sc_redis_engine_find(const sc_fm_engine *engine, const sc_check_sum *c
 
         res = SC_RESULT_OK;
         goto clean;
-    }
+    } else
+        res = SC_RESULT_ERROR_NOT_FOUND;
 
     clean:
     {

@@ -331,6 +331,12 @@ sc_result sc_fs_storage_add_content_addr(sc_addr addr, const sc_check_sum *check
     return sc_fm_addr_ref_append(fm_engine, addr, check_sum);
 }
 
+sc_result sc_fs_storage_remove_content_addr(sc_addr addr, const sc_check_sum *check_sum)
+{
+    g_assert(fm_engine != 0);
+    return sc_fm_addr_ref_remove(fm_engine, addr, check_sum);
+}
+
 sc_result sc_fs_storage_find_links_with_content(const sc_check_sum *check_sum, sc_addr **result, sc_uint32 *result_count)
 {
     g_assert(fm_engine != 0);

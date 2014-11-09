@@ -457,8 +457,14 @@ sc_result sc_storage_element_free(const sc_memory_context *ctx, sc_addr addr)
         if (el->flags.type & sc_flag_request_deletion)
             continue;
 
-        // delete arcs from output and input lists
-        if (el->flags.type & sc_type_arc_mask)
+        if (el->flags.type & sc_type_link)
+        {
+            sc_check_sum sum;
+            memcpy(&sum.data[0], el->content.data, SC_CHECKSUM_LEN);
+            sum.len = SC_CHECKSUM_LEN;
+
+            STORAGE_CHECK_CALL(sc_fs_storage_remove_content_addr(addr, &sum));
+        } else if (el->flags.type & sc_type_arc_mask)
         {
             // output arcs
             sc_addr prev_arc = el->arc.prev_out_arc;
@@ -883,7 +889,15 @@ sc_result sc_storage_set_link_content(const sc_memory_context *ctx, sc_addr addr
         goto unlock;
     }
 
-    // calculate checksum for data
+    if (sc_element_is_checksum_empty(el) == SC_FALSE)
+    {
+        sc_check_sum sum;
+        sum.len = SC_CHECKSUM_LEN;
+        memcpy(&sum.data[0], el->content.data, SC_CHECKSUM_LEN);
+
+        STORAGE_CHECK_CALL(sc_fs_storage_remove_content_addr(addr, &sum));
+    }
+
     if (sc_link_calculate_checksum(stream, &check_sum) == SC_TRUE)
     {
         result = sc_fs_storage_write_content(addr, &check_sum, stream);
@@ -948,6 +962,7 @@ sc_result sc_storage_find_links_with_content(const sc_memory_context *ctx, const
     sc_result r = SC_RESULT_ERROR;
 
     *result = 0;
+    *result_count = 0;
     if (sc_link_calculate_checksum(stream, &check_sum) == SC_TRUE)
     {
         sc_addr * tmp_res = 0;
@@ -984,7 +999,7 @@ sc_result sc_storage_find_links_with_content(const sc_memory_context *ctx, const
             if (*result_count == 0 && *result)
             {
                 g_free(*result);
-                r = SC_RESULT_ERROR;
+                r = SC_RESULT_ERROR_NOT_FOUND;
             }
         }
     }
