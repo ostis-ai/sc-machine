@@ -502,7 +502,7 @@ sc_addr SCsTranslator::createScAddr(sElement *el)
             }
 
         } else
-        {
+        {           
             sc_stream *stream = sc_stream_memory_new(el->link_data.c_str(), el->link_data.size(), SC_STREAM_READ, SC_FALSE);
             sc_memory_set_link_content(mContext, addr, stream);
             sc_stream_free(stream);
@@ -617,6 +617,8 @@ sElement* SCsTranslator::_addLink(const String &idtf, bool is_file, const String
     return el;
 }
 
+#define CHECK_LINK_DATA(__d) if (__d.empty()) { THROW_EXCEPT(Exception::ERR_PARSE, "Empty link content", mParams.fileName, tok->getLine(tok)) }
+
 sElement* SCsTranslator::parseElementTree(pANTLR3_BASE_TREE tree, const String *assignIdtf)
 {
     pANTLR3_COMMON_TOKEN tok = tree->getToken(tree);
@@ -643,7 +645,11 @@ sElement* SCsTranslator::parseElementTree(pANTLR3_BASE_TREE tree, const String *
     }
 
     if (tok->type == LINK)
+    {
+        String data = GET_NODE_TEXT(tree);
+        CHECK_LINK_DATA(data);
         res = _addLink(assignIdtf ? *assignIdtf : "", true, GET_NODE_TEXT(tree));
+    }
 
     if (tok->type == CONTENT)
     {
@@ -713,11 +719,16 @@ sElement* SCsTranslator::parseElementTree(pANTLR3_BASE_TREE tree, const String *
         } else
         {
             if (StringUtil::startsWith(content, "^\"", false))
-                res = _addLink("", true, content.substr(1));
+            {
+                String data = content.substr(1);
+                CHECK_LINK_DATA(data);
+                res = _addLink("", true, data);
+            }
             else
             {
                 content = StringUtil::replaceAll(content, "\\[", "[");
-                 content = StringUtil::replaceAll(content, "\\]", "]");
+                content = StringUtil::replaceAll(content, "\\]", "]");
+                CHECK_LINK_DATA(content);
                 res = _addLink("", false, content);
             }
         }
