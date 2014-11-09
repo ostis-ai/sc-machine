@@ -314,13 +314,7 @@ sc_result sc_storage_element_free(const sc_memory_context *ctx, sc_addr addr)
         {
             STORAGE_CHECK_CALL(sc_storage_element_lock(ctx, _addr, &el));
 
-            if (el->flags.type & sc_flag_request_deletion)
-            {
-                STORAGE_CHECK_CALL(sc_storage_element_unlock(ctx, _addr));
-                continue;
-            }
-
-            g_assert(el != 0 && el->flags.type != 0);
+            g_assert(el->flags.type != 0);
             g_hash_table_insert(remove_table, p_addr, el);
             g_hash_table_insert(lock_table, p_addr, el);
         }
@@ -403,11 +397,15 @@ sc_result sc_storage_element_free(const sc_memory_context *ctx, sc_addr addr)
 
             if (el2 == nullptr)
             {
-                sc_storage_element_lock(ctx, _addr, &el2);
-                g_assert(el2 != nullptr);
+                el2 = g_hash_table_lookup(lock_table, p_addr);
+                if (el2 == nullptr)
+                {
+                    sc_storage_element_lock(ctx, _addr, &el2);
+                    g_hash_table_insert(lock_table, p_addr, el2);
+                }
 
+                g_assert(el2 != nullptr);
                 g_hash_table_insert(remove_table, p_addr, el2);
-                g_hash_table_insert(lock_table, p_addr, el2);
 
                 remove_list = g_slist_append(remove_list, p_addr);
             }
@@ -423,11 +421,15 @@ sc_result sc_storage_element_free(const sc_memory_context *ctx, sc_addr addr)
 
             if (el2 == nullptr)
             {
-                sc_storage_element_lock(ctx, _addr, &el2);
-                g_assert(el2 != nullptr);
+                el2 = g_hash_table_lookup(lock_table, p_addr);
+                if (el2 == nullptr)
+                {
+                    sc_storage_element_lock(ctx, _addr, &el2);
+                    g_hash_table_insert(lock_table, p_addr, el2);
+                }
 
+                g_assert(el2 != nullptr);
                 g_hash_table_insert(remove_table, p_addr, el2);
-                g_hash_table_insert(lock_table, p_addr, el2);
 
                 remove_list = g_slist_append(remove_list, p_addr);
             }
@@ -451,6 +453,9 @@ sc_result sc_storage_element_free(const sc_memory_context *ctx, sc_addr addr)
         addr.offset = SC_ADDR_LOCAL_OFFSET_FROM_INT(uint_addr);
         addr.seg = SC_ADDR_LOCAL_SEG_FROM_INT(uint_addr);
         sc_access_levels el_access = el->flags.access_levels;
+
+        if (el->flags.type & sc_flag_request_deletion)
+            continue;
 
         // delete arcs from output and input lists
         if (el->flags.type & sc_type_arc_mask)
