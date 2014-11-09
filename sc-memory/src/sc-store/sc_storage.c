@@ -30,6 +30,7 @@ along with OSTIS.  If not, see <http://www.gnu.org/licenses/>.
 #include "sc_event.h"
 #include "sc_config.h"
 #include "sc_iterator.h"
+#include "sc_stream_memory.h"
 
 #include "sc_event/sc_event_private.h"
 #include "../sc_memory_private.h"
@@ -460,8 +461,14 @@ sc_result sc_storage_element_free(const sc_memory_context *ctx, sc_addr addr)
         if (el->flags.type & sc_type_link)
         {
             sc_check_sum sum;
-            memcpy(&sum.data[0], el->content.data, SC_CHECKSUM_LEN);
-            sum.len = SC_CHECKSUM_LEN;
+
+            if (el->flags.type & sc_flag_link_self_container)
+                sc_link_self_container_calculate_checksum(el, &sum);
+            else
+            {
+                memcpy(&sum.data[0], el->content.data, SC_CHECKSUM_LEN);
+                sum.len = SC_CHECKSUM_LEN;
+            }
 
             STORAGE_CHECK_CALL(sc_fs_storage_remove_content_addr(addr, &sum));
         } else if (el->flags.type & sc_type_arc_mask)
@@ -892,17 +899,45 @@ sc_result sc_storage_set_link_content(const sc_memory_context *ctx, sc_addr addr
     if (sc_element_is_checksum_empty(el) == SC_FALSE)
     {
         sc_check_sum sum;
-        sum.len = SC_CHECKSUM_LEN;
-        memcpy(&sum.data[0], el->content.data, SC_CHECKSUM_LEN);
+        if (el->flags.type & sc_flag_link_self_container)
+            sc_link_self_container_calculate_checksum(el, &sum);
+        else
+        {
+            sum.len = SC_CHECKSUM_LEN;
+            memcpy(&sum.data[0], el->content.data, SC_CHECKSUM_LEN);
+        }
 
         STORAGE_CHECK_CALL(sc_fs_storage_remove_content_addr(addr, &sum));
     }
 
     if (sc_link_calculate_checksum(stream, &check_sum) == SC_TRUE)
     {
-        result = sc_fs_storage_write_content(addr, &check_sum, stream);
-        memcpy(el->content.data, check_sum.data, check_sum.len);
-        result = SC_RESULT_OK;
+        sc_uint32 len = 0;
+        STORAGE_CHECK_CALL(sc_stream_get_length(stream, &len));
+        if (len >= SC_CHECKSUM_LEN)
+        {
+            el->flags.type &= ~sc_flag_link_self_container;
+
+            result = sc_fs_storage_write_content(addr, &check_sum, stream);
+            memcpy(el->content.data, check_sum.data, check_sum.len);
+        } else
+        {
+            G_STATIC_ASSERT(SC_CHECKSUM_LEN < 256);
+            el->flags.type |= sc_flag_link_self_container;
+
+            char buff[SC_CHECKSUM_LEN];
+            sc_uint32 read = 0;
+            STORAGE_CHECK_CALL(sc_stream_read_data(stream, &buff[0], len, &read));
+            g_assert(read == len);
+
+            el->content.data[0] = (sc_uint8)len;
+            memcpy(&el->content.data[1], &buff[0], len);
+            result = SC_RESULT_OK;
+
+            sc_check_sum sum;
+            STORAGE_CHECK_CALL(sc_link_calculate_checksum(stream, &sum));
+            sc_fs_storage_add_content_addr(addr, &sum);
+        }
     }
     g_assert(result == SC_RESULT_OK);
 
@@ -939,12 +974,24 @@ sc_result sc_storage_get_link_content(const sc_memory_context *ctx, sc_addr addr
         goto unlock;
     }
 
-    // prepare checksum
-    sc_check_sum checksum;
-    checksum.len = SC_CHECKSUM_LEN;
-    memcpy(checksum.data, el->content.data, checksum.len);
+    if (el->flags.type & sc_flag_link_self_container)
+    {
+        sc_uint8 len = el->content.data[0];
+        g_assert(len < SC_CHECKSUM_LEN);
+        gchar *buff = g_new0(gchar, len);
+        memcpy(buff, &el->content.data[1], len);
+        *stream = sc_stream_memory_new(buff, len, SC_STREAM_READ, SC_TRUE);
 
-    res = sc_fs_storage_get_checksum_content(&checksum, stream);
+        res = SC_RESULT_OK;
+    } else
+    {
+        // prepare checksum
+        sc_check_sum checksum;
+        checksum.len = SC_CHECKSUM_LEN;
+        memcpy(checksum.data, el->content.data, checksum.len);
+
+        res = sc_fs_storage_get_checksum_content(&checksum, stream);
+    }
 
     unlock:
     {

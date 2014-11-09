@@ -319,6 +319,9 @@ sc_result sc_fs_storage_write_content(sc_addr addr, const sc_check_sum *check_su
         }
         sc_stream_free(out_stream);
 
+        // reset input stream positon to begin
+        sc_stream_seek(stream, SC_STREAM_SEEK_SET, 0);
+
         return sc_fs_storage_add_content_addr(addr, check_sum);
     }
 

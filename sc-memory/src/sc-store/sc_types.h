@@ -149,7 +149,8 @@ typedef sc_uint16 sc_type;
 
 // just for internal usage
 #define sc_flag_request_deletion    (0x4000)
-#define sc_flags_remove(x)          ((x) & (~sc_flag_request_deletion))
+#define sc_flag_link_self_container (0x8000)
+#define sc_flags_remove(x)          ((x) & ~(sc_flag_request_deletion | sc_flag_link_self_container))
 
 // locks
 #define sc_lock_out_in      0x1

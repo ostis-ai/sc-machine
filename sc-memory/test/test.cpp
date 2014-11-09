@@ -497,6 +497,32 @@ void test_states()
     shutdown_memory();
 }
 
+sc_bool test_stream_equal(sc_stream const *s1, sc_stream const *s2)
+{
+    sc_uint32 l1, l2;
+    g_assert(sc_stream_get_length(s1, &l1) == SC_RESULT_OK);
+    g_assert(sc_stream_get_length(s2, &l2) == SC_RESULT_OK);
+
+    if (l1 != l2)
+        return SC_FALSE;
+
+    sc_uint32 i, read;
+    char b1, b2;
+    sc_bool res = SC_TRUE;
+    for (i = 0; i < l1; ++i)
+    {
+        g_assert(sc_stream_read_data(s1, &b1, 1, &read) == SC_RESULT_OK);
+        g_assert(sc_stream_read_data(s2, &b2, 1, &read) == SC_RESULT_OK);
+        if (b1 != b2)
+        {
+            res = SC_FALSE;
+            break;
+        }
+    }
+
+    return res;
+}
+
 void test_links()
 {
     initialize_memory();
@@ -524,20 +550,63 @@ void test_links()
         sc_stream *rstream;
         g_assert(sc_memory_get_link_content(ctx, link, &rstream) == SC_RESULT_OK);
         g_assert(rstream != nullptr);
-        sc_uint32 l2, lr;
-        g_assert(sc_stream_get_length(stream2, &l2) == SC_RESULT_OK);
-        g_assert(sc_stream_get_length(rstream, &lr) == SC_RESULT_OK);
-
-        sc_uint32 i, read;
-        char b2, br;
-        for (i = 0; i < lr; ++i)
-        {
-            g_assert(sc_stream_read_data(stream2, &b2, 1, &read) == SC_RESULT_OK);
-            g_assert(sc_stream_read_data(rstream, &br, 1, &read) == SC_RESULT_OK);
-            g_assert(b2 == br);
-        }
+        g_assert(test_stream_equal(stream2, rstream) == SC_TRUE);
 
         sc_stream_free(stream);
+        sc_stream_free(stream2);
+    }
+
+    // test links store in memory
+    {
+        char const *data = "short content";
+        char const *data2 = "very large content, that will be store in file memory";
+
+        g_assert(strlen(data) < SC_CHECKSUM_LEN);
+        g_assert(strlen(data2) >= SC_CHECKSUM_LEN);
+
+        sc_addr link1 = sc_memory_link_new(ctx);
+        sc_addr link2 = sc_memory_link_new(ctx);
+
+        sc_stream *stream1 = sc_stream_memory_new(data, strlen(data), SC_STREAM_READ, SC_FALSE);
+        sc_stream *stream2 = sc_stream_memory_new(data2, strlen(data2), SC_STREAM_READ, SC_FALSE);
+
+        g_assert(sc_memory_set_link_content(ctx, link1, stream1) == SC_RESULT_OK);
+        g_assert(sc_memory_set_link_content(ctx, link2, stream2) == SC_RESULT_OK);
+
+        sc_stream *s1 = 0, *s2 = 0;
+        g_assert(sc_memory_get_link_content(ctx, link1, &s1) == SC_RESULT_OK);
+        g_assert(sc_memory_get_link_content(ctx, link2, &s2) == SC_RESULT_OK);
+
+        g_assert(test_stream_equal(s1, stream1) == SC_TRUE);
+        g_assert(test_stream_equal(s2, stream2) == SC_TRUE);
+
+        sc_stream_free(s1);
+        sc_stream_free(s2);
+
+        g_assert(sc_stream_seek(stream1, SC_STREAM_SEEK_SET, 0) == SC_RESULT_OK);
+        g_assert(sc_stream_seek(stream2, SC_STREAM_SEEK_SET, 0) == SC_RESULT_OK);
+
+        // find links
+        sc_addr *result;
+        sc_uint32 count;
+        g_assert(sc_memory_find_links_with_content(ctx, stream1, &result, &count) == SC_RESULT_OK);
+        g_assert(count == 1);
+        g_assert(SC_ADDR_IS_EQUAL(result[0], link1));
+
+        g_assert(sc_memory_find_links_with_content(ctx, stream2, &result, &count) == SC_RESULT_OK);
+        g_assert(count == 1);
+        g_assert(SC_ADDR_IS_EQUAL(result[0], link2));
+
+        g_assert(sc_memory_element_free(ctx, link1));
+        g_assert(sc_memory_element_free(ctx, link2));
+
+        g_assert(sc_memory_find_links_with_content(ctx, stream1, &result, &count) == SC_RESULT_ERROR_NOT_FOUND);
+        g_assert(count == 0);
+
+        g_assert(sc_memory_find_links_with_content(ctx, stream2, &result, &count) == SC_RESULT_ERROR_NOT_FOUND);
+        g_assert(count == 0);
+
+        sc_stream_free(stream1);
         sc_stream_free(stream2);
     }
 
