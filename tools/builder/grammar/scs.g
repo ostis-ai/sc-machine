@@ -43,6 +43,10 @@ tokens {
 #include "../parseutils.h"
 }
 
+@parser::apifuncs {
+    RECOGNIZER->displayRecognitionError = displayRecognitionError;
+}
+
 @rulecatch
 {
     if (HASEXCEPTION())
@@ -53,89 +57,89 @@ tokens {
 
 /* Parser rules */
 syntax
-	: (sentence SEP_SENTENCE!)* EOF
-	;
-	
+    : (sentence SEP_SENTENCE!)* EOF
+    ;
+    
 sentence
-	: sentence_level1
-	| sentence_level2_6
-	| sentence_assignment
-	;
-	
+    : sentence_level1
+    | sentence_level2_6
+    | sentence_assignment
+    ;
+    
 
 sentence_level2_6
-	:
-	| (idtf c1=CONNECTORS a1=attrs_idtf_list -> ^($c1 idtf $a1))
-	(SEP_IDTF c2=CONNECTORS a2=attrs_idtf_list -> $sentence_level2_6 ^($c2 idtf $a2))*
-	;
-	
+    :
+    | (idtf c1=CONNECTORS a1=attrs_idtf_list -> ^($c1 idtf $a1))
+    (SEP_IDTF c2=CONNECTORS a2=attrs_idtf_list -> $sentence_level2_6 ^($c2 idtf $a2))*
+    ;
+    
 sentence_level1
-	: idtf_level1 SEP_SIMPLE idtf_level1 SEP_SIMPLE idtf_level1 -> ^(SEP_SIMPLE idtf_level1+)
-	;
-	
-	
+    : idtf_level1 SEP_SIMPLE idtf_level1 SEP_SIMPLE idtf_level1 -> ^(SEP_SIMPLE idtf_level1+)
+    ;
+    
+    
 sentence_internal_list
-	: SEP_LINT  (sentence_internal SEP_SENTENCE)* SEP_RINT -> ^(SEP_LINT sentence_internal+)
-	;
-	
+    : SEP_LINT  (sentence_internal SEP_SENTENCE)* SEP_RINT -> ^(SEP_LINT sentence_internal+)
+    ;
+    
 sentence_assignment
-	: idtf SEP_ASSIGN idtf -> ^(SEP_ASSIGN idtf+)
-	;
-	
+    : idtf SEP_ASSIGN idtf -> ^(SEP_ASSIGN idtf+)
+    ;
+    
 sentence_internal
-	: CONNECTORS^ attrs_idtf_list
-	;
-	
+    : CONNECTORS^ attrs_idtf_list
+    ;
+    
 attrs_idtf_list
-	: idtf_attrs  (SEP_IDTF! idtf_attrs)*
-	;
-	
+    : idtf_attrs  (SEP_IDTF! idtf_attrs)*
+    ;
+    
 idtf_attrs
-	: attrs_list idtf_internal
-	;
-	
+    : attrs_list idtf_internal
+    ;
+    
 attrs_list
-	: (attr_sep)* 
-	;
-	
+    : (attr_sep)* 
+    ;
+    
 attr_sep
-	: idtf_level1 SEP_ATTR_VAR^
-	| idtf_level1 SEP_ATTR_CONST^
-	;
-	
+    : idtf_level1 SEP_ATTR_VAR^
+    | idtf_level1 SEP_ATTR_CONST^
+    ;
+    
 idtf_internal
-	: idtf^ sentence_internal_list?
-	;
+    : idtf^ sentence_internal_list?
+    ;
 
 idtf_tuple
-	: SEP_LTUPLE^ attrs_idtf_list  SEP_RTUPLE!
-	;
-	
+    : SEP_LTUPLE^ attrs_idtf_list  SEP_RTUPLE!
+    ;
+    
 idtf_set
-	: SEP_LSET^ attrs_idtf_list SEP_RSET!
-	;
+    : SEP_LSET^ attrs_idtf_list SEP_RSET!
+    ;
 
 idtf
-	: idtf_level1
-	| idtf_edge
-	| idtf_tuple
-	| idtf_set
-	| CONTENT
-	;
+    : idtf_level1
+    | idtf_edge
+    | idtf_tuple
+    | idtf_set
+    | CONTENT
+    ;
 
 idtf_level1
-	: ID_SYSTEM
-	| LINK
-	;
+    : ID_SYSTEM
+    | LINK
+    ;
 
 idtf_edge
-	: SEP_LPAR^ idtf CONNECTORS idtf SEP_RPAR! 
-	;
+    : SEP_LPAR^ idtf CONNECTORS idtf SEP_RPAR! 
+    ;
 
 // --------------- separators -----------------
 
 
-ID_SYSTEM  :	('a'..'z'|'A'..'Z'|'_'|'.'|'0'..'9'|'#')+
+ID_SYSTEM  :    ('a'..'z'|'A'..'Z'|'_'|'.'|'0'..'9'|'#')+
     ;
 
 COMMENT
@@ -144,12 +148,12 @@ COMMENT
     ;
 
 CONTENT
-   	: SEP_LCONTENT (~('[' | ']') | ('\\[' | '\\]'))* SEP_RCONTENT
-   	;
+    : SEP_LCONTENT (~('[' | ']') | ('\\[' | '\\]'))* SEP_RCONTENT
+    ;
 
 LINK
-	 :  '"' (   ~('"')  | '\\"'  )* '"'
-	 ;
+     :  '"' (   ~('"')  | '\\"'  )* '"'
+     ;
     
 CONNECTORS  :  ( 
                 '<>'

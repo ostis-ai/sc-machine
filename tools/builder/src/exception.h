@@ -225,8 +225,8 @@ public:
 };
 
 #ifndef THROW_EXCEPT
-#define THROW_EXCEPT(num, desc, file, line) \
-    {StringStream ss; ss << desc; throw ExceptionFactory::create(ExceptionCodeType<num>(), ss.str(), file, line);}
+#define THROW_EXCEPT(__num, __desc, __file, __line) \
+    {StringStream __ss; __ss << __desc; throw ExceptionFactory::create(ExceptionCodeType<__num>(), __ss.str(), __file, __line);}
 #endif
 
 #endif
