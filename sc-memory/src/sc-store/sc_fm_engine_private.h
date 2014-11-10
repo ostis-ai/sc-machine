@@ -41,7 +41,8 @@ typedef sc_result (*fEngineClear)(const sc_fm_engine *engine);
 typedef sc_result (*fEngineSave)(const sc_fm_engine *engine);
 //! Pointer to function, that destroys storage specified data
 typedef sc_result (*fEngineDestroyData)(const sc_fm_engine *engine);
-
+//! Pointer to function, that clean file memory state on sc-memory start (invalid backward links to sc-addrs)
+typedef sc_result (*fEngineCleanState)(const sc_fm_engine *engine);
 
 /*! Sturcture that provides file memory storage engine object
  */
@@ -57,6 +58,7 @@ struct _sc_fm_engine
     fEngineClear funcClear;
     fEngineSave funcSave;
     fEngineDestroyData funcDestroyData;
+    fEngineCleanState funcCleanState;
 };
 
 

@@ -239,7 +239,15 @@ sc_bool sc_fs_storage_read_from_path(sc_segment **segments, sc_uint32 *segments_
     g_message("Segments loaded: %u", idx);
 
     g_dir_close(dir);
-    return SC_TRUE;
+
+    g_assert(fm_engine != nullptr);
+    g_message("Clean file memory state");
+    sc_bool r = sc_fm_clean_state(fm_engine) == SC_RESULT_OK;
+
+    if (r == SC_FALSE)
+        g_error("File memory wasn't clean properly");
+
+    return r;
 }
 
 sc_bool sc_fs_storage_write_to_path(sc_segment **segments)
@@ -293,7 +301,7 @@ sc_result sc_fs_storage_write_content(sc_addr addr, const sc_check_sum *check_su
 
     if (sc_fm_stream_new(fm_engine, check_sum, SC_STREAM_WRITE, &out_stream) == SC_RESULT_OK)
     {
-        g_assert(out_stream != 0);
+        g_assert(out_stream != nullptr);
         // reset input stream positon to begin
         sc_stream_seek(stream, SC_STREAM_SEEK_SET, 0);
 
@@ -330,25 +338,25 @@ sc_result sc_fs_storage_write_content(sc_addr addr, const sc_check_sum *check_su
 
 sc_result sc_fs_storage_add_content_addr(sc_addr addr, const sc_check_sum *check_sum)
 {
-    g_assert(fm_engine != 0);
+    g_assert(fm_engine != nullptr);
     return sc_fm_addr_ref_append(fm_engine, addr, check_sum);
 }
 
 sc_result sc_fs_storage_remove_content_addr(sc_addr addr, const sc_check_sum *check_sum)
 {
-    g_assert(fm_engine != 0);
+    g_assert(fm_engine != nullptr);
     return sc_fm_addr_ref_remove(fm_engine, addr, check_sum);
 }
 
 sc_result sc_fs_storage_find_links_with_content(const sc_check_sum *check_sum, sc_addr **result, sc_uint32 *result_count)
 {
-    g_assert(fm_engine != 0);
+    g_assert(fm_engine != nullptr);
     return sc_fm_find(fm_engine, check_sum, result, result_count);
 }
 
 sc_result sc_fs_storage_get_checksum_content(const sc_check_sum *check_sum, sc_stream **stream)
 {
-    g_assert(fm_engine != 0);
+    g_assert(fm_engine != nullptr);
     return sc_fm_stream_new(fm_engine, check_sum, SC_STREAM_READ, stream);
 }
 

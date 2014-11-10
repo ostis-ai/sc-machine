@@ -22,6 +22,9 @@ along with OSTIS.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "sc_fm_engine_private.h"
 #include "sc_stream_file.h"
+
+#include "../sc_memory.h"
+
 #include <glib.h>
 
 gchar contents_path[MAX_PATH_LENGTH + 1];
@@ -119,6 +122,15 @@ sc_result sc_fs_engine_addr_ref_append(const sc_fm_engine *engine, sc_addr addr,
     sc_result res = SC_RESULT_ERROR_IO;
 
     // try to load existing file
+    if (g_file_test(abs_path, G_FILE_TEST_IS_DIR) == FALSE)
+    {
+        if (g_mkdir_with_parents(abs_path, -1) < 0)
+        {
+            g_message("Error while creating '%s' directory", abs_path);
+            goto clean;
+        }
+    }
+
     if (g_file_test(addr_path, G_FILE_TEST_EXISTS))
     {
         if (g_file_get_contents(addr_path, &content, &content_len, 0) == FALSE)
@@ -137,9 +149,12 @@ sc_result sc_fs_engine_addr_ref_append(const sc_fm_engine *engine, sc_addr addr,
     }else
     {
         content2 = content;
-        content2 += sizeof(sc_addr);
+        (*(sc_uint32*)content)++;
 
         content = g_new0(gchar, content_len + sizeof(addr));
+
+        g_assert(content2 != 0);
+
         memcpy(content, content2, content_len);
         memcpy(content + content_len, &addr, sizeof(addr));
         content_len += sizeof(addr);
@@ -379,6 +394,71 @@ sc_result sc_fs_engine_destroy_data(const sc_fm_engine *engine)
     return SC_RESULT_OK;
 }
 
+sc_result _sc_fs_engine_clean_state_dir(const sc_memory_context *ctx, const gchar *path)
+{
+    sc_result res = SC_RESULT_OK;
+    GDir *dir = g_dir_open(path, 0, 0);
+    const gchar *name = nullptr;
+    gchar buff[MAX_PATH_LENGTH];
+
+    while ((name = g_dir_read_name(dir)) != nullptr && res == SC_RESULT_OK)
+    {
+        g_snprintf(buff, MAX_PATH_LENGTH, "%s/%s", path, name);
+        if (g_file_test(buff, G_FILE_TEST_IS_DIR) == TRUE)
+        {
+            res = _sc_fs_engine_clean_state_dir(ctx, buff);
+        }
+        else if (g_file_test(buff, G_FILE_TEST_IS_REGULAR) == TRUE)
+        {
+            if (g_str_has_suffix(buff, "addrs") == TRUE)
+            {
+                gchar *content = nullptr;
+                gsize len = 0;
+                if (g_file_get_contents(buff, &content, &len, 0) == TRUE)
+                {
+                    gchar *content2 = g_new0(gchar, len);
+
+                    sc_uint32 count = *(sc_uint32*)content;
+                    sc_addr *addrs = (sc_addr*)(content + sizeof(sc_uint32));
+                    sc_addr *addrs2 = (sc_addr*)(content2 + sizeof(sc_uint32));
+                    sc_uint32 i = 0, copied = 0;
+                    for (; i < count; ++i)
+                    {
+                        if (sc_memory_is_element(ctx, addrs[i]) == SC_TRUE)
+                        {
+                            addrs2[copied] = addrs[i];
+                            copied++;
+                        }
+                    }
+
+                    *(sc_uint32*)content2 = copied;
+
+                    if (copied != count)
+                    {
+                        if (g_file_set_contents(buff, content2, sizeof(sc_uint32) + sizeof(sc_addr) * copied, 0) == FALSE)
+                            res = SC_RESULT_ERROR_IO;
+                    }
+
+                    g_free(content);
+                    g_free(content2);
+                } else
+                    res = SC_RESULT_ERROR_IO;
+            }
+        }
+    }
+
+    g_dir_close(dir);
+    return res;
+}
+
+sc_result sc_fs_engine_clean_state(const sc_fm_engine *engine)
+{
+    sc_memory_context *ctx = sc_memory_context_new(sc_access_lvl_make_max);
+    sc_bool res = _sc_fs_engine_clean_state_dir(ctx, contents_path);
+    sc_memory_context_free(ctx);
+    return res;
+}
+
 
 // --- extension interface ---
 sc_fm_engine* initialize(const sc_char* repo_path)
@@ -404,6 +484,7 @@ sc_fm_engine* initialize(const sc_char* repo_path)
     engine->funcClear = &sc_fs_engine_clear;
     engine->funcSave = &sc_fs_save;
     engine->funcDestroyData = &sc_fs_engine_destroy_data;
+    engine->funcCleanState = &sc_fs_engine_clean_state;
 
     return engine;
 }

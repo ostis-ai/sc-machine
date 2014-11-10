@@ -24,6 +24,8 @@ along with OSTIS.  If not, see <http://www.gnu.org/licenses/>.
 #include "sc_fm_engine_private.h"
 #include "sc_stream_redis.h"
 #include "sc_fm_redis_config.h"
+#include "../sc_memory.h"
+
 #include <glib.h>
 #include <memory.h>
 
@@ -108,8 +110,6 @@ redisContext* connectToRedis()
     // start ping thread
 
     ping_thread = g_thread_new("redis_ping_thread", ping_thread_loop, c);
-
-
 
     return c;
 }
@@ -317,6 +317,75 @@ sc_result sc_redis_engine_destroy_data(const sc_fm_engine *engine)
     return SC_RESULT_OK;
 }
 
+sc_result sc_redis_engine_clean_state(const sc_fm_engine *engine)
+{
+    LOCK_COMMAND();
+
+    redis_data *data = (redis_data*)engine->storage_info;
+    g_assert(data);
+
+    sc_memory_context *ctx = sc_memory_context_new(sc_access_lvl_make_max);
+
+    sc_result res = SC_RESULT_OK;
+    sc_uint32 cursor = 0;
+    redisReply *reply = 0;
+    do
+    {
+        reply = do_sync_redis_command(&data->context, "SCAN %d MATCH link:*:addrs COUNT 100", cursor);
+
+        if (reply == 0 || reply->type != REDIS_REPLY_ARRAY || reply->elements != 2)
+        {
+            res = SC_RESULT_ERROR;
+            goto clean;
+        }
+
+        // iterate backward lists and clean them
+        sc_uint32 n = reply->element[1]->elements;
+        sc_uint32 i;
+        for (i = 0; i < n; ++i)
+        {
+            const char *key = reply->element[1]->element[i]->str;
+            redisReply *r = do_sync_redis_command(&data->context, "LRANGE %s 0 -1", key);
+
+            if (r != nullptr)
+            {
+                sc_uint32 j;
+                for (j = 0; j < r->elements; ++j)
+                {
+                    sc_addr addr;
+                    g_assert(sizeof(addr) == r->element[j]->len);
+                    memcpy(&addr, r->element[j]->str, sizeof(addr));
+
+                    sc_type type;
+                    if (sc_memory_get_element_type(ctx, addr, &type) != SC_RESULT_OK || !(type & sc_type_link))
+                    {
+                        redisReply *rrem = do_sync_redis_command(&data->context, "LREM %s 0 %b", key, &addr, sizeof(addr));
+                        if (rrem == nullptr || rrem->integer != 1)
+                            g_error("Error while clean %s", key);
+                        else
+                            freeReplyObject(rrem);
+                    }
+                }
+                freeReplyObject(r);
+            }
+        }
+
+        cursor = atoi(reply->element[0]->str);
+
+    } while (cursor != 0);
+
+    clean:
+    {
+        if (reply)
+            freeReplyObject(reply);
+        if (ctx)
+            sc_memory_context_free(ctx);
+        UNLOCK_COMMAND();
+    }
+
+    return res;
+}
+
 sc_fm_engine* initialize(const sc_char* repo_path)
 {
     sc_redis_config_initialize();
@@ -351,6 +420,7 @@ sc_fm_engine* initialize(const sc_char* repo_path)
     engine->funcClear = &sc_redis_engine_clear;
     engine->funcSave = &sc_redis_engine_save;
     engine->funcDestroyData = &sc_redis_engine_destroy_data;
+    engine->funcCleanState = &sc_redis_engine_clean_state;
 
     return engine;
 }

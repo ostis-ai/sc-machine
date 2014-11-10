@@ -82,5 +82,11 @@ sc_result sc_fm_clear(const sc_fm_engine *engine);
  */
 sc_result sc_fm_save(const sc_fm_engine *engine);
 
+/*! Clean state of file memory
+ * @param engine Pointer to used file memory engine
+ * @returns If there are any errors during file memory state clean, then returns SC_RESULT_ERROR; othrwise returns SC_RESULT_OK
+ */
+sc_result sc_fm_clean_state(const sc_fm_engine *engine);
+
 
 #endif // _sc_fm_engine_h_

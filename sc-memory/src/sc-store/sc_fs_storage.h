@@ -105,6 +105,4 @@ sc_result sc_fs_storage_find_links_with_content(const sc_check_sum *check_sum, s
 sc_result sc_fs_storage_get_checksum_content(const sc_check_sum *check_sum, sc_stream **stream);
 
 
-
-
 #endif
