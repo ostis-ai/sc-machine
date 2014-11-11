@@ -31,5 +31,6 @@ along with OSTIS.  If not, see <http://www.gnu.org/licenses/>.
 
 EXTERNC void parseError( const char* errorName, int line);
 EXTERNC void displayRecognitionError (pANTLR3_BASE_RECOGNIZER recognizer, pANTLR3_UINT8 * tokenNames);
+EXTERNC void displayLexerError(pANTLR3_BASE_RECOGNIZER recognizer, pANTLR3_UINT8 * tokenNames);
 
 #endif // _parseutils_h_

@@ -258,3 +258,56 @@ void displayRecognitionError (pANTLR3_BASE_RECOGNIZER recognizer, pANTLR3_UINT8 
                  fileName,
                  line);
 }
+
+
+void displayLexerError(pANTLR3_BASE_RECOGNIZER recognizer, pANTLR3_UINT8 * tokenNames)
+{
+    /// modified https://github.com/antlr/antlr3/blob/master/runtime/C/src/antlr3lexer.c
+
+    pANTLR3_LEXER lexer;
+    pANTLR3_EXCEPTION ex;
+    pANTLR3_STRING ftext;
+    lexer = (pANTLR3_LEXER)(recognizer->super);
+    ex = lexer->rec->state->exception;
+
+    // See if there is a 'filename' we can use
+    String fname = "-unknown source-";
+    if (ex->name != NULL)
+    {
+        ftext = ex->streamName->to8(ex->streamName);
+        fname = (const char*)ftext->chars;
+    }
+    int line = recognizer->state->exception->line;
+    StringStream ss ;
+    ss << "lexer error " << ex->type << " :\n\t" << (const char*)ex->message << " at offset " << ex->charPositionInLine + 1 << ", ";
+
+    {
+
+        ANTLR3_INT32 width;
+        width = ANTLR3_UINT32_CAST(( (pANTLR3_UINT8)(lexer->input->data) + (lexer->input->size(lexer->input) )) - (pANTLR3_UINT8)(ex->index));
+        if (width >= 1)
+        {
+            if	(isprint(ex->c))
+                ss << "near '" << ex->c << "' :\n";
+            else
+            {
+                StringStream hs;
+                hs << std::hex << std::setfill('0');
+                hs << std::setw(2) << ex->c;
+                ss << "near char(0x" << hs.str() << ") :\n";
+            }
+        }
+        else
+        {
+            std::cerr << "(end of input).\n\t This indicates a poorly specified lexer RULE\n\t or unterminated input element such as: \"STRING[\"]\n";
+            std::cerr <<  "\t The lexer was matching from line " << (ANTLR3_UINT32)(lexer->rec->state->tokenStartLine) << ", offset "
+                      << (ANTLR3_UINT32)(lexer->rec->state->tokenStartCharPositionInLine) << ", which\n\t ";
+        }
+    }
+
+
+    THROW_EXCEPT(Exception::ERR_PARSE,
+                 ss.str(),
+                 fname,
+                 line);
+}

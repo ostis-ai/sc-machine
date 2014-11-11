@@ -28,23 +28,20 @@ tokens {
   
 }
 
-@lexer::includes
-{
-
+@lexer::includes {
+    #include "../parseutils.h"
 }
 
-
-@parser::postinclude {
-
-}
-
-@parser::includes
-{
-#include "../parseutils.h"
+@parser::includes {
+    #include "../parseutils.h"
 }
 
 @parser::apifuncs {
     RECOGNIZER->displayRecognitionError = displayRecognitionError;
+}
+
+@lexer::apifuncs {
+    LEXER->rec->displayRecognitionError = displayLexerError;
 }
 
 @rulecatch
