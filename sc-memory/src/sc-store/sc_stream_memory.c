@@ -139,6 +139,7 @@ sc_stream* sc_stream_memory_new(const sc_char *buffer, sc_uint buffer_size, sc_u
     }
 
     g_assert(flags & SC_STREAM_READ);
+    g_assert(buffer != nullptr);
 
     sc_memory_buffer *data_buffer = g_new0(sc_memory_buffer, 1);
 
