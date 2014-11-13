@@ -41,6 +41,7 @@ extern sc_addr keynode_question_search_full_pattern;
 extern sc_addr keynode_nrel_answer;
 extern sc_addr keynode_quasybinary_relation;
 extern sc_addr keynode_decomposition_relation;
+extern sc_addr keynode_taxonomy_relation;
 extern sc_addr keynode_identification_relation;
 extern sc_addr keynode_order_relation;
 extern sc_addr keynode_nonbinary_relation;
