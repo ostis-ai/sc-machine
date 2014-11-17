@@ -159,6 +159,32 @@ void search_subclasses_rec(sc_addr elem, sc_addr answer, sc_bool sys_off)
     sc_iterator5 *it5, *it_order;
     sc_type el_type;
 
+    // iterate taxonomy
+    it5 = sc_iterator5_f_a_a_a_a_new(s_default_ctx,
+                                     elem,
+                                     sc_type_arc_common | sc_type_const,
+                                     sc_type_node | sc_type_const,
+                                     sc_type_arc_pos_const_perm,
+                                     sc_type_node | sc_type_const);
+    while (sc_iterator5_next(it5) == SC_TRUE)
+    {
+        if (SC_FALSE == sc_helper_check_arc(s_default_ctx, keynode_taxonomy_relation, sc_iterator5_value(it5, 4), sc_type_arc_pos_const_perm))
+            continue;
+        if (SC_TRUE == sys_off && (IS_SYSTEM_ELEMENT(sc_iterator5_value(it5, 1))
+                                   || IS_SYSTEM_ELEMENT(sc_iterator5_value(it5, 2))
+                                   || IS_SYSTEM_ELEMENT(sc_iterator5_value(it5, 3))
+                                   || IS_SYSTEM_ELEMENT(sc_iterator5_value(it5, 4))))
+            continue;
+
+        appendIntoAnswer(answer, sc_iterator5_value(it5, 1));
+        appendIntoAnswer(answer, sc_iterator5_value(it5, 2));
+        appendIntoAnswer(answer, sc_iterator5_value(it5, 3));
+        appendIntoAnswer(answer, sc_iterator5_value(it5, 4));
+
+        search_subclasses_rec(sc_iterator5_value(it5, 2), answer, sys_off);
+    }
+    sc_iterator5_free(it5);
+
     // iterate decomposition
     it5 = sc_iterator5_a_a_f_a_a_new(s_default_ctx,
                                      sc_type_node | sc_type_const,
@@ -292,6 +318,32 @@ void search_superclasses_rec(sc_addr elem, sc_addr answer, sc_bool sys_off)
 {
     sc_iterator3 *it3;
     sc_iterator5 *it5;
+
+    // search taxonomy
+    it5 = sc_iterator5_a_a_f_a_a_new(s_default_ctx,
+                                     sc_type_node | sc_type_const,
+                                     sc_type_arc_common | sc_type_const,
+                                     elem,
+                                     sc_type_arc_pos_const_perm,
+                                     sc_type_node | sc_type_const);
+    while (sc_iterator5_next(it5) == SC_TRUE)
+    {
+        if (SC_FALSE == sc_helper_check_arc(s_default_ctx, keynode_taxonomy_relation, sc_iterator5_value(it5, 4), sc_type_arc_pos_const_perm))
+            continue;
+        if (SC_TRUE == sys_off && (IS_SYSTEM_ELEMENT(sc_iterator5_value(it5, 0))
+                                   || IS_SYSTEM_ELEMENT(sc_iterator5_value(it5, 1))
+                                   || IS_SYSTEM_ELEMENT(sc_iterator5_value(it5, 3))
+                                   || IS_SYSTEM_ELEMENT(sc_iterator5_value(it5, 4))))
+            continue;
+
+        appendIntoAnswer(answer, sc_iterator5_value(it5, 0));
+        appendIntoAnswer(answer, sc_iterator5_value(it5, 1));
+        appendIntoAnswer(answer, sc_iterator5_value(it5, 3));
+        appendIntoAnswer(answer, sc_iterator5_value(it5, 4));
+
+        search_superclasses_rec(sc_iterator5_value(it5, 0), answer, sys_off);
+    }
+    sc_iterator5_free(it5);
 
     // iterate input arcs
     it3 = sc_iterator3_a_a_f_new(s_default_ctx,
