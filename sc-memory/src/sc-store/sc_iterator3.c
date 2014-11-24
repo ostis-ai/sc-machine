@@ -191,7 +191,9 @@ sc_iterator3* sc_iterator3_new(const sc_memory_context *ctx, sc_iterator_type ty
 
 void sc_iterator3_free(sc_iterator3 *it)
 {
-    g_assert(it != 0);
+    if (it == nullptr)
+        return;
+
     if ((it->finished == SC_FALSE) && SC_ADDR_IS_NOT_EMPTY(it->results[1]))
     {
         sc_element *el = 0;
@@ -475,7 +477,8 @@ sc_bool _sc_iterator3_a_a_f_next(sc_iterator3 *it)
 
 sc_bool sc_iterator3_next(sc_iterator3 *it)
 {
-    g_assert(it != 0);
+    if (it == nullptr)
+        return SC_FALSE;
 
     switch (it->type)
     {

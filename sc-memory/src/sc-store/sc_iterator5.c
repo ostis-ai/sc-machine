@@ -222,7 +222,8 @@ sc_iterator5* sc_iterator5_a_a_f_a_a_new(const sc_memory_context *ctx, sc_type p
 
 void sc_iterator5_free(sc_iterator5 *it)
 {
-    g_assert(it != 0);
+    if (it == nullptr)
+        return;
 
     if (it->it_attr != nullptr)
         sc_iterator3_free(it->it_attr);
@@ -520,7 +521,8 @@ sc_bool _sc_iterator5_a_a_f_a_a_next(sc_iterator5 *it)
 
 sc_bool sc_iterator5_next(sc_iterator5 *it)
 {
-    g_assert(it != 0);
+    if (it == nullptr)
+        return SC_FALSE;
 
     switch (it->type)
     {
