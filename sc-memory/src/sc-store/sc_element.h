@@ -95,6 +95,10 @@ struct _sc_element_flags
 {
     sc_type type;
     sc_access_levels access_levels;
+};
+
+struct _sc_element_meta
+{
     union
     {
         sc_element_locks locks; // bits access
@@ -106,7 +110,6 @@ struct _sc_element_flags
         sc_uint32 refs_data;
     };
 };
-
 
 struct _sc_element
 {
@@ -127,10 +130,10 @@ void sc_element_set_type(sc_element *element, sc_type type);
 sc_bool sc_element_is_checksum_empty(sc_element *element);
 
 sc_bool sc_element_is_request_deletion(sc_element *element);
-sc_uint16 sc_element_get_iterator_refs(sc_element *element);
 sc_bool sc_element_is_valid(sc_element *element);
 
-sc_bool sc_element_itref_add(sc_element *element);
-sc_bool sc_element_itref_dec(sc_element *element);
+sc_uint16 sc_element_get_iterator_refs(sc_element_meta *element);
+sc_bool sc_element_itref_add(sc_element_meta *element);
+sc_bool sc_element_itref_dec(sc_element_meta *element);
 
 #endif

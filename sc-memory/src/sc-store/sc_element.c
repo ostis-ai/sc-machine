@@ -49,29 +49,29 @@ sc_bool sc_element_is_request_deletion(sc_element *element)
     return (element->flags.type & sc_flag_request_deletion) ? SC_TRUE : SC_FALSE;
 }
 
-sc_uint16 sc_element_get_iterator_refs(sc_element *element)
-{
-    return element->flags.refs.it;
-}
-
 sc_bool sc_element_is_valid(sc_element *element)
 {
     return (element->flags.type == 0 || element->flags.type & sc_flag_request_deletion) ? SC_FALSE : SC_TRUE;
 }
 
-sc_bool sc_element_itref_add(sc_element *element)
+sc_uint16 sc_element_get_iterator_refs(sc_element_meta *element)
 {
-    if (element->flags.refs.it == G_MAXUINT16)
+    return element->refs.it;
+}
+
+sc_bool sc_element_itref_add(sc_element_meta *element)
+{
+    if (element->refs.it == G_MAXUINT16)
         return SC_FALSE;
 
-    element->flags.refs.it++;
+    element->refs.it++;
     return SC_TRUE;
 }
 
-sc_bool sc_element_itref_dec(sc_element *element)
+sc_bool sc_element_itref_dec(sc_element_meta *element)
 {
-    g_assert(element->flags.refs.it > 0);
-    element->flags.refs.it--;
+    g_assert(element->refs.it > 0);
+    element->refs.it--;
 
-    return (element->flags.refs.it == 0) ? SC_TRUE : SC_FALSE;
+    return (element->refs.it == 0) ? SC_TRUE : SC_FALSE;
 }

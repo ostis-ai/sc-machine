@@ -545,7 +545,7 @@ sc_result sc_storage_element_free(const sc_memory_context *ctx, sc_addr addr)
                 sc_storage_element_unlock(ctx, el->arc.end);
         }
 
-        if (sc_element_get_iterator_refs(el) == 0)
+        if (sc_element_get_iterator_refs(sc_storage_get_element_meta(ctx, addr)) == 0)
         {
             sc_storage_erase_element_from_segment(addr);
             _sc_segment_cache_append(ctx, g_atomic_pointer_get(&segments[addr.seg]));
@@ -1127,6 +1127,15 @@ unsigned int sc_storage_get_segments_count()
 sc_result sc_storage_erase_element_from_segment(sc_addr addr)
 {
     sc_segment_erase_element(g_atomic_pointer_get(&segments[addr.seg]), addr.offset);
+}
+
+// ------------------------------
+sc_element_meta* sc_storage_get_element_meta(const sc_memory_context *ctx, sc_addr addr)
+{
+    g_assert(addr.seg < SC_ADDR_SEG_MAX);
+    sc_segment *segment = g_atomic_pointer_get(&segments[addr.seg]);
+    g_assert(segment != nullptr);
+    return sc_segment_get_meta(ctx, segment, addr.offset);
 }
 
 sc_result sc_storage_element_lock(const sc_memory_context *ctx, sc_addr addr, sc_element **el)

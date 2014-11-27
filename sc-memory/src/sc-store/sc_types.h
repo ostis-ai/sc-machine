@@ -234,6 +234,7 @@ typedef struct _sc_element_locks sc_element_locks;
 typedef struct _sc_element_flags sc_element_flags;
 typedef struct _sc_element_refs sc_element_refs;
 typedef struct _sc_memory_context sc_memory_context;
+typedef struct _sc_element_meta sc_element_meta;
 typedef struct _sc_element sc_element;
 typedef struct _sc_segment sc_segment;
 typedef struct _sc_addr sc_addr;

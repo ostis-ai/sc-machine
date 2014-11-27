@@ -194,7 +194,10 @@ sc_result sc_storage_get_elements_stat(const sc_memory_context *ctx, sc_stat *st
 
 sc_result sc_storage_erase_element_from_segment(sc_addr addr);
 
+
 // ----- Locks -----
+//! Returns pointer to sc-element metainfo
+sc_element_meta* sc_storage_get_element_meta(const sc_memory_context *ctx, sc_addr addr);
 //! Locks specified sc-element. Pointer to locked sc-element stores in el
 sc_result sc_storage_element_lock(const sc_memory_context *ctx, sc_addr addr, sc_element **el);
 //! Try to lock sc-element by maximum attempts. If element wasn't locked and there are no errors, then el pointer will have null value.
