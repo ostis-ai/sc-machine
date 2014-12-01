@@ -25,7 +25,10 @@ along with OSTIS.  If not, see <http://www.gnu.org/licenses/>.
 
 bool operator < (const sc_addr &addr1, const sc_addr &addr2)
 {
-    return (addr1.seg < addr2.seg || addr1.offset < addr2.offset);
+    if (addr1.seg != addr2.seg)
+        return addr1.seg < addr2.seg;
+
+    return addr1.offset < addr2.offset;
 }
 
 bool operator == (const sc_addr &addr1, const sc_addr &addr2)
