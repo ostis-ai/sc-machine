@@ -86,7 +86,8 @@ bool uiTranslateFromSc::isNeedToTranslate(const sc_addr &addr) const
 
 String uiTranslateFromSc::buildId(const sc_addr &addr)
 {
+    uint32_t v = addr.seg | (addr.offset << 16);
     StringStream ss;
-    ss << addr.seg << "_" << addr.offset;
+    ss << v;
     return ss.str();
 }

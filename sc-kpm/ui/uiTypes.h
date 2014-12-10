@@ -34,6 +34,7 @@ extern "C"
 #include <list>
 #include <vector>
 #include <assert.h>
+#include <stdint.h>
 
 typedef std::string String;
 typedef std::stringstream StringStream;
