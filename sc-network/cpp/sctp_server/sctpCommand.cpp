@@ -540,16 +540,14 @@ eSctpErrorCode sctpCommand::processIterateElements(quint32 cmdFlags, quint32 cmd
             return SCTP_ERROR;
         }
 
-        Q_ASSERT(it != nullptr);
+        if (it == nullptr)
+            writeResultHeader(SCTP_CMD_ITERATE_ELEMENTS, cmdId, SCTP_RESULT_FAIL, 0, outDevice);
 
         // create results data
         QByteArray results;
         QBuffer buffer(&results);
         sc_uint32 results_count = 0;
         sc_addr addr;
-
-        if (addr1.offset == 1593 && addr2.offset >= 33081)
-            printf("test");
 
         buffer.open(QBuffer::WriteOnly);
         while (sc_iterator3_next(it) == SC_TRUE)
@@ -636,7 +634,8 @@ eSctpErrorCode sctpCommand::processIterateElements(quint32 cmdFlags, quint32 cmd
             return SCTP_ERROR;
         }
 
-        Q_ASSERT(it != nullptr);
+        if (it == nullptr)
+            writeResultHeader(SCTP_CMD_ITERATE_ELEMENTS, cmdId, SCTP_RESULT_FAIL, 0, outDevice);
 
         // create results data
         QByteArray results;
