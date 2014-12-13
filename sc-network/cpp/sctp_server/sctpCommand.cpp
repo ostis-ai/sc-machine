@@ -31,6 +31,7 @@ along with OSTIS.  If not, see <http://www.gnu.org/licenses/>.
 #include <QCoreApplication>
 
 #include <limits>
+#include <assert.h>
 
 
 #define SCTP_READ_TIMEOUT   10000
@@ -126,6 +127,9 @@ eSctpErrorCode sctpCommand::processCommand(QIODevice *inDevice, QIODevice *outDe
 
     case SCTP_CMD_ITERATE_ELEMENTS:
         return processIterateElements(cmdFlags, cmdId, &paramsStream, outDevice);
+
+    case SCTP_CMD_ITERATE_CONSTRUCTION:
+        return processIterateConstruction(cmdFlags, cmdId, &paramsStream, outDevice);
 
     case SCTP_CMD_EVENT_CREATE:
         return processCreateEvent(cmdFlags, cmdId, &paramsStream, outDevice);
@@ -585,7 +589,7 @@ eSctpErrorCode sctpCommand::processIterateElements(quint32 cmdFlags, quint32 cmd
             it = sc_iterator5_f_a_a_a_f_new(mContext, addr1, type1, type2, type3, addr2);
             break;
 
-        case SCTP_ITERATOR_5_A_A_F_A_A:
+        case SCTP_ITERATOR_5A_A_F_A_A:
             READ_PARAM(type1);
             READ_PARAM(type2);
             READ_PARAM(addr1);
@@ -594,7 +598,7 @@ eSctpErrorCode sctpCommand::processIterateElements(quint32 cmdFlags, quint32 cmd
             it = sc_iterator5_a_a_f_a_a_new(mContext, type1, type2, addr1, type3, type4);
             break;
 
-        case SCTP_ITERATOR_5_A_A_F_A_F:
+        case SCTP_ITERATOR_5A_A_F_A_F:
             READ_PARAM(type1);
             READ_PARAM(type2);
             READ_PARAM(addr1);
@@ -603,7 +607,7 @@ eSctpErrorCode sctpCommand::processIterateElements(quint32 cmdFlags, quint32 cmd
             it = sc_iterator5_a_a_f_a_f_new(mContext, type1, type2, addr1, type3, addr2);
             break;
 
-        case SCTP_ITERATOR_5_F_A_A_A_A:
+        case SCTP_ITERATOR_5F_A_A_A_A:
             READ_PARAM(addr1);
             READ_PARAM(type1);
             READ_PARAM(type2);
@@ -612,7 +616,7 @@ eSctpErrorCode sctpCommand::processIterateElements(quint32 cmdFlags, quint32 cmd
             it = sc_iterator5_f_a_a_a_a_new(mContext, addr1, type1, type2, type3, type4);
             break;
 
-        case SCTP_ITERATOR_5_F_A_F_A_A:
+        case SCTP_ITERATOR_5F_A_F_A_A:
             READ_PARAM(addr1);
             READ_PARAM(type1);
             READ_PARAM(addr2);
@@ -621,7 +625,7 @@ eSctpErrorCode sctpCommand::processIterateElements(quint32 cmdFlags, quint32 cmd
             it = sc_iterator5_f_a_f_a_a_new(mContext, addr1, type1, addr2, type2, type3);
             break;
 
-        case SCTP_ITERATOR_5_F_A_F_A_F:
+        case SCTP_ITERATOR_5F_A_F_A_F:
             READ_PARAM(addr1);
             READ_PARAM(type1);
             READ_PARAM(addr2);
@@ -667,6 +671,463 @@ eSctpErrorCode sctpCommand::processIterateElements(quint32 cmdFlags, quint32 cmd
     return SCTP_NO_ERROR;
 }
 
+
+namespace
+{
+    class IterConstsr
+    {
+    public:
+        typedef std::vector<sc_addr> ScAddrVec;
+        ScAddrVec m_results;
+
+    private:
+        struct IteratorData
+        {
+            struct IterParam
+            {
+                sc_iterator_param m_param;
+                quint8 m_repl;
+
+                IterParam()
+                    : m_repl(255)
+                {
+                    memset(&m_param, 0, sizeof(m_param));
+                }
+
+                bool isRepl() const
+                {
+                    return m_repl != 255;
+                }
+            };
+
+            quint8 m_type;
+            quint8 m_repl[5];
+            quint8 m_replCount;
+            IterParam m_args[5];
+
+            sc_iterator3 *m_it3;
+            sc_iterator5 *m_it5;
+
+            IteratorData()
+                : m_type(SCTP_ITERATOR_COUNT)
+                , m_replCount(0)
+                , m_it3(0)
+                , m_it5(0)
+            {
+                memset(&m_repl[0], 255, sizeof(uint8_t) * 5);
+            }
+
+            ~IteratorData()
+            {
+                stopIterate();
+            }
+
+            quint8 argsCount() const
+            {
+                if (m_type >= SCTP_ITERATOR_3F_A_A && m_type <= SCTP_ITERATOR_3F_A_F)
+                    return 3;
+                if (m_type >= SCTP_ITERATOR_5F_A_A_A_F && m_type <= SCTP_ITERATOR_5A_A_F_A_A)
+                    return 5;
+
+                return 0;
+            }
+
+            quint8 fixedCount() const
+            {
+                switch (m_type)
+                {
+                case SCTP_ITERATOR_5F_A_A_A_A:
+                case SCTP_ITERATOR_5A_A_F_A_A:
+                case SCTP_ITERATOR_3F_A_A:
+                case SCTP_ITERATOR_3A_A_F:
+                    return 1;
+
+                case SCTP_ITERATOR_5F_A_F_A_A:
+                case SCTP_ITERATOR_5A_A_F_A_F:
+                case SCTP_ITERATOR_5F_A_A_A_F:
+                case SCTP_ITERATOR_3F_A_F:
+                    return 2;
+
+                case SCTP_ITERATOR_5F_A_F_A_F:
+                    return 3;
+                }
+
+                return 0;
+            }
+
+            quint8 assignCount() const
+            {
+                return argsCount() - fixedCount();
+            }
+
+            bool isValidType() const
+            {
+                return argsCount() != 0;
+            }
+
+            bool buildRepl(QDataStream *params)
+            {
+                quint8 count = fixedCount();
+                params->readRawData((char*)&m_repl[0], count);
+
+                for (quint8 i = 0; i < count; ++i)
+                {
+                    if (m_repl[i] != 255)
+                        ++m_replCount;
+                }
+            }
+
+            void preapreArgs()
+            {
+                switch (m_type)
+                {
+                case SCTP_ITERATOR_3F_A_F:
+                    m_args[0].m_param.is_type = m_args[2].m_param.is_type = false;
+                    m_args[1].m_param.is_type = true;
+                    break;
+
+                case SCTP_ITERATOR_3F_A_A:
+                    m_args[0].m_param.is_type = false;
+                    m_args[1].m_param.is_type = m_args[2].m_param.is_type = true;
+                    break;
+
+                case SCTP_ITERATOR_3A_A_F:
+                    m_args[2].m_param.is_type = false;
+                    m_args[0].m_param.is_type = m_args[1].m_param.is_type = true;
+                    break;
+
+                case SCTP_ITERATOR_5F_A_F_A_F:
+                    m_args[0].m_param.is_type = m_args[2].m_param.is_type = m_args[4].m_param.is_type = false;
+                    m_args[1].m_param.is_type = m_args[3].m_param.is_type = true;
+                    break;
+
+                case SCTP_ITERATOR_5A_A_F_A_F:
+                    m_args[2].m_param.is_type = m_args[4].m_param.is_type = false;
+                    m_args[0].m_param.is_type = m_args[1].m_param.is_type = m_args[3].m_param.is_type = true;
+                    break;
+
+                case SCTP_ITERATOR_5F_A_F_A_A:
+                    m_args[0].m_param.is_type = m_args[2].m_param.is_type = false;
+                    m_args[1].m_param.is_type = m_args[3].m_param.is_type = m_args[4].m_param.is_type = true;
+                    break;
+
+                case SCTP_ITERATOR_5F_A_A_A_F:
+                    m_args[0].m_param.is_type = m_args[4].m_param.is_type = false;
+                    m_args[1].m_param.is_type = m_args[2].m_param.is_type = m_args[3].m_param.is_type = true;
+                    break;
+
+                case SCTP_ITERATOR_5F_A_A_A_A:
+                    m_args[0].m_param.is_type = false;
+                    m_args[1].m_param.is_type = m_args[2].m_param.is_type = m_args[3].m_param.is_type = m_args[4].m_param.is_type = true;
+                    break;
+
+                case SCTP_ITERATOR_5A_A_F_A_A:
+                    m_args[2].m_param.is_type = false;
+                    m_args[0].m_param.is_type = m_args[1].m_param.is_type = m_args[3].m_param.is_type = m_args[4].m_param.is_type = true;
+                    break;
+                }
+            }
+
+            bool buildParams(QDataStream *params)
+            {
+                quint8 count = argsCount();
+
+                preapreArgs();
+
+                quint8 rCount = 0;
+                for (quint8 i = 0; i < count; ++i)
+                {
+                    IterParam & p = m_args[i];
+                    if (p.m_param.is_type)
+                        params->readRawData((char*)&p.m_param.type, sizeof(p.m_param.type));
+                    else
+                    {
+                        p.m_repl = m_repl[rCount];
+                        if (!p.isRepl())
+                            params->readRawData((char*)&p.m_param.addr, sizeof(p.m_param.addr));
+                        ++rCount;
+                    }
+                }
+            }
+
+            sc_iterator3_type scIterator3Type(quint8 type) const
+            {
+                switch (type)
+                {
+                case SCTP_ITERATOR_3F_A_A:
+                    return sc_iterator3_f_a_a;
+                case SCTP_ITERATOR_3A_A_F:
+                    return sc_iterator3_a_a_f;
+                case SCTP_ITERATOR_3F_A_F:
+                    return sc_iterator3_f_a_f;
+                }
+
+                return (sc_iterator3_type)-1;
+            }
+
+            sc_iterator5_type scIterator5Type(quint8 type) const
+            {
+                switch (type)
+                {
+                case SCTP_ITERATOR_5F_A_A_A_F:
+                    return sc_iterator5_f_a_a_a_f;
+                case SCTP_ITERATOR_5A_A_F_A_F:
+                    return sc_iterator5_a_a_f_a_f;
+                case SCTP_ITERATOR_5F_A_F_A_F:
+                    return sc_iterator5_f_a_f_a_f;
+                case SCTP_ITERATOR_5F_A_F_A_A:
+                    return sc_iterator5_f_a_f_a_a;
+                case SCTP_ITERATOR_5F_A_A_A_A:
+                    return sc_iterator5_f_a_a_a_a;
+                case SCTP_ITERATOR_5A_A_F_A_A:
+                    return sc_iterator5_a_a_f_a_a;
+                }
+                return (sc_iterator5_type)-1;
+            }
+
+            qint8 fixedPos(quint8 pos) const
+            {
+                switch (m_type)
+                {
+                case SCTP_ITERATOR_3F_A_A:
+                    {
+                        if (pos == 0)
+                            return 0;
+                        return -1;
+                    }
+                case SCTP_ITERATOR_3A_A_F:
+                    {
+                        if (pos == 0)
+                            return 2;
+                        return -1;
+                    }
+                case SCTP_ITERATOR_3F_A_F:
+                    {
+                        if (pos == 0)
+                            return 0;
+                        if (pos == 1)
+                            return 2;
+                        return -1;
+                    }
+                case SCTP_ITERATOR_5F_A_A_A_F:
+                    {
+                        if (pos == 0)
+                            return 0;
+                        if (pos == 1)
+                            return 4;
+                        return -1;
+                    }
+                case SCTP_ITERATOR_5A_A_F_A_F:
+                    {
+                        if (pos == 0)
+                            return 2;
+                        if (pos == 1)
+                            return 4;
+                        return -1;
+                    }
+                case SCTP_ITERATOR_5F_A_F_A_F:
+                    {
+                        if (pos == 0)
+                            return 0;
+                        if (pos == 1)
+                            return 2;
+                        if (pos == 2)
+                            return 4;
+                        return -1;
+                    }
+                case SCTP_ITERATOR_5F_A_F_A_A:
+                    {
+                        if (pos == 0)
+                            return 0;
+                        if (pos == 1)
+                            return 2;
+                        return -1;
+                    }
+                case SCTP_ITERATOR_5F_A_A_A_A:
+                    {
+                        if (pos == 0)
+                            return 0;
+                        return -1;
+                    }
+                case SCTP_ITERATOR_5A_A_F_A_A:
+                    {
+                        if (pos == 0)
+                            return 2;
+                        return -1;
+                    }
+
+                } // switch
+
+                return -1;
+            }
+
+            void startIterate(sc_memory_context const * ctx)
+            {
+                stopIterate();
+
+                quint8 const count = argsCount();
+                if (count == 3)
+                    m_it3 = sc_iterator3_new(ctx, scIterator3Type(m_type), m_args[0].m_param, m_args[1].m_param, m_args[2].m_param);
+                else if (count == 5)
+                    m_it5 = sc_iterator5_new(ctx, scIterator5Type(m_type), m_args[0].m_param, m_args[1].m_param, m_args[2].m_param, m_args[3].m_param, m_args[4].m_param);
+            }
+
+            void stopIterate()
+            {
+                quint8 const count = argsCount();
+                if (count == 3)
+                {
+                    sc_iterator3_free(m_it3);
+                    m_it3 = 0;
+                }
+                else if (count == 5)
+                {
+                    sc_iterator5_free(m_it5);
+                    m_it5 = 0;
+                }
+            }
+
+            bool nextIterate() const
+            {
+                quint8 const count = argsCount();
+                if (count == 3 && m_it3)
+                    return sc_iterator3_next(m_it3) == SC_TRUE;
+                else if (count == 5 && m_it5)
+                    return sc_iterator5_next(m_it5) == SC_TRUE;
+                return false;
+            }
+
+            void copyResults(ScAddrVec & result, quint8 pos) const
+            {
+                quint8 const count = argsCount();
+                if (count == 3)
+                {
+                    for (quint8 i = 0; i < count; ++i)
+                        result[pos + i] = sc_iterator3_value(m_it3, i);
+                } else if (count == 5)
+                {
+                    for (quint8 i = 0; i < count; ++i)
+                        result[pos + i] = sc_iterator5_value(m_it5, i);
+                }
+
+            }
+
+        }; // IteratorData
+
+        typedef std::vector<IteratorData> IteratorDataVec;
+        IteratorDataVec m_iterators;
+
+    public:
+
+        bool build(QDataStream *params)
+        {
+            quint8 iterCount;
+
+            READ_PARAM(iterCount);
+            if (iterCount > 50)
+                return false;
+
+            m_iterators.resize(iterCount);
+            for (size_t i = 0; i <iterCount; ++i)
+            {
+                IteratorData & it = m_iterators[i];
+
+                READ_PARAM(it.m_type);
+                if (i > 0)
+                    it.buildRepl(params);
+                it.buildParams(params);
+            }
+        }
+
+        quint8 oneResultSize()
+        {
+            quint8 r = 0;
+            for (quint8 i = 0; i < m_iterators.size(); ++i)
+            {
+                IteratorData & it = m_iterators[i];
+                r += it.argsCount();
+            }
+            return r;
+        }
+
+        void iterateStep(sc_memory_context const * ctx, ScAddrVec & result, quint8 resultPos, quint8 itIdx)
+        {
+            Q_ASSERT(itIdx < m_iterators.size());
+            Q_ASSERT(resultPos < result.size());    
+
+            IteratorData & it = m_iterators[itIdx];
+            // apply replaces
+            if (itIdx > 0)
+            {
+                quint8 count = it.fixedCount();
+                for (quint8 i = 0; i < count; ++i)
+                {
+                    quint8 const repl = it.m_repl[i];
+                    if (repl == 255)
+                        continue;
+
+                    Q_ASSERT(repl < resultPos);
+                    qint8 pos = it.fixedPos(i);
+
+                    Q_ASSERT(pos != -1 && pos < it.argsCount());
+                    Q_ASSERT(SC_ADDR_IS_NOT_EMPTY(result[repl]));
+                    Q_ASSERT(it.m_args[pos].isRepl());
+                    Q_ASSERT(!it.m_args[pos].m_param.is_type);
+
+                    it.m_args[pos].m_param.addr = result[repl];
+                }
+            }
+            it.startIterate(ctx);
+
+            while (it.nextIterate())
+            {
+                it.copyResults(result, resultPos);
+                if (itIdx == m_iterators.size() - 1)
+                    m_results.insert(m_results.end(), result.begin(), result.end());
+                else
+                    iterateStep(ctx, result, resultPos + it.argsCount(), itIdx + 1);
+            }
+
+            it.stopIterate();
+        }
+
+        void iterate(sc_memory_context const * ctx)
+        {
+            ScAddrVec result;
+            result.resize(oneResultSize());
+
+            iterateStep(ctx, result, 0, 0);
+        }
+
+        ScAddrVec const & result() const
+        {
+            return m_results;
+        }
+
+    };
+}
+
+eSctpErrorCode sctpCommand::processIterateConstruction(quint32 cmdFlags, quint32 cmdId, QDataStream *params, QIODevice *outDevice)
+{
+    IterConstsr constr;
+    if (constr.build(params))
+    {
+        constr.iterate(mContext);
+        quint8 stride = constr.oneResultSize();
+        IterConstsr::ScAddrVec const & result = constr.result();
+        Q_ASSERT(result.size() % stride == 0);
+
+        quint32 const n = result.size();
+        quint32 const s = sizeof(sc_addr) * n;
+        quint32 const count = n / stride;
+        writeResultHeader(SCTP_CMD_ITERATE_CONSTRUCTION, cmdId, SCTP_RESULT_OK, s + sizeof(quint32), outDevice);
+        outDevice->write((const char*)&count, sizeof(count));
+        outDevice->write((const char*)result.data(), s);
+    } else
+        writeResultHeader(SCTP_CMD_ITERATE_CONSTRUCTION, cmdId, SCTP_RESULT_FAIL, 0, outDevice);
+
+    return SCTP_NO_ERROR;
+}
 
 eSctpErrorCode sctpCommand::processCreateEvent(quint32 cmdFlags, quint32 cmdId, QDataStream *params, QIODevice *outDevice)
 {

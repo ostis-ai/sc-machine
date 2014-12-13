@@ -29,6 +29,8 @@ extern "C"
 #include "sc_helper.h"
 }
 
+#include <stdint.h>
+
 #define POINTER_TO_UINT(p)	((sc_uint) (sc_ulong) (p))
 #define UINT_TO_POINTER(u)	((sc_pointer) (sc_ulong) (u))
 
@@ -66,11 +68,11 @@ typedef enum
     SCTP_ITERATOR_3A_A_F = 1,
     SCTP_ITERATOR_3F_A_F = 2,
     SCTP_ITERATOR_5F_A_A_A_F = 3,
-    SCTP_ITERATOR_5_A_A_F_A_F = 4,
-    SCTP_ITERATOR_5_F_A_F_A_F = 5,
-    SCTP_ITERATOR_5_F_A_F_A_A = 6,
-    SCTP_ITERATOR_5_F_A_A_A_A = 7,
-    SCTP_ITERATOR_5_A_A_F_A_A = 8,
+    SCTP_ITERATOR_5A_A_F_A_F = 4,
+    SCTP_ITERATOR_5F_A_F_A_F = 5,
+    SCTP_ITERATOR_5F_A_F_A_A = 6,
+    SCTP_ITERATOR_5F_A_A_A_A = 7,
+    SCTP_ITERATOR_5A_A_F_A_A = 8,
 
     SCTP_ITERATOR_COUNT
 
