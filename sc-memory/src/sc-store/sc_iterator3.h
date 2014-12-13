@@ -34,7 +34,7 @@ typedef enum
     sc_iterator3_f_a_a = 0, // output arcs
     sc_iterator3_a_a_f,     // input arcs
     sc_iterator3_f_a_f      // arcs between two elements
-} sc_iterator_type;
+} sc_iterator3_type;
 
 /*! Iterator parameter
  */
@@ -52,7 +52,7 @@ struct _sc_iterator_param
  */
 struct _sc_iterator3
 {
-    sc_iterator_type type;          // iterator type (search template)
+    sc_iterator3_type type;          // iterator type (search template)
     sc_iterator_param params[3];    // parameters array
     sc_addr results[3];             // results array (same size as params)
     const sc_memory_context *ctx;   // pointer to used memory context
@@ -90,7 +90,7 @@ sc_iterator3* sc_iterator3_f_a_f_new(const sc_memory_context *ctx, sc_addr el_be
  * @param p3 Third iterator parameter
  * @return Pointer to created iterator. If parameters invalid for specified iterator type, or type is not a sc-iterator-3, then return 0
  */
-sc_iterator3* sc_iterator3_new(const sc_memory_context *ctx, sc_iterator_type type, sc_iterator_param p1, sc_iterator_param p2, sc_iterator_param p3);
+sc_iterator3* sc_iterator3_new(const sc_memory_context *ctx, sc_iterator3_type type, sc_iterator_param p1, sc_iterator_param p2, sc_iterator_param p3);
 
 /*! Destroy iterator and free allocated memory
  * @param it Pointer to sc-iterator that need to be destroyed

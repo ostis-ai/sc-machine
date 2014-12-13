@@ -51,6 +51,9 @@ struct _sc_iterator5
 
 typedef struct _sc_iterator5 sc_iterator5;
 
+sc_iterator5* sc_iterator5_new(const sc_memory_context *ctx, sc_iterator5_type type,
+                               sc_iterator_param p1, sc_iterator_param p2, sc_iterator_param p3, sc_iterator_param p4, sc_iterator_param p5);
+
 /*! Create new sc-iterator5
  * @param type Iterator type (search template)
  * @param p1 First element type

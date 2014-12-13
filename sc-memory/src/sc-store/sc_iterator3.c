@@ -132,7 +132,7 @@ void _sc_iterator_unref_element_addr(const sc_memory_context *ctx, sc_addr addr)
     STORAGE_CHECK_CALL(sc_storage_element_unlock(ctx, addr))
 }
 
-sc_iterator3* sc_iterator3_new(const sc_memory_context *ctx, sc_iterator_type type, sc_iterator_param p1, sc_iterator_param p2, sc_iterator_param p3)
+sc_iterator3* sc_iterator3_new(const sc_memory_context *ctx, sc_iterator3_type type, sc_iterator_param p1, sc_iterator_param p2, sc_iterator_param p3)
 {
     // check types
     if (type > sc_iterator3_f_a_f) return (sc_iterator3*)0;
