@@ -149,8 +149,12 @@ void _sc_event_queue_item_remove_by_addr(gpointer _item, gpointer _addr)
 {
     sc_event_queue_item *item = (sc_event_queue_item*)_item;
 
-    if ((SC_ADDR_LOCAL_TO_INT(item->arg) == GPOINTER_TO_UINT(_addr)) && (sc_event_get_type(item->event)!= SC_EVENT_REMOVE_ELEMENT))
-        item->event = 0;
+    if ((SC_ADDR_LOCAL_TO_INT(item->arg) == GPOINTER_TO_UINT(_addr)))
+    {
+        sc_event_type t = sc_event_get_type(item->event);
+        if (t != SC_EVENT_REMOVE_ELEMENT && t != SC_EVENT_REMOVE_INPUT_ARC && t != SC_EVENT_REMOVE_OUTPUT_ARC)
+            item->event = 0;
+    }
 }
 
 void sc_event_queue_remove(sc_event_queue *queue, sc_event *event)
