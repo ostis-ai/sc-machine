@@ -20,20 +20,11 @@ along with OSTIS. If not, see <http://www.gnu.org/licenses/>.
 -----------------------------------------------------------------------------
  */
 
-#ifndef _utils_keynodes_h_
-#define _utils_keynodes_h_
+#ifndef _utils_garbage_deletion_h_
+#define _utils_garbage_deletion_h_
 
-#include "sc_memory.h"
+#include "sc_memory_headers.h"
 
-extern sc_addr keynode_nrel_idtf;
-extern sc_addr keynode_nrel_main_idtf;
-extern sc_addr keynode_nrel_system_identifier;
-extern sc_addr keynode_system_element;
-
-extern sc_addr keynode_sc_garbage;
-
-sc_result utils_collect_keynodes_initialize();
-
-sc_result utils_keynodes_initialize();
+sc_result agent_garbage_delete(const sc_event *event, sc_addr arg);
 
 #endif

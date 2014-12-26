@@ -26,9 +26,10 @@ along with OSTIS. If not, see <http://www.gnu.org/licenses/>.
 #include "sc_memory.h"
 
 extern sc_memory_context * s_default_ctx;
+extern sc_memory_context * s_garbage_ctx;
 
 sc_result initialize();
-
+sc_uint32 load_priority();
 sc_result shutdown();
 
 #endif
