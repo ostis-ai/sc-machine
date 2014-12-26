@@ -92,7 +92,6 @@ eSctpErrorCode sctpCommand::processCommand(QIODevice *inDevice, QIODevice *outDe
     inDevice->read((char*)paramsData.data(), paramsData.size());
     QDataStream paramsStream(paramsData);
 
-
     switch (cmdCode)
     {
     case SCTP_CMD_CHECK_ELEMENT:
@@ -390,7 +389,7 @@ eSctpErrorCode sctpCommand::processGetLinkContent(quint32 cmdFlags, quint32 cmdI
         if (stream != nullptr)
             sc_stream_free(stream);
 
-        return SCTP_ERROR;
+        return SCTP_NO_ERROR;
     }
 
     // write content data

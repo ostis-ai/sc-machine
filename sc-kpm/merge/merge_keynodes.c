@@ -23,18 +23,10 @@ along with OSTIS. If not, see <http://www.gnu.org/licenses/>.
 #include "merge_keynodes.h"
 #include "merge.h"
 
+#include "../common/sc_keynodes.h"
+
 #include "sc_helper.h"
 #include <glib.h>
-
-#define resolve_keynode(keynode) \
-    if (sc_helper_resolve_system_identifier(s_default_ctx, keynode##_str, &keynode) == SC_FALSE) \
-    {\
-        g_warning("Can't find element with system identifier: %s", keynode##_str); \
-        keynode = sc_memory_node_new(s_default_ctx, 0); \
-        if (sc_helper_set_system_identifier(s_default_ctx, keynode, keynode##_str, strlen(keynode##_str)) != SC_RESULT_OK) \
-            return SC_RESULT_ERROR; \
-        g_message("Created element with system identifier: %s", keynode##_str); \
-    }
 
 sc_addr keynode_question_set_cantorization;
 
@@ -55,13 +47,13 @@ const char keynode_system_element_str[] = "system_element";
 sc_result merge_keynodes_initialize()
 {
 
-    resolve_keynode(keynode_question_set_cantorization);
+    RESOLVE_KEYNODE(s_default_ctx, keynode_question_set_cantorization);
 
-    resolve_keynode(keynode_nrel_answer);
-    resolve_keynode(keynode_question_initiated);
-    resolve_keynode(keynode_question);
-    resolve_keynode(keynode_question_finished);
-    resolve_keynode(keynode_system_element);
+    RESOLVE_KEYNODE(s_default_ctx, keynode_nrel_answer);
+    RESOLVE_KEYNODE(s_default_ctx, keynode_question_initiated);
+    RESOLVE_KEYNODE(s_default_ctx, keynode_question);
+    RESOLVE_KEYNODE(s_default_ctx, keynode_question_finished);
+    RESOLVE_KEYNODE(s_default_ctx, keynode_system_element);
 
     return SC_RESULT_OK;
 }

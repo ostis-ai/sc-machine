@@ -25,6 +25,7 @@ along with OSTIS.  If not, see <http://www.gnu.org/licenses/>.
 
 extern "C"
 {
+#include "../common/sc_keynodes.h"
 #include <glib.h>
 }
 
@@ -91,44 +92,34 @@ sc_addr ui_keynode_rrel_order[RREL_ORDER_COUNT];
 sc_addr ui_keynode_arg[UI_ARG_COUNT];
 
 
-#define resolve_keynode(keynode) \
-    if (sc_helper_resolve_system_identifier(s_default_ctx, keynode##_str, &keynode) == SC_FALSE) \
-    {\
-        g_warning("Can't find element with system identifier: %s", keynode##_str); \
-        keynode = sc_memory_node_new(s_default_ctx, 0); \
-        if (sc_helper_set_system_identifier(s_default_ctx, keynode, keynode##_str, strlen(keynode##_str)) != SC_RESULT_OK) \
-            return SC_FALSE; \
-        g_message("Created element with system identifier: %s", keynode##_str); \
-    }
-
 // -------------------------------------------------
 sc_bool initialize_keynodes()
 {
-    resolve_keynode(keynode_user);
-    resolve_keynode(keynode_question_nrel_answer);
-    resolve_keynode(keynode_question_finished);
-    resolve_keynode(keynode_command_translate_from_sc);
-    resolve_keynode(keynode_nrel_authors);
-    resolve_keynode(keynode_nrel_user_answer_formats);
-    resolve_keynode(keynode_rrel_source_sc_construction);
-    resolve_keynode(keynode_rrel_output_format);
-    resolve_keynode(keynode_nrel_translation);
-    resolve_keynode(keynode_nrel_format);
+    RESOLVE_KEYNODE(s_default_ctx, keynode_user);
+    RESOLVE_KEYNODE(s_default_ctx, keynode_question_nrel_answer);
+    RESOLVE_KEYNODE(s_default_ctx, keynode_question_finished);
+    RESOLVE_KEYNODE(s_default_ctx, keynode_command_translate_from_sc);
+    RESOLVE_KEYNODE(s_default_ctx, keynode_nrel_authors);
+    RESOLVE_KEYNODE(s_default_ctx, keynode_nrel_user_answer_formats);
+    RESOLVE_KEYNODE(s_default_ctx, keynode_rrel_source_sc_construction);
+    RESOLVE_KEYNODE(s_default_ctx, keynode_rrel_output_format);
+    RESOLVE_KEYNODE(s_default_ctx, keynode_nrel_translation);
+    RESOLVE_KEYNODE(s_default_ctx, keynode_nrel_format);
 
-    resolve_keynode(keynode_command_generate_instance);
-    resolve_keynode(keynode_command_initiated);
-    resolve_keynode(keynode_command_finished);
-    resolve_keynode(keynode_rrel_command_arguments);
-    resolve_keynode(keynode_rrel_command);
-    resolve_keynode(keynode_nrel_command_template);
-    resolve_keynode(keynode_nrel_command_result);
-    resolve_keynode(keynode_displayed_answer);
+    RESOLVE_KEYNODE(s_default_ctx, keynode_command_generate_instance);
+    RESOLVE_KEYNODE(s_default_ctx, keynode_command_initiated);
+    RESOLVE_KEYNODE(s_default_ctx, keynode_command_finished);
+    RESOLVE_KEYNODE(s_default_ctx, keynode_rrel_command_arguments);
+    RESOLVE_KEYNODE(s_default_ctx, keynode_rrel_command);
+    RESOLVE_KEYNODE(s_default_ctx, keynode_nrel_command_template);
+    RESOLVE_KEYNODE(s_default_ctx, keynode_nrel_command_result);
+    RESOLVE_KEYNODE(s_default_ctx, keynode_displayed_answer);
 
-    resolve_keynode(keynode_format_scs_json);
-    resolve_keynode(keynode_format_scg_json);
-    resolve_keynode(keynode_format_scn_json);
+    RESOLVE_KEYNODE(s_default_ctx, keynode_format_scs_json);
+    RESOLVE_KEYNODE(s_default_ctx, keynode_format_scg_json);
+    RESOLVE_KEYNODE(s_default_ctx, keynode_format_scn_json);
 
-    resolve_keynode(keynode_system_element);
+    RESOLVE_KEYNODE(s_default_ctx, keynode_system_element);
 
     for (sc_uint32 i = 0; i < RREL_ORDER_COUNT; ++i)
     {

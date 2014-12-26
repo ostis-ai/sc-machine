@@ -19,27 +19,15 @@ You should have received a copy of the GNU Lesser General Public License
 along with OSTIS. If not, see <http://www.gnu.org/licenses/>.
 -----------------------------------------------------------------------------
  */
-#include "utils_keynodes.h"
-#include "../common/sc_keynodes.h"
-#include "utils.h"
-#include <glib.h>
 
-const char keynode_nrel_idtf_str[] = "nrel_idtf";
-const char keynode_nrel_main_idtf_str[] = "nrel_main_idtf";
-const char keynode_nrel_system_identifier_str[] = "nrel_system_identifier";
-const char keynode_system_element_str[] = "system_element";
+#ifndef _sc_keynodes_h_
+#define _sc_keynodes_h_
 
-sc_addr keynode_nrel_idtf;
-sc_addr keynode_nrel_main_idtf;
-sc_addr keynode_nrel_system_identifier;
-sc_addr keynode_system_element;
+#include "sc_helper.h"
+#include "sc_memory.h"
 
-sc_result utils_keynodes_initialize()
-{
-    RESOLVE_KEYNODE(s_default_ctx, keynode_nrel_idtf);
-    RESOLVE_KEYNODE(s_default_ctx, keynode_nrel_main_idtf);
-    RESOLVE_KEYNODE(s_default_ctx, keynode_nrel_system_identifier);
-    RESOLVE_KEYNODE(s_default_ctx, keynode_system_element);
+sc_result sc_common_resolve_keynode(sc_memory_context const * ctx, char const * sys_idtf, sc_addr * keynode);
 
-    return SC_RESULT_OK;
-}
+#define RESOLVE_KEYNODE(ctx, keynode) if (sc_common_resolve_keynode(ctx, keynode##_str, &keynode) != SC_RESULT_OK) return SC_RESULT_ERROR;
+
+#endif
