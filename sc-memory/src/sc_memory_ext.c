@@ -25,24 +25,56 @@ along with OSTIS.  If not, see <http://www.gnu.org/licenses/>.
 #include <glib.h>
 #include <gmodule.h>
 
-// Table of loaded extension modules
-GHashTable *modules_table = 0;
+GList *modules_priority_list = 0;
 
 //! Type of module function
 typedef sc_result (*fModuleFunc)();
+typedef sc_uint32 (*fModulePriorityFunc)();
 
-gboolean modules_table_equal_func(gconstpointer a, gconstpointer b)
+typedef struct _sc_module_info
 {
-    return a == b;
+    GModule *ptr;
+    gchar *path;
+    sc_uint32 priority;
+    fModuleFunc init_func;
+    fModuleFunc shut_func;
+} sc_module_info;
+
+void sc_module_info_free(gpointer mi)
+{
+    sc_module_info *info = (sc_module_info*)mi;
+
+    if (info->path)
+        g_free(info->path);
+    if (info->ptr)
+        g_module_close(info->ptr);
+    g_free(info);
 }
+
+gint sc_priority_less(gconstpointer a, gconstpointer b)
+{
+    sc_module_info *ma = (sc_module_info*)a;
+    sc_module_info *mb = (sc_module_info*)b;
+
+    if (ma->priority < mb->priority)
+        return -1;
+    if (ma->priority > mb->priority)
+        return 1;
+
+    return strcmp(ma->path, mb->path);
+}
+
+gint sc_priority_great(gconstpointer a, gconstpointer b)
+{
+    return sc_priority_less(b, a);
+}
+
 
 
 sc_result sc_ext_initialize(const sc_char *ext_dir_path)
 {
     GDir *ext_dir = nullptr;
     const gchar *file_name = 0;
-    GModule *module = 0;
-    gchar *module_path = 0;
     fModuleFunc func = 0;
 
     // doesn't need to initialize extensions
@@ -67,84 +99,98 @@ sc_result sc_ext_initialize(const sc_char *ext_dir_path)
     if (ext_dir == nullptr)
         return SC_RESULT_ERROR;
 
-    modules_table = g_hash_table_new(&g_str_hash, &modules_table_equal_func);
-
     // list all files in directory and try to load them
     file_name = g_dir_read_name(ext_dir);
     while (file_name != nullptr)
     {
-        // build module path
-        module_path = g_module_build_path(ext_dir_path, file_name);
+        sc_module_info *mi = g_new0(sc_module_info, 1);
+        mi->path = g_module_build_path(ext_dir_path, file_name);
 
         // open module
-        module = g_module_open(module_path, G_MODULE_BIND_LOCAL);
+        mi->ptr = g_module_open(mi->path, G_MODULE_BIND_LOCAL);
+        if (mi->ptr == nullptr)
+        {
+            g_warning("Can't load module: %s. Error: %s", mi->path, g_module_error());
+            goto clean;
+        }
 
         // skip non module files
         if (g_str_has_suffix(file_name, G_MODULE_SUFFIX) == TRUE)
         {
-
-            if (module == nullptr)
+            if (g_module_symbol(mi->ptr, "initialize", (gpointer*) &func) == FALSE)
             {
-                g_warning("Can't load module: %s. Error: %s", file_name, g_module_error());
-            }else
-            {
-                g_message("Initialize module: %s", file_name);
-                if (g_module_symbol(module, "initialize", (gpointer*) &func) == FALSE)
-                {
-                    g_warning("Can't find 'initialize' symbol in module: %s", file_name);
-                }else
-                {
-                    if (func() != SC_RESULT_OK)
-                    {
-                        g_warning("Something happends, on module initialization: %s", file_name);
-                    }
-                }
-
-                g_hash_table_insert(modules_table, module_path, (gpointer)module);
+                g_warning("Can't find 'initialize' symbol in module: %s", mi->path);
+                goto clean;
             }
+            mi->init_func = func;
+
+            if (g_module_symbol(mi->ptr, "shutdown", (gpointer*) &func) == FALSE)
+            {
+                g_warning("Can't find 'shutdown' symbol in module: %s", mi->path);
+                goto clean;
+            }
+            mi->shut_func = func;
+
+            fModulePriorityFunc pfunc;
+            if (g_module_symbol(mi->ptr, "load_priority", (gpointer*)&pfunc) == FALSE)
+                mi->priority = G_MAXUINT32;
+            else
+                mi->priority = pfunc();
         }
 
-        file_name = g_dir_read_name(ext_dir);
+        modules_priority_list = g_list_insert_sorted(modules_priority_list, (gpointer)mi, sc_priority_less);
+        goto next;
+
+        clean:
+        {
+            sc_module_info_free(mi);
+        }
+
+        next:
+        {
+            file_name = g_dir_read_name(ext_dir);
+        }
     }
 
     g_dir_close(ext_dir);
 
-    return SC_RESULT_OK;
-}
 
-void module_table_unload_func(gpointer key, gpointer value, gpointer user_data)
-{
-    gchar *module_name = (gchar*)key;
-    GModule *module = (GModule*)value;
-    fModuleFunc func = 0;
-
-    g_assert(module_name != nullptr);
-    g_assert(module != nullptr);
-
-    if (g_module_symbol(module, "shutdown", (gpointer*)&func) == FALSE)
+    // initialize modules
+    GList *item = modules_priority_list;
+    while (item != nullptr)
     {
-        g_warning("Can't find shutdown symbol in module: %s", module_name);
-    }else
-    {
-        if (func() != SC_RESULT_OK)
+        sc_module_info *module = (sc_module_info*)item->data;
+        g_message("Initialize module: %s", module->path);
+        if (module->init_func() != SC_RESULT_OK)
         {
-            g_warning("Something happends, on module shutdown: %s", module_name);
+            g_warning("Something happends, on module initialization: %s", module->path);
+            module->shut_func();
+            g_module_close(module->ptr);
+            module->ptr = nullptr;
         }
+
+        item = item->next;
     }
 
-    g_module_close(module);
-    g_free(module_name);
-
+    return SC_RESULT_OK;
 }
 
 void sc_ext_shutdown()
 {
-    if (modules_table == nullptr)
-        return; // extensions wasn't initialized
+    modules_priority_list = g_list_sort(modules_priority_list, sc_priority_great);
+    GList *item = modules_priority_list;
+    while (item != nullptr)
+    {
+        sc_module_info *module = (sc_module_info*)item->data;
+        g_message("Shutdown module: %s", module->path);
+        if (module->ptr != nullptr)
+        {
+            if (module->shut_func() != SC_RESULT_OK)
+                g_warning("Something happends, on module shutdown: %s", module->path);
+        }
 
-    // itrate all loaded modules and try to unload them
-    g_hash_table_foreach(modules_table, &module_table_unload_func, 0);
+        item = item->next;
+    }
 
-    g_hash_table_destroy(modules_table);
-    modules_table = nullptr;
+    g_list_free_full(modules_priority_list, sc_module_info_free);
 }
