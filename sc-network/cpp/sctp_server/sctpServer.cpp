@@ -41,7 +41,6 @@ sctpServer::sctpServer(QObject *parent)
   : QTcpServer(parent)
   , mPort(0)
   , mStatistic(0)
-  , mThreadPool(0)
   , mEventManager(0)
   , mContext(0)
 {
@@ -52,8 +51,6 @@ sctpServer::~sctpServer()
     if (mStatistic)
         delete mStatistic;
 
-    if (mThreadPool)
-        delete mThreadPool;
 }
 
 bool sctpServer::start(const QString &config)
@@ -111,9 +108,6 @@ bool sctpServer::start(const QString &config)
         mStatistic->initialize(mStatPath, mStatUpdatePeriod, mContext);
     }
 
-    mThreadPool = new QThreadPool(this);
-    mThreadPool->setMaxThreadCount(100);
-
     return true;
 }
 
@@ -156,9 +150,13 @@ void sctpServer::parseConfig(const QString &config_path)
 
 void sctpServer::incomingConnection(int socketDescriptor)
 {
-    sctpClient *client = new sctpClient(socketDescriptor);
-    client->setAutoDelete(true);
-    mThreadPool->start(client);
+    sctpClient *client = new sctpClient(this, socketDescriptor);
+    connect(client, SIGNAL(finished()), client, SLOT(deleteLater()));
+    connect(client, SIGNAL(destroyed(QObject*)), this, SLOT(clientDestroyed(QObject*)));
+    mClients.insert(client);
+    client->start();
+
+    qDebug() << "Connect client: " << mClients.size();
 }
 
 void sctpServer::stop()
@@ -171,5 +169,16 @@ void sctpServer::stop()
     mEventManager = 0;
 
     close();
+}
+
+void sctpServer::clientDestroyed(QObject *client)
+{
+    QSet<sctpClient*>::iterator it = mClients.find(static_cast<sctpClient*>(client));
+    if (it == mClients.end())
+        qWarning("Recieve event from non existing client");
+
+    mClients.erase(it);
+
+    qDebug() << "Destroy client: " << mClients.size();
 }
 

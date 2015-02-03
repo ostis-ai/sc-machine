@@ -32,8 +32,6 @@ class sctpClient;
 class sctpStatistic;
 class sctpEventManager;
 
-class QThreadPool;
-
 class sctpServer : public QTcpServer
 {
     Q_OBJECT
@@ -64,11 +62,10 @@ private:
     quint32 mStatUpdatePeriod;
     sctpStatistic *mStatistic;
 
-    //! Worker threads pool
-    QThreadPool *mThreadPool;
+    QSet<sctpClient*> mClients;
+
     //! Event manager instance
     sctpEventManager *mEventManager;
-
     //! Pointer to default memory context
     sc_memory_context *mContext;
 
@@ -77,6 +74,8 @@ signals:
 
 public slots:
     void stop();
+
+    void clientDestroyed(QObject *client);
 
 };
 

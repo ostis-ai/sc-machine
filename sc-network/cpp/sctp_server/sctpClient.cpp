@@ -28,8 +28,9 @@ along with OSTIS.  If not, see <http://www.gnu.org/licenses/>.
 #include <QHostAddress>
 #include <QDebug>
 
-sctpClient::sctpClient(int socketDescriptor)
-    : mSocket(0)
+sctpClient::sctpClient(QObject *parent, int socketDescriptor)
+    : QThread(parent)
+    , mSocket(0)
     , mSocketDescriptor(socketDescriptor)
     , mCommand(0)
 {
@@ -73,6 +74,8 @@ void sctpClient::run()
 
     delete mCommand;
     mCommand = 0;
+
+    //deleteLater(); // shedule destroy in main thread
 }
 
 void sctpClient::processCommands()
