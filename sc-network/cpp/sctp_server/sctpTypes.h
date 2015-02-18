@@ -41,7 +41,7 @@ typedef enum
     SCTP_CMD_GET_ELEMENT_TYPE   = 0x02, // return sc-element type
     SCTP_CMD_ERASE_ELEMENT      = 0x03, // erase specified sc-element
     SCTP_CMD_CREATE_NODE        = 0x04, // create new sc-node
-    SCTP_CMD_CREAET_LINK        = 0x05, // create new sc-link
+    SCTP_CMD_CREATE_LINK        = 0x05, // create new sc-link
     SCTP_CMD_CREATE_ARC         = 0x06, // create new sc-arc
     SCTP_CMD_GET_ARC            = 0x07, // return begin element of sc-arc
 

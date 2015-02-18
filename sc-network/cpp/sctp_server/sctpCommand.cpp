@@ -106,7 +106,7 @@ eSctpErrorCode sctpCommand::processCommand(QIODevice *inDevice, QIODevice *outDe
     case SCTP_CMD_CREATE_NODE:
         return processCreateNode(cmdFlags, cmdId, &paramsStream, outDevice);
 
-    case SCTP_CMD_CREAET_LINK:
+    case SCTP_CMD_CREATE_LINK:
         return processCreateLink(cmdFlags, cmdId, &paramsStream, outDevice);
 
     case SCTP_CMD_CREATE_ARC:
@@ -284,13 +284,13 @@ eSctpErrorCode sctpCommand::processCreateLink(quint32 cmdFlags, quint32 cmdId, Q
     eSctpErrorCode result;
     if (SC_ADDR_IS_NOT_EMPTY(addr))
     {
-        writeResultHeader(SCTP_CMD_CREATE_NODE, cmdId, SCTP_RESULT_OK, sizeof(addr), outDevice);
+        writeResultHeader(SCTP_CMD_CREATE_LINK, cmdId, SCTP_RESULT_OK, sizeof(addr), outDevice);
         outDevice->write((const char*)&addr, sizeof(addr));
 
         result = SCTP_NO_ERROR;
     }else
     {
-        writeResultHeader(SCTP_CMD_CREATE_NODE, cmdId, SCTP_RESULT_FAIL, 0, outDevice);
+        writeResultHeader(SCTP_CMD_CREATE_LINK, cmdId, SCTP_RESULT_FAIL, 0, outDevice);
         result = SCTP_ERROR;
     }
 
@@ -323,7 +323,7 @@ eSctpErrorCode sctpCommand::processCreateArc(quint32 cmdFlags, quint32 cmdId, QD
         result = SCTP_NO_ERROR;
     }else
     {
-        writeResultHeader(SCTP_CMD_CREAET_LINK, cmdId, SCTP_RESULT_FAIL, 0, outDevice);
+        writeResultHeader(SCTP_CMD_CREATE_LINK, cmdId, SCTP_RESULT_FAIL, 0, outDevice);
         result = SCTP_ERROR;
     }
 

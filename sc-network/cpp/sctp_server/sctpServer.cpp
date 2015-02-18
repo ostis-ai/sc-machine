@@ -155,8 +155,6 @@ void sctpServer::incomingConnection(int socketDescriptor)
     connect(client, SIGNAL(destroyed(QObject*)), this, SLOT(clientDestroyed(QObject*)));
     mClients.insert(client);
     client->start();
-
-    qDebug() << "Connect client: " << mClients.size();
 }
 
 void sctpServer::stop()
@@ -178,7 +176,5 @@ void sctpServer::clientDestroyed(QObject *client)
         qWarning("Recieve event from non existing client");
 
     mClients.erase(it);
-
-    qDebug() << "Destroy client: " << mClients.size();
 }
 
