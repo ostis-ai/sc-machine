@@ -28,6 +28,5 @@ along with OSTIS. If not, see <http://www.gnu.org/licenses/>.
 #include "agents/search_semantic_neighborhood.h"
 #include "agents/search_structure.h"
 #include "agents/search_identifiers.h"
-#include "agents/search_pattern.h"
 
 #endif
