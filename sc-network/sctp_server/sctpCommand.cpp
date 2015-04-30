@@ -34,7 +34,7 @@ along with OSTIS.  If not, see <http://www.gnu.org/licenses/>.
 #include <assert.h>
 
 
-#define SCTP_READ_TIMEOUT   10000
+#define SCTP_READ_TIMEOUT   3000
 
 #define READ_PARAM(val)  if (params->readRawData((char*)&val, sizeof(val)) != sizeof(val)) \
                             return SCTP_ERROR_CMD_READ_PARAMS;
@@ -1119,10 +1119,17 @@ eSctpErrorCode sctpCommand::processIterateConstruction(quint32 cmdFlags, quint32
         quint32 const n = result.size();
         quint32 const s = sizeof(sc_addr) * n;
         quint32 const count = n / stride;
-        writeResultHeader(SCTP_CMD_ITERATE_CONSTRUCTION, cmdId, SCTP_RESULT_OK, s + sizeof(quint32), outDevice);
-        outDevice->write((const char*)&count, sizeof(count));
-        outDevice->write((const char*)result.data(), s);
-    } else
+
+        if (result.size() > 0)
+        {
+            writeResultHeader(SCTP_CMD_ITERATE_CONSTRUCTION, cmdId, SCTP_RESULT_OK, s + sizeof(quint32), outDevice);
+            outDevice->write((const char*)&count, sizeof(count));
+            outDevice->write((const char*)result.data(), s);
+        }
+        else
+            writeResultHeader(SCTP_CMD_ITERATE_CONSTRUCTION, cmdId, SCTP_RESULT_FAIL, 0, outDevice);
+    }
+    else
         writeResultHeader(SCTP_CMD_ITERATE_CONSTRUCTION, cmdId, SCTP_RESULT_FAIL, 0, outDevice);
 
     return SCTP_NO_ERROR;
