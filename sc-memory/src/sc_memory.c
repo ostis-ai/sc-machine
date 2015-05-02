@@ -51,6 +51,8 @@ void sc_memory_params_clear(sc_memory_params *params)
 
 sc_memory_context* sc_memory_initialize(const sc_memory_params *params)
 {
+    g_log_set_always_fatal(G_LOG_LEVEL_CRITICAL);
+
 #if SC_PROFILE_MODE
     sc_storage_reset_profile();
 #endif
@@ -269,4 +271,9 @@ sc_result sc_memory_get_element_access_levels(sc_memory_context const * ctx, sc_
 sc_result sc_memory_stat(sc_memory_context const * ctx, sc_stat *stat)
 {
     return sc_storage_get_elements_stat(ctx, stat);
+}
+
+sc_result sc_memory_save(sc_memory_context const * ctx)
+{
+    return sc_storage_save(ctx);
 }

@@ -2,6 +2,7 @@
 Port = 55770
 [Repo]
 Path = ~/develop/sc-machine/bin/repo
+SavePeriod = 300
 [Extensions]
 Directory = ~/develop/sc-machine/bin/extensions
 [Stat]
@@ -11,7 +12,6 @@ Path = /tmp/sctp_stat
 ##### sc-memory
 [memory]
 max_loaded_segments = 10
-save_period = 30
 
 [filememory]
 engine = redis

@@ -27,6 +27,16 @@ along with OSTIS.  If not, see <http://www.gnu.org/licenses/>.
 #include "sc_defines.h"
 #include "sc_stream.h"
 
+#define SC_STORAGE_SEG_CHECKSUM_SIZE 64
+
+typedef struct _sc_fs_storage_segments_header
+{
+    sc_uint32 version;
+    sc_uint16 segments_num;
+    sc_uint64 timestamp;
+    sc_uint8  checksum[SC_STORAGE_SEG_CHECKSUM_SIZE]; // buffer size for sha 512
+
+} sc_fs_storage_segments_header;
 
 /*! Initialize file system storage in specified path
  * @param path Path to store on file system.
@@ -37,15 +47,6 @@ sc_bool sc_fs_storage_initialize(const char *path, sc_bool clear);
 /*! Shutdown file system storage
  */
 sc_bool sc_fs_storage_shutdown(sc_segment **segments, sc_bool save_segments);
-
-/*! Load segment from file system
- *
- * @param id Segment id.
- *
- * @return Pointer to loaded segment.
- */
-sc_segment* sc_fs_storage_load_segment(sc_uint id);
-
 
 /*! Load segments from file system storage
  *

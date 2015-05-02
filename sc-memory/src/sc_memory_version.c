@@ -56,3 +56,17 @@ void sc_version_string_free(char *str)
     g_assert(str != 0);
     g_free(str);
 }
+
+sc_uint32 sc_version_to_int(sc_version const * version)
+{
+    g_assert(version);
+    return (version->major << 16) | (version->minor << 8) | version->patch;
+}
+
+void sc_version_from_int(sc_uint32 value, sc_version * version)
+{
+    g_assert(version);
+    version->patch = value & 0xff;
+    version->minor = value >> 8 & 0xff;
+    version->major = value >> 16 & 0xff;
+}

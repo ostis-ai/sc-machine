@@ -53,6 +53,7 @@ sc_int32 segments_cache_count = 0;
 sc_segment* segments_cache[SC_SEGMENT_CACHE_SIZE]; // cache of segments that have empty elements
 
 GMutex s_mutex_free;
+GMutex s_mutex_save;
 
 #define CONCURRENCY_TO_CACHE_IDX(x) ((x) % SC_SEGMENT_CACHE_SIZE)
 
@@ -138,11 +139,15 @@ sc_segment* _sc_segment_cache_get(const sc_memory_context *ctx)
     // try to update cache
     _sc_segment_cache_update(ctx);
 
+    g_mutex_lock(&s_mutex_save);
+
     // if element still not added, then create new segment and append element into it
     sc_int32 seg_num = g_atomic_int_add(&segments_num, 1);
     seg = sc_segment_new(seg_num);
     segments[seg_num] = seg;
     _sc_segment_cache_append(ctx, seg);
+
+    g_mutex_unlock(&s_mutex_save);
 
     result:
     {
@@ -166,7 +171,10 @@ sc_bool sc_storage_initialize(const char *path, sc_bool clear)
         return SC_FALSE;
 
     if (clear == SC_FALSE)
-        sc_fs_storage_read_from_path(segments, &segments_num);
+    {
+        if (sc_fs_storage_read_from_path(segments, &segments_num) == SC_FALSE)
+            return SC_FALSE;
+    }
 
     is_initialized = SC_TRUE;
 
@@ -553,6 +561,8 @@ sc_result sc_storage_element_free(const sc_memory_context *ctx, sc_addr addr)
             el->flags.type |= sc_flag_request_deletion;
 
         sc_event_emit(addr, el_access, SC_EVENT_REMOVE_ELEMENT, addr);
+
+        g_message("deleted: %d, %d", addr.seg, addr.offset);
 
         // remove registered events before deletion
         sc_event_notify_element_deleted(addr);
@@ -1202,3 +1212,39 @@ void sc_storage_print_profile()
 }
 
 #endif
+
+sc_result sc_storage_save(sc_memory_context const * ctx)
+{
+    sc_segment * seg;
+    sc_uint32 i;
+
+    // synchronize with free
+    g_mutex_lock(&s_mutex_free);
+    g_mutex_lock(&s_mutex_save);
+
+    for (i = 0; i < SC_SEGMENT_MAX; ++i)
+    {
+        seg = segments[i];
+        if (seg == nullptr)
+            continue;
+
+        sc_segment_lock(seg, ctx);
+    }
+
+    sc_fs_storage_write_to_path(segments);
+
+    g_mutex_unlock(&s_mutex_free);
+
+    for (i = 0; i < SC_SEGMENT_MAX; ++i)
+    {
+        seg = segments[i];
+        if (seg == nullptr)
+            continue;
+
+        sc_segment_unlock(seg, ctx);
+    }
+
+    g_mutex_unlock(&s_mutex_save);
+
+
+}

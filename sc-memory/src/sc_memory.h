@@ -196,6 +196,11 @@ sc_result sc_memory_get_element_access_levels(sc_memory_context const * ctx, sc_
  */
 sc_result sc_memory_stat(sc_memory_context const * ctx, sc_stat *stat);
 
+/*! Save sc-memory state.
+ * Calls from application, when request to save memory state
+ */
+sc_result sc_memory_save(sc_memory_context const * ctx);
+
 
 
 #endif

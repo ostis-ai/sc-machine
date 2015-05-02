@@ -6,6 +6,7 @@ extern "C"
 #include "sc_helper.h"
 }
 #include <iostream>
+#include <sstream>
 #include <vector>
 #include <limits>
 #include <glib.h>
@@ -614,6 +615,68 @@ void test_links()
     shutdown_memory();
 }
 
+// --------------------
+namespace
+{
+
+std::string genIdtf(int idx)
+{
+    std::stringstream ss;
+    ss << idx;
+    return ss.str();
+}
+
+}
+
+void test_save()
+{
+    sc_memory_params p;
+    p.clear = SC_TRUE;
+    p.repo_path = "repo";
+    p.config_file = "sc-memory.ini";
+    p.ext_path = 0;
+    std::vector<sc_addr> addrs;
+
+    static sc_uint32 const ADDRS_COUNT = 100000;
+    addrs.reserve(ADDRS_COUNT);
+
+    sc_memory_initialize(&p);
+    s_default_ctx = sc_memory_context_new(sc_access_lvl_make_max);
+
+    for (int i = 0; i < ADDRS_COUNT; ++i)
+    {
+        std::string const s = genIdtf(i);
+
+        sc_addr addr = sc_memory_node_new(s_default_ctx, sc_type_node | sc_type_const);
+        sc_helper_set_system_identifier(s_default_ctx, addr, s.c_str(), s.size());
+        addrs.push_back(addr);
+    }
+
+    print_storage_statistics();
+
+    sc_memory_context_free(s_default_ctx);
+    sc_memory_shutdown(SC_TRUE);
+
+    p.clear = SC_FALSE;
+    sc_memory_initialize(&p);
+    s_default_ctx = sc_memory_context_new(sc_access_lvl_make_max);
+    print_storage_statistics();
+
+    for (int i = 0; i < ADDRS_COUNT; ++i)
+    {
+        std::string const s = genIdtf(i);
+
+        //sc_result sc_helper_find_element_by_system_identifier(sc_memory_context const * ctx, const sc_char* data, sc_uint32 len, sc_addr *result_addr);
+        sc_addr addr;
+        g_assert(sc_helper_find_element_by_system_identifier(s_default_ctx, s.c_str(), s.size(), &addr) == SC_RESULT_OK);
+        g_assert(SC_ADDR_IS_EQUAL(addr, addrs[i]));
+    }
+
+    sc_memory_context_free(s_default_ctx);
+    sc_memory_shutdown(SC_TRUE);
+
+}
+
 // ---------------------------
 int main(int argc, char *argv[])
 {
@@ -627,6 +690,9 @@ int main(int argc, char *argv[])
     printf("sc_element: %zd, sc_addr: %zd, sc_arc: %zd, sc_content: %zd", sizeof(sc_element), sizeof(sc_addr), sizeof(sc_arc_info), sizeof(sc_content));
 
     g_test_init(&argc, &argv, NULL);
+    /// TODO: add test for verion utils
+
+    g_test_add_func("/common/save", test_save);
     g_test_add_func("/common/context", test_context);
     g_test_add_func("/common/access", test_access_levels);
     g_test_add_func("/common/deletion", test_deletion);

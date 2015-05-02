@@ -60,6 +60,31 @@ sc_segment* sc_segment_new(sc_addr_seg num)
     return segment;
 }
 
+void sc_segment_loaded(sc_segment * seg)
+{
+    sc_uint32 i;
+    seg->elements_count = 0;
+
+    for (i = 0; i < SC_CONCURRENCY_LEVEL; ++i)
+    {
+        sc_segment_section * section = &seg->sections[i];
+        sc_uint32 idx = i;
+
+        section->empty_count = 0;
+        while (idx < SC_SEGMENT_ELEMENTS_COUNT)
+        {
+            if (seg->elements[idx].flags.type == 0)
+            {
+                ++section->empty_count;
+                section->empty_offset = idx;
+            }
+            else
+                ++seg->elements_count;
+            idx += SC_CONCURRENCY_LEVEL;
+        }
+    }
+}
+
 void sc_segment_free(sc_segment *segment)
 {
     g_assert( segment != 0);
@@ -326,9 +351,21 @@ void sc_segment_section_unlock(const sc_memory_context *ctx, sc_segment_section 
     g_atomic_int_set(&section->internal_lock, 0);
 }
 
+void sc_segment_lock(sc_segment * seg, sc_memory_context const * ctx)
+{
+    sc_uint32 i;
+    for (i = 0; i < SC_CONCURRENCY_LEVEL; ++i)
+        sc_segment_section_lock(ctx, &seg->sections[i]);
+}
+
+void sc_segment_unlock(sc_segment * seg, sc_memory_context const * ctx)
+{
+    sc_uint32 i;
+    for (i = 0; i < SC_CONCURRENCY_LEVEL; ++i)
+        sc_segment_section_unlock(ctx, &seg->sections[i]);
+}
 
 #if SC_PROFILE_MODE
-
 
 void sc_segment_reset_profile()
 {

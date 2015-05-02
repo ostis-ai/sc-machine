@@ -29,6 +29,8 @@ along with OSTIS.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <glib.h>
 
+#define SC_SEG_ELEMENTS_SIZE_BYTE (sizeof(sc_element) * SC_SEGMENT_ELEMENTS_COUNT)
+
 //! Structure to store segment locks
 typedef struct _sc_segment_section
 {
@@ -54,6 +56,9 @@ struct _sc_segment
  * @param num Number of created intance in sc-memory
  */
 sc_segment* sc_segment_new(sc_addr_seg num);
+
+//! Need to be called after segment data loaded. This function update all meta info that need to coorect work (sections empty offsets, and others)
+void sc_segment_loaded(sc_segment * seg);
 
 void sc_segment_free(sc_segment *segment);
 
@@ -116,6 +121,10 @@ void sc_segment_section_lock(const sc_memory_context *ctx, sc_segment_section *s
 sc_bool sc_segment_section_lock_try(const sc_memory_context *ctx, sc_segment_section *section, sc_uint16 max_attempts);
 //! Unlocks specified segment part
 void sc_segment_section_unlock(const sc_memory_context *ctx, sc_segment_section *section);
+
+// Lock whole segment
+void sc_segment_lock(sc_segment * seg, sc_memory_context const * ctx);
+void sc_segment_unlock(sc_segment * seg, sc_memory_context const * ctx);
 
 #if SC_PROFILE_MODE
 void sc_segment_reset_profile();

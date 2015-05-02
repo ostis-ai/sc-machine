@@ -28,6 +28,7 @@ along with OSTIS.  If not, see <http://www.gnu.org/licenses/>.
 #include <QSettings>
 #include <QDebug>
 #include <QThreadPool>
+#include <QTimer>
 
 extern "C"
 {
@@ -43,6 +44,7 @@ sctpServer::sctpServer(QObject *parent)
   , mStatistic(0)
   , mEventManager(0)
   , mContext(0)
+  , mSavePeriod(0)
 {
 }
 
@@ -108,6 +110,8 @@ bool sctpServer::start(const QString &config)
         mStatistic->initialize(mStatPath, mStatUpdatePeriod, mContext);
     }
 
+    QTimer::singleShot(mSavePeriod * 1000, this, SLOT(onSave()));
+
     return true;
 }
 
@@ -131,6 +135,14 @@ void sctpServer::parseConfig(const QString &config_path)
         qDebug() << "Path to repo is empty\n";
         exit(0);
     }
+
+    mSavePeriod = settings.value("Repo/SavePeriod").toUInt(&result);
+    if (!result)
+    {
+        qWarning() << "Can't parse save period. Use default value: 3600 (1h)";
+        mSavePeriod = 3600;
+    }
+
     mExtPath = settings.value("Extensions/Directory").toString();
 
     mStatUpdatePeriod = settings.value("Stat/UpdatePeriod").toUInt(&result);
@@ -145,7 +157,6 @@ void sctpServer::parseConfig(const QString &config_path)
         qDebug() << "Path to store statistics is empty\n";
         exit(0);
     }
-
 }
 
 void sctpServer::incomingConnection(int socketDescriptor)
@@ -178,3 +189,9 @@ void sctpServer::clientDestroyed(QObject *client)
     mClients.erase(it);
 }
 
+void sctpServer::onSave()
+{
+    sc_memory_save(mContext);
+
+    QTimer::singleShot(mSavePeriod * 1000, this, SLOT(onSave()));
+}

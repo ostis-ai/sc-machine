@@ -26,17 +26,22 @@ along with OSTIS.  If not, see <http://www.gnu.org/licenses/>.
 #include "sc_config.h"
 #include "sc_fm_engine.h"
 
+#include "../sc_memory_version.h"
+
 #include <stdlib.h>
 #include <memory.h>
 #include <glib.h>
 #include <gmodule.h>
 
 gchar *repo_path = 0;
-gchar segments_path[MAX_PATH_LENGTH + 1];
+gchar segments_path[MAX_PATH_LENGTH]; // Path to file, where stored segments in correct state
 sc_fm_engine *fm_engine = 0;
 #define SC_DIR_PERMISSIONS -1
 
-const gchar *seg_dir = "segments";
+const gchar *seg_master_dir = "master";
+const gchar *seg_branch_dir = "branch";
+
+const gchar *seg_meta = "_meta";
 const gchar *addr_key_group = "addrs";
 
 GModule *fm_engine_module = 0;
@@ -45,11 +50,94 @@ typedef sc_fm_engine* (*fFmEngineInitFunc)();
 typedef sc_result (*fFmEngineShutdownFunc)();
 
 // ----------------------------------------------
+void _get_segment_path(const gchar *path_dir,
+                       sc_uint id,
+                       sc_uint max_path_len,
+                       gchar *res)
+{
+    g_snprintf(res, max_path_len, "%s/%.10d", path_dir, id);
+}
+
+void _get_segment_checksum_path(const gchar *path,
+                                sc_uint max_path_len,
+                                gchar * res)
+{
+    g_snprintf(res, max_path_len, "%s.checksum", path);
+}
+
+
+int _checksum_type()
+{
+    return G_CHECKSUM_SHA512;
+}
+
+sc_uint8 _checksum_get_size()
+{
+    return g_checksum_type_get_length(_checksum_type());
+}
+
+gchar * _checksum_seg(sc_segment const * seg)
+{
+    gchar * result = nullptr;
+    gsize length = 0;
+    GChecksum * checksum = g_checksum_new(_checksum_type());
+    g_assert(seg);
+
+    if (checksum)
+    {
+        g_checksum_reset(checksum);
+        g_checksum_update(checksum, (guchar*)(&seg->elements[0]), SC_SEG_ELEMENTS_SIZE_BYTE);
+
+        length = _checksum_get_size();
+        result = g_new0(gchar, length);
+        g_checksum_get_digest(checksum, result, &length);
+        g_assert( length == _checksum_get_size() );
+    }
+
+    return result;
+}
+
+void _remove_dir(gchar const * path)
+{
+    char tmp_path[MAX_PATH_LENGTH];
+    gchar const * fname = 0;
+    GDir * dir = 0;
+
+    if (g_file_test(path, G_FILE_TEST_IS_DIR) == FALSE)
+        return;
+
+    dir = g_dir_open(path, 0, 0);
+    g_assert( dir != (GDir*)0 );
+
+    // calculate files
+    fname = g_dir_read_name(dir);
+    while (fname != 0)
+    {
+        g_snprintf(tmp_path, MAX_PATH_LENGTH, "%s/%s", path, fname);
+
+        if (g_file_test(tmp_path, G_FILE_TEST_IS_REGULAR) == TRUE)
+        {
+            if (g_remove(tmp_path) == -1)
+                g_critical("Can't remove file: %s", tmp_path);
+        }
+        else if (g_file_test(tmp_path, G_FILE_TEST_IS_DIR) == TRUE)
+        {
+            _remove_dir(tmp_path);
+        }
+
+        fname = g_dir_read_name(dir);
+    }
+
+    g_dir_close(dir);
+    g_rmdir(path);
+}
+
+// ----------------------------------------------
 
 sc_bool sc_fs_storage_initialize(const gchar *path, sc_bool clear)
 {
     g_message("Initialize sc-storage from path: %s", path);
-    g_snprintf(segments_path, MAX_PATH_LENGTH, "%s/%s", path, seg_dir);
+    g_snprintf(segments_path, MAX_PATH_LENGTH, "%s/segments.scdb", path);
     repo_path = g_strdup(path);
 
     g_message("\tFile memory engine: %s", sc_config_fm_engine());
@@ -62,7 +150,6 @@ sc_bool sc_fs_storage_initialize(const gchar *path, sc_bool clear)
 #endif
 
     // try to load engine extension
-
     fFmEngineInitFunc func;
     fm_engine_module = g_module_open(fm_engine_module_path, G_MODULE_BIND_LOCAL);
 
@@ -72,13 +159,15 @@ sc_bool sc_fs_storage_initialize(const gchar *path, sc_bool clear)
         if (fm_engine_module == nullptr)
         {
             g_critical("Can't load module: %s. Error: %s", fm_engine_module_path, g_module_error());
-        }else
+        }
+        else
         {
             g_message("Initialize file memory engine from: %s", fm_engine_module_path);
             if (g_module_symbol(fm_engine_module, "initialize", (gpointer*) &func) == FALSE)
             {
                 g_critical("Can't find 'initialize' symbol in module: %s", fm_engine_module_path);
-            }else
+            }
+            else
             {
                 fm_engine = func(repo_path);
                 if (fm_engine == 0)
@@ -93,37 +182,11 @@ sc_bool sc_fs_storage_initialize(const gchar *path, sc_bool clear)
     // clear repository if needs
     if (clear == SC_TRUE)
     {
+        g_message("Clear memory");
+        if (g_file_test(segments_path, G_FILE_TEST_IS_REGULAR) && g_remove(segments_path) != 0)
+            g_error("Can't delete segments file: %s", segments_path);
+
         g_message("Clear file memory");
-        if (g_file_test(segments_path, G_FILE_TEST_IS_DIR))
-        {
-            // remove all segments
-            GDir *dir = 0;
-            const gchar *fname = 0;
-            char path[MAX_PATH_LENGTH];
-
-            dir = g_dir_open(segments_path, 0, 0);
-            g_assert( dir != (GDir*)0 );
-            // calculate files
-            fname = g_dir_read_name(dir);
-            while (fname != 0)
-            {
-                g_snprintf(path, MAX_PATH_LENGTH, "%s/%s", segments_path, fname);
-
-                if (g_file_test(path, G_FILE_TEST_IS_REGULAR))
-                {
-                    if (g_remove(path) == -1)
-                    {
-                        g_critical("Can't remove segment: %s", path);
-                        g_dir_close(dir);
-                        return SC_FALSE;
-                    }
-                }
-                fname = g_dir_read_name(dir);
-            }
-
-            g_dir_close(dir);
-        }
-
         if (sc_fm_clear(fm_engine) != SC_RESULT_OK)
         {
             g_critical("Can't clear file memory");
@@ -145,10 +208,6 @@ sc_bool sc_fs_storage_shutdown(sc_segment **segments, sc_bool save_segments)
     }
 
     sc_bool res = SC_FALSE;
-    g_message("Save file memory state");
-    if (sc_fm_save(fm_engine) != SC_RESULT_OK)
-        g_critical("Error while saves file memory");
-
     sc_fm_free(fm_engine);
 
     fFmEngineShutdownFunc func;
@@ -175,87 +234,148 @@ sc_bool sc_fs_storage_shutdown(sc_segment **segments, sc_bool save_segments)
     return res;
 }
 
-void _get_segment_path(const gchar *path, 
-                       sc_uint id,
-                       sc_uint max_path_len,
-                       gchar *res)
-{
-    g_snprintf(res, max_path_len, "%s/%.10d", path, id);
-}
-
-sc_segment* sc_fs_storage_load_segment(sc_uint id)
-{
-    sc_segment *segment = sc_segment_new(id);
-    gchar file_name[MAX_PATH_LENGTH + 1];
-    gboolean res;
-    gsize length;
-
-    _get_segment_path(segments_path, id, MAX_PATH_LENGTH, file_name);
-    res = g_file_get_contents(file_name, (gchar**)(&segment), &length, 0);
-    g_assert( res );
-    g_assert( length == sizeof(sc_segment) );
-
-    return segment;
-}
-
 sc_bool sc_fs_storage_read_from_path(sc_segment **segments, sc_uint32 *segments_num)
 {
-    const gchar *fname = 0;
-    sc_uint files_count = 0, idx, to_load;
-    GDir *dir = 0;
-
-    if (!g_file_test(repo_path, G_FILE_TEST_IS_DIR))
+    if (g_file_test(repo_path, G_FILE_TEST_IS_DIR) == FALSE)
     {
         g_error("%s isn't a directory.", repo_path);
         return SC_FALSE;
     }
 
-    if (!g_file_test(segments_path, G_FILE_TEST_IS_DIR))
+    if (g_file_test(segments_path, G_FILE_TEST_IS_REGULAR) == FALSE)
     {
-        g_message("There are no segments directory in %s", repo_path);
+        g_message("There are no segments in %s", segments_path);
         return SC_FALSE;
     }
 
-    dir = g_dir_open(segments_path, 0, 0);
-    g_assert( dir != (GDir*)0 );
-
-    // calculate files
-    fname = g_dir_read_name(dir);
-    while (fname != 0)
+    // open segments
     {
-        if (!g_file_test(fname, G_FILE_TEST_IS_DIR))
-            files_count++;
-        fname = g_dir_read_name(dir);
+        GIOChannel * in_file = g_io_channel_new_file(segments_path, "r", nullptr);
+        sc_fs_storage_segments_header header;
+        gsize bytes_num = 0;
+        sc_uint32 i = 0;
+        GChecksum * checksum = nullptr;
+        sc_segment * seg = nullptr;
+        sc_bool is_valid = SC_TRUE;
+        sc_uint8 calculated_checksum[SC_STORAGE_SEG_CHECKSUM_SIZE];
+
+        g_assert(_checksum_get_size() == SC_STORAGE_SEG_CHECKSUM_SIZE);
+        if (!in_file)
+        {
+            g_critical("Can't open segments from: %s", segments_path);
+            return SC_FALSE;
+        }
+
+        if (g_io_channel_set_encoding(in_file, nullptr, nullptr) != G_IO_STATUS_NORMAL)
+        {
+            g_critical("Can't setup encoding: %s", segments_path);
+            return SC_FALSE;
+        }
+
+        if ((g_io_channel_read_chars(in_file, (gchar*)&i, sizeof(i), &bytes_num, nullptr) != G_IO_STATUS_NORMAL) || (bytes_num != sizeof(i)))
+        {
+            g_critical("Can't read header size");
+            return SC_FALSE;
+        }
+
+        if (i != sizeof(header))
+        {
+            g_critical("Invalid header size %d != %d", i, (int)sizeof(header));
+            return SC_FALSE;
+        }
+
+        if ((g_io_channel_read_chars(in_file, (gchar*)&header, sizeof(header), &bytes_num, nullptr) != G_IO_STATUS_NORMAL) || (bytes_num != sizeof(header)))
+        {
+            g_critical("Can't read header of segments: %s", segments_path);
+            return SC_FALSE;
+        }
+
+        *segments_num = header.segments_num;
+
+        /// TODO: Check version
+
+        checksum = g_checksum_new(_checksum_type());
+        g_assert(checksum);
+
+        g_checksum_reset(checksum);
+
+        // chek data
+        for (i = 0; i < *segments_num; ++i)
+        {
+            seg = sc_segment_new(i);
+            segments[i] = seg;
+
+            g_io_channel_read_chars(in_file, (gchar*)seg->elements, SC_SEG_ELEMENTS_SIZE_BYTE, &bytes_num, nullptr);
+            sc_segment_loaded(seg);
+            if (bytes_num != SC_SEG_ELEMENTS_SIZE_BYTE)
+            {
+                g_error("Error while read data for segment: %d", i);
+                is_valid = SC_FALSE;
+                break;
+            }
+            g_checksum_update(checksum, (guchar*)seg->elements, SC_SEG_ELEMENTS_SIZE_BYTE);
+        }
+
+        if (is_valid == SC_TRUE)
+        {
+            // compare checksum
+            g_checksum_get_digest(checksum, calculated_checksum, &bytes_num);
+            if (bytes_num != SC_STORAGE_SEG_CHECKSUM_SIZE)
+                is_valid = SC_FALSE;
+            else
+                is_valid = (memcmp(calculated_checksum, header.checksum, SC_STORAGE_SEG_CHECKSUM_SIZE) == 0) ? SC_TRUE : SC_FALSE;
+        }
+
+        if (is_valid == SC_FALSE)
+        {
+            *segments_num = 0;
+            for (i = 0; i < SC_SEGMENT_MAX; ++i)
+            {
+                if (segments[i])
+                {
+                    sc_segment_free(segments[i]);
+                    segments[i] = nullptr;
+                }
+            }
+        }
+
+        g_checksum_free(checksum);
+        g_io_channel_shutdown(in_file, FALSE, nullptr);
     }
 
-    g_message("Segments found: %u", files_count);
-    *segments_num = files_count;
-
-    to_load = MIN(files_count, sc_config_get_max_loaded_segments());
-    // load segments
-    for (idx = 0; idx < to_load; idx++)
-        segments[idx] = (gpointer)sc_fs_storage_load_segment(idx);
-
-    g_message("Segments loaded: %u", idx);
-
-    g_dir_close(dir);
+    g_message("Segments loaded: %u", *segments_num);
 
     g_assert(fm_engine != nullptr);
-    g_message("Clean file memory state");
+    g_message("Check file memory state");
     sc_bool r = sc_fm_clean_state(fm_engine) == SC_RESULT_OK;
 
     if (r == SC_FALSE)
-        g_error("File memory wasn't clean properly");
+        g_error("File memory wasn't check properly");
 
     return r;
 }
 
+static GIOChannel * _open_tmp_file(gchar ** tmp_file_name)
+{
+    GIOChannel * result;
+
+    *tmp_file_name = g_strdup_printf("%s/segments_%ld", g_get_tmp_dir(), g_get_real_time());
+
+    result = g_io_channel_new_file(*tmp_file_name, "w", nullptr);
+
+    return result;
+}
+
 sc_bool sc_fs_storage_write_to_path(sc_segment **segments)
 {
-    sc_uint idx = 0;
+    sc_uint32 idx = 0;
     const sc_segment *segment = 0;
-    gchar file_name[MAX_PATH_LENGTH + 1];
-    gchar segments_path[MAX_PATH_LENGTH + 1];
+    sc_fs_storage_segments_header header;
+    GChecksum * checksum = nullptr;
+    GIOChannel * output = nullptr;
+    gchar * tmp_filename = nullptr;
+    gsize bytes;
+    sc_bool result = SC_TRUE;
 
     if (!g_file_test(repo_path, G_FILE_TEST_IS_DIR))
     {
@@ -263,32 +383,96 @@ sc_bool sc_fs_storage_write_to_path(sc_segment **segments)
         return SC_FALSE;
     }
 
-    // check if segments directory exists, if it doesn't, then create one
-    g_snprintf(segments_path, MAX_PATH_LENGTH, "%s/%s", repo_path, seg_dir);
-    if (!g_file_test(segments_path, G_FILE_TEST_IS_DIR))
+    // create temporary file
+
+    output = _open_tmp_file(&tmp_filename);
+
+    memset(&header, 0, sizeof(sc_fs_storage_segments_header));
+    header.segments_num = 0;
+    header.timestamp = g_get_real_time();
+    header.version = sc_version_to_int(&SC_VERSION);
+
+    g_io_channel_set_encoding(output, nullptr, nullptr);
+    if (g_io_channel_set_flags(output, G_IO_FLAG_IS_SEEKABLE, nullptr) != G_IO_STATUS_NORMAL)
     {
-        if (g_mkdir_with_parents(segments_path, SC_DIR_PERMISSIONS) < 0)
-            return SC_FALSE;
+        g_error("Can't setup seek flag: %s", tmp_filename);
+        result = SC_FALSE;
+        goto clean;
     }
+
+    checksum = g_checksum_new(_checksum_type());
+    g_checksum_reset(checksum);
 
     for (idx = 0; idx < SC_ADDR_SEG_MAX; idx++)
     {
         segment = segments[idx];
-        if (segment == nullptr) continue; // skip null segments
+        if (segment == nullptr)
+            break; // stop save, because we allocate segment in order
 
-        _get_segment_path(segments_path, idx, MAX_PATH_LENGTH, file_name);
-        g_file_set_contents(file_name, (gchar*)segment, sizeof(sc_segment), 0);
+        g_checksum_update(checksum, (guchar*)segment->elements, SC_SEG_ELEMENTS_SIZE_BYTE);
     }
 
-    _get_segment_path(segments_path, idx, MAX_PATH_LENGTH, file_name);
-    while (g_file_test(file_name, G_FILE_TEST_EXISTS))
+    header.segments_num = idx;
+    bytes = SC_STORAGE_SEG_CHECKSUM_SIZE;
+    g_checksum_get_digest(checksum, header.checksum, &bytes);
+
+    idx = sizeof(header);
+    if (g_io_channel_write_chars(output, (gchar*)&idx, sizeof(idx), &bytes, nullptr) != G_IO_STATUS_NORMAL || bytes != sizeof(idx))
     {
-        g_remove(file_name);
-        _get_segment_path(segments_path, ++idx, MAX_PATH_LENGTH, file_name);
+        g_error("Can't write header size: %s", tmp_filename);
+        result = SC_FALSE;
+        goto clean;
     }
 
+    if (g_io_channel_write_chars(output, (gchar*)&header, sizeof(header), &bytes, nullptr) != G_IO_STATUS_NORMAL || bytes != sizeof(header))
+    {
+        g_error("Can't write header: %s", tmp_filename);
+        result = SC_FALSE;
+        goto clean;
+    }
 
-    return SC_TRUE;
+    for (idx = 0; idx < header.segments_num; ++idx)
+    {
+        segment = segments[idx];
+        g_assert(segment != nullptr);
+
+        if (g_io_channel_write_chars(output, (gchar*)segment->elements, SC_SEG_ELEMENTS_SIZE_BYTE, &bytes, nullptr) != G_IO_STATUS_NORMAL || bytes != SC_SEG_ELEMENTS_SIZE_BYTE)
+        {
+            g_error("Can't write segment %d into %s", idx, tmp_filename);
+            result = SC_FALSE;
+            goto clean;
+        }
+    }
+
+    if (result == SC_TRUE)
+    {
+        // rename main file
+        if (g_file_test(tmp_filename, G_FILE_TEST_IS_REGULAR))
+        {
+            if (g_rename(tmp_filename, segments_path) != 0)
+            {
+                g_error("Can't rename %s -> %s", tmp_filename, segments_path);
+                result = SC_FALSE;
+            }
+        }
+
+        // save file memory
+        g_message("Save file memory state");
+        if (sc_fm_save(fm_engine) != SC_RESULT_OK)
+            g_critical("Error while saves file memory");
+    }
+
+    clean:
+    {
+        if (tmp_filename)
+            g_free(tmp_filename);
+        if (checksum)
+            g_checksum_free(checksum);
+        if (output)
+            g_io_channel_shutdown(output, TRUE, nullptr);
+    }
+
+    return result;
 }
 
 

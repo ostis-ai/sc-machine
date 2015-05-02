@@ -210,5 +210,7 @@ void sc_storage_reset_profile();
 void sc_storage_print_profile();
 #endif
 
+sc_result sc_storage_save(sc_memory_context const * ctx);
+
 #endif
 

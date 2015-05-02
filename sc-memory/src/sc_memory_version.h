@@ -54,7 +54,7 @@ char* sc_version_string_new(const sc_version *v);
  */
 void sc_version_string_free(char *str);
 
-
-
+sc_uint32 sc_version_to_int(sc_version const * version);
+void sc_version_from_int(sc_uint32 value, sc_version * version);
 
 #endif

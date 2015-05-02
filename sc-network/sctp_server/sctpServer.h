@@ -62,6 +62,8 @@ private:
     quint32 mStatUpdatePeriod;
     sctpStatistic *mStatistic;
 
+    quint32 mSavePeriod;
+
     QSet<sctpClient*> mClients;
 
     //! Event manager instance
@@ -74,6 +76,8 @@ signals:
 
 public slots:
     void stop();
+
+    void onSave();
 
     void clientDestroyed(QObject *client);
 
