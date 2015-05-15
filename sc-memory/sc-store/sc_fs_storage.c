@@ -467,7 +467,7 @@ sc_result sc_fs_storage_write_content(sc_addr addr, const sc_check_sum *check_su
     sc_uint32 data_read, data_write;
     sc_stream *out_stream = 0;
 
-    if (sc_fm_stream_new(fm_engine, check_sum, SC_STREAM_WRITE, &out_stream) == SC_RESULT_OK)
+    if (sc_fm_stream_new(fm_engine, check_sum, SC_STREAM_FLAG_WRITE, &out_stream) == SC_RESULT_OK)
     {
         g_assert(out_stream != nullptr);
         // reset input stream positon to begin
@@ -525,7 +525,7 @@ sc_result sc_fs_storage_find_links_with_content(const sc_check_sum *check_sum, s
 sc_result sc_fs_storage_get_checksum_content(const sc_check_sum *check_sum, sc_stream **stream)
 {
     g_assert(fm_engine != nullptr);
-    return sc_fm_stream_new(fm_engine, check_sum, SC_STREAM_READ, stream);
+    return sc_fm_stream_new(fm_engine, check_sum, SC_STREAM_FLAG_READ, stream);
 }
 
 

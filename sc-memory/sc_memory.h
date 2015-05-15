@@ -70,9 +70,7 @@ sc_result sc_memory_element_free(sc_memory_context const * ctx, sc_addr addr);
  */
 sc_addr sc_memory_node_new(sc_memory_context const * ctx, sc_type type);
 
-/*! Create new sc-link
-
- */
+//! Create new sc-link
 sc_addr sc_memory_link_new(sc_memory_context const * ctx);
 
 /*! Create new sc-arc.

@@ -157,8 +157,8 @@ void test_access_levels()
 
     // links
     const char * data = "Test";
-    sc_stream * stream1 = sc_stream_memory_new(data, strlen(data), SC_STREAM_READ, SC_FALSE);
-    sc_stream * stream2 = sc_stream_memory_new(data, strlen(data), SC_STREAM_READ, SC_FALSE);
+    sc_stream * stream1 = sc_stream_memory_new(data, strlen(data), SC_STREAM_FLAG_READ, SC_FALSE);
+    sc_stream * stream2 = sc_stream_memory_new(data, strlen(data), SC_STREAM_FLAG_READ, SC_FALSE);
     sc_addr link1 = sc_memory_link_new(ctx1);
     sc_addr link2 = sc_memory_link_new(ctx2);
     sc_stream * stream = 0;
@@ -179,7 +179,7 @@ void test_access_levels()
     r = sc_memory_get_link_content(ctx2, link1, &stream);
     g_assert(r == SC_RESULT_ERROR_NO_READ_RIGHTS);
 
-    sc_stream * stream3 = sc_stream_memory_new(data, strlen(data), SC_STREAM_READ, SC_FALSE);
+    sc_stream * stream3 = sc_stream_memory_new(data, strlen(data), SC_STREAM_FLAG_READ, SC_FALSE);
     sc_addr * result = 0;
     sc_uint32 count = 0;
     r = sc_memory_find_links_with_content(ctx1, stream3, &result, &count);
@@ -466,7 +466,7 @@ void test_deletion()
         sc_addr link = sc_memory_link_new(ctx);
 
         char const *data = "test content";
-        sc_stream *stream = sc_stream_memory_new(data, strlen(data), SC_STREAM_READ, SC_FALSE);
+        sc_stream *stream = sc_stream_memory_new(data, strlen(data), SC_STREAM_FLAG_READ, SC_FALSE);
         g_assert(sc_memory_set_link_content(ctx, link, stream) == SC_RESULT_OK);
 
         sc_addr *results = 0;
@@ -538,9 +538,9 @@ void test_links()
     // check change of content
     {
         char const *data = "test content";
-        sc_stream *stream = sc_stream_memory_new(data, strlen(data), SC_STREAM_READ, SC_FALSE);
+        sc_stream *stream = sc_stream_memory_new(data, strlen(data), SC_STREAM_FLAG_READ, SC_FALSE);
         char const *data2 = "test content 2";
-        sc_stream *stream2 = sc_stream_memory_new(data2, strlen(data2), SC_STREAM_READ, SC_FALSE);
+        sc_stream *stream2 = sc_stream_memory_new(data2, strlen(data2), SC_STREAM_FLAG_READ, SC_FALSE);
 
         sc_addr link = sc_memory_link_new(ctx);
         g_assert(sc_memory_set_link_content(ctx, link, stream) == SC_RESULT_OK);
@@ -574,8 +574,8 @@ void test_links()
         sc_addr link1 = sc_memory_link_new(ctx);
         sc_addr link2 = sc_memory_link_new(ctx);
 
-        sc_stream *stream1 = sc_stream_memory_new(data, strlen(data), SC_STREAM_READ, SC_FALSE);
-        sc_stream *stream2 = sc_stream_memory_new(data2, strlen(data2), SC_STREAM_READ, SC_FALSE);
+        sc_stream *stream1 = sc_stream_memory_new(data, strlen(data), SC_STREAM_FLAG_READ, SC_FALSE);
+        sc_stream *stream2 = sc_stream_memory_new(data2, strlen(data2), SC_STREAM_FLAG_READ, SC_FALSE);
 
         g_assert(sc_memory_set_link_content(ctx, link1, stream1) == SC_RESULT_OK);
         g_assert(sc_memory_set_link_content(ctx, link2, stream2) == SC_RESULT_OK);

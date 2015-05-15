@@ -27,7 +27,7 @@ sc_result sc_stream_read_data(const sc_stream *stream, sc_char *data, sc_uint32 
 {
     g_assert(stream != 0);
 
-    if (sc_stream_check_flag(stream, SC_STREAM_READ) == SC_FALSE)
+    if (sc_stream_check_flag(stream, SC_STREAM_FLAG_READ) == SC_FALSE)
         return SC_RESULT_ERROR;
 
     if (stream->read_func == 0)
@@ -40,7 +40,7 @@ sc_result sc_stream_write_data(const sc_stream *stream, sc_char *data, sc_uint32
 {
     g_assert(stream != 0);
 
-    if (sc_stream_check_flag(stream, SC_STREAM_WRITE) == SC_FALSE)
+    if (sc_stream_check_flag(stream, SC_STREAM_FLAG_WRITE) == SC_FALSE)
         return SC_RESULT_ERROR;
 
     if (stream->write_func == 0)
@@ -53,7 +53,7 @@ sc_result sc_stream_seek(const sc_stream *stream, sc_stream_seek_origin seek_ori
 {
     g_assert(stream != 0);
 
-    if (sc_stream_check_flag(stream, SC_STREAM_SEEK) == FALSE)
+    if (sc_stream_check_flag(stream, SC_STREAM_FLAG_SEEK) == FALSE)
         return SC_RESULT_ERROR;
 
 
@@ -84,7 +84,7 @@ sc_result sc_stream_get_length(const sc_stream *stream, sc_uint32 *length)
     if (stream->tell_func == 0 || stream->seek_func == 0)
         return SC_RESULT_ERROR;
 
-    if (sc_stream_check_flag(stream, SC_STREAM_SEEK | SC_STREAM_TELL) == FALSE)
+    if (sc_stream_check_flag(stream, SC_STREAM_FLAG_SEEK | SC_STREAM_FLAG_TELL) == FALSE)
         return SC_RESULT_ERROR;
 
     if (stream->tell_func(stream, &old_pos) == SC_RESULT_ERROR)

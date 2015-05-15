@@ -430,7 +430,7 @@ eSctpErrorCode sctpCommand::processFindLinks(quint32 cmdFlags, quint32 cmdId, QD
         return SCTP_ERROR_CMD_READ_PARAMS;
     }
 
-    sc_stream *stream = sc_stream_memory_new(data, data_len, SC_STREAM_READ, SC_FALSE);
+    sc_stream *stream = sc_stream_memory_new(data, data_len, SC_STREAM_FLAG_READ, SC_FALSE);
     sc_uint32 result_count = 0;
     sc_addr *result = 0;
 
@@ -470,7 +470,7 @@ eSctpErrorCode sctpCommand::processSetLinkContent(quint32 cmdFlags, quint32 cmdI
         return SCTP_ERROR_CMD_READ_PARAMS;
     }
 
-    sc_stream *stream = sc_stream_memory_new(data, data_len, SC_STREAM_READ, SC_FALSE);
+    sc_stream *stream = sc_stream_memory_new(data, data_len, SC_STREAM_FLAG_READ, SC_FALSE);
 
     sc_result result = sc_memory_set_link_content(mContext, addr, stream);
     writeResultHeader(SCTP_CMD_SET_LINK_CONTENT, cmdId, result == SC_RESULT_OK ? SCTP_RESULT_OK : SCTP_RESULT_FAIL, 0, outDevice);

@@ -116,13 +116,13 @@ sc_bool sc_stream_memory_eof(const sc_stream *stream)
 
 sc_stream* sc_stream_memory_new(const sc_char *buffer, sc_uint buffer_size, sc_uint8 flags, sc_bool data_owner)
 {
-    if (flags & SC_STREAM_WRITE || flags & SC_STREAM_APPEND)
+    if (flags & SC_STREAM_FLAG_WRITE || flags & SC_STREAM_FLAG_APPEND)
     {
         g_message("Memory stream doesn't support SC_STREAM_APPEND and SC_STREAM_WRITE flags");
         return 0;
     }
 
-    g_assert(flags & SC_STREAM_READ);
+    g_assert(flags & SC_STREAM_FLAG_READ);
     g_assert(buffer != nullptr);
 
     sc_memory_buffer *data_buffer = g_new0(sc_memory_buffer, 1);
@@ -135,7 +135,7 @@ sc_stream* sc_stream_memory_new(const sc_char *buffer, sc_uint buffer_size, sc_u
     sc_stream *stream = g_new0(sc_stream, 1);
 
     // tell and seek supported anyway
-    stream->flags = flags | SC_STREAM_SEEK | SC_STREAM_TELL;
+    stream->flags = flags | SC_STREAM_FLAG_SEEK | SC_STREAM_FLAG_TELL;
     stream->handler = data_buffer;
 
     stream->eof_func = &sc_stream_memory_eof;

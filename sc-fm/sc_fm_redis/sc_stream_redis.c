@@ -146,7 +146,7 @@ sc_stream* sc_stream_redis_new(redisContext *context, const sc_char *key, sc_uin
     handler->mutex = mutex;
 
     // determine size
-    if (flags & SC_STREAM_READ)
+    if (flags & SC_STREAM_FLAG_READ)
     {
         redisReply *reply = do_sync_redis_command(&handler->context, "STRLEN %s", key);
         if (reply->type != REDIS_REPLY_INTEGER || (reply->type == REDIS_REPLY_INTEGER && reply->integer == 0))
@@ -160,7 +160,7 @@ sc_stream* sc_stream_redis_new(redisContext *context, const sc_char *key, sc_uin
         freeReplyObject(reply);
     } else
     {
-        if (flags & SC_STREAM_WRITE)
+        if (flags & SC_STREAM_FLAG_WRITE)
         {
             redisReply *reply = do_sync_redis_command(&handler->context, "DEL %s", key);
             freeReplyObject(reply);
@@ -169,7 +169,7 @@ sc_stream* sc_stream_redis_new(redisContext *context, const sc_char *key, sc_uin
 
     stream = g_new0(sc_stream, 1);
 
-    stream->flags = flags | SC_STREAM_TELL;
+    stream->flags = flags | SC_STREAM_FLAG_TELL;
     stream->handler = (void*)handler;
 
     stream->read_func = &sc_stream_redis_read;

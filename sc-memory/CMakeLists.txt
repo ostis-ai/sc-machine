@@ -10,7 +10,22 @@ include_directories(${SC_STORE_ROOT} ${GLIB2_INCLUDE_DIRS})
 target_link_libraries(sc-memory ${GLIB2_LIBRARIES})
 
 # cpp wrapper
-add_library (sc-memory-cpp SHARED "wrap/sc_memory.cpp" "wrap/sc_memory.hpp")
+include_directories(${SC_MEMORY_SRC})
+add_library (sc-memory-cpp SHARED
+            "wrap/sc_memory.cpp"
+            "wrap/sc_addr.cpp"
+            "wrap/sc_utils.cpp"
+            "wrap/sc_iterator.cpp"
+            "wrap/sc_stream.cpp"
+
+            "wrap/sc_memory.hpp"
+            "wrap/sc_addr.hpp"
+            "wrap/sc_utils.hpp"
+            "wrap/sc_iterator.hpp"
+            "wrap/sc_stream.hpp"
+
+            "wrap/sc_memory_headers.hpp"
+            )
 add_dependencies(sc-memory-cpp sc-memory)
 target_link_libraries(sc-memory-cpp sc-memory)
 

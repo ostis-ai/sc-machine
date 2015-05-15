@@ -225,6 +225,7 @@ typedef struct _sc_addr sc_addr;
 typedef struct _sc_elements_stat sc_elements_stat;
 typedef struct _sc_iterator_param sc_iterator_param;
 typedef struct _sc_iterator3 sc_iterator3;
+typedef struct _sc_iterator5 sc_iterator5;
 typedef struct _sc_event sc_event;
 typedef enum _sc_result sc_result;
 typedef enum _sc_event_type sc_event_type;

@@ -465,7 +465,7 @@ sc_addr SCsTranslator::createScAddr(sElement *el)
             String file_path;
             if (_getAbsFilePath(el->link_data, file_path))
             {
-                sc_stream *stream = sc_stream_file_new(file_path.c_str(), SC_STREAM_READ);
+                sc_stream *stream = sc_stream_file_new(file_path.c_str(), SC_STREAM_FLAG_READ);
                 if (stream)
                 {
                     sc_memory_set_link_content(mContext, addr, stream);
@@ -487,7 +487,7 @@ sc_addr SCsTranslator::createScAddr(sElement *el)
 
         } else
         {           
-            sc_stream *stream = sc_stream_memory_new(el->link_data.c_str(), el->link_data.size(), SC_STREAM_READ, SC_FALSE);
+            sc_stream *stream = sc_stream_memory_new(el->link_data.c_str(), el->link_data.size(), SC_STREAM_FLAG_READ, SC_FALSE);
             sc_memory_set_link_content(mContext, addr, stream);
             sc_stream_free(stream);
         }

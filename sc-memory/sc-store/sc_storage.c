@@ -977,7 +977,7 @@ sc_result sc_storage_get_link_content(const sc_memory_context *ctx, sc_addr addr
             g_assert(len < SC_CHECKSUM_LEN);
             gchar *buff = g_new0(gchar, len);
             memcpy(buff, &el->content.data[1], len);
-            *stream = sc_stream_memory_new(buff, len, SC_STREAM_READ, SC_TRUE);
+            *stream = sc_stream_memory_new(buff, len, SC_STREAM_FLAG_READ, SC_TRUE);
 
             res = SC_RESULT_OK;
         } else

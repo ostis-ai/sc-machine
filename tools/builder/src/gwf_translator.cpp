@@ -160,7 +160,7 @@ bool GwfTranslator::processString(const String &data)
                 if (content->IntAttribute("type") == 4)
                     data = base64_decode(data);
 
-                sc_stream *stream = sc_stream_memory_new(data.c_str(), data.size(), SC_STREAM_READ, SC_FALSE);
+                sc_stream *stream = sc_stream_memory_new(data.c_str(), data.size(), SC_STREAM_FLAG_READ, SC_FALSE);
                 sc_memory_set_link_content(mContext, addr, stream);
                 sc_stream_free(stream);
 

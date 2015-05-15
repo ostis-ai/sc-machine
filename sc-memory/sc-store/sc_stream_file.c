@@ -97,15 +97,15 @@ sc_stream* sc_stream_file_new(const sc_char *file_name, sc_uint8 flags)
     sc_stream *stream = 0;
     FILE *fd = 0;
 
-    if (flags & SC_STREAM_READ)
+    if (flags & SC_STREAM_FLAG_READ)
     {
-        g_assert(!(flags & SC_STREAM_APPEND)); // couldn't support append in read mode
+        g_assert(!(flags & SC_STREAM_FLAG_APPEND)); // couldn't support append in read mode
         fd = fopen(file_name, "r");
     }else
     {
-        if (flags & SC_STREAM_WRITE)
+        if (flags & SC_STREAM_FLAG_WRITE)
         {
-            if (flags & SC_STREAM_APPEND)
+            if (flags & SC_STREAM_FLAG_APPEND)
                 fd = fopen(file_name, "w+");
             else
                 fd = fopen(file_name, "w");
@@ -118,7 +118,7 @@ sc_stream* sc_stream_file_new(const sc_char *file_name, sc_uint8 flags)
 
     stream = g_new0(sc_stream, 1);
 
-    stream->flags = flags | SC_STREAM_TELL | SC_STREAM_SEEK;
+    stream->flags = flags | SC_STREAM_FLAG_TELL | SC_STREAM_FLAG_SEEK;
     stream->handler = (void*)fd;
 
     stream->read_func = &sc_stream_file_read;

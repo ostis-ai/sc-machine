@@ -22,7 +22,7 @@ sc_result resolve_nrel_system_identifier(sc_memory_context const * ctx)
     sc_uint32 results_count = 0;
     sc_stream *stream = sc_stream_memory_new(keynodes_str[SC_KEYNODE_NREL_SYSTEM_IDENTIFIER],
                                              sizeof(sc_uchar) * strlen(keynodes_str[SC_KEYNODE_NREL_SYSTEM_IDENTIFIER]),
-                                             SC_STREAM_READ, SC_FALSE);
+                                             SC_STREAM_FLAG_READ, SC_FALSE);
     sc_uint32 i = 0;
     sc_iterator5 *it = 0;
     sc_bool found = SC_FALSE;
@@ -119,7 +119,7 @@ sc_result sc_helper_init(sc_memory_context const * ctx)
         sc_addr link = sc_memory_link_new(ctx);
         sc_stream *stream = sc_stream_memory_new(keynodes_str[SC_KEYNODE_NREL_SYSTEM_IDENTIFIER],
                                                  sizeof(sc_uchar) * strlen(keynodes_str[SC_KEYNODE_NREL_SYSTEM_IDENTIFIER]),
-                                                 SC_STREAM_READ, SC_FALSE);
+                                                 SC_STREAM_FLAG_READ, SC_FALSE);
         sc_memory_set_link_content(ctx, link, stream);
         sc_stream_free(stream);
 
@@ -154,7 +154,7 @@ sc_result sc_helper_find_element_by_system_identifier(sc_memory_context const * 
     g_assert(sc_keynodes != 0);
 
     // try to find sc-links with that contains system identifier value
-    stream = sc_stream_memory_new(data, sizeof(sc_char) * len, SC_STREAM_READ, SC_FALSE);
+    stream = sc_stream_memory_new(data, sizeof(sc_char) * len, SC_STREAM_FLAG_READ, SC_FALSE);
     if (sc_memory_find_links_with_content(ctx, stream, &results, &results_count) == SC_RESULT_OK)
     {
         for (i = 0; i < results_count; i++)
@@ -205,7 +205,7 @@ sc_result sc_helper_set_system_identifier(sc_memory_context const * ctx, sc_addr
     g_assert(sc_keynodes != 0);
 
     // check if specified system identifier already used
-    stream = sc_stream_memory_new(data, sizeof(sc_char) * len, SC_STREAM_READ, SC_FALSE);
+    stream = sc_stream_memory_new(data, sizeof(sc_char) * len, SC_STREAM_FLAG_READ, SC_FALSE);
     if (sc_memory_find_links_with_content(ctx, stream, &results, &results_count) == SC_RESULT_OK)
     {
         for (i = 0; i < results_count; i++)

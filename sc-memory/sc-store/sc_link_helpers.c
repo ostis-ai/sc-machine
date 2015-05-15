@@ -54,7 +54,7 @@ sc_bool sc_link_calculate_checksum(const sc_stream *stream, sc_check_sum *check_
 
 sc_bool sc_link_self_container_calculate_checksum(sc_element *el, sc_check_sum *sum)
 {
-    sc_stream *stream = sc_stream_memory_new(&el->content.data[1], el->content.data[0], SC_STREAM_READ, SC_FALSE);
+    sc_stream *stream = sc_stream_memory_new(&el->content.data[1], el->content.data[0], SC_STREAM_FLAG_READ, SC_FALSE);
     sc_bool r = sc_link_calculate_checksum(stream, sum);
     sc_stream_free(stream);
     return r;
