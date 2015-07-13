@@ -237,7 +237,7 @@ sc_bool sc_fs_storage_read_from_path(sc_segment **segments, sc_uint32 *segments_
         GIOChannel * in_file = g_io_channel_new_file(segments_path, "r", nullptr);
         sc_fs_storage_segments_header header;
         gsize bytes_num = 0;
-        sc_uint32 i = 0;
+        sc_uint32 i = 0, header_size = 0;
         GChecksum * checksum = nullptr;
         sc_segment * seg = nullptr;
         sc_bool is_valid = SC_TRUE;
@@ -256,15 +256,15 @@ sc_bool sc_fs_storage_read_from_path(sc_segment **segments, sc_uint32 *segments_
             return SC_FALSE;
         }
 
-        if ((g_io_channel_read_chars(in_file, (gchar*)&i, sizeof(i), &bytes_num, nullptr) != G_IO_STATUS_NORMAL) || (bytes_num != sizeof(i)))
+        if ((g_io_channel_read_chars(in_file, (gchar*)&header_size, sizeof(header_size), &bytes_num, nullptr) != G_IO_STATUS_NORMAL) || (bytes_num != sizeof(header_size)))
         {
             g_critical("Can't read header size");
             return SC_FALSE;
         }
 
-        if (i != sizeof(header))
+        if (header_size != sizeof(header))
         {
-            g_critical("Invalid header size %d != %d", i, (int)sizeof(header));
+            g_critical("Invalid header size %d != %d", header_size, (int)sizeof(header));
             return SC_FALSE;
         }
 
@@ -325,6 +325,9 @@ sc_bool sc_fs_storage_read_from_path(sc_segment **segments, sc_uint32 *segments_
 
         g_checksum_free(checksum);
         g_io_channel_shutdown(in_file, FALSE, nullptr);
+
+        if (is_valid == SC_FALSE)
+            return SC_FALSE;
     }
 
     g_message("Segments loaded: %u", *segments_num);
@@ -352,7 +355,7 @@ static GIOChannel * _open_tmp_file(gchar ** tmp_file_name)
 
 sc_bool sc_fs_storage_write_to_path(sc_segment **segments)
 {
-    sc_uint32 idx = 0;
+    sc_uint32 idx = 0, header_size = 0;
     const sc_segment *segment = 0;
     sc_fs_storage_segments_header header;
     GChecksum * checksum = nullptr;
@@ -400,15 +403,15 @@ sc_bool sc_fs_storage_write_to_path(sc_segment **segments)
     bytes = SC_STORAGE_SEG_CHECKSUM_SIZE;
     g_checksum_get_digest(checksum, header.checksum, &bytes);
 
-    idx = sizeof(header);
-    if (g_io_channel_write_chars(output, (gchar*)&idx, sizeof(idx), &bytes, nullptr) != G_IO_STATUS_NORMAL || bytes != sizeof(idx))
+    header_size = sizeof(header);
+    if (g_io_channel_write_chars(output, (gchar*)&header_size, sizeof(header_size), &bytes, nullptr) != G_IO_STATUS_NORMAL || bytes != sizeof(header_size))
     {
         g_error("Can't write header size: %s", tmp_filename);
         result = SC_FALSE;
         goto clean;
     }
 
-    if (g_io_channel_write_chars(output, (gchar*)&header, sizeof(header), &bytes, nullptr) != G_IO_STATUS_NORMAL || bytes != sizeof(header))
+    if (g_io_channel_write_chars(output, (gchar*)&header, header_size, &bytes, nullptr) != G_IO_STATUS_NORMAL || bytes != header_size)
     {
         g_error("Can't write header: %s", tmp_filename);
         result = SC_FALSE;
