@@ -21,7 +21,7 @@ sc_result resolve_nrel_system_identifier(sc_memory_context const * ctx)
     sc_addr *results = 0;
     sc_uint32 results_count = 0;
     sc_stream *stream = sc_stream_memory_new(keynodes_str[SC_KEYNODE_NREL_SYSTEM_IDENTIFIER],
-                                             sizeof(sc_uchar) * strlen(keynodes_str[SC_KEYNODE_NREL_SYSTEM_IDENTIFIER]),
+                                             (sc_uint)(sizeof(sc_uchar) * strlen(keynodes_str[SC_KEYNODE_NREL_SYSTEM_IDENTIFIER])),
                                              SC_STREAM_FLAG_READ, SC_FALSE);
     sc_uint32 i = 0;
     sc_iterator5 *it = 0;
@@ -87,7 +87,7 @@ void _init_keynodes_str()
     // check for errors
     for (i = 0; i < (sc_uint32)SC_KEYNODE_COUNT; ++i)
     {
-        if (keynodes_str[(sc_keynode)i] == nullptr)
+        if (keynodes_str[(sc_keynode)i] == null_ptr)
             g_error("Error to create string representation of keynode: %d", i);
     }
 
@@ -118,7 +118,7 @@ sc_result sc_helper_init(sc_memory_context const * ctx)
         sc_addr addr = sc_memory_node_new(ctx, sc_type_const | sc_type_node_norole);
         sc_addr link = sc_memory_link_new(ctx);
         sc_stream *stream = sc_stream_memory_new(keynodes_str[SC_KEYNODE_NREL_SYSTEM_IDENTIFIER],
-                                                 sizeof(sc_uchar) * strlen(keynodes_str[SC_KEYNODE_NREL_SYSTEM_IDENTIFIER]),
+                                                 (sc_uint)(sizeof(sc_uchar) * strlen(keynodes_str[SC_KEYNODE_NREL_SYSTEM_IDENTIFIER])),
                                                  SC_STREAM_FLAG_READ, SC_FALSE);
         sc_memory_set_link_content(ctx, link, stream);
         sc_stream_free(stream);
@@ -265,7 +265,7 @@ sc_result sc_helper_get_system_identifier(sc_memory_context const * ctx, sc_addr
                                     sc_type_link,
                                     sc_type_arc_pos_const_perm,
                                     sc_keynodes[SC_KEYNODE_NREL_SYSTEM_IDENTIFIER]);
-    g_assert(it != nullptr);
+    g_assert(it != null_ptr);
 
     while (sc_iterator5_next(it) == SC_TRUE)
     {
@@ -278,7 +278,7 @@ sc_result sc_helper_get_system_identifier(sc_memory_context const * ctx, sc_addr
 
 sc_result sc_helper_get_keynode(sc_memory_context const * ctx, sc_keynode keynode, sc_addr *keynode_addr)
 {
-    if ((sc_helper_is_initialized == SC_FALSE) || (sc_keynodes == nullptr))
+    if ((sc_helper_is_initialized == SC_FALSE) || (sc_keynodes == null_ptr))
         return SC_RESULT_ERROR;
 
     *keynode_addr = sc_keynodes[(sc_uint32)keynode];
@@ -292,13 +292,13 @@ sc_bool sc_helper_resolve_system_identifier(sc_memory_context const * ctx, const
     gsize bytes_written = 0;
 
     keynode_idtf = g_locale_to_utf8(system_idtf, -1, 0, &bytes_written, 0);
-    if (keynode_idtf == nullptr)
+    if (keynode_idtf == null_ptr)
     {
         g_warning("Error while trying to convert %s to utd-8", system_idtf);
         return SC_FALSE;
     }
 
-    if (sc_helper_find_element_by_system_identifier(ctx, keynode_idtf, bytes_written, result) != SC_RESULT_OK)
+    if (sc_helper_find_element_by_system_identifier(ctx, keynode_idtf, (sc_uint32)bytes_written, result) != SC_RESULT_OK)
         return SC_FALSE;
 
     g_free(keynode_idtf);
@@ -312,7 +312,7 @@ sc_bool sc_helper_check_arc(sc_memory_context const * ctx, sc_addr beg_el, sc_ad
     sc_bool res = SC_FALSE;
 
     it = sc_iterator3_f_a_f_new(ctx, beg_el, arc_type, end_el);
-    if (it == nullptr)
+    if (it == null_ptr)
         return SC_FALSE;
 
     if (sc_iterator3_next(it) == SC_TRUE)

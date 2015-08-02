@@ -28,7 +28,7 @@ bool Memory::initialize(sc_memory_params const & params)
     gContextGounter = 0;
 
     msGlobalContext = sc_memory_initialize(&params);
-    return msGlobalContext != nullptr;
+    return msGlobalContext != null_ptr;
 }
 
 void Memory::shutdown(bool saveState /* = true */)
@@ -121,7 +121,7 @@ bool MemoryContext::isValid() const
 bool MemoryContext::isElement(Addr const & addr) const
 {
     check(isValid());
-    return sc_memory_is_element(mContext, addr.mRealAddr) == SC_TRUE;
+    return (sc_memory_is_element(mContext, addr.mRealAddr) == SC_TRUE);
 }
 
 bool MemoryContext::eraseElement(Addr const & addr)
@@ -217,8 +217,8 @@ bool MemoryContext::findLinksByContent(Stream const & stream, tAddrList & found)
     for (sc_uint32 i = 0; i < resultCount; ++i)
         found.push_back(Addr(result[i]));
 
-    if (result)
-        free(result);
+	if (result)
+		sc_memory_free_buff(result);
 
     return found.size() > 0;
 }
@@ -226,7 +226,7 @@ bool MemoryContext::findLinksByContent(Stream const & stream, tAddrList & found)
 bool MemoryContext::save()
 {
     check(isValid());
-    return sc_memory_save(mContext);
+    return (sc_memory_save(mContext) == SC_RESULT_OK);
 }
 
 

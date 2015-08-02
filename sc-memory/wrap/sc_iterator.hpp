@@ -35,7 +35,7 @@ protected:
 
 
 template <typename ParamType1, typename ParamType2, typename ParamType3>
-class Iterator3 : public IteratorBase<sc_iterator3>
+class _SC_WRAP_EXTERN Iterator3 : public IteratorBase<sc_iterator3>
 {
 public:
     Iterator3(MemoryContext const & context, ParamType1 const & p1, ParamType2 const & p2, ParamType3 const & p3);
@@ -74,7 +74,7 @@ typedef Iterator3<sc_type, sc_type, Addr> Iterator3_a_a_f;
 
 
 template <typename ParamType1, typename ParamType2, typename ParamType3, typename ParamType4, typename ParamType5>
-class Iterator5 : public IteratorBase<sc_iterator5>
+class _SC_WRAP_EXTERN Iterator5 : public IteratorBase<sc_iterator5>
 {
 public:
     Iterator5(MemoryContext const & context, ParamType1 const & p1, ParamType2 const & p2, ParamType3 const & p3, ParamType4 const & p4, ParamType5 const & p5);

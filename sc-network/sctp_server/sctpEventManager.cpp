@@ -29,6 +29,8 @@ sctpEventManager* sctpEventManager::getSingleton()
 bool sctpEventManager::initialize()
 {
     QMutexLocker locker(&mEventsMutex);
+
+    return true;
 }
 
 void sctpEventManager::shutdown()

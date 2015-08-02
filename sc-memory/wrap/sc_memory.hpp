@@ -11,6 +11,7 @@ extern "C"
 #include "sc_memory.h"
 }
 
+#include "sc_types.hpp"
 #include "sc_addr.hpp"
 
 #include <list>
@@ -22,7 +23,7 @@ namespace sc
 class MemoryContext;
 class Stream;
 
-class Memory
+class _SC_WRAP_EXTERN Memory
 {
     friend class MemoryContext;
 
@@ -46,7 +47,7 @@ private:
 };
 
 //! Class used to work with memory. It provides functions to create/erase elements
-class MemoryContext
+class _SC_WRAP_EXTERN MemoryContext
 {
 public:
     explicit MemoryContext(sc_uint8 accessLevels = 0, std::string const & name = "");
@@ -92,7 +93,7 @@ public:
 private:
     // Disable object copying
     MemoryContext(MemoryContext const & other) {}
-    MemoryContext & operator = (MemoryContext const & other) {}
+	MemoryContext & operator = (MemoryContext const & other) { return *this; }
 
 private:
     sc_memory_context * mContext;

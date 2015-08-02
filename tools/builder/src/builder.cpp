@@ -59,7 +59,7 @@ bool Builder::run(const BuilderParams &params)
     tFileSet::iterator it, itEnd = mFileSet.end();
     for (it = mFileSet.begin(); it != itEnd; ++it)
     {
-        uint32 progress = ((float)++done / (float)mFileSet.size()) * 100;
+        uint32 progress = (uint32)(((float)++done / (float)mFileSet.size()) * 100);
         if (last_progress != progress)
         {
             if (progress % 10 == 0)

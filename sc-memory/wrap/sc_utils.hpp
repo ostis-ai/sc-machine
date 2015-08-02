@@ -10,6 +10,8 @@
 #include <string>
 #include <assert.h>
 
+#include "sc_types.hpp"
+
 namespace sc
 {
 

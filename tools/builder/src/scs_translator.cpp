@@ -64,7 +64,7 @@ bool SCsTranslator::processString(const String &data)
     pANTLR3_INPUT_STREAM input;
 
 #if defined( __WIN32__ ) || defined( _WIN32 )
-    input = antlr3StringStreamNew((pANTLR3_UINT8)data.c_str(), ANTLR3_ENC_UTF8, data.length(), (pANTLR3_UINT8)"scs");
+    input = antlr3StringStreamNew((pANTLR3_UINT8)data.c_str(), ANTLR3_ENC_UTF8, (ANTLR3_UINT32)data.length(), (pANTLR3_UINT8)"scs");
 #elif defined( __APPLE_CC__)
     input = antlr3StringStreamNew((pANTLR3_UINT8)data.c_str(), ANTLR3_ENC_UTF8, data.length(), (pANTLR3_UINT8)"scs");
 #else
@@ -106,6 +106,8 @@ bool SCsTranslator::processString(const String &data)
     lex->free(lex);
 
     input->close(input);
+
+    return true;
 }
 
 bool SCsTranslator::buildScText(pANTLR3_BASE_TREE tree)
@@ -152,7 +154,7 @@ bool SCsTranslator::buildScText(pANTLR3_BASE_TREE tree)
                 el->ignore = true;
                 sc_type newType = el->arc_trg->type | type;
                 // TODO check conflicts in sc-type
-                if (type & sc_type_constancy_mask != 0)
+                if ((type & sc_type_constancy_mask) != 0)
                     newType = (type & sc_type_constancy_mask) | (newType & ~sc_type_constancy_mask);
                 el->arc_trg->type = newType;
             }
@@ -404,7 +406,7 @@ sc_addr SCsTranslator::resolveScAddr(sElement *el)
                 else
                 {
                     // resolve system identifier
-                    sc_result res = sc_helper_find_element_by_system_identifier(mContext, el->idtf.c_str(), el->idtf.size(), &addr);
+                    sc_result res = sc_helper_find_element_by_system_identifier(mContext, el->idtf.c_str(), (sc_uint32)el->idtf.size(), &addr);
                     if (res == SC_RESULT_OK)
                         mSysIdtfAddrs[el->idtf] = addr;
                 }
@@ -432,7 +434,7 @@ sc_addr SCsTranslator::resolveScAddr(sElement *el)
         switch (_getIdentifierVisibility(el->idtf))
         {
         case IdtfSystem:
-            sc_helper_set_system_identifier(mContext, addr, el->idtf.c_str(), el->idtf.size());
+            sc_helper_set_system_identifier(mContext, addr, el->idtf.c_str(), (sc_uint32)el->idtf.size());
             mSysIdtfAddrs[el->idtf] = addr;
             break;
         case IdtfLocal:
@@ -487,7 +489,7 @@ sc_addr SCsTranslator::createScAddr(sElement *el)
 
         } else
         {           
-            sc_stream *stream = sc_stream_memory_new(el->link_data.c_str(), el->link_data.size(), SC_STREAM_FLAG_READ, SC_FALSE);
+            sc_stream *stream = sc_stream_memory_new(el->link_data.c_str(), (sc_uint)el->link_data.size(), SC_STREAM_FLAG_READ, SC_FALSE);
             sc_memory_set_link_content(mContext, addr, stream);
             sc_stream_free(stream);
         }

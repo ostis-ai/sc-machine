@@ -24,17 +24,17 @@ struct _sc_memory_params
 typedef struct _sc_memory_params sc_memory_params;
 
 //! Function to clear memory parameters
-void sc_memory_params_clear(sc_memory_params *params);
+_SC_EXTERN void sc_memory_params_clear(sc_memory_params *params);
 
 /*! Initialize sc-memory with specified path to repository
  * @param params Pointer to initialization parameters
  * @returns Returns pointer to created sc-memory context
  */
-sc_memory_context* sc_memory_initialize(const sc_memory_params *params);
+_SC_EXTERN sc_memory_context* sc_memory_initialize(const sc_memory_params *params);
 
 
 //! Shutdown sc-memory (save repository to file system)
-void sc_memory_shutdown(sc_bool save_state);
+_SC_EXTERN void sc_memory_shutdown(sc_bool save_state);
 
 /*! Function that create memory context with specified params
  * @param levels Access levels, you can create it with macros @see sc_access_level_make
@@ -42,15 +42,15 @@ void sc_memory_shutdown(sc_bool save_state);
  * context creation, then function returns 0
  * @note Do not use one context in different threads.
  */
-sc_memory_context* sc_memory_context_new(sc_uint8 levels);
+_SC_EXTERN sc_memory_context* sc_memory_context_new(sc_uint8 levels);
 
 /*! Function that destroys created memory context. You can use that function
  * just for contexts, that were created with @see sc_memory_context_new
  */
-void sc_memory_context_free(sc_memory_context *ctx);
+_SC_EXTERN void sc_memory_context_free(sc_memory_context *ctx);
 
 //! Check if sc-memory is initialized
-sc_bool sc_memory_is_initialized();
+_SC_EXTERN sc_bool sc_memory_is_initialized();
 
 /*! Check if sc-element with specified sc-addr exist
  * @param addr sc-addr of element
@@ -58,20 +58,20 @@ sc_bool sc_memory_is_initialized();
  * If element deleted, then return SC_FALSE.
 
  */
-sc_bool sc_memory_is_element(sc_memory_context const * ctx, sc_addr addr);
+_SC_EXTERN sc_bool sc_memory_is_element(sc_memory_context const * ctx, sc_addr addr);
 
 //! Remove sc-element from sc-memory
-sc_result sc_memory_element_free(sc_memory_context const * ctx, sc_addr addr);
+_SC_EXTERN sc_result sc_memory_element_free(sc_memory_context const * ctx, sc_addr addr);
 
 /*! Create new sc-node
  * @param type Type of new sc-node
  * @return Return sc-addr of created sc-node
  * @note This function is a thread safe
  */
-sc_addr sc_memory_node_new(sc_memory_context const * ctx, sc_type type);
+_SC_EXTERN sc_addr sc_memory_node_new(sc_memory_context const * ctx, sc_type type);
 
 //! Create new sc-link
-sc_addr sc_memory_link_new(sc_memory_context const * ctx);
+_SC_EXTERN sc_addr sc_memory_link_new(sc_memory_context const * ctx);
 
 /*! Create new sc-arc.
  * @param type Type of new sc-arc
@@ -81,7 +81,7 @@ sc_addr sc_memory_link_new(sc_memory_context const * ctx);
  * @return Return sc-addr of created sc-arc
 
  */
-sc_addr sc_memory_arc_new(sc_memory_context const * ctx, sc_type type, sc_addr beg, sc_addr end);
+_SC_EXTERN sc_addr sc_memory_arc_new(sc_memory_context const * ctx, sc_type type, sc_addr beg, sc_addr end);
 
 /*! Get type of sc-element with specified sc-addr
  * @param addr sc-addr of element to get type
@@ -90,7 +90,7 @@ sc_addr sc_memory_arc_new(sc_memory_context const * ctx, sc_type type, sc_addr b
  * otherwise return SC_RESULT_ERROR
 
  */
-sc_result sc_memory_get_element_type(sc_memory_context const * ctx, sc_addr addr, sc_type *result);
+_SC_EXTERN sc_result sc_memory_get_element_type(sc_memory_context const * ctx, sc_addr addr, sc_type *result);
 
 /*! Change element sub-type
  * @param addr sc-addr of element to set new type
@@ -98,7 +98,7 @@ sc_result sc_memory_get_element_type(sc_memory_context const * ctx, sc_addr addr
  * @return If sub-type changed, then returns SC_RESULT_OK; otherwise returns SC_RESULT_ERROR
 
  */
-sc_result sc_memory_change_element_subtype(sc_memory_context const * ctx, sc_addr addr, sc_type type);
+_SC_EXTERN sc_result sc_memory_change_element_subtype(sc_memory_context const * ctx, sc_addr addr, sc_type type);
 
 /*! Returns sc-addr of begin element of specified arc
  * @param addr sc-addr of arc to get begin element
@@ -107,7 +107,7 @@ sc_result sc_memory_change_element_subtype(sc_memory_context const * ctx, sc_add
  * If element with specified addr isn't an arc, then return SC_RESULT_INVALID_TYPE
 
  */
-sc_result sc_memory_get_arc_begin(sc_memory_context const * ctx, sc_addr addr, sc_addr *result);
+_SC_EXTERN sc_result sc_memory_get_arc_begin(sc_memory_context const * ctx, sc_addr addr, sc_addr *result);
 
 /*! Returns sc-addr of end element of specified arc
  * @param addr sc-addr of arc to get end element
@@ -116,7 +116,7 @@ sc_result sc_memory_get_arc_begin(sc_memory_context const * ctx, sc_addr addr, s
  * If element with specified addr isn't an arc, then return SC_RESULT_INVALID_TYPE
 
  */
-sc_result sc_memory_get_arc_end(sc_memory_context const * ctx, sc_addr addr, sc_addr *result);
+_SC_EXTERN sc_result sc_memory_get_arc_end(sc_memory_context const * ctx, sc_addr addr, sc_addr *result);
 
 /*! Setup content data for specified sc-link
  * @param addr sc-addr of sc-link to setup content
@@ -129,7 +129,7 @@ sc_result sc_memory_get_arc_end(sc_memory_context const * ctx, sc_addr addr, sc_
  * </ul>
 
  */
-sc_result sc_memory_set_link_content(sc_memory_context const * ctx, sc_addr addr, sc_stream const *stream);
+_SC_EXTERN sc_result sc_memory_set_link_content(sc_memory_context const * ctx, sc_addr addr, sc_stream const *stream);
 
 /*! Returns content of specified sc-link
  * @param addr sc-addr of sc-link to return content data
@@ -143,7 +143,7 @@ sc_result sc_memory_set_link_content(sc_memory_context const * ctx, sc_addr addr
  * </ul>
 
  */
-sc_result sc_memory_get_link_content(sc_memory_context const * ctx, sc_addr addr, sc_stream **stream);
+_SC_EXTERN sc_result sc_memory_get_link_content(sc_memory_context const * ctx, sc_addr addr, sc_stream **stream);
 
 /*! Search sc-link addrs by specified checksum
  * @param stream Pointert to stream that contains data for search
@@ -155,14 +155,18 @@ sc_result sc_memory_get_link_content(sc_memory_context const * ctx, sc_addr addr
  * sc-addrs
  * @attention \p result array need to be free after usage
  */
-sc_result sc_memory_find_links_with_content(sc_memory_context const * ctx, sc_stream const * stream, sc_addr **result, sc_uint32 *result_count);
+_SC_EXTERN sc_result sc_memory_find_links_with_content(sc_memory_context const * ctx, sc_stream const * stream, sc_addr **result, sc_uint32 *result_count);
+
+/*! Free buffer allocated for links content find result
+ */
+_SC_EXTERN void sc_memory_free_buff(sc_pointer buff);
 
 /*! Setup new access levele for sc-element. New access levels will be a minimum from context access levels and parameter \b access_levels
  * @param addr sc-add of sc-element to change access levels
  * @param access_levels New access levels
  * @param new_value Pointer to structure that contains new value of access levels. This pointer can be a NULL.
  */
-sc_result sc_memory_set_element_access_levels(sc_memory_context const * ctx, sc_addr addr, sc_access_levels access_levels, sc_access_levels * new_value);
+_SC_EXTERN sc_result sc_memory_set_element_access_levels(sc_memory_context const * ctx, sc_addr addr, sc_access_levels access_levels, sc_access_levels * new_value);
 
 /*! Get access levels of sc-element
  * @param addr sc-addr of sc-element to get access levels
@@ -170,18 +174,18 @@ sc_result sc_memory_set_element_access_levels(sc_memory_context const * ctx, sc_
  *
  * @return If access levele returned in \b result, then return SC_RESULT_OK; otherwise returns error code
  */
-sc_result sc_memory_get_element_access_levels(sc_memory_context const * ctx, sc_addr addr, sc_access_levels * result);
+_SC_EXTERN sc_result sc_memory_get_element_access_levels(sc_memory_context const * ctx, sc_addr addr, sc_access_levels * result);
 
 /*! Collect statistic information about current state of sc-memory
  * @param stat Pointer to structure, that will contains statistics info
  * @return If info collected without errors, then return SC_RESULT_OK; otherwise return SC_RESULT_ERROR
  */
-sc_result sc_memory_stat(sc_memory_context const * ctx, sc_stat *stat);
+_SC_EXTERN sc_result sc_memory_stat(sc_memory_context const * ctx, sc_stat *stat);
 
 /*! Save sc-memory state.
  * Calls from application, when request to save memory state
  */
-sc_result sc_memory_save(sc_memory_context const * ctx);
+_SC_EXTERN sc_result sc_memory_save(sc_memory_context const * ctx);
 
 
 

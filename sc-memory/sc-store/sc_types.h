@@ -10,9 +10,10 @@
 #include "sc_defines.h"
 #include <memory.h>
 #include <stdlib.h>
+#include <string.h>
 
-#ifndef nullptr
-#define nullptr ((void*)0)
+#ifndef null_ptr
+#define null_ptr ((void*)0)
 #endif
 
 // base types
@@ -39,8 +40,8 @@ typedef void* sc_pointer;
 #define sc_max(a, b) ((a) > (b) ? (a) : (b))
 
 // booleans
-#define SC_FALSE (0)
-#define SC_TRUE (!SC_FALSE)
+#define SC_FALSE 0
+#define SC_TRUE 1
 
 typedef sc_int sc_bool;
 

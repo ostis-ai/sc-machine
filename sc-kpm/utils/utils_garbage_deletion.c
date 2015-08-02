@@ -15,10 +15,11 @@ sc_result agent_garbage_delete(const sc_event *event, sc_addr arg)
     /// all other agents must to add objects to the set sc_garbage
 
     sc_addr addr;
+    sc_type t;
+
     if (sc_memory_get_arc_end(s_garbage_ctx, arg, &addr) != SC_RESULT_OK)
         return SC_RESULT_ERROR_INVALID_STATE;
 
-    sc_type t;
     if (sc_memory_get_element_type(s_garbage_ctx, addr, &t) != SC_RESULT_OK)
         return SC_RESULT_ERROR_INVALID_STATE;
 

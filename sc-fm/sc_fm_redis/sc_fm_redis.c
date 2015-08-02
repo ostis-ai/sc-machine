@@ -13,6 +13,8 @@
 #include <glib.h>
 #include <memory.h>
 
+
+
 GMutex redis_mutex;
 GMutex redis_command_mutex;
 
@@ -218,7 +220,7 @@ sc_result sc_redis_engine_find(const sc_fm_engine *engine, const sc_check_sum *c
 
     if ((reply->type == REDIS_REPLY_ARRAY) && (reply->elements > 0))
     {
-        *result_count = reply->elements;
+        *result_count = (sc_uint32)reply->elements;
         *result = g_new0(sc_addr, *result_count);
         size_t i;
         for (i = 0; i < reply->elements; ++i)
@@ -324,14 +326,14 @@ sc_result sc_redis_engine_clean_state(const sc_fm_engine *engine)
         }
 
         // iterate backward lists and clean them
-        sc_uint32 n = reply->element[1]->elements;
+        sc_uint32 n = (sc_uint32)reply->element[1]->elements;
         sc_uint32 i;
         for (i = 0; i < n; ++i)
         {
             const char *key = reply->element[1]->element[i]->str;
             redisReply *r = do_sync_redis_command(&data->context, "LRANGE %s 0 -1", key);
 
-            if (r != nullptr)
+            if (r != null_ptr)
             {
                 sc_uint32 j;
                 for (j = 0; j < r->elements; ++j)
@@ -344,7 +346,7 @@ sc_result sc_redis_engine_clean_state(const sc_fm_engine *engine)
                     if (sc_memory_get_element_type(ctx, addr, &type) != SC_RESULT_OK || !(type & sc_type_link))
                     {
                         redisReply *rrem = do_sync_redis_command(&data->context, "LREM %s 0 %b", key, &addr, sizeof(addr));
-                        if (rrem == nullptr || rrem->integer != 1)
+                        if (rrem == null_ptr || rrem->integer != 1)
                             g_error("Error while clean %s", key);
                         else
                             freeReplyObject(rrem);
@@ -370,8 +372,13 @@ sc_result sc_redis_engine_clean_state(const sc_fm_engine *engine)
     return res;
 }
 
-sc_fm_engine* initialize(const sc_char* repo_path)
+_SC_EXT_EXTERN sc_fm_engine* initialize(const sc_char* repo_path)
 {
+#if defined (SC_PLATFORM_WIN)
+	WSADATA wsaData;
+	WSAStartup(MAKEWORD(2, 2), &wsaData);
+#endif
+
     sc_redis_config_initialize();
 
     redis_data *data = g_new0(redis_data, 1);
@@ -409,7 +416,10 @@ sc_fm_engine* initialize(const sc_char* repo_path)
     return engine;
 }
 
-sc_result shutdown()
+_SC_EXT_EXTERN sc_result shutdown()
 {
+#if defined (SC_PLATFORM_WIN)
+	WSACleanup();
+#endif
     return SC_RESULT_OK;
 }

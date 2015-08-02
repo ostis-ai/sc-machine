@@ -23,7 +23,7 @@ sc_result sc_stream_file_read(const sc_stream *stream, sc_char *data, sc_uint32 
 {
     SC_STREAM_FILE_FD_CHECK;
 
-    *bytes_read = fread(data, 1, length, fd);
+    *bytes_read = (sc_uint32)fread(data, 1, length, fd);
     return SC_RESULT_OK;
 }
 
@@ -32,7 +32,7 @@ sc_result sc_stream_file_write(const sc_stream *stream, sc_char *data, sc_uint32
     SC_STREAM_FILE_FD_CHECK;
 
     if (bytes_written)
-        *bytes_written = fwrite(data, 1, length, fd);
+        *bytes_written = (sc_uint32)fwrite(data, 1, length, fd);
     else
         fwrite(data, 1, length, fd);
 
@@ -101,7 +101,8 @@ sc_stream* sc_stream_file_new(const sc_char *file_name, sc_uint8 flags)
     {
         g_assert(!(flags & SC_STREAM_FLAG_APPEND)); // couldn't support append in read mode
         fd = fopen(file_name, "r");
-    }else
+    }
+    else
     {
         if (flags & SC_STREAM_FLAG_WRITE)
         {

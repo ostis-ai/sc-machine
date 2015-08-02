@@ -20,8 +20,8 @@
 
 #define SCTP_READ_TIMEOUT   3000
 
-#define READ_PARAM(val)  if (params->readRawData((char*)&val, sizeof(val)) != sizeof(val)) \
-                            return SCTP_ERROR_CMD_READ_PARAMS;
+#define READ_PARAM(__val)   if (params->readRawData((char*)&__val, sizeof(__val)) != sizeof(__val)) \
+                                  return SCTP_ERROR_CMD_READ_PARAMS;
 
 // -----------------------------
 
@@ -340,7 +340,7 @@ eSctpErrorCode sctpCommand::processGetArc(quint32 cmdFlags, quint32 cmdId, QData
 eSctpErrorCode sctpCommand::processGetLinkContent(quint32 cmdFlags, quint32 cmdId, QDataStream *params, QIODevice *outDevice)
 {
     sc_addr addr;
-    sc_stream *stream = (sc_stream*)nullptr;
+    sc_stream *stream = (sc_stream*)null_ptr;
     sc_char data_buffer[512];
     sc_uint32 data_len = 0;
     sc_uint32 data_written = 0;
@@ -362,7 +362,7 @@ eSctpErrorCode sctpCommand::processGetLinkContent(quint32 cmdFlags, quint32 cmdI
         {
             resCode = SCTP_RESULT_FAIL;
             sc_stream_free(stream);
-            stream = (sc_stream*)nullptr;
+            stream = (sc_stream*)null_ptr;
         }
     }
     // send result
@@ -370,7 +370,7 @@ eSctpErrorCode sctpCommand::processGetLinkContent(quint32 cmdFlags, quint32 cmdI
 
     if (resCode == SCTP_RESULT_FAIL)
     {
-        if (stream != nullptr)
+        if (stream != null_ptr)
             sc_stream_free(stream);
 
         return SCTP_NO_ERROR;
@@ -411,7 +411,6 @@ eSctpErrorCode sctpCommand::processGetLinkContent(quint32 cmdFlags, quint32 cmdI
 
 eSctpErrorCode sctpCommand::processFindLinks(quint32 cmdFlags, quint32 cmdId, QDataStream *params, QIODevice *outDevice)
 {
-    sc_addr addr;
     sc_uint32 data_len = 0;
     sc_char *data = 0;
 
@@ -488,7 +487,7 @@ eSctpErrorCode sctpCommand::processIterateElements(quint32 cmdFlags, quint32 cmd
 
     Q_UNUSED(cmdFlags);
 
-    Q_ASSERT(params != nullptr);
+    Q_ASSERT(params != null_ptr);
 
     // read iterator type
     READ_PARAM(iterator_type);
@@ -498,7 +497,7 @@ eSctpErrorCode sctpCommand::processIterateElements(quint32 cmdFlags, quint32 cmd
     // 3-elements iterators
     if (iterator_type <= SCTP_ITERATOR_3F_A_F)
     {
-        sc_iterator3 *it = (sc_iterator3*)nullptr;
+        sc_iterator3 *it = (sc_iterator3*)null_ptr;
 
         switch (iterator_type)
         {
@@ -527,7 +526,7 @@ eSctpErrorCode sctpCommand::processIterateElements(quint32 cmdFlags, quint32 cmd
             return SCTP_ERROR;
         }
 
-        if (it == nullptr)
+        if (it == null_ptr)
             writeResultHeader(SCTP_CMD_ITERATE_ELEMENTS, cmdId, SCTP_RESULT_FAIL, 0, outDevice);
 
         // create results data
@@ -559,7 +558,7 @@ eSctpErrorCode sctpCommand::processIterateElements(quint32 cmdFlags, quint32 cmd
     }else
     {
         // 5-elements iterators
-        sc_iterator5 *it = (sc_iterator5*)nullptr;
+        sc_iterator5 *it = (sc_iterator5*)null_ptr;
 
         switch (iterator_type)
         {
@@ -621,7 +620,7 @@ eSctpErrorCode sctpCommand::processIterateElements(quint32 cmdFlags, quint32 cmd
             return SCTP_ERROR;
         }
 
-        if (it == nullptr)
+        if (it == null_ptr)
             writeResultHeader(SCTP_CMD_ITERATE_ELEMENTS, cmdId, SCTP_RESULT_FAIL, 0, outDevice);
 
         // create results data
@@ -758,6 +757,8 @@ namespace
                     if (m_repl[i] != 255)
                         ++m_replCount;
                 }
+
+                return true;
             }
 
             void preapreArgs()
@@ -831,6 +832,8 @@ namespace
                         ++rCount;
                     }
                 }
+
+                return true;
             }
 
             sc_iterator3_type scIterator3Type(quint8 type) const
@@ -974,9 +977,9 @@ namespace
             {
                 quint8 const count = argsCount();
                 if (count == 3 && m_it3)
-                    return sc_iterator3_next(m_it3) == SC_TRUE;
+                    return (sc_iterator3_next(m_it3) == SC_TRUE);
                 else if (count == 5 && m_it5)
-                    return sc_iterator5_next(m_it5) == SC_TRUE;
+                    return (sc_iterator5_next(m_it5) == SC_TRUE);
                 return false;
             }
 
@@ -1006,7 +1009,9 @@ namespace
         {
             quint8 iterCount;
 
-            READ_PARAM(iterCount);
+            if (params->readRawData((char*)&iterCount, sizeof(iterCount)) != sizeof(iterCount))
+                return false;
+
             if (iterCount > 50)
                 return false;
 
@@ -1015,11 +1020,14 @@ namespace
             {
                 IteratorData & it = m_iterators[i];
 
-                READ_PARAM(it.m_type);
+                if (params->readRawData((char*)&it.m_type, sizeof(it.m_type)) != sizeof(it.m_type))
+                    return false;
                 if (i > 0)
                     it.buildRepl(params);
                 it.buildParams(params);
             }
+
+            return true;
         }
 
         quint8 oneResultSize()
@@ -1100,7 +1108,7 @@ eSctpErrorCode sctpCommand::processIterateConstruction(quint32 cmdFlags, quint32
         IterConstsr::ScAddrVec const & result = constr.result();
         Q_ASSERT(result.size() % stride == 0);
 
-        quint32 const n = result.size();
+        quint32 const n = (quint32)result.size();
         quint32 const s = sizeof(sc_addr) * n;
         quint32 const count = n / stride;
 
@@ -1186,7 +1194,6 @@ eSctpErrorCode sctpCommand::processEmitEvent(quint32 cmdFlags, quint32 cmdId, QD
 
 eSctpErrorCode sctpCommand::processFindElementBySysIdtf(quint32 cmdFlags, quint32 cmdId, QDataStream *params, QIODevice *outDevice)
 {
-    sc_addr addr;
     sc_uint32 data_len = 0;
     sc_char *data = 0;
 
@@ -1280,4 +1287,6 @@ sc_result sctpCommand::processEventEmit(tEventId eventId, sc_addr el_addr, sc_ad
     mSendData.append((char*)&arg_addr, sizeof(arg_addr));
 
     ++mSendEventsCount;
+
+    return SC_RESULT_OK;
 }

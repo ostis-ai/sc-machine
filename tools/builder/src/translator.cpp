@@ -24,7 +24,7 @@ iTranslator::~iTranslator()
 bool iTranslator::translate(const TranslatorParams &params)
 {
     mParams = params;
-    translateImpl();
+    return translateImpl();
 }
 
 void iTranslator::generateFormatInfo(sc_addr addr, const String &ext)
@@ -41,10 +41,10 @@ void iTranslator::generateFormatInfo(sc_addr addr, const String &ext)
     else
     {
         // try to find by system identifier
-        if (sc_helper_find_element_by_system_identifier(mContext, fmtStr.c_str(), fmtStr.size(), &fmt_addr) != SC_RESULT_OK)
+        if (sc_helper_find_element_by_system_identifier(mContext, fmtStr.c_str(), (sc_uint32)fmtStr.size(), &fmt_addr) != SC_RESULT_OK)
         {
             fmt_addr = sc_memory_node_new(mContext, sc_type_node_class | sc_type_const);
-            sc_helper_set_system_identifier(mContext, fmt_addr, fmtStr.c_str(), fmtStr.size());
+            sc_helper_set_system_identifier(mContext, fmt_addr, fmtStr.c_str(), (sc_uint32)fmtStr.size());
             mSysIdtfAddrs[fmtStr] = fmt_addr;
         }
     }
@@ -60,10 +60,10 @@ void iTranslator::generateFormatInfo(sc_addr addr, const String &ext)
     else
     {
         // try to find by system identifier
-        if (sc_helper_find_element_by_system_identifier(mContext, nrel_format_str.c_str(), nrel_format_str.size(), &nrel_format_addr) != SC_RESULT_OK)
+        if (sc_helper_find_element_by_system_identifier(mContext, nrel_format_str.c_str(), (sc_uint32)nrel_format_str.size(), &nrel_format_addr) != SC_RESULT_OK)
         {
             nrel_format_addr = sc_memory_node_new(mContext, sc_type_node_norole | sc_type_const);
-            sc_helper_set_system_identifier(mContext, nrel_format_addr, nrel_format_str.c_str(), nrel_format_str.size());
+            sc_helper_set_system_identifier(mContext, nrel_format_addr, nrel_format_str.c_str(), (sc_uint32)nrel_format_str.size());
             mSysIdtfAddrs[nrel_format_str] = nrel_format_addr;
         }
     }

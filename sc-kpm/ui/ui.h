@@ -15,11 +15,6 @@ extern "C"
 extern "C"
 {
 // --------------- Module ----------------
-//! Module initialization function
-sc_result initialize();
-
-//! Module shutdown function
-sc_result shutdown();
 
 }
 

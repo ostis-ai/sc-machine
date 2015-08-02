@@ -11,12 +11,13 @@ extern "C"
 #include "sc_memory_headers.h"
 }
 
+#include "sc_types.hpp"
 #include "sc_utils.hpp"
 
 namespace sc
 {
 
-class Stream
+class _SC_WRAP_EXTERN Stream
 {
     friend class MemoryContext;
 

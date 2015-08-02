@@ -7,6 +7,7 @@
 #ifndef _sc_stream_redis_h_
 #define _sc_stream_redis_h_
 
+#include "sc_fm_redis_types.h"
 
 #include "sc_stream.h"
 #include <hiredis/hiredis.h>

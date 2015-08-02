@@ -14,10 +14,12 @@ extern "C"
 #include <vector>
 #include <list>
 
+#include "sc_types.hpp"
+
 namespace sc
 {
 
-class Addr
+class _SC_WRAP_EXTERN Addr
 {
     friend class MemoryContext;
 

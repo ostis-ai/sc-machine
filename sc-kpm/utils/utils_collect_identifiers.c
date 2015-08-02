@@ -129,6 +129,7 @@ sc_result agent_append_idtf(const sc_event *event, sc_addr arg)
     sc_stream *content = 0;
     sc_uint8 *data = 0;
     sc_uint32 data_len = 0, read_bytes = 0;
+    redisReply * reply = null_ptr;
 
     if (sc_memory_get_arc_end(s_default_ctx, arg, &arc) != SC_RESULT_OK)
         return SC_RESULT_ERROR;
@@ -172,7 +173,7 @@ sc_result agent_append_idtf(const sc_event *event, sc_addr arg)
     if (SC_ADDR_IS_EQUAL(n, keynode_nrel_idtf))
         el_addr = link;
 
-    redisReply *reply = do_sync_redis_command(redisCtx, "SET idtf:%s:%s %b",
+    reply = do_sync_redis_command(redisCtx, "SET idtf:%s:%s %b",
                                               SC_ADDR_IS_EQUAL(n, keynode_nrel_main_idtf) ? str_main_idtf_postfix : (SC_ADDR_IS_EQUAL(n, keynode_nrel_idtf) ? str_idtf_postfix : str_sys_idtf_postfix),
                                               data, &el_addr, sizeof(el_addr));
     if (reply == 0 || reply->type == REDIS_REPLY_ERROR)

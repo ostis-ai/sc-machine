@@ -36,7 +36,7 @@ sc_result agent_set_cantorization(const sc_event *event, sc_addr arg)
                                  0);
     if (sc_iterator3_next(it1) == SC_TRUE)
     {
-        table = g_hash_table_new(nullptr, nullptr);
+        table = g_hash_table_new(null_ptr, null_ptr);
         // iterate set elements
         it2 = sc_iterator3_f_a_a_new(s_default_ctx,
                                      sc_iterator3_value(it1, 2),

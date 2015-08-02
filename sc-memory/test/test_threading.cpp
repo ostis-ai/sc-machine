@@ -50,10 +50,8 @@ gpointer create_node_thread(gpointer data)
             result = i + 1;
     }
 
-    result:
-    {
-        sc_memory_context_free(ctx);
-    }
+    sc_memory_context_free(ctx);
+
     return GINT_TO_POINTER(result);
 }
 
@@ -77,11 +75,8 @@ gpointer create_arc_thread(gpointer data)
 
         continue;
 
-        error:
-        {
-            result = i + 1;
-            break;
-        }
+        result = i + 1;
+        break;
     }
 
     result:
@@ -104,10 +99,8 @@ gpointer create_link_thread(gpointer data)
             result = i + 1;
     }
 
-    result:
-    {
-        sc_memory_context_free(ctx);
-    }
+    sc_memory_context_free(ctx);
+
     return GINT_TO_POINTER(result);
 }
 
@@ -136,7 +129,7 @@ void test_creation(GThreadFunc f, sc_int32 count, sc_int thread_count)
     }
 
     for (size_t i = 0; i < thread_count; ++i)
-        g_assert_true(GPOINTER_TO_INT(g_thread_join(threads[i])) == test_count);
+        g_assert(GPOINTER_TO_INT(g_thread_join(threads[i])) == test_count);
 
     printf("Time: %lf\n", g_test_timer_elapsed());
 
@@ -144,7 +137,7 @@ void test_creation(GThreadFunc f, sc_int32 count, sc_int thread_count)
     sc_memory_shutdown(SC_FALSE);
 }
 
-const sc_int32 g_thread_count = 64;
+const sc_int32 g_thread_count = 8;
 const sc_uint32 g_task_count = 1 << 23;
 
 void test_node_creation()
@@ -198,7 +191,7 @@ void test_combined_creation()
     }
 
     for (size_t i = 0; i < thread_count; ++i)
-        g_assert_true(GPOINTER_TO_INT(g_thread_join(threads[i])) == test_count);
+        g_assert(GPOINTER_TO_INT(g_thread_join(threads[i])) == test_count);
 
     printf("Time: %lf\n", g_test_timer_elapsed());
 

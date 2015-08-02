@@ -21,7 +21,7 @@ sc_result initialize()
         return SC_RESULT_ERROR;
 
     event_question_set_cantorization = sc_event_new(s_default_ctx, keynode_question_initiated, SC_EVENT_ADD_OUTPUT_ARC, 0, agent_set_cantorization, 0);
-    if (event_question_set_cantorization == nullptr)
+    if (event_question_set_cantorization == null_ptr)
         return SC_RESULT_ERROR;
 
     return SC_RESULT_OK;

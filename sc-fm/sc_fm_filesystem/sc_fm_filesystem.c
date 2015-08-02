@@ -10,6 +10,7 @@
 #include "../sc_memory.h"
 
 #include <glib.h>
+#include <gstdio.h>
 
 gchar contents_path[MAX_PATH_LENGTH + 1];
 const gchar *content_dir = "contents";
@@ -175,6 +176,7 @@ sc_result sc_fs_engine_addr_ref_remove(const sc_fm_engine *engine, sc_addr addr,
     gchar *content = 0;
     gchar *content2 = 0;
     gsize content_len = 0;
+    sc_addr * iter_next = null_ptr;
 
     // make absolute path to content directory
     g_snprintf(abs_path, MAX_PATH_LENGTH, "%s/%s", contents_path, path);
@@ -208,7 +210,7 @@ sc_result sc_fs_engine_addr_ref_remove(const sc_fm_engine *engine, sc_addr addr,
                     if ((gchar*)iter != content)
                         memcpy(content2, content, (gchar*)iter - content);
 
-                    sc_addr *iter_next = iter;
+                    iter_next = iter;
                     ++iter_next;
 
                     if (iter_next != iter_end)
@@ -219,7 +221,7 @@ sc_result sc_fs_engine_addr_ref_remove(const sc_fm_engine *engine, sc_addr addr,
                 } else
                 {
                     g_free(content);
-                    content = nullptr;
+                    content = null_ptr;
                 }
 
                 break;
@@ -239,7 +241,7 @@ sc_result sc_fs_engine_addr_ref_remove(const sc_fm_engine *engine, sc_addr addr,
 
     // write content to file
     res = SC_RESULT_OK;
-    if (content == nullptr)
+    if (content == null_ptr)
     {
         if (g_remove(addr_path) != 0)
             res = SC_RESULT_ERROR_IO;
@@ -382,10 +384,10 @@ sc_result _sc_fs_engine_clean_state_dir(const sc_memory_context *ctx, const gcha
 {
     sc_result res = SC_RESULT_OK;
     GDir *dir = g_dir_open(path, 0, 0);
-    const gchar *name = nullptr;
+    const gchar *name = null_ptr;
     gchar buff[MAX_PATH_LENGTH];
 
-    while ((name = g_dir_read_name(dir)) != nullptr && res == SC_RESULT_OK)
+    while ((name = g_dir_read_name(dir)) != null_ptr && res == SC_RESULT_OK)
     {
         g_snprintf(buff, MAX_PATH_LENGTH, "%s/%s", path, name);
         if (g_file_test(buff, G_FILE_TEST_IS_DIR) == TRUE)
@@ -396,7 +398,7 @@ sc_result _sc_fs_engine_clean_state_dir(const sc_memory_context *ctx, const gcha
         {
             if (g_str_has_suffix(buff, "addrs") == TRUE)
             {
-                gchar *content = nullptr;
+                gchar *content = null_ptr;
                 gsize len = 0;
                 if (g_file_get_contents(buff, &content, &len, 0) == TRUE)
                 {
@@ -445,7 +447,7 @@ sc_result sc_fs_engine_clean_state(const sc_fm_engine *engine)
 
 
 // --- extension interface ---
-sc_fm_engine* initialize(const sc_char* repo_path)
+_SC_EXT_EXTERN sc_fm_engine * initialize(const sc_char* repo_path)
 {
     // initialize file system storage
     g_snprintf(contents_path, MAX_PATH_LENGTH, "%s/%s", repo_path, content_dir);
@@ -473,7 +475,7 @@ sc_fm_engine* initialize(const sc_char* repo_path)
     return engine;
 }
 
-sc_result shutdown()
+_SC_EXT_EXTERN sc_result shutdown()
 {
     g_mutex_clear(&fs_mutex);
     return SC_RESULT_OK;

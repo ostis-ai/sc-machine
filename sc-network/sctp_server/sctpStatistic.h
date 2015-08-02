@@ -35,7 +35,7 @@ struct sStatItem
 
     static quint32 realSize()
     {
-        return sizeof(quint64) * 11 + sizeof(mIsInitStat);
+        return sizeof(sStatItem);
     }
 };
 

@@ -72,7 +72,7 @@ bool Stream::seek(sc_stream_seek_origin origin, sc_uint32 offset)
 bool Stream::eof() const
 {
     check(isValid());
-    return sc_stream_eof(mStream) == SC_TRUE;
+    return (sc_stream_eof(mStream) == SC_TRUE);
 }
 
 sc_uint32 Stream::size() const
@@ -98,7 +98,7 @@ sc_uint32 Stream::pos() const
 bool Stream::hasFlag(sc_uint8 flag)
 {
     check(isValid());
-    return sc_stream_check_flag(mStream, flag) == SC_TRUE;
+    return (sc_stream_check_flag(mStream, flag) == SC_TRUE);
 }
 
 void Stream::init(sc_stream * stream)

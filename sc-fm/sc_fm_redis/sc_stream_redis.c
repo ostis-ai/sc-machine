@@ -25,12 +25,13 @@ typedef struct _sc_redis_handler sc_redis_handler;
 sc_result sc_stream_redis_read(const sc_stream *stream, sc_char *data, sc_uint32 length, sc_uint32 *bytes_read)
 {
     sc_redis_handler *handler = (sc_redis_handler*)stream->handler;
+    redisReply * reply = null_ptr;
     g_assert(handler != 0);
 
     if (handler->size == 0)
         return SC_RESULT_ERROR;
 
-    redisReply *reply = do_sync_redis_command(&handler->context, "GETRANGE %s %d %d", handler->key, handler->pos, handler->pos + length - 1);
+    reply = do_sync_redis_command(&handler->context, "GETRANGE %s %d %d", handler->key, handler->pos, handler->pos + length - 1);
     if (reply->type != REDIS_REPLY_STRING)
     {
         freeReplyObject(reply);
@@ -54,14 +55,14 @@ sc_result sc_stream_redis_write(const sc_stream *stream, sc_char *data, sc_uint3
     sc_redis_handler *handler = (sc_redis_handler*)stream->handler;
     g_assert(handler != 0);
 
-    redisReply *reply = do_sync_redis_command(&handler->context, "APPEND %s %b", handler->key, data, length);
+    redisReply *reply = do_sync_redis_command(&handler->context, "APPEND %s %b", handler->key, data, (size_t)length);
     if (reply->type != REDIS_REPLY_INTEGER)
     {
         freeReplyObject(reply);
         return SC_RESULT_ERROR_IO;
     }
 
-    sc_uint32 new_size = reply->integer;
+    sc_uint32 new_size = (sc_uint32)reply->integer;
     *bytes_written = new_size - handler->size;
     handler->size = new_size;
     handler->pos = handler->size;
@@ -156,7 +157,7 @@ sc_stream* sc_stream_redis_new(redisContext *context, const sc_char *key, sc_uin
             return 0;
         }
 
-        handler->size = reply->integer;
+        handler->size = (sc_uint32)reply->integer;
         freeReplyObject(reply);
     } else
     {

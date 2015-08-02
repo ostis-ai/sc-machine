@@ -12,9 +12,9 @@
 #include "translators/uiSc2SCgJsonTranslator.h"
 #include "translators/uiSc2SCnJsonTranslator.h"
 
-sc_event *ui_translator_sc2scs_event = (sc_event*)nullptr;
-sc_event *ui_translator_sc2scg_json_event = (sc_event*)nullptr;
-sc_event *ui_translator_sc2scn_json_event = (sc_event*)nullptr;
+sc_event *ui_translator_sc2scs_event = (sc_event*)null_ptr;
+sc_event *ui_translator_sc2scg_json_event = (sc_event*)null_ptr;
+sc_event *ui_translator_sc2scn_json_event = (sc_event*)null_ptr;
 
 void ui_initialize_translators()
 {
@@ -35,7 +35,7 @@ void ui_shutdown_translators()
 
 sc_result ui_translate_command_resolve_arguments(sc_addr cmd_addr, sc_addr *output_fmt_addr, sc_addr *source_addr)
 {
-    sc_iterator5 *it = (sc_iterator5*)nullptr;
+    sc_iterator5 *it = (sc_iterator5*)null_ptr;
     sc_bool fmt_found = SC_FALSE;
     sc_bool source_found = SC_FALSE;
 

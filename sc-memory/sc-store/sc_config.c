@@ -44,7 +44,7 @@ void sc_config_initialize(const sc_char *file_path)
 {
     GKeyFile *key_file = 0;
     key_file = g_key_file_new();
-    if ((file_path != nullptr) && (g_key_file_load_from_file(key_file, file_path, G_KEY_FILE_NONE, 0) == TRUE))
+    if ((file_path != null_ptr) && (g_key_file_load_from_file(key_file, file_path, G_KEY_FILE_NONE, 0) == TRUE))
     {
         // parse settings
         if (g_key_file_has_key(key_file, str_group_memory, str_key_max_loaded_segments, 0) == TRUE)
@@ -92,7 +92,7 @@ void sc_config_shutdown()
     values_table = 0;
 }
 
-sc_uint sc_config_get_max_loaded_segments()
+sc_int32 sc_config_get_max_loaded_segments()
 {
     return config_max_loaded_segments;
 }
@@ -133,7 +133,7 @@ float sc_config_get_value_float(const char *group, const char *key)
     if (str_value == 0)
         return SC_FALSE;
 
-    return atof(str_value);
+    return (float)atof(str_value);
 }
 
 const sc_char* sc_config_fm_engine()

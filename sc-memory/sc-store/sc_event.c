@@ -41,7 +41,7 @@ sc_result insert_event_into_table(sc_event *event)
     EVENTS_TABLE_LOCK
 
     // first of all, if table doesn't exist, then create it
-    if (events_table == nullptr)
+    if (events_table == null_ptr)
         events_table = g_hash_table_new(events_table_hash_func, events_table_equal_func);
 
     // if there are no events for specified sc-element, then create new events list
@@ -58,12 +58,12 @@ sc_result insert_event_into_table(sc_event *event)
 sc_result remove_event_from_table(sc_event *event)
 {
     GSList *element_events_list = 0;
-    g_assert(events_table != nullptr);
+    g_assert(events_table != null_ptr);
 
     EVENTS_TABLE_LOCK
 
     element_events_list = (GSList*)g_hash_table_lookup(events_table, (gconstpointer)&event->element);
-    if (element_events_list == nullptr)
+    if (element_events_list == null_ptr)
     {
         EVENTS_TABLE_UNLOCK
         return SC_RESULT_ERROR_INVALID_PARAMS;
@@ -71,7 +71,7 @@ sc_result remove_event_from_table(sc_event *event)
 
     // remove event from list of events for specified sc-element
     element_events_list = g_slist_remove(element_events_list, (gconstpointer)event);
-    if (element_events_list == nullptr)
+    if (element_events_list == null_ptr)
         g_hash_table_remove(events_table, (gconstpointer)&event->element);
     else
         g_hash_table_insert(events_table, (gpointer)&event->element, (gpointer)element_events_list);
@@ -80,7 +80,7 @@ sc_result remove_event_from_table(sc_event *event)
     if (g_hash_table_size(events_table) == 0)
     {
         g_hash_table_destroy(events_table);
-        events_table = nullptr;
+        events_table = null_ptr;
     }
 
     EVENTS_TABLE_UNLOCK
@@ -91,10 +91,11 @@ sc_result remove_event_from_table(sc_event *event)
 sc_event* sc_event_new(sc_memory_context *ctx, sc_addr el, sc_event_type type, sc_pointer data, fEventCallback callback, fDeleteCallback delete_callback)
 {
     sc_access_levels levels;
+    sc_event *event = null_ptr;
     if (sc_storage_get_access_levels(ctx, el, &levels) != SC_RESULT_OK || !sc_access_lvl_check_read(ctx->access_levels, levels))
         return 0;
 
-    sc_event *event = g_new0(sc_event, 1);
+    event = g_new0(sc_event, 1);
     event->element = el;
     event->type = type;
     event->callback = callback;
@@ -102,13 +103,13 @@ sc_event* sc_event_new(sc_memory_context *ctx, sc_addr el, sc_event_type type, s
     event->data = data;
     event->ctx = ctx;
 
-    g_assert(callback != nullptr);
+    g_assert(callback != null_ptr);
 
     // register created event
     if (insert_event_into_table(event) != SC_RESULT_OK)
     {
         g_free(event);
-        return nullptr;
+        return null_ptr;
     }
 
     return event;
@@ -135,17 +136,17 @@ sc_result sc_event_notify_element_deleted(sc_addr element)
 
     EVENTS_TABLE_LOCK
     // do nothing, if there are no registered events
-    if (events_table == nullptr)
+    if (events_table == null_ptr)
         goto result;
 
     // lookup for all registered to specified sc-elemen events
     element_events_list = (GSList*)g_hash_table_lookup(events_table, (gconstpointer)&element);
 
     // destroy events
-    while (element_events_list != nullptr)
+    while (element_events_list != null_ptr)
     {
         event = (sc_event*)element_events_list->data;
-        if (event->delete_callback != nullptr)
+        if (event->delete_callback != null_ptr)
             event->delete_callback(event);
         element_events_list = g_slist_delete_link(element_events_list, element_events_list);
     }
@@ -166,18 +167,18 @@ sc_result sc_event_emit(sc_addr el, sc_access_levels el_access, sc_event_type ty
     EVENTS_TABLE_LOCK;
 
     // if table is empty, then do nothing
-    if (events_table == nullptr)
+    if (events_table == null_ptr)
         goto result;
 
     // lookup for all registered to specified sc-elemen events
     element_events_list = (GSList*)g_hash_table_lookup(events_table, (gconstpointer)&el);
-    while (element_events_list != nullptr)
+    while (element_events_list != null_ptr)
     {
         event = (sc_event*)element_events_list->data;
 
         if (event->type == type && sc_access_lvl_check_read(event->ctx->access_levels, el_access))
         {
-            g_assert(event->callback != nullptr);
+            g_assert(event->callback != null_ptr);
             sc_event_queue_append(event_queue, event, arg);
         }
 

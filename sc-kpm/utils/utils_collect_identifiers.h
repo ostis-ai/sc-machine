@@ -7,6 +7,11 @@
 #ifndef _utils_collect_identifiers_h_
 #define _utils_collect_identifiers_h_
 
+#if defined (SC_PLATFORM_WIN)
+#define INCL_WINSOCK_API_PROTOTYPES 0
+#include <WinSock2.h>
+#endif
+
 #include "sc_memory_headers.h"
 #include <hiredis/hiredis.h>
 

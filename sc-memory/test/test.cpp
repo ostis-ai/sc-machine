@@ -157,8 +157,8 @@ void test_access_levels()
 
     // links
     const char * data = "Test";
-    sc_stream * stream1 = sc_stream_memory_new(data, strlen(data), SC_STREAM_FLAG_READ, SC_FALSE);
-    sc_stream * stream2 = sc_stream_memory_new(data, strlen(data), SC_STREAM_FLAG_READ, SC_FALSE);
+    sc_stream * stream1 = sc_stream_memory_new(data, (sc_uint)strlen(data), SC_STREAM_FLAG_READ, SC_FALSE);
+    sc_stream * stream2 = sc_stream_memory_new(data, (sc_uint)strlen(data), SC_STREAM_FLAG_READ, SC_FALSE);
     sc_addr link1 = sc_memory_link_new(ctx1);
     sc_addr link2 = sc_memory_link_new(ctx2);
     sc_stream * stream = 0;
@@ -179,7 +179,7 @@ void test_access_levels()
     r = sc_memory_get_link_content(ctx2, link1, &stream);
     g_assert(r == SC_RESULT_ERROR_NO_READ_RIGHTS);
 
-    sc_stream * stream3 = sc_stream_memory_new(data, strlen(data), SC_STREAM_FLAG_READ, SC_FALSE);
+    sc_stream * stream3 = sc_stream_memory_new(data, (sc_uint)strlen(data), SC_STREAM_FLAG_READ, SC_FALSE);
     sc_addr * result = 0;
     sc_uint32 count = 0;
     r = sc_memory_find_links_with_content(ctx1, stream3, &result, &count);
@@ -466,7 +466,7 @@ void test_deletion()
         sc_addr link = sc_memory_link_new(ctx);
 
         char const *data = "test content";
-        sc_stream *stream = sc_stream_memory_new(data, strlen(data), SC_STREAM_FLAG_READ, SC_FALSE);
+        sc_stream *stream = sc_stream_memory_new(data, (sc_uint)strlen(data), SC_STREAM_FLAG_READ, SC_FALSE);
         g_assert(sc_memory_set_link_content(ctx, link, stream) == SC_RESULT_OK);
 
         sc_addr *results = 0;
@@ -538,9 +538,9 @@ void test_links()
     // check change of content
     {
         char const *data = "test content";
-        sc_stream *stream = sc_stream_memory_new(data, strlen(data), SC_STREAM_FLAG_READ, SC_FALSE);
+        sc_stream *stream = sc_stream_memory_new(data, (sc_uint)strlen(data), SC_STREAM_FLAG_READ, SC_FALSE);
         char const *data2 = "test content 2";
-        sc_stream *stream2 = sc_stream_memory_new(data2, strlen(data2), SC_STREAM_FLAG_READ, SC_FALSE);
+        sc_stream *stream2 = sc_stream_memory_new(data2, (sc_uint)strlen(data2), SC_STREAM_FLAG_READ, SC_FALSE);
 
         sc_addr link = sc_memory_link_new(ctx);
         g_assert(sc_memory_set_link_content(ctx, link, stream) == SC_RESULT_OK);
@@ -556,7 +556,7 @@ void test_links()
 
         sc_stream *rstream;
         g_assert(sc_memory_get_link_content(ctx, link, &rstream) == SC_RESULT_OK);
-        g_assert(rstream != nullptr);
+        g_assert(rstream != null_ptr);
         g_assert(test_stream_equal(stream2, rstream) == SC_TRUE);
 
         sc_stream_free(stream);
@@ -574,8 +574,8 @@ void test_links()
         sc_addr link1 = sc_memory_link_new(ctx);
         sc_addr link2 = sc_memory_link_new(ctx);
 
-        sc_stream *stream1 = sc_stream_memory_new(data, strlen(data), SC_STREAM_FLAG_READ, SC_FALSE);
-        sc_stream *stream2 = sc_stream_memory_new(data2, strlen(data2), SC_STREAM_FLAG_READ, SC_FALSE);
+        sc_stream *stream1 = sc_stream_memory_new(data, (sc_uint)strlen(data), SC_STREAM_FLAG_READ, SC_FALSE);
+        sc_stream *stream2 = sc_stream_memory_new(data2, (sc_uint)strlen(data2), SC_STREAM_FLAG_READ, SC_FALSE);
 
         g_assert(sc_memory_set_link_content(ctx, link1, stream1) == SC_RESULT_OK);
         g_assert(sc_memory_set_link_content(ctx, link2, stream2) == SC_RESULT_OK);
@@ -643,7 +643,7 @@ void test_save()
     p.ext_path = 0;
     std::vector<sc_addr> addrs;
 
-    static sc_uint32 const ADDRS_COUNT = 100000;
+    static sc_uint32 const ADDRS_COUNT = 3000;
     addrs.reserve(ADDRS_COUNT);
 
     sc_memory_initialize(&p);
@@ -654,7 +654,7 @@ void test_save()
         std::string const s = genIdtf(i);
 
         sc_addr addr = sc_memory_node_new(s_default_ctx, sc_type_node | sc_type_const);
-        sc_helper_set_system_identifier(s_default_ctx, addr, s.c_str(), s.size());
+        sc_helper_set_system_identifier(s_default_ctx, addr, s.c_str(), (sc_uint32)s.size());
         addrs.push_back(addr);
     }
 
@@ -674,7 +674,7 @@ void test_save()
 
         //sc_result sc_helper_find_element_by_system_identifier(sc_memory_context const * ctx, const sc_char* data, sc_uint32 len, sc_addr *result_addr);
         sc_addr addr;
-        g_assert(sc_helper_find_element_by_system_identifier(s_default_ctx, s.c_str(), s.size(), &addr) == SC_RESULT_OK);
+        g_assert(sc_helper_find_element_by_system_identifier(s_default_ctx, s.c_str(), (sc_uint32)s.size(), &addr) == SC_RESULT_OK);
         g_assert(SC_ADDR_IS_EQUAL(addr, addrs[i]));
     }
 

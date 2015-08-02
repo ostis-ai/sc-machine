@@ -8,7 +8,7 @@
 
 #include <glib.h>
 
-const sc_version SC_VERSION = {0, 2, 0, "rc1"};
+const sc_version SC_VERSION = { 0, 2, 0, "rc1" };
 
 
 sc_int32 sc_version_compare(const sc_version *a, const sc_version *b)

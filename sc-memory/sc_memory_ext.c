@@ -57,12 +57,12 @@ gint sc_priority_great(gconstpointer a, gconstpointer b)
 
 sc_result sc_ext_initialize(const sc_char *ext_dir_path)
 {
-    GDir *ext_dir = nullptr;
+    GDir *ext_dir = null_ptr;
     const gchar *file_name = 0;
     fModuleFunc func = 0;
 
     // doesn't need to initialize extensions
-    if (ext_dir_path == nullptr)
+    if (ext_dir_path == null_ptr)
         return SC_RESULT_OK;
 
     // check if modules supported on this platform
@@ -80,19 +80,19 @@ sc_result sc_ext_initialize(const sc_char *ext_dir_path)
 
     // get list of files in extension directory
     ext_dir = g_dir_open(ext_dir_path, 0, 0);
-    if (ext_dir == nullptr)
+    if (ext_dir == null_ptr)
         return SC_RESULT_ERROR;
 
     // list all files in directory and try to load them
     file_name = g_dir_read_name(ext_dir);
-    while (file_name != nullptr)
+    while (file_name != null_ptr)
     {
         sc_module_info *mi = g_new0(sc_module_info, 1);
         mi->path = g_module_build_path(ext_dir_path, file_name);
 
         // open module
         mi->ptr = g_module_open(mi->path, G_MODULE_BIND_LOCAL);
-        if (mi->ptr == nullptr)
+        if (mi->ptr == null_ptr)
         {
             g_warning("Can't load module: %s. Error: %s", mi->path, g_module_error());
             goto clean;
@@ -141,7 +141,7 @@ sc_result sc_ext_initialize(const sc_char *ext_dir_path)
 
     // initialize modules
     GList *item = modules_priority_list;
-    while (item != nullptr)
+    while (item != null_ptr)
     {
         sc_module_info *module = (sc_module_info*)item->data;
         g_message("Initialize module: %s", module->path);
@@ -150,7 +150,7 @@ sc_result sc_ext_initialize(const sc_char *ext_dir_path)
             g_warning("Something happends, on module initialization: %s", module->path);
             module->shut_func();
             g_module_close(module->ptr);
-            module->ptr = nullptr;
+            module->ptr = null_ptr;
         }
 
         item = item->next;
@@ -163,11 +163,11 @@ void sc_ext_shutdown()
 {
     modules_priority_list = g_list_sort(modules_priority_list, sc_priority_great);
     GList *item = modules_priority_list;
-    while (item != nullptr)
+    while (item != null_ptr)
     {
         sc_module_info *module = (sc_module_info*)item->data;
         g_message("Shutdown module: %s", module->path);
-        if (module->ptr != nullptr)
+        if (module->ptr != null_ptr)
         {
             if (module->shut_func() != SC_RESULT_OK)
                 g_warning("Something happends, on module shutdown: %s", module->path);

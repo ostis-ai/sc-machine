@@ -127,6 +127,8 @@ void sc_memory_shutdown(sc_bool save_state)
 sc_memory_context* sc_memory_context_new(sc_uint8 levels)
 {
     sc_memory_context *ctx = g_new0(sc_memory_context, 1);
+	sc_uint32 index = 0;
+
     ctx->access_levels = levels;
 
     // setup concurency id
@@ -134,7 +136,7 @@ sc_memory_context* sc_memory_context_new(sc_uint8 levels)
     if (s_context_id_count >= G_MAXUINT16)
         goto error;
 
-    sc_uint32 index = (s_context_id_last + 1) % G_MAXUINT16;
+    index = (s_context_id_last + 1) % G_MAXUINT16;
     while (index == 0 || (index != s_context_id_last && g_hash_table_lookup(s_context_hash_table, GINT_TO_POINTER(index))))
         index = (index + 1) % G_MAXUINT16;
 
@@ -240,6 +242,11 @@ sc_result sc_memory_get_link_content(sc_memory_context const * ctx, sc_addr addr
 sc_result sc_memory_find_links_with_content(sc_memory_context const * ctx, sc_stream const * stream, sc_addr **result, sc_uint32 *result_count)
 {
     return sc_storage_find_links_with_content(ctx, stream, result, result_count);
+}
+
+void sc_memory_free_buff(sc_pointer buff)
+{
+	g_free(buff);
 }
 
 sc_result sc_memory_set_element_access_levels(sc_memory_context const * ctx, sc_addr addr, sc_access_levels access_levels, sc_access_levels * new_value)

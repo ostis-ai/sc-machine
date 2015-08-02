@@ -39,7 +39,7 @@ sc_bool sc_link_calculate_checksum(const sc_stream *stream, sc_check_sum *check_
     }
 
     // store results
-    check_sum->len = g_checksum_type_get_length(SC_DEFAULT_CHECKSUM);
+    check_sum->len = (sc_uint8)g_checksum_type_get_length(SC_DEFAULT_CHECKSUM);
     g_assert(check_sum->len == SC_CHECKSUM_LEN);
 
     result = g_checksum_get_string(checksum);

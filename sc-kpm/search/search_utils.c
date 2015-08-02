@@ -41,7 +41,7 @@ void appendIntoAnswer(sc_addr answer, sc_addr el)
 
 void finish_question(sc_addr question)
 {
-    sc_iterator3 *it = nullptr;
+    sc_iterator3 *it = null_ptr;
     sc_addr arc;
 
     it = sc_iterator3_f_a_f_new(s_default_ctx,
