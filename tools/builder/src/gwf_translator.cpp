@@ -160,7 +160,7 @@ bool GwfTranslator::processString(const String &data)
                 if (content->IntAttribute("type") == 4)
                     data = base64_decode(data);
 
-                sc_stream *stream = sc_stream_memory_new(data.c_str(), data.size(), SC_STREAM_FLAG_READ, SC_FALSE);
+                sc_stream *stream = sc_stream_memory_new(data.c_str(), (sc_uint)data.size(), SC_STREAM_FLAG_READ, SC_FALSE);
                 sc_memory_set_link_content(mContext, addr, stream);
                 sc_stream_free(stream);
 
@@ -174,7 +174,7 @@ bool GwfTranslator::processString(const String &data)
         }
 
         if (!idtf.empty())
-            sc_helper_set_system_identifier(mContext, addr, idtf.c_str(), idtf.size());
+            sc_helper_set_system_identifier(mContext, addr, idtf.c_str(), (sc_uint32)idtf.size());
 
         id_map[id] = addr;
     }
@@ -229,7 +229,7 @@ bool GwfTranslator::processString(const String &data)
             id_map[id] = addr;
 
             if (!idtf.empty())
-                sc_helper_set_system_identifier(mContext, addr, idtf.c_str(), idtf.size());
+                sc_helper_set_system_identifier(mContext, addr, idtf.c_str(), (sc_uint32)idtf.size());
         }
     }
 
@@ -276,7 +276,7 @@ bool GwfTranslator::getScAddr(const String &idtf, sc_addr &addr)
         return true;
     }
 
-    if (sc_helper_find_element_by_system_identifier(mContext, idtf.c_str(), idtf.size(), &addr) == SC_RESULT_OK)
+    if (sc_helper_find_element_by_system_identifier(mContext, idtf.c_str(), (sc_uint32)idtf.size(), &addr) == SC_RESULT_OK)
         return true;
 
     return false;

@@ -6,5 +6,18 @@
 
 #pragma once
 
-#include "sc_memory.hpp"
-#include "sc_stream.hpp"
+namespace sctp
+{
+
+class Client
+{
+public:
+    explicit Client();
+
+    //! Create new node
+
+
+private:
+};
+
+}

@@ -23,8 +23,8 @@ class _SC_WRAP_EXTERN Addr
 {
     friend class MemoryContext;
 
-    template <typename ParamType1, typename ParamType2, typename ParamType3> friend class Iterator3;
-    template <typename ParamType1, typename ParamType2, typename ParamType3, typename ParamType4, typename ParamType5> friend class Iterator5;
+    template <typename ParamType1, typename ParamType2, typename ParamType3> friend class TIterator3;
+    template <typename ParamType1, typename ParamType2, typename ParamType3, typename ParamType4, typename ParamType5> friend class TIterator5;
 
 public:
     bool isValid() const;

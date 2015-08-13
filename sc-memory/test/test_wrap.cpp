@@ -48,12 +48,12 @@ void test_common_elements()
         g_assert(ctx.getArcBegin(arc) == addr);
         g_assert(ctx.getArcEnd(arc) == link);
 
-        g_assert(ctx.getElementType(addr) == sc_type_node | sc_type_const);
+        g_assert(ctx.getElementType(addr) == (sc_type_node | sc_type_const));
         g_assert(ctx.getElementType(link) == sc_type_link);
         g_assert(ctx.getElementType(arc) == sc_type_arc_pos_const_perm);
 
         g_assert(ctx.setElementSubtype(addr, sc_type_var));
-        g_assert(ctx.getElementType(addr) == sc_type_node | sc_type_var);
+        g_assert(ctx.getElementType(addr) == (sc_type_node | sc_type_var));
 
         g_assert(ctx.eraseElement(addr));
         g_assert(!ctx.isElement(addr));
@@ -83,27 +83,27 @@ void test_common_iterators()
         g_assert(ctx.isElement(arc1));
 
         {
-            sc::Iterator3_f_a_f iter(ctx, addr1, sc_type_arc_pos_const_perm, addr2);
-            g_assert(iter.next());
-            g_assert(iter.value(0) == addr1);
-            g_assert(iter.value(1) == arc1);
-            g_assert(iter.value(2) == addr2);
+            sc::Iterator3Ptr iter3 = ctx.iterator3(addr1, sc_type_arc_pos_const_perm, addr2);
+            g_assert(iter3->next());
+            g_assert(iter3->value(0) == addr1);
+            g_assert(iter3->value(1) == arc1);
+            g_assert(iter3->value(2) == addr2);
         }
 
         {
-            sc::Iterator3_f_a_a iter(ctx, addr1, sc_type_arc_pos_const_perm, sc_type_node);
-            g_assert(iter.next());
-            g_assert(iter.value(0) == addr1);
-            g_assert(iter.value(1) == arc1);
-            g_assert(iter.value(2) == addr2);
+            sc::Iterator3Ptr iter3 = ctx.iterator3(addr1, sc_type_arc_pos_const_perm, sc_type_node);
+            g_assert(iter3->next());
+            g_assert(iter3->value(0) == addr1);
+            g_assert(iter3->value(1) == arc1);
+            g_assert(iter3->value(2) == addr2);
         }
 
         {
-            sc::Iterator3_a_a_f iter(ctx, sc_type_node, sc_type_arc_pos_const_perm, addr2);
-            g_assert(iter.next());
-            g_assert(iter.value(0) == addr1);
-            g_assert(iter.value(1) == arc1);
-            g_assert(iter.value(2) == addr2);
+            sc::Iterator3Ptr iter3 = ctx.iterator3(sc_type_node, sc_type_arc_pos_const_perm, addr2);
+            g_assert(iter3->next());
+            g_assert(iter3->value(0) == addr1);
+            g_assert(iter3->value(1) == arc1);
+            g_assert(iter3->value(2) == addr2);
         }
 
         sc::Addr addr3 = ctx.createNode(sc_type_const);
@@ -116,80 +116,80 @@ void test_common_iterators()
         g_assert(ctx.isElement(arc2));
 
         {
-            sc::Iterator5_a_a_f_a_a iter(ctx, sc_type_node, sc_type_arc_pos_const_perm, addr2, sc_type_arc_pos_const_perm, sc_type_node);
+            sc::Iterator5Ptr iter5 = ctx.iterator5(sc_type_node, sc_type_arc_pos_const_perm, addr2, sc_type_arc_pos_const_perm, sc_type_node);
 
-            g_assert(iter.next());
+            g_assert(iter5->next());
 
-            g_assert(iter.value(0) == addr1);
-            g_assert(iter.value(1) == arc1);
-            g_assert(iter.value(2) == addr2);
-            g_assert(iter.value(3) == arc2);
-            g_assert(iter.value(4) == addr3);
+            g_assert(iter5->value(0) == addr1);
+            g_assert(iter5->value(1) == arc1);
+            g_assert(iter5->value(2) == addr2);
+            g_assert(iter5->value(3) == arc2);
+            g_assert(iter5->value(4) == addr3);
         }
 
         {
-            sc::Iterator5_a_a_f_a_f iter(ctx, sc_type_node, sc_type_arc_pos_const_perm, addr2, sc_type_arc_pos_const_perm, addr3);
+            sc::Iterator5Ptr iter5 = ctx.iterator5(sc_type_node, sc_type_arc_pos_const_perm, addr2, sc_type_arc_pos_const_perm, addr3);
 
-            g_assert(iter.next());
+            g_assert(iter5->next());
 
-            g_assert(iter.value(0) == addr1);
-            g_assert(iter.value(1) == arc1);
-            g_assert(iter.value(2) == addr2);
-            g_assert(iter.value(3) == arc2);
-            g_assert(iter.value(4) == addr3);
+            g_assert(iter5->value(0) == addr1);
+            g_assert(iter5->value(1) == arc1);
+            g_assert(iter5->value(2) == addr2);
+            g_assert(iter5->value(3) == arc2);
+            g_assert(iter5->value(4) == addr3);
         }
 
         {
-            sc::Iterator5_f_a_a_a_a iter(ctx, addr1, sc_type_arc_pos_const_perm, sc_type_node, sc_type_arc_pos_const_perm, sc_type_node);
+            sc::Iterator5Ptr iter5 = ctx.iterator5(addr1, sc_type_arc_pos_const_perm, sc_type_node, sc_type_arc_pos_const_perm, sc_type_node);
 
-            g_assert(iter.next());
+            g_assert(iter5->next());
 
-            g_assert(iter.value(0) == addr1);
-            g_assert(iter.value(1) == arc1);
-            g_assert(iter.value(2) == addr2);
-            g_assert(iter.value(3) == arc2);
-            g_assert(iter.value(4) == addr3);
+            g_assert(iter5->value(0) == addr1);
+            g_assert(iter5->value(1) == arc1);
+            g_assert(iter5->value(2) == addr2);
+            g_assert(iter5->value(3) == arc2);
+            g_assert(iter5->value(4) == addr3);
         }
 
         {
-            sc::Iterator5_f_a_a_a_f iter(ctx, addr1, sc_type_arc_pos_const_perm, sc_type_node, sc_type_arc_pos_const_perm, addr3);
+            sc::Iterator5Ptr iter5 = ctx.iterator5(addr1, sc_type_arc_pos_const_perm, sc_type_node, sc_type_arc_pos_const_perm, addr3);
 
-            g_assert(iter.next());
+            g_assert(iter5->next());
 
-            g_assert(iter.value(0) == addr1);
-            g_assert(iter.value(1) == arc1);
-            g_assert(iter.value(2) == addr2);
-            g_assert(iter.value(3) == arc2);
-            g_assert(iter.value(4) == addr3);
+            g_assert(iter5->value(0) == addr1);
+            g_assert(iter5->value(1) == arc1);
+            g_assert(iter5->value(2) == addr2);
+            g_assert(iter5->value(3) == arc2);
+            g_assert(iter5->value(4) == addr3);
         }
 
         {
-            sc::Iterator5_f_a_f_a_a iter(ctx, addr1, sc_type_arc_pos_const_perm, addr2, sc_type_arc_pos_const_perm, sc_type_node);
+            sc::Iterator5Ptr iter5 = ctx.iterator5(addr1, sc_type_arc_pos_const_perm, addr2, sc_type_arc_pos_const_perm, sc_type_node);
 
-            g_assert(iter.next());
+            g_assert(iter5->next());
 
-            g_assert(iter.value(0) == addr1);
-            g_assert(iter.value(1) == arc1);
-            g_assert(iter.value(2) == addr2);
-            g_assert(iter.value(3) == arc2);
-            g_assert(iter.value(4) == addr3);
+            g_assert(iter5->value(0) == addr1);
+            g_assert(iter5->value(1) == arc1);
+            g_assert(iter5->value(2) == addr2);
+            g_assert(iter5->value(3) == arc2);
+            g_assert(iter5->value(4) == addr3);
         }
 
         {
-            sc::Iterator5_f_a_f_a_f iter(ctx, addr1, sc_type_arc_pos_const_perm, addr2, sc_type_arc_pos_const_perm, addr3);
+            sc::Iterator5Ptr iter5 = ctx.iterator5(addr1, sc_type_arc_pos_const_perm, addr2, sc_type_arc_pos_const_perm, addr3);
 
-            g_assert(iter.next());
+            g_assert(iter5->next());
 
-            g_assert(iter.value(0) == addr1);
-            g_assert(iter.value(1) == arc1);
-            g_assert(iter.value(2) == addr2);
-            g_assert(iter.value(3) == arc2);
-            g_assert(iter.value(4) == addr3);
+            g_assert(iter5->value(0) == addr1);
+            g_assert(iter5->value(1) == arc1);
+            g_assert(iter5->value(2) == addr2);
+            g_assert(iter5->value(3) == arc2);
+            g_assert(iter5->value(4) == addr3);
         }
 
         {
             std::string str("test content string");
-            sc::Stream stream(str.c_str(), str.size(), SC_STREAM_FLAG_READ);
+            sc::Stream stream(str.c_str(), (sc_uint32)str.size(), SC_STREAM_FLAG_READ);
             sc::Addr link = ctx.createLink();
 
             g_assert(link.isValid());
@@ -204,7 +204,7 @@ void test_common_iterators()
 
             std::string str2;
             str2.resize(stream2.size());
-            for (int i = 0; i < stream2.size(); ++i)
+            for (sc_uint i = 0; i < stream2.size(); ++i)
             {
                 sc_char c;
                 sc_uint32 readBytes;

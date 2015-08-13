@@ -53,31 +53,31 @@ bool Stream::isValid() const
 
 bool Stream::read(sc_char * buff, sc_uint32 buffLen, sc_uint32 & readBytes)
 {
-    check(isValid());
+    check_expr(isValid());
     return sc_stream_read_data(mStream, buff, buffLen, &readBytes) == SC_RESULT_OK;
 }
 
 bool Stream::write(sc_char * data, sc_uint32 dataLen, sc_uint32 & writtenBytes)
 {
-    check(isValid());
+    check_expr(isValid());
     return sc_stream_write_data(mStream, data, dataLen, &writtenBytes) == SC_RESULT_OK;
 }
 
 bool Stream::seek(sc_stream_seek_origin origin, sc_uint32 offset)
 {
-    check(isValid());
+    check_expr(isValid());
     return sc_stream_seek(mStream, origin, offset) == SC_RESULT_OK;
 }
 
 bool Stream::eof() const
 {
-    check(isValid());
+    check_expr(isValid());
     return (sc_stream_eof(mStream) == SC_TRUE);
 }
 
 sc_uint32 Stream::size() const
 {
-    check(isValid());
+    check_expr(isValid());
     sc_uint32 len;
     if (sc_stream_get_length(mStream, &len) != SC_RESULT_OK)
         len = 0;
@@ -87,7 +87,7 @@ sc_uint32 Stream::size() const
 
 sc_uint32 Stream::pos() const
 {
-    check(isValid());
+    check_expr(isValid());
     sc_uint32 pos;
     if (sc_stream_get_position(mStream, &pos) != SC_RESULT_OK)
         pos = 0;
@@ -97,7 +97,7 @@ sc_uint32 Stream::pos() const
 
 bool Stream::hasFlag(sc_uint8 flag)
 {
-    check(isValid());
+    check_expr(isValid());
     return (sc_stream_check_flag(mStream, flag) == SC_TRUE);
 }
 

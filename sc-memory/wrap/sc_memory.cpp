@@ -120,50 +120,50 @@ bool MemoryContext::isValid() const
 
 bool MemoryContext::isElement(Addr const & addr) const
 {
-    check(isValid());
+    check_expr(isValid());
     return (sc_memory_is_element(mContext, addr.mRealAddr) == SC_TRUE);
 }
 
 bool MemoryContext::eraseElement(Addr const & addr)
 {
-    check(isValid());
+    check_expr(isValid());
     return sc_memory_element_free(mContext, addr.mRealAddr) == SC_RESULT_OK;
 }
 
 Addr MemoryContext::createNode(sc_type type)
 {
-    check(isValid());
+    check_expr(isValid());
     return Addr(sc_memory_node_new(mContext, type));
 }
 
 Addr MemoryContext::createLink()
 {
-    check(isValid());
+    check_expr(isValid());
     return Addr(sc_memory_link_new(mContext));
 }
 
 Addr MemoryContext::createArc(sc_type type, Addr const & addrBeg, Addr const & addrEnd)
 {
-    check(isValid());
+    check_expr(isValid());
     return Addr(sc_memory_arc_new(mContext, type, addrBeg.mRealAddr, addrEnd.mRealAddr));
 }
 
 sc_type MemoryContext::getElementType(Addr const & addr) const
 {
-    check(isValid());
+    check_expr(isValid());
     sc_type type = 0;
     return (sc_memory_get_element_type(mContext, addr.mRealAddr, &type) == SC_RESULT_OK) ? type : 0;
 }
 
 bool MemoryContext::setElementSubtype(Addr const & addr, sc_type subtype)
 {
-    check(isValid());
+    check_expr(isValid());
     return sc_memory_change_element_subtype(mContext, addr.mRealAddr, subtype) == SC_RESULT_OK;
 }
 
 Addr MemoryContext::getArcBegin(Addr const & arcAddr) const
 {
-    check(isValid());
+    check_expr(isValid());
     Addr addr;
     if (sc_memory_get_arc_begin(mContext, arcAddr.mRealAddr, &addr.mRealAddr) != SC_RESULT_OK)
         addr.reset();
@@ -173,7 +173,7 @@ Addr MemoryContext::getArcBegin(Addr const & arcAddr) const
 
 Addr MemoryContext::getArcEnd(Addr const & arcAddr) const
 {
-    check(isValid());
+    check_expr(isValid());
     Addr addr;
     if (sc_memory_get_arc_end(mContext, arcAddr.mRealAddr, &addr.mRealAddr) != SC_RESULT_OK)
         addr.reset();
@@ -183,13 +183,13 @@ Addr MemoryContext::getArcEnd(Addr const & arcAddr) const
 
 bool MemoryContext::setLinkContent(Addr const & addr, Stream const & stream)
 {
-    check(isValid());
+    check_expr(isValid());
     return sc_memory_set_link_content(mContext, addr.mRealAddr, stream.mStream) == SC_RESULT_OK;
 }
 
 bool MemoryContext::getLinkContent(Addr const & addr, Stream & stream)
 {
-    check(isValid());
+    check_expr(isValid());
 
     sc_stream * s = 0;
     if (sc_memory_get_link_content(mContext, addr.mRealAddr, &s) != SC_RESULT_OK)
@@ -205,7 +205,7 @@ bool MemoryContext::getLinkContent(Addr const & addr, Stream & stream)
 
 bool MemoryContext::findLinksByContent(Stream const & stream, tAddrList & found)
 {
-    check(isValid());
+    check_expr(isValid());
 
     sc_addr * result = 0;
     sc_uint32 resultCount = 0;
@@ -225,7 +225,7 @@ bool MemoryContext::findLinksByContent(Stream const & stream, tAddrList & found)
 
 bool MemoryContext::save()
 {
-    check(isValid());
+    check_expr(isValid());
     return (sc_memory_save(mContext) == SC_RESULT_OK);
 }
 

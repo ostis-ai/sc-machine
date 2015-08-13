@@ -1,7 +1,7 @@
 set(SCTP_CLIENT_ROOT "${SC_MACHINE_ROOT}/sc-network/sctp_client")
 
 file(GLOB_RECURSE SOURCES "*.cpp")
-file(GLOB_RECURSE HEADERS "*.h")
+file(GLOB_RECURSE HEADERS "*.hpp")
 
 add_library (sctp-client SHARED ${SOURCES} ${HEADERS})
 

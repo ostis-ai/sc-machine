@@ -13,6 +13,7 @@ extern "C"
 
 #include "sc_types.hpp"
 #include "sc_addr.hpp"
+#include "sc_iterator.hpp"
 
 #include <list>
 #include <string>
@@ -89,6 +90,24 @@ public:
 
     //! Saves memory state
     bool save();
+
+    template <typename ParamType1, typename ParamType2, typename ParamType3, typename ParamType4, typename ParamType5>
+    TSharedPointer< TIterator5<ParamType1, ParamType2, ParamType3, ParamType4, ParamType5> > iterator5(ParamType1 const & param1,
+                                                                                                       ParamType2 const & param2,
+                                                                                                       ParamType3 const & param3,
+                                                                                                       ParamType4 const & param4,
+                                                                                                       ParamType5 const & param5)
+    {
+        return new TIterator5<ParamType1, ParamType2, ParamType3, ParamType4, ParamType5>(*this, param1, param2, param3, param4, param5);
+    }
+
+    template <typename ParamType1, typename ParamType2, typename ParamType3>
+    TSharedPointer< TIterator3<ParamType1, ParamType2, ParamType3> > iterator3(ParamType1 const & param1,
+                                                                               ParamType2 const & param2,
+                                                                               ParamType3 const & param3)
+    {
+        return new TIterator3<ParamType1, ParamType2, ParamType3>(*this, param1, param2, param3);
+    }
 
 private:
     // Disable object copying

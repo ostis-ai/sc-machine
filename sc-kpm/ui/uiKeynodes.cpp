@@ -112,7 +112,7 @@ sc_bool initialize_keynodes()
         if (sc_helper_resolve_system_identifier(s_default_ctx, ss.str().c_str(), &(ui_keynode_rrel_order[i])) == SC_FALSE)
         {
             ui_keynode_rrel_order[i] = sc_memory_node_new(s_default_ctx, 0);
-            if (sc_helper_set_system_identifier(s_default_ctx, ui_keynode_rrel_order[i], ss.str().c_str(), ss.str().size()) != SC_RESULT_OK)
+            if (sc_helper_set_system_identifier(s_default_ctx, ui_keynode_rrel_order[i], ss.str().c_str(), (sc_uint32)ss.str().size()) != SC_RESULT_OK)
                 return SC_FALSE;
         }
     }
@@ -124,7 +124,7 @@ sc_bool initialize_keynodes()
         if (sc_helper_resolve_system_identifier(s_default_ctx, ss.str().c_str(), &(ui_keynode_arg[i])) == SC_FALSE)
         {
             ui_keynode_rrel_order[i] = sc_memory_node_new(s_default_ctx, 0);
-            if (sc_helper_set_system_identifier(s_default_ctx, ui_keynode_rrel_order[i], ss.str().c_str(), ss.str().size()) != SC_RESULT_OK)
+            if (sc_helper_set_system_identifier(s_default_ctx, ui_keynode_rrel_order[i], ss.str().c_str(), (sc_uint32)ss.str().size()) != SC_RESULT_OK)
                 return SC_FALSE;
         }
     }

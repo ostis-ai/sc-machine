@@ -275,7 +275,7 @@ bool uiSc2SCnJsonTranslator::isInOutputConstruction(sc_addr addr) const
 
 void uiSc2SCnJsonTranslator::collectScElementsInfo()
 {
-    sc_uint32 elementsCount = mObjects.size();
+    sc_uint32 elementsCount =(sc_uint32) mObjects.size();
     mScElementsInfoPool = new sScElementInfo[elementsCount];
 
     sc_uint32 poolUsed = 0;
