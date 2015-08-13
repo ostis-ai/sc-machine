@@ -17,40 +17,66 @@ extern "C"
 namespace sc
 {
 
-class _SC_WRAP_EXTERN Stream
+
+class IStream
+{
+public:
+	_SC_EXTERN virtual bool isValid() const = 0;
+
+	_SC_EXTERN virtual bool read(sc_char * buff, sc_uint32 buffLen, sc_uint32 & readBytes) const = 0;
+
+	_SC_EXTERN virtual bool write(sc_char * data, sc_uint32 dataLen, sc_uint32 & writtenBytes) = 0;
+
+	_SC_EXTERN virtual bool seek(sc_stream_seek_origin origin, sc_uint32 offset) = 0;
+
+	//! Check if current position at the end of file
+	_SC_EXTERN virtual bool eof() const = 0;
+
+	//! Returns lenght of stream in bytes
+	_SC_EXTERN virtual sc_uint32 size() const = 0;
+
+	//! Returns current position of stream
+	_SC_EXTERN virtual sc_uint32 pos() const = 0;
+
+	//! Check if stream has a specified flag
+	_SC_EXTERN virtual bool hasFlag(sc_uint8 flag) = 0;
+};
+
+
+class Stream : public IStream
 {
     friend class MemoryContext;
 
 public:
-    explicit Stream();
-    explicit Stream(sc_stream * stream);
-    explicit Stream(std::string const & fileName, sc_uint8 flags);
-    explicit Stream(sc_char * buffer, sc_uint32 bufferSize, sc_uint8 flags);
-    explicit Stream(sc_char const * buffer, sc_uint32 bufferSize, sc_uint8 flags);
+	_SC_EXTERN explicit Stream();
+	_SC_EXTERN explicit Stream(sc_stream * stream);
+	_SC_EXTERN explicit Stream(std::string const & fileName, sc_uint8 flags);
+	_SC_EXTERN explicit Stream(sc_char * buffer, sc_uint32 bufferSize, sc_uint8 flags);
+	_SC_EXTERN explicit Stream(sc_char const * buffer, sc_uint32 bufferSize, sc_uint8 flags);
 
-    ~Stream();
+	_SC_EXTERN ~Stream();
 
-    void reset();
+	_SC_EXTERN void reset();
 
-    bool isValid() const;
+	_SC_EXTERN bool isValid() const;
 
-    bool read(sc_char * buff, sc_uint32 buffLen, sc_uint32 & readBytes);
+	_SC_EXTERN bool read(sc_char * buff, sc_uint32 buffLen, sc_uint32 & readBytes) const;
 
-    bool write(sc_char * data, sc_uint32 dataLen, sc_uint32 & writtenBytes);
+	_SC_EXTERN bool write(sc_char * data, sc_uint32 dataLen, sc_uint32 & writtenBytes);
 
-    bool seek(sc_stream_seek_origin origin, sc_uint32 offset);
+	_SC_EXTERN bool seek(sc_stream_seek_origin origin, sc_uint32 offset);
 
     //! Check if current position at the end of file
-    bool eof() const;
+	_SC_EXTERN bool eof() const;
 
     //! Returns lenght of stream in bytes
-    sc_uint32 size() const;
+	_SC_EXTERN sc_uint32 size() const;
 
     //! Returns current position of stream
-    sc_uint32 pos() const;
+	_SC_EXTERN sc_uint32 pos() const;
 
     //! Check if stream has a specified flag
-    bool hasFlag(sc_uint8 flag);
+	_SC_EXTERN bool hasFlag(sc_uint8 flag);
 
 protected:
     //! Init with new stream object. Used by MemoryContext::getLinkContent
@@ -60,5 +86,27 @@ protected:
     sc_stream * mStream;
 };
 
+class StreamMemory : public IStream
+{
+public:
+	_SC_EXTERN explicit StreamMemory(MemoryBufferPtr const & buff);
+	_SC_EXTERN virtual ~StreamMemory();
+
+	_SC_EXTERN bool isValid() const;
+	_SC_EXTERN bool read(sc_char * buff, sc_uint32 buffLen, sc_uint32 & readBytes) const;
+	_SC_EXTERN bool write(sc_char * data, sc_uint32 dataLen, sc_uint32 & writtenBytes);
+	_SC_EXTERN bool seek(sc_stream_seek_origin origin, sc_uint32 offset);
+	_SC_EXTERN bool eof() const;
+	_SC_EXTERN sc_uint32 size() const;
+	_SC_EXTERN sc_uint32 pos() const;
+	_SC_EXTERN bool hasFlag(sc_uint8 flag);
+
+private:
+	MemoryBufferPtr mBuffer;
+	mutable sc_uint32 mPos;
+};
+
+
+SHARED_PTR_TYPE(IStream)
 
 }

@@ -75,24 +75,27 @@ public:
 
     ~TSharedPointer()
     {
-        if (mRefCount->unref() == 0)
-        {
-            delete mRefCount;
-            delete mObject;
-        }
+		clear();
     }
 
-    template <typename OtherObjectType>
-    TSharedPointer(TSharedPointer<OtherObjectType> const & other)
+	TSharedPointer(TSharedPointer const & other)
+	{
+		mObject = other._GetPtr();
+		mRefCount = other._GetRef();
+		mRefCount->ref();
+	}
+
+	template <typename OtherType>
+    TSharedPointer(TSharedPointer<OtherType> const & other)
     {
         mObject = other._GetPtr();
         mRefCount = other._GetRef();
         mRefCount->ref();
     }
 
-    template <typename OtherObjectType>
-    ObjectType & operator = (TSharedPointer<OtherObjectType> const & other)
+    TSharedPointer & operator = (TSharedPointer const & other)
     {
+		clear();
         mObject = other._GetPtr();
         mRefCount = other._GetRef();
         mRefCount->ref();
@@ -102,6 +105,7 @@ public:
 
     ObjectType & operator = (ObjectType * object)
     {
+		clear();
         mObject = object;
         initRef();
         return *this;
@@ -143,13 +147,51 @@ private:
         mRefCount->ref();
     }
 
+	void clear()
+	{
+		if (mRefCount->unref() == 0)
+		{
+			delete mRefCount;
+			delete mObject;
+		}
+
+		mRefCount = 0;
+		mObject = 0;
+	}
+
 
 protected:
     ObjectType * mObject;
     RefCount * mRefCount;
 };
 
-#define SHARED_PTR_TYPE(__type) typedef TSharedPointer< __type > __type##Ptr;
+#define SHARED_PTR_TYPE(__type) typedef sc::TSharedPointer< __type > __type##Ptr;
+
+struct MemoryBuffer
+{
+	char * mData;
+	unsigned int mSize;
+
+	MemoryBuffer(char * buff, unsigned int size)
+		: mData(buff)
+		, mSize(size)
+	{
+	}
+};
+
+SHARED_PTR_TYPE(MemoryBuffer)
+
+template<typename T>
+T min(T a, T b)
+{
+	return (a < b) ? a : b;
+}
+
+template<typename T>
+T max(T a, T b)
+{
+	return (a > b) ? a : b;
+}
 
 }
 

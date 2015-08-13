@@ -51,7 +51,7 @@ bool Stream::isValid() const
     return mStream != 0;
 }
 
-bool Stream::read(sc_char * buff, sc_uint32 buffLen, sc_uint32 & readBytes)
+bool Stream::read(sc_char * buff, sc_uint32 buffLen, sc_uint32 & readBytes) const
 {
     check_expr(isValid());
     return sc_stream_read_data(mStream, buff, buffLen, &readBytes) == SC_RESULT_OK;
@@ -106,5 +106,93 @@ void Stream::init(sc_stream * stream)
     reset();
     mStream = stream;
 }
+
+// ---------------
+
+StreamMemory::StreamMemory(MemoryBufferPtr const & buff)
+	: mBuffer(buff)
+	, mPos(0)
+{
+}
+
+StreamMemory::~StreamMemory()
+{
+}
+
+bool StreamMemory::isValid() const
+{
+	return mBuffer.isValid();
+}
+
+bool StreamMemory::read(sc_char * buff, sc_uint32 buffLen, sc_uint32 & readBytes) const
+{
+	assert(mBuffer.isValid());
+	if (mPos < mBuffer->mSize)
+	{
+		readBytes = sc::min(mBuffer->mSize - mPos, buffLen);
+		memcpy(buff, (mBuffer->mData + mPos), readBytes);
+		mPos += readBytes;
+		return true;
+	}
+
+	readBytes = 0;
+	return false;
+}
+
+bool StreamMemory::write(sc_char * data, sc_uint32 dataLen, sc_uint32 & writtenBytes)
+{
+	return false;
+}
+
+bool StreamMemory::seek(sc_stream_seek_origin origin, sc_uint32 offset)
+{
+	assert(mBuffer.isValid());
+	switch (origin)
+	{
+	case SC_STREAM_SEEK_SET:
+		if (offset > mBuffer->mSize)
+			return false;
+		mPos = offset;
+		break;
+
+	case SC_STREAM_SEEK_CUR:
+		if (mPos + offset >= mBuffer->mSize)
+			return false;
+		mPos += offset;
+		break;
+
+	case SC_STREAM_SEEK_END:
+		if (offset > mBuffer->mSize)
+			return false;
+		mPos = mBuffer->mSize - offset;
+		break;
+	};
+
+	return true;
+}
+
+bool StreamMemory::eof() const
+{
+	assert(mBuffer.isValid());
+	return mPos >= mBuffer->mSize;
+}
+
+sc_uint32 StreamMemory::size() const
+{
+	assert(mBuffer.isValid());
+	return mBuffer->mSize;
+}
+
+sc_uint32 StreamMemory::pos() const
+{
+	assert(mBuffer.isValid());
+	return mPos;
+}
+
+bool StreamMemory::hasFlag(sc_uint8 flag)
+{
+	return !(flag & SC_STREAM_FLAG_WRITE);
+}
+
 
 }

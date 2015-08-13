@@ -48,7 +48,8 @@ if (${UNIX})
             pkg_check_modules(REDIS REQUIRED libhiredis)
         endif()
 
-    add_definitions(-DSC_PLATFORM_UNIX)
+        add_definitions(-DSC_PLATFORM_UNIX)
+
 elseif (${WIN32})
 
 	set(PACKAGES_PATH "${CMAKE_BINARY_DIR}/packages")
@@ -86,10 +87,16 @@ elseif (${WIN32})
 	# copy runtime libraries
 	set (GLIB_RUNTIME_PATH "${PACKAGES_PATH}/glib.redist.2.36.2.11/build/native/bin/v110/x64/Release/dynamic")
 	set (INTL_RUNTIME_PATH "${PACKAGES_PATH}/libintl.redist.0.18.2.10/build/native/bin/v110/x64/Release/dynamic/cdecl")
+        set (ZLIB_RUNTIME_PATH "${PACKAGES_PATH}/zlib.v120.windesktop.msvcstl.dyn.rt-dyn.1.2.8.8/lib/native/v120/windesktop/msvcstl/dyn/rt-dyn/x64/Release")
+        set (FFI_RUNTIME_PATH "${PACKAGES_PATH}/libffi.redist.3.0.10.3/build/native/bin/x64/v110/dynamic/Release")
 	set (WIN_RUNTIME_LIBRARIES
 			"${GLIB_RUNTIME_PATH}/glib-2-vs10.dll"
 			"${GLIB_RUNTIME_PATH}/gmodule-2-vs10.dll"
+                        "${GLIB_RUNTIME_PATH}/gio-2-vs10.dll"
+                        "${GLIB_RUNTIME_PATH}/gobject-2-vs10.dll"
 			"${INTL_RUNTIME_PATH}/libintl.dll"
+                        "${ZLIB_RUNTIME_PATH}/zlib.dll"
+                        "${FFI_RUNTIME_PATH}/libffi.dll"
 			)
 	file(COPY ${WIN_RUNTIME_LIBRARIES} DESTINATION "${SC_MACHINE_ROOT}/bin")
 

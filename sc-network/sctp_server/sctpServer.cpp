@@ -65,7 +65,7 @@ bool sctpServer::start(const QString &config)
         ipAddress = QHostAddress(QHostAddress::LocalHost).toString();
     QString message = QObject::tr("The server is running on\nIP: %1\tport: %2\n")
                                   .arg(ipAddress).arg(serverPort());
-    printf("%s", message.toUtf8().constData());
+    qDebug() << message.toUtf8().constData();
 
     // initialize sc-memory
     qDebug() << "Initialize sc-memory\n";
@@ -143,7 +143,7 @@ void sctpServer::parseConfig(const QString &config_path)
     }
 }
 
-void sctpServer::incomingConnection(int socketDescriptor)
+void sctpServer::incomingConnection(qintptr socketDescriptor)
 {
     sctpClient *client = new sctpClient(this, socketDescriptor);
     connect(client, SIGNAL(finished()), client, SLOT(deleteLater()));

@@ -34,6 +34,8 @@ void sctpClient::run()
         return;
     }
 
+    qDebug() << "Client connected: " << mSocket->peerAddress();
+
     sctpStatistic::getInstance()->clientConnected();
 
     mCommand = new sctpCommand();

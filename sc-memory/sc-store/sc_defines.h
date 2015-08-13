@@ -41,7 +41,7 @@
 	#endif
 #else
 	#if defined (SC_PLATFORM_WIN)
-		#define _SC_EXTERN __declspec(dllimport)
+        #define _SC_EXTERN __declspec(dllimport)
 	#else
 		#define _SC_EXTERN
 	#endif

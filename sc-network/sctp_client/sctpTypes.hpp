@@ -4,8 +4,7 @@
  * (See accompanying file COPYING.MIT or copy at http://opensource.org/licenses/MIT)
  */
 
-#ifndef SCTPTYPES_H
-#define SCTPTYPES_H
+#pragma once
 
 extern "C"
 {
@@ -86,4 +85,3 @@ typedef enum
 
 typedef sc_uint32 tEventId;
 
-#endif // SCTPTYPES_H

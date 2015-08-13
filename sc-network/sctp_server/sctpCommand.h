@@ -13,7 +13,7 @@
 
 #include <set>
 
-#include "sctpTypes.h"
+#include "../sctp_client/sctpTypes.hpp"
 
 
 class QIODevice;

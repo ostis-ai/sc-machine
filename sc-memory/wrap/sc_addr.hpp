@@ -19,7 +19,9 @@ extern "C"
 namespace sc
 {
 
-class _SC_WRAP_EXTERN Addr
+typedef sc_addr tRealAddr;
+
+class _SC_EXTERN Addr
 {
     friend class MemoryContext;
 
@@ -33,11 +35,13 @@ public:
     bool operator == (Addr const & other) const;
     bool operator != (Addr const & other) const;
 
-protected:
+    tRealAddr const & getRealAddr() const;
+
     explicit Addr();
     explicit Addr(sc_addr const & addr);
 
-    sc_addr mRealAddr;
+protected:
+    tRealAddr mRealAddr;
 };
 
 typedef std::vector<Addr> tAddrVector;

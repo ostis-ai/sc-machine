@@ -39,4 +39,9 @@ bool Addr::operator != (Addr const & other) const
     return SC_ADDR_IS_NOT_EQUAL(mRealAddr, other.mRealAddr);
 }
 
+tRealAddr const & Addr::getRealAddr() const
+{
+    return mRealAddr;
+}
+
 }

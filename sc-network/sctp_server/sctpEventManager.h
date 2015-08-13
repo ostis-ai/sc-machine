@@ -9,7 +9,7 @@
 
 #include <QObject>
 #include <QMutex>
-#include "sctpTypes.h"
+#include "../sctp_client/sctpTypes.hpp"
 
 #include <map>
 

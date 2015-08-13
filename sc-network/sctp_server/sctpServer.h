@@ -7,7 +7,7 @@
 #ifndef _sctpServer_h_
 #define _sctpServer_h_
 
-#include "sctpTypes.h"
+#include "../sctp_client/sctpTypes.hpp"
 
 #include <QTcpServer>
 #include <QList>
@@ -32,7 +32,7 @@ protected:
 
 
 protected:
-    void incomingConnection(int socketDescriptor);
+    void incomingConnection(qintptr socketDescriptor);
 
 private:
     //! Port number
