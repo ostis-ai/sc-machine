@@ -1,5 +1,9 @@
-set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${SC_MACHINE_ROOT}/bin/extensions")
-file(MAKE_DIRECTORY ${CMAKE_LIBRARY_OUTPUT_DIRECTORY})
+set(SC_KPM_ROOT "${CMAKE_SOURCE_DIR}/sc-kpm")
+
+add_subdirectory(common)
+
+file(MAKE_DIRECTORY ${SC_EXTENSION_DIRECTORY})
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${SC_EXTENSION_DIRECTORY})
 
 # for multi-config builds (e.g. msvc)
 foreach( OUTPUTCONFIG ${CMAKE_CONFIGURATION_TYPES} )
@@ -8,9 +12,7 @@ foreach( OUTPUTCONFIG ${CMAKE_CONFIGURATION_TYPES} )
     set( CMAKE_LIBRARY_OUTPUT_DIRECTORY_${OUTPUTCONFIG} "${SC_MACHINE_ROOT}/bin/extensions")
 endforeach( OUTPUTCONFIG CMAKE_CONFIGURATION_TYPES )
 
-set(SC_KPM_ROOT "${CMAKE_SOURCE_DIR}/sc-kpm")
 
-add_subdirectory(common)
 add_subdirectory(ui)
 add_subdirectory(search)
 add_subdirectory(merge)

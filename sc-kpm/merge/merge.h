@@ -11,11 +11,4 @@
 
 extern sc_memory_context * s_default_ctx;
 
-
-//! Module initialization function
-sc_result initialize();
-
-//! Module shutdown function
-sc_result shutdown();
-
 #endif

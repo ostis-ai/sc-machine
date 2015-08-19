@@ -12,9 +12,10 @@ if (${WIN32})
 elseif (${UNIX})
 	set (JAVA_EXE "java")
 endif (${WIN32})
-
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${SC_MACHINE_ROOT}/bin)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${SC_MACHINE_ROOT}/bin)
+
+set(SC_EXTENSION_DIRECTORY "${SC_MACHINE_ROOT}/bin/extensions")
 
 # for multi-config builds (e.g. msvc)
 foreach( OUTPUTCONFIG ${CMAKE_CONFIGURATION_TYPES} )

@@ -48,9 +48,14 @@
 #endif
 
 #if defined (SC_PLATFORM_WIN)
-	#define _SC_EXT_EXTERN __declspec(dllexport) 
+#   if defined(__cplusplus)
+#       define _SC_EXT_EXTERN extern "C" __declspec(dllexport)
+#   else
+#       define _SC_EXT_EXTERN __declspec(dllexport)
+#   endif
 #else
 	#define _SC_EXT_EXTERN
 #endif
+
 
 #endif // _sc_defines_h_

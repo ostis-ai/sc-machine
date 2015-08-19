@@ -22,21 +22,8 @@ sc_memory_context * s_default_ctx = 0;
 // ------------------- Module ------------------------------
 _SC_EXT_EXTERN sc_result initialize()
 {
-    s_default_ctx = sc_memory_context_new(sc_access_lvl_make_min);
-
-    if (sc_version_compare(&SC_VERSION, &required_version) < 0)
-    {
-        char *req_str = sc_version_string_new(&required_version);
-        char *v_str = sc_version_string_new(&SC_VERSION);
-
-        g_error("Required version %s, but you use %s", req_str, v_str);
-
-        sc_version_string_free(req_str);
-        sc_version_string_free(v_str);
-
-        return SC_RESULT_ERROR;
-    }
-
+    s_default_ctx = sc_memory_context_new(sc_access_lvl_make_min); 
+    
     if (!initialize_keynodes())
     {
         g_warning("Some errors, while initialize ui keynodes");

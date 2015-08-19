@@ -20,7 +20,7 @@ struct _sc_version
 typedef struct _sc_version sc_version;
 
 
-_SC_EXT_EXTERN const sc_version SC_VERSION;
+_SC_EXTERN const sc_version SC_VERSION;
 
 /*! Function compares to versions @p a and @p b.
  * @returns If version @p a less then version @p b, then returns -1.
