@@ -5,7 +5,6 @@
  */
 
 #include "sctpClient.hpp"
-#include "sctpISocket.hpp"
 #include "sctpTypes.hpp"
 
 namespace sctp

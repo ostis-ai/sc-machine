@@ -3,18 +3,20 @@
  * Distributed under the MIT License
  * (See accompanying file COPYING.MIT or copy at http://opensource.org/licenses/MIT)
  */
+
 extern "C"
 {
 #include <glib.h>
 }
 
 #include "../sctpClient.hpp"
-#include "../sockets/winSocket.hpp"
 
 #if defined (SC_PLATFORM_WIN)
-sctp::Client sctpClient(new sctp::winSocket());
+    #include "../sockets/winSocket.hpp"
+    sctp::Client sctpClient(new sctp::winSocket());
 #else
-# error "Request implementation"
+    #include "../sockets/glibSocket.hpp"
+    sctp::Client sctpClient(new sctp::glibSocket());
 #endif
 
 void test_connection()

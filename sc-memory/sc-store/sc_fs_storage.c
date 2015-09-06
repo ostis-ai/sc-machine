@@ -16,7 +16,7 @@
 #include <memory.h>
 #include <glib.h>
 #include <gmodule.h>
-#include <gstdio.h>
+#include <glib/gstdio.h>
 
 gchar *repo_path = 0;
 gchar segments_path[MAX_PATH_LENGTH]; // Path to file, where stored segments in correct state
@@ -433,7 +433,7 @@ sc_bool sc_fs_storage_write_to_path(sc_segment **segments)
 
             if (g_rename(tmp_filename, segments_path) != 0)
             {
-                g_error("Can't rename %s -> %s: %s", tmp_filename, segments_path, strerror(errno));
+                g_error("Can't rename %s -> %s", tmp_filename, segments_path);
                 result = SC_FALSE;
             }
         }

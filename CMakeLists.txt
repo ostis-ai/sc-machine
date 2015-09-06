@@ -1,6 +1,6 @@
 project (sc-machine)
 site_name (www.ostis.net)
-cmake_minimum_required (VERSION 3.0)
+cmake_minimum_required (VERSION 2.8)
 
 set(SC_MACHINE_ROOT ${CMAKE_SOURCE_DIR})
 set(SC_MACHINE_THIRDPARTY_PATH "${SC_MACHINE_ROOT}/thirdparty")

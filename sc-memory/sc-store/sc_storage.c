@@ -108,6 +108,8 @@ sc_segment* _sc_segment_cache_get(const sc_memory_context *ctx)
 {
     _sc_segment_cache_lock(ctx);
 
+    g_mutex_lock(&s_mutex_save);
+
     sc_segment *seg = 0;
     if (g_atomic_int_get(&segments_cache_count) > 0)
     {
@@ -123,20 +125,18 @@ sc_segment* _sc_segment_cache_get(const sc_memory_context *ctx)
     // try to update cache
     _sc_segment_cache_update(ctx);
 
-    g_mutex_lock(&s_mutex_save);
-
     // if element still not added, then create new segment and append element into it
     sc_int32 seg_num = g_atomic_int_add(&segments_num, 1);
     seg = sc_segment_new(seg_num);
     segments[seg_num] = seg;
     _sc_segment_cache_append(ctx, seg);
 
-    g_mutex_unlock(&s_mutex_save);
-
     result:
     {
         _sc_segment_cache_unlock(ctx);
+        g_mutex_unlock(&s_mutex_save);
     }
+
     return seg;
 }
 
@@ -270,11 +270,15 @@ sc_result sc_storage_element_free(const sc_memory_context *ctx, sc_addr addr)
     // first of all we need to collect and lock all elements
     sc_element *el;
     if (sc_storage_element_lock(ctx, addr, &el) != SC_RESULT_OK)
+    {
+        g_mutex_unlock(&s_mutex_free);
         return SC_RESULT_ERROR;
+    }
 
     g_assert(el != 0);
     if (el->flags.type == 0 || el->flags.type & sc_flag_request_deletion)
     {
+        g_mutex_unlock(&s_mutex_free);
         sc_storage_element_unlock(ctx, addr);
         return SC_RESULT_ERROR;
     }
@@ -465,7 +469,8 @@ sc_result sc_storage_element_free(const sc_memory_context *ctx, sc_addr addr)
             }
 
             STORAGE_CHECK_CALL(sc_fs_storage_remove_content_addr(addr, &sum));
-        } else if (el->flags.type & sc_type_arc_mask)
+        }
+        else if (el->flags.type & sc_type_arc_mask)
         {
             // output arcs
             sc_addr prev_arc = el->arc.prev_out_arc;
@@ -543,8 +548,11 @@ sc_result sc_storage_element_free(const sc_memory_context *ctx, sc_addr addr)
         {
             sc_storage_erase_element_from_segment(addr);
             _sc_segment_cache_append(ctx, g_atomic_pointer_get(&segments[addr.seg]));
-        } else
+        }
+        else
+        {
             el->flags.type |= sc_flag_request_deletion;
+        }
 
         sc_event_emit(addr, el_access, SC_EVENT_REMOVE_ELEMENT, addr);
 
@@ -652,7 +660,7 @@ sc_addr sc_storage_arc_new_ext(const sc_memory_context *ctx, sc_type type, sc_ad
         sc_element *f_out_arc = 0, *f_in_arc = 0;
         sc_element *tmp_el = 0;
 
-        // try to lock begin end end elements
+        // try to lock begin and end elements
         r = sc_storage_element_lock_try(ctx, beg, s_max_storage_lock_attempts, &beg_el);
         if (beg_el == null_ptr)
             goto unlock;

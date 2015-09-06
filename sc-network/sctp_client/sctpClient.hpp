@@ -11,6 +11,7 @@
 #include "wrap/sc_utils.hpp"
 
 #include "sctpTypes.hpp"
+#include "sctpISocket.hpp"
 
 
 
@@ -76,8 +77,6 @@ struct ResultHeader
 
 
 #pragma pack(pop)
-
-class ISocket;
 
 class Iterator
 {
@@ -342,7 +341,7 @@ public:
 			}
 		}
 
-		return IteratorPtr(nullptr);
+        return IteratorPtr();
 	}
 
 	/// TODO: possible merge 3 and 5 iterator in one template function
@@ -380,7 +379,7 @@ public:
 			}
 		}
 
-		return IteratorPtr(nullptr);
+        return IteratorPtr();
 	}
 
 

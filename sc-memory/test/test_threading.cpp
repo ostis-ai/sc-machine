@@ -116,7 +116,7 @@ void test_creation(GThreadFunc f, sc_int32 count, sc_int thread_count)
     tGThreadVector threads;
     threads.reserve(thread_count);
 
-    s_default_ctx = sc_memory_initialize(&params);
+
     print_storage_statistics();
 
     g_test_timer_start();
@@ -134,7 +134,6 @@ void test_creation(GThreadFunc f, sc_int32 count, sc_int thread_count)
     printf("Time: %lf\n", g_test_timer_elapsed());
 
     print_storage_statistics();
-    sc_memory_shutdown(SC_FALSE);
 }
 
 const sc_int32 g_thread_count = 8;
@@ -142,17 +141,23 @@ const sc_uint32 g_task_count = 1 << 23;
 
 void test_node_creation()
 {
+    s_default_ctx = sc_memory_initialize(&params);
     test_creation(create_node_thread, g_task_count, g_thread_count);
+    sc_memory_shutdown(SC_FALSE);
 }
 
 void test_arc_creation()
 {
+    s_default_ctx = sc_memory_initialize(&params);
     test_creation(create_arc_thread, g_task_count, g_thread_count);
+    sc_memory_shutdown(SC_FALSE);
 }
 
 void test_link_creation()
 {
+    s_default_ctx = sc_memory_initialize(&params);
     test_creation(create_link_thread, g_task_count, g_thread_count);
+    sc_memory_shutdown(SC_FALSE);
 }
 
 void test_combined_creation()
@@ -199,6 +204,36 @@ void test_combined_creation()
     sc_memory_shutdown(SC_FALSE);
 }
 
+
+gpointer start_save_threaded(gpointer data)
+{
+    g_test_timer_start();
+    sc_memory_save(s_default_ctx);
+    printf("Save time: %lf\n", g_test_timer_elapsed());
+}
+
+void test_save()
+{
+    // create nodes
+    s_default_ctx = sc_memory_initialize(&params);
+
+    sc_memory_context *ctx = sc_memory_context_new(sc_access_lvl_make(8, 8));
+    int const count = 1000000;
+    for (int i = 0; i < count; ++i)
+    {
+        g_assert(SC_ADDR_IS_NOT_EMPTY(sc_memory_node_new(ctx, 0)));
+    }
+
+    sc_memory_context_free(ctx);
+
+    GThread * thread = g_thread_try_new(0, start_save_threaded, 0, 0);
+    test_creation(create_arc_thread, g_task_count, g_thread_count);
+
+    g_thread_join(thread);
+
+    sc_memory_shutdown(SC_FALSE);
+}
+
 // ---------------------------
 int main(int argc, char *argv[])
 {
@@ -212,6 +247,7 @@ int main(int argc, char *argv[])
     printf("sc_element: %zd, sc_addr: %zd, sc_arc: %zd, sc_content: %zd\n", sizeof(sc_element), sizeof(sc_addr), sizeof(sc_arc_info), sizeof(sc_content));
 
     g_test_init(&argc, &argv, NULL);
+    g_test_add_func("/threading/create_save", test_save);
     g_test_add_func("/threading/create_nodes", test_node_creation);
     g_test_add_func("/threading/create_arcs", test_arc_creation);
     g_test_add_func("/threading/create_links", test_link_creation);

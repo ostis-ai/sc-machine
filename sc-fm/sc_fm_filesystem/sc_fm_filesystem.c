@@ -10,7 +10,7 @@
 #include "../sc_memory.h"
 
 #include <glib.h>
-#include <gstdio.h>
+#include <glib/gstdio.h>
 
 gchar contents_path[MAX_PATH_LENGTH + 1];
 const gchar *content_dir = "contents";
