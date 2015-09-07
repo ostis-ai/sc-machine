@@ -188,7 +188,9 @@ sc_result ui_command_generate_instance(const sc_event *event, sc_addr arg)
     {
         created = false;
         tTemplArcsList::iterator it, it_end = templ_arcs.end();
-        for (it = templ_arcs.begin(); it != it_end; ++it)
+		it = templ_arcs.begin();
+
+        while (it != it_end)
         {
             arc_addr = (*it).self_addr;
             arc_beg_addr = (*it).begin_addr;
@@ -200,14 +202,16 @@ sc_result ui_command_generate_instance(const sc_event *event, sc_addr arg)
             it_arc_end = templ_to_inst.find(arc_end_addr);
 
             // check if arc can be created
-            if (it_arc_beg != templ_to_inst.end() && it_arc_end != templ_to_inst.end())
-            {
-                created = true;
-                new_arc_addr = sc_memory_arc_new(s_default_ctx, (arc_type & ~sc_type_var) | sc_type_const, (*it_arc_beg).second, (*it_arc_end).second);
-                templ_to_inst[arc_addr] = new_arc_addr;
+			if (it_arc_beg != templ_to_inst.end() && it_arc_end != templ_to_inst.end())
+			{
+				created = true;
+				new_arc_addr = sc_memory_arc_new(s_default_ctx, (arc_type & ~sc_type_var) | sc_type_const, (*it_arc_beg).second, (*it_arc_end).second);
+				templ_to_inst[arc_addr] = new_arc_addr;
 
-                it = templ_arcs.erase(it);
-            }
+				it = templ_arcs.erase(it);
+			}
+			else
+				++it;
         }
     }
 
