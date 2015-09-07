@@ -14,7 +14,7 @@ sc_memory_context * s_garbage_ctx = 0;
 
 sc_event *event_garbage_deletion;
 
-sc_result initialize()
+_SC_EXT_EXTERN sc_result initialize()
 {
     s_default_ctx = sc_memory_context_new(sc_access_lvl_make_min);
     s_garbage_ctx = sc_memory_context_new(sc_access_lvl_make_max);
@@ -40,7 +40,7 @@ sc_uint32 load_priority()
     return 0;
 }
 
-sc_result shutdown()
+_SC_EXT_EXTERN sc_result shutdown()
 {
     sc_result res = SC_RESULT_OK;
 

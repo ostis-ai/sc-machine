@@ -12,8 +12,8 @@
 extern sc_memory_context * s_default_ctx;
 extern sc_memory_context * s_garbage_ctx;
 
-sc_result initialize();
+_SC_EXT_EXTERN sc_result initialize();
 sc_uint32 load_priority();
-sc_result shutdown();
+_SC_EXT_EXTERN sc_result shutdown();
 
 #endif

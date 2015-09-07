@@ -210,6 +210,8 @@ gpointer start_save_threaded(gpointer data)
     g_test_timer_start();
     sc_memory_save(s_default_ctx);
     printf("Save time: %lf\n", g_test_timer_elapsed());
+
+	return 0;
 }
 
 void test_save()
