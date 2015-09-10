@@ -224,7 +224,7 @@ eSctpErrorCode sctpCommand::processElementErase(quint32 cmdFlags, quint32 cmdId,
 
     eSctpResultCode resCode = (sc_memory_element_free(mContext, addr) == SC_RESULT_OK) ? SCTP_RESULT_OK : SCTP_RESULT_FAIL;
     // send result
-    writeResultHeader(SCTP_CMD_CHECK_ELEMENT, cmdId, resCode, 0, outDevice);
+    writeResultHeader(SCTP_CMD_ERASE_ELEMENT, cmdId, resCode, 0, outDevice);
 
     return SCTP_NO_ERROR;
 }
@@ -1247,7 +1247,7 @@ eSctpErrorCode sctpCommand::processSetSysIdtf(quint32 cmdFlags, quint32 cmdId, Q
         return SCTP_ERROR_CMD_READ_PARAMS;
     }
 
-    writeResultHeader(SCTP_CMD_FIND_ELEMENT_BY_SYSITDF, cmdId, sc_helper_set_system_identifier(mContext, addr, data, data_len) != SC_RESULT_OK ? SCTP_RESULT_FAIL : SCTP_RESULT_OK, 0, outDevice);
+    writeResultHeader(SCTP_CMD_SET_SYSIDTF, cmdId, sc_helper_set_system_identifier(mContext, addr, data, data_len) != SC_RESULT_OK ? SCTP_RESULT_FAIL : SCTP_RESULT_OK, 0, outDevice);
 
     delete[] data;
 
