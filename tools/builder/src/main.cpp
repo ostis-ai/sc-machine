@@ -13,15 +13,16 @@ int main(int argc, char *argv[])
 {
 
     boost::program_options::options_description options_description("Builder usage");
-    options_description.add_options()
-            ("help", "Display this message")
-            ("version", "Displays version number")
-            ("input-path,i", boost::program_options::value<std::string>(), "Path to directory with sources")
-            ("output-path,o", boost::program_options::value<std::string>(), "Path to output directory (repository)")
-            ("extension-path,e", boost::program_options::value<std::string>(), "Path to extensions directory")
-            ("clear-output,c", "Clear output directory (repository) before build")
-            ("settings,s", boost::program_options::value<std::string>(), "Path to configuration file for sc-memory")
-            ("auto-formats,f", "Enable automatic formats info generation");
+	options_description.add_options()
+		("help", "Display this message")
+		("version", "Displays version number")
+		("input-path,i", boost::program_options::value<std::string>(), "Path to directory with sources")
+		("output-path,o", boost::program_options::value<std::string>(), "Path to output directory (repository)")
+		("extension-path,e", boost::program_options::value<std::string>(), "Path to extensions directory")
+		("clear-output,c", "Clear output directory (repository) before build")
+		("settings,s", boost::program_options::value<std::string>(), "Path to configuration file for sc-memory")
+		("auto-formats,f", "Enable automatic formats info generation")
+		("show-filenames,v", "Enable processing filnames printing");
 
     boost::program_options::variables_map vm;
     boost::program_options::store(boost::program_options::command_line_parser(argc, argv).options(options_description).run(), vm);
@@ -54,6 +55,9 @@ int main(int argc, char *argv[])
 
     if (vm.count("settings"))
         params.configFile = vm["settings"].as<std::string>();
+
+	if (vm.count("show-filenames"))
+		params.showFileNames = true;
 
     Builder builder;
     builder.initialize();

@@ -27,11 +27,13 @@ struct BuilderParams
     //! Path to memory extensions
     String extensionsPath;
     //! Flag to clear output
-    bool clearOutput;
+    bool clearOutput:1;
     //! Flag to generate format information based on file extensions
-    bool autoFormatInfo;
+    bool autoFormatInfo:1;
     //! Path to configuration file
     String configFile;
+	//! Flag to show processing file names
+	bool showFileNames : 1;
 };
 
 class Builder

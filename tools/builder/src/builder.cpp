@@ -59,20 +59,28 @@ bool Builder::run(const BuilderParams &params)
     tFileSet::iterator it, itEnd = mFileSet.end();
     for (it = mFileSet.begin(); it != itEnd; ++it)
     {
-        uint32 progress = (uint32)(((float)++done / (float)mFileSet.size()) * 100);
-        if (last_progress != progress)
-        {
-            if (progress % 10 == 0)
-            {
-                std::cout << "[" << progress << "%]";
-                std::cout.flush();
-            } else
-            {
-                std::cout << ".";
-                std::cout.flush();
-            }
-            last_progress = progress;
-        }
+		uint32 progress = (uint32)(((float)++done / (float)mFileSet.size()) * 100);
+		if (mParams.showFileNames)
+		{
+			std::cout << "[ " << progress << "% ] " << *it << std::endl;
+		}
+		else
+		{
+			if (last_progress != progress)
+			{
+				if (progress % 10 == 0)
+				{
+					std::cout << "[" << progress << "%]";
+					std::cout.flush();
+				}
+				else
+				{
+					std::cout << ".";
+					std::cout.flush();
+				}
+				last_progress = progress;
+			}
+		}
 
         try
         {

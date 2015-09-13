@@ -100,16 +100,16 @@ sc_stream* sc_stream_file_new(const sc_char *file_name, sc_uint8 flags)
     if (flags & SC_STREAM_FLAG_READ)
     {
         g_assert(!(flags & SC_STREAM_FLAG_APPEND)); // couldn't support append in read mode
-        fd = fopen(file_name, "r");
+        fd = fopen(file_name, "rb");
     }
     else
     {
         if (flags & SC_STREAM_FLAG_WRITE)
         {
             if (flags & SC_STREAM_FLAG_APPEND)
-                fd = fopen(file_name, "w+");
+                fd = fopen(file_name, "wb+");
             else
-                fd = fopen(file_name, "w");
+                fd = fopen(file_name, "wb");
         }
     }
 

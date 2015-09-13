@@ -556,9 +556,7 @@ sc_result sc_storage_element_free(const sc_memory_context *ctx, sc_addr addr)
 
         sc_event_emit(addr, el_access, SC_EVENT_REMOVE_ELEMENT, addr);
 
-        g_message("deleted: %d, %d", addr.seg, addr.offset);
-
-        // remove registered events before deletion
+		// remove registered events before deletion
         sc_event_notify_element_deleted(addr);
     }
 

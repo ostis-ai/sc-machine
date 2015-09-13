@@ -18,6 +18,8 @@
 #include <gmodule.h>
 #include <glib/gstdio.h>
 
+#define BuffSize 256 * 1024
+
 gchar *repo_path = 0;
 gchar segments_path[MAX_PATH_LENGTH]; // Path to file, where stored segments in correct state
 sc_fm_engine *fm_engine = 0;
@@ -461,7 +463,7 @@ sc_bool sc_fs_storage_write_to_path(sc_segment **segments)
 sc_result sc_fs_storage_write_content(sc_addr addr, const sc_check_sum *check_sum, const sc_stream *stream)
 {
     // write content into file
-    sc_char buffer[1024];
+    sc_char buffer[BuffSize];
     sc_uint32 data_read, data_write;
     sc_stream *out_stream = 0;
 
@@ -473,7 +475,7 @@ sc_result sc_fs_storage_write_content(sc_addr addr, const sc_check_sum *check_su
 
         while (sc_stream_eof(stream) == SC_FALSE)
         {
-            if (sc_stream_read_data(stream, buffer, 1024, &data_read) == SC_RESULT_ERROR)
+            if (sc_stream_read_data(stream, buffer, BuffSize, &data_read) == SC_RESULT_ERROR)
             {
                 sc_stream_free(out_stream);
                 return SC_RESULT_ERROR;
