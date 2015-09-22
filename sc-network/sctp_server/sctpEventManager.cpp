@@ -10,7 +10,7 @@
 sctpEventManager* sctpEventManager::msInstance = 0;
 
 sctpEventManager::sctpEventManager()
-    : mLastEventId(0)
+    : mLastEventId(1)
 {
     Q_ASSERT(msInstance == 0);
     msInstance = this;
@@ -93,7 +93,7 @@ bool sctpEventManager::_getAvailableEventId(tEventId &eventId)
     tEventId start = mLastEventId;
     eventId = start + 1;
 
-    while (eventId != start && (mEvents.find(eventId) != mEvents.end()))
+    while (eventId != start && (mEvents.find(eventId) != mEvents.end()) && eventId != 0)
         eventId = eventId + 1;
 
     if (eventId != start)
