@@ -112,9 +112,6 @@ void search_arc_components(sc_addr elem, sc_addr answer, sc_bool sys_off)
 
     appendIntoAnswer(answer, begin);
     appendIntoAnswer(answer, end);
-
-    search_translation(begin, answer, sys_off);
-    search_translation(end, answer, sys_off);
 }
 
 void search_nonbinary_relation(sc_addr elem, sc_addr answer, sc_bool sys_off)
@@ -222,7 +219,7 @@ void search_typical_sc_neighborhood(sc_addr elem, sc_addr answer, sc_bool sys_of
                                          sc_type_arc_common | sc_type_const,
                                          sc_iterator3_value(it0, 0),
                                          sc_type_arc_pos_const_perm,
-                                         keynode_nrel_inclusion);
+                                         keynode_nrel_strict_inclusion);
         if (sc_iterator5_next(it5) == SC_TRUE)
         {
             if (sys_off == SC_TRUE && (IS_SYSTEM_ELEMENT(sc_iterator5_value(it5, 1)) || IS_SYSTEM_ELEMENT(sc_iterator5_value(it5, 3))))
@@ -314,6 +311,7 @@ sc_result agent_search_full_semantic_neighborhood(const sc_event *event, sc_addr
                 if (SC_ADDR_IS_EQUAL(keynode_rrel_key_sc_element, sc_iterator3_value(it3, 0)))
                 {
                     search_typical_sc_neighborhood(sc_iterator3_value(it2, 0), answer, sys_off);
+                    search_translation(sc_iterator3_value(it2, 0), answer, sys_off);
                 }
 
                 // check if it's a quasy binary relation
@@ -416,9 +414,6 @@ sc_result agent_search_full_semantic_neighborhood(const sc_event *event, sc_addr
             }
             sc_iterator5_free(it5);
 
-            // search translation for element
-            search_translation(sc_iterator3_value(it2, 0), answer, sys_off);
-
             // search non-binary relation link
             search_nonbinary_relation(sc_iterator3_value(it2, 0), answer, sys_off);
         }
@@ -480,14 +475,8 @@ sc_result agent_search_full_semantic_neighborhood(const sc_event *event, sc_addr
                     }
                     sc_iterator5_free(it_order2);
                 }
-
-                // search translation for element
-                search_translation(sc_iterator3_value(it3, 0), answer, sys_off);
             }
             sc_iterator3_free(it3);
-
-            // search translation for element
-            search_translation(sc_iterator3_value(it2, 2), answer, sys_off);
 
             // check if element is an sc-link
             if (SC_RESULT_OK == sc_memory_get_element_type(s_default_ctx, sc_iterator3_value(it2, 2), &el_type) &&
@@ -576,6 +565,8 @@ sc_result agent_search_links_of_relation_connected_with_element(const sc_event *
     if (IS_SYSTEM_ELEMENT(param_elem) || IS_SYSTEM_ELEMENT(param_rel))
         sys_off = SC_FALSE;
 
+    search_translation(param_elem, answer, sys_off);
+
     if (SC_TRUE == sc_helper_check_arc(s_default_ctx, keynode_quasybinary_relation, param_rel, sc_type_arc_pos_const_perm))
     {
         // Search subclasses in quasybinary relation
@@ -599,13 +590,15 @@ sc_result agent_search_links_of_relation_connected_with_element(const sc_event *
             appendIntoAnswer(answer, sc_iterator5_value(it5, 1));
             appendIntoAnswer(answer, sc_iterator5_value(it5, 3));
 
+            search_translation(sc_iterator5_value(it5, 0), answer, sys_off);
+
             search_arc_components(sc_iterator5_value(it5, 0), answer, sys_off);
 
             // Iterate subclasses in quasybinary relation
             it1 = sc_iterator3_f_a_a_new(s_default_ctx,
                                          sc_iterator5_value(it5, 0),
                                          sc_type_arc_pos_const_perm,
-                                         sc_type_const | sc_type_node);
+                                         0);
             while (sc_iterator3_next(it1) == SC_TRUE)
             {
                 if (sys_off == SC_TRUE && (IS_SYSTEM_ELEMENT(sc_iterator3_value(it1, 1))
@@ -614,6 +607,8 @@ sc_result agent_search_links_of_relation_connected_with_element(const sc_event *
 
                 appendIntoAnswer(answer, sc_iterator3_value(it1, 1));
                 appendIntoAnswer(answer, sc_iterator3_value(it1, 2));
+
+                search_translation(sc_iterator3_value(it1, 2), answer, sys_off);
 
                 search_arc_components(sc_iterator3_value(it1, 2), answer, sys_off);
 
@@ -691,10 +686,13 @@ sc_result agent_search_links_of_relation_connected_with_element(const sc_event *
                                            || IS_SYSTEM_ELEMENT(sc_iterator5_value(it5, 3))))
                     continue;
 
+                found = SC_TRUE;
+
                 appendIntoAnswer(answer, sc_iterator5_value(it5, 1));
                 appendIntoAnswer(answer, sc_iterator5_value(it5, 2));
                 appendIntoAnswer(answer, sc_iterator5_value(it5, 3));
 
+                search_translation(sc_iterator5_value(it5, 2), answer, sys_off);
                 search_arc_components(sc_iterator5_value(it5, 2), answer, sys_off);
 
                 appendIntoAnswer(answer, sc_iterator3_value(it1, 0));
@@ -728,6 +726,7 @@ sc_result agent_search_links_of_relation_connected_with_element(const sc_event *
             appendIntoAnswer(answer, sc_iterator5_value(it5, 2));
             appendIntoAnswer(answer, sc_iterator5_value(it5, 3));
 
+            search_translation(sc_iterator5_value(it5, 2), answer, sys_off);
             search_arc_components(sc_iterator5_value(it5, 2), answer, sys_off);
         }
         sc_iterator5_free(it5);
@@ -746,10 +745,13 @@ sc_result agent_search_links_of_relation_connected_with_element(const sc_event *
                                        || IS_SYSTEM_ELEMENT(sc_iterator5_value(it5, 3))))
                 continue;
 
+            found = SC_TRUE;
+
             appendIntoAnswer(answer, sc_iterator5_value(it5, 0));
             appendIntoAnswer(answer, sc_iterator5_value(it5, 1));
             appendIntoAnswer(answer, sc_iterator5_value(it5, 3));
 
+            search_translation(sc_iterator5_value(it5, 0), answer, sys_off);
             search_arc_components(sc_iterator5_value(it5, 0), answer, sys_off);
         }
         sc_iterator5_free(it5);
@@ -775,10 +777,12 @@ sc_result agent_search_links_of_relation_connected_with_element(const sc_event *
                 if (sys_off == SC_TRUE && (IS_SYSTEM_ELEMENT(sc_iterator3_value(it2, 1))))
                     continue;
 
+                found = SC_TRUE;
+
                 appendIntoAnswer(answer, sc_iterator3_value(it2, 1));
                 appendIntoAnswer(answer, sc_iterator3_value(it1, 0));
 
-                // Iterate elements of fonnd link of given relation
+                // Iterate elements of found link of given relation
                 it3 = sc_iterator3_f_a_a_new(s_default_ctx,
                                              sc_iterator3_value(it1, 0),
                                              sc_type_arc_pos_const_perm,
@@ -792,6 +796,7 @@ sc_result agent_search_links_of_relation_connected_with_element(const sc_event *
                     appendIntoAnswer(answer, sc_iterator3_value(it3, 1));
                     appendIntoAnswer(answer, sc_iterator3_value(it3, 2));
 
+                    search_translation(sc_iterator3_value(it3, 2), answer, sys_off);
                     search_arc_components(sc_iterator3_value(it3, 2), answer, sys_off);
 
                     // Iterate role relations

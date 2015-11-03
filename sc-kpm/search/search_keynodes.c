@@ -1,3 +1,4 @@
+
 /*
  * This source file is part of an OSTIS project. For the latest info, see http://ostis.net
  * Distributed under the MIT License
@@ -47,6 +48,8 @@ sc_addr keynode_nrel_main_idtf;
 sc_addr keynode_rrel_key_sc_element;
 sc_addr keynode_nrel_key_sc_element_base_order;
 sc_addr keynode_nrel_inclusion;
+sc_addr keynode_nrel_strict_inclusion;
+
 sc_addr keynode_system_element;
 sc_addr keynode_languages;
 
@@ -79,16 +82,17 @@ const char keynode_taxonomy_relation_str[] = "taxonomy_relation";
 const char keynode_identification_relation_str[] = "identification_relation";
 const char keynode_order_relation_str[] = "order_relation";
 const char keynode_nonbinary_relation_str[] = "nonbinary_relation";
-const char keynode_typical_sc_neighborhood_str[] = "typical_sc_neighborhood";
+const char keynode_typical_sc_neighborhood_str[] = "typical_semantic_neighbourhood";
 
 const char keynode_nrel_identification_str[] = "nrel_identification";
 const char keynode_nrel_translation_str[] = "nrel_sc_text_translation";
 const char keynode_nrel_main_idtf_str[] = "nrel_main_idtf";
 const char keynode_nrel_inclusion_str[] = "nrel_inclusion";
+const char keynode_nrel_strict_inclusion_str[] = "nrel_strict_inclusion";
 const char keynode_rrel_key_sc_element_str[] = "rrel_key_sc_element";
 const char keynode_nrel_key_sc_element_base_order_str[] = "nrel_key_sc_element_base_order";
 const char keynode_system_element_str[] = "system_element";
-const char keynode_sc_neighborhood_str[] = "sc_neighborhood";
+const char keynode_sc_neighborhood_str[] = "semantic_neighbourhood";
 const char keynode_languages_str[] = "languages";
 
 sc_result search_keynodes_initialize()
@@ -129,6 +133,7 @@ sc_result search_keynodes_initialize()
     RESOLVE_KEYNODE(s_default_ctx, keynode_rrel_key_sc_element);
     RESOLVE_KEYNODE(s_default_ctx, keynode_nrel_key_sc_element_base_order);
     RESOLVE_KEYNODE(s_default_ctx, keynode_nrel_inclusion);
+    RESOLVE_KEYNODE(s_default_ctx, keynode_nrel_strict_inclusion);
     RESOLVE_KEYNODE(s_default_ctx, keynode_system_element);
     RESOLVE_KEYNODE(s_default_ctx, keynode_languages);
 

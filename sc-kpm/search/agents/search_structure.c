@@ -138,6 +138,7 @@ sc_result agent_search_decomposition(const sc_event *event, sc_addr arg)
     return SC_RESULT_OK;
 }
 
+
 void search_subclasses_rec(sc_addr elem, sc_addr answer, sc_bool sys_off)
 {
     sc_iterator3 *it2, *it6;
