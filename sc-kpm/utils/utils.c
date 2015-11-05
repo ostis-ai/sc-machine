@@ -35,7 +35,7 @@ _SC_EXT_EXTERN sc_result initialize()
     return SC_RESULT_OK;
 }
 
-sc_uint32 load_priority()
+_SC_EXT_EXTERN sc_uint32 load_priority()
 {
     return 0;
 }
