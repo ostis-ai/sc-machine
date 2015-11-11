@@ -16,14 +16,14 @@ sc_event *event_ui_start_answer_translation = 0;
 sc_event *event_ui_command_generate_instance = 0;
 sc_event *event_ui_remove_displayed_answer = 0;
 
-struct sArcInfo
+struct sTemplateArcInfo
 {
     sc_addr self_addr;
     sc_addr begin_addr;
     sc_addr end_addr;
     sc_type self_type;
 
-    sArcInfo(sc_addr _self, sc_addr _beg, sc_addr _end, sc_type _type)
+	sTemplateArcInfo(sc_addr _self, sc_addr _beg, sc_addr _end, sc_type _type)
         : self_addr(_self)
         , begin_addr(_beg)
         , end_addr(_end)
@@ -31,8 +31,10 @@ struct sArcInfo
     {
 
     }
-
 };
+
+typedef std::list < sTemplateArcInfo > tTemplArcsList;
+typedef std::list < sc_addr > tElementsList;
 
 // -------------------- Event handlers --------------
 sc_result ui_command_generate_instance(const sc_event *event, sc_addr arg)
@@ -127,13 +129,14 @@ sc_result ui_command_generate_instance(const sc_event *event, sc_addr arg)
     sc_type templ_item_type;
     tScAddrToScAddrMap templ_to_inst;
 
-    typedef std::list < sArcInfo > tTemplArcsList;
+	tElementsList created_nodes;
     tTemplArcsList templ_arcs;
-    it3 = sc_iterator3_f_a_a_new(s_default_ctx,
-                                 new_command_templ_addr,
-                                 sc_type_arc_pos_const_perm,
-                                 0);
-    while (sc_iterator3_next(it3) == SC_TRUE)
+	bool isValid = true;
+	it3 = sc_iterator3_f_a_a_new(s_default_ctx,
+								 new_command_templ_addr,
+								 sc_type_arc_pos_const_perm,
+								 0);
+    while (sc_iterator3_next(it3) == SC_TRUE && isValid)
     {
         templ_item_addr = sc_iterator3_value(it3, 2);
         sc_memory_get_element_type(s_default_ctx, templ_item_addr, &templ_item_type);
@@ -147,20 +150,24 @@ sc_result ui_command_generate_instance(const sc_event *event, sc_addr arg)
                 // todo checks
                 sc_memory_get_arc_begin(s_default_ctx, templ_item_addr, &beg_addr);
                 sc_memory_get_arc_end(s_default_ctx, templ_item_addr, &end_addr);
-                templ_arcs.push_back(sArcInfo(templ_item_addr, beg_addr, end_addr, templ_item_type));
+                templ_arcs.push_back(sTemplateArcInfo(templ_item_addr, beg_addr, end_addr, templ_item_type));
             }
             else
             {
                 if (templ_item_type & sc_type_node)
                 {
-                    templ_to_inst[templ_item_addr] = sc_memory_node_new(s_default_ctx, (templ_item_type & ~sc_type_var) | sc_type_const);
-                }else
+					sc_addr const new_addr = sc_memory_node_new(s_default_ctx, (templ_item_type & ~sc_type_var) | sc_type_const);
+					templ_to_inst[templ_item_addr] = new_addr;
+					created_nodes.push_back(new_addr);
+                }
+				else
                 {
                     if (templ_item_type & sc_type_link)
-                        assert("Not supported yet");
+                        assert("sc-links not supported yet");
                 }
             }
-        }else
+        }
+		else
         {
             // check arguments
             bool is_argument = false;
@@ -169,7 +176,14 @@ sc_result ui_command_generate_instance(const sc_event *event, sc_addr arg)
                 if (SC_ADDR_IS_EQUAL(templ_item_addr, ui_keynode_arg[i]))
                 {
                     is_argument = true;
-                    templ_to_inst[templ_item_addr] = arguments[i];
+					if (i >= arguments.size())
+					{
+						isValid = false;
+					}
+					else
+					{
+						templ_to_inst[templ_item_addr] = arguments[i];
+					}
                     break;
                 }
             }
@@ -178,6 +192,22 @@ sc_result ui_command_generate_instance(const sc_event *event, sc_addr arg)
                 templ_to_inst[templ_item_addr] = templ_item_addr;
         }
     }
+
+	sc_iterator3_free(it3);
+
+	if (!isValid)
+	{
+		tElementsList::iterator it_res, it_res_end = created_nodes.end();
+		for (it_res = created_nodes.begin(); it_res != it_res_end; ++it_res)
+			sc_memory_element_free(s_default_ctx, *it_res);
+
+		// append to set of failed commands
+		sc_memory_element_free(s_default_ctx, arg);
+		sc_addr arc_addr = sc_memory_arc_new(s_default_ctx, sc_type_arc_pos_const_perm, keynode_command_failed, command_addr);
+		SYSTEM_ELEMENT(arc_addr);
+
+		return SC_RESULT_ERROR_INVALID_PARAMS;
+	}
 
     // now process arcs
     bool created = true;

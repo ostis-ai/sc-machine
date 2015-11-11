@@ -26,6 +26,7 @@ extern sc_addr keynode_nrel_format;
 
 extern sc_addr keynode_command_generate_instance;
 extern sc_addr keynode_command_initiated;
+extern sc_addr keynode_command_failed;
 extern sc_addr keynode_command_finished;
 extern sc_addr keynode_rrel_command_arguments;
 extern sc_addr keynode_rrel_command;

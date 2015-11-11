@@ -32,6 +32,7 @@ const char keynode_nrel_format_str[] = "nrel_format";
 const char keynode_command_generate_instance_str[] = "ui_command_generate_instance";
 const char keynode_command_initiated_str[] = "ui_command_initiated";
 const char keynode_command_finished_str[] = "ui_command_finished";
+const char keynode_command_failed_str[] = "ui_command_failed";
 const char keynode_rrel_command_arguments_str[] = "ui_rrel_command_arguments";
 const char keynode_rrel_command_str[] = "ui_rrel_command";
 const char keynode_nrel_command_template_str[] = "ui_nrel_command_template";
@@ -60,6 +61,7 @@ sc_addr keynode_nrel_format;
 sc_addr keynode_command_generate_instance;
 sc_addr keynode_command_initiated;
 sc_addr keynode_command_finished;
+sc_addr keynode_command_failed;
 sc_addr keynode_rrel_command_arguments;
 sc_addr keynode_rrel_command;
 sc_addr keynode_nrel_command_template;
@@ -92,6 +94,7 @@ sc_bool initialize_keynodes()
 
     RESOLVE_KEYNODE(s_default_ctx, keynode_command_generate_instance);
     RESOLVE_KEYNODE(s_default_ctx, keynode_command_initiated);
+	RESOLVE_KEYNODE(s_default_ctx, keynode_command_failed);
     RESOLVE_KEYNODE(s_default_ctx, keynode_command_finished);
     RESOLVE_KEYNODE(s_default_ctx, keynode_rrel_command_arguments);
     RESOLVE_KEYNODE(s_default_ctx, keynode_rrel_command);
