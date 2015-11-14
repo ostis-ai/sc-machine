@@ -44,14 +44,6 @@ void finish_question(sc_addr question)
     sc_iterator3 *it = null_ptr;
     sc_addr arc;
 
-    it = sc_iterator3_f_a_f_new(s_default_ctx,
-                                keynode_question_initiated,
-                                sc_type_arc_pos_const_perm,
-                                question);
-    while (sc_iterator3_next(it))
-        sc_memory_element_free(s_default_ctx, sc_iterator3_value(it, 1));
-    sc_iterator3_free(it);
-
     arc = sc_memory_arc_new(s_default_ctx, sc_type_arc_pos_const_perm, keynode_question_finished, question);
     SYSTEM_ELEMENT(arc);
 }
