@@ -45,7 +45,6 @@ extern scp_operand question_finished_unsuccessfully;
 
 extern scp_operand scp_process;
 extern scp_operand abstract_scp_machine;
-extern scp_operand prepared_scp_program;
 extern scp_operand useless_scp_process;
 extern scp_operand nrel_scp_process;
 extern scp_operand nrel_value;
