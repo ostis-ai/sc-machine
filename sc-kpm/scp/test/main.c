@@ -5,7 +5,6 @@
 #include <stdio.h>
 
 #include <glib.h>
-#include <unistd.h>
 
 sc_bool check_type_sc_addr(sc_memory_context *context, sc_addr element, sc_type input_type)
 {
