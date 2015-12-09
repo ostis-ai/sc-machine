@@ -23,6 +23,27 @@ struct sc_add_compare
     }
 };
 
+struct sBuffer
+{
+	std::vector<char> data;
+
+	sBuffer()
+	{		
+	}
+
+	sBuffer(char const * in_data, sc_uint in_len)
+	{
+		set(in_data, in_len);
+	}
+
+	void set(char const * in_data, sc_uint in_len)
+	{
+		data.assign(in_data, in_data + in_len);
+	}
+
+
+};
+
 struct sElement
 {
     sc_type type;
@@ -35,7 +56,8 @@ struct sElement
 
     // link info
     bool link_is_file;
-    String link_data;
+	String file_path;
+    sBuffer link_data;
 
     bool ignore;
 
@@ -141,12 +163,12 @@ private:
 
     /*! Append new link into elements
      * @param idtf Link identifier if it exists
-     * @param is_file Flag to determine data type. If this flag is true, then data is a file path; otherwise
-     * \p data contains link data
      * @param data Link data
      * @returns Returns id of created element
      */
-    sElement* _addLink(const String &idtf, bool is_file, const String &data);
+    sElement* _addLink(const String & idtf, const sBuffer & data);
+	sElement* _addLinkFile(const String & idtf, const String & filePath);
+	sElement* _addLinkString(const String & idtf, const String & str);
 
 
     //! Parse subtree of antrl tree, and returns pointer to created sc-element, that designate this subtree
@@ -166,6 +188,13 @@ private:
 
     //! Check if identifier is variable
     bool _isIdentifierVar(const String &idtf) const;
+
+	/*! Parse binary data from string content
+	 * @param data String that contains data for parsing
+	 * @param outBuffer Output buffer to store parsed data as binary
+	 * @returns If data parsed then return true, otherwise - false
+	 */
+	bool parseContentBinaryData(String const & data, sBuffer & outBuffer);
 
     //! Dump to dot
     void dumpDot(pANTLR3_BASE_TREE tree);

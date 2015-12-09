@@ -23,6 +23,14 @@ long long SCsTranslator::msAutoIdtfCount = 0;
 
 // ------------------------
 
+String trimContentData(String const & path)
+{
+	if (path.size() < 2)
+		return String();
+
+	return path.substr(2, path.size() - 3);
+}
+
 SCsTranslator::SCsTranslator(sc_memory_context *ctx)
     : iTranslator(ctx)
 {
@@ -465,7 +473,7 @@ sc_addr SCsTranslator::createScAddr(sElement *el)
         if (el->link_is_file)
         {
             String file_path;
-            if (_getAbsFilePath(el->link_data, file_path))
+            if (_getAbsFilePath(el->file_path, file_path))
             {
                 sc_stream *stream = sc_stream_file_new(file_path.c_str(), SC_STREAM_FLAG_READ);
                 if (stream)
@@ -475,21 +483,21 @@ sc_addr SCsTranslator::createScAddr(sElement *el)
                 } else
                 {
                     THROW_EXCEPT(Exception::ERR_FILE_NOT_FOUND,
-                                 "Can't open file " + el->link_data,
+                                 "Can't open file " + el->file_path,
                                  mParams.fileName,
                                  -1);
                 }
             } else
             {
                 THROW_EXCEPT(Exception::ERR_INVALID_PARAMS,
-                             "Unsupported link type  " + el->link_data,
+                             "Unsupported link type  " + el->file_path,
                              mParams.fileName,
                              -1);
             }
 
         } else
         {           
-            sc_stream *stream = sc_stream_memory_new(el->link_data.c_str(), (sc_uint)el->link_data.size(), SC_STREAM_FLAG_READ, SC_FALSE);
+            sc_stream *stream = sc_stream_memory_new(el->link_data.data.data(), (sc_uint)el->link_data.data.size(), SC_STREAM_FLAG_READ, SC_FALSE);
             sc_memory_set_link_content(mContext, addr, stream);
             sc_stream_free(stream);
         }
@@ -500,7 +508,7 @@ sc_addr SCsTranslator::createScAddr(sElement *el)
         {
             if (el->link_is_file)
             {
-                String url = el->link_data.substr(1, el->link_data.size() - 2);
+                String url = el->file_path.substr(1, el->file_path.size() - 2);
                 size_t n = url.find_last_of(".");
                 if (n != String::npos)
                     generateFormatInfo(addr, url.substr(n + 1));
@@ -593,14 +601,34 @@ sElement* SCsTranslator::_addEdge(sElement *source, sElement *target, sc_type ty
     return el;
 }
 
-sElement* SCsTranslator::_addLink(const String &idtf, bool is_file, const String &data)
+sElement* SCsTranslator::_addLink(const String &idtf, const sBuffer & data)
 {
     sElement *el = _createElement(idtf, sc_type_link);
 
-    el->link_is_file = is_file;
+    el->link_is_file = false;
     el->link_data = data;
 
     return el;
+}
+
+sElement* SCsTranslator::_addLinkFile(const String & idtf, const String & filePath)
+{
+	sElement *el = _createElement(idtf, sc_type_link);
+
+	el->link_is_file = true;
+	el->file_path = filePath;
+
+	return el;
+}
+
+sElement* SCsTranslator::_addLinkString(const String & idtf, const String & str)
+{
+	sElement *el = _createElement(idtf, sc_type_link);
+
+	el->link_is_file = false;
+	el->link_data = sBuffer(str.c_str(), (sc_uint)str.size());
+
+	return el;
 }
 
 #define CHECK_LINK_DATA(__d) if (__d.empty()) { THROW_EXCEPT(Exception::ERR_PARSE, "Empty link content", mParams.fileName, tok->getLine(tok)) }
@@ -634,7 +662,7 @@ sElement* SCsTranslator::parseElementTree(pANTLR3_BASE_TREE tree, const String *
     {
         String data = GET_NODE_TEXT(tree);
         CHECK_LINK_DATA(data);
-        res = _addLink(assignIdtf ? *assignIdtf : "", true, GET_NODE_TEXT(tree));
+		res = _addLinkFile(assignIdtf ? *assignIdtf : "", data.substr(1, data.size() - 2));
     }
 
     if (tok->type == CONTENT)
@@ -656,7 +684,7 @@ sElement* SCsTranslator::parseElementTree(pANTLR3_BASE_TREE tree, const String *
             {
                 String name;
                 bool result = false;
-                if (_getAbsFilePath(data.substr(1), name))
+				if (_getAbsFilePath(trimContentData(data), name))
                 {
                     fileName = name;
                     std::ifstream ifs(name.c_str());
@@ -702,20 +730,30 @@ sElement* SCsTranslator::parseElementTree(pANTLR3_BASE_TREE tree, const String *
             }
 
 
-        } else
+        }
+		else
         {
             if (StringUtil::startsWith(content, "^\"", false))
             {
-                String data = content.substr(1);
+				String data = trimContentData(content);
                 CHECK_LINK_DATA(data);
-                res = _addLink("", true, data);
+				sBuffer buffer;
+								
+				if (parseContentBinaryData(data, buffer))
+				{
+					res = _addLink("", buffer);
+				}
+				else
+				{
+					res = _addLinkFile("", data);
+				}
             }
             else
             {
                 content = StringUtil::replaceAll(content, "\\[", "[");
                 content = StringUtil::replaceAll(content, "\\]", "]");
                 CHECK_LINK_DATA(content);
-                res = _addLink("", false, content);
+                res = _addLinkString("", content);
             }
         }
     }
@@ -881,11 +919,10 @@ bool SCsTranslator::_getAbsFilePath(const String &url, String &abs_path)
     // split file name
     String path, name;
     StringUtil::splitFilename(mParams.fileName, name, path);
-    String file_name = url.substr(1, url.size() - 2);
     static String file_preffix = "file://";
-    if (StringUtil::startsWith(file_name, file_preffix, true))
+    if (StringUtil::startsWith(url, file_preffix, true))
     {
-        String file_path = file_name.substr(file_preffix.size());
+        String file_path = url.substr(file_preffix.size());
         if (!StringUtil::startsWith(file_path, "/", false))
         {
             boost::filesystem::path dir (path);
@@ -913,6 +950,39 @@ bool SCsTranslator::_isIdentifierVar(const String &idtf) const
     }
 
     return StringUtil::startsWith(s, "_", false);
+}
+
+bool SCsTranslator::parseContentBinaryData(String const & data, sBuffer & outBuffer)
+{
+	if (StringUtil::startsWith(data, "float", true))
+	{
+		float value = (float)::atof(data.substr(6).c_str());
+		outBuffer.set((char*)&value, sizeof(value));
+		return true;
+	}
+
+	if (StringUtil::startsWith(data, "int32", true))
+	{
+		sc_int32 value = (sc_int32)::atoi(data.substr(6).c_str());
+		outBuffer.set((char*)&value, sizeof(value));
+		return true;
+	}
+
+	if (StringUtil::startsWith(data, "int16", true))
+	{
+		sc_int16 value = (sc_int16)::atoi(data.substr(6).c_str());
+		outBuffer.set((char*)&value, sizeof(value));
+		return true;
+	}
+
+	if (StringUtil::startsWith(data, "int8", true))
+	{
+		sc_int8 value = (sc_int8)::atoi(data.substr(6).c_str());
+		outBuffer.set((char*)&value, sizeof(value));
+		return true;
+	}
+
+	return false;
 }
 
 void SCsTranslator::dumpDot(pANTLR3_BASE_TREE tree)
