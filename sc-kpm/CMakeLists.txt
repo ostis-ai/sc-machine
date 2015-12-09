@@ -13,6 +13,7 @@ foreach( OUTPUTCONFIG ${CMAKE_CONFIGURATION_TYPES} )
 endforeach( OUTPUTCONFIG CMAKE_CONFIGURATION_TYPES )
 
 
+add_subdirectory(iot)
 add_subdirectory(ui)
 add_subdirectory(search)
 add_subdirectory(merge)
