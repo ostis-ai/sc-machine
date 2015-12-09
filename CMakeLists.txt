@@ -6,7 +6,6 @@ set(SC_MACHINE_ROOT ${CMAKE_SOURCE_DIR})
 set(SC_MACHINE_THIRDPARTY_PATH "${SC_MACHINE_ROOT}/thirdparty")
 set(SC_MACHINE_ANTRL_DIR "${SC_MACHINE_THIRDPARTY_PATH}/antlr")
 
-
 if (${WIN32})
 	set(JAVA_EXE "c:/Program Files/Java/jre7/bin/java.exe")
 elseif (${UNIX})
@@ -33,7 +32,6 @@ endif()
 
 set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -DSC_DEBUG -DSC_PROFILE")
 set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -DSC_DEBUG -DSC_PROFILE")
-
 
 # find dependencies
 if (${UNIX})

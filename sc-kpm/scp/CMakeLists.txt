@@ -1,6 +1,6 @@
-file(GLOB SOURCES_C "*.c")
-file(GLOB SOURCES_CPP "*.cpp")
-file(GLOB HEADERS "*.h")
+file(GLOB_RECURSE SOURCES_C "*.c")
+file(GLOB_RECURSE SOURCES_CPP "*.cpp")
+file(GLOB_RECURSE HEADERS "*.h")
 
 set(SCP_ROOT ${SC_KPM_ROOT}/scp)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${SC_MACHINE_ROOT}/bin/extensions)
@@ -13,8 +13,6 @@ add_definitions(-DSCP_STRING)
 add_library (scp SHARED ${SOURCES_CPP} ${SOURCES_C} ${HEADERS})
 
 include_directories("${SCP_ROOT}/scp_lib" ${SC_MEMORY_SRC} ${GLIB2_INCLUDE_DIRS})
-add_dependencies(scp scp_lib sc-memory)
+add_dependencies(scp sc-memory)
 
-target_link_libraries(scp scp_lib sc-memory)
-
-add_subdirectory(scp_lib)
+target_link_libraries(scp sc-memory)

@@ -1,14 +1,13 @@
 
 #include "scp_lib.h"
 #include "sc_helper.h"
-//#include "sc_memory_headers.h"
 
 #include <stdio.h>
 
 #include <glib.h>
 #include <unistd.h>
 
-sc_bool check_type(sc_memory_context *context, sc_addr element, sc_type input_type)
+sc_bool check_type_sc_addr(sc_memory_context *context, sc_addr element, sc_type input_type)
 {
     sc_type type;
     if (SC_RESULT_OK != sc_memory_get_element_type(context, element, &type))

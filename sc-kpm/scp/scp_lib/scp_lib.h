@@ -23,7 +23,6 @@ along with OSTIS.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef SCP_LIB_H
 #define SCP_LIB_H
 
-#include "scp_types.h"
 #include "scp_functions.h"
 #include "scp_iterator3.h"
 #include "scp_iterator5.h"
