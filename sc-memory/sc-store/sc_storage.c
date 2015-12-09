@@ -877,6 +877,7 @@ sc_result sc_storage_set_link_content(const sc_memory_context *ctx, sc_addr addr
     sc_element *el;
 	sc_check_sum check_sum;
 	sc_result result = SC_RESULT_ERROR;
+	sc_access_levels access_lvl;
 
     if (sc_storage_element_lock(ctx, addr, &el) != SC_RESULT_OK)
         return SC_RESULT_ERROR;
@@ -889,7 +890,8 @@ sc_result sc_storage_set_link_content(const sc_memory_context *ctx, sc_addr addr
 
     g_assert(stream != null_ptr);
 
-    if (!sc_access_lvl_check_write(ctx->access_levels, el->flags.access_levels))
+	access_lvl = el->flags.access_levels;
+    if (!sc_access_lvl_check_write(ctx->access_levels, access_lvl))
     {
         result = SC_RESULT_ERROR_NO_WRITE_RIGHTS;
         goto unlock;
@@ -945,6 +947,8 @@ sc_result sc_storage_set_link_content(const sc_memory_context *ctx, sc_addr addr
         }
     }
     g_assert(result == SC_RESULT_OK);
+
+	sc_event_emit(addr, access_lvl, SC_EVENT_CONTENT_CHANGED, addr);
 
     unlock:
     {
