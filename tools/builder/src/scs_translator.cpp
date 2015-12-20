@@ -508,10 +508,9 @@ sc_addr SCsTranslator::createScAddr(sElement *el)
         {
             if (el->link_is_file)
             {
-                String url = el->file_path.substr(1, el->file_path.size() - 2);
-                size_t n = url.find_last_of(".");
+				size_t n = el->file_path.find_last_of(".");
                 if (n != String::npos)
-                    generateFormatInfo(addr, url.substr(n + 1));
+					generateFormatInfo(addr, el->file_path.substr(n + 1));
             }
         }
     }
