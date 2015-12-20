@@ -5,13 +5,32 @@
 */
 
 #include "iot.hpp"
+#include "iotKeynodes.hpp"
+#include "iotCommands.hpp"
 
 _SC_EXT_EXTERN sc_result initialize()
 {
+	if (!iot::Keynodes::initialize())
+		return SC_RESULT_ERROR;
+
+	if (!iot::Commands::initialize())
+		return SC_RESULT_ERROR;
+
 	return SC_RESULT_OK;
 }
 
 _SC_EXT_EXTERN sc_result shutdown()
 {
-	return SC_RESULT_OK;
+	sc_result result = SC_RESULT_OK;
+
+	if (!iot::Commands::shutdown())
+		result = SC_RESULT_ERROR;
+
+	if (!iot::Keynodes::shutdown())
+		result = SC_RESULT_ERROR;
+		
+
+	/// TODO: shutdown other subsytems
+
+	return result;
 }
