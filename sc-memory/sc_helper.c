@@ -254,7 +254,7 @@ sc_result sc_helper_set_system_identifier(sc_memory_context const * ctx, sc_addr
     return SC_RESULT_OK;
 }
 
-sc_result sc_helper_get_system_identifier(sc_memory_context const * ctx, sc_addr el, sc_addr *sys_idtf_addr)
+sc_result sc_helper_get_system_identifier_link(sc_memory_context const * ctx, sc_addr el, sc_addr *sys_idtf_addr)
 {
     sc_iterator5 *it = 0;
     sc_result res = SC_RESULT_ERROR;

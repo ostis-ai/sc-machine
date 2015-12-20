@@ -8,3 +8,9 @@
 
 #include "sc_memory.h"
 
+namespace sc
+{
+	class MemoryCotext;
+	class Addr;
+
+}

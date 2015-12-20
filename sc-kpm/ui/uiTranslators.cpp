@@ -90,7 +90,7 @@ sc_bool ui_translate_resolve_system_identifier(sc_addr el, String &sys_idtf)
     sc_char buffer[32];
 
     sys_idtf = "";
-    if (sc_helper_get_system_identifier(s_default_ctx, el, &sys_idtf_addr) == SC_RESULT_OK)
+	if (sc_helper_get_system_identifier_link(s_default_ctx, el, &sys_idtf_addr) == SC_RESULT_OK)
     {
         if (sc_memory_get_link_content(s_default_ctx, sys_idtf_addr, &idtf_stream) == SC_RESULT_OK)
         {

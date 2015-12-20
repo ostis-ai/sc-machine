@@ -26,7 +26,7 @@ set (SC_MEMORY_WRAP_SOURCES
                         "wrap/sc_stream.hpp"
                         "wrap/sc_types.hpp"
 
-                        "wrap/sc_memory_headers.hpp")
+        )
 
 add_library (sc-memory-cpp SHARED ${SC_MEMORY_WRAP_SOURCES})
 

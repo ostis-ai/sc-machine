@@ -9,6 +9,7 @@
 extern "C"
 {
 #include "sc_memory.h"
+#include "sc_helper.h"
 }
 
 #include "sc_types.hpp"
@@ -23,6 +24,8 @@ namespace sc
 
 class MemoryContext;
 class Stream;
+
+
 
 class Memory
 {
@@ -109,6 +112,11 @@ public:
     {
         return new TIterator3<ParamType1, ParamType2, ParamType3>(*this, param1, param2, param3);
     }
+
+
+	_SC_EXTERN bool helperResolveSystemIdtf(std::string const & sysIdtf, Addr & outAddr);
+	_SC_EXTERN bool helperSetSystemIdtf(std::string const & sysIdtf, Addr const & addr);
+	_SC_EXTERN bool helperCheckArc(Addr const & begin, Addr end, sc_type arcType);
 
 private:
     // Disable object copying

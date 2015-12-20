@@ -44,7 +44,7 @@ _SC_EXTERN sc_result sc_helper_set_system_identifier(sc_memory_context const * c
  * @param sys_idtf_addr Pointer to found sc-addr of system identifier
  * @return If system identifier found, then return SC_RESULT_OK; otherwise return SC_RESULT_ERROR
  */
-_SC_EXTERN sc_result sc_helper_get_system_identifier(sc_memory_context const * ctx, sc_addr el, sc_addr *sys_idtf_addr);
+_SC_EXTERN sc_result sc_helper_get_system_identifier_link(sc_memory_context const * ctx, sc_addr el, sc_addr *sys_idtf_addr);
 
 /*! Returns sc-addr of specified sc-keynode
  * @param keynode Code of specified sc-keynode

@@ -88,7 +88,7 @@ sc_result remove_event_from_table(sc_event *event)
     return SC_RESULT_OK;
 }
 
-sc_event* sc_event_new(sc_memory_context *ctx, sc_addr el, sc_event_type type, sc_pointer data, fEventCallback callback, fDeleteCallback delete_callback)
+sc_event* sc_event_new(sc_memory_context const * ctx, sc_addr el, sc_event_type type, sc_pointer data, fEventCallback callback, fDeleteCallback delete_callback)
 {
     sc_access_levels levels;
     sc_event *event = null_ptr;

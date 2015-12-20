@@ -229,5 +229,22 @@ bool MemoryContext::save()
     return (sc_memory_save(mContext) == SC_RESULT_OK);
 }
 
+bool MemoryContext::helperResolveSystemIdtf(std::string const & sysIdtf, Addr & outAddr)
+{
+	check_expr(isValid());
+	return (sc_helper_resolve_system_identifier(mContext, sysIdtf.c_str(), &outAddr.mRealAddr) == SC_TRUE);
+}
+
+bool MemoryContext::helperSetSystemIdtf(std::string const & sysIdtf, Addr const & addr)
+{
+	check_expr(isValid());
+	return (sc_helper_set_system_identifier(mContext, addr.mRealAddr, sysIdtf.c_str(), (sc_uint32)sysIdtf.size()) == SC_RESULT_OK);
+}
+
+bool MemoryContext::helperCheckArc(Addr const & begin, Addr end, sc_type arcType)
+{
+	check_expr(isValid());
+	return (sc_helper_check_arc(mContext, begin.mRealAddr, end.mRealAddr, arcType) == SC_RESULT_OK);
+}
 
 }
