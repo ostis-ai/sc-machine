@@ -6,10 +6,11 @@
 
 #pragma once
 
-#include "wrap/sc_addr.hpp"
+#include "iotTypes.hpp"
+#include "iotAgent.hpp"
 
-#include <string>
-#include <list>
-#include <vector>
-#include <unordered_map>
+namespace iot
+{
 
+	sc_result handler_add_content_command(sc_event const * event, sc_addr arg);
+}

@@ -29,10 +29,22 @@ namespace iot
 		/// Commands
 		static sc::Addr device_group_enable_command;
 		static sc::Addr device_group_disable_command;
+		static sc::Addr add_content_command;
 
 		/// common
 		static sc::Addr group_volume;
 		static sc::Addr command_initiated;
+		static sc::Addr command_finished;
+		static sc::Addr command_in_progress;
+
+		/// relations
+		static sc::Addr nrel_content;
+		static sc::Addr nrel_mass;
+
+		static sc::Addr rrel_1;
+		static sc::Addr rrel_2;
+		static sc::Addr rrel_3;
+		static sc::Addr rrel_gram;
 
 		static bool initialize();
 		static bool shutdown();

@@ -17,9 +17,20 @@ namespace iot
 
 	sc::Addr Keynodes::device_group_enable_command;
 	sc::Addr Keynodes::device_group_disable_command;
+	sc::Addr Keynodes::add_content_command;
 
 	sc::Addr Keynodes::group_volume;
 	sc::Addr Keynodes::command_initiated;
+	sc::Addr Keynodes::command_finished;
+	sc::Addr Keynodes::command_in_progress;
+
+	sc::Addr Keynodes::nrel_content;
+	sc::Addr Keynodes::nrel_mass;
+
+	sc::Addr Keynodes::rrel_1;
+	sc::Addr Keynodes::rrel_2;
+	sc::Addr Keynodes::rrel_3;
+	sc::Addr Keynodes::rrel_gram;
 
 	sc::MemoryContext * Keynodes::memory_ctx = 0;
 
@@ -39,9 +50,20 @@ namespace iot
 
 		result = result && resolveKeynode("device_group_enable_command", device_group_enable_command);
 		result = result && resolveKeynode("device_group_disable_command", device_group_disable_command);
+		result = result && resolveKeynode("add_content_command", add_content_command);
 
 		result = result && resolveKeynode("group_volume", group_volume);
 		result = result && resolveKeynode("command_initiated", command_initiated);
+		result = result && resolveKeynode("command_finished", command_finished);
+		result = result && resolveKeynode("command_in_progress", command_in_progress);
+
+		result = result && resolveKeynode("nrel_content", nrel_content);
+		result = result && resolveKeynode("nrel_mass", nrel_mass);
+
+		result = result && resolveKeynode("rrel_1", rrel_1);
+		result = result && resolveKeynode("rrel_2", rrel_2);
+		result = result && resolveKeynode("rrel_3", rrel_3);
+		result = result && resolveKeynode("rrel_gram", rrel_gram);
 
 		return result;
 	}

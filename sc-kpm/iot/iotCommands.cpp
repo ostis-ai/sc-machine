@@ -6,10 +6,12 @@
 
 #include "iotCommands.hpp"
 #include "iotKeynodes.hpp"
+#include "iotContent.hpp"
 
 #include "wrap/sc_memory.hpp"
 
 sc_event * event_device_group_enable_command = 0;
+sc_event * event_add_content_command = 0;
 
 namespace iot
 {
@@ -80,6 +82,10 @@ namespace iot
 		if (!event_device_group_enable_command)
 			return false;
 
+		event_add_content_command = sc_event_new(memory_ctx->getRealContext(), Keynodes::command_initiated.getRealAddr(), SC_EVENT_ADD_OUTPUT_ARC, 0, &handler_add_content_command, 0);
+		if (!event_add_content_command)
+			return false;
+
 		return true;
 	}
 
@@ -90,6 +96,12 @@ namespace iot
 		{
 			sc_event_destroy(event_device_group_enable_command);
 			event_device_group_enable_command = 0;
+		}
+
+		if (event_add_content_command)
+		{
+			sc_event_destroy(event_add_content_command);
+			event_add_content_command = 0;
 		}
 
 		if (memory_ctx)

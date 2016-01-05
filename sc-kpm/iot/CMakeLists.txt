@@ -3,6 +3,9 @@ set(SOURCES
 	"iotEnergy.cpp"
 	"iotKeynodes.cpp"
 	"iotCommands.cpp"
+	"iotContent.cpp"
+	"iotUtils.cpp"
+	"iotAgent.cpp"
 )
 set(HEADERS 
 	"iotTypes.hpp"
@@ -10,6 +13,9 @@ set(HEADERS
 	"iotEnergy.hpp"
 	"iotKeynodes.hpp"
 	"iotCommands.hpp"
+	"iotContent.hpp"
+	"iotUtils.hpp"
+	"iotAgent.hpp"
 )
 
 add_library (iot SHARED ${SOURCES} ${HEADERS})
