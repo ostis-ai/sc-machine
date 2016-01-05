@@ -13,6 +13,8 @@
 sc_event * event_device_group_enable_command = 0;
 sc_event * event_add_content_command = 0;
 
+sc_event * event_get_content_question = 0;
+
 namespace iot
 {
 	sc::MemoryContext * Commands::memory_ctx = 0;
@@ -43,10 +45,7 @@ namespace iot
 				while (it->next())
 					ctx.eraseElement(it->value(1));
 			}
-		}
-
-
-		
+		}		
 	}
 
 	sc_result handler_device_group_enable_state_command(sc_event const * event, sc_addr arg)
@@ -57,8 +56,8 @@ namespace iot
 		if (!commandInstance.isValid())
 			return SC_RESULT_ERROR;
 
-		bool isEnable = ctx.helperCheckArc(Keynodes::device_group_enable_command, commandInstance, sc_type_arc_pos_const_perm);
-		bool isDisable = ctx.helperCheckArc(Keynodes::device_group_disable_command, commandInstance, sc_type_arc_pos_const_perm);
+		bool isEnable = ctx.helperCheckArc(Keynodes::command_device_group_enable, commandInstance, sc_type_arc_pos_const_perm);
+		bool isDisable = ctx.helperCheckArc(Keynodes::command_device_group_disable, commandInstance, sc_type_arc_pos_const_perm);
 
 		if (!isDisable && !isEnable)
 			return SC_RESULT_ERROR;
@@ -86,6 +85,10 @@ namespace iot
 		if (!event_add_content_command)
 			return false;
 
+		event_get_content_question = sc_event_new(memory_ctx->getRealContext(), Keynodes::question_initiated.getRealAddr(), SC_EVENT_ADD_OUTPUT_ARC, 0, &handler_get_content_question, 0);
+		if (!event_get_content_question)
+			return false;
+
 		return true;
 	}
 
@@ -102,6 +105,12 @@ namespace iot
 		{
 			sc_event_destroy(event_add_content_command);
 			event_add_content_command = 0;
+		}
+
+		if (event_get_content_question)
+		{
+			sc_event_destroy(event_get_content_question);
+			event_get_content_question = 0;
 		}
 
 		if (memory_ctx)

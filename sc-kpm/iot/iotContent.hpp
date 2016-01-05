@@ -13,4 +13,6 @@ namespace iot
 {
 
 	sc_result handler_add_content_command(sc_event const * event, sc_addr arg);
+	
+	sc_result handler_get_content_question(sc_event const * event, sc_addr arg);
 }

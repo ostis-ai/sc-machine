@@ -13,12 +13,12 @@
 namespace iot
 {
 
-	IMPLEMENT_AGENT(AddContent)
+	IMPLEMENT_AGENT(AddContent, COMMAND_AGENT)
 	{
-		assert(cmdAddr.isValid());
+		assert(requestAddr.isValid());
 
 		// determine device class
-		sc::Iterator5Ptr iterDevice = mMemoryCtx.iterator5(cmdAddr,
+		sc::Iterator5Ptr iterDevice = mMemoryCtx.iterator5(requestAddr,
 			SC_TYPE(sc_type_arc_pos_const_perm),
 			SC_TYPE(sc_type_const | sc_type_node | sc_type_node_material),
 			SC_TYPE(sc_type_arc_pos_const_perm),
@@ -30,7 +30,7 @@ namespace iot
 		sc::Addr deviceAddr = iterDevice->value(2);
 
 		// determine product class
-		sc::Iterator5Ptr iterProductClass = mMemoryCtx.iterator5(cmdAddr,
+		sc::Iterator5Ptr iterProductClass = mMemoryCtx.iterator5(requestAddr,
 			SC_TYPE(sc_type_arc_pos_const_perm),
 			SC_TYPE(sc_type_const | sc_type_node | sc_type_node_class),
 			SC_TYPE(sc_type_arc_pos_const_perm),
@@ -42,7 +42,7 @@ namespace iot
 		sc::Addr productClassAddr = iterProductClass->value(2);
 
 		// determine mass
-		sc::Iterator5Ptr iterMass = mMemoryCtx.iterator5(cmdAddr,
+		sc::Iterator5Ptr iterMass = mMemoryCtx.iterator5(requestAddr,
 			SC_TYPE(sc_type_arc_pos_const_perm),
 			SC_TYPE(sc_type_link),
 			SC_TYPE(sc_type_arc_pos_const_perm),
@@ -88,13 +88,25 @@ namespace iot
 		assert(arc.isValid());
 	}
 
+	// ------------------------------------
+	IMPLEMENT_AGENT(GetContent, QUESTION_AGENT)
+	{
+		assert(requestAddr.isValid());
+	}
 
+
+	// --------- Handlers ---------
 	sc_result handler_add_content_command(sc_event const * event, sc_addr arg)
 	{
-		sc::MemoryContext ctx(sc_access_lvl_make_min, "handler_add_content_command");
-		
-		RUN_AGENT(AddContent, Keynodes::add_content_command, sc_access_lvl_make_min, sc::Addr(arg));
+		sc::MemoryContext ctx(sc_access_lvl_make_min, "handler_add_content_command");	
+		RUN_AGENT(AddContent, Keynodes::command_add_content, sc_access_lvl_make_min, sc::Addr(arg));
+		return SC_RESULT_ERROR;
+	}
 
+	sc_result handler_get_content_question(sc_event const * event, sc_addr arg)
+	{
+		sc::MemoryContext ctx(sc_access_lvl_make_min, "handler_get_content_question");
+		RUN_AGENT(GetContent, Keynodes::question_get_content, sc_access_lvl_make_min, sc::Addr(arg));
 		return SC_RESULT_ERROR;
 	}
 

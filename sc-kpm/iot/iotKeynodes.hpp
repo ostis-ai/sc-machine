@@ -27,9 +27,12 @@ namespace iot
 		static sc::Addr device_real_energy_usage;
 
 		/// Commands
-		static sc::Addr device_group_enable_command;
-		static sc::Addr device_group_disable_command;
-		static sc::Addr add_content_command;
+		static sc::Addr command_device_group_enable;
+		static sc::Addr command_device_group_disable;
+		static sc::Addr command_add_content;
+
+		/// quesions
+		static sc::Addr question_get_content;
 
 		/// common
 		static sc::Addr group_volume;
@@ -37,9 +40,14 @@ namespace iot
 		static sc::Addr command_finished;
 		static sc::Addr command_in_progress;
 
+		static sc::Addr question_initiated;
+		static sc::Addr question_finished;
+		static sc::Addr question_in_progress;
+
 		/// relations
 		static sc::Addr nrel_content;
 		static sc::Addr nrel_mass;
+		static sc::Addr nrel_result;
 
 		static sc::Addr rrel_1;
 		static sc::Addr rrel_2;

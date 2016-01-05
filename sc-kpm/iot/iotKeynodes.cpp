@@ -15,17 +15,24 @@ namespace iot
 	sc::Addr Keynodes::device_standby_energy_usage;
 	sc::Addr Keynodes::device_real_energy_usage;
 
-	sc::Addr Keynodes::device_group_enable_command;
-	sc::Addr Keynodes::device_group_disable_command;
-	sc::Addr Keynodes::add_content_command;
+	sc::Addr Keynodes::command_device_group_enable;
+	sc::Addr Keynodes::command_device_group_disable;
+	sc::Addr Keynodes::command_add_content;
+
+	sc::Addr Keynodes::question_get_content;
 
 	sc::Addr Keynodes::group_volume;
 	sc::Addr Keynodes::command_initiated;
 	sc::Addr Keynodes::command_finished;
 	sc::Addr Keynodes::command_in_progress;
 
+	sc::Addr Keynodes::question_initiated;
+	sc::Addr Keynodes::question_finished;
+	sc::Addr Keynodes::question_in_progress;
+
 	sc::Addr Keynodes::nrel_content;
 	sc::Addr Keynodes::nrel_mass;
+	sc::Addr Keynodes::nrel_result;
 
 	sc::Addr Keynodes::rrel_1;
 	sc::Addr Keynodes::rrel_2;
@@ -33,6 +40,11 @@ namespace iot
 	sc::Addr Keynodes::rrel_gram;
 
 	sc::MemoryContext * Keynodes::memory_ctx = 0;
+
+	void _resolveKeynodeImpl(char const * str, sc::Addr & addr, bool & result)
+	{
+		result = result && Keynodes::resolveKeynode(str, addr);
+	}
 
 	bool Keynodes::initialize()
 	{
@@ -42,28 +54,35 @@ namespace iot
 
 		bool result = true;
 
-		result = result && resolveKeynode("device", device);
-		result = result && resolveKeynode("device_enabled", device_enabled);
-		result = result && resolveKeynode("nrel_energy_usage", device_energy_usage);
-		result = result && resolveKeynode("nrel_standby_energy_usage", device_standby_energy_usage);
-		result = result && resolveKeynode("nrel_real_energy_usage", device_real_energy_usage);
+		_resolveKeynodeImpl("device", device, result);
+		_resolveKeynodeImpl("device_enabled", device_enabled, result);
+		_resolveKeynodeImpl("nrel_energy_usage", device_energy_usage, result);
+		_resolveKeynodeImpl("nrel_standby_energy_usage", device_standby_energy_usage, result);
+		_resolveKeynodeImpl("nrel_real_energy_usage", device_real_energy_usage, result);
 
-		result = result && resolveKeynode("device_group_enable_command", device_group_enable_command);
-		result = result && resolveKeynode("device_group_disable_command", device_group_disable_command);
-		result = result && resolveKeynode("add_content_command", add_content_command);
+		_resolveKeynodeImpl("command_device_group_enable", command_device_group_enable, result);
+		_resolveKeynodeImpl("command_device_group_disable", command_device_group_disable, result);
+		_resolveKeynodeImpl("command_add_content", command_add_content, result);
 
-		result = result && resolveKeynode("group_volume", group_volume);
-		result = result && resolveKeynode("command_initiated", command_initiated);
-		result = result && resolveKeynode("command_finished", command_finished);
-		result = result && resolveKeynode("command_in_progress", command_in_progress);
+		_resolveKeynodeImpl("question_get_content", question_get_content, result);
 
-		result = result && resolveKeynode("nrel_content", nrel_content);
-		result = result && resolveKeynode("nrel_mass", nrel_mass);
+		_resolveKeynodeImpl("group_volume", group_volume, result);
+		_resolveKeynodeImpl("command_initiated", command_initiated, result);
+		_resolveKeynodeImpl("command_finished", command_finished, result);
+		_resolveKeynodeImpl("command_in_progress", command_in_progress, result);
 
-		result = result && resolveKeynode("rrel_1", rrel_1);
-		result = result && resolveKeynode("rrel_2", rrel_2);
-		result = result && resolveKeynode("rrel_3", rrel_3);
-		result = result && resolveKeynode("rrel_gram", rrel_gram);
+		_resolveKeynodeImpl("question_initiated", question_initiated, result);
+		_resolveKeynodeImpl("question_finished", question_finished, result);
+		_resolveKeynodeImpl("question_in_progress", question_in_progress, result);
+
+		_resolveKeynodeImpl("nrel_content", nrel_content, result);
+		_resolveKeynodeImpl("nrel_mass", nrel_mass, result);
+		_resolveKeynodeImpl("nrel_result", nrel_result, result);
+
+		_resolveKeynodeImpl("rrel_1", rrel_1, result);
+		_resolveKeynodeImpl("rrel_2", rrel_2, result);
+		_resolveKeynodeImpl("rrel_3", rrel_3, result);
+		_resolveKeynodeImpl("rrel_gram", rrel_gram, result);
 
 		return result;
 	}
