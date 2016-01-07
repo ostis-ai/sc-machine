@@ -55,7 +55,7 @@ namespace iot
 
 				sc::Addr const commonArc = mMemoryCtx.createArc(sc_type_const | sc_type_arc_common, cmdAddr, resultAddr);
 				assert(commonArc.isValid());
-				sc::Addr const arc = mMemoryCtx.createArc(sc_type_arc_pos_const_perm, Keynodes::nrel_result, commonArc);
+				sc::Addr const arc = mMemoryCtx.createArc(sc_type_arc_pos_const_perm, Keynodes::nrel_answer, commonArc);
 				assert(arc.isValid());
 
 				mMemoryCtx.createArc(sc_type_arc_pos_const_perm, Keynodes::question_finished, cmdAddr);

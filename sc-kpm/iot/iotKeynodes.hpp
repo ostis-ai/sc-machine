@@ -47,6 +47,7 @@ namespace iot
 		/// relations
 		static sc::Addr nrel_content;
 		static sc::Addr nrel_mass;
+		static sc::Addr nrel_answer;
 		static sc::Addr nrel_result;
 
 		static sc::Addr rrel_1;

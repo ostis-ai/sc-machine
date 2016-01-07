@@ -32,6 +32,7 @@ namespace iot
 
 	sc::Addr Keynodes::nrel_content;
 	sc::Addr Keynodes::nrel_mass;
+	sc::Addr Keynodes::nrel_answer;
 	sc::Addr Keynodes::nrel_result;
 
 	sc::Addr Keynodes::rrel_1;
@@ -77,6 +78,7 @@ namespace iot
 
 		_resolveKeynodeImpl("nrel_content", nrel_content, result);
 		_resolveKeynodeImpl("nrel_mass", nrel_mass, result);
+		_resolveKeynodeImpl("nrel_answer", nrel_answer, result);
 		_resolveKeynodeImpl("nrel_result", nrel_result, result);
 
 		_resolveKeynodeImpl("rrel_1", rrel_1, result);

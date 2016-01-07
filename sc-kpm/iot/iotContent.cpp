@@ -92,6 +92,38 @@ namespace iot
 	IMPLEMENT_AGENT(GetContent, QUESTION_AGENT)
 	{
 		assert(requestAddr.isValid());
+
+		sc::Iterator3Ptr iter = mMemoryCtx.iterator3(requestAddr,
+			SC_TYPE(sc_type_arc_pos_const_perm),
+			SC_TYPE(sc_type_node | sc_type_const | sc_type_node_material));
+
+		if (!iter->next())
+
+			return;
+
+		sc::Addr const deviceAddr = iter->value(2);
+		sc::Iterator5Ptr iter5 = mMemoryCtx.iterator5(
+			SC_TYPE(sc_type_const | sc_type_node | sc_type_node_tuple),
+			SC_TYPE(sc_type_const | sc_type_arc_common),
+			deviceAddr,
+			SC_TYPE(sc_type_arc_pos_const_perm),
+			Keynodes::nrel_content);
+
+		if (!iter5->next())
+			return;
+
+		sc::Addr const contentSet = iter5->value(0);
+
+		sc::Iterator3Ptr iterContent = mMemoryCtx.iterator3(
+			contentSet,
+			SC_TYPE(sc_type_arc_pos_const_perm),
+			SC_TYPE(sc_type_const | sc_type_node | sc_type_node_material));
+
+		while (iterContent->next())
+		{
+			sc::Addr const arc = mMemoryCtx.createArc(sc_type_arc_pos_const_perm, resultAddr, iterContent->value(2));
+			assert(arc.isValid());
+		}
 	}
 
 
