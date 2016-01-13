@@ -25,7 +25,7 @@ namespace iot
 			Keynodes::rrel_1);
 
 		if (!iterDevice->next())
-			return;
+			return SC_RESULT_ERROR_INVALID_PARAMS;
 
 		sc::Addr deviceAddr = iterDevice->value(2);
 
@@ -37,7 +37,7 @@ namespace iot
 			Keynodes::rrel_2);
 
 		if (!iterProductClass->next())
-			return;
+			return SC_RESULT_ERROR_INVALID_PARAMS;
 
 		sc::Addr productClassAddr = iterProductClass->value(2);
 
@@ -49,7 +49,7 @@ namespace iot
 			Keynodes::rrel_3);
 
 		if (!iterMass->next())
-			return;
+			return SC_RESULT_ERROR_INVALID_PARAMS;
 
 		sc::Addr massLinkAddr = iterMass->value(2);
 
@@ -86,6 +86,8 @@ namespace iot
 
 		sc::Addr arc = mMemoryCtx.createArc(sc_type_arc_pos_const_perm, contentSet, product);
 		assert(arc.isValid());
+
+		return SC_RESULT_OK;
 	}
 
 	// ------------------------------------
@@ -98,8 +100,7 @@ namespace iot
 			SC_TYPE(sc_type_node | sc_type_const | sc_type_node_material));
 
 		if (!iter->next())
-
-			return;
+			return SC_RESULT_ERROR_INVALID_PARAMS;
 
 		sc::Addr const deviceAddr = iter->value(2);
 		sc::Iterator5Ptr iter5 = mMemoryCtx.iterator5(
@@ -110,7 +111,7 @@ namespace iot
 			Keynodes::nrel_content);
 
 		if (!iter5->next())
-			return;
+			return SC_RESULT_ERROR;
 
 		sc::Addr const contentSet = iter5->value(0);
 
@@ -124,22 +125,20 @@ namespace iot
 			sc::Addr const arc = mMemoryCtx.createArc(sc_type_arc_pos_const_perm, resultAddr, iterContent->value(2));
 			assert(arc.isValid());
 		}
+
+		return SC_RESULT_OK;
 	}
 
 
 	// --------- Handlers ---------
 	sc_result handler_add_content_command(sc_event const * event, sc_addr arg)
 	{
-		sc::MemoryContext ctx(sc_access_lvl_make_min, "handler_add_content_command");	
 		RUN_AGENT(AddContent, Keynodes::command_add_content, sc_access_lvl_make_min, sc::Addr(arg));
-		return SC_RESULT_ERROR;
 	}
 
 	sc_result handler_get_content_question(sc_event const * event, sc_addr arg)
 	{
-		sc::MemoryContext ctx(sc_access_lvl_make_min, "handler_get_content_question");
 		RUN_AGENT(GetContent, Keynodes::question_get_content, sc_access_lvl_make_min, sc::Addr(arg));
-		return SC_RESULT_ERROR;
 	}
 
 }

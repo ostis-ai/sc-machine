@@ -30,6 +30,8 @@ namespace iot
 		static sc::Addr command_device_group_enable;
 		static sc::Addr command_device_group_disable;
 		static sc::Addr command_add_content;
+		static sc::Addr command_who_are_you;
+		static sc::Addr command_generate_text_from_template;
 
 		/// quesions
 		static sc::Addr question_get_content;
@@ -49,6 +51,7 @@ namespace iot
 		static sc::Addr nrel_mass;
 		static sc::Addr nrel_answer;
 		static sc::Addr nrel_result;
+		static sc::Addr nrel_speech_templates;
 
 		static sc::Addr rrel_1;
 		static sc::Addr rrel_2;

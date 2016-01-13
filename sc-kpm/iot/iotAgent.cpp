@@ -21,12 +21,18 @@ namespace iot
 				mMemoryCtx.eraseElement(startArcAddr);
 				sc::Addr progressAddr = mMemoryCtx.createArc(sc_type_arc_pos_const_perm, Keynodes::command_in_progress, cmdAddr);
 				assert(progressAddr.isValid());
-				sc::Addr resultAddr;
-				assert(!resultAddr.isValid());
+				sc::Addr resultAddr = mMemoryCtx.createNode(sc_type_const | sc_type_node_struct);
+				assert(resultAddr.isValid());
 
 				runImpl(cmdAddr, resultAddr);
 
 				mMemoryCtx.eraseElement(progressAddr);
+
+				sc::Addr const commonArc = mMemoryCtx.createArc(sc_type_const | sc_type_arc_common, cmdAddr, resultAddr);
+				assert(commonArc.isValid());
+				sc::Addr const arc = mMemoryCtx.createArc(sc_type_arc_pos_const_perm, Keynodes::nrel_result, commonArc);
+				assert(arc.isValid());
+
 				mMemoryCtx.createArc(sc_type_arc_pos_const_perm, Keynodes::command_finished, cmdAddr);
 
 				return SC_RESULT_OK;

@@ -7,6 +7,8 @@
 #include "iotCommands.hpp"
 #include "iotKeynodes.hpp"
 #include "iotContent.hpp"
+#include "iotAbout.hpp"
+#include "iotSpeech.hpp"
 
 #include "wrap/sc_memory.hpp"
 
@@ -14,6 +16,9 @@ sc_event * event_device_group_enable_command = 0;
 sc_event * event_add_content_command = 0;
 
 sc_event * event_get_content_question = 0;
+
+sc_event * event_who_are_you = 0;
+sc_event * event_generate_text = 0;
 
 namespace iot
 {
@@ -89,6 +94,14 @@ namespace iot
 		if (!event_get_content_question)
 			return false;
 
+		event_who_are_you = sc_event_new(memory_ctx->getRealContext(), Keynodes::command_initiated.getRealAddr(), SC_EVENT_ADD_OUTPUT_ARC, 0, &handler_who_are_you_command, 0);
+		if (!event_who_are_you)
+			return false;
+
+		event_generate_text = sc_event_new(memory_ctx->getRealContext(), Keynodes::command_initiated.getRealAddr(), SC_EVENT_ADD_OUTPUT_ARC, 0, &handler_generate_text_command, 0);
+		if (!event_generate_text)
+			return false;
+
 		return true;
 	}
 
@@ -111,6 +124,18 @@ namespace iot
 		{
 			sc_event_destroy(event_get_content_question);
 			event_get_content_question = 0;
+		}
+
+		if (event_who_are_you)
+		{
+			sc_event_destroy(event_who_are_you);
+			event_who_are_you = 0;
+		}
+
+		if (event_generate_text)
+		{
+			sc_event_destroy(event_generate_text);
+			event_generate_text = 0;
 		}
 
 		if (memory_ctx)

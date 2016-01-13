@@ -18,6 +18,8 @@ namespace iot
 	sc::Addr Keynodes::command_device_group_enable;
 	sc::Addr Keynodes::command_device_group_disable;
 	sc::Addr Keynodes::command_add_content;
+	sc::Addr Keynodes::command_who_are_you;
+	sc::Addr Keynodes::command_generate_text_from_template;
 
 	sc::Addr Keynodes::question_get_content;
 
@@ -34,6 +36,7 @@ namespace iot
 	sc::Addr Keynodes::nrel_mass;
 	sc::Addr Keynodes::nrel_answer;
 	sc::Addr Keynodes::nrel_result;
+	sc::Addr Keynodes::nrel_speech_templates;
 
 	sc::Addr Keynodes::rrel_1;
 	sc::Addr Keynodes::rrel_2;
@@ -64,6 +67,8 @@ namespace iot
 		_resolveKeynodeImpl("command_device_group_enable", command_device_group_enable, result);
 		_resolveKeynodeImpl("command_device_group_disable", command_device_group_disable, result);
 		_resolveKeynodeImpl("command_add_content", command_add_content, result);
+		_resolveKeynodeImpl("command_who_are_you", command_who_are_you, result);
+		_resolveKeynodeImpl("command_generate_text_from_template", command_generate_text_from_template, result);
 
 		_resolveKeynodeImpl("question_get_content", question_get_content, result);
 
@@ -80,6 +85,7 @@ namespace iot
 		_resolveKeynodeImpl("nrel_mass", nrel_mass, result);
 		_resolveKeynodeImpl("nrel_answer", nrel_answer, result);
 		_resolveKeynodeImpl("nrel_result", nrel_result, result);
+		_resolveKeynodeImpl("nrel_speech_templates", nrel_speech_templates, result);
 
 		_resolveKeynodeImpl("rrel_1", rrel_1, result);
 		_resolveKeynodeImpl("rrel_2", rrel_2, result);
