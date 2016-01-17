@@ -85,5 +85,31 @@ namespace iot
 
 		}
 
+
+		sc::Addr findMainIdtf(sc::MemoryContext & ctx, sc::Addr const & elAddr, sc::Addr const langAddr)
+		{
+			assert(elAddr.isValid());
+			assert(langAddr.isValid());
+
+			sc::Addr result;
+			sc::Iterator5Ptr it5 = ctx.iterator5(
+				elAddr,
+				SC_TYPE(sc_type_arc_common | sc_type_const),
+				SC_TYPE(sc_type_link),
+				SC_TYPE(sc_type_arc_pos_const_perm),
+				Keynodes::nrel_main_idtf
+				);
+
+			while (it5->next())
+			{
+				if (ctx.helperCheckArc(langAddr, it5->value(2), sc_type_arc_pos_const_perm))
+				{
+					result = it5->value(2);
+					break;
+				}
+			}
+
+			return result;
+		}
 	}
 }

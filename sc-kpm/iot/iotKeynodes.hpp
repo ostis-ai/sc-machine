@@ -52,6 +52,7 @@ namespace iot
 		static sc::Addr nrel_answer;
 		static sc::Addr nrel_result;
 		static sc::Addr nrel_speech_templates;
+		static sc::Addr nrel_main_idtf;
 
 		static sc::Addr rrel_1;
 		static sc::Addr rrel_2;

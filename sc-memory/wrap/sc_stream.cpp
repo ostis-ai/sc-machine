@@ -210,3 +210,4 @@ bool StreamConverter::streamToString(ScStream const & stream, std::string & outS
 	return true;
 
 }
+

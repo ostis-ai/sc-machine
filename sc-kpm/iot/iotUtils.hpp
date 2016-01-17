@@ -36,5 +36,9 @@ namespace iot
 		 * @param valueAddr sc-addr of sc-link that contains mass value
 		 */
 		void setMass(sc::MemoryContext & ctx, sc::Addr const & objAddr, sc::Addr const & valueAddr);
+
+		/*! Trying to find main identifier of specified element with specified language
+		 */
+		sc::Addr findMainIdtf(sc::MemoryContext & ctx, sc::Addr const & elAddr, sc::Addr const langAddr);
 	}
 }

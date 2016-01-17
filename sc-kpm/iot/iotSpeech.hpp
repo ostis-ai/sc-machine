@@ -14,4 +14,21 @@ namespace iot
 
 	sc_result handler_generate_text_command(sc_event const * event, sc_addr arg);
 
+	class TextTemplateProcessor
+	{
+	public:
+		explicit TextTemplateProcessor(sc::MemoryContext & memoryCtx, std::string const & str, sc::Addr const & langAddr);
+		virtual ~TextTemplateProcessor();
+
+		bool generateOutputText(std::string & outText);
+
+	protected:
+		std::string processMainIdtfCmd(std::string & arguments);
+
+	private:
+		sc::MemoryContext & mMemoryCtx;
+		std::string mInputTextTemplate;
+		sc::Addr mLanguageAddr;
+	};
+
 }

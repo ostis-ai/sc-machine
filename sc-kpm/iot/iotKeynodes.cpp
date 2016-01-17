@@ -37,6 +37,7 @@ namespace iot
 	sc::Addr Keynodes::nrel_answer;
 	sc::Addr Keynodes::nrel_result;
 	sc::Addr Keynodes::nrel_speech_templates;
+	sc::Addr Keynodes::nrel_main_idtf;
 
 	sc::Addr Keynodes::rrel_1;
 	sc::Addr Keynodes::rrel_2;
@@ -86,6 +87,7 @@ namespace iot
 		_resolveKeynodeImpl("nrel_answer", nrel_answer, result);
 		_resolveKeynodeImpl("nrel_result", nrel_result, result);
 		_resolveKeynodeImpl("nrel_speech_templates", nrel_speech_templates, result);
+		_resolveKeynodeImpl("nrel_main_idtf", nrel_main_idtf, result);
 
 		_resolveKeynodeImpl("rrel_1", rrel_1, result);
 		_resolveKeynodeImpl("rrel_2", rrel_2, result);
