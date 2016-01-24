@@ -36,11 +36,15 @@ namespace iot
 		/// quesions
 		static sc::Addr question_get_content;
 
+		
 		/// common
+		static sc::Addr self;
+
 		static sc::Addr group_volume;
 		static sc::Addr command_initiated;
 		static sc::Addr command_finished;
 		static sc::Addr command_in_progress;
+		static sc::Addr command;
 
 		static sc::Addr question_initiated;
 		static sc::Addr question_finished;

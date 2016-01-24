@@ -23,10 +23,13 @@ namespace iot
 
 	sc::Addr Keynodes::question_get_content;
 
+	sc::Addr Keynodes::self;
+
 	sc::Addr Keynodes::group_volume;
 	sc::Addr Keynodes::command_initiated;
 	sc::Addr Keynodes::command_finished;
 	sc::Addr Keynodes::command_in_progress;
+	sc::Addr Keynodes::command;
 
 	sc::Addr Keynodes::question_initiated;
 	sc::Addr Keynodes::question_finished;
@@ -73,10 +76,12 @@ namespace iot
 
 		_resolveKeynodeImpl("question_get_content", question_get_content, result);
 
+		_resolveKeynodeImpl("self", self, result);
 		_resolveKeynodeImpl("group_volume", group_volume, result);
 		_resolveKeynodeImpl("command_initiated", command_initiated, result);
 		_resolveKeynodeImpl("command_finished", command_finished, result);
 		_resolveKeynodeImpl("command_in_progress", command_in_progress, result);
+		_resolveKeynodeImpl("command", command, result);
 
 		_resolveKeynodeImpl("question_initiated", question_initiated, result);
 		_resolveKeynodeImpl("question_finished", question_finished, result);

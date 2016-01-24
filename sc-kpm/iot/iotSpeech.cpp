@@ -26,8 +26,25 @@ namespace iot
 
 		if (!itCmd->next())
 			return SC_RESULT_ERROR_INVALID_PARAMS;
+
 		// got command addr
-		sc::Addr const commandAddr = itCmd->value(2);
+		sc::Addr commandAddr;
+		sc::Addr const commandInstAddr = itCmd->value(2);
+		sc::Iterator3Ptr itCommandClass = mMemoryCtx.iterator3(
+			SC_TYPE(sc_type_node | sc_type_const | sc_type_node_class),
+			SC_TYPE(sc_type_arc_pos_const_perm),
+			commandInstAddr);
+		while (itCommandClass->next())
+		{
+			if (mMemoryCtx.helperCheckArc(Keynodes::command, itCommandClass->value(0), SC_TYPE(sc_type_arc_pos_const_perm)))
+			{
+				commandAddr = itCommandClass->value(0);
+				break;
+			}
+		}
+
+		if (!commandAddr.isValid())
+			return SC_RESULT_ERROR_INVALID_STATE;
 
 		sc::Iterator5Ptr itLang = mMemoryCtx.iterator5(
 			requestAddr,
