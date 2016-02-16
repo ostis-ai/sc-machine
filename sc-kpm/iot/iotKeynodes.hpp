@@ -32,6 +32,7 @@ namespace iot
 		static sc::Addr command_add_content;
 		static sc::Addr command_who_are_you;
 		static sc::Addr command_generate_text_from_template;
+		static sc::Addr command_change_tv_program;
 
 		/// quesions
 		static sc::Addr question_get_content;
@@ -57,6 +58,7 @@ namespace iot
 		static sc::Addr nrel_result;
 		static sc::Addr nrel_speech_templates;
 		static sc::Addr nrel_main_idtf;
+		static sc::Addr nrel_tv_program;
 
 		static sc::Addr rrel_1;
 		static sc::Addr rrel_2;

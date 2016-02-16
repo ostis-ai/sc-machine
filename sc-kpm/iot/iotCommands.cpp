@@ -9,13 +9,16 @@
 #include "iotContent.hpp"
 #include "iotAbout.hpp"
 #include "iotSpeech.hpp"
+#include "iotTV.hpp"
 
 #include "wrap/sc_memory.hpp"
 
 sc_event * event_device_group_enable_command = 0;
-sc_event * event_add_content_command = 0;
 
+sc_event * event_add_content_command = 0;
 sc_event * event_get_content_question = 0;
+
+sc_event * event_change_tv_program = 0;
 
 sc_event * event_who_are_you = 0;
 sc_event * event_generate_text = 0;
@@ -94,6 +97,10 @@ namespace iot
 		if (!event_get_content_question)
 			return false;
 
+		event_change_tv_program = sc_event_new(memory_ctx->getRealContext(), Keynodes::command_initiated.getRealAddr(), SC_EVENT_ADD_OUTPUT_ARC, 0, &handler_change_tv_program, 0);
+		if (!event_change_tv_program)
+			return false;
+
 		event_who_are_you = sc_event_new(memory_ctx->getRealContext(), Keynodes::command_initiated.getRealAddr(), SC_EVENT_ADD_OUTPUT_ARC, 0, &handler_who_are_you_command, 0);
 		if (!event_who_are_you)
 			return false;
@@ -124,6 +131,12 @@ namespace iot
 		{
 			sc_event_destroy(event_get_content_question);
 			event_get_content_question = 0;
+		}
+
+		if (event_change_tv_program)
+		{
+			sc_event_destroy(event_change_tv_program);
+			event_change_tv_program = 0;
 		}
 
 		if (event_who_are_you)

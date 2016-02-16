@@ -16,7 +16,7 @@ namespace iot
 #define QUESTION_AGENT		1
 
 
-	template<size_t AgentType>
+	template <size_t AgentType>
 	class Agent
 	{
 	public:
@@ -32,12 +32,29 @@ namespace iot
 
 		sc_result run(sc::Addr const & startArcAddr);
 
+		sc::Addr getParam(sc::Addr const & cmdAddr, sc::Addr const & relationAddr, sc_type paramType)
+		{
+			sc::Iterator5Ptr iter = mMemoryCtx.iterator5(cmdAddr,
+				SC_TYPE(sc_type_arc_pos_const_perm),
+				SC_TYPE(paramType),
+				SC_TYPE(sc_type_arc_pos_const_perm),
+				relationAddr);
+
+			if (!iter->next())
+				return sc::Addr();
+
+			return iter->value(2);
+		}
+
 	protected:
 		virtual sc_result runImpl(sc::Addr const & requestAddr, sc::Addr const & resultAddr) = 0;
 
 	protected:
 		sc::Addr mCmdClassAddr;
 		sc::MemoryContext mMemoryCtx;
+
+	private:
+		sc::Addr mCmdAddr;
 	};
 
 #define AGENT_NAME_TYPE(__Name__) __Name__##Type

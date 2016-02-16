@@ -8,6 +8,7 @@ set(SOURCES
 	"iotAgent.cpp"
 	"iotAbout.cpp"
 	"iotSpeech.cpp"
+	"iotTV.cpp"
 )
 set(HEADERS 
 	"iotTypes.hpp"
@@ -20,6 +21,7 @@ set(HEADERS
 	"iotAgent.hpp"
 	"iotAbout.hpp"
 	"iotSpeech.hpp"
+	"iotTV.hpp"
 )
 
 add_library (iot SHARED ${SOURCES} ${HEADERS})
