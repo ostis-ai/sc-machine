@@ -18,7 +18,7 @@
 namespace sctp
 {
 
-#define SCTP_ADDR_SIZE      (sizeof(sc::tRealAddr))
+#define SCTP_ADDR_SIZE      (sizeof(tRealAddr))
 
 #pragma pack(push,1)
 struct RequestHeader
@@ -32,7 +32,7 @@ struct RequestHeader
 struct BaseElementRequest
 {
     RequestHeader header;
-    sc::tRealAddr addr;
+    tRealAddr addr;
 };
 
 typedef BaseElementRequest RequestElementCheck;
@@ -50,8 +50,8 @@ struct RequestCreateArc
 {
     RequestHeader header;
     sc_type type;
-    sc::tRealAddr addrBeg;
-    sc::tRealAddr addrEnd;
+    tRealAddr addrBeg;
+    tRealAddr addrEnd;
 };
 
 typedef BaseElementRequest RequestGetLinkContent;
@@ -59,7 +59,7 @@ typedef BaseElementRequest RequestGetLinkContent;
 struct RequestSetLinkContent
 {
 	RequestHeader header;
-	sc::tRealAddr addr;
+	tRealAddr addr;
 	sc_uint32 size;
 
 	// data appends later (because it has dynamic size)
@@ -83,29 +83,31 @@ class Iterator
 	friend class Client;
 
 protected:
-	_SC_EXTERN Iterator(sc::TSharedPointer<char> buffer, sc_uint32 resultCount, sc_uint8 iterRange);
+	_SC_EXTERN Iterator(TSharedPointer<char> buffer, sc_uint32 resultCount, sc_uint8 iterRange);
 
 public:
 	_SC_EXTERN virtual ~Iterator();
 	_SC_EXTERN bool next();
-	_SC_EXTERN sc::Addr getValue(sc_uint8 idx) const;
+	_SC_EXTERN ScAddr getValue(sc_uint8 idx) const;
 
 private:
 	sc_uint8 mIterRange;
 	sc_uint32 mResultCount;
 	sc_uint32 mCurrentResult;
-	sc::TSharedPointer<char> mBuffer;
+	TSharedPointer<char> mBuffer;
 };
 
 SHARED_PTR_TYPE(Iterator)
 
+
+
 template <typename ParamType1, typename ParamType2, typename ParamType3>
 sc_uint32 Iterator3ParamsT(char * buffer, ParamType1 const & param1, ParamType2 const & param2, ParamType3 const & param3);
 
-template<> sc_uint32 Iterator3ParamsT<sc::Addr, sc_type, sc_type>(char * buffer, sc::Addr const & param1, sc_type const & param2, sc_type const & param3)
+template<> sc_uint32 Iterator3ParamsT<ScAddr, sc_type, sc_type>(char * buffer, ScAddr const & param1, sc_type const & param2, sc_type const & param3)
 {
 	buffer[0] = SCTP_ITERATOR_3F_A_A;
-	sc::tRealAddr * addrBuff = (sc::tRealAddr*)(buffer + 1);
+	tRealAddr * addrBuff = (tRealAddr*)(buffer + 1);
 	*addrBuff = param1.getRealAddr();
 	++addrBuff;
 	sc_type * typeBuff = (sc_type*)addrBuff;
@@ -113,25 +115,25 @@ template<> sc_uint32 Iterator3ParamsT<sc::Addr, sc_type, sc_type>(char * buffer,
 	++typeBuff;
 	*typeBuff = param3;
 
-	return 1 + sizeof(sc::tRealAddr) + sizeof(sc_type)* 2;
+	return 1 + sizeof(tRealAddr) + sizeof(sc_type)* 2;
 }
 
-template<> sc_uint32 Iterator3ParamsT<sc::Addr, sc_type, sc::Addr>(char * buffer, sc::Addr const & param1, sc_type const & param2, sc::Addr const & param3)
+template<> sc_uint32 Iterator3ParamsT<ScAddr, sc_type, ScAddr>(char * buffer, ScAddr const & param1, sc_type const & param2, ScAddr const & param3)
 {
 	buffer[0] = SCTP_ITERATOR_3F_A_F;
-	sc::tRealAddr * addrBuff = (sc::tRealAddr*)(buffer + 1);
+	tRealAddr * addrBuff = (tRealAddr*)(buffer + 1);
 	*addrBuff = param1.getRealAddr();
 	++addrBuff;
 	sc_type * typeBuff = (sc_type*)addrBuff;
 	*typeBuff = param2;
 	++typeBuff;
-	addrBuff = (sc::tRealAddr*)typeBuff;
+	addrBuff = (tRealAddr*)typeBuff;
 	*addrBuff = param3.getRealAddr();
 
-	return 1 + sizeof(sc::tRealAddr) * 2 + sizeof(sc_type);
+	return 1 + sizeof(tRealAddr) * 2 + sizeof(sc_type);
 }
 
-template<> sc_uint32 Iterator3ParamsT<sc_type, sc_type, sc::Addr>(char * buffer, sc_type const & param1, sc_type const & param2, sc::Addr const & param3)
+template<> sc_uint32 Iterator3ParamsT<sc_type, sc_type, ScAddr>(char * buffer, sc_type const & param1, sc_type const & param2, ScAddr const & param3)
 {
 	buffer[0] = SCTP_ITERATOR_3A_A_F;
 	sc_type * typeBuff = (sc_type*)(buffer + 1);
@@ -139,10 +141,10 @@ template<> sc_uint32 Iterator3ParamsT<sc_type, sc_type, sc::Addr>(char * buffer,
 	++typeBuff;
 	*typeBuff = param2;
 	++typeBuff;
-	sc::tRealAddr * addrBuff = (sc::tRealAddr*)typeBuff;
+	tRealAddr * addrBuff = (tRealAddr*)typeBuff;
 	*addrBuff = param3.getRealAddr();
 	
-	return 1 + sizeof(sc::tRealAddr) + sizeof(sc_type) * 2;
+	return 1 + sizeof(tRealAddr) + sizeof(sc_type) * 2;
 }
 
 
@@ -150,11 +152,11 @@ template <typename ParamType1, typename ParamType2, typename ParamType3, typenam
 sc_uint32 Iterator5ParamsT(char * buffer, ParamType1 const & param1, ParamType2 const & param2, ParamType3 const & param3, ParamType4 const & param4, ParamType5 const & param5);
 
 
-template <> sc_uint32 Iterator5ParamsT<sc::Addr, sc_type, sc_type, sc_type, sc::Addr>
-	(char * buffer, sc::Addr const & param1, sc_type const & param2, sc_type const & param3, sc_type const & param4, sc::Addr const & param5)
+template <> sc_uint32 Iterator5ParamsT<ScAddr, sc_type, sc_type, sc_type, ScAddr>
+	(char * buffer, ScAddr const & param1, sc_type const & param2, sc_type const & param3, sc_type const & param4, ScAddr const & param5)
 {
 	buffer[0] = SCTP_ITERATOR_5F_A_A_A_F;
-	sc::tRealAddr * addrBuff = (sc::tRealAddr*)(buffer + 1);
+	tRealAddr * addrBuff = (tRealAddr*)(buffer + 1);
 	*addrBuff = param1.getRealAddr();
 	++addrBuff;
 	sc_type * typeBuff = (sc_type*)addrBuff;
@@ -164,14 +166,14 @@ template <> sc_uint32 Iterator5ParamsT<sc::Addr, sc_type, sc_type, sc_type, sc::
 	++typeBuff;
 	*typeBuff = param4;
 	++typeBuff;
-	addrBuff = (sc::tRealAddr*)typeBuff;
+	addrBuff = (tRealAddr*)typeBuff;
 	*addrBuff = param5.getRealAddr();
 
-	return 1 + sizeof(sc::tRealAddr) * 2 + sizeof(sc_type) * 3;
+	return 1 + sizeof(tRealAddr) * 2 + sizeof(sc_type) * 3;
 }
 
-template <> sc_uint32 Iterator5ParamsT<sc_type, sc_type, sc::Addr, sc_type, sc::Addr>
-	(char * buffer, sc_type const & param1, sc_type const & param2, sc::Addr const & param3, sc_type const & param4, sc::Addr const & param5)
+template <> sc_uint32 Iterator5ParamsT<sc_type, sc_type, ScAddr, sc_type, ScAddr>
+	(char * buffer, sc_type const & param1, sc_type const & param2, ScAddr const & param3, sc_type const & param4, ScAddr const & param5)
 {
 	buffer[0] = SCTP_ITERATOR_5A_A_F_A_F;
 	sc_type * typeBuff = (sc_type*)(buffer + 1);
@@ -179,41 +181,41 @@ template <> sc_uint32 Iterator5ParamsT<sc_type, sc_type, sc::Addr, sc_type, sc::
 	++typeBuff;
 	*typeBuff = param2;
 	++typeBuff;
-	sc::tRealAddr * addrBuff = (sc::tRealAddr*)typeBuff;
+	tRealAddr * addrBuff = (tRealAddr*)typeBuff;
 	*addrBuff = param3.getRealAddr();
 	++addrBuff;
 	typeBuff = (sc_type*)addrBuff;
 	*typeBuff = param4;
 	++typeBuff;
-	addrBuff = (sc::tRealAddr*)typeBuff;
+	addrBuff = (tRealAddr*)typeBuff;
 	*addrBuff = param5.getRealAddr();
 
-	return 1 + sizeof(sc::tRealAddr) * 2 + sizeof(sc_type) * 3;
+	return 1 + sizeof(tRealAddr) * 2 + sizeof(sc_type) * 3;
 }
 
-template <> sc_uint32 Iterator5ParamsT<sc::Addr, sc_type, sc::Addr, sc_type, sc::Addr>
-	(char * buffer, sc::Addr const & param1, sc_type const & param2, sc::Addr const & param3, sc_type const & param4, sc::Addr const & param5)
+template <> sc_uint32 Iterator5ParamsT<ScAddr, sc_type, ScAddr, sc_type, ScAddr>
+	(char * buffer, ScAddr const & param1, sc_type const & param2, ScAddr const & param3, sc_type const & param4, ScAddr const & param5)
 {
 	buffer[0] = SCTP_ITERATOR_5F_A_F_A_F;
-	sc::tRealAddr * addrBuff = (sc::tRealAddr*)(buffer + 1);
+	tRealAddr * addrBuff = (tRealAddr*)(buffer + 1);
 	*addrBuff = param1.getRealAddr();
 	++addrBuff;
 	sc_type * typeBuff = (sc_type*)addrBuff;
 	*typeBuff = param2;
 	++typeBuff;
-	addrBuff = (sc::tRealAddr*)typeBuff;
+	addrBuff = (tRealAddr*)typeBuff;
 	*addrBuff = param3.getRealAddr();
 	typeBuff = (sc_type*)addrBuff;
 	*typeBuff = param4;
 	++typeBuff;
-	addrBuff = (sc::tRealAddr*)typeBuff;
+	addrBuff = (tRealAddr*)typeBuff;
 	*addrBuff = param5.getRealAddr();
 
-	return 1 + sizeof(sc::tRealAddr) * 3 + sizeof(sc_type) * 2;
+	return 1 + sizeof(tRealAddr) * 3 + sizeof(sc_type) * 2;
 }
 
-template <> sc_uint32 Iterator5ParamsT<sc_type, sc_type, sc::Addr, sc_type, sc_type>
-	(char * buffer, sc_type const & param1, sc_type const & param2, sc::Addr const & param3, sc_type const & param4, sc_type const & param5)
+template <> sc_uint32 Iterator5ParamsT<sc_type, sc_type, ScAddr, sc_type, sc_type>
+	(char * buffer, sc_type const & param1, sc_type const & param2, ScAddr const & param3, sc_type const & param4, sc_type const & param5)
 {
 	buffer[0] = SCTP_ITERATOR_5A_A_F_A_A;
 	sc_type * typeBuff = (sc_type*)(buffer + 1);
@@ -221,7 +223,7 @@ template <> sc_uint32 Iterator5ParamsT<sc_type, sc_type, sc::Addr, sc_type, sc_t
 	++typeBuff;
 	*typeBuff = param2;
 	++typeBuff;
-	sc::tRealAddr * addrBuff = (sc::tRealAddr*)typeBuff;
+	tRealAddr * addrBuff = (tRealAddr*)typeBuff;
 	*addrBuff = param3.getRealAddr();
 	++addrBuff;
 	typeBuff = (sc_type*)addrBuff;
@@ -229,14 +231,14 @@ template <> sc_uint32 Iterator5ParamsT<sc_type, sc_type, sc::Addr, sc_type, sc_t
 	++typeBuff;
 	*typeBuff = param5;
 
-	return 1 + sizeof(sc::tRealAddr) + sizeof(sc_type) * 4;
+	return 1 + sizeof(tRealAddr) + sizeof(sc_type) * 4;
 }
 
-template <> sc_uint32 Iterator5ParamsT<sc::Addr, sc_type, sc_type, sc_type, sc_type>
-	(char * buffer, sc::Addr const & param1, sc_type const & param2, sc_type const & param3, sc_type const & param4, sc_type const & param5)
+template <> sc_uint32 Iterator5ParamsT<ScAddr, sc_type, sc_type, sc_type, sc_type>
+	(char * buffer, ScAddr const & param1, sc_type const & param2, sc_type const & param3, sc_type const & param4, sc_type const & param5)
 {
 	buffer[0] = SCTP_ITERATOR_5F_A_A_A_A;
-	sc::tRealAddr * addrBuff = (sc::tRealAddr*)(buffer + 1);
+	tRealAddr * addrBuff = (tRealAddr*)(buffer + 1);
 	*addrBuff = param1.getRealAddr();
 	++addrBuff;
 	sc_type * typeBuff = (sc_type*)addrBuff;
@@ -248,20 +250,20 @@ template <> sc_uint32 Iterator5ParamsT<sc::Addr, sc_type, sc_type, sc_type, sc_t
 	++typeBuff;
 	*typeBuff = param5;
 
-	return 1 + sizeof(sc::tRealAddr) + sizeof(sc_type) * 4;
+	return 1 + sizeof(tRealAddr) + sizeof(sc_type) * 4;
 }
 
-template <> sc_uint32 Iterator5ParamsT<sc::Addr, sc_type, sc::Addr, sc_type, sc_type>
-	(char * buffer, sc::Addr const & param1, sc_type const & param2, sc::Addr const & param3, sc_type const & param4, sc_type const & param5)
+template <> sc_uint32 Iterator5ParamsT<ScAddr, sc_type, ScAddr, sc_type, sc_type>
+	(char * buffer, ScAddr const & param1, sc_type const & param2, ScAddr const & param3, sc_type const & param4, sc_type const & param5)
 {
 	buffer[0] = SCTP_ITERATOR_5F_A_F_A_A;
-	sc::tRealAddr * addrBuff = (sc::tRealAddr*)(buffer + 1);
+	tRealAddr * addrBuff = (tRealAddr*)(buffer + 1);
 	*addrBuff = param1.getRealAddr();
 	++addrBuff;
 	sc_type * typeBuff = (sc_type*)addrBuff;
 	*typeBuff = param2;
 	++typeBuff;
-	addrBuff = (sc::tRealAddr*)typeBuff;
+	addrBuff = (tRealAddr*)typeBuff;
 	*addrBuff = param3.getRealAddr();
 	++addrBuff;
 	typeBuff = (sc_type*)addrBuff;
@@ -269,7 +271,7 @@ template <> sc_uint32 Iterator5ParamsT<sc::Addr, sc_type, sc::Addr, sc_type, sc_
 	++typeBuff;
 	*typeBuff = param5;
 	
-	return 1 + sizeof(sc::tRealAddr) * 2 + sizeof(sc_type) * 3;
+	return 1 + sizeof(tRealAddr) * 2 + sizeof(sc_type) * 3;
 }
 
 // ------------------------------------------------------
@@ -283,29 +285,29 @@ public:
     _SC_EXTERN void disconnect();
 
     //! Check if element exists with specified addr
-    _SC_EXTERN bool isElement(sc::Addr const & addr);
+    _SC_EXTERN bool isElement(ScAddr const & addr);
     //! Erase element from sc-memory and returns true on success; otherwise returns false.
-    _SC_EXTERN bool eraseElement(sc::Addr const & addr);
+    _SC_EXTERN bool eraseElement(ScAddr const & addr);
 
-    _SC_EXTERN sc::Addr createNode(sc_type type);
-    _SC_EXTERN sc::Addr createLink();
-    _SC_EXTERN sc::Addr createArc(sc_type type, sc::Addr const & addrBeg, sc::Addr const & addrEnd);
+    _SC_EXTERN ScAddr createNode(sc_type type);
+    _SC_EXTERN ScAddr createLink();
+    _SC_EXTERN ScAddr createArc(sc_type type, ScAddr const & addrBeg, ScAddr const & addrEnd);
 
     //! Returns type of sc-element. If there are any error, then returns 0
-    _SC_EXTERN sc_type getElementType(sc::Addr const & addr);
+    _SC_EXTERN sc_type getElementType(ScAddr const & addr);
 
     /*! Change subtype of sc-element (subtype & sc_type_element_mask == 0).
      * Return true, if there are no any errors; otherwise return false.
      */
-    _SC_EXTERN bool setElementSubtype(sc::Addr const & addr, sc_type subtype);
+    _SC_EXTERN bool setElementSubtype(ScAddr const & addr, sc_type subtype);
 
-    _SC_EXTERN bool getArcInfo(sc::Addr const & arcAddr, sc::Addr & outBegin, sc::Addr & outEnd) const;
+    _SC_EXTERN bool getArcInfo(ScAddr const & arcAddr, ScAddr & outBegin, ScAddr & outEnd) const;
 
-	_SC_EXTERN bool setLinkContent(sc::Addr const & addr, sc::IStreamPtr const & stream);
-	_SC_EXTERN bool getLinkContent(sc::Addr const & addr, sc::IStreamPtr & stream);
+	_SC_EXTERN bool setLinkContent(ScAddr const & addr, IScStreamPtr const & stream);
+	_SC_EXTERN bool getLinkContent(ScAddr const & addr, IScStreamPtr & stream);
 
     //! Returns true, if any links found
-	_SC_EXTERN bool findLinksByContent(sc::IStreamPtr const & stream, sc::tAddrList & found);
+	_SC_EXTERN bool findLinksByContent(IScStreamPtr const & stream, tAddrList & found);
 
 	template <typename ParamType1, typename ParamType2, typename ParamType3>
 	_SC_EXTERN IteratorPtr iterator3(ParamType1 param1, ParamType2 param2, ParamType3 param3)
@@ -327,10 +329,10 @@ public:
 				sc_uint32 resultCount = 0;
 				if (mSocketImpl->readType(resultCount) == sizeof(sc_uint32))
 				{
-					sc_uint32 const bufferSize = sizeof(sc::tRealAddr) * 3 * resultCount;
+					sc_uint32 const bufferSize = sizeof(tRealAddr) * 3 * resultCount;
 					if (bufferSize > 0)
 					{
-						sc::TSharedPointer<char> buffer = sc::TSharedPointer<char>(new char[bufferSize]);
+						TSharedPointer<char> buffer = TSharedPointer<char>(new char[bufferSize]);
 						if (bufferSize > 0)
 						{
 							if (mSocketImpl->read(buffer._GetPtr(), bufferSize) == bufferSize)
@@ -365,10 +367,10 @@ public:
 				sc_uint32 resultCount = 0;
 				if (mSocketImpl->readType(resultCount) == sizeof(sc_uint32))
 				{
-					sc_uint32 const bufferSize = sizeof(sc::tRealAddr) * 5 * resultCount;
+					sc_uint32 const bufferSize = sizeof(tRealAddr) * 5 * resultCount;
 					if (bufferSize > 0)
 					{
-						sc::TSharedPointer<char> buffer = sc::TSharedPointer<char>(new char[bufferSize]);
+						TSharedPointer<char> buffer = TSharedPointer<char>(new char[bufferSize]);
 						if (bufferSize > 0)
 						{
 							if (mSocketImpl->read(buffer._GetPtr(), bufferSize) == bufferSize)

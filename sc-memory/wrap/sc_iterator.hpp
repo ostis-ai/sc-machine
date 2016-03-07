@@ -14,10 +14,8 @@ extern "C"
 #include "sc_memory_headers.h"
 }
 
-namespace sc
-{
 
-class MemoryContext;
+class ScMemoryContext;
 
 template <typename IterType>
 class TIteratorBase
@@ -33,7 +31,7 @@ public:
     _SC_EXTERN virtual bool next() const = 0;
 
     //! Returns sc-addr of specified element in iterator result
-    _SC_EXTERN virtual Addr value(sc_uint8 idx) const = 0;
+	_SC_EXTERN virtual ScAddr value(sc_uint8 idx) const = 0;
 
 protected:
     IterType * mIterator;
@@ -43,10 +41,10 @@ protected:
 template <typename ParamType1, typename ParamType2, typename ParamType3>
 class TIterator3 : public TIteratorBase<sc_iterator3>
 {
-friend class MemoryContext;
+friend class ScMemoryContext;
 
 protected:
-    _SC_EXTERN TIterator3(MemoryContext const & context, ParamType1 const & p1, ParamType2 const & p2, ParamType3 const & p3);
+	_SC_EXTERN TIterator3(ScMemoryContext const & context, ParamType1 const & p1, ParamType2 const & p2, ParamType3 const & p3);
 
 public:
     _SC_EXTERN ~TIterator3()
@@ -80,11 +78,11 @@ public:
         return sc_iterator3_next(mIterator) == SC_TRUE;
     }
 
-    _SC_EXTERN Addr value(sc_uint8 idx) const
+	_SC_EXTERN ScAddr value(sc_uint8 idx) const
     {
         check_expr(idx < 3);
         check_expr(isValid());
-        return Addr(sc_iterator3_value(mIterator, idx));
+		return ScAddr(sc_iterator3_value(mIterator, idx));
     }
 };
 
@@ -92,10 +90,10 @@ public:
 template <typename ParamType1, typename ParamType2, typename ParamType3, typename ParamType4, typename ParamType5>
 class TIterator5 : public TIteratorBase<sc_iterator5>
 {
-    friend class MemoryContext;
+    friend class ScMemoryContext;
 
 protected:
-    _SC_EXTERN TIterator5(MemoryContext const & context, ParamType1 const & p1, ParamType2 const & p2, ParamType3 const & p3, ParamType4 const & p4, ParamType5 const & p5);
+	_SC_EXTERN TIterator5(ScMemoryContext const & context, ParamType1 const & p1, ParamType2 const & p2, ParamType3 const & p3, ParamType4 const & p4, ParamType5 const & p5);
 
 public:
     _SC_EXTERN ~TIterator5()
@@ -118,11 +116,11 @@ public:
         return sc_iterator5_next(mIterator) == SC_TRUE;
     }
 
-    _SC_EXTERN Addr value(sc_uint8 idx) const
+	_SC_EXTERN ScAddr value(sc_uint8 idx) const
     {
         check_expr(idx < 5);
         check_expr(isValid());
-        return Addr(sc_iterator5_value(mIterator, idx));
+		return ScAddr(sc_iterator5_value(mIterator, idx));
     }
 
 };
@@ -133,4 +131,3 @@ typedef TIteratorBase<sc_iterator5> Iterator5Type;
 typedef TSharedPointer< Iterator3Type > Iterator3Ptr;
 typedef TSharedPointer< Iterator5Type > Iterator5Ptr;
 
-}

@@ -6,24 +6,20 @@
 
 #include "sc_utils.hpp"
 
-namespace sc
-{
 
-Exception::Exception(std::string const & description)
+ScException::ScException(std::string const & description)
     : mDescription(description)
 {
 
 }
 
-Exception::~Exception() throw()
+ScException::~ScException() throw()
 {
 
 }
 
-const char* Exception::what() const throw()
+const char* ScException::what() const throw()
 {
     return mDescription.c_str();
 }
 
-
-}

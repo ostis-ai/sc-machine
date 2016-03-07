@@ -14,11 +14,8 @@ extern "C"
 #include "sc_types.hpp"
 #include "sc_utils.hpp"
 
-namespace sc
-{
 
-
-class IStream
+class IScStream
 {
 public:
 	_SC_EXTERN virtual bool isValid() const = 0;
@@ -43,18 +40,18 @@ public:
 };
 
 
-class Stream : public IStream
+class ScStream : public IScStream
 {
-    friend class MemoryContext;
+	friend class ScMemoryContext;
 
 public:
-	_SC_EXTERN explicit Stream();
-	_SC_EXTERN explicit Stream(sc_stream * stream);
-	_SC_EXTERN explicit Stream(std::string const & fileName, sc_uint8 flags);
-	_SC_EXTERN explicit Stream(sc_char * buffer, sc_uint32 bufferSize, sc_uint8 flags);
-	_SC_EXTERN explicit Stream(sc_char const * buffer, sc_uint32 bufferSize, sc_uint8 flags);
+	_SC_EXTERN explicit ScStream();
+	_SC_EXTERN explicit ScStream(sc_stream * stream);
+	_SC_EXTERN explicit ScStream(std::string const & fileName, sc_uint8 flags);
+	_SC_EXTERN explicit ScStream(sc_char * buffer, sc_uint32 bufferSize, sc_uint8 flags);
+	_SC_EXTERN explicit ScStream(sc_char const * buffer, sc_uint32 bufferSize, sc_uint8 flags);
 
-	_SC_EXTERN ~Stream();
+	_SC_EXTERN ~ScStream();
 
 	_SC_EXTERN void reset();
 
@@ -86,11 +83,11 @@ protected:
     sc_stream * mStream;
 };
 
-class StreamMemory : public IStream
+class ScStreamMemory : public IScStream
 {
 public:
-	_SC_EXTERN explicit StreamMemory(MemoryBufferPtr const & buff);
-	_SC_EXTERN virtual ~StreamMemory();
+	_SC_EXTERN explicit ScStreamMemory(MemoryBufferPtr const & buff);
+	_SC_EXTERN virtual ~ScStreamMemory();
 
 	_SC_EXTERN bool isValid() const;
 	_SC_EXTERN bool read(sc_char * buff, sc_uint32 buffLen, sc_uint32 & readBytes) const;
@@ -107,6 +104,5 @@ private:
 };
 
 
-SHARED_PTR_TYPE(IStream)
+SHARED_PTR_TYPE(IScStream)
 
-}

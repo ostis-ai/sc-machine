@@ -12,14 +12,12 @@
 
 #include "sc_types.hpp"
 
-namespace sc
-{
 
-class Exception : public std::exception
+class ScException : public std::exception
 {
 public:
-    Exception(std::string const & description);
-    virtual ~Exception() throw();
+	ScException(std::string const & description);
+	virtual ~ScException() throw();
 
     const char* what() const throw();
 
@@ -28,7 +26,7 @@ private:
 };
 
 #define check_expr(x) assert(x)
-#define error(str) { throw sc::Exception(str); }
+#define error(str) { throw ScException(str); }
 
 // ---------------- Reference counter -----------
 class RefCount
@@ -165,7 +163,7 @@ protected:
     RefCount * mRefCount;
 };
 
-#define SHARED_PTR_TYPE(__type) typedef sc::TSharedPointer< __type > __type##Ptr;
+#define SHARED_PTR_TYPE(__type) typedef TSharedPointer< __type > __type##Ptr;
 
 struct MemoryBuffer
 {
@@ -192,7 +190,3 @@ T max(T a, T b)
 {
 	return (a > b) ? a : b;
 }
-
-}
-
-

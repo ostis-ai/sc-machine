@@ -11,7 +11,7 @@ namespace sctp
 {
 
 
-Iterator::Iterator(sc::TSharedPointer<char> buffer, sc_uint32 resultCount, sc_uint8 iterRange)
+Iterator::Iterator(TSharedPointer<char> buffer, sc_uint32 resultCount, sc_uint8 iterRange)
 	: mBuffer(buffer)
 	, mResultCount(resultCount)
 	, mCurrentResult(0)
@@ -29,11 +29,11 @@ bool Iterator::next()
 	return (mCurrentResult <= mResultCount);
 }
 
-sc::Addr Iterator::getValue(sc_uint8 idx) const
+ScAddr Iterator::getValue(sc_uint8 idx) const
 {
 	check_expr(mCurrentResult > 0);
-	sc_uint32 const offset = (mCurrentResult - 1) * sizeof(sc::tRealAddr) * mIterRange + sizeof(sc::tRealAddr) * idx;
-	return sc::Addr(*((sc::tRealAddr*)(mBuffer._GetPtr() + offset)));
+	sc_uint32 const offset = (mCurrentResult - 1) * sizeof(tRealAddr) * mIterRange + sizeof(tRealAddr) * idx;
+	return ScAddr(*((tRealAddr*)(mBuffer._GetPtr() + offset)));
 }
 
 // -----------------------------------------
@@ -61,7 +61,7 @@ _SC_EXTERN void Client::disconnect()
 }
 
 /// TODO: Implement error code return
-_SC_EXTERN bool Client::isElement(sc::Addr const & addr)
+_SC_EXTERN bool Client::isElement(ScAddr const & addr)
 {
     RequestElementCheck req;
 
@@ -82,7 +82,7 @@ _SC_EXTERN bool Client::isElement(sc::Addr const & addr)
     return false;
 }
 
-_SC_EXTERN bool Client::eraseElement(sc::Addr const & addr)
+_SC_EXTERN bool Client::eraseElement(ScAddr const & addr)
 {
     RequestElementErase req;
 
@@ -102,7 +102,7 @@ _SC_EXTERN bool Client::eraseElement(sc::Addr const & addr)
     return false;
 }
 
-_SC_EXTERN sc::Addr Client::createNode(sc_type type)
+_SC_EXTERN ScAddr Client::createNode(sc_type type)
 {
     RequestCreateNode req;
     req.header.id = ++mCmdIdCounter;
@@ -116,17 +116,17 @@ _SC_EXTERN sc::Addr Client::createNode(sc_type type)
         ResultHeader res;
         if ((mSocketImpl->readType(res) == sizeof(ResultHeader)) && (res.resultCode == SCTP_RESULT_OK))
         {
-            sc::tRealAddr addr;
+            tRealAddr addr;
             assert(res.resultSize == sizeof(addr));
             if (mSocketImpl->readType(addr) == sizeof(addr))
-                return sc::Addr(addr);
+                return ScAddr(addr);
         }
     }
 
-    return sc::Addr();
+    return ScAddr();
 }
 
-_SC_EXTERN sc::Addr Client::createLink()
+_SC_EXTERN ScAddr Client::createLink()
 {
 	RequestHeader req;
 	req.id = ++mCmdIdCounter;
@@ -139,17 +139,17 @@ _SC_EXTERN sc::Addr Client::createLink()
 		ResultHeader res;
 		if ((mSocketImpl->readType(res) == sizeof(ResultHeader)) && (res.resultCode == SCTP_RESULT_OK))
 		{
-			sc::tRealAddr addr;
+			tRealAddr addr;
 			assert(res.resultSize == sizeof(addr));
 			if (mSocketImpl->readType(addr) == sizeof(addr))
-				return sc::Addr(addr);
+				return ScAddr(addr);
 		}
 	}
 
-    return sc::Addr();
+    return ScAddr();
 }
 
-_SC_EXTERN sc::Addr Client::createArc(sc_type type, sc::Addr const & addrBeg, sc::Addr const & addrEnd)
+_SC_EXTERN ScAddr Client::createArc(sc_type type, ScAddr const & addrBeg, ScAddr const & addrEnd)
 {
     RequestCreateArc req;
 
@@ -166,17 +166,17 @@ _SC_EXTERN sc::Addr Client::createArc(sc_type type, sc::Addr const & addrBeg, sc
         ResultHeader res;
         if ((mSocketImpl->readType(res) == sizeof(ResultHeader)) && (res.resultCode == SCTP_RESULT_OK))
         {
-            sc::tRealAddr addr;
+            tRealAddr addr;
             assert(res.resultSize == sizeof(addr));
             if (mSocketImpl->readType(addr) == sizeof(addr))
-                return sc::Addr(addr);
+                return ScAddr(addr);
         }
     }
 
-    return sc::Addr();
+    return ScAddr();
 }
 
-_SC_EXTERN sc_type Client::getElementType(sc::Addr const & addr)
+_SC_EXTERN sc_type Client::getElementType(ScAddr const & addr)
 {
     RequestElementType req;
 
@@ -203,12 +203,12 @@ _SC_EXTERN sc_type Client::getElementType(sc::Addr const & addr)
     return (sc_type)0;
 }
 
-_SC_EXTERN bool Client::setElementSubtype(sc::Addr const & addr, sc_type subtype)
+_SC_EXTERN bool Client::setElementSubtype(ScAddr const & addr, sc_type subtype)
 {
     return false;
 }
 
-_SC_EXTERN bool Client::getArcInfo(sc::Addr const & arcAddr, sc::Addr & outBegin, sc::Addr & outEnd) const
+_SC_EXTERN bool Client::getArcInfo(ScAddr const & arcAddr, ScAddr & outBegin, ScAddr & outEnd) const
 {
     RequestArcInfo req;
 
@@ -223,12 +223,12 @@ _SC_EXTERN bool Client::getArcInfo(sc::Addr const & arcAddr, sc::Addr & outBegin
         ResultHeader res;
         if ((mSocketImpl->readType(res) == sizeof(res)) && (res.resultCode == SCTP_RESULT_OK))
         {
-            sc::tRealAddr addrs[2];
+            tRealAddr addrs[2];
             assert(res.resultSize == sizeof(addrs));
             if (mSocketImpl->readType(addrs) == sizeof(addrs))
             {
-                outBegin = sc::Addr(addrs[0]);
-                outEnd = sc::Addr(addrs[1]);
+                outBegin = ScAddr(addrs[0]);
+                outEnd = ScAddr(addrs[1]);
                 return true;
             }
         }
@@ -237,7 +237,7 @@ _SC_EXTERN bool Client::getArcInfo(sc::Addr const & arcAddr, sc::Addr & outBegin
     return false;
 }
 
-_SC_EXTERN bool Client::setLinkContent(sc::Addr const & addr, sc::IStreamPtr const & stream)
+_SC_EXTERN bool Client::setLinkContent(ScAddr const & addr, IScStreamPtr const & stream)
 {
 	RequestSetLinkContent req;
 	
@@ -268,7 +268,7 @@ _SC_EXTERN bool Client::setLinkContent(sc::Addr const & addr, sc::IStreamPtr con
     return false;
 }
 
-_SC_EXTERN bool Client::getLinkContent(sc::Addr const & addr, sc::IStreamPtr & stream)
+_SC_EXTERN bool Client::getLinkContent(ScAddr const & addr, IScStreamPtr & stream)
 {
 	RequestGetLinkContent req;
 	req.header.id = ++mCmdIdCounter;
@@ -285,8 +285,8 @@ _SC_EXTERN bool Client::getLinkContent(sc::Addr const & addr, sc::IStreamPtr & s
 			char * buff = new char[res.resultSize];
 			if (mSocketImpl->read(buff, res.resultSize) == res.resultSize)
 			{
-				sc::MemoryBufferPtr buffer(new sc::MemoryBuffer(buff, res.resultSize));
-				stream = sc::IStreamPtr(new sc::StreamMemory(buffer));
+				MemoryBufferPtr buffer(new MemoryBuffer(buff, res.resultSize));
+				stream = IScStreamPtr(new ScStreamMemory(buffer));
 				return true;
 			}
 		}
@@ -295,7 +295,7 @@ _SC_EXTERN bool Client::getLinkContent(sc::Addr const & addr, sc::IStreamPtr & s
     return false;
 }
 
-_SC_EXTERN bool Client::findLinksByContent(sc::IStreamPtr const & stream, sc::tAddrList & found)
+_SC_EXTERN bool Client::findLinksByContent(IScStreamPtr const & stream, tAddrList & found)
 {
     return false;
 }

@@ -82,6 +82,7 @@ private:
     eSctpErrorCode processSetLinkContent(quint32 cmdFlags, quint32 cmdId, QDataStream *params, QIODevice *outDevice);
     eSctpErrorCode processIterateElements(quint32 cmdFlags, quint32 cmdId, QDataStream *params, QIODevice *outDevice);
     eSctpErrorCode processIterateConstruction(quint32 cmdFlags, quint32 cmdId, QDataStream *params, QIODevice *outDevice);
+	eSctpErrorCode processGenerateConstruction(quint32 cmdFlags, quint32 cmdId, QDataStream *params, QIODevice *outDevice);
 
     // events
     eSctpErrorCode processCreateEvent(quint32 cmdFlags, quint32 cmdId, QDataStream *params, QIODevice *outDevice);

@@ -16,14 +16,12 @@
 
 unsigned int gContextGounter;
 
-namespace sc
-{
 // ------------------
 
-sc_memory_context * Memory::msGlobalContext = 0;
-Memory::tMemoryContextList Memory::msContexts;
+sc_memory_context * ScMemory::msGlobalContext = 0;
+ScMemory::tMemoryContextList ScMemory::msContexts;
 
-bool Memory::initialize(sc_memory_params const & params)
+bool ScMemory::initialize(sc_memory_params const & params)
 {
     gContextGounter = 0;
 
@@ -31,7 +29,7 @@ bool Memory::initialize(sc_memory_params const & params)
     return msGlobalContext != null_ptr;
 }
 
-void Memory::shutdown(bool saveState /* = true */)
+void ScMemory::shutdown(bool saveState /* = true */)
 {
     if (msContexts.size() > 0)
     {
@@ -48,13 +46,13 @@ void Memory::shutdown(bool saveState /* = true */)
     msGlobalContext = 0;
 }
 
-void Memory::registerContext(MemoryContext const * ctx)
+void ScMemory::registerContext(ScMemoryContext const * ctx)
 {
     assert(!hasMemoryContext(ctx));
     msContexts.push_back(ctx);
 }
 
-void Memory::unregisterContext(MemoryContext const * ctx)
+void ScMemory::unregisterContext(ScMemoryContext const * ctx)
 {
     assert(hasMemoryContext(ctx));
     tMemoryContextList::iterator it = msContexts.begin();
@@ -68,7 +66,7 @@ void Memory::unregisterContext(MemoryContext const * ctx)
     }
 }
 
-bool Memory::hasMemoryContext(MemoryContext const * ctx)
+bool ScMemory::hasMemoryContext(ScMemoryContext const * ctx)
 {
     tMemoryContextList::const_iterator it = msContexts.begin();
     for (; it != msContexts.end(); ++it)
@@ -81,7 +79,7 @@ bool Memory::hasMemoryContext(MemoryContext const * ctx)
 
 // ---------------
 
-MemoryContext::MemoryContext(sc_uint8 accessLevels /* = 0 */, std::string const & name /* = "" */)
+ScMemoryContext::ScMemoryContext(sc_uint8 accessLevels /* = 0 */, std::string const & name /* = "" */)
     : mContext(0)
 {
     mContext = sc_memory_context_new(accessLevels);
@@ -94,100 +92,100 @@ MemoryContext::MemoryContext(sc_uint8 accessLevels /* = 0 */, std::string const 
     else
         mName = name;
 
-    Memory::registerContext(this);
+	ScMemory::registerContext(this);
 }
 
-MemoryContext::~MemoryContext()
+ScMemoryContext::~ScMemoryContext()
 {
     destroy();
 }
 
-void MemoryContext::destroy()
+void ScMemoryContext::destroy()
 {
     if (mContext)
     {
-        Memory::unregisterContext(this);
+		ScMemory::unregisterContext(this);
 
         sc_memory_context_free(mContext);
         mContext = 0;
     }
 }
 
-bool MemoryContext::isValid() const
+bool ScMemoryContext::isValid() const
 {
     return mContext != 0;
 }
 
-bool MemoryContext::isElement(Addr const & addr) const
+bool ScMemoryContext::isElement(ScAddr const & addr) const
 {
     check_expr(isValid());
     return (sc_memory_is_element(mContext, addr.mRealAddr) == SC_TRUE);
 }
 
-bool MemoryContext::eraseElement(Addr const & addr)
+bool ScMemoryContext::eraseElement(ScAddr const & addr)
 {
     check_expr(isValid());
     return sc_memory_element_free(mContext, addr.mRealAddr) == SC_RESULT_OK;
 }
 
-Addr MemoryContext::createNode(sc_type type)
+ScAddr ScMemoryContext::createNode(sc_type type)
 {
     check_expr(isValid());
-    return Addr(sc_memory_node_new(mContext, type));
+	return ScAddr(sc_memory_node_new(mContext, type));
 }
 
-Addr MemoryContext::createLink()
+ScAddr ScMemoryContext::createLink()
 {
     check_expr(isValid());
-    return Addr(sc_memory_link_new(mContext));
+	return ScAddr(sc_memory_link_new(mContext));
 }
 
-Addr MemoryContext::createArc(sc_type type, Addr const & addrBeg, Addr const & addrEnd)
+ScAddr ScMemoryContext::createArc(sc_type type, ScAddr const & addrBeg, ScAddr const & addrEnd)
 {
     check_expr(isValid());
-    return Addr(sc_memory_arc_new(mContext, type, addrBeg.mRealAddr, addrEnd.mRealAddr));
+	return ScAddr(sc_memory_arc_new(mContext, type, addrBeg.mRealAddr, addrEnd.mRealAddr));
 }
 
-sc_type MemoryContext::getElementType(Addr const & addr) const
+sc_type ScMemoryContext::getElementType(ScAddr const & addr) const
 {
     check_expr(isValid());
     sc_type type = 0;
     return (sc_memory_get_element_type(mContext, addr.mRealAddr, &type) == SC_RESULT_OK) ? type : 0;
 }
 
-bool MemoryContext::setElementSubtype(Addr const & addr, sc_type subtype)
+bool ScMemoryContext::setElementSubtype(ScAddr const & addr, sc_type subtype)
 {
     check_expr(isValid());
     return sc_memory_change_element_subtype(mContext, addr.mRealAddr, subtype) == SC_RESULT_OK;
 }
 
-Addr MemoryContext::getArcBegin(Addr const & arcAddr) const
+ScAddr ScMemoryContext::getArcBegin(ScAddr const & arcAddr) const
 {
     check_expr(isValid());
-    Addr addr;
+	ScAddr addr;
     if (sc_memory_get_arc_begin(mContext, arcAddr.mRealAddr, &addr.mRealAddr) != SC_RESULT_OK)
         addr.reset();
 
     return addr;
 }
 
-Addr MemoryContext::getArcEnd(Addr const & arcAddr) const
+ScAddr ScMemoryContext::getArcEnd(ScAddr const & arcAddr) const
 {
     check_expr(isValid());
-    Addr addr;
+	ScAddr addr;
     if (sc_memory_get_arc_end(mContext, arcAddr.mRealAddr, &addr.mRealAddr) != SC_RESULT_OK)
         addr.reset();
 
     return addr;
 }
 
-bool MemoryContext::setLinkContent(Addr const & addr, Stream const & stream)
+bool ScMemoryContext::setLinkContent(ScAddr const & addr, ScStream const & stream)
 {
     check_expr(isValid());
     return sc_memory_set_link_content(mContext, addr.mRealAddr, stream.mStream) == SC_RESULT_OK;
 }
 
-bool MemoryContext::getLinkContent(Addr const & addr, Stream & stream)
+bool ScMemoryContext::getLinkContent(ScAddr const & addr, ScStream & stream)
 {
     check_expr(isValid());
 
@@ -203,7 +201,7 @@ bool MemoryContext::getLinkContent(Addr const & addr, Stream & stream)
     return stream.isValid();
 }
 
-bool MemoryContext::findLinksByContent(Stream const & stream, tAddrList & found)
+bool ScMemoryContext::findLinksByContent(ScStream const & stream, tAddrList & found)
 {
     check_expr(isValid());
 
@@ -215,7 +213,7 @@ bool MemoryContext::findLinksByContent(Stream const & stream, tAddrList & found)
         return false;
 
     for (sc_uint32 i = 0; i < resultCount; ++i)
-        found.push_back(Addr(result[i]));
+		found.push_back(ScAddr(result[i]));
 
 	if (result)
 		sc_memory_free_buff(result);
@@ -223,28 +221,28 @@ bool MemoryContext::findLinksByContent(Stream const & stream, tAddrList & found)
     return found.size() > 0;
 }
 
-bool MemoryContext::save()
+bool ScMemoryContext::save()
 {
     check_expr(isValid());
     return (sc_memory_save(mContext) == SC_RESULT_OK);
 }
 
-bool MemoryContext::helperResolveSystemIdtf(std::string const & sysIdtf, Addr & outAddr)
+bool ScMemoryContext::helperResolveSystemIdtf(std::string const & sysIdtf, ScAddr & outAddr)
 {
 	check_expr(isValid());
 	return (sc_helper_resolve_system_identifier(mContext, sysIdtf.c_str(), &outAddr.mRealAddr) == SC_TRUE);
 }
 
-bool MemoryContext::helperSetSystemIdtf(std::string const & sysIdtf, Addr const & addr)
+bool ScMemoryContext::helperSetSystemIdtf(std::string const & sysIdtf, ScAddr const & addr)
 {
 	check_expr(isValid());
 	return (sc_helper_set_system_identifier(mContext, addr.mRealAddr, sysIdtf.c_str(), (sc_uint32)sysIdtf.size()) == SC_RESULT_OK);
 }
 
-bool MemoryContext::helperCheckArc(Addr const & begin, Addr end, sc_type arcType)
+bool ScMemoryContext::helperCheckArc(ScAddr const & begin, ScAddr end, sc_type arcType)
 {
 	check_expr(isValid());
 	return (sc_helper_check_arc(mContext, begin.mRealAddr, end.mRealAddr, arcType) == SC_RESULT_OK);
 }
 
-}
+

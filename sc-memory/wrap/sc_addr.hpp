@@ -16,14 +16,11 @@ extern "C"
 
 #include "sc_types.hpp"
 
-namespace sc
-{
-
 typedef sc_addr tRealAddr;
 
-class _SC_EXTERN Addr
+class _SC_EXTERN ScAddr
 {
-    friend class MemoryContext;
+	friend class ScMemoryContext;
 
     template <typename ParamType1, typename ParamType2, typename ParamType3> friend class TIterator3;
     template <typename ParamType1, typename ParamType2, typename ParamType3, typename ParamType4, typename ParamType5> friend class TIterator5;
@@ -32,18 +29,17 @@ public:
     bool isValid() const;
     void reset();
 
-    bool operator == (Addr const & other) const;
-    bool operator != (Addr const & other) const;
+	bool operator == (ScAddr const & other) const;
+	bool operator != (ScAddr const & other) const;
 
     tRealAddr const & getRealAddr() const;
 
-    explicit Addr();
-    explicit Addr(sc_addr const & addr);
+	explicit ScAddr();
+	explicit ScAddr(sc_addr const & addr);
 
 protected:
     tRealAddr mRealAddr;
 };
 
-typedef std::vector<Addr> tAddrVector;
-typedef std::list<Addr> tAddrList;
-}
+typedef std::vector<ScAddr> tAddrVector;
+typedef std::list<ScAddr> tAddrList;

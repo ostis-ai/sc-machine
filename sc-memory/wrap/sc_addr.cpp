@@ -6,42 +6,39 @@
 
 #include "sc_addr.hpp"
 
-namespace sc
-{
 
-Addr::Addr()
+ScAddr::ScAddr()
 {
-    SC_ADDR_MAKE_EMPTY(mRealAddr);
+	SC_ADDR_MAKE_EMPTY(mRealAddr);
 }
 
-Addr::Addr(sc_addr const & addr)
-    : mRealAddr(addr)
+ScAddr::ScAddr(sc_addr const & addr)
+	: mRealAddr(addr)
 {
 }
 
-bool Addr::isValid() const
+bool ScAddr::isValid() const
 {
     return !SC_ADDR_IS_EMPTY(mRealAddr);
 }
 
-void Addr::reset()
+void ScAddr::reset()
 {
     SC_ADDR_MAKE_EMPTY(mRealAddr);
 }
 
-bool Addr::operator == (Addr const & other) const
+bool ScAddr::operator == (ScAddr const & other) const
 {
     return SC_ADDR_IS_EQUAL(mRealAddr, other.mRealAddr);
 }
 
-bool Addr::operator != (Addr const & other) const
+bool ScAddr::operator != (ScAddr const & other) const
 {
     return SC_ADDR_IS_NOT_EQUAL(mRealAddr, other.mRealAddr);
 }
 
-tRealAddr const & Addr::getRealAddr() const
+tRealAddr const & ScAddr::getRealAddr() const
 {
     return mRealAddr;
 }
 
-}

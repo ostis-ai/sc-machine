@@ -27,7 +27,7 @@ void test_connection()
 void test_base_commands()
 {
     {
-        sc::Addr addr = sctpClient.createNode(sc_type_node | sc_type_node_class);
+        ScAddr addr = sctpClient.createNode(sc_type_node | sc_type_node_class);
 
         g_assert(addr.isValid());
         g_assert(sctpClient.isElement(addr));
@@ -37,31 +37,31 @@ void test_base_commands()
 	}
 
 	{
-		sc::Addr addr1 = sctpClient.createNode(sc_type_node);
-		sc::Addr addr2 = sctpClient.createNode(sc_type_node);
+		ScAddr addr1 = sctpClient.createNode(sc_type_node);
+		ScAddr addr2 = sctpClient.createNode(sc_type_node);
 
-		sc::Addr arc = sctpClient.createArc(sc_type_arc_pos_const_perm, addr1, addr2);
+		ScAddr arc = sctpClient.createArc(sc_type_arc_pos_const_perm, addr1, addr2);
 
 		g_assert(arc.isValid());
 		g_assert(sctpClient.getElementType(arc) == sc_type_arc_pos_const_perm);
 
-		sc::Addr a1, a2;
+		ScAddr a1, a2;
 		g_assert(sctpClient.getArcInfo(arc, a1, a2));
 		g_assert(a1 == addr1);
 		g_assert(a2 == addr2);
 	}
 
 	{
-		sc::Addr link = sctpClient.createLink();
+		ScAddr link = sctpClient.createLink();
 		char * data = "Test data";
-		sc::IStreamPtr stream(new sc::Stream(data, (sc_uint32)strlen(data), SC_STREAM_FLAG_READ | SC_STREAM_FLAG_SEEK));
+		IScStreamPtr stream(new ScStream(data, (sc_uint32)strlen(data), SC_STREAM_FLAG_READ | SC_STREAM_FLAG_SEEK));
 
 		g_assert(link.isValid());
 		g_assert(sctpClient.setLinkContent(link, stream));
 
 		g_assert(stream->seek(SC_STREAM_SEEK_SET, 0));
 
-		sc::IStreamPtr stream2;
+		IScStreamPtr stream2;
 		g_assert(sctpClient.getLinkContent(link, stream2));
 		g_assert(stream->size() == stream2->size());
 		for (sc_uint32 i = 0; i < stream->size(); ++i)
@@ -80,19 +80,19 @@ void test_base_commands()
 void test_iterators()
 {
 	{
-		sc::Addr addr = sctpClient.createNode(0);
-		sc::Addr addr1 = sctpClient.createNode(0);
-		sc::Addr addr2 = sctpClient.createNode(0);
-		sc::Addr addr3 = sctpClient.createNode(0);
+		ScAddr addr = sctpClient.createNode(0);
+		ScAddr addr1 = sctpClient.createNode(0);
+		ScAddr addr2 = sctpClient.createNode(0);
+		ScAddr addr3 = sctpClient.createNode(0);
 
 		g_assert(addr.isValid());
 		g_assert(addr1.isValid());
 		g_assert(addr2.isValid());
 		g_assert(addr3.isValid());
 
-		sc::Addr arc1 = sctpClient.createArc(sc_type_arc_pos_const_perm, addr, addr1);
-		sc::Addr arc2 = sctpClient.createArc(sc_type_arc_pos_const_perm, addr, addr2);
-		sc::Addr arc3 = sctpClient.createArc(sc_type_arc_pos_const_perm, addr, addr3);
+		ScAddr arc1 = sctpClient.createArc(sc_type_arc_pos_const_perm, addr, addr1);
+		ScAddr arc2 = sctpClient.createArc(sc_type_arc_pos_const_perm, addr, addr2);
+		ScAddr arc3 = sctpClient.createArc(sc_type_arc_pos_const_perm, addr, addr3);
 
 		g_assert(arc1.isValid());
 		g_assert(arc2.isValid());
@@ -118,19 +118,19 @@ void test_iterators()
 	}
 
 	{
-		sc::Addr addr = sctpClient.createNode(0);
-		sc::Addr addr1 = sctpClient.createNode(0);
-		sc::Addr addr2 = sctpClient.createNode(0);
-		sc::Addr addr3 = sctpClient.createNode(0);
+		ScAddr addr = sctpClient.createNode(0);
+		ScAddr addr1 = sctpClient.createNode(0);
+		ScAddr addr2 = sctpClient.createNode(0);
+		ScAddr addr3 = sctpClient.createNode(0);
 
 		g_assert(addr.isValid());
 		g_assert(addr1.isValid());
 		g_assert(addr2.isValid());
 		g_assert(addr3.isValid());
 
-		sc::Addr arc1 = sctpClient.createArc(sc_type_arc_pos_const_perm, addr, addr1);
-		sc::Addr arc2 = sctpClient.createArc(sc_type_arc_pos_const_perm, addr2, arc1);
-		sc::Addr arc3 = sctpClient.createArc(sc_type_arc_pos_const_perm, addr3, arc1);
+		ScAddr arc1 = sctpClient.createArc(sc_type_arc_pos_const_perm, addr, addr1);
+		ScAddr arc2 = sctpClient.createArc(sc_type_arc_pos_const_perm, addr2, arc1);
+		ScAddr arc3 = sctpClient.createArc(sc_type_arc_pos_const_perm, addr3, arc1);
 
 		g_assert(arc1.isValid());
 		g_assert(arc2.isValid());

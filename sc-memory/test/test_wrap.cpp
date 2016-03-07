@@ -17,12 +17,12 @@ void init_memory()
     params.config_file = "sc-memory.ini";
     params.ext_path = 0;
 
-    sc::Memory::initialize(params);
+    ScMemory::initialize(params);
 }
 
 void shutdown_memory(bool save)
 {
-    sc::Memory::shutdown(save);
+    ScMemory::shutdown(save);
 }
 
 
@@ -31,14 +31,14 @@ void test_common_elements()
     init_memory();
 
     {
-        sc::MemoryContext ctx;
-        sc::Addr addr = ctx.createNode(sc_type_const);
+        ScMemoryContext ctx;
+        ScAddr addr = ctx.createNode(sc_type_const);
         g_assert(addr.isValid());
 
-        sc::Addr link = ctx.createLink();
+        ScAddr link = ctx.createLink();
         g_assert(link.isValid());
 
-        sc::Addr arc = ctx.createArc(sc_type_arc_pos_const_perm, addr, link);
+        ScAddr arc = ctx.createArc(sc_type_arc_pos_const_perm, addr, link);
         g_assert(arc.isValid());
 
         g_assert(ctx.isElement(addr));
@@ -69,10 +69,10 @@ void test_common_iterators()
     init_memory();
 
     {
-        sc::MemoryContext ctx;
-        sc::Addr addr1 = ctx.createNode(sc_type_const);
-        sc::Addr addr2 = ctx.createNode(sc_type_var);
-        sc::Addr arc1 = ctx.createArc(sc_type_arc_pos_const_perm, addr1, addr2);
+        ScMemoryContext ctx;
+        ScAddr addr1 = ctx.createNode(sc_type_const);
+        ScAddr addr2 = ctx.createNode(sc_type_var);
+        ScAddr arc1 = ctx.createArc(sc_type_arc_pos_const_perm, addr1, addr2);
 
         g_assert(addr1.isValid());
         g_assert(addr2.isValid());
@@ -83,7 +83,7 @@ void test_common_iterators()
         g_assert(ctx.isElement(arc1));
 
         {
-            sc::Iterator3Ptr iter3 = ctx.iterator3(addr1, sc_type_arc_pos_const_perm, addr2);
+            Iterator3Ptr iter3 = ctx.iterator3(addr1, sc_type_arc_pos_const_perm, addr2);
             g_assert(iter3->next());
             g_assert(iter3->value(0) == addr1);
             g_assert(iter3->value(1) == arc1);
@@ -91,7 +91,7 @@ void test_common_iterators()
         }
 
         {
-            sc::Iterator3Ptr iter3 = ctx.iterator3(addr1, sc_type_arc_pos_const_perm, sc_type_node);
+            Iterator3Ptr iter3 = ctx.iterator3(addr1, sc_type_arc_pos_const_perm, sc_type_node);
             g_assert(iter3->next());
             g_assert(iter3->value(0) == addr1);
             g_assert(iter3->value(1) == arc1);
@@ -99,15 +99,15 @@ void test_common_iterators()
         }
 
         {
-            sc::Iterator3Ptr iter3 = ctx.iterator3(sc_type_node, sc_type_arc_pos_const_perm, addr2);
+            Iterator3Ptr iter3 = ctx.iterator3(sc_type_node, sc_type_arc_pos_const_perm, addr2);
             g_assert(iter3->next());
             g_assert(iter3->value(0) == addr1);
             g_assert(iter3->value(1) == arc1);
             g_assert(iter3->value(2) == addr2);
         }
 
-        sc::Addr addr3 = ctx.createNode(sc_type_const);
-        sc::Addr arc2 = ctx.createArc(sc_type_arc_pos_const_perm, addr3, arc1);
+        ScAddr addr3 = ctx.createNode(sc_type_const);
+        ScAddr arc2 = ctx.createArc(sc_type_arc_pos_const_perm, addr3, arc1);
 
         g_assert(addr3.isValid());
         g_assert(arc2.isValid());
@@ -116,7 +116,7 @@ void test_common_iterators()
         g_assert(ctx.isElement(arc2));
 
         {
-            sc::Iterator5Ptr iter5 = ctx.iterator5(sc_type_node, sc_type_arc_pos_const_perm, addr2, sc_type_arc_pos_const_perm, sc_type_node);
+			Iterator5Ptr iter5 = ctx.iterator5(sc_type_node, sc_type_arc_pos_const_perm, addr2, sc_type_arc_pos_const_perm, sc_type_node);
 
             g_assert(iter5->next());
 
@@ -128,7 +128,7 @@ void test_common_iterators()
         }
 
         {
-            sc::Iterator5Ptr iter5 = ctx.iterator5(sc_type_node, sc_type_arc_pos_const_perm, addr2, sc_type_arc_pos_const_perm, addr3);
+            Iterator5Ptr iter5 = ctx.iterator5(sc_type_node, sc_type_arc_pos_const_perm, addr2, sc_type_arc_pos_const_perm, addr3);
 
             g_assert(iter5->next());
 
@@ -140,7 +140,7 @@ void test_common_iterators()
         }
 
         {
-            sc::Iterator5Ptr iter5 = ctx.iterator5(addr1, sc_type_arc_pos_const_perm, sc_type_node, sc_type_arc_pos_const_perm, sc_type_node);
+            Iterator5Ptr iter5 = ctx.iterator5(addr1, sc_type_arc_pos_const_perm, sc_type_node, sc_type_arc_pos_const_perm, sc_type_node);
 
             g_assert(iter5->next());
 
@@ -152,7 +152,7 @@ void test_common_iterators()
         }
 
         {
-            sc::Iterator5Ptr iter5 = ctx.iterator5(addr1, sc_type_arc_pos_const_perm, sc_type_node, sc_type_arc_pos_const_perm, addr3);
+            Iterator5Ptr iter5 = ctx.iterator5(addr1, sc_type_arc_pos_const_perm, sc_type_node, sc_type_arc_pos_const_perm, addr3);
 
             g_assert(iter5->next());
 
@@ -164,7 +164,7 @@ void test_common_iterators()
         }
 
         {
-            sc::Iterator5Ptr iter5 = ctx.iterator5(addr1, sc_type_arc_pos_const_perm, addr2, sc_type_arc_pos_const_perm, sc_type_node);
+            Iterator5Ptr iter5 = ctx.iterator5(addr1, sc_type_arc_pos_const_perm, addr2, sc_type_arc_pos_const_perm, sc_type_node);
 
             g_assert(iter5->next());
 
@@ -176,7 +176,7 @@ void test_common_iterators()
         }
 
         {
-            sc::Iterator5Ptr iter5 = ctx.iterator5(addr1, sc_type_arc_pos_const_perm, addr2, sc_type_arc_pos_const_perm, addr3);
+            Iterator5Ptr iter5 = ctx.iterator5(addr1, sc_type_arc_pos_const_perm, addr2, sc_type_arc_pos_const_perm, addr3);
 
             g_assert(iter5->next());
 
@@ -189,14 +189,14 @@ void test_common_iterators()
 
         {
             std::string str("test content string");
-            sc::Stream stream(str.c_str(), (sc_uint32)str.size(), SC_STREAM_FLAG_READ);
-            sc::Addr link = ctx.createLink();
+            ScStream stream(str.c_str(), (sc_uint32)str.size(), SC_STREAM_FLAG_READ);
+            ScAddr link = ctx.createLink();
 
             g_assert(link.isValid());
             g_assert(ctx.isElement(link));
             g_assert(ctx.setLinkContent(link, stream));
 
-            sc::Stream stream2;
+            ScStream stream2;
             g_assert(ctx.getLinkContent(link, stream2));
 
             g_assert(stream.size() == stream2.size());
@@ -216,7 +216,7 @@ void test_common_iterators()
 
             g_assert(str == str2);
 
-            sc::tAddrList result;
+            tAddrList result;
             g_assert(ctx.findLinksByContent(stream, result));
             g_assert(result.size() == 1);
             g_assert(result.front() == link);
@@ -238,7 +238,7 @@ void test_common_streams()
         for (int i = 0; i < length; ++i)
             buff[i] = rand() % 256;
 
-        sc::Stream stream((sc_char*)buff, length, SC_STREAM_FLAG_READ);
+        ScStream stream((sc_char*)buff, length, SC_STREAM_FLAG_READ);
 
         g_assert(stream.isValid());
         g_assert(stream.hasFlag(SC_STREAM_FLAG_READ));

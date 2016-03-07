@@ -8,9 +8,27 @@
 
 #include "sc_memory.h"
 
-namespace sc
-{
-	class MemoryCotext;
-	class Addr;
+#include <string>
+#include <map>
 
-}
+class ScMemoryCotext;
+class ScAddr;
+
+class ScType
+{
+public:
+	typedef sc_type tRealType;
+
+	explicit ScType() : mRealType(0) 
+	{
+	}
+
+	explicit ScType(tRealType type)
+		: mRealType(type)
+	{
+	}
+
+
+private:
+	tRealType mRealType;
+};

@@ -19,17 +19,14 @@ extern "C"
 #include <list>
 #include <string>
 
-namespace sc
+class ScMemoryContext;
+class ScStream;
+
+
+
+class ScMemory
 {
-
-class MemoryContext;
-class Stream;
-
-
-
-class Memory
-{
-    friend class MemoryContext;
+	friend class ScMemoryContext;
 
 public:
     //! Returns true, on memory initialized; otherwise returns false
@@ -38,24 +35,24 @@ public:
 
 protected:
 
-    static void registerContext(MemoryContext const * ctx);
-    static void unregisterContext(MemoryContext const * ctx);
+    static void registerContext(ScMemoryContext const * ctx);
+    static void unregisterContext(ScMemoryContext const * ctx);
 private:
-    static bool hasMemoryContext(MemoryContext const * ctx);
+    static bool hasMemoryContext(ScMemoryContext const * ctx);
 
 private:
     static sc_memory_context * msGlobalContext;
 
-    typedef std::list<MemoryContext const *> tMemoryContextList;
+    typedef std::list<ScMemoryContext const *> tMemoryContextList;
     static tMemoryContextList msContexts;
 };
 
 //! Class used to work with memory. It provides functions to create/erase elements
-class MemoryContext
+class ScMemoryContext
 {
 public:
-    _SC_EXTERN explicit MemoryContext(sc_uint8 accessLevels = 0, std::string const & name = "");
-    _SC_EXTERN ~MemoryContext();
+    _SC_EXTERN explicit ScMemoryContext(sc_uint8 accessLevels = 0, std::string const & name = "");
+	_SC_EXTERN ~ScMemoryContext();
 
     sc_memory_context const * getRealContext() const { return mContext; }
 
@@ -67,30 +64,30 @@ public:
     _SC_EXTERN bool isValid() const;
 
     //! Check if element exists with specified addr
-    _SC_EXTERN bool isElement(Addr const & addr) const;
+	_SC_EXTERN bool isElement(ScAddr const & addr) const;
     //! Erase element from sc-memory and returns true on success; otherwise returns false.
-    _SC_EXTERN bool eraseElement(Addr const & addr);
+	_SC_EXTERN bool eraseElement(ScAddr const & addr);
 
-    _SC_EXTERN Addr createNode(sc_type type);
-    _SC_EXTERN Addr createLink();
-    _SC_EXTERN Addr createArc(sc_type type, Addr const & addrBeg, Addr const & addrEnd);
+	_SC_EXTERN ScAddr createNode(sc_type type);
+	_SC_EXTERN ScAddr createLink();
+	_SC_EXTERN ScAddr createArc(sc_type type, ScAddr const & addrBeg, ScAddr const & addrEnd);
 
     //! Returns type of sc-element. If there are any error, then returns 0
-    _SC_EXTERN sc_type getElementType(Addr const & addr) const;
+	_SC_EXTERN sc_type getElementType(ScAddr const & addr) const;
 
     /*! Change subtype of sc-element (subtype & sc_type_element_mask == 0).
      * Return true, if there are no any errors; otherwise return false.
      */
-    _SC_EXTERN bool setElementSubtype(Addr const & addr, sc_type subtype);
+	_SC_EXTERN bool setElementSubtype(ScAddr const & addr, sc_type subtype);
 
-    _SC_EXTERN Addr getArcBegin(Addr const & arcAddr) const;
-    _SC_EXTERN Addr getArcEnd(Addr const & arcAddr) const;
+	_SC_EXTERN ScAddr getArcBegin(ScAddr const & arcAddr) const;
+	_SC_EXTERN ScAddr getArcEnd(ScAddr const & arcAddr) const;
 
-    _SC_EXTERN bool setLinkContent(Addr const & addr, Stream const & stream);
-    _SC_EXTERN bool getLinkContent(Addr const & addr, Stream & stream);
+	_SC_EXTERN bool setLinkContent(ScAddr const & addr, ScStream const & stream);
+	_SC_EXTERN bool getLinkContent(ScAddr const & addr, ScStream & stream);
 
     //! Returns true, if any links found
-    _SC_EXTERN bool findLinksByContent(Stream const & stream, tAddrList & found);
+	_SC_EXTERN bool findLinksByContent(ScStream const & stream, tAddrList & found);
 
     //! Saves memory state
     _SC_EXTERN bool save();
@@ -114,14 +111,14 @@ public:
     }
 
 
-	_SC_EXTERN bool helperResolveSystemIdtf(std::string const & sysIdtf, Addr & outAddr);
-	_SC_EXTERN bool helperSetSystemIdtf(std::string const & sysIdtf, Addr const & addr);
-	_SC_EXTERN bool helperCheckArc(Addr const & begin, Addr end, sc_type arcType);
+	_SC_EXTERN bool helperResolveSystemIdtf(std::string const & sysIdtf, ScAddr & outAddr);
+	_SC_EXTERN bool helperSetSystemIdtf(std::string const & sysIdtf, ScAddr const & addr);
+	_SC_EXTERN bool helperCheckArc(ScAddr const & begin, ScAddr end, sc_type arcType);
 
 private:
     // Disable object copying
-    MemoryContext(MemoryContext const & other) {}
-	MemoryContext & operator = (MemoryContext const & other) { return *this; }
+	ScMemoryContext(ScMemoryContext const & other) {}
+	ScMemoryContext & operator = (ScMemoryContext const & other) { return *this; }
 
 private:
     sc_memory_context * mContext;
@@ -129,4 +126,3 @@ private:
 };
 
 
-}

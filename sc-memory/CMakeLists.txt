@@ -18,6 +18,7 @@ set (SC_MEMORY_WRAP_SOURCES
                         "wrap/sc_utils.cpp"
                         "wrap/sc_iterator.cpp"
                         "wrap/sc_stream.cpp"
+						"wrap/sc_template.cpp"
 
                         "wrap/sc_memory.hpp"
                         "wrap/sc_addr.hpp"
@@ -25,6 +26,7 @@ set (SC_MEMORY_WRAP_SOURCES
                         "wrap/sc_iterator.hpp"
                         "wrap/sc_stream.hpp"
                         "wrap/sc_types.hpp"
+						"wrap/sc_template.hpp"
 
         )
 
