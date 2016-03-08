@@ -18,7 +18,7 @@ namespace iot
 		assert(requestAddr.isValid());
 
 		// determine device class
-		Iterator5Ptr iterDevice = mMemoryCtx.iterator5(requestAddr,
+		ScIterator5Ptr iterDevice = mMemoryCtx.iterator5(requestAddr,
 			SC_TYPE(sc_type_arc_pos_const_perm),
 			SC_TYPE(sc_type_const | sc_type_node | sc_type_node_material),
 			SC_TYPE(sc_type_arc_pos_const_perm),
@@ -30,7 +30,7 @@ namespace iot
         ScAddr deviceAddr = iterDevice->value(2);
 
 		// determine product class
-		Iterator5Ptr iterProductClass = mMemoryCtx.iterator5(requestAddr,
+		ScIterator5Ptr iterProductClass = mMemoryCtx.iterator5(requestAddr,
 			SC_TYPE(sc_type_arc_pos_const_perm),
 			SC_TYPE(sc_type_const | sc_type_node | sc_type_node_class),
 			SC_TYPE(sc_type_arc_pos_const_perm),
@@ -42,7 +42,7 @@ namespace iot
         ScAddr productClassAddr = iterProductClass->value(2);
 
 		// determine mass
-        Iterator5Ptr iterMass = mMemoryCtx.iterator5(requestAddr,
+        ScIterator5Ptr iterMass = mMemoryCtx.iterator5(requestAddr,
 			SC_TYPE(sc_type_arc_pos_const_perm),
 			SC_TYPE(sc_type_link),
 			SC_TYPE(sc_type_arc_pos_const_perm),
@@ -54,7 +54,7 @@ namespace iot
         ScAddr massLinkAddr = iterMass->value(2);
 
 		// create content set if it doesn't exists
-        Iterator5Ptr iterContent = mMemoryCtx.iterator5(
+        ScIterator5Ptr iterContent = mMemoryCtx.iterator5(
 			SC_TYPE(sc_type_node | sc_type_const | sc_type_node_tuple),
 			SC_TYPE(sc_type_const | sc_type_arc_common),
 			deviceAddr,
@@ -95,7 +95,7 @@ namespace iot
 	{
 		assert(requestAddr.isValid());
 
-		Iterator3Ptr iter = mMemoryCtx.iterator3(requestAddr,
+		ScIterator3Ptr iter = mMemoryCtx.iterator3(requestAddr,
 			SC_TYPE(sc_type_arc_pos_const_perm),
 			SC_TYPE(sc_type_node | sc_type_const | sc_type_node_material));
 
@@ -103,7 +103,7 @@ namespace iot
 			return SC_RESULT_ERROR_INVALID_PARAMS;
 
         ScAddr const deviceAddr = iter->value(2);
-		Iterator5Ptr iter5 = mMemoryCtx.iterator5(
+		ScIterator5Ptr iter5 = mMemoryCtx.iterator5(
 			SC_TYPE(sc_type_const | sc_type_node | sc_type_node_tuple),
 			SC_TYPE(sc_type_const | sc_type_arc_common),
 			deviceAddr,
@@ -115,7 +115,7 @@ namespace iot
 
         ScAddr const contentSet = iter5->value(0);
 
-		Iterator3Ptr iterContent = mMemoryCtx.iterator3(
+		ScIterator3Ptr iterContent = mMemoryCtx.iterator3(
 			contentSet,
 			SC_TYPE(sc_type_arc_pos_const_perm),
 			SC_TYPE(sc_type_const | sc_type_node | sc_type_node_material));

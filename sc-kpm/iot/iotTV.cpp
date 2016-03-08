@@ -23,7 +23,7 @@ namespace iot
 
 		// remove old program relation
 		{
-			Iterator5Ptr iter = mMemoryCtx.iterator5(tvAddr,
+			ScIterator5Ptr iter = mMemoryCtx.iterator5(tvAddr,
 				SC_TYPE(sc_type_arc_common | sc_type_const),
 				SC_TYPE(sc_type_node | sc_type_const),
 				SC_TYPE(sc_type_arc_pos_const_perm),

@@ -32,7 +32,7 @@ namespace iot
 		// if current element is a group_volume, then call the same function recursively for all childs
 		if (ctx.helperCheckArc(Keynodes::group_volume, addr, sc_type_arc_pos_const_perm))
 		{
-			Iterator3Ptr iterator = ctx.iterator3(addr, sc_type_arc_pos_const_perm, (sc_type)(sc_type_node | sc_type_const));
+			ScIterator3Ptr iterator = ctx.iterator3(addr, sc_type_arc_pos_const_perm, (sc_type)(sc_type_node | sc_type_const));
 			while (iterator->next())
 				handler_device_group_enable_state_command_recursion(iterator->value(2), ctx, isNeedEnable);
 		}
@@ -49,7 +49,7 @@ namespace iot
 			else
 			{
 				// disable device
-				Iterator3Ptr it = ctx.iterator3(Keynodes::device_enabled, sc_type_arc_pos_const_perm, addr);
+				ScIterator3Ptr it = ctx.iterator3(Keynodes::device_enabled, sc_type_arc_pos_const_perm, addr);
 				while (it->next())
 					ctx.eraseElement(it->value(1));
 			}
@@ -70,7 +70,7 @@ namespace iot
 		if (!isDisable && !isEnable)
 			return SC_RESULT_ERROR;
 		
-		Iterator3Ptr it = ctx.iterator3(commandInstance, sc_type_arc_pos_const_perm, (sc_type)(sc_type_node | sc_type_const));
+		ScIterator3Ptr it = ctx.iterator3(commandInstance, sc_type_arc_pos_const_perm, (sc_type)(sc_type_node | sc_type_const));
 		while (it->next())
 		{
 			handler_device_group_enable_state_command_recursion(it->value(2), ctx, !isDisable);

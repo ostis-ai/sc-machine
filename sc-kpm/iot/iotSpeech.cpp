@@ -16,7 +16,7 @@ namespace iot
 
 	IMPLEMENT_AGENT(GenerateSpeechText, COMMAND_AGENT)
 	{
-        Iterator5Ptr itCmd = mMemoryCtx.iterator5(
+        ScIterator5Ptr itCmd = mMemoryCtx.iterator5(
 			requestAddr,
 			SC_TYPE(sc_type_arc_pos_const_perm),
 			SC_TYPE(sc_type_node | sc_type_const),
@@ -30,7 +30,7 @@ namespace iot
 		// got command addr
         ScAddr commandAddr;
         ScAddr const commandInstAddr = itCmd->value(2);
-		Iterator3Ptr itCommandClass = mMemoryCtx.iterator3(
+		ScIterator3Ptr itCommandClass = mMemoryCtx.iterator3(
 			SC_TYPE(sc_type_node | sc_type_const | sc_type_node_class),
 			SC_TYPE(sc_type_arc_pos_const_perm),
 			commandInstAddr);
@@ -46,7 +46,7 @@ namespace iot
 		if (!commandAddr.isValid())
 			return SC_RESULT_ERROR_INVALID_STATE;
 
-        Iterator5Ptr itLang = mMemoryCtx.iterator5(
+        ScIterator5Ptr itLang = mMemoryCtx.iterator5(
 			requestAddr,
 			SC_TYPE(sc_type_arc_pos_const_perm),
 			SC_TYPE(sc_type_node | sc_type_const),
@@ -58,7 +58,7 @@ namespace iot
 
         ScAddr const langAddr = itLang->value(2);
 
-		Iterator5Ptr itAttr = mMemoryCtx.iterator5(
+		ScIterator5Ptr itAttr = mMemoryCtx.iterator5(
 			requestAddr,
 			SC_TYPE(sc_type_arc_pos_const_perm),
 			SC_TYPE(sc_type_node | sc_type_const),
@@ -72,7 +72,7 @@ namespace iot
 		/// TODO: make commond method to get arguments with custom role
 
 		// check if there are speech templates for a specified command
-        Iterator5Ptr itTemplatesSet = mMemoryCtx.iterator5(
+        ScIterator5Ptr itTemplatesSet = mMemoryCtx.iterator5(
 			SC_TYPE(sc_type_node | sc_type_const | sc_type_node_tuple),
 			SC_TYPE(sc_type_arc_common | sc_type_const),
 			commandAddr,
@@ -87,7 +87,7 @@ namespace iot
         ScAddr const templatesAddr = itTemplatesSet->value(0);
 		
 		// try to find template for a specified language
-        Iterator5Ptr itTempl = mMemoryCtx.iterator5(
+        ScIterator5Ptr itTempl = mMemoryCtx.iterator5(
 			templatesAddr,
 			SC_TYPE(sc_type_arc_pos_const_perm),
 			SC_TYPE(sc_type_link),

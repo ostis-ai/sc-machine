@@ -27,7 +27,7 @@ namespace iot
 
         bool removeFromSet(ScMemoryContext & ctx, ScAddr const & setAddr, ScAddr const & elAddr)
 		{
-			Iterator3Ptr it = ctx.iterator3(setAddr, sc_type_arc_pos_const_perm, elAddr);
+			ScIterator3Ptr it = ctx.iterator3(setAddr, sc_type_arc_pos_const_perm, elAddr);
 			bool result = false;
 			while (it->next())
 				ctx.eraseElement(it->value(1));
@@ -39,7 +39,7 @@ namespace iot
 		{
 			ScAddr massAddr;
 
-			Iterator5Ptr itMass = ctx.iterator5(objAddr,
+			ScIterator5Ptr itMass = ctx.iterator5(objAddr,
 				SC_TYPE(sc_type_arc_common | sc_type_const),
 				SC_TYPE(sc_type_const | sc_type_node | sc_type_node_abstract),
 				SC_TYPE(sc_type_arc_pos_const_perm),
@@ -60,7 +60,7 @@ namespace iot
 				assert(arc.isValid());
 			}
 
-			Iterator5Ptr itValue = ctx.iterator5(massAddr,
+			ScIterator5Ptr itValue = ctx.iterator5(massAddr,
 				SC_TYPE(sc_type_arc_pos_const_perm),
 				SC_TYPE(sc_type_link),
 				SC_TYPE(sc_type_arc_pos_const_perm),
@@ -92,7 +92,7 @@ namespace iot
 			assert(langAddr.isValid());
 
             ScAddr result;
-			Iterator5Ptr it5 = ctx.iterator5(
+			ScIterator5Ptr it5 = ctx.iterator5(
 				elAddr,
 				SC_TYPE(sc_type_arc_common | sc_type_const),
 				SC_TYPE(sc_type_link),

@@ -34,7 +34,7 @@ namespace iot
 
         ScAddr getParam(ScAddr const & cmdAddr, ScAddr const & relationAddr, sc_type paramType)
 		{
-			Iterator5Ptr iter = mMemoryCtx.iterator5(cmdAddr,
+			ScIterator5Ptr iter = mMemoryCtx.iterator5(cmdAddr,
 				SC_TYPE(sc_type_arc_pos_const_perm),
 				SC_TYPE(paramType),
 				SC_TYPE(sc_type_arc_pos_const_perm),
