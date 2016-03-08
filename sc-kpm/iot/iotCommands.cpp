@@ -25,14 +25,14 @@ sc_event * event_generate_text = 0;
 
 namespace iot
 {
-	sc::MemoryContext * Commands::memory_ctx = 0;
+    ScMemoryContext * Commands::memory_ctx = 0;
 
-	void handler_device_group_enable_state_command_recursion(sc::Addr const & addr, sc::MemoryContext & ctx, bool isNeedEnable)
+    void handler_device_group_enable_state_command_recursion(ScAddr const & addr, ScMemoryContext & ctx, bool isNeedEnable)
 	{
 		// if current element is a group_volume, then call the same function recursively for all childs
 		if (ctx.helperCheckArc(Keynodes::group_volume, addr, sc_type_arc_pos_const_perm))
 		{
-			sc::Iterator3Ptr iterator = ctx.iterator3(addr, sc_type_arc_pos_const_perm, (sc_type)(sc_type_node | sc_type_const));
+			Iterator3Ptr iterator = ctx.iterator3(addr, sc_type_arc_pos_const_perm, (sc_type)(sc_type_node | sc_type_const));
 			while (iterator->next())
 				handler_device_group_enable_state_command_recursion(iterator->value(2), ctx, isNeedEnable);
 		}
@@ -49,7 +49,7 @@ namespace iot
 			else
 			{
 				// disable device
-				sc::Iterator3Ptr it = ctx.iterator3(Keynodes::device_enabled, sc_type_arc_pos_const_perm, addr);
+				Iterator3Ptr it = ctx.iterator3(Keynodes::device_enabled, sc_type_arc_pos_const_perm, addr);
 				while (it->next())
 					ctx.eraseElement(it->value(1));
 			}
@@ -58,9 +58,9 @@ namespace iot
 
 	sc_result handler_device_group_enable_state_command(sc_event const * event, sc_addr arg)
 	{
-		sc::MemoryContext ctx(sc_access_lvl_make_min, "handler_device_group_enable_command");
+        ScMemoryContext ctx(sc_access_lvl_make_min, "handler_device_group_enable_command");
 
-		sc::Addr commandInstance = ctx.getArcEnd(sc::Addr(arg));
+        ScAddr commandInstance = ctx.getArcEnd(ScAddr(arg));
 		if (!commandInstance.isValid())
 			return SC_RESULT_ERROR;
 
@@ -70,7 +70,7 @@ namespace iot
 		if (!isDisable && !isEnable)
 			return SC_RESULT_ERROR;
 		
-		sc::Iterator3Ptr it = ctx.iterator3(commandInstance, sc_type_arc_pos_const_perm, (sc_type)(sc_type_node | sc_type_const));
+		Iterator3Ptr it = ctx.iterator3(commandInstance, sc_type_arc_pos_const_perm, (sc_type)(sc_type_node | sc_type_const));
 		while (it->next())
 		{
 			handler_device_group_enable_state_command_recursion(it->value(2), ctx, !isDisable);
@@ -81,7 +81,7 @@ namespace iot
 
 	bool Commands::initialize()
 	{
-		memory_ctx = new sc::MemoryContext(sc_access_lvl_make_min, "iotCommands");
+        memory_ctx = new ScMemoryContext(sc_access_lvl_make_min, "iotCommands");
 		if (!memory_ctx)
 			return false;
 

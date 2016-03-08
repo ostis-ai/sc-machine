@@ -8,11 +8,10 @@
 
 #include "iotTypes.hpp"
 
-namespace sc
-{
-	class MemoryContext;
-	class Addr;
-}
+
+class ScMemoryContext;
+class ScAddr;
+
 
 namespace iot
 {
@@ -23,22 +22,22 @@ namespace iot
 		 * @returns If element already exists in set, then do nothing and returns false. Otherwise
 		 * add element into set and returns true.
 		 */
-		bool addToSet(sc::MemoryContext & ctx, sc::Addr const & setAddr, sc::Addr const & elAddr);
+        bool addToSet(ScMemoryContext & ctx, ScAddr const & setAddr, ScAddr const & elAddr);
 
 		/*! Remove element (elAddr) from set (setAddr)
 		 * @returns If element doesn't exist in set, then do nothing and returns false. Otherwise
 		 * remove element from set and returns true.
 		 */
-		bool removeFromSet(sc::MemoryContext & ctx, sc::Addr const & setAddr, sc::Addr const & elAddr);
+        bool removeFromSet(ScMemoryContext & ctx, ScAddr const & setAddr, ScAddr const & elAddr);
 
 		/*! Add mass value (in grams) for a spceified object
 		 * @param objAddr sc-addr of object to add mass
 		 * @param valueAddr sc-addr of sc-link that contains mass value
 		 */
-		void setMass(sc::MemoryContext & ctx, sc::Addr const & objAddr, sc::Addr const & valueAddr);
+        void setMass(ScMemoryContext & ctx, ScAddr const & objAddr, ScAddr const & valueAddr);
 
 		/*! Trying to find main identifier of specified element with specified language
 		 */
-		sc::Addr findMainIdtf(sc::MemoryContext & ctx, sc::Addr const & elAddr, sc::Addr const langAddr);
+        ScAddr findMainIdtf(ScMemoryContext & ctx, ScAddr const & elAddr, ScAddr const langAddr);
 	}
 }

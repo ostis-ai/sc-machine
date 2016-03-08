@@ -9,10 +9,8 @@
 #include "wrap/sc_addr.hpp"
 
 
-namespace sc
-{
-	class MemoryContext;
-}
+class ScMemoryContext;
+
 
 namespace iot
 {
@@ -20,57 +18,57 @@ namespace iot
 	{
 	public:
 
-		static sc::Addr device;
-		static sc::Addr device_enabled;
-		static sc::Addr device_energy_usage;
-		static sc::Addr device_standby_energy_usage;
-		static sc::Addr device_real_energy_usage;
+        static ScAddr device;
+        static ScAddr device_enabled;
+        static ScAddr device_energy_usage;
+        static ScAddr device_standby_energy_usage;
+        static ScAddr device_real_energy_usage;
 
 		/// Commands
-		static sc::Addr command_device_group_enable;
-		static sc::Addr command_device_group_disable;
-		static sc::Addr command_add_content;
-		static sc::Addr command_who_are_you;
-		static sc::Addr command_generate_text_from_template;
-		static sc::Addr command_change_tv_program;
+        static ScAddr command_device_group_enable;
+        static ScAddr command_device_group_disable;
+        static ScAddr command_add_content;
+        static ScAddr command_who_are_you;
+        static ScAddr command_generate_text_from_template;
+        static ScAddr command_change_tv_program;
 
 		/// quesions
-		static sc::Addr question_get_content;
+		static ScAddr question_get_content;
 
 		
 		/// common
-		static sc::Addr self;
+		static ScAddr self;
 
-		static sc::Addr group_volume;
-		static sc::Addr command_initiated;
-		static sc::Addr command_finished;
-		static sc::Addr command_in_progress;
-		static sc::Addr command;
+		static ScAddr group_volume;
+		static ScAddr command_initiated;
+		static ScAddr command_finished;
+		static ScAddr command_in_progress;
+		static ScAddr command;
 
-		static sc::Addr question_initiated;
-		static sc::Addr question_finished;
-		static sc::Addr question_in_progress;
+		static ScAddr question_initiated;
+		static ScAddr question_finished;
+		static ScAddr question_in_progress;
 
 		/// relations
-		static sc::Addr nrel_content;
-		static sc::Addr nrel_mass;
-		static sc::Addr nrel_answer;
-		static sc::Addr nrel_result;
-		static sc::Addr nrel_speech_templates;
-		static sc::Addr nrel_main_idtf;
-		static sc::Addr nrel_tv_program;
+		static ScAddr nrel_content;
+		static ScAddr nrel_mass;
+		static ScAddr nrel_answer;
+		static ScAddr nrel_result;
+		static ScAddr nrel_speech_templates;
+		static ScAddr nrel_main_idtf;
+		static ScAddr nrel_tv_program;
 
-		static sc::Addr rrel_1;
-		static sc::Addr rrel_2;
-		static sc::Addr rrel_3;
-		static sc::Addr rrel_gram;
+		static ScAddr rrel_1;
+		static ScAddr rrel_2;
+		static ScAddr rrel_3;
+		static ScAddr rrel_gram;
 
 		static bool initialize();
 		static bool shutdown();
-		static bool resolveKeynode(std::string const & sysIdtf, sc::Addr & outAddr);
+        static bool resolveKeynode(std::string const & sysIdtf, ScAddr & outAddr);
 
 	private:
-		static sc::MemoryContext * memory_ctx;
+        static ScMemoryContext * memory_ctx;
 	};
 
 }

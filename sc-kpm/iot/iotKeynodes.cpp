@@ -9,56 +9,56 @@
 
 namespace iot
 {
-	sc::Addr Keynodes::device;
-	sc::Addr Keynodes::device_enabled;
-	sc::Addr Keynodes::device_energy_usage;
-	sc::Addr Keynodes::device_standby_energy_usage;
-	sc::Addr Keynodes::device_real_energy_usage;
+	ScAddr Keynodes::device;
+	ScAddr Keynodes::device_enabled;
+	ScAddr Keynodes::device_energy_usage;
+	ScAddr Keynodes::device_standby_energy_usage;
+	ScAddr Keynodes::device_real_energy_usage;
 
-	sc::Addr Keynodes::command_device_group_enable;
-	sc::Addr Keynodes::command_device_group_disable;
-	sc::Addr Keynodes::command_add_content;
-	sc::Addr Keynodes::command_who_are_you;
-	sc::Addr Keynodes::command_generate_text_from_template;
-	sc::Addr Keynodes::command_change_tv_program;
+	ScAddr Keynodes::command_device_group_enable;
+	ScAddr Keynodes::command_device_group_disable;
+	ScAddr Keynodes::command_add_content;
+	ScAddr Keynodes::command_who_are_you;
+	ScAddr Keynodes::command_generate_text_from_template;
+	ScAddr Keynodes::command_change_tv_program;
 
-	sc::Addr Keynodes::question_get_content;
+	ScAddr Keynodes::question_get_content;
 
-	sc::Addr Keynodes::self;
+	ScAddr Keynodes::self;
 
-	sc::Addr Keynodes::group_volume;
-	sc::Addr Keynodes::command_initiated;
-	sc::Addr Keynodes::command_finished;
-	sc::Addr Keynodes::command_in_progress;
-	sc::Addr Keynodes::command;
+	ScAddr Keynodes::group_volume;
+	ScAddr Keynodes::command_initiated;
+	ScAddr Keynodes::command_finished;
+	ScAddr Keynodes::command_in_progress;
+	ScAddr Keynodes::command;
 
-	sc::Addr Keynodes::question_initiated;
-	sc::Addr Keynodes::question_finished;
-	sc::Addr Keynodes::question_in_progress;
+	ScAddr Keynodes::question_initiated;
+	ScAddr Keynodes::question_finished;
+	ScAddr Keynodes::question_in_progress;
 
-	sc::Addr Keynodes::nrel_content;
-	sc::Addr Keynodes::nrel_mass;
-	sc::Addr Keynodes::nrel_answer;
-	sc::Addr Keynodes::nrel_result;
-	sc::Addr Keynodes::nrel_speech_templates;
-	sc::Addr Keynodes::nrel_main_idtf;
-	sc::Addr Keynodes::nrel_tv_program;
+	ScAddr Keynodes::nrel_content;
+	ScAddr Keynodes::nrel_mass;
+	ScAddr Keynodes::nrel_answer;
+	ScAddr Keynodes::nrel_result;
+	ScAddr Keynodes::nrel_speech_templates;
+	ScAddr Keynodes::nrel_main_idtf;
+	ScAddr Keynodes::nrel_tv_program;
 
-	sc::Addr Keynodes::rrel_1;
-	sc::Addr Keynodes::rrel_2;
-	sc::Addr Keynodes::rrel_3;
-	sc::Addr Keynodes::rrel_gram;
+	ScAddr Keynodes::rrel_1;
+	ScAddr Keynodes::rrel_2;
+	ScAddr Keynodes::rrel_3;
+	ScAddr Keynodes::rrel_gram;
 
-	sc::MemoryContext * Keynodes::memory_ctx = 0;
+	ScMemoryContext * Keynodes::memory_ctx = 0;
 
-	void _resolveKeynodeImpl(char const * str, sc::Addr & addr, bool & result)
+	void _resolveKeynodeImpl(char const * str, ScAddr & addr, bool & result)
 	{
 		result = result && Keynodes::resolveKeynode(str, addr);
 	}
 
 	bool Keynodes::initialize()
 	{
-		memory_ctx = new sc::MemoryContext(sc_access_lvl_make_min, "IoTKeynodes");
+		memory_ctx = new ScMemoryContext(sc_access_lvl_make_min, "IoTKeynodes");
 		if (!memory_ctx)
 			return false;
 
@@ -116,7 +116,7 @@ namespace iot
 		return true;
 	}
 
-	bool Keynodes::resolveKeynode(std::string const & sysIdtf, sc::Addr & outAddr)
+	bool Keynodes::resolveKeynode(std::string const & sysIdtf, ScAddr & outAddr)
 	{
 		check_expr(memory_ctx);
 

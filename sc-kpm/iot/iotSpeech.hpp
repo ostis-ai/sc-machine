@@ -17,7 +17,7 @@ namespace iot
 	class TextTemplateProcessor
 	{
 	public:
-		explicit TextTemplateProcessor(sc::MemoryContext & memoryCtx, std::string const & str, sc::Addr const & langAddr);
+        explicit TextTemplateProcessor(ScMemoryContext & memoryCtx, std::string const & str, ScAddr const & langAddr);
 		virtual ~TextTemplateProcessor();
 
 		bool generateOutputText(std::string & outText);
@@ -26,9 +26,9 @@ namespace iot
 		std::string processMainIdtfCmd(std::string & arguments);
 
 	private:
-		sc::MemoryContext & mMemoryCtx;
+        ScMemoryContext & mMemoryCtx;
 		std::string mInputTextTemplate;
-		sc::Addr mLanguageAddr;
+        ScAddr mLanguageAddr;
 	};
 
 }

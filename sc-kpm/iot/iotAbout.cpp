@@ -20,6 +20,6 @@ namespace iot
 
 	sc_result handler_who_are_you_command(sc_event const * event, sc_addr arg)
 	{
-		RUN_AGENT(WhoAreYou, Keynodes::command_who_are_you, sc_access_lvl_make_min, sc::Addr(arg));
+        RUN_AGENT(WhoAreYou, Keynodes::command_who_are_you, sc_access_lvl_make_min, ScAddr(arg));
 	}
 }

@@ -16,7 +16,7 @@ namespace iot
 
 	IMPLEMENT_AGENT(GenerateSpeechText, COMMAND_AGENT)
 	{
-		sc::Iterator5Ptr itCmd = mMemoryCtx.iterator5(
+        Iterator5Ptr itCmd = mMemoryCtx.iterator5(
 			requestAddr,
 			SC_TYPE(sc_type_arc_pos_const_perm),
 			SC_TYPE(sc_type_node | sc_type_const),
@@ -28,9 +28,9 @@ namespace iot
 			return SC_RESULT_ERROR_INVALID_PARAMS;
 
 		// got command addr
-		sc::Addr commandAddr;
-		sc::Addr const commandInstAddr = itCmd->value(2);
-		sc::Iterator3Ptr itCommandClass = mMemoryCtx.iterator3(
+        ScAddr commandAddr;
+        ScAddr const commandInstAddr = itCmd->value(2);
+		Iterator3Ptr itCommandClass = mMemoryCtx.iterator3(
 			SC_TYPE(sc_type_node | sc_type_const | sc_type_node_class),
 			SC_TYPE(sc_type_arc_pos_const_perm),
 			commandInstAddr);
@@ -46,7 +46,7 @@ namespace iot
 		if (!commandAddr.isValid())
 			return SC_RESULT_ERROR_INVALID_STATE;
 
-		sc::Iterator5Ptr itLang = mMemoryCtx.iterator5(
+        Iterator5Ptr itLang = mMemoryCtx.iterator5(
 			requestAddr,
 			SC_TYPE(sc_type_arc_pos_const_perm),
 			SC_TYPE(sc_type_node | sc_type_const),
@@ -56,9 +56,9 @@ namespace iot
 		if (!itLang->next())
 			return SC_RESULT_ERROR_INVALID_PARAMS;
 
-		sc::Addr const langAddr = itLang->value(2);
+        ScAddr const langAddr = itLang->value(2);
 
-		sc::Iterator5Ptr itAttr = mMemoryCtx.iterator5(
+		Iterator5Ptr itAttr = mMemoryCtx.iterator5(
 			requestAddr,
 			SC_TYPE(sc_type_arc_pos_const_perm),
 			SC_TYPE(sc_type_node | sc_type_const),
@@ -67,12 +67,12 @@ namespace iot
 			);
 		if (!itAttr->next())
 			return SC_RESULT_ERROR_INVALID_PARAMS;
-		sc::Addr const attrAddr = itAttr->value(2);
+        ScAddr const attrAddr = itAttr->value(2);
 
 		/// TODO: make commond method to get arguments with custom role
 
 		// check if there are speech templates for a specified command
-		sc::Iterator5Ptr itTemplatesSet = mMemoryCtx.iterator5(
+        Iterator5Ptr itTemplatesSet = mMemoryCtx.iterator5(
 			SC_TYPE(sc_type_node | sc_type_const | sc_type_node_tuple),
 			SC_TYPE(sc_type_arc_common | sc_type_const),
 			commandAddr,
@@ -84,10 +84,10 @@ namespace iot
 		if (!itTemplatesSet->next())
 			return SC_RESULT_ERROR_INVALID_PARAMS;
 		// got templates set
-		sc::Addr const templatesAddr = itTemplatesSet->value(0);
+        ScAddr const templatesAddr = itTemplatesSet->value(0);
 		
 		// try to find template for a specified language
-		sc::Iterator5Ptr itTempl = mMemoryCtx.iterator5(
+        Iterator5Ptr itTempl = mMemoryCtx.iterator5(
 			templatesAddr,
 			SC_TYPE(sc_type_arc_pos_const_perm),
 			SC_TYPE(sc_type_link),
@@ -98,28 +98,28 @@ namespace iot
 		/// TODO: possible select random template from a set (more then one template for language and result attr)
 		while (itTempl->next())
 		{
-			sc::Addr const linkAddr = itTempl->value(2);
+            ScAddr const linkAddr = itTempl->value(2);
 			if (mMemoryCtx.helperCheckArc(langAddr, linkAddr, sc_type_arc_pos_const_perm))
 			{
-				sc::Stream stream;
+                ScStream stream;
 				if (mMemoryCtx.getLinkContent(linkAddr, stream))
 				{
 					std::string strTemplate;
-					if (sc::StreamConverter::streamToString(stream, strTemplate))
+					if (StreamConverter::streamToString(stream, strTemplate))
 					{
 						std::string resultText;
 						TextTemplateProcessor processor(mMemoryCtx, strTemplate, langAddr);
 						if (processor.generateOutputText(resultText))
 						{
-							sc::Addr const resultLink = mMemoryCtx.createLink();
+                            ScAddr const resultLink = mMemoryCtx.createLink();
 							assert(resultLink.isValid());
 
-							sc::Stream resultStream(resultText.c_str(), (sc_uint32)resultText.size(), SC_STREAM_FLAG_READ | SC_STREAM_FLAG_SEEK);
+                            ScStream resultStream(resultText.c_str(), (sc_uint32)resultText.size(), SC_STREAM_FLAG_READ | SC_STREAM_FLAG_SEEK);
 							
 							bool const res = mMemoryCtx.setLinkContent(resultLink, resultStream);
 							assert(res);
 
-							sc::Addr const edge = mMemoryCtx.createArc(sc_type_arc_pos_const_perm, resultAddr, resultLink);
+                            ScAddr const edge = mMemoryCtx.createArc(sc_type_arc_pos_const_perm, resultAddr, resultLink);
 							assert(edge.isValid());
 							
 						}						
@@ -130,7 +130,7 @@ namespace iot
 					/// TODO: generate default text
 
 					// for a fast test, just use template as an answer
-					sc::Addr const edge = mMemoryCtx.createArc(sc_type_arc_pos_const_perm, resultAddr, linkAddr);
+                    ScAddr const edge = mMemoryCtx.createArc(sc_type_arc_pos_const_perm, resultAddr, linkAddr);
 					assert(edge.isValid());
 				}
 
@@ -144,7 +144,7 @@ namespace iot
 
 	sc_result handler_generate_text_command(sc_event const * event, sc_addr arg)
 	{
-		RUN_AGENT(GenerateSpeechText, Keynodes::command_generate_text_from_template, sc_access_lvl_make_min, sc::Addr(arg));
+        RUN_AGENT(GenerateSpeechText, Keynodes::command_generate_text_from_template, sc_access_lvl_make_min, ScAddr(arg));
 	}
 
 
@@ -153,7 +153,7 @@ namespace iot
 
 // ----------------- Template processor ---------------
 
-	TextTemplateProcessor::TextTemplateProcessor(sc::MemoryContext & memoryCtx, std::string const & str, sc::Addr const & langAddr)
+    TextTemplateProcessor::TextTemplateProcessor(ScMemoryContext & memoryCtx, std::string const & str, ScAddr const & langAddr)
 		: mMemoryCtx(memoryCtx)
 		, mInputTextTemplate(str)
 		, mLanguageAddr(langAddr)
@@ -218,16 +218,16 @@ namespace iot
 	std::string TextTemplateProcessor::processMainIdtfCmd(std::string & arguments)
 	{
 		std::string result;
-		sc::Addr elAddr;
+        ScAddr elAddr;
 		if (mMemoryCtx.helperFindBySystemIdtf(arguments, elAddr))
 		{
-			sc::Addr linkIdtf = Utils::findMainIdtf(mMemoryCtx, elAddr, mLanguageAddr);
+            ScAddr linkIdtf = Utils::findMainIdtf(mMemoryCtx, elAddr, mLanguageAddr);
 			if (linkIdtf.isValid())
 			{
-				sc::Stream stream;
+                ScStream stream;
 				if (mMemoryCtx.getLinkContent(linkIdtf, stream))
 				{
-					sc::StreamConverter::streamToString(stream, result);
+					StreamConverter::streamToString(stream, result);
 				}
 			}
 		}

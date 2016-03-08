@@ -15,19 +15,19 @@ namespace iot
 	namespace Utils
 	{
 
-		bool addToSet(sc::MemoryContext & ctx, sc::Addr const & setAddr, sc::Addr const & elAddr)
+        bool addToSet(ScMemoryContext & ctx, ScAddr const & setAddr, ScAddr const & elAddr)
 		{
 			if (ctx.helperCheckArc(setAddr, elAddr, sc_type_arc_pos_const_perm))
 				return false;
 
-			sc::Addr arcAddr = ctx.createArc(sc_type_arc_pos_const_perm, setAddr, elAddr);
+            ScAddr arcAddr = ctx.createArc(sc_type_arc_pos_const_perm, setAddr, elAddr);
 			assert(arcAddr.isValid());
 			return true;
 		}
 
-		bool removeFromSet(sc::MemoryContext & ctx, sc::Addr const & setAddr, sc::Addr const & elAddr)
+        bool removeFromSet(ScMemoryContext & ctx, ScAddr const & setAddr, ScAddr const & elAddr)
 		{
-			sc::Iterator3Ptr it = ctx.iterator3(setAddr, sc_type_arc_pos_const_perm, elAddr);
+			Iterator3Ptr it = ctx.iterator3(setAddr, sc_type_arc_pos_const_perm, elAddr);
 			bool result = false;
 			while (it->next())
 				ctx.eraseElement(it->value(1));
@@ -35,11 +35,11 @@ namespace iot
 			return result;
 		}
 
-		void setMass(sc::MemoryContext & ctx, sc::Addr const & objAddr, sc::Addr const & valueAddr)
+		void setMass(ScMemoryContext & ctx, ScAddr const & objAddr, ScAddr const & valueAddr)
 		{
-			sc::Addr massAddr;
+			ScAddr massAddr;
 
-			sc::Iterator5Ptr itMass = ctx.iterator5(objAddr,
+			Iterator5Ptr itMass = ctx.iterator5(objAddr,
 				SC_TYPE(sc_type_arc_common | sc_type_const),
 				SC_TYPE(sc_type_const | sc_type_node | sc_type_node_abstract),
 				SC_TYPE(sc_type_arc_pos_const_perm),
@@ -54,13 +54,13 @@ namespace iot
 			{
 				massAddr = ctx.createNode(sc_type_const | sc_type_node_abstract);
 				assert(massAddr.isValid());
-				sc::Addr arcCommon = ctx.createArc(sc_type_const | sc_type_arc_common, objAddr, massAddr);
+				ScAddr arcCommon = ctx.createArc(sc_type_const | sc_type_arc_common, objAddr, massAddr);
 				assert(arcCommon.isValid());
-				sc::Addr arc = ctx.createArc(sc_type_arc_pos_const_perm, Keynodes::nrel_mass, arcCommon);
+                ScAddr arc = ctx.createArc(sc_type_arc_pos_const_perm, Keynodes::nrel_mass, arcCommon);
 				assert(arc.isValid());
 			}
 
-			sc::Iterator5Ptr itValue = ctx.iterator5(massAddr,
+			Iterator5Ptr itValue = ctx.iterator5(massAddr,
 				SC_TYPE(sc_type_arc_pos_const_perm),
 				SC_TYPE(sc_type_link),
 				SC_TYPE(sc_type_arc_pos_const_perm),
@@ -68,8 +68,8 @@ namespace iot
 
 			if (itValue->next())
 			{
-				sc::Addr linkAddr = itValue->value(2);
-				sc::Stream stream;
+                ScAddr linkAddr = itValue->value(2);
+                ScStream stream;
 				bool res = ctx.getLinkContent(valueAddr, stream);
 				assert(res);
 				res = ctx.setLinkContent(linkAddr, stream);
@@ -77,7 +77,7 @@ namespace iot
 			}
 			else
 			{
-				sc::Addr arc = ctx.createArc(sc_type_arc_pos_const_perm, massAddr, valueAddr);
+                ScAddr arc = ctx.createArc(sc_type_arc_pos_const_perm, massAddr, valueAddr);
 				assert(arc.isValid());
 				arc = ctx.createArc(sc_type_arc_pos_const_perm, Keynodes::rrel_gram, arc);
 				assert(arc.isValid());
@@ -86,13 +86,13 @@ namespace iot
 		}
 
 
-		sc::Addr findMainIdtf(sc::MemoryContext & ctx, sc::Addr const & elAddr, sc::Addr const langAddr)
+        ScAddr findMainIdtf(ScMemoryContext & ctx, ScAddr const & elAddr, ScAddr const langAddr)
 		{
 			assert(elAddr.isValid());
 			assert(langAddr.isValid());
 
-			sc::Addr result;
-			sc::Iterator5Ptr it5 = ctx.iterator5(
+            ScAddr result;
+			Iterator5Ptr it5 = ctx.iterator5(
 				elAddr,
 				SC_TYPE(sc_type_arc_common | sc_type_const),
 				SC_TYPE(sc_type_link),

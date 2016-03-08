@@ -6,10 +6,8 @@
 
 #include "iotEnergy.hpp"
 
-namespace sc
-{
-	class MemoryContext;
-}
+class ScMemoryContext;
+
 
 namespace iot
 {
@@ -20,7 +18,7 @@ namespace iot
 		static bool shutdown();
 
 	private:
-		static sc::MemoryContext * memory_ctx;
+        static ScMemoryContext * memory_ctx;
 	};
 
 }

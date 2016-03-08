@@ -20,7 +20,7 @@ namespace iot
 	class Agent
 	{
 	public:
-		explicit Agent(sc::Addr const & cmdClassAddr, char const * name, sc_uint8 accessLvl = sc_access_lvl_make_max)
+        explicit Agent(ScAddr const & cmdClassAddr, char const * name, sc_uint8 accessLvl = sc_access_lvl_make_max)
 			: mCmdClassAddr(cmdClassAddr)
 			, mMemoryCtx(accessLvl, name)
 		{
@@ -30,31 +30,31 @@ namespace iot
 		{
 		}
 
-		sc_result run(sc::Addr const & startArcAddr);
+        sc_result run(ScAddr const & startArcAddr);
 
-		sc::Addr getParam(sc::Addr const & cmdAddr, sc::Addr const & relationAddr, sc_type paramType)
+        ScAddr getParam(ScAddr const & cmdAddr, ScAddr const & relationAddr, sc_type paramType)
 		{
-			sc::Iterator5Ptr iter = mMemoryCtx.iterator5(cmdAddr,
+			Iterator5Ptr iter = mMemoryCtx.iterator5(cmdAddr,
 				SC_TYPE(sc_type_arc_pos_const_perm),
 				SC_TYPE(paramType),
 				SC_TYPE(sc_type_arc_pos_const_perm),
 				relationAddr);
 
 			if (!iter->next())
-				return sc::Addr();
+                return ScAddr();
 
 			return iter->value(2);
 		}
 
 	protected:
-		virtual sc_result runImpl(sc::Addr const & requestAddr, sc::Addr const & resultAddr) = 0;
+        virtual sc_result runImpl(ScAddr const & requestAddr, ScAddr const & resultAddr) = 0;
 
 	protected:
-		sc::Addr mCmdClassAddr;
-		sc::MemoryContext mMemoryCtx;
+        ScAddr mCmdClassAddr;
+        ScMemoryContext mMemoryCtx;
 
 	private:
-		sc::Addr mCmdAddr;
+        ScAddr mCmdAddr;
 	};
 
 #define AGENT_NAME_TYPE(__Name__) __Name__##Type
@@ -66,16 +66,16 @@ namespace iot
 	class AGENT_NAME_CLASS(__AgentName__) : public iot::Agent<AgentType> \
 	{ \
 	public: \
-	explicit AGENT_NAME_CLASS(__AgentName__)(sc::Addr const & cmdClassAddr, char const * name, sc_uint8 accessLvl = sc_access_lvl_make_min) \
+    explicit AGENT_NAME_CLASS(__AgentName__)(ScAddr const & cmdClassAddr, char const * name, sc_uint8 accessLvl = sc_access_lvl_make_min) \
 	: Agent(cmdClassAddr, name, accessLvl) {} \
 	private: \
-	virtual sc_result runImpl(sc::Addr const & requestAddr, sc::Addr const & resultAddr); \
+    virtual sc_result runImpl(ScAddr const & requestAddr, ScAddr const & resultAddr); \
 	}; \
 	typedef AGENT_NAME_CLASS(__AgentName__)<__AgentType__> AGENT_NAME_TYPE(__AgentName__);
 
 #define IMPLEMENT_AGENT(__AgentName__, __AgentType__) \
 	DECLARE_AGENT(__AgentName__, __AgentType__) \
-	template <> sc_result AGENT_NAME_CLASS(__AgentName__)<__AgentType__>::runImpl(sc::Addr const & requestAddr, sc::Addr const & resultAddr)
+    template <> sc_result AGENT_NAME_CLASS(__AgentName__)<__AgentType__>::runImpl(ScAddr const & requestAddr, ScAddr const & resultAddr)
 
 #define RUN_AGENT(__AgentName__, __CmdClassAddr__, __AccessLvl__, __ArcAddr__) \
 	AGENT_NAME_TYPE(__AgentName__) AGENT_NAME_INST(__AgentName__)(__CmdClassAddr__, #__AgentName__, __AccessLvl__); \
