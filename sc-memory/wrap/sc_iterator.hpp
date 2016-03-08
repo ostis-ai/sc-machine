@@ -125,9 +125,9 @@ public:
 
 };
 
-typedef TIteratorBase<sc_iterator3> Iterator3Type;
-typedef TIteratorBase<sc_iterator5> Iterator5Type;
+typedef TIteratorBase<sc_iterator3> ScIterator3Type;
+typedef TIteratorBase<sc_iterator5> ScIterator5Type;
 
-typedef TSharedPointer< Iterator3Type > Iterator3Ptr;
-typedef TSharedPointer< Iterator5Type > Iterator5Ptr;
+typedef TSharedPointer< ScIterator3Type > ScIterator3Ptr;
+typedef TSharedPointer< ScIterator5Type > ScIterator5Ptr;
 

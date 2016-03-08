@@ -192,3 +192,21 @@ bool ScStreamMemory::hasFlag(sc_uint8 flag)
 	return !(flag & SC_STREAM_FLAG_WRITE);
 }
 
+
+bool StreamConverter::streamToString(ScStream const & stream, std::string & outString)
+{
+	sc_uint32 const bytesCount = stream.size();
+	if (bytesCount == 0)
+		return false;
+
+	char * data = new char[bytesCount];
+	sc_uint32 readBytes;
+	if (stream.read(data, bytesCount, readBytes) && (readBytes == bytesCount))
+	{
+		outString.assign(data, data + bytesCount);
+	}
+	delete[]data;
+
+	return true;
+
+}

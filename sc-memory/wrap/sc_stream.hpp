@@ -106,3 +106,9 @@ private:
 
 SHARED_PTR_TYPE(IScStream)
 
+class StreamConverter
+{
+public:
+    static _SC_EXTERN bool streamToString(ScStream const & stream, std::string & outString);
+};
+

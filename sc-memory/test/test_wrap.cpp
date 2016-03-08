@@ -83,7 +83,7 @@ void test_common_iterators()
         g_assert(ctx.isElement(arc1));
 
         {
-            Iterator3Ptr iter3 = ctx.iterator3(addr1, sc_type_arc_pos_const_perm, addr2);
+            ScIterator3Ptr iter3 = ctx.iterator3(addr1, sc_type_arc_pos_const_perm, addr2);
             g_assert(iter3->next());
             g_assert(iter3->value(0) == addr1);
             g_assert(iter3->value(1) == arc1);
@@ -91,7 +91,7 @@ void test_common_iterators()
         }
 
         {
-            Iterator3Ptr iter3 = ctx.iterator3(addr1, sc_type_arc_pos_const_perm, sc_type_node);
+            ScIterator3Ptr iter3 = ctx.iterator3(addr1, sc_type_arc_pos_const_perm, sc_type_node);
             g_assert(iter3->next());
             g_assert(iter3->value(0) == addr1);
             g_assert(iter3->value(1) == arc1);
@@ -99,7 +99,7 @@ void test_common_iterators()
         }
 
         {
-            Iterator3Ptr iter3 = ctx.iterator3(sc_type_node, sc_type_arc_pos_const_perm, addr2);
+            ScIterator3Ptr iter3 = ctx.iterator3(sc_type_node, sc_type_arc_pos_const_perm, addr2);
             g_assert(iter3->next());
             g_assert(iter3->value(0) == addr1);
             g_assert(iter3->value(1) == arc1);
@@ -116,7 +116,7 @@ void test_common_iterators()
         g_assert(ctx.isElement(arc2));
 
         {
-			Iterator5Ptr iter5 = ctx.iterator5(sc_type_node, sc_type_arc_pos_const_perm, addr2, sc_type_arc_pos_const_perm, sc_type_node);
+            ScIterator5Ptr iter5 = ctx.iterator5(sc_type_node, sc_type_arc_pos_const_perm, addr2, sc_type_arc_pos_const_perm, sc_type_node);
 
             g_assert(iter5->next());
 
@@ -128,7 +128,7 @@ void test_common_iterators()
         }
 
         {
-            Iterator5Ptr iter5 = ctx.iterator5(sc_type_node, sc_type_arc_pos_const_perm, addr2, sc_type_arc_pos_const_perm, addr3);
+            ScIterator5Ptr iter5 = ctx.iterator5(sc_type_node, sc_type_arc_pos_const_perm, addr2, sc_type_arc_pos_const_perm, addr3);
 
             g_assert(iter5->next());
 
@@ -140,7 +140,7 @@ void test_common_iterators()
         }
 
         {
-            Iterator5Ptr iter5 = ctx.iterator5(addr1, sc_type_arc_pos_const_perm, sc_type_node, sc_type_arc_pos_const_perm, sc_type_node);
+            ScIterator5Ptr iter5 = ctx.iterator5(addr1, sc_type_arc_pos_const_perm, sc_type_node, sc_type_arc_pos_const_perm, sc_type_node);
 
             g_assert(iter5->next());
 
@@ -152,7 +152,7 @@ void test_common_iterators()
         }
 
         {
-            Iterator5Ptr iter5 = ctx.iterator5(addr1, sc_type_arc_pos_const_perm, sc_type_node, sc_type_arc_pos_const_perm, addr3);
+            ScIterator5Ptr iter5 = ctx.iterator5(addr1, sc_type_arc_pos_const_perm, sc_type_node, sc_type_arc_pos_const_perm, addr3);
 
             g_assert(iter5->next());
 
@@ -164,7 +164,7 @@ void test_common_iterators()
         }
 
         {
-            Iterator5Ptr iter5 = ctx.iterator5(addr1, sc_type_arc_pos_const_perm, addr2, sc_type_arc_pos_const_perm, sc_type_node);
+            ScIterator5Ptr iter5 = ctx.iterator5(addr1, sc_type_arc_pos_const_perm, addr2, sc_type_arc_pos_const_perm, sc_type_node);
 
             g_assert(iter5->next());
 
@@ -176,7 +176,7 @@ void test_common_iterators()
         }
 
         {
-            Iterator5Ptr iter5 = ctx.iterator5(addr1, sc_type_arc_pos_const_perm, addr2, sc_type_arc_pos_const_perm, addr3);
+            ScIterator5Ptr iter5 = ctx.iterator5(addr1, sc_type_arc_pos_const_perm, addr2, sc_type_arc_pos_const_perm, addr3);
 
             g_assert(iter5->next());
 
@@ -315,7 +315,7 @@ void test_common_templates()
 			g_assert(result[6] == result["addr2"]);
 			g_assert(result[8] == result["edge1"]);
 
-			Iterator5Ptr it5 = ctx.iterator5(addr1, sc_type_arc_pos_const_perm, sc_type_node, sc_type_arc_pos_const_perm, sc_type_node);
+            ScIterator5Ptr it5 = ctx.iterator5(addr1, sc_type_arc_pos_const_perm, sc_type_node, sc_type_arc_pos_const_perm, sc_type_node);
 			g_assert(it5->next());
 			g_assert(it5->value(0) == result["addr1"]);
 			g_assert(it5->value(1) == result["edge1"]);
@@ -323,7 +323,7 @@ void test_common_templates()
 			g_assert(it5->value(3) == result[4]);
 			g_assert(it5->value(4) == result[3]);
 
-			Iterator3Ptr it3 = ctx.iterator3(result["addr2"], sc_type_arc_common, sc_type_arc_pos_const_perm);
+            ScIterator3Ptr it3 = ctx.iterator3(result["addr2"], sc_type_arc_common, sc_type_arc_pos_const_perm);
 			g_assert(it3->next());
 			g_assert(it3->value(0) == result["addr2"]);
 			g_assert(it3->value(1) == result[7]);

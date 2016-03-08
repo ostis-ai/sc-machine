@@ -245,6 +245,11 @@ bool ScMemoryContext::helperCheckArc(ScAddr const & begin, ScAddr end, sc_type a
 	return (sc_helper_check_arc(mContext, begin.mRealAddr, end.mRealAddr, arcType) == SC_RESULT_OK);
 }
 
+bool ScMemoryContext::helperFindBySystemIdtf(std::string const & sysIdtf, ScAddr & outAddr)
+{
+	check_expr(isValid());
+	return (sc_helper_find_element_by_system_identifier(mContext, sysIdtf.c_str(), (sc_uint32)sysIdtf.size(), &outAddr.mRealAddr) == SC_RESULT_OK);
+}
 bool ScMemoryContext::helperGenTemplate(ScTemplate const & templ, ScTemplateGenResult & result)
 {
 	return templ.generate(*this, result);
