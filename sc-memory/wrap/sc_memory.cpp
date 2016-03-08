@@ -256,7 +256,6 @@ bool ScMemoryContext::helperGenTemplate(ScTemplate const & templ, ScTemplateGenR
 	return templ.generate(*this, result);
 }
 
-}
 
 bool ScMemoryContext::helperSearchTemplate(ScTemplate const & templ, ScTemplateSearchResult & result)
 {
