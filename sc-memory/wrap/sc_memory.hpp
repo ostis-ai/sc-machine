@@ -15,6 +15,7 @@ extern "C"
 #include "sc_types.hpp"
 #include "sc_addr.hpp"
 #include "sc_iterator.hpp"
+#include "sc_template.hpp"
 
 #include <list>
 #include <string>
@@ -114,6 +115,7 @@ public:
 	_SC_EXTERN bool helperResolveSystemIdtf(std::string const & sysIdtf, ScAddr & outAddr);
 	_SC_EXTERN bool helperSetSystemIdtf(std::string const & sysIdtf, ScAddr const & addr);
 	_SC_EXTERN bool helperCheckArc(ScAddr const & begin, ScAddr end, sc_type arcType);
+	_SC_EXTERN bool helperGenTemplate(ScTemplate const & templ, ScTemplateGenResult & result);
 
 private:
     // Disable object copying

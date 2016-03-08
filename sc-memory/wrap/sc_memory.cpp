@@ -245,4 +245,7 @@ bool ScMemoryContext::helperCheckArc(ScAddr const & begin, ScAddr end, sc_type a
 	return (sc_helper_check_arc(mContext, begin.mRealAddr, end.mRealAddr, arcType) == SC_RESULT_OK);
 }
 
-
+bool ScMemoryContext::helperGenTemplate(ScTemplate const & templ, ScTemplateGenResult & result)
+{
+	return templ.generate(*this, result);
+}

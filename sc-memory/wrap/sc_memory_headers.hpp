@@ -8,3 +8,4 @@
 
 #include "sc_memory.hpp"
 #include "sc_stream.hpp"
+#include "sc_template.hpp"

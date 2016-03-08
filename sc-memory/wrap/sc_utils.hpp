@@ -16,10 +16,10 @@
 class ScException : public std::exception
 {
 public:
-	ScException(std::string const & description);
-	virtual ~ScException() throw();
+	_SC_EXTERN ScException(std::string const & description);
+	_SC_EXTERN virtual ~ScException() throw();
 
-    const char* what() const throw();
+	_SC_EXTERN const char* what() const throw();
 
 private:
     std::string mDescription;

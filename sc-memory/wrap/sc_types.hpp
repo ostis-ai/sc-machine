@@ -10,8 +10,9 @@
 
 #include <string>
 #include <map>
+#include <assert.h>
 
-class ScMemoryCotext;
+class ScMemoryContext;
 class ScAddr;
 
 class ScType
@@ -28,6 +29,25 @@ public:
 	{
 	}
 
+	bool isEdge() const
+	{
+		return (mRealType & sc_type_arc_mask) != 0;
+	}
+
+	bool isNode() const
+	{
+		return (mRealType & sc_type_node) != 0;
+	}
+
+	bool isLink() const
+	{
+		return (mRealType & sc_type_link) != 0;
+	}
+
+	sc_type operator * () const
+	{
+		return mRealType;
+	}
 
 private:
 	tRealType mRealType;

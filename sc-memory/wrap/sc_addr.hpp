@@ -31,7 +31,9 @@ public:
 
 	bool operator == (ScAddr const & other) const;
 	bool operator != (ScAddr const & other) const;
+	tRealAddr operator * () const;
 
+	/// TODO: remove and replace by operator * ()
     tRealAddr const & getRealAddr() const;
 
 	explicit ScAddr();

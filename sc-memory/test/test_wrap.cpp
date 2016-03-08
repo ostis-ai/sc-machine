@@ -277,6 +277,64 @@ void test_common_streams()
     shutdown_memory(false);
 }
 
+void test_common_templates()
+{
+	init_memory();
+	{
+		ScMemoryContext ctx;
+		ScAddr const addr1 = ctx.createNode(0);
+		ScAddr const addr2 = ctx.createNode(0);
+		ScAddr const addr3 = ctx.createNode(0);
+
+		ScAddr const edge1 = ctx.createArc(sc_type_arc_pos_const_perm, addr1, addr2);
+		ScAddr const edge2 = ctx.createArc(sc_type_arc_pos_const_perm, addr3, edge1);
+
+		{
+			ScTemplate templ;
+
+			templ
+				.triple(addr1 >> "addr1",
+						ScType(sc_type_arc_pos_const_perm) >> "edge1",
+						ScType(sc_type_node) >> "addr2"
+				)
+                .triple(ScType(sc_type_node),
+						ScType(sc_type_arc_pos_const_perm),
+						"edge1"
+				)
+                .triple("addr2",
+						ScType(sc_type_arc_common),
+						"edge1");
+
+			ScTemplateGenResult result;
+			g_assert(ctx.helperGenTemplate(templ, result));
+
+			g_assert(result[0] == result["addr1"]);
+			g_assert(result[1] == result["edge1"]);
+			g_assert(result[2] == result["addr2"]);
+			g_assert(result[5] == result["edge1"]);
+			g_assert(result[6] == result["addr2"]);
+			g_assert(result[8] == result["edge1"]);
+
+			Iterator5Ptr it5 = ctx.iterator5(addr1, sc_type_arc_pos_const_perm, sc_type_node, sc_type_arc_pos_const_perm, sc_type_node);
+			g_assert(it5->next());
+			g_assert(it5->value(0) == result["addr1"]);
+			g_assert(it5->value(1) == result["edge1"]);
+			g_assert(it5->value(2) == result["addr2"]);
+			g_assert(it5->value(3) == result[4]);
+			g_assert(it5->value(4) == result[3]);
+
+			Iterator3Ptr it3 = ctx.iterator3(result["addr2"], sc_type_arc_common, sc_type_arc_pos_const_perm);
+			g_assert(it3->next());
+			g_assert(it3->value(0) == result["addr2"]);
+			g_assert(it3->value(1) == result[7]);
+			g_assert(it3->value(2) == result["edge1"]);
+
+		}
+	}
+
+	shutdown_memory(false);
+}
+
 int main(int argc, char *argv[])
 {
     g_test_init(&argc, &argv, NULL);
@@ -284,6 +342,7 @@ int main(int argc, char *argv[])
     g_test_add_func("/common/elements", test_common_elements);
     g_test_add_func("/common/iterators", test_common_iterators);
     g_test_add_func("/common/streams", test_common_streams);
+	g_test_add_func("/common/templates", test_common_templates);
 
     g_test_run();
 
