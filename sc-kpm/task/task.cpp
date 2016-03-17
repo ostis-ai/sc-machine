@@ -4,14 +4,17 @@
 * (See accompanying file COPYING.MIT or copy at http://opensource.org/licenses/MIT)
 */
 
-#pragma once
+#include "task.hpp"
 
-#include "iotTypes.hpp"
-#include "wrap/kpm/sc_agent.hpp"
-
-namespace iot
+_SC_EXT_EXTERN sc_result initialize()
 {
 
-	sc_result handler_who_are_you_command(sc_event const * event, sc_addr arg);
+	return SC_RESULT_OK;
+}
 
+_SC_EXT_EXTERN sc_result shutdown()
+{
+	sc_result result = SC_RESULT_OK;
+
+	return result;
 }

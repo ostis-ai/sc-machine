@@ -41,13 +41,9 @@ namespace iot
 
 		static ScAddr group_volume;
 		static ScAddr command_initiated;
-		static ScAddr command_finished;
-		static ScAddr command_in_progress;
 		static ScAddr command;
 
 		static ScAddr question_initiated;
-		static ScAddr question_finished;
-		static ScAddr question_in_progress;
 
 		/// relations
 		static ScAddr nrel_content;

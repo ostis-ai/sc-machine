@@ -28,13 +28,9 @@ namespace iot
 
 	ScAddr Keynodes::group_volume;
 	ScAddr Keynodes::command_initiated;
-	ScAddr Keynodes::command_finished;
-	ScAddr Keynodes::command_in_progress;
 	ScAddr Keynodes::command;
 
 	ScAddr Keynodes::question_initiated;
-	ScAddr Keynodes::question_finished;
-	ScAddr Keynodes::question_in_progress;
 
 	ScAddr Keynodes::nrel_content;
 	ScAddr Keynodes::nrel_mass;
@@ -82,13 +78,9 @@ namespace iot
 		_resolveKeynodeImpl("self", self, result);
 		_resolveKeynodeImpl("group_volume", group_volume, result);
 		_resolveKeynodeImpl("command_initiated", command_initiated, result);
-		_resolveKeynodeImpl("command_finished", command_finished, result);
-		_resolveKeynodeImpl("command_in_progress", command_in_progress, result);
 		_resolveKeynodeImpl("command", command, result);
 
 		_resolveKeynodeImpl("question_initiated", question_initiated, result);
-		_resolveKeynodeImpl("question_finished", question_finished, result);
-		_resolveKeynodeImpl("question_in_progress", question_in_progress, result);
 
 		_resolveKeynodeImpl("nrel_content", nrel_content, result);
 		_resolveKeynodeImpl("nrel_mass", nrel_mass, result);

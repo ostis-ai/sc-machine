@@ -8,8 +8,13 @@
 #include "iotKeynodes.hpp"
 #include "iotCommands.hpp"
 
+#include "wrap/kpm/sc_agent.hpp"
+
 _SC_EXT_EXTERN sc_result initialize()
 {
+    if (!ScAgentInit())
+        return SC_RESULT_ERROR;
+
 	if (!iot::Keynodes::initialize())
 		return SC_RESULT_ERROR;
 

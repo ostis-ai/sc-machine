@@ -7,7 +7,7 @@
 #pragma once
 
 #include "iotTypes.hpp"
-#include "iotAgent.hpp"
+#include "wrap/kpm/sc_agent.hpp"
 
 namespace iot
 {

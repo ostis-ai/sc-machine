@@ -14,20 +14,21 @@ include_directories(${SC_MEMORY_SRC})
 
 set (SC_MEMORY_WRAP_SOURCES 
 			"wrap/sc_memory.cpp"
-                        "wrap/sc_addr.cpp"
-                        "wrap/sc_utils.cpp"
-                        "wrap/sc_iterator.cpp"
-                        "wrap/sc_stream.cpp"
-						"wrap/sc_template.cpp"
+            "wrap/sc_addr.cpp"
+            "wrap/sc_utils.cpp"
+            "wrap/sc_iterator.cpp"
+            "wrap/sc_stream.cpp"
+			"wrap/sc_template.cpp"
+			"wrap/kpm/sc_agent.cpp"
 
-                        "wrap/sc_memory.hpp"
-                        "wrap/sc_addr.hpp"
-                        "wrap/sc_utils.hpp"
-                        "wrap/sc_iterator.hpp"
-                        "wrap/sc_stream.hpp"
-                        "wrap/sc_types.hpp"
-						"wrap/sc_template.hpp"
-
+            "wrap/sc_memory.hpp"
+            "wrap/sc_addr.hpp"
+            "wrap/sc_utils.hpp"
+            "wrap/sc_iterator.hpp"
+            "wrap/sc_stream.hpp"
+            "wrap/sc_types.hpp"
+			"wrap/sc_template.hpp"
+			"wrap/kpm/sc_agent.hpp"
         )
 
 add_library (sc-memory-cpp SHARED ${SC_MEMORY_WRAP_SOURCES})

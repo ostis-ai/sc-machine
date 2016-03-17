@@ -6,12 +6,11 @@
 
 #pragma once
 
-#include "iotTypes.hpp"
-#include "wrap/kpm/sc_agent.hpp"
+#include "sc_memory.h"
 
-namespace iot
+extern "C"
 {
-
-	sc_result handler_who_are_you_command(sc_event const * event, sc_addr arg);
-
+	_SC_EXT_EXTERN sc_result initialize();
+	//_SC_EXT_EXTERN sc_uint32 load_priority();
+	_SC_EXT_EXTERN sc_result shutdown();
 }

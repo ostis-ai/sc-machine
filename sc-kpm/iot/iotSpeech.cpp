@@ -14,7 +14,7 @@
 namespace iot
 {
 
-	IMPLEMENT_AGENT(GenerateSpeechText, COMMAND_AGENT)
+	IMPLEMENT_AGENT(GenerateSpeechText, KPM_COMMAND_AGENT)
 	{
         ScIterator5Ptr itCmd = mMemoryCtx.iterator5(
 			requestAddr,

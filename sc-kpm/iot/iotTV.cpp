@@ -12,7 +12,7 @@
 
 namespace iot
 {
-	IMPLEMENT_AGENT(TVChangeProgram, COMMAND_AGENT)
+	IMPLEMENT_AGENT(TVChangeProgram, KPM_COMMAND_AGENT)
 	{
 		// get tv device
         ScAddr tvAddr = getParam(requestAddr, Keynodes::rrel_1, 0);

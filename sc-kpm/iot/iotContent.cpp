@@ -13,7 +13,7 @@
 namespace iot
 {
 
-	IMPLEMENT_AGENT(AddContent, COMMAND_AGENT)
+	IMPLEMENT_AGENT(AddContent, KPM_COMMAND_AGENT)
 	{
 		assert(requestAddr.isValid());
 
@@ -91,7 +91,7 @@ namespace iot
 	}
 
 	// ------------------------------------
-	IMPLEMENT_AGENT(GetContent, QUESTION_AGENT)
+	IMPLEMENT_AGENT(GetContent, KPM_QUESTION_AGENT)
 	{
 		assert(requestAddr.isValid());
 
