@@ -25,6 +25,17 @@ void shutdown_memory(bool save)
     ScMemory::shutdown(save);
 }
 
+bool has_addr(tAddrVector const & v, ScAddr const & addr)
+{
+    for (tAddrVector::const_iterator it = v.begin(); it != v.end(); ++it)
+    {
+        if (*it == addr)
+            return true;
+    }
+
+    return false;
+}
+
 
 void test_common_elements()
 {
@@ -327,8 +338,73 @@ void test_common_templates()
 			g_assert(it3->next());
 			g_assert(it3->value(0) == result["addr2"]);
 			g_assert(it3->value(1) == result[7]);
-			g_assert(it3->value(2) == result["edge1"]);
+            g_assert(it3->value(2) == result["edge1"]);
 
+
+            // test template search
+            {
+                ScTemplateSearchResult searchResult;
+                g_assert(ctx.helperSearchTemplate(templ, searchResult));
+
+                g_assert(searchResult.getSize() == 1);
+
+                ScTemplateSearchResultItem const & res = searchResult.getResult(0);
+                g_assert(res[0] == res["addr1"]);
+                g_assert(res[1] == res["edge1"]);
+                g_assert(res[2] == res["addr2"]);
+                g_assert(res[5] == res["edge1"]);
+                g_assert(res[6] == res["addr2"]);
+                g_assert(res[8] == res["edge1"]);
+
+                g_assert(it5->value(0) == res["addr1"]);
+                g_assert(it5->value(1) == res["edge1"]);
+                g_assert(it5->value(2) == res["addr2"]);
+                g_assert(it5->value(3) == res[4]);
+                g_assert(it5->value(4) == res[3]);
+
+                g_assert(it3->value(0) == res["addr2"]);
+                g_assert(it3->value(1) == res[7]);
+                g_assert(it3->value(2) == res["edge1"]);
+            }
+
+            // template search test 2
+            {
+                size_t const testCount = 10;
+                tAddrVector nodes, edges;
+
+                ScAddr addrSrc = ctx.createNode(sc_type_const);
+                g_assert(addrSrc.isValid());
+                for (size_t i = 0; i < testCount; ++i)
+                {
+                    ScAddr const addrTrg = ctx.createNode(sc_type_var);
+                    g_assert(addrTrg.isValid());
+
+                    ScAddr const addrEdge = ctx.createArc(sc_type_arc_pos_const_perm, addrSrc, addrTrg);
+                    g_assert(addrEdge.isValid());
+
+                    nodes.push_back(addrTrg);
+                    edges.push_back(addrEdge);
+                }
+
+                ScTemplate templ2;
+
+                templ2.triple(addrSrc >> "addrSrc",
+                    ScType(sc_type_arc_pos_const_perm) >> "edge",
+                    ScType(sc_type_node | sc_type_var) >> "addrTrg");
+
+                ScTemplateSearchResult result2;
+                g_assert(ctx.helperSearchTemplate(templ2, result2));
+                size_t const count = result2.getSize();
+                for (size_t i = 0; i < count; ++i)
+                {
+                    ScTemplateSearchResultItem r = result2.getResult(i);
+
+                    g_assert(r["addrSrc"] == addrSrc);
+
+                    g_assert(has_addr(edges, r["edge"]));
+                    g_assert(has_addr(nodes, r["addrTrg"]));
+                }
+            }
 		}
 	}
 

@@ -66,6 +66,16 @@ struct ScTemplateItemValue
 			mReplacementName = name;
 	}
 
+    bool canBeAddr() const
+    {
+        return mItemType == VT_Addr || mItemType == VT_Replace;
+    }
+
+    bool canBeType() const
+    {
+        return mItemType == VT_Type;
+    }
+
 	eType mItemType;
 
 	ScAddr mAddrValue;
@@ -100,6 +110,7 @@ ScTemplateItemValue operator >> (Type const & value, char const * replName)
 }
 
 class ScTemplateGenResult;
+class ScTemplateSearchResult;
 
 class ScTemplate
 {
@@ -137,6 +148,8 @@ public:
 protected:
 	// Calls by memory context
 	bool generate(ScMemoryContext & ctx, ScTemplateGenResult & result) const;
+    // Calls be memory context
+    bool search(ScMemoryContext & ctx, ScTemplateSearchResult & result) const;
 
 private:
 	/** Generates node or link element in memory, depending on type. 
@@ -162,11 +175,11 @@ protected:
 class ScTemplateGenResult
 {
 	friend class ScTemplateGenerator;
-
+    
 public:
 	ScTemplateGenResult() {	}
 
-	ScAddr const & operator [] (std::string const & name)
+	ScAddr const & operator [] (std::string const & name) const
 	{
 		ScTemplate::tReplacementsMap::const_iterator it = mReplacements.find(name);
 		if (it != mReplacements.end())
@@ -185,7 +198,7 @@ public:
 		return empty;
 	}
 
-	ScAddr const & operator [] (size_t idx)
+	ScAddr const & operator [] (size_t idx) const
 	{
 		check_expr(idx < mResult.size());
 		return mResult[idx];
@@ -202,4 +215,55 @@ protected:
 	ScTemplate::tReplacementsMap mReplacements;
 };
 
+class ScTemplateSearchResultItem
+{
+    friend class ScTemplateSearch;
+    friend class ScTemplateSearchResult;
 
+protected:
+    explicit ScTemplateSearchResultItem(tAddrVector const * results, ScTemplate::tReplacementsMap const * replacements) 
+        : mResults(results)
+        , mReplacements(replacements)
+    {
+    }
+
+public:
+    ScAddr const & operator[] (size_t idx) const
+    {
+        check_expr(idx < mResults->size());
+        return (*mResults)[idx];
+    }
+
+    ScAddr const & operator[] (std::string const & name) const
+    {
+        ScTemplate::tReplacementsMap::const_iterator it = mReplacements->find(name);
+        check_expr(it != mReplacements->end());
+        return (*this)[it->second];
+    }
+
+protected:
+    tAddrVector const * mResults;
+    ScTemplate::tReplacementsMap const * mReplacements;
+};
+
+class ScTemplateSearchResult
+{
+    friend class ScTemplateSearch;
+
+public:
+    inline size_t getSize() const
+    {
+        return mResults.size();
+    }
+
+    inline ScTemplateSearchResultItem getResult(size_t idx)
+    {
+        check_expr(idx < mResults.size());
+        return ScTemplateSearchResultItem(&(mResults[idx]), &mReplacements);
+    }
+
+protected:
+    typedef std::vector<tAddrVector> tSearchResults;
+    tSearchResults mResults;
+    ScTemplate::tReplacementsMap mReplacements;
+};
