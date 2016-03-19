@@ -26,7 +26,7 @@ public:
         std::vector<Global*> &output, 
         const Cursor &cursor, 
         const Namespace &currentNamespace
-    );
+   );
 
 private:
     std::string m_name;

@@ -8,36 +8,36 @@ Global::Global(
     const Namespace &currentNamespace, 
     Class *parent
 )
-    : LanguageType( cursor, currentNamespace )
-    , m_isConst( cursor.GetType( ).IsConst( ) )
-    , m_hasExplicitGetter( m_metaData.GetFlag( kMetaExplicitGetter ) )
-    , m_hasExplicitSetter( m_metaData.GetFlag( kMetaExplicitSetter ) )
-    , m_parent( parent )
-    , m_name( cursor.GetSpelling( ) )
-    , m_qualifiedName( utils::GetQualifiedName( cursor, currentNamespace ) )
-    , m_type( cursor.GetType( ).GetDisplayName( ) )
+    : LanguageType(cursor, currentNamespace)
+    , m_isConst(cursor.GetType().IsConst())
+    , m_hasExplicitGetter(m_metaData.GetFlag(kMetaExplicitGetter))
+    , m_hasExplicitSetter(m_metaData.GetFlag(kMetaExplicitSetter))
+    , m_parent(parent)
+    , m_name(cursor.GetSpelling())
+    , m_qualifiedName(utils::GetQualifiedName(cursor, currentNamespace))
+    , m_type(cursor.GetType().GetDisplayName())
 {
-    auto displayName = m_metaData.GetNativeString( kMetaDisplayName );
+    auto displayName = m_metaData.GetNativeString(kMetaDisplayName);
 
-    if (displayName.empty( ))
+    if (displayName.empty())
     {
         m_displayName = m_qualifiedName;
     }
     else
     {
         m_displayName = 
-            utils::GetQualifiedName( displayName, currentNamespace );
+            utils::GetQualifiedName(displayName, currentNamespace);
     }
 }
 
 bool Global::ShouldCompile(void) const
 {
-    return isAccessible( );
+    return isAccessible();
 }
 
 bool Global::isAccessible(void) const
 {
-    return isGetterAccessible( ) || isSetterAccessible( );
+    return isGetterAccessible() || isSetterAccessible();
 }
 
 bool Global::isGetterAccessible(void) const

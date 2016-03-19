@@ -6,6 +6,10 @@ set(SC_MACHINE_ROOT ${CMAKE_SOURCE_DIR})
 set(SC_MACHINE_THIRDPARTY_PATH "${SC_MACHINE_ROOT}/thirdparty")
 set(SC_MACHINE_ANTRL_DIR "${SC_MACHINE_THIRDPARTY_PATH}/antlr")
 
+# codegen
+set(SC_PARSE_TOOL "${SC_MACHINE_ROOT}/bin/sc-code-generator.exe")
+include("cmake/codegen.cmake")
+
 if (${WIN32})
 	set(JAVA_EXE "c:/Program Files/Java/jre7/bin/java.exe")
 elseif (${UNIX})

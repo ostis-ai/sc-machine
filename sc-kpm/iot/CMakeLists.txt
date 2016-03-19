@@ -1,3 +1,5 @@
+set(SC_IOT_SRC "${SC_KPM_ROOT}/iot")
+
 set(SOURCES 
 	"iot.cpp"
 	"iotEnergy.cpp"
@@ -24,7 +26,8 @@ set(HEADERS
 
 add_library (iot SHARED ${SOURCES} ${HEADERS})
 
+sc_codegen(iot ${SC_IOT_SRC})
 
-include_directories("${SC_KPM_ROOT}/iot" ${SC_MEMORY_SRC} ${GLIB2_INCLUDE_DIRS})
+include_directories(${SC_IOT_SRC} ${SC_MEMORY_SRC} ${GLIB2_INCLUDE_DIRS})
 add_dependencies(iot sc-memory-cpp sc-kpm-common)
 target_link_libraries(iot sc-memory-cpp sc-kpm-common)

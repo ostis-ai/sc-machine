@@ -11,13 +11,11 @@
     const std::string kSwitch##name##Shorthand = "," shorthand; \
 
 #define SWITCH_OPTION(name)                                 \
-    ((kSwitch##name) + (kSwitch##name##Shorthand)).c_str( ) \
+    ((kSwitch##name) + (kSwitch##name##Shorthand)).c_str() \
 
-DEFINE_SWITCH_FULL( Help,              "help",           "h" );
-DEFINE_SWITCH_FULL( TargetName,        "target-name",    "t" );
-DEFINE_SWITCH_FULL( InputSource,       "in-source",      "i" );
-DEFINE_SWITCH_FULL( OutputHeader,      "out-header",     "a" );
-DEFINE_SWITCH_FULL( OutputSource,      "out-source",     "b" );
-DEFINE_SWITCH_FULL( TemplateDirectory, "tmpl-directory", "d" );
-DEFINE_SWITCH_FULL( PrecompiledHeader, "pch",            "p" );
-DEFINE_SWITCH_FULL( CompilerFlags,     "flags",          "f" );
+DEFINE_SWITCH_FULL(Help,              "help",           "h");
+DEFINE_SWITCH_FULL(TargetName,        "target",		    "t");
+DEFINE_SWITCH_FULL(Input,			  "source",		    "i");
+DEFINE_SWITCH_FULL(Output,			  "output",		    "o");
+DEFINE_SWITCH_FULL(TemplateDirectory, "tmpl-directory", "d");
+DEFINE_SWITCH_FULL(CompilerFlags,     "flags",          "f");

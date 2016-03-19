@@ -11,18 +11,18 @@ Function::Function(
     const Namespace &currentNamespace, 
     Class *parent
 )
-    : LanguageType( cursor, currentNamespace )
-    , Invokable( cursor )
-    , m_parent( parent )
-    , m_name( cursor.GetSpelling( ) )
-    , m_qualifiedName( utils::GetQualifiedName( cursor, currentNamespace ) )
+    : LanguageType(cursor, currentNamespace)
+    , Invokable(cursor)
+    , m_parent(parent)
+    , m_name(cursor.GetSpelling())
+    , m_qualifiedName(utils::GetQualifiedName(cursor, currentNamespace))
 {
         
 }
 
 bool Function::ShouldCompile(void) const
 {
-    return isAccessible( );
+    return isAccessible();
 }
 
 bool Function::isAccessible(void) const
@@ -35,7 +35,7 @@ bool Function::isAccessible(void) const
 
 std::string Function::getQualifiedSignature(void) const
 {
-    auto argsList = boost::algorithm::join( m_signature, ", " );
+    auto argsList = boost::algorithm::join(m_signature, ", ");
 
-    return (boost::format( "%1%(*)(%2%)" ) % m_returnType % argsList).str( );
+    return (boost::format("%1%(*)(%2%)") % m_returnType % argsList).str();
 }

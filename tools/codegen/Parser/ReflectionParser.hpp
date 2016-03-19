@@ -13,6 +13,8 @@
 
 #include "Templates.hpp"
 
+#include <list>
+
 class Class;
 class Global;
 class Function;
@@ -20,14 +22,22 @@ class Enum;
 
 class ReflectionParser
 {
+	typedef std::list<std::string> tStringList;
+
 public:
     ReflectionParser(const ReflectionOptions &options);
     ~ReflectionParser(void);
 
     void Parse(void);
+	void ProcessFile(std::string const & fileName);
 
-    void GenerateHeader(std::string &output) const;
-    void GenerateSource(std::string &output) const;
+    void GenerateHeader(std::string & output) const;
+    void GenerateSource(std::string & output) const;
+
+protected:
+	static void CollectFiles(std::string const & inPath, tStringList & outFiles);
+	static std::string GetFileExtension(std::string const & fileName);
+	static std::string GetOutputFileName(std::string const & fileName);
 
 private:
     ReflectionOptions m_options;
@@ -48,7 +58,7 @@ private:
     void buildGlobalFunctions(
         const Cursor &cursor, 
         Namespace &currentNamespace
-    );
+   );
 
     void buildEnums(const Cursor &cursor, Namespace &currentNamespace);
 };

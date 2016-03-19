@@ -14,83 +14,83 @@ namespace
 
     bool isNativeType(const std::string &qualifiedName)
     {
-        return std::find( 
-            nativeTypes.begin( ), 
-            nativeTypes.end( ), 
+        return std::find(
+            nativeTypes.begin(), 
+            nativeTypes.end(), 
             qualifiedName
-        ) != nativeTypes.end( );
+       ) != nativeTypes.end();
     }
 }
 
 BaseClass::BaseClass(const Cursor &cursor)
-    : name( cursor.GetType( ).GetCanonicalType( ).GetDisplayName( ) )
+    : name(cursor.GetType().GetCanonicalType().GetDisplayName())
 {
 
 }
 
 Class::Class(const Cursor &cursor, const Namespace &currentNamespace)
-    : LanguageType( cursor, currentNamespace )
-    , m_name( cursor.GetDisplayName( ) )
-    , m_qualifiedName( cursor.GetType( ).GetDisplayName( ) )
+    : LanguageType(cursor, currentNamespace)
+    , m_name(cursor.GetDisplayName())
+    , m_qualifiedName(cursor.GetType().GetDisplayName())
 {
-    auto displayName = m_metaData.GetNativeString( kMetaDisplayName );
+    auto displayName = m_metaData.GetNativeString(kMetaDisplayName);
 
-    if (displayName.empty( ))
+    if (displayName.empty())
     {
         m_displayName = m_qualifiedName;
     }
     else
     {
         m_displayName = 
-            utils::GetQualifiedName( displayName, currentNamespace );
+            utils::GetQualifiedName(displayName, currentNamespace);
     }
 
-    for (auto &child : cursor.GetChildren( ))
+    for (auto &child : cursor.GetChildren())
     {
-        switch (child.GetKind( ))
+        switch (child.GetKind())
         {
         case CXCursor_CXXBaseSpecifier:
         {
-            auto baseClass = new BaseClass( child );
+            auto baseClass = new BaseClass(child);
 
-            m_baseClasses.emplace_back( baseClass );
+            m_baseClasses.emplace_back(baseClass);
 
             // automatically enable the type if not explicitly disabled
-            if (isNativeType( baseClass->name ))
-                m_enabled = !m_metaData.GetFlag( kMetaDisable );
+            if (isNativeType(baseClass->name))
+                m_enabled = !m_metaData.GetFlag(kMetaDisable);
         }
             break;
         // constructor
         case CXCursor_Constructor:
-            m_constructors.emplace_back( 
-                new Constructor( child, currentNamespace, this ) 
-            );
+            m_constructors.emplace_back(
+                new Constructor(child, currentNamespace, this) 
+           );
             break;
         // field
         case CXCursor_FieldDecl:
-            m_fields.emplace_back( 
-                new Field( child, currentNamespace, this )
-            );
+            m_fields.emplace_back(
+                new Field(child, currentNamespace, this)
+           );
             break;
         // static field
         case CXCursor_VarDecl:
-            m_staticFields.emplace_back( 
-                new Global( child, Namespace( ), this ) 
-            );
+            m_staticFields.emplace_back(
+                new Global(child, Namespace(), this) 
+           );
             break;
         // method / static method
         case CXCursor_CXXMethod:
-            if (child.IsStatic( )) 
+            if (child.IsStatic()) 
             { 
-                m_staticMethods.emplace_back( 
-                    new Function( child, Namespace( ), this ) 
-                );
+                m_staticMethods.emplace_back(
+                    new Function(child, Namespace(), this) 
+               );
             }
             else 
             { 
-                m_methods.emplace_back( 
-                    new Method( child, currentNamespace, this ) 
-                );
+                m_methods.emplace_back(
+                    new Method(child, currentNamespace, this) 
+               );
             }
             break;
         default:
@@ -122,7 +122,7 @@ Class::~Class(void)
 
 bool Class::ShouldCompile(void) const
 {
-    return isAccessible( ) && !isNativeType( m_qualifiedName );
+    return isAccessible() && !isNativeType(m_qualifiedName);
 }
 
 bool Class::isAccessible(void) const

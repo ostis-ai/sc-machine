@@ -14,7 +14,7 @@ public:
         const Cursor &cursor, 
         const Namespace &currentNamespace, 
         Class *parent = nullptr
-    );
+   );
 
     virtual ~Method(void) { }
 

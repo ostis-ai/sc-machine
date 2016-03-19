@@ -52,6 +52,6 @@ link_directories(${SC_MACHINE_THIRDPARTY_PATH}/clang/lib)
 add_executable(sc-code-generator ${SOURCES} ${HEADERS})
 include_directories(${SC_CODEGEN_DIR}/Parser ${SC_MACHINE_THIRDPARTY_PATH}/clang/include)
 target_link_libraries(sc-code-generator libclang)
-# add_dependencies(sc-builder )
+# add_dependencies(sc-builder)
 
 install_targets("/bin" sc-code-generator)

@@ -10,21 +10,21 @@ namespace utils
 {
     void ToString(const CXString &str, std::string &output)
     {
-        auto cstr = clang_getCString( str );
+        auto cstr = clang_getCString(str);
 
         output = cstr;
 
-        clang_disposeString( str );
+        clang_disposeString(str);
     }
 
     std::string GetQualifiedName(
         const std::string &displayName, 
         const Namespace &currentNamespace
-    )
+   )
     {
-        auto name = boost::algorithm::join( currentNamespace, "::" );
+        auto name = boost::algorithm::join(currentNamespace, "::");
 
-        if (!currentNamespace.empty( ))
+        if (!currentNamespace.empty())
             name += "::";
 
         name += displayName;
@@ -35,14 +35,14 @@ namespace utils
     std::string GetQualifiedName(
         const Cursor &cursor, 
         const Namespace &currentNamespace
-    )
+   )
     {
-        return GetQualifiedName( cursor.GetSpelling( ), currentNamespace );
+        return GetQualifiedName(cursor.GetSpelling(), currentNamespace);
     }
 
     void LoadText(const std::string &filename, std::string &output)
     {
-        std::ifstream input( filename );
+        std::ifstream input(filename);
 
         if (!input)
         {
@@ -51,31 +51,31 @@ namespace utils
             error << "Unable to open file \"" 
                   << filename 
                   << "\" for reading." << std::endl;
-            error << strerror( errno );
+            error << strerror(errno);
 
-            throw std::exception( error.str( ).c_str( ) );
+            throw std::exception(error.str().c_str());
         }
 
-        input.seekg( 0, std::ios::end );
+        input.seekg(0, std::ios::end);
 
         output.reserve(
-            static_cast<std::string::size_type>( input.tellg( ) )
-        );
+            static_cast<std::string::size_type>(input.tellg())
+       );
 
-        input.seekg( 0, std::ios::beg );
+        input.seekg(0, std::ios::beg);
 
         output.assign(
             // disambiguate function declaration
-            (std::istreambuf_iterator<char>( input )),
-            std::istreambuf_iterator<char>( ) 
-        );
+            (std::istreambuf_iterator<char>(input)),
+            std::istreambuf_iterator<char>() 
+       );
 
-        input.close( );
+        input.close();
     }
 
     void WriteText(const std::string &filename, const std::string &text)
     {
-        std::ofstream output( filename );
+        std::ofstream output(filename);
 
         if (!output)
         {
@@ -84,20 +84,20 @@ namespace utils
             error << "Unable to open file \"" 
                   << filename << "\" for writing." 
                   << std::endl;
-            error << strerror( errno );
+            error << strerror(errno);
 
-            throw std::exception( error.str( ).c_str( ) );
+            throw std::exception(error.str().c_str());
         }
 
         output << text;
 
-        output.close( );
+        output.close();
     }
 
     void FatalError(const std::string &error)
     {
         std::cerr << "Error: " << error << std::endl;
 
-        exit( EXIT_FAILURE );
+        exit(EXIT_FAILURE);
     }
 }

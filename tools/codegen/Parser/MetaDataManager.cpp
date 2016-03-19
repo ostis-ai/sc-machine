@@ -7,35 +7,35 @@
 
 MetaDataManager::MetaDataManager(const Cursor &cursor)
 {
-    for (auto &child : cursor.GetChildren( ))
+    for (auto &child : cursor.GetChildren())
     {
-        if (child.GetKind( ) != CXCursor_AnnotateAttr)
+        if (child.GetKind() != CXCursor_AnnotateAttr)
             continue;
 
-        for (auto &prop : extractProperties( child ))
+        for (auto &prop : extractProperties(child))
             m_properties[ prop.first ] = prop.second;
     }
 }
 
 std::string MetaDataManager::GetProperty(const std::string &key) const
 {
-    auto search = m_properties.find( key );
+    auto search = m_properties.find(key);
 
     // use an empty string by default
-    return search == m_properties.end( ) ? "" : search->second;
+    return search == m_properties.end() ? "" : search->second;
 }
 
 bool MetaDataManager::GetFlag(const std::string &key) const
 {
-    return m_properties.find( key ) == m_properties.end( ) ? false : true;
+    return m_properties.find(key) == m_properties.end() ? false : true;
 }
 
 std::string MetaDataManager::GetNativeString(const std::string &key) const
 {
-    auto search = m_properties.find( key );
+    auto search = m_properties.find(key);
 
     // wasn't set
-    if (search == m_properties.end( ))
+    if (search == m_properties.end())
         return "";
 
     static const boost::regex quotedString(
@@ -46,7 +46,7 @@ std::string MetaDataManager::GetNativeString(const std::string &key) const
         // closing quote
         "\"",
         boost::regex::icase
-    );
+   );
 
     auto &value = search->second;
     
@@ -54,16 +54,16 @@ std::string MetaDataManager::GetNativeString(const std::string &key) const
 
     boost::match_results<std::string::const_iterator> match;
 
-    if (boost::regex_search( 
-            value.cbegin( ), 
-            value.cend( ), 
+    if (boost::regex_search(
+            value.cbegin(), 
+            value.cend(), 
             match, 
             quotedString, 
             flags 
-        )
-    )
+       )
+   )
     {
-        return match[ 1 ].str( );
+        return match[ 1 ].str();
     }
 
     // couldn't find one
@@ -92,33 +92,33 @@ std::vector<MetaDataManager::Property> MetaDataManager::extractProperties(const 
         // optional comma/whitespace
         "(?:(\\s|,)*)",
         boost::regex::icase
-    );
+   );
 
     auto flags = boost::match_default | boost::format_all;
 
     boost::match_results<std::string::const_iterator> match;
 
-    auto meta = cursor.GetDisplayName( );
+    auto meta = cursor.GetDisplayName();
 
-    auto start = meta.cbegin( );
+    auto start = meta.cbegin();
 
     // collect properties and optional arguments
-    while (boost::regex_search( 
+    while (boost::regex_search(
             start, 
-            meta.cend( ), 
+            meta.cend(), 
             match, 
             propertyList, 
             flags 
-        )
-    )
+       )
+   )
     {
-        auto name = match[ 1 ].str( );
-        auto arguments = match[ 3 ].str( );
+        auto name = match[ 1 ].str();
+        auto arguments = match[ 3 ].str();
 
-        properties.emplace_back( name, arguments );
+        properties.emplace_back(name, arguments);
 
         // advance the first capture group
-        start += match[ 0 ].length( );
+        start += match[ 0 ].length();
     }
 
     return properties;
