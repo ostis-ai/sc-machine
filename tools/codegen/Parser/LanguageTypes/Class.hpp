@@ -28,7 +28,11 @@ public:
     Class(const Cursor &cursor, const Namespace &currentNamespace);
     virtual ~Class(void);
 
-    bool ShouldCompile(void) const;
+    bool ShouldGenerate(void) const;
+    void GenerateCode(std::stringstream & outCode) const;
+
+protected:
+    void GenerateFieldsInitCode(std::stringstream & outCode) const;
 
 private:
     std::string m_name;
@@ -39,11 +43,12 @@ private:
         
     std::vector<Constructor*> m_constructors;
 
-    std::vector<Field*> m_fields;
+    typedef std::vector<Field*> tFieldsVector;
+    tFieldsVector m_fields;
     std::vector<Global*> m_staticFields;
 
     std::vector<Method*> m_methods;
     std::vector<Function*> m_staticMethods;
 
-    bool isAccessible(void) const;
+    bool isScObject;
 };

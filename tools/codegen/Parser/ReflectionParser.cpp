@@ -12,14 +12,14 @@
 
 #include <boost/algorithm/string.hpp>
 
-#define RECURSE_NAMESPACES(kind, cursor, method, ns) \
+#define RECURSE_NAMESPACES(kind, cursor, method, ns, cd) \
     if (kind == CXCursor_Namespace)                  \
     {                                                \
         auto displayName = cursor.GetDisplayName(); \
         if (!displayName.empty())                   \
         {                                            \
             ns.emplace_back(displayName);          \
-            method(cursor, ns);                    \
+            method(cursor, ns, cd);                    \
             ns.pop_back();                          \
         }                                            \
     }                                                \
@@ -107,10 +107,45 @@ void ReflectionParser::Parse(void)
 	}
 }
 
-void ReflectionParser::ProcessFile(std::string const & fileName)
-{
-	m_index = clang_createIndex(true, false);
+//CXChildVisitResult visitCursor(CXCursor cursor, CXCursor parent, CXClientData client_data)
+//{
+//    ReflectionParser * parser = (ReflectionParser*)client_data;
+//    assert(parser != 0);
+//    MacrosManager & manager = parser->GetMacrosManager();
+//
+//    Cursor c(cursor);
+//  
+//    if (c.GetKind() == CXCursor_MacroExpansion)
+//    {
+//        std::string const name = c.GetDisplayName();
+//        if (MacrosInfo::RequestProcess(name))
+//        {
+//            CXFile file;
+//            unsigned int line, column, offset;
+//            CXSourceLocation loc = clang_getCursorLocation(cursor);
+//            clang_getSpellingLocation(loc, &file, &line, &column, &offset);
+//
+//            std::string fileName = clang_getCString(clang_getFileName(file));
+//
+//            if (parser->IsCurrentFile(fileName))
+//            {
+//                CXSourceRange range = clang_getCursorExtent(cursor);
+//                std::string code = parser->GetCodeInRange(range.begin_int_data, range.end_int_data);
+//                
+//                MacrosInfo info(name, code, line, column, fileName);
+//                manager.AddMacros(info);
+//            }            
+//        }
+//    }
+//    
+//    return CXChildVisit_Continue;
+//}
 
+
+void ReflectionParser::ProcessFile(std::string const & fileName)
+{   
+	m_index = clang_createIndex(true, false);
+    
 	std::vector<const char *> arguments;
 
 	for (auto &argument : m_options.arguments)
@@ -132,194 +167,157 @@ void ReflectionParser::ProcessFile(std::string const & fileName)
 
 	auto cursor = clang_getTranslationUnitCursor(m_translationUnit);
 
-	/*Namespace tempNamespace;
+    std::string fileId = GetFileID(fileName);
+	Namespace tempNamespace;
+    std::stringstream outCode;
 
-	buildClasses(cursor, tempNamespace);
+    // includes
+    outCode << "#include \"wrap/sc_memory.hpp\"\n\n\n";
 
+	buildClasses(cursor, tempNamespace, outCode);
 	tempNamespace.clear();
+    for (auto it = m_classes.begin(); it != m_classes.end(); ++it)
+    {
+        Class const * klass = *it;
+        if (klass->ShouldGenerate())
+        {
+            outCode << "#define " << fileId << "_body ";
+            klass->GenerateCode(outCode);
+        }
+    }
 
-	buildGlobals(cursor, tempNamespace);
-
+	/*buildGlobals(cursor, tempNamespace);
 	tempNamespace.clear();
 
 	buildGlobalFunctions(cursor, tempNamespace);
-
 	tempNamespace.clear();
 
 	buildEnums(cursor, tempNamespace);*/
+
+    /// write ScFileID definition
+    outCode << "\n\n#undef ScFileID\n";
+    outCode << "#define ScFileID " << fileId;
+
+    
+    /// test dump
+    //outCode << "\n\n ----- Dump ----- \n\n";
+    //DumpTree(cursor, 0, outCode);
 
 	// generate output file
 	fs::path outputPath(m_options.outputPath);
 	outputPath /= fs::path(GetOutputFileName(fileName));
 	std::ofstream outputFile(outputPath.string());
-	
+    outputFile << outCode.str();
 	outputFile.close();
 }
 
-void ReflectionParser::GenerateHeader(std::string &output) const
-{
-    //TemplateData headerData { TemplateData::Type::Object };
 
-    //// general options
-
-    //headerData[ "targetName" ] = m_options.targetName;
-    //headerData[ "inputSourceFile" ] = m_options.inputSourceFile;
-    //headerData[ "ouputHeaderFile" ] = m_options.outputHeaderFile;
-    //headerData[ "outpuSourceFile" ] = m_options.outputSourceFile;
-
-    //headerData[ "usingPrecompiledHeader" ] = 
-    //    utils::TemplateBool(!m_options.precompiledHeader.empty());
-
-    //headerData[ "precompiledHeader" ] = m_options.precompiledHeader;
-
-    //auto headerTemplate = LoadTemplate(kTemplateHeader);
-
-    //if (!headerTemplate.isValid())
-    //{
-    //    std::stringstream error;
-
-    //    error << "Unable to compile header template." << std::endl;
-    //    error << headerTemplate.errorMessage();
-
-    //    throw std::exception(error.str().c_str());
-    //}
-
-    //output = headerTemplate.render(headerData);
-}
-
-void ReflectionParser::GenerateSource(std::string &output) const
-{
-    //TemplateData sourceData { TemplateData::Type::Object };
-
-    //// general options
-
-    //sourceData[ "targetName" ] = m_options.targetName;
-    //sourceData[ "inputSourceFile" ] = m_options.inputSourceFile;
-    //sourceData[ "ouputHeaderFile" ] = m_options.outputHeaderFile;
-    //sourceData[ "outpuSourceFile" ] = m_options.outputSourceFile;
-
-    //sourceData[ "usingPrecompiledHeader" ] = 
-    //    utils::TemplateBool(!m_options.precompiledHeader.empty());
-
-    //sourceData[ "precompiledHeader" ] = m_options.precompiledHeader;
-
-    //// language type data
-
-    //sourceData[ "class" ] = compileClassTemplates();
-    //sourceData[ "global" ] = compileGlobalTemplates();
-    //sourceData[ "globalFunction" ] = compileGlobalFunctionTemplates();
-    //sourceData[ "enum" ] = compileEnumTemplates();
-
-    //auto sourceTemplate = LoadTemplate(kTemplateSource);
-
-    //if (!sourceTemplate.isValid())
-    //{
-    //    std::stringstream error;
-
-    //    error << "Unable to compile header template." << std::endl;
-    //    error << sourceTemplate.errorMessage();
-
-    //    throw std::exception(error.str().c_str());
-    //}
-
-    //output = sourceTemplate.render(sourceData);
-}
-
-void ReflectionParser::buildClasses(const Cursor &cursor, Namespace &currentNamespace)
+void ReflectionParser::buildClasses(const Cursor &cursor, Namespace &currentNamespace, std::stringstream & outCode)
 {
     for (auto &child : cursor.GetChildren())
     {
         auto kind = child.GetKind();
 
         // actual definition and a class or struct
-        if (child.IsDefinition() && 
-            (kind == CXCursor_ClassDecl || kind == CXCursor_StructDecl)
-       )
+        if (child.IsDefinition() && (kind == CXCursor_ClassDecl || kind == CXCursor_StructDecl))
         {
-            m_classes.emplace_back(
-                new Class(child, currentNamespace)
-           );
+            m_classes.emplace_back(new Class(child, currentNamespace));
         }
         
-        RECURSE_NAMESPACES(kind, child, buildClasses, currentNamespace);
+        RECURSE_NAMESPACES(kind, child, buildClasses, currentNamespace, outCode);
     }
 }
 
-void ReflectionParser::buildGlobals(const Cursor &cursor, Namespace &currentNamespace)
+
+void ReflectionParser::DumpTree(Cursor const & cursor, int level, std::stringstream & outData)
 {
+    outData << "\n";
+    for (size_t i = 0; i < level; ++i)
+        outData << "-";
+
+    outData << cursor.GetDisplayName() << ", " << cursor.GetKind();
+
     for (auto &child : cursor.GetChildren())
     {
-        // skip static globals (hidden)
-        if (child.GetStorageClass() == CX_SC_Static)
-            continue;
-
-        auto kind = child.GetKind();
-
-        // variable declaration, which is global
-        if (kind == CXCursor_VarDecl) 
-        {
-            m_globals.emplace_back(
-                new Global(child, currentNamespace) 
-           );
-        }
-
-        RECURSE_NAMESPACES(kind, child, buildGlobals, currentNamespace);
+        DumpTree(child, level + 1, outData);
     }
 }
 
-void ReflectionParser::buildGlobalFunctions(const Cursor &cursor, Namespace &currentNamespace)
-{
-    for (auto &child : cursor.GetChildren())
-    {
-        // skip static globals (hidden)
-        if (child.GetStorageClass() == CX_SC_Static)
-            continue;
-
-        auto kind = child.GetKind();
-
-        // function declaration, which is global
-        if (kind == CXCursor_FunctionDecl) 
-        {
-            m_globalFunctions.emplace_back(new Function(child, currentNamespace));
-        }
-
-        RECURSE_NAMESPACES(
-            kind, 
-            child, 
-            buildGlobalFunctions, 
-            currentNamespace 
-       );
-    }
-}
-
-void ReflectionParser::buildEnums(const Cursor &cursor, Namespace &currentNamespace)
-{
-    for (auto &child : cursor.GetChildren())
-    {
-        auto kind = child.GetKind();
-
-        // actual definition and an enum
-        if (child.IsDefinition() && kind == CXCursor_EnumDecl)
-        {
-            // anonymous enum if the underlying type display name contains this
-            if (child.GetType().GetDisplayName().find("anonymous enum at") 
-                != std::string::npos)
-            {
-                // anonymous enums are just loaded as 
-                // globals with each of their values
-                Enum::LoadAnonymous(m_globals, child, currentNamespace);
-            }
-            else
-            {
-                m_enums.emplace_back(
-                    new Enum(child, currentNamespace) 
-               );
-            }
-        }
-
-        RECURSE_NAMESPACES(kind, child, buildEnums, currentNamespace);
-    }
-}
+//void ReflectionParser::buildGlobals(const Cursor &cursor, Namespace &currentNamespace)
+//{
+//    for (auto &child : cursor.GetChildren())
+//    {
+//        // skip static globals (hidden)
+//        if (child.GetStorageClass() == CX_SC_Static)
+//            continue;
+//
+//        auto kind = child.GetKind();
+//
+//        // variable declaration, which is global
+//        if (kind == CXCursor_VarDecl) 
+//        {
+//            m_globals.emplace_back(
+//                new Global(child, currentNamespace) 
+//           );
+//        }
+//
+//        RECURSE_NAMESPACES(kind, child, buildGlobals, currentNamespace);
+//    }
+//}
+//
+//void ReflectionParser::buildGlobalFunctions(const Cursor &cursor, Namespace &currentNamespace)
+//{
+//    for (auto &child : cursor.GetChildren())
+//    {
+//        // skip static globals (hidden)
+//        if (child.GetStorageClass() == CX_SC_Static)
+//            continue;
+//
+//        auto kind = child.GetKind();
+//
+//        // function declaration, which is global
+//        if (kind == CXCursor_FunctionDecl) 
+//        {
+//            m_globalFunctions.emplace_back(new Function(child, currentNamespace));
+//        }
+//
+//        RECURSE_NAMESPACES(
+//            kind, 
+//            child, 
+//            buildGlobalFunctions, 
+//            currentNamespace 
+//       );
+//    }
+//}
+//
+//void ReflectionParser::buildEnums(const Cursor &cursor, Namespace &currentNamespace)
+//{
+//    for (auto &child : cursor.GetChildren())
+//    {
+//        auto kind = child.GetKind();
+//
+//        // actual definition and an enum
+//        if (child.IsDefinition() && kind == CXCursor_EnumDecl)
+//        {
+//            // anonymous enum if the underlying type display name contains this
+//            if (child.GetType().GetDisplayName().find("anonymous enum at") 
+//                != std::string::npos)
+//            {
+//                // anonymous enums are just loaded as 
+//                // globals with each of their values
+//                Enum::LoadAnonymous(m_globals, child, currentNamespace);
+//            }
+//            else
+//            {
+//                m_enums.emplace_back(
+//                    new Enum(child, currentNamespace) 
+//               );
+//            }
+//        }
+//
+//        RECURSE_NAMESPACES(kind, child, buildEnums, currentNamespace);
+//    }
+//}
 
 std::string ReflectionParser::GetFileExtension(std::string const & fileName)
 {
@@ -337,3 +335,20 @@ std::string ReflectionParser::GetOutputFileName(std::string const & fileName)
 	std::string baseName = inputPath.filename().replace_extension().string();
 	return baseName + ".generated" + inputPath.extension().string();
 }
+
+std::string ReflectionParser::GetFileID(std::string const & fileName)
+{
+    fs::path inputPath(fileName);
+    std::string res = inputPath.filename().string();
+    
+    for (std::string::iterator it = res.begin(); it != res.end(); ++it)
+    {
+        if (*it == ' ' || *it == '-' || *it == '.')
+        {
+            *it = '_';
+        }
+    }
+
+    return res;
+}
+

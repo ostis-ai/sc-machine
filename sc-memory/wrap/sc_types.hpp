@@ -12,6 +12,8 @@
 #include <map>
 #include <assert.h>
 
+#include "sc_defines.hpp"
+
 class ScMemoryContext;
 class ScAddr;
 

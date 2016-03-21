@@ -16,6 +16,10 @@ public:
     virtual ~Field(void) { }
 
     bool ShouldCompile(void) const;
+
+    void GenarateInitCode(std::stringstream & outCode) const;
+
+    std::string const & GetDisplayName() const;
     
 private:
     bool m_isConst;

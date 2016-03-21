@@ -5,6 +5,7 @@
  */
 
 #include "wrap/sc_memory_headers.hpp"
+#include "test_sc_object.hpp"
 #include <glib.h>
 
 void init_memory()
@@ -411,6 +412,29 @@ void test_common_templates()
 	shutdown_memory(false);
 }
 
+void test_codegen_keynodes()
+{
+    init_memory();
+
+    {
+        ScMemoryContext ctx;
+
+        ScAddr addr1 = ctx.createNode(sc_type_const);
+        g_assert(addr1.isValid());
+        g_assert(ctx.helperSetSystemIdtf("test_keynode1", addr1));
+
+        ScAddr addr2 = ctx.createNode(sc_type_var);
+        g_assert(addr2.isValid());
+        g_assert(ctx.helperSetSystemIdtf("test_keynode2", addr2));
+        
+        n1::n2::TestObject obj1;
+        g_assert(addr1 == obj1.mTestKeynode1);
+        g_assert(addr2 == obj1.mTestKeynode2);
+    }
+
+    shutdown_memory(false);
+}
+
 int main(int argc, char *argv[])
 {
     g_test_init(&argc, &argv, NULL);
@@ -419,6 +443,7 @@ int main(int argc, char *argv[])
     g_test_add_func("/common/iterators", test_common_iterators);
     g_test_add_func("/common/streams", test_common_streams);
 	g_test_add_func("/common/templates", test_common_templates);
+    g_test_add_func("/codegen/keynodes", test_codegen_keynodes);
 
     g_test_run();
 

@@ -11,7 +11,7 @@
 #include "Cursor.hpp"
 #include "Namespace.hpp"
 
-#include "Templates.hpp"
+#include "MacrosManager.hpp"
 
 #include <list>
 
@@ -31,13 +31,14 @@ public:
     void Parse(void);
 	void ProcessFile(std::string const & fileName);
 
-    void GenerateHeader(std::string & output) const;
-    void GenerateSource(std::string & output) const;
+protected:
+    void DumpTree(Cursor const & cursor, int level, std::stringstream & outData);
 
 protected:
 	static void CollectFiles(std::string const & inPath, tStringList & outFiles);
 	static std::string GetFileExtension(std::string const & fileName);
 	static std::string GetOutputFileName(std::string const & fileName);
+    static std::string GetFileID(std::string const & fileName);
 
 private:
     ReflectionOptions m_options;
@@ -52,13 +53,13 @@ private:
 
     mutable std::unordered_map<std::string, std::string> m_templatePartialCache;
 
-    void buildClasses(const Cursor &cursor, Namespace &currentNamespace);
-    void buildGlobals(const Cursor &cursor, Namespace &currentNamespace);
+    void buildClasses(Cursor const & cursor, Namespace & currentNamespace, std::stringstream & outCode);
+    /*void buildGlobals(const Cursor &cursor, Namespace &currentNamespace);
 
     void buildGlobalFunctions(
         const Cursor &cursor, 
         Namespace &currentNamespace
    );
 
-    void buildEnums(const Cursor &cursor, Namespace &currentNamespace);
+    void buildEnums(const Cursor &cursor, Namespace &currentNamespace);*/
 };

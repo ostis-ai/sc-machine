@@ -33,6 +33,8 @@ Class::Class(const Cursor &cursor, const Namespace &currentNamespace)
     , m_name(cursor.GetDisplayName())
     , m_qualifiedName(cursor.GetType().GetDisplayName())
 {
+    isScObject = false;
+
     auto displayName = m_metaData.GetNativeString(kMetaDisplayName);
 
     if (displayName.empty())
@@ -49,6 +51,7 @@ Class::Class(const Cursor &cursor, const Namespace &currentNamespace)
     {
         switch (child.GetKind())
         {
+
         case CXCursor_CXXBaseSpecifier:
         {
             auto baseClass = new BaseClass(child);
@@ -56,28 +59,32 @@ Class::Class(const Cursor &cursor, const Namespace &currentNamespace)
             m_baseClasses.emplace_back(baseClass);
 
             // automatically enable the type if not explicitly disabled
-            if (isNativeType(baseClass->name))
-                m_enabled = !m_metaData.GetFlag(kMetaDisable);
+            if (baseClass->name == "ScObject")
+                isScObject = true;
         }
             break;
+
         // constructor
         case CXCursor_Constructor:
             m_constructors.emplace_back(
                 new Constructor(child, currentNamespace, this) 
            );
             break;
+
         // field
         case CXCursor_FieldDecl:
             m_fields.emplace_back(
                 new Field(child, currentNamespace, this)
            );
             break;
+
         // static field
         case CXCursor_VarDecl:
             m_staticFields.emplace_back(
                 new Global(child, Namespace(), this) 
            );
             break;
+
         // method / static method
         case CXCursor_CXXMethod:
             if (child.IsStatic()) 
@@ -93,9 +100,11 @@ Class::Class(const Cursor &cursor, const Namespace &currentNamespace)
                );
             }
             break;
+
         default:
             break;
         }
+
     }
 }
 
@@ -120,12 +129,27 @@ Class::~Class(void)
         delete staticMethod;
 }
 
-bool Class::ShouldCompile(void) const
+bool Class::ShouldGenerate(void) const
 {
-    return isAccessible() && !isNativeType(m_qualifiedName);
+    return !isNativeType(m_qualifiedName) && isScObject;
 }
 
-bool Class::isAccessible(void) const
+void Class::GenerateCode(std::stringstream & outCode) const
 {
-    return m_enabled;
+    outCode << "void _initInternal() \\\n{ \\\n";
+    outCode << "    ScMemoryContext ctx(sc_access_lvl_make_max, \"" << m_name << "::_initInternal\"); \\\n";
+    outCode << "    bool result = true; \\\n";
+    GenerateFieldsInitCode(outCode);
+    outCode << "}\n";
+}
+
+void Class::GenerateFieldsInitCode(std::stringstream & outCode) const
+{
+    for (tFieldsVector::const_iterator it = m_fields.begin(); it != m_fields.end(); ++it)
+    {
+        Field * field = *it;
+        outCode << "    ";
+        field->GenarateInitCode(outCode);
+        outCode << " \\\n";
+    }
 }

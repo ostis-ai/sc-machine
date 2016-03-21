@@ -19,6 +19,7 @@ set (SOURCES
 	"Parser/MetaDataManager.cpp"
 	"Parser/Precompiled.cpp"
 	"Parser/ReflectionParser.cpp"
+	"Parser/MacrosManager.cpp"
 )
 
 set (HEADERS
@@ -44,6 +45,8 @@ set (HEADERS
 	"Parser/ReservedTypes.hpp"
 	"Parser/Switches.hpp"
 	"Parser/Templates.hpp"
+	"Parser/MacrosManager.hpp"
+	"Parser/Types.hpp"
 )
 
 

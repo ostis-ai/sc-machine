@@ -19,6 +19,9 @@ macro(sc_codegen Target SrcPath)
 	    message(FATAL_ERROR "System include directories not implemented for this compiler.")
 	endif ()
 
+	set (OutputPath "${CMAKE_CURRENT_BINARY_DIR}/${Target}_gen")
+
+	include_directories(${OutputPath})
 	add_custom_command(
     	PRE_BUILD
     	TARGET ${Target}
@@ -26,7 +29,7 @@ macro(sc_codegen Target SrcPath)
 		COMMAND call "${SC_PARSE_TOOL}"
 		--target 	"${Target}"
 		--source 	"${SrcPath}"
-		--output 	"${CMAKE_CURRENT_BINARY_DIR}/GeneratedCode"
+		--output 	"${OutputPath}"
 		--flags 	${META_FLAGS}
 	)
 

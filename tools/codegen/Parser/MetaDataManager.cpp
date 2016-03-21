@@ -13,7 +13,7 @@ MetaDataManager::MetaDataManager(const Cursor &cursor)
             continue;
 
         for (auto &prop : extractProperties(child))
-            m_properties[ prop.first ] = prop.second;
+            m_properties[prop.first] = prop.second;
     }
 }
 

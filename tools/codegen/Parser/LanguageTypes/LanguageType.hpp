@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Types.hpp"
+
 #include "Cursor.hpp"
 #include "Namespace.hpp"
 
@@ -27,6 +29,8 @@ protected:
     // determines if the constant pointer type to this type will be
     // generated in the reflection database
     bool m_constPtrTypeEnabled;
+
+    Namespace m_currentNamespace;
 
     CX_CXXAccessSpecifier m_accessModifier;
 

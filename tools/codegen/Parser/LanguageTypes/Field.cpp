@@ -52,3 +52,13 @@ bool Field::isSetterAccessible(void) const
     return m_hasExplicitSetter || 
            (!m_isConst && m_accessModifier == CX_CXXPublic);
 }
+
+void Field::GenarateInitCode(std::stringstream & outCode) const
+{
+    outCode << "result = result && ctx.helperFindBySystemIdtf(\"" << m_metaData.GetNativeString("SysIdtf") << "\", " << m_displayName << ");";
+}
+
+std::string const & Field::GetDisplayName() const
+{
+    return m_displayName;
+}

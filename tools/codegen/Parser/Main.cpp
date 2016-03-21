@@ -96,13 +96,13 @@ void parse(const po::variables_map &cmdLine)
 {
     ReflectionOptions options;
 
-    options.targetName = 
+    options.targetName =
         cmdLine.at(kSwitchTargetName).as<std::string>();
 
-    options.inputPath = 
+    options.inputPath =
         cmdLine.at(kSwitchInput).as<std::string>();
 
-    options.outputPath = 
+    options.outputPath =
         cmdLine.at(kSwitchOutput).as<std::string>();
 
     // default arguments
@@ -118,17 +118,18 @@ void parse(const po::variables_map &cmdLine)
     {
         auto flags = cmdLine.at(kSwitchCompilerFlags).as<std::vector<std::string>>();
 
-        for (auto &flag : flags) 
+        for (auto &flag : flags)
             options.arguments.emplace_back(flag.c_str());
     }
 
     options.templateDirectory = cmdLine.at(kSwitchTemplateDirectory).as<std::string>();
-    
-    std::cout << "Generate reflection code for \"" 
-              << options.targetName << "\"" 
-              << std::endl;
+
+    std::cout << "Generate reflection code for \""
+        << options.targetName << "\""
+        << std::endl;
 
     ReflectionParser parser(options);
 
     parser.Parse();
+
 }
