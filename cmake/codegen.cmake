@@ -5,8 +5,13 @@ macro(sc_codegen Target SrcPath)
 
 	# build the include directory flags
 	foreach (DIRECTORY ${DIRECTORIES})
-	    set(META_FLAGS ${meta_flags} "\\-I${DIRECTORY}")
+	    set(META_FLAGS ${META_FLAGS} "\\-I${DIRECTORY}")
 	endforeach ()
+
+	get_property(dirs DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY INCLUDE_DIRECTORIES)
+	foreach(dir ${dirs})
+  		set(META_FLAGS ${META_FLAGS} "\\-I${dir}")
+	endforeach()
 
 	# include the system directories
 	if (MSVC)

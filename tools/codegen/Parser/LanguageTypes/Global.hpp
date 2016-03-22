@@ -16,6 +16,7 @@ public:
     virtual ~Global(void) { }
 
     bool ShouldCompile(void) const;
+    void GenerateInitCode(std::stringstream & outCode) const;
     
 private:
     bool m_isConst;

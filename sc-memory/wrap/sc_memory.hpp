@@ -112,7 +112,7 @@ public:
     }
 
 
-	_SC_EXTERN bool helperResolveSystemIdtf(std::string const & sysIdtf, ScAddr & outAddr);
+	_SC_EXTERN bool helperResolveSystemIdtf(std::string const & sysIdtf, ScAddr & outAddr, bool bForceCreation = false);
 	_SC_EXTERN bool helperSetSystemIdtf(std::string const & sysIdtf, ScAddr const & addr);
 	_SC_EXTERN bool helperCheckArc(ScAddr const & begin, ScAddr end, sc_type arcType);
 	_SC_EXTERN bool helperFindBySystemIdtf(std::string const & sysIdtf, ScAddr & outAddr);

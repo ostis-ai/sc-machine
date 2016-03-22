@@ -15,7 +15,7 @@ _SC_EXT_EXTERN sc_result initialize()
     if (!ScAgentInit())
         return SC_RESULT_ERROR;
 
-	if (!iot::Keynodes::initialize())
+    if (!iot::Keynodes::initGlobal())
 		return SC_RESULT_ERROR;
 
 	if (!iot::Commands::initialize())
@@ -29,11 +29,7 @@ _SC_EXT_EXTERN sc_result shutdown()
 	sc_result result = SC_RESULT_OK;
 
 	if (!iot::Commands::shutdown())
-		result = SC_RESULT_ERROR;
-
-	if (!iot::Keynodes::shutdown())
-		result = SC_RESULT_ERROR;
-		
+		result = SC_RESULT_ERROR;	
 
 	/// TODO: shutdown other subsytems
 

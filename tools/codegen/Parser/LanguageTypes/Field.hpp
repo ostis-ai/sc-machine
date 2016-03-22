@@ -22,6 +22,11 @@ public:
     std::string const & GetDisplayName() const;
     
 private:
+    bool isAccessible(void) const;
+    bool isGetterAccessible(void) const;
+    bool isSetterAccessible(void) const;
+
+private:
     bool m_isConst;
 
     bool m_hasExplicitGetter;
@@ -36,7 +41,5 @@ private:
     std::string m_explicitGetter;
     std::string m_explicitSetter;
 
-    bool isAccessible(void) const;
-    bool isGetterAccessible(void) const;
-    bool isSetterAccessible(void) const;
+    
 };

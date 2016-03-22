@@ -141,9 +141,21 @@ void ReflectionParser::Parse(void)
 //    return CXChildVisit_Continue;
 //}
 
+void ReflectionParser::Clear()
+{
+    m_currentFile = "";
+
+    m_classes.clear();
+    m_globals.clear();
+    m_globalFunctions.clear();
+    m_enums.clear();
+}
 
 void ReflectionParser::ProcessFile(std::string const & fileName)
 {   
+    Clear();
+
+    m_currentFile = fileName;
 	m_index = clang_createIndex(true, false);
     
 	std::vector<const char *> arguments;
@@ -181,8 +193,13 @@ void ReflectionParser::ProcessFile(std::string const & fileName)
         Class const * klass = *it;
         if (klass->ShouldGenerate())
         {
-            outCode << "#define " << fileId << "_body ";
-            klass->GenerateCode(outCode);
+            std::string const line = klass->GetGeneratedBodyLine();
+
+            outCode << "#define " << fileId << "_" << line << "_init ";
+            klass->GenerateCodeInit(outCode);
+
+            outCode << "#define " << fileId << "_" << line << "_initStatic ";
+            klass->GenerateCodeStaticInit(outCode);
         }
     }
 
@@ -211,11 +228,19 @@ void ReflectionParser::ProcessFile(std::string const & fileName)
 	outputFile.close();
 }
 
+bool ReflectionParser::IsInCurrentFile(Cursor const & cursor) const
+{
+    return cursor.GetFileName() == m_currentFile;
+}
 
 void ReflectionParser::buildClasses(const Cursor &cursor, Namespace &currentNamespace, std::stringstream & outCode)
 {
     for (auto &child : cursor.GetChildren())
     {
+        // skip classes from other files
+        if (!IsInCurrentFile(child))
+            continue;
+
         auto kind = child.GetKind();
 
         // actual definition and a class or struct

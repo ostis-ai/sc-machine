@@ -294,7 +294,7 @@ sc_bool sc_helper_resolve_system_identifier(sc_memory_context const * ctx, const
     keynode_idtf = g_locale_to_utf8(system_idtf, -1, 0, &bytes_written, 0);
     if (keynode_idtf == null_ptr)
     {
-        g_warning("Error while trying to convert %s to utd-8", system_idtf);
+        g_warning("Error while trying to convert %s to utf-8", system_idtf);
         return SC_FALSE;
     }
 

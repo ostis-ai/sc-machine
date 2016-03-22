@@ -29,10 +29,16 @@ public:
     virtual ~Class(void);
 
     bool ShouldGenerate(void) const;
-    void GenerateCode(std::stringstream & outCode) const;
+
+    void GenerateCodeInit(std::stringstream & outCode) const;
+    void GenerateCodeStaticInit(std::stringstream & outCode) const;
+
+    std::string GetGeneratedBodyLine() const;
 
 protected:
     void GenerateFieldsInitCode(std::stringstream & outCode) const;
+    void GenerateStaticFieldsInitCode(std::stringstream & outCode) const;
+    
 
 private:
     std::string m_name;
@@ -45,9 +51,13 @@ private:
 
     typedef std::vector<Field*> tFieldsVector;
     tFieldsVector m_fields;
-    std::vector<Global*> m_staticFields;
+    
+    typedef std::vector<Global*> tStaticFieldsVector;
+    tStaticFieldsVector m_staticFields;
+    
+    typedef std::vector<Method*> tMethodVector;
+    tMethodVector m_methods;
 
-    std::vector<Method*> m_methods;
     std::vector<Function*> m_staticMethods;
 
     bool isScObject;

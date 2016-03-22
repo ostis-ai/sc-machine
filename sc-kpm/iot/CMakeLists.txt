@@ -24,10 +24,10 @@ set(HEADERS
 	"iotTV.hpp"
 )
 
-add_library (iot SHARED ${SOURCES} ${HEADERS})
-
-sc_codegen(iot ${SC_IOT_SRC})
-
 include_directories(${SC_IOT_SRC} ${SC_MEMORY_SRC} ${GLIB2_INCLUDE_DIRS})
+
+add_library (iot SHARED ${SOURCES} ${HEADERS})
 add_dependencies(iot sc-memory-cpp sc-kpm-common)
 target_link_libraries(iot sc-memory-cpp sc-kpm-common)
+
+sc_codegen(iot ${SC_IOT_SRC})

@@ -32,7 +32,9 @@ public:
 	void ProcessFile(std::string const & fileName);
 
 protected:
+    void Clear();
     void DumpTree(Cursor const & cursor, int level, std::stringstream & outData);
+    bool IsInCurrentFile(Cursor const & cursor) const;
 
 protected:
 	static void CollectFiles(std::string const & inPath, tStringList & outFiles);
@@ -46,12 +48,12 @@ private:
     CXIndex m_index;
     CXTranslationUnit m_translationUnit;
 
+    std::string m_currentFile;
+
     std::vector<Class*> m_classes;
     std::vector<Global*> m_globals;
     std::vector<Function*> m_globalFunctions;
     std::vector<Enum*> m_enums;
-
-    mutable std::unordered_map<std::string, std::string> m_templatePartialCache;
 
     void buildClasses(Cursor const & cursor, Namespace & currentNamespace, std::stringstream & outCode);
     /*void buildGlobals(const Cursor &cursor, Namespace &currentNamespace);

@@ -4,10 +4,10 @@
 #include "LanguageTypes/Field.hpp"
 
 Field::Field(
-    const Cursor &cursor, 
-    const Namespace &currentNamespace, 
+    const Cursor &cursor,
+    const Namespace &currentNamespace,
     Class *parent
-)
+    )
     : LanguageType(cursor, currentNamespace)
     , m_isConst(cursor.GetType().IsConst())
     , m_parent(parent)
@@ -55,7 +55,13 @@ bool Field::isSetterAccessible(void) const
 
 void Field::GenarateInitCode(std::stringstream & outCode) const
 {
-    outCode << "result = result && ctx.helperFindBySystemIdtf(\"" << m_metaData.GetNativeString("SysIdtf") << "\", " << m_displayName << ");";
+    if (m_metaData.HasProperty(Props::Keynode))
+    {
+        outCode << "result = result && ctx.helperResolveSystemIdtf(\"" 
+                << m_metaData.GetNativeString(Props::SysIdtf) << "\", " 
+                << m_displayName << ", "
+                << (m_metaData.HasProperty(Props::ForceCreate) ? "true" : "false") << ");";
+    }        
 }
 
 std::string const & Field::GetDisplayName() const

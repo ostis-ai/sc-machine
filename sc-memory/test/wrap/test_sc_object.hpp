@@ -22,17 +22,22 @@ namespace n1
 
         public:
             /// TODO: autogenerate code to call _initInternal
-            TestObject() { _initInternal(); } /// TEST
-
+            TestObject() { init(); } /// TEST
 
         public:
 
-            //SC_PROPERTY(Keynode, SysIdtf = "test_keynode1")
             SC_PROPERTY(Keynode, SysIdtf("test_keynode1"))
             ScAddr mTestKeynode1;
 
             SC_PROPERTY(Keynode, SysIdtf("test_keynode2"))
             ScAddr mTestKeynode2;
+
+            SC_PROPERTY(Keynode, SysIdtf("test_keynode3"))
+            static ScAddr mTestKeynode3;
+
+            // not created object
+            SC_PROPERTY(Keynode, SysIdtf("test_keynode_force"), ForceCreate)
+            ScAddr mTestKeynodeForce;
         };
     }
 }

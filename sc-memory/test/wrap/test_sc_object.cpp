@@ -6,3 +6,10 @@
 
 #include "test_sc_object.hpp"
 
+namespace n1
+{
+    namespace n2
+    {
+        ScAddr TestObject::mTestKeynode3;
+    }
+}

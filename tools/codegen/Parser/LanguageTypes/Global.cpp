@@ -35,6 +35,18 @@ bool Global::ShouldCompile(void) const
     return isAccessible();
 }
 
+void Global::GenerateInitCode(std::stringstream & outCode) const
+{
+    /// TODO: merge with field code generation
+    if (m_metaData.HasProperty(Props::Keynode))
+    {
+        outCode << "result = result && ctx.helperResolveSystemIdtf(\""
+            << m_metaData.GetNativeString(Props::SysIdtf) << "\", "
+            << m_displayName << ", "
+            << (m_metaData.HasProperty(Props::ForceCreate) ? "true" : "false") << ");";
+    }
+}
+
 bool Global::isAccessible(void) const
 {
     return isGetterAccessible() || isSetterAccessible();

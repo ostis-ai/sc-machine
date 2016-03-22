@@ -108,6 +108,7 @@ void parse(const po::variables_map &cmdLine)
     // default arguments
     options.arguments =
     { {
+        "-analyzer-display-progress",
         "-x",
         "c++",
         "-std=c++11",
@@ -130,6 +131,11 @@ void parse(const po::variables_map &cmdLine)
 
     ReflectionParser parser(options);
 
-    parser.Parse();
-
+    try {
+        parser.Parse();
+    }
+    catch (Exception e)
+    {
+        std::cerr << "Error: " << e.GetDescription() << std::endl;
+    }
 }

@@ -8,6 +8,8 @@
 
 
 ScObject::ScObject()
+    : mIsInitialized(false)
+    , mInitResult(false)
 {
 }
 
@@ -24,4 +26,15 @@ ScObject::ScObject(ScObject const & other)
 ScObject & ScObject::operator=(ScObject const & other)
 {
     return *this;
+}
+
+bool ScObject::init()
+{
+    if (!mIsInitialized)
+    {
+        mIsInitialized = true;
+        mInitResult = _initInternal();
+    }
+    
+    return mInitResult;
 }

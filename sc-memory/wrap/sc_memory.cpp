@@ -227,10 +227,18 @@ bool ScMemoryContext::save()
     return (sc_memory_save(mContext) == SC_RESULT_OK);
 }
 
-bool ScMemoryContext::helperResolveSystemIdtf(std::string const & sysIdtf, ScAddr & outAddr)
+bool ScMemoryContext::helperResolveSystemIdtf(std::string const & sysIdtf, ScAddr & outAddr, bool bForceCreation /*= false*/)
 {
 	check_expr(isValid());
-	return (sc_helper_resolve_system_identifier(mContext, sysIdtf.c_str(), &outAddr.mRealAddr) == SC_TRUE);
+    outAddr.reset();
+    bool result = helperFindBySystemIdtf(sysIdtf, outAddr);
+    if (!result && bForceCreation)
+    {
+        outAddr = createNode(sc_type_const);
+        if (outAddr.isValid())
+            result = helperSetSystemIdtf(sysIdtf, outAddr);
+    }
+    return result;
 }
 
 bool ScMemoryContext::helperSetSystemIdtf(std::string const & sysIdtf, ScAddr const & addr)

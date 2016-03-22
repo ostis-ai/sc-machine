@@ -17,6 +17,8 @@ public:
     std::string GetSpelling(void) const;
     std::string GetDisplayName(void) const;
     std::string GetMangledName(void) const;
+    std::string const & GetFileName() const;
+    size_t GetLineNumber() const;
 
     bool IsDefinition(void) const;
     bool IsConst(void) const;
@@ -34,4 +36,7 @@ public:
 
 private:
     CXCursor m_handle;
+
+    std::string m_fileName;
+    size_t m_line;
 };

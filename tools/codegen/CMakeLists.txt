@@ -44,7 +44,6 @@ set (HEADERS
 	"Parser/ReflectionParser.hpp"
 	"Parser/ReservedTypes.hpp"
 	"Parser/Switches.hpp"
-	"Parser/Templates.hpp"
 	"Parser/MacrosManager.hpp"
 	"Parser/Types.hpp"
 )

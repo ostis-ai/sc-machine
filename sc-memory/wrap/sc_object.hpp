@@ -23,9 +23,16 @@ protected:
     ScObject(ScObject const & other);
     ScObject & operator = (ScObject const & other);
 
+    /// TODO: Need mechanism to call that function automaticaly after object construction
+    bool init();
+
 private:
     /** This method override genarates by code generator, and initialize all
       * meta data for this object. It calls from ScObject constructors
       */
-    virtual void _initInternal() = 0;
+    virtual bool _initInternal() = 0;
+
+private:
+    bool mIsInitialized : 1;
+    bool mInitResult : 1;
 };

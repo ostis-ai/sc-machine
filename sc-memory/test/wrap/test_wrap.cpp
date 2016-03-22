@@ -417,7 +417,7 @@ void test_codegen_keynodes()
     init_memory();
 
     {
-        ScMemoryContext ctx;
+        ScMemoryContext ctx(sc_access_lvl_make_max);
 
         ScAddr addr1 = ctx.createNode(sc_type_const);
         g_assert(addr1.isValid());
@@ -426,10 +426,21 @@ void test_codegen_keynodes()
         ScAddr addr2 = ctx.createNode(sc_type_var);
         g_assert(addr2.isValid());
         g_assert(ctx.helperSetSystemIdtf("test_keynode2", addr2));
+
+        ScAddr addr3 = ctx.createNode(sc_type_var);
+        g_assert(addr3.isValid());
+        g_assert(ctx.helperSetSystemIdtf("test_keynode3", addr3));
         
         n1::n2::TestObject obj1;
         g_assert(addr1 == obj1.mTestKeynode1);
         g_assert(addr2 == obj1.mTestKeynode2);
+
+        obj1.initGlobal();
+        g_assert(addr3 == obj1.mTestKeynode3);
+
+        ScAddr addrForce;
+        g_assert(ctx.helperFindBySystemIdtf("test_keynode_force", addrForce));
+        g_assert(addrForce == obj1.mTestKeynodeForce);
     }
 
     shutdown_memory(false);

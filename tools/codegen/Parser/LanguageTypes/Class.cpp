@@ -4,24 +4,6 @@
 
 #include "../ReservedTypes.hpp"
 
-namespace
-{
-    const std::vector<std::string> nativeTypes
-    {
-        kTypeObject,
-        kTypeMetaProperty
-    };
-
-    bool isNativeType(const std::string &qualifiedName)
-    {
-        return std::find(
-            nativeTypes.begin(), 
-            nativeTypes.end(), 
-            qualifiedName
-       ) != nativeTypes.end();
-    }
-}
-
 BaseClass::BaseClass(const Cursor &cursor)
     : name(cursor.GetType().GetCanonicalType().GetDisplayName())
 {
@@ -131,16 +113,25 @@ Class::~Class(void)
 
 bool Class::ShouldGenerate(void) const
 {
-    return !isNativeType(m_qualifiedName) && isScObject;
+    return isScObject;
 }
 
-void Class::GenerateCode(std::stringstream & outCode) const
-{
-    outCode << "void _initInternal() \\\n{ \\\n";
-    outCode << "    ScMemoryContext ctx(sc_access_lvl_make_max, \"" << m_name << "::_initInternal\"); \\\n";
-    outCode << "    bool result = true; \\\n";
-    GenerateFieldsInitCode(outCode);
+#define _GENERATE_INIT_CODE(FuncName, Method, Modifier) \
+    outCode << Modifier << " bool " << FuncName << "() \\\n{ \\\n"; \
+    outCode << "    ScMemoryContext ctx(sc_access_lvl_make_max, \"" << m_name << "::" << FuncName << "\"); \\\n"; \
+    outCode << "    bool result = true; \\\n"; \
+    Method(outCode); \
+    outCode << "    return result; \\\n"; \
     outCode << "}\n";
+
+void Class::GenerateCodeInit(std::stringstream & outCode) const
+{
+    _GENERATE_INIT_CODE("_initInternal", GenerateFieldsInitCode, "")
+}
+
+void Class::GenerateCodeStaticInit(std::stringstream & outCode) const
+{
+    _GENERATE_INIT_CODE("_initStaticInternal", GenerateStaticFieldsInitCode, "static")
 }
 
 void Class::GenerateFieldsInitCode(std::stringstream & outCode) const
@@ -152,4 +143,34 @@ void Class::GenerateFieldsInitCode(std::stringstream & outCode) const
         field->GenarateInitCode(outCode);
         outCode << " \\\n";
     }
+}
+
+void Class::GenerateStaticFieldsInitCode(std::stringstream & outCode) const
+{
+    for (tStaticFieldsVector::const_iterator it = m_staticFields.begin(); it != m_staticFields.end(); ++it)
+    {
+        Global * field = *it;
+        outCode << "    ";
+        field->GenerateInitCode(outCode);
+        outCode << " \\\n";
+    }
+}
+
+std::string Class::GetGeneratedBodyLine() const
+{
+    for (tMethodVector::const_iterator it = m_methods.begin(); it != m_methods.end(); ++it)
+    {
+        Method const * const field = *it;
+        MetaDataManager const & meta = field->GetMetaData();
+        std::string propBody;
+
+        if (meta.GetPropertySafe(Props::Body, propBody))
+        {
+            return propBody;
+        }
+    }
+
+    EMIT_ERROR("Can't find " << Props::Body << " meta info");
+
+    return "";
 }

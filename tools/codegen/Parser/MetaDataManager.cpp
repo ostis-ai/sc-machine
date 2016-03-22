@@ -5,7 +5,7 @@
 
 #include <boost/regex.hpp>
 
-MetaDataManager::MetaDataManager(const Cursor &cursor)
+MetaDataManager::MetaDataManager(Cursor const & cursor)
 {
     for (auto &child : cursor.GetChildren())
     {
@@ -17,7 +17,7 @@ MetaDataManager::MetaDataManager(const Cursor &cursor)
     }
 }
 
-std::string MetaDataManager::GetProperty(const std::string &key) const
+std::string MetaDataManager::GetProperty(std::string const & key) const
 {
     auto search = m_properties.find(key);
 
@@ -25,12 +25,30 @@ std::string MetaDataManager::GetProperty(const std::string &key) const
     return search == m_properties.end() ? "" : search->second;
 }
 
-bool MetaDataManager::GetFlag(const std::string &key) const
+bool MetaDataManager::GetPropertySafe(std::string const & key, std::string & outValue) const
+{
+    auto search = m_properties.find(key);
+
+    if (search != m_properties.end())
+    {
+        outValue = search->second;
+        return true;
+    }
+
+    return false;
+}
+
+bool MetaDataManager::HasProperty(std::string const & key) const
+{
+    return (m_properties.find(key) != m_properties.end());
+}
+
+bool MetaDataManager::GetFlag(std::string const & key) const
 {
     return m_properties.find(key) == m_properties.end() ? false : true;
 }
 
-std::string MetaDataManager::GetNativeString(const std::string &key) const
+std::string MetaDataManager::GetNativeString(std::string const & key) const
 {
     auto search = m_properties.find(key);
 
@@ -70,7 +88,7 @@ std::string MetaDataManager::GetNativeString(const std::string &key) const
     return "";
 }
 
-std::vector<MetaDataManager::Property> MetaDataManager::extractProperties(const Cursor &cursor) const
+std::vector<MetaDataManager::Property> MetaDataManager::extractProperties(Cursor const & cursor) const
 {
     std::vector<Property> properties;
 
@@ -114,6 +132,13 @@ std::vector<MetaDataManager::Property> MetaDataManager::extractProperties(const 
     {
         auto name = match[ 1 ].str();
         auto arguments = match[ 3 ].str();
+
+        if (name == Props::Body)
+        {
+            std::stringstream str;
+            str << cursor.GetLineNumber();
+            arguments = str.str();
+        }
 
         properties.emplace_back(name, arguments);
 

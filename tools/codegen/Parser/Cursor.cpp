@@ -5,7 +5,18 @@
 #include "MetaUtils.hpp"
 
 Cursor::Cursor(const CXCursor &handle)
-    : m_handle(handle) { }
+    : m_handle(handle)
+{ 
+    CXSourceLocation loc = clang_getCursorLocation(m_handle);
+    CXFile file;
+    unsigned int line, column, offset;
+    clang_getSpellingLocation(loc, &file, &line, &column, &offset);
+
+    if (file)
+        m_fileName = clang_getCString(clang_getFileName(file));
+
+    m_line = line;
+}
 
 CXCursorKind Cursor::GetKind(void) const
 {
@@ -42,6 +53,16 @@ std::string Cursor::GetMangledName(void) const
     utils::ToString(clang_Cursor_getMangling(m_handle), mangled);
 
     return mangled;
+}
+
+std::string const & Cursor::GetFileName() const
+{
+    return m_fileName;
+}
+
+size_t Cursor::GetLineNumber() const
+{
+    return m_line;
 }
 
 bool Cursor::IsDefinition(void) const
