@@ -24,16 +24,7 @@ bool _resolveKeynodeImpl(ScMemoryContext & ctx, char const * str, ScAddr & outAd
 {
     check_expr(ctx.isValid());
 
-    // check if node with system identifier already exists
-    if (ctx.helperResolveSystemIdtf(str, outAddr))
-        return true;
-
-    // create new node with specified system identifier
-    outAddr = ctx.createNode(sc_type_node);
-    if (outAddr.isValid())
-        return ctx.helperSetSystemIdtf(str, outAddr);
-
-    return false;
+    return ctx.helperResolveSystemIdtf(str, outAddr, true);
 }
 
 bool ScAgentInit()
@@ -42,7 +33,7 @@ bool ScAgentInit()
     {
         gIsInitialized = true;
 
-        ScMemoryContext ctx(sc_access_lvl_make_max, "AgentKeynodes");
+        ScMemoryContext ctx(sc_access_lvl_make_min, "AgentKeynodes");
 
         gInitializeResult = true;
         gInitializeResult = gInitializeResult && _resolveKeynodeImpl(ctx, "command_in_progress", Keynodes::command_in_progress);

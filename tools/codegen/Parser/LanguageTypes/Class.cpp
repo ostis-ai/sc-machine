@@ -118,7 +118,7 @@ bool Class::ShouldGenerate(void) const
 
 #define _GENERATE_INIT_CODE(FuncName, Method, Modifier) \
     outCode << Modifier << " bool " << FuncName << "() \\\n{ \\\n"; \
-    outCode << "    ScMemoryContext ctx(sc_access_lvl_make_max, \"" << m_name << "::" << FuncName << "\"); \\\n"; \
+    outCode << "    ScMemoryContext ctx(sc_access_lvl_make_min, \"" << m_name << "::" << FuncName << "\"); \\\n"; \
     outCode << "    bool result = true; \\\n"; \
     Method(outCode); \
     outCode << "    return result; \\\n"; \
