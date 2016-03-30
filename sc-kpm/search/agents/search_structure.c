@@ -350,6 +350,11 @@ void search_superclasses_rec(sc_addr elem, sc_addr answer, sc_bool sys_off)
             // check if it's a quasybinary relation
             if (sc_helper_check_arc(s_default_ctx, keynode_quasybinary_relation, sc_iterator5_value(it5, 4), sc_type_arc_pos_const_perm) == SC_TRUE)
             {
+                if (!(sc_helper_check_arc(s_default_ctx, keynode_taxonomy_relation, sc_iterator5_value(it5, 4), sc_type_arc_pos_const_perm) == SC_TRUE
+                      || sc_helper_check_arc(s_default_ctx, keynode_decomposition_relation, sc_iterator5_value(it5, 4), sc_type_arc_pos_const_perm) == SC_TRUE))
+                    continue;
+
+
                 if (sys_off == SC_TRUE && (IS_SYSTEM_ELEMENT(sc_iterator5_value(it5, 1))
                                            || IS_SYSTEM_ELEMENT(sc_iterator5_value(it5, 2))
                                            || IS_SYSTEM_ELEMENT(sc_iterator5_value(it5, 3))
