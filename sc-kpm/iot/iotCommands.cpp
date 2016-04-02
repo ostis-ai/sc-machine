@@ -15,14 +15,6 @@
 
 sc_event * event_device_group_enable_command = 0;
 
-sc_event * event_add_content_command = 0;
-sc_event * event_get_content_question = 0;
-
-sc_event * event_change_tv_program = 0;
-
-sc_event * event_who_are_you = 0;
-sc_event * event_generate_text = 0;
-
 namespace iot
 {
     ScMemoryContext * Commands::memory_ctx = 0;
@@ -89,25 +81,11 @@ namespace iot
 		if (!event_device_group_enable_command)
 			return false;
 
-		event_add_content_command = sc_event_new(memory_ctx->getRealContext(), Keynodes::command_initiated.getRealAddr(), SC_EVENT_ADD_OUTPUT_ARC, 0, &handler_add_content_command, 0);
-		if (!event_add_content_command)
-			return false;
-
-		event_get_content_question = sc_event_new(memory_ctx->getRealContext(), Keynodes::question_initiated.getRealAddr(), SC_EVENT_ADD_OUTPUT_ARC, 0, &handler_get_content_question, 0);
-		if (!event_get_content_question)
-			return false;
-
-		event_change_tv_program = sc_event_new(memory_ctx->getRealContext(), Keynodes::command_initiated.getRealAddr(), SC_EVENT_ADD_OUTPUT_ARC, 0, &handler_change_tv_program, 0);
-		if (!event_change_tv_program)
-			return false;
-
-		event_who_are_you = sc_event_new(memory_ctx->getRealContext(), Keynodes::command_initiated.getRealAddr(), SC_EVENT_ADD_OUTPUT_ARC, 0, &handler_who_are_you_command, 0);
-		if (!event_who_are_you)
-			return false;
-
-		event_generate_text = sc_event_new(memory_ctx->getRealContext(), Keynodes::command_initiated.getRealAddr(), SC_EVENT_ADD_OUTPUT_ARC, 0, &handler_generate_text_command, 0);
-		if (!event_generate_text)
-			return false;
+		SC_AGENT_REGISTER(AAddContentAgent)
+		SC_AGENT_REGISTER(AGetContentAgent)
+		SC_AGENT_REGISTER(ATVChangeProgram)
+		SC_AGENT_REGISTER(AWhoAreYouAgent)
+		SC_AGENT_REGISTER(AGenerateTextByTemplate)
 
 		return true;
 	}
@@ -121,35 +99,11 @@ namespace iot
 			event_device_group_enable_command = 0;
 		}
 
-		if (event_add_content_command)
-		{
-			sc_event_destroy(event_add_content_command);
-			event_add_content_command = 0;
-		}
-
-		if (event_get_content_question)
-		{
-			sc_event_destroy(event_get_content_question);
-			event_get_content_question = 0;
-		}
-
-		if (event_change_tv_program)
-		{
-			sc_event_destroy(event_change_tv_program);
-			event_change_tv_program = 0;
-		}
-
-		if (event_who_are_you)
-		{
-			sc_event_destroy(event_who_are_you);
-			event_who_are_you = 0;
-		}
-
-		if (event_generate_text)
-		{
-			sc_event_destroy(event_generate_text);
-			event_generate_text = 0;
-		}
+		SC_AGENT_UNREGISTER(AAddContentAgent)
+		SC_AGENT_UNREGISTER(AGetContentAgent)
+		SC_AGENT_UNREGISTER(ATVChangeProgram)
+		SC_AGENT_UNREGISTER(AWhoAreYouAgent)
+		SC_AGENT_UNREGISTER(AGenerateTextByTemplate)
 
 		if (memory_ctx)
 		{

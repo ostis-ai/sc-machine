@@ -15,9 +15,9 @@ namespace n1
 {
     namespace n2
     {
-        SC_CLASS()
         class TestObject : public ScObject
         {
+			SC_CLASS()
             SC_GENERATED_BODY()
 
         public:

@@ -6,6 +6,7 @@
 
 #include "wrap/sc_memory_headers.hpp"
 #include "test_sc_object.hpp"
+#include "test_sc_agent.hpp"
 #include <glib.h>
 
 void init_memory()
@@ -417,7 +418,7 @@ void test_codegen_keynodes()
     init_memory();
 
     {
-        ScMemoryContext ctx(sc_access_lvl_make_max);
+        ScMemoryContext ctx(sc_access_lvl_make_min);
 
         ScAddr addr1 = ctx.createNode(sc_type_const);
         g_assert(addr1.isValid());
@@ -446,6 +447,87 @@ void test_codegen_keynodes()
     shutdown_memory(false);
 }
 
+void test_codegen_agent()
+{
+	init_memory();
+
+	{
+		ScMemoryContext ctx(sc_access_lvl_make_min);
+
+		SC_AGENT_REGISTER(TestAgent)
+
+		SC_AGENT_UNREGISTER(TestAgent)
+	}
+
+	shutdown_memory(false);
+}
+
+void test_perfomance_templ()
+{
+	init_memory();
+
+	ScAddr node1, node2, node3, node4, edge1, edge2, edge3;
+	ScMemoryContext ctx(sc_access_lvl_make_min);
+
+	{
+		// preapre test
+		ScTemplate templ;
+		templ
+			.triple(ScType(sc_type_node) >> "Node1",
+					ScType(sc_type_arc_pos_const_perm) >> "Edge1",
+					ScType(sc_type_node) >> "Node2")
+			.triple(ScType(sc_type_node) >> "Node3",
+					ScType(sc_type_arc_pos_const_perm) >> "Edge2",
+					"Edge1")
+			.triple(ScType(sc_type_node) >> "Node4",
+					ScType(sc_type_arc_pos_const_perm) >> "Edge3",
+					"Node1");
+
+		ScTemplateGenResult result;
+		if (ctx.helperGenTemplate(templ, result))
+		{
+			node1 = result["Node1"];
+			node2 = result["Node2"];
+			node3 = result["Node3"];
+			node4 = result["Node4"];
+			edge1 = result["Edge1"];
+			edge2 = result["Edge2"];
+			edge3 = result["Edge3"];
+		}
+		else
+			g_assert(false);
+	}
+
+
+	static size_t const iterCount = 10000;
+	printf("Search (template)\n");
+	g_test_timer_start();
+
+	for (size_t i = 0; i < iterCount; ++i)
+	{
+		ScTemplate templ;
+		templ
+			.triple(node1,
+					ScType(sc_type_arc_pos_const_perm) >> "Edge1",
+					ScType(sc_type_node))
+			.triple(node3,
+					ScType(sc_type_arc_pos_const_perm),
+					"Edge1")
+			.triple(node4,
+					ScType(sc_type_arc_pos_const_perm),
+					node1);
+		
+		ScTemplateSearchResult result;
+		g_assert(ctx.helperSearchTemplate(templ, result));
+	}
+
+	double const time = g_test_timer_elapsed();
+	printf("Time: %.3f\n s", time);
+	printf("Time per search: %.8f s", time / iterCount);
+
+	shutdown_memory(false);
+}
+
 int main(int argc, char *argv[])
 {
     g_test_init(&argc, &argv, NULL);
@@ -454,7 +536,10 @@ int main(int argc, char *argv[])
     g_test_add_func("/common/iterators", test_common_iterators);
     g_test_add_func("/common/streams", test_common_streams);
 	g_test_add_func("/common/templates", test_common_templates);
+
     g_test_add_func("/codegen/keynodes", test_codegen_keynodes);
+	g_test_add_func("/codegen/agent", test_codegen_agent);
+	g_test_add_func("/perfomance/templates", test_perfomance_templ);
 
     g_test_run();
 

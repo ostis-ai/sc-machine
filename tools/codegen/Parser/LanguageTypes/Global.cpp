@@ -40,11 +40,19 @@ void Global::GenerateInitCode(std::stringstream & outCode) const
     /// TODO: merge with field code generation
     if (m_metaData.HasProperty(Props::Keynode))
     {
-        outCode << "result = result && ctx.helperResolveSystemIdtf(\""
-            << m_metaData.GetNativeString(Props::SysIdtf) << "\", "
-            << m_displayName << ", "
-            << (m_metaData.HasProperty(Props::ForceCreate) ? "true" : "false") << ");";
-    }
+		GenerateResolveKeynodeCode(m_metaData.GetNativeString(Props::SysIdtf), 
+									m_displayName,
+									m_metaData.HasProperty(Props::ForceCreate),
+									outCode);
+	}
+}
+
+void Global::GenerateResolveKeynodeCode(std::string const & sysIdtf, std::string const & displayName, bool forceCreation, std::stringstream & outCode)
+{
+	outCode << "result = result && ctx.helperResolveSystemIdtf(\""
+		<< sysIdtf << "\", "
+		<< displayName << ", "
+		<< (forceCreation ? "true" : "false") << ");";
 }
 
 bool Global::isAccessible(void) const

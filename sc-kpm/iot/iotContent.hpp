@@ -9,10 +9,20 @@
 #include "iotTypes.hpp"
 #include "wrap/kpm/sc_agent.hpp"
 
+#include "iotContent.generated.hpp"
+
 namespace iot
 {
 
-	sc_result handler_add_content_command(sc_event const * event, sc_addr arg);
+	class AAddContentAgent : public ScAgent
+	{
+		SC_CLASS(Agent, CmdClass("command_add_content"))
+		SC_GENERATED_BODY()
+	};
 	
-	sc_result handler_get_content_question(sc_event const * event, sc_addr arg);
+	class AGetContentAgent : public ScAgent
+	{
+		SC_CLASS(Agent, CmdClass("question_get_content"))
+		SC_GENERATED_BODY()
+	};
 }

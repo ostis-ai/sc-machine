@@ -4,17 +4,18 @@
 * (See accompanying file COPYING.MIT or copy at http://opensource.org/licenses/MIT)
 */
 
-#include "iotSpeech.hpp"
 #include "iotKeynodes.hpp"
 #include "iotUtils.hpp"
 
 #include "wrap/sc_memory.hpp"
 #include "wrap/sc_stream.hpp"
 
+#include "iotSpeech.hpp"
+
 namespace iot
 {
 
-	IMPLEMENT_AGENT(GenerateSpeechText, KPM_COMMAND_AGENT)
+	SC_AGENT_IMPLEMENTATION(AGenerateTextByTemplate)
 	{
         ScIterator5Ptr itCmd = mMemoryCtx.iterator5(
 			requestAddr,
@@ -141,14 +142,6 @@ namespace iot
 
 		return SC_RESULT_ERROR;
 	}
-
-	sc_result handler_generate_text_command(sc_event const * event, sc_addr arg)
-	{
-        RUN_AGENT(GenerateSpeechText, Keynodes::command_generate_text_from_template, sc_access_lvl_make_min, ScAddr(arg));
-	}
-
-
-
 
 
 // ----------------- Template processor ---------------

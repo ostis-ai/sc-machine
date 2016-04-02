@@ -3,6 +3,7 @@ build
 scripts/redis*
 
 tools/builder/src/parser/
+*.generated.*
 
 sc-machine.json
 manifest.json

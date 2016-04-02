@@ -9,10 +9,17 @@
 #include "iotTypes.hpp"
 #include "wrap/kpm/sc_agent.hpp"
 
+#include "iotSpeech.generated.hpp"
+
 namespace iot
 {
 
-	sc_result handler_generate_text_command(sc_event const * event, sc_addr arg);
+	class AGenerateTextByTemplate : public ScAgent
+	{
+		SC_CLASS(Agent, CmdClass("command_generate_text_from_template"))
+		SC_GENERATED_BODY()
+	};
+
 
 	class TextTemplateProcessor
 	{

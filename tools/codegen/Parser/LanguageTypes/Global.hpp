@@ -18,6 +18,9 @@ public:
     bool ShouldCompile(void) const;
     void GenerateInitCode(std::stringstream & outCode) const;
     
+	static void GenerateResolveKeynodeCode(std::string const & sysIdtf, std::string const & displayName, 
+											bool forceCreation, std::stringstream & outCode);
+
 private:
     bool m_isConst;
 

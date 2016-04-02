@@ -12,8 +12,9 @@
 #ifdef __SC_REFLECTION_PARSER__
 
 #define SC_BODY_INTERNAL(...) __attribute__((annotate(#__VA_ARGS__))) void __null_body() {}
+#define SC_CLASS_INTERNAL(...) __attribute__((annotate(#__VA_ARGS__))) void __null_meta() {}
 
-#define SC_CLASS(...) 
+#define SC_CLASS(...) SC_CLASS_INTERNAL(__VA_ARGS__)
 #define SC_GENERATED_BODY(...) SC_BODY_INTERNAL(GenBody())
 #define SC_PROPERTY(...) __attribute__((annotate(#__VA_ARGS__)))
 
@@ -25,12 +26,12 @@
     static bool initGlobal() { return _initStaticInternal(); } \
     private: \
     SC_GENERATED_BODY_ITEMS(_init) \
-    SC_GENERATED_BODY_ITEMS(_initStatic)
-    
+    SC_GENERATED_BODY_ITEMS(_initStatic) \
+	SC_GENERATED_BODY_ITEMS(_decl)
 
 
 #define SC_CLASS(...)
-#define SC_GENERATED_BODY(...)  SC_GENERATED_BODY_INIT() /// TODO: depend on class name or line
+#define SC_GENERATED_BODY(...)  SC_GENERATED_BODY_INIT()
 #define SC_PROPERTY(...)
 
 #endif

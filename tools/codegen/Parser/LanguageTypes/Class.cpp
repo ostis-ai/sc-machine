@@ -10,14 +10,20 @@ BaseClass::BaseClass(const Cursor &cursor)
 
 }
 
+bool BaseClass::IsNative() const
+{
+	return (name == Classes::Object ||
+			name == Classes::Agent);
+}
+
 Class::Class(const Cursor &cursor, const Namespace &currentNamespace)
     : LanguageType(cursor, currentNamespace)
     , m_name(cursor.GetDisplayName())
     , m_qualifiedName(cursor.GetType().GetDisplayName())
 {
-    isScObject = false;
+    m_isScObject = false;
 
-    auto displayName = m_metaData.GetNativeString(kMetaDisplayName);
+    /*auto displayName = m_metaData.GetNativeString(kMetaDisplayName);
 
     if (displayName.empty())
     {
@@ -25,9 +31,10 @@ Class::Class(const Cursor &cursor, const Namespace &currentNamespace)
     }
     else
     {
-        m_displayName = 
-            utils::GetQualifiedName(displayName, currentNamespace);
-    }
+        m_displayName = utils::GetQualifiedName(displayName, currentNamespace);
+    }*/
+
+	m_displayName = cursor.GetSpelling();
 
     for (auto &child : cursor.GetChildren())
     {
@@ -40,9 +47,12 @@ Class::Class(const Cursor &cursor, const Namespace &currentNamespace)
 
             m_baseClasses.emplace_back(baseClass);
 
+			/// TODO: Implement recursive base class parsing (disable check of filename, and parse whole hierarchy)
+			/// Possible best way to check if it has SC_CLASS field
+
             // automatically enable the type if not explicitly disabled
-            if (baseClass->name == "ScObject")
-                isScObject = true;
+			if (baseClass->IsNative())
+                m_isScObject = true;
         }
             break;
 
@@ -71,15 +81,19 @@ Class::Class(const Cursor &cursor, const Namespace &currentNamespace)
         case CXCursor_CXXMethod:
             if (child.IsStatic()) 
             { 
-                m_staticMethods.emplace_back(
-                    new Function(child, Namespace(), this) 
-               );
+				m_staticMethods.emplace_back(new Function(child, Namespace(), this));
             }
             else 
-            { 
-                m_methods.emplace_back(
-                    new Method(child, currentNamespace, this) 
-               );
+            {
+				std::string const name = child.GetSpelling();
+				if (name == "__null_meta")
+				{
+					m_metaData = MetaDataManager(child);
+				}
+				else
+				{
+					m_methods.emplace_back(new Method(child, currentNamespace, this));
+				}
             }
             break;
 
@@ -113,7 +127,29 @@ Class::~Class(void)
 
 bool Class::ShouldGenerate(void) const
 {
-    return isScObject;
+    return m_isScObject;
+}
+
+bool Class::IsAgent() const
+{
+	return m_metaData.HasProperty(Props::Agent);
+}
+
+void Class::GenerateCode(std::string const & fileId, std::stringstream & outCode) const
+{
+	std::string const line = GetGeneratedBodyLine();
+
+	outCode << "\n\n#define " << fileId << "_" << line << "_init ";
+	GenerateCodeInit(outCode);
+
+	outCode << "\n\n#define " << fileId << "_" << line << "_initStatic ";
+	GenerateCodeStaticInit(outCode);
+
+	outCode << "\n\n#define " << fileId << "_" << line << "_decl ";
+	GenerateDeclarations(outCode);
+
+	outCode << "\n\n#define " << fileId << "_" << m_displayName << "_impl ";
+	GenerateImpl(outCode);
 }
 
 #define _GENERATE_INIT_CODE(FuncName, Method, Modifier) \
@@ -150,10 +186,84 @@ void Class::GenerateStaticFieldsInitCode(std::stringstream & outCode) const
     for (tStaticFieldsVector::const_iterator it = m_staticFields.begin(); it != m_staticFields.end(); ++it)
     {
         Global * field = *it;
-        outCode << "    ";
+        outCode << "\t";
         field->GenerateInitCode(outCode);
         outCode << " \\\n";
     }
+
+	// init data specified for an agents
+	if (IsAgent())
+	{
+		outCode << "\t";
+		Global::GenerateResolveKeynodeCode(m_metaData.GetNativeString(Props::AgentCommandClass),
+			"msCmdClass_" + m_displayName,
+			true,
+			outCode);
+		outCode << " \\\n";
+	}
+}
+
+void Class::GenerateDeclarations(std::stringstream & outCode) const
+{
+	// overrides for agents
+	if (IsAgent())
+	{
+		BaseClass const * agentClass = GetBaseClass(Classes::Agent);
+		if (!agentClass)
+		{
+			EMIT_ERROR("Invalid base class for Agent " << m_displayName);
+		}
+
+		if (!m_metaData.HasProperty(Props::AgentCommandClass))
+		{
+			EMIT_ERROR(Props::AgentCommandClass << " not specified for " << m_displayName);
+		}
+
+		
+		outCode << "\\\nprivate:";
+		outCode << "\\\n\ttypedef " << agentClass->name << " Super;";
+		outCode << "\\\n\tvirtual sc_result runImpl(ScAddr const & requestAddr, ScAddr const & resultAddr); ";
+		outCode << "\\\n\tstatic sc_event * msEventPtr; ";
+		outCode << "\\\n\tstatic ScAddr msCmdClass_" << m_displayName << ";";
+
+		// static function for handler
+		outCode << "\\\npublic: ";
+		outCode << "\\\n \tstatic sc_result handler_" << m_displayName << "(sc_event const * event, sc_addr arg) ";
+		outCode << "\\\n\t{";
+		outCode << "\\\n\t\t" << m_displayName << " Instance(msCmdClass_" << m_displayName <<", \"" << m_displayName << "\", sc_access_lvl_make_min);";
+		outCode << "\\\n\t\t" << "return Instance.run(ScAddr(arg));";
+		outCode << "\\\n\t}";
+
+		// register/unregister
+		outCode << "\\\n\tstatic void registerHandler()";
+		outCode << "\\\n\t{";
+		outCode << "\\\n\t\tcheck_expr(!msEventPtr); ";
+		outCode << "\\\n\t\tScMemoryContext ctx(sc_access_lvl_make_min, \"handler_" << m_displayName << "\"); ";
+		outCode << "\\\n\t\tmsEventPtr = sc_event_new(ctx.getRealContext(), GetCommandInitiatedAddr().getRealAddr(), SC_EVENT_ADD_OUTPUT_ARC, 0, &" << m_displayName << "::handler_" << m_displayName << ", 0);";
+		outCode << "\\\n\t}";
+
+		outCode << "\\\n\tstatic void unregisterHandler()";
+		outCode << "\\\n\t{";
+		outCode << "\\\n\t\tif (msEventPtr) ";
+		outCode << "\\\n\t\t{";
+		outCode << "\\\n\t\t\tsc_event_destroy(msEventPtr);";
+		outCode << "\\\n\t\t\tmsEventPtr = 0;";
+		outCode << "\\\n\t\t}";
+		outCode << "\\\n\t}";
+
+		// default constructor for a handler
+		outCode << "\\\nprotected: ";
+		outCode << "\\\n\t" << m_displayName << "(ScAddr const & cmdClassAddr, char const * name, sc_uint8 accessLvl) : Super(cmdClassAddr, name, accessLvl) {}";
+	}
+}
+
+void Class::GenerateImpl(std::stringstream & outCode) const
+{
+	if (IsAgent())
+	{
+		outCode << "\\\nsc_event * " << m_displayName << "::msEventPtr = 0;";
+		outCode << "\\\nScAddr " << m_displayName << "::msCmdClass_" << m_displayName << ";";
+	}
 }
 
 std::string Class::GetGeneratedBodyLine() const
@@ -173,4 +283,15 @@ std::string Class::GetGeneratedBodyLine() const
     EMIT_ERROR("Can't find " << Props::Body << " meta info");
 
     return "";
+}
+
+BaseClass const * Class::GetBaseClass(std::string const & name) const
+{
+	for (tBaseClassVector::const_iterator it = m_baseClasses.begin(); it != m_baseClasses.end(); ++it)
+	{
+		if ((*it)->name == name)
+			return *it;
+	}
+
+	return 0;
 }

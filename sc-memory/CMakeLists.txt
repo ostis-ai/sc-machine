@@ -12,6 +12,8 @@ target_link_libraries(sc-memory ${GLIB2_LIBRARIES})
 # cpp wrapper
 include_directories(${SC_MEMORY_SRC})
 
+set (SC_MEMORY_WRAP_ROOT "${SC_MEMORY_ROOT}/wrap")
+
 set (SC_MEMORY_WRAP_SOURCES 
 			"wrap/sc_memory.cpp"
             "wrap/sc_addr.cpp"
@@ -38,6 +40,7 @@ add_library (sc-memory-cpp SHARED ${SC_MEMORY_WRAP_SOURCES})
 
 add_dependencies(sc-memory-cpp sc-memory sc-code-generator)
 target_link_libraries(sc-memory-cpp sc-memory)
+sc_codegen_ex(sc-memory-cpp ${SC_MEMORY_WRAP_ROOT} "${SC_MEMORY_WRAP_ROOT}/generated")
 
 target_compile_definitions(sc-memory PUBLIC "-DSC_MEMORY_SELF_BUILD")
 

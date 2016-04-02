@@ -12,14 +12,14 @@
 
 #include <boost/algorithm/string.hpp>
 
-#define RECURSE_NAMESPACES(kind, cursor, method, ns, cd) \
+#define RECURSE_NAMESPACES(kind, cursor, method, ns) \
     if (kind == CXCursor_Namespace)                  \
     {                                                \
         auto displayName = cursor.GetDisplayName(); \
         if (!displayName.empty())                   \
         {                                            \
             ns.emplace_back(displayName);          \
-            method(cursor, ns, cd);                    \
+            method(cursor, ns);                    \
             ns.pop_back();                          \
         }                                            \
     }                                                \
@@ -102,8 +102,14 @@ void ReflectionParser::Parse(void)
 
 	for (tStringList::const_iterator it = filesList.begin(); it != filesList.end(); ++it)
 	{
-		std::cout << "Parse header " << *it << "..." << std::endl;
-		ProcessFile(*it);
+		try {
+			ProcessFile(*it);
+		}
+		catch (Exception e)
+		{
+			EMIT_ERROR(e.GetDescription() << " in " << *it);
+ 		}
+		
 	}
 }
 
@@ -179,53 +185,53 @@ void ReflectionParser::ProcessFile(std::string const & fileName)
 
 	auto cursor = clang_getTranslationUnitCursor(m_translationUnit);
 
-    std::string fileId = GetFileID(fileName);
 	Namespace tempNamespace;
-    std::stringstream outCode;
-
-    // includes
-    outCode << "#include \"wrap/sc_memory.hpp\"\n\n\n";
-
-	buildClasses(cursor, tempNamespace, outCode);
-	tempNamespace.clear();
-    for (auto it = m_classes.begin(); it != m_classes.end(); ++it)
-    {
-        Class const * klass = *it;
-        if (klass->ShouldGenerate())
-        {
-            std::string const line = klass->GetGeneratedBodyLine();
-
-            outCode << "#define " << fileId << "_" << line << "_init ";
-            klass->GenerateCodeInit(outCode);
-
-            outCode << "#define " << fileId << "_" << line << "_initStatic ";
-            klass->GenerateCodeStaticInit(outCode);
-        }
-    }
-
-	/*buildGlobals(cursor, tempNamespace);
+	buildClasses(cursor, tempNamespace);
 	tempNamespace.clear();
 
-	buildGlobalFunctions(cursor, tempNamespace);
-	tempNamespace.clear();
+	if (RequestGenerate())
+	{
 
-	buildEnums(cursor, tempNamespace);*/
+		std::string fileId = GetFileID(fileName);
 
-    /// write ScFileID definition
-    outCode << "\n\n#undef ScFileID\n";
-    outCode << "#define ScFileID " << fileId;
+		std::stringstream outCode;
 
-    
-    /// test dump
-    //outCode << "\n\n ----- Dump ----- \n\n";
-    //DumpTree(cursor, 0, outCode);
+		// includes
+		outCode << "#include \"wrap/sc_memory.hpp\"\n\n\n";
 
-	// generate output file
-	fs::path outputPath(m_options.outputPath);
-	outputPath /= fs::path(GetOutputFileName(fileName));
-	std::ofstream outputFile(outputPath.string());
-    outputFile << outCode.str();
-	outputFile.close();
+		for (auto it = m_classes.begin(); it != m_classes.end(); ++it)
+		{
+			Class const * klass = *it;
+			if (klass->ShouldGenerate())
+			{
+				klass->GenerateCode(fileId, outCode);
+			}
+		}
+
+		/*buildGlobals(cursor, tempNamespace);
+		tempNamespace.clear();
+
+		buildGlobalFunctions(cursor, tempNamespace);
+		tempNamespace.clear();
+
+		buildEnums(cursor, tempNamespace);*/
+
+		/// write ScFileID definition
+		outCode << "\n\n#undef ScFileID\n";
+		outCode << "#define ScFileID " << fileId;
+
+
+		/// test dump
+		//outCode << "\n\n ----- Dump ----- \n\n";
+		//DumpTree(cursor, 0, outCode);
+
+		// generate output file
+		fs::path outputPath(m_options.outputPath);
+		outputPath /= fs::path(GetOutputFileName(fileName));
+		std::ofstream outputFile(outputPath.string());
+		outputFile << outCode.str();
+		outputFile.close();
+	}
 }
 
 bool ReflectionParser::IsInCurrentFile(Cursor const & cursor) const
@@ -233,7 +239,18 @@ bool ReflectionParser::IsInCurrentFile(Cursor const & cursor) const
     return cursor.GetFileName() == m_currentFile;
 }
 
-void ReflectionParser::buildClasses(const Cursor &cursor, Namespace &currentNamespace, std::stringstream & outCode)
+bool ReflectionParser::RequestGenerate() const
+{
+	for (auto it = m_classes.begin(); it != m_classes.end(); ++it)
+	{
+		if ((*it)->ShouldGenerate())
+			return true;
+	}
+
+	return false;
+}
+
+void ReflectionParser::buildClasses(const Cursor &cursor, Namespace &currentNamespace)
 {
     for (auto &child : cursor.GetChildren())
     {
@@ -249,7 +266,7 @@ void ReflectionParser::buildClasses(const Cursor &cursor, Namespace &currentName
             m_classes.emplace_back(new Class(child, currentNamespace));
         }
         
-        RECURSE_NAMESPACES(kind, child, buildClasses, currentNamespace, outCode);
+        RECURSE_NAMESPACES(kind, child, buildClasses, currentNamespace);
     }
 }
 

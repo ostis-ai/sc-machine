@@ -12,5 +12,12 @@ namespace Props
     const std::string Keynode = "Keynode";
     const std::string SysIdtf = "SysIdtf";
     const std::string ForceCreate = "ForceCreate";
+	const std::string Agent = "Agent";
+	const std::string AgentCommandClass = "CmdClass";
 }
 
+namespace Classes
+{
+	const std::string Object = "ScObject";
+	const std::string Agent = "ScAgent";
+}

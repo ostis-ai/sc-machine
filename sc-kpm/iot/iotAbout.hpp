@@ -9,9 +9,15 @@
 #include "iotTypes.hpp"
 #include "wrap/kpm/sc_agent.hpp"
 
+#include "iotAbout.generated.hpp"
+
 namespace iot
 {
 
-	sc_result handler_who_are_you_command(sc_event const * event, sc_addr arg);
+	class AWhoAreYouAgent : public ScAgent
+	{
+		SC_CLASS(Agent, CmdClass("command_who_are_you"))
+		SC_GENERATED_BODY()
+	};
 
 }

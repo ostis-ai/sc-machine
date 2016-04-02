@@ -9,9 +9,15 @@
 #include "iotTypes.hpp"
 #include "wrap/kpm/sc_agent.hpp"
 
+#include "iotTV.generated.hpp"
+
 namespace iot
 {
 
-	sc_result handler_change_tv_program(sc_event const * event, sc_addr arg);
+	class ATVChangeProgram : public ScAgent
+	{
+		SC_CLASS(Agent, CmdClass("command_change_tv_program"))
+		SC_GENERATED_BODY()
+	};
 
 }

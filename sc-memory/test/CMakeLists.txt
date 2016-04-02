@@ -11,6 +11,8 @@ set(SOURCES_WRAP
 	"wrap/test_wrap.cpp"
 	"wrap/test_sc_object.cpp"
 	"wrap/test_sc_object.hpp"
+	"wrap/test_sc_agent.cpp"
+	"wrap/test_sc_agent.hpp"
 	)
 
 add_executable(test_wrap ${SOURCES_WRAP})

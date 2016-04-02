@@ -1,5 +1,4 @@
-macro(sc_codegen Target SrcPath)
-	
+macro(sc_codegen_ex Target SrcPath OutputPath)
 	# fetch all include directories for the project target
 	get_property(DIRECTORIES TARGET ${Target} PROPERTY INCLUDE_DIRECTORIES)
 
@@ -24,8 +23,6 @@ macro(sc_codegen Target SrcPath)
 	    message(FATAL_ERROR "System include directories not implemented for this compiler.")
 	endif ()
 
-	set (OutputPath "${CMAKE_CURRENT_BINARY_DIR}/${Target}_gen")
-
 	include_directories(${OutputPath})
 	add_custom_command(
     	PRE_BUILD
@@ -37,5 +34,8 @@ macro(sc_codegen Target SrcPath)
 		--output 	"${OutputPath}"
 		--flags 	${META_FLAGS}
 	)
+endmacro(sc_codegen_ex)
 
+macro(sc_codegen Target SrcPath)
+	sc_codegen_ex(${Target} ${SrcPath} "${CMAKE_CURRENT_BINARY_DIR}/${Target}_gen")
 endmacro(sc_codegen)

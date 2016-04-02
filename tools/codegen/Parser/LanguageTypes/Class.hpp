@@ -12,6 +12,8 @@ struct BaseClass
 {
     BaseClass(const Cursor &cursor);
 
+	bool IsNative() const;
+	
     std::string name;
 };
 
@@ -29,7 +31,9 @@ public:
     virtual ~Class(void);
 
     bool ShouldGenerate(void) const;
+	bool IsAgent() const;
 
+	void GenerateCode(std::string const & fileId, std::stringstream & outCode) const;
     void GenerateCodeInit(std::stringstream & outCode) const;
     void GenerateCodeStaticInit(std::stringstream & outCode) const;
 
@@ -38,14 +42,18 @@ public:
 protected:
     void GenerateFieldsInitCode(std::stringstream & outCode) const;
     void GenerateStaticFieldsInitCode(std::stringstream & outCode) const;
+	void GenerateDeclarations(std::stringstream & outCode) const;
+	void GenerateImpl(std::stringstream & outCode) const;
     
+	BaseClass const * GetBaseClass(std::string const & name) const;
 
 private:
     std::string m_name;
     std::string m_displayName;
     std::string m_qualifiedName;
 
-    std::vector<BaseClass*> m_baseClasses;
+	typedef std::vector<BaseClass*> tBaseClassVector;
+	tBaseClassVector m_baseClasses;
         
     std::vector<Constructor*> m_constructors;
 
@@ -60,5 +68,5 @@ private:
 
     std::vector<Function*> m_staticMethods;
 
-    bool isScObject;
+    bool m_isScObject;
 };

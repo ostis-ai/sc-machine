@@ -35,6 +35,7 @@ protected:
     void Clear();
     void DumpTree(Cursor const & cursor, int level, std::stringstream & outData);
     bool IsInCurrentFile(Cursor const & cursor) const;
+	bool RequestGenerate() const;
 
 protected:
 	static void CollectFiles(std::string const & inPath, tStringList & outFiles);
@@ -55,7 +56,7 @@ private:
     std::vector<Function*> m_globalFunctions;
     std::vector<Enum*> m_enums;
 
-    void buildClasses(Cursor const & cursor, Namespace & currentNamespace, std::stringstream & outCode);
+    void buildClasses(Cursor const & cursor, Namespace & currentNamespace);
     /*void buildGlobals(const Cursor &cursor, Namespace &currentNamespace);
 
     void buildGlobalFunctions(

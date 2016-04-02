@@ -4,16 +4,17 @@
 * (See accompanying file COPYING.MIT or copy at http://opensource.org/licenses/MIT)
 */
 
-#include "iotContent.hpp"
 #include "iotKeynodes.hpp"
 #include "iotUtils.hpp"
 
 #include "wrap/sc_memory.hpp"
 
+#include "iotContent.hpp"
+
 namespace iot
 {
 
-	IMPLEMENT_AGENT(AddContent, KPM_COMMAND_AGENT)
+	SC_AGENT_IMPLEMENTATION(AAddContentAgent)
 	{
 		assert(requestAddr.isValid());
 
@@ -91,7 +92,7 @@ namespace iot
 	}
 
 	// ------------------------------------
-	IMPLEMENT_AGENT(GetContent, KPM_QUESTION_AGENT)
+	SC_AGENT_IMPLEMENTATION(AGetContentAgent)
 	{
 		assert(requestAddr.isValid());
 
@@ -127,18 +128,6 @@ namespace iot
 		}
 
 		return SC_RESULT_OK;
-	}
-
-
-	// --------- Handlers ---------
-	sc_result handler_add_content_command(sc_event const * event, sc_addr arg)
-	{
-        RUN_AGENT(AddContent, Keynodes::command_add_content, sc_access_lvl_make_min, ScAddr(arg));
-	}
-
-	sc_result handler_get_content_question(sc_event const * event, sc_addr arg)
-	{
-        RUN_AGENT(GetContent, Keynodes::question_get_content, sc_access_lvl_make_min, ScAddr(arg));
 	}
 
 }
