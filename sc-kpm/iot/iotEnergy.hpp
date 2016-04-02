@@ -6,3 +6,19 @@
 
 #pragma once
 
+#include "iotTypes.hpp"
+
+#include "wrap/kpm/sc_agent.hpp"
+
+#include "iotEnergy.generated.hpp"
+
+namespace iot
+{
+
+	class AUpdateUsedPowerSum : public ScAgent
+	{
+		SC_CLASS(Agent, CmdClass("command_update_power_usage"))
+		SC_GENERATED_BODY()
+	};
+
+}

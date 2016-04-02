@@ -87,6 +87,9 @@ namespace iot
 		SC_AGENT_REGISTER(AWhoAreYouAgent)
 		SC_AGENT_REGISTER(AGenerateTextByTemplate)
 
+		/// power
+		SC_AGENT_REGISTER(AUpdateUsedPowerSum)
+
 		return true;
 	}
 
@@ -104,6 +107,9 @@ namespace iot
 		SC_AGENT_UNREGISTER(ATVChangeProgram)
 		SC_AGENT_UNREGISTER(AWhoAreYouAgent)
 		SC_AGENT_UNREGISTER(AGenerateTextByTemplate)
+
+		/// Power
+		SC_AGENT_UNREGISTER(AUpdateUsedPowerSum)
 
 		if (memory_ctx)
 		{

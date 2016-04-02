@@ -175,6 +175,29 @@ struct MemoryBuffer
 		, mSize(size)
 	{
 	}
+
+protected:
+	MemoryBuffer()
+		: mData(0)
+		, mSize(0)
+	{
+	}
+
+};
+
+struct MemoryBufferSafe : public MemoryBuffer
+{
+	MemoryBufferSafe(char * buff, unsigned int size)
+		: MemoryBuffer(buff, size)
+	{
+		mData = new char[size];
+		mSize = size;
+	}
+
+	~MemoryBufferSafe()
+	{
+		delete mData;
+	}
 };
 
 SHARED_PTR_TYPE(MemoryBuffer)

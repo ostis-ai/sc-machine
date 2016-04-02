@@ -23,6 +23,7 @@ extern "C"
 class ScMemoryContext;
 class ScStream;
 
+/// TODO: replace with ScType
 #define SC_TYPE(__t__) ((sc_type)(__t__))
 
 class ScMemory

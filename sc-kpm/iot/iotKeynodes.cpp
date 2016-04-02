@@ -44,4 +44,6 @@ namespace iot
 	ScAddr Keynodes::rrel_2;
 	ScAddr Keynodes::rrel_3;
 	ScAddr Keynodes::rrel_gram;
+
+	ScAddr Keynodes::binary_float;
 }

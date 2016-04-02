@@ -192,7 +192,7 @@ bool ScStreamMemory::hasFlag(sc_uint8 flag)
 	return !(flag & SC_STREAM_FLAG_WRITE);
 }
 
-
+// --------------------------------
 bool StreamConverter::streamToString(ScStream const & stream, std::string & outString)
 {
 	sc_uint32 const bytesCount = stream.size();

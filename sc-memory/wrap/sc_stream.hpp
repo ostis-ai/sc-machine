@@ -37,6 +37,13 @@ public:
 
 	//! Check if stream has a specified flag
 	_SC_EXTERN virtual bool hasFlag(sc_uint8 flag) = 0;
+
+	template <typename Type>
+	_SC_EXTERN bool readType(Type & value)
+	{
+		sc_uint32 readBytes = 0;
+		return read((sc_char*)&value, sizeof(Type), readBytes) && (readBytes == sizeof(Type));
+	}
 };
 
 
@@ -109,6 +116,7 @@ SHARED_PTR_TYPE(IScStream)
 class StreamConverter
 {
 public:
+
     static _SC_EXTERN bool streamToString(ScStream const & stream, std::string & outString);
 };
 

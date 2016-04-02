@@ -107,6 +107,9 @@ namespace iot
 
         SC_PROPERTY(Keynode, SysIdtf("rrel_gram"), ForceCreation)
 		static ScAddr rrel_gram;
+
+		SC_PROPERTY(Keynode, SysIdtf("binary_float"), ForceCreation)
+		static ScAddr binary_float;
 	};
 
 }
