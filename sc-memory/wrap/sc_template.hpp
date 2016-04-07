@@ -262,6 +262,12 @@ public:
         return ScTemplateSearchResultItem(&(mResults[idx]), &mReplacements);
     }
 
+	inline void clear()
+	{
+		mResults.clear();
+		mReplacements.clear();
+	}
+
 protected:
     typedef std::vector<tAddrVector> tSearchResults;
     tSearchResults mResults;

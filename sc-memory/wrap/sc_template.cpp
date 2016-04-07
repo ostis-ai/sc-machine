@@ -223,6 +223,8 @@ public:
 
     bool operator () (ScTemplateSearchResult & result)
     {
+		result.clear();
+
         result.mReplacements = mReplacements;
         mResultAddrs.resize(calculateOneResultSize());
 
