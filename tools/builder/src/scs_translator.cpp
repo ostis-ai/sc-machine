@@ -960,6 +960,13 @@ bool SCsTranslator::parseContentBinaryData(String const & data, sBuffer & outBuf
 		return true;
 	}
 
+	if (StringUtil::startsWith(data, "double", true))
+	{
+		double value = (double)::atof(data.substr(6).c_str());
+		outBuffer.set((char*)&value, sizeof(value));
+		return true;
+	}
+
 	if (StringUtil::startsWith(data, "int32", true))
 	{
 		sc_int32 value = (sc_int32)::atoi(data.substr(6).c_str());
