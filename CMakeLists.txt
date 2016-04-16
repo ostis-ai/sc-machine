@@ -10,11 +10,10 @@ set(SC_MACHINE_ANTRL_DIR "${SC_MACHINE_THIRDPARTY_PATH}/antlr")
 set(SC_PARSE_TOOL "${SC_MACHINE_ROOT}/bin/sc-code-generator.exe")
 include("cmake/codegen.cmake")
 
-if (${WIN32})
-	set(JAVA_EXE "c:/Program Files/Java/jre7/bin/java.exe")
-elseif (${UNIX})
-	set (JAVA_EXE "java")
-endif (${WIN32})
+find_package(Java)
+
+set (JAVA_EXE ${Java_JAVA_EXECUTABLE})
+
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${SC_MACHINE_ROOT}/bin)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${SC_MACHINE_ROOT}/bin)
 
