@@ -4,20 +4,15 @@
 * (See accompanying file COPYING.MIT or copy at http://opensource.org/licenses/MIT)
 */
 
-#pragma once
+#include "iotKeynodes.hpp"
+#include "iotUtils.hpp"
 
-#include "iotTypes.hpp"
-#include "wrap/kpm/sc_agent.hpp"
-
-#include "iotTV.generated.hpp"
+#include "iotActions.hpp"
 
 namespace iot
 {
-
-	class ATVChangeProgram : public ScAgentAction
+	SC_AGENT_IMPLEMENTATION(ANewPeriodicalActionAgent)
 	{
-		SC_CLASS(Agent, CmdClass("command_change_tv_program"))
-		SC_GENERATED_BODY()
-	};
-
+		return SC_RESULT_ERROR;
+	}
 }

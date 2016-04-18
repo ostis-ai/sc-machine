@@ -15,7 +15,7 @@
 namespace iot
 {
 
-	class AUpdateUsedPowerSum : public ScAgent
+	class AUpdateUsedPowerSum : public ScAgentAction
 	{
 		SC_CLASS(Agent, CmdClass("command_update_power_usage"))
 		SC_GENERATED_BODY()

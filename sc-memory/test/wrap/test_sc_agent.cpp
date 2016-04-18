@@ -6,7 +6,7 @@
 
 #include "test_sc_agent.hpp"
 
-SC_AGENT_IMPLEMENTATION(TestAgent)
+SC_AGENT_ACTION_IMPLEMENTATION(TestAgent)
 {
 	return SC_RESULT_ERROR;
 }

@@ -14,7 +14,7 @@
 namespace iot
 {
 
-	class AGenerateTextByTemplate : public ScAgent
+	class AGenerateTextByTemplate : public ScAgentAction
 	{
 		SC_CLASS(Agent, CmdClass("command_generate_text_from_template"))
 		SC_GENERATED_BODY()

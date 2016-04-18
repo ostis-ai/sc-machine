@@ -46,6 +46,7 @@ protected:
 	void GenerateImpl(std::stringstream & outCode) const;
     
 	BaseClass const * GetBaseClass(std::string const & name) const;
+	BaseClass const * GetBaseAgentClass() const;
 
 private:
     std::string m_name;

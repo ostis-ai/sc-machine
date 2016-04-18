@@ -15,7 +15,7 @@
 namespace iot
 {
 
-	SC_AGENT_IMPLEMENTATION(AGenerateTextByTemplate)
+	SC_AGENT_ACTION_IMPLEMENTATION(AGenerateTextByTemplate)
 	{
         ScIterator5Ptr itCmd = mMemoryCtx.iterator5(
 			requestAddr,

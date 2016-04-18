@@ -2,6 +2,7 @@ set(SC_IOT_SRC "${SC_KPM_ROOT}/iot")
 
 set(SOURCES 
 	"iot.cpp"
+	"iotActions.cpp"
 	"iotEnergy.cpp"
 	"iotKeynodes.cpp"
 	"iotCommands.cpp"
@@ -14,6 +15,7 @@ set(SOURCES
 set(HEADERS 
 	"iotTypes.hpp"
 	"iot.hpp"
+	"iotActions.hpp"
 	"iotEnergy.hpp"
 	"iotKeynodes.hpp"
 	"iotCommands.hpp"

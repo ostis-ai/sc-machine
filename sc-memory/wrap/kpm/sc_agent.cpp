@@ -20,7 +20,7 @@ bool ScAgentInit()
 {
     if (!gIsInitialized)
     {
-		gInitializeResult = ScAgent::initGlobal();
+		gInitializeResult = ScAgentAction::initGlobal();
 		        
 		gIsInitialized = true;
     }
@@ -29,15 +29,8 @@ bool ScAgentInit()
 }
 
 
-ScAddr ScAgent::msCommandInitiatedAddr;
-ScAddr ScAgent::msCommandProgressdAddr;
-ScAddr ScAgent::msCommandFinishedAddr;
-ScAddr ScAgent::msNrelResult;
-
-
-ScAgent::ScAgent(ScAddr const & cmdClassAddr, char const * name, sc_uint8 accessLvl)
-	: mCmdClassAddr(cmdClassAddr)
-	, mMemoryCtx(accessLvl, name)
+ScAgent::ScAgent(char const * name, sc_uint8 accessLvl)
+	: mMemoryCtx(accessLvl, name)
 {
 }
 
@@ -45,7 +38,30 @@ ScAgent::~ScAgent()
 {
 }
 
-sc_result ScAgent::run(ScAddr const & startArcAddr)
+sc_result ScAgent::run(ScAddr const & listedAddr, ScAddr const & argAddr)
+{
+	return SC_RESULT_ERROR;
+}
+
+
+// ---------------------------
+ScAddr ScAgentAction::msCommandInitiatedAddr;
+ScAddr ScAgentAction::msCommandProgressdAddr;
+ScAddr ScAgentAction::msCommandFinishedAddr;
+ScAddr ScAgentAction::msNrelResult;
+
+ScAgentAction::ScAgentAction(ScAddr const & cmdClassAddr, char const * name, sc_uint8 accessLvl)
+	: ScAgent(name, accessLvl)
+	, mCmdClassAddr(cmdClassAddr)
+	
+{
+}
+
+ScAgentAction::~ScAgentAction()
+{
+}
+
+sc_result ScAgentAction::run(ScAddr const & listenAddr, ScAddr const & startArcAddr)
 {
     ScAddr cmdAddr = mMemoryCtx.getArcEnd(startArcAddr);
 	if (cmdAddr.isValid())
@@ -76,7 +92,7 @@ sc_result ScAgent::run(ScAddr const & startArcAddr)
 	return SC_RESULT_ERROR;
 }
 
-ScAddr ScAgent::getParam(ScAddr const & cmdAddr, ScAddr const & relationAddr, sc_type paramType)
+ScAddr ScAgentAction::getParam(ScAddr const & cmdAddr, ScAddr const & relationAddr, sc_type paramType)
 {
 	ScIterator5Ptr iter = mMemoryCtx.iterator5(cmdAddr,
 		SC_TYPE(sc_type_arc_pos_const_perm),
@@ -90,7 +106,7 @@ ScAddr ScAgent::getParam(ScAddr const & cmdAddr, ScAddr const & relationAddr, sc
 	return iter->value(2);
 }
 
-ScAddr const & ScAgent::GetCommandInitiatedAddr()
+ScAddr const & ScAgentAction::GetCommandInitiatedAddr()
 {
 	return msCommandInitiatedAddr;
 }

@@ -11,7 +11,7 @@
 
 namespace iot
 {
-	SC_AGENT_IMPLEMENTATION(AWhoAreYouAgent)
+	SC_AGENT_ACTION_IMPLEMENTATION(AWhoAreYouAgent)
 	{
 		return mMemoryCtx.createArc(SC_TYPE(sc_type_arc_pos_const_perm), resultAddr, Keynodes::self).isValid() ? SC_RESULT_OK : SC_RESULT_ERROR;
 	}

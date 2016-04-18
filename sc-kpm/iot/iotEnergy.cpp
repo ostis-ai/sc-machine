@@ -125,7 +125,7 @@ namespace iot
 	};
 
 
-	SC_AGENT_IMPLEMENTATION(AUpdateUsedPowerSum)
+	SC_AGENT_ACTION_IMPLEMENTATION(AUpdateUsedPowerSum)
 	{
 		// update all device groups, that in params
 		ScIterator3Ptr itGroups = mMemoryCtx.iterator3(requestAddr,

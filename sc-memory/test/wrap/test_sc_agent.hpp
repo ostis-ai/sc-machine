@@ -13,7 +13,7 @@
 #include "test_sc_agent.generated.hpp"
 
 
-class TestAgent : public ScAgent
+class TestAgent : public ScAgentAction
 {
 	SC_CLASS(Agent(Command), CmdClass("question"))
 	SC_GENERATED_BODY()

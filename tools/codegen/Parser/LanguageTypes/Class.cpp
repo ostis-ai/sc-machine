@@ -13,7 +13,8 @@ BaseClass::BaseClass(const Cursor &cursor)
 bool BaseClass::IsNative() const
 {
 	return (name == Classes::Object ||
-			name == Classes::Agent);
+			name == Classes::Agent ||
+			name == Classes::AgentAction);
 }
 
 Class::Class(const Cursor &cursor, const Namespace &currentNamespace)
@@ -49,6 +50,7 @@ Class::Class(const Cursor &cursor, const Namespace &currentNamespace)
 
 			/// TODO: Implement recursive base class parsing (disable check of filename, and parse whole hierarchy)
 			/// Possible best way to check if it has SC_CLASS field
+			/// One way to check i
 
             // automatically enable the type if not explicitly disabled
 			if (baseClass->IsNative())
@@ -208,21 +210,68 @@ void Class::GenerateDeclarations(std::stringstream & outCode) const
 	// overrides for agents
 	if (IsAgent())
 	{
-		BaseClass const * agentClass = GetBaseClass(Classes::Agent);
+		BaseClass const * agentClass = GetBaseAgentClass();
 		if (!agentClass)
 		{
 			EMIT_ERROR("Invalid base class for Agent " << m_displayName);
 		}
 
-		if (!m_metaData.HasProperty(Props::AgentCommandClass))
-		{
-			EMIT_ERROR(Props::AgentCommandClass << " not specified for " << m_displayName);
-		}
+		std::string listenAddr;
+		std::string eventType;
+		std::string instConstructParams;
+		std::string constrCode;
 
-		
 		outCode << "\\\nprivate:";
 		outCode << "\\\n\ttypedef " << agentClass->name << " Super;";
-		outCode << "\\\n\tvirtual sc_result runImpl(ScAddr const & requestAddr, ScAddr const & resultAddr); ";
+		if (agentClass->name == Classes::AgentAction)
+		{
+			if (!m_metaData.HasProperty(Props::AgentCommandClass))
+			{
+				EMIT_ERROR(Props::AgentCommandClass << " not specified for " << m_displayName);
+			}
+			outCode << "\\\n\tvirtual sc_result runImpl(ScAddr const & requestAddr, ScAddr const & resultAddr); ";
+			listenAddr = "GetCommandInitiatedAddr()";
+			eventType = "SC_EVENT_ADD_OUTPUT_ARC";
+			instConstructParams = "msCmdClass_" + m_displayName + ", ";
+
+			outCode << "\\\nprotected: ";
+			outCode << "\\\n\t" << constrCode;
+			outCode << m_displayName << "(ScAddr const & cmdClassAddr, char const * name, sc_uint8 accessLvl) : Super(cmdClassAddr, name, accessLvl) {}";
+		}
+		else
+		{
+			// determine listen addr and event type
+			std::string eventData;
+			if (m_metaData.GetPropertySafe(Props::Event, eventData))
+			{
+				size_t pos = eventData.find_first_of(",");
+				if ((pos != std::string::npos) && (pos < eventData.size()))
+				{
+					listenAddr = eventData.substr(0, pos);
+					eventType = eventData.substr(pos + 1);
+					
+					boost::trim(listenAddr);
+					boost::trim(eventType);
+				}
+				else
+				{
+					EMIT_ERROR("Invalid value of " << Props::Event << " in " << m_displayName);
+				}
+			}
+			else
+			{
+				EMIT_ERROR(Props::Event << " not specified for " << m_displayName);
+			}
+
+			// default constructor for a handler
+			outCode << "\\\nprotected: ";
+			outCode << "\\\n\t" << constrCode;
+			outCode << m_displayName << "(char const * name, sc_uint8 accessLvl) : Super(name, accessLvl) {}";
+			outCode << "\\\n\tvirtual sc_result run(ScAddr const & listedAddr, ScAddr const & argAddr) override; ";
+
+		}
+		
+		outCode << "\\\nprivate:";
 		outCode << "\\\n\tstatic sc_event * msEventPtr; ";
 		outCode << "\\\n\tstatic ScAddr msCmdClass_" << m_displayName << ";";
 
@@ -230,8 +279,8 @@ void Class::GenerateDeclarations(std::stringstream & outCode) const
 		outCode << "\\\npublic: ";
 		outCode << "\\\n \tstatic sc_result handler_" << m_displayName << "(sc_event const * event, sc_addr arg) ";
 		outCode << "\\\n\t{";
-		outCode << "\\\n\t\t" << m_displayName << " Instance(msCmdClass_" << m_displayName <<", \"" << m_displayName << "\", sc_access_lvl_make_min);";
-		outCode << "\\\n\t\t" << "return Instance.run(ScAddr(arg));";
+		outCode << "\\\n\t\t" << m_displayName << " Instance(" << instConstructParams << "\"" << m_displayName << "\", sc_access_lvl_make_min);";
+		outCode << "\\\n\t\t" << "return Instance.run(ScAddr(sc_event_get_element(event)), ScAddr(arg));";
 		outCode << "\\\n\t}";
 
 		// register/unregister
@@ -239,7 +288,7 @@ void Class::GenerateDeclarations(std::stringstream & outCode) const
 		outCode << "\\\n\t{";
 		outCode << "\\\n\t\tcheck_expr(!msEventPtr); ";
 		outCode << "\\\n\t\tScMemoryContext ctx(sc_access_lvl_make_min, \"handler_" << m_displayName << "\"); ";
-		outCode << "\\\n\t\tmsEventPtr = sc_event_new(ctx.getRealContext(), GetCommandInitiatedAddr().getRealAddr(), SC_EVENT_ADD_OUTPUT_ARC, 0, &" << m_displayName << "::handler_" << m_displayName << ", 0);";
+		outCode << "\\\n\t\tmsEventPtr = sc_event_new(ctx.getRealContext(), " << listenAddr << ".getRealAddr(), " << eventType << ", 0, &" << m_displayName << "::handler_" << m_displayName << ", 0);";
 		outCode << "\\\n\t}";
 
 		outCode << "\\\n\tstatic void unregisterHandler()";
@@ -250,10 +299,6 @@ void Class::GenerateDeclarations(std::stringstream & outCode) const
 		outCode << "\\\n\t\t\tmsEventPtr = 0;";
 		outCode << "\\\n\t\t}";
 		outCode << "\\\n\t}";
-
-		// default constructor for a handler
-		outCode << "\\\nprotected: ";
-		outCode << "\\\n\t" << m_displayName << "(ScAddr const & cmdClassAddr, char const * name, sc_uint8 accessLvl) : Super(cmdClassAddr, name, accessLvl) {}";
 	}
 }
 
@@ -290,6 +335,17 @@ BaseClass const * Class::GetBaseClass(std::string const & name) const
 	for (tBaseClassVector::const_iterator it = m_baseClasses.begin(); it != m_baseClasses.end(); ++it)
 	{
 		if ((*it)->name == name)
+			return *it;
+	}
+
+	return 0;
+}
+
+BaseClass const * Class::GetBaseAgentClass() const
+{
+	for (tBaseClassVector::const_iterator it = m_baseClasses.begin(); it != m_baseClasses.end(); ++it)
+	{
+		if ((*it)->name.find("ScAgent") != std::string::npos)
 			return *it;
 	}
 

@@ -14,7 +14,7 @@
 namespace iot
 {
 
-	SC_AGENT_IMPLEMENTATION(AAddContentAgent)
+	SC_AGENT_ACTION_IMPLEMENTATION(AAddContentAgent)
 	{
 		assert(requestAddr.isValid());
 
@@ -92,7 +92,7 @@ namespace iot
 	}
 
 	// ------------------------------------
-	SC_AGENT_IMPLEMENTATION(AGetContentAgent)
+	SC_AGENT_ACTION_IMPLEMENTATION(AGetContentAgent)
 	{
 		assert(requestAddr.isValid());
 
