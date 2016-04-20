@@ -7,7 +7,6 @@
 #include "sc_template.hpp"
 #include "sc_memory.hpp"
 
-
 class ScTemplateGenerator
 {
 public:
@@ -258,4 +257,43 @@ bool ScTemplate::search(ScMemoryContext & ctx, ScTemplateSearchResult & result) 
 {
     ScTemplateSearch search(mReplacements, mConstructions, ctx);
     return search(result);
+}
+
+ScTemplate & ScTemplate::triple(ScTemplateItemValue const & param1, ScTemplateItemValue const & param2, ScTemplateItemValue const & param3)
+{
+	size_t const replPos = mConstructions.size() * 3;
+	mConstructions.push_back(ScTemplateConstr3(param1, param2, param3)); // TODO: replace with emplace_back in c++11
+
+	ScTemplateConstr3 const & constr3 = mConstructions.back();
+	for (size_t i = 0; i < 3; ++i)
+	{
+		ScTemplateItemValue const & value = constr3.mValues[i];
+		if (value.mItemType != ScTemplateItemValue::VT_Replace && !value.mReplacementName.empty())
+		{
+			mReplacements[value.mReplacementName] = replPos + i;
+		}
+	}
+
+	return *this;
+}
+
+ScTemplate & ScTemplate::tripleWithRelation(ScTemplateItemValue const & param1, ScTemplateItemValue const & param2, ScTemplateItemValue const & param3,
+	ScTemplateItemValue const & param4, ScTemplateItemValue const & param5)
+{
+	size_t const replPos = mConstructions.size() * 3;
+	
+	ScTemplateItemValue edgeCommonItem = param2;
+
+	// check if relation edge has replacement
+	if (edgeCommonItem.mReplacementName.empty())
+	{
+		std::stringstream ss;
+		ss << "_repl_" << replPos + 1;
+		edgeCommonItem.mReplacementName = ss.str();
+	}
+
+	triple(param1, edgeCommonItem, param3);
+	triple(param5, param4, edgeCommonItem.mReplacementName.c_str());
+
+	return *this;
 }

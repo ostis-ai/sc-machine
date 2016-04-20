@@ -96,6 +96,9 @@ namespace iot
         SC_PROPERTY(Keynode, SysIdtf("nrel_tv_program"), ForceCreation)
 		static ScAddr nrel_tv_program;
 
+		SC_PROPERTY(Keynode, SysIdtf("nrel_period"), ForceCreation)
+		static ScAddr nrel_period;
+
         SC_PROPERTY(Keynode, SysIdtf("rrel_1"), ForceCreation)
 		static ScAddr rrel_1;
 
@@ -108,8 +111,23 @@ namespace iot
         SC_PROPERTY(Keynode, SysIdtf("rrel_gram"), ForceCreation)
 		static ScAddr rrel_gram;
 
+		SC_PROPERTY(Keynode, SysIdtf("rrel_seconds"), ForceCreation)
+		static ScAddr rrel_seconds;
+
 		SC_PROPERTY(Keynode, SysIdtf("binary_float"), ForceCreation)
 		static ScAddr binary_float;
+
+		SC_PROPERTY(Keynode, SysIdtf("binary_int8"), ForceCreation)
+		static ScAddr binary_int8;
+		
+		SC_PROPERTY(Keynode, SysIdtf("binary_int16"), ForceCreation)
+		static ScAddr binary_int16;
+
+		SC_PROPERTY(Keynode, SysIdtf("binary_int32"), ForceCreation)
+		static ScAddr binary_int32;
+
+		SC_PROPERTY(Keynode, SysIdtf("binary_int64"), ForceCreation)
+		static ScAddr binary_int64;
 	};
 
 }

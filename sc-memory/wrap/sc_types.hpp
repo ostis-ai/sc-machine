@@ -9,8 +9,10 @@
 #include "sc_memory.h"
 
 #include <string>
+#include <sstream>
 #include <map>
 #include <assert.h>
+#include <stdint.h>
 
 #include "sc_defines.hpp"
 

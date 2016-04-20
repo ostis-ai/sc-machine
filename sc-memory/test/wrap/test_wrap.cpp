@@ -302,6 +302,7 @@ void test_common_templates()
 		ScAddr const edge1 = ctx.createArc(sc_type_arc_pos_const_perm, addr1, addr2);
 		ScAddr const edge2 = ctx.createArc(sc_type_arc_pos_const_perm, addr3, edge1);
 
+		
 		{
 			ScTemplate templ;
 
@@ -408,6 +409,57 @@ void test_common_templates()
                 }
             }
 		}
+
+		{
+			ScTemplate templ;
+
+			templ
+				.tripleWithRelation(
+					addr1,
+					ScType(sc_type_arc_pos_const_perm),
+					ScType(sc_type_node),
+					ScType(sc_type_arc_pos_const_perm),
+					addr3
+				);
+
+			ScTemplateSearchResult result;
+			g_assert(ctx.helperSearchTemplate(templ, result));
+			g_assert(result.getSize() > 0);
+
+			ScTemplateSearchResultItem item = result.getResult(0);
+
+			g_assert(addr1 == item[0]);
+			g_assert(addr2 == item[2]);
+			g_assert(addr3 == item[3]);
+			g_assert(edge1 == item[1]);
+			g_assert(edge2 == item[4]);
+		}
+
+		{
+			ScTemplate templ;
+
+			templ
+				.tripleWithRelation(
+					addr1 >> "1",
+					ScType(sc_type_arc_pos_const_perm) >> "2",
+					ScType(sc_type_node) >> "3",
+					ScType(sc_type_arc_pos_const_perm) >> "4",
+					addr3 >> "5"
+				);
+
+			ScTemplateSearchResult result;
+			g_assert(ctx.helperSearchTemplate(templ, result));
+			g_assert(result.getSize() > 0);
+
+			ScTemplateSearchResultItem item = result.getResult(0);
+
+			g_assert(addr1 == item["1"]);
+			g_assert(addr2 == item["3"]);
+			g_assert(addr3 == item["5"]);
+			g_assert(edge1 == item["2"]);
+			g_assert(edge2 == item["4"]);
+		}
+
 	}
 
 	shutdown_memory(false);
@@ -465,66 +517,66 @@ void test_codegen_agent()
 void test_perfomance_templ()
 {
 	init_memory();
-
-	ScAddr node1, node2, node3, node4, edge1, edge2, edge3;
-	ScMemoryContext ctx(sc_access_lvl_make_min);
-
 	{
-		// preapre test
-		ScTemplate templ;
-		templ
-			.triple(ScType(sc_type_node) >> "Node1",
-					ScType(sc_type_arc_pos_const_perm) >> "Edge1",
-					ScType(sc_type_node) >> "Node2")
-			.triple(ScType(sc_type_node) >> "Node3",
-					ScType(sc_type_arc_pos_const_perm) >> "Edge2",
-					"Edge1")
-			.triple(ScType(sc_type_node) >> "Node4",
-					ScType(sc_type_arc_pos_const_perm) >> "Edge3",
-					"Node1");
+		ScAddr node1, node2, node3, node4, edge1, edge2, edge3;
+		ScMemoryContext ctx(sc_access_lvl_make_min);
 
-		ScTemplateGenResult result;
-		if (ctx.helperGenTemplate(templ, result))
 		{
-			node1 = result["Node1"];
-			node2 = result["Node2"];
-			node3 = result["Node3"];
-			node4 = result["Node4"];
-			edge1 = result["Edge1"];
-			edge2 = result["Edge2"];
-			edge3 = result["Edge3"];
+			// preapre test
+			ScTemplate templ;
+			templ
+				.triple(ScType(sc_type_node) >> "Node1",
+				ScType(sc_type_arc_pos_const_perm) >> "Edge1",
+				ScType(sc_type_node) >> "Node2")
+				.triple(ScType(sc_type_node) >> "Node3",
+				ScType(sc_type_arc_pos_const_perm) >> "Edge2",
+				"Edge1")
+				.triple(ScType(sc_type_node) >> "Node4",
+				ScType(sc_type_arc_pos_const_perm) >> "Edge3",
+				"Node1");
+
+			ScTemplateGenResult result;
+			if (ctx.helperGenTemplate(templ, result))
+			{
+				node1 = result["Node1"];
+				node2 = result["Node2"];
+				node3 = result["Node3"];
+				node4 = result["Node4"];
+				edge1 = result["Edge1"];
+				edge2 = result["Edge2"];
+				edge3 = result["Edge3"];
+			}
+			else
+				g_assert(false);
 		}
-		else
-			g_assert(false);
+
+
+		static size_t const iterCount = 10000;
+		printf("Search (template)\n");
+		g_test_timer_start();
+
+		for (size_t i = 0; i < iterCount; ++i)
+		{
+			ScTemplate templ;
+			templ
+				.triple(node1,
+						ScType(sc_type_arc_pos_const_perm) >> "Edge1",
+						ScType(sc_type_node))
+				.triple(node3,
+						ScType(sc_type_arc_pos_const_perm),
+						"Edge1")
+				.triple(node4,
+						ScType(sc_type_arc_pos_const_perm),
+						node1);
+
+			ScTemplateSearchResult result;
+			g_assert(ctx.helperSearchTemplate(templ, result));
+		}
+
+		double const time = g_test_timer_elapsed();
+		printf("Time: %.3f\n s", time);
+		printf("Time per search: %.8f s", time / iterCount);
 	}
-
-
-	static size_t const iterCount = 10000;
-	printf("Search (template)\n");
-	g_test_timer_start();
-
-	for (size_t i = 0; i < iterCount; ++i)
-	{
-		ScTemplate templ;
-		templ
-			.triple(node1,
-					ScType(sc_type_arc_pos_const_perm) >> "Edge1",
-					ScType(sc_type_node))
-			.triple(node3,
-					ScType(sc_type_arc_pos_const_perm),
-					"Edge1")
-			.triple(node4,
-					ScType(sc_type_arc_pos_const_perm),
-					node1);
-		
-		ScTemplateSearchResult result;
-		g_assert(ctx.helperSearchTemplate(templ, result));
-	}
-
-	double const time = g_test_timer_elapsed();
-	printf("Time: %.3f\n s", time);
-	printf("Time per search: %.8f s", time / iterCount);
-
 	shutdown_memory(false);
 }
 

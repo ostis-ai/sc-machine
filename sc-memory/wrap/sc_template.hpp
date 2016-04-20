@@ -43,6 +43,11 @@ struct ScTemplateItemValue
 		setReplacement(name);
 	}
 
+	ScTemplateItemValue(std::string const & name)
+	{
+		setReplacement(name.c_str());
+	}
+
 	void setAddr(ScAddr const & addr, char const * replName = 0)
 	{
 		mItemType = VT_Addr;
@@ -126,24 +131,25 @@ public:
 		mCurrentReplPos = 0;
 	}
 
-	template <typename ParamType1, typename ParamType2, typename ParamType3>
-    ScTemplate & triple(ParamType1 const & param1, ParamType2 const & param2, ParamType3 const & param3)
-	{
-		size_t const replPos = mConstructions.size() * 3;
-		mConstructions.push_back(ScTemplateConstr3(param1, param2, param3)); // TODO: replace with emplace_back in c++11
-				
-		ScTemplateConstr3 const & constr3 = mConstructions.back();
-		for (size_t i = 0; i < 3; ++i)
-		{
-			ScTemplateItemValue const & value = constr3.mValues[i];
-			if (value.mItemType != ScTemplateItemValue::VT_Replace && !value.mReplacementName.empty())
-			{
-				mReplacements[value.mReplacementName] = replPos + i;
-			}
-		}
+	/** Add construction:
+	 *          param2
+	 * param1 ----------> param3
+	 */
+	_SC_EXTERN ScTemplate & triple(ScTemplateItemValue const & param1, ScTemplateItemValue const & param2, ScTemplateItemValue const & param3);
 
-		return *this;
-	}
+	/** Adds template:
+	 *           param2
+	 *	param1 ---------> param3
+	 *             ^
+	 *             |
+	 *             | param4
+	 *             |
+	 *           param5
+	 * Equal to two calls of triple, so this template add 6 items to result (NOT 5), to minimize
+	 * possible abuse, use result name mapping, and get result by names
+	 */
+	_SC_EXTERN ScTemplate & tripleWithRelation(ScTemplateItemValue const & param1, ScTemplateItemValue const & param2, ScTemplateItemValue const & param3,
+		ScTemplateItemValue const & param4, ScTemplateItemValue const & param5);
 
 protected:
 	// Calls by memory context

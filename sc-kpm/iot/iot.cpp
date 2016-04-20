@@ -7,8 +7,13 @@
 #include "iot.hpp"
 #include "iotKeynodes.hpp"
 #include "iotCommands.hpp"
+#include "iotActions.hpp"
 
 #include "wrap/kpm/sc_agent.hpp"
+
+using namespace iot;
+
+PeriodicalTaskManager PeriodTaskManager;
 
 _SC_EXT_EXTERN sc_result initialize()
 {
@@ -17,6 +22,9 @@ _SC_EXT_EXTERN sc_result initialize()
 
     if (!iot::Keynodes::initGlobal())
 		return SC_RESULT_ERROR;
+
+	PeriodicalTaskManager::initGlobal();
+	PeriodTaskManager.initialize();
 
 	if (!iot::Commands::initialize())
 		return SC_RESULT_ERROR;
@@ -29,7 +37,9 @@ _SC_EXT_EXTERN sc_result shutdown()
 	sc_result result = SC_RESULT_OK;
 
 	if (!iot::Commands::shutdown())
-		result = SC_RESULT_ERROR;	
+		result = SC_RESULT_ERROR;
+
+	PeriodTaskManager.shutdown();
 
 	/// TODO: shutdown other subsytems
 
