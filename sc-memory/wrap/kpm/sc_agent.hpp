@@ -64,16 +64,16 @@ protected:
     ScAddr mCmdClassAddr;
 
 private:
-	SC_PROPERTY(Keynode, SysIdtf("command_initiated"))
+	SC_PROPERTY(Keynode, SysIdtf("command_initiated"), ForceCreate)
 	static ScAddr msCommandInitiatedAddr;
 
-	SC_PROPERTY(Keynode, SysIdtf("command_in_progress"))
+	SC_PROPERTY(Keynode, SysIdtf("command_in_progress"), ForceCreate)
 	static ScAddr msCommandProgressdAddr;
 
-	SC_PROPERTY(Keynode, SysIdtf("command_finished"))
+	SC_PROPERTY(Keynode, SysIdtf("command_finished"), ForceCreate)
 	static ScAddr msCommandFinishedAddr;
 
-	SC_PROPERTY(Keynode, SysIdtf("nrel_result"))
+	SC_PROPERTY(Keynode, SysIdtf("nrel_result"), ForceCreate)
 	static ScAddr msNrelResult;
 
 private:

@@ -48,11 +48,15 @@ namespace iot
 		void shutdown();
 
 		void appendAction(ScAddr const & action, uint32_t period);
+		void tick();
+
+		bool isRunning() const;
 
 		static PeriodicalTaskManager * getInstance();
 		
 	private:
 		bool mIsInitialized;
+		bool mIsRunning;
 
 		ScMemoryContext * mMemoryCtx;
 
@@ -60,7 +64,7 @@ namespace iot
 		tTaskSet mTaskSet;
 
 	public:
-		SC_PROPERTY(Keynode, SysIdtf("action_periodical"))
+		SC_PROPERTY(Keynode, SysIdtf("action_periodical"), ForceCreate)
 		static ScAddr msActionPeriodical;
 
 	private:
