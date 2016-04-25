@@ -953,37 +953,46 @@ bool SCsTranslator::_isIdentifierVar(const String &idtf) const
 
 bool SCsTranslator::parseContentBinaryData(String const & data, sBuffer & outBuffer)
 {
+	std::string const valueStr = data.substr(6);
+
 	if (StringUtil::startsWith(data, "float", true))
 	{
-		float value = (float)::atof(data.substr(6).c_str());
+		float value = (float)::atof(valueStr.c_str());
 		outBuffer.set((char*)&value, sizeof(value));
 		return true;
 	}
 
 	if (StringUtil::startsWith(data, "double", true))
 	{
-		double value = (double)::atof(data.substr(6).c_str());
+		double value = (double)::atof(valueStr.c_str());
+		outBuffer.set((char*)&value, sizeof(value));
+		return true;
+	}
+
+	if (StringUtil::startsWith(data, "int64", true))
+	{
+		sc_int64 value = (sc_int64)::atoll(valueStr.c_str());
 		outBuffer.set((char*)&value, sizeof(value));
 		return true;
 	}
 
 	if (StringUtil::startsWith(data, "int32", true))
 	{
-		sc_int32 value = (sc_int32)::atoi(data.substr(6).c_str());
+		sc_int32 value = (sc_int32)::atoi(valueStr.c_str());
 		outBuffer.set((char*)&value, sizeof(value));
 		return true;
 	}
 
 	if (StringUtil::startsWith(data, "int16", true))
 	{
-		sc_int16 value = (sc_int16)::atoi(data.substr(6).c_str());
+		sc_int16 value = (sc_int16)::atoi(valueStr.c_str());
 		outBuffer.set((char*)&value, sizeof(value));
 		return true;
 	}
 
 	if (StringUtil::startsWith(data, "int8", true))
 	{
-		sc_int8 value = (sc_int8)::atoi(data.substr(6).c_str());
+		sc_int8 value = (sc_int8)::atoi(valueStr.c_str());
 		outBuffer.set((char*)&value, sizeof(value));
 		return true;
 	}
