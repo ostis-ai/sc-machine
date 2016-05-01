@@ -106,7 +106,7 @@ public:
 		clear();
         mObject = object;
         initRef();
-        return *this;
+        return *mObject;
     }
 
     ObjectType & operator * () const
