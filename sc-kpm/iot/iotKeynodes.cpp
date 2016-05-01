@@ -40,12 +40,14 @@ namespace iot
 	ScAddr Keynodes::nrel_main_idtf;
 	ScAddr Keynodes::nrel_tv_program;
 	ScAddr Keynodes::nrel_period;
+	ScAddr Keynodes::nrel_time;
 
 	ScAddr Keynodes::rrel_1;
 	ScAddr Keynodes::rrel_2;
 	ScAddr Keynodes::rrel_3;
 	ScAddr Keynodes::rrel_gram;
 	ScAddr Keynodes::rrel_seconds;
+	ScAddr Keynodes::rrel_epoch;
 
 	ScAddr Keynodes::binary_float;
 	ScAddr Keynodes::binary_int8;

@@ -13,7 +13,7 @@
 
 using namespace iot;
 
-PeriodicalTaskManager PeriodTaskManager;
+ActionManager ActionMngr;
 
 _SC_EXT_EXTERN sc_result initialize()
 {
@@ -23,8 +23,8 @@ _SC_EXT_EXTERN sc_result initialize()
     if (!iot::Keynodes::initGlobal())
 		return SC_RESULT_ERROR;
 
-	PeriodicalTaskManager::initGlobal();
-	PeriodTaskManager.initialize();
+	ActionManager::initGlobal();
+	ActionMngr.initialize();
 
 	if (!iot::Commands::initialize())
 		return SC_RESULT_ERROR;
@@ -39,7 +39,7 @@ _SC_EXT_EXTERN sc_result shutdown()
 	if (!iot::Commands::shutdown())
 		result = SC_RESULT_ERROR;
 
-	PeriodTaskManager.shutdown();
+	ActionMngr.shutdown();
 
 	/// TODO: shutdown other subsytems
 

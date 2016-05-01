@@ -15,7 +15,7 @@
 
 namespace iot
 {
-	class PeriodicalTaskManager : public ScObject
+	class ActionManager : public ScObject
 	{
 		SC_CLASS()
 		SC_GENERATED_BODY()
@@ -41,39 +41,47 @@ namespace iot
 		};
 
 	public:
-		explicit PeriodicalTaskManager();
-		~PeriodicalTaskManager();
+		explicit ActionManager();
+		~ActionManager();
 
 		void initialize();
 		void shutdown();
 
-		void appendAction(ScAddr const & action, uint32_t period);
+		void appendActionPeriodical(ScAddr const & action, uint32_t period);
+		void appendAction(ScAddr const & action, uint64_t runTime);
 		void tick();
 
 		bool isRunning() const;
 
-		static PeriodicalTaskManager * getInstance();
+		static ActionManager * getInstance();
 		
+	protected:
+		void addPeriodicalAction(ScAddr const & actionAddr);
+		void addTimeSpecifiedAction(ScAddr const & actionAddr);
+
 	private:
 		bool mIsInitialized;
 		bool mIsRunning;
 
 		ScMemoryContext * mMemoryCtx;
 
-		typedef std::set<PeriodicalTaskManager::Task> tTaskSet;
+		typedef std::set<ActionManager::Task> tTaskSet;
 		tTaskSet mTaskSet;
 
 	public:
 		SC_PROPERTY(Keynode, SysIdtf("action_periodical"), ForceCreate)
 		static ScAddr msActionPeriodical;
 
+		SC_PROPERTY(Keynode, SysIdtf("action_time_specified"), ForceCreate)
+		static ScAddr msActionTimeSpecified;
+
 	private:
-		static PeriodicalTaskManager * msInstance;
+		static ActionManager * msInstance;
 	};
 
 	class ANewPeriodicalActionAgent : public ScAgent
 	{
-		SC_CLASS(Agent, Event(PeriodicalTaskManager::msActionPeriodical, SC_EVENT_ADD_OUTPUT_ARC))
+		SC_CLASS(Agent, Event(ActionManager::msActionPeriodical, SC_EVENT_ADD_OUTPUT_ARC))
 		SC_GENERATED_BODY()
 
 	};

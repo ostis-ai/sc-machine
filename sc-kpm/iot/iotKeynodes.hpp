@@ -99,6 +99,9 @@ namespace iot
 		SC_PROPERTY(Keynode, SysIdtf("nrel_period"), ForceCreate)
 		static ScAddr nrel_period;
 
+		SC_PROPERTY(Keynode, SysIdtf("nrel_time"), ForceCreate)
+		static ScAddr nrel_time;
+
         SC_PROPERTY(Keynode, SysIdtf("rrel_1"), ForceCreate)
 		static ScAddr rrel_1;
 
@@ -113,6 +116,9 @@ namespace iot
 
 		SC_PROPERTY(Keynode, SysIdtf("rrel_seconds"), ForceCreate)
 		static ScAddr rrel_seconds;
+
+		SC_PROPERTY(Keynode, SysIdtf("rrel_epoch"), ForceCreate)
+		static ScAddr rrel_epoch;
 
 		SC_PROPERTY(Keynode, SysIdtf("binary_float"), ForceCreate)
 		static ScAddr binary_float;
