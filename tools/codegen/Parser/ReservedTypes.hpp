@@ -15,6 +15,7 @@ namespace Props
 	const std::string Agent = "Agent";
 	const std::string AgentCommandClass = "CmdClass";
 	const std::string Event = "Event";
+	const std::string LoadPriority = "LoadPriority";
 }
 
 namespace Classes
@@ -22,4 +23,5 @@ namespace Classes
 	const std::string Object = "ScObject";
 	const std::string Agent = "ScAgent";
 	const std::string AgentAction = "ScAgentAction";
+	const std::string Module = "ScModule";
 }

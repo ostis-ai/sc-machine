@@ -9,18 +9,15 @@
 #include "iotCommands.hpp"
 #include "iotActions.hpp"
 
-#include "wrap/kpm/sc_agent.hpp"
-
 using namespace iot;
 
 ActionManager ActionMngr;
 
-_SC_EXT_EXTERN sc_result initialize()
-{
-    if (!ScAgentInit())
-        return SC_RESULT_ERROR;
+SC_IMPLEMENT_MODULE(iotModule)
 
-    if (!iot::Keynodes::initGlobal())
+sc_result iotModule::initializeImpl()
+{
+	if (!iot::Keynodes::initGlobal())
 		return SC_RESULT_ERROR;
 
 	ActionManager::initGlobal();
@@ -32,7 +29,7 @@ _SC_EXT_EXTERN sc_result initialize()
 	return SC_RESULT_OK;
 }
 
-_SC_EXT_EXTERN sc_result shutdown()
+sc_result iotModule::shutdownImpl()
 {
 	sc_result result = SC_RESULT_OK;
 

@@ -32,6 +32,7 @@ public:
 
     bool ShouldGenerate(void) const;
 	bool IsAgent() const;
+	bool IsModule() const;
 
 	void GenerateCode(std::string const & fileId, std::stringstream & outCode) const;
     void GenerateCodeInit(std::stringstream & outCode) const;

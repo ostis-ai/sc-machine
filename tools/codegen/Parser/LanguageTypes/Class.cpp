@@ -14,7 +14,8 @@ bool BaseClass::IsNative() const
 {
 	return (name == Classes::Object ||
 			name == Classes::Agent ||
-			name == Classes::AgentAction);
+			name == Classes::AgentAction ||
+			name == Classes::Module);
 }
 
 Class::Class(const Cursor &cursor, const Namespace &currentNamespace)
@@ -135,6 +136,18 @@ bool Class::ShouldGenerate(void) const
 bool Class::IsAgent() const
 {
 	return m_metaData.HasProperty(Props::Agent);
+}
+
+bool Class::IsModule() const
+{
+	for (tBaseClassVector::const_iterator it = m_baseClasses.begin(); it != m_baseClasses.end(); ++it)
+	{
+		BaseClass * const baseClass = *it;
+		if (baseClass->name == Classes::Module)
+			return true;
+	}
+
+	return false;
 }
 
 void Class::GenerateCode(std::string const & fileId, std::stringstream & outCode) const
@@ -265,40 +278,64 @@ void Class::GenerateDeclarations(std::stringstream & outCode) const
 
 			// default constructor for a handler
 			outCode << "\\\nprotected: ";
-			outCode << "\\\n\t" << constrCode;
+			outCode << "\\\n	" << constrCode;
 			outCode << m_displayName << "(char const * name, sc_uint8 accessLvl) : Super(name, accessLvl) {}";
-			outCode << "\\\n\tvirtual sc_result run(ScAddr const & listedAddr, ScAddr const & argAddr) override; ";
+			outCode << "\\\n	virtual sc_result run(ScAddr const & listedAddr, ScAddr const & argAddr) override; ";
 
 		}
 		
 		outCode << "\\\nprivate:";
-		outCode << "\\\n\tstatic sc_event * msEventPtr; ";
-		outCode << "\\\n\tstatic ScAddr msCmdClass_" << m_displayName << ";";
+		outCode << "\\\n	static sc_event * msEventPtr; ";
+		outCode << "\\\n	static ScAddr msCmdClass_" << m_displayName << ";";
 
 		// static function for handler
 		outCode << "\\\npublic: ";
-		outCode << "\\\n \tstatic sc_result handler_" << m_displayName << "(sc_event const * event, sc_addr arg) ";
-		outCode << "\\\n\t{";
-		outCode << "\\\n\t\t" << m_displayName << " Instance(" << instConstructParams << "\"" << m_displayName << "\", sc_access_lvl_make_min);";
-		outCode << "\\\n\t\t" << "return Instance.run(ScAddr(sc_event_get_element(event)), ScAddr(arg));";
-		outCode << "\\\n\t}";
+		outCode << "\\\n	static sc_result handler_" << m_displayName << "(sc_event const * event, sc_addr arg) ";
+		outCode << "\\\n	{";
+		outCode << "\\\n		" << m_displayName << " Instance(" << instConstructParams << "\"" << m_displayName << "\", sc_access_lvl_make_min);";
+		outCode << "\\\n		" << "return Instance.run(ScAddr(sc_event_get_element(event)), ScAddr(arg));";
+		outCode << "\\\n	}";
 
 		// register/unregister
-		outCode << "\\\n\tstatic void registerHandler()";
-		outCode << "\\\n\t{";
-		outCode << "\\\n\t\tcheck_expr(!msEventPtr); ";
-		outCode << "\\\n\t\tScMemoryContext ctx(sc_access_lvl_make_min, \"handler_" << m_displayName << "\"); ";
-		outCode << "\\\n\t\tmsEventPtr = sc_event_new(ctx.getRealContext(), " << listenAddr << ".getRealAddr(), " << eventType << ", 0, &" << m_displayName << "::handler_" << m_displayName << ", 0);";
-		outCode << "\\\n\t}";
+		outCode << "\\\n	static void registerHandler()";
+		outCode << "\\\n	{";
+		outCode << "\\\n		check_expr(!msEventPtr); ";
+		outCode << "\\\n		ScMemoryContext ctx(sc_access_lvl_make_min, \"handler_" << m_displayName << "\"); ";
+		outCode << "\\\n		msEventPtr = sc_event_new(ctx.getRealContext(), " << listenAddr << ".getRealAddr(), " << eventType << ", 0, &" << m_displayName << "::handler_" << m_displayName << ", 0);";
+		outCode << "\\\n	}";
 
-		outCode << "\\\n\tstatic void unregisterHandler()";
-		outCode << "\\\n\t{";
-		outCode << "\\\n\t\tif (msEventPtr) ";
-		outCode << "\\\n\t\t{";
-		outCode << "\\\n\t\t\tsc_event_destroy(msEventPtr);";
-		outCode << "\\\n\t\t\tmsEventPtr = 0;";
-		outCode << "\\\n\t\t}";
-		outCode << "\\\n\t}";
+		outCode << "\\\n	static void unregisterHandler()";
+		outCode << "\\\n	{";
+		outCode << "\\\n		if (msEventPtr) ";
+		outCode << "\\\n		{";
+		outCode << "\\\n			sc_event_destroy(msEventPtr);";
+		outCode << "\\\n			msEventPtr = 0;";
+		outCode << "\\\n		}";
+		outCode << "\\\n	}";
+	}
+	else if (IsModule())	// overrides for modules
+	{
+		outCode << "\\\npublic:";
+		outCode << "\\\n	sc_result _initialize()";
+		outCode << "\\\n	{";
+		outCode << "\\\n		if (!ScAgentInit())";
+		outCode << "\\\n			return SC_RESULT_ERROR;";
+		outCode << "\\\n		return initializeImpl();";
+		outCode << "\\\n	}";
+
+		outCode << "\\\n	sc_result _shutdown()";
+		outCode << "\\\n	{";
+		outCode << "\\\n		return shutdownImpl();";
+		outCode << "\\\n	}";
+
+		std::string loadPriority;
+		if (!m_metaData.GetPropertySafe(Props::LoadPriority, loadPriority))
+			loadPriority = "1000";
+
+		outCode << "\\\n	sc_uint32 _getLoadPriority()";
+		outCode << "\\\n	{";
+		outCode << "\\\n		return " << loadPriority << ";";
+		outCode << "\\\n	}";
 	}
 }
 

@@ -7,10 +7,15 @@
 #pragma once
 
 #include "sc_memory.h"
+#include "wrap/sc_module.hpp"
 
-extern "C"
+#include "iot.generated.hpp"
+
+class iotModule : public ScModule
 {
-	_SC_EXT_EXTERN sc_result initialize();
-	//_SC_EXT_EXTERN sc_uint32 load_priority();
-	_SC_EXT_EXTERN sc_result shutdown();
-}
+	SC_CLASS(LoadPriority(10))
+	SC_GENERATED_BODY()
+
+	sc_result initializeImpl();
+	sc_result shutdownImpl();
+};
