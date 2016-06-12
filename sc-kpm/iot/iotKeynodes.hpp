@@ -55,8 +55,8 @@ namespace iot
         static ScAddr command_change_tv_program;
 
 		/// quesions
-        SC_PROPERTY(Keynode, SysIdtf("question_get_content"), ForceCreate)
-		static ScAddr question_get_content;
+        SC_PROPERTY(Keynode, SysIdtf("command_get_content"), ForceCreate)
+		static ScAddr command_get_content;
 		
 		/// common
         SC_PROPERTY(Keynode, SysIdtf("self"), ForceCreate)

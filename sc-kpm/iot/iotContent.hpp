@@ -22,7 +22,7 @@ namespace iot
 	
 	class AGetContentAgent : public ScAgentAction
 	{
-		SC_CLASS(Agent, CmdClass("question_get_content"))
+		SC_CLASS(Agent, CmdClass("command_get_content"))
 		SC_GENERATED_BODY()
 	};
 }

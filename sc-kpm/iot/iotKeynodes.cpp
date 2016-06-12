@@ -22,7 +22,7 @@ namespace iot
 	ScAddr Keynodes::command_generate_text_from_template;
 	ScAddr Keynodes::command_change_tv_program;
 
-	ScAddr Keynodes::question_get_content;
+	ScAddr Keynodes::command_get_content;
 
 	ScAddr Keynodes::self;
 
