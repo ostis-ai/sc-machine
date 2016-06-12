@@ -22,6 +22,7 @@ Class::Class(const Cursor &cursor, const Namespace &currentNamespace)
     : LanguageType(cursor, currentNamespace)
     , m_name(cursor.GetDisplayName())
     , m_qualifiedName(cursor.GetType().GetDisplayName())
+	, m_parser(0)
 {
     m_isScObject = false;
 
@@ -150,8 +151,10 @@ bool Class::IsModule() const
 	return false;
 }
 
-void Class::GenerateCode(std::string const & fileId, std::stringstream & outCode) const
+void Class::GenerateCode(std::string const & fileId, std::stringstream & outCode, ReflectionParser * parser) const
 {
+	m_parser = parser;
+
 	std::string const line = GetGeneratedBodyLine();
 
 	outCode << "\n\n#define " << fileId << "_" << line << "_init ";
@@ -320,6 +323,7 @@ void Class::GenerateDeclarations(std::stringstream & outCode) const
 		outCode << "\\\n	{";
 		outCode << "\\\n		if (!ScAgentInit())";
 		outCode << "\\\n			return SC_RESULT_ERROR;";
+
 		outCode << "\\\n		return initializeImpl();";
 		outCode << "\\\n	}";
 
@@ -365,6 +369,11 @@ std::string Class::GetGeneratedBodyLine() const
     EMIT_ERROR("Can't find " << Props::Body << " meta info");
 
     return "";
+}
+
+std::string Class::GetQualifiedName() const
+{
+	return m_qualifiedName;
 }
 
 BaseClass const * Class::GetBaseClass(std::string const & name) const

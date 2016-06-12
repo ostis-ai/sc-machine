@@ -75,7 +75,7 @@ public:
 	_SC_EXTERN ScAddr createArc(sc_type type, ScAddr const & addrBeg, ScAddr const & addrEnd);
 
     //! Returns type of sc-element. If there are any error, then returns 0
-	_SC_EXTERN sc_type getElementType(ScAddr const & addr) const;
+	_SC_EXTERN ScType getElementType(ScAddr const & addr) const;
 
     /*! Change subtype of sc-element (subtype & sc_type_element_mask == 0).
      * Return true, if there are no any errors; otherwise return false.
@@ -115,10 +115,12 @@ public:
 
 	_SC_EXTERN bool helperResolveSystemIdtf(std::string const & sysIdtf, ScAddr & outAddr, bool bForceCreation = false);
 	_SC_EXTERN bool helperSetSystemIdtf(std::string const & sysIdtf, ScAddr const & addr);
+	_SC_EXTERN std::string helperGetSystemIdtf(ScAddr const & addr);
 	_SC_EXTERN bool helperCheckArc(ScAddr const & begin, ScAddr end, sc_type arcType);
 	_SC_EXTERN bool helperFindBySystemIdtf(std::string const & sysIdtf, ScAddr & outAddr);
 	_SC_EXTERN bool helperGenTemplate(ScTemplate const & templ, ScTemplateGenResult & result);
     _SC_EXTERN bool helperSearchTemplate(ScTemplate const & templ, ScTemplateSearchResult & result);
+	_SC_EXTERN bool helperBuildTemplate(ScTemplate & templ, ScAddr const & templAddr);
 
 private:
     // Disable object copying

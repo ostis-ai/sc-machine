@@ -1322,7 +1322,7 @@ eSctpErrorCode sctpCommand::processFindElementBySysIdtf(quint32 cmdFlags, quint3
 
     // read length of content data
     READ_PARAM(data_len);
-    Q_ASSERT(data_len > 0);
+    Q_ASSERT(data_len > 0);	// just for a test
 
     data = new sc_char[data_len];
     if (params->readRawData(data, data_len) != data_len)

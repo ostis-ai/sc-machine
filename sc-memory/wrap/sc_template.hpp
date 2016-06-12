@@ -114,6 +114,12 @@ ScTemplateItemValue operator >> (Type const & value, char const * replName)
 	return ScTemplateItemValue(value, replName);
 }
 
+template <typename Type>
+ScTemplateItemValue operator >> (Type const & value, std::string const & replName)
+{
+	return ScTemplateItemValue(value, replName.c_str());
+}
+
 class ScTemplateGenResult;
 class ScTemplateSearchResult;
 
@@ -130,6 +136,10 @@ public:
 		mConstructions.reserve(BufferedNum);
 		mCurrentReplPos = 0;
 	}
+
+	void clear();
+
+	_SC_EXTERN bool hasReplacement(std::string const & repl) const;
 
 	/** Add construction:
 	 *          param2
@@ -152,11 +162,14 @@ public:
 		ScTemplateItemValue const & param4, ScTemplateItemValue const & param5);
 
 protected:
-	// Calls by memory context
+	// Begin: calls by memory context
 	bool generate(ScMemoryContext & ctx, ScTemplateGenResult & result) const;
-    // Calls be memory context
     bool search(ScMemoryContext & ctx, ScTemplateSearchResult & result) const;
-
+	
+	// Builds template based on template in sc-memory
+	bool fromScTemplate(ScMemoryContext & ctx, ScAddr const & scTemplateAddr);
+	// End: calls by memory context
+	
 private:
 	/** Generates node or link element in memory, depending on type. 
 	 * If type isn't a node or link, then return empty addr

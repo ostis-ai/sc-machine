@@ -18,6 +18,20 @@ extern "C"
 
 typedef sc_addr tRealAddr;
 
+struct tRealAddrLess
+{
+	bool operator () (tRealAddr const & a, tRealAddr const & b) const
+	{
+		if (a.seg < b.seg)
+			return true;
+
+		if (a.seg > b.seg)
+			return false;
+
+		return (a.offset < b.offset);
+	}
+};
+
 class _SC_EXTERN ScAddr
 {
 	friend class ScMemoryContext;

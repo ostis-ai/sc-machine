@@ -34,11 +34,12 @@ public:
 	bool IsAgent() const;
 	bool IsModule() const;
 
-	void GenerateCode(std::string const & fileId, std::stringstream & outCode) const;
+	void GenerateCode(std::string const & fileId, std::stringstream & outCode, ReflectionParser * parser) const;
     void GenerateCodeInit(std::stringstream & outCode) const;
     void GenerateCodeStaticInit(std::stringstream & outCode) const;
 
     std::string GetGeneratedBodyLine() const;
+	std::string GetQualifiedName() const;
 
 protected:
     void GenerateFieldsInitCode(std::stringstream & outCode) const;
@@ -71,4 +72,6 @@ private:
     std::vector<Function*> m_staticMethods;
 
     bool m_isScObject;
+
+	mutable ReflectionParser * m_parser;
 };

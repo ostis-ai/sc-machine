@@ -53,7 +53,7 @@ ReflectionParser::~ReflectionParser(void)
         clang_disposeIndex(m_index);
 }
 
-void ReflectionParser::CollectFiles(std::string const & inPath, ReflectionParser::tStringList & outFiles)
+void ReflectionParser::CollectFiles(std::string const & inPath, tStringList & outFiles)
 {
 	boost::filesystem::recursive_directory_iterator itEnd, it(inPath);
 	while (it != itEnd)
@@ -95,6 +95,7 @@ void ReflectionParser::CollectFiles(std::string const & inPath, ReflectionParser
 void ReflectionParser::Parse(void)
 {
 	tStringList filesList;
+	std::string moduleFile;
 	CollectFiles(m_options.inputPath, filesList);
 
 	// ensure that output directory exist
@@ -102,15 +103,35 @@ void ReflectionParser::Parse(void)
 
 	for (tStringList::const_iterator it = filesList.begin(); it != filesList.end(); ++it)
 	{
-		try {
-			ProcessFile(*it);
+		try
+		{
+			// if contains module, then process it later
+			if (!ProcessFile(*it))
+			{
+				if (!moduleFile.empty())
+				{
+					EMIT_ERROR("You couldn't implement two module classes in one module");
+				}
+
+				moduleFile = *it;
+			}
 		}
 		catch (Exception e)
 		{
 			EMIT_ERROR(e.GetDescription() << " in " << *it);
- 		}
-		
+		}
 	}
+
+	try 
+	{
+		if (!moduleFile.empty())
+			ProcessFile(moduleFile, true);
+	}
+	catch (Exception e)
+	{
+		EMIT_ERROR(e.GetDescription() << " in " << moduleFile);
+	}
+
 }
 
 //CXChildVisitResult visitCursor(CXCursor cursor, CXCursor parent, CXClientData client_data)
@@ -157,7 +178,7 @@ void ReflectionParser::Clear()
     m_enums.clear();
 }
 
-void ReflectionParser::ProcessFile(std::string const & fileName)
+bool ReflectionParser::ProcessFile(std::string const & fileName, bool InProcessModule)
 {   
     Clear();
 
@@ -189,11 +210,18 @@ void ReflectionParser::ProcessFile(std::string const & fileName)
 	buildClasses(cursor, tempNamespace);
 	tempNamespace.clear();
 
+	if (ContainsModule() && !InProcessModule)
+	{
+		if (m_classes.size() > 1)
+		{
+			EMIT_ERROR("You can't implement any other classes in one file with module class");
+		}
+		return false;
+	}
+
 	if (RequestGenerate())
 	{
-
 		std::string fileId = GetFileID(fileName);
-
 		std::stringstream outCode;
 
 		// includes
@@ -204,26 +232,13 @@ void ReflectionParser::ProcessFile(std::string const & fileName)
 			Class const * klass = *it;
 			if (klass->ShouldGenerate())
 			{
-				klass->GenerateCode(fileId, outCode);
+				klass->GenerateCode(fileId, outCode, this);
 			}
 		}
-
-		/*buildGlobals(cursor, tempNamespace);
-		tempNamespace.clear();
-
-		buildGlobalFunctions(cursor, tempNamespace);
-		tempNamespace.clear();
-
-		buildEnums(cursor, tempNamespace);*/
 
 		/// write ScFileID definition
 		outCode << "\n\n#undef ScFileID\n";
 		outCode << "#define ScFileID " << fileId;
-
-
-		/// test dump
-		//outCode << "\n\n ----- Dump ----- \n\n";
-		//DumpTree(cursor, 0, outCode);
 
 		// generate output file
 		fs::path outputPath(m_options.outputPath);
@@ -232,6 +247,8 @@ void ReflectionParser::ProcessFile(std::string const & fileName)
 		outputFile << outCode.str();
 		outputFile.close();
 	}
+
+	return true;
 }
 
 bool ReflectionParser::IsInCurrentFile(Cursor const & cursor) const
@@ -244,6 +261,17 @@ bool ReflectionParser::RequestGenerate() const
 	for (auto it = m_classes.begin(); it != m_classes.end(); ++it)
 	{
 		if ((*it)->ShouldGenerate())
+			return true;
+	}
+
+	return false;
+}
+
+bool ReflectionParser::ContainsModule() const
+{
+	for (auto it = m_classes.begin(); it != m_classes.end(); ++it)
+	{
+		if ((*it)->IsModule())
 			return true;
 	}
 

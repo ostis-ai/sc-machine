@@ -96,7 +96,7 @@ private:
 
 
 #define SC_AGENT_REGISTER(__AgentName__) \
-	__AgentName__##::initGlobal(); \
+	SC_OBJECT_INIT_GLOBAL_CALL(__AgentName__) \
 	__AgentName__##::registerHandler();
 
 #define SC_AGENT_UNREGISTER(__AgentName__)	__AgentName__##::unregisterHandler();

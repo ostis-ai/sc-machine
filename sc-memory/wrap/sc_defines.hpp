@@ -34,4 +34,6 @@
 #define SC_GENERATED_BODY(...)  SC_GENERATED_BODY_INIT()
 #define SC_PROPERTY(...)
 
+#define SC_OBJECT_INIT_GLOBAL_CALL(__class) __class::initGlobal();
+
 #endif

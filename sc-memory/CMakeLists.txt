@@ -23,6 +23,7 @@ set (SC_MEMORY_WRAP_SOURCES
 			"wrap/sc_template.cpp"
 			"wrap/sc_object.cpp"
 			"wrap/sc_module.cpp"
+			"wrap/sc_struct.cpp"
 			"wrap/kpm/sc_agent.cpp"
 
             "wrap/sc_memory.hpp"
@@ -35,6 +36,8 @@ set (SC_MEMORY_WRAP_SOURCES
 			"wrap/sc_object.hpp"
 			"wrap/sc_defines.hpp"
 			"wrap/sc_module.hpp"
+			"wrap/sc_struct.hpp"
+			"wrap/sc_memory_headers.hpp"
 			"wrap/kpm/sc_agent.hpp"
         )
 

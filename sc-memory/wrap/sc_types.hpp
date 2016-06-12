@@ -11,10 +11,13 @@
 #include <string>
 #include <sstream>
 #include <map>
+#include <set>
 #include <assert.h>
 #include <stdint.h>
 
 #include "sc_defines.hpp"
+
+typedef std::set<std::string> tStringSet;
 
 class ScMemoryContext;
 class ScAddr;
@@ -48,9 +51,35 @@ public:
 		return (mRealType & sc_type_link) != 0;
 	}
 
+	bool isConst() const
+	{
+		return (mRealType & sc_type_const) != 0;
+	}
+
+	bool isVar() const
+	{
+		return (mRealType & sc_type_var) != 0;
+	}
+
+	// Returns copy of this type, but with variable raplaced to const
+	ScType asConst() const
+	{
+		return ScType((mRealType & ~sc_type_var) | sc_type_const);
+	}
+
 	sc_type operator * () const
 	{
 		return mRealType;
+	}
+
+	bool operator == (ScType const & other)
+	{
+		return (mRealType == other.mRealType);
+	}
+
+	tRealType bitAnd(tRealType const & inMask) const
+	{
+		return (mRealType & inMask);
 	}
 
 private:

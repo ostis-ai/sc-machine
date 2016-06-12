@@ -61,12 +61,12 @@ void test_common_elements()
         g_assert(ctx.getArcBegin(arc) == addr);
         g_assert(ctx.getArcEnd(arc) == link);
 
-        g_assert(ctx.getElementType(addr) == (sc_type_node | sc_type_const));
-        g_assert(ctx.getElementType(link) == sc_type_link);
-        g_assert(ctx.getElementType(arc) == sc_type_arc_pos_const_perm);
+        g_assert(ctx.getElementType(addr) == ScType(sc_type_node | sc_type_const));
+        g_assert(ctx.getElementType(link) == ScType(sc_type_link));
+        g_assert(ctx.getElementType(arc) == ScType(sc_type_arc_pos_const_perm));
 
         g_assert(ctx.setElementSubtype(addr, sc_type_var));
-        g_assert(ctx.getElementType(addr) == (sc_type_node | sc_type_var));
+        g_assert(ctx.getElementType(addr) == ScType(sc_type_node | sc_type_var));
 
         g_assert(ctx.eraseElement(addr));
         g_assert(!ctx.isElement(addr));
@@ -580,6 +580,159 @@ void test_perfomance_templ()
 	shutdown_memory(false);
 }
 
+void test_common_struct()
+{
+	init_memory();
+	
+	{
+		ScMemoryContext ctx(sc_access_lvl_make_min);
+
+		ScAddr structAddr = ctx.createNode(sc_type_node_struct | sc_type_const);
+		g_assert(structAddr.isValid());
+
+		ScStruct st(&ctx, structAddr);
+
+		ScAddr const addr1 = ctx.createNode(sc_type_node_class);
+		g_assert(addr1.isValid());
+		ScAddr const addr2 = ctx.createNode(sc_type_node_material);
+		g_assert(addr2.isValid());
+		
+		st << addr1 << addr2;
+		g_assert(st.hasElement(addr1));
+		g_assert(st.hasElement(addr2));
+
+		st >> addr1;
+
+		g_assert(!st.hasElement(addr1));
+		g_assert(st.hasElement(addr2));
+
+		st >> addr2;
+
+		g_assert(!st.hasElement(addr1));
+		g_assert(!st.hasElement(addr2));
+		g_assert(st.isEmpty());
+
+		// attributes
+		ScAddr const attrAddr = ctx.createNode(sc_type_node_role);
+		g_assert(attrAddr.isValid());
+
+		g_assert(st.append(addr1, attrAddr));
+		ScIterator5Ptr iter5 = ctx.iterator5(
+			structAddr,
+			SC_TYPE(sc_type_arc_pos_const_perm),
+			SC_TYPE(0),
+			SC_TYPE(sc_type_arc_pos_const_perm),
+			attrAddr);
+
+		bool found = false;
+		while (iter5->next())
+		{
+			g_assert(!found);	// one time
+			g_assert(iter5->value(0) == structAddr);
+			g_assert(iter5->value(2) == addr1);
+			g_assert(iter5->value(4) == attrAddr);
+			found = true;
+		}
+		g_assert(found);
+
+	}
+
+	shutdown_memory(false);
+}
+
+void test_common_sc_templates()
+{
+	init_memory();
+	{
+		ScMemoryContext ctx(sc_access_lvl_make_min);
+
+		// create template
+		/*			_y
+					^
+					|
+					| <----- _z
+					|
+					x <----- _s
+					*/
+		ScAddr templateAddr = ctx.createNode(sc_type_const | sc_type_node_struct);
+		g_assert(templateAddr.isValid());
+
+		ScStruct templStruct(&ctx, templateAddr);
+		ScAddr xAddr;
+		{
+
+			ScAddr _yAddr, _zAddr, _sAddr;
+
+			xAddr = ctx.createNode(sc_type_const | sc_type_node_material);
+			g_assert(xAddr.isValid());
+			g_assert(ctx.helperSetSystemIdtf("x", xAddr));
+
+			_yAddr = ctx.createNode(sc_type_var);
+			g_assert(_yAddr.isValid());
+			g_assert(ctx.helperSetSystemIdtf("_y", _yAddr));
+
+			_zAddr = ctx.createNode(sc_type_var | sc_type_node_role);
+			g_assert(_zAddr.isValid());
+			g_assert(ctx.helperSetSystemIdtf("_z", _zAddr));
+
+			_sAddr = ctx.createNode(sc_type_node_class | sc_type_var);
+			g_assert(_sAddr.isValid());
+			g_assert(ctx.helperSetSystemIdtf("_s", _sAddr));
+
+			ScAddr xyAddr = ctx.createArc(sc_type_arc_access | sc_type_var, xAddr, _yAddr);
+			g_assert(xyAddr.isValid());
+			ScAddr zxyAddr = ctx.createArc(sc_type_arc_access | sc_type_var, _zAddr, xyAddr);
+			g_assert(zxyAddr.isValid());
+			ScAddr sxAddr = ctx.createArc(sc_type_arc_access | sc_type_var, _sAddr, xAddr);
+			g_assert(sxAddr.isValid());
+
+			// append created elements into struct
+			templStruct << xAddr << _yAddr << _zAddr << xyAddr << zxyAddr << _sAddr << sxAddr;
+		}
+
+		ScTemplate templ;
+		g_assert(ctx.helperBuildTemplate(templ, templateAddr));
+
+		// create test structure that correspond to template
+		{
+			ScAddr yAddr, zAddr, sAddr;
+
+			yAddr = ctx.createNode(sc_type_const);
+			g_assert(yAddr.isValid());
+
+			zAddr = ctx.createNode(sc_type_const | sc_type_node_role);
+			g_assert(zAddr.isValid());
+
+			sAddr = ctx.createNode(sc_type_node_class | sc_type_const);
+			g_assert(sAddr.isValid());
+
+			ScAddr xyAddr = ctx.createArc(sc_type_arc_pos_const_perm, xAddr, yAddr);
+			g_assert(xyAddr.isValid());
+			ScAddr zxyAddr = ctx.createArc(sc_type_arc_pos_const_perm, zAddr, xyAddr);
+			g_assert(zxyAddr.isValid());
+			ScAddr sxAddr = ctx.createArc(sc_type_arc_pos_const_perm, sAddr, xAddr);
+			g_assert(sxAddr.isValid());
+
+
+			// test search by template
+			{
+				ScTemplateSearchResult result;
+				g_assert(ctx.helperSearchTemplate(templ, result));
+
+				g_assert(result.getSize() == 1);
+				ScTemplateSearchResultItem item = result.getResult(0);
+
+				g_assert(item["x"] == xAddr);
+				g_assert(item["_y"] == yAddr);
+				g_assert(item["_z"] == zAddr);
+				g_assert(item["_s"] == sAddr);
+			}
+		}
+	}
+
+	shutdown_memory(false);
+}
+
 int main(int argc, char *argv[])
 {
     g_test_init(&argc, &argv, NULL);
@@ -588,6 +741,8 @@ int main(int argc, char *argv[])
     g_test_add_func("/common/iterators", test_common_iterators);
     g_test_add_func("/common/streams", test_common_streams);
 	g_test_add_func("/common/templates", test_common_templates);
+	g_test_add_func("/common/struct", test_common_struct);
+	g_test_add_func("/common/sc_templates", test_common_sc_templates);
 
     g_test_add_func("/codegen/keynodes", test_codegen_keynodes);
 	g_test_add_func("/codegen/agent", test_codegen_agent);

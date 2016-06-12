@@ -146,11 +146,11 @@ ScAddr ScMemoryContext::createArc(sc_type type, ScAddr const & addrBeg, ScAddr c
 	return ScAddr(sc_memory_arc_new(mContext, type, addrBeg.mRealAddr, addrEnd.mRealAddr));
 }
 
-sc_type ScMemoryContext::getElementType(ScAddr const & addr) const
+ScType ScMemoryContext::getElementType(ScAddr const & addr) const
 {
     check_expr(isValid());
     sc_type type = 0;
-    return (sc_memory_get_element_type(mContext, addr.mRealAddr, &type) == SC_RESULT_OK) ? type : 0;
+    return (sc_memory_get_element_type(mContext, addr.mRealAddr, &type) == SC_RESULT_OK) ? ScType(type) : ScType(0);
 }
 
 bool ScMemoryContext::setElementSubtype(ScAddr const & addr, sc_type subtype)
@@ -244,13 +244,36 @@ bool ScMemoryContext::helperResolveSystemIdtf(std::string const & sysIdtf, ScAdd
 bool ScMemoryContext::helperSetSystemIdtf(std::string const & sysIdtf, ScAddr const & addr)
 {
 	check_expr(isValid());
-	return (sc_helper_set_system_identifier(mContext, addr.mRealAddr, sysIdtf.c_str(), (sc_uint32)sysIdtf.size()) == SC_RESULT_OK);
+	return (sc_helper_set_system_identifier(mContext, *addr, sysIdtf.c_str(), (sc_uint32)sysIdtf.size()) == SC_RESULT_OK);
+}
+
+std::string ScMemoryContext::helperGetSystemIdtf(ScAddr const & addr)
+{
+	check_expr(isValid());
+	ScAddr idtfLink;
+	if (sc_helper_get_system_identifier_link(mContext, *addr, &idtfLink.mRealAddr) == SC_RESULT_OK)
+	{
+		if (idtfLink.isValid())
+		{
+			ScStream stream;
+			if (getLinkContent(idtfLink, stream))
+			{
+				std::string result;
+				if (StreamConverter::streamToString(stream, result))
+				{
+					return result;
+				}
+			}
+		}
+	}
+
+	return std::string("");
 }
 
 bool ScMemoryContext::helperCheckArc(ScAddr const & begin, ScAddr end, sc_type arcType)
 {
 	check_expr(isValid());
-	return (sc_helper_check_arc(mContext, begin.mRealAddr, end.mRealAddr, arcType) == SC_RESULT_OK);
+	return (sc_helper_check_arc(mContext, *begin, *end, arcType) == SC_RESULT_OK);
 }
 
 bool ScMemoryContext::helperFindBySystemIdtf(std::string const & sysIdtf, ScAddr & outAddr)
@@ -268,4 +291,9 @@ bool ScMemoryContext::helperGenTemplate(ScTemplate const & templ, ScTemplateGenR
 bool ScMemoryContext::helperSearchTemplate(ScTemplate const & templ, ScTemplateSearchResult & result)
 {
     return templ.search(*this, result);
+}
+
+bool ScMemoryContext::helperBuildTemplate(ScTemplate & templ, ScAddr const & templAddr)
+{
+	return templ.fromScTemplate(*this, templAddr);
 }

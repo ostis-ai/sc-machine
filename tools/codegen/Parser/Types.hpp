@@ -6,6 +6,7 @@
 #include <list>
 #include <vector>
 #include <map>
+#include <set>
 #include <exception>
 
 #include "ReservedTypes.hpp"
@@ -30,3 +31,6 @@ private:
 #define EMIT_ERROR(__desc) \
     { std::stringstream ss; ss << __desc; throw Exception(ss.str()); }
 #endif
+
+typedef std::list<std::string> tStringList;
+typedef std::set<std::string> tStringSet;

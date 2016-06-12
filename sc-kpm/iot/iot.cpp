@@ -4,10 +4,17 @@
 * (See accompanying file COPYING.MIT or copy at http://opensource.org/licenses/MIT)
 */
 
-#include "iot.hpp"
-#include "iotKeynodes.hpp"
-#include "iotCommands.hpp"
+#include "iotAbout.hpp"
 #include "iotActions.hpp"
+#include "iotCommands.hpp"
+#include "iotContent.hpp"
+#include "iotEnergy.hpp"
+#include "iotSpeech.hpp"
+#include "iotTV.hpp"
+#include "iotKeynodes.hpp"
+
+#include "iot.hpp"
+
 
 using namespace iot;
 
