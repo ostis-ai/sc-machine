@@ -12,7 +12,7 @@ foreach( OUTPUTCONFIG ${CMAKE_CONFIGURATION_TYPES} )
     set( CMAKE_LIBRARY_OUTPUT_DIRECTORY_${OUTPUTCONFIG} "${SC_MACHINE_ROOT}/bin/extensions")
 endforeach( OUTPUTCONFIG CMAKE_CONFIGURATION_TYPES )
 
-
+add_subdirectory(nl)
 add_subdirectory(iot)
 add_subdirectory(ui)
 add_subdirectory(search)
