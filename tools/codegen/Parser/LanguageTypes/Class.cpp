@@ -37,6 +37,8 @@ Class::Class(const Cursor &cursor, const Namespace &currentNamespace)
         m_displayName = utils::GetQualifiedName(displayName, currentNamespace);
     }*/
 
+	m_metaData.Check();
+
 	m_displayName = cursor.GetSpelling();
 
     for (auto &child : cursor.GetChildren())
@@ -213,7 +215,7 @@ void Class::GenerateStaticFieldsInitCode(std::stringstream & outCode) const
 	if (IsAgent())
 	{
 		outCode << "\t";
-		Global::GenerateResolveKeynodeCode(m_metaData.GetNativeString(Props::AgentCommandClass),
+		Field::GenerateResolveKeynodeCode(m_metaData.GetNativeString(Props::AgentCommandClass),
 			"msCmdClass_" + m_displayName,
 			true,
 			outCode);

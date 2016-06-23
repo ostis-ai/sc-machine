@@ -21,11 +21,7 @@ Field::Field(
     else
         m_displayName = displayName;
 
-    m_explicitGetter = m_metaData.GetNativeString(kMetaExplicitGetter);
-    m_hasExplicitGetter = !m_explicitGetter.empty();
-
-    m_explicitSetter = m_metaData.GetNativeString(kMetaExplicitSetter);
-    m_hasExplicitSetter = !m_explicitSetter.empty();
+	m_metaData.Check();
 }
 
 bool Field::ShouldCompile(void) const
@@ -57,11 +53,32 @@ void Field::GenarateInitCode(std::stringstream & outCode) const
 {
     if (m_metaData.HasProperty(Props::Keynode))
     {
-        outCode << "result = result && ctx.helperResolveSystemIdtf(\"" 
-                << m_metaData.GetNativeString(Props::SysIdtf) << "\", " 
-                << m_displayName << ", "
-                << (m_metaData.HasProperty(Props::ForceCreate) ? "true" : "false") << ");";
-    }        
+		GenerateResolveKeynodeCode(m_metaData.GetNativeString(Props::SysIdtf),
+			m_displayName,
+			(m_metaData.HasProperty(Props::ForceCreate) ? true : false),
+			outCode);
+    } 
+	else if (m_metaData.HasProperty(Props::Template))
+	{
+		GenerateTemplateBuildCode(m_metaData.GetNativeString(Props::SysIdtf),
+			m_displayName, outCode);
+	}
+}
+
+void Field::GenerateTemplateBuildCode(std::string const & sysIdtf, std::string const & displayName, std::stringstream & outCode)
+{
+	std::string vName = displayName + "_Addr_";
+	outCode << "ScAddr " << vName << "; ";
+	GenerateResolveKeynodeCode(sysIdtf, vName, false, outCode);
+	outCode << " if (result) { result = result && ctx.helperBuildTemplate(" << displayName << ", " << vName << "); }";
+}
+
+void Field::GenerateResolveKeynodeCode(std::string const & sysIdtf, std::string const & displayName, bool forceCreation, std::stringstream & outCode)
+{
+	outCode << "result = result && ctx.helperResolveSystemIdtf(\""
+		<< sysIdtf << "\", "
+		<< displayName << ", "
+		<< (forceCreation ? "true" : "false") << ");";
 }
 
 std::string const & Field::GetDisplayName() const

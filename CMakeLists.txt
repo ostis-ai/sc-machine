@@ -56,15 +56,29 @@ elseif (${WIN32})
 
 	set(PACKAGES_PATH "${CMAKE_BINARY_DIR}/packages")
 
-	file(COPY "${SC_MACHINE_ROOT}/packages.config" DESTINATION ${CMAKE_BINARY_DIR})
+	if (${MSVC_VERSION} EQUAL "1800")
+		set (MSVC_SUFFIX "vc120")
+	elseif (${MSVC_VERSION} EQUAL "1900")
+		set (MSVC_SUFFIX "vc140")
+	endif()
+
+	set (BOOST_VERSION "1.61.0.0")
+	configure_file("${SC_MACHINE_ROOT}/packages.config.in" "${CMAKE_BINARY_DIR}/packages.config")
 
 	file(MAKE_DIRECTORY ${PACKAGES_PATH})
 	execute_process(COMMAND "${SC_MACHINE_THIRDPARTY_PATH}/nuget.exe" install ${CMAKE_BINARY_DIR}/packages.config WORKING_DIRECTORY ${PACKAGES_PATH})
 
+	
+
 	set (GLIB_PATH "${PACKAGES_PATH}/glib.2.36.2.11/build/native")
 	set (REDIS_PATH "${SC_MACHINE_THIRDPARTY_PATH}/libhiredis/")
-	set (BOOST_PATH "${PACKAGES_PATH}/boost.1.58.0.0/lib/native")
-	
+	set (BOOST_PATH "${PACKAGES_PATH}/boost.${BOOST_VERSION}/lib/native")
+
+	# CURL
+	set (CURLPP_PATH "${PACKAGES_PATH}/curlpp.0.7.3.1/build/native/")
+	set (CURLPP_INCLUDE "${CURLPP_PATH}/include")
+	set (CURLPP_LIB "${CURLPP_PATH}/lib/x64/Release/curlpp.lib")
+
 	set (GLIB2_INCLUDE_DIRS "${GLIB_PATH}/include"
 							"${GLIB_PATH}/include/glib")
 	set (REDIS_INCLUDE_DIRS "${REDIS_PATH}")
@@ -76,10 +90,10 @@ elseif (${WIN32})
 					 "${GLIB_PATH}/lib/v110/x64/Release/dynamic/"
 					 "${REDIS_PATH}"
 					 "${SC_MACHINE_ANTRL_DIR}"
-					 "${PACKAGES_PATH}/boost_filesystem-vc120.1.58.0.0/lib/native/address-model-64/lib/"
-					 "${PACKAGES_PATH}/boost_system-vc120.1.58.0.0/lib/native/address-model-64/lib/"
-					 "${PACKAGES_PATH}/boost_program_options-vc120.1.58.0.0/lib/native/address-model-64/lib/"
-					 "${PACKAGES_PATH}/boost_regex-vc120.1.58.0.0/lib/native/address-model-64/lib/")
+					 "${PACKAGES_PATH}/boost_filesystem-${MSVC_SUFFIX}.${BOOST_VERSION}/lib/native/address-model-64/lib/"
+					 "${PACKAGES_PATH}/boost_system-${MSVC_SUFFIX}.${BOOST_VERSION}/lib/native/address-model-64/lib/"
+					 "${PACKAGES_PATH}/boost_program_options-${MSVC_SUFFIX}.${BOOST_VERSION}/lib/native/address-model-64/lib/"
+					 "${PACKAGES_PATH}/boost_regex-${MSVC_SUFFIX}.${BOOST_VERSION}/lib/native/address-model-64/lib/")
 
 
 	set (REDIS_LIBRARIES "hiredis.lib" "WSock32.lib" "Ws2_32.lib")

@@ -22,9 +22,12 @@ public:
     bool HasProperty(std::string const & key) const;
 
     bool GetFlag(std::string const & key) const;
+	size_t GetLineNumber() const;
 
     std::string GetNativeString(std::string const & key) const;
     
+	/** Check if metadata is valid. If there are any errors, then throw an exciption */
+	void Check() const;
 
 protected:
     std::vector<Property> extractProperties(Cursor const & cursor) const;
@@ -32,5 +35,6 @@ protected:
 private:
     
     std::unordered_map<std::string, std::string> m_properties;
+	size_t m_lineNumber;
 
 };

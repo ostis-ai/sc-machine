@@ -16,10 +16,8 @@ public:
     virtual ~Global(void) { }
 
     bool ShouldCompile(void) const;
-    void GenerateInitCode(std::stringstream & outCode) const;
-    
-	static void GenerateResolveKeynodeCode(std::string const & sysIdtf, std::string const & displayName, 
-											bool forceCreation, std::stringstream & outCode);
+	void GenerateInitCode(std::stringstream & outCode) const;
+	
 
 private:
     bool m_isConst;

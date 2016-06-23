@@ -1,10 +1,12 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <packages>
-  <package id="boost_program_options-vc120" version="1.58.0" targetFramework="Native" />
-  <package id="boost_system-vc120" version="1.58.0" targetFramework="Native" />
-  <package id="boost_filesystem-vc120" version="1.58.0" targetFramework="Native" />
-  <package id="boost_regex-vc120" version="1.58.0" targetFramework="Native" />
-  <package id="boost" version="1.58.0" targetFramework="Native" />
+  <package id="boost_program_options-${MSVC_SUFFIX}" version="${BOOST_VERSION}" targetFramework="Native" />
+  <package id="boost_system-${MSVC_SUFFIX}" version="${BOOST_VERSION}" targetFramework="Native" />
+  <package id="boost_filesystem-${MSVC_SUFFIX}" version="${BOOST_VERSION}" targetFramework="Native" />
+  <package id="boost_regex-${MSVC_SUFFIX}" version="${BOOST_VERSION}" targetFramework="Native" />
+  <package id="boost" version="${BOOST_VERSION}" targetFramework="Native" />
+  <package id="zlib" version="1.2.8.8" targetFramework="Native" />
+  <package id="curlpp" version="0.7.3.1" targetFramework="Native" />
   <package id="glib" version="2.36.2.11" targetFramework="Native" />
   <package id="glib.redist" version="2.36.2.11" targetFramework="Native" />
   <package id="libffi" version="3.0.10.3" targetFramework="Native" />

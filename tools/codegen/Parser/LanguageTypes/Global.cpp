@@ -28,6 +28,8 @@ Global::Global(
         m_displayName = 
             utils::GetQualifiedName(displayName, currentNamespace);
     }
+
+	m_metaData.Check();
 }
 
 bool Global::ShouldCompile(void) const
@@ -37,23 +39,23 @@ bool Global::ShouldCompile(void) const
 
 void Global::GenerateInitCode(std::stringstream & outCode) const
 {
+
     /// TODO: merge with field code generation
     if (m_metaData.HasProperty(Props::Keynode))
     {
-		GenerateResolveKeynodeCode(m_metaData.GetNativeString(Props::SysIdtf), 
+		Field::GenerateResolveKeynodeCode(m_metaData.GetNativeString(Props::SysIdtf), 
 									m_displayName,
 									m_metaData.HasProperty(Props::ForceCreate),
 									outCode);
 	}
+	else if (m_metaData.HasProperty(Props::Template))
+	{ 
+		Field::GenerateTemplateBuildCode(m_metaData.GetNativeString(Props::SysIdtf),
+			m_displayName, outCode);
+	}
 }
 
-void Global::GenerateResolveKeynodeCode(std::string const & sysIdtf, std::string const & displayName, bool forceCreation, std::stringstream & outCode)
-{
-	outCode << "result = result && ctx.helperResolveSystemIdtf(\""
-		<< sysIdtf << "\", "
-		<< displayName << ", "
-		<< (forceCreation ? "true" : "false") << ");";
-}
+
 
 bool Global::isAccessible(void) const
 {

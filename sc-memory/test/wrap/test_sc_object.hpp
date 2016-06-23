@@ -38,6 +38,12 @@ namespace n1
             // not created object
             SC_PROPERTY(Keynode, SysIdtf("test_keynode_force"), ForceCreate)
             ScAddr mTestKeynodeForce;
+
+			SC_PROPERTY(Template, SysIdtf("test_template"))
+			ScTemplate mTestTemplate;
+
+			SC_PROPERTY(Template, SysIdtf("test_template2"))
+			static ScTemplate mTestTemplate2;
         };
     }
 }

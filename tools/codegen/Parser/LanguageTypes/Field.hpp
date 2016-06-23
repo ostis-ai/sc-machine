@@ -19,6 +19,11 @@ public:
 
     void GenarateInitCode(std::stringstream & outCode) const;
 
+	static void GenerateResolveKeynodeCode(std::string const & sysIdtf, std::string const & displayName,
+		bool forceCreation, std::stringstream & outCode);
+	static void GenerateTemplateBuildCode(std::string const & sysIdtf, std::string const & displayName,
+		std::stringstream & outCode);
+
     std::string const & GetDisplayName() const;
     
 private:
@@ -36,10 +41,5 @@ private:
 
     std::string m_name;
     std::string m_displayName;
-    std::string m_type;
-
-    std::string m_explicitGetter;
-    std::string m_explicitSetter;
-
-    
+    std::string m_type;   
 };

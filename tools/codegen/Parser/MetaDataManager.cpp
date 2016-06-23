@@ -7,6 +7,7 @@
 
 MetaDataManager::MetaDataManager(Cursor const & cursor)
 {
+	m_lineNumber = cursor.GetLineNumber() - 1;
     for (auto &child : cursor.GetChildren())
     {
         if (child.GetKind() != CXCursor_AnnotateAttr)
@@ -46,6 +47,11 @@ bool MetaDataManager::HasProperty(std::string const & key) const
 bool MetaDataManager::GetFlag(std::string const & key) const
 {
     return m_properties.find(key) == m_properties.end() ? false : true;
+}
+
+size_t MetaDataManager::GetLineNumber() const
+{
+	return m_lineNumber;
 }
 
 std::string MetaDataManager::GetNativeString(std::string const & key) const
@@ -147,4 +153,45 @@ std::vector<MetaDataManager::Property> MetaDataManager::extractProperties(Cursor
     }
 
     return properties;
+}
+
+#define EMIT_ERROR_LINE(__descr) EMIT_ERROR(__descr << " at line " << GetLineNumber())
+
+void MetaDataManager::Check() const
+{
+	bool const hasAgent = HasProperty(Props::Agent);
+	bool const hasKeynode = HasProperty(Props::Keynode);
+	bool const hasTemplate = HasProperty(Props::Template);
+	bool const hasForceCreation = HasProperty(Props::ForceCreate);
+	bool const hasSysIdtf = HasProperty(Props::SysIdtf);
+
+	if (hasAgent && hasTemplate)
+	{
+		EMIT_ERROR_LINE("You can't use " << Props::Template << " property with " << Props::Agent);
+	}
+
+	if (hasKeynode && hasTemplate)
+	{
+		EMIT_ERROR_LINE("You can't use " << Props::Template << " property with " << Props::Keynode);
+	}
+
+	if (hasForceCreation && !hasKeynode)
+	{
+		EMIT_ERROR_LINE("You can use " << Props::ForceCreate << " just with " << Props::Keynode);
+	}
+
+	std::string const sysIdtf = GetNativeString(Props::SysIdtf);
+
+	if ((hasKeynode || hasTemplate))
+	{
+		if (!hasSysIdtf)
+		{
+			EMIT_ERROR_LINE("You should to specify " << Props::SysIdtf);
+		}
+		else if (sysIdtf.size() == 0)
+		{
+			EMIT_ERROR_LINE("Don't use empty " << Props::SysIdtf);
+		}
+	}
+
 }
