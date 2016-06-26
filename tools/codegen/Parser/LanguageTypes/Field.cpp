@@ -53,14 +53,14 @@ void Field::GenarateInitCode(std::stringstream & outCode) const
 {
     if (m_metaData.HasProperty(Props::Keynode))
     {
-		GenerateResolveKeynodeCode(m_metaData.GetNativeString(Props::SysIdtf),
+		GenerateResolveKeynodeCode(m_metaData.GetNativeString(Props::Keynode),
 			m_displayName,
 			(m_metaData.HasProperty(Props::ForceCreate) ? true : false),
 			outCode);
     } 
 	else if (m_metaData.HasProperty(Props::Template))
 	{
-		GenerateTemplateBuildCode(m_metaData.GetNativeString(Props::SysIdtf),
+		GenerateTemplateBuildCode(m_metaData.GetNativeString(Props::Template),
 			m_displayName, outCode);
 	}
 }

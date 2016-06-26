@@ -18,6 +18,12 @@ MetaDataManager::MetaDataManager(Cursor const & cursor)
     }
 }
 
+void MetaDataManager::Merge(MetaDataManager const & metaData)
+{
+	for (auto const & prop : metaData.m_properties)
+		SetProperty(prop.first, prop.second);
+}
+
 std::string MetaDataManager::GetProperty(std::string const & key) const
 {
     auto search = m_properties.find(key);
@@ -37,6 +43,12 @@ bool MetaDataManager::GetPropertySafe(std::string const & key, std::string & out
     }
 
     return false;
+}
+
+void MetaDataManager::SetProperty(std::string const & key, std::string const & value)
+{
+	assert(!HasProperty(key));
+	m_properties[key] = value;
 }
 
 bool MetaDataManager::HasProperty(std::string const & key) const
@@ -163,7 +175,8 @@ void MetaDataManager::Check() const
 	bool const hasKeynode = HasProperty(Props::Keynode);
 	bool const hasTemplate = HasProperty(Props::Template);
 	bool const hasForceCreation = HasProperty(Props::ForceCreate);
-	bool const hasSysIdtf = HasProperty(Props::SysIdtf);
+	bool const hasCmdClass = HasProperty(Props::AgentCommandClass);
+	bool const hasEvent = HasProperty(Props::Event);
 
 	if (hasAgent && hasTemplate)
 	{
@@ -180,18 +193,38 @@ void MetaDataManager::Check() const
 		EMIT_ERROR_LINE("You can use " << Props::ForceCreate << " just with " << Props::Keynode);
 	}
 
-	std::string const sysIdtf = GetNativeString(Props::SysIdtf);
-
-	if ((hasKeynode || hasTemplate))
+	if (hasKeynode && GetNativeString(Props::Keynode).empty())
 	{
-		if (!hasSysIdtf)
+		EMIT_ERROR_LINE("Can't use empty " << Props::Keynode << ". You should specify system identifier of keynode in it");
+	}
+
+	if (hasTemplate && GetNativeString(Props::Template).empty())
+	{
+		EMIT_ERROR_LINE("Can't use empty " << Props::Template << ". You should specify system identifier of sc-structure in it");
+	}
+	
+	std::string const cmdClass = GetNativeString(Props::AgentCommandClass);
+
+	std::string const parentClass = GetProperty(ParserMeta::ParentClass);
+	bool const isAgentParent = (parentClass == Classes::Agent);
+	bool const isAgentActionParent = (parentClass == Classes::AgentAction);
+
+	if (hasAgent && isAgentActionParent && !hasCmdClass)
+	{
+		EMIT_ERROR_LINE("You should specify " << Props::AgentCommandClass);
+	}
+
+	if (hasCmdClass)
+	{
+		if (!isAgentActionParent)
 		{
-			EMIT_ERROR_LINE("You should to specify " << Props::SysIdtf);
-		}
-		else if (sysIdtf.size() == 0)
+			EMIT_ERROR_LINE("You can use " << Props::AgentCommandClass << " just with " << Classes::AgentAction << " class");
+		} 
+		else if (cmdClass.empty())
 		{
-			EMIT_ERROR_LINE("Don't use empty " << Props::SysIdtf);
+			EMIT_ERROR_LINE("Don't use empty " << Props::AgentCommandClass);
 		}
+
 	}
 
 }

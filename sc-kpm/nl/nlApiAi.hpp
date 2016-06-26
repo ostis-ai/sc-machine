@@ -6,16 +6,14 @@
 
 #pragma once
 
-#include "sc_memory.h"
-#include "wrap/sc_module.hpp"
+#include "wrap/kpm/sc_agent.hpp"
+#include "nlApiAi.generated.hpp"
 
-#include "nl.generated.hpp"
-
-class nlModule : public ScModule
+namespace nl
 {
-	SC_CLASS(LoadOrder(11))
-	SC_GENERATED_BODY()
-
-	sc_result initializeImpl();
-	sc_result shutdownImpl();
-};
+	class AApiAiParseUserTextAgent : public ScAgentAction
+	{
+		SC_CLASS(Agent, CmdClass("command_process_user_text_message"))
+		SC_GENERATED_BODY()
+	};
+}

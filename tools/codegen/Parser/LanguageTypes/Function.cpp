@@ -17,7 +17,7 @@ Function::Function(
     , m_name(cursor.GetSpelling())
     , m_qualifiedName(utils::GetQualifiedName(cursor, currentNamespace))
 {
-        
+	m_metaData.Check();
 }
 
 bool Function::ShouldCompile(void) const

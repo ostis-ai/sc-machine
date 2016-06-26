@@ -75,9 +75,9 @@ elseif (${WIN32})
 	set (BOOST_PATH "${PACKAGES_PATH}/boost.${BOOST_VERSION}/lib/native")
 
 	# CURL
-	set (CURLPP_PATH "${PACKAGES_PATH}/curlpp.0.7.3.1/build/native/")
-	set (CURLPP_INCLUDE "${CURLPP_PATH}/include")
-	set (CURLPP_LIB "${CURLPP_PATH}/lib/x64/Release/curlpp.lib")
+	set (CURL_PATH "${SC_MACHINE_THIRDPARTY_PATH}/curl")
+	set (CURL_INCLUDE "${CURL_PATH}/include")
+	set (CURL_LIBRARIES "${CURL_PATH}/lib/libcurl_${MSVC_SUFFIX}.lib" "WSock32.lib" "Ws2_32.lib")
 
 	set (GLIB2_INCLUDE_DIRS "${GLIB_PATH}/include"
 							"${GLIB_PATH}/include/glib")

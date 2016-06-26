@@ -37,8 +37,6 @@ Class::Class(const Cursor &cursor, const Namespace &currentNamespace)
         m_displayName = utils::GetQualifiedName(displayName, currentNamespace);
     }*/
 
-	m_metaData.Check();
-
 	m_displayName = cursor.GetSpelling();
 
     for (auto &child : cursor.GetChildren())
@@ -58,7 +56,10 @@ Class::Class(const Cursor &cursor, const Namespace &currentNamespace)
 
             // automatically enable the type if not explicitly disabled
 			if (baseClass->IsNative())
-                m_isScObject = true;
+			{
+				m_isScObject = true;
+				m_metaData.SetProperty(ParserMeta::ParentClass, baseClass->name);
+			}
         }
             break;
 
@@ -94,7 +95,7 @@ Class::Class(const Cursor &cursor, const Namespace &currentNamespace)
 				std::string const name = child.GetSpelling();
 				if (name == "__null_meta")
 				{
-					m_metaData = MetaDataManager(child);
+					m_metaData.Merge(MetaDataManager(child));
 				}
 				else
 				{
@@ -108,6 +109,8 @@ Class::Class(const Cursor &cursor, const Namespace &currentNamespace)
         }
 
     }
+
+	m_metaData.Check();
 }
 
 Class::~Class(void)
@@ -335,7 +338,7 @@ void Class::GenerateDeclarations(std::stringstream & outCode) const
 		outCode << "\\\n	}";
 
 		std::string loadPriority;
-		if (!m_metaData.GetPropertySafe(Props::LoadPriority, loadPriority))
+		if (!m_metaData.GetPropertySafe(Props::LoadOrder, loadPriority))
 			loadPriority = "1000";
 
 		outCode << "\\\n	sc_uint32 _getLoadPriority()";

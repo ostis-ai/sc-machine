@@ -26,23 +26,23 @@ namespace n1
 
         public:
 
-            SC_PROPERTY(Keynode, SysIdtf("test_keynode1"))
+            SC_PROPERTY(Keynode("test_keynode1"))
             ScAddr mTestKeynode1;
 
-            SC_PROPERTY(Keynode, SysIdtf("test_keynode2"))
+            SC_PROPERTY(Keynode("test_keynode2"))
             ScAddr mTestKeynode2;
 
-            SC_PROPERTY(Keynode, SysIdtf("test_keynode3"))
+            SC_PROPERTY(Keynode("test_keynode3"))
             static ScAddr mTestKeynode3;
 
             // not created object
-            SC_PROPERTY(Keynode, SysIdtf("test_keynode_force"), ForceCreate)
+            SC_PROPERTY(Keynode("test_keynode_force"), ForceCreate)
             ScAddr mTestKeynodeForce;
 
-			SC_PROPERTY(Template, SysIdtf("test_template"))
+			SC_PROPERTY(Template("test_template"))
 			ScTemplate mTestTemplate;
 
-			SC_PROPERTY(Template, SysIdtf("test_template2"))
+			SC_PROPERTY(Template("test_template2"))
 			static ScTemplate mTestTemplate2;
         };
     }

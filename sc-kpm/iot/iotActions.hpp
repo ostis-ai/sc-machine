@@ -69,10 +69,10 @@ namespace iot
 		tTaskSet mTaskSet;
 
 	public:
-		SC_PROPERTY(Keynode, SysIdtf("action_periodical"), ForceCreate)
+		SC_PROPERTY(Keynode("action_periodical"), ForceCreate)
 		static ScAddr msActionPeriodical;
 
-		SC_PROPERTY(Keynode, SysIdtf("action_time_specified"), ForceCreate)
+		SC_PROPERTY(Keynode("action_time_specified"), ForceCreate)
 		static ScAddr msActionTimeSpecified;
 
 	private:

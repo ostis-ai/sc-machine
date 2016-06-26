@@ -17,9 +17,12 @@ class MetaDataManager
 public:
     MetaDataManager(Cursor const & cursor);
 
+	void Merge(MetaDataManager const & metaData);
+
     std::string GetProperty(std::string const & key) const;
     bool GetPropertySafe(std::string const & key, std::string & outValue) const;
     bool HasProperty(std::string const & key) const;
+	void SetProperty(std::string const & key, std::string const & value);
 
     bool GetFlag(std::string const & key) const;
 	size_t GetLineNumber() const;

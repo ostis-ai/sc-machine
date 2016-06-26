@@ -17,7 +17,7 @@ Method::Method(
     , m_parent(parent)
     , m_name(cursor.GetSpelling())
 {
-    
+	m_metaData.Check();
 }
 
 bool Method::ShouldCompile(void) const

@@ -13,7 +13,7 @@
 
 class iotModule : public ScModule
 {
-	SC_CLASS(LoadPriority(10))
+	SC_CLASS(LoadOrder(10))
 	SC_GENERATED_BODY()
 
 	sc_result initializeImpl();
