@@ -12,7 +12,19 @@
 #include <iostream>
 #include <sstream>
 
+extern "C"
+{
+#include <glib.h>
+}
+
 #define SC_BOOL(x) (x) ? SC_TRUE : SC_FALSE
+
+GMutex gContextMutex;
+struct ContextMutexLock
+{
+	ContextMutexLock() { g_mutex_lock(&gContextMutex); }
+	~ContextMutexLock() { g_mutex_unlock(&gContextMutex); }
+};
 
 unsigned int gContextGounter;
 
@@ -49,12 +61,16 @@ void ScMemory::shutdown(bool saveState /* = true */)
 void ScMemory::registerContext(ScMemoryContext const * ctx)
 {
     assert(!hasMemoryContext(ctx));
+	
+	ContextMutexLock lock;
     msContexts.push_back(ctx);
 }
 
 void ScMemory::unregisterContext(ScMemoryContext const * ctx)
 {
     assert(hasMemoryContext(ctx));
+
+	ContextMutexLock lock;
     tMemoryContextList::iterator it = msContexts.begin();
     for (; it != msContexts.end(); ++it)
     {
@@ -68,6 +84,7 @@ void ScMemory::unregisterContext(ScMemoryContext const * ctx)
 
 bool ScMemory::hasMemoryContext(ScMemoryContext const * ctx)
 {
+	ContextMutexLock lock;
     tMemoryContextList::const_iterator it = msContexts.begin();
     for (; it != msContexts.end(); ++it)
     {

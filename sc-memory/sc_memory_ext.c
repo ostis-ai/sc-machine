@@ -94,7 +94,6 @@ sc_result sc_ext_initialize(const sc_char *ext_dir_path)
         mi->ptr = g_module_open(mi->path, G_MODULE_BIND_LOCAL);
         if (mi->ptr == null_ptr)
         {
-            g_warning("Can't load module: %s. Error: %s", mi->path, g_module_error());
             goto clean;
         }
 

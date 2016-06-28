@@ -1,8 +1,5 @@
 #ifndef __CURL_CURLBUILD_H
 #define __CURL_CURLBUILD_H
-
-#include "curl_config.h"
-
 /***************************************************************************
  *                                  _   _ ____  _
  *  Project                     ___| | | |  _ \| |

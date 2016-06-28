@@ -244,12 +244,9 @@ void Class::GenerateDeclarations(std::stringstream & outCode) const
 
 		outCode << "\\\nprivate:";
 		outCode << "\\\n\ttypedef " << agentClass->name << " Super;";
-		if (agentClass->name == Classes::AgentAction)
+		bool const isActionAgent = (agentClass->name == Classes::AgentAction);
+		if (isActionAgent)
 		{
-			if (!m_metaData.HasProperty(Props::AgentCommandClass))
-			{
-				EMIT_ERROR(Props::AgentCommandClass << " not specified for " << m_displayName);
-			}
 			outCode << "\\\n\tvirtual sc_result runImpl(ScAddr const & requestAddr, ScAddr const & resultAddr); ";
 			listenAddr = "GetCommandInitiatedAddr()";
 			eventType = "SC_EVENT_ADD_OUTPUT_ARC";
@@ -310,8 +307,26 @@ void Class::GenerateDeclarations(std::stringstream & outCode) const
 		outCode << "\\\n		check_expr(!msEventPtr); ";
 		outCode << "\\\n		ScMemoryContext ctx(sc_access_lvl_make_min, \"handler_" << m_displayName << "\"); ";
 		outCode << "\\\n		msEventPtr = sc_event_new(ctx.getRealContext(), " << listenAddr << ".getRealAddr(), " << eventType << ", 0, &" << m_displayName << "::handler_" << m_displayName << ", 0);";
-		outCode << "\\\n	}";
+		outCode << "\\\n        if (msEventPtr)";
+		outCode << "\\\n        {";
 
+		/// TODO: Use common log system
+		if (isActionAgent)
+		{
+			outCode << "\\\n            std::cout << \"[info] Register agent " << m_displayName << " to action " << m_metaData.GetNativeString(Props::AgentCommandClass) << "\" << std::endl; ";
+		}
+		else
+		{
+			outCode << "\\\n            std::cout << \"[info] Register agent " << m_displayName << "\" << std::endl; ";
+		}
+		outCode << "\\\n        }";
+		outCode << "\\\n        else";
+		outCode << "\\\n        {";
+		outCode << "\\\n            std::cout << \"[error] Can't register agent " << m_displayName << "\" << std::endl; ";
+		outCode << "\\\n        }";
+	
+		outCode << "\\\n	}";
+		
 		outCode << "\\\n	static void unregisterHandler()";
 		outCode << "\\\n	{";
 		outCode << "\\\n		if (msEventPtr) ";

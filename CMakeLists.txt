@@ -76,15 +76,17 @@ elseif (${WIN32})
 
 	# CURL
 	set (CURL_PATH "${SC_MACHINE_THIRDPARTY_PATH}/curl")
+	set (CURL_RUNTIME_PATH "${CURL_PATH}/bin")
 	set (CURL_INCLUDE "${CURL_PATH}/include")
-	set (CURL_LIBRARIES "${CURL_PATH}/lib/libcurl_${MSVC_SUFFIX}.lib" "WSock32.lib" "Ws2_32.lib")
+	set (CURL_LIBRARIES "${CURL_PATH}/lib/libcurl.lib" "WSock32.lib" "Ws2_32.lib")
 
 	set (GLIB2_INCLUDE_DIRS "${GLIB_PATH}/include"
 							"${GLIB_PATH}/include/glib")
 	set (REDIS_INCLUDE_DIRS "${REDIS_PATH}")
 
 	include_directories("${SC_MACHINE_ANTRL_DIR}/include"
-						"${BOOST_PATH}/include")
+						"${BOOST_PATH}/include"
+						"${SC_MACHINE_THIRDPARTY_PATH}")
 
 	link_directories(
 					 "${GLIB_PATH}/lib/v110/x64/Release/dynamic/"
@@ -116,6 +118,9 @@ elseif (${WIN32})
             "${ZLIB_RUNTIME_PATH}/zlib.dll"
             "${FFI_RUNTIME_PATH}/libffi.dll"
             "${CLANG_RUNTIME_PATH}/libclang.dll"
+            "${CURL_RUNTIME_PATH}/libcurl.dll"
+            "${CURL_RUNTIME_PATH}/libeay32.dll"
+            "${CURL_RUNTIME_PATH}/ssleay32.dll"
 			)
 	file(COPY ${WIN_RUNTIME_LIBRARIES} DESTINATION "${SC_MACHINE_ROOT}/bin")
 
