@@ -7,6 +7,7 @@ set(SOURCES
 set(HEADERS 
 	"nl.hpp"
 	"nlApiAi.hpp"
+	"nlApiAiUtils.hpp"
 )
 
 include_directories(${SC_IOT_SRC} ${SC_MEMORY_SRC} ${GLIB2_INCLUDE_DIRS} ${CURL_INCLUDE})
