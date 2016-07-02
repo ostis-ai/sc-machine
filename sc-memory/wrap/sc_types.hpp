@@ -15,6 +15,7 @@ extern "C"
 #include <sstream>
 #include <map>
 #include <set>
+#include <vector>
 #include <hash_map>
 #include <unordered_map>
 #include <unordered_set>
@@ -24,6 +25,8 @@ extern "C"
 #include "sc_defines.hpp"
 
 typedef std::set<std::string> tStringSet;
+typedef std::vector<std::string> tStringVector;
+typedef std::map<std::string, std::string> tStringMap;
 
 class ScMemoryContext;
 class ScAddr;
