@@ -5,6 +5,8 @@ scripts/redis*
 tools/builder/src/parser/
 *.generated.*
 
+!thirdparty/*/bin/
+
 sc-machine.json
 manifest.json
 *.user
