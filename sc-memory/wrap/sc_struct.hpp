@@ -30,6 +30,8 @@ public:
 	/* Check if specified element exist in structure */
 	_SC_EXTERN bool hasElement(ScAddr const & elAddr) const;
 
+	_SC_EXTERN ScAddr const & operator * () const;
+
 	/* Check if structure has no elements */
 	_SC_EXTERN bool isEmpty() const;
 

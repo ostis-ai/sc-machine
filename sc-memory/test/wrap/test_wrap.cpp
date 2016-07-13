@@ -646,14 +646,15 @@ void test_common_sc_templates()
 	{
 		ScMemoryContext ctx(sc_access_lvl_make_min);
 
-		// create template
 		/*			_y
-					^
-					|
-					| <----- _z
-					|
-					x <----- _s
-					*/
+		 *			^
+		 *			|
+		 *			| <----- _z
+		 *			|
+		 *			x <----- _s
+		 *
+		 * scs: x _-> _z:: _y;; _s _-> x;;
+		 */ 
 		ScAddr templateAddr = ctx.createNode(sc_type_const | sc_type_node_struct);
 		g_assert(templateAddr.isValid());
 
@@ -733,6 +734,137 @@ void test_common_sc_templates()
 	shutdown_memory(false);
 }
 
+void test_common_search_in_struct()
+{
+	init_memory();
+	{
+		ScMemoryContext ctx(sc_access_lvl_make_min);
+
+		/*
+		 *   _y
+		 *    ^
+		 *    | <--- _z
+		 *    x
+		 * scs: x _-> _z:: _y;;
+		 */
+
+		ScAddr templateAddr = ctx.createNode(*ScType::NODE_CONST_STRUCT);
+		g_assert(templateAddr.isValid());
+
+		ScAddr xAddr, _yAddr, _zAddr, _xyEdgeAddr, _zxyEdgeAddr;
+		ScStruct templStruct(&ctx, templateAddr);
+		{
+			xAddr = ctx.createNode(*ScType::NODE_CONST);
+			g_assert(xAddr.isValid());
+			g_assert(ctx.helperSetSystemIdtf("x", xAddr));
+
+			_yAddr = ctx.createNode(*ScType::NODE_VAR);
+			g_assert(_yAddr.isValid());
+			g_assert(ctx.helperSetSystemIdtf("_y", _yAddr));
+
+			_zAddr = ctx.createNode(*ScType::NODE_VAR);
+			g_assert(_zAddr.isValid());
+			g_assert(ctx.helperSetSystemIdtf("_z", _zAddr));
+
+			_xyEdgeAddr = ctx.createArc(*ScType::EDGE_ACCESS_VAR_POS_PERM, xAddr, _yAddr);
+			g_assert(_xyEdgeAddr.isValid());
+			g_assert(ctx.helperSetSystemIdtf("_xyEdge", _xyEdgeAddr));
+
+			_zxyEdgeAddr = ctx.createArc(*ScType::EDGE_ACCESS_VAR_POS_PERM, _zAddr, _xyEdgeAddr);
+			g_assert(_zxyEdgeAddr.isValid());
+			g_assert(ctx.helperSetSystemIdtf("_zxyEdge", _zxyEdgeAddr));
+
+			templStruct << xAddr << _yAddr << _zAddr << _xyEdgeAddr << _zxyEdgeAddr;
+		}
+
+		ScTemplate templ;
+		g_assert(ctx.helperBuildTemplate(templ, templateAddr));
+
+		// create text struct
+		ScAddr testStructAddr = ctx.createNode(*ScType::NODE_CONST_STRUCT);
+		g_assert(testStructAddr.isValid());
+
+		/*   y ---> u
+		 *   ^
+		 *   | <--- z
+		 *   x
+		 *   | <--- s
+		 *   v
+		 *   g
+		 * scs: x -> z: y; s: g;; y -> u;;
+		 */
+		ScAddr tyAddr, txAddr, tgAddr, tuAddr, tzAddr, tsAddr,
+			tyuEdgeAddr, txyEdgeAddr, txgEdgeAddr, tzxyEdgeAddr, tsxgEdgeAddr;
+
+		ScStruct testStruct(&ctx, testStructAddr);
+		{
+			txAddr = xAddr;
+
+			tyAddr = ctx.createNode(*ScType::NODE_CONST);
+			g_assert(tyAddr.isValid());
+
+			tgAddr = ctx.createNode(*ScType::NODE_CONST);
+			g_assert(tgAddr.isValid());
+
+			tuAddr = ctx.createNode(*ScType::NODE_CONST);
+			g_assert(tuAddr.isValid());
+
+			tzAddr = ctx.createNode(*ScType::NODE_CONST);
+			g_assert(tzAddr.isValid());
+
+			tsAddr = ctx.createNode(*ScType::NODE_CONST);
+			g_assert(tsAddr.isValid());
+
+			tyuEdgeAddr = ctx.createArc(*ScType::EDGE_ACCESS_CONST_POS_PERM, tyAddr, tuAddr);
+			g_assert(tyuEdgeAddr.isValid());
+
+			txyEdgeAddr = ctx.createArc(*ScType::EDGE_ACCESS_CONST_POS_PERM, txAddr, tyAddr);
+			g_assert(txyEdgeAddr.isValid());
+
+			txgEdgeAddr = ctx.createArc(*ScType::EDGE_ACCESS_CONST_POS_PERM, txAddr, tgAddr);
+			g_assert(txgEdgeAddr.isValid());
+
+			tzxyEdgeAddr = ctx.createArc(*ScType::EDGE_ACCESS_CONST_POS_PERM, tzAddr, txyEdgeAddr);
+			g_assert(tzxyEdgeAddr.isValid());
+
+			tsxgEdgeAddr = ctx.createArc(*ScType::EDGE_ACCESS_CONST_POS_PERM, tsAddr, txgEdgeAddr);
+			g_assert(tsxgEdgeAddr.isValid());
+
+			testStruct << tyAddr << txAddr << tgAddr 
+					   << tuAddr << tzAddr << tsAddr 
+					   << tyuEdgeAddr << txyEdgeAddr 
+					   << txgEdgeAddr << tzxyEdgeAddr 
+					   << tsxgEdgeAddr;
+		}
+
+		// add extra edges that not included into struct
+		// scs: x -> t: y;;
+		ScAddr edge1 = ctx.createArc(*ScType::EDGE_ACCESS_CONST_POS_PERM, txAddr, tyAddr);
+		g_assert(edge1.isValid());
+		ScAddr edge2 = ctx.createArc(*ScType::EDGE_ACCESS_CONST_POS_PERM, tzAddr, edge1);
+		g_assert(edge2.isValid());
+
+		{
+			ScTemplateSearchResult result;
+			g_assert(ctx.helperSearchTemplateInStruct(templ, *testStruct, result));
+
+			g_assert(result.getSize() == 2);
+			for (uint32_t i = 0; i < result.getSize(); ++i)
+			{
+				ScTemplateSearchResultItem res1 = result.getResult(i);
+				g_assert(res1["x"] == xAddr);
+				g_assert(res1["_y"] == tyAddr || res1["_y"] == tgAddr);
+				g_assert(res1["_z"] == tzAddr || res1["_z"] == tsAddr);
+				g_assert(res1["_xyEdge"] == txyEdgeAddr || res1["_xyEdge"] == txgEdgeAddr);
+				g_assert(res1["_zxyEdge"] == tsxgEdgeAddr || res1["_zxyEdge"] == tzxyEdgeAddr);
+			}
+
+		}
+
+	}
+	shutdown_memory(false);
+}
+
 int main(int argc, char *argv[])
 {
     g_test_init(&argc, &argv, NULL);
@@ -743,6 +875,7 @@ int main(int argc, char *argv[])
 	g_test_add_func("/common/templates", test_common_templates);
 	g_test_add_func("/common/struct", test_common_struct);
 	g_test_add_func("/common/sc_templates", test_common_sc_templates);
+	g_test_add_func("/common/searchInStruct", test_common_search_in_struct);
 
     g_test_add_func("/codegen/keynodes", test_codegen_keynodes);
 	g_test_add_func("/codegen/agent", test_codegen_agent);

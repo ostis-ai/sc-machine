@@ -293,6 +293,11 @@ bool ScMemoryContext::helperSearchTemplate(ScTemplate const & templ, ScTemplateS
     return templ.search(*this, result);
 }
 
+bool ScMemoryContext::helperSearchTemplateInStruct(ScTemplate const & templ, ScAddr const & scStruct, ScTemplateSearchResult & result)
+{
+	return templ.searchInStruct(*this, scStruct, result);
+}
+
 bool ScMemoryContext::helperBuildTemplate(ScTemplate & templ, ScAddr const & templAddr)
 {
 	return templ.fromScTemplate(*this, templAddr);

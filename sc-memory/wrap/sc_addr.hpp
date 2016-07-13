@@ -18,19 +18,6 @@ extern "C"
 
 typedef sc_addr tRealAddr;
 
-struct tRealAddrLess
-{
-	bool operator () (tRealAddr const & a, tRealAddr const & b) const
-	{
-		if (a.seg < b.seg)
-			return true;
-
-		if (a.seg > b.seg)
-			return false;
-
-		return (a.offset < b.offset);
-	}
-};
 
 class _SC_EXTERN ScAddr
 {
@@ -59,3 +46,41 @@ protected:
 
 typedef std::vector<ScAddr> tAddrVector;
 typedef std::list<ScAddr> tAddrList;
+
+
+struct RealAddrLessFunc
+{
+	bool operator () (tRealAddr const & a, tRealAddr const & b) const
+	{
+		if (a.seg < b.seg)
+			return true;
+
+		if (a.seg > b.seg)
+			return false;
+
+		return (a.offset < b.offset);
+	}
+};
+
+struct ScAddLessFunc
+{
+	bool operator () (ScAddr const & a, ScAddr const & b)
+	{
+		return RealAddrLessFunc()(a.getRealAddr(), b.getRealAddr());
+	}
+};
+
+// hash functions
+template <typename HashType>
+struct ScAddrHashFunc
+{
+	HashType operator () (ScAddr const & addr);
+};
+
+template <> struct ScAddrHashFunc < uint32_t >
+{
+	uint32_t operator() (ScAddr const & addr)
+	{
+		return SC_ADDR_LOCAL_TO_INT(addr.getRealAddr());
+	}
+};

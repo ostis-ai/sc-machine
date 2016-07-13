@@ -24,6 +24,7 @@ set (SC_MEMORY_WRAP_SOURCES
 			"wrap/sc_object.cpp"
 			"wrap/sc_module.cpp"
 			"wrap/sc_struct.cpp"
+			"wrap/sc_types.cpp"
 			"wrap/kpm/sc_agent.cpp"
 
             "wrap/sc_memory.hpp"
@@ -47,7 +48,8 @@ add_dependencies(sc-memory-cpp sc-memory sc-code-generator)
 target_link_libraries(sc-memory-cpp sc-memory)
 sc_codegen_ex(sc-memory-cpp ${SC_MEMORY_WRAP_ROOT} "${SC_MEMORY_WRAP_ROOT}/generated")
 
-target_compile_definitions(sc-memory PUBLIC "-DSC_MEMORY_SELF_BUILD")
+target_compile_definitions(sc-memory PRIVATE "-DSC_MEMORY_SELF_BUILD")
+target_compile_definitions(sc-memory-cpp PRIVATE "-DSC_MEMORY_SELF_BUILD")
 
 # compile test
 add_subdirectory(test)

@@ -6,12 +6,18 @@
 
 #pragma once
 
+extern "C"
+{
 #include "sc_memory.h"
+}
 
 #include <string>
 #include <sstream>
 #include <map>
 #include <set>
+#include <hash_map>
+#include <unordered_map>
+#include <unordered_set>
 #include <assert.h>
 #include <stdint.h>
 
@@ -22,12 +28,12 @@ typedef std::set<std::string> tStringSet;
 class ScMemoryContext;
 class ScAddr;
 
-class ScType
+class _SC_EXTERN ScType
 {
 public:
 	typedef sc_type tRealType;
 
-	explicit ScType() : mRealType(0) 
+	explicit ScType() : mRealType(0)
 	{
 	}
 
@@ -84,4 +90,28 @@ public:
 
 private:
 	tRealType mRealType;
+
+public:
+
+	static const ScType EDGE_ACCESS_CONST_POS_PERM;
+	static const ScType EDGE_ACCESS_VAR_POS_PERM;
+
+	static const ScType NODE_CONST;
+	static const ScType NODE_VAR;
+	
+	static const ScType NODE_CONST_STRUCT;
+	static const ScType NODE_CONST_TUPLE;
+	static const ScType NODE_CONST_ROLE;
+	static const ScType NODE_CONST_NOROLE;
+	static const ScType NODE_CONST_CLASS;
+	static const ScType NODE_CONST_ABSTRACT;
+	static const ScType NODE_CONST_MATERIAL;
+
+	static const ScType NODE_VAR_STRUCT;
+	static const ScType NODE_VAR_TUPLE;
+	static const ScType NODE_VAR_ROLE;
+	static const ScType NODE_VAR_NOROLE;
+	static const ScType NODE_VAR_CLASS;
+	static const ScType NODE_VAR_ABSTRACT;
+	static const ScType NODE_VAR_MATERIAL;
 };

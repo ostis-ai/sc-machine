@@ -120,6 +120,7 @@ public:
 	_SC_EXTERN bool helperFindBySystemIdtf(std::string const & sysIdtf, ScAddr & outAddr);
 	_SC_EXTERN bool helperGenTemplate(ScTemplate const & templ, ScTemplateGenResult & result);
     _SC_EXTERN bool helperSearchTemplate(ScTemplate const & templ, ScTemplateSearchResult & result);
+	_SC_EXTERN bool helperSearchTemplateInStruct(ScTemplate const & templ, ScAddr const & scStruct, ScTemplateSearchResult & result);
 	_SC_EXTERN bool helperBuildTemplate(ScTemplate & templ, ScAddr const & templAddr);
 
 private:

@@ -165,6 +165,7 @@ protected:
 	// Begin: calls by memory context
 	bool generate(ScMemoryContext & ctx, ScTemplateGenResult & result) const;
     bool search(ScMemoryContext & ctx, ScTemplateSearchResult & result) const;
+	bool searchInStruct(ScMemoryContext & ctx, ScAddr const & scStruct, ScTemplateSearchResult & result) const;
 	
 	// Builds template based on template in sc-memory
 	bool fromScTemplate(ScMemoryContext & ctx, ScAddr const & scTemplateAddr);

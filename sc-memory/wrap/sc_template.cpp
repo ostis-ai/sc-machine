@@ -131,10 +131,14 @@ private:
 class ScTemplateSearch
 {
 public:
-    ScTemplateSearch(ScTemplate::tReplacementsMap const & replacements, ScTemplate::tTemplateConts3Vector const & constructions, ScMemoryContext & context)
+    ScTemplateSearch(ScTemplate::tReplacementsMap const & replacements, 
+					 ScTemplate::tTemplateConts3Vector const & constructions,
+					 ScMemoryContext & context,
+					 ScAddr const & scStruct)
         : mReplacements(replacements)
         , mConstructions(constructions)
         , mContext(context)
+		, mScStruct(scStruct)
     {
     }
 
@@ -196,6 +200,21 @@ public:
         return ScIterator3Ptr();
     }
 
+	bool checkInStruct(ScAddr const & addr)
+	{
+		tStructCache::const_iterator it = mStructCache.find(addr);
+		if (it != mStructCache.end())
+			return true;
+		
+		if (mContext.helperCheckArc(mScStruct, addr, sc_type_arc_pos_const_perm))
+		{
+			mStructCache.insert(addr);
+			return true;
+		}
+
+		return false;
+	}
+
     void iteration(size_t constrIndex, ScTemplateSearchResult & result)
     {
         check_expr(constrIndex < mConstructions.size());
@@ -206,6 +225,17 @@ public:
         ScIterator3Ptr const it3 = createIterator(constr);
         while (it3->next())
         {
+			/// check if search in structure
+			if (mScStruct.isValid())
+			{
+				if (!checkInStruct(it3->value(0)) ||
+					!checkInStruct(it3->value(1)) ||
+					!checkInStruct(it3->value(2)))
+				{
+					continue;
+				}
+			}
+
             // do not make cycle for optimization issues (remove comparsion expresion)
             mResultAddrs[resultIdx] = it3->value(0);
             mResultAddrs[resultIdx + 1] = it3->value(1);
@@ -243,6 +273,10 @@ private:
     ScTemplate::tReplacementsMap const & mReplacements;
     ScTemplate::tTemplateConts3Vector const & mConstructions;
     ScMemoryContext & mContext;
+	ScAddr const & mScStruct;
+
+	typedef std::unordered_set<ScAddr, ScAddrHashFunc<uint32_t>> tStructCache;
+	tStructCache mStructCache;
 
     tAddrVector mResultAddrs;
 };
@@ -251,7 +285,7 @@ class ScTemplateBuilder
 {
 	friend class ScTemplate;
 
-	typedef std::map<tRealAddr, size_t, tRealAddrLess> tAddrToIndexMap;
+	typedef std::map<tRealAddr, size_t, RealAddrLessFunc> tAddrToIndexMap;
 
 	struct ObjectInfo
 	{
@@ -542,8 +576,14 @@ bool ScTemplate::generate(ScMemoryContext & ctx,  ScTemplateGenResult & result) 
 
 bool ScTemplate::search(ScMemoryContext & ctx, ScTemplateSearchResult & result) const
 {
-    ScTemplateSearch search(mReplacements, mConstructions, ctx);
+    ScTemplateSearch search(mReplacements, mConstructions, ctx, ScAddr());
     return search(result);
+}
+
+bool ScTemplate::searchInStruct(ScMemoryContext & ctx, ScAddr const & scStruct, ScTemplateSearchResult & result) const
+{
+	ScTemplateSearch search(mReplacements, mConstructions, ctx, scStruct);
+	return search(result);
 }
 
 bool ScTemplate::fromScTemplate(ScMemoryContext & ctx, ScAddr const & scTemplateAddr)

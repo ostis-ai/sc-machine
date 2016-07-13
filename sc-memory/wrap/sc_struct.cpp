@@ -74,6 +74,11 @@ ScStruct & ScStruct::operator >> (ScAddr const & elAddr)
 	return *this;
 }
 
+ScAddr const & ScStruct::operator * () const
+{
+	return mAddr;
+}
+
 bool ScStruct::isEmpty() const
 {
 	check_expr(mContext);
