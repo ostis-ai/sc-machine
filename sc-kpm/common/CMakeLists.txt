@@ -1,7 +1,16 @@
-file(GLOB_RECURSE SOURCES "*.c")
-file(GLOB_RECURSE HEADERS "*.h")
 
-add_library(sc-kpm-common SHARED ${SOURCES} ${HEADERS})
+set (SOURCES
+	"sc_keynodes.c"
+
+	)
+
+set (HEADERS
+	"sc_keynodes.h"
+	"sc_common_types.h"
+
+	)
+
+add_library(sc-kpm-common STATIC ${SOURCES} ${HEADERS})
 
 include_directories("${SC_KPM_ROOT}/common" ${SC_MEMORY_SRC} ${GLIB2_INCLUDE_DIRS})
 add_dependencies(sc-kpm-common sc-memory)

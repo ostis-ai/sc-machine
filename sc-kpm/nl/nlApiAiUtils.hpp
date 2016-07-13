@@ -33,8 +33,89 @@ size_t CurlWrite_CallbackFunc_StdString(void *contents, size_t size, size_t nmem
 	return size * nmemb;
 }
 
+template <typename ParentType>
+bool getJSONMemberSafe(ParentType & parent, const char * name, rapidjson::Value & outValue)
+{
+	if (parent.HasMember(name))
+	{
+		outValue = parent[name];
+		return true;
+	}
+	return false;
+}
+
+template < class ContainerT >
+void tokenize(const std::string& str, ContainerT& tokens,
+	const std::string& delimiters = " ", bool trimEmpty = false)
+{
+	std::string::size_type pos, lastPos = 0;
+
+	using value_type = typename ContainerT::value_type;
+	using size_type = typename ContainerT::size_type;
+
+	while (true)
+	{
+		pos = str.find_first_of(delimiters, lastPos);
+		if (pos == std::string::npos)
+		{
+			pos = str.length();
+
+			if (pos != lastPos || !trimEmpty)
+				tokens.push_back(value_type(str.data() + lastPos,
+				(size_type)pos - lastPos));
+
+			break;
+		}
+		else
+		{
+			if (pos != lastPos || !trimEmpty)
+				tokens.push_back(value_type(str.data() + lastPos,
+				(size_type)pos - lastPos));
+		}
+
+		lastPos = pos + 1;
+	}
+}
+
+bool parseTimeStamp(std::string str, std::tm & outValue)
+{
+	//2016-02-16T00:30:13.529Z
+	/*size_t pos = str.find('-');
+	if (pos == std::string::npos)
+		return false;
+	outValue.tm_year = atoi(str.substr(0, pos).c_str());
+	str = str.substr(pos + 1);
+
+	pos = str.find('-');
+	if (pos == std::string::npos)
+		return false;
+	outValue.tm_mon = atoi(str.substr(0, pos).c_str());
+	str = str.substr(pos + 1);
+	
+	pos = str.find('T');
+	if (pos == std::string::npos)
+		return false;
+	outValue.tm_mday = atoi(str.substr(0, pos).c_str());
+	str = str.substr(pos + 1);*/
+	tStringVector tokens;
+	tokenize(str, tokens, "-T:.");
+
+	check_expr(tokens.size() == 7);
+	outValue.tm_year = atoi(tokens[0].c_str());
+	outValue.tm_mon = atoi(tokens[1].c_str());
+	outValue.tm_mday = atoi(tokens[2].c_str());
+
+	outValue.tm_hour = atoi(tokens[3].c_str());
+	outValue.tm_min = atoi(tokens[4].c_str());
+	outValue.tm_sec = atoi(tokens[5].c_str());
+
+	return true;
+}
+
 namespace apiAi
 {
+	
+
 	class Context
 	{
 	public:
@@ -70,16 +151,14 @@ namespace apiAi
 
 		void parseJSON(rapidjson::Value & jsonElement)
 		{
-			rapidjson::Value & jsonValue = jsonElement["name"];
-			if (jsonValue.IsString())
+			rapidjson::Value & jsonValue = rapidjson::Value();
+			if (getJSONMemberSafe(jsonElement, "name", jsonValue) && jsonValue.IsString())
 				m_name = jsonValue.GetString();
 
-			jsonValue = jsonElement["lifespan"];
-			if (jsonValue.IsInt())
+			if (getJSONMemberSafe(jsonElement, "lifespan", jsonValue) && jsonValue.IsInt())
 				m_lifespan = jsonValue.GetInt();
 
-			jsonValue = jsonElement["parameters"];
-			if (jsonValue.IsObject())
+			if (getJSONMemberSafe(jsonElement, "parameters", jsonValue) && jsonValue.IsObject())
 			{
 				rapidjson::Value::MemberIterator iter;
 				for (iter = jsonValue.MemberBegin(); iter != jsonValue.MemberEnd(); ++iter)
@@ -117,12 +196,11 @@ namespace apiAi
 
 		void parseJSON(rapidjson::Value & jsonElement)
 		{
-			rapidjson::Value & jsonValue = jsonElement["intentId"];
-			if (jsonValue.IsString())
+			rapidjson::Value & jsonValue = rapidjson::Value();
+			if (getJSONMemberSafe(jsonElement, "intentId", jsonValue) && jsonValue.IsString())
 				m_intentId = jsonValue.GetString();
 
-			jsonValue = jsonElement["intentName"];
-			if (jsonValue.IsString())
+			if (getJSONMemberSafe(jsonElement, "intentName", jsonValue) && jsonValue.IsString())
 				m_intentName = jsonValue.GetString();
 		}
 
@@ -151,12 +229,11 @@ namespace apiAi
 
 		void parseJSON(rapidjson::Value & jsonElement)
 		{
-			rapidjson::Value & jsonValue = jsonElement["speech"];
-			if (jsonValue.IsString())
+			rapidjson::Value & jsonValue = rapidjson::Value();
+			if (getJSONMemberSafe(jsonElement, "speech", jsonValue) && jsonValue.IsString())
 				m_speech = jsonValue.GetString();
 
-			jsonValue = jsonElement["speech"];
-			if (jsonValue.IsString())
+			if (getJSONMemberSafe(jsonElement, "source", jsonValue) && jsonValue.IsString())
 				m_source = jsonValue.GetString();
 		}
 
@@ -195,20 +272,17 @@ namespace apiAi
 
 		void parseJSON(rapidjson::Value & jsonElement)
 		{
-			rapidjson::Value & jsonValue = jsonElement["code"];
-			if (jsonValue.IsInt())
+			rapidjson::Value & jsonValue = rapidjson::Value();
+			if (getJSONMemberSafe(jsonElement, "code", jsonValue) && jsonValue.IsInt())
 				m_code = jsonValue.GetInt();
 
-			jsonValue = jsonElement["errorType"];
-			if (jsonValue.IsString())
+			if (getJSONMemberSafe(jsonElement, "errorType", jsonValue) && jsonValue.IsString())
 				m_errorType = jsonValue.GetString();
 
-			jsonValue = jsonElement["errorId"];
-			if (jsonValue.IsString())
+			if (getJSONMemberSafe(jsonElement, "errorId", jsonValue) && jsonValue.IsString())
 				m_errorId = jsonValue.GetString();
 
-			jsonValue = jsonElement["errorDetails"];
-			if (jsonValue.IsString())
+			if (getJSONMemberSafe(jsonElement, "errorDetails", jsonValue) && jsonValue.IsString())
 				m_errorDetails = jsonValue.GetString();
 		}
 
@@ -239,49 +313,42 @@ public:
 		/// TODO: parse error
 
 		// request id
-		rapidjson::Value & jsonValue = jsonDocument["id"];
-		if (!jsonValue.IsString())
+		rapidjson::Value & jsonValue = rapidjson::Value();
+		
+		if (!getJSONMemberSafe(jsonDocument, "id", jsonValue) || !jsonValue.IsString())
 			return false;
 
 		m_id = jsonValue.GetString();
 
 		// timestamp
-		jsonValue = jsonDocument["timestamp"];
-		if (!jsonValue.IsString())
+		if (!getJSONMemberSafe(jsonDocument, "timestamp", jsonValue) || !jsonValue.IsString())
 			return false;
 
-		std::istringstream ss(jsonValue.GetString());
-		ss.imbue(std::locale("en_EN.utf-8"));
-		ss >> std::get_time(&m_timeStamp, "%Y-%m-%dT%H:%M:%S"); //2016-02-16T00:30:13.529Z
+		parseTimeStamp(jsonValue.GetString(), m_timeStamp);
 		
 		// result
-		rapidjson::Value & jsonResult = jsonDocument["result"];
-		if (!jsonResult.IsObject())
+		rapidjson::Value & jsonResult = rapidjson::Value();
+		if (!getJSONMemberSafe(jsonDocument, "result", jsonResult) || !jsonResult.IsObject())
 			return false;
 
 		// result source
-		jsonValue = jsonResult["source"];
-		if (jsonValue.IsString())
+		if (getJSONMemberSafe(jsonResult, "source", jsonValue) && jsonValue.IsString())
 			m_resultSource = jsonValue.GetString();
 
 		// result resolved query
-		jsonValue = jsonResult["resolvedQuery"];
-		if (jsonValue.IsString())
+		if (getJSONMemberSafe(jsonResult, "resolvedQuery", jsonValue) && jsonValue.IsString())
 			m_resolvedQuery = jsonValue.GetString();
 
 		// result action
-		jsonValue = jsonResult["action"];
-		if (jsonValue.IsString())
+		if (getJSONMemberSafe(jsonResult, "action", jsonValue) && jsonValue.IsString())
 			m_action = jsonValue.GetString();
 
 		// result actionIncomplete
-		jsonValue = jsonResult["actionIncomplete"];
-		if (jsonValue.IsBool())
+		if (getJSONMemberSafe(jsonResult, "actionIncomplete", jsonValue) && jsonValue.IsBool())
 			m_isActionIncomplete = jsonValue.GetBool();
 
 		// result parameters
-		jsonValue = jsonResult["parameters"];
-		if (jsonValue.IsObject())
+		if (getJSONMemberSafe(jsonResult, "parameters", jsonValue) && jsonValue.IsObject())
 		{
 			rapidjson::Value::ConstMemberIterator iter;
 			for (iter = jsonValue.MemberBegin(); iter != jsonValue.MemberEnd(); ++iter)
@@ -292,8 +359,7 @@ public:
 		}
 
 		// contexts
-		jsonValue = jsonResult["contexts"];
-		if (jsonValue.IsArray())
+		if (getJSONMemberSafe(jsonResult, "contexts", jsonValue) && jsonValue.IsArray())
 		{
 			rapidjson::Value::Array const & arr = jsonValue.GetArray();
 			m_contexts.resize(arr.Size());
@@ -304,18 +370,15 @@ public:
 		}
 
 		// metadata
-		jsonValue = jsonResult["metadata"];
-		if (jsonValue.IsObject())
+		if (getJSONMemberSafe(jsonResult, "metadata", jsonValue) && jsonValue.IsObject())
 			m_metaData.parseJSON(jsonValue);
 
 		// fulfillment
-		jsonValue = jsonResult["fulfillment"];
-		if (jsonValue.IsObject())
+		if (getJSONMemberSafe(jsonResult, "fulfillment", jsonValue) && jsonValue.IsObject())
 			m_fulfillment.parseJSON(jsonValue);
 
 		// status
-		jsonValue = jsonDocument["status"];
-		if (jsonValue.IsObject())
+		if (getJSONMemberSafe(jsonDocument, "status", jsonValue) && jsonValue.IsObject())
 			m_status.parseJSON(jsonValue);
 		
 		return true;
