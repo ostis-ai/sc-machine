@@ -12,6 +12,7 @@
 #include "Namespace.hpp"
 
 #include "MacrosManager.hpp"
+#include "Cache.hpp"
 
 #include <list>
 
@@ -56,6 +57,8 @@ private:
     std::vector<Global*> m_globals;
     std::vector<Function*> m_globalFunctions;
     std::vector<Enum*> m_enums;
+
+	SourceCache * m_sourceCache;
 
 	void buildClasses(Cursor const & cursor, Namespace & currentNamespace);
     /*void buildGlobals(const Cursor &cursor, Namespace &currentNamespace);

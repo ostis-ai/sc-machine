@@ -32,6 +32,7 @@ macro(sc_codegen_ex Target SrcPath OutputPath)
 		--target 	"${Target}"
 		--source 	"${SrcPath}"
 		--output 	"${OutputPath}"
+		--build_dir "${CMAKE_CURRENT_BINARY_DIR}"
 		--flags 	${META_FLAGS}
 	)
 endmacro(sc_codegen_ex)

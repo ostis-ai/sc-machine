@@ -20,6 +20,8 @@ set (SOURCES
 	"Parser/Precompiled.cpp"
 	"Parser/ReflectionParser.cpp"
 	"Parser/MacrosManager.cpp"
+	"Parser/Cache.cpp"
+	"Parser/Sha256.cpp"
 )
 
 set (HEADERS
@@ -46,6 +48,8 @@ set (HEADERS
 	"Parser/Switches.hpp"
 	"Parser/MacrosManager.hpp"
 	"Parser/Types.hpp"
+	"Parser/Cache.hpp"
+	"Parser/Sha256.hpp"
 )
 
 

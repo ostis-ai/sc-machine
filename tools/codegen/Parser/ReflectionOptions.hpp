@@ -11,7 +11,8 @@ struct ReflectionOptions
     std::string targetName;
     std::string inputPath;
     std::string outputPath;
-    std::string templateDirectory;
+    std::string buildDirectory;
+	std::string generatorPath;
 
     std::vector<std::string> arguments;
 };

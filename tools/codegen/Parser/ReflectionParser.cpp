@@ -25,9 +25,10 @@
     }                                                \
 
 ReflectionParser::ReflectionParser(const ReflectionOptions &options)
-    : m_options(options)
-    , m_index(nullptr)
-    , m_translationUnit(nullptr)
+	: m_options(options)
+	, m_index(nullptr)
+	, m_translationUnit(nullptr)
+	, m_sourceCache(nullptr)
 {
    
 }
@@ -51,6 +52,8 @@ ReflectionParser::~ReflectionParser(void)
 
     if (m_index)
         clang_disposeIndex(m_index);
+
+	delete m_sourceCache;
 }
 
 void ReflectionParser::CollectFiles(std::string const & inPath, tStringList & outFiles)
@@ -98,6 +101,10 @@ void ReflectionParser::Parse(void)
 	std::string moduleFile;
 	CollectFiles(m_options.inputPath, filesList);
 
+	m_sourceCache = new SourceCache(m_options.buildDirectory, m_options.targetName);
+	m_sourceCache->Load();
+	m_sourceCache->CheckGenerator(m_options.generatorPath);
+
 	// ensure that output directory exist
 	fs::create_directory(fs::path(m_options.outputPath));
 
@@ -132,6 +139,7 @@ void ReflectionParser::Parse(void)
 		EMIT_ERROR(e.GetDescription() << " in " << moduleFile);
 	}
 
+	m_sourceCache->Save();
 }
 
 //CXChildVisitResult visitCursor(CXCursor cursor, CXCursor parent, CXClientData client_data)
@@ -179,7 +187,10 @@ void ReflectionParser::Clear()
 }
 
 bool ReflectionParser::ProcessFile(std::string const & fileName, bool InProcessModule)
-{   
+{
+	if (!InProcessModule && !m_sourceCache->RequestGenerate(fileName))
+		return true;
+
     Clear();
 
     m_currentFile = fileName;

@@ -17,5 +17,5 @@ DEFINE_SWITCH_FULL(Help,              "help",           "h");
 DEFINE_SWITCH_FULL(TargetName,        "target",		    "t");
 DEFINE_SWITCH_FULL(Input,			  "source",		    "i");
 DEFINE_SWITCH_FULL(Output,			  "output",		    "o");
-DEFINE_SWITCH_FULL(TemplateDirectory, "tmpl-directory", "d");
+DEFINE_SWITCH_FULL(BuildDirectory,    "build_dir",		"b");
 DEFINE_SWITCH_FULL(CompilerFlags,     "flags",          "f");

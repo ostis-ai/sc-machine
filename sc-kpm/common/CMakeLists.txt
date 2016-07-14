@@ -10,7 +10,7 @@ set (HEADERS
 
 	)
 
-add_library(sc-kpm-common STATIC ${SOURCES} ${HEADERS})
+add_library(sc-kpm-common SHARED ${SOURCES} ${HEADERS})
 
 include_directories("${SC_KPM_ROOT}/common" ${SC_MEMORY_SRC} ${GLIB2_INCLUDE_DIRS})
 add_dependencies(sc-kpm-common sc-memory)

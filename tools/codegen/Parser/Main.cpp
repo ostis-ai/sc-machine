@@ -8,7 +8,47 @@
 #include <chrono>
 #include <iostream>
 
-void parse(const po::variables_map &cmdLine);
+void parse(std::string const & appName, const po::variables_map &cmdLine)
+{
+	ReflectionOptions options;
+
+	options.generatorPath = appName;
+	options.targetName = cmdLine.at(kSwitchTargetName).as<std::string>();
+	options.inputPath = cmdLine.at(kSwitchInput).as<std::string>();
+	options.outputPath = cmdLine.at(kSwitchOutput).as<std::string>();
+	options.buildDirectory = cmdLine.at(kSwitchBuildDirectory).as<std::string>();
+
+	// default arguments
+	options.arguments =
+	{ {
+			"-analyzer-display-progress",
+			"-x",
+			"c++",
+			"-std=c++11",
+			"-D__SC_REFLECTION_PARSER__"
+		} };
+
+	if (cmdLine.count(kSwitchCompilerFlags))
+	{
+		auto flags = cmdLine.at(kSwitchCompilerFlags).as<std::vector<std::string>>();
+
+		for (auto &flag : flags)
+			options.arguments.emplace_back(flag.c_str());
+	}
+
+	std::cout << "Generate reflection code for \"" << options.targetName << "\"" << std::endl;
+
+	ReflectionParser parser(options);
+
+	try
+	{
+		parser.Parse();
+	}
+	catch (Exception e)
+	{
+		std::cerr << "Error: " << e.GetDescription() << std::endl;
+	}
+}
 
 int main(int argc, char *argv[])
 {
@@ -49,9 +89,9 @@ int main(int argc, char *argv[])
             "Output path for generated headers." 
        )
         (
-            SWITCH_OPTION(TemplateDirectory), 
-            po::value<std::string>()->default_value("Templates/"), 
-            "Directory that contains the mustache templates." 
+            SWITCH_OPTION(BuildDirectory), 
+            po::value<std::string>()->default_value("./build"), 
+            "Directory that contains the build intermediate files." 
        )
         (
             SWITCH_OPTION(CompilerFlags), 
@@ -72,7 +112,8 @@ int main(int argc, char *argv[])
 
         po::notify(cmdLine);
 
-        parse(cmdLine);
+		std::string const appName = argv[0];
+        parse(appName, cmdLine);
     }
     catch (std::exception &e) 
     {
@@ -92,50 +133,3 @@ int main(int argc, char *argv[])
     return EXIT_SUCCESS;
 }
 
-void parse(const po::variables_map &cmdLine)
-{
-    ReflectionOptions options;
-
-    options.targetName =
-        cmdLine.at(kSwitchTargetName).as<std::string>();
-
-    options.inputPath =
-        cmdLine.at(kSwitchInput).as<std::string>();
-
-    options.outputPath =
-        cmdLine.at(kSwitchOutput).as<std::string>();
-
-    // default arguments
-    options.arguments =
-    { {
-        "-analyzer-display-progress",
-        "-x",
-        "c++",
-        "-std=c++11",
-        "-D__SC_REFLECTION_PARSER__"
-    } };
-
-    if (cmdLine.count(kSwitchCompilerFlags))
-    {
-        auto flags = cmdLine.at(kSwitchCompilerFlags).as<std::vector<std::string>>();
-
-        for (auto &flag : flags)
-            options.arguments.emplace_back(flag.c_str());
-    }
-
-    options.templateDirectory = cmdLine.at(kSwitchTemplateDirectory).as<std::string>();
-
-    std::cout << "Generate reflection code for \""
-        << options.targetName << "\""
-        << std::endl;
-
-    ReflectionParser parser(options);
-
-    try {
-        parser.Parse();
-    }
-    catch (Exception e)
-    {
-        std::cerr << "Error: " << e.GetDescription() << std::endl;
-    }
-}
