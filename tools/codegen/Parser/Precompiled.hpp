@@ -15,9 +15,6 @@
 
 #include <clang-c/Index.h>
 
-//#include <MacroUtils.hpp>
-//#include <UrsineLogTools.h>
-
 #include <boost/filesystem.hpp>
 #include <boost/program_options.hpp>
 #include <boost/algorithm/string.hpp>

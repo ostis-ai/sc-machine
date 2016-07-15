@@ -16,8 +16,6 @@ extern "C"
 #include <map>
 #include <set>
 #include <vector>
-#include <hash_map>
-#include <unordered_map>
 #include <unordered_set>
 #include <assert.h>
 #include <stdint.h>

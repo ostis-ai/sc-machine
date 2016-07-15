@@ -4,13 +4,12 @@ set (SC_CODEGEN_DIR "${SC_TOOLS_DIR}/codegen")
 set (SOURCES 
 	"Parser/LanguageTypes/Class.cpp"
 	"Parser/LanguageTypes/Constructor.cpp"
-	"Parser/LanguageTypes/Enum.cpp"
 	"Parser/LanguageTypes/Field.cpp"
-	"Parser/LanguageTypes/Function.cpp"
 	"Parser/LanguageTypes/Global.cpp"
-	"Parser/LanguageTypes/Invokable.cpp"
 	"Parser/LanguageTypes/LanguageType.cpp"
-	"Parser/LanguageTypes/Method.cpp"
+    "Parser/LanguageTypes/Invokable.cpp"
+    "Parser/LanguageTypes/Function.cpp"
+    "Parser/LanguageTypes/Method.cpp"
 
 	"Parser/Main.cpp"
 	"Parser/Cursor.cpp"
@@ -27,13 +26,12 @@ set (SOURCES
 set (HEADERS
 	"Parser/LanguageTypes/Class.hpp"
 	"Parser/LanguageTypes/Constructor.hpp"
-	"Parser/LanguageTypes/Enum.hpp"
 	"Parser/LanguageTypes/Field.hpp"
-	"Parser/LanguageTypes/Function.hpp"
 	"Parser/LanguageTypes/Global.hpp"
-	"Parser/LanguageTypes/Invokable.hpp"
 	"Parser/LanguageTypes/LanguageType.hpp"
-	"Parser/LanguageTypes/Method.hpp"
+    "Parser/LanguageTypes/Invokable.hpp"
+    "Parser/LanguageTypes/Function.hpp"
+    "Parser/LanguageTypes/Method.hpp"
 
 	"Parser/MetaDataConfig.hpp"
 	"Parser/Cursor.hpp"
@@ -52,12 +50,21 @@ set (HEADERS
 	"Parser/Sha256.hpp"
 )
 
-
-link_directories(${SC_MACHINE_THIRDPARTY_PATH}/clang/lib)
-
 add_executable(sc-code-generator ${SOURCES} ${HEADERS})
-include_directories(${SC_CODEGEN_DIR}/Parser ${SC_MACHINE_THIRDPARTY_PATH}/clang/include)
-target_link_libraries(sc-code-generator libclang)
-# add_dependencies(sc-builder)
+include_directories(${SC_CODEGEN_DIR}/Parser ${LIBCLANG_INCLUDE_DIRS})
+
+if (${WIN32})
+    set (BOOST_LIBS_LIST )
+else()
+    set (BOOST_LIBS_LIST
+            boost_filesystem
+            boost_program_options
+            boost_system
+            boost_regex)
+
+    set_target_properties(sc-code-generator PROPERTIES COMPILE_FLAGS ${LIBCLANG_CXXFLAGS})
+endif (${WIN32})
+
+target_link_libraries(sc-code-generator ${LIBCLANG_LIBRARY} ${BOOST_LIBS_LIST})
 
 install_targets("/bin" sc-code-generator)

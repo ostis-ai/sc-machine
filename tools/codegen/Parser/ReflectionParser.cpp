@@ -5,7 +5,6 @@
 #include "LanguageTypes/Class.hpp"
 #include "LanguageTypes/Global.hpp"
 #include "LanguageTypes/Function.hpp"
-#include "LanguageTypes/Enum.hpp"
 
 #include <iostream>
 #include <fstream>
@@ -44,15 +43,6 @@ ReflectionParser::~ReflectionParser(void)
     for (auto *globalFunction : m_globalFunctions)
         delete globalFunction;
 
-    for (auto *enewm : m_enums)
-        delete enewm;
-
-    if (m_translationUnit)
-        clang_disposeTranslationUnit(m_translationUnit);
-
-    if (m_index)
-        clang_disposeIndex(m_index);
-
 	delete m_sourceCache;
 }
 
@@ -68,7 +58,7 @@ void ReflectionParser::CollectFiles(std::string const & inPath, tStringList & ou
 			std::string ext = GetFileExtension(filename);
 			std::transform(ext.begin(), ext.end(), ext.begin(), tolower);
 
-			if ((ext == "hpp") || (ext == "h"))
+            if (((ext == "hpp") || (ext == "h")) && (filename.find(".generated.") == std::string::npos))
 			{
 				outFiles.push_back(filename);
 			}
@@ -142,39 +132,6 @@ void ReflectionParser::Parse(void)
 	m_sourceCache->Save();
 }
 
-//CXChildVisitResult visitCursor(CXCursor cursor, CXCursor parent, CXClientData client_data)
-//{
-//    ReflectionParser * parser = (ReflectionParser*)client_data;
-//    assert(parser != 0);
-//    MacrosManager & manager = parser->GetMacrosManager();
-//
-//    Cursor c(cursor);
-//  
-//    if (c.GetKind() == CXCursor_MacroExpansion)
-//    {
-//        std::string const name = c.GetDisplayName();
-//        if (MacrosInfo::RequestProcess(name))
-//        {
-//            CXFile file;
-//            unsigned int line, column, offset;
-//            CXSourceLocation loc = clang_getCursorLocation(cursor);
-//            clang_getSpellingLocation(loc, &file, &line, &column, &offset);
-//
-//            std::string fileName = clang_getCString(clang_getFileName(file));
-//
-//            if (parser->IsCurrentFile(fileName))
-//            {
-//                CXSourceRange range = clang_getCursorExtent(cursor);
-//                std::string code = parser->GetCodeInRange(range.begin_int_data, range.end_int_data);
-//                
-//                MacrosInfo info(name, code, line, column, fileName);
-//                manager.AddMacros(info);
-//            }            
-//        }
-//    }
-//    
-//    return CXChildVisit_Continue;
-//}
 
 void ReflectionParser::Clear()
 {
@@ -183,7 +140,6 @@ void ReflectionParser::Clear()
     m_classes.clear();
     m_globals.clear();
     m_globalFunctions.clear();
-    m_enums.clear();
 }
 
 bool ReflectionParser::ProcessFile(std::string const & fileName, bool InProcessModule)
@@ -217,48 +173,63 @@ bool ReflectionParser::ProcessFile(std::string const & fileName, bool InProcessM
 
 	auto cursor = clang_getTranslationUnitCursor(m_translationUnit);
 
-	Namespace tempNamespace;
-	buildClasses(cursor, tempNamespace);
-	tempNamespace.clear();
+    try
+    {
+        Namespace tempNamespace;
+        buildClasses(cursor, tempNamespace);
+        tempNamespace.clear();
 
-	if (ContainsModule() && !InProcessModule)
-	{
-		if (m_classes.size() > 1)
-		{
-			EMIT_ERROR("You can't implement any other classes in one file with module class");
-		}
-		return false;
-	}
+        if (ContainsModule() && !InProcessModule)
+        {
+            if (m_classes.size() > 1)
+            {
+                EMIT_ERROR("You can't implement any other classes in one file with module class");
+            }
+            return false;
+        }
 
-	if (RequestGenerate())
-	{
-		std::string fileId = GetFileID(fileName);
-		std::stringstream outCode;
+        if (RequestGenerate())
+        {
+            std::string fileId = GetFileID(fileName);
+            std::stringstream outCode;
 
-		// includes
-		outCode << "#include <iostream>\n\n";
-		outCode << "#include \"wrap/sc_memory.hpp\"\n\n\n";
+            // includes
+            outCode << "#include <iostream>\n\n";
+            outCode << "#include \"wrap/sc_memory.hpp\"\n\n\n";
 
-		for (auto it = m_classes.begin(); it != m_classes.end(); ++it)
-		{
-			Class const * klass = *it;
-			if (klass->ShouldGenerate())
-			{
-				klass->GenerateCode(fileId, outCode, this);
-			}
-		}
+            for (auto it = m_classes.begin(); it != m_classes.end(); ++it)
+            {
+                Class const * klass = *it;
+                if (klass->ShouldGenerate())
+                {
+                    klass->GenerateCode(fileId, outCode, this);
+                }
+            }
 
-		/// write ScFileID definition
-		outCode << "\n\n#undef ScFileID\n";
-		outCode << "#define ScFileID " << fileId;
+            /// write ScFileID definition
+            outCode << "\n\n#undef ScFileID\n";
+            outCode << "#define ScFileID " << fileId;
 
-		// generate output file
-		fs::path outputPath(m_options.outputPath);
-		outputPath /= fs::path(GetOutputFileName(fileName));
-		std::ofstream outputFile(outputPath.string());
-		outputFile << outCode.str();
-		outputFile.close();
-	}
+            // generate output file
+            fs::path outputPath(m_options.outputPath);
+            outputPath /= fs::path(GetOutputFileName(fileName));
+            std::ofstream outputFile(outputPath.string());
+            outputFile << outCode.str();
+            outputFile << std::endl << std::endl;
+            outputFile.close();
+        }
+
+        clang_disposeIndex(m_index);
+        clang_disposeTranslationUnit(m_translationUnit);
+
+    } catch (Exception e)
+    {
+        clang_disposeIndex(m_index);
+        clang_disposeTranslationUnit(m_translationUnit);
+
+        EMIT_ERROR(e.GetDescription());
+    }
+
 
 	return true;
 }
@@ -311,7 +282,7 @@ void ReflectionParser::buildClasses(const Cursor &cursor, Namespace &currentName
 }
 
 
-void ReflectionParser::DumpTree(Cursor const & cursor, int level, std::stringstream & outData)
+void ReflectionParser::DumpTree(Cursor const & cursor, size_t level, std::stringstream & outData)
 {
     outData << "\n";
     for (size_t i = 0; i < level; ++i)

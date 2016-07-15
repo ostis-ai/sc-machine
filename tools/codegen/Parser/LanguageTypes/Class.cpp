@@ -1,6 +1,11 @@
 #include "Precompiled.hpp"
 
 #include "Class.hpp"
+#include "Constructor.hpp"
+#include "Field.hpp"
+#include "Global.hpp"
+#include "Method.hpp"
+#include "Function.hpp"
 
 #include "../ReservedTypes.hpp"
 
@@ -25,17 +30,6 @@ Class::Class(const Cursor &cursor, const Namespace &currentNamespace)
 	, m_parser(0)
 {
     m_isScObject = false;
-
-    /*auto displayName = m_metaData.GetNativeString(kMetaDisplayName);
-
-    if (displayName.empty())
-    {
-        m_displayName = m_qualifiedName;
-    }
-    else
-    {
-        m_displayName = utils::GetQualifiedName(displayName, currentNamespace);
-    }*/
 
 	m_displayName = cursor.GetSpelling();
 
@@ -86,21 +80,22 @@ Class::Class(const Cursor &cursor, const Namespace &currentNamespace)
 
         // method / static method
         case CXCursor_CXXMethod:
-            if (child.IsStatic()) 
-            { 
-				m_staticMethods.emplace_back(new Function(child, Namespace(), this));
-            }
-            else 
+            if (child.IsStatic())
             {
-				std::string const name = child.GetSpelling();
-				if (name == "__null_meta")
-				{
-					m_metaData.Merge(MetaDataManager(child));
-				}
-				else
-				{
-					m_methods.emplace_back(new Method(child, currentNamespace, this));
-				}
+                m_staticMethods.emplace_back(new Function(child, Namespace(), this));
+            }
+            else
+            {
+                std::string const name = child.GetSpelling();
+
+                if (name == "__null_meta")
+                {
+                    m_metaData.Merge(MetaDataManager(child));
+                }
+                else
+                {
+                    m_methods.emplace_back(new Method(child, currentNamespace, this));
+                }
             }
             break;
 

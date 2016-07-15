@@ -28,9 +28,10 @@ namespace iot
 			ScAddr action;
 
 			Task(ScAddr const & inAction, uint64_t const & inPeriod = 0, uint64_t inNextRunTime = 0) 
-				: action(inAction)
+                : nextRunTime(inNextRunTime)
 				, period(inPeriod)
-				, nextRunTime(inNextRunTime)
+                , action(inAction)
+
 			{
 			}
 			

@@ -24,17 +24,31 @@ void parse(std::string const & appName, const po::variables_map &cmdLine)
 			"-analyzer-display-progress",
 			"-x",
 			"c++",
-			"-std=c++11",
-			"-D__SC_REFLECTION_PARSER__"
+            "-D__SC_REFLECTION_PARSER__",
+            "-std=c++11"
 		} };
 
-	if (cmdLine.count(kSwitchCompilerFlags))
-	{
-		auto flags = cmdLine.at(kSwitchCompilerFlags).as<std::vector<std::string>>();
+    if (cmdLine.count(kSwitchCompilerFlags))
+    {
+        auto flagsList = cmdLine.at(kSwitchCompilerFlags).as<std::vector<std::string>>();
 
-		for (auto &flag : flags)
-			options.arguments.emplace_back(flag.c_str());
-	}
+        for (std::string & flags : flagsList)
+        {
+            while (1)
+            {
+                size_t pos = flags.find(";");
+                if (pos == std::string::npos)
+                    break;
+                std::string f = flags.substr(0, pos);
+                options.arguments.emplace_back(f);
+
+                flags = flags.substr(pos + 1);
+            }
+
+        }
+        //for (auto & flag : flags)
+        //    options.arguments.emplace_back(flag.c_str());
+    }
 
 	std::cout << "Generate reflection code for \"" << options.targetName << "\"" << std::endl;
 
@@ -53,15 +67,6 @@ void parse(std::string const & appName, const po::variables_map &cmdLine)
 int main(int argc, char *argv[])
 {
     auto start = std::chrono::system_clock::now();
-
-    // misc initialization
-    {
-        // path to the executable
-        auto exeDir = fs::path(argv[ 0 ]);
-
-        // set the working directory to the executable directory
-        fs::current_path(exeDir.parent_path());
-    }
 
     // parse command line
     try 
@@ -113,6 +118,7 @@ int main(int argc, char *argv[])
         po::notify(cmdLine);
 
 		std::string const appName = argv[0];
+        std::cout << appName << std::endl;
         parse(appName, cmdLine);
     }
     catch (std::exception &e) 

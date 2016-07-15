@@ -69,10 +69,10 @@ struct RequestSetLinkContent
 /// ------------
 struct ResultHeader
 {
-    sc_uint8 code;
-    sc_uint32 id;
-    sc_uint8 resultCode;
-    sc_uint32 resultSize;
+    uint8_t code;
+    uint32_t id;
+    uint8_t resultCode;
+    uint32_t resultSize;
 };
 
 

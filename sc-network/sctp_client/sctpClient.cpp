@@ -10,12 +10,19 @@
 namespace sctp
 {
 
+sc_uint8 mIterRange;
+sc_uint32 mResultCount;
+sc_uint32 mCurrentResult;
+TSharedPointer<char> mBuffer;
 
 Iterator::Iterator(TSharedPointer<char> buffer, sc_uint32 resultCount, sc_uint8 iterRange)
-	: mBuffer(buffer)
-	, mResultCount(resultCount)
-	, mCurrentResult(0)
-	, mIterRange(iterRange)
+    : mIterRange(iterRange)
+    , mResultCount(resultCount)
+    , mCurrentResult(0)
+    , mBuffer(buffer)
+
+
+
 {
 }
 
@@ -251,7 +258,7 @@ _SC_EXTERN bool Client::setLinkContent(ScAddr const & addr, IScStreamPtr const &
 	if (mSocketImpl->writeType(req) == sizeof(RequestSetLinkContent))
 	{
 		char buff[1024];
-		sc_uint32 readBytes;
+        uint32_t readBytes;
 		while (!stream->eof())
 		{
 			if (!stream->read(buff, 1024, readBytes))

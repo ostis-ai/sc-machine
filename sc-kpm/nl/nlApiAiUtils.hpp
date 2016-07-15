@@ -80,23 +80,6 @@ void tokenize(const std::string& str, ContainerT& tokens,
 bool parseTimeStamp(std::string str, std::tm & outValue)
 {
 	//2016-02-16T00:30:13.529Z
-	/*size_t pos = str.find('-');
-	if (pos == std::string::npos)
-		return false;
-	outValue.tm_year = atoi(str.substr(0, pos).c_str());
-	str = str.substr(pos + 1);
-
-	pos = str.find('-');
-	if (pos == std::string::npos)
-		return false;
-	outValue.tm_mon = atoi(str.substr(0, pos).c_str());
-	str = str.substr(pos + 1);
-	
-	pos = str.find('T');
-	if (pos == std::string::npos)
-		return false;
-	outValue.tm_mday = atoi(str.substr(0, pos).c_str());
-	str = str.substr(pos + 1);*/
 	tStringVector tokens;
 	tokenize(str, tokens, "-T:.");
 
@@ -151,7 +134,7 @@ namespace apiAi
 
 		void parseJSON(rapidjson::Value & jsonElement)
 		{
-			rapidjson::Value & jsonValue = rapidjson::Value();
+            rapidjson::Value jsonValue = rapidjson::Value();
 			if (getJSONMemberSafe(jsonElement, "name", jsonValue) && jsonValue.IsString())
 				m_name = jsonValue.GetString();
 
@@ -196,7 +179,7 @@ namespace apiAi
 
 		void parseJSON(rapidjson::Value & jsonElement)
 		{
-			rapidjson::Value & jsonValue = rapidjson::Value();
+            rapidjson::Value jsonValue = rapidjson::Value();
 			if (getJSONMemberSafe(jsonElement, "intentId", jsonValue) && jsonValue.IsString())
 				m_intentId = jsonValue.GetString();
 
@@ -229,7 +212,7 @@ namespace apiAi
 
 		void parseJSON(rapidjson::Value & jsonElement)
 		{
-			rapidjson::Value & jsonValue = rapidjson::Value();
+            rapidjson::Value jsonValue = rapidjson::Value();
 			if (getJSONMemberSafe(jsonElement, "speech", jsonValue) && jsonValue.IsString())
 				m_speech = jsonValue.GetString();
 
@@ -272,7 +255,7 @@ namespace apiAi
 
 		void parseJSON(rapidjson::Value & jsonElement)
 		{
-			rapidjson::Value & jsonValue = rapidjson::Value();
+            rapidjson::Value jsonValue = rapidjson::Value();
 			if (getJSONMemberSafe(jsonElement, "code", jsonValue) && jsonValue.IsInt())
 				m_code = jsonValue.GetInt();
 
@@ -313,7 +296,7 @@ public:
 		/// TODO: parse error
 
 		// request id
-		rapidjson::Value & jsonValue = rapidjson::Value();
+        rapidjson::Value jsonValue = rapidjson::Value();
 		
 		if (!getJSONMemberSafe(jsonDocument, "id", jsonValue) || !jsonValue.IsString())
 			return false;
@@ -327,7 +310,7 @@ public:
 		parseTimeStamp(jsonValue.GetString(), m_timeStamp);
 		
 		// result
-		rapidjson::Value & jsonResult = rapidjson::Value();
+        rapidjson::Value jsonResult = rapidjson::Value();
 		if (!getJSONMemberSafe(jsonDocument, "result", jsonResult) || !jsonResult.IsObject())
 			return false;
 

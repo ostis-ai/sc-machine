@@ -176,7 +176,6 @@ void MetaDataManager::Check() const
 	bool const hasTemplate = HasProperty(Props::Template);
 	bool const hasForceCreation = HasProperty(Props::ForceCreate);
 	bool const hasCmdClass = HasProperty(Props::AgentCommandClass);
-	bool const hasEvent = HasProperty(Props::Event);
 
 	if (hasAgent && hasTemplate)
 	{
@@ -206,7 +205,6 @@ void MetaDataManager::Check() const
 	std::string const cmdClass = GetNativeString(Props::AgentCommandClass);
 
 	std::string const parentClass = GetProperty(ParserMeta::ParentClass);
-	bool const isAgentParent = (parentClass == Classes::Agent);
 	bool const isAgentActionParent = (parentClass == Classes::AgentAction);
 
 	if (hasAgent && isAgentActionParent && !hasCmdClass)

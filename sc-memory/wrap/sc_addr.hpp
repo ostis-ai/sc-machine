@@ -79,7 +79,7 @@ struct ScAddrHashFunc
 
 template <> struct ScAddrHashFunc < uint32_t >
 {
-	uint32_t operator() (ScAddr const & addr)
+    uint32_t operator() (ScAddr const & addr) const
 	{
 		return SC_ADDR_LOCAL_TO_INT(addr.getRealAddr());
 	}

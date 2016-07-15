@@ -8,8 +8,9 @@
 #include "sc_memory.hpp"
 
 ScStruct::ScStruct(ScMemoryContext * ctx, ScAddr const & structAddr)
-	: mContext(ctx)
-	, mAddr(structAddr)
+    : mAddr(structAddr)
+    , mContext(ctx)
+
 {
 }
 

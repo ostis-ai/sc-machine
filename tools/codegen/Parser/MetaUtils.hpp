@@ -24,8 +24,5 @@ namespace utils
     	const Namespace &currentNamespace
 	);
 
-    void LoadText(const std::string &filename, std::string &output);
-    void WriteText(const std::string &filename, const std::string &text);
-
     void FatalError(const std::string &error);
 }

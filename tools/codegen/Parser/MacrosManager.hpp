@@ -1,6 +1,6 @@
 #pragma once
 
-#include "types.hpp"
+#include "Types.hpp"
 
 
 struct MacrosInfo
@@ -15,9 +15,9 @@ struct MacrosInfo
     } Type;
 
     MacrosInfo()
-        : m_line(0)
+        : m_type(MT_NONE)
+        , m_line(0)
         , m_column(0)
-        , m_type(MT_NONE)
     {
 
     }

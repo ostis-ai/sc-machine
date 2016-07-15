@@ -10,10 +10,10 @@ set(HEADERS
 	"nlApiAiUtils.hpp"
 )
 
-include_directories(${SC_IOT_SRC} ${SC_MEMORY_SRC} ${GLIB2_INCLUDE_DIRS} ${CURL_INCLUDE})
+include_directories(${SC_IOT_SRC} ${SC_MEMORY_SRC} ${GLIB2_INCLUDE_DIRS} ${LIBCURL_INCLUDE_DIRS})
 
 add_library (nl SHARED ${SOURCES} ${HEADERS})
 add_dependencies(nl sc-memory-cpp sc-kpm-common)
-target_link_libraries(nl sc-memory-cpp sc-kpm-common ${CURL_LIBRARIES})
+target_link_libraries(nl sc-memory-cpp sc-kpm-common ${LIBCURL_LIBRARIES})
 
 sc_codegen(nl ${SC_IOT_SRC})

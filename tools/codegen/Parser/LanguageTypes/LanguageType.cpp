@@ -10,8 +10,8 @@ LanguageType::LanguageType(
     , m_enabled(m_metaData.GetFlag(kMetaEnable))
     , m_ptrTypeEnabled(!m_metaData.GetFlag(kMetaDisablePtrType))
     , m_constPtrTypeEnabled(!m_metaData.GetFlag(kMetaDisableConstPtrType))
-    , m_accessModifier(cursor.GetAccessModifier())
     , m_currentNamespace(currentNamespace)
+    , m_accessModifier(cursor.GetAccessModifier())
 {
     
 }

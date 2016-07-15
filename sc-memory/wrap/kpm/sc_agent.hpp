@@ -13,8 +13,6 @@
 #define KPM_COMMAND_AGENT		0
 #define KPM_QUESTION_AGENT		1
 
-/// TODO: Implement meta data StaitClass linke in UE4
-
 /* Call this function before agent module usage. 
  * If module initialized, then returns true; otherwise returns false 
  */
@@ -87,16 +85,16 @@ private:
 
 #define SC_AGENT_IMPLEMENTATION(__AgentName__) \
 	SC_COMBINE(ScFileID, _, __AgentName__, _impl) \
-	sc_result __AgentName__##::run(ScAddr const & listenAddr, ScAddr const & argAddr)
+    sc_result __AgentName__::run(ScAddr const & listenAddr, ScAddr const & argAddr)
 
 #define SC_AGENT_ACTION_IMPLEMENTATION(__AgentName__) \
 	SC_COMBINE(ScFileID, _, __AgentName__, _impl) \
-	sc_result __AgentName__##::runImpl(ScAddr const & requestAddr, ScAddr const & resultAddr)
+    sc_result __AgentName__::runImpl(ScAddr const & requestAddr, ScAddr const & resultAddr)
 
 
 
 #define SC_AGENT_REGISTER(__AgentName__) \
 	SC_OBJECT_INIT_GLOBAL_CALL(__AgentName__) \
-	__AgentName__##::registerHandler();
+    __AgentName__::registerHandler();
 
-#define SC_AGENT_UNREGISTER(__AgentName__)	__AgentName__##::unregisterHandler();
+#define SC_AGENT_UNREGISTER(__AgentName__)	__AgentName__::unregisterHandler();

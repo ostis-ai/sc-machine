@@ -16,16 +16,14 @@ public:
 
     std::string GetSpelling(void) const;
     std::string GetDisplayName(void) const;
-    std::string GetMangledName(void) const;
     std::string const & GetFileName() const;
     size_t GetLineNumber() const;
 
     bool IsDefinition(void) const;
-    bool IsConst(void) const;
     bool IsStatic(void) const;
 
     CX_CXXAccessSpecifier GetAccessModifier(void) const;
-    CX_StorageClass GetStorageClass(void) const;
+    //CX_StorageClass GetStorageClass(void) const;
 
     CursorType GetType(void) const;
     CursorType GetReturnType(void) const;

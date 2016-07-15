@@ -46,15 +46,6 @@ std::string Cursor::GetDisplayName(void) const
     return displayName;
 }
 
-std::string Cursor::GetMangledName(void) const
-{
-    std::string mangled;
-
-    utils::ToString(clang_Cursor_getMangling(m_handle), mangled);
-
-    return mangled;
-}
-
 std::string const & Cursor::GetFileName() const
 {
     return m_fileName;
@@ -70,11 +61,6 @@ bool Cursor::IsDefinition(void) const
     return clang_isCursorDefinition(m_handle) ? true : false;
 }
 
-bool Cursor::IsConst(void) const
-{
-    return clang_CXXMethod_isConst(m_handle) ? true : false;
-}
-
 bool Cursor::IsStatic(void) const
 {
     return clang_CXXMethod_isStatic(m_handle) ? true : false;
@@ -85,10 +71,6 @@ CX_CXXAccessSpecifier Cursor::GetAccessModifier(void) const
     return clang_getCXXAccessSpecifier(m_handle);
 }
 
-CX_StorageClass Cursor::GetStorageClass(void) const
-{
-    return clang_Cursor_getStorageClass(m_handle);
-}
 
 CursorType Cursor::GetType(void) const
 {

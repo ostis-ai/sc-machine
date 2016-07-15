@@ -16,11 +16,6 @@
 
 #include <list>
 
-class Class;
-class Global;
-class Function;
-class Enum;
-
 class ReflectionParser
 {
 public:
@@ -34,7 +29,7 @@ public:
 
 protected:
     void Clear();
-    void DumpTree(Cursor const & cursor, int level, std::stringstream & outData);
+    void DumpTree(Cursor const & cursor, size_t level, std::stringstream & outData);
     bool IsInCurrentFile(Cursor const & cursor) const;
 	bool RequestGenerate() const;
 	bool ContainsModule() const;
@@ -53,10 +48,9 @@ private:
 
     std::string m_currentFile;
 
-    std::vector<Class*> m_classes;
-    std::vector<Global*> m_globals;
-    std::vector<Function*> m_globalFunctions;
-    std::vector<Enum*> m_enums;
+    std::vector<class Class*> m_classes;
+    std::vector<class Global*> m_globals;
+    std::vector<class Function*> m_globalFunctions;
 
 	SourceCache * m_sourceCache;
 

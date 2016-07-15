@@ -6,7 +6,6 @@
 #include "Namespace.hpp"
 
 #include "MetaDataManager.hpp"
-#include "ReflectionParser.hpp"
 
 class LanguageType
 {
@@ -14,7 +13,7 @@ public:
     LanguageType(const Cursor &cursor, const Namespace &currentNamespace);
     virtual ~LanguageType(void) { }
 
-    const MetaDataManager &GetMetaData(void) const;
+    const MetaDataManager & GetMetaData(void) const;
 
 protected:
     MetaDataManager m_metaData;

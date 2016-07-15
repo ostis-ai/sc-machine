@@ -2,11 +2,6 @@
 
 #include "LanguageType.hpp"
 
-#include "Constructor.hpp"
-#include "Field.hpp"
-#include "Global.hpp"
-#include "Method.hpp"
-#include "Function.hpp"
 
 struct BaseClass
 {
@@ -58,18 +53,18 @@ private:
 	typedef std::vector<BaseClass*> tBaseClassVector;
 	tBaseClassVector m_baseClasses;
         
-    std::vector<Constructor*> m_constructors;
+    std::vector<class Constructor*> m_constructors;
 
-    typedef std::vector<Field*> tFieldsVector;
+    typedef std::vector<class Field*> tFieldsVector;
     tFieldsVector m_fields;
     
-    typedef std::vector<Global*> tStaticFieldsVector;
+    typedef std::vector<class Global*> tStaticFieldsVector;
     tStaticFieldsVector m_staticFields;
     
-    typedef std::vector<Method*> tMethodVector;
+    typedef std::vector<class Method*> tMethodVector;
     tMethodVector m_methods;
 
-    std::vector<Function*> m_staticMethods;
+    std::vector<class Function*> m_staticMethods;
 
     bool m_isScObject;
 

@@ -5,6 +5,8 @@
 #include <fstream>
 #include <streambuf>
 
+#include <boost/filesystem/operations.hpp>
+
 SourceCache::SourceCache(std::string const & path, std::string const & targetName)
 	: m_cacheFileName(path + "/" + targetName + ".gen_cache")
 {
@@ -53,9 +55,10 @@ void SourceCache::Save()
 
 void SourceCache::CheckGenerator(std::string const & fileName)
 {
-	std::string checksum = FileChecksum(fileName);
+    std::string absPath = boost::filesystem::canonical(boost::filesystem::path(fileName)).string();
+    std::string checksum = FileChecksum(absPath);
 
-	tCacheMap::iterator it = m_cache.find(fileName);
+    tCacheMap::iterator it = m_cache.find(absPath);
 	if (it != m_cache.end())
 	{
 		if (it->second == checksum)
@@ -64,29 +67,38 @@ void SourceCache::CheckGenerator(std::string const & fileName)
 
 	// clear cache, because of new generator
 	m_cache.clear();
-	m_cache[fileName] = checksum;
+    m_cache[absPath] = checksum;
 }
 
 bool SourceCache::RequestGenerate(std::string const & fileName)
 {
-	std::string checksum = FileChecksum(fileName);
+    std::string absPath = boost::filesystem::canonical(boost::filesystem::path(fileName)).string();
+    std::string checksum = FileChecksum(absPath);
 	
-	tCacheMap::iterator it = m_cache.find(fileName);
+    tCacheMap::iterator it = m_cache.find(absPath);
 	if (it != m_cache.end())
 	{
 		if (it->second == checksum)
 			return false;
 	}
 
-	m_cache[fileName] = checksum;
+    m_cache[absPath] = checksum;
 
 	return true;
 }
 
 std::string SourceCache::FileChecksum(std::string const & fileName)
 {
-	std::ifstream input(fileName);
-	std::string str((std::istreambuf_iterator<char>(input)), std::istreambuf_iterator<char>());
+    boost::filesystem::path p(fileName);
+    if (boost::filesystem::exists(p))
+    {
+        std::ifstream input(fileName);
+        std::string str((std::istreambuf_iterator<char>(input)), std::istreambuf_iterator<char>());
 
-	return sha256(str);
+        std::time_t t = boost::filesystem::last_write_time(p);
+
+        return sha256(str + std::ctime(&t));
+    }
+
+    return std::string();
 }

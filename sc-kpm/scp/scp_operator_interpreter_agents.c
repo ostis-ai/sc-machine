@@ -2494,7 +2494,7 @@ scp_result create_sys_wait_event(sc_memory_context *context, scp_operand *operan
         return print_error("Event processing", "Can't resolve event type");
     }
 
-    event = sc_event_new(context, operands[1].addr, type, SC_ADDR_LOCAL_TO_INT(operator_node->addr), (fEventCallback)sys_wait_processor, NULL);
+    event = sc_event_new(context, operands[1].addr, type, (sc_pointer)SC_ADDR_LOCAL_TO_INT(operator_node->addr), (fEventCallback)sys_wait_processor, NULL);
     g_hash_table_insert(scp_wait_event_table, MAKE_PHASH(operator_node), (gpointer)event);
     return SC_RESULT_OK;
 }
@@ -3716,7 +3716,7 @@ sc_result sc_agent_activator(sc_event *in_event, sc_addr arg)
     {
         if (SCP_TRUE != resolve_sc_agent_event_type(s_default_ctx, &event_type, &type))
             return SC_RESULT_OK;
-        event = sc_event_new(s_default_ctx, event_elem.addr, type, SC_ADDR_LOCAL_TO_INT(agent_program.addr), (fEventCallback)scp_event_procedure_processor, NULL);
+        event = sc_event_new(s_default_ctx, event_elem.addr, type, (sc_pointer)SC_ADDR_LOCAL_TO_INT(agent_program.addr), (fEventCallback)scp_event_procedure_processor, NULL);
         g_hash_table_insert(scp_event_table, MAKE_HASH(agent_program), (gpointer)event);
 
         printf("REGISTERING SCP AGENT PROGRAM: ");

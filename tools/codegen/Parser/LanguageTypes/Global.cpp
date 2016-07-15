@@ -2,12 +2,9 @@
 
 #include "LanguageTypes/Global.hpp"
 #include "LanguageTypes/Class.hpp"
+#include "LanguageTypes/Field.hpp"
 
-Global::Global(
-    const Cursor &cursor, 
-    const Namespace &currentNamespace, 
-    Class *parent
-)
+Global::Global(const Cursor &cursor, const Namespace &currentNamespace, Class *parent)
     : LanguageType(cursor, currentNamespace)
     , m_isConst(cursor.GetType().IsConst())
     , m_hasExplicitGetter(m_metaData.GetFlag(kMetaExplicitGetter))

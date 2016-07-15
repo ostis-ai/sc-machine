@@ -16,6 +16,7 @@ extern "C"
 #include <vector>
 #include <limits>
 #include <glib.h>
+#include <cstdint>
 
 sc_memory_context * s_default_ctx = 0;
 sc_memory_params params;
@@ -649,7 +650,7 @@ void test_save()
     sc_memory_initialize(&p);
     s_default_ctx = sc_memory_context_new(sc_access_lvl_make_max);
 
-    for (int i = 0; i < ADDRS_COUNT; ++i)
+    for (uint32_t i = 0; i < ADDRS_COUNT; ++i)
     {
         std::string const s = genIdtf(i);
 
@@ -668,7 +669,7 @@ void test_save()
     s_default_ctx = sc_memory_context_new(sc_access_lvl_make_max);
     print_storage_statistics();
 
-    for (int i = 0; i < ADDRS_COUNT; ++i)
+    for (uint32_t i = 0; i < ADDRS_COUNT; ++i)
     {
         std::string const s = genIdtf(i);
 

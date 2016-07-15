@@ -22,6 +22,8 @@ class TIteratorBase
 {
 public:
 
+    virtual ~TIteratorBase() {}
+
     inline bool isValid() const
     {
         return mIterator != 0;
@@ -47,7 +49,7 @@ protected:
 	_SC_EXTERN TIterator3(ScMemoryContext const & context, ParamType1 const & p1, ParamType2 const & p2, ParamType3 const & p3);
 
 public:
-    _SC_EXTERN ~TIterator3()
+    _SC_EXTERN virtual ~TIterator3()
     {
         destroy();
     }
@@ -96,7 +98,7 @@ protected:
 	_SC_EXTERN TIterator5(ScMemoryContext const & context, ParamType1 const & p1, ParamType2 const & p2, ParamType3 const & p3, ParamType4 const & p4, ParamType5 const & p5);
 
 public:
-    _SC_EXTERN ~TIterator5()
+    _SC_EXTERN virtual ~TIterator5()
     {
         destroy();
     }

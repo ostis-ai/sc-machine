@@ -18,6 +18,8 @@ extern "C"
 class IScStream
 {
 public:
+    _SC_EXTERN virtual ~IScStream() {};
+
 	_SC_EXTERN virtual bool isValid() const = 0;
 
 	_SC_EXTERN virtual bool read(sc_char * buff, sc_uint32 buffLen, sc_uint32 & readBytes) const = 0;
