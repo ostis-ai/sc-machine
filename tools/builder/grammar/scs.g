@@ -145,8 +145,18 @@ COMMENT
     ;
 
 CONTENT
-    : SEP_LCONTENT (~('[' | ']') | ('\\[' | '\\]'))* SEP_RCONTENT
-    ;
+    @init{int count = 1;}
+  	: SEP_LCONTENT
+  	  (
+  	  { count > 0 }? =>
+  	   	 (
+  		  ~ (SEP_LCONTENT | SEP_RCONTENT)
+	  	  | SEP_LCONTENT { count++; } 
+  		  | SEP_RCONTENT { count--; }
+	  	  )
+	  )*
+  	;
+
 
 LINK
      :  '"' (   ~('"')  | '\\"'  )* '"'
