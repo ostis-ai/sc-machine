@@ -669,7 +669,8 @@ sElement* SCsTranslator::parseElementTree(pANTLR3_BASE_TREE tree, const String *
         res = _addNode(assignIdtf ? *assignIdtf : "", sc_type_node_struct);
 
         String content = GET_NODE_TEXT(tree);
-        content = content.substr(1, content.size() - 2);
+		bool isVar = StringUtil::startsWith(content, "_", false);
+        content = content.substr(isVar ? 2 : 1, content.size() - (isVar ? 3 : 2));
 
         if (StringUtil::startsWith(content, "*", false) && StringUtil::endsWith(content, "*", false))
         {
@@ -720,7 +721,7 @@ sElement* SCsTranslator::parseElementTree(pANTLR3_BASE_TREE tree, const String *
                     el->addr = (*it)->addr;
 
                     mElementSet.insert(el);
-                    _addEdge(res, el, sc_type_arc_pos_const_perm, false, "");
+					_addEdge(res, el, isVar ? sc_type_arc_pos_var_perm : sc_type_arc_pos_const_perm, false, "");
                 }
 
                 // merge identifiers map
@@ -749,8 +750,6 @@ sElement* SCsTranslator::parseElementTree(pANTLR3_BASE_TREE tree, const String *
             }
             else
             {
-                content = StringUtil::replaceAll(content, "\\[", "[");
-                content = StringUtil::replaceAll(content, "\\]", "]");
                 CHECK_LINK_DATA(content);
                 res = _addLinkString("", content);
             }

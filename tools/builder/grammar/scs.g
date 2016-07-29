@@ -146,7 +146,7 @@ COMMENT
 
 CONTENT
     @init{int count = 1;}
-  	: SEP_LCONTENT
+  	: '_'? SEP_LCONTENT
   	  (
   	  { count > 0 }? =>
   	   	 (
