@@ -117,9 +117,14 @@ elseif (${WIN32})
 					 "${PACKAGES_PATH}/boost_regex-${MSVC_SUFFIX}.${BOOST_VERSION}/lib/native/address-model-64/lib/")
 
 
-	set (REDIS_LIBRARIES "hiredis.lib" "WSock32.lib" "Ws2_32.lib")
+	
 	set (GLIB2_LIBRARIES "gio-2.0.lib" "glib-2.0.lib" "gmodule-2.0.lib" "gobject-2.0.lib" "gthread-2.0.lib")
-
+	if (${MSVC_VERSION} EQUAL "1800")
+		set (REDIS_LIBRARIES "hiredis.vc120.lib" "WSock32.lib" "Ws2_32.lib")
+	elseif (${MSVC_VERSION} EQUAL "1900")
+		set (REDIS_LIBRARIES "hiredis.vc140.lib" "Win32_Interop.vc140.lib" "WSock32.lib" "Ws2_32.lib")
+	endif()
+	
 	add_definitions(-DSC_PLATFORM_WIN -DHIREDIS_WIN)
 
 	# copy runtime libraries
