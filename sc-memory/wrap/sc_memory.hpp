@@ -118,7 +118,7 @@ public:
 	_SC_EXTERN std::string helperGetSystemIdtf(ScAddr const & addr);
 	_SC_EXTERN bool helperCheckArc(ScAddr const & begin, ScAddr end, sc_type arcType);
 	_SC_EXTERN bool helperFindBySystemIdtf(std::string const & sysIdtf, ScAddr & outAddr);
-	_SC_EXTERN bool helperGenTemplate(ScTemplate const & templ, ScTemplateGenResult & result);
+	_SC_EXTERN bool helperGenTemplate(ScTemplate const & templ, ScTemplateGenResult & result, ScTemplateGenParams const & params = ScTemplateGenParams::Empty, ScTemplateResultCode * resultCode = nullptr);
     _SC_EXTERN bool helperSearchTemplate(ScTemplate const & templ, ScTemplateSearchResult & result);
 	_SC_EXTERN bool helperSearchTemplateInStruct(ScTemplate const & templ, ScAddr const & scStruct, ScTemplateSearchResult & result);
 	_SC_EXTERN bool helperBuildTemplate(ScTemplate & templ, ScAddr const & templAddr);

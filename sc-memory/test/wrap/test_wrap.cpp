@@ -9,6 +9,9 @@
 #include "test_sc_agent.hpp"
 #include <glib.h>
 
+#define SUBTEST_START(__name) { std::string subtestName(#__name); std::cout << "Testing " << subtestName << " ... ";
+#define SUBTEST_END std::cout << "ok" << std::endl; }
+
 void init_memory()
 {
     sc_memory_params params;
@@ -95,6 +98,7 @@ void test_common_iterators()
         g_assert(ctx.isElement(addr2));
         g_assert(ctx.isElement(arc1));
 
+		SUBTEST_START(iterator3_f_a_f)
         {
             ScIterator3Ptr iter3 = ctx.iterator3(addr1, sc_type_arc_pos_const_perm, addr2);
             g_assert(iter3->next());
@@ -102,7 +106,9 @@ void test_common_iterators()
             g_assert(iter3->value(1) == arc1);
             g_assert(iter3->value(2) == addr2);
         }
+		SUBTEST_END
 
+		SUBTEST_START(iterator3_f_a_a)
         {
             ScIterator3Ptr iter3 = ctx.iterator3(addr1, sc_type_arc_pos_const_perm, sc_type_node);
             g_assert(iter3->next());
@@ -110,7 +116,9 @@ void test_common_iterators()
             g_assert(iter3->value(1) == arc1);
             g_assert(iter3->value(2) == addr2);
         }
+		SUBTEST_END
 
+		SUBTEST_START(iterator3_a_a_f)
         {
             ScIterator3Ptr iter3 = ctx.iterator3(sc_type_node, sc_type_arc_pos_const_perm, addr2);
             g_assert(iter3->next());
@@ -118,6 +126,7 @@ void test_common_iterators()
             g_assert(iter3->value(1) == arc1);
             g_assert(iter3->value(2) == addr2);
         }
+		SUBTEST_END
 
         ScAddr addr3 = ctx.createNode(sc_type_const);
         ScAddr arc2 = ctx.createArc(sc_type_arc_pos_const_perm, addr3, arc1);
@@ -128,6 +137,7 @@ void test_common_iterators()
         g_assert(ctx.isElement(addr3));
         g_assert(ctx.isElement(arc2));
 
+		SUBTEST_START(iterator5_a_a_f_a_a)
         {
             ScIterator5Ptr iter5 = ctx.iterator5(sc_type_node, sc_type_arc_pos_const_perm, addr2, sc_type_arc_pos_const_perm, sc_type_node);
 
@@ -139,7 +149,9 @@ void test_common_iterators()
             g_assert(iter5->value(3) == arc2);
             g_assert(iter5->value(4) == addr3);
         }
+		SUBTEST_END
 
+		SUBTEST_START(iterator5_a_a_f_a_f)
         {
             ScIterator5Ptr iter5 = ctx.iterator5(sc_type_node, sc_type_arc_pos_const_perm, addr2, sc_type_arc_pos_const_perm, addr3);
 
@@ -151,7 +163,9 @@ void test_common_iterators()
             g_assert(iter5->value(3) == arc2);
             g_assert(iter5->value(4) == addr3);
         }
+		SUBTEST_END
 
+		SUBTEST_START(iterator5_f_a_a_a_a)
         {
             ScIterator5Ptr iter5 = ctx.iterator5(addr1, sc_type_arc_pos_const_perm, sc_type_node, sc_type_arc_pos_const_perm, sc_type_node);
 
@@ -163,7 +177,9 @@ void test_common_iterators()
             g_assert(iter5->value(3) == arc2);
             g_assert(iter5->value(4) == addr3);
         }
+		SUBTEST_END
 
+		SUBTEST_START(iterator5_f_a_a_a_f)
         {
             ScIterator5Ptr iter5 = ctx.iterator5(addr1, sc_type_arc_pos_const_perm, sc_type_node, sc_type_arc_pos_const_perm, addr3);
 
@@ -175,7 +191,9 @@ void test_common_iterators()
             g_assert(iter5->value(3) == arc2);
             g_assert(iter5->value(4) == addr3);
         }
+		SUBTEST_END
 
+		SUBTEST_START(iterator5_f_a_f_a_a)
         {
             ScIterator5Ptr iter5 = ctx.iterator5(addr1, sc_type_arc_pos_const_perm, addr2, sc_type_arc_pos_const_perm, sc_type_node);
 
@@ -187,7 +205,9 @@ void test_common_iterators()
             g_assert(iter5->value(3) == arc2);
             g_assert(iter5->value(4) == addr3);
         }
+		SUBTEST_END
 
+		SUBTEST_START(iterator5_f_a_f_a_f)
         {
             ScIterator5Ptr iter5 = ctx.iterator5(addr1, sc_type_arc_pos_const_perm, addr2, sc_type_arc_pos_const_perm, addr3);
 
@@ -199,7 +219,9 @@ void test_common_iterators()
             g_assert(iter5->value(3) == arc2);
             g_assert(iter5->value(4) == addr3);
         }
+		SUBTEST_END
 
+		SUBTEST_START(content_string)
         {
             std::string str("test content string");
             ScStream stream(str.c_str(), (sc_uint32)str.size(), SC_STREAM_FLAG_READ);
@@ -234,6 +256,7 @@ void test_common_iterators()
             g_assert(result.size() == 1);
             g_assert(result.front() == link);
         }
+		SUBTEST_END
 
     }
 
@@ -244,6 +267,7 @@ void test_common_streams()
 {
     init_memory();
 
+	SUBTEST_START(content_streams)
     {
         static int const length = 1024;
         unsigned char buff[length];
@@ -286,6 +310,7 @@ void test_common_streams()
             g_assert(c == buff[pos]);
         }
     }
+	SUBTEST_END
 
     shutdown_memory(false);
 }
@@ -302,7 +327,6 @@ void test_common_templates()
 		ScAddr const edge1 = ctx.createArc(sc_type_arc_pos_const_perm, addr1, addr2);
 		ScAddr const edge2 = ctx.createArc(sc_type_arc_pos_const_perm, addr3, edge1);
 
-		
 		{
 			ScTemplate templ;
 
@@ -344,7 +368,7 @@ void test_common_templates()
             g_assert(it3->value(2) == result["edge1"]);
 
 
-            // test template search
+			SUBTEST_START(template_search)
             {
                 ScTemplateSearchResult searchResult;
                 g_assert(ctx.helperSearchTemplate(templ, searchResult));
@@ -369,8 +393,9 @@ void test_common_templates()
                 g_assert(it3->value(1) == res[7]);
                 g_assert(it3->value(2) == res["edge1"]);
             }
+			SUBTEST_END
 
-            // template search test 2
+			SUBTEST_START(template_search2)
             {
                 size_t const testCount = 10;
                 tAddrVector nodes, edges;
@@ -408,8 +433,10 @@ void test_common_templates()
                     g_assert(has_addr(nodes, r["addrTrg"]));
                 }
             }
+			SUBTEST_END
 		}
 
+		SUBTEST_START(template_tripleWithRelation)
 		{
 			ScTemplate templ;
 
@@ -459,6 +486,92 @@ void test_common_templates()
 			g_assert(edge1 == item["2"]);
 			g_assert(edge2 == item["4"]);
 		}
+		SUBTEST_END
+
+		SUBTEST_START(template_params_correct)
+		{
+			ScAddr const addrConst = ctx.createNode(*ScType::NODE_CONST);
+			ScAddr const addrTest3 = ctx.createNode(*ScType::NODE_CONST_TUPLE);
+			ScAddr const addrTest6 = ctx.createNode(*ScType::NODE_CONST_CLASS);
+
+			ScTemplate templ;
+
+			templ
+				.triple(
+					addrConst >> "1",
+					ScType::EDGE_ACCESS_VAR_POS_PERM >> "_2",
+					ScType::NODE_VAR_TUPLE >> "_3"
+				)
+				.triple(
+					"_3",
+					ScType::EDGE_ACCESS_VAR_POS_PERM >> "_5",
+					ScType::NODE_VAR_CLASS >> "_6"
+				);
+
+			ScTemplateGenParams params;
+			params.add("_3", addrTest3).add("_6", addrTest6);
+				
+			ScTemplateGenResult result;
+			g_assert(ctx.helperGenTemplate(templ, result, params));
+
+			ScTemplate searchTempl;
+			searchTempl
+				.triple(
+					addrConst >> "1",
+					ScType::EDGE_ACCESS_VAR_POS_PERM >> "_2",
+					ScType::NODE_CONST_TUPLE >> "_3"
+				)
+				.triple(
+					"_3",
+					ScType::EDGE_ACCESS_VAR_POS_PERM >> "_5",
+					ScType::NODE_CONST_CLASS >> "_6"
+				);
+
+			ScTemplateSearchResult searchResult;
+			g_assert(ctx.helperSearchTemplate(searchTempl, searchResult));
+			g_assert(searchResult.getSize() == 1);
+			g_assert(searchResult.getResult(0)["_3"] == addrTest3);
+			g_assert(searchResult.getResult(0)["_6"] == addrTest6);
+		}
+		SUBTEST_END
+
+		SUBTEST_START(template_params_invalid)
+		{
+			ScAddr const addrConst = ctx.createNode(*ScType::NODE_CONST);
+			ScAddr const addrTest3 = ctx.createNode(*ScType::NODE_CONST_TUPLE);
+			ScAddr const addrEdge2 = ctx.createArc(*ScType::EDGE_ACCESS_CONST_POS_PERM, addrConst, addrTest3);
+
+			ScTemplate templ;
+			templ
+				.triple(
+					addrConst >> "1",
+					ScType::EDGE_ACCESS_VAR_POS_PERM >> "_2", // can't be replaced by param in template generation
+					ScType::NODE_CONST >> "_3"	// can't be replaced by param in template generation
+				);
+
+			ScTemplateGenResult result;
+			g_assert(ctx.helperGenTemplate(templ, result));
+
+			// test edge
+			{
+				ScTemplateGenParams params;
+				params.add("_2", addrEdge2);
+
+				g_assert(!ctx.helperGenTemplate(templ, result, params));
+			}
+
+			// test node
+			{
+				ScTemplateGenParams params;
+				params.add("_3", addrTest3);
+
+				g_assert(!ctx.helperGenTemplate(templ, result, params));
+			}
+
+		}
+		SUBTEST_END
+
+		
 
 	}
 

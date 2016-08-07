@@ -123,6 +123,56 @@ ScTemplateItemValue operator >> (Type const & value, std::string const & replNam
 class ScTemplateGenResult;
 class ScTemplateSearchResult;
 
+enum class ScTemplateResultCode : uint8_t
+{
+	Success = 0,
+	InvalidParams = 1,
+	InternalError = 2
+};
+
+/* Parameters for template generator.
+ * Can be used to replace variables by values
+ */
+class ScTemplateGenParams
+{
+	friend class ScTemplateGenerator;
+
+public:
+	explicit ScTemplateGenParams()
+	{
+	}
+
+	_SC_EXTERN ScTemplateGenParams & add(std::string const & varIdtf, ScAddr const & value)
+	{
+		assert(mValues.find(varIdtf) == mValues.end());
+		mValues[varIdtf] = value;
+		return *this;
+	}
+
+	_SC_EXTERN bool get(std::string const & varIdtf, ScAddr & outResult) const
+	{
+		tParamsMap::const_iterator it = mValues.find(varIdtf);
+		if (it != mValues.end())
+		{
+			outResult = it->second;
+			return true;
+		}			
+
+		return false;
+	}
+
+	_SC_EXTERN bool empty() const
+	{
+		return mValues.empty();
+	}
+
+	_SC_EXTERN static const ScTemplateGenParams Empty;
+
+protected:
+	typedef std::map<std::string, ScAddr> tParamsMap;
+	tParamsMap mValues;
+};
+
 class ScTemplate
 {
 	friend class ScMemoryContext;
@@ -163,7 +213,7 @@ public:
 
 protected:
 	// Begin: calls by memory context
-	bool generate(ScMemoryContext & ctx, ScTemplateGenResult & result) const;
+	bool generate(ScMemoryContext & ctx, ScTemplateGenResult & result, ScTemplateGenParams const & params, ScTemplateResultCode * errorCode = nullptr) const;
     bool search(ScMemoryContext & ctx, ScTemplateSearchResult & result) const;
 	bool searchInStruct(ScMemoryContext & ctx, ScAddr const & scStruct, ScTemplateSearchResult & result) const;
 	

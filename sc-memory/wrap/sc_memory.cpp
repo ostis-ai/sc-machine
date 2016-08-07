@@ -299,11 +299,10 @@ bool ScMemoryContext::helperFindBySystemIdtf(std::string const & sysIdtf, ScAddr
 	return (sc_helper_find_element_by_system_identifier(mContext, sysIdtf.c_str(), (sc_uint32)sysIdtf.size(), &outAddr.mRealAddr) == SC_RESULT_OK);
 }
 
-bool ScMemoryContext::helperGenTemplate(ScTemplate const & templ, ScTemplateGenResult & result)
+bool ScMemoryContext::helperGenTemplate(ScTemplate const & templ, ScTemplateGenResult & result, ScTemplateGenParams const & params, ScTemplateResultCode * resultCode)
 {
-	return templ.generate(*this, result);
+	return templ.generate(*this, result, params, resultCode);
 }
-
 
 bool ScMemoryContext::helperSearchTemplate(ScTemplate const & templ, ScTemplateSearchResult & result)
 {

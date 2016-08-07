@@ -9,20 +9,27 @@
 
 #include <algorithm>
 
+const ScTemplateGenParams ScTemplateGenParams::Empty = ScTemplateGenParams();
+
 class ScTemplateGenerator
 {
 public:
 	ScTemplateGenerator(ScTemplate::tReplacementsMap const & replacements,
 						ScTemplate::tTemplateConts3Vector const & constructions,
+						ScTemplateGenParams const & params,
 						ScMemoryContext & context)
 		: mReplacements(replacements)
 		, mConstructions(constructions)
+		, mParams(params)
 		, mContext(context)
 	{
 	}
 
-	bool operator() (ScTemplateGenResult & result)
+	ScTemplateResultCode operator() (ScTemplateGenResult & result)
 	{
+		if (!checkParams())
+			return ScTemplateResultCode::InvalidParams;	/// TODO: Provide error
+
 		result.mResult.resize(mConstructions.size() * 3);
 		result.mReplacements = mReplacements;
 
@@ -43,7 +50,9 @@ public:
 			check_expr(values[1].mItemType != ScTemplateItemValue::VT_Replace);
 
 			ScAddr const addr1 = resolveAddr(values[0], result.mResult);
+			check_expr(addr1.isValid());
 			ScAddr const addr2 = resolveAddr(values[2], result.mResult);
+			check_expr(addr2.isValid());
 
 			if (!addr1.isValid() || !addr2.isValid())
 			{
@@ -66,10 +75,10 @@ public:
 		if (isError)
 		{
 			cleanupCreated();
-			return false;
+			return ScTemplateResultCode::InternalError;
 		}
 
-		return true;
+		return ScTemplateResultCode::Success;
 	}
 
 	ScAddr createNodeLink(ScType const & type)
@@ -92,6 +101,15 @@ public:
 
 	ScAddr resolveAddr(ScTemplateItemValue const & itemValue, tAddrVector const & resultAddrs)
 	{
+		/// TODO: improve speed, because not all time we need to replace by params
+		// replace by value from params
+		if (!mParams.empty() && !itemValue.mReplacementName.empty())
+		{
+			ScAddr result;
+			if (mParams.get(itemValue.mReplacementName, result))
+				return result;
+		}
+
 		switch (itemValue.mItemType)
 		{
 		case ScTemplateItemValue::VT_Addr:
@@ -121,9 +139,30 @@ public:
 		mCreatedElements.clear();
 	}
 
+	bool checkParams() const
+	{
+		ScTemplateGenParams::tParamsMap::const_iterator it;
+		for (it = mParams.mValues.begin(); it != mParams.mValues.end(); ++it)
+		{
+			ScTemplate::tReplacementsMap::const_iterator const itRepl = mReplacements.find(it->first);
+
+			if (itRepl == mReplacements.end())
+				return false;
+
+			ScTemplateConstr3 const & constr = mConstructions[itRepl->second / 3];
+			ScType const & itemType = constr.getValues()[itRepl->second % 3].mTypeValue;
+			/// TODO: check subtype of objects. Can't replace tuple with no tuple object
+			if (!itemType.isVar() || itemType.isEdge())
+				return false;
+		}
+
+		return true;
+	}
+
 private:
 	ScTemplate::tReplacementsMap const & mReplacements;
 	ScTemplate::tTemplateConts3Vector const & mConstructions;
+	ScTemplateGenParams const & mParams;
 	ScMemoryContext & mContext;
 	tAddrList mCreatedElements;
 };
@@ -568,10 +607,15 @@ protected:
 	std::vector<size_t> mEdgeIndicies;
 };
 
-bool ScTemplate::generate(ScMemoryContext & ctx,  ScTemplateGenResult & result) const
+bool ScTemplate::generate(ScMemoryContext & ctx, ScTemplateGenResult & result, ScTemplateGenParams const & params, ScTemplateResultCode * errorCode) const
 {
-	ScTemplateGenerator gen(mReplacements, mConstructions, ctx);
-	return gen(result);
+	ScTemplateGenerator gen(mReplacements, mConstructions, params, ctx);
+	ScTemplateResultCode resultCode = gen(result);
+
+	if (errorCode)
+		*errorCode = resultCode;
+
+	return (resultCode == ScTemplateResultCode::Success);
 }
 
 bool ScTemplate::search(ScMemoryContext & ctx, ScTemplateSearchResult & result) const
