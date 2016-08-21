@@ -95,8 +95,11 @@ protected:
 class ScStreamMemory : public IScStream
 {
 public:
+	_SC_EXTERN explicit ScStreamMemory();
 	_SC_EXTERN explicit ScStreamMemory(MemoryBufferPtr const & buff);
 	_SC_EXTERN virtual ~ScStreamMemory();
+
+	_SC_EXTERN void reinit(MemoryBufferPtr const & buff);
 
 	_SC_EXTERN bool isValid() const;
 	_SC_EXTERN bool read(sc_char * buff, sc_uint32 buffLen, sc_uint32 & readBytes) const;
@@ -120,5 +123,6 @@ class StreamConverter
 public:
 
     static _SC_EXTERN bool streamToString(ScStream const & stream, std::string & outString);
+	static _SC_EXTERN void streamFromString(std::string const & str, ScStreamMemory & outStream);
 };
 

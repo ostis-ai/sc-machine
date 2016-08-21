@@ -21,6 +21,9 @@ set (SC_MEMORY_WRAP_SOURCES
             "wrap/sc_iterator.cpp"
             "wrap/sc_stream.cpp"
 			"wrap/sc_template.cpp"
+			"wrap/sc_template_build.cpp"
+			"wrap/sc_template_gen.cpp"
+			"wrap/sc_template_search.cpp"
 			"wrap/sc_object.cpp"
             "wrap/sc_module.cpp"
 			"wrap/sc_struct.cpp"
@@ -38,6 +41,7 @@ set (SC_MEMORY_WRAP_SOURCES
             "wrap/sc_defines.hpp"
             "wrap/sc_module.hpp"
 			"wrap/sc_struct.hpp"
+			"wrap/sc_platform.hpp"
 			"wrap/sc_memory_headers.hpp"
 			"wrap/kpm/sc_agent.hpp"
         )

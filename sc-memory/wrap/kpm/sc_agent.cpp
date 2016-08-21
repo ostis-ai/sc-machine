@@ -63,7 +63,7 @@ ScAgentAction::~ScAgentAction()
 
 sc_result ScAgentAction::run(ScAddr const & listenAddr, ScAddr const & startArcAddr)
 {
-    ScAddr cmdAddr = mMemoryCtx.getArcEnd(startArcAddr);
+    ScAddr cmdAddr = mMemoryCtx.getEdgeTarget(startArcAddr);
 	if (cmdAddr.isValid())
 	{
 		if (mMemoryCtx.helperCheckArc(mCmdClassAddr, cmdAddr, sc_type_arc_pos_const_perm))

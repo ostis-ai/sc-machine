@@ -344,7 +344,7 @@ public:
 		// contexts
 		if (getJSONMemberSafe(jsonResult, "contexts", jsonValue) && jsonValue.IsArray())
 		{
-			rapidjson::Value::Array const & arr = jsonValue.GetArray();
+			rapidjson::Value::Array const arr = jsonValue.GetArray();
 			m_contexts.resize(arr.Size());
 			for (size_t i = 0; i < m_contexts.size(); ++i)
 			{
@@ -365,6 +365,61 @@ public:
 			m_status.parseJSON(jsonValue);
 		
 		return true;
+	}
+
+	const std::string & GetId() const
+	{
+		return m_id;
+	}
+
+	const std::tm & GetTimeStamp() const
+	{
+		return m_timeStamp;
+	}
+
+	const std::string & GetResultSource() const
+	{
+		return m_resultSource;
+	}
+
+	const std::string & GetResolverQuery() const
+	{
+		return m_resolvedQuery;
+	}
+
+	const std::string & GetAction() const
+	{
+		return m_action;
+	}
+
+	bool IsActionComplete() const
+	{
+		return m_isActionIncomplete;
+	}
+
+	const tStringMap & GetResultParameters() const
+	{
+		return m_resultParameters;
+	}
+
+	const apiAi::tContextVector & GetContexts() const
+	{
+		return m_contexts;
+	}
+
+	const apiAi::MetaData & GetMetaData() const
+	{
+		return m_metaData;
+	}
+
+	const apiAi::Fulfillment & GetFullfillment() const
+	{
+		return m_fulfillment;
+	}
+
+	const apiAi::Status & GetStatus() const
+	{
+		return m_status;
 	}
 
 private:

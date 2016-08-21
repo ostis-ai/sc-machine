@@ -176,24 +176,48 @@ bool ScMemoryContext::setElementSubtype(ScAddr const & addr, sc_type subtype)
     return sc_memory_change_element_subtype(mContext, addr.mRealAddr, subtype) == SC_RESULT_OK;
 }
 
+ScAddr ScMemoryContext::getEdgeSource(ScAddr const & edgeAddr) const
+{
+	check_expr(isValid());
+	ScAddr addr;
+	if (sc_memory_get_arc_begin(mContext, edgeAddr.mRealAddr, &addr.mRealAddr) != SC_RESULT_OK)
+		addr.reset();
+
+	return addr;
+}
+
+ScAddr ScMemoryContext::getEdgeTarget(ScAddr const & edgeAddr) const
+{
+	check_expr(isValid());
+	ScAddr addr;
+	if (sc_memory_get_arc_end(mContext, edgeAddr.mRealAddr, &addr.mRealAddr) != SC_RESULT_OK)
+		addr.reset();
+
+	return addr;
+}
+
+bool ScMemoryContext::getEdgeInfo(ScAddr const & edgeAddr, ScAddr & outSourceAddr, ScAddr & outTargetAddr) const
+{
+	check_expr(isValid());
+	if (sc_memory_get_arc_info(mContext, *edgeAddr, &outSourceAddr.mRealAddr, &outTargetAddr.mRealAddr) != SC_RESULT_OK)
+	{
+		outSourceAddr.reset();
+		outTargetAddr.reset();
+
+		return false;
+	}
+		
+	return true;
+}
+
 ScAddr ScMemoryContext::getArcBegin(ScAddr const & arcAddr) const
 {
-    check_expr(isValid());
-	ScAddr addr;
-    if (sc_memory_get_arc_begin(mContext, arcAddr.mRealAddr, &addr.mRealAddr) != SC_RESULT_OK)
-        addr.reset();
-
-    return addr;
+	return getEdgeSource(arcAddr);
 }
 
 ScAddr ScMemoryContext::getArcEnd(ScAddr const & arcAddr) const
 {
-    check_expr(isValid());
-	ScAddr addr;
-    if (sc_memory_get_arc_end(mContext, arcAddr.mRealAddr, &addr.mRealAddr) != SC_RESULT_OK)
-        addr.reset();
-
-    return addr;
+	return getEdgeTarget(arcAddr);
 }
 
 bool ScMemoryContext::setLinkContent(ScAddr const & addr, ScStream const & stream)

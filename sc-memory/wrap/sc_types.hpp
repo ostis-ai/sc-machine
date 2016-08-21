@@ -43,40 +43,54 @@ public:
 	{
 	}
 
-	bool isEdge() const
+	inline bool isEdge() const
 	{
 		return (mRealType & sc_type_arc_mask) != 0;
 	}
 
-	bool isNode() const
+	inline bool isNode() const
 	{
 		return (mRealType & sc_type_node) != 0;
 	}
 
-	bool isLink() const
+	inline bool isLink() const
 	{
 		return (mRealType & sc_type_link) != 0;
 	}
 
-	bool isConst() const
+	inline bool isConst() const
 	{
 		return (mRealType & sc_type_const) != 0;
 	}
 
-	bool isVar() const
+	inline bool isVar() const
 	{
 		return (mRealType & sc_type_var) != 0;
 	}
 
 	// Returns copy of this type, but with variable raplaced to const
-	ScType asConst() const
+	inline ScType asConst() const
 	{
 		return ScType((mRealType & ~sc_type_var) | sc_type_const);
 	}
 
-	sc_type operator * () const
+	// Returns copy of this type, but replace constancy type upward (metavar -> var -> const)
+	inline ScType upConstType() const
+	{
+		/// TODO: metavar
+		//if (isVar())
+		return ScType((mRealType & ~sc_type_var) | sc_type_const); // copied from asConst for maximum perfomance
+	}
+
+	inline sc_type operator * () const
 	{
 		return mRealType;
+	}
+
+	ScType & operator() (tRealType bits)
+	{
+		mRealType |= bits;
+		return *this;
 	}
 
 	bool operator == (ScType const & other)
@@ -84,9 +98,14 @@ public:
 		return (mRealType == other.mRealType);
 	}
 
-	tRealType bitAnd(tRealType const & inMask) const
+	inline tRealType bitAnd(tRealType const & inMask) const
 	{
 		return (mRealType & inMask);
+	}
+
+	operator tRealType () const
+	{
+		return mRealType;
 	}
 
 private:
@@ -94,8 +113,27 @@ private:
 
 public:
 
+	static const ScType EDGE_UCOMMON_CONST;
+	static const ScType EDGE_DCOMMON_CONST;
 	static const ScType EDGE_ACCESS_CONST_POS_PERM;
+	static const ScType EDGE_ACCESS_CONST_NEG_PERM;
+	static const ScType EDGE_ACCESS_CONST_FUZ_PERM;
+	static const ScType EDGE_ACCESS_CONST_POS_TEMP;
+	static const ScType EDGE_ACCESS_CONST_NEG_TEMP;
+	static const ScType EDGE_ACCESS_CONST_FUZ_TEMP;
+
+	static const ScType EDGE_UCOMMON_VAR;
+	static const ScType EDGE_DCOMMON_VAR;
 	static const ScType EDGE_ACCESS_VAR_POS_PERM;
+	static const ScType EDGE_ACCESS_VAR_NEG_PERM;
+	static const ScType EDGE_ACCESS_VAR_FUZ_PERM;
+	static const ScType EDGE_ACCESS_VAR_POS_TEMP;
+	static const ScType EDGE_ACCESS_VAR_NEG_TEMP;
+	static const ScType EDGE_ACCESS_VAR_FUZ_TEMP;
+	
+
+
+	static const ScType NODE;
 
 	static const ScType NODE_CONST;
 	static const ScType NODE_VAR;

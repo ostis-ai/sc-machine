@@ -15,5 +15,15 @@ namespace nl
 	{
 		SC_CLASS(Agent, CmdClass("command_process_user_text_message"))
 		SC_GENERATED_BODY()
+
+	private:
+		SC_PROPERTY(Keynode("nrel_translation"), ForceCreate)
+		static ScAddr ms_nrelTranslation;
+
+		SC_PROPERTY(Keynode("rrel_location"), ForceCreation)
+		static ScAddr ms_rrelLocation;
+
+		SC_PROPERTY(Keynode("nrel_common_template"), ForceCreation)
+		static ScAddr ms_nrelCommonTemplate;
 	};
 }

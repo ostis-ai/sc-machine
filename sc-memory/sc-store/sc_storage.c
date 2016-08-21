@@ -872,6 +872,39 @@ sc_result sc_storage_get_arc_end(const sc_memory_context *ctx, sc_addr addr, sc_
     return res;
 }
 
+sc_result sc_storage_get_arc_info(sc_memory_context const * ctx, sc_addr addr, sc_addr * result_begin_addr, sc_addr * result_end_addr)
+{
+	sc_element *el = null_ptr;
+	sc_result res = SC_RESULT_ERROR_INVALID_TYPE;
+
+	if (sc_storage_element_lock(ctx, addr, &el) != SC_RESULT_OK)
+		return SC_RESULT_ERROR;
+
+	if (sc_element_is_valid(el) == SC_FALSE)
+	{
+		res = SC_RESULT_ERROR_INVALID_STATE;
+		goto unlock;
+	}
+
+	if (sc_access_lvl_check_read(ctx->access_levels, el->flags.access_levels))
+	{
+		if (el->flags.type & sc_type_arc_mask)
+		{
+			*result_begin_addr = el->arc.begin;
+			*result_end_addr = el->arc.end;
+			res = SC_RESULT_OK;
+		}
+	}
+	else
+		res = SC_RESULT_ERROR_NO_READ_RIGHTS;
+
+unlock:
+	{
+		sc_storage_element_unlock(ctx, addr);
+	}
+	return res;
+}
+
 sc_result sc_storage_set_link_content(const sc_memory_context *ctx, sc_addr addr, const sc_stream *stream)
 {
     sc_element *el;

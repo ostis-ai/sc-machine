@@ -52,7 +52,7 @@ namespace iot
 	{
         ScMemoryContext ctx(sc_access_lvl_make_min, "handler_device_group_enable_command");
 
-        ScAddr commandInstance = ctx.getArcEnd(ScAddr(arg));
+        ScAddr commandInstance = ctx.getEdgeTarget(ScAddr(arg));
 		if (!commandInstance.isValid())
 			return SC_RESULT_ERROR;
 

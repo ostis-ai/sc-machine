@@ -90,7 +90,7 @@ _SC_EXTERN sc_addr sc_memory_arc_new(sc_memory_context const * ctx, sc_type type
  * otherwise return SC_RESULT_ERROR
 
  */
-_SC_EXTERN sc_result sc_memory_get_element_type(sc_memory_context const * ctx, sc_addr addr, sc_type *result);
+_SC_EXTERN sc_result sc_memory_get_element_type(sc_memory_context const * ctx, sc_addr addr, sc_type * result);
 
 /*! Change element sub-type
  * @param addr sc-addr of element to set new type
@@ -107,7 +107,7 @@ _SC_EXTERN sc_result sc_memory_change_element_subtype(sc_memory_context const * 
  * If element with specified addr isn't an arc, then return SC_RESULT_INVALID_TYPE
 
  */
-_SC_EXTERN sc_result sc_memory_get_arc_begin(sc_memory_context const * ctx, sc_addr addr, sc_addr *result);
+_SC_EXTERN sc_result sc_memory_get_arc_begin(sc_memory_context const * ctx, sc_addr addr, sc_addr * result);
 
 /*! Returns sc-addr of end element of specified arc
  * @param addr sc-addr of arc to get end element
@@ -116,7 +116,14 @@ _SC_EXTERN sc_result sc_memory_get_arc_begin(sc_memory_context const * ctx, sc_a
  * If element with specified addr isn't an arc, then return SC_RESULT_INVALID_TYPE
 
  */
-_SC_EXTERN sc_result sc_memory_get_arc_end(sc_memory_context const * ctx, sc_addr addr, sc_addr *result);
+_SC_EXTERN sc_result sc_memory_get_arc_end(sc_memory_context const * ctx, sc_addr addr, sc_addr * result);
+
+/*! Returns sc-addr of start and end elements of specified arc.
+ * Call logic equal to calls sc_memory_get_arc_begin and sc_memory_get_arc_end,
+ * but this one do this work faster.
+ */
+_SC_EXTERN sc_result sc_memory_get_arc_info(sc_memory_context const * ctx, sc_addr addr,	
+											sc_addr * result_start_addr, sc_addr * result_end_addr);
 
 /*! Setup content data for specified sc-link
  * @param addr sc-addr of sc-link to setup content

@@ -12,6 +12,9 @@
 
 namespace nl
 {
+	ScAddr AApiAiParseUserTextAgent::ms_nrelCommonTemplate;
+	ScAddr AApiAiParseUserTextAgent::ms_nrelTranslation;
+	ScAddr AApiAiParseUserTextAgent::ms_rrelLocation;
 
 	/** 
 	  * Command template: requestAddr _-> _text;;
@@ -39,7 +42,31 @@ namespace nl
 				
 					if (request.perform(params))
 					{
-						printf("test");
+						// try to find template for specified action
+						const ApiAiRequestResult & result = request.getResult();
+												
+						std::string actionName = utils::StringUtils::replaceAll(result.GetAction(), ".", "_");						
+						
+						ScAddr actionAddr;
+						if (mMemoryCtx.helperFindBySystemIdtf(std::string("apiai_action_") + actionName, actionAddr))
+						{
+							ScIterator5Ptr iterTempl = mMemoryCtx.iterator5(actionAddr, 
+										*ScType::EDGE_DCOMMON_CONST,
+										*ScType::NODE_CONST_STRUCT,
+										*ScType::EDGE_ACCESS_CONST_POS_PERM,
+										ms_nrelCommonTemplate
+									);
+							if (iterTempl->next())
+							{
+								ScTemplate templ;
+								if (mMemoryCtx.helperBuildTemplate(templ, iterTempl->value(2)))
+								{
+									// setup template parameters
+									ScTemplateGenParams params;
+									//params.add()
+								}
+							}
+						}
 					}
 				}
 				else

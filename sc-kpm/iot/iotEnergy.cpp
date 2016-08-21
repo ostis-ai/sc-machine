@@ -64,7 +64,7 @@ namespace iot
 				size_t const resultNum = searchResult.getSize();
 				for (size_t i = 0; i < resultNum; ++i)
 				{
-					ScTemplateSearchResultItem const & res = searchResult.getResult(i);
+					ScTemplateSearchResultItem const res = searchResult[i];
 
 					/// TODO: implement support of different types (int, float, ...)
 					ScAddr const & link = res["link"];
@@ -99,7 +99,7 @@ namespace iot
 			ScAddr linkAddr;
 			if (mMemoryCtx.helperSearchTemplate(templPowerUsage, searchResult))
 			{
-				linkAddr = searchResult.getResult(0)["link"];
+				linkAddr = searchResult[0]["link"];
 			}
 			else
 			{

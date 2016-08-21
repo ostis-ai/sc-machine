@@ -25,8 +25,18 @@ private:
     std::string mDescription;
 };
 
-#define check_expr(x) assert(x)
-#define error(str) { throw ScException(str); }
+class ScExceptionInvalidParams final : public ScException
+{
+public:
+	_SC_EXTERN ScExceptionInvalidParams(std::string const & description)
+		: ScException(description)
+	{
+	}
+};
+
+#define check_expr(__x) assert(__x)
+#define error(__str) { throw ScException(__str); }
+#define error_invalid_params(__str) { throw ScExceptionInvalidParams(__str); }
 
 // ---------------- Reference counter -----------
 class RefCount
@@ -187,8 +197,8 @@ protected:
 
 struct MemoryBufferSafe : public MemoryBuffer
 {
-	MemoryBufferSafe(char * buff, unsigned int size)
-		: MemoryBuffer(buff, size)
+	MemoryBufferSafe(char const * buff, unsigned int size)
+		: MemoryBuffer(0, size)
 	{
 		mData = new char[size];
 		mSize = size;
@@ -212,4 +222,13 @@ template<typename T>
 T max(T a, T b)
 {
 	return (a > b) ? a : b;
+}
+
+namespace utils
+{
+	class StringUtils
+	{
+	public:
+		_SC_EXTERN static std::string replaceAll(std::string const & source, std::string const & replaceWhat, std::string const & replaceWithWhat);
+	};
 }

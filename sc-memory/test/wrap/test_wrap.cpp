@@ -12,6 +12,37 @@
 #define SUBTEST_START(__name) { std::string subtestName(#__name); std::cout << "Testing " << subtestName << " ... ";
 #define SUBTEST_END std::cout << "ok" << std::endl; }
 
+struct TestTemplParams
+{
+	explicit TestTemplParams(ScMemoryContext & ctx)
+		: mCtx(ctx)
+	{
+	}
+
+	bool operator () (ScTemplateItemValue param1, ScTemplateItemValue param2, ScTemplateItemValue param3)
+	{
+		bool catched = false;
+		try
+		{
+			ScTemplate testTempl;
+			testTempl(param1, param2, param3);
+
+			ScTemplateGenResult res;
+			g_assert(mCtx.helperGenTemplate(testTempl, res));
+		}
+		catch (ScExceptionInvalidParams & e)
+		{
+			(void)e;
+			catched = true;
+		}
+
+		return !catched;
+	}
+
+private:
+	ScMemoryContext & mCtx;
+};
+
 void init_memory()
 {
     sc_memory_params params;
@@ -61,8 +92,8 @@ void test_common_elements()
         g_assert(ctx.isElement(link));
         g_assert(ctx.isElement(arc));
 
-        g_assert(ctx.getArcBegin(arc) == addr);
-        g_assert(ctx.getArcEnd(arc) == link);
+        g_assert(ctx.getEdgeSource(arc) == addr);
+        g_assert(ctx.getEdgeTarget(arc) == link);
 
         g_assert(ctx.getElementType(addr) == ScType(sc_type_node | sc_type_const));
         g_assert(ctx.getElementType(link) == ScType(sc_type_link));
@@ -126,6 +157,16 @@ void test_common_iterators()
             g_assert(iter3->value(1) == arc1);
             g_assert(iter3->value(2) == addr2);
         }
+		SUBTEST_END
+
+		SUBTEST_START(iterator3_a_f_a)
+		{
+			ScIterator3Ptr iter3 = ctx.iterator3(sc_type_node, arc1, sc_type_node);
+			g_assert(iter3->next());
+			g_assert(iter3->value(0) == addr1);
+			g_assert(iter3->value(1) == arc1);
+			g_assert(iter3->value(2) == addr2);
+		}
 		SUBTEST_END
 
         ScAddr addr3 = ctx.createNode(sc_type_const);
@@ -320,51 +361,44 @@ void test_common_templates()
 	init_memory();
 	{
 		ScMemoryContext ctx;
-		ScAddr const addr1 = ctx.createNode(0);
-		ScAddr const addr2 = ctx.createNode(0);
-		ScAddr const addr3 = ctx.createNode(0);
+		ScAddr const addr1 = ctx.createNode(ScType::NODE_CONST);
+		ScAddr const addr2 = ctx.createNode(ScType::NODE_CONST);
+		ScAddr const addr3 = ctx.createNode(ScType::NODE_CONST);
 
-		ScAddr const edge1 = ctx.createArc(sc_type_arc_pos_const_perm, addr1, addr2);
-		ScAddr const edge2 = ctx.createArc(sc_type_arc_pos_const_perm, addr3, edge1);
+		ScAddr const edge1 = ctx.createArc(ScType::EDGE_ACCESS_CONST_POS_PERM, addr1, addr2);
+		ScAddr const edge2 = ctx.createArc(ScType::EDGE_ACCESS_CONST_POS_PERM, addr3, edge1);
 
 		{
 			ScTemplate templ;
 
 			templ
-				.triple(addr1 >> "addr1",
-						ScType(sc_type_arc_pos_const_perm) >> "edge1",
-						ScType(sc_type_node) >> "addr2"
+				(addr1 >> "addr1",
+				 ScType::EDGE_ACCESS_VAR_POS_PERM >> "edge1",
+				 ScType::NODE_VAR >> "addr2"
 				)
-                .triple(ScType(sc_type_node),
-						ScType(sc_type_arc_pos_const_perm),
-						"edge1"
+                (ScType::NODE_VAR >> "_addr1T2",
+				 ScType::EDGE_ACCESS_VAR_POS_PERM >> "_addr2T2",
+				 "edge1"
 				)
-                .triple("addr2",
-						ScType(sc_type_arc_common),
-						"edge1");
+                ("addr2",
+				 ScType::EDGE_DCOMMON_VAR >> "_addr2T3",
+				 "edge1");
 
 			ScTemplateGenResult result;
 			g_assert(ctx.helperGenTemplate(templ, result));
-
-			g_assert(result[0] == result["addr1"]);
-			g_assert(result[1] == result["edge1"]);
-			g_assert(result[2] == result["addr2"]);
-			g_assert(result[5] == result["edge1"]);
-			g_assert(result[6] == result["addr2"]);
-			g_assert(result[8] == result["edge1"]);
 
             ScIterator5Ptr it5 = ctx.iterator5(addr1, sc_type_arc_pos_const_perm, sc_type_node, sc_type_arc_pos_const_perm, sc_type_node);
 			g_assert(it5->next());
 			g_assert(it5->value(0) == result["addr1"]);
 			g_assert(it5->value(1) == result["edge1"]);
 			g_assert(it5->value(2) == result["addr2"]);
-			g_assert(it5->value(3) == result[4]);
-			g_assert(it5->value(4) == result[3]);
+			g_assert(it5->value(3) == result["_addr2T2"]);
+			g_assert(it5->value(4) == result["_addr1T2"]);
 
             ScIterator3Ptr it3 = ctx.iterator3(result["addr2"], sc_type_arc_common, sc_type_arc_pos_const_perm);
 			g_assert(it3->next());
 			g_assert(it3->value(0) == result["addr2"]);
-			g_assert(it3->value(1) == result[7]);
+			g_assert(it3->value(1) == result["_addr2T3"]);
             g_assert(it3->value(2) == result["edge1"]);
 
 
@@ -375,22 +409,16 @@ void test_common_templates()
 
                 g_assert(searchResult.getSize() == 1);
 
-                ScTemplateSearchResultItem const & res = searchResult.getResult(0);
-                g_assert(res[0] == res["addr1"]);
-                g_assert(res[1] == res["edge1"]);
-                g_assert(res[2] == res["addr2"]);
-                g_assert(res[5] == res["edge1"]);
-                g_assert(res[6] == res["addr2"]);
-                g_assert(res[8] == res["edge1"]);
-
+                ScTemplateSearchResultItem res = searchResult[0];
+   
                 g_assert(it5->value(0) == res["addr1"]);
                 g_assert(it5->value(1) == res["edge1"]);
                 g_assert(it5->value(2) == res["addr2"]);
-                g_assert(it5->value(3) == res[4]);
-                g_assert(it5->value(4) == res[3]);
+				g_assert(it5->value(3) == result["_addr2T2"]);
+				g_assert(it5->value(4) == result["_addr1T2"]);
 
                 g_assert(it3->value(0) == res["addr2"]);
-                g_assert(it3->value(1) == res[7]);
+				g_assert(it3->value(1) == result["_addr2T3"]);
                 g_assert(it3->value(2) == res["edge1"]);
             }
 			SUBTEST_END
@@ -404,7 +432,7 @@ void test_common_templates()
                 g_assert(addrSrc.isValid());
                 for (size_t i = 0; i < testCount; ++i)
                 {
-                    ScAddr const addrTrg = ctx.createNode(sc_type_var);
+                    ScAddr const addrTrg = ctx.createNode(sc_type_const);
                     g_assert(addrTrg.isValid());
 
                     ScAddr const addrEdge = ctx.createArc(sc_type_arc_pos_const_perm, addrSrc, addrTrg);
@@ -417,15 +445,15 @@ void test_common_templates()
                 ScTemplate templ2;
 
                 templ2.triple(addrSrc >> "addrSrc",
-                    ScType(sc_type_arc_pos_const_perm) >> "edge",
-                    ScType(sc_type_node | sc_type_var) >> "addrTrg");
+                    ScType::EDGE_ACCESS_VAR_POS_PERM >> "edge",
+                    ScType::NODE_VAR >> "addrTrg");
 
                 ScTemplateSearchResult result2;
                 g_assert(ctx.helperSearchTemplate(templ2, result2));
                 size_t const count = result2.getSize();
                 for (size_t i = 0; i < count; ++i)
                 {
-                    ScTemplateSearchResultItem r = result2.getResult(i);
+                    ScTemplateSearchResultItem r = result2[i];
 
                     g_assert(r["addrSrc"] == addrSrc);
 
@@ -443,23 +471,15 @@ void test_common_templates()
 			templ
 				.tripleWithRelation(
 					addr1,
-					ScType(sc_type_arc_pos_const_perm),
-					ScType(sc_type_node),
-					ScType(sc_type_arc_pos_const_perm),
+					ScType::EDGE_ACCESS_VAR_POS_PERM,
+					ScType::NODE_VAR,
+					ScType::EDGE_ACCESS_VAR_POS_PERM,
 					addr3
 				);
 
 			ScTemplateSearchResult result;
 			g_assert(ctx.helperSearchTemplate(templ, result));
 			g_assert(result.getSize() > 0);
-
-			ScTemplateSearchResultItem item = result.getResult(0);
-
-			g_assert(addr1 == item[0]);
-			g_assert(addr2 == item[2]);
-			g_assert(addr3 == item[3]);
-			g_assert(edge1 == item[1]);
-			g_assert(edge2 == item[4]);
 		}
 
 		{
@@ -468,9 +488,9 @@ void test_common_templates()
 			templ
 				.tripleWithRelation(
 					addr1 >> "1",
-					ScType(sc_type_arc_pos_const_perm) >> "2",
-					ScType(sc_type_node) >> "3",
-					ScType(sc_type_arc_pos_const_perm) >> "4",
+					ScType::EDGE_ACCESS_VAR_POS_PERM >> "2",
+					ScType::NODE_VAR >> "3",
+					ScType::EDGE_ACCESS_VAR_POS_PERM >> "4",
 					addr3 >> "5"
 				);
 
@@ -478,13 +498,6 @@ void test_common_templates()
 			g_assert(ctx.helperSearchTemplate(templ, result));
 			g_assert(result.getSize() > 0);
 
-			ScTemplateSearchResultItem item = result.getResult(0);
-
-			g_assert(addr1 == item["1"]);
-			g_assert(addr2 == item["3"]);
-			g_assert(addr3 == item["5"]);
-			g_assert(edge1 == item["2"]);
-			g_assert(edge2 == item["4"]);
 		}
 		SUBTEST_END
 
@@ -519,19 +532,19 @@ void test_common_templates()
 				.triple(
 					addrConst >> "1",
 					ScType::EDGE_ACCESS_VAR_POS_PERM >> "_2",
-					ScType::NODE_CONST_TUPLE >> "_3"
+					ScType::NODE_VAR_TUPLE >> "_3"
 				)
 				.triple(
 					"_3",
 					ScType::EDGE_ACCESS_VAR_POS_PERM >> "_5",
-					ScType::NODE_CONST_CLASS >> "_6"
+					ScType::NODE_VAR_CLASS >> "_6"
 				);
 
 			ScTemplateSearchResult searchResult;
 			g_assert(ctx.helperSearchTemplate(searchTempl, searchResult));
 			g_assert(searchResult.getSize() == 1);
-			g_assert(searchResult.getResult(0)["_3"] == addrTest3);
-			g_assert(searchResult.getResult(0)["_6"] == addrTest6);
+			g_assert(searchResult[0]["_3"] == addrTest3);
+			g_assert(searchResult[0]["_6"] == addrTest6);
 		}
 		SUBTEST_END
 
@@ -543,11 +556,9 @@ void test_common_templates()
 
 			ScTemplate templ;
 			templ
-				.triple(
-					addrConst >> "1",
-					ScType::EDGE_ACCESS_VAR_POS_PERM >> "_2", // can't be replaced by param in template generation
-					ScType::NODE_CONST >> "_3"	// can't be replaced by param in template generation
-				);
+				(addrConst >> "1",
+				 ScType::EDGE_ACCESS_VAR_POS_PERM >> "_2", // can't be replaced by param in template generation
+				 ScType::NODE_VAR >> "_3");	// can't be replaced by param in template generation
 
 			ScTemplateGenResult result;
 			g_assert(ctx.helperGenTemplate(templ, result));
@@ -560,18 +571,113 @@ void test_common_templates()
 				g_assert(!ctx.helperGenTemplate(templ, result, params));
 			}
 
-			// test node
+			// test invalid params
 			{
-				ScTemplateGenParams params;
-				params.add("_3", addrTest3);
+				// target is const
+				{
+					g_assert(false == TestTemplParams(ctx)(
+						 addrConst >> "1",
+						 ScType::EDGE_ACCESS_VAR_POS_PERM >> "_2",
+						 ScType::NODE_CONST >> "_3"));
+				}
+				
+				// source is const
+				{
+					g_assert(false == TestTemplParams(ctx)(
+						 ScType::NODE_CONST >> "_1",
+						 ScType::EDGE_ACCESS_VAR_POS_PERM >> "_2",
+						 addrConst >> "3"));
+				}
 
-				g_assert(!ctx.helperGenTemplate(templ, result, params));
+				// edge is const
+				{
+					g_assert(false == TestTemplParams(ctx)(
+						 ScType::NODE_VAR >> "_1",
+						 ScType::EDGE_ACCESS_CONST_POS_PERM >> "_2",
+						 addrConst >> "3"));
+				}
+
+			}
+		}
+		SUBTEST_END
+		
+		SUBTEST_START(template_a_a_a)
+		{
+			/*
+				_struct
+					<- sc_node_struct;
+					_-> rrel_location:: _apiai_location;
+					_=> nrel_translation:: _apiai_speech
+					(* _<- _lang;; *);;
+			*/
+
+			const ScAddr _structAddr = ctx.createNode(ScType::NODE_VAR_STRUCT);
+			g_assert(_structAddr.isValid());
+			const ScAddr _apiai_locationAddr = ctx.createNode(ScType::NODE_VAR);
+			g_assert(_apiai_locationAddr.isValid());
+			const ScAddr _apiai_speechAddr = ctx.createNode(ScType::NODE_VAR);
+			g_assert(_apiai_speechAddr.isValid());
+			const ScAddr _langAddr = ctx.createNode(ScType::NODE_VAR);
+			g_assert(_langAddr.isValid());
+
+			const ScAddr rrel_locationAddr = ctx.createNode(ScType::NODE_CONST);
+			g_assert(rrel_locationAddr.isValid());
+			g_assert(ctx.helperSetSystemIdtf("rrel_location", rrel_locationAddr));
+
+			const ScAddr nrel_translationAddr = ctx.createNode(ScType::NODE_CONST);
+			g_assert(nrel_translationAddr.isValid());
+			g_assert(ctx.helperSetSystemIdtf("nrel_translation", nrel_translationAddr));
+
+			const ScAddr _struct_locationEdgeAddr = ctx.createArc(ScType::EDGE_ACCESS_VAR_POS_PERM, _structAddr, _apiai_locationAddr);
+			g_assert(_struct_locationEdgeAddr.isValid());
+
+			const ScAddr _rrel_locationEdgeAddr = ctx.createArc(ScType::EDGE_ACCESS_VAR_POS_PERM, rrel_locationAddr, _struct_locationEdgeAddr);
+			g_assert(_rrel_locationEdgeAddr.isValid());
+
+			const ScAddr _struct_speechEdgeAddr = ctx.createArc(ScType::EDGE_DCOMMON_VAR, _structAddr, _apiai_speechAddr);
+			g_assert(_struct_speechEdgeAddr.isValid());
+
+			const ScAddr _nrel_translationEdgeAddr = ctx.createArc(ScType::EDGE_ACCESS_VAR_POS_PERM, nrel_translationAddr, _struct_speechEdgeAddr);
+			g_assert(_nrel_translationEdgeAddr.isValid());
+
+			const ScAddr _langEdgeAddr = ctx.createArc(ScType::EDGE_ACCESS_VAR_POS_PERM, _langAddr, _apiai_speechAddr);
+			g_assert(_langEdgeAddr.isValid());
+
+			// create template
+			const ScAddr templStructAddr = ctx.createNode(ScType::NODE_CONST_STRUCT);
+			g_assert(templStructAddr.isValid());
+			ScStruct templStruct(&ctx, templStructAddr);
+
+			templStruct
+				<< _structAddr
+				<< _apiai_locationAddr
+				<< _apiai_speechAddr
+				<< _langAddr
+				<< rrel_locationAddr
+				<< nrel_translationAddr
+				<< _struct_locationEdgeAddr
+				<< _rrel_locationEdgeAddr
+				<< _struct_speechEdgeAddr
+				<< _nrel_translationEdgeAddr
+				<< _langEdgeAddr;
+
+			ScTemplate templ;
+			g_assert(ctx.helperBuildTemplate(templ, templStructAddr));
+
+			// check creation by this template
+			{
+				ScTemplateGenResult result;
+				g_assert(ctx.helperGenTemplate(templ, result));
+			}
+
+			// check search by this template
+			{
+				ScTemplateSearchResult result;
+				g_assert(ctx.helperSearchTemplate(templ, result));
 			}
 
 		}
 		SUBTEST_END
-
-		
 
 	}
 
@@ -638,15 +744,17 @@ void test_perfomance_templ()
 			// preapre test
 			ScTemplate templ;
 			templ
-				.triple(ScType(sc_type_node) >> "Node1",
-				ScType(sc_type_arc_pos_const_perm) >> "Edge1",
-				ScType(sc_type_node) >> "Node2")
-				.triple(ScType(sc_type_node) >> "Node3",
-				ScType(sc_type_arc_pos_const_perm) >> "Edge2",
-				"Edge1")
-				.triple(ScType(sc_type_node) >> "Node4",
-				ScType(sc_type_arc_pos_const_perm) >> "Edge3",
-				"Node1");
+				(ScType::NODE_VAR >> "Node1",
+				 ScType::EDGE_ACCESS_VAR_POS_PERM >> "Edge1",
+				 ScType::NODE_VAR >> "Node2"
+				)
+				(ScType::NODE_VAR >> "Node3",
+				 ScType::EDGE_ACCESS_VAR_POS_PERM >> "Edge2",
+				 "Edge1"
+				)
+				(ScType::NODE_VAR >> "Node4",
+				 ScType::EDGE_ACCESS_VAR_POS_PERM >> "Edge3",
+				 "Node1");
 
 			ScTemplateGenResult result;
 			if (ctx.helperGenTemplate(templ, result))
@@ -672,23 +780,27 @@ void test_perfomance_templ()
 		{
 			ScTemplate templ;
 			templ
-				.triple(node1,
-						ScType(sc_type_arc_pos_const_perm) >> "Edge1",
-						ScType(sc_type_node))
-				.triple(node3,
-						ScType(sc_type_arc_pos_const_perm),
-						"Edge1")
-				.triple(node4,
-						ScType(sc_type_arc_pos_const_perm),
-						node1);
+				(node1,
+				 ScType::EDGE_ACCESS_VAR_POS_PERM >> "Edge1",
+				 ScType::NODE_VAR
+				)
+				(node3,
+				 ScType::EDGE_ACCESS_VAR_POS_PERM,
+				 "Edge1"
+				)
+				(node4,
+				 ScType::EDGE_ACCESS_VAR_POS_PERM,
+				 node1
+				);
 
 			ScTemplateSearchResult result;
 			g_assert(ctx.helperSearchTemplate(templ, result));
 		}
 
 		double const time = g_test_timer_elapsed();
-		printf("Time: %.3f\n s", time);
-		printf("Time per search: %.8f s", time / iterCount);
+		printf("Time: %.3f s\n", time);
+		printf("Time per search: %.8f s\n", time / iterCount);
+		printf("Search per second: %.8f search/sec \n", iterCount / time);
 	}
 	shutdown_memory(false);
 }
@@ -834,7 +946,7 @@ void test_common_sc_templates()
 				g_assert(ctx.helperSearchTemplate(templ, result));
 
 				g_assert(result.getSize() == 1);
-				ScTemplateSearchResultItem item = result.getResult(0);
+				ScTemplateSearchResultItem item = result[0];
 
 				g_assert(item["x"] == xAddr);
 				g_assert(item["_y"] == yAddr);
@@ -964,7 +1076,7 @@ void test_common_search_in_struct()
 			g_assert(result.getSize() == 2);
 			for (uint32_t i = 0; i < result.getSize(); ++i)
 			{
-				ScTemplateSearchResultItem res1 = result.getResult(i);
+				ScTemplateSearchResultItem res1 = result[i];
 				g_assert(res1["x"] == xAddr);
 				g_assert(res1["_y"] == tyAddr || res1["_y"] == tgAddr);
 				g_assert(res1["_z"] == tzAddr || res1["_z"] == tsAddr);
@@ -985,8 +1097,8 @@ int main(int argc, char *argv[])
     g_test_add_func("/common/elements", test_common_elements);
     g_test_add_func("/common/iterators", test_common_iterators);
     g_test_add_func("/common/streams", test_common_streams);
-	g_test_add_func("/common/templates", test_common_templates);
 	g_test_add_func("/common/struct", test_common_struct);
+	g_test_add_func("/common/templates", test_common_templates);
 	g_test_add_func("/common/sc_templates", test_common_sc_templates);
 	g_test_add_func("/common/searchInStruct", test_common_search_in_struct);
 

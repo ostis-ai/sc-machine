@@ -131,21 +131,21 @@ namespace iot
 		periodTempl
 			.tripleWithRelation(
 				actionAddr >> "action",
-				ScType(sc_type_arc_common | sc_type_const),
-				ScType(sc_type_node | sc_type_const) >> "value",
-				ScType(sc_type_arc_pos_const_perm),
+				ScType(sc_type_arc_common | sc_type_var),
+				ScType(sc_type_node | sc_type_var) >> "value",
+				ScType(sc_type_arc_pos_var_perm),
 				Keynodes::nrel_period
 			)
 			.tripleWithRelation(
 				"value",
-				ScType(sc_type_arc_pos_const_perm),
-				ScType(sc_type_link) >> "link",
-				ScType(sc_type_arc_pos_const_perm),
+				ScType(sc_type_arc_pos_var_perm),
+				ScType(sc_type_link | sc_type_var) >> "link",
+				ScType(sc_type_arc_pos_var_perm),
 				Keynodes::rrel_seconds
 			)
 			.triple(
 				Keynodes::binary_int32,
-				ScType(sc_type_arc_pos_const_perm),
+				ScType(sc_type_arc_pos_var_perm),
 				"link"
 			);
 
@@ -154,7 +154,7 @@ namespace iot
 		if (mMemoryCtx->helperSearchTemplate(periodTempl, searchResult))
 		{
 			check_expr(searchResult.getSize() > 0);
-			ScTemplateSearchResultItem const item = searchResult.getResult(0);
+			ScTemplateSearchResultItem const item = searchResult[0];
 
 			int32_t period = 0;
 			ScStream stream;
@@ -174,21 +174,21 @@ namespace iot
 		timeTempl
 			.tripleWithRelation(
 				actionAddr >> "action",
-				ScType(sc_type_arc_common | sc_type_const),
-				ScType(sc_type_node | sc_type_const) >> "value",
-				ScType(sc_type_arc_pos_const_perm),
+				ScType(sc_type_arc_common | sc_type_var),
+				ScType(sc_type_node | sc_type_var) >> "value",
+				ScType(sc_type_arc_pos_var_perm),
 				Keynodes::nrel_time
 			)
 			.tripleWithRelation(
 				"value",
-				ScType(sc_type_arc_pos_const_perm),
-				ScType(sc_type_link) >> "link",
-				ScType(sc_type_arc_pos_const_perm),
+				ScType(sc_type_arc_pos_var_perm),
+				ScType(sc_type_link | sc_type_var) >> "link",
+				ScType(sc_type_arc_pos_var_perm),
 				Keynodes::rrel_epoch
 			)
 			.triple(
 				Keynodes::binary_int64,
-				ScType(sc_type_arc_pos_const_perm),
+				ScType(sc_type_arc_pos_var_perm),
 				"link"
 			);
 
@@ -197,7 +197,7 @@ namespace iot
 		if (mMemoryCtx->helperSearchTemplate(timeTempl, searchResult))
 		{
 			check_expr(searchResult.getSize() > 0);
-			ScTemplateSearchResultItem const item = searchResult.getResult(0);
+			ScTemplateSearchResultItem const item = searchResult[0];
 
 			int64_t time = 0;
 			ScStream stream;

@@ -56,6 +56,7 @@ public:
     _SC_EXTERN explicit ScMemoryContext(sc_uint8 accessLevels = 0, std::string const & name = "");
 	_SC_EXTERN ~ScMemoryContext();
 
+	sc_memory_context const * operator * () const { return mContext; }
     sc_memory_context const * getRealContext() const { return mContext; }
 
     //! Call this function, when you request to destroy real memory context, before destructor calls for this object
@@ -82,7 +83,13 @@ public:
      */
 	_SC_EXTERN bool setElementSubtype(ScAddr const & addr, sc_type subtype);
 
+	_SC_EXTERN ScAddr getEdgeSource(ScAddr const & edgeAddr) const;
+	_SC_EXTERN ScAddr getEdgeTarget(ScAddr const & edgeAddr) const;
+	_SC_EXTERN bool getEdgeInfo(ScAddr const & edgeAddr, ScAddr & outSourceAddr, ScAddr & outTargetAddr) const;
+
+	SC_DEPRECATED(0.3.0, "Use ScMemoryContext::getEdgeSource instead.")
 	_SC_EXTERN ScAddr getArcBegin(ScAddr const & arcAddr) const;
+	SC_DEPRECATED(0.3.0, "Use ScMemoryContext::getEdgeTarget instead.")
 	_SC_EXTERN ScAddr getArcEnd(ScAddr const & arcAddr) const;
 
 	_SC_EXTERN bool setLinkContent(ScAddr const & addr, ScStream const & stream);

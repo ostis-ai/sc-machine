@@ -229,6 +229,12 @@ sc_result sc_memory_get_arc_end(sc_memory_context const * ctx, sc_addr addr, sc_
     return sc_storage_get_arc_end(ctx, addr, result);
 }
 
+sc_result sc_memory_get_arc_info(sc_memory_context const * ctx, sc_addr addr, 
+								 sc_addr * result_start_addr, sc_addr * result_end_addr)
+{
+	return sc_storage_get_arc_info(ctx, addr, result_start_addr, result_end_addr);
+}
+
 sc_result sc_memory_set_link_content(sc_memory_context const * ctx, sc_addr addr, const sc_stream *stream)
 {
     return sc_storage_set_link_content(ctx, addr, stream);

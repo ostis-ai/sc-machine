@@ -17,7 +17,10 @@ typedef enum
 {
     sc_iterator3_f_a_a = 0, // output arcs
     sc_iterator3_a_a_f,     // input arcs
-    sc_iterator3_f_a_f      // arcs between two elements
+    sc_iterator3_f_a_f,     // arcs between two elements
+	sc_iterator3_a_f_a,		// begin and end elements of arc
+	sc_iterator3_count
+
 } sc_iterator3_type;
 
 /*! Iterator parameter
@@ -49,7 +52,7 @@ struct _sc_iterator3
  * @param end_type Type of end element for output arcs, to iterate
  * @return If iterator created, then return pointer to it; otherwise return null
  */
-_SC_EXTERN sc_iterator3* sc_iterator3_f_a_a_new(const sc_memory_context *ctx, sc_addr el, sc_type arc_type, sc_type end_type);
+_SC_EXTERN sc_iterator3 * sc_iterator3_f_a_a_new(sc_memory_context const * ctx, sc_addr el, sc_type arc_type, sc_type end_type);
 
 /*! Create iterator to find input arcs for specified element
  * @param beg_type Type of begin element for input arcs, to iterate
@@ -57,7 +60,7 @@ _SC_EXTERN sc_iterator3* sc_iterator3_f_a_a_new(const sc_memory_context *ctx, sc
  * @param el sc-addr of element to iterate input arcs
  * @return If iterator created, then return pointer to it; otherwise return null
  */
-_SC_EXTERN sc_iterator3* sc_iterator3_a_a_f_new(const sc_memory_context *ctx, sc_type beg_type, sc_type arc_type, sc_addr el);
+_SC_EXTERN sc_iterator3 * sc_iterator3_a_a_f_new(sc_memory_context const * ctx, sc_type beg_type, sc_type arc_type, sc_addr el);
 
 /*! Create iterator to find arcs between two specified elements
  * @param el_beg sc-addr of begin element
@@ -65,7 +68,11 @@ _SC_EXTERN sc_iterator3* sc_iterator3_a_a_f_new(const sc_memory_context *ctx, sc
  * @param el_end sc-addr of end element
  * @return If iterator created, then return pointer to it; otherwise return null
  */
-_SC_EXTERN sc_iterator3* sc_iterator3_f_a_f_new(const sc_memory_context *ctx, sc_addr el_beg, sc_type arc_type, sc_addr el_end);
+_SC_EXTERN sc_iterator3 * sc_iterator3_f_a_f_new(sc_memory_context const * ctx, sc_addr el_beg, sc_type arc_type, sc_addr el_end);
+
+/*! Create iterator to determine edge source and target
+ */
+_SC_EXTERN sc_iterator3 * sc_iterator3_a_f_a_new(sc_memory_context const * ctx, sc_type beg_type, sc_addr arc_addr, sc_type end_type);
 
 /*! Create new sc-iterator-3
  * @param type Iterator type (search template)
@@ -74,26 +81,26 @@ _SC_EXTERN sc_iterator3* sc_iterator3_f_a_f_new(const sc_memory_context *ctx, sc
  * @param p3 Third iterator parameter
  * @return Pointer to created iterator. If parameters invalid for specified iterator type, or type is not a sc-iterator-3, then return 0
  */
-_SC_EXTERN sc_iterator3* sc_iterator3_new(const sc_memory_context *ctx, sc_iterator3_type type, sc_iterator_param p1, sc_iterator_param p2, sc_iterator_param p3);
+ _SC_EXTERN sc_iterator3 * sc_iterator3_new(sc_memory_context const * ctx, sc_iterator3_type type, sc_iterator_param p1, sc_iterator_param p2, sc_iterator_param p3);
 
 /*! Destroy iterator and free allocated memory
  * @param it Pointer to sc-iterator that need to be destroyed
  */
-_SC_EXTERN void sc_iterator3_free(sc_iterator3 *it);
+_SC_EXTERN void sc_iterator3_free(sc_iterator3 * it);
 
 /*! Go to next iterator result
  * @param it Pointer to iterator that we need to go next result
  * @return Return SC_TRUE, if iterator moved to new results; otherwise return SC_FALSE.
  * example: while(sc_iterator_next(it)) { <your code> }
  */
-_SC_EXTERN sc_bool sc_iterator3_next(sc_iterator3 *it);
+_SC_EXTERN sc_bool sc_iterator3_next(sc_iterator3 * it);
 
 /*! Get iterator value
  * @param it Pointer to iterator for getting value
  * @param vid Value id (can't be more that 3 for sc-iterator3)
  * @return Return sc-addr of search result value
  */
-_SC_EXTERN sc_addr sc_iterator3_value(sc_iterator3 *it, sc_uint vid);
+_SC_EXTERN sc_addr sc_iterator3_value(sc_iterator3 * it, sc_uint vid);
 
 /*! Check if specified element type passed into
  * iterator selection.

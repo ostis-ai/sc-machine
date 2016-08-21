@@ -107,14 +107,24 @@ void ScStream::init(sc_stream * stream)
 
 // ---------------
 
-ScStreamMemory::ScStreamMemory(MemoryBufferPtr const & buff)
-	: mBuffer(buff)
-	, mPos(0)
+ScStreamMemory::ScStreamMemory()
 {
+	reinit(MemoryBufferPtr());
+}
+
+ScStreamMemory::ScStreamMemory(MemoryBufferPtr const & buff)
+{
+	reinit(buff);
 }
 
 ScStreamMemory::~ScStreamMemory()
 {
+}
+
+void ScStreamMemory::reinit(MemoryBufferPtr const & buff)
+{
+	mPos = 0;
+	mBuffer = buff;
 }
 
 bool ScStreamMemory::isValid() const
@@ -205,9 +215,14 @@ bool StreamConverter::streamToString(ScStream const & stream, std::string & outS
 	{
 		outString.assign(data, data + bytesCount);
 	}
-	delete[]data;
+	delete []data;
 
 	return true;
 
 }
 
+void StreamConverter::streamFromString(std::string const & str, ScStreamMemory & outStream)
+{
+	MemoryBufferPtr buff = MemoryBufferPtr(new MemoryBufferSafe(str.c_str(), (uint32_t)str.size()));
+	outStream.reinit(buff);
+}

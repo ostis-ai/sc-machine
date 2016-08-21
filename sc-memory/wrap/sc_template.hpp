@@ -48,6 +48,36 @@ struct ScTemplateItemValue
 		setReplacement(name.c_str());
 	}
 
+	inline bool isAddr() const
+	{
+		return (mItemType == VT_Addr);
+	}
+
+	inline bool isReplacement() const
+	{
+		return (mItemType == VT_Replace);
+	}
+
+	inline bool isType() const
+	{
+		return (mItemType == VT_Type);
+	}
+
+	inline bool isFixed() const
+	{
+		return (isAddr() || isReplacement());
+	}
+
+	inline bool isAssign() const
+	{
+		return (mItemType == VT_Type);
+	}
+
+	inline bool isItemType(eType type) const
+	{
+		return (mItemType == type);
+	}
+
 	void setAddr(ScAddr const & addr, char const * replName = 0)
 	{
 		mItemType = VT_Addr;
@@ -71,11 +101,13 @@ struct ScTemplateItemValue
 			mReplacementName = name;
 	}
 
-    bool canBeAddr() const
+	SC_DEPRECATED(0.3.0, "Use ScTemplateItemValue::isFixed instead")
+	bool canBeAddr() const
     {
         return mItemType == VT_Addr || mItemType == VT_Replace;
     }
-
+	
+	SC_DEPRECATED(0.3.0, "Use ScTemplateItemValue::isAssign instead")
     bool canBeType() const
     {
         return mItemType == VT_Type;
@@ -92,7 +124,8 @@ class ScTemplateConstr3
 {
 	friend class ScTemplate;
 public:
-	ScTemplateConstr3(ScTemplateItemValue const & param1, ScTemplateItemValue const & param2, ScTemplateItemValue const & param3)
+	ScTemplateConstr3(ScTemplateItemValue const & param1, ScTemplateItemValue const & param2, ScTemplateItemValue const & param3, size_t idx)
+		: mIndex(idx)
 	{
 		mValues[0] = param1;
 		mValues[1] = param2;
@@ -104,8 +137,45 @@ public:
 		return &(mValues[0]);
 	}
 
+	size_t countFixed() const
+	{
+		return countCommonT([](ScTemplateItemValue const & value) {
+			return value.isFixed();
+		});
+	}
+
+	size_t countAddrs() const
+	{
+		return countCommonT([](ScTemplateItemValue const & value) {
+			return value.isAddr();
+		});
+	}
+	size_t countReplacements() const
+	{
+		return countCommonT([](ScTemplateItemValue const & value) {
+			return value.isReplacement();
+		});
+	}
+
+	template <typename Func>
+	size_t countCommonT(Func f) const
+	{
+		size_t result = 0;
+		for (size_t i = 0; i < 3; ++i)
+		{
+			if (f(mValues[i]))
+				++result;
+		}
+		return result;
+	}
+
 protected:
 	ScTemplateItemValue mValues[3];
+	/* Store original index in template. Because when perform search or generation 
+	 * we sort triples in sutable for operation order.
+	 * Used to construct result
+	 */
+	size_t mIndex;
 };
 
 template <typename Type>
@@ -173,21 +243,29 @@ protected:
 	tParamsMap mValues;
 };
 
-class ScTemplate
+class ScTemplate final
 {
 	friend class ScMemoryContext;
+	friend class ScTemplateSearch;
+	friend class ScTemplateGenerator;
+	friend class ScTemplateBuilder;
 
 public:
 	typedef std::map<std::string, size_t> tReplacementsMap;
-	typedef std::vector<ScTemplateConstr3> tTemplateConts3Vector;
+	typedef std::vector<ScTemplateConstr3> tTemplateConstr3Vector;
+	typedef std::vector<size_t> tProcessOrder;
 
-	explicit ScTemplate(size_t BufferedNum = 16)
-	{
-		mConstructions.reserve(BufferedNum);
-		mCurrentReplPos = 0;
-	}
+	_SC_EXTERN explicit ScTemplate(size_t BufferedNum = 16);
 
-	void clear();
+	_SC_EXTERN ScTemplate & operator() (ScTemplateItemValue const & param1, ScTemplateItemValue const & param2, ScTemplateItemValue const & param3);
+
+	_SC_EXTERN ScTemplate & operator() (ScTemplateItemValue const & param1, ScTemplateItemValue const & param2, ScTemplateItemValue const & param3,
+		ScTemplateItemValue const & param4, ScTemplateItemValue const & param5);
+	
+	_SC_EXTERN void clear();
+
+	bool isSearchCacheValid() const;
+	bool isGenerateCacheValid() const;
 
 	_SC_EXTERN bool hasReplacement(std::string const & repl) const;
 
@@ -236,8 +314,19 @@ protected:
 	// Store mapping of name to index in result vector
 	tReplacementsMap mReplacements;
 	// Store construction (triples)
-	tTemplateConts3Vector mConstructions;
+	tTemplateConstr3Vector mConstructions;
 	size_t mCurrentReplPos;
+
+	/* Caches (used to prevent processing order update on each search/gen)
+	 * Flag mIsCacheValid == false - request to update cache. We doesn't use two flags,
+	 * because one enogh to get info, that triples changed. Can't use triple count instead of this flag.
+	 * In some cases developer can remove on triple and add new one after that.
+	 * Caches are mutable, to prevent changes of template in search and generation, they can asses just a cache.
+	 * That because template passed into them by const reference.
+	 */
+	bool mIsCacheValid : 1;
+	mutable tProcessOrder mSearchCachedOrder;
+	mutable tProcessOrder mGenerateCachedOrder;
 };
 
 
@@ -268,12 +357,6 @@ public:
 		return empty;
 	}
 
-	ScAddr const & operator [] (size_t idx) const
-	{
-		check_expr(idx < mResult.size());
-		return mResult[idx];
-	}
-
 	size_t getSize() const
 	{
 		return mResult.size();
@@ -298,17 +381,12 @@ protected:
     }
 
 public:
-    ScAddr const & operator[] (size_t idx) const
-    {
-        check_expr(idx < mResults->size());
-        return (*mResults)[idx];
-    }
-
     ScAddr const & operator[] (std::string const & name) const
     {
         ScTemplate::tReplacementsMap::const_iterator it = mReplacements->find(name);
         check_expr(it != mReplacements->end());
-        return (*this)[it->second];
+		check_expr(it->second < mResults->size());
+        return (*mResults)[it->second];
     }
 
 protected:
@@ -326,11 +404,23 @@ public:
         return mResults.size();
     }
 
-    inline ScTemplateSearchResultItem getResult(size_t idx)
-    {
-        check_expr(idx < mResults.size());
-        return ScTemplateSearchResultItem(&(mResults[idx]), &mReplacements);
-    }
+	inline bool getResultItemSave(size_t idx, ScTemplateSearchResultItem & outItem) const
+	{
+		if (idx < mResults.size())
+		{
+			outItem.mReplacements = &mReplacements;
+			outItem.mResults = &(mResults[idx]);
+			return true;
+		}
+
+		return false;
+	}
+
+	inline ScTemplateSearchResultItem operator [] (size_t idx) const
+	{
+		check_expr(idx < mResults.size());
+		return ScTemplateSearchResultItem(&(mResults[idx]), &mReplacements);
+	}
 
 	inline void clear()
 	{
