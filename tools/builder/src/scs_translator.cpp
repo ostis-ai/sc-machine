@@ -160,6 +160,8 @@ bool SCsTranslator::buildScText(pANTLR3_BASE_TREE tree)
             if (type != 0)
             {
                 el->ignore = true;
+				el->arc_src->ignore = true;
+
                 sc_type newType = el->arc_trg->type | type;
                 // TODO check conflicts in sc-type
                 if ((type & sc_type_constancy_mask) != 0)
@@ -714,7 +716,8 @@ sElement* SCsTranslator::parseElementTree(pANTLR3_BASE_TREE tree, const String *
                 tElementSet::iterator it, itEnd = translator.mElementSet.end();
                 for (it = translator.mElementSet.begin(); it != itEnd; ++it)
                 {
-                    if ((*it)->ignore) continue;
+                    if ((*it)->ignore)
+						continue;
 
                     sElement *el = new sElement();
                     el->ignore = true;
