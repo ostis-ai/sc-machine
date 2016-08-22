@@ -334,6 +334,7 @@ protected:
 class ScTemplateGenResult
 {
 	friend class ScTemplateGenerator;
+	friend class ScStruct;
     
 public:
 	ScTemplateGenResult() {	}

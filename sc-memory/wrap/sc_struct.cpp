@@ -6,6 +6,7 @@
 
 #include "sc_struct.hpp"
 #include "sc_memory.hpp"
+#include "sc_template.hpp"
 
 ScStruct::ScStruct(ScMemoryContext * ctx, ScAddr const & structAddr)
     : mAddr(structAddr)
@@ -66,6 +67,15 @@ bool ScStruct::hasElement(ScAddr const & elAddr) const
 ScStruct & ScStruct::operator << (ScAddr const & elAddr)
 {
 	append(elAddr);
+	return *this;
+}
+
+ScStruct & ScStruct::operator << (ScTemplateGenResult const & res)
+{
+	size_t const res_num = res.getSize();
+	for (size_t i = 0; i < res_num; ++i)
+		append(res.mResult[i]);
+
 	return *this;
 }
 

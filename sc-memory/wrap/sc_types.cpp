@@ -21,6 +21,7 @@ const ScType ScType::EDGE_ACCESS_VAR_FUZ_TEMP(sc_type_var | sc_type_arc_access |
 
 
 const ScType ScType::NODE(sc_type_node);
+const ScType ScType::LINK(sc_type_link);
 
 const ScType ScType::NODE_CONST(sc_type_node | sc_type_const);
 const ScType ScType::NODE_VAR(sc_type_node | sc_type_var);

@@ -134,6 +134,7 @@ public:
 
 
 	static const ScType NODE;
+	static const ScType LINK;
 
 	static const ScType NODE_CONST;
 	static const ScType NODE_VAR;
