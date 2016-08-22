@@ -8,6 +8,7 @@
 #include "nlApiAiUtils.hpp"
 
 #include "wrap/sc_stream.hpp"
+#include "wrap/sc_struct.hpp"
 
 
 namespace nl
@@ -22,6 +23,8 @@ namespace nl
 	SC_AGENT_ACTION_IMPLEMENTATION(AApiAiParseUserTextAgent)
 	{
 		curl_global_init(CURL_GLOBAL_ALL);
+
+		ScStruct resultStructAddr(&mMemoryCtx, resultAddr);
 
 		// get text content of argument
 		ScIterator3Ptr iter = mMemoryCtx.iterator3(requestAddr, SC_TYPE(sc_type_arc_pos_const_perm), SC_TYPE(sc_type_link));
@@ -63,7 +66,36 @@ namespace nl
 								{
 									// setup template parameters
 									ScTemplateGenParams params;
-									//params.add()
+									
+									if (templ.hasReplacement("_apiai_location"))
+									{
+										/// TODO: replace location by real city addr, or something else
+									}
+
+									if (templ.hasReplacement("_lang"))
+									{
+										/// TOOD: replace with current user language
+									}
+
+									if (templ.hasReplacement("_apiai_speech"))
+									{
+										ScAddr const speechAddr = mMemoryCtx.createLink();
+										
+										std::string const & speech = result.GetFullfillment().getSpeech();
+										ScStream stream(speech.c_str(), (uint32_t)speech.size(), SC_STREAM_FLAG_READ);
+										if (!mMemoryCtx.setLinkContent(speechAddr, stream))
+											return SC_RESULT_ERROR_IO;
+
+										params.add("_apiai_speech", speechAddr);
+									}
+
+									// generate with params
+									ScTemplateGenResult genResult;
+									if (!mMemoryCtx.helperGenTemplate(templ, genResult, params))
+										return SC_RESULT_ERROR_INVALID_STATE;
+
+									// append generated struct into result structure
+									resultStructAddr << genResult;
 								}
 							}
 						}
