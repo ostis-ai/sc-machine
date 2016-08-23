@@ -3,11 +3,14 @@ set(SC_IOT_SRC "${SC_KPM_ROOT}/nl")
 set(SOURCES 
 	"nl.cpp"
 	"nlApiAi.cpp"
+	"nlIvona.cpp"
+	"hash/sha256.cpp"
 )
 set(HEADERS 
 	"nl.hpp"
 	"nlApiAi.hpp"
 	"nlApiAiUtils.hpp"
+	"nlIvona.hpp"
 )
 
 include_directories(${SC_IOT_SRC} ${SC_MEMORY_SRC} ${GLIB2_INCLUDE_DIRS} ${LIBCURL_INCLUDE_DIRS})
