@@ -26,17 +26,19 @@ set (SOURCES_C
 
 if (${WIN32})
 	set (BOOST_LIBS_LIST )
+	set (ANTLR_LIB antlr3c.${MSVC_SUFFIX})
 else()
  	set (BOOST_LIBS_LIST
  			boost_filesystem 
  			boost_program_options 
  			boost_system)
+	set (ANTLR_LIB antlr3c)
 endif (${WIN32})
 
 	
 add_executable(sc-builder ${SOURCES} ${SOURCES_C} ${HEADERS})
 include_directories(${SC_MEMORY_SRC} ${GLIB2_INCLUDE_DIRS})
-target_link_libraries(sc-builder sc-memory antlr3c.${MSVC_SUFFIX} ${BOOST_LIBS_LIST})
+target_link_libraries(sc-builder sc-memory ${ANTLR_LIB} ${BOOST_LIBS_LIST})
 add_dependencies(sc-builder GenerateParser)
 
 install_targets("/bin" sc-builder)
