@@ -5,12 +5,17 @@
  */
 
 #include "wrap/sc_memory_headers.hpp"
+#include "wrap/sc_wait.hpp"
+
 #include "test_sc_object.hpp"
 #include "test_sc_agent.hpp"
 #include <glib.h>
 
-#define SUBTEST_START(__name) { std::string subtestName(#__name); std::cout << "Testing " << subtestName << " ... ";
-#define SUBTEST_END std::cout << "ok" << std::endl; }
+#define TEST_START()	{ init_memory(); }
+#define TEST_END		{ shutdown_memory(false); }
+
+#define SUBTEST_START(__name) { std::string subtestName(#__name); std::cout << std::endl << "Testing " << subtestName << " ... ";
+#define SUBTEST_END std::cout << "ok   "; }
 
 struct TestTemplParams
 {
@@ -75,8 +80,7 @@ bool has_addr(tAddrVector const & v, ScAddr const & addr)
 
 void test_common_elements()
 {
-    init_memory();
-
+	TEST_START();
     {
         ScMemoryContext ctx;
         ScAddr addr = ctx.createNode(sc_type_const);
@@ -107,14 +111,12 @@ void test_common_elements()
         g_assert(!ctx.isElement(arc));
         g_assert(ctx.isElement(link));
     }
-
-    shutdown_memory(false);
+	TEST_END;
 }
 
 void test_common_iterators()
 {
-    init_memory();
-
+	TEST_START();
     {
         ScMemoryContext ctx;
         ScAddr addr1 = ctx.createNode(sc_type_const);
@@ -300,65 +302,65 @@ void test_common_iterators()
 		SUBTEST_END
 
     }
-
-    shutdown_memory(false);
+	TEST_END;
 }
 
 void test_common_streams()
 {
-    init_memory();
+	TEST_START();
+	{
+		SUBTEST_START(content_streams)
+		{
+			static int const length = 1024;
+			unsigned char buff[length];
 
-	SUBTEST_START(content_streams)
-    {
-        static int const length = 1024;
-        unsigned char buff[length];
+			for (int i = 0; i < length; ++i)
+				buff[i] = rand() % 256;
 
-        for (int i = 0; i < length; ++i)
-            buff[i] = rand() % 256;
+			ScStream stream((sc_char*)buff, length, SC_STREAM_FLAG_READ);
 
-        ScStream stream((sc_char*)buff, length, SC_STREAM_FLAG_READ);
+			g_assert(stream.isValid());
+			g_assert(stream.hasFlag(SC_STREAM_FLAG_READ));
+			g_assert(stream.hasFlag(SC_STREAM_FLAG_SEEK));
+			g_assert(stream.hasFlag(SC_STREAM_FLAG_TELL));
+			g_assert(!stream.eof());
+			g_assert(stream.pos() == 0);
+			g_assert(stream.size() == length);
 
-        g_assert(stream.isValid());
-        g_assert(stream.hasFlag(SC_STREAM_FLAG_READ));
-        g_assert(stream.hasFlag(SC_STREAM_FLAG_SEEK));
-        g_assert(stream.hasFlag(SC_STREAM_FLAG_TELL));
-        g_assert(!stream.eof());
-        g_assert(stream.pos() == 0);
-        g_assert(stream.size() == length);
+			for (int i = 0; i < length; ++i)
+			{
+				unsigned char c;
+				sc_uint32 readBytes;
+				g_assert(stream.read((sc_char*)&c, sizeof(c), readBytes));
+				g_assert(c == buff[i]);
+			}
 
-        for (int i = 0; i < length; ++i)
-        {
-            unsigned char c;
-            sc_uint32 readBytes;
-            g_assert(stream.read((sc_char*)&c, sizeof(c), readBytes));
-            g_assert(c == buff[i]);
-        }
+			g_assert(stream.eof());
+			g_assert(stream.pos() == length);
 
-        g_assert(stream.eof());
-        g_assert(stream.pos() == length);
-
-        // random seek
-        static int const seekOpCount = 1000000;
-        for (int i = 0; i < seekOpCount; ++i)
-        {
-            sc_uint32 pos = rand() % length;
-            g_assert(stream.seek(SC_STREAM_SEEK_SET, pos));
+			// random seek
+			static int const seekOpCount = 1000000;
+			for (int i = 0; i < seekOpCount; ++i)
+			{
+				sc_uint32 pos = rand() % length;
+				g_assert(stream.seek(SC_STREAM_SEEK_SET, pos));
 
 
-            unsigned char c;
-            sc_uint32 readBytes;
-            g_assert(stream.read((sc_char*)&c, sizeof(c), readBytes));
-            g_assert(c == buff[pos]);
-        }
-    }
-	SUBTEST_END
+				unsigned char c;
+				sc_uint32 readBytes;
+				g_assert(stream.read((sc_char*)&c, sizeof(c), readBytes));
+				g_assert(c == buff[pos]);
+			}
+		}
+		SUBTEST_END
+	}
 
-    shutdown_memory(false);
+	TEST_END;
 }
 
 void test_common_templates()
 {
-	init_memory();
+	TEST_START();
 	{
 		ScMemoryContext ctx;
 		ScAddr const addr1 = ctx.createNode(ScType::NODE_CONST);
@@ -680,14 +682,12 @@ void test_common_templates()
 		SUBTEST_END
 
 	}
-
-	shutdown_memory(false);
+	TEST_END;
 }
 
 void test_codegen_keynodes()
 {
-    init_memory();
-
+	TEST_START();
     {
         ScMemoryContext ctx(sc_access_lvl_make_min);
 
@@ -714,14 +714,12 @@ void test_codegen_keynodes()
         g_assert(ctx.helperFindBySystemIdtf("test_keynode_force", addrForce));
         g_assert(addrForce == obj1.mTestKeynodeForce);
     }
-
-    shutdown_memory(false);
+	TEST_END;
 }
 
 void test_codegen_agent()
 {
-	init_memory();
-
+	TEST_START();
 	{
 		ScMemoryContext ctx(sc_access_lvl_make_min);
 
@@ -729,13 +727,12 @@ void test_codegen_agent()
 
 		SC_AGENT_UNREGISTER(TestAgent)
 	}
-
-	shutdown_memory(false);
+	TEST_END;
 }
 
 void test_perfomance_templ()
 {
-	init_memory();
+	TEST_START();
 	{
 		ScAddr node1, node2, node3, node4, edge1, edge2, edge3;
 		ScMemoryContext ctx(sc_access_lvl_make_min);
@@ -802,13 +799,12 @@ void test_perfomance_templ()
 		printf("Time per search: %.8f s\n", time / iterCount);
 		printf("Search per second: %.8f search/sec \n", iterCount / time);
 	}
-	shutdown_memory(false);
+	TEST_END;
 }
 
 void test_common_struct()
 {
-	init_memory();
-	
+	TEST_START();
 	{
 		ScMemoryContext ctx(sc_access_lvl_make_min);
 
@@ -861,13 +857,12 @@ void test_common_struct()
 		g_assert(found);
 
 	}
-
-	shutdown_memory(false);
+	TEST_END;
 }
 
 void test_common_sc_templates()
 {
-	init_memory();
+	TEST_START();
 	{
 		ScMemoryContext ctx(sc_access_lvl_make_min);
 
@@ -955,13 +950,12 @@ void test_common_sc_templates()
 			}
 		}
 	}
-
-	shutdown_memory(false);
+	TEST_END;
 }
 
 void test_common_search_in_struct()
 {
-	init_memory();
+	TEST_START();
 	{
 		ScMemoryContext ctx(sc_access_lvl_make_min);
 
@@ -1085,9 +1079,95 @@ void test_common_search_in_struct()
 			}
 
 		}
-
 	}
-	shutdown_memory(false);
+	TEST_END;
+}
+
+// waiters threads
+struct WaitTestData
+{
+	WaitTestData(ScMemoryContext & ctx, const ScAddr & addr)
+		: mContext(ctx)
+		, mAddr(addr)
+		, mIsDone(false)
+	{
+	}
+
+	ScMemoryContext & mContext;
+	ScAddr mAddr;
+	bool mIsDone;
+};
+gpointer emit_event_thread(gpointer data)
+{
+	WaitTestData * d = (WaitTestData*)data;
+	g_usleep(2000000);	// sleep for a second
+
+	const ScAddr node = d->mContext.createNode(*ScType::NODE_CONST);
+	const ScAddr arc = d->mContext.createArc(*ScType::EDGE_ACCESS_CONST_POS_PERM, node, d->mAddr);
+
+	d->mIsDone = arc.isValid();
+
+	return nullptr;
+}
+
+void test_common_waiters()
+{
+	TEST_START();
+	{
+		ScMemoryContext ctx(sc_access_lvl_make_min);
+
+		const ScAddr addr = ctx.createNode(ScType::NODE_CONST);
+		g_assert(addr.isValid());
+
+		SUBTEST_START(WaitValid)
+		{
+			WaitTestData data(ctx, addr);
+			GThread * thread = g_thread_try_new(0, emit_event_thread, (gpointer)&data, 0);
+
+			g_assert(ScWait<ScEventAddInputEdge>(ctx, addr).Wait());
+			g_assert(data.mIsDone);
+		}
+		SUBTEST_END
+
+		SUBTEST_START(WaitTimeOut)
+		{
+			g_assert(!ScWait<ScEventAddOutputEdge>(ctx, addr).Wait(1000));
+		}
+		SUBTEST_END
+
+		SUBTEST_START(WaitCondValid)
+		{
+			WaitTestData data(ctx, addr);
+			GThread * thread = g_thread_try_new(0, emit_event_thread, (gpointer)&data, 0);
+
+			auto checkTrue = [](const ScAddr & addr, const ScAddr & arg) {
+				return true;
+			};
+
+			ScWaitCondition<ScEventAddInputEdge> waiter(ctx, addr, SC_WAIT_CHECK(checkTrue));
+
+			g_assert(waiter.Wait());
+			g_assert(data.mIsDone);
+		}
+		SUBTEST_END
+
+		SUBTEST_START(WaitCondValidFalse)
+		{
+			WaitTestData data(ctx, addr);
+			GThread * thread = g_thread_try_new(0, emit_event_thread, (gpointer)&data, 0);
+
+			auto checkFalse = [](const ScAddr & addr, const ScAddr & arg) {
+				return false;
+			};
+
+			ScWaitCondition<ScEventAddInputEdge> waiter(ctx, addr, SC_WAIT_CHECK(checkFalse));
+
+			g_assert(!waiter.Wait());
+			g_assert(data.mIsDone);
+		}
+		SUBTEST_END
+	}
+	TEST_END;
 }
 
 int main(int argc, char *argv[])
@@ -1101,6 +1181,7 @@ int main(int argc, char *argv[])
 	g_test_add_func("/common/templates", test_common_templates);
 	g_test_add_func("/common/sc_templates", test_common_sc_templates);
 	g_test_add_func("/common/searchInStruct", test_common_search_in_struct);
+	g_test_add_func("/common/waiters", test_common_waiters);
 
     g_test_add_func("/codegen/keynodes", test_codegen_keynodes);
 	g_test_add_func("/codegen/agent", test_codegen_agent);

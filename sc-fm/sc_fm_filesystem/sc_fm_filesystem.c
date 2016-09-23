@@ -325,39 +325,42 @@ sc_result _sc_fs_clear_delete_files(const char *root_path)
     char path[MAX_PATH_LENGTH];
 
     dir = g_dir_open(root_path, 0, 0);
-    g_assert( dir != (GDir*)0 );
-    // calculate files
-    fname = g_dir_read_name(dir);
-    while (fname != 0)
-    {
-        g_snprintf(path, MAX_PATH_LENGTH, "%s/%s", root_path, fname);
+	if (dir != (GDir*)0)
+	{
+		// calculate files
+		fname = g_dir_read_name(dir);
+		while (fname != 0)
+		{
+			g_snprintf(path, MAX_PATH_LENGTH, "%s/%s", root_path, fname);
 
-        if (g_file_test(path, G_FILE_TEST_IS_REGULAR))
-        {
-            if (g_remove(path) == -1)
-            {
-                g_critical("Can't remove file: %s", path);
-                g_dir_close(dir);
-                return SC_RESULT_ERROR;
-            }
-        } else
-        {
-            if (g_file_test(path, G_FILE_TEST_IS_DIR))
-            {
-                sc_result res = _sc_fs_clear_delete_files(path);
-                if (res != SC_RESULT_OK)
-                {
-                    g_dir_close(dir);
-                    return SC_RESULT_ERROR;
-                }
-            }
-        }
-        fname = g_dir_read_name(dir);
-    }
+			if (g_file_test(path, G_FILE_TEST_IS_REGULAR))
+			{
+				if (g_remove(path) == -1)
+				{
+					g_critical("Can't remove file: %s", path);
+					g_dir_close(dir);
+					return SC_RESULT_ERROR;
+				}
+			}
+			else
+			{
+				if (g_file_test(path, G_FILE_TEST_IS_DIR))
+				{
+					sc_result res = _sc_fs_clear_delete_files(path);
+					if (res != SC_RESULT_OK)
+					{
+						g_dir_close(dir);
+						return SC_RESULT_ERROR;
+					}
+				}
+			}
+			fname = g_dir_read_name(dir);
+		}
 
-    g_dir_close(dir);
-    if (g_rmdir(root_path))
-        return SC_RESULT_ERROR;
+		g_dir_close(dir);
+		if (g_rmdir(root_path))
+			return SC_RESULT_ERROR;
+	}
 
     return SC_RESULT_OK;
 }

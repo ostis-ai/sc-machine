@@ -16,6 +16,7 @@ extern "C"
 #include "sc_addr.hpp"
 #include "sc_iterator.hpp"
 #include "sc_template.hpp"
+#include "sc_event.hpp"
 
 #include <list>
 #include <string>
