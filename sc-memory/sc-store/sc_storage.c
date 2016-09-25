@@ -544,7 +544,7 @@ sc_result sc_storage_element_free(const sc_memory_context *ctx, sc_addr addr)
                 sc_storage_element_unlock(ctx, el->arc.end);
         }
 
-        if (sc_element_get_iterator_refs(sc_storage_get_element_meta(ctx, addr)) == 0)
+        if (sc_element_get_refs(sc_storage_get_element_meta(ctx, addr)) == 0)
         {
             sc_storage_erase_element_from_segment(addr);
             _sc_segment_cache_append(ctx, g_atomic_pointer_get(&segments[addr.seg]));

@@ -38,24 +38,24 @@ sc_bool sc_element_is_valid(sc_element *element)
     return (element->flags.type == 0 || element->flags.type & sc_flag_request_deletion) ? SC_FALSE : SC_TRUE;
 }
 
-sc_uint16 sc_element_get_iterator_refs(sc_element_meta *element)
+sc_uint16 sc_element_get_refs(sc_element_meta *element)
 {
-    return element->refs.it;
+    return element->ref_count;
 }
 
-sc_bool sc_element_itref_add(sc_element_meta *element)
+sc_bool sc_element_ref(sc_element_meta *element)
 {
-    if (element->refs.it == G_MAXUINT16)
+    if (element->ref_count == G_MAXUINT32)
         return SC_FALSE;
 
-    element->refs.it++;
+	element->ref_count++;
     return SC_TRUE;
 }
 
-sc_bool sc_element_itref_dec(sc_element_meta *element)
+sc_bool sc_element_unref(sc_element_meta *element)
 {
-    g_assert(element->refs.it > 0);
-    element->refs.it--;
+    g_assert(element->ref_count > 0);
+    element->ref_count--;
 
-    return (element->refs.it == 0) ? SC_TRUE : SC_FALSE;
+    return (element->ref_count == 0) ? SC_TRUE : SC_FALSE;
 }

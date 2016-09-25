@@ -18,6 +18,7 @@ struct _sc_event_queue
     sc_bool running;    // flag that determine if queue is running
     sc_event *event_process;    // currently processing event
     GRecMutex proc_mutex;   // mutex to lock event for process
+	GThreadPool *thread_pool;	// thread pool that used for a workers
 };
 
 

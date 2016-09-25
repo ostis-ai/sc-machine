@@ -66,12 +66,6 @@ struct _sc_element_locks
     sc_uint8 read:1;
 };
 
-struct _sc_element_refs
-{
-    sc_uint16 it;
-    sc_uint16 id;
-};
-
 #define SC_ELID_REFS_MASK   0xffff
 #define SC_IT_REFS_MASK     (0xffff << 16)
 
@@ -90,8 +84,7 @@ struct _sc_element_meta
     };
     union
     {
-        sc_element_refs refs;
-        sc_uint32 refs_data;
+        sc_uint32 ref_count;
     };
 };
 
@@ -116,8 +109,8 @@ sc_bool sc_element_is_checksum_empty(sc_element *element);
 sc_bool sc_element_is_request_deletion(sc_element *element);
 sc_bool sc_element_is_valid(sc_element *element);
 
-sc_uint16 sc_element_get_iterator_refs(sc_element_meta *element);
-sc_bool sc_element_itref_add(sc_element_meta *element);
-sc_bool sc_element_itref_dec(sc_element_meta *element);
+sc_uint16 sc_element_get_refs(sc_element_meta *element);
+sc_bool sc_element_ref(sc_element_meta *element);
+sc_bool sc_element_unref(sc_element_meta *element);
 
 #endif
