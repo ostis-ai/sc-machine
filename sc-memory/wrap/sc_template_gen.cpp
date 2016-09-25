@@ -76,7 +76,7 @@ public:
 				break;
 			}
 
-			ScAddr const edge = mContext.createArc(*values[1].mTypeValue.upConstType(), addr1, addr2);
+			ScAddr const edge = mContext.createEdge(*values[1].mTypeValue.upConstType(), addr1, addr2);
 			if (!edge.isValid())
 			{
 				isError = true;

@@ -24,8 +24,6 @@ namespace nl
 	{
 		curl_global_init(CURL_GLOBAL_ALL);
 
-		ScStruct resultStructAddr(&mMemoryCtx, resultAddr);
-
 		// get text content of argument
 		ScIterator3Ptr iter = mMemoryCtx.iterator3(requestAddr, SC_TYPE(sc_type_arc_pos_const_perm), SC_TYPE(sc_type_link));
 		if (iter->next())
@@ -89,13 +87,13 @@ namespace nl
 										params.add("_apiai_speech", speechAddr);
 									}
 
+									params.add("_result", resultAddr);
+
 									// generate with params
 									ScTemplateGenResult genResult;
 									if (!mMemoryCtx.helperGenTemplate(templ, genResult, params))
 										return SC_RESULT_ERROR_INVALID_STATE;
 
-									// append generated struct into result structure
-									resultStructAddr << genResult;
 								}
 							}
 						}

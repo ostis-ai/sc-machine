@@ -69,7 +69,7 @@ sc_result ScAgentAction::run(ScAddr const & listenAddr, ScAddr const & startArcA
 		if (mMemoryCtx.helperCheckArc(mCmdClassAddr, cmdAddr, sc_type_arc_pos_const_perm))
 		{
 			mMemoryCtx.eraseElement(startArcAddr);
-            ScAddr progressAddr = mMemoryCtx.createArc(sc_type_arc_pos_const_perm, msCommandProgressdAddr, cmdAddr);
+            ScAddr progressAddr = mMemoryCtx.createEdge(sc_type_arc_pos_const_perm, msCommandProgressdAddr, cmdAddr);
 			assert(progressAddr.isValid());
             ScAddr resultAddr = mMemoryCtx.createNode(sc_type_const | sc_type_node_struct);
 			assert(resultAddr.isValid());
@@ -78,12 +78,12 @@ sc_result ScAgentAction::run(ScAddr const & listenAddr, ScAddr const & startArcA
 
 			mMemoryCtx.eraseElement(progressAddr);
 
-            ScAddr const commonArc = mMemoryCtx.createArc(sc_type_const | sc_type_arc_common, cmdAddr, resultAddr);
+            ScAddr const commonArc = mMemoryCtx.createEdge(sc_type_const | sc_type_arc_common, cmdAddr, resultAddr);
 			assert(commonArc.isValid());
-            ScAddr const arc = mMemoryCtx.createArc(sc_type_arc_pos_const_perm, msNrelResult, commonArc);
+			ScAddr const arc = mMemoryCtx.createEdge(sc_type_arc_pos_const_perm, msNrelResult, commonArc);
 			assert(arc.isValid());
 
-			mMemoryCtx.createArc(sc_type_arc_pos_const_perm, msCommandFinishedAddr, cmdAddr);
+			mMemoryCtx.createEdge(sc_type_arc_pos_const_perm, msCommandFinishedAddr, cmdAddr);
 
 			return SC_RESULT_OK;
 		}

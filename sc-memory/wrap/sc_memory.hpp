@@ -74,7 +74,11 @@ public:
 
 	_SC_EXTERN ScAddr createNode(sc_type type);
 	_SC_EXTERN ScAddr createLink();
+
+	SC_DEPRECATED(0.3.0, "Use ScMemoryContext::createEdge instead.")
 	_SC_EXTERN ScAddr createArc(sc_type type, ScAddr const & addrBeg, ScAddr const & addrEnd);
+
+	_SC_EXTERN ScAddr createEdge(sc_type type, ScAddr const & addrBeg, ScAddr const & addrEnd);
 
     //! Returns type of sc-element. If there are any error, then returns 0
 	_SC_EXTERN ScType getElementType(ScAddr const & addr) const;

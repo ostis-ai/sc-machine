@@ -19,7 +19,7 @@ bool ScStruct::append(ScAddr const & elAddr)
 {
 	check_expr(mContext);
 	if (!hasElement(elAddr))
-		return mContext->createArc(sc_type_arc_pos_const_perm, mAddr, elAddr).isValid();
+		return mContext->createEdge(sc_type_arc_pos_const_perm, mAddr, elAddr).isValid();
 
 	return false;
 }
@@ -29,10 +29,10 @@ bool ScStruct::append(ScAddr const & elAddr, ScAddr const & attrAddr)
 	check_expr(mContext);
 	if (!hasElement(elAddr))
 	{
-		ScAddr const edge = mContext->createArc(sc_type_arc_pos_const_perm, mAddr, elAddr);
+		ScAddr const edge = mContext->createEdge(sc_type_arc_pos_const_perm, mAddr, elAddr);
 		if (edge.isValid())
 		{
-			ScAddr const edge2 = mContext->createArc(sc_type_arc_pos_const_perm, attrAddr, edge);
+			ScAddr const edge2 = mContext->createEdge(sc_type_arc_pos_const_perm, attrAddr, edge);
 			if (edge2.isValid())
 				return true;
 

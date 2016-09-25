@@ -89,7 +89,7 @@ void test_common_elements()
         ScAddr link = ctx.createLink();
         g_assert(link.isValid());
 
-        ScAddr arc = ctx.createArc(sc_type_arc_pos_const_perm, addr, link);
+        ScAddr arc = ctx.createEdge(sc_type_arc_pos_const_perm, addr, link);
         g_assert(arc.isValid());
 
         g_assert(ctx.isElement(addr));
@@ -121,7 +121,7 @@ void test_common_iterators()
         ScMemoryContext ctx;
         ScAddr addr1 = ctx.createNode(sc_type_const);
         ScAddr addr2 = ctx.createNode(sc_type_var);
-        ScAddr arc1 = ctx.createArc(sc_type_arc_pos_const_perm, addr1, addr2);
+        ScAddr arc1 = ctx.createEdge(sc_type_arc_pos_const_perm, addr1, addr2);
 
         g_assert(addr1.isValid());
         g_assert(addr2.isValid());
@@ -172,7 +172,7 @@ void test_common_iterators()
 		SUBTEST_END
 
         ScAddr addr3 = ctx.createNode(sc_type_const);
-        ScAddr arc2 = ctx.createArc(sc_type_arc_pos_const_perm, addr3, arc1);
+        ScAddr arc2 = ctx.createEdge(sc_type_arc_pos_const_perm, addr3, arc1);
 
         g_assert(addr3.isValid());
         g_assert(arc2.isValid());
@@ -367,8 +367,8 @@ void test_common_templates()
 		ScAddr const addr2 = ctx.createNode(ScType::NODE_CONST);
 		ScAddr const addr3 = ctx.createNode(ScType::NODE_CONST);
 
-		ScAddr const edge1 = ctx.createArc(ScType::EDGE_ACCESS_CONST_POS_PERM, addr1, addr2);
-		ScAddr const edge2 = ctx.createArc(ScType::EDGE_ACCESS_CONST_POS_PERM, addr3, edge1);
+		ScAddr const edge1 = ctx.createEdge(ScType::EDGE_ACCESS_CONST_POS_PERM, addr1, addr2);
+		ScAddr const edge2 = ctx.createEdge(ScType::EDGE_ACCESS_CONST_POS_PERM, addr3, edge1);
 
 		{
 			ScTemplate templ;
@@ -437,7 +437,7 @@ void test_common_templates()
                     ScAddr const addrTrg = ctx.createNode(sc_type_const);
                     g_assert(addrTrg.isValid());
 
-                    ScAddr const addrEdge = ctx.createArc(sc_type_arc_pos_const_perm, addrSrc, addrTrg);
+                    ScAddr const addrEdge = ctx.createEdge(sc_type_arc_pos_const_perm, addrSrc, addrTrg);
                     g_assert(addrEdge.isValid());
 
                     nodes.push_back(addrTrg);
@@ -554,7 +554,7 @@ void test_common_templates()
 		{
 			ScAddr const addrConst = ctx.createNode(*ScType::NODE_CONST);
 			ScAddr const addrTest3 = ctx.createNode(*ScType::NODE_CONST_TUPLE);
-			ScAddr const addrEdge2 = ctx.createArc(*ScType::EDGE_ACCESS_CONST_POS_PERM, addrConst, addrTest3);
+			ScAddr const addrEdge2 = ctx.createEdge(*ScType::EDGE_ACCESS_CONST_POS_PERM, addrConst, addrTest3);
 
 			ScTemplate templ;
 			templ
@@ -630,19 +630,19 @@ void test_common_templates()
 			g_assert(nrel_translationAddr.isValid());
 			g_assert(ctx.helperSetSystemIdtf("nrel_translation", nrel_translationAddr));
 
-			const ScAddr _struct_locationEdgeAddr = ctx.createArc(ScType::EDGE_ACCESS_VAR_POS_PERM, _structAddr, _apiai_locationAddr);
+			const ScAddr _struct_locationEdgeAddr = ctx.createEdge(ScType::EDGE_ACCESS_VAR_POS_PERM, _structAddr, _apiai_locationAddr);
 			g_assert(_struct_locationEdgeAddr.isValid());
 
-			const ScAddr _rrel_locationEdgeAddr = ctx.createArc(ScType::EDGE_ACCESS_VAR_POS_PERM, rrel_locationAddr, _struct_locationEdgeAddr);
+			const ScAddr _rrel_locationEdgeAddr = ctx.createEdge(ScType::EDGE_ACCESS_VAR_POS_PERM, rrel_locationAddr, _struct_locationEdgeAddr);
 			g_assert(_rrel_locationEdgeAddr.isValid());
 
-			const ScAddr _struct_speechEdgeAddr = ctx.createArc(ScType::EDGE_DCOMMON_VAR, _structAddr, _apiai_speechAddr);
+			const ScAddr _struct_speechEdgeAddr = ctx.createEdge(ScType::EDGE_DCOMMON_VAR, _structAddr, _apiai_speechAddr);
 			g_assert(_struct_speechEdgeAddr.isValid());
 
-			const ScAddr _nrel_translationEdgeAddr = ctx.createArc(ScType::EDGE_ACCESS_VAR_POS_PERM, nrel_translationAddr, _struct_speechEdgeAddr);
+			const ScAddr _nrel_translationEdgeAddr = ctx.createEdge(ScType::EDGE_ACCESS_VAR_POS_PERM, nrel_translationAddr, _struct_speechEdgeAddr);
 			g_assert(_nrel_translationEdgeAddr.isValid());
 
-			const ScAddr _langEdgeAddr = ctx.createArc(ScType::EDGE_ACCESS_VAR_POS_PERM, _langAddr, _apiai_speechAddr);
+			const ScAddr _langEdgeAddr = ctx.createEdge(ScType::EDGE_ACCESS_VAR_POS_PERM, _langAddr, _apiai_speechAddr);
 			g_assert(_langEdgeAddr.isValid());
 
 			// create template
@@ -900,11 +900,11 @@ void test_common_sc_templates()
 			g_assert(_sAddr.isValid());
 			g_assert(ctx.helperSetSystemIdtf("_s", _sAddr));
 
-			ScAddr xyAddr = ctx.createArc(sc_type_arc_access | sc_type_var, xAddr, _yAddr);
+			ScAddr xyAddr = ctx.createEdge(sc_type_arc_access | sc_type_var, xAddr, _yAddr);
 			g_assert(xyAddr.isValid());
-			ScAddr zxyAddr = ctx.createArc(sc_type_arc_access | sc_type_var, _zAddr, xyAddr);
+			ScAddr zxyAddr = ctx.createEdge(sc_type_arc_access | sc_type_var, _zAddr, xyAddr);
 			g_assert(zxyAddr.isValid());
-			ScAddr sxAddr = ctx.createArc(sc_type_arc_access | sc_type_var, _sAddr, xAddr);
+			ScAddr sxAddr = ctx.createEdge(sc_type_arc_access | sc_type_var, _sAddr, xAddr);
 			g_assert(sxAddr.isValid());
 
 			// append created elements into struct
@@ -927,11 +927,11 @@ void test_common_sc_templates()
 			sAddr = ctx.createNode(sc_type_node_class | sc_type_const);
 			g_assert(sAddr.isValid());
 
-			ScAddr xyAddr = ctx.createArc(sc_type_arc_pos_const_perm, xAddr, yAddr);
+			ScAddr xyAddr = ctx.createEdge(sc_type_arc_pos_const_perm, xAddr, yAddr);
 			g_assert(xyAddr.isValid());
-			ScAddr zxyAddr = ctx.createArc(sc_type_arc_pos_const_perm, zAddr, xyAddr);
+			ScAddr zxyAddr = ctx.createEdge(sc_type_arc_pos_const_perm, zAddr, xyAddr);
 			g_assert(zxyAddr.isValid());
-			ScAddr sxAddr = ctx.createArc(sc_type_arc_pos_const_perm, sAddr, xAddr);
+			ScAddr sxAddr = ctx.createEdge(sc_type_arc_pos_const_perm, sAddr, xAddr);
 			g_assert(sxAddr.isValid());
 
 
@@ -985,11 +985,11 @@ void test_common_search_in_struct()
 			g_assert(_zAddr.isValid());
 			g_assert(ctx.helperSetSystemIdtf("_z", _zAddr));
 
-			_xyEdgeAddr = ctx.createArc(*ScType::EDGE_ACCESS_VAR_POS_PERM, xAddr, _yAddr);
+			_xyEdgeAddr = ctx.createEdge(*ScType::EDGE_ACCESS_VAR_POS_PERM, xAddr, _yAddr);
 			g_assert(_xyEdgeAddr.isValid());
 			g_assert(ctx.helperSetSystemIdtf("_xyEdge", _xyEdgeAddr));
 
-			_zxyEdgeAddr = ctx.createArc(*ScType::EDGE_ACCESS_VAR_POS_PERM, _zAddr, _xyEdgeAddr);
+			_zxyEdgeAddr = ctx.createEdge(*ScType::EDGE_ACCESS_VAR_POS_PERM, _zAddr, _xyEdgeAddr);
 			g_assert(_zxyEdgeAddr.isValid());
 			g_assert(ctx.helperSetSystemIdtf("_zxyEdge", _zxyEdgeAddr));
 
@@ -1034,19 +1034,19 @@ void test_common_search_in_struct()
 			tsAddr = ctx.createNode(*ScType::NODE_CONST);
 			g_assert(tsAddr.isValid());
 
-			tyuEdgeAddr = ctx.createArc(*ScType::EDGE_ACCESS_CONST_POS_PERM, tyAddr, tuAddr);
+			tyuEdgeAddr = ctx.createEdge(*ScType::EDGE_ACCESS_CONST_POS_PERM, tyAddr, tuAddr);
 			g_assert(tyuEdgeAddr.isValid());
 
-			txyEdgeAddr = ctx.createArc(*ScType::EDGE_ACCESS_CONST_POS_PERM, txAddr, tyAddr);
+			txyEdgeAddr = ctx.createEdge(*ScType::EDGE_ACCESS_CONST_POS_PERM, txAddr, tyAddr);
 			g_assert(txyEdgeAddr.isValid());
 
-			txgEdgeAddr = ctx.createArc(*ScType::EDGE_ACCESS_CONST_POS_PERM, txAddr, tgAddr);
+			txgEdgeAddr = ctx.createEdge(*ScType::EDGE_ACCESS_CONST_POS_PERM, txAddr, tgAddr);
 			g_assert(txgEdgeAddr.isValid());
 
-			tzxyEdgeAddr = ctx.createArc(*ScType::EDGE_ACCESS_CONST_POS_PERM, tzAddr, txyEdgeAddr);
+			tzxyEdgeAddr = ctx.createEdge(*ScType::EDGE_ACCESS_CONST_POS_PERM, tzAddr, txyEdgeAddr);
 			g_assert(tzxyEdgeAddr.isValid());
 
-			tsxgEdgeAddr = ctx.createArc(*ScType::EDGE_ACCESS_CONST_POS_PERM, tsAddr, txgEdgeAddr);
+			tsxgEdgeAddr = ctx.createEdge(*ScType::EDGE_ACCESS_CONST_POS_PERM, tsAddr, txgEdgeAddr);
 			g_assert(tsxgEdgeAddr.isValid());
 
 			testStruct << tyAddr << txAddr << tgAddr 
@@ -1058,9 +1058,9 @@ void test_common_search_in_struct()
 
 		// add extra edges that not included into struct
 		// scs: x -> t: y;;
-		ScAddr edge1 = ctx.createArc(*ScType::EDGE_ACCESS_CONST_POS_PERM, txAddr, tyAddr);
+		ScAddr edge1 = ctx.createEdge(*ScType::EDGE_ACCESS_CONST_POS_PERM, txAddr, tyAddr);
 		g_assert(edge1.isValid());
-		ScAddr edge2 = ctx.createArc(*ScType::EDGE_ACCESS_CONST_POS_PERM, tzAddr, edge1);
+		ScAddr edge2 = ctx.createEdge(*ScType::EDGE_ACCESS_CONST_POS_PERM, tzAddr, edge1);
 		g_assert(edge2.isValid());
 
 		{
@@ -1103,7 +1103,7 @@ gpointer emit_event_thread(gpointer data)
 	g_usleep(2000000);	// sleep for a second
 
 	const ScAddr node = d->mContext.createNode(*ScType::NODE_CONST);
-	const ScAddr arc = d->mContext.createArc(*ScType::EDGE_ACCESS_CONST_POS_PERM, node, d->mAddr);
+	const ScAddr arc = d->mContext.createEdge(*ScType::EDGE_ACCESS_CONST_POS_PERM, node, d->mAddr);
 
 	d->mIsDone = arc.isValid();
 

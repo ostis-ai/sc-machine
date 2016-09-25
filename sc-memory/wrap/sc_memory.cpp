@@ -159,6 +159,11 @@ ScAddr ScMemoryContext::createLink()
 
 ScAddr ScMemoryContext::createArc(sc_type type, ScAddr const & addrBeg, ScAddr const & addrEnd)
 {
+	return createEdge(type, addrBeg, addrEnd);
+}
+
+ScAddr ScMemoryContext::createEdge(sc_type type, ScAddr const & addrBeg, ScAddr const & addrEnd)
+{
     check_expr(isValid());
 	return ScAddr(sc_memory_arc_new(mContext, type, addrBeg.mRealAddr, addrEnd.mRealAddr));
 }
