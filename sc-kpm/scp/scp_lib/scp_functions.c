@@ -1536,16 +1536,16 @@ scp_result stringSlice(sc_memory_context *context, scp_operand *param1, scp_oper
     start_index = (int)num3;
     end_index = (int)num4;
 
-    if (start_index >= end_index)
+    if (start_index > end_index)
     {
-        print_error("stringSplice", "invalid range");
+        print_error("stringSlice", "invalid range");
         free(str);
         return SCP_RESULT_ERROR;
     }
 
     if (length <= end_index)
     {
-        print_error("stringSplice", "end index out of range");
+        print_error("stringSlice", "end index out of range");
         free(str);
         return SCP_RESULT_ERROR;
     }
@@ -1555,7 +1555,7 @@ scp_result stringSlice(sc_memory_context *context, scp_operand *param1, scp_oper
     sub_string = (char*)malloc(sub_string_length);
     if (sub_string == NULL)
     {
-        print_error("stringSplice", "unable to allocate memory");
+        print_error("stringSlice", "unable to allocate memory");
         free(str);
         return SCP_RESULT_ERROR;
     }
