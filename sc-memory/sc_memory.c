@@ -37,10 +37,6 @@ sc_memory_context* sc_memory_initialize(const sc_memory_params *params)
 {
     g_log_set_always_fatal(G_LOG_LEVEL_CRITICAL);
 
-#if SC_PROFILE_MODE
-    sc_storage_reset_profile();
-#endif
-
     sc_config_initialize(params->config_file);
 
     s_context_hash_table = g_hash_table_new(g_direct_hash, g_direct_equal);
@@ -100,10 +96,6 @@ sc_memory_context* sc_memory_initialize(const sc_memory_params *params)
 void sc_memory_shutdown(sc_bool save_state)
 {
     sc_events_stop_processing();
-
-#if SC_PROFILE_MODE
-    sc_storage_print_profile();
-#endif
 
     sc_ext_shutdown();
 

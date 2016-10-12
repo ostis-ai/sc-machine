@@ -26,6 +26,42 @@ struct ContextMutexLock
 	~ContextMutexLock() { g_mutex_unlock(&gContextMutex); }
 };
 
+bool gIsLogMuted = false;
+
+void _logPrintHandler(gchar const * log_domain, GLogLevelFlags log_level,
+	gchar const * message, gpointer user_data)
+{
+	if (gIsLogMuted)
+		return;
+
+	std::string stype;
+	switch (log_level)
+	{
+	case G_LOG_LEVEL_CRITICAL:
+		stype = "Critial";
+		break;
+
+	case G_LOG_LEVEL_ERROR:
+		stype = "Error";
+		break;
+
+	case G_LOG_LEVEL_WARNING:
+		stype = "Warning";
+		break;
+
+	case G_LOG_LEVEL_INFO:
+	case G_LOG_LEVEL_MESSAGE:
+		stype = "Info";
+		break;
+
+	case G_LOG_LEVEL_DEBUG:
+		stype = "Debug";
+		break;
+	};
+
+	std::cout << "[" << stype << "] " << message << std::endl;
+}
+
 unsigned int gContextGounter;
 
 // ------------------
@@ -36,6 +72,8 @@ ScMemory::tMemoryContextList ScMemory::msContexts;
 bool ScMemory::initialize(sc_memory_params const & params)
 {
     gContextGounter = 0;
+
+	g_log_set_default_handler(_logPrintHandler, nullptr);	
 
     msGlobalContext = sc_memory_initialize(&params);
     return msGlobalContext != null_ptr;
@@ -56,6 +94,18 @@ void ScMemory::shutdown(bool saveState /* = true */)
 
     sc_memory_shutdown(SC_BOOL(saveState));
     msGlobalContext = 0;
+
+	g_log_set_default_handler(g_log_default_handler, nullptr);
+}
+
+void ScMemory::logMute()
+{
+	gIsLogMuted = true;
+}
+
+void ScMemory::logUnmute()
+{
+	gIsLogMuted = false;
 }
 
 void ScMemory::registerContext(ScMemoryContext const * ctx)

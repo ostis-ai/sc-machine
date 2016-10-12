@@ -110,9 +110,5 @@ void sc_segment_section_unlock(const sc_memory_context *ctx, sc_segment_section 
 void sc_segment_lock(sc_segment * seg, sc_memory_context const * ctx);
 void sc_segment_unlock(sc_segment * seg, sc_memory_context const * ctx);
 
-#if SC_PROFILE_MODE
-void sc_segment_reset_profile();
-void sc_segment_print_profile();
-#endif
 
 #endif

@@ -277,14 +277,14 @@ namespace nl
 
 						// append format
 						{
-							ScAddr edge = mMemoryCtx.createArc(*ScType::EDGE_DCOMMON_CONST, linkAddr, msFormatOgg);
+							ScAddr edge = mMemoryCtx.createEdge(*ScType::EDGE_DCOMMON_CONST, linkAddr, msFormatOgg);
 							check_expr(edge.isValid());
-							mMemoryCtx.createArc(*ScType::EDGE_ACCESS_CONST_POS_PERM, msNrelFormat, edge);
+							mMemoryCtx.createEdge(*ScType::EDGE_ACCESS_CONST_POS_PERM, msNrelFormat, edge);
 						}
 
-						mMemoryCtx.createArc(*ScType::EDGE_ACCESS_CONST_POS_PERM, resultAddr, linkAddr);
+						mMemoryCtx.createEdge(*ScType::EDGE_ACCESS_CONST_POS_PERM, resultAddr, linkAddr);
 
-						ScStream stream((char*)soundData.data(), soundData.size(), SC_STREAM_FLAG_READ);
+						ScStream stream((char*)soundData.data(), (sc_uint32)soundData.size(), SC_STREAM_FLAG_READ);
 						if (mMemoryCtx.setLinkContent(linkAddr, stream))
 							return SC_RESULT_OK;
 					}

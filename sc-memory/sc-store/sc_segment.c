@@ -11,11 +11,6 @@
 
 #include <glib.h>
 
-#if SC_PROFILE_MODE
-sc_uint32 lock_empty_miss = 0;
-#endif
-
-
 #define MAX_LOCK_SLEEP      10 // microseconds
 #define LOCK_SLEEP() //{ g_usleep(g_random_int() % MAX_LOCK_SLEEP); }
 
@@ -224,9 +219,6 @@ sc_element* sc_segment_lock_empty_element(const sc_memory_context *ctx, sc_segme
             }
 
         }
-#if SC_PROFILE_MODE
-        g_atomic_int_inc(&lock_empty_miss);
-#endif
 
         if (max_attempts < SC_CONCURRENCY_LEVEL)
             ++max_attempts;
@@ -347,16 +339,3 @@ void sc_segment_unlock(sc_segment * seg, sc_memory_context const * ctx)
         sc_segment_section_unlock(ctx, &seg->sections[i]);
 }
 
-#if SC_PROFILE_MODE
-
-void sc_segment_reset_profile()
-{
-    lock_empty_miss = 0;
-}
-
-void sc_segment_print_profile()
-{
-    g_print("Semgnets:\n lock_empty_miss = %d\n", lock_empty_miss);
-}
-
-#endif

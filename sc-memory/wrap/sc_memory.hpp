@@ -36,6 +36,8 @@ public:
     _SC_EXTERN static bool initialize(sc_memory_params const & params);
     _SC_EXTERN static void shutdown(bool saveState = true);
 
+	_SC_EXTERN static void logMute();
+	_SC_EXTERN static void logUnmute();
 protected:
 
     static void registerContext(ScMemoryContext const * ctx);

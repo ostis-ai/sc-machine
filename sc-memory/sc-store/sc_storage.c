@@ -1239,20 +1239,6 @@ sc_result sc_storage_element_unlock(const sc_memory_context *ctx, sc_addr addr)
     return SC_RESULT_OK;
 }
 
-#if SC_PROFILE_MODE
-
-void sc_storage_reset_profile()
-{
-    sc_segment_reset_profile();
-}
-
-void sc_storage_print_profile()
-{
-    sc_segment_print_profile();
-}
-
-#endif
-
 sc_result sc_storage_save(sc_memory_context const * ctx)
 {
     sc_segment * seg;

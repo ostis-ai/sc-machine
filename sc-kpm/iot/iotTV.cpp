@@ -36,11 +36,11 @@ namespace iot
 
 		// create link to new program
 		{
-			ScAddr edge = mMemoryCtx.createArc(SC_TYPE(sc_type_arc_common | sc_type_const), tvAddr, programAddr);
+			ScAddr edge = mMemoryCtx.createEdge(SC_TYPE(sc_type_arc_common | sc_type_const), tvAddr, programAddr);
 			if (!edge.isValid())
 				return SC_RESULT_ERROR;
 
-			ScAddr edgeRel = mMemoryCtx.createArc(SC_TYPE(sc_type_arc_pos_const_perm), Keynodes::nrel_tv_program, edge);
+			ScAddr edgeRel = mMemoryCtx.createEdge(SC_TYPE(sc_type_arc_pos_const_perm), Keynodes::nrel_tv_program, edge);
 			if (!edgeRel.isValid())
 				return SC_RESULT_ERROR;
 		}

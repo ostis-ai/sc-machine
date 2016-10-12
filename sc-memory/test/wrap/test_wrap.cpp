@@ -21,7 +21,7 @@ struct TestTemplParams
 {
 	explicit TestTemplParams(ScMemoryContext & ctx)
 		: mCtx(ctx)
-	{
+	{ 
 	}
 
 	bool operator () (ScTemplateItemValue param1, ScTemplateItemValue param2, ScTemplateItemValue param3)
@@ -58,12 +58,16 @@ void init_memory()
     params.config_file = "sc-memory.ini";
     params.ext_path = 0;
 
+	ScMemory::logMute();
     ScMemory::initialize(params);
+	ScMemory::logUnmute();
 }
 
 void shutdown_memory(bool save)
 {
+	ScMemory::logMute();
     ScMemory::shutdown(save);
+	ScMemory::logUnmute();
 }
 
 bool has_addr(tAddrVector const & v, ScAddr const & addr)

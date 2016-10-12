@@ -67,9 +67,9 @@ namespace iot
 		{
 			contentSet = mMemoryCtx.createNode(sc_type_const | sc_type_node_tuple);
 			assert(contentSet.isValid());
-            ScAddr arcCommon = mMemoryCtx.createArc(sc_type_const | sc_type_arc_common, contentSet, deviceAddr);
+			ScAddr arcCommon = mMemoryCtx.createEdge(sc_type_const | sc_type_arc_common, contentSet, deviceAddr);
 			assert(arcCommon.isValid());
-            ScAddr arc = mMemoryCtx.createArc(sc_type_arc_pos_const_perm, Keynodes::nrel_content, arcCommon);
+			ScAddr arc = mMemoryCtx.createEdge(sc_type_arc_pos_const_perm, Keynodes::nrel_content, arcCommon);
 			assert(arc.isValid());
 		} 
 		else
@@ -80,12 +80,12 @@ namespace iot
 		// create product instance
         ScAddr product = mMemoryCtx.createNode(sc_type_node_material);
 		assert(product.isValid());
-        ScAddr arcClass = mMemoryCtx.createArc(sc_type_arc_pos_const_perm, productClassAddr, product);
+		ScAddr arcClass = mMemoryCtx.createEdge(sc_type_arc_pos_const_perm, productClassAddr, product);
 		assert(arcClass.isValid());
 
 		Utils::setMass(mMemoryCtx, product, massLinkAddr);
 
-        ScAddr arc = mMemoryCtx.createArc(sc_type_arc_pos_const_perm, contentSet, product);
+		ScAddr arc = mMemoryCtx.createEdge(sc_type_arc_pos_const_perm, contentSet, product);
 		assert(arc.isValid());
 
 		return SC_RESULT_OK;
@@ -123,7 +123,7 @@ namespace iot
 
 		while (iterContent->next())
 		{
-            ScAddr const arc = mMemoryCtx.createArc(sc_type_arc_pos_const_perm, resultAddr, iterContent->value(2));
+			ScAddr const arc = mMemoryCtx.createEdge(sc_type_arc_pos_const_perm, resultAddr, iterContent->value(2));
 			assert(arc.isValid());
 		}
 

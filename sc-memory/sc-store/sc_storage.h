@@ -194,11 +194,6 @@ sc_result sc_storage_element_lock_try(sc_memory_context const * ctx, sc_addr add
 //! Unlocks specified sc-element
 sc_result sc_storage_element_unlock(sc_memory_context const * ctx, sc_addr addr);
 
-#if SC_PROFILE_MODE
-void sc_storage_reset_profile();
-void sc_storage_print_profile();
-#endif
-
 sc_result sc_storage_save(sc_memory_context const * ctx);
 
 #endif

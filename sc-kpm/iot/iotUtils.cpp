@@ -20,7 +20,7 @@ namespace iot
 			if (ctx.helperCheckArc(setAddr, elAddr, sc_type_arc_pos_const_perm))
 				return false;
 
-            ScAddr arcAddr = ctx.createArc(sc_type_arc_pos_const_perm, setAddr, elAddr);
+			ScAddr arcAddr = ctx.createEdge(sc_type_arc_pos_const_perm, setAddr, elAddr);
 			assert(arcAddr.isValid());
 			return true;
 		}
@@ -54,9 +54,9 @@ namespace iot
 			{
 				massAddr = ctx.createNode(sc_type_const | sc_type_node_abstract);
 				assert(massAddr.isValid());
-				ScAddr arcCommon = ctx.createArc(sc_type_const | sc_type_arc_common, objAddr, massAddr);
+				ScAddr arcCommon = ctx.createEdge(sc_type_const | sc_type_arc_common, objAddr, massAddr);
 				assert(arcCommon.isValid());
-                ScAddr arc = ctx.createArc(sc_type_arc_pos_const_perm, Keynodes::nrel_mass, arcCommon);
+				ScAddr arc = ctx.createEdge(sc_type_arc_pos_const_perm, Keynodes::nrel_mass, arcCommon);
 				assert(arc.isValid());
 			}
 
@@ -77,9 +77,9 @@ namespace iot
 			}
 			else
 			{
-                ScAddr arc = ctx.createArc(sc_type_arc_pos_const_perm, massAddr, valueAddr);
+				ScAddr arc = ctx.createEdge(sc_type_arc_pos_const_perm, massAddr, valueAddr);
 				assert(arc.isValid());
-				arc = ctx.createArc(sc_type_arc_pos_const_perm, Keynodes::rrel_gram, arc);
+				arc = ctx.createEdge(sc_type_arc_pos_const_perm, Keynodes::rrel_gram, arc);
 				assert(arc.isValid());
 			}
 
