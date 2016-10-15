@@ -111,7 +111,7 @@ public:
 	typedef std::function<bool(const ScAddr &, const ScAddr &)> tDelegateCheckFunc;
 
 	explicit ScWaitCondition(const ScMemoryContext & ctx, const ScAddr & addr, tDelegateCheckFunc func)
-		: ScWait(ctx, addr)
+        : ScWait<EventClassT>(ctx, addr)
 		, mCheckFunc(func)
 	{
 	}

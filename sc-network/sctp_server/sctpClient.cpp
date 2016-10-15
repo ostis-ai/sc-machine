@@ -15,8 +15,8 @@
 sctpClient::sctpClient(QObject *parent, int socketDescriptor)
     : QThread(parent)
     , mSocket(0)
-    , mSocketDescriptor(socketDescriptor)
     , mCommand(0)
+    , mSocketDescriptor(socketDescriptor)
 {
 }
 

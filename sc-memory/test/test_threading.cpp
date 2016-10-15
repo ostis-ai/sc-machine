@@ -107,9 +107,9 @@ gpointer create_link_thread(gpointer data)
 
 // -----------------------------------------
 
-void test_creation(GThreadFunc f, sc_int32 count, size_t thread_count)
+void test_creation(GThreadFunc f, sc_int32 count, sc_int32 thread_count)
 {
-    size_t test_count = count / thread_count;
+    sc_int32 test_count = count / thread_count;
 
     g_message("Threads count: %d, Test per thread: %d", thread_count, test_count);
 
@@ -120,7 +120,7 @@ void test_creation(GThreadFunc f, sc_int32 count, size_t thread_count)
     print_storage_statistics();
 
     g_test_timer_start();
-    for (size_t i = 0; i < thread_count; ++i)
+    for (sc_int32 i = 0; i < thread_count; ++i)
     {
         GThread * thread = g_thread_try_new(0, f, GINT_TO_POINTER(test_count), 0);
         if (thread == 0)
@@ -128,8 +128,8 @@ void test_creation(GThreadFunc f, sc_int32 count, size_t thread_count)
         threads.push_back(thread);
     }
 
-    for (size_t i = 0; i < thread_count; ++i)
-        g_assert((size_t)GPOINTER_TO_INT(g_thread_join(threads[i])) == test_count);
+    for (sc_int32 i = 0; i < thread_count; ++i)
+        g_assert(GPOINTER_TO_INT(g_thread_join(threads[i])) == test_count);
 
     printf("Time: %lf\n", g_test_timer_elapsed());
 
@@ -162,8 +162,8 @@ void test_link_creation()
 
 void test_combined_creation()
 {
-    size_t thread_count = g_thread_count;
-    size_t test_count = (g_task_count) / thread_count;
+    sc_int32 thread_count = g_thread_count;
+    sc_int32 test_count = (g_task_count) / thread_count;
 
     g_message("Threads count: %d, Test per thread: %d", thread_count, test_count);
 
@@ -174,7 +174,7 @@ void test_combined_creation()
     print_storage_statistics();    
 
     g_test_timer_start();
-    for (size_t i = 0; i < thread_count; ++i)
+    for (sc_int32 i = 0; i < thread_count; ++i)
     {
         GThreadFunc f = create_node_thread;
         switch(g_random_int() % 3)
@@ -195,8 +195,8 @@ void test_combined_creation()
         threads.push_back(thread);
     }
 
-    for (size_t i = 0; i < thread_count; ++i)
-        g_assert((size_t)GPOINTER_TO_INT(g_thread_join(threads[i])) == test_count);
+    for (sc_int32 i = 0; i < thread_count; ++i)
+        g_assert(GPOINTER_TO_INT(g_thread_join(threads[i])) == test_count);
 
     printf("Time: %lf\n", g_test_timer_elapsed());
 

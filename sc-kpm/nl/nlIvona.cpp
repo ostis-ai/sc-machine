@@ -25,7 +25,6 @@ namespace
 	size_t CurlWrite_CallbackFunc_StdVector(void *contents, size_t size, size_t nmemb, std::vector<uint8_t> * data)
 	{
 		size_t newLength = size * nmemb;
-		size_t oldLength = data->size();
 
 		uint8_t * data_ptr = (uint8_t*)contents;
 
@@ -46,7 +45,7 @@ namespace
 		// convert to hex string
 		std::string result;
 		result.reserve(2 * bufferSize);
-		for (int i = 0; i < bufferSize; i++)
+        for (size_t i = 0; i < bufferSize; i++)
 		{
 			static const char dec2hex[16 + 1] = "0123456789abcdef";
 			result += dec2hex[(buffer[i] >> 4) & 15];

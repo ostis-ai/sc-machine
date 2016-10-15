@@ -8,6 +8,8 @@
 #include "utils_keynodes.h"
 #include "utils.h"
 
+#include "sc_helper.h"
+
 #include <glib.h>
 
 const char str_group_redis[] = "redis";

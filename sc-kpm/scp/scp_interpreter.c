@@ -30,6 +30,7 @@ along with OSTIS.  If not, see <http://www.gnu.org/licenses/>.
 #include "scp_process_destroyer.h"
 #include "scp_operator_interpreter_agents.h"
 #include "scp_interpreter_utils.h"
+#include "scp_operator_syncronizer.h"
 
 #include <stdio.h>
 

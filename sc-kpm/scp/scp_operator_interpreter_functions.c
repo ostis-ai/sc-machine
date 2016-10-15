@@ -22,6 +22,7 @@ along with OSTIS.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "scp_operator_interpreter_functions.h"
 
+#include "scp_utils.h"
 #include "scp_interpreter_utils.h"
 #include "scp_keynodes.h"
 

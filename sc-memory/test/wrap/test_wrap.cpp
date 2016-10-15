@@ -364,11 +364,16 @@ void test_common_templates()
 	{
 		ScMemoryContext ctx;
 		ScAddr const addr1 = ctx.createNode(ScType::NODE_CONST);
+        g_assert(addr1.isValid());
 		ScAddr const addr2 = ctx.createNode(ScType::NODE_CONST);
+        g_assert(addr2.isValid());
 		ScAddr const addr3 = ctx.createNode(ScType::NODE_CONST);
+        g_assert(addr3.isValid());
 
 		ScAddr const edge1 = ctx.createEdge(ScType::EDGE_ACCESS_CONST_POS_PERM, addr1, addr2);
+        g_assert(edge1.isValid());
 		ScAddr const edge2 = ctx.createEdge(ScType::EDGE_ACCESS_CONST_POS_PERM, addr3, edge1);
+        g_assert(edge2.isValid());
 
 		{
 			ScTemplate templ;
@@ -1123,6 +1128,7 @@ void test_common_waiters()
 		{
 			WaitTestData data(ctx, addr);
 			GThread * thread = g_thread_try_new(0, emit_event_thread, (gpointer)&data, 0);
+            g_assert(thread != nullptr);
 
 			g_assert(ScWait<ScEventAddInputEdge>(ctx, addr).Wait());
 			g_assert(data.mIsDone);
@@ -1139,6 +1145,7 @@ void test_common_waiters()
 		{
 			WaitTestData data(ctx, addr);
 			GThread * thread = g_thread_try_new(0, emit_event_thread, (gpointer)&data, 0);
+            g_assert(thread != nullptr);
 
 			auto checkTrue = [](const ScAddr & addr, const ScAddr & arg) {
 				return true;
@@ -1155,6 +1162,7 @@ void test_common_waiters()
 		{
 			WaitTestData data(ctx, addr);
 			GThread * thread = g_thread_try_new(0, emit_event_thread, (gpointer)&data, 0);
+            g_assert(thread != nullptr);
 
 			auto checkFalse = [](const ScAddr & addr, const ScAddr & arg) {
 				return false;

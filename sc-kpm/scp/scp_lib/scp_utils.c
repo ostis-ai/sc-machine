@@ -29,6 +29,8 @@ along with OSTIS.  If not, see <http://www.gnu.org/licenses/>.
 #include <stdlib.h>
 #include <string.h>
 
+#include <glib.h>
+
 //sc_addr format_numeric;
 
 #define NUMBER_PRECISE 8

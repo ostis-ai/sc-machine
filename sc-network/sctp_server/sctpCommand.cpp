@@ -956,7 +956,7 @@ eSctpErrorCode sctpCommand::processGetLinkContent(quint32 cmdFlags, quint32 cmdI
 
 eSctpErrorCode sctpCommand::processFindLinks(quint32 cmdFlags, quint32 cmdId, QDataStream *params, QIODevice *outDevice)
 {
-    sc_uint32 data_len = 0;
+    sc_int32 data_len = 0;
     sc_char *data = 0;
 
     Q_UNUSED(cmdFlags);
@@ -995,7 +995,7 @@ eSctpErrorCode sctpCommand::processFindLinks(quint32 cmdFlags, quint32 cmdId, QD
 eSctpErrorCode sctpCommand::processSetLinkContent(quint32 cmdFlags, quint32 cmdId, QDataStream *params, QIODevice *outDevice)
 {
     sc_addr addr;
-    sc_uint32 data_len = 0;
+    sc_int32 data_len = 0;
     sc_char *data = 0;
 
     Q_UNUSED(cmdFlags);
@@ -1313,7 +1313,7 @@ eSctpErrorCode sctpCommand::processEmitEvent(quint32 cmdFlags, quint32 cmdId, QD
 
 eSctpErrorCode sctpCommand::processFindElementBySysIdtf(quint32 cmdFlags, quint32 cmdId, QDataStream *params, QIODevice *outDevice)
 {
-    sc_uint32 data_len = 0;
+    sc_int32 data_len = 0;
     sc_char *data = 0;
 
     Q_UNUSED(cmdFlags);
@@ -1347,7 +1347,7 @@ eSctpErrorCode sctpCommand::processFindElementBySysIdtf(quint32 cmdFlags, quint3
 eSctpErrorCode sctpCommand::processSetSysIdtf(quint32 cmdFlags, quint32 cmdId, QDataStream *params, QIODevice *outDevice)
 {
     sc_addr addr;
-    sc_uint32 data_len = 0;
+    sc_int32 data_len = 0;
     sc_char *data = 0;
 
     Q_UNUSED(cmdFlags);

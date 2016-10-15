@@ -26,9 +26,9 @@ sctpServer::sctpServer(QObject *parent)
   : QTcpServer(parent)
   , mPort(0)
   , mStatistic(0)
+  , mSavePeriod(0)
   , mEventManager(0)
   , mContext(0)
-  , mSavePeriod(0)
 {
 }
 

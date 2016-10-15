@@ -385,6 +385,7 @@ void SCsTranslator::processSentenceAssign(pANTLR3_BASE_TREE node)
     {
         String left_idtf = (GET_NODE_TEXT(node_left));
         sElement *el = parseElementTree(node_right, &left_idtf);
+        assert(el != nullptr);
     }
 }
 
@@ -685,7 +686,6 @@ sElement* SCsTranslator::parseElementTree(pANTLR3_BASE_TREE tree, const String *
             if (StringUtil::startsWith(data, "^\"", false))
             {
                 String name;
-                bool result = false;
 				if (_getAbsFilePath(trimContentData(data), name))
                 {
                     fileName = name;
@@ -694,8 +694,9 @@ sElement* SCsTranslator::parseElementTree(pANTLR3_BASE_TREE tree, const String *
                     {
                         data = String((std::istreambuf_iterator<char>(ifs)), std::istreambuf_iterator<char>());
                         ifs.close();
-                        result = true;
-                    } else {
+                    }
+                    else
+                    {
                         THROW_EXCEPT(Exception::ERR_PARSE,
                                      "Can't open file " << name,
                                      mParams.fileName,

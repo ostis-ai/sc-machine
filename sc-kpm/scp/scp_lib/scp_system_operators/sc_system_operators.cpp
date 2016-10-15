@@ -91,7 +91,7 @@ void print_hash(sc_type_hash table)
 void print_result(sc_memory_context *context, sc_type_result table)
 {
     sc_type_result::iterator it;
-    printf("RESULT (%d):\n", table.size());
+    printf("RESULT (%d):\n", (int)table.size());
     for (it = table.begin() ; it != table.end(); it++)
     {
         sc_addr addr1 = (*it).first;
@@ -106,7 +106,7 @@ void print_result(sc_memory_context *context, sc_type_result table)
 
 void print_result_set(sc_memory_context *context, sc_type_result_vector *table)
 {
-    printf("RESULT COUNT:%d\n", table->size());
+    printf("RESULT COUNT:%d\n", (int)table->size());
     for (sc_uint i = 0; i < table->size(); i++)
     {
         print_result(context, *((*table)[i]));

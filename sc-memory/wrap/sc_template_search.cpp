@@ -43,9 +43,6 @@ public:
 				ScTemplateConstr3 const & aTriple = triples[a];
 				ScTemplateConstr3 const & bTriple = triples[b];
 
-				ScTemplateItemValue const * aValues = aTriple.getValues();
-				ScTemplateItemValue const * bValues = bTriple.getValues();
-
 				// compare by addrs arguments count
 				size_t const aAddrCount = aTriple.countAddrs();
 				size_t const bAddrCount = bTriple.countAddrs();

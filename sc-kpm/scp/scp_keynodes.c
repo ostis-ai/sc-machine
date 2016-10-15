@@ -26,6 +26,8 @@ along with OSTIS.  If not, see <http://www.gnu.org/licenses/>.
 #include "string.h"
 #include "stdio.h"
 
+#include "sc_helper.h"
+
 scp_operand scp_program;
 scp_operand agent_scp_program;
 scp_operand platform_independent_abstract_sc_agent;

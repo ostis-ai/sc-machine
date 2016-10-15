@@ -22,10 +22,6 @@ void parseError(const char* errorName, int line)
 void displayRecognitionError (pANTLR3_BASE_RECOGNIZER recognizer, pANTLR3_UINT8 * tokenNames)
 {
     // Adopted code from https://github.com/antlr/antlr3/blob/master/runtime/C/src/antlr3baserecognizer.c
-
-    pANTLR3_PARSER parser;
-    pANTLR3_TREE_PARSER tparser;
-    pANTLR3_INT_STREAM is;
     pANTLR3_EXCEPTION ex;
     pANTLR3_COMMON_TOKEN theToken;
     pANTLR3_BASE_TREE theBaseTree;
@@ -52,10 +48,8 @@ void displayRecognitionError (pANTLR3_BASE_RECOGNIZER recognizer, pANTLR3_UINT8 
     switch	(recognizer->type)
     {
     case ANTLR3_TYPE_PARSER:
+    {
         // Prepare the knowledge we know we have
-        parser = (pANTLR3_PARSER) (recognizer->super);
-        tparser = NULL;
-        is = parser->tstream->istream;
         theToken = (pANTLR3_COMMON_TOKEN)(recognizer->state->exception->token);
         ttext = theToken->toString(theToken);
         ss << ", at offset " << recognizer->state->exception->charPositionInLine;
@@ -67,12 +61,10 @@ void displayRecognitionError (pANTLR3_BASE_RECOGNIZER recognizer, pANTLR3_UINT8 
                 // Guard against null text in a token
                 ss << "\n near " << (ttext == NULL ? "<no text for the token>" : (const char*)ttext->chars) << "\n ";
         }
+    }
         break;
 
     case ANTLR3_TYPE_TREE_PARSER:
-        tparser = (pANTLR3_TREE_PARSER) (recognizer->super);
-        parser = NULL;
-        is = tparser->ctnstream->tnstream->istream;
         theBaseTree = (pANTLR3_BASE_TREE)(recognizer->state->exception->token);
         ttext = theBaseTree->toStringTree(theBaseTree);
         if (theBaseTree != NULL)

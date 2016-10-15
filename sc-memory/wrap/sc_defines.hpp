@@ -64,7 +64,7 @@
 		_Pragma("clang diagnostic pop")
 
 #elif (SC_COMPILER == SC_COMPILER_GNU)
-
+# define _SC_DEPRECATED_IMPL(__Version, __Message)
 #else
 #	define _SC_DEPRECATED_IMPL(__Version, __Message)
 #endif

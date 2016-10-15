@@ -25,6 +25,7 @@ along with OSTIS.  If not, see <http://www.gnu.org/licenses/>.
 #include "scp_operator_interpreter_functions.h"
 #include "scp_interpreter_utils.h"
 #include "scp_keynodes.h"
+#include "scp_utils.h"
 #include "malloc.h"
 
 #include <stdio.h>
@@ -2446,7 +2447,7 @@ sc_result scp_event_procedure_processor(const sc_event *event, sc_addr arg)
         return SC_RESULT_OK;
     }
     quest.param_type = SCP_ASSIGN;
-    agent_scp_program.addr = resolve_sc_addr_from_int(sc_event_get_data(event));
+    agent_scp_program.addr = resolve_sc_addr_from_int((scp_uint32)sc_event_get_data(event));
     agent_scp_program.param_type = SCP_FIXED;
 
     MAKE_DEFAULT_NODE_ASSIGN(quest);
@@ -2472,7 +2473,7 @@ sc_result sys_wait_processor(const sc_event *event, sc_addr arg)
     scp_operand operator_node, arc;
     MAKE_DEFAULT_ARC_ASSIGN(arc);
     MAKE_DEFAULT_OPERAND_FIXED(operator_node);
-    operator_node.addr = resolve_sc_addr_from_int(sc_event_get_data(event));
+    operator_node.addr = resolve_sc_addr_from_int((scp_uint32)sc_event_get_data(event));
     if (SCP_RESULT_TRUE == searchElStr3(s_default_ctx, &active_scp_operator, &arc, &operator_node))
     {
         g_hash_table_remove(scp_wait_event_table, MAKE_HASH(operator_node));

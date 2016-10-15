@@ -263,7 +263,7 @@ _SC_EXTERN bool Client::setLinkContent(ScAddr const & addr, IScStreamPtr const &
 		{
 			if (!stream->read(buff, 1024, readBytes))
 				return false;
-			if (mSocketImpl->write(buff, readBytes) != readBytes)
+            if (mSocketImpl->write(buff, readBytes) != static_cast<int>(readBytes))
 				return false;
 		}
 
@@ -290,7 +290,7 @@ _SC_EXTERN bool Client::getLinkContent(ScAddr const & addr, IScStreamPtr & strea
 		if ((mSocketImpl->readType(res) == sizeof(res)) && (res.resultCode == SCTP_RESULT_OK))
 		{
 			char * buff = new char[res.resultSize];
-			if (mSocketImpl->read(buff, res.resultSize) == res.resultSize)
+            if (mSocketImpl->read(buff, res.resultSize) == static_cast<int>(res.resultSize))
 			{
 				MemoryBufferPtr buffer(new MemoryBuffer(buff, res.resultSize));
 				stream = IScStreamPtr(new ScStreamMemory(buffer));

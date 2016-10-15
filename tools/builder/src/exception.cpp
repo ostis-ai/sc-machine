@@ -7,11 +7,11 @@
 #include "exception.h"
 
 Exception::Exception(Exception::eCodes code, const String &typeName, const String &descr, const String &fileName, int line)
-    : mTypeName(typeName)
+    : mCode(code)
+    , mTypeName(typeName)
     , mDescription(descr)
     , mFileName(fileName)
     , mLine(line)
-    , mCode(code)
 {
 }
 
