@@ -7,14 +7,14 @@ target_link_libraries(test_threading sc-memory)
 
 
 set(SC_MEMORY_WRAP_TEST "${SC_MACHINE_ROOT}/sc-memory/test/wrap")
-set(SOURCES_WRAP
+set(SOURCES_WRAP_TEST
+	"wrap/test.cpp"
+	"wrap/test.hpp"
 	"wrap/test_wrap.cpp"
-	"wrap/test_sc_object.cpp"
-	"wrap/test_sc_object.hpp"
-	"wrap/test_sc_agent.cpp"
-	"wrap/test_sc_agent.hpp"
 	)
 
-add_executable(test_wrap ${SOURCES_WRAP})
+file(GLOB UnitsGlob "wrap/units/*.cpp")
+
+add_executable(test_wrap ${SOURCES_WRAP_TEST} ${UnitsGlob})
 target_link_libraries(test_wrap sc-memory-cpp)
 sc_codegen(test_wrap ${SC_MEMORY_WRAP_TEST})

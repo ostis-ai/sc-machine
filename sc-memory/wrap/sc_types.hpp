@@ -16,9 +16,13 @@ extern "C"
 #include <map>
 #include <set>
 #include <vector>
+#include <array>
 #include <unordered_set>
+#include <unordered_map>
 #include <assert.h>
 #include <stdint.h>
+
+#include <fstream>
 
 #include "sc_defines.hpp"
 
