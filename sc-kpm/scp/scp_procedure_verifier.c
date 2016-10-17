@@ -73,6 +73,8 @@ sc_result verify_scp_program(const sc_event *event, sc_addr arg)
     }
 
     genElStr3(s_default_ctx, &correct_scp_program, &arc2, &program_node);
+
+	return SC_RESULT_OK;
 }
 
 scp_result verify_all_scp_programs(sc_memory_context *context)

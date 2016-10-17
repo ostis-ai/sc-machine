@@ -140,7 +140,6 @@ void _sc_iterator_unref_element_addr(const sc_memory_context *ctx, sc_addr addr)
 
 sc_iterator3* sc_iterator3_new(const sc_memory_context *ctx, sc_iterator3_type type, sc_iterator_param p1, sc_iterator_param p2, sc_iterator_param p3)
 {
-	sc_access_levels levels;
     // check types
     if (type >= sc_iterator3_count)
 		return (sc_iterator3*)0;

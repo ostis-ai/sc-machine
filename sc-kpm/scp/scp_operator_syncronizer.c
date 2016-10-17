@@ -36,7 +36,7 @@ scp_result start_next_operator(sc_memory_context *context, scp_operand *scp_oper
 
 scp_result erase_executed_mark(sc_memory_context *context, scp_operand *scp_operator)
 {
-    scp_operand arc1, arc2, arc3, execute_result;
+    scp_operand arc1, arc2, execute_result;
     scp_iterator3 *it;
     MAKE_DEFAULT_ARC_ASSIGN(arc1);
     MAKE_DEFAULT_ARC_ASSIGN(arc2);
@@ -147,6 +147,7 @@ sc_result syncronize_scp_operator(const sc_event *event, sc_addr arg)
     }
     scp_iterator5_free(it);
 
+	return SC_RESULT_OK;
 }
 
 scp_result start_next_operator(sc_memory_context *context, scp_operand *scp_operator, scp_operand *curr_arc)

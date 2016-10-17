@@ -682,11 +682,13 @@ scp_result search_superset_relating_to_given_class(sc_memory_context *context, s
         curr_superset.param_type = SCP_ASSIGN;
     }
     scp_iterator5_free(it1);
+
+	return SCP_TRUE;
 }
 
 scp_result register_scp_based_sc_agent(sc_memory_context *context, scp_operand *agent, scp_operand *program, scp_operand *event_type, scp_operand *event_elem)
 {
-    scp_operand abstract_agent1, abstract_agent2, arc1, arc2, arc3, program_set, init_cond, node1;
+    scp_operand abstract_agent1, abstract_agent2, arc1, arc2, arc3, program_set, init_cond;
     scp_iterator3 *it1;
 
     MAKE_DEFAULT_NODE_ASSIGN(abstract_agent1);
@@ -771,6 +773,8 @@ scp_result goto_unconditional(sc_memory_context *context, scp_operand *scp_opera
     scp_operand arc1;
     MAKE_DEFAULT_ARC_ASSIGN(arc1);
     genElStr3(context, &executed_scp_operator, &arc1, scp_operator_node);
+
+	return SCP_TRUE;
 }
 
 void operator_interpreting_crash(sc_memory_context *context, scp_operand *operator_node)

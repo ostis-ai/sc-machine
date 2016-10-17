@@ -111,7 +111,7 @@ scp_operand op_syncronize;
     {\
         g_warning("Can't find element with system identifier: %s", keynode_str); \
         keynode = sc_memory_node_new(s_default_ctx, 0); \
-        if (sc_helper_set_system_identifier(s_default_ctx, keynode, keynode_str, strlen(keynode_str)) != SC_RESULT_OK) \
+        if (sc_helper_set_system_identifier(s_default_ctx, keynode, keynode_str, (sc_uint32)strlen(keynode_str)) != SC_RESULT_OK) \
             return SCP_RESULT_ERROR; \
         g_message("Created element with system identifier: %s", keynode_str); \
     }
