@@ -11,8 +11,8 @@ inline std::string DebugPrint(char t);
 template <typename U, typename V> inline std::string DebugPrint(std::pair<U, V> const & p);
 template <typename T> inline std::string DebugPrint(std::list<T> const & v);
 template <typename T> inline std::string DebugPrint(std::vector<T> const & v);
-template <typename T, typename C = less<T>> inline std::string DebugPrint(std::set<T, C> const & v);
-template <typename T, typename C = less<T>> inline std::string DebugPrint(std::multiset<T, C> const & v);
+template <typename T, typename C = std::less<T>> inline std::string DebugPrint(std::set<T, C> const & v);
+template <typename T, typename C = std::less<T>> inline std::string DebugPrint(std::multiset<T, C> const & v);
 template <typename U, typename V, typename C = std::less<U>> inline std::string DebugPrint(std::map<U, V, C> const & v);
 template <typename T> inline std::string DebugPrint(std::initializer_list<T> const & v);
 

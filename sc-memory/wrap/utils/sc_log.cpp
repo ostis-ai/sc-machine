@@ -44,7 +44,10 @@ void ScLog::Message(ScLog::eType type, std::string const & msg)
 		std::tm tm = *std::localtime(&t);
 
 		std::stringstream ss;
-		ss << std::put_time(&tm, "[%H:%M:%S]: ") << msg << std::endl;
+		ss << "[" << std::setw(2) << std::setfill('0') << tm.tm_hour
+		   << ":" << std::setw(2) << std::setfill('0') << tm.tm_min
+		   << ":" << std::setw(2) << std::setfill('0') << tm.tm_sec << "]: "
+		   << msg << std::endl;
 
 		std::cout << ss.str();
 		m_file_stream << ss.str();

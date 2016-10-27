@@ -9,22 +9,13 @@
 #include "../wrap/sc_utils.hpp"
 #include "../wrap/sc_debug.hpp"
 
-#include <conio.h>
 #include <iostream>
-
-#define WAIT_KEY() \
-{ \
-	std::cout << "Press any key to exit..." << std::endl; \
-	getch(); \
-}
 
 int main(int argc, char ** argv) try
 {
 	utils::ScLog::GetInstance()->Initialize("test_wrap.log");
 	test::TestUnit::RunAll();
 	utils::ScLog::GetInstance()->Shutdown();
-	
-	WAIT_KEY();
 
 	return 0;
 }
