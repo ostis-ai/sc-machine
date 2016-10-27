@@ -308,16 +308,16 @@ void Class::GenerateDeclarations(std::stringstream & outCode) const
 		/// TODO: Use common log system
 		if (isActionAgent)
 		{
-			outCode << "\\\n            std::cout << \"[info] Register agent " << m_displayName << " to action " << m_metaData.GetNativeString(Props::AgentCommandClass) << "\" << std::endl; ";
+			outCode << "\\\n            SC_LOG_INFO(\"Register agent " << m_displayName << " to action " << m_metaData.GetNativeString(Props::AgentCommandClass) << "\");";
 		}
 		else
 		{
-			outCode << "\\\n            std::cout << \"[info] Register agent " << m_displayName << "\" << std::endl; ";
+			outCode << "\\\n            SC_LOG_INFO(\"Register agent " << m_displayName << "\");";
 		}
 		outCode << "\\\n        }";
 		outCode << "\\\n        else";
 		outCode << "\\\n        {";
-		outCode << "\\\n            std::cout << \"[error] Can't register agent " << m_displayName << "\" << std::endl; ";
+		outCode << "\\\n            SC_LOG_ERROR(\" Can't register agent " << m_displayName << "\");";
 		outCode << "\\\n        }";
 	
 		outCode << "\\\n	}";

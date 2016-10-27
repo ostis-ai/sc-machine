@@ -8,6 +8,7 @@
 
 #include "wrap/sc_object.hpp"
 #include "wrap/sc_memory.hpp"
+#include "wrap/utils/sc_log.hpp"
 #include "wrap/generated/sc_agent.generated.hpp"
 
 #define KPM_COMMAND_AGENT		0
