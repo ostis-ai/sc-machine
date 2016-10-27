@@ -28,17 +28,17 @@
 #define SC_SEGMENT_CACHE_SIZE  32   // size of segments cache
 
 #if defined (SC_MEMORY_SELF_BUILD)
-	#if defined (SC_PLATFORM_WIN)
-		#define _SC_EXTERN __declspec(dllexport) 
-	#else
-		#define _SC_EXTERN
-	#endif
+    #if defined (SC_PLATFORM_WIN)
+        #define _SC_EXTERN __declspec(dllexport) 
+    #else
+        #define _SC_EXTERN
+    #endif
 #else
-	#if defined (SC_PLATFORM_WIN)
+    #if defined (SC_PLATFORM_WIN)
         #define _SC_EXTERN __declspec(dllimport)
-	#else
-		#define _SC_EXTERN
-	#endif
+    #else
+        #define _SC_EXTERN
+    #endif
 #endif
 
 #if defined (SC_PLATFORM_WIN)
@@ -48,7 +48,7 @@
 #       define _SC_EXT_EXTERN __declspec(dllexport)
 #   endif
 #else
-	#define _SC_EXT_EXTERN
+    #define _SC_EXT_EXTERN
 #endif
 
 

@@ -48,7 +48,7 @@ sc_bool sc_element_ref(sc_element_meta *element)
     if (element->ref_count == G_MAXUINT32)
         return SC_FALSE;
 
-	element->ref_count++;
+    element->ref_count++;
     return SC_TRUE;
 }
 

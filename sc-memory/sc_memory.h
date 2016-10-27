@@ -123,7 +123,7 @@ _SC_EXTERN sc_result sc_memory_get_arc_end(sc_memory_context const * ctx, sc_add
  * but this one do this work faster.
  */
 _SC_EXTERN sc_result sc_memory_get_arc_info(sc_memory_context const * ctx, sc_addr addr,	
-											sc_addr * result_start_addr, sc_addr * result_end_addr);
+                                            sc_addr * result_start_addr, sc_addr * result_end_addr);
 
 /*! Setup content data for specified sc-link
  * @param addr sc-addr of sc-link to setup content

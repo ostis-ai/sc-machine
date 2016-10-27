@@ -197,11 +197,11 @@ sc_bool sc_storage_is_initialized()
 sc_bool sc_storage_is_element(const sc_memory_context *ctx, sc_addr addr)
 {
     sc_element *el = 0;
-	sc_bool res = SC_TRUE;
+    sc_bool res = SC_TRUE;
     
-	if (sc_storage_element_lock(ctx, addr, &el) != SC_RESULT_OK)
+    if (sc_storage_element_lock(ctx, addr, &el) != SC_RESULT_OK)
         return SC_FALSE;
-	    
+        
     if (el->flags.type == 0 || (el->flags.type & sc_flag_request_deletion))
         res = SC_FALSE;
 
@@ -212,7 +212,7 @@ sc_bool sc_storage_is_element(const sc_memory_context *ctx, sc_addr addr)
 
 sc_element* sc_storage_append_el_into_segments(const sc_memory_context *ctx, sc_element *element, sc_addr *addr)
 {
-	sc_segment * seg = (sc_segment*)0x1;
+    sc_segment * seg = (sc_segment*)0x1;
 
     g_assert( addr != 0 );
     SC_ADDR_MAKE_EMPTY(*addr);
@@ -556,7 +556,7 @@ sc_result sc_storage_element_free(const sc_memory_context *ctx, sc_addr addr)
 
         sc_event_emit(addr, el_access, SC_EVENT_REMOVE_ELEMENT, addr);
 
-		// remove registered events before deletion
+        // remove registered events before deletion
         sc_event_notify_element_deleted(addr);
     }
 
@@ -758,11 +758,11 @@ sc_addr sc_storage_arc_new_ext(const sc_memory_context *ctx, sc_type type, sc_ad
 sc_result sc_storage_get_element_type(const sc_memory_context *ctx, sc_addr addr, sc_type *result)
 {
     sc_element *el = null_ptr;
-	sc_result r = SC_RESULT_OK;
+    sc_result r = SC_RESULT_OK;
 
     if (sc_storage_element_lock(ctx, addr, &el) != SC_RESULT_OK)
         return SC_RESULT_ERROR;
-	    
+        
     if (sc_element_is_valid(el) == SC_FALSE)
     {
         r = SC_RESULT_ERROR_INVALID_STATE;
@@ -784,7 +784,7 @@ sc_result sc_storage_get_element_type(const sc_memory_context *ctx, sc_addr addr
 sc_result sc_storage_change_element_subtype(const sc_memory_context *ctx, sc_addr addr, sc_type type)
 {
     sc_element *el = null_ptr;
-	sc_result r = SC_RESULT_OK;
+    sc_result r = SC_RESULT_OK;
 
     if (type & sc_type_element_mask)
         return SC_RESULT_ERROR_INVALID_PARAMS;
@@ -813,11 +813,11 @@ sc_result sc_storage_change_element_subtype(const sc_memory_context *ctx, sc_add
 sc_result sc_storage_get_arc_begin(const sc_memory_context *ctx, sc_addr addr, sc_addr *result)
 {
     sc_element *el = null_ptr;
-	sc_result res = SC_RESULT_ERROR_INVALID_TYPE;
+    sc_result res = SC_RESULT_ERROR_INVALID_TYPE;
 
     if (sc_storage_element_lock(ctx, addr, &el) != SC_RESULT_OK)
         return SC_RESULT_ERROR;
-	    
+        
     if (sc_element_is_valid(el) == SC_FALSE)
     {
         res = SC_RESULT_ERROR_INVALID_STATE;
@@ -844,7 +844,7 @@ sc_result sc_storage_get_arc_begin(const sc_memory_context *ctx, sc_addr addr, s
 sc_result sc_storage_get_arc_end(const sc_memory_context *ctx, sc_addr addr, sc_addr *result)
 {
     sc_element *el = null_ptr;
-	sc_result res = SC_RESULT_ERROR_INVALID_TYPE;
+    sc_result res = SC_RESULT_ERROR_INVALID_TYPE;
 
     if (sc_storage_element_lock(ctx, addr, &el) != SC_RESULT_OK)
         return SC_RESULT_ERROR;
@@ -874,43 +874,43 @@ sc_result sc_storage_get_arc_end(const sc_memory_context *ctx, sc_addr addr, sc_
 
 sc_result sc_storage_get_arc_info(sc_memory_context const * ctx, sc_addr addr, sc_addr * result_begin_addr, sc_addr * result_end_addr)
 {
-	sc_element *el = null_ptr;
-	sc_result res = SC_RESULT_ERROR_INVALID_TYPE;
+    sc_element *el = null_ptr;
+    sc_result res = SC_RESULT_ERROR_INVALID_TYPE;
 
-	if (sc_storage_element_lock(ctx, addr, &el) != SC_RESULT_OK)
-		return SC_RESULT_ERROR;
+    if (sc_storage_element_lock(ctx, addr, &el) != SC_RESULT_OK)
+        return SC_RESULT_ERROR;
 
-	if (sc_element_is_valid(el) == SC_FALSE)
-	{
-		res = SC_RESULT_ERROR_INVALID_STATE;
-		goto unlock;
-	}
+    if (sc_element_is_valid(el) == SC_FALSE)
+    {
+        res = SC_RESULT_ERROR_INVALID_STATE;
+        goto unlock;
+    }
 
-	if (sc_access_lvl_check_read(ctx->access_levels, el->flags.access_levels))
-	{
-		if (el->flags.type & sc_type_arc_mask)
-		{
-			*result_begin_addr = el->arc.begin;
-			*result_end_addr = el->arc.end;
-			res = SC_RESULT_OK;
-		}
-	}
-	else
-		res = SC_RESULT_ERROR_NO_READ_RIGHTS;
+    if (sc_access_lvl_check_read(ctx->access_levels, el->flags.access_levels))
+    {
+        if (el->flags.type & sc_type_arc_mask)
+        {
+            *result_begin_addr = el->arc.begin;
+            *result_end_addr = el->arc.end;
+            res = SC_RESULT_OK;
+        }
+    }
+    else
+        res = SC_RESULT_ERROR_NO_READ_RIGHTS;
 
 unlock:
-	{
-		sc_storage_element_unlock(ctx, addr);
-	}
-	return res;
+    {
+        sc_storage_element_unlock(ctx, addr);
+    }
+    return res;
 }
 
 sc_result sc_storage_set_link_content(const sc_memory_context *ctx, sc_addr addr, const sc_stream *stream)
 {
     sc_element *el;
-	sc_check_sum check_sum;
-	sc_result result = SC_RESULT_ERROR;
-	sc_access_levels access_lvl;
+    sc_check_sum check_sum;
+    sc_result result = SC_RESULT_ERROR;
+    sc_access_levels access_lvl;
 
     if (sc_storage_element_lock(ctx, addr, &el) != SC_RESULT_OK)
         return SC_RESULT_ERROR;
@@ -923,7 +923,7 @@ sc_result sc_storage_set_link_content(const sc_memory_context *ctx, sc_addr addr
 
     g_assert(stream != null_ptr);
 
-	access_lvl = el->flags.access_levels;
+    access_lvl = el->flags.access_levels;
     if (!sc_access_lvl_check_write(ctx->access_levels, access_lvl))
     {
         result = SC_RESULT_ERROR_NO_WRITE_RIGHTS;
@@ -981,7 +981,7 @@ sc_result sc_storage_set_link_content(const sc_memory_context *ctx, sc_addr addr
     }
     g_assert(result == SC_RESULT_OK);
 
-	sc_event_emit(addr, access_lvl, SC_EVENT_CONTENT_CHANGED, addr);
+    sc_event_emit(addr, access_lvl, SC_EVENT_CONTENT_CHANGED, addr);
 
     unlock:
     {
@@ -994,7 +994,7 @@ sc_result sc_storage_set_link_content(const sc_memory_context *ctx, sc_addr addr
 sc_result sc_storage_get_link_content(const sc_memory_context *ctx, sc_addr addr, sc_stream **stream)
 {
     sc_element *el = null_ptr;
-	sc_result res = SC_RESULT_ERROR;
+    sc_result res = SC_RESULT_ERROR;
 
     if (sc_storage_element_lock(ctx, addr, &el) != SC_RESULT_OK)
         return SC_RESULT_ERROR;
@@ -1108,18 +1108,18 @@ sc_result sc_storage_find_links_with_content(const sc_memory_context *ctx, const
 sc_result sc_storage_set_access_levels(const sc_memory_context *ctx, sc_addr addr, sc_access_levels access_levels, sc_access_levels * new_value)
 {
     sc_element *el = 0;
-	sc_result r = SC_RESULT_OK;
+    sc_result r = SC_RESULT_OK;
 
     if (sc_storage_element_lock(ctx, addr, &el) != SC_RESULT_OK)
         return SC_RESULT_ERROR;
-	    
+        
     if (sc_access_lvl_check_write(ctx->access_levels, el->flags.access_levels))
     {
         el->flags.access_levels = sc_access_lvl_min(ctx->access_levels, access_levels);
         if (new_value)
             *new_value = el->flags.access_levels;
     }
-	else
+    else
         r = SC_RESULT_ERROR_NO_WRITE_RIGHTS;
 
     STORAGE_CHECK_CALL(sc_storage_element_unlock(ctx, addr));
@@ -1130,7 +1130,7 @@ sc_result sc_storage_set_access_levels(const sc_memory_context *ctx, sc_addr add
 sc_result sc_storage_get_access_levels(const sc_memory_context *ctx, sc_addr addr, sc_access_levels * result)
 {
     sc_element *el = null_ptr;
-	sc_result r = SC_RESULT_OK;
+    sc_result r = SC_RESULT_OK;
 
     if (sc_storage_element_lock(ctx, addr, &el) != SC_RESULT_OK)
         return SC_RESULT_ERROR;
@@ -1139,7 +1139,7 @@ sc_result sc_storage_get_access_levels(const sc_memory_context *ctx, sc_addr add
     {
         *result = el->flags.access_levels;
     }
-	else
+    else
         r = SC_RESULT_ERROR_NO_READ_RIGHTS;
 
     STORAGE_CHECK_CALL(sc_storage_element_unlock(ctx, addr));
@@ -1174,7 +1174,7 @@ unsigned int sc_storage_get_segments_count()
 sc_result sc_storage_erase_element_from_segment(sc_addr addr)
 {
     sc_segment_erase_element(g_atomic_pointer_get(&segments[addr.seg]), addr.offset);
-	return SC_RESULT_OK;
+    return SC_RESULT_OK;
 }
 
 // ------------------------------
@@ -1272,5 +1272,5 @@ sc_result sc_storage_save(sc_memory_context const * ctx)
 
     g_mutex_unlock(&s_mutex_save);
 
-	return SC_RESULT_OK;
+    return SC_RESULT_OK;
 }

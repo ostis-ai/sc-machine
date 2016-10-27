@@ -12,8 +12,8 @@
 
 struct _sc_event_pool_worker_data
 {
-	sc_event * evt;
-	sc_addr arg;
+    sc_event * evt;
+    sc_addr arg;
 };
 
 void sc_event_pool_worker(gpointer data, gpointer user_data)
@@ -36,9 +36,9 @@ gpointer sc_event_queue_thread_loop(gpointer data)
     {
         g_rec_mutex_lock(&queue->mutex);
         running = queue->running;
-		sc_event_queue_item *item = null_ptr;
-		if (queue->queue != null_ptr)
-			item = (sc_event_queue_item*)g_queue_pop_head(queue->queue);
+        sc_event_queue_item *item = null_ptr;
+        if (queue->queue != null_ptr)
+            item = (sc_event_queue_item*)g_queue_pop_head(queue->queue);
         g_rec_mutex_unlock(&queue->mutex);
 
         event = 0;
@@ -91,7 +91,7 @@ sc_event_queue* sc_event_queue_new()
     g_rec_mutex_init(&queue->proc_mutex);
     queue->thread = g_thread_new("sc_event_queue thread", sc_event_queue_thread_loop, (gpointer)queue);
     queue->queue = g_queue_new();
-	queue->thread_pool = g_thread_pool_new(sc_event_pool_worker, (gpointer)0, 2 * SC_CONCURRENCY_LEVEL, FALSE, 0);
+    queue->thread_pool = g_thread_pool_new(sc_event_pool_worker, (gpointer)0, 2 * SC_CONCURRENCY_LEVEL, FALSE, 0);
 
     return queue;
 }
@@ -118,16 +118,16 @@ void sc_event_queue_destroy_wait(sc_event_queue *queue)
         g_thread_join(thread);
     }
 
-	if (queue->queue)
-	{
-		g_queue_free(queue->queue);
-		queue->queue = 0;
-	}
-	if (queue->thread_pool)
-	{
-		g_thread_pool_free(queue->thread_pool, TRUE, TRUE);
-		queue->thread_pool = 0;
-	}
+    if (queue->queue)
+    {
+        g_queue_free(queue->queue);
+        queue->queue = 0;
+    }
+    if (queue->thread_pool)
+    {
+        g_thread_pool_free(queue->thread_pool, TRUE, TRUE);
+        queue->thread_pool = 0;
+    }
 }
 
 void sc_event_queue_append(sc_event_queue *queue, sc_event *event, sc_addr arg)

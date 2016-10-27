@@ -26,8 +26,8 @@ struct _sc_event
     fEventCallback callback;
     //! Pointer to callback function, that calls, when subscribed sc-element deleted
     fDeleteCallback delete_callback;
-	//! Reference count (just references from queue)
-	sc_uint32 ref_count;
+    //! Reference count (just references from queue)
+    sc_uint32 ref_count;
 };
 
 

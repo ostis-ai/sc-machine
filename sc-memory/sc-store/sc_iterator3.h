@@ -18,8 +18,8 @@ typedef enum
     sc_iterator3_f_a_a = 0, // output arcs
     sc_iterator3_a_a_f,     // input arcs
     sc_iterator3_f_a_f,     // arcs between two elements
-	sc_iterator3_a_f_a,		// begin and end elements of arc
-	sc_iterator3_count
+    sc_iterator3_a_f_a,		// begin and end elements of arc
+    sc_iterator3_count
 
 } sc_iterator3_type;
 
