@@ -1,0 +1,102 @@
+language: cpp
+
+git:
+  depth: 10
+
+# sudo:required is needed for trusty images
+sudo: required
+dist: trusty
+
+notifications:
+  email: false
+
+branches:
+  only:
+    - master
+    - dev
+
+cache:
+  ccache: true
+  apt: true
+  directories:
+    - test/cache
+
+env:
+  global:
+   - CCACHE_TEMPDIR=/tmp/.ccache-temp
+   - CCACHE_COMPRESS=1
+   - CASHER_TIME_OUT=599 # one second less than 10m to avoid 10m timeout error: https://github.com/Project-OSRM/osrm-backend/issues/2742
+   - JOBS=4
+
+matrix:
+  fast_finish: true
+
+  # We override the compiler names here to yield better ccache behavior, which uses this as key
+  include:
+
+    # Debug Builds
+    - os: linux
+      compiler: "gcc-6-debug"
+      addons: &gcc6
+        apt:
+          sources: ['ubuntu-toolchain-r-test']
+          packages: ['g++-6', 'libglib2.0-dev', 'qt4-qmake', 'libqt4-dev', 'libantlr3c-dev', 'libboost-system-dev', 'libboost-filesystem-dev', 'libboost-program-options-dev', 'libboost-regex-dev', 'make', 'cmake', 'antlr', 'antlr3', 'libhiredis-dev', 'gcc', 'g++', 'qtbase5-dev', 'llvm', 'libcurl4-openssl-dev', 'libclang-dev', 'libboost-regex-dev', 'ccache']
+      env: CCOMPILER='gcc-6' CXXCOMPILER='g++-6' BUILD_TYPE='Debug' COVERAGE=ON
+
+    - os: linux
+      compiler: "clang-3.8-debug"
+      addons: &clang38
+        apt:
+          sources: ['ubuntu-toolchain-r-test']
+          packages: ['libglib2.0-dev', 'qt4-qmake', 'libqt4-dev', 'libantlr3c-dev', 'libboost-system-dev', 'libboost-filesystem-dev', 'libboost-program-options-dev', 'libboost-regex-dev', 'make', 'cmake', 'antlr', 'antlr3', 'libhiredis-dev', 'gcc', 'g++', 'qtbase5-dev', 'llvm', 'libcurl4-openssl-dev', 'libclang-dev', 'libboost-regex-dev', 'ccache']
+      env: CLANG_VERSION='3.8.0' BUILD_TYPE='Debug' #RUN_CLANG_FORMAT=ON
+
+    # Release Builds
+    - os: linux
+      compiler: "gcc-6-release"
+      addons: &gcc6
+        apt:
+          sources: ['ubuntu-toolchain-r-test']
+          packages: ['g++-6', 'libglib2.0-dev', 'qt4-qmake', 'libqt4-dev', 'libantlr3c-dev', 'libboost-system-dev', 'libboost-filesystem-dev', 'libboost-program-options-dev', 'libboost-regex-dev', 'make', 'cmake', 'antlr', 'antlr3', 'libhiredis-dev', 'gcc', 'g++', 'qtbase5-dev', 'llvm', 'libcurl4-openssl-dev', 'libclang-dev', 'libboost-regex-dev', 'ccache']
+      env: CCOMPILER='gcc-6' CXXCOMPILER='g++-6' BUILD_TYPE='Release'
+
+    - os: linux
+      compiler: "clang-3.8-release"
+      addons: &clang38
+        apt:
+          sources: ['ubuntu-toolchain-r-test']
+          packages: ['libglib2.0-dev', 'qt4-qmake', 'libqt4-dev', 'libantlr3c-dev', 'libboost-system-dev', 'libboost-filesystem-dev', 'libboost-program-options-dev', 'libboost-regex-dev', 'make', 'cmake', 'antlr', 'antlr3', 'libhiredis-dev', 'gcc', 'g++', 'qtbase5-dev', 'llvm', 'libcurl4-openssl-dev', 'libclang-dev', 'libboost-regex-dev', 'ccache']
+      env: CLANG_VERSION='3.8.0' BUILD_TYPE='Release' #RUN_CLANG_FORMAT=ON
+
+before_install:
+  - if [[ $(uname -s) == 'Darwin' ]]; then sudo mdutil -i off /; fi;
+  - ccache --max-size=256M  # limiting the cache's size to roughly the previous job's object sizes
+
+install:
+  - |
+  - mkdir build && pushd build
+  - export CC=${CCOMPILER} CXX=${CXXCOMPILER}
+  - cmake .. -DCMAKE_BUILD_TYPE=${BUILD_TYPE} -DENABLE_CCACHE=ON
+  - echo "travis_fold:start:MAKE"
+  - make --jobs=${JOBS}
+  - echo "travis_fold:end:MAKE"
+  - ccache -s
+  - popd
+
+script:
+  # All tests assume to be run from the build directory
+  - pushd bin
+  - echo "travis_fold:start:TEST_CPP"
+  - ./test_wrap
+  - echo "travis_fold:end:TEST_CPP"
+  - popd
+
+after_success:
+  #- |
+  #  if [ -n "${RUN_CLANG_FORMAT}" ]; then
+  #    ./scripts/format.sh # we don't want to fail just yet
+  #  fi
+  - |
+    if [ -n "${COVERAGE}" ]; then
+      bash <(curl -s https://codecov.io/bash)
+    fi
