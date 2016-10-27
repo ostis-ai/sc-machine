@@ -36,7 +36,9 @@ gpointer sc_event_queue_thread_loop(gpointer data)
     {
         g_rec_mutex_lock(&queue->mutex);
         running = queue->running;
-        sc_event_queue_item *item = (sc_event_queue_item*)g_queue_pop_head(queue->queue);
+		sc_event_queue_item *item = null_ptr;
+		if (queue->queue != null_ptr)
+			item = (sc_event_queue_item*)g_queue_pop_head(queue->queue);
         g_rec_mutex_unlock(&queue->mutex);
 
         event = 0;
