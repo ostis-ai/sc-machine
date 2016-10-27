@@ -118,7 +118,6 @@ int main(int argc, char *argv[])
         po::notify(cmdLine);
 
 		std::string const appName = argv[0];
-        std::cout << appName << std::endl;
         parse(appName, cmdLine);
     }
     catch (std::exception &e) 
