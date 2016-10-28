@@ -11,6 +11,6 @@ cd sc-machine
 ./scripts/install_deps_ubuntu.sh
 mkdir build
 cd build
-cmake .. -DCMAKE_BUILD_TYPE=Release # use Debug gor debug build
+cmake .. -DCMAKE_BUILD_TYPE=Release # use Debug for debug build
 make
 ```
