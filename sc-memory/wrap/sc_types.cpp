@@ -1,7 +1,12 @@
 #include "sc_types.hpp"
 
+const ScType ScType::EDGE_UCOMMON(sc_type_edge_common);
+const ScType ScType::EDGE_DCOMMON(sc_type_arc_common);
+
 const ScType ScType::EDGE_UCOMMON_CONST(sc_type_edge_common | sc_type_const);
 const ScType ScType::EDGE_DCOMMON_CONST(sc_type_arc_common | sc_type_const);
+
+const ScType ScType::EDGE_ACCESS(sc_type_arc_access);
 const ScType ScType::EDGE_ACCESS_CONST_POS_PERM(sc_type_const | sc_type_arc_access | sc_type_arc_perm | sc_type_arc_pos);
 const ScType ScType::EDGE_ACCESS_CONST_NEG_PERM(sc_type_const | sc_type_arc_access | sc_type_arc_perm | sc_type_arc_neg);
 const ScType ScType::EDGE_ACCESS_CONST_FUZ_PERM(sc_type_const | sc_type_arc_access | sc_type_arc_perm | sc_type_arc_fuz);

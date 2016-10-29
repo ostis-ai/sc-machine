@@ -117,9 +117,14 @@ private:
 	tRealType mRealType;
 
 public:
+    static const ScType EDGE_UCOMMON;
+    static const ScType EDGE_DCOMMON;
 
 	static const ScType EDGE_UCOMMON_CONST;
 	static const ScType EDGE_DCOMMON_CONST;
+
+    static const ScType EDGE_ACCESS;
+
 	static const ScType EDGE_ACCESS_CONST_POS_PERM;
 	static const ScType EDGE_ACCESS_CONST_NEG_PERM;
 	static const ScType EDGE_ACCESS_CONST_FUZ_PERM;
