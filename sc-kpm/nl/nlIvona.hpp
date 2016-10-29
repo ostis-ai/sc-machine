@@ -11,18 +11,18 @@
 
 namespace nl
 {
-	class AIvonaGenerateSpeechAgent : public ScAgentAction
-	{
-		SC_CLASS(Agent, CmdClass("command_generate_speech_from_text"))
-		SC_GENERATED_BODY()
+    class AIvonaGenerateSpeechAgent : public ScAgentAction
+    {
+        SC_CLASS(Agent, CmdClass("command_generate_speech_from_text"))
+        SC_GENERATED_BODY()
 
-	private:
-		SC_PROPERTY(Keynode("format_ogg"), ForceCreation)
-		static ScAddr msFormatOgg;
+    private:
+        SC_PROPERTY(Keynode("format_ogg"), ForceCreate)
+        static ScAddr msFormatOgg;
 
-		SC_PROPERTY(Keynode("nrel_format"), ForceCreation)
-		static ScAddr msNrelFormat;
-	};
+        SC_PROPERTY(Keynode("nrel_format"), ForceCreate)
+        static ScAddr msNrelFormat;
+    };
 
-	void runTest();
+    void runTest();
 }
