@@ -27,6 +27,7 @@ public:
 
     bool ShouldGenerate(void) const;
 	bool IsAgent() const;
+    bool IsActionAgent() const;
 	bool IsModule() const;
 
 	void GenerateCode(std::string const & fileId, std::stringstream & outCode, ReflectionParser * parser) const;

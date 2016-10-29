@@ -139,6 +139,12 @@ bool Class::IsAgent() const
 	return m_metaData.HasProperty(Props::Agent);
 }
 
+bool Class::IsActionAgent() const
+{
+    BaseClass const * agentClass = GetBaseAgentClass();
+    return (agentClass && agentClass->name == Classes::AgentAction);
+}
+
 bool Class::IsModule() const
 {
 	for (tBaseClassVector::const_iterator it = m_baseClasses.begin(); it != m_baseClasses.end(); ++it)
@@ -210,7 +216,7 @@ void Class::GenerateStaticFieldsInitCode(std::stringstream & outCode) const
     }
 
 	// init data specified for an agents
-	if (IsAgent())
+	if (IsActionAgent())
 	{
 		outCode << "\t";
 		Field::GenerateResolveKeynodeCode(m_metaData.GetNativeString(Props::AgentCommandClass),
@@ -231,6 +237,7 @@ void Class::GenerateDeclarations(std::stringstream & outCode) const
 		{
 			EMIT_ERROR("Invalid base class for Agent " << m_displayName);
 		}
+        const bool isActionAgent = IsActionAgent();
 
 		std::string listenAddr;
 		std::string eventType;
@@ -239,8 +246,8 @@ void Class::GenerateDeclarations(std::stringstream & outCode) const
 
 		outCode << "\\\nprivate:";
 		outCode << "\\\n\ttypedef " << agentClass->name << " Super;";
-		bool const isActionAgent = (agentClass->name == Classes::AgentAction);
-		if (isActionAgent)
+
+        if (isActionAgent)
 		{
 			outCode << "\\\n\tvirtual sc_result runImpl(ScAddr const & requestAddr, ScAddr const & resultAddr); ";
 			listenAddr = "GetCommandInitiatedAddr()";
@@ -286,7 +293,10 @@ void Class::GenerateDeclarations(std::stringstream & outCode) const
 		
 		outCode << "\\\nprivate:";
 		outCode << "\\\n	static sc_event * msEventPtr; ";
-		outCode << "\\\n	static ScAddr msCmdClass_" << m_displayName << ";";
+        if (isActionAgent)
+        {
+            outCode << "\\\n	static ScAddr msCmdClass_" << m_displayName << ";";
+        }
 
 		// static function for handler
 		outCode << "\\\npublic: ";
@@ -317,7 +327,7 @@ void Class::GenerateDeclarations(std::stringstream & outCode) const
 		outCode << "\\\n        }";
 		outCode << "\\\n        else";
 		outCode << "\\\n        {";
-		outCode << "\\\n            SC_LOG_ERROR(\" Can't register agent " << m_displayName << "\");";
+		outCode << "\\\n            SC_LOG_ERROR(\"Can't register agent " << m_displayName << "\");";
 		outCode << "\\\n        }";
 	
 		outCode << "\\\n	}";
@@ -363,7 +373,10 @@ void Class::GenerateImpl(std::stringstream & outCode) const
 	if (IsAgent())
 	{
 		outCode << "\\\nsc_event * " << m_displayName << "::msEventPtr = 0;";
-		outCode << "\\\nScAddr " << m_displayName << "::msCmdClass_" << m_displayName << ";";
+        if (IsActionAgent())
+        {
+            outCode << "\\\nScAddr " << m_displayName << "::msCmdClass_" << m_displayName << ";";
+        }
 	}
 }
 
