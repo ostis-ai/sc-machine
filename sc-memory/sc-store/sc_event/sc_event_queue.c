@@ -174,7 +174,10 @@ void sc_event_queue_remove(sc_event_queue *queue, sc_event *event)
         queue->event_process = 0;
     g_rec_mutex_unlock(&queue->proc_mutex);
 
-    g_queue_foreach(queue->queue, _sc_event_queue_item_remove, (gpointer)event);
+    if (queue->queue)
+    {
+        g_queue_foreach(queue->queue, _sc_event_queue_item_remove, (gpointer)event);
+    }
 
     g_rec_mutex_unlock(&queue->mutex);
 
