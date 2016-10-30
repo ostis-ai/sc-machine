@@ -76,13 +76,13 @@ redisContext* connectToRedis()
 
     if (c == 0)
     {
-        g_error("redis: Couldn't connect to server");
+        g_warning("redis: Couldn't connect to server");
         return 0;
     }
 
     if (c != 0 && c->err)
     {
-        g_error("redis: %s", c->errstr);
+        g_warning("redis: %s", c->errstr);
         redisFree(c);
         return 0;
     }
@@ -208,6 +208,8 @@ sc_result utils_collect_identifiers_initialize()
     // connect to redis
     redisCtx = connectToRedis();
 
+    if (!redisCtx)
+        return SC_RESULT_ERROR;
 
     // initialize agents
     event_add_idtf = sc_event_new(s_default_ctx, keynode_nrel_idtf, SC_EVENT_ADD_OUTPUT_ARC, 0, agent_append_idtf, (fDeleteCallback)0);
@@ -249,10 +251,14 @@ sc_result utils_collect_identifiers_shutdown()
     g_mutex_lock(&ci_redis_mutex);
     ping_thread_running = FALSE;
     g_mutex_unlock(&ci_redis_mutex);
-    g_thread_join(ping_thread);
-    ping_thread = 0;
+    if (ping_thread)
+    {
+        g_thread_join(ping_thread);
+        ping_thread = 0;
+    }
 
-    redisFree(redisCtx);
+    if (redisCtx)
+        redisFree(redisCtx);
 
     return SC_RESULT_OK;
 }

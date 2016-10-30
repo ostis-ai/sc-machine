@@ -18,10 +18,6 @@ const char str_key_fm_engine[] = "engine";
 // Maximum number of segments, that can be loaded into memory at one moment
 sc_uint config_max_loaded_segments = G_MAXUINT16;
 
-
-
-
-
 // Hash table, that contains all configuration options: ['<group>/<key>'] = <value>
 GHashTable *values_table = 0;
 
