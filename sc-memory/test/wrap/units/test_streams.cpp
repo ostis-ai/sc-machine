@@ -5,7 +5,7 @@
 */
 
 #include "../test.hpp"
-#include "../../wrap/sc_stream.hpp"
+#include "sc-memory/cpp/sc_stream.hpp"
 
 UNIT_TEST(streams)
 {

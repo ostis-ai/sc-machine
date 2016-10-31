@@ -8,7 +8,7 @@
 
 extern "C"
 {
-#include "sc_memory.h"
+#include "sc-memory/sc_memory.h"
 }
 
 #include <string>

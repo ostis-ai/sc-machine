@@ -150,7 +150,7 @@ elseif (${WIN32})
 
 endif(${UNIX})
 
-include_directories(${SC_MEMORY_SRC} ${GLIB2_INCLUDE_DIRS})
+include_directories(${SC_MACHINE_ROOT} ${GLIB2_INCLUDE_DIRS})
 
 add_subdirectory(sc-memory)
 add_subdirectory(sc-fm)

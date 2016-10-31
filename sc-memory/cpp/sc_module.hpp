@@ -11,7 +11,7 @@
 #include "sc_addr.hpp"
 #include "kpm/sc_agent.hpp"
 
-#include "wrap/generated/sc_module.generated.hpp"
+#include "generated/sc_module.generated.hpp"
 
 class ScModule : public ScObject
 {

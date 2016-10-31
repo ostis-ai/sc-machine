@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include "wrap/kpm/sc_agent.hpp"
+#include "sc-memory/cpp/kpm/sc_agent.hpp"
 
 #include "nlKeynodes.hpp"
 

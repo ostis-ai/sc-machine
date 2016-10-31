@@ -6,8 +6,8 @@
 
 #include "nlIvona.hpp"
 
-#include "wrap/sc_stream.hpp"
-#include "wrap/sc_struct.hpp"
+#include "sc-memory/cpp/sc_stream.hpp"
+#include "sc-memory/cpp/sc_struct.hpp"
 
 #include "hash/hmac.h"
 #include "hash/sha256.h"

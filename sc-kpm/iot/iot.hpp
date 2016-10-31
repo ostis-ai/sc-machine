@@ -7,7 +7,7 @@
 #pragma once
 
 #include "sc_memory.h"
-#include "wrap/sc_module.hpp"
+#include "sc-memory/cpp/sc_module.hpp"
 
 #include "iot.generated.hpp"
 

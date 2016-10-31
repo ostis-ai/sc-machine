@@ -9,7 +9,7 @@
 
 #include <time.h>
 
-#include "wrap/sc_stream.hpp"
+#include "sc-memory/cpp/sc_stream.hpp"
 
 #include "iotActions.hpp"
 

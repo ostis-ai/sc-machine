@@ -5,7 +5,7 @@
 */
 
 #include "../test.hpp"
-#include "../../wrap/sc_wait.hpp"
+#include "sc-memory/cpp/sc_wait.hpp"
 
 namespace
 {

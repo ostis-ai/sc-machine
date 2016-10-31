@@ -7,8 +7,8 @@
 #ifndef _sc_memory_private_h_
 #define _sc_memory_private_h_
 
-#include "sc_element.h"
-#include "sc_types.h"
+#include "sc-store/sc_element.h"
+#include "sc-store/sc_types.h"
 
 struct _sc_memory_context
 {

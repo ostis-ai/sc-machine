@@ -7,7 +7,6 @@
 #include "sc_memory.h"
 #include "sc_memory_version.h"
 #include "sc_memory_private.h"
-#include "sc_element.h"
 #include "sc-store/sc_storage.h"
 #include "sc-store/sc_element.h"
 #include "sc_memory_ext.h"

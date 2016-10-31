@@ -7,7 +7,7 @@
 #ifndef _sc_event_queue_h_
 #define _sc_event_queue_h_
 
-#include "sc_types.h"
+#include "../sc_types.h"
 #include <glib.h>
 
 struct _sc_event_queue

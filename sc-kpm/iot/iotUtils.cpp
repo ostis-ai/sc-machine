@@ -7,8 +7,8 @@
 #include "iotUtils.hpp"
 #include "iotKeynodes.hpp"
 
-#include "wrap/sc_memory.hpp"
-#include "wrap/sc_stream.hpp"
+#include "sc-memory/cpp/sc_memory.hpp"
+#include "sc-memory/cpp/sc_stream.hpp"
 
 namespace iot
 {

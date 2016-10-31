@@ -6,9 +6,9 @@
 
 #pragma once
 
-#include "../wrap/sc_types.hpp"
-#include "../wrap/sc_memory.hpp"
-#include "../wrap/sc_debug.hpp"
+#include "sc-memory/cpp/sc_types.hpp"
+#include "sc-memory/cpp/sc_memory.hpp"
+#include "sc-memory/cpp/sc_debug.hpp"
 
 #include <iostream>
 

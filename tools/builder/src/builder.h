@@ -55,12 +55,15 @@ public:
      * @param factory Pointer to translator factory to register
      */
     void registerTranslator(iTranslatorFactory *factory);
+    
     /*! Check if translator for specified file extension exists
      * @param ext File extension to check
      * @param If translator for specified file extension registered, then returns true; otherwise returns false
      */
     bool hasTranslator(const std::string &ext) const;
 
+    bool hasErrors() const;
+    
 protected:
 
 

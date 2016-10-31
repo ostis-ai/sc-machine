@@ -340,7 +340,7 @@ void SCsTranslator::processSentenceLevel1(pANTLR3_BASE_TREE node)
     if (n != pred.npos)
         type = _getArcPreffixType(pred.substr(0, n));
 
-    _addEdge(el_obj, el_subj, type, false, pred);
+    _addEdge(el_obj, el_subj, type, false, pred.substr(n + 1, pred.size() - n - 1));
 }
 
 void SCsTranslator::processSentenceLevel2_7(pANTLR3_BASE_TREE node)
@@ -438,7 +438,6 @@ sc_addr SCsTranslator::resolveScAddr(sElement *el)
     // generate addr
     addr = createScAddr(el);
 
-
     // store in addrs map
     if (!el->idtf.empty())
     {
@@ -467,7 +466,9 @@ sc_addr SCsTranslator::createScAddr(sElement *el)
     SC_ADDR_MAKE_EMPTY(addr);
 
     if (el->type & sc_type_node)
+    {
         addr = sc_memory_node_new(mContext, el->type);
+    }
     else if (el->type & sc_type_link)
     {
         addr = sc_memory_link_new(mContext);
@@ -642,7 +643,9 @@ sElement* SCsTranslator::parseElementTree(pANTLR3_BASE_TREE tree, const String *
 
     sElement *res = 0;
     if (tok->type == ID_SYSTEM)
+    {
         res = _addNode(GET_NODE_TEXT(tree));
+    }
 
     if (tok->type == SEP_LPAR)
     {

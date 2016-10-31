@@ -63,5 +63,5 @@ int main(int argc, char *argv[])
     builder.initialize();
     builder.run(params);
 
-    return 0;
+    return builder.hasErrors() ? EXIT_SUCCESS : EXIT_FAILURE;
 }

@@ -7,8 +7,8 @@
 #include <stdio.h>
 extern "C"
 {
-#include "sc_memory_headers.h"
-#include "sc-store/sc_store.h"
+#include "sc-memory/sc_memory_headers.h"
+#include "sc-memory/sc-store/sc_store.h"
 }
 #include <vector>
 #include <limits>

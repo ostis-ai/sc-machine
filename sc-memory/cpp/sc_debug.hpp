@@ -3,7 +3,7 @@
 #include "utils/sc_log.hpp"
 #include "utils/sc_message.hpp"
 
-#include "../sc_utils.hpp"
+#include "sc_utils.hpp"
 
 namespace utils
 {
