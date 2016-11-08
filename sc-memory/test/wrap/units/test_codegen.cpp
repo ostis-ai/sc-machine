@@ -36,12 +36,3 @@ UNIT_TEST(codegen_keynodes)
 	SC_CHECK(ctx.helperFindBySystemIdtf("test_keynode_force", addrForce), ());
 	SC_CHECK_EQUAL(addrForce, obj1.mTestKeynodeForce, ());
 }
-
-UNIT_TEST(codegen_agent)
-{
-	ScMemoryContext ctx(sc_access_lvl_make_min);
-
-	SC_AGENT_REGISTER(TestAgent)
-
-	SC_AGENT_UNREGISTER(TestAgent)
-}
