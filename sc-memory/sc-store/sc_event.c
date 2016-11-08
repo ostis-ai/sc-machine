@@ -90,6 +90,9 @@ sc_result remove_event_from_table(sc_event *event)
 
 sc_event* sc_event_new(sc_memory_context const * ctx, sc_addr el, sc_event_type type, sc_pointer data, fEventCallback callback, fDeleteCallback delete_callback)
 {
+    if (SC_ADDR_IS_EMPTY(el))
+        return null_ptr;
+
     sc_access_levels levels;
     sc_event *event = null_ptr;
     if (sc_storage_get_access_levels(ctx, el, &levels) != SC_RESULT_OK || !sc_access_lvl_check_read(ctx->access_levels, levels))
