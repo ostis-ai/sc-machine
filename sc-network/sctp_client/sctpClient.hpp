@@ -6,9 +6,9 @@
 
 #pragma once
 
-#include "wrap/sc_addr.hpp"
-#include "wrap/sc_stream.hpp"
-#include "wrap/sc_utils.hpp"
+#include "sc-memory/cpp/sc_addr.hpp"
+#include "sc-memory/cpp/sc_stream.hpp"
+#include "sc-memory/cpp/sc_utils.hpp"
 
 #include "sctpTypes.hpp"
 #include "sctpISocket.hpp"

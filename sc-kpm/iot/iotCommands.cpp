@@ -11,7 +11,7 @@
 #include "iotSpeech.hpp"
 #include "iotTV.hpp"
 
-#include "wrap/sc_memory.hpp"
+#include "sc-memory/cpp/sc_memory.hpp"
 
 sc_event * event_device_group_enable_command = 0;
 

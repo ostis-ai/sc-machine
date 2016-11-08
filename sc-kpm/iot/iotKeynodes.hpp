@@ -6,8 +6,8 @@
 
 #pragma once
 
-#include "wrap/sc_addr.hpp"
-#include "wrap/sc_object.hpp"
+#include "sc-memory/cpp/sc_addr.hpp"
+#include "sc-memory/cpp/sc_object.hpp"
 
 #include "iotKeynodes.generated.hpp"
 

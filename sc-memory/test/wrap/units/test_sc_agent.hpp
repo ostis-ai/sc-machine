@@ -6,9 +6,9 @@
 
 #pragma once
 
-#include "wrap/sc_addr.hpp"
-#include "wrap/sc_object.hpp"
-#include "wrap/kpm/sc_agent.hpp"
+#include "sc-memory/cpp/sc_addr.hpp"
+#include "sc-memory/cpp/sc_object.hpp"
+#include "sc-memory/cpp/kpm/sc_agent.hpp"
 
 #include "test_sc_agent.generated.hpp"
 

@@ -6,8 +6,8 @@
 
 #include "test.hpp"
 
-#include "../wrap/sc_utils.hpp"
-#include "../wrap/sc_debug.hpp"
+#include "sc-memory/cpp/sc_utils.hpp"
+#include "sc-memory/cpp/sc_debug.hpp"
 
 #include <iostream>
 

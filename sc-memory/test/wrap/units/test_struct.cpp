@@ -5,7 +5,7 @@
 */
 
 #include "../test.hpp"
-#include "../../wrap/sc_struct.hpp"
+#include "sc-memory/cpp/sc_struct.hpp"
 
 UNIT_TEST(struct_common)
 {

@@ -7,7 +7,7 @@
 #pragma once
 
 #include "../sctpISocket.hpp"
-#include "sc-store/sc_defines.h"
+#include "sc-memory/sc-store/sc_defines.h"
 
 #define WIN32_LEAN_AND_MEAN
 

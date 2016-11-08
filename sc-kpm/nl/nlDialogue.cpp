@@ -4,7 +4,7 @@
 * (See accompanying file COPYING.MIT or copy at http://opensource.org/licenses/MIT)
 */
 
-#include "wrap/sc_wait.hpp"
+#include "sc-memory/cpp/sc_wait.hpp"
 #include "nlDialogue.hpp"
 
 namespace nl

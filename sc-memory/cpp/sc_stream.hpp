@@ -8,7 +8,7 @@
 
 extern "C"
 {
-#include "sc_memory_headers.h"
+#include "sc-memory/sc_memory_headers.h"
 }
 
 #include "sc_types.hpp"

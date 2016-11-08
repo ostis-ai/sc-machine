@@ -129,6 +129,10 @@ bool Builder::hasTranslator(const std::string &ext) const
 {
     return mTranslatorFactories.find(ext) != mTranslatorFactories.end();
 }
+bool Builder::hasErrors() const
+{
+    return mErrors.size() > 0;
+}
 
 bool Builder::processFile(const String &filename)
 {

@@ -6,10 +6,10 @@
 
 #pragma once
 
-#include "wrap/sc_object.hpp"
-#include "wrap/sc_memory.hpp"
-#include "wrap/utils/sc_log.hpp"
-#include "wrap/generated/sc_agent.generated.hpp"
+#include "sc-memory/cpp/sc_object.hpp"
+#include "sc-memory/cpp/sc_memory.hpp"
+#include "sc-memory/cpp/utils/sc_log.hpp"
+#include "../generated/sc_agent.generated.hpp"
 
 #define KPM_COMMAND_AGENT		0
 #define KPM_QUESTION_AGENT		1

@@ -5,10 +5,10 @@
  */
 
 #include "sc_event_queue.h"
-#include "sc_event.h"
+#include "../sc_event.h"
 #include "sc_event_private.h"
-#include "sc_storage.h"
-#include "../sc_memory_private.h"
+#include "../sc_storage.h"
+#include "../../sc_memory_private.h"
 
 struct _sc_event_pool_worker_data
 {

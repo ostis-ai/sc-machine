@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include "wrap/sc_addr.hpp"
+#include "sc-memory/cpp/sc_addr.hpp"
 
 #include <string>
 #include <list>
