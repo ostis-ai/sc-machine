@@ -2,9 +2,6 @@
 
 [![Join the chat at https://gitter.im/ostis-dev/sc-machine](https://badges.gitter.im/ostis-dev/sc-machine.svg)](https://gitter.im/ostis-dev/sc-machine?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
-# sc-machine
-Software implementation of sc-machine
-
 # Build status
 **Master:** 
 
