@@ -733,10 +733,11 @@ scp_result register_scp_based_sc_agent(sc_memory_context *context, scp_operand *
     // Search primary init condition for given agent
     if (SCP_TRUE != search_superset_relating_to_given_class(context, &abstract_agent1, &abstract_sc_agent, &abstract_agent2))
         return SCP_FALSE;
+    abstract_agent2.param_type = SCP_FIXED;
     if (SCP_TRUE != searchElStr5(context, &abstract_agent2, &arc3, &init_cond, &arc2, &nrel_primary_initiation_condition))
         return SCP_FALSE;
 
-    init_cond.param_type = SCP_TRUE;
+    init_cond.param_type = SCP_FIXED;
     if (SCP_TRUE != searchElStr3(context, event_type, &init_cond, event_elem))
         return SCP_FALSE;
     event_elem->param_type = SCP_FIXED;
