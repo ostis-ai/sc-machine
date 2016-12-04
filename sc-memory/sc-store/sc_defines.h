@@ -7,6 +7,8 @@
 #ifndef _sc_defines_h_
 #define _sc_defines_h_
 
+#include "sc_platform.h"
+
 #ifdef SC_DEBUG
 # define SC_DEBUG_MODE 1
 #else
@@ -50,6 +52,41 @@
 #else
     #define _SC_EXT_EXTERN
 #endif
+
+// -------------- Deprecation ---------------
+#if (SC_COMPILER == SC_COMPILER_MSVC)
+
+//__declspec(deprecated(__Message))// "Update you code to newest API version " #__Version " or later."))
+#	define _SC_DEPRECATED_IMPL(__Version, __Message) __declspec(deprecated(__Message " Update you code to newest API version " #__Version " or later."))
+
+#	define PRAGMA_DISABLE_DEPRECATION_WARNINGS \
+		__pragma (warning(push)) \
+		__pragma (warning(disable:4995)) \
+		__pragma (warning(disable:4996))
+
+#	define PRAGMA_ENABLE_DEPRECATION_WARNINGS \
+		__pragma (warning(pop))
+
+#elif (SC_COMPILER == SC_COMPILER_CLANG)
+
+#	define _SC_DEPRECATED_IMPL(__Version, __Message) __attribute__((deprecated(__Message "Update you code to newest API version " #__Version " or later.")))
+
+#	define PRAGMA_DISABLE_DEPRECATION_WARNINGS \
+		_Pragma ("clang diagnostic push") \
+		_Pragma ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
+
+#	define PRAGMA_ENABLE_DEPRECATION_WARNINGS
+_Pragma("clang diagnostic pop")
+
+#elif (SC_COMPILER == SC_COMPILER_GNU)
+# define _SC_DEPRECATED_IMPL(__Version, __Message)
+#else
+#	define _SC_DEPRECATED_IMPL(__Version, __Message)
+#endif
+
+
+#define SC_DEPRECATED(__Version, __Message)	_SC_DEPRECATED_IMPL(__Version, __Message)
+
 
 
 #endif // _sc_defines_h_

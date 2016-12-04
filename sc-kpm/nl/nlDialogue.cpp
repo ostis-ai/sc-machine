@@ -13,7 +13,7 @@ namespace nl
     {
         ScAddr dialogueAddr, itemAddr;
         check_expr(dialogueAddr == Keynodes::msMainNLDialogueInstance);
-        mMemoryCtx.getEdgeInfo(argAddr, dialogueAddr, itemAddr);
+        mMemoryCtx.getEdgeInfo(edgeAddr, dialogueAddr, itemAddr);
 
         if (!mMemoryCtx.getElementType(itemAddr).isLink())
             return SC_RESULT_ERROR_INVALID_PARAMS;
@@ -44,9 +44,12 @@ namespace nl
                 mMemoryCtx.createEdge(ScType::EDGE_ACCESS_CONST_POS_PERM, Keynodes::msCommandInitiated, cmdAddr);
                 
                 // wait until command finish
-                ScWaitCondition<ScEventAddInputEdge> waiter(mMemoryCtx, cmdAddr, [this](const ScAddr & addr, const ScAddr & argAddr){
+                ScWaitCondition<ScEventAddInputEdge> waiter(mMemoryCtx, cmdAddr, [this](ScAddr const & addr,
+                                                                                        ScAddr const & edgeAddr,
+                                                                                        ScAddr const & otherAddr)
+                {
                     ScAddr sourceAddr, targetAddr;
-                    if (mMemoryCtx.getEdgeInfo(argAddr, sourceAddr, targetAddr))
+                    if (mMemoryCtx.getEdgeInfo(edgeAddr, sourceAddr, targetAddr))
                         return (targetAddr == Keynodes::msCommandFinished);
 
                     return false;

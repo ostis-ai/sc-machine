@@ -25,7 +25,8 @@ struct _sc_event_queue
 struct _sc_event_queue_item
 {
     sc_event *event;
-    sc_addr arg;
+    sc_addr edge;
+    sc_addr other_el;
 };
 
 typedef struct _sc_event_queue sc_event_queue;
@@ -38,7 +39,7 @@ sc_event_queue* sc_event_queue_new();
 void sc_event_queue_destroy_wait(sc_event_queue *queue);
 
 //! Appends \p event to queue
-void sc_event_queue_append(sc_event_queue *queue, sc_event *event, sc_addr arg);
+void sc_event_queue_append(sc_event_queue *queue, sc_event *event, sc_addr edge, sc_addr other_el);
 
 /*! Removes event from queue. This function removes all events from queue that
  * equal to \p event

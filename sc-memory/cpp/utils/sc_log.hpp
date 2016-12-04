@@ -28,19 +28,13 @@ public:
 	/// TODO: thread safe
 	_SC_EXTERN void Message(eType type, std::string const & msg);
 
-	_SC_EXTERN static ScLog * GetInstance()
-	{
-		if (!ms_instance)
-			return new ScLog();
-
-		return ms_instance;
-	}
-
+    _SC_EXTERN static ScLog * GetInstance();
+	
 private:
 	std::ofstream m_file_stream;
 	eType m_mode;
 
-	static ScLog * ms_instance;
+    static ScLog * ms_instance;
 };
 
 

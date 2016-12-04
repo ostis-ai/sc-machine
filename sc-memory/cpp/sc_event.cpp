@@ -12,19 +12,19 @@
 ScEvent::Type ScEvent::AddOutputEdge = SC_EVENT_ADD_OUTPUT_ARC;
 ScEvent::Type ScEvent::AddInputEdge = SC_EVENT_ADD_INPUT_ARC;
 ScEvent::Type ScEvent::RemoveOutputEdge = SC_EVENT_REMOVE_OUTPUT_ARC;
-ScEvent::Type ScEvent::RemoveInputEdge = SC_EVENT_ADD_INPUT_ARC;
+ScEvent::Type ScEvent::RemoveInputEdge = SC_EVENT_REMOVE_INPUT_ARC;
 ScEvent::Type ScEvent::EraseElement = SC_EVENT_REMOVE_ELEMENT;
 ScEvent::Type ScEvent::ContentChanged = SC_EVENT_CONTENT_CHANGED;
 
 ScEvent::ScEvent(const ScMemoryContext & ctx, const ScAddr & addr, Type eventType)
 {
-	mEvent = sc_event_new(*ctx, *addr, (sc_event_type)eventType, (sc_pointer)this, &ScEvent::_handler, nullptr);
+	mEvent = sc_event_new_ex(*ctx, *addr, (sc_event_type)eventType, (sc_pointer)this, &ScEvent::_handler, nullptr);
 }
 
-ScEvent::ScEvent(const ScMemoryContext & ctx, const ScAddr & addr, Type eventType, ScEvent::tDelegateFunc func)
+ScEvent::ScEvent(const ScMemoryContext & ctx, const ScAddr & addr, Type eventType, ScEvent::DelegateFunc func)
 {
 	mDelegate = func;
-	mEvent = sc_event_new(*ctx, *addr, (sc_event_type)eventType, (sc_pointer)this, &ScEvent::_handler, &ScEvent::_handlerDelete);
+	mEvent = sc_event_new_ex(*ctx, *addr, (sc_event_type)eventType, (sc_pointer)this, &ScEvent::_handler, &ScEvent::_handlerDelete);
 }
 
 ScEvent::~ScEvent()
@@ -35,17 +35,17 @@ ScEvent::~ScEvent()
 
 void ScEvent::removeDelegate()
 {
-	mDelegate = tDelegateFunc();
+	mDelegate = DelegateFunc();
 }
 
-sc_result ScEvent::_handler(sc_event const * evt, sc_addr arg)
+sc_result ScEvent::_handler(sc_event const * evt, sc_addr edge, sc_addr other_el)
 {
 	ScEvent * eventObj = (ScEvent*)sc_event_get_data(evt);
 	check_expr(eventObj != nullptr);
 
 	if (eventObj->mDelegate)
 	{
-		return eventObj->mDelegate(ScAddr(sc_event_get_element(evt)), ScAddr(arg)) ? SC_RESULT_OK : SC_RESULT_ERROR;
+		return eventObj->mDelegate(ScAddr(sc_event_get_element(evt)), ScAddr(edge), ScAddr(other_el)) ? SC_RESULT_OK : SC_RESULT_ERROR;
 	}
 
 	return SC_RESULT_ERROR;
@@ -58,7 +58,6 @@ sc_result ScEvent::_handlerDelete(sc_event const * evt)
 
 	if (eventObj->mEvent)
 	{
-		sc_event_destroy(eventObj->mEvent);
 		eventObj->mEvent = nullptr;
 	}
 

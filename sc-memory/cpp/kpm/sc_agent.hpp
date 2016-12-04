@@ -29,9 +29,7 @@ public:
 	_SC_EXTERN virtual ~ScAgent();
 
 protected:
-	_SC_EXTERN sc_result runNativeEvent(ScAddr const & addr, ScAddr const & );
-
-	_SC_EXTERN virtual sc_result run(ScAddr const & listedAddr, ScAddr const & argAddr);
+	_SC_EXTERN virtual sc_result run(ScAddr const & listenAddr, ScAddr const & edgeAddr, ScAddr const & otherAddr);
 
 protected:
 	ScMemoryContext mMemoryCtx;
@@ -50,7 +48,7 @@ public:
 	_SC_EXTERN virtual ~ScAgentAction();
     	
 protected:
-	_SC_EXTERN virtual sc_result run(ScAddr const & listedAddr, ScAddr const & startArcAddr) override;
+	_SC_EXTERN virtual sc_result run(ScAddr const & listenAddr, ScAddr const & edgeAddr, ScAddr const & otherAddr) override;
 
 	_SC_EXTERN ScAddr getParam(ScAddr const & cmdAddr, ScAddr const & relationAddr, sc_type paramType);
 
@@ -86,7 +84,7 @@ private:
 
 #define SC_AGENT_IMPLEMENTATION(__AgentName__) \
 	SC_COMBINE(ScFileID, _, __AgentName__, _impl) \
-    sc_result __AgentName__::run(ScAddr const & listenAddr, ScAddr const & argAddr)
+    sc_result __AgentName__::run(ScAddr const & listenAddr, ScAddr const & edgeAddr, ScAddr const & otherAddr)
 
 #define SC_AGENT_ACTION_IMPLEMENTATION(__AgentName__) \
 	SC_COMBINE(ScFileID, _, __AgentName__, _impl) \

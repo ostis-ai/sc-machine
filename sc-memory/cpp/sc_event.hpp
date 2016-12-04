@@ -17,7 +17,7 @@
 class ScEvent
 {
 public:
-	typedef std::function<bool(const ScAddr &, const ScAddr &)>	tDelegateFunc;
+    using DelegateFunc = std::function<bool(ScAddr const &, ScAddr const &, ScAddr const &)>;
 
 	typedef uint8_t Type;
 	static Type AddOutputEdge;
@@ -28,7 +28,7 @@ public:
 	static Type ContentChanged;
 
 	explicit _SC_EXTERN ScEvent(const ScMemoryContext & ctx, const ScAddr & addr, Type eventType);
-	explicit _SC_EXTERN ScEvent(const ScMemoryContext & ctx, const ScAddr & addr, Type eventType, tDelegateFunc func);
+	explicit _SC_EXTERN ScEvent(const ScMemoryContext & ctx, const ScAddr & addr, Type eventType, DelegateFunc func);
 	virtual _SC_EXTERN ~ScEvent();
 
 	// Don't allow copying of events
@@ -44,12 +44,12 @@ public:
 	void removeDelegate();
 
 protected:
-	static sc_result _handler(sc_event const * evt, sc_addr arg);
+	static sc_result _handler(sc_event const * evt, sc_addr edge, sc_addr other_el);
 	static sc_result _handlerDelete(sc_event const * evt);
 
 private:
 	sc_event * mEvent;
-	tDelegateFunc mDelegate;
+	DelegateFunc mDelegate;
 };
 
 SHARED_PTR_TYPE(ScEvent);
@@ -59,7 +59,7 @@ class ScEventAddOutputEdge final : public ScEvent
 	friend class ScMemoryContext;
 
 public:
-	_SC_EXTERN ScEventAddOutputEdge(const ScMemoryContext & ctx, const ScAddr & addr, ScEvent::tDelegateFunc func)
+	_SC_EXTERN ScEventAddOutputEdge(const ScMemoryContext & ctx, const ScAddr & addr, ScEvent::DelegateFunc func)
 		: ScEvent(ctx, addr, ScEvent::AddOutputEdge, func)
 	{
 	}
@@ -69,7 +69,7 @@ class ScEventAddInputEdge final : public ScEvent
 {
 	friend class ScMemoryContext;
 public:
-	_SC_EXTERN ScEventAddInputEdge(const ScMemoryContext & ctx, const ScAddr & addr, ScEvent::tDelegateFunc func)
+	_SC_EXTERN ScEventAddInputEdge(const ScMemoryContext & ctx, const ScAddr & addr, ScEvent::DelegateFunc func)
 		: ScEvent(ctx, addr, ScEvent::AddInputEdge, func)
 	{
 	}
@@ -79,7 +79,7 @@ class ScEventRemoveOutputEdge final : public ScEvent
 {
 	friend class ScMemoryContext;
 public:
-	_SC_EXTERN ScEventRemoveOutputEdge(const ScMemoryContext & ctx, const ScAddr & addr, ScEvent::tDelegateFunc func)
+	_SC_EXTERN ScEventRemoveOutputEdge(const ScMemoryContext & ctx, const ScAddr & addr, ScEvent::DelegateFunc func)
 		: ScEvent(ctx, addr, ScEvent::RemoveOutputEdge, func)
 	{
 	}
@@ -89,7 +89,7 @@ class ScEventRemoveInputEdge final : public ScEvent
 {
 	friend class ScMemoryContext;
 public:
-	_SC_EXTERN ScEventRemoveInputEdge(const ScMemoryContext & ctx, const ScAddr & addr, ScEvent::tDelegateFunc func)
+	_SC_EXTERN ScEventRemoveInputEdge(const ScMemoryContext & ctx, const ScAddr & addr, ScEvent::DelegateFunc func)
 		: ScEvent(ctx, addr, ScEvent::RemoveInputEdge, func)
 	{
 	}
@@ -99,7 +99,7 @@ class ScEventEraseElement final : public ScEvent
 {
 	friend class ScMemoryContext;
 public:
-	_SC_EXTERN ScEventEraseElement(const ScMemoryContext & ctx, const ScAddr & addr, ScEvent::tDelegateFunc func)
+	_SC_EXTERN ScEventEraseElement(const ScMemoryContext & ctx, const ScAddr & addr, ScEvent::DelegateFunc func)
 		: ScEvent(ctx, addr, ScEvent::EraseElement, func)
 	{
 	}
@@ -109,7 +109,7 @@ class ScEventContentChanged final : public ScEvent
 {
 	friend class ScMemoryContext;
 public:
-	_SC_EXTERN ScEventContentChanged(const ScMemoryContext & ctx, const ScAddr & addr, ScEvent::tDelegateFunc func)
+	_SC_EXTERN ScEventContentChanged(const ScMemoryContext & ctx, const ScAddr & addr, ScEvent::DelegateFunc func)
 		: ScEvent(ctx, addr, ScEvent::ContentChanged, func)
 	{
 	}
