@@ -82,10 +82,8 @@ struct _sc_element_meta
         sc_element_locks locks; // bits access
         sc_uint8 locks_data; // one byte
     };
-    union
-    {
-        sc_uint32 ref_count;
-    };
+    
+    sc_uint32 ref_count;
 };
 
 struct _sc_element
@@ -108,9 +106,5 @@ sc_bool sc_element_is_checksum_empty(sc_element *element);
 
 sc_bool sc_element_is_request_deletion(sc_element *element);
 sc_bool sc_element_is_valid(sc_element *element);
-
-sc_uint16 sc_element_get_refs(sc_element_meta *element);
-sc_bool sc_element_ref(sc_element_meta *element);
-sc_bool sc_element_unref(sc_element_meta *element);
 
 #endif

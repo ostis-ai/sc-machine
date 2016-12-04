@@ -262,16 +262,13 @@ sc_bool sc_event_unref(sc_event * evt)
 // --------
 sc_bool sc_events_initialize()
 {
-    //g_mutex_init(&events_table_mutex);
     event_queue = sc_event_queue_new();
-
     return SC_TRUE;
 }
 
 void sc_events_shutdown()
 {
     sc_event_queue_destroy_wait(event_queue);
-    //g_mutex_clear(&events_table_mutex);
     event_queue = 0;
 }
 

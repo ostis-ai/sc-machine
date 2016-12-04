@@ -42,20 +42,3 @@ sc_uint16 sc_element_get_refs(sc_element_meta *element)
 {
     return element->ref_count;
 }
-
-sc_bool sc_element_ref(sc_element_meta *element)
-{
-    if (element->ref_count == G_MAXUINT32)
-        return SC_FALSE;
-
-    element->ref_count++;
-    return SC_TRUE;
-}
-
-sc_bool sc_element_unref(sc_element_meta *element)
-{
-    g_assert(element->ref_count > 0);
-    element->ref_count--;
-
-    return (element->ref_count == 0) ? SC_TRUE : SC_FALSE;
-}
