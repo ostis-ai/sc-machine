@@ -162,11 +162,11 @@ namespace
             std::string const dataSha256 = _sha256(strJsonData.GetString());
             
             std::time_t t = std::time(nullptr);
-            std::tm tm = *std::localtime(&t);
+            std::tm tm = *std::gmtime(&t);
 
             std::stringstream dateStampStream;
-            dateStampStream << tm.tm_year
-                            << std::setw(2) << std::setfill('0') << tm.tm_mon
+            dateStampStream << tm.tm_year + 1900
+                            << std::setw(2) << std::setfill('0') << tm.tm_mon + 1
                             << std::setw(2) << std::setfill('0') << tm.tm_mday;
                 
             std::string const dateStamp = dateStampStream.str();
