@@ -30,7 +30,7 @@ gpointer sc_event_queue_thread_loop(gpointer data)
 
     sc_bool running = SC_TRUE;
     sc_event *event = 0;
-    sc_addr arg;
+    sc_addr edge, other_el;
 
     while (running == SC_TRUE || g_queue_get_length(queue->queue) > 0)
     {
@@ -50,11 +50,8 @@ gpointer sc_event_queue_thread_loop(gpointer data)
             if (item->event)
             {
                 event = item->event;
-                arg = item->arg;
-
-                sc_access_levels arg_access;
-                if (sc_storage_get_access_levels(s_memory_default_ctx, arg, &arg_access) != SC_RESULT_OK)
-                    arg_access = sc_access_lvl_make_max;
+                edge = item->edge;
+                other_el = item->other_el;
 
                 g_free(item);
                 break;
@@ -72,7 +69,16 @@ gpointer sc_event_queue_thread_loop(gpointer data)
         queue->event_process = event;
 
         if (queue->event_process)
-            queue->event_process->callback(queue->event_process, arg);
+        {
+            if (queue->event_process->callback != null_ptr)
+            {
+                queue->event_process->callback(queue->event_process, edge);
+            }
+            else if (queue->event_process->callback_ex != null_ptr)
+            {
+                queue->event_process->callback_ex(queue->event_process, edge, other_el);
+            }
+        }
 
         queue->event_process = 0;
         g_rec_mutex_unlock(&queue->proc_mutex);
@@ -130,13 +136,14 @@ void sc_event_queue_destroy_wait(sc_event_queue *queue)
     }
 }
 
-void sc_event_queue_append(sc_event_queue *queue, sc_event *event, sc_addr arg)
+void sc_event_queue_append(sc_event_queue *queue, sc_event *event, sc_addr edge, sc_addr other_el)
 {
     g_assert(queue != 0);
     g_rec_mutex_lock(&queue->mutex);
 
     sc_event_queue_item *item = g_new0(sc_event_queue_item, 1);
-    item->arg = arg;
+    item->edge = edge;
+    item->other_el = other_el;
     item->event = event;
     g_queue_push_tail(queue->queue, (gpointer)item);
 
@@ -156,7 +163,7 @@ void _sc_event_queue_item_remove_by_addr(gpointer _item, gpointer _addr)
 {
     sc_event_queue_item *item = (sc_event_queue_item*)_item;
 
-    if ((SC_ADDR_LOCAL_TO_INT(item->arg) == GPOINTER_TO_UINT(_addr)))
+    if ((SC_ADDR_LOCAL_TO_INT(item->event->element) == GPOINTER_TO_UINT(_addr)))
     {
         sc_event_type t = sc_event_get_type(item->event);
         if (t != SC_EVENT_REMOVE_ELEMENT && t != SC_EVENT_REMOVE_INPUT_ARC && t != SC_EVENT_REMOVE_OUTPUT_ARC)

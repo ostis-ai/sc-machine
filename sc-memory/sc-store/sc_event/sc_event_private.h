@@ -22,8 +22,10 @@ struct _sc_event
     sc_event_type type;
     //! Pointer to user data
     sc_pointer data;
-    //! Pointer to callback function, that calls, when event emited
+    //! Pointer to callback function, that calls on event emit (for backward compatibility)
     fEventCallback callback;
+    //! Pointer to callback function, that calls on event emit
+    fEventCallbackEx callback_ex;
     //! Pointer to callback function, that calls, when subscribed sc-element deleted
     fDeleteCallback delete_callback;
     //! Reference count (just references from queue)
@@ -51,9 +53,11 @@ sc_result sc_event_notify_element_deleted(sc_addr element);
  * @param el sc-addr of element that emitting event
  * @param el_access Acces level of \p el
  * @param type Emitting event type
- * @param arg Argument of emitting event (depend of event type)
+ * @param edge sc-addr of added/remove edge (just for specified events)
+ * @param other_el sc-addr of the second element of edge. If \p el is a source, then \p other_el is a target.
+ * If \p el is a target, then \p other_el is a source.
  * @return If event emitted without any errors, then return SC_OK; otherwise return SC_ERROR code
  */
-sc_result sc_event_emit(sc_addr el, sc_access_levels el_acces, sc_event_type type, sc_addr arg);
+sc_result sc_event_emit(sc_addr el, sc_access_levels el_acces, sc_event_type type, sc_addr edge, sc_addr other_el);
 
 #endif

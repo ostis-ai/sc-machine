@@ -482,7 +482,6 @@ sc_result sc_storage_element_free(const sc_memory_context *ctx, sc_addr addr)
                 sc_element *prev_el_arc = g_hash_table_lookup(lock_table, p_addr);
                 g_assert(prev_el_arc != null_ptr);
                 prev_el_arc->arc.next_out_arc = next_arc;
-
             }
 
             if (SC_ADDR_IS_NOT_EMPTY(next_arc))
@@ -503,7 +502,7 @@ sc_result sc_storage_element_free(const sc_memory_context *ctx, sc_addr addr)
             if (SC_ADDR_IS_EQUAL(addr, b_el->first_out_arc))
                 b_el->first_out_arc = next_arc;
 
-            sc_event_emit(el->arc.begin, b_el->flags.access_levels, SC_EVENT_REMOVE_OUTPUT_ARC, addr);
+            sc_event_emit(el->arc.begin, b_el->flags.access_levels, SC_EVENT_REMOVE_OUTPUT_ARC, addr, el->arc.end);
 
             if (need_unlock)
                 sc_storage_element_unlock(ctx, el->arc.begin);
@@ -538,7 +537,7 @@ sc_result sc_storage_element_free(const sc_memory_context *ctx, sc_addr addr)
             if (SC_ADDR_IS_EQUAL(addr, e_el->first_in_arc))
                 e_el->first_in_arc = next_arc;
 
-            sc_event_emit(el->arc.end, e_el->flags.access_levels, SC_EVENT_REMOVE_INPUT_ARC, addr);
+            sc_event_emit(el->arc.end, e_el->flags.access_levels, SC_EVENT_REMOVE_INPUT_ARC, addr, el->arc.begin);
 
             if (need_unlock)
                 sc_storage_element_unlock(ctx, el->arc.end);
@@ -554,7 +553,9 @@ sc_result sc_storage_element_free(const sc_memory_context *ctx, sc_addr addr)
             el->flags.type |= sc_flag_request_deletion;
         }
 
-        sc_event_emit(addr, el_access, SC_EVENT_REMOVE_ELEMENT, addr);
+        sc_addr empty;
+        SC_ADDR_MAKE_EMPTY(empty);
+        sc_event_emit(addr, el_access, SC_EVENT_REMOVE_ELEMENT, empty, empty);
 
         // remove registered events before deletion
         sc_event_notify_element_deleted(addr);
@@ -707,8 +708,8 @@ sc_addr sc_storage_arc_new_ext(const sc_memory_context *ctx, sc_type type, sc_ad
         g_assert(SC_ADDR_IS_NOT_EQUAL(addr, first_in_arc));
 
         // emit events
-        sc_event_emit(beg, beg_access, SC_EVENT_ADD_OUTPUT_ARC, addr);
-        sc_event_emit(end, end_access, SC_EVENT_ADD_INPUT_ARC, addr);
+        sc_event_emit(beg, beg_access, SC_EVENT_ADD_OUTPUT_ARC, addr, end);
+        sc_event_emit(end, end_access, SC_EVENT_ADD_INPUT_ARC, addr, beg);
 
         // check values
         g_assert(beg_el != null_ptr && end_el != null_ptr);
@@ -981,7 +982,9 @@ sc_result sc_storage_set_link_content(const sc_memory_context *ctx, sc_addr addr
     }
     g_assert(result == SC_RESULT_OK);
 
-    sc_event_emit(addr, access_lvl, SC_EVENT_CONTENT_CHANGED, addr);
+    sc_addr empty;
+    SC_ADDR_MAKE_EMPTY(empty);
+    sc_event_emit(addr, access_lvl, SC_EVENT_CONTENT_CHANGED, empty, empty);
 
     unlock:
     {

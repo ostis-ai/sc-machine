@@ -88,6 +88,7 @@ sc_result remove_event_from_table(sc_event *event)
     return SC_RESULT_OK;
 }
 
+// TODO: remove in 0.4.0
 sc_event* sc_event_new(sc_memory_context const * ctx, sc_addr el, sc_event_type type, sc_pointer data, fEventCallback callback, fDeleteCallback delete_callback)
 {
     if (SC_ADDR_IS_EMPTY(el))
@@ -102,6 +103,36 @@ sc_event* sc_event_new(sc_memory_context const * ctx, sc_addr el, sc_event_type 
     event->element = el;
     event->type = type;
     event->callback = callback;
+    event->delete_callback = delete_callback;
+    event->data = data;
+    event->ctx = ctx;
+
+    g_assert(callback != null_ptr);
+
+    // register created event
+    if (insert_event_into_table(event) != SC_RESULT_OK)
+    {
+        g_free(event);
+        return null_ptr;
+    }
+
+    return event;
+}
+
+sc_event* sc_event_new_ex(sc_memory_context const * ctx, sc_addr el, sc_event_type type, sc_pointer data, fEventCallbackEx callback, fDeleteCallback delete_callback)
+{
+    if (SC_ADDR_IS_EMPTY(el))
+        return null_ptr;
+
+    sc_access_levels levels;
+    sc_event *event = null_ptr;
+    if (sc_storage_get_access_levels(ctx, el, &levels) != SC_RESULT_OK || !sc_access_lvl_check_read(ctx->access_levels, levels))
+        return 0;
+
+    event = g_new0(sc_event, 1);
+    event->element = el;
+    event->type = type;
+    event->callback_ex = callback;
     event->delete_callback = delete_callback;
     event->data = data;
     event->ctx = ctx;
@@ -162,7 +193,7 @@ sc_result sc_event_notify_element_deleted(sc_addr element)
     return SC_RESULT_OK;
 }
 
-sc_result sc_event_emit(sc_addr el, sc_access_levels el_access, sc_event_type type, sc_addr arg)
+sc_result sc_event_emit(sc_addr el, sc_access_levels el_access, sc_event_type type, sc_addr edge, sc_addr other_el)
 {
     GSList *element_events_list = 0;
     sc_event *event = 0;
@@ -181,8 +212,8 @@ sc_result sc_event_emit(sc_addr el, sc_access_levels el_access, sc_event_type ty
 
         if (event->type == type && sc_access_lvl_check_read(event->ctx->access_levels, el_access))
         {
-            g_assert(event->callback != null_ptr);
-            sc_event_queue_append(event_queue, event, arg);
+            g_assert(event->callback != null_ptr || event->callback_ex != null_ptr);
+            sc_event_queue_append(event_queue, event, edge, other_el);
         }
 
         element_events_list = element_events_list->next;
