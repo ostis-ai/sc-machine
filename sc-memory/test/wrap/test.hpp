@@ -43,14 +43,23 @@ private:
 	::test::TestUnit g_test_unit_##__name(#__name, __FILE__, &Test_##__name); \
 	void Test_##__name()
 
+#define _STATUS_COLOR(_expr) ((_expr) ? ScConsole::Color::Green : ScConsole::Color::Red)
 #define _STATUS(_expr)  ((_expr) ? "ok" : "fail")
 
-#define _TEST_IMPL(_check, _expr, _msg) { bool const _v = _expr; std::cout << #_expr << "... "; _check(_expr, _msg); std::cout << _STATUS(_v) << std::endl; }
+#define _TEST_IMPL(_check, _expr, _msg) \
+{ \
+    bool const _v = _expr; \
+    std::cout << #_expr << "... "; \
+    _check(_expr, _msg); \
+    ScConsole::SetColor(STATUS_COLOR(_v)); \
+    std::cout << _STATUS(_v) << std::endl; \
+    ScConsole::ResetColor(); \
+}
 
 #define TEST(_expr, _msg) _TEST_IMPL(CHECK, _expr, _msg)
 #define TEST_NOT(_expr, _msg) _TEST_IMPL(CHECK, !_expr, _msg)
 
 #define SUBTEST_START(_name) SC_LOG_INFO("Test "#_name" ...")
-#define SUBTEST_END SC_LOG_INFO(" ok")
+#define SUBTEST_END SC_LOG_INFO_COLOR(" ok", _STATUS_COLOR(true))
 
 } // namespace test
