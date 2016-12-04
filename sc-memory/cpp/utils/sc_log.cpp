@@ -10,6 +10,14 @@ namespace utils
 
 ScLog * ScLog::ms_instance = nullptr;
 
+ScLog * ScLog::GetInstance()
+{
+    if (!ms_instance)
+        return new ScLog();
+
+    return ms_instance;
+}
+
 ScLog::ScLog()
 	: m_mode(Debug)
 {
