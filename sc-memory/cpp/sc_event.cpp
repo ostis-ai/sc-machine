@@ -12,7 +12,7 @@
 ScEvent::Type ScEvent::AddOutputEdge = SC_EVENT_ADD_OUTPUT_ARC;
 ScEvent::Type ScEvent::AddInputEdge = SC_EVENT_ADD_INPUT_ARC;
 ScEvent::Type ScEvent::RemoveOutputEdge = SC_EVENT_REMOVE_OUTPUT_ARC;
-ScEvent::Type ScEvent::RemoveInputEdge = SC_EVENT_ADD_INPUT_ARC;
+ScEvent::Type ScEvent::RemoveInputEdge = SC_EVENT_REMOVE_INPUT_ARC;
 ScEvent::Type ScEvent::EraseElement = SC_EVENT_REMOVE_ELEMENT;
 ScEvent::Type ScEvent::ContentChanged = SC_EVENT_CONTENT_CHANGED;
 
