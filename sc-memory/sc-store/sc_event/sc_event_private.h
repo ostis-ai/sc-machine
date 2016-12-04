@@ -29,7 +29,7 @@ struct _sc_event
     //! Pointer to callback function, that calls, when subscribed sc-element deleted
     fDeleteCallback delete_callback;
     //! Reference count (just references from queue)
-    sc_uint32 ref_count;
+    volatile sc_uint32 ref_count;
 };
 
 
@@ -59,5 +59,14 @@ sc_result sc_event_notify_element_deleted(sc_addr element);
  * @return If event emitted without any errors, then return SC_OK; otherwise return SC_ERROR code
  */
 sc_result sc_event_emit(sc_addr el, sc_access_levels el_acces, sc_event_type type, sc_addr edge, sc_addr other_el);
+
+/*! Adds new reference into sc_event
+ */
+void sc_event_ref(sc_event * evt);
+
+/*! Remove reference from sc_event
+ * @return If there are no more any references to sc_event, then returns SC_TRUE; otherwise - SC_FALSE
+ */
+sc_bool sc_event_unref(sc_event * evt);
 
 #endif

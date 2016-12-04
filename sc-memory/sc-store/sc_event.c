@@ -245,6 +245,20 @@ sc_addr sc_event_get_element(const sc_event *event)
     return event->element;
 }
 
+void sc_event_ref(sc_event * evt)
+{
+    g_assert(evt != null_ptr);
+    g_assert(g_atomic_int_get(evt->ref_count) > 0);
+
+    g_atomic_int_inc(evt->ref_count);
+}
+
+sc_bool sc_event_unref(sc_event * evt)
+{
+    g_assert(evt != null_ptr);
+    return g_atomic_int_dec_and_test(evt->ref_count) ? SC_TRUE : SC_FALSE;
+}
+
 // --------
 sc_bool sc_events_initialize()
 {
