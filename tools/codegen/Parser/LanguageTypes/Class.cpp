@@ -287,7 +287,7 @@ void Class::GenerateDeclarations(std::stringstream & outCode) const
 			outCode << "\\\nprotected: ";
 			outCode << "\\\n	" << constrCode;
 			outCode << m_displayName << "(char const * name, sc_uint8 accessLvl) : Super(name, accessLvl) {}";
-			outCode << "\\\n	virtual sc_result run(ScAddr const & listedAddr, ScAddr const & argAddr) override; ";
+			outCode << "\\\n	virtual sc_result run(ScAddr const & listenAddr, ScAddr const & edgeAddr, ScAddr const & otherAddr) override; ";
 
 		}
 		
@@ -300,10 +300,10 @@ void Class::GenerateDeclarations(std::stringstream & outCode) const
 
 		// static function for handler
 		outCode << "\\\npublic: ";
-		outCode << "\\\n	static sc_result handler_" << m_displayName << "(sc_event const * event, sc_addr arg) ";
+		outCode << "\\\n	static sc_result handler_" << m_displayName << "(sc_event const * event, sc_addr edge, sc_addr other_el) ";
 		outCode << "\\\n	{";
 		outCode << "\\\n		" << m_displayName << " Instance(" << instConstructParams << "\"" << m_displayName << "\", sc_access_lvl_make_min);";
-		outCode << "\\\n		" << "return Instance.run(ScAddr(sc_event_get_element(event)), ScAddr(arg));";
+		outCode << "\\\n		" << "return Instance.run(ScAddr(sc_event_get_element(event)), ScAddr(edge), ScAddr(other_el));";
 		outCode << "\\\n	}";
 
 		// register/unregister
@@ -311,7 +311,7 @@ void Class::GenerateDeclarations(std::stringstream & outCode) const
 		outCode << "\\\n	{";
 		outCode << "\\\n		check_expr(!msEventPtr); ";
 		outCode << "\\\n		ScMemoryContext ctx(sc_access_lvl_make_min, \"handler_" << m_displayName << "\"); ";
-		outCode << "\\\n		msEventPtr = sc_event_new(ctx.getRealContext(), " << listenAddr << ".getRealAddr(), " << eventType << ", 0, &" << m_displayName << "::handler_" << m_displayName << ", 0);";
+		outCode << "\\\n		msEventPtr = sc_event_new_ex(ctx.getRealContext(), " << listenAddr << ".getRealAddr(), " << eventType << ", 0, &" << m_displayName << "::handler_" << m_displayName << ", 0);";
 		outCode << "\\\n        if (msEventPtr)";
 		outCode << "\\\n        {";
 

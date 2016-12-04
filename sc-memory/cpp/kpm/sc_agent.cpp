@@ -38,7 +38,7 @@ ScAgent::~ScAgent()
 {
 }
 
-sc_result ScAgent::run(ScAddr const & listedAddr, ScAddr const & argAddr)
+sc_result ScAgent::run(ScAddr const & listenAddr, ScAddr const & edgeAddr, ScAddr const & otherAddr)
 {
 	return SC_RESULT_ERROR;
 }
@@ -61,14 +61,16 @@ ScAgentAction::~ScAgentAction()
 {
 }
 
-sc_result ScAgentAction::run(ScAddr const & listenAddr, ScAddr const & startArcAddr)
+sc_result ScAgentAction::run(ScAddr const & listenAddr, ScAddr const & edgeAddr, ScAddr const & otherAddr)
 {
-    ScAddr cmdAddr = mMemoryCtx.getEdgeTarget(startArcAddr);
+    SC_UNUSED(otherAddr);
+
+    ScAddr const cmdAddr = mMemoryCtx.getEdgeTarget(edgeAddr);
 	if (cmdAddr.isValid())
 	{
 		if (mMemoryCtx.helperCheckArc(mCmdClassAddr, cmdAddr, sc_type_arc_pos_const_perm))
 		{
-			mMemoryCtx.eraseElement(startArcAddr);
+			mMemoryCtx.eraseElement(edgeAddr);
             ScAddr progressAddr = mMemoryCtx.createEdge(sc_type_arc_pos_const_perm, msCommandProgressdAddr, cmdAddr);
 			assert(progressAddr.isValid());
             ScAddr resultAddr = mMemoryCtx.createNode(sc_type_const | sc_type_node_struct);

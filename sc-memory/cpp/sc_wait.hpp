@@ -71,7 +71,12 @@ class ScWait
 
 public:
 	explicit ScWait(const ScMemoryContext & ctx, const ScAddr & addr)
-		: mEvent(ctx, addr, std::bind(&ScWait<EventClassT>::OnEvent, this, std::placeholders::_1, std::placeholders::_2))
+        : mEvent(ctx, addr, 
+                 std::bind(&ScWait<EventClassT>::OnEvent,
+                           this, 
+                           std::placeholders::_1, 
+                           std::placeholders::_2, 
+                           std::placeholders::_3))
 	{
 	}
 
@@ -85,9 +90,9 @@ public:
 	}
 
 protected:
-	bool OnEvent(const ScAddr & addr, const ScAddr & arg)
+	bool OnEvent(ScAddr const & listenAddr, ScAddr const & edgeAddr, ScAddr const & otherAddr)
 	{
-		if (OnEventImpl(addr, arg))
+		if (OnEventImpl(listenAddr, edgeAddr, otherAddr))
 		{
 			mWaiterImpl.Resolve();
 			return true;
@@ -95,7 +100,7 @@ protected:
 		return false;
 	}
 
-	virtual bool OnEventImpl(const ScAddr & addr, const ScAddr & arg) { return true; }
+	virtual bool OnEventImpl(ScAddr const & listenAddr, ScAddr const & edgeAddr, ScAddr const & otherAddr) { return true; }
 
 private:
 	EventClassT mEvent;
@@ -108,23 +113,23 @@ class ScWaitCondition final : public ScWait <EventClassT>
 {
 public:
 
-	typedef std::function<bool(const ScAddr &, const ScAddr &)> tDelegateCheckFunc;
+    using DelegateCheckFunc = std::function<bool(ScAddr const &, ScAddr const &, ScAddr const &)>;
 
-	explicit ScWaitCondition(const ScMemoryContext & ctx, const ScAddr & addr, tDelegateCheckFunc func)
+	explicit ScWaitCondition(const ScMemoryContext & ctx, const ScAddr & addr, DelegateCheckFunc func)
         : ScWait<EventClassT>(ctx, addr)
 		, mCheckFunc(func)
 	{
 	}
 
 private:
-	virtual bool OnEventImpl(const ScAddr & addr, const ScAddr & arg) override
+	virtual bool OnEventImpl(ScAddr const & listenAddr, ScAddr const & edgeAddr, ScAddr const & otherAddr) override
 	{
-		return mCheckFunc(addr, arg);
+		return mCheckFunc(listenAddr, edgeAddr, otherAddr);
 	}
 
 private:
-	tDelegateCheckFunc mCheckFunc;
+	DelegateCheckFunc mCheckFunc;
 };
 
-#define SC_WAIT_CHECK(_func) std::bind(_func, std::placeholders::_1, std::placeholders::_2)
-#define SC_WAIT_CHECK_MEMBER(_class, _func) std::bind(_class, _func, std::placeholders::_1, std::placeholders::_2)
+#define SC_WAIT_CHECK(_func) std::bind(_func, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3)
+#define SC_WAIT_CHECK_MEMBER(_class, _func) std::bind(_class, _func, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3)

@@ -67,11 +67,12 @@ UNIT_TEST(waiter)
 		GThread * thread = g_thread_try_new(0, emit_event_thread, (gpointer)&data, 0);
 		SC_CHECK_NOT_EQUAL(thread, nullptr, ());
 
-		auto checkTrue = [](const ScAddr & addr, const ScAddr & arg) {
-			return true;
-		};
-
-		ScWaitCondition<ScEventAddInputEdge> waiter(ctx, addr, SC_WAIT_CHECK(checkTrue));
+        ScWaitCondition<ScEventAddInputEdge> waiter(ctx, addr, [](ScAddr const & listenAddr, 
+                                                                  ScAddr const & edgeAddr,
+                                                                  ScAddr const & otherAddr)
+        {
+            return true;
+        });
 
 		SC_CHECK(waiter.Wait(), ("Waiter timeout"));
 		SC_CHECK(data.mIsDone, ("Waiter finished, but failed"));
@@ -84,11 +85,12 @@ UNIT_TEST(waiter)
 		GThread * thread = g_thread_try_new(0, emit_event_thread, (gpointer)&data, 0);
 		SC_CHECK_NOT_EQUAL(thread, nullptr, ());
 
-		auto checkFalse = [](const ScAddr & addr, const ScAddr & arg) {
-			return false;
-		};
-
-		ScWaitCondition<ScEventAddInputEdge> waiter(ctx, addr, SC_WAIT_CHECK(checkFalse));
+        ScWaitCondition<ScEventAddInputEdge> waiter(ctx, addr, [](ScAddr const & listenAddr,
+                                                                  ScAddr const & edgeAddr,
+                                                                  ScAddr const & otherAddr)
+        {
+            return false;
+        });
 
 		SC_CHECK(!waiter.Wait(), ());
 		SC_CHECK(data.mIsDone, ());

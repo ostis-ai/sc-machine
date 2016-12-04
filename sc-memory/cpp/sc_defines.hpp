@@ -36,5 +36,9 @@
 
 #define SC_OBJECT_INIT_GLOBAL_CALL(__class) __class::initGlobal();
 
+
+// utils
+#define SC_UNUSED(__X) (void)__X
+
 #endif	// __SC_REFLECTION_PARSER__
 
