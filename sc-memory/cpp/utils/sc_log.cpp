@@ -43,7 +43,7 @@ void ScLog::Shutdown()
 	m_file_stream.close();
 }
 
-void ScLog::Message(ScLog::eType type, std::string const & msg)
+void ScLog::Message(ScLog::eType type, std::string const & msg, ScConsole::Color color /*= ScConsole::Color::White*/)
 {
 	if (m_mode <= type)
 	{
@@ -52,12 +52,16 @@ void ScLog::Message(ScLog::eType type, std::string const & msg)
 		std::tm tm = *std::localtime(&t);
 
 		std::stringstream ss;
-		ss << "[" << std::setw(2) << std::setfill('0') << tm.tm_hour
-		   << ":" << std::setw(2) << std::setfill('0') << tm.tm_min
-		   << ":" << std::setw(2) << std::setfill('0') << tm.tm_sec << "]: "
-		   << msg << std::endl;
+        ss << "[" << std::setw(2) << std::setfill('0') << tm.tm_hour
+           << ":" << std::setw(2) << std::setfill('0') << tm.tm_min
+           << ":" << std::setw(2) << std::setfill('0') << tm.tm_sec << "]: ";
+		   
+        ScConsole::SetColor(ScConsole::Color::White);
+        std::cout << ss.str();
+        ScConsole::SetColor(color);
+        std::cout << msg << std::endl;;
+        ScConsole::ResetColor();
 
-		std::cout << ss.str();
 		m_file_stream << ss.str();
 		m_file_stream.flush();
 	}

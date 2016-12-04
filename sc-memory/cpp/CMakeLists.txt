@@ -22,6 +22,7 @@ set (SC_MEMORY_CPP_SOURCES
             "kpm/sc_agent.cpp"
             "utils/sc_log.cpp"
             "utils/sc_message.cpp"
+            "utils/sc_console.cpp"
 
             "sc_memory.hpp"
             "sc_addr.hpp"
@@ -43,6 +44,7 @@ set (SC_MEMORY_CPP_SOURCES
             "kpm/sc_agent.hpp"
             "utils/sc_log.hpp"
             "utils/sc_message.hpp"
+            "utils/sc_console.hpp"
         )
 
 add_library (sc-memory-cpp SHARED ${SC_MEMORY_CPP_SOURCES})

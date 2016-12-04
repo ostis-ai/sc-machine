@@ -186,6 +186,7 @@ UNIT_TEST(templates_common)
 		SC_CHECK(ctx.helperSearchTemplate(templ, result), ());
 		SC_CHECK_GREAT(result.getSize(), 0, ());
 	}
+    SUBTEST_END
 
 	SUBTEST_START(template_tripleWithRelation2)
 	{

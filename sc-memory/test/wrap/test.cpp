@@ -34,7 +34,7 @@ void TestUnit::Run()
 		m_fn();
 
 	ShutdownMemory(false);
-	SC_LOG_INFO("Test " << m_name << " complete");
+	SC_LOG_INFO_COLOR("Test " << m_name << " complete", ScConsole::Color::LightGreen);
 }
 
 void TestUnit::InitMemory()
