@@ -58,7 +58,6 @@ sc_result ScEvent::_handlerDelete(sc_event const * evt)
 
 	if (eventObj->mEvent)
 	{
-		sc_event_destroy(eventObj->mEvent);
 		eventObj->mEvent = nullptr;
 	}
 
