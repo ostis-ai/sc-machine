@@ -358,10 +358,22 @@ public:
 		return empty;
 	}
 
-	size_t getSize() const
+    SC_DEPRECATED(0.3.0, "Use ScTemplateGenResult::size instead")
+	inline size_t getSize() const
 	{
 		return mResult.size();
 	}
+
+    inline size_t size() const
+    {
+        return mResult.size();
+    }
+
+    ScAddr const & operator[] (size_t index)
+    {
+        check_expr(index < size());
+        return mResult[index];
+    }
 
 protected:
 	tAddrVector mResult;
@@ -375,14 +387,15 @@ class ScTemplateSearchResultItem
     friend class ScTemplateSearchResult;
 
 protected:
-    explicit ScTemplateSearchResultItem(tAddrVector const * results, ScTemplate::tReplacementsMap const * replacements) 
+    ScTemplateSearchResultItem(tAddrVector const * results, ScTemplate::tReplacementsMap const * replacements) 
         : mResults(results)
         , mReplacements(replacements)
     {
     }
 
 public:
-    ScAddr const & operator[] (std::string const & name) const
+
+    inline ScAddr const & operator[] (std::string const & name) const
     {
         ScTemplate::tReplacementsMap::const_iterator it = mReplacements->find(name);
         check_expr(it != mReplacements->end());
@@ -390,6 +403,19 @@ public:
         return (*mResults)[it->second];
     }
 
+    inline ScAddr const & operator[] (size_t index) const
+    {
+        check_expr(index < size());
+        return (*mResults)[index];
+    }
+
+    inline size_t size() const
+    {
+        check_expr(mResults != nullptr);
+        return mResults->size();
+    }
+
+    
 protected:
     tAddrVector const * mResults;
     ScTemplate::tReplacementsMap const * mReplacements;
