@@ -17,3 +17,5 @@ cd build
 cmake .. -DCMAKE_BUILD_TYPE=Release # use Debug for debug build
 make
 ```
+
+See [wiki](https://github.com/ostis-dev/sc-machine/wiki) for full documentation.
