@@ -52,7 +52,7 @@ UNIT_TEST(events_threading)
         return nodes[std::rand() % nodes.size()];
     };
 
-    size_t counter = 0;
+    size_t evtCount = 0;
 
     for (size_t i = 0; i < eventsNum; ++i)
     {
@@ -61,12 +61,15 @@ UNIT_TEST(events_threading)
                                 eventTypes[std::rand() % (eventTypes.size() - 1)], // ignore ContentChanged event
                                 [&](ScAddr const &, ScAddr const &, ScAddr const &)
         {
-            counter++;
+            evtCount++;
             return true;
         });
     }
     
     ScTimer timer;
+
+    size_t createEdgeCount = 0;
+    size_t eraseNodeCount = 0;
 
     std::vector<ScAddr> edges;
     edges.reserve(testCount);
@@ -78,20 +81,30 @@ UNIT_TEST(events_threading)
             ScAddr const e = ctx.createEdge(*ScType::EDGE_ACCESS, randNode(), randNode());
             SC_CHECK(e.isValid(), ());
             edges.push_back(e);
-        }
-        else if (v == 1)
-        {
-            if (edges.size() > 0)
-            {
-                size_t const idx = std::rand() % edges.size();
-                ScAddr const e = edges[idx];
-                edges.erase(edges.begin() + idx);
 
-                SC_CHECK(ctx.eraseElement(e), ());
+            createEdgeCount++;
+        }
+        else if (v == 1) // will also erase edges
+        {
+            if (nodes.size() > 2)
+            {
+                size_t const idx = std::rand() % nodes.size();
+                ScAddr const addr = nodes[idx];
+                nodes.erase(nodes.begin() + idx);
+                
+                SC_CHECK(ctx.eraseElement(addr), ());
+                eraseNodeCount++;
             }
         }
     }
 
-    SC_LOG_INFO("Event counter: " << counter);
-    SC_LOG_INFO("Events per second: " << (counter / timer.Seconds()));
+    for (auto e : events)
+        delete e;
+
+    events.clear();
+
+    SC_LOG_INFO("Event counter: " << evtCount);
+    SC_LOG_INFO("Events per second: " << ((float)evtCount / timer.Seconds()));
+    SC_LOG_INFO("Created edges: " << createEdgeCount);
+    SC_LOG_INFO("Erased nodes: " << eraseNodeCount);
 }
