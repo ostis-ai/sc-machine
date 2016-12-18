@@ -208,17 +208,24 @@ sc_event* sc_event_new_ex(sc_memory_context const * ctx, sc_addr el, sc_event_ty
 
 sc_result sc_event_destroy(sc_event * evt)
 {
+    sc_event_lock(evt, evt->ctx);
+    if (evt->ref_count & SC_EVENT_REQUEST_DESTROY)
+    {
+        goto exit;
+    }
+
     if (remove_event_from_table(evt) != SC_RESULT_OK)
         return SC_RESULT_ERROR;
-
-    // trying to set flag SC_EVENT_REQUEST_DESTROY
-    sc_event_lock(evt, evt->ctx);
+        
     evt->ref_count |= SC_EVENT_REQUEST_DESTROY;
     evt->callback = null_ptr;
     evt->callback_ex = null_ptr;
     sc_event_unlock(evt, evt->ctx);
 
-    sc_event_try_free(evt->ctx, evt);
+exit:
+    {
+        sc_event_try_free(evt->ctx, evt);
+    }
     
     return SC_RESULT_OK;
 }
@@ -226,7 +233,7 @@ sc_result sc_event_destroy(sc_event * evt)
 sc_result sc_event_notify_element_deleted(sc_addr element)
 {
     GSList *element_events_list = 0;
-    sc_event *event = 0;
+    sc_event *evt = 0;
 
     EVENTS_TABLE_LOCK
     // do nothing, if there are no registered events
@@ -237,6 +244,19 @@ sc_result sc_event_notify_element_deleted(sc_addr element)
     element_events_list = (GSList*)g_hash_table_lookup(events_table, (gconstpointer)&element);
     if (element_events_list)
     {
+        while (element_events_list != null_ptr)
+        {
+            evt = (sc_event*)element_events_list->data;
+
+            // mark event for deletion
+            sc_event_lock(evt, evt->ctx);
+            evt->ref_count |= SC_EVENT_REQUEST_DESTROY;
+            sc_event_unlock(evt, evt->ctx);
+
+            sc_event_try_free(evt->ctx, evt);
+
+            element_events_list = g_slist_delete_link(element_events_list, element_events_list);
+        }
         g_hash_table_remove(events_table, (gconstpointer)&element);
         g_slist_free(element_events_list);
     }

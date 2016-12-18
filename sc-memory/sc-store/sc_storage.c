@@ -1314,8 +1314,14 @@ sc_bool sc_storage_element_unref(sc_memory_context const * ctx, sc_addr addr)
     sc_bool const no_refs = _sc_storage_ref_common(ctx, addr, -1);
     if (no_refs == SC_TRUE)
     {
+        sc_element * el = null_ptr;
+        if (sc_storage_element_lock(ctx, addr, &el) != SC_RESULT_OK)
+            g_critical("Invalid state of sc-element");
+
         sc_storage_erase_element_from_segment(addr);
         _sc_segment_cache_append(ctx, g_atomic_pointer_get(&segments[addr.seg]));
+
+        sc_storage_element_unlock(ctx, addr);
     }
 
     return no_refs;
