@@ -20,15 +20,14 @@ public:
     using DelegateFunc = std::function<bool(ScAddr const &, ScAddr const &, ScAddr const &)>;
 
 	typedef uint8_t Type;
-	static Type AddOutputEdge;
-	static Type AddInputEdge;
-	static Type RemoveOutputEdge;
-	static Type RemoveInputEdge;
-	static Type EraseElement;
-	static Type ContentChanged;
+    _SC_EXTERN static Type AddOutputEdge;
+    _SC_EXTERN static Type AddInputEdge;
+    _SC_EXTERN static Type RemoveOutputEdge;
+    _SC_EXTERN static Type RemoveInputEdge;
+    _SC_EXTERN static Type EraseElement;
+    _SC_EXTERN static Type ContentChanged;
 
-	explicit _SC_EXTERN ScEvent(const ScMemoryContext & ctx, const ScAddr & addr, Type eventType);
-	explicit _SC_EXTERN ScEvent(const ScMemoryContext & ctx, const ScAddr & addr, Type eventType, DelegateFunc func);
+	explicit _SC_EXTERN ScEvent(const ScMemoryContext & ctx, const ScAddr & addr, Type eventType, DelegateFunc func = DelegateFunc());
 	virtual _SC_EXTERN ~ScEvent();
 
 	// Don't allow copying of events

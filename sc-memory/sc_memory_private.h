@@ -12,7 +12,7 @@
 
 struct _sc_memory_context
 {
-    sc_uint16 id;
+    sc_uint32 id;
     sc_access_levels access_levels;
 };
 

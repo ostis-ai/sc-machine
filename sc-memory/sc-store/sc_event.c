@@ -72,9 +72,13 @@ sc_result remove_event_from_table(sc_event *event)
     // remove event from list of events for specified sc-element
     element_events_list = g_slist_remove(element_events_list, (gconstpointer)event);
     if (element_events_list == null_ptr)
+    {
         g_hash_table_remove(events_table, (gconstpointer)&event->element);
+    }
     else
+    {
         g_hash_table_insert(events_table, (gpointer)&event->element, (gpointer)element_events_list);
+    }
 
     // if there are no more events in table, then delete it
     if (g_hash_table_size(events_table) == 0)
@@ -88,6 +92,51 @@ sc_result remove_event_from_table(sc_event *event)
     return SC_RESULT_OK;
 }
 
+/// -----------------------------------------
+sc_bool _sc_event_try_emit(sc_memory_context const * ctx, sc_event * evt)
+{
+    sc_bool res = SC_TRUE;
+
+    sc_event_lock(evt, ctx);
+    if (evt->ref_count & SC_EVENT_REQUEST_DESTROY)
+    {
+        res = SC_FALSE;
+    }
+    else
+    {
+        g_assert(evt->ref_count < SC_EVENT_REF_COUNT_MASK);
+        evt->ref_count++;
+    }
+
+    sc_event_unlock(evt, ctx);
+    return res;
+}
+
+sc_bool sc_event_try_free(sc_memory_context const * ctx, sc_event * evt)
+{
+    sc_event_lock(evt, ctx);
+    if (evt->ref_count & SC_EVENT_REQUEST_DESTROY)
+    {
+        if ((evt->ref_count & SC_EVENT_REQUEST_DESTROY) == 0)
+            g_critical("Invalid state of event: There are no flag SC_EVENT_REQUEST_DESTROY in event with 0 references. Need to debug");
+
+        evt->ref_count--;
+        sc_uint32 const count = evt->ref_count & SC_EVENT_REF_COUNT_MASK;
+        if (count == 0)
+        {
+            sc_storage_element_unref(ctx, evt->element);
+            if (evt->delete_callback != null_ptr)
+                evt->delete_callback(evt);
+            g_free(evt);
+
+            return SC_TRUE;
+        }
+    }
+
+    sc_event_unlock(evt, ctx);
+    return SC_FALSE;
+}
+
 // TODO: remove in 0.4.0
 sc_event* sc_event_new(sc_memory_context const * ctx, sc_addr el, sc_event_type type, sc_pointer data, fEventCallback callback, fDeleteCallback delete_callback)
 {
@@ -99,6 +148,8 @@ sc_event* sc_event_new(sc_memory_context const * ctx, sc_addr el, sc_event_type 
     if (sc_storage_get_access_levels(ctx, el, &levels) != SC_RESULT_OK || !sc_access_lvl_check_read(ctx->access_levels, levels))
         return 0;
 
+    sc_storage_element_ref(ctx, el);
+
     event = g_new0(sc_event, 1);
     event->element = el;
     event->type = type;
@@ -106,6 +157,8 @@ sc_event* sc_event_new(sc_memory_context const * ctx, sc_addr el, sc_event_type 
     event->delete_callback = delete_callback;
     event->data = data;
     event->ctx = ctx;
+    event->ctx_lock = null_ptr;
+    event->ref_count = 1;
 
     g_assert(callback != null_ptr);
 
@@ -129,6 +182,8 @@ sc_event* sc_event_new_ex(sc_memory_context const * ctx, sc_addr el, sc_event_ty
     if (sc_storage_get_access_levels(ctx, el, &levels) != SC_RESULT_OK || !sc_access_lvl_check_read(ctx->access_levels, levels))
         return 0;
 
+    sc_storage_element_ref(ctx, el);
+
     event = g_new0(sc_event, 1);
     event->element = el;
     event->type = type;
@@ -136,6 +191,8 @@ sc_event* sc_event_new_ex(sc_memory_context const * ctx, sc_addr el, sc_event_ty
     event->delete_callback = delete_callback;
     event->data = data;
     event->ctx = ctx;
+    event->ctx_lock = null_ptr;
+    event->ref_count = 1;
 
     g_assert(callback != null_ptr);
 
@@ -149,15 +206,20 @@ sc_event* sc_event_new_ex(sc_memory_context const * ctx, sc_addr el, sc_event_ty
     return event;
 }
 
-sc_result sc_event_destroy(sc_event *event)
+sc_result sc_event_destroy(sc_event * evt)
 {
-    if (remove_event_from_table(event) != SC_RESULT_OK)
+    if (remove_event_from_table(evt) != SC_RESULT_OK)
         return SC_RESULT_ERROR;
 
-    sc_event_queue_remove(event_queue, event);
+    // trying to set flag SC_EVENT_REQUEST_DESTROY
+    sc_event_lock(evt, evt->ctx);
+    evt->ref_count |= SC_EVENT_REQUEST_DESTROY;
+    evt->callback = null_ptr;
+    evt->callback_ex = null_ptr;
+    sc_event_unlock(evt, evt->ctx);
 
-    g_free(event);
-
+    sc_event_try_free(evt->ctx, evt);
+    
     return SC_RESULT_OK;
 }
 
@@ -166,8 +228,6 @@ sc_result sc_event_notify_element_deleted(sc_addr element)
     GSList *element_events_list = 0;
     sc_event *event = 0;
 
-    sc_event_queue_remove_element(event_queue, element);
-
     EVENTS_TABLE_LOCK
     // do nothing, if there are no registered events
     if (events_table == null_ptr)
@@ -175,14 +235,10 @@ sc_result sc_event_notify_element_deleted(sc_addr element)
 
     // lookup for all registered to specified sc-elemen events
     element_events_list = (GSList*)g_hash_table_lookup(events_table, (gconstpointer)&element);
-
-    // destroy events
-    while (element_events_list != null_ptr)
+    if (element_events_list)
     {
-        event = (sc_event*)element_events_list->data;
-        if (event->delete_callback != null_ptr)
-            event->delete_callback(event);
-        element_events_list = g_slist_delete_link(element_events_list, element_events_list);
+        g_hash_table_remove(events_table, (gconstpointer)&element);
+        g_slist_free(element_events_list);
     }
 
     result:
@@ -193,10 +249,12 @@ sc_result sc_event_notify_element_deleted(sc_addr element)
     return SC_RESULT_OK;
 }
 
-sc_result sc_event_emit(sc_addr el, sc_access_levels el_access, sc_event_type type, sc_addr edge, sc_addr other_el)
+sc_result sc_event_emit(sc_memory_context const * ctx, sc_addr el, sc_access_levels el_access, sc_event_type type, sc_addr edge, sc_addr other_el)
 {
     GSList *element_events_list = 0;
     sc_event *event = 0;
+
+    g_assert(SC_ADDR_IS_NOT_EMPTY(el));
 
     EVENTS_TABLE_LOCK;
 
@@ -210,7 +268,9 @@ sc_result sc_event_emit(sc_addr el, sc_access_levels el_access, sc_event_type ty
     {
         event = (sc_event*)element_events_list->data;
 
-        if (event->type == type && sc_access_lvl_check_read(event->ctx->access_levels, el_access))
+        if (event->type == type &&
+            sc_access_lvl_check_read(event->ctx->access_levels, el_access) &&
+            _sc_event_try_emit(ctx, event) == SC_TRUE)
         {
             g_assert(event->callback != null_ptr || event->callback_ex != null_ptr);
             sc_event_queue_append(event_queue, event, edge, other_el);
@@ -245,18 +305,35 @@ sc_addr sc_event_get_element(const sc_event *event)
     return event->element;
 }
 
-void sc_event_ref(sc_event * evt)
+void sc_event_lock(sc_event * evt, sc_memory_context const * ctx)
 {
-    g_assert(evt != null_ptr);
-    g_assert(g_atomic_int_get(evt->ref_count) > 0);
+    while (TRUE)
+    {
+        sc_memory_context * locked_ctx = g_atomic_pointer_get(&evt->ctx_lock);
+        if (locked_ctx == ctx)
+            return;
 
-    g_atomic_int_inc(evt->ref_count);
+        if (locked_ctx != null_ptr)
+            continue;
+
+        if (g_atomic_pointer_compare_and_exchange(&evt->ctx_lock, locked_ctx, ctx) == FALSE)
+        {
+            g_usleep(rand() % 10);
+        }
+        else
+        {
+            break;
+        }
+    }
 }
 
-sc_bool sc_event_unref(sc_event * evt)
+void sc_event_unlock(sc_event * evt, sc_memory_context const * ctx)
 {
-    g_assert(evt != null_ptr);
-    return g_atomic_int_dec_and_test(evt->ref_count) ? SC_TRUE : SC_FALSE;
+    sc_memory_context * locked_ctx = g_atomic_pointer_get(&evt->ctx_lock);
+    if (locked_ctx != ctx)
+        g_critical("Invalid state of event lock");
+
+    g_atomic_pointer_set(&evt->ctx_lock, 0);
 }
 
 // --------

@@ -20,7 +20,7 @@
 
 sc_memory_context * s_memory_default_ctx = 0;
 sc_uint16 s_context_id_last = 1;
-sc_uint16 s_context_id_count = 0;
+sc_uint32 s_context_id_count = 0;
 GHashTable *s_context_hash_table = 0;
 GMutex s_concurrency_mutex;
 
@@ -124,12 +124,12 @@ sc_memory_context* sc_memory_context_new(sc_uint8 levels)
 
     // setup concurency id
     g_mutex_lock(&s_concurrency_mutex);
-    if (s_context_id_count >= G_MAXUINT16)
+    if (s_context_id_count >= G_MAXUINT32)
         goto error;
 
-    index = (s_context_id_last + 1) % G_MAXUINT16;
+    index = (s_context_id_last + 1) % G_MAXUINT32;
     while (index == 0 || (index != s_context_id_last && g_hash_table_lookup(s_context_hash_table, GINT_TO_POINTER(index))))
-        index = (index + 1) % G_MAXUINT16;
+        index = (index + 1) % G_MAXUINT32;
 
     if (index != s_context_id_last)
     {
