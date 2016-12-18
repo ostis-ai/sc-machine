@@ -39,7 +39,7 @@ namespace
 
 UNIT_TEST(waiter)
 {
-	ScMemoryContext ctx(sc_access_lvl_make_min);
+	ScMemoryContext ctx(sc_access_lvl_make_min, "waiter");
 
 	const ScAddr addr = ctx.createNode(ScType::NODE_CONST);
 	SC_CHECK(addr.isValid(), ());

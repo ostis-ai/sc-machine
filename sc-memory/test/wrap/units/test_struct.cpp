@@ -9,7 +9,7 @@
 
 UNIT_TEST(struct_common)
 {
-	ScMemoryContext ctx(sc_access_lvl_make_min);
+	ScMemoryContext ctx(sc_access_lvl_make_min, "struct_common");
 
 	ScAddr structAddr = ctx.createNode(sc_type_node_struct | sc_type_const);
 	SC_CHECK(structAddr.isValid(), ());

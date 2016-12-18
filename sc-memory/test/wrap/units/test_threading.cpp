@@ -6,6 +6,7 @@
 
 #include "../test.hpp"
 #include "sc-memory/cpp/sc_wait.hpp"
+#include "sc-memory/cpp/sc_timer.hpp"
 
 #include <thread>
 #include <cstdlib>
@@ -15,7 +16,7 @@ UNIT_TEST(events_threading)
 {
     std::srand(unsigned(std::time(0)));
 
-    ScMemoryContext ctx(sc_access_lvl_make_min);
+    ScMemoryContext ctx(sc_access_lvl_make_min, "events_threading");
 
     size_t const nodeNum = 100000;
     size_t const eventsNum = 250000;
@@ -65,6 +66,8 @@ UNIT_TEST(events_threading)
         });
     }
     
+    ScTimer timer;
+
     std::vector<ScAddr> edges;
     edges.reserve(testCount);
     for (size_t i = 0; i < testCount; ++i)
@@ -90,4 +93,5 @@ UNIT_TEST(events_threading)
     }
 
     SC_LOG_INFO("Event counter: " << counter);
+    SC_LOG_INFO("Events per second: " << (counter / timer.Seconds()));
 }

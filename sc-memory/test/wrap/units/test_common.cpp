@@ -8,7 +8,8 @@
 
 UNIT_TEST(elements)
 {
-	ScMemoryContext ctx;
+	ScMemoryContext ctx(sc_access_lvl_make_min, "elements");
+
 	ScAddr addr = ctx.createNode(sc_type_const);
 	SC_CHECK(addr.isValid(), ());
 

@@ -32,7 +32,7 @@ SC_AGENT_ACTION_IMPLEMENTATION(ATestCommand)
 
 UNIT_TEST(ATestCommand)
 {
-    ScMemoryContext ctx;
+    ScMemoryContext ctx(sc_access_lvl_make_min, "ATestCommand");
 
     // create used keynodes
     ScAddr const cmd_init = CreateKeynode(ctx, "command_initiated");
@@ -71,7 +71,7 @@ SC_AGENT_IMPLEMENTATION(ATestAddInputEdge)
 
 UNIT_TEST(ATestAddInputEdge)
 {
-    ScMemoryContext ctx;
+    ScMemoryContext ctx(sc_access_lvl_make_min, "ATestAddInputEdge");
     ATestAddInputEdge::initGlobal();
     SC_AGENT_REGISTER(ATestAddInputEdge);
 
@@ -97,7 +97,7 @@ SC_AGENT_IMPLEMENTATION(ATestAddOutputEdge)
 
 UNIT_TEST(ATestAddOutputEdge)
 {
-    ScMemoryContext ctx;
+    ScMemoryContext ctx(sc_access_lvl_make_min, "ATestAddOutputEdge");
     ATestAddOutputEdge::initGlobal();
     SC_AGENT_REGISTER(ATestAddOutputEdge);
 
@@ -125,7 +125,7 @@ SC_AGENT_IMPLEMENTATION(ATestRemoveInputEdge)
 
 UNIT_TEST(ATestRemoveInputEdge)
 {
-    ScMemoryContext ctx;
+    ScMemoryContext ctx(sc_access_lvl_make_min, "ATestRemoveInputEdge");
     ATestRemoveInputEdge::initGlobal();
     
     ScAddr const node = ctx.createNode(ScType::NODE_CONST);
@@ -154,7 +154,7 @@ SC_AGENT_IMPLEMENTATION(ATestRemoveOutputEdge)
 
 UNIT_TEST(ATestRemoveOutputEdge)
 {
-    ScMemoryContext ctx;
+    ScMemoryContext ctx(sc_access_lvl_make_min, "ATestRemoveOutputEdge");
     ATestRemoveOutputEdge::initGlobal();
 
     ScAddr const node = ctx.createNode(ScType::NODE_CONST);
@@ -183,7 +183,7 @@ SC_AGENT_IMPLEMENTATION(ATestRemoveElement)
 
 UNIT_TEST(ATestRemoveElement)
 {
-    ScMemoryContext ctx;
+    ScMemoryContext ctx(sc_access_lvl_make_min, "ATestRemoveElement");
     ATestRemoveElement::initGlobal();
 
     SC_AGENT_REGISTER(ATestRemoveElement);
@@ -207,7 +207,7 @@ SC_AGENT_IMPLEMENTATION(ATestContentChanged)
 
 UNIT_TEST(ATestContentChanged)
 {
-    ScMemoryContext ctx;
+    ScMemoryContext ctx(sc_access_lvl_make_min, "ATestContentChanged");
 
     ScAddr const link = ctx.createLink();
     SC_CHECK(link.isValid(), ());

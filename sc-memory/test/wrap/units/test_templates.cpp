@@ -56,7 +56,7 @@ namespace
 }
 UNIT_TEST(templates_common)
 {
-	ScMemoryContext ctx;
+	ScMemoryContext ctx(sc_access_lvl_make_min, "templates_common");
 	ScAddr const addr1 = ctx.createNode(ScType::NODE_CONST);
 	SC_CHECK(addr1.isValid(), ());
 
@@ -393,7 +393,7 @@ UNIT_TEST(templates_common)
 
 UNIT_TEST(templates_2)
 {
-	ScMemoryContext ctx(sc_access_lvl_make_min);
+	ScMemoryContext ctx(sc_access_lvl_make_min, "templates_2");
 
 	/*			_y
 	*			^
@@ -482,7 +482,7 @@ UNIT_TEST(templates_2)
 
 UNIT_TEST(template_search_in_struct)
 {
-	ScMemoryContext ctx(sc_access_lvl_make_min);
+	ScMemoryContext ctx(sc_access_lvl_make_min, "template_search_in_struct");
 
 	/*
 	*   _y
@@ -609,7 +609,7 @@ UNIT_TEST(template_search_in_struct)
 UNIT_TEST(template_performance)
 {
 	ScAddr node1, node2, node3, node4, edge1, edge2, edge3;
-	ScMemoryContext ctx(sc_access_lvl_make_min);
+	ScMemoryContext ctx(sc_access_lvl_make_min, "template_performance");
 
 	{
 		// preapre test
