@@ -7,6 +7,7 @@
 #include "../test.hpp"
 #include "sc-memory/cpp/sc_wait.hpp"
 #include "sc-memory/cpp/sc_timer.hpp"
+#include "sc-memory/cpp/utils/sc_progress.hpp"
 
 #include <thread>
 #include <cstdlib>
@@ -18,9 +19,9 @@ UNIT_TEST(events_threading)
 
     ScMemoryContext ctx(sc_access_lvl_make_min, "events_threading");
 
-    size_t const nodeNum = 100000;
-    size_t const eventsNum = 250000;
-    size_t const testCount = 500000;
+    size_t const nodeNum = 10000;
+    size_t const eventsNum = 25000;
+    size_t const testCount = 50000;
 
     // generate N nodes
     std::vector<ScAddr> nodes;
@@ -71,6 +72,7 @@ UNIT_TEST(events_threading)
     size_t createEdgeCount = 0;
     size_t eraseNodeCount = 0;
 
+    utils::ScProgress progress("Run tests", testCount);
     std::vector<ScAddr> edges;
     edges.reserve(testCount);
     for (size_t i = 0; i < testCount; ++i)
@@ -96,6 +98,8 @@ UNIT_TEST(events_threading)
                 eraseNodeCount++;
             }
         }
+
+        progress.PrintStatus(i);
     }
 
     for (auto e : events)
