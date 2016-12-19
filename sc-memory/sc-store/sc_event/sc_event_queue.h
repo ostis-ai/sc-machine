@@ -12,11 +12,8 @@
 
 struct _sc_event_queue
 {
-    GQueue *queue;
-    GThread *thread;
-    GRecMutex mutex;
+    GMutex mutex;
     sc_bool running;    // flag that determine if queue is running
-    sc_event *event_process;    // currently processing event
     GRecMutex proc_mutex;   // mutex to lock event for process
     GThreadPool *thread_pool;	// thread pool that used for a workers
 };
@@ -40,14 +37,5 @@ void sc_event_queue_destroy_wait(sc_event_queue *queue);
 
 //! Appends \p event to queue
 void sc_event_queue_append(sc_event_queue *queue, sc_event *event, sc_addr edge, sc_addr other_el);
-
-/*! Removes event from queue. This function removes all events from queue that
- * equal to \p event
- */
-void sc_event_queue_remove(sc_event_queue *queue, sc_event *event);
-
-//! Delete events with specified element from queue
-void sc_event_queue_remove_element(sc_event_queue *queue, sc_addr addr);
-
 
 #endif

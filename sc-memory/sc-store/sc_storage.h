@@ -30,12 +30,11 @@ void sc_storage_shutdown(sc_bool save_state);
 sc_bool sc_storage_is_initialized();
 
 /*! Append sc-element to segments pool
- * @param element Pointer to structure, that contains element information
  * @param addr Pointer to sc-addr structure, that will contains sc-addr of appended sc-element
  * @return Return pointer to created sc-element data. If sc-element wasn't appended, then return 0.
  * @note Returned sc-element is locked
  */
-sc_element* sc_storage_append_el_into_segments(const sc_memory_context *ctx, sc_element *element, sc_addr *addr);
+sc_element* sc_storage_append_el_into_segments(const sc_memory_context *ctx, sc_addr *addr);
 
 /*! Check if sc-element with specified sc-addr exist
  * @param addr sc-addr of element
@@ -193,6 +192,15 @@ sc_result sc_storage_element_lock(sc_memory_context const * ctx, sc_addr addr, s
 sc_result sc_storage_element_lock_try(sc_memory_context const * ctx, sc_addr addr, sc_uint16 max_attempts, sc_element **el);
 //! Unlocks specified sc-element
 sc_result sc_storage_element_unlock(sc_memory_context const * ctx, sc_addr addr);
+
+//! Adds reference to a specified sc-element
+void sc_storage_element_ref(sc_memory_context const * ctx, sc_addr addr);
+/*! Removes reference from a specified sc-element
+ * @param addr sc_addr of element to remvoe reference
+ * @return If last reference removed from sc-element, then elements cell frees and this function returns SC_TRUE;
+ * otherwise - returns SC_FALSE and element is still alive. DO NOT work with this sc-element if function returns SC_TRUE
+ */
+sc_bool sc_storage_element_unref(sc_memory_context const * ctx, sc_addr addr);
 
 sc_result sc_storage_save(sc_memory_context const * ctx);
 

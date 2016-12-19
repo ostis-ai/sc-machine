@@ -16,12 +16,7 @@ ScEvent::Type ScEvent::RemoveInputEdge = SC_EVENT_REMOVE_INPUT_ARC;
 ScEvent::Type ScEvent::EraseElement = SC_EVENT_REMOVE_ELEMENT;
 ScEvent::Type ScEvent::ContentChanged = SC_EVENT_CONTENT_CHANGED;
 
-ScEvent::ScEvent(const ScMemoryContext & ctx, const ScAddr & addr, Type eventType)
-{
-	mEvent = sc_event_new_ex(*ctx, *addr, (sc_event_type)eventType, (sc_pointer)this, &ScEvent::_handler, nullptr);
-}
-
-ScEvent::ScEvent(const ScMemoryContext & ctx, const ScAddr & addr, Type eventType, ScEvent::DelegateFunc func)
+ScEvent::ScEvent(const ScMemoryContext & ctx, const ScAddr & addr, Type eventType, ScEvent::DelegateFunc func /*= DelegateFunc()*/)
 {
 	mDelegate = func;
 	mEvent = sc_event_new_ex(*ctx, *addr, (sc_event_type)eventType, (sc_pointer)this, &ScEvent::_handler, &ScEvent::_handlerDelete);

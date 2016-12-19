@@ -11,7 +11,7 @@
 
 UNIT_TEST(codegen_keynodes)
 {
-	ScMemoryContext ctx(sc_access_lvl_make_min);
+	ScMemoryContext ctx(sc_access_lvl_make_min, "codegen_keynodes");
 
 	ScAddr addr1 = ctx.createNode(sc_type_const);
 	SC_CHECK(addr1.isValid(), ());

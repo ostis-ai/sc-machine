@@ -9,7 +9,8 @@
 
 UNIT_TEST(iterators)
 {
-	ScMemoryContext ctx;
+	ScMemoryContext ctx(sc_access_lvl_make_min, "iterators");
+
 	ScAddr addr1 = ctx.createNode(sc_type_const);
 	ScAddr addr2 = ctx.createNode(sc_type_var);
 	ScAddr arc1 = ctx.createEdge(sc_type_arc_pos_const_perm, addr1, addr2);

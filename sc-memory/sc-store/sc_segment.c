@@ -62,6 +62,13 @@ void sc_segment_loaded(sc_segment * seg)
             idx += SC_CONCURRENCY_LEVEL;
         }
     }
+
+    // initialize references to 1
+    for (i = 0; i < SC_SEGMENT_ELEMENTS_COUNT; ++i)
+    {
+        if (seg->elements[i].flags.type != 0)
+            seg->meta[i].ref_count = 1;
+    }
 }
 
 void sc_segment_free(sc_segment *segment)

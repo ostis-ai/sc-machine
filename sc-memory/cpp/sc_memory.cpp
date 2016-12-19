@@ -7,6 +7,9 @@
 #include "sc_memory.hpp"
 #include "sc_utils.hpp"
 #include "sc_stream.hpp"
+
+#include "utils/sc_log.hpp"
+
 #include <assert.h>
 
 #include <iostream>
@@ -38,28 +41,23 @@ void _logPrintHandler(gchar const * log_domain, GLogLevelFlags log_level,
 	switch (log_level)
 	{
 	case G_LOG_LEVEL_CRITICAL:
-		stype = "Critial";
-		break;
-
-	case G_LOG_LEVEL_ERROR:
-		stype = "Error";
+    case G_LOG_LEVEL_ERROR:
+        SC_LOG_ERROR(message);
 		break;
 
 	case G_LOG_LEVEL_WARNING:
-		stype = "Warning";
+        SC_LOG_WARNING(message);
 		break;
 
 	case G_LOG_LEVEL_INFO:
 	case G_LOG_LEVEL_MESSAGE:
-		stype = "Info";
+        SC_LOG_INFO(message);
 		break;
 
 	case G_LOG_LEVEL_DEBUG:
-		stype = "Debug";
+        SC_LOG_DEBUG(message);
 		break;
 	};
-
-	std::cout << "[" << stype << "] " << message << std::endl;
 }
 
 unsigned int gContextGounter;
