@@ -293,6 +293,7 @@ void Class::GenerateDeclarations(std::stringstream & outCode) const
 		
 		outCode << "\\\nprivate:";
 		outCode << "\\\n	static sc_event * msEventPtr; ";
+        outCode << "\\\n    static std::unique_ptr<ScMemoryContext> msContext;";
         if (isActionAgent)
         {
             outCode << "\\\n	static ScAddr msCmdClass_" << m_displayName << ";";
@@ -316,8 +317,9 @@ void Class::GenerateDeclarations(std::stringstream & outCode) const
 		outCode << "\\\n	static void registerHandler()";
 		outCode << "\\\n	{";
 		outCode << "\\\n		check_expr(!msEventPtr); ";
-		outCode << "\\\n		ScMemoryContext ctx(sc_access_lvl_make_min, \"handler_" << m_displayName << "\"); ";
-		outCode << "\\\n		msEventPtr = sc_event_new_ex(ctx.getRealContext(), " << listenAddr << ".getRealAddr(), " 
+        outCode << "\\\n		check_expr(!msContext.get()); ";
+		outCode << "\\\n		msContext.reset(new ScMemoryContext(sc_access_lvl_make_min, \"handler_" << m_displayName << "\"));";
+		outCode << "\\\n		msEventPtr = sc_event_new_ex(msContext->getRealContext(), " << listenAddr << ".getRealAddr(), " 
                                     << eventType << ", 0, &" << m_displayName << "::handler_emit" << ", &"
                                     << m_displayName << "::handler_destroy);";
 		outCode << "\\\n        if (msEventPtr)";
@@ -342,11 +344,12 @@ void Class::GenerateDeclarations(std::stringstream & outCode) const
 		
 		outCode << "\\\n	static void unregisterHandler()";
 		outCode << "\\\n	{";
-		outCode << "\\\n		if (msEventPtr) ";
+        outCode << "\\\n		if (msEventPtr)";
 		outCode << "\\\n		{";
 		outCode << "\\\n			sc_event_destroy(msEventPtr);";
 		outCode << "\\\n			msEventPtr = 0;";
 		outCode << "\\\n		}";
+        outCode << "\\\n		msContext.reset();";
 		outCode << "\\\n	}";
 	}
 	else if (IsModule())	// overrides for modules
@@ -381,6 +384,7 @@ void Class::GenerateImpl(std::stringstream & outCode) const
 	if (IsAgent())
 	{
 		outCode << "\\\nsc_event * " << m_displayName << "::msEventPtr = 0;";
+        outCode << "\\\nstd::unique_ptr<ScMemoryContext> " << m_displayName << "::msContext;";
         if (IsActionAgent())
         {
             outCode << "\\\nScAddr " << m_displayName << "::msCmdClass_" << m_displayName << ";";

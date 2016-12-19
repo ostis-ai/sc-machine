@@ -15,6 +15,7 @@ GMutex events_table_mutex;
 #define EVENTS_TABLE_LOCK g_mutex_lock(&events_table_mutex);
 #define EVENTS_TABLE_UNLOCK g_mutex_unlock(&events_table_mutex);
 
+#define TABLE_KEY(__Addr) GUINT_TO_POINTER(SC_ADDR_LOCAL_TO_INT(__Addr))
 
 // Pointer to hash table that contains events
 GHashTable *events_table = 0;
@@ -22,15 +23,12 @@ sc_event_queue *event_queue = 0;
 
 guint events_table_hash_func(gconstpointer pointer)
 {
-    const sc_addr *addr = (const sc_addr*)pointer;
-    return SC_ADDR_LOCAL_TO_INT(*addr);
+    return pointer;
 }
 
 gboolean events_table_equal_func(gconstpointer a, gconstpointer b)
 {
-    const sc_addr *addr1 = (const sc_addr*)a;
-    const sc_addr *addr2 = (const sc_addr*)b;
-    return SC_ADDR_IS_EQUAL(*addr1, *addr2);
+    return (a == b);
 }
 
 //! Inserts specified event into events table
@@ -45,9 +43,9 @@ sc_result insert_event_into_table(sc_event *event)
         events_table = g_hash_table_new(events_table_hash_func, events_table_equal_func);
 
     // if there are no events for specified sc-element, then create new events list
-    element_events_list = (GSList*)g_hash_table_lookup(events_table, (gconstpointer)&event->element);
+    element_events_list = (GSList*)g_hash_table_lookup(events_table, TABLE_KEY(event->element));
     element_events_list = g_slist_append(element_events_list, (gpointer)event);
-    g_hash_table_insert(events_table, (gpointer)&event->element, (gpointer)element_events_list);
+    g_hash_table_insert(events_table, TABLE_KEY(event->element), (gpointer)element_events_list);
 
     EVENTS_TABLE_UNLOCK
 
@@ -62,7 +60,7 @@ sc_result remove_event_from_table(sc_event *event)
 
     EVENTS_TABLE_LOCK
 
-    element_events_list = (GSList*)g_hash_table_lookup(events_table, (gconstpointer)&event->element);
+    element_events_list = (GSList*)g_hash_table_lookup(events_table, TABLE_KEY(event->element));
     if (element_events_list == null_ptr)
     {
         EVENTS_TABLE_UNLOCK
@@ -73,11 +71,11 @@ sc_result remove_event_from_table(sc_event *event)
     element_events_list = g_slist_remove(element_events_list, (gconstpointer)event);
     if (element_events_list == null_ptr)
     {
-        g_hash_table_remove(events_table, (gconstpointer)&event->element);
+        g_hash_table_remove(events_table, TABLE_KEY(event->element));
     }
     else
     {
-        g_hash_table_insert(events_table, (gpointer)&event->element, (gpointer)element_events_list);
+        g_hash_table_insert(events_table, TABLE_KEY(event->element), (gpointer)element_events_list);
     }
 
     // if there are no more events in table, then delete it
@@ -241,9 +239,11 @@ sc_result sc_event_notify_element_deleted(sc_addr element)
         goto result;
 
     // lookup for all registered to specified sc-elemen events
-    element_events_list = (GSList*)g_hash_table_lookup(events_table, (gconstpointer)&element);
+    element_events_list = (GSList*)g_hash_table_lookup(events_table, TABLE_KEY(element));
     if (element_events_list)
     {
+        g_hash_table_remove(events_table, TABLE_KEY(element));
+
         while (element_events_list != null_ptr)
         {
             evt = (sc_event*)element_events_list->data;
@@ -256,8 +256,7 @@ sc_result sc_event_notify_element_deleted(sc_addr element)
             sc_event_try_free(evt->ctx, evt);
 
             element_events_list = g_slist_delete_link(element_events_list, element_events_list);
-        }
-        g_hash_table_remove(events_table, (gconstpointer)&element);
+        }      
         g_slist_free(element_events_list);
     }
 
@@ -283,7 +282,7 @@ sc_result sc_event_emit(sc_memory_context const * ctx, sc_addr el, sc_access_lev
         goto result;
 
     // lookup for all registered to specified sc-elemen events
-    element_events_list = (GSList*)g_hash_table_lookup(events_table, (gconstpointer)&el);
+    element_events_list = (GSList*)g_hash_table_lookup(events_table, TABLE_KEY(el));
     while (element_events_list != null_ptr)
     {
         event = (sc_event*)element_events_list->data;
