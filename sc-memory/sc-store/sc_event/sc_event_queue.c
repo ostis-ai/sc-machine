@@ -45,7 +45,6 @@ void sc_event_pool_worker(gpointer data, gpointer user_data)
     g_assert(data != null_ptr);
     sc_event_pool_worker_data * work_data = (sc_event_pool_worker_data*)data;
     
-    sc_event_lock(work_data->evt, work_data->ctx);
     g_assert(work_data->evt != null_ptr);
     if (work_data->evt->callback != null_ptr)    // TODO: cleanup in 0.4.0
     {
@@ -55,8 +54,6 @@ void sc_event_pool_worker(gpointer data, gpointer user_data)
     {
         work_data->evt->callback_ex(work_data->evt, work_data->edge_addr, work_data->other_addr);
     }
-
-    sc_event_unlock(work_data->evt, work_data->ctx);
 
     sc_event_try_free(work_data->ctx, work_data->evt);
     sc_event_pool_worker_data_destroy(work_data);
