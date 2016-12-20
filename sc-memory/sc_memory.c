@@ -117,6 +117,11 @@ void sc_memory_shutdown(sc_bool save_state)
 
 sc_memory_context* sc_memory_context_new(sc_uint8 levels)
 {
+    return sc_memory_context_new_impl(levels);
+}
+
+sc_memory_context* sc_memory_context_new_impl(sc_uint8 levels)
+{
     sc_memory_context *ctx = g_new0(sc_memory_context, 1);
     sc_uint32 index = 0;
 
@@ -155,6 +160,11 @@ sc_memory_context* sc_memory_context_new(sc_uint8 levels)
 }
 
 void sc_memory_context_free(sc_memory_context *ctx)
+{
+    sc_memory_context_free_impl(ctx);
+}
+
+void sc_memory_context_free_impl(sc_memory_context *ctx)
 {
     g_assert(ctx != 0);
 

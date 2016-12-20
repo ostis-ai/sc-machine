@@ -89,7 +89,7 @@ void sc_event_queue_destroy_wait(sc_event_queue *queue)
     if (queue->thread_pool)
     {
         g_mutex_lock(&queue->mutex);
-        g_thread_pool_free(queue->thread_pool, TRUE, TRUE);
+        g_thread_pool_free(queue->thread_pool, FALSE, TRUE);
         queue->thread_pool = 0;
         g_mutex_unlock(&queue->mutex);
     }

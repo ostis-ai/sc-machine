@@ -25,8 +25,8 @@
  */
 struct _sc_event
 {
-    //! Pointer to context that create event
-    sc_memory_context const * ctx;
+    //! Pointer to context that used with this event
+    sc_memory_context * ctx;
     //! sc-addr of listened sc-element
     sc_addr element;
     //! Event type

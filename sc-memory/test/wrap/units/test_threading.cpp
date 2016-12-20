@@ -19,9 +19,9 @@ UNIT_TEST(events_threading)
 
     ScMemoryContext ctx(sc_access_lvl_make_min, "events_threading");
 
-    size_t const nodeNum = 10000;
-    size_t const eventsNum = 25000;
-    size_t const testCount = 50000;
+    size_t const nodeNum = 1000;
+    size_t const eventsNum = 250000;
+    size_t const testCount = 500;
 
     // generate N nodes
     std::vector<ScAddr> nodes;
@@ -54,7 +54,7 @@ UNIT_TEST(events_threading)
     };
 
     size_t evtCount = 0;
-
+    utils::ScProgress progressPrepare("Run tests", testCount);
     for (size_t i = 0; i < eventsNum; ++i)
     {
         events[i] = new ScEvent(ctx,
@@ -65,6 +65,8 @@ UNIT_TEST(events_threading)
             evtCount++;
             return true;
         });
+
+        progressPrepare.PrintStatus(i);
     }
     
     ScTimer timer;

@@ -35,7 +35,16 @@ protected:
 	void(*m_fn)();
 
 private:
-	static std::set<TestUnit*> ms_tests;
+
+    struct TestLess
+    {
+        bool operator() (TestUnit const * a, TestUnit const * b) const
+        {
+            return (a->m_name < b->m_name);
+        }
+    };
+
+	static std::set<TestUnit*, TestLess> ms_tests;
 };
 
 #define UNIT_TEST(__name) \

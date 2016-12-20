@@ -167,3 +167,23 @@ UNIT_TEST(events_common)
     }
     SUBTEST_END
 }
+
+
+UNIT_TEST(events_destroy_order)
+{
+    ScMemoryContext * ctx = new ScMemoryContext(sc_access_lvl_make_min, "events_destroy_order");
+
+    ScAddr const node = ctx->createNode(0);
+    SC_CHECK(node.isValid(), ());
+
+    ScEventAddOutputEdge * evt = new ScEventAddOutputEdge(*ctx, node,
+        [](ScAddr const &, ScAddr const &, ScAddr const &)
+    {
+        return true;
+    });
+
+    delete ctx;
+    
+    // delete event after context
+    delete evt;
+}

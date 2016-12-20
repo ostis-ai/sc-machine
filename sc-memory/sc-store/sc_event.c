@@ -125,10 +125,17 @@ sc_bool sc_event_try_free(sc_memory_context const * ctx, sc_event * evt)
             sc_storage_element_unref(ctx, evt->element);
             if (evt->delete_callback != null_ptr)
                 evt->delete_callback(evt);
+
+            sc_memory_context_free_impl(evt->ctx);
+
             g_free(evt);
 
             return SC_TRUE;
         }
+    }
+    else
+    {
+        evt->ref_count--;
     }
 
     sc_event_unlock(evt, ctx);
@@ -138,6 +145,8 @@ sc_bool sc_event_try_free(sc_memory_context const * ctx, sc_event * evt)
 // TODO: remove in 0.4.0
 sc_event* sc_event_new(sc_memory_context const * ctx, sc_addr el, sc_event_type type, sc_pointer data, fEventCallback callback, fDeleteCallback delete_callback)
 {
+    g_assert(callback != null_ptr);
+
     if (SC_ADDR_IS_EMPTY(el))
         return null_ptr;
 
@@ -154,11 +163,9 @@ sc_event* sc_event_new(sc_memory_context const * ctx, sc_addr el, sc_event_type 
     event->callback = callback;
     event->delete_callback = delete_callback;
     event->data = data;
-    event->ctx = ctx;
+    event->ctx = sc_memory_context_new_impl(levels);
     event->ctx_lock = null_ptr;
     event->ref_count = 1;
-
-    g_assert(callback != null_ptr);
 
     // register created event
     if (insert_event_into_table(event) != SC_RESULT_OK)
@@ -172,6 +179,8 @@ sc_event* sc_event_new(sc_memory_context const * ctx, sc_addr el, sc_event_type 
 
 sc_event* sc_event_new_ex(sc_memory_context const * ctx, sc_addr el, sc_event_type type, sc_pointer data, fEventCallbackEx callback, fDeleteCallback delete_callback)
 {
+    g_assert(callback != null_ptr);
+
     if (SC_ADDR_IS_EMPTY(el))
         return null_ptr;
 
@@ -188,12 +197,10 @@ sc_event* sc_event_new_ex(sc_memory_context const * ctx, sc_addr el, sc_event_ty
     event->callback_ex = callback;
     event->delete_callback = delete_callback;
     event->data = data;
-    event->ctx = ctx;
+    event->ctx = sc_memory_context_new_impl(levels);
     event->ctx_lock = null_ptr;
     event->ref_count = 1;
-
-    g_assert(callback != null_ptr);
-
+    
     // register created event
     if (insert_event_into_table(event) != SC_RESULT_OK)
     {
@@ -209,11 +216,15 @@ sc_result sc_event_destroy(sc_event * evt)
     sc_event_lock(evt, evt->ctx);
     if (evt->ref_count & SC_EVENT_REQUEST_DESTROY)
     {
+        sc_event_unlock(evt, evt->ctx);
         goto exit;
     }
 
     if (remove_event_from_table(evt) != SC_RESULT_OK)
+    {
+        sc_event_unlock(evt, evt->ctx);
         return SC_RESULT_ERROR;
+    }
         
     evt->ref_count |= SC_EVENT_REQUEST_DESTROY;
     evt->callback = null_ptr;

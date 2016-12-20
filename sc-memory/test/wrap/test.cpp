@@ -9,7 +9,7 @@
 namespace test
 {
 
-std::set<TestUnit*> TestUnit::ms_tests;
+std::set<TestUnit*, TestUnit::TestLess> TestUnit::ms_tests;
 
 TestUnit::TestUnit(char const * name, char const * filename, void(*fn)())
 	: m_name(name)
