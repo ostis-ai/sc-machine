@@ -9,6 +9,9 @@
 #include "sc_addr.hpp"
 #include "sc_memory.hpp"
 
+#include "utils/sc_log.hpp"
+
+// Should be equal to C values
 ScEvent::Type ScEvent::AddOutputEdge = SC_EVENT_ADD_OUTPUT_ARC;
 ScEvent::Type ScEvent::AddInputEdge = SC_EVENT_ADD_INPUT_ARC;
 ScEvent::Type ScEvent::RemoveOutputEdge = SC_EVENT_REMOVE_OUTPUT_ARC;
@@ -24,8 +27,10 @@ ScEvent::ScEvent(const ScMemoryContext & ctx, const ScAddr & addr, Type eventTyp
 
 ScEvent::~ScEvent()
 {
+    mLock.lock();
 	if (mEvent)
 		sc_event_destroy(mEvent);
+    mLock.unlock();
 }
 
 void ScEvent::removeDelegate()
@@ -51,10 +56,12 @@ sc_result ScEvent::_handlerDelete(sc_event const * evt)
 	ScEvent * eventObj = (ScEvent*)sc_event_get_data(evt);
 	check_expr(eventObj != nullptr);
 
+    eventObj->mLock.lock();
 	if (eventObj->mEvent)
 	{
 		eventObj->mEvent = nullptr;
 	}
+    eventObj->mLock.unlock();
 
 	return SC_RESULT_OK;
 }

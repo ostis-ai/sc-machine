@@ -292,7 +292,7 @@ void Class::GenerateDeclarations(std::stringstream & outCode) const
 		}
 		
 		outCode << "\\\nprivate:";
-		outCode << "\\\n	static sc_event * msEventPtr; ";
+		outCode << "\\\n	static std::unique_ptr<ScEvent> msEvent;";
         outCode << "\\\n    static std::unique_ptr<ScMemoryContext> msContext;";
         if (isActionAgent)
         {
@@ -301,28 +301,21 @@ void Class::GenerateDeclarations(std::stringstream & outCode) const
 
 		// static function for handler
 		outCode << "\\\npublic: ";
-		outCode << "\\\n	static sc_result handler_emit" << "(sc_event const * event, sc_addr edge, sc_addr other_el)";
+		outCode << "\\\n	static bool handler_emit" << "(ScAddr const & addr, ScAddr const & edgeAddr, ScAddr const & otherAddr)";
 		outCode << "\\\n	{";
 		outCode << "\\\n		" << m_displayName << " Instance(" << instConstructParams << "\"" << m_displayName << "\", sc_access_lvl_make_min);";
-		outCode << "\\\n		" << "return Instance.run(ScAddr(sc_event_get_element(event)), ScAddr(edge), ScAddr(other_el));";
+		outCode << "\\\n		" << "return Instance.run(addr, edgeAddr, otherAddr) == SC_RESULT_OK;";
 		outCode << "\\\n	}";
-
-        outCode << "\\\n	static sc_result handler_destroy" << "(sc_event const * event)";
-        outCode << "\\\n	{";
-        outCode << "\\\n	    msEventPtr = nullptr;";
-        outCode << "\\\n	    return SC_RESULT_OK;";
-        outCode << "\\\n	}";
 
 		// register/unregister
 		outCode << "\\\n	static void registerHandler()";
 		outCode << "\\\n	{";
-		outCode << "\\\n		check_expr(!msEventPtr); ";
-        outCode << "\\\n		check_expr(!msContext.get()); ";
+		outCode << "\\\n		check_expr(!msEvent.get());";
+        outCode << "\\\n		check_expr(!msContext.get());";
 		outCode << "\\\n		msContext.reset(new ScMemoryContext(sc_access_lvl_make_min, \"handler_" << m_displayName << "\"));";
-		outCode << "\\\n		msEventPtr = sc_event_new_ex(msContext->getRealContext(), " << listenAddr << ".getRealAddr(), " 
-                                    << eventType << ", 0, &" << m_displayName << "::handler_emit" << ", &"
-                                    << m_displayName << "::handler_destroy);";
-		outCode << "\\\n        if (msEventPtr)";
+        outCode << "\\\n		msEvent.reset(new ScEvent(*msContext, " << listenAddr << ", "
+                                        << eventType << ", &" << m_displayName << "::handler_emit" << "));";
+		outCode << "\\\n        if (msEvent.get())";
 		outCode << "\\\n        {";
 
 		/// TODO: Use common log system
@@ -344,11 +337,7 @@ void Class::GenerateDeclarations(std::stringstream & outCode) const
 		
 		outCode << "\\\n	static void unregisterHandler()";
 		outCode << "\\\n	{";
-        outCode << "\\\n		if (msEventPtr)";
-		outCode << "\\\n		{";
-		outCode << "\\\n			sc_event_destroy(msEventPtr);";
-		outCode << "\\\n			msEventPtr = 0;";
-		outCode << "\\\n		}";
+        outCode << "\\\n		msEvent.reset();";
         outCode << "\\\n		msContext.reset();";
 		outCode << "\\\n	}";
 	}
@@ -383,7 +372,7 @@ void Class::GenerateImpl(std::stringstream & outCode) const
 {
 	if (IsAgent())
 	{
-		outCode << "\\\nsc_event * " << m_displayName << "::msEventPtr = 0;";
+		outCode << "\\\nstd::unique_ptr<ScEvent> " << m_displayName << "::msEvent;";
         outCode << "\\\nstd::unique_ptr<ScMemoryContext> " << m_displayName << "::msContext;";
         if (IsActionAgent())
         {

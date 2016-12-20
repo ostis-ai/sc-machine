@@ -14,9 +14,8 @@
 
 namespace
 {
-    const double kTestTimeout = 3.0;
-
-
+    const double kTestTimeout = 5.0;
+    
     template<typename EventClassT, typename PrepareF, typename EmitF>
     void testEventsFuncT(ScMemoryContext & ctx, ScAddr const & addr, PrepareF prepare, EmitF emit)
     {

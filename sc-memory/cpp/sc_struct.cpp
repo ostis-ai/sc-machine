@@ -72,7 +72,7 @@ ScStruct & ScStruct::operator << (ScAddr const & elAddr)
 
 ScStruct & ScStruct::operator << (ScTemplateGenResult const & res)
 {
-	size_t const res_num = res.getSize();
+	size_t const res_num = res.size();
 	for (size_t i = 0; i < res_num; ++i)
 		append(res.mResult[i]);
 

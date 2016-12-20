@@ -18,6 +18,11 @@
 
 #include <glib.h>
 
+sc_pointer sc_thread()
+{
+    return (sc_pointer)g_thread_self();
+}
+
 sc_memory_context * s_memory_default_ctx = 0;
 sc_uint16 s_context_id_last = 1;
 sc_uint32 s_context_id_count = 0;
@@ -268,7 +273,7 @@ sc_result sc_memory_get_element_access_levels(sc_memory_context const * ctx, sc_
 
 sc_result sc_memory_stat(sc_memory_context const * ctx, sc_stat *stat)
 {
-    return sc_storage_get_elements_stat(ctx, stat);
+    return sc_storage_get_elements_stat(stat);
 }
 
 sc_result sc_memory_save(sc_memory_context const * ctx)

@@ -14,7 +14,6 @@
 #pragma pack(push, 1)
 typedef struct
 {
-    sc_memory_context * ctx;
     sc_event * evt;
     sc_addr edge_addr;
     sc_addr other_addr;
@@ -24,7 +23,6 @@ typedef struct
 sc_event_pool_worker_data * sc_event_pool_worker_data_new(sc_event * evt, sc_addr edge_addr, sc_addr other_addr)
 {
     sc_event_pool_worker_data * data = g_new0(sc_event_pool_worker_data, 1);
-    data->ctx = sc_memory_context_new(sc_access_lvl_make_max);
     data->evt = evt;
     data->edge_addr = edge_addr;
     data->other_addr = other_addr;
@@ -35,7 +33,6 @@ sc_event_pool_worker_data * sc_event_pool_worker_data_new(sc_event * evt, sc_add
 void sc_event_pool_worker_data_destroy(sc_event_pool_worker_data * data)
 {
     g_assert(data != null_ptr);
-    sc_memory_context_free(data->ctx);
     g_free(data);
 }
 
@@ -44,7 +41,7 @@ void sc_event_pool_worker(gpointer data, gpointer user_data)
 {
     g_assert(data != null_ptr);
     sc_event_pool_worker_data * work_data = (sc_event_pool_worker_data*)data;
-    
+
     g_assert(work_data->evt != null_ptr);
     if (work_data->evt->callback != null_ptr)    // TODO: cleanup in 0.4.0
     {
@@ -55,7 +52,7 @@ void sc_event_pool_worker(gpointer data, gpointer user_data)
         work_data->evt->callback_ex(work_data->evt, work_data->edge_addr, work_data->other_addr);
     }
 
-    sc_event_try_free(work_data->ctx, work_data->evt);
+    sc_event_unref(work_data->evt);
     sc_event_pool_worker_data_destroy(work_data);
 }
 

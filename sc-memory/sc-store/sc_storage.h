@@ -178,31 +178,31 @@ sc_uint sc_storage_get_segments_count();
  * @return If statictics info collect without any errors, then return SC_OK;
  * otherwise return SC_ERROR
  */
-sc_result sc_storage_get_elements_stat(sc_memory_context const * ctx, sc_stat *stat);
+sc_result sc_storage_get_elements_stat(sc_stat *stat);
 
 sc_result sc_storage_erase_element_from_segment(sc_addr addr);
 
 
 // ----- Locks -----
 //! Returns pointer to sc-element metainfo
-sc_element_meta* sc_storage_get_element_meta(sc_memory_context const * ctx, sc_addr addr);
+sc_element_meta* sc_storage_get_element_meta(sc_addr addr);
 //! Locks specified sc-element. Pointer to locked sc-element stores in el
-sc_result sc_storage_element_lock(sc_memory_context const * ctx, sc_addr addr, sc_element **el);
+sc_result sc_storage_element_lock(sc_addr addr, sc_element **el);
 //! Try to lock sc-element by maximum attempts. If element wasn't locked and there are no errors, then el pointer will have null value.
-sc_result sc_storage_element_lock_try(sc_memory_context const * ctx, sc_addr addr, sc_uint16 max_attempts, sc_element **el);
+sc_result sc_storage_element_lock_try(sc_addr addr, sc_uint16 max_attempts, sc_element **el);
 //! Unlocks specified sc-element
-sc_result sc_storage_element_unlock(sc_memory_context const * ctx, sc_addr addr);
+sc_result sc_storage_element_unlock(sc_addr addr);
 
 //! Adds reference to a specified sc-element
-void sc_storage_element_ref(sc_memory_context const * ctx, sc_addr addr);
+void sc_storage_element_ref(sc_addr addr);
 /*! Removes reference from a specified sc-element
  * @param addr sc_addr of element to remvoe reference
  * @return If last reference removed from sc-element, then elements cell frees and this function returns SC_TRUE;
  * otherwise - returns SC_FALSE and element is still alive. DO NOT work with this sc-element if function returns SC_TRUE
  */
-sc_bool sc_storage_element_unref(sc_memory_context const * ctx, sc_addr addr);
+sc_bool sc_storage_element_unref(sc_addr addr);
 
-sc_result sc_storage_save(sc_memory_context const * ctx);
+sc_result sc_storage_save();
 
 #endif
 

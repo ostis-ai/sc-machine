@@ -26,7 +26,7 @@ namespace
 	gpointer emit_event_thread(gpointer data)
 	{
 		WaitTestData * d = (WaitTestData*)data;
-		g_usleep(2000000);	// sleep for a second
+		g_usleep(500000);	// sleep to run some later
 
 		const ScAddr node = d->mContext.createNode(*ScType::NODE_CONST);
 		const ScAddr arc = d->mContext.createEdge(*ScType::EDGE_ACCESS_CONST_POS_PERM, node, d->mAddr);
