@@ -105,16 +105,16 @@ sc_bool _sc_iterator_ref_element(const sc_memory_context *ctx, sc_addr addr)
 
     while (a < 1000)
     {
-        STORAGE_CHECK_CALL(sc_storage_element_lock(ctx, addr, &el));
+        STORAGE_CHECK_CALL(sc_storage_element_lock(addr, &el));
         if (el != null_ptr &&
             sc_element_is_request_deletion(el) == SC_FALSE &&
             el->flags.type != 0)
         {
-            sc_storage_element_ref(ctx, addr);
-            STORAGE_CHECK_CALL(sc_storage_element_unlock(ctx, addr));
+            sc_storage_element_ref(addr);
+            STORAGE_CHECK_CALL(sc_storage_element_unlock(addr));
             return SC_TRUE;
         }
-        STORAGE_CHECK_CALL(sc_storage_element_unlock(ctx, addr));
+        STORAGE_CHECK_CALL(sc_storage_element_unlock(addr));
 
         a++;
         g_usleep(1000);
@@ -192,25 +192,25 @@ void sc_iterator3_free(sc_iterator3 *it)
     if ((it->finished == SC_FALSE) && SC_ADDR_IS_NOT_EMPTY(it->results[1]))
     {
         sc_element *el = 0;
-        STORAGE_CHECK_CALL(sc_storage_element_lock(it->ctx, it->results[1], &el));
+        STORAGE_CHECK_CALL(sc_storage_element_lock(it->results[1], &el));
         g_assert(el != null_ptr);
-        sc_storage_element_unref(it->ctx, it->results[1]);
-        STORAGE_CHECK_CALL(sc_storage_element_unlock(it->ctx, it->results[1]));
+        sc_storage_element_unref(it->results[1]);
+        STORAGE_CHECK_CALL(sc_storage_element_unlock(it->results[1]));
     }
     switch (it->type)
     {
     case sc_iterator3_f_a_a:
-        sc_storage_element_unref(it->ctx, it->params[0].addr);
+        sc_storage_element_unref(it->params[0].addr);
         break;
     case sc_iterator3_a_a_f:
-        sc_storage_element_unref(it->ctx, it->params[2].addr);
+        sc_storage_element_unref(it->params[2].addr);
         break;
     case sc_iterator3_f_a_f:
-        sc_storage_element_unref(it->ctx, it->params[0].addr);
-        sc_storage_element_unref(it->ctx, it->params[2].addr);
+        sc_storage_element_unref(it->params[0].addr);
+        sc_storage_element_unref(it->params[2].addr);
         break;
     case sc_iterator3_a_f_a:
-        sc_storage_element_unref(it->ctx, it->params[1].addr);
+        sc_storage_element_unref(it->params[1].addr);
         break;
     }
 
@@ -241,18 +241,18 @@ sc_bool _sc_iterator3_f_a_a_next(sc_iterator3 *it)
     if (SC_ADDR_IS_EMPTY(it->results[1]))
     {
         sc_element *el = 0;
-        STORAGE_CHECK_CALL(sc_storage_element_lock(it->ctx, it->params[0].addr, &el));
+        STORAGE_CHECK_CALL(sc_storage_element_lock(it->params[0].addr, &el));
         g_assert(el != null_ptr);
         arc_addr = el->first_out_arc;
-        STORAGE_CHECK_CALL(sc_storage_element_unlock(it->ctx, it->params[0].addr));
+        STORAGE_CHECK_CALL(sc_storage_element_unlock(it->params[0].addr));
     }else
     {
         sc_element *el = 0;
-        STORAGE_CHECK_CALL(sc_storage_element_lock(it->ctx, it->results[1], &el));
+        STORAGE_CHECK_CALL(sc_storage_element_lock(it->results[1], &el));
         g_assert(el != null_ptr);
         arc_addr = el->arc.next_out_arc;
-        sc_storage_element_unref(it->ctx, it->results[1]);
-        STORAGE_CHECK_CALL(sc_storage_element_unlock(it->ctx, it->results[1]));
+        sc_storage_element_unref(it->results[1]);
+        STORAGE_CHECK_CALL(sc_storage_element_unlock(it->results[1]));
     }
 
     // iterate throught output arcs
@@ -261,9 +261,9 @@ sc_bool _sc_iterator3_f_a_a_next(sc_iterator3 *it)
         sc_element *el = 0;
         // lock required elements to prevent deadlock with deletion
         while (el == null_ptr)
-            STORAGE_CHECK_CALL(sc_storage_element_lock_try(it->ctx, arc_addr, s_max_iterator_lock_attempts, &el));
+            STORAGE_CHECK_CALL(sc_storage_element_lock_try(arc_addr, s_max_iterator_lock_attempts, &el));
 
-        sc_storage_element_ref(it->ctx, arc_addr);
+        sc_storage_element_ref(arc_addr);
 
         sc_addr next_out_arc = el->arc.next_out_arc;
         if (sc_element_is_request_deletion(el) == SC_FALSE)
@@ -275,7 +275,7 @@ sc_bool _sc_iterator3_f_a_a_next(sc_iterator3 *it)
             if (sc_storage_get_access_levels(it->ctx, arc_end, &end_access) != SC_RESULT_OK)
                 end_access = sc_access_lvl_make_max;
 
-            STORAGE_CHECK_CALL(sc_storage_element_unlock(it->ctx, arc_addr));
+            STORAGE_CHECK_CALL(sc_storage_element_unlock(arc_addr));
 
             sc_type el_type;
             sc_storage_get_element_type(it->ctx, arc_end, &el_type);
@@ -294,8 +294,8 @@ sc_bool _sc_iterator3_f_a_a_next(sc_iterator3 *it)
             }
         } else
         {
-            sc_storage_element_unref(it->ctx, arc_addr);
-            STORAGE_CHECK_CALL(sc_storage_element_unlock(it->ctx, arc_addr));
+            sc_storage_element_unref(arc_addr);
+            STORAGE_CHECK_CALL(sc_storage_element_unlock(arc_addr));
         }
 
         // go to next arc
@@ -320,18 +320,18 @@ sc_bool _sc_iterator3_f_a_f_next(sc_iterator3 *it)
     if (SC_ADDR_IS_EMPTY(it->results[1]))
     {
         sc_element *el = 0;
-        STORAGE_CHECK_CALL(sc_storage_element_lock(it->ctx, it->params[2].addr, &el));
+        STORAGE_CHECK_CALL(sc_storage_element_lock(it->params[2].addr, &el));
         g_assert(el != null_ptr);
         arc_addr = el->first_in_arc;
-        STORAGE_CHECK_CALL(sc_storage_element_unlock(it->ctx, it->params[2].addr));
+        STORAGE_CHECK_CALL(sc_storage_element_unlock(it->params[2].addr));
     }else
     {
         sc_element *el = 0;
-        STORAGE_CHECK_CALL(sc_storage_element_lock(it->ctx, it->results[1], &el));
+        STORAGE_CHECK_CALL(sc_storage_element_lock(it->results[1], &el));
         g_assert(el != null_ptr);
         arc_addr = el->arc.next_in_arc;
-        sc_storage_element_unref(it->ctx, it->results[1]);
-        STORAGE_CHECK_CALL(sc_storage_element_unlock(it->ctx, it->results[1]));
+        sc_storage_element_unref(it->results[1]);
+        STORAGE_CHECK_CALL(sc_storage_element_unlock(it->results[1]));
     }
 
     // trying to find input arc, that created before iterator, and wasn't deleted
@@ -339,9 +339,9 @@ sc_bool _sc_iterator3_f_a_f_next(sc_iterator3 *it)
     {
         sc_element *el = 0;
         while (el == null_ptr)
-            STORAGE_CHECK_CALL(sc_storage_element_lock_try(it->ctx, arc_addr, s_max_iterator_lock_attempts, &el));
+            STORAGE_CHECK_CALL(sc_storage_element_lock_try(arc_addr, s_max_iterator_lock_attempts, &el));
 
-        sc_storage_element_ref(it->ctx, arc_addr);
+        sc_storage_element_ref(arc_addr);
         
         sc_addr next_in_arc = el->arc.next_in_arc;
         if (sc_element_is_request_deletion(el) == SC_FALSE)
@@ -350,7 +350,7 @@ sc_bool _sc_iterator3_f_a_f_next(sc_iterator3 *it)
             sc_addr arc_begin = el->arc.begin;
             sc_access_levels arc_access = el->flags.access_levels;
 
-            STORAGE_CHECK_CALL(sc_storage_element_unlock(it->ctx, arc_addr));
+            STORAGE_CHECK_CALL(sc_storage_element_unlock(arc_addr));
 
             if (SC_ADDR_IS_EQUAL(it->params[0].addr, arc_begin) &&
                 sc_iterator_compare_type(arc_type, it->params[1].type) &&
@@ -363,8 +363,8 @@ sc_bool _sc_iterator3_f_a_f_next(sc_iterator3 *it)
             }
         } else
         {
-            sc_storage_element_unref(it->ctx, arc_addr);
-            STORAGE_CHECK_CALL(sc_storage_element_unlock(it->ctx, arc_addr));
+            sc_storage_element_unref(arc_addr);
+            STORAGE_CHECK_CALL(sc_storage_element_unlock(arc_addr));
         }
 
         // go to next arc
@@ -387,18 +387,18 @@ sc_bool _sc_iterator3_a_a_f_next(sc_iterator3 *it)
     if (SC_ADDR_IS_EMPTY(it->results[1]))
     {
         sc_element *el = 0;
-        STORAGE_CHECK_CALL(sc_storage_element_lock(it->ctx, it->params[2].addr, &el));
+        STORAGE_CHECK_CALL(sc_storage_element_lock(it->params[2].addr, &el));
         g_assert(el != null_ptr);
         arc_addr = el->first_in_arc;
-        STORAGE_CHECK_CALL(sc_storage_element_unlock(it->ctx, it->params[2].addr));
+        STORAGE_CHECK_CALL(sc_storage_element_unlock(it->params[2].addr));
     }else
     {
         sc_element *el = 0;
-        STORAGE_CHECK_CALL(sc_storage_element_lock(it->ctx, it->results[1], &el));
+        STORAGE_CHECK_CALL(sc_storage_element_lock(it->results[1], &el));
         g_assert(el != null_ptr);
         arc_addr = el->arc.next_in_arc;
-        sc_storage_element_unref(it->ctx, it->results[1]);
-        STORAGE_CHECK_CALL(sc_storage_element_unlock(it->ctx, it->results[1]));
+        sc_storage_element_unref(it->results[1]);
+        STORAGE_CHECK_CALL(sc_storage_element_unlock(it->results[1]));
     }
 
     // trying to find input arc, that created before iterator, and wasn't deleted
@@ -406,9 +406,9 @@ sc_bool _sc_iterator3_a_a_f_next(sc_iterator3 *it)
     {
         sc_element *el = 0;
         while (el == null_ptr)
-            STORAGE_CHECK_CALL(sc_storage_element_lock_try(it->ctx, arc_addr, s_max_iterator_lock_attempts, &el));
+            STORAGE_CHECK_CALL(sc_storage_element_lock_try(arc_addr, s_max_iterator_lock_attempts, &el));
 
-        sc_storage_element_ref(it->ctx, arc_addr);
+        sc_storage_element_ref(arc_addr);
         
         sc_addr next_in_arc = el->arc.next_in_arc;
         if (sc_element_is_request_deletion(el) == SC_FALSE)
@@ -420,7 +420,7 @@ sc_bool _sc_iterator3_a_a_f_next(sc_iterator3 *it)
             if (sc_storage_get_access_levels(it->ctx, arc_begin, &begin_access) != SC_RESULT_OK)
                 begin_access = sc_access_lvl_make_max;
 
-            STORAGE_CHECK_CALL(sc_storage_element_unlock(it->ctx, arc_addr));
+            STORAGE_CHECK_CALL(sc_storage_element_unlock(arc_addr));
 
             sc_type el_type = 0;
             sc_storage_get_element_type(it->ctx, arc_begin, &el_type);
@@ -439,8 +439,8 @@ sc_bool _sc_iterator3_a_a_f_next(sc_iterator3 *it)
             }
         } else
         {
-            sc_storage_element_unref(it->ctx, arc_addr);
-            STORAGE_CHECK_CALL(sc_storage_element_unlock(it->ctx, arc_addr));
+            sc_storage_element_unref(arc_addr);
+            STORAGE_CHECK_CALL(sc_storage_element_unlock(arc_addr));
         }
 
         // go to next arc
@@ -458,11 +458,11 @@ sc_bool _sc_iterator3_a_f_a_next(sc_iterator3 * it)
     it->results[1] = it->params[1].addr;
     
     sc_element * arc_el = 0;
-    STORAGE_CHECK_CALL(sc_storage_element_lock(it->ctx, it->params[1].addr, &arc_el));
+    STORAGE_CHECK_CALL(sc_storage_element_lock(it->params[1].addr, &arc_el));
     g_assert(arc_el != null_ptr);
     it->results[0] = arc_el->arc.begin;
     it->results[2] = arc_el->arc.end;
-    STORAGE_CHECK_CALL(sc_storage_element_unlock(it->ctx, it->params[1].addr));
+    STORAGE_CHECK_CALL(sc_storage_element_unlock(it->params[1].addr));
 
     return SC_TRUE;
 }

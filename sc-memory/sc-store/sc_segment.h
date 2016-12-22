@@ -18,7 +18,7 @@
 //! Structure to store segment locks
 typedef struct _sc_segment_section
 {
-    const sc_memory_context *ctx_lock;      // pointer to context, that locked section
+    volatile sc_pointer thread_lock;           // pointer to thread, that locked section
     sc_int empty_count;                     // use 32-bit value for atomic operations
     sc_int empty_offset;                    // use 32-bit value for atomic operations
     sc_int internal_lock;                   //
@@ -66,10 +66,10 @@ sc_uint32 sc_segment_get_elements_count(sc_segment *seg);
 sc_bool sc_segment_has_empty_slot(sc_segment *segment);
 
 //! Collects segment elements statistics
-void sc_segment_collect_elements_stat(const sc_memory_context *ctx, sc_segment * seg, sc_stat * stat);
+void sc_segment_collect_elements_stat(sc_segment * seg, sc_stat * stat);
 
 //! Returns pointer to sc-element metainfo
-sc_element_meta* sc_segment_get_meta(const sc_memory_context *ctx, sc_segment * seg, sc_addr_offset offset);
+sc_element_meta* sc_segment_get_meta(sc_segment * seg, sc_addr_offset offset);
 
 // ---------------------- locks --------------------------
 /*! Function to lock any empty element
@@ -78,37 +78,37 @@ sc_element_meta* sc_segment_get_meta(const sc_memory_context *ctx, sc_segment * 
  * @returns Returns pointer to locked empty element. If there are no any empty element found,
  * then returns 0
  */
-sc_element* sc_segment_lock_empty_element(const sc_memory_context *ctx, sc_segment *seg, sc_addr_offset *offset);
+sc_element* sc_segment_lock_empty_element(sc_memory_context const * ctx, sc_segment *seg, sc_addr_offset *offset);
 
 /*! Function to lock specified element in segment
  * @param seg Pointer to segment to lock element
  * @param offset Offset of element to lock
  * @returns Returns pointer to locked sc-element
  */
-sc_element* sc_segment_lock_element(const sc_memory_context *ctx, sc_segment *seg, sc_addr_offset offset);
+sc_element* sc_segment_lock_element(sc_segment *seg, sc_addr_offset offset);
 
 //! Try to lock sc-element with maximum attempts
-sc_element* sc_segment_lock_element_try(const sc_memory_context *ctx, sc_segment *seg, sc_addr_offset offset, sc_uint16 max_attempts);
+sc_element* sc_segment_lock_element_try(sc_segment *seg, sc_addr_offset offset, sc_uint16 max_attempts);
 
 /*! Function to unlock specified element in segment
  * @param seg Pointer to segment for element unlocking
  * @param offset Offset of sc-element in segment
  */
-void sc_segment_unlock_element(const sc_memory_context *ctx, sc_segment *seg, sc_addr_offset offset);
+void sc_segment_unlock_element(sc_segment *seg, sc_addr_offset offset);
 
 //! Locks segment section. This funciton doesn't returns control, while part wouldn't be locked.
-void sc_segment_section_lock(const sc_memory_context *ctx, sc_segment_section *section);
+void sc_segment_section_lock(sc_segment_section *section);
 /*! Try to lock segment section. If section already locked, then this function returns false; otherwise it locks section and returns true
  * @params section Pointer to segment section to lock
  * @param max_attempts Maximum number of lock attempts
  */
-sc_bool sc_segment_section_lock_try(const sc_memory_context *ctx, sc_segment_section *section, sc_uint16 max_attempts);
+sc_bool sc_segment_section_lock_try(sc_segment_section *section, sc_uint16 max_attempts);
 //! Unlocks specified segment part
-void sc_segment_section_unlock(const sc_memory_context *ctx, sc_segment_section *section);
+void sc_segment_section_unlock(sc_segment_section *section);
 
 // Lock whole segment
-void sc_segment_lock(sc_segment * seg, sc_memory_context const * ctx);
-void sc_segment_unlock(sc_segment * seg, sc_memory_context const * ctx);
+void sc_segment_lock(sc_segment * seg);
+void sc_segment_unlock(sc_segment * seg);
 
 
 #endif

@@ -10,6 +10,8 @@
 #include "sc_utils.hpp"
 #include "sc_addr.hpp"
 
+#include "utils/sc_lock.hpp"
+
 #include <functional>
 
 /* Base class for sc-events
@@ -49,6 +51,7 @@ protected:
 private:
 	sc_event * mEvent;
 	DelegateFunc mDelegate;
+    utils::ScLock mLock;
 };
 
 SHARED_PTR_TYPE(ScEvent);

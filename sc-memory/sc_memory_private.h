@@ -18,4 +18,17 @@ struct _sc_memory_context
 
 extern sc_memory_context * s_memory_default_ctx;
 
+/*! Function that create memory context with specified params
+* @param levels Access levels, you can create it with macros @see sc_access_level_make
+* @returns Retursn pointer to create memory context. If there were any errors during
+* context creation, then function returns 0
+* @note Do not use one context in different threads.
+*/
+sc_memory_context* sc_memory_context_new_impl(sc_uint8 levels);
+
+/*! Function that destroys created memory context. You can use that function
+* just for contexts, that were created with @see sc_memory_context_new
+*/
+void sc_memory_context_free_impl(sc_memory_context *ctx);
+
 #endif

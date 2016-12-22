@@ -359,7 +359,7 @@ public:
     }
 
     SC_DEPRECATED(0.3.0, "Use ScTemplateGenResult::size instead")
-        inline size_t getSize() const
+    inline size_t getSize() const
     {
         return mResult.size();
     }

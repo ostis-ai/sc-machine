@@ -14,9 +14,8 @@
 
 namespace
 {
-    const double kTestTimeout = 3.0;
-
-
+    const double kTestTimeout = 5.0;
+    
     template<typename EventClassT, typename PrepareF, typename EmitF>
     void testEventsFuncT(ScMemoryContext & ctx, ScAddr const & addr, PrepareF prepare, EmitF emit)
     {
@@ -166,4 +165,24 @@ UNIT_TEST(events_common)
         testEventsFuncT<ScEventEraseElement>(ctx, addr, prepare, emitEvent);
     }
     SUBTEST_END
+}
+
+
+UNIT_TEST(events_destroy_order)
+{
+    ScMemoryContext * ctx = new ScMemoryContext(sc_access_lvl_make_min, "events_destroy_order");
+
+    ScAddr const node = ctx->createNode(0);
+    SC_CHECK(node.isValid(), ());
+
+    ScEventAddOutputEdge * evt = new ScEventAddOutputEdge(*ctx, node,
+        [](ScAddr const &, ScAddr const &, ScAddr const &)
+    {
+        return true;
+    });
+
+    delete ctx;
+    
+    // delete event after context
+    delete evt;
 }

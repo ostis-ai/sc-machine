@@ -196,6 +196,7 @@ bool ReflectionParser::ProcessFile(std::string const & fileName, bool InProcessM
             // includes
             outCode << "#include <memory>\n\n";
             outCode << "#include \"sc-memory/cpp/sc_memory.hpp\"\n\n\n";
+            outCode << "#include \"sc-memory/cpp/sc_event.hpp\"\n\n\n";
 
             for (auto it = m_classes.begin(); it != m_classes.end(); ++it)
             {

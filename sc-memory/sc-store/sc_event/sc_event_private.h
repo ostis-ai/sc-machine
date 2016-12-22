@@ -25,8 +25,6 @@
  */
 struct _sc_event
 {
-    //! Pointer to context that create event
-    sc_memory_context const * ctx;
     //! sc-addr of listened sc-element
     sc_addr element;
     //! Event type
@@ -42,7 +40,9 @@ struct _sc_event
     //! Reference count (just references from queue). Higest bit used for SC_EVENT_REQUEST_DESTROY
     volatile sc_uint32 ref_count;
     //! Context lock 
-    volatile sc_memory_context * ctx_lock;
+    volatile sc_pointer thread_lock;
+    //! Access levels
+    sc_access_levels access_levels;
     
 };
 #pragma pack(pop)
@@ -77,15 +77,14 @@ sc_result sc_event_notify_element_deleted(sc_addr element);
 sc_result sc_event_emit(sc_memory_context const * ctx, sc_addr el, sc_access_levels el_acces, sc_event_type type, sc_addr edge, sc_addr other_el);
 
 /* Remove reference from event.
- * If event marked for destroy and reference count == 0,
- * then it would be free. In this case function returns SC_TRUE; otherwise - SC_FALSE
+ * Remove reference from an event
  */
-sc_bool sc_event_try_free(sc_memory_context const * ctx, sc_event * evt);
+sc_bool sc_event_unref(sc_event * evt);
 
 /* Lock sc-event by context
  */
-void sc_event_lock(sc_event * evt, sc_memory_context const * ctx);
+void sc_event_lock(sc_event * evt);
 
-void sc_event_unlock(sc_event * evt, sc_memory_context const * ctx);
+void sc_event_unlock(sc_event * evt);
 
 #endif
