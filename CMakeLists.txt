@@ -2,15 +2,17 @@ project (sc-machine)
 site_name (www.ostis.net)
 cmake_minimum_required (VERSION 2.8)
 
-set(SC_MACHINE_ROOT ${CMAKE_SOURCE_DIR})
+set(SC_BIN_PATH "${CMAKE_SOURCE_DIR}/bin")
+
+set(SC_MACHINE_ROOT ${CMAKE_CURRENT_LIST_DIR})
 set(SC_MACHINE_THIRDPARTY_PATH "${SC_MACHINE_ROOT}/thirdparty")
 set(SC_MACHINE_ANTRL_DIR "${SC_MACHINE_THIRDPARTY_PATH}/antlr")
 
 # codegen
 if (${UNIX})
-    set(SC_CODEGEN_TOOL "${SC_MACHINE_ROOT}/bin/sc-code-generator")
+    set(SC_CODEGEN_TOOL "${SC_BIN_PATH}/sc-code-generator")
 elseif (${WIN32})
-    set(SC_CODEGEN_TOOL "${SC_MACHINE_ROOT}/bin/sc-code-generator.exe")
+    set(SC_CODEGEN_TOOL "${SC_BIN_PATH}/sc-code-generator.exe")
 endif()
 include("cmake/codegen.cmake")
 
@@ -20,16 +22,16 @@ set(CMAKE_MODULE_PATH "${SC_MACHINE_ROOT}/cmake")
 
 set (JAVA_EXE ${Java_JAVA_EXECUTABLE})
 
-set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${SC_MACHINE_ROOT}/bin)
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${SC_MACHINE_ROOT}/bin)
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${SC_BIN_PATH})
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${SC_BIN_PATH})
 
-set(SC_EXTENSION_DIRECTORY "${SC_MACHINE_ROOT}/bin/extensions")
+set(SC_EXTENSION_DIRECTORY "${SC_BIN_PATH}/extensions")
 
 # for multi-config builds (e.g. msvc)
 foreach( OUTPUTCONFIG ${CMAKE_CONFIGURATION_TYPES} )
     string( TOUPPER ${OUTPUTCONFIG} OUTPUTCONFIG )
-    set( CMAKE_RUNTIME_OUTPUT_DIRECTORY_${OUTPUTCONFIG} ${SC_MACHINE_ROOT}/bin )
-    set( CMAKE_LIBRARY_OUTPUT_DIRECTORY_${OUTPUTCONFIG} ${SC_MACHINE_ROOT}/bin )
+    set( CMAKE_RUNTIME_OUTPUT_DIRECTORY_${OUTPUTCONFIG} ${SC_BIN_PATH} )
+    set( CMAKE_LIBRARY_OUTPUT_DIRECTORY_${OUTPUTCONFIG} ${SC_BIN_PATH} )
 endforeach( OUTPUTCONFIG CMAKE_CONFIGURATION_TYPES )
 
 set(SC_MEMORY_SRC "${SC_MACHINE_ROOT}/sc-memory")
@@ -146,7 +148,7 @@ elseif (${WIN32})
             "${LIBCURL_RUNTIME_PATH}/libeay32.dll"
             "${LIBCURL_RUNTIME_PATH}/ssleay32.dll"
 			)
-	file(COPY ${WIN_RUNTIME_LIBRARIES} DESTINATION "${SC_MACHINE_ROOT}/bin")
+	file(COPY ${WIN_RUNTIME_LIBRARIES} DESTINATION "${SC_BIN_PATH}")
 
 endif(${UNIX})
 
