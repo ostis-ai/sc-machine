@@ -8,6 +8,8 @@ set(SC_MACHINE_ROOT ${CMAKE_CURRENT_LIST_DIR})
 set(SC_MACHINE_THIRDPARTY_PATH "${SC_MACHINE_ROOT}/thirdparty")
 set(SC_MACHINE_ANTRL_DIR "${SC_MACHINE_THIRDPARTY_PATH}/antlr")
 
+option (SC_KPM_SCP "Flag to build SCP module" ON)
+
 # codegen
 if (${UNIX})
     set(SC_CODEGEN_TOOL "${SC_BIN_PATH}/sc-code-generator")
