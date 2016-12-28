@@ -26,13 +26,11 @@ set (SOURCES_C
 
 if (${WIN32})
 	set (BOOST_LIBS_LIST )
-	set (ANTLR_LIB antlr3c.${MSVC_SUFFIX})
 else()
  	set (BOOST_LIBS_LIST
  			boost_filesystem 
  			boost_program_options 
  			boost_system)
-	set (ANTLR_LIB antlr3c)
 endif (${WIN32})
 
 	

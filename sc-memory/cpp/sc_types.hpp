@@ -77,6 +77,21 @@ public:
   inline bool operator == (ScType const & other) { return (m_realType == other.m_realType); }
   inline RealType BitAnd(RealType const & inMask) const { return (m_realType & inMask); }
 
+  inline ScType operator | (ScType const & other) { return ScType(m_realType | other.m_realType); }
+  inline ScType operator & (ScType const & other) { return ScType(m_realType & other.m_realType); }
+
+  inline ScType & operator |= (ScType const & other)
+  {
+    m_realType |= other.m_realType;
+    return *this;
+  }
+
+  inline ScType & operator &= (ScType const & other)
+  {
+    m_realType &= other.m_realType;
+    return *this;
+  }
+
   operator RealType () const { return m_realType; }
 
 private:

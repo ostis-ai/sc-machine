@@ -27,16 +27,16 @@ private:
   std::string m_description;
 };
 
-class AssertException final : public ScException
+class ExceptionAssert final : public ScException
 {
 public:
-  explicit AssertException(std::string const & msg) : ScException("Assert: " + msg) {}
+  explicit ExceptionAssert(std::string const & msg) : ScException("Assert: " + msg) {}
 };
 
-class CriticalException final : public ScException 
+class ExceptionCritical final : public ScException
 {
 public:
-  explicit CriticalException(std::string const & msg) : ScException("Critical: " + msg) {}
+  explicit ExceptionCritical(std::string const & msg) : ScException("Critical: " + msg) {}
 };
 
 class ExceptionInvalidParams final : public ScException
@@ -55,6 +55,12 @@ class ExceptionItemNotFound final : public ScException
 {
 public:
   explicit ExceptionItemNotFound(std::string const & msg) : ScException("ItemNotFound: " + msg) {}
+};
+
+class ExceptionParseError final : public ScException
+{
+public:
+  explicit ExceptionParseError(std::string const & msg) : ScException("ParseError: " + msg) {}
 };
 
 #define error(__str) { throw ScException(__str); }
@@ -76,7 +82,7 @@ public:
   if (!(_expr)) \
 { \
   std::string _message = ::utils::impl::Message("SC_ASSERT("#_expr")", ::utils::impl::Message _msg); \
-  THROW_EXCEPTION(::utils::AssertException, _message, _file, _line); \
+  THROW_EXCEPTION(::utils::ExceptionAssert, _message, _file, _line); \
 } \
 }
 
@@ -96,7 +102,7 @@ public:
   if (_expr) {} else \
 { \
   std::string _message = ::utils::impl::Message(std::string(_name) + "("#_expr")", ::utils::impl::Message _msg); \
-  THROW_EXCEPTION(::utils::AssertException, _message, __FILE__, __LINE__); \
+  THROW_EXCEPTION(::utils::ExceptionAssert, _message, __FILE__, __LINE__); \
 } \
 } while (false);	// stop runtime
 
@@ -108,7 +114,7 @@ public:
   if ((_a) == (_b)) {} else \
 { \
   std::string _message = ::utils::impl::Message(std::string("SC_CHECK_EQUAL") + "("#_a" == "#_b")", ::utils::impl::Message _msg); \
-  THROW_EXCEPTION(::utils::AssertException, _message, __FILE__, __LINE__); \
+  THROW_EXCEPTION(::utils::ExceptionAssert, _message, __FILE__, __LINE__); \
 } \
 } while (false);	// stop runtime
 
@@ -118,7 +124,7 @@ public:
   if ((_a) != (_b)) {} else \
 { \
   std::string _message = ::utils::impl::Message(std::string("SC_CHECK_NOT_EQUAL") + "("#_a" != "#_b")", ::utils::impl::Message _msg); \
-  THROW_EXCEPTION(::utils::AssertException, _message, __FILE__, __LINE__); \
+  THROW_EXCEPTION(::utils::ExceptionAssert, _message, __FILE__, __LINE__); \
 } \
 } while (false);	// stop runtime
 
@@ -128,7 +134,7 @@ public:
   if ((_a) > (_b)) {} else \
 { \
   std::string _message = ::utils::impl::Message(std::string("SC_CHECK_GREAT") + "("#_a" > "#_b")", ::utils::impl::Message _msg); \
-  THROW_EXCEPTION(::utils::AssertException, _message, __FILE__, __LINE__); \
+  THROW_EXCEPTION(::utils::ExceptionAssert, _message, __FILE__, __LINE__); \
 } \
 } while (false);	// stop runtime
 
@@ -138,7 +144,7 @@ public:
   if ((_a) >= (_b)) {} else \
 { \
   std::string _message = ::utils::impl::Message(std::string("SC_CHECK_GREAT_EQ") + "("#_a" >= "#_b")", ::utils::impl::Message _msg); \
-  THROW_EXCEPTION(::utils::AssertException, _message, __FILE__, __LINE__); \
+  THROW_EXCEPTION(::utils::ExceptionAssert, _message, __FILE__, __LINE__); \
 } \
 } while (false);	// stop runtime
 
@@ -148,7 +154,7 @@ public:
   if ((_a) < (_b)) {} else \
 { \
   std::string _message = ::utils::impl::Message(std::string("SC_CHECK_LESS") + "("#_a" < "#_b")", ::utils::impl::Message _msg); \
-  THROW_EXCEPTION(::utils::AssertException, _message, __FILE__, __LINE__); \
+  THROW_EXCEPTION(::utils::ExceptionAssert, _message, __FILE__, __LINE__); \
 } \
 } while (false);	// stop runtime
 
@@ -158,7 +164,7 @@ public:
   if ((_a) <= (_b)) {} else \
 { \
   std::string _message = ::utils::impl::Message(std::string("SC_CHECK_LESS_EQ") + "("#_a" <= "#_b")", ::utils::impl::Message _msg); \
-  THROW_EXCEPTION(::utils::AssertException, _message, __FILE__, __LINE__); \
+  THROW_EXCEPTION(::utils::ExceptionAssert, _message, __FILE__, __LINE__); \
 } \
 } while (false);	// stop runtime
 

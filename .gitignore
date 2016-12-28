@@ -4,6 +4,9 @@ bin
 scripts/redis*
 
 tools/builder/src/parser/
+sc-memory/cpp/scs/scsLexer.*
+sc-memory/cpp/scs/scsParser.*
+sc-memory/cpp/scs/*.tokens
 *.generated.*
 
 !thirdparty/*/bin/
