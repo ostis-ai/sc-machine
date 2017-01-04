@@ -2,9 +2,11 @@ set(SCP_SRC "${SC_KPM_ROOT}/scp")
 
 set(SOURCES
         "scp.cpp"
+        "scpKeynodes.cpp"
 )
 set(HEADERS
         "scp.hpp"
+        "scpKeynodes.hpp"
 )
 
 include_directories(${SCP_SRC} ${SC_MEMORY_SRC} ${GLIB2_INCLUDE_DIRS})
