@@ -236,6 +236,147 @@ public:
 
     SC_PROPERTY(Keynode("order_role_relation"), ForceCreate)
     static ScAddr order_role_relation;
+
+//Operators
+    SC_PROPERTY(Keynode("scp_operator_atomic_type"), ForceCreate)
+    static ScAddr scp_operator_atomic_type;
+
+    SC_PROPERTY(Keynode("searchElStr3"), ForceCreate)
+    static ScAddr op_searchElStr3;
+    SC_PROPERTY(Keynode("searchElStr5"), ForceCreate)
+    static ScAddr op_searchElStr5;
+
+    SC_PROPERTY(Keynode("searchSetStr3"), ForceCreate)
+    static ScAddr op_searchSetStr3;
+    SC_PROPERTY(Keynode("searchSetStr5"), ForceCreate)
+    static ScAddr op_searchSetStr5;
+
+    SC_PROPERTY(Keynode("genEl"), ForceCreate)
+    static ScAddr op_genEl;
+    SC_PROPERTY(Keynode("genElStr3"), ForceCreate)
+    static ScAddr op_genElStr3;
+    SC_PROPERTY(Keynode("genElStr5"), ForceCreate)
+    static ScAddr op_genElStr5;
+
+    SC_PROPERTY(Keynode("eraseEl"), ForceCreate)
+    static ScAddr op_eraseEl;
+    SC_PROPERTY(Keynode("eraseElStr3"), ForceCreate)
+    static ScAddr op_eraseElStr3;
+    SC_PROPERTY(Keynode("eraseElStr5"), ForceCreate)
+    static ScAddr op_eraseElStr5;
+    SC_PROPERTY(Keynode("eraseSetStr3"), ForceCreate)
+    static ScAddr op_eraseSetStr3;
+    SC_PROPERTY(Keynode("eraseSetStr5"), ForceCreate)
+    static ScAddr op_eraseSetStr5;
+
+    SC_PROPERTY(Keynode("ifVarAssign"), ForceCreate)
+    static ScAddr op_ifVarAssign;
+    SC_PROPERTY(Keynode("ifFormCont"), ForceCreate)
+    static ScAddr op_ifFormCont;
+    SC_PROPERTY(Keynode("ifCoin"), ForceCreate)
+    static ScAddr op_ifCoin;
+    SC_PROPERTY(Keynode("ifType"), ForceCreate)
+    static ScAddr op_ifType;
+
+    SC_PROPERTY(Keynode("varAssign"), ForceCreate)
+    static ScAddr op_varAssign;
+
+#ifdef SCP_MATH
+    SC_PROPERTY(Keynode("ifEq"), ForceCreate)
+    static ScAddr op_ifEq;
+    SC_PROPERTY(Keynode("ifGr"), ForceCreate)
+    static ScAddr op_ifGr;
+
+    SC_PROPERTY(Keynode("contAdd"), ForceCreate)
+    static ScAddr op_contAdd;
+    SC_PROPERTY(Keynode("contDiv"), ForceCreate)
+    static ScAddr op_contDiv;
+    SC_PROPERTY(Keynode("contMult"), ForceCreate)
+    static ScAddr op_contMult;
+    SC_PROPERTY(Keynode("contSub"), ForceCreate)
+    static ScAddr op_contSub;
+    SC_PROPERTY(Keynode("contPow"), ForceCreate)
+    static ScAddr op_contPow;
+
+    SC_PROPERTY(Keynode("contLn"), ForceCreate)
+    static ScAddr op_contLn;
+    SC_PROPERTY(Keynode("contSin"), ForceCreate)
+    static ScAddr op_contSin;
+    SC_PROPERTY(Keynode("contCos"), ForceCreate)
+    static ScAddr op_contCos;
+    SC_PROPERTY(Keynode("contTg"), ForceCreate)
+    static ScAddr op_contTg;
+    SC_PROPERTY(Keynode("contASin"), ForceCreate)
+    static ScAddr op_contASin;
+    SC_PROPERTY(Keynode("contACos"), ForceCreate)
+    static ScAddr op_contACos;
+    SC_PROPERTY(Keynode("contATg"), ForceCreate)
+    static ScAddr op_contATg;
+
+    SC_PROPERTY(Keynode("contDivInt"), ForceCreate)
+    static ScAddr op_contDivInt;
+    SC_PROPERTY(Keynode("contDivRem"), ForceCreate)
+    static ScAddr op_contDivRem;
+#endif
+#ifdef SCP_STRING
+    SC_PROPERTY(Keynode("contStringConcat"), ForceCreate)
+    static ScAddr op_contStringConcat;
+    SC_PROPERTY(Keynode("stringIfEq"), ForceCreate)
+    static ScAddr op_stringIfEq;
+    SC_PROPERTY(Keynode("stringIfGr"), ForceCreate)
+    static ScAddr op_stringIfGr;
+    SC_PROPERTY(Keynode("stringSplit"), ForceCreate)
+    static ScAddr op_stringSplit;
+    SC_PROPERTY(Keynode("stringLen"), ForceCreate)
+    static ScAddr op_stringLen;
+    SC_PROPERTY(Keynode("stringSub"), ForceCreate)
+    static ScAddr op_stringSub;
+    SC_PROPERTY(Keynode("stringSlice"), ForceCreate)
+    static ScAddr op_stringSlice;
+    SC_PROPERTY(Keynode("stringStartsWith"), ForceCreate)
+    static ScAddr op_stringStartsWith;
+    SC_PROPERTY(Keynode("stringEndsWith"), ForceCreate)
+    static ScAddr op_stringEndsWith;
+    SC_PROPERTY(Keynode("stringReplace"), ForceCreate)
+    static ScAddr op_stringReplace;
+    SC_PROPERTY(Keynode("stringToUpperCase"), ForceCreate)
+    static ScAddr op_stringToUpperCase;
+    SC_PROPERTY(Keynode("stringToLowerCase"), ForceCreate)
+    static ScAddr op_stringToLowerCase;
+#endif
+
+    SC_PROPERTY(Keynode("contAssign"), ForceCreate)
+    static ScAddr op_contAssign;
+    SC_PROPERTY(Keynode("contErase"), ForceCreate)
+    static ScAddr op_contErase;
+
+    SC_PROPERTY(Keynode("print"), ForceCreate)
+    static ScAddr op_print;
+    SC_PROPERTY(Keynode("printNl"), ForceCreate)
+    static ScAddr op_printNl;
+    SC_PROPERTY(Keynode("printEl"), ForceCreate)
+    static ScAddr op_printEl;
+
+    SC_PROPERTY(Keynode("sys_search"), ForceCreate)
+    static ScAddr op_sys_search;
+    SC_PROPERTY(Keynode("sys_gen"), ForceCreate)
+    static ScAddr op_sys_gen;
+
+    SC_PROPERTY(Keynode("call"), ForceCreate)
+    static ScAddr op_call;
+    SC_PROPERTY(Keynode("waitReturn"), ForceCreate)
+    static ScAddr op_waitReturn;
+    SC_PROPERTY(Keynode("waitReturnSet"), ForceCreate)
+    static ScAddr op_waitReturnSet;
+    SC_PROPERTY(Keynode("return"), ForceCreate)
+    static ScAddr op_return;
+
+    SC_PROPERTY(Keynode("sys_wait"), ForceCreate)
+    static ScAddr op_sys_wait;
+
+    SC_PROPERTY(Keynode("syncronize"), ForceCreate)
+    static ScAddr op_syncronize;
+
 };
 
 }

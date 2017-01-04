@@ -90,4 +90,72 @@ ScAddr Keynodes::rrel_8;
 ScAddr Keynodes::rrel_9;
 ScAddr Keynodes::rrel_10;
 ScAddr Keynodes::order_role_relation;
+
+//Operators
+ScAddr Keynodes::scp_operator_atomic_type;
+ScAddr Keynodes::op_searchElStr3;
+ScAddr Keynodes::op_searchElStr5;
+ScAddr Keynodes::op_searchSetStr3;
+ScAddr Keynodes::op_searchSetStr5;
+ScAddr Keynodes::op_genEl;
+ScAddr Keynodes::op_genElStr3;
+ScAddr Keynodes::op_genElStr5;
+ScAddr Keynodes::op_eraseEl;
+ScAddr Keynodes::op_eraseElStr3;
+ScAddr Keynodes::op_eraseElStr5;
+ScAddr Keynodes::op_eraseSetStr3;
+ScAddr Keynodes::op_eraseSetStr5;
+ScAddr Keynodes::op_ifVarAssign;
+ScAddr Keynodes::op_ifFormCont;
+ScAddr Keynodes::op_ifCoin;
+ScAddr Keynodes::op_ifType;
+ScAddr Keynodes::op_varAssign;
+
+#ifdef SCP_MATH
+ScAddr Keynodes::op_ifEq;
+ScAddr Keynodes::op_ifGr;
+ScAddr Keynodes::op_contAdd;
+ScAddr Keynodes::op_contDiv;
+ScAddr Keynodes::op_contMult;
+ScAddr Keynodes::op_contSub;
+ScAddr Keynodes::op_contPow;
+ScAddr Keynodes::op_contLn;
+ScAddr Keynodes::op_contSin;
+ScAddr Keynodes::op_contCos;
+ScAddr Keynodes::op_contTg;
+ScAddr Keynodes::op_contASin;
+ScAddr Keynodes::op_contACos;
+ScAddr Keynodes::op_contATg;
+ScAddr Keynodes::op_contDivInt;
+ScAddr Keynodes::op_contDivRem;
+#endif
+
+#ifdef SCP_STRING
+ScAddr Keynodes::op_contStringConcat;
+ScAddr Keynodes::op_stringIfEq;
+ScAddr Keynodes::op_stringIfGr;
+ScAddr Keynodes::op_stringSplit;
+ScAddr Keynodes::op_stringLen;
+ScAddr Keynodes::op_stringSub;
+ScAddr Keynodes::op_stringSlice;
+ScAddr Keynodes::op_stringStartsWith;
+ScAddr Keynodes::op_stringEndsWith;
+ScAddr Keynodes::op_stringReplace;
+ScAddr Keynodes::op_stringToUpperCase;
+ScAddr Keynodes::op_stringToLowerCase;
+#endif
+
+ScAddr Keynodes::op_contAssign;
+ScAddr Keynodes::op_contErase;
+ScAddr Keynodes::op_print;
+ScAddr Keynodes::op_printNl;
+ScAddr Keynodes::op_printEl;
+ScAddr Keynodes::op_sys_search;
+ScAddr Keynodes::op_sys_gen;
+ScAddr Keynodes::op_call;
+ScAddr Keynodes::op_waitReturn;
+ScAddr Keynodes::op_waitReturnSet;
+ScAddr Keynodes::op_return;
+ScAddr Keynodes::op_sys_wait;
+ScAddr Keynodes::op_syncronize;
 }

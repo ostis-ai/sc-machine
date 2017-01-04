@@ -9,6 +9,9 @@ set(HEADERS
         "scpKeynodes.hpp"
 )
 
+add_definitions(-DSCP_MATH)
+add_definitions(-DSCP_STRING)
+
 include_directories(${SCP_SRC} ${SC_MEMORY_SRC} ${GLIB2_INCLUDE_DIRS})
 
 add_library (scp SHARED ${SOURCES} ${HEADERS})
