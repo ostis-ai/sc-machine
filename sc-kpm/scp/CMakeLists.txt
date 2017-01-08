@@ -3,10 +3,14 @@ set(SCP_SRC "${SC_KPM_ROOT}/scp")
 set(SOURCES
         "scp.cpp"
         "scpKeynodes.cpp"
+        "scpProcessCreator.cpp"
+        "scpUtils.cpp"
 )
 set(HEADERS
         "scp.hpp"
         "scpKeynodes.hpp"
+        "scpProcessCreator.hpp"
+        "scpUtils.hpp"
 )
 
 add_definitions(-DSCP_MATH)

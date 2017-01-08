@@ -1,0 +1,46 @@
+/*
+* This source file is part of an OSTIS project. For the latest info, see http://ostis.net
+* Distributed under the MIT License
+* (See accompanying file COPYING.MIT or copy at http://opensource.org/licenses/MIT)
+*/
+
+#pragma once
+
+#include "sc-memory/cpp/sc_memory.hpp"
+
+namespace scp
+{
+namespace Utils
+{
+
+/*! Adds element (elAddr) into set (setAddr).
+ * @returns If element already exists in set, then do nothing and returns false. Otherwise
+ * add element into set and returns true.
+ */
+bool addToSet(ScMemoryContext & ctx, ScAddr const & setAddr, ScAddr const & elAddr);
+
+/*! Remove element (elAddr) from set (setAddr)
+ * @returns If element doesn't exist in set, then do nothing and returns false. Otherwise
+ * remove element from set and returns true.
+ */
+bool removeFromSet(ScMemoryContext & ctx, ScAddr const & setAddr, ScAddr const & elAddr);
+
+/*! Resolves order role relation (1'-10') (relationAddr) of given arc (arcAddr)
+ * @returns true, if relation resolved
+ */
+bool resolveOrderRoleRelation(ScMemoryContext & ctx, ScAddr const & arcAddr, ScAddr &relationAddr);
+
+/*! Prints system identifier or address of sc-element (elemAddr)
+ */
+void printSystemIdentifier(ScMemoryContext & ctx, ScAddr const & elemAddr);
+
+/*! Prints semantic neighborhood of sc-element (elemAddr)
+ */
+void printInfo(ScMemoryContext & ctx, ScAddr const & elemAddr);
+
+/*! Logs error about missed parameter of scp-program with number (order)
+ */
+void logMissedParameterError(ScMemoryContext & ctx, ScAddr &order);
+
+}
+}
