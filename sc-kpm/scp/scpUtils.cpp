@@ -98,13 +98,13 @@ void printInfo(ScMemoryContext & ctx, ScAddr const & elemAddr)
     it = ctx.iterator3(elemAddr, SC_TYPE(0), SC_TYPE(0));
     while (it->next())
     {
-        c_in++;
+        c_out++;
         cout << "\t" << it->value(1).getRealAddr().seg << "|" << it->value(1).getRealAddr().offset;
         if (ctx.getElementType(it->value(1)).bitAnd(sc_type_arc_access))
             cout << " -> ";
         else
             cout << " => ";
-        printSystemIdentifier(ctx, it->value(0));
+        printSystemIdentifier(ctx, it->value(2));
         cout << endl;
     }
     cout << "Total output arcs: " << c_out << endl;
