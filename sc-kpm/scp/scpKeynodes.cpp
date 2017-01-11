@@ -26,6 +26,7 @@ ScAddr Keynodes::question_finished_unsuccessfully;
 ScAddr Keynodes::scp_process;
 ScAddr Keynodes::abstract_scp_machine;
 ScAddr Keynodes::nrel_scp_process;
+ScAddr Keynodes::nrel_decomposition_of_action;
 ScAddr Keynodes::nrel_authors;
 ScAddr Keynodes::nrel_system_identifier;
 ScAddr Keynodes::active_action;

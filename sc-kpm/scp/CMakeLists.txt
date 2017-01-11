@@ -4,12 +4,14 @@ set(SOURCES
         "scp.cpp"
         "scpKeynodes.cpp"
         "scpProcessCreator.cpp"
+        "scpProcessDestroyer.cpp"
         "scpUtils.cpp"
 )
 set(HEADERS
         "scp.hpp"
         "scpKeynodes.hpp"
         "scpProcessCreator.hpp"
+        "scpProcessDestroyer.hpp"
         "scpUtils.hpp"
 )
 

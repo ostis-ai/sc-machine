@@ -62,6 +62,9 @@ public:
     SC_PROPERTY(Keynode("abstract_scp_machine"), ForceCreate)
     static ScAddr abstract_scp_machine;
 
+    SC_PROPERTY(Keynode("nrel_decomposition_of_action"), ForceCreate)
+    static ScAddr nrel_decomposition_of_action;
+
     SC_PROPERTY(Keynode("nrel_scp_process"), ForceCreate)
     static ScAddr nrel_scp_process;
 

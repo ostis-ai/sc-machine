@@ -18,4 +18,5 @@ class scpModule : public ScModule
 
     sc_result initializeImpl();
     sc_result shutdownImpl();
+
 };
