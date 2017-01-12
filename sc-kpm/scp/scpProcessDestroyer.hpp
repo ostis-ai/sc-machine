@@ -25,6 +25,9 @@ public:
     SC_PROPERTY(Keynode("sc_agent_of_scp_process_destruction"), ForceCreate)
     static ScAddr msAgentKeynode;
 
+private:
+    void deleteSCPVarsSet(ScAddr & setAddr);
+
 };
 
 }
