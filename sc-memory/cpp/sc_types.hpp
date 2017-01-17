@@ -73,6 +73,11 @@ public:
 		return (mRealType & sc_type_var) != 0;
 	}
 
+    inline bool isValid() const
+    {
+        return (mRealType != 0);
+    }
+
 	// Returns copy of this type, but with variable raplaced to const
 	inline ScType asConst() const
 	{

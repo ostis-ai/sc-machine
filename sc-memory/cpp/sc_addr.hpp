@@ -18,7 +18,6 @@ extern "C"
 
 typedef sc_addr tRealAddr;
 
-
 class _SC_EXTERN ScAddr
 {
 	friend class ScMemoryContext;
@@ -27,18 +26,21 @@ class _SC_EXTERN ScAddr
     template <typename ParamType1, typename ParamType2, typename ParamType3, typename ParamType4, typename ParamType5> friend class TIterator5;
 
 public:
+    using HashType = uint64_t;
+
+    explicit ScAddr();
+    explicit ScAddr(sc_addr const & addr);
+
     bool isValid() const;
     void reset();
 
 	bool operator == (ScAddr const & other) const;
 	bool operator != (ScAddr const & other) const;
 	tRealAddr operator * () const;
+    HashType hash() const;
 
 	/// TODO: remove and replace by operator * ()
     tRealAddr const & getRealAddr() const;
-
-	explicit ScAddr();
-	explicit ScAddr(sc_addr const & addr);
 
 protected:
     tRealAddr mRealAddr;
@@ -46,7 +48,6 @@ protected:
 
 typedef std::vector<ScAddr> tAddrVector;
 typedef std::list<ScAddr> tAddrList;
-
 
 struct RealAddrLessFunc
 {
