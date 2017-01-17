@@ -27,6 +27,11 @@ void ScAddr::reset()
     SC_ADDR_MAKE_EMPTY(mRealAddr);
 }
 
+ScAddr::HashType ScAddr::hash() const
+{
+    return ((mRealAddr.seg << 16) | mRealAddr.offset);
+}
+
 bool ScAddr::operator == (ScAddr const & other) const
 {
     return SC_ADDR_IS_EQUAL(mRealAddr, other.mRealAddr);

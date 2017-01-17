@@ -39,11 +39,22 @@ public:
 	throw _exception_class(_str_message.str()); \
 }
 
-#define _ASSERT_IMPL(_expr, _msg, _file, _line) { if (!(_expr)) { THROW_EXCEPTION(::utils::AssertException, _msg, _file, _line); } }
+#define _ASSERT_IMPL(_expr, _msg, _file, _line) \
+{ \
+    if (!(_expr)) \
+    { \
+        std::string _message = ::utils::impl::Message("SC_ASSERT("#_expr")", ::utils::impl::Message _msg); \
+        THROW_EXCEPTION(::utils::AssertException, _message, _file, _line); \
+    } \
+}
 
-#if DNA_DEBUG_MODE
-#	define ASSERT(_expr, _msg) { bool v = (_expr); _ASSERT_IMPL(_expr, _msg, __FILE__, __LINE__) }
+#if SC_DEBUG_MODE
+#	define SC_ASSERT(_expr, _msg) { _ASSERT_IMPL( _expr, _msg, __FILE__, __LINE__ ); }
+// will be removed use SC_ASSERT instead
+#	define ASSERT(_expr, _msg) { _ASSERT_IMPL(_expr, _msg, __FILE__, __LINE__); }
 #else
+#	define SC_ASSERT(_expr, _msg)
+// will be removed use SC_ASSERT instead
 #	define ASSERT(_expr, _msg)
 #endif
 

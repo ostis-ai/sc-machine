@@ -6,101 +6,146 @@
 
 #include "sc_template.hpp"
 #include "sc_memory.hpp"
+#include "sc_debug.hpp"
 
 #include <algorithm>
 
+namespace
+{
+
+class ObjectInfo
+{
+public:
+    ObjectInfo(ScAddr const & inAddr, ScType const & inType, std::string const & inSysIdtf)
+        : mAddr(inAddr)
+        , mType(inType)
+        , mSysIdtf(inSysIdtf)
+        , mSource(nullptr)
+        , mTarget(nullptr)
+    {
+    }
+
+    inline bool isEdge() const
+    {
+        return mType.isEdge();
+    }
+
+    inline ObjectInfo const * getSource() const
+    {
+        return mSource;
+    }
+    
+    inline ObjectInfo const * getTarget() const
+    {
+        return mTarget;
+    }
+    
+    inline ScAddr const & getAddr() const
+    {
+        return mAddr;
+    }
+    
+    inline std::string const & getIdtf() const
+    {
+        return mSysIdtf;
+    }
+    
+    inline ScType const & getType() const
+    {
+        return mType;
+    }
+
+    inline void setSource(ObjectInfo * src)
+    {
+        mSource = src;
+    }
+
+    inline void setTarget(ObjectInfo * trg)
+    {
+        mTarget = trg;
+    }
+
+    inline uint32_t calculateEdgeRank() const
+    {
+        SC_ASSERT(isEdge(), ());
+        SC_ASSERT(mSource, ());
+        SC_ASSERT(mTarget, ());
+        return (mSource->getType().isConst() ? 1 : 0) +
+               (mTarget->getType().isConst() ? 1 : 0);
+    }
+
+private:
+    ScAddr mAddr;
+    ScType mType;
+    std::string mSysIdtf;
+
+    // edge data
+    ObjectInfo * mSource;
+    ObjectInfo * mTarget;
+};
+
+class EdgeLessFunctor
+{
+    using EdgeDependMap = std::unordered_multimap<ScAddr::HashType, ScAddr::HashType>;
+    using ObjectVector = std::vector<ObjectInfo>;
+
+public:
+    explicit EdgeLessFunctor(EdgeDependMap const & edgeDependMap, ObjectVector const & objects)
+        : mEdgeDependMap(edgeDependMap)
+        , mObjects(objects)
+    {
+    }
+
+    // returns true, when edge srouce/target objects depend on otherEdge construction
+    bool isEdgeDependOnOther(ScAddr::HashType const & edge, ScAddr::HashType const & otherEdge) const
+    {
+        // TODO: support possible loops
+        auto const range = mEdgeDependMap.equal_range(edge);
+        for (auto it = range.first; it != range.second; ++it)
+        {
+            if (it->second)
+            {
+                return true;
+            }
+            else if (isEdgeDependOnOther(it->second, otherEdge))
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    bool operator() (size_t const indexA, size_t const indexB) const
+    {
+        ObjectInfo const & objA = mObjects[indexA];
+        ObjectInfo const & objB = mObjects[indexB];
+
+        SC_ASSERT(objA.isEdge(), ());
+        SC_ASSERT(objB.isEdge(), ());
+
+        if (isEdgeDependOnOther(objA.getAddr().hash(), objB.getAddr().hash()))
+            return false;
+
+        uint32_t const rankA = objA.calculateEdgeRank();
+        uint32_t const rankB = objB.calculateEdgeRank();
+
+        if (rankA != rankB)
+            return rankA < rankB;
+
+        return objA.getAddr().hash() < objB.getAddr().hash();
+    }
+
+private:
+    EdgeDependMap const & mEdgeDependMap;
+    ObjectVector const & mObjects;
+};
+
+} // namespace
+
 class ScTemplateBuilder
 {
-    friend class ScTemplate;
-
-    typedef std::map<tRealAddr, size_t, RealAddrLessFunc> tAddrToIndexMap;
-
-    struct ObjectInfo
-    {
-        ScAddr mAddr;
-        ScType mType;
-        std::string mSysIdtf;
-
-        ObjectInfo(ScAddr const & inAddr, ScType const & inType, std::string const & inSysIdtf)
-            : mAddr(inAddr)
-            , mType(inType)
-            , mSysIdtf(inSysIdtf)
-        {
-        }
-    };
-
-    struct EdgeInfo
-    {
-        size_t mSourceObject;
-        size_t mTargetObject;
-        ScType mType;
-        size_t mEdgeIndex;
-
-        EdgeInfo()
-            : mSourceObject(-1)
-            , mTargetObject(-1)
-            , mType(0)
-            , mEdgeIndex(-1)
-        {
-        }
-
-        EdgeInfo(size_t inSourceObject, size_t inTargetObject, ScType const & inType, size_t inEdgeIndex)
-            : mSourceObject(inSourceObject)
-            , mTargetObject(inTargetObject)
-            , mType(inType)
-            , mEdgeIndex(inEdgeIndex)
-        {
-        }
-    };
-
-    struct EdgeCompareLess
-    {
-        EdgeCompareLess(ScTemplateBuilder * builder)
-            : mBuilder(builder)
-        {
-            check_expr(mBuilder);
-        }
-
-        bool _isEdgeDependOnOther(EdgeInfo const & left, EdgeInfo const & right) const
-        {
-            check_expr(left.mTargetObject < mBuilder->mObjects.size());
-
-            ObjectInfo & trgObj = mBuilder->mObjects[left.mTargetObject];
-            if (trgObj.mType.isEdge())
-            {
-                tAddrToIndexMap::const_iterator it = mBuilder->mEdgeAddrToEdgeIndex.find(*trgObj.mAddr);
-                check_expr(it != mBuilder->mEdgeAddrToEdgeIndex.end());
-                check_expr(it->second < mBuilder->mEdges.size());
-
-                return _isEdgeDependOnOther(mBuilder->mEdges[it->second], right);
-            }
-
-            return false;
-        }
-
-        bool operator() (EdgeInfo const & left, EdgeInfo const & right) const
-        {
-            ObjectInfo const & leftTrg = mBuilder->mObjects[left.mTargetObject];
-            ObjectInfo const & rightTrg = mBuilder->mObjects[right.mTargetObject];
-
-            // compare by end element type (edge - not good)
-            bool const isLeftEdge = leftTrg.mType.isEdge();
-            bool const isRightEdge = rightTrg.mType.isEdge();
-            if (!isLeftEdge && isRightEdge)
-                return true;
-            if (isLeftEdge && !isRightEdge)
-                return false;
-
-            // check if edge depend on other edge
-            if (_isEdgeDependOnOther(left, right))
-                return false;
-
-            return (left.mEdgeIndex < right.mEdgeIndex);
-        }
-
-    protected:
-        ScTemplateBuilder * mBuilder;
-    };
+    friend class ScTemplate;  
 
 protected:
     ScTemplateBuilder(ScAddr const & inScTemplateAddr, ScMemoryContext & inCtx)
@@ -111,154 +156,169 @@ protected:
 
     bool operator() (ScTemplate * inTemplate)
     {
-        /// TODO: lock structure
-        /// TODO: check for duplicates
+        // TODO: add struct blocking
+        // TODO: provide error codes
+        std::unordered_map<ScAddr::HashType, size_t> addrToObjectIndex;
+        std::unordered_multimap<ScAddr::HashType, ScAddr::HashType> edgeDependMap;
+        std::vector<size_t> edgeIndices;
 
-        inTemplate->clear();
+        mObjects.reserve(1024);
+        edgeIndices.reserve(512);
 
-        // first of all iterate all objects in template
         size_t index = 0;
-        mObjects.clear();
-        mObjects.reserve(128);
-        ScIterator3Ptr iterObj = mContext.iterator3(mScTemplateAddr, SC_TYPE(sc_type_arc_pos_const_perm), SC_TYPE(0));
-        while (iterObj->next())
+
+        ScIterator3Ptr iter = mContext.iterator3(
+            mScTemplateAddr,
+            *ScType::EDGE_ACCESS_CONST_POS_PERM,
+            *ScType());
+
+        while (iter->next())
         {
-            ScAddr const addr = iterObj->value(2);
-            ScType const type = mContext.getElementType(addr);
-            std::string idtf = mContext.helperGetSystemIdtf(addr);
+            ScAddr const objAddr = iter->value(2);
+            ScAddr::HashType const objHash = objAddr.hash();
 
-            if (idtf.empty())
-            {
-                std::stringstream ss;
-                ss << "obj_" << index++;
-                idtf = ss.str();
-            }
+            auto const it = addrToObjectIndex.find(objHash);
+            if (it != addrToObjectIndex.end())
+                continue; // object already exist
 
-            size_t const index = mObjects.size();
-            if (type.isConst())
-            {
-                mConstObjectIndicies.push_back(index);
-            }
-            else
-            {
-                mVarObjectIndicies.push_back(index);
-            }
+            addrToObjectIndex[objHash] = mObjects.size();
 
-            if (type.isEdge())
-                mEdgeIndicies.push_back(index);
+            ScType const objType = mContext.getElementType(objAddr);
+            if (!objType.isValid())
+                return false; // template corrupted
 
-            mAddrToIndex[*addr] = index;
-            mObjects.push_back(ObjectInfo(addr, type, idtf));
+            std::string objIdtf = mContext.helperGetSystemIdtf(objAddr);
+            if (objIdtf.empty())
+                objIdtf = "..obj_" + std::to_string(index++);
+
+            if (objType.isEdge())
+                edgeIndices.emplace_back(mObjects.size());
+
+            mObjects.emplace_back(objAddr, objType, objIdtf);
         }
 
-        // iterate all edges, to detect begin and end elements
+        // iterate all edges and determine source/target objects
+        for (auto const i : edgeIndices)
         {
-            size_t const edgeNum = mEdgeIndicies.size();
-            mEdges.clear();
-            mEdges.resize(edgeNum);
-            for (size_t i = 0; i < edgeNum; ++i)
-            {
-                ObjectInfo const & object = mObjects[mEdgeIndicies[i]];
-                check_expr(object.mType.isEdge());
+            ObjectInfo & obj = mObjects[i];
 
-                ScAddr edgeAddr = object.mAddr;
-                EdgeInfo & edge = mEdges[i];
+            // determine source and target objects
+            ScAddr src, trg;
+            if (!mContext.getEdgeInfo(obj.getAddr(), src, trg))
+                return false; // edge already doesn't exist
 
-                check_expr(edgeAddr.isValid());
+            auto const itSrc = addrToObjectIndex.find(src.hash());
+            if (itSrc == addrToObjectIndex.end())
+                return false; // edge source doesn't exist in template
 
-                ScAddr sourceAddr = mContext.getEdgeSource(edgeAddr);
-                ScAddr targetAddr = mContext.getEdgeTarget(edgeAddr);
-                check_expr(sourceAddr.isValid() && targetAddr.isValid());
+            auto const itTrg = addrToObjectIndex.find(trg.hash());
+            if (itTrg == addrToObjectIndex.end())
+                return false; // target source doesn't exist in template
 
-                tAddrToIndexMap::const_iterator it = mAddrToIndex.find(*sourceAddr);
-                if (it == mAddrToIndex.end())
-                    return false;	/// TODO: provide error code
+            ObjectInfo * srcObj = &(mObjects[itSrc->second]);
+            ObjectInfo * trgObj = &(mObjects[itTrg->second]);
 
-                edge.mSourceObject = it->second;
+            if (srcObj->isEdge())
+                edgeDependMap.insert({ obj.getAddr().hash(), srcObj->getAddr().hash() });
+            if (trgObj->isEdge())
+                edgeDependMap.insert({ obj.getAddr().hash(), srcObj->getAddr().hash() });
 
-                it = mAddrToIndex.find(*targetAddr);
-                if (it == mAddrToIndex.end())
-                    return false;	/// TODO: provide error code
-
-                edge.mTargetObject = it->second;
-                edge.mType = object.mType;
-                edge.mEdgeIndex = i;
-
-                mEdgeAddrToEdgeIndex[*edgeAddr] = edge.mEdgeIndex;
-            }
+            obj.setSource(srcObj);
+            obj.setTarget(trgObj);
         }
 
-        // sort edges by next rules:
-        // - more constants at the begin
-        // - more nodes at the begin
-        // - edges that depends on other ones moved to the end
-        {
-            EdgeCompareLess compare(this);
-            std::sort(mEdges.begin(), mEdges.end(), compare);
-        }
+        // now need to sort edges for suitable creation order
+        std::sort(edgeIndices.begin(), edgeIndices.end(), EdgeLessFunctor(edgeDependMap, mObjects));
 
-        // build template
+        // build template 
         {
-            size_t const edgeNum = mEdges.size();
-            for (size_t i = 0; i < edgeNum; ++i)
+            for (auto const i : edgeIndices)
             {
-                EdgeInfo const & edge = mEdges[i];
-                check_expr(edge.mType.isVar());
+                ObjectInfo const & edge = mObjects[i];
+                SC_ASSERT(edge.getType().isVar(), ());
 
-                ObjectInfo const & edgeObj = mObjects[mEdgeIndicies[edge.mEdgeIndex]];
-                ObjectInfo const & src = mObjects[edge.mSourceObject];
-                ObjectInfo const & trg = mObjects[edge.mTargetObject];
+                ObjectInfo const * src = edge.getSource();
+                ObjectInfo const * trg = edge.getTarget();
 
-                /// TODO: replacements
-                if (src.mType.isConst())
+                ScType const srcType = src->getType();
+                ScType const trgType = trg->getType();
+
+                if (srcType.isConst())
                 {
-                    if (trg.mType.isConst())	// F_A_F
+                    if (trgType.isConst())  // F_A_F 
                     {
-                        inTemplate->triple(src.mAddr >> src.mSysIdtf, edge.mType >> edgeObj.mSysIdtf, trg.mAddr >> trg.mSysIdtf);
+                        inTemplate->triple(
+                            src->getAddr() >> src->getIdtf(), 
+                            edge.getType() >> edge.getIdtf(),
+                            trg->getAddr() >> trg->getIdtf());
                     }
                     else
                     {
-                        if (inTemplate->hasReplacement(trg.mSysIdtf)) // F_A_F
+                        if (inTemplate->hasReplacement(trg->getIdtf())) // F_A_F 
                         {
-                            inTemplate->triple(src.mAddr >> src.mSysIdtf, edge.mType >> edgeObj.mSysIdtf, trg.mSysIdtf);
+                            inTemplate->triple(
+                                src->getAddr() >> src->getIdtf(),
+                                edge.getType() >> edge.getIdtf(),
+                                trg->getIdtf());
                         }
-                        else // F_A_A
+                        else // F_A_A 
                         {
-                            inTemplate->triple(src.mAddr >> src.mSysIdtf, edge.mType >> edgeObj.mSysIdtf, trg.mType >> trg.mSysIdtf);
+                            inTemplate->triple(
+                                src->getAddr() >> src->getIdtf(),
+                                edge.getType() >> edge.getIdtf(),
+                                trgType >> trg->getIdtf());
                         }
                     }
                 }
-                else if (trg.mType.isConst())
+                else if (trgType.isConst())
                 {
-                    if (inTemplate->hasReplacement(src.mSysIdtf)) // F_A_F
+                    if (inTemplate->hasReplacement(src->getIdtf())) // F_A_F 
                     {
-                        inTemplate->triple(src.mSysIdtf, edge.mType >> edgeObj.mSysIdtf, trg.mAddr >> trg.mSysIdtf);
+                        inTemplate->triple(
+                            src->getIdtf(),
+                            edge.getType() >> edge.getIdtf(),
+                            trg->getAddr() >> trg->getIdtf());
                     }
-                    else // A_A_F
+                    else // A_A_F 
                     {
-                        inTemplate->triple(src.mType >> src.mSysIdtf, edge.mType >> edgeObj.mSysIdtf, trg.mAddr >> trg.mSysIdtf);
+                        inTemplate->triple(
+                            srcType >> src->getIdtf(),
+                            edge.getType() >> edge.getIdtf(),
+                            trg->getAddr() >> trg->getIdtf());
                     }
                 }
                 else
                 {
-                    bool const srcRepl = inTemplate->hasReplacement(src.mSysIdtf);
-                    bool const trgRepl = inTemplate->hasReplacement(trg.mSysIdtf);
+                    bool const srcRepl = inTemplate->hasReplacement(src->getIdtf());
+                    bool const trgRepl = inTemplate->hasReplacement(trg->getIdtf());
 
-                    if (srcRepl && trgRepl) // F_A_F
+                    if (srcRepl && trgRepl) // F_A_F 
                     {
-                        inTemplate->triple(src.mSysIdtf, edge.mType >> edgeObj.mSysIdtf, trg.mSysIdtf);
+                        inTemplate->triple(
+                            src->getIdtf(),
+                            edge.getType() >> edge.getIdtf(),
+                            trg->getIdtf());
                     }
-                    else if (!srcRepl && trgRepl) // A_A_F
+                    else if (!srcRepl && trgRepl) // A_A_F 
                     {
-                        inTemplate->triple(src.mType >> src.mSysIdtf, edge.mType >> edgeObj.mSysIdtf, trg.mSysIdtf);
+                        inTemplate->triple(
+                            srcType >> src->getIdtf(),
+                            edge.getType() >> edge.getIdtf(),
+                            trg->getIdtf());
                     }
-                    else if (srcRepl && !trgRepl) // F_A_A
+                    else if (srcRepl && !trgRepl) // F_A_A 
                     {
-                        inTemplate->triple(src.mSysIdtf, edge.mType >> edgeObj.mSysIdtf, trg.mType >> trg.mSysIdtf);
+                        inTemplate->triple(
+                            src->getIdtf(),
+                            edge.getType() >> edge.getIdtf(),
+                            trgType >> trg->getIdtf());
                     }
                     else
                     {
-                        inTemplate->triple(src.mType >> src.mSysIdtf, edge.mType >> edgeObj.mSysIdtf, trg.mType >> trg.mSysIdtf);
+                        inTemplate->triple(
+                            srcType >> src->getIdtf(),
+                            edge.getType() >> edge.getIdtf(),
+                            trgType >> trg->getIdtf());
                     }
                 }
             }
@@ -273,14 +333,6 @@ protected:
 
     // all objects in template
     std::vector<ObjectInfo> mObjects;
-    std::vector<EdgeInfo> mEdges;
-    tAddrToIndexMap mAddrToIndex;
-    tAddrToIndexMap mEdgeAddrToEdgeIndex;
-
-    // indecies of objects by type
-    std::vector<size_t> mConstObjectIndicies;
-    std::vector<size_t> mVarObjectIndicies;
-    std::vector<size_t> mEdgeIndicies;
 };
 
 bool ScTemplate::fromScTemplate(ScMemoryContext & ctx, ScAddr const & scTemplateAddr)
