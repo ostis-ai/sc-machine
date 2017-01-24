@@ -70,7 +70,7 @@ class ScWait
 	};
 
 public:
-	explicit ScWait(const ScMemoryContext & ctx, const ScAddr & addr)
+	ScWait(const ScMemoryContext & ctx, const ScAddr & addr)
         : mEvent(ctx, addr, 
                  std::bind(&ScWait<EventClassT>::OnEvent,
                            this, 
@@ -115,7 +115,7 @@ public:
 
     using DelegateCheckFunc = std::function<bool(ScAddr const &, ScAddr const &, ScAddr const &)>;
 
-	explicit ScWaitCondition(const ScMemoryContext & ctx, const ScAddr & addr, DelegateCheckFunc func)
+	ScWaitCondition(const ScMemoryContext & ctx, const ScAddr & addr, DelegateCheckFunc func)
         : ScWait<EventClassT>(ctx, addr)
 		, mCheckFunc(func)
 	{
@@ -129,6 +129,17 @@ private:
 
 private:
 	DelegateCheckFunc mCheckFunc;
+};
+
+/* Implements waiting of 
+ */
+class ScWaitActionFinished final : public ScWait<ScEventAddInputEdge>
+{
+public:
+    _SC_EXTERN ScWaitActionFinished(ScMemoryContext const & ctx, ScAddr const & actionAddr);
+
+private:
+    virtual bool OnEventImpl(ScAddr const & listenAddr, ScAddr const & edgeAddr, ScAddr const & otherAddr) override;
 };
 
 #define SC_WAIT_CHECK(_func) std::bind(_func, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3)

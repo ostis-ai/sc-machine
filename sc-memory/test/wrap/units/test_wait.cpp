@@ -6,21 +6,24 @@
 
 #include "../test.hpp"
 #include "sc-memory/cpp/sc_wait.hpp"
+#include "sc-memory/cpp/kpm/sc_agent.hpp"
 
 namespace
 {
 	// waiters threads
 	struct WaitTestData
 	{
-		WaitTestData(ScMemoryContext & ctx, const ScAddr & addr)
+		WaitTestData(ScMemoryContext & ctx, ScAddr const & addr, ScAddr const & addrFrom = ScAddr())
 			: mContext(ctx)
 			, mAddr(addr)
+            , mAddrFrom(addrFrom)
 			, mIsDone(false)
 		{
 		}
 
 		ScMemoryContext & mContext;
 		ScAddr mAddr;
+        ScAddr mAddrFrom;
 		bool mIsDone;
 	};
 	gpointer emit_event_thread(gpointer data)
@@ -28,10 +31,10 @@ namespace
 		WaitTestData * d = (WaitTestData*)data;
 		g_usleep(500000);	// sleep to run some later
 
-		const ScAddr node = d->mContext.createNode(*ScType::NODE_CONST);
-		const ScAddr arc = d->mContext.createEdge(*ScType::EDGE_ACCESS_CONST_POS_PERM, node, d->mAddr);
+		ScAddr const node = d->mAddrFrom.isValid() ? d->mAddrFrom : d->mContext.createNode(*ScType::NODE_CONST);
+		ScAddr const edge = d->mContext.createEdge(*ScType::EDGE_ACCESS_CONST_POS_PERM, node, d->mAddr);
 
-		d->mIsDone = arc.isValid();
+		d->mIsDone = edge.isValid();
 
 		return nullptr;
 	}
@@ -39,6 +42,7 @@ namespace
 
 UNIT_TEST(waiter)
 {
+    ScAgentInit(true);
 	ScMemoryContext ctx(sc_access_lvl_make_min, "waiter");
 
 	const ScAddr addr = ctx.createNode(ScType::NODE_CONST);
@@ -96,4 +100,17 @@ UNIT_TEST(waiter)
 		SC_CHECK(data.mIsDone, ());
 	}
 	SUBTEST_END
+
+    SUBTEST_START(WaitActionFinished)
+    {
+        WaitTestData data(ctx, addr, ScAgentAction::GetCommandFinishedAddr());
+        GThread * thread = g_thread_try_new(0, emit_event_thread, (gpointer)&data, 0);
+        SC_CHECK_NOT_EQUAL(thread, nullptr, ());
+
+        ScWaitActionFinished waiter(ctx, addr);
+
+        SC_CHECK(waiter.Wait(), ("Waiter timeout"));
+        SC_CHECK(data.mIsDone, ("Waiter finished"));
+    }
+    SUBTEST_END
 }
