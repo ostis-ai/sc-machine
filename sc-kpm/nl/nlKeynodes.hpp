@@ -38,7 +38,13 @@ namespace nl
         SC_PROPERTY(Keynode("nrel_item_order"), ForceCreate)
         static ScAddr msNrelItemOrder;
 
+        SC_PROPERTY(Keynode("nrel_author"), ForceCreate)
+        static ScAddr msNrelAuthor;
+
         SC_PROPERTY(Keynode("rrel_last_item"), ForceCreate)
         static ScAddr msRrelLastItem;
+
+        SC_PROPERTY(Keynode("self"), ForceCreate)
+        static ScAddr msSelf;
     };
 }

@@ -118,7 +118,7 @@ private:
 
 SHARED_PTR_TYPE(IScStream)
 
-class StreamConverter
+class ScStreamConverter
 {
 public:
 

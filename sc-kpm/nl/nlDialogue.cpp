@@ -11,15 +11,29 @@ namespace nl
 {
     SC_AGENT_IMPLEMENTATION(ADialogueProcessMessageAgent)
     {
-        ScAddr dialogueAddr, itemAddr;
+        ScAddr const dialogueAddr = listenAddr;
+        ScAddr const itemAddr = otherAddr;
         check_expr(dialogueAddr == Keynodes::msMainNLDialogueInstance);
-        mMemoryCtx.getEdgeInfo(edgeAddr, dialogueAddr, itemAddr);
 
         if (!mMemoryCtx.getElementType(itemAddr).isLink())
             return SC_RESULT_ERROR_INVALID_PARAMS;
 
         if (itemAddr.isValid())
         {
+            // just if author is not a system
+            ScTemplate authorTempl;
+            authorTempl
+                (itemAddr,
+                 ScType::EDGE_DCOMMON_VAR,
+                 Keynodes::msSelf,
+                 ScType::EDGE_ACCESS_VAR_POS_PERM,
+                 Keynodes::msNrelAuthor
+                );
+
+            ScTemplateSearchResult authSearchRes;
+            if (mMemoryCtx.helperSearchTemplate(authorTempl, authSearchRes))
+                return SC_RESULT_ERROR_INVALID_STATE;
+
             /*
              * command_process_user_text_message
              * _<- _command_instance
@@ -29,7 +43,7 @@ namespace nl
             cmdProcessTextTemplate
                 (Keynodes::msCmdProcessUserTextMessage,
                  ScType::EDGE_ACCESS_VAR_POS_PERM,
-                 ScType::NODE_CONST >> "_command_instance")
+                 ScType::NODE_VAR >> "_command_instance")
                 ("_command_instance",
                  ScType::EDGE_ACCESS_VAR_POS_PERM,
                  itemAddr);
@@ -48,11 +62,7 @@ namespace nl
                                                                                         ScAddr const & edgeAddr,
                                                                                         ScAddr const & otherAddr)
                 {
-                    ScAddr sourceAddr, targetAddr;
-                    if (mMemoryCtx.getEdgeInfo(edgeAddr, sourceAddr, targetAddr))
-                        return (targetAddr == Keynodes::msCommandFinished);
-
-                    return false;
+                    return (otherAddr == Keynodes::msCommandFinished);
                 });
 
                 if (!waiter.Wait())
@@ -85,7 +95,13 @@ namespace nl
                      ScType::EDGE_ACCESS_VAR_POS_PERM,
                      ScType::NODE_VAR >> "_last_item",
                      ScType::EDGE_ACCESS_VAR_POS_PERM >> "_last_item_attr",
-                     Keynodes::msRrelLastItem);
+                     Keynodes::msRrelLastItem)
+                    ("_last_item",
+                     ScType::EDGE_DCOMMON_VAR,
+                     Keynodes::msSelf,
+                     ScType::EDGE_ACCESS_VAR_POS_PERM,
+                     Keynodes::msNrelAuthor
+                    );
 
                 ScAddr lastItemAddr;
                 if (mMemoryCtx.helperSearchTemplate(lastItemTemplate, searchResult))

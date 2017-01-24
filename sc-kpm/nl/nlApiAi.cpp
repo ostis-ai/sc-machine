@@ -32,7 +32,7 @@ namespace nl
             if (mMemoryCtx.getLinkContent(iter->value(2), stream))
             {
                 std::string text;
-                if (StreamConverter::streamToString(stream, text))
+                if (ScStreamConverter::streamToString(stream, text))
                 {
                     ApiAiRequestParams params;
                     params.m_queryString = text;

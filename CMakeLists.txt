@@ -8,13 +8,15 @@ set(SC_MACHINE_ROOT ${CMAKE_CURRENT_LIST_DIR})
 set(SC_MACHINE_THIRDPARTY_PATH "${SC_MACHINE_ROOT}/thirdparty")
 set(SC_MACHINE_ANTRL_DIR "${SC_MACHINE_THIRDPARTY_PATH}/antlr")
 
+option (SC_KPM_SCP "Flag to build SCP module" ON)
+
 # codegen
 if (${UNIX})
     set(SC_CODEGEN_TOOL "${SC_BIN_PATH}/sc-code-generator")
 elseif (${WIN32})
     set(SC_CODEGEN_TOOL "${SC_BIN_PATH}/sc-code-generator.exe")
 endif()
-include("cmake/codegen.cmake")
+include("${SC_MACHINE_ROOT}/cmake/codegen.cmake")
 
 find_package(Java)
 
@@ -154,11 +156,11 @@ endif(${UNIX})
 
 include_directories(${SC_MACHINE_ROOT} ${GLIB2_INCLUDE_DIRS})
 
-add_subdirectory(sc-memory)
-add_subdirectory(sc-fm)
-add_subdirectory(sc-kpm)
-add_subdirectory(sc-network)
-add_subdirectory(tools)
+add_subdirectory(${SC_MACHINE_ROOT}/sc-memory)
+add_subdirectory(${SC_MACHINE_ROOT}/sc-fm)
+add_subdirectory(${SC_MACHINE_ROOT}/sc-kpm)
+add_subdirectory(${SC_MACHINE_ROOT}/sc-network)
+add_subdirectory(${SC_MACHINE_ROOT}/tools)
 
 if (${CMAKE_SYSTEM_NAME} STREQUAL Windows)
 	if(MSVC)

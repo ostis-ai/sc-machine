@@ -203,7 +203,7 @@ bool ScStreamMemory::hasFlag(sc_uint8 flag)
 }
 
 // --------------------------------
-bool StreamConverter::streamToString(ScStream const & stream, std::string & outString)
+bool ScStreamConverter::streamToString(ScStream const & stream, std::string & outString)
 {
 	sc_uint32 const bytesCount = stream.size();
 	if (bytesCount == 0)
@@ -221,7 +221,7 @@ bool StreamConverter::streamToString(ScStream const & stream, std::string & outS
 
 }
 
-void StreamConverter::streamFromString(std::string const & str, ScStreamMemory & outStream)
+void ScStreamConverter::streamFromString(std::string const & str, ScStreamMemory & outStream)
 {
 	MemoryBufferPtr buff = MemoryBufferPtr(new MemoryBufferSafe(str.c_str(), (uint32_t)str.size()));
 	outStream.reinit(buff);

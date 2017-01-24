@@ -648,6 +648,10 @@ sc_addr sc_storage_arc_new_ext(const sc_memory_context *ctx, sc_type type, sc_ad
 
     sc_result r;
     SC_ADDR_MAKE_EMPTY(addr);
+
+    if (SC_ADDR_IS_EMPTY(beg) || SC_ADDR_IS_EMPTY(end))
+        return addr;
+
     while (SC_ADDR_IS_EMPTY(addr))
     {
         sc_element *beg_el = 0, *end_el = 0;

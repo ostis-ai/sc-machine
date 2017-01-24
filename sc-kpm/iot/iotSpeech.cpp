@@ -106,7 +106,7 @@ namespace iot
 				if (mMemoryCtx.getLinkContent(linkAddr, stream))
 				{
 					std::string strTemplate;
-					if (StreamConverter::streamToString(stream, strTemplate))
+					if (ScStreamConverter::streamToString(stream, strTemplate))
 					{
 						std::string resultText;
 						TextTemplateProcessor processor(mMemoryCtx, strTemplate, langAddr);
@@ -219,9 +219,7 @@ namespace iot
 			{
                 ScStream stream;
 				if (mMemoryCtx.getLinkContent(linkIdtf, stream))
-				{
-					StreamConverter::streamToString(stream, result);
-				}
+					ScStreamConverter::streamToString(stream, result);
 			}
 		}
 		return result;

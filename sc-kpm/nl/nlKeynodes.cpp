@@ -15,5 +15,7 @@ namespace nl
     ScAddr Keynodes::msNrelResult;
     ScAddr Keynodes::msNrelTranslation;
     ScAddr Keynodes::msNrelItemOrder;
+    ScAddr Keynodes::msNrelAuthor;
     ScAddr Keynodes::msRrelLastItem;
+    ScAddr Keynodes::msSelf;
 }
