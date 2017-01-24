@@ -17,7 +17,7 @@
 /* Call this function before agent module usage. 
  * If module initialized, then returns true; otherwise returns false 
  */
-_SC_EXTERN bool ScAgentInit();
+_SC_EXTERN bool ScAgentInit(bool force = false);
 
 class ScAgent : public ScObject
 {

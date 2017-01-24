@@ -16,9 +16,9 @@ bool _resolveKeynodeImpl(ScMemoryContext & ctx, char const * str, ScAddr & outAd
     return ctx.helperResolveSystemIdtf(str, outAddr, true);
 }
 
-bool ScAgentInit()
+bool ScAgentInit(bool force /* = false */)
 {
-    if (!gIsInitialized)
+    if (force || !gIsInitialized)
     {
 		gInitializeResult = ScAgentAction::initGlobal();
 		        
