@@ -39,6 +39,8 @@ public:
 	throw _exception_class(_str_message.str()); \
 }
 
+#define SC_THROW_EXCEPTION(_exception_class, _msg) THROW_EXCEPTION(_exception_class, _msg, __FILE__, __LINE__)
+
 #define _ASSERT_IMPL(_expr, _msg, _file, _line) \
 { \
     if (!(_expr)) \
