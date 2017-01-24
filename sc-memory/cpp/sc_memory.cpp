@@ -353,10 +353,8 @@ std::string ScMemoryContext::helperGetSystemIdtf(ScAddr const & addr)
 			if (getLinkContent(idtfLink, stream))
 			{
 				std::string result;
-				if (StreamConverter::streamToString(stream, result))
-				{
+				if (ScStreamConverter::streamToString(stream, result))
 					return result;
-				}
 			}
 		}
 	}
