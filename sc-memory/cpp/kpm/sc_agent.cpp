@@ -112,3 +112,8 @@ ScAddr const & ScAgentAction::GetCommandInitiatedAddr()
 {
 	return msCommandInitiatedAddr;
 }
+
+ScAddr const & ScAgentAction::GetCommandFinishedAddr()
+{
+    return msCommandFinishedAddr;
+}

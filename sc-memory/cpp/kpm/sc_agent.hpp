@@ -56,6 +56,7 @@ protected:
 
 public:
 	static _SC_EXTERN ScAddr const & GetCommandInitiatedAddr();
+    static _SC_EXTERN ScAddr const & GetCommandFinishedAddr();
 
 protected:
     ScAddr mCmdClassAddr;
