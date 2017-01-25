@@ -4,7 +4,7 @@
 * (See accompanying file COPYING.MIT or copy at http://opensource.org/licenses/MIT)
 */
 
-#include "../test.hpp"
+#include "sc-memory/cpp/utils/sc_test.hpp"
 
 #include "test_sc_object.hpp"
 #include "test_sc_agent.hpp"

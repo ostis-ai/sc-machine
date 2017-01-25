@@ -25,6 +25,7 @@ set (SC_MEMORY_CPP_SOURCES
 			"utils/sc_message.cpp"
 			"utils/sc_console.cpp"
 			"utils/sc_progress.cpp"
+			"utils/sc_test.cpp"
 
 			"sc_memory.hpp"
 			"sc_addr.hpp"
@@ -49,6 +50,7 @@ set (SC_MEMORY_CPP_SOURCES
 			"utils/sc_message.hpp"
 			"utils/sc_console.hpp"
 			"utils/sc_progress.hpp"
+			"utils/sc_test.hpp"
 		)
 
 add_library (sc-memory-cpp SHARED ${SC_MEMORY_CPP_SOURCES})

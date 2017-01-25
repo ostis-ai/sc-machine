@@ -4,8 +4,8 @@
 * (See accompanying file COPYING.MIT or copy at http://opensource.org/licenses/MIT)
 */
 
-#include "../test.hpp"
 #include "sc-memory/cpp/sc_stream.hpp"
+#include "sc-memory/cpp/utils/sc_test.hpp"
 
 UNIT_TEST(iterators)
 {
@@ -31,7 +31,7 @@ UNIT_TEST(iterators)
     SC_CHECK_EQUAL(iter3->value(1), arc1, ());
     SC_CHECK_EQUAL(iter3->value(2), addr2, ());
   }
-  SUBTEST_END
+  SUBTEST_END()
 
   SUBTEST_START(iterator3_f_a_a)
   {
@@ -41,7 +41,7 @@ UNIT_TEST(iterators)
     SC_CHECK_EQUAL(iter3->value(1), arc1, ());
     SC_CHECK_EQUAL(iter3->value(2), addr2, ());
   }
-  SUBTEST_END
+  SUBTEST_END()
 
   SUBTEST_START(iterator3_a_a_f)
   {
@@ -51,7 +51,7 @@ UNIT_TEST(iterators)
     SC_CHECK_EQUAL(iter3->value(1), arc1, ());
     SC_CHECK_EQUAL(iter3->value(2), addr2, ());
   }
-  SUBTEST_END
+  SUBTEST_END()
 
   SUBTEST_START(iterator3_a_f_a)
   {
@@ -61,7 +61,7 @@ UNIT_TEST(iterators)
     SC_CHECK_EQUAL(iter3->value(1), arc1, ());
     SC_CHECK_EQUAL(iter3->value(2), addr2, ());
   }
-  SUBTEST_END
+  SUBTEST_END()
 
   ScAddr addr3 = ctx.createNode(sc_type_const);
   ScAddr arc2 = ctx.createEdge(sc_type_arc_pos_const_perm, addr3, arc1);
@@ -84,7 +84,7 @@ UNIT_TEST(iterators)
     SC_CHECK_EQUAL(iter5->value(3), arc2, ());
     SC_CHECK_EQUAL(iter5->value(4), addr3, ());
   }
-  SUBTEST_END
+  SUBTEST_END()
 
   SUBTEST_START(iterator5_a_a_f_a_f)
   {
@@ -98,7 +98,7 @@ UNIT_TEST(iterators)
     SC_CHECK_EQUAL(iter5->value(3), arc2, ());
     SC_CHECK_EQUAL(iter5->value(4), addr3, ());
   }
-  SUBTEST_END
+  SUBTEST_END()
 
   SUBTEST_START(iterator5_f_a_a_a_a)
   {
@@ -112,7 +112,7 @@ UNIT_TEST(iterators)
     SC_CHECK_EQUAL(iter5->value(3), arc2, ());
     SC_CHECK_EQUAL(iter5->value(4), addr3, ());
   }
-  SUBTEST_END
+  SUBTEST_END()
 
   SUBTEST_START(iterator5_f_a_a_a_f)
   {
@@ -126,7 +126,7 @@ UNIT_TEST(iterators)
     SC_CHECK_EQUAL(iter5->value(3), arc2, ());
     SC_CHECK_EQUAL(iter5->value(4), addr3, ());
   }
-  SUBTEST_END
+  SUBTEST_END()
 
   SUBTEST_START(iterator5_f_a_f_a_a)
   {
@@ -140,7 +140,7 @@ UNIT_TEST(iterators)
     SC_CHECK_EQUAL(iter5->value(3), arc2, ());
     SC_CHECK_EQUAL(iter5->value(4), addr3, ());
   }
-  SUBTEST_END
+  SUBTEST_END()
 
   SUBTEST_START(iterator5_f_a_f_a_f)
   {
@@ -154,7 +154,7 @@ UNIT_TEST(iterators)
     SC_CHECK_EQUAL(iter5->value(3), arc2, ());
     SC_CHECK_EQUAL(iter5->value(4), addr3, ());
   }
-  SUBTEST_END
+  SUBTEST_END()
 
   SUBTEST_START(content_string)
   {
@@ -191,6 +191,6 @@ UNIT_TEST(iterators)
     SC_CHECK_EQUAL(result.size(), 1, ());
     SC_CHECK_EQUAL(result.front(), link, ());
   }
-  SUBTEST_END
+  SUBTEST_END()
 
 }

@@ -4,9 +4,9 @@
 * (See accompanying file COPYING.MIT or copy at http://opensource.org/licenses/MIT)
 */
 
-#include "../test.hpp"
 #include "sc-memory/cpp/sc_wait.hpp"
 #include "sc-memory/cpp/kpm/sc_agent.hpp"
+#include "sc-memory/cpp/utils/sc_test.hpp"
 
 namespace
 {
@@ -57,13 +57,13 @@ UNIT_TEST(waiter)
     SC_CHECK(ScWait<ScEventAddInputEdge>(ctx, addr).Wait(), ("Waiter timeout"));
     SC_CHECK(data.mIsDone, ("Waiter finished, but flag is false"));
   }
-  SUBTEST_END
+  SUBTEST_END()
 
   SUBTEST_START(WaitTimeOut)
   {
     SC_CHECK(!ScWait<ScEventAddOutputEdge>(ctx, addr).Wait(1000), ());
   }
-  SUBTEST_END
+  SUBTEST_END()
 
   SUBTEST_START(WaitCondValid)
   {
@@ -81,7 +81,7 @@ UNIT_TEST(waiter)
     SC_CHECK(waiter.Wait(), ("Waiter timeout"));
     SC_CHECK(data.mIsDone, ("Waiter finished, but failed"));
   }
-  SUBTEST_END
+  SUBTEST_END()
 
   SUBTEST_START(WaitCondValidFalse)
   {
@@ -99,7 +99,7 @@ UNIT_TEST(waiter)
     SC_CHECK(!waiter.Wait(), ());
     SC_CHECK(data.mIsDone, ());
   }
-  SUBTEST_END
+  SUBTEST_END()
 
   SUBTEST_START(WaitActionFinished)
   {
@@ -112,5 +112,5 @@ UNIT_TEST(waiter)
     SC_CHECK(waiter.Wait(), ("Waiter timeout"));
     SC_CHECK(data.mIsDone, ("Waiter finished"));
   }
-  SUBTEST_END
+  SUBTEST_END()
 }

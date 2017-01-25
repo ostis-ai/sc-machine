@@ -4,10 +4,10 @@
 * (See accompanying file COPYING.MIT or copy at http://opensource.org/licenses/MIT)
 */
 
-#include "../test.hpp"
 #include "sc-memory/cpp/sc_event.hpp"
 #include "sc-memory/cpp/sc_timer.hpp"
 #include "sc-memory/cpp/sc_stream.hpp"
+#include "sc-memory/cpp/utils/sc_test.hpp"
 
 #include <thread>
 #include <mutex>
@@ -68,7 +68,7 @@ UNIT_TEST(events_common)
 
     testEventsFuncT<ScEventAddInputEdge>(ctx, addr, createNode, emitEvent);
   }
-  SUBTEST_END
+  SUBTEST_END()
 
   SUBTEST_START(ScEventAddOutputEdge)
   {
@@ -90,7 +90,7 @@ UNIT_TEST(events_common)
 
     testEventsFuncT<ScEventAddOutputEdge>(ctx, addr, createNode, emitEvent);
   }
-  SUBTEST_END;
+  SUBTEST_END();
 
   SUBTEST_START(ScEventRemoveInputEdge)
   {
@@ -111,7 +111,7 @@ UNIT_TEST(events_common)
 
     testEventsFuncT<ScEventRemoveInputEdge>(ctx, addr2, prepare, emitEvent);
   }
-  SUBTEST_END
+  SUBTEST_END()
 
   SUBTEST_START(ScEventRemoveOutputEdge)
   {
@@ -132,7 +132,7 @@ UNIT_TEST(events_common)
 
     testEventsFuncT<ScEventRemoveOutputEdge>(ctx, addr, prepare, emitEvent);
   }
-  SUBTEST_END
+  SUBTEST_END()
 
   SUBTEST_START(ScEventContentChanged)
   {
@@ -149,7 +149,7 @@ UNIT_TEST(events_common)
 
     testEventsFuncT<ScEventContentChanged>(ctx, addr, prepare, emitEvent);
   }
-  SUBTEST_END
+  SUBTEST_END()
 
   SUBTEST_START(ScEventEraseElement)
   {
@@ -164,7 +164,7 @@ UNIT_TEST(events_common)
 
     testEventsFuncT<ScEventEraseElement>(ctx, addr, prepare, emitEvent);
   }
-  SUBTEST_END
+  SUBTEST_END()
 }
 
 

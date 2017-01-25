@@ -4,7 +4,7 @@
 * (See accompanying file COPYING.MIT or copy at http://opensource.org/licenses/MIT)
 */
 
-#include "test.hpp"
+#include "sc-memory/cpp/utils/sc_test.hpp"
 
 #include "sc-memory/cpp/sc_utils.hpp"
 #include "sc-memory/cpp/sc_debug.hpp"
@@ -26,7 +26,7 @@ void _pause()
 int main(int argc, char ** argv) try
 {
   utils::ScLog::GetInstance()->Initialize("test_wrap.log");
-  test::TestUnit::RunAll();
+  test::ScTestUnit::RunAll();
   utils::ScLog::GetInstance()->Shutdown();
 
   _pause();
