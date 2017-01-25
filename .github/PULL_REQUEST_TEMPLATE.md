@@ -1,4 +1,4 @@
-* [ ] Read PR [documentation](https://github.com/ostis-dev/sc-machine/wiki/Pull-requests)
+* [ ] Read PR [documentation](http://ostis-dev.github.io/sc-machine/dev/pr/)
 * [ ] Update changelog
 * [ ] Update documentation
 

@@ -1,8 +1,13 @@
 # Documentation
-- C++ Development
+- C++ API
     * [Knowledge processing machine](cpp/kpm.md)
     * [Meta programming](cpp/cpp-meta.md)
     * [Templates](cpp/templates.md)
+
+- Development
+    * [Pull Request](dev/pr.md)
+    * [Git workflow](dev/git-workflow.md)
+    * [Codestyle](dev/codestyle.md)
 
 - Common
     * [Config](other/config.md)
@@ -12,7 +17,3 @@
 - Building
     * [Linux](build/linux-build.md)
     * [Windows](build/windows-build.md)
-
-- Development
-    * [Pull Request](Pull-requests)
-    * [Git workflow](Git-workflow)
