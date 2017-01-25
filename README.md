@@ -2,9 +2,10 @@
 
 [![Join the chat at https://gitter.im/ostis-dev/sc-machine](https://badges.gitter.im/ostis-dev/sc-machine.svg)](https://gitter.im/ostis-dev/sc-machine?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
-# Build status
-**Master:** 
+**Documentation**
+[http://ostis-dev.github.io/sc-machine/](http://ostis-dev.github.io/sc-machine/)
 
+**Master:** 
 [![Build Status](https://travis-ci.org/ostis-dev/sc-machine.svg?branch=master)](https://travis-ci.org/ostis-dev/sc-machine)
 
 Build on ubuntu:
@@ -17,5 +18,3 @@ cd build
 cmake .. -DCMAKE_BUILD_TYPE=Release # use Debug for debug build
 make
 ```
-
-See [wiki](https://github.com/ostis-dev/sc-machine/wiki) for full documentation.
