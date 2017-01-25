@@ -6,3 +6,4 @@
 * Add documentation for `C++` API
 * Add codestyle document
 * Add `clang-format` config
+* Add [MkDocs](http://www.mkdocs.org/) documentation generator support
