@@ -32,7 +32,7 @@ There are some methods available for `ScTemplate` class:
     <td>f_a_a</td>
     <td>
       <strong>Graphical representation</strong>
-      <br/><img src="/images/templates/template_triple_f_a_a_example.png"></img>
+      <br/><img src="../../images/templates/template_triple_f_a_a_example.png"></img>
       <br/><strong>Equal C++ code</strong>
       <br/>
 <pre><code class="cpp hljs">
@@ -53,7 +53,7 @@ templ.triple(
   <tr>
     <td>f_a_f</td>
     <td><strong>Graphical representation</strong>
-    <br/><img src="/images/templates/template_triple_f_a_f_example.png"></img>
+    <br/><img src="../../images/templates/template_triple_f_a_f_example.png"></img>
     <br/><strong>Equal C++ code</strong>
     <br/>
 <pre><code class="cpp hljs">
@@ -73,7 +73,7 @@ templ.triple(
   <tr>
     <td>a_a_f</td>
     <td><strong>Graphical representation</strong>
-    <br/><img src="/images/templates/template_triple_a_a_f_example.png"></img>
+    <br/><img src="../../images/templates/template_triple_a_a_f_example.png"></img>
     <br/><strong>Equal C++ code</strong>
     <br/>
 <pre><code class="cpp hljs">
@@ -92,7 +92,7 @@ templ.triple(
 
 When template search engine works, it tries to traverse graph by simple (triple) template in order they specified. For example we need to check if specified sc-element (`_device`) is included into `device` set and `device_enabled` set:
 
-![Template example](images/templates/template_example_2.png)
+![Template example](../images/templates/template_example_2.png)
 
 **Code** that generates equal template
 ```cpp

@@ -160,7 +160,7 @@ Table of description (parameters of callback function named on pictures, if ther
   <tr>
     <td><strong>ScEventAddOutputEdge</strong></td>
     <td>
-      <img src="/images/sc-events/sc-event-output-edge.png"></img>
+      <img src="../../images/sc-events/sc-event-output-edge.png"></img>
       <br/>
       Callback calls each time, when any type edge <code>edgeAddr</code> between <code>listenAddr</code> and <code>otherAddr</code> create.
       <hr/>
@@ -185,7 +185,7 @@ ScEventAddOutputEdge evt(ctx, addr, callback);
   <tr>
     <td><strong>ScEventAddInputEdge</strong></td>
     <td>
-      <img src="/images/sc-events/sc-event-input-edge.png"></img>
+      <img src="../../images/sc-events/sc-event-input-edge.png"></img>
       <br/>
       Callback calls each time, when any type edge <code>edgeAddr</code> between <code>otherAddr</code> and <code>listenAddr</code> create.
       <hr/>
@@ -210,7 +210,7 @@ ScEventAddInputEdge evt(ctx, addr, callback);
   <tr>
     <td><strong>ScEventRemoveOutputEdge</strong></td>
     <td>
-      <img src="/images/sc-events/sc-event-output-edge.png"></img>
+      <img src="../../images/sc-events/sc-event-output-edge.png"></img>
       <br/>
       Callback calls each time, when any type edge <code>edgeAddr</code> between <code>listenAddr</code> and any element <code>otherAddr</code> erase.
       <hr/>
@@ -235,7 +235,7 @@ ScEventRemoveOutputEdge evt(ctx, addr, callback);
   <tr>
     <td><strong>ScEventRemoveInputEdge</strong></td>
     <td>
-      <img src="/images/sc-events/sc-event-input-edge.png"></img>
+      <img src="../../images/sc-events/sc-event-input-edge.png"></img>
       <br/>
       Callback calls each time, when any type edge <code>edgeAddr</code> between any element <code>otherAddr</code> and <code>listenAddr</code> erase.
       <hr/>
@@ -283,7 +283,7 @@ ScEventEraseElement evt(ctx, addr, callback);
   <tr>
     <td><strong>ScEventContentChanged</strong></td>
     <td>
-      <img src="/images/sc-events/sc-event-content.png"></img>
+      <img src="../../images/sc-events/sc-event-content.png"></img>
       <br/>
       Callback calls when content of <code>listenAddr</code> changed.
       <hr/>
