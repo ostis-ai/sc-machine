@@ -1,0 +1,21 @@
+site_name: SC-machine
+pages:
+  - Home: index.md
+  - Build:
+    - Build on Linux: build/linux-build.md
+    - Build on Windows: build/windows-build.md
+  - API:
+    - Meta programming: cpp/cpp-meta.md
+    - Agents: cpp/kpm.md
+    - Template: cpp/templates.md
+  - Common:
+    - Element types: cpp/el_types.md
+    - Configuration files: other/config.md
+    - Sctp-protocol: net/sctp.md
+  - License: license.md
+  - Changelog: changelog.md
+
+theme: readthedocs
+
+markdown_extensions:
+  - markdown_include.include
