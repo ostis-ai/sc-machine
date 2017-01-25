@@ -14,28 +14,28 @@
 namespace iot
 {
 
-	class AGenerateTextByTemplate : public ScAgentAction
-	{
-		SC_CLASS(Agent, CmdClass("command_generate_text_from_template"))
-		SC_GENERATED_BODY()
-	};
+class AGenerateTextByTemplate : public ScAgentAction
+{
+  SC_CLASS(Agent, CmdClass("command_generate_text_from_template"))
+  SC_GENERATED_BODY()
+};
 
 
-	class TextTemplateProcessor
-	{
-	public:
-        explicit TextTemplateProcessor(ScMemoryContext & memoryCtx, std::string const & str, ScAddr const & langAddr);
-		virtual ~TextTemplateProcessor();
+class TextTemplateProcessor
+{
+public:
+  explicit TextTemplateProcessor(ScMemoryContext & memoryCtx, std::string const & str, ScAddr const & langAddr);
+  virtual ~TextTemplateProcessor();
 
-		bool generateOutputText(std::string & outText);
+  bool generateOutputText(std::string & outText);
 
-	protected:
-		std::string processMainIdtfCmd(std::string & arguments);
+protected:
+  std::string processMainIdtfCmd(std::string & arguments);
 
-	private:
-        ScMemoryContext & mMemoryCtx;
-		std::string mInputTextTemplate;
-        ScAddr mLanguageAddr;
-	};
+private:
+  ScMemoryContext & mMemoryCtx;
+  std::string mInputTextTemplate;
+  ScAddr mLanguageAddr;
+};
 
-}
+} // namespace iot

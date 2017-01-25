@@ -23,119 +23,120 @@ extern "C"
 class TestWaiter
 {
 public:
-    TestWaiter()
-        : mLock(1)
-    {
-    }
+  TestWaiter()
+    : mLock(1)
+  {
+  }
 
-    bool Wait()
+  bool Wait()
+  {
+    std::time_t const t = std::time(nullptr);
+    std::time_t nt = t;
+    while (mLock.load() > 0)
     {
-        std::time_t const t = std::time(nullptr);
-        std::time_t nt = t;
-        while (mLock.load() > 0)
-        {
-            nt = std::time(nullptr);
-            if (nt - t > 5) // seconds
-                break;
-            g_usleep(100000); // 100 milliseconds
-        };
+      nt = std::time(nullptr);
+      if (nt - t > 5) // seconds
+        break;
+      g_usleep(100000); // 100 milliseconds
+    };
 
-        return (mLock.load() == 0);
-    }
+    return (mLock.load() == 0);
+  }
 
-    void Unlock()
-    {
-        mLock.store(0);
-    }
+  void Unlock()
+  {
+    mLock.store(0);
+  }
 
 private:
-    std::atomic<uint32_t> mLock;
+  std::atomic<uint32_t> mLock;
 };
 
 
 class ATestCommand : public ScAgentAction
 {
-	SC_CLASS(Agent, CmdClass("command_1"))
-	SC_GENERATED_BODY()
+  SC_CLASS(Agent, CmdClass("command_1"))
+  SC_GENERATED_BODY()
 
 public:
-    static TestWaiter msWaiter;
+  static TestWaiter msWaiter;
 };
 
 
 class ATestAddInputEdge : public ScAgent
 {
-    SC_CLASS(Agent, Event(msAgentKeynode, SC_EVENT_ADD_INPUT_ARC))
-    SC_GENERATED_BODY()
+  SC_CLASS(Agent, Event(msAgentKeynode, SC_EVENT_ADD_INPUT_ARC))
+  SC_GENERATED_BODY()
 
 public:
-    SC_PROPERTY(Keynode("ATestAddInputEdge"), ForceCreate)
-    static ScAddr msAgentKeynode;
+  SC_PROPERTY(Keynode("ATestAddInputEdge"), ForceCreate)
+  static ScAddr msAgentKeynode;
 
-    static TestWaiter msWaiter;
+  static TestWaiter msWaiter;
 };
 
 
 class ATestAddOutputEdge : public ScAgent
 {
-    SC_CLASS(Agent, Event(msAgentKeynode, SC_EVENT_ADD_OUTPUT_ARC))
-    SC_GENERATED_BODY()
+  SC_CLASS(Agent, Event(msAgentKeynode, SC_EVENT_ADD_OUTPUT_ARC))
+  SC_GENERATED_BODY()
 
 public:
-    SC_PROPERTY(Keynode("ATestAddOutputEdge"), ForceCreate)
-    static ScAddr msAgentKeynode;
 
-    static TestWaiter msWaiter;
+  SC_PROPERTY(Keynode("ATestAddOutputEdge"), ForceCreate)
+  static ScAddr msAgentKeynode;
+
+  static TestWaiter msWaiter;
 };
 
 
 class ATestRemoveInputEdge : public ScAgent
 {
-    SC_CLASS(Agent, Event(msAgentKeynode, SC_EVENT_REMOVE_INPUT_ARC))
-    SC_GENERATED_BODY()
+  SC_CLASS(Agent, Event(msAgentKeynode, SC_EVENT_REMOVE_INPUT_ARC))
+  SC_GENERATED_BODY()
 
 public:
-    SC_PROPERTY(Keynode("ATestRemoveInputEdge"), ForceCreate)
-    static ScAddr msAgentKeynode;
+  SC_PROPERTY(Keynode("ATestRemoveInputEdge"), ForceCreate)
+  static ScAddr msAgentKeynode;
 
-    static TestWaiter msWaiter;
+  static TestWaiter msWaiter;
 };
 
 
 class ATestRemoveOutputEdge : public ScAgent
 {
-    SC_CLASS(Agent, Event(msAgentKeynode, SC_EVENT_REMOVE_OUTPUT_ARC))
-    SC_GENERATED_BODY()
+  SC_CLASS(Agent, Event(msAgentKeynode, SC_EVENT_REMOVE_OUTPUT_ARC))
+  SC_GENERATED_BODY()
 
 public:
-    SC_PROPERTY(Keynode("ATestRemoveOutputEdge"), ForceCreate)
-    static ScAddr msAgentKeynode;
+  SC_PROPERTY(Keynode("ATestRemoveOutputEdge"), ForceCreate)
+  static ScAddr msAgentKeynode;
 
-    static TestWaiter msWaiter;
+  static TestWaiter msWaiter;
 };
 
 
 class ATestRemoveElement : public ScAgent
 {
-    SC_CLASS(Agent, Event(msAgentKeynode, SC_EVENT_REMOVE_ELEMENT))
-    SC_GENERATED_BODY()
+  SC_CLASS(Agent, Event(msAgentKeynode, SC_EVENT_REMOVE_ELEMENT))
+  SC_GENERATED_BODY()
 
 public:
-    SC_PROPERTY(Keynode("ATestRemoveElement"), ForceCreate)
-    static ScAddr msAgentKeynode;
+  SC_PROPERTY(Keynode("ATestRemoveElement"), ForceCreate)
+  static ScAddr msAgentKeynode;
 
-    static TestWaiter msWaiter;
+  static TestWaiter msWaiter;
 };
 
 
 class ATestContentChanged : public ScAgent
 {
-    SC_CLASS(Agent, Event(msAgentKeynode, SC_EVENT_CONTENT_CHANGED))
-    SC_GENERATED_BODY()
+  SC_CLASS(Agent, Event(msAgentKeynode, SC_EVENT_CONTENT_CHANGED))
+  SC_GENERATED_BODY()
 
 public:
-    SC_PROPERTY(Keynode("ATestContentChanged"), ForceCreate)
-    static ScAddr msAgentKeynode;
+  SC_PROPERTY(Keynode("ATestContentChanged"), ForceCreate)
+  static ScAddr msAgentKeynode;
 
-    static TestWaiter msWaiter;
+  static TestWaiter msWaiter;
 };

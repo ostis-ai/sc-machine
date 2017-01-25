@@ -10,15 +10,17 @@
 
 namespace
 {
-    ScAddr CreateKeynode(ScMemoryContext & ctx, std::string const & name)
-    {
-        ScAddr const node = ctx.createNode(ScType::NODE_CONST);
-        SC_CHECK(node.isValid(), ());
-        SC_CHECK(ctx.helperSetSystemIdtf(name, node), ());
 
-        return node;
-    }
+ScAddr CreateKeynode(ScMemoryContext & ctx, std::string const & name)
+{
+  ScAddr const node = ctx.createNode(ScType::NODE_CONST);
+  SC_CHECK(node.isValid(), ());
+  SC_CHECK(ctx.helperSetSystemIdtf(name, node), ());
+
+  return node;
 }
+
+} // namespace
 
 
 /// --------------------------------------
@@ -26,36 +28,36 @@ TestWaiter ATestCommand::msWaiter;
 
 SC_AGENT_ACTION_IMPLEMENTATION(ATestCommand)
 {
-    msWaiter.Unlock();
-	return SC_RESULT_ERROR;
+  msWaiter.Unlock();
+  return SC_RESULT_ERROR;
 }
 
 UNIT_TEST(ATestCommand)
 {
-    ScMemoryContext ctx(sc_access_lvl_make_min, "ATestCommand");
+  ScMemoryContext ctx(sc_access_lvl_make_min, "ATestCommand");
 
-    // create used keynodes
-    ScAddr const cmd_init = CreateKeynode(ctx, "command_initiated");
-    ScAddr const cmd_prog = CreateKeynode(ctx, "command_in_progress");
-    ScAddr const cmd_finish = CreateKeynode(ctx, "command_finished");
-    ScAddr const cmd_result = CreateKeynode(ctx, "nrel_result");
-    ScAddr const command_1 = CreateKeynode(ctx, "command_1");
+  // create used keynodes
+  ScAddr const cmd_init = CreateKeynode(ctx, "command_initiated");
+  ScAddr const cmd_prog = CreateKeynode(ctx, "command_in_progress");
+  ScAddr const cmd_finish = CreateKeynode(ctx, "command_finished");
+  ScAddr const cmd_result = CreateKeynode(ctx, "nrel_result");
+  ScAddr const command_1 = CreateKeynode(ctx, "command_1");
 
-    ScAgentInit();
-    ATestCommand::initGlobal();
+  ScAgentInit();
+  ATestCommand::initGlobal();
 
-    SC_AGENT_REGISTER(ATestCommand);
+  SC_AGENT_REGISTER(ATestCommand);
 
-    ScAddr const cmd = ctx.createNode(ScType::NODE_CONST);
-    SC_CHECK(cmd.isValid(), ());
-    ScAddr const e1 = ctx.createEdge(ScType::EDGE_ACCESS_CONST_POS_PERM, command_1, cmd);
-    SC_CHECK(e1.isValid(), ());
-    ScAddr const e2 = ctx.createEdge(ScType::EDGE_ACCESS_CONST_POS_PERM, cmd_init, cmd);
-    SC_CHECK(e2.isValid(), ());
+  ScAddr const cmd = ctx.createNode(ScType::NODE_CONST);
+  SC_CHECK(cmd.isValid(), ());
+  ScAddr const e1 = ctx.createEdge(ScType::EDGE_ACCESS_CONST_POS_PERM, command_1, cmd);
+  SC_CHECK(e1.isValid(), ());
+  ScAddr const e2 = ctx.createEdge(ScType::EDGE_ACCESS_CONST_POS_PERM, cmd_init, cmd);
+  SC_CHECK(e2.isValid(), ());
 
-    SC_CHECK(ATestCommand::msWaiter.Wait(), ());
+  SC_CHECK(ATestCommand::msWaiter.Wait(), ());
 
-    SC_AGENT_UNREGISTER(ATestCommand);
+  SC_AGENT_UNREGISTER(ATestCommand);
 }
 
 
@@ -65,23 +67,23 @@ TestWaiter ATestAddInputEdge::msWaiter;
 
 SC_AGENT_IMPLEMENTATION(ATestAddInputEdge)
 {
-    msWaiter.Unlock();
-    return SC_RESULT_OK;
+  msWaiter.Unlock();
+  return SC_RESULT_OK;
 }
 
 UNIT_TEST(ATestAddInputEdge)
 {
-    ScMemoryContext ctx(sc_access_lvl_make_min, "ATestAddInputEdge");
-    ATestAddInputEdge::initGlobal();
-    SC_AGENT_REGISTER(ATestAddInputEdge);
+  ScMemoryContext ctx(sc_access_lvl_make_min, "ATestAddInputEdge");
+  ATestAddInputEdge::initGlobal();
+  SC_AGENT_REGISTER(ATestAddInputEdge);
 
-    ScAddr const node = ctx.createNode(ScType::NODE_CONST);
-    SC_CHECK(node.isValid(), ());
-    ScAddr const e = ctx.createEdge(ScType::EDGE_ACCESS_CONST_POS_PERM, node, ATestAddInputEdge::msAgentKeynode);
-    SC_CHECK(e.isValid(), ());
-    SC_CHECK(ATestAddInputEdge::msWaiter.Wait(), ());
+  ScAddr const node = ctx.createNode(ScType::NODE_CONST);
+  SC_CHECK(node.isValid(), ());
+  ScAddr const e = ctx.createEdge(ScType::EDGE_ACCESS_CONST_POS_PERM, node, ATestAddInputEdge::msAgentKeynode);
+  SC_CHECK(e.isValid(), ());
+  SC_CHECK(ATestAddInputEdge::msWaiter.Wait(), ());
 
-    SC_AGENT_UNREGISTER(ATestAddInputEdge);
+  SC_AGENT_UNREGISTER(ATestAddInputEdge);
 }
 
 
@@ -91,25 +93,25 @@ TestWaiter ATestAddOutputEdge::msWaiter;
 
 SC_AGENT_IMPLEMENTATION(ATestAddOutputEdge)
 {
-    msWaiter.Unlock();
-    return SC_RESULT_OK;
+  msWaiter.Unlock();
+  return SC_RESULT_OK;
 }
 
 UNIT_TEST(ATestAddOutputEdge)
 {
-    ScMemoryContext ctx(sc_access_lvl_make_min, "ATestAddOutputEdge");
-    ATestAddOutputEdge::initGlobal();
-    SC_AGENT_REGISTER(ATestAddOutputEdge);
+  ScMemoryContext ctx(sc_access_lvl_make_min, "ATestAddOutputEdge");
+  ATestAddOutputEdge::initGlobal();
+  SC_AGENT_REGISTER(ATestAddOutputEdge);
 
-    ScAddr const node = ctx.createNode(ScType::NODE_CONST);
-    SC_CHECK(node.isValid(), ());
+  ScAddr const node = ctx.createNode(ScType::NODE_CONST);
+  SC_CHECK(node.isValid(), ());
 
-    ScAddr const e = ctx.createEdge(ScType::EDGE_ACCESS_CONST_POS_PERM, ATestAddOutputEdge::msAgentKeynode, node);
-    SC_CHECK(e.isValid(), ());
-        
-    SC_CHECK(ATestAddOutputEdge::msWaiter.Wait(), ());
+  ScAddr const e = ctx.createEdge(ScType::EDGE_ACCESS_CONST_POS_PERM, ATestAddOutputEdge::msAgentKeynode, node);
+  SC_CHECK(e.isValid(), ());
 
-    SC_AGENT_UNREGISTER(ATestAddOutputEdge);
+  SC_CHECK(ATestAddOutputEdge::msWaiter.Wait(), ());
+
+  SC_AGENT_UNREGISTER(ATestAddOutputEdge);
 }
 
 
@@ -119,26 +121,26 @@ TestWaiter ATestRemoveInputEdge::msWaiter;
 
 SC_AGENT_IMPLEMENTATION(ATestRemoveInputEdge)
 {
-    msWaiter.Unlock();
-    return SC_RESULT_OK;
+  msWaiter.Unlock();
+  return SC_RESULT_OK;
 }
 
 UNIT_TEST(ATestRemoveInputEdge)
 {
-    ScMemoryContext ctx(sc_access_lvl_make_min, "ATestRemoveInputEdge");
-    ATestRemoveInputEdge::initGlobal();
-    
-    ScAddr const node = ctx.createNode(ScType::NODE_CONST);
-    SC_CHECK(node.isValid(), ());
-    ScAddr const e = ctx.createEdge(ScType::EDGE_ACCESS, node, ATestRemoveInputEdge::msAgentKeynode);
-    SC_CHECK(e.isValid(), ());
+  ScMemoryContext ctx(sc_access_lvl_make_min, "ATestRemoveInputEdge");
+  ATestRemoveInputEdge::initGlobal();
 
-    SC_AGENT_REGISTER(ATestRemoveInputEdge);
+  ScAddr const node = ctx.createNode(ScType::NODE_CONST);
+  SC_CHECK(node.isValid(), ());
+  ScAddr const e = ctx.createEdge(ScType::EDGE_ACCESS, node, ATestRemoveInputEdge::msAgentKeynode);
+  SC_CHECK(e.isValid(), ());
 
-    SC_CHECK(ctx.eraseElement(e), ());
-    SC_CHECK(ATestRemoveInputEdge::msWaiter.Wait(), ());
+  SC_AGENT_REGISTER(ATestRemoveInputEdge);
 
-    SC_AGENT_UNREGISTER(ATestRemoveInputEdge);
+  SC_CHECK(ctx.eraseElement(e), ());
+  SC_CHECK(ATestRemoveInputEdge::msWaiter.Wait(), ());
+
+  SC_AGENT_UNREGISTER(ATestRemoveInputEdge);
 }
 
 
@@ -148,26 +150,26 @@ TestWaiter ATestRemoveOutputEdge::msWaiter;
 
 SC_AGENT_IMPLEMENTATION(ATestRemoveOutputEdge)
 {
-    msWaiter.Unlock();
-    return SC_RESULT_OK;
+  msWaiter.Unlock();
+  return SC_RESULT_OK;
 }
 
 UNIT_TEST(ATestRemoveOutputEdge)
 {
-    ScMemoryContext ctx(sc_access_lvl_make_min, "ATestRemoveOutputEdge");
-    ATestRemoveOutputEdge::initGlobal();
+  ScMemoryContext ctx(sc_access_lvl_make_min, "ATestRemoveOutputEdge");
+  ATestRemoveOutputEdge::initGlobal();
 
-    ScAddr const node = ctx.createNode(ScType::NODE_CONST);
-    SC_CHECK(node.isValid(), ());
-    ScAddr const e = ctx.createEdge(ScType::EDGE_ACCESS, ATestRemoveOutputEdge::msAgentKeynode, node);
-    SC_CHECK(e.isValid(), ());
+  ScAddr const node = ctx.createNode(ScType::NODE_CONST);
+  SC_CHECK(node.isValid(), ());
+  ScAddr const e = ctx.createEdge(ScType::EDGE_ACCESS, ATestRemoveOutputEdge::msAgentKeynode, node);
+  SC_CHECK(e.isValid(), ());
 
-    SC_AGENT_REGISTER(ATestRemoveOutputEdge);
+  SC_AGENT_REGISTER(ATestRemoveOutputEdge);
 
-    SC_CHECK(ctx.eraseElement(e), ());
-    SC_CHECK(ATestRemoveOutputEdge::msWaiter.Wait(), ());
+  SC_CHECK(ctx.eraseElement(e), ());
+  SC_CHECK(ATestRemoveOutputEdge::msWaiter.Wait(), ());
 
-    SC_AGENT_UNREGISTER(ATestRemoveOutputEdge);
+  SC_AGENT_UNREGISTER(ATestRemoveOutputEdge);
 }
 
 
@@ -177,21 +179,21 @@ TestWaiter ATestRemoveElement::msWaiter;
 
 SC_AGENT_IMPLEMENTATION(ATestRemoveElement)
 {
-    msWaiter.Unlock();
-    return SC_RESULT_OK;
+  msWaiter.Unlock();
+  return SC_RESULT_OK;
 }
 
 UNIT_TEST(ATestRemoveElement)
 {
-    ScMemoryContext ctx(sc_access_lvl_make_min, "ATestRemoveElement");
-    ATestRemoveElement::initGlobal();
+  ScMemoryContext ctx(sc_access_lvl_make_min, "ATestRemoveElement");
+  ATestRemoveElement::initGlobal();
 
-    SC_AGENT_REGISTER(ATestRemoveElement);
+  SC_AGENT_REGISTER(ATestRemoveElement);
 
-    SC_CHECK(ctx.eraseElement(ATestRemoveElement::msAgentKeynode), ());
-    SC_CHECK(ATestRemoveElement::msWaiter.Wait(), ());
+  SC_CHECK(ctx.eraseElement(ATestRemoveElement::msAgentKeynode), ());
+  SC_CHECK(ATestRemoveElement::msWaiter.Wait(), ());
 
-    SC_AGENT_UNREGISTER(ATestRemoveElement);
+  SC_AGENT_UNREGISTER(ATestRemoveElement);
 }
 
 
@@ -201,27 +203,27 @@ TestWaiter ATestContentChanged::msWaiter;
 
 SC_AGENT_IMPLEMENTATION(ATestContentChanged)
 {
-    msWaiter.Unlock();
-    return SC_RESULT_OK;
+  msWaiter.Unlock();
+  return SC_RESULT_OK;
 }
 
 UNIT_TEST(ATestContentChanged)
 {
-    ScMemoryContext ctx(sc_access_lvl_make_min, "ATestContentChanged");
+  ScMemoryContext ctx(sc_access_lvl_make_min, "ATestContentChanged");
 
-    ScAddr const link = ctx.createLink();
-    SC_CHECK(link.isValid(), ());
-    SC_CHECK(ctx.helperSetSystemIdtf("ATestContentChanged", link), ());
+  ScAddr const link = ctx.createLink();
+  SC_CHECK(link.isValid(), ());
+  SC_CHECK(ctx.helperSetSystemIdtf("ATestContentChanged", link), ());
 
-    ATestContentChanged::initGlobal();
+  ATestContentChanged::initGlobal();
 
-    SC_AGENT_REGISTER(ATestContentChanged);
+  SC_AGENT_REGISTER(ATestContentChanged);
 
-    uint32_t const value = 100;
-    ScStream stream((char*)&value, sizeof(value), SC_STREAM_FLAG_READ);
+  uint32_t const value = 100;
+  ScStream stream((char*)&value, sizeof(value), SC_STREAM_FLAG_READ);
 
-    SC_CHECK(ctx.setLinkContent(link, stream), ());
-    SC_CHECK(ATestContentChanged::msWaiter.Wait(), ());
+  SC_CHECK(ctx.setLinkContent(link, stream), ());
+  SC_CHECK(ATestContentChanged::msWaiter.Wait(), ());
 
-    SC_AGENT_UNREGISTER(ATestContentChanged);
+  SC_AGENT_UNREGISTER(ATestContentChanged);
 }

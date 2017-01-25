@@ -9,11 +9,11 @@
 
 
 ScWaitActionFinished::ScWaitActionFinished(ScMemoryContext const & ctx, ScAddr const & actionAddr)
-    : ScWait<ScEventAddInputEdge>(ctx, actionAddr)
+  : ScWait<ScEventAddInputEdge>(ctx, actionAddr)
 {
 }
 
 bool ScWaitActionFinished::OnEventImpl(ScAddr const & listenAddr, ScAddr const & edgeAddr, ScAddr const & otherAddr)
 {
-    return (otherAddr == ScAgentAction::GetCommandFinishedAddr());
+  return (otherAddr == ScAgentAction::GetCommandFinishedAddr());
 }

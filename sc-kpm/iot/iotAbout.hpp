@@ -14,10 +14,10 @@
 namespace iot
 {
 
-	class AWhoAreYouAgent : public ScAgentAction
-	{
-		SC_CLASS(Agent, CmdClass("command_who_are_you"))
-		SC_GENERATED_BODY()
-	};
+class AWhoAreYouAgent : public ScAgentAction
+{
+  SC_CLASS(Agent, CmdClass("command_who_are_you"))
+  SC_GENERATED_BODY()
+};
 
-}
+} // namespace iot

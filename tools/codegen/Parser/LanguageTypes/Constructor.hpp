@@ -10,20 +10,20 @@ class Constructor
     , public Invokable
 {
 public:
-    Constructor(
-    	const Cursor &cursor, 
-    	const Namespace &currentNamespace, 
-    	Class *parent = nullptr
-	);
+  Constructor(
+      const Cursor &cursor,
+      const Namespace &currentNamespace,
+      Class *parent = nullptr
+      );
 
-    virtual ~Constructor(void) { } 
+  virtual ~Constructor(void) { }
 
-    bool ShouldCompile(void) const;
-    
+  bool ShouldCompile(void) const;
+
 private:
-    Class *m_parent;
+  Class *m_parent;
 
-    bool isAccessible(void) const;
+  bool isAccessible(void) const;
 
-    std::string getTemplateParameters(void) const;
+  std::string getTemplateParameters(void) const;
 };

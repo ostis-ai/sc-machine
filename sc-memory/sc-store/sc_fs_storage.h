@@ -15,10 +15,10 @@
 
 typedef struct _sc_fs_storage_segments_header
 {
-    sc_uint32 version;
-    sc_uint16 segments_num;
-    sc_uint64 timestamp;
-    sc_uint8  checksum[SC_STORAGE_SEG_CHECKSUM_SIZE]; // buffer size for sha 512
+  sc_uint32 version;
+  sc_uint16 segments_num;
+  sc_uint64 timestamp;
+  sc_uint8  checksum[SC_STORAGE_SEG_CHECKSUM_SIZE]; // buffer size for sha 512
 
 } sc_fs_storage_segments_header;
 

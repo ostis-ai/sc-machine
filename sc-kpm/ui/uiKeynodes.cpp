@@ -81,57 +81,57 @@ sc_addr ui_keynode_arg[UI_ARG_COUNT];
 // -------------------------------------------------
 sc_bool initialize_keynodes()
 {
-    RESOLVE_KEYNODE(s_default_ctx, keynode_user);
-    RESOLVE_KEYNODE(s_default_ctx, keynode_question_nrel_answer);
-    RESOLVE_KEYNODE(s_default_ctx, keynode_question_finished);
-    RESOLVE_KEYNODE(s_default_ctx, keynode_command_translate_from_sc);
-    RESOLVE_KEYNODE(s_default_ctx, keynode_nrel_authors);
-    RESOLVE_KEYNODE(s_default_ctx, keynode_nrel_user_answer_formats);
-    RESOLVE_KEYNODE(s_default_ctx, keynode_rrel_source_sc_construction);
-    RESOLVE_KEYNODE(s_default_ctx, keynode_rrel_output_format);
-    RESOLVE_KEYNODE(s_default_ctx, keynode_nrel_translation);
-    RESOLVE_KEYNODE(s_default_ctx, keynode_nrel_format);
+  RESOLVE_KEYNODE(s_default_ctx, keynode_user);
+  RESOLVE_KEYNODE(s_default_ctx, keynode_question_nrel_answer);
+  RESOLVE_KEYNODE(s_default_ctx, keynode_question_finished);
+  RESOLVE_KEYNODE(s_default_ctx, keynode_command_translate_from_sc);
+  RESOLVE_KEYNODE(s_default_ctx, keynode_nrel_authors);
+  RESOLVE_KEYNODE(s_default_ctx, keynode_nrel_user_answer_formats);
+  RESOLVE_KEYNODE(s_default_ctx, keynode_rrel_source_sc_construction);
+  RESOLVE_KEYNODE(s_default_ctx, keynode_rrel_output_format);
+  RESOLVE_KEYNODE(s_default_ctx, keynode_nrel_translation);
+  RESOLVE_KEYNODE(s_default_ctx, keynode_nrel_format);
 
-    RESOLVE_KEYNODE(s_default_ctx, keynode_command_generate_instance);
-    RESOLVE_KEYNODE(s_default_ctx, keynode_command_initiated);
-	RESOLVE_KEYNODE(s_default_ctx, keynode_command_failed);
-    RESOLVE_KEYNODE(s_default_ctx, keynode_command_finished);
-    RESOLVE_KEYNODE(s_default_ctx, keynode_rrel_command_arguments);
-    RESOLVE_KEYNODE(s_default_ctx, keynode_rrel_command);
-    RESOLVE_KEYNODE(s_default_ctx, keynode_nrel_command_template);
-    RESOLVE_KEYNODE(s_default_ctx, keynode_nrel_command_result);
-    RESOLVE_KEYNODE(s_default_ctx, keynode_displayed_answer);
+  RESOLVE_KEYNODE(s_default_ctx, keynode_command_generate_instance);
+  RESOLVE_KEYNODE(s_default_ctx, keynode_command_initiated);
+  RESOLVE_KEYNODE(s_default_ctx, keynode_command_failed);
+  RESOLVE_KEYNODE(s_default_ctx, keynode_command_finished);
+  RESOLVE_KEYNODE(s_default_ctx, keynode_rrel_command_arguments);
+  RESOLVE_KEYNODE(s_default_ctx, keynode_rrel_command);
+  RESOLVE_KEYNODE(s_default_ctx, keynode_nrel_command_template);
+  RESOLVE_KEYNODE(s_default_ctx, keynode_nrel_command_result);
+  RESOLVE_KEYNODE(s_default_ctx, keynode_displayed_answer);
 
-    RESOLVE_KEYNODE(s_default_ctx, keynode_format_scs_json);
-    RESOLVE_KEYNODE(s_default_ctx, keynode_format_scg_json);
-    RESOLVE_KEYNODE(s_default_ctx, keynode_format_scn_json);
+  RESOLVE_KEYNODE(s_default_ctx, keynode_format_scs_json);
+  RESOLVE_KEYNODE(s_default_ctx, keynode_format_scg_json);
+  RESOLVE_KEYNODE(s_default_ctx, keynode_format_scn_json);
 
-    RESOLVE_KEYNODE(s_default_ctx, keynode_system_element);
+  RESOLVE_KEYNODE(s_default_ctx, keynode_system_element);
 
-    for (sc_uint32 i = 0; i < RREL_ORDER_COUNT; ++i)
+  for (sc_uint32 i = 0; i < RREL_ORDER_COUNT; ++i)
+  {
+    std::stringstream ss;
+    ss << "rrel_" << (i + 1);
+    if (sc_helper_resolve_system_identifier(s_default_ctx, ss.str().c_str(), &(ui_keynode_rrel_order[i])) == SC_FALSE)
     {
-        std::stringstream ss;
-        ss << "rrel_" << (i + 1);
-        if (sc_helper_resolve_system_identifier(s_default_ctx, ss.str().c_str(), &(ui_keynode_rrel_order[i])) == SC_FALSE)
-        {
-            ui_keynode_rrel_order[i] = sc_memory_node_new(s_default_ctx, 0);
-            if (sc_helper_set_system_identifier(s_default_ctx, ui_keynode_rrel_order[i], ss.str().c_str(), (sc_uint32)ss.str().size()) != SC_RESULT_OK)
-                return SC_FALSE;
-        }
+      ui_keynode_rrel_order[i] = sc_memory_node_new(s_default_ctx, 0);
+      if (sc_helper_set_system_identifier(s_default_ctx, ui_keynode_rrel_order[i], ss.str().c_str(), (sc_uint32)ss.str().size()) != SC_RESULT_OK)
+        return SC_FALSE;
     }
+  }
 
-    for (sc_uint32 i = 0; i < UI_ARG_COUNT; ++i)
+  for (sc_uint32 i = 0; i < UI_ARG_COUNT; ++i)
+  {
+    std::stringstream ss;
+    ss << "ui_arg_" << (i + 1);
+    if (sc_helper_resolve_system_identifier(s_default_ctx, ss.str().c_str(), &(ui_keynode_arg[i])) == SC_FALSE)
     {
-        std::stringstream ss;
-        ss << "ui_arg_" << (i + 1);
-        if (sc_helper_resolve_system_identifier(s_default_ctx, ss.str().c_str(), &(ui_keynode_arg[i])) == SC_FALSE)
-        {
-            ui_keynode_rrel_order[i] = sc_memory_node_new(s_default_ctx, 0);
-            if (sc_helper_set_system_identifier(s_default_ctx, ui_keynode_rrel_order[i], ss.str().c_str(), (sc_uint32)ss.str().size()) != SC_RESULT_OK)
-                return SC_FALSE;
-        }
+      ui_keynode_rrel_order[i] = sc_memory_node_new(s_default_ctx, 0);
+      if (sc_helper_set_system_identifier(s_default_ctx, ui_keynode_rrel_order[i], ss.str().c_str(), (sc_uint32)ss.str().size()) != SC_RESULT_OK)
+        return SC_FALSE;
     }
+  }
 
-    return SC_TRUE;
+  return SC_TRUE;
 }
 

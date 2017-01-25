@@ -18,22 +18,22 @@
 //! Structure to store segment locks
 typedef struct _sc_segment_section
 {
-    volatile sc_pointer thread_lock;           // pointer to thread, that locked section
-    sc_int empty_count;                     // use 32-bit value for atomic operations
-    sc_int empty_offset;                    // use 32-bit value for atomic operations
-    sc_int internal_lock;                   //
-    sc_int lock_count;                      // count of recursive locks
+  volatile sc_pointer thread_lock;           // pointer to thread, that locked section
+  sc_int empty_count;                     // use 32-bit value for atomic operations
+  sc_int empty_offset;                    // use 32-bit value for atomic operations
+  sc_int internal_lock;                   //
+  sc_int lock_count;                      // count of recursive locks
 } sc_segment_section;
 
 /*! Structure for segment storing
  */
 struct _sc_segment
 {
-    sc_element_meta meta[SC_SEGMENT_ELEMENTS_COUNT];
-    sc_element elements[SC_SEGMENT_ELEMENTS_COUNT];
-    sc_addr_seg num;            // number of this segment in memory
-    sc_segment_section sections[SC_CONCURRENCY_LEVEL];
-    sc_uint elements_count;   // number of sc-element in the segment
+  sc_element_meta meta[SC_SEGMENT_ELEMENTS_COUNT];
+  sc_element elements[SC_SEGMENT_ELEMENTS_COUNT];
+  sc_addr_seg num;            // number of this segment in memory
+  sc_segment_section sections[SC_CONCURRENCY_LEVEL];
+  sc_uint elements_count;   // number of sc-element in the segment
 };
 
 /*! Create new segment with specified size.

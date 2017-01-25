@@ -10,27 +10,27 @@
 
 namespace utils
 {
-    ScLock::ScLock()
-    {
-        unlock();
-    }
 
-    void ScLock::lock()
-    {
-        bool expected = false;
-        while (true)
-        {
-            if (mLocked.compare_exchange_strong(expected, true))
-                break;
-
-            std::this_thread::sleep_for(std::chrono::milliseconds(2));
-        }
-    }
-
-    void ScLock::unlock()
-    {
-        mLocked.store(false);
-    }
-
-
+ScLock::ScLock()
+{
+  unlock();
 }
+
+void ScLock::lock()
+{
+  bool expected = false;
+  while (true)
+  {
+    if (mLocked.compare_exchange_strong(expected, true))
+      break;
+
+    std::this_thread::sleep_for(std::chrono::milliseconds(2));
+  }
+}
+
+void ScLock::unlock()
+{
+  mLocked.store(false);
+}
+
+} // namespace utils

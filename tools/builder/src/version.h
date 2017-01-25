@@ -15,8 +15,7 @@
 
 class Version
 {
-
-    static std::string getString();
+  static std::string getString();
 };
 
 #endif // _version_h_

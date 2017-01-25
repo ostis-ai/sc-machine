@@ -14,15 +14,16 @@
 namespace iot
 {
 
-	class AAddContentAgent : public ScAgentAction
-	{
-		SC_CLASS(Agent, CmdClass("command_add_content"))
-		SC_GENERATED_BODY()
-	};
-	
-	class AGetContentAgent : public ScAgentAction
-	{
-		SC_CLASS(Agent, CmdClass("command_get_content"))
-		SC_GENERATED_BODY()
-	};
-}
+class AAddContentAgent : public ScAgentAction
+{
+  SC_CLASS(Agent, CmdClass("command_add_content"))
+  SC_GENERATED_BODY()
+};
+
+class AGetContentAgent : public ScAgentAction
+{
+  SC_CLASS(Agent, CmdClass("command_get_content"))
+  SC_GENERATED_BODY()
+};
+
+} // namespace iot

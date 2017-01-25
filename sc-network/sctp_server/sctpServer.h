@@ -18,52 +18,52 @@ class sctpEventManager;
 
 class sctpServer : public QTcpServer
 {
-    Q_OBJECT
+  Q_OBJECT
 public:
-    explicit sctpServer(QObject *parent = 0);
-    virtual ~sctpServer();
+  explicit sctpServer(QObject *parent = 0);
+  virtual ~sctpServer();
 
-    //! Starts server
-    bool start(const QString &config);
-
-protected:
-    //! Parse configuration file
-    void parseConfig(const QString &config_path);
-
+  //! Starts server
+  bool start(const QString &config);
 
 protected:
-    void incomingConnection(qintptr socketDescriptor);
+  //! Parse configuration file
+  void parseConfig(const QString &config_path);
+
+
+protected:
+  void incomingConnection(qintptr socketDescriptor);
 
 private:
-    //! Port number
-    quint16 mPort;
-    //! Path to repository
-    QString mRepoPath;
-    //! Path to extensions directory
-    QString mExtPath;
+  //! Port number
+  quint16 mPort;
+  //! Path to repository
+  QString mRepoPath;
+  //! Path to extensions directory
+  QString mExtPath;
 
-    QString mStatPath;
-    quint32 mStatUpdatePeriod;
-    sctpStatistic *mStatistic;
+  QString mStatPath;
+  quint32 mStatUpdatePeriod;
+  sctpStatistic *mStatistic;
 
-    quint32 mSavePeriod;
+  quint32 mSavePeriod;
 
-    QSet<sctpClient*> mClients;
+  QSet<sctpClient*> mClients;
 
-    //! Event manager instance
-    sctpEventManager *mEventManager;
-    //! Pointer to default memory context
-    sc_memory_context *mContext;
+  //! Event manager instance
+  sctpEventManager *mEventManager;
+  //! Pointer to default memory context
+  sc_memory_context *mContext;
 
 signals:
 
 
 public slots:
-    void stop();
+  void stop();
 
-    void onSave();
+  void onSave();
 
-    void clientDestroyed(QObject *client);
+  void clientDestroyed(QObject *client);
 
 };
 

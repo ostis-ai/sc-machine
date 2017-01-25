@@ -16,24 +16,24 @@ void _pause()
 {
 #if !SC_BUILD_AUTO_TESTS
 #   if SC_PLATFORM_WIN32
-    system("PAUSE");
+  system("PAUSE");
 #   else
-    system("read -p \"Press a key to continue...\" -n 1 -s");
+  system("read -p \"Press a key to continue...\" -n 1 -s");
 #   endif
 #endif 
 }
 
 int main(int argc, char ** argv) try
 {
-    utils::ScLog::GetInstance()->Initialize("test_wrap.log");
-    test::TestUnit::RunAll();
-    utils::ScLog::GetInstance()->Shutdown();
+  utils::ScLog::GetInstance()->Initialize("test_wrap.log");
+  test::TestUnit::RunAll();
+  utils::ScLog::GetInstance()->Shutdown();
 
-    _pause();
-    return 0;
+  _pause();
+  return 0;
 }
 catch (ScException const & ex)
 {
-    SC_LOG_ERROR(ex.what());
-    _pause();
+  SC_LOG_ERROR(ex.what());
+  _pause();
 }

@@ -11,40 +11,42 @@
 
 namespace nl
 {
-    class Keynodes : public ScObject
-    {
-        SC_CLASS()
-        SC_GENERATED_BODY()
 
-    public:
-        SC_PROPERTY(Keynode("main_nl_dialogue_instance"), ForceCreate)
-        static ScAddr msMainNLDialogueInstance;
+class Keynodes : public ScObject
+{
+  SC_CLASS()
+  SC_GENERATED_BODY()
 
-        SC_PROPERTY(Keynode("command_process_user_text_message"), ForceCreate)
-        static ScAddr msCmdProcessUserTextMessage;
+public:
+  SC_PROPERTY(Keynode("main_nl_dialogue_instance"), ForceCreate)
+  static ScAddr msMainNLDialogueInstance;
 
-        SC_PROPERTY(Keynode("command_initiated"), ForceCreate)
-        static ScAddr msCommandInitiated;
+  SC_PROPERTY(Keynode("command_process_user_text_message"), ForceCreate)
+  static ScAddr msCmdProcessUserTextMessage;
 
-        SC_PROPERTY(Keynode("command_finished"), ForceCreate)
-        static ScAddr msCommandFinished;
+  SC_PROPERTY(Keynode("command_initiated"), ForceCreate)
+  static ScAddr msCommandInitiated;
 
-        SC_PROPERTY(Keynode("nrel_result"), ForceCreate)
-        static ScAddr msNrelResult;
+  SC_PROPERTY(Keynode("command_finished"), ForceCreate)
+  static ScAddr msCommandFinished;
 
-        SC_PROPERTY(Keynode("nrel_translation"), ForceCreate)
-        static ScAddr msNrelTranslation;
+  SC_PROPERTY(Keynode("nrel_result"), ForceCreate)
+  static ScAddr msNrelResult;
 
-        SC_PROPERTY(Keynode("nrel_item_order"), ForceCreate)
-        static ScAddr msNrelItemOrder;
+  SC_PROPERTY(Keynode("nrel_translation"), ForceCreate)
+  static ScAddr msNrelTranslation;
 
-        SC_PROPERTY(Keynode("nrel_author"), ForceCreate)
-        static ScAddr msNrelAuthor;
+  SC_PROPERTY(Keynode("nrel_item_order"), ForceCreate)
+  static ScAddr msNrelItemOrder;
 
-        SC_PROPERTY(Keynode("rrel_last_item"), ForceCreate)
-        static ScAddr msRrelLastItem;
+  SC_PROPERTY(Keynode("nrel_author"), ForceCreate)
+  static ScAddr msNrelAuthor;
 
-        SC_PROPERTY(Keynode("self"), ForceCreate)
-        static ScAddr msSelf;
-    };
-}
+  SC_PROPERTY(Keynode("rrel_last_item"), ForceCreate)
+  static ScAddr msRrelLastItem;
+
+  SC_PROPERTY(Keynode("self"), ForceCreate)
+  static ScAddr msSelf;
+};
+
+} // namespace nl

@@ -8,34 +8,34 @@
 
 UNIT_TEST(elements)
 {
-	ScMemoryContext ctx(sc_access_lvl_make_min, "elements");
+  ScMemoryContext ctx(sc_access_lvl_make_min, "elements");
 
-	ScAddr addr = ctx.createNode(sc_type_const);
-	SC_CHECK(addr.isValid(), ());
+  ScAddr addr = ctx.createNode(sc_type_const);
+  SC_CHECK(addr.isValid(), ());
 
-	ScAddr link = ctx.createLink();
-	SC_CHECK(link.isValid(), ());
+  ScAddr link = ctx.createLink();
+  SC_CHECK(link.isValid(), ());
 
-	ScAddr arc = ctx.createEdge(sc_type_arc_pos_const_perm, addr, link);
-	SC_CHECK(arc.isValid(), ());
+  ScAddr arc = ctx.createEdge(sc_type_arc_pos_const_perm, addr, link);
+  SC_CHECK(arc.isValid(), ());
 
-	SC_CHECK(ctx.isElement(addr), ());
-	SC_CHECK(ctx.isElement(link), ());
-	SC_CHECK(ctx.isElement(arc), ());
+  SC_CHECK(ctx.isElement(addr), ());
+  SC_CHECK(ctx.isElement(link), ());
+  SC_CHECK(ctx.isElement(arc), ());
 
-	SC_CHECK_EQUAL(ctx.getEdgeSource(arc), addr, ());
-	SC_CHECK_EQUAL(ctx.getEdgeTarget(arc), link, ());
+  SC_CHECK_EQUAL(ctx.getEdgeSource(arc), addr, ());
+  SC_CHECK_EQUAL(ctx.getEdgeTarget(arc), link, ());
 
-	SC_CHECK_EQUAL(ctx.getElementType(addr), ScType(sc_type_node | sc_type_const), ());
-	SC_CHECK_EQUAL(ctx.getElementType(link), ScType(sc_type_link), ());
-	SC_CHECK_EQUAL(ctx.getElementType(arc), ScType(sc_type_arc_pos_const_perm), ());
+  SC_CHECK_EQUAL(ctx.getElementType(addr), ScType(sc_type_node | sc_type_const), ());
+  SC_CHECK_EQUAL(ctx.getElementType(link), ScType(sc_type_link), ());
+  SC_CHECK_EQUAL(ctx.getElementType(arc), ScType(sc_type_arc_pos_const_perm), ());
 
-	SC_CHECK(ctx.setElementSubtype(addr, sc_type_var), ());
-	SC_CHECK_EQUAL(ctx.getElementType(addr), ScType(sc_type_node | sc_type_var), ());
+  SC_CHECK(ctx.setElementSubtype(addr, sc_type_var), ());
+  SC_CHECK_EQUAL(ctx.getElementType(addr), ScType(sc_type_node | sc_type_var), ());
 
-	SC_CHECK(ctx.eraseElement(addr), ());
-	SC_CHECK(!ctx.isElement(addr), ());
-	SC_CHECK(!ctx.isElement(arc), ());
-	SC_CHECK(ctx.isElement(link), ());
+  SC_CHECK(ctx.eraseElement(addr), ());
+  SC_CHECK(!ctx.isElement(addr), ());
+  SC_CHECK(!ctx.isElement(arc), ());
+  SC_CHECK(ctx.isElement(link), ());
 }
 

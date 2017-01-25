@@ -8,14 +8,16 @@
 
 namespace nl
 {
-    ScAddr Keynodes::msMainNLDialogueInstance;
-    ScAddr Keynodes::msCmdProcessUserTextMessage;
-    ScAddr Keynodes::msCommandInitiated;
-    ScAddr Keynodes::msCommandFinished;
-    ScAddr Keynodes::msNrelResult;
-    ScAddr Keynodes::msNrelTranslation;
-    ScAddr Keynodes::msNrelItemOrder;
-    ScAddr Keynodes::msNrelAuthor;
-    ScAddr Keynodes::msRrelLastItem;
-    ScAddr Keynodes::msSelf;
-}
+
+ScAddr Keynodes::msMainNLDialogueInstance;
+ScAddr Keynodes::msCmdProcessUserTextMessage;
+ScAddr Keynodes::msCommandInitiated;
+ScAddr Keynodes::msCommandFinished;
+ScAddr Keynodes::msNrelResult;
+ScAddr Keynodes::msNrelTranslation;
+ScAddr Keynodes::msNrelItemOrder;
+ScAddr Keynodes::msNrelAuthor;
+ScAddr Keynodes::msRrelLastItem;
+ScAddr Keynodes::msSelf;
+
+} // namespace nl

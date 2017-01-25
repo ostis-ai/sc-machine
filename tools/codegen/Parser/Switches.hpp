@@ -3,15 +3,15 @@
 #include <string>
 
 #define DEFINE_SWITCH(name, value)                   \
-    const std::string kSwitch##name = value;         \
-    const std::string kSwitch##name##Shorthand = ""; \
+  const std::string kSwitch##name = value;         \
+  const std::string kSwitch##name##Shorthand = ""; \
 
 #define DEFINE_SWITCH_FULL(name, value, shorthand)              \
-    const std::string kSwitch##name = value;                    \
-    const std::string kSwitch##name##Shorthand = "," shorthand; \
+  const std::string kSwitch##name = value;                    \
+  const std::string kSwitch##name##Shorthand = "," shorthand; \
 
 #define SWITCH_OPTION(name)                                 \
-    ((kSwitch##name) + (kSwitch##name##Shorthand)).c_str() \
+  ((kSwitch##name) + (kSwitch##name##Shorthand)).c_str() \
 
 DEFINE_SWITCH_FULL(Help,              "help",           "h");
 DEFINE_SWITCH_FULL(TargetName,        "target",		    "t");

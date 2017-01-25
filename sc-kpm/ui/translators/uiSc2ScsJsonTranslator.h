@@ -16,22 +16,22 @@
 class uiSc2ScsTranslator : public uiTranslateFromSc
 {
 public:
-    explicit uiSc2ScsTranslator();
-    virtual ~uiSc2ScsTranslator();
+  explicit uiSc2ScsTranslator();
+  virtual ~uiSc2ScsTranslator();
 
-    static sc_result ui_translate_sc2scs(const sc_event *event, sc_addr arg);
-
-protected:
-    //! @copydoc uiTranslateFromSc::runImpl
-    void runImpl();
-
-    //! Resolve system identifier for specified sc-addr
-    void resolveSystemIdentifier(const sc_addr &addr, String &idtf);
+  static sc_result ui_translate_sc2scs(const sc_event *event, sc_addr arg);
 
 protected:
-    //! Map of resolved system identifiers
-    typedef std::map<sc_addr, String> tSystemIdentifiersMap;
-    tSystemIdentifiersMap mSystemIdentifiers;
+  //! @copydoc uiTranslateFromSc::runImpl
+  void runImpl();
+
+  //! Resolve system identifier for specified sc-addr
+  void resolveSystemIdentifier(const sc_addr &addr, String &idtf);
+
+protected:
+  //! Map of resolved system identifiers
+  typedef std::map<sc_addr, String> tSystemIdentifiersMap;
+  tSystemIdentifiersMap mSystemIdentifiers;
 };
 
 #endif

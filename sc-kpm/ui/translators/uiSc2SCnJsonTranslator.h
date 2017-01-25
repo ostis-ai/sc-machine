@@ -11,89 +11,89 @@
 
 struct sScElementInfo
 {
-    typedef std::list<sScElementInfo*> tScElementInfoList;
+  typedef std::list<sScElementInfo*> tScElementInfoList;
 
-    typedef enum
-    {
-        VT_NODE,
-        VT_EDGE,
-        VT_SET,
-        VT_CONTOUR
+  typedef enum
+  {
+    VT_NODE,
+    VT_EDGE,
+    VT_SET,
+    VT_CONTOUR
 
-    } eVisualType;
+  } eVisualType;
 
-    sc_type type;
-    sc_addr addr;
-    sc_addr srcAddr;
-    sc_addr trgAddr;
-    sScElementInfo* source;
-    sScElementInfo* target;
-    tScElementInfoList outputArcs;
-    tScElementInfoList inputArcs;
+  sc_type type;
+  sc_addr addr;
+  sc_addr srcAddr;
+  sc_addr trgAddr;
+  sScElementInfo* source;
+  sScElementInfo* target;
+  tScElementInfoList outputArcs;
+  tScElementInfoList inputArcs;
 
-    eVisualType visualType;
-    bool isInSentenceTree;
+  eVisualType visualType;
+  bool isInSentenceTree;
 };
 
 class uiSCnSentenceNode
 {
-    typedef enum
-    {
-        ST_KEYWORD,
-        ST_PREDICATE,
-        ST_NODE
-    } eSentenceNodeType;
+  typedef enum
+  {
+    ST_KEYWORD,
+    ST_PREDICATE,
+    ST_NODE
+  } eSentenceNodeType;
 
 public:
-    typedef std::list<uiSCnSentenceNode*> tSentenceNodeList;
+  typedef std::list<uiSCnSentenceNode*> tSentenceNodeList;
 
-    //! Create keyword sentence node
-    explicit uiSCnSentenceNode(sScElementInfo *keywordEl);
-    virtual ~uiSCnSentenceNode();
+  //! Create keyword sentence node
+  explicit uiSCnSentenceNode(sScElementInfo *keywordEl);
+  virtual ~uiSCnSentenceNode();
 
-    //! Build tree based on keyword. This node must be a keyword
-    void buildTree();
-    //! Balance tree
-    void balance();
-    //! Generates json for specified tree
-    const String& json();
+  //! Build tree based on keyword. This node must be a keyword
+  void buildTree();
+  //! Balance tree
+  void balance();
+  //! Generates json for specified tree
+  const String& json();
 
-    //! Append new child tree node to this one
-    uiSCnSentenceNode* createChildNode(eSentenceNodeType type);
+  //! Append new child tree node to this one
+  uiSCnSentenceNode* createChildNode(eSentenceNodeType type);
 
 protected:
-    //! Destroy tree recursively
-    void destroyChilds();
+  //! Destroy tree recursively
+  void destroyChilds();
 
-    //! Removes node from childs list
-    void _removeChildNode(uiSCnSentenceNode *child);
-    //! Appends new node to childs list
-    void _appendChildNode(uiSCnSentenceNode *child);
-    //! Check if specified tree node exists in child list of this one
-    bool _hasChildNode(uiSCnSentenceNode *child) const;
+  //! Removes node from childs list
+  void _removeChildNode(uiSCnSentenceNode *child);
+  //! Appends new node to childs list
+  void _appendChildNode(uiSCnSentenceNode *child);
+  //! Check if specified tree node exists in child list of this one
+  bool _hasChildNode(uiSCnSentenceNode *child) const;
 
-
-private:
-    explicit uiSCnSentenceNode();
-
-    //! Create child predicate node
-    void _createChildPredicate(sScElementInfo *arc);
 
 private:
-    //! Pointer to parent sentence tree node
-    uiSCnSentenceNode *mParent;
-    //! Type of sentence tree node
-    eSentenceNodeType mType;
-    //! List of conotur article root nodes
-    tSentenceNodeList mContourSentences;
-    //! List of child set sentences
-    tSentenceNodeList mChildSetSentences;
-    //! List of child sentences
-    tSentenceNodeList mChildSentences;
-    //! Pointer to sc-element info
-    sScElementInfo *mElementInfo;
-    //! String that contains cache of generated json for tree
-    String mJSONData;
+  explicit uiSCnSentenceNode();
+
+  //! Create child predicate node
+  void _createChildPredicate(sScElementInfo *arc);
+
+private:
+  //! Pointer to parent sentence tree node
+  uiSCnSentenceNode *mParent;
+  //! Type of sentence tree node
+  eSentenceNodeType mType;
+  //! List of conotur article root nodes
+  tSentenceNodeList mContourSentences;
+  //! List of child set sentences
+  tSentenceNodeList mChildSetSentences;
+  //! List of child sentences
+  tSentenceNodeList mChildSentences;
+  //! Pointer to sc-element info
+  sScElementInfo *mElementInfo;
+  //! String that contains cache of generated json for tree
+  String mJSONData;
 };
 
 
@@ -104,39 +104,39 @@ private:
 class uiSc2SCnJsonTranslator : public uiTranslateFromSc
 {
 public:
-    explicit uiSc2SCnJsonTranslator();
-    virtual ~uiSc2SCnJsonTranslator();
+  explicit uiSc2SCnJsonTranslator();
+  virtual ~uiSc2SCnJsonTranslator();
 
 
-    static sc_result ui_translate_sc2scn(const sc_event *event, sc_addr arg);
+  static sc_result ui_translate_sc2scn(const sc_event *event, sc_addr arg);
 
 protected:
-    //! @copydoc uiTranslateFromSc::runImpl
-    void runImpl();
+  //! @copydoc uiTranslateFromSc::runImpl
+  void runImpl();
 
-    /*! Translate one sc-element semantic neighborhood
+  /*! Translate one sc-element semantic neighborhood
      * @param addr sc-addr of sc-element to translate
      * @param isKeyword Keyword flag
      * @return Returns string that json representaion of sc-element
      */
-    String translateElement(sc_addr addr, bool isKeyword);
+  String translateElement(sc_addr addr, bool isKeyword);
 
-    //! Check if specified sc-element included in output construction
-    bool isInOutputConstruction(sc_addr addr) const;
+  //! Check if specified sc-element included in output construction
+  bool isInOutputConstruction(sc_addr addr) const;
 
-    //! Collect information of trsnslated sc-elements and store it
-    void collectScElementsInfo();
+  //! Collect information of trsnslated sc-elements and store it
+  void collectScElementsInfo();
 
 protected:
-    //! List of keywords
-    tScAddrList mKeywordsList;
-    //! Collection of objects information
-    typedef std::map<sc_addr, sScElementInfo*> tScElemetsInfoMap;
-    tScElemetsInfoMap mScElementsInfo;
-    //! Pull of sc-elements information (used to prevent many memory allocations)
-    sScElementInfo *mScElementsInfoPool;
-    //! List of articles root elements
-    uiSCnSentenceNode::tSentenceNodeList mRootSentences;
+  //! List of keywords
+  tScAddrList mKeywordsList;
+  //! Collection of objects information
+  typedef std::map<sc_addr, sScElementInfo*> tScElemetsInfoMap;
+  tScElemetsInfoMap mScElementsInfo;
+  //! Pull of sc-elements information (used to prevent many memory allocations)
+  sScElementInfo *mScElementsInfoPool;
+  //! List of articles root elements
+  uiSCnSentenceNode::tSentenceNodeList mRootSentences;
 };
 
 

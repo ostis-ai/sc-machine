@@ -16,26 +16,26 @@ class sctpCommand;
 
 class sctpClient : public QThread
 {
-    Q_OBJECT
+  Q_OBJECT
 public:
-    explicit sctpClient(QObject *parent, int socketDescriptor);
-    virtual ~sctpClient();
+  explicit sctpClient(QObject *parent, int socketDescriptor);
+  virtual ~sctpClient();
 
-    void run();
+  void run();
 
 protected:
-    void processCommands();
+  void processCommands();
 
 private:
-    //! Pointer to client socket
-    QTcpSocket *mSocket;
-    //! Pointer to command processing class
-    sctpCommand *mCommand;
+  //! Pointer to client socket
+  QTcpSocket *mSocket;
+  //! Pointer to command processing class
+  sctpCommand *mCommand;
 
-    int mSocketDescriptor;
-    
+  int mSocketDescriptor;
+
 signals:
-    void done(sctpClient *client);
+  void done(sctpClient *client);
 };
 
 #endif // CLIENTTHREAD_H

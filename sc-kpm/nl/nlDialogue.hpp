@@ -14,13 +14,13 @@
 
 namespace nl
 {
-    class ADialogueProcessMessageAgent : public ScAgent
-    {
-        SC_CLASS(Agent, Event(Keynodes::msMainNLDialogueInstance, SC_EVENT_ADD_OUTPUT_ARC))
-        SC_GENERATED_BODY()
 
-    private:
-    };
+class ADialogueProcessMessageAgent : public ScAgent
+{
+  SC_CLASS(Agent, Event(Keynodes::msMainNLDialogueInstance, SC_EVENT_ADD_OUTPUT_ARC))
+  SC_GENERATED_BODY()
+};
 
-    void runTest();
-}
+void runTest();
+
+} // namespace nl

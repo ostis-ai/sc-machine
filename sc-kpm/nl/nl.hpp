@@ -13,9 +13,9 @@
 
 class nlModule : public ScModule
 {
-    SC_CLASS(LoadOrder(11))
-    SC_GENERATED_BODY()
+  SC_CLASS(LoadOrder(11))
+  SC_GENERATED_BODY()
 
-    sc_result initializeImpl();
-    sc_result shutdownImpl();
+  sc_result initializeImpl();
+  sc_result shutdownImpl();
 };

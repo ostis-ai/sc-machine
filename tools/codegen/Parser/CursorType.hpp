@@ -11,21 +11,21 @@ class Cursor;
 class CursorType
 {
 public:
-    CursorType(const CXType &handle);
+  CursorType(const CXType &handle);
 
-    std::string GetDisplayName(void) const;
+  std::string GetDisplayName(void) const;
 
-    int GetArgumentCount(void) const;
-    CursorType GetArgument(unsigned index) const;
+  int GetArgumentCount(void) const;
+  CursorType GetArgument(unsigned index) const;
 
-    CursorType GetCanonicalType(void) const;
+  CursorType GetCanonicalType(void) const;
 
-    Cursor GetDeclaration(void) const;
+  Cursor GetDeclaration(void) const;
 
-    CXTypeKind GetKind(void) const;
+  CXTypeKind GetKind(void) const;
 
-    bool IsConst(void) const;
+  bool IsConst(void) const;
 
 private:
-    CXType m_handle;
+  CXType m_handle;
 };

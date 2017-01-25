@@ -12,8 +12,8 @@
 //! Enumeration of sc-keynodes
 enum _sc_keynode
 {
-    SC_KEYNODE_NREL_SYSTEM_IDENTIFIER = 0,      // nrel_system_identifier
-    SC_KEYNODE_COUNT
+  SC_KEYNODE_NREL_SYSTEM_IDENTIFIER = 0,      // nrel_system_identifier
+  SC_KEYNODE_COUNT
 };
 
 typedef enum _sc_keynode sc_keynode;

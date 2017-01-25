@@ -8,12 +8,12 @@ class Function
     , public Invokable
 {
 public:
-    Function(const Cursor & cursor, const Namespace & currentNamespace, class Class * parent = nullptr);
+  Function(const Cursor & cursor, const Namespace & currentNamespace, class Class * parent = nullptr);
 
-    virtual ~Function(void);
+  virtual ~Function(void);
 
 private:
-    class Class * m_parent;
+  class Class * m_parent;
 
-    std::string m_name;
+  std::string m_name;
 };

@@ -13,10 +13,10 @@
 #include <QDebug>
 
 sctpClient::sctpClient(QObject *parent, int socketDescriptor)
-    : QThread(parent)
-    , mSocket(0)
-    , mCommand(0)
-    , mSocketDescriptor(socketDescriptor)
+  : QThread(parent)
+  , mSocket(0)
+  , mCommand(0)
+  , mSocketDescriptor(socketDescriptor)
 {
 }
 
@@ -26,58 +26,58 @@ sctpClient::~sctpClient()
 
 void sctpClient::run()
 {
-    mSocket = new QTcpSocket();
-    if (!mSocket->setSocketDescriptor(mSocketDescriptor))
-    {
-        qDebug() << "Can't process socket descriptor " << mSocketDescriptor;
-        delete mSocket;
-        return;
-    }
-
-    qDebug() << "Client connected: " << mSocket->peerAddress();
-
-    sctpStatistic::getInstance()->clientConnected();
-
-    mCommand = new sctpCommand();
-    mCommand->init();
-
-    while (mSocket->waitForReadyRead())
-    {
-        processCommands();
-    }
-
-    mCommand->shutdown();
-
-    if (mSocket->state() == QTcpSocket::ConnectedState)
-    {
-        mSocket->waitForBytesWritten();
-        mSocket->waitForDisconnected();
-    }
-    mSocket->close();
-
+  mSocket = new QTcpSocket();
+  if (!mSocket->setSocketDescriptor(mSocketDescriptor))
+  {
+    qDebug() << "Can't process socket descriptor " << mSocketDescriptor;
     delete mSocket;
-    mSocket = 0;
+    return;
+  }
 
-    delete mCommand;
-    mCommand = 0;
+  qDebug() << "Client connected: " << mSocket->peerAddress();
 
-    //deleteLater(); // shedule destroy in main thread
+  sctpStatistic::getInstance()->clientConnected();
+
+  mCommand = new sctpCommand();
+  mCommand->init();
+
+  while (mSocket->waitForReadyRead())
+  {
+    processCommands();
+  }
+
+  mCommand->shutdown();
+
+  if (mSocket->state() == QTcpSocket::ConnectedState)
+  {
+    mSocket->waitForBytesWritten();
+    mSocket->waitForDisconnected();
+  }
+  mSocket->close();
+
+  delete mSocket;
+  mSocket = 0;
+
+  delete mCommand;
+  mCommand = 0;
+
+  //deleteLater(); // shedule destroy in main thread
 }
 
 void sctpClient::processCommands()
 {
-    while (mSocket->bytesAvailable() >= mCommand->cmdHeaderSize())
+  while (mSocket->bytesAvailable() >= mCommand->cmdHeaderSize())
+  {
+    eSctpErrorCode errCode = mCommand->processCommand(mSocket, mSocket);
+    if (errCode != SCTP_NO_ERROR)
     {
-        eSctpErrorCode errCode = mCommand->processCommand(mSocket, mSocket);
-        if (errCode != SCTP_NO_ERROR)
-        {
-            qDebug() << "Error: " << errCode << "; while process request from client " << mSocket->peerAddress().toString();
-            sctpStatistic::getInstance()->commandProcessed(true);
-        }else
-        {
-            sctpStatistic::getInstance()->commandProcessed(false);
-        }
-
-        mSocket->flush();
+      qDebug() << "Error: " << errCode << "; while process request from client " << mSocket->peerAddress().toString();
+      sctpStatistic::getInstance()->commandProcessed(true);
+    }else
+    {
+      sctpStatistic::getInstance()->commandProcessed(false);
     }
+
+    mSocket->flush();
+  }
 }

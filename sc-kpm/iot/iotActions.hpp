@@ -15,75 +15,77 @@
 
 namespace iot
 {
-	class ActionManager : public ScObject
-	{
-		SC_CLASS()
-		SC_GENERATED_BODY()
 
-	private:
-		struct Task
-		{
-			uint64_t nextRunTime;
-			uint64_t period;
-			ScAddr action;
+class ActionManager : public ScObject
+{
+  SC_CLASS()
+  SC_GENERATED_BODY()
 
-			Task(ScAddr const & inAction, uint64_t const & inPeriod = 0, uint64_t inNextRunTime = 0) 
-                : nextRunTime(inNextRunTime)
-				, period(inPeriod)
-                , action(inAction)
+private:
+  struct Task
+  {
+             uint64_t nextRunTime;
+  uint64_t period;
+  ScAddr action;
 
-			{
-			}
-			
-			bool operator < (Task const & other) const
-			{ 
-				return nextRunTime < other.nextRunTime;
-			}
-		};
+  Task(ScAddr const & inAction, uint64_t const & inPeriod = 0, uint64_t inNextRunTime = 0)
+    : nextRunTime(inNextRunTime)
+    , period(inPeriod)
+    , action(inAction)
 
-	public:
-		explicit ActionManager();
-		~ActionManager();
+  {
+  }
 
-		void initialize();
-		void shutdown();
+  bool operator < (Task const & other) const
+  {
+    return nextRunTime < other.nextRunTime;
+  }
+};
 
-		void appendActionPeriodical(ScAddr const & action, uint32_t period);
-		void appendAction(ScAddr const & action, uint64_t runTime);
-		void tick();
+public:
+  explicit ActionManager();
+  ~ActionManager();
 
-		bool isRunning() const;
+  void initialize();
+  void shutdown();
 
-		static ActionManager * getInstance();
-		
-	protected:
-		void addPeriodicalAction(ScAddr const & actionAddr);
-		void addTimeSpecifiedAction(ScAddr const & actionAddr);
+  void appendActionPeriodical(ScAddr const & action, uint32_t period);
+  void appendAction(ScAddr const & action, uint64_t runTime);
+  void tick();
 
-	private:
-		bool mIsInitialized;
-		bool mIsRunning;
+  bool isRunning() const;
 
-		ScMemoryContext * mMemoryCtx;
+  static ActionManager * getInstance();
 
-		typedef std::set<ActionManager::Task> tTaskSet;
-		tTaskSet mTaskSet;
+protected:
+  void addPeriodicalAction(ScAddr const & actionAddr);
+  void addTimeSpecifiedAction(ScAddr const & actionAddr);
 
-	public:
-		SC_PROPERTY(Keynode("action_periodical"), ForceCreate)
-		static ScAddr msActionPeriodical;
+private:
+  bool mIsInitialized;
+  bool mIsRunning;
 
-		SC_PROPERTY(Keynode("action_time_specified"), ForceCreate)
-		static ScAddr msActionTimeSpecified;
+  ScMemoryContext * mMemoryCtx;
 
-	private:
-		static ActionManager * msInstance;
-	};
+  typedef std::set<ActionManager::Task> tTaskSet;
+  tTaskSet mTaskSet;
 
-	class ANewPeriodicalActionAgent : public ScAgent
-	{
-		SC_CLASS(Agent, Event(ActionManager::msActionPeriodical, SC_EVENT_ADD_OUTPUT_ARC))
-		SC_GENERATED_BODY()
+  public:
+  SC_PROPERTY(Keynode("action_periodical"), ForceCreate)
+  static ScAddr msActionPeriodical;
 
-	};
-}
+  SC_PROPERTY(Keynode("action_time_specified"), ForceCreate)
+  static ScAddr msActionTimeSpecified;
+
+  private:
+  static ActionManager * msInstance;
+};
+
+class ANewPeriodicalActionAgent : public ScAgent
+{
+  SC_CLASS(Agent, Event(ActionManager::msActionPeriodical, SC_EVENT_ADD_OUTPUT_ARC))
+  SC_GENERATED_BODY()
+
+};
+
+} // namespace iot

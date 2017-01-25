@@ -13,26 +13,26 @@ class StringUtil
 {
 public:
 
-    static void toLowerCase(String& str);
-    static void toUpperCase(String &str);
+  static void toLowerCase(String& str);
+  static void toUpperCase(String &str);
 
-    //! Check if string starts with specified pattern
-    static bool startsWith(const String& str, const String& pattern, bool lowerCase);
+  //! Check if string starts with specified pattern
+  static bool startsWith(const String& str, const String& pattern, bool lowerCase);
 
-    //! Check if string ends with specified pattern
-    static bool endsWith(const String &str, const String &pattern, bool lowerCase);
+  //! Check if string ends with specified pattern
+  static bool endsWith(const String &str, const String &pattern, bool lowerCase);
 
-    //! Split file name to path and name
-    static void splitFilename(const String& qualifiedName, String& outBasename, String& outPath);
+  //! Split file name to path and name
+  static void splitFilename(const String& qualifiedName, String& outBasename, String& outPath);
 
-    //! Returns file extension
-    static String getFileExtension(const String &filename);
+  //! Returns file extension
+  static String getFileExtension(const String &filename);
 
-    //! Make file path normalized
-    static String normalizeFilePath(const String& init, bool makeLowerCase);
+  //! Make file path normalized
+  static String normalizeFilePath(const String& init, bool makeLowerCase);
 
-    //! Replace all substrings in string
-    static const String replaceAll(const String& source, const String& replaceWhat, const String& replaceWithWhat);
+  //! Replace all substrings in string
+  static const String replaceAll(const String& source, const String& replaceWhat, const String& replaceWithWhat);
 
 };
 

@@ -30,27 +30,27 @@
 #define SC_SEGMENT_CACHE_SIZE  32   // size of segments cache
 
 #if defined (SC_MEMORY_SELF_BUILD)
-    #if defined (SC_PLATFORM_WIN)
-        #define _SC_EXTERN __declspec(dllexport) 
-    #else
-        #define _SC_EXTERN
-    #endif
+# if defined (SC_PLATFORM_WIN)
+#   define _SC_EXTERN __declspec(dllexport)
+# else
+#   define _SC_EXTERN
+# endif
 #else
-    #if defined (SC_PLATFORM_WIN)
-        #define _SC_EXTERN __declspec(dllimport)
-    #else
-        #define _SC_EXTERN
-    #endif
+# if defined (SC_PLATFORM_WIN)
+#   define _SC_EXTERN __declspec(dllimport)
+# else
+#   define _SC_EXTERN
+# endif
 #endif
 
 #if defined (SC_PLATFORM_WIN)
-#   if defined(__cplusplus)
-#       define _SC_EXT_EXTERN extern "C" __declspec(dllexport)
-#   else
-#       define _SC_EXT_EXTERN __declspec(dllexport)
-#   endif
+# if defined(__cplusplus)
+#   define _SC_EXT_EXTERN extern "C" __declspec(dllexport)
+# else
+#   define _SC_EXT_EXTERN __declspec(dllexport)
+# endif
 #else
-    #define _SC_EXT_EXTERN
+# define _SC_EXT_EXTERN
 #endif
 
 // -------------- Deprecation ---------------
@@ -60,20 +60,20 @@
 #	define _SC_DEPRECATED_IMPL(__Version, __Message) __declspec(deprecated(__Message " Update you code to newest API version " #__Version " or later."))
 
 #	define PRAGMA_DISABLE_DEPRECATION_WARNINGS \
-		__pragma (warning(push)) \
-		__pragma (warning(disable:4995)) \
-		__pragma (warning(disable:4996))
+  __pragma (warning(push)) \
+  __pragma (warning(disable:4995)) \
+  __pragma (warning(disable:4996))
 
 #	define PRAGMA_ENABLE_DEPRECATION_WARNINGS \
-		__pragma (warning(pop))
+  __pragma (warning(pop))
 
 #elif (SC_COMPILER == SC_COMPILER_CLANG)
 
 #	define _SC_DEPRECATED_IMPL(__Version, __Message) __attribute__((deprecated(__Message "Update you code to newest API version " #__Version " or later.")))
 
 #	define PRAGMA_DISABLE_DEPRECATION_WARNINGS \
-		_Pragma ("clang diagnostic push") \
-		_Pragma ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
+  _Pragma ("clang diagnostic push") \
+  _Pragma ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
 
 #	define PRAGMA_ENABLE_DEPRECATION_WARNINGS
 _Pragma("clang diagnostic pop")

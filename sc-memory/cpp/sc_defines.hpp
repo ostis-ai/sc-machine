@@ -22,12 +22,12 @@
 
 #define SC_GENERATED_BODY_ITEMS(v) SC_COMBINE(ScFileID, _, __LINE__, v)
 #define SC_GENERATED_BODY_INIT() \
-    public: \
-    static bool initGlobal() { return _initStaticInternal(); } \
-    private: \
-    SC_GENERATED_BODY_ITEMS(_init) \
-    SC_GENERATED_BODY_ITEMS(_initStatic) \
-    SC_GENERATED_BODY_ITEMS(_decl)
+  public: \
+  static bool initGlobal() { return _initStaticInternal(); } \
+  private: \
+  SC_GENERATED_BODY_ITEMS(_init) \
+  SC_GENERATED_BODY_ITEMS(_initStatic) \
+  SC_GENERATED_BODY_ITEMS(_decl)
 
 
 #define SC_CLASS(...)

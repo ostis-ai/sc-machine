@@ -8,17 +8,17 @@
 
 class ScMemoryContext;
 
-
 namespace iot
 {
-	class Commands
-	{
-	public:
-		static bool initialize();
-		static bool shutdown();
 
-	private:
-        static ScMemoryContext * memory_ctx;
-	};
+class Commands
+{
+public:
+  static bool initialize();
+  static bool shutdown();
 
-}
+private:
+  static ScMemoryContext * memory_ctx;
+};
+
+} // namespace iot

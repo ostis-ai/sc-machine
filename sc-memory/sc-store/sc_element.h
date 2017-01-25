@@ -12,12 +12,12 @@
 
 struct _sc_arc_info
 {
-    sc_addr begin;
-    sc_addr end;
-    sc_addr next_out_arc; // sc-addr of next output arc in list
-    sc_addr next_in_arc; // sc-addr of next input arc in list
-    sc_addr prev_out_arc; // sc-addr of pevious output arc in list
-    sc_addr prev_in_arc; // sc-addr of previous input arc in list
+  sc_addr begin;
+  sc_addr end;
+  sc_addr next_out_arc; // sc-addr of next output arc in list
+  sc_addr next_in_arc; // sc-addr of next input arc in list
+  sc_addr prev_out_arc; // sc-addr of pevious output arc in list
+  sc_addr prev_in_arc; // sc-addr of previous input arc in list
 };
 
 
@@ -28,7 +28,7 @@ struct _sc_arc_info
  */
 struct _sc_content
 {
-    char data[SC_CHECKSUM_LEN];
+  char data[SC_CHECKSUM_LEN];
 };
 
 /* Structure to store information for sc-elements.
@@ -60,10 +60,10 @@ struct _sc_content
 
 struct _sc_element_locks
 {
-    sc_uint8 out_inp:1;
-    sc_uint8 del:1;
-    sc_uint8 change:1;
-    sc_uint8 read:1;
+  sc_uint8 out_inp:1;
+  sc_uint8 del:1;
+  sc_uint8 change:1;
+  sc_uint8 read:1;
 };
 
 #define SC_ELID_REFS_MASK   0xffff
@@ -71,32 +71,32 @@ struct _sc_element_locks
 
 struct _sc_element_flags
 {
-    sc_type type;
-    sc_access_levels access_levels;
+  sc_type type;
+  sc_access_levels access_levels;
 };
 
 struct _sc_element_meta
 {
-    union
-    {
-        sc_element_locks locks; // bits access
-        sc_uint8 locks_data; // one byte
-    };
-    
-    sc_uint32 ref_count;
+  union
+  {
+    sc_element_locks locks; // bits access
+    sc_uint8 locks_data; // one byte
+  };
+
+  sc_uint32 ref_count;
 };
 
 struct _sc_element
 {
-    sc_element_flags flags;
+  sc_element_flags flags;
 
-    sc_addr first_out_arc;
-    sc_addr first_in_arc;
-    union
-    {
-        sc_content content;
-        sc_arc_info arc;
-    };
+  sc_addr first_out_arc;
+  sc_addr first_in_arc;
+  union
+  {
+    sc_content content;
+    sc_arc_info arc;
+  };
 };
 
 /// All functions must be called for locked sc-elements

@@ -131,7 +131,7 @@ sc_result sc_storage_get_arc_info(sc_memory_context const * ctx, sc_addr addr, s
  * <li>SC_ERROR - unknown error</li>
  * </ul>
  */
- sc_result sc_storage_set_link_content(sc_memory_context const * ctx, sc_addr addr, const sc_stream *stream);
+sc_result sc_storage_set_link_content(sc_memory_context const * ctx, sc_addr addr, const sc_stream *stream);
 
 /*! Returns content data from specified sc-link
  * @param addr sc-addr of sc-link to get content data
@@ -144,7 +144,7 @@ sc_result sc_storage_get_arc_info(sc_memory_context const * ctx, sc_addr addr, s
  * <li>SC_ERROR - unknown error</li>
  * </ul>
  */
- sc_result sc_storage_get_link_content(sc_memory_context const * ctx, sc_addr addr, sc_stream **stream);
+sc_result sc_storage_get_link_content(sc_memory_context const * ctx, sc_addr addr, sc_stream **stream);
 
 /*! Search sc-link addrs by specified data
  * @param stream Pointert to stream that contains data for search
@@ -156,7 +156,7 @@ sc_result sc_storage_get_arc_info(sc_memory_context const * ctx, sc_addr addr, s
  * sc-addrs
  * @attention \p result array need to be free after usage
  */
- sc_result sc_storage_find_links_with_content(sc_memory_context const * ctx, sc_stream const * stream, sc_addr ** result, sc_uint32 * result_count);
+sc_result sc_storage_find_links_with_content(sc_memory_context const * ctx, sc_stream const * stream, sc_addr ** result, sc_uint32 * result_count);
 
 /*! Setup new access levels to sc-element. New access levels will be a minimum from context access levels and parameter \b access_levels
  * @param addr sc-addr of sc-element to change access levels
@@ -165,10 +165,10 @@ sc_result sc_storage_get_arc_info(sc_memory_context const * ctx, sc_addr addr, s
  *
  * @return Returns SC_RESULT_OK, when access level changed; otherwise it returns error code
  */
- sc_result sc_storage_set_access_levels(sc_memory_context const * ctx, sc_addr addr, sc_access_levels access_levels, sc_access_levels * new_value);
+sc_result sc_storage_set_access_levels(sc_memory_context const * ctx, sc_addr addr, sc_access_levels access_levels, sc_access_levels * new_value);
 
 //! Get access levels of sc-element
- sc_result sc_storage_get_access_levels(sc_memory_context const * ctx, sc_addr addr, sc_access_levels * result);
+sc_result sc_storage_get_access_levels(sc_memory_context const * ctx, sc_addr addr, sc_access_levels * result);
 
 //! Returns number of segments
 sc_uint sc_storage_get_segments_count();
