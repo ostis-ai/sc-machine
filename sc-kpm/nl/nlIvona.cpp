@@ -264,7 +264,7 @@ SC_AGENT_ACTION_IMPLEMENTATION(AIvonaGenerateSpeechAgent)
   curl_global_init(CURL_GLOBAL_ALL);
 
   // get text to process
-  ScIterator3Ptr iter = mMemoryCtx.iterator3(requestAddr, *ScType::EDGE_ACCESS_CONST_POS_PERM, *ScType::LINK);
+  ScIterator3Ptr iter = mMemoryCtx.iterator3(requestAddr, *ScType::EdgeAccessConstPosPerm, *ScType::Link);
   if (iter->next())
   {
     ScStream stream;
@@ -283,12 +283,12 @@ SC_AGENT_ACTION_IMPLEMENTATION(AIvonaGenerateSpeechAgent)
 
           // append format
           {
-            ScAddr edge = mMemoryCtx.createEdge(*ScType::EDGE_DCOMMON_CONST, linkAddr, msFormatOgg);
+            ScAddr edge = mMemoryCtx.createEdge(*ScType::EdgeDCommonConst, linkAddr, msFormatOgg);
             check_expr(edge.isValid());
-            mMemoryCtx.createEdge(*ScType::EDGE_ACCESS_CONST_POS_PERM, msNrelFormat, edge);
+            mMemoryCtx.createEdge(*ScType::EdgeAccessConstPosPerm, msNrelFormat, edge);
           }
 
-          mMemoryCtx.createEdge(*ScType::EDGE_ACCESS_CONST_POS_PERM, resultAddr, linkAddr);
+          mMemoryCtx.createEdge(*ScType::EdgeAccessConstPosPerm, resultAddr, linkAddr);
 
           ScStream stream((char*)soundData.data(), (sc_uint32)soundData.size(), SC_STREAM_FLAG_READ);
           if (mMemoryCtx.setLinkContent(linkAddr, stream))

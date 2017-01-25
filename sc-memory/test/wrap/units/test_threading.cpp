@@ -29,7 +29,7 @@ UNIT_TEST(events_threading)
 
   for (size_t i = 0; i < nodeNum; ++i)
   {
-    ScAddr const addr = ctx.createNode(*ScType::NODE_CONST);
+    ScAddr const addr = ctx.createNode(*ScType::NodeConst);
     SC_CHECK(addr.isValid(), ());
     nodes[i] = addr;
   }
@@ -80,7 +80,7 @@ UNIT_TEST(events_threading)
     uint32_t const v = rand() % 2;
     if (v == 0)
     {
-      ScAddr const e = ctx.createEdge(*ScType::EDGE_ACCESS, randNode(), randNode());
+      ScAddr const e = ctx.createEdge(*ScType::EdgeAccess, randNode(), randNode());
       SC_CHECK(e.isValid(), ());
       edges.push_back(e);
 

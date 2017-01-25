@@ -126,7 +126,7 @@ idtf
 
 idtf_level1
     : ID_SYSTEM
-    | LINK
+    | Link
     ;
 
 idtf_edge
@@ -158,7 +158,7 @@ CONTENT
   	;
 
 
-LINK
+Link
      :  '"' (   ~('"')  | '\\"'  )* '"'
      ;
     

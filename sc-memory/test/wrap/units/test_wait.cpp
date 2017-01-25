@@ -31,8 +31,8 @@ gpointer emit_event_thread(gpointer data)
   WaitTestData * d = (WaitTestData*)data;
   g_usleep(500000);	// sleep to run some later
 
-  ScAddr const node = d->mAddrFrom.isValid() ? d->mAddrFrom : d->mContext.createNode(*ScType::NODE_CONST);
-  ScAddr const edge = d->mContext.createEdge(*ScType::EDGE_ACCESS_CONST_POS_PERM, node, d->mAddr);
+  ScAddr const node = d->mAddrFrom.isValid() ? d->mAddrFrom : d->mContext.createNode(*ScType::NodeConst);
+  ScAddr const edge = d->mContext.createEdge(*ScType::EdgeAccessConstPosPerm, node, d->mAddr);
 
   d->mIsDone = edge.isValid();
 
@@ -45,7 +45,7 @@ UNIT_TEST(waiter)
   ScAgentInit(true);
   ScMemoryContext ctx(sc_access_lvl_make_min, "waiter");
 
-  const ScAddr addr = ctx.createNode(ScType::NODE_CONST);
+  const ScAddr addr = ctx.createNode(ScType::NodeConst);
   SC_CHECK(addr.isValid(), ());
 
   SUBTEST_START(WaitValid)

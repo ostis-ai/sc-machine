@@ -1,48 +1,50 @@
 #include "sc_types.hpp"
 
-const ScType ScType::EDGE_UCOMMON(sc_type_edge_common);
-const ScType ScType::EDGE_DCOMMON(sc_type_arc_common);
+ScType const ScType::EdgeUCommon(sc_type_edge_common);
+ScType const ScType::EdgeDCommon(sc_type_arc_common);
 
-const ScType ScType::EDGE_UCOMMON_CONST(sc_type_edge_common | sc_type_const);
-const ScType ScType::EDGE_DCOMMON_CONST(sc_type_arc_common | sc_type_const);
+ScType const ScType::EdgeUCommonConst(sc_type_edge_common | sc_type_const);
+ScType const ScType::EdgeDCommonConst(sc_type_arc_common | sc_type_const);
 
-const ScType ScType::EDGE_ACCESS(sc_type_arc_access);
-const ScType ScType::EDGE_ACCESS_CONST_POS_PERM(sc_type_const | sc_type_arc_access | sc_type_arc_perm | sc_type_arc_pos);
-const ScType ScType::EDGE_ACCESS_CONST_NEG_PERM(sc_type_const | sc_type_arc_access | sc_type_arc_perm | sc_type_arc_neg);
-const ScType ScType::EDGE_ACCESS_CONST_FUZ_PERM(sc_type_const | sc_type_arc_access | sc_type_arc_perm | sc_type_arc_fuz);
-const ScType ScType::EDGE_ACCESS_CONST_POS_TEMP(sc_type_const | sc_type_arc_access | sc_type_arc_temp | sc_type_arc_pos);
-const ScType ScType::EDGE_ACCESS_CONST_NEG_TEMP(sc_type_const | sc_type_arc_access | sc_type_arc_temp | sc_type_arc_neg);
-const ScType ScType::EDGE_ACCESS_CONST_FUZ_TEMP(sc_type_const | sc_type_arc_access | sc_type_arc_temp | sc_type_arc_fuz);
-
-
-const ScType ScType::EDGE_UCOMMON_VAR(sc_type_edge_common | sc_type_var);
-const ScType ScType::EDGE_DCOMMON_VAR(sc_type_arc_common | sc_type_var);
-const ScType ScType::EDGE_ACCESS_VAR_POS_PERM(sc_type_var | sc_type_arc_access | sc_type_arc_perm | sc_type_arc_pos);
-const ScType ScType::EDGE_ACCESS_VAR_NEG_PERM(sc_type_var | sc_type_arc_access | sc_type_arc_perm | sc_type_arc_neg);
-const ScType ScType::EDGE_ACCESS_VAR_FUZ_PERM(sc_type_var | sc_type_arc_access | sc_type_arc_perm | sc_type_arc_fuz);
-const ScType ScType::EDGE_ACCESS_VAR_POS_TEMP(sc_type_var | sc_type_arc_access | sc_type_arc_temp | sc_type_arc_pos);
-const ScType ScType::EDGE_ACCESS_VAR_NEG_TEMP(sc_type_var | sc_type_arc_access | sc_type_arc_temp | sc_type_arc_neg);
-const ScType ScType::EDGE_ACCESS_VAR_FUZ_TEMP(sc_type_var | sc_type_arc_access | sc_type_arc_temp | sc_type_arc_fuz);
+ScType const ScType::EdgeAccess(sc_type_arc_access);
+ScType const ScType::EdgeAccessConstPosPerm(sc_type_const | sc_type_arc_access | sc_type_arc_perm | sc_type_arc_pos);
+ScType const ScType::EdgeAccessConstNegPerm(sc_type_const | sc_type_arc_access | sc_type_arc_perm | sc_type_arc_neg);
+ScType const ScType::EdgeAccessConstFuzPerm(sc_type_const | sc_type_arc_access | sc_type_arc_perm | sc_type_arc_fuz);
+ScType const ScType::EdgeAccessConstPosTemp(sc_type_const | sc_type_arc_access | sc_type_arc_temp | sc_type_arc_pos);
+ScType const ScType::EdgeAccessConstNegTemp(sc_type_const | sc_type_arc_access | sc_type_arc_temp | sc_type_arc_neg);
+ScType const ScType::EdgeAccessConstFuzTemp(sc_type_const | sc_type_arc_access | sc_type_arc_temp | sc_type_arc_fuz);
 
 
-const ScType ScType::NODE(sc_type_node);
-const ScType ScType::LINK(sc_type_link);
+ScType const ScType::EdgeUCommonVar(sc_type_edge_common | sc_type_var);
+ScType const ScType::EdgeDCommonVar(sc_type_arc_common | sc_type_var);
+ScType const ScType::EdgeAccessVarPosPerm(sc_type_var | sc_type_arc_access | sc_type_arc_perm | sc_type_arc_pos);
+ScType const ScType::EdgeAccessVarNegPerm(sc_type_var | sc_type_arc_access | sc_type_arc_perm | sc_type_arc_neg);
+ScType const ScType::EdgeAccessVarFuzPerm(sc_type_var | sc_type_arc_access | sc_type_arc_perm | sc_type_arc_fuz);
+ScType const ScType::EdgeAccessVarPosTemp(sc_type_var | sc_type_arc_access | sc_type_arc_temp | sc_type_arc_pos);
+ScType const ScType::EdgeAccessVarNegTemp(sc_type_var | sc_type_arc_access | sc_type_arc_temp | sc_type_arc_neg);
+ScType const ScType::EdgeAccessVarFuzTemp(sc_type_var | sc_type_arc_access | sc_type_arc_temp | sc_type_arc_fuz);
 
-const ScType ScType::NODE_CONST(sc_type_node | sc_type_const);
-const ScType ScType::NODE_VAR(sc_type_node | sc_type_var);
+ScType const ScType::Const(sc_type_const);
+ScType const ScType::Var(sc_type_var);
 
-const ScType ScType::NODE_CONST_STRUCT(sc_type_node | sc_type_const | sc_type_node_struct);
-const ScType ScType::NODE_CONST_TUPLE(sc_type_node | sc_type_const | sc_type_node_tuple);
-const ScType ScType::NODE_CONST_ROLE(sc_type_node | sc_type_const | sc_type_node_role);
-const ScType ScType::NODE_CONST_NOROLE(sc_type_node | sc_type_const | sc_type_node_norole);
-const ScType ScType::NODE_CONST_CLASS(sc_type_node | sc_type_const | sc_type_node_class);
-const ScType ScType::NODE_CONST_ABSTRACT(sc_type_node | sc_type_const | sc_type_node_abstract);
-const ScType ScType::NODE_CONST_MATERIAL(sc_type_node | sc_type_const | sc_type_node_material);
+ScType const ScType::Node(sc_type_node);
+ScType const ScType::Link(sc_type_link);
 
-const ScType ScType::NODE_VAR_STRUCT(sc_type_node | sc_type_var | sc_type_node_struct);
-const ScType ScType::NODE_VAR_TUPLE(sc_type_node | sc_type_var | sc_type_node_tuple);
-const ScType ScType::NODE_VAR_ROLE(sc_type_node | sc_type_var | sc_type_node_role);
-const ScType ScType::NODE_VAR_NOROLE(sc_type_node | sc_type_var | sc_type_node_norole);
-const ScType ScType::NODE_VAR_CLASS(sc_type_node | sc_type_var | sc_type_node_class);
-const ScType ScType::NODE_VAR_ABSTRACT(sc_type_node | sc_type_var | sc_type_node_abstract);
-const ScType ScType::NODE_VAR_MATERIAL(sc_type_node | sc_type_var | sc_type_node_material);
+ScType const ScType::NodeConst(sc_type_node | sc_type_const);
+ScType const ScType::NodeVar(sc_type_node | sc_type_var);
+
+ScType const ScType::NodeConstStruct(sc_type_node | sc_type_const | sc_type_node_struct);
+ScType const ScType::NodeConstTuple(sc_type_node | sc_type_const | sc_type_node_tuple);
+ScType const ScType::NodeConstRole(sc_type_node | sc_type_const | sc_type_node_role);
+ScType const ScType::NodeConstNoRole(sc_type_node | sc_type_const | sc_type_node_norole);
+ScType const ScType::NodeConstClass(sc_type_node | sc_type_const | sc_type_node_class);
+ScType const ScType::NodeConstAbstract(sc_type_node | sc_type_const | sc_type_node_abstract);
+ScType const ScType::NodeConstMaterial(sc_type_node | sc_type_const | sc_type_node_material);
+
+ScType const ScType::NodeVarStruct(sc_type_node | sc_type_var | sc_type_node_struct);
+ScType const ScType::NodeVarTuple(sc_type_node | sc_type_var | sc_type_node_tuple);
+ScType const ScType::NodeVarRole(sc_type_node | sc_type_var | sc_type_node_role);
+ScType const ScType::NodeVarNoRole(sc_type_node | sc_type_var | sc_type_node_norole);
+ScType const ScType::NodeVarClass(sc_type_node | sc_type_var | sc_type_node_class);
+ScType const ScType::NodeVarAbstract(sc_type_node | sc_type_var | sc_type_node_abstract);
+ScType const ScType::NodeVarMaterial(sc_type_node | sc_type_var | sc_type_node_material);

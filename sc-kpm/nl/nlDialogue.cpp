@@ -25,9 +25,9 @@ SC_AGENT_IMPLEMENTATION(ADialogueProcessMessageAgent)
     ScTemplate authorTempl;
     authorTempl.tripleWithRelation(
           itemAddr,
-          ScType::EDGE_DCOMMON_VAR,
+          ScType::EdgeDCommonVar,
           Keynodes::msSelf,
-          ScType::EDGE_ACCESS_VAR_POS_PERM,
+          ScType::EdgeAccessVarPosPerm,
           Keynodes::msNrelAuthor);
 
     ScTemplateSearchResult authSearchRes;
@@ -42,11 +42,11 @@ SC_AGENT_IMPLEMENTATION(ADialogueProcessMessageAgent)
     ScTemplate cmdProcessTextTemplate;
     cmdProcessTextTemplate.triple(
           Keynodes::msCmdProcessUserTextMessage,
-          ScType::EDGE_ACCESS_VAR_POS_PERM,
-          ScType::NODE_VAR >> "_command_instance");
+          ScType::EdgeAccessVarPosPerm,
+          ScType::NodeVar >> "_command_instance");
     cmdProcessTextTemplate.triple(
           "_command_instance",
-          ScType::EDGE_ACCESS_VAR_POS_PERM,
+          ScType::EdgeAccessVarPosPerm,
           itemAddr);
 
     ScTemplateGenResult result;
@@ -56,7 +56,7 @@ SC_AGENT_IMPLEMENTATION(ADialogueProcessMessageAgent)
       check_expr(cmdAddr.isValid());
 
       // initiate command
-      mMemoryCtx.createEdge(ScType::EDGE_ACCESS_CONST_POS_PERM, Keynodes::msCommandInitiated, cmdAddr);
+      mMemoryCtx.createEdge(ScType::EdgeAccessConstPosPerm, Keynodes::msCommandInitiated, cmdAddr);
 
       // wait until command finish
       ScWaitCondition<ScEventAddInputEdge> waiter(
@@ -74,9 +74,9 @@ SC_AGENT_IMPLEMENTATION(ADialogueProcessMessageAgent)
       ScTemplate resultTemplate;
       resultTemplate.tripleWithRelation(
             cmdAddr,
-            ScType::EDGE_DCOMMON_VAR,
-            ScType::NODE_VAR_STRUCT >> "_result",
-            ScType::EDGE_ACCESS_VAR_POS_PERM,
+            ScType::EdgeDCommonVar,
+            ScType::NodeVarStruct >> "_result",
+            ScType::EdgeAccessVarPosPerm,
             Keynodes::msNrelResult);
 
       ScTemplateSearchResult searchResult;
@@ -94,16 +94,16 @@ SC_AGENT_IMPLEMENTATION(ADialogueProcessMessageAgent)
       ScTemplate lastItemTemplate;
       lastItemTemplate.tripleWithRelation(
             Keynodes::msMainNLDialogueInstance,
-            ScType::EDGE_ACCESS_VAR_POS_PERM,
-            ScType::NODE_VAR >> "_last_item",
-            ScType::EDGE_ACCESS_VAR_POS_PERM >> "_last_item_attr",
+            ScType::EdgeAccessVarPosPerm,
+            ScType::NodeVar >> "_last_item",
+            ScType::EdgeAccessVarPosPerm >> "_last_item_attr",
             Keynodes::msRrelLastItem);
 
       lastItemTemplate.tripleWithRelation(
             "_last_item",
-            ScType::EDGE_DCOMMON_VAR,
+            ScType::EdgeDCommonVar,
             Keynodes::msSelf,
-            ScType::EDGE_ACCESS_VAR_POS_PERM,
+            ScType::EdgeAccessVarPosPerm,
             Keynodes::msNrelAuthor);
 
       ScAddr lastItemAddr;
@@ -121,9 +121,9 @@ SC_AGENT_IMPLEMENTATION(ADialogueProcessMessageAgent)
         ScTemplate nextItemTemplate;
         nextItemTemplate.tripleWithRelation(
               lastItemAddr,
-              ScType::EDGE_DCOMMON_VAR,
+              ScType::EdgeDCommonVar,
               resultAddr,
-              ScType::EDGE_ACCESS_VAR_POS_PERM,
+              ScType::EdgeAccessVarPosPerm,
               Keynodes::msNrelItemOrder);
 
         ScTemplateGenResult genResult;

@@ -169,7 +169,7 @@ protected:
 
     ScIterator3Ptr iter = mContext.iterator3(
           mScTemplateAddr,
-          *ScType::EDGE_ACCESS_CONST_POS_PERM,
+          *ScType::EdgeAccessConstPosPerm,
           *ScType());
 
     while (iter->next())
