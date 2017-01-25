@@ -11,14 +11,15 @@ Message text should start from an upper case letter. If commit doesn't fix or im
 </pre>
 
 Possible tags:
-* `[cpp]` - use, when you made changes in cpp wrapper code
-* `[memory]` - use, when you made changes in c core code
-* `[tests]` or `[test]` - use, when you made changes in tests
-* `[tools]` - use, when you made changes in tools
-* `[builder]` - use, when you made changes in builder tools
-* `[codegen]` - use, when you made changes in code generator
-* `[review]` - use, when you made commit with review fixes
-* `[refactor]` - use, when you made commit with some code refactoring
+
+  * `[cpp]` - use, when you made changes in cpp wrapper code
+  * `[memory]` - use, when you made changes in c core code
+  * `[tests]` or `[test]` - use, when you made changes in tests
+  * `[tools]` - use, when you made changes in tools
+  * `[builder]` - use, when you made changes in builder tools
+  * `[codegen]` - use, when you made changes in code generator
+  * `[review]` - use, when you made commit with review fixes
+  * `[refactor]` - use, when you made commit with some code refactoring
 
 ***
 Each commit in Pull request should be an atomic. Another word implement or fix one feature. For example:
@@ -35,9 +36,10 @@ Init commit
 
 ***
 Each commit should have not much differences excluding cases, with:
-* CodeStyle changes;
-* Renames;
-* Code formating;
+
+  * CodeStyle changes;
+  * Renames;
+  * Code formating;
 
 **Do atomic commits for each changes.** For example if you rename some members in `ClassX` and `ClassY`, then do two commits:
 <pre>
@@ -53,10 +55,11 @@ _**All commit, that not applies to this rules, should be split by this rules. An
 Each pull request with many changes, that not possible to review (excluding codestyle, rename changes), will be rejected.
 ***
 For each pull request you should do:
-* update `doc/changelog` file according to your commits
-* ensure prepare updates for documentation
-* cover new functionality by tests
-* your code should be written according to a [codestyle](https://github.com/ostis-dev/sc-machine/blob/master/doc/codestyle.md)
+
+  * update `docs/changelog.md` file according to your commits
+  * ensure prepare updates for documentation
+  * cover new functionality by tests
+  * your code should be written according to a [codestyle](codestyle.md)
 
 ***
 After prepare pull request an automation tests will run on it. If any test doesn't passed, then pull request couldn't be merged and you should to fix it.

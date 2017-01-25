@@ -122,51 +122,52 @@ private:
   tRealType mRealType;
 
 public:
-  static const ScType EDGE_UCOMMON;
-  static const ScType EDGE_DCOMMON;
-
-  static const ScType EDGE_UCOMMON_CONST;
-  static const ScType EDGE_DCOMMON_CONST;
-
-  static const ScType EDGE_ACCESS;
-
-  static const ScType EDGE_ACCESS_CONST_POS_PERM;
-  static const ScType EDGE_ACCESS_CONST_NEG_PERM;
-  static const ScType EDGE_ACCESS_CONST_FUZ_PERM;
-  static const ScType EDGE_ACCESS_CONST_POS_TEMP;
-  static const ScType EDGE_ACCESS_CONST_NEG_TEMP;
-  static const ScType EDGE_ACCESS_CONST_FUZ_TEMP;
-
-  static const ScType EDGE_UCOMMON_VAR;
-  static const ScType EDGE_DCOMMON_VAR;
-  static const ScType EDGE_ACCESS_VAR_POS_PERM;
-  static const ScType EDGE_ACCESS_VAR_NEG_PERM;
-  static const ScType EDGE_ACCESS_VAR_FUZ_PERM;
-  static const ScType EDGE_ACCESS_VAR_POS_TEMP;
-  static const ScType EDGE_ACCESS_VAR_NEG_TEMP;
-  static const ScType EDGE_ACCESS_VAR_FUZ_TEMP;
-
-
-
-  static const ScType NODE;
-  static const ScType LINK;
-
-  static const ScType NODE_CONST;
-  static const ScType NODE_VAR;
-
-  static const ScType NODE_CONST_STRUCT;
-  static const ScType NODE_CONST_TUPLE;
-  static const ScType NODE_CONST_ROLE;
-  static const ScType NODE_CONST_NOROLE;
-  static const ScType NODE_CONST_CLASS;
-  static const ScType NODE_CONST_ABSTRACT;
-  static const ScType NODE_CONST_MATERIAL;
-
-  static const ScType NODE_VAR_STRUCT;
-  static const ScType NODE_VAR_TUPLE;
-  static const ScType NODE_VAR_ROLE;
-  static const ScType NODE_VAR_NOROLE;
-  static const ScType NODE_VAR_CLASS;
-  static const ScType NODE_VAR_ABSTRACT;
-  static const ScType NODE_VAR_MATERIAL;
+  static ScType const EdgeUCommon;
+  static ScType const EdgeDCommon;
+                
+  static ScType const EdgeUCommonConst;
+  static ScType const EdgeDCommonConst;
+                
+  static ScType const EdgeAccess;
+                
+  static ScType const EdgeAccessConstPosPerm;
+  static ScType const EdgeAccessConstNegPerm;
+  static ScType const EdgeAccessConstFuzPerm;
+  static ScType const EdgeAccessConstPosTemp;
+  static ScType const EdgeAccessConstNegTemp;
+  static ScType const EdgeAccessConstFuzTemp;
+                
+  static ScType const EdgeUCommonVar;
+  static ScType const EdgeDCommonVar;
+  static ScType const EdgeAccessVarPosPerm;
+  static ScType const EdgeAccessVarNegPerm;
+  static ScType const EdgeAccessVarFuzPerm;
+  static ScType const EdgeAccessVarPosTemp;
+  static ScType const EdgeAccessVarNegTemp;
+  static ScType const EdgeAccessVarFuzTemp;
+                
+  static ScType const Const;
+  static ScType const Var;
+                
+  static ScType const Node;
+  static ScType const Link;
+                
+  static ScType const NodeConst;
+  static ScType const NodeVar;
+                
+  static ScType const NodeConstStruct;
+  static ScType const NodeConstTuple;
+  static ScType const NodeConstRole;
+  static ScType const NodeConstNoRole;
+  static ScType const NodeConstClass;
+  static ScType const NodeConstAbstract;
+  static ScType const NodeConstMaterial;
+                
+  static ScType const NodeVarStruct;
+  static ScType const NodeVarTuple;
+  static ScType const NodeVarRole;
+  static ScType const NodeVarNoRole;
+  static ScType const NodeVarClass;
+  static ScType const NodeVarAbstract;
+  static ScType const NodeVarMaterial;
 };

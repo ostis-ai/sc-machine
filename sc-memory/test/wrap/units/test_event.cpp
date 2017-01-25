@@ -62,7 +62,7 @@ UNIT_TEST(events_common)
       ScAddr const addr2 = ctx.createNode(0);
       SC_CHECK(addr2.isValid(), ());
 
-      ScAddr const edge = ctx.createEdge(*ScType::EDGE_ACCESS, addr2, addr);
+      ScAddr const edge = ctx.createEdge(*ScType::EdgeAccess, addr2, addr);
       SC_CHECK(edge.isValid(), ());
     };
 
@@ -84,7 +84,7 @@ UNIT_TEST(events_common)
       ScAddr const addr2 = ctx.createNode(0);
       SC_CHECK(addr2.isValid(), ());
 
-      ScAddr const edge = ctx.createEdge(*ScType::EDGE_ACCESS, addr, addr2);
+      ScAddr const edge = ctx.createEdge(*ScType::EdgeAccess, addr, addr2);
       SC_CHECK(edge.isValid(), ());
     };
 
@@ -100,7 +100,7 @@ UNIT_TEST(events_common)
     ScAddr const addr2 = ctx.createNode(0);
     SC_CHECK(addr2.isValid(), ());
 
-    ScAddr const edge = ctx.createEdge(*ScType::EDGE_ACCESS, addr, addr2);
+    ScAddr const edge = ctx.createEdge(*ScType::EdgeAccess, addr, addr2);
     SC_CHECK(edge.isValid(), ());
 
     auto const prepare = []() {};
@@ -121,7 +121,7 @@ UNIT_TEST(events_common)
     ScAddr const addr2 = ctx.createNode(0);
     SC_CHECK(addr2.isValid(), ());
 
-    ScAddr const edge = ctx.createEdge(*ScType::EDGE_ACCESS, addr, addr2);
+    ScAddr const edge = ctx.createEdge(*ScType::EdgeAccess, addr, addr2);
     SC_CHECK(edge.isValid(), ());
 
     auto const prepare = []() {};

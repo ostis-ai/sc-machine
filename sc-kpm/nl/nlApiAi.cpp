@@ -54,9 +54,9 @@ SC_AGENT_ACTION_IMPLEMENTATION(AApiAiParseUserTextAgent)
           {
             ScIterator5Ptr iterTempl = mMemoryCtx.iterator5(
                   actionAddr,
-                  *ScType::EDGE_DCOMMON_CONST,
-                  *ScType::NODE_CONST_STRUCT,
-                  *ScType::EDGE_ACCESS_CONST_POS_PERM,
+                  *ScType::EdgeDCommonConst,
+                  *ScType::NodeConstStruct,
+                  *ScType::EdgeAccessConstPosPerm,
                   ms_nrelCommonTemplate);
             if (iterTempl->next())
             {

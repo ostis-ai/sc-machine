@@ -13,7 +13,7 @@ namespace
 
 ScAddr CreateKeynode(ScMemoryContext & ctx, std::string const & name)
 {
-  ScAddr const node = ctx.createNode(ScType::NODE_CONST);
+  ScAddr const node = ctx.createNode(ScType::NodeConst);
   SC_CHECK(node.isValid(), ());
   SC_CHECK(ctx.helperSetSystemIdtf(name, node), ());
 
@@ -48,11 +48,11 @@ UNIT_TEST(ATestCommand)
 
   SC_AGENT_REGISTER(ATestCommand);
 
-  ScAddr const cmd = ctx.createNode(ScType::NODE_CONST);
+  ScAddr const cmd = ctx.createNode(ScType::NodeConst);
   SC_CHECK(cmd.isValid(), ());
-  ScAddr const e1 = ctx.createEdge(ScType::EDGE_ACCESS_CONST_POS_PERM, command_1, cmd);
+  ScAddr const e1 = ctx.createEdge(ScType::EdgeAccessConstPosPerm, command_1, cmd);
   SC_CHECK(e1.isValid(), ());
-  ScAddr const e2 = ctx.createEdge(ScType::EDGE_ACCESS_CONST_POS_PERM, cmd_init, cmd);
+  ScAddr const e2 = ctx.createEdge(ScType::EdgeAccessConstPosPerm, cmd_init, cmd);
   SC_CHECK(e2.isValid(), ());
 
   SC_CHECK(ATestCommand::msWaiter.Wait(), ());
@@ -77,9 +77,9 @@ UNIT_TEST(ATestAddInputEdge)
   ATestAddInputEdge::initGlobal();
   SC_AGENT_REGISTER(ATestAddInputEdge);
 
-  ScAddr const node = ctx.createNode(ScType::NODE_CONST);
+  ScAddr const node = ctx.createNode(ScType::NodeConst);
   SC_CHECK(node.isValid(), ());
-  ScAddr const e = ctx.createEdge(ScType::EDGE_ACCESS_CONST_POS_PERM, node, ATestAddInputEdge::msAgentKeynode);
+  ScAddr const e = ctx.createEdge(ScType::EdgeAccessConstPosPerm, node, ATestAddInputEdge::msAgentKeynode);
   SC_CHECK(e.isValid(), ());
   SC_CHECK(ATestAddInputEdge::msWaiter.Wait(), ());
 
@@ -103,10 +103,10 @@ UNIT_TEST(ATestAddOutputEdge)
   ATestAddOutputEdge::initGlobal();
   SC_AGENT_REGISTER(ATestAddOutputEdge);
 
-  ScAddr const node = ctx.createNode(ScType::NODE_CONST);
+  ScAddr const node = ctx.createNode(ScType::NodeConst);
   SC_CHECK(node.isValid(), ());
 
-  ScAddr const e = ctx.createEdge(ScType::EDGE_ACCESS_CONST_POS_PERM, ATestAddOutputEdge::msAgentKeynode, node);
+  ScAddr const e = ctx.createEdge(ScType::EdgeAccessConstPosPerm, ATestAddOutputEdge::msAgentKeynode, node);
   SC_CHECK(e.isValid(), ());
 
   SC_CHECK(ATestAddOutputEdge::msWaiter.Wait(), ());
@@ -130,9 +130,9 @@ UNIT_TEST(ATestRemoveInputEdge)
   ScMemoryContext ctx(sc_access_lvl_make_min, "ATestRemoveInputEdge");
   ATestRemoveInputEdge::initGlobal();
 
-  ScAddr const node = ctx.createNode(ScType::NODE_CONST);
+  ScAddr const node = ctx.createNode(ScType::NodeConst);
   SC_CHECK(node.isValid(), ());
-  ScAddr const e = ctx.createEdge(ScType::EDGE_ACCESS, node, ATestRemoveInputEdge::msAgentKeynode);
+  ScAddr const e = ctx.createEdge(ScType::EdgeAccess, node, ATestRemoveInputEdge::msAgentKeynode);
   SC_CHECK(e.isValid(), ());
 
   SC_AGENT_REGISTER(ATestRemoveInputEdge);
@@ -159,9 +159,9 @@ UNIT_TEST(ATestRemoveOutputEdge)
   ScMemoryContext ctx(sc_access_lvl_make_min, "ATestRemoveOutputEdge");
   ATestRemoveOutputEdge::initGlobal();
 
-  ScAddr const node = ctx.createNode(ScType::NODE_CONST);
+  ScAddr const node = ctx.createNode(ScType::NodeConst);
   SC_CHECK(node.isValid(), ());
-  ScAddr const e = ctx.createEdge(ScType::EDGE_ACCESS, ATestRemoveOutputEdge::msAgentKeynode, node);
+  ScAddr const e = ctx.createEdge(ScType::EdgeAccess, ATestRemoveOutputEdge::msAgentKeynode, node);
   SC_CHECK(e.isValid(), ());
 
   SC_AGENT_REGISTER(ATestRemoveOutputEdge);

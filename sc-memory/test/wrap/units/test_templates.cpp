@@ -72,19 +72,19 @@ ScAddr resolveKeynode(ScMemoryContext & ctx, ScType const & type, std::string co
 UNIT_TEST(templates_common)
 {
   ScMemoryContext ctx(sc_access_lvl_make_min, "templates_common");
-  ScAddr const addr1 = ctx.createNode(ScType::NODE_CONST);
+  ScAddr const addr1 = ctx.createNode(ScType::NodeConst);
   SC_CHECK(addr1.isValid(), ());
 
-  ScAddr const addr2 = ctx.createNode(ScType::NODE_CONST);
+  ScAddr const addr2 = ctx.createNode(ScType::NodeConst);
   SC_CHECK(addr2.isValid(), ());
 
-  ScAddr const addr3 = ctx.createNode(ScType::NODE_CONST);
+  ScAddr const addr3 = ctx.createNode(ScType::NodeConst);
   SC_CHECK(addr3.isValid(), ());
 
-  ScAddr const edge1 = ctx.createEdge(ScType::EDGE_ACCESS_CONST_POS_PERM, addr1, addr2);
+  ScAddr const edge1 = ctx.createEdge(ScType::EdgeAccessConstPosPerm, addr1, addr2);
   SC_CHECK(edge1.isValid(), ());
 
-  ScAddr const edge2 = ctx.createEdge(ScType::EDGE_ACCESS_CONST_POS_PERM, addr3, edge1);
+  ScAddr const edge2 = ctx.createEdge(ScType::EdgeAccessConstPosPerm, addr3, edge1);
   SC_CHECK(edge2.isValid(), ());
 
   {
@@ -92,15 +92,15 @@ UNIT_TEST(templates_common)
 
     templ.triple(
           addr1 >> "addr1",
-          ScType::EDGE_ACCESS_VAR_POS_PERM >> "edge1",
-          ScType::NODE_VAR >> "addr2");
+          ScType::EdgeAccessVarPosPerm >> "edge1",
+          ScType::NodeVar >> "addr2");
     templ.triple(
-          ScType::NODE_VAR >> "_addr1T2",
-          ScType::EDGE_ACCESS_VAR_POS_PERM >> "_addr2T2",
+          ScType::NodeVar >> "_addr1T2",
+          ScType::EdgeAccessVarPosPerm >> "_addr2T2",
           "edge1");
     templ.triple(
           "addr2",
-          ScType::EDGE_DCOMMON_VAR >> "_addr2T3",
+          ScType::EdgeDCommonVar >> "_addr2T3",
           "edge1");
 
     ScTemplateGenResult result;
@@ -164,8 +164,8 @@ UNIT_TEST(templates_common)
       ScTemplate templ2;
 
       templ2.triple(addrSrc >> "addrSrc",
-                    ScType::EDGE_ACCESS_VAR_POS_PERM >> "edge",
-                    ScType::NODE_VAR >> "addrTrg");
+                    ScType::EdgeAccessVarPosPerm >> "edge",
+                    ScType::NodeVar >> "addrTrg");
 
       ScTemplateSearchResult result2;
       SC_CHECK(ctx.helperSearchTemplate(templ2, result2), ());
@@ -190,9 +190,9 @@ UNIT_TEST(templates_common)
 
     templ.tripleWithRelation(
           addr1,
-          ScType::EDGE_ACCESS_VAR_POS_PERM,
-          ScType::NODE_VAR,
-          ScType::EDGE_ACCESS_VAR_POS_PERM,
+          ScType::EdgeAccessVarPosPerm,
+          ScType::NodeVar,
+          ScType::EdgeAccessVarPosPerm,
           addr3);
 
     ScTemplateSearchResult result;
@@ -207,9 +207,9 @@ UNIT_TEST(templates_common)
 
     templ.tripleWithRelation(
           addr1 >> "1",
-          ScType::EDGE_ACCESS_VAR_POS_PERM >> "2",
-          ScType::NODE_VAR >> "3",
-          ScType::EDGE_ACCESS_VAR_POS_PERM >> "4",
+          ScType::EdgeAccessVarPosPerm >> "2",
+          ScType::NodeVar >> "3",
+          ScType::EdgeAccessVarPosPerm >> "4",
           addr3 >> "5");
 
     ScTemplateSearchResult result;
@@ -221,20 +221,20 @@ UNIT_TEST(templates_common)
 
   SUBTEST_START(template_params_correct)
   {
-    ScAddr const addrConst = ctx.createNode(*ScType::NODE_CONST);
-    ScAddr const addrTest3 = ctx.createNode(*ScType::NODE_CONST_TUPLE);
-    ScAddr const addrTest6 = ctx.createNode(*ScType::NODE_CONST_CLASS);
+    ScAddr const addrConst = ctx.createNode(*ScType::NodeConst);
+    ScAddr const addrTest3 = ctx.createNode(*ScType::NodeConstTuple);
+    ScAddr const addrTest6 = ctx.createNode(*ScType::NodeConstClass);
 
     ScTemplate templ;
 
     templ.triple(
           addrConst >> "1",
-          ScType::EDGE_ACCESS_VAR_POS_PERM >> "_2",
-          ScType::NODE_VAR_TUPLE >> "_3");
+          ScType::EdgeAccessVarPosPerm >> "_2",
+          ScType::NodeVarTuple >> "_3");
     templ.triple(
           "_3",
-          ScType::EDGE_ACCESS_VAR_POS_PERM >> "_5",
-          ScType::NODE_VAR_CLASS >> "_6");
+          ScType::EdgeAccessVarPosPerm >> "_5",
+          ScType::NodeVarClass >> "_6");
 
     ScTemplateGenParams params;
     params.add("_3", addrTest3).add("_6", addrTest6);
@@ -245,12 +245,12 @@ UNIT_TEST(templates_common)
     ScTemplate searchTempl;
     searchTempl.triple(
           addrConst >> "1",
-          ScType::EDGE_ACCESS_VAR_POS_PERM >> "_2",
-          ScType::NODE_VAR_TUPLE >> "_3");
+          ScType::EdgeAccessVarPosPerm >> "_2",
+          ScType::NodeVarTuple >> "_3");
     searchTempl.triple(
           "_3",
-          ScType::EDGE_ACCESS_VAR_POS_PERM >> "_5",
-          ScType::NODE_VAR_CLASS >> "_6");
+          ScType::EdgeAccessVarPosPerm >> "_5",
+          ScType::NodeVarClass >> "_6");
 
     ScTemplateSearchResult searchResult;
     SC_CHECK(ctx.helperSearchTemplate(searchTempl, searchResult), ());
@@ -262,15 +262,15 @@ UNIT_TEST(templates_common)
 
   SUBTEST_START(template_params_invalid)
   {
-    ScAddr const addrConst = ctx.createNode(*ScType::NODE_CONST);
-    ScAddr const addrTest3 = ctx.createNode(*ScType::NODE_CONST_TUPLE);
-    ScAddr const addrEdge2 = ctx.createEdge(*ScType::EDGE_ACCESS_CONST_POS_PERM, addrConst, addrTest3);
+    ScAddr const addrConst = ctx.createNode(*ScType::NodeConst);
+    ScAddr const addrTest3 = ctx.createNode(*ScType::NodeConstTuple);
+    ScAddr const addrEdge2 = ctx.createEdge(*ScType::EdgeAccessConstPosPerm, addrConst, addrTest3);
 
     ScTemplate templ;
     templ
         (addrConst >> "1",
-         ScType::EDGE_ACCESS_VAR_POS_PERM >> "_2", // can't be replaced by param in template generation
-         ScType::NODE_VAR >> "_3");	// can't be replaced by param in template generation
+         ScType::EdgeAccessVarPosPerm >> "_2", // can't be replaced by param in template generation
+         ScType::NodeVar >> "_3");	// can't be replaced by param in template generation
 
     ScTemplateGenResult result;
     SC_CHECK(ctx.helperGenTemplate(templ, result), ());
@@ -289,23 +289,23 @@ UNIT_TEST(templates_common)
       {
         SC_CHECK_EQUAL(false, TestTemplParams(ctx)(
                          addrConst >> "1",
-                         ScType::EDGE_ACCESS_VAR_POS_PERM >> "_2",
-                         ScType::NODE_CONST >> "_3"), ());
+                         ScType::EdgeAccessVarPosPerm >> "_2",
+                         ScType::NodeConst >> "_3"), ());
       }
 
       // source is const
       {
         SC_CHECK_EQUAL(false, TestTemplParams(ctx)(
-                         ScType::NODE_CONST >> "_1",
-                         ScType::EDGE_ACCESS_VAR_POS_PERM >> "_2",
+                         ScType::NodeConst >> "_1",
+                         ScType::EdgeAccessVarPosPerm >> "_2",
                          addrConst >> "3"), ());
       }
 
       // edge is const
       {
         SC_CHECK_EQUAL(false, TestTemplParams(ctx)(
-                         ScType::NODE_VAR >> "_1",
-                         ScType::EDGE_ACCESS_CONST_POS_PERM >> "_2",
+                         ScType::NodeVar >> "_1",
+                         ScType::EdgeAccessConstPosPerm >> "_2",
                          addrConst >> "3"), ());
       }
 
@@ -323,43 +323,43 @@ UNIT_TEST(templates_common)
     (* _<- _lang;; *);;
     */
 
-    const ScAddr _structAddr = ctx.createNode(ScType::NODE_VAR_STRUCT);
+    const ScAddr _structAddr = ctx.createNode(ScType::NodeVarStruct);
     SC_CHECK(_structAddr.isValid(), ());
 
-    const ScAddr _apiai_locationAddr = ctx.createNode(ScType::NODE_VAR);
+    const ScAddr _apiai_locationAddr = ctx.createNode(ScType::NodeVar);
     SC_CHECK(_apiai_locationAddr.isValid(), ());
 
-    const ScAddr _apiai_speechAddr = ctx.createNode(ScType::NODE_VAR);
+    const ScAddr _apiai_speechAddr = ctx.createNode(ScType::NodeVar);
     SC_CHECK(_apiai_speechAddr.isValid(), ());
 
-    const ScAddr _langAddr = ctx.createNode(ScType::NODE_VAR);
+    const ScAddr _langAddr = ctx.createNode(ScType::NodeVar);
     SC_CHECK(_langAddr.isValid(), ());
 
-    const ScAddr rrel_locationAddr = ctx.createNode(ScType::NODE_CONST);
+    const ScAddr rrel_locationAddr = ctx.createNode(ScType::NodeConst);
     SC_CHECK(rrel_locationAddr.isValid(), ());
     SC_CHECK(ctx.helperSetSystemIdtf("rrel_location", rrel_locationAddr), ());
 
-    const ScAddr nrel_translationAddr = ctx.createNode(ScType::NODE_CONST);
+    const ScAddr nrel_translationAddr = ctx.createNode(ScType::NodeConst);
     SC_CHECK(nrel_translationAddr.isValid(), ());
     SC_CHECK(ctx.helperSetSystemIdtf("nrel_translation", nrel_translationAddr), ());
 
-    const ScAddr _struct_locationEdgeAddr = ctx.createEdge(ScType::EDGE_ACCESS_VAR_POS_PERM, _structAddr, _apiai_locationAddr);
+    const ScAddr _struct_locationEdgeAddr = ctx.createEdge(ScType::EdgeAccessVarPosPerm, _structAddr, _apiai_locationAddr);
     SC_CHECK(_struct_locationEdgeAddr.isValid(), ());
 
-    const ScAddr _rrel_locationEdgeAddr = ctx.createEdge(ScType::EDGE_ACCESS_VAR_POS_PERM, rrel_locationAddr, _struct_locationEdgeAddr);
+    const ScAddr _rrel_locationEdgeAddr = ctx.createEdge(ScType::EdgeAccessVarPosPerm, rrel_locationAddr, _struct_locationEdgeAddr);
     SC_CHECK(_rrel_locationEdgeAddr.isValid(), ());
 
-    const ScAddr _struct_speechEdgeAddr = ctx.createEdge(ScType::EDGE_DCOMMON_VAR, _structAddr, _apiai_speechAddr);
+    const ScAddr _struct_speechEdgeAddr = ctx.createEdge(ScType::EdgeDCommonVar, _structAddr, _apiai_speechAddr);
     SC_CHECK(_struct_speechEdgeAddr.isValid(), ());
 
-    const ScAddr _nrel_translationEdgeAddr = ctx.createEdge(ScType::EDGE_ACCESS_VAR_POS_PERM, nrel_translationAddr, _struct_speechEdgeAddr);
+    const ScAddr _nrel_translationEdgeAddr = ctx.createEdge(ScType::EdgeAccessVarPosPerm, nrel_translationAddr, _struct_speechEdgeAddr);
     SC_CHECK(_nrel_translationEdgeAddr.isValid(), ());
 
-    const ScAddr _langEdgeAddr = ctx.createEdge(ScType::EDGE_ACCESS_VAR_POS_PERM, _langAddr, _apiai_speechAddr);
+    const ScAddr _langEdgeAddr = ctx.createEdge(ScType::EdgeAccessVarPosPerm, _langAddr, _apiai_speechAddr);
     SC_CHECK(_langEdgeAddr.isValid(), ());
 
     // create template
-    const ScAddr templStructAddr = ctx.createNode(ScType::NODE_CONST_STRUCT);
+    const ScAddr templStructAddr = ctx.createNode(ScType::NodeConstStruct);
     SC_CHECK(templStructAddr.isValid(), ());
     ScStruct templStruct(&ctx, templStructAddr);
 
@@ -497,29 +497,29 @@ UNIT_TEST(template_search_in_struct)
   * scs: x _-> _z:: _y;;
   */
 
-  ScAddr templateAddr = ctx.createNode(*ScType::NODE_CONST_STRUCT);
+  ScAddr templateAddr = ctx.createNode(*ScType::NodeConstStruct);
   SC_CHECK(templateAddr.isValid(), ());
 
   ScAddr xAddr, _yAddr, _zAddr, _xyEdgeAddr, _zxyEdgeAddr;
   ScStruct templStruct(&ctx, templateAddr);
   {
-    xAddr = ctx.createNode(*ScType::NODE_CONST);
+    xAddr = ctx.createNode(*ScType::NodeConst);
     SC_CHECK(xAddr.isValid(), ());
     SC_CHECK(ctx.helperSetSystemIdtf("x", xAddr), ());
 
-    _yAddr = ctx.createNode(*ScType::NODE_VAR);
+    _yAddr = ctx.createNode(*ScType::NodeVar);
     SC_CHECK(_yAddr.isValid(), ());
     SC_CHECK(ctx.helperSetSystemIdtf("_y", _yAddr), ());
 
-    _zAddr = ctx.createNode(*ScType::NODE_VAR);
+    _zAddr = ctx.createNode(*ScType::NodeVar);
     SC_CHECK(_zAddr.isValid(), ());
     SC_CHECK(ctx.helperSetSystemIdtf("_z", _zAddr), ());
 
-    _xyEdgeAddr = ctx.createEdge(*ScType::EDGE_ACCESS_VAR_POS_PERM, xAddr, _yAddr);
+    _xyEdgeAddr = ctx.createEdge(*ScType::EdgeAccessVarPosPerm, xAddr, _yAddr);
     SC_CHECK(_xyEdgeAddr.isValid(), ());
     SC_CHECK(ctx.helperSetSystemIdtf("_xyEdge", _xyEdgeAddr), ());
 
-    _zxyEdgeAddr = ctx.createEdge(*ScType::EDGE_ACCESS_VAR_POS_PERM, _zAddr, _xyEdgeAddr);
+    _zxyEdgeAddr = ctx.createEdge(*ScType::EdgeAccessVarPosPerm, _zAddr, _xyEdgeAddr);
     SC_CHECK(_zxyEdgeAddr.isValid(), ());
     SC_CHECK(ctx.helperSetSystemIdtf("_zxyEdge", _zxyEdgeAddr), ());
 
@@ -530,7 +530,7 @@ UNIT_TEST(template_search_in_struct)
   SC_CHECK(ctx.helperBuildTemplate(templ, templateAddr), ());
 
   // create text struct
-  ScAddr testStructAddr = ctx.createNode(*ScType::NODE_CONST_STRUCT);
+  ScAddr testStructAddr = ctx.createNode(*ScType::NodeConstStruct);
   SC_CHECK(testStructAddr.isValid(), ());
 
   /*   y ---> u
@@ -549,34 +549,34 @@ UNIT_TEST(template_search_in_struct)
   {
     txAddr = xAddr;
 
-    tyAddr = ctx.createNode(*ScType::NODE_CONST);
+    tyAddr = ctx.createNode(*ScType::NodeConst);
     SC_CHECK(tyAddr.isValid(), ());
 
-    tgAddr = ctx.createNode(*ScType::NODE_CONST);
+    tgAddr = ctx.createNode(*ScType::NodeConst);
     SC_CHECK(tgAddr.isValid(), ());
 
-    tuAddr = ctx.createNode(*ScType::NODE_CONST);
+    tuAddr = ctx.createNode(*ScType::NodeConst);
     SC_CHECK(tuAddr.isValid(), ());
 
-    tzAddr = ctx.createNode(*ScType::NODE_CONST);
+    tzAddr = ctx.createNode(*ScType::NodeConst);
     SC_CHECK(tzAddr.isValid(), ());
 
-    tsAddr = ctx.createNode(*ScType::NODE_CONST);
+    tsAddr = ctx.createNode(*ScType::NodeConst);
     SC_CHECK(tsAddr.isValid(), ());
 
-    tyuEdgeAddr = ctx.createEdge(*ScType::EDGE_ACCESS_CONST_POS_PERM, tyAddr, tuAddr);
+    tyuEdgeAddr = ctx.createEdge(*ScType::EdgeAccessConstPosPerm, tyAddr, tuAddr);
     SC_CHECK(tyuEdgeAddr.isValid(), ());
 
-    txyEdgeAddr = ctx.createEdge(*ScType::EDGE_ACCESS_CONST_POS_PERM, txAddr, tyAddr);
+    txyEdgeAddr = ctx.createEdge(*ScType::EdgeAccessConstPosPerm, txAddr, tyAddr);
     SC_CHECK(txyEdgeAddr.isValid(), ());
 
-    txgEdgeAddr = ctx.createEdge(*ScType::EDGE_ACCESS_CONST_POS_PERM, txAddr, tgAddr);
+    txgEdgeAddr = ctx.createEdge(*ScType::EdgeAccessConstPosPerm, txAddr, tgAddr);
     SC_CHECK(txgEdgeAddr.isValid(), ());
 
-    tzxyEdgeAddr = ctx.createEdge(*ScType::EDGE_ACCESS_CONST_POS_PERM, tzAddr, txyEdgeAddr);
+    tzxyEdgeAddr = ctx.createEdge(*ScType::EdgeAccessConstPosPerm, tzAddr, txyEdgeAddr);
     SC_CHECK(tzxyEdgeAddr.isValid(), ());
 
-    tsxgEdgeAddr = ctx.createEdge(*ScType::EDGE_ACCESS_CONST_POS_PERM, tsAddr, txgEdgeAddr);
+    tsxgEdgeAddr = ctx.createEdge(*ScType::EdgeAccessConstPosPerm, tsAddr, txgEdgeAddr);
     SC_CHECK(tsxgEdgeAddr.isValid(), ());
 
     testStruct << tyAddr << txAddr << tgAddr
@@ -588,9 +588,9 @@ UNIT_TEST(template_search_in_struct)
 
   // add extra edges that not included into struct
   // scs: x -> t: y;;
-  ScAddr edge1 = ctx.createEdge(*ScType::EDGE_ACCESS_CONST_POS_PERM, txAddr, tyAddr);
+  ScAddr edge1 = ctx.createEdge(*ScType::EdgeAccessConstPosPerm, txAddr, tyAddr);
   SC_CHECK(edge1.isValid(), ());
-  ScAddr edge2 = ctx.createEdge(*ScType::EDGE_ACCESS_CONST_POS_PERM, tzAddr, edge1);
+  ScAddr edge2 = ctx.createEdge(*ScType::EdgeAccessConstPosPerm, tzAddr, edge1);
   SC_CHECK(edge2.isValid(), ());
 
   {
@@ -620,16 +620,16 @@ UNIT_TEST(template_performance)
     // preapre test
     ScTemplate templ;
     templ.triple(
-          ScType::NODE_VAR >> "Node1",
-          ScType::EDGE_ACCESS_VAR_POS_PERM >> "Edge1",
-          ScType::NODE_VAR >> "Node2");
+          ScType::NodeVar >> "Node1",
+          ScType::EdgeAccessVarPosPerm >> "Edge1",
+          ScType::NodeVar >> "Node2");
     templ.triple(
-          ScType::NODE_VAR >> "Node3",
-          ScType::EDGE_ACCESS_VAR_POS_PERM >> "Edge2",
+          ScType::NodeVar >> "Node3",
+          ScType::EdgeAccessVarPosPerm >> "Edge2",
           "Edge1");
     templ.triple(
-          ScType::NODE_VAR >> "Node4",
-          ScType::EDGE_ACCESS_VAR_POS_PERM >> "Edge3",
+          ScType::NodeVar >> "Node4",
+          ScType::EdgeAccessVarPosPerm >> "Edge3",
           "Node1");
 
     ScTemplateGenResult result;
@@ -660,17 +660,17 @@ UNIT_TEST(template_performance)
     ScTemplate templ;
     templ.triple(
           node1,
-          ScType::EDGE_ACCESS_VAR_POS_PERM >> "Edge1",
-          ScType::NODE_VAR);
+          ScType::EdgeAccessVarPosPerm >> "Edge1",
+          ScType::NodeVar);
 
     templ.triple(
           node3,
-          ScType::EDGE_ACCESS_VAR_POS_PERM,
+          ScType::EdgeAccessVarPosPerm,
           "Edge1");
 
     templ.triple(
           node4,
-          ScType::EDGE_ACCESS_VAR_POS_PERM,
+          ScType::EdgeAccessVarPosPerm,
           node1);
 
     ScTemplateSearchResult result;
@@ -689,25 +689,25 @@ UNIT_TEST(template_double_attrs)
 {
   ScMemoryContext ctx(sc_access_lvl_make_min, "template_double_attrs");
   {
-    ScAddr const addr1 = ctx.createNode(ScType::NODE_CONST);
+    ScAddr const addr1 = ctx.createNode(ScType::NodeConst);
     SC_CHECK(addr1.isValid(), ());
-    ScAddr const addr2 = ctx.createNode(ScType::NODE_VAR);
+    ScAddr const addr2 = ctx.createNode(ScType::NodeVar);
     SC_CHECK(addr2.isValid(), ());
-    ScAddr const addr3 = ctx.createNode(ScType::NODE_CONST_ROLE);
+    ScAddr const addr3 = ctx.createNode(ScType::NodeConstRole);
     SC_CHECK(addr3.isValid(), ());
-    ScAddr const addr4 = ctx.createNode(ScType::NODE_CONST_ROLE);
+    ScAddr const addr4 = ctx.createNode(ScType::NodeConstRole);
     SC_CHECK(addr4.isValid(), ());
 
-    ScAddr const edge1 = ctx.createEdge(ScType::EDGE_ACCESS_VAR_POS_PERM, addr1, addr2);
+    ScAddr const edge1 = ctx.createEdge(ScType::EdgeAccessVarPosPerm, addr1, addr2);
     SC_CHECK(edge1.isValid(), ());
-    ScAddr const edge2 = ctx.createEdge(ScType::EDGE_ACCESS_VAR_POS_PERM, addr3, edge1);
+    ScAddr const edge2 = ctx.createEdge(ScType::EdgeAccessVarPosPerm, addr3, edge1);
     SC_CHECK(edge2.isValid(), ());
-    ScAddr const edge3 = ctx.createEdge(ScType::EDGE_ACCESS_VAR_POS_PERM, addr4, edge1);
+    ScAddr const edge3 = ctx.createEdge(ScType::EdgeAccessVarPosPerm, addr4, edge1);
     SC_CHECK(edge3.isValid(), ());
 
     auto const testOrder = [&ctx](std::vector<ScAddr> const & addrs)
     {
-      ScAddr const structAddr = ctx.createNode(ScType::NODE_CONST_STRUCT);
+      ScAddr const structAddr = ctx.createNode(ScType::NodeConstStruct);
       ScStruct st(&ctx, structAddr);
 
       for (auto const & a : addrs)
@@ -741,21 +741,21 @@ UNIT_TEST(template_edge_from_edge)
 {
   ScMemoryContext ctx(sc_access_lvl_make_min, "template_edge_from_edge");
   {
-    ScAddr const addr1 = ctx.createNode(ScType::NODE_CONST);
+    ScAddr const addr1 = ctx.createNode(ScType::NodeConst);
     SC_CHECK(addr1.isValid(), ());
-    ScAddr const addr2 = ctx.createNode(ScType::NODE_VAR);
+    ScAddr const addr2 = ctx.createNode(ScType::NodeVar);
     SC_CHECK(addr2.isValid(), ());
-    ScAddr const addr3 = ctx.createNode(ScType::NODE_CONST_ROLE);
+    ScAddr const addr3 = ctx.createNode(ScType::NodeConstRole);
     SC_CHECK(addr3.isValid(), ());
 
-    ScAddr const edge1 = ctx.createEdge(ScType::EDGE_ACCESS_VAR_POS_PERM, addr1, addr2);
+    ScAddr const edge1 = ctx.createEdge(ScType::EdgeAccessVarPosPerm, addr1, addr2);
     SC_CHECK(edge1.isValid(), ());
-    ScAddr const edge2 = ctx.createEdge(ScType::EDGE_ACCESS_VAR_POS_PERM, edge1, addr3);
+    ScAddr const edge2 = ctx.createEdge(ScType::EdgeAccessVarPosPerm, edge1, addr3);
     SC_CHECK(edge2.isValid(), ());
 
     auto const testOrder = [&ctx](std::vector<ScAddr> const & addrs)
     {
-      ScAddr const structAddr = ctx.createNode(ScType::NODE_CONST_STRUCT);
+      ScAddr const structAddr = ctx.createNode(ScType::NodeConstStruct);
       ScStruct st(&ctx, structAddr);
 
       for (auto const & a : addrs)
@@ -852,178 +852,178 @@ UNIT_TEST(template_issue_224)
              */
 
       // create known nodes
-      ScAddr const _set1Addr = testCreateNodeIdtf(ScType::NODE_VAR, "_set1");
-      ScAddr const _element1Addr = testCreateNodeIdtf(ScType::NODE_VAR, "_element1");
-      ScAddr const _arc1Addr = testCreateNodeIdtf(ScType::NODE_VAR, "_arc1");
-      ScAddr const _operator1Addr = testCreateNodeIdtf(ScType::NODE_VAR, "_operator1");
-      ScAddr const _operator2Addr = testCreateNodeIdtf(ScType::NODE_VAR, "_operator2");
-      ScAddr const _operator3Addr = testCreateNodeIdtf(ScType::NODE_VAR, "_operator3");
+      ScAddr const _set1Addr = testCreateNodeIdtf(ScType::NodeVar, "_set1");
+      ScAddr const _element1Addr = testCreateNodeIdtf(ScType::NodeVar, "_element1");
+      ScAddr const _arc1Addr = testCreateNodeIdtf(ScType::NodeVar, "_arc1");
+      ScAddr const _operator1Addr = testCreateNodeIdtf(ScType::NodeVar, "_operator1");
+      ScAddr const _operator2Addr = testCreateNodeIdtf(ScType::NodeVar, "_operator2");
+      ScAddr const _operator3Addr = testCreateNodeIdtf(ScType::NodeVar, "_operator3");
 
-      ScAddr const scpProcessAddr = testCreateNodeIdtf(ScType::NODE_CONST, "scp_process");
-      ScAddr const rrel_1Addr = testCreateNodeIdtf(ScType::NODE_CONST_ROLE, "rrel_1");
-      ScAddr const rrel_2Addr = testCreateNodeIdtf(ScType::NODE_CONST_ROLE, "rrel_2");
-      ScAddr const rrel_3Addr = testCreateNodeIdtf(ScType::NODE_CONST_ROLE, "rrel_3");
-      ScAddr const rrel_inAddr = testCreateNodeIdtf(ScType::NODE_CONST_ROLE, "rrel_in");
-      ScAddr const rrel_arc_const_pos_perm = testCreateNodeIdtf(ScType::NODE_VAR_ROLE, "rrel_arc_const_pos_perm");
-      ScAddr const rrel_fixedAddr = testCreateNodeIdtf(ScType::NODE_CONST_ROLE, "rrel_fixed");
-      ScAddr const rrel_assignAddr = testCreateNodeIdtf(ScType::NODE_CONST_ROLE, "rrel_assign");
-      ScAddr const rrel_scp_varAddr = testCreateNodeIdtf(ScType::NODE_CONST_ROLE, "rrel_scp_var");
-      ScAddr const searchElStr3Addr = testCreateNodeIdtf(ScType::NODE_CONST_CLASS, "searchElStr3");
-      ScAddr const genElStr3Addr = testCreateNodeIdtf(ScType::NODE_CONST_CLASS, "geElStr3");
-      ScAddr const returnAddr = testCreateNodeIdtf(ScType::NODE_CONST_CLASS, "return");
-      ScAddr const nrel_decompoisition_of_actionAddr = testCreateNodeIdtf(ScType::NODE_VAR_NOROLE, "nrel_decomposition_of_action");
-      ScAddr const nrel_thenAddr = testCreateNodeIdtf(ScType::NODE_CONST_NOROLE, "nrel_then");
-      ScAddr const nrel_elseAddr = testCreateNodeIdtf(ScType::NODE_CONST_NOROLE, "nrel_else");
-      ScAddr const nrel_gotoAddr = testCreateNodeIdtf(ScType::NODE_CONST_NOROLE, "nrel_goto");
+      ScAddr const scpProcessAddr = testCreateNodeIdtf(ScType::NodeConst, "scp_process");
+      ScAddr const rrel_1Addr = testCreateNodeIdtf(ScType::NodeConstRole, "rrel_1");
+      ScAddr const rrel_2Addr = testCreateNodeIdtf(ScType::NodeConstRole, "rrel_2");
+      ScAddr const rrel_3Addr = testCreateNodeIdtf(ScType::NodeConstRole, "rrel_3");
+      ScAddr const rrel_inAddr = testCreateNodeIdtf(ScType::NodeConstRole, "rrel_in");
+      ScAddr const rrel_arc_const_pos_perm = testCreateNodeIdtf(ScType::NodeVarRole, "rrel_arc_const_pos_perm");
+      ScAddr const rrel_fixedAddr = testCreateNodeIdtf(ScType::NodeConstRole, "rrel_fixed");
+      ScAddr const rrel_assignAddr = testCreateNodeIdtf(ScType::NodeConstRole, "rrel_assign");
+      ScAddr const rrel_scp_varAddr = testCreateNodeIdtf(ScType::NodeConstRole, "rrel_scp_var");
+      ScAddr const searchElStr3Addr = testCreateNodeIdtf(ScType::NodeConstClass, "searchElStr3");
+      ScAddr const genElStr3Addr = testCreateNodeIdtf(ScType::NodeConstClass, "geElStr3");
+      ScAddr const returnAddr = testCreateNodeIdtf(ScType::NodeConstClass, "return");
+      ScAddr const nrel_decompoisition_of_actionAddr = testCreateNodeIdtf(ScType::NodeVarNoRole, "nrel_decomposition_of_action");
+      ScAddr const nrel_thenAddr = testCreateNodeIdtf(ScType::NodeConstNoRole, "nrel_then");
+      ScAddr const nrel_elseAddr = testCreateNodeIdtf(ScType::NodeConstNoRole, "nrel_else");
+      ScAddr const nrel_gotoAddr = testCreateNodeIdtf(ScType::NodeConstNoRole, "nrel_goto");
 
       {
         // scp_process _-> ..process_instance;;
-        ScAddr const __procInstanceAddr = testCreateNode(ScType::NODE_VAR);
+        ScAddr const __procInstanceAddr = testCreateNode(ScType::NodeVar);
         testCreateEdge(
-              ScType::EDGE_ACCESS_VAR_POS_PERM,
+              ScType::EdgeAccessVarPosPerm,
               scpProcessAddr,
               __procInstanceAddr);
 
         // ..process_instance _-> rrel_1:: rrel_in:: _set1;;
         testCreateEdgeAttrs(
-              ScType::EDGE_ACCESS_VAR_POS_PERM,
+              ScType::EdgeAccessVarPosPerm,
               __procInstanceAddr,
               _set1Addr,
-              ScType::EDGE_ACCESS_VAR_POS_PERM,
+              ScType::EdgeAccessVarPosPerm,
               { rrel_1Addr, rrel_inAddr });
 
         // ..process_instance _-> rrel_1:: rrel_in::_element1;;
         testCreateEdgeAttrs(
-              ScType::EDGE_ACCESS_VAR_POS_PERM,
+              ScType::EdgeAccessVarPosPerm,
               __procInstanceAddr,
               _element1Addr,
-              ScType::EDGE_ACCESS_VAR_POS_PERM,
+              ScType::EdgeAccessVarPosPerm,
               { rrel_1Addr, rrel_inAddr });
 
         // ..process_instance _<= nrel_decomposition_of_action:: ..proc_decomp_instance;;
-        ScAddr const __procDecompInstanceAddr = testCreateNode(ScType::NODE_VAR);
+        ScAddr const __procDecompInstanceAddr = testCreateNode(ScType::NodeVar);
         testCreateEdgeAttrs(
-              ScType::EDGE_DCOMMON_VAR,
+              ScType::EdgeDCommonVar,
               __procDecompInstanceAddr,
               __procInstanceAddr,
-              ScType::EDGE_ACCESS_VAR_POS_PERM,
+              ScType::EdgeAccessVarPosPerm,
               { nrel_decompoisition_of_actionAddr });
 
         // ..proc_decomp_instance _-> rrel_1:: _operator1;;
         testCreateEdgeAttrs(
-              ScType::EDGE_ACCESS_VAR_POS_PERM,
+              ScType::EdgeAccessVarPosPerm,
               __procDecompInstanceAddr,
               _operator1Addr,
-              ScType::EDGE_ACCESS_VAR_POS_PERM,
+              ScType::EdgeAccessVarPosPerm,
               { rrel_1Addr });
 
         // ..proc_decomp_instance _->_operator2;;
         testCreateEdge(
-              ScType::EDGE_ACCESS_VAR_POS_PERM,
+              ScType::EdgeAccessVarPosPerm,
               __procDecompInstanceAddr,
               _operator2Addr);
 
         // ..proc_decomp_instance _-> _operator3;;
         testCreateEdge(
-              ScType::EDGE_ACCESS_VAR_POS_PERM,
+              ScType::EdgeAccessVarPosPerm,
               __procDecompInstanceAddr,
               _operator3Addr);
 
         // _operator1 _<- searchElStr3;;
         testCreateEdge(
-              ScType::EDGE_ACCESS_VAR_POS_PERM,
+              ScType::EdgeAccessVarPosPerm,
               searchElStr3Addr,
               _operator1Addr);
 
         // _operator1 _-> rrel_1:: rrel_fixed:: rrel_scp_var:: _set1;;
         testCreateEdgeAttrs(
-              ScType::EDGE_ACCESS_VAR_POS_PERM,
+              ScType::EdgeAccessVarPosPerm,
               _operator1Addr,
               _set1Addr,
-              ScType::EDGE_ACCESS_VAR_POS_PERM,
+              ScType::EdgeAccessVarPosPerm,
               { rrel_1Addr, rrel_fixedAddr, rrel_scp_varAddr });
 
         // _operator1 _-> rrel_2:: rrel_assign:: rrel_arc_const_pos_perm:: rrel_scp_var:: _arc1;;
         testCreateEdgeAttrs(
-              ScType::EDGE_ACCESS_VAR_POS_PERM,
+              ScType::EdgeAccessVarPosPerm,
               _operator1Addr,
               _arc1Addr,
-              ScType::EDGE_ACCESS_VAR_POS_PERM,
+              ScType::EdgeAccessVarPosPerm,
               { rrel_assignAddr, rrel_arc_const_pos_perm, rrel_scp_varAddr });
 
         // _operator1 _-> rrel_3:: rrel_fixed:: rrel_scp_var:: _element1;;
         testCreateEdgeAttrs(
-              ScType::EDGE_ACCESS_VAR_POS_PERM,
+              ScType::EdgeAccessVarPosPerm,
               _operator1Addr,
               _element1Addr,
-              ScType::EDGE_ACCESS_VAR_POS_PERM,
+              ScType::EdgeAccessVarPosPerm,
               { rrel_3Addr, rrel_fixedAddr, rrel_scp_varAddr });
 
         // _operator1 _=> nrel_then:: _operator3;;
         testCreateEdgeAttrs(
-              ScType::EDGE_DCOMMON_VAR,
+              ScType::EdgeDCommonVar,
               _operator1Addr,
               _operator3Addr,
-              ScType::EDGE_ACCESS_VAR_POS_PERM,
+              ScType::EdgeAccessVarPosPerm,
               { nrel_thenAddr });
 
         // _operator1 _=> nrel_else:: _operator2;;
         testCreateEdgeAttrs(
-              ScType::EDGE_DCOMMON_VAR,
+              ScType::EdgeDCommonVar,
               _operator1Addr,
               _operator2Addr,
-              ScType::EDGE_ACCESS_VAR_POS_PERM,
+              ScType::EdgeAccessVarPosPerm,
               { nrel_elseAddr });
 
         // _operator2 _<- genElStr3;;
         testCreateEdge(
-              ScType::EDGE_ACCESS_VAR_POS_PERM,
+              ScType::EdgeAccessVarPosPerm,
               genElStr3Addr,
               _operator2Addr);
 
         // _operator2 _-> rrel_1:: rrel_fixed:: rrel_scp_var:: _set1;;
         testCreateEdgeAttrs(
-              ScType::EDGE_ACCESS_VAR_POS_PERM,
+              ScType::EdgeAccessVarPosPerm,
               _operator2Addr,
               _set1Addr,
-              ScType::EDGE_ACCESS_VAR_POS_PERM,
+              ScType::EdgeAccessVarPosPerm,
               { rrel_1Addr, rrel_fixedAddr, rrel_scp_varAddr });
 
         // _operator2 _-> rrel_2:: rrel_assign:: rrel_arc_const_pos_perm:: rrel_scp_var:: _arc1;;
         testCreateEdgeAttrs(
-              ScType::EDGE_ACCESS_VAR_POS_PERM,
+              ScType::EdgeAccessVarPosPerm,
               _operator2Addr,
               _arc1Addr,
-              ScType::EDGE_ACCESS_VAR_POS_PERM,
+              ScType::EdgeAccessVarPosPerm,
               { rrel_2Addr, rrel_assignAddr, rrel_arc_const_pos_perm, rrel_scp_varAddr });
 
         // _operator2 _-> rrel_3:: rrel_fixed:: rrel_scp_var:: _element1;;
         testCreateEdgeAttrs(
-              ScType::EDGE_ACCESS_VAR_POS_PERM,
+              ScType::EdgeAccessVarPosPerm,
               _operator2Addr,
               _element1Addr,
-              ScType::EDGE_ACCESS_VAR_POS_PERM,
+              ScType::EdgeAccessVarPosPerm,
               { rrel_3Addr, rrel_fixedAddr, rrel_scp_varAddr });
 
         // _operator2 _-> rrel_3:: rrel_fixed:: rrel_scp_var:: _element1;;
         testCreateEdgeAttrs(
-              ScType::EDGE_ACCESS_VAR_POS_PERM,
+              ScType::EdgeAccessVarPosPerm,
               _operator2Addr,
               _element1Addr,
-              ScType::EDGE_ACCESS_VAR_POS_PERM,
+              ScType::EdgeAccessVarPosPerm,
               { rrel_3Addr, rrel_fixedAddr, rrel_scp_varAddr });
 
         // _operator2 _=> nrel_goto:: _operator3;;
         testCreateEdgeAttrs(
-              ScType::EDGE_DCOMMON_VAR,
+              ScType::EdgeDCommonVar,
               _operator2Addr,
               _operator3Addr,
-              ScType::EDGE_ACCESS_VAR_POS_PERM,
+              ScType::EdgeAccessVarPosPerm,
               { nrel_gotoAddr });
 
         // _operator3 _<- return;;
         testCreateEdge(
-              ScType::EDGE_ACCESS_VAR_POS_PERM,
+              ScType::EdgeAccessVarPosPerm,
               returnAddr,
               _operator3Addr);
       }
@@ -1052,7 +1052,7 @@ UNIT_TEST(template_issue_224)
       for (size_t i = 0; i < testNum; ++i)
       {
         shuffle(1);
-        ScAddr const structAddr = resolveKeynode(ctx, ScType::NODE_CONST_STRUCT, "test_program" + std::to_string(i));
+        ScAddr const structAddr = resolveKeynode(ctx, ScType::NodeConstStruct, "test_program" + std::to_string(i));
         ScStruct contour(&ctx, structAddr);
 
         for (auto const & a : contourItems)

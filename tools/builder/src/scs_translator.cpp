@@ -663,7 +663,7 @@ sElement* SCsTranslator::parseElementTree(pANTLR3_BASE_TREE tree, const String *
     res = _addEdge(src, trg, _getTypeByConnector(pred), _isConnectorReversed(pred), "");
   }
 
-  if (tok->type == LINK)
+  if (tok->type == Link)
   {
     String data = GET_NODE_TEXT(tree);
     CHECK_LINK_DATA(data);
