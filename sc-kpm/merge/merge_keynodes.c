@@ -31,13 +31,13 @@ const char keynode_system_element_str[] = "system_element";
 sc_result merge_keynodes_initialize()
 {
 
-    RESOLVE_KEYNODE(s_default_ctx, keynode_question_set_cantorization);
+  RESOLVE_KEYNODE(s_default_ctx, keynode_question_set_cantorization);
 
-    RESOLVE_KEYNODE(s_default_ctx, keynode_nrel_answer);
-    RESOLVE_KEYNODE(s_default_ctx, keynode_question_initiated);
-    RESOLVE_KEYNODE(s_default_ctx, keynode_question);
-    RESOLVE_KEYNODE(s_default_ctx, keynode_question_finished);
-    RESOLVE_KEYNODE(s_default_ctx, keynode_system_element);
+  RESOLVE_KEYNODE(s_default_ctx, keynode_nrel_answer);
+  RESOLVE_KEYNODE(s_default_ctx, keynode_question_initiated);
+  RESOLVE_KEYNODE(s_default_ctx, keynode_question);
+  RESOLVE_KEYNODE(s_default_ctx, keynode_question_finished);
+  RESOLVE_KEYNODE(s_default_ctx, keynode_system_element);
 
-    return SC_RESULT_OK;
+  return SC_RESULT_OK;
 }

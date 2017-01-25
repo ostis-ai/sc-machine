@@ -16,36 +16,36 @@ namespace utils
 class ScLog final
 {
 protected:
-	_SC_EXTERN ScLog();
-	_SC_EXTERN ~ScLog();
+  _SC_EXTERN ScLog();
+  _SC_EXTERN ~ScLog();
 
 public:
-	typedef enum
-	{
-		Debug = 0,
-		Info,
-		Warning,
-		Error
-	} eType;
+  typedef enum
+  {
+    Debug = 0,
+    Info,
+    Warning,
+    Error
+  } eType;
 
-	_SC_EXTERN bool Initialize(std::string const & file_name, eType mode = Info);
-	_SC_EXTERN void Shutdown();
+  _SC_EXTERN bool Initialize(std::string const & file_name, eType mode = Info);
+  _SC_EXTERN void Shutdown();
 
-	/// TODO: thread safe
-	_SC_EXTERN void Message(eType type, std::string const & msg, ScConsole::Color color = ScConsole::Color::White);
+  /// TODO: thread safe
+  _SC_EXTERN void Message(eType type, std::string const & msg, ScConsole::Color color = ScConsole::Color::White);
 
-    _SC_EXTERN static ScLog * GetInstance();
-	
+  _SC_EXTERN static ScLog * GetInstance();
+
 private:
-	std::ofstream m_file_stream;
-	eType m_mode;
+  std::ofstream m_file_stream;
+  eType m_mode;
 
-    static ScLog * ms_instance;
+  static ScLog * ms_instance;
 };
 
 
 #define SC_LOG_COLOR(__type, __msg, __color) \
-	{ std::stringstream ss; ss << __msg; ::utils::ScLog::GetInstance()->Message(__type, ss.str(), __color); }
+{ std::stringstream ss; ss << __msg; ::utils::ScLog::GetInstance()->Message(__type, ss.str(), __color); }
 
 #define SC_LOG(__type, __msg) SC_LOG_COLOR(__type, __msg, ScConsole::Color::White)
 

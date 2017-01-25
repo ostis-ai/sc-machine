@@ -7,19 +7,19 @@
 #include "sc_timer.hpp"
 
 ScTimer::ScTimer(double timeoutSec /*= -1.0*/)
-    : mStartTime(Now())
-    , mTimeOutSec(timeoutSec)
+  : mStartTime(Now())
+  , mTimeOutSec(timeoutSec)
 {
 }
 
 double ScTimer::Seconds() const
 {
-    std::chrono::duration<double> const diff = Now() - mStartTime;
-    return diff.count();
+  std::chrono::duration<double> const diff = Now() - mStartTime;
+  return diff.count();
 }
 
 bool ScTimer::IsTimeOut() const
 {
-    return ((mTimeOutSec > 0) && (Seconds() > mTimeOutSec));
+  return ((mTimeOutSec > 0) && (Seconds() > mTimeOutSec));
 }
 

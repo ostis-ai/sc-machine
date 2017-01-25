@@ -16,15 +16,15 @@
 class uiSc2SCgJsonTranslator : public uiTranslateFromSc
 {
 public:
-    explicit uiSc2SCgJsonTranslator();
-    virtual ~uiSc2SCgJsonTranslator();
+  explicit uiSc2SCgJsonTranslator();
+  virtual ~uiSc2SCgJsonTranslator();
 
 
-    static sc_result ui_translate_sc2scg_json(const sc_event *event, sc_addr arg);
+  static sc_result ui_translate_sc2scg_json(const sc_event *event, sc_addr arg);
 
 protected:
-    //! @copydoc uiTranslateFromSc::runImpl
-    void runImpl();
+  //! @copydoc uiTranslateFromSc::runImpl
+  void runImpl();
 
 private:
 

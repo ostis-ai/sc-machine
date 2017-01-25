@@ -11,10 +11,10 @@
 
 struct _sc_version
 {
-    sc_uint8 major;
-    sc_uint8 minor;
-    sc_uint8 patch;
-    const char *suffix;
+  sc_uint8 major;
+  sc_uint8 minor;
+  sc_uint8 patch;
+  const char *suffix;
 };
 
 typedef struct _sc_version sc_version;

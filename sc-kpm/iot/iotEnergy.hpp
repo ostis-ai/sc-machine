@@ -15,10 +15,10 @@
 namespace iot
 {
 
-	class AUpdateUsedPowerSum : public ScAgentAction
-	{
-		SC_CLASS(Agent, CmdClass("command_update_power_usage"))
-		SC_GENERATED_BODY()
-	};
+class AUpdateUsedPowerSum : public ScAgentAction
+{
+  SC_CLASS(Agent, CmdClass("command_update_power_usage"))
+  SC_GENERATED_BODY()
+};
 
-}
+} // namespace iot

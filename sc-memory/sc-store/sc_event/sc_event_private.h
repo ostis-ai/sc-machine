@@ -12,7 +12,7 @@
 /* Events life cycle:
  * - create event - set reference count to 1
  * - emit event - if there are no SC_EVENT_REQUEST_DESTROY flag, then ref sc_event and add it into pending queue
- * - destroy event - wait set flag SC_EVENT_REQUEST_DESTROY and wait until 
+ * - destroy event - wait set flag SC_EVENT_REQUEST_DESTROY and wait until
  *   all pending calls of this event would be processed (ref count == 1).
  *   After that destroy event.
  */
@@ -25,25 +25,25 @@
  */
 struct _sc_event
 {
-    //! sc-addr of listened sc-element
-    sc_addr element;
-    //! Event type
-    sc_event_type type;
-    //! Pointer to user data
-    sc_pointer data;
-    //! Pointer to callback function, that calls on event emit (for backward compatibility)
-    fEventCallback callback;
-    //! Pointer to callback function, that calls on event emit
-    fEventCallbackEx callback_ex;
-    //! Pointer to callback function, that calls, when subscribed sc-element deleted
-    fDeleteCallback delete_callback;
-    //! Reference count (just references from queue). Higest bit used for SC_EVENT_REQUEST_DESTROY
-    volatile sc_uint32 ref_count;
-    //! Context lock 
-    volatile sc_pointer thread_lock;
-    //! Access levels
-    sc_access_levels access_levels;
-    
+  //! sc-addr of listened sc-element
+  sc_addr element;
+  //! Event type
+  sc_event_type type;
+  //! Pointer to user data
+  sc_pointer data;
+  //! Pointer to callback function, that calls on event emit (for backward compatibility)
+  fEventCallback callback;
+  //! Pointer to callback function, that calls on event emit
+  fEventCallbackEx callback_ex;
+  //! Pointer to callback function, that calls, when subscribed sc-element deleted
+  fDeleteCallback delete_callback;
+  //! Reference count (just references from queue). Higest bit used for SC_EVENT_REQUEST_DESTROY
+  volatile sc_uint32 ref_count;
+  //! Context lock
+  volatile sc_pointer thread_lock;
+  //! Access levels
+  sc_access_levels access_levels;
+
 };
 #pragma pack(pop)
 

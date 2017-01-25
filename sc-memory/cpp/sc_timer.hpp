@@ -13,23 +13,23 @@
 class ScTimer
 {
 public:
-    _SC_EXTERN ScTimer(double timeoutSec = -1.0);
-    
-    // Returns number of seconds elapsed from timer start
-    _SC_EXTERN double Seconds() const;
+  _SC_EXTERN ScTimer(double timeoutSec = -1.0);
 
-    // Returns true, if time since start to Now is more then timesoutSec (that passed into constructor)
-    _SC_EXTERN bool IsTimeOut() const;
+  // Returns number of seconds elapsed from timer start
+  _SC_EXTERN double Seconds() const;
 
-private:
-    using TimeValue = std::chrono::steady_clock::time_point;
-   
-    inline TimeValue Now() const
-    {
-        return std::chrono::steady_clock::now();
-    }
+  // Returns true, if time since start to Now is more then timesoutSec (that passed into constructor)
+  _SC_EXTERN bool IsTimeOut() const;
 
 private:
-    TimeValue mStartTime;
-    double mTimeOutSec;
+  using TimeValue = std::chrono::steady_clock::time_point;
+
+  inline TimeValue Now() const
+  {
+    return std::chrono::steady_clock::now();
+  }
+
+private:
+  TimeValue mStartTime;
+  double mTimeOutSec;
 };

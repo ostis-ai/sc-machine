@@ -14,10 +14,10 @@
 
 struct _sc_memory_params
 {
-    const sc_char *repo_path;
-    const sc_char *config_file;
-    const sc_char *ext_path;
-    sc_bool clear;
+  const sc_char *repo_path;
+  const sc_char *config_file;
+  const sc_char *ext_path;
+  sc_bool clear;
 
 };
 

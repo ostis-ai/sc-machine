@@ -15,11 +15,11 @@
 //! sc-iterator types
 typedef enum
 {
-    sc_iterator3_f_a_a = 0, // output arcs
-    sc_iterator3_a_a_f,     // input arcs
-    sc_iterator3_f_a_f,     // arcs between two elements
-    sc_iterator3_a_f_a,		// begin and end elements of arc
-    sc_iterator3_count
+  sc_iterator3_f_a_a = 0, // output arcs
+  sc_iterator3_a_a_f,     // input arcs
+  sc_iterator3_f_a_f,     // arcs between two elements
+  sc_iterator3_a_f_a,		// begin and end elements of arc
+  sc_iterator3_count
 
 } sc_iterator3_type;
 
@@ -27,23 +27,23 @@ typedef enum
  */
 struct _sc_iterator_param
 {
-    sc_bool is_type;
-    union
-    {
-        sc_addr addr;
-        sc_type type;
-    };
+  sc_bool is_type;
+  union
+  {
+    sc_addr addr;
+    sc_type type;
+  };
 };
 
 /*! Structure to store iterator information
  */
 struct _sc_iterator3
 {
-    sc_iterator3_type type;          // iterator type (search template)
-    sc_iterator_param params[3];    // parameters array
-    sc_addr results[3];             // results array (same size as params)
-    const sc_memory_context *ctx;   // pointer to used memory context
-    sc_bool finished;
+  sc_iterator3_type type;          // iterator type (search template)
+  sc_iterator_param params[3];    // parameters array
+  sc_addr results[3];             // results array (same size as params)
+  const sc_memory_context *ctx;   // pointer to used memory context
+  sc_bool finished;
 };
 
 /*! Create iterator to find output arcs for specified element
@@ -81,7 +81,7 @@ _SC_EXTERN sc_iterator3 * sc_iterator3_a_f_a_new(sc_memory_context const * ctx, 
  * @param p3 Third iterator parameter
  * @return Pointer to created iterator. If parameters invalid for specified iterator type, or type is not a sc-iterator-3, then return 0
  */
- _SC_EXTERN sc_iterator3 * sc_iterator3_new(sc_memory_context const * ctx, sc_iterator3_type type, sc_iterator_param p1, sc_iterator_param p2, sc_iterator_param p3);
+_SC_EXTERN sc_iterator3 * sc_iterator3_new(sc_memory_context const * ctx, sc_iterator3_type type, sc_iterator_param p1, sc_iterator_param p2, sc_iterator_param p3);
 
 /*! Destroy iterator and free allocated memory
  * @param it Pointer to sc-iterator that need to be destroyed

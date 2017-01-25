@@ -18,59 +18,59 @@ ScLog * ScLog::ms_instance = nullptr;
 
 ScLog * ScLog::GetInstance()
 {
-    if (!ms_instance)
-        return new ScLog();
+  if (!ms_instance)
+    return new ScLog();
 
-    return ms_instance;
+  return ms_instance;
 }
 
 ScLog::ScLog()
-	: m_mode(Debug)
+  : m_mode(Debug)
 {
-	ASSERT(!ms_instance, ());
-	ms_instance = this;
+  ASSERT(!ms_instance, ());
+  ms_instance = this;
 }
 
 ScLog::~ScLog()
 {
-	ms_instance = nullptr;
+  ms_instance = nullptr;
 }
 
 bool ScLog::Initialize(std::string const & file_name, eType mode /*= Info*/)
 {
-	m_mode = mode;
-	m_file_stream.open(file_name, std::ofstream::out | std::ofstream::trunc);
-	return m_file_stream.is_open();
+  m_mode = mode;
+  m_file_stream.open(file_name, std::ofstream::out | std::ofstream::trunc);
+  return m_file_stream.is_open();
 }
 
 void ScLog::Shutdown()
 {
-	m_file_stream.flush();
-	m_file_stream.close();
+  m_file_stream.flush();
+  m_file_stream.close();
 }
 
 void ScLog::Message(ScLog::eType type, std::string const & msg, ScConsole::Color color /*= ScConsole::Color::White*/)
 {
-	if (m_mode <= type)
-	{
-		// get time
-		std::time_t t = std::time(nullptr);
-		std::tm tm = *std::localtime(&t);
+  if (m_mode <= type)
+  {
+    // get time
+    std::time_t t = std::time(nullptr);
+    std::tm tm = *std::localtime(&t);
 
-		std::stringstream ss;
-        ss << "[" << std::setw(2) << std::setfill('0') << tm.tm_hour
-           << ":" << std::setw(2) << std::setfill('0') << tm.tm_min
-           << ":" << std::setw(2) << std::setfill('0') << tm.tm_sec << "]: ";
-		   
-        ScConsole::SetColor(ScConsole::Color::White);
-        std::cout << ss.str();
-        ScConsole::SetColor(color);
-        std::cout << msg << std::endl;;
-        ScConsole::ResetColor();
+    std::stringstream ss;
+    ss << "[" << std::setw(2) << std::setfill('0') << tm.tm_hour
+       << ":" << std::setw(2) << std::setfill('0') << tm.tm_min
+       << ":" << std::setw(2) << std::setfill('0') << tm.tm_sec << "]: ";
 
-		m_file_stream << ss.str();
-		m_file_stream.flush();
-	}
+    ScConsole::SetColor(ScConsole::Color::White);
+    std::cout << ss.str();
+    ScConsole::SetColor(color);
+    std::cout << msg << std::endl;;
+    ScConsole::ResetColor();
+
+    m_file_stream << ss.str();
+    m_file_stream.flush();
+  }
 }
 
 } // namespace utils

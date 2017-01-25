@@ -6,11 +6,11 @@
 class Method : public LanguageType, public Invokable
 {
 public:
-    Method(const Cursor & cursor, const Namespace & currentNamespace, class Class * parent = nullptr);
+  Method(const Cursor & cursor, const Namespace & currentNamespace, class Class * parent = nullptr);
 
-    virtual ~Method(void);
-    
+  virtual ~Method(void);
+
 private:
-    class Class * m_parent;
-    std::string m_name;
+  class Class * m_parent;
+  std::string m_name;
 };

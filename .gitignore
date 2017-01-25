@@ -1,5 +1,5 @@
 bin
-build
+build*
 scripts/redis*
 
 tools/builder/src/parser/

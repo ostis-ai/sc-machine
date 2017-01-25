@@ -8,16 +8,18 @@
 
 namespace utils
 {
-    // Simple lock without mutex
-    class ScLock
-    {
-    public:
-        ScLock();
 
-        void lock();
-        void unlock();
+// Simple lock without mutex
+class ScLock
+{
+public:
+  ScLock();
 
-    private:
-        std::atomic_bool mLocked;
-    };
-}
+  void lock();
+  void unlock();
+
+private:
+  std::atomic_bool mLocked;
+};
+
+} // namespace utils

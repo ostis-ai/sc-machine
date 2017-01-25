@@ -7,35 +7,35 @@
 #include "exception.h"
 
 Exception::Exception(Exception::eCodes code, const String &typeName, const String &descr, const String &fileName, int line)
-    : mCode(code)
-    , mTypeName(typeName)
-    , mDescription(descr)
-    , mFileName(fileName)
-    , mLine(line)
+  : mCode(code)
+  , mTypeName(typeName)
+  , mDescription(descr)
+  , mFileName(fileName)
+  , mLine(line)
 {
 }
 
 const String& Exception::getTypeName() const
 {
-    return mTypeName;
+  return mTypeName;
 }
 
 const String& Exception::getDescription() const
 {
-    return mDescription;
+  return mDescription;
 }
 
 const String& Exception::getFileName() const
 {
-    return mFileName;
+  return mFileName;
 }
 
 int Exception::getLineNumber() const
 {
-    return mLine;
+  return mLine;
 }
 
 Exception::eCodes Exception::getCode() const
 {
-    return mCode;
+  return mCode;
 }

@@ -32,17 +32,17 @@ typedef sc_result (*fEngineCleanState)(const sc_fm_engine *engine);
  */
 struct _sc_fm_engine
 {
-    //! Pointer to storage specified data
-    void *storage_info;
+  //! Pointer to storage specified data
+  void *storage_info;
 
-    fEngineStreamCreate funcStreamCreate;
-    fEngineAddrRefAppend funcAddrRefAppend;
-    fEngineAddrRefRemove funcAddrRefRemove;
-    fEngineFind funcFind;
-    fEngineClear funcClear;
-    fEngineSave funcSave;
-    fEngineDestroyData funcDestroyData;
-    fEngineCleanState funcCleanState;
+  fEngineStreamCreate funcStreamCreate;
+  fEngineAddrRefAppend funcAddrRefAppend;
+  fEngineAddrRefRemove funcAddrRefRemove;
+  fEngineFind funcFind;
+  fEngineClear funcClear;
+  fEngineSave funcSave;
+  fEngineDestroyData funcDestroyData;
+  fEngineCleanState funcCleanState;
 };
 
 

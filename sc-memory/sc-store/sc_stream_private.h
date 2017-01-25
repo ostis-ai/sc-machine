@@ -39,22 +39,22 @@ typedef sc_result (*fStreamFreeHandler)(const sc_stream *stream);
  */
 struct _sc_stream
 {
-    //! Pointer to resource handle (file handle, network handle, ...)
-    void *handler;
-    //! Access flags (read, write, append, ...)
-    sc_uint8 flags;
-    //! Pointer to a function that reads data from stream
-    fStreamRead read_func;
-    //! Pointer to a function that writes data into stream
-    fStreamWrite write_func;
-    //! Pointer to a function that sets the position indicator associated with the stream to a new position
-    fStreamSeek seek_func;
-    //! Pointer to a function that returns the current value of the position indicator of the stream
-    fStreamTell tell_func;
-    //! Pointer to function for handler freeing
-    fStreamFreeHandler free_func;
-    //! Pointer to function to check if stream indicates to the end position
-    fStreamEof eof_func;
+  //! Pointer to resource handle (file handle, network handle, ...)
+  void *handler;
+  //! Access flags (read, write, append, ...)
+  sc_uint8 flags;
+  //! Pointer to a function that reads data from stream
+  fStreamRead read_func;
+  //! Pointer to a function that writes data into stream
+  fStreamWrite write_func;
+  //! Pointer to a function that sets the position indicator associated with the stream to a new position
+  fStreamSeek seek_func;
+  //! Pointer to a function that returns the current value of the position indicator of the stream
+  fStreamTell tell_func;
+  //! Pointer to function for handler freeing
+  fStreamFreeHandler free_func;
+  //! Pointer to function to check if stream indicates to the end position
+  fStreamEof eof_func;
 };
 
 

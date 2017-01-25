@@ -20,30 +20,30 @@ typedef sc_addr tRealAddr;
 
 class _SC_EXTERN ScAddr
 {
-	friend class ScMemoryContext;
+  friend class ScMemoryContext;
 
-    template <typename ParamType1, typename ParamType2, typename ParamType3> friend class TIterator3;
-    template <typename ParamType1, typename ParamType2, typename ParamType3, typename ParamType4, typename ParamType5> friend class TIterator5;
+  template <typename ParamType1, typename ParamType2, typename ParamType3> friend class TIterator3;
+  template <typename ParamType1, typename ParamType2, typename ParamType3, typename ParamType4, typename ParamType5> friend class TIterator5;
 
 public:
-    using HashType = uint64_t;
+  using HashType = uint64_t;
 
-    explicit ScAddr();
-    explicit ScAddr(sc_addr const & addr);
+  explicit ScAddr();
+  explicit ScAddr(sc_addr const & addr);
 
-    bool isValid() const;
-    void reset();
+  bool isValid() const;
+  void reset();
 
-	bool operator == (ScAddr const & other) const;
-	bool operator != (ScAddr const & other) const;
-	tRealAddr operator * () const;
-    HashType hash() const;
+  bool operator == (ScAddr const & other) const;
+  bool operator != (ScAddr const & other) const;
+  tRealAddr operator * () const;
+  HashType hash() const;
 
-	/// TODO: remove and replace by operator * ()
-    tRealAddr const & getRealAddr() const;
+  /// TODO: remove and replace by operator * ()
+  tRealAddr const & getRealAddr() const;
 
 protected:
-    tRealAddr mRealAddr;
+  tRealAddr mRealAddr;
 };
 
 typedef std::vector<ScAddr> tAddrVector;
@@ -51,37 +51,37 @@ typedef std::list<ScAddr> tAddrList;
 
 struct RealAddrLessFunc
 {
-	bool operator () (tRealAddr const & a, tRealAddr const & b) const
-	{
-		if (a.seg < b.seg)
-			return true;
+  bool operator () (tRealAddr const & a, tRealAddr const & b) const
+  {
+    if (a.seg < b.seg)
+      return true;
 
-		if (a.seg > b.seg)
-			return false;
+    if (a.seg > b.seg)
+      return false;
 
-		return (a.offset < b.offset);
-	}
+    return (a.offset < b.offset);
+  }
 };
 
 struct ScAddLessFunc
 {
-	bool operator () (ScAddr const & a, ScAddr const & b)
-	{
-		return RealAddrLessFunc()(a.getRealAddr(), b.getRealAddr());
-	}
+  bool operator () (ScAddr const & a, ScAddr const & b)
+  {
+    return RealAddrLessFunc()(a.getRealAddr(), b.getRealAddr());
+  }
 };
 
 // hash functions
 template <typename HashType>
 struct ScAddrHashFunc
 {
-	HashType operator () (ScAddr const & addr);
+  HashType operator () (ScAddr const & addr);
 };
 
 template <> struct ScAddrHashFunc < uint32_t >
 {
-    uint32_t operator() (ScAddr const & addr) const
-	{
-		return SC_ADDR_LOCAL_TO_INT(addr.getRealAddr());
-	}
+  uint32_t operator() (ScAddr const & addr) const
+  {
+    return SC_ADDR_LOCAL_TO_INT(addr.getRealAddr());
+  }
 };

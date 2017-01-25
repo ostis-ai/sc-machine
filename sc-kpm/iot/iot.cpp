@@ -24,28 +24,28 @@ SC_IMPLEMENT_MODULE(iotModule)
 
 sc_result iotModule::initializeImpl()
 {
-	if (!iot::Keynodes::initGlobal())
-		return SC_RESULT_ERROR;
+  if (!iot::Keynodes::initGlobal())
+    return SC_RESULT_ERROR;
 
-	ActionManager::initGlobal();
-	ActionMngr.initialize();
+  ActionManager::initGlobal();
+  ActionMngr.initialize();
 
-	if (!iot::Commands::initialize())
-		return SC_RESULT_ERROR;
+  if (!iot::Commands::initialize())
+    return SC_RESULT_ERROR;
 
-	return SC_RESULT_OK;
+  return SC_RESULT_OK;
 }
 
 sc_result iotModule::shutdownImpl()
 {
-	sc_result result = SC_RESULT_OK;
+  sc_result result = SC_RESULT_OK;
 
-	if (!iot::Commands::shutdown())
-		result = SC_RESULT_ERROR;
+  if (!iot::Commands::shutdown())
+    result = SC_RESULT_ERROR;
 
-	ActionMngr.shutdown();
+  ActionMngr.shutdown();
 
-	/// TODO: shutdown other subsytems
+  /// TODO: shutdown other subsytems
 
-	return result;
+  return result;
 }

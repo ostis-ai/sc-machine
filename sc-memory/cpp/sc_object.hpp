@@ -17,22 +17,22 @@ class _SC_EXTERN ScObject
 {
 
 protected:
-    explicit ScObject();
-    virtual ~ScObject();
+  explicit ScObject();
+  virtual ~ScObject();
 
-    ScObject(ScObject const & other);
-    ScObject & operator = (ScObject const & other);
+  ScObject(ScObject const & other);
+  ScObject & operator = (ScObject const & other);
 
-    /// TODO: Need mechanism to call that function automaticaly after object construction
-    bool init();
+  /// TODO: Need mechanism to call that function automaticaly after object construction
+  bool init();
 
 private:
-    /** This method override genarates by code generator, and initialize all
+  /** This method override genarates by code generator, and initialize all
       * meta data for this object. It calls from ScObject constructors
       */
-    virtual bool _initInternal() = 0;
+  virtual bool _initInternal() = 0;
 
 private:
-    bool mIsInitialized : 1;
-    bool mInitResult : 1;
+  bool mIsInitialized : 1;
+  bool mInitResult : 1;
 };

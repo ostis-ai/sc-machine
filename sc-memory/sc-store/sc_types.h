@@ -71,8 +71,8 @@ typedef sc_uint16 sc_addr_offset;
 //! Structure to store sc-element address
 struct _sc_addr
 {
-    sc_addr_seg seg;
-    sc_addr_offset offset;
+  sc_addr_seg seg;
+  sc_addr_offset offset;
 };
 
 //! Make sc-addr empty
@@ -167,16 +167,16 @@ typedef sc_uint16 sc_type;
 // results
 enum _sc_result
 {
-    SC_RESULT_ERROR = 0,                // unknown error
-    SC_RESULT_OK = 1,                   // no any error
-    SC_RESULT_ERROR_INVALID_PARAMS = 3, // invalid function parameters error
-    SC_RESULT_ERROR_INVALID_TYPE = 5,   // invalied type error
-    SC_RESULT_ERROR_IO = 7,             // input/output error
-    SC_RESULT_ERROR_INVALID_STATE = 9,  // invalid state of processed object
-    SC_RESULT_ERROR_NOT_FOUND = 11,     // item not found
-    SC_RESULT_ERROR_NO_WRITE_RIGHTS = 2,// no ritghs to change or delete object
-    SC_RESULT_ERROR_NO_READ_RIGHTS = 4, // no ritghs to read object
-    SC_RESULT_ERROR_NO_RIGHTS = SC_RESULT_ERROR_NO_WRITE_RIGHTS | SC_RESULT_ERROR_NO_READ_RIGHTS
+  SC_RESULT_ERROR = 0,                // unknown error
+  SC_RESULT_OK = 1,                   // no any error
+  SC_RESULT_ERROR_INVALID_PARAMS = 3, // invalid function parameters error
+  SC_RESULT_ERROR_INVALID_TYPE = 5,   // invalied type error
+  SC_RESULT_ERROR_IO = 7,             // input/output error
+  SC_RESULT_ERROR_INVALID_STATE = 9,  // invalid state of processed object
+  SC_RESULT_ERROR_NOT_FOUND = 11,     // item not found
+  SC_RESULT_ERROR_NO_WRITE_RIGHTS = 2,// no ritghs to change or delete object
+  SC_RESULT_ERROR_NO_READ_RIGHTS = 4, // no ritghs to read object
+  SC_RESULT_ERROR_NO_RIGHTS = SC_RESULT_ERROR_NO_WRITE_RIGHTS | SC_RESULT_ERROR_NO_READ_RIGHTS
 };
 
 // contents
@@ -184,31 +184,31 @@ enum _sc_result
 //! Structure to store checksum informaiton
 struct _sc_check_sum
 {
-    char data[SC_MAX_CHECKSUM_LEN];  // maximum checksum length
-    sc_uint8 len;    // checksum length
+  char data[SC_MAX_CHECKSUM_LEN];  // maximum checksum length
+  sc_uint8 len;    // checksum length
 };
 
 // events
 enum _sc_event_type
 {
-    SC_EVENT_UNKNOWN = -1,
-    SC_EVENT_ADD_OUTPUT_ARC = 0,
-    SC_EVENT_ADD_INPUT_ARC = 1,
-    SC_EVENT_REMOVE_OUTPUT_ARC = 2,
-    SC_EVENT_REMOVE_INPUT_ARC = 3,
-    SC_EVENT_REMOVE_ELEMENT = 4,
-    SC_EVENT_CONTENT_CHANGED = 5
+  SC_EVENT_UNKNOWN = -1,
+  SC_EVENT_ADD_OUTPUT_ARC = 0,
+  SC_EVENT_ADD_INPUT_ARC = 1,
+  SC_EVENT_REMOVE_OUTPUT_ARC = 2,
+  SC_EVENT_REMOVE_INPUT_ARC = 3,
+  SC_EVENT_REMOVE_ELEMENT = 4,
+  SC_EVENT_CONTENT_CHANGED = 5
 };
 
 // structure to store statistics info
 struct _sc_stat
 {
-    sc_uint32 node_count; // amount of all sc-nodes stored in memory
-    sc_uint32 arc_count; // amount of all sc-arcs stored in memory
-    sc_uint32 link_count; // amount of all sc-links stored in memory
+  sc_uint32 node_count; // amount of all sc-nodes stored in memory
+  sc_uint32 arc_count; // amount of all sc-arcs stored in memory
+  sc_uint32 link_count; // amount of all sc-links stored in memory
 
-    sc_uint32 empty_count; // amount of empty sc-element cells
-    sc_uint32 segments_count;
+  sc_uint32 empty_count; // amount of empty sc-element cells
+  sc_uint32 segments_count;
 };
 
 

@@ -14,10 +14,10 @@
 namespace iot
 {
 
-	class ATVChangeProgram : public ScAgentAction
-	{
-		SC_CLASS(Agent, CmdClass("command_change_tv_program"))
-		SC_GENERATED_BODY()
-	};
+class ATVChangeProgram : public ScAgentAction
+{
+  SC_CLASS(Agent, CmdClass("command_change_tv_program"))
+  SC_GENERATED_BODY()
+};
 
-}
+} // namespace iot

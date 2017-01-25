@@ -22,108 +22,108 @@ class TIteratorBase
 {
 public:
 
-    virtual ~TIteratorBase() {}
+  virtual ~TIteratorBase() {}
 
-    inline bool isValid() const
-    {
-        return mIterator != 0;
-    }
+  inline bool isValid() const
+  {
+    return mIterator != 0;
+  }
 
-    //! Returns false, if there are no more iterator results. It more results exists, then go to next one and returns true
-    _SC_EXTERN virtual bool next() const = 0;
+  //! Returns false, if there are no more iterator results. It more results exists, then go to next one and returns true
+  _SC_EXTERN virtual bool next() const = 0;
 
-    //! Returns sc-addr of specified element in iterator result
-	_SC_EXTERN virtual ScAddr value(sc_uint8 idx) const = 0;
+  //! Returns sc-addr of specified element in iterator result
+  _SC_EXTERN virtual ScAddr value(sc_uint8 idx) const = 0;
 
 protected:
-    IterType * mIterator;
+  IterType * mIterator;
 };
 
 
 template <typename ParamType1, typename ParamType2, typename ParamType3>
 class TIterator3 : public TIteratorBase<sc_iterator3>
 {
-friend class ScMemoryContext;
+  friend class ScMemoryContext;
 
 protected:
-	_SC_EXTERN TIterator3(ScMemoryContext const & context, ParamType1 const & p1, ParamType2 const & p2, ParamType3 const & p3);
+  _SC_EXTERN TIterator3(ScMemoryContext const & context, ParamType1 const & p1, ParamType2 const & p2, ParamType3 const & p3);
 
 public:
-    _SC_EXTERN virtual ~TIterator3()
+  _SC_EXTERN virtual ~TIterator3()
+  {
+    destroy();
+  }
+
+  TIterator3(TIterator3 const & other)
+  {
+
+  }
+
+  TIterator3 & operator = (TIterator3 const & other)
+  {
+    takeOwnership(other);
+    return *this;
+  }
+
+  void destroy()
+  {
+    if (mIterator)
     {
-        destroy();
+      sc_iterator3_free(mIterator);
+      mIterator = 0;
     }
+  }
 
-    TIterator3(TIterator3 const & other)
-    {
+  _SC_EXTERN bool next() const
+  {
+    check_expr(isValid());
+    return sc_iterator3_next(mIterator) == SC_TRUE;
+  }
 
-    }
-
-    TIterator3 & operator = (TIterator3 const & other)
-    {
-        takeOwnership(other);
-        return *this;
-    }
-
-    void destroy()
-    {     
-        if (mIterator)
-        {
-            sc_iterator3_free(mIterator);
-            mIterator = 0;
-        }
-    }
-
-    _SC_EXTERN bool next() const
-    {
-        check_expr(isValid());
-        return sc_iterator3_next(mIterator) == SC_TRUE;
-    }
-
-	_SC_EXTERN ScAddr value(sc_uint8 idx) const
-    {
-        check_expr(idx < 3);
-        check_expr(isValid());
-		return ScAddr(sc_iterator3_value(mIterator, idx));
-    }
+  _SC_EXTERN ScAddr value(sc_uint8 idx) const
+  {
+    check_expr(idx < 3);
+    check_expr(isValid());
+    return ScAddr(sc_iterator3_value(mIterator, idx));
+  }
 };
 
 // ---------------------------
 template <typename ParamType1, typename ParamType2, typename ParamType3, typename ParamType4, typename ParamType5>
 class TIterator5 : public TIteratorBase<sc_iterator5>
 {
-    friend class ScMemoryContext;
+  friend class ScMemoryContext;
 
 protected:
-	_SC_EXTERN TIterator5(ScMemoryContext const & context, ParamType1 const & p1, ParamType2 const & p2, ParamType3 const & p3, ParamType4 const & p4, ParamType5 const & p5);
+  _SC_EXTERN TIterator5(ScMemoryContext const & context, ParamType1 const & p1, ParamType2 const & p2, ParamType3 const & p3, ParamType4 const & p4, ParamType5 const & p5);
 
 public:
-    _SC_EXTERN virtual ~TIterator5()
-    {
-        destroy();
-    }
+  _SC_EXTERN virtual ~TIterator5()
+  {
+    destroy();
+  }
 
-    void destroy()
+  void destroy()
+  {
+    if (mIterator)
     {
-        if (mIterator)
-        {
-            sc_iterator5_free(mIterator);
-            mIterator = 0;
-        }
+      sc_iterator5_free(mIterator);
+      mIterator = 0;
     }
+  }
 
-    _SC_EXTERN bool next() const
-    {
-        check_expr(isValid());
-        return sc_iterator5_next(mIterator) == SC_TRUE;
-    }
+  _SC_EXTERN bool next() const
+  {
+    check_expr(isValid());
+    return sc_iterator5_next(mIterator) == SC_TRUE;
+  }
 
-	_SC_EXTERN ScAddr value(sc_uint8 idx) const
-    {
-        check_expr(idx < 5);
-        check_expr(isValid());
-		return ScAddr(sc_iterator5_value(mIterator, idx));
-    }
+  _SC_EXTERN ScAddr value(sc_uint8 idx) const
+  {
+    check_expr(idx < 5);
+    check_expr(isValid());
+    return ScAddr(sc_iterator5_value(mIterator, idx));
+  }
 
 };
 

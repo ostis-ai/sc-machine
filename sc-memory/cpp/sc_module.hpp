@@ -15,29 +15,29 @@
 
 class ScModule : public ScObject
 {
-	SC_CLASS()
-	SC_GENERATED_BODY()
+  SC_CLASS()
+  SC_GENERATED_BODY()
 
-	virtual sc_result initializeImpl() = 0;
-	virtual sc_result shutdownImpl() = 0;
+  virtual sc_result initializeImpl() = 0;
+  virtual sc_result shutdownImpl() = 0;
 };
 
 #define _SC_MODULE_INSTANCE(__ModuleName) __ModuleName##Instance
 
 #define SC_IMPLEMENT_MODULE(__ModuleName) \
-__ModuleName _SC_MODULE_INSTANCE(__ModuleName); \
-extern "C" \
-{ \
-	_SC_EXT_EXTERN sc_result initialize() \
-	{ \
-		return _SC_MODULE_INSTANCE(__ModuleName)._initialize(); \
-	} \
-	_SC_EXT_EXTERN sc_uint32 load_priority() \
-	{ \
-		return _SC_MODULE_INSTANCE(__ModuleName)._getLoadPriority(); \
-	} \
-	_SC_EXT_EXTERN sc_result shutdown() \
-	{ \
-		return _SC_MODULE_INSTANCE(__ModuleName)._shutdown(); \
-	} \
-}
+  __ModuleName _SC_MODULE_INSTANCE(__ModuleName); \
+  extern "C" \
+  { \
+    _SC_EXT_EXTERN sc_result initialize() \
+    { \
+      return _SC_MODULE_INSTANCE(__ModuleName)._initialize(); \
+    } \
+    _SC_EXT_EXTERN sc_uint32 load_priority() \
+    { \
+      return _SC_MODULE_INSTANCE(__ModuleName)._getLoadPriority(); \
+    } \
+    _SC_EXT_EXTERN sc_result shutdown() \
+    { \
+      return _SC_MODULE_INSTANCE(__ModuleName)._shutdown(); \
+    } \
+  }

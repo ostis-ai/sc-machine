@@ -12,17 +12,17 @@
 
 namespace utils
 {
-    void ToString(const CXString &str, std::string &output);
+void ToString(const CXString &str, std::string &output);
 
-    std::string GetQualifiedName(
-    	const std::string &displayName, 
-    	const Namespace &currentNamespace
-	);
+std::string GetQualifiedName(
+    const std::string &displayName,
+    const Namespace &currentNamespace
+    );
 
-    std::string GetQualifiedName(
-    	const Cursor &cursor, 
-    	const Namespace &currentNamespace
-	);
+std::string GetQualifiedName(
+    const Cursor &cursor,
+    const Namespace &currentNamespace
+    );
 
-    void FatalError(const std::string &error);
+void FatalError(const std::string &error);
 }

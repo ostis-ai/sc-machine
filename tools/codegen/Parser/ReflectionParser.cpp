@@ -12,289 +12,289 @@
 #include <boost/algorithm/string.hpp>
 
 #define RECURSE_NAMESPACES(kind, cursor, method, ns) \
-    if (kind == CXCursor_Namespace)                  \
-    {                                                \
-        auto displayName = cursor.GetDisplayName(); \
-        if (!displayName.empty())                   \
-        {                                            \
-            ns.emplace_back(displayName);          \
-            method(cursor, ns);                    \
-            ns.pop_back();                          \
-        }                                            \
-    }                                                \
+if (kind == CXCursor_Namespace) \
+{ \
+  auto displayName = cursor.GetDisplayName(); \
+  if (!displayName.empty()) \
+  { \
+    ns.emplace_back(displayName); \
+    method(cursor, ns); \
+    ns.pop_back(); \
+  } \
+}
 
 ReflectionParser::ReflectionParser(const ReflectionOptions &options)
-	: m_options(options)
-	, m_index(nullptr)
-	, m_translationUnit(nullptr)
-	, m_sourceCache(nullptr)
+  : m_options(options)
+  , m_index(nullptr)
+  , m_translationUnit(nullptr)
+  , m_sourceCache(nullptr)
 {
-   
+
 }
 
 ReflectionParser::~ReflectionParser(void)
 {
-    for (auto *klass : m_classes)
-        delete klass;
+  for (auto *klass : m_classes)
+    delete klass;
 
-    for (auto *global : m_globals)
-        delete global;
+  for (auto *global : m_globals)
+    delete global;
 
-    for (auto *globalFunction : m_globalFunctions)
-        delete globalFunction;
+  for (auto *globalFunction : m_globalFunctions)
+    delete globalFunction;
 
-	delete m_sourceCache;
+  delete m_sourceCache;
 }
 
 void ReflectionParser::CollectFiles(std::string const & inPath, tStringList & outFiles)
 {
-	boost::filesystem::recursive_directory_iterator itEnd, it(inPath);
-	while (it != itEnd)
-	{
-		if (!boost::filesystem::is_directory(*it))
-		{
-			boost::filesystem::path path = *it;
-			std::string filename = path.string();
-			std::string ext = GetFileExtension(filename);
-			std::transform(ext.begin(), ext.end(), ext.begin(), tolower);
+  boost::filesystem::recursive_directory_iterator itEnd, it(inPath);
+  while (it != itEnd)
+  {
+    if (!boost::filesystem::is_directory(*it))
+    {
+      boost::filesystem::path path = *it;
+      std::string filename = path.string();
+      std::string ext = GetFileExtension(filename);
+      std::transform(ext.begin(), ext.end(), ext.begin(), tolower);
 
-            if (((ext == "hpp") || (ext == "h")) && (filename.find(".generated.") == std::string::npos))
-			{
-				outFiles.push_back(filename);
-			}
-		}
+      if (((ext == "hpp") || (ext == "h")) && (filename.find(".generated.") == std::string::npos))
+      {
+        outFiles.push_back(filename);
+      }
+    }
 
-		try
-		{
-			++it;
-		}
-		catch (std::exception & ex)
-		{
-			std::cout << ex.what() << std::endl;
-			it.no_push();
-			try
-			{
-				++it;
-			}
-			catch (...)
-			{
-				std::cout << ex.what() << std::endl;
-				return;
-			}
-		}
-	}
+    try
+    {
+      ++it;
+    }
+    catch (std::exception & ex)
+    {
+      std::cout << ex.what() << std::endl;
+      it.no_push();
+      try
+      {
+        ++it;
+      }
+      catch (...)
+      {
+        std::cout << ex.what() << std::endl;
+        return;
+      }
+    }
+  }
 }
 
 void ReflectionParser::Parse(void)
 {
-	tStringList filesList;
-	std::string moduleFile;
-	CollectFiles(m_options.inputPath, filesList);
+  tStringList filesList;
+  std::string moduleFile;
+  CollectFiles(m_options.inputPath, filesList);
 
-	m_sourceCache = new SourceCache(m_options.buildDirectory, m_options.targetName);
-	m_sourceCache->Load();
-	m_sourceCache->CheckGenerator(m_options.generatorPath);
+  m_sourceCache = new SourceCache(m_options.buildDirectory, m_options.targetName);
+  m_sourceCache->Load();
+  m_sourceCache->CheckGenerator(m_options.generatorPath);
 
-	// ensure that output directory exist
-	fs::create_directory(fs::path(m_options.outputPath));
+  // ensure that output directory exist
+  fs::create_directory(fs::path(m_options.outputPath));
 
-	for (tStringList::const_iterator it = filesList.begin(); it != filesList.end(); ++it)
-	{
-		try
-		{
-			// if contains module, then process it later
-			if (!ProcessFile(*it))
-			{
-				if (!moduleFile.empty())
-				{
-					EMIT_ERROR("You couldn't implement two module classes in one module");
-				}
+  for (tStringList::const_iterator it = filesList.begin(); it != filesList.end(); ++it)
+  {
+    try
+    {
+      // if contains module, then process it later
+      if (!ProcessFile(*it))
+      {
+        if (!moduleFile.empty())
+        {
+          EMIT_ERROR("You couldn't implement two module classes in one module");
+        }
 
-				moduleFile = *it;
-			}
-		}
-		catch (Exception e)
-		{
-			EMIT_ERROR(e.GetDescription() << " in " << *it);
-		}
-	}
+        moduleFile = *it;
+      }
+    }
+    catch (Exception e)
+    {
+      EMIT_ERROR(e.GetDescription() << " in " << *it);
+    }
+  }
 
-	try 
-	{
-		if (!moduleFile.empty())
-			ProcessFile(moduleFile, true);
-	}
-	catch (Exception e)
-	{
-		EMIT_ERROR(e.GetDescription() << " in " << moduleFile);
-	}
+  try
+  {
+    if (!moduleFile.empty())
+      ProcessFile(moduleFile, true);
+  }
+  catch (Exception e)
+  {
+    EMIT_ERROR(e.GetDescription() << " in " << moduleFile);
+  }
 
-	m_sourceCache->Save();
+  m_sourceCache->Save();
 }
 
 
 void ReflectionParser::Clear()
 {
-    m_currentFile = "";
+  m_currentFile = "";
 
-    m_classes.clear();
-    m_globals.clear();
-    m_globalFunctions.clear();
+  m_classes.clear();
+  m_globals.clear();
+  m_globalFunctions.clear();
 }
 
 bool ReflectionParser::ProcessFile(std::string const & fileName, bool InProcessModule)
 {
-	if (!InProcessModule && !m_sourceCache->RequestGenerate(fileName))
-		return true;
+  if (!InProcessModule && !m_sourceCache->RequestGenerate(fileName))
+    return true;
 
-    Clear();
+  Clear();
 
-    m_currentFile = fileName;
-	m_index = clang_createIndex(true, false);
-    
-	std::vector<const char *> arguments;
+  m_currentFile = fileName;
+  m_index = clang_createIndex(true, false);
 
-	for (auto &argument : m_options.arguments)
-	{
-		// unescape flags
-		boost::algorithm::replace_all(argument, "\\-", "-");
+  std::vector<const char *> arguments;
 
-		arguments.emplace_back(argument.c_str());
-	}
+  for (auto &argument : m_options.arguments)
+  {
+    // unescape flags
+    boost::algorithm::replace_all(argument, "\\-", "-");
 
-	m_translationUnit = clang_createTranslationUnitFromSourceFile(
-		m_index,
-		fileName.c_str(),
-		static_cast<int>(arguments.size()),
-		arguments.data(),
-		0,
-		nullptr
-		);
+    arguments.emplace_back(argument.c_str());
+  }
 
-	auto cursor = clang_getTranslationUnitCursor(m_translationUnit);
+  m_translationUnit = clang_createTranslationUnitFromSourceFile(
+        m_index,
+        fileName.c_str(),
+        static_cast<int>(arguments.size()),
+        arguments.data(),
+        0,
+        nullptr
+        );
 
-    try
+  auto cursor = clang_getTranslationUnitCursor(m_translationUnit);
+
+  try
+  {
+    Namespace tempNamespace;
+    buildClasses(cursor, tempNamespace);
+    tempNamespace.clear();
+
+    if (ContainsModule() && !InProcessModule)
     {
-        Namespace tempNamespace;
-        buildClasses(cursor, tempNamespace);
-        tempNamespace.clear();
-
-        if (ContainsModule() && !InProcessModule)
-        {
-            if (m_classes.size() > 1)
-            {
-                EMIT_ERROR("You can't implement any other classes in one file with module class");
-            }
-            return false;
-        }
-
-        if (RequestGenerate())
-        {
-            std::string fileId = GetFileID(fileName);
-            std::stringstream outCode;
-
-            // includes
-            outCode << "#include <memory>\n\n";
-            outCode << "#include \"sc-memory/cpp/sc_memory.hpp\"\n\n\n";
-            outCode << "#include \"sc-memory/cpp/sc_event.hpp\"\n\n\n";
-
-            for (auto it = m_classes.begin(); it != m_classes.end(); ++it)
-            {
-                Class const * klass = *it;
-                if (klass->ShouldGenerate())
-                {
-                    klass->GenerateCode(fileId, outCode, this);
-                }
-            }
-
-            /// write ScFileID definition
-            outCode << "\n\n#undef ScFileID\n";
-            outCode << "#define ScFileID " << fileId;
-
-            // generate output file
-            fs::path outputPath(m_options.outputPath);
-            outputPath /= fs::path(GetOutputFileName(fileName));
-            std::ofstream outputFile(outputPath.string());
-            outputFile << outCode.str();
-            outputFile << std::endl << std::endl;
-            outputFile.close();
-        }
-
-        clang_disposeIndex(m_index);
-        clang_disposeTranslationUnit(m_translationUnit);
-
-    } catch (Exception e)
-    {
-        clang_disposeIndex(m_index);
-        clang_disposeTranslationUnit(m_translationUnit);
-
-        EMIT_ERROR(e.GetDescription());
+      if (m_classes.size() > 1)
+      {
+        EMIT_ERROR("You can't implement any other classes in one file with module class");
+      }
+      return false;
     }
 
+    if (RequestGenerate())
+    {
+      std::string fileId = GetFileID(fileName);
+      std::stringstream outCode;
 
-	return true;
+      // includes
+      outCode << "#include <memory>\n\n";
+      outCode << "#include \"sc-memory/cpp/sc_memory.hpp\"\n\n\n";
+      outCode << "#include \"sc-memory/cpp/sc_event.hpp\"\n\n\n";
+
+      for (auto it = m_classes.begin(); it != m_classes.end(); ++it)
+      {
+        Class const * klass = *it;
+        if (klass->ShouldGenerate())
+        {
+          klass->GenerateCode(fileId, outCode, this);
+        }
+      }
+
+      /// write ScFileID definition
+      outCode << "\n\n#undef ScFileID\n";
+      outCode << "#define ScFileID " << fileId;
+
+      // generate output file
+      fs::path outputPath(m_options.outputPath);
+      outputPath /= fs::path(GetOutputFileName(fileName));
+      std::ofstream outputFile(outputPath.string());
+      outputFile << outCode.str();
+      outputFile << std::endl << std::endl;
+      outputFile.close();
+    }
+
+    clang_disposeIndex(m_index);
+    clang_disposeTranslationUnit(m_translationUnit);
+
+  } catch (Exception e)
+  {
+    clang_disposeIndex(m_index);
+    clang_disposeTranslationUnit(m_translationUnit);
+
+    EMIT_ERROR(e.GetDescription());
+  }
+
+
+  return true;
 }
 
 bool ReflectionParser::IsInCurrentFile(Cursor const & cursor) const
 {
-    return cursor.GetFileName() == m_currentFile;
+  return cursor.GetFileName() == m_currentFile;
 }
 
 bool ReflectionParser::RequestGenerate() const
 {
-	for (auto it = m_classes.begin(); it != m_classes.end(); ++it)
-	{
-		if ((*it)->ShouldGenerate())
-			return true;
-	}
+  for (auto it = m_classes.begin(); it != m_classes.end(); ++it)
+  {
+    if ((*it)->ShouldGenerate())
+      return true;
+  }
 
-	return false;
+  return false;
 }
 
 bool ReflectionParser::ContainsModule() const
 {
-	for (auto it = m_classes.begin(); it != m_classes.end(); ++it)
-	{
-		if ((*it)->IsModule())
-			return true;
-	}
+  for (auto it = m_classes.begin(); it != m_classes.end(); ++it)
+  {
+    if ((*it)->IsModule())
+      return true;
+  }
 
-	return false;
+  return false;
 }
 
 void ReflectionParser::buildClasses(const Cursor &cursor, Namespace &currentNamespace)
 {
-    for (auto &child : cursor.GetChildren())
+  for (auto &child : cursor.GetChildren())
+  {
+    // skip classes from other files
+    if (!IsInCurrentFile(child))
+      continue;
+
+    auto kind = child.GetKind();
+
+    // actual definition and a class or struct
+    if (child.IsDefinition() && (kind == CXCursor_ClassDecl || kind == CXCursor_StructDecl))
     {
-        // skip classes from other files
-        if (!IsInCurrentFile(child))
-            continue;
-
-        auto kind = child.GetKind();
-
-        // actual definition and a class or struct
-        if (child.IsDefinition() && (kind == CXCursor_ClassDecl || kind == CXCursor_StructDecl))
-        {
-            m_classes.emplace_back(new Class(child, currentNamespace));
-        }
-        
-        RECURSE_NAMESPACES(kind, child, buildClasses, currentNamespace);
+      m_classes.emplace_back(new Class(child, currentNamespace));
     }
+
+    RECURSE_NAMESPACES(kind, child, buildClasses, currentNamespace);
+  }
 }
 
 
 void ReflectionParser::DumpTree(Cursor const & cursor, size_t level, std::stringstream & outData)
 {
-    outData << "\n";
-    for (size_t i = 0; i < level; ++i)
-        outData << "-";
+  outData << "\n";
+  for (size_t i = 0; i < level; ++i)
+    outData << "-";
 
-    outData << cursor.GetDisplayName() << ", " << cursor.GetKind();
+  outData << cursor.GetDisplayName() << ", " << cursor.GetKind();
 
-    for (auto &child : cursor.GetChildren())
-    {
-        DumpTree(child, level + 1, outData);
-    }
+  for (auto &child : cursor.GetChildren())
+  {
+    DumpTree(child, level + 1, outData);
+  }
 }
 
 //void ReflectionParser::buildGlobals(const Cursor &cursor, Namespace &currentNamespace)
@@ -375,34 +375,34 @@ void ReflectionParser::DumpTree(Cursor const & cursor, size_t level, std::string
 
 std::string ReflectionParser::GetFileExtension(std::string const & fileName)
 {
-	// get file extension
-	size_t n = fileName.rfind(".");
-	if (n == std::string::npos)
-		return std::string();
+  // get file extension
+  size_t n = fileName.rfind(".");
+  if (n == std::string::npos)
+    return std::string();
 
-	return fileName.substr(n + 1, std::string::npos);
+  return fileName.substr(n + 1, std::string::npos);
 }
 
 std::string ReflectionParser::GetOutputFileName(std::string const & fileName)
 {
-	fs::path inputPath(fileName);
-	std::string baseName = inputPath.filename().replace_extension().string();
-	return baseName + ".generated" + inputPath.extension().string();
+  fs::path inputPath(fileName);
+  std::string baseName = inputPath.filename().replace_extension().string();
+  return baseName + ".generated" + inputPath.extension().string();
 }
 
 std::string ReflectionParser::GetFileID(std::string const & fileName)
 {
-    fs::path inputPath(fileName);
-    std::string res = inputPath.filename().string();
-    
-    for (std::string::iterator it = res.begin(); it != res.end(); ++it)
-    {
-        if (*it == ' ' || *it == '-' || *it == '.')
-        {
-            *it = '_';
-        }
-    }
+  fs::path inputPath(fileName);
+  std::string res = inputPath.filename().string();
 
-    return res;
+  for (std::string::iterator it = res.begin(); it != res.end(); ++it)
+  {
+    if (*it == ' ' || *it == '-' || *it == '.')
+    {
+      *it = '_';
+    }
+  }
+
+  return res;
 }
 

@@ -13,37 +13,37 @@
 
 namespace n1
 {
-    namespace n2
-    {
-        class TestObject : public ScObject
-        {
-			SC_CLASS()
-            SC_GENERATED_BODY()
+namespace n2
+{
+class TestObject : public ScObject
+{
+  SC_CLASS()
+  SC_GENERATED_BODY()
 
-        public:
-            /// TODO: autogenerate code to call _initInternal
-            TestObject() { init(); } /// TEST
+public:
+  /// TODO: autogenerate code to call _initInternal
+  TestObject() { init(); } /// TEST
 
-        public:
+public:
 
-            SC_PROPERTY(Keynode("test_keynode1"))
-            ScAddr mTestKeynode1;
+  SC_PROPERTY(Keynode("test_keynode1"))
+  ScAddr mTestKeynode1;
 
-            SC_PROPERTY(Keynode("test_keynode2"))
-            ScAddr mTestKeynode2;
+  SC_PROPERTY(Keynode("test_keynode2"))
+  ScAddr mTestKeynode2;
 
-            SC_PROPERTY(Keynode("test_keynode3"))
-            static ScAddr mTestKeynode3;
+  SC_PROPERTY(Keynode("test_keynode3"))
+  static ScAddr mTestKeynode3;
 
-            // not created object
-            SC_PROPERTY(Keynode("test_keynode_force"), ForceCreate)
-            ScAddr mTestKeynodeForce;
+  // not created object
+  SC_PROPERTY(Keynode("test_keynode_force"), ForceCreate)
+  ScAddr mTestKeynodeForce;
 
-			SC_PROPERTY(Template("test_template"))
-			ScTemplate mTestTemplate;
+  SC_PROPERTY(Template("test_template"))
+  ScTemplate mTestTemplate;
 
-			SC_PROPERTY(Template("test_template2"))
-			static ScTemplate mTestTemplate2;
-        };
-    }
+  SC_PROPERTY(Template("test_template2"))
+  static ScTemplate mTestTemplate2;
+};
+}
 }
