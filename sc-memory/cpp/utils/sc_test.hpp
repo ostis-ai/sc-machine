@@ -6,24 +6,24 @@
 
 #pragma once
 
-#include "sc-memory/cpp/sc_types.hpp"
-#include "sc-memory/cpp/sc_memory.hpp"
-#include "sc-memory/cpp/sc_debug.hpp"
+#include "../sc_types.hpp"
+#include "../sc_memory.hpp"
+#include "../sc_debug.hpp"
 
 #include <iostream>
 
 namespace test
 {
 
-class TestUnit final
+class ScTestUnit final
 {
 public:
-  TestUnit(char const * name, char const * filename, void(*fn)());
-  ~TestUnit();
+  _SC_EXTERN ScTestUnit(char const * name, char const * filename, void(*fn)());
+  _SC_EXTERN ~ScTestUnit();
 
   void Run();
 
-  static void RunAll();
+  static _SC_EXTERN void RunAll();
 
 protected:
   void ShutdownMemory(bool save);
@@ -38,18 +38,18 @@ private:
 
   struct TestLess
   {
-    bool operator() (TestUnit const * a, TestUnit const * b) const
+    bool operator() (ScTestUnit const * a, ScTestUnit const * b) const
     {
       return (a->m_name < b->m_name);
     }
   };
 
-  static std::set<TestUnit*, TestLess> ms_tests;
+  static _SC_EXTERN std::set<ScTestUnit*, TestLess> ms_tests;
 };
 
 #define UNIT_TEST(__name) \
   void Test_##__name(); \
-  ::test::TestUnit g_test_unit_##__name(#__name, __FILE__, &Test_##__name); \
+  ::test::ScTestUnit g_test_unit_##__name(#__name, __FILE__, &Test_##__name); \
   void Test_##__name()
 
 #define _STATUS_COLOR(_expr) ((_expr) ? ScConsole::Color::Green : ScConsole::Color::Red)
@@ -69,6 +69,6 @@ private:
 #define TEST_NOT(_expr, _msg) _TEST_IMPL(CHECK, !_expr, _msg)
 
 #define SUBTEST_START(_name) SC_LOG_INFO("Test "#_name" ...")
-#define SUBTEST_END SC_LOG_INFO_COLOR(" ok", _STATUS_COLOR(true))
+#define SUBTEST_END() SC_LOG_INFO_COLOR(" ok", _STATUS_COLOR(true))
 
 } // namespace test

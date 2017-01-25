@@ -8,6 +8,7 @@ pages:
     - Git-workflow: dev/git-workflow.md
     - Pull requets: dev/pr.md
     - Codestyle: dev/codestyle.md
+    - Unit tests: dev/test.md
   - API:
     - Meta programming: cpp/cpp-meta.md
     - Agents: cpp/kpm.md

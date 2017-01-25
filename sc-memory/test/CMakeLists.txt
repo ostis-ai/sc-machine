@@ -8,8 +8,6 @@ target_link_libraries(test_threading sc-memory)
 
 set(SC_MEMORY_WRAP_TEST "${SC_MACHINE_ROOT}/sc-memory/test/wrap")
 set(SOURCES_WRAP_TEST
-	"wrap/test.cpp"
-	"wrap/test.hpp"
 	"wrap/test_wrap.cpp"
 	)
 

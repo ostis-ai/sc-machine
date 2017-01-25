@@ -4,9 +4,10 @@
 * (See accompanying file COPYING.MIT or copy at http://opensource.org/licenses/MIT)
 */
 
-#include "../test.hpp"
+#include "sc-memory/cpp/sc_template.hpp"
 #include "sc-memory/cpp/sc_struct.hpp"
 #include "sc-memory/cpp/utils/sc_progress.hpp"
+#include "sc-memory/cpp/utils/sc_test.hpp"
 
 #include <glib.h>
 
@@ -140,7 +141,7 @@ UNIT_TEST(templates_common)
       SC_CHECK_EQUAL(it3->value(1), result["_addr2T3"], ());
       SC_CHECK_EQUAL(it3->value(2), res["edge1"], ());
     }
-    SUBTEST_END
+    SUBTEST_END()
 
     SUBTEST_START(template_search2)
     {
@@ -181,7 +182,7 @@ UNIT_TEST(templates_common)
         SC_CHECK(hasAddr(nodes, r["addrTrg"]), ());
       }
     }
-    SUBTEST_END
+    SUBTEST_END()
   }
 
   SUBTEST_START(template_tripleWithRelation)
@@ -199,7 +200,7 @@ UNIT_TEST(templates_common)
     SC_CHECK(ctx.helperSearchTemplate(templ, result), ());
     SC_CHECK_GREAT(result.getSize(), 0, ());
   }
-  SUBTEST_END
+  SUBTEST_END()
 
   SUBTEST_START(template_tripleWithRelation2)
   {
@@ -217,7 +218,7 @@ UNIT_TEST(templates_common)
     SC_CHECK_GREAT(result.getSize(), 0, ());
 
   }
-  SUBTEST_END
+  SUBTEST_END()
 
   SUBTEST_START(template_params_correct)
   {
@@ -258,7 +259,7 @@ UNIT_TEST(templates_common)
     SC_CHECK_EQUAL(searchResult[0]["_3"], addrTest3, ());
     SC_CHECK_EQUAL(searchResult[0]["_6"], addrTest6, ());
   }
-  SUBTEST_END
+  SUBTEST_END()
 
   SUBTEST_START(template_params_invalid)
   {
@@ -311,7 +312,7 @@ UNIT_TEST(templates_common)
 
     }
   }
-  SUBTEST_END
+  SUBTEST_END()
 
   SUBTEST_START(template_a_a_a)
   {
@@ -392,7 +393,7 @@ UNIT_TEST(templates_common)
     }
 
   }
-  SUBTEST_END
+  SUBTEST_END()
 }
 
 
@@ -721,19 +722,19 @@ UNIT_TEST(template_double_attrs)
     {
       testOrder({ addr1, addr2, addr3, addr4, edge1, edge2, edge3 });
     }
-    SUBTEST_END
+    SUBTEST_END()
 
     SUBTEST_START(backward_order)
     {
       testOrder({ edge3, edge2, edge1, addr4, addr3, addr2, addr1 });
     }
-    SUBTEST_END
+    SUBTEST_END()
 
     SUBTEST_START(test_order)
     {
       testOrder({ addr1, addr2, addr3, addr4, edge2, edge1, edge3 });
     }
-    SUBTEST_END
+    SUBTEST_END()
   }
 }
 
@@ -769,19 +770,19 @@ UNIT_TEST(template_edge_from_edge)
     {
       testOrder({ addr1, addr2, addr3, edge1, edge2 });
     }
-    SUBTEST_END
+    SUBTEST_END()
 
     SUBTEST_START(backward_order)
     {
       testOrder({ edge2, edge1, addr3, addr2, addr1 });
     }
-    SUBTEST_END
+    SUBTEST_END()
 
     SUBTEST_START(test_order)
     {
       testOrder({ addr1, addr2, addr3, edge2, edge1});
     }
-    SUBTEST_END
+    SUBTEST_END()
   }
 }
 

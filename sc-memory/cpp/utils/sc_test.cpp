@@ -4,14 +4,14 @@
 * (See accompanying file COPYING.MIT or copy at http://opensource.org/licenses/MIT)
 */
 
-#include "test.hpp"
+#include "sc_test.hpp"
 
 namespace test
 {
 
-std::set<TestUnit*, TestUnit::TestLess> TestUnit::ms_tests;
+std::set<ScTestUnit*, ScTestUnit::TestLess> ScTestUnit::ms_tests;
 
-TestUnit::TestUnit(char const * name, char const * filename, void(*fn)())
+ScTestUnit::ScTestUnit(char const * name, char const * filename, void(*fn)())
   : m_name(name)
   , m_filename(filename)
   , m_fn(fn)
@@ -19,12 +19,12 @@ TestUnit::TestUnit(char const * name, char const * filename, void(*fn)())
   ms_tests.insert(this);
 }
 
-TestUnit::~TestUnit()
+ScTestUnit::~ScTestUnit()
 {
   ms_tests.erase(this);
 }
 
-void TestUnit::Run()
+void ScTestUnit::Run()
 {
   SC_LOG_INFO("Run test " << m_name);
 
@@ -37,7 +37,7 @@ void TestUnit::Run()
   SC_LOG_INFO_COLOR("Test " << m_name << " complete", ScConsole::Color::LightGreen);
 }
 
-void TestUnit::InitMemory()
+void ScTestUnit::InitMemory()
 {
   sc_memory_params params;
   sc_memory_params_clear(&params);
@@ -52,16 +52,16 @@ void TestUnit::InitMemory()
   ScMemory::logUnmute();
 }
 
-void TestUnit::ShutdownMemory(bool save)
+void ScTestUnit::ShutdownMemory(bool save)
 {
   ScMemory::logMute();
   ScMemory::shutdown(save);
   ScMemory::logUnmute();
 }
 
-void TestUnit::RunAll()
+void ScTestUnit::RunAll()
 {
-  for (TestUnit * unit : ms_tests)
+  for (ScTestUnit * unit : ms_tests)
     unit->Run();
 }
 
