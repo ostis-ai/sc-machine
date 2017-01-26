@@ -1,4 +1,5 @@
 ## v0.3.0 rc1
+* Implement support of result codes for action agents
 * Improve unit test system
 * Add [MkDocs](http://www.mkdocs.org/) documentation generator support
 * Add `clang-format` config
