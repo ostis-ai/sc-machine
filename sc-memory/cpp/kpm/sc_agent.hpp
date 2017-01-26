@@ -57,6 +57,8 @@ protected:
 public:
   static _SC_EXTERN ScAddr const & GetCommandInitiatedAddr();
   static _SC_EXTERN ScAddr const & GetCommandFinishedAddr();
+  static _SC_EXTERN ScAddr const & GetNrelResultAddr();
+  static _SC_EXTERN ScAddr const & GetResultCodeAddr(sc_result resCode);
 
 protected:
   ScAddr mCmdClassAddr;
@@ -73,6 +75,34 @@ private:
 
   SC_PROPERTY(Keynode("nrel_result"), ForceCreate)
   static ScAddr msNrelResult;
+
+  // result codes
+  SC_PROPERTY(Keynode("sc_result_ok"), ForceCreate)
+  static ScAddr ms_keynodeScResultOk;
+
+  SC_PROPERTY(Keynode("sc_result_error"), ForceCreate)
+  static ScAddr ms_keynodeScResultError;
+
+  SC_PROPERTY(Keynode("sc_result_error_invalid_params"), ForceCreate)
+  static ScAddr ms_keynodeScResultErrorInvalidParams;
+
+  SC_PROPERTY(Keynode("sc_result_error_invalid_type"), ForceCreate)
+  static ScAddr ms_keynodeScResultErrorInvalidType;
+
+  SC_PROPERTY(Keynode("sc_result_error_io"), ForceCreate)
+  static ScAddr ms_keynodeScResultErrorIO;
+
+  SC_PROPERTY(Keynode("sc_result_invalid_state"), ForceCreate)
+  static ScAddr ms_keynodeScResultInvalidState;
+
+  SC_PROPERTY(Keynode("sc_result_error_not_found"), ForceCreate)
+  static ScAddr ms_keynodeScResultErrorNotFound;
+
+  SC_PROPERTY(Keynode("sc_result_error_no_write_rights"), ForceCreate)
+  static ScAddr ms_keynodeScResultErrorNoWriteRights;
+
+  SC_PROPERTY(Keynode("sc_result_error_no_read_rights"), ForceCreate)
+  static ScAddr ms_keynodeScResultErrorNoReadRights;
 
 private:
   ScAddr mCmdAddr;

@@ -71,6 +71,11 @@ if (${UNIX})
 
     add_definitions(-DSC_PLATFORM_UNIX)
 
+    # for std::thread support
+    if (${CMAKE_COMPILER_IS_GNUCXX})
+    	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread")
+    endif()
+
 elseif (${WIN32})
 
 	set(PACKAGES_PATH "${CMAKE_BINARY_DIR}/packages")

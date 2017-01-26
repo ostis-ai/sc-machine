@@ -6,6 +6,8 @@
 
 #include "sc_agent.hpp"
 
+#include "../sc_debug.hpp"
+
 bool gInitializeResult = false;
 bool gIsInitialized = false;
 
@@ -50,6 +52,16 @@ ScAddr ScAgentAction::msCommandProgressdAddr;
 ScAddr ScAgentAction::msCommandFinishedAddr;
 ScAddr ScAgentAction::msNrelResult;
 
+ScAddr ScAgentAction::ms_keynodeScResultOk;
+ScAddr ScAgentAction::ms_keynodeScResultError;
+ScAddr ScAgentAction::ms_keynodeScResultErrorInvalidParams;
+ScAddr ScAgentAction::ms_keynodeScResultErrorInvalidType;
+ScAddr ScAgentAction::ms_keynodeScResultErrorIO;
+ScAddr ScAgentAction::ms_keynodeScResultInvalidState;
+ScAddr ScAgentAction::ms_keynodeScResultErrorNotFound;
+ScAddr ScAgentAction::ms_keynodeScResultErrorNoWriteRights;
+ScAddr ScAgentAction::ms_keynodeScResultErrorNoReadRights;
+
 ScAgentAction::ScAgentAction(ScAddr const & cmdClassAddr, char const * name, sc_uint8 accessLvl)
   : ScAgent(name, accessLvl)
   , mCmdClassAddr(cmdClassAddr)
@@ -76,14 +88,17 @@ sc_result ScAgentAction::run(ScAddr const & listenAddr, ScAddr const & edgeAddr,
       ScAddr resultAddr = mMemoryCtx.createNode(sc_type_const | sc_type_node_struct);
       assert(resultAddr.isValid());
 
-      runImpl(cmdAddr, resultAddr);
+      sc_result const resCode = runImpl(cmdAddr, resultAddr);
 
       mMemoryCtx.eraseElement(progressAddr);
 
-      ScAddr const commonArc = mMemoryCtx.createEdge(sc_type_const | sc_type_arc_common, cmdAddr, resultAddr);
-      assert(commonArc.isValid());
-      ScAddr const arc = mMemoryCtx.createEdge(sc_type_arc_pos_const_perm, msNrelResult, commonArc);
-      assert(arc.isValid());
+      ScAddr const commonEdge = mMemoryCtx.createEdge(sc_type_const | sc_type_arc_common, cmdAddr, resultAddr);
+      SC_ASSERT(commonEdge.isValid(), ());
+      ScAddr const edge = mMemoryCtx.createEdge(sc_type_arc_pos_const_perm, msNrelResult, commonEdge);
+      SC_ASSERT(edge.isValid(), ());
+
+      ScAddr const edgeResult = mMemoryCtx.createEdge(ScType::EdgeAccessConstPosPerm, GetResultCodeAddr(resCode), resultAddr);
+      SC_ASSERT(edgeResult.isValid(), ());
 
       mMemoryCtx.createEdge(sc_type_arc_pos_const_perm, msCommandFinishedAddr, cmdAddr);
 
@@ -116,4 +131,36 @@ ScAddr const & ScAgentAction::GetCommandInitiatedAddr()
 ScAddr const & ScAgentAction::GetCommandFinishedAddr()
 {
   return msCommandFinishedAddr;
+}
+
+ScAddr const & ScAgentAction::GetNrelResultAddr()
+{
+  return msNrelResult;
+}
+
+ScAddr const & ScAgentAction::GetResultCodeAddr(sc_result resCode)
+{
+  switch (resCode)
+  {
+  case SC_RESULT_ERROR:
+    return ms_keynodeScResultError;
+  case SC_RESULT_OK:
+    return ms_keynodeScResultOk;
+  case SC_RESULT_ERROR_INVALID_PARAMS:
+    return ms_keynodeScResultErrorInvalidParams;
+  case SC_RESULT_ERROR_INVALID_TYPE:
+    return ms_keynodeScResultErrorInvalidType;
+  case SC_RESULT_ERROR_IO:
+    return ms_keynodeScResultErrorIO;
+  case SC_RESULT_ERROR_INVALID_STATE:
+    return ms_keynodeScResultInvalidState;
+  case SC_RESULT_ERROR_NOT_FOUND:
+    return ms_keynodeScResultErrorNotFound;
+  case SC_RESULT_ERROR_NO_WRITE_RIGHTS:
+    return ms_keynodeScResultErrorNoWriteRights;
+  case SC_RESULT_ERROR_NO_READ_RIGHTS:
+    return ms_keynodeScResultErrorNoReadRights;
+  };
+
+  return ms_keynodeScResultError;
 }

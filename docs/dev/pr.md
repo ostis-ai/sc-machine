@@ -12,14 +12,16 @@ Message text should start from an upper case letter. If commit doesn't fix or im
 
 Possible tags:
 
-  * `[cpp]` - use, when you made changes in cpp wrapper code
-  * `[memory]` - use, when you made changes in c core code
-  * `[tests]` or `[test]` - use, when you made changes in tests
-  * `[tools]` - use, when you made changes in tools
-  * `[builder]` - use, when you made changes in builder tools
-  * `[codegen]` - use, when you made changes in code generator
-  * `[review]` - use, when you made commit with review fixes
-  * `[refactor]` - use, when you made commit with some code refactoring
+  * `[cpp]` - use, when you made changes in cpp wrapper code;
+  * `[memory]` - use, when you made changes in c core code;
+  * `[tests]` or `[test]` - use, when you made changes in tests;
+  * `[tools]` - use, when you made changes in tools;
+  * `[builder]` - use, when you made changes in builder tools;
+  * `[codegen]` - use, when you made changes in code generator;
+  * `[review]` - use, when you made commit with review fixes;
+  * `[refactor]` - use, when you made commit with some code refactoring;
+  * `[changelog]` - use, when you update changelog;
+  * `[docs]` - use, when you update documentation.
 
 ***
 Each commit in Pull request should be an atomic. Another word implement or fix one feature. For example:
