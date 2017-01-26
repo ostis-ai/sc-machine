@@ -11,7 +11,7 @@ set(SOURCES_WRAP_TEST
 	"wrap/test_wrap.cpp"
 	)
 
-file(GLOB UnitsGlob "wrap/units/*.cpp")
+file(GLOB UnitsGlob "wrap/units/*.cpp" "wrap/units/*.hpp")
 
 add_executable(test_wrap ${SOURCES_WRAP_TEST} ${UnitsGlob})
 target_link_libraries(test_wrap sc-memory-cpp)
