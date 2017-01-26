@@ -36,6 +36,11 @@
 
 #define SC_OBJECT_INIT_GLOBAL_CALL(__class) __class::initGlobal();
 
+// for autocompletion
+#define Keynode(__X)
+#define ForceCreate(__X)
+#define CmdClass
+#define Agent
 
 // utils
 #define SC_UNUSED(__X) (void)__X
