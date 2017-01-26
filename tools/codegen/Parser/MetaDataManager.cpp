@@ -148,8 +148,8 @@ std::vector<MetaDataManager::Property> MetaDataManager::extractProperties(Cursor
            )
          )
   {
-    auto name = match[ 1 ].str();
-    auto arguments = match[ 3 ].str();
+    auto name = match[1].str();
+    auto arguments = match[3].str();
 
     if (name == Props::Body)
     {
@@ -161,7 +161,7 @@ std::vector<MetaDataManager::Property> MetaDataManager::extractProperties(Cursor
     properties.emplace_back(name, arguments);
 
     // advance the first capture group
-    start += match[ 0 ].length();
+    start += match[0].length();
   }
 
   return properties;
