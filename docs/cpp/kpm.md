@@ -128,9 +128,26 @@ namespace nl
 * `resultAddr` - `ScAddr` of sc-structure that designate command (action) result;
 * `mMemoryCtx` - memory context that can be used to work with `ScMemory`.
 
-If sc-agent finished work without any errors, then it must return `SC_RESULT_OK`, otherwise - one of code error `SC_RESULT_ERROR_...`
+If sc-agent finished work without any errors, then it must return `SC_RESULT_OK`, otherwise - one of code error `SC_RESULT_ERROR_...`.
+Result of agent will be automaticaly added into specified set:
+
+![Example of succesfully finished command](images/sc_result_ok_example.png)
+
+Possible result sets:
+
+* `sc_result_error` - unknown error;
+* `sc_result_ok` - no any errors (successfull finish);
+* `sc_result_error_invalid_params` - invalid parameters of agent;
+* `sc_result_error_invalid_type` - invalid type error (invalid type of data of something else);
+* `sc_result_error_io` - input/output error (can't read/write something from/to any source);
+* `sc_result_invalid_state` - invalid state of processing data;
+* `sc_result_error_not_found` - something wasn't found (for example: can't resolve element by identifier);
+* `sc_result_error_no_write_rights` - agent hasn't rights to write something;
+* `sc_result_error_no_read_rights` - agent hans't rights to read something.
+
 
 **It's important:**
+
 * All sc-agents class names must to be started with A symbol;
 * You can implement more than one `ScAgent` class in on source/header file;
 * Don't use any other memory contexts instead of `mMemoryCtx` in `ScAgent` implementation;
@@ -138,6 +155,7 @@ If sc-agent finished work without any errors, then it must return `SC_RESULT_OK`
 
 ## ScEvent
 This type of objects allows you to subscribe to any events in `ScMemory`. There are c++ classes that correspond to specified event types:
+
 * `ScEventAddOutputEdge` - emits each time, when output (outgoing) edge (from specified element) added;
 * `ScEventAddInputEdge` - emits each time, when input (ingoing) edge (into specified element) added;
 * `ScEventRemoveOutputEdge` - emits each time, when output (outgoing) edge (from specified element) removed;
@@ -146,6 +164,7 @@ This type of objects allows you to subscribe to any events in `ScMemory`. There 
 * `ScEventContentChanged` - emits each time, when content of specified sc-link changed.
 
 Each event constructor takes 3 parameters:
+
 * `ctx` - `ScMemoryContext` that will be used to work with event;
 * `addr` - `ScAddr` of element that need to be listen for a specified event;
 * `func` - delegate to a callback function, that will be called on each event emit (`bool func(ScAddr const & listenAddr, ScAddr const & edgeAddr, ScAddr const & otherAddr)`). Description of parameters for this function you can see in table below (for each event type). **Note: callback function will be called in another thread!**
@@ -308,6 +327,7 @@ ScEventContentChanged evt(ctx, addr, callback);
 
 ## ScWait
 This type of objects used to wait until some event emits. It usually used, when on of an `ScAgent` want to wait result of another one. There are next kind of `ScWait` objects:
+
 * `ScWait`- lock run flow until simple event emits. You can see the list of this events in the Class propertires table (Event property);
 * `ScWaitCondition` - lock run flow until simple event emits and specified conditional check returns true. Another words, this works like an `ScWait`, but returns to run flow if special condition function returns true. Condition function receive 3 parameters (see [ScEvent](#scevent) for more details about them);
 * `ScWaitConstruction` - wait object, that wait until specified construction would be appeared in a memory. **(Not implemented yet)**
