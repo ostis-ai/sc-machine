@@ -57,6 +57,7 @@ ScAddr ScAgentAction::ms_commandProgressdAddr;
 ScAddr ScAgentAction::ms_commandFinishedAddr;
 ScAddr ScAgentAction::ms_nrelResult;
 
+ScAddr ScAgentAction::ms_keynodeScResultUnknown;
 ScAddr ScAgentAction::ms_keynodeScResultOk;
 ScAddr ScAgentAction::ms_keynodeScResultNo;
 ScAddr ScAgentAction::ms_keynodeScResultError;
@@ -148,6 +149,8 @@ ScAddr const & ScAgentAction::GetResultCodeAddr(sc_result resCode)
 {
   switch (resCode)
   {
+  case SC_RESULT_UNKNOWN:
+    return ms_keynodeScResultUnknown;
   case SC_RESULT_NO:
     return ms_keynodeScResultNo;
   case SC_RESULT_ERROR:
@@ -171,4 +174,33 @@ ScAddr const & ScAgentAction::GetResultCodeAddr(sc_result resCode)
   };
 
   return ms_keynodeScResultError;
+}
+
+sc_result ScAgentAction::GetResultCodeByAddr(ScAddr const & resultClassAddr)
+{
+  if (!resultClassAddr.IsValid())
+    return SC_RESULT_UNKNOWN;
+
+  if (resultClassAddr == ms_keynodeScResultNo)
+    return SC_RESULT_NO;
+  else if (resultClassAddr == ms_keynodeScResultError)
+    return SC_RESULT_ERROR;
+  else if (resultClassAddr == ms_keynodeScResultOk)
+    return SC_RESULT_OK;
+  else if (resultClassAddr == ms_keynodeScResultErrorInvalidParams)
+    return SC_RESULT_ERROR_INVALID_PARAMS;
+  else if (resultClassAddr == ms_keynodeScResultErrorInvalidType)
+    return SC_RESULT_ERROR_INVALID_TYPE;
+  else if (resultClassAddr == ms_keynodeScResultErrorIO)
+    return SC_RESULT_ERROR_IO;
+  else if (resultClassAddr == ms_keynodeScResultInvalidState)
+    return SC_RESULT_ERROR_INVALID_STATE;
+  else if (resultClassAddr == ms_keynodeScResultErrorNotFound)
+    return SC_RESULT_ERROR_NOT_FOUND;
+  else if (resultClassAddr == ms_keynodeScResultErrorNoWriteRights)
+    return SC_RESULT_ERROR_NO_WRITE_RIGHTS;
+  else if (resultClassAddr == ms_keynodeScResultErrorNoReadRights)
+    return SC_RESULT_ERROR_NO_READ_RIGHTS;
+  
+  return SC_RESULT_UNKNOWN;
 }

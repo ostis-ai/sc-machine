@@ -73,3 +73,27 @@ UNIT_TEST(ATestResultOk)
     SC_AGENT_UNREGISTER(ATestResultOk);
   }
 }
+
+UNIT_TEST(AgentResultsCommon)
+{
+  ScAgentInit(true);
+
+  auto const CheckValue = [](sc_result resCode)
+  {
+    ScAddr const & addr = ScAgentAction::GetResultCodeAddr(resCode);
+    sc_result const res = ScAgentAction::GetResultCodeByAddr(addr);
+    SC_CHECK_EQUAL(resCode, res, ());
+  };
+
+  CheckValue(SC_RESULT_UNKNOWN);
+  CheckValue(SC_RESULT_NO);
+  CheckValue(SC_RESULT_ERROR);
+  CheckValue(SC_RESULT_OK);
+  CheckValue(SC_RESULT_ERROR_INVALID_PARAMS);
+  CheckValue(SC_RESULT_ERROR_INVALID_TYPE);
+  CheckValue(SC_RESULT_ERROR_IO);
+  CheckValue(SC_RESULT_ERROR_INVALID_STATE);
+  CheckValue(SC_RESULT_ERROR_NOT_FOUND);
+  CheckValue(SC_RESULT_ERROR_NO_WRITE_RIGHTS);
+  CheckValue(SC_RESULT_ERROR_NO_READ_RIGHTS);
+}

@@ -177,8 +177,8 @@ enum _sc_result
   SC_RESULT_ERROR_NO_WRITE_RIGHTS,    // no ritghs to change or delete object
   SC_RESULT_ERROR_NO_READ_RIGHTS,     // no ritghs to read object
   SC_RESULT_NO,                       // no any result
+  SC_RESULT_UNKNOWN,                  // result unknown
   SC_RESULT_ERROR_NO_RIGHTS = SC_RESULT_ERROR_NO_WRITE_RIGHTS | SC_RESULT_ERROR_NO_READ_RIGHTS
-
 };
 
 // contents
