@@ -4,6 +4,7 @@
 * (See accompanying file COPYING.MIT or copy at http://opensource.org/licenses/MIT)
 */
 
+#include "sc-memory/cpp/sc_debug.hpp"
 #include "sc-memory/cpp/sc_template.hpp"
 #include "sc-memory/cpp/sc_struct.hpp"
 #include "sc-memory/cpp/utils/sc_progress.hpp"
@@ -32,9 +33,9 @@ struct TestTemplParams
       testTempl(param1, param2, param3);
 
       ScTemplateGenResult res;
-      SC_CHECK(mCtx.helperGenTemplate(testTempl, res), ());
+      SC_CHECK(mCtx.HelperGenTemplate(testTempl, res), ());
     }
-    catch (ScExceptionInvalidParams & e)
+    catch (utils::ExceptionInvalidParams & e)
     {
       (void)e;
       catched = true;
@@ -48,22 +49,22 @@ private:
 };
 
 
-bool hasAddr(tAddrVector const & v, ScAddr const & addr)
+bool HasAddr(ScAddrVector const & v, ScAddr const & addr)
 {
-  for (tAddrVector::const_iterator it = v.begin(); it != v.end(); ++it)
+  for (auto const & it : v)
   {
-    if (*it == addr)
+    if (it == addr)
       return true;
   }
 
   return false;
 }
 
-ScAddr resolveKeynode(ScMemoryContext & ctx, ScType const & type, std::string const & idtf)
+ScAddr ResolveKeynode(ScMemoryContext & ctx, ScType const & type, std::string const & idtf)
 {
   ScAddr addr;
-  ctx.helperResolveSystemIdtf(idtf, addr, true);
-  SC_CHECK(addr.isValid(), ());
+  ctx.HelperResolveSystemIdtf(idtf, addr, true);
+  SC_CHECK(addr.IsValid(), ());
   return addr;
 }
 
@@ -73,90 +74,90 @@ ScAddr resolveKeynode(ScMemoryContext & ctx, ScType const & type, std::string co
 UNIT_TEST(templates_common)
 {
   ScMemoryContext ctx(sc_access_lvl_make_min, "templates_common");
-  ScAddr const addr1 = ctx.createNode(ScType::NodeConst);
-  SC_CHECK(addr1.isValid(), ());
+  ScAddr const addr1 = ctx.CreateNode(ScType::NodeConst);
+  SC_CHECK(addr1.IsValid(), ());
 
-  ScAddr const addr2 = ctx.createNode(ScType::NodeConst);
-  SC_CHECK(addr2.isValid(), ());
+  ScAddr const addr2 = ctx.CreateNode(ScType::NodeConst);
+  SC_CHECK(addr2.IsValid(), ());
 
-  ScAddr const addr3 = ctx.createNode(ScType::NodeConst);
-  SC_CHECK(addr3.isValid(), ());
+  ScAddr const addr3 = ctx.CreateNode(ScType::NodeConst);
+  SC_CHECK(addr3.IsValid(), ());
 
-  ScAddr const edge1 = ctx.createEdge(ScType::EdgeAccessConstPosPerm, addr1, addr2);
-  SC_CHECK(edge1.isValid(), ());
+  ScAddr const edge1 = ctx.CreateEdge(ScType::EdgeAccessConstPosPerm, addr1, addr2);
+  SC_CHECK(edge1.IsValid(), ());
 
-  ScAddr const edge2 = ctx.createEdge(ScType::EdgeAccessConstPosPerm, addr3, edge1);
-  SC_CHECK(edge2.isValid(), ());
+  ScAddr const edge2 = ctx.CreateEdge(ScType::EdgeAccessConstPosPerm, addr3, edge1);
+  SC_CHECK(edge2.IsValid(), ());
 
   {
     ScTemplate templ;
 
-    templ.triple(
+    templ.Triple(
           addr1 >> "addr1",
           ScType::EdgeAccessVarPosPerm >> "edge1",
           ScType::NodeVar >> "addr2");
-    templ.triple(
+    templ.Triple(
           ScType::NodeVar >> "_addr1T2",
           ScType::EdgeAccessVarPosPerm >> "_addr2T2",
           "edge1");
-    templ.triple(
+    templ.Triple(
           "addr2",
           ScType::EdgeDCommonVar >> "_addr2T3",
           "edge1");
 
     ScTemplateGenResult result;
-    SC_CHECK(ctx.helperGenTemplate(templ, result), ());
+    SC_CHECK(ctx.HelperGenTemplate(templ, result), ());
 
-    ScIterator5Ptr it5 = ctx.iterator5(addr1, sc_type_arc_pos_const_perm, sc_type_node, sc_type_arc_pos_const_perm, sc_type_node);
-    SC_CHECK(it5->next(), ());
-    SC_CHECK_EQUAL(it5->value(0), result["addr1"], ());
-    SC_CHECK_EQUAL(it5->value(1), result["edge1"], ());
-    SC_CHECK_EQUAL(it5->value(2), result["addr2"], ());
-    SC_CHECK_EQUAL(it5->value(3), result["_addr2T2"], ());
-    SC_CHECK_EQUAL(it5->value(4), result["_addr1T2"], ());
+    ScIterator5Ptr it5 = ctx.Iterator5(addr1, sc_type_arc_pos_const_perm, sc_type_node, sc_type_arc_pos_const_perm, sc_type_node);
+    SC_CHECK(it5->Next(), ());
+    SC_CHECK_EQUAL(it5->Get(0), result["addr1"], ());
+    SC_CHECK_EQUAL(it5->Get(1), result["edge1"], ());
+    SC_CHECK_EQUAL(it5->Get(2), result["addr2"], ());
+    SC_CHECK_EQUAL(it5->Get(3), result["_addr2T2"], ());
+    SC_CHECK_EQUAL(it5->Get(4), result["_addr1T2"], ());
 
-    ScIterator3Ptr it3 = ctx.iterator3(result["addr2"], sc_type_arc_common, sc_type_arc_pos_const_perm);
-    SC_CHECK(it3->next(), ());
-    SC_CHECK_EQUAL(it3->value(0), result["addr2"], ());
-    SC_CHECK_EQUAL(it3->value(1), result["_addr2T3"], ());
-    SC_CHECK_EQUAL(it3->value(2), result["edge1"], ());
+    ScIterator3Ptr it3 = ctx.Iterator3(result["addr2"], sc_type_arc_common, sc_type_arc_pos_const_perm);
+    SC_CHECK(it3->Next(), ());
+    SC_CHECK_EQUAL(it3->Get(0), result["addr2"], ());
+    SC_CHECK_EQUAL(it3->Get(1), result["_addr2T3"], ());
+    SC_CHECK_EQUAL(it3->Get(2), result["edge1"], ());
 
 
     SUBTEST_START(template_search)
     {
       ScTemplateSearchResult searchResult;
-      SC_CHECK(ctx.helperSearchTemplate(templ, searchResult), ());
+      SC_CHECK(ctx.HelperSearchTemplate(templ, searchResult), ());
 
-      SC_CHECK_EQUAL(searchResult.getSize(), 1, ());
+      SC_CHECK_EQUAL(searchResult.Size(), 1, ());
 
       ScTemplateSearchResultItem res = searchResult[0];
 
-      SC_CHECK_EQUAL(it5->value(0), res["addr1"], ());
-      SC_CHECK_EQUAL(it5->value(1), res["edge1"], ());
-      SC_CHECK_EQUAL(it5->value(2), res["addr2"], ());
-      SC_CHECK_EQUAL(it5->value(3), result["_addr2T2"], ());
-      SC_CHECK_EQUAL(it5->value(4), result["_addr1T2"], ());
+      SC_CHECK_EQUAL(it5->Get(0), res["addr1"], ());
+      SC_CHECK_EQUAL(it5->Get(1), res["edge1"], ());
+      SC_CHECK_EQUAL(it5->Get(2), res["addr2"], ());
+      SC_CHECK_EQUAL(it5->Get(3), result["_addr2T2"], ());
+      SC_CHECK_EQUAL(it5->Get(4), result["_addr1T2"], ());
 
-      SC_CHECK_EQUAL(it3->value(0), res["addr2"], ());
-      SC_CHECK_EQUAL(it3->value(1), result["_addr2T3"], ());
-      SC_CHECK_EQUAL(it3->value(2), res["edge1"], ());
+      SC_CHECK_EQUAL(it3->Get(0), res["addr2"], ());
+      SC_CHECK_EQUAL(it3->Get(1), result["_addr2T3"], ());
+      SC_CHECK_EQUAL(it3->Get(2), res["edge1"], ());
     }
     SUBTEST_END()
 
     SUBTEST_START(template_search2)
     {
       size_t const testCount = 10;
-      tAddrVector nodes, edges;
+      ScAddrVector nodes, edges;
 
-      ScAddr addrSrc = ctx.createNode(sc_type_const);
-      SC_CHECK(addrSrc.isValid(), ());
+      ScAddr addrSrc = ctx.CreateNode(sc_type_const);
+      SC_CHECK(addrSrc.IsValid(), ());
       for (size_t i = 0; i < testCount; ++i)
       {
-        ScAddr const addrTrg = ctx.createNode(sc_type_const);
-        SC_CHECK(addrTrg.isValid(), ());
+        ScAddr const addrTrg = ctx.CreateNode(sc_type_const);
+        SC_CHECK(addrTrg.IsValid(), ());
 
-        ScAddr const addrEdge = ctx.createEdge(sc_type_arc_pos_const_perm, addrSrc, addrTrg);
-        SC_CHECK(addrEdge.isValid(), ());
+        ScAddr const addrEdge = ctx.CreateEdge(sc_type_arc_pos_const_perm, addrSrc, addrTrg);
+        SC_CHECK(addrEdge.IsValid(), ());
 
         nodes.push_back(addrTrg);
         edges.push_back(addrEdge);
@@ -164,22 +165,22 @@ UNIT_TEST(templates_common)
 
       ScTemplate templ2;
 
-      templ2.triple(addrSrc >> "addrSrc",
+      templ2.Triple(addrSrc >> "addrSrc",
                     ScType::EdgeAccessVarPosPerm >> "edge",
                     ScType::NodeVar >> "addrTrg");
 
       ScTemplateSearchResult result2;
-      SC_CHECK(ctx.helperSearchTemplate(templ2, result2), ());
+      SC_CHECK(ctx.HelperSearchTemplate(templ2, result2), ());
 
-      size_t const count = result2.getSize();
+      size_t const count = result2.Size();
       for (size_t i = 0; i < count; ++i)
       {
         ScTemplateSearchResultItem r = result2[i];
 
         SC_CHECK_EQUAL(r["addrSrc"], addrSrc, ());
 
-        SC_CHECK(hasAddr(edges, r["edge"]), ());
-        SC_CHECK(hasAddr(nodes, r["addrTrg"]), ());
+        SC_CHECK(HasAddr(edges, r["edge"]), ());
+        SC_CHECK(HasAddr(nodes, r["addrTrg"]), ());
       }
     }
     SUBTEST_END()
@@ -189,7 +190,7 @@ UNIT_TEST(templates_common)
   {
     ScTemplate templ;
 
-    templ.tripleWithRelation(
+    templ.TripleWithRelation(
           addr1,
           ScType::EdgeAccessVarPosPerm,
           ScType::NodeVar,
@@ -197,8 +198,8 @@ UNIT_TEST(templates_common)
           addr3);
 
     ScTemplateSearchResult result;
-    SC_CHECK(ctx.helperSearchTemplate(templ, result), ());
-    SC_CHECK_GREAT(result.getSize(), 0, ());
+    SC_CHECK(ctx.HelperSearchTemplate(templ, result), ());
+    SC_CHECK_GREAT(result.Size(), 0, ());
   }
   SUBTEST_END()
 
@@ -206,7 +207,7 @@ UNIT_TEST(templates_common)
   {
     ScTemplate templ;
 
-    templ.tripleWithRelation(
+    templ.TripleWithRelation(
           addr1 >> "1",
           ScType::EdgeAccessVarPosPerm >> "2",
           ScType::NodeVar >> "3",
@@ -214,25 +215,25 @@ UNIT_TEST(templates_common)
           addr3 >> "5");
 
     ScTemplateSearchResult result;
-    SC_CHECK(ctx.helperSearchTemplate(templ, result), ());
-    SC_CHECK_GREAT(result.getSize(), 0, ());
+    SC_CHECK(ctx.HelperSearchTemplate(templ, result), ());
+    SC_CHECK_GREAT(result.Size(), 0, ());
 
   }
   SUBTEST_END()
 
   SUBTEST_START(template_params_correct)
   {
-    ScAddr const addrConst = ctx.createNode(*ScType::NodeConst);
-    ScAddr const addrTest3 = ctx.createNode(*ScType::NodeConstTuple);
-    ScAddr const addrTest6 = ctx.createNode(*ScType::NodeConstClass);
+    ScAddr const addrConst = ctx.CreateNode(*ScType::NodeConst);
+    ScAddr const addrTest3 = ctx.CreateNode(*ScType::NodeConstTuple);
+    ScAddr const addrTest6 = ctx.CreateNode(*ScType::NodeConstClass);
 
     ScTemplate templ;
 
-    templ.triple(
+    templ.Triple(
           addrConst >> "1",
           ScType::EdgeAccessVarPosPerm >> "_2",
           ScType::NodeVarTuple >> "_3");
-    templ.triple(
+    templ.Triple(
           "_3",
           ScType::EdgeAccessVarPosPerm >> "_5",
           ScType::NodeVarClass >> "_6");
@@ -241,21 +242,21 @@ UNIT_TEST(templates_common)
     params.add("_3", addrTest3).add("_6", addrTest6);
 
     ScTemplateGenResult result;
-    SC_CHECK(ctx.helperGenTemplate(templ, result, params), ());
+    SC_CHECK(ctx.HelperGenTemplate(templ, result, params), ());
 
     ScTemplate searchTempl;
-    searchTempl.triple(
+    searchTempl.Triple(
           addrConst >> "1",
           ScType::EdgeAccessVarPosPerm >> "_2",
           ScType::NodeVarTuple >> "_3");
-    searchTempl.triple(
+    searchTempl.Triple(
           "_3",
           ScType::EdgeAccessVarPosPerm >> "_5",
           ScType::NodeVarClass >> "_6");
 
     ScTemplateSearchResult searchResult;
-    SC_CHECK(ctx.helperSearchTemplate(searchTempl, searchResult), ());
-    SC_CHECK_EQUAL(searchResult.getSize(), 1, ());
+    SC_CHECK(ctx.HelperSearchTemplate(searchTempl, searchResult), ());
+    SC_CHECK_EQUAL(searchResult.Size(), 1, ());
     SC_CHECK_EQUAL(searchResult[0]["_3"], addrTest3, ());
     SC_CHECK_EQUAL(searchResult[0]["_6"], addrTest6, ());
   }
@@ -263,9 +264,9 @@ UNIT_TEST(templates_common)
 
   SUBTEST_START(template_params_invalid)
   {
-    ScAddr const addrConst = ctx.createNode(*ScType::NodeConst);
-    ScAddr const addrTest3 = ctx.createNode(*ScType::NodeConstTuple);
-    ScAddr const addrEdge2 = ctx.createEdge(*ScType::EdgeAccessConstPosPerm, addrConst, addrTest3);
+    ScAddr const addrConst = ctx.CreateNode(*ScType::NodeConst);
+    ScAddr const addrTest3 = ctx.CreateNode(*ScType::NodeConstTuple);
+    ScAddr const addrEdge2 = ctx.CreateEdge(*ScType::EdgeAccessConstPosPerm, addrConst, addrTest3);
 
     ScTemplate templ;
     templ
@@ -274,14 +275,14 @@ UNIT_TEST(templates_common)
          ScType::NodeVar >> "_3");	// can't be replaced by param in template generation
 
     ScTemplateGenResult result;
-    SC_CHECK(ctx.helperGenTemplate(templ, result), ());
+    SC_CHECK(ctx.HelperGenTemplate(templ, result), ());
 
     // test edge
     {
       ScTemplateGenParams params;
       params.add("_2", addrEdge2);
 
-      SC_CHECK(!ctx.helperGenTemplate(templ, result, params), ());
+      SC_CHECK(!ctx.HelperGenTemplate(templ, result, params), ());
     }
 
     // test invalid params
@@ -324,44 +325,44 @@ UNIT_TEST(templates_common)
     (* _<- _lang;; *);;
     */
 
-    const ScAddr _structAddr = ctx.createNode(ScType::NodeVarStruct);
-    SC_CHECK(_structAddr.isValid(), ());
+    const ScAddr _structAddr = ctx.CreateNode(ScType::NodeVarStruct);
+    SC_CHECK(_structAddr.IsValid(), ());
 
-    const ScAddr _apiai_locationAddr = ctx.createNode(ScType::NodeVar);
-    SC_CHECK(_apiai_locationAddr.isValid(), ());
+    const ScAddr _apiai_locationAddr = ctx.CreateNode(ScType::NodeVar);
+    SC_CHECK(_apiai_locationAddr.IsValid(), ());
 
-    const ScAddr _apiai_speechAddr = ctx.createNode(ScType::NodeVar);
-    SC_CHECK(_apiai_speechAddr.isValid(), ());
+    const ScAddr _apiai_speechAddr = ctx.CreateNode(ScType::NodeVar);
+    SC_CHECK(_apiai_speechAddr.IsValid(), ());
 
-    const ScAddr _langAddr = ctx.createNode(ScType::NodeVar);
-    SC_CHECK(_langAddr.isValid(), ());
+    const ScAddr _langAddr = ctx.CreateNode(ScType::NodeVar);
+    SC_CHECK(_langAddr.IsValid(), ());
 
-    const ScAddr rrel_locationAddr = ctx.createNode(ScType::NodeConst);
-    SC_CHECK(rrel_locationAddr.isValid(), ());
-    SC_CHECK(ctx.helperSetSystemIdtf("rrel_location", rrel_locationAddr), ());
+    const ScAddr rrel_locationAddr = ctx.CreateNode(ScType::NodeConst);
+    SC_CHECK(rrel_locationAddr.IsValid(), ());
+    SC_CHECK(ctx.HelperSetSystemIdtf("rrel_location", rrel_locationAddr), ());
 
-    const ScAddr nrel_translationAddr = ctx.createNode(ScType::NodeConst);
-    SC_CHECK(nrel_translationAddr.isValid(), ());
-    SC_CHECK(ctx.helperSetSystemIdtf("nrel_translation", nrel_translationAddr), ());
+    const ScAddr nrel_translationAddr = ctx.CreateNode(ScType::NodeConst);
+    SC_CHECK(nrel_translationAddr.IsValid(), ());
+    SC_CHECK(ctx.HelperSetSystemIdtf("nrel_translation", nrel_translationAddr), ());
 
-    const ScAddr _struct_locationEdgeAddr = ctx.createEdge(ScType::EdgeAccessVarPosPerm, _structAddr, _apiai_locationAddr);
-    SC_CHECK(_struct_locationEdgeAddr.isValid(), ());
+    const ScAddr _struct_locationEdgeAddr = ctx.CreateEdge(ScType::EdgeAccessVarPosPerm, _structAddr, _apiai_locationAddr);
+    SC_CHECK(_struct_locationEdgeAddr.IsValid(), ());
 
-    const ScAddr _rrel_locationEdgeAddr = ctx.createEdge(ScType::EdgeAccessVarPosPerm, rrel_locationAddr, _struct_locationEdgeAddr);
-    SC_CHECK(_rrel_locationEdgeAddr.isValid(), ());
+    const ScAddr _rrel_locationEdgeAddr = ctx.CreateEdge(ScType::EdgeAccessVarPosPerm, rrel_locationAddr, _struct_locationEdgeAddr);
+    SC_CHECK(_rrel_locationEdgeAddr.IsValid(), ());
 
-    const ScAddr _struct_speechEdgeAddr = ctx.createEdge(ScType::EdgeDCommonVar, _structAddr, _apiai_speechAddr);
-    SC_CHECK(_struct_speechEdgeAddr.isValid(), ());
+    const ScAddr _struct_speechEdgeAddr = ctx.CreateEdge(ScType::EdgeDCommonVar, _structAddr, _apiai_speechAddr);
+    SC_CHECK(_struct_speechEdgeAddr.IsValid(), ());
 
-    const ScAddr _nrel_translationEdgeAddr = ctx.createEdge(ScType::EdgeAccessVarPosPerm, nrel_translationAddr, _struct_speechEdgeAddr);
-    SC_CHECK(_nrel_translationEdgeAddr.isValid(), ());
+    const ScAddr _nrel_translationEdgeAddr = ctx.CreateEdge(ScType::EdgeAccessVarPosPerm, nrel_translationAddr, _struct_speechEdgeAddr);
+    SC_CHECK(_nrel_translationEdgeAddr.IsValid(), ());
 
-    const ScAddr _langEdgeAddr = ctx.createEdge(ScType::EdgeAccessVarPosPerm, _langAddr, _apiai_speechAddr);
-    SC_CHECK(_langEdgeAddr.isValid(), ());
+    const ScAddr _langEdgeAddr = ctx.CreateEdge(ScType::EdgeAccessVarPosPerm, _langAddr, _apiai_speechAddr);
+    SC_CHECK(_langEdgeAddr.IsValid(), ());
 
     // create template
-    const ScAddr templStructAddr = ctx.createNode(ScType::NodeConstStruct);
-    SC_CHECK(templStructAddr.isValid(), ());
+    const ScAddr templStructAddr = ctx.CreateNode(ScType::NodeConstStruct);
+    SC_CHECK(templStructAddr.IsValid(), ());
     ScStruct templStruct(&ctx, templStructAddr);
 
     templStruct
@@ -378,18 +379,18 @@ UNIT_TEST(templates_common)
         << _langEdgeAddr;
 
     ScTemplate templ;
-    SC_CHECK(ctx.helperBuildTemplate(templ, templStructAddr), ());
+    SC_CHECK(ctx.HelperBuildTemplate(templ, templStructAddr), ());
 
     // check creation by this template
     {
       ScTemplateGenResult result;
-      SC_CHECK(ctx.helperGenTemplate(templ, result), ());
+      SC_CHECK(ctx.HelperGenTemplate(templ, result), ());
     }
 
     // check search by this template
     {
       ScTemplateSearchResult result;
-      SC_CHECK(ctx.helperSearchTemplate(templ, result), ());
+      SC_CHECK(ctx.HelperSearchTemplate(templ, result), ());
     }
 
   }
@@ -410,8 +411,8 @@ UNIT_TEST(templates_2)
   *
   * scs: x _-> _z:: _y;; _s _-> x;;
   */
-  ScAddr templateAddr = ctx.createNode(sc_type_const | sc_type_node_struct);
-  SC_CHECK(templateAddr.isValid(), ());
+  ScAddr templateAddr = ctx.CreateNode(sc_type_const | sc_type_node_struct);
+  SC_CHECK(templateAddr.IsValid(), ());
 
   ScStruct templStruct(&ctx, templateAddr);
   ScAddr xAddr;
@@ -419,63 +420,63 @@ UNIT_TEST(templates_2)
 
     ScAddr _yAddr, _zAddr, _sAddr;
 
-    xAddr = ctx.createNode(sc_type_const | sc_type_node_material);
-    SC_CHECK(xAddr.isValid(), ());
-    SC_CHECK(ctx.helperSetSystemIdtf("x", xAddr), ());
+    xAddr = ctx.CreateNode(sc_type_const | sc_type_node_material);
+    SC_CHECK(xAddr.IsValid(), ());
+    SC_CHECK(ctx.HelperSetSystemIdtf("x", xAddr), ());
 
-    _yAddr = ctx.createNode(sc_type_var);
-    SC_CHECK(_yAddr.isValid(), ());
-    SC_CHECK(ctx.helperSetSystemIdtf("_y", _yAddr), ());
+    _yAddr = ctx.CreateNode(sc_type_var);
+    SC_CHECK(_yAddr.IsValid(), ());
+    SC_CHECK(ctx.HelperSetSystemIdtf("_y", _yAddr), ());
 
-    _zAddr = ctx.createNode(sc_type_var | sc_type_node_role);
-    SC_CHECK(_zAddr.isValid(), ());
-    SC_CHECK(ctx.helperSetSystemIdtf("_z", _zAddr), ());
+    _zAddr = ctx.CreateNode(sc_type_var | sc_type_node_role);
+    SC_CHECK(_zAddr.IsValid(), ());
+    SC_CHECK(ctx.HelperSetSystemIdtf("_z", _zAddr), ());
 
-    _sAddr = ctx.createNode(sc_type_node_class | sc_type_var);
-    SC_CHECK(_sAddr.isValid(), ());
-    SC_CHECK(ctx.helperSetSystemIdtf("_s", _sAddr), ());
+    _sAddr = ctx.CreateNode(sc_type_node_class | sc_type_var);
+    SC_CHECK(_sAddr.IsValid(), ());
+    SC_CHECK(ctx.HelperSetSystemIdtf("_s", _sAddr), ());
 
-    ScAddr xyAddr = ctx.createEdge(sc_type_arc_access | sc_type_var, xAddr, _yAddr);
-    SC_CHECK(xyAddr.isValid(), ());
-    ScAddr zxyAddr = ctx.createEdge(sc_type_arc_access | sc_type_var, _zAddr, xyAddr);
-    SC_CHECK(zxyAddr.isValid(), ());
-    ScAddr sxAddr = ctx.createEdge(sc_type_arc_access | sc_type_var, _sAddr, xAddr);
-    SC_CHECK(sxAddr.isValid(), ());
+    ScAddr xyAddr = ctx.CreateEdge(sc_type_arc_access | sc_type_var, xAddr, _yAddr);
+    SC_CHECK(xyAddr.IsValid(), ());
+    ScAddr zxyAddr = ctx.CreateEdge(sc_type_arc_access | sc_type_var, _zAddr, xyAddr);
+    SC_CHECK(zxyAddr.IsValid(), ());
+    ScAddr sxAddr = ctx.CreateEdge(sc_type_arc_access | sc_type_var, _sAddr, xAddr);
+    SC_CHECK(sxAddr.IsValid(), ());
 
     // append created elements into struct
     templStruct << xAddr << _yAddr << _zAddr << xyAddr << zxyAddr << _sAddr << sxAddr;
   }
 
   ScTemplate templ;
-  SC_CHECK(ctx.helperBuildTemplate(templ, templateAddr), ());
+  SC_CHECK(ctx.HelperBuildTemplate(templ, templateAddr), ());
 
   // create test structure that correspond to template
   {
     ScAddr yAddr, zAddr, sAddr;
 
-    yAddr = ctx.createNode(sc_type_const);
-    SC_CHECK(yAddr.isValid(), ());
+    yAddr = ctx.CreateNode(sc_type_const);
+    SC_CHECK(yAddr.IsValid(), ());
 
-    zAddr = ctx.createNode(sc_type_const | sc_type_node_role);
-    SC_CHECK(zAddr.isValid(), ());
+    zAddr = ctx.CreateNode(sc_type_const | sc_type_node_role);
+    SC_CHECK(zAddr.IsValid(), ());
 
-    sAddr = ctx.createNode(sc_type_node_class | sc_type_const);
-    SC_CHECK(sAddr.isValid(), ());
+    sAddr = ctx.CreateNode(sc_type_node_class | sc_type_const);
+    SC_CHECK(sAddr.IsValid(), ());
 
-    ScAddr xyAddr = ctx.createEdge(sc_type_arc_pos_const_perm, xAddr, yAddr);
-    SC_CHECK(xyAddr.isValid(), ());
-    ScAddr zxyAddr = ctx.createEdge(sc_type_arc_pos_const_perm, zAddr, xyAddr);
-    SC_CHECK(zxyAddr.isValid(), ());
-    ScAddr sxAddr = ctx.createEdge(sc_type_arc_pos_const_perm, sAddr, xAddr);
-    SC_CHECK(sxAddr.isValid(), ());
+    ScAddr xyAddr = ctx.CreateEdge(sc_type_arc_pos_const_perm, xAddr, yAddr);
+    SC_CHECK(xyAddr.IsValid(), ());
+    ScAddr zxyAddr = ctx.CreateEdge(sc_type_arc_pos_const_perm, zAddr, xyAddr);
+    SC_CHECK(zxyAddr.IsValid(), ());
+    ScAddr sxAddr = ctx.CreateEdge(sc_type_arc_pos_const_perm, sAddr, xAddr);
+    SC_CHECK(sxAddr.IsValid(), ());
 
 
     // test search by template
     {
       ScTemplateSearchResult result;
-      SC_CHECK(ctx.helperSearchTemplate(templ, result), ());
+      SC_CHECK(ctx.HelperSearchTemplate(templ, result), ());
 
-      SC_CHECK_EQUAL(result.getSize(), 1, ());
+      SC_CHECK_EQUAL(result.Size(), 1, ());
       ScTemplateSearchResultItem item = result[0];
 
       SC_CHECK_EQUAL(item["x"], xAddr, ());
@@ -498,41 +499,41 @@ UNIT_TEST(template_search_in_struct)
   * scs: x _-> _z:: _y;;
   */
 
-  ScAddr templateAddr = ctx.createNode(*ScType::NodeConstStruct);
-  SC_CHECK(templateAddr.isValid(), ());
+  ScAddr templateAddr = ctx.CreateNode(*ScType::NodeConstStruct);
+  SC_CHECK(templateAddr.IsValid(), ());
 
   ScAddr xAddr, _yAddr, _zAddr, _xyEdgeAddr, _zxyEdgeAddr;
   ScStruct templStruct(&ctx, templateAddr);
   {
-    xAddr = ctx.createNode(*ScType::NodeConst);
-    SC_CHECK(xAddr.isValid(), ());
-    SC_CHECK(ctx.helperSetSystemIdtf("x", xAddr), ());
+    xAddr = ctx.CreateNode(*ScType::NodeConst);
+    SC_CHECK(xAddr.IsValid(), ());
+    SC_CHECK(ctx.HelperSetSystemIdtf("x", xAddr), ());
 
-    _yAddr = ctx.createNode(*ScType::NodeVar);
-    SC_CHECK(_yAddr.isValid(), ());
-    SC_CHECK(ctx.helperSetSystemIdtf("_y", _yAddr), ());
+    _yAddr = ctx.CreateNode(*ScType::NodeVar);
+    SC_CHECK(_yAddr.IsValid(), ());
+    SC_CHECK(ctx.HelperSetSystemIdtf("_y", _yAddr), ());
 
-    _zAddr = ctx.createNode(*ScType::NodeVar);
-    SC_CHECK(_zAddr.isValid(), ());
-    SC_CHECK(ctx.helperSetSystemIdtf("_z", _zAddr), ());
+    _zAddr = ctx.CreateNode(*ScType::NodeVar);
+    SC_CHECK(_zAddr.IsValid(), ());
+    SC_CHECK(ctx.HelperSetSystemIdtf("_z", _zAddr), ());
 
-    _xyEdgeAddr = ctx.createEdge(*ScType::EdgeAccessVarPosPerm, xAddr, _yAddr);
-    SC_CHECK(_xyEdgeAddr.isValid(), ());
-    SC_CHECK(ctx.helperSetSystemIdtf("_xyEdge", _xyEdgeAddr), ());
+    _xyEdgeAddr = ctx.CreateEdge(*ScType::EdgeAccessVarPosPerm, xAddr, _yAddr);
+    SC_CHECK(_xyEdgeAddr.IsValid(), ());
+    SC_CHECK(ctx.HelperSetSystemIdtf("_xyEdge", _xyEdgeAddr), ());
 
-    _zxyEdgeAddr = ctx.createEdge(*ScType::EdgeAccessVarPosPerm, _zAddr, _xyEdgeAddr);
-    SC_CHECK(_zxyEdgeAddr.isValid(), ());
-    SC_CHECK(ctx.helperSetSystemIdtf("_zxyEdge", _zxyEdgeAddr), ());
+    _zxyEdgeAddr = ctx.CreateEdge(*ScType::EdgeAccessVarPosPerm, _zAddr, _xyEdgeAddr);
+    SC_CHECK(_zxyEdgeAddr.IsValid(), ());
+    SC_CHECK(ctx.HelperSetSystemIdtf("_zxyEdge", _zxyEdgeAddr), ());
 
     templStruct << xAddr << _yAddr << _zAddr << _xyEdgeAddr << _zxyEdgeAddr;
   }
 
   ScTemplate templ;
-  SC_CHECK(ctx.helperBuildTemplate(templ, templateAddr), ());
+  SC_CHECK(ctx.HelperBuildTemplate(templ, templateAddr), ());
 
   // create text struct
-  ScAddr testStructAddr = ctx.createNode(*ScType::NodeConstStruct);
-  SC_CHECK(testStructAddr.isValid(), ());
+  ScAddr testStructAddr = ctx.CreateNode(*ScType::NodeConstStruct);
+  SC_CHECK(testStructAddr.IsValid(), ());
 
   /*   y ---> u
   *   ^
@@ -550,35 +551,35 @@ UNIT_TEST(template_search_in_struct)
   {
     txAddr = xAddr;
 
-    tyAddr = ctx.createNode(*ScType::NodeConst);
-    SC_CHECK(tyAddr.isValid(), ());
+    tyAddr = ctx.CreateNode(*ScType::NodeConst);
+    SC_CHECK(tyAddr.IsValid(), ());
 
-    tgAddr = ctx.createNode(*ScType::NodeConst);
-    SC_CHECK(tgAddr.isValid(), ());
+    tgAddr = ctx.CreateNode(*ScType::NodeConst);
+    SC_CHECK(tgAddr.IsValid(), ());
 
-    tuAddr = ctx.createNode(*ScType::NodeConst);
-    SC_CHECK(tuAddr.isValid(), ());
+    tuAddr = ctx.CreateNode(*ScType::NodeConst);
+    SC_CHECK(tuAddr.IsValid(), ());
 
-    tzAddr = ctx.createNode(*ScType::NodeConst);
-    SC_CHECK(tzAddr.isValid(), ());
+    tzAddr = ctx.CreateNode(*ScType::NodeConst);
+    SC_CHECK(tzAddr.IsValid(), ());
 
-    tsAddr = ctx.createNode(*ScType::NodeConst);
-    SC_CHECK(tsAddr.isValid(), ());
+    tsAddr = ctx.CreateNode(*ScType::NodeConst);
+    SC_CHECK(tsAddr.IsValid(), ());
 
-    tyuEdgeAddr = ctx.createEdge(*ScType::EdgeAccessConstPosPerm, tyAddr, tuAddr);
-    SC_CHECK(tyuEdgeAddr.isValid(), ());
+    tyuEdgeAddr = ctx.CreateEdge(*ScType::EdgeAccessConstPosPerm, tyAddr, tuAddr);
+    SC_CHECK(tyuEdgeAddr.IsValid(), ());
 
-    txyEdgeAddr = ctx.createEdge(*ScType::EdgeAccessConstPosPerm, txAddr, tyAddr);
-    SC_CHECK(txyEdgeAddr.isValid(), ());
+    txyEdgeAddr = ctx.CreateEdge(*ScType::EdgeAccessConstPosPerm, txAddr, tyAddr);
+    SC_CHECK(txyEdgeAddr.IsValid(), ());
 
-    txgEdgeAddr = ctx.createEdge(*ScType::EdgeAccessConstPosPerm, txAddr, tgAddr);
-    SC_CHECK(txgEdgeAddr.isValid(), ());
+    txgEdgeAddr = ctx.CreateEdge(*ScType::EdgeAccessConstPosPerm, txAddr, tgAddr);
+    SC_CHECK(txgEdgeAddr.IsValid(), ());
 
-    tzxyEdgeAddr = ctx.createEdge(*ScType::EdgeAccessConstPosPerm, tzAddr, txyEdgeAddr);
-    SC_CHECK(tzxyEdgeAddr.isValid(), ());
+    tzxyEdgeAddr = ctx.CreateEdge(*ScType::EdgeAccessConstPosPerm, tzAddr, txyEdgeAddr);
+    SC_CHECK(tzxyEdgeAddr.IsValid(), ());
 
-    tsxgEdgeAddr = ctx.createEdge(*ScType::EdgeAccessConstPosPerm, tsAddr, txgEdgeAddr);
-    SC_CHECK(tsxgEdgeAddr.isValid(), ());
+    tsxgEdgeAddr = ctx.CreateEdge(*ScType::EdgeAccessConstPosPerm, tsAddr, txgEdgeAddr);
+    SC_CHECK(tsxgEdgeAddr.IsValid(), ());
 
     testStruct << tyAddr << txAddr << tgAddr
                << tuAddr << tzAddr << tsAddr
@@ -589,17 +590,17 @@ UNIT_TEST(template_search_in_struct)
 
   // add extra edges that not included into struct
   // scs: x -> t: y;;
-  ScAddr edge1 = ctx.createEdge(*ScType::EdgeAccessConstPosPerm, txAddr, tyAddr);
-  SC_CHECK(edge1.isValid(), ());
-  ScAddr edge2 = ctx.createEdge(*ScType::EdgeAccessConstPosPerm, tzAddr, edge1);
-  SC_CHECK(edge2.isValid(), ());
+  ScAddr edge1 = ctx.CreateEdge(*ScType::EdgeAccessConstPosPerm, txAddr, tyAddr);
+  SC_CHECK(edge1.IsValid(), ());
+  ScAddr edge2 = ctx.CreateEdge(*ScType::EdgeAccessConstPosPerm, tzAddr, edge1);
+  SC_CHECK(edge2.IsValid(), ());
 
   {
     ScTemplateSearchResult result;
-    SC_CHECK(ctx.helperSearchTemplateInStruct(templ, *testStruct, result), ());
+    SC_CHECK(ctx.HelperSearchTemplateInStruct(templ, *testStruct, result), ());
 
-    SC_CHECK_EQUAL(result.getSize(), 2, ());
-    for (uint32_t i = 0; i < result.getSize(); ++i)
+    SC_CHECK_EQUAL(result.Size(), 2, ());
+    for (uint32_t i = 0; i < result.Size(); ++i)
     {
       ScTemplateSearchResultItem res1 = result[i];
       SC_CHECK_EQUAL(res1["x"], xAddr, ());
@@ -620,21 +621,21 @@ UNIT_TEST(template_performance)
   {
     // preapre test
     ScTemplate templ;
-    templ.triple(
+    templ.Triple(
           ScType::NodeVar >> "Node1",
           ScType::EdgeAccessVarPosPerm >> "Edge1",
           ScType::NodeVar >> "Node2");
-    templ.triple(
+    templ.Triple(
           ScType::NodeVar >> "Node3",
           ScType::EdgeAccessVarPosPerm >> "Edge2",
           "Edge1");
-    templ.triple(
+    templ.Triple(
           ScType::NodeVar >> "Node4",
           ScType::EdgeAccessVarPosPerm >> "Edge3",
           "Node1");
 
     ScTemplateGenResult result;
-    if (ctx.helperGenTemplate(templ, result))
+    if (ctx.HelperGenTemplate(templ, result))
     {
       node1 = result["Node1"];
       node2 = result["Node2"];
@@ -659,23 +660,23 @@ UNIT_TEST(template_performance)
     g_test_timer_start();
 
     ScTemplate templ;
-    templ.triple(
+    templ.Triple(
           node1,
           ScType::EdgeAccessVarPosPerm >> "Edge1",
           ScType::NodeVar);
 
-    templ.triple(
+    templ.Triple(
           node3,
           ScType::EdgeAccessVarPosPerm,
           "Edge1");
 
-    templ.triple(
+    templ.Triple(
           node4,
           ScType::EdgeAccessVarPosPerm,
           node1);
 
     ScTemplateSearchResult result;
-    bool const res = ctx.helperSearchTemplate(templ, result);
+    bool const res = ctx.HelperSearchTemplate(templ, result);
 
     sum_time += g_test_timer_elapsed();
     SC_CHECK(res, ());
@@ -690,32 +691,32 @@ UNIT_TEST(template_double_attrs)
 {
   ScMemoryContext ctx(sc_access_lvl_make_min, "template_double_attrs");
   {
-    ScAddr const addr1 = ctx.createNode(ScType::NodeConst);
-    SC_CHECK(addr1.isValid(), ());
-    ScAddr const addr2 = ctx.createNode(ScType::NodeVar);
-    SC_CHECK(addr2.isValid(), ());
-    ScAddr const addr3 = ctx.createNode(ScType::NodeConstRole);
-    SC_CHECK(addr3.isValid(), ());
-    ScAddr const addr4 = ctx.createNode(ScType::NodeConstRole);
-    SC_CHECK(addr4.isValid(), ());
+    ScAddr const addr1 = ctx.CreateNode(ScType::NodeConst);
+    SC_CHECK(addr1.IsValid(), ());
+    ScAddr const addr2 = ctx.CreateNode(ScType::NodeVar);
+    SC_CHECK(addr2.IsValid(), ());
+    ScAddr const addr3 = ctx.CreateNode(ScType::NodeConstRole);
+    SC_CHECK(addr3.IsValid(), ());
+    ScAddr const addr4 = ctx.CreateNode(ScType::NodeConstRole);
+    SC_CHECK(addr4.IsValid(), ());
 
-    ScAddr const edge1 = ctx.createEdge(ScType::EdgeAccessVarPosPerm, addr1, addr2);
-    SC_CHECK(edge1.isValid(), ());
-    ScAddr const edge2 = ctx.createEdge(ScType::EdgeAccessVarPosPerm, addr3, edge1);
-    SC_CHECK(edge2.isValid(), ());
-    ScAddr const edge3 = ctx.createEdge(ScType::EdgeAccessVarPosPerm, addr4, edge1);
-    SC_CHECK(edge3.isValid(), ());
+    ScAddr const edge1 = ctx.CreateEdge(ScType::EdgeAccessVarPosPerm, addr1, addr2);
+    SC_CHECK(edge1.IsValid(), ());
+    ScAddr const edge2 = ctx.CreateEdge(ScType::EdgeAccessVarPosPerm, addr3, edge1);
+    SC_CHECK(edge2.IsValid(), ());
+    ScAddr const edge3 = ctx.CreateEdge(ScType::EdgeAccessVarPosPerm, addr4, edge1);
+    SC_CHECK(edge3.IsValid(), ());
 
     auto const testOrder = [&ctx](std::vector<ScAddr> const & addrs)
     {
-      ScAddr const structAddr = ctx.createNode(ScType::NodeConstStruct);
+      ScAddr const structAddr = ctx.CreateNode(ScType::NodeConstStruct);
       ScStruct st(&ctx, structAddr);
 
       for (auto const & a : addrs)
         st << a;
 
       ScTemplate templ;
-      SC_CHECK(ctx.helperBuildTemplate(templ, structAddr), ());
+      SC_CHECK(ctx.HelperBuildTemplate(templ, structAddr), ());
     };
 
     SUBTEST_START(forwadr_order)
@@ -742,28 +743,28 @@ UNIT_TEST(template_edge_from_edge)
 {
   ScMemoryContext ctx(sc_access_lvl_make_min, "template_edge_from_edge");
   {
-    ScAddr const addr1 = ctx.createNode(ScType::NodeConst);
-    SC_CHECK(addr1.isValid(), ());
-    ScAddr const addr2 = ctx.createNode(ScType::NodeVar);
-    SC_CHECK(addr2.isValid(), ());
-    ScAddr const addr3 = ctx.createNode(ScType::NodeConstRole);
-    SC_CHECK(addr3.isValid(), ());
+    ScAddr const addr1 = ctx.CreateNode(ScType::NodeConst);
+    SC_CHECK(addr1.IsValid(), ());
+    ScAddr const addr2 = ctx.CreateNode(ScType::NodeVar);
+    SC_CHECK(addr2.IsValid(), ());
+    ScAddr const addr3 = ctx.CreateNode(ScType::NodeConstRole);
+    SC_CHECK(addr3.IsValid(), ());
 
-    ScAddr const edge1 = ctx.createEdge(ScType::EdgeAccessVarPosPerm, addr1, addr2);
-    SC_CHECK(edge1.isValid(), ());
-    ScAddr const edge2 = ctx.createEdge(ScType::EdgeAccessVarPosPerm, edge1, addr3);
-    SC_CHECK(edge2.isValid(), ());
+    ScAddr const edge1 = ctx.CreateEdge(ScType::EdgeAccessVarPosPerm, addr1, addr2);
+    SC_CHECK(edge1.IsValid(), ());
+    ScAddr const edge2 = ctx.CreateEdge(ScType::EdgeAccessVarPosPerm, edge1, addr3);
+    SC_CHECK(edge2.IsValid(), ());
 
     auto const testOrder = [&ctx](std::vector<ScAddr> const & addrs)
     {
-      ScAddr const structAddr = ctx.createNode(ScType::NodeConstStruct);
+      ScAddr const structAddr = ctx.CreateNode(ScType::NodeConstStruct);
       ScStruct st(&ctx, structAddr);
 
       for (auto const & a : addrs)
         st << a;
 
       ScTemplate templ;
-      SC_CHECK(ctx.helperBuildTemplate(templ, structAddr), ());
+      SC_CHECK(ctx.HelperBuildTemplate(templ, structAddr), ());
     };
 
     SUBTEST_START(forwadr_order)
@@ -798,24 +799,24 @@ UNIT_TEST(template_issue_224)
     {
       auto testCreateNode = [&ctx, &contourItems](ScType const & type)
       {
-        ScAddr const addr = ctx.createNode(type);
-        SC_CHECK(addr.isValid(), ());
+        ScAddr const addr = ctx.CreateNode(type);
+        SC_CHECK(addr.IsValid(), ());
         contourItems.push_back(addr);
         return addr;
       };
 
       auto testCreateNodeIdtf = [&ctx, &contourItems](ScType const & type, std::string const & idtf)
       {
-        ScAddr const addr = resolveKeynode(ctx, type, idtf);
-        SC_CHECK(addr.isValid(), ());
+        ScAddr const addr = ResolveKeynode(ctx, type, idtf);
+        SC_CHECK(addr.IsValid(), ());
         contourItems.push_back(addr);
         return addr;
       };
 
       auto testCreateEdge = [&ctx, &contourItems](ScType const & type, ScAddr const & src, ScAddr const & trg)
       {
-        ScAddr const edge = ctx.createEdge(type, src, trg);
-        SC_CHECK(edge.isValid(), ());
+        ScAddr const edge = ctx.CreateEdge(type, src, trg);
+        SC_CHECK(edge.IsValid(), ());
         contourItems.push_back(edge);
         return edge;
       };
@@ -1053,14 +1054,14 @@ UNIT_TEST(template_issue_224)
       for (size_t i = 0; i < testNum; ++i)
       {
         shuffle(1);
-        ScAddr const structAddr = resolveKeynode(ctx, ScType::NodeConstStruct, "test_program" + std::to_string(i));
+        ScAddr const structAddr = ResolveKeynode(ctx, ScType::NodeConstStruct, "test_program" + std::to_string(i));
         ScStruct contour(&ctx, structAddr);
 
         for (auto const & a : contourItems)
           contour << a;
 
         ScTemplate templ;
-        SC_CHECK(ctx.helperBuildTemplate(templ, structAddr), ());
+        SC_CHECK(ctx.HelperBuildTemplate(templ, structAddr), ());
 
         progress.PrintStatus(i);
       }

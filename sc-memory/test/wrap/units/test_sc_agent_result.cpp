@@ -23,15 +23,15 @@ SC_AGENT_ACTION_IMPLEMENTATION(ATestResultOk)
 UNIT_TEST(ATestResultOk)
 {
   ScAgentInit(true);
-  ATestResultOk::initGlobal();
+  ATestResultOk::InitGlobal();
 
   SC_AGENT_REGISTER(ATestResultOk);
   
   ScMemoryContext ctx(sc_access_lvl_make_min, "ATestResultOk");
 
-  ScAddr const cmdAddr = ctx.createNode(ScType::NodeConst);
-  SC_CHECK(cmdAddr.isValid(), ());
-  ScAddr const edge = ctx.createEdge(
+  ScAddr const cmdAddr = ctx.CreateNode(ScType::NodeConst);
+  SC_CHECK(cmdAddr.IsValid(), ());
+  ScAddr const edge = ctx.CreateEdge(
     ScType::EdgeAccessConstPosPerm,
     ATestResultOk::ms_keynodeTestResultOk,
     cmdAddr);
@@ -42,7 +42,7 @@ UNIT_TEST(ATestResultOk)
 
     // initiate command
     ScMemoryContext ctxLocal(sc_access_lvl_make_min, "ATestResultOk_thread");
-    ctxLocal.createEdge(ScType::EdgeAccessConstPosPerm, ScAgentAction::GetCommandInitiatedAddr(), cmdAddr);
+    ctxLocal.CreateEdge(ScType::EdgeAccessConstPosPerm, ScAgentAction::GetCommandInitiatedAddr(), cmdAddr);
   });
 
   work_thread.join();
@@ -51,21 +51,21 @@ UNIT_TEST(ATestResultOk)
   SC_CHECK(waiter.Wait(), ());
 
   // check result
-  ScIterator5Ptr it5 = ctx.iterator5(
+  ScIterator5Ptr it5 = ctx.Iterator5(
     cmdAddr,
     ScType::EdgeDCommonConst,
     ScType::NodeConst,
     ScType::EdgeAccessConstPosPerm,
     ScAgentAction::GetNrelResultAddr());
   
-  SC_CHECK(it5->next(), ());
+  SC_CHECK(it5->Next(), ());
 
-  ScIterator3Ptr it = ctx.iterator3(
+  ScIterator3Ptr it = ctx.Iterator3(
     ScAgentAction::GetResultCodeAddr(SC_RESULT_OK),
     ScType::EdgeAccessConstPosPerm,
-    it5->value(2));
+    it5->Get(2));
 
-  SC_CHECK(it->next(), ());
+  SC_CHECK(it->Next(), ());
 
   SC_AGENT_UNREGISTER(ATestResultOk);
 }

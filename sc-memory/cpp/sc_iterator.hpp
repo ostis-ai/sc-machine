@@ -24,19 +24,22 @@ public:
 
   virtual ~TIteratorBase() {}
 
-  inline bool isValid() const
+  inline bool IsValid() const
   {
-    return mIterator != 0;
+    return m_iterator != 0;
   }
 
   //! Returns false, if there are no more iterator results. It more results exists, then go to next one and returns true
-  _SC_EXTERN virtual bool next() const = 0;
+  _SC_EXTERN virtual bool Next() const = 0;
 
   //! Returns sc-addr of specified element in iterator result
-  _SC_EXTERN virtual ScAddr value(sc_uint8 idx) const = 0;
+  _SC_EXTERN virtual ScAddr Get(sc_uint8 idx) const = 0;
+  
+  //! Short form of Get
+  inline ScAddr operator [] (sc_uint8 idx) const { return Get(idx); }
 
 protected:
-  IterType * mIterator;
+  IterType * m_iterator;
 };
 
 
@@ -51,7 +54,7 @@ protected:
 public:
   _SC_EXTERN virtual ~TIterator3()
   {
-    destroy();
+    Destroy();
   }
 
   TIterator3(TIterator3 const & other)
@@ -61,30 +64,30 @@ public:
 
   TIterator3 & operator = (TIterator3 const & other)
   {
-    takeOwnership(other);
+    TakeOwnership(other);
     return *this;
   }
 
-  void destroy()
+  void Destroy()
   {
-    if (mIterator)
+    if (m_iterator)
     {
-      sc_iterator3_free(mIterator);
-      mIterator = 0;
+      sc_iterator3_free(m_iterator);
+      m_iterator = 0;
     }
   }
 
-  _SC_EXTERN bool next() const
+  _SC_EXTERN bool Next() const
   {
-    check_expr(isValid());
-    return sc_iterator3_next(mIterator) == SC_TRUE;
+    SC_ASSERT(IsValid(), ());
+    return sc_iterator3_next(m_iterator) == SC_TRUE;
   }
 
-  _SC_EXTERN ScAddr value(sc_uint8 idx) const
+  _SC_EXTERN ScAddr Get(sc_uint8 idx) const
   {
-    check_expr(idx < 3);
-    check_expr(isValid());
-    return ScAddr(sc_iterator3_value(mIterator, idx));
+    SC_ASSERT(idx < 3, ());
+    SC_ASSERT(IsValid(), ());
+    return ScAddr(sc_iterator3_value(m_iterator, idx));
   }
 };
 
@@ -100,29 +103,29 @@ protected:
 public:
   _SC_EXTERN virtual ~TIterator5()
   {
-    destroy();
+    Destroy();
   }
 
-  void destroy()
+  void Destroy()
   {
-    if (mIterator)
+    if (m_iterator)
     {
-      sc_iterator5_free(mIterator);
-      mIterator = 0;
+      sc_iterator5_free(m_iterator);
+      m_iterator = 0;
     }
   }
 
-  _SC_EXTERN bool next() const
+  _SC_EXTERN bool Next() const
   {
-    check_expr(isValid());
-    return sc_iterator5_next(mIterator) == SC_TRUE;
+    SC_ASSERT(IsValid(), ());
+    return sc_iterator5_next(m_iterator) == SC_TRUE;
   }
 
-  _SC_EXTERN ScAddr value(sc_uint8 idx) const
+  _SC_EXTERN ScAddr Get(sc_uint8 idx) const
   {
-    check_expr(idx < 5);
-    check_expr(isValid());
-    return ScAddr(sc_iterator5_value(mIterator, idx));
+    SC_ASSERT(idx < 5, ());
+    SC_ASSERT(IsValid(), ());
+    return ScAddr(sc_iterator5_value(m_iterator, idx));
   }
 
 };

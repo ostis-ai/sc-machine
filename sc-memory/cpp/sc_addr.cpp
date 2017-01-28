@@ -9,46 +9,46 @@
 
 ScAddr::ScAddr()
 {
-  SC_ADDR_MAKE_EMPTY(mRealAddr);
+  SC_ADDR_MAKE_EMPTY(m_realAddr);
 }
 
 ScAddr::ScAddr(sc_addr const & addr)
-  : mRealAddr(addr)
+  : m_realAddr(addr)
 {
 }
 
-bool ScAddr::isValid() const
+bool ScAddr::IsValid() const
 {
-  return !SC_ADDR_IS_EMPTY(mRealAddr);
+  return !SC_ADDR_IS_EMPTY(m_realAddr);
 }
 
-void ScAddr::reset()
+void ScAddr::Reset()
 {
-  SC_ADDR_MAKE_EMPTY(mRealAddr);
+  SC_ADDR_MAKE_EMPTY(m_realAddr);
 }
 
-ScAddr::HashType ScAddr::hash() const
+ScAddr::HashType ScAddr::Hash() const
 {
-  return ((mRealAddr.seg << 16) | mRealAddr.offset);
+  return ((m_realAddr.seg << 16) | m_realAddr.offset);
 }
 
 bool ScAddr::operator == (ScAddr const & other) const
 {
-  return SC_ADDR_IS_EQUAL(mRealAddr, other.mRealAddr);
+  return SC_ADDR_IS_EQUAL(m_realAddr, other.m_realAddr);
 }
 
 bool ScAddr::operator != (ScAddr const & other) const
 {
-  return SC_ADDR_IS_NOT_EQUAL(mRealAddr, other.mRealAddr);
+  return SC_ADDR_IS_NOT_EQUAL(m_realAddr, other.m_realAddr);
 }
 
-tRealAddr ScAddr::operator * () const
+ScRealAddr const & ScAddr::operator * () const
 {
-  return mRealAddr;
+  return m_realAddr;
 }
 
-tRealAddr const & ScAddr::getRealAddr() const
+ScRealAddr const & ScAddr::GetRealAddr() const
 {
-  return mRealAddr;
+  return m_realAddr;
 }
 

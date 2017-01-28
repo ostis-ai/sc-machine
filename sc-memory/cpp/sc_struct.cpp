@@ -9,90 +9,90 @@
 #include "sc_template.hpp"
 
 ScStruct::ScStruct(ScMemoryContext * ctx, ScAddr const & structAddr)
-  : mAddr(structAddr)
-  , mContext(ctx)
+  : m_addr(structAddr)
+  , m_context(ctx)
 
 {
 }
 
-bool ScStruct::append(ScAddr const & elAddr)
+bool ScStruct::Append(ScAddr const & elAddr)
 {
-  check_expr(mContext);
-  if (!hasElement(elAddr))
-    return mContext->createEdge(sc_type_arc_pos_const_perm, mAddr, elAddr).isValid();
+  SC_ASSERT(m_context, ());
+  if (!HasElement(elAddr))
+    return m_context->CreateEdge(sc_type_arc_pos_const_perm, m_addr, elAddr).IsValid();
 
   return false;
 }
 
-bool ScStruct::append(ScAddr const & elAddr, ScAddr const & attrAddr)
+bool ScStruct::Append(ScAddr const & elAddr, ScAddr const & attrAddr)
 {
-  check_expr(mContext);
-  if (!hasElement(elAddr))
+  SC_ASSERT(m_context, ());
+  if (!HasElement(elAddr))
   {
-    ScAddr const edge = mContext->createEdge(sc_type_arc_pos_const_perm, mAddr, elAddr);
-    if (edge.isValid())
+    ScAddr const edge = m_context->CreateEdge(sc_type_arc_pos_const_perm, m_addr, elAddr);
+    if (edge.IsValid())
     {
-      ScAddr const edge2 = mContext->createEdge(sc_type_arc_pos_const_perm, attrAddr, edge);
-      if (edge2.isValid())
+      ScAddr const edge2 = m_context->CreateEdge(sc_type_arc_pos_const_perm, attrAddr, edge);
+      if (edge2.IsValid())
         return true;
 
       // cleanup
-      mContext->eraseElement(edge);
+      m_context->EraseElement(edge);
     }
   }
 
   return false;
 }
 
-bool ScStruct::remove(ScAddr const & elAddr)
+bool ScStruct::Remove(ScAddr const & elAddr)
 {
-  check_expr(mContext);
+  SC_ASSERT(m_context, ());
   bool found = false;
-  ScIterator3Ptr iter = mContext->iterator3(mAddr, SC_TYPE(sc_type_arc_pos_const_perm), elAddr);
-  while (iter->next())
+  ScIterator3Ptr iter = m_context->Iterator3(m_addr, SC_TYPE(sc_type_arc_pos_const_perm), elAddr);
+  while (iter->Next())
   {
-    mContext->eraseElement(iter->value(1));
+    m_context->EraseElement(iter->Get(1));
     found = true;
   }
 
   return found;
 }
 
-bool ScStruct::hasElement(ScAddr const & elAddr) const
+bool ScStruct::HasElement(ScAddr const & elAddr) const
 {
-  check_expr(mContext);
-  return mContext->helperCheckArc(mAddr, elAddr, sc_type_arc_pos_const_perm);
+  SC_ASSERT(m_context, ());
+  return m_context->HelperCheckArc(m_addr, elAddr, sc_type_arc_pos_const_perm);
 }
 
 ScStruct & ScStruct::operator << (ScAddr const & elAddr)
 {
-  append(elAddr);
+  Append(elAddr);
   return *this;
 }
 
 ScStruct & ScStruct::operator << (ScTemplateGenResult const & res)
 {
-  size_t const res_num = res.size();
+  size_t const res_num = res.Size();
   for (size_t i = 0; i < res_num; ++i)
-    append(res.mResult[i]);
+    Append(res.m_result[i]);
 
   return *this;
 }
 
 ScStruct & ScStruct::operator >> (ScAddr const & elAddr)
 {
-  remove(elAddr);
+  Remove(elAddr);
   return *this;
 }
 
 ScAddr const & ScStruct::operator * () const
 {
-  return mAddr;
+  return m_addr;
 }
 
-bool ScStruct::isEmpty() const
+bool ScStruct::IsEmpty() const
 {
-  check_expr(mContext);
-  ScIterator3Ptr iter = mContext->iterator3(mAddr, SC_TYPE(sc_type_arc_pos_const_perm), SC_TYPE(0));
-  return !iter->next();
+  SC_ASSERT(m_context, ());
+  ScIterator3Ptr iter = m_context->Iterator3(m_addr, SC_TYPE(sc_type_arc_pos_const_perm), SC_TYPE(0));
+  return !iter->Next();
 }

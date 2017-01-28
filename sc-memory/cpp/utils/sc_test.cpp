@@ -47,16 +47,16 @@ void ScTestUnit::InitMemory()
   params.config_file = "sc-memory.ini";
   params.ext_path = 0;
 
-  ScMemory::logMute();
-  ScMemory::initialize(params);
-  ScMemory::logUnmute();
+  ScMemory::LogMute();
+  ScMemory::Initialize(params);
+  ScMemory::LogUnmute();
 }
 
 void ScTestUnit::ShutdownMemory(bool save)
 {
-  ScMemory::logMute();
-  ScMemory::shutdown(save);
-  ScMemory::logUnmute();
+  ScMemory::LogMute();
+  ScMemory::Shutdown(save);
+  ScMemory::LogUnmute();
 }
 
 void ScTestUnit::RunAll()

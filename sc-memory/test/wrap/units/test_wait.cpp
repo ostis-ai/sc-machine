@@ -14,27 +14,27 @@ namespace
 struct WaitTestData
 {
   WaitTestData(ScMemoryContext & ctx, ScAddr const & addr, ScAddr const & addrFrom = ScAddr())
-    : mContext(ctx)
-    , mAddr(addr)
-    , mAddrFrom(addrFrom)
-    , mIsDone(false)
+    : m_context(ctx)
+    , m_addr(addr)
+    , m_addrFrom(addrFrom)
+    , m_isDone(false)
   {
   }
 
-  ScMemoryContext & mContext;
-  ScAddr mAddr;
-  ScAddr mAddrFrom;
-  bool mIsDone;
+  ScMemoryContext & m_context;
+  ScAddr m_addr;
+  ScAddr m_addrFrom;
+  bool m_isDone;
 };
 gpointer emit_event_thread(gpointer data)
 {
   WaitTestData * d = (WaitTestData*)data;
   g_usleep(500000);	// sleep to run some later
 
-  ScAddr const node = d->mAddrFrom.isValid() ? d->mAddrFrom : d->mContext.createNode(*ScType::NodeConst);
-  ScAddr const edge = d->mContext.createEdge(*ScType::EdgeAccessConstPosPerm, node, d->mAddr);
+  ScAddr const node = d->m_addrFrom.IsValid() ? d->m_addrFrom : d->m_context.CreateNode(*ScType::NodeConst);
+  ScAddr const edge = d->m_context.CreateEdge(*ScType::EdgeAccessConstPosPerm, node, d->m_addr);
 
-  d->mIsDone = edge.isValid();
+  d->m_isDone = edge.IsValid();
 
   return nullptr;
 }
@@ -45,8 +45,8 @@ UNIT_TEST(waiter)
   ScAgentInit(true);
   ScMemoryContext ctx(sc_access_lvl_make_min, "waiter");
 
-  const ScAddr addr = ctx.createNode(ScType::NodeConst);
-  SC_CHECK(addr.isValid(), ());
+  const ScAddr addr = ctx.CreateNode(ScType::NodeConst);
+  SC_CHECK(addr.IsValid(), ());
 
   SUBTEST_START(WaitValid)
   {
@@ -55,7 +55,7 @@ UNIT_TEST(waiter)
     SC_CHECK_NOT_EQUAL(thread, nullptr, ());
 
     SC_CHECK(ScWait<ScEventAddInputEdge>(ctx, addr).Wait(), ("Waiter timeout"));
-    SC_CHECK(data.mIsDone, ("Waiter finished, but flag is false"));
+    SC_CHECK(data.m_isDone, ("Waiter finished, but flag is false"));
   }
   SUBTEST_END()
 
@@ -79,7 +79,7 @@ UNIT_TEST(waiter)
     });
 
     SC_CHECK(waiter.Wait(), ("Waiter timeout"));
-    SC_CHECK(data.mIsDone, ("Waiter finished, but failed"));
+    SC_CHECK(data.m_isDone, ("Waiter finished, but failed"));
   }
   SUBTEST_END()
 
@@ -97,7 +97,7 @@ UNIT_TEST(waiter)
     });
 
     SC_CHECK(!waiter.Wait(), ());
-    SC_CHECK(data.mIsDone, ());
+    SC_CHECK(data.m_isDone, ());
   }
   SUBTEST_END()
 
@@ -110,7 +110,7 @@ UNIT_TEST(waiter)
     ScWaitActionFinished waiter(ctx, addr);
 
     SC_CHECK(waiter.Wait(), ("Waiter timeout"));
-    SC_CHECK(data.mIsDone, ("Waiter finished"));
+    SC_CHECK(data.m_isDone, ("Waiter finished"));
   }
   SUBTEST_END()
 }

@@ -186,12 +186,12 @@ void Class::GenerateCode(std::string const & fileId, std::stringstream & outCode
 
 void Class::GenerateCodeInit(std::stringstream & outCode) const
 {
-  _GENERATE_INIT_CODE("_initInternal", GenerateFieldsInitCode, "")
+  _GENERATE_INIT_CODE("_InitInternal", GenerateFieldsInitCode, "")
 }
 
 void Class::GenerateCodeStaticInit(std::stringstream & outCode) const
 {
-  _GENERATE_INIT_CODE("_initStaticInternal", GenerateStaticFieldsInitCode, "static")
+  _GENERATE_INIT_CODE("_InitStaticInternal", GenerateStaticFieldsInitCode, "static")
 }
 
 void Class::GenerateFieldsInitCode(std::stringstream & outCode) const
@@ -220,7 +220,7 @@ void Class::GenerateStaticFieldsInitCode(std::stringstream & outCode) const
   {
     outCode << "\t";
     Field::GenerateResolveKeynodeCode(m_metaData.GetNativeString(Props::AgentCommandClass),
-                                      "msCmdClass_" + m_displayName,
+                                      "ms_cmdClass_" + m_displayName,
                                       true,
                                       outCode);
     outCode << " \\\n";
@@ -249,10 +249,10 @@ void Class::GenerateDeclarations(std::stringstream & outCode) const
 
     if (isActionAgent)
     {
-      outCode << "\\\n\tvirtual sc_result runImpl(ScAddr const & requestAddr, ScAddr const & resultAddr); ";
+      outCode << "\\\n\tvirtual sc_result RunImpl(ScAddr const & requestAddr, ScAddr const & resultAddr); ";
       listenAddr = "GetCommandInitiatedAddr()";
       eventType = "SC_EVENT_ADD_OUTPUT_ARC";
-      instConstructParams = "msCmdClass_" + m_displayName + ", ";
+      instConstructParams = "ms_cmdClass_" + m_displayName + ", ";
 
       outCode << "\\\nprotected: ";
       outCode << "\\\n\t" << constrCode;
@@ -287,16 +287,16 @@ void Class::GenerateDeclarations(std::stringstream & outCode) const
       outCode << "\\\nprotected: ";
       outCode << "\\\n	" << constrCode;
       outCode << m_displayName << "(char const * name, sc_uint8 accessLvl) : Super(name, accessLvl) {}";
-      outCode << "\\\n	virtual sc_result run(ScAddr const & listenAddr, ScAddr const & edgeAddr, ScAddr const & otherAddr) override; ";
+      outCode << "\\\n	virtual sc_result Run(ScAddr const & listenAddr, ScAddr const & edgeAddr, ScAddr const & otherAddr) override; ";
 
     }
 
     outCode << "\\\nprivate:";
-    outCode << "\\\n	static std::unique_ptr<ScEvent> msEvent;";
-    outCode << "\\\n    static std::unique_ptr<ScMemoryContext> msContext;";
+    outCode << "\\\n	static std::unique_ptr<ScEvent> ms_event;";
+    outCode << "\\\n    static std::unique_ptr<ScMemoryContext> ms_context;";
     if (isActionAgent)
     {
-      outCode << "\\\n	static ScAddr msCmdClass_" << m_displayName << ";";
+      outCode << "\\\n	static ScAddr ms_cmdClass_" << m_displayName << ";";
     }
 
     // static function for handler
@@ -304,18 +304,18 @@ void Class::GenerateDeclarations(std::stringstream & outCode) const
     outCode << "\\\n	static bool handler_emit" << "(ScAddr const & addr, ScAddr const & edgeAddr, ScAddr const & otherAddr)";
     outCode << "\\\n	{";
     outCode << "\\\n		" << m_displayName << " Instance(" << instConstructParams << "\"" << m_displayName << "\", sc_access_lvl_make_min);";
-    outCode << "\\\n		" << "return Instance.run(addr, edgeAddr, otherAddr) == SC_RESULT_OK;";
+    outCode << "\\\n		" << "return Instance.Run(addr, edgeAddr, otherAddr) == SC_RESULT_OK;";
     outCode << "\\\n	}";
 
     // register/unregister
-    outCode << "\\\n	static void registerHandler()";
+    outCode << "\\\n	static void RegisterHandler()";
     outCode << "\\\n	{";
-    outCode << "\\\n		check_expr(!msEvent.get());";
-    outCode << "\\\n		check_expr(!msContext.get());";
-    outCode << "\\\n		msContext.reset(new ScMemoryContext(sc_access_lvl_make_min, \"handler_" << m_displayName << "\"));";
-    outCode << "\\\n		msEvent.reset(new ScEvent(*msContext, " << listenAddr << ", "
+    outCode << "\\\n		SC_ASSERT(!ms_event.get(), ());";
+    outCode << "\\\n		SC_ASSERT(!ms_context.get(), ());";
+    outCode << "\\\n		ms_context.reset(new ScMemoryContext(sc_access_lvl_make_min, \"handler_" << m_displayName << "\"));";
+    outCode << "\\\n		ms_event.reset(new ScEvent(*ms_context, " << listenAddr << ", "
             << eventType << ", &" << m_displayName << "::handler_emit" << "));";
-    outCode << "\\\n        if (msEvent.get())";
+    outCode << "\\\n        if (ms_event.get())";
     outCode << "\\\n        {";
 
     /// TODO: Use common log system
@@ -335,33 +335,33 @@ void Class::GenerateDeclarations(std::stringstream & outCode) const
 
     outCode << "\\\n	}";
 
-    outCode << "\\\n	static void unregisterHandler()";
+    outCode << "\\\n	static void UnregisterHandler()";
     outCode << "\\\n	{";
-    outCode << "\\\n		msEvent.reset();";
-    outCode << "\\\n		msContext.reset();";
+    outCode << "\\\n		ms_event.reset();";
+    outCode << "\\\n		ms_context.reset();";
     outCode << "\\\n	}";
   }
   else if (IsModule())	// overrides for modules
   {
     outCode << "\\\npublic:";
-    outCode << "\\\n	sc_result _initialize()";
+    outCode << "\\\n	sc_result InitializeGenerated()";
     outCode << "\\\n	{";
-    outCode << "\\\n		if (!ScAgentInit())";
+    outCode << "\\\n		if (!ScAgentInit(false))";
     outCode << "\\\n			return SC_RESULT_ERROR;";
 
-    outCode << "\\\n		return initializeImpl();";
+    outCode << "\\\n		return InitializeImpl();";
     outCode << "\\\n	}";
 
-    outCode << "\\\n	sc_result _shutdown()";
+    outCode << "\\\n	sc_result ShutdownGenerated()";
     outCode << "\\\n	{";
-    outCode << "\\\n		return shutdownImpl();";
+    outCode << "\\\n		return ShutdownImpl();";
     outCode << "\\\n	}";
 
     std::string loadPriority;
     if (!m_metaData.GetPropertySafe(Props::LoadOrder, loadPriority))
       loadPriority = "1000";
 
-    outCode << "\\\n	sc_uint32 _getLoadPriority()";
+    outCode << "\\\n	sc_uint32 GetLoadPriorityGenerated()";
     outCode << "\\\n	{";
     outCode << "\\\n		return " << loadPriority << ";";
     outCode << "\\\n	}";
@@ -372,11 +372,11 @@ void Class::GenerateImpl(std::stringstream & outCode) const
 {
   if (IsAgent())
   {
-    outCode << "\\\nstd::unique_ptr<ScEvent> " << m_displayName << "::msEvent;";
-    outCode << "\\\nstd::unique_ptr<ScMemoryContext> " << m_displayName << "::msContext;";
+    outCode << "\\\nstd::unique_ptr<ScEvent> " << m_displayName << "::ms_event;";
+    outCode << "\\\nstd::unique_ptr<ScMemoryContext> " << m_displayName << "::ms_context;";
     if (IsActionAgent())
     {
-      outCode << "\\\nScAddr " << m_displayName << "::msCmdClass_" << m_displayName << ";";
+      outCode << "\\\nScAddr " << m_displayName << "::ms_cmdClass_" << m_displayName << ";";
     }
   }
 }

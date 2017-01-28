@@ -19,13 +19,13 @@ public:
   _SC_EXTERN void PrintStatus(size_t passedSteps);
 
 private:
-  std::string mTitle;
-  size_t mWidth;
-  size_t mStepsNum;
-  size_t mPassedSteps;
-  bool mIsComplete : 1;
-  bool mIsFirst : 1;
-  size_t mPrevPercent;
+  std::string m_title;
+  size_t m_width;
+  size_t m_stepsNum;
+  size_t m_passedSteps;
+  bool m_isComplete : 1;
+  bool m_isFirst : 1;
+  size_t m_prevPercent;
 };
 
 } // namespace utils

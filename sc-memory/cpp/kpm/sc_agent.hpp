@@ -29,10 +29,10 @@ class ScAgent : public ScObject
   _SC_EXTERN virtual ~ScAgent();
 
 protected:
-  _SC_EXTERN virtual sc_result run(ScAddr const & listenAddr, ScAddr const & edgeAddr, ScAddr const & otherAddr);
+  _SC_EXTERN virtual sc_result Run(ScAddr const & listenAddr, ScAddr const & edgeAddr, ScAddr const & otherAddr);
 
 protected:
-  ScMemoryContext mMemoryCtx;
+  ScMemoryContext m_memoryCtx;
 };
 
 class ScAgentAction : public ScAgent
@@ -48,11 +48,11 @@ class ScAgentAction : public ScAgent
   _SC_EXTERN virtual ~ScAgentAction();
 
 protected:
-  _SC_EXTERN virtual sc_result run(ScAddr const & listenAddr, ScAddr const & edgeAddr, ScAddr const & otherAddr) override;
+  _SC_EXTERN virtual sc_result Run(ScAddr const & listenAddr, ScAddr const & edgeAddr, ScAddr const & otherAddr) override;
 
-  _SC_EXTERN ScAddr getParam(ScAddr const & cmdAddr, ScAddr const & relationAddr, sc_type paramType);
+  _SC_EXTERN ScAddr GetParam(ScAddr const & cmdAddr, ScAddr const & relationAddr, ScType const & paramType);
 
-  _SC_EXTERN virtual sc_result runImpl(ScAddr const & requestAddr, ScAddr const & resultAddr) = 0;
+  _SC_EXTERN virtual sc_result RunImpl(ScAddr const & requestAddr, ScAddr const & resultAddr) = 0;
 
 public:
   static _SC_EXTERN ScAddr const & GetCommandInitiatedAddr();
@@ -61,20 +61,20 @@ public:
   static _SC_EXTERN ScAddr const & GetResultCodeAddr(sc_result resCode);
 
 protected:
-  ScAddr mCmdClassAddr;
+  ScAddr m_cmdClassAddr;
 
 private:
   SC_PROPERTY(Keynode("command_initiated"), ForceCreate)
-  static ScAddr msCommandInitiatedAddr;
+  static ScAddr ms_commandInitiatedAddr;
 
   SC_PROPERTY(Keynode("command_in_progress"), ForceCreate)
-  static ScAddr msCommandProgressdAddr;
+  static ScAddr ms_commandProgressdAddr;
 
   SC_PROPERTY(Keynode("command_finished"), ForceCreate)
-  static ScAddr msCommandFinishedAddr;
+  static ScAddr ms_commandFinishedAddr;
 
   SC_PROPERTY(Keynode("nrel_result"), ForceCreate)
-  static ScAddr msNrelResult;
+  static ScAddr ms_nrelResult;
 
   // result codes
   SC_PROPERTY(Keynode("sc_result_ok"), ForceCreate)
@@ -103,9 +103,6 @@ private:
 
   SC_PROPERTY(Keynode("sc_result_error_no_read_rights"), ForceCreate)
   static ScAddr ms_keynodeScResultErrorNoReadRights;
-
-private:
-  ScAddr mCmdAddr;
 };
 
 #define AGENT_NAME_TYPE(__Name__) __Name__##Type
@@ -115,16 +112,16 @@ private:
 
 #define SC_AGENT_IMPLEMENTATION(__AgentName__) \
   SC_COMBINE(ScFileID, _, __AgentName__, _impl) \
-  sc_result __AgentName__::run(ScAddr const & listenAddr, ScAddr const & edgeAddr, ScAddr const & otherAddr)
+  sc_result __AgentName__::Run(ScAddr const & listenAddr, ScAddr const & edgeAddr, ScAddr const & otherAddr)
 
 #define SC_AGENT_ACTION_IMPLEMENTATION(__AgentName__) \
   SC_COMBINE(ScFileID, _, __AgentName__, _impl) \
-  sc_result __AgentName__::runImpl(ScAddr const & requestAddr, ScAddr const & resultAddr)
+  sc_result __AgentName__::RunImpl(ScAddr const & requestAddr, ScAddr const & resultAddr)
 
 
 
 #define SC_AGENT_REGISTER(__AgentName__) \
   SC_OBJECT_INIT_GLOBAL_CALL(__AgentName__) \
-  __AgentName__::registerHandler();
+  __AgentName__::RegisterHandler();
 
-#define SC_AGENT_UNREGISTER(__AgentName__)	__AgentName__::unregisterHandler();
+#define SC_AGENT_UNREGISTER(__AgentName__)	__AgentName__::UnregisterHandler();

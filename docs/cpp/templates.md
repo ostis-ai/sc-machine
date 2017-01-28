@@ -37,7 +37,7 @@ There are some methods available for `ScTemplate` class:
       <br/>
 <pre><code class="cpp hljs">
 ScTemplate templ;
-templ.triple(
+templ.Triple(
   param1,
   ScType::EDGE_ACCESS_VAR_POS_PERM,
   ScType::NODE_VAR
@@ -58,7 +58,7 @@ templ.triple(
     <br/>
 <pre><code class="cpp hljs">
 ScTemplate templ;
-templ.triple(
+templ.Triple(
   param1,
   ScType::EDGE_ACCESS_VAR_POS_PERM,
   param3
@@ -78,7 +78,7 @@ templ.triple(
     <br/>
 <pre><code class="cpp hljs">
 ScTemplate templ;
-templ.triple(
+templ.Triple(
   ScType::NODE_VAR,
   ScType::EDGE_ACCESS_VAR_POS_PERM,
   param3
@@ -100,12 +100,12 @@ ScAddr device_addr, device_enabled_addr;
 ...
 
 ScTemplate templ;
-templ.triple(
+templ.Triple(
   device_addr,    // sc-addr of device node
   ScType::EDGE_ACCESS_VAR_POS_PERM,
   ScType::NODE_VAR >> "_device_instance"
 );
-templ.triple(
+templ.Triple(
   device_enabled_addr,    // sc-addr of device_enabled node
   ScType::EDGE_ACCESS_VAR_POS_PERM,
   "_device_instance"
@@ -122,12 +122,12 @@ So if you want to use the same element `_x` in different triples, and you doesn'
 
 ```cpp
 ScTemplateTempl;
-templ.triple(
+templ.Triple(
   any_addr, // sc-addr of known sc-element
   ScType::EDGE_ACCESS_VAR_POS_PERM,  // type of unknown edge
   ScType::NODE_VAR >> "_x"  // type and name for an unknown sc-element
 );
-templ.triple(
+templ.Triple(
   "_x",  // say that is the same element as the last on in a previous triple
   ScType::EDGE_ACCESS_VAR_POS_PERM,  // type of unknown edge
   ScType::NODE_VAR  // type of unknown sc-element

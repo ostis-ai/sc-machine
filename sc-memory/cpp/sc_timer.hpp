@@ -30,6 +30,6 @@ private:
   }
 
 private:
-  TimeValue mStartTime;
-  double mTimeOutSec;
+  TimeValue m_startTime;
+  double m_timeOutSec;
 };

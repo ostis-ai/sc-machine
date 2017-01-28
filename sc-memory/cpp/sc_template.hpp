@@ -15,109 +15,109 @@
 
 struct ScTemplateItemValue
 {
-  typedef enum
+  enum class Type : uint8_t
   {
-    VT_None,
-    VT_Type,
-    VT_Addr,
-    VT_Replace
-  } eType;
+    None,
+    Type,
+    Addr,
+    Replace
+  };
 
   ScTemplateItemValue()
   {
-    mItemType = VT_None;
+    m_itemType = Type::Type;
   }
 
   ScTemplateItemValue(ScAddr const & addr, char const * replName = 0)
   {
-    setAddr(addr, replName);
+    SetAddr(addr, replName);
   }
 
   ScTemplateItemValue(ScType const & type, char const * replName = 0)
   {
-    setType(type, replName);
+    SetType(type, replName);
   }
 
   ScTemplateItemValue(char const * name)
   {
-    setReplacement(name);
+    SetReplacement(name);
   }
 
   ScTemplateItemValue(std::string const & name)
   {
-    setReplacement(name.c_str());
+    SetReplacement(name.c_str());
   }
 
-  inline bool isAddr() const
+  inline bool IsAddr() const
   {
-    return (mItemType == VT_Addr);
+    return (m_itemType == Type::Addr);
   }
 
-  inline bool isReplacement() const
+  inline bool IsReplacement() const
   {
-    return (mItemType == VT_Replace);
+    return (m_itemType == Type::Replace);
   }
 
-  inline bool isType() const
+  inline bool IsType() const
   {
-    return (mItemType == VT_Type);
+    return (m_itemType == Type::Type);
   }
 
-  inline bool isFixed() const
+  inline bool IsFixed() const
   {
-    return (isAddr() || isReplacement());
+    return (IsAddr() || IsReplacement());
   }
 
-  inline bool isAssign() const
+  inline bool IsAssign() const
   {
-    return (mItemType == VT_Type);
+    return (m_itemType == Type::Type);
   }
 
-  inline bool isItemType(eType type) const
+  inline bool IsItemType(Type type) const
   {
-    return (mItemType == type);
+    return (m_itemType == type);
   }
 
-  void setAddr(ScAddr const & addr, char const * replName = 0)
+  void SetAddr(ScAddr const & addr, char const * replName = 0)
   {
-    mItemType = VT_Addr;
-    mAddrValue = addr;
+    m_itemType = Type::Addr;
+    m_addrValue = addr;
     if (replName)
-      mReplacementName = replName;
+      m_replacementName = replName;
   }
 
-  void setType(ScType const & type, char const * replName = 0)
+  void SetType(ScType const & type, char const * replName = 0)
   {
-    mItemType = VT_Type;
-    mTypeValue = type;
+    m_itemType = Type::Type;
+    m_typeValue = type;
     if (replName)
-      mReplacementName = replName;
+      m_replacementName = replName;
   }
 
-  void setReplacement(char const * name)
+  void SetReplacement(char const * name)
   {
-    mItemType = VT_Replace;
+    m_itemType = Type::Replace;
     if (name)
-      mReplacementName = name;
+      m_replacementName = name;
   }
 
   SC_DEPRECATED(0.3.0, "Use ScTemplateItemValue::isFixed instead")
-  bool canBeAddr() const
+  bool CanBeAddr() const
   {
-    return mItemType == VT_Addr || mItemType == VT_Replace;
+    return m_itemType == Type::Addr || m_itemType == Type::Replace;
   }
 
   SC_DEPRECATED(0.3.0, "Use ScTemplateItemValue::isAssign instead")
-  bool canBeType() const
+  bool CanBeType() const
   {
-    return mItemType == VT_Type;
+    return m_itemType == Type::Type;
   }
 
-  eType mItemType;
+  Type m_itemType;
 
-  ScAddr mAddrValue;
-  ScType mTypeValue;
-  std::string mReplacementName;
+  ScAddr m_addrValue;
+  ScType m_typeValue;
+  std::string m_replacementName;
 };
 
 class ScTemplateConstr3
@@ -125,57 +125,57 @@ class ScTemplateConstr3
   friend class ScTemplate;
 public:
   ScTemplateConstr3(ScTemplateItemValue const & param1, ScTemplateItemValue const & param2, ScTemplateItemValue const & param3, size_t idx)
-    : mIndex(idx)
+    : m_index(idx)
   {
-    mValues[0] = param1;
-    mValues[1] = param2;
-    mValues[2] = param3;
+    m_values[0] = param1;
+    m_values[1] = param2;
+    m_values[2] = param3;
   }
 
-  ScTemplateItemValue const * getValues() const
+  ScTemplateItemValue const * GetValues() const
   {
-    return &(mValues[0]);
+    return &(m_values[0]);
   }
 
-  size_t countFixed() const
+  size_t CountFixed() const
   {
-    return countCommonT([](ScTemplateItemValue const & value) {
-      return value.isFixed();
+    return CountCommonT([](ScTemplateItemValue const & value) {
+      return value.IsFixed();
     });
   }
 
-  size_t countAddrs() const
+  size_t CountAddrs() const
   {
-    return countCommonT([](ScTemplateItemValue const & value) {
-      return value.isAddr();
+    return CountCommonT([](ScTemplateItemValue const & value) {
+      return value.IsAddr();
     });
   }
-  size_t countReplacements() const
+  size_t CountReplacements() const
   {
-    return countCommonT([](ScTemplateItemValue const & value) {
-      return value.isReplacement();
+    return CountCommonT([](ScTemplateItemValue const & value) {
+      return value.IsReplacement();
     });
   }
 
   template <typename Func>
-  size_t countCommonT(Func f) const
+  size_t CountCommonT(Func f) const
   {
     size_t result = 0;
     for (size_t i = 0; i < 3; ++i)
     {
-      if (f(mValues[i]))
+      if (f(m_values[i]))
         ++result;
     }
     return result;
   }
 
 protected:
-  ScTemplateItemValue mValues[3];
+  ScTemplateItemValue m_values[3];
   /* Store original index in template. Because when perform search or generation
      * we sort triples in sutable for operation order.
      * Used to construct result
      */
-  size_t mIndex;
+  size_t m_index;
 };
 
 template <typename Type>
@@ -214,15 +214,15 @@ public:
 
   _SC_EXTERN ScTemplateGenParams & add(std::string const & varIdtf, ScAddr const & value)
   {
-    assert(mValues.find(varIdtf) == mValues.end());
-    mValues[varIdtf] = value;
+    assert(m_values.find(varIdtf) == m_values.end());
+    m_values[varIdtf] = value;
     return *this;
   }
 
-  _SC_EXTERN bool get(std::string const & varIdtf, ScAddr & outResult) const
+  _SC_EXTERN bool Get(std::string const & varIdtf, ScAddr & outResult) const
   {
-    tParamsMap::const_iterator it = mValues.find(varIdtf);
-    if (it != mValues.end())
+    auto const it = m_values.find(varIdtf);
+    if (it != m_values.end())
     {
       outResult = it->second;
       return true;
@@ -233,14 +233,14 @@ public:
 
   _SC_EXTERN bool empty() const
   {
-    return mValues.empty();
+    return m_values.empty();
   }
 
   _SC_EXTERN static const ScTemplateGenParams Empty;
 
 protected:
-  typedef std::map<std::string, ScAddr> tParamsMap;
-  tParamsMap mValues;
+  using ParamsMap = std::map<std::string, ScAddr>;
+  ParamsMap m_values;
 };
 
 class ScTemplate final
@@ -251,9 +251,9 @@ class ScTemplate final
   friend class ScTemplateBuilder;
 
 public:
-  typedef std::map<std::string, size_t> tReplacementsMap;
-  typedef std::vector<ScTemplateConstr3> tTemplateConstr3Vector;
-  typedef std::vector<size_t> tProcessOrder;
+  using ReplacementsMap = std::map<std::string, size_t>;
+  using TemplateConstr3Vector = std::vector<ScTemplateConstr3>;
+  using ProcessOrder = std::vector<size_t>;
 
   _SC_EXTERN explicit ScTemplate(size_t BufferedNum = 16);
 
@@ -262,18 +262,18 @@ public:
   _SC_EXTERN ScTemplate & operator() (ScTemplateItemValue const & param1, ScTemplateItemValue const & param2, ScTemplateItemValue const & param3,
                                       ScTemplateItemValue const & param4, ScTemplateItemValue const & param5);
 
-  _SC_EXTERN void clear();
+  _SC_EXTERN void Clear();
 
-  bool isSearchCacheValid() const;
-  bool isGenerateCacheValid() const;
+  bool IsSearchCacheValid() const;
+  bool IsGenerateCacheValid() const;
 
-  _SC_EXTERN bool hasReplacement(std::string const & repl) const;
+  _SC_EXTERN bool HasReplacement(std::string const & repl) const;
 
   /** Add construction:
      *          param2
      * param1 ----------> param3
      */
-  _SC_EXTERN ScTemplate & triple(ScTemplateItemValue const & param1, ScTemplateItemValue const & param2, ScTemplateItemValue const & param3);
+  _SC_EXTERN ScTemplate & Triple(ScTemplateItemValue const & param1, ScTemplateItemValue const & param2, ScTemplateItemValue const & param3);
 
   /** Adds template:
      *           param2
@@ -286,36 +286,36 @@ public:
      * Equal to two calls of triple, so this template add 6 items to result (NOT 5), to minimize
      * possible abuse, use result name mapping, and get result by names
      */
-  _SC_EXTERN ScTemplate & tripleWithRelation(ScTemplateItemValue const & param1, ScTemplateItemValue const & param2, ScTemplateItemValue const & param3,
+  _SC_EXTERN ScTemplate & TripleWithRelation(ScTemplateItemValue const & param1, ScTemplateItemValue const & param2, ScTemplateItemValue const & param3,
                                              ScTemplateItemValue const & param4, ScTemplateItemValue const & param5);
 
 protected:
   // Begin: calls by memory context
-  bool generate(ScMemoryContext & ctx, ScTemplateGenResult & result, ScTemplateGenParams const & params, ScTemplateResultCode * errorCode = nullptr) const;
-  bool search(ScMemoryContext & ctx, ScTemplateSearchResult & result) const;
-  bool searchInStruct(ScMemoryContext & ctx, ScAddr const & scStruct, ScTemplateSearchResult & result) const;
+  bool Generate(ScMemoryContext & ctx, ScTemplateGenResult & result, ScTemplateGenParams const & params, ScTemplateResultCode * errorCode = nullptr) const;
+  bool Search(ScMemoryContext & ctx, ScTemplateSearchResult & result) const;
+  bool SearchInStruct(ScMemoryContext & ctx, ScAddr const & scStruct, ScTemplateSearchResult & result) const;
 
   // Builds template based on template in sc-memory
-  bool fromScTemplate(ScMemoryContext & ctx, ScAddr const & scTemplateAddr);
+  bool FromScTemplate(ScMemoryContext & ctx, ScAddr const & scTemplateAddr);
   // End: calls by memory context
 
 private:
   /** Generates node or link element in memory, depending on type.
      * If type isn't a node or link, then return empty addr
      */
-  ScAddr createNodeLink(ScMemoryContext & ctx, ScType const & type) const;
+  ScAddr CreateNodeLink(ScMemoryContext & ctx, ScType const & type) const;
 
   /** Resolve ScAddr for specified ScTemplateItemValue.
      * If ScAddr not resolved, then returns empty addr.
      */
-  ScAddr resolveAddr(ScMemoryContext & ctx, ScTemplateItemValue const & itemValue) const;
+  ScAddr ResolveAddr(ScMemoryContext & ctx, ScTemplateItemValue const & itemValue) const;
 
 protected:
   // Store mapping of name to index in result vector
-  tReplacementsMap mReplacements;
+  ReplacementsMap m_replacements;
   // Store construction (triples)
-  tTemplateConstr3Vector mConstructions;
-  size_t mCurrentReplPos;
+  TemplateConstr3Vector m_constructions;
+  size_t m_currentReplPos;
 
   /* Caches (used to prevent processing order update on each search/gen)
      * Flag mIsCacheValid == false - request to update cache. We doesn't use two flags,
@@ -324,9 +324,9 @@ protected:
      * Caches are mutable, to prevent changes of template in search and generation, they can asses just a cache.
      * That because template passed into them by const reference.
      */
-  bool mIsCacheValid : 1;
-  mutable tProcessOrder mSearchCachedOrder;
-  mutable tProcessOrder mGenerateCachedOrder;
+  bool m_isCacheValid : 1;
+  mutable ProcessOrder m_searchCachedOrder;
+  mutable ProcessOrder m_generateCachedOrder;
 };
 
 
@@ -341,44 +341,44 @@ public:
 
   ScAddr const & operator [] (std::string const & name) const
   {
-    ScTemplate::tReplacementsMap::const_iterator it = mReplacements.find(name);
-    if (it != mReplacements.end())
+    auto const it = m_replacements.find(name);
+    if (it != m_replacements.end())
     {
-      if (it->second >= mResult.size())
-        error("Invalid replacement " + name);
+      if (it->second >= m_result.size())
+        SC_THROW_EXCEPTION(utils::ExceptionInvalidState, "Invalid replacement " + name);
 
-      return mResult[it->second];
+      return m_result[it->second];
     }
     else
     {
-      error("Can't find replacement " + name);
+      SC_THROW_EXCEPTION(utils::ExceptionItemNotFound, "Can't find replacement " + name);
     }
 
     static ScAddr empty;
     return empty;
   }
 
-  SC_DEPRECATED(0.3.0, "Use ScTemplateGenResult::size instead")
-  inline size_t getSize() const
+  SC_DEPRECATED(0.3.0, "Use ScTemplateGenResult::Size instead")
+  inline size_t GetSize() const
   {
-    return mResult.size();
+    return m_result.size();
   }
 
-  inline size_t size() const
+  inline size_t Size() const
   {
-    return mResult.size();
+    return m_result.size();
   }
 
   ScAddr const & operator[] (size_t index)
   {
-    check_expr(index < size());
-    return mResult[index];
+    SC_ASSERT(index < Size(), ());
+    return m_result[index];
   }
 
 protected:
-  tAddrVector mResult;
+  ScAddrVector m_result;
 
-  ScTemplate::tReplacementsMap mReplacements;
+  ScTemplate::ReplacementsMap m_replacements;
 };
 
 class ScTemplateSearchResultItem
@@ -387,9 +387,9 @@ class ScTemplateSearchResultItem
   friend class ScTemplateSearchResult;
 
 protected:
-  ScTemplateSearchResultItem(tAddrVector const * results, ScTemplate::tReplacementsMap const * replacements)
-    : mResults(results)
-    , mReplacements(replacements)
+  ScTemplateSearchResultItem(ScAddrVector const * results, ScTemplate::ReplacementsMap const * replacements)
+    : m_results(results)
+    , m_replacements(replacements)
   {
   }
 
@@ -397,28 +397,28 @@ public:
 
   inline ScAddr const & operator[] (std::string const & name) const
   {
-    ScTemplate::tReplacementsMap::const_iterator it = mReplacements->find(name);
-    check_expr(it != mReplacements->end());
-    check_expr(it->second < mResults->size());
-    return (*mResults)[it->second];
+    auto const it = m_replacements->find(name);
+    SC_ASSERT(it != m_replacements->end(), ());
+    SC_ASSERT(it->second < m_results->size(), ());
+    return (*m_results)[it->second];
   }
 
   inline ScAddr const & operator[] (size_t index) const
   {
-    check_expr(index < size());
-    return (*mResults)[index];
+    SC_ASSERT(index < Size(), ());
+    return (*m_results)[index];
   }
 
-  inline size_t size() const
+  inline size_t Size() const
   {
-    check_expr(mResults != nullptr);
-    return mResults->size();
+    SC_ASSERT(m_results != nullptr, ());
+    return m_results->size();
   }
 
 
 protected:
-  tAddrVector const * mResults;
-  ScTemplate::tReplacementsMap const * mReplacements;
+  ScAddrVector const * m_results;
+  ScTemplate::ReplacementsMap const * m_replacements;
 };
 
 class ScTemplateSearchResult
@@ -426,17 +426,16 @@ class ScTemplateSearchResult
   friend class ScTemplateSearch;
 
 public:
-  inline size_t getSize() const
-  {
-    return mResults.size();
-  }
+  SC_DEPRECATED(0.3.0, "Use ScTemplateSearchResult::Size instead")
+  inline size_t GetSize() const { return Size(); }
+  inline size_t Size() const { return m_results.size(); }
 
-  inline bool getResultItemSave(size_t idx, ScTemplateSearchResultItem & outItem) const
+  inline bool GetResultItemSave(size_t idx, ScTemplateSearchResultItem & outItem) const
   {
-    if (idx < mResults.size())
+    if (idx < m_results.size())
     {
-      outItem.mReplacements = &mReplacements;
-      outItem.mResults = &(mResults[idx]);
+      outItem.m_replacements = &m_replacements;
+      outItem.m_results = &(m_results[idx]);
       return true;
     }
 
@@ -445,18 +444,18 @@ public:
 
   inline ScTemplateSearchResultItem operator [] (size_t idx) const
   {
-    check_expr(idx < mResults.size());
-    return ScTemplateSearchResultItem(&(mResults[idx]), &mReplacements);
+    SC_ASSERT(idx < m_results.size(), ());
+    return ScTemplateSearchResultItem(&(m_results[idx]), &m_replacements);
   }
 
   inline void clear()
   {
-    mResults.clear();
-    mReplacements.clear();
+    m_results.clear();
+    m_replacements.clear();
   }
 
 protected:
-  typedef std::vector<tAddrVector> tSearchResults;
-  tSearchResults mResults;
-  ScTemplate::tReplacementsMap mReplacements;
+  using SearchResults = std::vector<ScAddrVector>;
+  SearchResults m_results;
+  ScTemplate::ReplacementsMap m_replacements;
 };

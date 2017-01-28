@@ -19,36 +19,36 @@ UNIT_TEST(streams)
 
     ScStream stream((sc_char*)buff, length, SC_STREAM_FLAG_READ);
 
-    SC_CHECK(stream.isValid(), ());
-    SC_CHECK(stream.hasFlag(SC_STREAM_FLAG_READ), ());
-    SC_CHECK(stream.hasFlag(SC_STREAM_FLAG_SEEK), ());
-    SC_CHECK(stream.hasFlag(SC_STREAM_FLAG_TELL), ());
-    SC_CHECK_NOT(stream.eof(), ());
-    SC_CHECK_EQUAL(stream.pos(), 0, ());
-    SC_CHECK_EQUAL(stream.size(), length, ());
+    SC_CHECK(stream.IsValid(), ());
+    SC_CHECK(stream.HasFlag(SC_STREAM_FLAG_READ), ());
+    SC_CHECK(stream.HasFlag(SC_STREAM_FLAG_SEEK), ());
+    SC_CHECK(stream.HasFlag(SC_STREAM_FLAG_TELL), ());
+    SC_CHECK_NOT(stream.Eof(), ());
+    SC_CHECK_EQUAL(stream.Pos(), 0, ());
+    SC_CHECK_EQUAL(stream.Size(), length, ());
 
     for (int i = 0; i < length; ++i)
     {
       unsigned char c;
       sc_uint32 readBytes;
-      SC_CHECK(stream.read((sc_char*)&c, sizeof(c), readBytes), ());
+      SC_CHECK(stream.Read((sc_char*)&c, sizeof(c), readBytes), ());
       SC_CHECK_EQUAL(c, buff[i], ());
     }
 
-    SC_CHECK(stream.eof(), ());
-    SC_CHECK_EQUAL(stream.pos(), length, ());
+    SC_CHECK(stream.Eof(), ());
+    SC_CHECK_EQUAL(stream.Pos(), length, ());
 
     // random seek
     static int const seekOpCount = 1000000;
     for (int i = 0; i < seekOpCount; ++i)
     {
       sc_uint32 pos = rand() % length;
-      SC_CHECK(stream.seek(SC_STREAM_SEEK_SET, pos), ());
+      SC_CHECK(stream.Seek(SC_STREAM_SEEK_SET, pos), ());
 
 
       unsigned char c;
       sc_uint32 readBytes;
-      SC_CHECK(stream.read((sc_char*)&c, sizeof(c), readBytes), ());
+      SC_CHECK(stream.Read((sc_char*)&c, sizeof(c), readBytes), ());
       SC_CHECK_EQUAL(c, buff[pos], ());
     }
   }

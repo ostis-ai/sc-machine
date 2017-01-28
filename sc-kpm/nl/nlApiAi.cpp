@@ -26,14 +26,18 @@ SC_AGENT_ACTION_IMPLEMENTATION(AApiAiParseUserTextAgent)
   curl_global_init(CURL_GLOBAL_ALL);
 
   // get text content of argument
-  ScIterator3Ptr iter = mMemoryCtx.iterator3(requestAddr, SC_TYPE(sc_type_arc_pos_const_perm), SC_TYPE(sc_type_link));
-  if (iter->next())
+  ScIterator3Ptr iter = m_memoryCtx.Iterator3(
+    requestAddr,
+    ScType::EdgeAccessConstPosPerm,
+    ScType::Link);
+
+  if (iter->Next())
   {
     ScStream stream;
-    if (mMemoryCtx.getLinkContent(iter->value(2), stream))
+    if (m_memoryCtx.GetLinkContent(iter->Get(2), stream))
     {
       std::string text;
-      if (ScStreamConverter::streamToString(stream, text))
+      if (ScStreamConverter::StreamToString(stream, text))
       {
         ApiAiRequestParams params;
         params.m_queryString = text;
@@ -47,42 +51,43 @@ SC_AGENT_ACTION_IMPLEMENTATION(AApiAiParseUserTextAgent)
           // try to find template for specified action
           const ApiAiRequestResult & result = request.getResult();
 
-          std::string actionName = utils::StringUtils::replaceAll(result.GetAction(), ".", "_");
+          std::string actionName = utils::StringUtils::ReplaceAll(result.GetAction(), ".", "_");
 
           ScAddr actionAddr;
-          if (mMemoryCtx.helperFindBySystemIdtf(std::string("apiai_action_") + actionName, actionAddr))
+          if (m_memoryCtx.HelperFindBySystemIdtf(std::string("apiai_action_") + actionName, actionAddr))
           {
-            ScIterator5Ptr iterTempl = mMemoryCtx.iterator5(
+            ScIterator5Ptr iterTempl = m_memoryCtx.Iterator5(
                   actionAddr,
                   *ScType::EdgeDCommonConst,
                   *ScType::NodeConstStruct,
                   *ScType::EdgeAccessConstPosPerm,
                   ms_nrelCommonTemplate);
-            if (iterTempl->next())
+
+            if (iterTempl->Next())
             {
               ScTemplate templ;
-              if (mMemoryCtx.helperBuildTemplate(templ, iterTempl->value(2)))
+              if (m_memoryCtx.HelperBuildTemplate(templ, iterTempl->Get(2)))
               {
                 // setup template parameters
                 ScTemplateGenParams params;
 
-                if (templ.hasReplacement("_apiai_location"))
+                if (templ.HasReplacement("_apiai_location"))
                 {
                   /// TODO: replace location by real city addr, or something else
                 }
 
-                if (templ.hasReplacement("_lang"))
+                if (templ.HasReplacement("_lang"))
                 {
                   /// TOOD: replace with current user language
                 }
 
-                if (templ.hasReplacement("_apiai_speech"))
+                if (templ.HasReplacement("_apiai_speech"))
                 {
-                  ScAddr const speechAddr = mMemoryCtx.createLink();
+                  ScAddr const speechAddr = m_memoryCtx.CreateLink();
 
                   std::string const & speech = result.GetFullfillment().getSpeech();
                   ScStream stream(speech.c_str(), (uint32_t)speech.size(), SC_STREAM_FLAG_READ);
-                  if (!mMemoryCtx.setLinkContent(speechAddr, stream))
+                  if (!m_memoryCtx.SetLinkContent(speechAddr, stream))
                     return SC_RESULT_ERROR_IO;
 
                   params.add("_apiai_speech", speechAddr);
@@ -92,9 +97,8 @@ SC_AGENT_ACTION_IMPLEMENTATION(AApiAiParseUserTextAgent)
 
                 // generate with params
                 ScTemplateGenResult genResult;
-                if (!mMemoryCtx.helperGenTemplate(templ, genResult, params))
+                if (!m_memoryCtx.HelperGenTemplate(templ, genResult, params))
                   return SC_RESULT_ERROR_INVALID_STATE;
-
               }
             }
           }

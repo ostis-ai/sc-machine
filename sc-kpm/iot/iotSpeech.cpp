@@ -17,110 +17,88 @@ namespace iot
 
 SC_AGENT_ACTION_IMPLEMENTATION(AGenerateTextByTemplate)
 {
-  ScIterator5Ptr itCmd = mMemoryCtx.iterator5(
-        requestAddr,
-        SC_TYPE(sc_type_arc_pos_const_perm),
-        SC_TYPE(sc_type_node | sc_type_const),
-        SC_TYPE(sc_type_arc_pos_const_perm),
-        Keynodes::rrel_1
-        );
-
-  if (!itCmd->next())
+  ScAddr const commandInstAddr = GetParam(requestAddr, Keynodes::rrel_1, ScType::NodeConst);
+  if (!commandInstAddr.IsValid())
     return SC_RESULT_ERROR_INVALID_PARAMS;
 
   // got command addr
   ScAddr commandAddr;
-  ScAddr const commandInstAddr = itCmd->value(2);
-  ScIterator3Ptr itCommandClass = mMemoryCtx.iterator3(
-        SC_TYPE(sc_type_node | sc_type_const | sc_type_node_class),
-        SC_TYPE(sc_type_arc_pos_const_perm),
+  ScIterator3Ptr itCommandClass = m_memoryCtx.Iterator3(
+        ScType::NodeConstClass,
+        ScType::EdgeAccessConstPosPerm,
         commandInstAddr);
-  while (itCommandClass->next())
+
+  while (itCommandClass->Next())
   {
-    if (mMemoryCtx.helperCheckArc(Keynodes::command, itCommandClass->value(0), SC_TYPE(sc_type_arc_pos_const_perm)))
+    if (m_memoryCtx.HelperCheckEdge(Keynodes::command, itCommandClass->Get(0), ScType::EdgeAccessConstPosPerm))
     {
-      commandAddr = itCommandClass->value(0);
+      commandAddr = itCommandClass->Get(0);
       break;
     }
   }
 
-  if (!commandAddr.isValid())
+  if (!commandAddr.IsValid())
     return SC_RESULT_ERROR_INVALID_STATE;
 
-  ScIterator5Ptr itLang = mMemoryCtx.iterator5(
-        requestAddr,
-        SC_TYPE(sc_type_arc_pos_const_perm),
-        SC_TYPE(sc_type_node | sc_type_const),
-        SC_TYPE(sc_type_arc_pos_const_perm),
-        Keynodes::rrel_2);
-
-  if (!itLang->next())
+  
+  ScAddr const langAddr = GetParam(requestAddr, Keynodes::rrel_2, ScType::NodeConst);
+  if (!langAddr.IsValid())
     return SC_RESULT_ERROR_INVALID_PARAMS;
-
-  ScAddr const langAddr = itLang->value(2);
-
-  ScIterator5Ptr itAttr = mMemoryCtx.iterator5(
-        requestAddr,
-        SC_TYPE(sc_type_arc_pos_const_perm),
-        SC_TYPE(sc_type_node | sc_type_const),
-        SC_TYPE(sc_type_arc_pos_const_perm),
-        Keynodes::rrel_3);
-
-  if (!itAttr->next())
+  
+  ScAddr const attrAddr = GetParam(requestAddr, Keynodes::rrel_3, ScType::NodeConst);
+  if (!attrAddr.IsValid())
     return SC_RESULT_ERROR_INVALID_PARAMS;
-
-  ScAddr const attrAddr = itAttr->value(2);
 
   /// TODO: make commond method to get arguments with custom role
 
   // check if there are speech templates for a specified command
-  ScIterator5Ptr itTemplatesSet = mMemoryCtx.iterator5(
-        SC_TYPE(sc_type_node | sc_type_const | sc_type_node_tuple),
-        SC_TYPE(sc_type_arc_common | sc_type_const),
+  ScIterator5Ptr itTemplatesSet = m_memoryCtx.Iterator5(
+        ScType::NodeConstTuple,
+        ScType::EdgeDCommonConst,
         commandAddr,
-        SC_TYPE(sc_type_arc_pos_const_perm),
+        ScType::EdgeAccessConstPosPerm,
         Keynodes::nrel_speech_templates);
 
-  if (!itTemplatesSet->next())
+  if (!itTemplatesSet->Next())
     return SC_RESULT_ERROR_INVALID_PARAMS;
 
   // got templates set
-  ScAddr const templatesAddr = itTemplatesSet->value(0);
+  ScAddr const templatesAddr = itTemplatesSet->Get(0);
 
   // try to find template for a specified language
-  ScIterator5Ptr itTempl = mMemoryCtx.iterator5(
+  ScIterator5Ptr itTempl = m_memoryCtx.Iterator5(
         templatesAddr,
-        SC_TYPE(sc_type_arc_pos_const_perm),
-        SC_TYPE(sc_type_link),
-        SC_TYPE(sc_type_arc_pos_const_perm),
+        ScType::EdgeAccessConstPosPerm,
+        ScType::Link,
+        ScType::EdgeAccessConstPosPerm,
         attrAddr);
 
   /// TODO: possible select random template from a set (more then one template for language and result attr)
-  while (itTempl->next())
+  while (itTempl->Next())
   {
-    ScAddr const linkAddr = itTempl->value(2);
-    if (mMemoryCtx.helperCheckArc(langAddr, linkAddr, sc_type_arc_pos_const_perm))
+    ScAddr const linkAddr = itTempl->Get(2);
+    if (m_memoryCtx.HelperCheckEdge(langAddr, linkAddr, ScType::EdgeAccessConstPosPerm))
     {
       ScStream stream;
-      if (mMemoryCtx.getLinkContent(linkAddr, stream))
+      if (m_memoryCtx.GetLinkContent(linkAddr, stream))
       {
         std::string strTemplate;
-        if (ScStreamConverter::streamToString(stream, strTemplate))
+        if (ScStreamConverter::StreamToString(stream, strTemplate))
         {
           std::string resultText;
-          TextTemplateProcessor processor(mMemoryCtx, strTemplate, langAddr);
+          TextTemplateProcessor processor(m_memoryCtx, strTemplate, langAddr);
           if (processor.generateOutputText(resultText))
           {
-            ScAddr const resultLink = mMemoryCtx.createLink();
-            assert(resultLink.isValid());
+            ScAddr const resultLink = m_memoryCtx.CreateLink();
+            SC_ASSERT(resultLink.IsValid(), ());
 
             ScStream resultStream(resultText.c_str(), (sc_uint32)resultText.size(), SC_STREAM_FLAG_READ | SC_STREAM_FLAG_SEEK);
 
-            bool const res = mMemoryCtx.setLinkContent(resultLink, resultStream);
-            assert(res);
+            bool const res = m_memoryCtx.SetLinkContent(resultLink, resultStream);
+            SC_ASSERT(res, ());
 
-            ScAddr const edge = mMemoryCtx.createArc(sc_type_arc_pos_const_perm, resultAddr, resultLink);
-            assert(edge.isValid());
+            ScAddr const edge = m_memoryCtx.CreateEdge(ScType::EdgeAccessConstPosPerm, resultAddr, resultLink);
+            SC_ASSERT(edge.IsValid(), ());
 
           }
         }
@@ -130,8 +108,8 @@ SC_AGENT_ACTION_IMPLEMENTATION(AGenerateTextByTemplate)
         /// TODO: generate default text
 
         // for a fast test, just use template as an answer
-        ScAddr const edge = mMemoryCtx.createArc(sc_type_arc_pos_const_perm, resultAddr, linkAddr);
-        assert(edge.isValid());
+        ScAddr const edge = m_memoryCtx.CreateEdge(ScType::EdgeAccessConstPosPerm, resultAddr, linkAddr);
+        SC_ASSERT(edge.IsValid(), ());
       }
 
       return SC_RESULT_OK;
@@ -211,14 +189,14 @@ std::string TextTemplateProcessor::processMainIdtfCmd(std::string & arguments)
 {
   std::string result;
   ScAddr elAddr;
-  if (mMemoryCtx.helperFindBySystemIdtf(arguments, elAddr))
+  if (mMemoryCtx.HelperFindBySystemIdtf(arguments, elAddr))
   {
     ScAddr linkIdtf = utils::findMainIdtf(mMemoryCtx, elAddr, mLanguageAddr);
-    if (linkIdtf.isValid())
+    if (linkIdtf.IsValid())
     {
       ScStream stream;
-      if (mMemoryCtx.getLinkContent(linkIdtf, stream))
-        ScStreamConverter::streamToString(stream, result);
+      if (mMemoryCtx.GetLinkContent(linkIdtf, stream))
+        ScStreamConverter::StreamToString(stream, result);
     }
   }
   return result;

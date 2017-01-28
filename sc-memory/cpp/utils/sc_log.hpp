@@ -37,7 +37,7 @@ public:
   _SC_EXTERN static ScLog * GetInstance();
 
 private:
-  std::ofstream m_file_stream;
+  std::ofstream m_fileStream;
   eType m_mode;
 
   static ScLog * ms_instance;

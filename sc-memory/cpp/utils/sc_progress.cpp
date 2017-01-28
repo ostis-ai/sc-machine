@@ -9,40 +9,40 @@ namespace utils
 {
 // ---------------
 ScProgress::ScProgress(std::string const & title, size_t stepsNum, size_t width)
-  : mTitle(title)
-  , mWidth(width)
-  , mStepsNum(stepsNum)
-  , mPassedSteps(0)
-  , mIsComplete(false)
-  , mIsFirst(false)
-  , mPrevPercent(0)
+  : m_title(title)
+  , m_width(width)
+  , m_stepsNum(stepsNum)
+  , m_passedSteps(0)
+  , m_isComplete(false)
+  , m_isFirst(false)
+  , m_prevPercent(0)
 {
-  std::cout << mTitle << "..." << std::endl;
+  std::cout << m_title << "..." << std::endl;
 }
 
 void ScProgress::PrintStatus(size_t passedStep)
 {
-  mPassedSteps = passedStep + 1; // to correctly work with for (0; N);
+  m_passedSteps = passedStep + 1; // to correctly work with for (0; N);
   // calculate status
-  float progress = (float)(mPassedSteps + 1) / (float)mStepsNum;
-  mIsComplete = (progress >= 1.f);
+  float progress = (float)(m_passedSteps + 1) / (float)m_stepsNum;
+  m_isComplete = (progress >= 1.f);
   progress = std::min(std::max(0.f, progress), 1.f);
 
-  size_t const filledNum = (size_t)((float)mWidth * progress);
+  size_t const filledNum = (size_t)((float)m_width * progress);
   size_t const percentInt = (size_t)((float)100 * progress);
 
-  if (mIsFirst || (mPrevPercent != percentInt))
+  if (m_isFirst || (m_prevPercent != percentInt))
   {
-    mIsFirst = false;
-    mPrevPercent = percentInt;
+    m_isFirst = false;
+    m_prevPercent = percentInt;
 
     // prepare string
     std::string const filledStr(filledNum, '#');
-    std::string const notFilledStr(mWidth - filledNum, '-');
+    std::string const notFilledStr(m_width - filledNum, '-');
 
     ScConsole::SetString("[" + filledStr + notFilledStr + "] " + std::to_string(percentInt) + "%");
   }
-  if (mIsComplete)
+  if (m_isComplete)
     std::cout << std::endl;
 }
 

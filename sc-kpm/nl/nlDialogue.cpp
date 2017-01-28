@@ -14,16 +14,16 @@ SC_AGENT_IMPLEMENTATION(ADialogueProcessMessageAgent)
 {
   ScAddr const dialogueAddr = listenAddr;
   ScAddr const itemAddr = otherAddr;
-  check_expr(dialogueAddr == Keynodes::msMainNLDialogueInstance);
+  SC_ASSERT(dialogueAddr == Keynodes::msMainNLDialogueInstance, ());
 
-  if (!mMemoryCtx.getElementType(itemAddr).isLink())
+  if (!m_memoryCtx.GetElementType(itemAddr).IsLink())
     return SC_RESULT_ERROR_INVALID_PARAMS;
 
-  if (itemAddr.isValid())
+  if (itemAddr.IsValid())
   {
     // just if author is not a system
     ScTemplate authorTempl;
-    authorTempl.tripleWithRelation(
+    authorTempl.TripleWithRelation(
           itemAddr,
           ScType::EdgeDCommonVar,
           Keynodes::msSelf,
@@ -31,7 +31,7 @@ SC_AGENT_IMPLEMENTATION(ADialogueProcessMessageAgent)
           Keynodes::msNrelAuthor);
 
     ScTemplateSearchResult authSearchRes;
-    if (mMemoryCtx.helperSearchTemplate(authorTempl, authSearchRes))
+    if (m_memoryCtx.HelperSearchTemplate(authorTempl, authSearchRes))
       return SC_RESULT_ERROR_INVALID_STATE;
 
     /*
@@ -40,27 +40,27 @@ SC_AGENT_IMPLEMENTATION(ADialogueProcessMessageAgent)
      * (* _-> _message;; *);;
      */
     ScTemplate cmdProcessTextTemplate;
-    cmdProcessTextTemplate.triple(
+    cmdProcessTextTemplate.Triple(
           Keynodes::msCmdProcessUserTextMessage,
           ScType::EdgeAccessVarPosPerm,
           ScType::NodeVar >> "_command_instance");
-    cmdProcessTextTemplate.triple(
+    cmdProcessTextTemplate.Triple(
           "_command_instance",
           ScType::EdgeAccessVarPosPerm,
           itemAddr);
 
     ScTemplateGenResult result;
-    if (mMemoryCtx.helperGenTemplate(cmdProcessTextTemplate, result))
+    if (m_memoryCtx.HelperGenTemplate(cmdProcessTextTemplate, result))
     {
       const ScAddr cmdAddr = result["_command_instance"];
-      check_expr(cmdAddr.isValid());
+      SC_ASSERT(cmdAddr.IsValid(), ());
 
       // initiate command
-      mMemoryCtx.createEdge(ScType::EdgeAccessConstPosPerm, Keynodes::msCommandInitiated, cmdAddr);
+      m_memoryCtx.CreateEdge(ScType::EdgeAccessConstPosPerm, Keynodes::msCommandInitiated, cmdAddr);
 
       // wait until command finish
       ScWaitCondition<ScEventAddInputEdge> waiter(
-            mMemoryCtx, cmdAddr, [this](ScAddr const & addr,
+            m_memoryCtx, cmdAddr, [this](ScAddr const & addr,
             ScAddr const & edgeAddr,
             ScAddr const & otherAddr)
       {
@@ -72,7 +72,7 @@ SC_AGENT_IMPLEMENTATION(ADialogueProcessMessageAgent)
 
       // parse result and append it into dialogue
       ScTemplate resultTemplate;
-      resultTemplate.tripleWithRelation(
+      resultTemplate.TripleWithRelation(
             cmdAddr,
             ScType::EdgeDCommonVar,
             ScType::NodeVarStruct >> "_result",
@@ -80,7 +80,7 @@ SC_AGENT_IMPLEMENTATION(ADialogueProcessMessageAgent)
             Keynodes::msNrelResult);
 
       ScTemplateSearchResult searchResult;
-      if (!mMemoryCtx.helperSearchTemplate(resultTemplate, searchResult))
+      if (!m_memoryCtx.HelperSearchTemplate(resultTemplate, searchResult))
         return SC_RESULT_ERROR_INVALID_STATE;
 
       ScAddr resultAddr;
@@ -92,14 +92,14 @@ SC_AGENT_IMPLEMENTATION(ADialogueProcessMessageAgent)
       /// TODO: add blockers, to prevent race conditions with last element
       // append it into dialogue
       ScTemplate lastItemTemplate;
-      lastItemTemplate.tripleWithRelation(
+      lastItemTemplate.TripleWithRelation(
             Keynodes::msMainNLDialogueInstance,
             ScType::EdgeAccessVarPosPerm,
             ScType::NodeVar >> "_last_item",
             ScType::EdgeAccessVarPosPerm >> "_last_item_attr",
             Keynodes::msRrelLastItem);
 
-      lastItemTemplate.tripleWithRelation(
+      lastItemTemplate.TripleWithRelation(
             "_last_item",
             ScType::EdgeDCommonVar,
             Keynodes::msSelf,
@@ -107,19 +107,19 @@ SC_AGENT_IMPLEMENTATION(ADialogueProcessMessageAgent)
             Keynodes::msNrelAuthor);
 
       ScAddr lastItemAddr;
-      if (mMemoryCtx.helperSearchTemplate(lastItemTemplate, searchResult))
+      if (m_memoryCtx.HelperSearchTemplate(lastItemTemplate, searchResult))
       {
         ScTemplateSearchResultItem item = searchResult[0];
         lastItemAddr = item["_last_item"];
         // remove attr edge
-        mMemoryCtx.eraseElement(item["_last_item_attr"]);
+        m_memoryCtx.EraseElement(item["_last_item_attr"]);
       }
 
       // if previous item exist, then append item order relation
-      if (lastItemAddr.isValid())
+      if (lastItemAddr.IsValid())
       {
         ScTemplate nextItemTemplate;
-        nextItemTemplate.tripleWithRelation(
+        nextItemTemplate.TripleWithRelation(
               lastItemAddr,
               ScType::EdgeDCommonVar,
               resultAddr,
@@ -127,7 +127,7 @@ SC_AGENT_IMPLEMENTATION(ADialogueProcessMessageAgent)
               Keynodes::msNrelItemOrder);
 
         ScTemplateGenResult genResult;
-        if (!mMemoryCtx.helperGenTemplate(nextItemTemplate, genResult))
+        if (!m_memoryCtx.HelperGenTemplate(nextItemTemplate, genResult))
           return SC_RESULT_ERROR_INVALID_STATE;
       }
 
@@ -137,7 +137,7 @@ SC_AGENT_IMPLEMENTATION(ADialogueProcessMessageAgent)
         params.add("_last_item", resultAddr);
 
         ScTemplateGenResult genResult;
-        if (!mMemoryCtx.helperGenTemplate(lastItemTemplate, genResult, params))
+        if (!m_memoryCtx.HelperGenTemplate(lastItemTemplate, genResult, params))
           return SC_RESULT_ERROR_INVALID_STATE;
       }
 

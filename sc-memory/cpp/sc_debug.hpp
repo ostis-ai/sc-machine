@@ -10,12 +10,22 @@
 #include "utils/sc_message.hpp"
 #include "utils/sc_console.hpp"
 
-#include "sc_utils.hpp"
-
 namespace utils
 {
 
 /// -----------------------
+
+class ScException : public std::exception
+{
+public:
+  _SC_EXTERN ScException(std::string const & description);
+  _SC_EXTERN virtual ~ScException() throw();
+
+  _SC_EXTERN const char* What() const throw();
+
+private:
+  std::string m_description;
+};
 
 class AssertException final : public ScException
 {
@@ -29,6 +39,26 @@ public:
   explicit CriticalException(std::string const & msg) : ScException("Critical: " + msg) {}
 };
 
+class ExceptionInvalidParams final : public ScException
+{
+public:
+  explicit ExceptionInvalidParams(std::string const & msg) : ScException("InvalidParams: " + msg) {}
+};
+
+class ExceptionInvalidState final : public ScException
+{
+public:
+  explicit ExceptionInvalidState(std::string const & msg) : ScException("InvalidState: " + msg) {}
+};
+
+class ExceptionItemNotFound final : public ScException
+{
+public:
+  explicit ExceptionItemNotFound(std::string const & msg) : ScException("ItemNotFound: " + msg) {}
+};
+
+#define error(__str) { throw ScException(__str); }
+#define error_invalid_params(__str) { throw ScExceptionInvalidParams(__str); }
 
 // Asserts
 #define THROW_EXCEPTION(_exception_class, _msg, _file, _line) \

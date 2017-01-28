@@ -22,12 +22,12 @@ ActionManager ActionMngr;
 
 SC_IMPLEMENT_MODULE(iotModule)
 
-sc_result iotModule::initializeImpl()
+sc_result iotModule::InitializeImpl()
 {
-  if (!iot::Keynodes::initGlobal())
+  if (!iot::Keynodes::InitGlobal())
     return SC_RESULT_ERROR;
 
-  ActionManager::initGlobal();
+  ActionManager::InitGlobal();
   ActionMngr.initialize();
 
   if (!iot::Commands::initialize())
@@ -36,7 +36,7 @@ sc_result iotModule::initializeImpl()
   return SC_RESULT_OK;
 }
 
-sc_result iotModule::shutdownImpl()
+sc_result iotModule::ShutdownImpl()
 {
   sc_result result = SC_RESULT_OK;
 

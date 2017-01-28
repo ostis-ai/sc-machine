@@ -18,8 +18,8 @@ class ScModule : public ScObject
   SC_CLASS()
   SC_GENERATED_BODY()
 
-  virtual sc_result initializeImpl() = 0;
-  virtual sc_result shutdownImpl() = 0;
+  virtual sc_result InitializeImpl() = 0;
+  virtual sc_result ShutdownImpl() = 0;
 };
 
 #define _SC_MODULE_INSTANCE(__ModuleName) __ModuleName##Instance
@@ -30,14 +30,14 @@ class ScModule : public ScObject
   { \
     _SC_EXT_EXTERN sc_result initialize() \
     { \
-      return _SC_MODULE_INSTANCE(__ModuleName)._initialize(); \
+      return _SC_MODULE_INSTANCE(__ModuleName).InitializeGenerated(); \
     } \
     _SC_EXT_EXTERN sc_uint32 load_priority() \
     { \
-      return _SC_MODULE_INSTANCE(__ModuleName)._getLoadPriority(); \
+      return _SC_MODULE_INSTANCE(__ModuleName).GetLoadPriorityGenerated(); \
     } \
     _SC_EXT_EXTERN sc_result shutdown() \
     { \
-      return _SC_MODULE_INSTANCE(__ModuleName)._shutdown(); \
+      return _SC_MODULE_INSTANCE(__ModuleName).ShutdownGenerated(); \
     } \
   }

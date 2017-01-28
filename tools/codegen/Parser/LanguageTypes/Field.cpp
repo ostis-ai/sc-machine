@@ -70,12 +70,12 @@ void Field::GenerateTemplateBuildCode(std::string const & sysIdtf, std::string c
   std::string vName = displayName + "_Addr_";
   outCode << "ScAddr " << vName << "; ";
   GenerateResolveKeynodeCode(sysIdtf, vName, false, outCode);
-  outCode << " if (result) { result = result && ctx.helperBuildTemplate(" << displayName << ", " << vName << "); }";
+  outCode << " if (result) { result = result && ctx.HelperBuildTemplate(" << displayName << ", " << vName << "); }";
 }
 
 void Field::GenerateResolveKeynodeCode(std::string const & sysIdtf, std::string const & displayName, bool forceCreation, std::stringstream & outCode)
 {
-  outCode << "result = result && ctx.helperResolveSystemIdtf(\""
+  outCode << "result = result && ctx.HelperResolveSystemIdtf(\""
           << sysIdtf << "\", "
           << displayName << ", "
           << (forceCreation ? "true" : "false") << ");";

@@ -14,26 +14,26 @@ const ScTemplateGenParams ScTemplateGenParams::Empty = ScTemplateGenParams();
 class ScTemplateGenerator
 {
 public:
-  ScTemplateGenerator(ScTemplate::tReplacementsMap const & replacements,
-                      ScTemplate::tTemplateConstr3Vector const & constructions,
+  ScTemplateGenerator(ScTemplate::ReplacementsMap const & replacements,
+                      ScTemplate::TemplateConstr3Vector const & constructions,
                       ScTemplateGenParams const & params,
                       ScMemoryContext & context)
-    : mReplacements(replacements)
-    , mConstructions(constructions)
-    , mParams(params)
-    , mContext(context)
+    : m_replacements(replacements)
+    , m_constructions(constructions)
+    , m_params(params)
+    , m_context(context)
   {
     // check if it valid
-    for (auto constr : mConstructions)
+    for (auto constr : m_constructions)
     {
-      auto values = constr.getValues();
-      if (values[1].isFixed())
-        error_invalid_params("You can't use fixed value for edge in triple for template generation")
+      auto values = constr.GetValues();
+      if (values[1].IsFixed())
+        SC_THROW_EXCEPTION(utils::ExceptionInvalidParams, "You can't use fixed value for edge in triple for template generation");
 
         auto checkEdge = [](ScTemplateItemValue const & value)
         {
-          if (value.isAssign() && (!value.isType() || value.mTypeValue.isEdge()))
-            error_invalid_params("You can't use edges as a source/target element in triple for generation")
+          if (value.IsAssign() && (!value.IsType() || value.m_typeValue.IsEdge()))
+            SC_THROW_EXCEPTION(utils::ExceptionInvalidParams, "You can't use edges as a source/target element in triple for generation");
         };
 
       checkEdge(values[0]);
@@ -46,46 +46,46 @@ public:
     if (!checkParams())
       return ScTemplateResultCode::InvalidParams;	/// TODO: Provide error
 
-    result.mResult.resize(mConstructions.size() * 3);
-    result.mReplacements = mReplacements;
+    result.m_result.resize(m_constructions.size() * 3);
+    result.m_replacements = m_replacements;
 
-    tAddrList createdElements;
+    ScAddrList createdElements;
     size_t resultIdx = 0;
     bool isError = false;
 
-    for (auto it = mConstructions.begin(); it != mConstructions.end(); ++it)
+    for (auto it = m_constructions.begin(); it != m_constructions.end(); ++it)
     {
       ScTemplateConstr3 const & item = *it;
-      ScTemplateItemValue const * values = item.getValues();
+      ScTemplateItemValue const * values = item.GetValues();
 
       // check that the third argument isn't a command to generate edge
-      check_expr(!(values[2].mItemType == ScTemplateItemValue::VT_Type && values[2].mTypeValue.isEdge()));
+      SC_ASSERT(!(values[2].m_itemType == ScTemplateItemValue::Type::Type && values[2].m_typeValue.IsEdge()), ());
       // check that second command is to generate edge
-      check_expr(values[1].mItemType == ScTemplateItemValue::VT_Type && values[1].mTypeValue.isEdge());
+      SC_ASSERT(values[1].m_itemType == ScTemplateItemValue::Type::Type && values[1].m_typeValue.IsEdge(), ());
       // the second item couldn't be a replacement
-      check_expr(values[1].mItemType != ScTemplateItemValue::VT_Replace);
+      SC_ASSERT(values[1].m_itemType != ScTemplateItemValue::Type::Replace, ());
 
-      ScAddr const addr1 = resolveAddr(values[0], result.mResult);
-      check_expr(addr1.isValid());
-      ScAddr const addr2 = resolveAddr(values[2], result.mResult);
-      check_expr(addr2.isValid());
+      ScAddr const addr1 = resolveAddr(values[0], result.m_result);
+      SC_ASSERT(addr1.IsValid(), ());
+      ScAddr const addr2 = resolveAddr(values[2], result.m_result);
+      SC_ASSERT(addr2.IsValid(), ());
 
-      if (!addr1.isValid() || !addr2.isValid())
+      if (!addr1.IsValid() || !addr2.IsValid())
       {
         isError = true;
         break;
       }
 
-      ScAddr const edge = mContext.createEdge(*values[1].mTypeValue.upConstType(), addr1, addr2);
-      if (!edge.isValid())
+      ScAddr const edge = m_context.CreateEdge(*values[1].m_typeValue.UpConstType(), addr1, addr2);
+      if (!edge.IsValid())
       {
         isError = true;
         break;
       }
 
-      result.mResult[resultIdx++] = addr1;
-      result.mResult[resultIdx++] = edge;
-      result.mResult[resultIdx++] = addr2;
+      result.m_result[resultIdx++] = addr1;
+      result.m_result[resultIdx++] = edge;
+      result.m_result[resultIdx++] = addr2;
     }
 
     if (isError)
@@ -100,44 +100,44 @@ public:
   ScAddr createNodeLink(ScType const & type)
   {
     ScAddr addr;
-    if (type.isNode())
+    if (type.IsNode())
     {
-      addr = mContext.createNode(*type);
+      addr = m_context.CreateNode(*type);
     }
-    else if (type.isLink())
+    else if (type.IsLink())
     {
-      addr = mContext.createLink();
+      addr = m_context.CreateLink();
     }
 
-    if (addr.isValid())
-      mCreatedElements.push_back(addr);
+    if (addr.IsValid())
+      m_createdElements.push_back(addr);
 
     return addr;
   }
 
-  ScAddr resolveAddr(ScTemplateItemValue const & itemValue, tAddrVector const & resultAddrs)
+  ScAddr resolveAddr(ScTemplateItemValue const & itemValue, ScAddrVector const & resultAddrs)
   {
     /// TODO: improve speed, because not all time we need to replace by params
     // replace by value from params
-    if (!mParams.empty() && !itemValue.mReplacementName.empty())
+    if (!m_params.empty() && !itemValue.m_replacementName.empty())
     {
       ScAddr result;
-      if (mParams.get(itemValue.mReplacementName, result))
+      if (m_params.Get(itemValue.m_replacementName, result))
         return result;
     }
 
-    switch (itemValue.mItemType)
+    switch (itemValue.m_itemType)
     {
-    case ScTemplateItemValue::VT_Addr:
-      return itemValue.mAddrValue;
-    case ScTemplateItemValue::VT_Type:
-      return createNodeLink(itemValue.mTypeValue.upConstType());
-    case ScTemplateItemValue::VT_Replace:
+    case ScTemplateItemValue::Type::Addr:
+      return itemValue.m_addrValue;
+    case ScTemplateItemValue::Type::Type:
+      return createNodeLink(itemValue.m_typeValue.UpConstType());
+    case ScTemplateItemValue::Type::Replace:
     {
-      ScTemplate::tReplacementsMap::const_iterator it = mReplacements.find(itemValue.mReplacementName);
-      if (it != mReplacements.end())
+      ScTemplate::ReplacementsMap::const_iterator it = m_replacements.find(itemValue.m_replacementName);
+      if (it != m_replacements.end())
       {
-        check_expr(it->second < resultAddrs.size());
+        SC_ASSERT(it->second < resultAddrs.size(), ());
         return resultAddrs[it->second];
       }
     }
@@ -150,25 +150,24 @@ public:
 
   void cleanupCreated()
   {
-    for (tAddrList::iterator it = mCreatedElements.begin(); it != mCreatedElements.end(); ++it)
-      mContext.eraseElement(*it);
-    mCreatedElements.clear();
+    for (ScAddrList::iterator it = m_createdElements.begin(); it != m_createdElements.end(); ++it)
+      m_context.EraseElement(*it);
+    m_createdElements.clear();
   }
 
   bool checkParams() const
   {
-    ScTemplateGenParams::tParamsMap::const_iterator it;
-    for (it = mParams.mValues.begin(); it != mParams.mValues.end(); ++it)
+    for (auto const it : m_params.m_values)
     {
-      ScTemplate::tReplacementsMap::const_iterator const itRepl = mReplacements.find(it->first);
+      ScTemplate::ReplacementsMap::const_iterator const itRepl = m_replacements.find(it.first);
 
-      if (itRepl == mReplacements.end())
+      if (itRepl == m_replacements.end())
         return false;
 
-      ScTemplateConstr3 const & constr = mConstructions[itRepl->second / 3];
-      ScType const & itemType = constr.getValues()[itRepl->second % 3].mTypeValue;
+      ScTemplateConstr3 const & constr = m_constructions[itRepl->second / 3];
+      ScType const & itemType = constr.GetValues()[itRepl->second % 3].m_typeValue;
       /// TODO: check subtype of objects. Can't replace tuple with no tuple object
-      if (!itemType.isVar() || itemType.isEdge())
+      if (!itemType.IsVar() || itemType.IsEdge())
         return false;
     }
 
@@ -176,17 +175,17 @@ public:
   }
 
 private:
-  ScTemplate::tReplacementsMap const & mReplacements;
-  ScTemplate::tTemplateConstr3Vector const & mConstructions;
-  ScTemplateGenParams const & mParams;
-  ScMemoryContext & mContext;
-  tAddrList mCreatedElements;
+  ScTemplate::ReplacementsMap const & m_replacements;
+  ScTemplate::TemplateConstr3Vector const & m_constructions;
+  ScTemplateGenParams const & m_params;
+  ScMemoryContext & m_context;
+  ScAddrList m_createdElements;
 };
 
 
-bool ScTemplate::generate(ScMemoryContext & ctx, ScTemplateGenResult & result, ScTemplateGenParams const & params, ScTemplateResultCode * errorCode) const
+bool ScTemplate::Generate(ScMemoryContext & ctx, ScTemplateGenResult & result, ScTemplateGenParams const & params, ScTemplateResultCode * errorCode) const
 {
-  ScTemplateGenerator gen(mReplacements, mConstructions, params, ctx);
+  ScTemplateGenerator gen(m_replacements, m_constructions, params, ctx);
   ScTemplateResultCode resultCode = gen(result);
 
   if (errorCode)

@@ -16,33 +16,33 @@ namespace iot
 SC_AGENT_ACTION_IMPLEMENTATION(ATVChangeProgram)
 {
   // get tv device
-  ScAddr tvAddr = getParam(requestAddr, Keynodes::rrel_1, 0);
-  ScAddr programAddr = getParam(requestAddr, Keynodes::rrel_2, 0);
+  ScAddr tvAddr = GetParam(requestAddr, Keynodes::rrel_1, ScType::Unknown);
+  ScAddr programAddr = GetParam(requestAddr, Keynodes::rrel_2, ScType::Unknown);
 
-  if (!tvAddr.isValid() || !programAddr.isValid())
+  if (!tvAddr.IsValid() || !programAddr.IsValid())
     return SC_RESULT_ERROR_INVALID_PARAMS;
 
   // remove old program relation
   {
-    ScIterator5Ptr iter = mMemoryCtx.iterator5(
+    ScIterator5Ptr iter = m_memoryCtx.Iterator5(
           tvAddr,
-          SC_TYPE(sc_type_arc_common | sc_type_const),
-          SC_TYPE(sc_type_node | sc_type_const),
-          SC_TYPE(sc_type_arc_pos_const_perm),
+          ScType::EdgeDCommonConst,
+          ScType::NodeConst,
+          ScType::EdgeAccessConstPosPerm,
           Keynodes::nrel_tv_program);
 
-    if (iter->next())
-      mMemoryCtx.eraseElement(iter->value(2));
+    if (iter->Next())
+      m_memoryCtx.EraseElement(iter->Get(2));
   }
 
   // create link to new program
   {
-    ScAddr edge = mMemoryCtx.createEdge(SC_TYPE(sc_type_arc_common | sc_type_const), tvAddr, programAddr);
-    if (!edge.isValid())
+    ScAddr const edge = m_memoryCtx.CreateEdge(ScType::EdgeDCommonConst, tvAddr, programAddr);
+    if (!edge.IsValid())
       return SC_RESULT_ERROR;
 
-    ScAddr edgeRel = mMemoryCtx.createEdge(SC_TYPE(sc_type_arc_pos_const_perm), Keynodes::nrel_tv_program, edge);
-    if (!edgeRel.isValid())
+    ScAddr const edgeRel = m_memoryCtx.CreateEdge(ScType::EdgeAccessConstPosPerm, Keynodes::nrel_tv_program, edge);
+    if (!edgeRel.IsValid())
       return SC_RESULT_ERROR;
   }
 

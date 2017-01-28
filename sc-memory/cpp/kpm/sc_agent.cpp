@@ -8,21 +8,26 @@
 
 #include "../sc_debug.hpp"
 
+namespace
+{
+
 bool gInitializeResult = false;
 bool gIsInitialized = false;
 
-bool _resolveKeynodeImpl(ScMemoryContext & ctx, char const * str, ScAddr & outAddr)
+bool ResolveKeynodeImpl(ScMemoryContext & ctx, char const * str, ScAddr & outAddr)
 {
-  check_expr(ctx.isValid());
+  SC_ASSERT(ctx.IsValid(), ());
 
-  return ctx.helperResolveSystemIdtf(str, outAddr, true);
+  return ctx.HelperResolveSystemIdtf(str, outAddr, true);
 }
+
+} // namespace
 
 bool ScAgentInit(bool force /* = false */)
 {
   if (force || !gIsInitialized)
   {
-    gInitializeResult = ScAgentAction::initGlobal();
+    gInitializeResult = ScAgentAction::InitGlobal();
 
     gIsInitialized = true;
   }
@@ -32,7 +37,7 @@ bool ScAgentInit(bool force /* = false */)
 
 
 ScAgent::ScAgent(char const * name, sc_uint8 accessLvl)
-  : mMemoryCtx(accessLvl, name)
+  : m_memoryCtx(accessLvl, name)
 {
 }
 
@@ -40,17 +45,17 @@ ScAgent::~ScAgent()
 {
 }
 
-sc_result ScAgent::run(ScAddr const & listenAddr, ScAddr const & edgeAddr, ScAddr const & otherAddr)
+sc_result ScAgent::Run(ScAddr const & listenAddr, ScAddr const & edgeAddr, ScAddr const & otherAddr)
 {
   return SC_RESULT_ERROR;
 }
 
 
 // ---------------------------
-ScAddr ScAgentAction::msCommandInitiatedAddr;
-ScAddr ScAgentAction::msCommandProgressdAddr;
-ScAddr ScAgentAction::msCommandFinishedAddr;
-ScAddr ScAgentAction::msNrelResult;
+ScAddr ScAgentAction::ms_commandInitiatedAddr;
+ScAddr ScAgentAction::ms_commandProgressdAddr;
+ScAddr ScAgentAction::ms_commandFinishedAddr;
+ScAddr ScAgentAction::ms_nrelResult;
 
 ScAddr ScAgentAction::ms_keynodeScResultOk;
 ScAddr ScAgentAction::ms_keynodeScResultError;
@@ -64,7 +69,7 @@ ScAddr ScAgentAction::ms_keynodeScResultErrorNoReadRights;
 
 ScAgentAction::ScAgentAction(ScAddr const & cmdClassAddr, char const * name, sc_uint8 accessLvl)
   : ScAgent(name, accessLvl)
-  , mCmdClassAddr(cmdClassAddr)
+  , m_cmdClassAddr(cmdClassAddr)
 
 {
 }
@@ -73,34 +78,34 @@ ScAgentAction::~ScAgentAction()
 {
 }
 
-sc_result ScAgentAction::run(ScAddr const & listenAddr, ScAddr const & edgeAddr, ScAddr const & otherAddr)
+sc_result ScAgentAction::Run(ScAddr const & listenAddr, ScAddr const & edgeAddr, ScAddr const & otherAddr)
 {
   SC_UNUSED(otherAddr);
 
-  ScAddr const cmdAddr = mMemoryCtx.getEdgeTarget(edgeAddr);
-  if (cmdAddr.isValid())
+  ScAddr const cmdAddr = m_memoryCtx.GetEdgeTarget(edgeAddr);
+  if (cmdAddr.IsValid())
   {
-    if (mMemoryCtx.helperCheckArc(mCmdClassAddr, cmdAddr, sc_type_arc_pos_const_perm))
+    if (m_memoryCtx.HelperCheckEdge(m_cmdClassAddr, cmdAddr, ScType::EdgeAccessConstPosPerm))
     {
-      mMemoryCtx.eraseElement(edgeAddr);
-      ScAddr progressAddr = mMemoryCtx.createEdge(sc_type_arc_pos_const_perm, msCommandProgressdAddr, cmdAddr);
-      assert(progressAddr.isValid());
-      ScAddr resultAddr = mMemoryCtx.createNode(sc_type_const | sc_type_node_struct);
-      assert(resultAddr.isValid());
+      m_memoryCtx.EraseElement(edgeAddr);
+      ScAddr progressAddr = m_memoryCtx.CreateEdge(ScType::EdgeAccessConstPosPerm, ms_commandProgressdAddr, cmdAddr);
+      assert(progressAddr.IsValid());
+      ScAddr resultAddr = m_memoryCtx.CreateNode(ScType::NodeConstStruct);
+      assert(resultAddr.IsValid());
 
-      sc_result const resCode = runImpl(cmdAddr, resultAddr);
+      sc_result const resCode = RunImpl(cmdAddr, resultAddr);
 
-      mMemoryCtx.eraseElement(progressAddr);
+      m_memoryCtx.EraseElement(progressAddr);
 
-      ScAddr const commonEdge = mMemoryCtx.createEdge(sc_type_const | sc_type_arc_common, cmdAddr, resultAddr);
-      SC_ASSERT(commonEdge.isValid(), ());
-      ScAddr const edge = mMemoryCtx.createEdge(sc_type_arc_pos_const_perm, msNrelResult, commonEdge);
-      SC_ASSERT(edge.isValid(), ());
+      ScAddr const commonEdge = m_memoryCtx.CreateEdge(ScType::EdgeDCommonConst, cmdAddr, resultAddr);
+      SC_ASSERT(commonEdge.IsValid(), ());
+      ScAddr const edge = m_memoryCtx.CreateEdge(ScType::EdgeAccessConstPosPerm, ms_nrelResult, commonEdge);
+      SC_ASSERT(edge.IsValid(), ());
 
-      ScAddr const edgeResult = mMemoryCtx.createEdge(ScType::EdgeAccessConstPosPerm, GetResultCodeAddr(resCode), resultAddr);
-      SC_ASSERT(edgeResult.isValid(), ());
+      ScAddr const edgeResult = m_memoryCtx.CreateEdge(ScType::EdgeAccessConstPosPerm, GetResultCodeAddr(resCode), resultAddr);
+      SC_ASSERT(edgeResult.IsValid(), ());
 
-      mMemoryCtx.createEdge(sc_type_arc_pos_const_perm, msCommandFinishedAddr, cmdAddr);
+      m_memoryCtx.CreateEdge(ScType::EdgeAccessConstPosPerm, ms_commandFinishedAddr, cmdAddr);
 
       return SC_RESULT_OK;
     }
@@ -109,33 +114,33 @@ sc_result ScAgentAction::run(ScAddr const & listenAddr, ScAddr const & edgeAddr,
   return SC_RESULT_ERROR;
 }
 
-ScAddr ScAgentAction::getParam(ScAddr const & cmdAddr, ScAddr const & relationAddr, sc_type paramType)
+ScAddr ScAgentAction::GetParam(ScAddr const & cmdAddr, ScAddr const & relationAddr, ScType const & paramType)
 {
-  ScIterator5Ptr iter = mMemoryCtx.iterator5(cmdAddr,
-                                             SC_TYPE(sc_type_arc_pos_const_perm),
-                                             SC_TYPE(paramType),
-                                             SC_TYPE(sc_type_arc_pos_const_perm),
-                                             relationAddr);
+  ScIterator5Ptr iter = m_memoryCtx.Iterator5(cmdAddr,
+                                              ScType::EdgeAccessConstPosPerm,
+                                              paramType,
+                                              ScType::EdgeAccessConstPosPerm,
+                                              relationAddr);
 
-  if (!iter->next())
+  if (!iter->Next())
     return ScAddr();
 
-  return iter->value(2);
+  return iter->Get(2);
 }
 
 ScAddr const & ScAgentAction::GetCommandInitiatedAddr()
 {
-  return msCommandInitiatedAddr;
+  return ms_commandInitiatedAddr;
 }
 
 ScAddr const & ScAgentAction::GetCommandFinishedAddr()
 {
-  return msCommandFinishedAddr;
+  return ms_commandFinishedAddr;
 }
 
 ScAddr const & ScAgentAction::GetNrelResultAddr()
 {
-  return msNrelResult;
+  return ms_nrelResult;
 }
 
 ScAddr const & ScAgentAction::GetResultCodeAddr(sc_result resCode)

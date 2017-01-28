@@ -16,21 +16,21 @@ public:
   ScTemplateSearch(ScTemplate const & templ,
                    ScMemoryContext & context,
                    ScAddr const & scStruct)
-    : mTemplate(templ)
-    , mContext(context)
-    , mScStruct(scStruct)
+    : m_template(templ)
+    , m_context(context)
+    , m_struct(scStruct)
   {
-    updateSearchCache();
+    UpdateSearchCache();
   }
 
-  void updateSearchCache()
+  void UpdateSearchCache()
   {
-    if (!mTemplate.isSearchCacheValid())
+    if (!m_template.IsSearchCacheValid())
     {
       // update it
-      auto const & triples = mTemplate.mConstructions;
-      ScTemplate::tProcessOrder & cache = mTemplate.mSearchCachedOrder;
-      cache.resize(mTemplate.mConstructions.size());
+      auto const & triples = m_template.m_constructions;
+      ScTemplate::ProcessOrder & cache = m_template.m_searchCachedOrder;
+      cache.resize(m_template.m_constructions.size());
       size_t i = 0;
       for (size_t & v : cache)
         v = i++;
@@ -44,22 +44,22 @@ public:
         ScTemplateConstr3 const & bTriple = triples[b];
 
         // compare by addrs arguments count
-        size_t const aAddrCount = aTriple.countAddrs();
-        size_t const bAddrCount = bTriple.countAddrs();
+        size_t const aAddrCount = aTriple.CountAddrs();
+        size_t const bAddrCount = bTriple.CountAddrs();
 
         if (aAddrCount != bAddrCount)
           return (aAddrCount > bAddrCount);
 
         // compare by fixed arguments count
-        size_t const aFCount = aTriple.countFixed();
-        size_t const bFCount = bTriple.countFixed();
+        size_t const aFCount = aTriple.CountFixed();
+        size_t const bFCount = bTriple.CountFixed();
 
         if (aFCount != bFCount)
           return (aFCount > bFCount);
 
         // compare by replacements count
-        size_t const aRCount = aTriple.countReplacements();
-        size_t const bRCount = bTriple.countReplacements();
+        size_t const aRCount = aTriple.CountReplacements();
+        size_t const bRCount = bTriple.CountReplacements();
 
         if (aRCount != bRCount)
           return (aRCount > bRCount);
@@ -69,29 +69,29 @@ public:
     }
   }
 
-  ScAddr const & resolveAddr(ScTemplateItemValue const & value) const
+  ScAddr const & ResolveAddr(ScTemplateItemValue const & value) const
   {
-    switch (value.mItemType)
+    switch (value.m_itemType)
     {
-    case ScTemplateItemValue::VT_Addr:
-      return value.mAddrValue;
+    case ScTemplateItemValue::Type::Addr:
+      return value.m_addrValue;
 
-    case ScTemplateItemValue::VT_Replace:
+    case ScTemplateItemValue::Type::Replace:
     {
-      auto it = mTemplate.mReplacements.find(value.mReplacementName);
-      check_expr(it != mTemplate.mReplacements.end());
-      check_expr(it->second < mResultAddrs.size());
-      return mResultAddrs[it->second];
+      auto it = m_template.m_replacements.find(value.m_replacementName);
+      SC_ASSERT(it != m_template.m_replacements.end(), ());
+      SC_ASSERT(it->second < m_resultAddrs.size(), ());
+      return m_resultAddrs[it->second];
     }
 
-    case ScTemplateItemValue::VT_Type:
+    case ScTemplateItemValue::Type::Type:
     {
-      if (!value.mReplacementName.empty())
+      if (!value.m_replacementName.empty())
       {
-        auto it = mTemplate.mReplacements.find(value.mReplacementName);
-        check_expr(it != mTemplate.mReplacements.end());
-        check_expr(it->second < mResultAddrs.size());
-        return mResultAddrs[it->second];
+        auto it = m_template.m_replacements.find(value.m_replacementName);
+        SC_ASSERT(it != m_template.m_replacements.end(), ());
+        SC_ASSERT(it->second < m_resultAddrs.size(), ());
+        return m_resultAddrs[it->second];
       }
       break;
     }
@@ -104,132 +104,132 @@ public:
     return empty;
   }
 
-  ScIterator3Ptr createIterator(ScTemplateConstr3 const & constr)
+  ScIterator3Ptr CreateIterator(ScTemplateConstr3 const & constr)
   {
-    ScTemplateItemValue const * values = constr.getValues();
+    ScTemplateItemValue const * values = constr.GetValues();
 
     ScTemplateItemValue const & value0 = values[0];
     ScTemplateItemValue const & value1 = values[1];
     ScTemplateItemValue const & value2 = values[2];
 
-    ScAddr const addr0 = resolveAddr(value0);
-    ScAddr const addr1 = resolveAddr(value1);
-    ScAddr const addr2 = resolveAddr(value2);
+    ScAddr const addr0 = ResolveAddr(value0);
+    ScAddr const addr1 = ResolveAddr(value1);
+    ScAddr const addr2 = ResolveAddr(value2);
 
-    if (addr0.isValid())
+    if (addr0.IsValid())
     {
-      if (addr2.isValid()) // F_A_F
+      if (addr2.IsValid()) // F_A_F
       {
-        return mContext.iterator3(addr0, *value1.mTypeValue.upConstType(), addr2);
+        return m_context.Iterator3(addr0, *value1.m_typeValue.UpConstType(), addr2);
       }
       else // F_A_A
       {
-        return mContext.iterator3(addr0, *value1.mTypeValue.upConstType(), *value2.mTypeValue.upConstType());
+        return m_context.Iterator3(addr0, *value1.m_typeValue.UpConstType(), *value2.m_typeValue.UpConstType());
       }
     }
-    else if (addr2.isValid()) // A_A_F
+    else if (addr2.IsValid()) // A_A_F
     {
-      return mContext.iterator3(*value0.mTypeValue.upConstType(), *value1.mTypeValue.upConstType(), addr2);
+      return m_context.Iterator3(*value0.m_typeValue.UpConstType(), *value1.m_typeValue.UpConstType(), addr2);
     }
-    else if (addr1.isValid()) // A_F_A
+    else if (addr1.IsValid()) // A_F_A
     {
-      return mContext.iterator3(*value0.mTypeValue.upConstType(), addr1, *value2.mTypeValue.upConstType());
+      return m_context.Iterator3(*value0.m_typeValue.UpConstType(), addr1, *value2.m_typeValue.UpConstType());
     }
     else // unknown iterator type
     {
-      error("Unknown iterator type");
+      SC_THROW_EXCEPTION(utils::ExceptionInvalidState, "Unknown iterator type");
     }
 
     return ScIterator3Ptr();
   }
 
-  bool checkInStruct(ScAddr const & addr)
+  bool CheckInStruct(ScAddr const & addr)
   {
-    tStructCache::const_iterator it = mStructCache.find(addr);
-    if (it != mStructCache.end())
+    StructCache::const_iterator it = m_structCache.find(addr);
+    if (it != m_structCache.end())
       return true;
 
-    if (mContext.helperCheckArc(mScStruct, addr, sc_type_arc_pos_const_perm))
+    if (m_context.HelperCheckArc(m_struct, addr, sc_type_arc_pos_const_perm))
     {
-      mStructCache.insert(addr);
+      m_structCache.insert(addr);
       return true;
     }
 
     return false;
   }
 
-  void refReplacement(ScTemplateItemValue const & v, ScAddr const & addr)
+  void RefReplacement(ScTemplateItemValue const & v, ScAddr const & addr)
   {
-    if (!v.mReplacementName.empty())
+    if (!v.m_replacementName.empty())
     {
-      auto it = mTemplate.mReplacements.find(v.mReplacementName);
-      check_expr(it != mTemplate.mReplacements.end());
+      auto it = m_template.m_replacements.find(v.m_replacementName);
+      SC_ASSERT(it != m_template.m_replacements.end(), ());
 
-      mResultAddrs[it->second] = addr;
-      mReplRefs[it->second]++;
+      m_resultAddrs[it->second] = addr;
+      m_replRefs[it->second]++;
     }
   }
 
-  void unrefReplacement(ScTemplateItemValue const & v)
+  void UnrefReplacement(ScTemplateItemValue const & v)
   {
-    if (!v.mReplacementName.empty())
+    if (!v.m_replacementName.empty())
     {
-      auto it = mTemplate.mReplacements.find(v.mReplacementName);
-      check_expr(it != mTemplate.mReplacements.end());
+      auto it = m_template.m_replacements.find(v.m_replacementName);
+      SC_ASSERT(it != m_template.m_replacements.end(), ());
 
-      mReplRefs[it->second]--;
-      if (mReplRefs[it->second] == 0)
-        mResultAddrs[it->second].reset();
+      m_replRefs[it->second]--;
+      if (m_replRefs[it->second] == 0)
+        m_resultAddrs[it->second].Reset();
     }
   }
 
-  void iteration(size_t orderIndex, ScTemplateSearchResult & result)
+  void Iteration(size_t orderIndex, ScTemplateSearchResult & result)
   {
-    size_t const constrIndex = mTemplate.mSearchCachedOrder[orderIndex];
+    size_t const constrIndex = m_template.m_searchCachedOrder[orderIndex];
 
-    check_expr(constrIndex < mTemplate.mConstructions.size());
-    size_t const finishIdx = mTemplate.mConstructions.size() - 1;
+    SC_ASSERT(constrIndex < m_template.m_constructions.size(), ());
+    size_t const finishIdx = m_template.m_constructions.size() - 1;
     size_t resultIdx = constrIndex * 3;
 
     /// TODO: prevent recursive search and make test for that case
 
-    ScTemplateConstr3 const & constr = mTemplate.mConstructions[constrIndex];
-    ScTemplateItemValue const * values = constr.getValues();
-    ScIterator3Ptr const it3 = createIterator(constr);
-    while (it3->next())
+    ScTemplateConstr3 const & constr = m_template.m_constructions[constrIndex];
+    ScTemplateItemValue const * values = constr.GetValues();
+    ScIterator3Ptr const it3 = CreateIterator(constr);
+    while (it3->Next())
     {
       /// check if search in structure
-      if (mScStruct.isValid())
+      if (m_struct.IsValid())
       {
-        if (!checkInStruct(it3->value(0)) ||
-            !checkInStruct(it3->value(1)) ||
-            !checkInStruct(it3->value(2)))
+        if (!CheckInStruct(it3->Get(0)) ||
+            !CheckInStruct(it3->Get(1)) ||
+            !CheckInStruct(it3->Get(2)))
         {
           continue;
         }
       }
 
       // do not make cycle for optimization issues (remove comparsion expresion)
-      mResultAddrs[resultIdx] = it3->value(0);
-      mResultAddrs[resultIdx + 1] = it3->value(1);
-      mResultAddrs[resultIdx + 2] = it3->value(2);
+      m_resultAddrs[resultIdx] = it3->Get(0);
+      m_resultAddrs[resultIdx + 1] = it3->Get(1);
+      m_resultAddrs[resultIdx + 2] = it3->Get(2);
 
-      refReplacement(values[0], it3->value(0));
-      refReplacement(values[1], it3->value(1));
-      refReplacement(values[2], it3->value(2));
+      RefReplacement(values[0], it3->Get(0));
+      RefReplacement(values[1], it3->Get(1));
+      RefReplacement(values[2], it3->Get(2));
 
       if (orderIndex == finishIdx)
       {
-        result.mResults.push_back(mResultAddrs);
+        result.m_results.push_back(m_resultAddrs);
       }
       else
       {
-        iteration(orderIndex + 1, result);
+        Iteration(orderIndex + 1, result);
       }
 
-      unrefReplacement(values[0]);
-      unrefReplacement(values[1]);
-      unrefReplacement(values[2]);
+      UnrefReplacement(values[0]);
+      UnrefReplacement(values[1]);
+      UnrefReplacement(values[2]);
     }
   }
 
@@ -237,40 +237,40 @@ public:
   {
     result.clear();
 
-    result.mReplacements = mTemplate.mReplacements;
-    mResultAddrs.resize(calculateOneResultSize());
-    mReplRefs.resize(mResultAddrs.size(), 0);
+    result.m_replacements = m_template.m_replacements;
+    m_resultAddrs.resize(CalculateOneResultSize());
+    m_replRefs.resize(m_resultAddrs.size(), 0);
 
-    iteration(0, result);
+    Iteration(0, result);
 
-    return result.getSize() > 0;
+    return (result.Size() > 0);
   }
 
-  size_t calculateOneResultSize() const
+  size_t CalculateOneResultSize() const
   {
-    return mTemplate.mConstructions.size() * 3;
+    return m_template.m_constructions.size() * 3;
   }
 
 private:
-  ScTemplate const & mTemplate;
-  ScMemoryContext & mContext;
-  ScAddr const & mScStruct;
+  ScTemplate const & m_template;
+  ScMemoryContext & m_context;
+  ScAddr const & m_struct;
 
-  typedef std::unordered_set<ScAddr, ScAddrHashFunc<uint32_t>> tStructCache;
-  tStructCache mStructCache;
+  using StructCache = std::unordered_set<ScAddr, ScAddrHashFunc<uint32_t>>;
+  StructCache m_structCache;
 
-  tAddrVector mResultAddrs;
-  typedef std::vector<uint32_t> tReplRefs;
-  tReplRefs mReplRefs;
+  ScAddrVector m_resultAddrs;
+  using ReplRefs = std::vector<uint32_t>;
+  ReplRefs m_replRefs;
 };
 
-bool ScTemplate::search(ScMemoryContext & ctx, ScTemplateSearchResult & result) const
+bool ScTemplate::Search(ScMemoryContext & ctx, ScTemplateSearchResult & result) const
 {
   ScTemplateSearch search(*this, ctx, ScAddr());
   return search(result);
 }
 
-bool ScTemplate::searchInStruct(ScMemoryContext & ctx, ScAddr const & scStruct, ScTemplateSearchResult & result) const
+bool ScTemplate::SearchInStruct(ScMemoryContext & ctx, ScAddr const & scStruct, ScTemplateSearchResult & result) const
 {
   ScTemplateSearch search(*this, ctx, scStruct);
   return search(result);

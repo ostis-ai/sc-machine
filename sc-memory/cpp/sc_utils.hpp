@@ -10,58 +10,34 @@
 #include <string>
 #include <assert.h>
 
+#include "sc_debug.hpp"
 #include "sc_types.hpp"
 
-
-class ScException : public std::exception
-{
-public:
-  _SC_EXTERN ScException(std::string const & description);
-  _SC_EXTERN virtual ~ScException() throw();
-
-  _SC_EXTERN const char* what() const throw();
-
-private:
-  std::string mDescription;
-};
-
-class ScExceptionInvalidParams final : public ScException
-{
-public:
-  _SC_EXTERN ScExceptionInvalidParams(std::string const & description)
-    : ScException(description)
-  {
-  }
-};
-
-#define check_expr(__x) assert(__x)
-#define error(__str) { throw ScException(__str); }
-#define error_invalid_params(__str) { throw ScExceptionInvalidParams(__str); }
 
 // ---------------- Reference counter -----------
 class RefCount
 {
 public:
   RefCount()
-    : mRefCount(0)
+    : m_refCount(0)
   {
   }
 
-  void ref()
+  inline void Ref()
   {
-    ++mRefCount;
+    ++m_refCount;
   }
 
-  sc_uint32 unref()
+  inline sc_uint32 Unref()
   {
-    check_expr(mRefCount > 0);
-    --mRefCount;
+    SC_ASSERT(m_refCount > 0, ());
+    --m_refCount;
 
-    return mRefCount;
+    return m_refCount;
   }
 
 private:
-  sc_uint32 mRefCount;
+  sc_uint32 m_refCount;
 };
 
 // ------------ Shared pointer -------------
@@ -71,125 +47,127 @@ class TSharedPointer
 public:
   TSharedPointer()
   {
-    mObject = 0;
-    initRef();
+    m_object = 0;
+    InitRef();
   }
 
   TSharedPointer(ObjectType * object)
   {
-    mObject = object;
-    initRef();
+    m_object = object;
+    InitRef();
   }
 
   ~TSharedPointer()
   {
-    clear();
+    Clear();
   }
 
   TSharedPointer(TSharedPointer const & other)
   {
-    mObject = other._GetPtr();
-    mRefCount = other._GetRef();
-    mRefCount->ref();
+    m_object = other.GetPtr();
+    m_refCount = other.GetRef();
+    m_refCount->Ref();
   }
 
   template <typename OtherType>
   TSharedPointer(TSharedPointer<OtherType> const & other)
   {
-    mObject = other._GetPtr();
-    mRefCount = other._GetRef();
-    mRefCount->ref();
+    m_object = other.GetPtr();
+    m_refCount = other.GetRef();
+    m_refCount->Ref();
   }
 
   TSharedPointer & operator = (TSharedPointer const & other)
   {
-    clear();
-    mObject = other._GetPtr();
-    mRefCount = other._GetRef();
-    mRefCount->ref();
+    Clear();
+    m_object = other.GetPtr();
+    m_refCount = other.GetRef();
+    m_refCount->Ref();
 
     return *this;
   }
 
   ObjectType & operator = (ObjectType * object)
   {
-    clear();
-    mObject = object;
-    initRef();
-    return *mObject;
+    Clear();
+    m_object = object;
+    InitRef();
+    return *m_object;
   }
 
   ObjectType & operator * () const
   {
-    check_expr(isValid());
-    return *mObject;
+    SC_ASSERT(IsValid(), ());
+    return *m_object;
   }
 
   ObjectType * operator -> () const
   {
-    check_expr(isValid());
-    return mObject;
+    SC_ASSERT(IsValid(), ());
+    return m_object;
   }
 
-  bool isValid() const
+  inline bool IsValid() const
   {
-    return mObject != 0;
-  }
-
-  /// Just for internal usage
-  inline ObjectType * _GetPtr() const
-  {
-    return mObject;
+    return m_object != 0;
   }
 
   /// Just for internal usage
-  inline RefCount * _GetRef() const
+  inline ObjectType * GetPtr() const
   {
-    return mRefCount;
+    return m_object;
+  }
+
+  /// Just for internal usage
+  inline RefCount * GetRef() const
+  {
+    return m_refCount;
   }
 
 private:
-  void initRef()
+  void InitRef()
   {
-    mRefCount = new RefCount();
-    mRefCount->ref();
+    m_refCount = new RefCount();
+    m_refCount->Ref();
   }
 
-  void clear()
+  void Clear()
   {
-    if (mRefCount->unref() == 0)
+    if (m_refCount->Unref() == 0)
     {
-      delete mRefCount;
-      delete mObject;
+      delete m_refCount;
+      delete m_object;
     }
 
-    mRefCount = 0;
-    mObject = 0;
+    m_refCount = 0;
+    m_object = 0;
   }
 
 
 protected:
-  ObjectType * mObject;
-  RefCount * mRefCount;
+  ObjectType * m_object;
+  RefCount * m_refCount;
 };
 
 #define SHARED_PTR_TYPE(__type) typedef TSharedPointer< __type > __type##Ptr;
 
 struct MemoryBuffer
 {
-  char * mData;
-  unsigned int mSize;
+  char * m_data;
+  unsigned int m_size;
 
   MemoryBuffer(char * buff, unsigned int size)
-    : mData(buff)
-    , mSize(size)
+    : m_data(buff)
+    , m_size(size)
   {
   }
 
+  inline bool IsValid() const { return m_data != nullptr; }
+
 protected:
   MemoryBuffer()
-    : mData(0)
-    , mSize(0)
+    : m_data(0)
+    , m_size(0)
   {
   }
 
@@ -200,29 +178,18 @@ struct MemoryBufferSafe : public MemoryBuffer
   MemoryBufferSafe(char const * buff, unsigned int size)
     : MemoryBuffer(0, size)
   {
-    mData = new char[size];
-    mSize = size;
+    m_data = new char[size];
+    m_size = size;
   }
 
   ~MemoryBufferSafe()
   {
-    delete mData;
+    delete m_data;
   }
 };
 
 SHARED_PTR_TYPE(MemoryBuffer)
 
-template<typename T>
-T min(T a, T b)
-{
-  return (a < b) ? a : b;
-}
-
-template<typename T>
-T max(T a, T b)
-{
-  return (a > b) ? a : b;
-}
 
 namespace utils
 {
@@ -230,7 +197,7 @@ namespace utils
 class StringUtils
 {
 public:
-  _SC_EXTERN static std::string replaceAll(std::string const & source, std::string const & replaceWhat, std::string const & replaceWithWhat);
+  _SC_EXTERN static std::string ReplaceAll(std::string const & source, std::string const & replaceWhat, std::string const & replaceWithWhat);
 };
 
 } // namespace utils

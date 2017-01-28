@@ -16,80 +16,54 @@ namespace iot
 
 SC_AGENT_ACTION_IMPLEMENTATION(AAddContentAgent)
 {
-  assert(requestAddr.isValid());
+  SC_ASSERT(requestAddr.IsValid(), ());
 
   // determine device class
-  ScIterator5Ptr iterDevice = mMemoryCtx.iterator5(
-        requestAddr,
-        SC_TYPE(sc_type_arc_pos_const_perm),
-        SC_TYPE(sc_type_const | sc_type_node | sc_type_node_material),
-        SC_TYPE(sc_type_arc_pos_const_perm),
-        Keynodes::rrel_1);
-
-  if (!iterDevice->next())
+  ScAddr const deviceAddr = GetParam(requestAddr, Keynodes::rrel_1, ScType::NodeConstMaterial);
+  if (!deviceAddr.IsValid())
     return SC_RESULT_ERROR_INVALID_PARAMS;
 
-  ScAddr deviceAddr = iterDevice->value(2);
-
-  // determine product class
-  ScIterator5Ptr iterProductClass = mMemoryCtx.iterator5(
-        requestAddr,
-        SC_TYPE(sc_type_arc_pos_const_perm),
-        SC_TYPE(sc_type_const | sc_type_node | sc_type_node_class),
-        SC_TYPE(sc_type_arc_pos_const_perm),
-        Keynodes::rrel_2);
-
-  if (!iterProductClass->next())
+  ScAddr const productClassAddr = GetParam(requestAddr, Keynodes::rrel_2, ScType::NodeConstClass);
+  if (!productClassAddr.IsValid())
     return SC_RESULT_ERROR_INVALID_PARAMS;
-
-  ScAddr productClassAddr = iterProductClass->value(2);
-
-  // determine mass
-  ScIterator5Ptr iterMass = mMemoryCtx.iterator5(
-        requestAddr,
-        SC_TYPE(sc_type_arc_pos_const_perm),
-        SC_TYPE(sc_type_link),
-        SC_TYPE(sc_type_arc_pos_const_perm),
-        Keynodes::rrel_3);
-
-  if (!iterMass->next())
+  
+  ScAddr const massLinkAddr = GetParam(requestAddr, Keynodes::rrel_3, ScType::Link);
+  if (!massLinkAddr.IsValid())
     return SC_RESULT_ERROR_INVALID_PARAMS;
-
-  ScAddr massLinkAddr = iterMass->value(2);
 
   // create content set if it doesn't exists
-  ScIterator5Ptr iterContent = mMemoryCtx.iterator5(
-        SC_TYPE(sc_type_node | sc_type_const | sc_type_node_tuple),
-        SC_TYPE(sc_type_const | sc_type_arc_common),
+  ScIterator5Ptr iterContent = m_memoryCtx.Iterator5(
+        ScType::NodeConstTuple,
+        ScType::EdgeDCommonConst,
         deviceAddr,
-        SC_TYPE(sc_type_arc_pos_const_perm),
+        ScType::EdgeAccessConstPosPerm,
         Keynodes::nrel_content);
 
   ScAddr contentSet;
-  if (!iterContent->next())
+  if (!iterContent->Next())
   {
-    contentSet = mMemoryCtx.createNode(sc_type_const | sc_type_node_tuple);
-    assert(contentSet.isValid());
-    ScAddr arcCommon = mMemoryCtx.createEdge(sc_type_const | sc_type_arc_common, contentSet, deviceAddr);
-    assert(arcCommon.isValid());
-    ScAddr arc = mMemoryCtx.createEdge(sc_type_arc_pos_const_perm, Keynodes::nrel_content, arcCommon);
-    assert(arc.isValid());
+    contentSet = m_memoryCtx.CreateNode(ScType::NodeConstTuple);
+    SC_ASSERT(contentSet.IsValid(), ());
+    ScAddr const edgeCommon = m_memoryCtx.CreateEdge(ScType::EdgeDCommonConst, contentSet, deviceAddr);
+    SC_ASSERT(edgeCommon.IsValid(), ());
+    ScAddr const edge = m_memoryCtx.CreateEdge(ScType::EdgeAccessConstPosPerm, Keynodes::nrel_content, edgeCommon);
+    SC_ASSERT(edge.IsValid(), ());
   }
   else
   {
-    contentSet = iterContent->value(0);
+    contentSet = iterContent->Get(0);
   }
 
   // create product instance
-  ScAddr product = mMemoryCtx.createNode(sc_type_node_material);
-  assert(product.isValid());
-  ScAddr arcClass = mMemoryCtx.createEdge(sc_type_arc_pos_const_perm, productClassAddr, product);
-  assert(arcClass.isValid());
+  ScAddr const product = m_memoryCtx.CreateNode(ScType::NodeConstMaterial);
+  SC_ASSERT(product.IsValid(), ());
+  ScAddr const edgeClass = m_memoryCtx.CreateEdge(ScType::EdgeAccessConstPosPerm, productClassAddr, product);
+  SC_ASSERT(edgeClass.IsValid(), ());
 
-  utils::setMass(mMemoryCtx, product, massLinkAddr);
+  utils::setMass(m_memoryCtx, product, massLinkAddr);
 
-  ScAddr arc = mMemoryCtx.createEdge(sc_type_arc_pos_const_perm, contentSet, product);
-  assert(arc.isValid());
+  ScAddr const edge = m_memoryCtx.CreateEdge(ScType::EdgeAccessConstPosPerm, contentSet, product);
+  SC_ASSERT(edge.IsValid(), ());
 
   return SC_RESULT_OK;
 }
@@ -97,38 +71,37 @@ SC_AGENT_ACTION_IMPLEMENTATION(AAddContentAgent)
 // ------------------------------------
 SC_AGENT_ACTION_IMPLEMENTATION(AGetContentAgent)
 {
-  assert(requestAddr.isValid());
-
-  ScIterator3Ptr iter = mMemoryCtx.iterator3(
+  ScIterator3Ptr iter = m_memoryCtx.Iterator3(
         requestAddr,
-        SC_TYPE(sc_type_arc_pos_const_perm),
-        SC_TYPE(sc_type_node | sc_type_const | sc_type_node_material));
+        ScType::EdgeAccessConstPosPerm,
+        ScType::NodeConstMaterial);
 
-  if (!iter->next())
+  if (!iter->Next())
     return SC_RESULT_ERROR_INVALID_PARAMS;
 
-  ScAddr const deviceAddr = iter->value(2);
-  ScIterator5Ptr iter5 = mMemoryCtx.iterator5(
-        SC_TYPE(sc_type_const | sc_type_node | sc_type_node_tuple),
-        SC_TYPE(sc_type_const | sc_type_arc_common),
+  ScAddr const deviceAddr = iter->Get(2);
+
+  ScIterator5Ptr iter5 = m_memoryCtx.Iterator5(
+        ScType::NodeConstTuple,
+        ScType::EdgeDCommonConst,
         deviceAddr,
-        SC_TYPE(sc_type_arc_pos_const_perm),
+        ScType::EdgeAccessConstPosPerm,
         Keynodes::nrel_content);
 
-  if (!iter5->next())
+  if (!iter5->Next())
     return SC_RESULT_ERROR;
 
-  ScAddr const contentSet = iter5->value(0);
+  ScAddr const contentSet = iter5->Get(0);
 
-  ScIterator3Ptr iterContent = mMemoryCtx.iterator3(
+  ScIterator3Ptr iterContent = m_memoryCtx.Iterator3(
         contentSet,
-        SC_TYPE(sc_type_arc_pos_const_perm),
-        SC_TYPE(sc_type_const | sc_type_node | sc_type_node_material));
+        ScType::EdgeAccessConstPosPerm,
+        ScType::NodeConstMaterial);
 
-  while (iterContent->next())
+  while (iterContent->Next())
   {
-    ScAddr const arc = mMemoryCtx.createEdge(sc_type_arc_pos_const_perm, resultAddr, iterContent->value(2));
-    assert(arc.isValid());
+    ScAddr const edge = m_memoryCtx.CreateEdge(ScType::EdgeAccessConstPosPerm, resultAddr, iterContent->Get(2));
+    SC_ASSERT(edge.IsValid(), ());
   }
 
   return SC_RESULT_OK;

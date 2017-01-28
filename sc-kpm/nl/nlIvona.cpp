@@ -264,34 +264,34 @@ SC_AGENT_ACTION_IMPLEMENTATION(AIvonaGenerateSpeechAgent)
   curl_global_init(CURL_GLOBAL_ALL);
 
   // get text to process
-  ScIterator3Ptr iter = mMemoryCtx.iterator3(requestAddr, *ScType::EdgeAccessConstPosPerm, *ScType::Link);
-  if (iter->next())
+  ScIterator3Ptr iter = m_memoryCtx.Iterator3(requestAddr, ScType::EdgeAccessConstPosPerm, ScType::Link);
+  if (iter->Next())
   {
     ScStream stream;
-    if (mMemoryCtx.getLinkContent(iter->value(2), stream))
+    if (m_memoryCtx.GetLinkContent(iter->Get(2), stream))
     {
       std::string text;
-      if (ScStreamConverter::streamToString(stream, text))
+      if (ScStreamConverter::StreamToString(stream, text))
       {
         IvonaApi api;
         /// TODO: determine language and voice
         std::vector<uint8_t> soundData;
         if (api.generateSpeech(text, "en-GB", "Brian", soundData))
         {
-          ScAddr linkAddr = mMemoryCtx.createLink();
-          check_expr(linkAddr.isValid());
+          ScAddr linkAddr = m_memoryCtx.CreateLink();
+          SC_ASSERT(linkAddr.IsValid(), ());
 
           // append format
           {
-            ScAddr edge = mMemoryCtx.createEdge(*ScType::EdgeDCommonConst, linkAddr, msFormatOgg);
-            check_expr(edge.isValid());
-            mMemoryCtx.createEdge(*ScType::EdgeAccessConstPosPerm, msNrelFormat, edge);
+            ScAddr const edge = m_memoryCtx.CreateEdge(ScType::EdgeDCommonConst, linkAddr, msFormatOgg);
+            SC_ASSERT(edge.IsValid(), ());
+            m_memoryCtx.CreateEdge(ScType::EdgeAccessConstPosPerm, msNrelFormat, edge);
           }
 
-          mMemoryCtx.createEdge(*ScType::EdgeAccessConstPosPerm, resultAddr, linkAddr);
+          m_memoryCtx.CreateEdge(ScType::EdgeAccessConstPosPerm, resultAddr, linkAddr);
 
           ScStream stream((char*)soundData.data(), (sc_uint32)soundData.size(), SC_STREAM_FLAG_READ);
-          if (mMemoryCtx.setLinkContent(linkAddr, stream))
+          if (m_memoryCtx.SetLinkContent(linkAddr, stream))
             return SC_RESULT_OK;
         }
       }

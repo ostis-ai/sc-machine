@@ -29,8 +29,8 @@ UNIT_TEST(events_threading)
 
   for (size_t i = 0; i < nodeNum; ++i)
   {
-    ScAddr const addr = ctx.createNode(*ScType::NodeConst);
-    SC_CHECK(addr.isValid(), ());
+    ScAddr const addr = ctx.CreateNode(*ScType::NodeConst);
+    SC_CHECK(addr.IsValid(), ());
     nodes[i] = addr;
   }
 
@@ -80,8 +80,8 @@ UNIT_TEST(events_threading)
     uint32_t const v = rand() % 2;
     if (v == 0)
     {
-      ScAddr const e = ctx.createEdge(*ScType::EdgeAccess, randNode(), randNode());
-      SC_CHECK(e.isValid(), ());
+      ScAddr const e = ctx.CreateEdge(*ScType::EdgeAccess, randNode(), randNode());
+      SC_CHECK(e.IsValid(), ());
       edges.push_back(e);
 
       createEdgeCount++;
@@ -94,7 +94,7 @@ UNIT_TEST(events_threading)
         ScAddr const addr = nodes[idx];
         nodes.erase(nodes.begin() + idx);
 
-        SC_CHECK(ctx.eraseElement(addr), ());
+        SC_CHECK(ctx.EraseElement(addr), ());
         eraseNodeCount++;
       }
     }
