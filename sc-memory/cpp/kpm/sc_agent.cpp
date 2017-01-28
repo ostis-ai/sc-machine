@@ -58,6 +58,7 @@ ScAddr ScAgentAction::ms_commandFinishedAddr;
 ScAddr ScAgentAction::ms_nrelResult;
 
 ScAddr ScAgentAction::ms_keynodeScResultOk;
+ScAddr ScAgentAction::ms_keynodeScResultNo;
 ScAddr ScAgentAction::ms_keynodeScResultError;
 ScAddr ScAgentAction::ms_keynodeScResultErrorInvalidParams;
 ScAddr ScAgentAction::ms_keynodeScResultErrorInvalidType;
@@ -147,6 +148,8 @@ ScAddr const & ScAgentAction::GetResultCodeAddr(sc_result resCode)
 {
   switch (resCode)
   {
+  case SC_RESULT_NO:
+    return ms_keynodeScResultNo;
   case SC_RESULT_ERROR:
     return ms_keynodeScResultError;
   case SC_RESULT_OK:

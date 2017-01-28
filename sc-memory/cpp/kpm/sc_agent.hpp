@@ -80,6 +80,9 @@ private:
   SC_PROPERTY(Keynode("sc_result_ok"), ForceCreate)
   static ScAddr ms_keynodeScResultOk;
 
+  SC_PROPERTY(Keynode("sc_result_no"), ForceCreate)
+  static ScAddr ms_keynodeScResultNo;
+
   SC_PROPERTY(Keynode("sc_result_error"), ForceCreate)
   static ScAddr ms_keynodeScResultError;
 
