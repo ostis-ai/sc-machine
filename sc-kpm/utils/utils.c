@@ -14,7 +14,7 @@ sc_memory_context * s_garbage_ctx = 0;
 
 sc_event *event_garbage_deletion;
 
-_SC_EXT_EXTERN sc_result initialize()
+_SC_EXT_EXTERN sc_result sc_module_initialize()
 {
   s_default_ctx = sc_memory_context_new(sc_access_lvl_make_min);
   s_garbage_ctx = sc_memory_context_new(sc_access_lvl_make_max);
@@ -35,12 +35,12 @@ _SC_EXT_EXTERN sc_result initialize()
   return SC_RESULT_OK;
 }
 
-_SC_EXT_EXTERN sc_uint32 load_priority()
+_SC_EXT_EXTERN sc_uint32 sc_module_load_priority()
 {
   return 0;
 }
 
-_SC_EXT_EXTERN sc_result shutdown()
+_SC_EXT_EXTERN sc_result sc_module_shutdown()
 {
   sc_result res = SC_RESULT_OK;
 

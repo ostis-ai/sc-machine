@@ -28,15 +28,15 @@ class ScModule : public ScObject
   __ModuleName _SC_MODULE_INSTANCE(__ModuleName); \
   extern "C" \
   { \
-    _SC_EXT_EXTERN sc_result initialize() \
+    _SC_EXT_EXTERN sc_result sc_module_initialize() \
     { \
       return _SC_MODULE_INSTANCE(__ModuleName).InitializeGenerated(); \
     } \
-    _SC_EXT_EXTERN sc_uint32 load_priority() \
+    _SC_EXT_EXTERN sc_uint32 sc_module_load_priority() \
     { \
       return _SC_MODULE_INSTANCE(__ModuleName).GetLoadPriorityGenerated(); \
     } \
-    _SC_EXT_EXTERN sc_result shutdown() \
+    _SC_EXT_EXTERN sc_result sc_module_shutdown() \
     { \
       return _SC_MODULE_INSTANCE(__ModuleName).ShutdownGenerated(); \
     } \

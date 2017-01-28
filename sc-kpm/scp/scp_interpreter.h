@@ -26,11 +26,11 @@ along with OSTIS.  If not, see <http://www.gnu.org/licenses/>.
 #include "scp_lib.h"
 
 //! Module initialization function
-_SC_EXT_EXTERN sc_result initialize();
+_SC_EXT_EXTERN sc_result sc_module_initialize();
 
 //! Module shutdown function
-_SC_EXT_EXTERN sc_result shutdown();
+_SC_EXT_EXTERN sc_result sc_module_shutdown();
 
-_SC_EXT_EXTERN sc_uint32 load_priority();
+_SC_EXT_EXTERN sc_uint32 sc_module_load_priority();
 
 #endif // SCP_INTERPRETER_H
