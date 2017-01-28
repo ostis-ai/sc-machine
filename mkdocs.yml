@@ -17,6 +17,9 @@ pages:
     - Element types: cpp/el_types.md
     - Configuration files: other/config.md
     - Sctp-protocol: net/sctp.md
+  - Modules:
+    - Natural language:
+      - AApiAiParseUserTextAgent: modules/nl/AApiAiParseUserTextAgent.md
   - License: license.md
   - Changelog: changelog.md
 
