@@ -13,24 +13,24 @@ namespace utils
 
 ScLock::ScLock()
 {
-  unlock();
+  Unlock();
 }
 
-void ScLock::lock()
+void ScLock::Lock()
 {
   bool expected = false;
   while (true)
   {
-    if (mLocked.compare_exchange_strong(expected, true))
+    if (m_locked.compare_exchange_strong(expected, true))
       break;
 
     std::this_thread::sleep_for(std::chrono::milliseconds(2));
   }
 }
 
-void ScLock::unlock()
+void ScLock::Unlock()
 {
-  mLocked.store(false);
+  m_locked.store(false);
 }
 
 } // namespace utils

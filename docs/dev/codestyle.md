@@ -42,7 +42,7 @@ Naming and formatting
 
 ```cpp
 for (ScAddr const & addr : listOfAddr)
-  ctx.eraseElement(addr);
+  ctx.EraseElement(addr);
 
 ...
 

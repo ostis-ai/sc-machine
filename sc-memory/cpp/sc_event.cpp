@@ -21,47 +21,47 @@ ScEvent::Type ScEvent::ContentChanged = SC_EVENT_CONTENT_CHANGED;
 
 ScEvent::ScEvent(const ScMemoryContext & ctx, const ScAddr & addr, Type eventType, ScEvent::DelegateFunc func /*= DelegateFunc()*/)
 {
-  mDelegate = func;
-  mEvent = sc_event_new_ex(*ctx, *addr, (sc_event_type)eventType, (sc_pointer)this, &ScEvent::_handler, &ScEvent::_handlerDelete);
+  m_delegate = func;
+  m_event = sc_event_new_ex(*ctx, *addr, (sc_event_type)eventType, (sc_pointer)this, &ScEvent::Handler, &ScEvent::HandlerDelete);
 }
 
 ScEvent::~ScEvent()
 {
-  mLock.lock();
-  if (mEvent)
-    sc_event_destroy(mEvent);
-  mLock.unlock();
+  m_lock.Lock();
+  if (m_event)
+    sc_event_destroy(m_event);
+  m_lock.Unlock();
 }
 
-void ScEvent::removeDelegate()
+void ScEvent::RemoveDelegate()
 {
-  mDelegate = DelegateFunc();
+  m_delegate = DelegateFunc();
 }
 
-sc_result ScEvent::_handler(sc_event const * evt, sc_addr edge, sc_addr other_el)
+sc_result ScEvent::Handler(sc_event const * evt, sc_addr edge, sc_addr other_el)
 {
   ScEvent * eventObj = (ScEvent*)sc_event_get_data(evt);
-  check_expr(eventObj != nullptr);
+  SC_ASSERT(eventObj != nullptr, ());
 
-  if (eventObj->mDelegate)
+  if (eventObj->m_delegate)
   {
-    return eventObj->mDelegate(ScAddr(sc_event_get_element(evt)), ScAddr(edge), ScAddr(other_el)) ? SC_RESULT_OK : SC_RESULT_ERROR;
+    return eventObj->m_delegate(ScAddr(sc_event_get_element(evt)), ScAddr(edge), ScAddr(other_el)) ? SC_RESULT_OK : SC_RESULT_ERROR;
   }
 
   return SC_RESULT_ERROR;
 }
 
-sc_result ScEvent::_handlerDelete(sc_event const * evt)
+sc_result ScEvent::HandlerDelete(sc_event const * evt)
 {
   ScEvent * eventObj = (ScEvent*)sc_event_get_data(evt);
-  check_expr(eventObj != nullptr);
+  SC_ASSERT(eventObj != nullptr, ());
 
-  eventObj->mLock.lock();
-  if (eventObj->mEvent)
-  {
-    eventObj->mEvent = nullptr;
-  }
-  eventObj->mLock.unlock();
+  eventObj->m_lock.Lock();
+
+  if (eventObj->m_event)
+    eventObj->m_event = nullptr;
+
+  eventObj->m_lock.Unlock();
 
   return SC_RESULT_OK;
 }

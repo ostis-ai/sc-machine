@@ -6,6 +6,7 @@ set (SC_MEMORY_CPP_SOURCES
 			"sc_memory.cpp"
 			"sc_addr.cpp"
 			"sc_event.cpp"
+			"sc_debug.cpp"
 			"sc_utils.cpp"
 			"sc_iterator.cpp"
 			"sc_stream.cpp"

@@ -22,6 +22,9 @@ extern "C"
 
 #define SC_BOOL(x) (x) ? SC_TRUE : SC_FALSE
 
+namespace
+{
+
 GMutex gContextMutex;
 struct ContextMutexLock
 {
@@ -32,7 +35,7 @@ struct ContextMutexLock
 bool gIsLogMuted = false;
 
 void _logPrintHandler(gchar const * log_domain, GLogLevelFlags log_level,
-                      gchar const * message, gpointer user_data)
+  gchar const * message, gpointer user_data)
 {
   if (gIsLogMuted)
     return;
@@ -62,81 +65,80 @@ void _logPrintHandler(gchar const * log_domain, GLogLevelFlags log_level,
 
 unsigned int gContextGounter;
 
+} // namespace
+
 // ------------------
 
-sc_memory_context * ScMemory::msGlobalContext = 0;
-ScMemory::tMemoryContextList ScMemory::msContexts;
+sc_memory_context * ScMemory::ms_globalContext = 0;
+ScMemory::MemoryContextList ScMemory::ms_contexts;
 
-bool ScMemory::initialize(sc_memory_params const & params)
+bool ScMemory::Initialize(sc_memory_params const & params)
 {
   gContextGounter = 0;
 
   g_log_set_default_handler(_logPrintHandler, nullptr);
 
-  msGlobalContext = sc_memory_initialize(&params);
-  return msGlobalContext != null_ptr;
+  ms_globalContext = sc_memory_initialize(&params);
+  return ms_globalContext != null_ptr;
 }
 
-void ScMemory::shutdown(bool saveState /* = true */)
+void ScMemory::Shutdown(bool saveState /* = true */)
 {
-  if (msContexts.size() > 0)
+  if (ms_contexts.size() > 0)
   {
     std::stringstream description;
-    description << "There are " << msContexts.size() << " contexts, wan't destroyed, before Memory::shutdown:";
-    tMemoryContextList::const_iterator it = msContexts.begin();
-    for (; it != msContexts.end(); ++it)
-      description << "\t\n" << (*it)->getName();
+    description << "There are " << ms_contexts.size() << " contexts, wan't destroyed, before Memory::shutdown:";
+    for (auto const * ctx : ms_contexts)
+      description << "\t\n" << ctx->GetName();
 
-    error(description.str());
+    SC_THROW_EXCEPTION(utils::ExceptionInvalidState, description.str());
   }
 
   sc_memory_shutdown(SC_BOOL(saveState));
-  msGlobalContext = 0;
+  ms_globalContext = 0;
 
   g_log_set_default_handler(g_log_default_handler, nullptr);
 }
 
-void ScMemory::logMute()
+void ScMemory::LogMute()
 {
   gIsLogMuted = true;
 }
 
-void ScMemory::logUnmute()
+void ScMemory::LogUnmute()
 {
   gIsLogMuted = false;
 }
 
-void ScMemory::registerContext(ScMemoryContext const * ctx)
+void ScMemory::RegisterContext(ScMemoryContext const * ctx)
 {
-  assert(!hasMemoryContext(ctx));
+  assert(!HasMemoryContext(ctx));
 
   ContextMutexLock lock;
-  msContexts.push_back(ctx);
+  ms_contexts.push_back(ctx);
 }
 
-void ScMemory::unregisterContext(ScMemoryContext const * ctx)
+void ScMemory::UnregisterContext(ScMemoryContext const * ctx)
 {
-  assert(hasMemoryContext(ctx));
+  assert(HasMemoryContext(ctx));
 
   ContextMutexLock lock;
-  tMemoryContextList::iterator it = msContexts.begin();
-  for (; it != msContexts.end(); ++it)
+  for (auto it = ms_contexts.begin(); it != ms_contexts.end(); ++it)
   {
     if (*it == ctx)
     {
-      msContexts.erase(it);
+      ms_contexts.erase(it);
       return;
     }
   }
 }
 
-bool ScMemory::hasMemoryContext(ScMemoryContext const * ctx)
+bool ScMemory::HasMemoryContext(ScMemoryContext const * ctx)
 {
   ContextMutexLock lock;
-  tMemoryContextList::const_iterator it = msContexts.begin();
-  for (; it != msContexts.end(); ++it)
+  for (auto const it : ms_contexts)
   {
-    if (*it == ctx)
+    if (it == ctx)
       return true;
   }
   return false;
@@ -145,117 +147,119 @@ bool ScMemory::hasMemoryContext(ScMemoryContext const * ctx)
 // ---------------
 
 ScMemoryContext::ScMemoryContext(sc_uint8 accessLevels /* = 0 */, std::string const & name /* = "" */)
-  : mContext(0)
+  : m_context(0)
 {
-  mContext = sc_memory_context_new(accessLevels);
+  m_context = sc_memory_context_new(accessLevels);
   if (name.empty())
   {
     std::stringstream ss;
     ss << "Context_" << gContextGounter;
-    mName = ss.str();
+    m_name = ss.str();
   }
   else
-    mName = name;
+  {
+    m_name = name;
+  }
 
-  ScMemory::registerContext(this);
+  ScMemory::RegisterContext(this);
 }
 
 ScMemoryContext::~ScMemoryContext()
 {
-  destroy();
+  Destroy();
 }
 
-void ScMemoryContext::destroy()
+void ScMemoryContext::Destroy()
 {
-  if (mContext)
+  if (m_context)
   {
-    ScMemory::unregisterContext(this);
+    ScMemory::UnregisterContext(this);
 
-    sc_memory_context_free(mContext);
-    mContext = 0;
+    sc_memory_context_free(m_context);
+    m_context = 0;
   }
 }
 
-bool ScMemoryContext::isValid() const
+bool ScMemoryContext::IsValid() const
 {
-  return mContext != 0;
+  return m_context != 0;
 }
 
-bool ScMemoryContext::isElement(ScAddr const & addr) const
+bool ScMemoryContext::IsElement(ScAddr const & addr) const
 {
-  check_expr(isValid());
-  return (sc_memory_is_element(mContext, addr.mRealAddr) == SC_TRUE);
+  SC_ASSERT(IsValid(), ());
+  return (sc_memory_is_element(m_context, *addr) == SC_TRUE);
 }
 
-bool ScMemoryContext::eraseElement(ScAddr const & addr)
+bool ScMemoryContext::EraseElement(ScAddr const & addr)
 {
-  check_expr(isValid());
-  return sc_memory_element_free(mContext, addr.mRealAddr) == SC_RESULT_OK;
+  SC_ASSERT(IsValid(), ());
+  return sc_memory_element_free(m_context, *addr) == SC_RESULT_OK;
 }
 
-ScAddr ScMemoryContext::createNode(sc_type type)
+ScAddr ScMemoryContext::CreateNode(sc_type type)
 {
-  check_expr(isValid());
-  return ScAddr(sc_memory_node_new(mContext, type));
+  SC_ASSERT(IsValid(), ());
+  return ScAddr(sc_memory_node_new(m_context, type));
 }
 
-ScAddr ScMemoryContext::createLink()
+ScAddr ScMemoryContext::CreateLink()
 {
-  check_expr(isValid());
-  return ScAddr(sc_memory_link_new(mContext));
+  SC_ASSERT(IsValid(), ());
+  return ScAddr(sc_memory_link_new(m_context));
 }
 
-ScAddr ScMemoryContext::createArc(sc_type type, ScAddr const & addrBeg, ScAddr const & addrEnd)
+ScAddr ScMemoryContext::CreateArc(sc_type type, ScAddr const & addrBeg, ScAddr const & addrEnd)
 {
-  return createEdge(type, addrBeg, addrEnd);
+  return CreateEdge(type, addrBeg, addrEnd);
 }
 
-ScAddr ScMemoryContext::createEdge(sc_type type, ScAddr const & addrBeg, ScAddr const & addrEnd)
+ScAddr ScMemoryContext::CreateEdge(sc_type type, ScAddr const & addrBeg, ScAddr const & addrEnd)
 {
-  check_expr(isValid());
-  return ScAddr(sc_memory_arc_new(mContext, type, addrBeg.mRealAddr, addrEnd.mRealAddr));
+  SC_ASSERT(IsValid(), ());
+  return ScAddr(sc_memory_arc_new(m_context, type, *addrBeg, *addrEnd));
 }
 
-ScType ScMemoryContext::getElementType(ScAddr const & addr) const
+ScType ScMemoryContext::GetElementType(ScAddr const & addr) const
 {
-  check_expr(isValid());
+  SC_ASSERT(IsValid(), ());
   sc_type type = 0;
-  return (sc_memory_get_element_type(mContext, addr.mRealAddr, &type) == SC_RESULT_OK) ? ScType(type) : ScType(0);
+  return (sc_memory_get_element_type(m_context, *addr, &type) == SC_RESULT_OK) ? ScType(type) : ScType(0);
 }
 
-bool ScMemoryContext::setElementSubtype(ScAddr const & addr, sc_type subtype)
+bool ScMemoryContext::SetElementSubtype(ScAddr const & addr, sc_type subtype)
 {
-  check_expr(isValid());
-  return sc_memory_change_element_subtype(mContext, addr.mRealAddr, subtype) == SC_RESULT_OK;
+  SC_ASSERT(IsValid(), ());
+  return sc_memory_change_element_subtype(m_context, *addr, subtype) == SC_RESULT_OK;
 }
 
-ScAddr ScMemoryContext::getEdgeSource(ScAddr const & edgeAddr) const
+ScAddr ScMemoryContext::GetEdgeSource(ScAddr const & edgeAddr) const
 {
-  check_expr(isValid());
+  SC_ASSERT(IsValid(), ());
   ScAddr addr;
-  if (sc_memory_get_arc_begin(mContext, edgeAddr.mRealAddr, &addr.mRealAddr) != SC_RESULT_OK)
-    addr.reset();
+  if (sc_memory_get_arc_begin(m_context, *edgeAddr, &addr.m_realAddr) != SC_RESULT_OK)
+    addr.Reset();
 
   return addr;
 }
 
-ScAddr ScMemoryContext::getEdgeTarget(ScAddr const & edgeAddr) const
+ScAddr ScMemoryContext::GetEdgeTarget(ScAddr const & edgeAddr) const
 {
-  check_expr(isValid());
+  SC_ASSERT(IsValid(), ());
   ScAddr addr;
-  if (sc_memory_get_arc_end(mContext, edgeAddr.mRealAddr, &addr.mRealAddr) != SC_RESULT_OK)
-    addr.reset();
+  if (sc_memory_get_arc_end(m_context, *edgeAddr, &addr.m_realAddr) != SC_RESULT_OK)
+    addr.Reset();
 
   return addr;
 }
 
-bool ScMemoryContext::getEdgeInfo(ScAddr const & edgeAddr, ScAddr & outSourceAddr, ScAddr & outTargetAddr) const
+bool ScMemoryContext::GetEdgeInfo(ScAddr const & edgeAddr, ScAddr & outSourceAddr, ScAddr & outTargetAddr) const
 {
-  check_expr(isValid());
-  if (sc_memory_get_arc_info(mContext, *edgeAddr, &outSourceAddr.mRealAddr, &outTargetAddr.mRealAddr) != SC_RESULT_OK)
+  SC_ASSERT(IsValid(), ());
+  if (sc_memory_get_arc_info(m_context, *edgeAddr, &outSourceAddr.m_realAddr, &outTargetAddr.m_realAddr) != SC_RESULT_OK)
   {
-    outSourceAddr.reset();
-    outTargetAddr.reset();
+    outSourceAddr.Reset();
+    outTargetAddr.Reset();
 
     return false;
   }
@@ -263,47 +267,47 @@ bool ScMemoryContext::getEdgeInfo(ScAddr const & edgeAddr, ScAddr & outSourceAdd
   return true;
 }
 
-ScAddr ScMemoryContext::getArcBegin(ScAddr const & arcAddr) const
+ScAddr ScMemoryContext::GetArcBegin(ScAddr const & arcAddr) const
 {
-  return getEdgeSource(arcAddr);
+  return GetEdgeSource(arcAddr);
 }
 
-ScAddr ScMemoryContext::getArcEnd(ScAddr const & arcAddr) const
+ScAddr ScMemoryContext::GetArcEnd(ScAddr const & arcAddr) const
 {
-  return getEdgeTarget(arcAddr);
+  return GetEdgeTarget(arcAddr);
 }
 
-bool ScMemoryContext::setLinkContent(ScAddr const & addr, ScStream const & stream)
+bool ScMemoryContext::SetLinkContent(ScAddr const & addr, ScStream const & stream)
 {
-  check_expr(isValid());
-  return sc_memory_set_link_content(mContext, addr.mRealAddr, stream.mStream) == SC_RESULT_OK;
+  SC_ASSERT(IsValid(), ());
+  return sc_memory_set_link_content(m_context, *addr, stream.m_stream) == SC_RESULT_OK;
 }
 
-bool ScMemoryContext::getLinkContent(ScAddr const & addr, ScStream & stream)
+bool ScMemoryContext::GetLinkContent(ScAddr const & addr, ScStream & stream)
 {
-  check_expr(isValid());
+  SC_ASSERT(IsValid(), ());
 
   sc_stream * s = 0;
-  if (sc_memory_get_link_content(mContext, addr.mRealAddr, &s) != SC_RESULT_OK)
+  if (sc_memory_get_link_content(m_context, *addr, &s) != SC_RESULT_OK)
   {
-    stream.reset();
+    stream.Reset();
     return false;
   }
 
-  stream.init(s);
+  stream.Init(s);
 
-  return stream.isValid();
+  return stream.IsValid();
 }
 
-bool ScMemoryContext::findLinksByContent(ScStream const & stream, tAddrList & found)
+bool ScMemoryContext::FindLinksByContent(ScStream const & stream, ScAddrList & found)
 {
-  check_expr(isValid());
+  SC_ASSERT(IsValid(), ());
 
   sc_addr * result = 0;
   sc_uint32 resultCount = 0;
 
   found.clear();
-  if (sc_memory_find_links_with_content(mContext, stream.mStream, &result, &resultCount) != SC_RESULT_OK)
+  if (sc_memory_find_links_with_content(m_context, stream.m_stream, &result, &resultCount) != SC_RESULT_OK)
     return false;
 
   for (sc_uint32 i = 0; i < resultCount; ++i)
@@ -315,45 +319,45 @@ bool ScMemoryContext::findLinksByContent(ScStream const & stream, tAddrList & fo
   return found.size() > 0;
 }
 
-bool ScMemoryContext::save()
+bool ScMemoryContext::Save()
 {
-  check_expr(isValid());
-  return (sc_memory_save(mContext) == SC_RESULT_OK);
+  SC_ASSERT(IsValid(), ());
+  return (sc_memory_save(m_context) == SC_RESULT_OK);
 }
 
-bool ScMemoryContext::helperResolveSystemIdtf(std::string const & sysIdtf, ScAddr & outAddr, bool bForceCreation /*= false*/)
+bool ScMemoryContext::HelperResolveSystemIdtf(std::string const & sysIdtf, ScAddr & outAddr, bool bForceCreation /*= false*/)
 {
-  check_expr(isValid());
-  outAddr.reset();
-  bool result = helperFindBySystemIdtf(sysIdtf, outAddr);
+  SC_ASSERT(IsValid(), ());
+  outAddr.Reset();
+  bool result = HelperFindBySystemIdtf(sysIdtf, outAddr);
   if (!result && bForceCreation)
   {
-    outAddr = createNode(sc_type_const);
-    if (outAddr.isValid())
-      result = helperSetSystemIdtf(sysIdtf, outAddr);
+    outAddr = CreateNode(sc_type_const);
+    if (outAddr.IsValid())
+      result = HelperSetSystemIdtf(sysIdtf, outAddr);
   }
   return result;
 }
 
-bool ScMemoryContext::helperSetSystemIdtf(std::string const & sysIdtf, ScAddr const & addr)
+bool ScMemoryContext::HelperSetSystemIdtf(std::string const & sysIdtf, ScAddr const & addr)
 {
-  check_expr(isValid());
-  return (sc_helper_set_system_identifier(mContext, *addr, sysIdtf.c_str(), (sc_uint32)sysIdtf.size()) == SC_RESULT_OK);
+  SC_ASSERT(IsValid(), ());
+  return (sc_helper_set_system_identifier(m_context, *addr, sysIdtf.c_str(), (sc_uint32)sysIdtf.size()) == SC_RESULT_OK);
 }
 
-std::string ScMemoryContext::helperGetSystemIdtf(ScAddr const & addr)
+std::string ScMemoryContext::HelperGetSystemIdtf(ScAddr const & addr)
 {
-  check_expr(isValid());
+  SC_ASSERT(IsValid(), ());
   ScAddr idtfLink;
-  if (sc_helper_get_system_identifier_link(mContext, *addr, &idtfLink.mRealAddr) == SC_RESULT_OK)
+  if (sc_helper_get_system_identifier_link(m_context, *addr, &idtfLink.m_realAddr) == SC_RESULT_OK)
   {
-    if (idtfLink.isValid())
+    if (idtfLink.IsValid())
     {
       ScStream stream;
-      if (getLinkContent(idtfLink, stream))
+      if (GetLinkContent(idtfLink, stream))
       {
         std::string result;
-        if (ScStreamConverter::streamToString(stream, result))
+        if (ScStreamConverter::StreamToString(stream, result))
           return result;
       }
     }
@@ -362,34 +366,39 @@ std::string ScMemoryContext::helperGetSystemIdtf(ScAddr const & addr)
   return std::string("");
 }
 
-bool ScMemoryContext::helperCheckArc(ScAddr const & begin, ScAddr end, sc_type arcType)
+bool ScMemoryContext::HelperCheckArc(ScAddr const & begin, ScAddr end, sc_type arcType)
 {
-  check_expr(isValid());
-  return (sc_helper_check_arc(mContext, *begin, *end, arcType) == SC_RESULT_OK);
+  return HelperCheckEdge(begin, end, ScType(arcType));
 }
 
-bool ScMemoryContext::helperFindBySystemIdtf(std::string const & sysIdtf, ScAddr & outAddr)
+bool ScMemoryContext::HelperCheckEdge(ScAddr const & begin, ScAddr end, ScType const & edgeType)
 {
-  check_expr(isValid());
-  return (sc_helper_find_element_by_system_identifier(mContext, sysIdtf.c_str(), (sc_uint32)sysIdtf.size(), &outAddr.mRealAddr) == SC_RESULT_OK);
+  SC_ASSERT(IsValid(), ());
+  return (sc_helper_check_arc(m_context, *begin, *end, *edgeType) == SC_RESULT_OK);
 }
 
-bool ScMemoryContext::helperGenTemplate(ScTemplate const & templ, ScTemplateGenResult & result, ScTemplateGenParams const & params, ScTemplateResultCode * resultCode)
+bool ScMemoryContext::HelperFindBySystemIdtf(std::string const & sysIdtf, ScAddr & outAddr)
 {
-  return templ.generate(*this, result, params, resultCode);
+  SC_ASSERT(IsValid(), ());
+  return (sc_helper_find_element_by_system_identifier(m_context, sysIdtf.c_str(), (sc_uint32)sysIdtf.size(), &outAddr.m_realAddr) == SC_RESULT_OK);
 }
 
-bool ScMemoryContext::helperSearchTemplate(ScTemplate const & templ, ScTemplateSearchResult & result)
+bool ScMemoryContext::HelperGenTemplate(ScTemplate const & templ, ScTemplateGenResult & result, ScTemplateGenParams const & params, ScTemplateResultCode * resultCode)
 {
-  return templ.search(*this, result);
+  return templ.Generate(*this, result, params, resultCode);
 }
 
-bool ScMemoryContext::helperSearchTemplateInStruct(ScTemplate const & templ, ScAddr const & scStruct, ScTemplateSearchResult & result)
+bool ScMemoryContext::HelperSearchTemplate(ScTemplate const & templ, ScTemplateSearchResult & result)
 {
-  return templ.searchInStruct(*this, scStruct, result);
+  return templ.Search(*this, result);
 }
 
-bool ScMemoryContext::helperBuildTemplate(ScTemplate & templ, ScAddr const & templAddr)
+bool ScMemoryContext::HelperSearchTemplateInStruct(ScTemplate const & templ, ScAddr const & scStruct, ScTemplateSearchResult & result)
 {
-  return templ.fromScTemplate(*this, templAddr);
+  return templ.SearchInStruct(*this, scStruct, result);
+}
+
+bool ScMemoryContext::HelperBuildTemplate(ScTemplate & templ, ScAddr const & templAddr)
+{
+  return templ.FromScTemplate(*this, templAddr);
 }

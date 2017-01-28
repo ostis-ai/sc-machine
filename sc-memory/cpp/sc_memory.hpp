@@ -33,23 +33,23 @@ class ScMemory
 
 public:
   //! Returns true, on memory initialized; otherwise returns false
-  _SC_EXTERN static bool initialize(sc_memory_params const & params);
-  _SC_EXTERN static void shutdown(bool saveState = true);
+  _SC_EXTERN static bool Initialize(sc_memory_params const & params);
+  _SC_EXTERN static void Shutdown(bool saveState = true);
 
-  _SC_EXTERN static void logMute();
-  _SC_EXTERN static void logUnmute();
+  _SC_EXTERN static void LogMute();
+  _SC_EXTERN static void LogUnmute();
 protected:
 
-  static void registerContext(ScMemoryContext const * ctx);
-  static void unregisterContext(ScMemoryContext const * ctx);
+  static void RegisterContext(ScMemoryContext const * ctx);
+  static void UnregisterContext(ScMemoryContext const * ctx);
 private:
-  static bool hasMemoryContext(ScMemoryContext const * ctx);
+  static bool HasMemoryContext(ScMemoryContext const * ctx);
 
 private:
-  static sc_memory_context * msGlobalContext;
+  static sc_memory_context * ms_globalContext;
 
-  typedef std::list<ScMemoryContext const *> tMemoryContextList;
-  static tMemoryContextList msContexts;
+  using MemoryContextList = std::list<ScMemoryContext const *>;
+  static MemoryContextList ms_contexts;
 };
 
 //! Class used to work with memory. It provides functions to create/erase elements
@@ -59,57 +59,57 @@ public:
   _SC_EXTERN explicit ScMemoryContext(sc_uint8 accessLevels = 0, std::string const & name = "");
   _SC_EXTERN ~ScMemoryContext();
 
-  sc_memory_context const * operator * () const { return mContext; }
-  sc_memory_context const * getRealContext() const { return mContext; }
+  sc_memory_context const * operator * () const { return m_context; }
+  sc_memory_context const * GetRealContext() const { return m_context; }
 
   //! Call this function, when you request to destroy real memory context, before destructor calls for this object
-  _SC_EXTERN void destroy();
+  _SC_EXTERN void Destroy();
 
-  std::string const & getName() const { return mName; }
+  std::string const & GetName() const { return m_name; }
 
-  _SC_EXTERN bool isValid() const;
+  _SC_EXTERN bool IsValid() const;
 
   //! Check if element exists with specified addr
-  _SC_EXTERN bool isElement(ScAddr const & addr) const;
+  _SC_EXTERN bool IsElement(ScAddr const & addr) const;
   //! Erase element from sc-memory and returns true on success; otherwise returns false.
-  _SC_EXTERN bool eraseElement(ScAddr const & addr);
+  _SC_EXTERN bool EraseElement(ScAddr const & addr);
 
-  _SC_EXTERN ScAddr createNode(sc_type type);
-  _SC_EXTERN ScAddr createLink();
+  _SC_EXTERN ScAddr CreateNode(sc_type type);
+  _SC_EXTERN ScAddr CreateLink();
 
   SC_DEPRECATED(0.3.0, "Use ScMemoryContext::createEdge instead.")
-  _SC_EXTERN ScAddr createArc(sc_type type, ScAddr const & addrBeg, ScAddr const & addrEnd);
+  _SC_EXTERN ScAddr CreateArc(sc_type type, ScAddr const & addrBeg, ScAddr const & addrEnd);
 
-  _SC_EXTERN ScAddr createEdge(sc_type type, ScAddr const & addrBeg, ScAddr const & addrEnd);
+  _SC_EXTERN ScAddr CreateEdge(sc_type type, ScAddr const & addrBeg, ScAddr const & addrEnd);
 
   //! Returns type of sc-element. If there are any error, then returns 0
-  _SC_EXTERN ScType getElementType(ScAddr const & addr) const;
+  _SC_EXTERN ScType GetElementType(ScAddr const & addr) const;
 
   /*! Change subtype of sc-element (subtype & sc_type_element_mask == 0).
      * Return true, if there are no any errors; otherwise return false.
      */
-  _SC_EXTERN bool setElementSubtype(ScAddr const & addr, sc_type subtype);
+  _SC_EXTERN bool SetElementSubtype(ScAddr const & addr, sc_type subtype);
 
-  _SC_EXTERN ScAddr getEdgeSource(ScAddr const & edgeAddr) const;
-  _SC_EXTERN ScAddr getEdgeTarget(ScAddr const & edgeAddr) const;
-  _SC_EXTERN bool getEdgeInfo(ScAddr const & edgeAddr, ScAddr & outSourceAddr, ScAddr & outTargetAddr) const;
+  _SC_EXTERN ScAddr GetEdgeSource(ScAddr const & edgeAddr) const;
+  _SC_EXTERN ScAddr GetEdgeTarget(ScAddr const & edgeAddr) const;
+  _SC_EXTERN bool GetEdgeInfo(ScAddr const & edgeAddr, ScAddr & outSourceAddr, ScAddr & outTargetAddr) const;
 
   SC_DEPRECATED(0.3.0, "Use ScMemoryContext::getEdgeSource instead.")
-  _SC_EXTERN ScAddr getArcBegin(ScAddr const & arcAddr) const;
+  _SC_EXTERN ScAddr GetArcBegin(ScAddr const & arcAddr) const;
   SC_DEPRECATED(0.3.0, "Use ScMemoryContext::getEdgeTarget instead.")
-  _SC_EXTERN ScAddr getArcEnd(ScAddr const & arcAddr) const;
+  _SC_EXTERN ScAddr GetArcEnd(ScAddr const & arcAddr) const;
 
-  _SC_EXTERN bool setLinkContent(ScAddr const & addr, ScStream const & stream);
-  _SC_EXTERN bool getLinkContent(ScAddr const & addr, ScStream & stream);
+  _SC_EXTERN bool SetLinkContent(ScAddr const & addr, ScStream const & stream);
+  _SC_EXTERN bool GetLinkContent(ScAddr const & addr, ScStream & stream);
 
   //! Returns true, if any links found
-  _SC_EXTERN bool findLinksByContent(ScStream const & stream, tAddrList & found);
+  _SC_EXTERN bool FindLinksByContent(ScStream const & stream, ScAddrList & found);
 
   //! Saves memory state
-  _SC_EXTERN bool save();
+  _SC_EXTERN bool Save();
 
   template <typename ParamType1, typename ParamType2, typename ParamType3, typename ParamType4, typename ParamType5>
-  TIterator5<ParamType1, ParamType2, ParamType3, ParamType4, ParamType5> * iterator5(ParamType1 const & param1,
+  TIterator5<ParamType1, ParamType2, ParamType3, ParamType4, ParamType5> * Iterator5(ParamType1 const & param1,
                                                                                      ParamType2 const & param2,
                                                                                      ParamType3 const & param3,
                                                                                      ParamType4 const & param4,
@@ -119,7 +119,7 @@ public:
   }
 
   template <typename ParamType1, typename ParamType2, typename ParamType3>
-  TIterator3<ParamType1, ParamType2, ParamType3> * iterator3(ParamType1 const & param1,
+  TIterator3<ParamType1, ParamType2, ParamType3> * Iterator3(ParamType1 const & param1,
                                                              ParamType2 const & param2,
                                                              ParamType3 const & param3)
   {
@@ -127,15 +127,19 @@ public:
   }
 
 
-  _SC_EXTERN bool helperResolveSystemIdtf(std::string const & sysIdtf, ScAddr & outAddr, bool bForceCreation = false);
-  _SC_EXTERN bool helperSetSystemIdtf(std::string const & sysIdtf, ScAddr const & addr);
-  _SC_EXTERN std::string helperGetSystemIdtf(ScAddr const & addr);
-  _SC_EXTERN bool helperCheckArc(ScAddr const & begin, ScAddr end, sc_type arcType);
-  _SC_EXTERN bool helperFindBySystemIdtf(std::string const & sysIdtf, ScAddr & outAddr);
-  _SC_EXTERN bool helperGenTemplate(ScTemplate const & templ, ScTemplateGenResult & result, ScTemplateGenParams const & params = ScTemplateGenParams::Empty, ScTemplateResultCode * resultCode = nullptr);
-  _SC_EXTERN bool helperSearchTemplate(ScTemplate const & templ, ScTemplateSearchResult & result);
-  _SC_EXTERN bool helperSearchTemplateInStruct(ScTemplate const & templ, ScAddr const & scStruct, ScTemplateSearchResult & result);
-  _SC_EXTERN bool helperBuildTemplate(ScTemplate & templ, ScAddr const & templAddr);
+  _SC_EXTERN bool HelperResolveSystemIdtf(std::string const & sysIdtf, ScAddr & outAddr, bool bForceCreation = false);
+  _SC_EXTERN bool HelperSetSystemIdtf(std::string const & sysIdtf, ScAddr const & addr);
+  _SC_EXTERN std::string HelperGetSystemIdtf(ScAddr const & addr);
+
+  SC_DEPRECATED(0.3.0, "Use ScMemoryContext::HelperCheckEdge instead.")
+  _SC_EXTERN bool HelperCheckArc(ScAddr const & begin, ScAddr end, sc_type arcType);
+  _SC_EXTERN bool HelperCheckEdge(ScAddr const & begin, ScAddr end, ScType const & edgeType);
+
+  _SC_EXTERN bool HelperFindBySystemIdtf(std::string const & sysIdtf, ScAddr & outAddr);
+  _SC_EXTERN bool HelperGenTemplate(ScTemplate const & templ, ScTemplateGenResult & result, ScTemplateGenParams const & params = ScTemplateGenParams::Empty, ScTemplateResultCode * resultCode = nullptr);
+  _SC_EXTERN bool HelperSearchTemplate(ScTemplate const & templ, ScTemplateSearchResult & result);
+  _SC_EXTERN bool HelperSearchTemplateInStruct(ScTemplate const & templ, ScAddr const & scStruct, ScTemplateSearchResult & result);
+  _SC_EXTERN bool HelperBuildTemplate(ScTemplate & templ, ScAddr const & templAddr);
 
 private:
   // Disable object copying
@@ -143,8 +147,8 @@ private:
   ScMemoryContext & operator = (ScMemoryContext const & other) { return *this; }
 
 private:
-  sc_memory_context * mContext;
-  std::string mName;
+  sc_memory_context * m_context;
+  std::string m_name;
 };
 
 

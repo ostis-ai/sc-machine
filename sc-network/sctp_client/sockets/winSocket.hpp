@@ -29,28 +29,28 @@ class winSocket : public ISocket
 public:
 	_SC_EXTERN explicit winSocket();
 
-	_SC_EXTERN bool connect(std::string const & host, std::string const & port);
-	_SC_EXTERN void disconnect();
+	_SC_EXTERN bool Connect(std::string const & host, std::string const & port);
+	_SC_EXTERN void Disconnect();
 
-	_SC_EXTERN bool isConnected() const;
+	_SC_EXTERN bool IsConnected() const;
 
     /** Reads data from socket into buffer (buffer size must be equal to bytesCount).
      * Returns number of bytes that was read. If returned value is -1,
      * then there was error while read data.
      */
-	_SC_EXTERN int read(void * buffer, unsigned int bytesCount);
+	_SC_EXTERN int Read(void * buffer, unsigned int bytesCount);
 
     /** Writes data into socket from buffer (buffer size must be equal to bytesCount)
      * Returns number of bytes that was written. If returned value is -1,
      * then there was error while write data.
      */
-	_SC_EXTERN int write(void * buffer, unsigned int bytesCount);
+	_SC_EXTERN int Write(void * buffer, unsigned int bytesCount);
 
-	_SC_EXTERN static bool initialize();
-	_SC_EXTERN static void shutdown();
+	_SC_EXTERN static bool Initialize();
+	_SC_EXTERN static void Shutdown();
 
 private:
-    SOCKET mSocket;
+    SOCKET m_socket;
 };
 
 }

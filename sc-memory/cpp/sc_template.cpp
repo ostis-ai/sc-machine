@@ -10,98 +10,98 @@
 #include <algorithm>
 
 ScTemplate::ScTemplate(size_t BufferedNum)
-  : mIsCacheValid(false)
+  : m_isCacheValid(false)
 {
-  mConstructions.reserve(BufferedNum);
-  mCurrentReplPos = 0;
+  m_constructions.reserve(BufferedNum);
+  m_currentReplPos = 0;
 }
 
 ScTemplate & ScTemplate::operator() (ScTemplateItemValue const & param1, ScTemplateItemValue const & param2, ScTemplateItemValue const & param3)
 {
-  return triple(param1, param2, param3);
+  return Triple(param1, param2, param3);
 }
 
 ScTemplate & ScTemplate::operator() (ScTemplateItemValue const & param1, ScTemplateItemValue const & param2, ScTemplateItemValue const & param3,
                                      ScTemplateItemValue const & param4, ScTemplateItemValue const & param5)
 {
-  return tripleWithRelation(param1, param2, param3, param4, param5);
+  return TripleWithRelation(param1, param2, param3, param4, param5);
 }
 
-void ScTemplate::clear()
+void ScTemplate::Clear()
 {
-  mConstructions.clear();
-  mReplacements.clear();
-  mCurrentReplPos = 0;
+  m_constructions.clear();
+  m_replacements.clear();
+  m_currentReplPos = 0;
 
-  mIsCacheValid = false;
+  m_isCacheValid = false;
 }
 
-bool ScTemplate::isSearchCacheValid() const
+bool ScTemplate::IsSearchCacheValid() const
 {
-  return (mIsCacheValid && (mSearchCachedOrder.size() == mConstructions.size()));
+  return (m_isCacheValid && (m_searchCachedOrder.size() == m_constructions.size()));
 }
 
-bool ScTemplate::isGenerateCacheValid() const
+bool ScTemplate::IsGenerateCacheValid() const
 {
-  return (mIsCacheValid && (mGenerateCachedOrder.size() == mConstructions.size()));
+  return (m_isCacheValid && (m_generateCachedOrder.size() == m_constructions.size()));
 }
 
-bool ScTemplate::hasReplacement(std::string const & repl) const
+bool ScTemplate::HasReplacement(std::string const & repl) const
 {
-  return (mReplacements.find(repl) != mReplacements.end());
+  return (m_replacements.find(repl) != m_replacements.end());
 }
 
-ScTemplate & ScTemplate::triple(ScTemplateItemValue const & param1, ScTemplateItemValue const & param2, ScTemplateItemValue const & param3)
+ScTemplate & ScTemplate::Triple(ScTemplateItemValue const & param1, ScTemplateItemValue const & param2, ScTemplateItemValue const & param3)
 {
-  size_t const replPos = mConstructions.size() * 3;
-  mConstructions.emplace_back(ScTemplateConstr3(param1, param2, param3, mConstructions.size()));
+  size_t const replPos = m_constructions.size() * 3;
+  m_constructions.emplace_back(ScTemplateConstr3(param1, param2, param3, m_constructions.size()));
 
-  ScTemplateConstr3 & constr3 = mConstructions.back();
+  ScTemplateConstr3 & constr3 = m_constructions.back();
   for (size_t i = 0; i < 3; ++i)
   {
-    ScTemplateItemValue & value = constr3.mValues[i];
-    if (value.mItemType == ScTemplateItemValue::VT_Type && !value.mTypeValue.isVar())
-      error_invalid_params("You should to use variable types in template");
+    ScTemplateItemValue & value = constr3.m_values[i];
+    if (value.m_itemType == ScTemplateItemValue::Type::Type && !value.m_typeValue.IsVar())
+      SC_THROW_EXCEPTION(utils::ExceptionInvalidParams, "You should to use variable types in template");
 
-    if (!value.mReplacementName.empty())
+    if (!value.m_replacementName.empty())
     {
-      if (value.mItemType != ScTemplateItemValue::VT_Replace)
-        mReplacements[value.mReplacementName] = replPos + i;
+      if (value.m_itemType != ScTemplateItemValue::Type::Replace)
+        m_replacements[value.m_replacementName] = replPos + i;
 
       /* Store type there, if replacement for any type.
       * That allows to use it before original type will processed
       */
       size_t const constrIdx = replPos / 3;
-      check_expr(constrIdx < mConstructions.size());
-      ScTemplateItemValue const & valueType = mConstructions[constrIdx].mValues[i];
+      SC_ASSERT(constrIdx < m_constructions.size(), ());
+      ScTemplateItemValue const & valueType = m_constructions[constrIdx].m_values[i];
 
-      if (valueType.isType())
-        value.mTypeValue = valueType.mTypeValue;
+      if (valueType.IsType())
+        value.m_typeValue = valueType.m_typeValue;
     }
   }
 
-  mIsCacheValid = false;
+  m_isCacheValid = false;
 
   return *this;
 }
 
-ScTemplate & ScTemplate::tripleWithRelation(ScTemplateItemValue const & param1, ScTemplateItemValue const & param2, ScTemplateItemValue const & param3,
+ScTemplate & ScTemplate::TripleWithRelation(ScTemplateItemValue const & param1, ScTemplateItemValue const & param2, ScTemplateItemValue const & param3,
                                             ScTemplateItemValue const & param4, ScTemplateItemValue const & param5)
 {
-  size_t const replPos = mConstructions.size() * 3;
+  size_t const replPos = m_constructions.size() * 3;
 
   ScTemplateItemValue edgeCommonItem = param2;
 
   // check if relation edge has replacement
-  if (edgeCommonItem.mReplacementName.empty())
+  if (edgeCommonItem.m_replacementName.empty())
   {
     std::stringstream ss;
     ss << "_repl_" << replPos + 1;
-    edgeCommonItem.mReplacementName = ss.str();
+    edgeCommonItem.m_replacementName = ss.str();
   }
 
-  triple(param1, edgeCommonItem, param3);
-  triple(param5, param4, edgeCommonItem.mReplacementName.c_str());
+  Triple(param1, edgeCommonItem, param3);
+  Triple(param5, param4, edgeCommonItem.m_replacementName.c_str());
 
   return *this;
 }

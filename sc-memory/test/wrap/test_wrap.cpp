@@ -32,7 +32,7 @@ int main(int argc, char ** argv) try
   _pause();
   return 0;
 }
-catch (ScException const & ex)
+catch (utils::ScException const & ex)
 {
   SC_LOG_ERROR(ex.what());
   _pause();

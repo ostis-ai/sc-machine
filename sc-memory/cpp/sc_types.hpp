@@ -37,89 +37,50 @@ class ScAddr;
 class _SC_EXTERN ScType
 {
 public:
-  typedef sc_type tRealType;
+  using RealType = sc_type;
 
-  explicit ScType() : mRealType(0)
+  explicit ScType() : m_realType(0)
   {
   }
 
-  explicit ScType(tRealType type)
-    : mRealType(type)
+  explicit ScType(RealType type)
+    : m_realType(type)
   {
   }
 
-  inline bool isEdge() const
-  {
-    return (mRealType & sc_type_arc_mask) != 0;
-  }
-
-  inline bool isNode() const
-  {
-    return (mRealType & sc_type_node) != 0;
-  }
-
-  inline bool isLink() const
-  {
-    return (mRealType & sc_type_link) != 0;
-  }
-
-  inline bool isConst() const
-  {
-    return (mRealType & sc_type_const) != 0;
-  }
-
-  inline bool isVar() const
-  {
-    return (mRealType & sc_type_var) != 0;
-  }
-
-  inline bool isValid() const
-  {
-    return (mRealType != 0);
-  }
+  inline bool IsEdge() const { return (m_realType & sc_type_arc_mask) != 0; }
+  inline bool IsNode() const { return (m_realType & sc_type_node) != 0; }
+  inline bool IsLink() const { return (m_realType & sc_type_link) != 0; }
+  inline bool IsConst() const { return (m_realType & sc_type_const) != 0; }
+  inline bool IsVar() const { return (m_realType & sc_type_var) != 0; }
+  inline bool IsValid() const { return (m_realType != 0); }
 
   // Returns copy of this type, but with variable raplaced to const
-  inline ScType asConst() const
-  {
-    return ScType((mRealType & ~sc_type_var) | sc_type_const);
-  }
+  inline ScType AsConst() const { return ScType((m_realType & ~sc_type_var) | sc_type_const); }
 
   // Returns copy of this type, but replace constancy type upward (metavar -> var -> const)
-  inline ScType upConstType() const
+  inline ScType UpConstType() const
   {
     /// TODO: metavar
     //if (isVar())
-    return ScType((mRealType & ~sc_type_var) | sc_type_const); // copied from asConst for maximum perfomance
+    return ScType((m_realType & ~sc_type_var) | sc_type_const); // copied from asConst for maximum perfomance
   }
 
-  inline sc_type operator * () const
-  {
-    return mRealType;
-  }
+  inline sc_type operator * () const { return m_realType; }
 
-  ScType & operator() (tRealType bits)
+  ScType & operator() (RealType bits)
   {
-    mRealType |= bits;
+    m_realType |= bits;
     return *this;
   }
 
-  bool operator == (ScType const & other)
-  {
-    return (mRealType == other.mRealType);
-  }
+  inline bool operator == (ScType const & other) { return (m_realType == other.m_realType); }
+  inline RealType BitAnd(RealType const & inMask) const { return (m_realType & inMask); }
 
-  inline tRealType bitAnd(tRealType const & inMask) const
-  {
-    return (mRealType & inMask);
-  }
-
-  operator tRealType () const
-  {
-    return mRealType;
-  }
+  operator RealType () const { return m_realType; }
 
 private:
-  tRealType mRealType;
+  RealType m_realType;
 
 public:
   static ScType const EdgeUCommon;
@@ -151,6 +112,7 @@ public:
                 
   static ScType const Node;
   static ScType const Link;
+  static ScType const Unknown;
                 
   static ScType const NodeConst;
   static ScType const NodeVar;

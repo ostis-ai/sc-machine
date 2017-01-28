@@ -59,7 +59,7 @@ ActionManager * ActionManager::msInstance = 0;
 
 ActionManager * ActionManager::getInstance()
 {
-  check_expr(msInstance);
+  SC_ASSERT(msInstance, ());
   return msInstance;
 }
 
@@ -68,7 +68,7 @@ ActionManager::ActionManager()
   : mIsInitialized(false)
   , mIsRunning(false)
 {
-  check_expr(msInstance == nullptr);
+  SC_ASSERT(msInstance == nullptr, ());
   msInstance = this;
 }
 
@@ -79,37 +79,34 @@ ActionManager::~ActionManager()
 
 void ActionManager::initialize()
 {
-  check_expr(!mIsInitialized);
+  SC_ASSERT(!mIsInitialized, ());
   mIsInitialized = true;
 
   mMemoryCtx = new ScMemoryContext(sc_access_lvl_make_min, "ActionManager");
 
   // try to find all periodical actions
-  ScIterator3Ptr iterActions = mMemoryCtx->iterator3(
+  ScIterator3Ptr iterActions = mMemoryCtx->Iterator3(
         msActionPeriodical,
-        SC_TYPE(sc_type_arc_pos_const_perm),
-        SC_TYPE(sc_type_const | sc_type_node));
+        ScType::EdgeAccessConstPosPerm,
+        ScType::NodeConst);
 
-  while (iterActions->next())
-  {
-    addPeriodicalAction(iterActions->value(2));
-  }
+  while (iterActions->Next())
+    addPeriodicalAction(iterActions->Get(2));
 
   // try to find all time based actions
-  iterActions = mMemoryCtx->iterator3(
+  iterActions = mMemoryCtx->Iterator3(
         msActionTimeSpecified,
-        SC_TYPE(sc_type_arc_pos_const_perm),
-        SC_TYPE(sc_type_const | sc_type_node)
-        );
-  while (iterActions->next())
+        ScType::EdgeAccessConstPosPerm,
+        ScType::NodeConst);
+  while (iterActions->Next())
   {
     // TODO: skip finished
-    addTimeSpecifiedAction(iterActions->value(2));
+    addTimeSpecifiedAction(iterActions->Get(2));
   }
 
   // run thread
   mIsRunning = true;
-  check_expr(gPeriodicalThread == 0);
+  SC_ASSERT(gPeriodicalThread == 0, ());
   gPeriodicalThread = g_thread_new("PeriodicalTaskThread", periodical_task_loop, 0);
 }
 
@@ -130,39 +127,36 @@ void ActionManager::addPeriodicalAction(ScAddr const & actionAddr)
   ScTemplate periodTempl;
 
   periodTempl
-      .tripleWithRelation(
+      .TripleWithRelation(
         actionAddr >> "action",
         ScType(sc_type_arc_common | sc_type_var),
         ScType(sc_type_node | sc_type_var) >> "value",
         ScType(sc_type_arc_pos_var_perm),
-        Keynodes::nrel_period
-        )
-      .tripleWithRelation(
+        Keynodes::nrel_period)
+      .TripleWithRelation(
         "value",
         ScType(sc_type_arc_pos_var_perm),
         ScType(sc_type_link | sc_type_var) >> "link",
         ScType(sc_type_arc_pos_var_perm),
-        Keynodes::rrel_seconds
-        )
-      .triple(
+        Keynodes::rrel_seconds)
+      .Triple(
         Keynodes::binary_int32,
         ScType(sc_type_arc_pos_var_perm),
-        "link"
-        );
+        "link");
 
   ScTemplateSearchResult searchResult;
 
-  if (mMemoryCtx->helperSearchTemplate(periodTempl, searchResult))
+  if (mMemoryCtx->HelperSearchTemplate(periodTempl, searchResult))
   {
-    check_expr(searchResult.getSize() > 0);
+    SC_ASSERT(searchResult.Size() > 0, ());
     ScTemplateSearchResultItem const item = searchResult[0];
 
     int32_t period = 0;
     ScStream stream;
 
-    if (mMemoryCtx->getLinkContent(item["link"], stream) && (stream.size() == sizeof(period)))
+    if (mMemoryCtx->GetLinkContent(item["link"], stream) && (stream.Size() == sizeof(period)))
     {
-      stream.readType(period);
+      stream.ReadType(period);
       appendActionPeriodical(item["action"], period);
     }
   }
@@ -173,21 +167,19 @@ void ActionManager::addTimeSpecifiedAction(ScAddr const & actionAddr)
   ScTemplate timeTempl;
 
   timeTempl
-      .tripleWithRelation(
+      .TripleWithRelation(
         actionAddr >> "action",
         ScType(sc_type_arc_common | sc_type_var),
         ScType(sc_type_node | sc_type_var) >> "value",
         ScType(sc_type_arc_pos_var_perm),
-        Keynodes::nrel_time
-        )
-      .tripleWithRelation(
+        Keynodes::nrel_time)
+      .TripleWithRelation(
         "value",
         ScType(sc_type_arc_pos_var_perm),
         ScType(sc_type_link | sc_type_var) >> "link",
         ScType(sc_type_arc_pos_var_perm),
-        Keynodes::rrel_epoch
-        )
-      .triple(
+        Keynodes::rrel_epoch)
+      .Triple(
         Keynodes::binary_int64,
         ScType(sc_type_arc_pos_var_perm),
         "link"
@@ -195,17 +187,17 @@ void ActionManager::addTimeSpecifiedAction(ScAddr const & actionAddr)
 
   ScTemplateSearchResult searchResult;
 
-  if (mMemoryCtx->helperSearchTemplate(timeTempl, searchResult))
+  if (mMemoryCtx->HelperSearchTemplate(timeTempl, searchResult))
   {
-    check_expr(searchResult.getSize() > 0);
+    SC_ASSERT(searchResult.Size() > 0, ());
     ScTemplateSearchResultItem const item = searchResult[0];
 
     int64_t time = 0;
     ScStream stream;
 
-    if (mMemoryCtx->getLinkContent(item["link"], stream) && (stream.size() == sizeof(time)))
+    if (mMemoryCtx->GetLinkContent(item["link"], stream) && (stream.Size() == sizeof(time)))
     {
-      stream.readType(time);
+      stream.ReadType(time);
       appendAction(item["action"], time);
     }
   }
@@ -242,16 +234,16 @@ void ActionManager::tick()
       // run action
       ScTemplate initTempl;
 
-      initTempl.triple(
+      initTempl.Triple(
             Keynodes::command_initiated,
             ScType(sc_type_arc_pos_const_perm),
             task.action);
 
       ScTemplateSearchResult searchResult;
-      if (!mMemoryCtx->helperSearchTemplate(initTempl, searchResult))
+      if (!mMemoryCtx->HelperSearchTemplate(initTempl, searchResult))
       {
         ScTemplateGenResult genResult;
-        mMemoryCtx->helperGenTemplate(initTempl, genResult);
+        mMemoryCtx->HelperGenTemplate(initTempl, genResult);
 
         mTaskSet.erase(*it);
 

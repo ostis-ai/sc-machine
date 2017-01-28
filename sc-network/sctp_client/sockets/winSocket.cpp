@@ -12,12 +12,12 @@ namespace sctp
 {
 
 winSocket::winSocket()
-    : mSocket(INVALID_SOCKET)
+    : m_socket(INVALID_SOCKET)
 {
 
 }
 
-bool winSocket::connect(std::string const & host, std::string const & port)
+bool winSocket::Connect(std::string const & host, std::string const & port)
 {
     int portValue = atoi(port.c_str());
     assert(portValue > 0);
@@ -27,17 +27,17 @@ bool winSocket::connect(std::string const & host, std::string const & port)
     address.sin_port = htons(portValue);
     address.sin_addr.s_addr = inet_addr(host.c_str());//InetPton(address.sin_family, host.c_str(), &address.sin_addr.s_addr);
 
-    mSocket = socket(address.sin_family, SOCK_STREAM, 0);
-    if (mSocket == INVALID_SOCKET)
+    m_socket = socket(address.sin_family, SOCK_STREAM, 0);
+    if (m_socket == INVALID_SOCKET)
     {
         printf("Could not create socket: %d", WSAGetLastError());
         return false;
     }
 
-    if (::connect(mSocket, (struct sockaddr *)&address, sizeof(address)) < 0)
+    if (::connect(m_socket, (struct sockaddr *)&address, sizeof(address)) < 0)
     {
         printf("Can't connect to server: %s:%s", host.c_str(), port.c_str());
-        disconnect();
+        Disconnect();
         return false;
     }
 
@@ -45,25 +45,25 @@ bool winSocket::connect(std::string const & host, std::string const & port)
     return true;
 }
 
-void winSocket::disconnect()
+void winSocket::Disconnect()
 {
-    closesocket(mSocket);
-    mSocket = INVALID_SOCKET;
+    closesocket(m_socket);
+    m_socket = INVALID_SOCKET;
 }
 
-bool winSocket::isConnected() const
+bool winSocket::IsConnected() const
 {
-    return (mSocket != INVALID_SOCKET);
+    return (m_socket != INVALID_SOCKET);
 }
 
-int winSocket::read(void * buffer, unsigned int bytesCount)
+int winSocket::Read(void * buffer, unsigned int bytesCount)
 {
     unsigned int bytesRead = 0;
     char * buff = (char*)buffer;
 
     while (bytesRead < bytesCount)
     {
-        int bytes = ::recv(mSocket, (&buff[bytesRead]), bytesCount - bytesRead, 0);
+        int bytes = ::recv(m_socket, (&buff[bytesRead]), bytesCount - bytesRead, 0);
         if (bytes == SOCKET_ERROR)
             return -1;
 
@@ -74,14 +74,14 @@ int winSocket::read(void * buffer, unsigned int bytesCount)
     return bytesRead;
 }
 
-int winSocket::write(void * buffer, unsigned int bytesCount)
+int winSocket::Write(void * buffer, unsigned int bytesCount)
 {
     unsigned int bytesSent = 0;
     char const * buff = (char*)buffer;
 
     while (bytesSent < bytesCount)
     {
-        int bytes = ::send(mSocket, (&(buff[bytesSent])), bytesCount - bytesSent, 0);
+        int bytes = ::send(m_socket, (&(buff[bytesSent])), bytesCount - bytesSent, 0);
         if (bytes == SOCKET_ERROR)
             return -1;
 
@@ -93,14 +93,13 @@ int winSocket::write(void * buffer, unsigned int bytesCount)
     return bytesSent;
 }
 
-
-bool winSocket::initialize()
+bool winSocket::Initialize()
 {
     WSADATA wsaData;
     return (WSAStartup(MAKEWORD(2, 2), &wsaData) != 0);
 }
 
-void winSocket::shutdown()
+void winSocket::Shutdown()
 {
     WSACleanup();
 }

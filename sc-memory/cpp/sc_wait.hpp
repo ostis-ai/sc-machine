@@ -24,54 +24,54 @@ class ScWait
   {
   public:
     WaiterImpl()
-      : mIsResolved(false)
+      : m_isResolved(false)
     {
-      g_mutex_init(&mMutex);
-      g_cond_init(&mCond);
+      g_mutex_init(&m_mutex);
+      g_cond_init(&m_cond);
     }
 
     ~WaiterImpl()
     {
-      g_mutex_clear(&mMutex);
-      g_cond_clear(&mCond);
+      g_mutex_clear(&m_mutex);
+      g_cond_clear(&m_cond);
     }
 
     void Resolve()
     {
-      g_mutex_lock(&mMutex);
-      mIsResolved = true;
-      g_cond_signal(&mCond);
-      g_mutex_unlock(&mMutex);
+      g_mutex_lock(&m_mutex);
+      m_isResolved = true;
+      g_cond_signal(&m_cond);
+      g_mutex_unlock(&m_mutex);
     }
 
     bool Wait(uint64_t timeout_ms)
     {
       gint64 endTime;
 
-      g_mutex_lock(&mMutex);
+      g_mutex_lock(&m_mutex);
       endTime = g_get_monotonic_time() + timeout_ms * G_TIME_SPAN_MILLISECOND;
-      while (!mIsResolved)
+      while (!m_isResolved)
       {
-        if (!g_cond_wait_until(&mCond, &mMutex, endTime))
+        if (!g_cond_wait_until(&m_cond, &m_mutex, endTime))
         {
-          g_mutex_unlock(&mMutex);
+          g_mutex_unlock(&m_mutex);
           return false;
         }
       }
-      g_mutex_unlock(&mMutex);
+      g_mutex_unlock(&m_mutex);
 
       return true;
     }
 
   private:
-    GMutex mMutex;
-    GCond mCond;
-    bool mIsResolved : 1;
+    GMutex m_mutex;
+    GCond m_cond;
+    bool m_isResolved : 1;
   };
 
 public:
   ScWait(const ScMemoryContext & ctx, const ScAddr & addr)
-    : mEvent(ctx, addr,
+    : m_event(ctx, addr,
              std::bind(&ScWait<EventClassT>::OnEvent,
                        this,
                        std::placeholders::_1,
@@ -86,7 +86,7 @@ public:
 
   bool Wait(uint64_t timeout_ms = 5000)
   {
-    return mWaiterImpl.Wait(timeout_ms);
+    return m_waiterImpl.Wait(timeout_ms);
   }
 
 protected:
@@ -94,7 +94,7 @@ protected:
   {
     if (OnEventImpl(listenAddr, edgeAddr, otherAddr))
     {
-      mWaiterImpl.Resolve();
+      m_waiterImpl.Resolve();
       return true;
     }
     return false;
@@ -103,8 +103,8 @@ protected:
   virtual bool OnEventImpl(ScAddr const & listenAddr, ScAddr const & edgeAddr, ScAddr const & otherAddr) { return true; }
 
 private:
-  EventClassT mEvent;
-  WaiterImpl mWaiterImpl;
+  EventClassT m_event;
+  WaiterImpl m_waiterImpl;
 };
 
 
@@ -117,18 +117,18 @@ public:
 
   ScWaitCondition(const ScMemoryContext & ctx, const ScAddr & addr, DelegateCheckFunc func)
     : ScWait<EventClassT>(ctx, addr)
-    , mCheckFunc(func)
+    , m_checkFunc(func)
   {
   }
 
 private:
   virtual bool OnEventImpl(ScAddr const & listenAddr, ScAddr const & edgeAddr, ScAddr const & otherAddr) override
   {
-    return mCheckFunc(listenAddr, edgeAddr, otherAddr);
+    return m_checkFunc(listenAddr, edgeAddr, otherAddr);
   }
 
 private:
-  DelegateCheckFunc mCheckFunc;
+  DelegateCheckFunc m_checkFunc;
 };
 
 /* Implements waiting of 

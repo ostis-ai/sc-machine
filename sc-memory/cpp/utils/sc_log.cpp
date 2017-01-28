@@ -39,14 +39,14 @@ ScLog::~ScLog()
 bool ScLog::Initialize(std::string const & file_name, eType mode /*= Info*/)
 {
   m_mode = mode;
-  m_file_stream.open(file_name, std::ofstream::out | std::ofstream::trunc);
-  return m_file_stream.is_open();
+  m_fileStream.open(file_name, std::ofstream::out | std::ofstream::trunc);
+  return m_fileStream.is_open();
 }
 
 void ScLog::Shutdown()
 {
-  m_file_stream.flush();
-  m_file_stream.close();
+  m_fileStream.flush();
+  m_fileStream.close();
 }
 
 void ScLog::Message(ScLog::eType type, std::string const & msg, ScConsole::Color color /*= ScConsole::Color::White*/)
@@ -68,8 +68,8 @@ void ScLog::Message(ScLog::eType type, std::string const & msg, ScConsole::Color
     std::cout << msg << std::endl;;
     ScConsole::ResetColor();
 
-    m_file_stream << ss.str();
-    m_file_stream.flush();
+    m_fileStream << ss.str();
+    m_fileStream.flush();
   }
 }
 

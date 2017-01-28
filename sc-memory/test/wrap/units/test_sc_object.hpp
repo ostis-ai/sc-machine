@@ -22,7 +22,7 @@ class TestObject : public ScObject
 
 public:
   /// TODO: autogenerate code to call _initInternal
-  TestObject() { init(); } /// TEST
+  TestObject() { Init(); } /// TEST
 
 public:
 

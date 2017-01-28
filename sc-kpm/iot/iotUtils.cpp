@@ -17,20 +17,20 @@ namespace utils
 
 bool addToSet(ScMemoryContext & ctx, ScAddr const & setAddr, ScAddr const & elAddr)
 {
-  if (ctx.helperCheckArc(setAddr, elAddr, sc_type_arc_pos_const_perm))
+  if (ctx.HelperCheckEdge(setAddr, elAddr, ScType::EdgeAccessConstPosPerm))
     return false;
 
-  ScAddr arcAddr = ctx.createEdge(sc_type_arc_pos_const_perm, setAddr, elAddr);
-  assert(arcAddr.isValid());
+  ScAddr const edgeAddr = ctx.CreateEdge(ScType::EdgeAccessConstPosPerm, setAddr, elAddr);
+  SC_ASSERT(edgeAddr.IsValid(), ());
   return true;
 }
 
 bool removeFromSet(ScMemoryContext & ctx, ScAddr const & setAddr, ScAddr const & elAddr)
 {
-  ScIterator3Ptr it = ctx.iterator3(setAddr, sc_type_arc_pos_const_perm, elAddr);
+  ScIterator3Ptr it = ctx.Iterator3(setAddr, ScType::EdgeAccessConstPosPerm, elAddr);
   bool result = false;
-  while (it->next())
-    ctx.eraseElement(it->value(1));
+  while (it->Next())
+    result = result || ctx.EraseElement(it->Get(1));
 
   return result;
 }
@@ -39,50 +39,50 @@ void setMass(ScMemoryContext & ctx, ScAddr const & objAddr, ScAddr const & value
 {
   ScAddr massAddr;
 
-  ScIterator5Ptr itMass = ctx.iterator5(
+  ScIterator5Ptr itMass = ctx.Iterator5(
         objAddr,
-        SC_TYPE(sc_type_arc_common | sc_type_const),
-        SC_TYPE(sc_type_const | sc_type_node | sc_type_node_abstract),
-        SC_TYPE(sc_type_arc_pos_const_perm),
+        ScType::EdgeDCommonConst,
+        ScType::NodeConstAbstract,
+        ScType::EdgeAccessConstPosPerm,
         Keynodes::nrel_mass);
 
   /// TODO: check if there is a more than one result
-  if (itMass->next())
+  if (itMass->Next())
   {
-    massAddr = itMass->value(2);
+    massAddr = itMass->Get(2);
   }
   else
   {
-    massAddr = ctx.createNode(sc_type_const | sc_type_node_abstract);
-    assert(massAddr.isValid());
-    ScAddr arcCommon = ctx.createEdge(sc_type_const | sc_type_arc_common, objAddr, massAddr);
-    assert(arcCommon.isValid());
-    ScAddr arc = ctx.createEdge(sc_type_arc_pos_const_perm, Keynodes::nrel_mass, arcCommon);
-    assert(arc.isValid());
+    massAddr = ctx.CreateNode(ScType::NodeConstAbstract);
+    SC_ASSERT(massAddr.IsValid(), ());
+    ScAddr const edgeCommon = ctx.CreateEdge(ScType::EdgeDCommonConst, objAddr, massAddr);
+    SC_ASSERT(edgeCommon.IsValid(), ());
+    ScAddr const edge = ctx.CreateEdge(ScType::EdgeAccessConstPosPerm, Keynodes::nrel_mass, edgeCommon);
+    SC_ASSERT(edge.IsValid(), ());
   }
 
-  ScIterator5Ptr itValue = ctx.iterator5(
+  ScIterator5Ptr itValue = ctx.Iterator5(
         massAddr,
-        SC_TYPE(sc_type_arc_pos_const_perm),
-        SC_TYPE(sc_type_link),
-        SC_TYPE(sc_type_arc_pos_const_perm),
+        ScType::EdgeAccessConstPosPerm,
+        ScType::Link,
+        ScType::EdgeAccessConstPosPerm,
         Keynodes::rrel_gram);
 
-  if (itValue->next())
+  if (itValue->Next())
   {
-    ScAddr linkAddr = itValue->value(2);
+    ScAddr const linkAddr = itValue->Get(2);
     ScStream stream;
-    bool res = ctx.getLinkContent(valueAddr, stream);
-    assert(res);
-    res = ctx.setLinkContent(linkAddr, stream);
-    assert(res);
+    bool res = ctx.GetLinkContent(valueAddr, stream);
+    SC_ASSERT(res, ());
+    res = ctx.SetLinkContent(linkAddr, stream);
+    SC_ASSERT(res, ());
   }
   else
   {
-    ScAddr arc = ctx.createEdge(sc_type_arc_pos_const_perm, massAddr, valueAddr);
-    assert(arc.isValid());
-    arc = ctx.createEdge(sc_type_arc_pos_const_perm, Keynodes::rrel_gram, arc);
-    assert(arc.isValid());
+    ScAddr edge = ctx.CreateEdge(ScType::EdgeAccessConstPosPerm, massAddr, valueAddr);
+    SC_ASSERT(edge.IsValid(), ());
+    edge = ctx.CreateEdge(ScType::EdgeAccessConstPosPerm, Keynodes::rrel_gram, edge);
+    SC_ASSERT(edge.IsValid(), ());
   }
 
 }
@@ -90,22 +90,22 @@ void setMass(ScMemoryContext & ctx, ScAddr const & objAddr, ScAddr const & value
 
 ScAddr findMainIdtf(ScMemoryContext & ctx, ScAddr const & elAddr, ScAddr const langAddr)
 {
-  assert(elAddr.isValid());
-  assert(langAddr.isValid());
+  SC_ASSERT(elAddr.IsValid(), ());
+  SC_ASSERT(langAddr.IsValid(), ());
 
   ScAddr result;
-  ScIterator5Ptr it5 = ctx.iterator5(
+  ScIterator5Ptr it5 = ctx.Iterator5(
         elAddr,
-        SC_TYPE(sc_type_arc_common | sc_type_const),
-        SC_TYPE(sc_type_link),
-        SC_TYPE(sc_type_arc_pos_const_perm),
+        ScType::EdgeDCommonConst,
+        ScType::Link,
+        ScType::EdgeAccessConstPosPerm,
         Keynodes::nrel_main_idtf);
 
-  while (it5->next())
+  while (it5->Next())
   {
-    if (ctx.helperCheckArc(langAddr, it5->value(2), sc_type_arc_pos_const_perm))
+    if (ctx.HelperCheckEdge(langAddr, it5->Get(2), ScType::EdgeAccessConstPosPerm))
     {
-      result = it5->value(2);
+      result = it5->Get(2);
       break;
     }
   }

@@ -24,14 +24,14 @@ struct UsedPowerSum
   {
     float result = 0.f;
     // calculate for child groups
-    ScIterator3Ptr itGroups = mMemoryCtx.iterator3(
+    ScIterator3Ptr itGroups = mMemoryCtx.Iterator3(
           mGroupAddr,
-          SC_TYPE(sc_type_arc_pos_const_perm),
-          SC_TYPE(sc_type_node | sc_type_const | sc_type_node_class));
+          ScType::EdgeAccessConstPosPerm,
+          ScType::NodeConstClass);
 
-    while (itGroups->next())
+    while (itGroups->Next())
     {
-      UsedPowerSum sum(itGroups->value(2), mMemoryCtx);
+      UsedPowerSum sum(itGroups->Get(2), mMemoryCtx);
       result += sum();
     }
 
@@ -43,24 +43,24 @@ struct UsedPowerSum
     /// TODO: use transitive relation to device set
     ScTemplate templDevice;
     templDevice
-        .triple(
+        .Triple(
           mGroupAddr,
-          ScType(sc_type_arc_pos_const_perm),
-          ScType(sc_type_node | sc_type_const | sc_type_node_material) >> "device")
-        .triple(
+          ScType::EdgeAccessConstPosPerm,
+          ScType::NodeConstMaterial >> "device")
+        .Triple(
           "device",
-          ScType(sc_type_arc_common | sc_type_const) >> "edge",
-          ScType(sc_type_link) >> "link")
-        .triple(
+          ScType::EdgeDCommonConst >> "edge",
+          ScType::Link >> "link")
+        .Triple(
           Keynodes::device_real_energy_usage,
-          ScType(sc_type_arc_pos_const_perm),
+          ScType::EdgeAccessConstPosPerm,
           "edge");
 
     // Devices
     ScTemplateSearchResult searchResult;
-    if (mMemoryCtx.helperSearchTemplate(templDevice, searchResult))
+    if (mMemoryCtx.HelperSearchTemplate(templDevice, searchResult))
     {
-      size_t const resultNum = searchResult.getSize();
+      size_t const resultNum = searchResult.Size();
       for (size_t i = 0; i < resultNum; ++i)
       {
         ScTemplateSearchResultItem const res = searchResult[i];
@@ -68,10 +68,10 @@ struct UsedPowerSum
         /// TODO: implement support of different types (int, float, ...)
         ScAddr const & link = res["link"];
         ScStream stream;
-        if (mMemoryCtx.getLinkContent(link, stream) && (stream.size() == sizeof(float)))
+        if (mMemoryCtx.GetLinkContent(link, stream) && (stream.Size() == sizeof(float)))
         {
           float value = 0.f;
-          if (stream.readType(value))
+          if (stream.ReadType(value))
             result += value;
         }
       }
@@ -81,38 +81,37 @@ struct UsedPowerSum
 
     ScTemplate templPowerUsage;
     templPowerUsage
-        .triple(
+        .Triple(
           mGroupAddr,
-          ScType(sc_type_arc_common | sc_type_const) >> "edge",
-          ScType(sc_type_link) >> "link")
-        .triple(
+          ScType::EdgeDCommonConst >> "edge",
+          ScType::Link >> "link")
+        .Triple(
           Keynodes::device_real_energy_usage,
-          ScType(sc_type_arc_pos_const_perm),
+          ScType::EdgeAccessConstPosPerm,
           "edge")
-        .triple(
+        .Triple(
           Keynodes::binary_float,
-          ScType(sc_type_arc_pos_const_perm),
-          "link"
-          );
+          ScType::EdgeAccessConstPosPerm,
+          "link");
 
     ScAddr linkAddr;
-    if (mMemoryCtx.helperSearchTemplate(templPowerUsage, searchResult))
+    if (mMemoryCtx.HelperSearchTemplate(templPowerUsage, searchResult))
     {
       linkAddr = searchResult[0]["link"];
     }
     else
     {
       ScTemplateGenResult genResult;
-      if (mMemoryCtx.helperGenTemplate(templPowerUsage, genResult))
+      if (mMemoryCtx.HelperGenTemplate(templPowerUsage, genResult))
       {
         linkAddr = genResult["link"];
       }
     }
 
-    if (linkAddr.isValid())
+    if (linkAddr.IsValid())
     {
       ScStream stream((sc_char*)&result, sizeof(result), SC_STREAM_FLAG_READ);
-      mMemoryCtx.setLinkContent(linkAddr, stream);
+      mMemoryCtx.SetLinkContent(linkAddr, stream);
     }
 
     return result;
@@ -127,14 +126,14 @@ protected:
 SC_AGENT_ACTION_IMPLEMENTATION(AUpdateUsedPowerSum)
 {
   // update all device groups, that in params
-  ScIterator3Ptr itGroups = mMemoryCtx.iterator3(
+  ScIterator3Ptr itGroups = m_memoryCtx.Iterator3(
         requestAddr,
-        SC_TYPE(sc_type_arc_pos_const_perm),
-        SC_TYPE(sc_type_node | sc_type_const | sc_type_node_class));
+        ScType::EdgeAccessConstPosPerm,
+        ScType::NodeConstClass);
 
-  while (itGroups->next())
+  while (itGroups->Next())
   {
-    UsedPowerSum sum(itGroups->value(2), mMemoryCtx);
+    UsedPowerSum sum(itGroups->Get(2), m_memoryCtx);
     sum();
   }
 

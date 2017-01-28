@@ -13,10 +13,10 @@
 
 SC_IMPLEMENT_MODULE(nlModule)
 
-sc_result nlModule::initializeImpl()
+sc_result nlModule::InitializeImpl()
 {
   // keynodes should be initialized first
-  nl::Keynodes::initGlobal();
+  nl::Keynodes::InitGlobal();
 
   SC_AGENT_REGISTER(nl::AApiAiParseUserTextAgent);
   SC_AGENT_REGISTER(nl::AIvonaGenerateSpeechAgent);
@@ -25,7 +25,7 @@ sc_result nlModule::initializeImpl()
   return SC_RESULT_OK;
 }
 
-sc_result nlModule::shutdownImpl()
+sc_result nlModule::ShutdownImpl()
 {
   SC_AGENT_UNREGISTER(nl::AApiAiParseUserTextAgent);
   SC_AGENT_UNREGISTER(nl::AIvonaGenerateSpeechAgent);

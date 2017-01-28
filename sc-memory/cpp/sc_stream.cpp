@@ -8,138 +8,138 @@
 
 
 ScStream::ScStream()
-  : mStream(0)
+  : m_stream(0)
 {
 }
 
 ScStream::ScStream(sc_stream * stream)
-  : mStream(stream)
+  : m_stream(stream)
 {
 }
 
 ScStream::ScStream(std::string const & fileName, sc_uint8 flags)
 {
-  mStream = sc_stream_file_new(fileName.c_str(), flags);
+  m_stream = sc_stream_file_new(fileName.c_str(), flags);
 }
 
 ScStream::ScStream(sc_char * buffer, sc_uint32 bufferSize, sc_uint8 flags)
 {
-  mStream = sc_stream_memory_new(buffer, bufferSize, flags, SC_FALSE);
+  m_stream = sc_stream_memory_new(buffer, bufferSize, flags, SC_FALSE);
 }
 
 ScStream::ScStream(sc_char const * buffer, sc_uint32 bufferSize, sc_uint8 flags)
 {
-  mStream = sc_stream_memory_new(buffer, bufferSize, flags, SC_FALSE);
+  m_stream = sc_stream_memory_new(buffer, bufferSize, flags, SC_FALSE);
 }
 
 ScStream::~ScStream()
 {
-  reset();
+  Reset();
 }
 
-void ScStream::reset()
+void ScStream::Reset()
 {
-  if (mStream)
-    sc_stream_free(mStream);
-  mStream = 0;
+  if (m_stream)
+    sc_stream_free(m_stream);
+  m_stream = 0;
 }
 
-bool ScStream::isValid() const
+bool ScStream::IsValid() const
 {
-  return mStream != 0;
+  return m_stream != 0;
 }
 
-bool ScStream::read(sc_char * buff, sc_uint32 buffLen, sc_uint32 & readBytes) const
+bool ScStream::Read(sc_char * buff, sc_uint32 buffLen, sc_uint32 & readBytes) const
 {
-  check_expr(isValid());
-  return sc_stream_read_data(mStream, buff, buffLen, &readBytes) == SC_RESULT_OK;
+  SC_ASSERT(IsValid(), ());
+  return sc_stream_read_data(m_stream, buff, buffLen, &readBytes) == SC_RESULT_OK;
 }
 
-bool ScStream::write(sc_char * data, sc_uint32 dataLen, sc_uint32 & writtenBytes)
+bool ScStream::Write(sc_char * data, sc_uint32 dataLen, sc_uint32 & writtenBytes)
 {
-  check_expr(isValid());
-  return sc_stream_write_data(mStream, data, dataLen, &writtenBytes) == SC_RESULT_OK;
+  SC_ASSERT(IsValid(), ());
+  return sc_stream_write_data(m_stream, data, dataLen, &writtenBytes) == SC_RESULT_OK;
 }
 
-bool ScStream::seek(sc_stream_seek_origin origin, sc_uint32 offset)
+bool ScStream::Seek(sc_stream_seek_origin origin, sc_uint32 offset)
 {
-  check_expr(isValid());
-  return sc_stream_seek(mStream, origin, offset) == SC_RESULT_OK;
+  SC_ASSERT(IsValid(), ());
+  return sc_stream_seek(m_stream, origin, offset) == SC_RESULT_OK;
 }
 
-bool ScStream::eof() const
+bool ScStream::Eof() const
 {
-  check_expr(isValid());
-  return (sc_stream_eof(mStream) == SC_TRUE);
+  SC_ASSERT(IsValid(), ());
+  return (sc_stream_eof(m_stream) == SC_TRUE);
 }
 
-sc_uint32 ScStream::size() const
+sc_uint32 ScStream::Size() const
 {
-  check_expr(isValid());
+  SC_ASSERT(IsValid(), ());
   sc_uint32 len;
-  if (sc_stream_get_length(mStream, &len) != SC_RESULT_OK)
+  if (sc_stream_get_length(m_stream, &len) != SC_RESULT_OK)
     len = 0;
 
   return len;
 }
 
-sc_uint32 ScStream::pos() const
+sc_uint32 ScStream::Pos() const
 {
-  check_expr(isValid());
+  SC_ASSERT(IsValid(), ());
   sc_uint32 pos;
-  if (sc_stream_get_position(mStream, &pos) != SC_RESULT_OK)
+  if (sc_stream_get_position(m_stream, &pos) != SC_RESULT_OK)
     pos = 0;
 
   return pos;
 }
 
-bool ScStream::hasFlag(sc_uint8 flag)
+bool ScStream::HasFlag(sc_uint8 flag)
 {
-  check_expr(isValid());
-  return (sc_stream_check_flag(mStream, flag) == SC_TRUE);
+  SC_ASSERT(IsValid(), ());
+  return (sc_stream_check_flag(m_stream, flag) == SC_TRUE);
 }
 
-void ScStream::init(sc_stream * stream)
+void ScStream::Init(sc_stream * stream)
 {
-  reset();
-  mStream = stream;
+  Reset();
+  m_stream = stream;
 }
 
 // ---------------
 
 ScStreamMemory::ScStreamMemory()
 {
-  reinit(MemoryBufferPtr());
+  Reinit(MemoryBufferPtr());
 }
 
 ScStreamMemory::ScStreamMemory(MemoryBufferPtr const & buff)
 {
-  reinit(buff);
+  Reinit(buff);
 }
 
 ScStreamMemory::~ScStreamMemory()
 {
 }
 
-void ScStreamMemory::reinit(MemoryBufferPtr const & buff)
+void ScStreamMemory::Reinit(MemoryBufferPtr const & buff)
 {
-  mPos = 0;
-  mBuffer = buff;
+  m_pos = 0;
+  m_buffer = buff;
 }
 
-bool ScStreamMemory::isValid() const
+bool ScStreamMemory::IsValid() const
 {
-  return mBuffer.isValid();
+  return m_buffer.IsValid();
 }
 
-bool ScStreamMemory::read(sc_char * buff, sc_uint32 buffLen, sc_uint32 & readBytes) const
+bool ScStreamMemory::Read(sc_char * buff, sc_uint32 buffLen, sc_uint32 & readBytes) const
 {
-  assert(mBuffer.isValid());
-  if (mPos < mBuffer->mSize)
+  SC_ASSERT(IsValid(), ());
+  if (m_pos < m_buffer->m_size)
   {
-    readBytes = min(mBuffer->mSize - mPos, buffLen);
-    memcpy(buff, (mBuffer->mData + mPos), readBytes);
-    mPos += readBytes;
+    readBytes = std::min(m_buffer->m_size - m_pos, buffLen);
+    memcpy(buff, (m_buffer->m_data + m_pos), readBytes);
+    m_pos += readBytes;
     return true;
   }
 
@@ -147,71 +147,71 @@ bool ScStreamMemory::read(sc_char * buff, sc_uint32 buffLen, sc_uint32 & readByt
   return false;
 }
 
-bool ScStreamMemory::write(sc_char * data, sc_uint32 dataLen, sc_uint32 & writtenBytes)
+bool ScStreamMemory::Write(sc_char * data, sc_uint32 dataLen, sc_uint32 & writtenBytes)
 {
   return false;
 }
 
-bool ScStreamMemory::seek(sc_stream_seek_origin origin, sc_uint32 offset)
+bool ScStreamMemory::Seek(sc_stream_seek_origin origin, sc_uint32 offset)
 {
-  assert(mBuffer.isValid());
+  SC_ASSERT(m_buffer.IsValid(), ());
   switch (origin)
   {
   case SC_STREAM_SEEK_SET:
-    if (offset > mBuffer->mSize)
+    if (offset > m_buffer->m_size)
       return false;
-    mPos = offset;
+    m_pos = offset;
     break;
 
   case SC_STREAM_SEEK_CUR:
-    if (mPos + offset >= mBuffer->mSize)
+    if (m_pos + offset >= m_buffer->m_size)
       return false;
-    mPos += offset;
+    m_pos += offset;
     break;
 
   case SC_STREAM_SEEK_END:
-    if (offset > mBuffer->mSize)
+    if (offset > m_buffer->m_size)
       return false;
-    mPos = mBuffer->mSize - offset;
+    m_pos = m_buffer->m_size - offset;
     break;
   };
 
   return true;
 }
 
-bool ScStreamMemory::eof() const
+bool ScStreamMemory::Eof() const
 {
-  assert(mBuffer.isValid());
-  return mPos >= mBuffer->mSize;
+  SC_ASSERT(m_buffer.IsValid(), ());
+  return (m_pos >= m_buffer->m_size);
 }
 
-sc_uint32 ScStreamMemory::size() const
+sc_uint32 ScStreamMemory::Size() const
 {
-  assert(mBuffer.isValid());
-  return mBuffer->mSize;
+  SC_ASSERT(m_buffer.IsValid(), ());
+  return m_buffer->m_size;
 }
 
-sc_uint32 ScStreamMemory::pos() const
+sc_uint32 ScStreamMemory::Pos() const
 {
-  assert(mBuffer.isValid());
-  return mPos;
+  SC_ASSERT(m_buffer.IsValid(), ());
+  return m_pos;
 }
 
-bool ScStreamMemory::hasFlag(sc_uint8 flag)
+bool ScStreamMemory::HasFlag(sc_uint8 flag)
 {
   return !(flag & SC_STREAM_FLAG_WRITE);
 }
 
 // --------------------------------
-bool ScStreamConverter::streamToString(ScStream const & stream, std::string & outString)
+bool ScStreamConverter::StreamToString(ScStream const & stream, std::string & outString)
 {
-  sc_uint32 const bytesCount = stream.size();
+  sc_uint32 const bytesCount = stream.Size();
   if (bytesCount == 0)
     return false;
 
   char * data = new char[bytesCount];
   sc_uint32 readBytes;
-  if (stream.read(data, bytesCount, readBytes) && (readBytes == bytesCount))
+  if (stream.Read(data, bytesCount, readBytes) && (readBytes == bytesCount))
   {
     outString.assign(data, data + bytesCount);
   }
@@ -221,8 +221,8 @@ bool ScStreamConverter::streamToString(ScStream const & stream, std::string & ou
 
 }
 
-void ScStreamConverter::streamFromString(std::string const & str, ScStreamMemory & outStream)
+void ScStreamConverter::StreamFromString(std::string const & str, ScStreamMemory & outStream)
 {
   MemoryBufferPtr buff = MemoryBufferPtr(new MemoryBufferSafe(str.c_str(), (uint32_t)str.size()));
-  outStream.reinit(buff);
+  outStream.Reinit(buff);
 }

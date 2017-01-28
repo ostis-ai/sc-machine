@@ -23,51 +23,57 @@ ScMemoryContext * Commands::memory_ctx = 0;
 void handler_device_group_enable_state_command_recursion(ScAddr const & addr, ScMemoryContext & ctx, bool isNeedEnable)
 {
   // if current element is a group_volume, then call the same function recursively for all childs
-  if (ctx.helperCheckArc(Keynodes::group_volume, addr, sc_type_arc_pos_const_perm))
+  if (ctx.HelperCheckEdge(Keynodes::group_volume, addr, ScType::EdgeAccessConstPosPerm))
   {
-    ScIterator3Ptr iterator = ctx.iterator3(addr, sc_type_arc_pos_const_perm, (sc_type)(sc_type_node | sc_type_const));
-    while (iterator->next())
-      handler_device_group_enable_state_command_recursion(iterator->value(2), ctx, isNeedEnable);
+    ScIterator3Ptr iterator = ctx.Iterator3(
+      addr,
+      ScType::EdgeAccessConstPosPerm,
+      ScType::NodeConst);
+
+    while (iterator->Next())
+      handler_device_group_enable_state_command_recursion(iterator->Get(2), ctx, isNeedEnable);
   }
   else
   {
     if (isNeedEnable)
     {
       // check if device doesn't already exists in enabled devices set and then append it
-      if (!ctx.helperCheckArc(Keynodes::device_enabled, addr, sc_type_arc_pos_const_perm))
+      if (!ctx.HelperCheckEdge(Keynodes::device_enabled, addr, ScType::EdgeAccessConstPosPerm))
       {
-        ctx.createEdge(sc_type_arc_pos_const_perm, Keynodes::device_enabled, addr);
+        ctx.CreateEdge(ScType::EdgeAccessConstPosPerm, Keynodes::device_enabled, addr);
       }
     }
     else
     {
       // disable device
-      ScIterator3Ptr it = ctx.iterator3(Keynodes::device_enabled, sc_type_arc_pos_const_perm, addr);
-      while (it->next())
-        ctx.eraseElement(it->value(1));
+      ScIterator3Ptr it = ctx.Iterator3(Keynodes::device_enabled, ScType::EdgeAccessConstPosPerm, addr);
+      while (it->Next())
+        ctx.EraseElement(it->Get(1));
     }
   }
 }
 
-sc_result handler_device_group_enable_state_command(sc_event const * event, sc_addr arg)
+sc_result handler_device_group_enable_state_command(sc_event const * event, sc_addr arg, sc_addr otherAddr)
 {
   ScMemoryContext ctx(sc_access_lvl_make_min, "handler_device_group_enable_command");
 
-  ScAddr commandInstance = ctx.getEdgeTarget(ScAddr(arg));
-  if (!commandInstance.isValid())
+  ScAddr const commandInstance = ctx.GetEdgeTarget(ScAddr(arg));
+  if (!commandInstance.IsValid())
     return SC_RESULT_ERROR;
 
-  bool isEnable = ctx.helperCheckArc(Keynodes::command_device_group_enable, commandInstance, sc_type_arc_pos_const_perm);
-  bool isDisable = ctx.helperCheckArc(Keynodes::command_device_group_disable, commandInstance, sc_type_arc_pos_const_perm);
+  bool const isEnable = ctx.HelperCheckEdge(Keynodes::command_device_group_enable, commandInstance, ScType::EdgeAccessConstPosPerm);
+  bool const isDisable = ctx.HelperCheckEdge(Keynodes::command_device_group_disable, commandInstance, ScType::EdgeAccessConstPosPerm);
 
   if (!isDisable && !isEnable)
     return SC_RESULT_ERROR;
 
-  ScIterator3Ptr it = ctx.iterator3(commandInstance, sc_type_arc_pos_const_perm, (sc_type)(sc_type_node | sc_type_const));
-  while (it->next())
-  {
-    handler_device_group_enable_state_command_recursion(it->value(2), ctx, !isDisable);
-  }
+  ScIterator3Ptr it = ctx.Iterator3(
+    commandInstance,
+    ScType::EdgeAccessConstPosPerm,
+    ScType::NodeConst);
+
+  while (it->Next())
+    handler_device_group_enable_state_command_recursion(it->Get(2), ctx, !isDisable);
 
   return SC_RESULT_OK;
 }
@@ -78,20 +84,27 @@ bool Commands::initialize()
   if (!memory_ctx)
     return false;
 
-  event_device_group_enable_command = sc_event_new(memory_ctx->getRealContext(), Keynodes::command_initiated.getRealAddr(), SC_EVENT_ADD_OUTPUT_ARC, 0, &handler_device_group_enable_state_command, 0);
+  event_device_group_enable_command = sc_event_new_ex(
+      memory_ctx->GetRealContext(),
+      *Keynodes::command_initiated,
+      SC_EVENT_ADD_OUTPUT_ARC,
+      0,
+      &handler_device_group_enable_state_command,
+      0);
+
   if (!event_device_group_enable_command)
     return false;
 
   SC_AGENT_REGISTER(AAddContentAgent)
-      SC_AGENT_REGISTER(AGetContentAgent)
-      SC_AGENT_REGISTER(ATVChangeProgram)
-      SC_AGENT_REGISTER(AWhoAreYouAgent)
-      SC_AGENT_REGISTER(AGenerateTextByTemplate)
+  SC_AGENT_REGISTER(AGetContentAgent)
+  SC_AGENT_REGISTER(ATVChangeProgram)
+  SC_AGENT_REGISTER(AWhoAreYouAgent)
+  SC_AGENT_REGISTER(AGenerateTextByTemplate)
 
-      /// power
-      SC_AGENT_REGISTER(AUpdateUsedPowerSum)
+  /// power
+  SC_AGENT_REGISTER(AUpdateUsedPowerSum)
 
-      return true;
+  return true;
 }
 
 bool Commands::shutdown()
@@ -104,15 +117,15 @@ bool Commands::shutdown()
   }
 
   SC_AGENT_UNREGISTER(AAddContentAgent)
-      SC_AGENT_UNREGISTER(AGetContentAgent)
-      SC_AGENT_UNREGISTER(ATVChangeProgram)
-      SC_AGENT_UNREGISTER(AWhoAreYouAgent)
-      SC_AGENT_UNREGISTER(AGenerateTextByTemplate)
+  SC_AGENT_UNREGISTER(AGetContentAgent)
+  SC_AGENT_UNREGISTER(ATVChangeProgram)
+  SC_AGENT_UNREGISTER(AWhoAreYouAgent)
+  SC_AGENT_UNREGISTER(AGenerateTextByTemplate)
 
-      /// Power
-      SC_AGENT_UNREGISTER(AUpdateUsedPowerSum)
+  /// Power
+  SC_AGENT_UNREGISTER(AUpdateUsedPowerSum)
 
-      if (memory_ctx)
+  if (memory_ctx)
   {
     delete memory_ctx;
     memory_ctx = 0;

@@ -11,38 +11,38 @@ UNIT_TEST(struct_common)
 {
   ScMemoryContext ctx(sc_access_lvl_make_min, "struct_common");
 
-  ScAddr structAddr = ctx.createNode(sc_type_node_struct | sc_type_const);
-  SC_CHECK(structAddr.isValid(), ());
+  ScAddr structAddr = ctx.CreateNode(sc_type_node_struct | sc_type_const);
+  SC_CHECK(structAddr.IsValid(), ());
 
   ScStruct st(&ctx, structAddr);
 
-  ScAddr const addr1 = ctx.createNode(sc_type_node_class);
-  SC_CHECK(addr1.isValid(), ());
+  ScAddr const addr1 = ctx.CreateNode(sc_type_node_class);
+  SC_CHECK(addr1.IsValid(), ());
 
-  ScAddr const addr2 = ctx.createNode(sc_type_node_material);
-  SC_CHECK(addr2.isValid(), ());
+  ScAddr const addr2 = ctx.CreateNode(sc_type_node_material);
+  SC_CHECK(addr2.IsValid(), ());
 
   st << addr1 << addr2;
-  SC_CHECK(st.hasElement(addr1), ());
-  SC_CHECK(st.hasElement(addr2), ());
+  SC_CHECK(st.HasElement(addr1), ());
+  SC_CHECK(st.HasElement(addr2), ());
 
   st >> addr1;
 
-  SC_CHECK(!st.hasElement(addr1), ());
-  SC_CHECK(st.hasElement(addr2), ());
+  SC_CHECK(!st.HasElement(addr1), ());
+  SC_CHECK(st.HasElement(addr2), ());
 
   st >> addr2;
 
-  SC_CHECK(!st.hasElement(addr1), ());
-  SC_CHECK(!st.hasElement(addr2), ());
-  SC_CHECK(st.isEmpty(), ());
+  SC_CHECK(!st.HasElement(addr1), ());
+  SC_CHECK(!st.HasElement(addr2), ());
+  SC_CHECK(st.IsEmpty(), ());
 
   // attributes
-  ScAddr const attrAddr = ctx.createNode(sc_type_node_role);
-  SC_CHECK(attrAddr.isValid(), ());
+  ScAddr const attrAddr = ctx.CreateNode(sc_type_node_role);
+  SC_CHECK(attrAddr.IsValid(), ());
 
-  SC_CHECK(st.append(addr1, attrAddr), ());
-  ScIterator5Ptr iter5 = ctx.iterator5(
+  SC_CHECK(st.Append(addr1, attrAddr), ());
+  ScIterator5Ptr iter5 = ctx.Iterator5(
         structAddr,
         SC_TYPE(sc_type_arc_pos_const_perm),
         SC_TYPE(0),
@@ -50,12 +50,12 @@ UNIT_TEST(struct_common)
         attrAddr);
 
   bool found = false;
-  while (iter5->next())
+  while (iter5->Next())
   {
     SC_CHECK(!found, ());	// one time
-    SC_CHECK_EQUAL(iter5->value(0), structAddr, ());
-    SC_CHECK_EQUAL(iter5->value(2), addr1, ());
-    SC_CHECK_EQUAL(iter5->value(4), attrAddr, ());
+    SC_CHECK_EQUAL(iter5->Get(0), structAddr, ());
+    SC_CHECK_EQUAL(iter5->Get(2), addr1, ());
+    SC_CHECK_EQUAL(iter5->Get(4), attrAddr, ());
     found = true;
   }
   SC_CHECK(found, ());

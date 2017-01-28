@@ -16,7 +16,7 @@ extern "C"
 
 #include "sc_types.hpp"
 
-typedef sc_addr tRealAddr;
+using ScRealAddr = sc_addr;
 
 class _SC_EXTERN ScAddr
 {
@@ -31,27 +31,27 @@ public:
   explicit ScAddr();
   explicit ScAddr(sc_addr const & addr);
 
-  bool isValid() const;
-  void reset();
+  bool IsValid() const;
+  void Reset();
 
   bool operator == (ScAddr const & other) const;
   bool operator != (ScAddr const & other) const;
-  tRealAddr operator * () const;
-  HashType hash() const;
+  ScRealAddr const & operator * () const;
+  HashType Hash() const;
 
   /// TODO: remove and replace by operator * ()
-  tRealAddr const & getRealAddr() const;
-
+  ScRealAddr const & GetRealAddr() const;
+ 
 protected:
-  tRealAddr mRealAddr;
+  ScRealAddr m_realAddr;
 };
 
-typedef std::vector<ScAddr> tAddrVector;
-typedef std::list<ScAddr> tAddrList;
+using ScAddrVector = std::vector<ScAddr>;
+using ScAddrList = std::list<ScAddr>;
 
 struct RealAddrLessFunc
 {
-  bool operator () (tRealAddr const & a, tRealAddr const & b) const
+  bool operator () (ScRealAddr const & a, ScRealAddr const & b) const
   {
     if (a.seg < b.seg)
       return true;
@@ -67,7 +67,7 @@ struct ScAddLessFunc
 {
   bool operator () (ScAddr const & a, ScAddr const & b)
   {
-    return RealAddrLessFunc()(a.getRealAddr(), b.getRealAddr());
+    return RealAddrLessFunc()(*a, *b);
   }
 };
 
@@ -82,6 +82,6 @@ template <> struct ScAddrHashFunc < uint32_t >
 {
   uint32_t operator() (ScAddr const & addr) const
   {
-    return SC_ADDR_LOCAL_TO_INT(addr.getRealAddr());
+    return SC_ADDR_LOCAL_TO_INT(*addr);
   }
 };

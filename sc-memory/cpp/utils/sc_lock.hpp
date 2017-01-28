@@ -15,11 +15,11 @@ class ScLock
 public:
   ScLock();
 
-  void lock();
-  void unlock();
+  void Lock();
+  void Unlock();
 
 private:
-  std::atomic_bool mLocked;
+  std::atomic_bool m_locked;
 };
 
 } // namespace utils

@@ -83,7 +83,7 @@ bool parseTimeStamp(std::string str, std::tm & outValue)
   tStringVector tokens;
   tokenize(str, tokens, "-T:.");
 
-  check_expr(tokens.size() == 7);
+  SC_ASSERT(tokens.size() == 7, ());
   outValue.tm_year = atoi(tokens[0].c_str());
   outValue.tm_mon = atoi(tokens[1].c_str());
   outValue.tm_mday = atoi(tokens[2].c_str());

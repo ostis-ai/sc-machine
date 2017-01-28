@@ -37,21 +37,21 @@ public:
 
   /* Set specified function as a delegate that will be calls on event emit */
   template <typename FuncT>
-  void setDelegate(FuncT & func)
+  void SetDelegate(FuncT & func)
   {
-    mDelegate = func;
+    m_delegate = func;
   }
 
-  void removeDelegate();
+  void RemoveDelegate();
 
 protected:
-  static sc_result _handler(sc_event const * evt, sc_addr edge, sc_addr other_el);
-  static sc_result _handlerDelete(sc_event const * evt);
+  static sc_result Handler(sc_event const * evt, sc_addr edge, sc_addr other_el);
+  static sc_result HandlerDelete(sc_event const * evt);
 
 private:
-  sc_event * mEvent;
-  DelegateFunc mDelegate;
-  utils::ScLock mLock;
+  sc_event * m_event;
+  DelegateFunc m_delegate;
+  utils::ScLock m_lock;
 };
 
 SHARED_PTR_TYPE(ScEvent);

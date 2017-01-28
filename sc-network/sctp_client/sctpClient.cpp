@@ -35,50 +35,50 @@ bool Iterator::next()
 
 ScAddr Iterator::getValue(sc_uint8 idx) const
 {
-  check_expr(mCurrentResult > 0);
-  sc_uint32 const offset = (mCurrentResult - 1) * sizeof(tRealAddr) * mIterRange + sizeof(tRealAddr) * idx;
-  return ScAddr(*((tRealAddr*)(mBuffer._GetPtr() + offset)));
+  SC_ASSERT(mCurrentResult > 0, ());
+  sc_uint32 const offset = (mCurrentResult - 1) * sizeof(ScRealAddr) * mIterRange + sizeof(ScRealAddr) * idx;
+  return ScAddr(*((ScRealAddr*)(mBuffer.GetPtr() + offset)));
 }
 
 // -----------------------------------------
 _SC_EXTERN Client::Client(ISocket * socket)
-  : mCmdIdCounter(0)
-  , mSocketImpl(socket)
+  : m_cmdIdCounter(0)
+  , m_socketImpl(socket)
 {
 }
 
 _SC_EXTERN Client::~Client()
 {
-  if (mSocketImpl->isConnected())
-    mSocketImpl->disconnect();
-  delete mSocketImpl;
+  if (m_socketImpl->IsConnected())
+    m_socketImpl->Disconnect();
+  delete m_socketImpl;
 }
 
-_SC_EXTERN bool Client::connect(std::string const & address, std::string const & port)
+_SC_EXTERN bool Client::Connect(std::string const & address, std::string const & port)
 {
-  return mSocketImpl->connect(address, port);
+  return m_socketImpl->Connect(address, port);
 }
 
-_SC_EXTERN void Client::disconnect()
+_SC_EXTERN void Client::Disconnect()
 {
-  mSocketImpl->disconnect();
+  m_socketImpl->Disconnect();
 }
 
 /// TODO: Implement error code return
-_SC_EXTERN bool Client::isElement(ScAddr const & addr)
+_SC_EXTERN bool Client::IsElement(ScAddr const & addr)
 {
   RequestElementCheck req;
 
-  req.header.id = ++mCmdIdCounter;
+  req.header.id = ++m_cmdIdCounter;
   req.header.flags = 0;
   req.header.commandType = SCTP_CMD_CHECK_ELEMENT;
   req.header.argsSize = SCTP_ADDR_SIZE;
-  req.addr = addr.getRealAddr();
+  req.addr = *addr;
 
-  if (mSocketImpl->writeType(req) == sizeof(RequestElementCheck))
+  if (m_socketImpl->WriteType(req) == sizeof(RequestElementCheck))
   {
     ResultHeader res;
-    if (mSocketImpl->readType(res) == sizeof(ResultHeader))
+    if (m_socketImpl->ReadType(res) == sizeof(ResultHeader))
       return (res.resultCode == SCTP_RESULT_OK);
   }
 
@@ -86,43 +86,43 @@ _SC_EXTERN bool Client::isElement(ScAddr const & addr)
   return false;
 }
 
-_SC_EXTERN bool Client::eraseElement(ScAddr const & addr)
+_SC_EXTERN bool Client::EraseElement(ScAddr const & addr)
 {
   RequestElementErase req;
 
-  req.header.id = ++mCmdIdCounter;
+  req.header.id = ++m_cmdIdCounter;
   req.header.flags = 0;
   req.header.commandType = SCTP_CMD_ERASE_ELEMENT;
   req.header.argsSize = SCTP_ADDR_SIZE;
-  req.addr = addr.getRealAddr();
+  req.addr = *addr;
 
-  if (mSocketImpl->writeType(req) == sizeof(RequestElementErase))
+  if (m_socketImpl->WriteType(req) == sizeof(RequestElementErase))
   {
     ResultHeader res;
-    if (mSocketImpl->readType(res) == sizeof(ResultHeader))
+    if (m_socketImpl->ReadType(res) == sizeof(ResultHeader))
       return (res.resultCode == SCTP_RESULT_OK);
   }
 
   return false;
 }
 
-_SC_EXTERN ScAddr Client::createNode(sc_type type)
+_SC_EXTERN ScAddr Client::CreateNode(sc_type type)
 {
   RequestCreateNode req;
-  req.header.id = ++mCmdIdCounter;
+  req.header.id = ++m_cmdIdCounter;
   req.header.flags = 0;
   req.header.commandType = SCTP_CMD_CREATE_NODE;
   req.header.argsSize = sizeof(sc_type);
   req.type = type;
 
-  if (mSocketImpl->writeType(req) == sizeof(RequestCreateNode))
+  if (m_socketImpl->WriteType(req) == sizeof(RequestCreateNode))
   {
     ResultHeader res;
-    if ((mSocketImpl->readType(res) == sizeof(ResultHeader)) && (res.resultCode == SCTP_RESULT_OK))
+    if ((m_socketImpl->ReadType(res) == sizeof(ResultHeader)) && (res.resultCode == SCTP_RESULT_OK))
     {
-      tRealAddr addr;
-      assert(res.resultSize == sizeof(addr));
-      if (mSocketImpl->readType(addr) == sizeof(addr))
+      ScRealAddr addr;
+      SC_ASSERT(res.resultSize == sizeof(addr), ());
+      if (m_socketImpl->ReadType(addr) == sizeof(addr))
         return ScAddr(addr);
     }
   }
@@ -130,22 +130,22 @@ _SC_EXTERN ScAddr Client::createNode(sc_type type)
   return ScAddr();
 }
 
-_SC_EXTERN ScAddr Client::createLink()
+_SC_EXTERN ScAddr Client::CreateLink()
 {
   RequestHeader req;
-  req.id = ++mCmdIdCounter;
+  req.id = ++m_cmdIdCounter;
   req.flags = 0;
   req.commandType = SCTP_CMD_CREATE_LINK;
   req.argsSize = 0;
 
-  if (mSocketImpl->writeType(req) == sizeof(RequestHeader))
+  if (m_socketImpl->WriteType(req) == sizeof(RequestHeader))
   {
     ResultHeader res;
-    if ((mSocketImpl->readType(res) == sizeof(ResultHeader)) && (res.resultCode == SCTP_RESULT_OK))
+    if ((m_socketImpl->ReadType(res) == sizeof(ResultHeader)) && (res.resultCode == SCTP_RESULT_OK))
     {
-      tRealAddr addr;
-      assert(res.resultSize == sizeof(addr));
-      if (mSocketImpl->readType(addr) == sizeof(addr))
+      ScRealAddr addr;
+      SC_ASSERT(res.resultSize == sizeof(addr), ());
+      if (m_socketImpl->ReadType(addr) == sizeof(addr))
         return ScAddr(addr);
     }
   }
@@ -153,26 +153,26 @@ _SC_EXTERN ScAddr Client::createLink()
   return ScAddr();
 }
 
-_SC_EXTERN ScAddr Client::createArc(sc_type type, ScAddr const & addrBeg, ScAddr const & addrEnd)
+_SC_EXTERN ScAddr Client::CreateArc(sc_type type, ScAddr const & addrBeg, ScAddr const & addrEnd)
 {
   RequestCreateArc req;
 
-  req.header.id = ++mCmdIdCounter;
+  req.header.id = ++m_cmdIdCounter;
   req.header.flags = 0;
   req.header.commandType = SCTP_CMD_CREATE_ARC;
   req.header.argsSize = sizeof(sc_type) + SCTP_ADDR_SIZE * 2;
   req.type = type;
-  req.addrBeg = addrBeg.getRealAddr();
-  req.addrEnd = addrEnd.getRealAddr();
+  req.addrBeg = *addrBeg;
+  req.addrEnd = *addrEnd;
 
-  if (mSocketImpl->writeType(req) == sizeof(RequestCreateArc))
+  if (m_socketImpl->WriteType(req) == sizeof(RequestCreateArc))
   {
     ResultHeader res;
-    if ((mSocketImpl->readType(res) == sizeof(ResultHeader)) && (res.resultCode == SCTP_RESULT_OK))
+    if ((m_socketImpl->ReadType(res) == sizeof(ResultHeader)) && (res.resultCode == SCTP_RESULT_OK))
     {
-      tRealAddr addr;
-      assert(res.resultSize == sizeof(addr));
-      if (mSocketImpl->readType(addr) == sizeof(addr))
+      ScRealAddr addr;
+      SC_ASSERT(res.resultSize == sizeof(addr), ());
+      if (m_socketImpl->ReadType(addr) == sizeof(addr))
         return ScAddr(addr);
     }
   }
@@ -180,25 +180,25 @@ _SC_EXTERN ScAddr Client::createArc(sc_type type, ScAddr const & addrBeg, ScAddr
   return ScAddr();
 }
 
-_SC_EXTERN sc_type Client::getElementType(ScAddr const & addr)
+_SC_EXTERN sc_type Client::GetElementType(ScAddr const & addr)
 {
   RequestElementType req;
 
-  req.header.id = ++mCmdIdCounter;
+  req.header.id = ++m_cmdIdCounter;
   req.header.flags = 0;
   req.header.commandType = SCTP_CMD_GET_ELEMENT_TYPE;
   req.header.argsSize = SCTP_ADDR_SIZE;
-  req.addr = addr.getRealAddr();
+  req.addr = *addr;
 
-  if (mSocketImpl->writeType(req) == sizeof(RequestElementType))
+  if (m_socketImpl->WriteType(req) == sizeof(RequestElementType))
   {
     ResultHeader resultHeader;
-    if (readResultHeader(resultHeader) && (resultHeader.resultCode == SCTP_RESULT_OK))
+    if (ReadResultHeader(resultHeader) && (resultHeader.resultCode == SCTP_RESULT_OK))
     {
       if (resultHeader.resultSize == sizeof(sc_type))
       {
         sc_type resultType;
-        if (mSocketImpl->readType(resultType) == sizeof(sc_type))
+        if (m_socketImpl->ReadType(resultType) == sizeof(sc_type))
           return resultType;
       }
     }
@@ -207,29 +207,29 @@ _SC_EXTERN sc_type Client::getElementType(ScAddr const & addr)
   return (sc_type)0;
 }
 
-_SC_EXTERN bool Client::setElementSubtype(ScAddr const & addr, sc_type subtype)
+_SC_EXTERN bool Client::SetElementSubtype(ScAddr const & addr, sc_type subtype)
 {
   return false;
 }
 
-_SC_EXTERN bool Client::getArcInfo(ScAddr const & arcAddr, ScAddr & outBegin, ScAddr & outEnd) const
+_SC_EXTERN bool Client::GetArcInfo(ScAddr const & arcAddr, ScAddr & outBegin, ScAddr & outEnd) const
 {
   RequestArcInfo req;
 
-  req.header.id = ++mCmdIdCounter;
+  req.header.id = ++m_cmdIdCounter;
   req.header.flags = 0;
   req.header.commandType = SCTP_CMD_GET_ARC;
   req.header.argsSize = SCTP_ADDR_SIZE;
-  req.addr = arcAddr.getRealAddr();
+  req.addr = *arcAddr;
 
-  if (mSocketImpl->writeType(req) == sizeof(RequestArcInfo))
+  if (m_socketImpl->WriteType(req) == sizeof(RequestArcInfo))
   {
     ResultHeader res;
-    if ((mSocketImpl->readType(res) == sizeof(res)) && (res.resultCode == SCTP_RESULT_OK))
+    if ((m_socketImpl->ReadType(res) == sizeof(res)) && (res.resultCode == SCTP_RESULT_OK))
     {
-      tRealAddr addrs[2];
-      assert(res.resultSize == sizeof(addrs));
-      if (mSocketImpl->readType(addrs) == sizeof(addrs))
+      ScRealAddr addrs[2];
+      SC_ASSERT(res.resultSize == sizeof(addrs), ());
+      if (m_socketImpl->ReadType(addrs) == sizeof(addrs))
       {
         outBegin = ScAddr(addrs[0]);
         outEnd = ScAddr(addrs[1]);
@@ -241,53 +241,53 @@ _SC_EXTERN bool Client::getArcInfo(ScAddr const & arcAddr, ScAddr & outBegin, Sc
   return false;
 }
 
-_SC_EXTERN bool Client::setLinkContent(ScAddr const & addr, IScStreamPtr const & stream)
+_SC_EXTERN bool Client::SetLinkContent(ScAddr const & addr, IScStreamPtr const & stream)
 {
   RequestSetLinkContent req;
 
-  req.header.id = ++mCmdIdCounter;
+  req.header.id = ++m_cmdIdCounter;
   req.header.flags = 0;
   req.header.commandType = SCTP_CMD_SET_LINK_CONTENT;
-  req.header.argsSize = sizeof(addr) + sizeof(sc_uint32) + stream->size();
-  req.addr = addr.getRealAddr();
-  req.size = stream->size();
+  req.header.argsSize = sizeof(addr) + sizeof(sc_uint32) + stream->Size();
+  req.addr = *addr;
+  req.size = stream->Size();
 
-  if (mSocketImpl->writeType(req) == sizeof(RequestSetLinkContent))
+  if (m_socketImpl->WriteType(req) == sizeof(RequestSetLinkContent))
   {
     char buff[1024];
     uint32_t readBytes;
-    while (!stream->eof())
+    while (!stream->Eof())
     {
-      if (!stream->read(buff, 1024, readBytes))
+      if (!stream->Read(buff, 1024, readBytes))
         return false;
-      if (mSocketImpl->write(buff, readBytes) != static_cast<int>(readBytes))
+      if (m_socketImpl->Write(buff, readBytes) != static_cast<int>(readBytes))
         return false;
     }
 
     ResultHeader res;
-    if (mSocketImpl->readType(res) == sizeof(res))
+    if (m_socketImpl->ReadType(res) == sizeof(res))
       return (res.resultCode == SCTP_RESULT_OK);
   }
 
   return false;
 }
 
-_SC_EXTERN bool Client::getLinkContent(ScAddr const & addr, IScStreamPtr & stream)
+_SC_EXTERN bool Client::GetLinkContent(ScAddr const & addr, IScStreamPtr & stream)
 {
   RequestGetLinkContent req;
-  req.header.id = ++mCmdIdCounter;
+  req.header.id = ++m_cmdIdCounter;
   req.header.flags = 0;
   req.header.commandType = SCTP_CMD_GET_LINK_CONTENT;
   req.header.argsSize = SCTP_ADDR_SIZE;
-  req.addr = addr.getRealAddr();
+  req.addr = *addr;
 
-  if (mSocketImpl->writeType(req) == sizeof(RequestGetLinkContent))
+  if (m_socketImpl->WriteType(req) == sizeof(RequestGetLinkContent))
   {
     ResultHeader res;
-    if ((mSocketImpl->readType(res) == sizeof(res)) && (res.resultCode == SCTP_RESULT_OK))
+    if ((m_socketImpl->ReadType(res) == sizeof(res)) && (res.resultCode == SCTP_RESULT_OK))
     {
       char * buff = new char[res.resultSize];
-      if (mSocketImpl->read(buff, res.resultSize) == static_cast<int>(res.resultSize))
+      if (m_socketImpl->Read(buff, res.resultSize) == static_cast<int>(res.resultSize))
       {
         MemoryBufferPtr buffer(new MemoryBuffer(buff, res.resultSize));
         stream = IScStreamPtr(new ScStreamMemory(buffer));
@@ -299,21 +299,21 @@ _SC_EXTERN bool Client::getLinkContent(ScAddr const & addr, IScStreamPtr & strea
   return false;
 }
 
-_SC_EXTERN bool Client::findLinksByContent(IScStreamPtr const & stream, tAddrList & found)
+_SC_EXTERN bool Client::FindLinksByContent(IScStreamPtr const & stream, ScAddrList & found)
 {
   return false;
 }
 
-bool Client::writeSctpHeader(RequestHeader const & header)
+bool Client::WriteSctpHeader(RequestHeader const & header)
 {
-  assert(mSocketImpl);
+  SC_ASSERT(m_socketImpl, ());
 
-  return (mSocketImpl->writeType(header) == sizeof(RequestHeader));
+  return (m_socketImpl->WriteType(header) == sizeof(RequestHeader));
 }
 
-bool Client::readResultHeader(ResultHeader & outHeader)
+bool Client::ReadResultHeader(ResultHeader & outHeader)
 {
-  if (mSocketImpl->readType(outHeader) == sizeof(ResultHeader))
+  if (m_socketImpl->ReadType(outHeader) == sizeof(ResultHeader))
     return true;
 
   return false;

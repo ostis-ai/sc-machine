@@ -23,7 +23,7 @@
 #define SC_GENERATED_BODY_ITEMS(v) SC_COMBINE(ScFileID, _, __LINE__, v)
 #define SC_GENERATED_BODY_INIT() \
   public: \
-  static bool initGlobal() { return _initStaticInternal(); } \
+  static bool InitGlobal() { return _InitStaticInternal(); } \
   private: \
   SC_GENERATED_BODY_ITEMS(_init) \
   SC_GENERATED_BODY_ITEMS(_initStatic) \
@@ -34,7 +34,7 @@
 #define SC_GENERATED_BODY(...)  SC_GENERATED_BODY_INIT()
 #define SC_PROPERTY(...)
 
-#define SC_OBJECT_INIT_GLOBAL_CALL(__class) __class::initGlobal();
+#define SC_OBJECT_INIT_GLOBAL_CALL(__class) __class::InitGlobal();
 
 // for autocompletion
 #define Keynode(__X)

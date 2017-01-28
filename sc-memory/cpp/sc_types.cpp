@@ -1,3 +1,9 @@
+/*
+* This source file is part of an OSTIS project. For the latest info, see http://ostis.net
+* Distributed under the MIT License
+* (See accompanying file COPYING.MIT or copy at http://opensource.org/licenses/MIT)
+*/
+
 #include "sc_types.hpp"
 
 ScType const ScType::EdgeUCommon(sc_type_edge_common);
@@ -29,6 +35,7 @@ ScType const ScType::Var(sc_type_var);
 
 ScType const ScType::Node(sc_type_node);
 ScType const ScType::Link(sc_type_link);
+ScType const ScType::Unknown;
 
 ScType const ScType::NodeConst(sc_type_node | sc_type_const);
 ScType const ScType::NodeVar(sc_type_node | sc_type_var);
