@@ -6,16 +6,28 @@
 
 #pragma once
 
+#include "nlApiAiUtils.hpp"
+
 #include "sc-memory/cpp/kpm/sc_agent.hpp"
+
 #include "nlApiAi.generated.hpp"
 
 namespace nl
 {
 
-class AApiAiParseUserTextAgent : public ScAgentAction
+class AApiAiParseUserTextAgent final : public ScAgentAction
 {
   SC_CLASS(Agent, CmdClass("command_process_user_text_message"))
   SC_GENERATED_BODY()
+  
+protected:
+  sc_result TryCommonTemplate(ScAddr const & actionAddr,
+                              ScAddr const & resultAddr,
+                              ApiAiRequestResult const & resultParsed);
+
+  sc_result TryCommandEmit(ScAddr const & actionAddr,
+                           ScAddr const & resultAddr,
+                           ApiAiRequestResult const & resultParsed);
 
 private:
   SC_PROPERTY(Keynode("nrel_translation"), ForceCreate)
