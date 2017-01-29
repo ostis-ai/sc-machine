@@ -22,50 +22,54 @@ SC_AGENT_ACTION_IMPLEMENTATION(ATestResultOk)
 
 UNIT_TEST(ATestResultOk)
 {
-  ScAgentInit(true);
-  ATestResultOk::InitGlobal();
-
-  SC_AGENT_REGISTER(ATestResultOk);
-  
-  ScMemoryContext ctx(sc_access_lvl_make_min, "ATestResultOk");
-
-  ScAddr const cmdAddr = ctx.CreateNode(ScType::NodeConst);
-  SC_CHECK(cmdAddr.IsValid(), ());
-  ScAddr const edge = ctx.CreateEdge(
-    ScType::EdgeAccessConstPosPerm,
-    ATestResultOk::ms_keynodeTestResultOk,
-    cmdAddr);
-
-  std::thread work_thread([&ctx, &cmdAddr]
+  // uncomment to run more complex test
+  //for (size_t i = 0; i < 50; ++i)
   {
-    std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+    ScAgentInit(true);
+    ATestResultOk::InitGlobal();
 
-    // initiate command
-    ScMemoryContext ctxLocal(sc_access_lvl_make_min, "ATestResultOk_thread");
-    ctxLocal.CreateEdge(ScType::EdgeAccessConstPosPerm, ScAgentAction::GetCommandInitiatedAddr(), cmdAddr);
-  });
+    SC_AGENT_REGISTER(ATestResultOk);
 
-  work_thread.join();
+    ScMemoryContext ctx(sc_access_lvl_make_min, "ATestResultOk");
 
-  ScWaitActionFinished waiter(ctx, cmdAddr);
-  SC_CHECK(waiter.Wait(), ());
+    ScAddr const cmdAddr = ctx.CreateNode(ScType::NodeConst);
+    SC_CHECK(cmdAddr.IsValid(), ());
+    ScAddr const edge = ctx.CreateEdge(
+      ScType::EdgeAccessConstPosPerm,
+      ATestResultOk::ms_keynodeTestResultOk,
+      cmdAddr);
 
-  // check result
-  ScIterator5Ptr it5 = ctx.Iterator5(
-    cmdAddr,
-    ScType::EdgeDCommonConst,
-    ScType::NodeConst,
-    ScType::EdgeAccessConstPosPerm,
-    ScAgentAction::GetNrelResultAddr());
-  
-  SC_CHECK(it5->Next(), ());
+    std::thread work_thread([&ctx, &cmdAddr]
+    {
+      std::this_thread::sleep_for(std::chrono::milliseconds(300));
 
-  ScIterator3Ptr it = ctx.Iterator3(
-    ScAgentAction::GetResultCodeAddr(SC_RESULT_OK),
-    ScType::EdgeAccessConstPosPerm,
-    it5->Get(2));
+      // initiate command
+      ScMemoryContext ctxLocal(sc_access_lvl_make_min, "ATestResultOk_thread");
+      ctxLocal.CreateEdge(ScType::EdgeAccessConstPosPerm, ScAgentAction::GetCommandInitiatedAddr(), cmdAddr);
+    });
 
-  SC_CHECK(it->Next(), ());
+    ScWaitActionFinished waiter(ctx, cmdAddr);
+    SC_CHECK(waiter.Wait(), ());
 
-  SC_AGENT_UNREGISTER(ATestResultOk);
+    // check result
+    ScIterator5Ptr it5 = ctx.Iterator5(
+      cmdAddr,
+      ScType::EdgeDCommonConst,
+      ScType::NodeConst,
+      ScType::EdgeAccessConstPosPerm,
+      ScAgentAction::GetNrelResultAddr());
+
+    SC_CHECK(it5->Next(), ());
+
+    ScIterator3Ptr it = ctx.Iterator3(
+      ScAgentAction::GetResultCodeAddr(SC_RESULT_OK),
+      ScType::EdgeAccessConstPosPerm,
+      it5->Get(2));
+
+    SC_CHECK(it->Next(), ());
+
+    work_thread.join();
+
+    SC_AGENT_UNREGISTER(ATestResultOk);
+  }
 }

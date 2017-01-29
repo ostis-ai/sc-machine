@@ -657,6 +657,7 @@ sc_addr sc_storage_arc_new_ext(const sc_memory_context *ctx, sc_type type, sc_ad
     sc_element *beg_el = 0, *end_el = 0;
     sc_element *f_out_arc = 0, *f_in_arc = 0;
     sc_element *tmp_el = 0;
+    sc_bool should_break = SC_FALSE;
 
     // try to lock begin and end elements
     r = sc_storage_element_lock_try(beg, s_max_storage_lock_attempts, &beg_el);
@@ -665,6 +666,7 @@ sc_addr sc_storage_arc_new_ext(const sc_memory_context *ctx, sc_type type, sc_ad
 
     if (sc_element_is_valid(beg_el) == SC_FALSE)
     {
+      should_break = SC_TRUE;
       r = SC_RESULT_ERROR_INVALID_STATE;
       goto unlock;
     }
@@ -677,6 +679,7 @@ sc_addr sc_storage_arc_new_ext(const sc_memory_context *ctx, sc_type type, sc_ad
 
     if (sc_element_is_valid(end_el) == SC_FALSE)
     {
+      should_break = SC_TRUE;
       r = SC_RESULT_ERROR_INVALID_STATE;
       goto unlock;
     }
@@ -752,6 +755,9 @@ unlock:
       if (tmp_el)
         sc_storage_element_unlock(addr);
     }
+
+    if (should_break == SC_TRUE)
+      break;
   }
 
   return addr;

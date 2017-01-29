@@ -34,6 +34,6 @@ int main(int argc, char ** argv) try
 }
 catch (utils::ScException const & ex)
 {
-  SC_LOG_ERROR(ex.what());
+  SC_LOG_ERROR(ex.What());
   _pause();
 }
