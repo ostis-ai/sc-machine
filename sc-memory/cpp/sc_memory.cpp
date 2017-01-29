@@ -328,14 +328,20 @@ bool ScMemoryContext::Save()
   return (sc_memory_save(m_context) == SC_RESULT_OK);
 }
 
-bool ScMemoryContext::HelperResolveSystemIdtf(std::string const & sysIdtf, ScAddr & outAddr, bool bForceCreation /*= false*/)
+bool ScMemoryContext::HelperResolveSystemIdtf(std::string const & sysIdtf, ScAddr & outAddr, ScType const & type/* = ScType()*/)
 {
   SC_ASSERT(IsValid(), ());
   outAddr.Reset();
   bool result = HelperFindBySystemIdtf(sysIdtf, outAddr);
-  if (!result && bForceCreation)
+  if (!result && type.IsValid())
   {
-    outAddr = CreateNode(sc_type_const);
+    if (!type.IsNode())
+    {
+      SC_THROW_EXCEPTION(utils::ExceptionInvalidParams,
+        "You should provide any of ScType::Node... value as a type");
+    }
+
+    outAddr = CreateNode(type);
     if (outAddr.IsValid())
       result = HelperSetSystemIdtf(sysIdtf, outAddr);
   }

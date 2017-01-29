@@ -63,7 +63,7 @@ bool HasAddr(ScAddrVector const & v, ScAddr const & addr)
 ScAddr ResolveKeynode(ScMemoryContext & ctx, ScType const & type, std::string const & idtf)
 {
   ScAddr addr;
-  ctx.HelperResolveSystemIdtf(idtf, addr, true);
+  ctx.HelperResolveSystemIdtf(idtf, addr, ScType::NodeConst);
   SC_CHECK(addr.IsValid(), ());
   return addr;
 }
