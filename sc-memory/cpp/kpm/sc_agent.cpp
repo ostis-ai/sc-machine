@@ -14,12 +14,8 @@ namespace
 bool gInitializeResult = false;
 bool gIsInitialized = false;
 
-bool ResolveKeynodeImpl(ScMemoryContext & ctx, char const * str, ScAddr & outAddr)
-{
-  SC_ASSERT(ctx.IsValid(), ());
-
-  return ctx.HelperResolveSystemIdtf(str, outAddr, true);
-}
+size_t const kKeynodeRrelListNum = 10;
+std::array<ScAddr, kKeynodeRrelListNum> kKeynodeRrelList;
 
 } // namespace
 
@@ -28,6 +24,19 @@ bool ScAgentInit(bool force /* = false */)
   if (force || !gIsInitialized)
   {
     gInitializeResult = ScAgentAction::InitGlobal();
+
+    // resolve rrel_n relations
+    ScMemoryContext ctx(sc_access_lvl_make_min, "ScAgentInit");
+    for (size_t i = 0; i < kKeynodeRrelListNum; ++i)
+    {
+      ScAddr & item = kKeynodeRrelList[i];
+      if (!ctx.HelperResolveSystemIdtf("rrel_" + std::to_string(i + 1), item, ScType::NodeConstRole))
+        gInitializeResult = false;
+      SC_ASSERT(item.IsValid(), ());
+    }
+
+    // should be call after ScAgentAction::InitGlobal()
+    gInitializeResult = gInitializeResult && ScAgentAction::InitSets(ctx);
 
     gIsInitialized = true;
   }
@@ -56,7 +65,9 @@ ScAddr ScAgentAction::ms_commandInitiatedAddr;
 ScAddr ScAgentAction::ms_commandProgressdAddr;
 ScAddr ScAgentAction::ms_commandFinishedAddr;
 ScAddr ScAgentAction::ms_nrelResult;
+ScAddr ScAgentAction::ms_nrelCommonTemplate;
 
+ScAddr ScAgentAction::ms_keynodeScResult;
 ScAddr ScAgentAction::ms_keynodeScResultUnknown;
 ScAddr ScAgentAction::ms_keynodeScResultOk;
 ScAddr ScAgentAction::ms_keynodeScResultNo;
@@ -78,6 +89,24 @@ ScAgentAction::ScAgentAction(ScAddr const & cmdClassAddr, char const * name, sc_
 
 ScAgentAction::~ScAgentAction()
 {
+}
+
+bool ScAgentAction::InitSets(ScMemoryContext & ctx)
+{
+  bool result = true;
+
+  // init sc_result set
+  for (size_t i = 0; i < SC_RESULT_COUNT; ++i)
+  {
+    ScAddr const resAddr = GetResultCodeAddr(static_cast<sc_result>(i));
+    result = result && resAddr.IsValid();
+    if (!ctx.HelperCheckEdge(ms_keynodeScResult, resAddr, ScType::EdgeAccessConstPosPerm))
+    {
+      result = result && ctx.CreateEdge(ScType::EdgeAccessConstPosPerm, ms_keynodeScResult, resAddr).IsValid();
+    }
+  }
+
+  return result;
 }
 
 sc_result ScAgentAction::Run(ScAddr const & listenAddr, ScAddr const & edgeAddr, ScAddr const & otherAddr)
@@ -116,7 +145,7 @@ sc_result ScAgentAction::Run(ScAddr const & listenAddr, ScAddr const & edgeAddr,
   return SC_RESULT_ERROR;
 }
 
-ScAddr ScAgentAction::GetParam(ScAddr const & cmdAddr, ScAddr const & relationAddr, ScType const & paramType)
+ScAddr ScAgentAction::GetParam(ScAddr const & cmdAddr, ScAddr const & relationAddr, ScType const & paramType) const
 {
   ScIterator5Ptr iter = m_memoryCtx.Iterator5(cmdAddr,
                                               ScType::EdgeAccessConstPosPerm,
@@ -128,6 +157,17 @@ ScAddr ScAgentAction::GetParam(ScAddr const & cmdAddr, ScAddr const & relationAd
     return ScAddr();
 
   return iter->Get(2);
+}
+
+ScAddr ScAgentAction::GetParam(ScAddr const & cmdAddr, size_t index) const
+{
+  if (index >= kKeynodeRrelListNum)
+  {
+    SC_THROW_EXCEPTION(utils::ExceptionInvalidParams,
+      "You should use index in range[0; " + std::to_string(kKeynodeRrelListNum) + "]");
+  }
+
+  return GetParam(cmdAddr, kKeynodeRrelList[index], ScType());
 }
 
 ScAddr const & ScAgentAction::GetCommandInitiatedAddr()
@@ -203,4 +243,101 @@ sc_result ScAgentAction::GetResultCodeByAddr(ScAddr const & resultClassAddr)
     return SC_RESULT_ERROR_NO_READ_RIGHTS;
   
   return SC_RESULT_UNKNOWN;
+}
+
+ScAddr ScAgentAction::EmitCommand(ScMemoryContext & ctx, ScAddr const & cmdClassAddr, ScAddrVector const & params)
+{
+  if (params.size() >= kKeynodeRrelListNum)
+    SC_THROW_EXCEPTION(utils::ExceptionInvalidParams, "You should use <= " + std::to_string(kKeynodeRrelListNum) + " params");
+
+  SC_ASSERT(cmdClassAddr.IsValid(), ());
+
+  ScAddr const cmdInstanceAddr = ctx.CreateNode(ScType::NodeConst);
+  SC_ASSERT(cmdInstanceAddr.IsValid(), ());
+  ScAddr const edge = ctx.CreateEdge(ScType::EdgeAccessConstPosPerm, cmdClassAddr, cmdInstanceAddr);
+  SC_ASSERT(edge.IsValid(), ());
+  
+  for (size_t i = 0; i < params.size(); ++i)
+  {
+    ScAddr const edgeCommon = ctx.CreateEdge(ScType::EdgeAccessConstPosPerm, cmdInstanceAddr, params[i]);
+    SC_ASSERT(edgeCommon.IsValid(), ());
+    ctx.CreateEdge(ScType::EdgeAccessConstPosPerm, kKeynodeRrelList[i], edgeCommon);
+  }
+
+  if (!InitiateCommand(ctx, cmdInstanceAddr))
+  {
+    // cleanup after error
+    ctx.EraseElement(cmdInstanceAddr);
+    return ScAddr();
+  }
+
+  return cmdInstanceAddr;
+}
+
+bool ScAgentAction::InitiateCommand(ScMemoryContext & ctx, ScAddr const & cmdAddr)
+{
+  // TODO: add blocks (locks) to prevent adding command to initiated set twicely
+
+  // check if command is in progress
+  if (ctx.HelperCheckEdge(ms_commandProgressdAddr, cmdAddr, ScType::EdgeAccessConstPosPerm))
+    return false;
+
+  if (ctx.HelperCheckEdge(ms_commandInitiatedAddr, cmdAddr, ScType::EdgeAccessConstPosPerm))
+    return false;
+
+  return ctx.CreateEdge(ScType::EdgeAccessConstPosPerm, ms_commandInitiatedAddr, cmdAddr).IsValid();
+}
+
+ScAddr ScAgentAction::GetCommandResultAddr(ScMemoryContext & ctx, ScAddr const & cmdAddr)
+{
+  ScIterator5Ptr it = ctx.Iterator5(
+    cmdAddr,
+    ScType::EdgeDCommonConst,
+    ScType::NodeConstStruct,
+    ScType::EdgeAccessConstPosPerm,
+    ms_nrelResult);
+
+  if (it->Next())
+    return it->Get(2);
+
+  return ScAddr();
+}
+
+sc_result ScAgentAction::GetCommandResultCode(ScMemoryContext & ctx, ScAddr const & cmdAddr)
+{
+  ScAddr const resultAddr = GetCommandResultAddr(ctx, cmdAddr);
+  if (!resultAddr.IsValid())
+    return SC_RESULT_UNKNOWN;
+
+  ScTemplate templ;
+  templ.Triple(
+    ms_keynodeScResult,
+    ScType::EdgeAccessVarPosPerm,
+    ScType::NodeVarClass >> "result_class");
+  templ.Triple(
+    "result_class",
+    ScType::EdgeAccessVarPosPerm,
+    resultAddr);
+
+  ScTemplateSearchResult searchResult;
+  if (!ctx.HelperSearchTemplate(templ, searchResult))
+    return SC_RESULT_UNKNOWN;
+
+  //ScIterator3Ptr it1 = ctx.Iterator3(
+  //  ms_keynodeScResult,
+  //  ScType::EdgeAccessConstPosPerm,
+  //  ScType());
+  //while (it1->Next())
+  //{
+  //  ScIterator3Ptr it2 = ctx.Iterator3(
+  //    it1->Get(2),
+  //    ScType::EdgeAccessConstPosPerm,
+  //    resultAddr);
+  //  if (it2->Next())
+  //    return GetResultCodeByAddr(it2->Get(2));
+  //}
+
+  SC_ASSERT(searchResult.Size() == 1, ());
+  return GetResultCodeByAddr(searchResult[0][2]);
+  //return SC_RESULT_UNKNOWN;
 }

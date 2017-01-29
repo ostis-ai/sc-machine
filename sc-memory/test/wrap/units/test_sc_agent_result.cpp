@@ -39,36 +39,16 @@ UNIT_TEST(ATestResultOk)
       ATestResultOk::ms_keynodeTestResultOk,
       cmdAddr);
 
-    std::thread work_thread([&ctx, &cmdAddr]
-    {
-      std::this_thread::sleep_for(std::chrono::milliseconds(300));
-
-      // initiate command
-      ScMemoryContext ctxLocal(sc_access_lvl_make_min, "ATestResultOk_thread");
-      ctxLocal.CreateEdge(ScType::EdgeAccessConstPosPerm, ScAgentAction::GetCommandInitiatedAddr(), cmdAddr);
-    });
-
     ScWaitActionFinished waiter(ctx, cmdAddr);
+    waiter.SetOnWaitStartDelegate([&cmdAddr]()
+    {
+      ScMemoryContext ctxLocal(sc_access_lvl_make_min, "ATestResultOk_init");
+      ScAgentAction::InitiateCommand(ctxLocal, cmdAddr);
+    });
     SC_CHECK(waiter.Wait(), ());
 
     // check result
-    ScIterator5Ptr it5 = ctx.Iterator5(
-      cmdAddr,
-      ScType::EdgeDCommonConst,
-      ScType::NodeConst,
-      ScType::EdgeAccessConstPosPerm,
-      ScAgentAction::GetNrelResultAddr());
-
-    SC_CHECK(it5->Next(), ());
-
-    ScIterator3Ptr it = ctx.Iterator3(
-      ScAgentAction::GetResultCodeAddr(SC_RESULT_OK),
-      ScType::EdgeAccessConstPosPerm,
-      it5->Get(2));
-
-    SC_CHECK(it->Next(), ());
-
-    work_thread.join();
+    SC_CHECK_EQUAL(ScAgentAction::GetCommandResultCode(ctx, cmdAddr), SC_RESULT_OK, ());
 
     SC_AGENT_UNREGISTER(ATestResultOk);
   }
