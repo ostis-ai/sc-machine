@@ -8,10 +8,9 @@
 
 #include "sc-memory/cpp/sc_addr.hpp"
 #include "sc-memory/cpp/sc_object.hpp"
+#include "sc-memory/cpp/sc_timer.hpp"
+#include "sc-memory/cpp/utils/sc_lock.hpp"
 #include "sc-memory/cpp/kpm/sc_agent.hpp"
-
-#include <atomic>
-#include <ctime>
 
 extern "C"
 {
@@ -24,32 +23,26 @@ class TestWaiter
 {
 public:
   TestWaiter()
-    : mLock(1)
   {
+    m_lock.Lock();
   }
 
   bool Wait()
   {
-    std::time_t const t = std::time(nullptr);
-    std::time_t nt = t;
-    while (mLock.load() > 0)
-    {
-      nt = std::time(nullptr);
-      if (nt - t > 5) // seconds
-        break;
-      g_usleep(100000); // 100 milliseconds
-    };
+    ScTimer timer(5.0);
+    while (!timer.IsTimeOut() && m_lock.IsLocked())
+      g_usleep(10000); // 10 milliseconds
 
-    return (mLock.load() == 0);
+    return !m_lock.IsLocked();
   }
 
   void Unlock()
   {
-    mLock.store(0);
+    m_lock.Unlock();
   }
 
 private:
-  std::atomic<uint32_t> mLock;
+  utils::ScLock m_lock;
 };
 
 

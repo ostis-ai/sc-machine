@@ -33,4 +33,9 @@ void ScLock::Unlock()
   m_locked.store(false);
 }
 
+bool ScLock::IsLocked() const
+{
+  return m_locked.load();
+}
+
 } // namespace utils

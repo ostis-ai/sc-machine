@@ -48,7 +48,7 @@ bool ScStruct::Remove(ScAddr const & elAddr)
 {
   SC_ASSERT(m_context, ());
   bool found = false;
-  ScIterator3Ptr iter = m_context->Iterator3(m_addr, SC_TYPE(sc_type_arc_pos_const_perm), elAddr);
+  ScIterator3Ptr iter = m_context->Iterator3(m_addr, ScType::EdgeAccessConstPosPerm, elAddr);
   while (iter->Next())
   {
     m_context->EraseElement(iter->Get(1));
@@ -61,7 +61,7 @@ bool ScStruct::Remove(ScAddr const & elAddr)
 bool ScStruct::HasElement(ScAddr const & elAddr) const
 {
   SC_ASSERT(m_context, ());
-  return m_context->HelperCheckArc(m_addr, elAddr, sc_type_arc_pos_const_perm);
+  return m_context->HelperCheckEdge(m_addr, elAddr, ScType::EdgeAccessConstPosPerm);
 }
 
 ScStruct & ScStruct::operator << (ScAddr const & elAddr)

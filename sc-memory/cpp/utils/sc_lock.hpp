@@ -4,6 +4,10 @@
 * (See accompanying file COPYING.MIT or copy at http://opensource.org/licenses/MIT)
 */
 
+#pragma once
+
+#include "../sc_defines.hpp"
+
 #include <atomic>
 
 namespace utils
@@ -13,10 +17,17 @@ namespace utils
 class ScLock
 {
 public:
-  ScLock();
+  _SC_EXTERN ScLock();
 
-  void Lock();
-  void Unlock();
+  _SC_EXTERN void Lock();
+  _SC_EXTERN void Unlock();
+
+  /* Note that lock status can be changed during
+   * function run (by other thread). So there are no gurantee
+   * that lock would have the same status after this function returns value.
+   * It's useful just for some types of check.
+   */
+  _SC_EXTERN bool IsLocked() const;
 
 private:
   std::atomic_bool m_locked;

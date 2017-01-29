@@ -20,7 +20,7 @@ namespace utils
 
   }
 
-  const char* ScException::What() const throw()
+  const char* ScException::Message() const throw()
   {
     return m_description.c_str();
   }

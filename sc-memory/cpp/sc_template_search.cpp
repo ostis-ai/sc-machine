@@ -149,7 +149,7 @@ public:
     if (it != m_structCache.end())
       return true;
 
-    if (m_context.HelperCheckArc(m_struct, addr, sc_type_arc_pos_const_perm))
+    if (m_context.HelperCheckEdge(m_struct, addr, ScType::EdgeAccessConstPosPerm))
     {
       m_structCache.insert(addr);
       return true;
