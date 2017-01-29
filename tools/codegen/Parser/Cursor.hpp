@@ -2,6 +2,8 @@
 
 #include "CursorType.hpp"
 
+#include <vector>
+
 class Cursor
 {
 public:

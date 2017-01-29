@@ -1,4 +1,4 @@
-#include "Precompiled.hpp"
+#include "Cursor.hpp"
 
 #include "LanguageTypes/Function.hpp"
 #include "LanguageTypes/Class.hpp"

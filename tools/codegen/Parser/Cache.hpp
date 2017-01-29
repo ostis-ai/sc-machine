@@ -2,6 +2,8 @@
 
 #include "Types.hpp"
 
+#include <unordered_map>
+
 // Class works with cache of checksums of processed files
 class SourceCache
 {
@@ -17,8 +19,8 @@ public:
 
   static std::string FileChecksum(std::string const & fileName);
 private:
-  typedef std::map<std::string, std::string> tCacheMap;
-  tCacheMap m_cache;
+  using CacheMap = std::unordered_map<std::string, std::string>;
+  CacheMap m_cache;
 
   std::string m_cacheFileName;
 };

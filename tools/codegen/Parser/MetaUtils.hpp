@@ -1,28 +1,17 @@
-/* ----------------------------------------------------------------------------
-** © 201x Austin Brunkhorst, All Rights Reserved.
-**
-** MetaUtils.h
-** --------------------------------------------------------------------------*/
-
 #pragma once
 
-#include "Cursor.hpp"
-#include "Namespace.hpp"
+#include "CursorType.hpp"
+#include "Types.hpp"
 
+class Cursor;
 
 namespace utils
 {
 void ToString(const CXString &str, std::string &output);
 
-std::string GetQualifiedName(
-    const std::string &displayName,
-    const Namespace &currentNamespace
-    );
+std::string GetQualifiedName(std::string const & displayName, Namespace const & currentNamespace);
 
-std::string GetQualifiedName(
-    const Cursor &cursor,
-    const Namespace &currentNamespace
-    );
+std::string GetQualifiedName(Cursor const & cursor, Namespace const & currentNamespace);
 
 void FatalError(const std::string &error);
 }

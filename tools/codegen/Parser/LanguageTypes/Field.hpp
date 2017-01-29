@@ -19,8 +19,10 @@ public:
 
   void GenarateInitCode(std::stringstream & outCode) const;
 
+  static std::string GetForceType(MetaDataManager const & metaData);
+
   static void GenerateResolveKeynodeCode(std::string const & sysIdtf, std::string const & displayName,
-                                         bool forceCreation, std::stringstream & outCode);
+                                         std::string const & forceType, std::stringstream & outCode);
   static void GenerateTemplateBuildCode(std::string const & sysIdtf, std::string const & displayName,
                                         std::stringstream & outCode);
 

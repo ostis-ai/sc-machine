@@ -1,15 +1,14 @@
 #pragma once
 
 #include <assert.h>
-#include <iostream>
-#include <string>
-#include <list>
 #include <vector>
-#include <map>
+#include <list>
 #include <set>
-#include <exception>
+#include <sstream>
 
 #include "ReservedTypes.hpp"
+
+using Namespace = std::vector<std::string>;
 
 class Exception : public std::exception
 {

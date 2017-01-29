@@ -1,14 +1,11 @@
-/* ----------------------------------------------------------------------------
-** © 201x Austin Brunkhorst, All Rights Reserved.
-**
-** MetaDataManager.h
-** --------------------------------------------------------------------------*/
-
 #pragma once
 
-#include "Cursor.hpp"
+#include "Types.hpp"
+
+#include <unordered_map>
 
 class ReflectionParser;
+class Cursor;
 
 class MetaDataManager
 {

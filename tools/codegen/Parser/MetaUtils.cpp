@@ -1,6 +1,7 @@
-#include "Precompiled.hpp"
-
 #include "MetaUtils.hpp"
+
+#include "Cursor.hpp"
+#include "CursorType.hpp"
 #include "Types.hpp"
 
 #include <iostream>
@@ -9,6 +10,7 @@
 
 namespace utils
 {
+
 void ToString(const CXString &str, std::string &output)
 {
   auto cstr = clang_getCString(str);
@@ -41,4 +43,5 @@ void FatalError(const std::string &error)
 
   exit(EXIT_FAILURE);
 }
-}
+
+} // namespace utils

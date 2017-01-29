@@ -1,10 +1,6 @@
-/* ----------------------------------------------------------------------------
-** © 201x Austin Brunkhorst, All Rights Reserved.
-**
-** ReflectionTypes.h
-** --------------------------------------------------------------------------*/
-
 #pragma once
+
+#include <string>
 
 namespace Props
 {

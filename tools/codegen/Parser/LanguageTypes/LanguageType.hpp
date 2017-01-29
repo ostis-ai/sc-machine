@@ -1,16 +1,15 @@
 #pragma once
 
+#include "CursorType.hpp"
+#include "MetaDataManager.hpp"
 #include "Types.hpp"
 
-#include "Cursor.hpp"
-#include "Namespace.hpp"
-
-#include "MetaDataManager.hpp"
+class Cursor;
 
 class LanguageType
 {
 public:
-  LanguageType(const Cursor &cursor, const Namespace &currentNamespace);
+  LanguageType(Cursor const & cursor, const Namespace &currentNamespace);
   virtual ~LanguageType(void) { }
 
   const MetaDataManager & GetMetaData(void) const;

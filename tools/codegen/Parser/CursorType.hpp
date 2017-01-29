@@ -1,10 +1,8 @@
-/* ----------------------------------------------------------------------------
-** © 201x Austin Brunkhorst, All Rights Reserved.
-**
-** CursorType.h
-** --------------------------------------------------------------------------*/
-
 #pragma once
+
+#include <clang-c/Index.h>
+
+#include <string>
 
 class Cursor;
 

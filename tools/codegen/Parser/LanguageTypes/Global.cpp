@@ -1,4 +1,7 @@
-#include "Precompiled.hpp"
+#include "Cursor.hpp"
+
+#include "MetaDataConfig.hpp"
+#include "MetaUtils.hpp"
 
 #include "LanguageTypes/Global.hpp"
 #include "LanguageTypes/Class.hpp"
@@ -39,10 +42,10 @@ void Global::GenerateInitCode(std::stringstream & outCode) const
 
   /// TODO: merge with field code generation
   if (m_metaData.HasProperty(Props::Keynode))
-  {
+  {   
     Field::GenerateResolveKeynodeCode(m_metaData.GetNativeString(Props::Keynode),
                                       m_displayName,
-                                      m_metaData.HasProperty(Props::ForceCreate),
+                                      Field::GetForceType(m_metaData),
                                       outCode);
   }
   else if (m_metaData.HasProperty(Props::Template))

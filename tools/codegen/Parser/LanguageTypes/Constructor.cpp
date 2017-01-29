@@ -1,7 +1,6 @@
-#include "Precompiled.hpp"
-
 #include "Class.hpp"
 #include "Constructor.hpp"
+#include "MetaDataConfig.hpp"
 
 #include <boost/algorithm/string/join.hpp>
 

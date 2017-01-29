@@ -1,13 +1,14 @@
-#include "Precompiled.hpp"
-
 #include "Class.hpp"
 #include "Constructor.hpp"
+#include "Cursor.hpp"
 #include "Field.hpp"
 #include "Global.hpp"
 #include "Method.hpp"
 #include "Function.hpp"
 
 #include "../ReservedTypes.hpp"
+
+#include <boost/algorithm/string.hpp>
 
 BaseClass::BaseClass(const Cursor &cursor)
   : name(cursor.GetType().GetCanonicalType().GetDisplayName())
@@ -221,7 +222,7 @@ void Class::GenerateStaticFieldsInitCode(std::stringstream & outCode) const
     outCode << "\t";
     Field::GenerateResolveKeynodeCode(m_metaData.GetNativeString(Props::AgentCommandClass),
                                       "ms_cmdClass_" + m_displayName,
-                                      true,
+                                      "ScType::NodeConstClass",
                                       outCode);
     outCode << " \\\n";
   }
@@ -301,6 +302,10 @@ void Class::GenerateDeclarations(std::stringstream & outCode) const
 
     // static function for handler
     outCode << "\\\npublic: ";
+    if (isActionAgent)
+    {
+      outCode << "\\\n  static ScAddr const & GetCommandClassAddr() { return ms_cmdClass_" << m_displayName << "; }";
+    }
     outCode << "\\\n	static bool handler_emit" << "(ScAddr const & addr, ScAddr const & edgeAddr, ScAddr const & otherAddr)";
     outCode << "\\\n	{";
     outCode << "\\\n		" << m_displayName << " Instance(" << instConstructParams << "\"" << m_displayName << "\", sc_access_lvl_make_min);";

@@ -1,15 +1,8 @@
-/* ----------------------------------------------------------------------------
-** © 201x Austin Brunkhorst, All Rights Reserved.
-**
-** ReflectionParser.h
-** --------------------------------------------------------------------------*/
-
 #pragma once
 
 #include "ReflectionOptions.hpp"
 
 #include "Cursor.hpp"
-#include "Namespace.hpp"
 
 #include "MacrosManager.hpp"
 #include "Cache.hpp"

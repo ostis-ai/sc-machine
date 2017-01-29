@@ -2,6 +2,7 @@
 
 #include "LanguageType.hpp"
 
+#include <vector>
 
 struct BaseClass
 {
