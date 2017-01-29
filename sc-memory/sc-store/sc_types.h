@@ -167,7 +167,9 @@ typedef sc_uint16 sc_type;
 // results
 enum _sc_result
 {
+  // SC_RESULT_ERROR should be 0 anytime
   SC_RESULT_ERROR = 0,                // unknown error
+  // SC_RESULT_OK should be 1 anytime
   SC_RESULT_OK = 1,                   // no any error
   SC_RESULT_ERROR_INVALID_PARAMS,     // invalid function parameters error
   SC_RESULT_ERROR_INVALID_TYPE,       // invalied type error
@@ -178,6 +180,9 @@ enum _sc_result
   SC_RESULT_ERROR_NO_READ_RIGHTS,     // no ritghs to read object
   SC_RESULT_NO,                       // no any result
   SC_RESULT_UNKNOWN,                  // result unknown
+
+  // add atomic types before
+  SC_RESULT_COUNT,                    // number of result types
   SC_RESULT_ERROR_NO_RIGHTS = SC_RESULT_ERROR_NO_WRITE_RIGHTS | SC_RESULT_ERROR_NO_READ_RIGHTS
 };
 

@@ -40,7 +40,7 @@ private:
   {
     bool operator() (ScTestUnit const * a, ScTestUnit const * b) const
     {
-      return (a->m_name < b->m_name);
+      return strcmp(a->m_name, b->m_name) < 0;
     }
   };
 
