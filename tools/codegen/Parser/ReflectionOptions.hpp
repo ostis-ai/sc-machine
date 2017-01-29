@@ -1,10 +1,7 @@
-/* ----------------------------------------------------------------------------
-** © 201x Austin Brunkhorst, All Rights Reserved.
-**
-** ReflectionOptions.h
-** --------------------------------------------------------------------------*/
-
 #pragma once
+
+#include <string>
+#include <vector>
 
 struct ReflectionOptions
 {

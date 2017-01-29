@@ -1,6 +1,7 @@
-#include "Precompiled.hpp"
-
 #include "LanguageType.hpp"
+
+#include "MetaDataConfig.hpp"
+#include "Cursor.hpp"
 
 LanguageType::LanguageType(
     const Cursor &cursor,

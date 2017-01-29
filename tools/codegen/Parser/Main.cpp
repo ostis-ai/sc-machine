@@ -1,14 +1,16 @@
-#include "Precompiled.hpp"
-
 #include "ReflectionOptions.hpp"
 #include "ReflectionParser.hpp"
 
+#include "MetaUtils.hpp"
 #include "Switches.hpp"
 
 #include <chrono>
 #include <iostream>
+#include <string>
 
-void parse(std::string const & appName, const po::variables_map &cmdLine)
+#include <boost/program_options.hpp>
+
+void parse(std::string const & appName, boost::program_options::variables_map const & cmdLine)
 {
   ReflectionOptions options;
 
@@ -71,7 +73,7 @@ int main(int argc, char *argv[])
   // parse command line
   try
   {
-    po::options_description program("SC Reflection Parser");
+    boost::program_options::options_description program("SC Reflection Parser");
 
     program.add_options()
         (
@@ -80,33 +82,33 @@ int main(int argc, char *argv[])
           )
         (
           SWITCH_OPTION(TargetName),
-          po::value<std::string>()->required(),
+          boost::program_options::value<std::string>()->required(),
           "Input target project name."
           )
         (
           SWITCH_OPTION(Input),
-          po::value<std::string>()->required(),
+          boost::program_options::value<std::string>()->required(),
           "Source path to parse headers in."
           )
         (
           SWITCH_OPTION(Output),
-          po::value<std::string>()->required(),
+          boost::program_options::value<std::string>()->required(),
           "Output path for generated headers."
           )
         (
           SWITCH_OPTION(BuildDirectory),
-          po::value<std::string>()->default_value("./build"),
+          boost::program_options::value<std::string>()->default_value("./build"),
           "Directory that contains the build intermediate files."
           )
         (
           SWITCH_OPTION(CompilerFlags),
-          po::value<std::vector<std::string>>()->multitoken()->required(),
+          boost::program_options::value<std::vector<std::string>>()->multitoken()->required(),
           "Optional list of flags to pass to the compiler."
           );
 
-    po::variables_map cmdLine;
+    boost::program_options::variables_map cmdLine;
 
-    po::store(po::parse_command_line(argc, argv, program), cmdLine);
+    boost::program_options::store(boost::program_options::parse_command_line(argc, argv, program), cmdLine);
 
     if (cmdLine.count("help"))
     {
@@ -115,7 +117,7 @@ int main(int argc, char *argv[])
       return EXIT_SUCCESS;
     }
 
-    po::notify(cmdLine);
+    boost::program_options::notify(cmdLine);
 
     std::string const appName = argv[0];
     parse(appName, cmdLine);

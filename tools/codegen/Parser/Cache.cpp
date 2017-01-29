@@ -1,4 +1,3 @@
-#include "Precompiled.hpp"
 #include "Cache.hpp"
 #include "Sha256.hpp"
 
@@ -44,7 +43,7 @@ void SourceCache::Load()
 void SourceCache::Save()
 {
   std::ofstream out(m_cacheFileName, std::fstream::out);
-  tCacheMap::const_iterator it = m_cache.begin();
+  CacheMap::const_iterator it = m_cache.begin();
   for (; it != m_cache.end(); ++it)
   {
     out << it->first << "|" << it->second << std::endl;
@@ -58,7 +57,7 @@ void SourceCache::CheckGenerator(std::string const & fileName)
   std::string absPath = boost::filesystem::canonical(boost::filesystem::path(fileName)).string();
   std::string checksum = FileChecksum(absPath);
 
-  tCacheMap::iterator it = m_cache.find(absPath);
+  CacheMap::iterator it = m_cache.find(absPath);
   if (it != m_cache.end())
   {
     if (it->second == checksum)
@@ -75,7 +74,7 @@ bool SourceCache::RequestGenerate(std::string const & fileName)
   std::string absPath = boost::filesystem::canonical(boost::filesystem::path(fileName)).string();
   std::string checksum = FileChecksum(absPath);
 
-  tCacheMap::iterator it = m_cache.find(absPath);
+  CacheMap::iterator it = m_cache.find(absPath);
   if (it != m_cache.end())
   {
     if (it->second == checksum)

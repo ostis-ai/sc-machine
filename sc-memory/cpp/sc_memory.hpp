@@ -127,7 +127,12 @@ public:
   }
 
 
-  _SC_EXTERN bool HelperResolveSystemIdtf(std::string const & sysIdtf, ScAddr & outAddr, bool bForceCreation = false);
+  /* Trying to reosolve ScAddr by it system identifier. If element with specified identifier doesn't exist
+   * and type is not empty, then it would be created with specified type.
+   * Look at type parameter as ForceCreate flag, that contains type.
+   * Important: Type should be any of ScType::Node...
+   */
+  _SC_EXTERN bool HelperResolveSystemIdtf(std::string const & sysIdtf, ScAddr & outAddr, ScType const & type = ScType());
   _SC_EXTERN bool HelperSetSystemIdtf(std::string const & sysIdtf, ScAddr const & addr);
   _SC_EXTERN std::string HelperGetSystemIdtf(ScAddr const & addr);
 

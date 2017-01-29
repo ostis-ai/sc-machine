@@ -1,5 +1,3 @@
-#include "Precompiled.hpp"
-
 #include "MetaDataManager.hpp"
 #include "ReflectionParser.hpp"
 
@@ -103,7 +101,7 @@ std::string MetaDataManager::GetNativeString(std::string const & key) const
   }
 
   // couldn't find one
-  return "";
+  return search->second;
 }
 
 std::vector<MetaDataManager::Property> MetaDataManager::extractProperties(Cursor const & cursor) const
@@ -152,11 +150,7 @@ std::vector<MetaDataManager::Property> MetaDataManager::extractProperties(Cursor
     auto arguments = match[3].str();
 
     if (name == Props::Body)
-    {
-      std::stringstream str;
-      str << cursor.GetLineNumber();
-      arguments = str.str();
-    }
+      arguments = std::to_string(cursor.GetLineNumber());
 
     properties.emplace_back(name, arguments);
 

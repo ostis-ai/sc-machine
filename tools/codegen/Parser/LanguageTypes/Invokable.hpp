@@ -1,7 +1,8 @@
 #pragma once
 
-#include "Cursor.hpp"
-#include "Namespace.hpp"
+#include "Types.hpp"
+
+class Cursor;
 
 class Invokable
 {

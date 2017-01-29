@@ -1,10 +1,7 @@
-#include "Precompiled.hpp"
-
 #include "LanguageTypes/Class.hpp"
 #include "LanguageTypes/Method.hpp"
 
-#include <boost/format.hpp>
-#include <boost/algorithm/string/join.hpp>
+#include "Cursor.hpp"
 
 Method::Method(const Cursor & cursor, const Namespace & currentNamespace, Class * parent)
   : LanguageType(cursor, currentNamespace)

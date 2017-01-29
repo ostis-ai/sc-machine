@@ -149,7 +149,7 @@ Table of available properties of class members metadata (**SC_PROPERTY**):
       <hr/>
       <pre><code class="cpp hljs">
 SC_PROPERTY(Keynode("device"), ForceCreate)
-static ScAddr device;
+static ScAddr m_device;
       </code></pre>
     </td>
   </tr>
@@ -166,7 +166,7 @@ static ScAddr device;
       <hr/>
       <pre><code class="cpp hljs">
 SC_PROPERTY(Template("test_template"))
-ScTemplate mTestTemplate;
+ScTemplate m_testTemplate;
       </code></pre>
     </td>
   </tr>
@@ -174,8 +174,19 @@ ScTemplate mTestTemplate;
   <tr>
     <td><strong>ForceCreate</strong></td>
     <td>
-      <strong>Arguments:</strong> none
+      <strong>Arguments:</strong>
+      <ul>
+        <li>[<strong>optional</strong>] type of sc-element. Any value from `ScType::Node...`</li>
+      </ul>
       <br/>Used just with <strong>Keynode</strong> property. Using of this property force sc-element creation, if it didn't found by system identifier.
+      <hr/>
+      <pre><code class="cpp hljs">
+SC_PROPERTY(Keynode("device"), ForceCreate(ScType::NodeConstClass))
+static ScAddr m_device;
+
+SC_PROPERTY(Keynode("device"), ForceCreate) // default value ScType::Node
+static ScAddr m_node;
+      </code></pre>
     </td>
   </tr>
 

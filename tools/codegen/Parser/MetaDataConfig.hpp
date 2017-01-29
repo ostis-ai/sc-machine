@@ -1,9 +1,3 @@
-/* ----------------------------------------------------------------------------
-** © 201x Austin Brunkhorst, All Rights Reserved.
-**
-** MetaDataConfig.h
-** --------------------------------------------------------------------------*/
-
 #pragma once
 
 const auto kMetaEnable = "Enable";

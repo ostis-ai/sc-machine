@@ -27,9 +27,9 @@ extern "C"
 
 #include "sc_defines.hpp"
 
-typedef std::set<std::string> tStringSet;
-typedef std::vector<std::string> tStringVector;
-typedef std::map<std::string, std::string> tStringMap;
+using StringSet = std::set<std::string>;
+using StringVector = std::vector<std::string>;
+using StringMap = std::map<std::string, std::string>;
 
 class ScMemoryContext;
 class ScAddr;

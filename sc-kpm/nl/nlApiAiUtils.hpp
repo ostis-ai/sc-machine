@@ -6,32 +6,15 @@
 
 #pragma once
 
-#include <iomanip>
+#include "sc-memory/cpp/sc_debug.hpp"
+
+#include <ctime>
 
 #include <curl/curl.h>
 
 #include <rapidjson/document.h>
 #include <rapidjson/stringbuffer.h>
 #include <rapidjson/writer.h>
-
-
-size_t CurlWrite_CallbackFunc_StdString(void *contents, size_t size, size_t nmemb, std::string * s)
-{
-  size_t newLength = size * nmemb;
-  size_t oldLength = s->size();
-  try
-  {
-    s->resize(oldLength + newLength);
-  }
-  catch (std::bad_alloc & e)
-  {
-    //handle memory problem
-    return 0;
-  }
-
-  std::copy((char*)contents, (char*)contents + newLength, s->begin() + oldLength);
-  return size * nmemb;
-}
 
 template <typename ParentType>
 bool getJSONMemberSafe(ParentType & parent, const char * name, rapidjson::Value & outValue)
@@ -77,23 +60,26 @@ void tokenize(const std::string& str, ContainerT& tokens,
   }
 }
 
-bool parseTimeStamp(std::string str, std::tm & outValue)
+struct TimeStampParser
 {
-  //2016-02-16T00:30:13.529Z
-  tStringVector tokens;
-  tokenize(str, tokens, "-T:.");
+  bool operator () (std::string str, std::tm & outValue) const
+  {
+    //2016-02-16T00:30:13.529Z
+    StringVector tokens;
+    tokenize(str, tokens, "-T:.");
 
-  SC_ASSERT(tokens.size() == 7, ());
-  outValue.tm_year = atoi(tokens[0].c_str());
-  outValue.tm_mon = atoi(tokens[1].c_str());
-  outValue.tm_mday = atoi(tokens[2].c_str());
+    SC_ASSERT(tokens.size() == 7, ());
+    outValue.tm_year = atoi(tokens[0].c_str());
+    outValue.tm_mon = atoi(tokens[1].c_str());
+    outValue.tm_mday = atoi(tokens[2].c_str());
 
-  outValue.tm_hour = atoi(tokens[3].c_str());
-  outValue.tm_min = atoi(tokens[4].c_str());
-  outValue.tm_sec = atoi(tokens[5].c_str());
+    outValue.tm_hour = atoi(tokens[3].c_str());
+    outValue.tm_min = atoi(tokens[4].c_str());
+    outValue.tm_sec = atoi(tokens[5].c_str());
 
-  return true;
-}
+    return true;
+  }
+};
 
 namespace apiAi
 {
@@ -113,7 +99,7 @@ public:
 
   std::string const & getParam(std::string const & name) const
   {
-    tStringMap::const_iterator it = m_parameters.find(name);
+    StringMap::const_iterator it = m_parameters.find(name);
     if (it != m_parameters.end())
       return it->second;
 
@@ -153,7 +139,7 @@ public:
 
 private:
   std::string m_name;
-  tStringMap m_parameters;
+  StringMap m_parameters;
   uint32_t m_lifespan;
 };
 typedef std::vector<Context> tContextVector;
@@ -308,7 +294,7 @@ public:
     if (!getJSONMemberSafe(jsonDocument, "timestamp", jsonValue) || !jsonValue.IsString())
       return false;
 
-    parseTimeStamp(jsonValue.GetString(), m_timeStamp);
+    TimeStampParser()(jsonValue.GetString(), m_timeStamp);
 
     // result
     rapidjson::Value jsonResult = rapidjson::Value();
@@ -398,7 +384,7 @@ public:
     return m_isActionIncomplete;
   }
 
-  const tStringMap & GetResultParameters() const
+  const StringMap & GetResultParameters() const
   {
     return m_resultParameters;
   }
@@ -430,114 +416,25 @@ private:
   std::string m_resolvedQuery;
   std::string m_action;
   bool m_isActionIncomplete;
-  tStringMap m_resultParameters;
+  StringMap m_resultParameters;
   apiAi::tContextVector m_contexts;
   apiAi::MetaData m_metaData;
   apiAi::Fulfillment m_fulfillment;
   apiAi::Status m_status;
 };
 
-class ApiAiRequest
+class ApiAiRequest final
 {
 public:
+  explicit ApiAiRequest();
+  ~ApiAiRequest();
 
+  std::string GetPostJSON(ApiAiRequestParams const & params);
 
-  explicit ApiAiRequest()
-  {
-    m_curl = curl_easy_init();
-    curl_easy_setopt(m_curl, CURLOPT_URL, "https://api.api.ai/v1/query?v=20150910");
-  }
+  bool ParseResponseJSON(std::string const & responseJSON);
+  bool Perform(ApiAiRequestParams const & params);
 
-  ~ApiAiRequest()
-  {
-    curl_easy_cleanup(m_curl);
-  }
-
-  std::string getPostJSON(ApiAiRequestParams const & params)
-  {
-    rapidjson::Document jsonDocument;
-    rapidjson::Document::AllocatorType & jsonAllocator = jsonDocument.GetAllocator();
-    jsonDocument.SetObject();
-
-    rapidjson::Value jsonQuery;
-    jsonQuery.SetArray();
-
-    rapidjson::Value jsonQueryValue;
-    jsonQueryValue.SetString(params.m_queryString.c_str(), (rapidjson::SizeType)params.m_queryString.size(), jsonAllocator);
-    jsonQuery.PushBack(jsonQueryValue, jsonAllocator);
-
-    rapidjson::Value jsonSessionId;
-    jsonSessionId.SetString(params.m_sessionId.c_str(), (rapidjson::SizeType)params.m_sessionId.size(), jsonAllocator);
-
-    rapidjson::Value jsonLang;
-    jsonLang.SetString(params.m_lang.c_str(), (rapidjson::SizeType)params.m_lang.size(), jsonAllocator);
-
-    jsonDocument.AddMember("query", jsonQuery, jsonAllocator);
-    jsonDocument.AddMember("sessionId", jsonSessionId, jsonAllocator);
-    jsonDocument.AddMember("lang", jsonLang, jsonAllocator);
-
-    rapidjson::StringBuffer strBuffer;
-    rapidjson::Writer<rapidjson::StringBuffer> writer(strBuffer);
-    jsonDocument.Accept(writer);
-
-    return std::string(strBuffer.GetString());
-  }
-
-  bool parseResponseJSON(std::string const & responseJSON)
-  {
-    rapidjson::Document jsonDocument;
-
-    jsonDocument.Parse(responseJSON.c_str());
-    if (jsonDocument.HasParseError())
-      return false;
-
-    return m_result.parseJSON(jsonDocument);
-  }
-
-  bool perform(ApiAiRequestParams const & params)
-  {
-    bool result = false;
-    std::string responseString;
-
-    /// TODO: add support of timezone and location
-
-    std::string const postData = getPostJSON(params);
-
-    curl_easy_setopt(m_curl, CURLOPT_POST, 1L);
-    curl_easy_setopt(m_curl, CURLOPT_POSTFIELDS, postData.c_str());
-
-    curl_easy_setopt(m_curl, CURLOPT_SSL_VERIFYPEER, 0L);
-    curl_easy_setopt(m_curl, CURLOPT_SSL_VERIFYHOST, 0L);
-
-    std::string const accessToken = sc_config_get_value_string("apiai", "access_token");
-    std::stringstream headersString;
-    headersString << "Authorization: Bearer " << accessToken;
-
-    curl_slist * headers = nullptr;
-    headers = curl_slist_append(headers, headersString.str().c_str());
-    headers = curl_slist_append(headers, "Content-Type: application/json; charset=utf-8");
-    curl_easy_setopt(m_curl, CURLOPT_HTTPHEADER, headers);
-
-    curl_easy_setopt(m_curl, CURLOPT_WRITEFUNCTION, CurlWrite_CallbackFunc_StdString);
-    curl_easy_setopt(m_curl, CURLOPT_WRITEDATA, &responseString);
-
-    // perform request
-    CURLcode resultCode = curl_easy_perform(m_curl);
-    std::string const error = curl_easy_strerror(resultCode);
-    if (resultCode == CURLE_OK)
-    {
-      result = parseResponseJSON(responseString);
-    }
-
-    curl_slist_free_all(headers);
-
-    return result;
-  }
-
-  ApiAiRequestResult const & getResult() const
-  {
-    return m_result;
-  }
+  ApiAiRequestResult const & GetResult() const { return m_result; }
 
 private:
   CURL * m_curl;

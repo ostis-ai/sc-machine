@@ -1,5 +1,3 @@
-#include "Precompiled.hpp"
-
 #include "Cursor.hpp"
 
 #include "MetaUtils.hpp"

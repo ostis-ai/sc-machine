@@ -1,5 +1,3 @@
-#include "Precompiled.hpp"
-
 #include "ReflectionParser.hpp"
 
 #include "LanguageTypes/Class.hpp"
@@ -10,6 +8,7 @@
 #include <fstream>
 
 #include <boost/algorithm/string.hpp>
+#include <boost/filesystem.hpp>
 
 #define RECURSE_NAMESPACES(kind, cursor, method, ns) \
 if (kind == CXCursor_Namespace) \
@@ -96,7 +95,7 @@ void ReflectionParser::Parse(void)
   m_sourceCache->CheckGenerator(m_options.generatorPath);
 
   // ensure that output directory exist
-  fs::create_directory(fs::path(m_options.outputPath));
+  boost::filesystem::create_directory(boost::filesystem::path(m_options.outputPath));
 
   for (tStringList::const_iterator it = filesList.begin(); it != filesList.end(); ++it)
   {
@@ -212,8 +211,8 @@ bool ReflectionParser::ProcessFile(std::string const & fileName, bool InProcessM
       outCode << "#define ScFileID " << fileId;
 
       // generate output file
-      fs::path outputPath(m_options.outputPath);
-      outputPath /= fs::path(GetOutputFileName(fileName));
+      boost::filesystem::path outputPath(m_options.outputPath);
+      outputPath /= boost::filesystem::path(GetOutputFileName(fileName));
       std::ofstream outputFile(outputPath.string());
       outputFile << outCode.str();
       outputFile << std::endl << std::endl;
@@ -385,14 +384,14 @@ std::string ReflectionParser::GetFileExtension(std::string const & fileName)
 
 std::string ReflectionParser::GetOutputFileName(std::string const & fileName)
 {
-  fs::path inputPath(fileName);
+  boost::filesystem::path const inputPath(fileName);
   std::string baseName = inputPath.filename().replace_extension().string();
   return baseName + ".generated" + inputPath.extension().string();
 }
 
 std::string ReflectionParser::GetFileID(std::string const & fileName)
 {
-  fs::path inputPath(fileName);
+  boost::filesystem::path inputPath(fileName);
   std::string res = inputPath.filename().string();
 
   for (std::string::iterator it = res.begin(); it != res.end(); ++it)

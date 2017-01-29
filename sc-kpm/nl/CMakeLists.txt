@@ -3,6 +3,7 @@ set(SC_IOT_SRC "${SC_KPM_ROOT}/nl")
 set(SOURCES 
 	"nl.cpp"
 	"nlApiAi.cpp"
+	"nlApiAiUtils.cpp"
 	"nlDialogue.cpp"
 	"nlIvona.cpp"
 	"nlKeynodes.cpp"

@@ -1,4 +1,3 @@
-#include "Precompiled.hpp"
 #include "Sha256.hpp"
 
 #include <cstring>

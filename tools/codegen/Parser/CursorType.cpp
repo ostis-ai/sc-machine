@@ -1,6 +1,7 @@
-#include "Precompiled.hpp"
-
 #include "CursorType.hpp"
+#include "Cursor.hpp"
+
+#include "MetaUtils.hpp"
 
 CursorType::CursorType(const CXType &handle)
   : m_handle(handle)

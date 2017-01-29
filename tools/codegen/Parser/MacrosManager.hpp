@@ -2,6 +2,7 @@
 
 #include "Types.hpp"
 
+#include <map>
 
 struct MacrosInfo
 {
@@ -90,8 +91,8 @@ private:
   bool FindMacrosInternal(MacrosInfo::Type type, size_t line, std::string const & fileName, MacrosInfo & outResult) const;
 
 private:
-  typedef std::map< size_t, MacrosInfo> tMacrosLineMap;
-  typedef std::map< MacrosInfo::Type, tMacrosLineMap> tMacrosTypedMap;
+  using MacrosLineMap = std::map< size_t, MacrosInfo>;
+  using MacrosTypedMap = std::map< MacrosInfo::Type, MacrosLineMap>;
 
-  tMacrosTypedMap m_macrosStorage;
+  MacrosTypedMap m_macrosStorage;
 };

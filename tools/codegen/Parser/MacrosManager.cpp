@@ -1,5 +1,7 @@
 #include "MacrosManager.hpp"
 
+#include <iostream>
+
 MacrosManager::MacrosManager()
 {
 
@@ -12,8 +14,8 @@ MacrosManager::~MacrosManager()
 
 bool MacrosManager::AddMacros(MacrosInfo const & inMacros)
 {
-  tMacrosLineMap & lineMap = m_macrosStorage[inMacros.m_type];
-  tMacrosLineMap::const_iterator it = lineMap.find(inMacros.m_line);
+  MacrosLineMap & lineMap = m_macrosStorage[inMacros.m_type];
+  MacrosLineMap::const_iterator it = lineMap.find(inMacros.m_line);
   if ((it != lineMap.end()) && (it->second == inMacros))
   {
     return false;
@@ -61,16 +63,16 @@ bool MacrosManager::FindMacros(size_t line, std::string const & fileName, Macros
 
 void MacrosManager::Clear()
 {
-  m_macrosStorage = tMacrosTypedMap();
+  m_macrosStorage = MacrosTypedMap();
 }
 
 bool MacrosManager::FindMacrosInternal(MacrosInfo::Type type, size_t line, std::string const & fileName, MacrosInfo & outResult) const
 {
-  tMacrosTypedMap::const_iterator itTyped = m_macrosStorage.find(type);
+  MacrosTypedMap::const_iterator itTyped = m_macrosStorage.find(type);
   if (itTyped != m_macrosStorage.end())
   {
-    tMacrosLineMap const & lineMap = itTyped->second;
-    tMacrosLineMap::const_iterator itLine = lineMap.find(line);
+    MacrosLineMap const & lineMap = itTyped->second;
+    MacrosLineMap::const_iterator itLine = lineMap.find(line);
     if (itLine != lineMap.end())
     {
       outResult = itLine->second;
