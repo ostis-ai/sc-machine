@@ -22,6 +22,7 @@ pages:
       - AApiAiParseUserTextAgent: modules/nl/AApiAiParseUserTextAgent.md
   - License: license.md
   - Changelog: changelog.md
+  - Thirdparty: thirdparty.md
 
 theme: readthedocs
 
