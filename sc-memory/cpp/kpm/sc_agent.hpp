@@ -9,6 +9,7 @@
 #include "sc-memory/cpp/sc_object.hpp"
 #include "sc-memory/cpp/sc_memory.hpp"
 #include "sc-memory/cpp/utils/sc_log.hpp"
+
 #include "../generated/sc_agent.generated.hpp"
 
 #define KPM_COMMAND_AGENT		0
@@ -24,8 +25,8 @@ class ScAgent : public ScObject
   SC_CLASS()
   SC_GENERATED_BODY()
 
-  public:
-    _SC_EXTERN explicit ScAgent(char const * name, sc_uint8 accessLvl = sc_access_lvl_make_max);
+public:
+  _SC_EXTERN explicit ScAgent(char const * name, sc_uint8 accessLvl = sc_access_lvl_make_max);
   _SC_EXTERN virtual ~ScAgent();
 
 protected:
@@ -42,9 +43,8 @@ class ScAgentAction : public ScAgent
   SC_CLASS()
   SC_GENERATED_BODY()
 
-  public:
-    _SC_EXTERN explicit ScAgentAction(ScAddr const & cmdClassAddr, char const * name, sc_uint8 accessLvl = sc_access_lvl_make_max);
-
+public:
+  _SC_EXTERN explicit ScAgentAction(ScAddr const & cmdClassAddr, char const * name, sc_uint8 accessLvl = sc_access_lvl_make_max);
   _SC_EXTERN virtual ~ScAgentAction();
 
 protected:
@@ -59,6 +59,7 @@ public:
   static _SC_EXTERN ScAddr const & GetCommandFinishedAddr();
   static _SC_EXTERN ScAddr const & GetNrelResultAddr();
   static _SC_EXTERN ScAddr const & GetResultCodeAddr(sc_result resCode);
+  static _SC_EXTERN sc_result GetResultCodeByAddr(ScAddr const & resultClassAddr);
 
 protected:
   ScAddr m_cmdClassAddr;
@@ -79,6 +80,12 @@ private:
   // result codes
   SC_PROPERTY(Keynode("sc_result_ok"), ForceCreate)
   static ScAddr ms_keynodeScResultOk;
+
+  SC_PROPERTY(Keynode("sc_result_no"), ForceCreate)
+  static ScAddr ms_keynodeScResultNo;
+
+  SC_PROPERTY(Keynode("sc_result_unknown"), ForceCreate)
+  static ScAddr ms_keynodeScResultUnknown;
 
   SC_PROPERTY(Keynode("sc_result_error"), ForceCreate)
   static ScAddr ms_keynodeScResultError;

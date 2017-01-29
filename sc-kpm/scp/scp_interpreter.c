@@ -34,7 +34,7 @@ along with OSTIS.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <stdio.h>
 
-_SC_EXT_EXTERN sc_result initialize()
+_SC_EXT_EXTERN sc_result sc_module_initialize()
 {
     s_default_ctx = sc_memory_context_new(sc_access_lvl_make_min);
     if (SCP_RESULT_TRUE == scp_lib_init() &&
@@ -50,7 +50,7 @@ _SC_EXT_EXTERN sc_result initialize()
         return SCP_RESULT_ERROR;
 }
 
-_SC_EXT_EXTERN sc_result shutdown()
+_SC_EXT_EXTERN sc_result sc_module_shutdown()
 {
     sc_memory_context_free(s_default_ctx);
     if (SCP_RESULT_TRUE == scp_lib_shutdown() &&
@@ -65,7 +65,7 @@ _SC_EXT_EXTERN sc_result shutdown()
         return SCP_RESULT_ERROR;
 }
 
-_SC_EXT_EXTERN sc_uint32 load_priority()
+_SC_EXT_EXTERN sc_uint32 sc_module_load_priority()
 {
 	return 1;
 }

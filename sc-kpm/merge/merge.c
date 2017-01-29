@@ -13,7 +13,7 @@ sc_memory_context * s_default_ctx = 0;
 
 sc_event *event_question_set_cantorization;
 
-_SC_EXT_EXTERN sc_result initialize()
+_SC_EXT_EXTERN sc_result sc_module_initialize()
 {
   s_default_ctx = sc_memory_context_new(sc_access_lvl_make_min);
 
@@ -27,7 +27,7 @@ _SC_EXT_EXTERN sc_result initialize()
   return SC_RESULT_OK;
 }
 
-_SC_EXT_EXTERN sc_result shutdown()
+_SC_EXT_EXTERN sc_result sc_module_shutdown()
 {
   sc_event_destroy(event_question_set_cantorization);
   sc_memory_context_free(s_default_ctx);

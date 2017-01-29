@@ -7,6 +7,7 @@
 #include "sc_memory.hpp"
 #include "sc_utils.hpp"
 #include "sc_stream.hpp"
+#include "kpm/sc_agent.hpp"
 
 #include "utils/sc_log.hpp"
 
@@ -79,6 +80,8 @@ bool ScMemory::Initialize(sc_memory_params const & params)
   g_log_set_default_handler(_logPrintHandler, nullptr);
 
   ms_globalContext = sc_memory_initialize(&params);
+  
+  ScAgentInit(true);
   return ms_globalContext != null_ptr;
 }
 

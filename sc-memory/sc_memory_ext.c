@@ -100,22 +100,22 @@ sc_result sc_ext_initialize(const sc_char *ext_dir_path)
     // skip non module files
     if (g_str_has_suffix(file_name, G_MODULE_SUFFIX) == TRUE)
     {
-      if (g_module_symbol(mi->ptr, "initialize", (gpointer*) &func) == FALSE)
+      if (g_module_symbol(mi->ptr, "sc_module_initialize", (gpointer*) &func) == FALSE)
       {
-        g_warning("Can't find 'initialize' symbol in module: %s", mi->path);
+        g_warning("Can't find 'sc_module_initialize' symbol in module: %s", mi->path);
         goto clean;
       }
       mi->init_func = func;
 
-      if (g_module_symbol(mi->ptr, "shutdown", (gpointer*) &func) == FALSE)
+      if (g_module_symbol(mi->ptr, "sc_module_shutdown", (gpointer*) &func) == FALSE)
       {
-        g_warning("Can't find 'shutdown' symbol in module: %s", mi->path);
+        g_warning("Can't find 'sc_module_shutdown' symbol in module: %s", mi->path);
         goto clean;
       }
       mi->shut_func = func;
 
       fModulePriorityFunc pfunc;
-      if (g_module_symbol(mi->ptr, "load_priority", (gpointer*)&pfunc) == FALSE)
+      if (g_module_symbol(mi->ptr, "sc_module_load_priority", (gpointer*)&pfunc) == FALSE)
         mi->priority = G_MAXUINT32;
       else
         mi->priority = pfunc();

@@ -10,34 +10,33 @@
 
 namespace
 {
+
 // waiters threads
 struct WaitTestData
 {
-  WaitTestData(ScMemoryContext & ctx, ScAddr const & addr, ScAddr const & addrFrom = ScAddr())
-    : m_context(ctx)
-    , m_addr(addr)
+  WaitTestData(ScAddr const & addr, ScAddr const & addrFrom = ScAddr())
+    : m_addr(addr)
     , m_addrFrom(addrFrom)
     , m_isDone(false)
   {
   }
 
-  ScMemoryContext & m_context;
   ScAddr m_addr;
   ScAddr m_addrFrom;
   bool m_isDone;
 };
-gpointer emit_event_thread(gpointer data)
+
+
+void EmitEvent(WaitTestData & data)
 {
-  WaitTestData * d = (WaitTestData*)data;
-  g_usleep(500000);	// sleep to run some later
+  ScMemoryContext ctx(sc_access_lvl_make_min, "EmitEvent");
 
-  ScAddr const node = d->m_addrFrom.IsValid() ? d->m_addrFrom : d->m_context.CreateNode(*ScType::NodeConst);
-  ScAddr const edge = d->m_context.CreateEdge(*ScType::EdgeAccessConstPosPerm, node, d->m_addr);
+  ScAddr const node = data.m_addrFrom.IsValid() ? data.m_addrFrom : ctx.CreateNode(ScType::NodeConst);
+  ScAddr const edge = ctx.CreateEdge(ScType::EdgeAccessConstPosPerm, node, data.m_addr);
 
-  d->m_isDone = edge.IsValid();
-
-  return nullptr;
+  data.m_isDone = edge.IsValid();
 }
+
 }
 
 UNIT_TEST(waiter)
@@ -50,11 +49,13 @@ UNIT_TEST(waiter)
 
   SUBTEST_START(WaitValid)
   {
-    WaitTestData data(ctx, addr);
-    GThread * thread = g_thread_try_new(0, emit_event_thread, (gpointer)&data, 0);
-    SC_CHECK_NOT_EQUAL(thread, nullptr, ());
-
-    SC_CHECK(ScWait<ScEventAddInputEdge>(ctx, addr).Wait(), ("Waiter timeout"));
+    WaitTestData data(addr);
+    ScWait<ScEventAddInputEdge> waiter(ctx, addr);
+    waiter.SetOnWaitStartDelegate([&data]() {
+      EmitEvent(data);
+    });
+    
+    SC_CHECK(waiter.Wait(), ("Waiter timeout"));
     SC_CHECK(data.m_isDone, ("Waiter finished, but flag is false"));
   }
   SUBTEST_END()
@@ -67,15 +68,16 @@ UNIT_TEST(waiter)
 
   SUBTEST_START(WaitCondValid)
   {
-    WaitTestData data(ctx, addr);
-    GThread * thread = g_thread_try_new(0, emit_event_thread, (gpointer)&data, 0);
-    SC_CHECK_NOT_EQUAL(thread, nullptr, ());
-
+    WaitTestData data(addr);
     ScWaitCondition<ScEventAddInputEdge> waiter(ctx, addr, [](ScAddr const & listenAddr,
                                                 ScAddr const & edgeAddr,
                                                 ScAddr const & otherAddr)
     {
       return true;
+    });
+
+    waiter.SetOnWaitStartDelegate([&data]() {
+      EmitEvent(data);
     });
 
     SC_CHECK(waiter.Wait(), ("Waiter timeout"));
@@ -85,9 +87,7 @@ UNIT_TEST(waiter)
 
   SUBTEST_START(WaitCondValidFalse)
   {
-    WaitTestData data(ctx, addr);
-    GThread * thread = g_thread_try_new(0, emit_event_thread, (gpointer)&data, 0);
-    SC_CHECK_NOT_EQUAL(thread, nullptr, ());
+    WaitTestData data(addr);
 
     ScWaitCondition<ScEventAddInputEdge> waiter(ctx, addr, [](ScAddr const & listenAddr,
                                                 ScAddr const & edgeAddr,
@@ -96,18 +96,23 @@ UNIT_TEST(waiter)
       return false;
     });
 
-    SC_CHECK(!waiter.Wait(), ());
+    waiter.SetOnWaitStartDelegate([&data]() {
+      EmitEvent(data);
+    });
+
+    SC_CHECK(!waiter.Wait(2000), ());
     SC_CHECK(data.m_isDone, ());
   }
   SUBTEST_END()
 
   SUBTEST_START(WaitActionFinished)
   {
-    WaitTestData data(ctx, addr, ScAgentAction::GetCommandFinishedAddr());
-    GThread * thread = g_thread_try_new(0, emit_event_thread, (gpointer)&data, 0);
-    SC_CHECK_NOT_EQUAL(thread, nullptr, ());
-
+    WaitTestData data(addr, ScAgentAction::GetCommandFinishedAddr());
+    
     ScWaitActionFinished waiter(ctx, addr);
+    waiter.SetOnWaitStartDelegate([&data]() {
+      EmitEvent(data);
+    });
 
     SC_CHECK(waiter.Wait(), ("Waiter timeout"));
     SC_CHECK(data.m_isDone, ("Waiter finished"));

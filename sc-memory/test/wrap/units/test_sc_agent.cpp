@@ -37,14 +37,9 @@ UNIT_TEST(ATestCommand)
 {
   ScMemoryContext ctx(sc_access_lvl_make_min, "ATestCommand");
 
-  // create used keynodes
-  ScAddr const cmd_init = CreateKeynode(ctx, "command_initiated");
-  ScAddr const cmd_prog = CreateKeynode(ctx, "command_in_progress");
-  ScAddr const cmd_finish = CreateKeynode(ctx, "command_finished");
-  ScAddr const cmd_result = CreateKeynode(ctx, "nrel_result");
   ScAddr const command_1 = CreateKeynode(ctx, "command_1");
 
-  ScAgentInit();
+  ScAgentInit(true);
   ATestCommand::InitGlobal();
 
   SC_AGENT_REGISTER(ATestCommand);
@@ -53,7 +48,7 @@ UNIT_TEST(ATestCommand)
   SC_CHECK(cmd.IsValid(), ());
   ScAddr const e1 = ctx.CreateEdge(ScType::EdgeAccessConstPosPerm, command_1, cmd);
   SC_CHECK(e1.IsValid(), ());
-  ScAddr const e2 = ctx.CreateEdge(ScType::EdgeAccessConstPosPerm, cmd_init, cmd);
+  ScAddr const e2 = ctx.CreateEdge(ScType::EdgeAccessConstPosPerm, ScAgentAction::GetCommandInitiatedAddr(), cmd);
   SC_CHECK(e2.IsValid(), ());
 
   SC_CHECK(ATestCommand::msWaiter.Wait(), ());
@@ -75,6 +70,8 @@ SC_AGENT_IMPLEMENTATION(ATestAddInputEdge)
 UNIT_TEST(ATestAddInputEdge)
 {
   ScMemoryContext ctx(sc_access_lvl_make_min, "ATestAddInputEdge");
+  
+  ScAgentInit(true);
   ATestAddInputEdge::InitGlobal();
   SC_AGENT_REGISTER(ATestAddInputEdge);
 
@@ -101,6 +98,8 @@ SC_AGENT_IMPLEMENTATION(ATestAddOutputEdge)
 UNIT_TEST(ATestAddOutputEdge)
 {
   ScMemoryContext ctx(sc_access_lvl_make_min, "ATestAddOutputEdge");
+
+  ScAgentInit(true);
   ATestAddOutputEdge::InitGlobal();
   SC_AGENT_REGISTER(ATestAddOutputEdge);
 
@@ -129,6 +128,8 @@ SC_AGENT_IMPLEMENTATION(ATestRemoveInputEdge)
 UNIT_TEST(ATestRemoveInputEdge)
 {
   ScMemoryContext ctx(sc_access_lvl_make_min, "ATestRemoveInputEdge");
+
+  ScAgentInit(true);
   ATestRemoveInputEdge::InitGlobal();
 
   ScAddr const node = ctx.CreateNode(ScType::NodeConst);
@@ -158,6 +159,8 @@ SC_AGENT_IMPLEMENTATION(ATestRemoveOutputEdge)
 UNIT_TEST(ATestRemoveOutputEdge)
 {
   ScMemoryContext ctx(sc_access_lvl_make_min, "ATestRemoveOutputEdge");
+
+  ScAgentInit(true);
   ATestRemoveOutputEdge::InitGlobal();
 
   ScAddr const node = ctx.CreateNode(ScType::NodeConst);
@@ -187,6 +190,8 @@ SC_AGENT_IMPLEMENTATION(ATestRemoveElement)
 UNIT_TEST(ATestRemoveElement)
 {
   ScMemoryContext ctx(sc_access_lvl_make_min, "ATestRemoveElement");
+
+  ScAgentInit(true);
   ATestRemoveElement::InitGlobal();
 
   SC_AGENT_REGISTER(ATestRemoveElement);
@@ -216,6 +221,7 @@ UNIT_TEST(ATestContentChanged)
   SC_CHECK(link.IsValid(), ());
   SC_CHECK(ctx.HelperSetSystemIdtf("ATestContentChanged", link), ());
 
+  ScAgentInit(true);
   ATestContentChanged::InitGlobal();
 
   SC_AGENT_REGISTER(ATestContentChanged);

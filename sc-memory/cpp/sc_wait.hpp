@@ -70,6 +70,8 @@ class ScWait
   };
 
 public:
+  using DelegateFunc = std::function<void(void)>;
+
   ScWait(const ScMemoryContext & ctx, const ScAddr & addr)
     : m_event(ctx, addr,
              std::bind(&ScWait<EventClassT>::OnEvent,
@@ -84,8 +86,16 @@ public:
   {
   }
 
+  void SetOnWaitStartDelegate(DelegateFunc const & startDelegate)
+  {
+    m_waitStartDelegate = startDelegate;
+  }
+
   bool Wait(uint64_t timeout_ms = 5000)
   {
+    if (m_waitStartDelegate)
+      m_waitStartDelegate();
+
     return m_waiterImpl.Wait(timeout_ms);
   }
 
@@ -105,6 +115,7 @@ protected:
 private:
   EventClassT m_event;
   WaiterImpl m_waiterImpl;
+  DelegateFunc m_waitStartDelegate;
 };
 
 

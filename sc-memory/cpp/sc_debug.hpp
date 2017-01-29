@@ -21,7 +21,7 @@ public:
   _SC_EXTERN ScException(std::string const & description);
   _SC_EXTERN virtual ~ScException() throw();
 
-  _SC_EXTERN const char* What() const throw();
+  _SC_EXTERN const char* Message() const throw();
 
 private:
   std::string m_description;
