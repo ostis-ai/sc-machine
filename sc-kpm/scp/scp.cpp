@@ -12,11 +12,11 @@ using namespace scp;
 
 SC_IMPLEMENT_MODULE(scpModule)
 
-sc_result scpModule::initializeImpl()
+sc_result scpModule::InitializeImpl()
 {
     std::cout << "SCP START" << std::endl;
 
-    if (!scp::Keynodes::initGlobal())
+    if (!scp::Keynodes::InitGlobal())
         return SC_RESULT_ERROR;
 
     SC_AGENT_REGISTER(ASCPProcessCreator)
@@ -25,7 +25,7 @@ sc_result scpModule::initializeImpl()
     return SC_RESULT_OK;
 }
 
-sc_result scpModule::shutdownImpl()
+sc_result scpModule::ShutdownImpl()
 {
     std::cout << "SCP END" << std::endl;
     return SC_RESULT_OK;

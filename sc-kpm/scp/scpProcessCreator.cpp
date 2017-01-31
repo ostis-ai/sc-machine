@@ -16,55 +16,55 @@ ScAddr ASCPProcessCreator::msAgentKeynode;
 
 SC_AGENT_IMPLEMENTATION(ASCPProcessCreator)
 {
-    if (!edgeAddr.isValid())
+    if (!edgeAddr.IsValid())
         return SC_RESULT_ERROR;
 
-    ScAddr action = msContext->getArcEnd(edgeAddr);
+    ScAddr action = ms_context->GetArcEnd(edgeAddr);
 
-    if (!msContext->helperCheckArc(Keynodes::question_scp_interpretation_request, action, sc_type_arc_pos_const_perm))
+    if (!ms_context->HelperCheckArc(Keynodes::question_scp_interpretation_request, action, sc_type_arc_pos_const_perm))
         return SC_RESULT_ERROR_INVALID_PARAMS;
 
     ScAddr program, params;
-    ScIterator5Ptr iter_param = msContext->iterator5(action, sc_type_arc_pos_const_perm, sc_type_node, sc_type_arc_pos_const_perm, Keynodes::rrel_1);
-    if (iter_param->next())
-        program = iter_param->value(2);
+    ScIterator5Ptr iter_param = ms_context->Iterator5(action, sc_type_arc_pos_const_perm, sc_type_node, sc_type_arc_pos_const_perm, Keynodes::rrel_1);
+    if (iter_param->Next())
+        program = iter_param->Get(2);
     else
         return SC_RESULT_ERROR_INVALID_PARAMS;
 
-    iter_param = msContext->iterator5(action, sc_type_arc_pos_const_perm, sc_type_node, sc_type_arc_pos_const_perm, Keynodes::rrel_2);
-    if (iter_param->next())
-        params = iter_param->value(2);
+    iter_param = ms_context->Iterator5(action, sc_type_arc_pos_const_perm, sc_type_node, sc_type_arc_pos_const_perm, Keynodes::rrel_2);
+    if (iter_param->Next())
+        params = iter_param->Get(2);
     else
         return SC_RESULT_ERROR_INVALID_PARAMS;
 
     ScTemplate program_templ;
-    msContext->helperBuildTemplate(program_templ, program);
+    ms_context->HelperBuildTemplate(program_templ, program);
     ScTemplateGenParams gen_params;
 
     ScAddr process_node;
-    ScIterator5Ptr iter_temp = msContext->iterator5(Keynodes::scp_process, sc_type_arc_pos_var_perm, SC_TYPE(sc_type_var | sc_type_node), sc_type_arc_pos_const_perm, program);
-    if (iter_temp->isValid() && iter_temp->next())
-        process_node = iter_temp->value(2);
+    ScIterator5Ptr iter_temp = ms_context->Iterator5(Keynodes::scp_process, sc_type_arc_pos_var_perm, SC_TYPE(sc_type_var | sc_type_node), sc_type_arc_pos_const_perm, program);
+    if (iter_temp->IsValid() && iter_temp->Next())
+        process_node = iter_temp->Get(2);
     else
         return SC_RESULT_ERROR_INVALID_PARAMS;
 
-    iter_temp = msContext->iterator5(process_node, sc_type_arc_pos_var_perm, SC_TYPE(sc_type_var | sc_type_node), sc_type_arc_pos_const_perm, program);
-    if (!iter_temp->isValid())
+    iter_temp = ms_context->Iterator5(process_node, sc_type_arc_pos_var_perm, SC_TYPE(sc_type_var | sc_type_node), sc_type_arc_pos_const_perm, program);
+    if (!iter_temp->IsValid())
         return SC_RESULT_ERROR_INVALID_PARAMS;
 
-    while (iter_temp->next())
+    while (iter_temp->Next())
     {
         ScAddr order;
-        if (Utils::resolveOrderRoleRelation((ScMemoryContext&)msContext, iter_temp->value(1), order));
+        if (Utils::resolveOrderRoleRelation((ScMemoryContext&)ms_context, iter_temp->Get(1), order));
         {
-            iter_param = msContext->iterator5(params, sc_type_arc_pos_const_perm, SC_TYPE(0), sc_type_arc_pos_const_perm, order);
-            if (!iter_param->next())
-                Utils::logMissedParameterError((ScMemoryContext&)msContext, order);
+            iter_param = ms_context->Iterator5(params, sc_type_arc_pos_const_perm, SC_TYPE(0), sc_type_arc_pos_const_perm, order);
+            if (!iter_param->Next())
+                Utils::logMissedParameterError((ScMemoryContext&)ms_context, order);
 
-            //!TODO gen_params.add(iter_temp->value(2),iter_param->value(2));
-            //Utils::printSystemIdentifier((ScMemoryContext&)msContext, iter_temp->value(2));
+            //!TODO gen_params.add(iter_temp->Get(2),iter_param->Get(2));
+            //Utils::printSystemIdentifier((ScMemoryContext&)ms_context, iter_temp->Get(2));
             //std::cout << "-->" << std::endl;
-            //Utils::printSystemIdentifier((ScMemoryContext&)msContext, iter_param->value(2));
+            //Utils::printSystemIdentifier((ScMemoryContext&)ms_context, iter_param->Get(2));
             //std::cout << std::endl;
         }
     }

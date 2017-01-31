@@ -16,81 +16,81 @@ ScAddr ASCPProcessDestroyer::msAgentKeynode;
 
 SC_AGENT_IMPLEMENTATION(ASCPProcessDestroyer)
 {
-    if (!edgeAddr.isValid())
+    if (!edgeAddr.IsValid())
         return SC_RESULT_ERROR;
 
-    ScAddr process = msContext->getArcEnd(edgeAddr);
+    ScAddr process = ms_context->GetArcEnd(edgeAddr);
 
-    if (!msContext->helperCheckArc(Keynodes::scp_process, process, sc_type_arc_pos_const_perm))
+    if (!ms_context->HelperCheckArc(Keynodes::scp_process, process, sc_type_arc_pos_const_perm))
         return SC_RESULT_ERROR_INVALID_PARAMS;
 
     ScAddr decomp_node;
-    ScIterator5Ptr it_temp = msContext->iterator5(SC_TYPE(sc_type_node | sc_type_const), SC_TYPE(sc_type_arc_common | sc_type_const), process, sc_type_arc_pos_const_perm, Keynodes::nrel_decomposition_of_action);
-    if (it_temp->next())
-        decomp_node = it_temp->value(0);
+    ScIterator5Ptr it_temp = ms_context->Iterator5(SC_TYPE(sc_type_node | sc_type_const), SC_TYPE(sc_type_arc_common | sc_type_const), process, sc_type_arc_pos_const_perm, Keynodes::nrel_decomposition_of_action);
+    if (it_temp->Next())
+        decomp_node = it_temp->Get(0);
     else return SC_RESULT_ERROR_INVALID_STATE;
 
-    ScIterator3Ptr it_oper = msContext->iterator3(decomp_node, sc_type_arc_pos_const_perm, SC_TYPE(sc_type_node | sc_type_const));
-    while (it_oper->next())
+    ScIterator3Ptr it_oper = ms_context->Iterator3(decomp_node, sc_type_arc_pos_const_perm, SC_TYPE(sc_type_node | sc_type_const));
+    while (it_oper->Next())
     {
-        ScAddr curr_operator = it_oper->value(2);
+        ScAddr curr_operator = it_oper->Get(2);
 
-        if (msContext->helperCheckArc(Keynodes::op_sys_search, curr_operator, sc_type_arc_pos_const_perm)
-                || msContext->helperCheckArc(Keynodes::op_sys_gen, curr_operator, sc_type_arc_pos_const_perm))
+        if (ms_context->HelperCheckArc(Keynodes::op_sys_search, curr_operator, sc_type_arc_pos_const_perm)
+                || ms_context->HelperCheckArc(Keynodes::op_sys_gen, curr_operator, sc_type_arc_pos_const_perm))
         {
-            ScIterator5Ptr it_operand = msContext->iterator5(curr_operator, sc_type_arc_pos_const_perm, SC_TYPE(sc_type_node | sc_type_const), sc_type_arc_pos_const_perm, Keynodes::rrel_scp_const);
-            while (it_operand->next())
+            ScIterator5Ptr it_operand = ms_context->Iterator5(curr_operator, sc_type_arc_pos_const_perm, SC_TYPE(sc_type_node | sc_type_const), sc_type_arc_pos_const_perm, Keynodes::rrel_scp_const);
+            while (it_operand->Next())
             {
-                if (!(msContext->helperCheckArc(Keynodes::rrel_2, it_operand->value(1), sc_type_arc_pos_const_perm)
-                        || msContext->helperCheckArc(Keynodes::rrel_3, it_operand->value(1), sc_type_arc_pos_const_perm)))
+                if (!(ms_context->HelperCheckArc(Keynodes::rrel_2, it_operand->Get(1), sc_type_arc_pos_const_perm)
+                        || ms_context->HelperCheckArc(Keynodes::rrel_3, it_operand->Get(1), sc_type_arc_pos_const_perm)))
                     continue;
 
-                ScAddr curr_operand = it_operand->value(2);
-                ScIterator3Ptr it_pairs = msContext->iterator3(curr_operand, sc_type_arc_pos_const_perm, SC_TYPE(0));
-                while (it_pairs->next())
+                ScAddr curr_operand = it_operand->Get(2);
+                ScIterator3Ptr it_pairs = ms_context->Iterator3(curr_operand, sc_type_arc_pos_const_perm, SC_TYPE(0));
+                while (it_pairs->Next())
                 {
-                    ScAddr curr_pair = it_pairs->value(2);
+                    ScAddr curr_pair = it_pairs->Get(2);
                     deleteSCPVarsSet(curr_pair);
-                    msContext->eraseElement(curr_pair);
+                    ms_context->EraseElement(curr_pair);
                 }
-                msContext->eraseElement(curr_operand);
+                ms_context->EraseElement(curr_operand);
             }
         }
-        if (msContext->helperCheckArc(Keynodes::op_call, curr_operator, sc_type_arc_pos_const_perm))
+        if (ms_context->HelperCheckArc(Keynodes::op_call, curr_operator, sc_type_arc_pos_const_perm))
         {
-            ScIterator5Ptr it_operand = msContext->iterator5(curr_operator, sc_type_arc_pos_const_perm, SC_TYPE(sc_type_node | sc_type_const), sc_type_arc_pos_const_perm, Keynodes::rrel_2);
-            if (it_operand->next())
+            ScIterator5Ptr it_operand = ms_context->Iterator5(curr_operator, sc_type_arc_pos_const_perm, SC_TYPE(sc_type_node | sc_type_const), sc_type_arc_pos_const_perm, Keynodes::rrel_2);
+            if (it_operand->Next())
             {
-                if (msContext->helperCheckArc(Keynodes::rrel_scp_const, it_operand->value(1), sc_type_arc_pos_const_perm))
+                if (ms_context->HelperCheckArc(Keynodes::rrel_scp_const, it_operand->Get(1), sc_type_arc_pos_const_perm))
                 {
-                    ScAddr curr_operand = it_operand->value(2);
+                    ScAddr curr_operand = it_operand->Get(2);
                     deleteSCPVarsSet(curr_operand);
-                    msContext->eraseElement(curr_operand);
+                    ms_context->EraseElement(curr_operand);
                 }
             }
         }
 
         deleteSCPVarsSet(curr_operator);
-        msContext->eraseElement(curr_operator);
+        ms_context->EraseElement(curr_operator);
     }
 
-    msContext->eraseElement(decomp_node);
-    msContext->eraseElement(process);
+    ms_context->EraseElement(decomp_node);
+    ms_context->EraseElement(process);
 
     ScAddr contur;
-    msContext->helperFindBySystemIdtf("test_contour1", contur);
-    Utils::printInfo((ScMemoryContext&)msContext, contur);
+    ms_context->HelperFindBySystemIdtf("test_contour1", contur);
+    Utils::printInfo((ScMemoryContext&)ms_context, contur);
 
     return SC_RESULT_OK;
 }
 
 void ASCPProcessDestroyer::deleteSCPVarsSet(ScAddr & setAddr)
 {
-    ScIterator5Ptr it_operand = msContext->iterator5(setAddr, sc_type_arc_pos_const_perm, SC_TYPE(sc_type_node | sc_type_const), sc_type_arc_pos_const_perm, Keynodes::rrel_scp_var);
-    while (it_operand->next())
+    ScIterator5Ptr it_operand = ms_context->Iterator5(setAddr, sc_type_arc_pos_const_perm, SC_TYPE(sc_type_node | sc_type_const), sc_type_arc_pos_const_perm, Keynodes::rrel_scp_var);
+    while (it_operand->Next())
     {
-        ScAddr elem = it_operand->value(2);
-        msContext->eraseElement(elem);
+        ScAddr elem = it_operand->Get(2);
+        ms_context->EraseElement(elem);
     }
 }
 
