@@ -30,6 +30,11 @@ bool removeFromSet(ScMemoryContext & ctx, ScAddr const & setAddr, ScAddr const &
  */
 bool resolveOrderRoleRelation(ScMemoryContext & ctx, ScAddr const & arcAddr, ScAddr &relationAddr);
 
+/*! Resolves atomic operator type (operatorType) of given operator (operatorAddr)
+ * @returns true, if relation resolved
+ */
+bool resolveOperatorType(ScMemoryContext & ctx, ScAddr const &operatorAddr, ScAddr &operatorType);
+
 /*! Prints system identifier or address of sc-element (elemAddr)
  */
 void printSystemIdentifier(ScMemoryContext & ctx, ScAddr const & elemAddr);

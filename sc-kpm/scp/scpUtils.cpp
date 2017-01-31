@@ -52,6 +52,21 @@ bool resolveOrderRoleRelation(ScMemoryContext & ctx, ScAddr const &arcAddr, ScAd
     return false;
 }
 
+bool resolveOperatorType(ScMemoryContext & ctx, ScAddr const &operatorAddr, ScAddr &operatorType)
+{
+    ScIterator3Ptr it = ctx.iterator3(SC_TYPE(sc_type_node | sc_type_const), sc_type_arc_access, operatorAddr);
+    while (it->next())
+    {
+        if (ctx.helperCheckArc(Keynodes::scp_operator_atomic_type, it->value(0), sc_type_arc_pos_const_perm))
+        {
+            operatorType = it->value(0);
+            return true;
+        }
+    }
+
+    return false;
+}
+
 void printSystemIdentifier(ScMemoryContext & ctx, ScAddr const & elemAddr)
 {
     if (ctx.getElementType(elemAddr).isNode() || ctx.getElementType(elemAddr).isLink())
