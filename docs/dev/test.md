@@ -41,3 +41,5 @@ UNIT_TEST(me_test_name_2)
 ```
 
 For example you can see any test in `sc-memory/test/wrap/units/` folder.
+
+**TODO:** how to create automation tests for another project

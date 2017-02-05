@@ -9,7 +9,11 @@
 #include "../sc_types.hpp"
 #include "../sc_memory.hpp"
 #include "../sc_debug.hpp"
+#include "../sc_utils.hpp"
 
+#include "../utils/sc_console.hpp"
+
+#include <cstdlib>
 #include <iostream>
 
 namespace test
@@ -70,5 +74,26 @@ private:
 
 #define SUBTEST_START(_name) SC_LOG_INFO("Test "#_name" ...")
 #define SUBTEST_END() SC_LOG_INFO_COLOR(" ok", _STATUS_COLOR(true))
+
+#ifdef SC_BUILD_AUTO_TESTS
+# define _WAIT_KEY_IMPL()
+#else
+# define _WAIT_KEY_IMPL() ScConsole::WaitAnyKey("Press a key to continue...");
+#endif
+
+#define SC_AUTOMATION_TESTS(__name) \
+int main(int argc, char ** argv) try \
+{ \
+  utils::ScLog::GetInstance()->Initialize(__name".log"); \
+  test::ScTestUnit::RunAll(); \
+  utils::ScLog::GetInstance()->Shutdown(); \
+  _WAIT_KEY_IMPL() \
+  return 0; \
+} \
+catch (utils::ScException const & ex) \
+{ \
+  SC_LOG_ERROR(ex.Message()); \
+  _WAIT_KEY_IMPL() \
+}
 
 } // namespace test
