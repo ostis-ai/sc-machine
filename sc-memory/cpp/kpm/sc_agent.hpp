@@ -67,14 +67,14 @@ public:
   static _SC_EXTERN ScAddr const & GetResultCodeAddr(sc_result resCode);
   static _SC_EXTERN sc_result GetResultCodeByAddr(ScAddr const & resultClassAddr);
 
-  /* Create instance and initiate specified command with arguments
+  /* Create instance of specified command with arguments
    * cmdClassAddr - node that designate command class
    * For each parameter from params would be added attribute rrel_<i + 1>, where
    * i is an index of parameter in vector. Maximum size of params is 10.
-   * Returns ScAddr of initiated command instance. If addr is not valid, then
+   * Returns ScAddr of created command instance. If addr is not valid, then
    * command doesn't created
    */
-  static _SC_EXTERN ScAddr EmitCommand(ScMemoryContext & ctx, ScAddr const & cmdClassAddr, ScAddrVector const & params);
+  static _SC_EXTERN ScAddr CreateCommand(ScMemoryContext & ctx, ScAddr const & cmdClassAddr, ScAddrVector const & params);
 
   /* Init specified command.
    * cmdAddr - ScAddr of command instance

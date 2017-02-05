@@ -245,7 +245,7 @@ sc_result ScAgentAction::GetResultCodeByAddr(ScAddr const & resultClassAddr)
   return SC_RESULT_UNKNOWN;
 }
 
-ScAddr ScAgentAction::EmitCommand(ScMemoryContext & ctx, ScAddr const & cmdClassAddr, ScAddrVector const & params)
+ScAddr ScAgentAction::CreateCommand(ScMemoryContext & ctx, ScAddr const & cmdClassAddr, ScAddrVector const & params)
 {
   if (params.size() >= kKeynodeRrelListNum)
     SC_THROW_EXCEPTION(utils::ExceptionInvalidParams, "You should use <= " + std::to_string(kKeynodeRrelListNum) + " params");
@@ -262,13 +262,6 @@ ScAddr ScAgentAction::EmitCommand(ScMemoryContext & ctx, ScAddr const & cmdClass
     ScAddr const edgeCommon = ctx.CreateEdge(ScType::EdgeAccessConstPosPerm, cmdInstanceAddr, params[i]);
     SC_ASSERT(edgeCommon.IsValid(), ());
     ctx.CreateEdge(ScType::EdgeAccessConstPosPerm, kKeynodeRrelList[i], edgeCommon);
-  }
-
-  if (!InitiateCommand(ctx, cmdInstanceAddr))
-  {
-    // cleanup after error
-    ctx.EraseElement(cmdInstanceAddr);
-    return ScAddr();
   }
 
   return cmdInstanceAddr;
