@@ -30,18 +30,20 @@ SC_AGENT_ACTION_IMPLEMENTATION(ATestCommandEmit)
 
 UNIT_TEST(ATestCommandEmit)
 {
-  ScMemoryContext ctx(sc_access_lvl_make_min, "ATestCommantEmit");
+  ScMemoryContext ctx(sc_access_lvl_make_min, "ATestCommandEmit");
   ATestCommandEmit::InitGlobal();
 
   SC_AGENT_REGISTER(ATestCommandEmit);
 
   testInitLock.Lock();
-  ScAddr const cmd = ScAgentAction::EmitCommand(
+  ScAddr const cmd = ScAgentAction::CreateCommand(
     ctx,
     ATestCommandEmit::GetCommandClassAddr(),
     { ATestCommandEmit::ms_keynodeParam1, ATestCommandEmit::ms_keynodeParam2 });
 
   SC_CHECK(cmd.IsValid(), ());
+
+  ScAgentAction::InitiateCommand(ctx, cmd);
 
   ScTimer timer(3.0);
   while (!timer.IsTimeOut() && testInitLock.IsLocked())

@@ -68,7 +68,7 @@ void ScLog::Message(ScLog::eType type, std::string const & msg, ScConsole::Color
     std::cout << msg << std::endl;;
     ScConsole::ResetColor();
 
-    m_fileStream << ss.str();
+    m_fileStream << ss.str() << msg << std::endl;
     m_fileStream.flush();
   }
 }

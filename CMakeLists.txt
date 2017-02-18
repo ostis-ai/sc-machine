@@ -8,6 +8,7 @@ set(SC_MACHINE_ROOT ${CMAKE_CURRENT_LIST_DIR})
 set(SC_MACHINE_THIRDPARTY_PATH "${SC_MACHINE_ROOT}/thirdparty")
 set(SC_MACHINE_ANTRL_DIR "${SC_MACHINE_THIRDPARTY_PATH}/antlr")
 
+option (SC_AUTO_TEST "Flag to build for automation testing" OFF)
 option (SC_KPM_SCP "Flag to build SCP module" ON)
 
 # codegen
@@ -46,6 +47,10 @@ endif()
 
 set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -DSC_DEBUG -DSC_PROFILE")
 set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -DSC_DEBUG -DSC_PROFILE")
+
+if (${SC_AUTO_TEST})
+	add_definitions(-DSC_BUILD_AUTO_TESTS)
+endif()
 
 # find dependencies
 if (${UNIX})
