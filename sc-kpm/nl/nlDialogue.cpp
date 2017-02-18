@@ -55,19 +55,12 @@ SC_AGENT_IMPLEMENTATION(ADialogueProcessMessageAgent)
       const ScAddr cmdAddr = result["_command_instance"];
       SC_ASSERT(cmdAddr.IsValid(), ());
 
-      // initiate command
-      m_memoryCtx.CreateEdge(ScType::EdgeAccessConstPosPerm, Keynodes::msCommandInitiated, cmdAddr);
-
-      // wait until command finish
-      ScWaitCondition<ScEventAddInputEdge> waiter(
-            m_memoryCtx, cmdAddr, [this](ScAddr const & addr,
-            ScAddr const & edgeAddr,
-            ScAddr const & otherAddr)
-      {
-        return (otherAddr == Keynodes::msCommandFinished);
+      ScWaitActionFinished wait(m_memoryCtx, cmdAddr);
+      wait.SetOnWaitStartDelegate([this, &cmdAddr]() {
+        ScAgentAction::InitiateCommand(m_memoryCtx, cmdAddr);
       });
 
-      if (!waiter.Wait())
+      if (!wait.Wait())
         return SC_RESULT_ERROR_INVALID_STATE;
 
       // parse result and append it into dialogue
