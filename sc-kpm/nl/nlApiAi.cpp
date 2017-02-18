@@ -8,10 +8,13 @@
 
 #include "sc-memory/cpp/sc_stream.hpp"
 #include "sc-memory/cpp/sc_struct.hpp"
+#include "sc-memory/cpp/sc_wait.hpp"
 
 namespace nl
 {
 
+ScAddr AApiAiParseUserTextAgent::ms_commandResolveAddr;
+ScAddr AApiAiParseUserTextAgent::ms_nrelInitCommand;
 ScAddr AApiAiParseUserTextAgent::ms_nrelCommonTemplate;
 ScAddr AApiAiParseUserTextAgent::ms_nrelTranslation;
 ScAddr AApiAiParseUserTextAgent::ms_rrelLocation;
@@ -72,6 +75,76 @@ sc_result AApiAiParseUserTextAgent::TryCommandEmit(ScAddr const & actionAddr,
                                                    ScAddr const & resultAddr,
                                                    ApiAiRequestResult const & resultParsed)
 {
+  // if action is a commnad, then trying to emit it (iterators faster, then templates)
+  ScIterator5Ptr itCmd = m_memoryCtx.Iterator5(
+    actionAddr,
+    ScType::EdgeDCommonConst,
+    ScType::NodeConstClass,
+    ScType::EdgeAccessConstPosPerm,
+    ms_nrelInitCommand);
+  if (!itCmd->Next())
+    return SC_RESULT_ERROR;
+
+  ScIterator5Ptr itTempl = m_memoryCtx.Iterator5(
+    itCmd->Get(2),
+    ScType::EdgeDCommonConst,
+    ScType::NodeConstStruct,
+    ScType::EdgeAccessConstPosPerm,
+    ms_nrelCommonTemplate);
+
+  if (itTempl->Next())
+  {
+    ScTemplate templ;
+    if (!m_memoryCtx.HelperBuildTemplate(templ, itTempl->Get(2)))
+      return SC_RESULT_ERROR_INVALID_STATE;
+
+    // TODO: make it parallel (run N instances to resolve parameters)
+    ScTemplateGenParams params;
+    for (auto const it : resultParsed.GetResultParameters())
+    {
+      std::string const paramName = it.first;
+      std::string const paramValue = it.second;
+
+      ScAddr const link = m_memoryCtx.CreateLink();
+      SC_ASSERT(link.IsValid(), ());
+
+      ScStream stream(paramValue.c_str(), paramValue.size(), SC_STREAM_FLAG_READ);
+      m_memoryCtx.SetLinkContent(link, stream);
+
+      // resolve parameter
+      ScAddr const commandInstance = ScAgentAction::CreateCommand(m_memoryCtx, ms_commandResolveAddr, { link });
+
+      ScWaitActionFinished wait(m_memoryCtx, commandInstance);
+      wait.SetOnWaitStartDelegate([this, &commandInstance]() {
+        ScAgentAction::InitiateCommand(m_memoryCtx, commandInstance);
+      });
+
+      if (!wait.Wait())
+        return SC_RESULT_ERROR_INVALID_STATE;
+
+      // append resolved sc-element as a parameter into template
+      ScAddr const commandResult = ScAgentAction::GetCommandResultAddr(m_memoryCtx, commandInstance);
+      SC_ASSERT(commandResult.IsValid(), ());
+
+      // get resolved sc-element
+      ScIterator3Ptr it3 = m_memoryCtx.Iterator3(
+        commandResult,
+        ScType::EdgeAccessConstPosPerm,
+        ScType::Unknown);
+      if (!it3->Next())
+        return SC_RESULT_ERROR;
+
+      params.add(paramName, it3->Get(2));
+    }
+
+    // generate command instance by template
+    ScTemplateGenResult templResult;
+    if (!m_memoryCtx.HelperGenTemplate(templ, templResult, params))
+      return SC_RESULT_ERROR_INVALID_STATE;
+
+    ScAgentAction::InitiateCommand(m_memoryCtx, templResult["_command"]);
+  }
+
   return SC_RESULT_NO;
 }
 

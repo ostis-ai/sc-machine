@@ -22,14 +22,14 @@ ScStream::ScStream(std::string const & fileName, sc_uint8 flags)
   m_stream = sc_stream_file_new(fileName.c_str(), flags);
 }
 
-ScStream::ScStream(sc_char * buffer, sc_uint32 bufferSize, sc_uint8 flags)
+ScStream::ScStream(sc_char * buffer, size_t bufferSize, sc_uint8 flags)
 {
-  m_stream = sc_stream_memory_new(buffer, bufferSize, flags, SC_FALSE);
+  m_stream = sc_stream_memory_new(buffer, (sc_uint)bufferSize, flags, SC_FALSE);
 }
 
-ScStream::ScStream(sc_char const * buffer, sc_uint32 bufferSize, sc_uint8 flags)
+ScStream::ScStream(sc_char const * buffer, size_t bufferSize, sc_uint8 flags)
 {
-  m_stream = sc_stream_memory_new(buffer, bufferSize, flags, SC_FALSE);
+  m_stream = sc_stream_memory_new(buffer, (sc_uint)bufferSize, flags, SC_FALSE);
 }
 
 ScStream::~ScStream()
@@ -49,22 +49,28 @@ bool ScStream::IsValid() const
   return m_stream != 0;
 }
 
-bool ScStream::Read(sc_char * buff, sc_uint32 buffLen, sc_uint32 & readBytes) const
+bool ScStream::Read(sc_char * buff, size_t buffLen, size_t & readBytes) const
 {
   SC_ASSERT(IsValid(), ());
-  return sc_stream_read_data(m_stream, buff, buffLen, &readBytes) == SC_RESULT_OK;
+  sc_uint32 readBytesNum = 0;
+  bool const res = sc_stream_read_data(m_stream, buff, static_cast<sc_uint32>(buffLen), &readBytesNum) == SC_RESULT_OK;
+  readBytes = (size_t)readBytesNum;
+  return res;
 }
 
-bool ScStream::Write(sc_char * data, sc_uint32 dataLen, sc_uint32 & writtenBytes)
+bool ScStream::Write(sc_char * data, size_t dataLen, size_t & writtenBytes)
 {
   SC_ASSERT(IsValid(), ());
-  return sc_stream_write_data(m_stream, data, dataLen, &writtenBytes) == SC_RESULT_OK;
+  sc_uint32 writtenBytesNum = 0;
+  bool res = sc_stream_write_data(m_stream, data, static_cast<sc_uint32>(dataLen), &writtenBytesNum) == SC_RESULT_OK;
+  writtenBytes = (size_t)writtenBytesNum;
+  return res;
 }
 
-bool ScStream::Seek(sc_stream_seek_origin origin, sc_uint32 offset)
+bool ScStream::Seek(sc_stream_seek_origin origin, size_t offset)
 {
   SC_ASSERT(IsValid(), ());
-  return sc_stream_seek(m_stream, origin, offset) == SC_RESULT_OK;
+  return sc_stream_seek(m_stream, origin, static_cast<sc_uint32>(offset)) == SC_RESULT_OK;
 }
 
 bool ScStream::Eof() const
@@ -73,7 +79,7 @@ bool ScStream::Eof() const
   return (sc_stream_eof(m_stream) == SC_TRUE);
 }
 
-sc_uint32 ScStream::Size() const
+size_t ScStream::Size() const
 {
   SC_ASSERT(IsValid(), ());
   sc_uint32 len;
@@ -83,7 +89,7 @@ sc_uint32 ScStream::Size() const
   return len;
 }
 
-sc_uint32 ScStream::Pos() const
+size_t ScStream::Pos() const
 {
   SC_ASSERT(IsValid(), ());
   sc_uint32 pos;
@@ -132,7 +138,7 @@ bool ScStreamMemory::IsValid() const
   return m_buffer.IsValid();
 }
 
-bool ScStreamMemory::Read(sc_char * buff, sc_uint32 buffLen, sc_uint32 & readBytes) const
+bool ScStreamMemory::Read(sc_char * buff, size_t buffLen, size_t & readBytes) const
 {
   SC_ASSERT(IsValid(), ());
   if (m_pos < m_buffer->m_size)
@@ -147,12 +153,12 @@ bool ScStreamMemory::Read(sc_char * buff, sc_uint32 buffLen, sc_uint32 & readByt
   return false;
 }
 
-bool ScStreamMemory::Write(sc_char * data, sc_uint32 dataLen, sc_uint32 & writtenBytes)
+bool ScStreamMemory::Write(sc_char * data, size_t dataLen, size_t & writtenBytes)
 {
   return false;
 }
 
-bool ScStreamMemory::Seek(sc_stream_seek_origin origin, sc_uint32 offset)
+bool ScStreamMemory::Seek(sc_stream_seek_origin origin, size_t offset)
 {
   SC_ASSERT(m_buffer.IsValid(), ());
   switch (origin)
@@ -185,13 +191,13 @@ bool ScStreamMemory::Eof() const
   return (m_pos >= m_buffer->m_size);
 }
 
-sc_uint32 ScStreamMemory::Size() const
+size_t ScStreamMemory::Size() const
 {
   SC_ASSERT(m_buffer.IsValid(), ());
   return m_buffer->m_size;
 }
 
-sc_uint32 ScStreamMemory::Pos() const
+size_t ScStreamMemory::Pos() const
 {
   SC_ASSERT(m_buffer.IsValid(), ());
   return m_pos;
@@ -205,12 +211,12 @@ bool ScStreamMemory::HasFlag(sc_uint8 flag)
 // --------------------------------
 bool ScStreamConverter::StreamToString(ScStream const & stream, std::string & outString)
 {
-  sc_uint32 const bytesCount = stream.Size();
+  size_t const bytesCount = stream.Size();
   if (bytesCount == 0)
     return false;
 
   char * data = new char[bytesCount];
-  sc_uint32 readBytes;
+  size_t readBytes;
   if (stream.Read(data, bytesCount, readBytes) && (readBytes == bytesCount))
   {
     outString.assign(data, data + bytesCount);
