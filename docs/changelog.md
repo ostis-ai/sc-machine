@@ -1,5 +1,6 @@
 ## v0.3.0 rc1
 
+* Agent `AApiAiParseUserTextAgent` can run commands
 * Implement common function to work with commands in knowledge base
 * Add support of keynode types in codegenerator. Now you can specify type of keynode that would be used to create it: `ForceCreate(ScType::Node...)`
 * Rename module funcitons from `initialize`, `shutdown`, `load_priority` to `sc_module_initialize`, `sc_module_shutdown`, `sc_module_load_priority`
