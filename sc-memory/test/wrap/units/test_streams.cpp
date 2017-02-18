@@ -30,7 +30,7 @@ UNIT_TEST(streams)
     for (int i = 0; i < length; ++i)
     {
       unsigned char c;
-      sc_uint32 readBytes;
+      size_t readBytes;
       SC_CHECK(stream.Read((sc_char*)&c, sizeof(c), readBytes), ());
       SC_CHECK_EQUAL(c, buff[i], ());
     }
@@ -47,7 +47,7 @@ UNIT_TEST(streams)
 
 
       unsigned char c;
-      sc_uint32 readBytes;
+      size_t readBytes;
       SC_CHECK(stream.Read((sc_char*)&c, sizeof(c), readBytes), ());
       SC_CHECK_EQUAL(c, buff[pos], ());
     }

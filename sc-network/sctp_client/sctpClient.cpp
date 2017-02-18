@@ -248,14 +248,14 @@ _SC_EXTERN bool Client::SetLinkContent(ScAddr const & addr, IScStreamPtr const &
   req.header.id = ++m_cmdIdCounter;
   req.header.flags = 0;
   req.header.commandType = SCTP_CMD_SET_LINK_CONTENT;
-  req.header.argsSize = sizeof(addr) + sizeof(sc_uint32) + stream->Size();
+  req.header.argsSize = sizeof(addr) + sizeof(sc_uint32) + static_cast<sc_uint32>(stream->Size());
   req.addr = *addr;
-  req.size = stream->Size();
+  req.size = static_cast<sc_uint32>(stream->Size());
 
   if (m_socketImpl->WriteType(req) == sizeof(RequestSetLinkContent))
   {
     char buff[1024];
-    uint32_t readBytes;
+    size_t readBytes;
     while (!stream->Eof())
     {
       if (!stream->Read(buff, 1024, readBytes))

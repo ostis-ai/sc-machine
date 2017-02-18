@@ -38,13 +38,13 @@ public:
      * Returns number of bytes that was read. If returned value is -1,
      * then there was error while read data.
      */
-	_SC_EXTERN int Read(void * buffer, unsigned int bytesCount);
+	_SC_EXTERN int Read(void * buffer, size_t bytesCount);
 
     /** Writes data into socket from buffer (buffer size must be equal to bytesCount)
      * Returns number of bytes that was written. If returned value is -1,
      * then there was error while write data.
      */
-	_SC_EXTERN int Write(void * buffer, unsigned int bytesCount);
+	_SC_EXTERN int Write(void * buffer, size_t bytesCount);
 
 	_SC_EXTERN static bool Initialize();
 	_SC_EXTERN static void Shutdown();

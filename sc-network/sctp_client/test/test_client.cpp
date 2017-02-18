@@ -67,7 +67,7 @@ void test_base_commands()
 		for (sc_uint32 i = 0; i < stream->Size(); ++i)
 		{
 			char v1, v2;
-			sc_uint32 r1, r2;
+			size_t r1, r2;
 			g_assert(stream->Read(&v1, sizeof(v1), r1));
 			g_assert(stream2->Read(&v2, sizeof(v2), r2));
 

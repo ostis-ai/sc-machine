@@ -56,14 +56,14 @@ bool winSocket::IsConnected() const
     return (m_socket != INVALID_SOCKET);
 }
 
-int winSocket::Read(void * buffer, unsigned int bytesCount)
+int winSocket::Read(void * buffer, size_t bytesCount)
 {
     unsigned int bytesRead = 0;
     char * buff = (char*)buffer;
 
     while (bytesRead < bytesCount)
     {
-        int bytes = ::recv(m_socket, (&buff[bytesRead]), bytesCount - bytesRead, 0);
+        int bytes = ::recv(m_socket, (&buff[bytesRead]), static_cast<int>(bytesCount - bytesRead), 0);
         if (bytes == SOCKET_ERROR)
             return -1;
 
@@ -74,14 +74,14 @@ int winSocket::Read(void * buffer, unsigned int bytesCount)
     return bytesRead;
 }
 
-int winSocket::Write(void * buffer, unsigned int bytesCount)
+int winSocket::Write(void * buffer, size_t bytesCount)
 {
     unsigned int bytesSent = 0;
     char const * buff = (char*)buffer;
 
     while (bytesSent < bytesCount)
     {
-        int bytes = ::send(m_socket, (&(buff[bytesSent])), bytesCount - bytesSent, 0);
+        int bytes = ::send(m_socket, (&(buff[bytesSent])), static_cast<int>(bytesCount - bytesSent), 0);
         if (bytes == SOCKET_ERROR)
             return -1;
 

@@ -177,7 +177,7 @@ UNIT_TEST(iterators)
     for (sc_uint i = 0; i < stream2.Size(); ++i)
     {
       sc_char c;
-      sc_uint32 readBytes;
+      size_t readBytes;
       SC_CHECK(stream2.Read(&c, sizeof(c), readBytes), ());
       SC_CHECK_EQUAL(readBytes, sizeof(c), ());
 

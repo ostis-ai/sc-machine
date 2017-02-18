@@ -22,20 +22,20 @@ public:
 
   _SC_EXTERN virtual bool IsValid() const = 0;
 
-  _SC_EXTERN virtual bool Read(sc_char * buff, sc_uint32 buffLen, sc_uint32 & readBytes) const = 0;
+  _SC_EXTERN virtual bool Read(sc_char * buff, size_t buffLen, size_t & readBytes) const = 0;
 
-  _SC_EXTERN virtual bool Write(sc_char * data, sc_uint32 dataLen, sc_uint32 & writtenBytes) = 0;
+  _SC_EXTERN virtual bool Write(sc_char * data, size_t dataLen, size_t & writtenBytes) = 0;
 
-  _SC_EXTERN virtual bool Seek(sc_stream_seek_origin origin, sc_uint32 offset) = 0;
+  _SC_EXTERN virtual bool Seek(sc_stream_seek_origin origin, size_t offset) = 0;
 
   //! Check if current position at the end of file
   _SC_EXTERN virtual bool Eof() const = 0;
 
   //! Returns lenght of stream in bytes
-  _SC_EXTERN virtual sc_uint32 Size() const = 0;
+  _SC_EXTERN virtual size_t Size() const = 0;
 
   //! Returns current position of stream
-  _SC_EXTERN virtual sc_uint32 Pos() const = 0;
+  _SC_EXTERN virtual size_t Pos() const = 0;
 
   //! Check if stream has a specified flag
   _SC_EXTERN virtual bool HasFlag(sc_uint8 flag) = 0;
@@ -43,7 +43,7 @@ public:
   template <typename Type>
   bool ReadType(Type & value)
   {
-    sc_uint32 readBytes = 0;
+    size_t readBytes = 0;
     return Read((sc_char*)&value, sizeof(Type), readBytes) && (readBytes == sizeof(Type));
   }
 };
@@ -57,32 +57,28 @@ public:
   _SC_EXTERN explicit ScStream();
   _SC_EXTERN explicit ScStream(sc_stream * stream);
   _SC_EXTERN explicit ScStream(std::string const & fileName, sc_uint8 flags);
-  _SC_EXTERN explicit ScStream(sc_char * buffer, sc_uint32 bufferSize, sc_uint8 flags);
-  _SC_EXTERN explicit ScStream(sc_char const * buffer, sc_uint32 bufferSize, sc_uint8 flags);
+  _SC_EXTERN explicit ScStream(sc_char * buffer, size_t bufferSize, sc_uint8 flags);
+  _SC_EXTERN explicit ScStream(sc_char const * buffer, size_t bufferSize, sc_uint8 flags);
 
   _SC_EXTERN ~ScStream();
 
   _SC_EXTERN void Reset();
-
-  _SC_EXTERN bool IsValid() const;
-
-  _SC_EXTERN bool Read(sc_char * buff, sc_uint32 buffLen, sc_uint32 & readBytes) const;
-
-  _SC_EXTERN bool Write(sc_char * data, sc_uint32 dataLen, sc_uint32 & writtenBytes);
-
-  _SC_EXTERN bool Seek(sc_stream_seek_origin origin, sc_uint32 offset);
+  _SC_EXTERN bool IsValid() const override;
+  _SC_EXTERN bool Read(sc_char * buff, size_t buffLen, size_t & readBytes) const override;
+  _SC_EXTERN bool Write(sc_char * data, size_t dataLen, size_t & writtenBytes) override;
+  _SC_EXTERN bool Seek(sc_stream_seek_origin origin, size_t offset) override;
 
   //! Check if current position at the end of file
-  _SC_EXTERN bool Eof() const;
+  _SC_EXTERN bool Eof() const override;
 
   //! Returns lenght of stream in bytes
-  _SC_EXTERN sc_uint32 Size() const;
+  _SC_EXTERN size_t Size() const override;
 
   //! Returns current position of stream
-  _SC_EXTERN sc_uint32 Pos() const;
+  _SC_EXTERN size_t Pos() const override;
 
   //! Check if stream has a specified flag
-  _SC_EXTERN bool HasFlag(sc_uint8 flag);
+  _SC_EXTERN bool HasFlag(sc_uint8 flag) override;
 
 protected:
   //! Init with new stream object. Used by MemoryContext::getLinkContent
@@ -101,18 +97,18 @@ public:
 
   _SC_EXTERN void Reinit(MemoryBufferPtr const & buff);
 
-  _SC_EXTERN bool IsValid() const;
-  _SC_EXTERN bool Read(sc_char * buff, sc_uint32 buffLen, sc_uint32 & readBytes) const;
-  _SC_EXTERN bool Write(sc_char * data, sc_uint32 dataLen, sc_uint32 & writtenBytes);
-  _SC_EXTERN bool Seek(sc_stream_seek_origin origin, sc_uint32 offset);
-  _SC_EXTERN bool Eof() const;
-  _SC_EXTERN sc_uint32 Size() const;
-  _SC_EXTERN sc_uint32 Pos() const;
-  _SC_EXTERN bool HasFlag(sc_uint8 flag);
+  _SC_EXTERN bool IsValid() const override;
+  _SC_EXTERN bool Read(sc_char * buff, size_t buffLen, size_t & readBytes) const override;
+  _SC_EXTERN bool Write(sc_char * data, size_t dataLen, size_t & writtenBytes) override;
+  _SC_EXTERN bool Seek(sc_stream_seek_origin origin, size_t offset) override;
+  _SC_EXTERN bool Eof() const override;
+  _SC_EXTERN size_t Size() const override;
+  _SC_EXTERN size_t Pos() const override;
+  _SC_EXTERN bool HasFlag(sc_uint8 flag) override;
 
 private:
   MemoryBufferPtr m_buffer;
-  mutable sc_uint32 m_pos;
+  mutable size_t m_pos;
 };
 
 

@@ -154,7 +154,7 @@ protected:
 struct MemoryBuffer
 {
   char * m_data;
-  unsigned int m_size;
+  size_t m_size;
 
   MemoryBuffer(char * buff, unsigned int size)
     : m_data(buff)

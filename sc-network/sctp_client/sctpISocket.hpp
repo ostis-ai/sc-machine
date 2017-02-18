@@ -26,13 +26,13 @@ public:
    * Returns number of bytes that was read. If returned value is -1,
    * then there was error while read data.
    */
-  virtual int Read(void * buffer, uint32_t bytesCount) = 0;
+  virtual int Read(void * buffer, size_t bytesCount) = 0;
 
   /** Writes data into socket from buffer (buffer size must be equal to bytesCount)
    * Returns number of bytes that was written. If returned value is -1,
    * then there was error while write data.
    */
-  virtual int Write(void * buffer, uint32_t bytesCount) = 0;
+  virtual int Write(void * buffer, size_t bytesCount) = 0;
 
   template <typename Type>
   int WriteType(Type const & value)
