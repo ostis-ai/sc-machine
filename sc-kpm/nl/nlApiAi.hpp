@@ -38,6 +38,12 @@ private:
 
   SC_PROPERTY(Keynode("nrel_common_template"), ForceCreate)
   static ScAddr ms_nrelCommonTemplate;
+
+  SC_PROPERTY(Keynode("nrel_init_command"), ForceCreate(ScType::NodeConstNoRole))
+  static ScAddr ms_nrelInitCommand;
+
+  SC_PROPERTY(Keynode("command_resolve_addr"))
+  static ScAddr ms_commandResolveAddr;
 };
 
 } // namespace nl
