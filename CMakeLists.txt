@@ -116,7 +116,8 @@ elseif (${WIN32})
 							"${GLIB_PATH}/include/glib")
 	set (REDIS_INCLUDE_DIRS "${REDIS_PATH}")
 
-	include_directories("${SC_MACHINE_ANTRL_DIR}/include"
+	include_directories("${SC_MACHINE_ANTRL_DIR}/c"
+						"${SC_MACHINE_ANTRL_DIR}/cpp"
 						"${BOOST_PATH}/include"
 						"${SC_MACHINE_THIRDPARTY_PATH}")
 
