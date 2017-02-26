@@ -1,5 +1,6 @@
 ## v0.3.0 rc1
 
+* Implement SCs-text parser
 * Agent `AApiAiParseUserTextAgent` can run commands
 * Implement common function to work with commands in knowledge base
 * Add support of keynode types in codegenerator. Now you can specify type of keynode that would be used to create it: `ForceCreate(ScType::Node...)`
