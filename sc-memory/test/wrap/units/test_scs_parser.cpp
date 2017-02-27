@@ -80,10 +80,7 @@ struct TripleTester
     auto const & triples = m_parser.GetParsedTriples();
     SC_CHECK_EQUAL(triples.size(), resultTriples.size(), ());
     for (size_t i = 0; i < triples.size(); ++i)
-    {
-      auto const & tItem = triples[i];
       resultTriples[i].Test(m_parser, triples[i]);
-    }
   }
 
 private:

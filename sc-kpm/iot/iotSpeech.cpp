@@ -94,12 +94,8 @@ SC_AGENT_ACTION_IMPLEMENTATION(AGenerateTextByTemplate)
 
             ScStream resultStream(resultText.c_str(), (sc_uint32)resultText.size(), SC_STREAM_FLAG_READ | SC_STREAM_FLAG_SEEK);
 
-            bool const res = m_memoryCtx.SetLinkContent(resultLink, resultStream);
-            SC_ASSERT(res, ());
-
-            ScAddr const edge = m_memoryCtx.CreateEdge(ScType::EdgeAccessConstPosPerm, resultAddr, resultLink);
-            SC_ASSERT(edge.IsValid(), ());
-
+            m_memoryCtx.SetLinkContent(resultLink, resultStream);
+            m_memoryCtx.CreateEdge(ScType::EdgeAccessConstPosPerm, resultAddr, resultLink);
           }
         }
       }
@@ -108,8 +104,7 @@ SC_AGENT_ACTION_IMPLEMENTATION(AGenerateTextByTemplate)
         /// TODO: generate default text
 
         // for a fast test, just use template as an answer
-        ScAddr const edge = m_memoryCtx.CreateEdge(ScType::EdgeAccessConstPosPerm, resultAddr, linkAddr);
-        SC_ASSERT(edge.IsValid(), ());
+        m_memoryCtx.CreateEdge(ScType::EdgeAccessConstPosPerm, resultAddr, linkAddr);
       }
 
       return SC_RESULT_OK;
