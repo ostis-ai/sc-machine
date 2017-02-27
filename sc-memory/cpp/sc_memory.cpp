@@ -58,7 +58,7 @@ void _logPrintHandler(gchar const * log_domain, GLogLevelFlags log_level,
     SC_LOG_INFO(message);
     break;
 
-  case G_LOG_LEVEL_DEBUG:
+  default:
     SC_LOG_DEBUG(message);
     break;
   };

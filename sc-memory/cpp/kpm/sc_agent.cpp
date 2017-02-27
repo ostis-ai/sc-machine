@@ -129,13 +129,9 @@ sc_result ScAgentAction::Run(ScAddr const & listenAddr, ScAddr const & edgeAddr,
       m_memoryCtx.EraseElement(progressAddr);
 
       ScAddr const commonEdge = m_memoryCtx.CreateEdge(ScType::EdgeDCommonConst, cmdAddr, resultAddr);
-      SC_ASSERT(commonEdge.IsValid(), ());
-      ScAddr const edge = m_memoryCtx.CreateEdge(ScType::EdgeAccessConstPosPerm, ms_nrelResult, commonEdge);
-      SC_ASSERT(edge.IsValid(), ());
 
-      ScAddr const edgeResult = m_memoryCtx.CreateEdge(ScType::EdgeAccessConstPosPerm, GetResultCodeAddr(resCode), resultAddr);
-      SC_ASSERT(edgeResult.IsValid(), ());
-
+      m_memoryCtx.CreateEdge(ScType::EdgeAccessConstPosPerm, ms_nrelResult, commonEdge);
+      m_memoryCtx.CreateEdge(ScType::EdgeAccessConstPosPerm, GetResultCodeAddr(resCode), resultAddr);
       m_memoryCtx.CreateEdge(ScType::EdgeAccessConstPosPerm, ms_commandFinishedAddr, cmdAddr);
 
       return SC_RESULT_OK;
@@ -211,6 +207,9 @@ ScAddr const & ScAgentAction::GetResultCodeAddr(sc_result resCode)
     return ms_keynodeScResultErrorNoWriteRights;
   case SC_RESULT_ERROR_NO_READ_RIGHTS:
     return ms_keynodeScResultErrorNoReadRights;
+
+  default:
+    return ms_keynodeScResultError;
   };
 
   return ms_keynodeScResultError;
@@ -254,8 +253,7 @@ ScAddr ScAgentAction::CreateCommand(ScMemoryContext & ctx, ScAddr const & cmdCla
 
   ScAddr const cmdInstanceAddr = ctx.CreateNode(ScType::NodeConst);
   SC_ASSERT(cmdInstanceAddr.IsValid(), ());
-  ScAddr const edge = ctx.CreateEdge(ScType::EdgeAccessConstPosPerm, cmdClassAddr, cmdInstanceAddr);
-  SC_ASSERT(edge.IsValid(), ());
+  ctx.CreateEdge(ScType::EdgeAccessConstPosPerm, cmdClassAddr, cmdInstanceAddr);
   
   for (size_t i = 0; i < params.size(); ++i)
   {

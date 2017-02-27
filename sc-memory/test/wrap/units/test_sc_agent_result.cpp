@@ -39,6 +39,8 @@ UNIT_TEST(ATestResultOk)
       ATestResultOk::ms_keynodeTestResultOk,
       cmdAddr);
 
+    SC_CHECK(edge.IsValid(), ());
+
     ScWaitActionFinished waiter(ctx, cmdAddr);
     waiter.SetOnWaitStartDelegate([&cmdAddr]()
     {

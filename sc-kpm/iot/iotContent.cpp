@@ -46,8 +46,7 @@ SC_AGENT_ACTION_IMPLEMENTATION(AAddContentAgent)
     SC_ASSERT(contentSet.IsValid(), ());
     ScAddr const edgeCommon = m_memoryCtx.CreateEdge(ScType::EdgeDCommonConst, contentSet, deviceAddr);
     SC_ASSERT(edgeCommon.IsValid(), ());
-    ScAddr const edge = m_memoryCtx.CreateEdge(ScType::EdgeAccessConstPosPerm, Keynodes::nrel_content, edgeCommon);
-    SC_ASSERT(edge.IsValid(), ());
+    m_memoryCtx.CreateEdge(ScType::EdgeAccessConstPosPerm, Keynodes::nrel_content, edgeCommon);
   }
   else
   {
@@ -57,13 +56,11 @@ SC_AGENT_ACTION_IMPLEMENTATION(AAddContentAgent)
   // create product instance
   ScAddr const product = m_memoryCtx.CreateNode(ScType::NodeConstMaterial);
   SC_ASSERT(product.IsValid(), ());
-  ScAddr const edgeClass = m_memoryCtx.CreateEdge(ScType::EdgeAccessConstPosPerm, productClassAddr, product);
-  SC_ASSERT(edgeClass.IsValid(), ());
+  m_memoryCtx.CreateEdge(ScType::EdgeAccessConstPosPerm, productClassAddr, product);
 
   utils::setMass(m_memoryCtx, product, massLinkAddr);
 
-  ScAddr const edge = m_memoryCtx.CreateEdge(ScType::EdgeAccessConstPosPerm, contentSet, product);
-  SC_ASSERT(edge.IsValid(), ());
+  m_memoryCtx.CreateEdge(ScType::EdgeAccessConstPosPerm, contentSet, product);
 
   return SC_RESULT_OK;
 }
@@ -99,10 +96,7 @@ SC_AGENT_ACTION_IMPLEMENTATION(AGetContentAgent)
         ScType::NodeConstMaterial);
 
   while (iterContent->Next())
-  {
-    ScAddr const edge = m_memoryCtx.CreateEdge(ScType::EdgeAccessConstPosPerm, resultAddr, iterContent->Get(2));
-    SC_ASSERT(edge.IsValid(), ());
-  }
+    m_memoryCtx.CreateEdge(ScType::EdgeAccessConstPosPerm, resultAddr, iterContent->Get(2));
 
   return SC_RESULT_OK;
 }
