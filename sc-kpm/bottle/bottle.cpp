@@ -7,6 +7,7 @@
 #include "bottle.hpp"
 #include "bottleKeynodes.hpp"
 #include "AOpenValveAgent.hpp"
+#include "AFillBottle.hpp"
 
 using namespace bottle;
 
@@ -18,6 +19,7 @@ sc_result bottleModule::InitializeImpl()
         return SC_RESULT_ERROR;
 
     SC_AGENT_REGISTER(AOpenValveAgent)
+    SC_AGENT_REGISTER(AFillBottle)
 
     return SC_RESULT_OK;
 }

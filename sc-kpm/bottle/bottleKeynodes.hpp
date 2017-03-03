@@ -33,6 +33,12 @@ public:
     SC_PROPERTY(Keynode("registration"), ForceCreate)
     static ScAddr registration;
 
+    SC_PROPERTY(Keynode("pass_speed"), ForceCreate)
+    static ScAddr pass_speed;
+
+    SC_PROPERTY(Keynode("max_capacity"), ForceCreate)
+    static ScAddr max_capacity;
+
     SC_PROPERTY(Keynode("nrel_idtf"), ForceCreate)
     static ScAddr nrel_idtf;
 
@@ -41,6 +47,9 @@ public:
 
     SC_PROPERTY(Keynode("measurement_of_fixed_measure"), ForceCreate)
     static ScAddr measurement_of_fixed_measure;
+
+    SC_PROPERTY(Keynode("decimal_numeral_system"), ForceCreate)
+    static ScAddr decimal_numeral_system;
 
     SC_PROPERTY(Keynode("closed"), ForceCreate)
     static ScAddr closed;

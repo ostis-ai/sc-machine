@@ -4,11 +4,13 @@ set(SOURCES
 	"bottle.cpp"
        	"bottleKeynodes.cpp"
         "AOpenValveAgent.cpp"
+        "AFillBottle.cpp"
 )
 set(HEADERS
 	"bottle.hpp"
        	"bottleKeynodes.hpp"
         "AOpenValveAgent.hpp"
+        "AFillBottle.hpp"
 )
 
 include_directories(${SC_BOTTLE_SRC} ${SC_MEMORY_SRC} ${GLIB2_INCLUDE_DIRS})
