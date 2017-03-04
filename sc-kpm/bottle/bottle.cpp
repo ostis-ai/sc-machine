@@ -8,6 +8,7 @@
 #include "bottleKeynodes.hpp"
 #include "AOpenValveAgent.hpp"
 #include "AFillBottle.hpp"
+#include "AUnpressButtonAgent.hpp"
 
 using namespace bottle;
 
@@ -20,6 +21,7 @@ sc_result bottleModule::InitializeImpl()
 
     SC_AGENT_REGISTER(AOpenValveAgent)
     SC_AGENT_REGISTER(AFillBottle)
+    SC_AGENT_REGISTER(AUnpressButtonAgent)
 
     return SC_RESULT_OK;
 }

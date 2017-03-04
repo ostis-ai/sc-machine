@@ -27,7 +27,14 @@ SC_AGENT_IMPLEMENTATION(AOpenValveAgent)
     {
         ScAddr myvalve = iter_valve->Get(2);
         if (ms_context->HelperCheckArc(Keynodes::valve, myvalve, sc_type_arc_pos_const_perm))
+        {
+            ScIterator3Ptr iter_open = ms_context->Iterator3(Keynodes::closed, sc_type_arc_pos_const_perm, myvalve);
+            while (iter_open->Next())
+            {
+                ms_context->EraseElement(iter_open->Get(1));
+            }
             ms_context->CreateArc(sc_type_arc_pos_const_perm, Keynodes::opened, myvalve);
+        }
 
         std::cout << "Valve opened: " << ms_context->HelperGetSystemIdtf(myvalve) << std::endl;
     }

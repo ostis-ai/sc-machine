@@ -154,7 +154,14 @@ SC_AGENT_IMPLEMENTATION(AFillBottle)
                             int curr_value = readInt((ScMemoryContext&)ms_context, localAddr);
                             std::cout << curr_value << std::endl;
                             if (curr_value >= max_capacity)
+                            {
+                                ScIterator3Ptr iter_open = ms_context->Iterator3(Keynodes::opened, sc_type_arc_pos_const_perm, myvalve);
+                                while (iter_open->Next())
+                                {
+                                    ms_context->EraseElement(iter_open->Get(1));
+                                }
                                 ms_context->CreateArc(sc_type_arc_pos_const_perm, Keynodes::closed, myvalve);
+                            }
                             return true;
                         };
                         ScEventContentChanged myevent((ScMemoryContext&)ms_context, value, processChange);
@@ -162,10 +169,8 @@ SC_AGENT_IMPLEMENTATION(AFillBottle)
                         for (int i = 0; i < 1000; i++)
                         {
                             if (ms_context->HelperCheckArc(Keynodes::closed, myvalve, sc_type_arc_pos_const_perm))
-                            {
-                                std::cout << "Valve closed: " << ms_context->HelperGetSystemIdtf(myvalve) << std::endl;
                                 break;
-                            }
+
                             int count = readInt((ScMemoryContext&)ms_context, value);
                             //std::cout << count << std::endl;
                             writeInt((ScMemoryContext&)ms_context, value, count + (speed / 2));
