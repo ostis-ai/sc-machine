@@ -91,9 +91,9 @@ public:
 // will be removed use SC_ASSERT instead
 #	define ASSERT(_expr, _msg) { _ASSERT_IMPL(_expr, _msg, __FILE__, __LINE__); }
 #else
-#	define SC_ASSERT(_expr, _msg)
+#	define SC_ASSERT(_expr, _msg) ((void)0)
 // will be removed use SC_ASSERT instead
-#	define ASSERT(_expr, _msg)
+#	define ASSERT(_expr, _msg) ((void)0)
 #endif
 
 #define _CHECK_IMPL(_expr, _msg, _name) \
