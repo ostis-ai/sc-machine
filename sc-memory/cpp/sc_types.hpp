@@ -133,6 +133,9 @@ public:
                 
   static ScType const NodeConst;
   static ScType const NodeVar;
+
+  static ScType const LinkConst;
+  static ScType const LinkVar;
                 
   static ScType const NodeConstStruct;
   static ScType const NodeConstTuple;
