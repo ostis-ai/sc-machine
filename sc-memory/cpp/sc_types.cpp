@@ -40,6 +40,9 @@ ScType const ScType::Unknown;
 ScType const ScType::NodeConst(sc_type_node | sc_type_const);
 ScType const ScType::NodeVar(sc_type_node | sc_type_var);
 
+ScType const ScType::LinkConst(sc_type_link | sc_type_const);
+ScType const ScType::LinkVar(sc_type_link | sc_type_var);
+
 ScType const ScType::NodeConstStruct(sc_type_node | sc_type_const | sc_type_node_struct);
 ScType const ScType::NodeConstTuple(sc_type_node | sc_type_const | sc_type_node_tuple);
 ScType const ScType::NodeConstRole(sc_type_node | sc_type_const | sc_type_node_role);

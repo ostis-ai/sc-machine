@@ -124,7 +124,10 @@ class ScTemplateConstr3
 {
   friend class ScTemplate;
 public:
-  ScTemplateConstr3(ScTemplateItemValue const & param1, ScTemplateItemValue const & param2, ScTemplateItemValue const & param3, size_t idx)
+  ScTemplateConstr3(ScTemplateItemValue const & param1,
+                    ScTemplateItemValue const & param2,
+                    ScTemplateItemValue const & param3,
+                    size_t idx)
     : m_index(idx)
   {
     m_values[0] = param1;

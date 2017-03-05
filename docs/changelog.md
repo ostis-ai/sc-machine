@@ -1,5 +1,8 @@
 ## v0.3.0 rc1
 
+* Implement search for elements, that has no constancy flag in a type
+* Fix template search error (#251)
+* Fix problem with `SC_ASSERT` compilation in release mode (#249)
 * Implement SCs-text parser
 * Agent `AApiAiParseUserTextAgent` can run commands
 * Implement common function to work with commands in knowledge base

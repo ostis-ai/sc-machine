@@ -55,6 +55,8 @@ public:
   inline bool IsVar() const { return (m_realType & sc_type_var) != 0; }
   inline bool IsValid() const { return (m_realType != 0); }
 
+  inline bool HasConstancyFlag() const { return (m_realType & sc_type_constancy_mask) != 0; }
+
   // Returns copy of this type, but with variable raplaced to const
   inline ScType AsConst() const { return ScType((m_realType & ~sc_type_var) | sc_type_const); }
 
@@ -131,6 +133,9 @@ public:
                 
   static ScType const NodeConst;
   static ScType const NodeVar;
+
+  static ScType const LinkConst;
+  static ScType const LinkVar;
                 
   static ScType const NodeConstStruct;
   static ScType const NodeConstTuple;
