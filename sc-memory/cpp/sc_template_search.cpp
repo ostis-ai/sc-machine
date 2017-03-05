@@ -5,6 +5,8 @@
  */
 
 #include "sc_template.hpp"
+
+#include "sc_debug.hpp"
 #include "sc_memory.hpp"
 
 #include <algorithm>
@@ -57,12 +59,34 @@ public:
         if (aFCount != bFCount)
           return (aFCount > bFCount);
 
+        // compare replacement types
+        auto const CalculateReplTypeValue = [](ScTemplateConstr3 const & tr)
+        {
+          size_t res = 0;
+          for (size_t i = 0; i < 3; ++i)
+          {
+            auto const & v = tr.GetValues()[i];
+            if (v.m_itemType == ScTemplateItemValue::Type::Replace)
+              ++res;
+          }
+          return res;
+        };
+
+        size_t const aRV = CalculateReplTypeValue(aTriple);
+        size_t const bRV = CalculateReplTypeValue(bTriple);
+
+        if (aRV != bRV)
+          return (aRV < bRV);
+
         // compare by replacements count
         size_t const aRCount = aTriple.CountReplacements();
         size_t const bRCount = bTriple.CountReplacements();
 
         if (aRCount != bRCount)
           return (aRCount > bRCount);
+
+        auto const & aValues = aTriple.GetValues();
+        auto const & bValues = bTriple.GetValues();
 
         return false;
       });
@@ -116,24 +140,32 @@ public:
     ScAddr const addr1 = ResolveAddr(value1);
     ScAddr const addr2 = ResolveAddr(value2);
 
+    auto const PrepareType = [](ScType const & type)
+    {
+      if (type.HasConstancyFlag())
+        return type.UpConstType();
+
+      return type;
+    };
+
     if (addr0.IsValid())
     {
       if (addr2.IsValid()) // F_A_F
       {
-        return m_context.Iterator3(addr0, *value1.m_typeValue.UpConstType(), addr2);
+        return m_context.Iterator3(addr0, PrepareType(value1.m_typeValue), addr2);
       }
       else // F_A_A
       {
-        return m_context.Iterator3(addr0, *value1.m_typeValue.UpConstType(), *value2.m_typeValue.UpConstType());
+        return m_context.Iterator3(addr0, PrepareType(value1.m_typeValue), PrepareType(value2.m_typeValue));
       }
     }
     else if (addr2.IsValid()) // A_A_F
     {
-      return m_context.Iterator3(*value0.m_typeValue.UpConstType(), *value1.m_typeValue.UpConstType(), addr2);
+      return m_context.Iterator3(PrepareType(value0.m_typeValue), PrepareType(value1.m_typeValue), addr2);
     }
     else if (addr1.IsValid()) // A_F_A
     {
-      return m_context.Iterator3(*value0.m_typeValue.UpConstType(), addr1, *value2.m_typeValue.UpConstType());
+      return m_context.Iterator3(PrepareType(value0.m_typeValue), addr1, PrepareType(value2.m_typeValue));
     }
     else // unknown iterator type
     {

@@ -51,7 +51,9 @@ bool ScTemplate::HasReplacement(std::string const & repl) const
   return (m_replacements.find(repl) != m_replacements.end());
 }
 
-ScTemplate & ScTemplate::Triple(ScTemplateItemValue const & param1, ScTemplateItemValue const & param2, ScTemplateItemValue const & param3)
+ScTemplate & ScTemplate::Triple(ScTemplateItemValue const & param1,
+                                ScTemplateItemValue const & param2,
+                                ScTemplateItemValue const & param3)
 {
   size_t const replPos = m_constructions.size() * 3;
   m_constructions.emplace_back(ScTemplateConstr3(param1, param2, param3, m_constructions.size()));
@@ -60,8 +62,11 @@ ScTemplate & ScTemplate::Triple(ScTemplateItemValue const & param1, ScTemplateIt
   for (size_t i = 0; i < 3; ++i)
   {
     ScTemplateItemValue & value = constr3.m_values[i];
-    if (value.m_itemType == ScTemplateItemValue::Type::Type && !value.m_typeValue.IsVar())
+    if ((value.m_itemType == ScTemplateItemValue::Type::Type) &&
+        (value.m_typeValue.HasConstancyFlag() && !value.m_typeValue.IsVar()))
+    {
       SC_THROW_EXCEPTION(utils::ExceptionInvalidParams, "You should to use variable types in template");
+    }
 
     if (!value.m_replacementName.empty())
     {
@@ -85,8 +90,11 @@ ScTemplate & ScTemplate::Triple(ScTemplateItemValue const & param1, ScTemplateIt
   return *this;
 }
 
-ScTemplate & ScTemplate::TripleWithRelation(ScTemplateItemValue const & param1, ScTemplateItemValue const & param2, ScTemplateItemValue const & param3,
-                                            ScTemplateItemValue const & param4, ScTemplateItemValue const & param5)
+ScTemplate & ScTemplate::TripleWithRelation(ScTemplateItemValue const & param1,
+                                            ScTemplateItemValue const & param2,
+                                            ScTemplateItemValue const & param3,
+                                            ScTemplateItemValue const & param4,
+                                            ScTemplateItemValue const & param5)
 {
   size_t const replPos = m_constructions.size() * 3;
 

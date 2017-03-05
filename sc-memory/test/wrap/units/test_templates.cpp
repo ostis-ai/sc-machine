@@ -319,7 +319,6 @@ UNIT_TEST(templates_common)
   {
     /*
     _struct
-    <- sc_node_struct;
     _-> rrel_location:: _apiai_location;
     _=> nrel_translation:: _apiai_speech
     (* _<- _lang;; *);;
@@ -1067,4 +1066,82 @@ UNIT_TEST(template_issue_224)
       }
     }
   }
+}
+
+// https://github.com/ostis-dev/sc-machine/issues/251
+UNIT_TEST(template_issue_251)
+{
+	ScMemoryContext ctx(sc_access_lvl_make_min, "template_issue_251");
+
+	/* generate equal to scs:
+   * k => rel: [] (* <- t;; *);;
+	 */
+  ScAddr const kAddr = ctx.CreateNode(ScType::NodeConst);
+  SC_CHECK(kAddr.IsValid(), ());
+  ScAddr const relAddr = ctx.CreateNode(ScType::NodeConstRole);
+  SC_CHECK(relAddr.IsValid(), ());
+  ScAddr const tAddr = ctx.CreateNode(ScType::NodeConstClass);
+  SC_CHECK(tAddr.IsValid(), ());
+  ScAddr const linkAddr = ctx.CreateLink();
+  SC_CHECK(linkAddr.IsValid(), ());
+
+  ScAddr const edgeK_link = ctx.CreateEdge(ScType::EdgeDCommonConst, kAddr, linkAddr);
+  SC_CHECK(edgeK_link.IsValid(), ());
+  ScAddr const edgeT_link = ctx.CreateEdge(ScType::EdgeAccessConstPosPerm, tAddr, linkAddr);
+  SC_CHECK(edgeT_link.IsValid(), ());
+  ScAddr const edgeRel_edge = ctx.CreateEdge(ScType::EdgeAccessConstPosPerm, relAddr, edgeK_link);
+  SC_CHECK(edgeRel_edge.IsValid(), ());
+
+  // create template for a search
+  ScTemplate templ;
+
+  templ.TripleWithRelation(
+    kAddr,
+    ScType::EdgeDCommonVar,
+    ScType::Link >> "_link",
+    ScType::EdgeAccessVarPosPerm,
+    relAddr
+  );
+  templ.Triple(
+    tAddr,
+    ScType::EdgeAccessVarPosPerm,
+    "_link"
+  );
+
+  ScTemplateSearchResult res;
+  SC_CHECK(ctx.HelperSearchTemplate(templ, res), ());
+
+  // checks
+  SC_CHECK_EQUAL(res.Size(), 1, ());
+
+  SC_CHECK_EQUAL(res[0]["_link"], linkAddr, ());
+}
+
+UNIT_TEST(template_search_unknown)
+{
+  ScMemoryContext ctx(sc_access_lvl_make_min, "template_search_unknown");
+
+  // addr1 -> addr2;;
+  ScAddr const addr1 = ctx.CreateNode(ScType::NodeConst);
+  SC_CHECK(addr1.IsValid(), ());
+  ScAddr const addr2 = ctx.CreateNode(ScType::NodeConstAbstract);
+  SC_CHECK(addr2.IsValid(), ());
+
+  ScAddr const edge = ctx.CreateEdge(ScType::EdgeAccessConstPosPerm, addr1, addr2);
+  SC_CHECK(edge.IsValid(), ());
+
+
+  ScTemplate templ;
+  templ.Triple(
+    addr1,
+    ScType::EdgeAccessVarPosPerm >> "edge",
+    ScType::Unknown >> "addr2"
+  );
+
+  ScTemplateSearchResult res;
+  SC_CHECK(ctx.HelperSearchTemplate(templ, res), ());
+  SC_CHECK_EQUAL(res.Size(), 1, ());
+
+  SC_CHECK_EQUAL(res[0]["edge"], edge, ());
+  SC_CHECK_EQUAL(res[0]["addr2"], addr2, ());
 }
