@@ -47,5 +47,9 @@ void printInfo(ScMemoryContext & ctx, ScAddr const & elemAddr);
  */
 void logMissedParameterError(ScMemoryContext & ctx, ScAddr &order);
 
+/*! Logs error about unknown type of given operator (addr)
+ */
+void logUnknownOperatorTypeError(ScMemoryContext & ctx, ScAddr &addr);
+
 }
 }

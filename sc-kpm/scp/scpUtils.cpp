@@ -132,5 +132,13 @@ void logMissedParameterError(ScMemoryContext & ctx, ScAddr &order)
     cout << endl;
 }
 
+void logUnknownOperatorTypeError(ScMemoryContext & ctx, ScAddr &addr)
+{
+    cout << "Unknown scp-operator type: ";
+    printSystemIdentifier(ctx, addr);
+    cout << endl;
+}
+
+
 }
 }

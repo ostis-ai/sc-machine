@@ -6,6 +6,8 @@ set(SOURCES
         "scpProcessCreator.cpp"
         "scpProcessDestroyer.cpp"
         "scpUtils.cpp"
+        "scpOperand.cpp"
+        "scpOperator.cpp"
 )
 set(HEADERS
         "scp.hpp"
@@ -13,6 +15,8 @@ set(HEADERS
         "scpProcessCreator.hpp"
         "scpProcessDestroyer.hpp"
         "scpUtils.hpp"
+        "scpOperand.hpp"
+        "scpOperator.hpp"
 )
 
 add_definitions(-DSCP_MATH)
