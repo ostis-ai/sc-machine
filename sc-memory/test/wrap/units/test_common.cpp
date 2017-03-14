@@ -39,3 +39,35 @@ UNIT_TEST(elements)
   SC_CHECK(ctx.IsElement(link), ());
 }
 
+UNIT_TEST(StringUtils)
+{
+  SUBTEST_START(simple)
+  {
+    std::string trimLeft = "  value";
+    std::string trimRight = "value  ";
+    std::string trim = " value  ";
+    std::string empty = "     ";
+
+    utils::StringUtils::TrimLeft(trimLeft);
+    SC_CHECK_EQUAL(trimLeft, "value", ());
+
+    utils::StringUtils::TrimRight(trimRight);
+    SC_CHECK_EQUAL(trimRight, "value", ());
+
+    utils::StringUtils::Trim(trim);
+    SC_CHECK_EQUAL(trim, "value", ());
+
+    utils::StringUtils::Trim(empty);
+    SC_CHECK_EQUAL(empty, "", ());
+  }
+  SUBTEST_END()
+
+  SUBTEST_START(complex)
+  {
+    std::string value = "  value value \t\n ";
+    utils::StringUtils::Trim(value);
+
+    SC_CHECK_EQUAL(value, "value value", ());
+  }
+  SUBTEST_END()
+}

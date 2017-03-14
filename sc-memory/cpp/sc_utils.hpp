@@ -197,6 +197,21 @@ namespace utils
 class StringUtils
 {
 public:
+  _SC_EXTERN static void ToLowerCase(std::string & str);
+  _SC_EXTERN static void ToUpperCase(std::string & str);
+
+  _SC_EXTERN static bool StartsWith(std::string const & str, std::string const & pattern, bool lowerCase);
+  _SC_EXTERN static bool EndsWith(std::string const & str, std::string const & pattern, bool lowerCase);
+
+  _SC_EXTERN static void SplitFilename(std::string const & qualifiedName, std::string & outBasename, std::string & outPath);
+
+  _SC_EXTERN static void TrimLeft(std::string & str);
+  _SC_EXTERN static void TrimRight(std::string & str);
+  _SC_EXTERN static void Trim(std::string & str);
+
+  _SC_EXTERN static std::string GetFileExtension(std::string const & filename);
+  _SC_EXTERN static std::string NormalizeFilePath(std::string const & init, bool makeLowerCase);
+
   _SC_EXTERN static std::string ReplaceAll(std::string const & source, std::string const & replaceWhat, std::string const & replaceWithWhat);
 };
 
