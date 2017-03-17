@@ -126,6 +126,8 @@ command_process_user_text_message
 
 ### Result
 
+Result structure contains sc-link with newly generated text.
+
 Possible result codes:
 
 * `sc_result_ok` - text parsed and assigned action emited;
