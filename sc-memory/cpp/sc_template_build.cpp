@@ -120,12 +120,14 @@ public:
 
     if (IsEdgeDependOnOther(objA.GetAddr().Hash(), objB.GetAddr().Hash()))
       return false;
+    else if (IsEdgeDependOnOther(objB.GetAddr().Hash(), objA.GetAddr().Hash()))
+      return true;
 
     uint32_t const rankA = objA.CalculateEdgeRank();
     uint32_t const rankB = objB.CalculateEdgeRank();
 
     if (rankA != rankB)
-      return rankA < rankB;
+      return rankA > rankB;
 
     return objA.GetAddr().Hash() < objB.GetAddr().Hash();
   }
@@ -221,7 +223,7 @@ protected:
       obj.SetTarget(trgObj);
     }
 
-    // now need to sort edges for suitable creation order
+    // now need to sort edges for suitable search order
     std::sort(edgeIndices.begin(), edgeIndices.end(), EdgeLessFunctor(edgeDependMap, m_objects));
 
     // build template

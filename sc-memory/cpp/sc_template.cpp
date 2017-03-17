@@ -10,7 +10,7 @@
 #include <algorithm>
 
 ScTemplate::ScTemplate(size_t BufferedNum)
-  : m_isCacheValid(false)
+  : m_isSearchCacheValid(false)
 {
   m_constructions.reserve(BufferedNum);
   m_currentReplPos = 0;
@@ -33,17 +33,12 @@ void ScTemplate::Clear()
   m_replacements.clear();
   m_currentReplPos = 0;
 
-  m_isCacheValid = false;
+  m_isSearchCacheValid = false;
 }
 
 bool ScTemplate::IsSearchCacheValid() const
 {
-  return (m_isCacheValid && (m_searchCachedOrder.size() == m_constructions.size()));
-}
-
-bool ScTemplate::IsGenerateCacheValid() const
-{
-  return (m_isCacheValid && (m_generateCachedOrder.size() == m_constructions.size()));
+  return (m_isSearchCacheValid && (m_searchCachedOrder.size() == m_constructions.size()));
 }
 
 bool ScTemplate::HasReplacement(std::string const & repl) const
@@ -58,6 +53,12 @@ ScTemplate & ScTemplate::Triple(ScTemplateItemValue const & param1,
   size_t const replPos = m_constructions.size() * 3;
   m_constructions.emplace_back(ScTemplateConstr3(param1, param2, param3, m_constructions.size()));
 
+  if (!param2.m_replacementName.empty() &&
+      (param2.m_replacementName == param1.m_replacementName || param2.m_replacementName == param3.m_replacementName))
+  {
+    SC_THROW_EXCEPTION(utils::ExceptionInvalidParams, "You can't use equal replacement for an edge and source/target");
+  }
+
   ScTemplateConstr3 & constr3 = m_constructions.back();
   for (size_t i = 0; i < 3; ++i)
   {
@@ -68,10 +69,19 @@ ScTemplate & ScTemplate::Triple(ScTemplateItemValue const & param1,
       SC_THROW_EXCEPTION(utils::ExceptionInvalidParams, "You should to use variable types in template");
     }
 
+    if ((value.m_itemType == ScTemplateItemValue::Type::Addr) &&
+        !value.m_addrValue.IsValid())
+    {
+      SC_THROW_EXCEPTION(utils::ExceptionInvalidParams, "You can't use empty ScAddr");
+    }
+
     if (!value.m_replacementName.empty())
     {
       if (value.m_itemType != ScTemplateItemValue::Type::Replace)
-        m_replacements[value.m_replacementName] = replPos + i;
+      {
+        if (m_replacements.find(value.m_replacementName) == m_replacements.end())
+          m_replacements[value.m_replacementName] = replPos + i;
+      }
 
       /* Store type there, if replacement for any type.
       * That allows to use it before original type will processed
@@ -85,7 +95,7 @@ ScTemplate & ScTemplate::Triple(ScTemplateItemValue const & param1,
     }
   }
 
-  m_isCacheValid = false;
+  m_isSearchCacheValid = false;
 
   return *this;
 }
