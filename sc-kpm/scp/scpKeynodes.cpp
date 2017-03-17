@@ -69,7 +69,7 @@ ScAddr Keynodes::rrel_pos_const_perm;
 ScAddr Keynodes::rrel_struct;
 ScAddr Keynodes::rrel_role_relation;
 ScAddr Keynodes::rrel_norole_relation;
-ScAddr Keynodes::rrel_not_relation;
+ScAddr Keynodes::rrel_class;
 
 // Events
 ScAddr Keynodes::sc_event_remove_element;

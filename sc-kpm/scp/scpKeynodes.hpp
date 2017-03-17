@@ -184,8 +184,8 @@ public:
     SC_PROPERTY(Keynode("rrel_norole_relation"), ForceCreate)
     static ScAddr rrel_norole_relation;
 
-    SC_PROPERTY(Keynode("rrel_not_relation"), ForceCreate)
-    static ScAddr rrel_not_relation;
+    SC_PROPERTY(Keynode("rrel_class"), ForceCreate)
+    static ScAddr rrel_class;
 
 // Events
     SC_PROPERTY(Keynode("sc_event_remove_element"), ForceCreate)
