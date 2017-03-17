@@ -9,7 +9,6 @@ set(SOURCES
 	"iotContent.cpp"
 	"iotUtils.cpp"
 	"iotAbout.cpp"
-	"iotSpeech.cpp"
 	"iotTV.cpp"
 )
 set(HEADERS 
@@ -22,7 +21,6 @@ set(HEADERS
 	"iotContent.hpp"
 	"iotUtils.hpp"
 	"iotAbout.hpp"
-	"iotSpeech.hpp"
 	"iotTV.hpp"
 )
 

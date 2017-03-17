@@ -8,7 +8,6 @@
 #include "iotKeynodes.hpp"
 #include "iotContent.hpp"
 #include "iotAbout.hpp"
-#include "iotSpeech.hpp"
 #include "iotTV.hpp"
 
 #include "sc-memory/cpp/sc_memory.hpp"
@@ -99,7 +98,6 @@ bool Commands::initialize()
   SC_AGENT_REGISTER(AGetContentAgent)
   SC_AGENT_REGISTER(ATVChangeProgram)
   SC_AGENT_REGISTER(AWhoAreYouAgent)
-  SC_AGENT_REGISTER(AGenerateTextByTemplate)
 
   /// power
   SC_AGENT_REGISTER(AUpdateUsedPowerSum)
@@ -120,7 +118,6 @@ bool Commands::shutdown()
   SC_AGENT_UNREGISTER(AGetContentAgent)
   SC_AGENT_UNREGISTER(ATVChangeProgram)
   SC_AGENT_UNREGISTER(AWhoAreYouAgent)
-  SC_AGENT_UNREGISTER(AGenerateTextByTemplate)
 
   /// Power
   SC_AGENT_UNREGISTER(AUpdateUsedPowerSum)

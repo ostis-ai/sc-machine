@@ -9,7 +9,6 @@
 #include "iotCommands.hpp"
 #include "iotContent.hpp"
 #include "iotEnergy.hpp"
-#include "iotSpeech.hpp"
 #include "iotTV.hpp"
 #include "iotKeynodes.hpp"
 

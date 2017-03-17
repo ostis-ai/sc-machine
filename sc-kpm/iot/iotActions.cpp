@@ -236,7 +236,7 @@ void ActionManager::tick()
 
       initTempl.Triple(
             Keynodes::command_initiated,
-            ScType(sc_type_arc_pos_const_perm),
+            ScType(ScType::EdgeAccessVarPosPerm),
             task.action);
 
       ScTemplateSearchResult searchResult;
