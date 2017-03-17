@@ -59,7 +59,7 @@ SC_AGENT_IMPLEMENTATION(ASCPProcessCreator)
         {
             iter_param = ms_context->Iterator5(params, sc_type_arc_pos_const_perm, SC_TYPE(0), sc_type_arc_pos_const_perm, order);
             if (!iter_param->Next())
-                Utils::logMissedParameterError((ScMemoryContext&)ms_context, order);
+                Utils::logSCPError((ScMemoryContext&)ms_context, "Missed scp-program parameter", order);
 
             //!TODO gen_params.add(iter_temp->Get(2),iter_param->Get(2));
             //Utils::printSystemIdentifier((ScMemoryContext&)ms_context, iter_temp->Get(2));

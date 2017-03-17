@@ -125,16 +125,16 @@ void printInfo(ScMemoryContext & ctx, ScAddr const & elemAddr)
     cout << "Total output arcs: " << c_out << endl;
 }
 
-void logMissedParameterError(ScMemoryContext & ctx, ScAddr &order)
+void logUnknownOperatorTypeError(ScMemoryContext & ctx, ScAddr &addr)
 {
-    cout << "Missed scp-program parameter: ";
-    printSystemIdentifier(ctx, order);
+    cout << "SCP Error: Unknown scp-operator type: ";
+    printSystemIdentifier(ctx, addr);
     cout << endl;
 }
 
-void logUnknownOperatorTypeError(ScMemoryContext & ctx, ScAddr &addr)
+void logSCPError(ScMemoryContext & ctx, string text, ScAddr &addr)
 {
-    cout << "Unknown scp-operator type: ";
+    cout << "SCP Error: " << text << ": ";
     printSystemIdentifier(ctx, addr);
     cout << endl;
 }
