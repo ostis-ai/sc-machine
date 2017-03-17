@@ -15,21 +15,9 @@
 namespace scp
 {
 
-bool compareSCPOperandPtr(SCPOperand* a, SCPOperand* b)
-{
-    return (a->GetOrder() < b->GetOrder());
-}
-
 SCPOperator::SCPOperator(ScMemoryContext &ctx, ScAddr addr): addr(addr), ms_context(ctx)
 {
-    if (!Utils::resolveOperatorType(ms_context, addr, type))
-        Utils::logUnknownOperatorTypeError(ms_context, addr);
-    ScIterator3Ptr iter_operator = ms_context.Iterator3(addr, sc_type_arc_pos_const_perm, SC_TYPE(sc_type_node | sc_type_const));
-    while (iter_operator->Next())
-    {
-        operands.push_back(new SCPOperand(ms_context, iter_operator->Get(1)));
-    }
-    std::sort(operands.begin(), operands.end(), compareSCPOperandPtr);
+
 }
 
 ScAddr SCPOperator::GetAddr()
@@ -37,9 +25,15 @@ ScAddr SCPOperator::GetAddr()
     return addr;
 }
 
-ScAddr SCPOperator::GetType()
+sc_result SCPOperator::Parse()
 {
-    return type;
+    std::fill(operands.begin(), operands.end(), nullptr);
+    return SC_RESULT_OK;
+}
+
+sc_result SCPOperator::Execute()
+{
+    return SC_RESULT_OK;
 }
 
 SCPOperator::~SCPOperator()

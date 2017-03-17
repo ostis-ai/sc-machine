@@ -15,10 +15,10 @@ namespace scp
 
 class SCPOperator
 {
-private:
+protected:
     ScAddr addr;
     ScAddr type;
-    std::vector<SCPOperand*> operands;
+    std::vector<SCPOperand*> operands = std::vector<SCPOperand*>(0);
 
     ScMemoryContext &ms_context;
 
@@ -26,7 +26,8 @@ public:
     SCPOperator(ScMemoryContext &ctx, ScAddr addr);
     ~SCPOperator();
     ScAddr GetAddr();
-    ScAddr GetType();
+    virtual sc_result Parse();
+    virtual sc_result Execute();
 };
 
 }
