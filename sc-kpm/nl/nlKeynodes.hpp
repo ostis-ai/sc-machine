@@ -18,6 +18,8 @@ class Keynodes : public ScObject
   SC_GENERATED_BODY()
 
 public:
+
+  /// TODO: fix code style >>>
   SC_PROPERTY(Keynode("main_nl_dialogue_instance"), ForceCreate)
   static ScAddr msMainNLDialogueInstance;
 
@@ -47,6 +49,13 @@ public:
 
   SC_PROPERTY(Keynode("self"), ForceCreate)
   static ScAddr msSelf;
+  /// <<< fix
+
+  SC_PROPERTY(Keynode("languages"), ForceCreate(ScType::NodeConstClass))
+  static ScAddr ms_languages;
+
+  SC_PROPERTY(Keynode("nrel_main_idtf"), ForceCreate(ScType::NodeConstNoRole))
+  static ScAddr ms_nrelMainIdtf;
 };
 
 } // namespace nl

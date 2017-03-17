@@ -20,4 +20,7 @@ ScAddr Keynodes::msNrelAuthor;
 ScAddr Keynodes::msRrelLastItem;
 ScAddr Keynodes::msSelf;
 
+ScAddr Keynodes::ms_languages;
+ScAddr Keynodes::ms_nrelMainIdtf;
+
 } // namespace nl

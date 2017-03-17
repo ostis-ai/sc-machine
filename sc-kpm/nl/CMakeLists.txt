@@ -5,8 +5,11 @@ set(SOURCES
 	"nlApiAi.cpp"
 	"nlApiAiUtils.cpp"
 	"nlDialogue.cpp"
+	"nlGenText.cpp"
 	"nlIvona.cpp"
 	"nlKeynodes.cpp"
+	"nlTextTemplProcessor.cpp"
+	
 	"hash/sha256.cpp"
 )
 set(HEADERS 
@@ -14,8 +17,11 @@ set(HEADERS
 	"nlApiAi.hpp"
 	"nlApiAiUtils.hpp"
 	"nlDialogue.hpp"
+	"nlGenText.hpp"
 	"nlIvona.hpp"
 	"nlKeynodes.hpp"
+	"nlTextTemplProcessor.hpp"
+	"nlTextTemplProcessorTokens.hpp"
 )
 
 include_directories(${SC_IOT_SRC} ${SC_MEMORY_SRC} ${GLIB2_INCLUDE_DIRS} ${LIBCURL_INCLUDE_DIRS})
