@@ -97,17 +97,17 @@ public:
 
   ObjectType & operator * () const
   {
-    SC_ASSERT(IsValid(), ());
+    SC_ASSERT(IsPtrValid(), ());
     return *m_object;
   }
 
   ObjectType * operator -> () const
   {
-    SC_ASSERT(IsValid(), ());
+    SC_ASSERT(IsPtrValid(), ());
     return m_object;
   }
 
-  inline bool IsValid() const
+  inline bool IsPtrValid() const
   {
     return m_object != 0;
   }
@@ -125,6 +125,7 @@ public:
   }
 
 private:
+
   void InitRef()
   {
     m_refCount = new RefCount();

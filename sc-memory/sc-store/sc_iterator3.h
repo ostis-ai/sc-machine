@@ -15,10 +15,10 @@
 //! sc-iterator types
 typedef enum
 {
-  sc_iterator3_f_a_a = 0, // output arcs
-  sc_iterator3_a_a_f,     // input arcs
-  sc_iterator3_f_a_f,     // arcs between two elements
-  sc_iterator3_a_f_a,		// begin and end elements of arc
+  sc_iterator3_f_a_a = 0, // outgoing edges
+  sc_iterator3_a_a_f,     // ingoing edges
+  sc_iterator3_f_a_f,     // edge between source and target
+  sc_iterator3_a_f_a,		  // find source/target elements of edge
   sc_iterator3_count
 
 } sc_iterator3_type;
