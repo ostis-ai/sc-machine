@@ -45,15 +45,15 @@ struct UsedPowerSum
     templDevice
         .Triple(
           mGroupAddr,
-          ScType::EdgeAccessConstPosPerm,
-          ScType::NodeConstMaterial >> "device")
+          ScType::EdgeAccessVarPosPerm,
+          ScType::NodeVarMaterial >> "device")
         .Triple(
           "device",
-          ScType::EdgeDCommonConst >> "edge",
+          ScType::EdgeDCommonVar >> "edge",
           ScType::Link >> "link")
         .Triple(
           Keynodes::device_real_energy_usage,
-          ScType::EdgeAccessConstPosPerm,
+          ScType::EdgeAccessVarPosPerm,
           "edge");
 
     // Devices
@@ -83,15 +83,15 @@ struct UsedPowerSum
     templPowerUsage
         .Triple(
           mGroupAddr,
-          ScType::EdgeDCommonConst >> "edge",
+          ScType::EdgeDCommonVar >> "edge",
           ScType::Link >> "link")
         .Triple(
           Keynodes::device_real_energy_usage,
-          ScType::EdgeAccessConstPosPerm,
+          ScType::EdgeAccessVarPosPerm,
           "edge")
         .Triple(
           Keynodes::binary_float,
-          ScType::EdgeAccessConstPosPerm,
+          ScType::EdgeAccessVarPosPerm,
           "link");
 
     ScAddr linkAddr;

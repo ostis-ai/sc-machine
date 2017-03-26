@@ -8,6 +8,9 @@
 #include "nlApiAi.hpp"
 #include "nlIvona.hpp"
 #include "nlDialogue.hpp"
+#include "nlGenText.hpp"
+
+#include "nlTextTemplProcessor.hpp"
 
 #include "nlKeynodes.hpp"
 
@@ -21,6 +24,9 @@ sc_result nlModule::InitializeImpl()
   SC_AGENT_REGISTER(nl::AApiAiParseUserTextAgent);
   SC_AGENT_REGISTER(nl::AIvonaGenerateSpeechAgent);
   SC_AGENT_REGISTER(nl::ADialogueProcessMessageAgent);
+  
+  nl::util::TextTemplProcessor::InitGlobal();
+  SC_AGENT_REGISTER(nl::AGenText);
 
   return SC_RESULT_OK;
 }
@@ -30,6 +36,7 @@ sc_result nlModule::ShutdownImpl()
   SC_AGENT_UNREGISTER(nl::AApiAiParseUserTextAgent);
   SC_AGENT_UNREGISTER(nl::AIvonaGenerateSpeechAgent);
   SC_AGENT_UNREGISTER(nl::ADialogueProcessMessageAgent);
+  SC_AGENT_UNREGISTER(nl::AGenText);
 
   return SC_RESULT_OK;
 }

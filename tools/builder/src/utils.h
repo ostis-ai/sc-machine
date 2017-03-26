@@ -9,6 +9,7 @@
 
 #include "types.h"
 
+// TODO: replace to moved into sc-memory cpp
 class StringUtil
 {
 public:

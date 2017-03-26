@@ -326,15 +326,19 @@ UNIT_TEST(templates_common)
 
     const ScAddr _structAddr = ctx.CreateNode(ScType::NodeVarStruct);
     SC_CHECK(_structAddr.IsValid(), ());
+    SC_CHECK(ctx.HelperSetSystemIdtf("_struct", _structAddr), ());
 
     const ScAddr _apiai_locationAddr = ctx.CreateNode(ScType::NodeVar);
     SC_CHECK(_apiai_locationAddr.IsValid(), ());
+    SC_CHECK(ctx.HelperSetSystemIdtf("_apiai_location", _apiai_locationAddr), ());
 
     const ScAddr _apiai_speechAddr = ctx.CreateNode(ScType::NodeVar);
     SC_CHECK(_apiai_speechAddr.IsValid(), ());
+    SC_CHECK(ctx.HelperSetSystemIdtf("_apiai_speech", _apiai_speechAddr), ());
 
     const ScAddr _langAddr = ctx.CreateNode(ScType::NodeVar);
     SC_CHECK(_langAddr.IsValid(), ());
+    SC_CHECK(ctx.HelperSetSystemIdtf("_lang", _langAddr), ());
 
     const ScAddr rrel_locationAddr = ctx.CreateNode(ScType::NodeConst);
     SC_CHECK(rrel_locationAddr.IsValid(), ());
@@ -483,6 +487,60 @@ UNIT_TEST(templates_2)
       SC_CHECK_EQUAL(item["_z"], zAddr, ());
       SC_CHECK_EQUAL(item["_s"], sAddr, ());
     }
+  }
+}
+
+UNIT_TEST(templates_3)
+{
+  ScMemoryContext ctx(sc_access_lvl_make_min, "templates_3");
+
+  /** SCs:
+   * addr => nrel_main_idtf: [] (* <- lang;; *);;
+   */
+
+  ScAddr const addr = ctx.CreateNode(ScType::NodeConst);
+  SC_CHECK(addr.IsValid(), ());
+  ScAddr const nrelMainIdtf = ctx.CreateNode(ScType::NodeConstNoRole);
+  SC_CHECK(nrelMainIdtf.IsValid(), ());
+  ScAddr const lang = ctx.CreateNode(ScType::NodeConstClass);
+  SC_CHECK(lang.IsValid(), ());
+  ScAddr const link = ctx.CreateLink();
+  SC_CHECK(link.IsValid(), ());
+
+  ScAddr const edgeCommon = ctx.CreateEdge(ScType::EdgeDCommonConst, addr, link);
+  SC_CHECK(edgeCommon.IsValid(), ());
+  ScAddr const edgeAttr = ctx.CreateEdge(ScType::EdgeAccessConstPosPerm, nrelMainIdtf, edgeCommon);
+  SC_CHECK(edgeAttr.IsValid(), ());
+  ScAddr const edgeLang = ctx.CreateEdge(ScType::EdgeAccessConstPosPerm, lang, link);
+  SC_CHECK(edgeLang.IsValid(), ());
+
+  // now check search
+  ScTemplate templ;
+  templ.TripleWithRelation(
+    addr >> "_addr",
+    ScType::EdgeDCommonVar >> "_edgeCommon",
+    ScType::Link >> "_link",
+    ScType::EdgeAccessVarPosPerm >> "_edgeAttr",
+    nrelMainIdtf >> "_nrelMainIdtf");
+
+  templ.Triple(
+    lang >> "_lang",
+    ScType::EdgeAccessVarPosPerm >> "_edgeLang",
+    "_link");
+
+  // search
+  {
+    ScTemplateSearchResult res;
+    SC_CHECK(ctx.HelperSearchTemplate(templ, res), ());
+
+    SC_CHECK_EQUAL(res.Size(), 1, ());
+    SC_CHECK_EQUAL(res[0]["_addr"], addr, ());
+    SC_CHECK_EQUAL(res[0]["_edgeCommon"], edgeCommon, ());
+    SC_CHECK_EQUAL(res[0]["_link"], link, ());
+    SC_CHECK_EQUAL(res[0]["_edgeAttr"], edgeAttr, ());
+    SC_CHECK_EQUAL(res[0]["_nrelMainIdtf"], nrelMainIdtf, ());
+    SC_CHECK_EQUAL(res[0]["_lang"], lang, ());
+    SC_CHECK_EQUAL(res[0]["_edgeLang"], edgeLang, ());
   }
 }
 

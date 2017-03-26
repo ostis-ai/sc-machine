@@ -1,9 +1,14 @@
-## v0.3.0 rc1
+## v0.3.1
+
+* Fix templates search error (problems was with triples search order)
+* Implement `AGenText` agent in `kpm/nl` module
+
+## v0.3.0
 
 * Implement search for elements, that has no constancy flag in a type
 * Fix template search error (#251)
 * Fix problem with `SC_ASSERT` compilation in release mode (#249)
-* Implement SCs-text parser
+* Implement SCs-text parser (levels 1 - 4)
 * Agent `AApiAiParseUserTextAgent` can run commands
 * Implement common function to work with commands in knowledge base
 * Add support of keynode types in codegenerator. Now you can specify type of keynode that would be used to create it: `ForceCreate(ScType::Node...)`

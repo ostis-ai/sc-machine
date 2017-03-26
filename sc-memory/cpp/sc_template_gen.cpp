@@ -56,7 +56,7 @@ public:
     for (auto it = m_constructions.begin(); it != m_constructions.end(); ++it)
     {
       ScTemplateConstr3 const & item = *it;
-      ScTemplateItemValue const * values = item.GetValues();
+      auto const & values = item.GetValues();
 
       // check that the third argument isn't a command to generate edge
       SC_ASSERT(!(values[2].m_itemType == ScTemplateItemValue::Type::Type && values[2].m_typeValue.IsEdge()), ());

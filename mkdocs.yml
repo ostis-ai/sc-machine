@@ -21,6 +21,7 @@ pages:
   - Modules:
     - Natural language:
       - AApiAiParseUserTextAgent: modules/nl/AApiAiParseUserTextAgent.md
+      - AGenText: modules/nl/AGenText.md
   - License: license.md
   - Changelog: changelog.md
   - Thirdparty: thirdparty.md

@@ -124,6 +124,8 @@ class ScTemplateConstr3
 {
   friend class ScTemplate;
 public:
+  using ItemsArray = std::array<ScTemplateItemValue, 3>;
+
   ScTemplateConstr3(ScTemplateItemValue const & param1,
                     ScTemplateItemValue const & param2,
                     ScTemplateItemValue const & param3,
@@ -135,9 +137,9 @@ public:
     m_values[2] = param3;
   }
 
-  ScTemplateItemValue const * GetValues() const
+  ItemsArray const & GetValues() const
   {
-    return &(m_values[0]);
+    return m_values;
   }
 
   size_t CountFixed() const
@@ -164,20 +166,20 @@ public:
   size_t CountCommonT(Func f) const
   {
     size_t result = 0;
-    for (size_t i = 0; i < 3; ++i)
+    for (auto & v : m_values)
     {
-      if (f(m_values[i]))
+      if (f(v))
         ++result;
     }
     return result;
   }
 
 protected:
-  ScTemplateItemValue m_values[3];
+  ItemsArray m_values;
   /* Store original index in template. Because when perform search or generation
-     * we sort triples in sutable for operation order.
-     * Used to construct result
-     */
+   * we sort triples in suitable for operation order.
+   * Used to construct result
+   */
   size_t m_index;
 };
 
@@ -268,27 +270,26 @@ public:
   _SC_EXTERN void Clear();
 
   bool IsSearchCacheValid() const;
-  bool IsGenerateCacheValid() const;
 
   _SC_EXTERN bool HasReplacement(std::string const & repl) const;
 
   /** Add construction:
-     *          param2
-     * param1 ----------> param3
-     */
+    *          param2
+    * param1 ----------> param3
+    */
   _SC_EXTERN ScTemplate & Triple(ScTemplateItemValue const & param1, ScTemplateItemValue const & param2, ScTemplateItemValue const & param3);
 
   /** Adds template:
-     *           param2
-     *	param1 ---------> param3
-     *             ^
-     *             |
-     *             | param4
-     *             |
-     *           param5
-     * Equal to two calls of triple, so this template add 6 items to result (NOT 5), to minimize
-     * possible abuse, use result name mapping, and get result by names
-     */
+    *           param2
+    *	param1 ---------> param3
+    *             ^
+    *             |
+    *             | param4
+    *             |
+    *           param5
+    * Equal to two calls of triple, so this template add 6 items to result (NOT 5), to minimize
+    * possible abuse, use result name mapping, and get result by names
+    */
   _SC_EXTERN ScTemplate & TripleWithRelation(ScTemplateItemValue const & param1, ScTemplateItemValue const & param2, ScTemplateItemValue const & param3,
                                              ScTemplateItemValue const & param4, ScTemplateItemValue const & param5);
 
@@ -304,13 +305,13 @@ protected:
 
 private:
   /** Generates node or link element in memory, depending on type.
-     * If type isn't a node or link, then return empty addr
-     */
+   * If type isn't a node or link, then return empty addr
+   */
   ScAddr CreateNodeLink(ScMemoryContext & ctx, ScType const & type) const;
 
   /** Resolve ScAddr for specified ScTemplateItemValue.
-     * If ScAddr not resolved, then returns empty addr.
-     */
+   * If ScAddr not resolved, then returns empty addr.
+   */
   ScAddr ResolveAddr(ScMemoryContext & ctx, ScTemplateItemValue const & itemValue) const;
 
 protected:
@@ -321,15 +322,11 @@ protected:
   size_t m_currentReplPos;
 
   /* Caches (used to prevent processing order update on each search/gen)
-     * Flag mIsCacheValid == false - request to update cache. We doesn't use two flags,
-     * because one enogh to get info, that triples changed. Can't use triple count instead of this flag.
-     * In some cases developer can remove on triple and add new one after that.
-     * Caches are mutable, to prevent changes of template in search and generation, they can asses just a cache.
-     * That because template passed into them by const reference.
-     */
-  bool m_isCacheValid : 1;
+   * Caches are mutable, to prevent changes of template in search and generation, they can asses just a cache.
+   * That because template passed into them by const reference.
+   */
+  mutable bool m_isSearchCacheValid : 1;
   mutable ProcessOrder m_searchCachedOrder;
-  mutable ProcessOrder m_generateCachedOrder;
 };
 
 

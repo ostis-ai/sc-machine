@@ -302,3 +302,8 @@ public:
 ```cpp
 SC_THROW_EXCEPTION(MyException, "my message")
 ```
+
+- Exception for a non implemented parts of code
+```cpp
+SC_NOT_IMPLEMENTED("message")
+```
