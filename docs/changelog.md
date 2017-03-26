@@ -1,5 +1,8 @@
 ## v0.3.1
 
+* Fix templates search error (problems was with triples search order)
+* Implement `AGenText` agent in `kpm/nl` module
+
 ## v0.3.0
 
 * Implement search for elements, that has no constancy flag in a type
