@@ -63,6 +63,12 @@ public:
   explicit ExceptionParseError(std::string const & msg) : ScException("ParseError: " + msg) {}
 };
 
+class ExceptionNotImplemented final : public ScException
+{
+public:
+  explicit ExceptionNotImplemented(std::string const & msg) : ScException("NotImplemented: " + msg) {}
+};
+
 #define error(__str) { throw ScException(__str); }
 #define error_invalid_params(__str) { throw ScExceptionInvalidParams(__str); }
 
@@ -76,6 +82,8 @@ public:
 }
 
 #define SC_THROW_EXCEPTION(_exception_class, _msg) THROW_EXCEPTION(_exception_class, _msg, __FILE__, __LINE__)
+
+#define SC_NOT_IMPLEMENTED(_msg) SC_THROW_EXCEPTION(utils::ExceptionNotImplemented, _msg)
 
 #define _ASSERT_IMPL(_expr, _msg, _file, _line) \
 { \
