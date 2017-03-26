@@ -7,6 +7,7 @@
 #include "sc_utils.hpp"
 
 #include <cctype>
+#include <algorithm>
 
 namespace utils
 {
