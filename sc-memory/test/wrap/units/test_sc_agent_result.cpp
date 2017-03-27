@@ -62,8 +62,8 @@ UNIT_TEST(AgentResultsCommon)
 
   auto const CheckValue = [](sc_result resCode)
   {
-    ScAddr const & addr = ScAgentAction::GetResultCodeAddr(resCode);
-    sc_result const res = ScAgentAction::GetResultCodeByAddr(addr);
+    ScAddr const & addr = ScKeynodes::GetResultCodeAddr(resCode);
+    sc_result const res = ScKeynodes::GetResultCodeByAddr(addr);
     SC_CHECK_EQUAL(resCode, res, ());
   };
 

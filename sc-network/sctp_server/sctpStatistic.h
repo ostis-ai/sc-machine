@@ -74,7 +74,7 @@ public:
   virtual ~sctpStatistic();
 
   //! Initialize statistics
-  bool initialize(const QString &statDirPath, quint32 updatePeriod, sc_memory_context *context);
+  bool initialize(const QString &statDirPath, quint32 updatePeriod, sc_memory_context const * context);
   //! Shutdown statistics
   void shutdown();
 
@@ -108,7 +108,7 @@ protected:
   QMutex *mFsMutex;
 
   //! Pointer to default memory context
-  sc_memory_context *mContext;
+  sc_memory_context const * mContext;
 
 public:
   void clientConnected();

@@ -351,8 +351,12 @@ void Class::GenerateDeclarations(std::stringstream & outCode) const
     outCode << "\\\npublic:";
     outCode << "\\\n	sc_result InitializeGenerated()";
     outCode << "\\\n	{";
+    outCode << "\\\n		if (!ScKeynodes::Init())";
+    outCode << "\\\n			return SC_RESULT_ERROR;";
+
     outCode << "\\\n		if (!ScAgentInit(false))";
     outCode << "\\\n			return SC_RESULT_ERROR;";
+
 
     outCode << "\\\n		return InitializeImpl();";
     outCode << "\\\n	}";

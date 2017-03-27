@@ -5,6 +5,7 @@
  */
 
 #include "sc_memory.hpp"
+#include "sc_keynodes.hpp"
 #include "sc_utils.hpp"
 #include "sc_stream.hpp"
 #include "kpm/sc_agent.hpp"
@@ -81,12 +82,16 @@ bool ScMemory::Initialize(sc_memory_params const & params)
 
   ms_globalContext = sc_memory_initialize(&params);
   
-  ScAgentInit(true);
+  ScKeynodes::Init();
+  ScAgentInit(true);  
+
   return ms_globalContext != null_ptr;
 }
 
 void ScMemory::Shutdown(bool saveState /* = true */)
 {
+  ScKeynodes::Shutdown();
+
   if (ms_contexts.size() > 0)
   {
     std::stringstream description;

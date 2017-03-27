@@ -20,7 +20,7 @@ add_executable(sctp-server ${SOURCES} ${HEADERS})
 
 include_directories(${SC_MEMORY_SRC} ${GLIB2_INCLUDE_DIRS})
 
-target_link_libraries(sctp-server sc-memory
+target_link_libraries(sctp-server sc-memory sc-memory-cpp
                                   Qt5::Core
                                   Qt5::Network)
 

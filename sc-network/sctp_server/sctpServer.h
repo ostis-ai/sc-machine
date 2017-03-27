@@ -12,6 +12,10 @@
 #include <QTcpServer>
 #include <QList>
 
+#include <memory>
+
+#include "sc-memory/cpp/sc_memory.hpp"
+
 class sctpClient;
 class sctpStatistic;
 class sctpEventManager;
@@ -53,7 +57,7 @@ private:
   //! Event manager instance
   sctpEventManager *mEventManager;
   //! Pointer to default memory context
-  sc_memory_context *mContext;
+  std::unique_ptr<ScMemoryContext> mContext;
 
 signals:
 
