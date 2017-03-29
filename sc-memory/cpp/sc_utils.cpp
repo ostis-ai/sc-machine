@@ -6,8 +6,9 @@
 
 #include "sc_utils.hpp"
 
-#include <cctype>
 #include <algorithm>
+#include <cctype>
+#include <cstdlib>
 
 namespace utils
 {
@@ -223,6 +224,12 @@ void StringUtils::Trim(std::string & str)
 {
   TrimLeft(str);
   TrimRight(str);
+}
+
+
+int Random::Int()
+{
+  return std::rand();
 }
 
 } // namespace utils

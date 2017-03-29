@@ -216,4 +216,10 @@ public:
   _SC_EXTERN static std::string ReplaceAll(std::string const & source, std::string const & replaceWhat, std::string const & replaceWithWhat);
 };
 
+class Random
+{
+public:
+  _SC_EXTERN static int Int();
+};
+
 } // namespace utils

@@ -5,14 +5,15 @@
  */
 
 #include "sc_memory.hpp"
+#include "sc_keynodes.hpp"
 #include "sc_utils.hpp"
 #include "sc_stream.hpp"
 #include "kpm/sc_agent.hpp"
 
 #include "utils/sc_log.hpp"
 
-#include <assert.h>
-
+#include <cstdlib>
+#include <ctime>
 #include <iostream>
 #include <sstream>
 
@@ -75,18 +76,23 @@ ScMemory::MemoryContextList ScMemory::ms_contexts;
 
 bool ScMemory::Initialize(sc_memory_params const & params)
 {
+  std::srand(unsigned(std::time(0)));
   gContextGounter = 0;
 
   g_log_set_default_handler(_logPrintHandler, nullptr);
 
   ms_globalContext = sc_memory_initialize(&params);
   
-  ScAgentInit(true);
+  ScKeynodes::Init();
+  ScAgentInit(true);  
+
   return ms_globalContext != null_ptr;
 }
 
 void ScMemory::Shutdown(bool saveState /* = true */)
 {
+  ScKeynodes::Shutdown();
+
   if (ms_contexts.size() > 0)
   {
     std::stringstream description;

@@ -124,16 +124,25 @@ public:
 
   sc_result operator() (std::string const & inputString)
   {
-    auto CleanTokenInternal = [](std::string val)
-    {
-      // TODO: fix during utf-8 support
-      val = val.substr(2, val.size() - 4); // remove {%%}
-      utils::StringUtils::Trim(val);
-      return val;
-    };
-
     // parse string with simple stack
     std::stack<size_t> openStack;
+
+    auto const AppendToken = [&, this](size_t start, size_t len, bool isString)
+    {
+      std::string tokenInternal = inputString.substr(start, len);
+      if (!isString)
+      {
+        // TODO: fix during utf-8 support
+        tokenInternal = tokenInternal.substr(2, tokenInternal.size() - 4); // remove {%%}
+        utils::StringUtils::Trim(tokenInternal);
+      }
+
+      Token * token = ResolveToken(tokenInternal);
+
+      // TODO: provide error for unknown token
+      SC_ASSERT(token != nullptr, ());
+      m_tokens.push_back(token);
+    };
 
     // TODO: support utf-8 (check)
     size_t lastString = 0;
@@ -149,8 +158,7 @@ public:
         if (openStack.empty())
         {
           SC_ASSERT(curr - lastString > 0, ());
-          std::string const tokenInternal = inputString.substr(lastString, curr - lastString - 1);
-          m_tokens.push_back(new StringToken(tokenInternal));
+          AppendToken(lastString, curr - lastString - 1, true);
         }
 
         openStack.push(prev);
@@ -163,19 +171,16 @@ public:
         size_t const openPos = openStack.top();
         openStack.pop();
 
-        std::string const tokenInternal = CleanTokenInternal(inputString.substr(openPos, curr - openPos));
-        Token * token = ResolveToken(tokenInternal);
-
-        // TODO: provide error for unknown token
-        SC_ASSERT(token != nullptr, ());
-        m_tokens.push_back(token);
-
+        AppendToken(openPos, curr - openPos, false);
         lastString = curr + 1;
       }
       
       ++curr;
       ++prev;
     }
+
+    if (curr > lastString)
+      AppendToken(lastString, curr - lastString, true);
 
     // check if parsed correctly
     if (!openStack.empty())
@@ -195,7 +200,7 @@ private:
     if (utils::StringUtils::StartsWith(tokenBody, "$", false))
       return new MainIdtfToken(tokenBody.substr(1), m_lang);
 
-    return nullptr;
+    return new StringToken(tokenBody);
   }
 
 private:

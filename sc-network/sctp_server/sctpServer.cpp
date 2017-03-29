@@ -28,7 +28,6 @@ sctpServer::sctpServer(QObject *parent)
   , mStatistic(0)
   , mSavePeriod(0)
   , mEventManager(0)
-  , mContext(0)
 {
 }
 
@@ -81,8 +80,10 @@ bool sctpServer::start(const QString &config)
   params.repo_path = repo_path.c_str();
   params.ext_path = ext_path.c_str();
 
-  mContext = sc_memory_initialize(&params);
-  if (mContext == 0)
+  ScMemory::Initialize(params);
+
+  mContext.reset(new ScMemoryContext(sc_access_lvl_make_max, "SctpServer"));
+  if (mContext.get() == nullptr)
     return false;
 
   mEventManager = new sctpEventManager();
@@ -91,7 +92,7 @@ bool sctpServer::start(const QString &config)
   if (mStatUpdatePeriod > 0)
   {
     mStatistic = new sctpStatistic(this);
-    mStatistic->initialize(mStatPath, mStatUpdatePeriod, mContext);
+    mStatistic->initialize(mStatPath, mStatUpdatePeriod, mContext->GetRealContext());
   }
 
   QTimer::singleShot(mSavePeriod * 1000, this, SLOT(onSave()));
@@ -154,7 +155,7 @@ void sctpServer::incomingConnection(qintptr socketDescriptor)
 
 void sctpServer::stop()
 {
-  sc_memory_shutdown(SC_TRUE);
+  ScMemory::Shutdown(true);
   mContext = 0;
 
   mEventManager->shutdown();
@@ -175,7 +176,7 @@ void sctpServer::clientDestroyed(QObject *client)
 
 void sctpServer::onSave()
 {
-  sc_memory_save(mContext);
+  sc_memory_save(mContext->GetRealContext());
 
   QTimer::singleShot(mSavePeriod * 1000, this, SLOT(onSave()));
 }

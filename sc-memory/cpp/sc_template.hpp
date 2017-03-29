@@ -454,6 +454,13 @@ public:
     m_replacements.clear();
   }
 
+  template <typename FnT>
+  void ForEach(FnT && f)
+  {
+    for (auto const & res : m_results)
+      f(ScTemplateSearchResultItem(&res, &m_replacements));
+  }
+
 protected:
   using SearchResults = std::vector<ScAddrVector>;
   SearchResults m_results;

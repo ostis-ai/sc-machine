@@ -42,7 +42,7 @@ sctpStatistic::~sctpStatistic()
   mInstance = 0;
 }
 
-bool sctpStatistic::initialize(const QString &statDirPath, quint32 updatePeriod, sc_memory_context *context)
+bool sctpStatistic::initialize(const QString &statDirPath, quint32 updatePeriod, sc_memory_context const * context)
 {
   mStatPath = statDirPath;
   mStatUpdatePeriod = updatePeriod;

@@ -2,6 +2,8 @@
 
 * Fix templates search error (problems was with triples search order)
 * Implement `AGenText` agent in `kpm/nl` module
+* Implement `AGenCmdTextResult` agent in `kpm/nl` module
+* Added `ForEach` function into template search result
 
 ## v0.3.0
 
