@@ -2,9 +2,7 @@
 
 Agent generate output text, by a specified text template and input structure.
 
-** Parameters**
-
-This agent receive such parameters:
+**Parameters:**
 
 1. `text template`;
 2. **(optional)** `language` of output template
