@@ -12,8 +12,8 @@
 
 #include "utils/sc_log.hpp"
 
-#include <assert.h>
-
+#include <cstdlib>
+#include <ctime>
 #include <iostream>
 #include <sstream>
 
@@ -76,6 +76,7 @@ ScMemory::MemoryContextList ScMemory::ms_contexts;
 
 bool ScMemory::Initialize(sc_memory_params const & params)
 {
+  std::srand(unsigned(std::time(0)));
   gContextGounter = 0;
 
   g_log_set_default_handler(_logPrintHandler, nullptr);
