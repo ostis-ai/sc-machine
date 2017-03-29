@@ -9,6 +9,7 @@
 #include "nlIvona.hpp"
 #include "nlDialogue.hpp"
 #include "nlGenText.hpp"
+#include "nlGenCmdTextResult.hpp"
 
 #include "nlTextTemplProcessor.hpp"
 
@@ -27,6 +28,7 @@ sc_result nlModule::InitializeImpl()
   
   nl::util::TextTemplProcessor::InitGlobal();
   SC_AGENT_REGISTER(nl::AGenText);
+  SC_AGENT_REGISTER(nl::AGenCmdTextResult);
 
   return SC_RESULT_OK;
 }
@@ -37,6 +39,7 @@ sc_result nlModule::ShutdownImpl()
   SC_AGENT_UNREGISTER(nl::AIvonaGenerateSpeechAgent);
   SC_AGENT_UNREGISTER(nl::ADialogueProcessMessageAgent);
   SC_AGENT_UNREGISTER(nl::AGenText);
+  SC_AGENT_UNREGISTER(nl::AGenCmdTextResult);
 
   return SC_RESULT_OK;
 }
