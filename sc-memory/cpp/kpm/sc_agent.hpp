@@ -88,6 +88,11 @@ public:
    * process isn't finished. It could be finished with that result.
    */
   static _SC_EXTERN sc_result GetCommandResultCode(ScMemoryContext & ctx, ScAddr const & cmdAddr);
+  
+  /* Same as GetCommandResultCode, but returns ScAddr of result code set.
+   * If it can't be determined, then return empty value
+   */
+  static _SC_EXTERN ScAddr GetCommandResultCodeAddr(ScMemoryContext & ctx, ScAddr const & cmdAddr);
 
 private:
   ScAddr m_cmdClassAddr;

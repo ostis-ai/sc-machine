@@ -173,9 +173,15 @@ ScAddr ScAgentAction::GetCommandResultAddr(ScMemoryContext & ctx, ScAddr const &
 
 sc_result ScAgentAction::GetCommandResultCode(ScMemoryContext & ctx, ScAddr const & cmdAddr)
 {
+  ScAddr const addr = GetCommandResultCodeAddr(ctx, cmdAddr);
+  return addr.IsValid() ? ScKeynodes::GetResultCodeByAddr(addr) : SC_RESULT_UNKNOWN;
+}
+
+ScAddr ScAgentAction::GetCommandResultCodeAddr(ScMemoryContext & ctx, ScAddr const & cmdAddr)
+{
   ScAddr const resultAddr = GetCommandResultAddr(ctx, cmdAddr);
   if (!resultAddr.IsValid())
-    return SC_RESULT_UNKNOWN;
+    return ScAddr();
 
   ScTemplate templ;
   templ.Triple(
@@ -189,8 +195,8 @@ sc_result ScAgentAction::GetCommandResultCode(ScMemoryContext & ctx, ScAddr cons
 
   ScTemplateSearchResult searchResult;
   if (!ctx.HelperSearchTemplate(templ, searchResult))
-    return SC_RESULT_UNKNOWN;
+    return ScAddr();
 
   SC_ASSERT(searchResult.Size() == 1, ());
-  return ScKeynodes::GetResultCodeByAddr(searchResult[0][2]);
+  return searchResult[0]["result_class"];
 }
