@@ -2,6 +2,8 @@
 
 Agent generate output text, by a specified text template and input structure.
 
+**Command class:** `command_generate_text_from_template`
+
 **Parameters:**
 
 1. `text template`;
