@@ -107,12 +107,6 @@ elseif (${WIN32})
     set (REDIS_PATH "${SC_MACHINE_THIRDPARTY_PATH}/libhiredis/")
     set (BOOST_PATH "${PACKAGES_PATH}/boost.${BOOST_VERSION}/lib/native")
 
-    # CURL
-    set (LIBCURL_PATH "${SC_MACHINE_THIRDPARTY_PATH}/curl")
-    set (LIBCURL_RUNTIME_PATH "${LIBCURL_PATH}/bin")
-    set (LIBCURL_INCLUDE_DIRS "${LIBCURL_PATH}/include")
-    set (LIBCURL_LIBRARIES "${LIBCURL_PATH}/lib/libcurl.lib" "WSock32.lib" "Ws2_32.lib")
-
     set (LIBCLANG_INCLUDE_DIRS "${SC_MACHINE_THIRDPARTY_PATH}/clang/include")
     set (LIBCLANG_LIBRARY "libclang")
 
@@ -161,9 +155,6 @@ elseif (${WIN32})
             "${ZLIB_RUNTIME_PATH}/zlib.dll"
             "${FFI_RUNTIME_PATH}/libffi.dll"
             "${CLANG_RUNTIME_PATH}/libclang.dll"
-            "${LIBCURL_RUNTIME_PATH}/libcurl.dll"
-            "${LIBCURL_RUNTIME_PATH}/libeay32.dll"
-            "${LIBCURL_RUNTIME_PATH}/ssleay32.dll"
             )
     file(COPY ${WIN_RUNTIME_LIBRARIES} DESTINATION "${SC_BIN_PATH}")
 
