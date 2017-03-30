@@ -134,14 +134,9 @@ SC_AGENT_ACTION_IMPLEMENTATION(AGenCmdTextResult)
   {
     /// TODO: add support of parameter templates
     ScAddr const genCmd = ScAgentAction::CreateCommand(m_memoryCtx, ms_kCommandGetTextTempl, { templateAddr, lang });
-    ScWaitActionFinished waiter(m_memoryCtx, genCmd);
-    waiter.SetOnWaitStartDelegate([&genCmd, this]()
-    {
-      ScAgentAction::InitiateCommand(m_memoryCtx, genCmd);
-    });
-    if (!waiter.Wait())
+    if (!ScAgentAction::InitiateCommandWait(m_memoryCtx, genCmd))
       return SC_RESULT_ERROR;
-
+    
     ScAddr const res = ScAgentAction::GetCommandResultAddr(m_memoryCtx, genCmd);
     if (!res.IsValid())
       return SC_RESULT_ERROR;
