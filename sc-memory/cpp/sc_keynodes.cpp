@@ -11,6 +11,7 @@ std::array<ScAddr, kKeynodeRrelListNum> kKeynodeRrelList;
 
 bool ScKeynodes::ms_isInitialized = false;
 
+ScAddr ScKeynodes::kCommandStateAddr;
 ScAddr ScKeynodes::kCommandInitiatedAddr;
 ScAddr ScKeynodes::kCommandProgressdAddr;
 ScAddr ScKeynodes::kCommandFinishedAddr;
@@ -56,6 +57,14 @@ bool ScKeynodes::Init(bool force)
     if (!ctx.HelperResolveSystemIdtf("rrel_" + std::to_string(i + 1), item, ScType::NodeConstRole))
       result = false;
     SC_ASSERT(item.IsValid(), ());
+  }
+
+  // command states
+  ScAddr states[] = { kCommandFinishedAddr, kCommandInitiatedAddr, kCommandProgressdAddr };
+  for (auto const & a : states)
+  {
+    if (!ctx.CreateEdge(ScType::EdgeAccessConstPosPerm, kCommandStateAddr, a).IsValid())
+      result = true;
   }
 
   ms_isInitialized = true;

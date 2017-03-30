@@ -43,6 +43,15 @@ class ScAgentAction : public ScAgent
   SC_GENERATED_BODY()
 
 public:
+
+  enum class State : uint8_t
+  {
+    Unknown = 0,
+    Initiated,
+    Progress,
+    Finished
+  };
+
   _SC_EXTERN explicit ScAgentAction(ScAddr const & cmdClassAddr, char const * name, sc_uint8 accessLvl = sc_access_lvl_make_max);
   _SC_EXTERN virtual ~ScAgentAction();
 
@@ -93,6 +102,22 @@ public:
    * If it can't be determined, then return empty value
    */
   static _SC_EXTERN ScAddr GetCommandResultCodeAddr(ScMemoryContext & ctx, ScAddr const & cmdAddr);
+
+  /* Returns state of specified command
+   */
+  static _SC_EXTERN State GetCommandState(ScMemoryContext & ctx, ScAddr const & cmdAddr);
+
+  /* Reutrns true, if specified command included into set of finished commands
+   */
+  static _SC_EXTERN bool IsCommandFishined(ScMemoryContext & ctx, ScAddr const & cmdAddr);
+  
+  /* Reutrns true, if specified command included into set of initiated commands
+  */
+  static _SC_EXTERN bool IsCommandInitiated(ScMemoryContext & ctx, ScAddr const & cmdAddr);
+
+  /* Reutrns true, if specified command included into set of in-progress commands
+  */
+  static _SC_EXTERN bool IsCommandInProgress(ScMemoryContext & ctx, ScAddr const & cmdAddr);
 
 private:
   ScAddr m_cmdClassAddr;

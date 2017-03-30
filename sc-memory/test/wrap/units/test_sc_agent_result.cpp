@@ -51,6 +51,7 @@ UNIT_TEST(ATestResultOk)
 
     // check result
     SC_CHECK_EQUAL(ScAgentAction::GetCommandResultCode(ctx, cmdAddr), SC_RESULT_OK, ());
+    SC_CHECK_EQUAL(ScAgentAction::GetCommandState(ctx, cmdAddr), ScAgentAction::State::Finished, ());
 
     SC_AGENT_UNREGISTER(ATestResultOk);
   }

@@ -65,7 +65,7 @@ sc_result ScAgentAction::Run(ScAddr const & listenAddr, ScAddr const & edgeAddr,
     if (m_memoryCtx.HelperCheckEdge(m_cmdClassAddr, cmdAddr, ScType::EdgeAccessConstPosPerm))
     {
       m_memoryCtx.EraseElement(edgeAddr);
-      ScAddr progressAddr = m_memoryCtx.CreateEdge(ScType::EdgeAccessConstPosPerm, ScKeynodes::kCommandProgressdAddr, cmdAddr);
+      ScAddr progressAddr = m_memoryCtx.CreateEdge(ScType::EdgeAccessConstPosTemp, ScKeynodes::kCommandProgressdAddr, cmdAddr);
       assert(progressAddr.IsValid());
       ScAddr resultAddr = m_memoryCtx.CreateNode(ScType::NodeConstStruct);
       assert(resultAddr.IsValid());
@@ -78,7 +78,7 @@ sc_result ScAgentAction::Run(ScAddr const & listenAddr, ScAddr const & edgeAddr,
 
       m_memoryCtx.CreateEdge(ScType::EdgeAccessConstPosPerm, ScKeynodes::kNrelResult, commonEdge);
       m_memoryCtx.CreateEdge(ScType::EdgeAccessConstPosPerm, ScKeynodes::GetResultCodeAddr(resCode), resultAddr);
-      m_memoryCtx.CreateEdge(ScType::EdgeAccessConstPosPerm, ScKeynodes::kCommandFinishedAddr, cmdAddr);
+      m_memoryCtx.CreateEdge(ScType::EdgeAccessConstPosTemp, ScKeynodes::kCommandFinishedAddr, cmdAddr);
 
       return SC_RESULT_OK;
     }
@@ -147,13 +147,13 @@ bool ScAgentAction::InitiateCommand(ScMemoryContext & ctx, ScAddr const & cmdAdd
   // TODO: add blocks (locks) to prevent adding command to initiated set twicely
 
   // check if command is in progress
-  if (ctx.HelperCheckEdge(ScKeynodes::kCommandProgressdAddr, cmdAddr, ScType::EdgeAccessConstPosPerm))
+  if (ctx.HelperCheckEdge(ScKeynodes::kCommandProgressdAddr, cmdAddr, ScType::EdgeAccessConstPosTemp))
     return false;
 
-  if (ctx.HelperCheckEdge(ScKeynodes::kCommandInitiatedAddr, cmdAddr, ScType::EdgeAccessConstPosPerm))
+  if (ctx.HelperCheckEdge(ScKeynodes::kCommandInitiatedAddr, cmdAddr, ScType::EdgeAccessConstPosTemp))
     return false;
 
-  return ctx.CreateEdge(ScType::EdgeAccessConstPosPerm, ScKeynodes::kCommandInitiatedAddr, cmdAddr).IsValid();
+  return ctx.CreateEdge(ScType::EdgeAccessConstPosTemp, ScKeynodes::kCommandInitiatedAddr, cmdAddr).IsValid();
 }
 
 ScAddr ScAgentAction::GetCommandResultAddr(ScMemoryContext & ctx, ScAddr const & cmdAddr)
@@ -199,4 +199,45 @@ ScAddr ScAgentAction::GetCommandResultCodeAddr(ScMemoryContext & ctx, ScAddr con
 
   SC_ASSERT(searchResult.Size() == 1, ());
   return searchResult[0]["result_class"];
+}
+
+ScAgentAction::State ScAgentAction::GetCommandState(ScMemoryContext & ctx, ScAddr const & cmdAddr)
+{
+  ScIterator3Ptr it = ctx.Iterator3(
+    ScType::NodeConstClass,
+    ScType::EdgeAccessConstPosTemp,
+    cmdAddr);
+
+  ScAddr stateAddr;
+  while (it->Next())
+  {
+    if (ctx.HelperCheckEdge(ScKeynodes::kCommandStateAddr, it->Get(0), ScType::EdgeAccessConstPosPerm))
+    {
+      stateAddr = it->Get(0);
+    }
+  }
+
+  if (stateAddr == ScKeynodes::kCommandFinishedAddr)
+    return State::Finished;
+  else if (stateAddr == ScKeynodes::kCommandInitiatedAddr)
+    return State::Initiated;
+  else if (stateAddr == ScKeynodes::kCommandProgressdAddr)
+    return State::Progress;
+
+  return State::Unknown;
+}
+
+bool ScAgentAction::IsCommandFishined(ScMemoryContext & ctx, ScAddr const & cmdAddr)
+{
+  return GetCommandState(ctx, cmdAddr) == State::Finished;
+}
+
+bool ScAgentAction::IsCommandInitiated(ScMemoryContext & ctx, ScAddr const & cmdAddr)
+{
+  return GetCommandState(ctx, cmdAddr) == State::Initiated;
+}
+
+bool ScAgentAction::IsCommandInProgress(ScMemoryContext & ctx, ScAddr const & cmdAddr)
+{
+  return GetCommandState(ctx, cmdAddr) == State::Progress;
 }
