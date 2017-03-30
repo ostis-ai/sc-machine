@@ -48,7 +48,7 @@ UNIT_TEST(ATestCommand)
   SC_CHECK(cmd.IsValid(), ());
   ScAddr const e1 = ctx.CreateEdge(ScType::EdgeAccessConstPosPerm, command_1, cmd);
   SC_CHECK(e1.IsValid(), ());
-  ScAddr const e2 = ctx.CreateEdge(ScType::EdgeAccessConstPosPerm, ScAgentAction::GetCommandInitiatedAddr(), cmd);
+  ScAddr const e2 = ctx.CreateEdge(ScType::EdgeAccessConstPosTemp, ScAgentAction::GetCommandInitiatedAddr(), cmd);
   SC_CHECK(e2.IsValid(), ());
 
   SC_CHECK(ATestCommand::msWaiter.Wait(), ());

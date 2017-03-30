@@ -31,6 +31,9 @@ public:
   static _SC_EXTERN ScAddr const & GetRrelIndex(size_t idx);
   static _SC_EXTERN size_t GetRrelIndexNum();
 
+  SC_PROPERTY(Keynode("command_state"), ForceCreate(ScType::NodeConstClass))
+  static ScAddr kCommandStateAddr;
+
   SC_PROPERTY(Keynode("command_initiated"), ForceCreate(ScType::NodeConstClass))
   static ScAddr kCommandInitiatedAddr;
 

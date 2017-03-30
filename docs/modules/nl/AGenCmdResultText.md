@@ -3,6 +3,8 @@
 This agent get result text template for a specified command and run [AGenText](AGenText.md) agent
 to generate output text.
 
+**Command class:** `command_generate_cmd_result_text`
+
 **Parameters:**
 
 1. `command instance` - sc-node that designate instance of a command. It should be included into
@@ -57,11 +59,15 @@ then in our sample template `[Tanks for an information]` will be used.
 <div class="note">If there are no specified template for a <code>sc_result_error_...</code>, then
 <code>sc_result_error</code> will be used</div>
 
-<div class="note"> TODO: More complex description </div>
+<div class="note"><b>TODO:</b> More complex description </div>
 
 ### Example
 
+<div class="note"><b>TODO:</b> Add examples</div>
+
 ### Result
+
+Result contains one sc-link with generated text.
 
 Possible result codes:
 
