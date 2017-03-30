@@ -142,7 +142,12 @@ sc_result AApiAiParseUserTextAgent::TryCommandEmit(ScAddr const & actionAddr,
     if (!m_memoryCtx.HelperGenTemplate(templ, templResult, params))
       return SC_RESULT_ERROR_INVALID_STATE;
 
-    ScAgentAction::InitiateCommand(m_memoryCtx, templResult["_command"]);
+    ScAddr const commandAddr = templResult["_command"];
+    ScAddr const edge = m_memoryCtx.CreateEdge(ScType::EdgeAccessConstPosPerm, resultAddr, commandAddr);
+    if (!m_memoryCtx.CreateEdge(ScType::EdgeAccessConstPosPerm, ScKeynodes::GetRrelIndex(0), edge).IsValid())
+      return SC_RESULT_ERROR_INVALID_STATE;
+
+    return SC_RESULT_OK;
   }
 
   return SC_RESULT_NO;
