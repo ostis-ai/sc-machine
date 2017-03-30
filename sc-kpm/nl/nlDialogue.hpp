@@ -19,8 +19,13 @@ class ADialogueProcessMessageAgent : public ScAgent
 {
   SC_CLASS(Agent, Event(Keynodes::msMainNLDialogueInstance, SC_EVENT_ADD_OUTPUT_ARC))
   SC_GENERATED_BODY()
-};
 
-void runTest();
+private:
+  SC_PROPERTY(Keynode("nrel_output_text"), ForceCreate(ScType::NodeConstNoRole))
+  static ScAddr ms_kNrelOutputText;
+
+  SC_PROPERTY(Keynode("command_generate_cmd_result_text"), ForceCreate(ScType::NodeConstClass))
+  static ScAddr ms_kCommandGenCmdResultText;
+};
 
 } // namespace nl

@@ -35,9 +35,6 @@ public:
   SC_PROPERTY(Keynode("nrel_result"), ForceCreate)
   static ScAddr msNrelResult;
 
-  SC_PROPERTY(Keynode("nrel_translation"), ForceCreate)
-  static ScAddr msNrelTranslation;
-
   SC_PROPERTY(Keynode("nrel_item_order"), ForceCreate)
   static ScAddr msNrelItemOrder;
 

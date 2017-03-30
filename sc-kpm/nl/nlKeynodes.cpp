@@ -14,7 +14,6 @@ ScAddr Keynodes::msCmdProcessUserTextMessage;
 ScAddr Keynodes::msCommandInitiated;
 ScAddr Keynodes::msCommandFinished;
 ScAddr Keynodes::msNrelResult;
-ScAddr Keynodes::msNrelTranslation;
 ScAddr Keynodes::msNrelItemOrder;
 ScAddr Keynodes::msNrelAuthor;
 ScAddr Keynodes::msRrelLastItem;
