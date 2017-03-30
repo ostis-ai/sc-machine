@@ -44,7 +44,7 @@ class ScWait
       g_mutex_unlock(&m_mutex);
     }
 
-    bool Wait(uint64_t timeout_ms)
+    bool Wait(uint32_t timeout_ms)
     {
       gint64 endTime;
 
@@ -91,10 +91,12 @@ public:
     m_waitStartDelegate = startDelegate;
   }
 
-  bool Wait(uint64_t timeout_ms = 5000)
+  bool Wait(uint32_t timeout_ms = 5000)
   {
     if (m_waitStartDelegate)
       m_waitStartDelegate();
+
+    SC_ASSERT(timeout_ms < 60000, ("Too big timeout (it should be less then a minute)"));
 
     return m_waiterImpl.Wait(timeout_ms);
   }
@@ -142,7 +144,7 @@ private:
   DelegateCheckFunc m_checkFunc;
 };
 
-/* Implements waiting of 
+/* Implements waiting for action finish
  */
 class ScWaitActionFinished final : public ScWait<ScEventAddInputEdge>
 {

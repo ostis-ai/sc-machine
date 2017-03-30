@@ -87,6 +87,13 @@ public:
    */
   static _SC_EXTERN bool InitiateCommand(ScMemoryContext & ctx, ScAddr const & cmdAddr);
 
+  /* Initiate command and wait until it would be finished
+   * cmdAddr - ScAddr of command instance to initiate
+   * waitTimeOutMS - timeout for a waiting (milliseconds)
+   * Returns true, if command initiated and finished; otherwise returns false (wait timeout)
+   */
+  static _SC_EXTERN bool InitiateCommandWait(ScMemoryContext & ctx, ScAddr const & cmdAddr, uint32_t waitTimeOutMS = 5000);
+
   /* Returns ScAddr of result structure of specified command
    */
   static _SC_EXTERN ScAddr GetCommandResultAddr(ScMemoryContext & ctx, ScAddr const & cmdAddr);

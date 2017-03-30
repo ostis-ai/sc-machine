@@ -7,6 +7,7 @@
 #include "sc_agent.hpp"
 
 #include "../sc_debug.hpp"
+#include "../sc_wait.hpp"
 
 namespace
 {
@@ -154,6 +155,16 @@ bool ScAgentAction::InitiateCommand(ScMemoryContext & ctx, ScAddr const & cmdAdd
     return false;
 
   return ctx.CreateEdge(ScType::EdgeAccessConstPosTemp, ScKeynodes::kCommandInitiatedAddr, cmdAddr).IsValid();
+}
+
+bool ScAgentAction::InitiateCommandWait(ScMemoryContext & ctx, ScAddr const & cmdAddr, uint32_t waitTimeOutMS/* = 5000 */)
+{
+  ScWaitActionFinished waiter(ctx, cmdAddr);
+  waiter.SetOnWaitStartDelegate([&]()
+  {
+    ScAgentAction::InitiateCommand(ctx, cmdAddr);
+  });
+  return waiter.Wait(waitTimeOutMS);
 }
 
 ScAddr ScAgentAction::GetCommandResultAddr(ScMemoryContext & ctx, ScAddr const & cmdAddr)
