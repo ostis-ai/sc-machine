@@ -71,3 +71,19 @@ UNIT_TEST(StringUtils)
   }
   SUBTEST_END()
 }
+
+UNIT_TEST(ScAddr)
+{
+  SUBTEST_START(hash)
+  {
+    sc_addr a;
+    a.offset = 123;
+    a.seg = 654;
+
+    ScAddr const addr1(a);
+    auto const hash = addr1.Hash();
+    ScAddr const addr2(hash);
+    SC_CHECK_EQUAL(addr1, addr2, ());
+  }
+  SUBTEST_END()
+}

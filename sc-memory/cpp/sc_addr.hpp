@@ -30,6 +30,7 @@ public:
 
   explicit ScAddr();
   explicit ScAddr(sc_addr const & addr);
+  explicit ScAddr(HashType const & hash);
 
   bool IsValid() const;
   void Reset();
