@@ -30,5 +30,9 @@ sc_result scpModule::InitializeImpl()
 sc_result scpModule::ShutdownImpl()
 {
     std::cout << "SCP END" << std::endl;
+    SC_AGENT_UNREGISTER(ASCPProcessCreator)
+    SC_AGENT_UNREGISTER(ASCPProcessDestroyer)
+    SC_AGENT_UNREGISTER(ASCPGenOperatorInterpreter)
+
     return SC_RESULT_OK;
 }
