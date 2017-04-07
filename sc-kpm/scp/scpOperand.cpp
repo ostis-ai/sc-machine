@@ -141,10 +141,10 @@ void SCPOperand::resolveOrder(ScAddr modifier)
 
 void SCPOperand::resolveModifiers()
 {
-    ScIterator5Ptr iter = ms_context.Iterator5(SC_TYPE(sc_type_node | sc_type_const), sc_type_arc_pos_const_perm, addr, sc_type_arc_pos_const_perm, SC_TYPE(sc_type_node | sc_type_const));
+    ScIterator3Ptr iter = ms_context.Iterator3(SC_TYPE(sc_type_node | sc_type_const), sc_type_arc_pos_const_perm, arc_addr);
     while (iter->Next())
     {
-        ScAddr modifier = iter->Get(4);
+        ScAddr modifier = iter->Get(0);
         if (ms_context.HelperCheckArc(Keynodes::order_role_relation, modifier, sc_type_arc_pos_const_perm))
         {
             resolveOrder(modifier);
