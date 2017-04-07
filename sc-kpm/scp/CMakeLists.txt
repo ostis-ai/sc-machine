@@ -1,28 +1,10 @@
 set(SCP_SRC "${SC_KPM_ROOT}/scp")
 
-set(SOURCES
-        "scp.cpp"
-        "scpKeynodes.cpp"
-        "scpProcessCreator.cpp"
-        "scpProcessDestroyer.cpp"
-        "scpUtils.cpp"
-        "scpOperand.cpp"
-        "scpOperator.cpp"
-        "scpOperatorStr.cpp"
-        "scpOperatorInterpreter.cpp"
-)
-set(HEADERS
-        "scp.hpp"
-        "scpKeynodes.hpp"
-        "scpProcessCreator.hpp"
-        "scpProcessDestroyer.hpp"
-        "scpUtils.hpp"
-        "scpOperand.hpp"
-        "scpOperator.hpp"
-        "scpOperatorStr.hpp"
-        "scpOperatorInterpreter.hpp"
-)
+file(GLOB_RECURSE SOURCES "*.cpp")
+file(GLOB_RECURSE HEADERS "*.hpp")
 
+set(CMAKE_C_FLAGS_DEBUG "-DSCP_DEBUG")
+set(CMAKE_CXX_FLAGS_DEBUG "-DSCP_DEBUG")
 add_definitions(-DSCP_MATH)
 add_definitions(-DSCP_STRING)
 

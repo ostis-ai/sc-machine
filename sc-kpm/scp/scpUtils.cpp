@@ -125,6 +125,7 @@ void printInfo(ScMemoryContext & ctx, ScAddr const & elemAddr)
     cout << "Total output arcs: " << c_out << endl;
 }
 
+#ifdef SCP_DEBUG
 void logUnknownOperatorTypeError(ScMemoryContext & ctx, ScAddr &addr)
 {
     cout << "SCP Error: Unknown scp-operator type: ";
@@ -138,7 +139,7 @@ void logSCPError(ScMemoryContext & ctx, string text, ScAddr &addr)
     printSystemIdentifier(ctx, addr);
     cout << endl;
 }
-
+#endif
 
 }
 }

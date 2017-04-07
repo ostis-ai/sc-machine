@@ -45,6 +45,7 @@ void printSystemIdentifier(ScMemoryContext & ctx, ScAddr const & elemAddr);
  */
 void printInfo(ScMemoryContext & ctx, ScAddr const & elemAddr);
 
+#ifdef SCP_DEBUG
 /*! Logs error about unknown type of given operator (addr)
  */
 void logUnknownOperatorTypeError(ScMemoryContext & ctx, ScAddr &addr);
@@ -52,6 +53,7 @@ void logUnknownOperatorTypeError(ScMemoryContext & ctx, ScAddr &addr);
 /*! Logs error with text (text) and element addr (addr)
  */
 void logSCPError(ScMemoryContext & ctx, std::string text, ScAddr &addr);
+#endif
 
 }
 }
