@@ -56,6 +56,9 @@ public:
     SC_PROPERTY(Keynode("question_finished_unsuccessfully"), ForceCreate)
     static ScAddr question_finished_unsuccessfully;
 
+    SC_PROPERTY(Keynode("question_finished_with_error"), ForceCreate)
+    static ScAddr question_finished_with_error;
+
     SC_PROPERTY(Keynode("scp_process"), ForceCreate)
     static ScAddr scp_process;
 

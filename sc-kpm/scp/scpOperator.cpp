@@ -41,6 +41,7 @@ sc_result SCPOperator::ResetValues()
 #ifdef SCP_DEBUG
                 Utils::logSCPError(ms_context, "SCP CONST must have FIXED modifier", addr);
 #endif
+                FinishExecutionWithError();
                 return SC_RESULT_ERROR_INVALID_PARAMS;
             }
             (*i)->ResetValue();
@@ -58,6 +59,26 @@ sc_result SCPOperator::Parse()
 sc_result SCPOperator::Execute()
 {
     return SC_RESULT_OK;
+}
+
+void SCPOperator::FinishExecution()
+{
+    ms_context.CreateArc(sc_type_arc_pos_const_perm, Keynodes::question_finished, addr);
+}
+
+void SCPOperator::FinishExecutionSuccessfully()
+{
+    ms_context.CreateArc(sc_type_arc_pos_const_perm, Keynodes::question_finished_successfully, addr);
+}
+
+void SCPOperator::FinishExecutionUnsuccessfully()
+{
+    ms_context.CreateArc(sc_type_arc_pos_const_perm, Keynodes::question_finished_unsuccessfully, addr);
+}
+
+void SCPOperator::FinishExecutionWithError()
+{
+    ms_context.CreateArc(sc_type_arc_pos_const_perm, Keynodes::question_finished_with_error, addr);
 }
 
 SCPOperator::~SCPOperator()

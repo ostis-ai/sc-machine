@@ -23,6 +23,7 @@ ScAddr Keynodes::question_initiated;
 ScAddr Keynodes::question_finished;
 ScAddr Keynodes::question_finished_successfully;
 ScAddr Keynodes::question_finished_unsuccessfully;
+ScAddr Keynodes::question_finished_with_error;
 ScAddr Keynodes::scp_process;
 ScAddr Keynodes::abstract_scp_machine;
 ScAddr Keynodes::nrel_scp_process;

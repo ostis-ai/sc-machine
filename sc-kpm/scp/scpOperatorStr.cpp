@@ -36,6 +36,7 @@ sc_result SCPOperatorStr1::Parse()
             ss << (int)operand->GetOrder();
             Utils::logSCPError(ms_context, ss.str(), addr);
 #endif
+            FinishExecutionWithError();
             return SC_RESULT_ERROR_INVALID_PARAMS;
         }
         else
@@ -67,6 +68,7 @@ sc_result SCPOperatorStr3::Parse()
             ss << (int)operand->GetOrder();
             Utils::logSCPError(ms_context, ss.str(), addr);
 #endif
+            FinishExecutionWithError();
             return SC_RESULT_ERROR_INVALID_PARAMS;
         }
         else
@@ -98,6 +100,7 @@ sc_result SCPOperatorStr5::Parse()
             ss << (int)operand->GetOrder();
             Utils::logSCPError(ms_context, ss.str(), addr);
 #endif
+            FinishExecutionWithError();
             return SC_RESULT_ERROR_INVALID_PARAMS;
         }
         else

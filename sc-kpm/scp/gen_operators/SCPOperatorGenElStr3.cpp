@@ -42,6 +42,7 @@ sc_result SCPOperatorGenElStr3::Execute()
 #ifdef SCP_DEBUG
         Utils::logSCPError(ms_context, "Operand 2 must have ASSIGN modifier", addr);
 #endif
+        FinishExecutionWithError();
         return SC_RESULT_ERROR_INVALID_PARAMS;
     }
     if (operands[1]->GetType().IsNode())
@@ -49,6 +50,7 @@ sc_result SCPOperatorGenElStr3::Execute()
 #ifdef SCP_DEBUG
         Utils::logSCPError(ms_context, "Operand 2 must have ARC type", addr);
 #endif
+        FinishExecutionWithError();
         return SC_RESULT_ERROR_INVALID_PARAMS;
     }
     if (operands[0]->IsFixed())
@@ -58,6 +60,7 @@ sc_result SCPOperatorGenElStr3::Execute()
 #ifdef SCP_DEBUG
             Utils::logSCPError(ms_context, "Operand 1 has modifier FIXED, but has no value", addr);
 #endif
+            FinishExecutionWithError();
             return SC_RESULT_ERROR_INVALID_PARAMS;
         }
         type = type | 0x100;
@@ -69,6 +72,7 @@ sc_result SCPOperatorGenElStr3::Execute()
 #ifdef SCP_DEBUG
             Utils::logSCPError(ms_context, "Operand 3 has modifier FIXED, but has no value", addr);
 #endif
+            FinishExecutionWithError();
             return SC_RESULT_ERROR_INVALID_PARAMS;
         }
         type = type | 0x001;
@@ -81,36 +85,38 @@ sc_result SCPOperatorGenElStr3::Execute()
         elem1 = operands[0]->GetValue();
         elem3 = operands[2]->GetValue();
         operands[1]->SetValue(ms_context.CreateArc(operands[1]->GetType(), elem1, elem3));
-        return SC_RESULT_OK;
+        break;
     }
     case 0x001:
     {
         elem1 = operands[0]->CreateNodeOrLink();
         elem3 = operands[2]->GetValue();
         operands[1]->SetValue(ms_context.CreateArc(operands[1]->GetType(), elem1, elem3));
-        return SC_RESULT_OK;
+        break;
     }
     case 0x100:
     {
         elem1 = operands[0]->GetValue();
         elem3 = operands[2]->CreateNodeOrLink();
         operands[1]->SetValue(ms_context.CreateArc(operands[1]->GetType(), elem1, elem3));
-        return SC_RESULT_OK;
+        break;
     }
     case 0x000:
     {
         elem1 = operands[0]->CreateNodeOrLink();
         elem3 = operands[2]->CreateNodeOrLink();
         operands[1]->SetValue(ms_context.CreateArc(operands[1]->GetType(), elem1, elem3));
-        return SC_RESULT_OK;
+        break;
     }
     default:
 #ifdef SCP_DEBUG
         Utils::logSCPError(ms_context, "Unsupported operand type combination", addr);
 #endif
+        FinishExecutionWithError();
         return SC_RESULT_ERROR_INVALID_PARAMS;
     }
 
+    FinishExecutionSuccessfully();
     return SC_RESULT_OK;
 }
 

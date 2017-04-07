@@ -38,10 +38,13 @@ sc_result SCPOperatorGenEl::Execute()
 #ifdef SCP_DEBUG
         Utils::logSCPError(ms_context, "Operand must have ASSIGN modifier", addr);
 #endif
+        FinishExecutionWithError();
         return SC_RESULT_ERROR_INVALID_PARAMS;
     }
 
     operands[0]->CreateNodeOrLink();
+
+    FinishExecutionSuccessfully();
     return SC_RESULT_OK;
 }
 }
