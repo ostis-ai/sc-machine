@@ -40,17 +40,20 @@ private:
     ScMemoryContext &ms_context;
 
 public:
-    SCPOperand(ScMemoryContext &ctx,ScAddr addr);
+    SCPOperand(ScMemoryContext &ctx_, ScAddr addr_);
     ScAddr GetAddr();
-    ScAddr GetValueAddr();
+    ScAddr GetValue();
     ScType GetType();
     uint8_t GetOrder();
-    bool isFixed();
-    bool isAssign();
-    bool isSCPConst();
-    bool isSCPVar();
-    bool hasSetModifier();
-    bool hasEraseModifier();
+    void ResetValue();
+    void SetValue(ScAddr value);
+    ScAddr CreateNodeOrLink();
+    bool IsFixed();
+    bool IsAssign();
+    bool IsSCPConst();
+    bool IsSCPVar();
+    bool HasSetModifier();
+    bool HasEraseModifier();
 };
 
 }
