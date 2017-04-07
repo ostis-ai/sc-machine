@@ -10,21 +10,20 @@
 #include "sc-memory/cpp/sc_object.hpp"
 #include "sc-memory/cpp/kpm/sc_agent.hpp"
 #include "scpKeynodes.hpp"
+#include "scpOperatorStr.hpp"
 
-#include "scpOperatorInterpreter.generated.hpp"
+#include "scpGenOperatorInterpreter.generated.hpp"
 
 namespace scp
 {
 
-class ASCPOperatorInterpreter : public ScAgent
+class SCPOperatorGenElStr3: public SCPOperatorStr3
 {
-    SC_CLASS(Agent, Event(Keynodes::active_action, SC_EVENT_ADD_OUTPUT_ARC))
-    SC_GENERATED_BODY()
-
 public:
-    SC_PROPERTY(Keynode("sc_agent_of_scp_operator_interpreting"), ForceCreate)
-    static ScAddr msAgentKeynode;
-
+    SCPOperatorGenElStr3(ScMemoryContext &ctx, ScAddr addr);
+    std::string GetTypeName();
+    sc_result Parse();
+    sc_result Execute();
 };
 
 }

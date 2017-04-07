@@ -7,6 +7,7 @@
 #include "scpKeynodes.hpp"
 #include "scpProcessCreator.hpp"
 #include "scpProcessDestroyer.hpp"
+#include "scpGenOperatorInterpreter.hpp"
 
 using namespace scp;
 
@@ -21,6 +22,7 @@ sc_result scpModule::InitializeImpl()
 
     SC_AGENT_REGISTER(ASCPProcessCreator)
     SC_AGENT_REGISTER(ASCPProcessDestroyer)
+    SC_AGENT_REGISTER(ASCPGenOperatorInterpreter)
 
     return SC_RESULT_OK;
 }
