@@ -44,7 +44,7 @@ sc_result SCPOperatorStr1::Parse()
             operands[operand->GetOrder() - 1] = operand;
         }
     }
-    return SC_RESULT_OK;
+    return CheckNullValues();
 }
 
 SCPOperatorStr3::SCPOperatorStr3(ScMemoryContext &ctx_, ScAddr addr_): SCPOperator(ctx_, addr_)
@@ -76,7 +76,7 @@ sc_result SCPOperatorStr3::Parse()
             operands[operand->GetOrder() - 1] = operand;
         }
     }
-    return SC_RESULT_OK;
+    return CheckNullValues();
 }
 
 SCPOperatorStr5::SCPOperatorStr5(ScMemoryContext &ctx_, ScAddr addr_): SCPOperator(ctx_, addr_)
@@ -108,7 +108,7 @@ sc_result SCPOperatorStr5::Parse()
             operands[operand->GetOrder() - 1] = operand;
         }
     }
-    return SC_RESULT_OK;
+    return CheckNullValues();
 }
 
 }

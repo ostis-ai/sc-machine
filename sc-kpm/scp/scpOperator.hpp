@@ -25,6 +25,7 @@ protected:
     ScMemoryContext &ms_context;
 
     sc_result ResetValues();
+    sc_result CheckNullValues();
 
 public:
     SCPOperator(ScMemoryContext &ctx_, ScAddr addr_);

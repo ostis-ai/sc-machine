@@ -50,6 +50,22 @@ sc_result SCPOperator::ResetValues()
     return SC_RESULT_OK;
 }
 
+sc_result SCPOperator::CheckNullValues()
+{
+    for (std::vector<SCPOperand*>::iterator i = operands.begin(); i != operands.end(); ++i)
+    {
+        if (!(*i))
+        {
+#ifdef SCP_DEBUG
+            Utils::logSCPError(ms_context, "One or more operands missed", addr);
+#endif
+            FinishExecutionWithError();
+            return SC_RESULT_ERROR_INVALID_PARAMS;
+        }
+    }
+    return SC_RESULT_OK;
+}
+
 sc_result SCPOperator::Parse()
 {
     std::fill(operands.begin(), operands.end(), nullptr);
@@ -69,16 +85,19 @@ void SCPOperator::FinishExecution()
 void SCPOperator::FinishExecutionSuccessfully()
 {
     ms_context.CreateArc(sc_type_arc_pos_const_perm, Keynodes::question_finished_successfully, addr);
+    FinishExecution();
 }
 
 void SCPOperator::FinishExecutionUnsuccessfully()
 {
     ms_context.CreateArc(sc_type_arc_pos_const_perm, Keynodes::question_finished_unsuccessfully, addr);
+    FinishExecution();
 }
 
 void SCPOperator::FinishExecutionWithError()
 {
     ms_context.CreateArc(sc_type_arc_pos_const_perm, Keynodes::question_finished_with_error, addr);
+    FinishExecution();
 }
 
 SCPOperator::~SCPOperator()
