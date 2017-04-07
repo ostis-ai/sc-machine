@@ -8,6 +8,7 @@
 #include "scpProcessCreator.hpp"
 #include "scpProcessDestroyer.hpp"
 #include "scpGenOperatorInterpreter.hpp"
+#include "scpProgramExecutionSyncronizer.hpp"
 
 using namespace scp;
 
@@ -23,6 +24,7 @@ sc_result scpModule::InitializeImpl()
     SC_AGENT_REGISTER(ASCPProcessCreator)
     SC_AGENT_REGISTER(ASCPProcessDestroyer)
     SC_AGENT_REGISTER(ASCPGenOperatorInterpreter)
+    SC_AGENT_REGISTER(ASCPProgramExecutionSyncronizer)
 
     return SC_RESULT_OK;
 }
@@ -33,6 +35,7 @@ sc_result scpModule::ShutdownImpl()
     SC_AGENT_UNREGISTER(ASCPProcessCreator)
     SC_AGENT_UNREGISTER(ASCPProcessDestroyer)
     SC_AGENT_UNREGISTER(ASCPGenOperatorInterpreter)
+    SC_AGENT_UNREGISTER(ASCPProgramExecutionSyncronizer)
 
     return SC_RESULT_OK;
 }
