@@ -1,9 +1,10 @@
 ## v0.3.1
 
 * Fix templates search error (problems was with triples search order)
-* Implement `AGenText` agent in `kpm/nl` module
-* Implement `AGenCmdTextResult` agent in `kpm/nl` module
+* Implement logging for load extension module problems
+* Remove `nl`, `iot` modules from kpm, because they are project specific (moved to a separate repo)
 * Added `ForEach` function into template search result
+* Added `ForEachIter` functions into `ScMemoryContext`
 
 ## v0.3.0
 
