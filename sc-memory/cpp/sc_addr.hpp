@@ -28,7 +28,7 @@ class _SC_EXTERN ScAddr
 public:
   using HashType = uint64_t;
 
-  explicit ScAddr();
+  ScAddr();
   explicit ScAddr(sc_addr const & addr);
   explicit ScAddr(HashType const & hash);
 

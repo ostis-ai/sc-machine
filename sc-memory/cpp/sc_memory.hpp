@@ -125,7 +125,37 @@ public:
   {
     return new TIterator3<ParamType1, ParamType2, ParamType3>(*this, param1, param2, param3);
   }
+  
+  /* Make iteration by triples, and call fn function for each result.
+   * fn function should have 3 parameters (ScAddr const & source, ScAddr const & edge, ScAddr const & target)
+   */
+  template <typename ParamType1, typename ParamType2, typename ParamType3, typename FnT>
+  void ForEachIter3(ParamType1 const & param1,
+                    ParamType2 const & param2,
+                    ParamType3 const & param3,
+                    FnT && fn)
+  {
+    ScIterator3Ptr it = Iterator3(param1, param2, param3);
+    while (it->Next())
+      fn(it->Get(0), it->Get(1), it->Get(2));
+  }
 
+  /* Make iteration by 5-element constructions, and call fn function for each result.
+   * fn function should have 5 parameters 
+   * (ScAddr const & source, ScAddr const & edge, ScAddr const & target, ScAddr const & attrEdge, ScAddr const & attr)
+   */
+  template <typename ParamType1, typename ParamType2, typename ParamType3, typename ParamType4, typename ParamType5, typename FnT>
+  void ForEachIter5(ParamType1 const & param1,
+                    ParamType2 const & param2,
+                    ParamType3 const & param3,
+                    ParamType4 const & param4,
+                    ParamType5 const & param5,
+                    FnT && fn)
+  {
+    ScIterator5Ptr it = Iterator5(param1, param2, param3, param4, param5);
+    while (it->Next())
+      fn(it->Get(0), it->Get(1), it->Get(2), it->Get(3), it->Get(4));
+  }
 
   /* Trying to reosolve ScAddr by it system identifier. If element with specified identifier doesn't exist
    * and type is not empty, then it would be created with specified type.
