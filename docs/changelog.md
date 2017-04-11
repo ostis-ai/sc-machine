@@ -3,8 +3,9 @@
 * Fix templates search error (problems was with triples search order)
 * Implement logging for load extension module problems
 * Remove `nl`, `iot` modules from kpm, because they are project specific (moved to a separate repo)
-* Added `ForEach` function into template search result
-* Added `ForEachIter` functions into `ScMemoryContext`
+* Add `ForEach` function into template search result
+* Add `ForEachIter` functions into `ScMemoryContext`
+* Add `ScSet` class
 
 ## v0.3.0
 
