@@ -8,14 +8,13 @@
 #include "sc_memory.hpp"
 #include "sc_template.hpp"
 
-ScStruct::ScStruct(ScMemoryContext * ctx, ScAddr const & structAddr)
+ScSet::ScSet(ScMemoryContext * ctx, ScAddr const & structAddr)
   : m_addr(structAddr)
   , m_context(ctx)
-
 {
 }
 
-bool ScStruct::Append(ScAddr const & elAddr)
+bool ScSet::Append(ScAddr const & elAddr)
 {
   SC_ASSERT(m_context, ());
   if (!HasElement(elAddr))
@@ -24,7 +23,7 @@ bool ScStruct::Append(ScAddr const & elAddr)
   return false;
 }
 
-bool ScStruct::Append(ScAddr const & elAddr, ScAddr const & attrAddr)
+bool ScSet::Append(ScAddr const & elAddr, ScAddr const & attrAddr)
 {
   SC_ASSERT(m_context, ());
   if (!HasElement(elAddr))
@@ -44,7 +43,7 @@ bool ScStruct::Append(ScAddr const & elAddr, ScAddr const & attrAddr)
   return false;
 }
 
-bool ScStruct::Remove(ScAddr const & elAddr)
+bool ScSet::Remove(ScAddr const & elAddr)
 {
   SC_ASSERT(m_context, ());
   bool found = false;
@@ -58,19 +57,19 @@ bool ScStruct::Remove(ScAddr const & elAddr)
   return found;
 }
 
-bool ScStruct::HasElement(ScAddr const & elAddr) const
+bool ScSet::HasElement(ScAddr const & elAddr) const
 {
   SC_ASSERT(m_context, ());
   return m_context->HelperCheckEdge(m_addr, elAddr, ScType::EdgeAccessConstPosPerm);
 }
 
-ScStruct & ScStruct::operator << (ScAddr const & elAddr)
+ScSet & ScSet::operator << (ScAddr const & elAddr)
 {
   Append(elAddr);
   return *this;
 }
 
-ScStruct & ScStruct::operator << (ScTemplateGenResult const & res)
+ScSet & ScSet::operator << (ScTemplateGenResult const & res)
 {
   size_t const res_num = res.Size();
   for (size_t i = 0; i < res_num; ++i)
@@ -79,18 +78,18 @@ ScStruct & ScStruct::operator << (ScTemplateGenResult const & res)
   return *this;
 }
 
-ScStruct & ScStruct::operator >> (ScAddr const & elAddr)
+ScSet & ScSet::operator >> (ScAddr const & elAddr)
 {
   Remove(elAddr);
   return *this;
 }
 
-ScAddr const & ScStruct::operator * () const
+ScAddr const & ScSet::operator * () const
 {
   return m_addr;
 }
 
-bool ScStruct::IsEmpty() const
+bool ScSet::IsEmpty() const
 {
   SC_ASSERT(m_context, ());
   ScIterator3Ptr iter = m_context->Iterator3(m_addr, SC_TYPE(sc_type_arc_pos_const_perm), SC_TYPE(0));
