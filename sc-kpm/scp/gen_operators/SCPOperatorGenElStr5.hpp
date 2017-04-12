@@ -12,8 +12,6 @@
 #include "scpKeynodes.hpp"
 #include "scpOperatorStr.hpp"
 
-#include "scpGenOperatorInterpreter.generated.hpp"
-
 namespace scp
 {
 
