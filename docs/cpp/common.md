@@ -69,3 +69,28 @@ ctx.ForEachIter5(
   ... // there is you code
 });
 ```
+
+# HTTP
+
+You can use `ScHttpRequest` class to make requests using `HTTP` protocol:
+```cpp
+...
+
+ScHttpRequest request("http://any.url");
+request.SetType(ScHttpRequest::Type::POST);
+request.SetData("any data");
+
+request.AddHeader("Content-Type: application/json");
+request.AddHeader(...);
+
+request.Perform();
+auto const response = request.GetResponse();
+if (response.IsPtrValid() && response->IsSuccess())
+{
+  auto const & responseStr = response->GetData();
+  // process responseStr
+  return true;
+}
+
+...
+```
