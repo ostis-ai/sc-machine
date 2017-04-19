@@ -8,7 +8,7 @@ add_library (sc-memory SHARED ${SOURCES} ${HEADERS})
 
 include_directories(${GLIB2_INCLUDE_DIRS})
 target_link_libraries(sc-memory ${GLIB2_LIBRARIES})
-
+target_compile_definitions(sc-memory PRIVATE "-DSC_MEMORY_SELF_BUILD")
 
 add_subdirectory(cpp)
 add_subdirectory(test)
