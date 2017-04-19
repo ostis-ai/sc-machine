@@ -40,6 +40,9 @@ set (SC_MEMORY_CPP_SOURCES
             "sc_timer.cpp"
             "sc_types.cpp"
             "kpm/sc_agent.cpp"
+            "http/sc_http.cpp"
+            "http/sc_http_request.cpp"
+            "http/sc_http_response.cpp"
             "utils/sc_log.cpp"
             "utils/sc_lock.cpp"
             "utils/sc_message.cpp"
@@ -69,6 +72,9 @@ set (SC_MEMORY_CPP_SOURCES
             "sc_memory_headers.hpp"
             "sc_debug.hpp"
             "kpm/sc_agent.hpp"
+            "http/sc_http.hpp"
+            "http/sc_http_request.hpp"
+            "http/sc_http_response.hpp"
             "utils/sc_log.hpp"
             "utils/sc_lock.hpp"
             "utils/sc_message.hpp"
@@ -83,9 +89,8 @@ set (SC_MEMORY_CPP_SOURCES
 
 add_library (sc-memory-cpp SHARED ${SC_MEMORY_CPP_SOURCES} ${SOURCES_SCS})
 
-target_link_libraries(sc-memory-cpp sc-memory ${ANTLR_LIB})
+target_link_libraries(sc-memory-cpp sc-memory ${ANTLR_LIB} ${LIBCURL_LIBRARIES})
 sc_codegen_ex(sc-memory-cpp ${SC_MEMORY_CPP_ROOT} "${SC_MEMORY_CPP_ROOT}/generated")
 add_dependencies(sc-memory-cpp sc-memory sc-code-generator SCsParser)
 
-target_compile_definitions(sc-memory PRIVATE "-DSC_MEMORY_SELF_BUILD")
 target_compile_definitions(sc-memory-cpp PRIVATE "-DSC_MEMORY_SELF_BUILD")

@@ -42,7 +42,7 @@ public:
 
   /// TODO: remove and replace by operator * ()
   ScRealAddr const & GetRealAddr() const;
- 
+
 protected:
   ScRealAddr m_realAddr;
 };

@@ -6,7 +6,6 @@
 
 #include "sc_addr.hpp"
 
-
 ScAddr::ScAddr()
 {
   SC_ADDR_MAKE_EMPTY(m_realAddr);

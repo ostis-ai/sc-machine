@@ -6,6 +6,7 @@
 * Add `ForEach` function into template search result
 * Add `ForEachIter` functions into `ScMemoryContext`
 * Add `ScSet` class
+* Add support of http requests
 
 ## v0.3.0
 

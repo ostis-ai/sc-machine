@@ -8,7 +8,10 @@
 #include "sc_keynodes.hpp"
 #include "sc_utils.hpp"
 #include "sc_stream.hpp"
+
 #include "kpm/sc_agent.hpp"
+
+#include "http/sc_http.hpp"
 
 #include "utils/sc_log.hpp"
 
@@ -81,10 +84,12 @@ bool ScMemory::Initialize(sc_memory_params const & params)
 
   g_log_set_default_handler(_logPrintHandler, nullptr);
 
+  ScHttp::Init();
+
   ms_globalContext = sc_memory_initialize(&params);
   
   ScKeynodes::Init();
-  ScAgentInit(true);  
+  ScAgentInit(true);
 
   return ms_globalContext != null_ptr;
 }
@@ -92,7 +97,7 @@ bool ScMemory::Initialize(sc_memory_params const & params)
 void ScMemory::Shutdown(bool saveState /* = true */)
 {
   ScKeynodes::Shutdown();
-
+  
   if (ms_contexts.size() > 0)
   {
     std::stringstream description;
@@ -105,6 +110,8 @@ void ScMemory::Shutdown(bool saveState /* = true */)
 
   sc_memory_shutdown(SC_BOOL(saveState));
   ms_globalContext = 0;
+
+  ScHttp::Shutdown();
 
   g_log_set_default_handler(g_log_default_handler, nullptr);
 }
@@ -396,6 +403,14 @@ bool ScMemoryContext::HelperFindBySystemIdtf(std::string const & sysIdtf, ScAddr
 {
   SC_ASSERT(IsValid(), ());
   return (sc_helper_find_element_by_system_identifier(m_context, sysIdtf.c_str(), (sc_uint32)sysIdtf.size(), &outAddr.m_realAddr) == SC_RESULT_OK);
+}
+
+ScAddr ScMemoryContext::HelperFindBySystemIdtf(std::string const & sysIdtf)
+{
+  ScAddr result;
+  SC_ASSERT(IsValid(), ());
+  sc_helper_find_element_by_system_identifier(m_context, sysIdtf.c_str(), (sc_uint32)sysIdtf.size(), &result.m_realAddr);
+  return result;
 }
 
 bool ScMemoryContext::HelperGenTemplate(ScTemplate const & templ, ScTemplateGenResult & result, ScTemplateGenParams const & params, ScTemplateResultCode * resultCode)
