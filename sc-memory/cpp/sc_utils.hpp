@@ -14,6 +14,22 @@
 #include "sc_types.hpp"
 
 
+// Got it there: https://github.com/mapsme/omim/blob/136f12af3adde05623008f71d07bb996fe5801a5/base/macros.hpp
+#define ARRAY_SIZE(X) sizeof(::my::impl::ArraySize(X))
+
+#define SC_DISALLOW_COPY(className)                             \
+  className(className const &) = delete;                        \
+  className & operator=(className const &) = delete
+
+
+#define SC_DISALLOW_MOVE(className)                             \
+  className(className &&) = delete;                             \
+  className & operator=(className &&) = delete
+
+#define SC_DISALLOW_COPY_AND_MOVE(className)                    \
+  SC_DISALLOW_COPY(className);                                  \
+  SC_DISALLOW_MOVE(className)
+
 // ---------------- Reference counter -----------
 class RefCount
 {
@@ -205,6 +221,7 @@ public:
   _SC_EXTERN static bool EndsWith(std::string const & str, std::string const & pattern, bool lowerCase);
 
   _SC_EXTERN static void SplitFilename(std::string const & qualifiedName, std::string & outBasename, std::string & outPath);
+  _SC_EXTERN static void SplitString(std::string const & str, char delim, StringVector & outList);
 
   _SC_EXTERN static void TrimLeft(std::string & str);
   _SC_EXTERN static void TrimRight(std::string & str);

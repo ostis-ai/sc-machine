@@ -43,6 +43,8 @@ set (SC_MEMORY_CPP_SOURCES
             "http/sc_http.cpp"
             "http/sc_http_request.cpp"
             "http/sc_http_response.cpp"
+            "python/sc_python_interp.cpp"
+            "python/sc_python_module.cpp"
             "utils/sc_log.cpp"
             "utils/sc_lock.cpp"
             "utils/sc_message.cpp"
@@ -75,6 +77,9 @@ set (SC_MEMORY_CPP_SOURCES
             "http/sc_http.hpp"
             "http/sc_http_request.hpp"
             "http/sc_http_response.hpp"
+            "python/sc_python_interp.hpp"
+            "python/sc_python_module.hpp"
+            "utils/sc_cache.hpp"
             "utils/sc_log.hpp"
             "utils/sc_lock.hpp"
             "utils/sc_message.hpp"
@@ -87,9 +92,10 @@ set (SC_MEMORY_CPP_SOURCES
             "scs/scs_traits.hpp"
         )
 
+include_directories(${PYTHON_INCLUDE_DIRS})
 add_library (sc-memory-cpp SHARED ${SC_MEMORY_CPP_SOURCES} ${SOURCES_SCS})
 
-target_link_libraries(sc-memory-cpp sc-memory ${ANTLR_LIB} ${LIBCURL_LIBRARIES})
+target_link_libraries(sc-memory-cpp sc-memory ${ANTLR_LIB} ${LIBCURL_LIBRARIES} ${PYTHON_LIBRARY_RELEASE})
 sc_codegen_ex(sc-memory-cpp ${SC_MEMORY_CPP_ROOT} "${SC_MEMORY_CPP_ROOT}/generated")
 add_dependencies(sc-memory-cpp sc-memory sc-code-generator SCsParser)
 

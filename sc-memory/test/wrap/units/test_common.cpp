@@ -59,6 +59,13 @@ UNIT_TEST(StringUtils)
 
     utils::StringUtils::Trim(empty);
     SC_CHECK_EQUAL(empty, "", ());
+
+    StringVector res;
+    // Do not return empty item after ;
+    utils::StringUtils::SplitString("begin;end;", ';', res);
+    SC_CHECK_EQUAL(res.size(), 2, ());
+    SC_CHECK_EQUAL("begin", res[0], ());
+    SC_CHECK_EQUAL("end", res[1], ());
   }
   SUBTEST_END()
 

@@ -77,6 +77,7 @@ public:
   }
 
   inline bool operator == (ScType const & other) { return (m_realType == other.m_realType); }
+  inline bool operator != (ScType const & other) { return (m_realType != other.m_realType); }
   inline RealType BitAnd(RealType const & inMask) const { return (m_realType & inMask); }
 
   inline ScType operator | (ScType const & other) { return ScType(m_realType | other.m_realType); }

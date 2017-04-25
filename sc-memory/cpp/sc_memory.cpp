@@ -13,6 +13,8 @@
 
 #include "http/sc_http.hpp"
 
+#include "python/sc_python_interp.hpp"
+
 #include "utils/sc_log.hpp"
 
 #include <cstdlib>
@@ -90,12 +92,14 @@ bool ScMemory::Initialize(sc_memory_params const & params)
   
   ScKeynodes::Init();
   ScAgentInit(true);
+  py::ScPythonInterpreter::Initialize("sc-memory");
 
   return ms_globalContext != null_ptr;
 }
 
 void ScMemory::Shutdown(bool saveState /* = true */)
 {
+  py::ScPythonInterpreter::Shutdown();
   ScKeynodes::Shutdown();
   
   if (ms_contexts.size() > 0)

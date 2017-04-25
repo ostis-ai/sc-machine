@@ -68,7 +68,8 @@ public:
   //! Call this function, when you request to destroy real memory context, before destructor calls for this object
   _SC_EXTERN void Destroy();
 
-  std::string const & GetName() const { return m_name; }
+  // returns copy, because of Python wrapper
+  std::string GetName() const { return m_name; }
 
   _SC_EXTERN bool IsValid() const;
 
@@ -85,7 +86,7 @@ public:
 
   _SC_EXTERN ScAddr CreateEdge(ScType const & type, ScAddr const & addrBeg, ScAddr const & addrEnd);
 
-  //! Returns type of sc-element. If there are any error, then returns 0
+  //! Returns type of sc-element. If there are any error, then returns ScType::Unknown
   _SC_EXTERN ScType GetElementType(ScAddr const & addr) const;
 
   /*! Change subtype of sc-element (subtype & sc_type_element_mask == 0).
