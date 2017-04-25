@@ -26,6 +26,7 @@ ScLog * ScLog::GetInstance()
 
 ScLog::ScLog()
   : m_mode(Debug)
+  , m_isMuted(false)
 {
   ASSERT(!ms_instance, ());
   ms_instance = this;
@@ -51,6 +52,9 @@ void ScLog::Shutdown()
 
 void ScLog::Message(ScLog::eType type, std::string const & msg, ScConsole::Color color /*= ScConsole::Color::White*/)
 {
+  if (m_isMuted)
+    return; // do nothing on mute
+
   if (m_mode <= type)
   {
     // get time
@@ -71,6 +75,11 @@ void ScLog::Message(ScLog::eType type, std::string const & msg, ScConsole::Color
     m_fileStream << ss.str() << msg << std::endl;
     m_fileStream.flush();
   }
+}
+
+void ScLog::SetMuted(bool value)
+{
+  m_isMuted = value;
 }
 
 } // namespace utils

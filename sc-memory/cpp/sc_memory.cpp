@@ -119,11 +119,13 @@ void ScMemory::Shutdown(bool saveState /* = true */)
 void ScMemory::LogMute()
 {
   gIsLogMuted = true;
+  utils::ScLog::GetInstance()->SetMuted(true);
 }
 
 void ScMemory::LogUnmute()
 {
   gIsLogMuted = false;
+  utils::ScLog::GetInstance()->SetMuted(false);
 }
 
 void ScMemory::RegisterContext(ScMemoryContext const * ctx)
