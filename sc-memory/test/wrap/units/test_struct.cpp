@@ -11,15 +11,15 @@ UNIT_TEST(struct_common)
 {
   ScMemoryContext ctx(sc_access_lvl_make_min, "struct_common");
 
-  ScAddr structAddr = ctx.CreateNode(sc_type_node_struct | sc_type_const);
+  ScAddr structAddr = ctx.CreateNode(ScType::NodeConstStruct);
   SC_CHECK(structAddr.IsValid(), ());
 
   ScStruct st(&ctx, structAddr);
 
-  ScAddr const addr1 = ctx.CreateNode(sc_type_node_class);
+  ScAddr const addr1 = ctx.CreateNode(ScType::NodeConstClass);
   SC_CHECK(addr1.IsValid(), ());
 
-  ScAddr const addr2 = ctx.CreateNode(sc_type_node_material);
+  ScAddr const addr2 = ctx.CreateNode(ScType::NodeConstMaterial);
   SC_CHECK(addr2.IsValid(), ());
 
   st << addr1 << addr2;
@@ -38,7 +38,7 @@ UNIT_TEST(struct_common)
   SC_CHECK(st.IsEmpty(), ());
 
   // attributes
-  ScAddr const attrAddr = ctx.CreateNode(sc_type_node_role);
+  ScAddr const attrAddr = ctx.CreateNode(ScType::NodeConstRole);
   SC_CHECK(attrAddr.IsValid(), ());
 
   SC_CHECK(st.Append(addr1, attrAddr), ());

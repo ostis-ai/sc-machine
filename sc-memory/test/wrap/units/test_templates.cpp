@@ -149,14 +149,14 @@ UNIT_TEST(templates_common)
       size_t const testCount = 10;
       ScAddrVector nodes, edges;
 
-      ScAddr addrSrc = ctx.CreateNode(sc_type_const);
+      ScAddr addrSrc = ctx.CreateNode(ScType::NodeConst);
       SC_CHECK(addrSrc.IsValid(), ());
       for (size_t i = 0; i < testCount; ++i)
       {
-        ScAddr const addrTrg = ctx.CreateNode(sc_type_const);
+        ScAddr const addrTrg = ctx.CreateNode(ScType::NodeConst);
         SC_CHECK(addrTrg.IsValid(), ());
 
-        ScAddr const addrEdge = ctx.CreateEdge(sc_type_arc_pos_const_perm, addrSrc, addrTrg);
+        ScAddr const addrEdge = ctx.CreateEdge(ScType::EdgeAccessConstPosPerm, addrSrc, addrTrg);
         SC_CHECK(addrEdge.IsValid(), ());
 
         nodes.push_back(addrTrg);
@@ -223,9 +223,9 @@ UNIT_TEST(templates_common)
 
   SUBTEST_START(template_params_correct)
   {
-    ScAddr const addrConst = ctx.CreateNode(*ScType::NodeConst);
-    ScAddr const addrTest3 = ctx.CreateNode(*ScType::NodeConstTuple);
-    ScAddr const addrTest6 = ctx.CreateNode(*ScType::NodeConstClass);
+    ScAddr const addrConst = ctx.CreateNode(ScType::NodeConst);
+    ScAddr const addrTest3 = ctx.CreateNode(ScType::NodeConstTuple);
+    ScAddr const addrTest6 = ctx.CreateNode(ScType::NodeConstClass);
 
     ScTemplate templ;
 
@@ -264,9 +264,9 @@ UNIT_TEST(templates_common)
 
   SUBTEST_START(template_params_invalid)
   {
-    ScAddr const addrConst = ctx.CreateNode(*ScType::NodeConst);
-    ScAddr const addrTest3 = ctx.CreateNode(*ScType::NodeConstTuple);
-    ScAddr const addrEdge2 = ctx.CreateEdge(*ScType::EdgeAccessConstPosPerm, addrConst, addrTest3);
+    ScAddr const addrConst = ctx.CreateNode(ScType::NodeConst);
+    ScAddr const addrTest3 = ctx.CreateNode(ScType::NodeConstTuple);
+    ScAddr const addrEdge2 = ctx.CreateEdge(ScType::EdgeAccessConstPosPerm, addrConst, addrTest3);
 
     ScTemplate templ;
     templ
@@ -414,7 +414,7 @@ UNIT_TEST(templates_2)
   *
   * scs: x _-> _z:: _y;; _s _-> x;;
   */
-  ScAddr templateAddr = ctx.CreateNode(sc_type_const | sc_type_node_struct);
+  ScAddr templateAddr = ctx.CreateNode(ScType::NodeConstStruct);
   SC_CHECK(templateAddr.IsValid(), ());
 
   ScStruct templStruct(&ctx, templateAddr);
@@ -423,27 +423,27 @@ UNIT_TEST(templates_2)
 
     ScAddr _yAddr, _zAddr, _sAddr;
 
-    xAddr = ctx.CreateNode(sc_type_const | sc_type_node_material);
+    xAddr = ctx.CreateNode(ScType::NodeConstMaterial);
     SC_CHECK(xAddr.IsValid(), ());
     SC_CHECK(ctx.HelperSetSystemIdtf("x", xAddr), ());
 
-    _yAddr = ctx.CreateNode(sc_type_var);
+    _yAddr = ctx.CreateNode(ScType::Var);
     SC_CHECK(_yAddr.IsValid(), ());
     SC_CHECK(ctx.HelperSetSystemIdtf("_y", _yAddr), ());
 
-    _zAddr = ctx.CreateNode(sc_type_var | sc_type_node_role);
+    _zAddr = ctx.CreateNode(ScType::NodeVarRole);
     SC_CHECK(_zAddr.IsValid(), ());
     SC_CHECK(ctx.HelperSetSystemIdtf("_z", _zAddr), ());
 
-    _sAddr = ctx.CreateNode(sc_type_node_class | sc_type_var);
+    _sAddr = ctx.CreateNode(ScType::NodeVarClass);
     SC_CHECK(_sAddr.IsValid(), ());
     SC_CHECK(ctx.HelperSetSystemIdtf("_s", _sAddr), ());
 
-    ScAddr xyAddr = ctx.CreateEdge(sc_type_arc_access | sc_type_var, xAddr, _yAddr);
+    ScAddr xyAddr = ctx.CreateEdge(ScType::EdgeAccessVarPosPerm, xAddr, _yAddr);
     SC_CHECK(xyAddr.IsValid(), ());
-    ScAddr zxyAddr = ctx.CreateEdge(sc_type_arc_access | sc_type_var, _zAddr, xyAddr);
+    ScAddr zxyAddr = ctx.CreateEdge(ScType::EdgeAccessVarPosPerm, _zAddr, xyAddr);
     SC_CHECK(zxyAddr.IsValid(), ());
-    ScAddr sxAddr = ctx.CreateEdge(sc_type_arc_access | sc_type_var, _sAddr, xAddr);
+    ScAddr sxAddr = ctx.CreateEdge(ScType::EdgeAccessVarPosPerm, _sAddr, xAddr);
     SC_CHECK(sxAddr.IsValid(), ());
 
     // append created elements into struct
@@ -457,20 +457,20 @@ UNIT_TEST(templates_2)
   {
     ScAddr yAddr, zAddr, sAddr;
 
-    yAddr = ctx.CreateNode(sc_type_const);
+    yAddr = ctx.CreateNode(ScType::Const);
     SC_CHECK(yAddr.IsValid(), ());
 
-    zAddr = ctx.CreateNode(sc_type_const | sc_type_node_role);
+    zAddr = ctx.CreateNode(ScType::NodeConstRole);
     SC_CHECK(zAddr.IsValid(), ());
 
-    sAddr = ctx.CreateNode(sc_type_node_class | sc_type_const);
+    sAddr = ctx.CreateNode(ScType::NodeConstClass);
     SC_CHECK(sAddr.IsValid(), ());
 
-    ScAddr xyAddr = ctx.CreateEdge(sc_type_arc_pos_const_perm, xAddr, yAddr);
+    ScAddr xyAddr = ctx.CreateEdge(ScType::EdgeAccessConstPosPerm, xAddr, yAddr);
     SC_CHECK(xyAddr.IsValid(), ());
-    ScAddr zxyAddr = ctx.CreateEdge(sc_type_arc_pos_const_perm, zAddr, xyAddr);
+    ScAddr zxyAddr = ctx.CreateEdge(ScType::EdgeAccessConstPosPerm, zAddr, xyAddr);
     SC_CHECK(zxyAddr.IsValid(), ());
-    ScAddr sxAddr = ctx.CreateEdge(sc_type_arc_pos_const_perm, sAddr, xAddr);
+    ScAddr sxAddr = ctx.CreateEdge(ScType::EdgeAccessConstPosPerm, sAddr, xAddr);
     SC_CHECK(sxAddr.IsValid(), ());
 
 
@@ -556,29 +556,29 @@ UNIT_TEST(template_search_in_struct)
   * scs: x _-> _z:: _y;;
   */
 
-  ScAddr templateAddr = ctx.CreateNode(*ScType::NodeConstStruct);
+  ScAddr templateAddr = ctx.CreateNode(ScType::NodeConstStruct);
   SC_CHECK(templateAddr.IsValid(), ());
 
   ScAddr xAddr, _yAddr, _zAddr, _xyEdgeAddr, _zxyEdgeAddr;
   ScStruct templStruct(&ctx, templateAddr);
   {
-    xAddr = ctx.CreateNode(*ScType::NodeConst);
+    xAddr = ctx.CreateNode(ScType::NodeConst);
     SC_CHECK(xAddr.IsValid(), ());
     SC_CHECK(ctx.HelperSetSystemIdtf("x", xAddr), ());
 
-    _yAddr = ctx.CreateNode(*ScType::NodeVar);
+    _yAddr = ctx.CreateNode(ScType::NodeVar);
     SC_CHECK(_yAddr.IsValid(), ());
     SC_CHECK(ctx.HelperSetSystemIdtf("_y", _yAddr), ());
 
-    _zAddr = ctx.CreateNode(*ScType::NodeVar);
+    _zAddr = ctx.CreateNode(ScType::NodeVar);
     SC_CHECK(_zAddr.IsValid(), ());
     SC_CHECK(ctx.HelperSetSystemIdtf("_z", _zAddr), ());
 
-    _xyEdgeAddr = ctx.CreateEdge(*ScType::EdgeAccessVarPosPerm, xAddr, _yAddr);
+    _xyEdgeAddr = ctx.CreateEdge(ScType::EdgeAccessVarPosPerm, xAddr, _yAddr);
     SC_CHECK(_xyEdgeAddr.IsValid(), ());
     SC_CHECK(ctx.HelperSetSystemIdtf("_xyEdge", _xyEdgeAddr), ());
 
-    _zxyEdgeAddr = ctx.CreateEdge(*ScType::EdgeAccessVarPosPerm, _zAddr, _xyEdgeAddr);
+    _zxyEdgeAddr = ctx.CreateEdge(ScType::EdgeAccessVarPosPerm, _zAddr, _xyEdgeAddr);
     SC_CHECK(_zxyEdgeAddr.IsValid(), ());
     SC_CHECK(ctx.HelperSetSystemIdtf("_zxyEdge", _zxyEdgeAddr), ());
 
@@ -589,7 +589,7 @@ UNIT_TEST(template_search_in_struct)
   SC_CHECK(ctx.HelperBuildTemplate(templ, templateAddr), ());
 
   // create text struct
-  ScAddr testStructAddr = ctx.CreateNode(*ScType::NodeConstStruct);
+  ScAddr testStructAddr = ctx.CreateNode(ScType::NodeConstStruct);
   SC_CHECK(testStructAddr.IsValid(), ());
 
   /*   y ---> u
@@ -608,34 +608,34 @@ UNIT_TEST(template_search_in_struct)
   {
     txAddr = xAddr;
 
-    tyAddr = ctx.CreateNode(*ScType::NodeConst);
+    tyAddr = ctx.CreateNode(ScType::NodeConst);
     SC_CHECK(tyAddr.IsValid(), ());
 
-    tgAddr = ctx.CreateNode(*ScType::NodeConst);
+    tgAddr = ctx.CreateNode(ScType::NodeConst);
     SC_CHECK(tgAddr.IsValid(), ());
 
-    tuAddr = ctx.CreateNode(*ScType::NodeConst);
+    tuAddr = ctx.CreateNode(ScType::NodeConst);
     SC_CHECK(tuAddr.IsValid(), ());
 
-    tzAddr = ctx.CreateNode(*ScType::NodeConst);
+    tzAddr = ctx.CreateNode(ScType::NodeConst);
     SC_CHECK(tzAddr.IsValid(), ());
 
-    tsAddr = ctx.CreateNode(*ScType::NodeConst);
+    tsAddr = ctx.CreateNode(ScType::NodeConst);
     SC_CHECK(tsAddr.IsValid(), ());
 
-    tyuEdgeAddr = ctx.CreateEdge(*ScType::EdgeAccessConstPosPerm, tyAddr, tuAddr);
+    tyuEdgeAddr = ctx.CreateEdge(ScType::EdgeAccessConstPosPerm, tyAddr, tuAddr);
     SC_CHECK(tyuEdgeAddr.IsValid(), ());
 
-    txyEdgeAddr = ctx.CreateEdge(*ScType::EdgeAccessConstPosPerm, txAddr, tyAddr);
+    txyEdgeAddr = ctx.CreateEdge(ScType::EdgeAccessConstPosPerm, txAddr, tyAddr);
     SC_CHECK(txyEdgeAddr.IsValid(), ());
 
-    txgEdgeAddr = ctx.CreateEdge(*ScType::EdgeAccessConstPosPerm, txAddr, tgAddr);
+    txgEdgeAddr = ctx.CreateEdge(ScType::EdgeAccessConstPosPerm, txAddr, tgAddr);
     SC_CHECK(txgEdgeAddr.IsValid(), ());
 
-    tzxyEdgeAddr = ctx.CreateEdge(*ScType::EdgeAccessConstPosPerm, tzAddr, txyEdgeAddr);
+    tzxyEdgeAddr = ctx.CreateEdge(ScType::EdgeAccessConstPosPerm, tzAddr, txyEdgeAddr);
     SC_CHECK(tzxyEdgeAddr.IsValid(), ());
 
-    tsxgEdgeAddr = ctx.CreateEdge(*ScType::EdgeAccessConstPosPerm, tsAddr, txgEdgeAddr);
+    tsxgEdgeAddr = ctx.CreateEdge(ScType::EdgeAccessConstPosPerm, tsAddr, txgEdgeAddr);
     SC_CHECK(tsxgEdgeAddr.IsValid(), ());
 
     testStruct << tyAddr << txAddr << tgAddr
@@ -647,9 +647,9 @@ UNIT_TEST(template_search_in_struct)
 
   // add extra edges that not included into struct
   // scs: x -> t: y;;
-  ScAddr edge1 = ctx.CreateEdge(*ScType::EdgeAccessConstPosPerm, txAddr, tyAddr);
+  ScAddr edge1 = ctx.CreateEdge(ScType::EdgeAccessConstPosPerm, txAddr, tyAddr);
   SC_CHECK(edge1.IsValid(), ());
-  ScAddr edge2 = ctx.CreateEdge(*ScType::EdgeAccessConstPosPerm, tzAddr, edge1);
+  ScAddr edge2 = ctx.CreateEdge(ScType::EdgeAccessConstPosPerm, tzAddr, edge1);
   SC_CHECK(edge2.IsValid(), ());
 
   {

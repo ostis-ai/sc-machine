@@ -215,10 +215,10 @@ bool ScMemoryContext::EraseElement(ScAddr const & addr)
   return sc_memory_element_free(m_context, *addr) == SC_RESULT_OK;
 }
 
-ScAddr ScMemoryContext::CreateNode(sc_type type)
+ScAddr ScMemoryContext::CreateNode(ScType const & type)
 {
   SC_ASSERT(IsValid(), ());
-  return ScAddr(sc_memory_node_new(m_context, type));
+  return ScAddr(sc_memory_node_new(m_context, *type));
 }
 
 ScAddr ScMemoryContext::CreateLink()
@@ -229,13 +229,13 @@ ScAddr ScMemoryContext::CreateLink()
 
 ScAddr ScMemoryContext::CreateArc(sc_type type, ScAddr const & addrBeg, ScAddr const & addrEnd)
 {
-  return CreateEdge(type, addrBeg, addrEnd);
+  return CreateEdge(ScType(type), addrBeg, addrEnd);
 }
 
-ScAddr ScMemoryContext::CreateEdge(sc_type type, ScAddr const & addrBeg, ScAddr const & addrEnd)
+ScAddr ScMemoryContext::CreateEdge(ScType const & type, ScAddr const & addrBeg, ScAddr const & addrEnd)
 {
   SC_ASSERT(IsValid(), ());
-  return ScAddr(sc_memory_arc_new(m_context, type, *addrBeg, *addrEnd));
+  return ScAddr(sc_memory_arc_new(m_context, *type, *addrBeg, *addrEnd));
 }
 
 ScType ScMemoryContext::GetElementType(ScAddr const & addr) const

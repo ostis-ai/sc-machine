@@ -53,16 +53,16 @@ UNIT_TEST(events_common)
     ScAddr addr;
     auto const CreateNode = [&ctx, &addr]()
     {
-      addr = ctx.CreateNode(0);
+      addr = ctx.CreateNode(ScType::Unknown);
       SC_CHECK(addr.IsValid(), ());
     };
 
     auto const emitEvent = [&ctx, &addr]()
     {
-      ScAddr const addr2 = ctx.CreateNode(0);
+      ScAddr const addr2 = ctx.CreateNode(ScType::Unknown);
       SC_CHECK(addr2.IsValid(), ());
 
-      ScAddr const edge = ctx.CreateEdge(*ScType::EdgeAccess, addr2, addr);
+      ScAddr const edge = ctx.CreateEdge(ScType::EdgeAccess, addr2, addr);
       SC_CHECK(edge.IsValid(), ());
     };
 
@@ -75,16 +75,16 @@ UNIT_TEST(events_common)
     ScAddr addr;
     auto const CreateNode = [&ctx, &addr]()
     {
-      addr = ctx.CreateNode(0);
+      addr = ctx.CreateNode(ScType::Unknown);
       SC_CHECK(addr.IsValid(), ());
     };
 
     auto const emitEvent = [&ctx, &addr]()
     {
-      ScAddr const addr2 = ctx.CreateNode(0);
+      ScAddr const addr2 = ctx.CreateNode(ScType::Unknown);
       SC_CHECK(addr2.IsValid(), ());
 
-      ScAddr const edge = ctx.CreateEdge(*ScType::EdgeAccess, addr, addr2);
+      ScAddr const edge = ctx.CreateEdge(ScType::EdgeAccess, addr, addr2);
       SC_CHECK(edge.IsValid(), ());
     };
 
@@ -94,13 +94,13 @@ UNIT_TEST(events_common)
 
   SUBTEST_START(ScEventRemoveInputEdge)
   {
-    ScAddr const addr = ctx.CreateNode(0);
+    ScAddr const addr = ctx.CreateNode(ScType::Unknown);
     SC_CHECK(addr.IsValid(), ());
 
-    ScAddr const addr2 = ctx.CreateNode(0);
+    ScAddr const addr2 = ctx.CreateNode(ScType::Unknown);
     SC_CHECK(addr2.IsValid(), ());
 
-    ScAddr const edge = ctx.CreateEdge(*ScType::EdgeAccess, addr, addr2);
+    ScAddr const edge = ctx.CreateEdge(ScType::EdgeAccess, addr, addr2);
     SC_CHECK(edge.IsValid(), ());
 
     auto const prepare = []() {};
@@ -115,13 +115,13 @@ UNIT_TEST(events_common)
 
   SUBTEST_START(ScEventRemoveOutputEdge)
   {
-    ScAddr const addr = ctx.CreateNode(0);
+    ScAddr const addr = ctx.CreateNode(ScType::Unknown);
     SC_CHECK(addr.IsValid(), ());
 
-    ScAddr const addr2 = ctx.CreateNode(0);
+    ScAddr const addr2 = ctx.CreateNode(ScType::Unknown);
     SC_CHECK(addr2.IsValid(), ());
 
-    ScAddr const edge = ctx.CreateEdge(*ScType::EdgeAccess, addr, addr2);
+    ScAddr const edge = ctx.CreateEdge(ScType::EdgeAccess, addr, addr2);
     SC_CHECK(edge.IsValid(), ());
 
     auto const prepare = []() {};
@@ -153,7 +153,7 @@ UNIT_TEST(events_common)
 
   SUBTEST_START(ScEventEraseElement)
   {
-    ScAddr const addr = ctx.CreateNode(0);
+    ScAddr const addr = ctx.CreateNode(ScType::Unknown);
     SC_CHECK(addr.IsValid(), ());
 
     auto const prepare = []() {};
@@ -172,7 +172,7 @@ UNIT_TEST(events_destroy_order)
 {
   ScMemoryContext * ctx = new ScMemoryContext(sc_access_lvl_make_min, "events_destroy_order");
 
-  ScAddr const node = ctx->CreateNode(0);
+  ScAddr const node = ctx->CreateNode(ScType::Unknown);
   SC_CHECK(node.IsValid(), ());
 
   ScEventAddOutputEdge * evt = new ScEventAddOutputEdge(*ctx, node,

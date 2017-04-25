@@ -13,15 +13,15 @@ UNIT_TEST(codegen_keynodes)
 {
   ScMemoryContext ctx(sc_access_lvl_make_min, "codegen_keynodes");
 
-  ScAddr addr1 = ctx.CreateNode(sc_type_const);
+  ScAddr addr1 = ctx.CreateNode(ScType::Const);
   SC_CHECK(addr1.IsValid(), ());
   SC_CHECK(ctx.HelperSetSystemIdtf("test_keynode1", addr1), ());
 
-  ScAddr addr2 = ctx.CreateNode(sc_type_var);
+  ScAddr addr2 = ctx.CreateNode(ScType::Var);
   SC_CHECK(addr2.IsValid(), ());
   SC_CHECK(ctx.HelperSetSystemIdtf("test_keynode2", addr2), ());
 
-  ScAddr addr3 = ctx.CreateNode(sc_type_var);
+  ScAddr addr3 = ctx.CreateNode(ScType::Var);
   SC_CHECK(addr3.IsValid(), ());
   SC_CHECK(ctx.HelperSetSystemIdtf("test_keynode3", addr3), ());
 

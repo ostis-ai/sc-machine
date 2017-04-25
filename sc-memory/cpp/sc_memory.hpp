@@ -59,6 +59,9 @@ public:
   _SC_EXTERN explicit ScMemoryContext(sc_uint8 accessLevels = 0, std::string const & name = "");
   _SC_EXTERN ~ScMemoryContext();
 
+  // Disable object copying
+  ScMemoryContext & operator = (ScMemoryContext const & other) = delete;
+
   sc_memory_context const * operator * () const { return m_context; }
   sc_memory_context const * GetRealContext() const { return m_context; }
 
@@ -74,13 +77,13 @@ public:
   //! Erase element from sc-memory and returns true on success; otherwise returns false.
   _SC_EXTERN bool EraseElement(ScAddr const & addr);
 
-  _SC_EXTERN ScAddr CreateNode(sc_type type);
+  _SC_EXTERN ScAddr CreateNode(ScType const & type);
   _SC_EXTERN ScAddr CreateLink();
 
   SC_DEPRECATED(0.3.0, "Use ScMemoryContext::createEdge instead.")
   _SC_EXTERN ScAddr CreateArc(sc_type type, ScAddr const & addrBeg, ScAddr const & addrEnd);
 
-  _SC_EXTERN ScAddr CreateEdge(sc_type type, ScAddr const & addrBeg, ScAddr const & addrEnd);
+  _SC_EXTERN ScAddr CreateEdge(ScType const & type, ScAddr const & addrBeg, ScAddr const & addrEnd);
 
   //! Returns type of sc-element. If there are any error, then returns 0
   _SC_EXTERN ScType GetElementType(ScAddr const & addr) const;
@@ -177,11 +180,6 @@ public:
   _SC_EXTERN bool HelperSearchTemplate(ScTemplate const & templ, ScTemplateSearchResult & result);
   _SC_EXTERN bool HelperSearchTemplateInStruct(ScTemplate const & templ, ScAddr const & scStruct, ScTemplateSearchResult & result);
   _SC_EXTERN bool HelperBuildTemplate(ScTemplate & templ, ScAddr const & templAddr);
-
-private:
-  // Disable object copying
-  ScMemoryContext(ScMemoryContext const & other) {}
-  ScMemoryContext & operator = (ScMemoryContext const & other) { return *this; }
 
 private:
   sc_memory_context * m_context;
