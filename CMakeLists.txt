@@ -54,8 +54,8 @@ endif()
 
 # find dependencies
 
-find_package(PythonLibs 2.7 REQUIRED)
-message (${PYTHONLIBS_VERSION_STRING})
+find_package(PythonLibs 3.6 REQUIRED)
+message ("Python version: ${PYTHONLIBS_VERSION_STRING}")
 if (${UNIX})
 
     set (ANTLR_LIB antlr3c)
@@ -122,6 +122,11 @@ elseif (${WIN32})
     set (LIBCURL_INCLUDE_DIRS "${LIBCURL_PATH}/include")
     set (LIBCURL_LIBRARIES "${LIBCURL_PATH}/lib/libcurl.lib" "WSock32.lib" "Ws2_32.lib")
 
+    set (BOOST_RUNTIME_PATH "${SC_MACHINE_THIRDPARTY_PATH}/boost")
+    set (BOOST_PYTHON_LIBRARY_RELEASE "${BOOST_RUNTIME_PATH}/boost_python3-vc140-mt-1_64.lib")
+    set (BOOST_PYTHON_LIBRARY_DEBUG "${BOOST_RUNTIME_PATH}/boost_python3-vc140-mt-gd-1_64.lib")
+    
+
     include_directories("${SC_MACHINE_ANTRL_DIR}/c"
                         "${SC_MACHINE_ANTRL_DIR}/cpp"
                         "${BOOST_PATH}/include"
@@ -137,7 +142,6 @@ elseif (${WIN32})
                      "${PACKAGES_PATH}/boost_system-${MSVC_SUFFIX}.${BOOST_VERSION}/lib/native/address-model-64/lib/"
                      "${PACKAGES_PATH}/boost_program_options-${MSVC_SUFFIX}.${BOOST_VERSION}/lib/native/address-model-64/lib/"
                      "${PACKAGES_PATH}/boost_regex-${MSVC_SUFFIX}.${BOOST_VERSION}/lib/native/address-model-64/lib/"
-                     "${PACKAGES_PATH}/boost_python-${MSVC_SUFFIX}.${BOOST_VERSION}/lib/native/address-model-64/lib/"
                      )
 
     
@@ -148,7 +152,7 @@ elseif (${WIN32})
         set (REDIS_LIBRARIES "hiredis.vc140.lib" "Win32_Interop.vc140.lib" "WSock32.lib" "Ws2_32.lib")
     endif()
     
-    add_definitions(-DSC_PLATFORM_WIN -DHIREDIS_WIN)
+    add_definitions(-DSC_PLATFORM_WIN -DHIREDIS_WIN -DBOOST_PYTHON_NO_LIB)
 
     # copy runtime libraries
     set (GLIB_RUNTIME_PATH "${PACKAGES_PATH}/glib.redist.2.36.2.11/build/native/bin/v110/x64/Release/dynamic")
@@ -168,6 +172,8 @@ elseif (${WIN32})
             "${LIBCURL_RUNTIME_PATH}/libcurl.dll"
             "${LIBCURL_RUNTIME_PATH}/libeay32.dll"
             "${LIBCURL_RUNTIME_PATH}/ssleay32.dll"
+            "${BOOST_RUNTIME_PATH}/boost_python3-vc140-mt-1_64.dll"
+            "${BOOST_RUNTIME_PATH}/boost_python3-vc140-mt-gd-1_64.dll"
             )
     file(COPY ${WIN_RUNTIME_LIBRARIES} DESTINATION "${SC_BIN_PATH}")
 

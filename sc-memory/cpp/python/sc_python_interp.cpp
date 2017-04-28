@@ -1,5 +1,8 @@
+
 #include "sc_python_interp.hpp"
 #include "sc_python_module.hpp"
+
+#include "sc_python_includes.hpp"
 
 #include "../sc_debug.hpp"
 #include "../sc_utils.hpp"
@@ -7,7 +10,11 @@
 #include "../utils/sc_cache.hpp"
 
 #include <boost/filesystem.hpp>
-#include <boost/python/detail/wrap_python.hpp>
+
+
+
+namespace bp = boost::python;
+
 
 extern "C"
 {
@@ -27,7 +34,7 @@ struct PyObjectWrap
   {
     if (m_object)
     {
-      Py_DECREF(m_object);
+      Py_XDECREF(m_object);
       m_object = nullptr;
     }
   }
@@ -73,26 +80,24 @@ namespace py
 {
 
 bool ScPythonInterpreter::ms_isInitialized = false;
-std::string ScPythonInterpreter::ms_name;
+std::wstring ScPythonInterpreter::ms_name;
 ScPythonInterpreter::ModulesMap ScPythonInterpreter::ms_foundModules;
 ScPythonInterpreter::ModulePathSet ScPythonInterpreter::ms_modulePaths;
 
 PyThreadState * gMainThreadState = nullptr;
 
-// cache for a compiled code
-utils::Cache<std::string, PyObjectWrap> gCodeCache(10);
-
 bool ScPythonInterpreter::Initialize(std::string const & name)
 {
   SC_ASSERT(!ms_isInitialized, ("You can't initialize this class twicely."));
-  ms_name = name;
+  ms_name.assign(name.begin(), name.end());
 
   // TODO: more clear solution
-  Py_SetProgramName((char*)ms_name.c_str());
+  Py_SetProgramName((wchar_t*)ms_name.c_str());
   Py_Initialize();
-  //PyEval_InitThreads();
-  //gMainThreadState = PyThreadState_Get();
-  //PyEval_ReleaseLock();
+  
+  PyEval_InitThreads();
+  gMainThreadState = PyThreadState_Get();
+  PyEval_ReleaseLock();
 
   ScPythonMemoryModule::Initialize();
 
@@ -120,11 +125,6 @@ void ScPythonInterpreter::RunScript(std::string const & scriptName)
                        "Can't find " << scriptName << " module");
   }
 
-  bool found = false;
-  PyObjectWrap & wrap = gCodeCache.Find(scriptName, found);
-  if (found)
-    wrap.Clear();
-
   boost::filesystem::path p(it->second);
   p /= it->first;
   std::string const filePath = p.string();
@@ -136,26 +136,31 @@ void ScPythonInterpreter::RunScript(std::string const & scriptName)
   // now need to compile this file
   PyCompilerFlags flags;
   flags.cf_flags = 0;
-  PyObject * codeObj = Py_CompileStringFlags(fileContent.c_str(), filePath.c_str(), Py_file_input, &flags);
-  if (codeObj == nullptr)
+  PyObjectWrap codeObj(Py_CompileStringFlags(fileContent.c_str(), filePath.c_str(), Py_file_input, &flags));
+  if (*codeObj == nullptr)
   {
     PyErr_Print();
     SC_THROW_EXCEPTION(utils::ExceptionParseError,
                        "Can't parse file " << filePath);
   }
 
-  PyObjectWrap globals(PyDict_New());
-  PyDict_SetItemString(*globals, "__builtins__", PyEval_GetBuiltins());
-
   PyEvalLock lock;
 
-  PyObjectWrap resultObj(PyEval_EvalCode((PyCodeObject*)codeObj, *globals, nullptr));
+  /*PyObjectWrap globals(PyDict_New());
+  PyDict_SetItemString(*globals, "__builtins__", PyEval_GetBuiltins());*/
+  //PyObjectWrap globalsDict(PyDict_New());
+  //PyDict_SetItemString(*globals, "__dict__", *globalsDict);
+
+  bp::object mainModule((bp::handle<>(bp::borrowed(PyImport_AddModule("__main__")))));
+  bp::object mainNamespace = mainModule.attr("__dict__");
+
+  PyObjectWrap resultObj(PyEval_EvalCode(*codeObj, mainNamespace.ptr(), mainNamespace.ptr()));
   if (!resultObj.IsValid())
   {
     PyErr_Print();
     SC_THROW_EXCEPTION(utils::ExceptionInvalidState,
                        "Error during code run " << filePath);
-  }
+  } 
 }
 
 void ScPythonInterpreter::AddModulesPath(std::string const & modulesPath)

@@ -1,7 +1,6 @@
 #include "sc_python_module.hpp"
 
-#define BOOST_PYTHON_STATIC_LIB 
-#include <boost/python.hpp>
+#include "sc_python_includes.hpp"
 
 #include "../sc_memory.hpp"
 #include "../sc_stream.hpp"
@@ -340,7 +339,7 @@ namespace py
 
 void ScPythonMemoryModule::Initialize()
 {
-  PyImport_AppendInittab("sc", &initsc);
+  PyImport_AppendInittab("sc", &PyInit_sc);//&initsc);
 }
 
 } // namespace py

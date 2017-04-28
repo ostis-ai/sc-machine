@@ -27,7 +27,7 @@ protected:
 
 private:
   static bool ms_isInitialized;
-  static std::string ms_name;
+  static std::wstring ms_name;
 
   using ModulesMap = std::unordered_map<std::string, std::string>;
   static ModulesMap ms_foundModules;
