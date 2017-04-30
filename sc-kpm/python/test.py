@@ -1,4 +1,5 @@
-import unittest, struct
+from unittest import TestLoader, TestCase, TextTestRunner
+import struct
 
 # https://docs.python.org/2/library/unittest.html
 
@@ -7,7 +8,7 @@ from sc import *
 def MemoryCtx(name):
     return ScMemoryContext(0, name)
 
-class TestScAddr(unittest.TestCase):
+class TestScAddr(TestCase):
 
     def test_compare(self):
 
@@ -41,7 +42,7 @@ class TestScAddr(unittest.TestCase):
 
         self.assertNotEqual(addr2.ToInt(), 0)
 
-class TestScType(unittest.TestCase):
+class TestScType(TestCase):
 
     def test_compare(self):
         type1 = ScType.Node
@@ -97,7 +98,7 @@ class TestScType(unittest.TestCase):
         self.assertFalse(typeLink.IsEdge())
         self.assertFalse(typeLink.IsNode())
 
-class TestScMemoryContext(unittest.TestCase):
+class TestScMemoryContext(TestCase):
 
     def test_create(self):
         ctx = MemoryCtx("test")
@@ -164,9 +165,7 @@ class TestScMemoryContext(unittest.TestCase):
         self.assertTrue(addr1.IsValid())
         self.assertTrue(ctx.SetLinkContent(addr1, 56))
         
-        value1 = ctx.GetLinkContent(addr1)
-        self.assertTrue(type(value1) is str)
-        value1 = struct.unpack("q", value1)[0]
+        value1 = ctx.GetLinkContent(addr1).AsInt()
         self.assertTrue(type(value1) is int)
         self.assertEqual(value1, 56)
 
@@ -174,9 +173,7 @@ class TestScMemoryContext(unittest.TestCase):
         self.assertTrue(addr2.IsValid())
         self.assertTrue(ctx.SetLinkContent(addr2, 56.0))
 
-        value2 = ctx.GetLinkContent(addr2)
-        self.assertTrue(type(value2) is str)
-        value2 = struct.unpack("d", value2)[0]
+        value2 = ctx.GetLinkContent(addr2).AsFloat()
         self.assertTrue(type(value2) is float)
         self.assertEqual(value2, 56.0)
 
@@ -184,7 +181,7 @@ class TestScMemoryContext(unittest.TestCase):
         self.assertTrue(addr3.IsValid())
         self.assertTrue(ctx.SetLinkContent(addr3, "any text"))
 
-        value3 = ctx.GetLinkContent(addr3)
+        value3 = ctx.GetLinkContent(addr3).AsString()
         self.assertTrue(type(value3) is str)
         self.assertEqual(value3, "any text")
 
@@ -308,14 +305,14 @@ class TestScMemoryContext(unittest.TestCase):
         test_common(itAAFAA)
 
 def RunTest(test):
-    testItem = unittest.TestLoader().loadTestsFromTestCase(test)
-    res = unittest.TextTestRunner(verbosity=2).run(testItem)
+    global TestLoader
+    testItem = TestLoader().loadTestsFromTestCase(test)
+    res = TextTestRunner(verbosity=2).run(testItem)
 
     if not res.wasSuccessful():
         raise Exception("Unit test failed")
 
 try:
-
     RunTest(TestScAddr)
     RunTest(TestScType)
     RunTest(TestScMemoryContext)
@@ -324,4 +321,4 @@ except Exception as ex:
     raise ex
 except:
     import sys
-    print "Unexpected error:", sys.exc_info()[0]
+    print ("Unexpected error:", sys.exc_info()[0])

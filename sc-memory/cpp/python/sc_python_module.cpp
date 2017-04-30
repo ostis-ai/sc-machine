@@ -9,8 +9,63 @@ namespace
 {
 namespace bp = boost::python;
 
+void translateException(utils::ScException const & e)
+{
+  // Use the Python 'C' API to set up an exception object
+  PyErr_SetString(PyExc_RuntimeError, e.Message());
+}
+
 namespace impl
 {
+
+class PyLinkContent
+{
+public:
+  PyLinkContent() {}
+
+  explicit PyLinkContent(ScStream const & stream)
+  {
+    m_buffer = new MemoryBufferSafe();
+    m_buffer->Reinit(stream.Size());
+    size_t readBytes = 0;
+    stream.Read((sc_char*)m_buffer->Data(), stream.Size(), readBytes);
+  }
+
+  std::string AsString() const
+  {
+    char const * data = (char const*)m_buffer->CData();
+    return std::string(data, data + m_buffer->Size());
+  }
+
+  int64_t AsInt() const
+  {
+    if (m_buffer->Size() != sizeof(int64_t))
+    {
+      SC_THROW_EXCEPTION(utils::ExceptionInvalidType,
+                         "Size of content should be equal to " << sizeof(int64_t) << " bytes");
+    }
+
+    int64_t value = 0;
+    m_buffer->Read(&value, sizeof(value));
+    return value;
+  }
+
+  double AsDouble() const
+  {
+    if (m_buffer->Size() != sizeof(double))
+    {
+      SC_THROW_EXCEPTION(utils::ExceptionInvalidType,
+                         "Size of content should be equal to " << sizeof(double) << " bytes");
+    }
+
+    double value = 0.0;
+    m_buffer->Read(&value, sizeof(value));
+    return value;
+  }
+
+private:
+  MemoryBufferSafePtr m_buffer;
+};
 
 bp::tuple _context_getEdgeInfo(ScMemoryContext & self, ScAddr const & addr)
 {
@@ -57,12 +112,7 @@ bp::object _context_getLinkContent(ScMemoryContext & self, ScAddr const & linkAd
 {
   ScStream stream;
   if (self.GetLinkContent(linkAddr, stream))
-  {
-    std::vector<char> buff(stream.Size());
-    size_t readBytes;
-    if (stream.Read((sc_char*)buff.data(), stream.Size(), readBytes))
-      return bp::object(std::string(buff.begin(), buff.end()));
-  }
+    return bp::object(PyLinkContent(stream));
 
   return bp::object();
 }
@@ -235,6 +285,8 @@ bp::object _context_iterator5(ScMemoryContext & self,
 
 BOOST_PYTHON_MODULE(sc)
 {
+  bp::register_exception_translator<utils::ScException>(&translateException);
+
   bp::class_<ScMemoryContext>("ScMemoryContext", bp::init<uint8_t, std::string>())
     .def("CreateNode", &ScMemoryContext::CreateNode)
     .def("CreateEdge", &ScMemoryContext::CreateEdge)
@@ -259,6 +311,12 @@ BOOST_PYTHON_MODULE(sc)
     .def("Next", &impl::PyIterator5::Next)
     .def("IsValid", &impl::PyIterator5::IsValid)
     .def("Get", &impl::PyIterator5::Get)
+    ;
+
+  bp::class_<impl::PyLinkContent>("ScLinkContent")
+    .def("AsString", &impl::PyLinkContent::AsString)
+    .def("AsInt", &impl::PyLinkContent::AsInt)
+    .def("AsFloat", &impl::PyLinkContent::AsDouble)
     ;
 
   bp::class_<ScAddr>("ScAddr", bp::init<>())

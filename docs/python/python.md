@@ -207,6 +207,32 @@ while (it5.Next())
 - `IsValid()` - returns `True` if iterator is valid; otherwise - `False`
 
 
+## ScLinkContent
+
+This class wrap content of sc-link. It allows to unpack it to `string`, `int` or `float`. There are methods of this class:
+
+- `AsString` - get content of a link as `string` value.
+```python
+content = ctx.GetLinkContent(linkAddr)
+stringValue = content.AsString()
+```
+
+----
+
+- `AsInt` - get content of a link as `int` value. If length of content not equal to 8 bytes, then `ExceptionInvalidType` will be raised.
+```python
+content = ctx.GetLinkContent(linkAddr)
+intValue = content.AsInt()
+```
+
+---
+
+- `AsFloat` - get content of a link as `float` value. If length of content not equal to 8 bytes, then `ExceptionInvalidType` will be raised.
+```python
+content = ctx.GetLinkContent(linkAddr)
+floatValue = content.AsFloat()
+```
+
 ## ScMemoryContext
 
 This class implements context, that allows you to work with memory.
@@ -275,7 +301,7 @@ ctx.SetLinkContent(linkAddr1, "any text")
 
 ---
 
-- `GetLinkContent(addr)` - returns content of a specified link. If specified `addr` is not a link, or it doesn't exist, then returns `None`. Returned value has type `string`. It can be unpacked with [struct module](https://docs.python.org/2/library/struct.html) depending on semantic.
+- `GetLinkContent(addr)` - returns content of a specified link. If specified `addr` is not a link, or it doesn't exist, then returns `None`. Returned value has type `ScLinkContent`.
 ```python
 ...
 
