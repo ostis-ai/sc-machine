@@ -26,13 +26,15 @@ UNIT_TEST(codegen_keynodes)
   SC_CHECK(ctx.HelperSetSystemIdtf("test_keynode3", addr3), ());
 
   n1::n2::TestObject obj1;
+  obj1.Init();
+
   SC_CHECK_EQUAL(addr1, obj1.mTestKeynode1, ());
   SC_CHECK_EQUAL(addr2, obj1.mTestKeynode2, ());
 
   obj1.InitGlobal();
   SC_CHECK_EQUAL(addr3, obj1.mTestKeynode3, ());
 
-  ScAddr addrForce;
-  SC_CHECK(ctx.HelperFindBySystemIdtf("test_keynode_force", addrForce), ());
+  ScAddr const addrForce = ctx.HelperFindBySystemIdtf("test_keynode_force");
+  SC_CHECK(addrForce.IsValid(), ());
   SC_CHECK_EQUAL(addrForce, obj1.mTestKeynodeForce, ());
 }

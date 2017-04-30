@@ -23,6 +23,7 @@ protected:
   ScObject(ScObject const & other);
   ScObject & operator = (ScObject const & other);
 
+public:
   /// TODO: Need mechanism to call that function automaticaly after object construction
   bool Init();
 

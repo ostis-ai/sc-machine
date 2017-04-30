@@ -91,16 +91,13 @@ void Field::GenerateResolveKeynodeCode(
   std::string const & forceCreation,
   std::stringstream & outCode)
 {
-  outCode << "  result = result && ctx.HelperResolveSystemIdtf(\""
-    << sysIdtf << "\", "
-    << displayName;
-  
+  outCode << displayName << " = ctx.HelperResolveSystemIdtf(\"" << sysIdtf << "\"";
   if (!forceCreation.empty())
   {
     outCode << ", " << forceCreation;
-  }         
-
+  }
   outCode << ");";
+  outCode << " result = result && " << displayName << ".IsValid();";
 }
 
 std::string const & Field::GetDisplayName() const
