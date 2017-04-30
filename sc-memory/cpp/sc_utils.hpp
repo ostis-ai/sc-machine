@@ -80,24 +80,24 @@ public:
 
   TSharedPointer(TSharedPointer const & other)
   {
-    m_object = other.GetPtr();
-    m_refCount = other.GetRef();
+    m_object = other.m_object;
+    m_refCount = other.m_refCount;
     m_refCount->Ref();
   }
 
   template <typename OtherType>
   TSharedPointer(TSharedPointer<OtherType> const & other)
   {
-    m_object = other.GetPtr();
-    m_refCount = other.GetRef();
+    m_object = other.m_object;
+    m_refCount = other.m_refCount;
     m_refCount->Ref();
   }
 
   TSharedPointer & operator = (TSharedPointer const & other)
   {
     Clear();
-    m_object = other.GetPtr();
-    m_refCount = other.GetRef();
+    m_object = other.m_object;
+    m_refCount = other.m_refCount;
     m_refCount->Ref();
 
     return *this;
@@ -128,16 +128,15 @@ public:
     return m_object != 0;
   }
 
-  /// Just for internal usage
   inline ObjectType * GetPtr() const
   {
     return m_object;
   }
 
-  /// Just for internal usage
-  inline RefCount * GetRef() const
+  inline ObjectType & GetRef() const
   {
-    return m_refCount;
+    SC_ASSERT(m_object != nullptr, ("Pointer is not valid"))
+    return *m_object;
   }
 
 private:
