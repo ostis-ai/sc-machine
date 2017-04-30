@@ -239,7 +239,7 @@ UNIT_TEST(templates_common)
           ScType::NodeVarClass >> "_6");
 
     ScTemplateGenParams params;
-    params.add("_3", addrTest3).add("_6", addrTest6);
+    params.Add("_3", addrTest3).Add("_6", addrTest6);
 
     ScTemplateGenResult result;
     SC_CHECK(ctx.HelperGenTemplate(templ, result, params), ());
@@ -280,7 +280,7 @@ UNIT_TEST(templates_common)
     // test edge
     {
       ScTemplateGenParams params;
-      params.add("_2", addrEdge2);
+      params.Add("_2", addrEdge2);
 
       SC_CHECK(!ctx.HelperGenTemplate(templ, result, params), ());
     }

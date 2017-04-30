@@ -351,8 +351,8 @@ bool ScMemoryContext::HelperResolveSystemIdtf(std::string const & sysIdtf, ScAdd
 {
   SC_ASSERT(IsValid(), ());
   outAddr.Reset();
-  bool result = HelperFindBySystemIdtf(sysIdtf, outAddr);
-  if (!result && type.IsValid())
+  outAddr = HelperFindBySystemIdtf(sysIdtf);
+  if (!outAddr.IsValid() && type.IsValid())
   {
     if (!type.IsNode())
     {
@@ -362,9 +362,9 @@ bool ScMemoryContext::HelperResolveSystemIdtf(std::string const & sysIdtf, ScAdd
 
     outAddr = CreateNode(type);
     if (outAddr.IsValid())
-      result = HelperSetSystemIdtf(sysIdtf, outAddr);
+      return HelperSetSystemIdtf(sysIdtf, outAddr);
   }
-  return result;
+  return false;
 }
 
 bool ScMemoryContext::HelperSetSystemIdtf(std::string const & sysIdtf, ScAddr const & addr)
