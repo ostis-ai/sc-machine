@@ -242,7 +242,13 @@ public:
     return false;
   }
 
+  SC_DEPRECATED(0.4.0, "You should to use ScTemplateGenParams::IsEmpty")
   _SC_EXTERN bool empty() const
+  {
+    return m_values.empty();
+  }
+
+  _SC_EXTERN bool IsEmpty() const
   {
     return m_values.empty();
   }

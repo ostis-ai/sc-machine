@@ -166,7 +166,10 @@ public:
    * Look at type parameter as ForceCreate flag, that contains type.
    * Important: Type should be any of ScType::Node...
    */
+  SC_DEPRECATED(0.4.0, "Use should use ScMemoryContext::HelperResolveSystemIdtf(std::string const & sysIdtf, ScType const & type)")
   _SC_EXTERN bool HelperResolveSystemIdtf(std::string const & sysIdtf, ScAddr & outAddr, ScType const & type = ScType());
+  _SC_EXTERN ScAddr HelperResolveSystemIdtf(std::string const & sysIdtf, ScType const & type = ScType());
+
   _SC_EXTERN bool HelperSetSystemIdtf(std::string const & sysIdtf, ScAddr const & addr);
   _SC_EXTERN std::string HelperGetSystemIdtf(ScAddr const & addr);
 

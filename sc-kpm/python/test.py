@@ -8,6 +8,12 @@ from sc import *
 def MemoryCtx(name):
     return ScMemoryContext(0, name)
 
+def CreateNodeWithIdtf(ctx, _type, _idtf):
+    addr = ctx.CreateNode(_type)
+    linkAddr = ctx.CreateLink()
+
+    ctx.SetLinkContent(linkAddr, _idtf)
+
 class TestScAddr(TestCase):
 
     def test_compare(self):
@@ -303,6 +309,109 @@ class TestScMemoryContext(TestCase):
             ScType.EdgeAccessVarPosTemp,
             ScType.Node)
         test_common(itAAFAA)
+
+    def test_helper_sys_idtf(self):
+        ctx = MemoryCtx("test")       
+
+        addr1 = ctx.HelperResolveSystemIdtf("sc_result", None)
+        self.assertTrue(addr1.IsValid())
+
+        # non exist
+        addr2 = ctx.HelperResolveSystemIdtf("test_example_value_idtf", None)
+        self.assertFalse(addr2.IsValid())
+
+        # create new
+        addr3 = ctx.HelperResolveSystemIdtf("test_example_idtf1", ScType.NodeConst)
+        self.assertTrue(addr3.IsValid())
+        self.assertEqual(ScType.NodeConst, ctx.GetElementType(addr3))
+
+        # Set
+        addr1 = ctx.CreateNode(ScType.NodeConst)
+        self.assertTrue(addr1.IsValid())
+        self.assertTrue(ctx.HelperSetSystemIdtf("idtf_1_2_test", addr1))
+
+        addr2 = ctx.HelperResolveSystemIdtf("idtf_1_2_test", None)
+        self.assertEqual(addr1, addr2)
+
+        # get
+        self.assertEqual(ctx.HelperGetSystemIdtf(addr2), "idtf_1_2_test")
+
+    def test_helper_has_edge(self):
+        ctx = MemoryCtx("test")
+
+        addr1 = ctx.CreateNode(ScType.NodeConst)
+        self.assertTrue(addr1.IsValid())
+
+        addr2 = ctx.CreateNode(ScType.NodeConst)
+        self.assertTrue(addr2.IsValid())
+
+        edge = ctx.CreateEdge(ScType.EdgeAccessConstPosPerm, addr1, addr2)
+        self.assertTrue(edge.IsValid())
+        self.assertTrue(ctx.HelperCheckEdge(addr1, addr2, ScType.EdgeAccessConstPosPerm))
+
+    def test_helper_template(self):
+        ctx = MemoryCtx("test")
+
+        addr1 = ctx.CreateNode(ScType.NodeConst)
+        self.assertTrue(addr1.IsValid())
+
+        addr2 = ctx.CreateNode(ScType.NodeConst)
+        self.assertTrue(addr2.IsValid())
+
+        attrAddr = ctx.CreateNode(ScType.NodeConst)
+        self.assertTrue(attrAddr.IsValid())
+
+        templ = ScTemplate()
+        templ.Triple(addr1, ScType.EdgeAccessVarPosPerm >> "_edge", ScType.NodeVar >> "_target")
+        templ.Triple(attrAddr, ScType.EdgeAccessVarPosPerm, "_edge")
+
+        params = ScTemplateGenParams()
+        params.Add("_target", addr2)
+
+        genResult = ctx.HelperGenTemplate(templ, params)
+        self.assertTrue(type(genResult) is ScTemplateGenResult)
+
+        # search by this template and compare results
+        searchResult = ctx.HelperSearchTemplate(templ)
+        self.assertTrue(type(searchResult) is ScTemplateSearchResult)
+        self.assertEqual(searchResult.Size(), 1)
+
+        searchItem = searchResult[0]
+        self.assertEqual(searchItem["_edge"], genResult["_edge"])
+        self.assertEqual(searchItem["_target"], genResult["_target"])
+
+        # build template
+        addr1 = ctx.CreateNode(ScType.NodeConst)
+        self.assertTrue(addr1.IsValid())
+
+        addr2 = ctx.CreateNode(ScType.NodeConst)
+        self.assertTrue(addr2.IsValid())
+
+        edge = ctx.CreateEdge(ScType.EdgeAccessVarPosPerm, addr1, addr2)
+        self.assertTrue(edge.IsValid())
+
+        templAddr = ctx.CreateNode(ScType.NodeConstStruct)
+        self.assertTrue(templAddr.IsValid())
+
+        for addr in [addr1, addr2, edge]:
+            e = ctx.CreateEdge(ScType.EdgeAccessConstPosPerm, templAddr, addr)
+            self.assertTrue(e.IsValid())
+
+        templ = ctx.HelperBuildTemplate(templAddr)
+        self.assertTrue(type(templ) is ScTemplate)
+        
+
+    def test_rshift(self):
+        ctx = MemoryCtx("test")
+
+        addr1 = ctx.CreateNode(ScType.NodeConst)
+        
+        value1 = addr1 >> "test_repl"
+        self.assertTrue(type(value1) is ScTemplateItemValue)
+
+        value2 = ScType.NodeConst >> "test_repl2"
+        self.assertTrue(type(value2) is ScTemplateItemValue)
+
 
 def RunTest(test):
     global TestLoader
