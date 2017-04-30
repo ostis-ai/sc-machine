@@ -168,11 +168,9 @@ protected:
 
 #define SHARED_PTR_TYPE(__type) typedef TSharedPointer< __type > __type##Ptr;
 
-struct MemoryBuffer
+class MemoryBuffer
 {
-  char * m_data;
-  size_t m_size;
-
+public:
   MemoryBuffer(char * buff, unsigned int size)
     : m_data(buff)
     , m_size(size)
@@ -181,31 +179,70 @@ struct MemoryBuffer
 
   inline bool IsValid() const { return m_data != nullptr; }
 
+  void * Data() { return (void*)m_data; }
+  void const * CData() const { return (void const*)m_data; }
+  size_t Size() const { return m_size;  }
+
+  size_t Read(void * buff, size_t size) const
+  {
+    size_t const read = std::min(size, m_size);
+    memcpy(buff, m_data, read);
+    return read;
+  }
+
 protected:
   MemoryBuffer()
-    : m_data(0)
+    : m_data(nullptr)
     , m_size(0)
   {
   }
 
+  char * m_data;
+  size_t m_size;
 };
 
-struct MemoryBufferSafe : public MemoryBuffer
+class MemoryBufferSafe : public MemoryBuffer
 {
-  MemoryBufferSafe(char const * buff, unsigned int size)
-    : MemoryBuffer(0, size)
+public:
+  MemoryBufferSafe() : MemoryBuffer()
   {
-    m_data = new char[size];
-    m_size = size;
+  }
+
+  MemoryBufferSafe(char const * buff, size_t size)
+  {
+    Reinit(buff, size);
   }
 
   ~MemoryBufferSafe()
   {
-    delete m_data;
+    Clear();
+  }
+
+  void Reinit(size_t size)
+  {
+    Clear();
+    m_data = new char[size];
+    m_size = size;
+  }
+
+  void Reinit(char const * buff, size_t size)
+  {
+    m_data = new char[size];
+    m_size = size;
+    memcpy(m_data, buff, size);
+  }
+
+  void Clear()
+  {
+    if (m_data)
+      delete[] m_data;
+    m_data = nullptr;
+    m_size = 0;
   }
 };
 
 SHARED_PTR_TYPE(MemoryBuffer)
+SHARED_PTR_TYPE(MemoryBufferSafe)
 
 
 namespace utils

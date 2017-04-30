@@ -22,10 +22,15 @@ extern "C"
 #include <unordered_map>
 #include <assert.h>
 #include <stdint.h>
+#include <cstdint>
 
 #include <fstream>
 
 #include "sc_defines.hpp"
+
+#if SC_IS_PLATFORM_WIN32
+#define NOMINMAX
+#endif
 
 using StringSet = std::set<std::string>;
 using StringVector = std::vector<std::string>;
