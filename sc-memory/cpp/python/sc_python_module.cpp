@@ -418,7 +418,7 @@ bp::object _context_iterator5(ScMemoryContext & self,
   return bp::object();
 }
 
-bp::object _context_helperResolveSysIdtf(ScMemoryContext & self, bp::object & idtf, bp::object & type = bp::object())
+bp::object _context_helperResolveSysIdtf(ScMemoryContext & self, bp::object & idtf, bp::object const & type = bp::object())
 {
   bp::extract<std::string> se(idtf);
   if (!se.check())

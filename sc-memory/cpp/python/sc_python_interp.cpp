@@ -7,11 +7,8 @@
 #include "../sc_debug.hpp"
 #include "../sc_utils.hpp"
 
+#include "../utils/sc_boost.hpp"
 #include "../utils/sc_cache.hpp"
-
-#include <boost/filesystem.hpp>
-
-
 
 namespace bp = boost::python;
 
@@ -195,7 +192,7 @@ void ScPythonInterpreter::CollectModulesInPath(std::string const & modulePath)
       if (!boost::filesystem::is_directory(*itPath))
       {
         boost::filesystem::path const p = *itPath;
-        std::string const filename = boost::filesystem::relative(p, root).string();
+        std::string const filename = boost::filesystem::relativePath(root, p).string();
         std::string ext = utils::StringUtils::GetFileExtension(filename);
         utils::StringUtils::ToLowerCase(ext);
 

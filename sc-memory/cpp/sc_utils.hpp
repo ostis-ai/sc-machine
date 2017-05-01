@@ -135,7 +135,7 @@ public:
 
   inline ObjectType & GetRef() const
   {
-    SC_ASSERT(m_object != nullptr, ("Pointer is not valid"))
+    SC_ASSERT(m_object != nullptr, ("Pointer is not valid"));
     return *m_object;
   }
 

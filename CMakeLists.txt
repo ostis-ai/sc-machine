@@ -53,10 +53,9 @@ if (${SC_AUTO_TEST})
 endif()
 
 # find dependencies
-
-find_package(PythonLibs 3.6 REQUIRED)
-message ("Python version: ${PYTHONLIBS_VERSION_STRING}")
 if (${UNIX})
+    find_package(PythonLibs 3.5 REQUIRED)
+    find_package(Boost 1.58 REQUIRED COMPONENTS filesystem python-py35)
 
     set (ANTLR_LIB antlr3c)
 
@@ -89,6 +88,7 @@ if (${UNIX})
     endif()
 
 elseif (${WIN32})
+    find_package(PythonLibs 3.6 REQUIRED)
 
     set(PACKAGES_PATH "${CMAKE_BINARY_DIR}/packages")
 
@@ -178,6 +178,8 @@ elseif (${WIN32})
     file(COPY ${WIN_RUNTIME_LIBRARIES} DESTINATION "${SC_BIN_PATH}")
 
 endif(${UNIX})
+
+message ("Python version: ${PYTHONLIBS_VERSION_STRING}")
 
 include_directories(${SC_MACHINE_ROOT} ${GLIB2_INCLUDE_DIRS})
 
