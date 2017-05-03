@@ -59,13 +59,17 @@ public:
   _SC_EXTERN explicit ScMemoryContext(sc_uint8 accessLevels = 0, std::string const & name = "");
   _SC_EXTERN ~ScMemoryContext();
 
+  // Disable object copying
+  ScMemoryContext & operator = (ScMemoryContext const & other) = delete;
+
   sc_memory_context const * operator * () const { return m_context; }
   sc_memory_context const * GetRealContext() const { return m_context; }
 
   //! Call this function, when you request to destroy real memory context, before destructor calls for this object
   _SC_EXTERN void Destroy();
 
-  std::string const & GetName() const { return m_name; }
+  // returns copy, because of Python wrapper
+  std::string GetName() const { return m_name; }
 
   _SC_EXTERN bool IsValid() const;
 
@@ -74,15 +78,15 @@ public:
   //! Erase element from sc-memory and returns true on success; otherwise returns false.
   _SC_EXTERN bool EraseElement(ScAddr const & addr);
 
-  _SC_EXTERN ScAddr CreateNode(sc_type type);
+  _SC_EXTERN ScAddr CreateNode(ScType const & type);
   _SC_EXTERN ScAddr CreateLink();
 
   SC_DEPRECATED(0.3.0, "Use ScMemoryContext::createEdge instead.")
   _SC_EXTERN ScAddr CreateArc(sc_type type, ScAddr const & addrBeg, ScAddr const & addrEnd);
 
-  _SC_EXTERN ScAddr CreateEdge(sc_type type, ScAddr const & addrBeg, ScAddr const & addrEnd);
+  _SC_EXTERN ScAddr CreateEdge(ScType const & type, ScAddr const & addrBeg, ScAddr const & addrEnd);
 
-  //! Returns type of sc-element. If there are any error, then returns 0
+  //! Returns type of sc-element. If there are any error, then returns ScType::Unknown
   _SC_EXTERN ScType GetElementType(ScAddr const & addr) const;
 
   /*! Change subtype of sc-element (subtype & sc_type_element_mask == 0).
@@ -162,7 +166,10 @@ public:
    * Look at type parameter as ForceCreate flag, that contains type.
    * Important: Type should be any of ScType::Node...
    */
+  SC_DEPRECATED(0.4.0, "Use should use ScMemoryContext::HelperResolveSystemIdtf(std::string const & sysIdtf, ScType const & type)")
   _SC_EXTERN bool HelperResolveSystemIdtf(std::string const & sysIdtf, ScAddr & outAddr, ScType const & type = ScType());
+  _SC_EXTERN ScAddr HelperResolveSystemIdtf(std::string const & sysIdtf, ScType const & type = ScType());
+
   _SC_EXTERN bool HelperSetSystemIdtf(std::string const & sysIdtf, ScAddr const & addr);
   _SC_EXTERN std::string HelperGetSystemIdtf(ScAddr const & addr);
 
@@ -177,11 +184,6 @@ public:
   _SC_EXTERN bool HelperSearchTemplate(ScTemplate const & templ, ScTemplateSearchResult & result);
   _SC_EXTERN bool HelperSearchTemplateInStruct(ScTemplate const & templ, ScAddr const & scStruct, ScTemplateSearchResult & result);
   _SC_EXTERN bool HelperBuildTemplate(ScTemplate & templ, ScAddr const & templAddr);
-
-private:
-  // Disable object copying
-  ScMemoryContext(ScMemoryContext const & other) {}
-  ScMemoryContext & operator = (ScMemoryContext const & other) { return *this; }
 
 private:
   sc_memory_context * m_context;

@@ -15,7 +15,6 @@ class ATestCommandEmit : public ScAgentAction
   SC_CLASS(Agent, CmdClass("command_test_init__"))
   SC_GENERATED_BODY()
 
-
 public:
   SC_PROPERTY(Keynode("test_param_1"), ForceCreate(ScType::NodeConstMaterial))
   static ScAddr ms_keynodeParam1;

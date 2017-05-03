@@ -11,9 +11,9 @@ UNIT_TEST(iterators)
 {
   ScMemoryContext ctx(sc_access_lvl_make_min, "iterators");
 
-  ScAddr addr1 = ctx.CreateNode(sc_type_const);
-  ScAddr addr2 = ctx.CreateNode(sc_type_var);
-  ScAddr arc1 = ctx.CreateEdge(sc_type_arc_pos_const_perm, addr1, addr2);
+  ScAddr addr1 = ctx.CreateNode(ScType::Const);
+  ScAddr addr2 = ctx.CreateNode(ScType::Var);
+  ScAddr arc1 = ctx.CreateEdge(ScType::EdgeAccessConstPosPerm, addr1, addr2);
 
   SC_CHECK(addr1.IsValid(), ());
   SC_CHECK(addr2.IsValid(), ());
@@ -25,7 +25,7 @@ UNIT_TEST(iterators)
 
   SUBTEST_START(iterator3_f_a_f)
   {
-    ScIterator3Ptr iter3 = ctx.Iterator3(addr1, sc_type_arc_pos_const_perm, addr2);
+    ScIterator3Ptr iter3 = ctx.Iterator3(addr1, ScType::EdgeAccessConstPosPerm, addr2);
     SC_CHECK(iter3->Next(), ());
     SC_CHECK_EQUAL(iter3->Get(0), addr1, ());
     SC_CHECK_EQUAL(iter3->Get(1), arc1, ());
@@ -35,7 +35,7 @@ UNIT_TEST(iterators)
 
   SUBTEST_START(iterator3_f_a_a)
   {
-    ScIterator3Ptr iter3 = ctx.Iterator3(addr1, sc_type_arc_pos_const_perm, sc_type_node);
+    ScIterator3Ptr iter3 = ctx.Iterator3(addr1, ScType::EdgeAccessConstPosPerm, ScType::Node);
     SC_CHECK(iter3->Next(), ());
     SC_CHECK_EQUAL(iter3->Get(0), addr1, ());
     SC_CHECK_EQUAL(iter3->Get(1), arc1, ());
@@ -63,8 +63,8 @@ UNIT_TEST(iterators)
   }
   SUBTEST_END()
 
-  ScAddr addr3 = ctx.CreateNode(sc_type_const);
-  ScAddr arc2 = ctx.CreateEdge(sc_type_arc_pos_const_perm, addr3, arc1);
+  ScAddr addr3 = ctx.CreateNode(ScType::Const);
+  ScAddr arc2 = ctx.CreateEdge(ScType::EdgeAccessConstPosPerm, addr3, arc1);
 
   SC_CHECK(addr3.IsValid(), ());
   SC_CHECK(arc2.IsValid(), ());
@@ -74,7 +74,12 @@ UNIT_TEST(iterators)
 
   SUBTEST_START(iterator5_a_a_f_a_a)
   {
-    ScIterator5Ptr iter5 = ctx.Iterator5(sc_type_node, sc_type_arc_pos_const_perm, addr2, sc_type_arc_pos_const_perm, sc_type_node);
+    ScIterator5Ptr iter5 = ctx.Iterator5(
+      ScType::Node,
+      ScType::EdgeAccessConstPosPerm,
+      addr2,
+      ScType::EdgeAccessConstPosPerm,
+      ScType::Node);
 
     SC_CHECK(iter5->Next(), ());
 
@@ -88,7 +93,12 @@ UNIT_TEST(iterators)
 
   SUBTEST_START(iterator5_a_a_f_a_f)
   {
-    ScIterator5Ptr iter5 = ctx.Iterator5(sc_type_node, sc_type_arc_pos_const_perm, addr2, sc_type_arc_pos_const_perm, addr3);
+    ScIterator5Ptr iter5 = ctx.Iterator5(
+      ScType::Node,
+      ScType::EdgeAccessConstPosPerm,
+      addr2,
+      ScType::EdgeAccessConstPosPerm,
+      addr3);
 
     SC_CHECK(iter5->Next(), ());
 
@@ -102,7 +112,12 @@ UNIT_TEST(iterators)
 
   SUBTEST_START(iterator5_f_a_a_a_a)
   {
-    ScIterator5Ptr iter5 = ctx.Iterator5(addr1, sc_type_arc_pos_const_perm, sc_type_node, sc_type_arc_pos_const_perm, sc_type_node);
+    ScIterator5Ptr iter5 = ctx.Iterator5(
+      addr1,
+      ScType::EdgeAccessConstPosPerm,
+      ScType::Node,
+      ScType::EdgeAccessConstPosPerm,
+      ScType::Node);
 
     SC_CHECK(iter5->Next(), ());
 
@@ -116,7 +131,12 @@ UNIT_TEST(iterators)
 
   SUBTEST_START(iterator5_f_a_a_a_f)
   {
-    ScIterator5Ptr iter5 = ctx.Iterator5(addr1, sc_type_arc_pos_const_perm, sc_type_node, sc_type_arc_pos_const_perm, addr3);
+    ScIterator5Ptr iter5 = ctx.Iterator5(
+      addr1,
+      ScType::EdgeAccessConstPosPerm,
+      ScType::Node,
+      ScType::EdgeAccessConstPosPerm,
+      addr3);
 
     SC_CHECK(iter5->Next(), ());
 
@@ -130,7 +150,12 @@ UNIT_TEST(iterators)
 
   SUBTEST_START(iterator5_f_a_f_a_a)
   {
-    ScIterator5Ptr iter5 = ctx.Iterator5(addr1, sc_type_arc_pos_const_perm, addr2, sc_type_arc_pos_const_perm, sc_type_node);
+    ScIterator5Ptr iter5 = ctx.Iterator5(
+      addr1,
+      ScType::EdgeAccessConstPosPerm,
+      addr2,
+      ScType::EdgeAccessConstPosPerm,
+      ScType::Node);
 
     SC_CHECK(iter5->Next(), ());
 
@@ -144,7 +169,12 @@ UNIT_TEST(iterators)
 
   SUBTEST_START(iterator5_f_a_f_a_f)
   {
-    ScIterator5Ptr iter5 = ctx.Iterator5(addr1, sc_type_arc_pos_const_perm, addr2, sc_type_arc_pos_const_perm, addr3);
+    ScIterator5Ptr iter5 = ctx.Iterator5(
+      addr1,
+      ScType::EdgeAccessConstPosPerm,
+      addr2,
+      ScType::EdgeAccessConstPosPerm,
+      addr3);
 
     SC_CHECK(iter5->Next(), ());
 

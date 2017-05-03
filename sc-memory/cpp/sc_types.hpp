@@ -22,10 +22,15 @@ extern "C"
 #include <unordered_map>
 #include <assert.h>
 #include <stdint.h>
+#include <cstdint>
 
 #include <fstream>
 
 #include "sc_defines.hpp"
+
+#if SC_IS_PLATFORM_WIN32
+#define NOMINMAX
+#endif
 
 using StringSet = std::set<std::string>;
 using StringVector = std::vector<std::string>;
@@ -77,6 +82,7 @@ public:
   }
 
   inline bool operator == (ScType const & other) { return (m_realType == other.m_realType); }
+  inline bool operator != (ScType const & other) { return (m_realType != other.m_realType); }
   inline RealType BitAnd(RealType const & inMask) const { return (m_realType & inMask); }
 
   inline ScType operator | (ScType const & other) { return ScType(m_realType | other.m_realType); }

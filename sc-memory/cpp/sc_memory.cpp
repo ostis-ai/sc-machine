@@ -13,6 +13,8 @@
 
 #include "http/sc_http.hpp"
 
+#include "python/sc_python_interp.hpp"
+
 #include "utils/sc_log.hpp"
 
 #include <cstdlib>
@@ -90,12 +92,14 @@ bool ScMemory::Initialize(sc_memory_params const & params)
   
   ScKeynodes::Init();
   ScAgentInit(true);
+  py::ScPythonInterpreter::Initialize("sc-memory");
 
   return ms_globalContext != null_ptr;
 }
 
 void ScMemory::Shutdown(bool saveState /* = true */)
 {
+  py::ScPythonInterpreter::Shutdown();
   ScKeynodes::Shutdown();
   
   if (ms_contexts.size() > 0)
@@ -119,11 +123,13 @@ void ScMemory::Shutdown(bool saveState /* = true */)
 void ScMemory::LogMute()
 {
   gIsLogMuted = true;
+  utils::ScLog::GetInstance()->SetMuted(true);
 }
 
 void ScMemory::LogUnmute()
 {
   gIsLogMuted = false;
+  utils::ScLog::GetInstance()->SetMuted(false);
 }
 
 void ScMemory::RegisterContext(ScMemoryContext const * ctx)
@@ -213,10 +219,10 @@ bool ScMemoryContext::EraseElement(ScAddr const & addr)
   return sc_memory_element_free(m_context, *addr) == SC_RESULT_OK;
 }
 
-ScAddr ScMemoryContext::CreateNode(sc_type type)
+ScAddr ScMemoryContext::CreateNode(ScType const & type)
 {
   SC_ASSERT(IsValid(), ());
-  return ScAddr(sc_memory_node_new(m_context, type));
+  return ScAddr(sc_memory_node_new(m_context, *type));
 }
 
 ScAddr ScMemoryContext::CreateLink()
@@ -227,13 +233,13 @@ ScAddr ScMemoryContext::CreateLink()
 
 ScAddr ScMemoryContext::CreateArc(sc_type type, ScAddr const & addrBeg, ScAddr const & addrEnd)
 {
-  return CreateEdge(type, addrBeg, addrEnd);
+  return CreateEdge(ScType(type), addrBeg, addrEnd);
 }
 
-ScAddr ScMemoryContext::CreateEdge(sc_type type, ScAddr const & addrBeg, ScAddr const & addrEnd)
+ScAddr ScMemoryContext::CreateEdge(ScType const & type, ScAddr const & addrBeg, ScAddr const & addrEnd)
 {
   SC_ASSERT(IsValid(), ());
-  return ScAddr(sc_memory_arc_new(m_context, type, *addrBeg, *addrEnd));
+  return ScAddr(sc_memory_arc_new(m_context, *type, *addrBeg, *addrEnd));
 }
 
 ScType ScMemoryContext::GetElementType(ScAddr const & addr) const
@@ -343,22 +349,27 @@ bool ScMemoryContext::Save()
 
 bool ScMemoryContext::HelperResolveSystemIdtf(std::string const & sysIdtf, ScAddr & outAddr, ScType const & type/* = ScType()*/)
 {
+  outAddr = HelperResolveSystemIdtf(sysIdtf, type);
+  return outAddr.IsValid();
+}
+
+ScAddr ScMemoryContext::HelperResolveSystemIdtf(std::string const & sysIdtf, ScType const & type/* = ScType()*/)
+{
   SC_ASSERT(IsValid(), ());
-  outAddr.Reset();
-  bool result = HelperFindBySystemIdtf(sysIdtf, outAddr);
-  if (!result && type.IsValid())
+  ScAddr resultAddr = HelperFindBySystemIdtf(sysIdtf);
+  if (!resultAddr.IsValid() && type.IsValid())
   {
     if (!type.IsNode())
     {
       SC_THROW_EXCEPTION(utils::ExceptionInvalidParams,
-        "You should provide any of ScType::Node... value as a type");
+                         "You should provide any of ScType::Node... value as a type");
     }
 
-    outAddr = CreateNode(type);
-    if (outAddr.IsValid())
-      result = HelperSetSystemIdtf(sysIdtf, outAddr);
+    resultAddr = CreateNode(type);
+    if (resultAddr.IsValid())
+      HelperSetSystemIdtf(sysIdtf, resultAddr);
   }
-  return result;
+  return resultAddr;
 }
 
 bool ScMemoryContext::HelperSetSystemIdtf(std::string const & sysIdtf, ScAddr const & addr)

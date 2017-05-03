@@ -88,6 +88,8 @@ protected:
   sc_stream * m_stream;
 };
 
+using ScStreamPtr = TSharedPointer<ScStream>;
+
 class ScStreamMemory : public IScStream
 {
 public:
@@ -122,3 +124,8 @@ class ScStreamConverter
   static _SC_EXTERN void StreamFromString(std::string const & str, ScStreamMemory & outStream);
 };
 
+template <typename T>
+ScStreamPtr MakeReadStreamT(T const & value)
+{
+  return ScStreamPtr(new ScStream((sc_char*)&value, sizeof(T), SC_STREAM_FLAG_READ | SC_STREAM_FLAG_SEEK | SC_STREAM_FLAG_TELL));
+}

@@ -54,6 +54,16 @@ endif()
 
 # find dependencies
 if (${UNIX})
+    find_package(PythonLibs 3.4 REQUIRED)
+    message(${PYTHONLIBS_VERSION_STRING})
+
+    string(REPLACE "." ";" PY_VERSION_LIST ${PYTHONLIBS_VERSION_STRING})
+    list(GET PY_VERSION_LIST 0 PY_VERSION_MAJOR)
+    list(GET PY_VERSION_LIST 1 PY_VERSION_MINOR)
+
+    set(PY_SHORT_VERSION "${PY_VERSION_MAJOR}${PY_VERSION_MINOR}")
+
+    find_package(Boost 1.54 REQUIRED COMPONENTS filesystem python-py${PY_SHORT_VERSION})
 
     set (ANTLR_LIB antlr3c)
 
@@ -86,6 +96,7 @@ if (${UNIX})
     endif()
 
 elseif (${WIN32})
+    find_package(PythonLibs 3.6 REQUIRED)
 
     set(PACKAGES_PATH "${CMAKE_BINARY_DIR}/packages")
 
@@ -95,7 +106,7 @@ elseif (${WIN32})
         set (MSVC_SUFFIX "vc140")
     endif()
 
-    set (BOOST_VERSION "1.61.0.0")
+    set (BOOST_VERSION "1.64.0.0")
     configure_file("${SC_MACHINE_ROOT}/packages.config.in" "${CMAKE_BINARY_DIR}/packages.config")
 
     file(MAKE_DIRECTORY ${PACKAGES_PATH})
@@ -119,6 +130,11 @@ elseif (${WIN32})
     set (LIBCURL_INCLUDE_DIRS "${LIBCURL_PATH}/include")
     set (LIBCURL_LIBRARIES "${LIBCURL_PATH}/lib/libcurl.lib" "WSock32.lib" "Ws2_32.lib")
 
+    set (BOOST_RUNTIME_PATH "${SC_MACHINE_THIRDPARTY_PATH}/boost")
+    set (BOOST_PYTHON_LIBRARY_RELEASE "${BOOST_RUNTIME_PATH}/boost_python3-vc140-mt-1_64.lib")
+    set (BOOST_PYTHON_LIBRARY_DEBUG "${BOOST_RUNTIME_PATH}/boost_python3-vc140-mt-gd-1_64.lib")
+    
+
     include_directories("${SC_MACHINE_ANTRL_DIR}/c"
                         "${SC_MACHINE_ANTRL_DIR}/cpp"
                         "${BOOST_PATH}/include"
@@ -133,8 +149,8 @@ elseif (${WIN32})
                      "${PACKAGES_PATH}/boost_filesystem-${MSVC_SUFFIX}.${BOOST_VERSION}/lib/native/address-model-64/lib/"
                      "${PACKAGES_PATH}/boost_system-${MSVC_SUFFIX}.${BOOST_VERSION}/lib/native/address-model-64/lib/"
                      "${PACKAGES_PATH}/boost_program_options-${MSVC_SUFFIX}.${BOOST_VERSION}/lib/native/address-model-64/lib/"
-                     "${PACKAGES_PATH}/boost_regex-${MSVC_SUFFIX}.${BOOST_VERSION}/lib/native/address-model-64/lib/")
-
+                     "${PACKAGES_PATH}/boost_regex-${MSVC_SUFFIX}.${BOOST_VERSION}/lib/native/address-model-64/lib/"
+                     )
 
     
     set (GLIB2_LIBRARIES "gio-2.0.lib" "glib-2.0.lib" "gmodule-2.0.lib" "gobject-2.0.lib" "gthread-2.0.lib")
@@ -144,7 +160,7 @@ elseif (${WIN32})
         set (REDIS_LIBRARIES "hiredis.vc140.lib" "Win32_Interop.vc140.lib" "WSock32.lib" "Ws2_32.lib")
     endif()
     
-    add_definitions(-DSC_PLATFORM_WIN -DHIREDIS_WIN)
+    add_definitions(-DSC_PLATFORM_WIN -DHIREDIS_WIN -DBOOST_PYTHON_NO_LIB)
 
     # copy runtime libraries
     set (GLIB_RUNTIME_PATH "${PACKAGES_PATH}/glib.redist.2.36.2.11/build/native/bin/v110/x64/Release/dynamic")
@@ -164,10 +180,14 @@ elseif (${WIN32})
             "${LIBCURL_RUNTIME_PATH}/libcurl.dll"
             "${LIBCURL_RUNTIME_PATH}/libeay32.dll"
             "${LIBCURL_RUNTIME_PATH}/ssleay32.dll"
+            "${BOOST_RUNTIME_PATH}/boost_python3-vc140-mt-1_64.dll"
+            "${BOOST_RUNTIME_PATH}/boost_python3-vc140-mt-gd-1_64.dll"
             )
     file(COPY ${WIN_RUNTIME_LIBRARIES} DESTINATION "${SC_BIN_PATH}")
 
 endif(${UNIX})
+
+message ("Python version: ${PYTHONLIBS_VERSION_STRING}")
 
 include_directories(${SC_MACHINE_ROOT} ${GLIB2_INCLUDE_DIRS})
 

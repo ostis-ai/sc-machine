@@ -29,7 +29,7 @@ UNIT_TEST(events_threading)
 
   for (size_t i = 0; i < nodeNum; ++i)
   {
-    ScAddr const addr = ctx.CreateNode(*ScType::NodeConst);
+    ScAddr const addr = ctx.CreateNode(ScType::NodeConst);
     SC_CHECK(addr.IsValid(), ());
     nodes[i] = addr;
   }
@@ -80,7 +80,7 @@ UNIT_TEST(events_threading)
     uint32_t const v = rand() % 2;
     if (v == 0)
     {
-      ScAddr const e = ctx.CreateEdge(*ScType::EdgeAccess, randNode(), randNode());
+      ScAddr const e = ctx.CreateEdge(ScType::EdgeAccess, randNode(), randNode());
       SC_CHECK(e.IsValid(), ());
       edges.push_back(e);
 

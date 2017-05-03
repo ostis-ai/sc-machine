@@ -69,6 +69,12 @@ public:
   explicit ExceptionNotImplemented(std::string const & msg) : ScException("NotImplemented: " + msg) {}
 };
 
+class ExceptionInvalidType final : public ScException
+{
+public:
+  explicit ExceptionInvalidType(std::string const & msg) : ScException("InvalidType: " + msg) {}
+};
+
 #define error(__str) { throw ScException(__str); }
 #define error_invalid_params(__str) { throw ScExceptionInvalidParams(__str); }
 

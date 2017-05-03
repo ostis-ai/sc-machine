@@ -7,6 +7,7 @@
 #include "test_sc_agent_commands.hpp"
 
 #include "sc-memory/cpp/sc_timer.hpp"
+#include "sc-memory/cpp/sc_wait.hpp"
 #include "sc-memory/cpp/utils/sc_test.hpp"
 
 #include <thread>
@@ -43,12 +44,11 @@ UNIT_TEST(ATestCommandEmit)
 
   SC_CHECK(cmd.IsValid(), ());
 
-  ScAgentAction::InitiateCommand(ctx, cmd);
-
-  ScTimer timer(3.0);
-  while (!timer.IsTimeOut() && testInitLock.IsLocked())
-    std::this_thread::sleep_for(std::chrono::milliseconds(10));
-
+  ScWaitActionFinished waiter(ctx, cmd);
+  waiter.SetOnWaitStartDelegate([&]() {
+    ScAgentAction::InitiateCommand(ctx, cmd);
+  });
+  waiter.Wait();
   SC_CHECK_EQUAL(ScAgentAction::GetCommandResultCode(ctx, cmd), SC_RESULT_OK, ());
 
   SC_AGENT_UNREGISTER(ATestCommandEmit);

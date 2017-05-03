@@ -12,8 +12,10 @@ engine = filesystem     # used filememory plugin. Possible values: filesystem, r
 host = 127.0.0.1      # ip-address of redis server
 port = 6379       # port of redis server
 timeout = 1500     # max timeout for responce from redis server in milliseconds
-```
 
+[python]
+modules_path = ../python_modules;../python  # list of search path of python modules (default ./python)
+```
 
 ## sctp-server
 **Configuration**     

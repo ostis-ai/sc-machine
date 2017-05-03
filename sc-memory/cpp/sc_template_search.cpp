@@ -30,7 +30,6 @@ public:
     if (!m_template.IsSearchCacheValid() && !m_template.m_constructions.empty())
     {
       // update it
-      auto const & triples = m_template.m_constructions;
       ScTemplate::ProcessOrder preCache(m_template.m_constructions.size());
       for (size_t i = 0; i < preCache.size(); ++i)
         preCache[i] = i;
@@ -130,7 +129,6 @@ public:
         {
           // unpack it
           size_t const tripleIdx = idx >> 2;
-          size_t const elIdx = idx & 3;
 
           if (isTripleCached[tripleIdx])
             continue;
@@ -391,7 +389,7 @@ public:
 private:
   ScTemplate const & m_template;
   ScMemoryContext & m_context;
-  ScAddr const & m_struct;
+  ScAddr const m_struct;
 
   using StructCache = std::unordered_set<ScAddr, ScAddrHashFunc<uint32_t>>;
   StructCache m_structCache;

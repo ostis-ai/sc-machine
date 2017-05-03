@@ -1,3 +1,10 @@
+## v0.4.0
+
+* Improve test logging
+* Improve work with memory buffers
+* Cleanup API
+* Add suppor of python 3 code
+
 ## v0.3.1
 
 * Fix templates search error (problems was with triples search order)

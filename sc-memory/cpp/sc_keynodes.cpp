@@ -54,7 +54,8 @@ bool ScKeynodes::Init(bool force)
   for (size_t i = 0; i < kKeynodeRrelListNum; ++i)
   {
     ScAddr & item = kKeynodeRrelList[i];
-    if (!ctx.HelperResolveSystemIdtf("rrel_" + std::to_string(i + 1), item, ScType::NodeConstRole))
+    item = ctx.HelperResolveSystemIdtf("rrel_" + std::to_string(i + 1), ScType::NodeConstRole);
+    if (!item.IsValid())
       result = false;
     SC_ASSERT(item.IsValid(), ());
   }

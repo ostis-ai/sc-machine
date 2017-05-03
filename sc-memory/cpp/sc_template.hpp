@@ -217,7 +217,13 @@ public:
   {
   }
 
+  SC_DEPRECATED(0.4.0, "You should to use ScTemplateGenParams::Add")
   _SC_EXTERN ScTemplateGenParams & add(std::string const & varIdtf, ScAddr const & value)
+  {
+    return Add(varIdtf, value);
+  }
+
+  _SC_EXTERN ScTemplateGenParams & Add(std::string const & varIdtf, ScAddr const & value)
   {
     assert(m_values.find(varIdtf) == m_values.end());
     m_values[varIdtf] = value;
@@ -236,7 +242,13 @@ public:
     return false;
   }
 
+  SC_DEPRECATED(0.4.0, "You should to use ScTemplateGenParams::IsEmpty")
   _SC_EXTERN bool empty() const
+  {
+    return m_values.empty();
+  }
+
+  _SC_EXTERN bool IsEmpty() const
   {
     return m_values.empty();
   }
@@ -386,14 +398,12 @@ class ScTemplateSearchResultItem
   friend class ScTemplateSearch;
   friend class ScTemplateSearchResult;
 
-protected:
+public:
   ScTemplateSearchResultItem(ScAddrVector const * results, ScTemplate::ReplacementsMap const * replacements)
     : m_results(results)
     , m_replacements(replacements)
   {
   }
-
-public:
 
   inline ScAddr const & operator[] (std::string const & name) const
   {

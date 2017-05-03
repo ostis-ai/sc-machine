@@ -33,12 +33,14 @@ public:
 
   /// TODO: thread safe
   _SC_EXTERN void Message(eType type, std::string const & msg, ScConsole::Color color = ScConsole::Color::White);
+  _SC_EXTERN void SetMuted(bool value);
 
   _SC_EXTERN static ScLog * GetInstance();
 
 private:
   std::ofstream m_fileStream;
   eType m_mode;
+  bool m_isMuted;
 
   static ScLog * ms_instance;
 };

@@ -9,6 +9,7 @@
 #include <algorithm>
 #include <cctype>
 #include <cstdlib>
+#include <sstream>
 
 namespace utils
 {
@@ -89,6 +90,15 @@ void StringUtils::SplitFilename(std::string const & qualifiedName, std::string &
     outPath = path.substr(0, i + 1);
   }
 
+}
+
+void StringUtils::SplitString(std::string const & str, char delim, StringVector & outList)
+{
+  outList.clear();
+  std::istringstream ss(str);
+  std::string item;
+  while (std::getline(ss, item, delim))
+    outList.push_back(item);
 }
 
 std::string StringUtils::NormalizeFilePath(std::string const & init, bool makeLowerCase)

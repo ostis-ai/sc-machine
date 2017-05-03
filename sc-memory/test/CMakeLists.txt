@@ -6,7 +6,13 @@ add_executable(test_threading test_threading.cpp)
 target_link_libraries(test_threading sc-memory)
 
 
+# cpp tests
 set(SC_MEMORY_WRAP_TEST "${SC_MACHINE_ROOT}/sc-memory/test/wrap")
+
+set(SC_KPM_PYTHON_PATH "${SC_MACHINE_ROOT}/sc-kpm/python")
+
+configure_file("${SC_MEMORY_WRAP_TEST}/test_defines.hpp.in" "${CMAKE_CURRENT_BINARY_DIR}/test_wrap_gen/test_defines.hpp")
+
 set(SOURCES_WRAP_TEST
 	"wrap/test_wrap.cpp"
 	)

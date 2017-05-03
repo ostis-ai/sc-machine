@@ -76,7 +76,7 @@ public:
         break;
       }
 
-      ScAddr const edge = m_context.CreateEdge(*values[1].m_typeValue.UpConstType(), addr1, addr2);
+      ScAddr const edge = m_context.CreateEdge(values[1].m_typeValue.UpConstType(), addr1, addr2);
       if (!edge.IsValid())
       {
         isError = true;
@@ -102,7 +102,7 @@ public:
     ScAddr addr;
     if (type.IsNode())
     {
-      addr = m_context.CreateNode(*type);
+      addr = m_context.CreateNode(type);
     }
     else if (type.IsLink())
     {

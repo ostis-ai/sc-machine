@@ -21,7 +21,8 @@ Possible tags:
   * `[review]` - use, when you made commit with review fixes;
   * `[refactor]` - use, when you made commit with some code refactoring;
   * `[changelog]` - use, when you update changelog;
-  * `[docs]` - use, when you update documentation.
+  * `[docs]` - use, when you update documentation;
+  * `[python]` - use, when you made commit with python module changes.
 
 ***
 Each commit in Pull request should be an atomic. Another word implement or fix one feature. For example:

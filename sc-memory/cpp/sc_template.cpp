@@ -11,9 +11,9 @@
 
 ScTemplate::ScTemplate(size_t BufferedNum)
   : m_isSearchCacheValid(false)
+  , m_currentReplPos(0)
 {
   m_constructions.reserve(BufferedNum);
-  m_currentReplPos = 0;
 }
 
 ScTemplate & ScTemplate::operator() (ScTemplateItemValue const & param1, ScTemplateItemValue const & param2, ScTemplateItemValue const & param3)
