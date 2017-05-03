@@ -54,8 +54,16 @@ endif()
 
 # find dependencies
 if (${UNIX})
-    find_package(PythonLibs 3.5 REQUIRED)
-    find_package(Boost 1.58 REQUIRED COMPONENTS filesystem python-py35)
+    find_package(PythonLibs 3.4 REQUIRED)
+    message(${PYTHONLIBS_VERSION_STRING})
+
+    string(REPLACE "." ";" PY_VERSION_LIST ${PYTHONLIBS_VERSION_STRING})
+    list(GET PY_VERSION_LIST 0 PY_VERSION_MAJOR)
+    list(GET PY_VERSION_LIST 1 PY_VERSION_MINOR)
+
+    set(PY_SHORT_VERSION "${PY_VERSION_MAJOR}${PY_VERSION_MINOR}")
+
+    find_package(Boost 1.54 REQUIRED COMPONENTS filesystem python-py${PY_SHORT_VERSION})
 
     set (ANTLR_LIB antlr3c)
 
