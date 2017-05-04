@@ -98,7 +98,7 @@ add_library (sc-memory-cpp SHARED ${SC_MEMORY_CPP_SOURCES} ${SOURCES_SCS})
 
 if (${WIN32})
 target_link_libraries(sc-memory-cpp
-                        sc-memory ${ANTLR_LIB} ${LIBCURL_LIBRARIES}
+                        sc-memory ${ANTLR_LIB} ${LIBCURL_LIBRARIES} ${PYTHON_LIBRARY_RELEASE}
                         debug ${BOOST_PYTHON_LIBRARY_DEBUG}
                         optimized ${BOOST_PYTHON_LIBRARY_RELEASE})
 elseif (${UNIX})
