@@ -33,4 +33,13 @@ private:
   std::atomic_bool m_locked;
 };
 
+struct ScLockGuard
+{
+  ScLockGuard(ScLock & lock) : m_lock(lock) { m_lock.Lock(); }
+  ~ScLockGuard() { m_lock.Unlock(); }
+
+private:
+  ScLock & m_lock;
+};
+
 } // namespace utils
