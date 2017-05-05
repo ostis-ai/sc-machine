@@ -12,7 +12,7 @@ To create module you need to do next steps:
 
 **CMakeLists.txt**
 ```bash
- set(SC_IOT_SRC "${SC_KPM_ROOT}/nl")
+set(SC_IOT_SRC ${CMAKE_CURRENT_LIST_DIR})
 
 set(SOURCES
 	"nl.cpp"
@@ -21,11 +21,11 @@ set(HEADERS
 	"nl.hpp"
 )
 
-include_directories(${SC_IOT_SRC} ${SC_MEMORY_SRC} ${GLIB2_INCLUDE_DIRS})
+include_directories(${SC_IOT_SRC} ${SC_MEMORY_SRC})
 
 add_library (nl SHARED ${SOURCES} ${HEADERS})
-add_dependencies(nl sc-memory-cpp sc-kpm-common)
-target_link_libraries(nl sc-memory-cpp sc-kpm-common)
+add_dependencies(nl sc-memory-cpp)
+target_link_libraries(nl sc-memory-cpp)
 
 sc_codegen(nl ${SC_IOT_SRC})
 ```
@@ -37,8 +37,7 @@ After that you need to create two files (cpp, hpp):
 ```cpp
 #pragma once
 
-#include "sc_memory.h"
-#include "cpp/sc_module.hpp"
+#include <sc-memory/cpp/sc_module.hpp>
 
 #include "nl.generated.hpp"
 
