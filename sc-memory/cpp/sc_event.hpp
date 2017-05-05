@@ -21,13 +21,15 @@ class ScEvent
 public:
   using DelegateFunc = std::function<bool(ScAddr const &, ScAddr const &, ScAddr const &)>;
 
-  typedef uint8_t Type;
-  _SC_EXTERN static Type AddOutputEdge;
-  _SC_EXTERN static Type AddInputEdge;
-  _SC_EXTERN static Type RemoveOutputEdge;
-  _SC_EXTERN static Type RemoveInputEdge;
-  _SC_EXTERN static Type EraseElement;
-  _SC_EXTERN static Type ContentChanged;
+  enum class Type : uint8_t
+  {
+    AddOutputEdge = 0,
+    AddInputEdge,
+    RemoveOutputEdge,
+    RemoveInputEdge,
+    EraseElement,
+    ContentChanged
+  };
 
   explicit _SC_EXTERN ScEvent(const ScMemoryContext & ctx, const ScAddr & addr, Type eventType, DelegateFunc func = DelegateFunc());
   virtual _SC_EXTERN ~ScEvent();
@@ -62,7 +64,7 @@ class ScEventAddOutputEdge final : public ScEvent
 
 public:
   _SC_EXTERN ScEventAddOutputEdge(const ScMemoryContext & ctx, const ScAddr & addr, ScEvent::DelegateFunc func)
-    : ScEvent(ctx, addr, ScEvent::AddOutputEdge, func)
+    : ScEvent(ctx, addr, ScEvent::Type::AddOutputEdge, func)
   {
   }
 };
@@ -72,7 +74,7 @@ class ScEventAddInputEdge final : public ScEvent
   friend class ScMemoryContext;
 public:
   _SC_EXTERN ScEventAddInputEdge(const ScMemoryContext & ctx, const ScAddr & addr, ScEvent::DelegateFunc func)
-    : ScEvent(ctx, addr, ScEvent::AddInputEdge, func)
+    : ScEvent(ctx, addr, ScEvent::Type::AddInputEdge, func)
   {
   }
 };
@@ -82,7 +84,7 @@ class ScEventRemoveOutputEdge final : public ScEvent
   friend class ScMemoryContext;
 public:
   _SC_EXTERN ScEventRemoveOutputEdge(const ScMemoryContext & ctx, const ScAddr & addr, ScEvent::DelegateFunc func)
-    : ScEvent(ctx, addr, ScEvent::RemoveOutputEdge, func)
+    : ScEvent(ctx, addr, ScEvent::Type::RemoveOutputEdge, func)
   {
   }
 };
@@ -92,7 +94,7 @@ class ScEventRemoveInputEdge final : public ScEvent
   friend class ScMemoryContext;
 public:
   _SC_EXTERN ScEventRemoveInputEdge(const ScMemoryContext & ctx, const ScAddr & addr, ScEvent::DelegateFunc func)
-    : ScEvent(ctx, addr, ScEvent::RemoveInputEdge, func)
+    : ScEvent(ctx, addr, ScEvent::Type::RemoveInputEdge, func)
   {
   }
 };
@@ -102,7 +104,7 @@ class ScEventEraseElement final : public ScEvent
   friend class ScMemoryContext;
 public:
   _SC_EXTERN ScEventEraseElement(const ScMemoryContext & ctx, const ScAddr & addr, ScEvent::DelegateFunc func)
-    : ScEvent(ctx, addr, ScEvent::EraseElement, func)
+    : ScEvent(ctx, addr, ScEvent::Type::EraseElement, func)
   {
   }
 };
@@ -112,7 +114,7 @@ class ScEventContentChanged final : public ScEvent
   friend class ScMemoryContext;
 public:
   _SC_EXTERN ScEventContentChanged(const ScMemoryContext & ctx, const ScAddr & addr, ScEvent::DelegateFunc func)
-    : ScEvent(ctx, addr, ScEvent::ContentChanged, func)
+    : ScEvent(ctx, addr, ScEvent::Type::ContentChanged, func)
   {
   }
 };

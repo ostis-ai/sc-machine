@@ -40,12 +40,12 @@ UNIT_TEST(events_threading)
 
   std::vector<ScEvent::Type> eventTypes =
   {
-    ScEvent::AddOutputEdge,
-    ScEvent::AddInputEdge,
-    ScEvent::RemoveOutputEdge,
-    ScEvent::RemoveInputEdge,
-    ScEvent::EraseElement,
-    ScEvent::ContentChanged
+    ScEvent::Type::AddOutputEdge,
+    ScEvent::Type::AddInputEdge,
+    ScEvent::Type::RemoveOutputEdge,
+    ScEvent::Type::RemoveInputEdge,
+    ScEvent::Type::EraseElement,
+    ScEvent::Type::ContentChanged
   };
 
   auto const randNode = [&nodes]()
