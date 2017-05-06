@@ -1,7 +1,5 @@
 #include "sc_python_module.hpp"
 
-#include "sc_python_gil.hpp"
-
 #include "../sc_memory.hpp"
 #include "../sc_stream.hpp"
 
@@ -45,6 +43,7 @@ private:
   TSharedPointer<ScTemplateGenResult> m_result;
 };
 
+// -----------------------------
 class PyTemplateSearchResultItem
 {
 public:
@@ -85,6 +84,7 @@ private:
   TSharedPointer<ScTemplateSearchResultItem> m_item;
 };
 
+// -----------------------------
 class PyTemplateSearchResult
 {
 public:
@@ -116,6 +116,7 @@ private:
   TSharedPointer<ScTemplateSearchResult> m_result;
 };
 
+// -----------------------------
 class PyTemplateItemValue
 {
 public:
@@ -145,6 +146,7 @@ private:
   TSharedPointer<ScTemplateItemValue> m_item;
 };
 
+// -----------------------------
 bp::object _scAddrToRShift(ScAddr const & addr, std::string const & replName)
 {
   return bp::object(PyTemplateItemValue(addr, replName));
@@ -155,6 +157,7 @@ bp::object _scTypeToRShift(ScType const & type, std::string const & replName)
   return bp::object(PyTemplateItemValue(type, replName));
 }
 
+// -----------------------------
 class PyLinkContent
 {
 public:
@@ -529,7 +532,7 @@ BOOST_PYTHON_MODULE(sc)
 {
   bp::register_exception_translator<utils::ScException>(&translateException);
 
-  bp::class_<ScMemoryContext>("ScMemoryContext", bp::init<uint8_t, std::string>())
+  bp::class_<ScMemoryContext, boost::noncopyable>("ScMemoryContext", bp::init<uint8_t, std::string>())
     .def("CreateNode", bp::make_function(&ScMemoryContext::CreateNode, py::ReleaseGILPolicy()))
     .def("CreateEdge", bp::make_function(&ScMemoryContext::CreateEdge, py::ReleaseGILPolicy()))
     .def("CreateLink", bp::make_function(&ScMemoryContext::CreateLink, py::ReleaseGILPolicy()))
@@ -586,15 +589,19 @@ BOOST_PYTHON_MODULE(sc)
   bp::class_<impl::PyTemplateItemValue>("ScTemplateItemValue")
     ;
 
-  bp::class_<ScTemplateGenParams>("ScTemplateGenParams")
+  bp::class_<ScTemplateGenParams, boost::noncopyable>("ScTemplateGenParams")
     .def("Add", bp::make_function(impl::_templateGenParamsAdd, py::ReleaseGILPolicy()))
     .def("Get", bp::make_function(impl::_templateGenParamsGet, py::ReleaseGILPolicy()))
     .def("IsEmpty", bp::make_function(&ScTemplateGenParams::IsEmpty, py::ReleaseGILPolicy()))
     ;
 
-  bp::class_<ScTemplate>("ScTemplate")
+  bp::class_<ScTemplate, boost::noncopyable>("ScTemplate")
     .def("Triple", bp::make_function(impl::_templateTriple, py::ReleaseGILPolicy()))
     .def("TripleWithRelation", bp::make_function(impl::_templateTripleWithRelation, py::ReleaseGILPolicy()))
+    ;
+
+  bp::class_<py::ScPythonBridgeImpl, boost::noncopyable>("ScPythonBridge")
+    .def("SetOnEvent", &py::ScPythonBridgeImpl::SetOnEvent)
     ;
 
   bp::class_<ScAddr>("ScAddr", bp::init<>())
@@ -679,7 +686,18 @@ namespace py
 
 void ScPythonMemoryModule::Initialize()
 {
-  PyImport_AppendInittab("sc", &PyInit_sc);//&initsc);
+  PyImport_AppendInittab("sc", &PyInit_sc);
 }
 
 } // namespace py
+
+  // some fixes of boost compilation
+namespace boost
+{
+template <>
+py::ScPythonBridgeImpl const volatile * __cdecl get_pointer<py::ScPythonBridgeImpl const volatile>(py::ScPythonBridgeImpl const volatile * ptr)
+{
+  return ptr;
+}
+
+} // namespace boost

@@ -1,12 +1,30 @@
 #pragma once
 
+#include "../sc_utils.hpp"
 #include "../sc_types.hpp"
 #include "../utils/sc_lock.hpp"
 
 #include <string>
+#include <memory>
 
 namespace py
 {
+
+class ScPythonBridgeImpl;
+
+class ScPythonBridge
+{
+public:
+  
+  _SC_EXTERN ScPythonBridge();
+  _SC_EXTERN ~ScPythonBridge();
+
+  _SC_EXTERN MemoryBufferSafePtr SendEvent(std::string const & eventName, MemoryBufferSafePtr & data);
+  ScPythonBridgeImpl * GetImpl() const;
+  
+private:
+  ScPythonBridgeImpl * m_impl;
+};
 
 class ScPythonInterpreter
 {
@@ -18,7 +36,7 @@ public:
    * python.modules_path config value.
    * This function is a thread safe
    */
-  _SC_EXTERN static void RunScript(std::string const & scriptName);
+  _SC_EXTERN static void RunScript(std::string const & scriptName, ScPythonBridge * bridge = nullptr);
 
   _SC_EXTERN static void AddModulesPath(std::string const & modulesPath);
 

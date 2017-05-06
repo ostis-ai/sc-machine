@@ -213,6 +213,9 @@ class ScTemplateGenParams
   friend class ScTemplateGenerator;
 
 public:
+  ScTemplateGenParams(ScTemplateGenParams const & other) = delete;
+  ScTemplateGenParams & operator = (ScTemplateGenParams const & other) = delete;
+
   explicit ScTemplateGenParams()
   {
   }
@@ -268,6 +271,9 @@ class ScTemplate final
   friend class ScTemplateBuilder;
 
 public:
+  ScTemplate(ScTemplate const & other) = delete;
+  ScTemplate & operator = (ScTemplate const & other) = delete;
+
   using ReplacementsMap = std::map<std::string, size_t>;
   using TemplateConstr3Vector = std::vector<ScTemplateConstr3>;
   using ProcessOrder = std::vector<size_t>;

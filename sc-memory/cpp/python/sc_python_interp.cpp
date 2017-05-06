@@ -1,18 +1,15 @@
 
-#include "sc_python_interp.hpp"
+#include "sc_python_threads.hpp"
 #include "sc_python_module.hpp"
-
-#include "sc_python_includes.hpp"
+#include "sc_python_interp.hpp"
 
 #include "../sc_memory.hpp"
 #include "../sc_debug.hpp"
-#include "../sc_utils.hpp"
 
 #include "../utils/sc_boost.hpp"
 #include "../utils/sc_cache.hpp"
 
 namespace bp = boost::python;
-
 
 extern "C"
 {
@@ -61,19 +58,6 @@ private:
   PyObject * m_object;
 };
 
-struct PyEvalLock
-{
-  PyEvalLock()
-  {
-    PyEval_AcquireLock();
-  }
-
-  ~PyEvalLock()
-  {
-    PyEval_ReleaseLock();
-  }
-};
-
 void PyLoadModulePathFromConfig(StringVector & outValues)
 {
   // load search paths
@@ -105,6 +89,27 @@ void AddModuleSearchPaths(StringVector const & modulePath)
 namespace py
 {
 
+ScPythonBridge::ScPythonBridge()
+  : m_impl(new ScPythonBridgeImpl())
+{
+}
+
+ScPythonBridge::~ScPythonBridge()
+{
+  delete m_impl;
+}
+
+MemoryBufferSafePtr ScPythonBridge::SendEvent(std::string const & eventName, MemoryBufferSafePtr & data)
+{
+  return m_impl->SendEventToPython(eventName, data);
+}
+
+ScPythonBridgeImpl * ScPythonBridge::GetImpl() const
+{
+  return m_impl;
+}
+
+/// ----------------------------------------------
 bool ScPythonInterpreter::ms_isInitialized = false;
 std::wstring ScPythonInterpreter::ms_name;
 utils::ScLock ScPythonInterpreter::m_lock;
@@ -112,30 +117,24 @@ utils::ScLock ScPythonInterpreter::m_lock;
 ScPythonInterpreter::ModulesMap ScPythonInterpreter::ms_foundModules;
 ScPythonInterpreter::ModulePathSet ScPythonInterpreter::ms_modulePaths;
 
-PyThreadState * gMainThreadState = nullptr;
+ScPythonMainThread * gMainThread = nullptr;
+StringVector gModulePaths;
 
 bool ScPythonInterpreter::Initialize(std::string const & name)
 {
   SC_ASSERT(!ms_isInitialized, ("You can't initialize this class twicely."));
   ms_name.assign(name.begin(), name.end());
 
-  // TODO: more clear solution
-  Py_SetProgramName((wchar_t*)ms_name.c_str());
-  Py_Initialize();
-
-  StringVector modulePath;
-  PyLoadModulePathFromConfig(modulePath);
-  AddModuleSearchPaths(modulePath);  
-  
-  PyEval_InitThreads();
-  gMainThreadState = PyThreadState_Get();
-  //PyEval_ReleaseLock();
-
   ScPythonMemoryModule::Initialize();
+
+  SC_ASSERT(gMainThread == nullptr, ("ScPythonInterpreter already initialized"));
+  gMainThread = new ScPythonMainThread();
+
+  PyLoadModulePathFromConfig(gModulePaths);  
 
   SC_LOG_INIT("Initialize python iterpreter version " << PY_VERSION);
   SC_LOG_INFO("Collect modules...");
-  CollectModules(modulePath);
+  CollectModules(gModulePaths);
   SC_LOG_INFO("Collected " << ms_foundModules.size() << " modules");
 
   ms_isInitialized = true;
@@ -144,13 +143,20 @@ bool ScPythonInterpreter::Initialize(std::string const & name)
 
 void ScPythonInterpreter::Shutdown()
 {
-  Py_Finalize();
+  SC_ASSERT(gMainThread != nullptr, ());
+  gMainThread = nullptr;
+
+  gModulePaths.clear();
+  
   ms_isInitialized = false;
 }
 
-void ScPythonInterpreter::RunScript(std::string const & scriptName)
+void ScPythonInterpreter::RunScript(std::string const & scriptName, ScPythonBridge * bridge /* = nullptr */)
 {
   utils::ScLockScope scope(m_lock);
+  ScPythonSubThread subThreadScope;
+
+  //AddModuleSearchPaths(gModulePaths);
 
   auto const it = ms_foundModules.find(scriptName);
   if (it == ms_foundModules.end())
@@ -163,13 +169,9 @@ void ScPythonInterpreter::RunScript(std::string const & scriptName)
   p /= it->first;
   std::string const filePath = p.string();
 
-  AddModuleSearchPaths({ it->second });
-  
   std::ifstream inputfile(filePath);
   std::string fileContent((std::istreambuf_iterator<char>(inputfile)),
                            std::istreambuf_iterator<char>());
-
-  //PyEval_RestoreThread(gMainThreadState);
 
   // now need to compile this file
   PyCompilerFlags flags;
@@ -185,6 +187,20 @@ void ScPythonInterpreter::RunScript(std::string const & scriptName)
   //PyEvalLock lock;
   bp::object mainModule((bp::handle<>(bp::borrowed(PyImport_AddModule("__main__")))));
   bp::object mainNamespace = mainModule.attr("__dict__");
+
+  //if (bridge)
+  //{
+  //  try
+  //  {
+  //    ScPythonBridgeImpl * bridgeImpl = bridge->GetImpl();
+  //    SC_ASSERT(bridgeImpl != nullptr, ());
+  //    mainModule.attr("cpp_bridge") = bp::ptr(bridgeImpl);
+  //  }
+  //  catch (...)
+  //  {
+  //    PyErr_Print();
+  //  }
+  //}
 
   PyObjectWrap resultObj(PyEval_EvalCode(*codeObj, mainNamespace.ptr(), mainNamespace.ptr()));
   if (!resultObj.IsValid())

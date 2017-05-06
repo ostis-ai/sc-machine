@@ -9,7 +9,7 @@
 
 #include <algorithm>
 
-const ScTemplateGenParams ScTemplateGenParams::Empty = ScTemplateGenParams();
+const ScTemplateGenParams ScTemplateGenParams::Empty;
 
 class ScTemplateGenerator
 {
