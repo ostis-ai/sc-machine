@@ -1,6 +1,6 @@
 #include "sc_python_module.hpp"
 
-#include "sc_python_includes.hpp"
+#include "sc_python_gil.hpp"
 
 #include "../sc_memory.hpp"
 #include "../sc_stream.hpp"
@@ -530,90 +530,90 @@ BOOST_PYTHON_MODULE(sc)
   bp::register_exception_translator<utils::ScException>(&translateException);
 
   bp::class_<ScMemoryContext>("ScMemoryContext", bp::init<uint8_t, std::string>())
-    .def("CreateNode", &ScMemoryContext::CreateNode)
-    .def("CreateEdge", &ScMemoryContext::CreateEdge)
-    .def("CreateLink", &ScMemoryContext::CreateLink)
-    .def("GetName", &ScMemoryContext::GetName)
-    .def("IsElement", &ScMemoryContext::IsElement)
-    .def("GetElementType", &ScMemoryContext::GetElementType)
-    .def("GetEdgeInfo", impl::_context_getEdgeInfo)
-    .def("SetLinkContent", impl::_context_setLinkContent)
-    .def("GetLinkContent", impl::_context_getLinkContent)
-    .def("Iterator3", impl::_context_iterator3)
-    .def("Iterator5", impl::_context_iterator5)
-    .def("HelperResolveSystemIdtf", impl::_context_helperResolveSysIdtf)
-    .def("HelperSetSystemIdtf", &ScMemoryContext::HelperSetSystemIdtf)
-    .def("HelperGetSystemIdtf", &ScMemoryContext::HelperGetSystemIdtf)
-    .def("HelperCheckEdge", &ScMemoryContext::HelperCheckEdge)
-    .def("HelperGenTemplate", impl::_context_helperGenTemplate)
-    .def("HelperSearchTemplate", impl::_context_helperSearchTemplate)
-    .def("HelperBuildTemplate", impl::_context_helperBuildTemplate)
+    .def("CreateNode", bp::make_function(&ScMemoryContext::CreateNode, py::ReleaseGILPolicy()))
+    .def("CreateEdge", bp::make_function(&ScMemoryContext::CreateEdge, py::ReleaseGILPolicy()))
+    .def("CreateLink", bp::make_function(&ScMemoryContext::CreateLink, py::ReleaseGILPolicy()))
+    .def("GetName", bp::make_function(&ScMemoryContext::GetName, py::ReleaseGILPolicy()))
+    .def("IsElement", bp::make_function(&ScMemoryContext::IsElement, py::ReleaseGILPolicy()))
+    .def("GetElementType", bp::make_function(&ScMemoryContext::GetElementType, py::ReleaseGILPolicy()))
+    .def("GetEdgeInfo", bp::make_function(impl::_context_getEdgeInfo, py::ReleaseGILPolicy()))
+    .def("SetLinkContent", bp::make_function(impl::_context_setLinkContent, py::ReleaseGILPolicy()))
+    .def("GetLinkContent", bp::make_function(impl::_context_getLinkContent, py::ReleaseGILPolicy()))
+    .def("Iterator3", bp::make_function(impl::_context_iterator3, py::ReleaseGILPolicy()))
+    .def("Iterator5", bp::make_function(impl::_context_iterator5, py::ReleaseGILPolicy()))
+    .def("HelperResolveSystemIdtf", bp::make_function(impl::_context_helperResolveSysIdtf, py::ReleaseGILPolicy()))
+    .def("HelperSetSystemIdtf", bp::make_function(&ScMemoryContext::HelperSetSystemIdtf, py::ReleaseGILPolicy()))
+    .def("HelperGetSystemIdtf", bp::make_function(&ScMemoryContext::HelperGetSystemIdtf, py::ReleaseGILPolicy()))
+    .def("HelperCheckEdge", bp::make_function(&ScMemoryContext::HelperCheckEdge, py::ReleaseGILPolicy()))
+    .def("HelperGenTemplate", bp::make_function(impl::_context_helperGenTemplate, py::ReleaseGILPolicy()))
+    .def("HelperSearchTemplate", bp::make_function(impl::_context_helperSearchTemplate, py::ReleaseGILPolicy()))
+    .def("HelperBuildTemplate", bp::make_function(impl::_context_helperBuildTemplate, py::ReleaseGILPolicy()))
     ;
 
   bp::class_<impl::PyIterator3>("ScIterator3")
-    .def("Next", &impl::PyIterator3::Next)
-    .def("IsValid", &impl::PyIterator3::IsValid)
-    .def("Get", &impl::PyIterator3::Get)
+    .def("Next", bp::make_function(&impl::PyIterator3::Next, py::ReleaseGILPolicy()))
+    .def("IsValid", bp::make_function(&impl::PyIterator3::IsValid, py::ReleaseGILPolicy()))
+    .def("Get", bp::make_function(&impl::PyIterator3::Get, py::ReleaseGILPolicy()))
     ;
 
   bp::class_<impl::PyIterator5>("ScIterator5")
-    .def("Next", &impl::PyIterator5::Next)
-    .def("IsValid", &impl::PyIterator5::IsValid)
-    .def("Get", &impl::PyIterator5::Get)
+    .def("Next", bp::make_function(&impl::PyIterator5::Next, py::ReleaseGILPolicy()))
+    .def("IsValid", bp::make_function(&impl::PyIterator5::IsValid, py::ReleaseGILPolicy()))
+    .def("Get", bp::make_function(&impl::PyIterator5::Get, py::ReleaseGILPolicy()))
     ;
 
   bp::class_<impl::PyLinkContent>("ScLinkContent")
-    .def("AsString", &impl::PyLinkContent::AsString)
-    .def("AsInt", &impl::PyLinkContent::AsInt)
-    .def("AsFloat", &impl::PyLinkContent::AsDouble)
+    .def("AsString", bp::make_function(&impl::PyLinkContent::AsString, py::ReleaseGILPolicy()))
+    .def("AsInt", bp::make_function(&impl::PyLinkContent::AsInt, py::ReleaseGILPolicy()))
+    .def("AsFloat", bp::make_function(&impl::PyLinkContent::AsDouble, py::ReleaseGILPolicy()))
     ;
 
   bp::class_<impl::PyTemplateGenResult>("ScTemplateGenResult")
-    .def("Size", &impl::PyTemplateGenResult::Size)
-    .def("__getitem__", &impl::PyTemplateGenResult::Get)
+    .def("Size", bp::make_function(&impl::PyTemplateGenResult::Size, py::ReleaseGILPolicy()))
+    .def("__getitem__", bp::make_function(&impl::PyTemplateGenResult::Get, py::ReleaseGILPolicy()))
     ;
 
   bp::class_<impl::PyTemplateSearchResultItem>("ScTemplateSearchResultItem")
-    .def("Size", &impl::PyTemplateSearchResultItem::Size)
-    .def("__getitem__", &impl::PyTemplateSearchResultItem::Get)
+    .def("Size", bp::make_function(&impl::PyTemplateSearchResultItem::Size, py::ReleaseGILPolicy()))
+    .def("__getitem__", bp::make_function(&impl::PyTemplateSearchResultItem::Get, py::ReleaseGILPolicy()))
     ;
 
   bp::class_<impl::PyTemplateSearchResult>("ScTemplateSearchResult")
-    .def("Size",&impl::PyTemplateSearchResult::Size)
-    .def("__getitem__", &impl::PyTemplateSearchResult::Get)
+    .def("Size", bp::make_function(&impl::PyTemplateSearchResult::Size, py::ReleaseGILPolicy()))
+    .def("__getitem__", bp::make_function(&impl::PyTemplateSearchResult::Get, py::ReleaseGILPolicy()))
     ;
 
   bp::class_<impl::PyTemplateItemValue>("ScTemplateItemValue")
     ;
 
   bp::class_<ScTemplateGenParams>("ScTemplateGenParams")
-    .def("Add", impl::_templateGenParamsAdd)
-    .def("Get", impl::_templateGenParamsGet)
-    .def("IsEmpty", &ScTemplateGenParams::IsEmpty)
+    .def("Add", bp::make_function(impl::_templateGenParamsAdd, py::ReleaseGILPolicy()))
+    .def("Get", bp::make_function(impl::_templateGenParamsGet, py::ReleaseGILPolicy()))
+    .def("IsEmpty", bp::make_function(&ScTemplateGenParams::IsEmpty, py::ReleaseGILPolicy()))
     ;
 
   bp::class_<ScTemplate>("ScTemplate")
-    .def("Triple", impl::_templateTriple)
-    .def("TripleWithRelation", impl::_templateTripleWithRelation)
+    .def("Triple", bp::make_function(impl::_templateTriple, py::ReleaseGILPolicy()))
+    .def("TripleWithRelation", bp::make_function(impl::_templateTripleWithRelation, py::ReleaseGILPolicy()))
     ;
 
   bp::class_<ScAddr>("ScAddr", bp::init<>())
-    .def("IsValid", &ScAddr::IsValid)
-    .def("ToInt", &ScAddr::Hash)
-    .def("__eq__", &ScAddr::operator==)
-    .def("__ne__", &ScAddr::operator!=)
-    .def("__rshift__", impl::_scAddrToRShift)
-    .def("rshift", impl::_scAddrToRShift)
+    .def("IsValid", bp::make_function(&ScAddr::IsValid, py::ReleaseGILPolicy()))
+    .def("ToInt", bp::make_function(&ScAddr::Hash, py::ReleaseGILPolicy()))
+    .def("__eq__", bp::make_function(&ScAddr::operator==, py::ReleaseGILPolicy()))
+    .def("__ne__", bp::make_function(&ScAddr::operator!=, py::ReleaseGILPolicy()))
+    .def("__rshift__", bp::make_function(impl::_scAddrToRShift, py::ReleaseGILPolicy()))
+    .def("rshift", bp::make_function(impl::_scAddrToRShift, py::ReleaseGILPolicy()))
     ;
 
   bp::class_<ScType>("ScType", bp::init<>())
     .def(bp::init<ScType::RealType>())
-    .def("__eq__", &ScType::operator==)
-    .def("__ne__", &ScType::operator!=)
-    .def("__or__", &ScType::operator|)
-    .def("__and__", &ScType::operator&)
-    .def("__rshift__", impl::_scTypeToRShift)
-    .def("rshift", impl::_scTypeToRShift)
+    .def("__eq__", bp::make_function(&ScType::operator==, py::ReleaseGILPolicy()))
+    .def("__ne__", bp::make_function(&ScType::operator!=, py::ReleaseGILPolicy()))
+    .def("__or__", bp::make_function(&ScType::operator|, py::ReleaseGILPolicy()))
+    .def("__and__", bp::make_function(&ScType::operator&, py::ReleaseGILPolicy()))
+    .def("__rshift__", bp::make_function(impl::_scTypeToRShift, py::ReleaseGILPolicy()))
+    .def("rshift", bp::make_function(impl::_scTypeToRShift, py::ReleaseGILPolicy()))
     .def("IsLink", &ScType::IsLink)
     .def("IsEdge", &ScType::IsEdge)
     .def("IsNode", &ScType::IsNode)

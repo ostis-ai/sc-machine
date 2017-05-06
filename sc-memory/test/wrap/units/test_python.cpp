@@ -12,21 +12,10 @@
 UNIT_TEST(Python_interp)
 {
   py::ScPythonInterpreter::AddModulesPath(SC_TEST_KPM_PYTHON_PATH);
-  SUBTEST_START("Dummy")
-  {
-    py::ScPythonInterpreter::RunScript("dummy.py");
-  }
-  SUBTEST_END()
-
+  
   SUBTEST_START("common")
   {
-    py::ScPythonInterpreter::RunScript("test.py");
-  }
-  SUBTEST_END()
-
-  SUBTEST_START("global_context")
-  {
-    py::ScPythonInterpreter::RunScript("test2.py");
+    py::ScPythonInterpreter::RunScript("sc_test.py");
   }
   SUBTEST_END()
 }

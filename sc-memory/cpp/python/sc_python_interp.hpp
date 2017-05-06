@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../sc_types.hpp"
+#include "../utils/sc_lock.hpp"
 
 #include <string>
 
@@ -22,12 +23,13 @@ public:
   _SC_EXTERN static void AddModulesPath(std::string const & modulesPath);
 
 protected:
-  static void CollectModules();
+  static void CollectModules(StringVector const & modulePath);
   static void CollectModulesInPath(std::string const & path);
 
 private:
   static bool ms_isInitialized;
   static std::wstring ms_name;
+  static utils::ScLock m_lock;
 
   using ModulesMap = std::unordered_map<std::string, std::string>;
   static ModulesMap ms_foundModules;

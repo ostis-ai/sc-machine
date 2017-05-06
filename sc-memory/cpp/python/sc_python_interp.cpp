@@ -4,6 +4,7 @@
 
 #include "sc_python_includes.hpp"
 
+#include "../sc_memory.hpp"
 #include "../sc_debug.hpp"
 #include "../sc_utils.hpp"
 
@@ -20,6 +21,8 @@ extern "C"
 
 namespace
 {
+
+std::unordered_set<std::string> gAddedModulePaths;
 
 struct PyObjectWrap
 {
@@ -71,6 +74,32 @@ struct PyEvalLock
   }
 };
 
+void PyLoadModulePathFromConfig(StringVector & outValues)
+{
+  // load search paths
+  char const * pValue = sc_config_get_value_string("python", "modules_path");
+  if (pValue == nullptr)
+    return;
+
+  std::string const paths = pValue;
+  utils::StringUtils::SplitString(paths, ';', outValues);
+  for (auto & v : outValues)
+    v = utils::StringUtils::ReplaceAll(v, "\\", "/");
+}
+
+void AddModuleSearchPaths(StringVector const & modulePath)
+{
+  PyObject* sysPath = PySys_GetObject("path");
+  for (auto const & p : modulePath)
+  {
+    if (gAddedModulePaths.find(p) != gAddedModulePaths.end())
+    {
+      PyList_Insert(sysPath, 0, PyUnicode_DecodeLocale(p.c_str(), nullptr));
+      gAddedModulePaths.insert(p);
+    }
+  }
+}
+
 } // namespace 
 
 namespace py
@@ -78,6 +107,8 @@ namespace py
 
 bool ScPythonInterpreter::ms_isInitialized = false;
 std::wstring ScPythonInterpreter::ms_name;
+utils::ScLock ScPythonInterpreter::m_lock;
+
 ScPythonInterpreter::ModulesMap ScPythonInterpreter::ms_foundModules;
 ScPythonInterpreter::ModulePathSet ScPythonInterpreter::ms_modulePaths;
 
@@ -91,16 +122,20 @@ bool ScPythonInterpreter::Initialize(std::string const & name)
   // TODO: more clear solution
   Py_SetProgramName((wchar_t*)ms_name.c_str());
   Py_Initialize();
+
+  StringVector modulePath;
+  PyLoadModulePathFromConfig(modulePath);
+  AddModuleSearchPaths(modulePath);  
   
   PyEval_InitThreads();
   gMainThreadState = PyThreadState_Get();
-  PyEval_ReleaseLock();
+  //PyEval_ReleaseLock();
 
   ScPythonMemoryModule::Initialize();
 
   SC_LOG_INIT("Initialize python iterpreter version " << PY_VERSION);
   SC_LOG_INFO("Collect modules...");
-  CollectModules();
+  CollectModules(modulePath);
   SC_LOG_INFO("Collected " << ms_foundModules.size() << " modules");
 
   ms_isInitialized = true;
@@ -115,6 +150,8 @@ void ScPythonInterpreter::Shutdown()
 
 void ScPythonInterpreter::RunScript(std::string const & scriptName)
 {
+  utils::ScLockScope scope(m_lock);
+
   auto const it = ms_foundModules.find(scriptName);
   if (it == ms_foundModules.end())
   {
@@ -126,9 +163,13 @@ void ScPythonInterpreter::RunScript(std::string const & scriptName)
   p /= it->first;
   std::string const filePath = p.string();
 
+  AddModuleSearchPaths({ it->second });
+  
   std::ifstream inputfile(filePath);
   std::string fileContent((std::istreambuf_iterator<char>(inputfile)),
                            std::istreambuf_iterator<char>());
+
+  //PyEval_RestoreThread(gMainThreadState);
 
   // now need to compile this file
   PyCompilerFlags flags;
@@ -141,13 +182,7 @@ void ScPythonInterpreter::RunScript(std::string const & scriptName)
                        "Can't parse file " << filePath);
   }
 
-  PyEvalLock lock;
-
-  /*PyObjectWrap globals(PyDict_New());
-  PyDict_SetItemString(*globals, "__builtins__", PyEval_GetBuiltins());*/
-  //PyObjectWrap globalsDict(PyDict_New());
-  //PyDict_SetItemString(*globals, "__dict__", *globalsDict);
-
+  //PyEvalLock lock;
   bp::object mainModule((bp::handle<>(bp::borrowed(PyImport_AddModule("__main__")))));
   bp::object mainNamespace = mainModule.attr("__dict__");
 
@@ -162,22 +197,15 @@ void ScPythonInterpreter::RunScript(std::string const & scriptName)
 
 void ScPythonInterpreter::AddModulesPath(std::string const & modulesPath)
 {
+  utils::ScLockScope scope(m_lock);
+
   if (ms_modulePaths.insert(modulesPath).second)
     CollectModulesInPath(modulesPath);
 }
 
-void ScPythonInterpreter::CollectModules()
+void ScPythonInterpreter::CollectModules(StringVector const & modulePath)
 {
-  // load search paths
-  char const * pValue = sc_config_get_value_string("python", "modules_path");
-  if (pValue == nullptr)
-    return;
-
-  std::string const paths = pValue;
-
-  StringVector values;
-  utils::StringUtils::SplitString(paths, ';', values);
-  for (auto const & p : values)
+  for (auto const & p : modulePath)
     AddModulesPath(p);
 }
 void ScPythonInterpreter::CollectModulesInPath(std::string const & modulePath)
@@ -192,7 +220,7 @@ void ScPythonInterpreter::CollectModulesInPath(std::string const & modulePath)
       if (!boost::filesystem::is_directory(*itPath))
       {
         boost::filesystem::path const p = *itPath;
-        std::string const filename = boost::filesystem::relativePath(root, p).string();
+        std::string filename = utils::StringUtils::ReplaceAll(boost::filesystem::relativePath(root, p).string(), "\\", "/");
         std::string ext = utils::StringUtils::GetFileExtension(filename);
         utils::StringUtils::ToLowerCase(ext);
 
