@@ -68,17 +68,36 @@ sc_memory_context* sc_memory_initialize(const sc_memory_params *params)
     goto error;
   }
 
+  if (params->ext_path)
+  {
+    if (sc_memory_init_ext(params->ext_path) == SC_RESULT_OK)
+      return s_memory_default_ctx;
+  }
+
+  return s_memory_default_ctx;
+  
+error:
+  {
+    if (helper_ctx)
+      sc_memory_context_free(helper_ctx);
+    sc_memory_context_free(s_memory_default_ctx);
+  }
+  return (s_memory_default_ctx = null_ptr);
+}
+
+sc_result sc_memory_init_ext(sc_char const * ext_path)
+{
   sc_result ext_res;
-  ext_res = sc_ext_initialize(params->ext_path);
+  ext_res = sc_ext_initialize(ext_path);
 
   switch (ext_res)
   {
   case SC_RESULT_OK:
     g_message("Modules initialization finished");
-    return s_memory_default_ctx;
+    break;
 
   case SC_RESULT_ERROR_INVALID_PARAMS:
-    g_warning("Extensions directory '%s' doesn't exist", params->ext_path);
+    g_warning("Extensions directory '%s' doesn't exist", ext_path);
     break;
 
   default:
@@ -86,15 +105,8 @@ sc_memory_context* sc_memory_initialize(const sc_memory_params *params)
     break;
   }
 
-error:
-  {
-    if (helper_ctx)
-      sc_memory_context_free(helper_ctx);
-    sc_memory_context_free(s_memory_default_ctx);
-  }
-  return s_memory_default_ctx = 0;
+  return ext_res;
 }
-
 
 
 void sc_memory_shutdown(sc_bool save_state)

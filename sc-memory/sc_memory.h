@@ -18,7 +18,6 @@ struct _sc_memory_params
   const sc_char *config_file;
   const sc_char *ext_path;
   sc_bool clear;
-
 };
 
 typedef struct _sc_memory_params sc_memory_params;
@@ -31,6 +30,10 @@ _SC_EXTERN void sc_memory_params_clear(sc_memory_params *params);
  * @returns Returns pointer to created sc-memory context
  */
 _SC_EXTERN sc_memory_context* sc_memory_initialize(const sc_memory_params *params);
+
+/*! Initialize sc-memory extensions in specified directory
+ */
+_SC_EXTERN sc_result sc_memory_init_ext(sc_char const * ext_path);
 
 
 //! Shutdown sc-memory (save repository to file system)
