@@ -19,12 +19,14 @@ public:
   _SC_EXTERN ScPythonBridge();
   _SC_EXTERN ~ScPythonBridge();
 
-  _SC_EXTERN MemoryBufferSafePtr SendEvent(std::string const & eventName, MemoryBufferSafePtr & data);
+  _SC_EXTERN MemoryBufferSafePtr SendEvent(std::string const & eventName, MemoryBufferSafePtr data);
   ScPythonBridgeImpl * GetImpl() const;
   
 private:
   ScPythonBridgeImpl * m_impl;
 };
+
+SHARED_PTR_TYPE(ScPythonBridge)
 
 class ScPythonInterpreter
 {
@@ -36,7 +38,7 @@ public:
    * python.modules_path config value.
    * This function is a thread safe
    */
-  _SC_EXTERN static void RunScript(std::string const & scriptName, ScPythonBridge * bridge = nullptr);
+  _SC_EXTERN static void RunScript(std::string const & scriptName, ScPythonBridgePtr bridge = ScPythonBridgePtr());
 
   _SC_EXTERN static void AddModulesPath(std::string const & modulesPath);
 

@@ -84,7 +84,37 @@ void AddModuleSearchPaths(StringVector const & modulePath)
   }
 }
 
+class PyBridgeWrap
+{
+public:
+  void SetImpl(py::ScPythonBridgePtr impl) const
+  {
+    m_impl = impl;
+  }
+
+  MemoryBufferSafePtr SendEvent(std::string const & eventName, MemoryBufferSafePtr data)
+  {
+    m_impl->SendEvent(eventName, data);
+  }
+
+  void SetOnEvent(bp::object & func)
+  {
+    m_impl->GetImpl()->SetOnEvent(func);
+  }
+
+private:
+  mutable py::ScPythonBridgePtr m_impl;
+};
+
 } // namespace 
+
+  // small boost python module for bridge utils
+BOOST_PYTHON_MODULE(scb)
+{
+  bp::class_<PyBridgeWrap, boost::noncopyable>("ScPythonBridgeWrap", bp::init<>())
+    .def("SetOnEvent", &PyBridgeWrap::SetOnEvent)
+    ;
+}
 
 namespace py
 {
@@ -99,7 +129,7 @@ ScPythonBridge::~ScPythonBridge()
   delete m_impl;
 }
 
-MemoryBufferSafePtr ScPythonBridge::SendEvent(std::string const & eventName, MemoryBufferSafePtr & data)
+MemoryBufferSafePtr ScPythonBridge::SendEvent(std::string const & eventName, MemoryBufferSafePtr data)
 {
   return m_impl->SendEventToPython(eventName, data);
 }
@@ -126,6 +156,7 @@ bool ScPythonInterpreter::Initialize(std::string const & name)
   ms_name.assign(name.begin(), name.end());
 
   ScPythonMemoryModule::Initialize();
+  PyImport_AppendInittab("scb", &PyInit_scb);
 
   SC_ASSERT(gMainThread == nullptr, ("ScPythonInterpreter already initialized"));
   gMainThread = new ScPythonMainThread();
@@ -151,7 +182,7 @@ void ScPythonInterpreter::Shutdown()
   ms_isInitialized = false;
 }
 
-void ScPythonInterpreter::RunScript(std::string const & scriptName, ScPythonBridge * bridge /* = nullptr */)
+void ScPythonInterpreter::RunScript(std::string const & scriptName, ScPythonBridgePtr bridge /* = nullptr */)
 {
   utils::ScLockScope scope(m_lock);
   ScPythonSubThread subThreadScope;
@@ -169,21 +200,6 @@ void ScPythonInterpreter::RunScript(std::string const & scriptName, ScPythonBrid
   p /= it->first;
   std::string const filePath = p.string();
 
-  std::ifstream inputfile(filePath);
-  std::string fileContent((std::istreambuf_iterator<char>(inputfile)),
-                           std::istreambuf_iterator<char>());
-
-  // now need to compile this file
-  PyCompilerFlags flags;
-  flags.cf_flags = 0;
-  PyObjectWrap codeObj(Py_CompileStringFlags(fileContent.c_str(), filePath.c_str(), Py_file_input, &flags));
-  if (*codeObj == nullptr)
-  {
-    PyErr_Print();
-    SC_THROW_EXCEPTION(utils::ExceptionParseError,
-                       "Can't parse file " << filePath);
-  }
-
   //PyEvalLock lock;
   bp::object mainModule((bp::handle<>(bp::borrowed(PyImport_AddModule("__main__")))));
   bp::object mainNamespace = mainModule.attr("__dict__");
@@ -194,16 +210,30 @@ void ScPythonInterpreter::RunScript(std::string const & scriptName, ScPythonBrid
   //  {
   //    ScPythonBridgeImpl * bridgeImpl = bridge->GetImpl();
   //    SC_ASSERT(bridgeImpl != nullptr, ());
-  //    mainModule.attr("cpp_bridge") = bp::ptr(bridgeImpl);
+  //    bp::object bridgeObj(ScAddr());//boost::ref(bridgeImpl));
+  //    mainModule.attr("cpp_bridge") = bridgeObj;
   //  }
   //  catch (...)
   //  {
   //    PyErr_Print();
   //  }
   //}
+  
+  try
+  {
+    bp::exec("from scb import *\ncpp_bridge = ScPythonBridgeWrap()", mainNamespace, mainNamespace);
 
-  PyObjectWrap resultObj(PyEval_EvalCode(*codeObj, mainNamespace.ptr(), mainNamespace.ptr()));
-  if (!resultObj.IsValid())
+    bp::object b = mainNamespace["cpp_bridge"];
+    bp::extract<PyBridgeWrap> be(b);
+    if (be.check())
+    {
+      PyBridgeWrap const & bImpl = be;
+      bImpl.SetImpl(bridge);
+    }
+
+    bp::object resultObj(bp::exec_file(filePath.c_str(), mainNamespace, mainNamespace));
+  }
+  catch (...)
   {
     PyErr_Print();
     SC_THROW_EXCEPTION(utils::ExceptionInvalidState,
