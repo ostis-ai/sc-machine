@@ -86,3 +86,11 @@ template <> struct ScAddrHashFunc < uint32_t >
     return SC_ADDR_LOCAL_TO_INT(*addr);
   }
 };
+
+template <> struct ScAddrHashFunc < uint64_t >
+{
+  uint64_t operator() (ScAddr const & addr) const
+  {
+    return addr.Hash();
+  }
+};
