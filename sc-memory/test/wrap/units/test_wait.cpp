@@ -50,7 +50,7 @@ UNIT_TEST(waiter)
   SUBTEST_START(WaitValid)
   {
     WaitTestData data(addr);
-    ScWait<ScEventAddInputEdge> waiter(ctx, addr);
+    ScWaitEvent<ScEventAddInputEdge> waiter(ctx, addr);
     waiter.SetOnWaitStartDelegate([&data]() {
       EmitEvent(data);
     });
@@ -62,7 +62,7 @@ UNIT_TEST(waiter)
 
   SUBTEST_START(WaitTimeOut)
   {
-    SC_CHECK(!ScWait<ScEventAddOutputEdge>(ctx, addr).Wait(1000), ());
+    SC_CHECK(!ScWaitEvent<ScEventAddOutputEdge>(ctx, addr).Wait(1000), ());
   }
   SUBTEST_END()
 
