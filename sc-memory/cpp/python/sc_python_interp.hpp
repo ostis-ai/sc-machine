@@ -4,29 +4,13 @@
 #include "../sc_types.hpp"
 #include "../utils/sc_lock.hpp"
 
+#include "sc_python_bridge.hpp"
+
 #include <string>
 #include <memory>
 
 namespace py
 {
-
-class ScPythonBridgeImpl;
-
-class ScPythonBridge
-{
-public:
-  
-  _SC_EXTERN ScPythonBridge();
-  _SC_EXTERN ~ScPythonBridge();
-
-  _SC_EXTERN MemoryBufferSafePtr SendEvent(std::string const & eventName, MemoryBufferSafePtr data);
-  ScPythonBridgeImpl * GetImpl() const;
-  
-private:
-  ScPythonBridgeImpl * m_impl;
-};
-
-SHARED_PTR_TYPE(ScPythonBridge)
 
 class ScPythonInterpreter
 {

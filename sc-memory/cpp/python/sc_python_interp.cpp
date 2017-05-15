@@ -2,6 +2,7 @@
 #include "sc_python_threads.hpp"
 #include "sc_python_module.hpp"
 #include "sc_python_interp.hpp"
+#include "sc_python_bridge.hpp"
 
 #include "../sc_memory.hpp"
 #include "../sc_debug.hpp"
@@ -92,14 +93,40 @@ public:
     m_impl = impl;
   }
 
-  MemoryBufferSafePtr SendEvent(std::string const & eventName, MemoryBufferSafePtr data)
+  MemoryBufferSafePtr SendEvent(std::string const & eventName, std::string const & data)
   {
     m_impl->SendEvent(eventName, data);
   }
 
-  void SetOnEvent(bp::object & func)
+  void Initialize()
   {
-    m_impl->GetImpl()->SetOnEvent(func);
+    m_impl->Initialize();
+  }
+
+  bool IsExist() const
+  {
+    return m_impl->IsInitialized();
+  }
+
+  bp::object GetEvent()
+  {
+    py::ScPythonBridge::RequestPtr request = m_impl->GetNextEvent();
+
+    if (!request.IsPtrValid())
+      return bp::make_tuple(bp::object(), bp::object());
+    
+    /*MemoryBufferSafePtr resultBuffer;
+
+    PyObject * pyResult = result.ptr();
+    if (pyResult && PyMemoryView_Check(pyResult))
+    {
+    Py_buffer * buffer = PyMemoryView_GET_BUFFER(pyResult);
+    resultBuffer = MemoryBufferSafePtr(new MemoryBufferSafe((char*)buffer->buf, buffer->len));
+    }
+
+    return resultBuffer;*/
+
+    return bp::make_tuple(request->GetName(), request->GetData());
   }
 
 private:
@@ -112,34 +139,15 @@ private:
 BOOST_PYTHON_MODULE(scb)
 {
   bp::class_<PyBridgeWrap, boost::noncopyable>("ScPythonBridgeWrap", bp::init<>())
-    .def("SetOnEvent", &PyBridgeWrap::SetOnEvent)
+    .def("Initialize", &PyBridgeWrap::Initialize)
+    .def("Exist", &PyBridgeWrap::IsExist)
+    .def("GetEvent", &PyBridgeWrap::GetEvent)
     ;
 }
 
 namespace py
 {
 
-ScPythonBridge::ScPythonBridge()
-  : m_impl(new ScPythonBridgeImpl())
-{
-}
-
-ScPythonBridge::~ScPythonBridge()
-{
-  delete m_impl;
-}
-
-MemoryBufferSafePtr ScPythonBridge::SendEvent(std::string const & eventName, MemoryBufferSafePtr data)
-{
-  return m_impl->SendEventToPython(eventName, data);
-}
-
-ScPythonBridgeImpl * ScPythonBridge::GetImpl() const
-{
-  return m_impl;
-}
-
-/// ----------------------------------------------
 bool ScPythonInterpreter::ms_isInitialized = false;
 std::wstring ScPythonInterpreter::ms_name;
 utils::ScLock ScPythonInterpreter::m_lock;

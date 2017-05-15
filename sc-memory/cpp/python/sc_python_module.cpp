@@ -720,13 +720,3 @@ void ScPythonMemoryModule::Initialize()
 
 } // namespace py
 
-  // some fixes of boost compilation
-namespace boost
-{
-template <>
-py::ScPythonBridgeImpl const volatile * __cdecl get_pointer<py::ScPythonBridgeImpl const volatile>(py::ScPythonBridgeImpl const volatile * ptr)
-{
-  return ptr;
-}
-
-} // namespace boost
