@@ -6,6 +6,7 @@
 
 #include "sc_log.hpp"
 #include "../sc_debug.hpp"
+#include "sc_lock.hpp"
 
 #include <ctime>
 #include <iomanip>
@@ -14,6 +15,7 @@
 namespace utils
 {
 
+ScLock gLock;
 ScLog * ScLog::ms_instance = nullptr;
 
 ScLog * ScLog::GetInstance()
@@ -55,6 +57,7 @@ void ScLog::Message(ScLog::eType type, std::string const & msg, ScConsole::Color
   if (m_isMuted)
     return; // do nothing on mute
 
+  utils::ScLockScope lock(gLock);
   if (m_mode <= type)
   {
     // get time
