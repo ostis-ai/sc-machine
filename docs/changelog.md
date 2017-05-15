@@ -8,6 +8,8 @@
 * Implement multithreaded python script run
 * Pass `cpp_bridge` into python script
 * Extract `ScWaitEvent` as a separated class from `ScWait`
+* Some fixes in template search
+* Make log thread safe
 
 ## v0.3.1
 
