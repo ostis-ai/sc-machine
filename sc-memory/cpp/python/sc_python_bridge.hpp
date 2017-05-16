@@ -14,15 +14,24 @@ class ScPythonBridge
 public:
   class Response
   {
-  protected:
-    explicit Response(std::string const & data)
-      : m_data(data)
+  public:
+    enum class Status : uint8_t
+    {
+      Error,
+      Ok
+    };
+
+    explicit Response(Status status, std::string const & data)
+      : m_status(status)
+      , m_data(data)
     {
     }
 
-    std::string GetData() { return m_data; }
+    Status GetStatus() const { return m_status; }
+    std::string const & GetData() { return m_data; }
 
   private:
+    Status m_status;
     std::string m_data;
   };
 
@@ -41,12 +50,25 @@ public:
 
     std::string const & GetName() const { return m_name; }
     std::string const & GetData() const { return m_data; }
-    ResponsePtr GetResponse() const { return m_response; }
 
+    ResponsePtr WaitResponse(uint32_t timeOutMS = 10000)
+    {
+      m_waitResponse.Wait(timeOutMS);
+      return m_response;
+    }
+
+    /* Just for internal usage */
+    void _OnMakeResponse(Response::Status status, std::string const & data)
+    {
+      m_response = new Response(status, data);
+      m_waitResponse.Resolve();
+    }
+    
   private:
     std::string m_name;
     std::string m_data;
     ResponsePtr m_response;
+    ScWait m_waitResponse;
   };
 
   SHARED_PTR_TYPE(Request)
@@ -54,7 +76,7 @@ public:
 public:
   _SC_EXTERN ScPythonBridge();
 
-  _SC_EXTERN void SendEvent(std::string const & eventName, std::string const & data);
+  _SC_EXTERN ResponsePtr DoRequest(std::string const & eventName, std::string const & data);
   /* Waits until bridge would be initialized
   * Returns true, when bridge initialized correctly; otherwise - false
   */
@@ -63,7 +85,7 @@ public:
   _SC_EXTERN void Close();
 
   void Initialize();
-  RequestPtr GetNextEvent();
+  RequestPtr GetNextRequest();
 
 private:
   ScWait m_initWait;

@@ -85,17 +85,35 @@ void AddModuleSearchPaths(StringVector const & modulePath)
   }
 }
 
+class PyBridgeRequest
+{
+public:
+  PyBridgeRequest() {}
+
+  explicit PyBridgeRequest(py::ScPythonBridge::RequestPtr const & req)
+    : m_impl(req)
+  {
+  }
+
+  std::string GetName() const { return m_impl->GetName(); }
+  std::string GetData() const { return m_impl->GetData(); }
+  bool IsValid() const { return m_impl.IsPtrValid(); }
+
+  void MakeResponse(py::ScPythonBridge::Response::Status status, std::string const & data)
+  {
+    m_impl->_OnMakeResponse(status, data);
+  }
+
+private:
+  py::ScPythonBridge::RequestPtr m_impl;
+};
+
 class PyBridgeWrap
 {
 public:
   void SetImpl(py::ScPythonBridgePtr impl) const
   {
     m_impl = impl;
-  }
-
-  MemoryBufferSafePtr SendEvent(std::string const & eventName, std::string const & data)
-  {
-    m_impl->SendEvent(eventName, data);
   }
 
   void Initialize()
@@ -108,12 +126,12 @@ public:
     return m_impl->IsInitialized();
   }
 
-  bp::object GetEvent()
+  PyBridgeRequest GetRequest()
   {
-    py::ScPythonBridge::RequestPtr request = m_impl->GetNextEvent();
+    py::ScPythonBridge::RequestPtr request = m_impl->GetNextRequest();
 
     if (!request.IsPtrValid())
-      return bp::make_tuple(bp::object(), bp::object());
+      return PyBridgeRequest();
     
     /*MemoryBufferSafePtr resultBuffer;
 
@@ -126,7 +144,7 @@ public:
 
     return resultBuffer;*/
 
-    return bp::make_tuple(request->GetName(), request->GetData());
+    return PyBridgeRequest(request);
   }
 
 private:
@@ -138,10 +156,22 @@ private:
   // small boost python module for bridge utils
 BOOST_PYTHON_MODULE(scb)
 {
+  bp::enum_<py::ScPythonBridge::Response::Status>("ResponseStatus")
+    .value("Ok", py::ScPythonBridge::Response::Status::Ok)
+    .value("Error", py::ScPythonBridge::Response::Status::Error)
+    ;
+
+  bp::class_<PyBridgeRequest>("ScPythonBridgeRequest", bp::no_init)
+    .def("GetName", &PyBridgeRequest::GetName)
+    .def("GetData", &PyBridgeRequest::GetData)
+    .def("IsValid", &PyBridgeRequest::IsValid)
+    .def("MakeResponse", &PyBridgeRequest::MakeResponse)
+    ;
+
   bp::class_<PyBridgeWrap, boost::noncopyable>("ScPythonBridgeWrap", bp::init<>())
     .def("Initialize", &PyBridgeWrap::Initialize)
     .def("Exist", &PyBridgeWrap::IsExist)
-    .def("GetEvent", &PyBridgeWrap::GetEvent)
+    .def("GetRequest", &PyBridgeWrap::GetRequest)
     ;
 }
 

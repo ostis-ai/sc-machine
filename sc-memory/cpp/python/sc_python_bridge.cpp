@@ -9,10 +9,14 @@ ScPythonBridge::ScPythonBridge()
 }
 
 
-void ScPythonBridge::SendEvent(std::string const & eventName, std::string const & data)
+ScPythonBridge::ResponsePtr ScPythonBridge::DoRequest(std::string const & eventName, std::string const & data)
 {
-  utils::ScLockScope lock(m_lock);
-  m_eventsQueue.push_back(new Request(eventName, data));
+  RequestPtr req = new Request(eventName, data);
+  {
+    utils::ScLockScope lock(m_lock);
+    m_eventsQueue.push_back(req);
+  }
+  return req->WaitResponse();
 }
 
 bool ScPythonBridge::WaitInitialize(uint32_t timeOutMS/* = 10000*/)
@@ -42,7 +46,7 @@ void ScPythonBridge::Initialize()
   m_isInitialized = true;
 }
 
-ScPythonBridge::RequestPtr ScPythonBridge::GetNextEvent()
+ScPythonBridge::RequestPtr ScPythonBridge::GetNextRequest()
 {
   RequestPtr request;
   {
