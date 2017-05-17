@@ -28,6 +28,7 @@ public:
     }
 
     Status GetStatus() const { return m_status; }
+    bool IsStatusOk() const { return m_status == Status::Ok; }
     std::string const & GetData() { return m_data; }
 
   private:
