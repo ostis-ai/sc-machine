@@ -5,6 +5,7 @@
  */
 
 #include "sc_keynodes.hpp"
+#include "sc_struct.hpp"
 
 size_t const kKeynodeRrelListNum = 20;
 std::array<ScAddr, kKeynodeRrelListNum> kKeynodeRrelList;
@@ -30,6 +31,19 @@ ScAddr ScKeynodes::kScResultInvalidState;
 ScAddr ScKeynodes::kScResultErrorNotFound;
 ScAddr ScKeynodes::kScResultErrorNoWriteRights;
 ScAddr ScKeynodes::kScResultErrorNoReadRights;
+
+ScAddr ScKeynodes::kBinaryType;
+ScAddr ScKeynodes::kBinaryFloat;
+ScAddr ScKeynodes::kBinaryDouble;
+ScAddr ScKeynodes::kBinaryInt8;
+ScAddr ScKeynodes::kBinaryInt16;
+ScAddr ScKeynodes::kBinaryInt32;
+ScAddr ScKeynodes::kBinaryInt64;
+ScAddr ScKeynodes::kBinaryUInt8;
+ScAddr ScKeynodes::kBinaryUInt16;
+ScAddr ScKeynodes::kBinaryUInt32;
+ScAddr ScKeynodes::kBinaryUInt64;
+ScAddr ScKeynodes::kBinaryString;
 
 bool ScKeynodes::Init(bool force)
 {
@@ -66,6 +80,14 @@ bool ScKeynodes::Init(bool force)
   {
     if (!ctx.CreateEdge(ScType::EdgeAccessConstPosPerm, kCommandStateAddr, a).IsValid())
       result = true;
+  }
+
+  // binary types
+  {
+    ScSet set(&ctx, kBinaryType);
+    set << kBinaryDouble << kBinaryFloat << kBinaryString
+        << kBinaryInt8 << kBinaryInt16 << kBinaryInt32 << kBinaryInt64
+        << kBinaryUInt8 << kBinaryUInt16 << kBinaryUInt32 << kBinaryUInt64;
   }
 
   ms_isInitialized = true;
