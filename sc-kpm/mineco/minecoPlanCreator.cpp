@@ -35,17 +35,17 @@ SC_AGENT_IMPLEMENTATION(AMinEcoPlanCreator)
 
     ScAddr action = ms_context->GetArcEnd(edgeAddr);
 
-    if (!ms_context->HelperCheckArc(question_plan_creation, action, sc_type_arc_pos_const_perm))
+    if (!ms_context->HelperCheckArc(question_plan_creation, action, ScType::EdgeAccessConstPosPerm))
         return SC_RESULT_ERROR_INVALID_PARAMS;
 
     ScAddr program, param;
-    ScIterator5Ptr iter_param = ms_context->Iterator5(action, sc_type_arc_pos_const_perm, sc_type_node, sc_type_arc_pos_const_perm, rrel_1);
+    ScIterator5Ptr iter_param = ms_context->Iterator5(action, ScType::EdgeAccessConstPosPerm, ScType::Node, ScType::EdgeAccessConstPosPerm, rrel_1);
     if (iter_param->Next())
         program = iter_param->Get(2);
     else
         return SC_RESULT_ERROR_INVALID_PARAMS;
 
-    iter_param = ms_context->Iterator5(action, sc_type_arc_pos_const_perm, sc_type_node, sc_type_arc_pos_const_perm, rrel_2);
+    iter_param = ms_context->Iterator5(action, ScType::EdgeAccessConstPosPerm, ScType::Node, ScType::EdgeAccessConstPosPerm, rrel_2);
     if (iter_param->Next())
         param = iter_param->Get(2);
     else
@@ -58,11 +58,11 @@ SC_AGENT_IMPLEMENTATION(AMinEcoPlanCreator)
     ScTemplateGenResult res;
     ms_context->HelperGenTemplate(program_templ, res);
 
-    ScAddr answer = ms_context->CreateNode(sc_type_const);
+    ScAddr answer = ms_context->CreateNode(ScType::Const);
 
     for (int i = 0; i < res.GetSize(); i++)
     {
-        ms_context->CreateArc(sc_type_arc_pos_const_perm, answer, res[i]);
+        ms_context->CreateArc(ScType::EdgeAccessConstPosPerm, answer, res[i]);
     }
 
     // search of actions
@@ -72,11 +72,11 @@ SC_AGENT_IMPLEMENTATION(AMinEcoPlanCreator)
         if (ms_context->GetElementType(res[i]).IsNode())
         {
 
-            if (ms_context->HelperCheckArc(concept_store_opening, res[i], sc_type_arc_pos_const_perm))
+            if (ms_context->HelperCheckArc(concept_store_opening, res[i], ScType::EdgeAccessConstPosPerm))
             {
                 store_opening = res[i];
             }
-            if (ms_context->HelperCheckArc(ap_receiving_and_registering_book, res[i], sc_type_arc_pos_const_perm))
+            if (ms_context->HelperCheckArc(ap_receiving_and_registering_book, res[i], ScType::EdgeAccessConstPosPerm))
             {
                 book_registering = res[i];
             }
@@ -89,13 +89,13 @@ SC_AGENT_IMPLEMENTATION(AMinEcoPlanCreator)
     //Removing unnecessary actions
     ScAddr decomp, curr_action, next_action;
 
-    ScIterator5Ptr iter_action = ms_context->Iterator5(sc_type_node, SC_TYPE(sc_type_arc_common | sc_type_const), store_opening, sc_type_arc_pos_const_perm, nrel_decomposition_of_action);
+    ScIterator5Ptr iter_action = ms_context->Iterator5(ScType::Node, ScType::EdgeDCommonConst, store_opening, ScType::EdgeAccessConstPosPerm, nrel_decomposition_of_action);
     if (iter_action->Next())
         decomp = iter_action->Get(0);
     else
         return SC_RESULT_ERROR_INVALID_PARAMS;
 
-    iter_action = ms_context->Iterator5(decomp, sc_type_arc_pos_const_perm, sc_type_node, sc_type_arc_pos_const_perm, rrel_1);
+    iter_action = ms_context->Iterator5(decomp, ScType::EdgeAccessConstPosPerm, ScType::Node, ScType::EdgeAccessConstPosPerm, rrel_1);
     if (iter_action->Next())
         curr_action = iter_action->Get(2);
     else
@@ -103,7 +103,7 @@ SC_AGENT_IMPLEMENTATION(AMinEcoPlanCreator)
 
     while (true)
     {
-        if (ms_context->HelperCheckArc(ap_receiving_and_registering_book, curr_action, sc_type_arc_pos_const_perm))
+        if (ms_context->HelperCheckArc(ap_receiving_and_registering_book, curr_action, ScType::EdgeAccessConstPosPerm))
         {
             ScTemplate mytempl1;
             mytempl1.TripleWithRelation(
@@ -129,28 +129,28 @@ SC_AGENT_IMPLEMENTATION(AMinEcoPlanCreator)
             else
                 break;
 
-            ScIterator5Ptr iter1 = ms_context->Iterator5(district, SC_TYPE(sc_type_arc_common | sc_type_const), SC_TYPE(0), sc_type_arc_pos_const_perm, nrel_administrative_subordination);
+            ScIterator5Ptr iter1 = ms_context->Iterator5(district, ScType::EdgeDCommonConst, SC_TYPE(0), ScType::EdgeAccessConstPosPerm, nrel_administrative_subordination);
             while (iter1->Next())
             {
                 ScAddr addr2 = iter1->Get(2);
-                ScIterator5Ptr iter2 = ms_context->Iterator5(sc_type_node, SC_TYPE(sc_type_arc_common | sc_type_const), addr2, sc_type_arc_pos_const_perm, nrel_address);
+                ScIterator5Ptr iter2 = ms_context->Iterator5(ScType::Node, ScType::EdgeDCommonConst, addr2, ScType::EdgeAccessConstPosPerm, nrel_address);
                 while (iter2->Next())
                 {
                     ScAddr imns = iter2->Get(0);;
-                    if (ms_context->HelperCheckArc(inspection_MNS, imns, sc_type_arc_pos_const_perm))
+                    if (ms_context->HelperCheckArc(inspection_MNS, imns, ScType::EdgeAccessConstPosPerm))
                     {
-                        ScAddr arc1 = ms_context->CreateArc((sc_type_arc_common | sc_type_const), curr_action, imns);
-                        ScAddr arc2 = ms_context->CreateArc(sc_type_arc_pos_const_perm, nrel_registration, arc1);
-                        ms_context->CreateArc(sc_type_arc_pos_const_perm, answer, arc1);
-                        ms_context->CreateArc(sc_type_arc_pos_const_perm, answer, arc2);
-                        ms_context->CreateArc(sc_type_arc_pos_const_perm, answer, imns);
-                        ms_context->CreateArc(sc_type_arc_pos_const_perm, answer, nrel_registration);
+                        ScAddr arc1 = ms_context->CreateArc(ScType::EdgeDCommonConst, curr_action, imns);
+                        ScAddr arc2 = ms_context->CreateArc(ScType::EdgeAccessConstPosPerm, nrel_registration, arc1);
+                        ms_context->CreateArc(ScType::EdgeAccessConstPosPerm, answer, arc1);
+                        ms_context->CreateArc(ScType::EdgeAccessConstPosPerm, answer, arc2);
+                        ms_context->CreateArc(ScType::EdgeAccessConstPosPerm, answer, imns);
+                        ms_context->CreateArc(ScType::EdgeAccessConstPosPerm, answer, nrel_registration);
                     }
                 }
             }
             break;
         }
-        iter_action = ms_context->Iterator5(curr_action, SC_TYPE(sc_type_arc_common | sc_type_const), sc_type_node, sc_type_arc_pos_const_perm, nrel_goto);
+        iter_action = ms_context->Iterator5(curr_action, ScType::EdgeDCommonConst, ScType::Node, ScType::EdgeAccessConstPosPerm, nrel_goto);
         if (iter_action->Next())
         {
             next_action = iter_action->Get(2);
@@ -165,8 +165,8 @@ SC_AGENT_IMPLEMENTATION(AMinEcoPlanCreator)
     }
 
     //finish action
-    ScAddr myarc = ms_context->CreateArc(SC_TYPE(sc_type_arc_common | sc_type_const), action, answer);
-    ms_context->CreateArc(sc_type_arc_pos_const_perm, nrel_answer, myarc);
+    ScAddr myarc = ms_context->CreateArc(ScType::EdgeDCommonConst, action, answer);
+    ms_context->CreateArc(ScType::EdgeAccessConstPosPerm, nrel_answer, myarc);
 
     return SC_RESULT_OK;
 }

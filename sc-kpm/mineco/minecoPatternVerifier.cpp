@@ -24,12 +24,14 @@ SC_AGENT_IMPLEMENTATION(AMinEcoPatternVerifier)
 
     ScAddr action = ms_context->GetArcEnd(edgeAddr);
 
-    if (!ms_context->HelperCheckArc(question_pattern_verification, action, sc_type_arc_pos_const_perm))
+    if (!ms_context->HelperCheckArc(question_pattern_verification, action, ScType::EdgeAccessConstPosPerm))
         return SC_RESULT_ERROR_INVALID_PARAMS;
 
-    ScAddr answer = ms_context->CreateNode(sc_type_const);
+    ScAddr answer = ms_context->CreateNode(ScType::Const);
 
-    ScIterator3Ptr iter_struct = ms_context->Iterator3(incorrect_structure_pattern, sc_type_arc_pos_const_perm, SC_TYPE(sc_type_const | sc_type_node));
+//m_memoryCtx.CreateNode()
+
+    ScIterator3Ptr iter_struct = ms_context->Iterator3(incorrect_structure_pattern, ScType::EdgeAccessConstPosPerm, ScType::NodeConst);
     while (iter_struct->Next())
     {
         ScAddr curr_struct = iter_struct->Get(2);
@@ -42,21 +44,21 @@ SC_AGENT_IMPLEMENTATION(AMinEcoPatternVerifier)
         ms_context->HelperSearchTemplate(templ, res);
         if (res.Size() > 0)
         {
-            ScAddr ans_struct = ms_context->CreateNode(sc_type_const | sc_type_node_struct);
+            ScAddr ans_struct = ms_context->CreateNode(ScType::NodeConstStruct);
             for (int i = 0; i < res.Size(); i++)
             {
                 for (int j = 0; j < res[i].Size(); j++)
                 {
-                    ms_context->CreateArc(sc_type_arc_pos_const_perm, ans_struct, res[i][j]);
+                    ms_context->CreateArc(ScType::EdgeAccessConstPosPerm, ans_struct, res[i][j]);
                 }
             }
-            ms_context->CreateArc(sc_type_arc_pos_const_perm, answer, ans_struct);
+            ms_context->CreateArc(ScType::EdgeAccessConstPosPerm, answer, ans_struct);
         }
     }
 
 //finish action
-    ScAddr myarc = ms_context->CreateArc(SC_TYPE(sc_type_arc_common | sc_type_const), action, answer);
-    ms_context->CreateArc(sc_type_arc_pos_const_perm, nrel_answer, myarc);
+    ScAddr myarc = ms_context->CreateArc(ScType::EdgeDCommonConst, action, answer);
+    ms_context->CreateArc(ScType::EdgeAccessConstPosPerm, nrel_answer, myarc);
 
     return SC_RESULT_OK;
 }
