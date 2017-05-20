@@ -3,7 +3,14 @@
 * Improve test logging
 * Improve work with memory buffers
 * Cleanup API
-* Add suppor of python 3 code
+* Add support of python 3 code
+* Add `ScLockScope` class
+* Implement multithreaded python script run
+* Pass `cpp_bridge` into python script
+* Extract `ScWaitEvent` as a separated class from `ScWait`
+* Some fixes in template search
+* Make log thread safe
+* Implement `ScLink` wrapper class
 
 ## v0.3.1
 

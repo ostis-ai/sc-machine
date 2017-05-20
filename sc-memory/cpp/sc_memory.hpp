@@ -60,6 +60,7 @@ public:
   _SC_EXTERN ~ScMemoryContext();
 
   // Disable object copying
+  ScMemoryContext(ScMemoryContext const & other) = delete;
   ScMemoryContext & operator = (ScMemoryContext const & other) = delete;
 
   sc_memory_context const * operator * () const { return m_context; }

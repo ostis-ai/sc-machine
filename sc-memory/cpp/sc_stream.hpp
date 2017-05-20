@@ -53,6 +53,9 @@ class ScStream : public IScStream
 {
   friend class ScMemoryContext;
 
+  ScStream(ScStream const & other) = delete;
+  ScStream & operator = (ScStream const & other) = delete;
+
 public:
   _SC_EXTERN explicit ScStream();
   _SC_EXTERN explicit ScStream(sc_stream * stream);
@@ -88,7 +91,7 @@ protected:
   sc_stream * m_stream;
 };
 
-using ScStreamPtr = TSharedPointer<ScStream>;
+SHARED_PTR_TYPE(ScStream);
 
 class ScStreamMemory : public IScStream
 {

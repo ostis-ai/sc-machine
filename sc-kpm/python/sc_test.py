@@ -399,7 +399,6 @@ class TestScMemoryContext(TestCase):
 
         templ = ctx.HelperBuildTemplate(templAddr)
         self.assertTrue(type(templ) is ScTemplate)
-        
 
     def test_rshift(self):
         ctx = MemoryCtx("test")

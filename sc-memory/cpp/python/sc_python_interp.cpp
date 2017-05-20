@@ -1,17 +1,16 @@
 
-#include "sc_python_interp.hpp"
+#include "sc_python_threads.hpp"
 #include "sc_python_module.hpp"
+#include "sc_python_interp.hpp"
+#include "sc_python_bridge.hpp"
 
-#include "sc_python_includes.hpp"
-
+#include "../sc_memory.hpp"
 #include "../sc_debug.hpp"
-#include "../sc_utils.hpp"
 
 #include "../utils/sc_boost.hpp"
 #include "../utils/sc_cache.hpp"
 
 namespace bp = boost::python;
-
 
 extern "C"
 {
@@ -20,6 +19,8 @@ extern "C"
 
 namespace
 {
+
+std::unordered_set<std::string> gAddedModulePaths;
 
 struct PyObjectWrap
 {
@@ -58,49 +59,151 @@ private:
   PyObject * m_object;
 };
 
-struct PyEvalLock
+void PyLoadModulePathFromConfig(StringVector & outValues)
 {
-  PyEvalLock()
+  // load search paths
+  char const * pValue = sc_config_get_value_string("python", "modules_path");
+  if (pValue == nullptr)
+    return;
+
+  std::string const paths = pValue;
+  utils::StringUtils::SplitString(paths, ';', outValues);
+  for (auto & v : outValues)
+    v = utils::StringUtils::ReplaceAll(v, "\\", "/");
+}
+
+void AddModuleSearchPaths(StringVector const & modulePath)
+{
+  PyObject* sysPath = PySys_GetObject("path");
+  for (auto const & p : modulePath)
   {
-    PyEval_AcquireLock();
+    if (gAddedModulePaths.find(p) != gAddedModulePaths.end())
+    {
+      PyList_Insert(sysPath, 0, PyUnicode_DecodeLocale(p.c_str(), nullptr));
+      gAddedModulePaths.insert(p);
+    }
+  }
+}
+
+class PyBridgeRequest
+{
+public:
+  PyBridgeRequest() {}
+
+  explicit PyBridgeRequest(py::ScPythonBridge::RequestPtr const & req)
+    : m_impl(req)
+  {
   }
 
-  ~PyEvalLock()
+  std::string GetName() const { return m_impl->GetName(); }
+  std::string GetData() const { return m_impl->GetData(); }
+  bool IsValid() const { return m_impl.IsPtrValid(); }
+
+  void MakeResponse(py::ScPythonBridge::Response::Status status, std::string const & data)
   {
-    PyEval_ReleaseLock();
+    m_impl->_OnMakeResponse(status, data);
   }
+
+private:
+  py::ScPythonBridge::RequestPtr m_impl;
+};
+
+class PyBridgeWrap
+{
+public:
+  void SetImpl(py::ScPythonBridgePtr impl) const
+  {
+    m_impl = impl;
+  }
+
+  void Initialize()
+  {
+    m_impl->Initialize();
+  }
+
+  bool IsExist() const
+  {
+    return m_impl->IsInitialized();
+  }
+
+  PyBridgeRequest GetRequest()
+  {
+    py::ScPythonBridge::RequestPtr request = m_impl->GetNextRequest();
+
+    if (!request.IsPtrValid())
+      return PyBridgeRequest();
+    
+    /*MemoryBufferSafePtr resultBuffer;
+
+    PyObject * pyResult = result.ptr();
+    if (pyResult && PyMemoryView_Check(pyResult))
+    {
+    Py_buffer * buffer = PyMemoryView_GET_BUFFER(pyResult);
+    resultBuffer = MemoryBufferSafePtr(new MemoryBufferSafe((char*)buffer->buf, buffer->len));
+    }
+
+    return resultBuffer;*/
+
+    return PyBridgeRequest(request);
+  }
+
+private:
+  mutable py::ScPythonBridgePtr m_impl;
 };
 
 } // namespace 
+
+  // small boost python module for bridge utils
+BOOST_PYTHON_MODULE(scb)
+{
+  bp::enum_<py::ScPythonBridge::Response::Status>("ResponseStatus")
+    .value("Ok", py::ScPythonBridge::Response::Status::Ok)
+    .value("Error", py::ScPythonBridge::Response::Status::Error)
+    ;
+
+  bp::class_<PyBridgeRequest>("ScPythonBridgeRequest", bp::no_init)
+    .def("GetName", &PyBridgeRequest::GetName)
+    .def("GetData", &PyBridgeRequest::GetData)
+    .def("IsValid", &PyBridgeRequest::IsValid)
+    .def("MakeResponse", &PyBridgeRequest::MakeResponse)
+    ;
+
+  bp::class_<PyBridgeWrap, boost::noncopyable>("ScPythonBridgeWrap", bp::init<>())
+    .def("Initialize", &PyBridgeWrap::Initialize)
+    .def("Exist", &PyBridgeWrap::IsExist)
+    .def("GetRequest", &PyBridgeWrap::GetRequest)
+    ;
+}
 
 namespace py
 {
 
 bool ScPythonInterpreter::ms_isInitialized = false;
 std::wstring ScPythonInterpreter::ms_name;
+utils::ScLock ScPythonInterpreter::m_lock;
+
 ScPythonInterpreter::ModulesMap ScPythonInterpreter::ms_foundModules;
 ScPythonInterpreter::ModulePathSet ScPythonInterpreter::ms_modulePaths;
 
-PyThreadState * gMainThreadState = nullptr;
+ScPythonMainThread * gMainThread = nullptr;
+StringVector gModulePaths;
 
 bool ScPythonInterpreter::Initialize(std::string const & name)
 {
   SC_ASSERT(!ms_isInitialized, ("You can't initialize this class twicely."));
   ms_name.assign(name.begin(), name.end());
 
-  // TODO: more clear solution
-  Py_SetProgramName((wchar_t*)ms_name.c_str());
-  Py_Initialize();
-  
-  PyEval_InitThreads();
-  gMainThreadState = PyThreadState_Get();
-  PyEval_ReleaseLock();
-
   ScPythonMemoryModule::Initialize();
+  PyImport_AppendInittab("scb", &PyInit_scb);
+
+  SC_ASSERT(gMainThread == nullptr, ("ScPythonInterpreter already initialized"));
+  gMainThread = new ScPythonMainThread();
+
+  PyLoadModulePathFromConfig(gModulePaths);  
 
   SC_LOG_INIT("Initialize python iterpreter version " << PY_VERSION);
   SC_LOG_INFO("Collect modules...");
-  CollectModules();
+  CollectModules(gModulePaths);
   SC_LOG_INFO("Collected " << ms_foundModules.size() << " modules");
 
   ms_isInitialized = true;
@@ -109,12 +212,21 @@ bool ScPythonInterpreter::Initialize(std::string const & name)
 
 void ScPythonInterpreter::Shutdown()
 {
-  Py_Finalize();
+  SC_ASSERT(gMainThread != nullptr, ());
+  gMainThread = nullptr;
+
+  gModulePaths.clear();
+  
   ms_isInitialized = false;
 }
 
-void ScPythonInterpreter::RunScript(std::string const & scriptName)
+void ScPythonInterpreter::RunScript(std::string const & scriptName, ScPythonBridgePtr bridge /* = nullptr */)
 {
+  utils::ScLockScope scope(m_lock);
+  ScPythonSubThread subThreadScope;
+
+  //AddModuleSearchPaths(gModulePaths);
+
   auto const it = ms_foundModules.find(scriptName);
   if (it == ms_foundModules.end())
   {
@@ -126,33 +238,40 @@ void ScPythonInterpreter::RunScript(std::string const & scriptName)
   p /= it->first;
   std::string const filePath = p.string();
 
-  std::ifstream inputfile(filePath);
-  std::string fileContent((std::istreambuf_iterator<char>(inputfile)),
-                           std::istreambuf_iterator<char>());
-
-  // now need to compile this file
-  PyCompilerFlags flags;
-  flags.cf_flags = 0;
-  PyObjectWrap codeObj(Py_CompileStringFlags(fileContent.c_str(), filePath.c_str(), Py_file_input, &flags));
-  if (*codeObj == nullptr)
-  {
-    PyErr_Print();
-    SC_THROW_EXCEPTION(utils::ExceptionParseError,
-                       "Can't parse file " << filePath);
-  }
-
-  PyEvalLock lock;
-
-  /*PyObjectWrap globals(PyDict_New());
-  PyDict_SetItemString(*globals, "__builtins__", PyEval_GetBuiltins());*/
-  //PyObjectWrap globalsDict(PyDict_New());
-  //PyDict_SetItemString(*globals, "__dict__", *globalsDict);
-
+  //PyEvalLock lock;
   bp::object mainModule((bp::handle<>(bp::borrowed(PyImport_AddModule("__main__")))));
   bp::object mainNamespace = mainModule.attr("__dict__");
 
-  PyObjectWrap resultObj(PyEval_EvalCode(*codeObj, mainNamespace.ptr(), mainNamespace.ptr()));
-  if (!resultObj.IsValid())
+  //if (bridge)
+  //{
+  //  try
+  //  {
+  //    ScPythonBridgeImpl * bridgeImpl = bridge->GetImpl();
+  //    SC_ASSERT(bridgeImpl != nullptr, ());
+  //    bp::object bridgeObj(ScAddr());//boost::ref(bridgeImpl));
+  //    mainModule.attr("cpp_bridge") = bridgeObj;
+  //  }
+  //  catch (...)
+  //  {
+  //    PyErr_Print();
+  //  }
+  //}
+  
+  try
+  {
+    bp::exec("from scb import *\ncpp_bridge = ScPythonBridgeWrap()", mainNamespace, mainNamespace);
+
+    bp::object b = mainNamespace["cpp_bridge"];
+    bp::extract<PyBridgeWrap> be(b);
+    if (be.check())
+    {
+      PyBridgeWrap const & bImpl = be;
+      bImpl.SetImpl(bridge);
+    }
+
+    bp::object resultObj(bp::exec_file(filePath.c_str(), mainNamespace, mainNamespace));
+  }
+  catch (...)
   {
     PyErr_Print();
     SC_THROW_EXCEPTION(utils::ExceptionInvalidState,
@@ -162,22 +281,15 @@ void ScPythonInterpreter::RunScript(std::string const & scriptName)
 
 void ScPythonInterpreter::AddModulesPath(std::string const & modulesPath)
 {
+  utils::ScLockScope scope(m_lock);
+
   if (ms_modulePaths.insert(modulesPath).second)
     CollectModulesInPath(modulesPath);
 }
 
-void ScPythonInterpreter::CollectModules()
+void ScPythonInterpreter::CollectModules(StringVector const & modulePath)
 {
-  // load search paths
-  char const * pValue = sc_config_get_value_string("python", "modules_path");
-  if (pValue == nullptr)
-    return;
-
-  std::string const paths = pValue;
-
-  StringVector values;
-  utils::StringUtils::SplitString(paths, ';', values);
-  for (auto const & p : values)
+  for (auto const & p : modulePath)
     AddModulesPath(p);
 }
 void ScPythonInterpreter::CollectModulesInPath(std::string const & modulePath)
@@ -192,7 +304,7 @@ void ScPythonInterpreter::CollectModulesInPath(std::string const & modulePath)
       if (!boost::filesystem::is_directory(*itPath))
       {
         boost::filesystem::path const p = *itPath;
-        std::string const filename = boost::filesystem::relativePath(root, p).string();
+        std::string filename = utils::StringUtils::ReplaceAll(boost::filesystem::relativePath(root, p).string(), "\\", "/");
         std::string ext = utils::StringUtils::GetFileExtension(filename);
         utils::StringUtils::ToLowerCase(ext);
 

@@ -58,7 +58,7 @@ public:
 
 class ATestAddInputEdge : public ScAgent
 {
-  SC_CLASS(Agent, Event(msAgentKeynode, SC_EVENT_ADD_INPUT_ARC))
+  SC_CLASS(Agent, Event(msAgentKeynode, ScEvent::Type::AddInputEdge))
   SC_GENERATED_BODY()
 
 public:
@@ -71,7 +71,7 @@ public:
 
 class ATestAddOutputEdge : public ScAgent
 {
-  SC_CLASS(Agent, Event(msAgentKeynode, SC_EVENT_ADD_OUTPUT_ARC))
+  SC_CLASS(Agent, Event(msAgentKeynode, ScEvent::Type::AddOutputEdge))
   SC_GENERATED_BODY()
 
 public:
@@ -85,7 +85,7 @@ public:
 
 class ATestRemoveInputEdge : public ScAgent
 {
-  SC_CLASS(Agent, Event(msAgentKeynode, SC_EVENT_REMOVE_INPUT_ARC))
+  SC_CLASS(Agent, Event(msAgentKeynode, ScEvent::Type::RemoveInputEdge))
   SC_GENERATED_BODY()
 
 public:
@@ -98,7 +98,7 @@ public:
 
 class ATestRemoveOutputEdge : public ScAgent
 {
-  SC_CLASS(Agent, Event(msAgentKeynode, SC_EVENT_REMOVE_OUTPUT_ARC))
+  SC_CLASS(Agent, Event(msAgentKeynode, ScEvent::Type::RemoveOutputEdge))
   SC_GENERATED_BODY()
 
 public:
@@ -111,7 +111,7 @@ public:
 
 class ATestRemoveElement : public ScAgent
 {
-  SC_CLASS(Agent, Event(msAgentKeynode, SC_EVENT_REMOVE_ELEMENT))
+  SC_CLASS(Agent, Event(msAgentKeynode, ScEvent::Type::EraseElement))
   SC_GENERATED_BODY()
 
 public:
@@ -124,7 +124,7 @@ public:
 
 class ATestContentChanged : public ScAgent
 {
-  SC_CLASS(Agent, Event(msAgentKeynode, SC_EVENT_CONTENT_CHANGED))
+  SC_CLASS(Agent, Event(msAgentKeynode, ScEvent::Type::ContentChanged))
   SC_GENERATED_BODY()
 
 public:

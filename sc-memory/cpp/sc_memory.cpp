@@ -87,19 +87,21 @@ bool ScMemory::Initialize(sc_memory_params const & params)
   g_log_set_default_handler(_logPrintHandler, nullptr);
 
   ScHttp::Init();
+  auto newParams = params;
+  newParams.ext_path = nullptr;
 
-  ms_globalContext = sc_memory_initialize(&params);
+  ms_globalContext = sc_memory_initialize(&newParams);
+  py::ScPythonInterpreter::Initialize("sc-memory");
+  sc_memory_init_ext(params.ext_path);
   
   ScKeynodes::Init();
   ScAgentInit(true);
-  py::ScPythonInterpreter::Initialize("sc-memory");
 
-  return ms_globalContext != null_ptr;
+  return (ms_globalContext != null_ptr);
 }
 
 void ScMemory::Shutdown(bool saveState /* = true */)
 {
-  py::ScPythonInterpreter::Shutdown();
   ScKeynodes::Shutdown();
   
   if (ms_contexts.size() > 0)
@@ -116,6 +118,7 @@ void ScMemory::Shutdown(bool saveState /* = true */)
   ms_globalContext = 0;
 
   ScHttp::Shutdown();
+  py::ScPythonInterpreter::Shutdown();
 
   g_log_set_default_handler(g_log_default_handler, nullptr);
 }

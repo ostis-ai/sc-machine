@@ -252,7 +252,7 @@ void Class::GenerateDeclarations(std::stringstream & outCode) const
     {
       outCode << "\\\n\tvirtual sc_result RunImpl(ScAddr const & requestAddr, ScAddr const & resultAddr); ";
       listenAddr = "GetCommandInitiatedAddr()";
-      eventType = "SC_EVENT_ADD_OUTPUT_ARC";
+      eventType = "ScEvent::Type::AddOutputEdge";
       instConstructParams = "ms_cmdClass_" + m_displayName + ", ";
 
       outCode << "\\\nprotected: ";

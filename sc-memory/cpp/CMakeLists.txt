@@ -28,6 +28,7 @@ set (SC_MEMORY_CPP_SOURCES
             "sc_utils.cpp"
             "sc_iterator.cpp"
             "sc_keynodes.cpp"
+            "sc_link.cpp"
             "sc_stream.cpp"
             "sc_template.cpp"
             "sc_template_build.cpp"
@@ -43,8 +44,11 @@ set (SC_MEMORY_CPP_SOURCES
             "http/sc_http.cpp"
             "http/sc_http_request.cpp"
             "http/sc_http_response.cpp"
+            "python/sc_python_bridge.cpp"
+            "python/sc_python_gil.cpp"
             "python/sc_python_interp.cpp"
             "python/sc_python_module.cpp"
+            "python/sc_python_threads.cpp"
             "utils/sc_log.cpp"
             "utils/sc_lock.cpp"
             "utils/sc_message.cpp"
@@ -61,6 +65,7 @@ set (SC_MEMORY_CPP_SOURCES
             "sc_utils.hpp"
             "sc_iterator.hpp"
             "sc_keynodes.hpp"
+            "sc_link.hpp"
             "sc_stream.hpp"
             "sc_types.hpp"
             "sc_timer.hpp"
@@ -77,9 +82,12 @@ set (SC_MEMORY_CPP_SOURCES
             "http/sc_http.hpp"
             "http/sc_http_request.hpp"
             "http/sc_http_response.hpp"
+            "python/sc_python_bridge.hpp"
+            "python/sc_python_gil.hpp"
             "python/sc_python_interp.hpp"
-            "python/sc_python_module.hpp"
             "python/sc_python_includes.hpp"
+            "python/sc_python_module.hpp"
+            "python/sc_python_threads.hpp"
             "utils/sc_cache.hpp"
             "utils/sc_log.hpp"
             "utils/sc_lock.hpp"
@@ -98,7 +106,7 @@ add_library (sc-memory-cpp SHARED ${SC_MEMORY_CPP_SOURCES} ${SOURCES_SCS})
 
 if (${WIN32})
 target_link_libraries(sc-memory-cpp
-                        sc-memory ${ANTLR_LIB} ${LIBCURL_LIBRARIES}
+                        sc-memory ${ANTLR_LIB} ${LIBCURL_LIBRARIES} ${PYTHON_LIBRARY_RELEASE}
                         debug ${BOOST_PYTHON_LIBRARY_DEBUG}
                         optimized ${BOOST_PYTHON_LIBRARY_RELEASE})
 elseif (${UNIX})

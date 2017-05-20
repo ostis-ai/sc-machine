@@ -32,57 +32,94 @@ public:
   static _SC_EXTERN size_t GetRrelIndexNum();
 
   SC_PROPERTY(Keynode("command_state"), ForceCreate(ScType::NodeConstClass))
-  static ScAddr kCommandStateAddr;
+  _SC_EXTERN static ScAddr kCommandStateAddr;
 
   SC_PROPERTY(Keynode("command_initiated"), ForceCreate(ScType::NodeConstClass))
-  static ScAddr kCommandInitiatedAddr;
+  _SC_EXTERN static ScAddr kCommandInitiatedAddr;
 
   SC_PROPERTY(Keynode("command_in_progress"), ForceCreate(ScType::NodeConstClass))
-  static ScAddr kCommandProgressdAddr;
+  _SC_EXTERN static ScAddr kCommandProgressdAddr;
 
   SC_PROPERTY(Keynode("command_finished"), ForceCreate(ScType::NodeConstClass))
-  static ScAddr kCommandFinishedAddr;
+  _SC_EXTERN static ScAddr kCommandFinishedAddr;
 
   SC_PROPERTY(Keynode("nrel_result"), ForceCreate(ScType::NodeConstNoRole))
-  static ScAddr kNrelResult;
+  _SC_EXTERN static ScAddr kNrelResult;
 
   SC_PROPERTY(Keynode("nrel_common_template"), ForceCreate(ScType::NodeConstNoRole))
-  static ScAddr kNrelCommonTemplate;
+  _SC_EXTERN static ScAddr kNrelCommonTemplate;
 
   // result codes
   SC_PROPERTY(Keynode("sc_result"), ForceCreate(ScType::NodeConstClass))
-  static ScAddr kScResult;
+  _SC_EXTERN static ScAddr kScResult;
 
   SC_PROPERTY(Keynode("sc_result_ok"), ForceCreate(ScType::NodeConstClass))
-  static ScAddr kScResultOk;
+  _SC_EXTERN static ScAddr kScResultOk;
 
   SC_PROPERTY(Keynode("sc_result_no"), ForceCreate(ScType::NodeConstClass))
-  static ScAddr kScResultNo;
+  _SC_EXTERN static ScAddr kScResultNo;
 
   SC_PROPERTY(Keynode("sc_result_unknown"), ForceCreate(ScType::NodeConstClass))
-  static ScAddr kScResultUnknown;
+  _SC_EXTERN static ScAddr kScResultUnknown;
 
   SC_PROPERTY(Keynode("sc_result_error"), ForceCreate(ScType::NodeConstClass))
-  static ScAddr kScResultError;
+  _SC_EXTERN static ScAddr kScResultError;
 
   SC_PROPERTY(Keynode("sc_result_error_invalid_params"), ForceCreate(ScType::NodeConstClass))
-  static ScAddr kScResultErrorInvalidParams;
+  _SC_EXTERN static ScAddr kScResultErrorInvalidParams;
 
   SC_PROPERTY(Keynode("sc_result_error_invalid_type"), ForceCreate(ScType::NodeConstClass))
-  static ScAddr kScResultErrorInvalidType;
+  _SC_EXTERN static ScAddr kScResultErrorInvalidType;
 
   SC_PROPERTY(Keynode("sc_result_error_io"), ForceCreate(ScType::NodeConstClass))
-  static ScAddr kScResultErrorIO;
+  _SC_EXTERN static ScAddr kScResultErrorIO;
 
   SC_PROPERTY(Keynode("sc_result_invalid_state"), ForceCreate(ScType::NodeConstClass))
-  static ScAddr kScResultInvalidState;
+  _SC_EXTERN static ScAddr kScResultInvalidState;
 
   SC_PROPERTY(Keynode("sc_result_error_not_found"), ForceCreate(ScType::NodeConstClass))
-  static ScAddr kScResultErrorNotFound;
+  _SC_EXTERN static ScAddr kScResultErrorNotFound;
 
   SC_PROPERTY(Keynode("sc_result_error_no_write_rights"), ForceCreate(ScType::NodeConstClass))
-  static ScAddr kScResultErrorNoWriteRights;
+  _SC_EXTERN static ScAddr kScResultErrorNoWriteRights;
 
   SC_PROPERTY(Keynode("sc_result_error_no_read_rights"), ForceCreate(ScType::NodeConstClass))
-  static ScAddr kScResultErrorNoReadRights;
+  _SC_EXTERN static ScAddr kScResultErrorNoReadRights;
+
+  // binary types
+  SC_PROPERTY(Keynode("binary_type"), ForceCreate(ScType::NodeConstClass))
+  _SC_EXTERN static ScAddr kBinaryType;
+
+  SC_PROPERTY(Keynode("binary_float"), ForceCreate(ScType::NodeConstClass))
+  _SC_EXTERN static ScAddr kBinaryFloat;
+
+  SC_PROPERTY(Keynode("binary_double"), ForceCreate(ScType::NodeConstClass))
+  _SC_EXTERN static ScAddr kBinaryDouble;
+
+  SC_PROPERTY(Keynode("binary_int8"), ForceCreate(ScType::NodeConstClass))
+  _SC_EXTERN static ScAddr kBinaryInt8;
+
+  SC_PROPERTY(Keynode("binary_int16"), ForceCreate(ScType::NodeConstClass))
+  _SC_EXTERN static ScAddr kBinaryInt16;
+
+  SC_PROPERTY(Keynode("binary_int32"), ForceCreate(ScType::NodeConstClass))
+  _SC_EXTERN static ScAddr kBinaryInt32;
+  
+  SC_PROPERTY(Keynode("binary_int64"), ForceCreate(ScType::NodeConstClass))
+  _SC_EXTERN static ScAddr kBinaryInt64;
+
+  SC_PROPERTY(Keynode("binary_uint8"), ForceCreate(ScType::NodeConstClass))
+  _SC_EXTERN static ScAddr kBinaryUInt8;
+
+  SC_PROPERTY(Keynode("binary_uint16"), ForceCreate(ScType::NodeConstClass))
+  _SC_EXTERN static ScAddr kBinaryUInt16;
+
+  SC_PROPERTY(Keynode("binary_uint32"), ForceCreate(ScType::NodeConstClass))
+  _SC_EXTERN static ScAddr kBinaryUInt32;
+
+  SC_PROPERTY(Keynode("binary_uint64"), ForceCreate(ScType::NodeConstClass))
+  _SC_EXTERN static ScAddr kBinaryUInt64;
+
+  SC_PROPERTY(Keynode("binary_string"), ForceCreate(ScType::NodeConstClass))
+  _SC_EXTERN static ScAddr kBinaryString;
 };

@@ -14,10 +14,8 @@ extern "C"
 #include <glib.h>
 }
 
-/* Class implements event wait logic.
- * Should be alive, while Memory context is alive.
+/* Class implements common wait logic.
  */
-template <typename EventClassT>
 class ScWait
 {
   class WaiterImpl
@@ -72,18 +70,11 @@ class ScWait
 public:
   using DelegateFunc = std::function<void(void)>;
 
-  ScWait(const ScMemoryContext & ctx, const ScAddr & addr)
-    : m_event(ctx, addr,
-             std::bind(&ScWait<EventClassT>::OnEvent,
-                       this,
-                       std::placeholders::_1,
-                       std::placeholders::_2,
-                       std::placeholders::_3))
-  {
-  }
+  virtual ~ScWait() {}
 
-  virtual ~ScWait()
+  void Resolve()
   {
+    m_waiterImpl.Resolve();
   }
 
   void SetOnWaitStartDelegate(DelegateFunc const & startDelegate)
@@ -101,12 +92,36 @@ public:
     return m_waiterImpl.Wait(timeout_ms);
   }
 
+private:
+  WaiterImpl m_waiterImpl;
+  DelegateFunc m_waitStartDelegate;
+};
+
+/* Class implements event wait logic.
+* Should be alive, while Memory context is alive.
+*/
+template <typename EventClassT>
+class ScWaitEvent : public ScWait
+{
+public:
+  ScWaitEvent(const ScMemoryContext & ctx, const ScAddr & addr)
+    : m_event(ctx, addr,
+              std::bind(&ScWaitEvent<EventClassT>::OnEvent,
+                        this,
+                        std::placeholders::_1,
+                        std::placeholders::_2,
+                        std::placeholders::_3))
+  {
+  }
+
+  virtual ~ScWaitEvent() {}
+
 protected:
   bool OnEvent(ScAddr const & listenAddr, ScAddr const & edgeAddr, ScAddr const & otherAddr)
   {
     if (OnEventImpl(listenAddr, edgeAddr, otherAddr))
     {
-      m_waiterImpl.Resolve();
+      ScWait::Resolve();
       return true;
     }
     return false;
@@ -116,20 +131,18 @@ protected:
 
 private:
   EventClassT m_event;
-  WaiterImpl m_waiterImpl;
-  DelegateFunc m_waitStartDelegate;
 };
 
 
 template<typename EventClassT>
-class ScWaitCondition final : public ScWait <EventClassT>
+class ScWaitCondition final : public ScWaitEvent <EventClassT>
 {
 public:
 
   using DelegateCheckFunc = std::function<bool(ScAddr const &, ScAddr const &, ScAddr const &)>;
 
   ScWaitCondition(const ScMemoryContext & ctx, const ScAddr & addr, DelegateCheckFunc func)
-    : ScWait<EventClassT>(ctx, addr)
+    : ScWaitEvent<EventClassT>(ctx, addr)
     , m_checkFunc(func)
   {
   }
@@ -146,7 +159,7 @@ private:
 
 /* Implements waiting for action finish
  */
-class ScWaitActionFinished final : public ScWait<ScEventAddInputEdge>
+class ScWaitActionFinished final : public ScWaitEvent<ScEventAddInputEdge>
 {
 public:
   _SC_EXTERN ScWaitActionFinished(ScMemoryContext const & ctx, ScAddr const & actionAddr);

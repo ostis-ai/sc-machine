@@ -123,7 +123,7 @@ public:
         while (isTripleCached[preCache[preCacheIdx]])
           preCacheIdx++;
 
-        size_t bestTripleIdx = preCacheIdx;
+        size_t bestTripleIdx = preCache[preCacheIdx];
         // now update scores of resolved triples and find best one scores
         for (size_t idx : resolvedTriples)
         {

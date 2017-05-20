@@ -1,3 +1,38 @@
+## ScLink
+
+There is a special wrapped class `ScLink` that makes work with sc-links simple. It allows to set/get common types values.
+Supported types: `uint8_t`, `uint16_t`, `uint32_t`, `uint64_t`, `int8_t`, `int16_t`, `int32_t`, `int64_t`, `float`, `double`, `std::string`.
+
+<div class="note">If you try to get <code>Type1</code> value, but in memory stores <code>Type2</code> value, then function <code>Get&ltType&gt()</code> will throws an exception <code>ExceptionInvalidParams</code></div>
+
+Example:
+```cpp
+...
+std::string const str = "any text value";
+ScLink link(linkAddr);
+link.Set(str);
+link.IsType<std::string>(); // will return true
+std::string const value = link.Get<std::string>(); // value == str
+
+...
+
+uint32_t const ivalue = 473;
+link.Set(ivalue);
+link.IsType<std::string>(); // returns false
+link.IsType<uint32_t>(); // returns true
+link.IsType<uint8_t>(); // returns false
+
+...
+
+link.Get<std::string>(); // throws ExceptionInvalidParams
+link.Get<uint32_t>(); // returns stored value
+link.IsType<uint8_t>(); // throws ExceptionInvalidParams
+...
+```
+
+<div class="todo">Add function to get type of specified sc-link</div>
+
+
 ## Iterators
 
 You can use 3-element iterators and 5-element iterators from c++ code. Image below shows numeration

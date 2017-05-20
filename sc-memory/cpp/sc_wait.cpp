@@ -9,7 +9,7 @@
 
 
 ScWaitActionFinished::ScWaitActionFinished(ScMemoryContext const & ctx, ScAddr const & actionAddr)
-  : ScWait<ScEventAddInputEdge>(ctx, actionAddr)
+  : ScWaitEvent<ScEventAddInputEdge>(ctx, actionAddr)
 {
 }
 
