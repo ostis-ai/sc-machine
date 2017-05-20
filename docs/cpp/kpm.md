@@ -281,7 +281,7 @@ ScEventRemoveOutputEdge evt(ctx, addr, callback);
     Callback calls when <code>listenAddr</code> erased.
     <hr/>
     <strong>Example C++ code</strong>:
-    <pre><code class="cpp hljs">
+    <pre><code class="cpp">
 auto const callback [](ScAddr const & listenAddr,
                        ScAddr const & edgeAddr,
                        ScAddr const & otherAddr)
@@ -306,7 +306,7 @@ ScEventEraseElement evt(ctx, addr, callback);
       Callback calls when content of <code>listenAddr</code> changed.
       <hr/>
       <strong>Example C++ code</strong>:
-      <pre><code class="cpp hljs">
+      <pre><code class="cpp">
 auto const callback [](ScAddr const & listenAddr,
                        ScAddr const & edgeAddr,
                        ScAddr const & otherAddr)

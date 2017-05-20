@@ -1,5 +1,6 @@
 # Documentation
 - C++ API
+    * [Common](cpp/common.md)
     * [Knowledge processing machine](cpp/kpm.md)
     * [Meta programming](cpp/cpp-meta.md)
     * [Templates](cpp/templates.md)

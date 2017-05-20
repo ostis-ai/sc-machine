@@ -10,6 +10,7 @@
 * Extract `ScWaitEvent` as a separated class from `ScWait`
 * Some fixes in template search
 * Make log thread safe
+* Implement `ScLink` wrapper class
 
 ## v0.3.1
 

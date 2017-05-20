@@ -1,4 +1,7 @@
 site_name: SC-machine
+extra_css:
+  - main.css
+
 pages:
   - Home: index.md
   - Build:
