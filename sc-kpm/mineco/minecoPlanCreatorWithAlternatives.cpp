@@ -157,7 +157,7 @@ ScAddr AMinEcoPlanCreatorWithAlternatives::SelectFromAlternative(ScAddr main_cla
     ms_context->CreateArc(ScType::EdgeAccessConstPosPerm, question_initiated, action);
 
     ScAddr result;
-    auto check = [&](ScAddr const & listenAddr,
+    /*auto check = [&](ScAddr const & listenAddr,
                      ScAddr const & edgeAddr,
                      ScAddr const & otherAddr)
     {
@@ -169,7 +169,19 @@ ScAddr AMinEcoPlanCreatorWithAlternatives::SelectFromAlternative(ScAddr main_cla
         return false;
     };
     ScWaitCondition<ScEventAddOutputEdge> waiter((ScMemoryContext&)ms_context, action, SC_WAIT_CHECK(check));
-    waiter.Wait();
+    waiter.Wait();*/
+    while (true)
+    {
+        ScWait<ScEventAddOutputEdge> waiter((ScMemoryContext&)ms_context, action);
+        waiter.Wait();
+
+        ScIterator5Ptr iter = ms_context->Iterator5(action, ScType::EdgeDCommonConst, ScType::NodeConst, ScType::EdgeAccessConstPosPerm, nrel_result);
+        if (iter->Next())
+        {
+            result = iter->Get(2);
+            break;
+        }
+    }
 
     return result;
 }

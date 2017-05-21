@@ -129,7 +129,7 @@ SC_AGENT_IMPLEMENTATION(AMinEcoPlanCreator)
             else
                 break;
 
-            ScIterator5Ptr iter1 = ms_context->Iterator5(district, ScType::EdgeDCommonConst, SC_TYPE(0), ScType::EdgeAccessConstPosPerm, nrel_administrative_subordination);
+            ScIterator5Ptr iter1 = ms_context->Iterator5(district, ScType::EdgeDCommonConst, ScType::Const, ScType::EdgeAccessConstPosPerm, nrel_administrative_subordination);
             while (iter1->Next())
             {
                 ScAddr addr2 = iter1->Get(2);
