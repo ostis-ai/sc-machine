@@ -30,8 +30,25 @@ link.IsType<uint8_t>(); // throws ExceptionInvalidParams
 ...
 ```
 
-<div class="todo">Add function to get type of specified sc-link</div>
+---
 
+Also you can get type of specified `ScLink`:
+```cpp
+ScLink link;
+link.Set<uint32_t>(32);
+link.DetermineType(); // will return ScLink::Type::UInt32
+```
+
+See `ScLink::Types` for full list of supported ones.
+
+---
+
+You can get value of any ScLink as `std::string`:
+```cpp
+ScLink link;
+link.Set<uint32_t>(32);
+link.GetAsString(); // will return "32"
+```
 
 ## Iterators
 

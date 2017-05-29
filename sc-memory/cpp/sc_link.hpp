@@ -17,6 +17,22 @@
 class ScLink
 {
 public:
+  enum class Type : uint8_t
+  {
+    Unknown,
+    String,
+    Float,
+    Double,
+    Int8,
+    Int16,
+    Int32,
+    Int64,
+    UInt8,
+    UInt16,
+    UInt32,
+    UInt64
+  };
+
   _SC_EXTERN ScLink(ScMemoryContext & ctx, ScAddr const & addr);
 
   // Check if this class has reference to sc-link element
@@ -55,34 +71,15 @@ public:
     if (!m_ctx.SetLinkContent(m_addr, *stream))
       return false;
 
-    // set type
-    ScTemplate templ;
-    templ.Triple(
-      ScKeynodes::kBinaryType,
-      ScType::EdgeAccessVarPosPerm,
-      ScType::NodeVarClass >> "_type");
-
-    templ.Triple(
-      "_type",
-      ScType::EdgeAccessVarPosTemp >> "_edge",
-      m_addr);
-
     ScAddr const newType = Type2Addr<Type>();
     bool needAppend = true;
-    ScTemplateSearchResult res;
-    if (m_ctx.HelperSearchTemplate(templ, res))
+    ScAddr typeEdge, typeAddr;
+    if (_DetermineTypeEdgeImpl(typeEdge, typeAddr))
     {
-      res.ForEach([&, this](ScTemplateSearchResultItem const & item)
-      {
-        if (item["_type"] != newType)
-        {
-          m_ctx.EraseElement(item["_edge"]);
-        }
-        else
-        {
-          needAppend = false;
-        }
-      });
+      if (typeAddr == newType)
+        needAppend = false;
+      else
+        m_ctx.EraseElement(typeEdge);
     }
 
     // append into set
@@ -111,6 +108,11 @@ public:
     return result;
   }
 
+  _SC_EXTERN Type DetermineType() const;
+  _SC_EXTERN std::string GetAsString() const;
+
+protected:
+  _SC_EXTERN bool _DetermineTypeEdgeImpl(ScAddr & outEdge, ScAddr & outType) const;
 private:
   ScMemoryContext & m_ctx;
   ScAddr m_addr;  
