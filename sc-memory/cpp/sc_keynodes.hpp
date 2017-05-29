@@ -49,6 +49,12 @@ public:
   SC_PROPERTY(Keynode("nrel_common_template"), ForceCreate(ScType::NodeConstNoRole))
   _SC_EXTERN static ScAddr kNrelCommonTemplate;
 
+  SC_PROPERTY(Keynode("nrel_idtf"), ForceCreate(ScType::NodeConstNoRole))
+  _SC_EXTERN static ScAddr kNrelIdtf;
+
+  SC_PROPERTY(Keynode("nrel_format"), ForceCreate(ScType::NodeConstNoRole))
+  _SC_EXTERN static ScAddr kNrelFormat;
+
   // result codes
   SC_PROPERTY(Keynode("sc_result"), ForceCreate(ScType::NodeConstClass))
   _SC_EXTERN static ScAddr kScResult;

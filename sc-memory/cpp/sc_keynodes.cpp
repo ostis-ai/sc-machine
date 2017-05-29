@@ -18,6 +18,8 @@ ScAddr ScKeynodes::kCommandProgressdAddr;
 ScAddr ScKeynodes::kCommandFinishedAddr;
 ScAddr ScKeynodes::kNrelResult;
 ScAddr ScKeynodes::kNrelCommonTemplate;
+ScAddr ScKeynodes::kNrelIdtf;
+ScAddr ScKeynodes::kNrelFormat;
 
 ScAddr ScKeynodes::kScResult;
 ScAddr ScKeynodes::kScResultOk;
