@@ -11,6 +11,7 @@
 * Some fixes in template search
 * Make log thread safe
 * Implement `ScLink` wrapper class
+* Add `ScBase64` encode/decode functions
 
 ## v0.3.1
 
