@@ -85,12 +85,12 @@ bool ScKeynodes::Init(bool force)
   }
 
   // binary types
-  //{
-  //  ScSet set(&ctx, kBinaryType);
-  //  set << kBinaryDouble << kBinaryFloat << kBinaryString
-  //      << kBinaryInt8 << kBinaryInt16 << kBinaryInt32 << kBinaryInt64
-  //      << kBinaryUInt8 << kBinaryUInt16 << kBinaryUInt32 << kBinaryUInt64;
-  //}
+  {
+    ScSet set(&ctx, kBinaryType);
+    set << kBinaryDouble << kBinaryFloat << kBinaryString
+        << kBinaryInt8 << kBinaryInt16 << kBinaryInt32 << kBinaryInt64
+        << kBinaryUInt8 << kBinaryUInt16 << kBinaryUInt32 << kBinaryUInt64;
+  }
 
   ms_isInitialized = true;
 
