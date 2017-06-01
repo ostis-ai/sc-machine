@@ -38,13 +38,13 @@ public:
   // Check if this class has reference to sc-link element
   bool IsValid() const;
 
-  template <typename Type> ScAddr const & Type2Addr() const;
-  template <typename Type> void Value2Stream(Type const & value, ScStreamPtr & stream) const
+  template <typename Type> inline ScAddr const & Type2Addr() const;
+  template <typename Type> inline void Value2Stream(Type const & value, ScStreamPtr & stream) const
   {
     stream = new ScStream((sc_char*)&value, sizeof(value), SC_STREAM_FLAG_READ | SC_STREAM_FLAG_SEEK);
   }
 
-  template <typename Type> bool Stream2Value(ScStream & stream, Type & outValue) const
+  template <typename Type> inline bool Stream2Value(ScStream & stream, Type & outValue) const
   {
     if (stream.Size() != sizeof(Type))
       return false;
@@ -57,13 +57,13 @@ public:
     return true;
   }
 
-  template <typename Type>
+  template <typename Type> inline
   bool IsType() const
   {
     return m_ctx.HelperCheckEdge(Type2Addr<Type>(), m_addr, ScType::EdgeAccessConstPosTemp);
   }
 
-  template <typename Type>
+  template <typename Type> inline
   bool Set(Type const & value)
   {
     ScStreamPtr stream;
@@ -118,25 +118,24 @@ private:
   ScAddr m_addr;  
 };
 
+template <> inline ScAddr const & ScLink::Type2Addr<std::string>() const { return ScKeynodes::kBinaryString; }
+template <> inline ScAddr const & ScLink::Type2Addr<float>() const { return ScKeynodes::kBinaryFloat; }
+template <> inline ScAddr const & ScLink::Type2Addr<double>() const { return ScKeynodes::kBinaryDouble; }
+template <> inline ScAddr const & ScLink::Type2Addr<int8_t>() const { return ScKeynodes::kBinaryInt8; }
+template <> inline ScAddr const & ScLink::Type2Addr<int16_t>() const { return ScKeynodes::kBinaryInt16; }
+template <> inline ScAddr const & ScLink::Type2Addr<int32_t>() const { return ScKeynodes::kBinaryInt32; }
+template <> inline ScAddr const & ScLink::Type2Addr<int64_t>() const { return ScKeynodes::kBinaryInt64; }
+template <> inline ScAddr const & ScLink::Type2Addr<uint8_t>() const { return ScKeynodes::kBinaryUInt8; }
+template <> inline ScAddr const & ScLink::Type2Addr<uint16_t>() const { return ScKeynodes::kBinaryUInt16; }
+template <> inline ScAddr const & ScLink::Type2Addr<uint32_t>() const { return ScKeynodes::kBinaryUInt32; }
+template <> inline ScAddr const & ScLink::Type2Addr<uint64_t>() const { return ScKeynodes::kBinaryUInt64; }
 
-template <> ScAddr const & ScLink::Type2Addr<std::string>() const { return ScKeynodes::kBinaryString; }
-template <> ScAddr const & ScLink::Type2Addr<float>() const { return ScKeynodes::kBinaryFloat; }
-template <> ScAddr const & ScLink::Type2Addr<double>() const { return ScKeynodes::kBinaryDouble; }
-template <> ScAddr const & ScLink::Type2Addr<int8_t>() const { return ScKeynodes::kBinaryInt8; }
-template <> ScAddr const & ScLink::Type2Addr<int16_t>() const { return ScKeynodes::kBinaryInt16; }
-template <> ScAddr const & ScLink::Type2Addr<int32_t>() const { return ScKeynodes::kBinaryInt32; }
-template <> ScAddr const & ScLink::Type2Addr<int64_t>() const { return ScKeynodes::kBinaryInt64; }
-template <> ScAddr const & ScLink::Type2Addr<uint8_t>() const { return ScKeynodes::kBinaryUInt8; }
-template <> ScAddr const & ScLink::Type2Addr<uint16_t>() const { return ScKeynodes::kBinaryUInt16; }
-template <> ScAddr const & ScLink::Type2Addr<uint32_t>() const { return ScKeynodes::kBinaryUInt32; }
-template <> ScAddr const & ScLink::Type2Addr<uint64_t>() const { return ScKeynodes::kBinaryUInt64; }
-
-template <> void ScLink::Value2Stream<std::string>(std::string const & value, ScStreamPtr & stream) const
+template <> inline void ScLink::Value2Stream<std::string>(std::string const & value, ScStreamPtr & stream) const
 {
   stream = new ScStream((sc_char*)value.c_str(), value.size(), SC_STREAM_FLAG_READ | SC_STREAM_FLAG_SEEK);
 }
 
-template <> bool ScLink::Stream2Value<std::string>(ScStream & stream, std::string & outValue) const
+template <> inline bool ScLink::Stream2Value<std::string>(ScStream & stream, std::string & outValue) const
 {
   std::vector<uint8_t> buff(stream.Size());
   size_t readBytes = 0;
@@ -147,4 +146,3 @@ template <> bool ScLink::Stream2Value<std::string>(ScStream & stream, std::strin
   outValue.assign(buff.begin(), buff.end());
   return true;
 }
-

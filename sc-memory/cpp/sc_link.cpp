@@ -126,3 +126,4 @@ bool ScLink::_DetermineTypeEdgeImpl(ScAddr & outEdge, ScAddr & outType) const
 
   return false;
 }
+
