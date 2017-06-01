@@ -12,6 +12,7 @@
 * Make log thread safe
 * Implement `ScLink` wrapper class
 * Add `ScBase64` encode/decode functions
+* Add common templates generation (see `sc_common_templ.hpp`)
 
 ## v0.3.1
 
