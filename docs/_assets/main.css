@@ -1,0 +1,52 @@
+.todo {
+  background-color: #E06C6C;
+  border: 1px solid #AD3939;
+  color: #fff;
+  padding: 5px;
+  font-size: 14px;
+}
+
+.todo:before {
+  content: "TODO:";
+  font-weight: bold;
+  width: 100px;
+  margin-right: 7px;
+}
+
+.scg {
+  display: block;
+}
+
+.scg content span {
+  line-height: 1 !important;
+}
+
+.invalid {
+  display: block;
+  width: 64px;
+  height: 64px;
+  background-image: url(warning.svg);
+}
+
+.invalid:after {
+  content: "Error";
+  margin-left: 70px;
+  margin-right: auto;
+  margin-top: auto;
+  margin-bottom: auto;
+  display: block;
+  width: 200px;
+  line-height: 64px;
+  color: #740600;
+}
+
+.note {
+  background-color: #a3c69f !important;
+  border: 1px solid #70936C;
+  color: #444;
+}
+
+.note code {
+  background-color: #BDE0B9 !important;
+  border: none;
+}

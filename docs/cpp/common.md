@@ -1,4 +1,5 @@
 ## ScLink
+Include file: `#include <sc-memory/cpp/sc_link.hpp>`
 
 There is a special wrapped class `ScLink` that makes work with sc-links simple. It allows to set/get common types values.
 Supported types: `uint8_t`, `uint16_t`, `uint32_t`, `uint64_t`, `int8_t`, `int16_t`, `int32_t`, `int64_t`, `float`, `double`, `std::string`.
@@ -30,7 +31,58 @@ link.IsType<uint8_t>(); // throws ExceptionInvalidParams
 ...
 ```
 
-<div class="todo">Add function to get type of specified sc-link</div>
+---
+
+Also you can get type of specified `ScLink`:
+```cpp
+ScLink link;
+link.Set<uint32_t>(32);
+link.DetermineType(); // will return ScLink::Type::UInt32
+```
+
+See `ScLink::Types` for full list of supported ones.
+
+---
+
+You can get value of any ScLink as `std::string`:
+```cpp
+ScLink link;
+link.Set<uint32_t>(32);
+link.GetAsString(); // will return "32"
+```
+
+## Common constructions
+Include file: `#include <sc-memory/cpp/sc_common_templ.hpp>`
+
+There are some function that allows to make a common routine work:
+
+- `sc::ResolveRelationTuple` - allow to ensure that specified `quasy_binary` relation between tuple and specified element exists. Returns `ScAddr` of tuple. This function check if specified construction exists, and if it doesn't then generate it by template. Used template for check/generation:
+<scg src="../images/sc_ResolveRelationTuple.gwf"></scg>
+
+Example:
+```cpp
+ScAddr const tuple = sc::ResolveRelationTuple(ctx, el, relAddr);
+// where:
+// el - is a ScAddr of element to ensure tuple exist
+// relAddr - is a ScAddr of quasy_binary relation
+```
+
+---
+
+- `sc::SetRelationValue` - create sc-link linked to `el` by relation `rel`. If it already exist, than changes it value to new one. Returns `ScAddr` of sc-link. Used template for check/generation:
+<scg src="../images/sc_SetRelationValue.gwf"></scg>
+
+Example:
+```cpp
+std::string const value1 = "test_value";
+ScAddr const linkAddr1 = sc::SetRelationValue(ctx, el, relAddr1, value1);
+
+uint32_t const value2 = 57;
+ScAddr const linkAddr2 = sc::SetRelationValue(ctx, el, relAddr1, value2);
+
+SC_ASSERT(linkAddr1 == linkAddr2, ()); // should be valid (ScAddr of link doesn't changed)
+
+```
 
 
 ## Iterators

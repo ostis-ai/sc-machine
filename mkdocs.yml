@@ -1,6 +1,10 @@
 site_name: SC-machine
+
 extra_css:
-  - main.css
+  - _assets/main.css
+extra_javascript:
+  - _assets/scg.min.js
+  - _assets/main.js
 
 pages:
   - Home: index.md

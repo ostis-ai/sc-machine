@@ -58,3 +58,40 @@ UNIT_TEST(sc_link_reuse)
   SC_CHECK_NOT(link.IsType<std::string>(), ());
   SC_CHECK_EQUAL(link.Get<uint64_t>(), value, ());
 }
+
+UNIT_TEST(sc_link_as_string)
+{
+  ScMemoryContext ctx(sc_access_lvl_make_min, "sc_link_as_string");
+
+  ScAddr const linkAddr = ctx.CreateLink();
+  SC_CHECK(linkAddr.IsValid(), ());
+
+  ScLink link(ctx, linkAddr);
+
+  SC_CHECK(link.Set<std::string>("76"), ());
+  SC_CHECK_EQUAL(link.GetAsString(), "76", ());
+
+  SC_CHECK(link.Set<int8_t>(-76), ());
+  SC_CHECK_EQUAL(link.GetAsString(), "-76", ());
+
+  SC_CHECK(link.Set<uint8_t>(76), ());
+  SC_CHECK_EQUAL(link.GetAsString(), "76", ());
+
+  SC_CHECK(link.Set<int16_t>(-760), ());
+  SC_CHECK_EQUAL(link.GetAsString(), "-760", ());
+
+  SC_CHECK(link.Set<uint16_t>(760), ());
+  SC_CHECK_EQUAL(link.GetAsString(), "760", ());
+
+  SC_CHECK(link.Set<int32_t>(-76000), ());
+  SC_CHECK_EQUAL(link.GetAsString(), "-76000", ());
+
+  SC_CHECK(link.Set<uint32_t>(76000), ());
+  SC_CHECK_EQUAL(link.GetAsString(), "76000", ());
+
+  SC_CHECK(link.Set<int64_t>(-7600000000), ());
+  SC_CHECK_EQUAL(link.GetAsString(), "-7600000000", ());
+
+  SC_CHECK(link.Set<uint64_t>(7600000000), ());
+  SC_CHECK_EQUAL(link.GetAsString(), "7600000000", ());
+}
