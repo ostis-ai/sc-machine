@@ -220,16 +220,17 @@ sc_bool _sc_iterator5_a_a_f_a_f_next(sc_iterator5 *it)
 {
 
   SC_ADDR_MAKE_EMPTY(it->results[0])
-      SC_ADDR_MAKE_EMPTY(it->results[1])
-      SC_ADDR_MAKE_EMPTY(it->results[3])
+  SC_ADDR_MAKE_EMPTY(it->results[1])
+  SC_ADDR_MAKE_EMPTY(it->results[3])
 
-      if (it->it_attr != null_ptr && sc_iterator3_next(it->it_attr))
+  if (it->it_attr != null_ptr && sc_iterator3_next(it->it_attr))
   {
     it->results[0] = it->it_main->results[0];
     it->results[1]=it->it_main->results[1];
     it->results[3]=it->it_attr->results[1];
     return SC_TRUE;
-  } else
+  }
+  else
   {
     if (it->it_attr != null_ptr)
     {
@@ -267,16 +268,17 @@ sc_bool _sc_iterator5_a_a_f_a_f_next(sc_iterator5 *it)
 sc_bool _sc_iterator5_f_a_a_a_f_next(sc_iterator5 *it)
 {
   SC_ADDR_MAKE_EMPTY(it->results[1])
-      SC_ADDR_MAKE_EMPTY(it->results[2])
-      SC_ADDR_MAKE_EMPTY(it->results[3])
+  SC_ADDR_MAKE_EMPTY(it->results[2])
+  SC_ADDR_MAKE_EMPTY(it->results[3])
 
-      if (it->it_attr != null_ptr && sc_iterator3_next(it->it_attr))
+  if (it->it_attr != null_ptr && sc_iterator3_next(it->it_attr))
   {
     it->results[1] = it->it_main->results[1];
     it->results[2] = it->it_main->results[2];
     it->results[3] = it->it_attr->results[1];
     return SC_TRUE;
-  } else
+  }
+  else
   {
     if (it->it_attr != null_ptr)
     {
@@ -314,14 +316,15 @@ sc_bool _sc_iterator5_f_a_a_a_f_next(sc_iterator5 *it)
 sc_bool _sc_iterator5_f_a_f_a_f_next(sc_iterator5 *it)
 {
   SC_ADDR_MAKE_EMPTY(it->results[1])
-      SC_ADDR_MAKE_EMPTY(it->results[3])
+  SC_ADDR_MAKE_EMPTY(it->results[3])
 
-      if (it->it_attr != null_ptr && sc_iterator3_next(it->it_attr))
+  if (it->it_attr != null_ptr && sc_iterator3_next(it->it_attr))
   {
     it->results[1] = it->it_main->results[1];
     it->results[3] = it->it_attr->results[1];
     return SC_TRUE;
-  } else
+  }
+  else
   {
     if (it->it_attr != null_ptr)
     {
@@ -358,16 +361,17 @@ sc_bool _sc_iterator5_f_a_f_a_f_next(sc_iterator5 *it)
 sc_bool _sc_iterator5_f_a_f_a_a_next(sc_iterator5 *it)
 {
   SC_ADDR_MAKE_EMPTY(it->results[1])
-      SC_ADDR_MAKE_EMPTY(it->results[3])
-      SC_ADDR_MAKE_EMPTY(it->results[4])
+  SC_ADDR_MAKE_EMPTY(it->results[3])
+  SC_ADDR_MAKE_EMPTY(it->results[4])
 
-      if (it->it_attr != null_ptr && sc_iterator3_next(it->it_attr))
+  if (it->it_attr != null_ptr && sc_iterator3_next(it->it_attr))
   {
     it->results[1] = it->it_main->results[1];
     it->results[3] = it->it_attr->results[1];
     it->results[4] = it->it_attr->results[0];
     return SC_TRUE;
-  } else
+  }
+  else
   {
     if (it->it_attr != null_ptr)
     {
@@ -405,18 +409,19 @@ sc_bool _sc_iterator5_f_a_f_a_a_next(sc_iterator5 *it)
 sc_bool _sc_iterator5_f_a_a_a_a_next(sc_iterator5 *it)
 {
   SC_ADDR_MAKE_EMPTY(it->results[1])
-      SC_ADDR_MAKE_EMPTY(it->results[2])
-      SC_ADDR_MAKE_EMPTY(it->results[3])
-      SC_ADDR_MAKE_EMPTY(it->results[4])
+  SC_ADDR_MAKE_EMPTY(it->results[2])
+  SC_ADDR_MAKE_EMPTY(it->results[3])
+  SC_ADDR_MAKE_EMPTY(it->results[4])
 
-      if (it->it_attr != null_ptr && sc_iterator3_next(it->it_attr))
+  if (it->it_attr != null_ptr && sc_iterator3_next(it->it_attr))
   {
     it->results[1] = it->it_main->results[1];
     it->results[2] = it->it_main->results[2];
     it->results[3] = it->it_attr->results[1];
     it->results[4] = it->it_attr->results[0];
     return SC_TRUE;
-  } else
+  }
+  else
   {
     if (it->it_attr != null_ptr)
     {
@@ -456,18 +461,19 @@ sc_bool _sc_iterator5_a_a_f_a_a_next(sc_iterator5 *it)
 {
 
   SC_ADDR_MAKE_EMPTY(it->results[1])
-      SC_ADDR_MAKE_EMPTY(it->results[0])
-      SC_ADDR_MAKE_EMPTY(it->results[3])
-      SC_ADDR_MAKE_EMPTY(it->results[4])
+  SC_ADDR_MAKE_EMPTY(it->results[0])
+  SC_ADDR_MAKE_EMPTY(it->results[3])
+  SC_ADDR_MAKE_EMPTY(it->results[4])
 
-      if (it->it_attr != null_ptr && sc_iterator3_next(it->it_attr))
+  if (it->it_attr != null_ptr && sc_iterator3_next(it->it_attr))
   {
     it->results[0] = it->it_main->results[0];
     it->results[1] = it->it_main->results[1];
     it->results[3] = it->it_attr->results[1];
     it->results[4] = it->it_attr->results[0];
     return SC_TRUE;
-  } else
+  }
+  else
   {
     if (it->it_attr != null_ptr)
     {
