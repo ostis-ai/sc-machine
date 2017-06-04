@@ -17,7 +17,7 @@ namespace mineco
 
 class AMinEcoPlanCreator : public ScAgent
 {
-    SC_CLASS(Agent, Event(question_initiated, SC_EVENT_ADD_OUTPUT_ARC))
+    SC_CLASS(Agent, Event(question_initiated, ScEvent::Type::AddOutputEdge))
     SC_GENERATED_BODY()
 
 public:

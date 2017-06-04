@@ -172,7 +172,7 @@ ScAddr AMinEcoPlanCreatorWithAlternatives::SelectFromAlternative(ScAddr main_cla
     waiter.Wait();*/
     while (true)
     {
-        ScWait<ScEventAddOutputEdge> waiter((ScMemoryContext&)ms_context, action);
+        ScWaitEvent<ScEventAddOutputEdge> waiter((ScMemoryContext&)ms_context, action);
         waiter.Wait();
 
         ScIterator5Ptr iter = ms_context->Iterator5(action, ScType::EdgeDCommonConst, ScType::NodeConst, ScType::EdgeAccessConstPosPerm, nrel_result);
