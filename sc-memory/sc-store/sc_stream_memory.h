@@ -4,8 +4,8 @@
  * (See accompanying file COPYING.MIT or copy at http://opensource.org/licenses/MIT)
  */
 
-#ifndef SC_STREAM_MEMORY_H
-#define SC_STREAM_MEMORY_H
+#ifndef _sc_stream_memory_h_
+#define _sc_stream_memory_h_
 
 #include "sc_stream.h"
 

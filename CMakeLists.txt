@@ -55,7 +55,6 @@ endif()
 # find dependencies
 if (${UNIX})
     find_package(PythonLibs 3.4 REQUIRED)
-    message(${PYTHONLIBS_VERSION_STRING})
 
     string(REPLACE "." ";" PY_VERSION_LIST ${PYTHONLIBS_VERSION_STRING})
     list(GET PY_VERSION_LIST 0 PY_VERSION_MAJOR)

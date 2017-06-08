@@ -18,9 +18,6 @@ extern "C"
 #include "sc_template.hpp"
 #include "sc_event.hpp"
 
-#include <list>
-#include <string>
-
 class ScMemoryContext;
 class ScStream;
 
