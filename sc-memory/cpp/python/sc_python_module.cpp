@@ -564,6 +564,11 @@ boost::shared_ptr<ScMemoryContext> _context_new(std::string const & name)
   return boost::shared_ptr<ScMemoryContext>(new ScMemoryContext(sc_access_lvl_make_min, name));
 }
 
+bp::object ScAddrFromHash(ScAddr::HashType const value)
+{
+  return bp::object(ScAddr(value));
+}
+
 } // namespace impl
 
 BOOST_PYTHON_MODULE(sc)
@@ -572,6 +577,7 @@ BOOST_PYTHON_MODULE(sc)
   bp::register_ptr_to_python<boost::shared_ptr<ScMemoryContext>>();
 
   def("createScMemoryContext", bp::make_function(impl::_context_new, py::ReleaseGILPolicy()));
+  def("ScAddrFromHash", bp::make_function(impl::ScAddrFromHash, py::ReleaseGILPolicy()));
 
   bp::class_<ScMemoryContext, boost::noncopyable>("ScMemoryContext", bp::no_init)
     .def("CreateNode", bp::make_function(&ScMemoryContext::CreateNode, py::ReleaseGILPolicy()))
