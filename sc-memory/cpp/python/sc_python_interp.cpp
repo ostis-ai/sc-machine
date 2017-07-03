@@ -77,9 +77,9 @@ void AddModuleSearchPaths(StringVector const & modulePath)
   PyObject* sysPath = PySys_GetObject("path");
   for (auto const & p : modulePath)
   {
-    if (gAddedModulePaths.find(p) != gAddedModulePaths.end())
+    if (gAddedModulePaths.find(p) == gAddedModulePaths.end())
     {
-      PyList_Insert(sysPath, 0, PyUnicode_DecodeLocale(p.c_str(), nullptr));
+      PyList_Insert(sysPath, 0, PyUnicode_FromString(p.c_str()));
       gAddedModulePaths.insert(p);
     }
   }
@@ -199,8 +199,8 @@ bool ScPythonInterpreter::Initialize(std::string const & name)
   SC_ASSERT(gMainThread == nullptr, ("ScPythonInterpreter already initialized"));
   gMainThread = new ScPythonMainThread();
 
-  PyLoadModulePathFromConfig(gModulePaths);  
-
+  PyLoadModulePathFromConfig(gModulePaths);
+  
   SC_LOG_INIT("Initialize python iterpreter version " << PY_VERSION);
   SC_LOG_INFO("Collect modules...");
   CollectModules(gModulePaths);
@@ -225,7 +225,7 @@ void ScPythonInterpreter::RunScript(std::string const & scriptName, ScPythonBrid
   utils::ScLockScope scope(m_lock);
   ScPythonSubThread subThreadScope;
 
-  //AddModuleSearchPaths(gModulePaths);
+  AddModuleSearchPaths(gModulePaths);
 
   auto const it = ms_foundModules.find(scriptName);
   if (it == ms_foundModules.end())
