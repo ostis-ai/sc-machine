@@ -171,7 +171,7 @@ bool ScMemory::HasMemoryContext(ScMemoryContext const * ctx)
 
 // ---------------
 
-ScMemoryContext::ScMemoryContext(sc_uint8 accessLevels /* = 0 */, std::string const & name /* = "" */)
+ScMemoryContext::ScMemoryContext(sc_uint8 accessLevels, std::string const & name)
   : m_context(0)
 {
   m_context = sc_memory_context_new(accessLevels);
