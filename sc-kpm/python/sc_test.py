@@ -6,7 +6,7 @@ import struct
 from sc import *
 
 def MemoryCtx(name):
-    return ScMemoryContext(0, name)
+    return createScMemoryContext(name)
 
 def CreateNodeWithIdtf(ctx, _type, _idtf):
     addr = ctx.CreateNode(_type)

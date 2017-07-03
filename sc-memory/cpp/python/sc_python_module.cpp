@@ -559,13 +559,21 @@ bp::object _context_helperBuildTemplate(ScMemoryContext & self, ScAddr const & t
   return bp::object();
 }
 
+boost::shared_ptr<ScMemoryContext> _context_new(std::string const & name)
+{
+  return boost::shared_ptr<ScMemoryContext>(new ScMemoryContext(sc_access_lvl_make_min, name));
+}
+
 } // namespace impl
 
 BOOST_PYTHON_MODULE(sc)
 {
   bp::register_exception_translator<utils::ScException>(&translateException);
+  bp::register_ptr_to_python<boost::shared_ptr<ScMemoryContext>>();
 
-  bp::class_<ScMemoryContext, boost::noncopyable>("ScMemoryContext", bp::init<uint8_t, std::string>())
+  def("createScMemoryContext", bp::make_function(impl::_context_new, py::ReleaseGILPolicy()));
+
+  bp::class_<ScMemoryContext, boost::noncopyable>("ScMemoryContext", bp::no_init)
     .def("CreateNode", bp::make_function(&ScMemoryContext::CreateNode, py::ReleaseGILPolicy()))
     .def("CreateEdge", bp::make_function(&ScMemoryContext::CreateEdge, py::ReleaseGILPolicy()))
     .def("CreateLink", bp::make_function(&ScMemoryContext::CreateLink, py::ReleaseGILPolicy()))
