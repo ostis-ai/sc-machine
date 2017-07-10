@@ -53,7 +53,7 @@ private:
 class ScMemoryContext
 {
 public:
-  _SC_EXTERN ScMemoryContext(sc_uint8 accessLevels, std::string const & name);
+  _SC_EXTERN ScMemoryContext(sc_uint8 accessLevels, std::string const & name = "");
   _SC_EXTERN ~ScMemoryContext();
 
   // Disable object copying
