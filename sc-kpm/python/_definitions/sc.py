@@ -116,6 +116,9 @@ class ScMemoryContext:
     def CreateLink(self):
         return ScAddr()
 
+    def DeleteElement(self, elAddr):
+        return False
+
     def GetName(self):
         return ''
 
@@ -230,5 +233,9 @@ class ScTemplate:
     def TripleWithRelation(self, src, edge, trg, attrEdge, attrEl):
         return None
 
-def createScMemoryContext(self):
+def createScMemoryContext():
     return ScMemoryContext()
+
+def ScAddrFromHash(hash):
+    return ScAddr()
+
