@@ -15,6 +15,9 @@ namespace py
 class ScPythonInterpreter
 {
 public:
+  using ModulesMap = std::unordered_map<std::string, std::string>;
+  using ModulePathSet = std::set<std::string>;
+
   _SC_EXTERN static bool Initialize(std::string const & name);
   _SC_EXTERN static void Shutdown();
 
@@ -27,7 +30,7 @@ public:
   _SC_EXTERN static void AddModulesPath(std::string const & modulesPath);
 
 protected:
-  static void CollectModules(StringVector const & modulePath);
+  static void CollectModules(ModulePathSet const & modulePath);
   static void CollectModulesInPath(std::string const & path);
 
 private:
@@ -35,10 +38,7 @@ private:
   static std::wstring ms_name;
   static utils::ScLock m_lock;
 
-  using ModulesMap = std::unordered_map<std::string, std::string>;
-  static ModulesMap ms_foundModules;
-  
-  using ModulePathSet = std::set<std::string>;
+  static ModulesMap ms_foundModules; 
   static ModulePathSet ms_modulePaths;
 };
 

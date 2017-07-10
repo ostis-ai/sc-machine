@@ -9,7 +9,7 @@ namespace bp = boost::python;
 
 void translateException(utils::ScException const & e)
 {
-  // Use the Python 'C' API to set up an exception object
+  // Use the Python 'C' API to set up an exception object 
   PyErr_SetString(PyExc_RuntimeError, e.Message());
 }
 
@@ -583,6 +583,7 @@ BOOST_PYTHON_MODULE(sc)
     .def("CreateNode", bp::make_function(&ScMemoryContext::CreateNode, py::ReleaseGILPolicy()))
     .def("CreateEdge", bp::make_function(&ScMemoryContext::CreateEdge, py::ReleaseGILPolicy()))
     .def("CreateLink", bp::make_function(&ScMemoryContext::CreateLink, py::ReleaseGILPolicy()))
+    .def("DeleteElement", bp::make_function(&ScMemoryContext::EraseElement, py::ReleaseGILPolicy()))
     .def("GetName", bp::make_function(&ScMemoryContext::GetName, py::ReleaseGILPolicy()))
     .def("IsElement", bp::make_function(&ScMemoryContext::IsElement, py::ReleaseGILPolicy()))
     .def("GetElementType", bp::make_function(&ScMemoryContext::GetElementType, py::ReleaseGILPolicy()))

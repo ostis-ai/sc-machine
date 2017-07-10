@@ -1,5 +1,6 @@
 from common.sc_keynodes import ScKeynodes
 from common.sc_exception import ScKeynodeException
+from common.sc_event import ScEventManager
 import urllib.request
 import time, sys, traceback
 
@@ -11,6 +12,7 @@ class ScModule:
         self.sc_context = context
         self.keynodes = ScKeynodes(self.sc_context)
         self.cpp = cpp_bridge
+        self.events = ScEventManager(self.cpp)
 
         for k in keynodes:
             addr = self.keynodes[k]
@@ -66,11 +68,15 @@ class ScModule:
                         self.MakeCppResultError(request, data)
 
                     try:
-                        self.OnCppEvent(
-                            request.GetName(),
-                            request.GetData(),
-                            onSuccess,
-                            onError)
+                        req_name = request.GetName()
+                        if req_name == 'ScEvent':
+                            self.events.ProcessEvent(request.GetData())
+                        else:
+                            self.OnCppEvent(
+                                req_name,
+                                request.GetData(),
+                                onSuccess,
+                                onError)
                     except:
                         msg = "Unexpected error: {}".format(sys.exc_info()[0])
                         print(msg)

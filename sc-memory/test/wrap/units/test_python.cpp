@@ -15,7 +15,8 @@ UNIT_TEST(Python_interp)
   
   SUBTEST_START("common")
   {
-    py::ScPythonInterpreter::RunScript("sc_test.py");
+    py::ScPythonBridgePtr bridge(new py::ScPythonBridge());
+    py::ScPythonInterpreter::RunScript("sc_test.py", bridge);
   }
   SUBTEST_END()
 }

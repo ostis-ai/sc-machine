@@ -1,4 +1,6 @@
 from unittest import TestLoader, TestCase, TextTestRunner
+from datetime import datetime
+from common import ScEventManager
 import struct
 
 # https://docs.python.org/2/library/unittest.html
@@ -411,6 +413,49 @@ class TestScMemoryContext(TestCase):
         value2 = ScType.NodeConst >> "test_repl2"
         self.assertTrue(type(value2) is ScTemplateItemValue)
 
+class TestEvents(TestCase):
+
+    def test_events(self):
+        ctx = MemoryCtx("events")
+        events = ScEventManager(cpp_bridge)
+        cpp_bridge.Initialize()
+
+        def waitTimeout(seconds, checkFunc):
+            start = datetime.now()
+            delta = 0
+
+            print(delta, seconds)
+            while not checkFunc() and delta < seconds:
+                evt = None
+                if cpp_bridge.Exist():
+                    evt = cpp_bridge.GetRequest()
+
+                if evt and evt.IsValid():
+                    events.ProcessEvent(evt.GetData())
+                delta = (datetime.now() - start).seconds
+
+        addr1 = ctx.CreateNode(ScType.NodeConst)
+        addr2 = ctx.CreateNode(ScType.NodeConst)
+
+        class EventCheck:
+            def __init__(self):
+                self.passed = False
+            
+            def onEvent(self, addr, edgeAddr, otherAddr):
+                self.passed = True
+            
+            def isPassed(self):
+                return self.passed
+
+        check = EventCheck()
+
+        evtAddOutputEdge = events.CreateEventAddOutputEdge(addr1, check.onEvent)
+        
+        # emit event and wait
+        edge1 = ctx.CreateEdge(ScType.EdgeAccess, addr1, addr2)
+        waitTimeout(3, check.isPassed)
+
+        self.assertTrue(check.isPassed)
 
 def RunTest(test):
     global TestLoader
@@ -424,6 +469,7 @@ try:
     RunTest(TestScAddr)
     RunTest(TestScType)
     RunTest(TestScMemoryContext)
+    RunTest(TestEvents)
 
 except Exception as ex:
     raise ex
