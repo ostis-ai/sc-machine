@@ -27,7 +27,7 @@ ScLog * ScLog::GetInstance()
 }
 
 ScLog::ScLog()
-  : m_mode(Debug)
+  : m_mode(Type::Debug)
   , m_isMuted(false)
 {
   ASSERT(!ms_instance, ());
@@ -39,7 +39,7 @@ ScLog::~ScLog()
   ms_instance = nullptr;
 }
 
-bool ScLog::Initialize(std::string const & file_name, eType mode /*= Info*/)
+bool ScLog::Initialize(std::string const & file_name, Type mode /*= Info*/)
 {
   m_mode = mode;
   m_fileStream.open(file_name, std::ofstream::out | std::ofstream::trunc);
@@ -52,9 +52,9 @@ void ScLog::Shutdown()
   m_fileStream.close();
 }
 
-void ScLog::Message(ScLog::eType type, std::string const & msg, ScConsole::Color color /*= ScConsole::Color::White*/)
+void ScLog::Message(ScLog::Type type, std::string const & msg, ScConsole::Color color /*= ScConsole::Color::White*/)
 {
-  if (m_isMuted)
+  if (m_isMuted && type != Type::Error)
     return; // do nothing on mute
 
   utils::ScLockScope lock(gLock);
