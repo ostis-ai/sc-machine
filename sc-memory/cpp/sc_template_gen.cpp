@@ -119,7 +119,7 @@ public:
   {
     /// TODO: improve speed, because not all time we need to replace by params
     // replace by value from params
-    if (!m_params.empty() && !itemValue.m_replacementName.empty())
+    if (!m_params.IsEmpty() && !itemValue.m_replacementName.empty())
     {
       ScAddr result;
       if (m_params.Get(itemValue.m_replacementName, result))

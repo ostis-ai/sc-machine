@@ -83,7 +83,7 @@ class Iterator
   friend class Client;
 
 protected:
-  _SC_EXTERN Iterator(TSharedPointer<char> buffer, sc_uint32 resultCount, sc_uint8 iterRange);
+  _SC_EXTERN Iterator(std::shared_ptr<char> buffer, sc_uint32 resultCount, sc_uint8 iterRange);
 
 public:
   _SC_EXTERN virtual ~Iterator();
@@ -94,7 +94,7 @@ private:
   sc_uint8 mIterRange;
   sc_uint32 mResultCount;
   sc_uint32 mCurrentResult;
-  TSharedPointer<char> mBuffer;
+  std::shared_ptr<char> mBuffer;
 };
 
 SHARED_PTR_TYPE(Iterator)
@@ -332,10 +332,10 @@ public:
           sc_uint32 const bufferSize = sizeof(ScRealAddr) * 3 * resultCount;
           if (bufferSize > 0)
           {
-            TSharedPointer<char> buffer = TSharedPointer<char>(new char[bufferSize]);
+            std::shared_ptr<char> buffer(new char[bufferSize]);
             if (bufferSize > 0)
             {
-              if (m_socketImpl->Read(buffer.GetPtr(), bufferSize) == bufferSize)
+              if (m_socketImpl->Read(buffer.get(), bufferSize) == bufferSize)
                 return IteratorPtr(new Iterator(buffer, resultCount, 3));
             }
           }
@@ -370,10 +370,10 @@ public:
           sc_uint32 const bufferSize = sizeof(ScRealAddr) * 5 * resultCount;
           if (bufferSize > 0)
           {
-            TSharedPointer<char> buffer = TSharedPointer<char>(new char[bufferSize]);
+            std::shared_ptr<char> buffer(new char[bufferSize]);
             if (bufferSize > 0)
             {
-              if (m_socketImpl->Read(buffer.GetPtr(), bufferSize) == bufferSize)
+              if (m_socketImpl->Read(buffer.get(), bufferSize) == bufferSize)
                 return IteratorPtr(new Iterator(buffer, resultCount, 5));
             }
           }

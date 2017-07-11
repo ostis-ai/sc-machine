@@ -182,7 +182,7 @@ public:
 
   std::string GetName() const { return m_impl->GetName(); }
   std::string GetData() const { return m_impl->GetData(); }
-  bool IsValid() const { return m_impl.IsPtrValid(); }
+  bool IsValid() const { return m_impl.get(); }
 
   void MakeResponse(py::ScPythonBridge::Response::Status status, std::string const & data)
   {
@@ -242,7 +242,7 @@ public:
   {
     py::ScPythonBridge::RequestPtr request = m_impl->GetNextRequest();
 
-    if (!request.IsPtrValid())
+    if (!request.get())
       return PyBridgeRequest();
     
     return PyBridgeRequest(request);
@@ -419,7 +419,7 @@ void ScPythonInterpreter::RunScript(std::string const & scriptName, ScPythonBrid
     globalNamespace["__builtins__"] = mainNamespace["__builtins__"];
     bp::exec("from scb import *\nfrom sc import *", globalNamespace, globalNamespace);
     
-    if (bridge.IsPtrValid())
+    if (bridge.get())
     {
       boost::shared_ptr<PyBridgeWrap> bridgeWrap(new PyBridgeWrap());
       bridgeWrap->SetImpl(bridge);

@@ -279,7 +279,7 @@ public:
   {
     // try with iterator search
     ScIterator3Ptr const it3 = CreateIterator(constr);
-    if (it3.IsPtrValid())
+    if (it3.get())
     {
       while (it3->Next())
       {

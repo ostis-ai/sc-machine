@@ -135,7 +135,7 @@ void ScStreamMemory::Reinit(MemoryBufferPtr const & buff)
 
 bool ScStreamMemory::IsValid() const
 {
-  return m_buffer.IsPtrValid();
+  return m_buffer.get() != nullptr;
 }
 
 bool ScStreamMemory::Read(sc_char * buff, size_t buffLen, size_t & readBytes) const
@@ -160,7 +160,7 @@ bool ScStreamMemory::Write(sc_char * data, size_t dataLen, size_t & writtenBytes
 
 bool ScStreamMemory::Seek(sc_stream_seek_origin origin, size_t offset)
 {
-  SC_ASSERT(m_buffer.IsPtrValid(), ());
+  SC_ASSERT(m_buffer.get(), ());
   switch (origin)
   {
   case SC_STREAM_SEEK_SET:
@@ -187,19 +187,19 @@ bool ScStreamMemory::Seek(sc_stream_seek_origin origin, size_t offset)
 
 bool ScStreamMemory::Eof() const
 {
-  SC_ASSERT(m_buffer.IsPtrValid(), ());
+  SC_ASSERT(m_buffer.get(), ());
   return (m_pos >= m_buffer->Size());
 }
 
 size_t ScStreamMemory::Size() const
 {
-  SC_ASSERT(m_buffer.IsPtrValid(), ());
+  SC_ASSERT(m_buffer.get(), ());
   return m_buffer->Size();
 }
 
 size_t ScStreamMemory::Pos() const
 {
-  SC_ASSERT(m_buffer.IsPtrValid(), ());
+  SC_ASSERT(m_buffer.get(), ());
   return m_pos;
 }
 

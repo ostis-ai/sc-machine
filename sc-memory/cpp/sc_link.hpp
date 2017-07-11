@@ -41,7 +41,7 @@ public:
   template <typename Type> inline ScAddr const & Type2Addr() const;
   template <typename Type> inline void Value2Stream(Type const & value, ScStreamPtr & stream) const
   {
-    stream = new ScStream((sc_char*)&value, sizeof(value), SC_STREAM_FLAG_READ | SC_STREAM_FLAG_SEEK);
+    stream.reset(new ScStream((sc_char*)&value, sizeof(value), SC_STREAM_FLAG_READ | SC_STREAM_FLAG_SEEK));
   }
 
   template <typename Type> inline bool Stream2Value(ScStream & stream, Type & outValue) const
@@ -132,7 +132,7 @@ template <> inline ScAddr const & ScLink::Type2Addr<uint64_t>() const { return S
 
 template <> inline void ScLink::Value2Stream<std::string>(std::string const & value, ScStreamPtr & stream) const
 {
-  stream = new ScStream((sc_char*)value.c_str(), value.size(), SC_STREAM_FLAG_READ | SC_STREAM_FLAG_SEEK);
+  stream.reset(new ScStream((sc_char*)value.c_str(), value.size(), SC_STREAM_FLAG_READ | SC_STREAM_FLAG_SEEK));
 }
 
 template <> inline bool ScLink::Stream2Value<std::string>(ScStream & stream, std::string & outValue) const

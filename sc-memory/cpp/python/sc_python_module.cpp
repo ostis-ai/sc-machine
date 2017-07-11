@@ -26,12 +26,12 @@ public:
 
   ScTemplateGenResult & GetResultRef()
   {
-    return m_result.GetRef();
+    return *m_result;
   }
 
   ScAddr Get(std::string const & name) const
   {
-    return m_result.GetRef()[name];
+    return (*m_result)[name];
   }
 
   size_t Size() const
@@ -40,7 +40,7 @@ public:
   }
 
 private:
-  TSharedPointer<ScTemplateGenResult> m_result;
+  std::shared_ptr<ScTemplateGenResult> m_result;
 };
 
 // -----------------------------
@@ -59,18 +59,18 @@ public:
 
   ScTemplateSearchResultItem & GetItemRef()
   {
-    return m_item.GetRef();
+    return *m_item;
   }
 
   ScAddr Get(bp::object & ind) const
   {
     bp::extract<std::string> se(ind);
     if (se.check())
-      return m_item.GetRef()[static_cast<std::string>(se)];
+      return (*m_item)[static_cast<std::string>(se)];
 
     bp::extract<int64_t> ie(ind);
     if (ie.check())
-      return m_item.GetRef()[static_cast<int64_t>(ie)];
+      return (*m_item)[static_cast<int64_t>(ie)];
 
     return ScAddr();
   }
@@ -81,7 +81,7 @@ public:
   }
 
 private:
-  TSharedPointer<ScTemplateSearchResultItem> m_item;
+  std::shared_ptr<ScTemplateSearchResultItem> m_item;
 };
 
 // -----------------------------
@@ -95,7 +95,7 @@ public:
 
   ScTemplateSearchResult & GetResultRef()
   {
-    return m_result.GetRef();
+    return *m_result;
   }
 
   size_t Size() const
@@ -113,7 +113,7 @@ public:
   }
 
 private:
-  TSharedPointer<ScTemplateSearchResult> m_result;
+  std::shared_ptr<ScTemplateSearchResult> m_result;
 };
 
 // -----------------------------
@@ -139,11 +139,11 @@ public:
 
   ScTemplateItemValue & GetItemRef() const
   {
-    return m_item.GetRef();
+    return *m_item;
   }
 
 private:
-  TSharedPointer<ScTemplateItemValue> m_item;
+  std::shared_ptr<ScTemplateItemValue> m_item;
 };
 
 // -----------------------------
@@ -165,7 +165,7 @@ public:
 
   explicit PyLinkContent(ScStream const & stream)
   {
-    m_buffer = new MemoryBufferSafe();
+    m_buffer.reset(new MemoryBufferSafe());
     m_buffer->Reinit(stream.Size());
     size_t readBytes = 0;
     stream.Read((sc_char*)m_buffer->Data(), stream.Size(), readBytes);
@@ -272,19 +272,19 @@ public:
 
   bool IsValid() const
   {
-    SC_ASSERT(m_iter.IsPtrValid(), ());
+    SC_ASSERT(m_iter.get(), ());
     return m_iter->IsValid();
   }
 
   bool Next() const
   {
-    SC_ASSERT(m_iter.IsPtrValid(), ());
+    SC_ASSERT(m_iter.get(), ());
     return m_iter->Next();
   }
 
   ScAddr Get(uint8_t index) const
   {
-    SC_ASSERT(m_iter.IsPtrValid(), ());
+    SC_ASSERT(m_iter.get(), ());
     return m_iter->Get(index);
   }
 
@@ -494,11 +494,11 @@ public:
 
   ScTemplate & GetItemRef() const
   {
-    return m_impl.GetRef();
+    return *m_impl;
   }
 
 private:
-  TSharedPointer<ScTemplate> m_impl;
+  std::shared_ptr<ScTemplate> m_impl;
 };
 
 class PyTemplateGenParams
@@ -527,11 +527,11 @@ public:
 
   ScTemplateGenParams & GetItemRef() const
   {
-    return m_impl.GetRef();
+    return *m_impl;
   }
 
 private:
-  TSharedPointer<ScTemplateGenParams> m_impl;
+  std::shared_ptr<ScTemplateGenParams> m_impl;
 };
 
 bp::object _context_helperGenTemplate(ScMemoryContext & self, PyTemplate & templ, PyTemplateGenParams & params)
