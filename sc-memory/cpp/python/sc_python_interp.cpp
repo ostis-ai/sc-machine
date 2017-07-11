@@ -196,6 +196,11 @@ private:
 class PyBridgeWrap
 {
 public:
+  static boost::shared_ptr<PyBridgeWrap> Create()
+  {
+    return boost::shared_ptr<PyBridgeWrap>(new PyBridgeWrap());
+  }
+
   PyBridgeWrap()
     : m_ctx(sc_access_lvl_make_max)
   {
@@ -305,6 +310,7 @@ PyScEvent::EventID PyBridgeWrap::ms_idCounter = 0;
 BOOST_PYTHON_MODULE(scb)
 {
   bp::register_ptr_to_python<boost::shared_ptr<PyScEvent>>();
+  bp::register_ptr_to_python<boost::shared_ptr<PyBridgeWrap>>();
 
   bp::enum_<py::ScPythonBridge::Response::Status>("ResponseStatus")
     .value("Ok", py::ScPythonBridge::Response::Status::Ok)
@@ -327,7 +333,8 @@ BOOST_PYTHON_MODULE(scb)
     .def("MakeResponse", bp::make_function(&PyBridgeRequest::MakeResponse, py::ReleaseGILPolicy()))
     ;
 
-  bp::class_<PyBridgeWrap, boost::noncopyable>("ScPythonBridgeWrap", bp::init<>())
+  bp::class_<PyBridgeWrap, boost::noncopyable>("ScPythonBridgeWrap", bp::no_init)
+    .def("__init__", bp::make_constructor(&PyBridgeWrap::Create, py::ReleaseGILPolicy()))
     .def("Initialize", bp::make_function(&PyBridgeWrap::Initialize, py::ReleaseGILPolicy()))
     .def("Exist", bp::make_function(&PyBridgeWrap::IsExist, py::ReleaseGILPolicy()))
     .def("GetRequest", bp::make_function(&PyBridgeWrap::GetRequest, py::ReleaseGILPolicy()))
@@ -405,42 +412,40 @@ void ScPythonInterpreter::RunScript(std::string const & scriptName, ScPythonBrid
   //PyEvalLock lock;
   bp::object mainModule((bp::handle<>(bp::borrowed(PyImport_AddModule("__main__")))));
   bp::object mainNamespace = mainModule.attr("__dict__");
-
-  //if (bridge)
-  //{
-  //  try
-  //  {
-  //    ScPythonBridgeImpl * bridgeImpl = bridge->GetImpl();
-  //    SC_ASSERT(bridgeImpl != nullptr, ());
-  //    bp::object bridgeObj(ScAddr());//boost::ref(bridgeImpl));
-  //    mainModule.attr("cpp_bridge") = bridgeObj;
-  //  }
-  //  catch (...)
-  //  {
-  //    PyErr_Print();
-  //  }
-  //}
-  
+   
   try
   {
-    bp::exec("from scb import *\ncpp_bridge = ScPythonBridgeWrap()", mainNamespace, mainNamespace);
+    bp::dict globalNamespace;
+    globalNamespace["__builtins__"] = mainNamespace["__builtins__"];
+    bp::exec("from scb import *\nfrom sc import *", globalNamespace, globalNamespace);
+    
+    if (bridge.IsPtrValid())
+    {
+      boost::shared_ptr<PyBridgeWrap> bridgeWrap(new PyBridgeWrap());
+      bridgeWrap->SetImpl(bridge);
+      globalNamespace["cpp_bridge"] = bp::object(bridgeWrap);
+    }
+    else
+      globalNamespace["cpp_bridge"] = bp::object();
 
-    bp::object b = mainNamespace["cpp_bridge"];
+    //bp::exec("from scb import *\ncpp_bridge = ScPythonBridgeWrap()", globalNamespace, localNamespace);
+
+    /*bp::object b = mainNamespace["cpp_bridge"];
     bp::extract<PyBridgeWrap> be(b);
     if (be.check())
     {
       PyBridgeWrap const & bImpl = be;
       bImpl.SetImpl(bridge);
-    }
+    }*/
 
-    bp::object resultObj(bp::exec_file(filePath.c_str(), mainNamespace, mainNamespace));
+    bp::object resultObj(bp::exec_file(filePath.c_str(), globalNamespace, globalNamespace));
   }
   catch (...)
   {
     PyErr_Print();
     SC_THROW_EXCEPTION(utils::ExceptionInvalidState,
                        "Error during code run " << filePath);
-  } 
+  }
 }
 
 void ScPythonInterpreter::AddModulesPath(std::string const & modulesPath)

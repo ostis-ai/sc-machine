@@ -458,7 +458,7 @@ class TestEvents(TestCase):
         self.assertTrue(check.isPassed)
 
 def RunTest(test):
-    global TestLoader
+    global TestLoader, TextTestRunner
     testItem = TestLoader().loadTestsFromTestCase(test)
     res = TextTestRunner(verbosity=2).run(testItem)
 
