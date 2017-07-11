@@ -112,7 +112,7 @@ protected:
     SC_ASSERT(evt != nullptr, ("Should receive valid event pointer"));
     m_event.reset(evt);
 
-    evt->SetDelegate(std::bind(&PyScEvent::OnEvent, this, 
+    evt->SetDelegate(std::bind(&PyScEvent::OnEvent, this,
                                std::placeholders::_1,
                                std::placeholders::_2,
                                std::placeholders::_3));

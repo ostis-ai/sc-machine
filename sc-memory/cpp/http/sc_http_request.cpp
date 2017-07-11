@@ -46,7 +46,6 @@ void ScHttpRequest::Perform()
 {
   CURL * curl = (CURL*)m_handle;
   
-  CURLoption option = CURLOPT_HTTPGET;
   if (m_type == Type::POST)
   {
     curl_easy_setopt(curl, CURLOPT_POST, 1L);
