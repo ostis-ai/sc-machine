@@ -1,5 +1,9 @@
 ## v0.4.0
 
+* Add events support in Python scripts
+* Improve Python scripts run
+* Add common libraries for a Python
+* Fix memory leaks in core
 * Improve test logging
 * Improve work with memory buffers
 * Cleanup API
