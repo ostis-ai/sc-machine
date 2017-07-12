@@ -67,7 +67,7 @@ public:
   _SC_EXTERN void Destroy();
 
   // returns copy, because of Python wrapper
-  std::string GetName() const { return m_name; }
+  std::string const & GetName() const { return m_name; }
 
   _SC_EXTERN bool IsValid() const;
 
