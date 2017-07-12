@@ -24,6 +24,8 @@
    René Nyffenegger rene.nyffenegger@adp-gmbh.ch
 
 */
+#pragma once
+
 #include "../sc_types.hpp"
 
 #include <string>

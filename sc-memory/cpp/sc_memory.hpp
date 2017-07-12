@@ -18,9 +18,6 @@ extern "C"
 #include "sc_template.hpp"
 #include "sc_event.hpp"
 
-#include <list>
-#include <string>
-
 class ScMemoryContext;
 class ScStream;
 
@@ -56,7 +53,7 @@ private:
 class ScMemoryContext
 {
 public:
-  _SC_EXTERN explicit ScMemoryContext(sc_uint8 accessLevels = 0, std::string const & name = "");
+  _SC_EXTERN ScMemoryContext(sc_uint8 accessLevels, std::string const & name = "");
   _SC_EXTERN ~ScMemoryContext();
 
   // Disable object copying
@@ -70,7 +67,7 @@ public:
   _SC_EXTERN void Destroy();
 
   // returns copy, because of Python wrapper
-  std::string GetName() const { return m_name; }
+  std::string const & GetName() const { return m_name; }
 
   _SC_EXTERN bool IsValid() const;
 
@@ -114,21 +111,23 @@ public:
   _SC_EXTERN bool Save();
 
   template <typename ParamType1, typename ParamType2, typename ParamType3, typename ParamType4, typename ParamType5>
-  TIterator5<ParamType1, ParamType2, ParamType3, ParamType4, ParamType5> * Iterator5(ParamType1 const & param1,
-                                                                                     ParamType2 const & param2,
-                                                                                     ParamType3 const & param3,
-                                                                                     ParamType4 const & param4,
-                                                                                     ParamType5 const & param5)
+  std::shared_ptr<TIterator5<ParamType1, ParamType2, ParamType3, ParamType4, ParamType5>> Iterator5(ParamType1 const & param1,
+                                                                                                    ParamType2 const & param2,
+                                                                                                    ParamType3 const & param3,
+                                                                                                    ParamType4 const & param4,
+                                                                                                    ParamType5 const & param5)
   {
-    return new TIterator5<ParamType1, ParamType2, ParamType3, ParamType4, ParamType5>(*this, param1, param2, param3, param4, param5);
+    return std::shared_ptr<TIterator5<ParamType1, ParamType2, ParamType3, ParamType4, ParamType5>>(
+      new TIterator5<ParamType1, ParamType2, ParamType3, ParamType4, ParamType5>(*this, param1, param2, param3, param4, param5));
   }
 
   template <typename ParamType1, typename ParamType2, typename ParamType3>
-  TIterator3<ParamType1, ParamType2, ParamType3> * Iterator3(ParamType1 const & param1,
-                                                             ParamType2 const & param2,
-                                                             ParamType3 const & param3)
+  std::shared_ptr<TIterator3<ParamType1, ParamType2, ParamType3>> Iterator3(ParamType1 const & param1,
+                                                                            ParamType2 const & param2,
+                                                                            ParamType3 const & param3)
   {
-    return new TIterator3<ParamType1, ParamType2, ParamType3>(*this, param1, param2, param3);
+    return std::shared_ptr<TIterator3<ParamType1, ParamType2, ParamType3>>(
+      new TIterator3<ParamType1, ParamType2, ParamType3>(*this, param1, param2, param3));
   }
   
   /* Make iteration by triples, and call fn function for each result.

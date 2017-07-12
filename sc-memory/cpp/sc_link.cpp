@@ -95,6 +95,9 @@ std::string ScLink::GetAsString() const
 
   case Type::UInt64:
     return std::to_string(Get<uint64_t>());
+
+  default:
+    return "";
   }
 
   return "";

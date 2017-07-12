@@ -91,7 +91,7 @@ private:
 
 UNIT_TEST(scs_parser_error)
 {
-  ScMemoryContext ctx;
+  ScMemoryContext ctx(sc_access_lvl_make_min, "scs_parser_error");
 
   SUBTEST_START(error_1)
   {
@@ -117,7 +117,7 @@ UNIT_TEST(scs_parser_error)
 
 UNIT_TEST(scs_parser_triple)
 {
-  ScMemoryContext ctx;
+  ScMemoryContext ctx(sc_access_lvl_make_min, "scs_parser_triple");
 
   SUBTEST_START(triple_1)
   {
@@ -199,7 +199,7 @@ UNIT_TEST(scs_parser_triple)
 
 UNIT_TEST(scs_comments)
 {
-  ScMemoryContext ctx;
+  ScMemoryContext ctx(sc_access_lvl_make_min, "scs_comments");
   scs::Parser parser(ctx);
 
   char const * data =
@@ -241,7 +241,7 @@ UNIT_TEST(scs_comments)
 
 UNIT_TEST(scs_level_1)
 {
-  ScMemoryContext ctx;
+  ScMemoryContext ctx(sc_access_lvl_make_min, "scs_level_1");
 
   SUBTEST_START(simple)
   {
@@ -267,7 +267,7 @@ UNIT_TEST(scs_level_1)
 
 UNIT_TEST(scs_const_var)
 {
-  ScMemoryContext ctx;
+  ScMemoryContext ctx(sc_access_lvl_make_min, "scs_const_var");
 
   char const * data = "_a _-> b;;";
   scs::Parser parser(ctx);
@@ -293,7 +293,7 @@ UNIT_TEST(scs_const_var)
 
 UNIT_TEST(scs_level_2)
 {
-  ScMemoryContext ctx;
+  ScMemoryContext ctx(sc_access_lvl_make_min, "scs_level_2");
 
   SUBTEST_START(simple_1)
   {
@@ -398,7 +398,7 @@ UNIT_TEST(scs_level_2)
 
 UNIT_TEST(scs_level_3)
 {
-  ScMemoryContext ctx;
+  ScMemoryContext ctx(sc_access_lvl_make_min, "scs_level_3");
 
   SUBTEST_START(simple_1)
   {
@@ -522,7 +522,7 @@ UNIT_TEST(scs_level_3)
 
 UNIT_TEST(scs_level_4)
 {
-  ScMemoryContext ctx;
+  ScMemoryContext ctx(sc_access_lvl_make_min, "scs_level_4");
 
   SUBTEST_START(simple_1)
   {

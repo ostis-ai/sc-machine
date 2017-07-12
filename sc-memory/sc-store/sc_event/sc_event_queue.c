@@ -66,7 +66,7 @@ sc_event_queue * sc_event_queue_new()
   return queue;
 }
 
-void sc_event_queue_destroy_wait(sc_event_queue *queue)
+void sc_event_queue_stop_processing(sc_event_queue *queue)
 {
   g_assert(queue != 0);
 
@@ -83,6 +83,12 @@ void sc_event_queue_destroy_wait(sc_event_queue *queue)
     g_mutex_unlock(&queue->mutex);
   }
 
+}
+
+void sc_event_queue_destroy_wait(sc_event_queue *queue)
+{
+  g_assert(queue != 0);
+
   if (queue->thread_pool)
   {
     g_mutex_lock(&queue->mutex);
@@ -90,6 +96,8 @@ void sc_event_queue_destroy_wait(sc_event_queue *queue)
     queue->thread_pool = 0;
     g_mutex_unlock(&queue->mutex);
   }
+
+  g_free(queue);
 }
 
 void sc_event_queue_append(sc_event_queue * queue, sc_event * evt, sc_addr edge, sc_addr other_el)

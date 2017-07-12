@@ -39,7 +39,7 @@ public:
 
   /* Set specified function as a delegate that will be calls on event emit */
   template <typename FuncT>
-  void SetDelegate(FuncT & func)
+  void SetDelegate(FuncT && func)
   {
     m_delegate = func;
   }

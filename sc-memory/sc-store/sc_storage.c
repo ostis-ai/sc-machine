@@ -1110,6 +1110,9 @@ sc_result sc_storage_find_links_with_content(const sc_memory_context *ctx, const
         r = SC_RESULT_ERROR_NOT_FOUND;
       }
     }
+
+    if (tmp_res)
+      g_free(tmp_res);
   }
 
   return r;

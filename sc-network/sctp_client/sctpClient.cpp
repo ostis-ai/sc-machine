@@ -13,9 +13,9 @@ namespace sctp
 sc_uint8 mIterRange;
 sc_uint32 mResultCount;
 sc_uint32 mCurrentResult;
-TSharedPointer<char> mBuffer;
+std::shared_ptr<char> mBuffer;
 
-Iterator::Iterator(TSharedPointer<char> buffer, sc_uint32 resultCount, sc_uint8 iterRange)
+Iterator::Iterator(std::shared_ptr<char> buffer, sc_uint32 resultCount, sc_uint8 iterRange)
   : mIterRange(iterRange)
   , mResultCount(resultCount)
   , mCurrentResult(0)
@@ -37,7 +37,7 @@ ScAddr Iterator::getValue(sc_uint8 idx) const
 {
   SC_ASSERT(mCurrentResult > 0, ());
   sc_uint32 const offset = (mCurrentResult - 1) * sizeof(ScRealAddr) * mIterRange + sizeof(ScRealAddr) * idx;
-  return ScAddr(*((ScRealAddr*)(mBuffer.GetPtr() + offset)));
+  return ScAddr(*((ScRealAddr*)(mBuffer.get() + offset)));
 }
 
 // -----------------------------------------

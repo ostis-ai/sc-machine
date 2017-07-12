@@ -133,6 +133,6 @@ public:
 typedef TIteratorBase<sc_iterator3> ScIterator3Type;
 typedef TIteratorBase<sc_iterator5> ScIterator5Type;
 
-typedef TSharedPointer< ScIterator3Type > ScIterator3Ptr;
-typedef TSharedPointer< ScIterator5Type > ScIterator5Ptr;
+typedef std::shared_ptr< ScIterator3Type > ScIterator3Ptr;
+typedef std::shared_ptr< ScIterator5Type > ScIterator5Ptr;
 

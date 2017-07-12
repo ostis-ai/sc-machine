@@ -10,8 +10,9 @@
 #include <algorithm>
 
 ScTemplate::ScTemplate(size_t BufferedNum)
-  : m_isSearchCacheValid(false)
-  , m_currentReplPos(0)
+  : m_currentReplPos(0)
+  , m_isSearchCacheValid(false)
+  
 {
   m_constructions.reserve(BufferedNum);
 }

@@ -52,7 +52,8 @@ sc_result resolve_nrel_system_identifier(sc_memory_context const * ctx)
           {
             sc_keynodes[SC_KEYNODE_NREL_SYSTEM_IDENTIFIER] = addr1;
             found = SC_TRUE;
-          }else
+          }
+          else
           {
             sc_iterator5_free(it);
             sc_stream_free(stream);
@@ -67,8 +68,7 @@ sc_result resolve_nrel_system_identifier(sc_memory_context const * ctx)
     }
 
     g_free(results);
-  }else
-    return SC_RESULT_ERROR;
+  }
 
   sc_stream_free(stream);
 
@@ -171,7 +171,8 @@ sc_result sc_helper_find_element_by_system_identifier(sc_memory_context const * 
         {
           found = SC_TRUE;
           *result_addr = sc_iterator5_value(it, 0);
-        }else
+        }
+        else
         {
           // don't foget to free allocated memory before return error
           sc_iterator5_free(it);
@@ -272,6 +273,8 @@ sc_result sc_helper_get_system_identifier_link(sc_memory_context const * ctx, sc
     *sys_idtf_addr = sc_iterator5_value(it, 2);
     res = SC_RESULT_OK;
   }
+
+  sc_iterator5_free(it);
 
   return res;
 }

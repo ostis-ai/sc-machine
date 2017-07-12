@@ -16,3 +16,6 @@ sc-machine.json
 manifest.json
 *.user
 *.*~
+
+.vscode
+__pycache__

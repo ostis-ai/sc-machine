@@ -8,6 +8,8 @@
 
 #include <exception>
 #include <string>
+#include <memory>
+
 #include <assert.h>
 
 #include "sc_debug.hpp"
@@ -56,116 +58,8 @@ private:
   sc_uint32 m_refCount;
 };
 
-// ------------ Shared pointer -------------
-template<typename ObjectType>
-class TSharedPointer
-{
-public:
-  TSharedPointer()
-  {
-    m_object = 0;
-    InitRef();
-  }
 
-  TSharedPointer(ObjectType * object)
-  {
-    m_object = object;
-    InitRef();
-  }
-
-  ~TSharedPointer()
-  {
-    Clear();
-  }
-
-  TSharedPointer(TSharedPointer const & other)
-  {
-    m_object = other.m_object;
-    m_refCount = other.m_refCount;
-    m_refCount->Ref();
-  }
-
-  template <typename OtherType>
-  TSharedPointer(TSharedPointer<OtherType> const & other)
-  {
-    m_object = other.m_object;
-    m_refCount = other.m_refCount;
-    m_refCount->Ref();
-  }
-
-  TSharedPointer & operator = (TSharedPointer const & other)
-  {
-    Clear();
-    m_object = other.m_object;
-    m_refCount = other.m_refCount;
-    m_refCount->Ref();
-
-    return *this;
-  }
-
-  ObjectType & operator = (ObjectType * object)
-  {
-    Clear();
-    m_object = object;
-    InitRef();
-    return *m_object;
-  }
-
-  ObjectType & operator * () const
-  {
-    SC_ASSERT(IsPtrValid(), ());
-    return *m_object;
-  }
-
-  ObjectType * operator -> () const
-  {
-    SC_ASSERT(IsPtrValid(), ());
-    return m_object;
-  }
-
-  inline bool IsPtrValid() const
-  {
-    return m_object != 0;
-  }
-
-  inline ObjectType * GetPtr() const
-  {
-    return m_object;
-  }
-
-  inline ObjectType & GetRef() const
-  {
-    SC_ASSERT(m_object != nullptr, ("Pointer is not valid"));
-    return *m_object;
-  }
-
-private:
-
-  void InitRef()
-  {
-    m_refCount = new RefCount();
-    m_refCount->Ref();
-  }
-
-  void Clear()
-  {
-    if (m_refCount->Unref() == 0)
-    {
-      delete m_refCount;
-      delete m_object;
-    }
-
-    m_refCount = 0;
-    m_object = 0;
-  }
-
-
-protected:
-  ObjectType * m_object;
-  RefCount * m_refCount;
-};
-
-#define SHARED_PTR_TYPE(__type) typedef TSharedPointer< __type > __type##Ptr;
+#define SHARED_PTR_TYPE(__type) typedef std::shared_ptr< __type > __type##Ptr;
 
 class MemoryBuffer
 {

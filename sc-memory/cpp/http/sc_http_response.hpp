@@ -21,4 +21,4 @@ private:
   uint8_t m_resultCode;
 };
 
-using ScHttpResponsePtr = TSharedPointer<ScHttpResponse>;
+SHARED_PTR_TYPE(ScHttpResponse)

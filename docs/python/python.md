@@ -1,11 +1,123 @@
 # Python
 
-You can implement agents using python. All python modules should be implemented with specified rules.
+You can implement agents using **Python 3**. All python modules should be implemented with specified rules.
 
-1. Each module, that implement agent should be names by this rule: `a_<agentName>.py`. That allows system to
-know which modules could be used to run. Util modules and others should be named NOT using this rule.
+1. You can specify search paths of a python modules by `python.modules_path` value in a [configuration file](../other/config.md).
 
-2. You can specify search paths of a python modules by `python.modules_path` value in a [configuration file](../other/config.md).
+
+# Usage example
+There are two ways to run python script:
+
+- when you need run script and wait it finished, then just use this code:
+```cpp
+#include <sc-memory/cpp/python/sc_python_interp.hpp>
+...
+void doSomething()
+{
+  ...
+  py::ScPythonInterpreter::RunScript("lg/tv_service.py", m_bridge);
+  ...
+}
+```
+Then in python you can write any code you want:
+```python
+import any_module
+
+# create context (with minimal access)
+ctx = createScMemoryContext('context name')
+
+# create node
+nodeAddr = ctx.CreateNode(ScType.NodeConst)
+...
+
+# you can use any installed python libraries
+any_module.doSomething()
+```
+
+- if you want to run script as a service and communicate with it, then use code:
+```cpp
+class Service
+{
+public:
+  void Run()
+  {
+    // Run script in a separate thread
+    m_workThread.reset(new std::thread([&]
+    {
+      // should exist my/my_script.py in python modules path
+      py::ScPythonInterpreter::RunScript("my/my_script.py", m_bridge);
+    }));
+    m_workThread->detach();
+
+    // wait until bridge starts
+    m_bridge->WaitInitialize();
+
+    // now you can use bridge
+    ScPythonBridge::ResponsePtr res = m_bridge->DoRequest("eventName", "eventData");
+  }
+
+  void Stop()
+  {
+    m_bridge->Close(); // close bridge
+    m_workThread->join(); // wait until thread finished    
+  }
+
+private:
+  py::ScPythonBridgePtr m_bridge; // special bridge to communicate with python script
+  std::unique_ptr<std::thread> m_workThread; // thread where script runs
+};
+```
+
+Then in python code use common module:
+```python
+from common import ScModule
+
+class MyModule(ScModule):
+
+    kNrelMainIdtf = 'nrel_main_idtf'
+    kDevice = 'device'
+
+    def __init__(self):
+        ScModule.__init__(self,
+            createScMemoryContext('MyModule'), keynodes=[
+                # there we can initialize keynodes that we need
+                MyModule.kNrelMainIdtf,
+                MyModule.kDevice,
+            ], cpp_bridge=cpp_bridge)
+        # cpp_bridge - is a global variable that store CPP-Python bridge object
+
+
+    def OnCppUpdate(self):
+        super.OnCppUpdate(self)
+        # you can overload more functions for work
+        # see more details in sc-kpm/python/common/sc_module.py
+
+    def printMainIdtf(self):
+        # template to update current volume value
+        templ = ScTemplate()
+        templ.TripleWithRelation(
+            self.keynodes[self.kDevice], # get ScAddr of keynode
+            ScType.EdgeDCommonVar,
+            ScType.Link >> '_link',
+            ScType.EdgeAccessVarPosPerm,
+            self.keynodes[self.kNrelMainIdtf])
+
+        # self.sc_context - is a context to work with sc-memory (use just this one)
+        searchResult = self.sc_context.HelperSearchTemplate(templ)
+
+        linkAddr = None
+        if searchResult.Size() > 0:
+            # we found old value change it
+            linkAddr = searchResult[0]['_link']
+        else:
+            genResult = self.sc_context.HelperGenTemplate(templ, ScTemplateGenParams())
+            if genResult:
+                linkAddr = genResult['_link']
+
+        if linkAddr:
+            print(self.sc_context.GetLinkContent(linkAddr))
+
+```
 
 # Classes
 
@@ -306,7 +418,7 @@ for i in range(resultNum):
 ## ScMemoryContext
 
 This class implements context, that allows you to work with memory.
-<div class="note"><b>You shouldn't share one context between two or more threads</b></div>
+<div class="note"><b>DO NOT use one context in different threads</b></div>
 There are methods of this class:
 
 - `CreateNode(type)` - create node with specified type. Where `type` is an instance of `ScType` (just **edge** types could be used). Returns `ScAddr` of created node. If returned `ScAddr` is not valid (`IsValid()`), then node wasn't created.

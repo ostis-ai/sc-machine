@@ -46,7 +46,6 @@ void ScHttpRequest::Perform()
 {
   CURL * curl = (CURL*)m_handle;
   
-  CURLoption option = CURLOPT_HTTPGET;
   if (m_type == Type::POST)
   {
     curl_easy_setopt(curl, CURLOPT_POST, 1L);
@@ -74,7 +73,7 @@ void ScHttpRequest::Perform()
   CURLcode const resultCode = curl_easy_perform(curl);
   curl_slist_free_all(headers);
 
-  m_response = new ScHttpResponse(responseString, (uint8_t)resultCode);
+  m_response.reset(new ScHttpResponse(responseString, (uint8_t)resultCode));
 }
 
 void ScHttpRequest::SetURL(std::string const & url)

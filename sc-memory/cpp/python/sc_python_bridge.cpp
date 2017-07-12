@@ -11,7 +11,7 @@ ScPythonBridge::ScPythonBridge()
 
 ScPythonBridge::ResponsePtr ScPythonBridge::DoRequest(std::string const & eventName, std::string const & data)
 {
-  RequestPtr req = new Request(eventName, data);
+  RequestPtr req(new Request(eventName, data));
   {
     utils::ScLockScope lock(m_lock);
     m_eventsQueue.push_back(req);

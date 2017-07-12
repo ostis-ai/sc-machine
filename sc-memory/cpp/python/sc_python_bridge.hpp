@@ -36,7 +36,7 @@ public:
     std::string m_data;
   };
 
-  SHARED_PTR_TYPE(Response)
+  using ResponsePtr = std::shared_ptr<Response>;
 
   class Request
   {
@@ -61,7 +61,7 @@ public:
     /* Just for internal usage */
     void _OnMakeResponse(Response::Status status, std::string const & data)
     {
-      m_response = new Response(status, data);
+      m_response.reset(new Response(status, data));
       m_waitResponse.Resolve();
     }
     
@@ -72,7 +72,7 @@ public:
     ScWait m_waitResponse;
   };
 
-  SHARED_PTR_TYPE(Request)
+  using RequestPtr = std::shared_ptr<Request>;
 
 public:
   _SC_EXTERN ScPythonBridge();
@@ -96,6 +96,6 @@ private:
   std::list<RequestPtr> m_eventsQueue;
 };
 
-SHARED_PTR_TYPE(ScPythonBridge)
+using ScPythonBridgePtr = std::shared_ptr<ScPythonBridge>;
 
 } // py
