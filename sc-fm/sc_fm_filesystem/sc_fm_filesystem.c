@@ -131,7 +131,8 @@ sc_result sc_fs_engine_addr_ref_append(const sc_fm_engine *engine, sc_addr addr,
         addrs_num = 1;
         memcpy(content, &addrs_num, sizeof(addrs_num));
         memcpy(content + sizeof(addrs_num), &addr, sizeof(addr));
-    }else
+    }
+    else
     {
         content2 = content;
         (*(sc_uint32*)content)++;
@@ -195,30 +196,42 @@ sc_result sc_fs_engine_addr_ref_remove(const sc_fm_engine *engine, sc_addr addr,
     if (content != 0)
     {
         g_assert(content_len % sizeof(sc_addr) == 0);
-        sc_addr *iter = (sc_addr*)content;
+        sc_addr *begin_addr = (sc_addr*)(content + sizeof(sc_uint32));
+        sc_addr *iter = begin_addr;
         sc_addr *iter_end = (sc_addr*)(content + content_len);
         sc_bool found = SC_FALSE;
+        sc_uint32 *addrs_num = (sc_uint32*)content;
+
+        g_assert(content_len == (*addrs_num * sizeof(sc_addr) + sizeof(sc_uint32)));
 
         while (iter != iter_end)
         {
             if (SC_ADDR_IS_EQUAL(*iter, addr))
             {
-                if (content_len > sizeof(sc_addr))
+                if (*addrs_num > 1)
                 {
                     found = SC_TRUE;
-                    content2 = g_new0(gchar, content_len - sizeof(sc_addr));
-                    if ((gchar*)iter != content)
-                        memcpy(content2, content, (gchar*)iter - content);
+                    content_len -= sizeof(sc_addr);
+                    content2 = g_new0(gchar, content_len);
+
+                    (*addrs_num)--;
+
+                    // write number of addrs
+                    memcpy(content2, addrs_num, sizeof(sc_uint32));
+
+                    if (iter != begin_addr)
+                        memcpy(content2, begin_addr, (gchar*)iter - (gchar*)begin_addr);
 
                     iter_next = iter;
                     ++iter_next;
 
                     if (iter_next != iter_end)
-                        memcpy(content2, iter + 1, (gchar*)iter_end - (gchar*)iter_next);
+                        memcpy(content2, iter_next, (gchar*)iter_end - (gchar*)iter_next);
 
                     g_free(content);
                     content = content2;
-                } else
+                }
+                else
                 {
                     g_free(content);
                     content = null_ptr;
@@ -228,16 +241,11 @@ sc_result sc_fs_engine_addr_ref_remove(const sc_fm_engine *engine, sc_addr addr,
             }
             ++iter;
         }
-
-        content = g_new0(gchar, content_len + sizeof(addr));
-        memcpy(content, content2, content_len);
-        memcpy(content + content_len, &addr, sizeof(addr));
-        content_len += sizeof(addr);
-
-        // old content doesn't need
-        g_free(content2);
-    } else
+    }
+    else
+    {
         res = SC_RESULT_ERROR_NOT_FOUND;
+    }
 
     // write content to file
     res = SC_RESULT_OK;
@@ -247,7 +255,9 @@ sc_result sc_fs_engine_addr_ref_remove(const sc_fm_engine *engine, sc_addr addr,
             res = SC_RESULT_ERROR_IO;
     }
     else if (g_file_set_contents(addr_path, content, content_len, 0) != TRUE)
+    {
         res = SC_RESULT_ERROR_IO;
+    }
 
     clean:
     {
@@ -294,7 +304,8 @@ sc_result sc_fs_engine_find(const sc_fm_engine *engine, const sc_check_sum *chec
         *result = 0;
         *result_count = 0;
         res = SC_RESULT_ERROR_NOT_FOUND;
-    }else
+    }
+    else
     {
         *result_count = *((sc_uint32*)content);
         content2 = content;

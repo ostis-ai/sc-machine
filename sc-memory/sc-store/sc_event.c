@@ -376,5 +376,5 @@ void sc_events_shutdown()
 
 void sc_events_stop_processing()
 {
-  sc_event_queue_destroy_wait(event_queue);
+  sc_event_queue_stop_processing(event_queue);
 }
