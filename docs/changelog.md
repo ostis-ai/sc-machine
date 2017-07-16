@@ -1,3 +1,7 @@
+## v0.4.1
+
+* Fix bug with python modules search path initialization
+
 ## v0.4.0
 
 * Add events support in Python scripts
