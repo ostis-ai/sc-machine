@@ -166,6 +166,36 @@ class TestScMemoryContext(TestCase):
         self.assertEqual(src, None)
         self.assertEqual(trg, None)
 
+    def test_find_links_by_content(self):
+        ctx = MemoryCtx("test_find_links_by_content")
+
+        def createLink(content):
+            addr = ctx.CreateLink()
+            self.assertTrue(addr.IsValid())
+            self.assertTrue(ctx.SetLinkContent(addr, content))
+            return addr
+
+        c1 = 'test_link_1'
+        link1 = createLink(c1)
+        link1copy = createLink(c1)
+
+        link1List = [link1, link1copy]
+
+        c2 = 'test_link_2'
+        link2 = createLink(c2)
+        
+        res1 = ctx.FindLinksByContent(c1)
+        self.assertEqual(len(res1), len(link1List))
+        for el in res1:
+            self.assertTrue(el in link1List)
+
+        res2 = ctx.FindLinksByContent(c2)
+        self.assertEqual(len(res2), 1)
+        self.assertEqual(res2[0], link2)
+
+        res3 = ctx.FindLinksByContent('test_any_not_found')
+        self.assertEqual(len(res3), 0)
+
     def test_link_content(self):
         ctx = MemoryCtx("test")
 

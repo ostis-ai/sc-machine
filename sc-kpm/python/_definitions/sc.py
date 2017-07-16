@@ -131,6 +131,9 @@ class ScMemoryContext:
     def GetEdgeInfo(self, addr):
         return ()
 
+    def FindLinksByContent(self, content):
+        return []
+
     def SetLinkContent(self, addr, content):
         return False
 

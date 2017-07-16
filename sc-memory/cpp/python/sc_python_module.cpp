@@ -207,6 +207,31 @@ private:
   MemoryBufferSafePtr m_buffer;
 };
 
+bp::list _context_FindLinksByContent(ScMemoryContext & self, bp::object const & content)
+{
+  bp::list result;
+
+  bp::extract<std::string> strContent(content);
+  if (strContent.check())
+  {
+    std::string const value = strContent;
+    ScAddrList foundAddrs;
+    ScStream stream(value.c_str(), value.size(), SC_STREAM_FLAG_READ);
+    if (self.FindLinksByContent(stream, foundAddrs))
+    {
+      for (auto addr : foundAddrs)
+        result.append(bp::object(addr));
+    }
+  }
+  else
+  {
+    SC_THROW_EXCEPTION(utils::ExceptionNotImplemented,
+                       "Just string content type now supported");
+  }
+
+  return result;
+}
+
 bp::tuple _context_getEdgeInfo(ScMemoryContext & self, ScAddr const & addr)
 {
   ScAddr src, trg;
@@ -613,6 +638,7 @@ BOOST_PYTHON_MODULE(sc)
     .def("GetName", &ScMemoryContext::GetName, bp::return_value_policy<bp::return_by_value>())
     .def("IsElement", &ScMemoryContext::IsElement)
     .def("GetElementType", &ScMemoryContext::GetElementType)
+    .def("FindLinksByContent", impl::_context_FindLinksByContent)
     .def("GetEdgeInfo", impl::_context_getEdgeInfo)
     .def("SetLinkContent", impl::_context_setLinkContent)
     .def("GetLinkContent", impl::_context_getLinkContent)
