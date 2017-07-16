@@ -370,11 +370,12 @@ bool ScPythonInterpreter::Initialize(std::string const & name)
   SC_ASSERT(gMainThread == nullptr, ("ScPythonInterpreter already initialized"));
   gMainThread = new ScPythonMainThread();
 
-  PyLoadModulePathFromConfig(ms_modulePaths);
+  ModulePathSet modulePaths;
+  PyLoadModulePathFromConfig(modulePaths);
   
   SC_LOG_INIT("Initialize python iterpreter version " << PY_VERSION);
   SC_LOG_INFO("Collect modules...");
-  CollectModules(ms_modulePaths);
+  CollectModules(modulePaths);
   SC_LOG_INFO("Collected " << ms_foundModules.size() << " modules");
 
   ms_isInitialized = true;
