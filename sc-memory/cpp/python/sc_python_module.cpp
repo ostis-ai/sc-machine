@@ -177,17 +177,31 @@ public:
     return std::string(data, data + m_buffer->Size());
   }
 
-  int64_t AsInt() const
+  int32_t AsInt() const
   {
-    if (m_buffer->Size() != sizeof(int64_t))
+    if (m_buffer->Size() == sizeof(int32_t))
     {
-      SC_THROW_EXCEPTION(utils::ExceptionInvalidType,
-                         "Size of content should be equal to " << sizeof(int64_t) << " bytes");
+      int8_t value = 0;
+      m_buffer->Read(&value, sizeof(value));
+      return int32_t(value);
     }
+    else if (m_buffer->Size() == sizeof(int16_t))
+    {
+      int16_t value = 0;
+      m_buffer->Read(&value, sizeof(value));
+      return int32_t(value);
+    }
+    else if (m_buffer->Size() == sizeof(int32_t))
+    {
+      int32_t value = 0;
+      m_buffer->Read(&value, sizeof(value));
+      return value;
+    }
+    
+    SC_THROW_EXCEPTION(utils::ExceptionInvalidType,
+                       "Size of content should be equal to 1, 2 or 4 bytes");
 
-    int64_t value = 0;
-    m_buffer->Read(&value, sizeof(value));
-    return value;
+    return 0;
   }
 
   double AsDouble() const
@@ -254,7 +268,7 @@ bool _context_setLinkContent(ScMemoryContext & self, ScAddr const & linkAddr, bp
   if (content.is_none() || !linkAddr.IsValid())
     return false;
 
-  bp::extract<int64_t> l(content);
+  bp::extract<int32_t> l(content);
   if (l.check())
     return _set_contentT(self, linkAddr, l);
 
