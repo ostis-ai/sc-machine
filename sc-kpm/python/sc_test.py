@@ -555,6 +555,35 @@ class TestScSet(TestCase):
             count += 1
         self.assertEqual(count, len(elements))
 
+    def test_sc_set_relation(self):
+        ctx = MemoryCtx("ScSet")
+
+        addrSet = ctx.CreateNode(ScType.Node)
+        relAddr = ctx.CreateNode(ScType.NodeConstNoRole)
+        addr1 = ctx.CreateNode(ScType.NodeConst)
+        addr2 = ctx.CreateNode(ScType.NodeConstClass)
+        addr3 = ctx.CreateNode(ScType.NodeConstAbstract)
+
+        elements = [addr1, addr2, addr3]
+
+        _set = ScRelationSet(ctx, addrSet, relAddr)
+        for a in elements:
+            self.assertFalse(_set.Has(a))
+
+        for a in elements:
+            self.assertTrue(_set.Add(a))
+        
+        count = 0
+        for el in _set:
+            self.assertTrue(el in elements)
+            count += 1
+        self.assertEqual(count, len(elements))
+
+        _set.Clear()
+        for a in elements:
+            self.assertFalse(_set.Has(a))
+
+
 def RunTest(test):
     global TestLoader, TextTestRunner
     testItem = TestLoader().loadTestsFromTestCase(test)
