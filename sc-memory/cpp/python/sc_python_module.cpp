@@ -513,6 +513,20 @@ bp::object _context_helperResolveSysIdtf(ScMemoryContext & self, bp::object & id
   return bp::object(resultAddr);
 }
 
+bp::object _context_helperFindBySystemIdtf(ScMemoryContext & self, bp::object & idtf)
+{
+  bp::extract<std::string> se(idtf);
+  if (!se.check())
+  {
+    SC_THROW_EXCEPTION(utils::ExceptionInvalidType,
+                       "First parameter should have an instance of str");
+  }
+  
+  std::string const idtfValue = static_cast<std::string>(se);
+  ScAddr resultAddr = self.HelperFindBySystemIdtf(idtfValue);
+  return bp::object(resultAddr);
+}
+
 ScTemplateItemValue ResolveTemplateParam(bp::object & p)
 {
   bp::extract<impl::PyTemplateItemValue> ve(p);
@@ -661,6 +675,7 @@ BOOST_PYTHON_MODULE(sc)
     .def("HelperResolveSystemIdtf", impl::_context_helperResolveSysIdtf)
     .def("HelperSetSystemIdtf", &ScMemoryContext::HelperSetSystemIdtf)
     .def("HelperGetSystemIdtf", &ScMemoryContext::HelperGetSystemIdtf)
+    .def("HelperFindBySystemIdtf", impl::_context_helperFindBySystemIdtf)
     .def("HelperCheckEdge", &ScMemoryContext::HelperCheckEdge)
     .def("HelperGenTemplate", impl::_context_helperGenTemplate)
     .def("HelperSearchTemplate", impl::_context_helperSearchTemplate)
