@@ -394,20 +394,27 @@ void ScPythonInterpreter::Shutdown()
 
 void ScPythonInterpreter::RunScript(std::string const & scriptName, ScPythonBridgePtr bridge /* = nullptr */)
 {
-  utils::ScLockScope scope(m_lock);
   ScPythonSubThread subThreadScope;
 
-  AddModuleSearchPaths(ms_modulePaths);
-
-  auto const it = ms_foundModules.find(scriptName);
-  if (it == ms_foundModules.end())
+  std::string modulePath, moduleName;
   {
-    SC_THROW_EXCEPTION(utils::ExceptionItemNotFound,
-                       "Can't find " << scriptName << " module");
+    utils::ScLockScope scope(m_lock);
+
+    AddModuleSearchPaths(ms_modulePaths);
+
+    auto const it = ms_foundModules.find(scriptName);
+    if (it == ms_foundModules.end())
+    {
+      SC_THROW_EXCEPTION(utils::ExceptionItemNotFound,
+                         "Can't find " << scriptName << " module");
+    }
+
+    moduleName = it->first;
+    modulePath = it->second;
   }
 
-  boost::filesystem::path p(it->second);
-  p /= it->first;
+  boost::filesystem::path p(modulePath);
+  p /= moduleName;
   std::string const filePath = p.string();
 
   //PyEvalLock lock;
