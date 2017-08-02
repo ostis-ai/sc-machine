@@ -35,40 +35,49 @@ any_module.doSomething()
 ```
 
 - if you want to run script as a service and communicate with it, then use code:
+
+**my_service.hpp**
 ```cpp
-class Service
+#pragma once
+
+#include <sc-memory/cpp/python/sc_python_service.hpp>
+
+class MyService : public py::ScPythonService
 {
 public:
-  void Run()
-  {
-    // Run script in a separate thread
-    m_workThread.reset(new std::thread([&]
-    {
-      // should exist my/my_script.py in python modules path
-      py::ScPythonInterpreter::RunScript("my/my_script.py", m_bridge);
-    }));
-    m_workThread->detach();
-
-    // wait until bridge starts
-    m_bridge->WaitInitialize();
-
-    // now you can use bridge
-    ScPythonBridge::ResponsePtr res = m_bridge->DoRequest("eventName", "eventData");
-  }
-
-  void Stop()
-  {
-    m_bridge->Close(); // close bridge
-    m_workThread->join(); // wait until thread finished    
-  }
+  MyService();
 
 private:
-  py::ScPythonBridgePtr m_bridge; // special bridge to communicate with python script
-  std::unique_ptr<std::thread> m_workThread; // thread where script runs
+  virtual void RunImpl() override;
+  virtual void StopImpl() override;
 };
+
+}
+```
+
+**my_service.cpp**
+```cpp
+#include "my_service.hpp"
+
+MyService::MyService()
+  : ScPythonService("my_service.py")
+{
+}
+
+void MyService::RunImpl()
+{
+  // your run code that need to be run after service started
+}
+
+void MyService::StopImpl()
+{
+  // your run code that need to be run after service stopped
+}
 ```
 
 Then in python code use common module:
+
+**my_service.py**
 ```python
 from common import ScModule
 
@@ -117,6 +126,8 @@ class MyModule(ScModule):
         if linkAddr:
             print(self.sc_context.GetLinkContent(linkAddr))
 
+service = MyModule()
+service.Run()
 ```
 
 # Classes
