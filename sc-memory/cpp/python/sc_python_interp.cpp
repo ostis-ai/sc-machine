@@ -327,23 +327,23 @@ BOOST_PYTHON_MODULE(scb)
     ;
 
   bp::class_<PyBridgeRequest>("ScPythonBridgeRequest", bp::no_init)
-    .def("GetName", bp::make_function(&PyBridgeRequest::GetName, py::ReleaseGILPolicy()))
-    .def("GetData", bp::make_function(&PyBridgeRequest::GetData, py::ReleaseGILPolicy()))
-    .def("IsValid", bp::make_function(&PyBridgeRequest::IsValid, py::ReleaseGILPolicy()))
-    .def("MakeResponse", bp::make_function(&PyBridgeRequest::MakeResponse, py::ReleaseGILPolicy()))
+    .def("GetName", bp::make_function(&PyBridgeRequest::GetName))
+    .def("GetData", bp::make_function(&PyBridgeRequest::GetData))
+    .def("IsValid", bp::make_function(&PyBridgeRequest::IsValid))
+    .def("MakeResponse", bp::make_function(&PyBridgeRequest::MakeResponse))
     ;
 
   bp::class_<PyBridgeWrap, boost::noncopyable>("ScPythonBridgeWrap", bp::no_init)
-    .def("__init__", bp::make_constructor(&PyBridgeWrap::Create, py::ReleaseGILPolicy()))
-    .def("Initialize", bp::make_function(&PyBridgeWrap::Initialize, py::ReleaseGILPolicy()))
-    .def("Exist", bp::make_function(&PyBridgeWrap::IsExist, py::ReleaseGILPolicy()))
-    .def("GetRequest", bp::make_function(&PyBridgeWrap::GetRequest, py::ReleaseGILPolicy()))
-    .def("SubscribeEvent", bp::make_function(&PyBridgeWrap::SubscribeEvent, py::ReleaseGILPolicy()))
+    .def("__init__", bp::make_constructor(&PyBridgeWrap::Create))
+    .def("Initialize", bp::make_function(&PyBridgeWrap::Initialize))
+    .def("Exist", bp::make_function(&PyBridgeWrap::IsExist))
+    .def("GetRequest", bp::make_function(&PyBridgeWrap::GetRequest))
+    .def("SubscribeEvent", bp::make_function(&PyBridgeWrap::SubscribeEvent))
     ;
 
   bp::class_<PyScEvent, boost::noncopyable>("ScPythonEvent", bp::no_init)
-    .def("Destroy", bp::make_function(&PyScEvent::Destroy, py::ReleaseGILPolicy()))
-    .def("GetID", bp::make_function(&PyScEvent::GetID, py::ReleaseGILPolicy()))
+    .def("Destroy", bp::make_function(&PyScEvent::Destroy))
+    .def("GetID", bp::make_function(&PyScEvent::GetID))
     ;
 }
 
