@@ -177,17 +177,31 @@ public:
     return std::string(data, data + m_buffer->Size());
   }
 
-  int64_t AsInt() const
+  int32_t AsInt() const
   {
-    if (m_buffer->Size() != sizeof(int64_t))
+    if (m_buffer->Size() == sizeof(int32_t))
     {
-      SC_THROW_EXCEPTION(utils::ExceptionInvalidType,
-                         "Size of content should be equal to " << sizeof(int64_t) << " bytes");
+      int8_t value = 0;
+      m_buffer->Read(&value, sizeof(value));
+      return int32_t(value);
     }
+    else if (m_buffer->Size() == sizeof(int16_t))
+    {
+      int16_t value = 0;
+      m_buffer->Read(&value, sizeof(value));
+      return int32_t(value);
+    }
+    else if (m_buffer->Size() == sizeof(int32_t))
+    {
+      int32_t value = 0;
+      m_buffer->Read(&value, sizeof(value));
+      return value;
+    }
+    
+    SC_THROW_EXCEPTION(utils::ExceptionInvalidType,
+                       "Size of content should be equal to 1, 2 or 4 bytes");
 
-    int64_t value = 0;
-    m_buffer->Read(&value, sizeof(value));
-    return value;
+    return 0;
   }
 
   double AsDouble() const
@@ -206,6 +220,31 @@ public:
 private:
   MemoryBufferSafePtr m_buffer;
 };
+
+bp::list _context_FindLinksByContent(ScMemoryContext & self, bp::object const & content)
+{
+  bp::list result;
+
+  bp::extract<std::string> strContent(content);
+  if (strContent.check())
+  {
+    std::string const value = strContent;
+    ScAddrList foundAddrs;
+    ScStream stream(value.c_str(), value.size(), SC_STREAM_FLAG_READ);
+    if (self.FindLinksByContent(stream, foundAddrs))
+    {
+      for (auto addr : foundAddrs)
+        result.append(bp::object(addr));
+    }
+  }
+  else
+  {
+    SC_THROW_EXCEPTION(utils::ExceptionNotImplemented,
+                       "Just string content type now supported");
+  }
+
+  return result;
+}
 
 bp::tuple _context_getEdgeInfo(ScMemoryContext & self, ScAddr const & addr)
 {
@@ -229,7 +268,7 @@ bool _context_setLinkContent(ScMemoryContext & self, ScAddr const & linkAddr, bp
   if (content.is_none() || !linkAddr.IsValid())
     return false;
 
-  bp::extract<int64_t> l(content);
+  bp::extract<int32_t> l(content);
   if (l.check())
     return _set_contentT(self, linkAddr, l);
 
@@ -474,6 +513,20 @@ bp::object _context_helperResolveSysIdtf(ScMemoryContext & self, bp::object & id
   return bp::object(resultAddr);
 }
 
+bp::object _context_helperFindBySystemIdtf(ScMemoryContext & self, bp::object & idtf)
+{
+  bp::extract<std::string> se(idtf);
+  if (!se.check())
+  {
+    SC_THROW_EXCEPTION(utils::ExceptionInvalidType,
+                       "First parameter should have an instance of str");
+  }
+  
+  std::string const idtfValue = static_cast<std::string>(se);
+  ScAddr resultAddr = self.HelperFindBySystemIdtf(idtfValue);
+  return bp::object(resultAddr);
+}
+
 ScTemplateItemValue ResolveTemplateParam(bp::object & p)
 {
   bp::extract<impl::PyTemplateItemValue> ve(p);
@@ -613,6 +666,7 @@ BOOST_PYTHON_MODULE(sc)
     .def("GetName", &ScMemoryContext::GetName, bp::return_value_policy<bp::return_by_value>())
     .def("IsElement", &ScMemoryContext::IsElement)
     .def("GetElementType", &ScMemoryContext::GetElementType)
+    .def("FindLinksByContent", impl::_context_FindLinksByContent)
     .def("GetEdgeInfo", impl::_context_getEdgeInfo)
     .def("SetLinkContent", impl::_context_setLinkContent)
     .def("GetLinkContent", impl::_context_getLinkContent)
@@ -621,6 +675,7 @@ BOOST_PYTHON_MODULE(sc)
     .def("HelperResolveSystemIdtf", impl::_context_helperResolveSysIdtf)
     .def("HelperSetSystemIdtf", &ScMemoryContext::HelperSetSystemIdtf)
     .def("HelperGetSystemIdtf", &ScMemoryContext::HelperGetSystemIdtf)
+    .def("HelperFindBySystemIdtf", impl::_context_helperFindBySystemIdtf)
     .def("HelperCheckEdge", &ScMemoryContext::HelperCheckEdge)
     .def("HelperGenTemplate", impl::_context_helperGenTemplate)
     .def("HelperSearchTemplate", impl::_context_helperSearchTemplate)

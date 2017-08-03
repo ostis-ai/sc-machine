@@ -179,10 +179,38 @@ UNIT_TEST(events_destroy_order)
                                                         [](ScAddr const &, ScAddr const &, ScAddr const &)
   {
       return true;
-});
+  });
 
   delete ctx;
 
   // delete event after context
   delete evt;
+}
+
+UNIT_TEST(events_lock)
+{
+  ScMemoryContext ctx(sc_access_lvl_make_min, "events_lock");
+  
+  ScAddr const node = ctx.CreateNode(ScType::NodeConst);
+  ScAddr const node2 = ctx.CreateNode(ScType::NodeConst);
+
+  ScEventAddOutputEdge evt(ctx, node, 
+                           [](ScAddr const & addr, ScAddr const & edgeAddr, ScAddr const & otherAddr)
+  {
+    bool result = false;
+    ScMemoryContext localCtx(sc_access_lvl_make_min);
+    ScIterator3Ptr it = localCtx.Iterator3(addr, ScType::EdgeAccessConstPosPerm, ScType::Unknown);
+    while (it->Next())
+    {
+      result = true;
+    }
+
+    return true;
+  });
+
+  for (size_t i = 0; i < 10000; i++)
+  {
+    ctx.CreateEdge(ScType::EdgeAccessConstPosPerm,
+                   node, node2);
+  }
 }

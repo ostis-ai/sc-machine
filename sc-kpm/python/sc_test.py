@@ -1,6 +1,6 @@
 from unittest import TestLoader, TestCase, TextTestRunner
 from datetime import datetime
-from common import ScEventManager
+from common import *
 import struct
 
 # https://docs.python.org/2/library/unittest.html
@@ -165,6 +165,36 @@ class TestScMemoryContext(TestCase):
         src, trg = ctx.GetEdgeInfo(addr1)
         self.assertEqual(src, None)
         self.assertEqual(trg, None)
+
+    def test_find_links_by_content(self):
+        ctx = MemoryCtx("test_find_links_by_content")
+
+        def createLink(content):
+            addr = ctx.CreateLink()
+            self.assertTrue(addr.IsValid())
+            self.assertTrue(ctx.SetLinkContent(addr, content))
+            return addr
+
+        c1 = 'test_link_1'
+        link1 = createLink(c1)
+        link1copy = createLink(c1)
+
+        link1List = [link1, link1copy]
+
+        c2 = 'test_link_2'
+        link2 = createLink(c2)
+        
+        res1 = ctx.FindLinksByContent(c1)
+        self.assertEqual(len(res1), len(link1List))
+        for el in res1:
+            self.assertTrue(el in link1List)
+
+        res2 = ctx.FindLinksByContent(c2)
+        self.assertEqual(len(res2), 1)
+        self.assertEqual(res2[0], link2)
+
+        res3 = ctx.FindLinksByContent('test_any_not_found')
+        self.assertEqual(len(res3), 0)
 
     def test_link_content(self):
         ctx = MemoryCtx("test")
@@ -457,6 +487,103 @@ class TestEvents(TestCase):
 
         self.assertTrue(check.isPassed)
 
+class TestScSet(TestCase):
+
+    def test_sc_set(self):
+        ctx = MemoryCtx("ScSet")
+
+        addr1 = ctx.CreateNode(ScType.NodeConst)
+        addr2 = ctx.CreateNode(ScType.Node)
+        addr3 = ctx.CreateNode(ScType.Node)
+
+        edge = ctx.CreateEdge(ScType.EdgeAccessConstPosPerm, addr1, addr2)
+
+        _set = ScSet(ctx, addr1)
+
+        # check has element
+        self.assertTrue(_set.Has(addr2))
+        self.assertFalse(_set.Has(addr3))
+
+        # check add element
+        self.assertTrue(_set.Add(addr3))
+        self.assertTrue(_set.Has(addr3))
+        self.assertFalse(_set.Add(addr3))
+
+        # check remove element
+        self.assertTrue(_set.Remove(addr3))
+        self.assertFalse(_set.Has(addr3))
+        self.assertFalse(_set.Remove(addr3))
+        self.assertTrue(_set.Has(addr2))
+
+    def test_sc_set_clear(self):
+        ctx = MemoryCtx("ScSet")
+
+        addrSet = ctx.CreateNode(ScType.Node)
+        addr1 = ctx.CreateNode(ScType.NodeConst)
+        addr2 = ctx.CreateNode(ScType.Node)
+        addr3 = ctx.CreateNode(ScType.Node)
+
+        elements = [addr1, addr2, addr3]
+
+        _set = ScSet(ctx, addrSet)
+        for el in elements:
+            self.assertTrue(_set.Add(el))
+
+        _set.Clear()
+
+        for el in elements:
+            self.assertFalse(_set.Has(el))
+
+    def test_sc_set_iter(self):
+        ctx = MemoryCtx("ScSet")
+
+        addrSet = ctx.CreateNode(ScType.Node)
+        addr1 = ctx.CreateNode(ScType.NodeConst)
+        addr2 = ctx.CreateNode(ScType.Node)
+        addr3 = ctx.CreateNode(ScType.Node)
+
+        elements = [addr1, addr2, addr3]
+
+        _set = ScSet(ctx, addrSet)
+        for a in elements:
+            self.assertTrue(_set.Add(a))
+
+        # iterate elements in set
+        count = 0
+        for el in _set:
+            self.assertTrue(el in elements)
+            count += 1
+        self.assertEqual(count, len(elements))
+
+    def test_sc_set_relation(self):
+        ctx = MemoryCtx("ScSet")
+
+        addrSet = ctx.CreateNode(ScType.Node)
+        relAddr = ctx.CreateNode(ScType.NodeConstNoRole)
+        addr1 = ctx.CreateNode(ScType.NodeConst)
+        addr2 = ctx.CreateNode(ScType.NodeConstClass)
+        addr3 = ctx.CreateNode(ScType.NodeConstAbstract)
+
+        elements = [addr1, addr2, addr3]
+
+        _set = ScRelationSet(ctx, addrSet, relAddr)
+        for a in elements:
+            self.assertFalse(_set.Has(a))
+
+        for a in elements:
+            self.assertTrue(_set.Add(a))
+        
+        count = 0
+        for el in _set:
+            self.assertTrue(el in elements)
+            count += 1
+        self.assertEqual(count, len(elements))
+
+        _set.Clear()
+        for a in elements:
+            self.assertFalse(_set.Has(a))
+
+
 def RunTest(test):
     global TestLoader, TextTestRunner
     testItem = TestLoader().loadTestsFromTestCase(test)
@@ -470,6 +597,7 @@ try:
     RunTest(TestScType)
     RunTest(TestScMemoryContext)
     RunTest(TestEvents)
+    RunTest(TestScSet)
 
 except Exception as ex:
     raise ex
