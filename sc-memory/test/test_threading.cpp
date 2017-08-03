@@ -243,14 +243,18 @@ sc_result test_agents_func(const sc_event *event, sc_addr arg)
 {
     printf("AGENT\n");
 
+    sc_memory_context *ctx = sc_memory_context_new(sc_access_lvl_make_min);
+
     sc_addr begin;
-    sc_memory_get_arc_begin(s_default_ctx, arg, &begin);
-    sc_iterator3* it = sc_iterator3_f_a_a_new(s_default_ctx, begin, sc_type_arc_pos_const_perm, sc_type_const);
+    sc_memory_get_arc_begin(ctx, arg, &begin);
+    sc_iterator3* it = sc_iterator3_f_a_a_new(ctx, begin, sc_type_arc_pos_const_perm, sc_type_const);
     while (sc_iterator3_next(it))
     {
         printf("ARC: %u|%u\n", sc_iterator3_value(it, 1));
     }
     sc_iterator3_free(it);
+
+    sc_memory_context_free(ctx);
     return SC_RESULT_OK;
 }
 
@@ -258,11 +262,11 @@ void test_agents()
 {
     s_default_ctx = sc_memory_initialize(&params);
 
-    sc_memory_context *ctx = sc_memory_context_new(sc_access_lvl_make(8, 8));
+    sc_memory_context *ctx = sc_memory_context_new(sc_access_lvl_make_min);
     sc_addr test_elem1 = sc_memory_node_new(ctx, sc_type_const);
     sc_addr test_elem2 = sc_memory_node_new(ctx, sc_type_const);
 
-    sc_event* test_agent_event = sc_event_new(s_default_ctx, test_elem1, SC_EVENT_ADD_OUTPUT_ARC, 0, test_agents_func, 0);
+    sc_event* test_agent_event = sc_event_new(ctx, test_elem1, SC_EVENT_ADD_OUTPUT_ARC, 0, test_agents_func, 0);
     if (test_agent_event == null_ptr)
         return;
 
