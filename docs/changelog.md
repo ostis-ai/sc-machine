@@ -1,6 +1,9 @@
 ## v0.4.1
 
 * Fix bug with python modules search path initialization
+* Fix bug with python threading
+* Add `ScSet` and `ScRelationSet` in python common library
+* Add `ScPythonService` into C++ (allow to implement threaded python services)
 
 ## v0.4.0
 
