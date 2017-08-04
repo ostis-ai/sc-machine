@@ -425,7 +425,14 @@ void ScPythonInterpreter::RunScript(std::string const & scriptName, ScPythonBrid
   {
     bp::dict globalNamespace;
     globalNamespace["__builtins__"] = mainNamespace["__builtins__"];
-    bp::exec("from scb import *\nfrom sc import *", globalNamespace, globalNamespace);
+    std::stringstream initCode;
+    initCode
+      << "from scb import *" << std::endl
+      << "from sc import *" << std::endl
+      << "import sys" << std::endl
+      << "sys.path.append('" << p.parent_path().string() << "')";
+    bp::exec(initCode.str().c_str(), globalNamespace, globalNamespace);
+    
     
     if (bridge.get())
     {
