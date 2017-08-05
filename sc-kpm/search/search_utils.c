@@ -15,7 +15,6 @@
 sc_addr create_answer_node()
 {
     sc_addr res = sc_memory_node_new(s_default_ctx, sc_type_const);
-    SYSTEM_ELEMENT(res);
     return res;
 }
 
@@ -24,9 +23,7 @@ void connect_answer_to_question(sc_addr question, sc_addr answer)
     sc_addr arc;
 
     arc = sc_memory_arc_new(s_default_ctx, sc_type_arc_common | sc_type_const, question, answer);
-    SYSTEM_ELEMENT(arc);
     arc = sc_memory_arc_new(s_default_ctx, sc_type_arc_pos_const_perm, keynode_nrel_answer, arc);
-    SYSTEM_ELEMENT(arc);
 }
 
 void appendIntoAnswer(sc_addr answer, sc_addr el)
@@ -36,7 +33,6 @@ void appendIntoAnswer(sc_addr answer, sc_addr el)
         return;
 
     arc = sc_memory_arc_new(s_default_ctx, sc_type_arc_pos_const_perm, answer, el);
-    SYSTEM_ELEMENT(arc);
 }
 
 void finish_question(sc_addr question)
@@ -45,5 +41,4 @@ void finish_question(sc_addr question)
     sc_addr arc;
 
     arc = sc_memory_arc_new(s_default_ctx, sc_type_arc_pos_const_perm, keynode_question_finished, question);
-    SYSTEM_ELEMENT(arc);
 }

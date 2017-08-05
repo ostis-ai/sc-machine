@@ -51,7 +51,6 @@ sc_addr keynode_nrel_key_sc_element_base_order;
 sc_addr keynode_nrel_inclusion;
 sc_addr keynode_nrel_strict_inclusion;
 
-sc_addr keynode_system_element;
 sc_addr keynode_languages;
 
 sc_addr keynode_rrel_1;
@@ -94,7 +93,6 @@ const char keynode_nrel_inclusion_str[] = "nrel_inclusion";
 const char keynode_nrel_strict_inclusion_str[] = "nrel_strict_inclusion";
 const char keynode_rrel_key_sc_element_str[] = "rrel_key_sc_element";
 const char keynode_nrel_key_sc_element_base_order_str[] = "nrel_key_sc_element_base_order";
-const char keynode_system_element_str[] = "system_element";
 const char keynode_sc_neighborhood_str[] = "semantic_neighbourhood";
 const char keynode_languages_str[] = "languages";
 
@@ -138,7 +136,6 @@ sc_result search_keynodes_initialize()
     RESOLVE_KEYNODE(s_default_ctx, keynode_nrel_key_sc_element_base_order);
     RESOLVE_KEYNODE(s_default_ctx, keynode_nrel_inclusion);
     RESOLVE_KEYNODE(s_default_ctx, keynode_nrel_strict_inclusion);
-    RESOLVE_KEYNODE(s_default_ctx, keynode_system_element);
     RESOLVE_KEYNODE(s_default_ctx, keynode_languages);
 
     return SC_RESULT_OK;

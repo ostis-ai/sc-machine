@@ -7,12 +7,6 @@
 #ifndef _search_defines_h_
 #define _search_defines_h_
 
-
-#define SYSTEM_ELEMENT(el) if (sc_helper_check_arc(s_default_ctx, keynode_system_element,el, sc_type_arc_pos_const_perm) == SC_FALSE)\
-                                sc_memory_arc_new(s_default_ctx, sc_type_arc_pos_const_perm, keynode_system_element, el);
-
-#define IS_SYSTEM_ELEMENT(el) (sc_helper_check_arc(s_default_ctx, keynode_system_element, el, sc_type_arc_pos_const_perm) == SC_TRUE)
-
 #define NOT_IN_CONTEXT(context_node, el) (sc_helper_check_arc(s_default_ctx, context_node, el, sc_type_arc_pos_const_perm) == SC_FALSE)
 
 #endif // SEARCH_DEFINES_H
