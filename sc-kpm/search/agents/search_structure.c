@@ -17,8 +17,8 @@ sc_result agent_search_decomposition(const sc_event *event, sc_addr arg)
 {
     sc_addr question, answer;
     sc_iterator3 *it1, *it2, *it3;
-    sc_iterator5 *it5, *it_order;
-    sc_bool sys_off = SC_TRUE;
+    sc_iterator5 *it5, *it_order, *it_context;
+    sc_addr context_struct;
     sc_type el_type;
 
     if (!sc_memory_get_arc_end(s_default_ctx, arg, &question))
@@ -30,6 +30,20 @@ sc_result agent_search_decomposition(const sc_event *event, sc_addr arg)
 
     answer = create_answer_node();
 
+    // get question context
+    SC_ADDR_MAKE_EMPTY(context_struct);
+    it_context = sc_iterator5_f_a_a_a_f_new(s_default_ctx,
+                                            question,
+                                            sc_type_arc_common | sc_type_const,
+                                            sc_type_node | sc_type_const,
+                                            sc_type_arc_pos_const_perm,
+                                            keynode_nrel_context_of_action);
+    if (sc_iterator5_next(it_context))
+    {
+        context_struct = sc_iterator5_value(it_context, 2);
+    }
+    sc_iterator5_free(it_context);
+
     // get operation argument
     it1 = sc_iterator3_f_a_a_new(s_default_ctx,
                                  question,
@@ -37,8 +51,8 @@ sc_result agent_search_decomposition(const sc_event *event, sc_addr arg)
                                  0);
     if (sc_iterator3_next(it1) == SC_TRUE)
     {
-        if (IS_SYSTEM_ELEMENT(sc_iterator3_value(it1, 2)))
-            sys_off = SC_FALSE;
+        //if (NOT_IN_CONTEXT(context_struct,sc_iterator3_value(it1, 2)))
+        //context_struct = SC_FALSE;
 
         appendIntoAnswer(answer, sc_iterator3_value(it1, 2));
 
@@ -53,10 +67,10 @@ sc_result agent_search_decomposition(const sc_event *event, sc_addr arg)
         {
             if (SC_FALSE == sc_helper_check_arc(s_default_ctx, keynode_decomposition_relation, sc_iterator5_value(it5, 4), sc_type_arc_pos_const_perm))
                 continue;
-            if (sys_off == SC_TRUE && (IS_SYSTEM_ELEMENT(sc_iterator5_value(it5, 0))
-                                       || IS_SYSTEM_ELEMENT(sc_iterator5_value(it5, 1))
-                                       || IS_SYSTEM_ELEMENT(sc_iterator5_value(it5, 3))
-                                       || IS_SYSTEM_ELEMENT(sc_iterator5_value(it5, 4))))
+            if (SC_ADDR_IS_NOT_EMPTY(context_struct) && (NOT_IN_CONTEXT(context_struct, sc_iterator5_value(it5, 0))
+                    || NOT_IN_CONTEXT(context_struct, sc_iterator5_value(it5, 1))
+                    || NOT_IN_CONTEXT(context_struct, sc_iterator5_value(it5, 3))
+                    || NOT_IN_CONTEXT(context_struct, sc_iterator5_value(it5, 4))))
                 continue;
 
             appendIntoAnswer(answer, sc_iterator5_value(it5, 0));
@@ -71,8 +85,8 @@ sc_result agent_search_decomposition(const sc_event *event, sc_addr arg)
                                          0);
             while (sc_iterator3_next(it2) == SC_TRUE)
             {
-                if (sys_off == SC_TRUE && (IS_SYSTEM_ELEMENT(sc_iterator3_value(it2, 1))
-                                           || IS_SYSTEM_ELEMENT(sc_iterator3_value(it2, 2))))
+                if (SC_ADDR_IS_NOT_EMPTY(context_struct) && (NOT_IN_CONTEXT(context_struct, sc_iterator3_value(it2, 1))
+                        || NOT_IN_CONTEXT(context_struct, sc_iterator3_value(it2, 2))))
                     continue;
 
                 // iterate order relations between elements
@@ -89,10 +103,10 @@ sc_result agent_search_decomposition(const sc_event *event, sc_addr arg)
                     if (SC_FALSE == sc_helper_check_arc(s_default_ctx, sc_iterator5_value(it5, 0), sc_iterator5_value(it_order, 2), sc_type_arc_pos_const_perm))
                         continue;
 
-                    if (sys_off == SC_TRUE && (IS_SYSTEM_ELEMENT(sc_iterator5_value(it_order, 1))
-                                               || IS_SYSTEM_ELEMENT(sc_iterator5_value(it_order, 2))
-                                               || IS_SYSTEM_ELEMENT(sc_iterator5_value(it_order, 3))
-                                               || IS_SYSTEM_ELEMENT(sc_iterator5_value(it_order, 4))))
+                    if (SC_ADDR_IS_NOT_EMPTY(context_struct) && (NOT_IN_CONTEXT(context_struct, sc_iterator5_value(it_order, 1))
+                            || NOT_IN_CONTEXT(context_struct, sc_iterator5_value(it_order, 2))
+                            || NOT_IN_CONTEXT(context_struct, sc_iterator5_value(it_order, 3))
+                            || NOT_IN_CONTEXT(context_struct, sc_iterator5_value(it_order, 4))))
                         continue;
 
                     appendIntoAnswer(answer, sc_iterator5_value(it_order, 1));
@@ -114,8 +128,8 @@ sc_result agent_search_decomposition(const sc_event *event, sc_addr arg)
                     if (!(el_type & sc_type_node_role))
                         continue;
 
-                    if (sys_off == SC_TRUE && (IS_SYSTEM_ELEMENT(sc_iterator3_value(it3, 0))
-                                               || IS_SYSTEM_ELEMENT(sc_iterator3_value(it3, 1))))
+                    if (SC_ADDR_IS_NOT_EMPTY(context_struct) && (NOT_IN_CONTEXT(context_struct, sc_iterator3_value(it3, 0))
+                            || NOT_IN_CONTEXT(context_struct, sc_iterator3_value(it3, 1))))
                         continue;
 
                     appendIntoAnswer(answer, sc_iterator3_value(it3, 0));
@@ -139,7 +153,7 @@ sc_result agent_search_decomposition(const sc_event *event, sc_addr arg)
 }
 
 
-void search_subclasses_rec(sc_addr elem, sc_addr answer, sc_bool sys_off)
+void search_subclasses_rec(sc_addr elem, sc_addr answer, sc_addr context_struct)
 {
     sc_iterator3 *it2, *it6;
     sc_iterator5 *it5, *it_order;
@@ -156,10 +170,10 @@ void search_subclasses_rec(sc_addr elem, sc_addr answer, sc_bool sys_off)
     {
         if (SC_FALSE == sc_helper_check_arc(s_default_ctx, keynode_taxonomy_relation, sc_iterator5_value(it5, 4), sc_type_arc_pos_const_perm))
             continue;
-        if (SC_TRUE == sys_off && (IS_SYSTEM_ELEMENT(sc_iterator5_value(it5, 1))
-                                   || IS_SYSTEM_ELEMENT(sc_iterator5_value(it5, 2))
-                                   || IS_SYSTEM_ELEMENT(sc_iterator5_value(it5, 3))
-                                   || IS_SYSTEM_ELEMENT(sc_iterator5_value(it5, 4))))
+        if (SC_ADDR_IS_NOT_EMPTY(context_struct) && (NOT_IN_CONTEXT(context_struct, sc_iterator5_value(it5, 1))
+                || NOT_IN_CONTEXT(context_struct, sc_iterator5_value(it5, 2))
+                || NOT_IN_CONTEXT(context_struct, sc_iterator5_value(it5, 3))
+                || NOT_IN_CONTEXT(context_struct, sc_iterator5_value(it5, 4))))
             continue;
 
         appendIntoAnswer(answer, sc_iterator5_value(it5, 1));
@@ -167,7 +181,7 @@ void search_subclasses_rec(sc_addr elem, sc_addr answer, sc_bool sys_off)
         appendIntoAnswer(answer, sc_iterator5_value(it5, 3));
         appendIntoAnswer(answer, sc_iterator5_value(it5, 4));
 
-        search_subclasses_rec(sc_iterator5_value(it5, 2), answer, sys_off);
+        search_subclasses_rec(sc_iterator5_value(it5, 2), answer, context_struct);
     }
     sc_iterator5_free(it5);
 
@@ -183,10 +197,10 @@ void search_subclasses_rec(sc_addr elem, sc_addr answer, sc_bool sys_off)
         if (SC_FALSE == sc_helper_check_arc(s_default_ctx, keynode_decomposition_relation, sc_iterator5_value(it5, 4), sc_type_arc_pos_const_perm))
             continue;
 
-        if (sys_off == SC_TRUE && (IS_SYSTEM_ELEMENT(sc_iterator5_value(it5, 0))
-                                   || IS_SYSTEM_ELEMENT(sc_iterator5_value(it5, 1))
-                                   || IS_SYSTEM_ELEMENT(sc_iterator5_value(it5, 3))
-                                   || IS_SYSTEM_ELEMENT(sc_iterator5_value(it5, 4))))
+        if (SC_ADDR_IS_NOT_EMPTY(context_struct) && (NOT_IN_CONTEXT(context_struct, sc_iterator5_value(it5, 0))
+                || NOT_IN_CONTEXT(context_struct, sc_iterator5_value(it5, 1))
+                || NOT_IN_CONTEXT(context_struct, sc_iterator5_value(it5, 3))
+                || NOT_IN_CONTEXT(context_struct, sc_iterator5_value(it5, 4))))
             continue;
 
         appendIntoAnswer(answer, sc_iterator5_value(it5, 0));
@@ -201,8 +215,8 @@ void search_subclasses_rec(sc_addr elem, sc_addr answer, sc_bool sys_off)
                                      0);
         while (sc_iterator3_next(it2) == SC_TRUE)
         {
-            if (sys_off == SC_TRUE && (IS_SYSTEM_ELEMENT(sc_iterator3_value(it2, 1))
-                                       || IS_SYSTEM_ELEMENT(sc_iterator3_value(it2, 2))))
+            if (SC_ADDR_IS_NOT_EMPTY(context_struct) && (NOT_IN_CONTEXT(context_struct, sc_iterator3_value(it2, 1))
+                    || NOT_IN_CONTEXT(context_struct, sc_iterator3_value(it2, 2))))
                 continue;
 
             // iterate order relations between elements
@@ -219,10 +233,10 @@ void search_subclasses_rec(sc_addr elem, sc_addr answer, sc_bool sys_off)
                 if (SC_FALSE == sc_helper_check_arc(s_default_ctx, sc_iterator5_value(it5, 0), sc_iterator5_value(it_order, 2), sc_type_arc_pos_const_perm))
                     continue;
 
-                if (sys_off == SC_TRUE && (IS_SYSTEM_ELEMENT(sc_iterator5_value(it_order, 1))
-                                           || IS_SYSTEM_ELEMENT(sc_iterator5_value(it_order, 2))
-                                           || IS_SYSTEM_ELEMENT(sc_iterator5_value(it_order, 3))
-                                           || IS_SYSTEM_ELEMENT(sc_iterator5_value(it_order, 4))))
+                if (SC_ADDR_IS_NOT_EMPTY(context_struct) && (NOT_IN_CONTEXT(context_struct, sc_iterator5_value(it_order, 1))
+                        || NOT_IN_CONTEXT(context_struct, sc_iterator5_value(it_order, 2))
+                        || NOT_IN_CONTEXT(context_struct, sc_iterator5_value(it_order, 3))
+                        || NOT_IN_CONTEXT(context_struct, sc_iterator5_value(it_order, 4))))
                     continue;
 
                 appendIntoAnswer(answer, sc_iterator5_value(it_order, 1));
@@ -244,8 +258,8 @@ void search_subclasses_rec(sc_addr elem, sc_addr answer, sc_bool sys_off)
                 if (!(el_type & sc_type_node_role))
                     continue;
 
-                if (sys_off == SC_TRUE && (IS_SYSTEM_ELEMENT(sc_iterator3_value(it6, 0))
-                                           || IS_SYSTEM_ELEMENT(sc_iterator3_value(it6, 1))))
+                if (SC_ADDR_IS_NOT_EMPTY(context_struct) && (NOT_IN_CONTEXT(context_struct, sc_iterator3_value(it6, 0))
+                        || NOT_IN_CONTEXT(context_struct, sc_iterator3_value(it6, 1))))
                     continue;
 
                 appendIntoAnswer(answer, sc_iterator3_value(it6, 0));
@@ -256,7 +270,7 @@ void search_subclasses_rec(sc_addr elem, sc_addr answer, sc_bool sys_off)
             appendIntoAnswer(answer, sc_iterator3_value(it2, 1));
             appendIntoAnswer(answer, sc_iterator3_value(it2, 2));
 
-            search_subclasses_rec(sc_iterator3_value(it2, 2), answer, sys_off);
+            search_subclasses_rec(sc_iterator3_value(it2, 2), answer, context_struct);
         }
         sc_iterator3_free(it2);
     }
@@ -267,7 +281,8 @@ sc_result agent_search_all_subclasses_in_quasybinary_relation(const sc_event *ev
 {
     sc_addr question, answer;
     sc_iterator3 *it1;
-    sc_bool sys_off = SC_TRUE;
+    sc_iterator5 *it_context;
+    sc_addr context_struct;
 
     if (!sc_memory_get_arc_end(s_default_ctx, arg, &question))
         return SC_RESULT_ERROR_INVALID_PARAMS;
@@ -278,6 +293,20 @@ sc_result agent_search_all_subclasses_in_quasybinary_relation(const sc_event *ev
 
     answer = create_answer_node();
 
+    // get question context
+    SC_ADDR_MAKE_EMPTY(context_struct);
+    it_context = sc_iterator5_f_a_a_a_f_new(s_default_ctx,
+                                            question,
+                                            sc_type_arc_common | sc_type_const,
+                                            sc_type_node | sc_type_const,
+                                            sc_type_arc_pos_const_perm,
+                                            keynode_nrel_context_of_action);
+    if (sc_iterator5_next(it_context))
+    {
+        context_struct = sc_iterator5_value(it_context, 2);
+    }
+    sc_iterator5_free(it_context);
+
     // get operation argument
     it1 = sc_iterator3_f_a_a_new(s_default_ctx,
                                  question,
@@ -285,12 +314,12 @@ sc_result agent_search_all_subclasses_in_quasybinary_relation(const sc_event *ev
                                  0);
     if (sc_iterator3_next(it1) == SC_TRUE)
     {
-        if (IS_SYSTEM_ELEMENT(sc_iterator3_value(it1, 2)))
-            sys_off = SC_FALSE;
+        //if (NOT_IN_CONTEXT(context_struct, sc_iterator3_value(it1, 2)))
+        //context_struct = SC_FALSE;
 
         appendIntoAnswer(answer, sc_iterator3_value(it1, 2));
 
-        search_subclasses_rec(sc_iterator3_value(it1, 2), answer, sys_off);
+        search_subclasses_rec(sc_iterator3_value(it1, 2), answer, context_struct);
     }
     sc_iterator3_free(it1);
 
@@ -300,7 +329,7 @@ sc_result agent_search_all_subclasses_in_quasybinary_relation(const sc_event *ev
     return SC_RESULT_OK;
 }
 
-void search_superclasses_rec(sc_addr elem, sc_addr answer, sc_bool sys_off)
+void search_superclasses_rec(sc_addr elem, sc_addr answer, sc_addr context_struct)
 {
     sc_iterator3 *it3;
     sc_iterator5 *it5;
@@ -316,10 +345,10 @@ void search_superclasses_rec(sc_addr elem, sc_addr answer, sc_bool sys_off)
     {
         if (SC_FALSE == sc_helper_check_arc(s_default_ctx, keynode_taxonomy_relation, sc_iterator5_value(it5, 4), sc_type_arc_pos_const_perm))
             continue;
-        if (SC_TRUE == sys_off && (IS_SYSTEM_ELEMENT(sc_iterator5_value(it5, 0))
-                                   || IS_SYSTEM_ELEMENT(sc_iterator5_value(it5, 1))
-                                   || IS_SYSTEM_ELEMENT(sc_iterator5_value(it5, 3))
-                                   || IS_SYSTEM_ELEMENT(sc_iterator5_value(it5, 4))))
+        if (SC_ADDR_IS_NOT_EMPTY(context_struct) && (NOT_IN_CONTEXT(context_struct, sc_iterator5_value(it5, 0))
+                || NOT_IN_CONTEXT(context_struct, sc_iterator5_value(it5, 1))
+                || NOT_IN_CONTEXT(context_struct, sc_iterator5_value(it5, 3))
+                || NOT_IN_CONTEXT(context_struct, sc_iterator5_value(it5, 4))))
             continue;
 
         appendIntoAnswer(answer, sc_iterator5_value(it5, 0));
@@ -327,7 +356,7 @@ void search_superclasses_rec(sc_addr elem, sc_addr answer, sc_bool sys_off)
         appendIntoAnswer(answer, sc_iterator5_value(it5, 3));
         appendIntoAnswer(answer, sc_iterator5_value(it5, 4));
 
-        search_superclasses_rec(sc_iterator5_value(it5, 0), answer, sys_off);
+        search_superclasses_rec(sc_iterator5_value(it5, 0), answer, context_struct);
     }
     sc_iterator5_free(it5);
 
@@ -351,16 +380,16 @@ void search_superclasses_rec(sc_addr elem, sc_addr answer, sc_bool sys_off)
             if (sc_helper_check_arc(s_default_ctx, keynode_quasybinary_relation, sc_iterator5_value(it5, 4), sc_type_arc_pos_const_perm) == SC_TRUE)
             {
                 if (!(sc_helper_check_arc(s_default_ctx, keynode_taxonomy_relation, sc_iterator5_value(it5, 4), sc_type_arc_pos_const_perm) == SC_TRUE
-                      || sc_helper_check_arc(s_default_ctx, keynode_decomposition_relation, sc_iterator5_value(it5, 4), sc_type_arc_pos_const_perm) == SC_TRUE))
+                        || sc_helper_check_arc(s_default_ctx, keynode_decomposition_relation, sc_iterator5_value(it5, 4), sc_type_arc_pos_const_perm) == SC_TRUE))
                     continue;
 
 
-                if (sys_off == SC_TRUE && (IS_SYSTEM_ELEMENT(sc_iterator5_value(it5, 1))
-                                           || IS_SYSTEM_ELEMENT(sc_iterator5_value(it5, 2))
-                                           || IS_SYSTEM_ELEMENT(sc_iterator5_value(it5, 3))
-                                           || IS_SYSTEM_ELEMENT(sc_iterator5_value(it5, 4))
-                                           || IS_SYSTEM_ELEMENT(sc_iterator3_value(it3, 0))
-                                           || IS_SYSTEM_ELEMENT(sc_iterator3_value(it3, 1))))
+                if (SC_ADDR_IS_NOT_EMPTY(context_struct) && (NOT_IN_CONTEXT(context_struct, sc_iterator5_value(it5, 1))
+                        || NOT_IN_CONTEXT(context_struct, sc_iterator5_value(it5, 2))
+                        || NOT_IN_CONTEXT(context_struct, sc_iterator5_value(it5, 3))
+                        || NOT_IN_CONTEXT(context_struct, sc_iterator5_value(it5, 4))
+                        || NOT_IN_CONTEXT(context_struct, sc_iterator3_value(it3, 0))
+                        || NOT_IN_CONTEXT(context_struct, sc_iterator3_value(it3, 1))))
                     continue;
 
 
@@ -372,7 +401,7 @@ void search_superclasses_rec(sc_addr elem, sc_addr answer, sc_bool sys_off)
                 appendIntoAnswer(answer, sc_iterator3_value(it3, 0));
                 appendIntoAnswer(answer, sc_iterator3_value(it3, 1));
 
-                search_superclasses_rec(sc_iterator5_value(it5, 2), answer, sys_off);
+                search_superclasses_rec(sc_iterator5_value(it5, 2), answer, context_struct);
             }
         }
         sc_iterator5_free(it5);
@@ -385,7 +414,8 @@ sc_result agent_search_all_superclasses_in_quasybinary_relation(const sc_event *
 {
     sc_addr question, answer;
     sc_iterator3 *it1;
-    sc_bool sys_off = SC_TRUE;
+    sc_iterator5 *it_context;
+    sc_addr context_struct;
 
     if (!sc_memory_get_arc_end(s_default_ctx, arg, &question))
         return SC_RESULT_ERROR_INVALID_PARAMS;
@@ -396,6 +426,20 @@ sc_result agent_search_all_superclasses_in_quasybinary_relation(const sc_event *
 
     answer = create_answer_node();
 
+    // get question context
+    SC_ADDR_MAKE_EMPTY(context_struct);
+    it_context = sc_iterator5_f_a_a_a_f_new(s_default_ctx,
+                                            question,
+                                            sc_type_arc_common | sc_type_const,
+                                            sc_type_node | sc_type_const,
+                                            sc_type_arc_pos_const_perm,
+                                            keynode_nrel_context_of_action);
+    if (sc_iterator5_next(it_context))
+    {
+        context_struct = sc_iterator5_value(it_context, 2);
+    }
+    sc_iterator5_free(it_context);
+
     // get operation argument
     it1 = sc_iterator3_f_a_a_new(s_default_ctx,
                                  question,
@@ -403,12 +447,12 @@ sc_result agent_search_all_superclasses_in_quasybinary_relation(const sc_event *
                                  0);
     if (sc_iterator3_next(it1) == SC_TRUE)
     {
-        if (IS_SYSTEM_ELEMENT(sc_iterator3_value(it1, 2)))
-            sys_off = SC_FALSE;
+        //if (NOT_IN_CONTEXT(context_struct, sc_iterator3_value(it1, 2)))
+        //context_struct = SC_FALSE;
 
         appendIntoAnswer(answer, sc_iterator3_value(it1, 2));
 
-        search_superclasses_rec(sc_iterator3_value(it1, 2), answer, sys_off);
+        search_superclasses_rec(sc_iterator3_value(it1, 2), answer, context_struct);
     }
     sc_iterator3_free(it1);
 

@@ -13,4 +13,6 @@
 
 #define IS_SYSTEM_ELEMENT(el) (sc_helper_check_arc(s_default_ctx, keynode_system_element, el, sc_type_arc_pos_const_perm) == SC_TRUE)
 
+#define NOT_IN_CONTEXT(context_node, el) (sc_helper_check_arc(s_default_ctx, context_node, el, sc_type_arc_pos_const_perm) == SC_FALSE)
+
 #endif // SEARCH_DEFINES_H

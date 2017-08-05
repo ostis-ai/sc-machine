@@ -15,6 +15,7 @@
 
 #include <glib.h>
 
+sc_addr keynode_nrel_context_of_action;
 
 sc_addr keynode_question_all_output_const_pos_arc;
 sc_addr keynode_question_all_input_const_pos_arc;
@@ -55,6 +56,8 @@ sc_addr keynode_languages;
 
 sc_addr keynode_rrel_1;
 sc_addr keynode_rrel_2;
+
+const char keynode_nrel_context_of_action_str[] = "nrel_context_of_action";
 
 const char keynode_question_all_output_const_pos_arc_str[] = "question_search_all_output_const_pos_arcs";
 const char keynode_question_all_input_const_pos_arc_str[] = "question_search_all_input_const_pos_arcs";
@@ -97,6 +100,7 @@ const char keynode_languages_str[] = "languages";
 
 sc_result search_keynodes_initialize()
 {
+    RESOLVE_KEYNODE(s_default_ctx, keynode_nrel_context_of_action);
 
     RESOLVE_KEYNODE(s_default_ctx, keynode_question_all_output_const_pos_arc);
     RESOLVE_KEYNODE(s_default_ctx, keynode_question_all_input_const_pos_arc);

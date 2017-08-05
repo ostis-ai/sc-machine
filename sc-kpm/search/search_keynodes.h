@@ -9,6 +9,8 @@
 
 #include "sc_memory.h"
 
+extern sc_addr keynode_nrel_context_of_action;
+
 extern sc_addr keynode_question_all_output_const_pos_arc;
 extern sc_addr keynode_question_all_input_const_pos_arc;
 extern sc_addr keynode_question_all_output_const_pos_arc_with_rel;

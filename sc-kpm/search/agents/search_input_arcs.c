@@ -18,7 +18,8 @@ sc_result agent_search_all_const_pos_input_arc(const sc_event *event, sc_addr ar
 {
     sc_addr question, answer;
     sc_iterator3 *it1, *it2;
-    sc_bool sys_off = SC_TRUE;
+    sc_iterator5 *it_context;
+    sc_addr context_struct;
 
     if (!sc_memory_get_arc_end(s_default_ctx, arg, &question))
         return SC_RESULT_ERROR_INVALID_PARAMS;
@@ -29,6 +30,20 @@ sc_result agent_search_all_const_pos_input_arc(const sc_event *event, sc_addr ar
 
     answer = create_answer_node();
 
+    // get question context
+    SC_ADDR_MAKE_EMPTY(context_struct);
+    it_context = sc_iterator5_f_a_a_a_f_new(s_default_ctx,
+                                            question,
+                                            sc_type_arc_common | sc_type_const,
+                                            sc_type_node | sc_type_const,
+                                            sc_type_arc_pos_const_perm,
+                                            keynode_nrel_context_of_action);
+    if (sc_iterator5_next(it_context))
+    {
+        context_struct = sc_iterator5_value(it_context, 2);
+    }
+    sc_iterator5_free(it_context);
+
     // find argument
     it1 = sc_iterator3_f_a_a_new(s_default_ctx,
                                  question,
@@ -36,8 +51,8 @@ sc_result agent_search_all_const_pos_input_arc(const sc_event *event, sc_addr ar
                                  0);
     if (sc_iterator3_next(it1) == SC_TRUE)
     {
-        if (IS_SYSTEM_ELEMENT(sc_iterator3_value(it1, 2)))
-            sys_off = SC_FALSE;
+//        if (NOT_IN_CONTEXT(context_struct,sc_iterator3_value(it1, 2)))
+//            context_struct = SC_FALSE;
 
         // iterate input arcs
         it2 = sc_iterator3_a_a_f_new(s_default_ctx,
@@ -46,7 +61,7 @@ sc_result agent_search_all_const_pos_input_arc(const sc_event *event, sc_addr ar
                                      sc_iterator3_value(it1, 2));
         while (sc_iterator3_next(it2) == SC_TRUE)
         {
-            if (sys_off == SC_TRUE && (IS_SYSTEM_ELEMENT(sc_iterator3_value(it2, 0)) || IS_SYSTEM_ELEMENT(sc_iterator3_value(it2, 1))))
+            if (SC_ADDR_IS_NOT_EMPTY(context_struct) && (NOT_IN_CONTEXT(context_struct, sc_iterator3_value(it2, 0)) || NOT_IN_CONTEXT(context_struct, sc_iterator3_value(it2, 1))))
                 continue;
 
             appendIntoAnswer(answer, sc_iterator3_value(it2, 0));
@@ -70,7 +85,8 @@ sc_result agent_search_all_const_pos_input_arc_with_rel(const sc_event *event, s
 {
     sc_addr question, answer;
     sc_iterator3 *it1, *it2, *it3;
-    sc_bool sys_off = SC_TRUE;
+    sc_iterator5 *it_context;
+    sc_addr context_struct;
 
     if (!sc_memory_get_arc_end(s_default_ctx, arg, &question))
         return SC_RESULT_ERROR_INVALID_PARAMS;
@@ -81,6 +97,20 @@ sc_result agent_search_all_const_pos_input_arc_with_rel(const sc_event *event, s
 
     answer = create_answer_node();
 
+    // get question context
+    SC_ADDR_MAKE_EMPTY(context_struct);
+    it_context = sc_iterator5_f_a_a_a_f_new(s_default_ctx,
+                                            question,
+                                            sc_type_arc_common | sc_type_const,
+                                            sc_type_node | sc_type_const,
+                                            sc_type_arc_pos_const_perm,
+                                            keynode_nrel_context_of_action);
+    if (sc_iterator5_next(it_context))
+    {
+        context_struct = sc_iterator5_value(it_context, 2);
+    }
+    sc_iterator5_free(it_context);
+
     // get question argument
     it1 = sc_iterator3_f_a_a_new(s_default_ctx,
                                  question,
@@ -88,8 +118,8 @@ sc_result agent_search_all_const_pos_input_arc_with_rel(const sc_event *event, s
                                  0);
     if (sc_iterator3_next(it1) == SC_TRUE)
     {
-        if (IS_SYSTEM_ELEMENT(sc_iterator3_value(it1, 2)))
-            sys_off = SC_FALSE;
+        //if (NOT_IN_CONTEXT(context_struct, sc_iterator3_value(it1, 2)))
+        //context_struct = SC_FALSE;
 
         // iterate input arcs
         it2 = sc_iterator3_a_a_f_new(s_default_ctx,
@@ -98,7 +128,7 @@ sc_result agent_search_all_const_pos_input_arc_with_rel(const sc_event *event, s
                                      sc_iterator3_value(it1, 2));
         while (sc_iterator3_next(it2) == SC_TRUE)
         {
-            if (sys_off == SC_TRUE && (IS_SYSTEM_ELEMENT(sc_iterator3_value(it2, 0)) || IS_SYSTEM_ELEMENT(sc_iterator3_value(it2, 1))))
+            if (SC_ADDR_IS_NOT_EMPTY(context_struct) && (NOT_IN_CONTEXT(context_struct, sc_iterator3_value(it2, 0)) || NOT_IN_CONTEXT(context_struct, sc_iterator3_value(it2, 1))))
                 continue;
 
             // iterate relations
@@ -108,7 +138,7 @@ sc_result agent_search_all_const_pos_input_arc_with_rel(const sc_event *event, s
                                          sc_iterator3_value(it2, 1));
             while (sc_iterator3_next(it3) == SC_TRUE)
             {
-                if (sys_off == SC_TRUE && (IS_SYSTEM_ELEMENT(sc_iterator3_value(it3, 0)) || IS_SYSTEM_ELEMENT(sc_iterator3_value(it3, 1))))
+                if (SC_ADDR_IS_NOT_EMPTY(context_struct) && (NOT_IN_CONTEXT(context_struct, sc_iterator3_value(it3, 0)) || NOT_IN_CONTEXT(context_struct, sc_iterator3_value(it3, 1))))
                     continue;
 
                 appendIntoAnswer(answer, sc_iterator3_value(it3, 0));
