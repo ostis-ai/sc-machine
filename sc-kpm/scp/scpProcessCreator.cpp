@@ -21,17 +21,17 @@ SC_AGENT_IMPLEMENTATION(ASCPProcessCreator)
 
     ScAddr action = ms_context->GetArcEnd(edgeAddr);
 
-    if (!ms_context->HelperCheckArc(Keynodes::question_scp_interpretation_request, action, sc_type_arc_pos_const_perm))
+    if (!ms_context->HelperCheckArc(Keynodes::question_scp_interpretation_request, action, ScType::EdgeAccessConstPosPerm))
         return SC_RESULT_ERROR_INVALID_PARAMS;
 
     ScAddr program, params;
-    ScIterator5Ptr iter_param = ms_context->Iterator5(action, sc_type_arc_pos_const_perm, sc_type_node, sc_type_arc_pos_const_perm, Keynodes::rrel_1);
+    ScIterator5Ptr iter_param = ms_context->Iterator5(action, ScType::EdgeAccessConstPosPerm, ScType::Node, ScType::EdgeAccessConstPosPerm, Keynodes::rrel_1);
     if (iter_param->Next())
         program = iter_param->Get(2);
     else
         return SC_RESULT_ERROR_INVALID_PARAMS;
 
-    iter_param = ms_context->Iterator5(action, sc_type_arc_pos_const_perm, sc_type_node, sc_type_arc_pos_const_perm, Keynodes::rrel_2);
+    iter_param = ms_context->Iterator5(action, ScType::EdgeAccessConstPosPerm, ScType::Node, ScType::EdgeAccessConstPosPerm, Keynodes::rrel_2);
     if (iter_param->Next())
         params = iter_param->Get(2);
     else
@@ -42,13 +42,13 @@ SC_AGENT_IMPLEMENTATION(ASCPProcessCreator)
     ScTemplateGenParams gen_params;
 
     ScAddr process_node;
-    ScIterator5Ptr iter_temp = ms_context->Iterator5(Keynodes::scp_process, sc_type_arc_pos_var_perm, SC_TYPE(sc_type_var | sc_type_node), sc_type_arc_pos_const_perm, program);
+    ScIterator5Ptr iter_temp = ms_context->Iterator5(Keynodes::scp_process, ScType::EdgeAccessConstPosPerm, ScType::NodeVar, ScType::EdgeAccessConstPosPerm, program);
     if (iter_temp->IsValid() && iter_temp->Next())
         process_node = iter_temp->Get(2);
     else
         return SC_RESULT_ERROR_INVALID_PARAMS;
 
-    iter_temp = ms_context->Iterator5(process_node, sc_type_arc_pos_var_perm, SC_TYPE(sc_type_var | sc_type_node), sc_type_arc_pos_const_perm, program);
+    iter_temp = ms_context->Iterator5(process_node, ScType::EdgeAccessConstPosPerm, ScType::NodeVar, ScType::EdgeAccessConstPosPerm, program);
     if (!iter_temp->IsValid())
         return SC_RESULT_ERROR_INVALID_PARAMS;
 
@@ -57,7 +57,7 @@ SC_AGENT_IMPLEMENTATION(ASCPProcessCreator)
         ScAddr order;
         if (Utils::resolveOrderRoleRelation((ScMemoryContext&)ms_context, iter_temp->Get(1), order));
         {
-            iter_param = ms_context->Iterator5(params, sc_type_arc_pos_const_perm, SC_TYPE(0), sc_type_arc_pos_const_perm, order);
+            iter_param = ms_context->Iterator5(params, ScType::EdgeAccessConstPosPerm, SC_TYPE(0), ScType::EdgeAccessConstPosPerm, order);
             if (!iter_param->Next())
             {
 #ifdef SCP_DEBUG

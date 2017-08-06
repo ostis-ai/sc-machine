@@ -18,7 +18,7 @@ namespace scp
 
 class ASCPProcessDestroyer : public ScAgent
 {
-    SC_CLASS(Agent, Event(Keynodes::question_finished, SC_EVENT_ADD_OUTPUT_ARC))
+    SC_CLASS(Agent, Event(Keynodes::question_finished, ScEvent::Type::AddOutputEdge))
     SC_GENERATED_BODY()
 
 public:

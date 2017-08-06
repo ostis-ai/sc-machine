@@ -18,7 +18,7 @@ namespace scp
 
 class ASCPProcessCreator : public ScAgent
 {
-    SC_CLASS(Agent, Event(Keynodes::question_initiated, SC_EVENT_ADD_OUTPUT_ARC))
+    SC_CLASS(Agent, Event(Keynodes::question_initiated, ScEvent::Type::AddOutputEdge))
     SC_GENERATED_BODY()
 
 public:

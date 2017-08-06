@@ -19,17 +19,17 @@ namespace Utils
 
 bool addToSet(ScMemoryContext & ctx, ScAddr const & setAddr, ScAddr const & elAddr)
 {
-    if (ctx.HelperCheckArc(setAddr, elAddr, sc_type_arc_pos_const_perm))
+    if (ctx.HelperCheckArc(setAddr, elAddr, ScType::EdgeAccessConstPosPerm))
         return false;
 
-    ScAddr arcAddr = ctx.CreateEdge(sc_type_arc_pos_const_perm, setAddr, elAddr);
+    ScAddr arcAddr = ctx.CreateEdge(ScType::EdgeAccessConstPosPerm, setAddr, elAddr);
     assert(arcAddr.IsValid());
     return true;
 }
 
 bool removeFromSet(ScMemoryContext & ctx, ScAddr const & setAddr, ScAddr const & elAddr)
 {
-    ScIterator3Ptr it = ctx.Iterator3(setAddr, sc_type_arc_pos_const_perm, elAddr);
+    ScIterator3Ptr it = ctx.Iterator3(setAddr, ScType::EdgeAccessConstPosPerm, elAddr);
     bool result = false;
     while (it->Next())
         ctx.EraseElement(it->Get(1));
@@ -39,10 +39,10 @@ bool removeFromSet(ScMemoryContext & ctx, ScAddr const & setAddr, ScAddr const &
 
 bool resolveOrderRoleRelation(ScMemoryContext & ctx, ScAddr const &arcAddr, ScAddr &relationAddr)
 {
-    ScIterator3Ptr it = ctx.Iterator3(SC_TYPE(sc_type_node | sc_type_const), sc_type_arc_access, arcAddr);
+    ScIterator3Ptr it = ctx.Iterator3(ScType::NodeConst, ScType::EdgeAccess, arcAddr);
     while (it->Next())
     {
-        if (ctx.HelperCheckArc(Keynodes::order_role_relation, it->Get(0), sc_type_arc_pos_const_perm))
+        if (ctx.HelperCheckArc(Keynodes::order_role_relation, it->Get(0), ScType::EdgeAccessConstPosPerm))
         {
             relationAddr = it->Get(0);
             return true;
@@ -54,10 +54,10 @@ bool resolveOrderRoleRelation(ScMemoryContext & ctx, ScAddr const &arcAddr, ScAd
 
 bool resolveOperatorType(ScMemoryContext & ctx, ScAddr const &operatorAddr, ScAddr &operatorType)
 {
-    ScIterator3Ptr it = ctx.Iterator3(SC_TYPE(sc_type_node | sc_type_const), sc_type_arc_access, operatorAddr);
+    ScIterator3Ptr it = ctx.Iterator3(ScType::NodeConst, ScType::EdgeAccess, operatorAddr);
     while (it->Next())
     {
-        if (ctx.HelperCheckArc(Keynodes::scp_operator_atomic_type, it->Get(0), sc_type_arc_pos_const_perm))
+        if (ctx.HelperCheckArc(Keynodes::scp_operator_atomic_type, it->Get(0), ScType::EdgeAccessConstPosPerm))
         {
             operatorType = it->Get(0);
             return true;

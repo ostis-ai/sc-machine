@@ -18,7 +18,7 @@ namespace scp
 
 class ASCPGenOperatorInterpreter : public ScAgent
 {
-    SC_CLASS(Agent, Event(Keynodes::active_action, SC_EVENT_ADD_OUTPUT_ARC))
+    SC_CLASS(Agent, Event(Keynodes::active_action, ScEvent::Type::AddOutputEdge))
     SC_GENERATED_BODY()
 
 public:

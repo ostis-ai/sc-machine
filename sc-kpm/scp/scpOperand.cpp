@@ -141,11 +141,11 @@ void SCPOperand::resolveOrder(ScAddr modifier)
 
 void SCPOperand::resolveModifiers()
 {
-    ScIterator3Ptr iter = ms_context.Iterator3(SC_TYPE(sc_type_node | sc_type_const), sc_type_arc_pos_const_perm, arc_addr);
+    ScIterator3Ptr iter = ms_context.Iterator3(ScType::NodeConst, ScType::EdgeAccessConstPosPerm, arc_addr);
     while (iter->Next())
     {
         ScAddr modifier = iter->Get(0);
-        if (ms_context.HelperCheckArc(Keynodes::order_role_relation, modifier, sc_type_arc_pos_const_perm))
+        if (ms_context.HelperCheckArc(Keynodes::order_role_relation, modifier, ScType::EdgeAccessConstPosPerm))
         {
             resolveOrder(modifier);
             continue;
@@ -186,22 +186,22 @@ void SCPOperand::resolveModifiers()
 
         if (modifier == Keynodes::rrel_const)
         {
-            element_type = ScType(element_type | sc_type_const);
+            element_type = element_type | ScType::Const;
             continue;
         }
         if (modifier == Keynodes::rrel_var)
         {
-            element_type = ScType(element_type | sc_type_var);
+            element_type = element_type | ScType::Var;
             continue;
         }
         if (modifier == Keynodes::rrel_node)
         {
-            element_type = ScType(element_type | sc_type_node);
+            element_type = element_type | ScType::Node;
             continue;
         }
         if (modifier == Keynodes::rrel_link)
         {
-            element_type = ScType(element_type | sc_type_node);
+            element_type = element_type | ScType::Link | ScType::Node;
             continue;
         }
         if (modifier == Keynodes::rrel_struct)
@@ -227,12 +227,12 @@ void SCPOperand::resolveModifiers()
 
         if (modifier == Keynodes::rrel_edge)
         {
-            element_type = ScType(element_type | sc_type_edge_common);
+            element_type = element_type | ScType::EdgeUCommon;
             continue;
         }
         if (modifier == Keynodes::rrel_common)
         {
-            element_type = ScType(element_type | sc_type_arc_common);
+            element_type = element_type | ScType::EdgeDCommon;
             continue;
         }
 
@@ -240,7 +240,7 @@ void SCPOperand::resolveModifiers()
 
         if (modifier == Keynodes::rrel_access)
         {
-            element_type = ScType(element_type | sc_type_arc_access);
+            element_type = element_type | ScType::EdgeAccess;
             continue;
         }
         if (modifier == Keynodes::rrel_temp)
@@ -270,7 +270,7 @@ void SCPOperand::resolveModifiers()
         }
         if (modifier == Keynodes::rrel_pos_const_perm)
         {
-            element_type = ScType(element_type | sc_type_arc_pos_const_perm);
+            element_type = ScType(element_type | ScType::EdgeAccessConstPosPerm);
             continue;
         }
 
