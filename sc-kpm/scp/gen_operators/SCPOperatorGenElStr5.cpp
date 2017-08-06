@@ -13,7 +13,7 @@
 namespace scp
 {
 
-SCPOperatorGenElStr5::SCPOperatorGenElStr5(ScMemoryContext &ctx, ScAddr addr): SCPOperatorStr5(ctx, addr)
+SCPOperatorGenElStr5::SCPOperatorGenElStr5(ScMemoryContext &ctx, ScAddr addr): SCPOperatorElStr5(ctx, addr)
 {
 }
 
@@ -24,7 +24,7 @@ std::string SCPOperatorGenElStr5::GetTypeName()
 
 sc_result SCPOperatorGenElStr5::Parse()
 {
-    return SCPOperatorStr5::Parse();
+    return SCPOperatorElStr5::Parse();
 }
 
 sc_result SCPOperatorGenElStr5::Execute()

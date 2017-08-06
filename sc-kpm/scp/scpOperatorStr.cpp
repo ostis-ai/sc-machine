@@ -16,12 +16,12 @@
 namespace scp
 {
 
-SCPOperatorStr1::SCPOperatorStr1(ScMemoryContext &ctx_, ScAddr addr_): SCPOperator(ctx_, addr_)
+SCPOperatorElStr1::SCPOperatorElStr1(ScMemoryContext &ctx_, ScAddr addr_): SCPOperator(ctx_, addr_)
 {
     operands = std::vector<SCPOperand*>(1);
 }
 
-sc_result SCPOperatorStr1::Parse()
+sc_result SCPOperatorElStr1::Parse()
 {
     SCPOperator::Parse();
     ScIterator3Ptr iter_operator = ms_context.Iterator3(addr, sc_type_arc_pos_const_perm, SC_TYPE(sc_type_node | sc_type_const));
@@ -47,13 +47,13 @@ sc_result SCPOperatorStr1::Parse()
     return CheckNullValues();
 }
 
-SCPOperatorStr3::SCPOperatorStr3(ScMemoryContext &ctx_, ScAddr addr_): SCPOperator(ctx_, addr_)
+SCPOperatorElStr3::SCPOperatorElStr3(ScMemoryContext &ctx_, ScAddr addr_): SCPOperator(ctx_, addr_)
 {
     operands = std::vector<SCPOperand*>(3);
 }
 
 
-sc_result SCPOperatorStr3::Parse()
+sc_result SCPOperatorElStr3::Parse()
 {
     SCPOperator::Parse();
     ScIterator3Ptr iter_operator = ms_context.Iterator3(addr, sc_type_arc_pos_const_perm, SC_TYPE(sc_type_node | sc_type_const));
@@ -79,13 +79,13 @@ sc_result SCPOperatorStr3::Parse()
     return CheckNullValues();
 }
 
-SCPOperatorStr5::SCPOperatorStr5(ScMemoryContext &ctx_, ScAddr addr_): SCPOperator(ctx_, addr_)
+SCPOperatorElStr5::SCPOperatorElStr5(ScMemoryContext &ctx_, ScAddr addr_): SCPOperator(ctx_, addr_)
 {
     operands = std::vector<SCPOperand*>(5);
 }
 
 
-sc_result SCPOperatorStr5::Parse()
+sc_result SCPOperatorElStr5::Parse()
 {
     SCPOperator::Parse();
     ScIterator3Ptr iter_operator = ms_context.Iterator3(addr, sc_type_arc_pos_const_perm, SC_TYPE(sc_type_node | sc_type_const));

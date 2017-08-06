@@ -15,7 +15,7 @@
 namespace scp
 {
 
-class SCPOperatorSearchElStr5: public SCPOperatorStr5
+class SCPOperatorSearchElStr5: public SCPOperatorElStr5
 {
 public:
     SCPOperatorSearchElStr5(ScMemoryContext &ctx, ScAddr addr);

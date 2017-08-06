@@ -16,24 +16,24 @@
 namespace scp
 {
 
-class SCPOperatorStr1: public SCPOperator
+class SCPOperatorElStr1: public SCPOperator
 {
 public:
-    SCPOperatorStr1(ScMemoryContext &ctx, ScAddr addr);
+    SCPOperatorElStr1(ScMemoryContext &ctx, ScAddr addr);
     sc_result Parse();
 };
 
-class SCPOperatorStr3: public SCPOperator
+class SCPOperatorElStr3: public SCPOperator
 {
 public:
-    SCPOperatorStr3(ScMemoryContext &ctx, ScAddr addr);
+    SCPOperatorElStr3(ScMemoryContext &ctx, ScAddr addr);
     sc_result Parse();
 };
 
-class SCPOperatorStr5: public SCPOperator
+class SCPOperatorElStr5: public SCPOperator
 {
 public:
-    SCPOperatorStr5(ScMemoryContext &ctx, ScAddr addr);
+    SCPOperatorElStr5(ScMemoryContext &ctx, ScAddr addr);
     sc_result Parse();
 };
 
