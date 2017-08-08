@@ -24,7 +24,7 @@ SCPOperatorElStr1::SCPOperatorElStr1(ScMemoryContext &ctx_, ScAddr addr_): SCPOp
 sc_result SCPOperatorElStr1::Parse()
 {
     SCPOperator::Parse();
-    ScIterator3Ptr iter_operator = ms_context.Iterator3(addr, ScType::EdgeAccessConstPosPerm, ScType::NodeConst);
+    ScIterator3Ptr iter_operator = ms_context.Iterator3(addr, ScType::EdgeAccessConstPosPerm, ScType(0));
     while (iter_operator->Next())
     {
         SCPOperand *operand = new SCPOperand(ms_context, iter_operator->Get(1));
@@ -56,7 +56,7 @@ SCPOperatorElStr2::SCPOperatorElStr2(ScMemoryContext &ctx_, ScAddr addr_): SCPOp
 sc_result SCPOperatorElStr2::Parse()
 {
     SCPOperator::Parse();
-    ScIterator3Ptr iter_operator = ms_context.Iterator3(addr, ScType::EdgeAccessConstPosPerm, ScType::NodeConst);
+    ScIterator3Ptr iter_operator = ms_context.Iterator3(addr, ScType::EdgeAccessConstPosPerm, ScType(0));
     while (iter_operator->Next())
     {
         SCPOperand *operand = new SCPOperand(ms_context, iter_operator->Get(1));
@@ -88,7 +88,7 @@ SCPOperatorElStr3::SCPOperatorElStr3(ScMemoryContext &ctx_, ScAddr addr_): SCPOp
 sc_result SCPOperatorElStr3::Parse()
 {
     SCPOperator::Parse();
-    ScIterator3Ptr iter_operator = ms_context.Iterator3(addr, ScType::EdgeAccessConstPosPerm, ScType::NodeConst);
+    ScIterator3Ptr iter_operator = ms_context.Iterator3(addr, ScType::EdgeAccessConstPosPerm, ScType(0));
     while (iter_operator->Next())
     {
         SCPOperand *operand = new SCPOperand(ms_context, iter_operator->Get(1));
@@ -120,7 +120,7 @@ SCPOperatorElStr5::SCPOperatorElStr5(ScMemoryContext &ctx_, ScAddr addr_): SCPOp
 sc_result SCPOperatorElStr5::Parse()
 {
     SCPOperator::Parse();
-    ScIterator3Ptr iter_operator = ms_context.Iterator3(addr, ScType::EdgeAccessConstPosPerm, ScType::NodeConst);
+    ScIterator3Ptr iter_operator = ms_context.Iterator3(addr, ScType::EdgeAccessConstPosPerm, ScType(0));
     while (iter_operator->Next())
     {
         SCPOperand *operand = new SCPOperand(ms_context, iter_operator->Get(1));
