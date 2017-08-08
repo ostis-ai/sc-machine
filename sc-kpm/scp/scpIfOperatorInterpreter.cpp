@@ -7,6 +7,7 @@
 #include "scpKeynodes.hpp"
 #include "scpUtils.hpp"
 #include "scpIfOperatorInterpreter.hpp"
+#include "if_operators/SCPOperatorIfCoin.hpp"
 #include "if_operators/SCPOperatorIfType.hpp"
 #include "if_operators/SCPOperatorIfVarAssign.hpp"
 #include "sc-memory/cpp/sc_memory.hpp"
@@ -28,6 +29,10 @@ SC_AGENT_IMPLEMENTATION(ASCPIfOperatorInterpreter)
         return SC_RESULT_ERROR_INVALID_TYPE;
 
     SCPOperator* oper = nullptr;
+    if (type == Keynodes::op_ifCoin)
+    {
+        oper = new SCPOperatorIfCoin((ScMemoryContext&)ms_context, scp_operator);
+    }
     if (type == Keynodes::op_ifType)
     {
         oper = new SCPOperatorIfType((ScMemoryContext&)ms_context, scp_operator);
