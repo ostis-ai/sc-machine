@@ -23,6 +23,13 @@ public:
     sc_result Parse();
 };
 
+class SCPOperatorElStr2: public SCPOperator
+{
+public:
+    SCPOperatorElStr2(ScMemoryContext &ctx, ScAddr addr);
+    sc_result Parse();
+};
+
 class SCPOperatorElStr3: public SCPOperator
 {
 public:

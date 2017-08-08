@@ -47,6 +47,38 @@ sc_result SCPOperatorElStr1::Parse()
     return CheckNullValues();
 }
 
+SCPOperatorElStr2::SCPOperatorElStr2(ScMemoryContext &ctx_, ScAddr addr_): SCPOperator(ctx_, addr_)
+{
+    operands = std::vector<SCPOperand*>(2);
+}
+
+
+sc_result SCPOperatorElStr2::Parse()
+{
+    SCPOperator::Parse();
+    ScIterator3Ptr iter_operator = ms_context.Iterator3(addr, ScType::EdgeAccessConstPosPerm, ScType::NodeConst);
+    while (iter_operator->Next())
+    {
+        SCPOperand *operand = new SCPOperand(ms_context, iter_operator->Get(1));
+        if (!(operand->GetOrder() > 0 && operand->GetOrder() < 3 && operands[operand->GetOrder() - 1] == nullptr))
+        {
+#ifdef SCP_DEBUG
+            std::stringstream ss;
+            ss << "Invalid operand order ";
+            ss << (int)operand->GetOrder();
+            Utils::logSCPError(ms_context, ss.str(), addr);
+#endif
+            FinishExecutionWithError();
+            return SC_RESULT_ERROR_INVALID_PARAMS;
+        }
+        else
+        {
+            operands[operand->GetOrder() - 1] = operand;
+        }
+    }
+    return CheckNullValues();
+}
+
 SCPOperatorElStr3::SCPOperatorElStr3(ScMemoryContext &ctx_, ScAddr addr_): SCPOperator(ctx_, addr_)
 {
     operands = std::vector<SCPOperand*>(3);
