@@ -26,7 +26,7 @@ SCPOperand::SCPOperand(ScMemoryContext &ctx_, ScAddr addr_): arc_addr(addr_), ms
     }
     else
     {
-        ScIterator3Ptr iter = ms_context.Iterator3(addr, SC_TYPE(sc_type_arc_access | sc_type_arc_pos | sc_type_const), SC_TYPE(0));
+        ScIterator3Ptr iter = ms_context.Iterator3(addr, ScType(sc_type_arc_access | sc_type_arc_pos | sc_type_const), ScType(0));
         if (iter->Next())
         {
             value_addr = iter->Get(2);
@@ -56,7 +56,7 @@ uint8_t SCPOperand::GetOrder()
 
 void SCPOperand::ResetValue()
 {
-    ScIterator3Ptr iter = ms_context.Iterator3(addr, SC_TYPE(sc_type_arc_access | sc_type_arc_pos | sc_type_const), SC_TYPE(0));
+    ScIterator3Ptr iter = ms_context.Iterator3(addr, ScType(sc_type_arc_access | sc_type_arc_pos | sc_type_const), ScType(0));
     while (iter->Next())
     {
         ms_context.EraseElement(iter->Get(1));

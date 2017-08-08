@@ -57,7 +57,7 @@ SC_AGENT_IMPLEMENTATION(ASCPProcessCreator)
         ScAddr order;
         if (Utils::resolveOrderRoleRelation((ScMemoryContext&)ms_context, iter_temp->Get(1), order));
         {
-            iter_param = ms_context->Iterator5(params, ScType::EdgeAccessConstPosPerm, SC_TYPE(0), ScType::EdgeAccessConstPosPerm, order);
+            iter_param = ms_context->Iterator5(params, ScType::EdgeAccessConstPosPerm, ScType(0), ScType::EdgeAccessConstPosPerm, order);
             if (!iter_param->Next())
             {
 #ifdef SCP_DEBUG

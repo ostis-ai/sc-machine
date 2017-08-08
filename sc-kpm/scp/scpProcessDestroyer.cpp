@@ -46,7 +46,7 @@ SC_AGENT_IMPLEMENTATION(ASCPProcessDestroyer)
                     continue;
 
                 ScAddr curr_operand = it_operand->Get(2);
-                ScIterator3Ptr it_pairs = ms_context->Iterator3(curr_operand, ScType::EdgeAccessConstPosPerm, SC_TYPE(0));
+                ScIterator3Ptr it_pairs = ms_context->Iterator3(curr_operand, ScType::EdgeAccessConstPosPerm, ScType(0));
                 while (it_pairs->Next())
                 {
                     ScAddr curr_pair = it_pairs->Get(2);

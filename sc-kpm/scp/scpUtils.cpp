@@ -95,7 +95,7 @@ void printInfo(ScMemoryContext & ctx, ScAddr const & elemAddr)
     cout << endl;;
 
     cout << "Input arcs:\n";
-    ScIterator3Ptr it = ctx.Iterator3(SC_TYPE(0), SC_TYPE(0), elemAddr);
+    ScIterator3Ptr it = ctx.Iterator3(ScType(0), ScType(0), elemAddr);
     while (it->Next())
     {
         c_in++;
@@ -110,7 +110,7 @@ void printInfo(ScMemoryContext & ctx, ScAddr const & elemAddr)
     cout << "Total input arcs: " << c_in << endl;
 
     cout << "Output arcs:\n";
-    it = ctx.Iterator3(elemAddr, SC_TYPE(0), SC_TYPE(0));
+    it = ctx.Iterator3(elemAddr, ScType(0), ScType(0));
     while (it->Next())
     {
         c_out++;
