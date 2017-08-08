@@ -24,11 +24,11 @@ ScTestUnit::~ScTestUnit()
   ms_tests.erase(this);
 }
 
-void ScTestUnit::Run()
+void ScTestUnit::Run(std::string const & configPath, std::string const & extPath)
 {
   SC_LOG_INFO("Run test " << m_name);
 
-  InitMemory();
+  InitMemory(configPath, extPath);
 
   if (m_fn)
     m_fn();
@@ -37,15 +37,15 @@ void ScTestUnit::Run()
   SC_LOG_INFO_COLOR("Test " << m_name << " complete", ScConsole::Color::LightGreen);
 }
 
-void ScTestUnit::InitMemory()
+void ScTestUnit::InitMemory(std::string const & configPath, std::string const & extPath)
 {
   sc_memory_params params;
   sc_memory_params_clear(&params);
 
   params.clear = SC_TRUE;
   params.repo_path = "repo";
-  params.config_file = "sc-memory.ini";
-  params.ext_path = 0;
+  params.config_file = configPath.c_str();
+  params.ext_path = extPath.empty() ? nullptr : extPath.c_str();
 
   ScMemory::LogMute();
   ScMemory::Initialize(params);
@@ -59,10 +59,10 @@ void ScTestUnit::ShutdownMemory(bool save)
   ScMemory::LogUnmute();
 }
 
-void ScTestUnit::RunAll()
+void ScTestUnit::RunAll(std::string const & configPath, std::string const & extPath)
 {
   for (ScTestUnit * unit : ms_tests)
-    unit->Run();
+    unit->Run(configPath, extPath);
 }
 
 
