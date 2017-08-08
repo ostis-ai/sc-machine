@@ -8,6 +8,7 @@
 #include "scpUtils.hpp"
 #include "scpIfOperatorInterpreter.hpp"
 #include "if_operators/SCPOperatorIfType.hpp"
+#include "if_operators/SCPOperatorIfVarAssign.hpp"
 #include "sc-memory/cpp/sc_memory.hpp"
 #include <iostream>
 
@@ -30,6 +31,10 @@ SC_AGENT_IMPLEMENTATION(ASCPIfOperatorInterpreter)
     if (type == Keynodes::op_ifType)
     {
         oper = new SCPOperatorIfType((ScMemoryContext&)ms_context, scp_operator);
+    }
+    if (type == Keynodes::op_ifVarAssign)
+    {
+        oper = new SCPOperatorIfVarAssign((ScMemoryContext&)ms_context, scp_operator);
     }
 
     if (oper == nullptr)
