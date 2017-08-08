@@ -7,7 +7,7 @@
 #include "scpKeynodes.hpp"
 #include "scpUtils.hpp"
 #include "scpGenOperatorInterpreter.hpp"
-#include "gen_operators/scpOperatorGenEl.hpp"
+#include "gen_operators/SCPOperatorGenEl.hpp"
 #include "gen_operators/SCPOperatorGenElStr3.hpp"
 #include "gen_operators/SCPOperatorGenElStr5.hpp"
 #include "sc-memory/cpp/sc_memory.hpp"
