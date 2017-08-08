@@ -374,9 +374,9 @@ bool ScPythonInterpreter::Initialize(std::string const & name)
   PyLoadModulePathFromConfig(modulePaths);
   
   SC_LOG_INIT("Initialize python iterpreter version " << PY_VERSION);
-  SC_LOG_INFO("Collect modules...");
+  SC_LOG_INFO("Collect python modules...");
   CollectModules(modulePaths);
-  SC_LOG_INFO("Collected " << ms_foundModules.size() << " modules");
+  SC_LOG_INFO("Collected " << ms_foundModules.size() << " python modules");
 
   ms_isInitialized = true;
   return true;
