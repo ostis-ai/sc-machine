@@ -455,6 +455,8 @@ void ScPythonInterpreter::RunScript(std::string const & scriptName, ScPythonBrid
 
     bp::object resultObj(bp::exec_file(filePath.c_str(), globalNamespace, globalNamespace));  
     bp::exec("import gc\ngc.collect()", globalNamespace, globalNamespace);
+
+    globalNamespace.clear();
   }
   catch (...)
   {
