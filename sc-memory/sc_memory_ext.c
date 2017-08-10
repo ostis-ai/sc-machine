@@ -177,4 +177,5 @@ void sc_ext_shutdown()
   }
 
   g_list_free_full(modules_priority_list, sc_module_info_free);
+  modules_priority_list = null_ptr;
 }
