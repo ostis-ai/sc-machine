@@ -3,8 +3,6 @@ from datetime import datetime
 from common import *
 import struct
 
-# https://docs.python.org/2/library/unittest.html
-
 from sc import *
 
 def MemoryCtx(name):
