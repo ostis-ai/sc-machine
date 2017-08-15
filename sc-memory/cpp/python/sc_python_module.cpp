@@ -730,6 +730,7 @@ BOOST_PYTHON_MODULE(sc)
     ;
 
   bp::class_<ScAddr>("ScAddr", bp::init<>())
+    .def(bp::init<ScAddr::HashType>())
     .def("IsValid", &ScAddr::IsValid)
     .def("ToInt", &ScAddr::Hash)
     .def("__eq__", &ScAddr::operator==)
