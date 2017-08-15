@@ -4,6 +4,10 @@
 * Fix bug with python threading
 * Add `ScSet` and `ScRelationSet` in python common library
 * Add `ScPythonService` into C++ (allow to implement threaded python services)
+* Add support of some config in tests engine
+* Shutdown extensions before memory shutdown (fix issue with memory context destroy)
+* Fix python cleanup on script run finished
+* Add construction os `ScAddr` in python by hash (int) value
 
 ## v0.4.0
 
