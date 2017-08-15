@@ -35,9 +35,12 @@ _SC_EXTERN sc_memory_context* sc_memory_initialize(const sc_memory_params *param
  */
 _SC_EXTERN sc_result sc_memory_init_ext(sc_char const * ext_path);
 
-
 //! Shutdown sc-memory (save repository to file system)
 _SC_EXTERN void sc_memory_shutdown(sc_bool save_state);
+
+/*! Shutdown sc-memory extensions
+*/
+_SC_EXTERN void sc_memory_shutdown_ext();
 
 /*! Function that create memory context with specified params
  * @param levels Access levels, you can create it with macros @see sc_access_level_make

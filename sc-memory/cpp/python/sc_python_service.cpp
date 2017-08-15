@@ -19,8 +19,7 @@ void ScPythonService::Run()
   {
     py::ScPythonInterpreter::RunScript(m_scriptName, m_bridge);
   }));
-  m_workThread->detach();
-
+  
   // wait until bridge starts
   m_bridge->WaitInitialize();
 }

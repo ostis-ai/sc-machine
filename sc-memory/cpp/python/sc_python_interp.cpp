@@ -327,23 +327,23 @@ BOOST_PYTHON_MODULE(scb)
     ;
 
   bp::class_<PyBridgeRequest>("ScPythonBridgeRequest", bp::no_init)
-    .def("GetName", bp::make_function(&PyBridgeRequest::GetName, py::ReleaseGILPolicy()))
-    .def("GetData", bp::make_function(&PyBridgeRequest::GetData, py::ReleaseGILPolicy()))
-    .def("IsValid", bp::make_function(&PyBridgeRequest::IsValid, py::ReleaseGILPolicy()))
-    .def("MakeResponse", bp::make_function(&PyBridgeRequest::MakeResponse, py::ReleaseGILPolicy()))
+    .def("GetName", bp::make_function(&PyBridgeRequest::GetName))
+    .def("GetData", bp::make_function(&PyBridgeRequest::GetData))
+    .def("IsValid", bp::make_function(&PyBridgeRequest::IsValid))
+    .def("MakeResponse", bp::make_function(&PyBridgeRequest::MakeResponse))
     ;
 
   bp::class_<PyBridgeWrap, boost::noncopyable>("ScPythonBridgeWrap", bp::no_init)
-    .def("__init__", bp::make_constructor(&PyBridgeWrap::Create, py::ReleaseGILPolicy()))
-    .def("Initialize", bp::make_function(&PyBridgeWrap::Initialize, py::ReleaseGILPolicy()))
-    .def("Exist", bp::make_function(&PyBridgeWrap::IsExist, py::ReleaseGILPolicy()))
-    .def("GetRequest", bp::make_function(&PyBridgeWrap::GetRequest, py::ReleaseGILPolicy()))
-    .def("SubscribeEvent", bp::make_function(&PyBridgeWrap::SubscribeEvent, py::ReleaseGILPolicy()))
+    .def("__init__", bp::make_constructor(&PyBridgeWrap::Create))
+    .def("Initialize", bp::make_function(&PyBridgeWrap::Initialize))
+    .def("Exist", bp::make_function(&PyBridgeWrap::IsExist))
+    .def("GetRequest", bp::make_function(&PyBridgeWrap::GetRequest))
+    .def("SubscribeEvent", bp::make_function(&PyBridgeWrap::SubscribeEvent))
     ;
 
   bp::class_<PyScEvent, boost::noncopyable>("ScPythonEvent", bp::no_init)
-    .def("Destroy", bp::make_function(&PyScEvent::Destroy, py::ReleaseGILPolicy()))
-    .def("GetID", bp::make_function(&PyScEvent::GetID, py::ReleaseGILPolicy()))
+    .def("Destroy", bp::make_function(&PyScEvent::Destroy))
+    .def("GetID", bp::make_function(&PyScEvent::GetID))
     ;
 }
 
@@ -374,9 +374,9 @@ bool ScPythonInterpreter::Initialize(std::string const & name)
   PyLoadModulePathFromConfig(modulePaths);
   
   SC_LOG_INIT("Initialize python iterpreter version " << PY_VERSION);
-  SC_LOG_INFO("Collect modules...");
+  SC_LOG_INFO("Collect python modules...");
   CollectModules(modulePaths);
-  SC_LOG_INFO("Collected " << ms_foundModules.size() << " modules");
+  SC_LOG_INFO("Collected " << ms_foundModules.size() << " python modules");
 
   ms_isInitialized = true;
   return true;
@@ -425,7 +425,14 @@ void ScPythonInterpreter::RunScript(std::string const & scriptName, ScPythonBrid
   {
     bp::dict globalNamespace;
     globalNamespace["__builtins__"] = mainNamespace["__builtins__"];
-    bp::exec("from scb import *\nfrom sc import *", globalNamespace, globalNamespace);
+    std::stringstream initCode;
+    initCode
+      << "from scb import *" << std::endl
+      << "from sc import *" << std::endl
+      << "import sys" << std::endl
+      << "sys.path.append('" << p.parent_path().string() << "')";
+    bp::exec(initCode.str().c_str(), globalNamespace, globalNamespace);
+    
     
     if (bridge.get())
     {
@@ -448,6 +455,8 @@ void ScPythonInterpreter::RunScript(std::string const & scriptName, ScPythonBrid
 
     bp::object resultObj(bp::exec_file(filePath.c_str(), globalNamespace, globalNamespace));  
     bp::exec("import gc\ngc.collect()", globalNamespace, globalNamespace);
+
+    globalNamespace.clear();
   }
   catch (...)
   {

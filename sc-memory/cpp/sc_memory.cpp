@@ -102,6 +102,8 @@ bool ScMemory::Initialize(sc_memory_params const & params)
 
 void ScMemory::Shutdown(bool saveState /* = true */)
 {
+  sc_memory_shutdown_ext();
+
   ScKeynodes::Shutdown();
   
   if (ms_contexts.size() > 0)

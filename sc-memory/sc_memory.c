@@ -113,7 +113,7 @@ void sc_memory_shutdown(sc_bool save_state)
 {
   sc_events_stop_processing();
 
-  sc_ext_shutdown();
+  sc_memory_shutdown_ext();
 
   sc_events_shutdown();
   sc_config_shutdown();
@@ -130,6 +130,11 @@ void sc_memory_shutdown(sc_bool save_state)
   s_context_hash_table = 0;
   s_context_id_last = 0;
   g_assert(s_context_id_count == 0);
+}
+
+void sc_memory_shutdown_ext()
+{
+  sc_ext_shutdown();
 }
 
 sc_memory_context* sc_memory_context_new(sc_uint8 levels)
