@@ -356,6 +356,10 @@ content = ctx.GetLinkContent(linkAddr)
 floatValue = content.AsFloat()
 ```
 
+---
+
+- `GetType` - return type of content. There are possible values: `ScLinkContent.String`, `ScLinkContent.Int`, `ScLinkContent.Float`
+
 ## ScTemplateGenParams
 
 This class accumulate parameters for a template generation. There are methods of this class:
