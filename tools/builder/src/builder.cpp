@@ -8,6 +8,8 @@
 #include "utils.h"
 #include "translator.h"
 
+#include <sc-memory/cpp/sc_memory.hpp>
+
 #include <boost/filesystem.hpp>
 #include <boost/algorithm/string.hpp>
 
@@ -35,12 +37,12 @@ void Builder::initialize()
 
 bool Builder::run(const BuilderParams &params)
 {
-
   mParams = params;
 
   collectFiles();
 
   // initialize sc-memory
+  
   sc_memory_params p;
   sc_memory_params_clear(&p);
   p.clear = mParams.clearOutput ? SC_TRUE : SC_FALSE;
@@ -48,7 +50,7 @@ bool Builder::run(const BuilderParams &params)
   p.repo_path = mParams.outputPath.c_str();
   p.ext_path = mParams.extensionsPath.size() > 0 ? mParams.extensionsPath.c_str() : 0;
 
-  sc_memory_initialize(&p);
+  ScMemory::Initialize(p);
 
   mContext = sc_memory_context_new(sc_access_lvl_make_min);
 
@@ -114,7 +116,8 @@ bool Builder::run(const BuilderParams &params)
   std::cout << "Total: " << all_count << std::endl;
 
   sc_memory_context_free(mContext);
-  sc_memory_shutdown(SC_TRUE);
+
+  ScMemory::Shutdown(true);
 
   return true;
 }
