@@ -201,25 +201,32 @@ class TestScMemoryContext(TestCase):
         self.assertTrue(addr1.IsValid())
         self.assertTrue(ctx.SetLinkContent(addr1, 56))
         
-        value1 = ctx.GetLinkContent(addr1).AsInt()
+        v1 = ctx.GetLinkContent(addr1)
+        self.assertEqual(v1.GetType(), ScLinkContent.Int)
+
+        value1 = v1.AsInt()
         self.assertTrue(type(value1) is int)
         self.assertEqual(value1, 56)
-
+        
         addr2 = ctx.CreateLink()
         self.assertTrue(addr2.IsValid())
         self.assertTrue(ctx.SetLinkContent(addr2, 56.0))
 
-        value2 = ctx.GetLinkContent(addr2).AsFloat()
+        v2 = ctx.GetLinkContent(addr2)
+        value2 = v2.AsFloat()
         self.assertTrue(type(value2) is float)
         self.assertEqual(value2, 56.0)
+        self.assertEqual(v2.GetType(), ScLinkContent.Float)
 
         addr3 = ctx.CreateLink()
         self.assertTrue(addr3.IsValid())
         self.assertTrue(ctx.SetLinkContent(addr3, "any text"))
 
-        value3 = ctx.GetLinkContent(addr3).AsString()
+        v3 = ctx.GetLinkContent(addr3)
+        value3 = v3.AsString()
         self.assertTrue(type(value3) is str)
         self.assertEqual(value3, "any text")
+        self.assertEqual(v3.GetType(), ScLinkContent.String)
 
     def test_iterator3(self):
 

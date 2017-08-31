@@ -123,7 +123,7 @@ class ScMemoryContext:
         return ''
 
     def IsElement(self, addr):
-        return false
+        return False
 
     def GetElementType(self, addr):
         return ScType()
@@ -188,6 +188,10 @@ class ScIterator5:
         return ScAddr()
 
 class ScLinkContent:
+    String = 0
+    Int = 1
+    Float = 2
+
     def AsString(self):
         return ''
 
@@ -196,6 +200,9 @@ class ScLinkContent:
 
     def AsFloat(self):
         return 0.0
+
+    def GetType(self):
+        return ScLinkContent.String
 
 class ScTemplateGenResult:
     def Size(self):

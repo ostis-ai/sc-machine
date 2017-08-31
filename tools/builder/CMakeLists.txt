@@ -36,7 +36,7 @@ endif (${WIN32})
 	
 add_executable(sc-builder ${SOURCES} ${SOURCES_C} ${HEADERS})
 include_directories(${SC_MEMORY_SRC} ${GLIB2_INCLUDE_DIRS})
-target_link_libraries(sc-builder sc-memory ${ANTLR_LIB} ${BOOST_LIBS_LIST})
+target_link_libraries(sc-builder sc-memory sc-memory-cpp ${ANTLR_LIB} ${BOOST_LIBS_LIST})
 add_dependencies(sc-builder GenerateParser)
 
 install_targets("/bin" sc-builder)

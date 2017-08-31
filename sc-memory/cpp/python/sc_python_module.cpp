@@ -2,6 +2,7 @@
 
 #include "../sc_memory.hpp"
 #include "../sc_stream.hpp"
+#include "../sc_link.hpp"
 
 namespace
 {
@@ -161,14 +162,28 @@ bp::object _scTypeToRShift(ScType const & type, std::string const & replName)
 class PyLinkContent
 {
 public:
+  class Type
+  {
+  public:
+    static uint8_t String;
+    static uint8_t Int;
+    static uint8_t Float;
+  };
+
   PyLinkContent() {}
 
-  explicit PyLinkContent(ScStream const & stream)
+  explicit PyLinkContent(ScStream const & stream, uint8_t t)
+    : m_type(t)
   {
     m_buffer.reset(new MemoryBufferSafe());
     m_buffer->Reinit(stream.Size());
     size_t readBytes = 0;
     stream.Read((sc_char*)m_buffer->Data(), stream.Size(), readBytes);
+  }
+
+  uint8_t GetType() const
+  {
+    return m_type;
   }
 
   std::string AsString() const
@@ -219,7 +234,14 @@ public:
 
 private:
   MemoryBufferSafePtr m_buffer;
+  uint8_t m_type;
 };
+
+uint8_t PyLinkContent::Type::String = 0;
+uint8_t PyLinkContent::Type::Int = 1;
+uint8_t PyLinkContent::Type::Float = 2;
+
+// ----------------------------
 
 bp::list _context_FindLinksByContent(ScMemoryContext & self, bp::object const & content)
 {
@@ -259,8 +281,9 @@ template <typename T>
 bool _set_contentT(ScMemoryContext & self, ScAddr const & linkAddr, bp::extract<T> & v)
 {
   T const value = v;
-  ScStreamPtr const stream = MakeReadStreamT(value);
-  return self.SetLinkContent(linkAddr, *stream);
+  ScLink link(self, linkAddr);
+
+  return link.Set(value);
 }
 
 bool _context_setLinkContent(ScMemoryContext & self, ScAddr const & linkAddr, bp::object & content)
@@ -291,7 +314,34 @@ bp::object _context_getLinkContent(ScMemoryContext & self, ScAddr const & linkAd
 {
   ScStream stream;
   if (self.GetLinkContent(linkAddr, stream))
-    return bp::object(PyLinkContent(stream));
+  {
+    const ScLink link(self, linkAddr);
+    uint8_t linkType = PyLinkContent::Type::String;
+
+    const auto t = link.DetermineType();
+    switch (t)
+    {
+    case ScLink::Type::Int8:
+    case ScLink::Type::Int16:
+    case ScLink::Type::Int32:
+    case ScLink::Type::Int64:
+    case ScLink::Type::UInt8:
+    case ScLink::Type::UInt16:
+    case ScLink::Type::UInt32:
+    case ScLink::Type::UInt64:
+      linkType = PyLinkContent::Type::Int;
+      break;
+
+    case ScLink::Type::Float:
+    case ScLink::Type::Double:
+      linkType = PyLinkContent::Type::Float;
+      break;
+
+    default:
+      break;
+    }
+    return bp::object(PyLinkContent(stream, linkType));
+  }
 
   return bp::object();
 }
@@ -698,6 +748,10 @@ BOOST_PYTHON_MODULE(sc)
     .def("AsString", &impl::PyLinkContent::AsString)
     .def("AsInt", &impl::PyLinkContent::AsInt)
     .def("AsFloat", &impl::PyLinkContent::AsDouble)
+    .def("GetType", &impl::PyLinkContent::GetType)
+    .def_readonly("String", &impl::PyLinkContent::Type::String)
+    .def_readonly("Int", &impl::PyLinkContent::Type::Int)
+    .def_readonly("Float", &impl::PyLinkContent::Type::Float)
     ;
 
   bp::class_<impl::PyTemplateGenResult>("ScTemplateGenResult", bp::no_init)
