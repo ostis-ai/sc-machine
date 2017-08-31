@@ -1,13 +1,11 @@
 ## v0.4.1
 
-* Fix bug with python modules search path initialization
-* Fix bug with python threading
 * Add `ScSet` and `ScRelationSet` in python common library
 * Add `ScPythonService` into C++ (allow to implement threaded python services)
-* Add support of some config in tests engine
-* Shutdown extensions before memory shutdown (fix issue with memory context destroy)
-* Fix python cleanup on script run finished
-* Add construction os `ScAddr` in python by hash (int) value
+* Add `GetType` function into Python for a link content
+* Fix bug with python modules search path initialization
+* Fix bug with python threading
+* Fix bug with builder run
 
 ## v0.4.0
 
