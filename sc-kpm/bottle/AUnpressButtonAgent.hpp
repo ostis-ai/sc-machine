@@ -17,7 +17,7 @@ namespace bottle
 
 class AUnpressButtonAgent : public ScAgent
 {
-    SC_CLASS(Agent, Event(Keynodes::closed, SC_EVENT_ADD_OUTPUT_ARC))
+    SC_CLASS(Agent, Event(Keynodes::closed, ScEvent::Type::AddOutputEdge))
     SC_GENERATED_BODY()
 };
 

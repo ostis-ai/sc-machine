@@ -17,7 +17,7 @@ namespace bottle
 
 class AOpenValveAgent : public ScAgent
 {
-    SC_CLASS(Agent, Event(Keynodes::button_pressed, SC_EVENT_ADD_OUTPUT_ARC))
+    SC_CLASS(Agent, Event(Keynodes::button_pressed, ScEvent::Type::AddOutputEdge))
     SC_GENERATED_BODY()
 };
 

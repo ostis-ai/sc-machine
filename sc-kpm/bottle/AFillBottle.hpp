@@ -17,7 +17,7 @@ namespace bottle
 
 class AFillBottle : public ScAgent
 {
-    SC_CLASS(Agent, Event(Keynodes::opened, SC_EVENT_ADD_OUTPUT_ARC))
+    SC_CLASS(Agent, Event(Keynodes::opened, ScEvent::Type::AddOutputEdge))
     SC_GENERATED_BODY()
 };
 
