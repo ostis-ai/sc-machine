@@ -28,6 +28,10 @@ sc_result bottleModule::InitializeImpl()
 
 sc_result bottleModule::ShutdownImpl()
 {
+    SC_AGENT_UNREGISTER(AOpenValveAgent)
+    SC_AGENT_UNREGISTER(AFillBottle)
+    SC_AGENT_UNREGISTER(AUnpressButtonAgent)
+
     sc_result result = SC_RESULT_OK;
     return result;
 }
