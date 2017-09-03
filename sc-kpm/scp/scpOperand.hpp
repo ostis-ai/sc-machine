@@ -52,6 +52,8 @@ public:
     bool IsAssign();
     bool IsSCPConst();
     bool IsSCPVar();
+    bool IsErase();
+    bool IsSet();
     bool HasSetModifier();
     bool HasEraseModifier();
 };

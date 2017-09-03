@@ -100,6 +100,16 @@ bool SCPOperand::IsSCPVar()
     return (operand_type == SCP_VAR);
 }
 
+bool SCPOperand::IsErase()
+{
+    return isErase;
+}
+
+bool SCPOperand::IsSet()
+{
+    return isSet;
+}
+
 bool SCPOperand::HasSetModifier()
 {
     return isSet;
