@@ -12,6 +12,16 @@
 #include <iomanip>
 #include <iostream>
 
+namespace
+{
+
+// should be synced with ScLog::Type
+const char * kTypeToStr[] = {
+    "Debug", "Info", "Warning", "Error", "Python", "PythonError"
+};
+
+} // namespace
+
 namespace utils
 {
 
@@ -67,7 +77,8 @@ void ScLog::Message(ScLog::Type type, std::string const & msg, ScConsole::Color 
     std::stringstream ss;
     ss << "[" << std::setw(2) << std::setfill('0') << tm.tm_hour
        << ":" << std::setw(2) << std::setfill('0') << tm.tm_min
-       << ":" << std::setw(2) << std::setfill('0') << tm.tm_sec << "]: ";
+       << ":" << std::setw(2) << std::setfill('0') << tm.tm_sec << "]["
+       << kTypeToStr[int(type)] << "]: ";
 
     ScConsole::SetColor(ScConsole::Color::White);
     std::cout << ss.str();
@@ -75,7 +86,7 @@ void ScLog::Message(ScLog::Type type, std::string const & msg, ScConsole::Color 
     std::cout << msg << std::endl;;
     ScConsole::ResetColor();
 
-    m_fileStream << ss.str() << msg << std::endl;
+    m_fileStream << ss.str() << msg;
     m_fileStream.flush();
   }
 }
