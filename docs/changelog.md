@@ -3,9 +3,11 @@
 * Add `ScSet` and `ScRelationSet` in python common library
 * Add `ScPythonService` into C++ (allow to implement threaded python services)
 * Add `GetType` function into Python for a link content
+* Add colors to python output
 * Fix bug with python modules search path initialization
 * Fix bug with python threading
 * Fix bug with builder run
+* Fix bug with `ScLock`
 
 ## v0.4.0
 
