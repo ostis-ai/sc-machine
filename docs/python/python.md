@@ -358,6 +358,18 @@ floatValue = content.AsFloat()
 
 ---
 
+- `AsBinary` - get content of a link as `memoryview` value.
+```python
+content = ctx.GetLinkContent(linkAddr)
+binaryValue = content.AsFloat()
+```
+
+<div class="note">
+Object content should be alive until memory used
+</div>
+
+---
+
 - `GetType` - return type of content. There are possible values: `ScLinkContent.String`, `ScLinkContent.Int`, `ScLinkContent.Float`
 
 ## ScTemplateGenParams

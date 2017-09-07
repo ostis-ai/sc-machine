@@ -192,6 +192,9 @@ class ScLinkContent:
     Int = 1
     Float = 2
 
+    def AsBinary(self):
+        return ''
+
     def AsString(self):
         return ''
 
