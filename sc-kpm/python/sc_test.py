@@ -5,6 +5,9 @@ import struct
 
 from sc import *
 
+sys.stdout = sys.__stdout__
+sys.stderr = sys.__stderr__
+
 def MemoryCtx(name):
     return createScMemoryContext(name)
 

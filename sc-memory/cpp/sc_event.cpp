@@ -54,10 +54,8 @@ ScEvent::ScEvent(const ScMemoryContext & ctx, const ScAddr & addr, Type eventTyp
 
 ScEvent::~ScEvent()
 {
-  m_lock.Lock();
   if (m_event)
     sc_event_destroy(m_event);
-  m_lock.Unlock();
 }
 
 void ScEvent::RemoveDelegate()
@@ -83,12 +81,9 @@ sc_result ScEvent::HandlerDelete(sc_event const * evt)
   ScEvent * eventObj = (ScEvent*)sc_event_get_data(evt);
   SC_ASSERT(eventObj != nullptr, ());
 
-  eventObj->m_lock.Lock();
-
+  utils::ScLockScope(eventObj->m_lock);
   if (eventObj->m_event)
     eventObj->m_event = nullptr;
-
-  eventObj->m_lock.Unlock();
 
   return SC_RESULT_OK;
 }

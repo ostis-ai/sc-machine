@@ -304,6 +304,37 @@ private:
 
 PyScEvent::EventID PyBridgeWrap::ms_idCounter = 0;
 
+// Logging
+class PythonLog
+{
+public:
+  void Write(std::string const & str)
+  {
+    // python sends \n after each print call, so just skip it
+    if (str == "\n")
+      return;
+    
+    SC_LOG_PYTHON(str);
+  }
+
+  void Flush() {}
+};
+
+class PythonLogError
+{
+public:
+  void Write(std::string const & str)
+  {
+    // python sends \n after each print call, so just skip it
+    if (str == "\n")
+      return;
+
+    SC_LOG_PYTHON_ERROR(str);
+  }
+
+  void Flush() {}
+};
+
 } // namespace 
 
   // small boost python module for bridge utils
@@ -311,6 +342,14 @@ BOOST_PYTHON_MODULE(scb)
 {
   bp::register_ptr_to_python<boost::shared_ptr<PyScEvent>>();
   bp::register_ptr_to_python<boost::shared_ptr<PyBridgeWrap>>();
+
+  bp::class_<PythonLog>("CppLog", bp::init<>())
+    .def("write", bp::make_function(&PythonLog::Write))
+    .def("flush", bp::make_function(&PythonLog::Flush));
+
+  bp::class_<PythonLogError>("CppLogError", bp::init<>())
+    .def("write", bp::make_function(&PythonLogError::Write))
+    .def("flush", bp::make_function(&PythonLogError::Flush));
 
   bp::enum_<py::ScPythonBridge::Response::Status>("ResponseStatus")
     .value("Ok", py::ScPythonBridge::Response::Status::Ok)
@@ -430,7 +469,9 @@ void ScPythonInterpreter::RunScript(std::string const & scriptName, ScPythonBrid
       << "from scb import *" << std::endl
       << "from sc import *" << std::endl
       << "import sys" << std::endl
-      << "sys.path.append('" << p.parent_path().string() << "')";
+      << "sys.path.append('" << p.parent_path().string() << "')" << std::endl
+      << "sys.stdout = CppLog()" << std::endl
+      << "sys.stderr = CppLogError()" << std::endl;
     bp::exec(initCode.str().c_str(), globalNamespace, globalNamespace);
     
     
