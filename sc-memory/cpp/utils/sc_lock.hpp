@@ -8,8 +8,6 @@
 
 #include "../sc_defines.hpp"
 
-#include <atomic>
-
 namespace utils
 {
 
@@ -30,7 +28,7 @@ public:
   _SC_EXTERN bool IsLocked() const;
 
 private:
-  std::atomic_bool m_locked;
+  volatile int m_locked;
 };
 
 struct ScLockScope

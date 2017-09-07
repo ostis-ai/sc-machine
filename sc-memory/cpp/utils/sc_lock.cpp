@@ -8,34 +8,36 @@
 
 #include <thread>
 
+extern "C"
+{
+#include <glib.h>
+}
+
 namespace utils
 {
 
 ScLock::ScLock()
+  : m_locked(0)
 {
   Unlock();
 }
 
 void ScLock::Lock()
 {
-  bool expected = false;
-  while (true)
+  while (g_atomic_int_compare_and_exchange(&m_locked, 0, 1) == FALSE)
   {
-    if (m_locked.compare_exchange_strong(expected, true))
-      break;
-
-    std::this_thread::sleep_for(std::chrono::milliseconds(2));
+    std::this_thread::sleep_for(std::chrono::microseconds(1));
   }
 }
 
 void ScLock::Unlock()
 {
-  m_locked.store(false);
+  g_atomic_int_set(&m_locked, 0);
 }
 
 bool ScLock::IsLocked() const
 {
-  return m_locked.load();
+  return g_atomic_int_get(&m_locked) == 1;
 }
 
 } // namespace utils
