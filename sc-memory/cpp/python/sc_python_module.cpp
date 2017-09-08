@@ -194,7 +194,7 @@ public:
 
   int32_t AsInt() const
   {
-    if (m_buffer->Size() == sizeof(int32_t))
+    if (m_buffer->Size() == sizeof(int8_t))
     {
       int8_t value = 0;
       m_buffer->Read(&value, sizeof(value));
