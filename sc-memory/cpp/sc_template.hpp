@@ -278,7 +278,10 @@ public:
   using TemplateConstr3Vector = std::vector<ScTemplateConstr3>;
   using ProcessOrder = std::vector<size_t>;
 
-  _SC_EXTERN explicit ScTemplate(size_t BufferedNum = 16);
+  /*  If forceOrder flag is true, then search will be run in the same order,
+   * that was used for a triples append
+   */
+  _SC_EXTERN explicit ScTemplate(bool forceOrder = true);
 
   _SC_EXTERN ScTemplate & operator() (ScTemplateItemValue const & param1, ScTemplateItemValue const & param2, ScTemplateItemValue const & param3);
 
@@ -339,12 +342,14 @@ protected:
   TemplateConstr3Vector m_constructions;
   size_t m_currentReplPos;
 
+  bool m_isForceOrder : 1;
   /* Caches (used to prevent processing order update on each search/gen)
    * Caches are mutable, to prevent changes of template in search and generation, they can asses just a cache.
    * That because template passed into them by const reference.
    */
   mutable bool m_isSearchCacheValid : 1;
   mutable ProcessOrder m_searchCachedOrder;
+  
 };
 
 

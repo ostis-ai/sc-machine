@@ -152,6 +152,9 @@ protected:
 
   bool operator() (ScTemplate * inTemplate)
   {
+    // mark template to don't force order of triples
+    inTemplate->m_isForceOrder = false;
+
     // TODO: add struct blocking
     // TODO: provide error codes
     std::unordered_map<ScAddr::HashType, size_t> addrToObjectIndex;

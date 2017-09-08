@@ -5,6 +5,7 @@
 */
 
 #include "sc-memory/cpp/sc_debug.hpp"
+#include "sc-memory/cpp/sc_link.hpp"
 #include "sc-memory/cpp/sc_template.hpp"
 #include "sc-memory/cpp/sc_struct.hpp"
 #include "sc-memory/cpp/utils/sc_progress.hpp"
@@ -1201,4 +1202,145 @@ UNIT_TEST(template_search_unknown)
 
   SC_CHECK_EQUAL(res[0]["edge"], edge, ());
   SC_CHECK_EQUAL(res[0]["addr2"], addr2, ());
+}
+
+UNIT_TEST(template_search_some_relations)
+{
+  ScMemoryContext ctx(sc_access_lvl_make_min, "template_search_some_relations");
+
+  /* Check template:
+    deviceAddr _<= nrel_installed_apps: _tuple;;
+    _tuple _-> _app;
+    _app => nrel_idtf: _idtf;;
+    _app => nrel_image: _image;;
+   */
+   
+  ScAddr const deviceAddr = ctx.CreateNode(ScType::NodeConst);
+  SC_CHECK(deviceAddr.IsValid(), ());
+
+  ScAddr const nrelInstalledApp = ctx.CreateNode(ScType::NodeConstNoRole);
+  SC_CHECK(nrelInstalledApp.IsValid(), ());
+
+  ScAddr const _tuple = ctx.CreateNode(ScType::NodeConstTuple);
+  SC_CHECK(_tuple.IsValid(), ());
+
+  ScAddr const nrelIdtf = ctx.CreateNode(ScType::NodeConstNoRole);
+  SC_CHECK(nrelIdtf.IsValid(), ());
+
+  ScAddr const nrelImage = ctx.CreateNode(ScType::NodeConstNoRole);
+  SC_CHECK(nrelImage.IsValid(), ());
+
+  ScAddr edge = ctx.CreateEdge(ScType::EdgeDCommonConst, _tuple, deviceAddr);
+  SC_CHECK(edge.IsValid(), ());
+
+  edge = ctx.CreateEdge(ScType::EdgeAccessConstPosPerm, nrelInstalledApp, edge);
+  SC_CHECK(edge.IsValid(), ());
+
+  struct TestData
+  {
+    ScAddr m_app;
+    ScAddr m_idtf;
+    ScAddr m_image;
+  };
+
+  size_t i = 0;
+  std::vector<TestData> data(100);
+  for (auto & d : data)
+  {
+    d.m_app = ctx.CreateNode(ScType::NodeConstAbstract);
+    SC_CHECK(d.m_app.IsValid(), ());
+
+    edge = ctx.CreateEdge(ScType::EdgeAccessConstPosPerm, _tuple, d.m_app);
+    SC_CHECK(edge.IsValid(), ());
+
+    d.m_idtf = ctx.CreateLink();
+    SC_CHECK(d.m_idtf.IsValid(), ());
+
+    ScLink idtfLink(ctx, d.m_idtf);
+    SC_CHECK(idtfLink.Set("idtf_" + std::to_string(i)), ());
+
+    edge = ctx.CreateEdge(ScType::EdgeDCommonConst, d.m_app, d.m_idtf);
+    SC_CHECK(edge.IsValid(), ());
+
+    edge = ctx.CreateEdge(ScType::EdgeAccessConstPosPerm, nrelIdtf, edge);
+    SC_CHECK(edge.IsValid(), ());
+
+    d.m_image = ctx.CreateLink();
+    SC_CHECK(d.m_image.IsValid(), ());
+
+    ScLink imageLink(ctx, d.m_image);
+    SC_CHECK(imageLink.Set("data_" + std::to_string(i)), ());
+
+    edge = ctx.CreateEdge(ScType::EdgeDCommonConst, d.m_app, d.m_image);
+    SC_CHECK(edge.IsValid(), ());
+
+    edge = ctx.CreateEdge(ScType::EdgeAccessConstPosPerm, nrelImage, edge);
+    SC_CHECK(edge.IsValid(), ());
+
+    ++i;
+  }
+
+  SUBTEST_START(one_thread)
+  {
+    ScTemplate templ;
+
+    templ.TripleWithRelation(
+      ScType::NodeVarTuple >> "_tuple",
+      ScType::EdgeDCommonVar,
+      deviceAddr,
+      ScType::EdgeAccessVarPosPerm,
+      nrelInstalledApp);
+
+    templ.Triple(
+      "_tuple",
+      ScType::EdgeAccessVarPosPerm,
+      ScType::NodeVar >> "_app");
+
+    templ.TripleWithRelation(
+      "_app",
+      ScType::EdgeDCommonVar,
+      ScType::Link >> "_idtf",
+      ScType::EdgeAccessVarPosPerm,
+      nrelIdtf);
+
+    templ.TripleWithRelation(
+        "_app",
+        ScType::EdgeDCommonVar,
+        ScType::Link >> "_image",
+        ScType::EdgeAccessVarPosPerm,
+        nrelImage);
+
+    ScTemplateSearchResult searchRes;
+    SC_CHECK(ctx.HelperSearchTemplate(templ, searchRes), ());
+
+
+    SC_CHECK_EQUAL(searchRes.Size(), data.size(), ());
+    std::vector<TestData> foundData(data.size());
+    for (size_t i = 0; i < searchRes.Size(); ++i)
+    {
+      auto & d = foundData[i];
+
+      d.m_app = searchRes[i]["_app"];
+      d.m_idtf = searchRes[i]["_idtf"];
+      d.m_image = searchRes[i]["_image"];    
+    }
+
+    auto compare = [](TestData const & a, TestData const & b)
+    {
+      return (a.m_app.Hash() < b.m_app.Hash());
+    };
+    std::sort(data.begin(), data.end(), compare);
+    std::sort(foundData.begin(), foundData.end(), compare);
+
+    for (size_t i = 0; i < searchRes.Size(); ++i)
+    {
+      auto & d1 = foundData[i];
+      auto & d2 = data[i];
+
+      SC_CHECK_EQUAL(d1.m_app, d2.m_app, ());
+      SC_CHECK_EQUAL(d1.m_idtf, d2.m_idtf, ());
+      SC_CHECK_EQUAL(d1.m_image, d2.m_image, ());
+    }
+  }
+  SUBTEST_END()
 }
