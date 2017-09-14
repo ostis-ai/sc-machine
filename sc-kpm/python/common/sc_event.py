@@ -1,6 +1,7 @@
 from sc import *
 from scb import *
 
+import threading
 import json
 
 class ScEvent:
@@ -13,18 +14,43 @@ class ScEvent:
         if self.callback:
             self.callback(addr, edgeAddr, otherAddr)
 
+    def GetID(self):
+        return self.evt.GetID()
+
+
+'''This class is thread safe
+'''
 class ScEventManager:
 
     def __init__(self, cpp):
         self.cpp = cpp
         self.events = {}
+        self.lock = threading.Lock()
 
     def CreateEventInternal(self, addr, evtType, callback):
-        evt = self.cpp.SubscribeEvent(addr, evtType)
-        result = ScEvent(evt, callback)
-        self.events[evt.GetID()] = result
+        self.lock.acquire()
+        result = None
+        try:
+            evt = self.cpp.SubscribeEvent(addr, evtType)
+            result = ScEvent(evt, callback)
+            self.events[evt.GetID()] = result
+        except:
+            pass
+        finally:
+            self.lock.release()
 
         return result
+
+    def DestroyEvent(self, evt):
+        self.lock.acquire()
+
+        try:
+            del self.events[evt.GetID()]
+            evt.evt.Destroy()
+        except KeyError:
+            pass
+        finally:
+            self.lock.release()
 
     def CreateEventAddOutputEdge(self, addr, callback):
         return self.CreateEventInternal(addr, ScPythonEventType.AddOutputEdge, callback)
@@ -45,15 +71,21 @@ class ScEventManager:
         return self.CreateEventInternal(addr, ScPythonEventType.EraseElement, callback)
 
     def ProcessEvent(self, data):
-        data = json.loads(data)
+        self.lock.acquire()
 
-        evtID = int(data['id'])
-        addr = ScAddrFromHash(int(data['addr']))
-        edgeAddr = ScAddrFromHash(int(data['edgeAddr']))
-        otherAddr = ScAddrFromHash(int(data['otherAddr']))
+        try:
+            data = json.loads(data)
 
-        # find and emit event
-        if evtID in self.events:
-            evt = self.events[evtID]
-            evt.Emit(addr, edgeAddr, otherAddr)
+            evtID = int(data['id'])
+            addr = ScAddrFromHash(int(data['addr']))
+            edgeAddr = ScAddrFromHash(int(data['edgeAddr']))
+            otherAddr = ScAddrFromHash(int(data['otherAddr']))
 
+            # find and emit event
+            if evtID in self.events:
+                evt = self.events[evtID]
+                evt.Emit(addr, edgeAddr, otherAddr)
+        except:
+            pass
+        finally:
+            self.lock.release()
