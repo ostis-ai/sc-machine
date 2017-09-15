@@ -202,7 +202,7 @@ public:
   }
 
   PyBridgeWrap()
-    : m_ctx(sc_access_lvl_make_max)
+    : m_ctx(sc_access_lvl_make_max, "PyBridgeWrap")
   {
   }
 
@@ -474,12 +474,12 @@ void ScPythonInterpreter::RunScript(std::string const & scriptName, ScPythonBrid
       << "sys.stderr = CppLogError()" << std::endl;
     bp::exec(initCode.str().c_str(), globalNamespace, globalNamespace);
     
-    
+    std::unique_ptr<PyBridgeWrap> bridgeWrap;
     if (bridge.get())
     {
-      boost::shared_ptr<PyBridgeWrap> bridgeWrap(new PyBridgeWrap());
+      bridgeWrap.reset(new PyBridgeWrap());
       bridgeWrap->SetImpl(bridge);
-      globalNamespace["cpp_bridge"] = bp::object(bridgeWrap);
+      globalNamespace["cpp_bridge"] = bp::ptr(bridgeWrap.get());
     }
     else
       globalNamespace["cpp_bridge"] = bp::object();
@@ -498,6 +498,7 @@ void ScPythonInterpreter::RunScript(std::string const & scriptName, ScPythonBrid
     bp::exec("import gc\ngc.collect()", globalNamespace, globalNamespace);
 
     globalNamespace.clear();
+    SC_LOG_DEBUG("Clear python module run " + filePath);
   }
   catch (...)
   {

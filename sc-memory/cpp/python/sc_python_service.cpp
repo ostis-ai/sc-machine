@@ -28,6 +28,7 @@ void ScPythonService::Stop()
 {
   m_bridge->Close();
   m_workThread->join();
+  m_bridge.reset();
 }
 
 
