@@ -7,6 +7,8 @@
 #include <QtCore/QCoreApplication>
 #include "sctpServer.h"
 
+#include <sc-memory/cpp/utils/sc_signal_handler.hpp>
+
 int main(int argc, char *argv[])
 {
   QCoreApplication a(argc, argv);
@@ -16,6 +18,12 @@ int main(int argc, char *argv[])
     config = argv[1];
 
   sctpServer server;
+  utils::ScSignalHandler::Initialize();
+  utils::ScSignalHandler::m_onTerminate = [&server]()
+  {
+    server.stop();
+  };
+
   if (!server.start(config))
     exit(0);
 
