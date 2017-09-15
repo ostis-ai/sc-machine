@@ -14,6 +14,7 @@
 #include <glib.h>
 
 #include <random>
+#include <algorithm>
 
 namespace
 {
