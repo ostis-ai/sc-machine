@@ -109,7 +109,7 @@ void ScMemory::Shutdown(bool saveState /* = true */)
   if (ms_contexts.size() > 0)
   {
     std::stringstream description;
-    description << "There are " << ms_contexts.size() << " contexts, wan't destroyed, before Memory::shutdown:";
+    description << "There are " << ms_contexts.size() << " contexts, wasn't destroyed, before Memory::shutdown:";
     for (auto const * ctx : ms_contexts)
       description << "\t\n" << ctx->GetName();
 
