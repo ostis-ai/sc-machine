@@ -9,7 +9,7 @@
 
 #include <sc-memory/cpp/utils/sc_signal_handler.hpp>
 
-int main(int argc, char *argv[])
+int main(int argc, char *argv[]) try
 {
   QCoreApplication a(argc, argv);
 
@@ -25,9 +25,17 @@ int main(int argc, char *argv[])
   };
 
   if (!server.start(config))
-    exit(0);
+    exit(1);
 
-  QObject::connect(&a, SIGNAL(aboutToQuit()), &server, SLOT(stop()));
+  //QObject::connect(&a, SIGNAL(aboutToQuit()), &server, SLOT(stop()));
 
   return a.exec();
+}
+catch (utils::ScException const & ex)
+{
+  SC_LOG_ERROR(ex.Message());
+}
+catch (std::exception const & ex)
+{
+  SC_LOG_ERROR(ex.what());
 }
