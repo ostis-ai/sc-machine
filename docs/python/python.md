@@ -130,7 +130,7 @@ service = MyModule()
 service.Run()
 ```
 
-# Classes
+There are description of available classes with their methods:
 
 ## ScAddr
 
@@ -674,3 +674,6 @@ result = ctx.HelperSearchTemplate(templ)
 templ = ctx.HelperBuildTemplate(templAddr)
 ... # work with template
 ```
+
+
+## ScPythonBridge

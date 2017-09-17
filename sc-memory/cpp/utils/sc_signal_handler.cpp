@@ -28,14 +28,12 @@ BOOL CtrlHandler( DWORD fdwCtrlType )
     case CTRL_C_EVENT:
     // CTRL-CLOSE: confirm that the user wants to exit.
     case CTRL_CLOSE_EVENT:
+    case CTRL_BREAK_EVENT:
     {
       if (utils::ScSignalHandler::m_onTerminate)
         utils::ScSignalHandler::m_onTerminate();
       return( TRUE );
     }
-
-    case CTRL_BREAK_EVENT:
-      return FALSE;
 
     case CTRL_LOGOFF_EVENT:
     case CTRL_SHUTDOWN_EVENT:
