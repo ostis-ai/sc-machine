@@ -4,6 +4,14 @@ from scb import *
 import threading
 import json
 
+class ScEventParams:
+
+    def __init__(self, eid, addr, edge_addr, other_addr):
+        self.id = eid
+        self.addr = addr
+        self.edge_addr = edge_addr
+        self.other_addr = other_addr
+
 class ScEvent:
 
     def __init__(self, evt, callback):
@@ -25,10 +33,8 @@ class ScEventManager:
     def __init__(self, cpp):
         self.cpp = cpp
         self.events = {}
-        self.lock = threading.Lock()
 
     def CreateEventInternal(self, addr, evtType, callback):
-        self.lock.acquire()
         result = None
         try:
             evt = self.cpp.SubscribeEvent(addr, evtType)
@@ -36,21 +42,15 @@ class ScEventManager:
             self.events[evt.GetID()] = result
         except:
             pass
-        finally:
-            self.lock.release()
 
         return result
 
     def DestroyEvent(self, evt):
-        self.lock.acquire()
-
         try:
             del self.events[evt.GetID()]
             evt.evt.Destroy()
         except KeyError:
             pass
-        finally:
-            self.lock.release()
 
     def CreateEventAddOutputEdge(self, addr, callback):
         return self.CreateEventInternal(addr, ScPythonEventType.AddOutputEdge, callback)
@@ -70,22 +70,9 @@ class ScEventManager:
     def CreateEventEraseElement(self, addr, callback):
         return self.CreateEventInternal(addr, ScPythonEventType.EraseElement, callback)
 
-    def ProcessEvent(self, data):
-        self.lock.acquire()
-
+    def EmitEvent(self, evt_params):
         try:
-            data = json.loads(data)
-
-            evtID = int(data['id'])
-            addr = ScAddrFromHash(int(data['addr']))
-            edgeAddr = ScAddrFromHash(int(data['edgeAddr']))
-            otherAddr = ScAddrFromHash(int(data['otherAddr']))
-
-            # find and emit event
-            if evtID in self.events:
-                evt = self.events[evtID]
-                evt.Emit(addr, edgeAddr, otherAddr)
-        except:
-            pass
-        finally:
-            self.lock.release()
+            evt = self.events[evt_params.id]
+            evt.Emit(evt_params.addr, evt_params.edge_addr, evt_params.other_addr)
+        except KeyError:
+            print("Can't find event: {}".format(evt_params.id))

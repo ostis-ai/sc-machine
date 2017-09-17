@@ -10,9 +10,10 @@ ScPythonService::ScPythonService(std::string const & scriptName)
   m_bridge.reset(new ScPythonBridge());
 }
 
-void ScPythonService::Run()
+void ScPythonService::Run(std::string const & params)
 {
   SC_ASSERT(m_workThread.get() == nullptr, ("Can't run service twicely"));
+  m_bridge->SetInitParams(params);
 
   // Run script in a separate thread
   m_workThread.reset(new std::thread([&]
@@ -21,7 +22,7 @@ void ScPythonService::Run()
   }));
   
   // wait until bridge starts
-  m_bridge->WaitInitialize();
+  m_bridge->WaitReady();
 }
 
 void ScPythonService::Stop()
@@ -29,6 +30,11 @@ void ScPythonService::Stop()
   m_bridge->Close();
   m_workThread->join();
   m_bridge.reset();
+}
+
+bool ScPythonService::IsRun() const
+{
+  return !m_bridge->IsFinished();
 }
 
 

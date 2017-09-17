@@ -6,6 +6,7 @@
 
 #include "sc-memory/cpp/utils/sc_test.hpp"
 #include "sc-memory/cpp/python/sc_python_interp.hpp"
+#include "sc-memory/cpp/python/sc_python_service.hpp"
 
 #include "test_defines.hpp"
 
@@ -15,8 +16,13 @@ UNIT_TEST(Python_interp)
   
   SUBTEST_START("common")
   {
-    py::ScPythonBridgePtr bridge(new py::ScPythonBridge());
-    py::ScPythonInterpreter::RunScript("sc_test.py", bridge);
+    py::DummyService testService("sc_test.py");
+    testService.Run();
+
+    while (testService.IsRun())
+      std::this_thread::sleep_for(std::chrono::milliseconds(100));
+
+    testService.Stop();
   }
   SUBTEST_END()
 }
