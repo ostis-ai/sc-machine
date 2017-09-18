@@ -4,10 +4,16 @@
 * Add `ScPythonService` into C++ (allow to implement threaded python services)
 * Add `GetType` and `AsBinary` functions into Python for a link content
 * Add colors to python output
+* Add signal handler to handle `Ctrl + C`
 * Fix bug with python modules search path initialization
 * Fix bug with python threading
 * Fix bug with builder run
 * Fix bug with `ScLock`
+* Fix bug with Python interpreter shutdown
+* Fix bug with `int8_t` type support in python bindings
+* Fix bug with template generation, when pass parameter to triple with type that has no constancy flag
+* Fix errors catch during collect python modules
+* Refactoring of C++ Python bridge
 
 ## v0.4.0
 
