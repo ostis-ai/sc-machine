@@ -194,7 +194,7 @@ public:
 
   int32_t AsInt() const
   {
-    if (m_buffer->Size() == sizeof(int32_t))
+    if (m_buffer->Size() == sizeof(int8_t))
     {
       int8_t value = 0;
       m_buffer->Read(&value, sizeof(value));
@@ -230,6 +230,12 @@ public:
     double value = 0.0;
     m_buffer->Read(&value, sizeof(value));
     return value;
+  }
+
+  bp::object AsBinary() const
+  {
+    PyObject * buff = PyMemoryView_FromMemory((char*)m_buffer->Data(), m_buffer->Size(), PyBUF_READ);
+    return boost::python::object(boost::python::handle<>(buff));
   }
 
 private:
@@ -748,6 +754,7 @@ BOOST_PYTHON_MODULE(sc)
     .def("AsString", &impl::PyLinkContent::AsString)
     .def("AsInt", &impl::PyLinkContent::AsInt)
     .def("AsFloat", &impl::PyLinkContent::AsDouble)
+    .def("AsBinary", &impl::PyLinkContent::AsBinary)
     .def("GetType", &impl::PyLinkContent::GetType)
     .def_readonly("String", &impl::PyLinkContent::Type::String)
     .def_readonly("Int", &impl::PyLinkContent::Type::Int)

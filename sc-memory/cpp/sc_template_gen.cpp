@@ -167,7 +167,7 @@ public:
       ScTemplateConstr3 const & constr = m_constructions[itRepl->second / 3];
       ScType const & itemType = constr.GetValues()[itRepl->second % 3].m_typeValue;
       /// TODO: check subtype of objects. Can't replace tuple with no tuple object
-      if (!itemType.IsVar() || itemType.IsEdge())
+      if (itemType.HasConstancyFlag() && (!itemType.IsVar() || itemType.IsEdge()))
         return false;
     }
 

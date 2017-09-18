@@ -1,12 +1,14 @@
 from unittest import TestLoader, TestCase, TextTestRunner
 from datetime import datetime
 from common import *
-import struct
-
 from sc import *
+
+import asyncio
 
 sys.stdout = sys.__stdout__
 sys.stderr = sys.__stderr__
+
+module = None
 
 def MemoryCtx(name):
     return createScMemoryContext(name)
@@ -455,22 +457,16 @@ class TestEvents(TestCase):
 
     def test_events(self):
         ctx = MemoryCtx("events")
-        events = ScEventManager(cpp_bridge)
-        cpp_bridge.Initialize()
+        events = module.events
 
+        @asyncio.coroutine
         def waitTimeout(seconds, checkFunc):
             start = datetime.now()
             delta = 0
 
-            print(delta, seconds)
             while not checkFunc() and delta < seconds:
-                evt = None
-                if cpp_bridge.Exist():
-                    evt = cpp_bridge.GetRequest()
-
-                if evt and evt.IsValid():
-                    events.ProcessEvent(evt.GetData())
                 delta = (datetime.now() - start).seconds
+                asyncio.sleep(0.1)
 
         addr1 = ctx.CreateNode(ScType.NodeConst)
         addr2 = ctx.CreateNode(ScType.NodeConst)
@@ -480,6 +476,7 @@ class TestEvents(TestCase):
                 self.passed = False
             
             def onEvent(self, addr, edgeAddr, otherAddr):
+                print('onEvent')
                 self.passed = True
             
             def isPassed(self):
@@ -491,9 +488,14 @@ class TestEvents(TestCase):
         
         # emit event and wait
         edge1 = ctx.CreateEdge(ScType.EdgeAccess, addr1, addr2)
-        waitTimeout(3, check.isPassed)
+        loop = asyncio.get_event_loop()
 
-        self.assertTrue(check.isPassed)
+        try:
+            request = yield from asyncio.wait(waitTimeout(3, check.isPassed))
+        except asyncio.TimeoutError:
+            return
+
+        self.assertTrue(check.isPassed())
 
 class TestScSet(TestCase):
 
@@ -600,15 +602,35 @@ def RunTest(test):
     if not res.wasSuccessful():
         raise Exception("Unit test failed")
 
-try:
-    RunTest(TestScAddr)
-    RunTest(TestScType)
-    RunTest(TestScMemoryContext)
-    RunTest(TestEvents)
-    RunTest(TestScSet)
+class TestModule(ScModule):
+    def __init__(self):
+        ScModule.__init__(self,
+            createScMemoryContext('TestModule'),
+            cpp_bridge=__cpp_bridge__,
+            keynodes = [
+            ])
+        
+    def DoTests(self):
+        try:
+            RunTest(TestScAddr)
+            RunTest(TestScType)
+            RunTest(TestScMemoryContext)
+            RunTest(TestScSet)
+            RunTest(TestEvents)
 
-except Exception as ex:
-    raise ex
-except:
-    import sys
-    print ("Unexpected error:", sys.exc_info()[0])
+        except Exception as ex:
+            raise ex
+        except:
+            import sys
+            print ("Unexpected error:", sys.exc_info()[0])
+        finally:
+            self.loop.stop()
+
+    def OnInitialize(self, params):
+        self.loop.call_later(1, self.DoTests)
+
+    def OnShutdown(self):
+        pass
+
+module = TestModule()
+module.Run()

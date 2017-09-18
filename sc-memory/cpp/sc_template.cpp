@@ -9,12 +9,13 @@
 
 #include <algorithm>
 
-ScTemplate::ScTemplate(size_t BufferedNum)
+ScTemplate::ScTemplate(bool forceOrder /* = true */)
   : m_currentReplPos(0)
+  , m_isForceOrder(forceOrder)
   , m_isSearchCacheValid(false)
   
 {
-  m_constructions.reserve(BufferedNum);
+  m_constructions.reserve(16);
 }
 
 ScTemplate & ScTemplate::operator() (ScTemplateItemValue const & param1, ScTemplateItemValue const & param2, ScTemplateItemValue const & param3)

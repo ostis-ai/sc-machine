@@ -27,7 +27,14 @@ public:
 
   void UpdateSearchCache()
   {
-    if (!m_template.IsSearchCacheValid() && !m_template.m_constructions.empty())
+    if (m_template.m_isForceOrder)
+    {
+      ScTemplate::ProcessOrder & cache = m_template.m_searchCachedOrder;
+      cache.resize(m_template.m_constructions.size());
+      for (size_t i = 0; i < cache.size(); ++i)
+        cache[i] = i;
+    }
+    else if (!m_template.IsSearchCacheValid() && !m_template.m_constructions.empty())
     {
       // update it
       ScTemplate::ProcessOrder preCache(m_template.m_constructions.size());
@@ -148,9 +155,9 @@ public:
         cache[orderIdx++] = bestTripleIdx;
         isTripleCached[bestTripleIdx] = true;
       }
-    }
 
-    m_template.m_isSearchCacheValid = true;
+      m_template.m_isSearchCacheValid = true;
+    }
   }
 
   ScAddr const & ResolveAddr(ScTemplateItemValue const & value) const

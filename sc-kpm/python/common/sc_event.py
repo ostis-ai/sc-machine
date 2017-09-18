@@ -1,7 +1,16 @@
 from sc import *
 from scb import *
 
+import threading
 import json
+
+class ScEventParams:
+
+    def __init__(self, eid, addr, edge_addr, other_addr):
+        self.id = eid
+        self.addr = addr
+        self.edge_addr = edge_addr
+        self.other_addr = other_addr
 
 class ScEvent:
 
@@ -13,6 +22,12 @@ class ScEvent:
         if self.callback:
             self.callback(addr, edgeAddr, otherAddr)
 
+    def GetID(self):
+        return self.evt.GetID()
+
+
+'''This class is thread safe
+'''
 class ScEventManager:
 
     def __init__(self, cpp):
@@ -20,11 +35,22 @@ class ScEventManager:
         self.events = {}
 
     def CreateEventInternal(self, addr, evtType, callback):
-        evt = self.cpp.SubscribeEvent(addr, evtType)
-        result = ScEvent(evt, callback)
-        self.events[evt.GetID()] = result
+        result = None
+        try:
+            evt = self.cpp.SubscribeEvent(addr, evtType)
+            result = ScEvent(evt, callback)
+            self.events[evt.GetID()] = result
+        except:
+            pass
 
         return result
+
+    def DestroyEvent(self, evt):
+        try:
+            del self.events[evt.GetID()]
+            evt.evt.Destroy()
+        except KeyError:
+            pass
 
     def CreateEventAddOutputEdge(self, addr, callback):
         return self.CreateEventInternal(addr, ScPythonEventType.AddOutputEdge, callback)
@@ -44,16 +70,9 @@ class ScEventManager:
     def CreateEventEraseElement(self, addr, callback):
         return self.CreateEventInternal(addr, ScPythonEventType.EraseElement, callback)
 
-    def ProcessEvent(self, data):
-        data = json.loads(data)
-
-        evtID = int(data['id'])
-        addr = ScAddrFromHash(int(data['addr']))
-        edgeAddr = ScAddrFromHash(int(data['edgeAddr']))
-        otherAddr = ScAddrFromHash(int(data['otherAddr']))
-
-        # find and emit event
-        if evtID in self.events:
-            evt = self.events[evtID]
-            evt.Emit(addr, edgeAddr, otherAddr)
-
+    def EmitEvent(self, evt_params):
+        try:
+            evt = self.events[evt_params.id]
+            evt.Emit(evt_params.addr, evt_params.edge_addr, evt_params.other_addr)
+        except KeyError:
+            print("Can't find event: {}".format(evt_params.id))
