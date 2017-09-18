@@ -81,54 +81,37 @@ Then in python code use common module:
 ```python
 from common import ScModule
 
-class MyModule(ScModule):
-
-    kNrelMainIdtf = 'nrel_main_idtf'
-    kDevice = 'device'
-
+class TestModule(ScModule):
     def __init__(self):
         ScModule.__init__(self,
-            createScMemoryContext('MyModule'), keynodes=[
-                # there we can initialize keynodes that we need
-                MyModule.kNrelMainIdtf,
-                MyModule.kDevice,
-            ], cpp_bridge=cpp_bridge)
-        # cpp_bridge - is a global variable that store CPP-Python bridge object
+            createScMemoryContext('TestModule'),
+            cpp_bridge=__cpp_bridge__,
+            keynodes = [
+            ])
 
+    def DoSomething(self):
+        pass
 
-    def OnCppUpdate(self):
-        super.OnCppUpdate(self)
-        # you can overload more functions for work
-        # see more details in sc-kpm/python/common/sc_module.py
+    def OnContentChanged(self, addr, edgeAddr, otherAddr):
+        pass
 
-    def printMainIdtf(self):
-        # template to update current volume value
-        templ = ScTemplate()
-        templ.TripleWithRelation(
-            self.keynodes[self.kDevice], # get ScAddr of keynode
-            ScType.EdgeDCommonVar,
-            ScType.Link >> '_link',
-            ScType.EdgeAccessVarPosPerm,
-            self.keynodes[self.kNrelMainIdtf])
+    def OnInitialize(self, params):
+        self.loop.call_later(1, self.DoSomething) # call DoSomething function after 1 second
 
-        # self.sc_context - is a context to work with sc-memory (use just this one)
-        searchResult = self.sc_context.HelperSearchTemplate(templ)
+        # subscribe to any event
+        self.events.CreateEventContentChanged(content_addr, self.OnContentChanged)
 
-        linkAddr = None
-        if searchResult.Size() > 0:
-            # we found old value change it
-            linkAddr = searchResult[0]['_link']
-        else:
-            genResult = self.sc_context.HelperGenTemplate(templ, ScTemplateGenParams())
-            if genResult:
-                linkAddr = genResult['_link']
+    def OnShutdown(self):
+        pass
 
-        if linkAddr:
-            print(self.sc_context.GetLinkContent(linkAddr))
-
-service = MyModule()
-service.Run()
+module = TestModule()
+module.Run()
 ```
+
+Whole logic of `ScModule` based on `asyncio`. So you can use it to run your own async tasks.
+To get access to a `loop` use `self.loop`.
+
+<div class="note">Will be updated by some examples. For now see common python modules in <code>sc-kpm/python</code> for more information</div>
 
 There are description of available classes with their methods:
 
