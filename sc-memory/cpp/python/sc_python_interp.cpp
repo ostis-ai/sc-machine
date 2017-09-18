@@ -515,55 +515,49 @@ void ScPythonInterpreter::CollectModules(ModulePathSet const & modulePath)
 void ScPythonInterpreter::CollectModulesInPath(std::string const & modulePath)
 {
   boost::filesystem::path const root(modulePath);
-  try
-  {
-    boost::filesystem::recursive_directory_iterator itEnd, itPath(modulePath);
+
+  boost::filesystem::recursive_directory_iterator itEnd, itPath(modulePath);
   
-    while (itPath != itEnd)
+  while (itPath != itEnd)
+  {
+    if (!boost::filesystem::is_directory(*itPath))
     {
-      if (!boost::filesystem::is_directory(*itPath))
+      boost::filesystem::path const p = *itPath;
+      std::string filename = utils::StringUtils::ReplaceAll(boost::filesystem::relativePath(root, p).string(), "\\", "/");
+      std::string ext = utils::StringUtils::GetFileExtension(filename);
+      utils::StringUtils::ToLowerCase(ext);
+
+      if (ext == "py")
       {
-        boost::filesystem::path const p = *itPath;
-        std::string filename = utils::StringUtils::ReplaceAll(boost::filesystem::relativePath(root, p).string(), "\\", "/");
-        std::string ext = utils::StringUtils::GetFileExtension(filename);
-        utils::StringUtils::ToLowerCase(ext);
-
-        if (ext == "py")
+        auto const itModule = ms_foundModules.find(filename);
+        if (itModule != ms_foundModules.end())
         {
-          auto const itModule = ms_foundModules.find(filename);
-          if (itModule != ms_foundModules.end())
-          {
-            SC_THROW_EXCEPTION(utils::ExceptionInvalidState,
-                               "Module " << itModule->first << " already exist in " << itModule->second);
-          }
+          SC_THROW_EXCEPTION(utils::ExceptionInvalidState,
+                              "Module " << itModule->first << " already exist in " << itModule->second);
+        }
 
-          ms_foundModules.insert(std::make_pair(filename, modulePath));
-        }        
-      }
+        ms_foundModules.insert(std::make_pair(filename, modulePath));
+      }        
+    }
 
+    try
+    {
+      ++itPath;
+    }
+    catch (std::exception & ex)
+    {
+      SC_LOG_ERROR(ex.what());
+      itPath.no_push();
       try
       {
         ++itPath;
       }
-      catch (std::exception & ex)
+      catch (...)
       {
         SC_LOG_ERROR(ex.what());
-        itPath.no_push();
-        try
-        {
-          ++itPath;
-        }
-        catch (...)
-        {
-          SC_LOG_ERROR(ex.what());
-          return;
-        }
+        return;
       }
     }
-  }
-  catch (std::exception & ex)
-  {
-    SC_LOG_ERROR(ex.what());
   }
 }
 
