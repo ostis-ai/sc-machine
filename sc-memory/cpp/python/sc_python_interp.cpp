@@ -27,11 +27,11 @@ std::unordered_set<std::string> gAddedModulePaths;
 template<typename Func, typename... Args>
 void CallPythonFunction(Func & f, Args... args)
 {
-  PyGILState_STATE gstate = PyGILState_Ensure();
+  //PyGILState_STATE gstate = PyGILState_Ensure();
     
   f(args...);
   
-  PyGILState_Release(gstate);
+  //PyGILState_Release(gstate);
 }
 
 struct PyObjectWrap
@@ -243,9 +243,11 @@ public:
 
   // calls from PyScEvent to request emit it in main thread
   void EmitEvent(PyScEvent::EmitParams const & params)
-  {   
+  {
     if (m_eventDelegate)
     {
+      py::WithGIL gil;
+
       CallPythonFunction(
         m_eventDelegate,
         bp::object(params.m_id),
@@ -295,6 +297,7 @@ protected:
   // calls from c++
   void OnCloseRequest()
   {
+    py::WithGIL gil;
     if (!m_closeDelegate.is_none())
       CallPythonFunction(m_closeDelegate);
   }
