@@ -1,6 +1,8 @@
 from common.sc_keynodes import ScKeynodes
 from common.sc_exception import ScKeynodeException
 from common.sc_event import ScEventManager, ScEventParams
+from common.sc_agent import ScAgent
+
 import urllib.request
 import time, sys, traceback
 import queue
@@ -17,8 +19,6 @@ class Task:
 
 class ScModule:
 
-    
-
     def __init__(self, context,  cpp_bridge, keynodes=[]):
         self.sc_context = context
         self.keynodes = ScKeynodes(self.sc_context)
@@ -31,6 +31,8 @@ class ScModule:
 
         self.is_running = True
         self.task_queue = queue.Queue()
+
+        self.agents = [] # list of registered agents
 
     def KeynodesCheck(self, keynodes_list):
         for idtf in keynodes_list:
@@ -73,6 +75,7 @@ class ScModule:
         # notify c++ code that bridge is ready for work
         self.cpp.Ready()
 
+        ScAgent.InitGlobal(self)
         self.OnInitialize(self.cpp.InitParams())
 
     def Shutdown(self):

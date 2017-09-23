@@ -12,6 +12,7 @@ ScPythonService::ScPythonService(std::string const & scriptName)
 
 void ScPythonService::Run(std::string const & params)
 {
+  SC_LOG_LOAD("Python service " + m_scriptName);
   SC_ASSERT(m_workThread.get() == nullptr, ("Can't run service twicely"));
   m_bridge->SetInitParams(params);
 
@@ -27,6 +28,7 @@ void ScPythonService::Run(std::string const & params)
 
 void ScPythonService::Stop()
 {
+  SC_LOG_UNLOAD("Python service " + m_scriptName);
   m_bridge->Close();
   m_workThread->join();
   m_bridge.reset();

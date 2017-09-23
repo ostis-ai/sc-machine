@@ -61,4 +61,15 @@ private:
 };
 
 
+#define PYTHON_DECLARE_SERVICE(__name) \
+class __name##PythonService : public py::ScPythonService \
+{ \
+public:\
+  explicit __name##PythonService(std::string const & scriptName) \
+    : py::ScPythonService(scriptName) {} \
+private: \
+  void RunImpl() final override {} \
+  void StopImpl() final override {} \
+};
+
 }
