@@ -4,6 +4,12 @@
 #include "../sc_stream.hpp"
 #include "../sc_link.hpp"
 
+extern "C"
+{
+#include "sc-memory/sc_memory_headers.h"
+}
+
+
 namespace
 {
 namespace bp = boost::python;
@@ -705,6 +711,12 @@ bp::object ScAddrFromHash(ScAddr::HashType const value)
   return bp::object(ScAddr(value));
 }
 
+std::string GetConfigValue(std::string const & group, std::string const & key)
+{
+  char const * value = sc_config_get_value_string(group.c_str(), key.c_str());
+  return value ? std::string(value) : "";
+}
+
 } // namespace impl
 
 BOOST_PYTHON_MODULE(sc)
@@ -713,6 +725,7 @@ BOOST_PYTHON_MODULE(sc)
 
   def("createScMemoryContext", bp::make_function(&impl::_context_new, bp::return_value_policy<bp::manage_new_object>()));
   def("ScAddrFromHash", bp::make_function(&impl::ScAddrFromHash));
+  def("getScConfigValue", bp::make_function(&impl::GetConfigValue));
 
   bp::class_<ScMemoryContext, boost::noncopyable>("ScMemoryContext", bp::no_init)
     .def("CreateNode", &ScMemoryContext::CreateNode, bp::return_value_policy<bp::return_by_value>())
