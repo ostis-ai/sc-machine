@@ -3,7 +3,7 @@ from datetime import datetime
 from common import *
 from sc import *
 
-import asyncio
+import time
 
 sys.stdout = sys.__stdout__
 sys.stderr = sys.__stderr__
@@ -459,14 +459,14 @@ class TestEvents(TestCase):
         ctx = MemoryCtx("events")
         events = module.events
 
-        @asyncio.coroutine
         def waitTimeout(seconds, checkFunc):
             start = datetime.now()
             delta = 0
 
             while not checkFunc() and delta < seconds:
+                module.EmitEvents()
                 delta = (datetime.now() - start).seconds
-                asyncio.sleep(0.1)
+                time.sleep(0.1)
 
         addr1 = ctx.CreateNode(ScType.NodeConst)
         addr2 = ctx.CreateNode(ScType.NodeConst)
@@ -488,13 +488,8 @@ class TestEvents(TestCase):
         
         # emit event and wait
         edge1 = ctx.CreateEdge(ScType.EdgeAccess, addr1, addr2)
-        loop = asyncio.get_event_loop()
-
-        try:
-            request = yield from asyncio.wait(waitTimeout(3, check.isPassed))
-        except asyncio.TimeoutError:
-            return
-
+        waitTimeout(3, check.isPassed)
+        
         self.assertTrue(check.isPassed())
 
 class TestScSet(TestCase):
@@ -624,10 +619,10 @@ class TestModule(ScModule):
             import sys
             print ("Unexpected error:", sys.exc_info()[0])
         finally:
-            self.loop.stop()
+            module.Stop()
 
     def OnInitialize(self, params):
-        self.loop.call_later(1, self.DoTests)
+        self.DoTests()
 
     def OnShutdown(self):
         pass
