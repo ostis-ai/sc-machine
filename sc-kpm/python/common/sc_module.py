@@ -8,6 +8,7 @@ import time, sys, traceback
 import queue
 
 from scb import *
+from sc import *
 
 class Task:
     def __init__(self, func, *args):
@@ -19,8 +20,8 @@ class Task:
 
 class ScModule:
 
-    def __init__(self, context,  cpp_bridge, keynodes=[]):
-        self.sc_context = context
+    def __init__(self, ctx, cpp_bridge, keynodes=[]):
+        self.sc_context = ctx
         self.keynodes = ScKeynodes(self.sc_context)
         
         self.cpp = cpp_bridge
@@ -42,15 +43,18 @@ class ScModule:
 
     # --- handlers calls in main thread ---
     def HandleOnClose(self):
-        self.task_queue.put(Task(self.Stop))
+        self.CallLater(self.Stop)
 
     def HandleOnEvent(self, eid, addr, edge_addr, other_addr):
         params = ScEventParams(eid, addr, edge_addr, other_addr)
-        self.task_queue.put(Task(self.DoEmitEvent, params))
+        self.CallLater(self.DoEmitEvent, params)
 
     # --- tasks ---
     def DoEmitEvent(self, evt_params):
         self.events.EmitEvent(evt_params)
+
+    def CallLater(self, func, *args):
+        self.task_queue.put(Task(func, *args))
 
     # --- overloads ---
     def OnInitialize(self, params):

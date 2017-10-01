@@ -13,6 +13,7 @@ class ScPythonService
 
 protected:
   _SC_EXTERN explicit ScPythonService(std::string const & scriptName);
+  _SC_EXTERN ~ScPythonService();
 
 public:
   /** Run specified service. `params` string will be passed into python module initialization function.

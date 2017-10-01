@@ -10,13 +10,15 @@
 
 #include "test_defines.hpp"
 
+#include <thread>
+
 UNIT_TEST(Python_interp)
 {
-  py::ScPythonInterpreter::AddModulesPath(SC_TEST_KPM_PYTHON_PATH);
-  
   SUBTEST_START("common")
   {
-    py::DummyService testService("sc_test.py");
+    py::ScPythonInterpreter::AddModulesPath(SC_TEST_KPM_PYTHON_PATH);
+
+    py::DummyService testService("sc_tests/test_common.py");
     testService.Run();
 
     while (testService.IsRun())
@@ -25,4 +27,42 @@ UNIT_TEST(Python_interp)
     testService.Stop();
   }
   SUBTEST_END()
+}
+
+
+UNIT_TEST(Python_clean)
+{
+  py::ScPythonInterpreter::AddModulesPath(SC_TEST_KPM_PYTHON_PATH);
+
+  volatile bool passed = true;
+
+  std::vector<std::unique_ptr<std::thread>> threads;
+
+  size_t const numTests = 100;
+  threads.resize(numTests);
+  for (size_t i = 0; i < numTests; ++i) {
+    threads[i].reset(new std::thread([&passed]()
+    {
+      py::DummyService testService("sc_tests/test_dummy.py");
+      try
+      {
+        testService.Run();
+      }
+      catch (utils::ScException const & ex)
+      {
+        SC_LOG_ERROR(ex.Message());
+        passed = false;
+      }
+      catch (...)
+      {
+        SC_LOG_ERROR("Unknown error");
+        passed = false;
+      }
+    }));
+  }
+
+  for (auto const & t : threads)
+    t->join();
+  //std::this_thread::sleep_for(std::chrono::seconds(10));
+  SC_CHECK(passed, ());
 }

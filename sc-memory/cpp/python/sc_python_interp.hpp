@@ -25,7 +25,7 @@ public:
    * python.modules_path config value.
    * This function is a thread safe
    */
-  _SC_EXTERN static void RunScript(std::string const & scriptName, ScPythonBridgePtr bridge = ScPythonBridgePtr());
+  _SC_EXTERN static void RunScript(std::string const & scriptName, ScMemoryContext const & ctx, ScPythonBridgePtr bridge = ScPythonBridgePtr());
 
   _SC_EXTERN static void AddModulesPath(std::string const & modulesPath);
 

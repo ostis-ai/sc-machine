@@ -255,6 +255,11 @@ uint8_t PyLinkContent::Type::Float = 2;
 
 // ----------------------------
 
+ScMemoryContext * _context_CreateInstance(std::string const & name)
+{
+  return new ScMemoryContext(sc_access_lvl_make_min, name.c_str());
+}
+
 bp::list _context_FindLinksByContent(ScMemoryContext & self, bp::object const & content)
 {
   bp::list result;
@@ -701,11 +706,6 @@ bp::object _context_helperBuildTemplate(ScMemoryContext & self, ScAddr const & t
   return bp::object();
 }
 
-ScMemoryContext * _context_new(std::string const & name)
-{
-  return new ScMemoryContext(sc_access_lvl_make_min, name);
-}
-
 bp::object ScAddrFromHash(ScAddr::HashType const value)
 {
   return bp::object(ScAddr(value));
@@ -723,11 +723,12 @@ BOOST_PYTHON_MODULE(sc)
 {
   bp::register_exception_translator<utils::ScException>(&translateException);
 
-  def("createScMemoryContext", bp::make_function(&impl::_context_new, bp::return_value_policy<bp::manage_new_object>()));
   def("ScAddrFromHash", bp::make_function(&impl::ScAddrFromHash));
   def("getScConfigValue", bp::make_function(&impl::GetConfigValue));
 
   bp::class_<ScMemoryContext, boost::noncopyable>("ScMemoryContext", bp::no_init)
+    .def("Create", &impl::_context_CreateInstance, bp::return_value_policy<bp::manage_new_object>())
+    .staticmethod("Create")
     .def("CreateNode", &ScMemoryContext::CreateNode, bp::return_value_policy<bp::return_by_value>())
     .def("CreateEdge", &ScMemoryContext::CreateEdge)
     .def("CreateLink", &ScMemoryContext::CreateLink)
