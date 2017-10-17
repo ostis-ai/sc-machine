@@ -366,8 +366,11 @@ sc_bool sc_fs_storage_write_to_path(sc_segment **segments)
 
   if (!g_file_test(repo_path, G_FILE_TEST_IS_DIR))
   {
-    g_error("%s isn't a directory.", repo_path);
-    return SC_FALSE;
+    if (g_mkdir_with_parents(repo_path, 0) == -1)
+    {
+      g_error("Can't create a directory %s", repo_path);
+      return SC_FALSE;
+    }
   }
 
   // create temporary file
