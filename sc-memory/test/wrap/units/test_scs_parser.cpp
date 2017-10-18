@@ -95,22 +95,12 @@ UNIT_TEST(scs_parser_error)
 
   SUBTEST_START(error_1)
   {
-    bool isOk = true;
     char const * data = "a -> b;;\nc ->";
 
     scs::Parser parser(ctx);
-    try
-    {
-      parser.Parse(data);
-    }
-    catch (utils::ExceptionParseError const & e)
-    {
-      (void)e;    // unused
-      isOk = false;
-
-      SC_LOG_WARNING(e.Message());
-    }
-    SC_CHECK_NOT(isOk, ());
+    
+    SC_CHECK_NOT(parser.Parse(data), ());
+    SC_LOG_WARNING(parser.GetParseError());
   }
   SUBTEST_END()
 }
@@ -607,6 +597,120 @@ UNIT_TEST(scs_level_4)
     SC_CHECK_EQUAL(triples[0].m_edge, triples[1].m_target, ());
     SC_CHECK_EQUAL(triples[2].m_edge, triples[3].m_target, ());
     SC_CHECK_EQUAL(triples[2].m_edge, triples[4].m_target, ());
+  }
+  SUBTEST_END()
+}
+
+
+UNIT_TEST(scs_types)
+{
+  ScMemoryContext ctx(sc_access_lvl_make_min, "scs_types");
+
+  SUBTEST_START(nodes)
+  {
+    char const * data = "a -> b;;"
+      "sc_node_tuple -> a;;"
+      "sc_node_struct -> b;;"
+      "sc_node_role_relation -> c;;"
+      "c -> _d;;"
+      "sc_node_norole_relation -> _d;;"
+      "sc_node_class -> e;;"
+      "e -> f;;"
+      "sc_node_abstract -> f;;"
+      "f -> g;;"
+      "sc_node_material -> g;;";
+
+    scs::Parser parser(ctx);
+
+    SC_CHECK(parser.Parse(data), (parser.GetParseError()));
+
+    auto const & triples = parser.GetParsedTriples();
+    SC_CHECK_EQUAL(triples.size(), 4, ());
+    {
+      auto const CheckSourceNode = [&triples, &parser](size_t index, ScType type)
+      {
+        SC_CHECK(index < triples.size(), ());
+        return (parser.GetParsedElement(triples[index].m_source).GetType() == type);
+      };
+
+      auto const CheckTargetNode = [&triples, &parser](size_t index, ScType type)
+      {
+        SC_CHECK(index < triples.size(), ());
+        return (parser.GetParsedElement(triples[index].m_target).GetType() == type);
+      };
+
+      SC_CHECK(CheckSourceNode(0, ScType::NodeConstTuple), ());
+      SC_CHECK(CheckTargetNode(0, ScType::NodeConstStruct), ());
+      SC_CHECK(CheckSourceNode(1, ScType::NodeConstRole), ());
+      SC_CHECK(CheckTargetNode(1, ScType::NodeVarNoRole), ());
+      SC_CHECK(CheckSourceNode(2, ScType::NodeConstClass), ());
+      SC_CHECK(CheckTargetNode(2, ScType::NodeConstAbstract), ());
+      SC_CHECK(CheckSourceNode(3, ScType::NodeConstAbstract), ());
+      SC_CHECK(CheckTargetNode(3, ScType::NodeConstMaterial), ());
+    }
+  }
+  SUBTEST_END()
+  
+
+  SUBTEST_START(backward_compatibility)
+  {
+    char const * data = "a <- c;; a <- sc_node_not_relation;; b <- c;; b <- sc_node_not_binary_tuple;;";
+    scs::Parser parser(ctx);
+
+    SC_CHECK(parser.Parse(data), (parser.GetParseError()));
+    
+    auto const & triples = parser.GetParsedTriples();
+    SC_CHECK_EQUAL(triples.size(), 2, ());
+
+    SC_CHECK_EQUAL(parser.GetParsedElement(triples[0].m_target).GetType(), ScType::NodeConstClass, ());
+    SC_CHECK_EQUAL(parser.GetParsedElement(triples[1].m_target).GetType(), ScType::NodeConstTuple, ());
+  }
+  SUBTEST_END()
+
+  SUBTEST_START(edges)
+  {
+    char const * data = "x"
+      "> _y; <> y4; ..> y5;"
+      "<=> y7; _<=> y8; => y9; _=> y11;"
+      "-> y2; _-> y13; -|> y15; _-|> y17; -/> y19; _-/> y21;"
+      " ~> y23; _~> y25; ~|> y27; _~|> y29; ~/> y31; _~/> y33;;";
+
+    scs::Parser parser(ctx);
+
+    SC_CHECK(parser.Parse(data), (parser.GetParseError()));
+
+    auto const & triples = parser.GetParsedTriples();
+    SC_CHECK_EQUAL(triples.size(), 19, ());
+    {
+      auto const CheckEdgeType = [&triples, &parser](size_t index, ScType type) -> bool
+      {
+        SC_CHECK(index < triples.size(), ("Invalid index, check test logic please"));
+        return (parser.GetParsedElement(triples[index].m_edge).GetType() == type);
+      };
+
+      SC_CHECK(CheckEdgeType(0, ScType::EdgeDCommon), ());
+      SC_CHECK(CheckEdgeType(1, ScType::EdgeUCommon), ());
+      SC_CHECK(CheckEdgeType(2, ScType::EdgeAccess), ());
+
+      SC_CHECK(CheckEdgeType(3, ScType::EdgeUCommonConst), ());
+      SC_CHECK(CheckEdgeType(4, ScType::EdgeUCommonVar), ());
+      SC_CHECK(CheckEdgeType(5, ScType::EdgeDCommonConst), ());
+      SC_CHECK(CheckEdgeType(6, ScType::EdgeDCommonVar), ());
+
+      SC_CHECK(CheckEdgeType(7, ScType::EdgeAccessConstPosPerm), ());
+      SC_CHECK(CheckEdgeType(8, ScType::EdgeAccessVarPosPerm), ());
+      SC_CHECK(CheckEdgeType(9, ScType::EdgeAccessConstNegPerm), ());
+      SC_CHECK(CheckEdgeType(10, ScType::EdgeAccessVarNegPerm), ());
+      SC_CHECK(CheckEdgeType(11, ScType::EdgeAccessConstFuzPerm), ());
+      SC_CHECK(CheckEdgeType(12, ScType::EdgeAccessVarFuzPerm), ());
+
+      SC_CHECK(CheckEdgeType(13, ScType::EdgeAccessConstPosTemp), ());
+      SC_CHECK(CheckEdgeType(14, ScType::EdgeAccessVarPosTemp), ());
+      SC_CHECK(CheckEdgeType(15, ScType::EdgeAccessConstNegTemp), ());
+      SC_CHECK(CheckEdgeType(16, ScType::EdgeAccessVarNegTemp), ());
+      SC_CHECK(CheckEdgeType(17, ScType::EdgeAccessConstFuzTemp), ());
+      SC_CHECK(CheckEdgeType(18, ScType::EdgeAccessVarFuzTemp), ());
+    }
   }
   SUBTEST_END()
 }

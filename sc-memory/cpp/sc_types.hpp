@@ -141,7 +141,7 @@ public:
       if (!CheckMask(sc_type_constancy_mask | sc_type_node_mask | sc_type_node))
         return false;
     }
-    else
+    else if (IsEdge())
     {
       if (!CheckMask(sc_type_arc_common | sc_type_constancy_mask))
         return false;
@@ -206,6 +206,14 @@ public:
 
   static ScType const LinkConst;
   static ScType const LinkVar;
+
+  static ScType const NodeStruct;
+  static ScType const NodeTuple;
+  static ScType const NodeRole;
+  static ScType const NodeNoRole;
+  static ScType const NodeClass;
+  static ScType const NodeAbstract;
+  static ScType const NodeMaterial;
                 
   static ScType const NodeConstStruct;
   static ScType const NodeConstTuple;

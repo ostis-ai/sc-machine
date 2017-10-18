@@ -219,25 +219,53 @@ bool Parser::Parse(std::string const & str)
   scsParser parser(&tokenStream);
 
   parser.setParser(this);
-  parser.syntax();
+  try
+  {
+    parser.syntax();
+  }
+  catch (utils::ExceptionParseError const & e)
+  {
+    m_lastError = e.Message();
+    result = false;
+  } 
 
   return result;
 }
 
-ParsedElement const & Parser::GetParsedElement(ElementHandle const & elId) const
+ParsedElement & Parser::GetParsedElementRef(ElementHandle const & elID)
 {
-  auto & container = (elId.IsLocal() ? m_parsedElementsLocal : m_parsedElements);
+  auto & container = (elID.IsLocal() ? m_parsedElementsLocal : m_parsedElements);
 
-  if (*elId >= container.size())
+  if (*elID >= container.size())
+  {
     SC_THROW_EXCEPTION(utils::ExceptionItemNotFound,
-    std::string("ElementId{") + std::to_string(*elId) + ", " + std::to_string(elId.IsLocal()) + "}");
+                       std::string("ElementId{") + std::to_string(*elID) + ", " + std::to_string(elID.IsLocal()) + "}");
+  }
 
-  return container[*elId];
+  return container[*elID];
+}
+
+ParsedElement const & Parser::GetParsedElement(ElementHandle const & elID) const
+{
+  auto & container = (elID.IsLocal() ? m_parsedElementsLocal : m_parsedElements);
+
+  if (*elID >= container.size())
+  {
+    SC_THROW_EXCEPTION(utils::ExceptionItemNotFound,
+                       std::string("ElementId{") + std::to_string(*elID) + ", " + std::to_string(elID.IsLocal()) + "}");
+  }
+
+  return container[*elID];
 }
 
 Parser::TripleVector const & Parser::GetParsedTriples() const
 {
   return m_parsedTriples;
+}
+
+std::string const & Parser::GetParseError() const
+{
+  return m_lastError;
 }
 
 std::string Parser::GenerateEdgeIdtf()
@@ -280,7 +308,8 @@ ElementHandle Parser::ProcessIdentifier(std::string const & name)
 {
   // resolve type of sc-element
   SC_ASSERT(!IsLevel1Idtf(name), ());
-  return AppendElement(name);
+  ScType const type = TypeResolver::IsConst(name) ? ScType::NodeConst : ScType::NodeVar;
+  return AppendElement(name, type);
 }
 
 ElementHandle Parser::ProcessIdentifierLevel1(std::string const & type, std::string const & name)
@@ -302,13 +331,32 @@ void Parser::ProcessTriple(ElementHandle const & source, ElementHandle const & e
 {
   ParsedElement const & edgeEl = GetParsedElement(edge);
   SC_ASSERT(edgeEl.GetType().IsEdge(), ("edge has invalid type"));
+
+  auto addEdge = [this, &edgeEl](ElementHandle const & src, ElementHandle const & e, ElementHandle const & trg)
+  {
+    ParsedElement const & srcEl = GetParsedElement(src);
+    std::string const & idtf = srcEl.GetIdtf();
+    if (edgeEl.GetType() == ScType::EdgeAccessConstPosPerm && scs::TypeResolver::IsKeynodeType(idtf))
+    {
+      ParsedElement & targetEl = GetParsedElementRef(trg);
+      ScType const newType = targetEl.m_type | scs::TypeResolver::GetKeynodeType(idtf);
+
+      if (targetEl.m_type.CanExtendTo(newType))
+        targetEl.m_type = newType;
+    }
+    else
+    {
+      m_parsedTriples.emplace_back(ParsedTriple(src, e, trg));
+    }
+  }; 
+
   if (edgeEl.IsReversed())
   {
-    m_parsedTriples.emplace_back(ParsedTriple(target, edge, source));
+    addEdge(target, edge, source);
   }
   else
   {
-    m_parsedTriples.emplace_back(ParsedTriple(source, edge, target));
+    addEdge(source, edge, target);
   }    
 }
 

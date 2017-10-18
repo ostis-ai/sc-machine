@@ -50,16 +50,28 @@ TypeResolver::MapType TypeResolver::ms_connectorToType(
 });
 
 TypeResolver::MapType TypeResolver::ms_keynodeToType({
-  {"sc_node",         ScType::Node},
-  {"sc_link",         ScType::Link},
-  {"sc_arc_common",   ScType::EdgeDCommon},
-  {"sc_edge_dcommon", ScType::EdgeDCommon},
-  {"sc_edge",         ScType::EdgeUCommon},
-  {"sc_edge_ucommon", ScType::EdgeUCommon},
-  {"sc_arc_main",     ScType::EdgeAccessConstPosPerm},
-  {"sc_edge_main",    ScType::EdgeAccessConstPosPerm},
-  {"sc_arc_access",   ScType::EdgeAccess},
-  {"sc_edge_access",  ScType::EdgeAccess}
+  {"sc_node",                   ScType::Node},
+  {"sc_link",                   ScType::Link},
+  {"sc_arc_common",             ScType::EdgeDCommon},
+  {"sc_edge_dcommon",           ScType::EdgeDCommon},
+  {"sc_edge",                   ScType::EdgeUCommon},
+  {"sc_edge_ucommon",           ScType::EdgeUCommon},
+  {"sc_arc_main",               ScType::EdgeAccessConstPosPerm},
+  {"sc_edge_main",              ScType::EdgeAccessConstPosPerm},
+  {"sc_arc_access",             ScType::EdgeAccess},
+  {"sc_edge_access",            ScType::EdgeAccess},
+
+  {"sc_node_tuple",             ScType::NodeTuple},
+  {"sc_node_struct",            ScType::NodeStruct},
+  {"sc_node_role_relation",     ScType::NodeRole}, 
+  {"sc_node_norole_relation",   ScType::NodeNoRole},
+  {"sc_node_class",             ScType::NodeClass},
+  {"sc_node_abstract",          ScType::NodeAbstract},
+  {"sc_node_material",          ScType::NodeMaterial},
+
+  // backward compatibility
+  {"sc_node_not_relation",      ScType::NodeClass},
+  {"sc_node_not_binary_tuple",  ScType::NodeTuple}
 });
 
 TypeResolver::IsType TypeResolver::ms_reversedConnectors(
@@ -107,6 +119,11 @@ bool TypeResolver::IsConst(std::string const & idtf)
 bool TypeResolver::IsEdgeAttrConst(std::string const & attr)
 {
   return (attr == ":");
+}
+
+bool TypeResolver::IsKeynodeType(std::string const & alias)
+{
+  return (ms_keynodeToType.find(alias) != ms_keynodeToType.end());
 }
 
 }
