@@ -8,7 +8,7 @@
 
 extern "C"
 {
-#include "sc-memory/sc_memory.h"
+#include "../sc-memory/sc_memory.h"
 }
 
 #include <string>
@@ -58,7 +58,11 @@ public:
   inline bool IsLink() const { return (m_realType & sc_type_link) != 0; }
   inline bool IsConst() const { return (m_realType & sc_type_const) != 0; }
   inline bool IsVar() const { return (m_realType & sc_type_var) != 0; }
-  inline bool IsValid() const { return (m_realType != 0); }
+
+  SC_DEPRECATED(0.4.0, "Use !IsUnknown() instead")
+  inline bool IsValid() const { return !IsUnknown(); }
+
+  inline bool IsUnknown() const { return (m_realType == 0); }
 
   inline bool HasConstancyFlag() const { return (m_realType & sc_type_constancy_mask) != 0; }
 
@@ -101,6 +105,66 @@ public:
   }
 
   operator RealType () const { return m_realType; }
+
+  /* Check if specified type can be extended by another one to be a valid type/
+   * For example this function returns false, if you try to extend node by
+   * edge type, or const by var and etc.
+   */
+  inline bool CanExtendTo(ScType const & extType) const
+  {
+    RealType const selfSemType = m_realType & sc_type_element_mask;
+    RealType const extSemType = extType.m_realType & sc_type_element_mask;
+
+    // check semantic type
+    if (selfSemType != 0 && selfSemType != extSemType)
+      return false;
+
+    // check constancy
+    RealType const selfConstType = m_realType & sc_type_constancy_mask;
+    RealType const extConstType = extType.m_realType & sc_type_constancy_mask;
+
+    if (selfConstType != 0 && selfConstType != extConstType)
+      return false;
+
+    auto const CheckMask = [&extType](RealType const & mask)
+    {
+      return !(extType.m_realType != (extType.m_realType & mask));
+    };
+
+    if (IsLink())
+    {
+      if (!CheckMask(sc_type_constancy_mask | sc_type_link))
+        return false;
+    }
+    else if (IsNode())
+    {
+      if (!CheckMask(sc_type_constancy_mask | sc_type_node_mask | sc_type_node))
+        return false;
+    }
+    else
+    {
+      if (!CheckMask(sc_type_arc_common | sc_type_constancy_mask))
+        return false;
+
+      if (!CheckMask(sc_type_arc_access | sc_type_constancy_mask | sc_type_positivity_mask | sc_type_permanency_mask))
+        return false;
+
+      if (!CheckMask(sc_type_edge_common))
+        return false;
+
+      RealType const selfPermType = m_realType & sc_type_permanency_mask;
+      RealType const extPermType = extType.m_realType & sc_type_permanency_mask;
+      if (selfPermType != 0 && selfPermType != extPermType)
+        return false;
+
+      RealType const selfPosType = m_realType & sc_type_positivity_mask;
+      RealType const extPosType = extType.m_realType & sc_type_positivity_mask;
+      if (selfPosType != 0 && selfPosType != extPosType)
+        return false;
+    }
+
+    return true;
+  }
 
 private:
   RealType m_realType;

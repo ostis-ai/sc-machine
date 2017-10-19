@@ -183,7 +183,7 @@ protected:
       addrToObjectIndex[objHash] = m_objects.size();
 
       ScType const objType = m_context.GetElementType(objAddr);
-      if (!objType.IsValid())
+      if (objType.IsUnknown())
         return false; // template corrupted
 
       std::string objIdtf = m_context.HelperGetSystemIdtf(objAddr);

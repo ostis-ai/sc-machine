@@ -78,11 +78,11 @@ class TestScType(TestCase):
     def test_is_valid(self):
         type1 = ScType.Node
 
-        self.assertTrue(type1.IsValid())
+        self.assertFalse(type1.IsUnknown())
 
         type2 = ScType()
 
-        self.assertFalse(type2.IsValid())
+        self.assertTrue(type2.IsUnknown())
 
     def test_is_func(self):
 

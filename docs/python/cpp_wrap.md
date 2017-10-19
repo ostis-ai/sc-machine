@@ -95,13 +95,13 @@ type1.IsNode() # returns True
 
 ---
 
-- `IsValid()` - if type is not `Unknown`, then returns `True`; otherwise - `False`
+- `IsUnknown()` - if type is not `Unknown`, then returns `True`; otherwise - `False`
 ```python
 type1 = ScType.Node
-type1.IsValid() # return True
+type1.IsUnknown() # return True
 
 type2 = ScType()
-type2.IsValid() # return False
+type2.IsUnknown() # return False
 ```
 
 ---

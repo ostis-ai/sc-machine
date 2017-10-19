@@ -105,7 +105,7 @@ Visibility const ParsedElement::GetVisibility() const
 
 ScType const & ParsedElement::GetType() const
 {
-  if (m_type.IsValid())
+  if (!m_type.IsUnknown())
     return m_type;
 
   static ScType defConst = ScType::NodeConst;
