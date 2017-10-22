@@ -123,6 +123,7 @@ private:
                               std::string const & value = "");
 
   std::string GenerateEdgeIdtf();
+  std::string GenerateLinkIdtf();
    
 private:
   class ScMemoryContext & m_memoryCtx;
@@ -134,7 +135,7 @@ private:
 
   std::string m_lastError;
 
-  uint32_t m_edgeCounter;
+  uint32_t m_idtfCounter;
 };
 
 }

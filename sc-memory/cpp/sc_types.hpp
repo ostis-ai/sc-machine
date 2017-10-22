@@ -140,6 +140,11 @@ public:
     {
       if (!CheckMask(sc_type_constancy_mask | sc_type_node_mask | sc_type_node))
         return false;
+
+      RealType const selfNodeType = m_realType & sc_type_node_mask;
+      RealType const extNodeType = extType.m_realType & sc_type_node_mask;
+      if (selfNodeType != 0 && selfNodeType != extNodeType)
+        return false;
     }
     else if (IsEdge())
     {

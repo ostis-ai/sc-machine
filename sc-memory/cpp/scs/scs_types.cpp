@@ -107,11 +107,10 @@ bool TypeResolver::IsConst(std::string const & idtf)
 {
   SC_ASSERT(!idtf.empty(), ());
 
+  size_t const n = idtf.size() - 1;
   size_t i = 0;
-  while (idtf[i] == '.')
+  while ((idtf[i] == '.') && (i < n))
     ++i;
-
-  SC_ASSERT(i < idtf.size(), ());
 
   return (idtf[i] != '_');
 }
@@ -124,6 +123,11 @@ bool TypeResolver::IsEdgeAttrConst(std::string const & attr)
 bool TypeResolver::IsKeynodeType(std::string const & alias)
 {
   return (ms_keynodeToType.find(alias) != ms_keynodeToType.end());
+}
+
+bool TypeResolver::IsUnnamed(std::string const & alias)
+{
+  return (alias == "...");
 }
 
 }

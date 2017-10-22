@@ -147,8 +147,8 @@ public:
   _SC_EXTERN static void ToLowerCase(std::string & str);
   _SC_EXTERN static void ToUpperCase(std::string & str);
 
-  _SC_EXTERN static bool StartsWith(std::string const & str, std::string const & pattern, bool lowerCase);
-  _SC_EXTERN static bool EndsWith(std::string const & str, std::string const & pattern, bool lowerCase);
+  _SC_EXTERN static bool StartsWith(std::string const & str, std::string const & pattern, bool lowerCase = true);
+  _SC_EXTERN static bool EndsWith(std::string const & str, std::string const & pattern, bool lowerCase = true);
 
   _SC_EXTERN static void SplitFilename(std::string const & qualifiedName, std::string & outBasename, std::string & outPath);
   _SC_EXTERN static void SplitString(std::string const & str, char delim, StringVector & outList);

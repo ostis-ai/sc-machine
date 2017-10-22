@@ -206,6 +206,7 @@ UNIT_TEST(ScType)
     SC_CHECK(ScType::Unknown.CanExtendTo(ScType::EdgeDCommon), ());
 
     SC_CHECK_NOT(ScType::Node.CanExtendTo(ScType::EdgeAccess), ());
+    SC_CHECK_NOT(ScType::NodeAbstract.CanExtendTo(ScType::NodeConstMaterial), ());
     SC_CHECK_NOT(ScType::Link.CanExtendTo(ScType::Node), ());
     SC_CHECK_NOT(ScType::EdgeAccess.CanExtendTo(ScType::EdgeDCommon), ());
     SC_CHECK_NOT(ScType::EdgeAccess.CanExtendTo(ScType::EdgeUCommon), ());

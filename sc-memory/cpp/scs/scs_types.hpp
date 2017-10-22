@@ -22,6 +22,7 @@ public:
   _SC_EXTERN static bool IsConst(std::string const & idtf);
   _SC_EXTERN static bool IsEdgeAttrConst(std::string const & attr);
   _SC_EXTERN static bool IsKeynodeType(std::string const & alias);
+  _SC_EXTERN static bool IsUnnamed(std::string const & alias);
 
 private:
   using MapType = std::unordered_map<std::string, ScType>;

@@ -448,3 +448,8 @@ bool ScMemoryContext::HelperBuildTemplate(ScTemplate & templ, ScAddr const & tem
 {
   return templ.FromScTemplate(*this, templAddr);
 }
+
+bool ScMemoryContext::HelperBuildTemplate(ScTemplate & templ, std::string const & scsText)
+{
+  return templ.FromScs(*this, scsText);
+}

@@ -196,7 +196,7 @@ ElementHandle & ElementHandle::operator = (ElementHandle const & other)
 
 Parser::Parser(class ScMemoryContext & ctx)
   : m_memoryCtx(ctx)
-  , m_edgeCounter(0)
+  , m_idtfCounter(0)
 {
   m_parsedElements.reserve(PARSED_PREALLOC_NUM);
   m_parsedElementsLocal.reserve(PARSED_PREALLOC_NUM);
@@ -270,7 +270,12 @@ std::string const & Parser::GetParseError() const
 
 std::string Parser::GenerateEdgeIdtf()
 {
-  return std::string("..connector_") + std::to_string(m_edgeCounter++);
+  return std::string("..connector_") + std::to_string(m_idtfCounter++);
+}
+
+std::string Parser::GenerateLinkIdtf()
+{
+  return std::string("..link_") + std::to_string(m_idtfCounter++);
 }
 
 ElementHandle Parser::AppendElement(std::string const & idtf,
@@ -342,7 +347,14 @@ void Parser::ProcessTriple(ElementHandle const & source, ElementHandle const & e
       ScType const newType = targetEl.m_type | scs::TypeResolver::GetKeynodeType(idtf);
 
       if (targetEl.m_type.CanExtendTo(newType))
+      {
         targetEl.m_type = newType;
+      }
+      else
+      {
+        SC_THROW_EXCEPTION(utils::ExceptionParseError,
+                           "Can't merge types for element " + targetEl.GetIdtf());
+      }
     }
     else
     {
@@ -370,15 +382,24 @@ ElementHandle Parser::ProcessConnector(std::string const & connector)
 
 ElementHandle Parser::ProcessContent(std::string const & content)
 {
-  ScType type;
-  // TODO: parse content _[], [], [**], _[**]
+  SC_CHECK(content.size() > 0, ());
+
+  ScType type = utils::StringUtils::StartsWith(content, "_", true) ? ScType::Var : ScType::Const;
+  if (utils::StringUtils::StartsWith(content, "[*") || utils::StringUtils::StartsWith(content, "_[*"))
+  {
+    type |= ScType::NodeStruct;
+  }
+  else if (utils::StringUtils::StartsWith(content, "[") || utils::StringUtils::StartsWith(content, "_["))
+  {
+    type |= ScType::Link;
+  }
   
-  return AppendElement("...", type, false, content);
+  return AppendElement(GenerateLinkIdtf(), type, false, content);
 }
 
 ElementHandle Parser::ProcessLink(std::string const & link)
 {
-  return AppendElement("...", ScType::Link, false, link);
+  return AppendElement(GenerateLinkIdtf(), ScType::Link, false, link);
 }
 
 }

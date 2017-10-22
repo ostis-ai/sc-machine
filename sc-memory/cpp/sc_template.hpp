@@ -269,6 +269,7 @@ class ScTemplate final
   friend class ScTemplateSearch;
   friend class ScTemplateGenerator;
   friend class ScTemplateBuilder;
+  friend class ScTemplateBuilderFromScs;
 
 public:
   ScTemplate(ScTemplate const & other) = delete;
@@ -289,6 +290,7 @@ public:
                                       ScTemplateItemValue const & param4, ScTemplateItemValue const & param5);
 
   _SC_EXTERN void Clear();
+  _SC_EXTERN bool IsEmpty() const;
 
   bool IsSearchCacheValid() const;
 
@@ -322,6 +324,7 @@ protected:
 
   // Builds template based on template in sc-memory
   bool FromScTemplate(ScMemoryContext & ctx, ScAddr const & scTemplateAddr);
+  bool FromScs(ScMemoryContext & ctx, std::string const & scsText);
   // End: calls by memory context
 
 private:

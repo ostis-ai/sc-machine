@@ -38,6 +38,11 @@ void ScTemplate::Clear()
   m_isSearchCacheValid = false;
 }
 
+bool ScTemplate::IsEmpty() const
+{
+  return m_constructions.empty();
+}
+
 bool ScTemplate::IsSearchCacheValid() const
 {
   return (m_isSearchCacheValid && (m_searchCachedOrder.size() == m_constructions.size()));

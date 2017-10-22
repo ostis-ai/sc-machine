@@ -651,6 +651,27 @@ UNIT_TEST(scs_types)
   }
   SUBTEST_END()
   
+  SUBTEST_START(links)
+  {
+    char const * data =
+      "a -> \"file://data.txt\";;"
+      "b -> [x];;"
+      "c -> _[];;"
+      "d -> [];;";
+    scs::Parser parser(ctx);
+
+    SC_CHECK(parser.Parse(data), (parser.GetParseError()));
+
+    auto const & triples = parser.GetParsedTriples();
+    
+    SC_CHECK_EQUAL(triples.size(), 4, ());
+
+    SC_CHECK_EQUAL(parser.GetParsedElement(triples[0].m_target).GetType(), ScType::Link, ());
+    SC_CHECK_EQUAL(parser.GetParsedElement(triples[1].m_target).GetType(), ScType::LinkConst, ());
+    SC_CHECK_EQUAL(parser.GetParsedElement(triples[2].m_target).GetType(), ScType::LinkVar, ());
+    SC_CHECK_EQUAL(parser.GetParsedElement(triples[3].m_target).GetType(), ScType::LinkConst, ());
+  }
+  SUBTEST_END()
 
   SUBTEST_START(backward_compatibility)
   {
@@ -711,6 +732,15 @@ UNIT_TEST(scs_types)
       SC_CHECK(CheckEdgeType(17, ScType::EdgeAccessConstFuzTemp), ());
       SC_CHECK(CheckEdgeType(18, ScType::EdgeAccessVarFuzTemp), ());
     }
+  }
+  SUBTEST_END()
+
+  SUBTEST_START(type_error)
+  {
+    char const * data = "a <- sc_node_abstract;; a <- sc_node_role_relation;;";
+
+    scs::Parser parser(ctx);
+    SC_CHECK_NOT(parser.Parse(data), ());
   }
   SUBTEST_END()
 }
