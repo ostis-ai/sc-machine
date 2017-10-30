@@ -1346,6 +1346,45 @@ UNIT_TEST(template_search_some_relations)
   SUBTEST_END()
 }
 
+UNIT_TEST(template_one_edge_inclusion)
+{
+  ScMemoryContext ctx(sc_access_lvl_make_min, "template_one_edge_inclusion");
+  
+  /* In case:
+      a -> b (* <- sc_node_material;; *);;
+      a -> c;;
+
+      We should get just one seach result, edge `a -> c` shouldn't appears twicely
+   */
+
+  ScAddr const a = ctx.CreateNode(ScType::Node);
+  SC_CHECK(a.IsValid(), ());
+
+  ScTemplate templ;
+
+  templ.Triple(
+    a >> "a",
+    ScType::EdgeAccessVarPosPerm,
+    ScType::NodeVarMaterial >> "b");
+
+  templ.Triple(
+    "a",
+    ScType::EdgeAccessVarPosPerm,
+    ScType::NodeVar >> "c");
+
+  ScTemplateGenResult genResult;
+  SC_CHECK(ctx.HelperGenTemplate(templ, genResult), ());
+  SC_CHECK_EQUAL(a, genResult["a"], ());
+
+  ScTemplateSearchResult searchResult;
+  SC_CHECK(ctx.HelperSearchTemplate(templ, searchResult), ());
+  SC_CHECK_EQUAL(searchResult.Size(), 1, ());
+
+  SC_CHECK_EQUAL(searchResult[0]["a"], genResult["a"], ());
+  SC_CHECK_EQUAL(searchResult[0]["b"], genResult["b"], ());
+  SC_CHECK_EQUAL(searchResult[0]["c"], genResult["c"], ());
+}
+
 UNIT_TEST(scs_templates)
 {
   ScMemoryContext ctx(sc_access_lvl_make_min, "scs_templates");
