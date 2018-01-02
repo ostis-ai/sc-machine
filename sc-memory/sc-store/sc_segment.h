@@ -41,7 +41,7 @@ struct _sc_segment
  */
 sc_segment* sc_segment_new(sc_addr_seg num);
 
-//! Need to be called after segment data loaded. This function update all meta info that need to coorect work (sections empty offsets, and others)
+//! Need to be called after segment data loaded. This function update all meta info that need to correct work (sections empty offsets, and others)
 void sc_segment_loaded(sc_segment * seg);
 
 void sc_segment_free(sc_segment *segment);
