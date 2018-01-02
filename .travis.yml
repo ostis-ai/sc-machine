@@ -7,6 +7,9 @@ git:
 sudo: required
 dist: trusty
 
+# https://blog.travis-ci.com/2017-12-12-new-trusty-images-q4-launch
+group: deprecated-2017Q4
+
 notifications:
   email: false
 
