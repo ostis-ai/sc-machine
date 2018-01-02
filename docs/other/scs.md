@@ -395,3 +395,62 @@ a -> c: d: b;
 ### SCs level 5
 
 ### SCs level 6
+
+### Keynodes
+
+There are a list of element type keynodes, that can be used to specify type of an element:
+
+| Keynode                   | Equal sc-type |
+| ------------------------- | ------------- |
+| sc_node                   | ScType::Node  |
+| sc_link                   | ScType::Link  |
+| sc_edge_dcommon           | ScType::EdgeDCommon |
+| sc_edge_ucommon           | ScType::EdgeUCommon |
+| sc_edge_main              | ScType::EdgeAccessConstPosPerm |
+| sc_arc_access             | ScType::EdgeAccess |
+| sc_edge_access            | ScType::EdgeAccess |
+| sc_node_tuple             | ScType::NodeTuple |
+| sc_node_struct            | ScType::NodeStruct |
+| sc_node_role_relation     | ScType::NodeRole |
+| sc_node_norole_relation   | ScType::NodeNoRole |
+| sc_node_class             | ScType::NodeClass |
+| sc_node_abstract          | ScType::NodeAbstract |
+| sc_node_material          | ScType::NodeMaterial |
+
+There are old keynodes, that used for backward compatibility:
+
+| Keynode                   | Equal sc-type | New keynode |
+| ------------------------- | ------------- | ----------- |
+| sc_arc_main               | ScType::EdgeAccessConstPosPerm | sc_edge_main |
+| sc_edge                   | ScType::EdgeUCommon | sc_edge_ucommon |
+| sc_arc_common             | ScType::EdgeDCommon | sc_edge_dcommon |
+| sc_node_not_relation      | ScType::NodeClass | sc_node_class |
+| sc_node_not_binary_tuple  | ScType::NodeTuple | sc_node_tuple |
+
+There is an example of usage:
+
+<table>
+  <tr>
+    <th>SCs-code</th>
+    <th>Equal SCg-code</th>
+  </tr>
+  <tr>
+    <td>
+      <pre>
+a <- sc_node_class;;
+a _-> _b;;
+_b <- sc_node_material;;
+      </pre>
+    </td>
+    <td><scg src="../images/scs_keynodes_old_example_1.gwf"></scg></td>
+  </tr>
+  <tr>
+    <td>
+      <pre>
+_x => nrel_y: t;;
+nrel_y <- sc_node_norole_relation;;
+      </pre>
+    </td>
+    <td><scg src="../images/scs_keynodes_old_example_2.gwf"></scg></td>
+  </tr>
+</table>

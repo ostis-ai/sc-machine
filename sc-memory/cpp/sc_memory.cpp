@@ -362,7 +362,7 @@ ScAddr ScMemoryContext::HelperResolveSystemIdtf(std::string const & sysIdtf, ScT
 {
   SC_ASSERT(IsValid(), ());
   ScAddr resultAddr = HelperFindBySystemIdtf(sysIdtf);
-  if (!resultAddr.IsValid() && type.IsValid())
+  if (!resultAddr.IsValid() && !type.IsUnknown())
   {
     if (!type.IsNode())
     {
@@ -447,4 +447,9 @@ bool ScMemoryContext::HelperSearchTemplateInStruct(ScTemplate const & templ, ScA
 bool ScMemoryContext::HelperBuildTemplate(ScTemplate & templ, ScAddr const & templAddr)
 {
   return templ.FromScTemplate(*this, templAddr);
+}
+
+bool ScMemoryContext::HelperBuildTemplate(ScTemplate & templ, std::string const & scsText)
+{
+  return templ.FromScs(*this, scsText);
 }

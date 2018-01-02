@@ -3,15 +3,15 @@ from datetime import datetime
 from common import *
 from sc import *
 
-import asyncio
+import sys, time
 
 sys.stdout = sys.__stdout__
 sys.stderr = sys.__stderr__
 
 module = None
 
-def MemoryCtx(name):
-    return createScMemoryContext(name)
+def MemoryCtx():
+    return __ctx__
 
 def CreateNodeWithIdtf(ctx, _type, _idtf):
     addr = ctx.CreateNode(_type)
@@ -28,7 +28,7 @@ class TestScAddr(TestCase):
         
         self.assertEqual(addr1, addr2)
 
-        ctx = MemoryCtx("test")
+        ctx = MemoryCtx()
         addr2 = ctx.CreateNode(ScType.Unknown)
 
         self.assertNotEqual(addr1, addr2)
@@ -38,7 +38,7 @@ class TestScAddr(TestCase):
 
         self.assertFalse(addr1.IsValid())
 
-        ctx = MemoryCtx("test")
+        ctx = MemoryCtx()
         addr2 = ctx.CreateNode(ScType.Const)
 
         self.assertTrue(addr2.IsValid())
@@ -48,7 +48,7 @@ class TestScAddr(TestCase):
 
         self.assertEqual(addr1.ToInt(), 0)
 
-        ctx = MemoryCtx("test")
+        ctx = MemoryCtx()
         addr2 = ctx.CreateNode(ScType.Const)
 
         self.assertNotEqual(addr2.ToInt(), 0)
@@ -78,11 +78,11 @@ class TestScType(TestCase):
     def test_is_valid(self):
         type1 = ScType.Node
 
-        self.assertTrue(type1.IsValid())
+        self.assertFalse(type1.IsUnknown())
 
         type2 = ScType()
 
-        self.assertFalse(type2.IsValid())
+        self.assertTrue(type2.IsUnknown())
 
     def test_is_func(self):
 
@@ -112,7 +112,7 @@ class TestScType(TestCase):
 class TestScMemoryContext(TestCase):
 
     def test_create(self):
-        ctx = MemoryCtx("test")
+        ctx = MemoryCtx()
 
         addr1 = ctx.CreateNode(ScType.Const)
         self.assertTrue(addr1.IsValid())
@@ -126,15 +126,8 @@ class TestScMemoryContext(TestCase):
         edge2 = ctx.CreateEdge(ScType.EdgeAccessConstPosPerm, addr2, ScAddr())
         self.assertFalse(edge2.IsValid())
 
-    def test_name(self):
-        ctx = MemoryCtx("test_name")
-        self.assertEqual("test_name", ctx.GetName())
-
-        ctx = MemoryCtx("test_name2")
-        self.assertEqual("test_name2", ctx.GetName())
-
     def test_is_element(self):
-        ctx = MemoryCtx("test")
+        ctx = MemoryCtx()
 
         self.assertFalse(ctx.IsElement(ScAddr()))
 
@@ -142,7 +135,7 @@ class TestScMemoryContext(TestCase):
         self.assertTrue(ctx.IsElement(addr1))
 
     def test_get_element_type(self):
-        ctx = MemoryCtx("test")
+        ctx = MemoryCtx()
 
         self.assertEqual(ctx.GetElementType(ScAddr()), ScType.Unknown)
 
@@ -150,7 +143,7 @@ class TestScMemoryContext(TestCase):
         self.assertEqual(ctx.GetElementType(addr1), ScType.NodeConst)
 
     def test_get_edge_info(self):
-        ctx = MemoryCtx("test")
+        ctx = MemoryCtx()
 
         addr1 = ctx.CreateNode(ScType())
         self.assertTrue(addr1.IsValid())
@@ -170,7 +163,7 @@ class TestScMemoryContext(TestCase):
         self.assertEqual(trg, None)
 
     def test_find_links_by_content(self):
-        ctx = MemoryCtx("test_find_links_by_content")
+        ctx = MemoryCtx()
 
         def createLink(content):
             addr = ctx.CreateLink()
@@ -200,7 +193,7 @@ class TestScMemoryContext(TestCase):
         self.assertEqual(len(res3), 0)
 
     def test_link_content(self):
-        ctx = MemoryCtx("test")
+        ctx = MemoryCtx()
 
         addr1 = ctx.CreateLink()
         self.assertTrue(addr1.IsValid())
@@ -235,7 +228,7 @@ class TestScMemoryContext(TestCase):
 
     def test_iterator3(self):
 
-        ctx = MemoryCtx("test")
+        ctx = MemoryCtx()
         addr1 = ctx.CreateNode(ScType.NodeConst)
         self.assertTrue(addr1.IsValid())
 
@@ -271,7 +264,7 @@ class TestScMemoryContext(TestCase):
         self.assertFalse(it3.Next())
 
     def test_iterator5(self):
-        ctx = MemoryCtx("test")
+        ctx = MemoryCtx()
 
         addr1 = ctx.CreateNode(ScType.NodeConst)
         self.assertTrue(addr1.IsValid())
@@ -353,7 +346,7 @@ class TestScMemoryContext(TestCase):
         test_common(itAAFAA)
 
     def test_helper_sys_idtf(self):
-        ctx = MemoryCtx("test")       
+        ctx = MemoryCtx()
 
         addr1 = ctx.HelperResolveSystemIdtf("sc_result", None)
         self.assertTrue(addr1.IsValid())
@@ -379,7 +372,7 @@ class TestScMemoryContext(TestCase):
         self.assertEqual(ctx.HelperGetSystemIdtf(addr2), "idtf_1_2_test")
 
     def test_helper_has_edge(self):
-        ctx = MemoryCtx("test")
+        ctx = MemoryCtx()
 
         addr1 = ctx.CreateNode(ScType.NodeConst)
         self.assertTrue(addr1.IsValid())
@@ -392,7 +385,7 @@ class TestScMemoryContext(TestCase):
         self.assertTrue(ctx.HelperCheckEdge(addr1, addr2, ScType.EdgeAccessConstPosPerm))
 
     def test_helper_template(self):
-        ctx = MemoryCtx("test")
+        ctx = MemoryCtx()
 
         addr1 = ctx.CreateNode(ScType.NodeConst)
         self.assertTrue(addr1.IsValid())
@@ -443,7 +436,7 @@ class TestScMemoryContext(TestCase):
         self.assertTrue(type(templ) is ScTemplate)
 
     def test_rshift(self):
-        ctx = MemoryCtx("test")
+        ctx = MemoryCtx()
 
         addr1 = ctx.CreateNode(ScType.NodeConst)
         
@@ -456,17 +449,17 @@ class TestScMemoryContext(TestCase):
 class TestEvents(TestCase):
 
     def test_events(self):
-        ctx = MemoryCtx("events")
+        ctx = MemoryCtx()
         events = module.events
 
-        @asyncio.coroutine
         def waitTimeout(seconds, checkFunc):
             start = datetime.now()
             delta = 0
 
             while not checkFunc() and delta < seconds:
+                module.EmitEvents()
                 delta = (datetime.now() - start).seconds
-                asyncio.sleep(0.1)
+                time.sleep(0.1)
 
         addr1 = ctx.CreateNode(ScType.NodeConst)
         addr2 = ctx.CreateNode(ScType.NodeConst)
@@ -475,7 +468,7 @@ class TestEvents(TestCase):
             def __init__(self):
                 self.passed = False
             
-            def onEvent(self, addr, edgeAddr, otherAddr):
+            def onEvent(self, evt_params):
                 print('onEvent')
                 self.passed = True
             
@@ -488,19 +481,14 @@ class TestEvents(TestCase):
         
         # emit event and wait
         edge1 = ctx.CreateEdge(ScType.EdgeAccess, addr1, addr2)
-        loop = asyncio.get_event_loop()
-
-        try:
-            request = yield from asyncio.wait(waitTimeout(3, check.isPassed))
-        except asyncio.TimeoutError:
-            return
-
+        waitTimeout(3, check.isPassed)
+        
         self.assertTrue(check.isPassed())
 
 class TestScSet(TestCase):
 
     def test_sc_set(self):
-        ctx = MemoryCtx("ScSet")
+        ctx = MemoryCtx()
 
         addr1 = ctx.CreateNode(ScType.NodeConst)
         addr2 = ctx.CreateNode(ScType.Node)
@@ -526,7 +514,7 @@ class TestScSet(TestCase):
         self.assertTrue(_set.Has(addr2))
 
     def test_sc_set_clear(self):
-        ctx = MemoryCtx("ScSet")
+        ctx = MemoryCtx()
 
         addrSet = ctx.CreateNode(ScType.Node)
         addr1 = ctx.CreateNode(ScType.NodeConst)
@@ -545,7 +533,7 @@ class TestScSet(TestCase):
             self.assertFalse(_set.Has(el))
 
     def test_sc_set_iter(self):
-        ctx = MemoryCtx("ScSet")
+        ctx = MemoryCtx()
 
         addrSet = ctx.CreateNode(ScType.Node)
         addr1 = ctx.CreateNode(ScType.NodeConst)
@@ -566,7 +554,7 @@ class TestScSet(TestCase):
         self.assertEqual(count, len(elements))
 
     def test_sc_set_relation(self):
-        ctx = MemoryCtx("ScSet")
+        ctx = MemoryCtx()
 
         addrSet = ctx.CreateNode(ScType.Node)
         relAddr = ctx.CreateNode(ScType.NodeConstNoRole)
@@ -605,7 +593,7 @@ def RunTest(test):
 class TestModule(ScModule):
     def __init__(self):
         ScModule.__init__(self,
-            createScMemoryContext('TestModule'),
+            ctx=__ctx__,
             cpp_bridge=__cpp_bridge__,
             keynodes = [
             ])
@@ -624,10 +612,10 @@ class TestModule(ScModule):
             import sys
             print ("Unexpected error:", sys.exc_info()[0])
         finally:
-            self.loop.stop()
+            module.Stop()
 
     def OnInitialize(self, params):
-        self.loop.call_later(1, self.DoTests)
+        self.DoTests()
 
     def OnShutdown(self):
         pass

@@ -130,7 +130,7 @@ typedef sc_uint16 sc_type;
 #define sc_type_constancy_mask   (sc_type)(sc_type_const | sc_type_var)
 #define sc_type_positivity_mask  (sc_type)(sc_type_arc_pos | sc_type_arc_neg | sc_type_arc_fuz)
 #define sc_type_permanency_mask  (sc_type)(sc_type_arc_perm | sc_type_arc_temp)
-#define sc_type_node_struct_mask (sc_type)(sc_type_node_tuple | sc_type_node_struct | sc_type_node_role | sc_type_node_norole | sc_type_node_class | sc_type_node_abstract | sc_type_node_material)
+#define sc_type_node_mask        (sc_type)(sc_type_node_tuple | sc_type_node_struct | sc_type_node_role | sc_type_node_norole | sc_type_node_class | sc_type_node_abstract | sc_type_node_material)
 #define sc_type_arc_mask         (sc_type)(sc_type_arc_access | sc_type_arc_common | sc_type_edge_common)
 
 // just for internal usage

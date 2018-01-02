@@ -15,7 +15,6 @@ ScPythonBridge::ScPythonBridge()
 {
 }
 
-
 bool ScPythonBridge::WaitReady(uint32_t timeOutMS/* = 10000*/)
 {
   return m_initWait.Wait(timeOutMS);
@@ -35,10 +34,29 @@ bool ScPythonBridge::IsFinished() const
   return m_isFinished;
 }
 
+bool ScPythonBridge::TryClose()
+{
+  std::lock_guard<std::mutex> lock(m_lock);
+
+  if (!m_isFinished)
+  {
+    m_isInitialized = false;
+    m_isFinished = true;
+
+    if (m_closeDelegate)
+      m_closeDelegate();
+
+    return true;
+  }
+
+  return false;
+}
+
 void ScPythonBridge::Close()
 {
   std::lock_guard<std::mutex> lock(m_lock);
   m_isInitialized = false;
+  m_isFinished = true;
 
   if (m_closeDelegate)
     m_closeDelegate();
@@ -56,6 +74,7 @@ void ScPythonBridge::PythonFinish()
 {
   std::lock_guard<std::mutex> lock(m_lock);
 
+  m_closeDelegate = CloseFunc();
   m_isFinished = true;
 }
 

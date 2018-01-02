@@ -9,7 +9,9 @@
 
 #include <boost/program_options.hpp>
 
-int main(int argc, char *argv[])
+#include "sc-memory/cpp/sc_debug.hpp"
+
+int main(int argc, char *argv[]) try
 {
 
   boost::program_options::options_description options_description("Builder usage");
@@ -64,4 +66,8 @@ int main(int argc, char *argv[])
   builder.run(params);
 
   return builder.hasErrors() ? EXIT_SUCCESS : EXIT_FAILURE;
+}
+catch (utils::ScException const & ex)
+{
+  SC_LOG_ERROR(ex.Message());
 }

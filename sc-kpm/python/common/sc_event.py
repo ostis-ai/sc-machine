@@ -18,9 +18,9 @@ class ScEvent:
         self.evt = evt  # pointer to ScPythonEvent
         self.callback = callback
 
-    def Emit(self, addr, edgeAddr, otherAddr):
+    def Emit(self, evt):
         if self.callback:
-            self.callback(addr, edgeAddr, otherAddr)
+            self.callback(evt)
 
     def GetID(self):
         return self.evt.GetID()
@@ -73,6 +73,6 @@ class ScEventManager:
     def EmitEvent(self, evt_params):
         try:
             evt = self.events[evt_params.id]
-            evt.Emit(evt_params.addr, evt_params.edge_addr, evt_params.other_addr)
+            evt.Emit(evt_params)
         except KeyError:
             print("Can't find event: {}".format(evt_params.id))

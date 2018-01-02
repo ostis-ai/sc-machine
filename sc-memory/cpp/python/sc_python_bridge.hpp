@@ -29,6 +29,9 @@ public:
   bool WaitReady(uint32_t timeOutMS = 10000);
   bool IsInitialized() const;
   bool IsFinished() const;
+
+  // Trying to close bridge, and if it closed by this call, then returns true
+  bool TryClose();
   void Close();
 
   void SetInitParams(std::string const & params);

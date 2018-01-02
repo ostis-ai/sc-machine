@@ -13,6 +13,7 @@ class ScPythonService
 
 protected:
   _SC_EXTERN explicit ScPythonService(std::string const & scriptName);
+  _SC_EXTERN ~ScPythonService();
 
 public:
   /** Run specified service. `params` string will be passed into python module initialization function.
@@ -60,5 +61,16 @@ private:
   void StopImpl() override {}
 };
 
+
+#define PYTHON_DECLARE_SERVICE(__name) \
+class __name##PythonService : public py::ScPythonService \
+{ \
+public:\
+  explicit __name##PythonService(std::string const & scriptName) \
+    : py::ScPythonService(scriptName) {} \
+private: \
+  void RunImpl() final override {} \
+  void StopImpl() final override {} \
+};
 
 }

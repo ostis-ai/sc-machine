@@ -351,6 +351,10 @@ public:
                                        ScAddr const & addr2,
                                        ScAddr const & addr3)
     {
+      auto const res = m_usedEdges.insert(addr2);
+      if (!res.second) // don't iterate the same edge twicely
+        return;
+
       // do not make cycle for optimization issues (remove comparsion expresion)
       m_resultAddrs[resultIdx] = addr1;
       m_resultAddrs[resultIdx + 1] = addr2;
@@ -372,6 +376,8 @@ public:
       UnrefReplacement(values[0]);
       UnrefReplacement(values[1]);
       UnrefReplacement(values[2]);
+
+      m_usedEdges.erase(res.first);
     });
   }
 
@@ -400,6 +406,9 @@ private:
 
   using StructCache = std::unordered_set<ScAddr, ScAddrHashFunc<uint32_t>>;
   StructCache m_structCache;
+
+  using UsedEdges = std::set<ScAddr, ScAddLessFunc>;
+  UsedEdges m_usedEdges;
 
   ScAddrVector m_resultAddrs;
   using ReplRefs = std::vector<uint32_t>;

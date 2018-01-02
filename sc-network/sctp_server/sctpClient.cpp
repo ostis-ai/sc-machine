@@ -73,7 +73,8 @@ void sctpClient::processCommands()
     {
       qDebug() << "Error: " << errCode << "; while process request from client " << mSocket->peerAddress().toString();
       sctpStatistic::getInstance()->commandProcessed(true);
-    }else
+    }
+    else
     {
       sctpStatistic::getInstance()->commandProcessed(false);
     }

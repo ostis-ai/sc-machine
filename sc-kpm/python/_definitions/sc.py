@@ -107,6 +107,10 @@ class ScType:
     NodeVarMaterial = 41
 
 class ScMemoryContext:
+    @staticmethod
+    def Create(self, name):
+        return ScMemoryContext()
+
     def CreateNode(self, nodeType):
         return ScAddr()
 

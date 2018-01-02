@@ -21,7 +21,10 @@ pages:
     - Agents: cpp/kpm.md
     - Template: cpp/templates.md
     - Common: cpp/common.md
-    - Python: python/python.md
+    - Python:
+      - Common: python/python.md
+      - Library: python/library.md
+      - Wrapped classes: python/cpp_wrap.md
   - Common:
     - Element types: cpp/el_types.md
     - Configuration files: other/config.md
@@ -31,7 +34,8 @@ pages:
   - Changelog: changelog.md
   - Thirdparty: thirdparty.md
 
-theme: readthedocs
+theme: material
 
 markdown_extensions:
   - markdown_include.include
+  - codehilite

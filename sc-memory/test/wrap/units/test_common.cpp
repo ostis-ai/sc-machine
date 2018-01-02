@@ -94,3 +94,127 @@ UNIT_TEST(ScAddr)
   }
   SUBTEST_END()
 }
+
+UNIT_TEST(ScType)
+{
+  SUBTEST_START(nodes)
+  {
+    SC_CHECK(ScType::Node.IsNode(), ());
+
+    SC_CHECK(ScType::NodeConst.IsNode(), ());
+    SC_CHECK(ScType::NodeConstAbstract.IsNode(), ());
+    SC_CHECK(ScType::NodeConstClass.IsNode(), ());
+    SC_CHECK(ScType::NodeConstMaterial.IsNode(), ());
+    SC_CHECK(ScType::NodeConstNoRole.IsNode(), ());
+    SC_CHECK(ScType::NodeConstRole.IsNode(), ());
+    SC_CHECK(ScType::NodeConstStruct.IsNode(), ());
+    SC_CHECK(ScType::NodeConstTuple.IsNode(), ());
+
+    SC_CHECK(ScType::NodeVar.IsNode(), ());
+    SC_CHECK(ScType::NodeVarAbstract.IsNode(), ());
+    SC_CHECK(ScType::NodeVarClass.IsNode(), ());
+    SC_CHECK(ScType::NodeVarMaterial.IsNode(), ());
+    SC_CHECK(ScType::NodeVarNoRole.IsNode(), ());
+    SC_CHECK(ScType::NodeVarRole.IsNode(), ());
+    SC_CHECK(ScType::NodeVarStruct.IsNode(), ());
+    SC_CHECK(ScType::NodeVarTuple.IsNode(), ());
+  }
+  SUBTEST_END()
+
+  SUBTEST_START(constancy)
+  {
+    SC_CHECK_NOT(ScType::Node.IsConst(), ());
+    SC_CHECK_NOT(ScType::Node.IsVar(), ());
+
+    SC_CHECK(ScType::LinkConst.IsConst(), ());
+
+    SC_CHECK(ScType::NodeConst.IsConst(), ());
+    SC_CHECK(ScType::NodeConstAbstract.IsConst(), ());
+    SC_CHECK(ScType::NodeConstClass.IsConst(), ());
+    SC_CHECK(ScType::NodeConstMaterial.IsConst(), ());
+    SC_CHECK(ScType::NodeConstNoRole.IsConst(), ());
+    SC_CHECK(ScType::NodeConstRole.IsConst(), ());
+    SC_CHECK(ScType::NodeConstStruct.IsConst(), ());
+    SC_CHECK(ScType::NodeConstTuple.IsConst(), ());
+    SC_CHECK(ScType::EdgeDCommonConst.IsConst(), ());
+    SC_CHECK(ScType::EdgeUCommonConst.IsConst(), ());
+    SC_CHECK(ScType::EdgeAccessConstFuzPerm.IsConst(), ());
+    SC_CHECK(ScType::EdgeAccessConstFuzTemp.IsConst(), ());
+    SC_CHECK(ScType::EdgeAccessConstNegPerm.IsConst(), ());
+    SC_CHECK(ScType::EdgeAccessConstNegTemp.IsConst(), ());
+    SC_CHECK(ScType::EdgeAccessConstPosPerm.IsConst(), ());
+    SC_CHECK(ScType::EdgeAccessConstPosTemp.IsConst(), ());
+
+    SC_CHECK(ScType::NodeVar.IsVar(), ());
+    SC_CHECK(ScType::LinkVar.IsVar(), ());
+    SC_CHECK(ScType::NodeVarAbstract.IsVar(), ());
+    SC_CHECK(ScType::NodeVarClass.IsVar(), ());
+    SC_CHECK(ScType::NodeVarMaterial.IsVar(), ());
+    SC_CHECK(ScType::NodeVarNoRole.IsVar(), ());
+    SC_CHECK(ScType::NodeVarRole.IsVar(), ());
+    SC_CHECK(ScType::NodeVarStruct.IsVar(), ());
+    SC_CHECK(ScType::NodeVarTuple.IsVar(), ());
+    SC_CHECK(ScType::EdgeDCommonVar.IsVar(), ());
+    SC_CHECK(ScType::EdgeUCommonVar.IsVar(), ());
+    SC_CHECK(ScType::EdgeAccessVarFuzPerm.IsVar(), ());
+    SC_CHECK(ScType::EdgeAccessVarFuzTemp.IsVar(), ());
+    SC_CHECK(ScType::EdgeAccessVarNegPerm.IsVar(), ());
+    SC_CHECK(ScType::EdgeAccessVarNegTemp.IsVar(), ());
+    SC_CHECK(ScType::EdgeAccessVarPosPerm.IsVar(), ());
+    SC_CHECK(ScType::EdgeAccessVarPosTemp.IsVar(), ());
+  }
+  SUBTEST_END()
+
+  SUBTEST_START(edges)
+  {
+    SC_CHECK(ScType::EdgeAccess.IsEdge(), ());
+    SC_CHECK(ScType::EdgeAccessConstFuzPerm.IsEdge(), ());
+    SC_CHECK(ScType::EdgeAccessConstFuzTemp.IsEdge(), ());
+    SC_CHECK(ScType::EdgeAccessConstNegPerm.IsEdge(), ());
+    SC_CHECK(ScType::EdgeAccessConstNegTemp.IsEdge(), ());
+    SC_CHECK(ScType::EdgeAccessConstPosPerm.IsEdge(), ());
+    SC_CHECK(ScType::EdgeAccessConstPosTemp.IsEdge(), ());
+    SC_CHECK(ScType::EdgeAccessVarFuzPerm.IsEdge(), ());
+    SC_CHECK(ScType::EdgeAccessVarFuzTemp.IsEdge(), ());
+    SC_CHECK(ScType::EdgeAccessVarNegPerm.IsEdge(), ());
+    SC_CHECK(ScType::EdgeAccessVarNegTemp.IsEdge(), ());
+    SC_CHECK(ScType::EdgeAccessVarPosPerm.IsEdge(), ());
+    SC_CHECK(ScType::EdgeAccessVarPosTemp.IsEdge(), ());
+    SC_CHECK(ScType::EdgeDCommon.IsEdge(), ());
+    SC_CHECK(ScType::EdgeDCommonConst.IsEdge(), ());
+    SC_CHECK(ScType::EdgeDCommonVar.IsEdge(), ());
+    SC_CHECK(ScType::EdgeUCommon.IsEdge(), ());
+    SC_CHECK(ScType::EdgeUCommonConst.IsEdge(), ());
+    SC_CHECK(ScType::EdgeUCommonVar.IsEdge(), ());
+  }
+  SUBTEST_END()
+
+  SUBTEST_START(extend)
+  {
+    SC_CHECK(ScType::Node.CanExtendTo(ScType::Node), ());
+    SC_CHECK(ScType::Node.CanExtendTo(ScType::NodeConst), ());
+    SC_CHECK(ScType::Node.CanExtendTo(ScType::NodeVar), ());
+    SC_CHECK(ScType::Node.CanExtendTo(ScType::NodeMaterial), ());
+    SC_CHECK(ScType::Node.CanExtendTo(ScType::NodeConstMaterial), ());
+
+    SC_CHECK(ScType::Unknown.CanExtendTo(ScType::Node), ());
+    SC_CHECK(ScType::Unknown.CanExtendTo(ScType::NodeConst), ());
+    SC_CHECK(ScType::Unknown.CanExtendTo(ScType::EdgeAccessConstFuzPerm), ());
+    SC_CHECK(ScType::Unknown.CanExtendTo(ScType::Link), ());
+    SC_CHECK(ScType::Unknown.CanExtendTo(ScType::EdgeAccess), ());
+    SC_CHECK(ScType::Unknown.CanExtendTo(ScType::EdgeUCommon), ());
+    SC_CHECK(ScType::Unknown.CanExtendTo(ScType::EdgeDCommon), ());
+
+    SC_CHECK_NOT(ScType::Node.CanExtendTo(ScType::EdgeAccess), ());
+    SC_CHECK_NOT(ScType::NodeAbstract.CanExtendTo(ScType::NodeConstMaterial), ());
+    SC_CHECK_NOT(ScType::Link.CanExtendTo(ScType::Node), ());
+    SC_CHECK_NOT(ScType::EdgeAccess.CanExtendTo(ScType::EdgeDCommon), ());
+    SC_CHECK_NOT(ScType::EdgeAccess.CanExtendTo(ScType::EdgeUCommon), ());
+    SC_CHECK_NOT(ScType::EdgeAccess.CanExtendTo(ScType::Link), ());
+    SC_CHECK_NOT(ScType::Const.CanExtendTo(ScType::Var), ());
+    SC_CHECK_NOT(ScType::EdgeAccessConstFuzPerm.CanExtendTo(ScType::EdgeAccessConstFuzTemp), ());
+    SC_CHECK_NOT(ScType::EdgeAccessConstFuzPerm.CanExtendTo(ScType::EdgeAccessConstNegPerm), ());
+    SC_CHECK_NOT(ScType::EdgeAccessConstFuzPerm.CanExtendTo(ScType::EdgeAccessVarFuzPerm), ());
+  }
+  SUBTEST_END()
+}

@@ -1,3 +1,31 @@
+## v0.5.0
+
+- **Build system**:
+    - Add Visual Studio 2017 support
+
+- **Core**:
+    - Fix bug with repository save (case when it output directory doesn't exist)
+
+- **C++**:
+    - Fix bugs in python GIL work
+    - Fix python threading
+    - Fix problem with twicely pass of edge in template search
+    - Improve `ScType` class
+    - Add types support in SCs-parser
+    - Add keynode cache
+    - Add `ScTemplate` build from SCs-text
+
+- **Python**:
+    - Add `ScAgent` class
+    - Improve custom main cycle in `ScModule`
+    - Improve python testing
+
+- **Tools**:
+    - Fix error handling in sc-builder
+
+- **Common**
+    - Update documentation theme
+
 ## v0.4.1
 
 * Add `ScSet` and `ScRelationSet` in python common library

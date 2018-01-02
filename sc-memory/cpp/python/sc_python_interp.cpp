@@ -27,11 +27,8 @@ std::unordered_set<std::string> gAddedModulePaths;
 template<typename Func, typename... Args>
 void CallPythonFunction(Func & f, Args... args)
 {
-  PyGILState_STATE gstate = PyGILState_Ensure();
-    
+  py::WithGIL gil;
   f(args...);
-  
-  PyGILState_Release(gstate);
 }
 
 struct PyObjectWrap
@@ -243,7 +240,7 @@ public:
 
   // calls from PyScEvent to request emit it in main thread
   void EmitEvent(PyScEvent::EmitParams const & params)
-  {   
+  {
     if (m_eventDelegate)
     {
       CallPythonFunction(
@@ -295,6 +292,7 @@ protected:
   // calls from c++
   void OnCloseRequest()
   {
+    py::WithGIL gil;
     if (!m_closeDelegate.is_none())
       CallPythonFunction(m_closeDelegate);
   }
@@ -428,11 +426,12 @@ void ScPythonInterpreter::Shutdown()
   gMainThread = nullptr;
 
   ms_modulePaths.clear();
+  ms_foundModules.clear();
   
   ms_isInitialized = false;
 }
 
-void ScPythonInterpreter::RunScript(std::string const & scriptName, ScPythonBridgePtr bridge /* = nullptr */)
+void ScPythonInterpreter::RunScript(std::string const & scriptName, ScMemoryContext const & ctx, ScPythonBridgePtr bridge /* = nullptr */)
 {
   ScPythonSubThread subThreadScope;
 
@@ -460,7 +459,6 @@ void ScPythonInterpreter::RunScript(std::string const & scriptName, ScPythonBrid
   //PyEvalLock lock;
   bp::object mainModule((bp::handle<>(bp::borrowed(PyImport_AddModule("__main__")))));
   bp::object mainNamespace = mainModule.attr("__dict__");
-   
   try
   {
     bp::dict globalNamespace;
@@ -484,6 +482,8 @@ void ScPythonInterpreter::RunScript(std::string const & scriptName, ScPythonBrid
     }
     else
       globalNamespace["__cpp_bridge__"] = bp::object();
+    
+    globalNamespace["__ctx__"] = bp::ptr(&ctx);
 
     bp::object resultObj(bp::exec_file(filePath.c_str(), globalNamespace, globalNamespace));  
     bp::exec("import gc\ngc.collect()", globalNamespace, globalNamespace);

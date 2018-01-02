@@ -1,16 +1,27 @@
 from common.sc_keynodes import ScKeynodes
 from common.sc_exception import ScKeynodeException
 from common.sc_event import ScEventManager, ScEventParams
+from common.sc_agent import ScAgent
+
 import urllib.request
-import asyncio
 import time, sys, traceback
+import queue
 
 from scb import *
+from sc import *
+
+class Task:
+    def __init__(self, func, *args):
+        self.func = func
+        self.args = args
+
+    def do(self):
+        self.func(*self.args)
 
 class ScModule:
 
-    def __init__(self, context,  cpp_bridge, keynodes=[]):
-        self.sc_context = context
+    def __init__(self, ctx, cpp_bridge, keynodes=[]):
+        self.sc_context = ctx
         self.keynodes = ScKeynodes(self.sc_context)
         
         self.cpp = cpp_bridge
@@ -19,8 +30,10 @@ class ScModule:
         self.events = ScEventManager(self.cpp)
         self.KeynodesCheck(keynodes)
 
-        self.loop = asyncio.SelectorEventLoop()
-        asyncio.set_event_loop(self.loop)
+        self.is_running = True
+        self.task_queue = queue.Queue()
+
+        self.agents = [] # list of registered agents
 
     def KeynodesCheck(self, keynodes_list):
         for idtf in keynodes_list:
@@ -30,18 +43,18 @@ class ScModule:
 
     # --- handlers calls in main thread ---
     def HandleOnClose(self):
-        self.loop.call_soon_threadsafe(self.DoLoopStop)
+        self.CallLater(self.Stop)
 
     def HandleOnEvent(self, eid, addr, edge_addr, other_addr):
         params = ScEventParams(eid, addr, edge_addr, other_addr)
-        self.loop.call_soon_threadsafe(self.DoEmitEvent, params)
+        self.CallLater(self.DoEmitEvent, params)
 
-    # --- tasks that ---
-    def DoLoopStop(self):
-        self.loop.stop()
-
+    # --- tasks ---
     def DoEmitEvent(self, evt_params):
         self.events.EmitEvent(evt_params)
+
+    def CallLater(self, func, *args):
+        self.task_queue.put(Task(func, *args))
 
     # --- overloads ---
     def OnInitialize(self, params):
@@ -50,8 +63,14 @@ class ScModule:
         """
         pass
 
+    def OnUpdate(self):
+        pass
+
     def OnShutdown(self):
         pass
+
+    def Stop(self):
+        self.is_running = False
 
     # --- common state functions ---
     def Initialize(self):
@@ -60,6 +79,7 @@ class ScModule:
         # notify c++ code that bridge is ready for work
         self.cpp.Ready()
 
+        ScAgent.InitGlobal(self)
         self.OnInitialize(self.cpp.InitParams())
 
     def Shutdown(self):
@@ -68,11 +88,21 @@ class ScModule:
         self.cpp.onEvent = None
         self.cpp.Finish()
 
+    def EmitEvents(self):
+        try:
+            task = self.task_queue.get(block=True, timeout=0.01)
+            task.do()
+        except queue.Empty:
+            pass
+
     def Run(self):
         if self.cpp:
             # wait until cpp bridge will be initialized
             self.Initialize()
-            self.loop.run_forever()
+            while self.is_running:
+                self.EmitEvents()
+                self.OnUpdate()
+
             self.Shutdown()
 
     # Set of usefull functions
