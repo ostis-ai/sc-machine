@@ -74,7 +74,7 @@ Where `type` - is an element type specification. It can be one of possible value
   </tr>
 
   <tr>
-    <td><img src="../../images/scs/scs_example_level_1.png"></img></td>
+    <td><scg src="../../images/scs/scs_example_level_1.gwf"></scg></td>
     <td>
       <pre>
         <code class="js hljs javascript">
@@ -88,7 +88,7 @@ sc_node#fruit | sc_edge_main#... | sc_node#banana;;
   </tr>
 
   <tr>
-    <td width="50%"><img src="../../images/scs/scs_example_level_1_2.png"></img></td>
+    <td width="50%"><scg src="../../images/scs/scs_example_level_1_2.gwf"></scg></td>
     <td>
       <pre>
         <code class="js hljs javascript">
@@ -210,7 +210,7 @@ Where `<edge>` can be on of values:
   </tr>
 
   <tr>
-    <td><img src="../../images/scs/scs_example_level_1.png"></img></td>
+    <td><scg src="../../images/scs/scs_example_level_1.gwf"></scg></td>
     <td>
       <pre>
         <code class="js hljs javascript">
@@ -238,7 +238,7 @@ So that allows to simplify usage of an edge as a source or target of another one
   </tr>
 
   <tr>
-    <td width="50%"><img src="../../images/scs/scs_example_level_1_2.png"></img></td>
+    <td width="50%"><scg src="../../images/scs/scs_example_level_1_2.gwf"></scg></td>
     <td>
       <pre>
         <code class="js hljs javascript">
@@ -249,7 +249,7 @@ nrel_image -> (fruit => "file://apple.png");;
   </tr>
 
   <tr>
-    <td><img src="../../images/scs/scs_example_level_2.png"></img></td>
+    <td><scg src="../../images/scs/scs_example_level_2.gwf"></scg></td>
     <td>
       <pre>
         <code class="js hljs javascript">
@@ -260,7 +260,7 @@ d -> (c -> (a -> b));;
   </tr>
 
   <tr>
-    <td><img src="../../images/scs/scs_example_level_2_2.png"></img></td>
+    <td><scg src="../../images/scs/scs_example_level_2_2.gwf"></scg></td>
     <td>
       <pre>
         <code class="js hljs javascript">
@@ -275,7 +275,8 @@ d -> (c -> (a -> b));;
 ### SCs level 3
 
 This level of SCs-text allows to minimize symbols to represent constructions like this one:
-![SCg-example](../images/scs/scs_example_level_3.png)
+<scg src="../../images/scs/scs_example_level_3.gwf"></scg>
+
 ```js
 c -> (a -> b);;
 ```
@@ -313,7 +314,7 @@ c _-> (a -> b);;
   </tr>
 
   <tr>
-    <td><img src="../../images/scs/scs_example_level_1_2.png"></img></td>
+    <td><scg src="../../images/scs/scs_example_level_1_2.gwf"></scg></td>
     <td>
       <pre>
         <code class="js hljs javascript">
@@ -324,7 +325,7 @@ apple => nrel_image: "file://apple.png";;
   </tr>
 
   <tr>
-    <td><img src="../../images/scs/scs_example_level_3_2.png"></img></td>
+    <td><scg src="../../images/scs/scs_example_level_3_2.gwf"></scg></td>
     <td>
       <div class="note">
         <b>Note</b>: it is possible to use any number of <code>:</code>, <code>::</code> in one sentence.
@@ -367,7 +368,7 @@ Another words, this level of SCs text, allows to use source element one time.
   </tr>
 
   <tr>
-    <td><img src="../../images/scs/scs_example_level_1.png"></img></td>
+    <td><scg src="../../images/scs/scs_example_level_1.gwf"></scg></td>
     <td>
       <pre>
         <code class="js hljs javascript">
@@ -379,7 +380,7 @@ fruit -> apple;
   <tr>
 
   <tr>
-    <td><img src="../../images/scs/scs_example_level_4.png"></img></td>
+    <td><scg src="../../images/scs/scs_example_level_4.gwf"></scg></td>
     <td>
       <pre>
         <code class="js hljs javascript">
