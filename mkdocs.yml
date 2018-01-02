@@ -34,7 +34,8 @@ pages:
   - Changelog: changelog.md
   - Thirdparty: thirdparty.md
 
-theme: readthedocs
+theme: material
 
 markdown_extensions:
   - markdown_include.include
+  - codehilite

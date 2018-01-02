@@ -111,7 +111,6 @@ templ.Triple(
   "_device_instance"
 );
 ```
-
 In code you can see a construction `ScType::NODE_VAR >> "_device_instance"` - this is a naming for a template element. It allows to set name for a specified sc-element in template, and use it many times in different triples. You can see, that in the second triple we use this name `"_device_instance"`. That means, that we need to place search result from a first triple into the second. So the second triple is a `f_a_f` style triple.
 
 So if you want to use the same element `_x` in different triples, and you doesn't know it `ScAddr`, then just use two main rules:
@@ -133,6 +132,21 @@ templ.Triple(
   ScType::NODE_VAR  // type of unknown sc-element
 );
 ```
+
+Also you can generate templates using [SCs-code](/other/scs.md). Example code:
+
+```cpp
+ScTemplate templ; 
+char const * data = 
+  "_device_instance"
+  "  _<- device;"
+  "  _<- device_enabled;;";
+ctx.HelperBuildTemplate(templ, data);
+```
+
+During template building all constants will be resolved by their system identifier (in example: `device`, `device_enabled`), so in result `templ` will be contain template:
+
+![Template example](../images/templates/template_example_2.png)
 
 ## Search
 Search algorithm trying to find all possible variants of specified construction.

@@ -44,9 +44,6 @@
   background-color: #a3c69f !important;
   border: 1px solid #70936C;
   color: #444;
+  padding: 2px;
 }
 
-.note code {
-  background-color: #BDE0B9 !important;
-  border: none;
-}

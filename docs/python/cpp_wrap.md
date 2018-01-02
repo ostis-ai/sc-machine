@@ -1,3 +1,10 @@
+## Global
+
+- `getScConfigValue` - function that returns value from a sc-memory config file.
+```python
+configValue = getScConfigValue('group', 'value')
+```
+
 ## ScAddr
 
 This class represents `ScAddr` in C++. Methods of this class:
@@ -231,7 +238,7 @@ binaryValue = content.AsFloat()
 ```
 
 <div class="note">
-Object content should be alive until memory used
+Object <code>content</code> should be alive until memory used
 </div>
 
 ---
