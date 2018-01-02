@@ -131,7 +131,7 @@ namespace nl
 If sc-agent finished work without any errors, then it must return `SC_RESULT_OK`, otherwise - one of code error `SC_RESULT_ERROR_...`.
 Result of agent will be automaticaly added into specified set:
 
-![Example of succesfully finished command](images/sc_result_ok_example.png)
+<scg src="../images/sc_result_ok_example.gwf"></scg>
 
 Possible result sets:
 
@@ -179,7 +179,7 @@ Table of description (parameters of callback function named on pictures, if ther
   <tr>
     <td><strong>ScEventAddOutputEdge</strong></td>
     <td>
-      <img src="../../images/sc-events/sc-event-output-edge.png"></img>
+      <scg src="../../images/sc-events/sc-event-output-edge.gwf"></scg>
       <br/>
       Callback calls each time, when any type edge <code>edgeAddr</code> between <code>listenAddr</code> and <code>otherAddr</code> create.
       <hr/>
@@ -204,7 +204,7 @@ ScEventAddOutputEdge evt(ctx, addr, callback);
   <tr>
     <td><strong>ScEventAddInputEdge</strong></td>
     <td>
-      <img src="../../images/sc-events/sc-event-input-edge.png"></img>
+      <scg src="../../images/sc-events/sc-event-input-edge.gwf"></scg>
       <br/>
       Callback calls each time, when any type edge <code>edgeAddr</code> between <code>otherAddr</code> and <code>listenAddr</code> create.
       <hr/>
@@ -229,7 +229,7 @@ ScEventAddInputEdge evt(ctx, addr, callback);
   <tr>
     <td><strong>ScEventRemoveOutputEdge</strong></td>
     <td>
-      <img src="../../images/sc-events/sc-event-output-edge.png"></img>
+      <scg src="../../images/sc-events/sc-event-output-edge.gwf"></scg>
       <br/>
       Callback calls each time, when any type edge <code>edgeAddr</code> between <code>listenAddr</code> and any element <code>otherAddr</code> erase.
       <hr/>
@@ -254,7 +254,7 @@ ScEventRemoveOutputEdge evt(ctx, addr, callback);
   <tr>
     <td><strong>ScEventRemoveInputEdge</strong></td>
     <td>
-      <img src="../../images/sc-events/sc-event-input-edge.png"></img>
+      <scg src="../../images/sc-events/sc-event-input-edge.gwf"></scg>
       <br/>
       Callback calls each time, when any type edge <code>edgeAddr</code> between any element <code>otherAddr</code> and <code>listenAddr</code> erase.
       <hr/>
