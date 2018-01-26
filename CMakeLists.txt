@@ -6,6 +6,8 @@ set(SC_MACHINE_ROOT ${CMAKE_SOURCE_DIR})
 set(SC_MACHINE_THIRDPARTY_PATH "${SC_MACHINE_ROOT}/thirdparty")
 set(SC_MACHINE_ANTRL_DIR "${SC_MACHINE_THIRDPARTY_PATH}/antlr")
 
+set(CMAKE_BUILD_TYPE Debug)
+
 # codegen
 if (${UNIX})
     set(SC_CODEGEN_TOOL "${SC_MACHINE_ROOT}/bin/sc-code-generator")
