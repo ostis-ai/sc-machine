@@ -10,6 +10,10 @@
 
 #include "ASpeechTranslate.generated.hpp"
 
+#include<vector>
+
+using namespace std;
+
 namespace speech
 {
 
@@ -46,9 +50,13 @@ class ASpeechTranslate : public ScAgent
     static ScAddr keynode_nrel_idtf;
 
 private:
+    vector<vector<pair<ScAddr, float>*>*> confid_map;
+
     float readFloat(ScMemoryContext &ms_context, ScAddr addr);
     ScAddrList findConcepts(ScMemoryContext &ms_context, ScAddr name);
     float findConfidence(ScMemoryContext &ms_context, ScAddr edge);
+
+    ~ASpeechTranslate();
 };
 
 } // namespace speech

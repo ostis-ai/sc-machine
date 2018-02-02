@@ -13,8 +13,6 @@
 #include <vector>
 #include <thread>
 
-using namespace std;
-
 namespace speech
 {
 
@@ -110,8 +108,6 @@ SC_AGENT_IMPLEMENTATION(ASpeechTranslate)
     else
         return SC_RESULT_ERROR_INVALID_PARAMS;
 
-    vector<vector<pair<ScAddr, float>*>*> confid_map;
-
     while (true)
     {
         vector<pair<ScAddr, float>*> *vect = new vector<pair<ScAddr, float>*>();
@@ -119,9 +115,10 @@ SC_AGENT_IMPLEMENTATION(ASpeechTranslate)
         ScIterator5Ptr iter_pair = ms_context->Iterator5(s_word, ScType::EdgeUCommonConst, ScType::Link, ScType::EdgeAccessConstPosPerm, keynode_nrel_semantic_equivalence);
         while (iter_pair->Next())
         {
-            ScAddr p_word = iter_pair->Get(2);
+            if (!ms_context->HelperCheckArc(src_struct, iter_pair->Get(1), ScType::EdgeAccessConstPosPerm))
+                continue;
 
-            //!TODO struct check
+            ScAddr p_word = iter_pair->Get(2);
 
             ScAddrList concepts = findConcepts((ScMemoryContext&)ms_context, p_word);
             float value = findConfidence((ScMemoryContext&)ms_context, iter_pair->Get(1));
@@ -153,7 +150,11 @@ SC_AGENT_IMPLEMENTATION(ASpeechTranslate)
         }
     }*/
 
-    //free memory
+    return SC_RESULT_OK;
+}
+
+ASpeechTranslate::~ASpeechTranslate()
+{
     for (uint i = 0; i < confid_map.size(); i++)
     {
         for (uint j = 0; j < confid_map[i]->size(); j++)
@@ -162,8 +163,6 @@ SC_AGENT_IMPLEMENTATION(ASpeechTranslate)
         }
         delete confid_map[i];
     }
-
-    return SC_RESULT_OK;
 }
 
 } // namespace speech
