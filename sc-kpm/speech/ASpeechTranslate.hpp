@@ -55,6 +55,7 @@ private:
     float readFloat(ScMemoryContext &ms_context, ScAddr addr);
     ScAddrList findConcepts(ScMemoryContext &ms_context, ScAddr name);
     float findConfidence(ScMemoryContext &ms_context, ScAddr edge);
+    static bool pair_comp(pair<ScAddr, float>* i, pair<ScAddr, float>* j);
 
     ~ASpeechTranslate();
 };

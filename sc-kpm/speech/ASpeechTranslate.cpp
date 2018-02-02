@@ -11,6 +11,7 @@
 #include <iostream>
 #include <sstream>
 #include <vector>
+#include <algorithm>
 #include <thread>
 
 namespace speech
@@ -85,6 +86,11 @@ float ASpeechTranslate::findConfidence(ScMemoryContext &ms_context, ScAddr edge)
     return -1;
 }
 
+bool ASpeechTranslate::pair_comp(pair<ScAddr, float>* i, pair<ScAddr, float>* j)
+{
+    return (i->second > j->second);
+}
+
 SC_AGENT_IMPLEMENTATION(ASpeechTranslate)
 {
     if (!edgeAddr.IsValid())
@@ -127,7 +133,6 @@ SC_AGENT_IMPLEMENTATION(ASpeechTranslate)
             {
                 vect->push_back(new pair<ScAddr, float>(*iterator, value));
             }
-
         }
 
         if (vect->size() > 0)
@@ -138,6 +143,11 @@ SC_AGENT_IMPLEMENTATION(ASpeechTranslate)
             s_word = iter_src->Get(2);
         else
             break;
+    }
+
+    for (uint i = 0; i < confid_map.size(); i++)
+    {
+        sort(confid_map[i]->begin(), confid_map[i]->end(), pair_comp);
     }
 
     /*cout << "SIZE: " << confid_map.size() << endl;
