@@ -26,6 +26,13 @@ ScAddr ASpeechTranslate::keynode_action_translate;
 ScAddr ASpeechTranslate::keynode_rrel_1;
 ScAddr ASpeechTranslate::keynode_nrel_basic_sequence;
 ScAddr ASpeechTranslate::keynode_nrel_idtf;
+ScAddr ASpeechTranslate::keynode_nrel_object;
+ScAddr ASpeechTranslate::keynode_nrel_subject;
+
+bool ASpeechTranslate::pair_comp(pair<ScAddr, float>* i, pair<ScAddr, float>* j)
+{
+    return (i->second > j->second);
+}
 
 float ASpeechTranslate::readFloat(ScMemoryContext &ms_context, ScAddr addr)
 {
@@ -86,9 +93,95 @@ float ASpeechTranslate::findConfidence(ScMemoryContext &ms_context, ScAddr edge)
     return -1;
 }
 
-bool ASpeechTranslate::pair_comp(pair<ScAddr, float>* i, pair<ScAddr, float>* j)
+ScAddr ASpeechTranslate::makeClassInstance(ScAddr elem)
 {
-    return (i->second > j->second);
+    ScAddr inst;
+    if ((ms_context->GetElementType(elem) & ScType::NodeConstClass) == ScType::NodeConstClass)
+    {
+        inst = ms_context->CreateNode(ScType::NodeConst);
+        translation_result << inst << ms_context->CreateArc(ScType::EdgeAccessConstPosPerm, elem, inst) << elem;
+    }
+    else
+    {
+        inst = elem;
+        translation_result << inst;
+    }
+    return inst;
+}
+
+bool ASpeechTranslate::nextTriple()
+{
+    for (uint i = 0; i < confid_map.size(); i++)
+    {
+        source_triple.push_back((*confid_map[i])[0]->first);
+    }
+    return true;
+}
+
+bool ASpeechTranslate::translateAsAction()
+{
+    cout << "ACTION" << endl;
+    ScAddr start, end;
+    start = makeClassInstance(source_triple[0]);
+    end = makeClassInstance(source_triple[2]);
+    ScAddr action = ms_context->CreateNode(ScType::NodeConst);
+    translation_result << action << ms_context->CreateArc(ScType::EdgeAccessConstPosPerm, source_triple[1], action) << source_triple[1];
+
+    ScAddr arc = ms_context->CreateArc(ScType::EdgeDCommonConst, action, start);
+    translation_result << arc << ms_context->CreateArc(ScType::EdgeAccessConstPosPerm, keynode_nrel_subject, arc) << keynode_nrel_subject << start;
+
+    arc = ms_context->CreateArc(ScType::EdgeDCommonConst, action, end);
+    translation_result << arc << ms_context->CreateArc(ScType::EdgeAccessConstPosPerm, keynode_nrel_object, arc) << keynode_nrel_object << end;
+
+    return true;
+}
+
+bool ASpeechTranslate::translateAsRelation()
+{
+    cout << "RELATION" << endl;
+    ScAddr start, end;
+    start = makeClassInstance(source_triple[2]);
+    end = makeClassInstance(source_triple[0]);
+    ScAddr arc = ms_context->CreateArc(ScType::EdgeDCommonConst, start, end);
+    translation_result << arc << ms_context->CreateArc(ScType::EdgeAccessConstPosPerm, source_triple[1], arc) << source_triple[1];
+
+    return true;
+}
+
+void ASpeechTranslate::clearTranslation()
+{
+    ScIterator3Ptr iter_set = ms_context->Iterator3(*translation_result, ScType::EdgeAccessConstPosPerm, ScType::Const);
+    while (iter_set->Next())
+    {
+        ScAddr elem = iter_set->Get(2);
+        if ((ms_context->GetElementType(elem) & ScType::Node) != ScType::Node || ms_context->GetElementType(elem) == ScType::NodeConst)
+        {
+            ms_context->EraseElement(iter_set->Get(1));
+            ms_context->EraseElement(elem);
+        }
+        else
+        {
+            ms_context->EraseElement(iter_set->Get(1));
+        }
+    }
+}
+
+void ASpeechTranslate::translate()
+{
+    if (!nextTriple())
+        return;
+
+    if ((ms_context->GetElementType(source_triple[1]) & ScType::NodeConstClass) == ScType::NodeConstClass)
+    {
+        translateAsAction();
+        return;
+    }
+    if ((ms_context->GetElementType(source_triple[1]) & ScType::NodeConstNoRole) == ScType::NodeConstNoRole)
+    {
+        translateAsRelation();
+        return;
+    }
+
 }
 
 SC_AGENT_IMPLEMENTATION(ASpeechTranslate)
@@ -159,6 +252,8 @@ SC_AGENT_IMPLEMENTATION(ASpeechTranslate)
             cout << "\tPAIR " << j << " " << (*confid_map[i])[j]->first.Hash() << ":" << (*confid_map[i])[j]->second << endl;
         }
     }*/
+
+    translate();
 
     return SC_RESULT_OK;
 }

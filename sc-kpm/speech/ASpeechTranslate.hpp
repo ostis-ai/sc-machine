@@ -7,6 +7,7 @@
 #pragma once
 
 #include "sc-memory/cpp/kpm/sc_agent.hpp"
+#include "sc-memory/cpp/sc_struct.hpp"
 
 #include "ASpeechTranslate.generated.hpp"
 
@@ -49,13 +50,29 @@ class ASpeechTranslate : public ScAgent
     SC_PROPERTY(Keynode("nrel_idtf"), ForceCreate)
     static ScAddr keynode_nrel_idtf;
 
+    SC_PROPERTY(Keynode("nrel_object"), ForceCreate)
+    static ScAddr keynode_nrel_object;
+
+    SC_PROPERTY(Keynode("nrel_performer"), ForceCreate)
+    static ScAddr keynode_nrel_subject;
+
 private:
     vector<vector<pair<ScAddr, float>*>*> confid_map;
+    ScAddrVector source_triple;
+    //ms_context->CreateNode(ScType::NodeConstStruct)
+    ScStruct translation_result = ScStruct(&((ScMemoryContext&)ms_context), keynode_translation_result);
 
-    float readFloat(ScMemoryContext &ms_context, ScAddr addr);
-    ScAddrList findConcepts(ScMemoryContext &ms_context, ScAddr name);
-    float findConfidence(ScMemoryContext &ms_context, ScAddr edge);
     static bool pair_comp(pair<ScAddr, float>* i, pair<ScAddr, float>* j);
+    static float readFloat(ScMemoryContext &ms_context, ScAddr addr);
+    static ScAddrList findConcepts(ScMemoryContext &ms_context, ScAddr name);
+
+    float findConfidence(ScMemoryContext &ms_context, ScAddr edge);
+    ScAddr makeClassInstance(ScAddr elem);
+    void clearTranslation();
+    bool nextTriple();
+    bool translateAsAction();
+    bool translateAsRelation();
+    void translate();
 
     ~ASpeechTranslate();
 };
