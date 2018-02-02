@@ -6,6 +6,8 @@
 
 #include "speech.hpp"
 #include "ASpeechTranslate.hpp"
+#include "AVerificationAction.hpp"
+#include "AVerificationRelation.hpp"
 
 using namespace speech;
 
@@ -15,6 +17,8 @@ sc_result speechModule::InitializeImpl()
 {
 
     SC_AGENT_REGISTER(ASpeechTranslate)
+    SC_AGENT_REGISTER(AVerificationAction)
+    SC_AGENT_REGISTER(AVerificationRelation)
 
     return SC_RESULT_OK;
 }
@@ -22,6 +26,8 @@ sc_result speechModule::InitializeImpl()
 sc_result speechModule::ShutdownImpl()
 {
     SC_AGENT_UNREGISTER(ASpeechTranslate)
+    SC_AGENT_UNREGISTER(AVerificationAction)
+    SC_AGENT_UNREGISTER(AVerificationRelation)
 
     sc_result result = SC_RESULT_OK;
     return result;
