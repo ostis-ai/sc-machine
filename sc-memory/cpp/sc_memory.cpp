@@ -207,6 +207,16 @@ void ScMemoryContext::Destroy()
   }
 }
 
+void ScMemoryContext::BeingEventsPending()
+{
+  sc_memory_context_pending_begin(m_context);
+}
+
+void ScMemoryContext::EndEventsPending()
+{
+  sc_memory_context_pending_end(m_context);
+}
+
 bool ScMemoryContext::IsValid() const
 {
   return m_context != 0;

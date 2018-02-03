@@ -53,7 +53,7 @@ sc_addr sc_storage_element_new_access(const sc_memory_context *ctx, sc_type type
  * @return If input params are correct and element erased, then return SC_OK;
  * otherwise return SC_ERROR
  */
-sc_result sc_storage_element_free(const sc_memory_context *ctx, sc_addr addr);
+sc_result sc_storage_element_free(sc_memory_context *ctx, sc_addr addr);
 
 /*! Create new sc-node
  * @param type Type of new sc-node
@@ -79,10 +79,10 @@ sc_addr sc_storage_link_new_ext(const sc_memory_context *ctx, sc_access_levels a
  *
  * @return Return sc-addr of created sc-arc or empty sc-addr if sc-arc wasn't created
  */
-sc_addr sc_storage_arc_new(sc_memory_context const * ctx, sc_type type, sc_addr beg, sc_addr end);
+sc_addr sc_storage_arc_new(sc_memory_context * ctx, sc_type type, sc_addr beg, sc_addr end);
 
 //! Create new sc-arc with specified access levels
-sc_addr sc_storage_arc_new_ext(sc_memory_context const * ctx, sc_type type, sc_addr beg, sc_addr end, sc_access_levels access_levels);
+sc_addr sc_storage_arc_new_ext(sc_memory_context * ctx, sc_type type, sc_addr beg, sc_addr end, sc_access_levels access_levels);
 
 /*! Get type of sc-element with specified sc-addr
  * @param addr sc-addr of element to get type
@@ -131,7 +131,7 @@ sc_result sc_storage_get_arc_info(sc_memory_context const * ctx, sc_addr addr, s
  * <li>SC_ERROR - unknown error</li>
  * </ul>
  */
-sc_result sc_storage_set_link_content(sc_memory_context const * ctx, sc_addr addr, const sc_stream *stream);
+sc_result sc_storage_set_link_content(sc_memory_context * ctx, sc_addr addr, const sc_stream *stream);
 
 /*! Returns content data from specified sc-link
  * @param addr sc-addr of sc-link to get content data

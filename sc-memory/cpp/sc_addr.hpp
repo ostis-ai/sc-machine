@@ -66,7 +66,7 @@ struct RealAddrLessFunc
 
 struct ScAddLessFunc
 {
-  bool operator () (ScAddr const & a, ScAddr const & b)
+  bool operator () (ScAddr const & a, ScAddr const & b) const
   {
     return RealAddrLessFunc()(*a, *b);
   }

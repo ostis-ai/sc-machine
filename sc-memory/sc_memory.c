@@ -202,6 +202,44 @@ void sc_memory_context_free_impl(sc_memory_context *ctx)
   g_free(ctx);
 }
 
+void sc_memory_context_pending_begin(sc_memory_context * ctx)
+{
+  g_assert((ctx->flags & SC_CONTEXT_FLAG_PENDING_EVENTS) == 0);
+  ctx->flags |= SC_CONTEXT_FLAG_PENDING_EVENTS;
+}
+
+void sc_memory_context_pending_end(sc_memory_context * ctx)
+{
+  g_assert((ctx->flags & SC_CONTEXT_FLAG_PENDING_EVENTS) != 0);
+  ctx->flags = ctx->flags & (~SC_CONTEXT_FLAG_PENDING_EVENTS);
+  sc_memory_context_emit_events(ctx);
+}
+
+void sc_memory_context_pend_event(sc_memory_context * ctx, sc_event_emit_params * params)
+{
+  g_assert((ctx->flags & SC_CONTEXT_FLAG_PENDING_EVENTS) != 0);
+  ctx->pend_events = g_slist_append(ctx->pend_events, params);
+}
+
+void sc_memory_context_emit_events(sc_memory_context * ctx)
+{
+  GSList * item = NULL;
+  sc_event_emit_params * evt_params = NULL;
+
+  g_assert((ctx->flags & SC_CONTEXT_FLAG_PENDING_EVENTS) == 0);
+  while (ctx->pend_events)
+  {
+    item = ctx->pend_events;
+    evt_params = (sc_event_emit_params*)item->data;
+
+    sc_event_emit_impl(ctx, evt_params->el, evt_params->el_access, evt_params->type, evt_params->edge, evt_params->other_el);
+    
+    g_free(evt_params);
+
+    ctx->pend_events = g_slist_delete_link(ctx->pend_events, ctx->pend_events);
+  }
+}
+
 sc_bool sc_memory_is_initialized()
 {
   return sc_storage_is_initialized();
@@ -212,7 +250,7 @@ sc_bool sc_memory_is_element(sc_memory_context const * ctx, sc_addr addr)
   return sc_storage_is_element(ctx, addr);
 }
 
-sc_result sc_memory_element_free(sc_memory_context const * ctx, sc_addr addr)
+sc_result sc_memory_element_free(sc_memory_context * ctx, sc_addr addr)
 {
   return sc_storage_element_free(ctx, addr);
 }
@@ -227,7 +265,7 @@ sc_addr sc_memory_link_new(sc_memory_context const * ctx)
   return sc_storage_link_new(ctx);
 }
 
-sc_addr sc_memory_arc_new(sc_memory_context const * ctx, sc_type type, sc_addr beg, sc_addr end)
+sc_addr sc_memory_arc_new(sc_memory_context * ctx, sc_type type, sc_addr beg, sc_addr end)
 {
   return sc_storage_arc_new(ctx, type, beg, end);
 }
@@ -258,7 +296,7 @@ sc_result sc_memory_get_arc_info(sc_memory_context const * ctx, sc_addr addr,
   return sc_storage_get_arc_info(ctx, addr, result_start_addr, result_end_addr);
 }
 
-sc_result sc_memory_set_link_content(sc_memory_context const * ctx, sc_addr addr, const sc_stream *stream)
+sc_result sc_memory_set_link_content(sc_memory_context * ctx, sc_addr addr, const sc_stream *stream)
 {
   return sc_storage_set_link_content(ctx, addr, stream);
 }
