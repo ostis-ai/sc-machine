@@ -1502,3 +1502,48 @@ UNIT_TEST(scs_templates)
   }
   SUBTEST_END()
 }
+
+UNIT_TEST(big_template_2_15)
+{
+  ScMemoryContext ctx(sc_access_lvl_make_min, "pend_events");
+
+  ScAddr const set1 = ctx.CreateNode(ScType::NodeConstClass);
+  ScAddr const rel = ctx.CreateNode(ScType::NodeConstNoRole);
+
+  static const size_t el_num = 1 << 15;
+  std::set<ScAddr, ScAddLessFunc> elements;
+  for (size_t i = 0; i < el_num; ++i)
+  {
+    ScAddr const a = ctx.CreateNode(ScType::NodeConst);
+    SC_CHECK(a.IsValid(), ());
+    elements.insert(a);
+  }
+
+  volatile bool isPassed = true;
+
+  // create template for pending events check
+  ScTemplate templ;
+  for (auto const & a : elements)
+  {
+    templ.TripleWithRelation(
+      set1,
+      ScType::EdgeDCommonVar,
+      a >> "_el",
+      ScType::EdgeAccessVarPosPerm,
+      rel);
+  }
+
+  ScTemplateGenResult genResult;
+  SC_CHECK(ctx.HelperGenTemplate(templ, genResult), ());
+
+  // ensure whole data created correctly
+  ScTemplateSearchResult searchResult;
+  SC_CHECK(ctx.HelperSearchTemplate(templ, searchResult), ());
+
+  utils::ScProgress progress("Check search results", searchResult.Size());
+  for (size_t i = 0; i < searchResult.Size(); ++i)
+  {
+    SC_CHECK(elements.find(searchResult[i]["_el"]) != elements.end(), ());
+    progress.PrintStatus(i);
+  }
+}
