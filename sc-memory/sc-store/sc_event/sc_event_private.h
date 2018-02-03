@@ -64,7 +64,8 @@ void sc_events_stop_processing();
  */
 sc_result sc_event_notify_element_deleted(sc_addr element);
 
-/*! Emit event with \p type for sc-element \p el with argument \p arg
+/*! Emit event with \p type for sc-element \p el with argument \p arg.
+ * If \ctx is in a pending mode, then event will be pend for emit
  * @param ctx pointer to context, that emits event
  * @param el sc-addr of element that emitting event
  * @param el_access Acces level of \p el
@@ -74,7 +75,11 @@ sc_result sc_event_notify_element_deleted(sc_addr element);
  * If \p el is a target, then \p other_el is a source.
  * @return If event emitted without any errors, then return SC_OK; otherwise return SC_ERROR code
  */
-sc_result sc_event_emit(sc_memory_context const * ctx, sc_addr el, sc_access_levels el_acces, sc_event_type type, sc_addr edge, sc_addr other_el);
+sc_result sc_event_emit(sc_memory_context * ctx, sc_addr el, sc_access_levels el_acces, sc_event_type type, sc_addr edge, sc_addr other_el);
+
+/*! Emit event immediately
+ */
+sc_result sc_event_emit_impl(sc_memory_context const * ctx, sc_addr el, sc_access_levels el_access, sc_event_type type, sc_addr edge, sc_addr other_el);
 
 /* Remove reference from event.
  * Remove reference from an event

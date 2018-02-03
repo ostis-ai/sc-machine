@@ -332,7 +332,7 @@ private:
       return empty;
     }
 
-    bool generate(sc_memory_context const * ctx, ScAddrVec & result, quint8 pos)
+    bool generate(sc_memory_context * ctx, ScAddrVec & result, quint8 pos)
     {
       quint8 const count = argsCount();
       if (count == 3)
@@ -512,7 +512,7 @@ public:
     iterateStep(ctx, result, 0, 0);
   }
 
-  bool generateStep(sc_memory_context const * ctx, ScAddrVec & result, quint8 resultPos, quint8 itIdx)
+  bool generateStep(sc_memory_context * ctx, ScAddrVec & result, quint8 resultPos, quint8 itIdx)
   {
     Q_ASSERT(itIdx < m_iterators.size());
     Q_ASSERT(resultPos < result.size());
@@ -548,7 +548,7 @@ public:
     return false;
   }
 
-  bool generate(sc_memory_context const * ctx)
+  bool generate(sc_memory_context * ctx)
   {
     m_results.resize(oneResultSize());
     memset(m_results.data(), 0, sizeof(ScAddrVec::value_type) * m_results.size());

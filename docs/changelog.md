@@ -10,10 +10,12 @@
     - Fix bugs in python GIL work
     - Fix python threading
     - Fix problem with twicely pass of edge in template search
+    - Fix problem with stack overflow on large template search
     - Improve `ScType` class
     - Add types support in SCs-parser
     - Add keynode cache
     - Add `ScTemplate` build from SCs-text
+    - Add support of pending events. Now events emit after whole template generated
 
 - **Python**:
     - Add `ScAgent` class

@@ -274,7 +274,25 @@ result:
   return SC_RESULT_OK;
 }
 
-sc_result sc_event_emit(sc_memory_context const * ctx, sc_addr el, sc_access_levels el_access, sc_event_type type, sc_addr edge, sc_addr other_el)
+sc_result sc_event_emit(sc_memory_context * ctx, sc_addr el, sc_access_levels el_access, sc_event_type type, sc_addr edge, sc_addr other_el)
+{
+  if (ctx->flags & SC_CONTEXT_FLAG_PENDING_EVENTS)
+  {
+    sc_event_emit_params * params = g_new0(sc_event_emit_params, 1);
+    params->el = el;
+    params->el_access = el_access;
+    params->type = type;
+    params->edge = edge;
+    params->other_el = other_el;
+    
+    sc_memory_context_pend_event(ctx, params);
+    return SC_RESULT_OK;
+  }
+
+  return sc_event_emit_impl(ctx, el, el_access, type, edge, other_el);
+}
+
+sc_result sc_event_emit_impl(sc_memory_context const * ctx, sc_addr el, sc_access_levels el_access, sc_event_type type, sc_addr edge, sc_addr other_el)
 {
   GSList *element_events_list = 0;
   sc_event *event = 0;
