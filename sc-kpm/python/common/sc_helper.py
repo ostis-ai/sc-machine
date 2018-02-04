@@ -6,10 +6,10 @@ class ScHelper:
   def __init__(self, ctx):
     self.ctx = ctx
 
-  def kbSetRelationLink(self, _addr: ScAddr, _relAddr: ScAddr, _value: any):
-    """Sets value of ScLink connected to addr by relation.
+  def kbSetRelationLinkValue(self, _addr: ScAddr, _relAddr: ScAddr, _value: any):
+    """Sets value of ScLink connected to `_addr` by relation `_relAddr`.
     SCs text:
-    addr => relAddr: [value];;
+    _addr => _relAddr: [_value];;
     """
     templ = ScTemplate()
 
@@ -34,6 +34,29 @@ class ScHelper:
 
       edge = self.ctx.CreateEdge(ScType.EdgeDCommonConst, _addr, linkAddr)
       self.ctx.CreateEdge(ScType.EdgeAccessConstPosPerm, _relAddr, edge)
+  
+  def kbGetRelationLinkValue(self, _addr: ScAddr, _relAddr: ScAddr) -> ScLinkContent:
+    """Returns value of ScLink conneted to `_addr` by relation `_relAddr`.
+    SCs text:
+    _addr => _relAddr: [_value];;
+
+    If value found, then returns `ScLinkContent`, otherwise returns None
+    """
+    templ = ScTemplate()
+    templ.TripleWithRelation(
+        _addr,
+        ScType.EdgeDCommonVar,
+        ScType.Link >> '_link',
+        ScType.EdgeAccessVarPosPerm,
+        _relAddr)
+
+    searchRes = self.ctx.HelperSearchTemplate(templ)
+    if searchRes.Size() > 0:
+      linkAddr = searchRes[0]['_link']
+      return self.ctx.GetLinkContent(linkAddr)
+
+    return None
+
 
   def kbReplaceBinaryRelation(self, _addr: ScAddr, _relAddr: ScAddr, _newTarget: ScAddr) -> bool:
     """

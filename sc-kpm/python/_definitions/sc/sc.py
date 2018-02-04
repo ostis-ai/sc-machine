@@ -73,9 +73,9 @@ class ScMemoryContext:
     return ScTemplate()
 
 
-def createScMemoryContext():
+def createScMemoryContext() -> ScMemoryContext:
   return ScMemoryContext()
 
 
-def ScAddrFromHash(hash):
+def ScAddrFromHash(hash) -> ScAddr:
   return ScAddr()

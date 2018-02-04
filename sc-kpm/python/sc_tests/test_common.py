@@ -624,10 +624,10 @@ class TestScHelper(TestCase):
       self.assertEqual(data.AsString(), value)
 
     helper = ScHelper(ctx)
-    helper.kbSetRelationLink(addr, relAddr, 'test_data')
+    helper.kbSetRelationLinkValue(addr, relAddr, 'test_data')
     check_value('test_data')
 
-    helper.kbSetRelationLink(addr, relAddr, 'test_data2')
+    helper.kbSetRelationLinkValue(addr, relAddr, 'test_data2')
     check_value('test_data2')
 
   def test_replaceBinaryRelation(self):
@@ -659,6 +659,29 @@ class TestScHelper(TestCase):
 
     helper.kbReplaceBinaryRelation(addr, relAddr, node2)
     check_trg(node2)
+
+  def test_getRelationLinkValue(self):
+    ctx = MemoryCtx()
+
+    addr = ctx.CreateNode(ScType.NodeConst)
+    relAddr = ctx.CreateNode(ScType.NodeConstNoRole)
+
+    templ = ScTemplate()
+    templ.TripleWithRelation(
+        addr,
+        ScType.EdgeDCommonVar,
+        ScType.Link >> '_link',
+        ScType.EdgeAccessVarPosPerm,
+        relAddr)
+
+    searchRes = ctx.HelperSearchTemplate(templ)
+    self.assertEqual(searchRes.Size(), 0)
+
+    helper = ScHelper(ctx)
+    helper.kbSetRelationLinkValue(addr, relAddr, 'test_data')
+    value = helper.kbGetRelationLinkValue(addr, relAddr).AsString()
+
+    self.assertEqual(value, 'test_data')
 
 def RunTest(test):
   global TestLoader, TextTestRunner
