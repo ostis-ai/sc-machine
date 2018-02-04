@@ -56,11 +56,20 @@ class ASpeechTranslate : public ScAgent
     SC_PROPERTY(Keynode("nrel_performer"), ForceCreate)
     static ScAddr keynode_nrel_subject;
 
+    SC_PROPERTY(Keynode("incorrect_structure"), ForceCreate)
+    static ScAddr keynode_incorrect_structure;
+
+    SC_PROPERTY(Keynode("question_finished"), ForceCreate)
+    static ScAddr keynode_action_finished;
+
+    SC_PROPERTY(Keynode("action_of_verifying_the_desired_structure"), ForceCreate)
+    static ScAddr keynode_action_verifying;
+
 private:
     vector<vector<pair<ScAddr, float>*>*> confid_map;
     ScAddrVector source_triple;
-    //ms_context->CreateNode(ScType::NodeConstStruct)
-    ScStruct translation_result = ScStruct(&((ScMemoryContext&)ms_context), keynode_translation_result);
+    vector<int> triple_mask{-1, 0, 0};
+    ScStruct translation_result = ScStruct(&((ScMemoryContext&)ms_context), ms_context->CreateNode(ScType::NodeConstStruct));
 
     static bool pair_comp(pair<ScAddr, float>* i, pair<ScAddr, float>* j);
     static float readFloat(ScMemoryContext &ms_context, ScAddr addr);
@@ -73,6 +82,7 @@ private:
     bool translateAsAction();
     bool translateAsRelation();
     void translate();
+    bool verify();
 
     ~ASpeechTranslate();
 };

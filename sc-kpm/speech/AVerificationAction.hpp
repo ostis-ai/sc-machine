@@ -35,6 +35,12 @@ class AVerificationAction : public ScAgent
     SC_PROPERTY(Keynode("nrel_object_class"), ForceCreate)
     static ScAddr keynode_nrel_object_class;
 
+    SC_PROPERTY(Keynode("nrel_performer"), ForceCreate)
+    static ScAddr keynode_nrel_performer;
+
+    SC_PROPERTY(Keynode("nrel_object"), ForceCreate)
+    static ScAddr keynode_nrel_object;
+
     SC_PROPERTY(Keynode("incorrect_structure"), ForceCreate)
     static ScAddr keynode_incorrect_structure;
 
@@ -48,7 +54,7 @@ class AVerificationAction : public ScAgent
     static ScAddr keynode_action;
 
 private:
-    bool checkClass(ScAddr elem, ScAddr set);
+    bool checkClass(ScAddr elem, ScAddr set, ScAddr *superclass);
 
 };
 

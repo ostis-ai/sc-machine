@@ -6,6 +6,7 @@
 
 #include "ASpeechTranslate.hpp"
 #include "sc-memory/cpp/sc_memory.hpp"
+#include "sc-memory/cpp/sc_wait.hpp"
 #include "sc-memory/cpp/sc_stream.hpp"
 
 #include <iostream>
@@ -28,6 +29,9 @@ ScAddr ASpeechTranslate::keynode_nrel_basic_sequence;
 ScAddr ASpeechTranslate::keynode_nrel_idtf;
 ScAddr ASpeechTranslate::keynode_nrel_object;
 ScAddr ASpeechTranslate::keynode_nrel_subject;
+ScAddr ASpeechTranslate::keynode_incorrect_structure;
+ScAddr ASpeechTranslate::keynode_action_finished;
+ScAddr ASpeechTranslate::keynode_action_verifying;
 
 bool ASpeechTranslate::pair_comp(pair<ScAddr, float>* i, pair<ScAddr, float>* j)
 {
@@ -111,11 +115,61 @@ ScAddr ASpeechTranslate::makeClassInstance(ScAddr elem)
 
 bool ASpeechTranslate::nextTriple()
 {
+    uint i = 0;
+    while (i < 3)
+    {
+        if (triple_mask[i] >= (int)(confid_map[i]->size() - 1))
+        {
+            triple_mask[i] = 0;
+            i++;
+        }
+        else
+        {
+            triple_mask[i]++;
+            break;
+        }
+    }
+    if (i == 3)
+        return false;
+
+    source_triple.clear();
     for (uint i = 0; i < confid_map.size(); i++)
     {
-        source_triple.push_back((*confid_map[i])[0]->first);
+        source_triple.push_back((*confid_map[i])[triple_mask[i]]->first);
     }
     return true;
+}
+
+bool ASpeechTranslate::verify()
+{
+    ScAddr action = ms_context->CreateNode(ScType::NodeConst);
+    ms_context->CreateArc(ScType::EdgeAccessConstPosPerm, keynode_action_verifying, action);
+    ms_context->CreateArc(ScType::EdgeAccessConstPosPerm, action, *translation_result);
+
+    ScWaitCondition<ScEventAddInputEdge> waiter((ScMemoryContext&)ms_context, action, [](ScAddr const & listenAddr,
+            ScAddr const & edgeAddr,
+            ScAddr const & otherAddr)
+    {
+        if (otherAddr == keynode_action_finished)
+            return true;
+        else
+            return false;
+    });
+
+    ms_context->CreateArc(ScType::EdgeAccessConstPosPerm, keynode_question_initiated, action);
+    waiter.Wait();
+
+    ms_context->EraseElement(action);
+    if (ms_context->HelperCheckArc(keynode_incorrect_structure, *translation_result, ScType::EdgeAccessConstPosPerm))
+    {
+        cout << "INCORRECT" << endl;
+        return false;
+    }
+    else
+    {
+        cout << "CORRECT" << endl;
+        return true;
+    }
 }
 
 bool ASpeechTranslate::translateAsAction()
@@ -168,20 +222,33 @@ void ASpeechTranslate::clearTranslation()
 
 void ASpeechTranslate::translate()
 {
-    if (!nextTriple())
-        return;
-
-    if ((ms_context->GetElementType(source_triple[1]) & ScType::NodeConstClass) == ScType::NodeConstClass)
+    while (nextTriple())
     {
-        translateAsAction();
-        return;
-    }
-    if ((ms_context->GetElementType(source_triple[1]) & ScType::NodeConstNoRole) == ScType::NodeConstNoRole)
-    {
-        translateAsRelation();
-        return;
-    }
+        if ((ms_context->GetElementType(source_triple[1]) & ScType::NodeConstClass) == ScType::NodeConstClass)
+        {
+            translateAsAction();
+        }
+        if ((ms_context->GetElementType(source_triple[1]) & ScType::NodeConstNoRole) == ScType::NodeConstNoRole)
+        {
+            translateAsRelation();
+        }
 
+        if (verify())
+        {
+            ScIterator3Ptr iter = ms_context->Iterator3(*translation_result, ScType::EdgeAccessConstPosPerm, ScType::Const);
+            while (iter->Next())
+            {
+                ms_context->CreateArc(ScType::EdgeAccessConstPosPerm, keynode_translation_result, iter->Get(2));
+            }
+            ms_context->EraseElement(*translation_result);
+        }
+        else
+        {
+            clearTranslation();
+            ms_context->EraseElement(*translation_result);
+            translation_result = ScStruct(&((ScMemoryContext&)ms_context), ms_context->CreateNode(ScType::NodeConstStruct));
+        }
+    }
 }
 
 SC_AGENT_IMPLEMENTATION(ASpeechTranslate)
