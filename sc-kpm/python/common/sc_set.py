@@ -21,12 +21,12 @@ class ScSet:
         self.ctx = ctx
         self.addr = addr
 
-    def Has(self, elAddr):
+    def Has(self, elAddr: ScAddr) -> bool:
         """Check if specified element exists in set
         """
         return self.ctx.HelperCheckEdge(self.addr, elAddr, ScType.EdgeAccessConstPosPerm)
 
-    def Add(self, elAddr):
+    def Add(self, elAddr: ScAddr) -> bool:
         """Add element into set. If element added,
         then returns True; otherwise - False
         """
@@ -36,7 +36,7 @@ class ScSet:
 
         return False
 
-    def Remove(self, elAddr):
+    def Remove(self, elAddr: ScAddr) -> bool:
         """Remove element from a set. If element removed,
         then returns True; otherwise - False
         """
@@ -96,7 +96,7 @@ class ScRelationSet:
         self.addr = addr
         self.relAddr = relAddr
 
-    def Has(self, elAddr):
+    def Has(self, elAddr: ScAddr) -> bool:
         """Check if specified element exists in set
         """
         it = self.ctx.Iterator5(
@@ -108,7 +108,7 @@ class ScRelationSet:
 
         return it.Next()
 
-    def Add(self, elAddr):
+    def Add(self, elAddr: ScAddr) -> bool:
         """Add element into set. If element added,
         then returns True; otherwise - False
         """
@@ -120,7 +120,7 @@ class ScRelationSet:
 
         return False
 
-    def Remove(self, elAddr):
+    def Remove(self, elAddr: ScAddr) -> bool:
         """Remove element from a set. If element removed,
         then returns True; otherwise - False
         """

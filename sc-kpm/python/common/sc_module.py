@@ -20,14 +20,25 @@ class Task:
 
 class ScModule:
 
+    ctx = property()
+    events = property()
+
+    @ctx.getter
+    def ctx(self) -> ScMemoryContext:
+        return self.__sc_context
+
+    @events.getter
+    def events(self) -> ScEventManager:
+        return self.__events
+
     def __init__(self, ctx, cpp_bridge, keynodes=[]):
-        self.sc_context = ctx
-        self.keynodes = ScKeynodes(self.sc_context)
+        self.__sc_context = ctx
+        self.keynodes = ScKeynodes(self.__sc_context)
         
         self.cpp = cpp_bridge
         assert self.cpp
 
-        self.events = ScEventManager(self.cpp)
+        self.__events = ScEventManager(self.cpp)
         self.KeynodesCheck(keynodes)
 
         self.is_running = True
@@ -51,7 +62,7 @@ class ScModule:
 
     # --- tasks ---
     def DoEmitEvent(self, evt_params):
-        self.events.EmitEvent(evt_params)
+        self.__events.EmitEvent(evt_params)
 
     def CallLater(self, func, *args):
         self.task_queue.put(Task(func, *args))

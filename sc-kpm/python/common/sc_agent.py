@@ -41,7 +41,7 @@ class ScAgent:
 
     @staticmethod
     def InitGlobal(module):
-        ScAgent.keynodes = ScKeynodes(module.sc_context)
+        ScAgent.keynodes = ScKeynodes(module.ctx)
 
     def __init__(self, module):
         self.module = module
@@ -102,7 +102,7 @@ class ScAgentCommand(ScAgent):
     def CheckImpl(self, evt):
         """Check if type of initiated command is equal to specified one
         """
-        return self.module.sc_context.HelperCheckEdge(
+        return self.module.ctx.HelperCheckEdge(
             self.cmd_class,
             evt.other_addr,
             ScType.EdgeAccessConstPosPerm)
@@ -122,10 +122,10 @@ class ScAgentCommand(ScAgent):
             ScType.EdgeAccessVarPosPerm,
             ScAgent.keynodes[ScAgent.kNrelResult])
 
-        gen_res = self.module.sc_context.HelperGenTemplate(templ, ScTemplateGenParams())
+        gen_res = self.module.ctx.HelperGenTemplate(templ, ScTemplateGenParams())
         assert gen_res.Size() > 0
 
-        self.result_set = ScSet(self.module.sc_context, gen_res['_result'])
+        self.result_set = ScSet(self.module.ctx, gen_res['_result'])
 
         # run implementation of command
         result = self.DoCommand()
@@ -152,7 +152,7 @@ class ScAgentCommand(ScAgent):
             ScType.EdgeAccessVarPosPerm,
             self.keynodes['rrel_{}'.format(index)])
 
-        search_res = self.module.sc_context.HelperSearchTemplate(templ)
+        search_res = self.module.ctx.HelperSearchTemplate(templ)
         if search_res.Size() == 0:
             return ScAddr()
 

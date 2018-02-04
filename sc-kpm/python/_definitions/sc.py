@@ -1,16 +1,18 @@
+from typing import Tuple, List, Any, ByteString, TypeVar
+
 # This file used by autocompletion module, don't use it in other purposes
 class ScAddr:
 
-    def IsValid(self, other):
+    def IsValid(self) -> bool:
         pass
 
-    def ToInt(self, other):
+    def ToInt(self) -> int:
         pass
 
-    def __eq__(self, other):
+    def __eq__(self, other: ScAddr):
         pass
 
-    def __ne__(self, other):
+    def __ne__(self, other: ScAddr):
         pass
 
     def __rshift__(self, other):
@@ -38,25 +40,25 @@ class ScType:
     def rshift(self, other):
         pass
 
-    def IsLink(self):
+    def IsLink(self) -> bool:
         pass
 
-    def IsEdge(self):
+    def IsEdge(self) -> bool:
         pass
 
-    def IsNode(self):
+    def IsNode(self) -> bool:
         pass
 
-    def IsValid(self):
+    def IsValid(self) -> bool:
         pass
 
-    def IsConst(self):
+    def IsConst(self) -> bool:
         pass
 
-    def IsVar(self):
+    def IsVar(self) -> bool:
         pass
 
-    def ToInt(self):
+    def ToInt(self) -> bool:
         pass
 
     Unknown = 0
@@ -106,140 +108,75 @@ class ScType:
     NodeVarAbstract = 40
     NodeVarMaterial = 41
 
-class ScMemoryContext:
-    @staticmethod
-    def Create(self, name):
-        return ScMemoryContext()
-
-    def CreateNode(self, nodeType):
-        return ScAddr()
-
-    def CreateEdge(self, edgeType, src, trg):
-        return ScAddr()
-
-    def CreateLink(self):
-        return ScAddr()
-
-    def DeleteElement(self, elAddr):
-        return False
-
-    def GetName(self):
-        return ''
-
-    def IsElement(self, addr):
-        return False
-
-    def GetElementType(self, addr):
-        return ScType()
-
-    def GetEdgeInfo(self, addr):
-        return ()
-
-    def FindLinksByContent(self, content):
-        return []
-
-    def SetLinkContent(self, addr, content):
-        return False
-
-    def GetLinkContent(self, addr):
-        return ScLinkContent()
-
-    def Iterator3(self, src, edge, trg):
-        return ScIterator3()
-
-    def Iterator5(self, src, edge, trg, attrEdge, attrEl):
-        return ScIterator5()
-
-    def HelperResolveSystemIdtf(self, idtf, elType=ScType.Unknown):
-        return ScAddr()
-
-    def HelperSetSystemIdtf(self, idtf, addr):
-        return False
-
-    def HelperGetSystemIdtf(self, addr):
-        return ''
-
-    def HelperCheckEdge(self, src, trg, edgeType):
-        return False
-
-    def HelperGenTemplate(self, templ, params):
-        return ScTemplateGenResult()
-
-    def HelperSearchTemplate(self, templ):
-        return ScTemplateSearchResult()
-
-    def HelperBuildTemplate(self, addr):
-        return ScTemplate()
-
-class ScIterator3:
-    def Next(self):
-        return False
-
-    def IsValid(self):
-        return False
-
-    def Get(self, idx):
-        return ScAddr()
-
-class ScIterator5:
-    def Next(self):
-        return False
-
-    def IsValid(self):
-        return False
-
-    def Get(self, idx):
-        return ScAddr()
-
 class ScLinkContent:
     String = 0
     Int = 1
     Float = 2
 
-    def AsBinary(self):
+    def AsBinary(self) -> ByteString:
         return ''
 
-    def AsString(self):
+    def AsString(self) -> str:
         return ''
 
-    def AsInt(self):
+    def AsInt(self) -> int:
         return 0
 
-    def AsFloat(self):
+    def AsFloat(self) -> float:
         return 0.0
 
-    def GetType(self):
+    def GetType(self) -> int:
         return ScLinkContent.String
 
+class ScIterator3:
+    def Next(self) -> bool:
+        return False
+
+    def IsValid(self) -> bool:
+        return False
+
+    def Get(self, idx: int) -> ScAddr:
+        return ScAddr()
+
+class ScIterator5:
+    def Next(self) -> bool:
+        return False
+
+    def IsValid(self) -> bool:
+        return False
+
+    def Get(self, idx: int) -> ScAddr:
+        return ScAddr()
+
 class ScTemplateGenResult:
-    def Size(self):
+    def Size(self) -> int:
         return 0
 
-    def __getitem__(self, name):
+    def __getitem__(self, name: str) -> ScAddr:
         return ScAddr()
 
 class ScTemplateSearchResultItem:
-    def Size(self):
+    def Size(self) -> int:
         return 0
 
-    def __getitem__(self, name):
+    def __getitem__(self, name: str) -> ScAddr:
         return ScAddr()
 
 class ScTemplateSearchResult:
-    def Size(self):
+    def Size(self) -> int:
         return 0
 
-    def __getitem__(self, idx):
+    def __getitem__(self, idx: int) -> ScTemplateSearchResultItem:
         return ScTemplateSearchResultItem()
 
 class ScTemplateGenParams:
-    def Add(self, paramName, value):
+    def Add(self, paramName: str, value: ScAddr):
         pass
     
-    def Get(self, paramName):
+    def Get(self, paramName: str) -> ScAddr:
         return ScAddr()
 
-    def IsEmpty(self):
+    def IsEmpty(self) -> bool:
         return False
 
 class ScTemplate:
@@ -249,6 +186,73 @@ class ScTemplate:
 
     def TripleWithRelation(self, src, edge, trg, attrEdge, attrEl):
         return None
+
+IterParam = TypeVar('IterParam', ScAddr, ScType)
+
+class ScMemoryContext:
+    @staticmethod
+    def Create(self, name: str):
+        return ScMemoryContext()
+
+    def CreateNode(self, nodeType: ScType) -> ScAddr:
+        return ScAddr()
+
+    def CreateEdge(self, edgeType: ScType, src: ScAddr, trg: ScAddr) -> ScAddr:
+        return ScAddr()
+
+    def CreateLink(self) -> ScAddr:
+        return ScAddr()
+
+    def DeleteElement(self, elAddr: ScAddr) -> bool:
+        return False
+
+    def GetName(self) -> str:
+        return ''
+
+    def IsElement(self, addr) -> bool:
+        return False
+
+    def GetElementType(self, addr: ScAddr) -> ScType:
+        return ScType()
+
+    def GetEdgeInfo(self, addr: ScAddr) -> Tuple[ScAddr, ScAddr]:
+        return ()
+
+    def FindLinksByContent(self, content: Any) -> List[ScAddr]:
+        return []
+
+    def SetLinkContent(self, addr: ScAddr, content: Any) -> bool:
+        return False
+
+    def GetLinkContent(self, addr: ScAddr) -> ScLinkContent:
+        return ScLinkContent()
+
+    def Iterator3(self, src: IterParam, edge: IterParam, trg: IterParam) -> ScIterator3:
+        return ScIterator3()
+
+    def Iterator5(self, src: IterParam, edge: IterParam, trg: IterParam, attrEdge: IterParam, attrEl: IterParam) -> ScIterator5:
+        return ScIterator5()
+
+    def HelperResolveSystemIdtf(self, idtf: str, elType: ScType=ScType.Unknown) -> ScAddr:
+        return ScAddr()
+
+    def HelperSetSystemIdtf(self, idtf: str, addr: ScAddr) -> bool:
+        return False
+
+    def HelperGetSystemIdtf(self, addr: ScAddr) -> str:
+        return ''
+
+    def HelperCheckEdge(self, src: ScAddr, trg: ScAddr, edgeType: ScType) -> bool:
+        return False
+
+    def HelperGenTemplate(self, templ: ScTemplate, params: ScTemplateGenParams) -> ScTemplateGenResult:
+        return ScTemplateGenResult()
+
+    def HelperSearchTemplate(self, templ: ScTemplate) -> ScTemplateSearchResult:
+        return ScTemplateSearchResult()
+
+    def HelperBuildTemplate(self, addr: ScAddr) -> ScTemplate:
+        return ScTemplate()
 
 def createScMemoryContext():
     return ScMemoryContext()

@@ -52,19 +52,19 @@ class ScEventManager:
         except KeyError:
             pass
 
-    def CreateEventAddOutputEdge(self, addr, callback):
+    def CreateEventAddOutputEdge(self, addr: ScAddr, callback) -> ScEvent:
         return self.CreateEventInternal(addr, ScPythonEventType.AddOutputEdge, callback)
 
-    def CreateEventAddInputEdge(self, addr, callback):
+    def CreateEventAddInputEdge(self, addr: ScAddr, callback) -> ScEvent:
         return self.CreateEventInternal(addr, ScPythonEventType.AddInputEdge, callback)
 
-    def CreateEventRemoveOutputEdge(self, addr, callback):
+    def CreateEventRemoveOutputEdge(self, addr: ScAddr, callback) -> ScEvent:
         return self.CreateEventInternal(addr, ScPythonEventType.RemoveOutputEdge, callback)
 
-    def CreateEventRemoveInputEdge(self, addr, callback):
+    def CreateEventRemoveInputEdge(self, addr: ScAddr, callback) -> ScEvent:
         return self.CreateEventInternal(addr, ScPythonEventType.RemoveInputEdge, callback)
 
-    def CreateEventContentChanged(self, addr, callback):
+    def CreateEventContentChanged(self, addr: ScAddr, callback) -> ScEvent:
         return self.CreateEventInternal(addr, ScPythonEventType.ContentChanged, callback)
 
     def CreateEventEraseElement(self, addr, callback):
