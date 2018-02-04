@@ -21,7 +21,6 @@ class Task:
   def do(self):
     self.func(*self.args)
 
-
 class ScModule:
 
   ctx = property()

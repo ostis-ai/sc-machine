@@ -1,2 +1,2 @@
-from ./sc import *
-from ./scb import *
+from .scb import *
+from .sc import *
