@@ -127,8 +127,10 @@ sc_bool sc_fs_storage_initialize(const gchar *path, sc_bool clear)
   g_message("\tFile memory engine: %s", sc_config_fm_engine());
   // load engine extension
 
-#ifdef WIN32
+#if SC_IS_PLATFORM_WIN32
   g_snprintf(fm_engine_module_path, MAX_PATH_LENGTH, "sc-fm-%s.dll", sc_config_fm_engine());
+#elif SC_IS_PLATFORM_MAC
+  g_snprintf(fm_engine_module_path, MAX_PATH_LENGTH, "libsc-fm-%s.dylib", sc_config_fm_engine());
 #else
   g_snprintf(fm_engine_module_path, MAX_PATH_LENGTH, "libsc-fm-%s.so", sc_config_fm_engine());
 #endif
@@ -138,7 +140,11 @@ sc_bool sc_fs_storage_initialize(const gchar *path, sc_bool clear)
   fm_engine_module = g_module_open(fm_engine_module_path, G_MODULE_BIND_LOCAL);
 
   // skip non module files
+#if SC_IS_PLATFORM_MAC
+  if (g_str_has_suffix(fm_engine_module_path, "dylib") == TRUE)
+#else
   if (g_str_has_suffix(fm_engine_module_path, G_MODULE_SUFFIX) == TRUE)
+#endif
   {
     if (fm_engine_module == null_ptr)
     {
@@ -182,7 +188,7 @@ sc_bool sc_fs_storage_initialize(const gchar *path, sc_bool clear)
 }
 
 sc_bool sc_fs_storage_shutdown(sc_segment **segments, sc_bool save_segments)
-{    
+{
   g_message("Shutdown sc-storage");
 
   if (save_segments == SC_TRUE)

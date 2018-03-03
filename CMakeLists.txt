@@ -10,6 +10,7 @@ set(SC_MACHINE_ANTRL_DIR "${SC_MACHINE_THIRDPARTY_PATH}/antlr")
 
 option (SC_AUTO_TEST "Flag to build for automation testing" OFF)
 option (SC_KPM_SCP "Flag to build SCP module" ON)
+option (SC_BUILD_SCTP "Flag to build sctp client and server" OFF)
 
 # codegen
 if (${UNIX})
@@ -19,7 +20,7 @@ elseif (${WIN32})
 endif()
 include("${SC_MACHINE_ROOT}/cmake/codegen.cmake")
 
-find_package(Java)
+find_package(Java REQUIRED)
 
 set(CMAKE_MODULE_PATH "${SC_MACHINE_ROOT}/cmake")
 
@@ -50,7 +51,9 @@ elseif(CMAKE_CXX_COMPILER_ID MATCHES "GNU")
     set(CMAKE_CXX_FLAGS "-std=c++14 -Wall")
     set(CMAKE_CXX_FLAGS_RELEASE "-O3")        ## Optimize
     set(CMAKE_EXE_LINKER_FLAGS_RELEASE "-s")  ## Strip binary
-endif()
+elseif (NOT CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
+endif ()
 
 set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -DSC_DEBUG -DSC_PROFILE")
 set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -DSC_DEBUG -DSC_PROFILE")
@@ -62,8 +65,32 @@ if (${SC_AUTO_TEST})
     add_definitions(-DSC_BUILD_AUTO_TESTS)
 endif()
 
+
+include_directories(
+    "${SC_MACHINE_THIRDPARTY_PATH}"
+    "${SC_MACHINE_ANTRL_DIR}/cpp")
+
 # find dependencies
-if (${UNIX})
+if (${APPLE})
+    find_package(Boost 1.54 REQUIRED COMPONENTS filesystem python36)
+
+    find_package(glib2 REQUIRED)
+#    find_package(glib2_module REQUIRED)
+    set (GLIB2_LIBRARIES "glib-2.0" "gmodule-2.0")
+
+    find_package(hiredis REQUIRED)
+
+    set(LIBCLANG_LLVM_CONFIG_EXECUTABLE "/usr/local/opt/llvm/bin/llvm-config")
+    find_package(LibClang REQUIRED)
+
+    find_package(PythonLibs 3.6 REQUIRED)
+    find_package(curl REQUIRED)
+
+    set (LIBCURL_LIBRARIES ${CURL_LIBRARIES})
+
+    set (ANTLR_LIB antlr3c)
+
+elseif (${UNIX})
     find_package(PythonLibs 3.4 REQUIRED)
 
     string(REPLACE "." ";" PY_VERSION_LIST ${PYTHONLIBS_VERSION_STRING})
@@ -79,7 +106,7 @@ if (${UNIX})
     include(FindPkgConfig)
     pkg_check_modules (GLIB2 REQUIRED glib-2.0)
     pkg_check_modules (GLIB2_MODULE REQUIRED gmodule-2.0)
-    
+
     set (GLIB2_INCLUDE_DIRS "${GLIB2_INCLUDE_DIRS}" "/usr/lib/x86_64-linux-gnu/glib-2.0/include/" "${GLIB2_MODULE}")
     set (GLIB2_LIBRARIES "${GLIB2_LIBRARIES}" "${GLIB2_MODULE_LIBRARIES}")
 
@@ -94,8 +121,6 @@ if (${UNIX})
 
     pkg_check_modules(LIBCURL REQUIRED libcurl)
 
-    message (${LIBCLANG_LIBRARIES})
-   
     include_directories("${SC_MACHINE_THIRDPARTY_PATH}"
                         "${SC_MACHINE_ANTRL_DIR}/cpp")
 
@@ -148,12 +173,11 @@ elseif (${WIN32})
     set (BOOST_PYTHON_BIN_PATH "${SC_MACHINE_THIRDPARTY_PATH}/boost")
     set (BOOST_PYTHON_LIBRARY_RELEASE "${BOOST_PYTHON_BIN_PATH}/boost_python3-${MSVC_SUFFIX}-mt-1_64.lib")
     set (BOOST_PYTHON_LIBRARY_DEBUG "${BOOST_PYTHON_BIN_PATH}/boost_python3-${MSVC_SUFFIX}-mt-gd-1_64.lib")
-    
+
+
 
     include_directories("${SC_MACHINE_ANTRL_DIR}/c"
-                        "${SC_MACHINE_ANTRL_DIR}/cpp"
                         "${BOOST_PATH}/include"
-                        "${SC_MACHINE_THIRDPARTY_PATH}"
                         "${LIBCURL_INCLUDE_DIRS}")
 
     link_directories(
@@ -167,14 +191,14 @@ elseif (${WIN32})
                      "${PACKAGES_PATH}/boost_regex-${MSVC_SUFFIX}.${BOOST_VERSION}/lib/native/address-model-64/lib/"
                      )
 
-    
+
     set (GLIB2_LIBRARIES "gio-2.0.lib" "glib-2.0.lib" "gmodule-2.0.lib" "gobject-2.0.lib" "gthread-2.0.lib")
     if (${MSVC_VERSION} EQUAL "1800")
         set (REDIS_LIBRARIES "hiredis.vc120.lib" "WSock32.lib" "Ws2_32.lib")
     elseif ((${MSVC_VERSION} EQUAL "1900") OR (${MSVC_VERSION} EQUAL "1911"))
         set (REDIS_LIBRARIES "hiredis.vc140.lib" "Win32_Interop.vc140.lib" "WSock32.lib" "Ws2_32.lib")
     endif()
-    
+
     add_definitions(-DSC_PLATFORM_WIN -DHIREDIS_WIN -DBOOST_PYTHON_NO_LIB)
 
     # copy runtime libraries
@@ -200,7 +224,7 @@ elseif (${WIN32})
             )
     file(COPY ${WIN_RUNTIME_LIBRARIES} DESTINATION "${SC_BIN_PATH}")
 
-endif(${UNIX})
+endif(${APPLE})
 
 message ("Python version: ${PYTHONLIBS_VERSION_STRING}")
 
@@ -209,7 +233,9 @@ include_directories(${SC_MACHINE_ROOT} ${GLIB2_INCLUDE_DIRS})
 add_subdirectory(${SC_MACHINE_ROOT}/sc-memory)
 add_subdirectory(${SC_MACHINE_ROOT}/sc-fm)
 add_subdirectory(${SC_MACHINE_ROOT}/sc-kpm)
-add_subdirectory(${SC_MACHINE_ROOT}/sc-network)
+if (${SC_BUILD_SCTP})
+    add_subdirectory(${SC_MACHINE_ROOT}/sc-network)
+endif()
 add_subdirectory(${SC_MACHINE_ROOT}/tools)
 
 

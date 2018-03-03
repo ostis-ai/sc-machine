@@ -141,7 +141,7 @@ sc_iterator3* sc_iterator3_new(const sc_memory_context *ctx, sc_iterator3_type t
       return (sc_iterator3*)0;
     }
     break;
-    
+
   case sc_iterator3_a_a_f:
     if (!p1.is_type || !p2.is_type || p3.is_type ||
         _sc_iterator_ref_element(ctx, p3.addr) != SC_TRUE
@@ -168,6 +168,9 @@ sc_iterator3* sc_iterator3_new(const sc_memory_context *ctx, sc_iterator3_type t
     {
       return (sc_iterator3*)0;
     }
+    break;
+
+  default:
     break;
   };
 
@@ -202,15 +205,21 @@ void sc_iterator3_free(sc_iterator3 *it)
   case sc_iterator3_f_a_a:
     sc_storage_element_unref(it->params[0].addr);
     break;
+
   case sc_iterator3_a_a_f:
     sc_storage_element_unref(it->params[2].addr);
     break;
+
   case sc_iterator3_f_a_f:
     sc_storage_element_unref(it->params[0].addr);
     sc_storage_element_unref(it->params[2].addr);
     break;
+
   case sc_iterator3_a_f_a:
     sc_storage_element_unref(it->params[1].addr);
+    break;
+
+  default:
     break;
   }
 
@@ -486,6 +495,9 @@ sc_bool sc_iterator3_next(sc_iterator3 *it)
 
   case sc_iterator3_a_f_a:
     return _sc_iterator3_a_f_a_next(it);
+
+  default:
+    break;
   };
 
   return SC_FALSE;

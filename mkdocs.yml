@@ -11,6 +11,7 @@ pages:
   - Build:
     - Build on Linux: build/linux-build.md
     - Build on Windows: build/windows-build.md
+    - Build on OSX: build/osx-build.md
   - Development:
     - Git-workflow: dev/git-workflow.md
     - Pull requets: dev/pr.md
