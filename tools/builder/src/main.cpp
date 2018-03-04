@@ -24,7 +24,7 @@ int main(int argc, char *argv[]) try
       ("clear-output,c", "Clear output directory (repository) before build")
       ("settings,s", boost::program_options::value<std::string>(), "Path to configuration file for sc-memory")
       ("auto-formats,f", "Enable automatic formats info generation")
-      ("show-filenames,v", "Enable processing filnames printing");
+      ("show-filenames,v", "Enable processing file names printing");
 
   boost::program_options::variables_map vm;
   boost::program_options::store(boost::program_options::command_line_parser(argc, argv).options(options_description).run(), vm);
@@ -58,8 +58,7 @@ int main(int argc, char *argv[]) try
   if (vm.count("settings"))
     params.configFile = vm["settings"].as<std::string>();
 
-  if (vm.count("show-filenames"))
-    params.showFileNames = true;
+  params.showFileNames = vm.count("show-filenames");
 
   Builder builder;
   builder.initialize();
