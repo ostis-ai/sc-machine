@@ -11,6 +11,7 @@
     - Fix python threading
     - Fix problem with twicely pass of edge in template search
     - Fix problem with stack overflow on large template search
+    - Fix some python wrapping functions
     - Improve `ScType` class
     - Add types support in SCs-parser
     - Add keynode cache
@@ -21,12 +22,15 @@
     - Add `ScAgent` class
     - Improve custom main cycle in `ScModule`
     - Improve python testing
+    - Implement `ScHelper` class
 
 - **Tools**:
     - Fix error handling in sc-builder
+    - Fix `show-filenames` parameter processing in sc-builder
 
 - **Common**
     - Update documentation theme
+    - Improve python library documentation
 
 ## v0.4.1
 
