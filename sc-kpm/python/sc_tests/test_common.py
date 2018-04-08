@@ -415,8 +415,11 @@ class TestScMemoryContext(TestCase):
     params = ScTemplateGenParams()
     params.Add("_target", addr2)
 
+    self.assertEqual(params.Get("_target_none"), None)
+
     genResult = ctx.HelperGenTemplate(templ, params)
     self.assertTrue(type(genResult) is ScTemplateGenResult)
+    self.assertEqual(genResult["not_exist"], None)
 
     # search by this template and compare results
     searchResult = ctx.HelperSearchTemplate(templ)

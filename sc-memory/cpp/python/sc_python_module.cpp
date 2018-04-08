@@ -36,9 +36,20 @@ public:
     return *m_result;
   }
 
-  ScAddr Get(std::string const & name) const
+  bp::object Get(std::string const & name) const
   {
-    return (*m_result)[name];
+    ScAddr value;
+
+    try
+    {
+      value = (*m_result)[name];
+    }
+    catch (utils::ExceptionItemNotFound const & ex)
+    {
+      return bp::object();
+    }
+
+    return bp::object(value);
   }
 
   size_t Size() const
