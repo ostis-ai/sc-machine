@@ -39,14 +39,24 @@ endforeach( OUTPUTCONFIG CMAKE_CONFIGURATION_TYPES )
 
 set(SC_MEMORY_SRC "${SC_MACHINE_ROOT}/sc-memory")
 
-if(CMAKE_COMPILER_IS_GNUCXX)
-    set(CMAKE_CXX_FLAGS "-std=c++11 -Wall")
+if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fcolor-diagnostics -std=c++14")
+    set(CMAKE_CXX_FLAGS_RELEASE "-O3")
+
+    if(${SC_AUTO_TEST})
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wdeprecated-declarations")
+    endif()
+elseif(CMAKE_CXX_COMPILER_ID MATCHES "GNU")
+    set(CMAKE_CXX_FLAGS "-std=c++14 -Wall")
     set(CMAKE_CXX_FLAGS_RELEASE "-O3")        ## Optimize
     set(CMAKE_EXE_LINKER_FLAGS_RELEASE "-s")  ## Strip binary
 endif()
 
 set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -DSC_DEBUG -DSC_PROFILE")
 set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -DSC_DEBUG -DSC_PROFILE")
+
+set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} -DNDEBUG")
+set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -DNDEBUG")
 
 if (${SC_AUTO_TEST})
     add_definitions(-DSC_BUILD_AUTO_TESTS)
@@ -83,6 +93,8 @@ if (${UNIX})
     endif ()
 
     pkg_check_modules(LIBCURL REQUIRED libcurl)
+
+    message (${LIBCLANG_LIBRARIES})
    
     include_directories("${SC_MACHINE_THIRDPARTY_PATH}"
                         "${SC_MACHINE_ANTRL_DIR}/cpp")
@@ -90,9 +102,7 @@ if (${UNIX})
     add_definitions(-DSC_PLATFORM_UNIX)
 
     # for std::thread support
-    if (${CMAKE_COMPILER_IS_GNUCXX})
-        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread")
-    endif()
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread")
 
 elseif (${WIN32})
     find_package(PythonLibs 3.6 REQUIRED)
@@ -202,16 +212,4 @@ add_subdirectory(${SC_MACHINE_ROOT}/sc-kpm)
 add_subdirectory(${SC_MACHINE_ROOT}/sc-network)
 add_subdirectory(${SC_MACHINE_ROOT}/tools)
 
-if (${CMAKE_SYSTEM_NAME} STREQUAL Windows)
-    if(MSVC)
-        message(STATUS "Compiler: MSVC, version: " ${MSVC_VERSION})
-    endif(MSVC)
-    if(BORLAND) 
-        message(STATUS "Compiler: BCC") 
-    endif(BORLAND) 
-    else(${CMAKE_SYSTEM_NAME} STREQUAL Linux) 
-        message(STATUS "Only GCC is supported on Linux")
-    endif(${CMAKE_SYSTEM_NAME} STREQUAL Windows) 
-
-message(STATUS "CMake generates " ${CMAKE_GENERATOR})
 
