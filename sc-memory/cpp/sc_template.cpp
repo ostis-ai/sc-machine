@@ -9,6 +9,28 @@
 
 #include <algorithm>
 
+ScTemplateItemValue operator >> (ScAddr const & value, char const * replName)
+{
+  return ScTemplateItemValue(value, replName);
+}
+
+ScTemplateItemValue operator >> (ScAddr const & value, std::string const & replName)
+{
+  return ScTemplateItemValue(value, replName.c_str());
+}
+
+ScTemplateItemValue operator >> (ScType const & value, char const * replName)
+{
+  return ScTemplateItemValue(value, replName);
+}
+
+ScTemplateItemValue operator >> (ScType const & value, std::string const & replName)
+{
+  return ScTemplateItemValue(value, replName.c_str());
+}
+
+// --------------------------------
+
 ScTemplate::ScTemplate(bool forceOrder /* = true */)
   : m_currentReplPos(0)
   , m_isForceOrder(forceOrder)

@@ -183,17 +183,10 @@ protected:
   size_t m_index;
 };
 
-template <typename Type>
-ScTemplateItemValue operator >> (Type const & value, char const * replName)
-{
-  return ScTemplateItemValue(value, replName);
-}
-
-template <typename Type>
-ScTemplateItemValue operator >> (Type const & value, std::string const & replName)
-{
-  return ScTemplateItemValue(value, replName.c_str());
-}
+ScTemplateItemValue operator >> (ScAddr const & value, char const * replName);
+ScTemplateItemValue operator >> (ScAddr const & value, std::string const & replName);
+ScTemplateItemValue operator >> (ScType const & value, char const * replName);
+ScTemplateItemValue operator >> (ScType const & value, std::string const & replName);
 
 class ScTemplateGenResult;
 class ScTemplateSearchResult;

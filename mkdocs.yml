@@ -38,4 +38,7 @@ theme: material
 
 markdown_extensions:
   - markdown_include.include
+  - admonition
   - codehilite
+  - pymdownx.details
+  - pymdownx.superfences

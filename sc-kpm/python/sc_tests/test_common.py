@@ -3,622 +3,729 @@ from datetime import datetime
 from common import *
 from sc import *
 
-import sys, time
+import sys
+import time
 
 sys.stdout = sys.__stdout__
 sys.stderr = sys.__stderr__
 
 module = None
 
-def MemoryCtx():
-    return __ctx__
+
+def MemoryCtx() -> ScMemoryContext:
+  return __ctx__
+
 
 def CreateNodeWithIdtf(ctx, _type, _idtf):
-    addr = ctx.CreateNode(_type)
-    linkAddr = ctx.CreateLink()
+  addr = ctx.CreateNode(_type)
+  linkAddr = ctx.CreateLink()
 
-    ctx.SetLinkContent(linkAddr, _idtf)
+  ctx.SetLinkContent(linkAddr, _idtf)
+
 
 class TestScAddr(TestCase):
 
-    def test_compare(self):
+  def test_compare(self):
 
-        addr1 = ScAddr()
-        addr2 = ScAddr()
-        
-        self.assertEqual(addr1, addr2)
+    addr1 = ScAddr()
+    addr2 = ScAddr()
 
-        ctx = MemoryCtx()
-        addr2 = ctx.CreateNode(ScType.Unknown)
+    self.assertEqual(addr1, addr2)
 
-        self.assertNotEqual(addr1, addr2)
+    ctx = MemoryCtx()
+    addr2 = ctx.CreateNode(ScType.Unknown)
 
-    def test_is_valid(self):
-        addr1 = ScAddr()
+    self.assertNotEqual(addr1, addr2)
 
-        self.assertFalse(addr1.IsValid())
+  def test_is_valid(self):
+    addr1 = ScAddr()
 
-        ctx = MemoryCtx()
-        addr2 = ctx.CreateNode(ScType.Const)
+    self.assertFalse(addr1.IsValid())
 
-        self.assertTrue(addr2.IsValid())
+    ctx = MemoryCtx()
+    addr2 = ctx.CreateNode(ScType.Const)
 
-    def test_to_int(self):
-        addr1 = ScAddr()
+    self.assertTrue(addr2.IsValid())
 
-        self.assertEqual(addr1.ToInt(), 0)
+  def test_to_int(self):
+    addr1 = ScAddr()
 
-        ctx = MemoryCtx()
-        addr2 = ctx.CreateNode(ScType.Const)
+    self.assertEqual(addr1.ToInt(), 0)
 
-        self.assertNotEqual(addr2.ToInt(), 0)
+    ctx = MemoryCtx()
+    addr2 = ctx.CreateNode(ScType.Const)
+
+    self.assertNotEqual(addr2.ToInt(), 0)
+
 
 class TestScType(TestCase):
 
-    def test_compare(self):
-        type1 = ScType.Node
-        type2 = ScType.Link
+  def test_compare(self):
+    type1 = ScType.Node
+    type2 = ScType.Link
 
-        self.assertNotEqual(type1, type2)
+    self.assertNotEqual(type1, type2)
 
-        type2 = ScType.NodeConst
-        type3 = type1 | ScType.Const
+    type2 = ScType.NodeConst
+    type3 = type1 | ScType.Const
 
-        self.assertEqual(type2, type3)
+    self.assertEqual(type2, type3)
 
-        type4 = type3 & type1
+    type4 = type3 & type1
 
-        self.assertEqual(type1, type4)
+    self.assertEqual(type1, type4)
 
-    def test_to_int(self):
-        v = ScType.Node.ToInt()
-        self.assertGreater(v, 0)
-        self.assertEqual(v, 1)
+  def test_to_int(self):
+    v = ScType.Node.ToInt()
+    self.assertGreater(v, 0)
+    self.assertEqual(v, 1)
 
-    def test_is_valid(self):
-        type1 = ScType.Node
+  def test_is_valid(self):
+    type1 = ScType.Node
 
-        self.assertFalse(type1.IsUnknown())
+    self.assertFalse(type1.IsUnknown())
 
-        type2 = ScType()
+    type2 = ScType()
 
-        self.assertTrue(type2.IsUnknown())
+    self.assertTrue(type2.IsUnknown())
 
-    def test_is_func(self):
+  def test_is_func(self):
 
-        typeNode = ScType.NodeConst
+    typeNode = ScType.NodeConst
 
-        self.assertTrue(typeNode.IsNode())
-        self.assertTrue(typeNode.IsConst())
-        self.assertFalse(typeNode.IsEdge())
-        self.assertFalse(typeNode.IsLink())
+    self.assertTrue(typeNode.IsNode())
+    self.assertTrue(typeNode.IsConst())
+    self.assertFalse(typeNode.IsEdge())
+    self.assertFalse(typeNode.IsLink())
 
-        typeEdge = ScType.EdgeAccessVarPosTemp
+    typeEdge = ScType.EdgeAccessVarPosTemp
 
-        self.assertTrue(typeEdge.IsEdge())
-        self.assertTrue(typeEdge.IsVar())
-        self.assertFalse(typeEdge.IsConst())
-        self.assertFalse(typeEdge.IsNode())
-        self.assertFalse(typeEdge.IsLink())
+    self.assertTrue(typeEdge.IsEdge())
+    self.assertTrue(typeEdge.IsVar())
+    self.assertFalse(typeEdge.IsConst())
+    self.assertFalse(typeEdge.IsNode())
+    self.assertFalse(typeEdge.IsLink())
 
-        typeLink = ScType.Link
+    typeLink = ScType.Link
 
-        self.assertTrue(typeLink.IsLink())
-        self.assertFalse(typeLink.IsConst())
-        self.assertFalse(typeLink.IsVar())
-        self.assertFalse(typeLink.IsEdge())
-        self.assertFalse(typeLink.IsNode())
+    self.assertTrue(typeLink.IsLink())
+    self.assertFalse(typeLink.IsConst())
+    self.assertFalse(typeLink.IsVar())
+    self.assertFalse(typeLink.IsEdge())
+    self.assertFalse(typeLink.IsNode())
+
 
 class TestScMemoryContext(TestCase):
 
-    def test_create(self):
-        ctx = MemoryCtx()
+  def test_create(self):
+    ctx = MemoryCtx()
 
-        addr1 = ctx.CreateNode(ScType.Const)
-        self.assertTrue(addr1.IsValid())
+    addr1 = ctx.CreateNode(ScType.Const)
+    self.assertTrue(addr1.IsValid())
 
-        addr2 = ctx.CreateLink()
-        self.assertTrue(addr2.IsValid())
+    addr2 = ctx.CreateLink()
+    self.assertTrue(addr2.IsValid())
 
-        edge1 = ctx.CreateEdge(ScType.EdgeAccessConstPosPerm, addr1, addr2)
-        self.assertTrue(edge1.IsValid())
+    edge1 = ctx.CreateEdge(ScType.EdgeAccessConstPosPerm, addr1, addr2)
+    self.assertTrue(edge1.IsValid())
 
-        edge2 = ctx.CreateEdge(ScType.EdgeAccessConstPosPerm, addr2, ScAddr())
-        self.assertFalse(edge2.IsValid())
+    edge2 = ctx.CreateEdge(ScType.EdgeAccessConstPosPerm, addr2, ScAddr())
+    self.assertFalse(edge2.IsValid())
 
-    def test_is_element(self):
-        ctx = MemoryCtx()
+  def test_is_element(self):
+    ctx = MemoryCtx()
 
-        self.assertFalse(ctx.IsElement(ScAddr()))
+    self.assertFalse(ctx.IsElement(ScAddr()))
 
-        addr1 = ctx.CreateNode(ScType.Unknown)
-        self.assertTrue(ctx.IsElement(addr1))
+    addr1 = ctx.CreateNode(ScType.Unknown)
+    self.assertTrue(ctx.IsElement(addr1))
 
-    def test_get_element_type(self):
-        ctx = MemoryCtx()
+  def test_get_element_type(self):
+    ctx = MemoryCtx()
 
-        self.assertEqual(ctx.GetElementType(ScAddr()), ScType.Unknown)
+    self.assertEqual(ctx.GetElementType(ScAddr()), ScType.Unknown)
 
-        addr1 = ctx.CreateNode(ScType.NodeConst)
-        self.assertEqual(ctx.GetElementType(addr1), ScType.NodeConst)
+    addr1 = ctx.CreateNode(ScType.NodeConst)
+    self.assertEqual(ctx.GetElementType(addr1), ScType.NodeConst)
 
-    def test_get_edge_info(self):
-        ctx = MemoryCtx()
+  def test_get_edge_info(self):
+    ctx = MemoryCtx()
 
-        addr1 = ctx.CreateNode(ScType())
-        self.assertTrue(addr1.IsValid())
+    addr1 = ctx.CreateNode(ScType())
+    self.assertTrue(addr1.IsValid())
 
-        addr2 = ctx.CreateNode(ScType())
-        self.assertTrue(addr2.IsValid())
+    addr2 = ctx.CreateNode(ScType())
+    self.assertTrue(addr2.IsValid())
 
-        edge = ctx.CreateEdge(ScType.EdgeAccessConstPosPerm, addr1, addr2)
-        self.assertTrue(edge.IsValid())
-
-        src, trg = ctx.GetEdgeInfo(edge)
-        self.assertEqual(addr1, src)
-        self.assertEqual(addr2, trg)
-
-        src, trg = ctx.GetEdgeInfo(addr1)
-        self.assertEqual(src, None)
-        self.assertEqual(trg, None)
-
-    def test_find_links_by_content(self):
-        ctx = MemoryCtx()
-
-        def createLink(content):
-            addr = ctx.CreateLink()
-            self.assertTrue(addr.IsValid())
-            self.assertTrue(ctx.SetLinkContent(addr, content))
-            return addr
+    edge = ctx.CreateEdge(ScType.EdgeAccessConstPosPerm, addr1, addr2)
+    self.assertTrue(edge.IsValid())
 
-        c1 = 'test_link_1'
-        link1 = createLink(c1)
-        link1copy = createLink(c1)
+    src, trg = ctx.GetEdgeInfo(edge)
+    self.assertEqual(addr1, src)
+    self.assertEqual(addr2, trg)
 
-        link1List = [link1, link1copy]
+    src, trg = ctx.GetEdgeInfo(addr1)
+    self.assertEqual(src, None)
+    self.assertEqual(trg, None)
 
-        c2 = 'test_link_2'
-        link2 = createLink(c2)
-        
-        res1 = ctx.FindLinksByContent(c1)
-        self.assertEqual(len(res1), len(link1List))
-        for el in res1:
-            self.assertTrue(el in link1List)
+  def test_find_links_by_content(self):
+    ctx = MemoryCtx()
 
-        res2 = ctx.FindLinksByContent(c2)
-        self.assertEqual(len(res2), 1)
-        self.assertEqual(res2[0], link2)
-
-        res3 = ctx.FindLinksByContent('test_any_not_found')
-        self.assertEqual(len(res3), 0)
+    def createLink(content):
+      addr = ctx.CreateLink()
+      self.assertTrue(addr.IsValid())
+      self.assertTrue(ctx.SetLinkContent(addr, content))
+      return addr
 
-    def test_link_content(self):
-        ctx = MemoryCtx()
-
-        addr1 = ctx.CreateLink()
-        self.assertTrue(addr1.IsValid())
-        self.assertTrue(ctx.SetLinkContent(addr1, 56))
-        
-        v1 = ctx.GetLinkContent(addr1)
-        self.assertEqual(v1.GetType(), ScLinkContent.Int)
-
-        value1 = v1.AsInt()
-        self.assertTrue(type(value1) is int)
-        self.assertEqual(value1, 56)
-        
-        addr2 = ctx.CreateLink()
-        self.assertTrue(addr2.IsValid())
-        self.assertTrue(ctx.SetLinkContent(addr2, 56.0))
-
-        v2 = ctx.GetLinkContent(addr2)
-        value2 = v2.AsFloat()
-        self.assertTrue(type(value2) is float)
-        self.assertEqual(value2, 56.0)
-        self.assertEqual(v2.GetType(), ScLinkContent.Float)
-
-        addr3 = ctx.CreateLink()
-        self.assertTrue(addr3.IsValid())
-        self.assertTrue(ctx.SetLinkContent(addr3, "any text"))
-
-        v3 = ctx.GetLinkContent(addr3)
-        value3 = v3.AsString()
-        self.assertTrue(type(value3) is str)
-        self.assertEqual(value3, "any text")
-        self.assertEqual(v3.GetType(), ScLinkContent.String)
-
-    def test_iterator3(self):
-
-        ctx = MemoryCtx()
-        addr1 = ctx.CreateNode(ScType.NodeConst)
-        self.assertTrue(addr1.IsValid())
-
-        addr2 = ctx.CreateNode(ScType.NodeVar)
-        self.assertTrue(addr2.IsValid())
-
-        edge = ctx.CreateEdge(ScType.EdgeAccessConstPosPerm, addr1, addr2)
-        self.assertTrue(edge.IsValid())
-
-        def test_common(it):
-            self.assertTrue(it.IsValid())
-            self.assertTrue(it.Next())
-            self.assertEqual(it.Get(0), addr1)
-            self.assertEqual(it.Get(1), edge)
-            self.assertEqual(it.Get(2), addr2)
-            self.assertFalse(it.Next())
-
-        # f_a_a
-        itFAA = ctx.Iterator3(addr1, ScType.EdgeAccessConstPosPerm, ScType.NodeVar)
-        test_common(itFAA)
-        
-        # f_a_f
-        itFAF = ctx.Iterator3(addr1, ScType.EdgeAccessConstPosPerm, addr2)
-        test_common(itFAF)
-
-        # a_a_f
-        itAAF = ctx.Iterator3(ScType.NodeConst, ScType.EdgeAccessConstPosPerm, addr2)
-        test_common(itAAF)
-
-        # no results
-        it3 = ctx.Iterator3(addr1, ScType.EdgeAccessConstPosPerm, ScType.NodeConst)
-        self.assertTrue(it3.IsValid())
-        self.assertFalse(it3.Next())
-
-    def test_iterator5(self):
-        ctx = MemoryCtx()
-
-        addr1 = ctx.CreateNode(ScType.NodeConst)
-        self.assertTrue(addr1.IsValid())
-
-        addr2 = ctx.CreateNode(ScType.NodeVar)
-        self.assertTrue(addr2.IsValid())
-
-        attr = ctx.CreateNode(ScType.Unknown)
-        self.assertTrue(attr.IsValid())
-
-        edge = ctx.CreateEdge(ScType.EdgeAccessConstPosPerm, addr1, addr2)
-        self.assertTrue(edge.IsValid())
-
-        edgeAttr = ctx.CreateEdge(ScType.EdgeAccessVarPosTemp, attr, edge)
-        self.assertTrue(edgeAttr.IsValid())
-
-        def test_common(it):
-            self.assertTrue(it.IsValid())
-            self.assertTrue(it.Next())
-            self.assertEqual(it.Get(0), addr1)
-            self.assertEqual(it.Get(1), edge)
-            self.assertEqual(it.Get(2), addr2)
-            self.assertEqual(it.Get(3), edgeAttr)
-            self.assertEqual(it.Get(4), attr)
-            self.assertFalse(it.Next())
-
-        # f_a_f_a_f
-        itFAFAF = ctx.Iterator5(
-            addr1,
-            ScType.EdgeAccessConstPosPerm,
-            addr2,
-            ScType.EdgeAccessVarPosTemp,
-            attr)
-        test_common(itFAFAF)
-
-        # f_a_f_a_a
-        itFAFAA = ctx.Iterator5(
-            addr1, 
-            ScType.EdgeAccessConstPosPerm,
-            addr2,
-            ScType.EdgeAccessVarPosTemp,
-            ScType.Node)
-        test_common(itFAFAA)
-
-        # f_a_a_a_f
-        itFAAAF = ctx.Iterator5(
-            addr1, 
-            ScType.EdgeAccessConstPosPerm,
-            ScType.NodeVar,
-            ScType.EdgeAccessVarPosTemp,
-            attr)
-        test_common(itFAAAF)
-
-        # f_a_a_a_a
-        itFAAAA = ctx.Iterator5(
-            addr1, 
-            ScType.EdgeAccessConstPosPerm,
-            ScType.NodeVar,
-            ScType.EdgeAccessVarPosTemp,
-            ScType.Node)
-        test_common(itFAAAA)
-
-        # a_a_f_a_f
-        itAAFAF = ctx.Iterator5(
-            ScType.NodeConst, 
-            ScType.EdgeAccessConstPosPerm,
-            addr2,
-            ScType.EdgeAccessVarPosTemp,
-            attr)
-        test_common(itAAFAF)
-
-        # a_a_f_a_a
-        itAAFAA = ctx.Iterator5(
-            ScType.NodeConst, 
-            ScType.EdgeAccessConstPosPerm,
-            addr2,
-            ScType.EdgeAccessVarPosTemp,
-            ScType.Node)
-        test_common(itAAFAA)
-
-    def test_helper_sys_idtf(self):
-        ctx = MemoryCtx()
-
-        addr1 = ctx.HelperResolveSystemIdtf("sc_result", None)
-        self.assertTrue(addr1.IsValid())
-
-        # non exist
-        addr2 = ctx.HelperResolveSystemIdtf("test_example_value_idtf", None)
-        self.assertFalse(addr2.IsValid())
-
-        # create new
-        addr3 = ctx.HelperResolveSystemIdtf("test_example_idtf1", ScType.NodeConst)
-        self.assertTrue(addr3.IsValid())
-        self.assertEqual(ScType.NodeConst, ctx.GetElementType(addr3))
-
-        # Set
-        addr1 = ctx.CreateNode(ScType.NodeConst)
-        self.assertTrue(addr1.IsValid())
-        self.assertTrue(ctx.HelperSetSystemIdtf("idtf_1_2_test", addr1))
-
-        addr2 = ctx.HelperResolveSystemIdtf("idtf_1_2_test", None)
-        self.assertEqual(addr1, addr2)
-
-        # get
-        self.assertEqual(ctx.HelperGetSystemIdtf(addr2), "idtf_1_2_test")
-
-    def test_helper_has_edge(self):
-        ctx = MemoryCtx()
-
-        addr1 = ctx.CreateNode(ScType.NodeConst)
-        self.assertTrue(addr1.IsValid())
-
-        addr2 = ctx.CreateNode(ScType.NodeConst)
-        self.assertTrue(addr2.IsValid())
-
-        edge = ctx.CreateEdge(ScType.EdgeAccessConstPosPerm, addr1, addr2)
-        self.assertTrue(edge.IsValid())
-        self.assertTrue(ctx.HelperCheckEdge(addr1, addr2, ScType.EdgeAccessConstPosPerm))
-
-    def test_helper_template(self):
-        ctx = MemoryCtx()
-
-        addr1 = ctx.CreateNode(ScType.NodeConst)
-        self.assertTrue(addr1.IsValid())
-
-        addr2 = ctx.CreateNode(ScType.NodeConst)
-        self.assertTrue(addr2.IsValid())
-
-        attrAddr = ctx.CreateNode(ScType.NodeConst)
-        self.assertTrue(attrAddr.IsValid())
-
-        templ = ScTemplate()
-        templ.Triple(addr1, ScType.EdgeAccessVarPosPerm >> "_edge", ScType.NodeVar >> "_target")
-        templ.Triple(attrAddr, ScType.EdgeAccessVarPosPerm, "_edge")
-
-        params = ScTemplateGenParams()
-        params.Add("_target", addr2)
-
-        genResult = ctx.HelperGenTemplate(templ, params)
-        self.assertTrue(type(genResult) is ScTemplateGenResult)
-
-        # search by this template and compare results
-        searchResult = ctx.HelperSearchTemplate(templ)
-        self.assertTrue(type(searchResult) is ScTemplateSearchResult)
-        self.assertEqual(searchResult.Size(), 1)
-
-        searchItem = searchResult[0]
-        self.assertEqual(searchItem["_edge"], genResult["_edge"])
-        self.assertEqual(searchItem["_target"], genResult["_target"])
-
-        # build template
-        addr1 = ctx.CreateNode(ScType.NodeConst)
-        self.assertTrue(addr1.IsValid())
-
-        addr2 = ctx.CreateNode(ScType.NodeConst)
-        self.assertTrue(addr2.IsValid())
-
-        edge = ctx.CreateEdge(ScType.EdgeAccessVarPosPerm, addr1, addr2)
-        self.assertTrue(edge.IsValid())
-
-        templAddr = ctx.CreateNode(ScType.NodeConstStruct)
-        self.assertTrue(templAddr.IsValid())
-
-        for addr in [addr1, addr2, edge]:
-            e = ctx.CreateEdge(ScType.EdgeAccessConstPosPerm, templAddr, addr)
-            self.assertTrue(e.IsValid())
-
-        templ = ctx.HelperBuildTemplate(templAddr)
-        self.assertTrue(type(templ) is ScTemplate)
-
-    def test_rshift(self):
-        ctx = MemoryCtx()
-
-        addr1 = ctx.CreateNode(ScType.NodeConst)
-        
-        value1 = addr1 >> "test_repl"
-        self.assertTrue(type(value1) is ScTemplateItemValue)
-
-        value2 = ScType.NodeConst >> "test_repl2"
-        self.assertTrue(type(value2) is ScTemplateItemValue)
+    c1 = 'test_link_1'
+    link1 = createLink(c1)
+    link1copy = createLink(c1)
+
+    link1List = [link1, link1copy]
+
+    c2 = 'test_link_2'
+    link2 = createLink(c2)
+
+    res1 = ctx.FindLinksByContent(c1)
+    self.assertEqual(len(res1), len(link1List))
+    for el in res1:
+      self.assertTrue(el in link1List)
+
+    res2 = ctx.FindLinksByContent(c2)
+    self.assertEqual(len(res2), 1)
+    self.assertEqual(res2[0], link2)
+
+    res3 = ctx.FindLinksByContent('test_any_not_found')
+    self.assertEqual(len(res3), 0)
+
+  def test_link_content(self):
+    ctx = MemoryCtx()
+
+    addr1 = ctx.CreateLink()
+    self.assertTrue(addr1.IsValid())
+    self.assertTrue(ctx.SetLinkContent(addr1, 56))
+
+    v1 = ctx.GetLinkContent(addr1)
+    self.assertEqual(v1.GetType(), ScLinkContent.Int)
+
+    value1 = v1.AsInt()
+    self.assertTrue(type(value1) is int)
+    self.assertEqual(value1, 56)
+
+    addr2 = ctx.CreateLink()
+    self.assertTrue(addr2.IsValid())
+    self.assertTrue(ctx.SetLinkContent(addr2, 56.0))
+
+    v2 = ctx.GetLinkContent(addr2)
+    value2 = v2.AsFloat()
+    self.assertTrue(type(value2) is float)
+    self.assertEqual(value2, 56.0)
+    self.assertEqual(v2.GetType(), ScLinkContent.Float)
+
+    addr3 = ctx.CreateLink()
+    self.assertTrue(addr3.IsValid())
+    self.assertTrue(ctx.SetLinkContent(addr3, "any text"))
+
+    v3 = ctx.GetLinkContent(addr3)
+    value3 = v3.AsString()
+    self.assertTrue(type(value3) is str)
+    self.assertEqual(value3, "any text")
+    self.assertEqual(v3.GetType(), ScLinkContent.String)
+
+  def test_iterator3(self):
+
+    ctx = MemoryCtx()
+    addr1 = ctx.CreateNode(ScType.NodeConst)
+    self.assertTrue(addr1.IsValid())
+
+    addr2 = ctx.CreateNode(ScType.NodeVar)
+    self.assertTrue(addr2.IsValid())
+
+    edge = ctx.CreateEdge(ScType.EdgeAccessConstPosPerm, addr1, addr2)
+    self.assertTrue(edge.IsValid())
+
+    def test_common(it):
+      self.assertTrue(it.IsValid())
+      self.assertTrue(it.Next())
+      self.assertEqual(it.Get(0), addr1)
+      self.assertEqual(it.Get(1), edge)
+      self.assertEqual(it.Get(2), addr2)
+      self.assertFalse(it.Next())
+
+    # f_a_a
+    itFAA = ctx.Iterator3(
+        addr1, ScType.EdgeAccessConstPosPerm, ScType.NodeVar)
+    test_common(itFAA)
+
+    # f_a_f
+    itFAF = ctx.Iterator3(addr1, ScType.EdgeAccessConstPosPerm, addr2)
+    test_common(itFAF)
+
+    # a_a_f
+    itAAF = ctx.Iterator3(
+        ScType.NodeConst, ScType.EdgeAccessConstPosPerm, addr2)
+    test_common(itAAF)
+
+    # no results
+    it3 = ctx.Iterator3(
+        addr1, ScType.EdgeAccessConstPosPerm, ScType.NodeConst)
+    self.assertTrue(it3.IsValid())
+    self.assertFalse(it3.Next())
+
+  def test_iterator5(self):
+    ctx = MemoryCtx()
+
+    addr1 = ctx.CreateNode(ScType.NodeConst)
+    self.assertTrue(addr1.IsValid())
+
+    addr2 = ctx.CreateNode(ScType.NodeVar)
+    self.assertTrue(addr2.IsValid())
+
+    attr = ctx.CreateNode(ScType.Unknown)
+    self.assertTrue(attr.IsValid())
+
+    edge = ctx.CreateEdge(ScType.EdgeAccessConstPosPerm, addr1, addr2)
+    self.assertTrue(edge.IsValid())
+
+    edgeAttr = ctx.CreateEdge(ScType.EdgeAccessVarPosTemp, attr, edge)
+    self.assertTrue(edgeAttr.IsValid())
+
+    def test_common(it):
+      self.assertTrue(it.IsValid())
+      self.assertTrue(it.Next())
+      self.assertEqual(it.Get(0), addr1)
+      self.assertEqual(it.Get(1), edge)
+      self.assertEqual(it.Get(2), addr2)
+      self.assertEqual(it.Get(3), edgeAttr)
+      self.assertEqual(it.Get(4), attr)
+      self.assertFalse(it.Next())
+
+    # f_a_f_a_f
+    itFAFAF = ctx.Iterator5(
+        addr1,
+        ScType.EdgeAccessConstPosPerm,
+        addr2,
+        ScType.EdgeAccessVarPosTemp,
+        attr)
+    test_common(itFAFAF)
+
+    # f_a_f_a_a
+    itFAFAA = ctx.Iterator5(
+        addr1,
+        ScType.EdgeAccessConstPosPerm,
+        addr2,
+        ScType.EdgeAccessVarPosTemp,
+        ScType.Node)
+    test_common(itFAFAA)
+
+    # f_a_a_a_f
+    itFAAAF = ctx.Iterator5(
+        addr1,
+        ScType.EdgeAccessConstPosPerm,
+        ScType.NodeVar,
+        ScType.EdgeAccessVarPosTemp,
+        attr)
+    test_common(itFAAAF)
+
+    # f_a_a_a_a
+    itFAAAA = ctx.Iterator5(
+        addr1,
+        ScType.EdgeAccessConstPosPerm,
+        ScType.NodeVar,
+        ScType.EdgeAccessVarPosTemp,
+        ScType.Node)
+    test_common(itFAAAA)
+
+    # a_a_f_a_f
+    itAAFAF = ctx.Iterator5(
+        ScType.NodeConst,
+        ScType.EdgeAccessConstPosPerm,
+        addr2,
+        ScType.EdgeAccessVarPosTemp,
+        attr)
+    test_common(itAAFAF)
+
+    # a_a_f_a_a
+    itAAFAA = ctx.Iterator5(
+        ScType.NodeConst,
+        ScType.EdgeAccessConstPosPerm,
+        addr2,
+        ScType.EdgeAccessVarPosTemp,
+        ScType.Node)
+    test_common(itAAFAA)
+
+  def test_helper_sys_idtf(self):
+    ctx = MemoryCtx()
+
+    addr1 = ctx.HelperResolveSystemIdtf("sc_result", None)
+    self.assertTrue(addr1.IsValid())
+
+    # non exist
+    addr2 = ctx.HelperResolveSystemIdtf("test_example_value_idtf", None)
+    self.assertFalse(addr2.IsValid())
+
+    # create new
+    addr3 = ctx.HelperResolveSystemIdtf(
+        "test_example_idtf1", ScType.NodeConst)
+    self.assertTrue(addr3.IsValid())
+    self.assertEqual(ScType.NodeConst, ctx.GetElementType(addr3))
+
+    # Set
+    addr1 = ctx.CreateNode(ScType.NodeConst)
+    self.assertTrue(addr1.IsValid())
+    self.assertTrue(ctx.HelperSetSystemIdtf("idtf_1_2_test", addr1))
+
+    addr2 = ctx.HelperResolveSystemIdtf("idtf_1_2_test", None)
+    self.assertEqual(addr1, addr2)
+
+    # get
+    self.assertEqual(ctx.HelperGetSystemIdtf(addr2), "idtf_1_2_test")
+
+  def test_helper_has_edge(self):
+    ctx = MemoryCtx()
+
+    addr1 = ctx.CreateNode(ScType.NodeConst)
+    self.assertTrue(addr1.IsValid())
+
+    addr2 = ctx.CreateNode(ScType.NodeConst)
+    self.assertTrue(addr2.IsValid())
+
+    edge = ctx.CreateEdge(ScType.EdgeAccessConstPosPerm, addr1, addr2)
+    self.assertTrue(edge.IsValid())
+    self.assertTrue(ctx.HelperCheckEdge(
+        addr1, addr2, ScType.EdgeAccessConstPosPerm))
+
+  def test_helper_template(self):
+    ctx = MemoryCtx()
+
+    addr1 = ctx.CreateNode(ScType.NodeConst)
+    self.assertTrue(addr1.IsValid())
+
+    addr2 = ctx.CreateNode(ScType.NodeConst)
+    self.assertTrue(addr2.IsValid())
+
+    attrAddr = ctx.CreateNode(ScType.NodeConst)
+    self.assertTrue(attrAddr.IsValid())
+
+    templ = ScTemplate()
+    templ.Triple(addr1, ScType.EdgeAccessVarPosPerm >>
+                 "_edge", ScType.NodeVar >> "_target")
+    templ.Triple(attrAddr, ScType.EdgeAccessVarPosPerm, "_edge")
+
+    params = ScTemplateGenParams()
+    params.Add("_target", addr2)
+
+    self.assertEqual(params.Get("_target_none"), None)
+
+    genResult = ctx.HelperGenTemplate(templ, params)
+    self.assertTrue(type(genResult) is ScTemplateGenResult)
+    self.assertEqual(genResult["not_exist"], None)
+
+    # search by this template and compare results
+    searchResult = ctx.HelperSearchTemplate(templ)
+    self.assertTrue(type(searchResult) is ScTemplateSearchResult)
+    self.assertEqual(searchResult.Size(), 1)
+
+    searchItem = searchResult[0]
+    self.assertEqual(searchItem["_edge"], genResult["_edge"])
+    self.assertEqual(searchItem["_target"], genResult["_target"])
+
+    # build template
+    addr1 = ctx.CreateNode(ScType.NodeConst)
+    self.assertTrue(addr1.IsValid())
+
+    addr2 = ctx.CreateNode(ScType.NodeConst)
+    self.assertTrue(addr2.IsValid())
+
+    edge = ctx.CreateEdge(ScType.EdgeAccessVarPosPerm, addr1, addr2)
+    self.assertTrue(edge.IsValid())
+
+    templAddr = ctx.CreateNode(ScType.NodeConstStruct)
+    self.assertTrue(templAddr.IsValid())
+
+    for addr in [addr1, addr2, edge]:
+      e = ctx.CreateEdge(ScType.EdgeAccessConstPosPerm, templAddr, addr)
+      self.assertTrue(e.IsValid())
+
+    templ = ctx.HelperBuildTemplate(templAddr)
+    self.assertTrue(type(templ) is ScTemplate)
+
+  def test_rshift(self):
+    ctx = MemoryCtx()
+
+    addr1 = ctx.CreateNode(ScType.NodeConst)
+
+    value1 = addr1 >> "test_repl"
+    self.assertTrue(type(value1) is ScTemplateItemValue)
+
+    value2 = ScType.NodeConst >> "test_repl2"
+    self.assertTrue(type(value2) is ScTemplateItemValue)
+
 
 class TestEvents(TestCase):
 
-    def test_events(self):
-        ctx = MemoryCtx()
-        events = module.events
+  def test_events(self):
+    ctx = MemoryCtx()
+    events = module.events
 
-        def waitTimeout(seconds, checkFunc):
-            start = datetime.now()
-            delta = 0
+    def waitTimeout(seconds, checkFunc):
+      start = datetime.now()
+      delta = 0
 
-            while not checkFunc() and delta < seconds:
-                module.EmitEvents()
-                delta = (datetime.now() - start).seconds
-                time.sleep(0.1)
+      while not checkFunc() and delta < seconds:
+        module.EmitEvents()
+        delta = (datetime.now() - start).seconds
+        time.sleep(0.1)
 
-        addr1 = ctx.CreateNode(ScType.NodeConst)
-        addr2 = ctx.CreateNode(ScType.NodeConst)
+    addr1 = ctx.CreateNode(ScType.NodeConst)
+    addr2 = ctx.CreateNode(ScType.NodeConst)
 
-        class EventCheck:
-            def __init__(self):
-                self.passed = False
-            
-            def onEvent(self, evt_params):
-                print('onEvent')
-                self.passed = True
-            
-            def isPassed(self):
-                return self.passed
+    class EventCheck:
+      def __init__(self):
+        self.passed = False
 
-        check = EventCheck()
+      def onEvent(self, evt_params):
+        print('onEvent')
+        self.passed = True
 
-        evtAddOutputEdge = events.CreateEventAddOutputEdge(addr1, check.onEvent)
-        
-        # emit event and wait
-        edge1 = ctx.CreateEdge(ScType.EdgeAccess, addr1, addr2)
-        waitTimeout(3, check.isPassed)
-        
-        self.assertTrue(check.isPassed())
+      def isPassed(self):
+        return self.passed
+
+    check = EventCheck()
+
+    evtAddOutputEdge = events.CreateEventAddOutputEdge(
+        addr1, check.onEvent)
+
+    # emit event and wait
+    edge1 = ctx.CreateEdge(ScType.EdgeAccess, addr1, addr2)
+    waitTimeout(3, check.isPassed)
+
+    self.assertTrue(check.isPassed())
+
 
 class TestScSet(TestCase):
 
-    def test_sc_set(self):
-        ctx = MemoryCtx()
+  def test_sc_set(self):
+    ctx = MemoryCtx()
 
-        addr1 = ctx.CreateNode(ScType.NodeConst)
-        addr2 = ctx.CreateNode(ScType.Node)
-        addr3 = ctx.CreateNode(ScType.Node)
+    addr1 = ctx.CreateNode(ScType.NodeConst)
+    addr2 = ctx.CreateNode(ScType.Node)
+    addr3 = ctx.CreateNode(ScType.Node)
 
-        edge = ctx.CreateEdge(ScType.EdgeAccessConstPosPerm, addr1, addr2)
+    edge = ctx.CreateEdge(ScType.EdgeAccessConstPosPerm, addr1, addr2)
 
-        _set = ScSet(ctx, addr1)
+    _set = ScSet(ctx, addr1)
 
-        # check has element
-        self.assertTrue(_set.Has(addr2))
-        self.assertFalse(_set.Has(addr3))
+    # check has element
+    self.assertTrue(_set.Has(addr2))
+    self.assertFalse(_set.Has(addr3))
 
-        # check add element
-        self.assertTrue(_set.Add(addr3))
-        self.assertTrue(_set.Has(addr3))
-        self.assertFalse(_set.Add(addr3))
+    # check add element
+    self.assertTrue(_set.Add(addr3))
+    self.assertTrue(_set.Has(addr3))
+    self.assertFalse(_set.Add(addr3))
 
-        # check remove element
-        self.assertTrue(_set.Remove(addr3))
-        self.assertFalse(_set.Has(addr3))
-        self.assertFalse(_set.Remove(addr3))
-        self.assertTrue(_set.Has(addr2))
+    # check remove element
+    self.assertTrue(_set.Remove(addr3))
+    self.assertFalse(_set.Has(addr3))
+    self.assertFalse(_set.Remove(addr3))
+    self.assertTrue(_set.Has(addr2))
 
-    def test_sc_set_clear(self):
-        ctx = MemoryCtx()
+  def test_sc_set_clear(self):
+    ctx = MemoryCtx()
 
-        addrSet = ctx.CreateNode(ScType.Node)
-        addr1 = ctx.CreateNode(ScType.NodeConst)
-        addr2 = ctx.CreateNode(ScType.Node)
-        addr3 = ctx.CreateNode(ScType.Node)
+    addrSet = ctx.CreateNode(ScType.Node)
+    addr1 = ctx.CreateNode(ScType.NodeConst)
+    addr2 = ctx.CreateNode(ScType.Node)
+    addr3 = ctx.CreateNode(ScType.Node)
 
-        elements = [addr1, addr2, addr3]
+    elements = [addr1, addr2, addr3]
 
-        _set = ScSet(ctx, addrSet)
-        for el in elements:
-            self.assertTrue(_set.Add(el))
+    _set = ScSet(ctx, addrSet)
+    for el in elements:
+      self.assertTrue(_set.Add(el))
 
-        _set.Clear()
+    _set.Clear()
 
-        for el in elements:
-            self.assertFalse(_set.Has(el))
+    for el in elements:
+      self.assertFalse(_set.Has(el))
 
-    def test_sc_set_iter(self):
-        ctx = MemoryCtx()
+  def test_sc_set_iter(self):
+    ctx = MemoryCtx()
 
-        addrSet = ctx.CreateNode(ScType.Node)
-        addr1 = ctx.CreateNode(ScType.NodeConst)
-        addr2 = ctx.CreateNode(ScType.Node)
-        addr3 = ctx.CreateNode(ScType.Node)
+    addrSet = ctx.CreateNode(ScType.Node)
+    addr1 = ctx.CreateNode(ScType.NodeConst)
+    addr2 = ctx.CreateNode(ScType.Node)
+    addr3 = ctx.CreateNode(ScType.Node)
 
-        elements = [addr1, addr2, addr3]
+    elements = [addr1, addr2, addr3]
 
-        _set = ScSet(ctx, addrSet)
-        for a in elements:
-            self.assertTrue(_set.Add(a))
+    _set = ScSet(ctx, addrSet)
+    for a in elements:
+      self.assertTrue(_set.Add(a))
 
-        # iterate elements in set
-        count = 0
-        for el in _set:
-            self.assertTrue(el in elements)
-            count += 1
-        self.assertEqual(count, len(elements))
+    # iterate elements in set
+    count = 0
+    for el in _set:
+      self.assertTrue(el in elements)
+      count += 1
+    self.assertEqual(count, len(elements))
 
-    def test_sc_set_relation(self):
-        ctx = MemoryCtx()
+  def test_sc_set_relation(self):
+    ctx = MemoryCtx()
 
-        addrSet = ctx.CreateNode(ScType.Node)
-        relAddr = ctx.CreateNode(ScType.NodeConstNoRole)
-        addr1 = ctx.CreateNode(ScType.NodeConst)
-        addr2 = ctx.CreateNode(ScType.NodeConstClass)
-        addr3 = ctx.CreateNode(ScType.NodeConstAbstract)
+    addrSet = ctx.CreateNode(ScType.Node)
+    relAddr = ctx.CreateNode(ScType.NodeConstNoRole)
+    addr1 = ctx.CreateNode(ScType.NodeConst)
+    addr2 = ctx.CreateNode(ScType.NodeConstClass)
+    addr3 = ctx.CreateNode(ScType.NodeConstAbstract)
 
-        elements = [addr1, addr2, addr3]
+    elements = [addr1, addr2, addr3]
 
-        _set = ScRelationSet(ctx, addrSet, relAddr)
-        for a in elements:
-            self.assertFalse(_set.Has(a))
+    _set = ScRelationSet(ctx, addrSet, relAddr)
+    for a in elements:
+      self.assertFalse(_set.Has(a))
 
-        for a in elements:
-            self.assertTrue(_set.Add(a))
-        
-        count = 0
-        for el in _set:
-            self.assertTrue(el in elements)
-            count += 1
-        self.assertEqual(count, len(elements))
+    for a in elements:
+      self.assertTrue(_set.Add(a))
 
-        _set.Clear()
-        for a in elements:
-            self.assertFalse(_set.Has(a))
+    count = 0
+    for el in _set:
+      self.assertTrue(el in elements)
+      count += 1
+    self.assertEqual(count, len(elements))
 
+    _set.Clear()
+    for a in elements:
+      self.assertFalse(_set.Has(a))
+
+
+class TestScHelper(TestCase):
+
+  def test_setRelationLink(self):
+    ctx = MemoryCtx()
+
+    addr = ctx.CreateNode(ScType.NodeConst)
+    relAddr = ctx.CreateNode(ScType.NodeConstNoRole)
+
+    templ = ScTemplate()
+    templ.TripleWithRelation(
+        addr,
+        ScType.EdgeDCommonVar,
+        ScType.Link >> '_link',
+        ScType.EdgeAccessVarPosPerm,
+        relAddr)
+
+    searchRes = ctx.HelperSearchTemplate(templ)
+    self.assertEqual(searchRes.Size(), 0)
+
+    def check_value(value):
+      searchRes = ctx.HelperSearchTemplate(templ)
+      self.assertEqual(searchRes.Size(), 1)
+
+      data = ctx.GetLinkContent(searchRes[0]['_link'])
+      self.assertEqual(data.AsString(), value)
+
+    helper = ScHelper(ctx)
+    helper.kbSetRelationLinkValue(addr, relAddr, 'test_data')
+    check_value('test_data')
+
+    helper.kbSetRelationLinkValue(addr, relAddr, 'test_data2')
+    check_value('test_data2')
+
+  def test_replaceBinaryRelation(self):
+    ctx = MemoryCtx()
+
+    addr = ctx.CreateNode(ScType.NodeConst)
+    relAddr = ctx.CreateNode(ScType.NodeConstNoRole)
+    node1 = ctx.CreateNode(ScType.NodeConstAbstract)
+    node2 = ctx.CreateNode(ScType.NodeConstMaterial)
+
+    templ = ScTemplate()
+    templ.TripleWithRelation(
+        addr,
+        ScType.EdgeDCommonVar,
+        ScType.Unknown >> '_trg',
+        ScType.EdgeAccessVarPosPerm,
+        relAddr)
+
+    searchRes = ctx.HelperSearchTemplate(templ)
+    self.assertEqual(searchRes.Size(), 0)
+
+    def check_trg(trg):
+      searchRes = ctx.HelperSearchTemplate(templ)
+      self.assertEqual(searchRes[0]['_trg'], trg)
+
+    helper = ScHelper(ctx)
+    helper.kbReplaceBinaryRelation(addr, relAddr, node1)
+    check_trg(node1)
+
+    helper.kbReplaceBinaryRelation(addr, relAddr, node2)
+    check_trg(node2)
+
+  def test_getRelationLinkValue(self):
+    ctx = MemoryCtx()
+
+    addr = ctx.CreateNode(ScType.NodeConst)
+    relAddr = ctx.CreateNode(ScType.NodeConstNoRole)
+
+    templ = ScTemplate()
+    templ.TripleWithRelation(
+        addr,
+        ScType.EdgeDCommonVar,
+        ScType.Link >> '_link',
+        ScType.EdgeAccessVarPosPerm,
+        relAddr)
+
+    searchRes = ctx.HelperSearchTemplate(templ)
+    self.assertEqual(searchRes.Size(), 0)
+
+    helper = ScHelper(ctx)
+    helper.kbSetRelationLinkValue(addr, relAddr, 'test_data')
+    value = helper.kbGetRelationLinkValue(addr, relAddr).AsString()
+
+    self.assertEqual(value, 'test_data')
 
 def RunTest(test):
-    global TestLoader, TextTestRunner
-    testItem = TestLoader().loadTestsFromTestCase(test)
-    res = TextTestRunner(verbosity=2).run(testItem)
+  global TestLoader, TextTestRunner
+  testItem = TestLoader().loadTestsFromTestCase(test)
+  res = TextTestRunner(verbosity=2).run(testItem)
 
-    if not res.wasSuccessful():
-        raise Exception("Unit test failed")
+  if not res.wasSuccessful():
+    raise Exception("Unit test failed")
+
 
 class TestModule(ScModule):
-    def __init__(self):
-        ScModule.__init__(self,
-            ctx=__ctx__,
-            cpp_bridge=__cpp_bridge__,
-            keynodes = [
-            ])
-        
-    def DoTests(self):
-        try:
-            RunTest(TestScAddr)
-            RunTest(TestScType)
-            RunTest(TestScMemoryContext)
-            RunTest(TestScSet)
-            RunTest(TestEvents)
+  def __init__(self):
+    ScModule.__init__(self,
+                      ctx=__ctx__,
+                      cpp_bridge=__cpp_bridge__,
+                      keynodes=[
+                      ])
 
-        except Exception as ex:
-            raise ex
-        except:
-            import sys
-            print ("Unexpected error:", sys.exc_info()[0])
-        finally:
-            module.Stop()
+  def DoTests(self):
+    try:
+      RunTest(TestScAddr)
+      RunTest(TestScType)
+      RunTest(TestScMemoryContext)
+      RunTest(TestScSet)
+      RunTest(TestEvents)
+      RunTest(TestScHelper)
 
-    def OnInitialize(self, params):
-        self.DoTests()
+    except Exception as ex:
+      raise ex
+    except:
+      import sys
+      print("Unexpected error:", sys.exc_info()[0])
+    finally:
+      module.Stop()
 
-    def OnShutdown(self):
-        pass
+  def OnInitialize(self, params):
+    self.DoTests()
+
+  def OnShutdown(self):
+    pass
+
 
 module = TestModule()
 module.Run()
