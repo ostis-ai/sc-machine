@@ -183,10 +183,10 @@ protected:
   size_t m_index;
 };
 
-ScTemplateItemValue operator >> (ScAddr const & value, char const * replName);
-ScTemplateItemValue operator >> (ScAddr const & value, std::string const & replName);
-ScTemplateItemValue operator >> (ScType const & value, char const * replName);
-ScTemplateItemValue operator >> (ScType const & value, std::string const & replName);
+_SC_EXTERN ScTemplateItemValue operator >> (ScAddr const & value, char const * replName);
+_SC_EXTERN ScTemplateItemValue operator >> (ScAddr const & value, std::string const & replName);
+_SC_EXTERN ScTemplateItemValue operator >> (ScType const & value, char const * replName);
+_SC_EXTERN ScTemplateItemValue operator >> (ScType const & value, std::string const & replName);
 
 class ScTemplateGenResult;
 class ScTemplateSearchResult;
