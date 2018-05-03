@@ -209,9 +209,7 @@ public:
   ScTemplateGenParams(ScTemplateGenParams const & other) = delete;
   ScTemplateGenParams & operator = (ScTemplateGenParams const & other) = delete;
 
-  explicit ScTemplateGenParams()
-  {
-  }
+  ScTemplateGenParams() = default;
 
   SC_DEPRECATED(0.4.0, "You should to use ScTemplateGenParams::Add")
   _SC_EXTERN ScTemplateGenParams & add(std::string const & varIdtf, ScAddr const & value)
