@@ -19,12 +19,49 @@
 #include "scs_translator.h"
 #include "gwf_translator.h"
 
+namespace impl
+{
+
+class ExtParser
+{
+public:
+  void operator() (std::string const & file_path)
+  {
+    if (!file_path.empty())
+    {
+      std::ifstream infile(file_path);
+      std::string line;
+      while (std::getline(infile, line))
+      {
+        if (line.empty())
+          continue;
+        m_names.emplace_back(line);
+      }
+
+      m_params.clear();
+      m_params.reserve(m_names.size() + 1);
+      for (auto const & v : m_names)
+        m_params.push_back(v.c_str());
+      m_params.push_back(nullptr);
+    }
+
+    m_params.push_back(nullptr);
+  }
+
+  std::vector<const sc_char*> & GetParams()
+  {
+    return m_params;
+  }
+
+private:
+  std::vector<const sc_char*> m_params;
+  std::vector<std::string> m_names;
+};
+
+} // namespace impl
+
 Builder::Builder()
   : mContext(0)
-{
-}
-
-Builder::~Builder()
 {
 }
 
@@ -35,7 +72,7 @@ void Builder::initialize()
   registerTranslator(new GwfTranslatorFactory());
 }
 
-bool Builder::run(const BuilderParams &params)
+bool Builder::run(const BuilderParams & params)
 {
   mParams = params;
 
@@ -43,12 +80,16 @@ bool Builder::run(const BuilderParams &params)
 
   // initialize sc-memory
   
+  impl::ExtParser extParser;
+  extParser(mParams.enabledExtPath);
+
   sc_memory_params p;
   sc_memory_params_clear(&p);
   p.clear = mParams.clearOutput ? SC_TRUE : SC_FALSE;
   p.config_file = mParams.configFile.empty() ? 0 : mParams.configFile.c_str();
   p.repo_path = mParams.outputPath.c_str();
   p.ext_path = mParams.extensionsPath.size() > 0 ? mParams.extensionsPath.c_str() : 0;
+  p.enabled_exts = extParser.GetParams().data();
 
   ScMemory::Initialize(p);
 

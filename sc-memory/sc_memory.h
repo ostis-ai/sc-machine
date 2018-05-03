@@ -17,6 +17,7 @@ struct _sc_memory_params
   const sc_char *repo_path;
   const sc_char *config_file;
   const sc_char *ext_path;
+  const sc_char **enabled_exts; // null-terminated list of extension names that should be loaded
   sc_bool clear;
 };
 
@@ -32,8 +33,10 @@ _SC_EXTERN void sc_memory_params_clear(sc_memory_params *params);
 _SC_EXTERN sc_memory_context* sc_memory_initialize(const sc_memory_params *params);
 
 /*! Initialize sc-memory extensions in specified directory
+ * @param enabled_list Null terminated list of extensions names, that should be loaded. If it's a null value, then all
+ * modules in a directory will be loaded
  */
-_SC_EXTERN sc_result sc_memory_init_ext(sc_char const * ext_path);
+_SC_EXTERN sc_result sc_memory_init_ext(sc_char const * ext_path, const sc_char ** enabled_list);
 
 //! Shutdown sc-memory (save repository to file system)
 _SC_EXTERN void sc_memory_shutdown(sc_bool save_state);

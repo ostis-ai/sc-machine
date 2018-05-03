@@ -21,6 +21,7 @@ int main(int argc, char *argv[]) try
       ("input-path,i", boost::program_options::value<std::string>(), "Path to directory with sources")
       ("output-path,o", boost::program_options::value<std::string>(), "Path to output directory (repository)")
       ("extension-path,e", boost::program_options::value<std::string>(), "Path to extensions directory")
+      ("enabled-ext", boost::program_options::value<std::string>(), "Path to file with enabled extensions")
       ("clear-output,c", "Clear output directory (repository) before build")
       ("settings,s", boost::program_options::value<std::string>(), "Path to configuration file for sc-memory")
       ("auto-formats,f", "Enable automatic formats info generation")
@@ -57,6 +58,9 @@ int main(int argc, char *argv[]) try
 
   if (vm.count("settings"))
     params.configFile = vm["settings"].as<std::string>();
+
+  if (vm.count("enabled-ext"))
+    params.enabledExtPath = vm["enabled-ext"].as<std::string>();
 
   params.showFileNames = vm.count("show-filenames");
 

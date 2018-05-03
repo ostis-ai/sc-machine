@@ -53,14 +53,12 @@ gint sc_priority_great(gconstpointer a, gconstpointer b)
   return sc_priority_less(b, a);
 }
 
-
-
-sc_result sc_ext_initialize(const sc_char *ext_dir_path)
+sc_result sc_ext_initialize(const sc_char *ext_dir_path, const sc_char ** enabled_list)
 {
   GDir *ext_dir = null_ptr;
   const gchar *file_name = 0;
   fModuleFunc func = 0;
-
+  
   // doesn't need to initialize extensions
   if (ext_dir_path == null_ptr)
     return SC_RESULT_OK;
@@ -87,6 +85,26 @@ sc_result sc_ext_initialize(const sc_char *ext_dir_path)
   file_name = g_dir_read_name(ext_dir);
   while (file_name != null_ptr)
   {
+    // check if it should be loaded
+    if (enabled_list)
+    {
+      int i = 0;
+      gboolean shouldSkip = TRUE;
+      while (enabled_list[i] != null_ptr)
+      {
+        const sc_char * name = enabled_list[i];
+        if (g_str_has_prefix(file_name, name) && g_str_has_suffix(file_name, G_MODULE_SUFFIX))
+        {
+          shouldSkip = (strlen(file_name) != (strlen(name) + strlen(G_MODULE_SUFFIX) + 1));
+        }
+
+        ++i;
+      }
+
+      if (shouldSkip)
+        goto next;
+    }
+
     sc_module_info *mi = g_new0(sc_module_info, 1);
     mi->path = g_module_build_path(ext_dir_path, file_name);
 
