@@ -7,7 +7,7 @@
 #include "merge_keynodes.h"
 #include "merge.h"
 
-#include "../common/sc_keynodes.h"
+#include "../sc-common/sc_keynodes.h"
 
 #include "sc_helper.h"
 #include <glib.h>

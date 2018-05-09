@@ -9,7 +9,7 @@
 
 extern "C"
 {
-#include "../common/sc_keynodes.h"
+#include "../sc-common/sc_keynodes.h"
 #include <glib.h>
 }
 

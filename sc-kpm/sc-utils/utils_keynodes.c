@@ -5,7 +5,7 @@
  */
 
 #include "utils_keynodes.h"
-#include "../common/sc_keynodes.h"
+#include "../sc-common/sc_keynodes.h"
 #include "utils.h"
 #include <glib.h>
 

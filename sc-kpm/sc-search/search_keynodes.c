@@ -11,7 +11,7 @@
 #include "sc_memory_headers.h"
 #include "search.h"
 
-#include "../common/sc_keynodes.h"
+#include "../sc-common/sc_keynodes.h"
 
 #include <glib.h>
 

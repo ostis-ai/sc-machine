@@ -24,3 +24,6 @@ target_link_libraries(sctp-server sc-memory sc-memory-cpp
                                   Qt5::Core
                                   Qt5::Network)
 
+add_dependencies(sctp-server
+	sc-kpm
+	)
