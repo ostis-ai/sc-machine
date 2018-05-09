@@ -98,6 +98,76 @@ sc_iterator3 * sc_iterator3_a_f_a_new(sc_memory_context const * ctx, sc_type beg
   return sc_iterator3_new(ctx, sc_iterator3_a_f_a, p1, p2, p3);
 }
 
+sc_iterator3 * sc_iterator3_f_f_a_new(sc_memory_context const * ctx, sc_addr beg_addr, sc_addr edge_addr, sc_type end_type)
+{
+  sc_access_levels levels;
+  if (sc_storage_get_access_levels(ctx, beg_addr, &levels) != SC_RESULT_OK || !sc_access_lvl_check_read(ctx->access_levels, levels) ||
+      sc_storage_get_access_levels(ctx, edge_addr, &levels) != SC_RESULT_OK || !sc_access_lvl_check_read(ctx->access_levels, levels))
+  {
+    return 0;
+  }
+
+  sc_iterator_param p1, p2, p3;
+
+  p1.is_type = SC_FALSE;
+  p1.addr = beg_addr;
+
+  p2.is_type = SC_FALSE;
+  p2.addr = edge_addr;
+
+  p3.is_type = SC_TRUE;
+  p3.type = end_type;
+
+  return sc_iterator3_new(ctx, sc_iterator3_f_f_a, p1, p2, p3);
+}
+
+sc_iterator3 * sc_iterator3_a_f_f_new(sc_memory_context const * ctx, sc_type beg_type, sc_addr edge_addr, sc_addr end_addr)
+{
+  sc_access_levels levels;
+  if (sc_storage_get_access_levels(ctx, end_addr, &levels) != SC_RESULT_OK || !sc_access_lvl_check_read(ctx->access_levels, levels) ||
+      sc_storage_get_access_levels(ctx, edge_addr, &levels) != SC_RESULT_OK || !sc_access_lvl_check_read(ctx->access_levels, levels))
+  {
+    return 0;
+  }
+
+  sc_iterator_param p1, p2, p3;
+
+  p1.is_type = SC_TRUE;
+  p1.type = beg_type;
+
+  p2.is_type = SC_FALSE;
+  p2.addr = edge_addr;
+
+  p3.is_type = SC_FALSE;
+  p3.addr = end_addr;
+
+  return sc_iterator3_new(ctx, sc_iterator3_a_f_f, p1, p2, p3);
+}
+
+sc_iterator3 * sc_iterator3_f_f_f_new(sc_memory_context const * ctx, sc_addr beg_addr, sc_addr edge_addr, sc_addr end_addr)
+{
+  sc_access_levels levels;
+  if (sc_storage_get_access_levels(ctx, beg_addr, &levels) != SC_RESULT_OK || !sc_access_lvl_check_read(ctx->access_levels, levels) ||
+      sc_storage_get_access_levels(ctx, end_addr, &levels) != SC_RESULT_OK || !sc_access_lvl_check_read(ctx->access_levels, levels) ||
+      sc_storage_get_access_levels(ctx, edge_addr, &levels) != SC_RESULT_OK || !sc_access_lvl_check_read(ctx->access_levels, levels))
+  {
+    return 0;
+  }
+
+  sc_iterator_param p1, p2, p3;
+
+  p1.is_type = SC_FALSE;
+  p1.addr = beg_addr;
+
+  p2.is_type = SC_FALSE;
+  p2.addr = edge_addr;
+
+  p3.is_type = SC_FALSE;
+  p3.addr = end_addr;
+
+  return sc_iterator3_new(ctx, sc_iterator3_f_f_f, p1, p2, p3);
+}
+
 sc_bool _sc_iterator_ref_element(const sc_memory_context *ctx, sc_addr addr)
 {
   sc_element *el = 0;
@@ -170,8 +240,34 @@ sc_iterator3* sc_iterator3_new(const sc_memory_context *ctx, sc_iterator3_type t
     }
     break;
 
-  default:
+  case sc_iterator3_f_f_a:
+    if (p1.is_type || p2.is_type || !p3.is_type ||
+        _sc_iterator_ref_element(ctx, p1.addr) != SC_TRUE ||
+        _sc_iterator_ref_element(ctx, p2.addr) != SC_TRUE)
+    {
+      return (sc_iterator3*)0;
+    }
     break;
+
+  case sc_iterator3_a_f_f:
+    if (!p1.is_type || p2.is_type || p3.is_type ||
+        _sc_iterator_ref_element(ctx, p2.addr) != SC_TRUE ||
+        _sc_iterator_ref_element(ctx, p3.addr) != SC_TRUE)
+    {
+      return (sc_iterator3*)0;
+    }
+    break;
+
+  case sc_iterator3_f_f_f:
+    if (p1.is_type || p2.is_type || p3.is_type ||
+        _sc_iterator_ref_element(ctx, p1.addr) != SC_TRUE ||
+        _sc_iterator_ref_element(ctx, p2.addr) != SC_TRUE ||
+        _sc_iterator_ref_element(ctx, p3.addr) != SC_TRUE)
+    {
+      return (sc_iterator3*)0;
+    }
+    break;
+    
   };
 
   sc_iterator3 *it = g_new0(sc_iterator3, 1);
@@ -218,8 +314,18 @@ void sc_iterator3_free(sc_iterator3 *it)
   case sc_iterator3_a_f_a:
     sc_storage_element_unref(it->params[1].addr);
     break;
-
-  default:
+  case sc_iterator3_f_f_a:
+    sc_storage_element_unref(it->params[0].addr);
+    sc_storage_element_unref(it->params[1].addr);
+    break;
+  case sc_iterator3_a_f_f:
+    sc_storage_element_unref(it->params[1].addr);
+    sc_storage_element_unref(it->params[2].addr);
+    break;
+  case sc_iterator3_f_f_f:
+    sc_storage_element_unref(it->params[0].addr);
+    sc_storage_element_unref(it->params[1].addr);
+    sc_storage_element_unref(it->params[2].addr);
     break;
   }
 
@@ -333,7 +439,8 @@ sc_bool _sc_iterator3_f_a_f_next(sc_iterator3 *it)
     g_assert(el != null_ptr);
     arc_addr = el->first_in_arc;
     STORAGE_CHECK_CALL(sc_storage_element_unlock(it->params[2].addr));
-  }else
+  }
+  else
   {
     sc_element *el = 0;
     STORAGE_CHECK_CALL(sc_storage_element_lock(it->results[1], &el));
@@ -463,17 +570,98 @@ sc_bool _sc_iterator3_a_a_f_next(sc_iterator3 *it)
 
 sc_bool _sc_iterator3_a_f_a_next(sc_iterator3 * it)
 {
-  it->finished = SC_TRUE;
-  it->results[1] = it->params[1].addr;
+  if (!it->finished)
+  {
+    it->finished = SC_TRUE;
+    it->results[1] = it->params[1].addr;
 
-  sc_element * arc_el = 0;
-  STORAGE_CHECK_CALL(sc_storage_element_lock(it->params[1].addr, &arc_el));
-  g_assert(arc_el != null_ptr);
-  it->results[0] = arc_el->arc.begin;
-  it->results[2] = arc_el->arc.end;
-  STORAGE_CHECK_CALL(sc_storage_element_unlock(it->params[1].addr));
+    sc_element * arc_el = 0;
+    STORAGE_CHECK_CALL(sc_storage_element_lock(it->params[1].addr, &arc_el));
+    g_assert(arc_el != null_ptr);
+    it->results[0] = arc_el->arc.begin;
+    it->results[2] = arc_el->arc.end;
+    STORAGE_CHECK_CALL(sc_storage_element_unlock(it->params[1].addr));
+    
+    return SC_TRUE;
+  }
 
-  return SC_TRUE;
+  return SC_FALSE;
+}
+
+sc_bool _sc_iterator3_f_f_a_next(sc_iterator3 * it)
+{
+  if (!it->finished)
+  {
+    it->finished = SC_TRUE;
+    sc_bool result = SC_FALSE;
+
+    sc_element * edge_el = 0;
+    STORAGE_CHECK_CALL(sc_storage_element_lock(it->params[1].addr, &edge_el));
+    g_assert(edge_el != null_ptr);
+    if (SC_ADDR_IS_EQUAL(it->params[0].addr, edge_el->arc.begin))
+    {
+      result = SC_TRUE;
+      it->results[0] = edge_el->arc.begin;
+      it->results[1] = it->params[1].addr;
+      it->results[2] = edge_el->arc.end;
+    }
+    STORAGE_CHECK_CALL(sc_storage_element_unlock(it->params[1].addr));
+
+    return result;
+  }
+
+  return SC_FALSE;
+}
+
+sc_bool _sc_iterator3_a_f_f_next(sc_iterator3 * it)
+{
+  if (!it->finished)
+  {
+    it->finished = SC_TRUE;
+    sc_bool result = SC_FALSE;
+
+    sc_element * edge_el = 0;
+    STORAGE_CHECK_CALL(sc_storage_element_lock(it->params[1].addr, &edge_el));
+    g_assert(edge_el != null_ptr);
+    if (SC_ADDR_IS_EQUAL(it->params[2].addr, edge_el->arc.end))
+    {
+      result = SC_TRUE;
+      it->results[0] = edge_el->arc.begin;
+      it->results[1] = it->params[1].addr;
+      it->results[2] = edge_el->arc.end;
+    }
+    STORAGE_CHECK_CALL(sc_storage_element_unlock(it->params[1].addr));
+
+    return result;
+  }
+
+  return SC_FALSE;
+}
+
+sc_bool _sc_iterator3_f_f_f_next(sc_iterator3 * it)
+{
+  if (!it->finished)
+  {
+    it->finished = SC_TRUE;
+    sc_bool result = SC_FALSE;
+
+    sc_element * edge_el = 0;
+    STORAGE_CHECK_CALL(sc_storage_element_lock(it->params[1].addr, &edge_el));
+    g_assert(edge_el != null_ptr);
+    if (SC_ADDR_IS_EQUAL(it->params[0].addr, edge_el->arc.begin) &&
+        SC_ADDR_IS_EQUAL(it->params[2].addr, edge_el->arc.end))
+    {
+      result = SC_TRUE;
+      it->results[0] = edge_el->arc.begin;
+      it->results[1] = it->params[1].addr;
+      it->results[2] = edge_el->arc.end;
+    }
+    STORAGE_CHECK_CALL(sc_storage_element_unlock(it->params[1].addr));
+
+    return result;
+  }
+
+  return SC_FALSE;
 }
 
 sc_bool sc_iterator3_next(sc_iterator3 *it)
@@ -496,8 +684,14 @@ sc_bool sc_iterator3_next(sc_iterator3 *it)
   case sc_iterator3_a_f_a:
     return _sc_iterator3_a_f_a_next(it);
 
-  default:
-    break;
+  case sc_iterator3_f_f_a:
+    return _sc_iterator3_f_f_a_next(it);
+
+  case sc_iterator3_a_f_f:
+    return _sc_iterator3_a_f_f_next(it);
+
+  case sc_iterator3_f_f_f:
+    return _sc_iterator3_f_f_f_next(it);
   };
 
   return SC_FALSE;
