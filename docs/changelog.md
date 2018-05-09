@@ -1,5 +1,11 @@
 ## v0.6.0
 
+ - **Tools**:
+    - Support custom extensions loading in `sc-builder`
+
+ - **C++**:
+    - Implement optional search triples support
+
 ## v0.5.0
 
 - **Build system**:
