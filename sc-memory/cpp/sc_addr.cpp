@@ -6,6 +6,8 @@
 
 #include "sc_addr.hpp"
 
+ScAddr const ScAddr::Empty;
+
 ScAddr::ScAddr()
 {
   SC_ADDR_MAKE_EMPTY(m_realAddr);

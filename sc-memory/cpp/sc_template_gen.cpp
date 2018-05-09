@@ -30,14 +30,17 @@ public:
       if (values[1].IsFixed())
         SC_THROW_EXCEPTION(utils::ExceptionInvalidParams, "You can't use fixed value for edge in triple for template generation");
 
-        auto checkEdge = [](ScTemplateItemValue const & value)
-        {
-          if (value.IsAssign() && (!value.IsType() || value.m_typeValue.IsEdge()))
-            SC_THROW_EXCEPTION(utils::ExceptionInvalidParams, "You can't use edges as a source/target element in triple for generation");
-        };
+      auto checkEdge = [](ScTemplateItemValue const & value)
+      {
+        if (value.IsAssign() && (!value.IsType() || value.m_typeValue.IsEdge()))
+          SC_THROW_EXCEPTION(utils::ExceptionInvalidParams, "You can't use edges as a source/target element in triple for generation");
+      };
 
       checkEdge(values[0]);
       checkEdge(values[2]);
+
+      if (!constr.IsRequired())
+        SC_THROW_EXCEPTION(utils::ExceptionInvalidParams, "You can't use triples with isRequired param equal to false");
     }
   }
 

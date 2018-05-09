@@ -1547,3 +1547,117 @@ UNIT_TEST(big_template_2_15)
     progress.PrintStatus(i);
   }
 }
+
+UNIT_TEST(template_optional)
+{
+  ScMemoryContext ctx(sc_access_lvl_make_min, "template_optional");
+
+  ScAddr const addr1 = ctx.CreateNode(ScType::NodeConst);
+  ScAddr const addr2 = ctx.CreateNode(ScType::NodeConst);
+  ScAddr const relAddr = ctx.CreateNode(ScType::NodeConstRole);
+
+  ScAddr const edge = ctx.CreateEdge(ScType::EdgeAccessConstPosPerm, addr1, addr2);
+  
+  SUBTEST_START("not found")
+  {
+    ScTemplate templ;
+
+    templ.Triple(
+      addr1 >> "_addr1",
+      ScType::EdgeAccessVarPosPerm >> "_edge",
+      addr2 >> "_addr2");
+
+    templ.Triple(
+      relAddr >> "_relAddr",
+      ScType::EdgeAccessVarPosPerm,
+      "_edge");
+
+    ScTemplateSearchResult result;
+    SC_CHECK(!ctx.HelperSearchTemplate(templ, result), ());
+    SC_CHECK(result.IsEmpty(), ());
+  }
+  SUBTEST_END()
+
+  SUBTEST_START("found")
+  {
+    ScTemplate templ;
+
+    templ.Triple(
+      addr1 >> "_addr1",
+      ScType::EdgeAccessVarPosPerm >> "_edge",
+      addr2 >> "_addr2");
+
+    templ.Triple(
+      relAddr >> "_relAddr",
+      ScType::EdgeAccessVarPosPerm >> "_relEdge",
+      "_edge", 
+      false);
+
+    ScTemplateSearchResult result;
+    SC_CHECK(ctx.HelperSearchTemplate(templ, result), ());
+    SC_CHECK(!result.IsEmpty(), ());
+    SC_CHECK_EQUAL(result.Size(), 1, ());
+
+    SC_CHECK_EQUAL(result[0]["_addr1"], addr1, ());
+    SC_CHECK_EQUAL(result[0]["_addr2"], addr2, ());
+    SC_CHECK_EQUAL(result[0]["_edge"], edge, ());
+    SC_CHECK(!result[0]["_relAddr"].IsValid(), ());
+    SC_CHECK(!result[0]["_relEdge"].IsValid(), ());
+  }
+  SUBTEST_END()
+
+    SUBTEST_START("fully_optional")
+  {
+    ScTemplate templ;
+
+    templ.Triple(
+      addr1 >> "_addr1",
+      ScType::EdgeAccessVarFuzTemp >> "_edge",
+      addr2 >> "_addr2",
+      false);
+
+    ScTemplateSearchResult result;
+    bool passed = false;
+    try
+    {
+      ctx.HelperSearchTemplate(templ, result);
+    }
+    catch (utils::ExceptionInvalidParams const & ex)
+    {
+      passed = true;
+      SC_UNUSED(ex);
+    }
+    SC_CHECK(passed, ());
+  }
+  SUBTEST_END()
+
+  SUBTEST_START("generate_optional")
+  {
+    ScTemplate templ;
+
+    templ.Triple(
+      addr2,
+      ScType::EdgeAccessVarPosPerm,
+      addr1);
+
+    templ.Triple(
+      addr1,
+      ScType::EdgeAccessVarPosPerm,
+      ScType::NodeVarMaterial,
+      false);
+
+    ScTemplateGenResult result;
+    bool passed = false;
+    try
+    {
+      ctx.HelperGenTemplate(templ, result);
+    }
+    catch (utils::ExceptionInvalidParams const & ex)
+    {
+      passed = true;
+      SC_UNUSED(ex);
+    }
+    SC_CHECK(passed, ());
+  }
+  SUBTEST_END()
+}
