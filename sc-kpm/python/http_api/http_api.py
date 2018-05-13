@@ -1,5 +1,6 @@
 """This module implements http API for SmartHome
 """
+import os
 import threading
 import tornado
 
@@ -9,11 +10,18 @@ from keynodes import Keynodes
 
 from sc import *
 
+self_path = os.path.dirname(__file__)
+
+class DebugStaticFileHandler(tornado.web.StaticFileHandler):
+    def set_extra_headers(self, path):
+        # Disable cache
+        self.set_header('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0')
+
 class MainHandler(tornado.web.RequestHandler):
 
     #@tornado.web.asynchronous
-    def get(self):
-        self.write("<h2>It works!</h2>")
+    def get(self, path):
+        self.render(os.path.join(getScConfigValue('web', 'path'), "client/assets/templates/index.html"))
 
 class ContentHandler(tornado.web.RequestHandler):
 
@@ -54,11 +62,22 @@ class ServerThread(threading.Thread):
     def __init__(self, module, address='', port=8090):
         threading.Thread.__init__(self)
 
+        assets_path = os.path.join(getScConfigValue('web', 'path'), 'client/assets')
+        isDebug = bool(getScConfigValue('debug', 'is_debug'))
+        staticHandler = DebugStaticFileHandler
+        if not isDebug:
+            staticHandler = tornado.web.StaticFileHandler
+
+        print (staticHandler)
+
         self.port = port
         self.app = tornado.web.Application([
-            (r"/", MainHandler),
             (r"/ws_json", ScJsonSocketHandler, { 'evt_manager': module.events }),
             (r"/content/([0-9]+)", ContentHandler),
+            (r'/assets/(.*)', staticHandler, {'path': assets_path}),
+
+            # should be a last
+            (r"/(.*)", MainHandler),
         ])
 
     def run(self):

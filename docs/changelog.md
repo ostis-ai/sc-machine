@@ -6,6 +6,11 @@
  - **C++**:
     - Implement optional search triples support
 
+ - **KPM**:
+    - **web**:
+        - Implement `http` module to access memory via Web interface
+        - Implement web interface for sc-memory access
+
 ## v0.5.0
 
 - **Build system**:
