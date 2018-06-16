@@ -10,7 +10,7 @@ set(SC_MACHINE_ANTRL_DIR "${SC_MACHINE_THIRDPARTY_PATH}/antlr")
 
 option (SC_AUTO_TEST "Flag to build for automation testing" OFF)
 option (SC_KPM_SCP "Flag to build SCP module" ON)
-option (SC_BUILD_SCTP "Flag to build sctp client and server" OFF)
+option (SC_BUILD_SCTP "Flag to turn on/off sctp protocol support" ON)
 
 # codegen
 if (${UNIX})
@@ -20,7 +20,11 @@ elseif (${WIN32})
 endif()
 include("${SC_MACHINE_ROOT}/cmake/codegen.cmake")
 
-find_package(Java REQUIRED)
+if (${WIN32})
+    find_package(Java)
+else ()
+    find_package(Java REQUIRED)
+endif()
 
 set(CMAKE_MODULE_PATH "${SC_MACHINE_ROOT}/cmake")
 
@@ -134,11 +138,17 @@ elseif (${WIN32})
 
     set(PACKAGES_PATH "${CMAKE_BINARY_DIR}/packages")
 
+    set (ANTLR_LIB antlr3c.${MSVC_SUFFIX})
+
     if (${MSVC_VERSION} EQUAL "1800")
         set (MSVC_SUFFIX "vc120")
     elseif (${MSVC_VERSION} EQUAL "1900")
         set (MSVC_SUFFIX "vc140")
     elseif (${MSVC_VERSION} EQUAL "1911")
+        set (ANTLR_LIB "antlr3c.vc140")
+        set (MSVC_SUFFIX "vc141")
+    elseif (${MSVC_VERSION} EQUAL "1914")
+    set (ANTLR_LIB "antlr3c.vc140")
         set (MSVC_SUFFIX "vc141")
     endif()
 
@@ -147,12 +157,6 @@ elseif (${WIN32})
 
     file(MAKE_DIRECTORY ${PACKAGES_PATH})
     execute_process(COMMAND "${SC_MACHINE_THIRDPARTY_PATH}/nuget.exe" install ${CMAKE_BINARY_DIR}/packages.config WORKING_DIRECTORY ${PACKAGES_PATH})
-
-    if (${MSVC_VERSION} EQUAL "1911")
-        set (ANTLR_LIB "antlr3c.vc140")
-    else()
-        set (ANTLR_LIB antlr3c.${MSVC_SUFFIX})
-    endif()
 
     set (GLIB_PATH "${PACKAGES_PATH}/glib.2.36.2.11/build/native")
     set (REDIS_PATH "${SC_MACHINE_THIRDPARTY_PATH}/libhiredis/")
@@ -195,7 +199,7 @@ elseif (${WIN32})
     set (GLIB2_LIBRARIES "gio-2.0.lib" "glib-2.0.lib" "gmodule-2.0.lib" "gobject-2.0.lib" "gthread-2.0.lib")
     if (${MSVC_VERSION} EQUAL "1800")
         set (REDIS_LIBRARIES "hiredis.vc120.lib" "WSock32.lib" "Ws2_32.lib")
-    elseif ((${MSVC_VERSION} EQUAL "1900") OR (${MSVC_VERSION} EQUAL "1911"))
+    elseif ((${MSVC_VERSION} EQUAL "1900") OR (${MSVC_VERSION} EQUAL "1911") OR (${MSVC_VERSION} EQUAL "1914"))
         set (REDIS_LIBRARIES "hiredis.vc140.lib" "Win32_Interop.vc140.lib" "WSock32.lib" "Ws2_32.lib")
     endif()
 
@@ -233,9 +237,11 @@ include_directories(${SC_MACHINE_ROOT} ${GLIB2_INCLUDE_DIRS})
 add_subdirectory(${SC_MACHINE_ROOT}/sc-memory)
 add_subdirectory(${SC_MACHINE_ROOT}/sc-fm)
 add_subdirectory(${SC_MACHINE_ROOT}/sc-kpm)
+add_subdirectory(${SC_MACHINE_ROOT}/sc-server)
+add_subdirectory(${SC_MACHINE_ROOT}/tools)
+
 if (${SC_BUILD_SCTP})
     add_subdirectory(${SC_MACHINE_ROOT}/sc-network)
 endif()
-add_subdirectory(${SC_MACHINE_ROOT}/tools)
 
 

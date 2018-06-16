@@ -18,12 +18,13 @@ add_subdirectory(sc-merge)
 add_subdirectory(sc-utils)
 add_subdirectory(sc-http)
 
+add_custom_target(sc-kpm)
+
 if (${SC_KPM_SCP})
     add_subdirectory(scp)
     add_dependencies(sc-kpm scp)
 endif()
 
-add_custom_target(sc-kpm)
 add_dependencies(sc-kpm 
     sc-ui
     sc-search

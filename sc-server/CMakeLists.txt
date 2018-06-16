@@ -1,0 +1,23 @@
+set (SC_SERVER_DIR "${SC_MACHINE_ROOT}/sc-server")
+
+file(GLOB_RECURSE SOURCES "src/*.cpp")
+file(GLOB_RECURSE HEADERS "src/*.hpp")
+
+if (${WIN32})
+  set (BOOST_LIBS_LIST )
+else()
+   set (BOOST_LIBS_LIST
+       boost_filesystem 
+       boost_program_options 
+       boost_system)
+endif (${WIN32})
+
+  
+add_executable(sc-server ${SOURCES} ${HEADERS})
+include_directories(${SC_MEMORY_SRC} ${GLIB2_INCLUDE_DIRS})
+target_link_libraries(sc-server sc-memory sc-memory-cpp )
+
+add_dependencies(sc-server
+  sc-kpm
+  sc-memory
+  sc-memory-cpp)
