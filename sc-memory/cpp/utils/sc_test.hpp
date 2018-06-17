@@ -29,6 +29,8 @@ public:
 
   static _SC_EXTERN void RunAll(std::string const & configPath = "sc-memory.ini", std::string const & extPath = "");
 
+  static _SC_EXTERN void NotifySubTest();
+
 protected:
   void ShutdownMemory(bool save);
   void InitMemory(std::string const & configPath, std::string const & extPath);
@@ -49,6 +51,7 @@ private:
   };
 
   static _SC_EXTERN std::set<ScTestUnit*, TestLess> ms_tests;
+  static _SC_EXTERN uint32_t ms_subtestsNum;
 };
 
 #define UNIT_TEST(__name) \
@@ -72,7 +75,7 @@ private:
 #define TEST(_expr, _msg) _TEST_IMPL(CHECK, _expr, _msg)
 #define TEST_NOT(_expr, _msg) _TEST_IMPL(CHECK, !_expr, _msg)
 
-#define SUBTEST_START(_name) SC_LOG_INFO("Test "#_name" ...")
+#define SUBTEST_START(_name) { SC_LOG_INFO("Test "#_name" ..."); test::ScTestUnit::NotifySubTest(); }
 #define SUBTEST_END() SC_LOG_INFO_COLOR(" ok", _STATUS_COLOR(true))
 
 #ifdef SC_BUILD_AUTO_TESTS

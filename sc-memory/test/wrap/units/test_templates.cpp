@@ -1606,7 +1606,7 @@ UNIT_TEST(template_optional)
   }
   SUBTEST_END()
 
-    SUBTEST_START("fully_optional")
+  SUBTEST_START("fully_optional")
   {
     ScTemplate templ;
 

@@ -10,6 +10,7 @@ namespace test
 {
 
 std::set<ScTestUnit*, ScTestUnit::TestLess> ScTestUnit::ms_tests;
+uint32_t ScTestUnit::ms_subtestsNum = 0;
 
 ScTestUnit::ScTestUnit(char const * name, char const * filename, void(*fn)())
   : m_name(name)
@@ -61,8 +62,16 @@ void ScTestUnit::ShutdownMemory(bool save)
 
 void ScTestUnit::RunAll(std::string const & configPath, std::string const & extPath)
 {
+  SC_LOG_INFO("Run " << ms_tests.size() << " tests");
   for (ScTestUnit * unit : ms_tests)
     unit->Run(configPath, extPath);
+
+  SC_LOG_INFO_COLOR("Passed " << ms_subtestsNum << " subtests in " << ms_tests.size() << " tests", ScConsole::Color::LightGreen);
+}
+
+void ScTestUnit::NotifySubTest()
+{
+  ++ms_subtestsNum;
 }
 
 
