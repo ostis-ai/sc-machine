@@ -18,7 +18,7 @@ UNIT_TEST(Python_interp)
   {
     py::ScPythonInterpreter::AddModulesPath(SC_TEST_KPM_PYTHON_PATH);
 
-    py::DummyService testService("sc_tests/test_common.py");
+    py::DummyService testService("sc_tests/test_main.py");
     testService.Run();
 
     while (testService.IsRun())
