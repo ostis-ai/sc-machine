@@ -44,7 +44,7 @@ public:
     {
       value = (*m_result)[name];
     }
-    catch (utils::ExceptionItemNotFound const & ex)
+    catch (utils::ExceptionItemNotFound const &)
     {
       return bp::object();
     }
@@ -708,12 +708,28 @@ bp::object _context_helperSearchTemplate(ScMemoryContext & self, PyTemplate & te
   return bp::object(result);
 }
 
-bp::object _context_helperBuildTemplate(ScMemoryContext & self, ScAddr const & templAddr)
+bp::object _context_helperBuildTemplate(ScMemoryContext & self, bp::object & data)
 {
-  PyTemplate templ;
-  if (self.HelperBuildTemplate(templ.GetItemRef(), templAddr))
-    return bp::object(templ);
+  bp::extract<ScAddr> addr(data);
+  if (addr.check())
+  {
+    PyTemplate templ;
+    if (self.HelperBuildTemplate(templ.GetItemRef(), static_cast<ScAddr>(addr)))
+      return bp::object(templ);
+  }
+  
+  bp::extract<std::string> str(data);
+  if (str.check())
+  {
+    PyTemplate templ;
+    std::string const value = str;
+    if (self.HelperBuildTemplate(templ.GetItemRef(), value))
+      return bp::object(templ);
+  }
 
+  SC_THROW_EXCEPTION(utils::ExceptionInvalidType,
+                    "Second parameter should be ScAddr or string");
+  
   return bp::object();
 }
 

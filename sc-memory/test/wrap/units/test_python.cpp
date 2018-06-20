@@ -63,6 +63,6 @@ UNIT_TEST(Python_clean)
 
   for (auto const & t : threads)
     t->join();
-  //std::this_thread::sleep_for(std::chrono::seconds(10));
+ 
   SC_CHECK(passed, ());
 }

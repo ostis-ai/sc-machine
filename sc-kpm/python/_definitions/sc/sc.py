@@ -5,6 +5,7 @@ from .sc_class import *
 # This file used by autocompletion module, don't use it in other purposes
 
 IterParam = TypeVar('IterParam', ScAddr, ScType)
+BuildTemplateParam = TypeVar('BuildTemplateParam', ScAddr, str)
 
 class ScMemoryContext:
 
@@ -69,7 +70,7 @@ class ScMemoryContext:
   def HelperSearchTemplate(self, templ: ScTemplate) -> ScTemplateSearchResult:
     return ScTemplateSearchResult()
 
-  def HelperBuildTemplate(self, addr: ScAddr) -> ScTemplate:
+  def HelperBuildTemplate(self, data: BuildTemplateParam) -> ScTemplate:
     return ScTemplate()
 
 

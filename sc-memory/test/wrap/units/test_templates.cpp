@@ -1385,7 +1385,7 @@ UNIT_TEST(template_one_edge_inclusion)
   SC_CHECK_EQUAL(searchResult[0]["c"], genResult["c"], ());
 }
 
-UNIT_TEST(scs_templates)
+UNIT_TEST(scs_templates_dummy)
 {
   ScMemoryContext ctx(sc_access_lvl_make_min, "scs_templates");
 
@@ -1396,7 +1396,7 @@ UNIT_TEST(scs_templates)
     SC_CHECK(ctx.HelperSetSystemIdtf("d", addr), ());
 
     ScTemplate templ;
-    char const * data = "_a _-> d;;";
+    char const * data = "_a _-> d;; _a <- sc_node_class;;";
     SC_CHECK(ctx.HelperBuildTemplate(templ, data), ());
   }
   SUBTEST_END()

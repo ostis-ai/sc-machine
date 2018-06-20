@@ -7,6 +7,5 @@ from sc_tests.test_utils import *
 
 def CreateNodeWithIdtf(ctx, _type, _idtf):
   addr = ctx.CreateNode(_type)
-  linkAddr = ctx.CreateLink()
-
-  ctx.SetLinkContent(linkAddr, _idtf)
+  ctx.HelperSetSystemIdtf(_idtf, addr)
+  return addr

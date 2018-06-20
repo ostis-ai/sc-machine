@@ -320,7 +320,9 @@ class TestScMemoryContext(TestCase):
     self.assertEqual(searchItem["_edge"], genResult["_edge"])
     self.assertEqual(searchItem["_target"], genResult["_target"])
 
-    # build template
+  def test_helper_build_template_addr(self):
+    ctx = TestScMemoryContext.MemoryCtx()
+
     addr1 = ctx.CreateNode(ScType.NodeConst)
     self.assertTrue(addr1.IsValid())
 
@@ -339,6 +341,53 @@ class TestScMemoryContext(TestCase):
 
     templ = ctx.HelperBuildTemplate(templAddr)
     self.assertTrue(type(templ) is ScTemplate)
+
+  def test_helper_build_template_scs(self):
+    ctx = TestScMemoryContext.MemoryCtx()
+
+    # generate test content for template search
+    personAddr = CreateNodeWithIdtf(ctx, ScType.NodeConstClass, "person")
+    self.assertTrue(personAddr.IsValid())
+
+    nrelRelAddr = CreateNodeWithIdtf(ctx, ScType.NodeConstNoRole, "nrel_rel")
+    self.assertTrue(nrelRelAddr.IsValid())
+
+    nodeValidAddr = ctx.CreateNode(ScType.NodeConstMaterial)
+    self.assertTrue(nodeValidAddr.IsValid())
+
+    nodeErrorAddr = ctx.CreateNode(ScType.NodeConst)
+    self.assertTrue(nodeErrorAddr.IsValid())
+
+    relEdgeValidAddr = ctx.CreateEdge(ScType.EdgeDCommonConst, personAddr, nodeValidAddr)
+    self.assertTrue(relEdgeValidAddr.IsValid())
+
+    relEdgeAttrValidAddr = ctx.CreateEdge(ScType.EdgeAccessConstPosPerm, nrelRelAddr, relEdgeValidAddr)
+    self.assertTrue(relEdgeAttrValidAddr.IsValid())
+
+    relEdgeErrorAddr = ctx.CreateEdge(ScType.EdgeDCommonConst, personAddr, nodeErrorAddr)
+    self.assertTrue(relEdgeErrorAddr.IsValid())
+
+    relEdgeAttrErrorAddr = ctx.CreateEdge(ScType.EdgeAccessConstPosPerm, nrelRelAddr, relEdgeErrorAddr)
+    self.assertTrue(relEdgeAttrErrorAddr.IsValid())
+
+    # make template
+    scs = "person _=> nrel_rel:: .._x;;"\
+      "person <- sc_node_class;;"\
+      ".._x <- sc_node_material;;"
+
+
+    templ = ctx.HelperBuildTemplate(scs)
+    self.assertTrue(type(templ) is ScTemplate)
+
+    # try to find data with that template
+    searchResult = ctx.HelperSearchTemplate(templ)
+    self.assertTrue(type(searchResult) is ScTemplateSearchResult)
+    self.assertEqual(searchResult.Size(), 1)
+
+    searchItem = searchResult[0]
+    self.assertEqual(searchItem["person"], personAddr)
+    self.assertEqual(searchItem[".._x"], nodeValidAddr)
+
 
   def test_rshift(self):
     ctx = TestScMemoryContext.MemoryCtx()
