@@ -484,6 +484,7 @@ void ScPythonInterpreter::RunScript(std::string const & scriptName, ScMemoryCont
       globalNamespace["__cpp_bridge__"] = bp::object();
     
     globalNamespace["__ctx__"] = bp::ptr(&ctx);
+    globalNamespace["__file__"] = filePath;
 
     bp::object resultObj(bp::exec_file(filePath.c_str(), globalNamespace, globalNamespace));  
     bp::exec("import gc\ngc.collect()", globalNamespace, globalNamespace);

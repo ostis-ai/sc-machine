@@ -1,3 +1,35 @@
+## v0.6.0
+
+ - **Build system**:
+    - Add support of OSX platform
+    - Fix compilation with `clang`
+
+ - **Tools**:
+    - Support custom extensions loading in `sc-builder`
+    - Add `sc-server` application to run claen `sc-memory` with extensions
+
+ - **Core**:
+    - Support list of enabled extensions
+    - Support all possible combinations of `sc_iterator3`
+
+ - **C++**:
+    - Implement optional search triples support
+    - Fix randomical crash of unittest
+    - Improve test system
+
+ - **Python**:
+    - Refactoring test system
+    - Add support of template building from `SCs-code` string
+    - Add `Aliases` method to `ScTemplateSearchResult` and `ScTemplateGenResult`
+
+ - **KPM**:
+    - **web**:
+        - Implement `http` module to access memory via Web interface
+        - Implement web browser interface to access `sc-memory`
+
+ - **Documentation**:
+    - Improve `SCs-code` documentation
+
 ## v0.5.0
 
 - **Build system**:
@@ -28,7 +60,7 @@
     - Fix error handling in sc-builder
     - Fix `show-filenames` parameter processing in sc-builder
 
-- **Common**
+- **Documentation**
     - Update documentation theme
     - Improve python library documentation
 

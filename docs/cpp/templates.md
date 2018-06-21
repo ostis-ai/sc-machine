@@ -149,8 +149,25 @@ During template building all constants will be resolved by their system identifi
 <scg src="../../images/templates/template_example_2.gwf"></scg>
 
 ## Search
-Search algorithm trying to find all possible variants of specified construction.
+
+Search algorithm trying to find all possible variants of specified construction. It use any constants (available `ScAddr`'s from parameters to find equal constructions in sc-memory).
+
+
 
 ## Search in construction
+
+Do the same as [Search](#search), but check if all elements of found constructions are in a specified set.
+
+Example:
+
+```cpp
+ScTemplate templ; 
+templ.Triple(
+  anyAddr >> "_anyAddr",
+  ScType::EdgeAccessVarPosPerm >> "_edge",
+  ScType::NodeVar >> "_trgAddr");
+  
+ctx.HelperSearchTemplateInStruct(templ, anyStructAddr, result)
+```
 
 ## Generate

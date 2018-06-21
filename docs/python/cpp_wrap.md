@@ -275,6 +275,9 @@ This class accumulate parameters for a template generation. There are methods of
 
 This class wrap template generation result. There are methods of this class:
 
+??? tip "Aliases()"
+    returns a list of all used aliases in template. They can be used to get result values by `__getitem__`
+
 ??? tip "Size()"
     return number of elements
 
@@ -310,6 +313,9 @@ This class represents one result for a search by template. There are methods of 
 ## ScTemplateSearchResult
 
 This class represent list of results by template search. There are methods of this class:
+
+??? tip "Aliases()"
+    returns a list of all used aliases in template. They can be used to get result values by `__getitem__`
 
 ??? tip "Size()"
     returns number of results.
@@ -606,13 +612,14 @@ There are methods of this class:
     result = ctx.HelperSearchTemplate(templ)
     ```
 
-??? tip "HelperBuildTemplate(templAddr)"
-    * **templAddr** - `ScAddr` to sc-struct in memory, that contains a template
+??? tip "HelperBuildTemplate(data)"
+    * **data** - `ScAddr` or `str`. If it's a `ScAddr` then it should point to sc-struct in memory, that is a template. It it's a `str`, then it should contains `SCs-code` that describes template
 
-    build template from construction in memory. Returns `ScTemplate` instance. If template wasn't built, then return `None`
+    returns `ScTemplate` instance. If template wasn't built, then return `None`
 
     **Example:*
     ```python
-    templ = ctx.HelperBuildTemplate(templAddr)
+    templFromMemory = ctx.HelperBuildTemplate(templAddr)
+    templFromStr = ctx.HelperBuildTemplate('person _=> nrel_email:: _[];;')
     ... # work with template
     ```

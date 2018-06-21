@@ -1,4 +1,5 @@
 pygments
 markdown-include
+mkdocs-material
 mkdocs-cinder
 pymdown-extensions

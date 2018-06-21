@@ -37,6 +37,14 @@ For example: `.x`.
 In case, when you need to make a named object just local for a *scs* file,
 then you should to use `..` prefix (example: `..x`).
 
+So a rule to build identifier is:
+
+```
+[visibility][variable]<identifier>
+```
+
+For example identifier `.._x` localy visible variable identifier.
+
 <div class="note">
 SCs-code is splitted into levels. Each level allows to minimize number
 of string symbols to represent the same structures.
@@ -401,22 +409,21 @@ a -> c: d: b;
 
 There are a list of element type keynodes, that can be used to specify type of an element:
 
-| Keynode                   | Equal sc-type |
-| ------------------------- | ------------- |
-| sc_node                   | ScType::Node  |
-| sc_link                   | ScType::Link  |
-| sc_edge_dcommon           | ScType::EdgeDCommon |
-| sc_edge_ucommon           | ScType::EdgeUCommon |
-| sc_edge_main              | ScType::EdgeAccessConstPosPerm |
-| sc_arc_access             | ScType::EdgeAccess |
-| sc_edge_access            | ScType::EdgeAccess |
-| sc_node_tuple             | ScType::NodeTuple |
-| sc_node_struct            | ScType::NodeStruct |
-| sc_node_role_relation     | ScType::NodeRole |
-| sc_node_norole_relation   | ScType::NodeNoRole |
-| sc_node_class             | ScType::NodeClass |
-| sc_node_abstract          | ScType::NodeAbstract |
-| sc_node_material          | ScType::NodeMaterial |
+| Keynode                           | Equal sc-type                       | Equal SCg-element
+| --------------------------------- | ----------------------------------- | --------------
+| sc_node                           | ScType::Node                        | ![SCg-edge](../images/scg/scg_node.png)
+| sc_link                           | ScType::Link                        | ![SCg-edge](../images/scg/scg_link.png)
+| sc_edge_dcommon                   | ScType::EdgeDCommon                 | ![SCg-edge](../images/scg/scg_edge_common_orient.png)
+| sc_edge_ucommon                   | ScType::EdgeUCommon                 | ![SCg-edge](../images/scg/scg_edge_common.png)
+| sc_edge_main                      | ScType::EdgeAccessConstPosPerm      | ![SCg-edge](../images/scg/scg_edge_const_pos_perm.png)
+| sc_edge_access                    | ScType::EdgeAccess                  | ![SCg-edge](../images/scg/scg_edge_access.png)
+| sc_node_tuple                     | ScType::NodeTuple                   | ![SCg-edge](../images/scg/scg_node_const_tuple.png) ![SCg-edge](../images/scg/scg_node_var_tuple.png)
+| sc_node_struct                    | ScType::NodeStruct                  | ![SCg-edge](../images/scg/scg_node_const_struct.png) ![SCg-edge](../images/scg/scg_node_var_struct.png)
+| sc_node_role_relation             | ScType::NodeRole                    | ![SCg-edge](../images/scg/scg_node_const_role.png) ![SCg-edge](../images/scg/scg_node_var_role.png)
+| sc_node_norole_relation           | ScType::NodeNoRole                  | ![SCg-edge](../images/scg/scg_node_const_norole.png) ![SCg-edge](../images/scg/scg_node_var_norole.png)
+| sc_node_class                     | ScType::NodeClass                   | ![SCg-edge](../images/scg/scg_node_const_class.png) ![SCg-edge](../images/scg/scg_node_var_class.png)
+| sc_node_abstract                  | ScType::NodeAbstract                | ![SCg-edge](../images/scg/scg_node_const_abstract.png) ![SCg-edge](../images/scg/scg_node_var_abstract.png)
+| sc_node_material                  | ScType::NodeMaterial                | ![SCg-edge](../images/scg/scg_node_const_material.png) ![SCg-edge](../images/scg/scg_node_var_material.png)
 
 There are old keynodes, that used for backward compatibility:
 
@@ -425,6 +432,7 @@ There are old keynodes, that used for backward compatibility:
 | sc_arc_main               | ScType::EdgeAccessConstPosPerm | sc_edge_main |
 | sc_edge                   | ScType::EdgeUCommon | sc_edge_ucommon |
 | sc_arc_common             | ScType::EdgeDCommon | sc_edge_dcommon |
+| sc_arc_access             | ScType::EdgeAccess  | sc_edge_access |
 | sc_node_not_relation      | ScType::NodeClass | sc_node_class |
 | sc_node_not_binary_tuple  | ScType::NodeTuple | sc_node_tuple |
 

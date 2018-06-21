@@ -18,7 +18,7 @@ UNIT_TEST(Python_interp)
   {
     py::ScPythonInterpreter::AddModulesPath(SC_TEST_KPM_PYTHON_PATH);
 
-    py::DummyService testService("sc_tests/test_common.py");
+    py::DummyService testService("sc_tests/test_main.py");
     testService.Run();
 
     while (testService.IsRun())
@@ -63,6 +63,6 @@ UNIT_TEST(Python_clean)
 
   for (auto const & t : threads)
     t->join();
-  //std::this_thread::sleep_for(std::chrono::seconds(10));
+ 
   SC_CHECK(passed, ());
 }

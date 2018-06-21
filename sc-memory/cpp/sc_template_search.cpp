@@ -29,10 +29,9 @@ public:
   {
     if (m_template.m_isForceOrder)
     {
-      ScTemplate::ProcessOrder & cache = m_template.m_searchCachedOrder;
-      cache.resize(m_template.m_constructions.size());
-      for (size_t i = 0; i < cache.size(); ++i)
-        cache[i] = i;
+      m_template.m_searchCachedOrder.resize(m_template.m_constructions.size());
+      for (size_t i = 0; i < m_template.m_constructions.size(); ++i)
+        m_template.m_searchCachedOrder[i] = i;
     }
     else if (!m_template.IsSearchCacheValid() && !m_template.m_constructions.empty())
     {
@@ -215,22 +214,43 @@ public:
       return type;
     };
 
-    if (addr0.IsValid() && !addr1.IsValid())
+    if (addr0.IsValid())
     {
-      if (addr2.IsValid()) // F_A_F
+      if (!addr1.IsValid())
       {
-        return m_context.Iterator3(addr0, PrepareType(value1.m_typeValue), addr2);
+        if (addr2.IsValid()) // F_A_F
+        {
+          return m_context.Iterator3(addr0, PrepareType(value1.m_typeValue), addr2);
+        }
+        else // F_A_A
+        {
+          return m_context.Iterator3(addr0, PrepareType(value1.m_typeValue), PrepareType(value2.m_typeValue));
+        }
       }
-      else // F_A_A
+      else
       {
-        return m_context.Iterator3(addr0, PrepareType(value1.m_typeValue), PrepareType(value2.m_typeValue));
+        if (addr2.IsValid()) // F_F_F
+        {
+          return m_context.Iterator3(addr0, addr1, addr2);
+        }
+        else // F_F_A
+        {
+          return m_context.Iterator3(addr0, addr1, PrepareType(value2.m_typeValue));
+        }
       }
     }
-    else if (addr2.IsValid() && !addr0.IsValid()) // A_A_F
+    else if (addr2.IsValid())
     {
-      return m_context.Iterator3(PrepareType(value0.m_typeValue), PrepareType(value1.m_typeValue), addr2);
+      if (addr1.IsValid()) // A_F_F
+      {
+        return m_context.Iterator3(PrepareType(value0.m_typeValue), addr1, addr2);
+      }
+      else // A_A_F
+      {
+        return m_context.Iterator3(PrepareType(value0.m_typeValue), PrepareType(value1.m_typeValue), addr2);
+      }
     }
-    else if (addr1.IsValid() && !addr0.IsValid() && !addr2.IsValid()) // A_F_A
+    else if (addr1.IsValid() && !addr2.IsValid()) // A_F_A
     {
       return m_context.Iterator3(PrepareType(value0.m_typeValue), addr1, PrepareType(value2.m_typeValue));
     }
@@ -262,8 +282,8 @@ public:
     {
       auto it = m_template.m_replacements.find(v.m_replacementName);
       SC_ASSERT(it != m_template.m_replacements.end(), ());
-
-      m_resultAddrs[it->second] = addr;
+      if (addr.IsValid())
+        m_resultAddrs[it->second] = addr;
       m_replRefs[it->second]++;
     }
   }
@@ -281,9 +301,10 @@ public:
     }
   }
   
-  void Iteration(ScTemplateSearchResult & result)
+  void DoIterations(ScTemplateSearchResult & result)
   {
     std::stack<ScIterator3Ptr> iterators;
+    std::vector<bool> didIter(m_template.m_constructions.size(), false);
     std::vector<ScAddr> edges(m_template.m_constructions.size());
     size_t const finishIdx = m_template.m_constructions.size() - 1;
     bool newIteration = true;
@@ -312,41 +333,26 @@ public:
         UnrefReplacement(values[2]);
 
         auto const itEdge = m_usedEdges.find(edges[orderIndex]);
-        SC_ASSERT(itEdge != m_usedEdges.end(), ());
-        m_usedEdges.erase(itEdge);
+        if (itEdge != m_usedEdges.end())
+          m_usedEdges.erase(itEdge);
 
         it = iterators.top();
       }
 
-      auto const internalCode = [&](ScAddr const & addr1,
-                                    ScAddr const & addr2,
-                                    ScAddr const & addr3)
+      auto const applyResult = [&](ScAddr const & res1,
+                                   ScAddr const & res2,
+                                   ScAddr const & res3)
       {
-        // check if search in structure
-        if (m_struct.IsValid())
-        {
-          if (!CheckInStruct(it->Get(0)) ||
-              !CheckInStruct(it->Get(1)) ||
-              !CheckInStruct(it->Get(2)))
-          {
-            return false;
-          }
-        }
-
-        auto const res = m_usedEdges.insert(addr2);
-        if (!res.second) // don't iterate the same edge twicely
-          return false;
-
-        edges[orderIndex] = addr2;
+        edges[orderIndex] = res2;
 
         // do not make cycle for optimization issues (remove comparsion expresion)
-        m_resultAddrs[resultIdx] = addr1;
-        m_resultAddrs[resultIdx + 1] = addr2;
-        m_resultAddrs[resultIdx + 2] = addr3;
+        m_resultAddrs[resultIdx] = res1;
+        m_resultAddrs[resultIdx + 1] = res2;
+        m_resultAddrs[resultIdx + 2] = res3;
 
-        RefReplacement(values[0], addr1);
-        RefReplacement(values[1], addr2);
-        RefReplacement(values[2], addr3);
+        RefReplacement(values[0], res1);
+        RefReplacement(values[1], res2);
+        RefReplacement(values[2], res3);
 
         if (orderIndex == finishIdx)
         {
@@ -357,8 +363,6 @@ public:
         {
           newIteration = true;
         }
-
-        return true;
       };
 
       // make one iteration
@@ -368,11 +372,38 @@ public:
 
         while (it->Next())
         {
-          if (internalCode(it->Get(0), it->Get(1), it->Get(2)))
+          didIter[orderIndex] = true;
+
+          ScAddr const addr1 = it->Get(0);
+          ScAddr const addr2 = it->Get(1);
+          ScAddr const addr3 = it->Get(2);
+
+          // check if search in structure
+          if (m_struct.IsValid())
           {
-            isFinished = false;
-            break;
+            if (!CheckInStruct(addr1) ||
+                !CheckInStruct(addr2) ||
+                !CheckInStruct(addr3))
+            {
+              continue;
+            }
           }
+
+          auto const res = m_usedEdges.insert(addr2);
+          if (!res.second) // don't iterate the same edge twicely
+            continue;
+
+          applyResult(addr1, addr2, addr3);
+         
+          isFinished = false;
+          break;
+        }
+
+        if (!didIter[orderIndex] && !constr.IsRequired())
+        {
+          applyResult(ScAddr::Empty, ScAddr::Empty, ScAddr::Empty);
+          didIter[orderIndex] = true;
+          isFinished = false;
         }
         
         if (isFinished) // finish iterator
@@ -383,60 +414,23 @@ public:
       }
       else // special checks and search
       {
-        bool isFinished = true;
-
-        if (newIteration)
-        {
-          auto const & values = constr.GetValues();
-          ScTemplateItemValue const & value0 = values[0];
-          ScTemplateItemValue const & value1 = values[1];
-          ScTemplateItemValue const & value2 = values[2];
-
-          ScAddr const addr0 = ResolveAddr(value0);
-          ScAddr const addr1 = ResolveAddr(value1);
-          ScAddr const addr2 = ResolveAddr(value2);
-
-          if (addr1.IsValid())
-          {
-            ScAddr src, trg;
-            if (m_context.GetEdgeInfo(addr1, src, trg))
-            {
-              bool needCall = true;
-              if (addr0.IsValid() && (src != addr0))
-                needCall = false;
-
-              if (addr2.IsValid() && (trg != addr2))
-                needCall = false;
-
-              if (needCall && internalCode(src, addr1, trg))
-              {
-                newIteration = true;
-                isFinished = false;
-              }
-            }
-          }
-        }
-
-        if (isFinished)
-        {
-          iterators.pop();
-          newIteration = false;
-        }
+        SC_THROW_EXCEPTION(utils::ExceptionInvalidState, "Invalid state during template search");
       }
-
     } while (!iterators.empty());
-
   }
 
   bool operator () (ScTemplateSearchResult & result)
   {
+    if (!m_template.m_hasRequired)
+      SC_THROW_EXCEPTION(utils::ExceptionInvalidParams, "Templates just with optional triples doesn't supported.");
+
     result.clear();
 
     result.m_replacements = m_template.m_replacements;
     m_resultAddrs.resize(CalculateOneResultSize());
     m_replRefs.resize(m_resultAddrs.size(), 0);
 
-    Iteration(result);
+    DoIterations(result);
 
     return (result.Size() > 0);
   }

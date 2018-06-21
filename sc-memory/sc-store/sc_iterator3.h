@@ -19,6 +19,10 @@ typedef enum
   sc_iterator3_a_a_f,     // ingoing edges
   sc_iterator3_f_a_f,     // edge between source and target
   sc_iterator3_a_f_a,		  // find source/target elements of edge
+  // just for clean template search
+  sc_iterator3_f_f_a,
+  sc_iterator3_a_f_f,
+  sc_iterator3_f_f_f,
   sc_iterator3_count
 
 } sc_iterator3_type;
@@ -73,6 +77,11 @@ _SC_EXTERN sc_iterator3 * sc_iterator3_f_a_f_new(sc_memory_context const * ctx, 
 /*! Create iterator to determine edge source and target
  */
 _SC_EXTERN sc_iterator3 * sc_iterator3_a_f_a_new(sc_memory_context const * ctx, sc_type beg_type, sc_addr arc_addr, sc_type end_type);
+
+// Requried for clean template search algorithm
+_SC_EXTERN sc_iterator3 * sc_iterator3_f_f_a_new(sc_memory_context const * ctx, sc_addr beg_addr, sc_addr edge_addr, sc_type end_type);
+_SC_EXTERN sc_iterator3 * sc_iterator3_a_f_f_new(sc_memory_context const * ctx, sc_type beg_type, sc_addr edge_addr, sc_addr end_addr);
+_SC_EXTERN sc_iterator3 * sc_iterator3_f_f_f_new(sc_memory_context const * ctx, sc_addr beg_addr, sc_addr edge_addr, sc_addr end_addr);
 
 /*! Create new sc-iterator-3
  * @param type Iterator type (search template)

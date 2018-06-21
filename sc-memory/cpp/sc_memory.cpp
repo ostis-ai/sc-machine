@@ -92,7 +92,7 @@ bool ScMemory::Initialize(sc_memory_params const & params)
 
   ms_globalContext = sc_memory_initialize(&newParams);
   py::ScPythonInterpreter::Initialize("sc-memory");
-  sc_memory_init_ext(params.ext_path);
+  sc_memory_init_ext(params.ext_path, params.enabled_exts);
   
   ScKeynodes::Init();
   ScAgentInit(true);

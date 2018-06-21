@@ -11,6 +11,7 @@ pages:
   - Build:
     - Build on Linux: build/linux-build.md
     - Build on Windows: build/windows-build.md
+    - Build on OSX: build/osx-build.md
   - Development:
     - Git-workflow: dev/git-workflow.md
     - Pull requets: dev/pr.md
@@ -25,6 +26,10 @@ pages:
       - Common: python/python.md
       - Library: python/library.md
       - Wrapped classes: python/cpp_wrap.md
+  - Http:
+      - Common: http/index.md
+      - REST API: http/rest_api.md
+      - WebSocket: http/websocket.md
   - Common:
     - Element types: cpp/el_types.md
     - Configuration files: other/config.md

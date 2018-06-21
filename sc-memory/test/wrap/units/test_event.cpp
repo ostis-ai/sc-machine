@@ -255,12 +255,12 @@ UNIT_TEST(pend_events)
   volatile int32_t eventsCount = 0;
   volatile int32_t passedCount = 0;
 
-  ScTemplate checkTempl;
+  std::shared_ptr<ScTemplate> checkTempl(new ScTemplate());
   size_t step = 100;
   size_t testNum = el_num / step - 1;
   for (size_t i = 0; i < testNum; ++i)
   {
-    checkTempl.TripleWithRelation(
+    checkTempl->TripleWithRelation(
       set1,
       ScType::EdgeDCommonVar,
       elements[i * step] >> "_el",
@@ -269,12 +269,12 @@ UNIT_TEST(pend_events)
   }
 
   ScEventAddOutputEdge evt(ctx, set1,
-                           [&](ScAddr const & addr, ScAddr const & edgeAddr, ScAddr const & otherAddr)
+    [checkTempl, &passedCount, &eventsCount](ScAddr const & addr, ScAddr const & edgeAddr, ScAddr const & otherAddr)
   {
     ScMemoryContext localCtx(sc_access_lvl_make_min);
     
     ScTemplateSearchResult res;
-    SC_CHECK(localCtx.HelperSearchTemplate(checkTempl, res), ());
+    SC_CHECK(localCtx.HelperSearchTemplate(*checkTempl, res), ());
     
     if (res.Size() == 1)
       g_atomic_int_add(&passedCount, 1);

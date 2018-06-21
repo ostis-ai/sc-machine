@@ -129,8 +129,10 @@ public:
   ScTemplateConstr3(ScTemplateItemValue const & param1,
                     ScTemplateItemValue const & param2,
                     ScTemplateItemValue const & param3,
-                    size_t idx)
+                    size_t idx,
+                    bool isRequired)
     : m_index(idx)
+    , m_isRequired(isRequired)
   {
     m_values[0] = param1;
     m_values[1] = param2;
@@ -174,6 +176,11 @@ public:
     return result;
   }
 
+  bool IsRequired() const
+  {
+    return m_isRequired;
+  }
+
 protected:
   ItemsArray m_values;
   /* Store original index in template. Because when perform search or generation
@@ -181,12 +188,13 @@ protected:
    * Used to construct result
    */
   size_t m_index;
+  bool m_isRequired;
 };
 
-ScTemplateItemValue operator >> (ScAddr const & value, char const * replName);
-ScTemplateItemValue operator >> (ScAddr const & value, std::string const & replName);
-ScTemplateItemValue operator >> (ScType const & value, char const * replName);
-ScTemplateItemValue operator >> (ScType const & value, std::string const & replName);
+_SC_EXTERN ScTemplateItemValue operator >> (ScAddr const & value, char const * replName);
+_SC_EXTERN ScTemplateItemValue operator >> (ScAddr const & value, std::string const & replName);
+_SC_EXTERN ScTemplateItemValue operator >> (ScType const & value, char const * replName);
+_SC_EXTERN ScTemplateItemValue operator >> (ScType const & value, std::string const & replName);
 
 class ScTemplateGenResult;
 class ScTemplateSearchResult;
@@ -209,9 +217,7 @@ public:
   ScTemplateGenParams(ScTemplateGenParams const & other) = delete;
   ScTemplateGenParams & operator = (ScTemplateGenParams const & other) = delete;
 
-  explicit ScTemplateGenParams()
-  {
-  }
+  ScTemplateGenParams() = default;
 
   SC_DEPRECATED(0.4.0, "You should to use ScTemplateGenParams::Add")
   _SC_EXTERN ScTemplateGenParams & add(std::string const & varIdtf, ScAddr const & value)
@@ -277,10 +283,10 @@ public:
    */
   _SC_EXTERN explicit ScTemplate(bool forceOrder = true);
 
-  _SC_EXTERN ScTemplate & operator() (ScTemplateItemValue const & param1, ScTemplateItemValue const & param2, ScTemplateItemValue const & param3);
+  _SC_EXTERN ScTemplate & operator() (ScTemplateItemValue const & param1, ScTemplateItemValue const & param2, ScTemplateItemValue const & param3, bool isRequired = true);
 
   _SC_EXTERN ScTemplate & operator() (ScTemplateItemValue const & param1, ScTemplateItemValue const & param2, ScTemplateItemValue const & param3,
-                                      ScTemplateItemValue const & param4, ScTemplateItemValue const & param5);
+                                      ScTemplateItemValue const & param4, ScTemplateItemValue const & param5, bool isRequired = true);
 
   _SC_EXTERN void Clear();
   _SC_EXTERN bool IsEmpty() const;
@@ -293,7 +299,7 @@ public:
     *          param2
     * param1 ----------> param3
     */
-  _SC_EXTERN ScTemplate & Triple(ScTemplateItemValue const & param1, ScTemplateItemValue const & param2, ScTemplateItemValue const & param3);
+  _SC_EXTERN ScTemplate & Triple(ScTemplateItemValue const & param1, ScTemplateItemValue const & param2, ScTemplateItemValue const & param3, bool isRequired = true);
 
   /** Adds template:
     *           param2
@@ -307,7 +313,7 @@ public:
     * possible abuse, use result name mapping, and get result by names
     */
   _SC_EXTERN ScTemplate & TripleWithRelation(ScTemplateItemValue const & param1, ScTemplateItemValue const & param2, ScTemplateItemValue const & param3,
-                                             ScTemplateItemValue const & param4, ScTemplateItemValue const & param5);
+                                             ScTemplateItemValue const & param4, ScTemplateItemValue const & param5, bool isRequired = true);
 
 protected:
   // Begin: calls by memory context
@@ -339,6 +345,8 @@ protected:
   size_t m_currentReplPos;
 
   bool m_isForceOrder : 1;
+  bool m_hasRequired : 1;
+  bool m_hasOptional : 1;
   /* Caches (used to prevent processing order update on each search/gen)
    * Caches are mutable, to prevent changes of template in search and generation, they can asses just a cache.
    * That because template passed into them by const reference.
@@ -394,6 +402,11 @@ public:
     return m_result[index];
   }
 
+  inline ScTemplate::ReplacementsMap const & GetReplacements() const 
+  { 
+    return m_replacements; 
+  } 
+
 protected:
   ScAddrVector m_result;
 
@@ -443,9 +456,12 @@ class ScTemplateSearchResult
   friend class ScTemplateSearch;
 
 public:
-  SC_DEPRECATED(0.3.0, "Use ScTemplateSearchResult::Size instead")
-  inline size_t GetSize() const { return Size(); }
   inline size_t Size() const { return m_results.size(); }
+
+  inline bool IsEmpty() const
+  {
+    return Size() == 0;
+  }
 
   inline bool GetResultItemSave(size_t idx, ScTemplateSearchResultItem & outItem) const
   {
@@ -469,6 +485,11 @@ public:
   {
     m_results.clear();
     m_replacements.clear();
+  }
+
+  inline ScTemplate::ReplacementsMap const & GetReplacements() const
+  {
+    return m_replacements;
   }
 
   template <typename FnT>

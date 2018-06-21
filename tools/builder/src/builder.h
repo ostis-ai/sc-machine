@@ -26,6 +26,8 @@ struct BuilderParams
   String outputPath;
   //! Path to memory extensions
   String extensionsPath;
+  //! Path to file with a list of enabled extensions
+  String enabledExtPath;
   //! Flag to clear output
   bool clearOutput:1;
   //! Flag to generate format information based on file extensions
@@ -39,8 +41,7 @@ struct BuilderParams
 class Builder
 {
 public:
-  explicit Builder();
-  virtual ~Builder();
+  Builder();
 
   //! Initialize builder. Create and register translator factories
   void initialize();

@@ -31,6 +31,13 @@ public:
   {
   }
 
+  void Update()
+  {
+    m_replacements = bp::list();
+    for (auto const & it : m_result->GetReplacements())
+      m_replacements.append(it.first);
+  }
+
   ScTemplateGenResult & GetResultRef()
   {
     return *m_result;
@@ -44,7 +51,7 @@ public:
     {
       value = (*m_result)[name];
     }
-    catch (utils::ExceptionItemNotFound const & ex)
+    catch (utils::ExceptionItemNotFound const &)
     {
       return bp::object();
     }
@@ -57,8 +64,14 @@ public:
     return m_result->Size();
   }
 
+  bp::list GetReplaceAliases() const
+  {
+    return m_replacements;
+  }
+
 private:
   std::shared_ptr<ScTemplateGenResult> m_result;
+  bp::list m_replacements;
 };
 
 // -----------------------------
@@ -111,6 +124,13 @@ public:
   {
   }
 
+  void Update()
+  {
+    m_replacements = bp::list();
+    for (auto const & it : m_result->GetReplacements())
+      m_replacements.append(it.first);
+  }
+
   ScTemplateSearchResult & GetResultRef()
   {
     return *m_result;
@@ -130,8 +150,14 @@ public:
     return bp::object();
   }
 
+  bp::list GetReplaceAliases() const
+  {
+    return m_replacements;
+  }
+
 private:
   std::shared_ptr<ScTemplateSearchResult> m_result;
+  bp::list m_replacements;
 };
 
 // -----------------------------
@@ -696,7 +722,10 @@ bp::object _context_helperGenTemplate(ScMemoryContext & self, PyTemplate & templ
 {
   PyTemplateGenResult result;
   if (self.HelperGenTemplate(templ.GetItemRef(), result.GetResultRef(), params.GetItemRef()))
+  {
+    result.Update();
     return bp::object(result);
+  }
 
   return bp::object();
 }
@@ -705,15 +734,32 @@ bp::object _context_helperSearchTemplate(ScMemoryContext & self, PyTemplate & te
 {
   PyTemplateSearchResult result;
   self.HelperSearchTemplate(templ.GetItemRef(), result.GetResultRef());
+  result.Update();
   return bp::object(result);
 }
 
-bp::object _context_helperBuildTemplate(ScMemoryContext & self, ScAddr const & templAddr)
+bp::object _context_helperBuildTemplate(ScMemoryContext & self, bp::object & data)
 {
-  PyTemplate templ;
-  if (self.HelperBuildTemplate(templ.GetItemRef(), templAddr))
-    return bp::object(templ);
+  bp::extract<ScAddr> addr(data);
+  if (addr.check())
+  {
+    PyTemplate templ;
+    if (self.HelperBuildTemplate(templ.GetItemRef(), static_cast<ScAddr>(addr)))
+      return bp::object(templ);
+  }
+  
+  bp::extract<std::string> str(data);
+  if (str.check())
+  {
+    PyTemplate templ;
+    std::string const value = str;
+    if (self.HelperBuildTemplate(templ.GetItemRef(), value))
+      return bp::object(templ);
+  }
 
+  SC_THROW_EXCEPTION(utils::ExceptionInvalidType,
+                    "Second parameter should be ScAddr or string");
+  
   return bp::object();
 }
 
@@ -789,6 +835,7 @@ BOOST_PYTHON_MODULE(sc)
   bp::class_<impl::PyTemplateGenResult>("ScTemplateGenResult", bp::no_init)
     .def("Size", &impl::PyTemplateGenResult::Size)
     .def("__getitem__", &impl::PyTemplateGenResult::Get)
+    .def("Aliases", &impl::PyTemplateGenResult::GetReplaceAliases)
     ;
 
   bp::class_<impl::PyTemplateSearchResultItem>("ScTemplateSearchResultItem", bp::no_init)
@@ -799,6 +846,7 @@ BOOST_PYTHON_MODULE(sc)
   bp::class_<impl::PyTemplateSearchResult>("ScTemplateSearchResult", bp::no_init)
     .def("Size", &impl::PyTemplateSearchResult::Size)
     .def("__getitem__", &impl::PyTemplateSearchResult::Get)
+    .def("Aliases", &impl::PyTemplateSearchResult::GetReplaceAliases)
     ;
 
   bp::class_<impl::PyTemplateItemValue>("ScTemplateItemValue", bp::no_init)
