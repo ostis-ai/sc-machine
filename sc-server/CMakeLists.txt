@@ -7,15 +7,13 @@ if (${WIN32})
   set (BOOST_LIBS_LIST )
 else()
    set (BOOST_LIBS_LIST
-       boost_filesystem 
-       boost_program_options 
-       boost_system)
+       boost_program_options)
 endif (${WIN32})
 
   
 add_executable(sc-server ${SOURCES} ${HEADERS})
 include_directories(${SC_MEMORY_SRC} ${GLIB2_INCLUDE_DIRS})
-target_link_libraries(sc-server sc-memory sc-memory-cpp )
+target_link_libraries(sc-server sc-memory sc-memory-cpp ${BOOST_LIBS_LIST})
 
 add_dependencies(sc-server
   sc-kpm
