@@ -402,6 +402,11 @@ public:
     return m_result[index];
   }
 
+  inline ScTemplate::ReplacementsMap const & GetReplacements() const 
+  { 
+    return m_replacements; 
+  } 
+
 protected:
   ScAddrVector m_result;
 
@@ -480,6 +485,11 @@ public:
   {
     m_results.clear();
     m_replacements.clear();
+  }
+
+  inline ScTemplate::ReplacementsMap const & GetReplacements() const
+  {
+    return m_replacements;
   }
 
   template <typename FnT>

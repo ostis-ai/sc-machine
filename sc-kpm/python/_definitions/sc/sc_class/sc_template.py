@@ -7,6 +7,9 @@ class ScTemplateGenResult:
   def __getitem__(self, name: str) -> ScAddr:
     return ScAddr()
 
+  def Aliases(self) -> [str]:
+    return []
+
 
 class ScTemplateSearchResultItem:
   def Size(self) -> int:
@@ -23,6 +26,8 @@ class ScTemplateSearchResult:
   def __getitem__(self, idx: int) -> ScTemplateSearchResultItem:
     return ScTemplateSearchResultItem()
 
+  def Aliases(self) -> [str]:
+    return []
 
 class ScTemplateGenParams:
   def Add(self, paramName: str, value: ScAddr):

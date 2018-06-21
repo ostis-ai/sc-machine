@@ -298,10 +298,17 @@ class TestScMemoryContext(TestCase):
     self.assertTrue(attrAddr.IsValid())
 
     templ = ScTemplate()
-    templ.Triple(addr1, ScType.EdgeAccessVarPosPerm >>
-                 "_edge", ScType.NodeVar >> "_target")
-    templ.Triple(attrAddr, ScType.EdgeAccessVarPosPerm, "_edge")
+    templ.Triple(
+      addr1,
+      ScType.EdgeAccessVarPosPerm >> "_edge",
+      ScType.NodeVar >> "_target")
 
+    templ.Triple(
+      attrAddr,
+      ScType.EdgeAccessVarPosPerm,
+      "_edge")
+
+    # generate by template
     params = ScTemplateGenParams()
     params.Add("_target", addr2)
 
@@ -311,10 +318,22 @@ class TestScMemoryContext(TestCase):
     self.assertTrue(type(genResult) is ScTemplateGenResult)
     self.assertEqual(genResult["not_exist"], None)
 
+    # check aliases
+    aliases = genResult.Aliases()
+    self.assertEqual(len(aliases), 2)
+    self.assertTrue("_edge" in aliases)
+    self.assertTrue("_target" in aliases)
+
     # search by this template and compare results
     searchResult = ctx.HelperSearchTemplate(templ)
     self.assertTrue(type(searchResult) is ScTemplateSearchResult)
     self.assertEqual(searchResult.Size(), 1)
+
+    # check aliases
+    aliases = searchResult.Aliases()
+    self.assertEqual(len(aliases), 2)
+    self.assertTrue("_edge" in aliases)
+    self.assertTrue("_target" in aliases)
 
     searchItem = searchResult[0]
     self.assertEqual(searchItem["_edge"], genResult["_edge"])

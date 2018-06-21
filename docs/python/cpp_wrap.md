@@ -275,6 +275,9 @@ This class accumulate parameters for a template generation. There are methods of
 
 This class wrap template generation result. There are methods of this class:
 
+??? tip "Aliases()"
+    returns a list of all used aliases in template. They can be used to get result values by `__getitem__`
+
 ??? tip "Size()"
     return number of elements
 
@@ -310,6 +313,9 @@ This class represents one result for a search by template. There are methods of 
 ## ScTemplateSearchResult
 
 This class represent list of results by template search. There are methods of this class:
+
+??? tip "Aliases()"
+    returns a list of all used aliases in template. They can be used to get result values by `__getitem__`
 
 ??? tip "Size()"
     returns number of results.
