@@ -33,9 +33,9 @@ public:
 
   void Update()
   {
-    m_replacements = bp::list();
+    m_replacements = bp::dict();
     for (auto const & it : m_result->GetReplacements())
-      m_replacements.append(it.first);
+      m_replacements[it.first] = it.second;
   }
 
   ScTemplateGenResult & GetResultRef()
@@ -64,14 +64,14 @@ public:
     return m_result->Size();
   }
 
-  bp::list GetReplaceAliases() const
+  bp::dict GetReplaceAliases() const
   {
     return m_replacements;
   }
 
 private:
   std::shared_ptr<ScTemplateGenResult> m_result;
-  bp::list m_replacements;
+  bp::dict m_replacements;
 };
 
 // -----------------------------
@@ -126,9 +126,9 @@ public:
 
   void Update()
   {
-    m_replacements = bp::list();
+    m_replacements = bp::dict();
     for (auto const & it : m_result->GetReplacements())
-      m_replacements.append(it.first);
+      m_replacements[it.first] = it.second;
   }
 
   ScTemplateSearchResult & GetResultRef()
@@ -150,14 +150,14 @@ public:
     return bp::object();
   }
 
-  bp::list GetReplaceAliases() const
+  bp::dict GetReplaceAliases() const
   {
     return m_replacements;
   }
 
 private:
   std::shared_ptr<ScTemplateSearchResult> m_result;
-  bp::list m_replacements;
+  bp::dict m_replacements;
 };
 
 // -----------------------------

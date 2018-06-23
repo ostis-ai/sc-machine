@@ -276,13 +276,13 @@ This class accumulate parameters for a template generation. There are methods of
 This class wrap template generation result. There are methods of this class:
 
 ??? tip "Aliases()"
-    returns a list of all used aliases in template. They can be used to get result values by `__getitem__`
+    returns a `dict` of all used aliases in template (where key - `alias`, value - index in generate result). Keys can be used to get result values by `__getitem__`
 
 ??? tip "Size()"
     return number of elements
 
-??? tip "\_\_getitem\_\_(replName)"
-    * **replName** - name of result parameter (`str`)
+??? tip "\_\_getitem\_\_(alias)"
+    * **alias** - name of result parameter (`str`)
 
     returns `ScAddr` by specified name. If there are no value with a specified name, then returns `None`
     ```python
@@ -301,7 +301,7 @@ This class represents one result for a search by template. There are methods of 
     !!! warning 
         You will receive duplicate `ScAddr`'s, because result stored as array of founded triples.
 
-    When you try to get `ScAddr` with `str` it will be found by replacement name (see [templates](../cpp/templates.md) for more info). If there are no element with specified index, then returns `None`
+    When you try to get `ScAddr` with `str` it will be found by alias (see [templates](../cpp/templates.md) for more info). If there are no element with specified index, then returns `None`
     ```python
     resultSize = searchResultItem.Size()
     for i in range(resultSize):
@@ -315,7 +315,7 @@ This class represents one result for a search by template. There are methods of 
 This class represent list of results by template search. There are methods of this class:
 
 ??? tip "Aliases()"
-    returns a list of all used aliases in template. They can be used to get result values by `__getitem__`
+    returns a `dict` of all used aliases in template (where key - `alias`, value - index in search result). Keys can be used to get result values by `__getitem__`
 
 ??? tip "Size()"
     returns number of results.

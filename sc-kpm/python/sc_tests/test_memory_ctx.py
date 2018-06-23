@@ -319,7 +319,7 @@ class TestScMemoryContext(TestCase):
     self.assertEqual(genResult["not_exist"], None)
 
     # check aliases
-    aliases = genResult.Aliases()
+    aliases = genResult.Aliases().keys()
     self.assertEqual(len(aliases), 2)
     self.assertTrue("_edge" in aliases)
     self.assertTrue("_target" in aliases)
@@ -330,7 +330,7 @@ class TestScMemoryContext(TestCase):
     self.assertEqual(searchResult.Size(), 1)
 
     # check aliases
-    aliases = searchResult.Aliases()
+    aliases = searchResult.Aliases().keys()
     self.assertEqual(len(aliases), 2)
     self.assertTrue("_edge" in aliases)
     self.assertTrue("_target" in aliases)
