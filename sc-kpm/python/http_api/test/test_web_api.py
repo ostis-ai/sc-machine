@@ -510,8 +510,13 @@ class WsJsonApiTest(testing.AsyncTestCase):
     })
     self.assertTrue(result['status'])
     result = result['payload']
+    aliases = result['aliases']
+    addrs = result['addrs']
 
-    self.assertNotEqual(result['_edge'], 0)
+    def get_by_alias(alias):
+      return addrs[aliases[alias]]
+
+    self.assertNotEqual(get_by_alias('_edge'), 0)
 
     # try to search generated construction
     result = yield self.cmd_search_template(client, templ)

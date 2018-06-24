@@ -43,17 +43,26 @@ public:
     return *m_result;
   }
 
-  bp::object Get(std::string const & name) const
+  bp::object Get(bp::object & ind) const
   {
     ScAddr value;
-
-    try
+    bp::extract<std::string> se(ind);
+    if (se.check())
     {
-      value = (*m_result)[name];
+      try
+      {
+        value = (*m_result)[static_cast<std::string>(se)];
+      }
+      catch (utils::ExceptionItemNotFound const &)
+      {
+        return bp::object();
+      }
     }
-    catch (utils::ExceptionItemNotFound const &)
+    else
     {
-      return bp::object();
+      bp::extract<int64_t> ie(ind);
+      if (ie.check())
+        value = (*m_result)[static_cast<int64_t>(ie)];
     }
 
     return bp::object(value);
@@ -95,15 +104,25 @@ public:
 
   ScAddr Get(bp::object & ind) const
   {
+    ScAddr value;
     bp::extract<std::string> se(ind);
     if (se.check())
-      return (*m_item)[static_cast<std::string>(se)];
-
-    bp::extract<int64_t> ie(ind);
-    if (ie.check())
-      return (*m_item)[static_cast<int64_t>(ie)];
-
-    return ScAddr();
+    {
+      try
+      {
+        value = (*m_item)[static_cast<std::string>(se)];
+      }
+      catch (utils::ExceptionItemNotFound const &)
+      {
+      }
+    }
+    else
+    {
+      bp::extract<int64_t> ie(ind);
+      if (ie.check())
+        value = (*m_item)[static_cast<int64_t>(ie)];
+    }
+    return value;
   }
 
   size_t Size() const

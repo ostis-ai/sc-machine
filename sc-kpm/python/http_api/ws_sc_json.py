@@ -180,7 +180,6 @@ class ScJsonSocketHandler(websocket.WebSocketHandler):
     return True
 
   def makeTemplate(self, triples):
-    used_aliases = {}
 
     def convert_value(value):
       t = value['type']
@@ -195,7 +194,6 @@ class ScJsonSocketHandler(websocket.WebSocketHandler):
       if 'alias' in value:
         alias = value['alias']
         result = result >> alias
-        used_aliases[alias] = True
 
       return result
 
@@ -206,24 +204,25 @@ class ScJsonSocketHandler(websocket.WebSocketHandler):
       trg = convert_value(triple[2])
       templ.Triple(src, edg, trg)
 
-    return (templ, used_aliases)
+    return templ
 
   def handleTemplateSearch(self, ctx, payload):
-    templ, used_aliases = self.makeTemplate(payload)
+
+    if isinstance(payload, str):
+      templ = ctx.HelperBuildTemplate(payload)
+    else:
+      templ = self.makeTemplate(payload)
 
     # run search
     search_result = ctx.HelperSearchTemplate(templ)
-    alias_num = 0
-    aliases = {}
-    for k in used_aliases.keys():
-      aliases[k] = alias_num
-      alias_num += 1
-
+    aliases = search_result.Aliases()
+    
     addrs = []
     for idx in range(search_result.Size()):
-      items = [0] * alias_num
-      for alias_name, i in aliases.items():
-        items[i] = search_result[idx][alias_name].ToInt()
+      result_item = search_result[idx]
+      items = [0] * result_item.Size()
+      for it in range(len(items)):
+        items[it] = search_result[idx][it].ToInt()
       addrs.append(items)
 
     return {
@@ -232,9 +231,9 @@ class ScJsonSocketHandler(websocket.WebSocketHandler):
     }
 
   def handleTemplateGenerate(self, ctx, payload):
-    templ, used_aliases = self.makeTemplate(payload["templ"])
-
+    templ = self.makeTemplate(payload["templ"])
     params = payload['params']
+
     templ_params = ScTemplateGenParams()
     for alias, value in params.items():
       templ_params.Add(alias, ScAddr(value))
@@ -244,11 +243,14 @@ class ScJsonSocketHandler(websocket.WebSocketHandler):
     if not gen_result:
       return None
 
-    result = {}
-    for alias in used_aliases:
-      result[alias] = gen_result[alias].ToInt()
+    addrs = []
+    for idx in range(gen_result.Size()):
+      addrs.append(gen_result[idx].ToInt())
 
-    return result
+    return {
+      "aliases": gen_result.Aliases(),
+      "addrs": addrs
+    }
 
   def handleContent(self, ctx, payload):
     result = []

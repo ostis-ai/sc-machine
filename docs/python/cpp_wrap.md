@@ -296,8 +296,9 @@ This class represents one result for a search by template. There are methods of 
 ??? tip "Size()"
     return size of result (number of `ScAddr`'s equal to search construction)
 
-??? tip "\_\_getitem\_\_()"
+??? tip "\_\_getitem\_\_(name_or_index)"
     allows to get result items by any index: `int`, `str`. In case of `int` index you will just get `ScAddr` by index in result array (length equal to `Size()`) this case suitable, when you need to iterate all addrs in result.
+
     !!! warning 
         You will receive duplicate `ScAddr`'s, because result stored as array of founded triples.
 
@@ -307,7 +308,7 @@ This class represents one result for a search by template. There are methods of 
     for i in range(resultSize):
       addr = searchResultItem[i] # iterate all addrs
 
-    addr1 = searchResultItem["replacement name"] # get by replacement name
+    addr1 = searchResultItem["alias"] # get by replacement name
     ```
 
 ## ScTemplateSearchResult

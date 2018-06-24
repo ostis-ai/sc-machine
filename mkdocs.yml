@@ -28,7 +28,6 @@ pages:
       - Wrapped classes: python/cpp_wrap.md
   - Http:
       - Common: http/index.md
-      - REST API: http/rest_api.md
       - WebSocket: http/websocket.md
   - Common:
     - Element types: cpp/el_types.md

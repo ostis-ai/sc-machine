@@ -12,111 +12,119 @@ from sc import *
 
 self_path = os.path.dirname(__file__)
 
+
 class DebugStaticFileHandler(tornado.web.StaticFileHandler):
-    def set_extra_headers(self, path):
-        # Disable cache
-        self.set_header('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0')
+  def set_extra_headers(self, path):
+    # Disable cache
+    self.set_header(
+        'Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0')
+
 
 class MainHandler(tornado.web.RequestHandler):
 
-    #@tornado.web.asynchronous
-    def get(self, path):
-        self.render(os.path.join(getScConfigValue('web', 'path'), "client/assets/templates/index.html"))
+  #@tornado.web.asynchronous
+  def get(self, path):
+    self.render(os.path.join(getScConfigValue('web', 'path'),
+                             "client/assets/templates/index.html"))
+
 
 class ContentHandler(tornado.web.RequestHandler):
 
-    @tornado.web.asynchronous
-    def get(self, addr):
-        ctx = ScMemoryContext.Create('ContentHandler_{}'.format(addr))
-        link_addr = ScAddr(int(addr))
-        # try to find mime and get content
-        templ = ScTemplate()
+  @tornado.web.asynchronous
+  def get(self, addr):
+    ctx = ScMemoryContext.Create('ContentHandler_{}'.format(addr))
+    link_addr = ScAddr(int(addr))
+    # try to find mime and get content
+    templ = ScTemplate()
 
-        templ.TripleWithRelation(
-            link_addr,
-            ScType.EdgeDCommonVar,
-            ScType.NodeVar >> '_format',
-            ScType.EdgeAccessVarPosPerm,
-            Keynodes.Get(Keynodes.NrelFormat))
-        
-        templ.TripleWithRelation(
-            '_format',
-            ScType.EdgeDCommonVar,
-            ScType.Link >> '_mime',
-            ScType.EdgeAccessVarPosPerm,
-            Keynodes.Get(Keynodes.NrelMimeType))
+    templ.TripleWithRelation(
+        link_addr,
+        ScType.EdgeDCommonVar,
+        ScType.NodeVar >> '_format',
+        ScType.EdgeAccessVarPosPerm,
+        Keynodes.Get(Keynodes.NrelFormat))
 
-        searchRes = ctx.HelperSearchTemplate(templ)
-        if searchRes.Size() > 0:
-            mime = ctx.GetLinkContent(searchRes[0]['_mime']).AsString()
+    templ.TripleWithRelation(
+        '_format',
+        ScType.EdgeDCommonVar,
+        ScType.Link >> '_mime',
+        ScType.EdgeAccessVarPosPerm,
+        Keynodes.Get(Keynodes.NrelMimeType))
 
-        data = ctx.GetLinkContent(link_addr)
-        bdata = data.AsBinary().tobytes()
+    searchRes = ctx.HelperSearchTemplate(templ)
+    if searchRes.Size() > 0:
+      mime = ctx.GetLinkContent(searchRes[0]['_mime']).AsString()
 
-        self.set_header('Content-Type', mime)
-        self.write(bdata)
-        self.finish()
+    data = ctx.GetLinkContent(link_addr)
+    bdata = data.AsBinary().tobytes()
+
+    self.set_header('Content-Type', mime)
+    self.write(bdata)
+    self.finish()
+
 
 class ServerThread(threading.Thread):
 
-    def __init__(self, module, address='', port=8090):
-        threading.Thread.__init__(self)
+  def __init__(self, module, address='', port=8090):
+    threading.Thread.__init__(self)
 
-        assets_path = os.path.join(getScConfigValue('web', 'path'), 'client/assets')
-        isDebug = bool(getScConfigValue('debug', 'is_debug'))
-        staticHandler = DebugStaticFileHandler
-        if not isDebug:
-            staticHandler = tornado.web.StaticFileHandler
+    assets_path = os.path.join(
+        getScConfigValue('web', 'path'), 'client/assets')
+    isDebug = bool(getScConfigValue('debug', 'is_debug'))
+    staticHandler = DebugStaticFileHandler
+    if not isDebug:
+      staticHandler = tornado.web.StaticFileHandler
 
-        print (staticHandler)
+    print(staticHandler)
 
-        self.port = port
-        self.app = tornado.web.Application([
-            (r"/ws_json", ScJsonSocketHandler, { 'evt_manager': module.events }),
-            (r"/content/([0-9]+)", ContentHandler),
-            (r'/assets/(.*)', staticHandler, {'path': assets_path}),
+    self.port = port
+    self.app = tornado.web.Application([
+        (r"/ws_json", ScJsonSocketHandler, {'evt_manager': module.events}),
+        (r"/content/([0-9]+)", ContentHandler),
+        (r'/assets/(.*)', staticHandler, {'path': assets_path}),
 
-            # should be a last
-            (r"/(.*)", MainHandler),
-        ])
+        # should be a last
+        (r"/(.*)", MainHandler),
+    ])
 
-    def run(self):
-        self.running = True
-        self.app.listen(self.port)
+  def run(self):
+    self.running = True
+    self.app.listen(self.port)
 
-        tornado.ioloop.IOLoop.instance().start()
+    tornado.ioloop.IOLoop.instance().start()
 
-    def stop(self):
-        tornado.ioloop.IOLoop.instance().stop()
+  def stop(self):
+    tornado.ioloop.IOLoop.instance().stop()
+
 
 class HttpModule(ScModule):
 
-    def __init__(self):
-        ScModule.__init__(
-            self,
-            ctx=__ctx__,
-            cpp_bridge=__cpp_bridge__,
-            keynodes = [
-            ])
-        
-        self.server = None
+  def __init__(self):
+    ScModule.__init__(
+        self,
+        ctx=__ctx__,
+        cpp_bridge=__cpp_bridge__,
+        keynodes=[
+        ])
 
-    def OnInitialize(self, params):
-        print('Initialize HTTP module')
+    self.server = None
 
-        print('Initialize keynodes')
-        Keynodes.Init(__ctx__)
-        # TODO: parse port
-        port = 8090
+  def OnInitialize(self, params):
+    print('Initialize HTTP module')
 
-        self.server = ServerThread(self)
-        self.server.start()
+    print('Initialize keynodes')
+    Keynodes.Init(__ctx__)
+    # TODO: parse port
+    port = 8090
 
-    def OnShutdown(self):
-        print('Shutting down HTTP module')
-        self.server.stop()
-        self.server.join()
+    self.server = ServerThread(self)
+    self.server.start()
+
+  def OnShutdown(self):
+    print('Shutting down HTTP module')
+    self.server.stop()
+    self.server.join()
+
 
 service = HttpModule()
 service.Run()
-
