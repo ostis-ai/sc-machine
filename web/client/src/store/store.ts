@@ -43,15 +43,49 @@ export let servicesInitState: ServicesState = {
 
 };
 
+export interface KBViewTemplate {
+  title: string,
+  isSaved: boolean,
+  content: string,
+  id: number,
+};
+
+export interface KBViewState {
+  templates: Map<number, KBViewTemplate>,
+  templCounter: number,
+  templEditID: number,
+};
+
+export let kbViewInitState: KBViewState = {
+  templates: Map<number, KBViewTemplate>([
+    [0, {
+      title: null,
+      isSaved: false,
+      content: '/* Write your template there using SCs-code: \n * http://ostis-dev.github.io/sc-machine/other/scs/ \n */',
+      id: 0,
+    }],
+    [1, {
+      title: 'Test',
+      isSaved: true,
+      content: '/* Write your template there using SCs-code: \n * http://ostis-dev.github.io/sc-machine/other/scs/ \n */\n sc_node -> test;;',
+      id: 1,
+    }]
+  ]),
+  templCounter: 0,
+  templEditID: 0,
+};
+
 /// ---------------------------------------------------------
 export interface Store {
   ui: UIState,
   net: NetworkState,
   services: ServicesState,
+  kbView: KBViewState,
 }
 
 export const initialState: Store = {
   ui: uiInitState,
   net: netInitState,
   services: servicesInitState,
+  kbView: kbViewInitState,
 };

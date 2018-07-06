@@ -1,5 +1,4 @@
 import * as React from "react";
-import { Header } from 'semantic-ui-react';
 import { BaseContainer } from './BaseContainer';
 
 export interface DashBoardContainerProps {

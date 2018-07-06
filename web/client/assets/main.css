@@ -62,6 +62,8 @@
 
 /* SCs-editor */
 #scs-editor-kb {
-    width: 800px;
-    height: 600px;
+    width: 100%;
+    margin-bottom: 1px;
+    padding-right: 1px;
+    height: calc(100% - 95px);
 }

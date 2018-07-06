@@ -6,13 +6,11 @@ import {
 import { Route, Link, Switch, withRouter } from 'react-router-dom';
 
 import { connect } from 'react-redux';
-import { bindActionCreators } from 'redux';
 
 import { DashBoardContainer } from './DashboardContainer';
 import { KnowBaseContainer } from './KnowBaseContainer';
 
-import { Store, NetworkState, UIState, UIMode, UIActivePage } from '../store/store';
-import * as storeActions from '../store/actions';
+import { Store, UIMode, UIActivePage } from '../store/store';
 
 interface AppContainerProps {
   store?: Store,

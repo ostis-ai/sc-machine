@@ -1,5 +1,4 @@
 import { Action } from './action';
-import { UIMode, UIActivePage } from '../store';
 
 export namespace NET {
   export const CHANGE_STATE = "NET_CHANGE_STATE";
