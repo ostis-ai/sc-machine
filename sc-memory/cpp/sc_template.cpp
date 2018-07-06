@@ -9,12 +9,35 @@
 
 #include <algorithm>
 
-ScTemplate::ScTemplate(size_t BufferedNum)
+ScTemplateItemValue operator >> (ScAddr const & value, char const * replName)
+{
+  return ScTemplateItemValue(value, replName);
+}
+
+ScTemplateItemValue operator >> (ScAddr const & value, std::string const & replName)
+{
+  return ScTemplateItemValue(value, replName.c_str());
+}
+
+ScTemplateItemValue operator >> (ScType const & value, char const * replName)
+{
+  return ScTemplateItemValue(value, replName);
+}
+
+ScTemplateItemValue operator >> (ScType const & value, std::string const & replName)
+{
+  return ScTemplateItemValue(value, replName.c_str());
+}
+
+// --------------------------------
+
+ScTemplate::ScTemplate(bool forceOrder /* = true */)
   : m_currentReplPos(0)
+  , m_isForceOrder(forceOrder)
   , m_isSearchCacheValid(false)
   
 {
-  m_constructions.reserve(BufferedNum);
+  m_constructions.reserve(16);
 }
 
 ScTemplate & ScTemplate::operator() (ScTemplateItemValue const & param1, ScTemplateItemValue const & param2, ScTemplateItemValue const & param3)
@@ -35,6 +58,11 @@ void ScTemplate::Clear()
   m_currentReplPos = 0;
 
   m_isSearchCacheValid = false;
+}
+
+bool ScTemplate::IsEmpty() const
+{
+  return m_constructions.empty();
 }
 
 bool ScTemplate::IsSearchCacheValid() const

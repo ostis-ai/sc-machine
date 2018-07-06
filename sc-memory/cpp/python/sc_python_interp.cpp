@@ -24,6 +24,13 @@ namespace
 
 std::unordered_set<std::string> gAddedModulePaths;
 
+template<typename Func, typename... Args>
+void CallPythonFunction(Func & f, Args... args)
+{
+  py::WithGIL gil;
+  f(args...);
+}
+
 struct PyObjectWrap
 {
   PyObjectWrap() : m_object(nullptr) {}
@@ -170,31 +177,11 @@ private:
   EventID m_id;
 };
 
-class PyBridgeRequest
-{
-public:
-  PyBridgeRequest() {}
-
-  explicit PyBridgeRequest(py::ScPythonBridge::RequestPtr const & req)
-    : m_impl(req)
-  {
-  }
-
-  std::string GetName() const { return m_impl->GetName(); }
-  std::string GetData() const { return m_impl->GetData(); }
-  bool IsValid() const { return m_impl.get(); }
-
-  void MakeResponse(py::ScPythonBridge::Response::Status status, std::string const & data)
-  {
-    m_impl->_OnMakeResponse(status, data);
-  }
-
-private:
-  py::ScPythonBridge::RequestPtr m_impl;
-};
 
 class PyBridgeWrap
 {
+  using EventsMap = std::unordered_map<PyScEvent::EventID, boost::shared_ptr<PyScEvent>>;
+
 public:
   static boost::shared_ptr<PyBridgeWrap> Create()
   {
@@ -202,20 +189,28 @@ public:
   }
 
   PyBridgeWrap()
-    : m_ctx(sc_access_lvl_make_max)
+    : m_ctx(sc_access_lvl_make_max, "PyBridgeWrap")
   {
   }
 
   ~PyBridgeWrap()
   {
-    utils::ScLockScope scope(m_eventLock);  
     for (auto it : m_events)
-      DestroyEvent(it.second);
+      ClearEvent(it.second);
     
     m_events.clear();
+    if (m_impl.get())
+      m_impl->m_closeDelegate = py::ScPythonBridge::CloseFunc();
   }
 
-  void DestroyEvent(boost::shared_ptr<PyScEvent> & evt)
+  void SetImpl(py::ScPythonBridgePtr impl)
+  {
+    m_impl = impl;
+
+    m_impl->m_closeDelegate = std::bind(&PyBridgeWrap::OnCloseRequest, this);
+  }
+
+  void ClearEvent(boost::shared_ptr<PyScEvent> & evt)
   {
     evt->m_onDestroy = PyScEvent::OnDestroyFunc();
     evt->m_onEvent = PyScEvent::OnEventFunc();
@@ -228,9 +223,14 @@ public:
     m_impl = impl;
   }
 
-  void Initialize()
+  void Ready()
   {
-    m_impl->Initialize();
+    m_impl->PythonReady();
+  }
+
+  void Finish()
+  {
+    m_impl->PythonFinish();
   }
 
   bool IsExist() const
@@ -238,34 +238,23 @@ public:
     return m_impl->IsInitialized();
   }
 
-  PyBridgeRequest GetRequest()
-  {
-    py::ScPythonBridge::RequestPtr request = m_impl->GetNextRequest();
-
-    if (!request.get())
-      return PyBridgeRequest();
-    
-    return PyBridgeRequest(request);
-  }
-
   // calls from PyScEvent to request emit it in main thread
-  void RequestEmit(PyScEvent::EmitParams const & params)
+  void EmitEvent(PyScEvent::EmitParams const & params)
   {
-    utils::ScLockScope scope(m_eventLock);
-    
-    std::string evtParams = "{";
-    evtParams += "\"addr\":"  + std::to_string(params.m_addr.Hash());
-    evtParams += ",\"edgeAddr\":" + std::to_string(params.m_edgeAddr.Hash());
-    evtParams += ",\"otherAddr\":" + std::to_string(params.m_otherAddr.Hash());
-    evtParams += ",\"id\":" + std::to_string(params.m_id);
-    evtParams += "}";
-    
-    m_impl->DoRequest("ScEvent", evtParams);
+    if (m_eventDelegate)
+    {
+      CallPythonFunction(
+        m_eventDelegate,
+        bp::object(params.m_id),
+        bp::object(params.m_addr),
+        bp::object(params.m_edgeAddr),
+        bp::object(params.m_otherAddr));
+    }
   }
 
-  void RequestDestroy(PyScEvent::EventID evtID)
+  void DestroyEvent(PyScEvent::EventID evtID)
   {
-    utils::ScLockScope scope(m_eventLock);
+    utils::ScLockScope scope(m_eventsLock);
     auto it = m_events.find(evtID);
 
     if (it == m_events.end())
@@ -274,35 +263,86 @@ public:
                          "Can't find event with ID: " + std::to_string(evtID));
     }
 
-    DestroyEvent(it->second);
+    ClearEvent(it->second);
+    m_events.erase(it);
   }
   
   boost::shared_ptr<PyScEvent> SubscribeEvent(ScAddr const & elAddr, ScEvent::Type evtType)
   {
-    utils::ScLockScope scope(m_eventLock);
+    utils::ScLockScope scope(m_eventsLock);
 
     ScEvent * scEvt = new ScEvent(m_ctx, elAddr, evtType);
     boost::shared_ptr<PyScEvent> const evt(new PyScEvent(scEvt, ++ms_idCounter));
-    
+
     SC_ASSERT(m_events.find(evt->GetID()) == m_events.end(), ());
     m_events[evt->GetID()] = evt;
 
-    evt->m_onDestroy = std::bind(&PyBridgeWrap::RequestDestroy, this, std::placeholders::_1);
-    evt->m_onEvent = std::bind(&PyBridgeWrap::RequestEmit, this, std::placeholders::_1);
+    evt->m_onDestroy = std::bind(&PyBridgeWrap::DestroyEvent, this, std::placeholders::_1);
+    evt->m_onEvent = std::bind(&PyBridgeWrap::EmitEvent, this, std::placeholders::_1);
 
     return evt;
+  }
+
+  std::string GetInitParams() const
+  {
+    return m_impl->GetInitParams();
+  }
+
+protected:
+  // calls from c++
+  void OnCloseRequest()
+  {
+    py::WithGIL gil;
+    if (!m_closeDelegate.is_none())
+      CallPythonFunction(m_closeDelegate);
   }
   
 private:
   static PyScEvent::EventID ms_idCounter;
   mutable py::ScPythonBridgePtr m_impl;
   ScMemoryContext m_ctx;
-  
-  utils::ScLock m_eventLock;
-  std::unordered_map<PyScEvent::EventID, boost::shared_ptr<PyScEvent>> m_events;
+
+  utils::ScLock m_eventsLock;
+  EventsMap m_events;
+
+public:
+  // delegates that will be used in python module
+  bp::object m_closeDelegate;
+  bp::object m_eventDelegate;
 };
 
 PyScEvent::EventID PyBridgeWrap::ms_idCounter = 0;
+
+// Logging
+class PythonLog
+{
+public:
+  void Write(std::string const & str)
+  {
+    // python sends \n after each print call, so just skip it
+    if (str == "\n")
+      return;
+    
+    SC_LOG_PYTHON(str);
+  }
+
+  void Flush() {}
+};
+
+class PythonLogError
+{
+public:
+  void Write(std::string const & str)
+  {
+    // python sends \n after each print call, so just skip it
+    if (str == "\n")
+      return;
+
+    SC_LOG_PYTHON_ERROR(str);
+  }
+
+  void Flush() {}
+};
 
 } // namespace 
 
@@ -312,10 +352,13 @@ BOOST_PYTHON_MODULE(scb)
   bp::register_ptr_to_python<boost::shared_ptr<PyScEvent>>();
   bp::register_ptr_to_python<boost::shared_ptr<PyBridgeWrap>>();
 
-  bp::enum_<py::ScPythonBridge::Response::Status>("ResponseStatus")
-    .value("Ok", py::ScPythonBridge::Response::Status::Ok)
-    .value("Error", py::ScPythonBridge::Response::Status::Error)
-    ;
+  bp::class_<PythonLog>("CppLog", bp::init<>())
+    .def("write", bp::make_function(&PythonLog::Write))
+    .def("flush", bp::make_function(&PythonLog::Flush));
+
+  bp::class_<PythonLogError>("CppLogError", bp::init<>())
+    .def("write", bp::make_function(&PythonLogError::Write))
+    .def("flush", bp::make_function(&PythonLogError::Flush));
 
   bp::enum_<ScEvent::Type>("ScPythonEventType")
     .value("AddInputEdge", ScEvent::Type::AddInputEdge)
@@ -326,24 +369,19 @@ BOOST_PYTHON_MODULE(scb)
     .value("RemoveOutputEdge", ScEvent::Type::RemoveOutputEdge)
     ;
 
-  bp::class_<PyBridgeRequest>("ScPythonBridgeRequest", bp::no_init)
-    .def("GetName", bp::make_function(&PyBridgeRequest::GetName, py::ReleaseGILPolicy()))
-    .def("GetData", bp::make_function(&PyBridgeRequest::GetData, py::ReleaseGILPolicy()))
-    .def("IsValid", bp::make_function(&PyBridgeRequest::IsValid, py::ReleaseGILPolicy()))
-    .def("MakeResponse", bp::make_function(&PyBridgeRequest::MakeResponse, py::ReleaseGILPolicy()))
-    ;
-
-  bp::class_<PyBridgeWrap, boost::noncopyable>("ScPythonBridgeWrap", bp::no_init)
-    .def("__init__", bp::make_constructor(&PyBridgeWrap::Create, py::ReleaseGILPolicy()))
-    .def("Initialize", bp::make_function(&PyBridgeWrap::Initialize, py::ReleaseGILPolicy()))
-    .def("Exist", bp::make_function(&PyBridgeWrap::IsExist, py::ReleaseGILPolicy()))
-    .def("GetRequest", bp::make_function(&PyBridgeWrap::GetRequest, py::ReleaseGILPolicy()))
-    .def("SubscribeEvent", bp::make_function(&PyBridgeWrap::SubscribeEvent, py::ReleaseGILPolicy()))
-    ;
-
   bp::class_<PyScEvent, boost::noncopyable>("ScPythonEvent", bp::no_init)
-    .def("Destroy", bp::make_function(&PyScEvent::Destroy, py::ReleaseGILPolicy()))
-    .def("GetID", bp::make_function(&PyScEvent::GetID, py::ReleaseGILPolicy()))
+    .def("Destroy", bp::make_function(&PyScEvent::Destroy))
+    .def("GetID", bp::make_function(&PyScEvent::GetID))
+    ;
+
+  bp::class_<PyBridgeWrap, boost::noncopyable>("ScPythonBridge", bp::no_init)
+    .def("Ready", bp::make_function(&PyBridgeWrap::Ready))
+    .def("Finish", bp::make_function(&PyBridgeWrap::Finish))
+    .def("SubscribeEvent", bp::make_function(&PyBridgeWrap::SubscribeEvent))
+    .def("DestroyEvent", bp::make_function(&PyBridgeWrap::DestroyEvent))
+    .def_readwrite("onClose", &PyBridgeWrap::m_closeDelegate)
+    .def_readwrite("onEvent", &PyBridgeWrap::m_eventDelegate)
+    .def("InitParams", bp::make_function(&PyBridgeWrap::GetInitParams))
     ;
 }
 
@@ -374,9 +412,9 @@ bool ScPythonInterpreter::Initialize(std::string const & name)
   PyLoadModulePathFromConfig(modulePaths);
   
   SC_LOG_INIT("Initialize python iterpreter version " << PY_VERSION);
-  SC_LOG_INFO("Collect modules...");
+  SC_LOG_INFO("Collect python modules...");
   CollectModules(modulePaths);
-  SC_LOG_INFO("Collected " << ms_foundModules.size() << " modules");
+  SC_LOG_INFO("Collected " << ms_foundModules.size() << " python modules");
 
   ms_isInitialized = true;
   return true;
@@ -388,11 +426,12 @@ void ScPythonInterpreter::Shutdown()
   gMainThread = nullptr;
 
   ms_modulePaths.clear();
+  ms_foundModules.clear();
   
   ms_isInitialized = false;
 }
 
-void ScPythonInterpreter::RunScript(std::string const & scriptName, ScPythonBridgePtr bridge /* = nullptr */)
+void ScPythonInterpreter::RunScript(std::string const & scriptName, ScMemoryContext const & ctx, ScPythonBridgePtr bridge /* = nullptr */)
 {
   ScPythonSubThread subThreadScope;
 
@@ -420,34 +459,37 @@ void ScPythonInterpreter::RunScript(std::string const & scriptName, ScPythonBrid
   //PyEvalLock lock;
   bp::object mainModule((bp::handle<>(bp::borrowed(PyImport_AddModule("__main__")))));
   bp::object mainNamespace = mainModule.attr("__dict__");
-   
   try
   {
     bp::dict globalNamespace;
     globalNamespace["__builtins__"] = mainNamespace["__builtins__"];
-    bp::exec("from scb import *\nfrom sc import *", globalNamespace, globalNamespace);
+    std::stringstream initCode;
+    initCode
+      << "from scb import *" << std::endl
+      << "from sc import *" << std::endl
+      << "import sys" << std::endl
+      << "sys.path.append('" << p.parent_path().string() << "')" << std::endl
+      << "sys.stdout = CppLog()" << std::endl
+      << "sys.stderr = CppLogError()" << std::endl;
+    bp::exec(initCode.str().c_str(), globalNamespace, globalNamespace);
     
+    std::unique_ptr<PyBridgeWrap> bridgeWrap;
     if (bridge.get())
     {
-      boost::shared_ptr<PyBridgeWrap> bridgeWrap(new PyBridgeWrap());
+      bridgeWrap.reset(new PyBridgeWrap());
       bridgeWrap->SetImpl(bridge);
-      globalNamespace["cpp_bridge"] = bp::object(bridgeWrap);
+      globalNamespace["__cpp_bridge__"] = bp::ptr(bridgeWrap.get());
     }
     else
-      globalNamespace["cpp_bridge"] = bp::object();
-
-    //bp::exec("from scb import *\ncpp_bridge = ScPythonBridgeWrap()", globalNamespace, localNamespace);
-
-    /*bp::object b = mainNamespace["cpp_bridge"];
-    bp::extract<PyBridgeWrap> be(b);
-    if (be.check())
-    {
-      PyBridgeWrap const & bImpl = be;
-      bImpl.SetImpl(bridge);
-    }*/
+      globalNamespace["__cpp_bridge__"] = bp::object();
+    
+    globalNamespace["__ctx__"] = bp::ptr(&ctx);
 
     bp::object resultObj(bp::exec_file(filePath.c_str(), globalNamespace, globalNamespace));  
     bp::exec("import gc\ngc.collect()", globalNamespace, globalNamespace);
+
+    globalNamespace.clear();
+    SC_LOG_DEBUG("Clear python module run " + filePath);
   }
   catch (...)
   {
@@ -473,55 +515,49 @@ void ScPythonInterpreter::CollectModules(ModulePathSet const & modulePath)
 void ScPythonInterpreter::CollectModulesInPath(std::string const & modulePath)
 {
   boost::filesystem::path const root(modulePath);
-  try
-  {
-    boost::filesystem::recursive_directory_iterator itEnd, itPath(modulePath);
+
+  boost::filesystem::recursive_directory_iterator itEnd, itPath(modulePath);
   
-    while (itPath != itEnd)
+  while (itPath != itEnd)
+  {
+    if (!boost::filesystem::is_directory(*itPath))
     {
-      if (!boost::filesystem::is_directory(*itPath))
+      boost::filesystem::path const p = *itPath;
+      std::string filename = utils::StringUtils::ReplaceAll(boost::filesystem::relativePath(root, p).string(), "\\", "/");
+      std::string ext = utils::StringUtils::GetFileExtension(filename);
+      utils::StringUtils::ToLowerCase(ext);
+
+      if (ext == "py")
       {
-        boost::filesystem::path const p = *itPath;
-        std::string filename = utils::StringUtils::ReplaceAll(boost::filesystem::relativePath(root, p).string(), "\\", "/");
-        std::string ext = utils::StringUtils::GetFileExtension(filename);
-        utils::StringUtils::ToLowerCase(ext);
-
-        if (ext == "py")
+        auto const itModule = ms_foundModules.find(filename);
+        if (itModule != ms_foundModules.end())
         {
-          auto const itModule = ms_foundModules.find(filename);
-          if (itModule != ms_foundModules.end())
-          {
-            SC_THROW_EXCEPTION(utils::ExceptionInvalidState,
-                               "Module " << itModule->first << " already exist in " << itModule->second);
-          }
+          SC_THROW_EXCEPTION(utils::ExceptionInvalidState,
+                              "Module " << itModule->first << " already exist in " << itModule->second);
+        }
 
-          ms_foundModules.insert(std::make_pair(filename, modulePath));
-        }        
-      }
+        ms_foundModules.insert(std::make_pair(filename, modulePath));
+      }        
+    }
 
+    try
+    {
+      ++itPath;
+    }
+    catch (std::exception & ex)
+    {
+      SC_LOG_ERROR(ex.what());
+      itPath.no_push();
       try
       {
         ++itPath;
       }
-      catch (std::exception & ex)
+      catch (...)
       {
         SC_LOG_ERROR(ex.what());
-        itPath.no_push();
-        try
-        {
-          ++itPath;
-        }
-        catch (...)
-        {
-          SC_LOG_ERROR(ex.what());
-          return;
-        }
+        return;
       }
     }
-  }
-  catch (std::exception & ex)
-  {
-    SC_LOG_ERROR(ex.what());
   }
 }
 

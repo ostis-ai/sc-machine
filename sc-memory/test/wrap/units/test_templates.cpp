@@ -5,6 +5,7 @@
 */
 
 #include "sc-memory/cpp/sc_debug.hpp"
+#include "sc-memory/cpp/sc_link.hpp"
 #include "sc-memory/cpp/sc_template.hpp"
 #include "sc-memory/cpp/sc_struct.hpp"
 #include "sc-memory/cpp/utils/sc_progress.hpp"
@@ -13,6 +14,7 @@
 #include <glib.h>
 
 #include <random>
+#include <algorithm>
 
 namespace
 {
@@ -62,8 +64,7 @@ bool HasAddr(ScAddrVector const & v, ScAddr const & addr)
 
 ScAddr ResolveKeynode(ScMemoryContext & ctx, ScType const & type, std::string const & idtf)
 {
-  ScAddr addr;
-  ctx.HelperResolveSystemIdtf(idtf, addr, ScType::NodeConst);
+  ScAddr const addr = ctx.HelperResolveSystemIdtf(idtf, ScType::NodeConst);
   SC_CHECK(addr.IsValid(), ());
   return addr;
 }
@@ -1202,4 +1203,347 @@ UNIT_TEST(template_search_unknown)
 
   SC_CHECK_EQUAL(res[0]["edge"], edge, ());
   SC_CHECK_EQUAL(res[0]["addr2"], addr2, ());
+}
+
+UNIT_TEST(template_search_some_relations)
+{
+  ScMemoryContext ctx(sc_access_lvl_make_min, "template_search_some_relations");
+
+  /* Check template:
+    deviceAddr _<= nrel_installed_apps: _tuple;;
+    _tuple _-> _app;
+    _app => nrel_idtf: _idtf;;
+    _app => nrel_image: _image;;
+   */
+   
+  ScAddr const deviceAddr = ctx.CreateNode(ScType::NodeConst);
+  SC_CHECK(deviceAddr.IsValid(), ());
+
+  ScAddr const nrelInstalledApp = ctx.CreateNode(ScType::NodeConstNoRole);
+  SC_CHECK(nrelInstalledApp.IsValid(), ());
+
+  ScAddr const _tuple = ctx.CreateNode(ScType::NodeConstTuple);
+  SC_CHECK(_tuple.IsValid(), ());
+
+  ScAddr const nrelIdtf = ctx.CreateNode(ScType::NodeConstNoRole);
+  SC_CHECK(nrelIdtf.IsValid(), ());
+
+  ScAddr const nrelImage = ctx.CreateNode(ScType::NodeConstNoRole);
+  SC_CHECK(nrelImage.IsValid(), ());
+
+  ScAddr edge = ctx.CreateEdge(ScType::EdgeDCommonConst, _tuple, deviceAddr);
+  SC_CHECK(edge.IsValid(), ());
+
+  edge = ctx.CreateEdge(ScType::EdgeAccessConstPosPerm, nrelInstalledApp, edge);
+  SC_CHECK(edge.IsValid(), ());
+
+  struct TestData
+  {
+    ScAddr m_app;
+    ScAddr m_idtf;
+    ScAddr m_image;
+  };
+
+  size_t i = 0;
+  std::vector<TestData> data(100);
+  for (auto & d : data)
+  {
+    d.m_app = ctx.CreateNode(ScType::NodeConstAbstract);
+    SC_CHECK(d.m_app.IsValid(), ());
+
+    edge = ctx.CreateEdge(ScType::EdgeAccessConstPosPerm, _tuple, d.m_app);
+    SC_CHECK(edge.IsValid(), ());
+
+    d.m_idtf = ctx.CreateLink();
+    SC_CHECK(d.m_idtf.IsValid(), ());
+
+    ScLink idtfLink(ctx, d.m_idtf);
+    SC_CHECK(idtfLink.Set("idtf_" + std::to_string(i)), ());
+
+    edge = ctx.CreateEdge(ScType::EdgeDCommonConst, d.m_app, d.m_idtf);
+    SC_CHECK(edge.IsValid(), ());
+
+    edge = ctx.CreateEdge(ScType::EdgeAccessConstPosPerm, nrelIdtf, edge);
+    SC_CHECK(edge.IsValid(), ());
+
+    d.m_image = ctx.CreateLink();
+    SC_CHECK(d.m_image.IsValid(), ());
+
+    ScLink imageLink(ctx, d.m_image);
+    SC_CHECK(imageLink.Set("data_" + std::to_string(i)), ());
+
+    edge = ctx.CreateEdge(ScType::EdgeDCommonConst, d.m_app, d.m_image);
+    SC_CHECK(edge.IsValid(), ());
+
+    edge = ctx.CreateEdge(ScType::EdgeAccessConstPosPerm, nrelImage, edge);
+    SC_CHECK(edge.IsValid(), ());
+
+    ++i;
+  }
+
+  SUBTEST_START(one_thread)
+  {
+    ScTemplate templ;
+
+    templ.TripleWithRelation(
+      ScType::NodeVarTuple >> "_tuple",
+      ScType::EdgeDCommonVar,
+      deviceAddr,
+      ScType::EdgeAccessVarPosPerm,
+      nrelInstalledApp);
+
+    templ.Triple(
+      "_tuple",
+      ScType::EdgeAccessVarPosPerm,
+      ScType::NodeVar >> "_app");
+
+    templ.TripleWithRelation(
+      "_app",
+      ScType::EdgeDCommonVar,
+      ScType::Link >> "_idtf",
+      ScType::EdgeAccessVarPosPerm,
+      nrelIdtf);
+
+    templ.TripleWithRelation(
+        "_app",
+        ScType::EdgeDCommonVar,
+        ScType::Link >> "_image",
+        ScType::EdgeAccessVarPosPerm,
+        nrelImage);
+
+    ScTemplateSearchResult searchRes;
+    SC_CHECK(ctx.HelperSearchTemplate(templ, searchRes), ());
+
+
+    SC_CHECK_EQUAL(searchRes.Size(), data.size(), ());
+    std::vector<TestData> foundData(data.size());
+    for (size_t i = 0; i < searchRes.Size(); ++i)
+    {
+      auto & d = foundData[i];
+
+      d.m_app = searchRes[i]["_app"];
+      d.m_idtf = searchRes[i]["_idtf"];
+      d.m_image = searchRes[i]["_image"];    
+    }
+
+    auto compare = [](TestData const & a, TestData const & b)
+    {
+      return (a.m_app.Hash() < b.m_app.Hash());
+    };
+    std::sort(data.begin(), data.end(), compare);
+    std::sort(foundData.begin(), foundData.end(), compare);
+
+    for (size_t i = 0; i < searchRes.Size(); ++i)
+    {
+      auto & d1 = foundData[i];
+      auto & d2 = data[i];
+
+      SC_CHECK_EQUAL(d1.m_app, d2.m_app, ());
+      SC_CHECK_EQUAL(d1.m_idtf, d2.m_idtf, ());
+      SC_CHECK_EQUAL(d1.m_image, d2.m_image, ());
+    }
+  }
+  SUBTEST_END()
+}
+
+UNIT_TEST(template_one_edge_inclusion)
+{
+  ScMemoryContext ctx(sc_access_lvl_make_min, "template_one_edge_inclusion");
+  
+  /* In case:
+      a -> b (* <- sc_node_material;; *);;
+      a -> c;;
+
+      We should get just one seach result, edge `a -> c` shouldn't appears twicely
+   */
+
+  ScAddr const a = ctx.CreateNode(ScType::Node);
+  SC_CHECK(a.IsValid(), ());
+
+  ScTemplate templ;
+
+  templ.Triple(
+    a >> "a",
+    ScType::EdgeAccessVarPosPerm,
+    ScType::NodeVarMaterial >> "b");
+
+  templ.Triple(
+    "a",
+    ScType::EdgeAccessVarPosPerm,
+    ScType::NodeVar >> "c");
+
+  ScTemplateGenResult genResult;
+  SC_CHECK(ctx.HelperGenTemplate(templ, genResult), ());
+  SC_CHECK_EQUAL(a, genResult["a"], ());
+
+  ScTemplateSearchResult searchResult;
+  SC_CHECK(ctx.HelperSearchTemplate(templ, searchResult), ());
+  SC_CHECK_EQUAL(searchResult.Size(), 1, ());
+
+  SC_CHECK_EQUAL(searchResult[0]["a"], genResult["a"], ());
+  SC_CHECK_EQUAL(searchResult[0]["b"], genResult["b"], ());
+  SC_CHECK_EQUAL(searchResult[0]["c"], genResult["c"], ());
+}
+
+UNIT_TEST(scs_templates)
+{
+  ScMemoryContext ctx(sc_access_lvl_make_min, "scs_templates");
+
+  SUBTEST_START(build_ok)
+  {
+    ScAddr const addr = ctx.CreateNode(ScType::NodeConst);
+    SC_CHECK(addr.IsValid(), ());
+    SC_CHECK(ctx.HelperSetSystemIdtf("d", addr), ());
+
+    ScTemplate templ;
+    char const * data = "_a _-> d;;";
+    SC_CHECK(ctx.HelperBuildTemplate(templ, data), ());
+  }
+  SUBTEST_END()
+
+  SUBTEST_START(build_fail)
+  {
+    ScTemplate templ;
+    char const * data = "_a _-> b";
+    SC_CHECK_NOT(ctx.HelperBuildTemplate(templ, data), ());
+  }
+  SUBTEST_END()
+
+  SUBTEST_START(search_simple)
+  {
+    ScTemplate genTempl;
+    genTempl.Triple(
+      ScType::NodeVar >> "_a",
+      ScType::EdgeAccessVarPosPerm >> "_edge",
+      ScType::NodeVarTuple >> "b");
+    
+    ScTemplateGenResult genResult;
+    SC_CHECK(ctx.HelperGenTemplate(genTempl, genResult), ());
+
+    ScAddr const bAddr = genResult["b"];
+    SC_CHECK(bAddr.IsValid(), ());
+
+    SC_CHECK(ctx.HelperSetSystemIdtf("b", bAddr), ());
+
+    {
+      ScTemplate templ;
+      char const * data = "_a _-> b (* <- sc_node_tuple;; *);;";
+
+      SC_CHECK(ctx.HelperBuildTemplate(templ, data), ());
+      SC_CHECK_NOT(templ.IsEmpty(), ());
+
+      ScTemplateSearchResult searchResult;
+      SC_CHECK(ctx.HelperSearchTemplate(templ, searchResult), ());
+
+      SC_CHECK_EQUAL(searchResult.Size(), 1, ());
+      SC_CHECK_EQUAL(searchResult[0]["_a"], genResult["_a"], ());
+      SC_CHECK_EQUAL(searchResult[0]["b"], genResult["b"], ());
+    }
+  }
+  SUBTEST_END()
+
+  SUBTEST_START(gen_simple)
+  {
+    ScAddr const cAddr = ctx.CreateNode(ScType::Node);
+    SC_CHECK(cAddr.IsValid(), ());
+    SC_CHECK(ctx.HelperSetSystemIdtf("c1", cAddr), ());
+
+    ScTemplate templ;
+    char const * data = "c1 _=> _b1;; _b1 <- sc_node_abstract;;";
+
+    SC_CHECK(ctx.HelperBuildTemplate(templ, data), ());
+    ScTemplateGenResult genResult;
+    SC_CHECK(ctx.HelperGenTemplate(templ, genResult), ());
+
+    // check
+    {
+      ScTemplate searchTempl;
+
+      searchTempl.Triple(
+        cAddr >> "c1",
+        ScType::EdgeDCommonVar >> "_edge",
+        ScType::NodeVarAbstract >> "_b1");
+
+      ScTemplateSearchResult searchResult;
+      SC_CHECK(ctx.HelperSearchTemplate(searchTempl, searchResult), ());
+
+      SC_CHECK_EQUAL(searchResult.Size(), 1, ());
+      SC_CHECK_EQUAL(genResult["c1"], searchResult[0]["c1"], ());
+      SC_CHECK_EQUAL(genResult["_b1"], searchResult[0]["_b1"], ());
+    }
+  }
+  SUBTEST_END()
+
+  SUBTEST_START(gen_search)
+  {
+    ScAddr const cAddr = ctx.CreateNode(ScType::Node);
+    SC_CHECK(cAddr.IsValid(), ());
+    SC_CHECK(ctx.HelperSetSystemIdtf("g1", cAddr), ());
+
+    ScTemplate templ;
+    char const * data = "g1 _-> _l1 (* <- sc_node_material;; *);; g1 _-> _f1;;";
+
+    SC_CHECK(ctx.HelperBuildTemplate(templ, data), ());
+    ScTemplateGenResult genResult;
+    SC_CHECK(ctx.HelperGenTemplate(templ, genResult), ());
+    SC_CHECK_EQUAL(ctx.GetElementType(genResult["_l1"]), ScType::NodeConstMaterial, ());
+    SC_CHECK_EQUAL(ctx.GetElementType(genResult["_f1"]), ScType::NodeConst, ());
+
+    // check
+    {
+      ScTemplateSearchResult searchResult;
+      SC_CHECK(ctx.HelperSearchTemplate(templ, searchResult), ());
+
+      SC_CHECK_EQUAL(searchResult.Size(), 1, ());
+      SC_CHECK_EQUAL(genResult["g1"], searchResult[0]["g1"], ());
+      SC_CHECK_EQUAL(genResult["_l1"], searchResult[0]["_l1"], ());
+      SC_CHECK_EQUAL(genResult["_f1"], searchResult[0]["_f1"], ());
+    }
+  }
+  SUBTEST_END()
+}
+
+UNIT_TEST(big_template_2_15)
+{
+  ScMemoryContext ctx(sc_access_lvl_make_min, "pend_events");
+
+  ScAddr const set1 = ctx.CreateNode(ScType::NodeConstClass);
+  ScAddr const rel = ctx.CreateNode(ScType::NodeConstNoRole);
+
+  static const size_t el_num = 1 << 15;
+  std::set<ScAddr, ScAddLessFunc> elements;
+  for (size_t i = 0; i < el_num; ++i)
+  {
+    ScAddr const a = ctx.CreateNode(ScType::NodeConst);
+    SC_CHECK(a.IsValid(), ());
+    elements.insert(a);
+  }
+
+  volatile bool isPassed = true;
+
+  // create template for pending events check
+  ScTemplate templ;
+  for (auto const & a : elements)
+  {
+    templ.TripleWithRelation(
+      set1,
+      ScType::EdgeDCommonVar,
+      a >> "_el",
+      ScType::EdgeAccessVarPosPerm,
+      rel);
+  }
+
+  ScTemplateGenResult genResult;
+  SC_CHECK(ctx.HelperGenTemplate(templ, genResult), ());
+
+  // ensure whole data created correctly
+  ScTemplateSearchResult searchResult;
+  SC_CHECK(ctx.HelperSearchTemplate(templ, searchResult), ());
+
+  utils::ScProgress progress("Check search results", searchResult.Size());
+  for (size_t i = 0; i < searchResult.Size(); ++i)
+  {
+    SC_CHECK(elements.find(searchResult[i]["_el"]) != elements.end(), ());
+    progress.PrintStatus(i);
+  }
 }

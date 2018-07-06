@@ -103,7 +103,7 @@ void _destroy_keynodes_str()
   g_free(keynodes_str);
 }
 
-sc_result sc_helper_init(sc_memory_context const * ctx)
+sc_result sc_helper_init(sc_memory_context * ctx)
 {
   g_message("Initialize sc-helper");
 
@@ -193,7 +193,7 @@ sc_result sc_helper_find_element_by_system_identifier(sc_memory_context const * 
   return found == SC_TRUE ? SC_RESULT_OK : SC_RESULT_ERROR;
 }
 
-sc_result sc_helper_set_system_identifier(sc_memory_context const * ctx, sc_addr addr, const sc_char* data, sc_uint32 len)
+sc_result sc_helper_set_system_identifier(sc_memory_context * ctx, sc_addr addr, const sc_char* data, sc_uint32 len)
 {
   sc_iterator5 *it5 = 0;
   sc_addr *results = 0;

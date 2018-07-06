@@ -270,7 +270,7 @@ sc_addr sc_storage_element_new_access(const sc_memory_context *ctx, sc_type type
   return addr;
 }
 
-sc_result sc_storage_element_free(const sc_memory_context *ctx, sc_addr addr)
+sc_result sc_storage_element_free(sc_memory_context *ctx, sc_addr addr)
 {
   GHashTable *remove_table = 0, *lock_table = 0;
   GSList *remove_list = 0;
@@ -635,12 +635,12 @@ sc_addr sc_storage_link_new_ext(const sc_memory_context *ctx, sc_access_levels a
   return addr;
 }
 
-sc_addr sc_storage_arc_new(const sc_memory_context *ctx, sc_type type, sc_addr beg, sc_addr end)
+sc_addr sc_storage_arc_new(sc_memory_context *ctx, sc_type type, sc_addr beg, sc_addr end)
 {
   return sc_storage_arc_new_ext(ctx, type, beg, end, ctx->access_levels);
 }
 
-sc_addr sc_storage_arc_new_ext(const sc_memory_context *ctx, sc_type type, sc_addr beg, sc_addr end, sc_access_levels access_levels)
+sc_addr sc_storage_arc_new_ext(sc_memory_context *ctx, sc_type type, sc_addr beg, sc_addr end, sc_access_levels access_levels)
 {
   sc_addr addr;
 
@@ -913,7 +913,7 @@ unlock:
   return res;
 }
 
-sc_result sc_storage_set_link_content(const sc_memory_context *ctx, sc_addr addr, const sc_stream *stream)
+sc_result sc_storage_set_link_content(sc_memory_context *ctx, sc_addr addr, const sc_stream *stream)
 {
   sc_element *el;
   sc_check_sum check_sum;

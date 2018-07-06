@@ -26,6 +26,8 @@ enum class Visibility : uint8_t
 
 class ParsedElement
 {
+  friend class Parser;
+
 public:
   explicit ParsedElement(std::string const & idtf,
                          ScType const & type = ScType(),
@@ -41,7 +43,7 @@ public:
 protected:
   void ResolveVisibility();
 
-private:
+protected:
   std::string m_idtf;
   ScType m_type;
   Visibility m_visibility; // cached value, to prevent each time check
@@ -99,10 +101,14 @@ public:
   _SC_EXTERN explicit Parser(class ScMemoryContext & ctx);
 
   _SC_EXTERN bool Parse(std::string const & str);
-  _SC_EXTERN ParsedElement const & GetParsedElement(ElementHandle const & elId) const;
+  _SC_EXTERN ParsedElement const & GetParsedElement(ElementHandle const & elID) const;
   _SC_EXTERN TripleVector const & GetParsedTriples() const;
+  _SC_EXTERN std::string const & GetParseError() const;
 
 protected:
+
+  ParsedElement & GetParsedElementRef(ElementHandle const & elID);
+
   ElementHandle ProcessIdentifier(std::string const & name);
   ElementHandle ProcessIdentifierLevel1(std::string const & type, std::string const & name);
   void ProcessTriple(ElementHandle const & source, ElementHandle const & edge, ElementHandle const & target);
@@ -117,6 +123,7 @@ private:
                               std::string const & value = "");
 
   std::string GenerateEdgeIdtf();
+  std::string GenerateLinkIdtf();
    
 private:
   class ScMemoryContext & m_memoryCtx;
@@ -126,7 +133,9 @@ private:
   TripleVector m_parsedTriples;
   IdtfToParsedElementMap m_idtfToParsedElement;
 
-  uint32_t m_edgeCounter;
+  std::string m_lastError;
+
+  uint32_t m_idtfCounter;
 };
 
 }

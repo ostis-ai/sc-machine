@@ -1,5 +1,6 @@
+from enum import Enum
 
-class ScPythonEventType:
+class ScPythonEventType(Enum):
     AddInputEdge = 0
     AddOutputEdge = 1
     ContentChanged = 2

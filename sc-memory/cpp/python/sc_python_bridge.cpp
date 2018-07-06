@@ -1,3 +1,9 @@
+/*
+* This source file is part of an OSTIS project. For the latest info, see http://ostis.net
+* Distributed under the MIT License
+* (See accompanying file COPYING.MIT or copy at http://opensource.org/licenses/MIT)
+*/
+
 #include "sc_python_bridge.hpp"
 
 namespace py
@@ -5,61 +11,81 @@ namespace py
 
 ScPythonBridge::ScPythonBridge()
   : m_isInitialized(false)
+  , m_isFinished(false)
 {
 }
 
-
-ScPythonBridge::ResponsePtr ScPythonBridge::DoRequest(std::string const & eventName, std::string const & data)
-{
-  RequestPtr req(new Request(eventName, data));
-  {
-    utils::ScLockScope lock(m_lock);
-    m_eventsQueue.push_back(req);
-  }
-  return req->WaitResponse();
-}
-
-bool ScPythonBridge::WaitInitialize(uint32_t timeOutMS/* = 10000*/)
+bool ScPythonBridge::WaitReady(uint32_t timeOutMS/* = 10000*/)
 {
   return m_initWait.Wait(timeOutMS);
 }
 
 bool ScPythonBridge::IsInitialized() const
 {
-  utils::ScLockScope lock(m_lock);
+  std::lock_guard<std::mutex> lock(m_lock);
 
   return m_isInitialized;
 }
 
-void ScPythonBridge::Close()
+bool ScPythonBridge::IsFinished() const
 {
-  utils::ScLockScope lock(m_lock);
+  std::lock_guard<std::mutex> lock(m_lock);
 
-  m_isInitialized = false;
+  return m_isFinished;
 }
 
-void ScPythonBridge::Initialize()
+bool ScPythonBridge::TryClose()
 {
-  utils::ScLockScope lock(m_lock);
+  std::lock_guard<std::mutex> lock(m_lock);
+
+  if (!m_isFinished)
+  {
+    m_isInitialized = false;
+    m_isFinished = true;
+
+    if (m_closeDelegate)
+      m_closeDelegate();
+
+    return true;
+  }
+
+  return false;
+}
+
+void ScPythonBridge::Close()
+{
+  std::lock_guard<std::mutex> lock(m_lock);
+  m_isInitialized = false;
+  m_isFinished = true;
+
+  if (m_closeDelegate)
+    m_closeDelegate();
+}
+
+void ScPythonBridge::PythonReady()
+{
+  std::lock_guard<std::mutex> lock(m_lock);
 
   m_initWait.Resolve();
   m_isInitialized = true;
 }
 
-ScPythonBridge::RequestPtr ScPythonBridge::GetNextRequest()
+void ScPythonBridge::PythonFinish()
 {
-  RequestPtr request;
-  {
-    utils::ScLockScope lock(m_lock);
+  std::lock_guard<std::mutex> lock(m_lock);
 
-    if (m_eventsQueue.empty())
-      return RequestPtr();
+  m_closeDelegate = CloseFunc();
+  m_isFinished = true;
+}
 
-    request = m_eventsQueue.front();
-    m_eventsQueue.pop_front();
-  }
+void ScPythonBridge::SetInitParams(std::string const & params)
+{
+  m_initParams = params;
+}
 
-  return request;
+std::string const & ScPythonBridge::GetInitParams() const
+{
+  return m_initParams;
 }
 
 }

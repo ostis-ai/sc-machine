@@ -66,6 +66,12 @@ public:
   //! Call this function, when you request to destroy real memory context, before destructor calls for this object
   _SC_EXTERN void Destroy();
 
+  //! Begin events pending mode
+  void BeingEventsPending();
+
+  //! End events pending mode
+  void EndEventsPending();
+
   // returns copy, because of Python wrapper
   std::string const & GetName() const { return m_name; }
 
@@ -184,10 +190,28 @@ public:
   _SC_EXTERN bool HelperSearchTemplate(ScTemplate const & templ, ScTemplateSearchResult & result);
   _SC_EXTERN bool HelperSearchTemplateInStruct(ScTemplate const & templ, ScAddr const & scStruct, ScTemplateSearchResult & result);
   _SC_EXTERN bool HelperBuildTemplate(ScTemplate & templ, ScAddr const & templAddr);
+  _SC_EXTERN bool HelperBuildTemplate(ScTemplate & templ, std::string const & scsText);
 
 private:
   sc_memory_context * m_context;
   std::string m_name;
 };
 
+class ScMemoryContextPengindGuard
+{
+public:
+  _SC_EXTERN ScMemoryContextPengindGuard(ScMemoryContext & ctx)
+    : m_ctx(ctx)
+  {
+    m_ctx.BeingEventsPending();
+  }
+
+  _SC_EXTERN ~ScMemoryContextPengindGuard()
+  {
+    m_ctx.EndEventsPending();
+  }
+
+private:
+  ScMemoryContext & m_ctx;
+};
 

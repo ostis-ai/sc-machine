@@ -35,9 +35,12 @@ _SC_EXTERN sc_memory_context* sc_memory_initialize(const sc_memory_params *param
  */
 _SC_EXTERN sc_result sc_memory_init_ext(sc_char const * ext_path);
 
-
 //! Shutdown sc-memory (save repository to file system)
 _SC_EXTERN void sc_memory_shutdown(sc_bool save_state);
+
+/*! Shutdown sc-memory extensions
+ */
+_SC_EXTERN void sc_memory_shutdown_ext();
 
 /*! Function that create memory context with specified params
  * @param levels Access levels, you can create it with macros @see sc_access_level_make
@@ -52,6 +55,18 @@ _SC_EXTERN sc_memory_context* sc_memory_context_new(sc_uint8 levels);
  */
 _SC_EXTERN void sc_memory_context_free(sc_memory_context *ctx);
 
+/*! Start events pending mode for a context.
+ * In that mode all events emit will be pending until
+ * sc_memory_context_pending_end called
+ */
+_SC_EXTERN void sc_memory_context_pending_begin(sc_memory_context * ctx);
+
+/*! End events pending mode for a context.
+ * Call this function emits of all pended events for this context
+ */
+_SC_EXTERN void sc_memory_context_pending_end(sc_memory_context * ctx);
+
+
 //! Check if sc-memory is initialized
 _SC_EXTERN sc_bool sc_memory_is_initialized();
 
@@ -64,7 +79,7 @@ _SC_EXTERN sc_bool sc_memory_is_initialized();
 _SC_EXTERN sc_bool sc_memory_is_element(sc_memory_context const * ctx, sc_addr addr);
 
 //! Remove sc-element from sc-memory
-_SC_EXTERN sc_result sc_memory_element_free(sc_memory_context const * ctx, sc_addr addr);
+_SC_EXTERN sc_result sc_memory_element_free(sc_memory_context * ctx, sc_addr addr);
 
 /*! Create new sc-node
  * @param type Type of new sc-node
@@ -84,7 +99,7 @@ _SC_EXTERN sc_addr sc_memory_link_new(sc_memory_context const * ctx);
  * @return Return sc-addr of created sc-arc
 
  */
-_SC_EXTERN sc_addr sc_memory_arc_new(sc_memory_context const * ctx, sc_type type, sc_addr beg, sc_addr end);
+_SC_EXTERN sc_addr sc_memory_arc_new(sc_memory_context * ctx, sc_type type, sc_addr beg, sc_addr end);
 
 /*! Get type of sc-element with specified sc-addr
  * @param addr sc-addr of element to get type
@@ -139,7 +154,7 @@ _SC_EXTERN sc_result sc_memory_get_arc_info(sc_memory_context const * ctx, sc_ad
  * </ul>
 
  */
-_SC_EXTERN sc_result sc_memory_set_link_content(sc_memory_context const * ctx, sc_addr addr, sc_stream const *stream);
+_SC_EXTERN sc_result sc_memory_set_link_content(sc_memory_context * ctx, sc_addr addr, sc_stream const *stream);
 
 /*! Returns content of specified sc-link
  * @param addr sc-addr of sc-link to return content data

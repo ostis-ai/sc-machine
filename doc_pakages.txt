@@ -1,0 +1,4 @@
+pygments
+markdown-include
+mkdocs-cinder
+pymdown-extensions

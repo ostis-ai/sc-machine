@@ -25,13 +25,13 @@ public:
   _SC_EXTERN ScTestUnit(char const * name, char const * filename, void(*fn)());
   _SC_EXTERN ~ScTestUnit();
 
-  void Run();
+  void Run(std::string const & configPath, std::string const & extPath);
 
-  static _SC_EXTERN void RunAll();
+  static _SC_EXTERN void RunAll(std::string const & configPath = "sc-memory.ini", std::string const & extPath = "");
 
 protected:
   void ShutdownMemory(bool save);
-  void InitMemory();
+  void InitMemory(std::string const & configPath, std::string const & extPath);
 
 protected:
   char const * m_name;

@@ -102,12 +102,14 @@ bool ScMemory::Initialize(sc_memory_params const & params)
 
 void ScMemory::Shutdown(bool saveState /* = true */)
 {
+  sc_memory_shutdown_ext();
+
   ScKeynodes::Shutdown();
   
   if (ms_contexts.size() > 0)
   {
     std::stringstream description;
-    description << "There are " << ms_contexts.size() << " contexts, wan't destroyed, before Memory::shutdown:";
+    description << "There are " << ms_contexts.size() << " contexts, wasn't destroyed, before Memory::shutdown:";
     for (auto const * ctx : ms_contexts)
       description << "\t\n" << ctx->GetName();
 
@@ -203,6 +205,16 @@ void ScMemoryContext::Destroy()
     sc_memory_context_free(m_context);
     m_context = 0;
   }
+}
+
+void ScMemoryContext::BeingEventsPending()
+{
+  sc_memory_context_pending_begin(m_context);
+}
+
+void ScMemoryContext::EndEventsPending()
+{
+  sc_memory_context_pending_end(m_context);
 }
 
 bool ScMemoryContext::IsValid() const
@@ -360,7 +372,7 @@ ScAddr ScMemoryContext::HelperResolveSystemIdtf(std::string const & sysIdtf, ScT
 {
   SC_ASSERT(IsValid(), ());
   ScAddr resultAddr = HelperFindBySystemIdtf(sysIdtf);
-  if (!resultAddr.IsValid() && type.IsValid())
+  if (!resultAddr.IsValid() && !type.IsUnknown())
   {
     if (!type.IsNode())
     {
@@ -445,4 +457,9 @@ bool ScMemoryContext::HelperSearchTemplateInStruct(ScTemplate const & templ, ScA
 bool ScMemoryContext::HelperBuildTemplate(ScTemplate & templ, ScAddr const & templAddr)
 {
   return templ.FromScTemplate(*this, templAddr);
+}
+
+bool ScMemoryContext::HelperBuildTemplate(ScTemplate & templ, std::string const & scsText)
+{
+  return templ.FromScs(*this, scsText);
 }

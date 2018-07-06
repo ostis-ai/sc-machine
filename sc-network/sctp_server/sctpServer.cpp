@@ -14,6 +14,8 @@
 #include <QThreadPool>
 #include <QTimer>
 
+#include <iostream>
+
 extern "C"
 {
 #include "sc_memory.h"
@@ -155,14 +157,15 @@ void sctpServer::incomingConnection(qintptr socketDescriptor)
 
 void sctpServer::stop()
 {
-  ScMemory::Shutdown(true);
-  mContext = 0;
+  mContext.reset();
 
   mEventManager->shutdown();
   delete mEventManager;
   mEventManager = 0;
 
-  close();
+  ScMemory::Shutdown(true);
+
+  exit(0);
 }
 
 void sctpServer::clientDestroyed(QObject *client)

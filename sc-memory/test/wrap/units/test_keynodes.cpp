@@ -5,7 +5,9 @@
 */
 
 #include "sc-memory/cpp/utils/sc_test.hpp"
+
 #include "sc-memory/cpp/sc_keynodes.hpp"
+#include "sc-memory/cpp/utils/sc_keynode_cache.hpp"
 
 UNIT_TEST(keynodes)
 {
@@ -30,6 +32,26 @@ UNIT_TEST(keynodes)
 
     for (ScAddr a : keynodes)
       SC_CHECK(ctx.HelperCheckEdge(ScKeynodes::kBinaryType, a, ScType::EdgeAccessConstPosPerm), ());
+  }
+  SUBTEST_END()
+}
+
+UNIT_TEST(keynode_cache)
+{
+  ScMemoryContext ctx(sc_access_lvl_make_min, "keynode_cache");
+
+  SUBTEST_START("basic")
+  {
+    utils::ScKeynodeCache cache(ctx);
+
+    ScAddr const addr = ctx.CreateNode(ScType::NodeConst);
+
+    SC_CHECK(addr.IsValid(), ());
+    SC_CHECK(ctx.HelperSetSystemIdtf("test_idtf", addr), ());
+
+    SC_CHECK(cache.GetKeynode("test_idtf").IsValid(), ());
+    SC_CHECK_NOT(cache.GetKeynode("other").IsValid(), ());
+    SC_CHECK_NOT(cache.GetKeynode("any_idtf").IsValid(), ());
   }
   SUBTEST_END()
 }

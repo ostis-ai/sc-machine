@@ -49,7 +49,8 @@ void sc_config_initialize(const sc_char *file_path)
     // file memory
     if (g_key_file_has_key(key_file, str_group_fm, str_key_fm_engine, 0) == TRUE)
       config_fm_engine = g_key_file_get_string(key_file, str_group_fm, str_key_fm_engine, 0);
-  }else
+  }
+  else
   {
     // setup default values
     config_max_loaded_segments = G_MAXUINT16;

@@ -36,20 +36,20 @@ public:
     //
     if( !ex->get_streamName().empty() )
     {
-        errtext << "File:" << ex->get_streamName() << "\n";
+        errtext << "File:" << ex->get_streamName() << std::endl;
     }
 
     // Next comes the line number
     //
-    errtext << "Line: " << this->get_rec()->get_state()->get_exception()->get_line() << "\n";
+    errtext << "Line: " << this->get_rec()->get_state()->get_exception()->get_line() << std::endl;
     errtext << "Error: " << this->get_rec()->get_state()->get_exception()->getType()
-                            << ". "
-                            << this->get_rec()->get_state()->get_exception()->get_message();
+                         << ". "
+                         << this->get_rec()->get_state()->get_exception()->get_message();
 
     // Prepare the knowledge we know we have
     //
     const CommonTokenType* theToken   = this->get_rec()->get_state()->get_exception()->get_token();
-    StringType ttext            = theToken->toString();
+    StringType ttext = theToken->toString();
 
     errtext << ", at offset "
             << this->get_rec()->get_state()->get_exception()->get_charPositionInLine();

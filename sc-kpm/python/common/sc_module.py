@@ -1,120 +1,131 @@
 from common.sc_keynodes import ScKeynodes
 from common.sc_exception import ScKeynodeException
-from common.sc_event import ScEventManager
+from common.sc_event import ScEventManager, ScEventParams
+from common.sc_agent import ScAgent
+
 import urllib.request
-import time, sys, traceback
+import time
+import sys
+import traceback
+import queue
 
 from scb import *
+from sc import *
+
+
+class Task:
+  def __init__(self, func, *args):
+    self.func = func
+    self.args = args
+
+  def do(self):
+    self.func(*self.args)
 
 class ScModule:
 
-    def __init__(self, context, keynodes=[], cpp_bridge=None, update_timeout=0.1):
-        self.sc_context = context
-        self.keynodes = ScKeynodes(self.sc_context)
-        self.cpp = cpp_bridge
-        self.events = ScEventManager(self.cpp)
-        self.update_timeout = update_timeout
+  ctx = property()
+  events = property()
 
-        for k in keynodes:
-            addr = self.keynodes[k]
-            if not addr:
-                raise ScKeynodeException(k)
-    
-    # --- overloads ---
-    def OnInitialize(self):
-        """This function calls when module initialized.
-        You should overload it to run code of your module on initialize
-        """
-        pass
+  @ctx.getter
+  def ctx(self) -> ScMemoryContext:
+    return self.__sc_context
 
-    def OnShutdown(self):
-        pass
+  @events.getter
+  def events(self) -> ScEventManager:
+    return self.__events
 
-    def OnCppEvent(self, name, payload, onSuccess, onError):
-        """Should be overloaded in a child class.
-        ItCalls every time, when receive event from cpp_bridge.
-        * `name` - event name;
-        * `payload` - event payload data (depend on event)
-        * `onSuccess` - function that should be called,
-        if event processed whitout errors. Example: `onSuccess(data)`
-        * `onError` - function that should be called, when there are any error
-        during event processing. Examle: `onError(data)`
-        """
-        pass
-    
-    def OnCppUpdate(self):
-        """Can be overloaded in a child class.
-        Calls every tick, when trying to get event from cpp_bridge.abs
-        You should use this function, when you need periodical update
-        in your module
-        """
-        pass
+  def __init__(self, ctx, cpp_bridge, keynodes=[]):
+    self.__sc_context = ctx
+    self.keynodes = ScKeynodes(self.__sc_context)
 
-    # --- common state functions ---
-    def Initialize(self):
-        self.OnInitialize()
+    self.cpp = cpp_bridge
+    assert self.cpp
 
-    def Shutdown(self):
-        self.OnShutdown()
+    self.__events = ScEventManager(self.cpp)
+    self.KeynodesCheck(keynodes)
 
-    def Run(self):
-        if self.cpp:
-            # wait until cpp bridge will be initialized
-            self.cpp.Initialize()
-            self.Initialize()
+    self.is_running = True
+    self.task_queue = queue.Queue()
 
-            while (self.cpp.Exist()):
-                self.OnCppUpdate()
+    self.agents = []  # list of registered agents
 
-                request = self.cpp.GetRequest()
-                if (request.IsValid()):
+  def KeynodesCheck(self, keynodes_list):
+    for idtf in keynodes_list:
+      addr = self.keynodes[idtf]
+      if not addr:
+        raise ScKeynodeException(idtf)
 
-                    def onSuccess(data):
-                        self.MakeCppResultOk(request, data)
+  # --- handlers calls in main thread ---
+  def HandleOnClose(self):
+    self.CallLater(self.Stop)
 
-                    def onError(data):
-                        self.MakeCppResultError(request, data)
+  def HandleOnEvent(self, eid, addr, edge_addr, other_addr):
+    params = ScEventParams(eid, addr, edge_addr, other_addr)
+    self.CallLater(self.DoEmitEvent, params)
 
-                    try:
-                        req_name = request.GetName()
-                        if req_name == 'ScEvent':
-                            self.events.ProcessEvent(request.GetData())
-                        else:
-                            self.OnCppEvent(
-                                req_name,
-                                request.GetData(),
-                                onSuccess,
-                                onError)
-                    except:
-                        msg = "Unexpected error: {}".format(sys.exc_info()[0])
-                        print(msg)
-                        traceback.print_exc(file=sys.stdout)
-                        onError(msg)
-                else:
-                    time.sleep(self.update_timeout)
-            
-            self.Shutdown()
-        else:
-            self.Initialize()
-            self.Shutdown()
+  # --- tasks ---
+  def DoEmitEvent(self, evt_params):
+    self.__events.EmitEvent(evt_params)
 
-    # Work with CPP bridge
-    def MakeCppResult(self, req, status, data):
-        req.MakeResponse(status, data)
+  def CallLater(self, func, *args):
+    self.task_queue.put(Task(func, *args))
 
-    def MakeCppResultError(self, req, data):
-        self.MakeCppResult(req, ResponseStatus.Error, data)
+  # --- overloads ---
+  def OnInitialize(self, params):
+    """This function calls when module initialized.
+    You should overload it to run code of your module on initialize
+    """
+    pass
 
-    def MakeCppResultOk(self, req, data):
-        self.MakeCppResult(req, ResponseStatus.Ok, data)
+  def OnUpdate(self):
+    pass
 
-    # Set of usefull functions
-    @staticmethod
-    def GetDataByUrl(url):
-        try:
-            with urllib.request.urlopen(url) as response:
-                data = response.read()
-        except:
-            return None
+  def OnShutdown(self):
+    pass
 
-        return data
+  def Stop(self):
+    self.is_running = False
+
+  # --- common state functions ---
+  def Initialize(self):
+    self.cpp.onClose = self.HandleOnClose
+    self.cpp.onEvent = self.HandleOnEvent
+    # notify c++ code that bridge is ready for work
+    self.cpp.Ready()
+
+    ScAgent.InitGlobal(self)
+    self.OnInitialize(self.cpp.InitParams())
+
+  def Shutdown(self):
+    self.OnShutdown()
+    self.cpp.onClose = None
+    self.cpp.onEvent = None
+    self.cpp.Finish()
+
+  def EmitEvents(self):
+    try:
+      task = self.task_queue.get(block=True, timeout=0.01)
+      task.do()
+    except queue.Empty:
+      pass
+
+  def Run(self):
+    if self.cpp:
+      # wait until cpp bridge will be initialized
+      self.Initialize()
+      while self.is_running:
+        self.EmitEvents()
+        self.OnUpdate()
+
+      self.Shutdown()
+
+  # Set of usefull functions
+  @staticmethod
+  def GetDataByUrl(url):
+    try:
+      with urllib.request.urlopen(url) as response:
+        data = response.read()
+    except:
+      return None
+
+    return data

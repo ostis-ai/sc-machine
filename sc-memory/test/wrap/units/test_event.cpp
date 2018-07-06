@@ -8,9 +8,15 @@
 #include "sc-memory/cpp/sc_timer.hpp"
 #include "sc-memory/cpp/sc_stream.hpp"
 #include "sc-memory/cpp/utils/sc_test.hpp"
+#include "sc-memory/cpp/utils/sc_progress.hpp"
 
 #include <thread>
 #include <mutex>
+
+extern "C"
+{
+#include <glib.h>
+}
 
 namespace
 {
@@ -213,4 +219,81 @@ UNIT_TEST(events_lock)
     ctx.CreateEdge(ScType::EdgeAccessConstPosPerm,
                    node, node2);
   }
+}
+
+UNIT_TEST(pend_events)
+{
+  ScMemoryContext ctx(sc_access_lvl_make_min, "pend_events");
+
+  /* Main idea of test: create two sets with N elements, and add edges to relations.
+   * Everytime, when event emits, we should check, that whole construction exist
+   */
+  ScAddr const set1 = ctx.CreateNode(ScType::NodeConstClass);
+  ScAddr const rel = ctx.CreateNode(ScType::NodeConstNoRole);
+
+  static const size_t el_num = 1 << 10;
+  std::vector<ScAddr> elements(el_num);
+  for (size_t i = 0; i < el_num; ++i)
+  {
+    ScAddr const a = ctx.CreateNode(ScType::NodeConst);
+    SC_CHECK(a.IsValid(), ());
+    elements[i] = a;
+  }
+
+  // create template for pending events check
+  ScTemplate templ;
+  for (auto const & a : elements)
+  {
+    templ.TripleWithRelation(
+      set1,
+      ScType::EdgeDCommonVar,
+      a >> "_el",
+      ScType::EdgeAccessVarPosPerm,
+      rel);
+  }
+
+  volatile int32_t eventsCount = 0;
+  volatile int32_t passedCount = 0;
+
+  ScTemplate checkTempl;
+  size_t step = 100;
+  size_t testNum = el_num / step - 1;
+  for (size_t i = 0; i < testNum; ++i)
+  {
+    checkTempl.TripleWithRelation(
+      set1,
+      ScType::EdgeDCommonVar,
+      elements[i * step] >> "_el",
+      ScType::EdgeAccessVarPosPerm,
+      rel);
+  }
+
+  ScEventAddOutputEdge evt(ctx, set1,
+                           [&](ScAddr const & addr, ScAddr const & edgeAddr, ScAddr const & otherAddr)
+  {
+    ScMemoryContext localCtx(sc_access_lvl_make_min);
+    
+    ScTemplateSearchResult res;
+    SC_CHECK(localCtx.HelperSearchTemplate(checkTempl, res), ());
+    
+    if (res.Size() == 1)
+      g_atomic_int_add(&passedCount, 1);
+
+    g_atomic_int_add(&eventsCount, 1);
+    
+    return true;
+  });
+
+  ScTemplateGenResult genResult;
+  SC_CHECK(ctx.HelperGenTemplate(templ, genResult), ());
+
+  // wait all events
+  utils::ScProgress progress("Wait events", el_num);
+  while (g_atomic_int_get(&eventsCount) < el_num)
+  {
+    progress.PrintStatus(eventsCount);
+    std::this_thread::sleep_for(std::chrono::milliseconds(10));
+  }
+
+  SC_CHECK_EQUAL(passedCount, el_num, ());
 }

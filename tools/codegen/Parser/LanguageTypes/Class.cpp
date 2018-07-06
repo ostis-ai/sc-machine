@@ -177,8 +177,8 @@ void Class::GenerateCode(std::string const & fileId, std::stringstream & outCode
   GenerateImpl(outCode);
 }
 
-#define _GENERATE_INIT_CODE(FuncName, Method, Modifier) \
-  outCode << Modifier << " bool " << FuncName << "() \\\n{ \\\n"; \
+#define _GENERATE_INIT_CODE(FuncName, Method, PreModifier, PostModifier) \
+  outCode << PreModifier << " bool " << FuncName << "() " << PostModifier << " \\\n{ \\\n"; \
   outCode << "    ScMemoryContext ctx(sc_access_lvl_make_min, \"" << m_name << "::" << FuncName << "\"); \\\n"; \
   outCode << "    bool result = true; \\\n"; \
   Method(outCode); \
@@ -187,12 +187,12 @@ void Class::GenerateCode(std::string const & fileId, std::stringstream & outCode
 
 void Class::GenerateCodeInit(std::stringstream & outCode) const
 {
-  _GENERATE_INIT_CODE("_InitInternal", GenerateFieldsInitCode, "")
+  _GENERATE_INIT_CODE("_InitInternal", GenerateFieldsInitCode, "", "override")
 }
 
 void Class::GenerateCodeStaticInit(std::stringstream & outCode) const
 {
-  _GENERATE_INIT_CODE("_InitStaticInternal", GenerateStaticFieldsInitCode, "static")
+  _GENERATE_INIT_CODE("_InitStaticInternal", GenerateStaticFieldsInitCode, "static", "")
 }
 
 void Class::GenerateFieldsInitCode(std::stringstream & outCode) const
@@ -250,7 +250,7 @@ void Class::GenerateDeclarations(std::stringstream & outCode) const
 
     if (isActionAgent)
     {
-      outCode << "\\\n\tvirtual sc_result RunImpl(ScAddr const & requestAddr, ScAddr const & resultAddr); ";
+      outCode << "\\\n\tvirtual sc_result RunImpl(ScAddr const & requestAddr, ScAddr const & resultAddr) override; ";
       listenAddr = "GetCommandInitiatedAddr()";
       eventType = "ScEvent::Type::AddOutputEdge";
       instConstructParams = "ms_cmdClass_" + m_displayName + ", ";

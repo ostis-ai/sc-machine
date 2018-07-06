@@ -61,7 +61,7 @@ sc_event_queue * sc_event_queue_new()
   sc_event_queue *queue = g_new0(sc_event_queue, 1);
   queue->running = SC_TRUE;
   g_mutex_init(&queue->mutex);
-  queue->thread_pool = g_thread_pool_new(sc_event_pool_worker, (gpointer)0, g_get_num_processors() * 2, FALSE, 0);
+  queue->thread_pool = g_thread_pool_new(sc_event_pool_worker, (gpointer)0, g_get_num_processors(), FALSE, 0);
 
   return queue;
 }

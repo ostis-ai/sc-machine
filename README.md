@@ -10,7 +10,7 @@
 
 Build on ubuntu:
 ```sh
-git clone https://github.com/deniskoronchik/sc-machine.git
+git clone https://github.com/ostis-dev/sc-machine.git
 cd sc-machine
 ./scripts/install_deps_ubuntu.sh
 mkdir build

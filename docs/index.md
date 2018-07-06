@@ -13,6 +13,7 @@
 - Common
     * [Config](other/config.md)
     * [Sc-element types](cpp/el_types.md)
+    * [SCs-language](other/scs.md)
     * [SCTP protocol](net/sctp.md) - description of *Semantic Code Transport Protocol* (Russian);
 
 - Building

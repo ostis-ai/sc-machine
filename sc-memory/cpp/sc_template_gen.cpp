@@ -46,6 +46,8 @@ public:
     if (!checkParams())
       return ScTemplateResultCode::InvalidParams;	/// TODO: Provide error
 
+    ScMemoryContextPengindGuard guard(m_context);
+
     result.m_result.resize(m_constructions.size() * 3);
     result.m_replacements = m_replacements;
 
@@ -167,7 +169,7 @@ public:
       ScTemplateConstr3 const & constr = m_constructions[itRepl->second / 3];
       ScType const & itemType = constr.GetValues()[itRepl->second % 3].m_typeValue;
       /// TODO: check subtype of objects. Can't replace tuple with no tuple object
-      if (!itemType.IsVar() || itemType.IsEdge())
+      if (itemType.HasConstancyFlag() && (!itemType.IsVar() || itemType.IsEdge()))
         return false;
     }
 

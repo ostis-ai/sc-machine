@@ -1,9 +1,53 @@
+## v0.5.0
+
+- **Build system**:
+    - Add Visual Studio 2017 support
+
+- **Core**:
+    - Fix bug with repository save (case when it output directory doesn't exist)
+
+- **C++**:
+    - Fix bugs in python GIL work
+    - Fix python threading
+    - Fix problem with twicely pass of edge in template search
+    - Fix problem with stack overflow on large template search
+    - Fix some python wrapping functions
+    - Improve `ScType` class
+    - Add types support in SCs-parser
+    - Add keynode cache
+    - Add `ScTemplate` build from SCs-text
+    - Add support of pending events. Now events emit after whole template generated
+
+- **Python**:
+    - Add `ScAgent` class
+    - Improve custom main cycle in `ScModule`
+    - Improve python testing
+    - Implement `ScHelper` class
+
+- **Tools**:
+    - Fix error handling in sc-builder
+    - Fix `show-filenames` parameter processing in sc-builder
+
+- **Common**
+    - Update documentation theme
+    - Improve python library documentation
+
 ## v0.4.1
 
-* Fix bug with python modules search path initialization
-* Fix bug with python threading
 * Add `ScSet` and `ScRelationSet` in python common library
 * Add `ScPythonService` into C++ (allow to implement threaded python services)
+* Add `GetType` and `AsBinary` functions into Python for a link content
+* Add colors to python output
+* Add signal handler to handle `Ctrl + C`
+* Fix bug with python modules search path initialization
+* Fix bug with python threading
+* Fix bug with builder run
+* Fix bug with `ScLock`
+* Fix bug with Python interpreter shutdown
+* Fix bug with `int8_t` type support in python bindings
+* Fix bug with template generation, when pass parameter to triple with type that has no constancy flag
+* Fix errors catch during collect python modules
+* Refactoring of C++ Python bridge
 
 ## v0.4.0
 

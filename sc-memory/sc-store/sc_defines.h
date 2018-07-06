@@ -71,13 +71,6 @@
 
 #	define _SC_DEPRECATED_IMPL(__Version, __Message) __attribute__((deprecated(__Message "Update you code to newest API version " #__Version " or later.")))
 
-#	define PRAGMA_DISABLE_DEPRECATION_WARNINGS \
-  _Pragma ("clang diagnostic push") \
-  _Pragma ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
-
-#	define PRAGMA_ENABLE_DEPRECATION_WARNINGS
-_Pragma("clang diagnostic pop")
-
 #elif (SC_COMPILER == SC_COMPILER_GNU)
 # define _SC_DEPRECATED_IMPL(__Version, __Message)
 #else
