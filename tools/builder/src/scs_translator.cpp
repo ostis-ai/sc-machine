@@ -471,7 +471,7 @@ sc_addr SCsTranslator::createScAddr(sElement *el)
   }
   else if (el->type & sc_type_link)
   {
-    addr = sc_memory_link_new(mContext);
+    addr = sc_memory_link_new2(mContext, el->type & sc_type_const);
 
     // setup link content
     if (el->link_is_file)
@@ -606,7 +606,7 @@ sElement* SCsTranslator::_addEdge(sElement *source, sElement *target, sc_type ty
 
 sElement* SCsTranslator::_addLink(const String &idtf, const sBuffer & data)
 {
-  sElement *el = _createElement(idtf, sc_type_link);
+  sElement *el = _createElement(idtf, sc_type_link | sc_type_const);
 
   el->link_is_file = false;
   el->link_data = data;
@@ -616,7 +616,7 @@ sElement* SCsTranslator::_addLink(const String &idtf, const sBuffer & data)
 
 sElement* SCsTranslator::_addLinkFile(const String & idtf, const String & filePath)
 {
-  sElement *el = _createElement(idtf, sc_type_link);
+  sElement *el = _createElement(idtf, sc_type_link | sc_type_const);
 
   el->link_is_file = true;
   el->file_path = filePath;
@@ -626,7 +626,7 @@ sElement* SCsTranslator::_addLinkFile(const String & idtf, const String & filePa
 
 sElement* SCsTranslator::_addLinkString(const String & idtf, const String & str)
 {
-  sElement *el = _createElement(idtf, sc_type_link);
+  sElement *el = _createElement(idtf, sc_type_link | sc_type_const);
 
   el->link_is_file = false;
   el->link_data = sBuffer(str.c_str(), (sc_uint)str.size());

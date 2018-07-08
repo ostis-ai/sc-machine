@@ -341,7 +341,7 @@ class WsJsonApiTest(testing.AsyncTestCase):
     self.assertEqual(len(resPayload), len(params))
     self.assertEqual(resPayload[0], ScType.Node.ToInt())
     self.assertEqual(resPayload[1], 0)
-    self.assertEqual(resPayload[2], ScType.Link.ToInt())
+    self.assertEqual(resPayload[2], ScType.LinkConst.ToInt())
 
   @testing.gen_test
   def test_delete_elements(self):

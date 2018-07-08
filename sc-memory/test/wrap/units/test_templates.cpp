@@ -1661,3 +1661,41 @@ UNIT_TEST(template_optional)
   }
   SUBTEST_END()
 }
+
+UNIT_TEST(search_links)
+{
+  ScMemoryContext ctx(sc_access_lvl_make_min, "template_optional");
+
+  ScAddr const node = ctx.CreateNode(ScType::NodeConst);
+  SC_CHECK(node.IsValid(), ());
+
+  ScAddr const link = ctx.CreateLink();
+  SC_CHECK(link.IsValid(), ());
+
+  ScAddr const edge = ctx.CreateEdge(ScType::EdgeDCommonConst, node, link);
+  SC_CHECK(edge.IsValid(), ());
+
+  ScAddr const rel = ctx.CreateNode(ScType::NodeConstNoRole);
+  SC_CHECK(rel.IsValid(), ());
+
+  ScAddr const relEdge = ctx.CreateEdge(ScType::EdgeAccessConstPosPerm, rel, edge);
+  SC_CHECK(relEdge.IsValid(), ());
+
+  ScTemplate templ;
+  templ.TripleWithRelation(
+    node >> "_node",
+    ScType::EdgeDCommonVar >> "_edge",
+    link >> "_link",
+    ScType::EdgeAccessVarPosPerm >> "_edgeRel",
+    rel >> "_rel");
+
+  ScTemplateSearchResult res;
+  SC_CHECK(ctx.HelperSearchTemplate(templ, res), ());
+  
+  SC_CHECK_EQUAL(res.Size(), 1, ());
+  SC_CHECK_EQUAL(node, res[0]["_node"], ());
+  SC_CHECK_EQUAL(edge, res[0]["_edge"], ());
+  SC_CHECK_EQUAL(link, res[0]["_link"], ());
+  SC_CHECK_EQUAL(relEdge, res[0]["_edgeRel"], ());
+  SC_CHECK_EQUAL(rel, res[0]["_rel"], ());
+}

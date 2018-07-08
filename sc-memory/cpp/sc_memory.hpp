@@ -83,7 +83,7 @@ public:
   _SC_EXTERN bool EraseElement(ScAddr const & addr);
 
   _SC_EXTERN ScAddr CreateNode(ScType const & type);
-  _SC_EXTERN ScAddr CreateLink();
+  _SC_EXTERN ScAddr CreateLink(ScType const & type = ScType::LinkConst);
 
   SC_DEPRECATED(0.3.0, "Use ScMemoryContext::createEdge instead.")
   _SC_EXTERN ScAddr CreateArc(sc_type type, ScAddr const & addrBeg, ScAddr const & addrEnd);

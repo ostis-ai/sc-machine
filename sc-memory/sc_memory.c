@@ -263,7 +263,12 @@ sc_addr sc_memory_node_new(const sc_memory_context * ctx, sc_type type)
 
 sc_addr sc_memory_link_new(sc_memory_context const * ctx)
 {
-  return sc_storage_link_new(ctx);
+  return sc_memory_link_new2(ctx, SC_TRUE);
+}
+
+sc_addr sc_memory_link_new2(sc_memory_context const * ctx, sc_bool is_const)
+{
+  return sc_storage_link_new(ctx, is_const);
 }
 
 sc_addr sc_memory_arc_new(sc_memory_context * ctx, sc_type type, sc_addr beg, sc_addr end)

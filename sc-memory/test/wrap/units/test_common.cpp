@@ -27,7 +27,7 @@ UNIT_TEST(elements)
   SC_CHECK_EQUAL(ctx.GetEdgeTarget(arc), link, ());
 
   SC_CHECK_EQUAL(ctx.GetElementType(addr), ScType::NodeConst, ());
-  SC_CHECK_EQUAL(ctx.GetElementType(link), ScType::Link, ());
+  SC_CHECK_EQUAL(ctx.GetElementType(link), ScType::LinkConst, ());
   SC_CHECK_EQUAL(ctx.GetElementType(arc), ScType::EdgeAccessConstPosPerm, ());
 
   SC_CHECK(ctx.SetElementSubtype(addr, ScType::Var), ());

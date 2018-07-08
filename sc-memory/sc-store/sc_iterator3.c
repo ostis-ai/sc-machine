@@ -360,7 +360,8 @@ sc_bool _sc_iterator3_f_a_a_next(sc_iterator3 *it)
     g_assert(el != null_ptr);
     arc_addr = el->first_out_arc;
     STORAGE_CHECK_CALL(sc_storage_element_unlock(it->params[0].addr));
-  }else
+  }
+  else
   {
     sc_element *el = 0;
     STORAGE_CHECK_CALL(sc_storage_element_lock(it->results[1], &el));

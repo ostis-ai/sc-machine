@@ -795,6 +795,8 @@ std::string GetConfigValue(std::string const & group, std::string const & key)
 
 } // namespace impl
 
+BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(ScMemoryContext_CreateLink_overload, ScMemoryContext::CreateLink, 0, 1)
+
 BOOST_PYTHON_MODULE(sc)
 {
   bp::register_exception_translator<utils::ScException>(&translateException);
@@ -807,7 +809,7 @@ BOOST_PYTHON_MODULE(sc)
     .staticmethod("Create")
     .def("CreateNode", &ScMemoryContext::CreateNode, bp::return_value_policy<bp::return_by_value>())
     .def("CreateEdge", &ScMemoryContext::CreateEdge)
-    .def("CreateLink", &ScMemoryContext::CreateLink)
+    .def("CreateLink", &ScMemoryContext::CreateLink, ScMemoryContext_CreateLink_overload(bp::args("type"), "Create sc-link"))
     .def("DeleteElement", &ScMemoryContext::EraseElement)
     .def("GetName", &ScMemoryContext::GetName, bp::return_value_policy<bp::return_by_value>())
     .def("IsElement", &ScMemoryContext::IsElement)

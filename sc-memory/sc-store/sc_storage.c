@@ -611,19 +611,19 @@ sc_addr sc_storage_node_new_ext(const sc_memory_context *ctx, sc_type type, sc_a
   return addr;
 }
 
-sc_addr sc_storage_link_new(const sc_memory_context *ctx)
+sc_addr sc_storage_link_new(const sc_memory_context *ctx, sc_bool is_const)
 {
-  return sc_storage_link_new_ext(ctx, ctx->access_levels);
+  return sc_storage_link_new_ext(ctx, ctx->access_levels, is_const);
 }
 
-sc_addr sc_storage_link_new_ext(const sc_memory_context *ctx, sc_access_levels access_levels)
+sc_addr sc_storage_link_new_ext(const sc_memory_context *ctx, sc_access_levels access_levels, sc_bool is_const)
 {
   sc_addr addr;
 
   sc_element * locked_el = sc_storage_append_el_into_segments(ctx, &addr);
   if (locked_el != null_ptr)
   {
-    locked_el->flags.type = sc_type_link;
+    locked_el->flags.type = sc_type_link | (is_const ? sc_type_const : sc_type_var);
     locked_el->flags.access_levels = access_levels;
     STORAGE_CHECK_CALL(sc_storage_element_unlock(addr));
   }

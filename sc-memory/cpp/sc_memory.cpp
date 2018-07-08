@@ -240,10 +240,11 @@ ScAddr ScMemoryContext::CreateNode(ScType const & type)
   return ScAddr(sc_memory_node_new(m_context, *type));
 }
 
-ScAddr ScMemoryContext::CreateLink()
+ScAddr ScMemoryContext::CreateLink(ScType const & type/* = ScType::LinkConst */)
 {
+  SC_ASSERT(type == ScType::LinkConst || type == ScType::LinkVar, ());
   SC_ASSERT(IsValid(), ());
-  return ScAddr(sc_memory_link_new(m_context));
+  return ScAddr(sc_memory_link_new2(m_context, type.IsConst()));
 }
 
 ScAddr ScMemoryContext::CreateArc(sc_type type, ScAddr const & addrBeg, ScAddr const & addrEnd)
