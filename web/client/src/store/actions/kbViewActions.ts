@@ -8,13 +8,17 @@ export namespace KBView {
   export const CHANGE_TEMPLATE = "KB_VIEW_CHANGE_TEMPLATE";
 }
 
-export function addTemplate(title: string = null): Action<KBViewTemplate> {
+export function addTemplate(
+    title: string = null,
+    isSaved: boolean = false,
+    content: string = ''): Action<KBViewTemplate> {
+
   return {
     type: KBView.ADD_TEMPLATE,
     payload: {
       title: title,
-      isSaved: false,
-      content: '',
+      isSaved: isSaved,
+      content: content,
       id: -1,
     }
   };

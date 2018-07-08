@@ -1,22 +1,23 @@
-import { ScNet, ScAddr, ScType, ResolveIdtfMap } from '@ostis/sc-core';
+import { ScNet, ScAddr, ScType, ScIdtfResolveParams, ResolveIdtfMap } from '@ostis/sc-core';
 
 const sNrelSystemIdentifier: string = 'nrel_system_identifier';
+const sNrelMainIdtf: string = 'nrel_main_idtf';
+const sNrelWebTemplates: string = 'nrel_web_templates';
+const sNrelSCsTemplate: string = 'nrel_scs_template';
 
-// device types
-const sDeviceTV: string = 'device_tv';
-
-const sSelf: string = 'self';
-const sMyHome: string = 'my_home';
-const sMainNLDialogue: string = 'main_nl_dialogue_instance';
-const sUser: string = 'ui_user';
-const sUserRegistered: string = 'ui_user_registered';
-
-const sTestUser: string = 'denis_koronchik';
+// Test
+const sTestUser: string = 'test_user';
 
 export class ServerKeynodes {
   private _client: ScNet = null;
 
   private _kNrelSysIdtf: ScAddr = null;
+  private _kNrelMainIdtf: ScAddr = null;
+  private _kNrelWebTemplates: ScAddr = null;
+  private _kNrelSCsTemplate: ScAddr = null;
+
+  // test
+  private _kTestUser: ScAddr = null;
 
   constructor(client: ScNet) {
     this._client = client;
@@ -25,17 +26,27 @@ export class ServerKeynodes {
   public async Initialize(): Promise<boolean> {
     const self = this;
     return new Promise<boolean>(function (resolve, reject) {
-      const keynodesList = [
-        sNrelSystemIdentifier,
+      const keynodesList: ScIdtfResolveParams[] = [
+        { idtf: sNrelSystemIdentifier,  type: ScType.NodeConstNoRole },
+        { idtf: sNrelMainIdtf,          type: ScType.NodeConstNoRole },
+        { idtf: sNrelWebTemplates,      type: ScType.NodeConstNoRole },
+        { idtf: sNrelSCsTemplate,       type: ScType.NodeConstNoRole },
+
+        { idtf: sTestUser,              type: ScType.NodeConst },
       ];
 
       self._client.ResolveKeynodes(keynodesList).then(function (res: ResolveIdtfMap) {
 
         self._kNrelSysIdtf = res[sNrelSystemIdentifier];
+        self._kNrelMainIdtf = res[sNrelMainIdtf];
+        self._kNrelWebTemplates = res[sNrelWebTemplates];
+        self._kNrelSCsTemplate = res[sNrelSCsTemplate];
+
+        self._kTestUser = res[sTestUser];
 
         let resValue: boolean = true;
         for (let i = 0; i < keynodesList.length; ++i) {
-          const idtf: string = keynodesList[i];
+          const idtf: string = keynodesList[i].idtf;
           const addr: ScAddr = res[idtf];
           console.log(`Resolve keynode ${idtf} = ${addr.value}`);
 
@@ -48,4 +59,9 @@ export class ServerKeynodes {
   }
 
   public get kNrelSysIdtf(): ScAddr { return this._kNrelSysIdtf; }
+  public get kNrelMainIdtf(): ScAddr { return this._kNrelMainIdtf; }
+  public get kNrelWebTemplates(): ScAddr { return this._kNrelWebTemplates; }
+  public get kNrelSCsTemplate(): ScAddr { return this._kNrelSCsTemplate; }
+
+  public get kTestUser(): ScAddr { return this._kTestUser; }
 };

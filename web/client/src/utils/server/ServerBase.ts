@@ -11,9 +11,9 @@ export type Store = Store<{}>;
 
 export class ServerBase {
 
-  protected _client: ScNet = null;
-  protected _keynodes: ServerKeynodes = null;
-  protected _store: Store<{}> = null;
+  private _client: ScNet = null;
+  private _keynodes: ServerKeynodes = null;
+  private _store: Store<{}> = null;
 
   constructor(client: ScNet, keynodes: ServerKeynodes, store: Store<{}>) {
     this._client = client;
@@ -21,9 +21,18 @@ export class ServerBase {
     this._store = store;
   }
 
+  public get client(): ScNet {
+    return this._client;
+  }
+
   public get keynodes(): ServerKeynodes {
     return this._keynodes;
   }
+
+  public get store(): Store<{}> {
+    return this._store;
+  }
+
   public get host(): string {
     return location.protocol + '//' + location.hostname + (location.port ? ':' + location.port : '');
   }

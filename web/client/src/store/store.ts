@@ -1,6 +1,7 @@
 import { Map, List } from 'immutable';
 import { ScAddr } from '@ostis/sc-core';
-import * as services from '../utils/server';
+
+import * as servers from '../utils/server';
 
 export enum UIMode {
   Initialize = 0,
@@ -37,10 +38,15 @@ export let netInitState: NetworkState = {
 };
 
 export interface ServicesState {
+  bridge: servers.ServerBridge,
+  keynodes: servers.ServerKeynodes,
+  templates: servers.ServerTemplates,
 };
 
 export let servicesInitState: ServicesState = {
-
+  bridge: null,
+  keynodes: null,
+  templates: null,
 };
 
 export interface KBViewTemplate {

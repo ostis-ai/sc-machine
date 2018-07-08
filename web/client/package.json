@@ -48,7 +48,7 @@
   },
   "dependencies": {
     "@ostis/sc-core": "^0.2.1",
-    "@ostis/scs-js-editor": ">=0.1.4",
+    "@ostis/scs-js-editor": "^0.1.4",
     "@types/react": "^15.6.17",
     "@types/react-dom": "^0.14.23",
     "@types/react-redux": "^4.4.38",
