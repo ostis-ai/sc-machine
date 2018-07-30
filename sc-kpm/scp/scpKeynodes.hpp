@@ -71,6 +71,9 @@ public:
     SC_PROPERTY(Keynode("nrel_scp_process"), ForceCreate)
     static ScAddr nrel_scp_process;
 
+    SC_PROPERTY(Keynode("rrel_key_sc_element"), ForceCreate)
+    static ScAddr rrel_key_sc_element;
+
     SC_PROPERTY(Keynode("nrel_authors"), ForceCreate)
     static ScAddr nrel_authors;
 

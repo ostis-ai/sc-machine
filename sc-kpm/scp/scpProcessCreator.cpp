@@ -42,13 +42,13 @@ SC_AGENT_IMPLEMENTATION(ASCPProcessCreator)
     ScTemplateGenParams gen_params;
 
     ScAddr process_node;
-    ScIterator5Ptr iter_temp = ms_context->Iterator5(Keynodes::scp_process, ScType::EdgeAccessConstPosPerm, ScType::NodeVar, ScType::EdgeAccessConstPosPerm, program);
+    ScIterator5Ptr iter_temp = ms_context->Iterator5(program, ScType::EdgeAccessConstPosPerm, ScType::NodeVar, ScType::EdgeAccessConstPosPerm, Keynodes::rrel_key_sc_element);
     if (iter_temp->IsValid() && iter_temp->Next())
         process_node = iter_temp->Get(2);
     else
         return SC_RESULT_ERROR_INVALID_PARAMS;
 
-    iter_temp = ms_context->Iterator5(process_node, ScType::EdgeAccessConstPosPerm, ScType::NodeVar, ScType::EdgeAccessConstPosPerm, program);
+    iter_temp = ms_context->Iterator5(process_node, ScType::EdgeAccessVarPosPerm, ScType::NodeVar, ScType::EdgeAccessConstPosPerm, program);
     if (!iter_temp->IsValid())
         return SC_RESULT_ERROR_INVALID_PARAMS;
 
@@ -65,13 +65,38 @@ SC_AGENT_IMPLEMENTATION(ASCPProcessCreator)
 #endif
                 continue;
             }
-
-            //!TODO gen_params.add(iter_temp->Get(2),iter_param->Get(2));
-            //Utils::printSystemIdentifier((ScMemoryContext&)ms_context, iter_temp->Get(2));
-            //std::cout << "-->" << std::endl;
-            //Utils::printSystemIdentifier((ScMemoryContext&)ms_context, iter_param->Get(2));
-            //std::cout << std::endl;
+            //!TODO Eliminate name dependency
+            gen_params.Add(ms_context->HelperGetSystemIdtf(iter_temp->Get(2)), iter_param->Get(2));
         }
+    }
+
+    ScTemplateGenResult result;
+    ms_context->HelperGenTemplate(program_templ, result, gen_params);
+
+    //!TODO Eliminate name dependency
+    ScAddr const_process_node = result[ms_context->HelperGetSystemIdtf(process_node)];
+    iter_temp = ms_context->Iterator5(ScType::NodeConst, ScType::EdgeDCommonConst, const_process_node, ScType::EdgeAccessConstPosPerm, Keynodes::nrel_decomposition_of_action);
+    if (iter_temp->Next())
+    {
+        ScIterator5Ptr oper_iter = ms_context->Iterator5(iter_temp->Get(0), ScType::EdgeAccessConstPosPerm, ScType::NodeConst, ScType::EdgeAccessConstPosPerm, Keynodes::rrel_1);
+        if (oper_iter->Next())
+        {
+            ms_context->CreateArc(ScType::EdgeAccessConstPosPerm, Keynodes::active_action, oper_iter->Get(2));
+        }
+        else
+        {
+#ifdef SCP_DEBUG
+            Utils::logSCPError((ScMemoryContext&)ms_context, "Missed initial scp-operator", program);
+#endif
+            ms_context->CreateArc(ScType::EdgeAccessConstPosPerm, Keynodes::question_finished, const_process_node);
+        }
+    }
+    else
+    {
+#ifdef SCP_DEBUG
+        Utils::logSCPError((ScMemoryContext&)ms_context, "Missed scp-process decomposition", program);
+#endif
+        ms_context->CreateArc(ScType::EdgeAccessConstPosPerm, Keynodes::question_finished, const_process_node);
     }
 
     return SC_RESULT_OK;
