@@ -82,11 +82,16 @@ SC_AGENT_IMPLEMENTATION(ASCPProcessDestroyer)
 
 void ASCPProcessDestroyer::deleteSCPVarsSet(ScAddr & setAddr)
 {
+    ScAddrVector elems;
     ScIterator5Ptr it_operand = ms_context->Iterator5(setAddr, ScType::EdgeAccessConstPosPerm, ScType::NodeConst, ScType::EdgeAccessConstPosPerm, Keynodes::rrel_scp_var);
     while (it_operand->Next())
     {
         ScAddr elem = it_operand->Get(2);
-        ms_context->EraseElement(elem);
+        elems.push_back(elem);
+    }
+    for (size_t i = 0; i < elems.size(); i++ )
+    {
+        ms_context->EraseElement(elems[i]);
     }
 }
 
