@@ -77,10 +77,6 @@ SC_AGENT_IMPLEMENTATION(ASCPProcessDestroyer)
     ms_context->EraseElement(decomp_node);
     ms_context->EraseElement(process);
 
-    ScAddr contur;
-    ms_context->HelperFindBySystemIdtf("test_contour1", contur);
-    Utils::printInfo((ScMemoryContext&)ms_context, contur);
-
     return SC_RESULT_OK;
 }
 
