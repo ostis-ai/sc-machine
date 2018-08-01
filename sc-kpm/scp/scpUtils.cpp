@@ -82,7 +82,7 @@ void printSystemIdentifier(ScMemoryContext & ctx, ScAddr const & elemAddr)
         cout << "(";
         printSystemIdentifier(ctx, ctx.GetArcBegin(elemAddr));
         cout << "->";
-        printSystemIdentifier(ctx, ctx.GetArcBegin(elemAddr));
+        printSystemIdentifier(ctx, ctx.GetArcEnd(elemAddr));
         cout << ")";
     }
 }
