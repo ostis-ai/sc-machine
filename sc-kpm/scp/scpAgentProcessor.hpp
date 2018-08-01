@@ -23,18 +23,20 @@ class ASCPAgentActivator : public ScAgent
     SC_CLASS(Agent, Event(Keynodes::active_sc_agent, ScEvent::Type::AddOutputEdge))
     SC_GENERATED_BODY()
 
-private:
-    static concurrent_queue<SCPAgentEvent*> scp_agent_events;
-
-    ScEvent::Type static resolve_event_type(ScMemoryContext & ctx, ScAddr const & event_type_node);
-
 public:
     SC_PROPERTY(Keynode("sc_agent_of_scp_agents_activation"), ForceCreate)
     static ScAddr msAgentKeynode;
 
-    void static register_all_scp_agents(ScMemoryContext & ctx);
-    void static register_scp_agent(ScMemoryContext & ctx, ScAddr &agent_node);
-    void static unregister_all_scp_agents();
+};
+
+class ASCPAgentDeactivator : public ScAgent
+{
+    SC_CLASS(Agent, Event(Keynodes::active_sc_agent, ScEvent::Type::RemoveOutputEdge))
+    SC_GENERATED_BODY()
+
+public:
+    SC_PROPERTY(Keynode("sc_agent_of_scp_agents_deactivation"), ForceCreate)
+    static ScAddr msAgentKeynode;
 
 };
 

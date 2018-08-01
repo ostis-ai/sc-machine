@@ -6,24 +6,24 @@
 
 #pragma once
 
-#include <queue>
+#include <deque>
 #include <boost/thread/mutex.hpp>
 
 namespace scp
 {
 
 template<typename Data>
-class concurrent_queue
+class concurrent_deque
 {
 private:
-    std::queue<Data> the_queue;
+    std::deque<Data> the_queue;
     mutable boost::mutex the_mutex;
 
 public:
     void push(const Data& data)
     {
         boost::mutex::scoped_lock lock(the_mutex);
-        the_queue.push(data);
+        the_queue.push_back(data);
     }
 
     bool empty() const
@@ -47,7 +47,23 @@ public:
     void pop()
     {
         boost::mutex::scoped_lock lock(the_mutex);
-        the_queue.pop();
+        the_queue.pop_front();
+    }
+
+    bool extract(std::function<bool (Data&)> checker, Data& result)
+    {
+        boost::mutex::scoped_lock lock(the_mutex);
+        for (auto it = the_queue.begin(); it != the_queue.end(); )
+        {
+            if (checker(*it))
+            {
+                result = *it;
+                the_queue.erase(it);
+                return true;
+            }
+            ++it;
+        }
+        return false;
     }
 };
 
