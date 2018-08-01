@@ -8,6 +8,7 @@
 #include "scpUtils.hpp"
 #include "scpProcessControlOperatorInterpreter.hpp"
 #include "process_control_operators/SCPOperatorReturn.hpp"
+#include "process_control_operators/SCPOperatorSysWait.hpp"
 #include "sc-memory/cpp/sc_memory.hpp"
 #include <iostream>
 
@@ -30,6 +31,10 @@ SC_AGENT_IMPLEMENTATION(ASCPProcessControlOperatorInterpreter)
     if (type == Keynodes::op_return)
     {
         oper = new SCPOperatorReturn((ScMemoryContext&)ms_context, scp_operator);
+    }
+    if (type == Keynodes::op_sys_wait)
+    {
+        oper = new SCPOperatorSysWait((ScMemoryContext&)ms_context, scp_operator);
     }
     if (oper == nullptr)
         return SC_RESULT_ERROR_INVALID_PARAMS;

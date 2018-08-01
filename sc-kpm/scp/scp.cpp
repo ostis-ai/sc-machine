@@ -16,6 +16,7 @@
 #include "scpProcessControlOperatorInterpreter.hpp"
 #include "scpAgentProcessor.hpp"
 #include "scpAgentEvent.hpp"
+#include "scpWaitEvent.hpp"
 
 using namespace scp;
 
@@ -63,6 +64,7 @@ sc_result scpModule::ShutdownImpl()
     SC_AGENT_UNREGISTER(ASCPAgentDeactivator)
 
     SCPAgentEvent::unregister_all_scp_agents();
+    SCPWaitEvent::unregister_all_sys_wait();
     s_default_ctx.reset();
 
     return SC_RESULT_OK;
