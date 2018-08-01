@@ -3,6 +3,7 @@
 #include "sc-memory/cpp/sc_addr.hpp"
 #include "sc-memory/cpp/sc_object.hpp"
 #include "sc-memory/cpp/kpm/sc_agent.hpp"
+#include "sc-memory/cpp/sc_event.hpp"
 #include "scp.hpp"
 #include "scpKeynodes.hpp"
 #include "scpProcessCreator.hpp"
@@ -13,10 +14,13 @@
 #include "scpIfOperatorInterpreter.hpp"
 #include "scpProgramExecutionSyncronizer.hpp"
 #include "scpProcessControlOperatorInterpreter.hpp"
+#include "scpAgentProcessor.hpp"
 
 using namespace scp;
 
 SC_IMPLEMENT_MODULE(scpModule)
+
+std::unique_ptr<ScMemoryContext> scpModule::s_default_ctx;
 
 sc_result scpModule::InitializeImpl()
 {
@@ -34,12 +38,16 @@ sc_result scpModule::InitializeImpl()
     SC_AGENT_REGISTER(ASCPProgramExecutionSyncronizer)
     SC_AGENT_REGISTER(ASCPProcessControlOperatorInterpreter)
 
+    s_default_ctx.reset(new ScMemoryContext(sc_access_lvl_make_min));
+    ASCPAgentActivator::register_all_scp_agents((ScMemoryContext&)s_default_ctx);
+
     return SC_RESULT_OK;
 }
 
 sc_result scpModule::ShutdownImpl()
 {
     std::cout << "SCP END" << std::endl;
+
     SC_AGENT_UNREGISTER(ASCPProcessCreator)
     SC_AGENT_UNREGISTER(ASCPProcessDestroyer)
     SC_AGENT_UNREGISTER(ASCPGenOperatorInterpreter)
@@ -48,6 +56,9 @@ sc_result scpModule::ShutdownImpl()
     SC_AGENT_UNREGISTER(ASCPIfOperatorInterpreter)
     SC_AGENT_UNREGISTER(ASCPProgramExecutionSyncronizer)
     SC_AGENT_UNREGISTER(ASCPProcessControlOperatorInterpreter)
+
+    ASCPAgentActivator::unregister_all_scp_agents();
+    s_default_ctx.reset();
 
     return SC_RESULT_OK;
 }

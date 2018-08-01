@@ -19,4 +19,7 @@ class scpModule : public ScModule
     virtual sc_result InitializeImpl() override;
     virtual sc_result ShutdownImpl() override;
 
+public:
+    static std::unique_ptr<ScMemoryContext> s_default_ctx;
+
 };
