@@ -36,7 +36,9 @@ private:
     bool isErase = false;
     void resolveModifiers();
     void resolveOrder(ScAddr modifier);
+    void resolveSetOrder(ScAddr modifier);
     uint8_t order = 0;
+    uint8_t set_order = 0;
     ScMemoryContext &ms_context;
 
 public:
@@ -45,6 +47,7 @@ public:
     ScAddr GetValue();
     ScType GetType();
     uint8_t GetOrder();
+    uint8_t GetSetOrder();
     void ResetValue();
     void SetValue(ScAddr value);
     ScAddr CreateNodeOrLink();

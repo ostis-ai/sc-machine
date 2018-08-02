@@ -54,6 +54,11 @@ uint8_t SCPOperand::GetOrder()
     return order;
 }
 
+uint8_t SCPOperand::GetSetOrder()
+{
+    return set_order;
+}
+
 void SCPOperand::ResetValue()
 {
     ScIterator3Ptr iter = ms_context.Iterator3(addr, ScType(sc_type_arc_access | sc_type_arc_pos | sc_type_const), ScType(0));
@@ -149,6 +154,35 @@ void SCPOperand::resolveOrder(ScAddr modifier)
     }
 }
 
+void SCPOperand::resolveSetOrder(ScAddr modifier)
+{
+    if (modifier == Keynodes::rrel_set_1)
+    {
+        set_order = 1;
+        return;
+    }
+    if (modifier == Keynodes::rrel_set_2)
+    {
+        set_order = 2;
+        return;
+    }
+    if (modifier == Keynodes::rrel_set_3)
+    {
+        set_order = 3;
+        return;
+    }
+    if (modifier == Keynodes::rrel_set_4)
+    {
+        set_order = 4;
+        return;
+    }
+    if (modifier == Keynodes::rrel_set_5)
+    {
+        set_order = 5;
+        return;
+    }
+}
+
 void SCPOperand::resolveModifiers()
 {
     ScIterator3Ptr iter = ms_context.Iterator3(ScType::NodeConst, ScType::EdgeAccessConstPosPerm, arc_addr);
@@ -159,6 +193,13 @@ void SCPOperand::resolveModifiers()
         {
             resolveOrder(modifier);
             continue;
+        }
+
+        if (order == 0 && set_order == 0)
+        {
+            resolveSetOrder(modifier);
+            if (set_order > 0)
+                continue;
         }
 
         if (modifier == Keynodes::rrel_scp_const)
