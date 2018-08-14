@@ -113,6 +113,7 @@ ScAddr Keynodes::op_ifFormCont;
 ScAddr Keynodes::op_ifCoin;
 ScAddr Keynodes::op_ifType;
 ScAddr Keynodes::op_varAssign;
+ScAddr Keynodes::op_varErase;
 
 #ifdef SCP_MATH
 ScAddr Keynodes::op_ifEq;

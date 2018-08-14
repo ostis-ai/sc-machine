@@ -289,6 +289,8 @@ public:
 
     SC_PROPERTY(Keynode("varAssign"), ForceCreate)
     static ScAddr op_varAssign;
+    SC_PROPERTY(Keynode("varErase"), ForceCreate)
+    static ScAddr op_varErase;
 
 #ifdef SCP_MATH
     SC_PROPERTY(Keynode("ifEq"), ForceCreate)
