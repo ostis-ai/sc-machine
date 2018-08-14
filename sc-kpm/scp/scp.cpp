@@ -12,6 +12,7 @@
 #include "scpEraseOperatorInterpreter.hpp"
 #include "scpSearchOperatorInterpreter.hpp"
 #include "scpIfOperatorInterpreter.hpp"
+#include "scpPrintOperatorInterpreter.hpp"
 #include "scpProgramExecutionSyncronizer.hpp"
 #include "scpProcessControlOperatorInterpreter.hpp"
 #include "scpAgentProcessor.hpp"
@@ -37,6 +38,7 @@ sc_result scpModule::InitializeImpl()
     SC_AGENT_REGISTER(ASCPEraseOperatorInterpreter)
     SC_AGENT_REGISTER(ASCPSearchOperatorInterpreter)
     SC_AGENT_REGISTER(ASCPIfOperatorInterpreter)
+    SC_AGENT_REGISTER(ASCPPrintOperatorInterpreter)
     SC_AGENT_REGISTER(ASCPProgramExecutionSyncronizer)
     SC_AGENT_REGISTER(ASCPProcessControlOperatorInterpreter)
     SC_AGENT_REGISTER(ASCPAgentActivator)
@@ -58,6 +60,7 @@ sc_result scpModule::ShutdownImpl()
     SC_AGENT_UNREGISTER(ASCPEraseOperatorInterpreter)
     SC_AGENT_UNREGISTER(ASCPSearchOperatorInterpreter)
     SC_AGENT_UNREGISTER(ASCPIfOperatorInterpreter)
+    SC_AGENT_UNREGISTER(ASCPPrintOperatorInterpreter)
     SC_AGENT_UNREGISTER(ASCPProgramExecutionSyncronizer)
     SC_AGENT_UNREGISTER(ASCPProcessControlOperatorInterpreter)
     SC_AGENT_UNREGISTER(ASCPAgentActivator)

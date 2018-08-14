@@ -52,6 +52,7 @@ SC_AGENT_IMPLEMENTATION(ASCPProcessCreator)
     if (!iter_temp->IsValid())
         return SC_RESULT_ERROR_INVALID_PARAMS;
 
+    //!TODO Make all sc-links constant to allow using constant sc-links within scp-program code
     while (iter_temp->Next())
     {
         ScAddr order;
