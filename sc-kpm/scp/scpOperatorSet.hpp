@@ -24,6 +24,7 @@ protected:
 public:
     SCPOperatorSetStr3(ScMemoryContext &ctx, ScAddr addr);
     sc_result Parse();
+    ~SCPOperatorSetStr3();
 };
 
 class SCPOperatorSetStr5: public SCPOperator
@@ -34,6 +35,7 @@ protected:
 public:
     SCPOperatorSetStr5(ScMemoryContext &ctx, ScAddr addr);
     sc_result Parse();
+    ~SCPOperatorSetStr5();
 };
 
 }

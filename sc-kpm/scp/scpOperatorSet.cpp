@@ -102,6 +102,14 @@ sc_result SCPOperatorSetStr3::Parse()
     }
 }
 
+SCPOperatorSetStr3::~SCPOperatorSetStr3()
+{
+    for (std::vector<SCPOperand*>::iterator i = set_operands.begin(); i != set_operands.end(); ++i)
+    {
+        delete *i;
+    }
+}
+
 SCPOperatorSetStr5::SCPOperatorSetStr5(ScMemoryContext &ctx_, ScAddr addr_): SCPOperator(ctx_, addr_)
 {
     operands = std::vector<SCPOperand*>(5);
@@ -181,6 +189,14 @@ sc_result SCPOperatorSetStr5::Parse()
 #endif
         FinishExecutionWithError();
         return SC_RESULT_ERROR_INVALID_PARAMS;
+    }
+}
+
+SCPOperatorSetStr5::~SCPOperatorSetStr5()
+{
+    for (std::vector<SCPOperand*>::iterator i = set_operands.begin(); i != set_operands.end(); ++i)
+    {
+        delete *i;
     }
 }
 
