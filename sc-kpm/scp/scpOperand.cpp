@@ -324,33 +324,6 @@ void SCPOperand::resolveModifiers()
             element_type = ScType(element_type | ScType::EdgeAccessConstPosPerm);
             continue;
         }
-
-        if (modifier == Keynodes::rrel_set_1)
-        {
-            order = 6;
-            continue;
-        }
-        if (modifier == Keynodes::rrel_set_2)
-        {
-            order = 7;
-            continue;
-        }
-        if (modifier == Keynodes::rrel_set_3)
-        {
-            order = 8;
-            continue;
-        }
-        if (modifier == Keynodes::rrel_set_4)
-        {
-            order = 9;
-            continue;
-        }
-        if (modifier == Keynodes::rrel_set_5)
-        {
-            order = 10;
-            continue;
-        }
-
     }
 }
 
