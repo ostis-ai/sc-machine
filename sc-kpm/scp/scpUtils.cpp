@@ -52,6 +52,57 @@ bool resolveOrderRoleRelation(ScMemoryContext & ctx, ScAddr const &arcAddr, ScAd
     return false;
 }
 
+bool resolveOrderRoleRelation(ScMemoryContext & ctx, uint8_t const order, ScAddr &relationAddr)
+{
+    switch (order)
+    {
+    case 1:
+        relationAddr = Keynodes::rrel_1;
+        return true;
+        break;
+    case 2:
+        relationAddr = Keynodes::rrel_2;
+        return true;
+        break;
+    case 3:
+        relationAddr = Keynodes::rrel_3;
+        return true;
+        break;
+    case 4:
+        relationAddr = Keynodes::rrel_4;
+        return true;
+        break;
+    case 5:
+        relationAddr = Keynodes::rrel_5;
+        return true;
+        break;
+    case 6:
+        relationAddr = Keynodes::rrel_6;
+        return true;
+        break;
+    case 7:
+        relationAddr = Keynodes::rrel_7;
+        return true;
+        break;
+    case 8:
+        relationAddr = Keynodes::rrel_8;
+        return true;
+        break;
+    case 9:
+        relationAddr = Keynodes::rrel_9;
+        return true;
+        break;
+    case 10:
+        relationAddr = Keynodes::rrel_10;
+        return true;
+        break;
+    default:
+        relationAddr.Reset();
+        return false;
+        break;
+    }
+}
+
 bool resolveOperatorType(ScMemoryContext & ctx, ScAddr const &operatorAddr, ScAddr &operatorType)
 {
     ScIterator3Ptr it = ctx.Iterator3(ScType::NodeConst, ScType::EdgeAccess, operatorAddr);

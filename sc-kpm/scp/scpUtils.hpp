@@ -32,6 +32,11 @@ bool removeFromSet(ScMemoryContext & ctx, ScAddr const & setAddr, ScAddr const &
  */
 bool resolveOrderRoleRelation(ScMemoryContext & ctx, ScAddr const & arcAddr, ScAddr &relationAddr);
 
+/*! Resolves order role relation (1'-10') (relationAddr) by given number (order)
+ * @returns true, if relation resolved
+ */
+bool resolveOrderRoleRelation(ScMemoryContext & ctx, uint8_t const order, ScAddr &relationAddr);
+
 /*! Resolves atomic operator type (operatorType) of given operator (operatorAddr)
  * @returns true, if relation resolved
  */
