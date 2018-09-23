@@ -1,5 +1,6 @@
 """This module implements http API for SmartHome
 """
+import asyncio
 import os
 import threading
 import tornado
@@ -88,6 +89,8 @@ class ServerThread(threading.Thread):
     ])
 
   def run(self):
+    asyncio.set_event_loop(asyncio.new_event_loop())
+
     self.running = True
     self.app.listen(self.port)
 
