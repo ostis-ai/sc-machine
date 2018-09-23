@@ -1,6 +1,3 @@
-## Setup Java
-
-Use package: https://support.apple.com/kb/dl1572?locale=en_US
 
 ## Clone
 
@@ -9,7 +6,13 @@ git clone https://github.com/ostis-dev/sc-machine.git
 cd sc-machine
 ```
 
-### Install dependencies
+## Install dependencies
+
+### Setup Java
+
+Use package: https://support.apple.com/kb/dl1572?locale=en_US
+
+### Setup build packages with brew
 
 ```sh
 cd scripts

@@ -58,7 +58,13 @@ sc_result sc_ext_initialize(const sc_char *ext_dir_path, const sc_char ** enable
   GDir *ext_dir = null_ptr;
   const gchar *file_name = 0;
   fModuleFunc func = 0;
-  
+
+#if SC_PLATFORM_MAC
+  const gchar * moduleSuffix = "dylib";
+#else
+  const gchar * moduleSuffix = G_MODULE_SUFFIX;
+#endif
+
   // doesn't need to initialize extensions
   if (ext_dir_path == null_ptr)
     return SC_RESULT_OK;
@@ -93,9 +99,9 @@ sc_result sc_ext_initialize(const sc_char *ext_dir_path, const sc_char ** enable
       while (enabled_list[i] != null_ptr)
       {
         const sc_char * name = enabled_list[i];
-        if (g_str_has_prefix(file_name, name) && g_str_has_suffix(file_name, G_MODULE_SUFFIX))
+        if (g_str_has_prefix(file_name, name) && g_str_has_suffix(file_name, moduleSuffix))
         {
-          shouldSkip = (strlen(file_name) != (strlen(name) + strlen(G_MODULE_SUFFIX) + 1));
+          shouldSkip = (strlen(file_name) != (strlen(name) + strlen(moduleSuffix) + 1));
         }
 
         ++i;
@@ -117,7 +123,7 @@ sc_result sc_ext_initialize(const sc_char *ext_dir_path, const sc_char ** enable
     }
 
     // skip non module files
-    if (g_str_has_suffix(file_name, G_MODULE_SUFFIX) == TRUE)
+    if (g_str_has_suffix(file_name, moduleSuffix) == TRUE)
     {
       if (g_module_symbol(mi->ptr, "sc_module_initialize", (gpointer*) &func) == FALSE)
       {

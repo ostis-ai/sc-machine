@@ -124,7 +124,7 @@ sc_segment* _sc_segment_cache_get(const sc_memory_context *ctx)
   }
 
   // try to update cache
-  _sc_segment_cache_update(ctx);
+  _sc_segment_cache_update();
 
   // if element still not added, then create new segment and append element into it
   sc_int32 seg_num = g_atomic_int_add(&segments_num, 1);

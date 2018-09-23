@@ -60,9 +60,9 @@ sc_uint8 _checksum_get_size()
   return (sc_uint8)g_checksum_type_get_length(_checksum_type());
 }
 
-gchar * _checksum_seg(sc_segment const * seg)
+guint8 * _checksum_seg(sc_segment const * seg)
 {
-  gchar * result = null_ptr;
+  guint8 * result = null_ptr;
   gsize length = 0;
   GChecksum * checksum = g_checksum_new(_checksum_type());
   g_assert(seg);
@@ -73,7 +73,7 @@ gchar * _checksum_seg(sc_segment const * seg)
     g_checksum_update(checksum, (guchar*)(&seg->elements[0]), SC_SEG_ELEMENTS_SIZE_BYTE);
 
     length = _checksum_get_size();
-    result = g_new0(gchar, length);
+    result = g_new0(guint8, length);
     g_checksum_get_digest(checksum, result, &length);
     g_assert( length == _checksum_get_size() );
   }
@@ -352,7 +352,7 @@ static GIOChannel * _open_tmp_file(gchar ** tmp_file_name)
 {
   GIOChannel * result;
 
-  *tmp_file_name = g_strdup_printf("%s/segments_%lu", repo_path, g_get_real_time());
+  *tmp_file_name = g_strdup_printf("%s/segments_%lu", repo_path, (unsigned long)g_get_real_time());
 
   result = g_io_channel_new_file(*tmp_file_name, "w", null_ptr);
 
@@ -372,7 +372,11 @@ sc_bool sc_fs_storage_write_to_path(sc_segment **segments)
 
   if (!g_file_test(repo_path, G_FILE_TEST_IS_DIR))
   {
-    if (g_mkdir_with_parents(repo_path, 0) == -1)
+    int mode = 0;
+#if SC_PLATFORM_LINUX || SC_PLATFORM_MAC
+    mode = 755;
+#endif
+    if (g_mkdir_with_parents(repo_path, mode) == -1)
     {
       g_error("Can't create a directory %s", repo_path);
       return SC_FALSE;

@@ -541,7 +541,6 @@ sc_bool sc_iterator5_next(sc_iterator5 *it)
 sc_addr sc_iterator5_value(sc_iterator5 *it, sc_uint vid)
 {
   g_assert(it != 0);
-  g_assert(it->results != 0);
   g_assert(vid < 5);
 
   return it->results[vid];

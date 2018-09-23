@@ -76,18 +76,20 @@ include_directories(
 
 # find dependencies
 if (${APPLE})
-    find_package(Boost 1.54 REQUIRED COMPONENTS filesystem python36)
+    find_package(Boost 1.54 REQUIRED COMPONENTS filesystem python37)
 
-    find_package(glib2 REQUIRED)
-#    find_package(glib2_module REQUIRED)
-    set (GLIB2_LIBRARIES "glib-2.0" "gmodule-2.0")
+    find_package(PkgConfig REQUIRED)
+    pkg_search_module(GLIB2 REQUIRED glib-2.0)
+    pkg_search_module(GLIB2_MODULE REQUIRED gmodule-2.0)
+
+    set (GLIB2_LIBRARIES ${GLIB_LDFLAGS} ${GLIB2_MODULE_LDFLAGS})
 
     find_package(hiredis REQUIRED)
 
     set(LIBCLANG_LLVM_CONFIG_EXECUTABLE "/usr/local/opt/llvm/bin/llvm-config")
     find_package(LibClang REQUIRED)
 
-    find_package(PythonLibs 3.6 REQUIRED)
+    find_package(PythonLibs 3.7 REQUIRED)
     find_package(curl REQUIRED)
 
     set (LIBCURL_LIBRARIES ${CURL_LIBRARIES})

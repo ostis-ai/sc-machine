@@ -267,7 +267,9 @@ sc_iterator3* sc_iterator3_new(const sc_memory_context *ctx, sc_iterator3_type t
       return (sc_iterator3*)0;
     }
     break;
-    
+
+  default:
+    break;
   };
 
   sc_iterator3 *it = g_new0(sc_iterator3, 1);
@@ -326,6 +328,9 @@ void sc_iterator3_free(sc_iterator3 *it)
     sc_storage_element_unref(it->params[0].addr);
     sc_storage_element_unref(it->params[1].addr);
     sc_storage_element_unref(it->params[2].addr);
+    break;
+
+  default:
     break;
   }
 
@@ -582,7 +587,7 @@ sc_bool _sc_iterator3_a_f_a_next(sc_iterator3 * it)
     it->results[0] = arc_el->arc.begin;
     it->results[2] = arc_el->arc.end;
     STORAGE_CHECK_CALL(sc_storage_element_unlock(it->params[1].addr));
-    
+
     return SC_TRUE;
   }
 
@@ -693,6 +698,9 @@ sc_bool sc_iterator3_next(sc_iterator3 *it)
 
   case sc_iterator3_f_f_f:
     return _sc_iterator3_f_f_f_next(it);
+
+  default:
+    break;
   };
 
   return SC_FALSE;
@@ -701,7 +709,6 @@ sc_bool sc_iterator3_next(sc_iterator3 *it)
 sc_addr sc_iterator3_value(sc_iterator3 *it, sc_uint vid)
 {
   g_assert(it != 0);
-  g_assert(it->results != 0);
   g_assert(vid < 3);
 
   return it->results[vid];
