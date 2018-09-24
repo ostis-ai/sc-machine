@@ -7,7 +7,7 @@ const outputPath = path.resolve(__dirname, 'build');
 module.exports = {
   mode: 'none',
   entry: {
-    app: './src/index.tsx'
+    app: './src/index.ts'
   },
   module: {
     rules: [

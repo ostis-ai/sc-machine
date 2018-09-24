@@ -1,17 +1,28 @@
 import { ScNet, ScType, ScAddr, ScTemplate, 
          ScTemplateSearchResult, ScTemplateResult, ScLinkContent } from '@ostis/sc-core';
 import { ServerKeynodes } from './ServerKeynodes';
-import { ServerBase, Store } from './ServerBase';
-
-import * as actions from '../../store/actions/kbViewActions';
+import { ServerBase } from './ServerBase';
+import { KBTemplate } from '../types';
 
 export class ServerTemplates extends ServerBase {
 
-  constructor(client: ScNet, keynodes: ServerKeynodes, store: Store) {
-    super(client, keynodes, store);
+  private _templates: KBTemplate[] = [];
+
+  constructor(client: ScNet, keynodes: ServerKeynodes) {
+    super(client, keynodes);
   }
 
   public async Initialize(): Promise<boolean> {
+  
+    this._templates = await this.LoadTemplatesFromKB();
+
+    return new Promise<boolean>(function (resolve) {
+      resolve(true);
+    });
+  }
+
+  public async LoadTemplatesFromKB() : Promise<KBTemplate[]> {
+
     // find all templates
     const user: ScAddr = this.keynodes.kTestUser;
 
@@ -70,20 +81,31 @@ export class ServerTemplates extends ServerBase {
     });
 
     // get titles
+    let templates: KBTemplate[] = [];
     if (titleAddrs.length > 0) {
       const titles: ScLinkContent[] = await self.client.GetLinkContents(titleAddrs);
       const scsValues: ScLinkContent[] = await self.client.GetLinkContents(scsAddrs);
 
       for (let i = 0; i < titles.length; ++i) {
-        const title: string = titles[i].data as string;
-        const scs: string = scsValues[i].data as string;
-
-        this.store.dispatch(actions.addTemplate(title, true, scs));
+        templates.push({
+          addr: usedTemplates[i],
+          title: titles[i].data as string,
+          scsContent: scsValues[i].data as string,
+        });
       }
     }
-
-    return new Promise<boolean>(function (resolve) {
-      resolve(true);
+    
+    return new Promise<KBTemplate[]>(function(resolve) {
+      resolve(templates);
     });
   }
+
+  public async DoSearch(scsTempl: string): Promise<ScTemplateSearchResult> {
+
+    const result: ScTemplateSearchResult = await this.client.TemplateSearch(scsTempl);
+
+    return new Promise<ScTemplateSearchResult>(function (resolve) {
+      resolve(result);
+    });
+  };
 };

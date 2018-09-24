@@ -45,8 +45,18 @@
     box-sizing: content-box;
 }
 
+.hidden {
+    display: none !important;
+}
+
 .base-page {
-    height: 100%;
+    height: calc(100% - 175px);
+    width: 100% !important;
+}
+
+.base-page h2 {
+    padding-left: 25px !important;
+    padding-top: 20px !important;
 }
 
 .common-view {
@@ -61,7 +71,7 @@
 }
 
 /* SCs-editor */
-#scs-editor-kb {
+.scs-editor-container {
     width: 100%;
     margin-bottom: 1px;
     padding-right: 1px;
