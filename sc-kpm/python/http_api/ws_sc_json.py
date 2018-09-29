@@ -84,10 +84,9 @@ class ScJsonSocketHandler(websocket.WebSocketHandler):
         status = True
       else:
         response_payload = "Unsupported request type: {}".format(request_type)
-    except:
-      response_payload = sys.exc_info()[0]
+    except RuntimeError as ex:
+      response_payload = str(ex).split('File')[0]
       print("Unexpected error:", response_payload)
-      traceback.print_exc(file=sys.stdout)
     finally:
       pass
 
