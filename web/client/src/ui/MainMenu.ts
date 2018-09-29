@@ -31,11 +31,11 @@ class MenuItem {
   }
 
   public set OnClick(func: ClickFunction) {
-    this._item.addEventListener('click', () => {
+    this._item.onclick = () => {
       if (func) {
         func();
       }
-    });
+    };
   }
 }
 

@@ -1,5 +1,7 @@
+import { ScAddr } from "@ostis/sc-core";
+
 export interface KBTemplate {
-  addr: number,
+  addr: ScAddr,
   scsContent: string,
   title: string,
 }

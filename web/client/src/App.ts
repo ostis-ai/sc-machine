@@ -33,8 +33,9 @@ export class App {
   }
 
   private constructor() {
-    this.InitUI();
+  }
 
+  public Initialize() {
     this._serverRoot = new ServerRoot(
       'ws://localhost:8090/ws_json',
       {
@@ -43,13 +44,20 @@ export class App {
         initializedCallback: this.OnServerInitialized.bind(this),
       }
     );
+
+    this.InitDimmer();
+    this._serverRoot.Start();
+    this.InitUI();
+  }
+
+  private InitDimmer() {
+    const mainDiv: HTMLElement = document.getElementById('content');
+    this._dimmer = new PageDimmer(mainDiv);
+    this._dimmer.Show();
   }
 
   private InitUI() {
     const mainDiv: HTMLElement = document.getElementById('content');
-    this._dimmer = new PageDimmer(mainDiv);
-    this._dimmer.Show();
-
     this._mainMenu = new MainMenu(mainDiv);
 
     // create views

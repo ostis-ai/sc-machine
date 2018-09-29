@@ -16,6 +16,8 @@ interface ServerCallbacks {
 
 export class ServerRoot {
   private _client: ScNet = null;
+  private _url: string = '';
+
   private _callbackChangeInitState: CallbackChangeInitState = null;
   private _callbackChangeNetworkState: CallbackChangeNetworkState = null;
   private _callbackInitialized: CallbackInitialized = null;
@@ -29,12 +31,15 @@ export class ServerRoot {
    */
   constructor(url: string, callbacks: ServerCallbacks) {
 
+    this._url = url;
     this._callbackChangeInitState = callbacks.changeInitStateCallback;
     this._callbackChangeNetworkState = callbacks.changeNetworkStateCallback;
     this._callbackInitialized = callbacks.initializedCallback;
+  }
 
+  public Start() {
     this.NotifyChangeInitState('Connect to knowledge base');
-    this._client = new ScNet(url, this.OnConnected.bind(this), this.OnDisconnected.bind(this), this.OnError.bind(this));
+    this._client = new ScNet(this._url, this.OnConnected.bind(this), this.OnDisconnected.bind(this), this.OnError.bind(this));
 
     this._serverKeynodes = new ServerKeynodes(this._client);
     this._serverTemplates = new ServerTemplates(this._client, this._serverKeynodes);
@@ -65,7 +70,7 @@ export class ServerRoot {
 
   }
 
-  public async Initialize(): Promise<boolean> {
+  private async Initialize(): Promise<boolean> {
     const self = this;
 
     this.NotifyChangeInitState('Initialize keynodes');

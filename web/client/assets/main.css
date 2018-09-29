@@ -77,3 +77,15 @@
     padding-right: 1px;
     height: calc(100% - 95px);
 }
+
+.ui.list .item.selected {
+    background-color: #1B1C1D !important;
+}
+
+.ui.list .item.selected .description {
+    color: #fff !important;
+}
+
+.ui.list .item.selected:hover {
+    background-color: #404142 !important;
+}

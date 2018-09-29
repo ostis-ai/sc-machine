@@ -4,9 +4,14 @@ import { ServerKeynodes } from './ServerKeynodes';
 import { ServerBase } from './ServerBase';
 import { KBTemplate } from '../types';
 
+export abstract class ServerTemplatesListener {
+  public abstract OnTemplatesChanged(newTemplates: KBTemplate[]);
+};
+
 export class ServerTemplates extends ServerBase {
 
   private _templates: KBTemplate[] = [];
+  private _listeners: ServerTemplatesListener[] = [];
 
   constructor(client: ScNet, keynodes: ServerKeynodes) {
     super(client, keynodes);
@@ -15,9 +20,39 @@ export class ServerTemplates extends ServerBase {
   public async Initialize(): Promise<boolean> {
   
     this._templates = await this.LoadTemplatesFromKB();
+    this.NotifyAllListeners();
 
     return new Promise<boolean>(function (resolve) {
       resolve(true);
+    });
+  }
+
+  public get templates() :  KBTemplate[] {
+    return this._templates;
+  }
+
+  public AddListener(listener: ServerTemplatesListener) {
+    if (this._listeners.indexOf(listener) === -1) {
+      this._listeners.push(listener);
+      this.NotifyListener(listener);
+    }
+  }
+
+  public RemoveListener(listener: ServerTemplatesListener) {
+    const index = this._listeners.indexOf(listener);
+    if (index > -1) {
+      this._listeners.splice(index, 1);
+    }
+  }
+
+  private NotifyListener(listener: ServerTemplatesListener) {
+    listener.OnTemplatesChanged(this._templates);
+  }
+
+  private NotifyAllListeners() {
+    const self = this;
+    this._listeners.forEach(listener => {
+      self.NotifyListener(listener);
     });
   }
 
@@ -63,32 +98,34 @@ export class ServerTemplates extends ServerBase {
     const result: ScTemplateSearchResult = await this.client.TemplateSearch(templ);
     
     // collect templates data
-    const usedTemplates: number[] = [];
+    const templateAddrs: ScAddr[] = [];
     const titleAddrs: ScAddr[] = [];
     const scsAddrs: ScAddr[] = [];
     result.forEach((r: ScTemplateResult) => {
       const t: ScAddr = r.Get('_templ');
+      templateAddrs.push(t);
 
-      if (usedTemplates.indexOf(t.value) < 0) {
-        usedTemplates.push(t.value);
+      const title: ScAddr = r.Get('_title');
+      titleAddrs.push(title);
 
-        const title: ScAddr = r.Get('_title');
-        titleAddrs.push(title);
-
-        const scs: ScAddr = r.Get('_scs_templ');
-        scsAddrs.push(scs);
-      }
+      const scs: ScAddr = r.Get('_scs_templ');
+      scsAddrs.push(scs);
     });
 
     // get titles
-    let templates: KBTemplate[] = [];
+    let templates: KBTemplate[] = [{
+      title: 'Unknown',
+      addr: new ScAddr(),
+      scsContent: '/* Write your template there using SCs-code: \n * http://ostis-dev.github.io/sc-machine/other/scs/ \n */\n',
+    }];
+    
     if (titleAddrs.length > 0) {
       const titles: ScLinkContent[] = await self.client.GetLinkContents(titleAddrs);
       const scsValues: ScLinkContent[] = await self.client.GetLinkContents(scsAddrs);
 
       for (let i = 0; i < titles.length; ++i) {
         templates.push({
-          addr: usedTemplates[i],
+          addr: templateAddrs[i],
           title: titles[i].data as string,
           scsContent: scsValues[i].data as string,
         });
