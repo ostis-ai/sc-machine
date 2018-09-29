@@ -87,5 +87,12 @@
 }
 
 .ui.list .item.selected:hover {
-    background-color: #404142 !important;
+    background-color: #1B1C1D !important;
+}
+
+/* SCg-viewer */
+#kb-scg-viewer {
+    border: #1B1C1D 1px solid;
+    padding: 0 0 0 0 !important;
+    margin-right: 30px;
 }

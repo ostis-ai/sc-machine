@@ -41,8 +41,8 @@
     "webpack-merge": "^4.1.3"
   },
   "dependencies": {
-    "@ostis/sc-core": "^0.2.1",
-    "@ostis/scg-js-editor": "^0.2.0",
+    "@ostis/sc-core": "^0.2.5",
+    "@ostis/scg-js-editor": "^0.2.7",
     "@ostis/scs-js-editor": "^0.1.4",
     "config": "^1.26.1",
     "immutable": "^3.8.1",

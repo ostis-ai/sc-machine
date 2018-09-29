@@ -1,16 +1,19 @@
 import { SCsEditor } from "@ostis/scs-js-editor";
 import { App } from "../../App";
-import { ServerTemplates } from "../../utils/server";
 import { ServerTemplatesListener } from "../../utils/server/ServerTemplates";
 import { KBTemplate } from "../../utils/types";
-import { ScAddr } from "@ostis/sc-core";
+import { ScAddr, ScTemplateSearchResult } from "@ostis/sc-core";
 
+
+type OnNewSearchRequestCallback = (scsText: string) => Promise<boolean>;
 
 export class SCsInputContainer extends ServerTemplatesListener {
 
   private _container: HTMLElement = null;
   private _scsEditor: SCsEditor = null;
   private _activeTemplate: ScAddr = null;
+
+  private _onNewSeachRequestCallback: OnNewSearchRequestCallback = null;
 
   constructor(parent: HTMLElement) {
     super();
@@ -49,6 +52,14 @@ export class SCsInputContainer extends ServerTemplatesListener {
       <button class="ui green left bottom attached button" scs-search>Search</button>
       <button class="ui red right bottom attached button" scs-generate>Generate</button>
     `;
+
+    this.scsSearchButton.onclick = () => {
+      this.DoSearch(this._scsEditor.content);
+    }
+
+    this.scsGenerateButton.onclick = () => {
+      this.DoGenerate(this._scsEditor.content);
+    }
   }
 
   private get scsListContainer() : HTMLElement {
@@ -60,11 +71,15 @@ export class SCsInputContainer extends ServerTemplatesListener {
   }
 
   private get scsSearchButton() : HTMLElement {
-    return this._container.querySelector('button[scs-search]');
+    return this.scsEditorContainer.querySelector('button[scs-search]');
   }
 
   private get scsGenerateButton() : HTMLElement {
-    return this._container.querySelector('gutton[scs-generate]');
+    return this.scsEditorContainer.querySelector('button[scs-generate]');
+  }
+
+  public set onNewSearchRequest(callback: OnNewSearchRequestCallback) {
+    this._onNewSeachRequestCallback = callback;
   }
 
   private OnTemplateSelected(templAddr: ScAddr) {
@@ -118,6 +133,20 @@ export class SCsInputContainer extends ServerTemplatesListener {
     if (!this._activeTemplate && newTemplates.length > 0) {
       this.OnTemplateSelected(newTemplates[0].addr);
     }
+  }
+
+  public async DoSearch(scsContent: string) : Promise<void> {
+    if (this._onNewSeachRequestCallback) {
+      const result: boolean = await this._onNewSeachRequestCallback(this._scsEditor.content);
+    }
+
+    return new Promise<void>((resolve) => {
+      resolve();
+    });
+  }
+
+  public DoGenerate(scsContent: string) {
+
   }
 
 };

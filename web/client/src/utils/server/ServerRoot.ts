@@ -94,4 +94,8 @@ export class ServerRoot {
   public get templates() : ServerTemplates {
     return this._serverTemplates;
   }
+
+  public get client() : ScNet {
+    return this._client;
+  }
 };

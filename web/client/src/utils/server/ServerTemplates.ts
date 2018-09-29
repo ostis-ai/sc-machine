@@ -3,6 +3,7 @@ import { ScNet, ScType, ScAddr, ScTemplate,
 import { ServerKeynodes } from './ServerKeynodes';
 import { ServerBase } from './ServerBase';
 import { KBTemplate } from '../types';
+import { SCgStruct } from '@ostis/scg-js-editor';
 
 export abstract class ServerTemplatesListener {
   public abstract OnTemplatesChanged(newTemplates: KBTemplate[]);
@@ -139,10 +140,61 @@ export class ServerTemplates extends ServerBase {
 
   public async DoSearch(scsTempl: string): Promise<ScTemplateSearchResult> {
 
-    const result: ScTemplateSearchResult = await this.client.TemplateSearch(scsTempl);
+    const searchResult: ScTemplateSearchResult = await this.client.TemplateSearch(scsTempl);
 
     return new Promise<ScTemplateSearchResult>(function (resolve) {
-      resolve(result);
+      resolve(searchResult);
     });
   };
+
+  public async MakeSCgStruct(data: ScTemplateResult[]) : Promise<SCgStruct> {
+    const result: SCgStruct = new SCgStruct();
+
+    let values: number[] = [];
+    let addrs: ScAddr[] = [];
+    data.forEach(item => {
+      for (let i = 0; i < item.size; ++i) {
+        const a: ScAddr = item.Get(i);
+        
+        if (values.indexOf(a.value) === -1) {
+          values.push(a.value);
+          addrs.push(a);
+        }
+      }
+    });
+
+    // collect elements type
+    const types: ScType[] = await this.client.CheckElements(addrs);
+
+    // insert all nodes
+    const edgeTypes: Map<number, ScType> = new Map<number, ScType>();
+    for (let i = 0; i < types.length; ++i) {
+      const a: ScAddr = addrs[i];
+      const t: ScType = types[i];
+      if (t.isNode()) {
+        result.AddObject({
+          addr: a,
+          type: t,
+        })
+      } else if (t.isEdge()) {
+        edgeTypes.set(a.value, t);
+      }
+    }
+
+    // insert edges
+    data.forEach(item => {
+      item.ForEachTriple((src: ScAddr, edge: ScAddr, trg: ScAddr) => {
+        result.AddObject({
+          addr: edge,
+          type: edgeTypes.get(edge.value),
+          src: src,
+          trg: trg
+        });
+      });
+    });
+
+    return new Promise<SCgStruct>((resolve) => {
+      resolve(result);
+    });
+  }
 };
