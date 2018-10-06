@@ -76,7 +76,8 @@ include_directories(
 
 # find dependencies
 if (${APPLE})
-    find_package(Boost 1.54 REQUIRED COMPONENTS filesystem python37)
+    set(Boost_USE_STATIC_LIBS ON)
+    find_package(Boost 1.67 REQUIRED COMPONENTS filesystem python37 program_options regex)
 
     find_package(PkgConfig REQUIRED)
     pkg_search_module(GLIB2 REQUIRED glib-2.0)
@@ -234,7 +235,7 @@ endif(${APPLE})
 
 message ("Python version: ${PYTHONLIBS_VERSION_STRING}")
 
-include_directories(${SC_MACHINE_ROOT} ${GLIB2_INCLUDE_DIRS})
+include_directories(${SC_MACHINE_ROOT} ${GLIB2_INCLUDE_DIRS} ${Boost_INCLUDE_DIR})
 
 add_subdirectory(${SC_MACHINE_ROOT}/sc-memory)
 add_subdirectory(${SC_MACHINE_ROOT}/sc-fm)

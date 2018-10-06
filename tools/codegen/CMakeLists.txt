@@ -54,11 +54,10 @@ if (${WIN32})
     set (BOOST_LIBS_LIST )
 else()
     set (BOOST_LIBS_LIST
-            boost_filesystem
-            boost_program_options
-            boost_system
-            boost_regex)
-
+			Boost::filesystem
+			Boost::program_options
+			Boost::regex)
+			
 	set_target_properties(sc-code-generator PROPERTIES COMPILE_FLAGS ${LIBCLANG_CXXFLAGS})
 endif (${WIN32})
 
