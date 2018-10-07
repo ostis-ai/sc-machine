@@ -26,13 +26,19 @@ set (SOURCES_C
 
 if (${WIN32})
 	set (BOOST_LIBS_LIST )
-else()
+elseif (${APPLE})
  	set (BOOST_LIBS_LIST
- 			Boost::filesystem 
- 			Boost::program_options 
- 			Boost::system)
+ 				Boost::filesystem 
+ 				Boost::program_options 
+				 Boost::system
+			)
+else()
+	set (BOOST_LIBS_LIST
+ 				boost_filesystem 
+ 				boost_program_options 
+				 boost_system
+			)
 endif (${WIN32})
-
 	
 add_executable(sc-builder ${SOURCES} ${SOURCES_C} ${HEADERS})
 include_directories(${SC_MEMORY_SRC} ${GLIB2_INCLUDE_DIRS})
