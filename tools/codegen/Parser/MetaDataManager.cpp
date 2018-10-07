@@ -3,6 +3,8 @@
 
 #include <boost/regex.hpp>
 
+#include <iostream>
+
 MetaDataManager::MetaDataManager(Cursor const & cursor)
 {
   m_lineNumber = cursor.GetLineNumber() - 1;
@@ -11,7 +13,8 @@ MetaDataManager::MetaDataManager(Cursor const & cursor)
     if (child.GetKind() != CXCursor_AnnotateAttr)
       continue;
 
-    for (auto &prop : extractProperties(child))
+    auto const props = ExtractProperties(child);
+    for (auto &prop : props)
       m_properties[prop.first] = prop.second;
   }
 }
@@ -104,7 +107,7 @@ std::string MetaDataManager::GetNativeString(std::string const & key) const
   return search->second;
 }
 
-std::vector<MetaDataManager::Property> MetaDataManager::extractProperties(Cursor const & cursor) const
+std::vector<MetaDataManager::Property> MetaDataManager::ExtractProperties(Cursor const & cursor) const
 {
   std::vector<Property> properties;
 
@@ -133,18 +136,10 @@ std::vector<MetaDataManager::Property> MetaDataManager::extractProperties(Cursor
   boost::match_results<std::string::const_iterator> match;
 
   auto meta = cursor.GetDisplayName();
-
   auto start = meta.cbegin();
 
   // collect properties and optional arguments
-  while (boost::regex_search(
-           start,
-           meta.cend(),
-           match,
-           propertyList,
-           flags
-           )
-         )
+  while (boost::regex_search(start, meta.cend(), match, propertyList, flags))
   {
     auto name = match[1].str();
     auto arguments = match[3].str();

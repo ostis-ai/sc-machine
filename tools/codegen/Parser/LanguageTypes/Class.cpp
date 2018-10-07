@@ -60,30 +60,24 @@ Class::Class(const Cursor &cursor, const Namespace &currentNamespace)
 
       // constructor
     case CXCursor_Constructor:
-      m_constructors.emplace_back(
-            new Constructor(child, currentNamespace, this)
-            );
+      m_constructors.emplace_back(new Constructor(child, currentNamespace, this));
       break;
 
       // field
     case CXCursor_FieldDecl:
-      m_fields.emplace_back(
-            new Field(child, currentNamespace, this)
-            );
+      m_fields.emplace_back(new Field(child, currentNamespace));
       break;
 
       // static field
     case CXCursor_VarDecl:
-      m_staticFields.emplace_back(
-            new Global(child, Namespace(), this)
-            );
+      m_staticFields.emplace_back(new Global(child, Namespace(), this));
       break;
 
       // method / static method
     case CXCursor_CXXMethod:
       if (child.IsStatic())
       {
-        m_staticMethods.emplace_back(new Function(child, Namespace(), this));
+        m_staticMethods.emplace_back(new Function(child, Namespace()));
       }
       else
       {
@@ -95,7 +89,7 @@ Class::Class(const Cursor &cursor, const Namespace &currentNamespace)
         }
         else
         {
-          m_methods.emplace_back(new Method(child, currentNamespace, this));
+          m_methods.emplace_back(new Method(child, currentNamespace));
         }
       }
       break;
@@ -107,27 +101,6 @@ Class::Class(const Cursor &cursor, const Namespace &currentNamespace)
   }
 
   m_metaData.Check();
-}
-
-Class::~Class(void)
-{
-  for (auto *baseClass : m_baseClasses)
-    delete baseClass;
-
-  for (auto *constructor : m_constructors)
-    delete constructor;
-
-  for (auto *field : m_fields)
-    delete field;
-
-  for (auto *staticField : m_staticFields)
-    delete staticField;
-
-  for (auto *method : m_methods)
-    delete method;
-
-  for (auto *staticMethod : m_staticMethods)
-    delete staticMethod;
 }
 
 bool Class::ShouldGenerate(void) const
@@ -148,9 +121,8 @@ bool Class::IsActionAgent() const
 
 bool Class::IsModule() const
 {
-  for (tBaseClassVector::const_iterator it = m_baseClasses.begin(); it != m_baseClasses.end(); ++it)
+  for (auto const & baseClass : m_baseClasses)
   {
-    BaseClass * const baseClass = *it;
     if (baseClass->name == Classes::Module)
       return true;
   }
@@ -197,9 +169,8 @@ void Class::GenerateCodeStaticInit(std::stringstream & outCode) const
 
 void Class::GenerateFieldsInitCode(std::stringstream & outCode) const
 {
-  for (tFieldsVector::const_iterator it = m_fields.begin(); it != m_fields.end(); ++it)
+  for (auto const & field : m_fields)
   {
-    Field * field = *it;
     outCode << "    ";
     field->GenarateInitCode(outCode);
     outCode << " \\\n";
@@ -208,9 +179,8 @@ void Class::GenerateFieldsInitCode(std::stringstream & outCode) const
 
 void Class::GenerateStaticFieldsInitCode(std::stringstream & outCode) const
 {
-  for (tStaticFieldsVector::const_iterator it = m_staticFields.begin(); it != m_staticFields.end(); ++it)
+  for (auto const & field : m_staticFields)
   {
-    Global * field = *it;
     outCode << "\t";
     field->GenerateInitCode(outCode);
     outCode << " \\\n";
@@ -392,16 +362,13 @@ void Class::GenerateImpl(std::stringstream & outCode) const
 
 std::string Class::GetGeneratedBodyLine() const
 {
-  for (tMethodVector::const_iterator it = m_methods.begin(); it != m_methods.end(); ++it)
+  for (auto const & field : m_methods)
   {
-    Method const * const field = *it;
     MetaDataManager const & meta = field->GetMetaData();
     std::string propBody;
 
     if (meta.GetPropertySafe(Props::Body, propBody))
-    {
       return propBody;
-    }
   }
 
   EMIT_ERROR("Can't find " << Props::Body << " meta info");
@@ -416,10 +383,10 @@ std::string Class::GetQualifiedName() const
 
 BaseClass const * Class::GetBaseClass(std::string const & name) const
 {
-  for (tBaseClassVector::const_iterator it = m_baseClasses.begin(); it != m_baseClasses.end(); ++it)
+  for (auto const & cl : m_baseClasses)
   {
-    if ((*it)->name == name)
-      return *it;
+    if (cl->name == name)
+      return cl.get();
   }
 
   return 0;
@@ -427,10 +394,10 @@ BaseClass const * Class::GetBaseClass(std::string const & name) const
 
 BaseClass const * Class::GetBaseAgentClass() const
 {
-  for (tBaseClassVector::const_iterator it = m_baseClasses.begin(); it != m_baseClasses.end(); ++it)
+  for (auto const & cl : m_baseClasses)
   {
-    if ((*it)->name.find("ScAgent") != std::string::npos)
-      return *it;
+    if (cl->name.find("ScAgent") != std::string::npos)
+      return cl.get();
   }
 
   return 0;

@@ -28,9 +28,9 @@ if (${WIN32})
 	set (BOOST_LIBS_LIST )
 else()
  	set (BOOST_LIBS_LIST
- 			boost_filesystem 
- 			boost_program_options 
- 			boost_system)
+ 			Boost::filesystem 
+ 			Boost::program_options 
+ 			Boost::system)
 endif (${WIN32})
 
 	

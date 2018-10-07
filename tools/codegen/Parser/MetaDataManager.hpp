@@ -30,10 +30,9 @@ public:
   void Check() const;
 
 protected:
-  std::vector<Property> extractProperties(Cursor const & cursor) const;
+  std::vector<Property> ExtractProperties(Cursor const & cursor) const;
 
 private:
-
   std::unordered_map<std::string, std::string> m_properties;
   size_t m_lineNumber;
 

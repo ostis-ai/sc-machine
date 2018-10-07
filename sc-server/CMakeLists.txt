@@ -7,7 +7,8 @@ if (${WIN32})
   set (BOOST_LIBS_LIST )
 else()
    set (BOOST_LIBS_LIST
-       boost_program_options)
+        Boost::program_options
+        )
 endif (${WIN32})
 
   

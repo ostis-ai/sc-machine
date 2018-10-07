@@ -40,7 +40,6 @@ set (HEADERS
 	"Parser/ReflectionOptions.hpp"
 	"Parser/ReflectionParser.hpp"
 	"Parser/ReservedTypes.hpp"
-	"Parser/Switches.hpp"
 	"Parser/MacrosManager.hpp"
 	"Parser/Types.hpp"
 	"Parser/Cache.hpp"

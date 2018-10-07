@@ -10,7 +10,7 @@
 
 using Namespace = std::vector<std::string>;
 
-class Exception : public std::exception
+class Exception final: public std::exception
 {
 public:
   Exception(std::string const & descr)

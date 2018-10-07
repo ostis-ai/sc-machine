@@ -95,7 +95,8 @@ if (${APPLE})
 
     set (LIBCURL_LIBRARIES ${CURL_LIBRARIES})
 
-    set (ANTLR_LIB antlr3c)
+    find_library(ANTLR_LIB antlr3c)
+    include_directories("${CMAKE_OSX_SYSROOT}/usr/include")
 
 elseif (${UNIX})
     find_package(PythonLibs 3.4 REQUIRED)

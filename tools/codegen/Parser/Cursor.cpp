@@ -4,7 +4,7 @@
 
 Cursor::Cursor(const CXCursor &handle)
   : m_handle(handle)
-{ 
+{
   CXSourceLocation loc = clang_getCursorLocation(m_handle);
   CXFile file;
   unsigned int line, column, offset;

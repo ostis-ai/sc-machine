@@ -4,18 +4,12 @@
 
 class Class;
 
-class Field : public LanguageType
+class Field final : public LanguageType
 {
 public:
-  Field(
-      const Cursor &cursor,
-      const Namespace &currentNamespace,
-      Class *parent = nullptr
-      );
+  Field(Cursor const & cursor, Namespace const & currentNamespace);
 
-  virtual ~Field(void) { }
-
-  bool ShouldCompile(void) const;
+  bool ShouldCompile() const;
 
   void GenarateInitCode(std::stringstream & outCode) const;
 
@@ -29,17 +23,14 @@ public:
   std::string const & GetDisplayName() const;
 
 private:
-  bool isAccessible(void) const;
-  bool isGetterAccessible(void) const;
-  bool isSetterAccessible(void) const;
+  bool isAccessible() const;
+  bool isGetterAccessible() const;
+  bool isSetterAccessible() const;
 
 private:
   bool m_isConst;
-
   bool m_hasExplicitGetter;
   bool m_hasExplicitSetter;
-
-  Class *m_parent;
 
   std::string m_name;
   std::string m_displayName;

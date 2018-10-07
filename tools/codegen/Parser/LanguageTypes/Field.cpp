@@ -5,49 +5,38 @@
 #include "LanguageTypes/Class.hpp"
 #include "LanguageTypes/Field.hpp"
 
-Field::Field(
-    const Cursor &cursor,
-    const Namespace &currentNamespace,
-    Class *parent)
+Field::Field(Cursor const & cursor, Namespace const & currentNamespace)
   : LanguageType(cursor, currentNamespace)
   , m_isConst(cursor.GetType().IsConst())
-  , m_parent(parent)
   , m_name(cursor.GetSpelling())
   , m_type(cursor.GetType().GetDisplayName())
 {
   auto displayName = m_metaData.GetNativeString(kMetaDisplayName);
-
-  if (displayName.empty())
-    m_displayName = m_name;
-  else
-    m_displayName = displayName;
-
+  m_displayName = displayName.empty() ? m_name : displayName;
+  
   m_metaData.Check();
 }
 
-bool Field::ShouldCompile(void) const
+bool Field::ShouldCompile() const
 {
   return isAccessible();
 }
 
-bool Field::isAccessible(void) const
+bool Field::isAccessible() const
 {
-  return (m_hasExplicitGetter || m_hasExplicitSetter) ||
-      (
-        m_accessModifier == CX_CXXPublic &&
-        !m_metaData.GetFlag(kMetaDisable)
-        );
+  bool const metaFlag = (m_accessModifier == CX_CXXPublic && !m_metaData.GetFlag(kMetaDisable));
+  return m_hasExplicitGetter || m_hasExplicitSetter || metaFlag;
+      
 }
 
-bool Field::isGetterAccessible(void) const
+bool Field::isGetterAccessible() const
 {
-  return m_hasExplicitGetter || m_accessModifier == CX_CXXPublic;
+  return m_hasExplicitGetter || (m_accessModifier == CX_CXXPublic);
 }
 
 bool Field::isSetterAccessible(void) const
 {
-  return m_hasExplicitSetter ||
-      (!m_isConst && m_accessModifier == CX_CXXPublic);
+  return m_hasExplicitSetter || (!m_isConst && m_accessModifier == CX_CXXPublic);
 }
 
 std::string Field::GetForceType(MetaDataManager const & metaData)
@@ -86,10 +75,10 @@ void Field::GenerateTemplateBuildCode(std::string const & sysIdtf, std::string c
 }
 
 void Field::GenerateResolveKeynodeCode(
-  std::string const & sysIdtf, 
-  std::string const & displayName,
-  std::string const & forceCreation,
-  std::stringstream & outCode)
+    std::string const & sysIdtf,
+    std::string const & displayName,
+    std::string const & forceCreation,
+    std::stringstream & outCode)
 {
   outCode << displayName << " = ctx.HelperResolveSystemIdtf(\"" << sysIdtf << "\"";
   if (!forceCreation.empty())

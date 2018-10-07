@@ -1,9 +1,5 @@
 #include "ReflectionParser.hpp"
 
-#include "LanguageTypes/Class.hpp"
-#include "LanguageTypes/Global.hpp"
-#include "LanguageTypes/Function.hpp"
-
 #include <iostream>
 #include <fstream>
 
@@ -11,16 +7,41 @@
 #include <boost/filesystem.hpp>
 
 #define RECURSE_NAMESPACES(kind, cursor, method, ns) \
-if (kind == CXCursor_Namespace) \
-{ \
-  auto displayName = cursor.GetDisplayName(); \
-  if (!displayName.empty()) \
+  if (kind == CXCursor_Namespace) \
   { \
-    ns.emplace_back(displayName); \
-    method(cursor, ns); \
-    ns.pop_back(); \
-  } \
+    auto displayName = cursor.GetDisplayName(); \
+    if (!displayName.empty()) \
+    { \
+      ns.emplace_back(displayName); \
+      method(cursor, ns); \
+      ns.pop_back(); \
+    } \
+  }
+
+namespace impl
+{
+
+void displayDiagnostics (CXTranslationUnit tu)
+{
+  if (tu == 0)
+  {
+    std::cerr << "Parsing error!" << std::endl;
+    return;
+  }
+
+  int const numDiagnostics = clang_getNumDiagnostics(tu);
+  for (int i = 0; i < numDiagnostics; ++i)
+  {
+    auto const diagnostic = clang_getDiagnostic (tu, i);
+    auto const string = clang_formatDiagnostic (diagnostic, clang_defaultDiagnosticDisplayOptions());
+
+    std::cerr << clang_getCString (string) << std::endl;
+    clang_disposeString (string);
+    clang_disposeDiagnostic (diagnostic);
+  }
 }
+
+} // namespace impl
 
 ReflectionParser::ReflectionParser(const ReflectionOptions &options)
   : m_options(options)
@@ -28,21 +49,6 @@ ReflectionParser::ReflectionParser(const ReflectionOptions &options)
   , m_translationUnit(nullptr)
   , m_sourceCache(nullptr)
 {
-
-}
-
-ReflectionParser::~ReflectionParser(void)
-{
-  for (auto *klass : m_classes)
-    delete klass;
-
-  for (auto *global : m_globals)
-    delete global;
-
-  for (auto *globalFunction : m_globalFunctions)
-    delete globalFunction;
-
-  delete m_sourceCache;
 }
 
 void ReflectionParser::CollectFiles(std::string const & inPath, tStringList & outFiles)
@@ -84,13 +90,13 @@ void ReflectionParser::CollectFiles(std::string const & inPath, tStringList & ou
   }
 }
 
-void ReflectionParser::Parse(void)
+void ReflectionParser::Parse()
 {
   tStringList filesList;
   std::string moduleFile;
   CollectFiles(m_options.inputPath, filesList);
 
-  m_sourceCache = new SourceCache(m_options.buildDirectory, m_options.targetName);
+  m_sourceCache.reset(new SourceCache(m_options.buildDirectory, m_options.targetName));
   m_sourceCache->Load();
   m_sourceCache->CheckGenerator(m_options.generatorPath);
 
@@ -157,7 +163,6 @@ bool ReflectionParser::ProcessFile(std::string const & fileName, bool InProcessM
   {
     // unescape flags
     boost::algorithm::replace_all(argument, "\\-", "-");
-
     arguments.emplace_back(argument.c_str());
   }
 
@@ -169,6 +174,9 @@ bool ReflectionParser::ProcessFile(std::string const & fileName, bool InProcessM
         0,
         nullptr
         );
+
+  if (m_options.displayDiagnostic)
+    impl::displayDiagnostics(m_translationUnit);
 
   auto cursor = clang_getTranslationUnitCursor(m_translationUnit);
 
@@ -197,13 +205,10 @@ bool ReflectionParser::ProcessFile(std::string const & fileName, bool InProcessM
       outCode << "#include \"sc-memory/cpp/sc_memory.hpp\"\n\n\n";
       outCode << "#include \"sc-memory/cpp/sc_event.hpp\"\n\n\n";
 
-      for (auto it = m_classes.begin(); it != m_classes.end(); ++it)
+      for (auto const & klass : m_classes)
       {
-        Class const * klass = *it;
         if (klass->ShouldGenerate())
-        {
           klass->GenerateCode(fileId, outCode, this);
-        }
       }
 
       /// write ScFileID definition
@@ -222,7 +227,8 @@ bool ReflectionParser::ProcessFile(std::string const & fileName, bool InProcessM
     clang_disposeIndex(m_index);
     clang_disposeTranslationUnit(m_translationUnit);
 
-  } catch (Exception e)
+  }
+  catch (Exception e)
   {
     clang_disposeIndex(m_index);
     clang_disposeTranslationUnit(m_translationUnit);
@@ -232,6 +238,12 @@ bool ReflectionParser::ProcessFile(std::string const & fileName, bool InProcessM
 
 
   return true;
+}
+
+void ReflectionParser::ResetCache()
+{
+  if (m_sourceCache)
+    m_sourceCache->Reset();
 }
 
 bool ReflectionParser::IsInCurrentFile(Cursor const & cursor) const
@@ -269,13 +281,11 @@ void ReflectionParser::buildClasses(const Cursor &cursor, Namespace &currentName
     if (!IsInCurrentFile(child))
       continue;
 
-    auto kind = child.GetKind();
+    auto const kind = child.GetKind();
 
     // actual definition and a class or struct
     if (child.IsDefinition() && (kind == CXCursor_ClassDecl || kind == CXCursor_StructDecl))
-    {
       m_classes.emplace_back(new Class(child, currentNamespace));
-    }
 
     RECURSE_NAMESPACES(kind, child, buildClasses, currentNamespace);
   }
@@ -307,10 +317,10 @@ void ReflectionParser::DumpTree(Cursor const & cursor, size_t level, std::string
 //        auto kind = child.GetKind();
 //
 //        // variable declaration, which is global
-//        if (kind == CXCursor_VarDecl) 
+//        if (kind == CXCursor_VarDecl)
 //        {
 //            m_globals.emplace_back(
-//                new Global(child, currentNamespace) 
+//                new Global(child, currentNamespace)
 //           );
 //        }
 //
@@ -329,16 +339,16 @@ void ReflectionParser::DumpTree(Cursor const & cursor, size_t level, std::string
 //        auto kind = child.GetKind();
 //
 //        // function declaration, which is global
-//        if (kind == CXCursor_FunctionDecl) 
+//        if (kind == CXCursor_FunctionDecl)
 //        {
 //            m_globalFunctions.emplace_back(new Function(child, currentNamespace));
 //        }
 //
 //        RECURSE_NAMESPACES(
-//            kind, 
-//            child, 
-//            buildGlobalFunctions, 
-//            currentNamespace 
+//            kind,
+//            child,
+//            buildGlobalFunctions,
+//            currentNamespace
 //       );
 //    }
 //}
@@ -353,17 +363,17 @@ void ReflectionParser::DumpTree(Cursor const & cursor, size_t level, std::string
 //        if (child.IsDefinition() && kind == CXCursor_EnumDecl)
 //        {
 //            // anonymous enum if the underlying type display name contains this
-//            if (child.GetType().GetDisplayName().find("anonymous enum at") 
+//            if (child.GetType().GetDisplayName().find("anonymous enum at")
 //                != std::string::npos)
 //            {
-//                // anonymous enums are just loaded as 
+//                // anonymous enums are just loaded as
 //                // globals with each of their values
 //                Enum::LoadAnonymous(m_globals, child, currentNamespace);
 //            }
 //            else
 //            {
 //                m_enums.emplace_back(
-//                    new Enum(child, currentNamespace) 
+//                    new Enum(child, currentNamespace)
 //               );
 //            }
 //        }

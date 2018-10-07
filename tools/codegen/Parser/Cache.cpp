@@ -11,10 +11,6 @@ SourceCache::SourceCache(std::string const & path, std::string const & targetNam
 {
 }
 
-SourceCache::~SourceCache()
-{
-}
-
 void SourceCache::Load()
 {
   std::ifstream input(m_cacheFileName);
@@ -86,6 +82,11 @@ bool SourceCache::RequestGenerate(std::string const & fileName)
   return true;
 }
 
+void SourceCache::Reset()
+{
+  boost::filesystem::remove(m_cacheFileName);
+}
+
 std::string SourceCache::FileChecksum(std::string const & fileName)
 {
   boost::filesystem::path p(fileName);
@@ -94,7 +95,7 @@ std::string SourceCache::FileChecksum(std::string const & fileName)
     std::ifstream input(fileName);
     std::string str((std::istreambuf_iterator<char>(input)), std::istreambuf_iterator<char>());
 
-    std::time_t t = boost::filesystem::last_write_time(p);
+    std::time_t const t = boost::filesystem::last_write_time(p);
 
     return sha256(str + std::ctime(&t));
   }
