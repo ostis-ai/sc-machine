@@ -10,7 +10,6 @@
 
 #include "test_sc_agent_result.generated.hpp"
 
-
 class ATestResultOk: public ScAgentAction
 {
   SC_CLASS(Agent, CmdClass("test_result_ok"))

@@ -43,7 +43,7 @@ public:
       static const size_t kScoreEdge = 5;
       static const size_t kScoreOther = 1;
 
-      /** First of all we need to calculate scores for all triples 
+      /** First of all we need to calculate scores for all triples
         * (more scores - should be search first).
         * Also need to store all replacements that need to be resolved
         */
@@ -104,7 +104,7 @@ public:
 
         // get resolved replacements by the last triple
         std::vector<std::string> resolvedReplacements;
-        resolvedReplacements.reserve(3);     
+        resolvedReplacements.reserve(3);
         for (auto const & value : triple.GetValues())
         {
           if (!value.m_replacementName.empty())
@@ -254,7 +254,7 @@ public:
     {
       return m_context.Iterator3(PrepareType(value0.m_typeValue), addr1, PrepareType(value2.m_typeValue));
     }
-   
+
     //// unknown iterator type
     //SC_THROW_EXCEPTION(utils::ExceptionInvalidState, "Unknown iterator type");
 
@@ -300,7 +300,7 @@ public:
         m_resultAddrs[it->second].Reset();
     }
   }
-  
+
   void DoIterations(ScTemplateSearchResult & result)
   {
     std::stack<ScIterator3Ptr> iterators;
@@ -372,8 +372,6 @@ public:
 
         while (it->Next())
         {
-          didIter[orderIndex] = true;
-
           ScAddr const addr1 = it->Get(0);
           ScAddr const addr2 = it->Get(1);
           ScAddr const addr3 = it->Get(2);
@@ -394,7 +392,8 @@ public:
             continue;
 
           applyResult(addr1, addr2, addr3);
-         
+
+          didIter[orderIndex] = true;
           isFinished = false;
           break;
         }
@@ -405,7 +404,7 @@ public:
           didIter[orderIndex] = true;
           isFinished = false;
         }
-        
+
         if (isFinished) // finish iterator
         {
           iterators.pop();

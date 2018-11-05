@@ -1130,11 +1130,11 @@ UNIT_TEST(template_issue_224)
 // https://github.com/ostis-dev/sc-machine/issues/251
 UNIT_TEST(template_issue_251)
 {
-	ScMemoryContext ctx(sc_access_lvl_make_min, "template_issue_251");
+  ScMemoryContext ctx(sc_access_lvl_make_min, "template_issue_251");
 
-	/* generate equal to scs:
+  /* generate equal to scs:
    * k => rel: [] (* <- t;; *);;
-	 */
+   */
   ScAddr const kAddr = ctx.CreateNode(ScType::NodeConst);
   SC_CHECK(kAddr.IsValid(), ());
   ScAddr const relAddr = ctx.CreateNode(ScType::NodeConstRole);
@@ -1215,7 +1215,7 @@ UNIT_TEST(template_search_some_relations)
     _app => nrel_idtf: _idtf;;
     _app => nrel_image: _image;;
    */
-   
+
   ScAddr const deviceAddr = ctx.CreateNode(ScType::NodeConst);
   SC_CHECK(deviceAddr.IsValid(), ());
 
@@ -1323,7 +1323,7 @@ UNIT_TEST(template_search_some_relations)
 
       d.m_app = searchRes[i]["_app"];
       d.m_idtf = searchRes[i]["_idtf"];
-      d.m_image = searchRes[i]["_image"];    
+      d.m_image = searchRes[i]["_image"];
     }
 
     auto compare = [](TestData const & a, TestData const & b)
@@ -1349,7 +1349,7 @@ UNIT_TEST(template_search_some_relations)
 UNIT_TEST(template_one_edge_inclusion)
 {
   ScMemoryContext ctx(sc_access_lvl_make_min, "template_one_edge_inclusion");
-  
+
   /* In case:
       a -> b (* <- sc_node_material;; *);;
       a -> c;;
@@ -1416,7 +1416,7 @@ UNIT_TEST(scs_templates_dummy)
       ScType::NodeVar >> "_a",
       ScType::EdgeAccessVarPosPerm >> "_edge",
       ScType::NodeVarTuple >> "b");
-    
+
     ScTemplateGenResult genResult;
     SC_CHECK(ctx.HelperGenTemplate(genTempl, genResult), ());
 
@@ -1557,7 +1557,7 @@ UNIT_TEST(template_optional)
   ScAddr const relAddr = ctx.CreateNode(ScType::NodeConstRole);
 
   ScAddr const edge = ctx.CreateEdge(ScType::EdgeAccessConstPosPerm, addr1, addr2);
-  
+
   SUBTEST_START("not found")
   {
     ScTemplate templ;
@@ -1590,7 +1590,7 @@ UNIT_TEST(template_optional)
     templ.Triple(
       relAddr >> "_relAddr",
       ScType::EdgeAccessVarPosPerm >> "_relEdge",
-      "_edge", 
+      "_edge",
       false);
 
     ScTemplateSearchResult result;
@@ -1601,8 +1601,13 @@ UNIT_TEST(template_optional)
     SC_CHECK_EQUAL(result[0]["_addr1"], addr1, ());
     SC_CHECK_EQUAL(result[0]["_addr2"], addr2, ());
     SC_CHECK_EQUAL(result[0]["_edge"], edge, ());
+
     SC_CHECK(!result[0]["_relAddr"].IsValid(), ());
     SC_CHECK(!result[0]["_relEdge"].IsValid(), ());
+
+    SC_CHECK(!result[0][3].IsValid(), ());
+    SC_CHECK(!result[0][4].IsValid(), ());
+    SC_CHECK(!result[0][5].IsValid(), ());
   }
   SUBTEST_END()
 
@@ -1660,6 +1665,57 @@ UNIT_TEST(template_optional)
     SC_CHECK(passed, ());
   }
   SUBTEST_END()
+
+  SUBTEST_START("optional complex")
+  {
+    ScAddr const classAddr = ctx.CreateNode(ScType::NodeConstClass);
+    SC_CHECK(classAddr.IsValid(), ());
+
+    ScAddr const instAddr = ctx.CreateNode(ScType::NodeConst);
+    SC_CHECK(instAddr.IsValid(), ());
+
+    ScAddr const edgeAddr = ctx.CreateEdge(ScType::EdgeAccessConstPosPerm, classAddr, instAddr);
+    SC_CHECK(edgeAddr.IsValid(), ());
+
+    // template without optional
+    ScTemplate templNoOpt;
+
+    templNoOpt.Triple(
+      classAddr >> "_class",
+      ScType::EdgeAccessVarPosPerm >> "_edge",
+      ScType::NodeVar >> "_inst");
+
+    templNoOpt.Triple(
+      ScType::NodeVar,
+      ScType::EdgeAccessVarPosPerm,
+      "_inst");
+
+    ScTemplateSearchResult searchResult;
+    SC_CHECK_NOT(ctx.HelperSearchTemplate(templNoOpt, searchResult), ());
+    SC_CHECK_EQUAL(searchResult.Size(), 0, ());
+
+    // with optional
+    ScTemplate templOptional;
+
+    templOptional.Triple(
+      classAddr >> "_class",
+      ScType::EdgeAccessVarPosPerm >> "_edge",
+      ScType::NodeVar >> "_inst");
+
+    templOptional.Triple(
+      ScType::NodeVar,
+      ScType::EdgeAccessVarPosPerm,
+      "_inst",
+      false);
+
+    SC_CHECK(ctx.HelperSearchTemplate(templOptional, searchResult), ());
+
+    SC_CHECK_EQUAL(searchResult.Size(), 1, ());
+    SC_CHECK_EQUAL(searchResult[0]["_class"], classAddr, ());
+    SC_CHECK_EQUAL(searchResult[0]["_inst"], instAddr, ());
+    SC_CHECK_EQUAL(searchResult[0]["_edge"], edgeAddr, ());
+  }
+  SUBTEST_END()
 }
 
 UNIT_TEST(search_links)
@@ -1691,7 +1747,7 @@ UNIT_TEST(search_links)
 
   ScTemplateSearchResult res;
   SC_CHECK(ctx.HelperSearchTemplate(templ, res), ());
-  
+
   SC_CHECK_EQUAL(res.Size(), 1, ());
   SC_CHECK_EQUAL(node, res[0]["_node"], ());
   SC_CHECK_EQUAL(edge, res[0]["_edge"], ());
