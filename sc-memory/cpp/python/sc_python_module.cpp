@@ -4,6 +4,8 @@
 #include "../sc_stream.hpp"
 #include "../sc_link.hpp"
 
+#include <iostream>
+
 extern "C"
 {
 #include "sc-memory/sc_memory_headers.h"
@@ -16,7 +18,7 @@ namespace bp = boost::python;
 
 void translateException(utils::ScException const & e)
 {
-  // Use the Python 'C' API to set up an exception object 
+  // Use the Python 'C' API to set up an exception object
   PyErr_SetString(PyExc_RuntimeError, e.Message());
 }
 
@@ -274,7 +276,7 @@ public:
       m_buffer->Read(&value, sizeof(value));
       return value;
     }
-    
+
     SC_THROW_EXCEPTION(utils::ExceptionInvalidType,
                        "Size of content should be equal to 1, 2 or 4 bytes");
 
@@ -644,7 +646,7 @@ bp::object _context_helperFindBySystemIdtf(ScMemoryContext & self, bp::object & 
     SC_THROW_EXCEPTION(utils::ExceptionInvalidType,
                        "First parameter should have an instance of str");
   }
-  
+
   std::string const idtfValue = static_cast<std::string>(se);
   ScAddr resultAddr = self.HelperFindBySystemIdtf(idtfValue);
   return bp::object(resultAddr);
@@ -678,21 +680,24 @@ class PyTemplate
 public:
   PyTemplate() : m_impl(new ScTemplate()) {}
 
-  void Triple(bp::object & param1, bp::object & param2, bp::object & param3)
+  void Triple(bp::object & param1, bp::object & param2, bp::object & param3, bool isRequired = true)
   {
     m_impl->Triple(ResolveTemplateParam(param1),
                    ResolveTemplateParam(param2),
-                   ResolveTemplateParam(param3));
+                   ResolveTemplateParam(param3),
+                   isRequired);
   }
 
   void TripleWithRelation(bp::object & param1, bp::object & param2,
-                          bp::object & param3, bp::object & param4, bp::object & param5)
+                          bp::object & param3, bp::object & param4, bp::object & param5,
+                          bool isRequired = true)
   {
     m_impl->TripleWithRelation(ResolveTemplateParam(param1),
                                ResolveTemplateParam(param2),
                                ResolveTemplateParam(param3),
                                ResolveTemplateParam(param4),
-                               ResolveTemplateParam(param5));
+                               ResolveTemplateParam(param5),
+                               isRequired);
   }
 
   ScTemplate & GetItemRef() const
@@ -766,7 +771,7 @@ bp::object _context_helperBuildTemplate(ScMemoryContext & self, bp::object & dat
     if (self.HelperBuildTemplate(templ.GetItemRef(), static_cast<ScAddr>(addr)))
       return bp::object(templ);
   }
-  
+
   bp::extract<std::string> str(data);
   if (str.check())
   {
@@ -778,7 +783,7 @@ bp::object _context_helperBuildTemplate(ScMemoryContext & self, bp::object & dat
 
   SC_THROW_EXCEPTION(utils::ExceptionInvalidType,
                     "Second parameter should be ScAddr or string");
-  
+
   return bp::object();
 }
 
@@ -796,6 +801,8 @@ std::string GetConfigValue(std::string const & group, std::string const & key)
 } // namespace impl
 
 BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(ScMemoryContext_CreateLink_overload, ScMemoryContext::CreateLink, 0, 1)
+BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(PyTemplate_Triple_overload, impl::PyTemplate::Triple, 3, 4)
+BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(PyTemplate_TripleWithRelation_overload, impl::PyTemplate::TripleWithRelation, 5, 6)
 
 BOOST_PYTHON_MODULE(sc)
 {
@@ -879,9 +886,10 @@ BOOST_PYTHON_MODULE(sc)
     .def("IsEmpty", &impl::PyTemplateGenParams::IsEmpty)
     ;
 
+
   bp::class_<impl::PyTemplate>("ScTemplate", bp::init<>())
-    .def("Triple", &impl::PyTemplate::Triple)
-    .def("TripleWithRelation", &impl::PyTemplate::TripleWithRelation)
+    .def("Triple", &impl::PyTemplate::Triple, PyTemplate_Triple_overload())
+    .def("TripleWithRelation", &impl::PyTemplate::TripleWithRelation, PyTemplate_TripleWithRelation_overload())
     ;
 
   bp::class_<ScAddr>("ScAddr", bp::init<>())
@@ -960,7 +968,7 @@ BOOST_PYTHON_MODULE(sc)
 }
 
 
-} // namespace 
+} // namespace
 
 namespace py
 {

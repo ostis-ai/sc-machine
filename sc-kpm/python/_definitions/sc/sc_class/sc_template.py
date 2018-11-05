@@ -42,8 +42,8 @@ class ScTemplateGenParams:
 
 class ScTemplate:
 
-  def Triple(self, src, edge, trg):
+  def Triple(self, src, edge, trg, is_required = True):
     return None
 
-  def TripleWithRelation(self, src, edge, trg, attrEdge, attrEl):
+  def TripleWithRelation(self, src, edge, trg, attrEdge, attrEl, is_required = True):
     return None
