@@ -229,7 +229,7 @@ This request delete specified elements.
 This request search constructions by specified template.
 
 !!! quote "Request"
-    ```json
+    ```js
     {
       ..., // common request data
       "type": "search_template",
@@ -265,6 +265,10 @@ This request search constructions by specified template.
           {
             "type": "alias",
             "value": "_edge1"  // ref to first triple element
+          },
+          // last field is an options. You should to use it, when you need to override defaults
+          {
+            "is_required": false
           }
         ],
         ...
@@ -272,8 +276,9 @@ This request search constructions by specified template.
     }
     ```
 
-    !!! note ""
-        Just elements with `aliases` will be exist in a result
+There are decription options value for an each triple in template:
+
+- `is_required`: _default value is_ `true`. This option can be used to make triple optional in a search (use `false` value for that)
 
 !!! quote "Response"
 
@@ -292,7 +297,7 @@ This request search constructions by specified template.
         "addrs": [
           [23123, 412, 423, 231342, 282, 412], // addrs for 1st result
           [23123, 6734, 85643, 231342, 4234, 6734], // addrs for 2nd result
-          [23123, 7256, 252, 231342, 654, 7256],
+          [23123, 7256, 252, 0, 0, 0],    // doens't found triple with is_required = false
           ...
         ]
       }
@@ -330,38 +335,43 @@ This request generate construction by specified template.
         // there are a list of template triples
         "templ":
         [
-          [
-            // triple that represents F_A_A template
-            {
-              "type": "addr",
-              "value": 23123  // ScAddr
-            },
-            {
-              "type": "type",
-              "value": 32,    // ScType (should be a variable type)
-              "alias": "_edge1"
-            },
-            {
-              "type": "type",
-              "value": 2,     // ScType (should be a variable type)
-              "alias": "_trg"  // can be used in next triples to ref this element
-            }
-          ],
-          [
-            {
-              "type": "addr",
-              "value": 231342
-            },
-            {
-              "type": "type",
-              "value": 2000,
-              "alias": "_edge2"
-            },
-            {
-              "type": "alias",
-              "value": "_edge1"  // ref to first triple element
-            }
-          ],
+          {
+            "params": [
+
+              // triple that represents F_A_A template
+              {
+                "type": "addr",
+                "value": 23123  // ScAddr
+              },
+              {
+                "type": "type",
+                "value": 32,    // ScType (should be a variable type)
+                "alias": "_edge1"
+              },
+              {
+                "type": "type",
+                "value": 2,     // ScType (should be a variable type)
+                "alias": "_trg"  // can be used in next triples to ref this element
+              }
+            ]
+          },
+          {
+            "params": [
+              {
+                "type": "addr",
+                "value": 231342
+              },
+              {
+                "type": "type",
+                "value": 2000,
+                "alias": "_edge2"
+              },
+              {
+                "type": "alias",
+                "value": "_edge1"  // ref to first triple element
+              }
+            ]
+          },
           ...
         ],
         /* Map of parameters. Each parameter with specified alias in this map.
