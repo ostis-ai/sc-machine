@@ -6,10 +6,10 @@ class ScHelper:
   def __init__(self, ctx):
     self.ctx = ctx
 
-  def kbSetRelationLinkValue(self, _addr: ScAddr, _relAddr: ScAddr, _value: any):
-    """Sets value of ScLink connected to `_addr` by relation `_relAddr`.
-    SCs text:
-    _addr => _relAddr: [_value];;
+  def kbGetRelationLinkAddr(self, _addr: ScAddr, _relAddr: ScAddr) -> ScAddr:
+    """Find ScLink connected to `_addr` by relation `_relAddr`.
+      SCs text:
+        _addr => _relAddr: [_link];;
     """
     templ = ScTemplate()
 
@@ -24,6 +24,15 @@ class ScHelper:
     searchRes = self.ctx.HelperSearchTemplate(templ)
     if searchRes.Size() > 0:
       linkAddr = searchRes[0]['_link']
+
+    return linkAddr
+
+  def kbSetRelationLinkValue(self, _addr: ScAddr, _relAddr: ScAddr, _value: any):
+    """Sets value of ScLink connected to `_addr` by relation `_relAddr`.
+    SCs text:
+    _addr => _relAddr: [_value];;
+    """
+    linkAddr = self.kbGetRelationLinkAddr(_addr, _relAddr)
 
     # generate new relation if not found
     if linkAddr:
@@ -41,18 +50,9 @@ class ScHelper:
     _addr => _relAddr: [_value];;
 
     If value found, then returns `ScLinkContent`, otherwise returns None
-    """
-    templ = ScTemplate()
-    templ.TripleWithRelation(
-        _addr,
-        ScType.EdgeDCommonVar,
-        ScType.Link >> '_link',
-        ScType.EdgeAccessVarPosPerm,
-        _relAddr)
-
-    searchRes = self.ctx.HelperSearchTemplate(templ)
-    if searchRes.Size() > 0:
-      linkAddr = searchRes[0]['_link']
+    """  
+    linkAddr = self.kbGetRelationLinkAddr(_addr, _relAddr)
+    if linkAddr:
       return self.ctx.GetLinkContent(linkAddr)
 
     return None
