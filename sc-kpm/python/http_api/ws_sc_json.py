@@ -80,7 +80,7 @@ class ScJsonSocketHandler(websocket.WebSocketHandler):
       elif request_type == 'events':
         response_payload = self.handleEvents(ctx, request_payload)
 
-      if response_payload:
+      if response_payload is not None:
         status = True
       else:
         response_payload = "Unsupported request type: {}".format(request_type)

@@ -1,9 +1,10 @@
 import { ScNet, ScType, ScAddr, ScTemplate, 
-         ScTemplateSearchResult, ScTemplateResult, ScLinkContent } from '@ostis/sc-core';
+         ScTemplateSearchResult, ScTemplateResult, ScLinkContent, ScLinkContentType } from '@ostis/sc-core';
 import { ServerKeynodes } from './ServerKeynodes';
 import { ServerBase } from './ServerBase';
 import { KBTemplate } from '../types';
 import { SCgStruct } from '@ostis/scg-js-editor';
+import { Error } from '../Errors';
 
 export abstract class ServerTemplatesListener {
   public abstract OnTemplatesChanged(newTemplates: KBTemplate[]);
@@ -150,8 +151,8 @@ export class ServerTemplates extends ServerBase {
   public async MakeSCgStruct(data: ScTemplateResult[]) : Promise<SCgStruct> {
     const result: SCgStruct = new SCgStruct();
 
-    let values: number[] = [];
-    let addrs: ScAddr[] = [];
+    const values: number[] = [];
+    const addrs: ScAddr[] = [];
     data.forEach(item => {
       for (let i = 0; i < item.size; ++i) {
         const a: ScAddr = item.Get(i);
@@ -166,6 +167,51 @@ export class ServerTemplates extends ServerBase {
     // collect elements type
     const types: ScType[] = await this.client.CheckElements(addrs);
 
+    Error.Assert(types.length == addrs.length, 'Invalid number of types');
+
+    const links: ScAddr[] = [];
+    for (let i = 0; i < types.length; ++i) {
+      if (types[i].isLink()) {
+        links.push(addrs[i]);
+      }
+    }
+
+    // collect element system identifiers
+    const idtfs: {[key: number]: string} = await this.GetSystemIdentifier(addrs);
+    // collect links contents
+    const contents: ScLinkContent[] = await this.client.GetLinkContents(links);
+    
+    // make map of contents, for a fast search
+    Error.Assert(links.length == contents.length, 'Invalid number of contents');
+
+    const linkContents: {[key: number] : ScLinkContent} = {};
+    for (let i = 0; i < links.length; ++i) {
+      linkContents[links[i].value] = contents[i];
+    }
+
+    /// TODO: support binary contents
+    function getContent(a: ScAddr) : string {
+      const c: ScLinkContent = linkContents[a.value];
+      if (c) {
+        if (c.type === ScLinkContentType.Float || c.type === ScLinkContentType.Int) {
+          return c.data.toString();
+        } else if (c.type === ScLinkContentType.String) {
+          return c.data as string;
+        }
+      }
+
+      return null;
+    }
+
+    function getSysIdtf(a: ScAddr) : string {
+      let idtf: string = idtfs[a.value];
+
+      if (idtf) {
+        return idtf;
+      }
+      return null;
+    }
+
     // insert all nodes
     const edgeTypes: Map<number, ScType> = new Map<number, ScType>();
     for (let i = 0; i < types.length; ++i) {
@@ -175,9 +221,17 @@ export class ServerTemplates extends ServerBase {
         result.AddObject({
           addr: a,
           type: t,
+          alias: getSysIdtf(a)
         })
       } else if (t.isEdge()) {
         edgeTypes.set(a.value, t);
+      } else if (t.isLink()) {
+        result.AddObject({
+          addr: a,
+          type: ScType.LinkConst,
+          alias: getSysIdtf(a),
+          content: getContent(a)
+        })
       }
     }
 
@@ -188,7 +242,8 @@ export class ServerTemplates extends ServerBase {
           addr: edge,
           type: edgeTypes.get(edge.value),
           src: src,
-          trg: trg
+          trg: trg,
+          alias: getSysIdtf(edge)
         });
       });
     });
