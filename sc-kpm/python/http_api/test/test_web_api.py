@@ -3,6 +3,7 @@ from unittest import TestLoader, TestCase, TextTestRunner
 
 import json
 import types
+import tornado
 import http_api.ws_sc_json as wsh
 
 from common import ScModule
@@ -17,8 +18,10 @@ class WsJsonApiTest(testing.AsyncTestCase):
   def setUp(self):
     super(WsJsonApiTest, self).setUp()
 
+    ioloop = tornado.ioloop.IOLoop.instance()
+
     app = web.Application([
-        (r"/", wsh.ScJsonSocketHandler, {'evt_manager': module.events}),
+        (r"/", wsh.ScJsonSocketHandler, {'evt_manager': module.events, 'ioloop': ioloop}),
     ])
     server = httpserver.HTTPServer(app)
     socket, self.port = testing.bind_unused_port()

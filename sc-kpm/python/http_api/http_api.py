@@ -69,27 +69,30 @@ class ServerThread(threading.Thread):
   def __init__(self, module, address='', port=8090):
     threading.Thread.__init__(self)
 
-    assets_path = os.path.join(
+    self.assets_path = os.path.join(
         getScConfigValue('web', 'path'), 'client/assets')
     isDebug = bool(getScConfigValue('debug', 'is_debug'))
-    staticHandler = DebugStaticFileHandler
+    self.staticHandler = DebugStaticFileHandler
     if not isDebug:
       staticHandler = tornado.web.StaticFileHandler
-
-    print(staticHandler)
-
+    
     self.port = port
+    self.app = None
+    self.module = module
+    
+  def run(self):
+    
+    asyncio.set_event_loop(asyncio.new_event_loop())
+    ioloop = tornado.ioloop.IOLoop.instance()
+
     self.app = tornado.web.Application([
-        (r"/ws_json", ScJsonSocketHandler, {'evt_manager': module.events}),
+        (r"/ws_json", ScJsonSocketHandler, { 'evt_manager': self.module.events, 'ioloop': ioloop }),
         (r"/content/([0-9]+)", ContentHandler),
-        (r'/assets/(.*)', staticHandler, {'path': assets_path}),
+        (r'/assets/(.*)', self.staticHandler, {'path': self.assets_path}),
 
         # should be a last
         (r"/(.*)", MainHandler),
     ])
-
-  def run(self):
-    asyncio.set_event_loop(asyncio.new_event_loop())
 
     self.running = True
     self.app.listen(self.port)

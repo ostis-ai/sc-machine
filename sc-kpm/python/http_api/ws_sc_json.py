@@ -28,10 +28,11 @@ class EventHandler:
 
 class ScJsonSocketHandler(websocket.WebSocketHandler):
 
-  def initialize(self, evt_manager):
+  def initialize(self, evt_manager, ioloop):
     self.events = {}
     self.event_manager = evt_manager
     self.alive = False
+    self.ioloop = ioloop
 
   def check_origin(self, origin):
     return True
@@ -40,12 +41,10 @@ class ScJsonSocketHandler(websocket.WebSocketHandler):
     if self not in clients:
       clients.append(self)
     self.alive = True
-    print('connected')
 
   def on_close(self):
     if self in clients:
       clients.remove(self)
-    print('disconnected', len(clients))
     self.alive = False
 
     # remove all events
@@ -305,7 +304,7 @@ class ScJsonSocketHandler(websocket.WebSocketHandler):
         'payload': [evt.addr.ToInt(), evt.edge_addr.ToInt(), evt.other_addr.ToInt()]
     }
     data = json.dumps(response)
-    tornado.ioloop.IOLoop.instance().add_callback(self.sendMessage, data)
+    self.ioloop.add_callback(self.sendMessage, data)
 
   def handleEvents(self, ctx, payload):
     result = []
