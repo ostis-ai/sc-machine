@@ -17,6 +17,11 @@ pages:
     - Pull requets: dev/pr.md
     - Codestyle: dev/codestyle.md
     - Unit tests: dev/test.md
+  - Common:
+    - Element types: cpp/el_types.md
+    - Configuration files: other/config.md
+    - Sctp-protocol: net/sctp.md
+    - SCs language: other/scs.md
   - API:
     - Meta programming: cpp/cpp-meta.md
     - Agents: cpp/kpm.md
@@ -26,14 +31,13 @@ pages:
       - Common: python/python.md
       - Library: python/library.md
       - Wrapped classes: python/cpp_wrap.md
+  - KPM Agents:
+      - SCs To SC: kpm/translation/scs2sc.md
   - Http:
       - Common: http/index.md
       - WebSocket: http/websocket.md
-  - Common:
-    - Element types: cpp/el_types.md
-    - Configuration files: other/config.md
-    - Sctp-protocol: net/sctp.md
-    - SCs language: other/scs.md
+  - Tools:
+      - Knowledge Base builder: tools/kb_builder.md
   - License: license.md
   - Changelog: changelog.md
   - Thirdparty: thirdparty.md

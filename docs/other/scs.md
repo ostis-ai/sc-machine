@@ -3,6 +3,7 @@
 SCs-code - is a text representation of SC-code. Whole text consist of sentences, that
 separated by `;;` symbols.
 
+#### Comments
 You can use C-style comments in SCs text:
 ```cpp
 // one line comment
@@ -12,7 +13,8 @@ fruit -> apple;
  */
 ```
 
-To make an sc-link into specified file you can use special type identifier:
+#### Link to files
+To make an `sc-link` into specified file you can use special type identifier:
 ```
 "file://<file name>"
 ```
@@ -20,10 +22,11 @@ To make an sc-link into specified file you can use special type identifier:
 * `"file://<file name>"` - is a relative path to a file. According to a file, where it used;
 * `"file:///<file_name>"` - is an absolute path to a file.
 
+#### Names
 There are some tricks with object names:
 
 * `...` - is an unnamed object;
-* `_<object name>` - all object names, that starts with symbol `_` represents a variable objects.
+* `_<object name>` - all object names, that starts with symbol `_` represents a variable type of objects.
 
 Objects identifier visibility. By default all objects with name `x` are visible anywhere.
 After translating it into memory this object will have a **system identifier** equal to `x`.
@@ -34,7 +37,7 @@ Sometimes you need to designate the same objects in different files, but do not 
 **system identifier** in memory for it. In this case you should to prefix it name with a `.` symbol.
 For example: `.x`.
 
-In case, when you need to make a named object just local for a *scs* file,
+In case, when you need to make a named object just local for an *scs* file,
 then you should to use `..` prefix (example: `..x`).
 
 So a rule to build identifier is:
@@ -45,10 +48,22 @@ So a rule to build identifier is:
 
 For example identifier `.._x` localy visible variable identifier.
 
-<div class="note">
-SCs-code is splitted into levels. Each level allows to minimize number
-of string symbols to represent the same structures.
-</div>
+#### Aliases
+
+You can use alias for any sc-element by using `=` operator. There are some examples:
+
+```js
+@file_alias = "file://...";;
+@link_alias = [];;
+@element_alias = element_idtf;;
+@edge_alias = (c -> b);;
+@alias_to_alias = @other_alias;;
+```
+ 
+--- 
+
+!!! note
+    SCs-code is splitted into levels. Each level allows to minimize number of string symbols to represent the same structures.
 
 ### SCs level 1
 
@@ -403,7 +418,276 @@ a -> c: d: b;
 
 ### SCs level 5
 
+Internal sentences added to `SCs-text` on this level. They are wrapped by `(* ... *)` brackets.
+This type of sentences allow to describe connections of an element inplace.
+You can place these internal sentences after `object` element in triple (`subject -> object (* ... *);;`), but before `;;` separator.
+You can use level `2-4` sentences inside this one. But there is a just one rule: 
+
+!!! note ""
+    You doesn't need to specify start element for each sentece. Because object (for which internal sentece builds) is going to be a subject for all internal sentences 
+
+Look at the examples, to understand how it works:
+
+
+<table>
+  <tr>
+    <th>SCs-level 2-4</th>
+    <th>SCs-level 5</th>
+    <th>Description</th>
+  </tr>
+  
+  <tr>
+    <td>
+      <pre><code class="js hljs javascript">
+set -> attr: item;;
+item -> subitem;;
+        </code></pre>
+    </td>
+    <td>
+      <pre><code class="js hljs javascript">
+set
+  -> attr: item 
+    (*
+      -> subitem;;
+    *);;
+      </code></pre>
+    </td>
+    <td>
+    This is a simple example, that allow to make an <code>SCs-text</code> more readable and useful. In this case text has a sublevels, that allow 
+    to read it faster.
+    </td>
+  </tr>
+
+  <tr>
+    <td>
+      <pre>
+        <code class="js hljs javascript">
+set -> attr: item;;
+item -> subitem;;
+item -> attr2: subitem2;;
+        </code>
+      </pre>
+    </td>
+    <td>
+      <pre>
+        <code class="js hljs javascript">
+set 
+  -> attr: item
+  (* 
+    -> subitem;;
+    -> attr2:
+      subitem2;;
+  *);;
+        </code>
+      </pre>
+    </td>
+    <td>
+    You can use as more as you need sentences in <code>(* *)</code>, but all of them should be separated by <code>;;</code>.
+    </td>
+  </tr>
+
+  <tr>
+    <td>
+      <pre><code class="js hljs javascript">
+@en_idtf = [sc-element];;
+@ru_idtf = [sc-элемент];;
+@en_idtf <- lang_en;;
+@ru_idtf <- lang_ru;;
+sc_element 
+  => nrel_main_idtf: 
+    @en_idtf;
+    @ru_idtf;;
+      </code></pre>
+    </td>
+    <td>
+      <pre><code class="js hljs javascript">
+sc_element
+  => nrel_main_idtf:
+    [sc-element]
+    (* <- lang_en;; *);
+  => nrel_main_idtf:
+    [sc-элемент]
+    (* <- lang_ru;; *);;
+        </code></pre>
+    </td>
+    <td>
+    This type of syntax is very useful, when you need to specify some meta information on <code>sc-link</code>'s.
+    In this example we specify two main identifiers for a <code>sc_element</code>. One is an english (<code>lang_en</code>) identifier,
+    another one is a russian (<code>lang_ru</code>).
+    </td>
+  </tr>
+  
+</table>
+
 ### SCs level 6
+
+There are some new complex aliases, that adds by this level of `SCs-text`:
+
+* `[...]` - this is a short representation of `sc-link` with a content. You can create `sc-link` with a specified content
+by using this feature. There are all possible cases:
+<table>
+  <tr>
+    <th>Type</th>
+    <th>Description</th>
+    <th>Example</th>
+  </tr>
+    <tr>
+      <td>`string`</td>
+      <td>You can write any string that you wish inside <code>[ ... ]</code> alias</td>
+      <td>
+        <pre><code class="js hljs javascript">
+x -> [any string];;
+x -> [this is a 
+ multiline text];;
+        </code></pre>
+      </td>
+    </tr>
+    <tr>
+      <td>`number`</td>
+      <td>You can specify a number as a binary data. To do that, just use syntax:
+        <code>[^"type: value"]</code>. Where <code>type</code> is a one of possible types:
+        <ul> 
+          <li><code>int</code> - signed integer value (32 bit). You can also use such types for an integer:
+            <code>int8</code>, <code>int16</code>, <code>int32</code>, <code>int64</code>
+          </li>
+          <li><code>uint</code> - unsigned integer value (32 bit). You can also use such type for an unsigned integer:
+            <code>uint8</code>, <code>uint16</code>, <code>uint32</code>, <code>uint64</code>
+          </li>
+          <li><code>float</code> - 32-bit float value</li>
+          <li><code>double</code> - 64-bit float value</li>
+        </ul>
+      </td>
+      <td>
+        <pre><code class="js hljs javascript">
+x -> [^"float: 435.2346"];;
+x -> [^"int8: 7"];;
+x -> [^"uint: 781236"];;
+        </code></pre>
+      </td>
+    </tr>
+</table>
+
+* `[* ... *]` this is a short representation of <code>sc-structure</code>. You can use just <code>SCs-text</code> inside this brackets.
+  So these brackets will designate an <code>sc-structure</code> (<code>sc-node</code> with a type <code>sc_node_struct</code>). All elements inside
+  brackets will have ingoing edge (type <code>sc_edge_main</code>) from that <code>sc-node</code>.
+  <table>
+    <tr>
+      <th>SCs-text level 2-5</th>
+      <th>SCs-text level 6</th>
+    </tr>
+
+    <tr>
+      <td>
+        <pre><code class="js hljs javascript">
+@edge_alias = (set -> item);;
+struct -> set; item; @edge_alias;;
+        </code></pre>
+      </td>
+      <td>
+        <pre><code class="js hljs javascript">
+@struct = [ set -> item;; ];;
+        </code></pre>
+      </td>
+    </tr>
+  </table>
+
+!!! important "Thats important"
+    `SCs-text` inside `[* ... *]` has the same rules and semantic, like it was be in a separated file
+
+* `{ ... }` this is a short representation of set. This feature allow to make sets in very fast way.
+  Syntax looks like:
+  
+  ```js
+  @set = {
+    element1;
+    attr2: element2;
+    ...
+    last_element // no semicolon after last element
+  }
+  ```
+
+<table>
+  <tr>
+    <th>SCs-text level 2-5</th>
+    <th>SCs-text level 6</th>
+    <th>Comments</th>
+  </tr>
+
+  <tr>
+    <td>
+      <pre><code class="js hljs javascript">
+set
+  <- sc_node_tuple;
+  -> element1;
+  -> attr2: element2;
+  -> element3;;
+      </code></pre>
+    </td>
+    <td>
+      <pre><code class="js hljs javascript">
+@set = {
+  element1;
+  attr2: element2;
+  element3 // no semicolon
+};;
+      </code></pre>
+    </td>
+    <td>Using set looks much cleaner. You can use even attributes on it</td>
+  </tr>
+  
+  <tr>
+    <td>
+      <pre><code class="js hljs javascript">
+meta_set 
+  <- sc_node_tuple;
+  -> set1;
+  -> set2;;
+
+set1
+  <- sc_node_tuple;
+  -> element1;
+  -> attr2: element2;
+  -> element3;;
+
+set2
+  <- sc_node_tuple;
+  -> element5;
+  -> element6;;
+
+set3
+  <- sc_node_tuple;
+  -> element10;;
+
+element 
+  => nrel_relation:
+    set3;;
+      </code></pre>
+    </td>
+    <td>
+      <pre><code class="js hljs javascript">
+@meta_set = {
+  {
+    element1;
+    attr2: element2;
+    element3
+  };
+  {
+    element5;
+    element6
+  }
+};;
+
+element 
+  => nrel_relation:
+  {
+    element10
+  };;
+      </code></pre>
+    </td>
+    <td>You can use set alias inside any other complex aliases and triples.</td>
+  </tr>
+</table>
+
 
 ### Keynodes
 

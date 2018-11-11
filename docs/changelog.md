@@ -28,7 +28,7 @@
         - Implement web browser interface to access `sc-memory`
 
  - **Documentation**:
-    - Improve `SCs-code` documentation
+    - Improve `SCs-code` documentation. Add levels `5` and `6`
 
 ## v0.5.0
 
