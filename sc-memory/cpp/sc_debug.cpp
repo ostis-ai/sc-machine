@@ -9,8 +9,9 @@
 namespace utils
 {
 
-  ScException::ScException(std::string const & description)
+  ScException::ScException(std::string const & description, std::string const & msg)
     : m_description(description)
+    , m_msg(msg)
   {
 
   }
@@ -20,9 +21,14 @@ namespace utils
 
   }
 
-  const char* ScException::Message() const throw()
+  const char * ScException::Description() const throw()
   {
     return m_description.c_str();
+  }
+
+  const char * ScException::Message() const throw()
+  {
+    return m_msg.c_str();
   }
 
 } // namespace utils

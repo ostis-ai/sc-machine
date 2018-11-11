@@ -6,7 +6,6 @@ set(SC_BIN_PATH "${CMAKE_SOURCE_DIR}/bin")
 
 set(SC_MACHINE_ROOT ${CMAKE_CURRENT_LIST_DIR})
 set(SC_MACHINE_THIRDPARTY_PATH "${SC_MACHINE_ROOT}/thirdparty")
-set(SC_MACHINE_ANTRL_DIR "${SC_MACHINE_THIRDPARTY_PATH}/antlr")
 
 option (SC_AUTO_TEST "Flag to build for automation testing" OFF)
 option (SC_KPM_SCP "Flag to build SCP module" OFF)
@@ -28,7 +27,7 @@ endif()
 
 set(CMAKE_MODULE_PATH "${SC_MACHINE_ROOT}/cmake")
 
-set (JAVA_EXE ${Java_JAVA_EXECUTABLE})
+set(JAVA_EXE ${Java_JAVA_EXECUTABLE})
 
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${SC_BIN_PATH})
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${SC_BIN_PATH})
@@ -95,7 +94,6 @@ if (${APPLE})
 
     set (LIBCURL_LIBRARIES ${CURL_LIBRARIES})
 
-    find_library(ANTLR_LIB antlr3c)
     include_directories("${CMAKE_OSX_SYSROOT}/usr/include")
 
 elseif (${UNIX})
@@ -108,8 +106,6 @@ elseif (${UNIX})
     set(PY_SHORT_VERSION "${PY_VERSION_MAJOR}${PY_VERSION_MINOR}")
 
     find_package(Boost 1.54 REQUIRED COMPONENTS filesystem python-py${PY_SHORT_VERSION})
-
-    set (ANTLR_LIB antlr3c)
 
     include(FindPkgConfig)
     pkg_check_modules (GLIB2 REQUIRED glib-2.0)
@@ -142,17 +138,13 @@ elseif (${WIN32})
 
     set(PACKAGES_PATH "${CMAKE_BINARY_DIR}/packages")
 
-    set (ANTLR_LIB antlr3c.${MSVC_SUFFIX})
-
     if (${MSVC_VERSION} EQUAL "1800")
         set (MSVC_SUFFIX "vc120")
     elseif (${MSVC_VERSION} EQUAL "1900")
         set (MSVC_SUFFIX "vc140")
     elseif (${MSVC_VERSION} EQUAL "1911")
-        set (ANTLR_LIB "antlr3c.vc140")
         set (MSVC_SUFFIX "vc141")
     elseif (${MSVC_VERSION} EQUAL "1914")
-    set (ANTLR_LIB "antlr3c.vc140")
         set (MSVC_SUFFIX "vc141")
     endif()
 
@@ -235,6 +227,9 @@ elseif (${WIN32})
 endif(${APPLE})
 
 message ("Python version: ${PYTHONLIBS_VERSION_STRING}")
+
+# build antlr4 runtime
+add_subdirectory(${SC_MACHINE_THIRDPARTY_PATH}/antlr/runtime)
 
 include_directories(${SC_MACHINE_ROOT} ${GLIB2_INCLUDE_DIRS} ${Boost_INCLUDE_DIR})
 

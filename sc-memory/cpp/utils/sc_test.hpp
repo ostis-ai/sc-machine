@@ -95,7 +95,7 @@ int main(int argc, char ** argv) try \
 } \
 catch (utils::ScException const & ex) \
 { \
-  SC_LOG_ERROR(ex.Message()); \
+  SC_LOG_ERROR(ex.Description()); \
   _WAIT_KEY_IMPL() \
 }
 

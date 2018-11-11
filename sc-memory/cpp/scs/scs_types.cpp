@@ -10,7 +10,7 @@
 namespace scs
 {
 
-TypeResolver::MapType TypeResolver::ms_connectorToType(
+TypeResolver::MapType TypeResolver::ms_connectorToType =
 {
   {">",    ScType::EdgeDCommon},
   {"<",    ScType::EdgeDCommon},
@@ -47,9 +47,10 @@ TypeResolver::MapType TypeResolver::ms_connectorToType(
   {"</~",  ScType::EdgeAccessConstFuzTemp},
   {"_~/>", ScType::EdgeAccessVarFuzTemp},
   {"_</~", ScType::EdgeAccessVarFuzTemp}
-});
+};
 
-TypeResolver::MapType TypeResolver::ms_keynodeToType({
+TypeResolver::MapType TypeResolver::ms_keynodeToType =
+{
   {"sc_node",                   ScType::Node},
   {"sc_link",                   ScType::Link},
   {"sc_arc_common",             ScType::EdgeDCommon},
@@ -63,7 +64,7 @@ TypeResolver::MapType TypeResolver::ms_keynodeToType({
 
   {"sc_node_tuple",             ScType::NodeTuple},
   {"sc_node_struct",            ScType::NodeStruct},
-  {"sc_node_role_relation",     ScType::NodeRole}, 
+  {"sc_node_role_relation",     ScType::NodeRole},
   {"sc_node_norole_relation",   ScType::NodeNoRole},
   {"sc_node_class",             ScType::NodeClass},
   {"sc_node_abstract",          ScType::NodeAbstract},
@@ -72,9 +73,9 @@ TypeResolver::MapType TypeResolver::ms_keynodeToType({
   // backward compatibility
   {"sc_node_not_relation",      ScType::NodeClass},
   {"sc_node_not_binary_tuple",  ScType::NodeTuple}
-});
+};
 
-TypeResolver::IsType TypeResolver::ms_reversedConnectors(
+TypeResolver::IsType TypeResolver::ms_reversedConnectors =
 {
   "<", "<..",
   "<=", "_<=",
@@ -84,7 +85,7 @@ TypeResolver::IsType TypeResolver::ms_reversedConnectors(
   "<~", "_<~",
   "<|~", "_<|~",
   "</~", "_</~"
-});
+};
 
 ScType const & TypeResolver::GetConnectorType(std::string const & connectorAlias)
 {

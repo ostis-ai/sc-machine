@@ -19,7 +19,7 @@ namespace bp = boost::python;
 void translateException(utils::ScException const & e)
 {
   // Use the Python 'C' API to set up an exception object
-  PyErr_SetString(PyExc_RuntimeError, e.Message());
+  PyErr_SetString(PyExc_RuntimeError, e.Description());
 }
 
 namespace impl

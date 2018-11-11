@@ -8,6 +8,7 @@ tools/builder/src/parser/
 sc-memory/cpp/scs/scsLexer.*
 sc-memory/cpp/scs/scsParser.*
 sc-memory/cpp/scs/*.tokens
+sc-memory/cpp/scs/*.interp
 *.generated.*
 
 !thirdparty/*/bin/
@@ -20,3 +21,4 @@ manifest.json
 .vscode
 __pycache__
 .DS_store
+.antlr

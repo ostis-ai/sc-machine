@@ -50,7 +50,7 @@ UNIT_TEST(Python_clean)
       }
       catch (utils::ScException const & ex)
       {
-        SC_LOG_ERROR(ex.Message());
+        SC_LOG_ERROR(ex.Description());
         passed = false;
       }
       catch (...)

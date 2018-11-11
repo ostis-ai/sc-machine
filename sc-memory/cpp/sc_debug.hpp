@@ -18,61 +18,63 @@ namespace utils
 class ScException : public std::exception
 {
 public:
-  _SC_EXTERN ScException(std::string const & description);
+  _SC_EXTERN ScException(std::string const & description, std::string const & msg);
   _SC_EXTERN virtual ~ScException() throw();
 
-  _SC_EXTERN const char* Message() const throw();
+  _SC_EXTERN const char * Description() const throw();
+  _SC_EXTERN const char * Message() const throw();
 
 private:
   std::string m_description;
+  std::string m_msg;
 };
 
 class ExceptionAssert final : public ScException
 {
 public:
-  explicit ExceptionAssert(std::string const & msg) : ScException("Assert: " + msg) {}
+  ExceptionAssert(std::string const & description, std::string const & msg) : ScException("Assert: " + description, msg) {}
 };
 
 class ExceptionCritical final : public ScException
 {
 public:
-  explicit ExceptionCritical(std::string const & msg) : ScException("Critical: " + msg) {}
+  ExceptionCritical(std::string const & description, std::string const & msg) : ScException("Critical: " + description, msg) {}
 };
 
 class ExceptionInvalidParams final : public ScException
 {
 public:
-  explicit ExceptionInvalidParams(std::string const & msg) : ScException("InvalidParams: " + msg) {}
+  ExceptionInvalidParams(std::string const & description, std::string const & msg) : ScException("InvalidParams: " + description, msg) {}
 };
 
 class ExceptionInvalidState final : public ScException
 {
 public:
-  explicit ExceptionInvalidState(std::string const & msg) : ScException("InvalidState: " + msg) {}
+  ExceptionInvalidState(std::string const & description, std::string const & msg) : ScException("InvalidState: " + description, msg) {}
 };
 
 class ExceptionItemNotFound final : public ScException
 {
 public:
-  explicit ExceptionItemNotFound(std::string const & msg) : ScException("ItemNotFound: " + msg) {}
+  ExceptionItemNotFound(std::string const & description, std::string const & msg) : ScException("ItemNotFound: " + description, msg) {}
 };
 
 class ExceptionParseError final : public ScException
 {
 public:
-  explicit ExceptionParseError(std::string const & msg) : ScException("ParseError: " + msg) {}
+  ExceptionParseError(std::string const & description, std::string const & msg) : ScException("ParseError: " + description, msg) {}
 };
 
 class ExceptionNotImplemented final : public ScException
 {
 public:
-  explicit ExceptionNotImplemented(std::string const & msg) : ScException("NotImplemented: " + msg) {}
+  ExceptionNotImplemented(std::string const & description, std::string const & msg) : ScException("NotImplemented: " + description, msg) {}
 };
 
 class ExceptionInvalidType final : public ScException
 {
 public:
-  explicit ExceptionInvalidType(std::string const & msg) : ScException("InvalidType: " + msg) {}
+  explicit ExceptionInvalidType(std::string const & description, std::string const & msg) : ScException("InvalidType: " + description, msg) {}
 };
 
 #define error(__str) { throw ScException(__str); }
@@ -83,8 +85,9 @@ public:
 { \
   std::stringstream _str_message; \
   _str_message << _msg; \
+  std::string _msg_raw = _str_message.str(); \
   _str_message << std::endl << "File: " << _file << std::endl << "Line:" << _line << std::endl; \
-  throw _exception_class(_str_message.str()); \
+  throw _exception_class(_str_message.str(), _msg_raw); \
 }
 
 #define SC_THROW_EXCEPTION(_exception_class, _msg) THROW_EXCEPTION(_exception_class, _msg, __FILE__, __LINE__)

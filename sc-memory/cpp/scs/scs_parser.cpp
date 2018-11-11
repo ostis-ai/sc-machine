@@ -25,8 +25,8 @@
 #   define DEBUG_TOKEN(__msg)
 #endif
 
-#include "scsLexer.hpp"
-#include "scsParser.hpp"
+#include "scsLexer.h"
+#include "scsParser.h"
 
 #include <iostream>
 
@@ -65,6 +65,38 @@ std::pair<ScType, std::string> ParseIdtfLevel1(std::string const & idtf)
   return empty;
 }
 
+
+class ErrorListener : public antlr4::ANTLRErrorListener
+{
+protected:
+  void syntaxError(antlr4::Recognizer *, antlr4::Token *, size_t line,
+                   size_t charPositionInLine, std::string const & msg, std::exception_ptr) override
+  {
+    SC_THROW_EXCEPTION(utils::ExceptionParseError, "Parse error at " << line << "," << charPositionInLine << ": " << msg);
+  }
+
+  void reportAmbiguity(antlr4::Parser *, antlr4::dfa::DFA const &, size_t, size_t, bool,
+                       antlrcpp::BitSet const &, antlr4::atn::ATNConfigSet *) override
+  {
+    SC_THROW_EXCEPTION(utils::ExceptionParseError, "reportAmbiguity");
+  }
+
+
+  void reportAttemptingFullContext(antlr4::Parser *, antlr4::dfa::DFA const &, size_t, size_t,
+                                   antlrcpp::BitSet const &, antlr4::atn::ATNConfigSet *) override
+  {
+    SC_THROW_EXCEPTION(utils::ExceptionParseError, "reportAttemptingFullContext");
+  }
+
+
+  void reportContextSensitivity(antlr4::Parser *, antlr4::dfa::DFA const &, size_t, size_t,
+                                size_t, antlr4::atn::ATNConfigSet *) override
+  {
+    SC_THROW_EXCEPTION(utils::ExceptionParseError, "reportContextSensitivity");
+  }
+
+};
+
 }
 
 namespace scs
@@ -98,7 +130,7 @@ std::string const & ParsedElement::GetIdtf() const
   return m_idtf;
 }
 
-Visibility const ParsedElement::GetVisibility() const
+Visibility ParsedElement::GetVisibility() const
 {
   return m_visibility;
 }
@@ -192,6 +224,7 @@ ElementHandle & ElementHandle::operator = (ElementHandle const & other)
   return *this;
 }
 
+
 // ---------------------------------------
 
 Parser::Parser(class ScMemoryContext & ctx)
@@ -210,13 +243,14 @@ bool Parser::Parse(std::string const & str)
 
   std::string fName;
 
-  scsLexerTraits::InputStreamType input((ANTLR_UINT8 const *)str.c_str(),
-                                        ANTLR_ENC_UTF8,
-                                        (ANTLR_UINT32)str.size(),
-                                        (ANTLR_UINT8*)fName.c_str());
+  antlr4::ANTLRInputStream input(str);
   scsLexer lexer(&input);
-  scsLexerTraits::TokenStreamType tokenStream(ANTLR_SIZE_HINT, lexer.get_tokSource());
-  scsParser parser(&tokenStream);
+  antlr4::CommonTokenStream tokens(&lexer);
+  scsParser parser(&tokens);
+
+  ErrorListener errListen;
+
+  parser.addErrorListener(&errListen);
 
   parser.setParser(this);
   try
@@ -227,7 +261,7 @@ bool Parser::Parse(std::string const & str)
   {
     m_lastError = e.Message();
     result = false;
-  } 
+  }
 
   return result;
 }
@@ -360,7 +394,7 @@ void Parser::ProcessTriple(ElementHandle const & source, ElementHandle const & e
     {
       m_parsedTriples.emplace_back(ParsedTriple(src, e, trg));
     }
-  }; 
+  };
 
   if (edgeEl.IsReversed())
   {
@@ -369,11 +403,11 @@ void Parser::ProcessTriple(ElementHandle const & source, ElementHandle const & e
   else
   {
     addEdge(source, edge, target);
-  }    
+  }
 }
 
 ElementHandle Parser::ProcessConnector(std::string const & connector)
-{ 
+{
   ScType const type = TypeResolver::GetConnectorType(connector);
   SC_ASSERT(type.IsEdge(), ());
 
@@ -393,7 +427,7 @@ ElementHandle Parser::ProcessContent(std::string const & content)
   {
     type |= ScType::Link;
   }
-  
+
   return AppendElement(GenerateLinkIdtf(), type, false, content);
 }
 

@@ -7,7 +7,6 @@
 #pragma once
 
 #include "../sc_types.hpp"
-#include "scs_parseutils.hpp"
 #include "scs_types.hpp"
 
 #include <stack>
@@ -35,7 +34,7 @@ public:
                          std::string const & value = "");
 
   _SC_EXTERN std::string const & GetIdtf() const;
-  _SC_EXTERN Visibility const GetVisibility() const;
+  _SC_EXTERN Visibility GetVisibility() const;
   _SC_EXTERN ScType const & GetType() const;
   _SC_EXTERN bool IsReversed() const;
   _SC_EXTERN std::string const & GetValue() const;
@@ -48,14 +47,14 @@ protected:
   ScType m_type;
   Visibility m_visibility; // cached value, to prevent each time check
   bool m_isReversed : 1;   // flag used just for an edges
-  std::string m_value;  // string representation of content/link value 
+  std::string m_value;  // string representation of content/link value
 };
 
 class ElementHandle
 {
 public:
   explicit ElementHandle(ElementID id);
-  ElementHandle(); 
+  ElementHandle();
   ElementHandle(ElementID id, bool isLocal);
 
   ElementID operator * () const;
@@ -109,6 +108,7 @@ protected:
 
   ParsedElement & GetParsedElementRef(ElementHandle const & elID);
 
+  ElementHandle ProcessAlias(std::string const & name);
   ElementHandle ProcessIdentifier(std::string const & name);
   ElementHandle ProcessIdentifierLevel1(std::string const & type, std::string const & name);
   void ProcessTriple(ElementHandle const & source, ElementHandle const & edge, ElementHandle const & target);
@@ -124,7 +124,7 @@ private:
 
   std::string GenerateEdgeIdtf();
   std::string GenerateLinkIdtf();
-   
+
 private:
   class ScMemoryContext & m_memoryCtx;
 
