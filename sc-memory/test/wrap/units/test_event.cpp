@@ -196,11 +196,11 @@ UNIT_TEST(events_destroy_order)
 UNIT_TEST(events_lock)
 {
   ScMemoryContext ctx(sc_access_lvl_make_min, "events_lock");
-  
+
   ScAddr const node = ctx.CreateNode(ScType::NodeConst);
   ScAddr const node2 = ctx.CreateNode(ScType::NodeConst);
 
-  ScEventAddOutputEdge evt(ctx, node, 
+  ScEventAddOutputEdge evt(ctx, node,
                            [](ScAddr const & addr, ScAddr const & edgeAddr, ScAddr const & otherAddr)
   {
     bool result = false;
@@ -255,32 +255,32 @@ UNIT_TEST(pend_events)
   volatile int32_t eventsCount = 0;
   volatile int32_t passedCount = 0;
 
-  std::shared_ptr<ScTemplate> checkTempl(new ScTemplate());
-  size_t step = 100;
-  size_t testNum = el_num / step - 1;
-  for (size_t i = 0; i < testNum; ++i)
-  {
-    checkTempl->TripleWithRelation(
-      set1,
-      ScType::EdgeDCommonVar,
-      elements[i * step] >> "_el",
-      ScType::EdgeAccessVarPosPerm,
-      rel);
-  }
-
   ScEventAddOutputEdge evt(ctx, set1,
-    [checkTempl, &passedCount, &eventsCount](ScAddr const & addr, ScAddr const & edgeAddr, ScAddr const & otherAddr)
+    [&passedCount, &eventsCount, &set1, &elements, &rel](ScAddr const &, ScAddr const &, ScAddr const &)
   {
+    std::shared_ptr<ScTemplate> checkTempl(new ScTemplate());
+    size_t step = 100;
+    size_t testNum = el_num / step - 1;
+    for (size_t i = 0; i < testNum; ++i)
+    {
+      checkTempl->TripleWithRelation(
+        set1,
+        ScType::EdgeDCommonVar,
+        elements[i * step] >> "_el",
+        ScType::EdgeAccessVarPosPerm,
+        rel);
+    }
+
     ScMemoryContext localCtx(sc_access_lvl_make_min);
-    
+
     ScTemplateSearchResult res;
     SC_CHECK(localCtx.HelperSearchTemplate(*checkTempl, res), ());
-    
+
     if (res.Size() == 1)
       g_atomic_int_add(&passedCount, 1);
 
     g_atomic_int_add(&eventsCount, 1);
-    
+
     return true;
   });
 
