@@ -72,7 +72,7 @@ protected:
   void syntaxError(antlr4::Recognizer *, antlr4::Token *, size_t line,
                    size_t charPositionInLine, std::string const & msg, std::exception_ptr) override
   {
-    SC_THROW_EXCEPTION(utils::ExceptionParseError, "Parse error at " << line << "," << charPositionInLine << ": " << msg);
+    SC_THROW_EXCEPTION(utils::ExceptionParseError, "Parse error at line " << line << "," << charPositionInLine << ": " << msg);
   }
 
   void reportAmbiguity(antlr4::Parser *, antlr4::dfa::DFA const &, size_t, size_t, bool,
@@ -179,48 +179,48 @@ void ParsedElement::ResolveVisibility()
 }
 
 ElementHandle::ElementHandle(ElementID id)
-  : m_id(id << 1)
+  : m_id(id)
+  , m_isLocal(false)
 {
 }
 
 ElementHandle::ElementHandle()
   : m_id(INVALID_ID)
+  , m_isLocal(false)
 {
 }
 
 ElementHandle::ElementHandle(ElementID id, bool isLocal)
+  : m_id(id)
+  , m_isLocal(isLocal)
 {
-  if (id >= INVALID_ID)
-    SC_THROW_EXCEPTION(utils::ExceptionCritical, "There are too many elements in scs");
-
-  m_id = isLocal ? 1 : 0;
-  m_id |= (id << 1);
 }
 
 ElementID ElementHandle::operator * () const
 {
   SC_ASSERT(IsValid(), ());
-  return (m_id >> 1);
+  return m_id;
 }
 
 bool ElementHandle::IsLocal() const
 {
-  return (m_id & 1);
+  return m_isLocal;
 }
 
 bool ElementHandle::IsValid() const
 {
-  return (m_id >> 1) != INVALID_ID;
+  return m_id != INVALID_ID;
 }
 
 bool ElementHandle::operator == (ElementHandle const & other) const
 {
-  return (m_id == other.m_id);
+  return (m_id == other.m_id) && (m_isLocal == other.m_isLocal);
 }
 
 ElementHandle & ElementHandle::operator = (ElementHandle const & other)
 {
   m_id = other.m_id;
+  m_isLocal = other.m_isLocal;
   return *this;
 }
 
@@ -335,12 +335,18 @@ ElementHandle Parser::AppendElement(std::string const & idtf,
     bool const isLocal = (el.GetVisibility() == Visibility::Local);
     auto & container = isLocal ? m_parsedElementsLocal : m_parsedElements;
 
-    elId = ElementHandle(static_cast<ElementID>(container.size()), isLocal);
+    elId = ElementHandle(ElementID(container.size()), isLocal);
     container.emplace_back(el);
     m_idtfToParsedElement[idtf] = elId;
   }
 
   return elId;
+}
+
+ElementHandle Parser::ResolveAlias(std::string const & name)
+{
+  auto const it = m_aliasHandles.find(name);
+  return (it == m_aliasHandles.end()) ? ElementHandle() : it->second;
 }
 
 ElementHandle Parser::ProcessIdentifier(std::string const & name)
@@ -404,6 +410,11 @@ void Parser::ProcessTriple(ElementHandle const & source, ElementHandle const & e
   {
     addEdge(source, edge, target);
   }
+}
+
+void Parser::ProcessAssign(std::string const & alias, ElementHandle const & value)
+{
+  m_aliasHandles[alias] = value;
 }
 
 ElementHandle Parser::ProcessConnector(std::string const & connector)

@@ -89,6 +89,21 @@ private:
 
 }
 
+UNIT_TEST(scs_ElementHandle)
+{
+  scs::ElementHandle handle_err;
+  SC_CHECK_NOT(handle_err.IsValid(), ());
+  SC_CHECK_NOT(handle_err.IsLocal(), ());
+
+  scs::ElementHandle handle_ok(1);
+  SC_CHECK(handle_ok.IsValid(), ());
+  SC_CHECK_NOT(handle_ok.IsLocal(), ());
+
+  scs::ElementHandle handle_local(0, true);
+  SC_CHECK(handle_local.IsValid(), ());
+  SC_CHECK(handle_local.IsLocal(), ());
+}
+
 UNIT_TEST(scs_parser_error)
 {
   ScMemoryContext ctx(sc_access_lvl_make_min, "scs_parser_error");
@@ -98,7 +113,7 @@ UNIT_TEST(scs_parser_error)
     char const * data = "a -> b;;\nc ->";
 
     scs::Parser parser(ctx);
-    
+
     SC_CHECK_NOT(parser.Parse(data), ());
     SC_LOG_WARNING(parser.GetParseError());
   }
@@ -198,7 +213,7 @@ UNIT_TEST(scs_comments)
       "c <> d;;";
 
   SC_CHECK(parser.Parse(data), ());
-  
+
   auto const & triples = parser.GetParsedTriples();
   SC_CHECK_EQUAL(triples.size(), 2, ());
 
@@ -343,7 +358,7 @@ UNIT_TEST(scs_level_2)
     char const * data =
       "a <> (b -> c);;"
       "(c <- x) <- (b -> y);;";
-    
+
     scs::Parser parser(ctx);
     SC_CHECK(parser.Parse(data), ());
 
@@ -412,7 +427,7 @@ UNIT_TEST(scs_level_3)
         { ScType::NodeVar, "_b" },
         { ScType::EdgeAccessVarPosPerm, scs::Visibility::Local },
         { ScType::EdgeAccessConstPosPerm, scs::Visibility::Local }
-      }      
+      }
     });
 
     auto const & triples = parser.GetParsedTriples();
@@ -650,10 +665,10 @@ UNIT_TEST(scs_types)
     }
   }
   SUBTEST_END()
-  
+
   SUBTEST_START(links)
   {
-    char const * data =
+    std::string const data =
       "a -> \"file://data.txt\";;"
       "b -> [x];;"
       "c -> _[];;"
@@ -663,7 +678,7 @@ UNIT_TEST(scs_types)
     SC_CHECK(parser.Parse(data), (parser.GetParseError()));
 
     auto const & triples = parser.GetParsedTriples();
-    
+
     SC_CHECK_EQUAL(triples.size(), 4, ());
 
     SC_CHECK_EQUAL(parser.GetParsedElement(triples[0].m_target).GetType(), ScType::Link, ());
@@ -675,11 +690,11 @@ UNIT_TEST(scs_types)
 
   SUBTEST_START(backward_compatibility)
   {
-    char const * data = "a <- c;; a <- sc_node_not_relation;; b <- c;; b <- sc_node_not_binary_tuple;;";
+    std::string const data = "a <- c;; a <- sc_node_not_relation;; b <- c;; b <- sc_node_not_binary_tuple;;";
     scs::Parser parser(ctx);
 
     SC_CHECK(parser.Parse(data), (parser.GetParseError()));
-    
+
     auto const & triples = parser.GetParsedTriples();
     SC_CHECK_EQUAL(triples.size(), 2, ());
 
@@ -690,7 +705,7 @@ UNIT_TEST(scs_types)
 
   SUBTEST_START(edges)
   {
-    char const * data = "x"
+    std::string const data = "x"
       "> _y; <> y4; ..> y5;"
       "<=> y7; _<=> y8; => y9; _=> y11;"
       "-> y2; _-> y13; -|> y15; _-|> y17; -/> y19; _-/> y21;"
@@ -737,10 +752,114 @@ UNIT_TEST(scs_types)
 
   SUBTEST_START(type_error)
   {
-    char const * data = "a <- sc_node_abstract;; a <- sc_node_role_relation;;";
+    std::string const data = "a <- sc_node_abstract;; a <- sc_node_role_relation;;";
 
     scs::Parser parser(ctx);
     SC_CHECK_NOT(parser.Parse(data), ());
+  }
+  SUBTEST_END()
+}
+
+UNIT_TEST(scs_aliases)
+{
+  ScMemoryContext ctx(sc_access_lvl_make_min, "scs_aliases");
+
+  SUBTEST_START(simple_assign)
+  {
+    std::string const data = "@alias = [];; x ~> @alias;;";
+
+    scs::Parser parser(ctx);
+
+    SC_CHECK(parser.Parse(data), (parser.GetParseError()));
+
+    auto const & triples = parser.GetParsedTriples();
+    SC_CHECK_EQUAL(triples.size(), 1, ());
+
+    auto const & t = triples.front();
+    SC_CHECK(parser.GetParsedElement(t.m_source).GetType().IsNode(), ());
+    SC_CHECK_EQUAL(parser.GetParsedElement(t.m_edge).GetType(), ScType::EdgeAccessConstPosTemp, ());
+    SC_CHECK(parser.GetParsedElement(t.m_target).GetType().IsLink(), ());
+  }
+  SUBTEST_END()
+
+  SUBTEST_START(no_assign)
+  {
+    std::string const data = "x -> @y;;";
+
+    scs::Parser parser(ctx);
+
+    SC_CHECK(!parser.Parse(data), (parser.GetParseError()));
+  }
+  SUBTEST_END()
+
+  SUBTEST_START(recursive_assigns)
+  {
+    std::string const data = "@alias1 = x;; @alias1 <- sc_node_tuple;; @alias2 = @alias1;; _y -|> x;;";
+
+    scs::Parser parser(ctx);
+
+    SC_CHECK(parser.Parse(data), (parser.GetParseError()));
+
+    auto const & triples = parser.GetParsedTriples();
+    SC_CHECK_EQUAL(triples.size(), 1, ());
+
+    auto const t = triples.front();
+    auto const & src = parser.GetParsedElement(t.m_source);
+    auto const & edge = parser.GetParsedElement(t.m_edge);
+    auto const & trg = parser.GetParsedElement(t.m_target);
+
+    SC_CHECK_EQUAL(src.GetIdtf(), "_y", ());
+    SC_CHECK(src.GetType().IsNode(), ());
+    SC_CHECK(src.GetType().IsVar(), ());
+
+    SC_CHECK_EQUAL(edge.GetType(), ScType::EdgeAccessConstNegPerm, ());
+
+    SC_CHECK_EQUAL(trg.GetIdtf(), "x", ());
+    SC_CHECK_EQUAL(trg.GetType(), ScType::NodeConstTuple, ());
+  }
+  SUBTEST_END()
+
+  SUBTEST_START(alias_reassign)
+  {
+    std::string const data = "@alias = _x;; _x <- sc_node_struct;; y _~/> @alias;; @alias = _[];; z _~> @alias;;";
+
+    scs::Parser parser(ctx);
+
+    SC_CHECK(parser.Parse(data), (parser.GetParseError()));
+
+    auto const & triples = parser.GetParsedTriples();
+    SC_CHECK_EQUAL(triples.size(), 2, ());
+
+    {
+      auto const & t = triples[0];
+
+      auto const & src = parser.GetParsedElement(t.m_source);
+      auto const & edge = parser.GetParsedElement(t.m_edge);
+      auto const & trg = parser.GetParsedElement(t.m_target);
+
+      SC_CHECK_EQUAL(src.GetIdtf(), "y", ());
+      SC_CHECK_EQUAL(src.GetType(), ScType::NodeConst, ());
+
+      SC_CHECK_EQUAL(edge.GetType(), ScType::EdgeAccessVarFuzTemp, ());
+
+      SC_CHECK_EQUAL(trg.GetIdtf(), "_x", ());
+      SC_CHECK_EQUAL(trg.GetType(), ScType::NodeVarStruct, ());
+    }
+
+    {
+      auto const & t = triples[1];
+
+      auto const & src = parser.GetParsedElement(t.m_source);
+      auto const & edge = parser.GetParsedElement(t.m_edge);
+      auto const & trg = parser.GetParsedElement(t.m_target);
+
+      SC_CHECK_EQUAL(src.GetIdtf(), "z", ());
+      SC_CHECK_EQUAL(src.GetType(), ScType::NodeConst, ());
+
+      SC_CHECK_EQUAL(edge.GetType(), ScType::EdgeAccessVarPosTemp, ());
+
+      SC_CHECK_EQUAL(trg.GetType(), ScType::LinkVar, ());
+    }
   }
   SUBTEST_END()
 }

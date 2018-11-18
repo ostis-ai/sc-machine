@@ -23,6 +23,10 @@ for (auto const & _a : __attrs) \
   m_parser->ProcessTriple(_a.first, attrEdge, __edge); \
 }
 
+#define PARSE_ERROR(line, pos, msg) \
+  SC_THROW_EXCEPTION(utils::ExceptionParseError, \
+                    "line " << line << ", " << pos << " " << msg);
+
 }
 
 @parser::members {
@@ -34,43 +38,6 @@ public:
     m_parser = parser;
   }
 
-//   void displayRecognitionError(ANTLR_UINT8 ** tokenNames, Parser::ExceptionBaseType * ex)
-//   {
-//     scsParserImplTraits::StringStreamType errtext;
-//     // See if there is a 'filename' we can use
-//     //
-//     if( !ex->get_streamName().empty() )
-//     {
-//         errtext << "File:" << ex->get_streamName() << std::endl;
-//     }
-
-//     // Next comes the line number
-//     //
-//     errtext << "Line: " << this->get_rec()->get_state()->get_exception()->get_line() << std::endl;
-//     errtext << "Error: " << this->get_rec()->get_state()->get_exception()->getType()
-//                          << ". "
-//                          << this->get_rec()->get_state()->get_exception()->get_message();
-
-//     // Prepare the knowledge we know we have
-//     //
-//     const CommonTokenType* theToken   = this->get_rec()->get_state()->get_exception()->get_token();
-//     StringType ttext = theToken->toString();
-
-//     errtext << ", at offset "
-//             << this->get_rec()->get_state()->get_exception()->get_charPositionInLine();
-            
-//     if  (theToken != NULL)
-//     {
-//         if (theToken->get_type() != CommonTokenType::TOKEN_EOF && !ttext.empty())
-//         {
-//             errtext << " near " << ttext;
-//         }
-//     }
-
-// //  ex->displayRecognitionError( tokenNames, errtext );
-//     SC_THROW_EXCEPTION(utils::ExceptionParseError, errtext.str());
-//   }
-  
 private:
   scs::Parser * m_parser;
 
@@ -132,12 +99,12 @@ sentence_wrap
 
 sentence
   : sentence_lvl1
-	| sentence_lvl_common
   | sentence_assign
+	| sentence_lvl_common
   ;
 
-alias returns [ElementHandle handle]
-  : '@' ALIAS_SYMBOLS
+alias
+  : ALIAS_SYMBOLS
   ;
 
 idtf_system returns [ElementHandle handle]
@@ -149,7 +116,10 @@ idtf_system returns [ElementHandle handle]
 
 
 sentence_assign
-  : alias '=' idtf_common
+  : a=alias '=' i=idtf_common
+    {
+      m_parser->ProcessAssign($ctx->a->getText(), $ctx->i->handle);
+    }
   ;
     
 idtf_lvl1_preffix returns [std::string text]
@@ -159,6 +129,7 @@ idtf_lvl1_preffix returns [std::string text]
   | 'sc_edge_ucommon'
   | 'sc_edge_main'
   | 'sc_edge_access'
+  
   // backward compatibility
   | 'sc_arc_common'
   | 'sc_edge'
@@ -232,13 +203,22 @@ idtf_set returns [ElementHandle handle]
   ;
 
 idtf_common returns [ElementHandle handle]
-	: is=idtf_system { $ctx->handle = $ctx->is->handle; }
+	: a=alias 
+    { 
+      std::string const _alias = $ctx->a->getText();
+      $ctx->handle = m_parser->ResolveAlias(_alias);
+      if (!$ctx->handle.IsValid())
+      {
+        PARSE_ERROR($ctx->start->getLine(), $ctx->start->getCharPositionInLine(),
+          "Can't resolve alias `" << _alias << "`. You should use assigment of alias before usage.");
+      }
+    }
+  | is=idtf_system { $ctx->handle = $ctx->is->handle; }
 	| ie=idtf_edge { $ctx->handle = $ctx->ie->handle; }
 	| iset=idtf_set { $ctx->handle = $ctx->iset->handle; }
   | contour
 	| cn=content { $handle = $ctx->cn->handle; }
 	| LINK { $handle = m_parser->ProcessLink($LINK->getText()); }
-  | a=alias { $ctx->handle = $ctx->a->handle; }
   ;
 
 idtf_list returns [std::vector<ElementHandle> items]
@@ -317,7 +297,7 @@ ID_SYSTEM
   ;
 
 ALIAS_SYMBOLS
-  : ('a'..'z'|'A'..'Z'|'_'|'0'..'9')+
+  : '@'('a'..'z'|'A'..'Z'|'_'|'0'..'9')+
   ;
 
 LINK

@@ -27,7 +27,7 @@ ScTestUnit::~ScTestUnit()
 
 void ScTestUnit::Run(std::string const & configPath, std::string const & extPath)
 {
-  SC_LOG_INFO("Run test " << m_name);
+  SC_LOG_INFO_COLOR("Run test " << m_name, ScConsole::Color::Blue);
 
   InitMemory(configPath, extPath);
 

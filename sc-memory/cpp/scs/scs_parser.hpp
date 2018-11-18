@@ -56,6 +56,7 @@ public:
   explicit ElementHandle(ElementID id);
   ElementHandle();
   ElementHandle(ElementID id, bool isLocal);
+  ElementHandle(ElementHandle const & other) = default;
 
   ElementID operator * () const;
   _SC_EXTERN bool IsLocal() const;
@@ -64,9 +65,10 @@ public:
   ElementHandle & operator = (ElementHandle const & other);
 
 private:
-  static const ElementID INVALID_ID = ((1 << 30) - 1);
+  static const ElementID INVALID_ID = std::numeric_limits<ElementID>::max();
 
-  ElementID m_id : 32;
+  ElementID m_id;
+  bool m_isLocal;
 };
 
 
@@ -108,13 +110,15 @@ protected:
 
   ParsedElement & GetParsedElementRef(ElementHandle const & elID);
 
-  ElementHandle ProcessAlias(std::string const & name);
+  ElementHandle ResolveAlias(std::string const & name);
   ElementHandle ProcessIdentifier(std::string const & name);
   ElementHandle ProcessIdentifierLevel1(std::string const & type, std::string const & name);
-  void ProcessTriple(ElementHandle const & source, ElementHandle const & edge, ElementHandle const & target);
   ElementHandle ProcessConnector(std::string const & connector);
   ElementHandle ProcessContent(std::string const & content);
   ElementHandle ProcessLink(std::string const & link);
+
+  void ProcessTriple(ElementHandle const & source, ElementHandle const & edge, ElementHandle const & target);
+  void ProcessAssign(std::string const & alias, ElementHandle const & value);
 
 private:
   ElementHandle AppendElement(std::string const & idtf,
@@ -132,6 +136,9 @@ private:
   ParsedElementVector m_parsedElementsLocal;   // just elements that has a local visibility
   TripleVector m_parsedTriples;
   IdtfToParsedElementMap m_idtfToParsedElement;
+
+  using AliasHandles = std::map<std::string, ElementHandle>;
+  AliasHandles m_aliasHandles;
 
   std::string m_lastError;
 

@@ -59,6 +59,10 @@ You can use alias for any sc-element by using `=` operator. There are some examp
 @edge_alias = (c -> b);;
 @alias_to_alias = @other_alias;;
 ```
+
+!!! warning
+    Aliases visible just in a file scope. 
+    You should define alias before usage.
  
 --- 
 
