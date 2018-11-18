@@ -112,7 +112,7 @@ UNIT_TEST(scs_parser_error)
   {
     char const * data = "a -> b;;\nc ->";
 
-    scs::Parser parser(ctx);
+    scs::Parser parser;
 
     SC_CHECK_NOT(parser.Parse(data), ());
     SC_LOG_WARNING(parser.GetParseError());
@@ -126,7 +126,7 @@ UNIT_TEST(scs_parser_triple)
 
   SUBTEST_START(triple_1)
   {
-    scs::Parser parser(ctx);
+    scs::Parser parser;
     char const * data = "a -> b;;";
     SC_CHECK(parser.Parse(data), ());
 
@@ -151,7 +151,7 @@ UNIT_TEST(scs_parser_triple)
 
   SUBTEST_START(reversed_1)
   {
-    scs::Parser parser(ctx);
+    scs::Parser parser;
     char const * data = "a <- b;;";
     SC_CHECK(parser.Parse(data), ());
 
@@ -171,7 +171,7 @@ UNIT_TEST(scs_parser_triple)
 
   SUBTEST_START(sentences_1)
   {
-    scs::Parser parser(ctx);
+    scs::Parser parser;
     char const * data = "a <- b;; r => x;;";
     SC_CHECK(parser.Parse(data), ());
 
@@ -205,7 +205,7 @@ UNIT_TEST(scs_parser_triple)
 UNIT_TEST(scs_comments)
 {
   ScMemoryContext ctx(sc_access_lvl_make_min, "scs_comments");
-  scs::Parser parser(ctx);
+  scs::Parser parser;
 
   char const * data =
       "//Level1\n"
@@ -251,7 +251,7 @@ UNIT_TEST(scs_level_1)
   SUBTEST_START(simple)
   {
     char const * data = "sc_node#a | sc_edge#e1 | sc_node#b;;";
-    scs::Parser parser(ctx);
+    scs::Parser parser;
 
     SC_CHECK(parser.Parse(data), ());
 
@@ -275,7 +275,7 @@ UNIT_TEST(scs_const_var)
   ScMemoryContext ctx(sc_access_lvl_make_min, "scs_const_var");
 
   char const * data = "_a _-> b;;";
-  scs::Parser parser(ctx);
+  scs::Parser parser;
 
   SC_CHECK(parser.Parse(data), ());
 
@@ -304,7 +304,7 @@ UNIT_TEST(scs_level_2)
   {
     char const * data = "a -> (b <- c);;";
 
-    scs::Parser parser(ctx);
+    scs::Parser parser;
 
     SC_CHECK(parser.Parse(data), ());
     TripleTester tester(parser);
@@ -330,7 +330,7 @@ UNIT_TEST(scs_level_2)
   SUBTEST_START(simple_2)
   {
     char const * data = "(a -> b) => c;;";
-    scs::Parser parser(ctx);
+    scs::Parser parser;
 
     SC_CHECK(parser.Parse(data), ());
     TripleTester tester(parser);
@@ -359,7 +359,7 @@ UNIT_TEST(scs_level_2)
       "a <> (b -> c);;"
       "(c <- x) <- (b -> y);;";
 
-    scs::Parser parser(ctx);
+    scs::Parser parser;
     SC_CHECK(parser.Parse(data), ());
 
     TripleTester tester(parser);
@@ -408,7 +408,7 @@ UNIT_TEST(scs_level_3)
   SUBTEST_START(simple_1)
   {
     char const * data = "a -> c: _b:: d;;";
-    scs::Parser parser(ctx);
+    scs::Parser parser;
 
     SC_CHECK(parser.Parse(data), ());
     TripleTester tester(parser);
@@ -442,7 +442,7 @@ UNIT_TEST(scs_level_3)
   {
     char const * data = "(a <- f: d) -> (c -> b: d);;";
 
-    scs::Parser parser(ctx);
+    scs::Parser parser;
     SC_CHECK(parser.Parse(data), ());
 
     TripleTester tester(parser);
@@ -488,7 +488,7 @@ UNIT_TEST(scs_level_3)
   {
     char const * data = "a -> c: (d -> g: h);;";
 
-    scs::Parser parser(ctx);
+    scs::Parser parser;
     SC_CHECK(parser.Parse(data), ());
 
     TripleTester tester(parser);
@@ -533,7 +533,7 @@ UNIT_TEST(scs_level_4)
   {
     char const * data = "a -> b: c; d;;";
 
-    scs::Parser parser(ctx);
+    scs::Parser parser;
     SC_CHECK(parser.Parse(data), ());
 
     TripleTester tester(parser);
@@ -573,7 +573,7 @@ UNIT_TEST(scs_level_4)
   {
     char const * data = "a -> b: c; <- d: e: f;;";
 
-    scs::Parser parser(ctx);
+    scs::Parser parser;
     SC_CHECK(parser.Parse(data), ());
 
     TripleTester tester(parser);
@@ -624,7 +624,7 @@ UNIT_TEST(scs_level_5)
   {
     std::string const data = "set ~> attr:: item (* -/> subitem;; <= subitem2;; *);;";
 
-    scs::Parser parser(ctx);
+    scs::Parser parser;
 
     SC_CHECK(parser.Parse(data), (parser.GetParseError()));
 
@@ -679,6 +679,16 @@ UNIT_TEST(scs_level_5)
   SUBTEST_END()
 }
 
+UNIT_TEST(scs_level_6)
+{
+  ScMemoryContext ctx(sc_access_lvl_make_min, "scs_level_6");
+
+  SUBTEST_START(set)
+  {
+
+  }
+  SUBTEST_END()
+}
 
 UNIT_TEST(scs_types)
 {
@@ -698,7 +708,7 @@ UNIT_TEST(scs_types)
       "f -> g;;"
       "sc_node_material -> g;;";
 
-    scs::Parser parser(ctx);
+    scs::Parser parser;
 
     SC_CHECK(parser.Parse(data), (parser.GetParseError()));
 
@@ -736,7 +746,7 @@ UNIT_TEST(scs_types)
       "b -> [x];;"
       "c -> _[];;"
       "d -> [];;";
-    scs::Parser parser(ctx);
+    scs::Parser parser;
 
     SC_CHECK(parser.Parse(data), (parser.GetParseError()));
 
@@ -754,7 +764,7 @@ UNIT_TEST(scs_types)
   SUBTEST_START(backward_compatibility)
   {
     std::string const data = "a <- c;; a <- sc_node_not_relation;; b <- c;; b <- sc_node_not_binary_tuple;;";
-    scs::Parser parser(ctx);
+    scs::Parser parser;
 
     SC_CHECK(parser.Parse(data), (parser.GetParseError()));
 
@@ -774,7 +784,7 @@ UNIT_TEST(scs_types)
       "-> y2; _-> y13; -|> y15; _-|> y17; -/> y19; _-/> y21;"
       " ~> y23; _~> y25; ~|> y27; _~|> y29; ~/> y31; _~/> y33;;";
 
-    scs::Parser parser(ctx);
+    scs::Parser parser;
 
     SC_CHECK(parser.Parse(data), (parser.GetParseError()));
 
@@ -817,7 +827,7 @@ UNIT_TEST(scs_types)
   {
     std::string const data = "a <- sc_node_abstract;; a <- sc_node_role_relation;;";
 
-    scs::Parser parser(ctx);
+    scs::Parser parser;
     SC_CHECK_NOT(parser.Parse(data), ());
   }
   SUBTEST_END()
@@ -831,7 +841,7 @@ UNIT_TEST(scs_aliases)
   {
     std::string const data = "@alias = [];; x ~> @alias;;";
 
-    scs::Parser parser(ctx);
+    scs::Parser parser;
 
     SC_CHECK(parser.Parse(data), (parser.GetParseError()));
 
@@ -849,7 +859,7 @@ UNIT_TEST(scs_aliases)
   {
     std::string const data = "x -> @y;;";
 
-    scs::Parser parser(ctx);
+    scs::Parser parser;
 
     SC_CHECK(!parser.Parse(data), (parser.GetParseError()));
   }
@@ -859,7 +869,7 @@ UNIT_TEST(scs_aliases)
   {
     std::string const data = "@alias1 = x;; @alias1 <- sc_node_tuple;; @alias2 = @alias1;; _y -|> x;;";
 
-    scs::Parser parser(ctx);
+    scs::Parser parser;
 
     SC_CHECK(parser.Parse(data), (parser.GetParseError()));
 
@@ -886,7 +896,7 @@ UNIT_TEST(scs_aliases)
   {
     std::string const data = "@alias = _x;; _x <- sc_node_struct;; y _~/> @alias;; @alias = _[];; z _~> @alias;;";
 
-    scs::Parser parser(ctx);
+    scs::Parser parser;
 
     SC_CHECK(parser.Parse(data), (parser.GetParseError()));
 

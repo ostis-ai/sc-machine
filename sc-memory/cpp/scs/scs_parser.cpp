@@ -227,9 +227,8 @@ ElementHandle & ElementHandle::operator = (ElementHandle const & other)
 
 // ---------------------------------------
 
-Parser::Parser(class ScMemoryContext & ctx)
-  : m_memoryCtx(ctx)
-  , m_idtfCounter(0)
+Parser::Parser()
+  : m_idtfCounter(0)
 {
   m_parsedElements.reserve(PARSED_PREALLOC_NUM);
   m_parsedElementsLocal.reserve(PARSED_PREALLOC_NUM);

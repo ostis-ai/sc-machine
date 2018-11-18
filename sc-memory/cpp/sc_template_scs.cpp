@@ -18,7 +18,7 @@ public:
   ScTemplateBuilderFromScs(std::string const & scsText, ScMemoryContext & ctx)
     : m_scsText(scsText)
     , m_ctx(ctx)
-    , m_parser(ctx)
+    , m_parser()
   {
   }
 
@@ -61,7 +61,7 @@ protected:
         }
       }
     };
-    
+
     for (scs::ParsedTriple const & t : m_parser.GetParsedTriples())
     {
       scs::ParsedElement const & src = m_parser.GetParsedElement(t.m_source);
@@ -69,11 +69,11 @@ protected:
       scs::ParsedElement const & trg = m_parser.GetParsedElement(t.m_target);
 
       ScTemplateItemValue srcItem, edgeItem, trgItem;
-      
+
       MakeTemplItem(src, srcItem);
       MakeTemplItem(edge, edgeItem);
       MakeTemplItem(trg, trgItem);
-      
+
       templ->Triple(srcItem, edgeItem, trgItem);
     }
 

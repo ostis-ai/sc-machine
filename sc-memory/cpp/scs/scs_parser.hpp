@@ -99,7 +99,7 @@ public:
   using ParsedElementVector = std::vector<ParsedElement>;
   using IdtfToParsedElementMap = std::map<std::string, ElementHandle>;
 
-  _SC_EXTERN explicit Parser(class ScMemoryContext & ctx);
+  _SC_EXTERN Parser();
 
   _SC_EXTERN bool Parse(std::string const & str);
   _SC_EXTERN ParsedElement const & GetParsedElement(ElementHandle const & elID) const;
@@ -130,7 +130,6 @@ private:
   std::string GenerateLinkIdtf();
 
 private:
-  class ScMemoryContext & m_memoryCtx;
 
   ParsedElementVector m_parsedElements;
   ParsedElementVector m_parsedElementsLocal;   // just elements that has a local visibility
