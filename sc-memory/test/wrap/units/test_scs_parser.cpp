@@ -616,6 +616,69 @@ UNIT_TEST(scs_level_4)
   SUBTEST_END()
 }
 
+UNIT_TEST(scs_level_5)
+{
+  ScMemoryContext ctx(sc_access_lvl_make_min, "scs_level_5");
+
+  SUBTEST_START(simple)
+  {
+    std::string const data = "set ~> attr:: item (* -/> subitem;; <= subitem2;; *);;";
+
+    scs::Parser parser(ctx);
+
+    SC_CHECK(parser.Parse(data), (parser.GetParseError()));
+
+    auto const & triples = parser.GetParsedTriples();
+    SC_CHECK_EQUAL(triples.size(), 4, ());
+
+    {
+      auto const & t = triples[0];
+      auto const & src = parser.GetParsedElement(t.m_source);
+      auto const & edge = parser.GetParsedElement(t.m_edge);
+      auto const & trg = parser.GetParsedElement(t.m_target);
+
+      SC_CHECK_EQUAL(src.GetIdtf(), "item", ());
+      SC_CHECK_EQUAL(trg.GetIdtf(), "subitem", ());
+      SC_CHECK_EQUAL(edge.GetType(), ScType::EdgeAccessConstFuzPerm, ());
+    }
+
+    {
+      auto const & t = triples[1];
+      auto const & src = parser.GetParsedElement(t.m_source);
+      auto const & edge = parser.GetParsedElement(t.m_edge);
+      auto const & trg = parser.GetParsedElement(t.m_target);
+
+      SC_CHECK_EQUAL(src.GetIdtf(), "subitem2", ());
+      SC_CHECK_EQUAL(trg.GetIdtf(), "item", ());
+      SC_CHECK_EQUAL(edge.GetType(), ScType::EdgeDCommonConst, ());
+    }
+
+    {
+      auto const & t = triples[2];
+      auto const & src = parser.GetParsedElement(t.m_source);
+      auto const & edge = parser.GetParsedElement(t.m_edge);
+      auto const & trg = parser.GetParsedElement(t.m_target);
+
+      SC_CHECK_EQUAL(src.GetIdtf(), "set", ());
+      SC_CHECK_EQUAL(trg.GetIdtf(), "item", ());
+      SC_CHECK_EQUAL(edge.GetType(), ScType::EdgeAccessConstPosTemp, ());
+    }
+
+    {
+      auto const & t = triples[3];
+      auto const & src = parser.GetParsedElement(t.m_source);
+      auto const & edge = parser.GetParsedElement(t.m_edge);
+      auto const & trg = parser.GetParsedElement(t.m_target);
+
+      SC_CHECK_EQUAL(src.GetIdtf(), "attr", ());
+      SC_CHECK_EQUAL(trg.GetType(), ScType::EdgeAccessConstPosTemp, ());
+      SC_CHECK_EQUAL(edge.GetType(), ScType::EdgeAccessVarPosPerm, ());
+    }
+
+  }
+  SUBTEST_END()
+}
+
 
 UNIT_TEST(scs_types)
 {
