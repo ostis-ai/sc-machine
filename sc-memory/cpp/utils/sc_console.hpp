@@ -11,6 +11,7 @@
 #include "../sc_defines.hpp"
 
 #include <cinttypes>
+#include <iostream>
 #include <string>
 
 class ScConsole final
@@ -18,6 +19,7 @@ class ScConsole final
 public:
   enum class Color : uint8_t
   {
+    Reset = 0,
     Black,
     Blue,
     Green,
@@ -35,6 +37,30 @@ public:
     Yellow,
     White
   };
+
+
+  class Output final
+  {
+  public:
+    Output()
+    {
+      ScConsole::ResetColor();
+    }
+
+    ~Output()
+    {
+      ScConsole::ResetColor();
+      std::cout << std::flush;
+    }
+
+    template <typename T> Output & operator << (T v)
+    {
+      std::cout << v;
+      return *this;
+    }
+  };
+
+public:
 
   enum class KeyCode : uint8_t
   {
@@ -104,9 +130,24 @@ public:
   /// Set title of console window
   _SC_EXTERN static void SetTitle(std::string const & title);
 
+  _SC_EXTERN static Output Print();
+  _SC_EXTERN static void Endl();
+
   struct CursorHideGuard final
   {
     CursorHideGuard() { ScConsole::HideCursor(); }
     ~CursorHideGuard() { ScConsole::ShowCursor(); }
   };
 };
+
+namespace impl
+{
+  std::string const & GetANSIColor(ScConsole::Color const c);
+}
+
+
+template <> inline ScConsole::Output & ScConsole::Output::operator << <ScConsole::Color>(ScConsole::Color v)
+{
+  std::cout << impl::GetANSIColor(v);
+  return *this;
+}

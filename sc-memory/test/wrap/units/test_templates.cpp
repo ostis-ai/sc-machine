@@ -1108,7 +1108,6 @@ UNIT_TEST(template_issue_224)
       };
 
       static size_t const testNum = 300;
-      utils::ScProgress progress("Random order", testNum);
       for (size_t i = 0; i < testNum; ++i)
       {
         shuffle(1);
@@ -1120,8 +1119,6 @@ UNIT_TEST(template_issue_224)
 
         ScTemplate templ;
         SC_CHECK(ctx.HelperBuildTemplate(templ, structAddr), ());
-
-        progress.PrintStatus(i);
       }
     }
   }
@@ -1510,7 +1507,7 @@ UNIT_TEST(big_template_2_15)
   ScAddr const set1 = ctx.CreateNode(ScType::NodeConstClass);
   ScAddr const rel = ctx.CreateNode(ScType::NodeConstNoRole);
 
-  static const size_t el_num = 1 << 15;
+  static const size_t el_num = 1 << 12;
   std::set<ScAddr, ScAddLessFunc> elements;
   for (size_t i = 0; i < el_num; ++i)
   {
@@ -1518,8 +1515,6 @@ UNIT_TEST(big_template_2_15)
     SC_CHECK(a.IsValid(), ());
     elements.insert(a);
   }
-
-  volatile bool isPassed = true;
 
   // create template for pending events check
   ScTemplate templ;
@@ -1540,12 +1535,8 @@ UNIT_TEST(big_template_2_15)
   ScTemplateSearchResult searchResult;
   SC_CHECK(ctx.HelperSearchTemplate(templ, searchResult), ());
 
-  utils::ScProgress progress("Check search results", searchResult.Size());
   for (size_t i = 0; i < searchResult.Size(); ++i)
-  {
     SC_CHECK(elements.find(searchResult[i]["_el"]) != elements.end(), ());
-    progress.PrintStatus(i);
-  }
 }
 
 UNIT_TEST(template_optional)

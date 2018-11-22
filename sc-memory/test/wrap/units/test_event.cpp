@@ -288,10 +288,8 @@ UNIT_TEST(pend_events)
   SC_CHECK(ctx.HelperGenTemplate(templ, genResult), ());
 
   // wait all events
-  utils::ScProgress progress("Wait events", el_num);
   while (g_atomic_int_get(&eventsCount) < el_num)
   {
-    progress.PrintStatus(eventsCount);
     std::this_thread::sleep_for(std::chrono::milliseconds(10));
   }
 

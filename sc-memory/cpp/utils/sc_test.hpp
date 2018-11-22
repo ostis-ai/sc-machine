@@ -59,29 +59,40 @@ private:
   ::test::ScTestUnit g_test_unit_##__name(#__name, __FILE__, &Test_##__name); \
   void Test_##__name()
 
-#define _STATUS_COLOR(_expr) ((_expr) ? ScConsole::Color::Green : ScConsole::Color::Red)
-#define _STATUS(_expr)  ((_expr) ? "ok" : "fail")
+#define SC_TEST_STATUS_COLOR(_expr) ((_expr) ? ScConsole::Color::Green : ScConsole::Color::Red)
+#define SC_TEST_STATUS(_expr)  ((_expr) ? "\u2713" : "\u274C")
 
-#define _TEST_IMPL(_check, _expr, _msg) \
+#define SC_TEST_IMPL(_check, _expr, _msg) \
 { \
   bool const _v = _expr; \
   std::cout << #_expr << "... "; \
   _check(_expr, _msg); \
-  ScConsole::SetColor(STATUS_COLOR(_v)); \
-  std::cout << _STATUS(_v) << std::endl; \
+  ScConsole::SetColor(SC_TEST_STATUS_COLOR(_v)); \
+  std::cout << SC_TEST_STATUS(_v) << std::endl; \
   ScConsole::ResetColor(); \
 }
 
-#define TEST(_expr, _msg) _TEST_IMPL(CHECK, _expr, _msg)
-#define TEST_NOT(_expr, _msg) _TEST_IMPL(CHECK, !_expr, _msg)
+#define TEST(_expr, _msg) SC_TEST_IMPL(CHECK, _expr, _msg)
+#define TEST_NOT(_expr, _msg) SC_TEST_IMPL(CHECK, !_expr, _msg)
 
-#define SUBTEST_START(_name) { SC_LOG_INFO("Test "#_name" ..."); test::ScTestUnit::NotifySubTest(); }
-#define SUBTEST_END() SC_LOG_INFO_COLOR(" ok", _STATUS_COLOR(true))
+#define SUBTEST_START(_name) \
+{ \
+  ScConsole::SetColor(ScConsole::Color::Cyan); \
+  std::cout << std::endl << "\t" << #_name; \
+  ScConsole::ResetColor(); \
+  std::cout << " ... " << std::flush; \
+  test::ScTestUnit::NotifySubTest(); \
+};
+#define SUBTEST_END() \
+{ \
+  ScConsole::SetColor(SC_TEST_STATUS_COLOR(true)); \
+  std::cout << SC_TEST_STATUS(true) << std::flush; \
+};
 
 #ifdef SC_BUILD_AUTO_TESTS
-# define _WAIT_KEY_IMPL()
+# define SC_WAIT_KEY_IMPL()
 #else
-# define _WAIT_KEY_IMPL() ScConsole::WaitAnyKey("Press a key to continue...");
+# define SC_WAIT_KEY_IMPL() ScConsole::WaitAnyKey("Press a key to continue...");
 #endif
 
 #define SC_AUTOMATION_TESTS(__name) \
@@ -90,13 +101,14 @@ int main(int argc, char ** argv) try \
   utils::ScLog::GetInstance()->Initialize(__name".log"); \
   test::ScTestUnit::RunAll(); \
   utils::ScLog::GetInstance()->Shutdown(); \
-  _WAIT_KEY_IMPL() \
+  SC_WAIT_KEY_IMPL() \
   return 0; \
 } \
 catch (utils::ScException const & ex) \
 { \
+  ScMemory::LogUnmute(); \
   SC_LOG_ERROR(ex.Description()); \
-  _WAIT_KEY_IMPL() \
+  SC_WAIT_KEY_IMPL() \
 }
 
 } // namespace test

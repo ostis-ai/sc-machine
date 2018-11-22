@@ -72,7 +72,6 @@ UNIT_TEST(events_threading)
   size_t createEdgeCount = 0;
   size_t eraseNodeCount = 0;
 
-  utils::ScProgress progress("Run tests", testCount);
   std::vector<ScAddr> edges;
   edges.reserve(testCount);
   for (size_t i = 0; i < testCount; ++i)
@@ -98,8 +97,6 @@ UNIT_TEST(events_threading)
         eraseNodeCount++;
       }
     }
-
-    progress.PrintStatus(i);
   }
 
   for (auto e : events)

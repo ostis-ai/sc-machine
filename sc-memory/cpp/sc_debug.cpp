@@ -13,12 +13,10 @@ namespace utils
     : m_description(description)
     , m_msg(msg)
   {
-
   }
 
   ScException::~ScException() throw()
   {
-
   }
 
   const char * ScException::Description() const throw()

@@ -78,7 +78,7 @@ void ScSignalHandler::Initialize()
   sigemptyset(&sigIntHandler.sa_mask);
   sigIntHandler.sa_flags = 0;
 
-  sigaction(SIGINT, &sigIntHandler, NULL);
+  sigaction(SIGINT, &sigIntHandler, nullptr);
 #else
 #error "Unsupported platform"
 #endif

@@ -70,7 +70,7 @@ int kbhit(void)
 
 #define SC_CONSOLE_PRINT(st) { std::cout << st; }
 
-namespace 
+namespace impl
 {
 const std::string ANSI_CLS = "\033[2J\033[3J";
 const std::string ANSI_CONSOLE_TITLE_PRE = "\033]0;";
@@ -112,7 +112,7 @@ const std::string ANSI_EMPTY = "";
 ///
 /// Note:
 /// Only Arrows, Esc, Enter and Space are currently working properly.
-ScConsole::KeyCode getkey(void)
+ScConsole::KeyCode GetKey(void)
 {
 #if !SC_IS_PLATFORM_WIN32
   int cnt = kbhit(); // for ANSI escapes processing
@@ -190,11 +190,12 @@ int nb_getch(void)
   else return 0;
 }
 
-std::string const & getANSIColor(ScConsole::Color const c)
+std::string const & GetANSIColor(ScConsole::Color const c)
 {
 
   switch (c)
   {
+  case ScConsole::Color::Reset: return ANSI_ATTRIBUTE_RESET;
   case ScConsole::Color::Black: return ANSI_BLACK;
   case ScConsole::Color::Blue: return ANSI_BLUE; // non-ANSI
   case ScConsole::Color::Green: return ANSI_GREEN;
@@ -211,14 +212,15 @@ std::string const & getANSIColor(ScConsole::Color const c)
   case ScConsole::Color::LightMagneta: return ANSI_LIGHTMAGENTA;
   case ScConsole::Color::Yellow: return ANSI_YELLOW; // non-ANSI
   case ScConsole::Color::White: return ANSI_WHITE;
-  default: return ANSI_EMPTY;
   }
+  return ANSI_EMPTY;
 }
 
-std::string const & getANSIBackgroundColor(ScConsole::Color const c)
+std::string const & GetANSIBackgroundColor(ScConsole::Color const c)
 {
   switch (c)
   {
+  case ScConsole::Color::Reset: return ANSI_ATTRIBUTE_RESET;
   case ScConsole::Color::Black: return ANSI_BACKGROUND_BLACK;
   case ScConsole::Color::Blue: return ANSI_BACKGROUND_BLUE;
   case ScConsole::Color::Green: return ANSI_BACKGROUND_GREEN;
@@ -227,8 +229,9 @@ std::string const & getANSIBackgroundColor(ScConsole::Color const c)
   case ScConsole::Color::Magneta: return ANSI_BACKGROUND_MAGENTA;
   case ScConsole::Color::Brown: return ANSI_BACKGROUND_YELLOW;
   case ScConsole::Color::Grey: return ANSI_BACKGROUND_WHITE;
-  default: return ANSI_EMPTY;
+  default: break;
   }
+  return ANSI_EMPTY;
 }
 
 void SetCursorVisibility(bool isVisible)
@@ -244,10 +247,12 @@ void SetCursorVisibility(bool isVisible)
 #endif
 }
 
-} // anonymous namespace
+} // namespace
+
+
 
 void ScConsole::SetColor(Color c)
-{  
+{
 #if SC_IS_PLATFORM_WIN32 && !defined(SC_CONSOLE_USE_ANSI)
   HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
   CONSOLE_SCREEN_BUFFER_INFO csbi;
@@ -256,7 +261,7 @@ void ScConsole::SetColor(Color c)
 
   SetConsoleTextAttribute(hConsole, (csbi.wAttributes & 0xFFF0) | (WORD)c); // Foreground colors take up the least significant byte
 #else
-  SC_CONSOLE_PRINT(getANSIColor(c));
+  SC_CONSOLE_PRINT(impl::GetANSIColor(c));
 #endif
 }
 
@@ -270,7 +275,7 @@ void ScConsole::SetBackgroundColor(Color c)
 
   SetConsoleTextAttribute(hConsole, (csbi.wAttributes & 0xFF0F) | (((WORD)c) << 4)); // Background colors take up the second-least significant byte
 #else
-  SC_CONSOLE_PRINT(getANSIBackgroundColor(c));
+  SC_CONSOLE_PRINT(impl::GetANSIBackgroundColor(c));
 #endif
 }
 
@@ -297,7 +302,7 @@ void ScConsole::ResetColor()
 #if SC_IS_PLATFORM_WIN32 && !defined(SC_CONSOLE_USE_ANSI)
   SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), (WORD)GetDefaultColor());
 #else
-  SC_CONSOLE_PRINT(ANSI_ATTRIBUTE_RESET);
+  SC_CONSOLE_PRINT(impl::ANSI_ATTRIBUTE_RESET);
 #endif
 }
 
@@ -332,8 +337,8 @@ void ScConsole::Clear()
 
   SetConsoleCursorPosition(hConsole, coordScreen);
 #else
-  SC_CONSOLE_PRINT(ANSI_CLS);
-  SC_CONSOLE_PRINT(ANSI_CURSOR_HOME);
+  SC_CONSOLE_PRINT(impl::ANSI_CLS);
+  SC_CONSOLE_PRINT(impl::ANSI_CURSOR_HOME);
 #endif
 }
 
@@ -358,12 +363,12 @@ void ScConsole::SetString(std::string const & str)
 
 void ScConsole::ShowCursor()
 {
-  SetCursorVisibility(true);
+  impl::SetCursorVisibility(true);
 }
 
 void ScConsole::HideCursor()
 {
-  SetCursorVisibility(false);
+  impl::SetCursorVisibility(false);
 }
 
 int ScConsole::GetRowsNum()
@@ -431,8 +436,18 @@ void ScConsole::SetTitle(std::string const & title)
 #if SC_IS_PLATFORM_WIN32 && !defined(SC_CONSOLE_USE_ANSI)
   SetConsoleTitleA(title.c_str());
 #else
-  SC_CONSOLE_PRINT(ANSI_CONSOLE_TITLE_PRE);
+  SC_CONSOLE_PRINT(impl::ANSI_CONSOLE_TITLE_PRE);
   SC_CONSOLE_PRINT(title);
-  SC_CONSOLE_PRINT(ANSI_CONSOLE_TITLE_POST);
+  SC_CONSOLE_PRINT(impl::ANSI_CONSOLE_TITLE_POST);
 #endif
+}
+
+ScConsole::Output ScConsole::Print()
+{
+  return Output();
+}
+
+void ScConsole::Endl()
+{
+  std::cout << std::endl;
 }

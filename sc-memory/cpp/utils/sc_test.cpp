@@ -27,15 +27,26 @@ ScTestUnit::~ScTestUnit()
 
 void ScTestUnit::Run(std::string const & configPath, std::string const & extPath)
 {
-  SC_LOG_INFO_COLOR("Run test " << m_name, ScConsole::Color::Blue);
+  ScConsole::Print() << "Run test " << ScConsole::Color::Cyan
+                     << m_name << " ... ";
+
+  uint32_t const prevSubtests = ms_subtestsNum;
 
   InitMemory(configPath, extPath);
+
+  ScMemory::LogMute();
 
   if (m_fn)
     m_fn();
 
+  ScMemory::LogUnmute();
+
   ShutdownMemory(false);
-  SC_LOG_INFO_COLOR("Test " << m_name << " complete", ScConsole::Color::LightGreen);
+
+  if (prevSubtests == ms_subtestsNum)
+    ScConsole::Print() << SC_TEST_STATUS_COLOR(true) << SC_TEST_STATUS(true);
+
+  std::cout << std::endl;
 }
 
 void ScTestUnit::InitMemory(std::string const & configPath, std::string const & extPath)
@@ -62,11 +73,16 @@ void ScTestUnit::ShutdownMemory(bool save)
 
 void ScTestUnit::RunAll(std::string const & configPath, std::string const & extPath)
 {
-  SC_LOG_INFO("Run " << ms_tests.size() << " tests");
+  ScConsole::Print() << "Run " << ScConsole::Color::LightGreen << ms_tests.size() << ScConsole::Color::Reset << " tests";
+  ScConsole::Endl();
+
   for (ScTestUnit * unit : ms_tests)
     unit->Run(configPath, extPath);
 
-  SC_LOG_INFO_COLOR("Passed " << ms_subtestsNum << " subtests in " << ms_tests.size() << " tests", ScConsole::Color::LightGreen);
+  ScConsole::Print() << "Passed "
+                     << ScConsole::Color::LightGreen << ms_subtestsNum << ScConsole::Color::Reset << " subtests in "
+                     << ScConsole::Color::LightGreen << ms_tests.size() << ScConsole::Color::Reset << " tests";
+  ScConsole::Endl();
 }
 
 void ScTestUnit::NotifySubTest()
