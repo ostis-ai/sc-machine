@@ -63,6 +63,7 @@ public:
   _SC_EXTERN bool IsValid() const;
   _SC_EXTERN bool operator == (ElementHandle const & other) const;
   ElementHandle & operator = (ElementHandle const & other);
+  bool operator < (ElementHandle const & other) const;
 
 private:
   static const ElementID INVALID_ID = std::numeric_limits<ElementID>::max();
@@ -97,7 +98,7 @@ class Parser
 public:
   using TripleVector = std::vector<ParsedTriple>;
   using ParsedElementVector = std::vector<ParsedElement>;
-  using IdtfToParsedElementMap = std::map<std::string, ElementHandle>;
+  using IdtfToParsedElementMap = std::unordered_map<std::string, ElementHandle>;
 
   _SC_EXTERN Parser();
 
@@ -114,8 +115,12 @@ protected:
   ElementHandle ProcessIdentifier(std::string const & name);
   ElementHandle ProcessIdentifierLevel1(std::string const & type, std::string const & name);
   ElementHandle ProcessConnector(std::string const & connector);
-  ElementHandle ProcessContent(std::string const & content);
+  ElementHandle ProcessContent(std::string const & content, bool isVar);
   ElementHandle ProcessLink(std::string const & link);
+
+  ElementHandle ProcessEmptyContour();
+  void ProcessContourBegin();
+  ElementHandle ProcessContourEnd();
 
   void ProcessTriple(ElementHandle const & source, ElementHandle const & edge, ElementHandle const & target);
   void ProcessAssign(std::string const & alias, ElementHandle const & value);
@@ -128,11 +133,15 @@ private:
 
   std::string GenerateEdgeIdtf();
   std::string GenerateLinkIdtf();
+  std::string GenerateContourIdtf();
 
 private:
 
   ParsedElementVector m_parsedElements;
   ParsedElementVector m_parsedElementsLocal;   // just elements that has a local visibility
+  std::stack<std::pair<size_t, size_t>> m_contourElementsStack;
+  std::stack<size_t> m_contourTriplesStack;
+
   TripleVector m_parsedTriples;
   IdtfToParsedElementMap m_idtfToParsedElement;
 

@@ -38,33 +38,30 @@ bool IsLevel1Idtf(std::string const & idtf)
   return (idtf.find('#') != std::string::npos);
 }
 
-std::pair<ScType, std::string> ParseIdtfLevel1(std::string const & idtf)
+std::string UnescapeContent(std::string const & content)
 {
-  SC_ASSERT(IsLevel1Idtf(idtf), ("You can parse just level1 identifiers"));
+  std::string result = content;
 
-  size_t const n = idtf.find('#');
-  if (n != std::string::npos)
+  std::string::size_type pos = 0;
+  while (true)
   {
-    std::string const typeAlias = idtf.substr(0, n);
-    std::string const idtfAlias = idtf.substr(n + 1);
+    pos = result.find("\\", pos);
+    if (pos == std::string::npos)
+      break;
 
-    ScType type = scs::TypeResolver::GetKeynodeType(typeAlias);
-    if (scs::TypeResolver::IsConst(idtfAlias))
+    if (pos < result.size() - 1)
     {
-      type |= ScType::Const;
-    }
-    else
-    {
-      type |= ScType::Var;
+      auto const nextSymbol = result[pos + 1];
+      if (nextSymbol == '\\' || nextSymbol == '[' || nextSymbol == ']')
+        result.replace(pos, 2, { nextSymbol });
     }
 
-    return std::make_pair(type, idtfAlias);
+    ++pos;
   }
 
-  static const std::pair<ScType, std::string> empty = std::make_pair(ScType::Unknown, "");
-  return empty;
-}
 
+  return result;
+}
 
 class ErrorListener : public antlr4::ANTLRErrorListener
 {
@@ -147,7 +144,6 @@ ScType const & ParsedElement::GetType() const
 
 bool ParsedElement::IsReversed() const
 {
-  SC_ASSERT(m_type.IsEdge(), ("You should call this method just for edges"));
   return m_isReversed;
 }
 
@@ -222,6 +218,14 @@ ElementHandle & ElementHandle::operator = (ElementHandle const & other)
   m_id = other.m_id;
   m_isLocal = other.m_isLocal;
   return *this;
+}
+
+bool ElementHandle::operator < (ElementHandle const & other) const
+{
+  if (m_id == other.m_id)
+    return m_isLocal < other.m_isLocal;
+
+  return m_id < other.m_id;
 }
 
 
@@ -309,6 +313,11 @@ std::string Parser::GenerateEdgeIdtf()
 std::string Parser::GenerateLinkIdtf()
 {
   return std::string("..link_") + std::to_string(m_idtfCounter++);
+}
+
+std::string Parser::GenerateContourIdtf()
+{
+  return std::string("..contour_") + std::to_string(m_idtfCounter++);
 }
 
 ElementHandle Parser::AppendElement(std::string const & idtf,
@@ -424,26 +433,71 @@ ElementHandle Parser::ProcessConnector(std::string const & connector)
   return AppendElement(GenerateEdgeIdtf(), type, TypeResolver::IsConnectorReversed(connector));
 }
 
-ElementHandle Parser::ProcessContent(std::string const & content)
+ElementHandle Parser::ProcessContent(std::string const & content, bool isVar)
 {
-  SC_CHECK(content.size() > 0, ());
+  ScType type = ScType::Link;
 
-  ScType type = utils::StringUtils::StartsWith(content, "_", true) ? ScType::Var : ScType::Const;
-  if (utils::StringUtils::StartsWith(content, "[*") || utils::StringUtils::StartsWith(content, "_[*"))
-  {
-    type |= ScType::NodeStruct;
-  }
-  else if (utils::StringUtils::StartsWith(content, "[") || utils::StringUtils::StartsWith(content, "_["))
-  {
-    type |= ScType::Link;
-  }
+  type |= (isVar ? ScType::Var : ScType::Const);
 
-  return AppendElement(GenerateLinkIdtf(), type, false, content);
+  return AppendElement(GenerateLinkIdtf(), type, false, UnescapeContent(content));
 }
 
 ElementHandle Parser::ProcessLink(std::string const & link)
 {
   return AppendElement(GenerateLinkIdtf(), ScType::Link, false, link);
+}
+
+ElementHandle Parser::ProcessEmptyContour()
+{
+  return AppendElement(GenerateContourIdtf(), ScType::NodeConstStruct);
+}
+
+void Parser::ProcessContourBegin()
+{
+  m_contourElementsStack.push(std::make_pair(m_parsedElements.size(), m_parsedElementsLocal.size()));
+  m_contourTriplesStack.push(m_parsedTriples.size());
+}
+
+ElementHandle Parser::ProcessContourEnd()
+{
+  SC_ASSERT(!m_contourElementsStack.empty(), ());
+  SC_ASSERT(!m_contourTriplesStack.empty(), ());
+
+  size_t const last = m_parsedElements.size();
+  size_t const lastLocal = m_parsedElementsLocal.size();
+  size_t const lastTriple = m_parsedTriples.size();
+
+  ElementHandle const result = AppendElement(GenerateContourIdtf(), ScType::NodeConstStruct);
+  auto const ind = m_contourElementsStack.top();
+  m_contourElementsStack.pop();
+
+  std::set<ElementHandle> newElements;
+
+  // append all new elements into contour
+  for (size_t i = ind.first; i < last; ++i)
+    newElements.insert(ElementHandle(ElementID(i), false));
+
+  for (size_t i = ind.second; i < lastLocal; ++i)
+    newElements.insert(ElementHandle(ElementID(i), true));
+
+  size_t const tripleFirst = m_contourTriplesStack.top();
+  m_contourTriplesStack.pop();
+
+  for (size_t i = tripleFirst; i < lastTriple; ++i)
+  {
+    auto const & t = m_parsedTriples[i];
+    newElements.insert(t.m_source);
+    newElements.insert(t.m_edge);
+    newElements.insert(t.m_target);
+  }
+
+  for (auto const & el : newElements)
+  {
+    ElementHandle const edge = ProcessConnector("->");
+    ProcessTriple(result, edge, el);
+  }
+
+  return result;
 }
 
 }

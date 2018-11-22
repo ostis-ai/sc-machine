@@ -38,6 +38,23 @@ public:
     m_parser = parser;
   }
 
+//  static bool IsEmptyContour(std::string const & val)
+//  {
+//    if (!utils::StringUtils::StartsWith(val, "[*") || !utils::StringUtils::EndsWith(val, "*]"))
+//      return false;
+//
+//    SC_ASSERT(val.size() >= 4, ());
+//
+//    for (size_t i = 2; i < val.size() - 2; ++i)
+//    {
+//      if (val[i] != ' ')
+//        return false;
+//    }
+//
+//    return true;
+//  }
+
+
 private:
   scs::Parser * m_parser;
 
@@ -46,28 +63,34 @@ public:
 }
 
 content returns [ElementHandle handle]
-  locals [int count = 0]
-  @init{$count = 1; }
-  : ('_')? '[' 
-    (
-        { $count > 0 }?
-        (
-          ~ ('[' | ']')
-          | '[' { $count++; }
-          | ']' { $count--; }
-        )
-    )*
-
-    { $ctx->handle = m_parser->ProcessContent($ctx->getText()); }
+  locals [ bool isVar = false;]
+  @init{ $ctx->isVar = false; }
+  : ('_' { $ctx->isVar = true; } )?
+      c=CONTENT_BODY
+    {
+      std::string const v = $ctx->c->getText();
+      SC_ASSERT(v.size() > 1, ());
+      $ctx->handle = m_parser->ProcessContent(v.substr(1, v.size() - 2), $ctx->isVar);
+    }
   ;
 
-contour
-  locals [int count = 0]
+contour returns [ElementHandle handle]
+  locals [int count = 0; ]
   @init{ $count = 1; }
-  : '_'? '[*'
-    { $count > 0 }?
+  : CONTOUR_BEGIN
+    {
+      m_parser->ProcessContourBegin();
+    }
+    { $ctx->count > 0 }?
     ( sentence_wrap* )
-    '*]' { $count--; }
+    CONTOUR_END
+    {
+      $ctx->count--;
+      if ($ctx->count == 0)
+      {
+        $ctx->handle = m_parser->ProcessContourEnd();
+      }
+    }
   ;
 
 connector returns [std::string text]
@@ -90,7 +113,7 @@ connector returns [std::string text]
 // ------------- Rules --------------------
 
 syntax 
-  : sentence_wrap*
+  : sentence_wrap* EOF
   ;
 
 sentence_wrap
@@ -174,7 +197,15 @@ idtf_edge returns [ElementHandle handle]
   ;
 	
 idtf_set returns [ElementHandle handle]
-	: '{' { $ctx->handle = m_parser->ProcessIdentifier("..."); }
+	: '{' 
+      { 
+        std::string const setIdtf = "..set_" + std::to_string($ctx->start->getLine()) + "_" + std::to_string($ctx->start->getCharPositionInLine());
+        $ctx->handle = m_parser->ProcessIdentifier(setIdtf);
+        ElementHandle const typeEdge = m_parser->ProcessConnector("->");
+        ElementHandle const typeClass = m_parser->ProcessIdentifier("sc_node_tuple");
+
+        m_parser->ProcessTriple(typeClass, typeEdge, $ctx->handle);
+      }
     a1=attr_list? i1=idtf_common 
       {
         ElementHandle const edge = m_parser->ProcessConnector("->");
@@ -213,12 +244,12 @@ idtf_common returns [ElementHandle handle]
           "Can't resolve alias `" << _alias << "`. You should use assigment of alias before usage.");
       }
     }
-  | is=idtf_system { $ctx->handle = $ctx->is->handle; }
+    | is=idtf_system { $ctx->handle = $ctx->is->handle; }
 	| ie=idtf_edge { $ctx->handle = $ctx->ie->handle; }
 	| iset=idtf_set { $ctx->handle = $ctx->iset->handle; }
-  | contour
-	| cn=content { $handle = $ctx->cn->handle; }
-	| LINK { $handle = m_parser->ProcessLink($LINK->getText()); }
+    | ct=contour { $ctx->handle = $ctx->ct->handle; }
+	| cn=content { $ctx->handle = $ctx->cn->handle; }
+	| LINK { $ctx->handle = m_parser->ProcessLink($LINK->getText()); }
   ;
 
 idtf_list returns [std::vector<ElementHandle> items]
@@ -298,6 +329,31 @@ ID_SYSTEM
 
 ALIAS_SYMBOLS
   : '@'('a'..'z'|'A'..'Z'|'_'|'0'..'9')+
+  ;
+
+fragment CONTENT_ESCAPED
+  : '\\' ('[' | ']' | '\\')
+  ;
+
+fragment CONTENT_SYBMOL
+  : (CONTENT_ESCAPED | ~('[' | ']' | '\\'))
+  ;
+
+fragment CONTENT_SYBMOL_FIRST_END
+  : (CONTENT_ESCAPED | ~('[' | ']' | '\\' | '*'))
+  ;
+
+CONTOUR_BEGIN
+  : '[*'
+  ;
+
+CONTOUR_END
+  : '*]'
+  ;
+
+CONTENT_BODY
+  : '[]'
+  | '[' CONTENT_SYBMOL_FIRST_END CONTENT_SYBMOL* ']'
   ;
 
 LINK

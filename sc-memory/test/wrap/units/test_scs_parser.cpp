@@ -12,6 +12,11 @@
 namespace
 {
 
+#define SPLIT_TRIPLE(t) \
+  auto const & src = parser.GetParsedElement(t.m_source); \
+  auto const & edge = parser.GetParsedElement(t.m_edge); \
+  auto const & trg = parser.GetParsedElement(t.m_target);
+
 struct TripleElement
 {
   TripleElement(ScType const & type)
@@ -44,9 +49,8 @@ struct TripleElement
   {
     SC_CHECK_EQUAL(m_type, el.GetType(), ());
     if (!m_idtf.empty())
-    {
       SC_CHECK_EQUAL(m_idtf, el.GetIdtf(), ());
-    }
+
     SC_CHECK_EQUAL(m_visibility, el.GetVisibility(), ());
   }
 
@@ -55,19 +59,57 @@ struct TripleElement
   scs::Visibility m_visibility;
 };
 
+std::ostream & operator<< (std::ostream & out, TripleElement const & t)
+{
+  out << "{ m_type: " << *t.m_type << ", m_idtf: \"" << t.m_idtf << "\", m_visibility: " << int(t.m_visibility) << " }";
+  return out;
+}
+
+
 struct TripleResult
 {
   void Test(scs::Parser const & parser, scs::ParsedTriple const & triple) const
   {
-    m_source.Test(parser.GetParsedElement(triple.m_source));
-    m_edge.Test(parser.GetParsedElement(triple.m_edge));
-    m_target.Test(parser.GetParsedElement(triple.m_target));
+    auto const & src = parser.GetParsedElement(triple.m_source);
+    auto const & edge = parser.GetParsedElement(triple.m_edge);
+    auto const & trg = parser.GetParsedElement(triple.m_target);
+
+    try
+    {
+      m_source.Test(src);
+      m_edge.Test(edge);
+      m_target.Test(trg);
+    }
+    catch (utils::ScException const & ex)
+    {
+      std::cout << "Should be: " << std::endl
+                << " m_source: " << m_source << ", " << std::endl
+                << " m_edge: " << m_edge << ", " << std::endl
+                << " m_target: " << m_target << std::endl;
+
+      auto const elToString = [](scs::ParsedElement const & el) -> std::string
+      {
+        std::stringstream ss;
+
+        ss << "m_type: " << *el.GetType() << ", m_idtf: \"" << el.GetIdtf() << "\"";
+
+        return ss.str();
+      };
+
+      std::cout << "Parsed: " << std::endl
+                << " m_source: " << elToString(src) << std::endl
+                << " m_edge: " << elToString(edge) << std::endl
+                << " m_target: " << elToString(trg) << std::endl;
+
+      throw ex;
+    }
   }
 
   TripleElement m_source;
   TripleElement m_edge;
   TripleElement m_target;
 };
+
 
 using ResultTriples = std::vector<TripleResult>;
 
@@ -132,20 +174,18 @@ UNIT_TEST(scs_parser_triple)
 
     auto const & triples = parser.GetParsedTriples();
     SC_CHECK_EQUAL(triples.size(), 1, ());
-    auto const & t = triples[0];
-    auto const & source = parser.GetParsedElement(t.m_source);
-    auto const & edge = parser.GetParsedElement(t.m_edge);
-    auto const & target = parser.GetParsedElement(t.m_target);
 
-    SC_CHECK_EQUAL(source.GetType(), ScType::NodeConst, ());
+    SPLIT_TRIPLE(triples[0]);
+
+    SC_CHECK_EQUAL(src.GetType(), ScType::NodeConst, ());
     SC_CHECK_EQUAL(edge.GetType(), ScType::EdgeAccessConstPosPerm, ());
-    SC_CHECK_EQUAL(target.GetType(), ScType::NodeConst, ());
+    SC_CHECK_EQUAL(trg.GetType(), ScType::NodeConst, ());
 
-    SC_CHECK_EQUAL(source.GetIdtf(), "a", ());
-    SC_CHECK_EQUAL(target.GetIdtf(), "b", ());
+    SC_CHECK_EQUAL(src.GetIdtf(), "a", ());
+    SC_CHECK_EQUAL(trg.GetIdtf(), "b", ());
 
-    SC_CHECK_EQUAL(source.GetVisibility(), scs::Visibility::System, ());
-    SC_CHECK_EQUAL(target.GetVisibility(), scs::Visibility::System, ());
+    SC_CHECK_EQUAL(src.GetVisibility(), scs::Visibility::System, ());
+    SC_CHECK_EQUAL(trg.GetVisibility(), scs::Visibility::System, ());
   }
   SUBTEST_END()
 
@@ -157,17 +197,14 @@ UNIT_TEST(scs_parser_triple)
 
     auto const & triples = parser.GetParsedTriples();
     SC_CHECK_EQUAL(triples.size(), 1, ());
-    auto const & t = triples[0];
-    auto const & source = parser.GetParsedElement(t.m_source);
-    auto const & edge = parser.GetParsedElement(t.m_edge);
-    auto const & target = parser.GetParsedElement(t.m_target);
 
-    SC_CHECK_EQUAL(source.GetIdtf(), "b", ());
-    SC_CHECK_EQUAL(target.GetIdtf(), "a", ());
+    SPLIT_TRIPLE(triples[0]);
+
+    SC_CHECK_EQUAL(src.GetIdtf(), "b", ());
+    SC_CHECK_EQUAL(trg.GetIdtf(), "a", ());
     SC_CHECK_EQUAL(edge.GetType(), ScType::EdgeAccessConstPosPerm, ());
   }
   SUBTEST_END()
-
 
   SUBTEST_START(sentences_1)
   {
@@ -188,14 +225,10 @@ UNIT_TEST(scs_parser_triple)
     }
 
     {
-      auto const & t = triples[1];
-      auto const & source = parser.GetParsedElement(t.m_source);
-      auto const & edge = parser.GetParsedElement(t.m_edge);
-      auto const & target = parser.GetParsedElement(t.m_target);
+      SPLIT_TRIPLE(triples[1]);
 
-      SC_CHECK_EQUAL(source.GetIdtf(), "r", ());
-      SC_CHECK_EQUAL(target.GetIdtf(), "x", ());
-
+      SC_CHECK_EQUAL(src.GetIdtf(), "r", ());
+      SC_CHECK_EQUAL(trg.GetIdtf(), "x", ());
       SC_CHECK_EQUAL(edge.GetType(), ScType::EdgeDCommonConst, ());
     }
   }
@@ -218,9 +251,7 @@ UNIT_TEST(scs_comments)
   SC_CHECK_EQUAL(triples.size(), 2, ());
 
   {
-    auto const & src = parser.GetParsedElement(triples[0].m_source);
-    auto const & edge = parser.GetParsedElement(triples[0].m_edge);
-    auto const & trg = parser.GetParsedElement(triples[0].m_target);
+    SPLIT_TRIPLE(triples[0]);
 
     SC_CHECK_EQUAL(src.GetIdtf(), "a", ());
     SC_CHECK_EQUAL(trg.GetIdtf(), "b", ());
@@ -231,9 +262,7 @@ UNIT_TEST(scs_comments)
   }
 
   {
-    auto const & src = parser.GetParsedElement(triples[1].m_source);
-    auto const & edge = parser.GetParsedElement(triples[1].m_edge);
-    auto const & trg = parser.GetParsedElement(triples[1].m_target);
+    SPLIT_TRIPLE(triples[1]);
 
     SC_CHECK_EQUAL(src.GetIdtf(), "c", ());
     SC_CHECK_EQUAL(trg.GetIdtf(), "d", ());
@@ -258,9 +287,7 @@ UNIT_TEST(scs_level_1)
     auto const & triples = parser.GetParsedTriples();
     SC_CHECK_EQUAL(triples.size(), 1, ());
     {
-      auto const & src = parser.GetParsedElement(triples[0].m_source);
-      auto const & edge = parser.GetParsedElement(triples[0].m_edge);
-      auto const & trg = parser.GetParsedElement(triples[0].m_target);
+      SPLIT_TRIPLE(triples[0]);
 
       SC_CHECK_EQUAL(src.GetType(), ScType::NodeConst, ());
       SC_CHECK_EQUAL(trg.GetType(), ScType::NodeConst, ());
@@ -283,9 +310,7 @@ UNIT_TEST(scs_const_var)
   SC_CHECK_EQUAL(triples.size(), 1, ());
 
   {
-    auto const & src = parser.GetParsedElement(triples[0].m_source);
-    auto const & edge = parser.GetParsedElement(triples[0].m_edge);
-    auto const & trg = parser.GetParsedElement(triples[0].m_target);
+    SPLIT_TRIPLE(triples[0]);
 
     SC_CHECK_EQUAL(src.GetType(), ScType::NodeVar, ());
     SC_CHECK_EQUAL(edge.GetType(), ScType::EdgeAccessVarPosPerm, ());
@@ -309,17 +334,17 @@ UNIT_TEST(scs_level_2)
     SC_CHECK(parser.Parse(data), ());
     TripleTester tester(parser);
     tester({
-      {
-        { ScType::NodeConst, "c" },
-        { ScType::EdgeAccessConstPosPerm, "", scs::Visibility::Local },
-        { ScType::NodeConst, "b" }
-      },
-      {
-        { ScType::NodeConst, "a" },
-        { ScType::EdgeAccessConstPosPerm, "", scs::Visibility::Local },
-        { ScType::EdgeAccessConstPosPerm, "", scs::Visibility::Local }
-      }
-    });
+             {
+               { ScType::NodeConst, "c" },
+               { ScType::EdgeAccessConstPosPerm, "", scs::Visibility::Local },
+               { ScType::NodeConst, "b" }
+             },
+             {
+               { ScType::NodeConst, "a" },
+               { ScType::EdgeAccessConstPosPerm, "", scs::Visibility::Local },
+               { ScType::EdgeAccessConstPosPerm, "", scs::Visibility::Local }
+             }
+           });
 
     auto const & triples = parser.GetParsedTriples();
     SC_CHECK_EQUAL(triples.size(), 2, ());
@@ -335,17 +360,17 @@ UNIT_TEST(scs_level_2)
     SC_CHECK(parser.Parse(data), ());
     TripleTester tester(parser);
     tester({
-      {
-        { ScType::NodeConst, "a" },
-        { ScType::EdgeAccessConstPosPerm, "", scs::Visibility::Local },
-        { ScType::NodeConst, "b" }
-      },
-      {
-        { ScType::EdgeAccessConstPosPerm, "", scs::Visibility::Local },
-        { ScType::EdgeDCommonConst, "", scs::Visibility::Local },
-        { ScType::NodeConst, "c" }
-      }
-    });
+             {
+               { ScType::NodeConst, "a" },
+               { ScType::EdgeAccessConstPosPerm, "", scs::Visibility::Local },
+               { ScType::NodeConst, "b" }
+             },
+             {
+               { ScType::EdgeAccessConstPosPerm, "", scs::Visibility::Local },
+               { ScType::EdgeDCommonConst, "", scs::Visibility::Local },
+               { ScType::NodeConst, "c" }
+             }
+           });
 
     auto const & triples = parser.GetParsedTriples();
     SC_CHECK_EQUAL(triples.size(), 2, ());
@@ -356,40 +381,40 @@ UNIT_TEST(scs_level_2)
   SUBTEST_START(complex)
   {
     char const * data =
-      "a <> (b -> c);;"
-      "(c <- x) <- (b -> y);;";
+        "a <> (b -> c);;"
+        "(c <- x) <- (b -> y);;";
 
     scs::Parser parser;
     SC_CHECK(parser.Parse(data), ());
 
     TripleTester tester(parser);
     tester({
-      {
-        { ScType::NodeConst, "b" },
-        { ScType::EdgeAccessConstPosPerm, "", scs::Visibility::Local },
-        { ScType::NodeConst, "c" }
-      },
-      {
-        { ScType::NodeConst, "a" },
-        { ScType::EdgeUCommon, "", scs::Visibility::Local },
-        { ScType::EdgeAccessConstPosPerm, "", scs::Visibility::Local }
-      },
-      {
-        { ScType::NodeConst, "x" },
-        { ScType::EdgeAccessConstPosPerm, "", scs::Visibility::Local },
-        { ScType::NodeConst, "c" }
-      },
-      {
-        { ScType::NodeConst, "b" },
-        { ScType::EdgeAccessConstPosPerm, "", scs::Visibility::Local },
-        { ScType::NodeConst, "y" }
-      },
-      {
-        { ScType::EdgeAccessConstPosPerm, "", scs::Visibility::Local },
-        { ScType::EdgeAccessConstPosPerm, "", scs::Visibility::Local },
-        { ScType::EdgeAccessConstPosPerm, "", scs::Visibility::Local }
-      }
-    });
+             {
+               { ScType::NodeConst, "b" },
+               { ScType::EdgeAccessConstPosPerm, "", scs::Visibility::Local },
+               { ScType::NodeConst, "c" }
+             },
+             {
+               { ScType::NodeConst, "a" },
+               { ScType::EdgeUCommon, "", scs::Visibility::Local },
+               { ScType::EdgeAccessConstPosPerm, "", scs::Visibility::Local }
+             },
+             {
+               { ScType::NodeConst, "x" },
+               { ScType::EdgeAccessConstPosPerm, "", scs::Visibility::Local },
+               { ScType::NodeConst, "c" }
+             },
+             {
+               { ScType::NodeConst, "b" },
+               { ScType::EdgeAccessConstPosPerm, "", scs::Visibility::Local },
+               { ScType::NodeConst, "y" }
+             },
+             {
+               { ScType::EdgeAccessConstPosPerm, "", scs::Visibility::Local },
+               { ScType::EdgeAccessConstPosPerm, "", scs::Visibility::Local },
+               { ScType::EdgeAccessConstPosPerm, "", scs::Visibility::Local }
+             }
+           });
 
     auto const & triples = parser.GetParsedTriples();
     SC_CHECK_EQUAL(triples.size(), 5, ());
@@ -413,22 +438,22 @@ UNIT_TEST(scs_level_3)
     SC_CHECK(parser.Parse(data), ());
     TripleTester tester(parser);
     tester({
-      {
-        { ScType::NodeConst, "a" },
-        { ScType::EdgeAccessConstPosPerm, scs::Visibility::Local },
-        { ScType::NodeConst, "d" }
-      },
-      {
-        { ScType::NodeConst, "c" },
-        { ScType::EdgeAccessConstPosPerm, scs::Visibility::Local },
-        { ScType::EdgeAccessConstPosPerm, scs::Visibility::Local }
-      },
-      {
-        { ScType::NodeVar, "_b" },
-        { ScType::EdgeAccessVarPosPerm, scs::Visibility::Local },
-        { ScType::EdgeAccessConstPosPerm, scs::Visibility::Local }
-      }
-    });
+             {
+               { ScType::NodeConst, "a" },
+               { ScType::EdgeAccessConstPosPerm, scs::Visibility::Local },
+               { ScType::NodeConst, "d" }
+             },
+             {
+               { ScType::NodeConst, "c" },
+               { ScType::EdgeAccessConstPosPerm, scs::Visibility::Local },
+               { ScType::EdgeAccessConstPosPerm, scs::Visibility::Local }
+             },
+             {
+               { ScType::NodeVar, "_b" },
+               { ScType::EdgeAccessVarPosPerm, scs::Visibility::Local },
+               { ScType::EdgeAccessConstPosPerm, scs::Visibility::Local }
+             }
+           });
 
     auto const & triples = parser.GetParsedTriples();
     SC_CHECK_EQUAL(triples.size(), 3, ());
@@ -447,32 +472,32 @@ UNIT_TEST(scs_level_3)
 
     TripleTester tester(parser);
     tester({
-      {
-        { ScType::NodeConst, "d" },
-        { ScType::EdgeAccessConstPosPerm, scs::Visibility::Local },
-        { ScType::NodeConst, "a" }
-      },
-      {
-        { ScType::NodeConst, "f" },
-        { ScType::EdgeAccessConstPosPerm, scs::Visibility::Local },
-        { ScType::EdgeAccessConstPosPerm, scs::Visibility::Local }
-      },
-      {
-        { ScType::NodeConst, "c" },
-        { ScType::EdgeAccessConstPosPerm, scs::Visibility::Local },
-        { ScType::NodeConst, "d" }
-      },
-      {
-        { ScType::NodeConst, "b" },
-        { ScType::EdgeAccessConstPosPerm, scs::Visibility::Local },
-        { ScType::EdgeAccessConstPosPerm, scs::Visibility::Local }
-      },
-      {
-        { ScType::EdgeAccessConstPosPerm, scs::Visibility::Local },
-        { ScType::EdgeAccessConstPosPerm, scs::Visibility::Local },
-        { ScType::EdgeAccessConstPosPerm, scs::Visibility::Local }
-      }
-    });
+             {
+               { ScType::NodeConst, "d" },
+               { ScType::EdgeAccessConstPosPerm, scs::Visibility::Local },
+               { ScType::NodeConst, "a" }
+             },
+             {
+               { ScType::NodeConst, "f" },
+               { ScType::EdgeAccessConstPosPerm, scs::Visibility::Local },
+               { ScType::EdgeAccessConstPosPerm, scs::Visibility::Local }
+             },
+             {
+               { ScType::NodeConst, "c" },
+               { ScType::EdgeAccessConstPosPerm, scs::Visibility::Local },
+               { ScType::NodeConst, "d" }
+             },
+             {
+               { ScType::NodeConst, "b" },
+               { ScType::EdgeAccessConstPosPerm, scs::Visibility::Local },
+               { ScType::EdgeAccessConstPosPerm, scs::Visibility::Local }
+             },
+             {
+               { ScType::EdgeAccessConstPosPerm, scs::Visibility::Local },
+               { ScType::EdgeAccessConstPosPerm, scs::Visibility::Local },
+               { ScType::EdgeAccessConstPosPerm, scs::Visibility::Local }
+             }
+           });
 
     auto const & triples = parser.GetParsedTriples();
     SC_CHECK_EQUAL(triples.size(), 5, ());
@@ -493,27 +518,27 @@ UNIT_TEST(scs_level_3)
 
     TripleTester tester(parser);
     tester({
-      {
-        { ScType::NodeConst, "d" },
-        { ScType::EdgeAccessConstPosPerm, scs::Visibility::Local },
-        { ScType::NodeConst, "h"}
-      },
-      {
-        { ScType::NodeConst, "g" },
-        { ScType::EdgeAccessConstPosPerm, scs::Visibility::Local },
-        { ScType::EdgeAccessConstPosPerm, scs::Visibility::Local }
-      },
-      {
-        { ScType::NodeConst, "a" },
-        { ScType::EdgeAccessConstPosPerm, scs::Visibility::Local },
-        { ScType::EdgeAccessConstPosPerm, scs::Visibility::Local }
-      },
-      {
-        { ScType::NodeConst, "c" },
-        { ScType::EdgeAccessConstPosPerm, scs::Visibility::Local },
-        { ScType::EdgeAccessConstPosPerm, scs::Visibility::Local }
-      }
-    });
+             {
+               { ScType::NodeConst, "d" },
+               { ScType::EdgeAccessConstPosPerm, scs::Visibility::Local },
+               { ScType::NodeConst, "h"}
+             },
+             {
+               { ScType::NodeConst, "g" },
+               { ScType::EdgeAccessConstPosPerm, scs::Visibility::Local },
+               { ScType::EdgeAccessConstPosPerm, scs::Visibility::Local }
+             },
+             {
+               { ScType::NodeConst, "a" },
+               { ScType::EdgeAccessConstPosPerm, scs::Visibility::Local },
+               { ScType::EdgeAccessConstPosPerm, scs::Visibility::Local }
+             },
+             {
+               { ScType::NodeConst, "c" },
+               { ScType::EdgeAccessConstPosPerm, scs::Visibility::Local },
+               { ScType::EdgeAccessConstPosPerm, scs::Visibility::Local }
+             }
+           });
 
     auto const & triples = parser.GetParsedTriples();
     SC_CHECK_EQUAL(triples.size(), 4, ());
@@ -538,27 +563,27 @@ UNIT_TEST(scs_level_4)
 
     TripleTester tester(parser);
     tester({
-      {
-        { ScType::NodeConst, "a" },
-        { ScType::EdgeAccessConstPosPerm, scs::Visibility::Local },
-        { ScType::NodeConst, "c" }
-      },
-      {
-        { ScType::NodeConst, "b" },
-        { ScType::EdgeAccessConstPosPerm, scs::Visibility::Local },
-        { ScType::EdgeAccessConstPosPerm, scs::Visibility::Local }
-      },
-      {
-        { ScType::NodeConst, "a" },
-        { ScType::EdgeAccessConstPosPerm, scs::Visibility::Local },
-        { ScType::NodeConst, "d" }
-      },
-      {
-        { ScType::NodeConst, "b" },
-        { ScType::EdgeAccessConstPosPerm, scs::Visibility::Local },
-        { ScType::EdgeAccessConstPosPerm, scs::Visibility::Local }
-      }
-    });
+             {
+               { ScType::NodeConst, "a" },
+               { ScType::EdgeAccessConstPosPerm, scs::Visibility::Local },
+               { ScType::NodeConst, "c" }
+             },
+             {
+               { ScType::NodeConst, "b" },
+               { ScType::EdgeAccessConstPosPerm, scs::Visibility::Local },
+               { ScType::EdgeAccessConstPosPerm, scs::Visibility::Local }
+             },
+             {
+               { ScType::NodeConst, "a" },
+               { ScType::EdgeAccessConstPosPerm, scs::Visibility::Local },
+               { ScType::NodeConst, "d" }
+             },
+             {
+               { ScType::NodeConst, "b" },
+               { ScType::EdgeAccessConstPosPerm, scs::Visibility::Local },
+               { ScType::EdgeAccessConstPosPerm, scs::Visibility::Local }
+             }
+           });
 
     auto const & triples = parser.GetParsedTriples();
 
@@ -578,32 +603,32 @@ UNIT_TEST(scs_level_4)
 
     TripleTester tester(parser);
     tester({
-      {
-        { ScType::NodeConst, "a" },
-        { ScType::EdgeAccessConstPosPerm, scs::Visibility::Local },
-        { ScType::NodeConst, "c" }
-      },
-      {
-        { ScType::NodeConst, "b" },
-        { ScType::EdgeAccessConstPosPerm, scs::Visibility::Local },
-        { ScType::EdgeAccessConstPosPerm, scs::Visibility::Local },
-      },
-      {
-        { ScType::NodeConst, "f" },
-        { ScType::EdgeAccessConstPosPerm, scs::Visibility::Local },
-        { ScType::NodeConst, "a" }
-      },
-      {
-        { ScType::NodeConst, "d" },
-        { ScType::EdgeAccessConstPosPerm, scs::Visibility::Local },
-        { ScType::EdgeAccessConstPosPerm, scs::Visibility::Local },
-      },
-      {
-        { ScType::NodeConst, "e" },
-        { ScType::EdgeAccessConstPosPerm, scs::Visibility::Local },
-        { ScType::EdgeAccessConstPosPerm, scs::Visibility::Local },
-      }
-    });
+             {
+               { ScType::NodeConst, "a" },
+               { ScType::EdgeAccessConstPosPerm, scs::Visibility::Local },
+               { ScType::NodeConst, "c" }
+             },
+             {
+               { ScType::NodeConst, "b" },
+               { ScType::EdgeAccessConstPosPerm, scs::Visibility::Local },
+               { ScType::EdgeAccessConstPosPerm, scs::Visibility::Local },
+             },
+             {
+               { ScType::NodeConst, "f" },
+               { ScType::EdgeAccessConstPosPerm, scs::Visibility::Local },
+               { ScType::NodeConst, "a" }
+             },
+             {
+               { ScType::NodeConst, "d" },
+               { ScType::EdgeAccessConstPosPerm, scs::Visibility::Local },
+               { ScType::EdgeAccessConstPosPerm, scs::Visibility::Local },
+             },
+             {
+               { ScType::NodeConst, "e" },
+               { ScType::EdgeAccessConstPosPerm, scs::Visibility::Local },
+               { ScType::EdgeAccessConstPosPerm, scs::Visibility::Local },
+             }
+           });
 
     auto const & triples = parser.GetParsedTriples();
 
@@ -628,64 +653,370 @@ UNIT_TEST(scs_level_5)
 
     SC_CHECK(parser.Parse(data), (parser.GetParseError()));
 
+    TripleTester tester(parser);
+    tester({
+             {
+               { ScType::NodeConst, "item" },
+               { ScType::EdgeAccessConstFuzPerm, scs::Visibility::Local },
+               { ScType::NodeConst, "subitem" }
+             },
+             {
+               { ScType::NodeConst, "subitem2" },
+               { ScType::EdgeDCommonConst, scs::Visibility::Local },
+               { ScType::NodeConst, "item" }
+             },
+             {
+               { ScType::NodeConst, "set" },
+               { ScType::EdgeAccessConstPosTemp, scs::Visibility::Local },
+               { ScType::NodeConst, "item" }
+             },
+             {
+               { ScType::NodeConst, "attr" },
+               { ScType::EdgeAccessVarPosPerm, scs::Visibility::Local },
+               { ScType::EdgeAccessConstPosTemp, scs::Visibility::Local }
+             }
+           });
+
     auto const & triples = parser.GetParsedTriples();
     SC_CHECK_EQUAL(triples.size(), 4, ());
 
-    {
-      auto const & t = triples[0];
-      auto const & src = parser.GetParsedElement(t.m_source);
-      auto const & edge = parser.GetParsedElement(t.m_edge);
-      auto const & trg = parser.GetParsedElement(t.m_target);
-
-      SC_CHECK_EQUAL(src.GetIdtf(), "item", ());
-      SC_CHECK_EQUAL(trg.GetIdtf(), "subitem", ());
-      SC_CHECK_EQUAL(edge.GetType(), ScType::EdgeAccessConstFuzPerm, ());
-    }
-
-    {
-      auto const & t = triples[1];
-      auto const & src = parser.GetParsedElement(t.m_source);
-      auto const & edge = parser.GetParsedElement(t.m_edge);
-      auto const & trg = parser.GetParsedElement(t.m_target);
-
-      SC_CHECK_EQUAL(src.GetIdtf(), "subitem2", ());
-      SC_CHECK_EQUAL(trg.GetIdtf(), "item", ());
-      SC_CHECK_EQUAL(edge.GetType(), ScType::EdgeDCommonConst, ());
-    }
-
-    {
-      auto const & t = triples[2];
-      auto const & src = parser.GetParsedElement(t.m_source);
-      auto const & edge = parser.GetParsedElement(t.m_edge);
-      auto const & trg = parser.GetParsedElement(t.m_target);
-
-      SC_CHECK_EQUAL(src.GetIdtf(), "set", ());
-      SC_CHECK_EQUAL(trg.GetIdtf(), "item", ());
-      SC_CHECK_EQUAL(edge.GetType(), ScType::EdgeAccessConstPosTemp, ());
-    }
-
-    {
-      auto const & t = triples[3];
-      auto const & src = parser.GetParsedElement(t.m_source);
-      auto const & edge = parser.GetParsedElement(t.m_edge);
-      auto const & trg = parser.GetParsedElement(t.m_target);
-
-      SC_CHECK_EQUAL(src.GetIdtf(), "attr", ());
-      SC_CHECK_EQUAL(trg.GetType(), ScType::EdgeAccessConstPosTemp, ());
-      SC_CHECK_EQUAL(edge.GetType(), ScType::EdgeAccessVarPosPerm, ());
-    }
-
+    SC_CHECK_EQUAL(triples[3].m_target, triples[2].m_edge, ());
   }
   SUBTEST_END()
 }
 
-UNIT_TEST(scs_level_6)
+UNIT_TEST(scs_level_6_set)
 {
-  ScMemoryContext ctx(sc_access_lvl_make_min, "scs_level_6");
-
-  SUBTEST_START(set)
+  SUBTEST_START(base)
   {
+    std::string const data = "@set = { a; b: c; d: e: f };;";
 
+    scs::Parser parser;
+
+    SC_CHECK(parser.Parse(data), (parser.GetParseError()));
+
+    TripleTester tester(parser);
+    tester({
+             {
+               { ScType::NodeConstTuple, scs::Visibility::Local },
+               { ScType::EdgeAccessConstPosPerm, scs::Visibility::Local },
+               { ScType::NodeConst, "a" }
+             },
+             {
+               { ScType::NodeConstTuple, scs::Visibility::Local },
+               { ScType::EdgeAccessConstPosPerm, scs::Visibility::Local },
+               { ScType::NodeConst, "c" }
+             },
+             {
+               { ScType::NodeConst, "b" },
+               { ScType::EdgeAccessConstPosPerm, scs::Visibility::Local },
+               { ScType::EdgeAccessConstPosPerm, scs::Visibility::Local }
+             },
+             {
+               { ScType::NodeConstTuple, scs::Visibility::Local },
+               { ScType::EdgeAccessConstPosPerm, scs::Visibility::Local },
+               { ScType::NodeConst, "f" }
+             },
+             {
+               { ScType::NodeConst, "d" },
+               { ScType::EdgeAccessConstPosPerm, scs::Visibility::Local },
+               { ScType::EdgeAccessConstPosPerm, scs::Visibility::Local }
+             },
+             {
+               { ScType::NodeConst, "e" },
+               { ScType::EdgeAccessConstPosPerm, scs::Visibility::Local },
+               { ScType::EdgeAccessConstPosPerm, scs::Visibility::Local }
+             }
+           });
+  }
+  SUBTEST_END()
+}
+
+UNIT_TEST(scs_level_6_smoke)
+{
+  std::vector<std::string> data = {
+    "z -> [**];;",
+    "x -> [test*];;",
+    "@a = [\\[* r-> b;; *\\]];;",
+    "@alias = u;; @alias -> [* x -> [* y -> z;; *];; *];;",
+    "y <= nrel_main_idtf: [y*];;",
+    "a -> [* z -> [begin*];; *];;",
+    "a -> [* b -> c;; *];;"
+  };
+
+  for (auto const & d : data)
+  {
+    scs::Parser parser;
+    SC_CHECK(parser.Parse(d), (parser.GetParseError()));
+  }
+}
+
+UNIT_TEST(scs_level_6_content)
+{
+  SUBTEST_START(constant)
+  {
+    std::string const data = "x -> [content_const];;";
+
+    scs::Parser parser;
+
+    SC_CHECK(parser.Parse(data), (parser.GetParseError()));
+
+    auto const & triples = parser.GetParsedTriples();
+    SC_CHECK_EQUAL(triples.size(), 1, ());
+
+    SPLIT_TRIPLE(triples[0]);
+
+    SC_CHECK_EQUAL(src.GetIdtf(), "x", ());
+    SC_CHECK_EQUAL(edge.GetType(), ScType::EdgeAccessConstPosPerm, ());
+    SC_CHECK_EQUAL(trg.GetType(), ScType::LinkConst, ());
+
+    SC_CHECK_EQUAL(trg.GetValue(), "content_const", ());
+  }
+  SUBTEST_END()
+
+  SUBTEST_START(empty)
+  {
+    std::string const data = "x -> [];;";
+
+    scs::Parser parser;
+
+    SC_CHECK(parser.Parse(data), (parser.GetParseError()));
+
+    auto const & triples = parser.GetParsedTriples();
+    SC_CHECK_EQUAL(triples.size(), 1, ());
+
+    SPLIT_TRIPLE(triples[0]);
+
+    SC_CHECK_EQUAL(src.GetIdtf(), "x", ());
+    SC_CHECK_EQUAL(edge.GetType(), ScType::EdgeAccessConstPosPerm, ());
+    SC_CHECK_EQUAL(trg.GetType(), ScType::LinkConst, ());
+
+    SC_CHECK_EQUAL(trg.GetValue(), "", ());
+  }
+  SUBTEST_END()
+
+  SUBTEST_START(var)
+  {
+    std::string const data = "x -> _[var_content];;";
+
+    scs::Parser parser;
+
+    SC_CHECK(parser.Parse(data), (parser.GetParseError()));
+
+    auto const & triples = parser.GetParsedTriples();
+    SC_CHECK_EQUAL(triples.size(), 1, ());
+
+    auto const & trg = parser.GetParsedElement(triples[0].m_target);
+
+    SC_CHECK_EQUAL(trg.GetType(), ScType::LinkVar, ());
+    SC_CHECK_EQUAL(trg.GetValue(), "var_content", ());
+  }
+  SUBTEST_END()
+
+
+  auto const testContent = [](std::string const & src, std::string const & check)
+  {
+    scs::Parser parser;
+
+    SC_CHECK(parser.Parse(src), (parser.GetParseError()));
+
+    auto const & triples = parser.GetParsedTriples();
+    SC_CHECK_EQUAL(triples.size(), 1, ());
+
+    auto const & trg = parser.GetParsedElement(triples[0].m_target);
+
+    SC_CHECK_EQUAL(trg.GetValue(), check, ());
+  };
+
+  SUBTEST_START(escape)
+  {
+    testContent("x -> _[\\[test\\]];;", "[test]");
+  }
+  SUBTEST_END()
+
+  SUBTEST_START(escape_sequence)
+  {
+    testContent("x -> _[\\\\\\[test\\\\\\]];;", "\\[test\\]");
+  }
+  SUBTEST_END()
+
+  SUBTEST_START(escape_error)
+  {
+    std::string const data = "x -> _[\\test]];;";
+
+    scs::Parser parser;
+
+    SC_CHECK(!parser.Parse(data), (parser.GetParseError()));
+  }
+  SUBTEST_END()
+
+  SUBTEST_START(multiline)
+  {
+    std::string const data = "x -> _[line1\nline2];;";
+
+    scs::Parser parser;
+
+    SC_CHECK(parser.Parse(data), (parser.GetParseError()));
+
+    auto const & triples = parser.GetParsedTriples();
+    SC_CHECK_EQUAL(triples.size(), 1, ());
+
+    auto const & trg = parser.GetParsedElement(triples[0].m_target);
+
+    SC_CHECK_EQUAL(trg.GetValue(), "line1\nline2", ());
+  }
+  SUBTEST_END()
+}
+
+UNIT_TEST(scs_level_6_contour)
+{
+  SUBTEST_START(empty)
+  {
+    std::string const data = "x -> [**];;";
+
+    scs::Parser parser;
+
+    SC_CHECK(parser.Parse(data), (parser.GetParseError()));
+
+    auto const & triples = parser.GetParsedTriples();
+    SC_CHECK_EQUAL(triples.size(), 1, ());
+
+    SPLIT_TRIPLE(triples[0]);
+
+    SC_CHECK_EQUAL(trg.GetType(), ScType::NodeConstStruct, ());
+  }
+  SUBTEST_END()
+
+  SUBTEST_START(base)
+  {
+    std::string const data = "x -|> [* y _=> z;; *];;";
+
+    scs::Parser parser;
+
+    SC_CHECK(parser.Parse(data), (parser.GetParseError()));
+
+    auto const & triples = parser.GetParsedTriples();
+    SC_CHECK_EQUAL(triples.size(), 5, ());
+
+    {
+      SPLIT_TRIPLE(triples[0]);
+
+      SC_CHECK_EQUAL(src.GetIdtf(), "y", ());
+      SC_CHECK_EQUAL(edge.GetType(), ScType::EdgeDCommonVar, ());
+      SC_CHECK_EQUAL(trg.GetIdtf(), "z", ());
+    }
+
+    for (size_t i = 1; i < 4; ++i)
+    {
+      auto const & edge = parser.GetParsedElement(triples[i].m_edge);
+      SC_CHECK_EQUAL(edge.GetType(), ScType::EdgeAccessConstPosPerm, ());
+
+      auto const & src = parser.GetParsedElement(triples[i].m_source);
+      SC_CHECK_EQUAL(src.GetType(), ScType::NodeConstStruct, ());
+    }
+
+    {
+      SPLIT_TRIPLE(triples.back());
+
+      SC_CHECK_EQUAL(src.GetIdtf(), "x", ());
+      SC_CHECK_EQUAL(edge.GetType(), ScType::EdgeAccessConstNegPerm, ());
+      SC_CHECK_EQUAL(trg.GetType(), ScType::NodeConstStruct, ());
+    }
+  }
+  SUBTEST_END()
+
+  SUBTEST_START(recursive)
+  {
+    std::string const data = "x ~|> [* y _=> [* k ~> z;; *];; *];;";
+
+    scs::Parser parser;
+
+    SC_CHECK(parser.Parse(data), (parser.GetParseError()));
+
+    auto const & triples = parser.GetParsedTriples();
+    SC_CHECK_EQUAL(triples.size(), 15, ());
+
+    {
+      SPLIT_TRIPLE(triples[0]);
+      SC_CHECK_EQUAL(src.GetIdtf(), "k", ());
+      SC_CHECK_EQUAL(edge.GetType(), ScType::EdgeAccessConstPosTemp, ());
+      SC_CHECK_EQUAL(trg.GetIdtf(), "z", ());
+    }
+
+    auto const checkStructEdges = [&triples, &parser](size_t idxStart, size_t idxEnd)
+    {
+      for (size_t i = idxStart; i < idxEnd; ++i)
+      {
+        auto const & edge = parser.GetParsedElement(triples[i].m_edge);
+        SC_CHECK_EQUAL(edge.GetType(), ScType::EdgeAccessConstPosPerm, ());
+
+        auto const & src = parser.GetParsedElement(triples[i].m_source);
+        SC_CHECK_EQUAL(src.GetType(), ScType::NodeConstStruct, ());
+      }
+    };
+
+    checkStructEdges(1, 4);
+
+    {
+      SPLIT_TRIPLE(triples[4]);
+
+      SC_CHECK_EQUAL(src.GetIdtf(), "y", ());
+      SC_CHECK_EQUAL(edge.GetType(), ScType::EdgeDCommonVar, ());
+      SC_CHECK_EQUAL(trg.GetType(), ScType::NodeConstStruct, ());
+    }
+
+    checkStructEdges(5, 14);
+
+    {
+      SPLIT_TRIPLE(triples[14]);
+
+      SC_CHECK_EQUAL(src.GetIdtf(), "x", ());
+      SC_CHECK_EQUAL(edge.GetType(), ScType::EdgeAccessConstNegTemp, ());
+      SC_CHECK_EQUAL(trg.GetType(), ScType::NodeConstStruct, ());
+    }
+  }
+  SUBTEST_END()
+
+  SUBTEST_START(aliases)
+  {
+    std::string const data = "@alias = _[];; x -> [* @alias2 = y;; @alias _~> @alias2;;*];;";
+
+    scs::Parser parser;
+
+    SC_CHECK(parser.Parse(data), (parser.GetParseError()));
+
+    auto const & triples = parser.GetParsedTriples();
+    SC_CHECK_EQUAL(triples.size(), 5, ());
+
+    {
+      SPLIT_TRIPLE(triples[0]);
+
+      SC_CHECK_EQUAL(src.GetType(), ScType::LinkVar, ());
+      SC_CHECK_EQUAL(edge.GetType(), ScType::EdgeAccessVarPosTemp, ());
+      SC_CHECK_EQUAL(trg.GetIdtf(), "y", ());
+    }
+  }
+  SUBTEST_END()
+
+  SUBTEST_START(content)
+  {
+    std::string const data = "x -> [* y _=> [test*];; *];;";
+
+    scs::Parser parser;
+
+    SC_CHECK(parser.Parse(data), (parser.GetParseError()));
+
+    auto const & triples = parser.GetParsedTriples();
+    SC_CHECK_EQUAL(triples.size(), 5, ());
+
+    {
+      SPLIT_TRIPLE(triples[0]);
+
+      SC_CHECK_EQUAL(src.GetIdtf(), "y", ());
+      SC_CHECK_EQUAL(edge.GetType(), ScType::EdgeDCommonVar, ());
+      SC_CHECK_EQUAL(trg.GetType(), ScType::LinkConst, ());
+      SC_CHECK_EQUAL(trg.GetValue(), "test*", ());
+    }
   }
   SUBTEST_END()
 }
@@ -697,16 +1028,16 @@ UNIT_TEST(scs_types)
   SUBTEST_START(nodes)
   {
     char const * data = "a -> b;;"
-      "sc_node_tuple -> a;;"
-      "sc_node_struct -> b;;"
-      "sc_node_role_relation -> c;;"
-      "c -> _d;;"
-      "sc_node_norole_relation -> _d;;"
-      "sc_node_class -> e;;"
-      "e -> f;;"
-      "sc_node_abstract -> f;;"
-      "f -> g;;"
-      "sc_node_material -> g;;";
+                        "sc_node_tuple -> a;;"
+                        "sc_node_struct -> b;;"
+                        "sc_node_role_relation -> c;;"
+                        "c -> _d;;"
+                        "sc_node_norole_relation -> _d;;"
+                        "sc_node_class -> e;;"
+                        "e -> f;;"
+                        "sc_node_abstract -> f;;"
+                        "f -> g;;"
+                        "sc_node_material -> g;;";
 
     scs::Parser parser;
 
@@ -742,10 +1073,10 @@ UNIT_TEST(scs_types)
   SUBTEST_START(links)
   {
     std::string const data =
-      "a -> \"file://data.txt\";;"
-      "b -> [x];;"
-      "c -> _[];;"
-      "d -> [];;";
+        "a -> \"file://data.txt\";;"
+        "b -> [x];;"
+        "c -> _[];;"
+        "d -> [];;";
     scs::Parser parser;
 
     SC_CHECK(parser.Parse(data), (parser.GetParseError()));
@@ -779,10 +1110,10 @@ UNIT_TEST(scs_types)
   SUBTEST_START(edges)
   {
     std::string const data = "x"
-      "> _y; <> y4; ..> y5;"
-      "<=> y7; _<=> y8; => y9; _=> y11;"
-      "-> y2; _-> y13; -|> y15; _-|> y17; -/> y19; _-/> y21;"
-      " ~> y23; _~> y25; ~|> y27; _~|> y29; ~/> y31; _~/> y33;;";
+                             "> _y; <> y4; ..> y5;"
+                             "<=> y7; _<=> y8; => y9; _=> y11;"
+                             "-> y2; _-> y13; -|> y15; _-|> y17; -/> y19; _-/> y21;"
+                             " ~> y23; _~> y25; ~|> y27; _~|> y29; ~/> y31; _~/> y33;;";
 
     scs::Parser parser;
 

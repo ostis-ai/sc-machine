@@ -193,7 +193,8 @@ std::string StringUtils::ReplaceAll(std::string const & source, std::string cons
   while (1)
   {
     pos = result.find(replaceWhat, pos);
-    if (pos == std::string::npos) break;
+    if (pos == std::string::npos)
+      break;
     result.replace(pos, replaceWhat.size(), replaceWithWhat);
     pos += replaceWithWhat.size();
   }
