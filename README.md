@@ -6,7 +6,7 @@
 [http://ostis-dev.github.io/sc-machine/](http://ostis-dev.github.io/sc-machine/)
 
 **Master:** 
-[![Build Status](https://travis-ci.org/ostis-dev/sc-machine.svg?branch=master)](https://travis-ci.org/ostis-dev/sc-machine)
+[![Build Status](https://travis-ci.com/ostis-dev/sc-machine.svg?branch=master)](https://travis-ci.com/ostis-dev/sc-machine)
 
 Build on ubuntu:
 ```sh
