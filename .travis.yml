@@ -93,6 +93,9 @@ script:
   - echo "travis_fold:start:TEST_CPP"
   - ./test_wrap
   - echo "travis_fold:end:TEST_CPP"
+  - echo "travis_fold:start:TEST_SCS"
+  - ./test_scs
+  - echo "travis_fold:end:TEST_SCS"
   - popd
 
 after_success:

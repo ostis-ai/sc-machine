@@ -63,6 +63,6 @@ UNIT_TEST(Python_clean)
 
   for (auto const & t : threads)
     t->join();
- 
+
   SC_CHECK(passed, ());
 }

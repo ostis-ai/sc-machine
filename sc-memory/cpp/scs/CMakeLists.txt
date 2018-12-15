@@ -31,7 +31,7 @@ set (SOURCES_SCS
       "scs_types.hpp"
       )
 
-add_library(scs-parser ${SOURCES_SCS} ${SOURCES_PARSER})
-target_include_directories(scs-parser PRIVATE ${SC_MACHINE_ANTRL_DIR}/runtime/src)
-target_link_libraries(scs-parser antlr4_shared)
-add_dependencies(scs-parser antlr4_shared SCsParser)
+add_library(scs ${SOURCES_SCS} ${SOURCES_PARSER})
+target_include_directories(scs PRIVATE ${SC_MACHINE_ANTRL_DIR}/runtime/src)
+target_link_libraries(scs antlr4_shared)
+add_dependencies(scs antlr4_shared SCsParser)

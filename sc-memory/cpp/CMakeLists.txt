@@ -92,18 +92,18 @@ add_library (sc-memory-cpp SHARED ${SC_MEMORY_CPP_SOURCES})
 
 if (${WIN32})
   target_link_libraries(sc-memory-cpp
-                        sc-memory scs-parser ${LIBCURL_LIBRARIES} ${PYTHON_LIBRARY_RELEASE}
+                        sc-memory scs ${LIBCURL_LIBRARIES} ${PYTHON_LIBRARY_RELEASE}
                         debug ${BOOST_PYTHON_LIBRARY_DEBUG}
                         optimized ${BOOST_PYTHON_LIBRARY_RELEASE})
 elseif (${UNIX})
   target_link_libraries(sc-memory-cpp
-                        sc-memory scs-parser
+                        sc-memory scs
                         ${LIBCURL_LIBRARIES}
                         ${PYTHON_LIBRARIES}
                         ${Boost_LIBRARIES})
 endif(${WIN32})
 
 sc_codegen_ex(sc-memory-cpp ${SC_MEMORY_CPP_ROOT} "${SC_MEMORY_CPP_ROOT}/generated")
-add_dependencies(sc-memory-cpp sc-memory sc-code-generator SCsParser scs-parser)
+add_dependencies(sc-memory-cpp sc-memory sc-code-generator SCsParser scs)
 
 target_compile_definitions(sc-memory-cpp PRIVATE "-DSC_MEMORY_SELF_BUILD")

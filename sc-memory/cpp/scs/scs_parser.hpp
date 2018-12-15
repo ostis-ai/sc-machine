@@ -9,6 +9,7 @@
 #include "../sc_types.hpp"
 #include "scs_types.hpp"
 
+#include <limits>
 #include <stack>
 
 namespace scs
