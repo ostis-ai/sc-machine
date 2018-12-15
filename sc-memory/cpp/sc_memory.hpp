@@ -53,6 +53,19 @@ private:
 class ScMemoryContext
 {
 public:
+  struct Stat
+  {
+    uint32_t m_nodesNum;
+    uint32_t m_linksNum;
+    uint32_t m_edgesNum;
+
+    uint32_t GetAllNum() const
+    {
+      return m_nodesNum + m_linksNum + m_edgesNum;
+    }
+  };
+
+public:
   _SC_EXTERN ScMemoryContext(sc_uint8 accessLevels, std::string const & name = "");
   _SC_EXTERN ~ScMemoryContext();
 
@@ -135,7 +148,7 @@ public:
     return std::shared_ptr<TIterator3<ParamType1, ParamType2, ParamType3>>(
       new TIterator3<ParamType1, ParamType2, ParamType3>(*this, param1, param2, param3));
   }
-  
+
   /* Make iteration by triples, and call fn function for each result.
    * fn function should have 3 parameters (ScAddr const & source, ScAddr const & edge, ScAddr const & target)
    */
@@ -151,7 +164,7 @@ public:
   }
 
   /* Make iteration by 5-element constructions, and call fn function for each result.
-   * fn function should have 5 parameters 
+   * fn function should have 5 parameters
    * (ScAddr const & source, ScAddr const & edge, ScAddr const & target, ScAddr const & attrEdge, ScAddr const & attr)
    */
   template <typename ParamType1, typename ParamType2, typename ParamType3, typename ParamType4, typename ParamType5, typename FnT>
@@ -191,6 +204,8 @@ public:
   _SC_EXTERN bool HelperSearchTemplateInStruct(ScTemplate const & templ, ScAddr const & scStruct, ScTemplateSearchResult & result);
   _SC_EXTERN bool HelperBuildTemplate(ScTemplate & templ, ScAddr const & templAddr);
   _SC_EXTERN bool HelperBuildTemplate(ScTemplate & templ, std::string const & scsText);
+
+  _SC_EXTERN Stat CalculateStat() const;
 
 private:
   sc_memory_context * m_context;

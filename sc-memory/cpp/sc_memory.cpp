@@ -93,7 +93,7 @@ bool ScMemory::Initialize(sc_memory_params const & params)
   ms_globalContext = sc_memory_initialize(&newParams);
   py::ScPythonInterpreter::Initialize("sc-memory");
   sc_memory_init_ext(params.ext_path, params.enabled_exts);
-  
+
   ScKeynodes::Init();
   ScAgentInit(true);
 
@@ -105,7 +105,7 @@ void ScMemory::Shutdown(bool saveState /* = true */)
   sc_memory_shutdown_ext();
 
   ScKeynodes::Shutdown();
-  
+
   if (ms_contexts.size() > 0)
   {
     std::stringstream description;
@@ -463,4 +463,17 @@ bool ScMemoryContext::HelperBuildTemplate(ScTemplate & templ, ScAddr const & tem
 bool ScMemoryContext::HelperBuildTemplate(ScTemplate & templ, std::string const & scsText)
 {
   return templ.FromScs(*this, scsText);
+}
+
+ScMemoryContext::Stat ScMemoryContext::CalculateStat() const
+{
+  sc_stat stat;
+  sc_memory_stat(m_context, &stat);
+
+  Stat res;
+  res.m_edgesNum = uint32_t(stat.arc_count);
+  res.m_linksNum = uint32_t(stat.link_count);
+  res.m_nodesNum = uint32_t(stat.node_count);
+
+  return res;
 }
