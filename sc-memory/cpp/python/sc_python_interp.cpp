@@ -25,10 +25,16 @@ namespace
 std::unordered_set<std::string> gAddedModulePaths;
 
 template<typename Func, typename... Args>
+void CallPythonFunctionNoGIL(Func & f, Args... args)
+{
+  f(args...);
+}
+
+template<typename Func, typename... Args>
 void CallPythonFunction(Func & f, Args... args)
 {
   py::WithGIL gil;
-  f(args...);
+  CallPythonFunctionNoGIL(f, args...);
 }
 
 struct PyObjectWrap
@@ -197,7 +203,7 @@ public:
   {
     for (auto it : m_events)
       ClearEvent(it.second);
-    
+
     m_events.clear();
     if (m_impl.get())
       m_impl->m_closeDelegate = py::ScPythonBridge::CloseFunc();
@@ -243,7 +249,8 @@ public:
   {
     if (m_eventDelegate)
     {
-      CallPythonFunction(
+      py::WithGIL gil;
+      CallPythonFunctionNoGIL(
         m_eventDelegate,
         bp::object(params.m_id),
         bp::object(params.m_addr),
@@ -266,7 +273,7 @@ public:
     ClearEvent(it->second);
     m_events.erase(it);
   }
-  
+
   boost::shared_ptr<PyScEvent> SubscribeEvent(ScAddr const & elAddr, ScEvent::Type evtType)
   {
     utils::ScLockScope scope(m_eventsLock);
@@ -296,7 +303,7 @@ protected:
     if (!m_closeDelegate.is_none())
       CallPythonFunction(m_closeDelegate);
   }
-  
+
 private:
   static PyScEvent::EventID ms_idCounter;
   mutable py::ScPythonBridgePtr m_impl;
@@ -322,7 +329,7 @@ public:
     // python sends \n after each print call, so just skip it
     if (str == "\n")
       return;
-    
+
     SC_LOG_PYTHON(str);
   }
 
@@ -344,7 +351,7 @@ public:
   void Flush() {}
 };
 
-} // namespace 
+} // namespace
 
   // small boost python module for bridge utils
 BOOST_PYTHON_MODULE(scb)
@@ -410,7 +417,7 @@ bool ScPythonInterpreter::Initialize(std::string const & name)
 
   ModulePathSet modulePaths;
   PyLoadModulePathFromConfig(modulePaths);
-  
+
   SC_LOG_INIT("Initialize python iterpreter version " << PY_VERSION);
   SC_LOG_INFO("Collect python modules...");
   CollectModules(modulePaths);
@@ -427,7 +434,7 @@ void ScPythonInterpreter::Shutdown()
 
   ms_modulePaths.clear();
   ms_foundModules.clear();
-  
+
   ms_isInitialized = false;
 }
 
@@ -472,7 +479,7 @@ void ScPythonInterpreter::RunScript(std::string const & scriptName, ScMemoryCont
       << "sys.stdout = CppLog()" << std::endl
       << "sys.stderr = CppLogError()" << std::endl;
     bp::exec(initCode.str().c_str(), globalNamespace, globalNamespace);
-    
+
     std::unique_ptr<PyBridgeWrap> bridgeWrap;
     if (bridge.get())
     {
@@ -482,11 +489,11 @@ void ScPythonInterpreter::RunScript(std::string const & scriptName, ScMemoryCont
     }
     else
       globalNamespace["__cpp_bridge__"] = bp::object();
-    
+
     globalNamespace["__ctx__"] = bp::ptr(&ctx);
     globalNamespace["__file__"] = filePath;
 
-    bp::object resultObj(bp::exec_file(filePath.c_str(), globalNamespace, globalNamespace));  
+    bp::object resultObj(bp::exec_file(filePath.c_str(), globalNamespace, globalNamespace));
     bp::exec("import gc\ngc.collect()", globalNamespace, globalNamespace);
 
     globalNamespace.clear();
@@ -518,7 +525,7 @@ void ScPythonInterpreter::CollectModulesInPath(std::string const & modulePath)
   boost::filesystem::path const root(modulePath);
 
   boost::filesystem::recursive_directory_iterator itEnd, itPath(modulePath);
-  
+
   while (itPath != itEnd)
   {
     if (!boost::filesystem::is_directory(*itPath))
@@ -538,7 +545,7 @@ void ScPythonInterpreter::CollectModulesInPath(std::string const & modulePath)
         }
 
         ms_foundModules.insert(std::make_pair(filename, modulePath));
-      }        
+      }
     }
 
     try
