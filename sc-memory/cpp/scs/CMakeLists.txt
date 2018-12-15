@@ -35,3 +35,7 @@ add_library(scs ${SOURCES_SCS} ${SOURCES_PARSER})
 target_include_directories(scs PRIVATE ${SC_MACHINE_ANTRL_DIR}/runtime/src)
 target_link_libraries(scs antlr4_shared)
 add_dependencies(scs antlr4_shared SCsParser)
+
+if(NOT MSVC)
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC")
+endif()
