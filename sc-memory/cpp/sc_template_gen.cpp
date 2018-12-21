@@ -188,7 +188,7 @@ private:
 };
 
 
-bool ScTemplate::Generate(ScMemoryContext & ctx, ScTemplateGenResult & result, ScTemplateGenParams const & params, ScTemplateResultCode * errorCode) const
+ScTemplate::Result ScTemplate::Generate(ScMemoryContext & ctx, ScTemplateGenResult & result, ScTemplateGenParams const & params, ScTemplateResultCode * errorCode) const
 {
   ScTemplateGenerator gen(m_replacements, m_constructions, params, ctx);
   ScTemplateResultCode resultCode = gen(result);
@@ -196,6 +196,6 @@ bool ScTemplate::Generate(ScMemoryContext & ctx, ScTemplateGenResult & result, S
   if (errorCode)
     *errorCode = resultCode;
 
-  return (resultCode == ScTemplateResultCode::Success);
+  return ScTemplate::Result(resultCode == ScTemplateResultCode::Success);
 }
 

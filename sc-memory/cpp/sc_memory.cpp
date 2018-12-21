@@ -440,27 +440,27 @@ ScAddr ScMemoryContext::HelperFindBySystemIdtf(std::string const & sysIdtf)
   return result;
 }
 
-bool ScMemoryContext::HelperGenTemplate(ScTemplate const & templ, ScTemplateGenResult & result, ScTemplateGenParams const & params, ScTemplateResultCode * resultCode)
+ScTemplate::Result ScMemoryContext::HelperGenTemplate(ScTemplate const & templ, ScTemplateGenResult & result, ScTemplateGenParams const & params, ScTemplateResultCode * resultCode)
 {
   return templ.Generate(*this, result, params, resultCode);
 }
 
-bool ScMemoryContext::HelperSearchTemplate(ScTemplate const & templ, ScTemplateSearchResult & result)
+ScTemplate::Result ScMemoryContext::HelperSearchTemplate(ScTemplate const & templ, ScTemplateSearchResult & result)
 {
   return templ.Search(*this, result);
 }
 
-bool ScMemoryContext::HelperSearchTemplateInStruct(ScTemplate const & templ, ScAddr const & scStruct, ScTemplateSearchResult & result)
+ScTemplate::Result ScMemoryContext::HelperSearchTemplateInStruct(ScTemplate const & templ, ScAddr const & scStruct, ScTemplateSearchResult & result)
 {
   return templ.SearchInStruct(*this, scStruct, result);
 }
 
-bool ScMemoryContext::HelperBuildTemplate(ScTemplate & templ, ScAddr const & templAddr)
+ScTemplate::Result ScMemoryContext::HelperBuildTemplate(ScTemplate & templ, ScAddr const & templAddr)
 {
   return templ.FromScTemplate(*this, templAddr);
 }
 
-bool ScMemoryContext::HelperBuildTemplate(ScTemplate & templ, std::string const & scsText)
+ScTemplate::Result ScMemoryContext::HelperBuildTemplate(ScTemplate & templ, std::string const & scsText)
 {
   return templ.FromScs(*this, scsText);
 }

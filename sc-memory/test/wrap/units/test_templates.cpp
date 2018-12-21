@@ -72,6 +72,23 @@ ScAddr ResolveKeynode(ScMemoryContext & ctx, ScType const & type, std::string co
 } // namespace
 
 
+UNIT_TEST(template_result)
+{
+  {
+    ScTemplate::Result result(true);
+
+    SC_CHECK(result, ());
+    SC_CHECK_EQUAL(result.Msg(), "", ());
+  }
+
+  {
+    ScTemplate::Result result(false, "msg");
+
+    SC_CHECK_NOT(result, ());
+    SC_CHECK_EQUAL(result.Msg(), "msg", ());
+  }
+}
+
 UNIT_TEST(templates_common)
 {
   ScMemoryContext ctx(sc_access_lvl_make_min, "templates_common");
@@ -1745,4 +1762,18 @@ UNIT_TEST(search_links)
   SC_CHECK_EQUAL(link, res[0]["_link"], ());
   SC_CHECK_EQUAL(relEdge, res[0]["_edgeRel"], ());
   SC_CHECK_EQUAL(rel, res[0]["_rel"], ());
+}
+
+UNIT_TEST(templates_from_scs)
+{
+  ScMemoryContext ctx(sc_access_lvl_make_min, "templates_common");
+
+  SUBTEST_START(system_idtf_does_not_exist)
+  {
+    ScTemplate templ;
+    ScTemplate::Result result = ctx.HelperBuildTemplate(templ, "non_existing_item _-> _z;;");
+    SC_CHECK_NOT(result, ());
+    SC_CHECK_GREAT(result.Msg().size(), 0, ());
+  }
+  SUBTEST_END()
 }

@@ -22,22 +22,24 @@ public:
   {
   }
 
-  bool operator () (ScTemplate * templ)
+  ScTemplate::Result operator () (ScTemplate * templ)
   {
     // TODO: Provide error type
     if (!m_parser.Parse(m_scsText))
-      return false;
+      return ScTemplate::Result(false, m_parser.GetParseError());
 
     return BuildImpl(templ);
   }
 
 protected:
-  bool BuildImpl(ScTemplate * templ) const
+  ScTemplate::Result BuildImpl(ScTemplate * templ) const
   {
     utils::ScKeynodeCache keynodes(m_ctx);
     std::unordered_set<std::string> passed;
 
-    auto const MakeTemplItem = [&passed, &keynodes](scs::ParsedElement const & el, ScTemplateItemValue & outValue)
+    ScTemplate::Result result(true);
+
+    auto const MakeTemplItem = [&passed, &keynodes, &result](scs::ParsedElement const & el, ScTemplateItemValue & outValue) -> bool
     {
       std::string const & idtf = el.GetIdtf();
       bool const isUnnamed = scs::TypeResolver::IsUnnamed(idtf);
@@ -57,9 +59,19 @@ protected:
         }
         else
         {
-          outValue.SetType(el.GetType(), alias);
+          if (el.GetType().IsVar())
+          {
+            outValue.SetType(el.GetType(), alias);
+          }
+          else
+          {
+            result = ScTemplate::Result(false, "Can't find element " + idtf);
+            return false;
+          }
         }
       }
+
+      return true;
     };
 
     for (scs::ParsedTriple const & t : m_parser.GetParsedTriples())
@@ -70,14 +82,17 @@ protected:
 
       ScTemplateItemValue srcItem, edgeItem, trgItem;
 
-      MakeTemplItem(src, srcItem);
-      MakeTemplItem(edge, edgeItem);
-      MakeTemplItem(trg, trgItem);
+      if (!MakeTemplItem(src, srcItem) ||
+          !MakeTemplItem(edge, edgeItem) ||
+          !MakeTemplItem(trg, trgItem))
+      {
+        break;
+      }
 
       templ->Triple(srcItem, edgeItem, trgItem);
     }
 
-    return true;
+    return result;
   }
 
 private:
@@ -87,7 +102,7 @@ private:
   scs::Parser m_parser;
 };
 
-bool ScTemplate::FromScs(ScMemoryContext & ctx, std::string const & scsText)
+ScTemplate::Result ScTemplate::FromScs(ScMemoryContext & ctx, std::string const & scsText)
 {
   ScTemplateBuilderFromScs builder(scsText, ctx);
   return builder(this);

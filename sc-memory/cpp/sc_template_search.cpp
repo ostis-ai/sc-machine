@@ -418,7 +418,7 @@ public:
     } while (!iterators.empty());
   }
 
-  bool operator () (ScTemplateSearchResult & result)
+  ScTemplate::Result operator () (ScTemplateSearchResult & result)
   {
     if (!m_template.m_hasRequired)
       SC_THROW_EXCEPTION(utils::ExceptionInvalidParams, "Templates just with optional triples doesn't supported.");
@@ -431,7 +431,7 @@ public:
 
     DoIterations(result);
 
-    return (result.Size() > 0);
+    return ScTemplate::Result(result.Size() > 0);
   }
 
   size_t CalculateOneResultSize() const
@@ -455,13 +455,13 @@ private:
   ReplRefs m_replRefs;
 };
 
-bool ScTemplate::Search(ScMemoryContext & ctx, ScTemplateSearchResult & result) const
+ScTemplate::Result ScTemplate::Search(ScMemoryContext & ctx, ScTemplateSearchResult & result) const
 {
   ScTemplateSearch search(*this, ctx, ScAddr());
   return search(result);
 }
 
-bool ScTemplate::SearchInStruct(ScMemoryContext & ctx, ScAddr const & scStruct, ScTemplateSearchResult & result) const
+ScTemplate::Result ScTemplate::SearchInStruct(ScMemoryContext & ctx, ScAddr const & scStruct, ScTemplateSearchResult & result) const
 {
   ScTemplateSearch search(*this, ctx, scStruct);
   return search(result);

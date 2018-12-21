@@ -271,6 +271,32 @@ class ScTemplate final
   friend class ScTemplateBuilderFromScs;
 
 public:
+  class Result
+  {
+  public:
+    explicit Result(bool result, std::string errorMsg = "")
+      : m_result(result)
+      , m_msg(errorMsg)
+    {
+    }
+
+    operator bool() const
+    {
+      return m_result;
+    }
+
+    std::string const & Msg() const
+    {
+      return m_msg;
+    }
+
+  private:
+    bool m_result = false;
+    std::string m_msg;
+  };
+
+
+public:
   ScTemplate(ScTemplate const & other) = delete;
   ScTemplate & operator = (ScTemplate const & other) = delete;
 
@@ -317,13 +343,13 @@ public:
 
 protected:
   // Begin: calls by memory context
-  bool Generate(ScMemoryContext & ctx, ScTemplateGenResult & result, ScTemplateGenParams const & params, ScTemplateResultCode * errorCode = nullptr) const;
-  bool Search(ScMemoryContext & ctx, ScTemplateSearchResult & result) const;
-  bool SearchInStruct(ScMemoryContext & ctx, ScAddr const & scStruct, ScTemplateSearchResult & result) const;
+  Result Generate(ScMemoryContext & ctx, ScTemplateGenResult & result, ScTemplateGenParams const & params, ScTemplateResultCode * errorCode = nullptr) const;
+  Result Search(ScMemoryContext & ctx, ScTemplateSearchResult & result) const;
+  Result SearchInStruct(ScMemoryContext & ctx, ScAddr const & scStruct, ScTemplateSearchResult & result) const;
 
   // Builds template based on template in sc-memory
-  bool FromScTemplate(ScMemoryContext & ctx, ScAddr const & scTemplateAddr);
-  bool FromScs(ScMemoryContext & ctx, std::string const & scsText);
+  Result FromScTemplate(ScMemoryContext & ctx, ScAddr const & scTemplateAddr);
+  Result FromScs(ScMemoryContext & ctx, std::string const & scsText);
   // End: calls by memory context
 
 private:
@@ -353,7 +379,7 @@ protected:
    */
   mutable bool m_isSearchCacheValid : 1;
   mutable ProcessOrder m_searchCachedOrder;
-  
+
 };
 
 
@@ -402,10 +428,10 @@ public:
     return m_result[index];
   }
 
-  inline ScTemplate::ReplacementsMap const & GetReplacements() const 
-  { 
-    return m_replacements; 
-  } 
+  inline ScTemplate::ReplacementsMap const & GetReplacements() const
+  {
+    return m_replacements;
+  }
 
 protected:
   ScAddrVector m_result;

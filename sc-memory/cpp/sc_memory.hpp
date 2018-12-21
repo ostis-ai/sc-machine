@@ -12,11 +12,11 @@ extern "C"
 #include "sc-memory/sc_helper.h"
 }
 
-#include "sc_types.hpp"
 #include "sc_addr.hpp"
+#include "sc_event.hpp"
 #include "sc_iterator.hpp"
 #include "sc_template.hpp"
-#include "sc_event.hpp"
+#include "sc_types.hpp"
 
 class ScMemoryContext;
 class ScStream;
@@ -199,11 +199,12 @@ public:
   SC_DEPRECATED(0.4.0, "Use ScMemoryContext::HelperFindBySystemIdtf(std::string const & sysIdtf) instead.")
   _SC_EXTERN bool HelperFindBySystemIdtf(std::string const & sysIdtf, ScAddr & outAddr);
   _SC_EXTERN ScAddr HelperFindBySystemIdtf(std::string const & sysIdtf);
-  _SC_EXTERN bool HelperGenTemplate(ScTemplate const & templ, ScTemplateGenResult & result, ScTemplateGenParams const & params = ScTemplateGenParams::Empty, ScTemplateResultCode * resultCode = nullptr);
-  _SC_EXTERN bool HelperSearchTemplate(ScTemplate const & templ, ScTemplateSearchResult & result);
-  _SC_EXTERN bool HelperSearchTemplateInStruct(ScTemplate const & templ, ScAddr const & scStruct, ScTemplateSearchResult & result);
-  _SC_EXTERN bool HelperBuildTemplate(ScTemplate & templ, ScAddr const & templAddr);
-  _SC_EXTERN bool HelperBuildTemplate(ScTemplate & templ, std::string const & scsText);
+
+  _SC_EXTERN ScTemplate::Result HelperGenTemplate(ScTemplate const & templ, ScTemplateGenResult & result, ScTemplateGenParams const & params = ScTemplateGenParams::Empty, ScTemplateResultCode * resultCode = nullptr);
+  _SC_EXTERN ScTemplate::Result HelperSearchTemplate(ScTemplate const & templ, ScTemplateSearchResult & result);
+  _SC_EXTERN ScTemplate::Result HelperSearchTemplateInStruct(ScTemplate const & templ, ScAddr const & scStruct, ScTemplateSearchResult & result);
+  _SC_EXTERN ScTemplate::Result HelperBuildTemplate(ScTemplate & templ, ScAddr const & templAddr);
+  _SC_EXTERN ScTemplate::Result HelperBuildTemplate(ScTemplate & templ, std::string const & scsText);
 
   _SC_EXTERN Stat CalculateStat() const;
 

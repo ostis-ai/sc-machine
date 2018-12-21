@@ -150,7 +150,7 @@ protected:
   {
   }
 
-  bool operator() (ScTemplate * inTemplate)
+  ScTemplate::Result operator() (ScTemplate * inTemplate)
   {
     // mark template to don't force order of triples
     inTemplate->m_isForceOrder = false;
@@ -184,7 +184,7 @@ protected:
 
       ScType const objType = m_context.GetElementType(objAddr);
       if (objType.IsUnknown())
-        return false; // template corrupted
+        return ScTemplate::Result(false, "Can't determine type of ScElement"); // template corrupted
 
       std::string objIdtf = m_context.HelperGetSystemIdtf(objAddr);
       if (objIdtf.empty())
@@ -204,15 +204,15 @@ protected:
       // determine source and target objects
       ScAddr src, trg;
       if (!m_context.GetEdgeInfo(obj.GetAddr(), src, trg))
-        return false; // edge already doesn't exist
+        return ScTemplate::Result(false, "Edge removed during parse"); // edge already doesn't exist
 
       auto const itSrc = addrToObjectIndex.find(src.Hash());
       if (itSrc == addrToObjectIndex.end())
-        return false; // edge source doesn't exist in template
+        return ScTemplate::Result(false, "Edge source removed during parse");; // edge source doesn't exist in template
 
       auto const itTrg = addrToObjectIndex.find(trg.Hash());
       if (itTrg == addrToObjectIndex.end())
-        return false; // target source doesn't exist in template
+        return ScTemplate::Result(false, "Edge target removed during parse");; // target source doesn't exist in template
 
       ObjectInfo * srcObj = &(m_objects[itSrc->second]);
       ObjectInfo * trgObj = &(m_objects[itTrg->second]);
@@ -323,7 +323,7 @@ protected:
       }
     }
 
-    return true;
+    return ScTemplate::Result(true);
   }
 
 protected:
@@ -334,7 +334,7 @@ protected:
   std::vector<ObjectInfo> m_objects;
 };
 
-bool ScTemplate::FromScTemplate(ScMemoryContext & ctx, ScAddr const & scTemplateAddr)
+ScTemplate::Result ScTemplate::FromScTemplate(ScMemoryContext & ctx, ScAddr const & scTemplateAddr)
 {
   ScTemplateBuilder builder(scTemplateAddr, ctx);
   return builder(this);
