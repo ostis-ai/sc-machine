@@ -103,6 +103,7 @@ public:
   using TripleVector = std::vector<ParsedTriple>;
   using ParsedElementVector = std::vector<ParsedElement>;
   using IdtfToParsedElementMap = std::unordered_map<std::string, ElementHandle>;
+  using AliasHandles = std::map<std::string, ElementHandle>;
 
   _SC_EXTERN Parser();
 
@@ -110,6 +111,7 @@ public:
   _SC_EXTERN ParsedElement const & GetParsedElement(ElementHandle const & elID) const;
   _SC_EXTERN TripleVector const & GetParsedTriples() const;
   _SC_EXTERN std::string const & GetParseError() const;
+  _SC_EXTERN AliasHandles const & GetAliases() const;
 
 protected:
 
@@ -150,8 +152,6 @@ private:
 
   TripleVector m_parsedTriples;
   IdtfToParsedElementMap m_idtfToParsedElement;
-
-  using AliasHandles = std::map<std::string, ElementHandle>;
   AliasHandles m_aliasHandles;
 
   std::string m_lastError;

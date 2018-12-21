@@ -315,6 +315,11 @@ std::string const & Parser::GetParseError() const
   return m_lastError;
 }
 
+Parser::AliasHandles const & Parser::GetAliases() const
+{
+  return m_aliasHandles;
+}
+
 std::string Parser::GenerateEdgeIdtf()
 {
   return std::string("..connector_") + std::to_string(m_idtfCounter++);
