@@ -249,7 +249,12 @@ idtf_common returns [ElementHandle handle]
 	| iset=idtf_set { $ctx->handle = $ctx->iset->handle; }
     | ct=contour { $ctx->handle = $ctx->ct->handle; }
 	| cn=content { $ctx->handle = $ctx->cn->handle; }
-	| LINK { $ctx->handle = m_parser->ProcessLink($LINK->getText()); }
+	| LINK
+	  {
+	    std::string const value = $LINK->getText();
+	    SC_ASSERT(value.size() > 1, ());
+	    $ctx->handle = m_parser->ProcessFileURL(value.substr(1, value.size() - 2));
+	  }
   ;
 
 idtf_list returns [std::vector<ElementHandle> items]

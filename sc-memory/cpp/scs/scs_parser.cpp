@@ -99,12 +99,17 @@ protected:
 namespace scs
 {
 
-ParsedElement::ParsedElement(std::string const & idtf, ScType const & type, bool isReversed, std::string const & value)
+ParsedElement::ParsedElement(std::string const & idtf,
+                             ScType const & type,
+                             bool isReversed,
+                             std::string const & value /* = "" */,
+                             bool isURL /* = false */)
   : m_idtf(idtf)
   , m_type(type)
   , m_visibility(Visibility::System)
   , m_isReversed(isReversed)
   , m_value(value)
+  , m_isURL(isURL)
 {
   if (!m_value.empty())
   {
@@ -150,6 +155,11 @@ bool ParsedElement::IsReversed() const
 std::string const & ParsedElement::GetValue() const
 {
   return m_value;
+}
+
+bool ParsedElement::IsURL() const
+{
+  return m_isURL;
 }
 
 void ParsedElement::ResolveVisibility()
@@ -323,7 +333,8 @@ std::string Parser::GenerateContourIdtf()
 ElementHandle Parser::AppendElement(std::string const & idtf,
                                     ScType const & type,
                                     bool isConnectorReversed,
-                                    std::string const & value)
+                                    std::string const & value /* = "" */,
+                                    bool isURL /* = false */)
 {
   SC_CHECK_GREAT(idtf.size(), 0, ());
 
@@ -338,7 +349,7 @@ ElementHandle Parser::AppendElement(std::string const & idtf,
   else
   {
     // append element
-    ParsedElement el(idtf, type, isConnectorReversed, value);
+    ParsedElement el(idtf, type, isConnectorReversed, value, isURL);
 
     bool const isLocal = (el.GetVisibility() == Visibility::Local);
     auto & container = isLocal ? m_parsedElementsLocal : m_parsedElements;
@@ -445,6 +456,11 @@ ElementHandle Parser::ProcessContent(std::string const & content, bool isVar)
 ElementHandle Parser::ProcessLink(std::string const & link)
 {
   return AppendElement(GenerateLinkIdtf(), ScType::Link, false, link);
+}
+
+ElementHandle Parser::ProcessFileURL(std::string const & fileURL)
+{
+  return AppendElement(GenerateLinkIdtf(), ScType::LinkConst, false, fileURL, true);
 }
 
 ElementHandle Parser::ProcessEmptyContour()

@@ -32,13 +32,15 @@ public:
   explicit ParsedElement(std::string const & idtf,
                          ScType const & type = ScType(),
                          bool isReversed = false,
-                         std::string const & value = "");
+                         std::string const & value = "",
+                         bool isURL = false);
 
   _SC_EXTERN std::string const & GetIdtf() const;
   _SC_EXTERN Visibility GetVisibility() const;
   _SC_EXTERN ScType const & GetType() const;
   _SC_EXTERN bool IsReversed() const;
   _SC_EXTERN std::string const & GetValue() const;
+  _SC_EXTERN bool IsURL() const;
 
 protected:
   void ResolveVisibility();
@@ -49,6 +51,7 @@ protected:
   Visibility m_visibility; // cached value, to prevent each time check
   bool m_isReversed : 1;   // flag used just for an edges
   std::string m_value;  // string representation of content/link value
+  bool m_isURL : 1;     // flag used to determine if ScLink value is an URL
 };
 
 class ElementHandle
@@ -118,6 +121,7 @@ protected:
   ElementHandle ProcessConnector(std::string const & connector);
   ElementHandle ProcessContent(std::string const & content, bool isVar);
   ElementHandle ProcessLink(std::string const & link);
+  ElementHandle ProcessFileURL(std::string const & fileURL);
 
   ElementHandle ProcessEmptyContour();
   void ProcessContourBegin();
@@ -130,7 +134,8 @@ private:
   ElementHandle AppendElement(std::string const & idtf,
                               ScType const & type = ScType(),
                               bool isConnectorReversed = false,
-                              std::string const & value = "");
+                              std::string const & value = "",
+                              bool isURL = false);
 
   std::string GenerateEdgeIdtf();
   std::string GenerateLinkIdtf();

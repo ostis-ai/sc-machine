@@ -239,10 +239,13 @@ UNIT_TEST(scs_types)
 
     SC_CHECK_EQUAL(triples.size(), 4, ());
 
-    SC_CHECK_EQUAL(parser.GetParsedElement(triples[0].m_target).GetType(), ScType::Link, ());
+    SC_CHECK_EQUAL(parser.GetParsedElement(triples[0].m_target).GetType(), ScType::LinkConst, ());
+    SC_CHECK(parser.GetParsedElement(triples[0].m_target).IsURL(), ());
     SC_CHECK_EQUAL(parser.GetParsedElement(triples[1].m_target).GetType(), ScType::LinkConst, ());
+    SC_CHECK_NOT(parser.GetParsedElement(triples[2].m_target).IsURL(), ());
     SC_CHECK_EQUAL(parser.GetParsedElement(triples[2].m_target).GetType(), ScType::LinkVar, ());
     SC_CHECK_EQUAL(parser.GetParsedElement(triples[3].m_target).GetType(), ScType::LinkConst, ());
+    SC_CHECK_NOT(parser.GetParsedElement(triples[3].m_target).IsURL(), ());
   }
   SUBTEST_END()
 
@@ -420,4 +423,25 @@ UNIT_TEST(scs_aliases)
     }
   }
   SUBTEST_END()
+}
+
+UNIT_TEST(scs_file_url)
+{
+  ScMemoryContext ctx(sc_access_lvl_make_min, "scs_file_url");
+
+  std::string const data = "scs_file_url -> \"file://html/faq.html\";;";
+
+  scs::Parser parser;
+
+  SC_CHECK(parser.Parse(data), (parser.GetParseError()));
+
+  auto const & triples = parser.GetParsedTriples();
+  SC_CHECK_EQUAL(triples.size(), 1, ());
+
+  SPLIT_TRIPLE(triples[0]);
+
+  SC_CHECK_EQUAL(trg.GetType(), ScType::LinkConst, ());
+  SC_CHECK_EQUAL(trg.GetValue(), "file://html/faq.html", ());
+  SC_CHECK(trg.IsURL(), ());
+
 }
