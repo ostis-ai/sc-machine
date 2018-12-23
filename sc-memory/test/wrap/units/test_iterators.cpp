@@ -189,26 +189,26 @@ UNIT_TEST(iterators)
   SUBTEST_START(content_string)
   {
     std::string str("test content string");
-    ScStream stream(str.c_str(), (sc_uint32)str.size(), SC_STREAM_FLAG_READ);
+    ScStreamPtr const stream = ScStreamMakeRead(str);
     ScAddr link = ctx.CreateLink();
 
     SC_CHECK(link.IsValid(), ());
     SC_CHECK(ctx.IsElement(link), ());
     SC_CHECK(ctx.SetLinkContent(link, stream), ());
 
-    ScStream stream2;
-    SC_CHECK(ctx.GetLinkContent(link, stream2), ());
+    ScStreamPtr stream2 = ctx.GetLinkContent(link);
+    SC_CHECK(ctx.GetLinkContent(link), ());
 
-    SC_CHECK_EQUAL(stream.Size(), stream2.Size(), ());
-    SC_CHECK(stream2.Seek(SC_STREAM_SEEK_SET, 0), ());
+    SC_CHECK_EQUAL(stream->Size(), stream2->Size(), ());
+    SC_CHECK(stream2->Seek(SC_STREAM_SEEK_SET, 0), ());
 
     std::string str2;
-    str2.resize(stream2.Size());
-    for (sc_uint i = 0; i < stream2.Size(); ++i)
+    str2.resize(stream2->Size());
+    for (sc_uint i = 0; i < stream2->Size(); ++i)
     {
       sc_char c;
       size_t readBytes;
-      SC_CHECK(stream2.Read(&c, sizeof(c), readBytes), ());
+      SC_CHECK(stream2->Read(&c, sizeof(c), readBytes), ());
       SC_CHECK_EQUAL(readBytes, sizeof(c), ());
 
       str2[i] = c;
@@ -216,8 +216,7 @@ UNIT_TEST(iterators)
 
     SC_CHECK_EQUAL(str, str2, ());
 
-    ScAddrList result;
-    SC_CHECK(ctx.FindLinksByContent(stream, result), ());
+    ScAddrVector result = ctx.FindLinksByContent(stream);
     SC_CHECK_EQUAL(result.size(), 1, ());
     SC_CHECK_EQUAL(result.front(), link, ());
   }

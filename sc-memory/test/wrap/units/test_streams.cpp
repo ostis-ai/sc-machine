@@ -7,7 +7,7 @@
 #include "sc-memory/cpp/sc_stream.hpp"
 #include "sc-memory/cpp/utils/sc_test.hpp"
 
-UNIT_TEST(streams)
+UNIT_TEST(ScStream)
 {
   SUBTEST_START(content_streams)
   {
@@ -53,4 +53,20 @@ UNIT_TEST(streams)
     }
   }
   SUBTEST_END()
+}
+
+UNIT_TEST(ScStream_Make_Smoke)
+{
+  ScStreamPtr stream = ScStreamMakeRead("test");
+
+  stream = ScStreamMakeRead(uint8_t(7));
+  stream = ScStreamMakeRead(uint16_t(7));
+  stream = ScStreamMakeRead(uint32_t(7));
+  stream = ScStreamMakeRead(uint64_t(7));
+  stream = ScStreamMakeRead(int8_t(7));
+  stream = ScStreamMakeRead(int16_t(7));
+  stream = ScStreamMakeRead(int32_t(7));
+  stream = ScStreamMakeRead(int64_t(7));
+  stream = ScStreamMakeRead(float(7.f));
+  stream = ScStreamMakeRead(double(7.0));
 }

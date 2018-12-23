@@ -21,10 +21,10 @@ ScLink::Type ScLink::DetermineType() const
 {
   ScAddr typeEdge, typeAddr;
   _DetermineTypeEdgeImpl(typeEdge, typeAddr);
-  
+
   if (typeAddr == Type2Addr<std::string>())
     return Type::String;
-  
+
   if (typeAddr == Type2Addr<float>())
     return Type::Float;
 
@@ -54,6 +54,9 @@ ScLink::Type ScLink::DetermineType() const
 
   if (typeAddr == Type2Addr<uint64_t>())
     return Type::UInt64;
+
+  if (typeAddr == Type2Addr<ScStreamPtr>())
+    return Type::Custom;
 
   return Type::Unknown;
 }
@@ -95,6 +98,13 @@ std::string ScLink::GetAsString() const
 
   case Type::UInt64:
     return std::to_string(Get<uint64_t>());
+
+  case Type::Custom:
+  {
+    std::string value;
+    ScStreamConverter::StreamToString(Get<ScStreamPtr>(), value);
+    return value;
+  }
 
   default:
     return "";

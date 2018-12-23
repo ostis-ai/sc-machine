@@ -59,7 +59,7 @@ private:
 };
 
 
-#define SHARED_PTR_TYPE(__type) typedef std::shared_ptr< __type > __type##Ptr;
+#define SHARED_PTR_TYPE(__type) using __type##Ptr = std::shared_ptr< __type >;
 
 class MemoryBuffer
 {

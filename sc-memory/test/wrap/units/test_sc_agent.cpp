@@ -70,7 +70,7 @@ SC_AGENT_IMPLEMENTATION(ATestAddInputEdge)
 UNIT_TEST(ATestAddInputEdge)
 {
   ScMemoryContext ctx(sc_access_lvl_make_min, "ATestAddInputEdge");
-  
+
   ScAgentInit(true);
   ATestAddInputEdge::InitGlobal();
   SC_AGENT_REGISTER(ATestAddInputEdge);
@@ -227,7 +227,7 @@ UNIT_TEST(ATestContentChanged)
   SC_AGENT_REGISTER(ATestContentChanged);
 
   uint32_t const value = 100;
-  ScStream stream((char*)&value, sizeof(value), SC_STREAM_FLAG_READ);
+  ScStreamPtr const stream = ScStreamMakeRead(value);
 
   SC_CHECK(ctx.SetLinkContent(link, stream), ());
   SC_CHECK(ATestContentChanged::msWaiter.Wait(), ());

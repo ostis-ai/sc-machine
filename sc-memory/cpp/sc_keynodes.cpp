@@ -46,6 +46,7 @@ ScAddr ScKeynodes::kBinaryUInt16;
 ScAddr ScKeynodes::kBinaryUInt32;
 ScAddr ScKeynodes::kBinaryUInt64;
 ScAddr ScKeynodes::kBinaryString;
+ScAddr ScKeynodes::kBinaryCustom;
 
 bool ScKeynodes::Init(bool force)
 {
@@ -89,7 +90,8 @@ bool ScKeynodes::Init(bool force)
     ScSet set(&ctx, kBinaryType);
     set << kBinaryDouble << kBinaryFloat << kBinaryString
         << kBinaryInt8 << kBinaryInt16 << kBinaryInt32 << kBinaryInt64
-        << kBinaryUInt8 << kBinaryUInt16 << kBinaryUInt32 << kBinaryUInt64;
+        << kBinaryUInt8 << kBinaryUInt16 << kBinaryUInt32 << kBinaryUInt64
+        << kBinaryCustom;
   }
 
   ms_isInitialized = true;

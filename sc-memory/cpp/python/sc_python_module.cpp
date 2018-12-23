@@ -325,14 +325,10 @@ bp::list _context_FindLinksByContent(ScMemoryContext & self, bp::object const & 
   bp::extract<std::string> strContent(content);
   if (strContent.check())
   {
-    std::string const value = strContent;
-    ScAddrList foundAddrs;
-    ScStream stream(value.c_str(), value.size(), SC_STREAM_FLAG_READ);
-    if (self.FindLinksByContent(stream, foundAddrs))
-    {
-      for (auto addr : foundAddrs)
-        result.append(bp::object(addr));
-    }
+    ScStreamPtr stream = ScStreamConverter::StreamFromString(strContent);
+    ScAddrVector const foundAddrs = self.FindLinksByContent(stream);
+    for (auto addr : foundAddrs)
+      result.append(bp::object(addr));
   }
   else
   {
@@ -377,8 +373,7 @@ bool _context_setLinkContent(ScMemoryContext & self, ScAddr const & linkAddr, bp
   bp::extract<std::string> s(content);
   if (s.check())
   {
-    std::string const value = s;
-    ScStream stream(value.c_str(), value.size(), SC_STREAM_FLAG_READ);
+    ScStreamPtr stream = ScStreamMakeRead(std::string(s));
     return self.SetLinkContent(linkAddr, stream);
   }
 
@@ -387,8 +382,8 @@ bool _context_setLinkContent(ScMemoryContext & self, ScAddr const & linkAddr, bp
 
 bp::object _context_getLinkContent(ScMemoryContext & self, ScAddr const & linkAddr)
 {
-  ScStream stream;
-  if (self.GetLinkContent(linkAddr, stream))
+  ScStreamPtr stream = self.GetLinkContent(linkAddr);
+  if (stream)
   {
     const ScLink link(self, linkAddr);
     uint8_t linkType = PyLinkContent::Type::String;
@@ -415,7 +410,7 @@ bp::object _context_getLinkContent(ScMemoryContext & self, ScAddr const & linkAd
     default:
       break;
     }
-    return bp::object(PyLinkContent(stream, linkType));
+    return bp::object(PyLinkContent(*stream, linkType));
   }
 
   return bp::object();

@@ -54,7 +54,7 @@ public:
     result.m_result.resize(m_constructions.size() * 3);
     result.m_replacements = m_replacements;
 
-    ScAddrList createdElements;
+    ScAddrVector createdElements;
     size_t resultIdx = 0;
     bool isError = false;
 
@@ -155,7 +155,7 @@ public:
 
   void cleanupCreated()
   {
-    for (ScAddrList::iterator it = m_createdElements.begin(); it != m_createdElements.end(); ++it)
+    for (ScAddrVector::iterator it = m_createdElements.begin(); it != m_createdElements.end(); ++it)
       m_context.EraseElement(*it);
     m_createdElements.clear();
   }
@@ -184,7 +184,7 @@ private:
   ScTemplate::TemplateConstr3Vector const & m_constructions;
   ScTemplateGenParams const & m_params;
   ScMemoryContext & m_context;
-  ScAddrList m_createdElements;
+  ScAddrVector m_createdElements;
 };
 
 

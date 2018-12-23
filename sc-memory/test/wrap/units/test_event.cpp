@@ -149,7 +149,7 @@ UNIT_TEST(events_common)
     auto const emitEvent = [&ctx, &addr]()
     {
       std::string const value("test");
-      ScStream stream((sc_char*)value.data(), static_cast<sc_uint32>(value.size()), SC_STREAM_FLAG_READ);
+      ScStreamPtr stream = ScStreamMakeRead(value);
       SC_CHECK(ctx.SetLinkContent(addr, stream), ());
     };
 

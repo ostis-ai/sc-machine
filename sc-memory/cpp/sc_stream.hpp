@@ -14,42 +14,9 @@ extern "C"
 #include "sc_types.hpp"
 #include "sc_utils.hpp"
 
+#include <type_traits>
 
-class IScStream
-{
-public:
-  _SC_EXTERN virtual ~IScStream() {};
-
-  _SC_EXTERN virtual bool IsValid() const = 0;
-
-  _SC_EXTERN virtual bool Read(sc_char * buff, size_t buffLen, size_t & readBytes) const = 0;
-
-  _SC_EXTERN virtual bool Write(sc_char * data, size_t dataLen, size_t & writtenBytes) = 0;
-
-  _SC_EXTERN virtual bool Seek(sc_stream_seek_origin origin, size_t offset) = 0;
-
-  //! Check if current position at the end of file
-  _SC_EXTERN virtual bool Eof() const = 0;
-
-  //! Returns lenght of stream in bytes
-  _SC_EXTERN virtual size_t Size() const = 0;
-
-  //! Returns current position of stream
-  _SC_EXTERN virtual size_t Pos() const = 0;
-
-  //! Check if stream has a specified flag
-  _SC_EXTERN virtual bool HasFlag(sc_uint8 flag) = 0;
-
-  template <typename Type>
-  bool ReadType(Type & value)
-  {
-    size_t readBytes = 0;
-    return Read((sc_char*)&value, sizeof(Type), readBytes) && (readBytes == sizeof(Type));
-  }
-};
-
-
-class ScStream : public IScStream
+class ScStream
 {
   friend class ScMemoryContext;
 
@@ -66,69 +33,71 @@ public:
   _SC_EXTERN ~ScStream();
 
   _SC_EXTERN void Reset();
-  _SC_EXTERN bool IsValid() const override;
-  _SC_EXTERN bool Read(sc_char * buff, size_t buffLen, size_t & readBytes) const override;
-  _SC_EXTERN bool Write(sc_char * data, size_t dataLen, size_t & writtenBytes) override;
-  _SC_EXTERN bool Seek(sc_stream_seek_origin origin, size_t offset) override;
+  _SC_EXTERN bool IsValid() const;
+  _SC_EXTERN bool Read(sc_char * buff, size_t buffLen, size_t & readBytes) const;
+  _SC_EXTERN bool Write(sc_char * data, size_t dataLen, size_t & writtenBytes);
+  _SC_EXTERN bool Seek(sc_stream_seek_origin origin, size_t offset);
 
   //! Check if current position at the end of file
-  _SC_EXTERN bool Eof() const override;
+  _SC_EXTERN bool Eof() const;
 
   //! Returns lenght of stream in bytes
-  _SC_EXTERN size_t Size() const override;
+  _SC_EXTERN size_t Size() const;
 
   //! Returns current position of stream
-  _SC_EXTERN size_t Pos() const override;
+  _SC_EXTERN size_t Pos() const;
 
   //! Check if stream has a specified flag
-  _SC_EXTERN bool HasFlag(sc_uint8 flag) override;
+  _SC_EXTERN bool HasFlag(sc_uint8 flag);
 
-protected:
-  //! Init with new stream object. Used by MemoryContext::getLinkContent
-  void Init(sc_stream * stream);
+  template <typename Type>
+  bool ReadType(Type & value)
+  {
+    size_t readBytes = 0;
+    return Read((sc_char*)&value, sizeof(Type), readBytes) && (readBytes == sizeof(Type));
+  }
 
 protected:
   sc_stream * m_stream;
 };
 
-SHARED_PTR_TYPE(ScStream);
+using ScStreamPtr = std::shared_ptr<ScStream>;
 
-class ScStreamMemory : public IScStream
+class ScStreamMemory : public ScStream
 {
 public:
-  _SC_EXTERN explicit ScStreamMemory();
   _SC_EXTERN explicit ScStreamMemory(MemoryBufferPtr const & buff);
   _SC_EXTERN virtual ~ScStreamMemory();
 
-  _SC_EXTERN void Reinit(MemoryBufferPtr const & buff);
-
-  _SC_EXTERN bool IsValid() const override;
-  _SC_EXTERN bool Read(sc_char * buff, size_t buffLen, size_t & readBytes) const override;
-  _SC_EXTERN bool Write(sc_char * data, size_t dataLen, size_t & writtenBytes) override;
-  _SC_EXTERN bool Seek(sc_stream_seek_origin origin, size_t offset) override;
-  _SC_EXTERN bool Eof() const override;
-  _SC_EXTERN size_t Size() const override;
-  _SC_EXTERN size_t Pos() const override;
-  _SC_EXTERN bool HasFlag(sc_uint8 flag) override;
-
 private:
   MemoryBufferPtr m_buffer;
-  mutable size_t m_pos;
 };
 
-
-SHARED_PTR_TYPE(IScStream)
 
 class ScStreamConverter
 {
   public:
 
-  static _SC_EXTERN bool StreamToString(ScStream const & stream, std::string & outString);
-  static _SC_EXTERN void StreamFromString(std::string const & str, ScStreamMemory & outStream);
+  static _SC_EXTERN bool StreamToString(ScStreamPtr const & stream, std::string & outString);
+  static _SC_EXTERN ScStreamPtr StreamFromString(std::string const & str);
 };
 
 template <typename T>
-ScStreamPtr MakeReadStreamT(T const & value)
+inline ScStreamPtr ScStreamMakeReadT(T const & value)
 {
-  return ScStreamPtr(new ScStream((sc_char*)&value, sizeof(T), SC_STREAM_FLAG_READ | SC_STREAM_FLAG_SEEK | SC_STREAM_FLAG_TELL));
+  static_assert (std::is_arithmetic<T>::value, "Just simple arithmetic types are supported");
+  return std::make_shared<ScStream>((sc_char*)&value, sizeof(T), SC_STREAM_FLAG_READ | SC_STREAM_FLAG_SEEK | SC_STREAM_FLAG_TELL);
 }
+
+// TODO: implement with enable_if
+inline ScStreamPtr ScStreamMakeRead(std::string const & value) { return ScStreamConverter::StreamFromString(value); }
+inline ScStreamPtr ScStreamMakeRead(uint8_t const & value) { return ScStreamMakeReadT(value); }
+inline ScStreamPtr ScStreamMakeRead(uint16_t const & value) { return ScStreamMakeReadT(value); }
+inline ScStreamPtr ScStreamMakeRead(uint32_t const & value) { return ScStreamMakeReadT(value); }
+inline ScStreamPtr ScStreamMakeRead(uint64_t const & value) { return ScStreamMakeReadT(value); }
+inline ScStreamPtr ScStreamMakeRead(int8_t const & value) { return ScStreamMakeReadT(value); }
+inline ScStreamPtr ScStreamMakeRead(int16_t const & value) { return ScStreamMakeReadT(value); }
+inline ScStreamPtr ScStreamMakeRead(int32_t const & value) { return ScStreamMakeReadT(value); }
+inline ScStreamPtr ScStreamMakeRead(int64_t const & value) { return ScStreamMakeReadT(value); }
+inline ScStreamPtr ScStreamMakeRead(float const & value) { return ScStreamMakeReadT(value); }
+inline ScStreamPtr ScStreamMakeRead(double const & value) { return ScStreamMakeReadT(value); }

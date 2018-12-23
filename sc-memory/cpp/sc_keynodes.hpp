@@ -110,7 +110,7 @@ public:
 
   SC_PROPERTY(Keynode("binary_int32"), ForceCreate(ScType::NodeConstClass))
   _SC_EXTERN static ScAddr kBinaryInt32;
-  
+
   SC_PROPERTY(Keynode("binary_int64"), ForceCreate(ScType::NodeConstClass))
   _SC_EXTERN static ScAddr kBinaryInt64;
 
@@ -128,4 +128,7 @@ public:
 
   SC_PROPERTY(Keynode("binary_string"), ForceCreate(ScType::NodeConstClass))
   _SC_EXTERN static ScAddr kBinaryString;
+
+  SC_PROPERTY(Keynode("binary_custom"), ForceCreate(ScType::NodeConstClass))
+  _SC_EXTERN static ScAddr kBinaryCustom;
 };

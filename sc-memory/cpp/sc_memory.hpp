@@ -15,11 +15,11 @@ extern "C"
 #include "sc_addr.hpp"
 #include "sc_event.hpp"
 #include "sc_iterator.hpp"
+#include "sc_stream.hpp"
 #include "sc_template.hpp"
 #include "sc_types.hpp"
 
 class ScMemoryContext;
-class ScStream;
 
 /// TODO: replace with ScType
 #define SC_TYPE(__t__) ((sc_type)(__t__))
@@ -120,11 +120,17 @@ public:
   SC_DEPRECATED(0.3.0, "Use ScMemoryContext::getEdgeTarget instead.")
   _SC_EXTERN ScAddr GetArcEnd(ScAddr const & arcAddr) const;
 
-  _SC_EXTERN bool SetLinkContent(ScAddr const & addr, ScStream const & stream);
-  _SC_EXTERN bool GetLinkContent(ScAddr const & addr, ScStream & stream);
+  _SC_EXTERN bool SetLinkContent(ScAddr const & addr, ScStreamPtr const & stream);
+  _SC_EXTERN ScStreamPtr GetLinkContent(ScAddr const & addr);
 
   //! Returns true, if any links found
-  _SC_EXTERN bool FindLinksByContent(ScStream const & stream, ScAddrList & found);
+  SC_DEPRECATED(0.6.0, "Use `ScAddrList FindLinksByContent(ScStreamPtr const & stream)` instead.")
+  _SC_EXTERN bool FindLinksByContent(ScStreamPtr const & stream, ScAddrVector & found);
+  _SC_EXTERN ScAddrVector FindLinksByContent(ScStreamPtr const & stream);
+  template <typename TContentType> ScAddrVector FindLinksByContent(TContentType const & value)
+  {
+    return FindLinksByContent(ScStreamMakeRead(value));
+  }
 
   //! Saves memory state
   _SC_EXTERN bool Save();

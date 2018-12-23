@@ -315,46 +315,48 @@ ScAddr ScMemoryContext::GetArcEnd(ScAddr const & arcAddr) const
   return GetEdgeTarget(arcAddr);
 }
 
-bool ScMemoryContext::SetLinkContent(ScAddr const & addr, ScStream const & stream)
+bool ScMemoryContext::SetLinkContent(ScAddr const & addr, ScStreamPtr const & stream)
 {
   SC_ASSERT(IsValid(), ());
-  return sc_memory_set_link_content(m_context, *addr, stream.m_stream) == SC_RESULT_OK;
+  SC_ASSERT(stream, ());
+  return sc_memory_set_link_content(m_context, *addr, stream->m_stream) == SC_RESULT_OK;
 }
 
-bool ScMemoryContext::GetLinkContent(ScAddr const & addr, ScStream & stream)
+ScStreamPtr ScMemoryContext::GetLinkContent(ScAddr const & addr)
 {
   SC_ASSERT(IsValid(), ());
 
-  sc_stream * s = 0;
+  sc_stream * s = nullptr;
   if (sc_memory_get_link_content(m_context, *addr, &s) != SC_RESULT_OK)
-  {
-    stream.Reset();
-    return false;
-  }
+    return ScStreamPtr();
 
-  stream.Init(s);
-
-  return stream.IsValid();
+  return std::make_unique<ScStream>(s);
 }
 
-bool ScMemoryContext::FindLinksByContent(ScStream const & stream, ScAddrList & found)
+bool ScMemoryContext::FindLinksByContent(ScStreamPtr const & stream, ScAddrVector & found)
+{
+  found = FindLinksByContent(stream);
+  return !found.empty();
+}
+
+ScAddrVector ScMemoryContext::FindLinksByContent(ScStreamPtr const & stream)
 {
   SC_ASSERT(IsValid(), ());
+  ScAddrVector contents;
 
   sc_addr * result = 0;
   sc_uint32 resultCount = 0;
 
-  found.clear();
-  if (sc_memory_find_links_with_content(m_context, stream.m_stream, &result, &resultCount) != SC_RESULT_OK)
-    return false;
+  if (sc_memory_find_links_with_content(m_context, stream->m_stream, &result, &resultCount) == SC_RESULT_OK)
+  {
+    for (sc_uint32 i = 0; i < resultCount; ++i)
+      contents.push_back(ScAddr(result[i]));
 
-  for (sc_uint32 i = 0; i < resultCount; ++i)
-    found.push_back(ScAddr(result[i]));
+    if (result)
+      sc_memory_free_buff(result);
+  }
 
-  if (result)
-    sc_memory_free_buff(result);
-
-  return found.size() > 0;
+  return contents;
 }
 
 bool ScMemoryContext::Save()
@@ -402,8 +404,8 @@ std::string ScMemoryContext::HelperGetSystemIdtf(ScAddr const & addr)
   {
     if (idtfLink.IsValid())
     {
-      ScStream stream;
-      if (GetLinkContent(idtfLink, stream))
+      ScStreamPtr stream = GetLinkContent(idtfLink);
+      if (stream)
       {
         std::string result;
         if (ScStreamConverter::StreamToString(stream, result))
