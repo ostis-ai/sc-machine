@@ -77,6 +77,50 @@ UNIT_TEST(StringUtils)
     SC_CHECK_EQUAL(value, "value value", ());
   }
   SUBTEST_END()
+
+  SUBTEST_START(ParseNumbers)
+  {
+    auto const resultFloat = utils::StringUtils::ParseNumber<float>("7.56");
+    SC_CHECK(resultFloat, ());
+    SC_CHECK_EQUAL(*resultFloat, 7.56f, ());
+
+    auto const resultDouble = utils::StringUtils::ParseNumber<double>("8.56");
+    SC_CHECK(resultDouble, ());
+    SC_CHECK_EQUAL(*resultDouble, 8.56, ());
+
+    auto const resultInt8 = utils::StringUtils::ParseNumber<int8_t>("8");
+    SC_CHECK(resultInt8, ())
+    SC_CHECK_EQUAL(*resultInt8, 8, ());
+
+    auto const resultInt16 = utils::StringUtils::ParseNumber<int16_t>("16");
+    SC_CHECK(resultInt16, ())
+    SC_CHECK_EQUAL(*resultInt16, 16, ());
+
+    auto const resultInt32 = utils::StringUtils::ParseNumber<int32_t>("32");
+    SC_CHECK(resultInt32, ())
+    SC_CHECK_EQUAL(*resultInt32, 32, ());
+
+    auto const resultInt64 = utils::StringUtils::ParseNumber<int64_t>("64");
+    SC_CHECK(resultInt64, ());
+    SC_CHECK_EQUAL(*resultInt64, 64, ());
+
+    auto const resultUint8 = utils::StringUtils::ParseNumber<uint8_t>("8");
+    SC_CHECK(resultUint8, ());
+    SC_CHECK_EQUAL(*resultUint8, 8, ());
+
+    auto const resultUint16 = utils::StringUtils::ParseNumber<uint16_t>("16");
+    SC_CHECK(resultUint16, ());
+    SC_CHECK_EQUAL(*resultUint16, 16, ());
+
+    auto const resultUint32 = utils::StringUtils::ParseNumber<uint32_t>("32");
+    SC_CHECK(resultUint32, ());
+    SC_CHECK_EQUAL(*resultUint32, 32, ());
+
+    auto const resultUint64 = utils::StringUtils::ParseNumber<uint64_t>("64");
+    SC_CHECK(resultUint64, ());
+    SC_CHECK_EQUAL(*resultUint64, 64, ());
+  }
+  SUBTEST_END()
 }
 
 UNIT_TEST(ScAddr)

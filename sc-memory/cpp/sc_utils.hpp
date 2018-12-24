@@ -15,6 +15,7 @@
 #include "sc_debug.hpp"
 #include "sc_types.hpp"
 
+#include "utils/sc_std.hpp"
 
 // Got it there: https://github.com/mapsme/omim/blob/136f12af3adde05623008f71d07bb996fe5801a5/base/macros.hpp
 #define ARRAY_SIZE(X) sizeof(::my::impl::ArraySize(X))
@@ -141,6 +142,24 @@ SHARED_PTR_TYPE(MemoryBufferSafe)
 namespace utils
 {
 
+namespace impl
+{
+template <typename T> inline T toNumber(std::string const & value);
+
+template <> inline int8_t toNumber<int8_t>(std::string const & value) { return int8_t(std::stol(value)); }
+template <> inline int16_t toNumber<int16_t>(std::string const & value) { return int16_t(std::stol(value)); }
+template <> inline int32_t toNumber<int32_t>(std::string const & value) { return int32_t(std::stol(value)); }
+template <> inline int64_t toNumber<int64_t>(std::string const & value) { return int64_t(std::stoll(value)); }
+template <> inline uint8_t toNumber<uint8_t>(std::string const & value) { return uint8_t(std::stoul(value)); }
+template <> inline uint16_t toNumber<uint16_t>(std::string const & value) { return uint16_t(std::stoul(value)); }
+template <> inline uint32_t toNumber<uint32_t>(std::string const & value) { return uint32_t(std::stoul(value)); }
+template <> inline uint64_t toNumber<uint64_t>(std::string const & value) { return uint64_t(std::stoull(value)); }
+template <> inline float toNumber<float>(std::string const & value) { return std::stof(value); }
+template <> inline double toNumber<double>(std::string const & value) { return std::stod(value); }
+
+} // namespace impl
+
+
 class StringUtils
 {
 public:
@@ -161,6 +180,19 @@ public:
   _SC_EXTERN static std::string NormalizeFilePath(std::string const & init, bool makeLowerCase);
 
   _SC_EXTERN static std::string ReplaceAll(std::string const & source, std::string const & replaceWhat, std::string const & replaceWithWhat);
+  _SC_EXTERN template <typename T> static std::optional<T> ParseNumber(std::string const & value)
+  {
+    try
+    {
+      T const v = impl::toNumber<T>(value);
+      return std::optional<T>(v);
+    }
+    catch (std::exception const &)
+    {
+    }
+
+    return std::optional<T>();
+  }
 };
 
 class Random

@@ -237,7 +237,6 @@ void StringUtils::Trim(std::string & str)
   TrimRight(str);
 }
 
-
 int Random::Int()
 {
   return std::rand();
