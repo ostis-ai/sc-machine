@@ -372,9 +372,10 @@ sc_bool sc_fs_storage_write_to_path(sc_segment **segments)
 
   if (!g_file_test(repo_path, G_FILE_TEST_IS_DIR))
   {
-    int mode = 0;
 #if SC_PLATFORM_LINUX || SC_PLATFORM_MAC
-    mode = 755;
+    int const mode = 0755;
+#else
+    int const mode = 0;
 #endif
     if (g_mkdir_with_parents(repo_path, mode) == -1)
     {
