@@ -38,15 +38,10 @@ class ScAgent:
   kResultErrorNoWriteRights = 'sc_result_error_no_write_rights'
   kResultErrorNoReadRights = 'sc_result_error_no_read_rights'
 
-  keynodes = None
-
-  @staticmethod
-  def InitGlobal(module):
-    ScAgent.keynodes = ScKeynodes(module.ctx)
-
   def __init__(self, module):
     self.module = module
     self.evt = None
+    self.keynodes = ScKeynodes(module.ctx)
 
   def Register(self, addr, evt_type):
     """Register this agent to a specified event
@@ -72,7 +67,7 @@ class ScAgent:
   def CheckImpl(self, evt):
     """This function can be overrided to check any conditions before run.
     If this function returns True, then RunImpl should be called; 
-    potherwise it woudn't be
+    otherwise it woudn't be run
     """
     return True
 
@@ -98,7 +93,7 @@ class ScAgentCommand(ScAgent):
     self.result_set = None
 
     self.Register(
-        ScAgent.keynodes[ScAgent.kCmdInitiated],
+        self.keynodes[ScAgent.kCmdInitiated],
         ScPythonEventType.AddOutputEdge)
 
   def CheckImpl(self, evt):

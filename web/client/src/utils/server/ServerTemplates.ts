@@ -1,5 +1,5 @@
 import { ScNet, ScType, ScAddr, ScTemplate, 
-         ScTemplateSearchResult, ScTemplateResult, ScLinkContent, ScLinkContentType } from '@ostis/sc-core';
+         ScTemplateSearchResult, ScTemplateResult, ScLinkContent, ScLinkContentType, ScTemplateGenerateResult } from '@ostis/sc-core';
 import { ServerKeynodes } from './ServerKeynodes';
 import { ServerBase } from './ServerBase';
 import { KBTemplate } from '../types';
@@ -146,9 +146,18 @@ export class ServerTemplates extends ServerBase {
     return new Promise<ScTemplateSearchResult>(function (resolve) {
       resolve(searchResult);
     });
-  };
+  }
+    
+  public async DoGenerate(scsTempl: string): Promise<ScTemplateGenerateResult> {
+    const genResult: ScTemplateGenerateResult = await this.client.TemplateGenerate(scsTempl, {});
+
+    return new Promise<ScTemplateGenerateResult>((resolve) => {
+      resolve(genResult);
+    });
+  }
 
   public async MakeSCgStruct(data: ScTemplateResult[]) : Promise<SCgStruct> {
+    
     const result: SCgStruct = new SCgStruct();
 
     const values: number[] = [];
@@ -192,15 +201,16 @@ export class ServerTemplates extends ServerBase {
     /// TODO: support binary contents
     function getContent(a: ScAddr) : string {
       const c: ScLinkContent = linkContents[a.value];
+      let res: string = null;
       if (c) {
         if (c.type === ScLinkContentType.Float || c.type === ScLinkContentType.Int) {
-          return c.data.toString();
+          res = c.data.toString();
         } else if (c.type === ScLinkContentType.String) {
-          return c.data as string;
+          res = c.data as string;
         }
       }
-
-      return null;
+      
+      return res;
     }
 
     function getSysIdtf(a: ScAddr) : string {

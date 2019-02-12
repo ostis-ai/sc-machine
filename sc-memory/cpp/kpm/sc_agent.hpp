@@ -14,7 +14,7 @@
 #include "../generated/sc_agent.generated.hpp"
 
 
-/* Call this function before agent module usage. 
+/* Call this function before agent module usage.
  * If module initialized, then returns true; otherwise returns false
  */
 _SC_EXTERN bool ScAgentInit(bool force = false);
@@ -29,7 +29,7 @@ public:
   _SC_EXTERN virtual ~ScAgent();
 
 protected:
-  _SC_EXTERN virtual sc_result Run(ScAddr const & listenAddr, ScAddr const & edgeAddr, ScAddr const & otherAddr);
+  virtual sc_result Run(ScAddr const & listenAddr, ScAddr const & edgeAddr, ScAddr const & otherAddr) = 0;
 
 protected:
   mutable ScMemoryContext m_memoryCtx;
@@ -71,7 +71,7 @@ public:
   static _SC_EXTERN ScAddr const & GetCommandInitiatedAddr();
   static _SC_EXTERN ScAddr const & GetCommandFinishedAddr();
   static _SC_EXTERN ScAddr const & GetNrelResultAddr();
- 
+
   /* Create instance of specified command with arguments
    * cmdClassAddr - node that designate command class
    * For each parameter from params would be added attribute rrel_<i + 1>, where
@@ -100,11 +100,11 @@ public:
 
   /* Returns result code of specified command
    * If command still haven't result (possible not finished), then return
-   * SC_RESULT_UNKNOWN. Be attentive, SC_RESULT_UNKNOWN is not a guarantee, that 
+   * SC_RESULT_UNKNOWN. Be attentive, SC_RESULT_UNKNOWN is not a guarantee, that
    * process isn't finished. It could be finished with that result.
    */
   static _SC_EXTERN sc_result GetCommandResultCode(ScMemoryContext & ctx, ScAddr const & cmdAddr);
-  
+
   /* Same as GetCommandResultCode, but returns ScAddr of result code set.
    * If it can't be determined, then return empty value
    */
@@ -117,7 +117,7 @@ public:
   /* Reutrns true, if specified command included into set of finished commands
    */
   static _SC_EXTERN bool IsCommandFishined(ScMemoryContext & ctx, ScAddr const & cmdAddr);
-  
+
   /* Reutrns true, if specified command included into set of initiated commands
   */
   static _SC_EXTERN bool IsCommandInitiated(ScMemoryContext & ctx, ScAddr const & cmdAddr);
@@ -130,7 +130,7 @@ private:
   ScAddr m_cmdClassAddr;
 
 private:
-  
+
 };
 
 #define AGENT_NAME_TYPE(__Name__) __Name__##Type

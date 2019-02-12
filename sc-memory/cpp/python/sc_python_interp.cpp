@@ -397,7 +397,7 @@ namespace py
 
 bool ScPythonInterpreter::ms_isInitialized = false;
 std::wstring ScPythonInterpreter::ms_name;
-utils::ScLock ScPythonInterpreter::m_lock;
+utils::ScLock ScPythonInterpreter::ms_lock;
 
 ScPythonInterpreter::ModulesMap ScPythonInterpreter::ms_foundModules;
 ScPythonInterpreter::ModulePathSet ScPythonInterpreter::ms_modulePaths;
@@ -444,7 +444,7 @@ void ScPythonInterpreter::RunScript(std::string const & scriptName, ScMemoryCont
 
   std::string modulePath, moduleName;
   {
-    utils::ScLockScope scope(m_lock);
+    utils::ScLockScope scope(ms_lock);
 
     AddModuleSearchPaths(ms_modulePaths);
 
@@ -509,10 +509,16 @@ void ScPythonInterpreter::RunScript(std::string const & scriptName, ScMemoryCont
 
 void ScPythonInterpreter::AddModulesPath(std::string const & modulesPath)
 {
-  utils::ScLockScope scope(m_lock);
+  utils::ScLockScope scope(ms_lock);
 
   if (ms_modulePaths.insert(modulesPath).second)
     CollectModulesInPath(modulesPath);
+}
+
+ScPythonInterpreter::ModulesMap ScPythonInterpreter::GetFoundModules()
+{
+  utils::ScLockScope scope(ms_lock);
+  return ms_foundModules;
 }
 
 void ScPythonInterpreter::CollectModules(ModulePathSet const & modulePath)

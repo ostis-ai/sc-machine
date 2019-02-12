@@ -49,7 +49,7 @@ public:
     if (!checkParams())
       return ScTemplateResultCode::InvalidParams;	/// TODO: Provide error
 
-    ScMemoryContextPengindGuard guard(m_context);
+    ScMemoryContextEventsPendingGuard guard(m_context);
 
     result.m_result.resize(m_constructions.size() * 3);
     result.m_replacements = m_replacements;

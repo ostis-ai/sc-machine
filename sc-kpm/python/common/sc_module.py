@@ -93,7 +93,6 @@ class ScModule:
     # notify c++ code that bridge is ready for work
     self.cpp.Ready()
 
-    ScAgent.InitGlobal(self)
     self.OnInitialize(self.cpp.InitParams())
 
   def Shutdown(self):

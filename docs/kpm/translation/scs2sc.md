@@ -7,6 +7,7 @@ This agent translate `SCs-text` from a specified `sc-link` into `SC-code` (build
 **Command class:** `command_translate`
 
 **Parameters:**
+
 1. `sc-link`'s that should be processed
 
 ### Example

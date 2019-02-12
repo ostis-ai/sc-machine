@@ -206,6 +206,8 @@ bool SCsHelper::GenerateBySCsText(std::string const & scsText)
   m_lastError = "";
   bool result = true;
 
+  ScMemoryContextEventsPendingGuard guard(*m_ctx);
+
   scs::Parser parser;
   try
   {

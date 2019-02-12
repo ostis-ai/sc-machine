@@ -73,4 +73,4 @@ private: \
   void StopImpl() final override {} \
 };
 
-}
+} // namespace py

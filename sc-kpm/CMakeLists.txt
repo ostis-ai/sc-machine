@@ -16,7 +16,6 @@ add_subdirectory(sc-ui)
 add_subdirectory(sc-search)
 add_subdirectory(sc-merge)
 add_subdirectory(sc-utils)
-add_subdirectory(sc-http)
 
 add_custom_target(sc-kpm)
 
@@ -25,9 +24,9 @@ if (${SC_KPM_SCP})
     add_dependencies(sc-kpm scp)
 endif()
 
-add_dependencies(sc-kpm 
+add_dependencies(sc-kpm
+    sc-fs
     sc-ui
     sc-search
     sc-merge
-    sc-utils
-    sc-http)
+    sc-utils)

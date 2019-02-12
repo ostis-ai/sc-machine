@@ -21,13 +21,15 @@ public:
   _SC_EXTERN static bool Initialize(std::string const & name);
   _SC_EXTERN static void Shutdown();
 
-  /* This function runs specified script. Path to script should be relative to 
+  /* This function runs specified script. Path to script should be relative to
    * python.modules_path config value.
    * This function is a thread safe
    */
   _SC_EXTERN static void RunScript(std::string const & scriptName, ScMemoryContext const & ctx, ScPythonBridgePtr bridge = ScPythonBridgePtr());
 
   _SC_EXTERN static void AddModulesPath(std::string const & modulesPath);
+
+  static ModulesMap GetFoundModules();
 
 protected:
   static void CollectModules(ModulePathSet const & modulePath);
@@ -36,9 +38,9 @@ protected:
 private:
   static bool ms_isInitialized;
   static std::wstring ms_name;
-  static utils::ScLock m_lock;
+  static utils::ScLock ms_lock;
 
-  static ModulesMap ms_foundModules; 
+  static ModulesMap ms_foundModules;
   static ModulePathSet ms_modulePaths;
 };
 

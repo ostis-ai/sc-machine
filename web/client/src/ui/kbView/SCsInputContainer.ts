@@ -5,7 +5,7 @@ import { KBTemplate } from "../../utils/types";
 import { ScAddr, ScTemplateSearchResult } from "@ostis/sc-core";
 
 
-type OnNewSearchRequestCallback = (scsText: string) => Promise<boolean>;
+type OnRequestCallback = (scsText: string) => Promise<boolean>;
 
 export class SCsInputContainer extends ServerTemplatesListener {
 
@@ -13,7 +13,8 @@ export class SCsInputContainer extends ServerTemplatesListener {
   private _scsEditor: SCsEditor = null;
   private _activeTemplate: ScAddr = null;
 
-  private _onNewSeachRequestCallback: OnNewSearchRequestCallback = null;
+  private _onNewSeachRequestCallback: OnRequestCallback = null;
+  private _onNewGenerateRequestCallback: OnRequestCallback = null;
 
   constructor(parent: HTMLElement) {
     super();
@@ -78,8 +79,13 @@ export class SCsInputContainer extends ServerTemplatesListener {
     return this.scsEditorContainer.querySelector('button[scs-generate]');
   }
 
-  public set onNewSearchRequest(callback: OnNewSearchRequestCallback) {
+  public set onNewSearchRequest(callback: OnRequestCallback) {
     this._onNewSeachRequestCallback = callback;
+  }
+
+  public set onNewGenerateRequest(callback: OnRequestCallback) {
+    console.log(callback);
+    this._onNewGenerateRequestCallback = callback;
   }
 
   private OnTemplateSelected(templAddr: ScAddr) {
@@ -137,7 +143,7 @@ export class SCsInputContainer extends ServerTemplatesListener {
 
   public async DoSearch(scsContent: string) : Promise<void> {
     if (this._onNewSeachRequestCallback) {
-      const result: boolean = await this._onNewSeachRequestCallback(this._scsEditor.content);
+      const result: boolean = await this._onNewSeachRequestCallback(scsContent);
     }
 
     return new Promise<void>((resolve) => {
@@ -145,8 +151,14 @@ export class SCsInputContainer extends ServerTemplatesListener {
     });
   }
 
-  public DoGenerate(scsContent: string) {
+  public async DoGenerate(scsContent: string) {
+    if (this._onNewGenerateRequestCallback) {
+      const result: boolean = await this._onNewGenerateRequestCallback(scsContent);
+    }
 
+    return new Promise<void>((resolve) => {
+      resolve();
+    });
   }
 
 };

@@ -180,6 +180,7 @@ class ScJsonSocketHandler(websocket.WebSocketHandler):
   def makeTemplate(self, triples, is_search):
 
     def convert_value(value):
+
       t = value['type']
       v = value['value']
       result = v
@@ -219,6 +220,7 @@ class ScJsonSocketHandler(websocket.WebSocketHandler):
 
   def handleTemplateSearch(self, ctx, payload):
 
+    templ = None
     if isinstance(payload, str):
       templ = ctx.HelperBuildTemplate(payload)
     else:
@@ -242,8 +244,14 @@ class ScJsonSocketHandler(websocket.WebSocketHandler):
     }
 
   def handleTemplateGenerate(self, ctx, payload):
-    templ = self.makeTemplate(payload["templ"], False)
-    params = payload['params']
+    
+    templ = None
+    params = {}
+    if isinstance(payload, str):
+      templ = ctx.HelperBuildTemplate(payload)
+    else:
+      templ = self.makeTemplate(payload["templ"], False)
+      params = payload['params']
 
     templ_params = ScTemplateGenParams()
     for alias, value in params.items():

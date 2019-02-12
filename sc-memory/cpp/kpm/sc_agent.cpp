@@ -38,11 +38,6 @@ ScAgent::~ScAgent()
 {
 }
 
-sc_result ScAgent::Run(ScAddr const & listenAddr, ScAddr const & edgeAddr, ScAddr const & otherAddr)
-{
-  return SC_RESULT_ERROR;
-}
-
 
 // ---------------------------
 ScAgentAction::ScAgentAction(ScAddr const & cmdClassAddr, char const * name, sc_uint8 accessLvl)
@@ -132,7 +127,7 @@ ScAddr ScAgentAction::CreateCommand(ScMemoryContext & ctx, ScAddr const & cmdCla
   ScAddr const cmdInstanceAddr = ctx.CreateNode(ScType::NodeConst);
   SC_ASSERT(cmdInstanceAddr.IsValid(), ());
   ctx.CreateEdge(ScType::EdgeAccessConstPosPerm, cmdClassAddr, cmdInstanceAddr);
-  
+
   for (size_t i = 0; i < params.size(); ++i)
   {
     ScAddr const edgeCommon = ctx.CreateEdge(ScType::EdgeAccessConstPosPerm, cmdInstanceAddr, params[i]);

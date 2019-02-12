@@ -219,16 +219,16 @@ private:
   std::string m_name;
 };
 
-class ScMemoryContextPengindGuard
+class ScMemoryContextEventsPendingGuard
 {
 public:
-  _SC_EXTERN ScMemoryContextPengindGuard(ScMemoryContext & ctx)
+  _SC_EXTERN ScMemoryContextEventsPendingGuard(ScMemoryContext & ctx)
     : m_ctx(ctx)
   {
     m_ctx.BeingEventsPending();
   }
 
-  _SC_EXTERN ~ScMemoryContextPengindGuard()
+  _SC_EXTERN ~ScMemoryContextEventsPendingGuard()
   {
     m_ctx.EndEventsPending();
   }
