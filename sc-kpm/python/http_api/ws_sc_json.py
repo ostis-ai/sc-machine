@@ -278,8 +278,18 @@ class ScJsonSocketHandler(websocket.WebSocketHandler):
       a = ScAddr(cmd['addr'])
 
       if t == 'set':
-        # TODO: support type of content
-        result.append(ctx.SetLinkContent(a, cmd['data']))
+        contentType = cmd['type']
+        value = cmd['data']
+
+        if contentType == 'float':
+          value = float(value)
+        elif contentType == 'int':
+          value = int(value)
+        elif contentType == 'string':
+          value = str(value)
+
+        result.append(ctx.SetLinkContent(a, value))
+        
       elif t == 'get':
         content = ctx.GetLinkContent(a)
         value = None
