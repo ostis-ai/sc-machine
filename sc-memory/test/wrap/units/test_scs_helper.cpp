@@ -4,27 +4,14 @@
 * (See accompanying file COPYING.MIT or copy at http://opensource.org/licenses/MIT)
 */
 
+#include "dummy_file_interface.hpp"
+
 #include "sc-memory/cpp/utils/sc_test.hpp"
 
 #include "sc-memory/cpp/sc_link.hpp"
 #include "sc-memory/cpp/sc_memory.hpp"
-#include "sc-memory/cpp/sc_scs_helper.hpp"
 
-namespace
-{
 
-class DummyFileInterface : public SCsFileInterface
-{
-public:
-  ~DummyFileInterface() override {}
-
-  ScStreamPtr GetFileContent(std::string const &) override
-  {
-    return ScStreamPtr();
-  }
-};
-
-} // namespace
 
 UNIT_TEST(SCsHelper_GenerateBySCs_Smoke)
 {

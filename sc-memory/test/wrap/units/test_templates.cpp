@@ -11,6 +11,8 @@
 #include "sc-memory/cpp/utils/sc_progress.hpp"
 #include "sc-memory/cpp/utils/sc_test.hpp"
 
+#include "dummy_file_interface.hpp"
+
 #include <glib.h>
 
 #include <random>
@@ -1776,4 +1778,37 @@ UNIT_TEST(templates_from_scs)
     SC_CHECK_GREAT(result.Msg().size(), 0, ());
   }
   SUBTEST_END()
+}
+
+UNIT_TEST(template_issue_295)
+{
+  ScMemoryContext ctx(sc_access_lvl_make_min, "template_issue_295");
+
+  // Check search by this template
+  // device_switch_multilevel _-> _x;;
+  // _x _=> nrel_value::
+  //      _[] (* _<= _range;; *);;
+
+  // input data
+  std::string const inData =
+      "device_switch_multilevel <- sc_node_class;;"
+      "device_switch_multilevel -> ..x;;"
+      "..x => nrel_value:"
+      "  [67] (* <= ..range;; *);;";
+
+  SCsHelper scs(&ctx, std::make_shared<DummyFileInterface>());
+
+  SC_CHECK(scs.GenerateBySCsText(inData), ());
+
+  // find by template
+  std::string const searchSCs =
+      "device_switch_multilevel _-> _x;;"
+      "_x _=> nrel_value::"
+      "  _[] (* _<= _range;; *);;";
+
+  ScTemplate templ;
+  SC_CHECK(ctx.HelperBuildTemplate(templ, searchSCs), ());
+
+  ScTemplateSearchResult searchResult;
+  SC_CHECK(ctx.HelperSearchTemplate(templ, searchResult), ());
 }
