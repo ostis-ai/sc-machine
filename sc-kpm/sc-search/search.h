@@ -7,7 +7,7 @@
 #ifndef _search_h_
 #define _search_h_
 
-#include "sc_memory.h"
+#include "sc-core/sc_memory.h"
 
 extern sc_memory_context * s_default_ctx;
 

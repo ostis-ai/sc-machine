@@ -5,7 +5,9 @@
  */
 
 #include "sc_stream_redis.h"
-#include "sc_stream_private.h"
+
+#include "sc-core/sc-store/sc_stream_private.h"
+
 #include "sc_fm_redis.h"
 
 #include <glib.h>

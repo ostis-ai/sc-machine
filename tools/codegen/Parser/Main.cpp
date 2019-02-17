@@ -109,7 +109,7 @@ int main(int argc, char *argv[])
         (
           "debug,d",
           boost::program_options::value<bool>()->implicit_value(false),
-          "Display conpiler errors"
+          "Display compiler errors"
         );
 
     boost::program_options::variables_map cmdLine;

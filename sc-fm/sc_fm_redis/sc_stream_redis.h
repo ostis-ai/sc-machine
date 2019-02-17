@@ -9,7 +9,8 @@
 
 #include "sc_fm_redis_types.h"
 
-#include "sc_stream.h"
+#include "sc-core/sc-store/sc_stream.h"
+
 #include <hiredis/hiredis.h>
 #include <glib.h>
 

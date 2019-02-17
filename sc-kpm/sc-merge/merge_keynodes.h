@@ -7,7 +7,7 @@
 #ifndef _merge_keynodes_h_
 #define _merge_keynodes_h_
 
-#include "sc_memory.h"
+#include "sc-core/sc_memory.h"
 
 extern sc_addr keynode_question_set_cantorization;
 

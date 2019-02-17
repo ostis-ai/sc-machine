@@ -4,10 +4,10 @@
  * (See accompanying file COPYING.MIT or copy at http://opensource.org/licenses/MIT)
  */
 
-#include "sc_fm_engine_private.h"
-#include "sc_stream_file.h"
+#include "sc-core/sc-store/sc_fm_engine_private.h"
+#include "sc-core/sc-store/sc_stream_file.h"
 
-#include "../sc_memory.h"
+#include "sc-core/sc_memory.h"
 
 #include <glib.h>
 #include <glib/gstdio.h>

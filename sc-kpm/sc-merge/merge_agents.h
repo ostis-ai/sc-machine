@@ -4,7 +4,7 @@
  * (See accompanying file COPYING.MIT or copy at http://opensource.org/licenses/MIT)
  */
 
-#include "sc_memory.h"
+#include "sc-core/sc_memory.h"
 
 #ifndef _merge_agents_h_
 #define _merge_agents_h_

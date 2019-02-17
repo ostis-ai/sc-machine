@@ -5,9 +5,10 @@
  */
 
 #include "merge.h"
-#include "sc_memory_headers.h"
 #include "merge_keynodes.h"
 #include "merge_agents.h"
+
+#include "sc-core/sc_memory_headers.h"
 
 sc_memory_context * s_default_ctx = 0;
 

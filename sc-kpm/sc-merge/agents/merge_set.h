@@ -7,7 +7,7 @@
 #ifndef _merge_set_h_
 #define _merge_set_h_
 
-#include <sc_memory.h>
+#include "sc-core/sc_memory.h"
 
 /*!
  * Function, that implements sc-agent to cantorize given set

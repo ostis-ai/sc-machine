@@ -8,9 +8,10 @@
 #include "merge_utils.h"
 #include "merge.h"
 
-#include <sc_helper.h>
+#include "sc-core/sc_helper.h"
+#include "sc-core/sc_memory_headers.h"
+
 #include <glib.h>
-#include <sc_memory_headers.h>
 
 #define MAKE_SC_ADDR_HASH(elem) GINT_TO_POINTER(SC_ADDR_LOCAL_TO_INT(elem))
 

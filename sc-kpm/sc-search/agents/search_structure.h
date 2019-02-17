@@ -7,7 +7,7 @@
 #ifndef _search_structure_h_
 #define _search_structure_h_
 
-#include <sc_memory.h>
+#include "sc-core/sc_memory.h"
 
 /*!
  * Function, that implements sc-agent to search decomposition of specified sc-element

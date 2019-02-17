@@ -14,7 +14,7 @@
 
 extern "C"
 {
-#include "sc_helper.h"
+#include "sc-core/sc_helper.h"
 }
 
 #endif // UI_PRECOMPILED_H

@@ -4,7 +4,7 @@
  * (See accompanying file COPYING.MIT or copy at http://opensource.org/licenses/MIT)
  */
 
-#include "sc_memory_headers.h"
+#include "sc-core/sc_memory_headers.h"
 
 #include <glib.h>
 

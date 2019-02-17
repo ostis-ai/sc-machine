@@ -5,10 +5,12 @@
  */
 
 #include "search.h"
-#include "sc_helper.h"
-#include "sc_memory_headers.h"
 #include "search_agents.h"
 #include "search_keynodes.h"
+
+#include "sc-core/sc_helper.h"
+#include "sc-core/sc_memory_headers.h"
+
 
 sc_memory_context * s_default_ctx = 0;
 

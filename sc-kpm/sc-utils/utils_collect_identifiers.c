@@ -8,7 +8,7 @@
 #include "utils_keynodes.h"
 #include "utils.h"
 
-#include "sc_helper.h"
+#include "sc-core/sc_helper.h"
 
 #include <glib.h>
 

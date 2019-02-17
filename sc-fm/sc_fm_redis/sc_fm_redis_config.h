@@ -8,7 +8,8 @@
 #define _sc_fm_redis_config_h_
 
 #include "sc_fm_redis_types.h"
-#include "sc_config.h"
+
+#include "sc-core/sc-store/sc_config.h"
 
 //! Initialize redis configuration
 void sc_redis_config_initialize();

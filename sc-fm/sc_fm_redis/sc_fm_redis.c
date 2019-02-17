@@ -5,10 +5,11 @@
  */
 
 #include "sc_fm_redis.h"
-#include "sc_fm_engine_private.h"
 #include "sc_stream_redis.h"
 #include "sc_fm_redis_config.h"
-#include "../sc_memory.h"
+
+#include "sc-core/sc-store/sc_fm_engine_private.h"
+#include "sc-core/sc_memory.h"
 
 #include <glib.h>
 #include <memory.h>

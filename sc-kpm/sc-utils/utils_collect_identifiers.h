@@ -12,7 +12,8 @@
 #include <WinSock2.h>
 #endif
 
-#include "sc_memory_headers.h"
+#include "sc-core/sc_memory_headers.h"
+
 #include <hiredis/hiredis.h>
 
 sc_result utils_collect_identifiers_initialize();

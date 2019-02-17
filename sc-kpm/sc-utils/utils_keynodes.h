@@ -7,7 +7,7 @@
 #ifndef _utils_keynodes_h_
 #define _utils_keynodes_h_
 
-#include "sc_memory.h"
+#include "sc-core/sc_memory.h"
 
 extern sc_addr keynode_nrel_idtf;
 extern sc_addr keynode_nrel_main_idtf;

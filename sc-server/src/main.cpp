@@ -8,9 +8,9 @@
 
 #include <iostream>
 
-#include <sc-memory/cpp/sc_debug.hpp>
-#include <sc-memory/cpp/sc_memory.hpp>
-#include <sc-memory/cpp/utils/sc_signal_handler.hpp>
+#include <sc-memory/sc_debug.hpp>
+#include <sc-memory/sc_memory.hpp>
+#include <sc-memory/utils/sc_signal_handler.hpp>
 
 #include <thread>
 

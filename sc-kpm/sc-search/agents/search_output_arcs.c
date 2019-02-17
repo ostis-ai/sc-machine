@@ -10,8 +10,8 @@
 #include "search_defines.h"
 #include "search.h"
 
-#include <sc_helper.h>
-#include <sc_memory_headers.h>
+#include "sc-core/sc_helper.h"
+#include "sc-core/sc_memory_headers.h"
 
 sc_result agent_search_all_const_pos_output_arc(const sc_event *event, sc_addr arg)
 {

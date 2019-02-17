@@ -7,7 +7,7 @@ add_custom_command(OUTPUT "${SC_BUILDER_DIR}/src/parser/scsLexer.c"
 						"${SC_BUILDER_DIR}/src/parser/scsLexer.h" 
 						"${SC_BUILDER_DIR}/src/parser/scsParser.c" 
 						"${SC_BUILDER_DIR}/src/parser/scsParser.h"
-		COMMAND ${JAVA_EXE} "-jar" "${SC_MACHINE_ANTRL_DIR}/antlr-3.2.jar" ${SC_BUILDER_DIR}/grammar/scs.g
+		COMMAND ${Java_JAVA_EXECUTABLE} "-jar" "${SC_MACHINE_ANTRL_DIR}/antlr-3.2.jar" ${SC_BUILDER_DIR}/grammar/scs.g
 		-fo ${SC_BUILDER_DIR}/src/parser
 		DEPENDS ${SC_BUILDER_DIR}/grammar/scs.g
 )

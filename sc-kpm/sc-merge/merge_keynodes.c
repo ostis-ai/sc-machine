@@ -9,7 +9,8 @@
 
 #include "../sc-common/sc_keynodes.h"
 
-#include "sc_helper.h"
+#include "sc-core/sc_helper.h"
+
 #include <glib.h>
 
 sc_addr keynode_question_set_cantorization;

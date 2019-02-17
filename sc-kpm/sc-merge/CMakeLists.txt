@@ -1,10 +1,10 @@
-set(SC_MERGE_SRC ${CMAKE_CURRENT_LIST_DIR})
 
-file(GLOB_RECURSE SOURCES "*.c")
-file(GLOB_RECURSE HEADERS "*.h")
+file(GLOB_RECURSE SOURCES "*.c" "*.h")
 
-add_library (sc-merge SHARED ${SOURCES} ${HEADERS})
+add_library (sc-merge SHARED ${SOURCES})
 
-include_directories(${SC_MERGE_SRC} ${SC_MEMORY_SRC} ${GLIB2_INCLUDE_DIRS})
-add_dependencies(sc-merge sc-memory sc-kpm-common)
+target_include_directories(sc-merge
+  PRIVATE ${GLIB2_INCLUDE_DIRS}
+  PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+add_dependencies(sc-merge sc-core sc-kpm-common)
 target_link_libraries(sc-merge sc-kpm-common)
