@@ -42,18 +42,18 @@ endforeach( OUTPUTCONFIG CMAKE_CONFIGURATION_TYPES )
 set(SC_MEMORY_SRC "${SC_MACHINE_ROOT}/sc-memory")
 
 if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fcolor-diagnostics -std=c++17")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fcolor-diagnostics -std=c++11")
     set(CMAKE_CXX_FLAGS_RELEASE "-O3")
 
     if(${SC_AUTO_TEST})
         set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wdeprecated-declarations")
     endif()
 elseif(CMAKE_CXX_COMPILER_ID MATCHES "GNU")
-    set(CMAKE_CXX_FLAGS "-std=c++17 -Wall")
+    set(CMAKE_CXX_FLAGS "-std=c++11 -Wall")
     set(CMAKE_CXX_FLAGS_RELEASE "-O3")        ## Optimize
     set(CMAKE_EXE_LINKER_FLAGS_RELEASE "-s")  ## Strip binary
 elseif (NOT CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 endif ()
 
 set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -DSC_DEBUG -DSC_PROFILE")
