@@ -91,7 +91,7 @@ script:
   # All tests assume to be run from the build directory
   - pushd bin
   - echo "travis_fold:start:TEST_CPP"
-  - ./test_wrap
+  - ./sc-memory-tests
   - echo "travis_fold:end:TEST_CPP"
   - echo "travis_fold:start:TEST_SCS"
   - ./test_scs
