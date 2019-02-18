@@ -42,6 +42,9 @@ class ScTemplateGenParams:
 
 class ScTemplate:
 
+  def __init__():
+    pass
+
   def Triple(self, src, edge, trg, is_required = True):
     return None
 

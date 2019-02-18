@@ -493,6 +493,13 @@ void ScPythonInterpreter::RunScript(std::string const & scriptName, ScMemoryCont
     globalNamespace["__ctx__"] = bp::ptr(&ctx);
     globalNamespace["__file__"] = filePath;
 
+    // prepare module name
+    std::string name = moduleName;
+    if (utils::StringUtils::EndsWith(moduleName, ".py"))
+      name = moduleName.substr(0, moduleName.size() - 3);
+
+    globalNamespace["__name__"] = utils::StringUtils::ReplaceAll(name, "/", ".");
+
     bp::object resultObj(bp::exec_file(filePath.c_str(), globalNamespace, globalNamespace));
     bp::exec("import gc\ngc.collect()", globalNamespace, globalNamespace);
 
