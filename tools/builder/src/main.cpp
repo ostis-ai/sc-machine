@@ -9,7 +9,7 @@
 
 #include <boost/program_options.hpp>
 
-#include "sc-memory/cpp/sc_debug.hpp"
+#include "sc-memory/sc_debug.hpp"
 
 int main(int argc, char *argv[]) try
 {

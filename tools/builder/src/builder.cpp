@@ -8,7 +8,7 @@
 #include "utils.h"
 #include "translator.h"
 
-#include <sc-memory/cpp/sc_memory.hpp>
+#include <sc-memory/sc_memory.hpp>
 
 #include <boost/filesystem.hpp>
 #include <boost/algorithm/string.hpp>
@@ -79,7 +79,7 @@ bool Builder::run(const BuilderParams & params)
   collectFiles();
 
   // initialize sc-memory
-  
+
   impl::ExtParser extParser;
   extParser(mParams.enabledExtPath);
 

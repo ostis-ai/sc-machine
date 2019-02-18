@@ -69,7 +69,7 @@ endif()
 
 include_directories(
     "${SC_MACHINE_THIRDPARTY_PATH}"
-    "${SC_MACHINE_ANTRL_DIR}/cpp")
+    )
 
 # find dependencies
 if (${APPLE})
