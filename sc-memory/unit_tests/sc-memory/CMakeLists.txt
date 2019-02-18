@@ -1,4 +1,4 @@
-set(SC_KPM_PYTHON_PATH "${SC_MACHINE_ROOT}/sc-kpm/python")
+set(SC_KPM_PYTHON_PATH "${SC_MACHINE_ROOT}/sc-kpm/sc-python/services")
 
 configure_file(
   "${CMAKE_CURRENT_SOURCE_DIR}/test_defines.hpp.in"

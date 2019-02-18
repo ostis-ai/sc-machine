@@ -6,13 +6,13 @@
 
 #pragma once
 
-#include "http_api_service.hpp"
+#include "sc-memory/sc_module.hpp"
 
-#include <sc-memory/cpp/sc_module.hpp>
+#include "sc_python_services.hpp"
 
-#include "http_module.generated.hpp"
+#include "sc_python_module.generated.hpp"
 
-class httpModule : public ScModule
+class PythonModule : public ScModule
 {
   SC_CLASS(LoadOrder(10))
   SC_GENERATED_BODY()
@@ -21,5 +21,5 @@ class httpModule : public ScModule
   virtual sc_result ShutdownImpl() override;
 
 private:
-  std::unique_ptr<http::HttpService> m_service;
+  std::unique_ptr<HttpPythonService> m_httpService;
 };

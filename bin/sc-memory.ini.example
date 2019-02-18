@@ -18,3 +18,6 @@ engine = redis
 
 [kpm]
 max_threads = 32
+
+[python]
+modules_path = ../sc-kpm/sc-python/services

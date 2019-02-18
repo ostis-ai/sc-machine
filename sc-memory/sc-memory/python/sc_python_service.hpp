@@ -68,6 +68,7 @@ class __name##PythonService : public py::ScPythonService \
 public:\
   explicit __name##PythonService(std::string const & scriptName) \
     : py::ScPythonService(scriptName) {} \
+  virtual ~__name##PythonService() {} \
 private: \
   void RunImpl() final override {} \
   void StopImpl() final override {} \
