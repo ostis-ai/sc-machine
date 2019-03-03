@@ -1558,6 +1558,83 @@ UNIT_TEST(big_template_2_15)
     SC_CHECK(elements.find(searchResult[i]["_el"]) != elements.end(), ());
 }
 
+UNIT_TEST(template_optional_complex)
+{
+  ScMemoryContext ctx(sc_access_lvl_make_min, "template_optional_complex");
+
+  SCsHelper helper(&ctx, std::make_shared<DummyFileInterface>());
+  std::string const scsData =
+      "langs <- sc_node_class;;"
+      "langEN <- langs;;"
+      "nrelMainIdtf <- sc_node_norole_relation;;"
+      "nrelImage <- sc_node_norole_relation;;"
+      "nrelSysIdtf <- sc_node_norole_relation;;"
+      "item"
+      "  => nrelSysIdtf:"
+      "   [item];;";
+
+  SC_CHECK(helper.GenerateBySCsText(scsData), ());
+
+  ScAddr const item = ctx.HelperFindBySystemIdtf("item");
+  SC_CHECK(item.IsValid(), ());
+
+  ScAddr const languages = ctx.HelperFindBySystemIdtf("langs");
+  SC_CHECK(languages.IsValid(), ());
+  SC_CHECK_EQUAL(ctx.GetElementType(languages), ScType::NodeConstClass, ());
+
+  ScAddr const nrelSysIdtf = ctx.HelperFindBySystemIdtf("nrelSysIdtf");
+  SC_CHECK(nrelSysIdtf.IsValid(), ());
+  SC_CHECK_EQUAL(ctx.GetElementType(nrelSysIdtf), ScType::NodeConstNoRole, ());
+
+  ScAddr const nrelMainIdtf = ctx.HelperFindBySystemIdtf("nrelMainIdtf");
+  SC_CHECK(nrelMainIdtf.IsValid(), ());
+  SC_CHECK_EQUAL(ctx.GetElementType(nrelMainIdtf), ScType::NodeConstNoRole, ());
+
+  ScAddr const nrelImage = ctx.HelperFindBySystemIdtf("nrelImage");
+  SC_CHECK(nrelImage.IsValid(), ());
+  SC_CHECK_EQUAL(ctx.GetElementType(nrelImage), ScType::NodeConstNoRole, ());
+
+  ScTemplate templ;
+  templ.TripleWithRelation(
+    item,
+    ScType::EdgeDCommonVar,
+    ScType::Link >> "_sys_idtf",
+    ScType::EdgeAccessVarPosPerm,
+    nrelSysIdtf,
+    ScTemplate::TripleFlag::NotRequired);
+
+  templ.TripleWithRelation(
+    item,
+    ScType::EdgeDCommonVar,
+    ScType::Link >> "_main_idtf",
+    ScType::EdgeAccessVarPosPerm,
+    nrelMainIdtf,
+    ScTemplate::TripleFlag::NotRequired);
+
+  templ.Triple(
+    ScType::NodeVar >> "_lang",
+    ScType::EdgeAccessVarPosPerm,
+    "_main_idtf",
+    ScTemplate::TripleFlag::NotRequired);
+
+  templ.Triple(
+    languages,
+    ScType::EdgeAccessVarPosPerm,
+    "_lang",
+    ScTemplate::TripleFlag::NotRequired);
+
+  templ.TripleWithRelation(
+    item,
+    ScType::EdgeDCommonVar,
+    ScType::Link >> "_image",
+    ScType::EdgeAccessVarPosPerm,
+    nrelImage,
+    ScTemplate::TripleFlag::NotRequired);
+
+  ScTemplateSearchResult result;
+  SC_CHECK(ctx.HelperSearchTemplate(templ, result), ());
+}
+
 UNIT_TEST(template_optional)
 {
   ScMemoryContext ctx(sc_access_lvl_make_min, "template_optional");
@@ -1621,6 +1698,7 @@ UNIT_TEST(template_optional)
   }
   SUBTEST_END()
 
+    /*
   SUBTEST_START("fully_optional")
   {
     ScTemplate templ;
@@ -1645,6 +1723,7 @@ UNIT_TEST(template_optional)
     SC_CHECK(passed, ());
   }
   SUBTEST_END()
+    */
 
   SUBTEST_START("generate_optional")
   {
@@ -1792,6 +1871,7 @@ UNIT_TEST(template_issue_295)
   // input data
   std::string const inData =
       "device_switch_multilevel <- sc_node_class;;"
+      "nrel_value <- sc_node_norole_relation;;"
       "device_switch_multilevel -> ..x;;"
       "..x => nrel_value:"
       "  [67] (* <= ..range;; *);;";
@@ -1811,4 +1891,15 @@ UNIT_TEST(template_issue_295)
 
   ScTemplateSearchResult searchResult;
   SC_CHECK(ctx.HelperSearchTemplate(templ, searchResult), ());
+  
+  SC_CHECK_EQUAL(searchResult.Size(), 1, ());
+  auto const item = searchResult[0];
+
+  SC_CHECK(item["device_switch_multilevel"].IsValid(), ());
+  SC_CHECK(item["_x"].IsValid(), ());
+  SC_CHECK(item["nrel_value"].IsValid(), ());
+  SC_CHECK(item["_range"].IsValid(), ());
+
+  SC_CHECK_EQUAL(ctx.GetElementType(item["device_switch_multilevel"]), ScType::NodeConstClass, ());
+  SC_CHECK_EQUAL(ctx.GetElementType(item["nrel_value"]), ScType::NodeConstNoRole, ());
 }

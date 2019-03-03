@@ -420,8 +420,8 @@ public:
 
   ScTemplate::Result operator () (ScTemplateSearchResult & result)
   {
-    if (!m_template.m_hasRequired)
-      SC_THROW_EXCEPTION(utils::ExceptionInvalidParams, "Templates just with optional triples doesn't supported.");
+    // if (!m_template.m_hasRequired)
+    //  SC_THROW_EXCEPTION(utils::ExceptionInvalidParams, "Templates just with optional triples doesn't supported.");
 
     result.clear();
 
