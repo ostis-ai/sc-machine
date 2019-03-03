@@ -1601,7 +1601,7 @@ UNIT_TEST(template_optional)
       relAddr >> "_relAddr",
       ScType::EdgeAccessVarPosPerm >> "_relEdge",
       "_edge",
-      false);
+      ScTemplate::TripleFlag::NotRequired);
 
     ScTemplateSearchResult result;
     SC_CHECK(ctx.HelperSearchTemplate(templ, result), ());
@@ -1629,7 +1629,7 @@ UNIT_TEST(template_optional)
       addr1 >> "_addr1",
       ScType::EdgeAccessVarFuzTemp >> "_edge",
       addr2 >> "_addr2",
-      false);
+      ScTemplate::TripleFlag::NotRequired);
 
     ScTemplateSearchResult result;
     bool passed = false;
@@ -1659,7 +1659,7 @@ UNIT_TEST(template_optional)
       addr1,
       ScType::EdgeAccessVarPosPerm,
       ScType::NodeVarMaterial,
-      false);
+      ScTemplate::TripleFlag::NotRequired);
 
     ScTemplateGenResult result;
     bool passed = false;
@@ -1716,7 +1716,7 @@ UNIT_TEST(template_optional)
       ScType::NodeVar,
       ScType::EdgeAccessVarPosPerm,
       "_inst",
-      false);
+      ScTemplate::TripleFlag::NotRequired);
 
     SC_CHECK(ctx.HelperSearchTemplate(templOptional, searchResult), ());
 

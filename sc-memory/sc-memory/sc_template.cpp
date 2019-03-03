@@ -41,13 +41,13 @@ ScTemplate::ScTemplate(bool forceOrder /* = true */)
   m_constructions.reserve(16);
 }
 
-ScTemplate & ScTemplate::operator() (ScTemplateItemValue const & param1, ScTemplateItemValue const & param2, ScTemplateItemValue const & param3, bool isRequired /* = true */)
+ScTemplate & ScTemplate::operator() (ScTemplateItemValue const & param1, ScTemplateItemValue const & param2, ScTemplateItemValue const & param3, ScTemplate::TripleFlag isRequired /* = ScTemplate::TripleFlag::Required */)
 {
   return Triple(param1, param2, param3, isRequired);
 }
 
 ScTemplate & ScTemplate::operator() (ScTemplateItemValue const & param1, ScTemplateItemValue const & param2, ScTemplateItemValue const & param3,
-                                     ScTemplateItemValue const & param4, ScTemplateItemValue const & param5, bool isRequired /* = true */)
+                                     ScTemplateItemValue const & param4, ScTemplateItemValue const & param5, ScTemplate::TripleFlag isRequired /* = ScTemplate::TripleFlag::Required */)
 {
   return TripleWithRelation(param1, param2, param3, param4, param5, isRequired);
 }
@@ -79,12 +79,12 @@ bool ScTemplate::HasReplacement(std::string const & repl) const
 ScTemplate & ScTemplate::Triple(ScTemplateItemValue const & param1,
                                 ScTemplateItemValue const & param2,
                                 ScTemplateItemValue const & param3,
-                                bool isRequired /* = true */)
+                                ScTemplate::TripleFlag isRequired /* = ScTemplate::TripleFlag::Required */)
 {
   size_t const replPos = m_constructions.size() * 3;
   m_constructions.emplace_back(ScTemplateConstr3(param1, param2, param3, m_constructions.size(), isRequired));
 
-  if (isRequired)
+  if (isRequired == ScTemplate::TripleFlag::Required)
   {
     m_hasRequired = true;
   }
@@ -142,7 +142,7 @@ ScTemplate & ScTemplate::Triple(ScTemplateItemValue const & param1,
 
 ScTemplate & ScTemplate::TripleWithRelation(ScTemplateItemValue const & param1, ScTemplateItemValue const & param2,
                                             ScTemplateItemValue const & param3, ScTemplateItemValue const & param4,
-                                            ScTemplateItemValue const & param5, bool isRequired /* = true */)
+                                            ScTemplateItemValue const & param5, ScTemplate::TripleFlag isRequired /* = ScTemplate::TripleFlag::Required */)
 {
   size_t const replPos = m_constructions.size() * 3;
 

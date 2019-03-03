@@ -680,7 +680,7 @@ public:
     m_impl->Triple(ResolveTemplateParam(param1),
                    ResolveTemplateParam(param2),
                    ResolveTemplateParam(param3),
-                   isRequired);
+                   isRequired ? ScTemplate::TripleFlag::Required : ScTemplate::TripleFlag::NotRequired);
   }
 
   void TripleWithRelation(bp::object & param1, bp::object & param2,
@@ -692,7 +692,7 @@ public:
                                ResolveTemplateParam(param3),
                                ResolveTemplateParam(param4),
                                ResolveTemplateParam(param5),
-                               isRequired);
+                               isRequired ? ScTemplate::TripleFlag::Required : ScTemplate::TripleFlag::NotRequired);
   }
 
   ScTemplate & GetItemRef() const
