@@ -36,8 +36,6 @@ pages:
   - Http:
       - Common: http/index.md
       - WebSocket: http/websocket.md
-  - Tools:
-      - Knowledge Base builder: tools/kb_builder.md
   - License: license.md
   - Changelog: changelog.md
   - Thirdparty: thirdparty.md
