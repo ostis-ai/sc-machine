@@ -38,11 +38,11 @@ public:
 
   _SC_EXTERN std::string const & GetIdtf() const;
   _SC_EXTERN ScType const & GetType() const;
-  
+
   _SC_EXTERN Visibility GetVisibility() const;
 
   _SC_EXTERN std::string const & GetValue() const;
-  
+
   _SC_EXTERN bool IsReversed() const;
   _SC_EXTERN bool IsURL() const;
 
@@ -70,6 +70,7 @@ public:
   _SC_EXTERN bool IsLocal() const;
   _SC_EXTERN bool IsValid() const;
   _SC_EXTERN bool operator == (ElementHandle const & other) const;
+  _SC_EXTERN bool operator != (ElementHandle const & other) const;
   _SC_EXTERN ElementHandle & operator = (ElementHandle const & other);
   _SC_EXTERN bool operator < (ElementHandle const & other) const;
 
@@ -117,6 +118,15 @@ public:
   _SC_EXTERN std::string const & GetParseError() const;
   _SC_EXTERN AliasHandles const & GetAliases() const;
 
+  template <typename TFunc>
+  void ForEachParsedElement(TFunc && fn) const
+  {
+    for (auto const & el : m_parsedElementsLocal)
+      fn(el);
+    for (auto const & el : m_parsedElements)
+      fn(el);
+  }
+
 protected:
 
   ParsedElement & GetParsedElementRef(ElementHandle const & elID);
@@ -137,12 +147,13 @@ protected:
   void ProcessAssign(std::string const & alias, ElementHandle const & value);
 
 private:
-  ElementHandle AppendElement(std::string const & idtf,
+  ElementHandle AppendElement(std::string idtf,
                               ScType const & type = ScType(),
                               bool isConnectorReversed = false,
                               std::string const & value = "",
                               bool isURL = false);
 
+  std::string GenerateNodeIdtf();
   std::string GenerateEdgeIdtf();
   std::string GenerateLinkIdtf();
   std::string GenerateContourIdtf();

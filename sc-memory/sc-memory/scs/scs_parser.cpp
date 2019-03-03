@@ -223,6 +223,11 @@ bool ElementHandle::operator == (ElementHandle const & other) const
   return (m_id == other.m_id) && (m_isLocal == other.m_isLocal);
 }
 
+bool ElementHandle::operator != (ElementHandle const & other) const
+{
+  return !(*this == other);
+}
+
 ElementHandle & ElementHandle::operator = (ElementHandle const & other)
 {
   m_id = other.m_id;
@@ -320,9 +325,14 @@ Parser::AliasHandles const & Parser::GetAliases() const
   return m_aliasHandles;
 }
 
+std::string Parser::GenerateNodeIdtf()
+{
+  return std::string("..node_") + std::to_string(m_idtfCounter++);
+}
+
 std::string Parser::GenerateEdgeIdtf()
 {
-  return std::string("..connector_") + std::to_string(m_idtfCounter++);
+  return std::string("..edge_") + std::to_string(m_idtfCounter++);
 }
 
 std::string Parser::GenerateLinkIdtf()
@@ -335,13 +345,15 @@ std::string Parser::GenerateContourIdtf()
   return std::string("..contour_") + std::to_string(m_idtfCounter++);
 }
 
-ElementHandle Parser::AppendElement(std::string const & idtf,
+ElementHandle Parser::AppendElement(std::string idtf,
                                     ScType const & type,
                                     bool isConnectorReversed,
                                     std::string const & value /* = "" */,
                                     bool isURL /* = false */)
 {
   SC_CHECK_GREAT(idtf.size(), 0, ());
+  if (TypeResolver::IsUnnamed(idtf))
+    idtf = GenerateNodeIdtf();
 
   ElementHandle elId;
 

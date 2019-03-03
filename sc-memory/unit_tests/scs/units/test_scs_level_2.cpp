@@ -111,4 +111,18 @@ UNIT_TEST(scs_level_2)
     SC_CHECK_EQUAL(triples[3].m_edge, triples[4].m_source, ());
   }
   SUBTEST_END()
+
+  SUBTEST_START(unnamed)
+  {
+    char const * data = "a -> ...; -> ...;;";
+
+    scs::Parser parser;
+    SC_CHECK(parser.Parse(data), ());
+
+    auto const triples = parser.GetParsedTriples();
+    SC_CHECK_EQUAL(triples.size(), 2, ());
+    SC_CHECK_EQUAL(triples[0].m_source, triples[1].m_source, ());
+    SC_CHECK_NOT_EQUAL(triples[0].m_target, triples[1].m_target, ());
+  }
+  SUBTEST_END()
 }

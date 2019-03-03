@@ -57,6 +57,12 @@ protected:
       SC_ASSERT(edgeAddr.IsValid(), ());
       m_idtfCache.insert(std::make_pair(edge.GetIdtf(), edgeAddr));
     }
+
+    parser.ForEachParsedElement([this](scs::ParsedElement const & el)
+    {
+      if (m_idtfCache.find(el.GetIdtf()) == m_idtfCache.end())
+        ResolveElement(el);
+    });
   }
 
 private:

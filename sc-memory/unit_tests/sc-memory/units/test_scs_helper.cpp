@@ -199,3 +199,17 @@ UNIT_TEST(SCsHelper_GenerateBySCs_NumberContents)
     SC_CHECK_EQUAL(linkUint64.Get<uint64_t>(), 16, ());
   }
 }
+
+UNIT_TEST(SCsHelper_GenerateBySCs_NotUsedElement)
+{
+  ScMemoryContext ctx(sc_access_lvl_make_max, "SCsHelper_GenerateBySCs_NotUsedElement");
+
+  SCsHelper helper(&ctx, std::make_shared<DummyFileInterface>());
+  std::string const scsData = "node <- sc_node_class";
+
+  SC_CHECK(helper.GenerateBySCsText(scsData), ());
+
+  ScAddr const node = ctx.HelperFindBySystemIdtf("node");
+  SC_CHECK(node.IsValid(), ());
+  SC_CHECK_EQUAL(ctx.GetElementType(node), ScType::NodeConstClass, ());
+}
