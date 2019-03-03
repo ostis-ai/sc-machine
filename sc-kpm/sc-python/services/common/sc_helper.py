@@ -6,7 +6,7 @@ class ScHelper:
   def __init__(self, ctx):
     self.ctx = ctx
 
-  def kbGetRelationLinkAddr(self, _addr: ScAddr, _relAddr: ScAddr) -> ScAddr:
+  def kbGetBinaryRelationLinkAddr(self, _addr: ScAddr, _relAddr: ScAddr) -> ScAddr:
     """Find ScLink connected to `_addr` by relation `_relAddr`.
       SCs text:
         _addr => _relAddr: [_link];;
@@ -27,12 +27,12 @@ class ScHelper:
 
     return linkAddr
 
-  def kbSetRelationLinkValue(self, _addr: ScAddr, _relAddr: ScAddr, _value: any):
+  def kbSetBinaryRelationLinkValue(self, _addr: ScAddr, _relAddr: ScAddr, _value: any):
     """Sets value of ScLink connected to `_addr` by relation `_relAddr`.
     SCs text:
     _addr => _relAddr: [_value];;
     """
-    linkAddr = self.kbGetRelationLinkAddr(_addr, _relAddr)
+    linkAddr = self.kbGetBinaryRelationLinkAddr(_addr, _relAddr)
 
     # generate new relation if not found
     if linkAddr:
@@ -44,14 +44,14 @@ class ScHelper:
       edge = self.ctx.CreateEdge(ScType.EdgeDCommonConst, _addr, linkAddr)
       self.ctx.CreateEdge(ScType.EdgeAccessConstPosPerm, _relAddr, edge)
   
-  def kbGetRelationLinkValue(self, _addr: ScAddr, _relAddr: ScAddr) -> ScLinkContent:
+  def kbGetBinaryRelationLinkValue(self, _addr: ScAddr, _relAddr: ScAddr) -> ScLinkContent:
     """Returns value of ScLink conneted to `_addr` by relation `_relAddr`.
     SCs text:
     _addr => _relAddr: [_value];;
 
     If value found, then returns `ScLinkContent`, otherwise returns None
     """  
-    linkAddr = self.kbGetRelationLinkAddr(_addr, _relAddr)
+    linkAddr = self.kbGetBinaryRelationLinkAddr(_addr, _relAddr)
     if linkAddr:
       return self.ctx.GetLinkContent(linkAddr)
 
@@ -82,3 +82,18 @@ class ScHelper:
     params.Add('_x', _newTarget)
 
     return self.ctx.HelperGenTemplate(templ, params)
+
+  def kbUpdateStructureValues(self, _addr: ScAddr, _values):
+    """
+    Update values of specified structure, where `_values` is a list of tuples. Each tuple
+    contains two values: `(rel_addr, value)`. So this function tries to set/update values 
+    for a such structure:
+      _addr
+        -> rel_addr_1: [value_1];
+        -> rel_addr_2: [value_2];
+        ...
+    
+    If value with a specified `rel_addr` doesn't exist, then it would be created. If value exists,
+    then this function will change content of sc-link.
+    """
+
