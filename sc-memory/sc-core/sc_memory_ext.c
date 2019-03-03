@@ -59,7 +59,7 @@ sc_result sc_ext_initialize(const sc_char *ext_dir_path, const sc_char ** enable
   const gchar *file_name = 0;
   fModuleFunc func = 0;
 
-#if SC_PLATFORM_MAC
+#if SC_IS_PLATFORM_MAC
   const gchar * moduleSuffix = "dylib";
 #else
   const gchar * moduleSuffix = G_MODULE_SUFFIX;
