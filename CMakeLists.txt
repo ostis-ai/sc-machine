@@ -136,13 +136,11 @@ elseif (${WIN32})
 
     set(PACKAGES_PATH "${CMAKE_BINARY_DIR}/packages")
 
-    if (${MSVC_VERSION} EQUAL "1800")
+    if (${MSVC_VERSION} EQUAL 1800)
         set (MSVC_SUFFIX "vc120")
-    elseif (${MSVC_VERSION} EQUAL "1900")
+    elseif (${MSVC_VERSION} EQUAL 1900)
         set (MSVC_SUFFIX "vc140")
-    elseif (${MSVC_VERSION} EQUAL "1911")
-        set (MSVC_SUFFIX "vc141")
-    elseif (${MSVC_VERSION} EQUAL "1914")
+    elseif (${MSVC_VERSION} GREATER_EQUAL 1911)
         set (MSVC_SUFFIX "vc141")
     endif()
 
@@ -189,11 +187,10 @@ elseif (${WIN32})
                      "${PACKAGES_PATH}/boost_regex-${MSVC_SUFFIX}.${BOOST_VERSION}/lib/native/address-model-64/lib/"
                      )
 
-
     set (GLIB2_LIBRARIES "gio-2.0.lib" "glib-2.0.lib" "gmodule-2.0.lib" "gobject-2.0.lib" "gthread-2.0.lib")
-    if (${MSVC_VERSION} EQUAL "1800")
+    if (${MSVC_VERSION} EQUAL 1800)
         set (REDIS_LIBRARIES "hiredis.vc120.lib" "WSock32.lib" "Ws2_32.lib")
-    elseif ((${MSVC_VERSION} EQUAL "1900") OR (${MSVC_VERSION} EQUAL "1911") OR (${MSVC_VERSION} EQUAL "1914"))
+    elseif (${MSVC_VERSION} GREATER_EQUAL 1900)
         set (REDIS_LIBRARIES "hiredis.vc140.lib" "Win32_Interop.vc140.lib" "WSock32.lib" "Ws2_32.lib")
     endif()
 

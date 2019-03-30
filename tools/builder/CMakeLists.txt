@@ -25,8 +25,8 @@ set (SOURCES_C
 
 if (${WIN32})
   set (BOOST_LIBS_LIST )
-  message(${MSVC_VERSION})
-  if (${MSVC_VERSION} EQUAL "1911" OR ${MSVC_VERSION} EQUAL "1914")
+
+  if (${MSVC_VERSION} GREATER_EQUAL 1911)
       set (ANTLR_LIB "antlr3c.vc140")
   else()
       set (ANTLR_LIB "antlr3c.${MSVC_SUFFIX}")
