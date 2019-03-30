@@ -5,7 +5,7 @@ separated by `;;` symbols.
 
 #### Comments
 You can use C-style comments in SCs text:
-```cpp
+```scs
 // one line comment
 fruit -> apple;
 /* Multiline
@@ -52,7 +52,7 @@ For example identifier `.._x` localy visible variable identifier.
 
 You can use alias for any sc-element by using `=` operator. There are some examples:
 
-```js
+```scs
 @file_alias = "file://...";;
 @link_alias = [];;
 @element_alias = element_idtf;;
@@ -77,7 +77,7 @@ that are splitted by `|` symbol. Line `subject | predicate | object;;` is a sent
 
 Identifier of `subject`, `predicate`, `object` build with rule:
 
-```
+```scs
 <type>#<identifier>
 ```
 
@@ -304,26 +304,31 @@ d -> (c -> (a -> b));;
 This level of SCs-text allows to minimize symbols to represent constructions like this one:
 <scg src="../../images/scs/scs_example_level_3.gwf"></scg>
 
-```js
+```scs
 c -> (a -> b);;
 ```
 
 To do that you should use sentence like this:
-```
+
+```scs
 <object> <edge> <attribute>: <object>
 ```
 
 For this example it would be like this:
-```js
+
+```scs
 a -> c: b;;
 ```
 
 In case, when output edge from `c` is an variable, then use `::` splitter instead of `:`:
-```js
+
+```scs
 a -> c:: b;;
 ```
+
 equal to:
-```js
+
+```scs
 c _-> (a -> b);;
 ```
 
@@ -370,14 +375,16 @@ a -> c: d:: b;;
 
 This level of SCs-text allows to combine many setences with one element into one.
 For that pupropses used ';' symbol. So if we have some sentences like:
-```js
+
+```scs
 x -> y;;
 x <- z;;
 x => h: r;;
 ```
 
 Then using SCs level 4 we can write them like this:
-```js
+
+```scs
 x -> y;
   <- z;
   => h: r;;
@@ -601,7 +608,7 @@ struct -> set; item; @edge_alias;;
 * `{ ... }` this is a short representation of set. This feature allow to make sets in very fast way.
   Syntax looks like:
   
-  ```js
+  ```scs
   @set = {
     element1;
     attr2: element2;
