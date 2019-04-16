@@ -285,15 +285,23 @@ public:
 
   double AsDouble() const
   {
-    if (m_buffer->Size() != sizeof(double))
+    if (m_buffer->Size() == sizeof(float))
     {
-      SC_THROW_EXCEPTION(utils::ExceptionInvalidType,
-                         "Size of content should be equal to " << sizeof(double) << " bytes");
+      float value = 0.0;
+      m_buffer->Read(&value, sizeof(value));
+      return value;
+    }
+    else if (m_buffer->Size() == sizeof(double))
+    {
+      double value = 0.0;
+      m_buffer->Read(&value, sizeof(value));
+      return value;
     }
 
-    double value = 0.0;
-    m_buffer->Read(&value, sizeof(value));
-    return value;
+    SC_THROW_EXCEPTION(utils::ExceptionInvalidType,
+                         "Size of content should be equal to " << sizeof(double) << " or " << sizeof(float) << " bytes");
+
+    return std::numeric_limits<double>::min();
   }
 
   bp::object AsBinary() const
