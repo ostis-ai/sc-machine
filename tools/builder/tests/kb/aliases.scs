@@ -1,0 +1,5 @@
+@content = [@content];;
+
+@content 
+    <- test_element;
+    <- alias_content;;

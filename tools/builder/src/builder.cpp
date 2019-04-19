@@ -4,23 +4,34 @@
  * (See accompanying file COPYING.MIT or copy at http://opensource.org/licenses/MIT)
  */
 
-#include "builder.h"
-#include "utils.h"
-#include "translator.h"
-
-#include <sc-memory/sc_memory.hpp>
+#include "builder.hpp"
+#include "scs_translator.hpp"
 
 #include <boost/filesystem.hpp>
 #include <boost/algorithm/string.hpp>
 
 #include <fstream>
-#include <assert.h>
+#include <unordered_set>
 
-#include "scs_translator.h"
-#include "gwf_translator.h"
+#include <assert.h>
 
 namespace impl
 {
+
+std::unordered_set<std::string> gSupportedFormats = {
+  "scs", "scsi"
+};
+
+std::string NormalizeExt(std::string ext)
+{
+  utils::StringUtils::ToLowerCase(ext);
+  return ext;
+}
+
+bool IsSupportedFormat(std::string const & fileExt)
+{
+  return gSupportedFormats.find(NormalizeExt(fileExt)) != gSupportedFormats.end();
+}
 
 class ExtParser
 {
@@ -61,160 +72,128 @@ private:
 } // namespace impl
 
 Builder::Builder()
-  : mContext(0)
 {
 }
 
-void Builder::initialize()
+bool Builder::Run(BuilderParams const & params)
 {
-  // register translator factories
-  registerTranslator(new SCsTranslatorFactory());
-  registerTranslator(new GwfTranslatorFactory());
-}
+  m_params = params;
 
-bool Builder::run(const BuilderParams & params)
-{
-  mParams = params;
+  // check
+  if (!boost::filesystem::is_directory(m_params.m_inputPath))
+  {
+    ScConsole::Print() << ScConsole::Color::White
+      << "Directory " << ScConsole::Color::Red 
+      << m_params.m_inputPath << ScConsole::Color::White 
+      << " doesn't exist";
 
-  collectFiles();
+    ScConsole::Endl();
+    return false;
+  }
+
+  CollectFiles();
 
   // initialize sc-memory
-
+  bool noErrors = true;  
   impl::ExtParser extParser;
-  extParser(mParams.enabledExtPath);
+  extParser(m_params.m_enabledExtPath);
 
   sc_memory_params p;
   sc_memory_params_clear(&p);
-  p.clear = mParams.clearOutput ? SC_TRUE : SC_FALSE;
-  p.config_file = mParams.configFile.empty() ? 0 : mParams.configFile.c_str();
-  p.repo_path = mParams.outputPath.c_str();
-  p.ext_path = mParams.extensionsPath.size() > 0 ? mParams.extensionsPath.c_str() : 0;
+  p.clear = m_params.m_clearOutput ? SC_TRUE : SC_FALSE;
+  p.config_file = m_params.m_configFile.empty() ? 0 : m_params.m_configFile.c_str();
+  p.repo_path = m_params.m_outputPath.c_str();
+  p.ext_path = m_params.m_extensionsPath.size() > 0 ? m_params.m_extensionsPath.c_str() : 0;
   p.enabled_exts = extParser.GetParams().data();
 
   ScMemory::Initialize(p);
-
-  mContext = sc_memory_context_new(sc_access_lvl_make_min);
+  m_ctx.reset(new ScMemoryContext(sc_access_lvl_make_min(), "Builder"));
+  
+  Translator::InitGlobal();
 
   std::cout << "Build knowledge base from sources... " << std::endl;
 
   // process founded files
-  uint32 done = 0, last_progress = -1;
-  tFileSet::iterator it, itEnd = mFileSet.end();
-  for (it = mFileSet.begin(); it != itEnd; ++it)
+  size_t done = 0;
+  for (auto const & fileName : m_files)
   {
-    uint32 progress = (uint32)(((float)++done / (float)mFileSet.size()) * 100);
-    if (mParams.showFileNames)
-    {
-      std::cout << "[ " << progress << "% ] " << *it << std::endl;
-    }
-    else
-    {
-      if (last_progress != progress)
-      {
-        if (progress % 10 == 0)
-        {
-          std::cout << "[" << progress << "%]";
-          std::cout.flush();
-        }
-        else
-        {
-          std::cout << ".";
-          std::cout.flush();
-        }
-        last_progress = progress;
-      }
-    }
+    ScConsole::SetColor(ScConsole::Color::White);
+    std::cout << "[" << (++done) << "/" << m_files.size() << "]: ";
+    ScConsole::SetColor(ScConsole::Color::Grey);
+    std::cout << fileName << " - ";
 
     try
     {
-      processFile(*it);
-    } catch(const Exception &e)
+      ProcessFile(fileName);
+
+      ScConsole::SetColor(ScConsole::Color::Green);
+      std::cout << "ok" << std::endl;
+    } 
+    catch(utils::ScException const & e)
     {
-      StringStream ss;
-      ss << e.getDescription() << " in " << e.getFileName() << " at line " << e.getLineNumber();
-      mErrors.push_back(ss.str());
-    }
+      ScConsole::SetColor(ScConsole::Color::Red);
+      std::cout << "failed" << std::endl;
+      ScConsole::ResetColor();
+      std::cout << e.Message() << std::endl;
+      noErrors = false;
+      break;
+    }    
   }
-  std::cout << std::endl << "done" << std::endl;
 
-  // print errors
-  std::cout << std::endl << "-------" << std::endl << "Errors:" << std::endl;
-  int idx = 1;
-  tStringList::iterator itErr, itErrEnd = mErrors.end();
-  for (itErr = mErrors.begin(); itErr != itErrEnd; ++itErr)
-    std::cout << "[" << idx++ << "]\t" << *itErr << std::endl;
+  ScConsole::ResetColor();
+  if (noErrors)
+  {    
+    // print statistics
+    ScMemoryContext::Stat const stats = m_ctx->CalculateStat();
 
-  // print statistics
-  sc_stat stat;
-  sc_memory_stat(mContext, &stat);
+    auto const allCount = stats.GetAllNum();
 
-  unsigned int all_count = stat.arc_count + stat.node_count + stat.link_count;
+    std::cout << std::endl << "Statistics" << std::endl;
+    std::cout << "Nodes: " << stats.m_nodesNum << "(" << ((float)stats.m_nodesNum / (float)allCount) * 100 << "%)" << std::endl;
+    std::cout << "Edges: " << stats.m_edgesNum << "(" << ((float)stats.m_edgesNum / (float)allCount) * 100 << "%)" << std::endl;
+    std::cout << "Links: " << stats.m_linksNum << "(" << ((float)stats.m_linksNum / (float)allCount) * 100 << "%)" << std::endl;
+    std::cout << "Total: " << stats.GetAllNum() << std::endl;
+  }
 
-  std::cout << std::endl << "Statistics" << std::endl;
-  std::cout << "Nodes: " << stat.node_count << "(" << ((float)stat.node_count / (float)all_count) * 100 << "%)" << std::endl;
-  std::cout << "Arcs: " << stat.arc_count << "(" << ((float)stat.arc_count / (float)all_count) * 100 << "%)"  << std::endl;
-  std::cout << "Links: " << stat.link_count << "(" << ((float)stat.link_count / (float)all_count) * 100 << "%)"  << std::endl;
-  std::cout << "Total: " << all_count << std::endl;
-
-  sc_memory_context_free(mContext);
+  m_ctx.reset();
 
   ScMemory::Shutdown(true);
 
-  return true;
+  return noErrors;
 }
 
-void Builder::registerTranslator(iTranslatorFactory *factory)
-{
-  assert(!hasTranslator(factory->getFileExt()));
-  mTranslatorFactories[factory->getFileExt()] = factory;
-}
-
-bool Builder::hasTranslator(const std::string &ext) const
-{
-  return mTranslatorFactories.find(ext) != mTranslatorFactories.end();
-}
-bool Builder::hasErrors() const
-{
-  return mErrors.size() > 0;
-}
-
-bool Builder::processFile(const String &filename)
+bool Builder::ProcessFile(std::string const & fileName)
 {
   // get file extension
-  size_t n = filename.rfind(".");
-  if (n == std::string::npos)
+  std::string const ext = utils::StringUtils::GetFileExtension(fileName);
+  if (ext.empty())
   {
-    THROW_EXCEPT(Exception::ERR_FILE_NOT_FOUND,
-                 "Can't determine file extension " + filename,
-                 filename, 0);
+    SC_THROW_EXCEPTION(
+      utils::ExceptionInvalidState, 
+      "Can't determine file extension " << fileName);
+
     return false;
   }
 
-  std::string ext = filename.substr(n + 1, std::string::npos);
-  // try to find translator factory
-  tTranslatorFactories::iterator it = mTranslatorFactories.find(ext);
-  if (it == mTranslatorFactories.end())
+  
+  std::shared_ptr<Translator> translator = CreateTranslator(ext);
+  if (!translator)
   {
-    THROW_EXCEPT(Exception::ERR_ITEM_NOT_FOUND,
-                 "There are no translators, that support " + ext + " extension",
-                 filename, 0);
+    SC_THROW_EXCEPTION(
+      utils::ExceptionInvalidState,
+      "Can't create translator for a file " << fileName);
+
     return false;
   }
 
-  iTranslator *translator = it->second->createInstance(mContext);
-  assert(translator);
+  Translator::Params translateParams;
+  translateParams.m_fileName = fileName;
+  translateParams.m_autoFormatInfo = m_params.m_autoFormatInfo;
 
-  TranslatorParams translateParams;
-  translateParams.fileName = filename;
-  translateParams.autoFormatInfo = mParams.autoFormatInfo;
-
-  bool result = translator->translate(translateParams);
-  delete translator;
-
-  return result;
+  return translator->Translate(translateParams);
 }
 
-void Builder::collectFiles(const String & path)
+void Builder::CollectFiles(std::string const & path)
 {
   boost::filesystem::recursive_directory_iterator itEnd, it(path);
   while (it != itEnd)
@@ -222,12 +201,12 @@ void Builder::collectFiles(const String & path)
     if (!boost::filesystem::is_directory(*it))
     {
       boost::filesystem::path path = *it;
-      String filename = path.string();
-      String ext = StringUtil::getFileExtension(filename);
-      StringUtil::toLowerCase(ext);
+      std::string const fileName = path.string();
+      std::string ext = utils::StringUtils::GetFileExtension(fileName);
+      utils::StringUtils::ToLowerCase(ext);
 
-      if (mTranslatorFactories.find(ext) != mTranslatorFactories.end())
-        mFileSet.insert(filename);
+      if (impl::IsSupportedFormat(ext))
+        m_files.push_back(fileName);
     }
 
     try
@@ -241,7 +220,8 @@ void Builder::collectFiles(const String & path)
       try
       {
         ++it;
-      } catch(...)
+      } 
+      catch(...)
       {
         std::cout << ex.what() << std::endl;
         return;
@@ -250,46 +230,54 @@ void Builder::collectFiles(const String & path)
   }
 }
 
-void Builder::collectFiles()
+void Builder::CollectFiles()
 {
-  mFileSet.clear();
-  if (boost::filesystem::is_directory(mParams.inputPath))
+  m_files.clear();
+  if (boost::filesystem::is_directory(m_params.m_inputPath))
   {
-    collectFiles(mParams.inputPath);
+    CollectFiles(m_params.m_inputPath);
   }
-  else if (boost::filesystem::is_regular_file(mParams.inputPath))
+  else if (boost::filesystem::is_regular_file(m_params.m_inputPath))
   {
     std::ifstream infile;
-    infile.open(mParams.inputPath.c_str());
+    infile.open(m_params.m_inputPath.c_str());
     if (infile.is_open())
     {
-      String path;
+      std::string path;
       while (std::getline(infile, path))
       {
         boost::trim(path);
-        if (StringUtil::startsWith(path, "#", true))
+        if (utils::StringUtils::StartsWith(path, "#", true))
           continue;
 
         if (!path.empty())
         {
           if (boost::filesystem::is_directory(path))
-            collectFiles(path);
+          {
+            CollectFiles(path);
+          }
           else
           {
-            StringStream ss;
-            ss << path << " isn't a directory";
-            mErrors.push_back(ss.str());
+            SC_THROW_EXCEPTION(utils::ExceptionInvalidState, path << " isn't a directory");
           }
         }
       }
     } else
     {
-      StringStream ss;
-      ss << "Can't open file: " << mParams.inputPath;
-      mErrors.push_back(ss.str());
+      SC_THROW_EXCEPTION(utils::ExceptionInvalidState, "Can't open file: " << m_params.m_inputPath);
     }
   }
-
 }
+
+std::shared_ptr<Translator> Builder::CreateTranslator(std::string const & fileExt)
+{
+  std::string const ext = impl::NormalizeExt(fileExt);
+  
+  if (ext == "scs" || ext == "scsi")
+    return std::make_shared<SCsTranslator>(*m_ctx);
+
+  return {};
+}
+
 
 

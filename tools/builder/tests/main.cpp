@@ -1,0 +1,18 @@
+
+#include "sc-memory/utils/sc_test.hpp"
+
+int main(int argc, char ** argv) try
+{
+  utils::ScLog::GetInstance()->Initialize("sc-builder-test.log");
+  test::ScTestUnit::RunAll();
+  utils::ScLog::GetInstance()->Shutdown();
+  SC_WAIT_KEY_IMPL()
+
+  return 0;
+}
+catch (utils::ScException const & ex)
+{
+  ScMemory::LogUnmute();
+  SC_LOG_ERROR(ex.Description());
+  SC_WAIT_KEY_IMPL()
+}

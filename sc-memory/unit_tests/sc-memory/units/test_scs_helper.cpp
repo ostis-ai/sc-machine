@@ -105,8 +105,9 @@ UNIT_TEST(SCsHelper_GenerateBySCs_Aliases)
   SC_CHECK_EQUAL(content, content2, ());
 }
 
-UNIT_TEST(SCsHelper_GenerateBySCs_NumberContents)
+UNIT_TEST(SCsHelper_GenerateBySCs_Contents)
 {
+  std::string const dataString = "v_string -> [string];;";
   std::string const dataFloat  = "v_float -> [^\"float:7\"];;";
   std::string const dataDouble = "v_double -> [^\"double:8\"];;";
   std::string const dataInt8   = "v_int8 -> [^\"int8:9\"];;";
@@ -138,6 +139,12 @@ UNIT_TEST(SCsHelper_GenerateBySCs_NumberContents)
 
     return linkAddr;
   };
+
+  {
+    ScLink const linkFloat(ctx, testLink(dataString, "v_string"));
+    SC_CHECK_EQUAL(linkFloat.DetermineType(), ScLink::Type::String, ());
+    SC_CHECK_EQUAL(linkFloat.Get<std::string>(), "string", ());
+  }
 
   {
     ScLink const linkFloat(ctx, testLink(dataFloat, "v_float"));

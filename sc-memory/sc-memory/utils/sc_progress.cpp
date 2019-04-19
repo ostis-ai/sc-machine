@@ -3,6 +3,7 @@
 #include "sc_log.hpp"
 #include "sc_console.hpp"
 
+#include <algorithm>
 #include <iostream>
 
 namespace utils
