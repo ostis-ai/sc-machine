@@ -38,23 +38,6 @@ public:
     m_parser = parser;
   }
 
-//  static bool IsEmptyContour(std::string const & val)
-//  {
-//    if (!utils::StringUtils::StartsWith(val, "[*") || !utils::StringUtils::EndsWith(val, "*]"))
-//      return false;
-//
-//    SC_ASSERT(val.size() >= 4, ());
-//
-//    for (size_t i = 2; i < val.size() - 2; ++i)
-//    {
-//      if (val[i] != ' ')
-//        return false;
-//    }
-//
-//    return true;
-//  }
-
-
 private:
   scs::Parser * m_parser;
 
@@ -73,6 +56,7 @@ content returns [ElementHandle handle]
       $ctx->handle = m_parser->ProcessContent(v.substr(1, v.size() - 2), $ctx->isVar);
     }
   ;
+
 
 contour returns [ElementHandle handle]
   locals [int count = 0; ]
@@ -117,13 +101,13 @@ syntax
   ;
 
 sentence_wrap
- 	: (sentence ';;')
+  : (sentence ';;')
   ;
 
 sentence
   : sentence_lvl1
   | sentence_assign
-	| sentence_lvl_common
+  | sentence_lvl_common
   ;
 
 alias
@@ -131,7 +115,7 @@ alias
   ;
 
 idtf_system returns [ElementHandle handle]
-	: ID_SYSTEM
+  : ID_SYSTEM
     { $ctx->handle = m_parser->ProcessIdentifier($ID_SYSTEM->getText()); }
   | '...'
     { $ctx->handle = m_parser->ProcessIdentifier("..."); }
@@ -146,7 +130,7 @@ sentence_assign
   ;
     
 idtf_lvl1_preffix returns [std::string text]
-	: type=('sc_node'
+  : type=('sc_node'
   | 'sc_link'
   | 'sc_edge_dcommon'
   | 'sc_edge_ucommon'
@@ -165,22 +149,22 @@ idtf_lvl1_preffix returns [std::string text]
   ;
     
 idtf_lvl1_value returns [ElementHandle handle]
- 	: type=idtf_lvl1_preffix '#' i=ID_SYSTEM
+   : type=idtf_lvl1_preffix '#' i=ID_SYSTEM
     {
       $ctx->handle = m_parser->ProcessIdentifierLevel1($ctx->type->text, $ctx->i->getText());
     }
   ;
     
 idtf_lvl1 returns [ElementHandle handle]
-	: idtf_lvl1_value { $ctx->handle = $idtf_lvl1_value.handle; }
+  : idtf_lvl1_value { $ctx->handle = $idtf_lvl1_value.handle; }
   // | LINK
   ;
 
 idtf_edge returns [ElementHandle handle]
-	: '(' src=idtf_system
-	      c=connector attrs=attr_list?
-	      trg=idtf_system
-	  ')'
+  : '(' src=idtf_system
+        c=connector attrs=attr_list?
+        trg=idtf_system
+    ')'
 
     {
       ElementHandle const edge = m_parser->ProcessConnector($ctx->c->text);
@@ -195,9 +179,9 @@ idtf_edge returns [ElementHandle handle]
       $ctx->handle = edge;
     }
   ;
-	
+  
 idtf_set returns [ElementHandle handle]
-	: '{' 
+  : '{' 
       { 
         std::string const setIdtf = "..set_" + std::to_string($ctx->start->getLine()) + "_" + std::to_string($ctx->start->getCharPositionInLine());
         $ctx->handle = m_parser->ProcessIdentifier(setIdtf);
@@ -234,7 +218,7 @@ idtf_set returns [ElementHandle handle]
   ;
 
 idtf_common returns [ElementHandle handle]
-	: a=alias 
+  : a=alias 
     { 
       std::string const _alias = $ctx->a->getText();
       $ctx->handle = m_parser->ResolveAlias(_alias);
@@ -245,20 +229,20 @@ idtf_common returns [ElementHandle handle]
       }
     }
     | is=idtf_system { $ctx->handle = $ctx->is->handle; }
-	| ie=idtf_edge { $ctx->handle = $ctx->ie->handle; }
-	| iset=idtf_set { $ctx->handle = $ctx->iset->handle; }
+  | ie=idtf_edge { $ctx->handle = $ctx->ie->handle; }
+  | iset=idtf_set { $ctx->handle = $ctx->iset->handle; }
     | ct=contour { $ctx->handle = $ctx->ct->handle; }
-	| cn=content { $ctx->handle = $ctx->cn->handle; }
-	| LINK
-	  {
-	    std::string const value = $LINK->getText();
-	    SC_ASSERT(value.size() > 1, ());
-	    $ctx->handle = m_parser->ProcessFileURL(value.substr(1, value.size() - 2));
-	  }
+  | cn=content { $ctx->handle = $ctx->cn->handle; }
+  | LINK
+    {
+      std::string const value = $LINK->getText();
+      SC_ASSERT(value.size() > 1, ());
+      $ctx->handle = m_parser->ProcessFileURL(value.substr(1, value.size() - 2));
+    }
   ;
 
 idtf_list returns [std::vector<ElementHandle> items]
-	: i1=idtf_common { $ctx->items.push_back($ctx->i1->handle); }
+  : i1=idtf_common { $ctx->items.push_back($ctx->i1->handle); }
     internal_sentence_list[$ctx->i1->handle]? 
     (';' 
       i2=idtf_common { $items.push_back($ctx->i2->handle); }
@@ -267,7 +251,7 @@ idtf_list returns [std::vector<ElementHandle> items]
   ;
 
 internal_sentence [ElementHandle source]
-	: c=connector attrs=attr_list? targets=idtf_list
+  : c=connector attrs=attr_list? targets=idtf_list
     {
       for (auto const & trg : $ctx->targets->items)
       {
@@ -283,11 +267,11 @@ internal_sentence [ElementHandle source]
   ;
 
 internal_sentence_list [ElementHandle source]
-	: '(*' (internal_sentence[source] ';;')+ '*)'
+  : '(*' (internal_sentence[source] ';;')+ '*)'
   ;
 
 sentence_lvl1
- 	: src=idtf_lvl1 '|' edge=idtf_lvl1 '|' trg=idtf_lvl1
+   : src=idtf_lvl1 '|' edge=idtf_lvl1 '|' trg=idtf_lvl1
     {
       m_parser->ProcessTriple($ctx->src->handle, $ctx->edge->handle, $ctx->trg->handle);
     }

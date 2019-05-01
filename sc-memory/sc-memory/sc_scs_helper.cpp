@@ -222,9 +222,16 @@ bool SCsHelper::GenerateBySCsText(std::string const & scsText)
   scs::Parser parser;
   try
   {
-    parser.Parse(scsText);
-    impl::StructGenerator generate(m_ctx, m_fileInterface);
-    generate(parser);
+    if (!parser.Parse(scsText))
+    {
+      m_lastError = parser.GetParseError();
+      result = false;
+    }
+    else
+    {
+      impl::StructGenerator generate(m_ctx, m_fileInterface);
+      generate(parser);
+    }
   }
   catch (utils::ScException const & ex)
   {

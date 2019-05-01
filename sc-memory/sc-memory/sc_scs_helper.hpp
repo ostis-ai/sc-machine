@@ -14,7 +14,7 @@
 class SCsFileInterface
 {
 public:
-  virtual ~SCsFileInterface() {}
+  virtual ~SCsFileInterface() = default;
   virtual ScStreamPtr GetFileContent(std::string const & fileURL) = 0;
 };
 

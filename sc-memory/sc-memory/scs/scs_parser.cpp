@@ -266,9 +266,10 @@ bool Parser::Parse(std::string const & str)
   antlr4::CommonTokenStream tokens(&lexer);
   scsParser parser(&tokens);
 
-  ErrorListener errListen;
+  ErrorListener errListener;
 
-  parser.addErrorListener(&errListen);
+  parser.addErrorListener(&errListener);
+  lexer.addErrorListener(&errListener);
 
   parser.setParser(this);
   try
@@ -280,6 +281,9 @@ bool Parser::Parse(std::string const & str)
     m_lastError = e.Message();
     result = false;
   }
+
+  parser.removeErrorListener(&errListener);
+  lexer.removeErrorListener(&errListener);
 
   return result;
 }

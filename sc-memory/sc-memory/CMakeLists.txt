@@ -1,9 +1,9 @@
 set (SC_MACHINE_ANTRL_DIR "${SC_MACHINE_THIRDPARTY_PATH}/antlr")
 
-add_custom_command(OUTPUT "${CMAKE_CURRENT_LIST_DIR}/scsLexer.cpp"
-                          "${CMAKE_CURRENT_LIST_DIR}/scsLexer.h"
-                          "${CMAKE_CURRENT_LIST_DIR}/scsParser.cpp"
-                          "${CMAKE_CURRENT_LIST_DIR}/scsParser.h"
+add_custom_command(OUTPUT "${CMAKE_CURRENT_LIST_DIR}/scs/scsLexer.cpp"
+                          "${CMAKE_CURRENT_LIST_DIR}/scs/scsLexer.h"
+                          "${CMAKE_CURRENT_LIST_DIR}/scs/scsParser.cpp"
+                          "${CMAKE_CURRENT_LIST_DIR}/scs/scsParser.h"
       COMMAND "${Java_JAVA_EXECUTABLE}" -jar "${SC_MACHINE_ANTRL_DIR}/antlr-4.7.1-complete.jar" scs.g4 -no-listener -package scs
       WORKING_DIRECTORY "${CMAKE_CURRENT_LIST_DIR}/scs"
       DEPENDS scs/scs.g4

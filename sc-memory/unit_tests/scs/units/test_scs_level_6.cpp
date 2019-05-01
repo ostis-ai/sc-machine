@@ -210,6 +210,16 @@ UNIT_TEST(scs_level_6_contour)
   }
   SUBTEST_END()
 
+  SUBTEST_START(err)
+  {
+    std::string const data = "x -> [* y -> z *];;";
+
+    scs::Parser parser;
+
+    SC_CHECK(!parser.Parse(data), ());
+  }
+  SUBTEST_END()
+
   SUBTEST_START(base)
   {
     std::string const data = "x -|> [* y _=> z;; *];;";
@@ -342,4 +352,15 @@ UNIT_TEST(scs_level_6_contour)
     }
   }
   SUBTEST_END()
+
+  SUBTEST_START(contour_error)
+  {
+    std::string const data = "test -> [* x -> *];;";
+
+    scs::Parser parser;
+
+    SC_CHECK(!parser.Parse(data), ());
+  }
+  SUBTEST_END()
+
 }
