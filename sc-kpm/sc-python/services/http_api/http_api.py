@@ -31,7 +31,6 @@ class MainHandler(tornado.web.RequestHandler):
 
 class ContentHandler(tornado.web.RequestHandler):
 
-  @tornado.web.asynchronous
   def get(self, addr):
     ctx = ScMemoryContext.Create('ContentHandler_{}'.format(addr))
     link_addr = ScAddr(int(addr))
