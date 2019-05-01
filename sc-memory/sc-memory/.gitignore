@@ -1,0 +1,4 @@
+scs/scsLexer.*
+scs/scsParser.*
+scs/*.tokens
+scs/*.interp
