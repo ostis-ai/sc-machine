@@ -19,11 +19,7 @@ elseif (${WIN32})
 endif()
 include("${SC_MACHINE_ROOT}/cmake/codegen.cmake")
 
-if (${WIN32})
-    find_package(Java)
-else ()
-    find_package(Java REQUIRED)
-endif()
+find_package(Java)
 
 set(CMAKE_MODULE_PATH "${SC_MACHINE_ROOT}/cmake")
 
@@ -82,7 +78,7 @@ if (${APPLE})
 
     set (GLIB2_LIBRARIES ${GLIB_LDFLAGS} ${GLIB2_MODULE_LDFLAGS})
 
-    find_package(hiredis REQUIRED)
+    find_package(Hiredis REQUIRED)
 
     set (LIBCLANG_LLVM_CONFIG_EXECUTABLE "/usr/local/opt/llvm/bin/llvm-config")
     find_package(LibClang REQUIRED)
@@ -112,10 +108,7 @@ elseif (${UNIX})
     set (GLIB2_INCLUDE_DIRS "${GLIB2_INCLUDE_DIRS}" "/usr/lib/x86_64-linux-gnu/glib-2.0/include/" "${GLIB2_MODULE}")
     set (GLIB2_LIBRARIES "${GLIB2_LIBRARIES}" "${GLIB2_MODULE_LIBRARIES}")
 
-    pkg_check_modules(REDIS QUIET hiredis)
-    if (NOT DEFINED ${REDIS_INCLUDE_DIRS})
-        pkg_check_modules(REDIS REQUIRED libhiredis)
-    endif()
+    find_package(Hiredis REQUIRED)
 
     if (NOT DEFINED LIBCLANG_LIBRARIES OR NOT DEFINED LIBCLANG_CXXFLAGS OR NOT DEFINED LIBCLANG_LIBDIR)
         find_package(LibClang REQUIRED)

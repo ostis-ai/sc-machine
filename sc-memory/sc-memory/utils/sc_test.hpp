@@ -27,7 +27,7 @@ public:
 
   void Run(std::string const & configPath, std::string const & extPath);
 
-  static _SC_EXTERN void RunAll(std::string const & configPath = "sc-memory.ini", std::string const & extPath = "");
+  static _SC_EXTERN void RunAll(std::string const & configPath = "", std::string const & extPath = "");
 
   static _SC_EXTERN void NotifySubTest();
 

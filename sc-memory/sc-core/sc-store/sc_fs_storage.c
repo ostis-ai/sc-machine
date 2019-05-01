@@ -125,14 +125,14 @@ sc_bool sc_fs_storage_initialize(const gchar *path, sc_bool clear)
   repo_path = g_strdup(path);
 
   g_message("\tFile memory engine: %s", sc_config_fm_engine());
-  // load engine extension
 
+  // load engine extension
 #if SC_IS_PLATFORM_WIN32
   g_snprintf(fm_engine_module_path, MAX_PATH_LENGTH, "sc-fm-%s.dll", sc_config_fm_engine());
 #elif SC_IS_PLATFORM_MAC
   g_snprintf(fm_engine_module_path, MAX_PATH_LENGTH, "libsc-fm-%s.dylib", sc_config_fm_engine());
 #else
-  g_snprintf(fm_engine_module_path, MAX_PATH_LENGTH, "libsc-fm-%s.so", sc_config_fm_engine());
+  g_snprintf(fm_engine_module_path, MAX_PATH_LENGTH, "%s/libsc-fm-%s.so", g_get_current_dir(), sc_config_fm_engine());
 #endif
 
   // try to load engine extension
