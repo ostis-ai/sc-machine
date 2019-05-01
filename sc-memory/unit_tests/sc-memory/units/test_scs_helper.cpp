@@ -205,7 +205,7 @@ UNIT_TEST(SCsHelper_GenerateBySCs_NotUsedElement)
   ScMemoryContext ctx(sc_access_lvl_make_max, "SCsHelper_GenerateBySCs_NotUsedElement");
 
   SCsHelper helper(&ctx, std::make_shared<DummyFileInterface>());
-  std::string const scsData = "node <- sc_node_class";
+  std::string const scsData = "node <- sc_node_class;;";
 
   SC_CHECK(helper.GenerateBySCsText(scsData), ());
 
