@@ -1,6 +1,6 @@
 set(SC_CORE_ROOT ${CMAKE_CURRENT_SOURCE_DIR})
 
-file(GLOB_RECURSE SOURCES "*.c" ".h" "*.cpp" "*.hpp")
+file(GLOB_RECURSE SOURCES "*.c" "*.h" "*.cpp" "*.hpp")
 
 add_library (sc-core SHARED ${SOURCES})
 
