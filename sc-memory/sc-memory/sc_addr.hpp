@@ -11,10 +11,9 @@ extern "C"
 #include "sc-core/sc_memory.h"
 }
 
-#include <vector>
+#include <cstdint>
 #include <list>
-
-#include "sc_types.hpp"
+#include <vector>
 
 using ScRealAddr = sc_addr;
 

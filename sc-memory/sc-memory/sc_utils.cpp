@@ -92,7 +92,7 @@ void StringUtils::SplitFilename(std::string const & qualifiedName, std::string &
 
 }
 
-void StringUtils::SplitString(std::string const & str, char delim, StringVector & outList)
+void StringUtils::SplitString(std::string const & str, char delim, std::vector<std::string> & outList)
 {
   outList.clear();
   std::istringstream ss(str);

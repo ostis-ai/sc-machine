@@ -5,7 +5,7 @@
  */
 #pragma once
 
-#include "sc-memory/sc_types.hpp"
+#include "sc-memory/sc_type.hpp"
 
 
 #include <unordered_map>

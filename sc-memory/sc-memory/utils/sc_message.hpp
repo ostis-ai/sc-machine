@@ -1,6 +1,17 @@
 #pragma once
 
-#include "../sc_types.hpp"
+#include "../sc_defines.hpp"
+
+#include <array>
+#include <list>
+#include <map>
+#include <set>
+#include <sstream>
+#include <string>
+#include <unordered_map>
+#include <unordered_set>
+#include <utility>
+#include <vector>
 
 template <typename T> inline std::string DebugPrint(T const & t);
 

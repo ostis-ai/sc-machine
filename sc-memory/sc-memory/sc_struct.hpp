@@ -6,14 +6,13 @@
 
 #pragma once
 
-#include "sc_types.hpp"
 #include "sc_addr.hpp"
 #include "sc_utils.hpp"
 
 class ScSet
 {
 public:
-  _SC_EXTERN ScSet(ScMemoryContext * ctx, ScAddr const & setAddr);
+  _SC_EXTERN ScSet(class ScMemoryContext * ctx, ScAddr const & setAddr);
 
   /* Append element into sc-set. If element already exist, then doesn't append it and return false; otherwise returns true. */
   _SC_EXTERN bool Append(ScAddr const & elAddr);

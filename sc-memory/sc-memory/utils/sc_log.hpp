@@ -5,10 +5,11 @@
 */
 #pragma once
 
-#include "../sc_types.hpp"
 #include "sc_console.hpp"
 
-#include <sstream>
+#include <cstdint>
+#include <fstream>
+#include <string>
 
 namespace utils
 {

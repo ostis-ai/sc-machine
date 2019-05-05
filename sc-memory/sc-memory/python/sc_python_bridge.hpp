@@ -6,7 +6,6 @@
 
 #pragma once
 
-#include "../sc_types.hpp"
 #include "../sc_utils.hpp"
 #include "../sc_wait.hpp"
 

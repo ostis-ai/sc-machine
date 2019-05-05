@@ -6,7 +6,6 @@
 
 #pragma once
 
-#include "sc_types.hpp"
 #include "sc_object.hpp"
 #include "sc_addr.hpp"
 #include "kpm/sc_agent.hpp"

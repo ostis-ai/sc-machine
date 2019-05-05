@@ -6,8 +6,8 @@
 
 #pragma once
 
-#include "sc_types.hpp"
 #include "sc_addr.hpp"
+#include "sc_type.hpp"
 #include "sc_utils.hpp"
 
 

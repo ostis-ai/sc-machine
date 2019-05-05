@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include "sc-memory/sc_types.hpp"
+#include "sc-memory/sc_type.hpp"
 
 #include "sc-memory/scs/scs_types.hpp"
 

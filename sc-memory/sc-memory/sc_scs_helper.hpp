@@ -6,7 +6,6 @@
 
 #pragma once
 
-#include "sc_types.hpp"
 #include "sc_stream.hpp"
 
 #include <memory>

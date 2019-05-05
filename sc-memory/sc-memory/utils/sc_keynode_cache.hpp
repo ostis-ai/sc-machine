@@ -9,6 +9,9 @@
 #include "../sc_defines.hpp"
 #include "../sc_addr.hpp"
 
+#include <unordered_map>
+#include <string>
+
 class ScMemoryContext;
 
 namespace utils

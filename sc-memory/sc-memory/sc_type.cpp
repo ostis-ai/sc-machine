@@ -4,7 +4,7 @@
 * (See accompanying file COPYING.MIT or copy at http://opensource.org/licenses/MIT)
 */
 
-#include "sc_types.hpp"
+#include "sc_type.hpp"
 
 ScType const ScType::EdgeUCommon(sc_type_edge_common);
 ScType const ScType::EdgeDCommon(sc_type_arc_common);

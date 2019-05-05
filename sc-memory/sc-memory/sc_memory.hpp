@@ -17,7 +17,7 @@ extern "C"
 #include "sc_iterator.hpp"
 #include "sc_stream.hpp"
 #include "sc_template.hpp"
-#include "sc_types.hpp"
+#include "sc_type.hpp"
 
 class ScMemoryContext;
 

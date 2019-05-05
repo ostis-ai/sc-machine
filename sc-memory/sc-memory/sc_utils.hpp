@@ -6,14 +6,15 @@
 
 #pragma once
 
+#include "sc_debug.hpp"
+
+#include <cstdint>
 #include <exception>
-#include <string>
 #include <memory>
+#include <string>
 
 #include <assert.h>
-
-#include "sc_debug.hpp"
-#include "sc_types.hpp"
+#include <memory.h>
 
 
 // Got it there: https://github.com/mapsme/omim/blob/136f12af3adde05623008f71d07bb996fe5801a5/base/macros.hpp
@@ -46,7 +47,7 @@ public:
     ++m_refCount;
   }
 
-  inline sc_uint32 Unref()
+  inline uint32_t Unref()
   {
     SC_ASSERT(m_refCount > 0, ());
     --m_refCount;
@@ -55,7 +56,7 @@ public:
   }
 
 private:
-  sc_uint32 m_refCount;
+  uint32_t m_refCount;
 };
 
 
@@ -72,8 +73,8 @@ public:
 
   inline bool IsValid() const { return m_data != nullptr; }
 
-  void * Data() { return (void*)m_data; }
-  void const * CData() const { return (void const*)m_data; }
+  void * Data() { return static_cast<void*>(m_data); }
+  void const * CData() const { return static_cast<void const*>(m_data); }
   size_t Size() const { return m_size;  }
 
   size_t Read(void * buff, size_t size) const
@@ -169,7 +170,7 @@ public:
   _SC_EXTERN static bool EndsWith(std::string const & str, std::string const & pattern, bool lowerCase = true);
 
   _SC_EXTERN static void SplitFilename(std::string const & qualifiedName, std::string & outBasename, std::string & outPath);
-  _SC_EXTERN static void SplitString(std::string const & str, char delim, StringVector & outList);
+  _SC_EXTERN static void SplitString(std::string const & str, char delim, std::vector<std::string> & outList);
 
   _SC_EXTERN static void TrimLeft(std::string & str);
   _SC_EXTERN static void TrimRight(std::string & str);

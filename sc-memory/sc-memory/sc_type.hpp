@@ -32,10 +32,6 @@ extern "C"
 #define NOMINMAX
 #endif
 
-using StringSet = std::set<std::string>;
-using StringVector = std::vector<std::string>;
-using StringMap = std::map<std::string, std::string>;
-
 class ScMemoryContext;
 class ScAddr;
 

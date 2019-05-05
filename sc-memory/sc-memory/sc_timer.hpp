@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include "sc_types.hpp"
+#include "sc_defines.hpp"
 
 #include <chrono>
 

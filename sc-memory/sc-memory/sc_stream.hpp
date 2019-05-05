@@ -11,7 +11,6 @@ extern "C"
 #include "sc-core/sc_memory_headers.h"
 }
 
-#include "sc_types.hpp"
 #include "sc_utils.hpp"
 
 #include <type_traits>

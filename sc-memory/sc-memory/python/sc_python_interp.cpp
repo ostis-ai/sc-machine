@@ -81,7 +81,7 @@ void PyLoadModulePathFromConfig(py::ScPythonInterpreter::ModulePathSet & outValu
   if (pValue == nullptr)
     return;
 
-  StringVector values;
+  std::vector<std::string> values;
   std::string const paths = pValue;
   utils::StringUtils::SplitString(paths, ';', values);
   for (auto const & v : values)

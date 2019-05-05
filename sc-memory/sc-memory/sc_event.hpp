@@ -6,9 +6,8 @@
 
 #pragma once
 
-#include "sc_types.hpp"
-#include "sc_utils.hpp"
 #include "sc_addr.hpp"
+#include "sc_utils.hpp"
 
 #include "utils/sc_lock.hpp"
 
@@ -31,7 +30,7 @@ public:
     ContentChanged
   };
 
-  explicit _SC_EXTERN ScEvent(const ScMemoryContext & ctx, const ScAddr & addr, Type eventType, DelegateFunc func = DelegateFunc());
+  explicit _SC_EXTERN ScEvent(class ScMemoryContext const & ctx, const ScAddr & addr, Type eventType, DelegateFunc func = DelegateFunc());
   virtual _SC_EXTERN ~ScEvent();
 
   // Don't allow copying of events

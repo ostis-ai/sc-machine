@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../sc_types.hpp"
+#include "../sc_defines.hpp"
 
 class _SC_EXTERN ScHttp
 {

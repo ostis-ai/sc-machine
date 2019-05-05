@@ -60,7 +60,7 @@ UNIT_TEST(StringUtils)
     utils::StringUtils::Trim(empty);
     SC_CHECK_EQUAL(empty, "", ());
 
-    StringVector res;
+    std::vector<std::string> res;
     // Do not return empty item after ;
     utils::StringUtils::SplitString("begin;end;", ';', res);
     SC_CHECK_EQUAL(res.size(), 2, ());

@@ -1,7 +1,6 @@
 #pragma once
 
 #include "../sc_utils.hpp"
-#include "../sc_types.hpp"
 #include "../utils/sc_lock.hpp"
 
 #include "sc_python_bridge.hpp"

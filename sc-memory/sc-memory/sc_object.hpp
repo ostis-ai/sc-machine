@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include "sc_types.hpp"
+#include "sc_defines.hpp"
 
 /**
  * Base class for all objects that has meta data.

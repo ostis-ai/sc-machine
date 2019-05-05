@@ -6,9 +6,8 @@
 
 #pragma once
 
-#include "../sc_types.hpp"
-#include "../sc_memory.hpp"
 #include "../sc_debug.hpp"
+#include "../sc_memory.hpp"
 #include "../sc_utils.hpp"
 
 #include "../utils/sc_console.hpp"

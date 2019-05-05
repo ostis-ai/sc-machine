@@ -1,7 +1,10 @@
 #pragma once
 
-#include "../sc_types.hpp"
+#include "../sc_defines.hpp"
 #include "../sc_utils.hpp"
+
+#include <cstdint>
+#include <string>
 
 class ScHttpResponse
 {
