@@ -19,11 +19,11 @@
 namespace test
 {
 
-class ScTestUnit final
+class ScTestUnit
 {
 public:
   _SC_EXTERN ScTestUnit(char const * name, char const * filename, void(*fn)());
-  _SC_EXTERN ~ScTestUnit();
+  _SC_EXTERN virtual ~ScTestUnit();
 
   void Run(std::string const & configPath, std::string const & extPath);
 
@@ -32,8 +32,8 @@ public:
   static _SC_EXTERN void NotifySubTest();
 
 protected:
-  void ShutdownMemory(bool save);
-  void InitMemory(std::string const & configPath, std::string const & extPath);
+  virtual void ShutdownMemory(bool save);
+  virtual void InitMemory(std::string const & configPath, std::string const & extPath);
 
 protected:
   char const * m_name;
@@ -54,11 +54,13 @@ private:
   static _SC_EXTERN uint32_t ms_subtestsNum;
 };
 
-#define UNIT_TEST(__name) \
+#define UNIT_TEST_CUSTOM(__name, _class) \
   void Test_##__name(); \
-  ::test::ScTestUnit g_test_unit_##__name(#__name, __FILE__, &Test_##__name); \
+  ##_class g_test_unit_##__name(#__name, __FILE__, &Test_##__name); \
   void Test_##__name()
 
+#define UNIT_TEST(__name) UNIT_TEST_CUSTOM(__name, ::test::ScTestUnit)
+ 
 #define SC_TEST_STATUS_COLOR(_expr) ((_expr) ? ScConsole::Color::Green : ScConsole::Color::Red)
 #if SC_PLATFORM_WIN32
 # define SC_TEST_STATUS(_expr)  ((_expr) ? "ok" : "fail")
