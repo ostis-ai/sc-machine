@@ -474,6 +474,11 @@ public:
     return (*m_results)[index];
   }
 
+  inline bool Has(std::string const& name) const
+  {
+    return (m_replacements->find(name) != m_replacements->end());
+  }
+
   inline size_t Size() const
   {
     SC_ASSERT(m_results != nullptr, ());
@@ -516,7 +521,7 @@ public:
     return ScTemplateSearchResultItem(&(m_results[idx]), &m_replacements);
   }
 
-  inline void clear()
+  inline void Clear()
   {
     m_results.clear();
     m_replacements.clear();

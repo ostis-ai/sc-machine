@@ -423,7 +423,7 @@ public:
     // if (!m_template.m_hasRequired)
     //  SC_THROW_EXCEPTION(utils::ExceptionInvalidParams, "Templates just with optional triples doesn't supported.");
 
-    result.clear();
+    result.Clear();
 
     result.m_replacements = m_template.m_replacements;
     m_resultAddrs.resize(CalculateOneResultSize());

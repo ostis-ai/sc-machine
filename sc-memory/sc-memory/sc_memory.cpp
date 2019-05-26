@@ -91,13 +91,16 @@ bool ScMemory::Initialize(sc_memory_params const & params)
   newParams.ext_path = nullptr;
 
   ms_globalContext = sc_memory_initialize(&newParams);
+  if (ms_globalContext == nullptr)
+    return false;
+
   py::ScPythonInterpreter::Initialize("sc-memory");
   sc_memory_init_ext(params.ext_path, params.enabled_exts);
 
   ScKeynodes::Init();
   ScAgentInit(true);
 
-  return (ms_globalContext != null_ptr);
+  return (ms_globalContext != nullptr);
 }
 
 void ScMemory::Shutdown(bool saveState /* = true */)
@@ -189,6 +192,11 @@ ScMemoryContext::ScMemoryContext(sc_uint8 accessLevels, std::string const & name
   }
 
   ScMemory::RegisterContext(this);
+}
+
+ScMemoryContext::ScMemoryContext(std::string const & name)
+  : ScMemoryContext(sc_access_lvl_make_min, name)
+{
 }
 
 ScMemoryContext::~ScMemoryContext()

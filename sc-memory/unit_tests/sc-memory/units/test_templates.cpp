@@ -1401,7 +1401,7 @@ UNIT_TEST(template_one_edge_inclusion)
   SC_CHECK_EQUAL(searchResult[0]["c"], genResult["c"], ());
 }
 
-UNIT_TEST(scs_templates_dummy)
+UNIT_TEST(scs_templates)
 {
   ScMemoryContext ctx(sc_access_lvl_make_min, "scs_templates");
 
