@@ -30,7 +30,7 @@ if (NOT MSVC)
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC")
 endif()
 
-set(LIB_OUTPUT_DIR "${CMAKE_HOME_DIRECTORY}/dist") # put generated libraries here.
+set(LIB_OUTPUT_DIR "${CMAKE_CURRENT_BINARY_DIR}") # put generated libraries here.
 message(STATUS "Output libraries to ${LIB_OUTPUT_DIR}")
 
 # make sure 'make' works fine even if ${LIB_OUTPUT_DIR} is deleted.
