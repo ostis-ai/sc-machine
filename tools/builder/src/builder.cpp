@@ -107,7 +107,7 @@ bool Builder::Run(BuilderParams const & params)
   p.enabled_exts = extParser.GetParams().data();
 
   ScMemory::Initialize(p);
-  m_ctx.reset(new ScMemoryContext(sc_access_lvl_make_min(), "Builder"));
+  m_ctx.reset(new ScMemoryContext(sc_access_lvl_make_min, "Builder"));
   
   Translator::InitGlobal();
 

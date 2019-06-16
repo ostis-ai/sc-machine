@@ -2,60 +2,61 @@ set (SC_CODEGEN_DIR "${SC_TOOLS_DIR}/codegen")
 
 
 set (SOURCES 
-	"Parser/LanguageTypes/Class.cpp"
-	"Parser/LanguageTypes/Constructor.cpp"
-	"Parser/LanguageTypes/Field.cpp"
-	"Parser/LanguageTypes/Global.cpp"
-	"Parser/LanguageTypes/LanguageType.cpp"
+  "Parser/LanguageTypes/Class.cpp"
+  "Parser/LanguageTypes/Constructor.cpp"
+  "Parser/LanguageTypes/Field.cpp"
+  "Parser/LanguageTypes/Global.cpp"
+  "Parser/LanguageTypes/LanguageType.cpp"
   "Parser/LanguageTypes/Invokable.cpp"
   "Parser/LanguageTypes/Function.cpp"
   "Parser/LanguageTypes/Method.cpp"
 
-	"Parser/Main.cpp"
-	"Parser/Cursor.cpp"
-	"Parser/CursorType.cpp"
-	"Parser/MetaUtils.cpp"
-	"Parser/MetaDataManager.cpp"
-	"Parser/ReflectionParser.cpp"
-	"Parser/MacrosManager.cpp"
-	"Parser/Cache.cpp"
-	"Parser/Sha256.cpp"
+  "Parser/Main.cpp"
+  "Parser/Cursor.cpp"
+  "Parser/CursorType.cpp"
+  "Parser/MetaUtils.cpp"
+  "Parser/MetaDataManager.cpp"
+  "Parser/ReflectionParser.cpp"
+  "Parser/MacrosManager.cpp"
+  "Parser/Cache.cpp"
+  "Parser/Sha256.cpp"
 )
 
 set (HEADERS
-	"Parser/LanguageTypes/Class.hpp"
-	"Parser/LanguageTypes/Constructor.hpp"
-	"Parser/LanguageTypes/Field.hpp"
-	"Parser/LanguageTypes/Global.hpp"
-	"Parser/LanguageTypes/LanguageType.hpp"
+  "Parser/LanguageTypes/Class.hpp"
+  "Parser/LanguageTypes/Constructor.hpp"
+  "Parser/LanguageTypes/Field.hpp"
+  "Parser/LanguageTypes/Global.hpp"
+  "Parser/LanguageTypes/LanguageType.hpp"
   "Parser/LanguageTypes/Invokable.hpp"
   "Parser/LanguageTypes/Function.hpp"
   "Parser/LanguageTypes/Method.hpp"
 
-	"Parser/MetaDataConfig.hpp"
-	"Parser/Cursor.hpp"
-	"Parser/CursorType.hpp"
-	"Parser/MetaUtils.hpp"
-	"Parser/MetaDataManager.hpp"
-	"Parser/ReflectionOptions.hpp"
-	"Parser/ReflectionParser.hpp"
-	"Parser/ReservedTypes.hpp"
-	"Parser/MacrosManager.hpp"
-	"Parser/Types.hpp"
-	"Parser/Cache.hpp"
-	"Parser/Sha256.hpp"
+  "Parser/MetaDataConfig.hpp"
+  "Parser/Cursor.hpp"
+  "Parser/CursorType.hpp"
+  "Parser/MetaUtils.hpp"
+  "Parser/MetaDataManager.hpp"
+  "Parser/ReflectionOptions.hpp"
+  "Parser/ReflectionParser.hpp"
+  "Parser/ReservedTypes.hpp"
+  "Parser/MacrosManager.hpp"
+  "Parser/Types.hpp"
+  "Parser/Cache.hpp"
+  "Parser/Sha256.hpp"
 )
 
 add_executable(sc-code-generator ${SOURCES} ${HEADERS})
-include_directories(${SC_CODEGEN_DIR}/Parser ${LIBCLANG_INCLUDE_DIRS})
+include_directories(${SC_CODEGEN_DIR}/Parser)
 
 if (${WIN32})
     set (BOOST_LIBS_LIST )
+    include_directories(${LIBCLANG_INCLUDE_DIRS})
 else()
   if(${APPLE})
     set (BOOST_LIBS_LIST
-			    Boost::filesystem
-			    Boost::program_options
+          Boost::filesystem
+          Boost::program_options
           Boost::regex
         )
   else()
@@ -66,7 +67,7 @@ else()
           boost_system
         )
   endif()
-
+  
   set_target_properties(sc-code-generator PROPERTIES COMPILE_FLAGS ${LIBCLANG_CXXFLAGS})
 endif (${WIN32})
 

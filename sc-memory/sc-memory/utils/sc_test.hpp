@@ -55,7 +55,7 @@ private:
 
 #define UNIT_TEST_CUSTOM(__name, _class) \
   void Test_##__name(); \
-  ##_class g_test_unit_##__name(#__name, __FILE__, &Test_##__name); \
+  _class g_test_unit_##__name(#__name, __FILE__, &Test_##__name); \
   void Test_##__name()
 
 #define UNIT_TEST(__name) UNIT_TEST_CUSTOM(__name, ::test::ScTestUnit)
