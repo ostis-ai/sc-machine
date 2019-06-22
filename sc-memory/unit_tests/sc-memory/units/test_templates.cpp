@@ -1562,7 +1562,7 @@ UNIT_TEST(template_optional_complex)
 {
   ScMemoryContext ctx(sc_access_lvl_make_min, "template_optional_complex");
 
-  SCsHelper helper(&ctx, std::make_shared<DummyFileInterface>());
+  SCsHelper helper(ctx, std::make_shared<DummyFileInterface>());
   std::string const scsData =
       "langs <- sc_node_class;;"
       "langEN <- langs;;"
@@ -1876,7 +1876,7 @@ UNIT_TEST(template_issue_295)
       "..x => nrel_value:"
       "  [67] (* <= ..range;; *);;";
 
-  SCsHelper scs(&ctx, std::make_shared<DummyFileInterface>());
+  SCsHelper scs(ctx, std::make_shared<DummyFileInterface>());
 
   SC_CHECK(scs.GenerateBySCsText(inData), ());
 

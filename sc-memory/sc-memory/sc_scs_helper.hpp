@@ -24,13 +24,14 @@ class ScMemoryContext;
 class SCsHelper final
 {
 public:
-  _SC_EXTERN SCsHelper(ScMemoryContext * ctx, SCsFileInterfacePtr const & fileInterface);
+  _SC_EXTERN SCsHelper(ScMemoryContext & ctx, SCsFileInterfacePtr const & fileInterface);
 
   _SC_EXTERN bool GenerateBySCsText(std::string const & scsText);
   _SC_EXTERN std::string const & GetLastError() const;
 
 private:
-  ScMemoryContext * m_ctx;
+  ScMemoryContext & m_ctx;
+
   SCsFileInterfacePtr m_fileInterface;
   std::string m_lastError;
 };

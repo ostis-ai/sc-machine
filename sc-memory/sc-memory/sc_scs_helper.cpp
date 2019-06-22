@@ -22,10 +22,12 @@ class StructGenerator
   friend class ::SCsHelper;
 
 protected:
-  StructGenerator(ScMemoryContext * ctx, SCsFileInterfacePtr const & fileInterface)
+  StructGenerator(ScMemoryContext & ctx, SCsFileInterfacePtr const & fileInterface)
     : m_fileInterface(fileInterface)
     , m_ctx(ctx)
   {
+    m_kNrelSCsGlobalIdtf = m_ctx.HelperResolveSystemIdtf("nrel_scs_global_idtf", ScType::NodeConstNoRole);
+    SC_ASSERT(m_kNrelSCsGlobalIdtf.IsValid(), ());
   }
 
   void operator() (scs::Parser const & parser)
@@ -53,7 +55,7 @@ protected:
                            "Edge in triple has incorrect type");
       }
 
-      ScAddr const edgeAddr = m_ctx->CreateEdge(edge.GetType(), srcAddr, trgAddr);
+      ScAddr const edgeAddr = m_ctx.CreateEdge(edge.GetType(), srcAddr, trgAddr);
       SC_ASSERT(edgeAddr.IsValid(), ());
       m_idtfCache.insert(std::make_pair(edge.GetIdtf(), edgeAddr));
     }
@@ -70,6 +72,55 @@ protected:
   }
 
 private:
+
+  void SetSCsGlobalIdtf(std::string const & idtf, ScAddr const & addr)
+  {
+    SC_ASSERT(m_kNrelSCsGlobalIdtf.IsValid(), ());
+
+    // Generate construction manually. To avoid recursive call of ScMemoryContextEventsPendingGuard
+
+    ScAddr const linkAddr = m_ctx.CreateLink();
+    ScLink link(m_ctx, linkAddr);
+    link.Set(idtf);
+
+    ScAddr const edgeAddr = m_ctx.CreateEdge(ScType::EdgeDCommonConst, addr, linkAddr);
+    m_ctx.CreateEdge(ScType::EdgeAccessConstPosPerm, m_kNrelSCsGlobalIdtf, edgeAddr);
+  }
+
+  ScAddr FindBySCsGlobalIdtf(std::string const & idtf) const
+  {
+    SC_ASSERT(m_kNrelSCsGlobalIdtf.IsValid(), ());
+
+    ScAddr result;
+
+    auto const links = m_ctx.FindLinksByContent(idtf);
+    for (ScAddr const & addr : links)
+    {
+      ScTemplate templ;
+
+      templ.TripleWithRelation(
+        ScType::Unknown >> "_el",
+        ScType::EdgeDCommonVar,
+        addr,
+        ScType::EdgeAccessVarPosPerm,
+        m_kNrelSCsGlobalIdtf);
+
+      ScTemplateSearchResult searchResult;
+      if (m_ctx.HelperSearchTemplate(templ, searchResult))
+      {
+        if (result.IsValid() || searchResult.Size() > 1)
+        {
+          SC_THROW_EXCEPTION(utils::ExceptionInvalidState,
+                             "There are more then 1 element with global identifier: " << idtf);
+        }
+
+        result = searchResult[0]["_el"];
+      }
+    }
+
+    return result;
+  }
+
   ScAddr ResolveElement(scs::ParsedElement const & el)
   {
     ScAddr result;
@@ -83,7 +134,13 @@ private:
     {
       // try to find existing
       if (el.GetVisibility() == scs::Visibility::System)
-        result = m_ctx->HelperFindBySystemIdtf(el.GetIdtf());
+      {
+        result = m_ctx.HelperFindBySystemIdtf(el.GetIdtf());
+      }
+      else if (el.GetVisibility() == scs::Visibility::Global)
+      {
+        result = FindBySCsGlobalIdtf(el.GetIdtf());
+      }
 
       // create new one
       if (!result.IsValid())
@@ -91,11 +148,11 @@ private:
         ScType const & type = el.GetType();
         if (type.IsNode())
         {
-          result = m_ctx->CreateNode(type);
+          result = m_ctx.CreateNode(type);
         }
         else if (type.IsLink())
         {
-          result = m_ctx->CreateLink(type);
+          result = m_ctx.CreateLink(type);
           SetupLinkContent(result, el);
         }
         else
@@ -105,7 +162,14 @@ private:
 
         // setup system identifier
         if (el.GetVisibility() == scs::Visibility::System)
-          m_ctx->HelperSetSystemIdtf(el.GetIdtf(), result);
+        {
+          m_ctx.HelperSetSystemIdtf(el.GetIdtf(), result);
+        }
+        else if (el.GetVisibility() == scs::Visibility::Global)
+        {
+          SetSCsGlobalIdtf(el.GetIdtf(), result);
+        }
+        
       }
 
       SC_ASSERT(result.IsValid(), ());
@@ -123,7 +187,7 @@ private:
     auto const result = utils::StringUtils::ParseNumber<T>(value, number);
     if (result)
     {
-      ScLink link(*m_ctx, linkAddr);
+      ScLink link(m_ctx, linkAddr);
       link.Set(number);
 
       return true;
@@ -139,7 +203,7 @@ private:
       ScStreamPtr stream = m_fileInterface->GetFileContent(el.GetValue());
       if (stream)
       {
-        ScLink link(*m_ctx, linkAddr);
+        ScLink link(m_ctx, linkAddr);
         link.Set(stream);
       }
     }
@@ -190,7 +254,7 @@ private:
       }
       else
       {
-        ScLink link(*m_ctx, linkAddr);
+        ScLink link(m_ctx, linkAddr);
         link.Set(el.GetValue());
       }
     }
@@ -198,18 +262,18 @@ private:
 
 private:
   SCsFileInterfacePtr m_fileInterface;
-  ScMemoryContext * m_ctx;
+  ScMemoryContext & m_ctx;
 
   std::unordered_map<std::string, ScAddr> m_idtfCache;
+  ScAddr m_kNrelSCsGlobalIdtf;
 };
 
 } // namespace impl
 
-SCsHelper::SCsHelper(ScMemoryContext * ctx, SCsFileInterfacePtr const & fileInterface)
+SCsHelper::SCsHelper(ScMemoryContext & ctx, SCsFileInterfacePtr const & fileInterface)
   : m_ctx(ctx)
   , m_fileInterface(fileInterface)
 {
-  SC_ASSERT(m_ctx, ());
 }
 
 bool SCsHelper::GenerateBySCsText(std::string const & scsText)
@@ -217,7 +281,7 @@ bool SCsHelper::GenerateBySCsText(std::string const & scsText)
   m_lastError = "";
   bool result = true;
 
-  ScMemoryContextEventsPendingGuard guard(*m_ctx);
+  ScMemoryContextEventsPendingGuard guard(m_ctx);
 
   scs::Parser parser;
   try

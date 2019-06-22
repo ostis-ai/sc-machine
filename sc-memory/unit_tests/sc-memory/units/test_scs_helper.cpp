@@ -27,7 +27,7 @@ UNIT_TEST(SCsHelper_GenerateBySCs_Smoke)
   {
     ScMemoryContext ctx(sc_access_lvl_make_max, "SCsHelper_GenerateBySCs_Smoke");
 
-    SCsHelper helper(&ctx, std::make_shared<DummyFileInterface>());
+    SCsHelper helper(ctx, std::make_shared<DummyFileInterface>());
 
     SC_CHECK(helper.GenerateBySCsText(t.first), ());
 
@@ -63,7 +63,7 @@ UNIT_TEST(SCsHelper_GenerateBySCs_FileURL)
 
   ScMemoryContext ctx(sc_access_lvl_make_max, "SCsHelper_GenerateBySCs_FileURL");
 
-  SCsHelper helper(&ctx, std::make_shared<TestFileInterface>());
+  SCsHelper helper(ctx, std::make_shared<TestFileInterface>());
   SC_CHECK(helper.GenerateBySCsText(data), ());
 
   ScTemplate templ;
@@ -92,7 +92,7 @@ UNIT_TEST(SCsHelper_GenerateBySCs_Aliases)
 
   ScMemoryContext ctx(sc_access_lvl_make_max, "SCsHelper_GenerateBySCs_Aliases");
 
-  SCsHelper helper(&ctx, std::make_shared<TestFileInterface>());
+  SCsHelper helper(ctx, std::make_shared<TestFileInterface>());
   SC_CHECK(helper.GenerateBySCsText(data), ());
 
   ScStreamPtr const stream = ScStreamMakeRead(content);
@@ -123,7 +123,7 @@ UNIT_TEST(SCsHelper_GenerateBySCs_Contents)
 
   auto const testLink = [&ctx](std::string const & data, std::string const & keynode)
   {
-    SCsHelper helper(&ctx, std::make_shared<TestFileInterface>());
+    SCsHelper helper(ctx, std::make_shared<TestFileInterface>());
     SC_CHECK(helper.GenerateBySCsText(data), ());
 
     ScTemplate templ;
@@ -211,7 +211,7 @@ UNIT_TEST(SCsHelper_GenerateBySCs_NotUsedElement)
 {
   ScMemoryContext ctx(sc_access_lvl_make_max, "SCsHelper_GenerateBySCs_NotUsedElement");
 
-  SCsHelper helper(&ctx, std::make_shared<DummyFileInterface>());
+  SCsHelper helper(ctx, std::make_shared<DummyFileInterface>());
   std::string const scsData = "node <- sc_node_class;;";
 
   SC_CHECK(helper.GenerateBySCsText(scsData), ());
@@ -219,4 +219,94 @@ UNIT_TEST(SCsHelper_GenerateBySCs_NotUsedElement)
   ScAddr const node = ctx.HelperFindBySystemIdtf("node");
   SC_CHECK(node.IsValid(), ());
   SC_CHECK_EQUAL(ctx.GetElementType(node), ScType::NodeConstClass, ());
+}
+
+UNIT_TEST(SCsHelper_GenerateBySCs_Visibility)
+{
+  ScMemoryContext ctx(sc_access_lvl_make_max, "SCsHelper_GenerateBySCs_Visibility");
+
+  SUBTEST_START(system_idtf)
+  {
+    SCsHelper helper(ctx, std::make_shared<DummyFileInterface>());
+
+    SC_CHECK(helper.GenerateBySCsText("x -> y;;"), ());
+    SC_CHECK(helper.GenerateBySCsText("x ~> z;;"), ());
+
+    ScAddr const xAddr = ctx.HelperResolveSystemIdtf("x");
+    SC_CHECK(xAddr.IsValid(), ());
+
+    ScAddr const yAddr = ctx.HelperResolveSystemIdtf("y");
+    SC_CHECK(yAddr.IsValid(), ());
+
+    ScAddr const zAddr = ctx.HelperResolveSystemIdtf("z");
+    SC_CHECK(zAddr.IsValid(), ());
+
+    {
+      ScTemplate templ;
+      templ.Triple(xAddr, ScType::EdgeAccessVarPosPerm, yAddr);
+
+      ScTemplateSearchResult res;
+      SC_CHECK(ctx.HelperSearchTemplate(templ, res), ());
+    }
+
+    {
+      ScTemplate templ;
+      templ.Triple(xAddr, ScType::EdgeAccessVarPosTemp, zAddr);
+
+      ScTemplateSearchResult res;
+      SC_CHECK(ctx.HelperSearchTemplate(templ, res), ());
+    }
+  }
+  SUBTEST_END()
+
+  SUBTEST_START(global)
+  {
+    SCsHelper helper(ctx, std::make_shared<DummyFileInterface>());
+
+    {
+      ScAddr const xAddr = ctx.HelperResolveSystemIdtf("x_global");
+      SC_CHECK_NOT(xAddr.IsValid(), ());
+    }
+
+    SC_CHECK(helper.GenerateBySCsText("x_global -> .y;;"), ());
+    SC_CHECK(helper.GenerateBySCsText("x_global -> .y;;"), ());
+
+    ScAddr const xAddr = ctx.HelperResolveSystemIdtf("x_global");
+    SC_CHECK(xAddr.IsValid(), ());
+
+    ScTemplate templ;
+    templ.Triple(xAddr, ScType::EdgeAccessVarPosPerm >> "_edge", ScType::Unknown >> "_trg");
+
+    ScTemplateSearchResult res;
+    SC_CHECK(ctx.HelperSearchTemplate(templ, res), ());
+    SC_CHECK_EQUAL(res.Size(), 2, ());
+    SC_CHECK_EQUAL(res[0]["_trg"], res[1]["_trg"], ());
+    SC_CHECK_NOT_EQUAL(res[0]["_edge"], res[1]["_edge"], ());
+  }
+  SUBTEST_END()
+
+  SUBTEST_START(local)
+  {
+    SCsHelper helper(ctx, std::make_shared<DummyFileInterface>());
+
+    {
+      ScAddr const xAddr = ctx.HelperResolveSystemIdtf("x_local");
+      SC_CHECK_NOT(xAddr.IsValid(), ());
+    }
+
+    SC_CHECK(helper.GenerateBySCsText("x_local -> ..y;;"), ());
+    SC_CHECK(helper.GenerateBySCsText("x_local -> ..z;;"), ());
+
+    ScAddr const xAddr = ctx.HelperResolveSystemIdtf("x_local");
+    SC_CHECK(xAddr.IsValid(), ());
+
+    ScTemplate templ;
+    templ.Triple(xAddr, ScType::EdgeAccessVarPosPerm, ScType::Unknown >> "_trg");
+
+    ScTemplateSearchResult res;
+    SC_CHECK(ctx.HelperSearchTemplate(templ, res), ());
+    SC_CHECK_EQUAL(res.Size(), 2, ());
+    SC_CHECK_NOT_EQUAL(res[0]["_trg"], res[1]["_trg"], ());
+  }
+  SUBTEST_END()
 }
