@@ -42,7 +42,8 @@ public:
   class Output final
   {
   public:
-    Output()
+    Output(bool isNewLine = false)
+      : m_isNewLine(isNewLine)
     {
       ScConsole::ResetColor();
     }
@@ -50,6 +51,9 @@ public:
     ~Output()
     {
       ScConsole::ResetColor();
+      if (m_isNewLine)
+        std::cout << std::endl;
+
       std::cout << std::flush;
     }
 
@@ -58,6 +62,8 @@ public:
       std::cout << v;
       return *this;
     }
+  private:
+    bool m_isNewLine = false;
   };
 
 public:
@@ -131,6 +137,7 @@ public:
   _SC_EXTERN static void SetTitle(std::string const & title);
 
   _SC_EXTERN static Output Print();
+  _SC_EXTERN static Output PrintLine();
   _SC_EXTERN static void Endl();
 
   struct CursorHideGuard final

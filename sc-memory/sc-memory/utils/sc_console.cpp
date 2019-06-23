@@ -486,6 +486,11 @@ ScConsole::Output ScConsole::Print()
   return Output();
 }
 
+ScConsole::Output ScConsole::PrintLine()
+{
+  return Output(true);
+}
+
 void ScConsole::Endl()
 {
   std::cout << std::endl;
