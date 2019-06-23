@@ -165,7 +165,7 @@ public:
   bp::object Get(size_t idx) const
   {
     PyTemplateSearchResultItem result;
-    if (m_result->GetResultItemSave(idx, result.GetItemRef()))
+    if (m_result->GetResultItemSafe(idx, result.GetItemRef()))
       return bp::object(result);
 
     return bp::object();

@@ -503,7 +503,7 @@ public:
     return Size() == 0;
   }
 
-  inline bool GetResultItemSave(size_t idx, ScTemplateSearchResultItem & outItem) const
+  inline bool GetResultItemSafe(size_t idx, ScTemplateSearchResultItem & outItem) const
   {
     if (idx < m_results.size())
     {
