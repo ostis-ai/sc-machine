@@ -968,18 +968,22 @@ sc_result sc_storage_set_link_content(sc_memory_context *ctx, sc_addr addr, cons
 
       result = sc_fs_storage_write_content(addr, &check_sum, stream);
       memcpy(el->content.data, check_sum.data, check_sum.len);
-    } else
+    }
+    else
     {
       G_STATIC_ASSERT(SC_CHECKSUM_LEN < 256);
       el->flags.type |= sc_flag_link_self_container;
 
-      char buff[SC_CHECKSUM_LEN];
-      sc_uint32 read = 0;
-      STORAGE_CHECK_CALL(sc_stream_read_data(stream, &buff[0], len, &read));
-      g_assert(read == len);
+      if (len > 0)
+      {
+        char buff[SC_CHECKSUM_LEN];
+        sc_uint32 read = 0;
+        STORAGE_CHECK_CALL(sc_stream_read_data(stream, &buff[0], len, &read));
+        g_assert(read == len);
 
-      el->content.data[0] = (sc_uint8)len;
-      memcpy(&el->content.data[1], &buff[0], len);
+        el->content.data[0] = (sc_uint8)len;
+        memcpy(&el->content.data[1], &buff[0], len);
+      }
       result = SC_RESULT_OK;
 
       sc_check_sum sum;
