@@ -128,7 +128,7 @@ UNIT_TEST(templates_common)
     ScTemplateGenResult result;
     SC_CHECK(ctx.HelperGenTemplate(templ, result), ());
 
-    ScIterator5Ptr it5 = ctx.Iterator5(addr1, sc_type_arc_pos_const_perm, sc_type_node, sc_type_arc_pos_const_perm, sc_type_node);
+    ScIterator5Ptr it5 = ctx.Iterator5(addr1, ScType::EdgeAccessConstPosPerm, ScType::Node, ScType::EdgeAccessConstPosPerm, ScType::Node);
     SC_CHECK(it5->Next(), ());
     SC_CHECK_EQUAL(it5->Get(0), result["addr1"], ());
     SC_CHECK_EQUAL(it5->Get(1), result["edge1"], ());
@@ -136,7 +136,7 @@ UNIT_TEST(templates_common)
     SC_CHECK_EQUAL(it5->Get(3), result["_addr2T2"], ());
     SC_CHECK_EQUAL(it5->Get(4), result["_addr1T2"], ());
 
-    ScIterator3Ptr it3 = ctx.Iterator3(result["addr2"], sc_type_arc_common, sc_type_arc_pos_const_perm);
+    ScIterator3Ptr it3 = ctx.Iterator3(result["addr2"], ScType::EdgeDCommon, ScType::EdgeAccessConstPosPerm);
     SC_CHECK(it3->Next(), ());
     SC_CHECK_EQUAL(it3->Get(0), result["addr2"], ());
     SC_CHECK_EQUAL(it3->Get(1), result["_addr2T3"], ());
@@ -1902,4 +1902,32 @@ UNIT_TEST(template_issue_295)
 
   SC_CHECK_EQUAL(ctx.GetElementType(item["device_switch_multilevel"]), ScType::NodeConstClass, ());
   SC_CHECK_EQUAL(ctx.GetElementType(item["nrel_value"]), ScType::NodeConstNoRole, ());
+}
+
+UNIT_TEST(template_a_a_a_a_f)
+{
+  ScMemoryContext ctx(sc_access_lvl_make_min, "template_a_a_a_a_f");
+
+  SCsHelper scs(ctx, std::make_shared<DummyFileInterface>());
+  SC_CHECK(scs.GenerateBySCsText("x => nrel: [];;"), ());
+
+  ScAddr const nrelAddr = ctx.HelperResolveSystemIdtf("nrel");
+  SC_CHECK(nrelAddr.IsValid(), ());
+
+  ScAddr const xAddr = ctx.HelperResolveSystemIdtf("x");
+  SC_CHECK(xAddr.IsValid(), ());
+
+  ScTemplate templ;
+  templ.TripleWithRelation(
+    ScType::Unknown >> "_x",
+    ScType::EdgeDCommonVar,
+    ScType::Link,
+    ScType::EdgeAccessVarPosPerm,
+    nrelAddr);
+
+  ScTemplateSearchResult res;
+  SC_CHECK(ctx.HelperSearchTemplate(templ, res), ());
+
+  SC_CHECK_EQUAL(res.Size(), 1, ());
+  SC_CHECK_EQUAL(res[0]["_x"], xAddr, ());
 }

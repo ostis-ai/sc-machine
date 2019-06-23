@@ -316,7 +316,7 @@ public:
   /*  If forceOrder flag is true, then search will be run in the same order,
    * that was used for a triples append
    */
-  _SC_EXTERN explicit ScTemplate(bool forceOrder = true);
+  _SC_EXTERN explicit ScTemplate(bool forceOrder = false);
 
   _SC_EXTERN ScTemplate & operator() (ScTemplateItemValue const & param1, ScTemplateItemValue const & param2, ScTemplateItemValue const & param3, TripleFlag isRequired = TripleFlag::Required);
 

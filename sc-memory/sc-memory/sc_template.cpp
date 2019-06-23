@@ -31,7 +31,7 @@ ScTemplateItemValue operator >> (ScType const & value, std::string const & replN
 
 // --------------------------------
 
-ScTemplate::ScTemplate(bool forceOrder /* = true */)
+ScTemplate::ScTemplate(bool forceOrder /* = false */)
   : m_currentReplPos(0)
   , m_isForceOrder(forceOrder)
   , m_isSearchCacheValid(false)
