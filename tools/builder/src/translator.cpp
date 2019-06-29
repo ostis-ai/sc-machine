@@ -7,6 +7,7 @@
 #include "translator.hpp"
 
 #include "sc-memory/sc_memory.hpp"
+#include "sc-memory/sc_link.hpp"
 
 ScAddr Translator::ms_kNrelFormat;
 
@@ -52,3 +53,34 @@ void Translator::GetFileContent(std::string const & fileName, std::string & outC
   outContent.assign((std::istreambuf_iterator<char>(ifs)), std::istreambuf_iterator<char>());
   ifs.close();
 }
+
+void Translator::Clean(ScMemoryContext & ctx)
+{
+  // remove global identifers 
+  ScAddr const nrelSCsGlobalIdtf = ctx.HelperResolveSystemIdtf("nrel_scs_global_idtf");
+  if (!nrelSCsGlobalIdtf.IsValid())
+  {
+    ScConsole::PrintLine() << ScConsole::Color::Red << "Can't resolve keynode 'nrel_scs_global_idtf'";
+    return;
+  }
+
+  ScTemplate templ;
+  templ.TripleWithRelation(
+    ScType::Unknown,
+    ScType::EdgeDCommonVar,
+    ScType::Link >> "_link",
+    ScType::EdgeAccessVarPosPerm,
+    nrelSCsGlobalIdtf);
+
+  ScTemplateSearchResult res;
+  if (ctx.HelperSearchTemplate(templ, res))
+  {
+    res.ForEach([&ctx](ScTemplateSearchResultItem const & item)
+    {
+      ctx.EraseElement(item["_link"]);
+    });
+  }
+}
+
+
+

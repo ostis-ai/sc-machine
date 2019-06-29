@@ -1,12 +1,12 @@
 visibility_sys_idtf <- visibility_first;;
 
 .visibility_global
-    <- visibility_first;
+    <~ visibility_first_global;
     => nrel_idtf:
         [.visibility_global];;
     
 ..visibility_local
-    <- visibility_first;
+    <- visibility_first_local;
     <- visibility_local;
     => nrel_idtf:
         [..visibility_local_first];;

@@ -82,12 +82,11 @@ bool Builder::Run(BuilderParams const & params)
   // check
   if (!boost::filesystem::is_directory(m_params.m_inputPath))
   {
-    ScConsole::Print() << ScConsole::Color::White
+    ScConsole::PrintLine() << ScConsole::Color::White
       << "Directory " << ScConsole::Color::Red 
       << m_params.m_inputPath << ScConsole::Color::White 
       << " doesn't exist";
 
-    ScConsole::Endl();
     return false;
   }
 
@@ -140,7 +139,9 @@ bool Builder::Run(BuilderParams const & params)
     }    
   }
 
-  ScConsole::ResetColor();
+  ScConsole::PrintLine() << ScConsole::Color::Green << "Clean state...";
+  Translator::Clean(*m_ctx);
+
   if (noErrors)
   {    
     // print statistics
@@ -148,11 +149,16 @@ bool Builder::Run(BuilderParams const & params)
 
     auto const allCount = stats.GetAllNum();
 
-    std::cout << std::endl << "Statistics" << std::endl;
-    std::cout << "Nodes: " << stats.m_nodesNum << "(" << ((float)stats.m_nodesNum / (float)allCount) * 100 << "%)" << std::endl;
-    std::cout << "Edges: " << stats.m_edgesNum << "(" << ((float)stats.m_edgesNum / (float)allCount) * 100 << "%)" << std::endl;
-    std::cout << "Links: " << stats.m_linksNum << "(" << ((float)stats.m_linksNum / (float)allCount) * 100 << "%)" << std::endl;
-    std::cout << "Total: " << stats.GetAllNum() << std::endl;
+    auto const printLine = [](std::string const & name, uint32_t num, float percent)
+    {
+      ScConsole::PrintLine() << ScConsole::Color::LightBlue << name << ": " << ScConsole::Color::White << num << "(" << percent << "%)";
+    };
+
+    ScConsole::PrintLine() << ScConsole::Color::White << "Statistics";
+    printLine("Nodes", stats.m_nodesNum, float(stats.m_nodesNum) / float(allCount) * 100);
+    printLine("Edges", stats.m_edgesNum, float(stats.m_edgesNum) / float(allCount) * 100);
+    printLine("Links", stats.m_linksNum, float(stats.m_linksNum) / float(allCount) * 100);
+    ScConsole::PrintLine() << ScConsole::Color::LightBlue << "Total: " << ScConsole::Color::White << stats.GetAllNum();
   }
 
   m_ctx.reset();
@@ -201,7 +207,7 @@ void Builder::CollectFiles(std::string const & path)
     if (!boost::filesystem::is_directory(*it))
     {
       boost::filesystem::path path = *it;
-      std::string const fileName = path.string();
+      std::string const fileName = path.normalize().string();
       std::string ext = utils::StringUtils::GetFileExtension(fileName);
       utils::StringUtils::ToLowerCase(ext);
 

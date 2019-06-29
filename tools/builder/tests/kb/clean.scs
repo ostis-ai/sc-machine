@@ -1,0 +1,6 @@
+clean_x 
+    -> .clean_global_1;
+    -> .clean_global_2;
+    -> .clean_global_3;
+    -> .clean_global_4;
+    -> .clean_global_5;;

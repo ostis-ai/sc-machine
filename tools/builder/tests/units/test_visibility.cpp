@@ -6,13 +6,7 @@ UNIT_TEST_CUSTOM(Builder_Visibility, BuilderTestUnit)
 {
   ScMemoryContext ctx("Builder_Visibility");
 
-  ScAddr const visFirst = ctx.HelperResolveSystemIdtf("visibility_first");
-  SC_CHECK(visFirst.IsValid(), ());
-
-  ScAddr const visSecond = ctx.HelperResolveSystemIdtf("visibility_second");
-  SC_CHECK(visSecond.IsValid(), ());
-
-  ScAddr const nrelIdtf = ctx.HelperResolveSystemIdtf("nrel_idtf");
+  ScAddr const nrelIdtf = ctx.HelperResolveSystemIdtf("nrel_idtf", ScType::NodeConstNoRole);
   SC_CHECK(nrelIdtf.IsValid(), ());
 
   auto const GetIdtf = [&nrelIdtf, &ctx](ScAddr const& addr) -> std::string
@@ -41,6 +35,12 @@ UNIT_TEST_CUSTOM(Builder_Visibility, BuilderTestUnit)
 
   SUBTEST_START(system_idtf)
   {
+    ScAddr const visFirst = ctx.HelperResolveSystemIdtf("visibility_first");
+    SC_CHECK(visFirst.IsValid(), ());
+
+    ScAddr const visSecond = ctx.HelperResolveSystemIdtf("visibility_second");
+    SC_CHECK(visSecond.IsValid(), ());
+
     ScAddr const element = ctx.HelperResolveSystemIdtf("visibility_sys_idtf");
     SC_CHECK(element.IsValid(), ());
 
@@ -63,16 +63,22 @@ UNIT_TEST_CUSTOM(Builder_Visibility, BuilderTestUnit)
 
   SUBTEST_START(global)
   {
+    ScAddr const visFirst = ctx.HelperResolveSystemIdtf("visibility_first_global");
+    SC_CHECK(visFirst.IsValid(), ());
+
+    ScAddr const visSecond = ctx.HelperResolveSystemIdtf("visibility_second_global");
+    SC_CHECK(visSecond.IsValid(), ());
+
     ScTemplate templ;
 
     templ.Triple(
       visFirst,
-      ScType::EdgeAccessVarPosPerm,
+      ScType::EdgeAccessVarPosTemp,
       ScType::Node >> ".visibility_global");
 
     templ.Triple(
       visSecond,
-      ScType::EdgeAccessVarPosPerm,
+      ScType::EdgeAccessVarPosTemp,
       ".visibility_global");
 
     ScTemplateSearchResult result;
@@ -88,6 +94,12 @@ UNIT_TEST_CUSTOM(Builder_Visibility, BuilderTestUnit)
 
   SUBTEST_START(local)
   {
+    ScAddr const visFirst = ctx.HelperResolveSystemIdtf("visibility_first_local");
+    SC_CHECK(visFirst.IsValid(), ());
+
+    ScAddr const visSecond = ctx.HelperResolveSystemIdtf("visibility_second_local");
+    SC_CHECK(visSecond.IsValid(), ());
+
     ScAddr const visLocal = ctx.HelperResolveSystemIdtf("visibility_local");
     SC_CHECK(visLocal.IsValid(), ());
 

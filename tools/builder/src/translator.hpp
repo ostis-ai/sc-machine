@@ -40,6 +40,8 @@ public:
   //! Implementation of translate
   virtual bool TranslateImpl(Params const & params) = 0;
 
+  static void Clean(ScMemoryContext & ctx);
+
 protected:
   /*! Generates format relation in sc-memory by file extension
    * @param addr sc-addr of sc-link to create format relation
