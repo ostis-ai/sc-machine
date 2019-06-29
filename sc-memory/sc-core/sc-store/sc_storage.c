@@ -472,7 +472,9 @@ sc_result sc_storage_element_free(sc_memory_context *ctx, sc_addr addr)
       sc_check_sum sum;
 
       if (el->flags.type & sc_flag_link_self_container)
+      {
         sc_link_self_container_calculate_checksum(el, &sum);
+      }
       else
       {
         memcpy(&sum.data[0], el->content.data, SC_CHECKSUM_LEN);

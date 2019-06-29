@@ -8,8 +8,9 @@
 
 #include "../sc_object.hpp"
 #include "../sc_memory.hpp"
-#include "../utils/sc_log.hpp"
 #include "../sc_keynodes.hpp"
+
+#include "../utils/sc_log.hpp"
 
 #include "../generated/sc_agent.generated.hpp"
 
