@@ -32,6 +32,5 @@ add_dependencies(sc-kpm
     sc-python
     sc-ui
     sc-search
-    sc-task
     sc-merge
     sc-utils)

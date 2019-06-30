@@ -22,16 +22,10 @@
 
 gchar *repo_path = 0;
 gchar segments_path[MAX_PATH_LENGTH]; // Path to file, where stored segments in correct state
-sc_fm_engine *fm_engine = 0;
 #define SC_DIR_PERMISSIONS -1
 
 const gchar *seg_meta = "_meta";
 const gchar *addr_key_group = "addrs";
-
-GModule *fm_engine_module = 0;
-gchar fm_engine_module_path[MAX_PATH_LENGTH + 1];
-typedef sc_fm_engine* (*fFmEngineInitFunc)();
-typedef sc_result (*fFmEngineShutdownFunc)();
 
 // ----------------------------------------------
 void _get_segment_path(const gchar *path_dir,
@@ -81,7 +75,7 @@ guint8 * _checksum_seg(sc_segment const * seg)
   return result;
 }
 
-void _remove_dir(gchar const * path)
+void _sc_fm_remove_dir(const char *path)
 {
   char tmp_path[MAX_PATH_LENGTH];
   gchar const * fname = 0;
@@ -106,7 +100,7 @@ void _remove_dir(gchar const * path)
     }
     else if (g_file_test(tmp_path, G_FILE_TEST_IS_DIR) == TRUE)
     {
-      _remove_dir(tmp_path);
+      _sc_fm_remove_dir(tmp_path);
     }
 
     fname = g_dir_read_name(dir);
@@ -117,57 +111,26 @@ void _remove_dir(gchar const * path)
 }
 
 // ----------------------------------------------
+sc_bool _sc_fs_mkdirs(const char *path)
+{
+#if SC_PLATFORM_LINUX || SC_PLATFORM_MAC
+  int const mode = 0755;
+#else
+  int const mode = 0;
+#endif
+  if (g_mkdir_with_parents(repo_path, mode) == -1)
+    return SC_FALSE;
+
+  return SC_TRUE;
+}
 
 sc_bool sc_fs_storage_initialize(const gchar *path, sc_bool clear)
 {
   g_message("Initialize sc-storage from path: %s", path);
   g_snprintf(segments_path, MAX_PATH_LENGTH, "%s/segments.scdb", path);
   repo_path = g_strdup(path);
-
-  g_message("\tFile memory engine: %s", sc_config_fm_engine());
-
-  // load engine extension
-#if SC_IS_PLATFORM_WIN32
-  g_snprintf(fm_engine_module_path, MAX_PATH_LENGTH, "sc-fm-%s.dll", sc_config_fm_engine());
-#elif SC_IS_PLATFORM_MAC
-  g_snprintf(fm_engine_module_path, MAX_PATH_LENGTH, "libsc-fm-%s.dylib", sc_config_fm_engine());
-#else
-  g_snprintf(fm_engine_module_path, MAX_PATH_LENGTH, "%s/libsc-fm-%s.so", g_get_current_dir(), sc_config_fm_engine());
-#endif
-
-  // try to load engine extension
-  fFmEngineInitFunc func;
-  fm_engine_module = g_module_open(fm_engine_module_path, G_MODULE_BIND_LOCAL);
-
-  // skip non module files
-#if SC_IS_PLATFORM_MAC
-  if (g_str_has_suffix(fm_engine_module_path, "dylib") == TRUE)
-#else
-  if (g_str_has_suffix(fm_engine_module_path, G_MODULE_SUFFIX) == TRUE)
-#endif
-  {
-    if (fm_engine_module == null_ptr)
-    {
-      g_critical("Can't load module: %s. Error: %s", fm_engine_module_path, g_module_error());
-    }
-    else
-    {
-      g_message("Initialize file memory engine from: %s", fm_engine_module_path);
-      if (g_module_symbol(fm_engine_module, "initialize", (gpointer*) &func) == FALSE)
-      {
-        g_critical("Can't find 'initialize' symbol in module: %s", fm_engine_module_path);
-      }
-      else
-      {
-        fm_engine = func(repo_path);
-        if (fm_engine == 0)
-        {
-          g_critical("Can't create file memory engine from: %s", fm_engine_module_path);
-          return SC_FALSE;
-        }
-      }
-    }
-  }
+  
+  sc_fm_init(repo_path);
 
   // clear repository if needs
   if (clear == SC_TRUE)
@@ -177,7 +140,7 @@ sc_bool sc_fs_storage_initialize(const gchar *path, sc_bool clear)
       g_error("Can't delete segments file: %s", segments_path);
 
     g_message("Clear file memory");
-    if (sc_fm_clear(fm_engine) != SC_RESULT_OK)
+    if (sc_fm_clear() != SC_RESULT_OK)
     {
       g_critical("Can't clear file memory");
       return SC_FALSE;
@@ -198,26 +161,7 @@ sc_bool sc_fs_storage_shutdown(sc_segment **segments, sc_bool save_segments)
   }
 
   sc_bool res = SC_FALSE;
-  sc_fm_free(fm_engine);
-
-  fFmEngineShutdownFunc func;
-  g_message("Shutting down file memory engine: %s", fm_engine_module_path);
-  if (g_module_symbol(fm_engine_module, "shutdown", (gpointer*) &func) == FALSE)
-  {
-    g_critical("Can't find 'shutdown' symbol in module: %s", fm_engine_module_path);
-  }else
-  {
-    if (func() != SC_RESULT_OK)
-      g_critical("Can't shutdown file memory properly: %s", fm_engine_module_path);
-    else
-      res = SC_TRUE;
-  }
-
-  if (g_module_close(fm_engine_module) != TRUE)
-    g_critical("Error while close module: %s", fm_engine_module_path);
-
-  fm_engine = 0;
-  fm_engine_module = 0;
+  sc_fm_free();
 
   g_free(repo_path);
 
@@ -338,9 +282,8 @@ sc_bool sc_fs_storage_read_from_path(sc_segment **segments, sc_uint32 *segments_
 
   g_message("Segments loaded: %u", *segments_num);
 
-  g_assert(fm_engine != null_ptr);
   g_message("Check file memory state");
-  sc_bool r = sc_fm_clean_state(fm_engine) == SC_RESULT_OK;
+  sc_bool r = sc_fm_clean_state() == SC_RESULT_OK;
 
   if (r == SC_FALSE)
     g_error("File memory wasn't check properly");
@@ -372,12 +315,7 @@ sc_bool sc_fs_storage_write_to_path(sc_segment **segments)
 
   if (!g_file_test(repo_path, G_FILE_TEST_IS_DIR))
   {
-#if SC_PLATFORM_LINUX || SC_PLATFORM_MAC
-    int const mode = 0755;
-#else
-    int const mode = 0;
-#endif
-    if (g_mkdir_with_parents(repo_path, mode) == -1)
+    if (!_sc_fs_mkdirs(repo_path))
     {
       g_error("Can't create a directory %s", repo_path);
       return SC_FALSE;
@@ -456,7 +394,7 @@ sc_bool sc_fs_storage_write_to_path(sc_segment **segments)
 
     // save file memory
     g_message("Save file memory state");
-    if (sc_fm_save(fm_engine) != SC_RESULT_OK)
+    if (sc_fm_save() != SC_RESULT_OK)
       g_critical("Error while saves file memory");
   }
 
@@ -476,42 +414,10 @@ clean:
 
 sc_result sc_fs_storage_write_content(sc_addr addr, const sc_check_sum *check_sum, const sc_stream *stream)
 {
-  // write content into file
-  sc_char buffer[BuffSize];
-  sc_uint32 data_read, data_write;
-  sc_stream *out_stream = 0;
-
-  if (sc_fm_stream_new(fm_engine, check_sum, SC_STREAM_FLAG_WRITE, &out_stream) == SC_RESULT_OK)
+  if (sc_fm_write_stream(check_sum, stream) == SC_RESULT_OK)
   {
-    g_assert(out_stream != null_ptr);
-    // reset input stream positon to begin
+    // seek input stream to start position
     sc_stream_seek(stream, SC_STREAM_SEEK_SET, 0);
-
-    while (sc_stream_eof(stream) == SC_FALSE)
-    {
-      if (sc_stream_read_data(stream, buffer, BuffSize, &data_read) == SC_RESULT_ERROR)
-      {
-        sc_stream_free(out_stream);
-        return SC_RESULT_ERROR;
-      }
-
-      if (sc_stream_write_data(out_stream, buffer, data_read, &data_write) == SC_RESULT_ERROR)
-      {
-        sc_stream_free(out_stream);
-        return SC_RESULT_ERROR;
-      }
-
-      if (data_read != data_write)
-      {
-        sc_stream_free(out_stream);
-        return SC_RESULT_ERROR;
-      }
-    }
-    sc_stream_free(out_stream);
-
-    // reset input stream positon to begin
-    sc_stream_seek(stream, SC_STREAM_SEEK_SET, 0);
-
     return sc_fs_storage_add_content_addr(addr, check_sum);
   }
 
@@ -520,26 +426,24 @@ sc_result sc_fs_storage_write_content(sc_addr addr, const sc_check_sum *check_su
 
 sc_result sc_fs_storage_add_content_addr(sc_addr addr, const sc_check_sum *check_sum)
 {
-  g_assert(fm_engine != null_ptr);
-  return sc_fm_addr_ref_append(fm_engine, addr, check_sum);
+  return sc_fm_addr_ref_append(addr, check_sum);
 }
 
 sc_result sc_fs_storage_remove_content_addr(sc_addr addr, const sc_check_sum *check_sum)
 {
-  g_assert(fm_engine != null_ptr);
-  return sc_fm_addr_ref_remove(fm_engine, addr, check_sum);
+  return sc_fm_addr_ref_remove(addr, check_sum);
 }
 
 sc_result sc_fs_storage_find_links_with_content(const sc_check_sum *check_sum, sc_addr **result, sc_uint32 *result_count)
 {
-  g_assert(fm_engine != null_ptr);
-  return sc_fm_find(fm_engine, check_sum, result, result_count);
+  return sc_fm_find(check_sum, result, result_count);
 }
 
 sc_result sc_fs_storage_get_checksum_content(const sc_check_sum *check_sum, sc_stream **stream)
 {
-  g_assert(fm_engine != null_ptr);
-  return sc_fm_stream_new(fm_engine, check_sum, SC_STREAM_FLAG_READ, stream);
+  *stream = sc_fm_read_stream_new(check_sum);
+
+  return stream ? SC_RESULT_OK : SC_RESULT_ERROR_IO;
 }
 
 

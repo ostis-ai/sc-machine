@@ -78,8 +78,6 @@ if (${APPLE})
 
     set (GLIB2_LIBRARIES ${GLIB_LDFLAGS} ${GLIB2_MODULE_LDFLAGS})
 
-    find_package(Hiredis REQUIRED)
-
     set (LIBCLANG_LLVM_CONFIG_EXECUTABLE "/usr/local/opt/llvm/bin/llvm-config")
     find_package(LibClang REQUIRED)
 
@@ -100,6 +98,10 @@ elseif (${UNIX})
     set(PY_SHORT_VERSION "${PY_VERSION_MAJOR}${PY_VERSION_MINOR}")
 
     find_package(Boost 1.54 REQUIRED COMPONENTS filesystem python-py${PY_SHORT_VERSION})
+    find_package(RocksDB REQUIRED)
+
+    message(${RocksDB_INCLUDE_DIR})
+    message(${RocksDB_LIBRARIES})
 
     include(FindPkgConfig)
     pkg_check_modules (GLIB2 REQUIRED glib-2.0)
@@ -107,8 +109,6 @@ elseif (${UNIX})
 
     set (GLIB2_INCLUDE_DIRS "${GLIB2_INCLUDE_DIRS}" "/usr/lib/x86_64-linux-gnu/glib-2.0/include/" "${GLIB2_MODULE}")
     set (GLIB2_LIBRARIES "${GLIB2_LIBRARIES}" "${GLIB2_MODULE_LIBRARIES}")
-
-    find_package(Hiredis REQUIRED)
 
     if (NOT DEFINED LIBCLANG_LIBRARIES OR NOT DEFINED LIBCLANG_CXXFLAGS OR NOT DEFINED LIBCLANG_LIBDIR)
         find_package(LibClang REQUIRED)
@@ -144,15 +144,14 @@ elseif (${WIN32})
     execute_process(COMMAND "${SC_MACHINE_THIRDPARTY_PATH}/nuget.exe" install ${CMAKE_BINARY_DIR}/packages.config WORKING_DIRECTORY ${PACKAGES_PATH})
 
     set (GLIB_PATH "${PACKAGES_PATH}/glib.2.36.2.11/build/native")
-    set (REDIS_PATH "${SC_MACHINE_THIRDPARTY_PATH}/libhiredis/")
     set (BOOST_PATH "${PACKAGES_PATH}/boost.${BOOST_VERSION}/lib/native")
+    set (ROCKSDB_PATH "${SC_MACHINE_THIRDPARTY_PATH}/rocksdb")
 
     set (LIBCLANG_INCLUDE_DIRS "${SC_MACHINE_THIRDPARTY_PATH}/clang/include")
     set (LIBCLANG_LIBRARY "libclang")
 
     set (GLIB2_INCLUDE_DIRS "${GLIB_PATH}/include"
                             "${GLIB_PATH}/include/glib")
-    set (REDIS_INCLUDE_DIRS "${REDIS_PATH}")
 
     set (LIBCURL_PATH "${SC_MACHINE_THIRDPARTY_PATH}/curl")
     set (LIBCURL_RUNTIME_PATH "${LIBCURL_PATH}/bin")
@@ -163,17 +162,15 @@ elseif (${WIN32})
     set (BOOST_PYTHON_LIBRARY_RELEASE "${BOOST_PYTHON_BIN_PATH}/boost_python3-${MSVC_SUFFIX}-mt-1_64.lib")
     set (BOOST_PYTHON_LIBRARY_DEBUG "${BOOST_PYTHON_BIN_PATH}/boost_python3-${MSVC_SUFFIX}-mt-gd-1_64.lib")
 
+    set (RocksDB_INCLUDE_DIR "${ROCKSDB_PATH}/include")
+    set (RocksDB_LIBRARIES "${ROCKSDB_PATH}/rocksdb-shared.lib")
 
-
-    include_directories("${SC_MACHINE_ANTRL_DIR}/c"
-                        "${BOOST_PATH}/include"
+    include_directories("${BOOST_PATH}/include"
                         "${LIBCURL_INCLUDE_DIRS}")
 
     link_directories(
                      "${SC_MACHINE_THIRDPARTY_PATH}/clang/lib"
                      "${GLIB_PATH}/lib/v110/x64/Release/dynamic/"
-                     "${REDIS_PATH}"
-                     "${SC_MACHINE_ANTRL_DIR}"
                      "${PACKAGES_PATH}/boost_filesystem-${MSVC_SUFFIX}.${BOOST_VERSION}/lib/native/address-model-64/lib/"
                      "${PACKAGES_PATH}/boost_system-${MSVC_SUFFIX}.${BOOST_VERSION}/lib/native/address-model-64/lib/"
                      "${PACKAGES_PATH}/boost_program_options-${MSVC_SUFFIX}.${BOOST_VERSION}/lib/native/address-model-64/lib/"
@@ -181,13 +178,8 @@ elseif (${WIN32})
                      )
 
     set (GLIB2_LIBRARIES "gio-2.0.lib" "glib-2.0.lib" "gmodule-2.0.lib" "gobject-2.0.lib" "gthread-2.0.lib")
-    if (${MSVC_VERSION} EQUAL 1800)
-        set (REDIS_LIBRARIES "hiredis.vc120.lib" "WSock32.lib" "Ws2_32.lib")
-    elseif (${MSVC_VERSION} GREATER_EQUAL 1900)
-        set (REDIS_LIBRARIES "hiredis.vc140.lib" "Win32_Interop.vc140.lib" "WSock32.lib" "Ws2_32.lib")
-    endif()
 
-    add_definitions(-DSC_PLATFORM_WIN -DHIREDIS_WIN -DBOOST_PYTHON_NO_LIB)
+    add_definitions(-DSC_PLATFORM_WIN -DBOOST_PYTHON_NO_LIB)
 
     # copy runtime libraries
     set (GLIB_RUNTIME_PATH "${PACKAGES_PATH}/glib.redist.2.36.2.11/build/native/bin/v110/x64/Release/dynamic")
@@ -209,6 +201,7 @@ elseif (${WIN32})
             "${LIBCURL_RUNTIME_PATH}/ssleay32.dll"
             "${BOOST_PYTHON_BIN_PATH}/boost_python3-${MSVC_SUFFIX}-mt-1_64.dll"
             "${BOOST_PYTHON_BIN_PATH}/boost_python3-${MSVC_SUFFIX}-mt-gd-1_64.dll"
+            "${ROCKSDB_PATH}/rocksdb-shared.dll"
             )
     file(COPY ${WIN_RUNTIME_LIBRARIES} DESTINATION "${SC_BIN_PATH}")
 
@@ -216,13 +209,9 @@ endif(${APPLE})
 
 message ("Python version: ${PYTHONLIBS_VERSION_STRING}")
 
-# build antlr4 runtime
-add_subdirectory(${SC_MACHINE_THIRDPARTY_PATH}/antlr/runtime)
-
 include_directories(${SC_MACHINE_ROOT} ${GLIB2_INCLUDE_DIRS} ${Boost_INCLUDE_DIR})
 
 add_subdirectory(${SC_MACHINE_ROOT}/sc-memory)
-add_subdirectory(${SC_MACHINE_ROOT}/sc-fm)
 add_subdirectory(${SC_MACHINE_ROOT}/sc-kpm)
 add_subdirectory(${SC_MACHINE_ROOT}/sc-server)
 add_subdirectory(${SC_MACHINE_ROOT}/tools)
@@ -230,5 +219,7 @@ add_subdirectory(${SC_MACHINE_ROOT}/tools)
 if (${SC_BUILD_SCTP})
     add_subdirectory(${SC_MACHINE_ROOT}/sc-network)
 endif()
+
+add_subdirectory(thirdparty)
 
 

@@ -22,6 +22,9 @@ typedef struct _sc_fs_storage_segments_header
 
 } sc_fs_storage_segments_header;
 
+void _sc_fm_remove_dir(const char *path);
+sc_bool _sc_fs_mkdirs(const char *path);
+
 /*! Initialize file system storage in specified path
  * @param path Path to store on file system.
  * @param clear Flag to initialize empty storage

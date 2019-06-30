@@ -20,8 +20,6 @@ struct _sc_memory_buffer
 
 typedef struct _sc_memory_buffer sc_memory_buffer;
 
-
-
 sc_result sc_stream_memory_read(const sc_stream *stream, sc_char *data, sc_uint32 length, sc_uint32 *bytes_read)
 {
   sc_memory_buffer *buffer = (sc_memory_buffer*)stream->handler;

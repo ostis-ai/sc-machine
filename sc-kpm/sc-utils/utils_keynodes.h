@@ -9,14 +9,7 @@
 
 #include "sc-core/sc_memory.h"
 
-extern sc_addr keynode_nrel_idtf;
-extern sc_addr keynode_nrel_main_idtf;
-extern sc_addr keynode_nrel_system_identifier;
-extern sc_addr keynode_system_element;
-
 extern sc_addr keynode_sc_garbage;
-
-sc_result utils_collect_keynodes_initialize();
 
 sc_result utils_keynodes_initialize();
 

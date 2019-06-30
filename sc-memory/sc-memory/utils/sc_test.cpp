@@ -20,7 +20,7 @@ ScTestUnit::ScTestUnit(char const * name, char const * filename, void(*fn)())
   ms_tests.insert(this);
 }
 
-ScTestUnit::~ScTestUnit()
+ScTestUnit::~ScTestUnit() 
 {
   ms_tests.erase(this);
 }

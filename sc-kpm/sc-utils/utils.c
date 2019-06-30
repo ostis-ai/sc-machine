@@ -6,7 +6,6 @@
 
 #include "utils.h"
 #include "utils_keynodes.h"
-#include "utils_collect_identifiers.h"
 #include "utils_garbage_deletion.h"
 
 sc_memory_context * s_default_ctx = 0;
@@ -18,12 +17,6 @@ _SC_EXT_EXTERN sc_result sc_module_initialize()
 {
   s_default_ctx = sc_memory_context_new(sc_access_lvl_make_min);
   s_garbage_ctx = sc_memory_context_new(sc_access_lvl_make_max);
-
-  if (utils_collect_keynodes_initialize() != SC_RESULT_OK)
-    return SC_RESULT_ERROR;
-
-  if (utils_collect_identifiers_initialize() != SC_RESULT_OK)
-    return SC_RESULT_ERROR;
 
   if (utils_keynodes_initialize() != SC_RESULT_OK)
     return SC_RESULT_ERROR;
@@ -43,9 +36,6 @@ _SC_EXT_EXTERN sc_uint32 sc_module_load_priority()
 _SC_EXT_EXTERN sc_result sc_module_shutdown()
 {
   sc_result res = SC_RESULT_OK;
-
-  if (utils_collect_identifiers_shutdown() != SC_RESULT_OK)
-    res = SC_RESULT_ERROR;
 
   if (event_garbage_deletion)
     sc_event_destroy(event_garbage_deletion);
