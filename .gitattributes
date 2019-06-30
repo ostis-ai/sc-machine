@@ -1,0 +1,4 @@
+thirdparty/**/*.dll filter=lfs diff=lfs merge=lfs -text
+thirdparty/**/*.lib filter=lfs diff=lfs merge=lfs -text
+thirdparty/**/*.exe filter=lfs diff=lfs merge=lfs -text
+thirdparty/**/*.jar filter=lfs diff=lfs merge=lfs -text
