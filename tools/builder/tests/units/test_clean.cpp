@@ -14,14 +14,14 @@ UNIT_TEST_CUSTOM(Builder_CheckClean, BuilderTestUnit)
     ScTemplate templ;
 
     templ.TripleWithRelation(
-      nrelSCsIdtf,
+      ScType::Unknown,
       ScType::EdgeDCommonVar,
-      ScType::Link,
+      ScType::Link >> "_link",
       ScType::EdgeAccessVarPosPerm,
       nrelSCsIdtf);
 
     ScTemplateSearchResult res;
-    SC_CHECK(ctx.HelperSearchTemplate(templ, res), ());
+    SC_CHECK(!ctx.HelperSearchTemplate(templ, res), ());
     SC_CHECK_EQUAL(res.Size(), 0, ());
   }
   SUBTEST_END()
