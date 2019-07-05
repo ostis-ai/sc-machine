@@ -72,5 +72,3 @@ else()
 endif (${WIN32})
 
 target_link_libraries(sc-code-generator ${LIBCLANG_LIBRARY} ${BOOST_LIBS_LIST})
-
-install_targets("/bin" sc-code-generator)

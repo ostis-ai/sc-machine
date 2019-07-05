@@ -30,7 +30,7 @@ target_link_libraries(sc-builder sc-core sc-memory ${BOOST_LIBS_LIST})
 
 sc_codegen(sc-builder "${CMAKE_CURRENT_SOURCE_DIR}/src")
 
-add_dependencies(sc-builder sc-kpm)
+add_dependencies(sc-builder sc-code-generator sc-kpm sc-memory)
 
 
 add_subdirectory(tests)
