@@ -107,6 +107,8 @@ void ReflectionParser::Parse()
   {
     try
     {
+      std::cout << *it << std::endl;
+
       // if contains module, then process it later
       if (!ProcessFile(*it))
       {

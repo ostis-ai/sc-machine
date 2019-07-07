@@ -4,13 +4,6 @@ bin
 /site/
 scripts/redis*
 
-tools/builder/src/parser/
-sc-memory/cpp/scs/scsLexer.*
-sc-memory/cpp/scs/scsParser.*
-sc-memory/cpp/scs/*.tokens
-sc-memory/cpp/scs/*.interp
-*.generated.*
-
 !thirdparty/*/bin/
 
 sc-machine.json

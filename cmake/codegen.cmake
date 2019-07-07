@@ -27,7 +27,7 @@ macro(sc_codegen_ex Target SrcPath OutputPath)
         message(FATAL_ERROR "System include directories not implemented for this compiler.")
     endif ()
 
-    include_directories(${OutputPath})
+    target_include_directories(${Target} PUBLIC ${OutputPath})
 
     if (MSVC)
         add_custom_command(
@@ -52,6 +52,7 @@ macro(sc_codegen_ex Target SrcPath OutputPath)
             --output     "${OutputPath}"
             --build_dir  "${CMAKE_CURRENT_BINARY_DIR}"
             --flags      "'${META_FLAGS}'"
+            --debug
             DEPENDS ${HEADER_FILES}
         )
 

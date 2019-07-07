@@ -23,7 +23,7 @@ stages:
 
 env:
   global:
-    - JOBS=4
+    - JOBS=8
 
 jobs:
 
