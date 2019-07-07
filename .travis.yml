@@ -47,7 +47,6 @@ jobs:
             'libboost-system-dev',
             'libboost-filesystem-dev',
             'libboost-program-options-dev',
-            'libboost-regex-dev',
             'libboost-python-dev',
             'python3-dev',
             'python3',

@@ -1,9 +1,8 @@
 #include "MetaDataManager.hpp"
 #include "ReflectionParser.hpp"
 
-#include <boost/regex.hpp>
-
 #include <iostream>
+#include <regex>
 
 MetaDataManager::MetaDataManager(Cursor const & cursor)
 {
@@ -69,38 +68,26 @@ size_t MetaDataManager::GetLineNumber() const
 
 std::string MetaDataManager::GetNativeString(std::string const & key) const
 {
-  auto search = m_properties.find(key);
+  auto const search = m_properties.find(key);
 
   // wasn't set
   if (search == m_properties.end())
     return "";
 
-  static const boost::regex quotedString(
+  static const std::regex quotedString(
         // opening quote
         "(?:\\s*\")"
         // actual string contents
         "([^\"]*)"
         // closing quote
-        "\"",
-        boost::regex::icase
-        );
+        "\"");
 
-  auto &value = search->second;
+    std::smatch match;
 
-  auto flags = boost::match_default | boost::format_all;
-
-  boost::match_results<std::string::const_iterator> match;
-
-  if (boost::regex_search(
-        value.cbegin(),
-        value.cend(),
-        match,
-        quotedString,
-        flags
-        )
-      )
+  if (std::regex_match(search->second, match, quotedString))
   {
-    return match[ 1 ].str();
+    assert(match.size() >= 2);
+    return match[1].str();
   }
 
   // couldn't find one
@@ -111,9 +98,9 @@ std::vector<MetaDataManager::Property> MetaDataManager::ExtractProperties(Cursor
 {
   std::vector<Property> properties;
 
-  static const boost::regex propertyList(
+  static const std::regex propertyList(
         // property name
-        "([a-z\\:]+)"
+        "([a-zA-Z\\:]+)"
         // optional whitespace before
         "(?:\\s*)"
         // constructor
@@ -127,19 +114,15 @@ std::vector<MetaDataManager::Property> MetaDataManager::ExtractProperties(Cursor
         // end constructor
         ")?"
         // optional comma/whitespace
-        "(?:(\\s|,)*)",
-        boost::regex::icase
+        "(?:(\\s|,)*)"
         );
 
-  auto flags = boost::match_default | boost::format_all;
-
-  boost::match_results<std::string::const_iterator> match;
-
-  auto meta = cursor.GetDisplayName();
+  auto const meta = cursor.GetDisplayName();
   auto start = meta.cbegin();
 
   // collect properties and optional arguments
-  while (boost::regex_search(start, meta.cend(), match, propertyList, flags))
+  std::smatch match;
+  while (std::regex_search(start, meta.cend(), match, propertyList))
   {
     auto name = match[1].str();
     auto arguments = match[3].str();

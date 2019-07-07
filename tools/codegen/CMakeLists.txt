@@ -1,52 +1,8 @@
 set (SC_CODEGEN_DIR "${SC_TOOLS_DIR}/codegen")
 
+file(GLOB_RECURSE SOURCES "Parser/*.cpp" "Parser/*.hpp")
 
-set (SOURCES 
-  "Parser/LanguageTypes/Class.cpp"
-  "Parser/LanguageTypes/Constructor.cpp"
-  "Parser/LanguageTypes/Field.cpp"
-  "Parser/LanguageTypes/Global.cpp"
-  "Parser/LanguageTypes/LanguageType.cpp"
-  "Parser/LanguageTypes/Invokable.cpp"
-  "Parser/LanguageTypes/Function.cpp"
-  "Parser/LanguageTypes/Method.cpp"
-
-  "Parser/Main.cpp"
-  "Parser/Cursor.cpp"
-  "Parser/CursorType.cpp"
-  "Parser/MetaUtils.cpp"
-  "Parser/MetaDataManager.cpp"
-  "Parser/ReflectionParser.cpp"
-  "Parser/MacrosManager.cpp"
-  "Parser/Cache.cpp"
-  "Parser/Sha256.cpp"
-)
-
-set (HEADERS
-  "Parser/LanguageTypes/Class.hpp"
-  "Parser/LanguageTypes/Constructor.hpp"
-  "Parser/LanguageTypes/Field.hpp"
-  "Parser/LanguageTypes/Global.hpp"
-  "Parser/LanguageTypes/LanguageType.hpp"
-  "Parser/LanguageTypes/Invokable.hpp"
-  "Parser/LanguageTypes/Function.hpp"
-  "Parser/LanguageTypes/Method.hpp"
-
-  "Parser/MetaDataConfig.hpp"
-  "Parser/Cursor.hpp"
-  "Parser/CursorType.hpp"
-  "Parser/MetaUtils.hpp"
-  "Parser/MetaDataManager.hpp"
-  "Parser/ReflectionOptions.hpp"
-  "Parser/ReflectionParser.hpp"
-  "Parser/ReservedTypes.hpp"
-  "Parser/MacrosManager.hpp"
-  "Parser/Types.hpp"
-  "Parser/Cache.hpp"
-  "Parser/Sha256.hpp"
-)
-
-add_executable(sc-code-generator ${SOURCES} ${HEADERS})
+add_executable(sc-code-generator ${SOURCES})
 include_directories(${SC_CODEGEN_DIR}/Parser)
 
 if (${WIN32})
@@ -57,13 +13,11 @@ else()
     set (BOOST_LIBS_LIST
           Boost::filesystem
           Boost::program_options
-          Boost::regex
         )
   else()
     set (BOOST_LIBS_LIST
           boost_filesystem
           boost_program_options
-          boost_regex
           boost_system
         )
   endif()
