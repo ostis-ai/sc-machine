@@ -7,17 +7,11 @@
 #pragma once
 
 #include "sc-memory/sc_addr.hpp"
-#include "sc-memory/sc_object.hpp"
 
 #include <string>
 
-#include "translator.generated.hpp"
-
-class Translator : public ScObject
+class Translator
 {
-  SC_CLASS()
-  SC_GENERATED_BODY()
-
 public:
 
   struct Params
@@ -54,8 +48,5 @@ protected:
 protected:
   //! Pointer to memory context
   class ScMemoryContext & m_ctx;
-
-  SC_PROPERTY(Keynode("nrel_format"), ForceCreate(ScType::NodeConstNoRole))
-  static ScAddr ms_kNrelFormat;
 };
 

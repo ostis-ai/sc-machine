@@ -5,11 +5,10 @@
  */
 
 #include "translator.hpp"
+#include "keynodes.hpp"
 
 #include "sc-memory/sc_memory.hpp"
 #include "sc-memory/sc_link.hpp"
-
-ScAddr Translator::ms_kNrelFormat;
 
 Translator::Translator(ScMemoryContext & ctx)
   : m_ctx(ctx)
@@ -33,7 +32,7 @@ void Translator::GenerateFormatInfo(ScAddr const & addr, std::string const & ext
     ScType::EdgeDCommonVar,
     formatAddr,
     ScType::EdgeAccessVarPosPerm,
-    ms_kNrelFormat
+    Keynodes::kNrelFormat()
   );
 
   ScTemplateGenResult genResult;

@@ -6,6 +6,8 @@
 
 #pragma once
 
+#include "sc-memory/sc_type.hpp"
+
 #include "translator.hpp"
 
 class GwfTranslator : public Translator

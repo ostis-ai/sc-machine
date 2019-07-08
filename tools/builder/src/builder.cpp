@@ -5,6 +5,7 @@
  */
 
 #include "builder.hpp"
+#include "keynodes.hpp"
 #include "scs_translator.hpp"
 
 #include <boost/filesystem.hpp>
@@ -108,7 +109,7 @@ bool Builder::Run(BuilderParams const & params)
   ScMemory::Initialize(p);
   m_ctx.reset(new ScMemoryContext(sc_access_lvl_make_min, "Builder"));
   
-  Translator::InitGlobal();
+  Keynodes::InitGlobal();
 
   std::cout << "Build knowledge base from sources... " << std::endl;
 

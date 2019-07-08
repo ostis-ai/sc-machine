@@ -52,7 +52,6 @@ macro(sc_codegen_ex Target SrcPath OutputPath)
             --output     "${OutputPath}"
             --build_dir  "${CMAKE_CURRENT_BINARY_DIR}"
             --flags      "'${META_FLAGS}'"
-            --debug
             DEPENDS ${HEADER_FILES}
         )
 
