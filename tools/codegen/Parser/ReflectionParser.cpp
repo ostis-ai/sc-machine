@@ -107,8 +107,6 @@ void ReflectionParser::Parse()
   {
     try
     {
-      std::cout << *it << std::endl;
-
       // if contains module, then process it later
       if (!ProcessFile(*it))
       {
@@ -149,9 +147,9 @@ void ReflectionParser::Clear()
   m_globalFunctions.clear();
 }
 
-bool ReflectionParser::ProcessFile(std::string const & fileName, bool InProcessModule)
+bool ReflectionParser::ProcessFile(std::string const & fileName, bool inProcessModule)
 {
-  if (!InProcessModule && !m_sourceCache->RequestGenerate(fileName))
+  if (!inProcessModule && !m_sourceCache->RequestGenerate(fileName))
     return true;
 
   Clear();
@@ -188,7 +186,7 @@ bool ReflectionParser::ProcessFile(std::string const & fileName, bool InProcessM
     buildClasses(cursor, tempNamespace);
     tempNamespace.clear();
 
-    if (ContainsModule() && !InProcessModule)
+    if (ContainsModule() && !inProcessModule)
     {
       if (m_classes.size() > 1)
       {
