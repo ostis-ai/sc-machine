@@ -119,6 +119,8 @@ idtf_system returns [ElementHandle handle]
     { $ctx->handle = m_parser->ProcessIdentifier($ID_SYSTEM->getText()); }
   | '...'
     { $ctx->handle = m_parser->ProcessIdentifier("..."); }
+  | type=idtf_lvl1_preffix
+    { $ctx->handle = m_parser->ProcessIdentifier($ctx->type->text); }
   ;
 
 
