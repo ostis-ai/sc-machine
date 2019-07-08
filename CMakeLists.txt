@@ -220,6 +220,6 @@ if (${SC_BUILD_SCTP})
     add_subdirectory(${SC_MACHINE_ROOT}/sc-network)
 endif()
 
-add_subdirectory(thirdparty)
+add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/thirdparty)
 
 
