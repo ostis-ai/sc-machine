@@ -7,63 +7,45 @@
 #pragma once
 
 #include "sc_event.hpp"
+#include "sc_timer.hpp"
 
-extern "C"
-{
-#include <glib.h>
-}
+#include <condition_variable>
+#include <chrono>
+#include <mutex>
 
 /* Class implements common wait logic.
  */
 class ScWait
 {
-  class WaiterImpl
+  class Impl
   {
   public:
-    WaiterImpl()
-      : m_isResolved(false)
-    {
-      g_mutex_init(&m_mutex);
-      g_cond_init(&m_cond);
-    }
-
-    ~WaiterImpl()
-    {
-      g_mutex_clear(&m_mutex);
-      g_cond_clear(&m_cond);
-    }
+    Impl() = default;
+    virtual ~Impl() = default;
 
     void Resolve()
     {
-      g_mutex_lock(&m_mutex);
+      std::unique_lock<std::mutex> lock(m_mutex);
       m_isResolved = true;
-      g_cond_signal(&m_cond);
-      g_mutex_unlock(&m_mutex);
+      m_cond.notify_one();
     }
 
     bool Wait(uint32_t timeout_ms)
     {
-      gint64 endTime;
-
-      g_mutex_lock(&m_mutex);
-      endTime = g_get_monotonic_time() + timeout_ms * G_TIME_SPAN_MILLISECOND;
+      std::unique_lock<std::mutex> lock(m_mutex);
       while (!m_isResolved)
       {
-        if (!g_cond_wait_until(&m_cond, &m_mutex, endTime))
-        {
-          g_mutex_unlock(&m_mutex);
+        if (m_cond.wait_for(lock, std::chrono::milliseconds(timeout_ms)) == std::cv_status::timeout)
           return false;
-        }
       }
-      g_mutex_unlock(&m_mutex);
 
       return true;
     }
 
   private:
-    GMutex m_mutex;
-    GCond m_cond;
-    bool m_isResolved : 1;
+    std::mutex m_mutex;
+    std::condition_variable m_cond;
+    bool m_isResolved = false;
   };
 
 public:
@@ -73,7 +55,7 @@ public:
 
   void Resolve()
   {
-    m_waiterImpl.Resolve();
+    m_impl.Resolve();
   }
 
   void SetOnWaitStartDelegate(DelegateFunc const & startDelegate)
@@ -88,11 +70,11 @@ public:
 
     SC_ASSERT(timeout_ms < 60000, ("Too big timeout (it should be less then a minute)"));
 
-    return m_waiterImpl.Wait(timeout_ms);
+    return m_impl.Wait(timeout_ms);
   }
 
 private:
-  WaiterImpl m_waiterImpl;
+  Impl m_impl;
   DelegateFunc m_waitStartDelegate;
 };
 
