@@ -31,24 +31,26 @@ jobs:
   include:
 
     - &linux-test
-      name: Tests / Linux / gcc6 / Debug
+      name: Tests / Linux / gcc7 / Debug
       stage: test
       os: linux
       language: cpp
-      compiler: "gcc-6-debug"
+      compiler: "gcc-7-debug"
       addons: &gcc6
         apt:
           sources: ['ubuntu-toolchain-r-test']
           packages: [
             'python3-pip', 
-            'g++-6',
+            'g++-7',
             'librocksdb-dev',
             'libglib2.0-dev',
             'libboost-system-dev',
             'libboost-filesystem-dev',
             'libboost-program-options-dev',
             'libboost-python-dev',
+            'python3-setuptools',
             'python3-dev',
+            'python3-pip',
             'python3',
             'make',
             'cmake',
@@ -57,13 +59,13 @@ jobs:
             'libcurl4-openssl-dev',
             'libclang-dev'
             ]
-      env: CCOMPILER='gcc-6' CXXCOMPILER='g++-6' BUILD_TYPE='Debug'
+      env: CCOMPILER='gcc-7' CXXCOMPILER='g++-7' BUILD_TYPE='Debug'
 
       install: scripts/travis/install-tests.sh
       script: scripts/travis/run-tests.sh
 
     - <<: *linux-test
-      name: Tests / Linux / gcc6 / Release
-      compiler: "gcc-6-release"
-      env: CCOMPILER='gcc-6' CXXCOMPILER='g++-6' BUILD_TYPE='Release'
+      name: Tests / Linux / gcc7 / Release
+      compiler: "gcc-7-release"
+      env: CCOMPILER='gcc-7' CXXCOMPILER='g++-7' BUILD_TYPE='Release'
     

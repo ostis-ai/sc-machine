@@ -10,7 +10,7 @@
 #include "merge.h"
 
 #include "sc-core/sc_helper.h"
-#include "sc-core/sc_memory_headers.h""
+#include "sc-core/sc_memory_headers.h"
 
 void finish_question(sc_addr question)
 {

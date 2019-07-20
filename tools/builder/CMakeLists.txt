@@ -1,6 +1,3 @@
-set (SC_BUILDER_DIR "${SC_TOOLS_DIR}/builder")
-
-file(MAKE_DIRECTORY "${SC_BUILDER_DIR}/src/parser")
 
 file(GLOB_RECURSE SOURCES "src/*.cpp" "src/*.h" "src/*.hpp")
 

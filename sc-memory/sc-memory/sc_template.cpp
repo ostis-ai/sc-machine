@@ -34,9 +34,9 @@ ScTemplateItemValue operator >> (ScType const & value, std::string const & replN
 ScTemplate::ScTemplate(bool forceOrder /* = false */)
   : m_currentReplPos(0)
   , m_isForceOrder(forceOrder)
-  , m_isSearchCacheValid(false)
   , m_hasRequired(false)
   , m_hasOptional(false)
+  , m_isSearchCacheValid(false)
 {
   m_constructions.reserve(16);
 }

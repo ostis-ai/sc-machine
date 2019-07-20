@@ -11,5 +11,3 @@ add_executable(test_scs ${SOURCES_SCS_TEST} ${UnitsGlob})
 target_include_directories(test_scs 
   PRIVATE ${SC_MEMORY_SRC})
 target_link_libraries(test_scs sc-memory)
-
-sc_codegen(test_scs ${CMAKE_CURRENT_LIST_DIR})

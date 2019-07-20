@@ -3,7 +3,7 @@ set (SC_CODEGEN_DIR "${SC_TOOLS_DIR}/codegen")
 file(GLOB_RECURSE SOURCES "Parser/*.cpp" "Parser/*.hpp")
 
 add_executable(sc-code-generator ${SOURCES})
-include_directories(${SC_CODEGEN_DIR}/Parser)
+target_include_directories(sc-code-generator PRIVATE ${SC_CODEGEN_DIR}/Parser)
 
 if (${WIN32})
     set (BOOST_LIBS_LIST )

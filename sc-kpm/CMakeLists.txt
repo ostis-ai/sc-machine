@@ -1,7 +1,5 @@
 set(SC_KPM_ROOT "${SC_MACHINE_ROOT}/sc-kpm")
 
-include_directories(${SC_MEMORY_SRC})
-
 add_subdirectory(sc-common)
 
 file(MAKE_DIRECTORY ${SC_EXTENSION_DIRECTORY})

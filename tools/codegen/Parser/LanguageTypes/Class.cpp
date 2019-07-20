@@ -31,7 +31,6 @@ Class::Class(const Cursor &cursor, const Namespace &currentNamespace)
   , m_parser(0)
 {
   m_isScObject = false;
-
   m_displayName = cursor.GetSpelling();
 
   for (auto &child : cursor.GetChildren())

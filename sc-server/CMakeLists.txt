@@ -16,7 +16,10 @@ else()
 endif (${WIN32})
   
 add_executable(sc-server ${SOURCES} ${HEADERS})
-include_directories(${SC_MEMORY_SRC} ${GLIB2_INCLUDE_DIRS})
+target_include_directories(sc-server 
+  PRIVATE ${SC_MEMORY_SRC} 
+  PRIVATE ${GLIB2_INCLUDE_DIRS}
+  )
 target_link_libraries(sc-server sc-memory ${BOOST_LIBS_LIST})
 
 add_dependencies(sc-server

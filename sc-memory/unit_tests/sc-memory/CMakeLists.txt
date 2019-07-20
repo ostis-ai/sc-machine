@@ -9,6 +9,7 @@ file(GLOB_RECURSE SOURCES "*.cpp" "*.hpp")
 add_executable(sc-memory-tests ${SOURCES})
 
 target_include_directories(sc-memory-tests 
+  PRIVATE ${GLIB2_INCLUDE_DIRS}
 	PRIVATE ${SC_MEMORY_SRC}
 	PRIVATE "${CMAKE_CURRENT_BINARY_DIR}/sc-memory-tests_gen/")
 

@@ -63,11 +63,6 @@ if (${SC_AUTO_TEST})
     add_definitions(-DSC_BUILD_AUTO_TESTS)
 endif()
 
-
-include_directories(
-    "${SC_MACHINE_THIRDPARTY_PATH}"
-    )
-
 # find dependencies
 if (${APPLE})
     set(Boost_USE_STATIC_LIBS ON)
@@ -101,9 +96,6 @@ elseif (${UNIX})
     find_package(Boost 1.54 REQUIRED COMPONENTS filesystem python-py${PY_SHORT_VERSION})
     find_package(RocksDB REQUIRED)
 
-    message(${RocksDB_INCLUDE_DIR})
-    message(${RocksDB_LIBRARIES})
-
     include(FindPkgConfig)
     pkg_check_modules (GLIB2 REQUIRED glib-2.0)
     pkg_check_modules (GLIB2_MODULE REQUIRED gmodule-2.0)
@@ -116,11 +108,6 @@ elseif (${UNIX})
     endif ()
 
     pkg_check_modules(LIBCURL REQUIRED libcurl)
-
-    include_directories("${SC_MACHINE_THIRDPARTY_PATH}"
-                        "${SC_MACHINE_ANTRL_DIR}/cpp")
-
-    add_definitions(-DSC_PLATFORM_UNIX)
 
     # for std::thread support
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread")
@@ -208,8 +195,6 @@ elseif (${WIN32})
 endif(${APPLE})
 
 message ("Python version: ${PYTHONLIBS_VERSION_STRING}")
-
-include_directories(${SC_MACHINE_ROOT} ${GLIB2_INCLUDE_DIRS} ${Boost_INCLUDE_DIR})
 
 add_subdirectory(${SC_MACHINE_ROOT}/sc-memory)
 add_subdirectory(${SC_MACHINE_ROOT}/sc-kpm)

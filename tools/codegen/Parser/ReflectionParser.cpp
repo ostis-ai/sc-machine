@@ -152,6 +152,7 @@ bool ReflectionParser::ProcessFile(std::string const & fileName, bool inProcessM
   if (!inProcessModule && !m_sourceCache->RequestGenerate(fileName))
     return true;
 
+  std::cout << fileName << std::endl;
   Clear();
 
   m_currentFile = fileName;

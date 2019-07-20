@@ -26,6 +26,7 @@ file(GLOB_RECURSE SOURCES "*.cpp" "*.hpp")
 add_library (sc-memory SHARED ${SOURCES} ${SOURCES_PARSER})
 
 target_include_directories(sc-memory
+      PRIVATE ${GLIB2_INCLUDE_DIRS}
       PRIVATE ${SC_MACHINE_ANTRL_DIR}/runtime/src
       PRIVATE ${SC_MEMORY_SRC}
       PRIVATE ${PYTHON_INCLUDE_DIRS})
@@ -48,7 +49,6 @@ endif(${WIN32})
 sc_codegen_ex(sc-memory ${CMAKE_CURRENT_SOURCE_DIR} "${CMAKE_CURRENT_SOURCE_DIR}/generated")
 add_dependencies(sc-memory 
   sc-core
-  sc-fm
   sc-code-generator
   antlr4_static
   SCsParser)

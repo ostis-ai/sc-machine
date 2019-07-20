@@ -2,7 +2,8 @@ file(GLOB_RECURSE SOURCES "*.c" "*.h")
 
 add_library (sc-utils SHARED ${SOURCES})
 
-target_include_directories(sc-utils 
+target_include_directories(sc-utils
+  PRIVATE ${SC_MEMORY_SRC}
   PRIVATE ${GLIB2_INCLUDE_DIRS}
   )
 add_dependencies(sc-utils sc-core sc-kpm-common)
