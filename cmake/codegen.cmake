@@ -37,11 +37,12 @@ macro(sc_codegen_ex Target SrcPath OutputPath)
             --output     "${OutputPath}"
             --flags      "${META_FLAGS}"
             --build_dir  "${CMAKE_CURRENT_BINARY_DIR}"
+            --cache
         )
     else()
         file(GLOB_RECURSE HEADER_FILES "${SrcPath}/*.hpp")
 
-        set (CACHE_FILE "${CMAKE_CURRENT_BINARY_DIR}/${Target}.gen_cache.missed")
+        set (CACHE_FILE "${CMAKE_CURRENT_BINARY_DIR}/${Target}.gen_cache")
         add_custom_command(
             OUTPUT ${CACHE_FILE}
             COMMAND "${SC_CODEGEN_TOOL}"
@@ -50,7 +51,7 @@ macro(sc_codegen_ex Target SrcPath OutputPath)
             --output     "${OutputPath}"
             --build_dir  "${CMAKE_CURRENT_BINARY_DIR}"
             --flags      "'${META_FLAGS}'"
-            --debug
+            --cache
             DEPENDS ${HEADER_FILES}
         )
 
@@ -58,11 +59,13 @@ macro(sc_codegen_ex Target SrcPath OutputPath)
         add_custom_target(${SUB_TARGET} DEPENDS ${CACHE_FILE} SOURCES ${HEADER_FILES})
 
         add_dependencies(${SUB_TARGET} sc-code-generator)
-
         add_dependencies(${Target} ${SUB_TARGET})
     endif()
 
     target_include_directories(${Target} PUBLIC ${OutputPath})
+
+    # clean stage
+    set_directory_properties(PROPERTIES ADDITIONAL_MAKE_CLEAN_FILES CACHE_FILE)
 
 endmacro(sc_codegen_ex)
 
