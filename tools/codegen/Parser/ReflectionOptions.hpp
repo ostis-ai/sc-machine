@@ -13,4 +13,5 @@ struct ReflectionOptions
 
   std::vector<std::string> arguments;
   bool displayDiagnostic = false;
+  bool useCache = false;
 };

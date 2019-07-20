@@ -96,9 +96,12 @@ void ReflectionParser::Parse()
   std::string moduleFile;
   CollectFiles(m_options.inputPath, filesList);
 
-  m_sourceCache.reset(new SourceCache(m_options.buildDirectory, m_options.targetName));
-  m_sourceCache->Load();
-  m_sourceCache->CheckGenerator(m_options.generatorPath);
+  if (m_options.useCache)
+  {
+    m_sourceCache.reset(new SourceCache(m_options.buildDirectory, m_options.targetName));
+    m_sourceCache->Load();
+    m_sourceCache->CheckGenerator(m_options.generatorPath);
+  }
 
   // ensure that output directory exist
   boost::filesystem::create_directory(boost::filesystem::path(m_options.outputPath));
@@ -134,7 +137,8 @@ void ReflectionParser::Parse()
     EMIT_ERROR(e.GetDescription() << " in " << moduleFile);
   }
 
-  m_sourceCache->Save();
+  if (m_options.useCache)
+    m_sourceCache->Save();
 }
 
 
@@ -149,10 +153,9 @@ void ReflectionParser::Clear()
 
 bool ReflectionParser::ProcessFile(std::string const & fileName, bool inProcessModule)
 {
-  if (!inProcessModule && !m_sourceCache->RequestGenerate(fileName))
+  if (!inProcessModule && m_options.useCache && !m_sourceCache->RequestGenerate(fileName))
     return true;
 
-  std::cout << fileName << std::endl;
   Clear();
 
   m_currentFile = fileName;

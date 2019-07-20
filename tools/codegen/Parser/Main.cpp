@@ -19,6 +19,7 @@ void parse(std::string const & appName, boost::program_options::variables_map co
   options.outputPath = cmdLine.at("output").as<std::string>();
   options.buildDirectory = cmdLine.at("build_dir").as<std::string>();
   options.displayDiagnostic = (cmdLine.count("debug") > 0);
+  options.useCache = (cmdLine.count("cache") > 0);
 
   // default arguments
   options.arguments = {
@@ -110,6 +111,11 @@ int main(int argc, char *argv[])
           "debug,d",
           boost::program_options::value<bool>()->implicit_value(false),
           "Display compiler errors"
+        )
+        (
+          "cache,c",
+          boost::program_options::value<bool>()->implicit_value(false),
+          "Force cache usage"
         );
 
     boost::program_options::variables_map cmdLine;
