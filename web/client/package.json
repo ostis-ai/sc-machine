@@ -7,7 +7,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "watch": "webpack --progress --colors --watch --config webpack.dev.js",
     "copy-bundle": "cpx build/bundle.js assets/",
-    "webpack-dev": "webpack --progress --colors --config webpack.dev.js && npm run copy-bundle",
+    "webpack-dev": "webpack --progress --colors --config webpack.dev.js && yarn run copy-bundle",
     "webpack-prod": "webpack --progress --colors --config webpack.prod.js"
   },
   "repository": {
@@ -37,7 +37,7 @@
     "ts-loader": "^4.4.1",
     "typescript": "^2.9.2",
     "webpack": "^4.12.1",
-    "webpack-cli": "^2.1.5",
+    "webpack-cli": "^3.1.1",
     "webpack-merge": "^4.1.3"
   },
   "dependencies": {
