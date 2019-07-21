@@ -129,7 +129,7 @@ class HttpModule(ScModule):
   def OnShutdown(self):
     print('Shutting down HTTP module')
     self.server.stop()
-    self.server.join()
+    # self.server.join()
 
 
 service = HttpModule()
