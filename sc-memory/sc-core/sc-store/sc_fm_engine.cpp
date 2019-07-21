@@ -120,7 +120,7 @@ sc_stream * sc_fm_read_stream_new(const sc_check_sum * check_sum)
   std::string value;
 
   rocksdb::ReadOptions options;
-  rocksdb::Status status = gDBInstance->Get(options, ChecksumToString(check_sum), &value);
+  rocksdb::Status status = gDBInstance->Get(options, MakeContentKey(check_sum), &value);
 
   if (status.ok())
   {
