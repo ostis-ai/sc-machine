@@ -36,8 +36,8 @@ export class SCsInputContainer extends ServerTemplatesListener {
             </div>
           </div>
           <div class="column">
-            <div class="scs-editor-container" scs-editor>
-            </div>
+            <div class="scs-editor-container" scs-editor></div>
+            <div class="scs-button-container" scs-buttons></div>
           </div>
         </div>
     `;
@@ -46,7 +46,7 @@ export class SCsInputContainer extends ServerTemplatesListener {
 
     // append buttons
     const buttonsGroup: HTMLElement = document.createElement('div');
-    this.scsEditorContainer.appendChild(buttonsGroup);
+    this.scsButtonsContainer.appendChild(buttonsGroup);
     buttonsGroup.setAttribute('class', 'ui right floated buttons');
 
     buttonsGroup.innerHTML = `
@@ -71,12 +71,16 @@ export class SCsInputContainer extends ServerTemplatesListener {
     return this._container.querySelector('div[scs-editor]');
   }
 
+  private get scsButtonsContainer() : HTMLElement {
+    return this._container.querySelector('div[scs-buttons]');
+  }
+
   private get scsSearchButton() : HTMLElement {
-    return this.scsEditorContainer.querySelector('button[scs-search]');
+    return this.scsButtonsContainer.querySelector('button[scs-search]');
   }
 
   private get scsGenerateButton() : HTMLElement {
-    return this.scsEditorContainer.querySelector('button[scs-generate]');
+    return this.scsButtonsContainer.querySelector('button[scs-generate]');
   }
 
   public set onNewSearchRequest(callback: OnRequestCallback) {
