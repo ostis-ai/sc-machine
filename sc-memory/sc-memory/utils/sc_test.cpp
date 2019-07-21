@@ -5,12 +5,14 @@
 */
 
 #include "sc_test.hpp"
+#include "sc_signal_handler.hpp"
 
 namespace test
 {
 
 std::set<ScTestUnit*, ScTestUnit::TestLess> ScTestUnit::ms_tests;
 uint32_t ScTestUnit::ms_subtestsNum = 0;
+std::atomic_bool ScTestUnit::ms_isRun = { false };
 
 ScTestUnit::ScTestUnit(char const * name, char const * filename, void(*fn)())
   : m_name(name)
@@ -73,11 +75,22 @@ void ScTestUnit::ShutdownMemory(bool save)
 
 void ScTestUnit::RunAll(std::string const & configPath, std::string const & extPath)
 {
+  utils::ScSignalHandler::Initialize();
+  utils::ScSignalHandler::m_onTerminate = []()
+  {
+    ms_isRun = false;
+  };
+
   ScConsole::Print() << "Run " << ScConsole::Color::Green << ms_tests.size() << ScConsole::Color::Reset << " tests";
   ScConsole::Endl();
 
+  ms_isRun = true;
   for (ScTestUnit * unit : ms_tests)
+  {
     unit->Run(configPath, extPath);
+    if (!ms_isRun)
+      break;
+  }
 
   ScConsole::Print() << "Passed "
                      << ScConsole::Color::Green << ms_subtestsNum << ScConsole::Color::Reset << " subtests in "

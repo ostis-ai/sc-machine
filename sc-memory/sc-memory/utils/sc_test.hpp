@@ -12,6 +12,7 @@
 
 #include "../utils/sc_console.hpp"
 
+#include <atomic>
 #include <cstdlib>
 #include <iostream>
 
@@ -51,6 +52,7 @@ private:
 
   static _SC_EXTERN std::set<ScTestUnit*, TestLess> ms_tests;
   static _SC_EXTERN uint32_t ms_subtestsNum;
+  static std::atomic_bool ms_isRun;
 };
 
 #define UNIT_TEST_CUSTOM(__name, _class) \
