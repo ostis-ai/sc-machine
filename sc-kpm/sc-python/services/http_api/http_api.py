@@ -52,6 +52,7 @@ class ContentHandler(tornado.web.RequestHandler):
         Keynodes.Get(Keynodes.NrelMimeType))
 
     searchRes = ctx.HelperSearchTemplate(templ)
+    mime = ''
     if searchRes.Size() > 0:
       mime = ctx.GetLinkContent(searchRes[0]['_mime']).AsString()
 
