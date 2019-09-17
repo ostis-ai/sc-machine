@@ -2,6 +2,7 @@ from common.sc_keynodes import ScKeynodes
 from common.sc_exception import ScKeynodeException
 from common.sc_event import ScEventManager, ScEventParams
 from common.sc_agent import ScAgent
+from common.sc_log import Log
 
 import urllib.request
 import time
@@ -46,8 +47,7 @@ class ScModule:
 
     self.is_running = True
     self.task_queue = queue.Queue()
-
-    self.agents = []  # list of registered agents
+    self.log = Log(self.__class__.__name__)
 
   def KeynodesCheck(self, keynodes_list):
     for idtf in keynodes_list:

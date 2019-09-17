@@ -51,10 +51,14 @@ class ScAgent:
     assert self.evt == None
     self.evt = self.module.events.CreateEventInternal(
         addr, evt_type, self._run)
+    
+    self.module.log.info(self.__class__.__name__ + ' registered')
 
   def Unregister(self):
     self.module.events.DestroyEvent(self.evt)
     self.evt = None
+
+    self.module.log.info(self.__class__.__name__ + ' unregistered')
 
   def RunImpl(self, evt):
     """Should be override and do agent logic.
@@ -76,7 +80,8 @@ class ScAgent:
     """Just for internal usage
     """
     if self.CheckImpl(evt):
-      self.RunImpl(evt)
+      self.module.log.info(self.__class__.__name__ + ' emited')
+      self.RunImpl(evt)    
 
 
 class ScAgentCommand(ScAgent):
@@ -117,7 +122,7 @@ class ScAgentCommand(ScAgent):
         ScType.EdgeDCommonVar,
         ScType.NodeVarStruct >> '_result',
         ScType.EdgeAccessVarPosPerm,
-        ScAgent.keynodes[ScAgent.kNrelResult])
+        self.keynodes[ScAgent.kNrelResult])
 
     gen_res = self.module.ctx.HelperGenTemplate(templ, ScTemplateGenParams())
     assert gen_res.Size() > 0
