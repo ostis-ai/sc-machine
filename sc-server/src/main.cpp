@@ -12,6 +12,7 @@
 #include <sc-memory/sc_memory.hpp>
 #include <sc-memory/utils/sc_signal_handler.hpp>
 
+#include <atomic>
 #include <thread>
 
 int main(int argc, char *argv[]) try
@@ -50,7 +51,7 @@ int main(int argc, char *argv[]) try
     return 0;
   }
 
-  volatile bool isRun = true;
+  std::atomic_bool isRun = { true };
   utils::ScSignalHandler::Initialize();
   utils::ScSignalHandler::m_onTerminate = [&isRun]()
   {
