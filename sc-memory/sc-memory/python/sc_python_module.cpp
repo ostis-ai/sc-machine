@@ -703,6 +703,11 @@ public:
                                isRequired ? ScTemplate::TripleFlag::Required : ScTemplate::TripleFlag::NotRequired);
   }
 
+  bool HasReplacement(std::string const & name)
+  {
+    return m_impl->HasReplacement(name);
+  }
+
   ScTemplate & GetItemRef() const
   {
     return *m_impl;
@@ -893,6 +898,7 @@ BOOST_PYTHON_MODULE(sc)
   bp::class_<impl::PyTemplate>("ScTemplate", bp::init<>())
     .def("Triple", &impl::PyTemplate::Triple, PyTemplate_Triple_overload())
     .def("TripleWithRelation", &impl::PyTemplate::TripleWithRelation, PyTemplate_TripleWithRelation_overload())
+    .def("HasReplacement", &impl::PyTemplate::HasReplacement)
     ;
 
   bp::class_<ScAddr>("ScAddr", bp::init<>())
@@ -968,8 +974,33 @@ BOOST_PYTHON_MODULE(sc)
     .def_readonly("NodeVarAbstract", &ScType::NodeVarAbstract)
     .def_readonly("NodeVarMaterial", &ScType::NodeVarMaterial)
     ;
-}
 
+  bp::enum_<sc_result>("ScResult")
+    .value("Ok", SC_RESULT_OK)
+    .value("Error", SC_RESULT_ERROR)
+    .value("ErrorInvalidParams", SC_RESULT_ERROR_INVALID_PARAMS)
+    .value("ErrorInvalidType", SC_RESULT_ERROR_INVALID_TYPE)
+    .value("ErrorIO", SC_RESULT_ERROR_IO)
+    .value("ErrorInvalidState", SC_RESULT_ERROR_INVALID_STATE)
+    .value("ErrorNotFound", SC_RESULT_ERROR_NOT_FOUND)
+    .value("ErrorNoWriteRights", SC_RESULT_ERROR_NO_WRITE_RIGHTS)
+    .value("ErrorNoReadRights", SC_RESULT_ERROR_NO_READ_RIGHTS)
+    .value("ErrorNoRights", SC_RESULT_ERROR_NO_RIGHTS)
+    .value("No", SC_RESULT_NO)
+    .value("Unknown", SC_RESULT_UNKNOWN)
+    ;
+
+  bp::class_<ScKeynodes>("ScKeynodesImpl", bp::no_init)
+    .def("GetResultCodeAddr", bp::make_function(&ScKeynodes::GetResultCodeAddr, bp::return_value_policy<bp::return_by_value>()))
+    .staticmethod("GetResultCodeAddr")
+    .def("GetResultCodeByAddr", bp::make_function(&ScKeynodes::GetResultCodeByAddr, bp::return_value_policy<bp::return_by_value>()))
+    .staticmethod("GetResultCodeByAddr")
+    .def_readonly("kCommandStateAddr", &ScKeynodes::kCommandStateAddr)
+    .def_readonly("kCommandInitiatedAddr", &ScKeynodes::kCommandInitiatedAddr)
+    .def_readonly("kCommandProgressdAddr", &ScKeynodes::kCommandProgressdAddr)
+    .def_readonly("kCommandFinishedAddr", &ScKeynodes::kCommandFinishedAddr)
+    ;
+}
 
 } // namespace
 

@@ -9,19 +9,6 @@ from scb import *
 
 class ScAgent:
 
-  class Status(Enum):
-    SC_RESULT_ERROR = 0  # unknown error
-    SC_RESULT_OK = 1  # no any error
-    SC_RESULT_ERROR_INVALID_PARAMS = 2  # invalid function parameters error
-    SC_RESULT_ERROR_INVALID_TYPE = 3  # invalied type error
-    SC_RESULT_ERROR_IO = 4  # input/output error
-    SC_RESULT_ERROR_INVALID_STATE = 5  # invalid state of processed object
-    SC_RESULT_ERROR_NOT_FOUND = 6  # item not found
-    SC_RESULT_ERROR_NO_WRITE_RIGHTS = 7  # no ritghs to change or delete object
-    SC_RESULT_ERROR_NO_READ_RIGHTS = 8  # no ritghs to read object
-    SC_RESULT_NO = 9  # no any result
-    SC_RESULT_UNKNOWN = 10  # result unknown
-
   # keynodes
   kCmdInitiated = 'command_initiated'
   kCmdFinished = 'command_finished'
@@ -115,6 +102,15 @@ class ScAgentCommand(ScAgent):
     self.cmd_addr = evt.other_addr
     assert self.cmd_addr.IsValid()
 
+    # change state to a progress
+    progress_edge = evt.edge_addr
+
+    def change_progress(state: ScAddr):
+      self.module.ctx.DeleteElement(progress_edge)
+      self.module.ctx.CreateEdge(ScType.EdgeAccessConstPosPerm, state, self.cmd_addr)
+
+    change_progress(ScKeynodes.kCommandProgressdAddr())
+
     # create result structure
     templ = ScTemplate()
     templ.TripleWithRelation(
@@ -127,19 +123,24 @@ class ScAgentCommand(ScAgent):
     gen_res = self.module.ctx.HelperGenTemplate(templ, ScTemplateGenParams())
     assert gen_res.Size() > 0
 
-    self.result_set = ScSet(self.module.ctx, gen_res['_result'])
+    res_addr = gen_res['_result']
+    self.result_set = ScSet(self.module.ctx, res_addr)
 
     # run implementation of command
     result = self.DoCommand()
 
+    # generate result type
+    self.module.ctx.CreateEdge(ScType.EdgeAccessConstPosPerm, ScKeynodes.GetResultCodeAddr(result), res_addr)
+    change_progress(ScKeynodes.kCommandFinishedAddr())
+
     return result
 
-  def DoCommand(self):
+  def DoCommand(self) -> ScResult:
     """Should be overrided.
     This method calls to run command implementation
     Should return value like RunImpl
     """
-    return ScAgent.Status.SC_RESULT_NO
+    return ScResult.No
 
   def GetParam(self, index):
     """Return parameter of command by specified index.

@@ -1,4 +1,5 @@
 from typing import Tuple, List, Any, ByteString, TypeVar
+from enum import Enum
 
 from .sc_class import *
 
@@ -80,3 +81,27 @@ def createScMemoryContext() -> ScMemoryContext:
 
 def ScAddrFromHash(hash) -> ScAddr:
   return ScAddr()
+
+
+class ScResult(Enum):
+  Ok = 0
+  Error = 1
+  ErrorInvalidParams = 2
+  ErrorInvalidType = 3
+  ErrorIO = 4
+  ErrorInvalidState = 5
+  ErrorNotFound = 6
+  ErrorNoWriteRights = 7
+  ErrorNoReadRights = 8
+  ErrorNoRights = 9
+  No = 10
+  Unknown = 11
+
+class ScKeynodes:
+  @staticmethod
+  def GetResultCodeAddr(res: ScResult) -> ScAddr:
+    return ScAddr()
+
+  @staticmethod
+  def GetResultCodeByAddr(addr: ScAddr) -> ScResult:
+    return ScResult.Ok
