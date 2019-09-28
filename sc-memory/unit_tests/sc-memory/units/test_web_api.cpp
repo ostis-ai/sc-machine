@@ -1,4 +1,4 @@
-#include "sc-memory/utils/sc_test.hpp"
+#include "sc-test-framework/sc_test_unit.hpp"
 #include "sc-memory/python/sc_python_interp.hpp"
 #include "sc-memory/python/sc_python_service.hpp"
 

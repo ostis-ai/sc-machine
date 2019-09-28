@@ -9,7 +9,7 @@
 #include "sc-memory/sc_template.hpp"
 #include "sc-memory/sc_struct.hpp"
 #include "sc-memory/utils/sc_progress.hpp"
-#include "sc-memory/utils/sc_test.hpp"
+#include "sc-test-framework/sc_test_unit.hpp"
 
 #include "dummy_file_interface.hpp"
 

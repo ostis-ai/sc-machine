@@ -4,8 +4,9 @@
 * (See accompanying file COPYING.MIT or copy at http://opensource.org/licenses/MIT)
 */
 
-#include "sc_test.hpp"
-#include "sc_signal_handler.hpp"
+#include "sc_test_unit.hpp"
+
+#include "sc-memory/utils/sc_signal_handler.hpp"
 
 namespace test
 {

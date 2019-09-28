@@ -7,7 +7,7 @@
 #include "test_sc_agent.hpp"
 
 #include "sc-memory/sc_stream.hpp"
-#include "sc-memory/utils/sc_test.hpp"
+#include "sc-test-framework/sc_test_unit.hpp"
 
 namespace
 {

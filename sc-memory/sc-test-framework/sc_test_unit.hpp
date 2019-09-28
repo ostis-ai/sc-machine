@@ -6,11 +6,11 @@
 
 #pragma once
 
-#include "../sc_debug.hpp"
-#include "../sc_memory.hpp"
-#include "../sc_utils.hpp"
+#include "sc-memory/sc_debug.hpp"
+#include "sc-memory/sc_memory.hpp"
+#include "sc-memory/sc_utils.hpp"
 
-#include "../utils/sc_console.hpp"
+#include "sc-memory/utils/sc_console.hpp"
 
 #include <atomic>
 #include <cstdlib>

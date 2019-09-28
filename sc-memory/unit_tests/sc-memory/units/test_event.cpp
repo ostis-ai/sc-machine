@@ -7,7 +7,7 @@
 #include "sc-memory/sc_event.hpp"
 #include "sc-memory/sc_timer.hpp"
 #include "sc-memory/sc_stream.hpp"
-#include "sc-memory/utils/sc_test.hpp"
+#include "sc-test-framework/sc_test_unit.hpp"
 #include "sc-memory/utils/sc_progress.hpp"
 
 #include <thread>

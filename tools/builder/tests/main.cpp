@@ -1,5 +1,5 @@
 
-#include "sc-memory/utils/sc_test.hpp"
+#include "sc-test-framework/sc_test_unit.hpp"
 
 int main(int argc, char ** argv) try
 {

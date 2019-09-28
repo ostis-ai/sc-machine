@@ -13,6 +13,8 @@ target_include_directories(sc-memory-tests
 	PRIVATE ${SC_MEMORY_SRC}
 	PRIVATE "${CMAKE_CURRENT_BINARY_DIR}/sc-memory-tests_gen/")
 
-target_link_libraries(sc-memory-tests sc-memory)
+target_link_libraries(sc-memory-tests 
+  sc-memory
+  sc-test-framework)
 
 sc_codegen(sc-memory-tests ${CMAKE_CURRENT_LIST_DIR})

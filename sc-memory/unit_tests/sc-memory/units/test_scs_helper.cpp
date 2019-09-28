@@ -6,7 +6,7 @@
 
 #include "dummy_file_interface.hpp"
 
-#include "sc-memory/utils/sc_test.hpp"
+#include "sc-test-framework/sc_test_unit.hpp"
 
 #include "sc-memory/sc_link.hpp"
 #include "sc-memory/sc_memory.hpp"

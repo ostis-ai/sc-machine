@@ -4,7 +4,7 @@
 * (See accompanying file COPYING.MIT or copy at http://opensource.org/licenses/MIT)
 */
 
-#include "sc-memory/utils/sc_test.hpp"
+#include "sc-test-framework/sc_test_unit.hpp"
 #include "sc-memory/sc_common_templ.hpp"
 #include "sc-memory/sc_keynodes.hpp"
 
