@@ -2,6 +2,7 @@ from enum import Enum
 
 from common.sc_keynodes import ScKeynodes
 from common.sc_set import ScSet
+from common.sc_event import ScEventParams
 
 from sc import *
 from scb import *
@@ -47,15 +48,15 @@ class ScAgent:
 
     self.module.log.info(self.__class__.__name__ + ' unregistered')
 
-  def RunImpl(self, evt):
+  def RunImpl(self, evt: ScEventParams) -> ScResult:
     """Should be override and do agent logic.
     It should return one of ScAgent.Status values
 
     evt - ScEventParams instance
     """
-    return ScAgent.Status.SC_RESULT_OK
+    return ScResult.Error
 
-  def CheckImpl(self, evt):
+  def CheckImpl(self, evt: ScEventParams):
     """This function can be overrided to check any conditions before run.
     If this function returns True, then RunImpl should be called; 
     otherwise it woudn't be run
@@ -63,12 +64,16 @@ class ScAgent:
     return True
 
   # --- Internal usage methods ---
-  def _run(self, evt):
+  def _run(self, evt: ScEventParams):
     """Just for internal usage
     """
     if self.CheckImpl(evt):
       self.module.log.info(self.__class__.__name__ + ' emited')
-      self.RunImpl(evt)    
+      result = self.RunImpl(evt)
+      if result != ScResult.Ok:
+        self.module.log.warning(self.__class__.__name__ + ' finished with error')
+      else:
+        self.module.log.info(self.__class__.__name__ + ' finished')
 
 
 class ScAgentCommand(ScAgent):
