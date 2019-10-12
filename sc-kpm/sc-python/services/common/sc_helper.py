@@ -96,4 +96,4 @@ class ScHelper:
     If value with a specified `rel_addr` doesn't exist, then it would be created. If value exists,
     then this function will change content of sc-link.
     """
-
+  pass

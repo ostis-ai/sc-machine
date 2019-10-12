@@ -6,6 +6,7 @@ from sc_tests.test_helper import TestScHelper
 from sc_tests.test_memory_ctx import TestScMemoryContext
 from sc_tests.test_set import TestScSet
 from sc_tests.test_templates import TestScTemplate
+from sc_tests.test_agent import TestScAgent
 
 from sc_tests.test_utils import CreateNodeWithIdtf
 
@@ -28,6 +29,7 @@ def RunTests():
   
   tests = [
     TestScAddr,
+    TestScAgent,
     TestScType,
     TestScMemoryContext,
     TestScSet,

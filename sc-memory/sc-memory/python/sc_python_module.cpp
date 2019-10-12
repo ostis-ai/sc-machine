@@ -4,6 +4,8 @@
 #include "../sc_stream.hpp"
 #include "../sc_link.hpp"
 
+#include "../kpm/sc_agent.hpp"
+
 #include <iostream>
 
 extern "C"
@@ -806,6 +808,35 @@ std::string GetConfigValue(std::string const & group, std::string const & key)
   return value ? std::string(value) : "";
 }
 
+class ScAgentCommandImpl
+{
+public:
+  static ScAddr CreateCommand(ScMemoryContext & ctx, ScAddr const & cmdClassAddr, bp::list params)
+  {
+    ScAddrVector _params;
+    bp::ssize_t count = bp::len(params);
+    for (bp::ssize_t i = 0; i < count; ++i)
+      _params.emplace_back(bp::extract<ScAddr>(params[i]));
+
+    return ScAgentAction::CreateCommand(ctx, cmdClassAddr, _params);
+  }
+
+  static bool RunCommand(ScMemoryContext & ctx, ScAddr const & cmdAddr)
+  {
+    return ScAgentAction::InitiateCommand(ctx, cmdAddr);
+  }
+
+  static bool RunCommandWait(ScMemoryContext & ctx, ScAddr const & cmdAddr, uint32_t waitTimeOutMS = 5000)
+  {
+    return ScAgentAction::InitiateCommandWait(ctx, cmdAddr, waitTimeOutMS);
+  }
+
+  static ScAddr GetCommandResultAddr(ScMemoryContext & ctx, ScAddr const & cmdAddr)
+  {
+    return ScAgentAction::GetCommandResultAddr(ctx, cmdAddr);
+  }
+};
+
 } // namespace impl
 
 BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(ScMemoryContext_CreateLink_overload, ScMemoryContext::CreateLink, 0, 1)
@@ -999,6 +1030,17 @@ BOOST_PYTHON_MODULE(sc)
     .def_readonly("kCommandInitiatedAddr", &ScKeynodes::kCommandInitiatedAddr)
     .def_readonly("kCommandProgressdAddr", &ScKeynodes::kCommandProgressdAddr)
     .def_readonly("kCommandFinishedAddr", &ScKeynodes::kCommandFinishedAddr)
+    ;
+
+  bp::class_<impl::ScAgentCommandImpl>("ScAgentCommandImpl", bp::no_init)
+    .def("CreateCommand", &impl::ScAgentCommandImpl::CreateCommand)
+    .staticmethod("CreateCommand")
+    .def("RunCommand", &impl::ScAgentCommandImpl::RunCommand)
+    .staticmethod("RunCommand")
+    .def("RunCommandWait", &impl::ScAgentCommandImpl::RunCommandWait)
+    .staticmethod("RunCommandWait")
+    .def("GetCommandResultAddr", &impl::ScAgentCommandImpl::GetCommandResultAddr)
+    .staticmethod("GetCommandResultAddr")
     ;
 }
 

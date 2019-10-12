@@ -97,8 +97,6 @@ class ScAgentCommand(ScAgent):
         ScType.EdgeAccessConstPosPerm)
 
   def RunImpl(self, evt):
-    """Get all data that can be usefule and cache it
-    """
     self.cmd_addr = evt.other_addr
     assert self.cmd_addr.IsValid()
 
@@ -160,6 +158,22 @@ class ScAgentCommand(ScAgent):
       return ScAddr()
 
     return search_res[0]['_el']
+
+  @staticmethod
+  def CreateCommand(ctx: ScMemoryContext, cmd_class_addr: ScAddr, params: [ScAddr]) -> ScAddr:
+    return ScAgentCommandImpl.CreateCommand(ctx, cmd_class_addr, params)
+
+  @staticmethod
+  def RunCommand(ctx: ScMemoryContext, cmd_addr: ScAddr) -> bool:
+    return ScAgentCommandImpl.RunCommand(ctx, cmd_addr)
+
+  @staticmethod
+  def RunCommandWait(ctx: ScMemoryContext, cmd_addr: ScAddr, wait_timeout_ms: int) -> bool:
+    return ScAgentCommandImpl.RunCommandWait(ctx, cmd_addr, wait_timeout_ms)
+
+  @staticmethod
+  def GetCommandResultAddr(ctx: ScMemoryContext, cmd_addr: ScAddr) -> ScAddr:
+    return ScAgentCommandImpl.GetCommandResultAddr(ctx, cmd_addr)
 
   # --- internal functions ---
   def _kb_resolve_status_addr(self, status):

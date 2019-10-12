@@ -9,35 +9,148 @@ There are a list of classes:
 
 ## ScAgent
 
-## ScKeynodes
+Object that implements `ScAgent` behaviour. This is a smart wrapper on event listener. It runs code on registered event emit. Create it with such parameters:
 
-Object that implements caching of keynodes. This objects cache requested `ScAddr`'s so you can access it when you need from any places. Create it with such parameters:
+* **module** - [`ScModule`](#scmodule)
 
-* **ctx** - [`ScMemoryContext`](cpp_wrap#scmemorycontext) that will be used to access sc-memory
+---
+
+***Methods***
+
+??? tip "Register(addr, evt_type)"
+    * **addr** - `ScAddr` of element to listen events
+    * **evt_type** - `ScPythonEventType` type of event to listen
+
+    Register `ScAgent` to run on spcified event emit.
+
+    **Example:**
+    ```python
+    agent = MyScAgent()
+    agent.Register(self.keynodes[ScAgent.kCmdInitiated], ScPythonEventType.AddOutputEdge)
+    ```
+
+??? tip "Unregister()"
+    Unregister `ScAgent` from previously registered event
+
+??? abstract "CheckImpl(evt)"
+    * **evt** - [`ScEventParams`](#sceventparams) structure that describes emited event
+
+    This method calls after event emit to check if `ScAgent` should run on this event.
+
+    You can override this method to implement your own check. It should return `True` when check passed; otherwise - `False`.
+
+    Default implementation returns `True`.
+
+    **Example:**
+    ```python
+    class MyScAgent(ScAgent):
+
+      def CheckImpl(self, evt):
+        # do extra check there
+        return ...
+    ```
+
+??? abstract "RunImpl(evt)"
+    * **evt** - [`ScEventParams`](#sceventparams) structure that describes emited event
+
+    This method should be everriden. It calls after passed `CheckImpl` returns `True`. Whole logic of agent should be implemented there.
+
+## ScAgentCommand
+
+Object that implement `ScAgent` logic to work with a commands. It built on top of `ScAgent` object, but **you should not override RunImpl of this one**. Instead of that you should write your custom logic in overriden `DoCommand` method.
+
+To create this object you should provide two parameters:
+
+* **module** - [`ScModule`](#scmodule)
+* **cmd_class_addr** - `ScAddr` of command class
 
 ---
 
 **Methods**
 
-??? tip "\_\_getitem\_\_(sys_idtf)"
-    * **sys_idtf** - system identifier of keynode
+??? abstract "DoCommand()"
 
-    returns `ScAddr` of keynodes with specified system identifier. If keynode doesn't exist, then returns invalid `ScAddr`
+    Returns command process result `ScResult`.
+
+    You can access command and result addrs in this function with
+    `self.cmd_addr` and `self.result_set`
+
+**StaticMethods**
+
+??? tip "CreateCommand(ctx, cmd_class_addr, params)"
+
+    * **ctx** - [`ScMemoryContext`](/python/cpp_wrap/#scmemorycontext) that will be used to access sc-memory
+    * **cmd_class_addr** - `ScAddr` of command class
+    * **params** - `ScAddr[]` array of parameters for a command
+
+    Create instance of a specified command class with a parameters and returns `ScAddr` of generated one.
 
     **Example:**
     ```python
-    keynodes = ScKeynodes(ctx)
-    addr1 = keynodes["keynode_idtf"]    # will find it in sc-memory
-    addr2 = keynodes["keynode_idtf_2"]  # will find it in sc-memory
-    addr3 = keynodes["keynode_idtf"]    # will return cached value equal to addr1
+    ScAgentCommand.CreateCommand(my_cmd_class, [param_1, param_2])
     ```
+
+    will generate such command in `ScMemory`
+
+    ```scs
+    cmd_instance
+      <- my_cmd_class;
+      -> rrel_1: param_1;
+      -> rrel_2: param_2;;
+    ```
+
+??? tip "RunCommand(ctx, cmd_addr)"
+
+    * **ctx** - [`ScMemoryContext`](/python/cpp_wrap/#scmemorycontext) that will be used to access sc-memory
+    * **cmd_addr** - `ScAddr` of command to run
+
+    Returns `True` on command run; otherwise - `False`.
+
+    **Improtant:** this function **doesn't block** thread. It runs command asynchronously.
+
+    **Example:**
+    ```python
+    cmd = ScAgentCommand.Create(my_cmd_class, [param_1, param_2])
+    if ScAgentCommand.RunCommand(cmd):
+      print("Command run")
+    else:
+      print("Can't run command")
+    ```
+
+??? tip "RunCommandWait(ctx, cmd_addr, wait_timeout_ms)"
+
+    * **ctx** - [`ScMemoryContext`](/python/cpp_wrap/#scmemorycontext) that will be used to access sc-memory
+    * **cmd_addr** - `ScAddr` of command to run
+    * **wait_timeout_ms** - wait timeout in milliseconds
+
+    Returns `True` on command run and finished in specified timeout; otherwise - `False`.
+
+    **Improtant:** this function **block** thread until command finishes. It runs comman synchronous.
+
+    **Example:**
+    ```python
+    cmd = ScAgentCommand.Create(my_cmd_class, [param_1, param_2])
+    if ScAgentCommand.RunCommandWait(cmd):
+      print("Command run and finished")
+    else:
+      print("Can't run command")
+    ```
+
+??? tip "GetCommandResultAddr(ctx, cmd_addr)"
+    * **ctx** - [`ScMemoryContext`](/python/cpp_wrap/#scmemorycontext) that will be used to access sc-memory
+    * **cmd_addr** - `ScAddr` of command
+
+    Returns `ScAddr` of result structure for a specified comand. If there are no result structure, then returns empty `ScAddr`
+
+
+## ScEventParams
 
 ## ScHelper
 
 Object that wrap some common functions to work with knowledge base.
 You can create it with such parameters:
 
-* **ctx** - [`ScMemoryContext`](cpp_wrap#scmemorycontext) that will be used to access sc-memory
+* **ctx** - [`ScMemoryContext`](/python/cpp_wrap/#scmemorycontext) that will be used to access sc-memory
 
 ---
 ** Methods **
@@ -120,5 +233,32 @@ You can create it with such parameters:
     ```
 
     **If any of field, already exist, then it would be replaced by a new value.**
+
+## ScKeynodes
+
+Object that implements caching of keynodes. This objects cache requested `ScAddr`'s so you can access it when you need from any places. Create it with such parameters:
+
+* **ctx** - [`ScMemoryContext`](/python/cpp_wrap/#scmemorycontext) that will be used to access sc-memory
+
+---
+
+**Methods**
+
+??? tip "\_\_getitem\_\_(sys_idtf)"
+    * **sys_idtf** - system identifier of keynode
+
+    returns `ScAddr` of keynodes with specified system identifier. If keynode doesn't exist, then returns invalid `ScAddr`
+
+    **Example:**
+    ```python
+    keynodes = ScKeynodes(ctx)
+    addr1 = keynodes["keynode_idtf"]    # will find it in sc-memory
+    addr2 = keynodes["keynode_idtf_2"]  # will find it in sc-memory
+    addr3 = keynodes["keynode_idtf"]    # will return cached value equal to addr1
+    ```
+
+## ScModule
+
+
 
 ## ScSet
