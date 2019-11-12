@@ -54,10 +54,7 @@ if (${UNIX})
 	set (GLIB2_INCLUDE_DIRS "${GLIB2_INCLUDE_DIRS}" "/usr/lib/x86_64-linux-gnu/glib-2.0/include/" "${GLIB2_MODULE}")
 	set (GLIB2_LIBRARIES "${GLIB2_LIBRARIES}" "${GLIB2_MODULE_LIBRARIES}")
 
-    pkg_check_modules(REDIS QUIET hiredis)
-    if (NOT DEFINED ${REDIS_INCLUDE_DIRS})
-        pkg_check_modules(REDIS REQUIRED libhiredis)
-    endif()
+	pkg_search_module(REDIS REQUIRED libhiredis hiredis)
 
     if (NOT DEFINED LIBCLANG_LIBRARIES OR NOT DEFINED LIBCLANG_CXXFLAGS OR NOT DEFINED LIBCLANG_LIBDIR)
         find_package(LibClang REQUIRED)
@@ -85,7 +82,7 @@ elseif (${WIN32})
 	file(MAKE_DIRECTORY ${PACKAGES_PATH})
 	execute_process(COMMAND "${SC_MACHINE_THIRDPARTY_PATH}/nuget.exe" install ${CMAKE_BINARY_DIR}/packages.config WORKING_DIRECTORY ${PACKAGES_PATH})
 
-	
+
 
 	set (GLIB_PATH "${PACKAGES_PATH}/glib.2.36.2.11/build/native")
 	set (REDIS_PATH "${SC_MACHINE_THIRDPARTY_PATH}/libhiredis/")
