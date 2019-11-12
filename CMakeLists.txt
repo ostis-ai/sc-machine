@@ -9,7 +9,7 @@ set(SC_MACHINE_THIRDPARTY_PATH "${SC_MACHINE_ROOT}/thirdparty")
 set(SC_MACHINE_ANTRL_DIR "${SC_MACHINE_THIRDPARTY_PATH}/antlr")
 
 option (SC_AUTO_TEST "Flag to build for automation testing" OFF)
-option (SC_KPM_SCP "Flag to build SCP module" ON)
+option (SC_KPM_SCP "Flag to build SCP module" OFF)
 
 # codegen
 if (${UNIX})
