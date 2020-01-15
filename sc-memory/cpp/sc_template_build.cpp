@@ -9,6 +9,7 @@
 #include "sc_debug.hpp"
 
 #include <algorithm>
+#include <iostream>
 
 namespace
 {
@@ -16,12 +17,8 @@ namespace
 class ObjectInfo
 {
 public:
-  ObjectInfo(ScAddr const & inAddr, ScType const & inType, std::string const & inSysIdtf)
-    : m_addr(inAddr)
-    , m_type(inType)
-    , m_sysIdtf(inSysIdtf)
-    , m_source(nullptr)
-    , m_target(nullptr)
+  ObjectInfo(ScAddr const& inAddr, ScType const& inType, std::string const& inSysIdtf)
+          : m_addr(inAddr), m_type(inType), m_sysIdtf(inSysIdtf), m_source(nullptr), m_target(nullptr)
   {
   }
 
@@ -30,37 +27,37 @@ public:
     return m_type.IsEdge();
   }
 
-  inline ObjectInfo const * GetSource() const
+  inline ObjectInfo const* GetSource() const
   {
     return m_source;
   }
 
-  inline ObjectInfo const * GetTarget() const
+  inline ObjectInfo const* GetTarget() const
   {
     return m_target;
   }
 
-  inline ScAddr const & GetAddr() const
+  inline ScAddr const& GetAddr() const
   {
     return m_addr;
   }
 
-  inline std::string const & GetIdtf() const
+  inline std::string const& GetIdtf() const
   {
     return m_sysIdtf;
   }
 
-  inline ScType const & GetType() const
+  inline ScType const& GetType() const
   {
     return m_type;
   }
 
-  inline void SetSource(ObjectInfo * src)
+  inline void SetSource(ObjectInfo* src)
   {
     m_source = src;
   }
 
-  inline void SetTarget(ObjectInfo * trg)
+  inline void SetTarget(ObjectInfo* trg)
   {
     m_target = trg;
   }
@@ -80,8 +77,8 @@ private:
   std::string m_sysIdtf;
 
   // edge data
-  ObjectInfo * m_source;
-  ObjectInfo * m_target;
+  ObjectInfo* m_source;
+  ObjectInfo* m_target;
 };
 
 class EdgeLessFunctor
@@ -90,14 +87,13 @@ class EdgeLessFunctor
   using ObjectVector = std::vector<ObjectInfo>;
 
 public:
-  explicit EdgeLessFunctor(EdgeDependMap const & edgeDependMap, ObjectVector const & objects)
-    : m_edgeDependMap(edgeDependMap)
-    , m_objects(objects)
+  explicit EdgeLessFunctor(EdgeDependMap const& edgeDependMap, ObjectVector const& objects)
+          : m_edgeDependMap(edgeDependMap), m_objects(objects)
   {
   }
 
   // returns true, when edge srouce/target objects depend on otherEdge construction
-  bool IsEdgeDependOnOther(ScAddr::HashType const & edge, ScAddr::HashType const & otherEdge) const
+  bool IsEdgeDependOnOther(ScAddr::HashType const& edge, ScAddr::HashType const& otherEdge) const
   {
     // TODO: support possible loops
     auto const range = m_edgeDependMap.equal_range(edge);
@@ -110,10 +106,10 @@ public:
     return false;
   }
 
-  bool operator() (size_t const indexA, size_t const indexB) const
+  bool operator()(size_t const indexA, size_t const indexB) const
   {
-    ObjectInfo const & objA = m_objects[indexA];
-    ObjectInfo const & objB = m_objects[indexB];
+    ObjectInfo const& objA = m_objects[indexA];
+    ObjectInfo const& objB = m_objects[indexB];
 
     SC_ASSERT(objA.IsEdge(), ());
     SC_ASSERT(objB.IsEdge(), ());
@@ -133,8 +129,8 @@ public:
   }
 
 private:
-  EdgeDependMap const & m_edgeDependMap;
-  ObjectVector const & m_objects;
+  EdgeDependMap const& m_edgeDependMap;
+  ObjectVector const& m_objects;
 };
 
 } // namespace
@@ -144,13 +140,15 @@ class ScTemplateBuilder
   friend class ScTemplate;
 
 protected:
-  ScTemplateBuilder(ScAddr const & inScTemplateAddr, ScMemoryContext & inCtx)
-    : m_templateAddr(inScTemplateAddr)
-    , m_context(inCtx)
+  ScTemplateBuilder(
+          ScAddr const& inScTemplateAddr,
+          ScMemoryContext& inCtx,
+          const ScTemplateGenParams & params)
+          : m_templateAddr(inScTemplateAddr), m_context(inCtx), m_params(params)
   {
   }
 
-  bool operator() (ScTemplate * inTemplate)
+  bool operator()(ScTemplate* inTemplate)
   {
     // mark template to don't force order of triples
     inTemplate->m_isForceOrder = false;
@@ -167,39 +165,38 @@ protected:
     size_t index = 0;
 
     ScIterator3Ptr iter = m_context.Iterator3(
-          m_templateAddr,
-          *ScType::EdgeAccessConstPosPerm,
-          *ScType());
+            m_templateAddr,
+            *ScType::EdgeAccessConstPosPerm,
+            *ScType());
 
     while (iter->Next())
     {
-      ScAddr const objAddr = iter->Get(2);
-      ScAddr::HashType const objHash = objAddr.Hash();
+      ScAddr const templateItem =iter->Get(2);
 
+      ScAddr::HashType const objHash = templateItem.Hash();
       auto const it = addrToObjectIndex.find(objHash);
       if (it != addrToObjectIndex.end())
         continue; // object already exist
-
       addrToObjectIndex[objHash] = m_objects.size();
 
-      ScType const objType = m_context.GetElementType(objAddr);
-      if (objType.IsUnknown())
+      ScType const templateItemType = m_context.GetElementType(templateItem);
+      if (templateItemType.IsUnknown())
         return false; // template corrupted
 
-      std::string objIdtf = m_context.HelperGetSystemIdtf(objAddr);
-      if (objIdtf.empty())
-        objIdtf = "..obj_" + std::to_string(index++);
+      std::string templateItemIdtf = m_context.HelperGetSystemIdtf(templateItem);
+      if (templateItemIdtf.empty())
+        templateItemIdtf = "..obj_" + std::to_string(index++);
 
-      if (objType.IsEdge())
+      if (templateItemType.IsEdge())
         edgeIndices.emplace_back(m_objects.size());
 
-      m_objects.emplace_back(objAddr, objType, objIdtf);
+      m_objects.emplace_back(templateItem, templateItemType, templateItemIdtf);
     }
 
     // iterate all edges and determine source/target objects
     for (auto const i : edgeIndices)
     {
-      ObjectInfo & obj = m_objects[i];
+      ObjectInfo& obj = m_objects[i];
 
       // determine source and target objects
       ScAddr src, trg;
@@ -214,13 +211,13 @@ protected:
       if (itTrg == addrToObjectIndex.end())
         return false; // target source doesn't exist in template
 
-      ObjectInfo * srcObj = &(m_objects[itSrc->second]);
-      ObjectInfo * trgObj = &(m_objects[itTrg->second]);
+      ObjectInfo* srcObj = &(m_objects[itSrc->second]);
+      ObjectInfo* trgObj = &(m_objects[itTrg->second]);
 
       if (srcObj->IsEdge())
-        edgeDependMap.insert({ obj.GetAddr().Hash(), srcObj->GetAddr().Hash() });
+        edgeDependMap.insert({obj.GetAddr().Hash(), srcObj->GetAddr().Hash()});
       if (trgObj->IsEdge())
-        edgeDependMap.insert({ obj.GetAddr().Hash(), srcObj->GetAddr().Hash() });
+        edgeDependMap.insert({obj.GetAddr().Hash(), srcObj->GetAddr().Hash()});
 
       obj.SetSource(srcObj);
       obj.SetTarget(trgObj);
@@ -233,11 +230,11 @@ protected:
     {
       for (auto const i : edgeIndices)
       {
-        ObjectInfo const & edge = m_objects[i];
+        ObjectInfo const& edge = m_objects[i];
         SC_ASSERT(edge.GetType().IsVar(), ());
 
-        ObjectInfo const * src = edge.GetSource();
-        ObjectInfo const * trg = edge.GetTarget();
+        const ObjectInfo* src = replaceWithParam(edge.GetSource());
+        const ObjectInfo* trg = replaceWithParam(edge.GetTarget());
 
         ScType const srcType = src->GetType();
         ScType const trgType = trg->GetType();
@@ -247,25 +244,25 @@ protected:
           if (trgType.IsConst())  // F_A_F
           {
             inTemplate->Triple(
-                  src->GetAddr() >> src->GetIdtf(),
-                  edge.GetType() >> edge.GetIdtf(),
-                  trg->GetAddr() >> trg->GetIdtf());
+                    src->GetAddr() >> src->GetIdtf(),
+                    edge.GetType() >> edge.GetIdtf(),
+                    trg->GetAddr() >> trg->GetIdtf());
           }
           else
           {
             if (inTemplate->HasReplacement(trg->GetIdtf())) // F_A_F
             {
               inTemplate->Triple(
-                    src->GetAddr() >> src->GetIdtf(),
-                    edge.GetType() >> edge.GetIdtf(),
-                    trg->GetIdtf());
+                      src->GetAddr() >> src->GetIdtf(),
+                      edge.GetType() >> edge.GetIdtf(),
+                      trg->GetIdtf());
             }
             else // F_A_A
             {
               inTemplate->Triple(
-                    src->GetAddr() >> src->GetIdtf(),
-                    edge.GetType() >> edge.GetIdtf(),
-                    trgType >> trg->GetIdtf());
+                      src->GetAddr() >> src->GetIdtf(),
+                      edge.GetType() >> edge.GetIdtf(),
+                      trgType >> trg->GetIdtf());
             }
           }
         }
@@ -274,16 +271,16 @@ protected:
           if (inTemplate->HasReplacement(src->GetIdtf())) // F_A_F
           {
             inTemplate->Triple(
-                  src->GetIdtf(),
-                  edge.GetType() >> edge.GetIdtf(),
-                  trg->GetAddr() >> trg->GetIdtf());
+                    src->GetIdtf(),
+                    edge.GetType() >> edge.GetIdtf(),
+                    trg->GetAddr() >> trg->GetIdtf());
           }
           else // A_A_F
           {
             inTemplate->Triple(
-                  srcType >> src->GetIdtf(),
-                  edge.GetType() >> edge.GetIdtf(),
-                  trg->GetAddr() >> trg->GetIdtf());
+                    srcType >> src->GetIdtf(),
+                    edge.GetType() >> edge.GetIdtf(),
+                    trg->GetAddr() >> trg->GetIdtf());
           }
         }
         else
@@ -294,30 +291,30 @@ protected:
           if (srcRepl && trgRepl) // F_A_F
           {
             inTemplate->Triple(
-                  src->GetIdtf(),
-                  edge.GetType() >> edge.GetIdtf(),
-                  trg->GetIdtf());
+                    src->GetIdtf(),
+                    edge.GetType() >> edge.GetIdtf(),
+                    trg->GetIdtf());
           }
           else if (!srcRepl && trgRepl) // A_A_F
           {
             inTemplate->Triple(
-                  srcType >> src->GetIdtf(),
-                  edge.GetType() >> edge.GetIdtf(),
-                  trg->GetIdtf());
+                    srcType >> src->GetIdtf(),
+                    edge.GetType() >> edge.GetIdtf(),
+                    trg->GetIdtf());
           }
           else if (srcRepl && !trgRepl) // F_A_A
           {
             inTemplate->Triple(
-                  src->GetIdtf(),
-                  edge.GetType() >> edge.GetIdtf(),
-                  trgType >> trg->GetIdtf());
+                    src->GetIdtf(),
+                    edge.GetType() >> edge.GetIdtf(),
+                    trgType >> trg->GetIdtf());
           }
           else
           {
             inTemplate->Triple(
-                  srcType >> src->GetIdtf(),
-                  edge.GetType() >> edge.GetIdtf(),
-                  trgType >> trg->GetIdtf());
+                    srcType >> src->GetIdtf(),
+                    edge.GetType() >> edge.GetIdtf(),
+                    trgType >> trg->GetIdtf());
           }
         }
       }
@@ -328,14 +325,37 @@ protected:
 
 protected:
   ScAddr m_templateAddr;
-  ScMemoryContext & m_context;
+  ScMemoryContext& m_context;
+  const ScTemplateGenParams & m_params;
 
   // all objects in template
   std::vector<ObjectInfo> m_objects;
+
+private:
+  const ObjectInfo* replaceWithParam(const ObjectInfo* templateItem)
+  {
+    if (!templateItem->IsEdge())
+    {
+      ScAddr replacedAddr;
+      if (m_params.Get(templateItem->GetIdtf(), replacedAddr))
+      {
+        ScType type = m_context.GetElementType(replacedAddr);
+        std::string idtf = m_context.HelperGetSystemIdtf(replacedAddr);
+        return new ObjectInfo(replacedAddr, type, idtf);
+      }
+    }
+    return templateItem;
+  }
 };
 
-bool ScTemplate::FromScTemplate(ScMemoryContext & ctx, ScAddr const & scTemplateAddr)
+bool ScTemplate::FromScTemplate(ScMemoryContext& ctx, ScAddr const& scTemplateAddr)
 {
-  ScTemplateBuilder builder(scTemplateAddr, ctx);
+  ScTemplateBuilder builder(scTemplateAddr, ctx, ScTemplateGenParams());
+  return builder(this);
+}
+
+bool ScTemplate::FromScTemplate(ScMemoryContext& ctx, ScAddr const& scTemplateAddr, const ScTemplateGenParams & params)
+{
+  ScTemplateBuilder builder(scTemplateAddr, ctx, params);
   return builder(this);
 }

@@ -317,6 +317,7 @@ protected:
 
   // Builds template based on template in sc-memory
   bool FromScTemplate(ScMemoryContext & ctx, ScAddr const & scTemplateAddr);
+  bool FromScTemplate(ScMemoryContext & ctx, ScAddr const & scTemplateAddr, const ScTemplateGenParams & params);
   bool FromScs(ScMemoryContext & ctx, std::string const & scsText);
   // End: calls by memory context
 
