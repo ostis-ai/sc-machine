@@ -439,7 +439,7 @@ ScAddr ScMemoryContext::HelperFindBySystemIdtf(std::string const & sysIdtf)
   return result;
 }
 
-bool ScMemoryContext::HelperGenTemplate(ScTemplate const & templ, ScTemplateGenResult & result, ScTemplateGenParams const & params, ScTemplateResultCode * resultCode)
+bool ScMemoryContext::HelperGenTemplate(ScTemplate const & templ, ScTemplateGenResult & result, ScTemplateParams const & params, ScTemplateResultCode * resultCode)
 {
   return templ.Generate(*this, result, params, resultCode);
 }
@@ -462,7 +462,7 @@ bool ScMemoryContext::HelperBuildTemplate(ScTemplate & templ, ScAddr const & tem
 bool ScMemoryContext::HelperBuildTemplate(
         ScTemplate & templ,
         ScAddr const & templAddr,
-        const ScTemplateGenParams & params)
+        const ScTemplateParams & params)
 {
   return templ.FromScTemplate(*this, templAddr, params);
 }

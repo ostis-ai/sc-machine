@@ -143,7 +143,7 @@ protected:
   ScTemplateBuilder(
           ScAddr const& inScTemplateAddr,
           ScMemoryContext& inCtx,
-          const ScTemplateGenParams & params)
+          const ScTemplateParams & params)
           : m_templateAddr(inScTemplateAddr), m_context(inCtx), m_params(params)
   {
   }
@@ -326,7 +326,7 @@ protected:
 protected:
   ScAddr m_templateAddr;
   ScMemoryContext& m_context;
-  const ScTemplateGenParams & m_params;
+  const ScTemplateParams & m_params;
 
   // all objects in template
   std::vector<ObjectInfo> m_objects;
@@ -350,11 +350,11 @@ private:
 
 bool ScTemplate::FromScTemplate(ScMemoryContext& ctx, ScAddr const& scTemplateAddr)
 {
-  ScTemplateBuilder builder(scTemplateAddr, ctx, ScTemplateGenParams());
+  ScTemplateBuilder builder(scTemplateAddr, ctx, ScTemplateParams());
   return builder(this);
 }
 
-bool ScTemplate::FromScTemplate(ScMemoryContext& ctx, ScAddr const& scTemplateAddr, const ScTemplateGenParams & params)
+bool ScTemplate::FromScTemplate(ScMemoryContext& ctx, ScAddr const& scTemplateAddr, const ScTemplateParams & params)
 {
   ScTemplateBuilder builder(scTemplateAddr, ctx, params);
   return builder(this);
