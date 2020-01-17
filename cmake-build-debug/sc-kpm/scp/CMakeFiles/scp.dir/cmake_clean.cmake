@@ -1,0 +1,41 @@
+file(REMOVE_RECURSE
+  "../../../bin/extensions/libscp.pdb"
+  "../../../bin/extensions/libscp.so"
+  "CMakeFiles/scp.dir/scp_interpreter.c.o"
+  "CMakeFiles/scp.dir/scp_interpreter_utils.c.o"
+  "CMakeFiles/scp.dir/scp_keynodes.c.o"
+  "CMakeFiles/scp.dir/scp_lib/scp_eraseElStr3.c.o"
+  "CMakeFiles/scp.dir/scp_lib/scp_eraseElStr5.c.o"
+  "CMakeFiles/scp.dir/scp_lib/scp_eraseSetStr3.c.o"
+  "CMakeFiles/scp.dir/scp_lib/scp_eraseSetStr5.c.o"
+  "CMakeFiles/scp.dir/scp_lib/scp_functions.c.o"
+  "CMakeFiles/scp.dir/scp_lib/scp_genElStr3.c.o"
+  "CMakeFiles/scp.dir/scp_lib/scp_genElStr5.c.o"
+  "CMakeFiles/scp.dir/scp_lib/scp_iterator3.c.o"
+  "CMakeFiles/scp.dir/scp_lib/scp_iterator5.c.o"
+  "CMakeFiles/scp.dir/scp_lib/scp_searchElStr3.c.o"
+  "CMakeFiles/scp.dir/scp_lib/scp_searchElStr5.c.o"
+  "CMakeFiles/scp.dir/scp_lib/scp_searchSetStr3.c.o"
+  "CMakeFiles/scp.dir/scp_lib/scp_searchSetStr5.c.o"
+  "CMakeFiles/scp.dir/scp_lib/scp_system_operators/sc_system_gen.cpp.o"
+  "CMakeFiles/scp.dir/scp_lib/scp_system_operators/sc_system_operators.cpp.o"
+  "CMakeFiles/scp.dir/scp_lib/scp_system_operators/sc_system_search.cpp.o"
+  "CMakeFiles/scp.dir/scp_lib/scp_system_operators/scp_sys.c.o"
+  "CMakeFiles/scp.dir/scp_lib/scp_system_operators/scp_sys_gen.cpp.o"
+  "CMakeFiles/scp.dir/scp_lib/scp_system_operators/scp_sys_search.cpp.o"
+  "CMakeFiles/scp.dir/scp_lib/scp_types.c.o"
+  "CMakeFiles/scp.dir/scp_lib/scp_utils.c.o"
+  "CMakeFiles/scp.dir/scp_operator_interpreter_agents.c.o"
+  "CMakeFiles/scp.dir/scp_operator_interpreter_functions.c.o"
+  "CMakeFiles/scp.dir/scp_operator_keynodes.c.o"
+  "CMakeFiles/scp.dir/scp_operator_syncronizer.c.o"
+  "CMakeFiles/scp.dir/scp_procedure_preprocessor.c.o"
+  "CMakeFiles/scp.dir/scp_procedure_verifier.c.o"
+  "CMakeFiles/scp.dir/scp_process_creator.c.o"
+  "CMakeFiles/scp.dir/scp_process_destroyer.c.o"
+)
+
+# Per-language clean rules from dependency scanning.
+foreach(lang C CXX)
+  include(CMakeFiles/scp.dir/cmake_clean_${lang}.cmake OPTIONAL)
+endforeach()

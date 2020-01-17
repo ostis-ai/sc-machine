@@ -34,14 +34,21 @@ String trimContentData(String const & path)
 SCsTranslator::SCsTranslator(sc_memory_context *ctx)
     : iTranslator(ctx)
 {
+    this->newEdgeid = 1;
+    createRootEl();
 }
 
 SCsTranslator::~SCsTranslator()
 {
     // destroy element descrptions
+    std::cout << "end ";
     tElementSet::iterator it, itEnd = mElementSet.end();
     for (it = mElementSet.begin(); it != itEnd; ++it)
+    {
+        std::cout << (*it)->idtf << "; ";
         delete *it;
+    }
+    std::cout << std::endl;
     mElementSet.clear();
 }
 
@@ -50,6 +57,7 @@ bool SCsTranslator::translateImpl()
     // open file and read data
     bool result = true;
     std::ifstream ifs(mParams.fileName.c_str());
+    std::cout << "!!! filename = " << mParams.fileName.c_str() << std::endl;
     if (ifs.is_open())
     {
         String data((std::istreambuf_iterator<char>(ifs)), std::istreambuf_iterator<char>());
@@ -159,6 +167,9 @@ bool SCsTranslator::buildScText(pANTLR3_BASE_TREE tree)
             sc_type type = _getTypeBySetIdtf(el->arc_src->idtf);
             if (type != 0)
             {
+                if (el->arc_src->idtf == "root") {
+                    std::cout << "anything goes wrong";
+                }
                 el->ignore = true;
 				el->arc_src->ignore = true;
 
@@ -221,6 +232,9 @@ bool SCsTranslator::buildScText(pANTLR3_BASE_TREE tree)
     {
         StringStream ss;
         ss << "Arcs not created: " << arcs.size();
+        for (auto it2 = arcs.begin(); it2 != arcs.end(); ++it2) {
+            ss << " " << (*it2)->idtf;
+        }
         THROW_EXCEPT(Exception::ERR_INVALID_STATE,
                      ss.str(),
                      mParams.fileName,
@@ -582,7 +596,15 @@ sElement* SCsTranslator::_createElement(const String &idtf, sc_type type)
 
 sElement* SCsTranslator::_addNode(const String &idtf, sc_type type)
 {
-    return _createElement(idtf, sc_type_node | type);
+    sElement* el = _createElement(idtf, sc_type_node | type);
+    if ((mElementIdtf.find("uridxcd" + el->idtf) == mElementIdtf.end()) && (!idtf.empty()) && (idtf != "...")) {
+        //String id = "uridxcd"+std::to_string(this->newEdgeid)+"_";
+        String id = "uridxcd_";
+        //this->newEdgeid++;
+        _addEdge(this->rootEl, el, sc_type_arc_pos_const_perm, false, id + el->idtf);
+        std::cout << idtf << std::endl;
+    }
+    return el;
 }
 
 sElement* SCsTranslator::_addEdge(sElement *source, sElement *target, sc_type type, bool is_reversed, const String &idtf)
@@ -644,7 +666,7 @@ sElement* SCsTranslator::parseElementTree(pANTLR3_BASE_TREE tree, const String *
     sElement *res = 0;
     if (tok->type == ID_SYSTEM)
     {
-        res = _addNode(GET_NODE_TEXT(tree));
+        res = _addNode(GET_NODE_TEXT(tree), 0);
     }
 
     if (tok->type == SEP_LPAR)
@@ -1068,6 +1090,14 @@ void SCsTranslator::dumpScs(const String &fileName)
     }
 
     out.close();
+}
+
+void SCsTranslator::createRootEl() {
+    this->rootEl = _createElement("rootElement", sc_type_node);
+}
+
+void SCsTranslator::addElementToRootScope() {
+
 }
 
 // -------------

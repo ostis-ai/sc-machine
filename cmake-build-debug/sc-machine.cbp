@@ -1,0 +1,2123 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6"/>
+	<Project>
+		<Option title="sc-machine"/>
+		<Option makefile_is_custom="1"/>
+		<Option compiler="gcc"/>
+		<Option virtualFolders="CMake Files\;CMake Files\cmake\;CMake Files\sc-memory\;CMake Files\sc-memory\cpp\;CMake Files\sc-memory\test\;CMake Files\sc-fm\;CMake Files\sc-fm\sc_fm_filesystem\;CMake Files\sc-fm\sc_fm_redis\;CMake Files\sc-kpm\;CMake Files\sc-kpm\common\;CMake Files\sc-kpm\ui\;CMake Files\sc-kpm\search\;CMake Files\sc-kpm\utils\;CMake Files\sc-kpm\scp\;CMake Files\sc-network\;CMake Files\sc-network\sctp_server\;CMake Files\sc-network\sctp_client\;CMake Files\..\;CMake Files\..\..\;CMake Files\..\..\..\;CMake Files\..\..\..\..\;CMake Files\..\..\..\..\..\;CMake Files\..\..\..\..\..\usr\;CMake Files\..\..\..\..\..\usr\lib\;CMake Files\..\..\..\..\..\usr\lib\x86_64-linux-gnu\;CMake Files\..\..\..\..\..\usr\lib\x86_64-linux-gnu\cmake\;CMake Files\..\..\..\..\..\usr\lib\x86_64-linux-gnu\cmake\Qt5Core\;CMake Files\..\..\..\..\..\usr\lib\x86_64-linux-gnu\cmake\Qt5Network\;CMake Files\tools\;CMake Files\tools\builder\;CMake Files\tools\codegen\;"/>
+		<Build>
+			<Target title="all">
+				<Option working_dir="/home/slava/work/ostis/sc-machine/cmake-build-debug"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j4 -f &quot;/home/slava/work/ostis/sc-machine/cmake-build-debug/Makefile&quot;  VERBOSE=1 all"/>
+					<CompileFile command="/usr/bin/make -j4 -f &quot;/home/slava/work/ostis/sc-machine/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j4 -f &quot;/home/slava/work/ostis/sc-machine/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j4 -f &quot;/home/slava/work/ostis/sc-machine/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="install/strip">
+				<Option working_dir="/home/slava/work/ostis/sc-machine/cmake-build-debug"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j4 -f &quot;/home/slava/work/ostis/sc-machine/cmake-build-debug/Makefile&quot;  VERBOSE=1 install/strip"/>
+					<CompileFile command="/usr/bin/make -j4 -f &quot;/home/slava/work/ostis/sc-machine/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j4 -f &quot;/home/slava/work/ostis/sc-machine/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j4 -f &quot;/home/slava/work/ostis/sc-machine/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="install">
+				<Option working_dir="/home/slava/work/ostis/sc-machine/cmake-build-debug"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j4 -f &quot;/home/slava/work/ostis/sc-machine/cmake-build-debug/Makefile&quot;  VERBOSE=1 install"/>
+					<CompileFile command="/usr/bin/make -j4 -f &quot;/home/slava/work/ostis/sc-machine/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j4 -f &quot;/home/slava/work/ostis/sc-machine/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j4 -f &quot;/home/slava/work/ostis/sc-machine/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="install/local">
+				<Option working_dir="/home/slava/work/ostis/sc-machine/cmake-build-debug"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j4 -f &quot;/home/slava/work/ostis/sc-machine/cmake-build-debug/Makefile&quot;  VERBOSE=1 install/local"/>
+					<CompileFile command="/usr/bin/make -j4 -f &quot;/home/slava/work/ostis/sc-machine/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j4 -f &quot;/home/slava/work/ostis/sc-machine/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j4 -f &quot;/home/slava/work/ostis/sc-machine/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="list_install_components">
+				<Option working_dir="/home/slava/work/ostis/sc-machine/cmake-build-debug"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j4 -f &quot;/home/slava/work/ostis/sc-machine/cmake-build-debug/Makefile&quot;  VERBOSE=1 list_install_components"/>
+					<CompileFile command="/usr/bin/make -j4 -f &quot;/home/slava/work/ostis/sc-machine/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j4 -f &quot;/home/slava/work/ostis/sc-machine/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j4 -f &quot;/home/slava/work/ostis/sc-machine/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="edit_cache">
+				<Option working_dir="/home/slava/work/ostis/sc-machine/cmake-build-debug"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j4 -f &quot;/home/slava/work/ostis/sc-machine/cmake-build-debug/Makefile&quot;  VERBOSE=1 edit_cache"/>
+					<CompileFile command="/usr/bin/make -j4 -f &quot;/home/slava/work/ostis/sc-machine/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j4 -f &quot;/home/slava/work/ostis/sc-machine/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j4 -f &quot;/home/slava/work/ostis/sc-machine/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="rebuild_cache">
+				<Option working_dir="/home/slava/work/ostis/sc-machine/cmake-build-debug"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j4 -f &quot;/home/slava/work/ostis/sc-machine/cmake-build-debug/Makefile&quot;  VERBOSE=1 rebuild_cache"/>
+					<CompileFile command="/usr/bin/make -j4 -f &quot;/home/slava/work/ostis/sc-machine/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j4 -f &quot;/home/slava/work/ostis/sc-machine/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j4 -f &quot;/home/slava/work/ostis/sc-machine/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="sc-memory">
+				<Option output="/home/slava/work/ostis/sc-machine/bin/libsc-memory.so" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/slava/work/ostis/sc-machine/cmake-build-debug/sc-memory"/>
+				<Option object_output="./"/>
+				<Option type="3"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add option="-DSC_MEMORY_SELF_BUILD"/>
+					<Add option="-DSC_PLATFORM_UNIX"/>
+					<Add directory="/home/slava/work/ostis/sc-machine/thirdparty"/>
+					<Add directory="/home/slava/work/ostis/sc-machine"/>
+					<Add directory="/usr/include/glib-2.0"/>
+					<Add directory="/usr/lib/x86_64-linux-gnu/glib-2.0/include"/>
+					<Add directory="/usr/include/c++/7"/>
+					<Add directory="/usr/include/x86_64-linux-gnu/c++/7"/>
+					<Add directory="/usr/include/c++/7/backward"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include-fixed"/>
+					<Add directory="/usr/include/x86_64-linux-gnu"/>
+					<Add directory="/usr/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j4 -f &quot;/home/slava/work/ostis/sc-machine/cmake-build-debug/sc-memory/Makefile&quot;  VERBOSE=1 sc-memory"/>
+					<CompileFile command="/usr/bin/make -j4 -f &quot;/home/slava/work/ostis/sc-machine/cmake-build-debug/sc-memory/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j4 -f &quot;/home/slava/work/ostis/sc-machine/cmake-build-debug/sc-memory/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j4 -f &quot;/home/slava/work/ostis/sc-machine/cmake-build-debug/sc-memory/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="sc-memory/fast">
+				<Option output="/home/slava/work/ostis/sc-machine/bin/libsc-memory.so" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/slava/work/ostis/sc-machine/cmake-build-debug/sc-memory"/>
+				<Option object_output="./"/>
+				<Option type="3"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add option="-DSC_MEMORY_SELF_BUILD"/>
+					<Add option="-DSC_PLATFORM_UNIX"/>
+					<Add directory="/home/slava/work/ostis/sc-machine/thirdparty"/>
+					<Add directory="/home/slava/work/ostis/sc-machine"/>
+					<Add directory="/usr/include/glib-2.0"/>
+					<Add directory="/usr/lib/x86_64-linux-gnu/glib-2.0/include"/>
+					<Add directory="/usr/include/c++/7"/>
+					<Add directory="/usr/include/x86_64-linux-gnu/c++/7"/>
+					<Add directory="/usr/include/c++/7/backward"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include-fixed"/>
+					<Add directory="/usr/include/x86_64-linux-gnu"/>
+					<Add directory="/usr/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j4 -f &quot;/home/slava/work/ostis/sc-machine/cmake-build-debug/sc-memory/Makefile&quot;  VERBOSE=1 sc-memory/fast"/>
+					<CompileFile command="/usr/bin/make -j4 -f &quot;/home/slava/work/ostis/sc-machine/cmake-build-debug/sc-memory/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j4 -f &quot;/home/slava/work/ostis/sc-machine/cmake-build-debug/sc-memory/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j4 -f &quot;/home/slava/work/ostis/sc-machine/cmake-build-debug/sc-memory/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="sc-memory-cpp-GenerateCode">
+				<Option working_dir="/home/slava/work/ostis/sc-machine/cmake-build-debug/sc-memory/cpp"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j4 -f &quot;/home/slava/work/ostis/sc-machine/cmake-build-debug/sc-memory/cpp/Makefile&quot;  VERBOSE=1 sc-memory-cpp-GenerateCode"/>
+					<CompileFile command="/usr/bin/make -j4 -f &quot;/home/slava/work/ostis/sc-machine/cmake-build-debug/sc-memory/cpp/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j4 -f &quot;/home/slava/work/ostis/sc-machine/cmake-build-debug/sc-memory/cpp/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j4 -f &quot;/home/slava/work/ostis/sc-machine/cmake-build-debug/sc-memory/cpp/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="sc-memory-cpp">
+				<Option output="/home/slava/work/ostis/sc-machine/bin/libsc-memory-cpp.so" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/slava/work/ostis/sc-machine/cmake-build-debug/sc-memory/cpp"/>
+				<Option object_output="./"/>
+				<Option type="3"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add option="-DSC_MEMORY_SELF_BUILD"/>
+					<Add option="-DSC_PLATFORM_UNIX"/>
+					<Add directory="/home/slava/work/ostis/sc-machine/thirdparty"/>
+					<Add directory="/home/slava/work/ostis/sc-machine"/>
+					<Add directory="/usr/include/glib-2.0"/>
+					<Add directory="/usr/lib/x86_64-linux-gnu/glib-2.0/include"/>
+					<Add directory="/home/slava/work/ostis/sc-machine/sc-memory"/>
+					<Add directory="/home/slava/work/ostis/sc-machine/sc-memory/cpp/generated"/>
+					<Add directory="/usr/include/c++/7"/>
+					<Add directory="/usr/include/x86_64-linux-gnu/c++/7"/>
+					<Add directory="/usr/include/c++/7/backward"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include-fixed"/>
+					<Add directory="/usr/include/x86_64-linux-gnu"/>
+					<Add directory="/usr/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j4 -f &quot;/home/slava/work/ostis/sc-machine/cmake-build-debug/sc-memory/cpp/Makefile&quot;  VERBOSE=1 sc-memory-cpp"/>
+					<CompileFile command="/usr/bin/make -j4 -f &quot;/home/slava/work/ostis/sc-machine/cmake-build-debug/sc-memory/cpp/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j4 -f &quot;/home/slava/work/ostis/sc-machine/cmake-build-debug/sc-memory/cpp/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j4 -f &quot;/home/slava/work/ostis/sc-machine/cmake-build-debug/sc-memory/cpp/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="sc-memory-cpp/fast">
+				<Option output="/home/slava/work/ostis/sc-machine/bin/libsc-memory-cpp.so" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/slava/work/ostis/sc-machine/cmake-build-debug/sc-memory/cpp"/>
+				<Option object_output="./"/>
+				<Option type="3"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add option="-DSC_MEMORY_SELF_BUILD"/>
+					<Add option="-DSC_PLATFORM_UNIX"/>
+					<Add directory="/home/slava/work/ostis/sc-machine/thirdparty"/>
+					<Add directory="/home/slava/work/ostis/sc-machine"/>
+					<Add directory="/usr/include/glib-2.0"/>
+					<Add directory="/usr/lib/x86_64-linux-gnu/glib-2.0/include"/>
+					<Add directory="/home/slava/work/ostis/sc-machine/sc-memory"/>
+					<Add directory="/home/slava/work/ostis/sc-machine/sc-memory/cpp/generated"/>
+					<Add directory="/usr/include/c++/7"/>
+					<Add directory="/usr/include/x86_64-linux-gnu/c++/7"/>
+					<Add directory="/usr/include/c++/7/backward"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include-fixed"/>
+					<Add directory="/usr/include/x86_64-linux-gnu"/>
+					<Add directory="/usr/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j4 -f &quot;/home/slava/work/ostis/sc-machine/cmake-build-debug/sc-memory/cpp/Makefile&quot;  VERBOSE=1 sc-memory-cpp/fast"/>
+					<CompileFile command="/usr/bin/make -j4 -f &quot;/home/slava/work/ostis/sc-machine/cmake-build-debug/sc-memory/cpp/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j4 -f &quot;/home/slava/work/ostis/sc-machine/cmake-build-debug/sc-memory/cpp/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j4 -f &quot;/home/slava/work/ostis/sc-machine/cmake-build-debug/sc-memory/cpp/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="test_threading">
+				<Option output="/home/slava/work/ostis/sc-machine/bin/test_threading" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/slava/work/ostis/sc-machine/bin"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add option="-DSC_PLATFORM_UNIX"/>
+					<Add directory="/home/slava/work/ostis/sc-machine/thirdparty"/>
+					<Add directory="/home/slava/work/ostis/sc-machine"/>
+					<Add directory="/usr/include/glib-2.0"/>
+					<Add directory="/usr/lib/x86_64-linux-gnu/glib-2.0/include"/>
+					<Add directory="/home/slava/work/ostis/sc-machine/cmake-build-debug/sc-memory/test/test_wrap_gen"/>
+					<Add directory="/usr/include/c++/7"/>
+					<Add directory="/usr/include/x86_64-linux-gnu/c++/7"/>
+					<Add directory="/usr/include/c++/7/backward"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include-fixed"/>
+					<Add directory="/usr/include/x86_64-linux-gnu"/>
+					<Add directory="/usr/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j4 -f &quot;/home/slava/work/ostis/sc-machine/cmake-build-debug/sc-memory/test/Makefile&quot;  VERBOSE=1 test_threading"/>
+					<CompileFile command="/usr/bin/make -j4 -f &quot;/home/slava/work/ostis/sc-machine/cmake-build-debug/sc-memory/test/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j4 -f &quot;/home/slava/work/ostis/sc-machine/cmake-build-debug/sc-memory/test/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j4 -f &quot;/home/slava/work/ostis/sc-machine/cmake-build-debug/sc-memory/test/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="test_threading/fast">
+				<Option output="/home/slava/work/ostis/sc-machine/bin/test_threading" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/slava/work/ostis/sc-machine/bin"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add option="-DSC_PLATFORM_UNIX"/>
+					<Add directory="/home/slava/work/ostis/sc-machine/thirdparty"/>
+					<Add directory="/home/slava/work/ostis/sc-machine"/>
+					<Add directory="/usr/include/glib-2.0"/>
+					<Add directory="/usr/lib/x86_64-linux-gnu/glib-2.0/include"/>
+					<Add directory="/home/slava/work/ostis/sc-machine/cmake-build-debug/sc-memory/test/test_wrap_gen"/>
+					<Add directory="/usr/include/c++/7"/>
+					<Add directory="/usr/include/x86_64-linux-gnu/c++/7"/>
+					<Add directory="/usr/include/c++/7/backward"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include-fixed"/>
+					<Add directory="/usr/include/x86_64-linux-gnu"/>
+					<Add directory="/usr/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j4 -f &quot;/home/slava/work/ostis/sc-machine/cmake-build-debug/sc-memory/test/Makefile&quot;  VERBOSE=1 test_threading/fast"/>
+					<CompileFile command="/usr/bin/make -j4 -f &quot;/home/slava/work/ostis/sc-machine/cmake-build-debug/sc-memory/test/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j4 -f &quot;/home/slava/work/ostis/sc-machine/cmake-build-debug/sc-memory/test/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j4 -f &quot;/home/slava/work/ostis/sc-machine/cmake-build-debug/sc-memory/test/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="test_wrap-GenerateCode">
+				<Option working_dir="/home/slava/work/ostis/sc-machine/cmake-build-debug/sc-memory/test"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j4 -f &quot;/home/slava/work/ostis/sc-machine/cmake-build-debug/sc-memory/test/Makefile&quot;  VERBOSE=1 test_wrap-GenerateCode"/>
+					<CompileFile command="/usr/bin/make -j4 -f &quot;/home/slava/work/ostis/sc-machine/cmake-build-debug/sc-memory/test/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j4 -f &quot;/home/slava/work/ostis/sc-machine/cmake-build-debug/sc-memory/test/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j4 -f &quot;/home/slava/work/ostis/sc-machine/cmake-build-debug/sc-memory/test/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="test_wrap">
+				<Option output="/home/slava/work/ostis/sc-machine/bin/test_wrap" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/slava/work/ostis/sc-machine/bin"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add option="-DSC_PLATFORM_UNIX"/>
+					<Add directory="/home/slava/work/ostis/sc-machine/thirdparty"/>
+					<Add directory="/home/slava/work/ostis/sc-machine"/>
+					<Add directory="/usr/include/glib-2.0"/>
+					<Add directory="/usr/lib/x86_64-linux-gnu/glib-2.0/include"/>
+					<Add directory="/home/slava/work/ostis/sc-machine/cmake-build-debug/sc-memory/test/test_wrap_gen"/>
+					<Add directory="/usr/include/c++/7"/>
+					<Add directory="/usr/include/x86_64-linux-gnu/c++/7"/>
+					<Add directory="/usr/include/c++/7/backward"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include-fixed"/>
+					<Add directory="/usr/include/x86_64-linux-gnu"/>
+					<Add directory="/usr/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j4 -f &quot;/home/slava/work/ostis/sc-machine/cmake-build-debug/sc-memory/test/Makefile&quot;  VERBOSE=1 test_wrap"/>
+					<CompileFile command="/usr/bin/make -j4 -f &quot;/home/slava/work/ostis/sc-machine/cmake-build-debug/sc-memory/test/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j4 -f &quot;/home/slava/work/ostis/sc-machine/cmake-build-debug/sc-memory/test/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j4 -f &quot;/home/slava/work/ostis/sc-machine/cmake-build-debug/sc-memory/test/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="test_wrap/fast">
+				<Option output="/home/slava/work/ostis/sc-machine/bin/test_wrap" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/slava/work/ostis/sc-machine/bin"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add option="-DSC_PLATFORM_UNIX"/>
+					<Add directory="/home/slava/work/ostis/sc-machine/thirdparty"/>
+					<Add directory="/home/slava/work/ostis/sc-machine"/>
+					<Add directory="/usr/include/glib-2.0"/>
+					<Add directory="/usr/lib/x86_64-linux-gnu/glib-2.0/include"/>
+					<Add directory="/home/slava/work/ostis/sc-machine/cmake-build-debug/sc-memory/test/test_wrap_gen"/>
+					<Add directory="/usr/include/c++/7"/>
+					<Add directory="/usr/include/x86_64-linux-gnu/c++/7"/>
+					<Add directory="/usr/include/c++/7/backward"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include-fixed"/>
+					<Add directory="/usr/include/x86_64-linux-gnu"/>
+					<Add directory="/usr/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j4 -f &quot;/home/slava/work/ostis/sc-machine/cmake-build-debug/sc-memory/test/Makefile&quot;  VERBOSE=1 test_wrap/fast"/>
+					<CompileFile command="/usr/bin/make -j4 -f &quot;/home/slava/work/ostis/sc-machine/cmake-build-debug/sc-memory/test/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j4 -f &quot;/home/slava/work/ostis/sc-machine/cmake-build-debug/sc-memory/test/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j4 -f &quot;/home/slava/work/ostis/sc-machine/cmake-build-debug/sc-memory/test/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="sc-memory-test">
+				<Option output="/home/slava/work/ostis/sc-machine/bin/sc-memory-test" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/slava/work/ostis/sc-machine/bin"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add option="-DSC_PLATFORM_UNIX"/>
+					<Add directory="/home/slava/work/ostis/sc-machine/thirdparty"/>
+					<Add directory="/home/slava/work/ostis/sc-machine"/>
+					<Add directory="/usr/include/glib-2.0"/>
+					<Add directory="/usr/lib/x86_64-linux-gnu/glib-2.0/include"/>
+					<Add directory="/home/slava/work/ostis/sc-machine/cmake-build-debug/sc-memory/test/test_wrap_gen"/>
+					<Add directory="/usr/include/c++/7"/>
+					<Add directory="/usr/include/x86_64-linux-gnu/c++/7"/>
+					<Add directory="/usr/include/c++/7/backward"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include-fixed"/>
+					<Add directory="/usr/include/x86_64-linux-gnu"/>
+					<Add directory="/usr/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j4 -f &quot;/home/slava/work/ostis/sc-machine/cmake-build-debug/sc-memory/test/Makefile&quot;  VERBOSE=1 sc-memory-test"/>
+					<CompileFile command="/usr/bin/make -j4 -f &quot;/home/slava/work/ostis/sc-machine/cmake-build-debug/sc-memory/test/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j4 -f &quot;/home/slava/work/ostis/sc-machine/cmake-build-debug/sc-memory/test/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j4 -f &quot;/home/slava/work/ostis/sc-machine/cmake-build-debug/sc-memory/test/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="sc-memory-test/fast">
+				<Option output="/home/slava/work/ostis/sc-machine/bin/sc-memory-test" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/slava/work/ostis/sc-machine/bin"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add option="-DSC_PLATFORM_UNIX"/>
+					<Add directory="/home/slava/work/ostis/sc-machine/thirdparty"/>
+					<Add directory="/home/slava/work/ostis/sc-machine"/>
+					<Add directory="/usr/include/glib-2.0"/>
+					<Add directory="/usr/lib/x86_64-linux-gnu/glib-2.0/include"/>
+					<Add directory="/home/slava/work/ostis/sc-machine/cmake-build-debug/sc-memory/test/test_wrap_gen"/>
+					<Add directory="/usr/include/c++/7"/>
+					<Add directory="/usr/include/x86_64-linux-gnu/c++/7"/>
+					<Add directory="/usr/include/c++/7/backward"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include-fixed"/>
+					<Add directory="/usr/include/x86_64-linux-gnu"/>
+					<Add directory="/usr/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j4 -f &quot;/home/slava/work/ostis/sc-machine/cmake-build-debug/sc-memory/test/Makefile&quot;  VERBOSE=1 sc-memory-test/fast"/>
+					<CompileFile command="/usr/bin/make -j4 -f &quot;/home/slava/work/ostis/sc-machine/cmake-build-debug/sc-memory/test/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j4 -f &quot;/home/slava/work/ostis/sc-machine/cmake-build-debug/sc-memory/test/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j4 -f &quot;/home/slava/work/ostis/sc-machine/cmake-build-debug/sc-memory/test/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="sc-fm-filesystem">
+				<Option output="/home/slava/work/ostis/sc-machine/bin/libsc-fm-filesystem.so" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/slava/work/ostis/sc-machine/cmake-build-debug/sc-fm/sc_fm_filesystem"/>
+				<Option object_output="./"/>
+				<Option type="3"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add option="-DSC_PLATFORM_UNIX"/>
+					<Add directory="/home/slava/work/ostis/sc-machine/thirdparty"/>
+					<Add directory="/home/slava/work/ostis/sc-machine"/>
+					<Add directory="/usr/include/glib-2.0"/>
+					<Add directory="/usr/lib/x86_64-linux-gnu/glib-2.0/include"/>
+					<Add directory="/home/slava/work/ostis/sc-machine/sc-memory/sc-store"/>
+					<Add directory="/usr/include/c++/7"/>
+					<Add directory="/usr/include/x86_64-linux-gnu/c++/7"/>
+					<Add directory="/usr/include/c++/7/backward"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include-fixed"/>
+					<Add directory="/usr/include/x86_64-linux-gnu"/>
+					<Add directory="/usr/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j4 -f &quot;/home/slava/work/ostis/sc-machine/cmake-build-debug/sc-fm/sc_fm_filesystem/Makefile&quot;  VERBOSE=1 sc-fm-filesystem"/>
+					<CompileFile command="/usr/bin/make -j4 -f &quot;/home/slava/work/ostis/sc-machine/cmake-build-debug/sc-fm/sc_fm_filesystem/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j4 -f &quot;/home/slava/work/ostis/sc-machine/cmake-build-debug/sc-fm/sc_fm_filesystem/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j4 -f &quot;/home/slava/work/ostis/sc-machine/cmake-build-debug/sc-fm/sc_fm_filesystem/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="sc-fm-filesystem/fast">
+				<Option output="/home/slava/work/ostis/sc-machine/bin/libsc-fm-filesystem.so" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/slava/work/ostis/sc-machine/cmake-build-debug/sc-fm/sc_fm_filesystem"/>
+				<Option object_output="./"/>
+				<Option type="3"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add option="-DSC_PLATFORM_UNIX"/>
+					<Add directory="/home/slava/work/ostis/sc-machine/thirdparty"/>
+					<Add directory="/home/slava/work/ostis/sc-machine"/>
+					<Add directory="/usr/include/glib-2.0"/>
+					<Add directory="/usr/lib/x86_64-linux-gnu/glib-2.0/include"/>
+					<Add directory="/home/slava/work/ostis/sc-machine/sc-memory/sc-store"/>
+					<Add directory="/usr/include/c++/7"/>
+					<Add directory="/usr/include/x86_64-linux-gnu/c++/7"/>
+					<Add directory="/usr/include/c++/7/backward"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include-fixed"/>
+					<Add directory="/usr/include/x86_64-linux-gnu"/>
+					<Add directory="/usr/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j4 -f &quot;/home/slava/work/ostis/sc-machine/cmake-build-debug/sc-fm/sc_fm_filesystem/Makefile&quot;  VERBOSE=1 sc-fm-filesystem/fast"/>
+					<CompileFile command="/usr/bin/make -j4 -f &quot;/home/slava/work/ostis/sc-machine/cmake-build-debug/sc-fm/sc_fm_filesystem/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j4 -f &quot;/home/slava/work/ostis/sc-machine/cmake-build-debug/sc-fm/sc_fm_filesystem/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j4 -f &quot;/home/slava/work/ostis/sc-machine/cmake-build-debug/sc-fm/sc_fm_filesystem/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="sc-fm-redis">
+				<Option output="/home/slava/work/ostis/sc-machine/bin/libsc-fm-redis.so" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/slava/work/ostis/sc-machine/cmake-build-debug/sc-fm/sc_fm_redis"/>
+				<Option object_output="./"/>
+				<Option type="3"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add option="-DSC_PLATFORM_UNIX"/>
+					<Add directory="/home/slava/work/ostis/sc-machine/thirdparty"/>
+					<Add directory="/home/slava/work/ostis/sc-machine"/>
+					<Add directory="/usr/include/glib-2.0"/>
+					<Add directory="/usr/lib/x86_64-linux-gnu/glib-2.0/include"/>
+					<Add directory="/home/slava/work/ostis/sc-machine/sc-memory/sc-store"/>
+					<Add directory="/usr/include/hiredis"/>
+					<Add directory="/usr/include/c++/7"/>
+					<Add directory="/usr/include/x86_64-linux-gnu/c++/7"/>
+					<Add directory="/usr/include/c++/7/backward"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include-fixed"/>
+					<Add directory="/usr/include/x86_64-linux-gnu"/>
+					<Add directory="/usr/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j4 -f &quot;/home/slava/work/ostis/sc-machine/cmake-build-debug/sc-fm/sc_fm_redis/Makefile&quot;  VERBOSE=1 sc-fm-redis"/>
+					<CompileFile command="/usr/bin/make -j4 -f &quot;/home/slava/work/ostis/sc-machine/cmake-build-debug/sc-fm/sc_fm_redis/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j4 -f &quot;/home/slava/work/ostis/sc-machine/cmake-build-debug/sc-fm/sc_fm_redis/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j4 -f &quot;/home/slava/work/ostis/sc-machine/cmake-build-debug/sc-fm/sc_fm_redis/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="sc-fm-redis/fast">
+				<Option output="/home/slava/work/ostis/sc-machine/bin/libsc-fm-redis.so" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/slava/work/ostis/sc-machine/cmake-build-debug/sc-fm/sc_fm_redis"/>
+				<Option object_output="./"/>
+				<Option type="3"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add option="-DSC_PLATFORM_UNIX"/>
+					<Add directory="/home/slava/work/ostis/sc-machine/thirdparty"/>
+					<Add directory="/home/slava/work/ostis/sc-machine"/>
+					<Add directory="/usr/include/glib-2.0"/>
+					<Add directory="/usr/lib/x86_64-linux-gnu/glib-2.0/include"/>
+					<Add directory="/home/slava/work/ostis/sc-machine/sc-memory/sc-store"/>
+					<Add directory="/usr/include/hiredis"/>
+					<Add directory="/usr/include/c++/7"/>
+					<Add directory="/usr/include/x86_64-linux-gnu/c++/7"/>
+					<Add directory="/usr/include/c++/7/backward"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include-fixed"/>
+					<Add directory="/usr/include/x86_64-linux-gnu"/>
+					<Add directory="/usr/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j4 -f &quot;/home/slava/work/ostis/sc-machine/cmake-build-debug/sc-fm/sc_fm_redis/Makefile&quot;  VERBOSE=1 sc-fm-redis/fast"/>
+					<CompileFile command="/usr/bin/make -j4 -f &quot;/home/slava/work/ostis/sc-machine/cmake-build-debug/sc-fm/sc_fm_redis/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j4 -f &quot;/home/slava/work/ostis/sc-machine/cmake-build-debug/sc-fm/sc_fm_redis/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j4 -f &quot;/home/slava/work/ostis/sc-machine/cmake-build-debug/sc-fm/sc_fm_redis/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="sc-kpm-common">
+				<Option output="/home/slava/work/ostis/sc-machine/bin/libsc-kpm-common.so" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/slava/work/ostis/sc-machine/cmake-build-debug/sc-kpm/common"/>
+				<Option object_output="./"/>
+				<Option type="3"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add option="-DSC_KPM_COMMON_SELF_BUILD"/>
+					<Add option="-DSC_PLATFORM_UNIX"/>
+					<Add directory="/home/slava/work/ostis/sc-machine/thirdparty"/>
+					<Add directory="/home/slava/work/ostis/sc-machine"/>
+					<Add directory="/usr/include/glib-2.0"/>
+					<Add directory="/usr/lib/x86_64-linux-gnu/glib-2.0/include"/>
+					<Add directory="/home/slava/work/ostis/sc-machine/sc-kpm/common"/>
+					<Add directory="/home/slava/work/ostis/sc-machine/sc-memory"/>
+					<Add directory="/usr/include/c++/7"/>
+					<Add directory="/usr/include/x86_64-linux-gnu/c++/7"/>
+					<Add directory="/usr/include/c++/7/backward"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include-fixed"/>
+					<Add directory="/usr/include/x86_64-linux-gnu"/>
+					<Add directory="/usr/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j4 -f &quot;/home/slava/work/ostis/sc-machine/cmake-build-debug/sc-kpm/common/Makefile&quot;  VERBOSE=1 sc-kpm-common"/>
+					<CompileFile command="/usr/bin/make -j4 -f &quot;/home/slava/work/ostis/sc-machine/cmake-build-debug/sc-kpm/common/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j4 -f &quot;/home/slava/work/ostis/sc-machine/cmake-build-debug/sc-kpm/common/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j4 -f &quot;/home/slava/work/ostis/sc-machine/cmake-build-debug/sc-kpm/common/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="sc-kpm-common/fast">
+				<Option output="/home/slava/work/ostis/sc-machine/bin/libsc-kpm-common.so" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/slava/work/ostis/sc-machine/cmake-build-debug/sc-kpm/common"/>
+				<Option object_output="./"/>
+				<Option type="3"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add option="-DSC_KPM_COMMON_SELF_BUILD"/>
+					<Add option="-DSC_PLATFORM_UNIX"/>
+					<Add directory="/home/slava/work/ostis/sc-machine/thirdparty"/>
+					<Add directory="/home/slava/work/ostis/sc-machine"/>
+					<Add directory="/usr/include/glib-2.0"/>
+					<Add directory="/usr/lib/x86_64-linux-gnu/glib-2.0/include"/>
+					<Add directory="/home/slava/work/ostis/sc-machine/sc-kpm/common"/>
+					<Add directory="/home/slava/work/ostis/sc-machine/sc-memory"/>
+					<Add directory="/usr/include/c++/7"/>
+					<Add directory="/usr/include/x86_64-linux-gnu/c++/7"/>
+					<Add directory="/usr/include/c++/7/backward"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include-fixed"/>
+					<Add directory="/usr/include/x86_64-linux-gnu"/>
+					<Add directory="/usr/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j4 -f &quot;/home/slava/work/ostis/sc-machine/cmake-build-debug/sc-kpm/common/Makefile&quot;  VERBOSE=1 sc-kpm-common/fast"/>
+					<CompileFile command="/usr/bin/make -j4 -f &quot;/home/slava/work/ostis/sc-machine/cmake-build-debug/sc-kpm/common/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j4 -f &quot;/home/slava/work/ostis/sc-machine/cmake-build-debug/sc-kpm/common/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j4 -f &quot;/home/slava/work/ostis/sc-machine/cmake-build-debug/sc-kpm/common/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="ui">
+				<Option output="/home/slava/work/ostis/sc-machine/bin/extensions/libui.so" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/slava/work/ostis/sc-machine/cmake-build-debug/sc-kpm/ui"/>
+				<Option object_output="./"/>
+				<Option type="3"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add option="-DSC_PLATFORM_UNIX"/>
+					<Add option="-DSC_KPM_COMMON_SELF_BUILD"/>
+					<Add directory="/home/slava/work/ostis/sc-machine/thirdparty"/>
+					<Add directory="/home/slava/work/ostis/sc-machine"/>
+					<Add directory="/usr/include/glib-2.0"/>
+					<Add directory="/usr/lib/x86_64-linux-gnu/glib-2.0/include"/>
+					<Add directory="/home/slava/work/ostis/sc-machine/sc-kpm/ui"/>
+					<Add directory="/home/slava/work/ostis/sc-machine/sc-memory"/>
+					<Add directory="/usr/include/c++/7"/>
+					<Add directory="/usr/include/x86_64-linux-gnu/c++/7"/>
+					<Add directory="/usr/include/c++/7/backward"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include-fixed"/>
+					<Add directory="/usr/include/x86_64-linux-gnu"/>
+					<Add directory="/usr/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j4 -f &quot;/home/slava/work/ostis/sc-machine/cmake-build-debug/sc-kpm/ui/Makefile&quot;  VERBOSE=1 ui"/>
+					<CompileFile command="/usr/bin/make -j4 -f &quot;/home/slava/work/ostis/sc-machine/cmake-build-debug/sc-kpm/ui/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j4 -f &quot;/home/slava/work/ostis/sc-machine/cmake-build-debug/sc-kpm/ui/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j4 -f &quot;/home/slava/work/ostis/sc-machine/cmake-build-debug/sc-kpm/ui/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="ui/fast">
+				<Option output="/home/slava/work/ostis/sc-machine/bin/extensions/libui.so" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/slava/work/ostis/sc-machine/cmake-build-debug/sc-kpm/ui"/>
+				<Option object_output="./"/>
+				<Option type="3"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add option="-DSC_PLATFORM_UNIX"/>
+					<Add option="-DSC_KPM_COMMON_SELF_BUILD"/>
+					<Add directory="/home/slava/work/ostis/sc-machine/thirdparty"/>
+					<Add directory="/home/slava/work/ostis/sc-machine"/>
+					<Add directory="/usr/include/glib-2.0"/>
+					<Add directory="/usr/lib/x86_64-linux-gnu/glib-2.0/include"/>
+					<Add directory="/home/slava/work/ostis/sc-machine/sc-kpm/ui"/>
+					<Add directory="/home/slava/work/ostis/sc-machine/sc-memory"/>
+					<Add directory="/usr/include/c++/7"/>
+					<Add directory="/usr/include/x86_64-linux-gnu/c++/7"/>
+					<Add directory="/usr/include/c++/7/backward"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include-fixed"/>
+					<Add directory="/usr/include/x86_64-linux-gnu"/>
+					<Add directory="/usr/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j4 -f &quot;/home/slava/work/ostis/sc-machine/cmake-build-debug/sc-kpm/ui/Makefile&quot;  VERBOSE=1 ui/fast"/>
+					<CompileFile command="/usr/bin/make -j4 -f &quot;/home/slava/work/ostis/sc-machine/cmake-build-debug/sc-kpm/ui/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j4 -f &quot;/home/slava/work/ostis/sc-machine/cmake-build-debug/sc-kpm/ui/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j4 -f &quot;/home/slava/work/ostis/sc-machine/cmake-build-debug/sc-kpm/ui/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="search">
+				<Option output="/home/slava/work/ostis/sc-machine/bin/extensions/libsearch.so" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/slava/work/ostis/sc-machine/cmake-build-debug/sc-kpm/search"/>
+				<Option object_output="./"/>
+				<Option type="3"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add option="-DSC_PLATFORM_UNIX"/>
+					<Add option="-DSC_KPM_COMMON_SELF_BUILD"/>
+					<Add directory="/home/slava/work/ostis/sc-machine/thirdparty"/>
+					<Add directory="/home/slava/work/ostis/sc-machine"/>
+					<Add directory="/usr/include/glib-2.0"/>
+					<Add directory="/usr/lib/x86_64-linux-gnu/glib-2.0/include"/>
+					<Add directory="/home/slava/work/ostis/sc-machine/sc-kpm/search"/>
+					<Add directory="/home/slava/work/ostis/sc-machine/sc-memory"/>
+					<Add directory="/usr/include/c++/7"/>
+					<Add directory="/usr/include/x86_64-linux-gnu/c++/7"/>
+					<Add directory="/usr/include/c++/7/backward"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include-fixed"/>
+					<Add directory="/usr/include/x86_64-linux-gnu"/>
+					<Add directory="/usr/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j4 -f &quot;/home/slava/work/ostis/sc-machine/cmake-build-debug/sc-kpm/search/Makefile&quot;  VERBOSE=1 search"/>
+					<CompileFile command="/usr/bin/make -j4 -f &quot;/home/slava/work/ostis/sc-machine/cmake-build-debug/sc-kpm/search/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j4 -f &quot;/home/slava/work/ostis/sc-machine/cmake-build-debug/sc-kpm/search/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j4 -f &quot;/home/slava/work/ostis/sc-machine/cmake-build-debug/sc-kpm/search/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="search/fast">
+				<Option output="/home/slava/work/ostis/sc-machine/bin/extensions/libsearch.so" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/slava/work/ostis/sc-machine/cmake-build-debug/sc-kpm/search"/>
+				<Option object_output="./"/>
+				<Option type="3"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add option="-DSC_PLATFORM_UNIX"/>
+					<Add option="-DSC_KPM_COMMON_SELF_BUILD"/>
+					<Add directory="/home/slava/work/ostis/sc-machine/thirdparty"/>
+					<Add directory="/home/slava/work/ostis/sc-machine"/>
+					<Add directory="/usr/include/glib-2.0"/>
+					<Add directory="/usr/lib/x86_64-linux-gnu/glib-2.0/include"/>
+					<Add directory="/home/slava/work/ostis/sc-machine/sc-kpm/search"/>
+					<Add directory="/home/slava/work/ostis/sc-machine/sc-memory"/>
+					<Add directory="/usr/include/c++/7"/>
+					<Add directory="/usr/include/x86_64-linux-gnu/c++/7"/>
+					<Add directory="/usr/include/c++/7/backward"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include-fixed"/>
+					<Add directory="/usr/include/x86_64-linux-gnu"/>
+					<Add directory="/usr/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j4 -f &quot;/home/slava/work/ostis/sc-machine/cmake-build-debug/sc-kpm/search/Makefile&quot;  VERBOSE=1 search/fast"/>
+					<CompileFile command="/usr/bin/make -j4 -f &quot;/home/slava/work/ostis/sc-machine/cmake-build-debug/sc-kpm/search/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j4 -f &quot;/home/slava/work/ostis/sc-machine/cmake-build-debug/sc-kpm/search/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j4 -f &quot;/home/slava/work/ostis/sc-machine/cmake-build-debug/sc-kpm/search/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="utils">
+				<Option output="/home/slava/work/ostis/sc-machine/bin/extensions/libutils.so" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/slava/work/ostis/sc-machine/cmake-build-debug/sc-kpm/utils"/>
+				<Option object_output="./"/>
+				<Option type="3"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add option="-DSC_PLATFORM_UNIX"/>
+					<Add option="-DSC_KPM_COMMON_SELF_BUILD"/>
+					<Add directory="/home/slava/work/ostis/sc-machine/thirdparty"/>
+					<Add directory="/home/slava/work/ostis/sc-machine"/>
+					<Add directory="/usr/include/glib-2.0"/>
+					<Add directory="/usr/lib/x86_64-linux-gnu/glib-2.0/include"/>
+					<Add directory="/home/slava/work/ostis/sc-machine/sc-kpm/utils"/>
+					<Add directory="/home/slava/work/ostis/sc-machine/sc-memory"/>
+					<Add directory="/usr/include/hiredis"/>
+					<Add directory="/usr/include/c++/7"/>
+					<Add directory="/usr/include/x86_64-linux-gnu/c++/7"/>
+					<Add directory="/usr/include/c++/7/backward"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include-fixed"/>
+					<Add directory="/usr/include/x86_64-linux-gnu"/>
+					<Add directory="/usr/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j4 -f &quot;/home/slava/work/ostis/sc-machine/cmake-build-debug/sc-kpm/utils/Makefile&quot;  VERBOSE=1 utils"/>
+					<CompileFile command="/usr/bin/make -j4 -f &quot;/home/slava/work/ostis/sc-machine/cmake-build-debug/sc-kpm/utils/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j4 -f &quot;/home/slava/work/ostis/sc-machine/cmake-build-debug/sc-kpm/utils/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j4 -f &quot;/home/slava/work/ostis/sc-machine/cmake-build-debug/sc-kpm/utils/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="utils/fast">
+				<Option output="/home/slava/work/ostis/sc-machine/bin/extensions/libutils.so" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/slava/work/ostis/sc-machine/cmake-build-debug/sc-kpm/utils"/>
+				<Option object_output="./"/>
+				<Option type="3"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add option="-DSC_PLATFORM_UNIX"/>
+					<Add option="-DSC_KPM_COMMON_SELF_BUILD"/>
+					<Add directory="/home/slava/work/ostis/sc-machine/thirdparty"/>
+					<Add directory="/home/slava/work/ostis/sc-machine"/>
+					<Add directory="/usr/include/glib-2.0"/>
+					<Add directory="/usr/lib/x86_64-linux-gnu/glib-2.0/include"/>
+					<Add directory="/home/slava/work/ostis/sc-machine/sc-kpm/utils"/>
+					<Add directory="/home/slava/work/ostis/sc-machine/sc-memory"/>
+					<Add directory="/usr/include/hiredis"/>
+					<Add directory="/usr/include/c++/7"/>
+					<Add directory="/usr/include/x86_64-linux-gnu/c++/7"/>
+					<Add directory="/usr/include/c++/7/backward"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include-fixed"/>
+					<Add directory="/usr/include/x86_64-linux-gnu"/>
+					<Add directory="/usr/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j4 -f &quot;/home/slava/work/ostis/sc-machine/cmake-build-debug/sc-kpm/utils/Makefile&quot;  VERBOSE=1 utils/fast"/>
+					<CompileFile command="/usr/bin/make -j4 -f &quot;/home/slava/work/ostis/sc-machine/cmake-build-debug/sc-kpm/utils/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j4 -f &quot;/home/slava/work/ostis/sc-machine/cmake-build-debug/sc-kpm/utils/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j4 -f &quot;/home/slava/work/ostis/sc-machine/cmake-build-debug/sc-kpm/utils/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="scp">
+				<Option output="/home/slava/work/ostis/sc-machine/bin/extensions/libscp.so" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/slava/work/ostis/sc-machine/cmake-build-debug/sc-kpm/scp"/>
+				<Option object_output="./"/>
+				<Option type="3"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add option="-DSC_PLATFORM_UNIX"/>
+					<Add option="-DSCP_MATH"/>
+					<Add option="-DSCP_STRING"/>
+					<Add directory="/home/slava/work/ostis/sc-machine/thirdparty"/>
+					<Add directory="/home/slava/work/ostis/sc-machine"/>
+					<Add directory="/usr/include/glib-2.0"/>
+					<Add directory="/usr/lib/x86_64-linux-gnu/glib-2.0/include"/>
+					<Add directory="/home/slava/work/ostis/sc-machine/sc-kpm/scp/scp_lib"/>
+					<Add directory="/home/slava/work/ostis/sc-machine/sc-memory"/>
+					<Add directory="/usr/include/c++/7"/>
+					<Add directory="/usr/include/x86_64-linux-gnu/c++/7"/>
+					<Add directory="/usr/include/c++/7/backward"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include-fixed"/>
+					<Add directory="/usr/include/x86_64-linux-gnu"/>
+					<Add directory="/usr/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j4 -f &quot;/home/slava/work/ostis/sc-machine/cmake-build-debug/sc-kpm/scp/Makefile&quot;  VERBOSE=1 scp"/>
+					<CompileFile command="/usr/bin/make -j4 -f &quot;/home/slava/work/ostis/sc-machine/cmake-build-debug/sc-kpm/scp/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j4 -f &quot;/home/slava/work/ostis/sc-machine/cmake-build-debug/sc-kpm/scp/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j4 -f &quot;/home/slava/work/ostis/sc-machine/cmake-build-debug/sc-kpm/scp/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="scp/fast">
+				<Option output="/home/slava/work/ostis/sc-machine/bin/extensions/libscp.so" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/slava/work/ostis/sc-machine/cmake-build-debug/sc-kpm/scp"/>
+				<Option object_output="./"/>
+				<Option type="3"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add option="-DSC_PLATFORM_UNIX"/>
+					<Add option="-DSCP_MATH"/>
+					<Add option="-DSCP_STRING"/>
+					<Add directory="/home/slava/work/ostis/sc-machine/thirdparty"/>
+					<Add directory="/home/slava/work/ostis/sc-machine"/>
+					<Add directory="/usr/include/glib-2.0"/>
+					<Add directory="/usr/lib/x86_64-linux-gnu/glib-2.0/include"/>
+					<Add directory="/home/slava/work/ostis/sc-machine/sc-kpm/scp/scp_lib"/>
+					<Add directory="/home/slava/work/ostis/sc-machine/sc-memory"/>
+					<Add directory="/usr/include/c++/7"/>
+					<Add directory="/usr/include/x86_64-linux-gnu/c++/7"/>
+					<Add directory="/usr/include/c++/7/backward"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include-fixed"/>
+					<Add directory="/usr/include/x86_64-linux-gnu"/>
+					<Add directory="/usr/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j4 -f &quot;/home/slava/work/ostis/sc-machine/cmake-build-debug/sc-kpm/scp/Makefile&quot;  VERBOSE=1 scp/fast"/>
+					<CompileFile command="/usr/bin/make -j4 -f &quot;/home/slava/work/ostis/sc-machine/cmake-build-debug/sc-kpm/scp/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j4 -f &quot;/home/slava/work/ostis/sc-machine/cmake-build-debug/sc-kpm/scp/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j4 -f &quot;/home/slava/work/ostis/sc-machine/cmake-build-debug/sc-kpm/scp/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="sctp-server">
+				<Option output="/home/slava/work/ostis/sc-machine/bin/sctp-server" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/slava/work/ostis/sc-machine/bin"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add option="-DSC_PLATFORM_UNIX"/>
+					<Add option="-DQT_CORE_LIB"/>
+					<Add option="-DQT_NETWORK_LIB"/>
+					<Add directory="/home/slava/work/ostis/sc-machine/cmake-build-debug/sc-network/sctp_server/sctp-server_autogen/include"/>
+					<Add directory="/home/slava/work/ostis/sc-machine/thirdparty"/>
+					<Add directory="/home/slava/work/ostis/sc-machine"/>
+					<Add directory="/usr/include/glib-2.0"/>
+					<Add directory="/usr/lib/x86_64-linux-gnu/glib-2.0/include"/>
+					<Add directory="/home/slava/work/ostis/sc-machine/sc-memory"/>
+					<Add directory="/usr/include/x86_64-linux-gnu/qt5"/>
+					<Add directory="/usr/include/x86_64-linux-gnu/qt5/QtCore"/>
+					<Add directory="/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++"/>
+					<Add directory="/usr/include/x86_64-linux-gnu/qt5/QtNetwork"/>
+					<Add directory="/usr/include/c++/7"/>
+					<Add directory="/usr/include/x86_64-linux-gnu/c++/7"/>
+					<Add directory="/usr/include/c++/7/backward"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include-fixed"/>
+					<Add directory="/usr/include/x86_64-linux-gnu"/>
+					<Add directory="/usr/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j4 -f &quot;/home/slava/work/ostis/sc-machine/cmake-build-debug/sc-network/sctp_server/Makefile&quot;  VERBOSE=1 sctp-server"/>
+					<CompileFile command="/usr/bin/make -j4 -f &quot;/home/slava/work/ostis/sc-machine/cmake-build-debug/sc-network/sctp_server/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j4 -f &quot;/home/slava/work/ostis/sc-machine/cmake-build-debug/sc-network/sctp_server/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j4 -f &quot;/home/slava/work/ostis/sc-machine/cmake-build-debug/sc-network/sctp_server/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="sctp-server/fast">
+				<Option output="/home/slava/work/ostis/sc-machine/bin/sctp-server" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/slava/work/ostis/sc-machine/bin"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add option="-DSC_PLATFORM_UNIX"/>
+					<Add option="-DQT_CORE_LIB"/>
+					<Add option="-DQT_NETWORK_LIB"/>
+					<Add directory="/home/slava/work/ostis/sc-machine/cmake-build-debug/sc-network/sctp_server/sctp-server_autogen/include"/>
+					<Add directory="/home/slava/work/ostis/sc-machine/thirdparty"/>
+					<Add directory="/home/slava/work/ostis/sc-machine"/>
+					<Add directory="/usr/include/glib-2.0"/>
+					<Add directory="/usr/lib/x86_64-linux-gnu/glib-2.0/include"/>
+					<Add directory="/home/slava/work/ostis/sc-machine/sc-memory"/>
+					<Add directory="/usr/include/x86_64-linux-gnu/qt5"/>
+					<Add directory="/usr/include/x86_64-linux-gnu/qt5/QtCore"/>
+					<Add directory="/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++"/>
+					<Add directory="/usr/include/x86_64-linux-gnu/qt5/QtNetwork"/>
+					<Add directory="/usr/include/c++/7"/>
+					<Add directory="/usr/include/x86_64-linux-gnu/c++/7"/>
+					<Add directory="/usr/include/c++/7/backward"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include-fixed"/>
+					<Add directory="/usr/include/x86_64-linux-gnu"/>
+					<Add directory="/usr/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j4 -f &quot;/home/slava/work/ostis/sc-machine/cmake-build-debug/sc-network/sctp_server/Makefile&quot;  VERBOSE=1 sctp-server/fast"/>
+					<CompileFile command="/usr/bin/make -j4 -f &quot;/home/slava/work/ostis/sc-machine/cmake-build-debug/sc-network/sctp_server/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j4 -f &quot;/home/slava/work/ostis/sc-machine/cmake-build-debug/sc-network/sctp_server/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j4 -f &quot;/home/slava/work/ostis/sc-machine/cmake-build-debug/sc-network/sctp_server/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="sctp-server_autogen">
+				<Option working_dir="/home/slava/work/ostis/sc-machine/cmake-build-debug/sc-network/sctp_server"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j4 -f &quot;/home/slava/work/ostis/sc-machine/cmake-build-debug/sc-network/sctp_server/Makefile&quot;  VERBOSE=1 sctp-server_autogen"/>
+					<CompileFile command="/usr/bin/make -j4 -f &quot;/home/slava/work/ostis/sc-machine/cmake-build-debug/sc-network/sctp_server/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j4 -f &quot;/home/slava/work/ostis/sc-machine/cmake-build-debug/sc-network/sctp_server/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j4 -f &quot;/home/slava/work/ostis/sc-machine/cmake-build-debug/sc-network/sctp_server/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="sctp-client">
+				<Option output="/home/slava/work/ostis/sc-machine/bin/libsctp-client.so" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/slava/work/ostis/sc-machine/cmake-build-debug/sc-network/sctp_client"/>
+				<Option object_output="./"/>
+				<Option type="3"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add option="-DSC_MEMORY_SELF_BUILD"/>
+					<Add option="-DSC_PLATFORM_UNIX"/>
+					<Add directory="/home/slava/work/ostis/sc-machine/cmake-build-debug/sc-network/sctp_client/sctp-client_autogen/include"/>
+					<Add directory="/home/slava/work/ostis/sc-machine/thirdparty"/>
+					<Add directory="/home/slava/work/ostis/sc-machine"/>
+					<Add directory="/usr/include/glib-2.0"/>
+					<Add directory="/usr/lib/x86_64-linux-gnu/glib-2.0/include"/>
+					<Add directory="/usr/include/c++/7"/>
+					<Add directory="/usr/include/x86_64-linux-gnu/c++/7"/>
+					<Add directory="/usr/include/c++/7/backward"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include-fixed"/>
+					<Add directory="/usr/include/x86_64-linux-gnu"/>
+					<Add directory="/usr/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j4 -f &quot;/home/slava/work/ostis/sc-machine/cmake-build-debug/sc-network/sctp_client/Makefile&quot;  VERBOSE=1 sctp-client"/>
+					<CompileFile command="/usr/bin/make -j4 -f &quot;/home/slava/work/ostis/sc-machine/cmake-build-debug/sc-network/sctp_client/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j4 -f &quot;/home/slava/work/ostis/sc-machine/cmake-build-debug/sc-network/sctp_client/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j4 -f &quot;/home/slava/work/ostis/sc-machine/cmake-build-debug/sc-network/sctp_client/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="sctp-client/fast">
+				<Option output="/home/slava/work/ostis/sc-machine/bin/libsctp-client.so" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/slava/work/ostis/sc-machine/cmake-build-debug/sc-network/sctp_client"/>
+				<Option object_output="./"/>
+				<Option type="3"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add option="-DSC_MEMORY_SELF_BUILD"/>
+					<Add option="-DSC_PLATFORM_UNIX"/>
+					<Add directory="/home/slava/work/ostis/sc-machine/cmake-build-debug/sc-network/sctp_client/sctp-client_autogen/include"/>
+					<Add directory="/home/slava/work/ostis/sc-machine/thirdparty"/>
+					<Add directory="/home/slava/work/ostis/sc-machine"/>
+					<Add directory="/usr/include/glib-2.0"/>
+					<Add directory="/usr/lib/x86_64-linux-gnu/glib-2.0/include"/>
+					<Add directory="/usr/include/c++/7"/>
+					<Add directory="/usr/include/x86_64-linux-gnu/c++/7"/>
+					<Add directory="/usr/include/c++/7/backward"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include-fixed"/>
+					<Add directory="/usr/include/x86_64-linux-gnu"/>
+					<Add directory="/usr/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j4 -f &quot;/home/slava/work/ostis/sc-machine/cmake-build-debug/sc-network/sctp_client/Makefile&quot;  VERBOSE=1 sctp-client/fast"/>
+					<CompileFile command="/usr/bin/make -j4 -f &quot;/home/slava/work/ostis/sc-machine/cmake-build-debug/sc-network/sctp_client/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j4 -f &quot;/home/slava/work/ostis/sc-machine/cmake-build-debug/sc-network/sctp_client/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j4 -f &quot;/home/slava/work/ostis/sc-machine/cmake-build-debug/sc-network/sctp_client/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="sctp-client_autogen">
+				<Option working_dir="/home/slava/work/ostis/sc-machine/cmake-build-debug/sc-network/sctp_client"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j4 -f &quot;/home/slava/work/ostis/sc-machine/cmake-build-debug/sc-network/sctp_client/Makefile&quot;  VERBOSE=1 sctp-client_autogen"/>
+					<CompileFile command="/usr/bin/make -j4 -f &quot;/home/slava/work/ostis/sc-machine/cmake-build-debug/sc-network/sctp_client/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j4 -f &quot;/home/slava/work/ostis/sc-machine/cmake-build-debug/sc-network/sctp_client/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j4 -f &quot;/home/slava/work/ostis/sc-machine/cmake-build-debug/sc-network/sctp_client/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="sc-builder">
+				<Option output="/home/slava/work/ostis/sc-machine/bin/sc-builder" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/slava/work/ostis/sc-machine/bin"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add option="-DSC_PLATFORM_UNIX"/>
+					<Add directory="/home/slava/work/ostis/sc-machine/thirdparty"/>
+					<Add directory="/home/slava/work/ostis/sc-machine"/>
+					<Add directory="/usr/include/glib-2.0"/>
+					<Add directory="/usr/lib/x86_64-linux-gnu/glib-2.0/include"/>
+					<Add directory="/home/slava/work/ostis/sc-machine/sc-memory"/>
+					<Add directory="/usr/include/c++/7"/>
+					<Add directory="/usr/include/x86_64-linux-gnu/c++/7"/>
+					<Add directory="/usr/include/c++/7/backward"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include-fixed"/>
+					<Add directory="/usr/include/x86_64-linux-gnu"/>
+					<Add directory="/usr/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j4 -f &quot;/home/slava/work/ostis/sc-machine/cmake-build-debug/tools/builder/Makefile&quot;  VERBOSE=1 sc-builder"/>
+					<CompileFile command="/usr/bin/make -j4 -f &quot;/home/slava/work/ostis/sc-machine/cmake-build-debug/tools/builder/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j4 -f &quot;/home/slava/work/ostis/sc-machine/cmake-build-debug/tools/builder/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j4 -f &quot;/home/slava/work/ostis/sc-machine/cmake-build-debug/tools/builder/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="sc-builder/fast">
+				<Option output="/home/slava/work/ostis/sc-machine/bin/sc-builder" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/slava/work/ostis/sc-machine/bin"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add option="-DSC_PLATFORM_UNIX"/>
+					<Add directory="/home/slava/work/ostis/sc-machine/thirdparty"/>
+					<Add directory="/home/slava/work/ostis/sc-machine"/>
+					<Add directory="/usr/include/glib-2.0"/>
+					<Add directory="/usr/lib/x86_64-linux-gnu/glib-2.0/include"/>
+					<Add directory="/home/slava/work/ostis/sc-machine/sc-memory"/>
+					<Add directory="/usr/include/c++/7"/>
+					<Add directory="/usr/include/x86_64-linux-gnu/c++/7"/>
+					<Add directory="/usr/include/c++/7/backward"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include-fixed"/>
+					<Add directory="/usr/include/x86_64-linux-gnu"/>
+					<Add directory="/usr/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j4 -f &quot;/home/slava/work/ostis/sc-machine/cmake-build-debug/tools/builder/Makefile&quot;  VERBOSE=1 sc-builder/fast"/>
+					<CompileFile command="/usr/bin/make -j4 -f &quot;/home/slava/work/ostis/sc-machine/cmake-build-debug/tools/builder/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j4 -f &quot;/home/slava/work/ostis/sc-machine/cmake-build-debug/tools/builder/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j4 -f &quot;/home/slava/work/ostis/sc-machine/cmake-build-debug/tools/builder/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="GenerateParser">
+				<Option working_dir="/home/slava/work/ostis/sc-machine/cmake-build-debug/tools/builder"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j4 -f &quot;/home/slava/work/ostis/sc-machine/cmake-build-debug/tools/builder/Makefile&quot;  VERBOSE=1 GenerateParser"/>
+					<CompileFile command="/usr/bin/make -j4 -f &quot;/home/slava/work/ostis/sc-machine/cmake-build-debug/tools/builder/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j4 -f &quot;/home/slava/work/ostis/sc-machine/cmake-build-debug/tools/builder/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j4 -f &quot;/home/slava/work/ostis/sc-machine/cmake-build-debug/tools/builder/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="sc-code-generator">
+				<Option output="/home/slava/work/ostis/sc-machine/bin/sc-code-generator" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/slava/work/ostis/sc-machine/bin"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add option="-DSC_PLATFORM_UNIX"/>
+					<Add directory="/home/slava/work/ostis/sc-machine/thirdparty"/>
+					<Add directory="/home/slava/work/ostis/sc-machine"/>
+					<Add directory="/usr/include/glib-2.0"/>
+					<Add directory="/usr/lib/x86_64-linux-gnu/glib-2.0/include"/>
+					<Add directory="/home/slava/work/ostis/sc-machine/tools/codegen/Parser"/>
+					<Add directory="/usr/include/c++/7"/>
+					<Add directory="/usr/include/x86_64-linux-gnu/c++/7"/>
+					<Add directory="/usr/include/c++/7/backward"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include-fixed"/>
+					<Add directory="/usr/include/x86_64-linux-gnu"/>
+					<Add directory="/usr/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j4 -f &quot;/home/slava/work/ostis/sc-machine/cmake-build-debug/tools/codegen/Makefile&quot;  VERBOSE=1 sc-code-generator"/>
+					<CompileFile command="/usr/bin/make -j4 -f &quot;/home/slava/work/ostis/sc-machine/cmake-build-debug/tools/codegen/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j4 -f &quot;/home/slava/work/ostis/sc-machine/cmake-build-debug/tools/codegen/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j4 -f &quot;/home/slava/work/ostis/sc-machine/cmake-build-debug/tools/codegen/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="sc-code-generator/fast">
+				<Option output="/home/slava/work/ostis/sc-machine/bin/sc-code-generator" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/slava/work/ostis/sc-machine/bin"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add option="-DSC_PLATFORM_UNIX"/>
+					<Add directory="/home/slava/work/ostis/sc-machine/thirdparty"/>
+					<Add directory="/home/slava/work/ostis/sc-machine"/>
+					<Add directory="/usr/include/glib-2.0"/>
+					<Add directory="/usr/lib/x86_64-linux-gnu/glib-2.0/include"/>
+					<Add directory="/home/slava/work/ostis/sc-machine/tools/codegen/Parser"/>
+					<Add directory="/usr/include/c++/7"/>
+					<Add directory="/usr/include/x86_64-linux-gnu/c++/7"/>
+					<Add directory="/usr/include/c++/7/backward"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include-fixed"/>
+					<Add directory="/usr/include/x86_64-linux-gnu"/>
+					<Add directory="/usr/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j4 -f &quot;/home/slava/work/ostis/sc-machine/cmake-build-debug/tools/codegen/Makefile&quot;  VERBOSE=1 sc-code-generator/fast"/>
+					<CompileFile command="/usr/bin/make -j4 -f &quot;/home/slava/work/ostis/sc-machine/cmake-build-debug/tools/codegen/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j4 -f &quot;/home/slava/work/ostis/sc-machine/cmake-build-debug/tools/codegen/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j4 -f &quot;/home/slava/work/ostis/sc-machine/cmake-build-debug/tools/codegen/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+		</Build>
+		<Unit filename="/home/slava/work/ostis/sc-machine/cmake-build-debug/sc-network/sctp_client/sctp-client_autogen/mocs_compilation.cpp">
+			<Option target="sctp-client"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/cmake-build-debug/sc-network/sctp_server/sctp-server_autogen/mocs_compilation.cpp">
+			<Option target="sctp-server"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/sc-fm/sc_fm_filesystem/sc_fm_filesystem.c">
+			<Option target="sc-fm-filesystem"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/sc-fm/sc_fm_redis/sc_fm_redis.c">
+			<Option target="sc-fm-redis"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/sc-fm/sc_fm_redis/sc_fm_redis.h">
+			<Option target="sc-fm-redis"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/sc-fm/sc_fm_redis/sc_fm_redis_config.c">
+			<Option target="sc-fm-redis"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/sc-fm/sc_fm_redis/sc_fm_redis_config.h">
+			<Option target="sc-fm-redis"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/sc-fm/sc_fm_redis/sc_fm_redis_types.h">
+			<Option target="sc-fm-redis"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/sc-fm/sc_fm_redis/sc_stream_redis.c">
+			<Option target="sc-fm-redis"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/sc-fm/sc_fm_redis/sc_stream_redis.h">
+			<Option target="sc-fm-redis"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/sc-kpm/common/sc_common_types.h">
+			<Option target="sc-kpm-common"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/sc-kpm/common/sc_keynodes.c">
+			<Option target="sc-kpm-common"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/sc-kpm/common/sc_keynodes.h">
+			<Option target="sc-kpm-common"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/sc-kpm/scp/scp_interpreter.c">
+			<Option target="scp"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/sc-kpm/scp/scp_interpreter.h">
+			<Option target="scp"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/sc-kpm/scp/scp_interpreter_utils.c">
+			<Option target="scp"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/sc-kpm/scp/scp_interpreter_utils.h">
+			<Option target="scp"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/sc-kpm/scp/scp_keynodes.c">
+			<Option target="scp"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/sc-kpm/scp/scp_keynodes.h">
+			<Option target="scp"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/sc-kpm/scp/scp_lib/scp_eraseElStr3.c">
+			<Option target="scp"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/sc-kpm/scp/scp_lib/scp_eraseElStr3.h">
+			<Option target="scp"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/sc-kpm/scp/scp_lib/scp_eraseElStr5.c">
+			<Option target="scp"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/sc-kpm/scp/scp_lib/scp_eraseElStr5.h">
+			<Option target="scp"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/sc-kpm/scp/scp_lib/scp_eraseSetStr3.c">
+			<Option target="scp"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/sc-kpm/scp/scp_lib/scp_eraseSetStr3.h">
+			<Option target="scp"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/sc-kpm/scp/scp_lib/scp_eraseSetStr5.c">
+			<Option target="scp"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/sc-kpm/scp/scp_lib/scp_eraseSetStr5.h">
+			<Option target="scp"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/sc-kpm/scp/scp_lib/scp_factory.h">
+			<Option target="scp"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/sc-kpm/scp/scp_lib/scp_functions.c">
+			<Option target="scp"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/sc-kpm/scp/scp_lib/scp_functions.h">
+			<Option target="scp"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/sc-kpm/scp/scp_lib/scp_genElStr3.c">
+			<Option target="scp"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/sc-kpm/scp/scp_lib/scp_genElStr3.h">
+			<Option target="scp"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/sc-kpm/scp/scp_lib/scp_genElStr5.c">
+			<Option target="scp"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/sc-kpm/scp/scp_lib/scp_genElStr5.h">
+			<Option target="scp"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/sc-kpm/scp/scp_lib/scp_iterator3.c">
+			<Option target="scp"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/sc-kpm/scp/scp_lib/scp_iterator3.h">
+			<Option target="scp"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/sc-kpm/scp/scp_lib/scp_iterator5.c">
+			<Option target="scp"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/sc-kpm/scp/scp_lib/scp_iterator5.h">
+			<Option target="scp"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/sc-kpm/scp/scp_lib/scp_lib.h">
+			<Option target="scp"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/sc-kpm/scp/scp_lib/scp_searchElStr3.c">
+			<Option target="scp"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/sc-kpm/scp/scp_lib/scp_searchElStr3.h">
+			<Option target="scp"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/sc-kpm/scp/scp_lib/scp_searchElStr5.c">
+			<Option target="scp"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/sc-kpm/scp/scp_lib/scp_searchElStr5.h">
+			<Option target="scp"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/sc-kpm/scp/scp_lib/scp_searchSetStr3.c">
+			<Option target="scp"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/sc-kpm/scp/scp_lib/scp_searchSetStr3.h">
+			<Option target="scp"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/sc-kpm/scp/scp_lib/scp_searchSetStr5.c">
+			<Option target="scp"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/sc-kpm/scp/scp_lib/scp_searchSetStr5.h">
+			<Option target="scp"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/sc-kpm/scp/scp_lib/scp_system_operators/sc_system_gen.cpp">
+			<Option target="scp"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/sc-kpm/scp/scp_lib/scp_system_operators/sc_system_gen.h">
+			<Option target="scp"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/sc-kpm/scp/scp_lib/scp_system_operators/sc_system_operators.cpp">
+			<Option target="scp"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/sc-kpm/scp/scp_lib/scp_system_operators/sc_system_operators.h">
+			<Option target="scp"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/sc-kpm/scp/scp_lib/scp_system_operators/sc_system_search.cpp">
+			<Option target="scp"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/sc-kpm/scp/scp_lib/scp_system_operators/sc_system_search.h">
+			<Option target="scp"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/sc-kpm/scp/scp_lib/scp_system_operators/scp_sys.c">
+			<Option target="scp"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/sc-kpm/scp/scp_lib/scp_system_operators/scp_sys.h">
+			<Option target="scp"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/sc-kpm/scp/scp_lib/scp_system_operators/scp_sys_gen.cpp">
+			<Option target="scp"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/sc-kpm/scp/scp_lib/scp_system_operators/scp_sys_gen.h">
+			<Option target="scp"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/sc-kpm/scp/scp_lib/scp_system_operators/scp_sys_search.cpp">
+			<Option target="scp"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/sc-kpm/scp/scp_lib/scp_system_operators/scp_sys_search.h">
+			<Option target="scp"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/sc-kpm/scp/scp_lib/scp_types.c">
+			<Option target="scp"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/sc-kpm/scp/scp_lib/scp_types.h">
+			<Option target="scp"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/sc-kpm/scp/scp_lib/scp_utils.c">
+			<Option target="scp"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/sc-kpm/scp/scp_lib/scp_utils.h">
+			<Option target="scp"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/sc-kpm/scp/scp_operator_interpreter_agents.c">
+			<Option target="scp"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/sc-kpm/scp/scp_operator_interpreter_agents.h">
+			<Option target="scp"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/sc-kpm/scp/scp_operator_interpreter_functions.c">
+			<Option target="scp"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/sc-kpm/scp/scp_operator_interpreter_functions.h">
+			<Option target="scp"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/sc-kpm/scp/scp_operator_keynodes.c">
+			<Option target="scp"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/sc-kpm/scp/scp_operator_keynodes.h">
+			<Option target="scp"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/sc-kpm/scp/scp_operator_syncronizer.c">
+			<Option target="scp"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/sc-kpm/scp/scp_operator_syncronizer.h">
+			<Option target="scp"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/sc-kpm/scp/scp_procedure_preprocessor.c">
+			<Option target="scp"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/sc-kpm/scp/scp_procedure_preprocessor.h">
+			<Option target="scp"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/sc-kpm/scp/scp_procedure_verifier.c">
+			<Option target="scp"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/sc-kpm/scp/scp_procedure_verifier.h">
+			<Option target="scp"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/sc-kpm/scp/scp_process_creator.c">
+			<Option target="scp"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/sc-kpm/scp/scp_process_creator.h">
+			<Option target="scp"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/sc-kpm/scp/scp_process_destroyer.c">
+			<Option target="scp"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/sc-kpm/scp/scp_process_destroyer.h">
+			<Option target="scp"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/sc-kpm/search/agents/search_identifiers.c">
+			<Option target="search"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/sc-kpm/search/agents/search_identifiers.h">
+			<Option target="search"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/sc-kpm/search/agents/search_input_arcs.c">
+			<Option target="search"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/sc-kpm/search/agents/search_input_arcs.h">
+			<Option target="search"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/sc-kpm/search/agents/search_output_arcs.c">
+			<Option target="search"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/sc-kpm/search/agents/search_output_arcs.h">
+			<Option target="search"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/sc-kpm/search/agents/search_semantic_neighborhood.c">
+			<Option target="search"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/sc-kpm/search/agents/search_semantic_neighborhood.h">
+			<Option target="search"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/sc-kpm/search/agents/search_structure.c">
+			<Option target="search"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/sc-kpm/search/agents/search_structure.h">
+			<Option target="search"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/sc-kpm/search/search.c">
+			<Option target="search"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/sc-kpm/search/search.h">
+			<Option target="search"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/sc-kpm/search/search_agents.h">
+			<Option target="search"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/sc-kpm/search/search_defines.h">
+			<Option target="search"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/sc-kpm/search/search_keynodes.c">
+			<Option target="search"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/sc-kpm/search/search_keynodes.h">
+			<Option target="search"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/sc-kpm/search/search_utils.c">
+			<Option target="search"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/sc-kpm/search/search_utils.h">
+			<Option target="search"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/sc-kpm/ui/translators/uiSc2SCgJsonTranslator.cpp">
+			<Option target="ui"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/sc-kpm/ui/translators/uiSc2SCgJsonTranslator.h">
+			<Option target="ui"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/sc-kpm/ui/translators/uiSc2SCnJsonTranslator.cpp">
+			<Option target="ui"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/sc-kpm/ui/translators/uiSc2SCnJsonTranslator.h">
+			<Option target="ui"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/sc-kpm/ui/translators/uiSc2ScsJsonTranslator.cpp">
+			<Option target="ui"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/sc-kpm/ui/translators/uiSc2ScsJsonTranslator.h">
+			<Option target="ui"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/sc-kpm/ui/translators/uiTranslatorFromSc.cpp">
+			<Option target="ui"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/sc-kpm/ui/translators/uiTranslatorFromSc.h">
+			<Option target="ui"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/sc-kpm/ui/ui.cpp">
+			<Option target="ui"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/sc-kpm/ui/ui.h">
+			<Option target="ui"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/sc-kpm/ui/uiCommands.cpp">
+			<Option target="ui"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/sc-kpm/ui/uiCommands.h">
+			<Option target="ui"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/sc-kpm/ui/uiDefines.h">
+			<Option target="ui"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/sc-kpm/ui/uiKeynodes.cpp">
+			<Option target="ui"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/sc-kpm/ui/uiKeynodes.h">
+			<Option target="ui"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/sc-kpm/ui/uiPrecompiled.h">
+			<Option target="ui"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/sc-kpm/ui/uiTranslators.cpp">
+			<Option target="ui"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/sc-kpm/ui/uiTranslators.h">
+			<Option target="ui"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/sc-kpm/ui/uiTypes.cpp">
+			<Option target="ui"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/sc-kpm/ui/uiTypes.h">
+			<Option target="ui"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/sc-kpm/ui/uiUtils.cpp">
+			<Option target="ui"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/sc-kpm/ui/uiUtils.h">
+			<Option target="ui"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/sc-kpm/utils/utils.c">
+			<Option target="utils"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/sc-kpm/utils/utils.h">
+			<Option target="utils"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/sc-kpm/utils/utils_collect_identifiers.c">
+			<Option target="utils"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/sc-kpm/utils/utils_collect_identifiers.h">
+			<Option target="utils"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/sc-kpm/utils/utils_garbage_deletion.c">
+			<Option target="utils"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/sc-kpm/utils/utils_garbage_deletion.h">
+			<Option target="utils"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/sc-kpm/utils/utils_keynodes.c">
+			<Option target="utils"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/sc-kpm/utils/utils_keynodes.h">
+			<Option target="utils"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/sc-memory/cpp/kpm/sc_agent.cpp">
+			<Option target="sc-memory-cpp"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/sc-memory/cpp/kpm/sc_agent.hpp">
+			<Option target="sc-memory-cpp"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/sc-memory/cpp/sc_addr.cpp">
+			<Option target="sc-memory-cpp"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/sc-memory/cpp/sc_addr.hpp">
+			<Option target="sc-memory-cpp"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/sc-memory/cpp/sc_debug.hpp">
+			<Option target="sc-memory-cpp"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/sc-memory/cpp/sc_defines.hpp">
+			<Option target="sc-memory-cpp"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/sc-memory/cpp/sc_event.cpp">
+			<Option target="sc-memory-cpp"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/sc-memory/cpp/sc_event.hpp">
+			<Option target="sc-memory-cpp"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/sc-memory/cpp/sc_iterator.cpp">
+			<Option target="sc-memory-cpp"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/sc-memory/cpp/sc_iterator.hpp">
+			<Option target="sc-memory-cpp"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/sc-memory/cpp/sc_memory.cpp">
+			<Option target="sc-memory-cpp"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/sc-memory/cpp/sc_memory.hpp">
+			<Option target="sc-memory-cpp"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/sc-memory/cpp/sc_memory_headers.hpp">
+			<Option target="sc-memory-cpp"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/sc-memory/cpp/sc_module.cpp">
+			<Option target="sc-memory-cpp"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/sc-memory/cpp/sc_module.hpp">
+			<Option target="sc-memory-cpp"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/sc-memory/cpp/sc_object.cpp">
+			<Option target="sc-memory-cpp"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/sc-memory/cpp/sc_object.hpp">
+			<Option target="sc-memory-cpp"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/sc-memory/cpp/sc_platform.hpp">
+			<Option target="sc-memory-cpp"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/sc-memory/cpp/sc_stream.cpp">
+			<Option target="sc-memory-cpp"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/sc-memory/cpp/sc_stream.hpp">
+			<Option target="sc-memory-cpp"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/sc-memory/cpp/sc_struct.cpp">
+			<Option target="sc-memory-cpp"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/sc-memory/cpp/sc_struct.hpp">
+			<Option target="sc-memory-cpp"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/sc-memory/cpp/sc_template.cpp">
+			<Option target="sc-memory-cpp"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/sc-memory/cpp/sc_template.hpp">
+			<Option target="sc-memory-cpp"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/sc-memory/cpp/sc_template_build.cpp">
+			<Option target="sc-memory-cpp"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/sc-memory/cpp/sc_template_gen.cpp">
+			<Option target="sc-memory-cpp"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/sc-memory/cpp/sc_template_search.cpp">
+			<Option target="sc-memory-cpp"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/sc-memory/cpp/sc_types.cpp">
+			<Option target="sc-memory-cpp"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/sc-memory/cpp/sc_types.hpp">
+			<Option target="sc-memory-cpp"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/sc-memory/cpp/sc_utils.cpp">
+			<Option target="sc-memory-cpp"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/sc-memory/cpp/sc_utils.hpp">
+			<Option target="sc-memory-cpp"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/sc-memory/cpp/sc_wait.cpp">
+			<Option target="sc-memory-cpp"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/sc-memory/cpp/sc_wait.hpp">
+			<Option target="sc-memory-cpp"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/sc-memory/cpp/utils/sc_log.cpp">
+			<Option target="sc-memory-cpp"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/sc-memory/cpp/utils/sc_log.hpp">
+			<Option target="sc-memory-cpp"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/sc-memory/cpp/utils/sc_message.cpp">
+			<Option target="sc-memory-cpp"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/sc-memory/cpp/utils/sc_message.hpp">
+			<Option target="sc-memory-cpp"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/sc-memory/sc-store/sc_config.c">
+			<Option target="sc-memory"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/sc-memory/sc-store/sc_config.h">
+			<Option target="sc-memory"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/sc-memory/sc-store/sc_defines.h">
+			<Option target="sc-memory"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/sc-memory/sc-store/sc_element.c">
+			<Option target="sc-memory"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/sc-memory/sc-store/sc_element.h">
+			<Option target="sc-memory"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/sc-memory/sc-store/sc_event.c">
+			<Option target="sc-memory"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/sc-memory/sc-store/sc_event.h">
+			<Option target="sc-memory"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/sc-memory/sc-store/sc_event/sc_event_private.h">
+			<Option target="sc-memory"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/sc-memory/sc-store/sc_event/sc_event_queue.c">
+			<Option target="sc-memory"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/sc-memory/sc-store/sc_event/sc_event_queue.h">
+			<Option target="sc-memory"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/sc-memory/sc-store/sc_fm_engine.c">
+			<Option target="sc-memory"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/sc-memory/sc-store/sc_fm_engine.h">
+			<Option target="sc-memory"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/sc-memory/sc-store/sc_fm_engine_private.h">
+			<Option target="sc-memory"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/sc-memory/sc-store/sc_fs_storage.c">
+			<Option target="sc-memory"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/sc-memory/sc-store/sc_fs_storage.h">
+			<Option target="sc-memory"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/sc-memory/sc-store/sc_iterator.c">
+			<Option target="sc-memory"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/sc-memory/sc-store/sc_iterator.h">
+			<Option target="sc-memory"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/sc-memory/sc-store/sc_iterator3.c">
+			<Option target="sc-memory"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/sc-memory/sc-store/sc_iterator3.h">
+			<Option target="sc-memory"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/sc-memory/sc-store/sc_iterator5.c">
+			<Option target="sc-memory"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/sc-memory/sc-store/sc_iterator5.h">
+			<Option target="sc-memory"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/sc-memory/sc-store/sc_link_helpers.c">
+			<Option target="sc-memory"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/sc-memory/sc-store/sc_link_helpers.h">
+			<Option target="sc-memory"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/sc-memory/sc-store/sc_segment.c">
+			<Option target="sc-memory"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/sc-memory/sc-store/sc_segment.h">
+			<Option target="sc-memory"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/sc-memory/sc-store/sc_storage.c">
+			<Option target="sc-memory"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/sc-memory/sc-store/sc_storage.h">
+			<Option target="sc-memory"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/sc-memory/sc-store/sc_store.h">
+			<Option target="sc-memory"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/sc-memory/sc-store/sc_stream.c">
+			<Option target="sc-memory"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/sc-memory/sc-store/sc_stream.h">
+			<Option target="sc-memory"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/sc-memory/sc-store/sc_stream_file.c">
+			<Option target="sc-memory"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/sc-memory/sc-store/sc_stream_file.h">
+			<Option target="sc-memory"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/sc-memory/sc-store/sc_stream_memory.c">
+			<Option target="sc-memory"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/sc-memory/sc-store/sc_stream_memory.h">
+			<Option target="sc-memory"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/sc-memory/sc-store/sc_stream_private.h">
+			<Option target="sc-memory"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/sc-memory/sc-store/sc_types.h">
+			<Option target="sc-memory"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/sc-memory/sc_helper.c">
+			<Option target="sc-memory"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/sc-memory/sc_helper.h">
+			<Option target="sc-memory"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/sc-memory/sc_helper_private.h">
+			<Option target="sc-memory"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/sc-memory/sc_memory.c">
+			<Option target="sc-memory"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/sc-memory/sc_memory.h">
+			<Option target="sc-memory"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/sc-memory/sc_memory_ext.c">
+			<Option target="sc-memory"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/sc-memory/sc_memory_ext.h">
+			<Option target="sc-memory"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/sc-memory/sc_memory_headers.h">
+			<Option target="sc-memory"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/sc-memory/sc_memory_private.h">
+			<Option target="sc-memory"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/sc-memory/sc_memory_version.c">
+			<Option target="sc-memory"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/sc-memory/sc_memory_version.h">
+			<Option target="sc-memory"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/sc-memory/test/test.cpp">
+			<Option target="sc-memory-test"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/sc-memory/test/test_threading.cpp">
+			<Option target="test_threading"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/sc-memory/test/wrap/test.cpp">
+			<Option target="test_wrap"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/sc-memory/test/wrap/test.hpp">
+			<Option target="test_wrap"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/sc-memory/test/wrap/test_wrap.cpp">
+			<Option target="test_wrap"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/sc-memory/test/wrap/units/test_codegen.cpp">
+			<Option target="test_wrap"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/sc-memory/test/wrap/units/test_common.cpp">
+			<Option target="test_wrap"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/sc-memory/test/wrap/units/test_iterators.cpp">
+			<Option target="test_wrap"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/sc-memory/test/wrap/units/test_sc_agent.cpp">
+			<Option target="test_wrap"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/sc-memory/test/wrap/units/test_sc_agent.hpp">
+			<Option target="test_wrap"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/sc-memory/test/wrap/units/test_sc_object.cpp">
+			<Option target="test_wrap"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/sc-memory/test/wrap/units/test_sc_object.hpp">
+			<Option target="test_wrap"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/sc-memory/test/wrap/units/test_streams.cpp">
+			<Option target="test_wrap"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/sc-memory/test/wrap/units/test_struct.cpp">
+			<Option target="test_wrap"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/sc-memory/test/wrap/units/test_templates.cpp">
+			<Option target="test_wrap"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/sc-memory/test/wrap/units/test_wait.cpp">
+			<Option target="test_wrap"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/sc-network/sctp_client/sctpClient.cpp">
+			<Option target="sctp-client"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/sc-network/sctp_client/sctpClient.hpp">
+			<Option target="sctp-client"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/sc-network/sctp_client/sctpISocket.hpp">
+			<Option target="sctp-client"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/sc-network/sctp_client/sctpTypes.hpp">
+			<Option target="sctp-client"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/sc-network/sctp_client/sockets/glibSocket.cpp">
+			<Option target="sctp-client"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/sc-network/sctp_client/sockets/glibSocket.hpp">
+			<Option target="sctp-client"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/sc-network/sctp_server/main.cpp">
+			<Option target="sctp-server"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/sc-network/sctp_server/sctpClient.cpp">
+			<Option target="sctp-server"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/sc-network/sctp_server/sctpClient.h">
+			<Option target="sctp-server"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/sc-network/sctp_server/sctpCommand.cpp">
+			<Option target="sctp-server"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/sc-network/sctp_server/sctpCommand.h">
+			<Option target="sctp-server"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/sc-network/sctp_server/sctpEventManager.cpp">
+			<Option target="sctp-server"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/sc-network/sctp_server/sctpEventManager.h">
+			<Option target="sctp-server"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/sc-network/sctp_server/sctpServer.cpp">
+			<Option target="sctp-server"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/sc-network/sctp_server/sctpServer.h">
+			<Option target="sctp-server"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/sc-network/sctp_server/sctpStatistic.cpp">
+			<Option target="sctp-server"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/sc-network/sctp_server/sctpStatistic.h">
+			<Option target="sctp-server"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/tools/builder/grammar/scs.g">
+			<Option target="GenerateParser"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/tools/builder/src/base64/base64.cpp">
+			<Option target="sc-builder"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/tools/builder/src/base64/base64.h">
+			<Option target="sc-builder"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/tools/builder/src/builder.cpp">
+			<Option target="sc-builder"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/tools/builder/src/builder.h">
+			<Option target="sc-builder"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/tools/builder/src/exception.cpp">
+			<Option target="sc-builder"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/tools/builder/src/exception.h">
+			<Option target="sc-builder"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/tools/builder/src/gwf_translator.cpp">
+			<Option target="sc-builder"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/tools/builder/src/gwf_translator.h">
+			<Option target="sc-builder"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/tools/builder/src/main.cpp">
+			<Option target="sc-builder"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/tools/builder/src/parser/scsLexer.c">
+			<Option target="sc-builder"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/tools/builder/src/parser/scsLexer.c.rule">
+			<Option target="sc-builder"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/tools/builder/src/parser/scsParser.c">
+			<Option target="sc-builder"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/tools/builder/src/parseutils.cpp">
+			<Option target="sc-builder"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/tools/builder/src/parseutils.h">
+			<Option target="sc-builder"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/tools/builder/src/scs_translator.cpp">
+			<Option target="sc-builder"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/tools/builder/src/scs_translator.h">
+			<Option target="sc-builder"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/tools/builder/src/tinyxml/tinyxml2.cpp">
+			<Option target="sc-builder"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/tools/builder/src/tinyxml/tinyxml2.h">
+			<Option target="sc-builder"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/tools/builder/src/translator.cpp">
+			<Option target="sc-builder"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/tools/builder/src/translator.h">
+			<Option target="sc-builder"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/tools/builder/src/types.h">
+			<Option target="sc-builder"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/tools/builder/src/utils.cpp">
+			<Option target="sc-builder"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/tools/builder/src/utils.h">
+			<Option target="sc-builder"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/tools/builder/src/version.cpp">
+			<Option target="sc-builder"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/tools/builder/src/version.h">
+			<Option target="sc-builder"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/tools/codegen/Parser/Cache.cpp">
+			<Option target="sc-code-generator"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/tools/codegen/Parser/Cache.hpp">
+			<Option target="sc-code-generator"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/tools/codegen/Parser/Cursor.cpp">
+			<Option target="sc-code-generator"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/tools/codegen/Parser/Cursor.hpp">
+			<Option target="sc-code-generator"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/tools/codegen/Parser/CursorType.cpp">
+			<Option target="sc-code-generator"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/tools/codegen/Parser/CursorType.hpp">
+			<Option target="sc-code-generator"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/tools/codegen/Parser/LanguageTypes/Class.cpp">
+			<Option target="sc-code-generator"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/tools/codegen/Parser/LanguageTypes/Class.hpp">
+			<Option target="sc-code-generator"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/tools/codegen/Parser/LanguageTypes/Constructor.cpp">
+			<Option target="sc-code-generator"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/tools/codegen/Parser/LanguageTypes/Constructor.hpp">
+			<Option target="sc-code-generator"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/tools/codegen/Parser/LanguageTypes/Field.cpp">
+			<Option target="sc-code-generator"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/tools/codegen/Parser/LanguageTypes/Field.hpp">
+			<Option target="sc-code-generator"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/tools/codegen/Parser/LanguageTypes/Function.cpp">
+			<Option target="sc-code-generator"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/tools/codegen/Parser/LanguageTypes/Function.hpp">
+			<Option target="sc-code-generator"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/tools/codegen/Parser/LanguageTypes/Global.cpp">
+			<Option target="sc-code-generator"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/tools/codegen/Parser/LanguageTypes/Global.hpp">
+			<Option target="sc-code-generator"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/tools/codegen/Parser/LanguageTypes/Invokable.cpp">
+			<Option target="sc-code-generator"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/tools/codegen/Parser/LanguageTypes/Invokable.hpp">
+			<Option target="sc-code-generator"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/tools/codegen/Parser/LanguageTypes/LanguageType.cpp">
+			<Option target="sc-code-generator"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/tools/codegen/Parser/LanguageTypes/LanguageType.hpp">
+			<Option target="sc-code-generator"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/tools/codegen/Parser/LanguageTypes/Method.cpp">
+			<Option target="sc-code-generator"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/tools/codegen/Parser/LanguageTypes/Method.hpp">
+			<Option target="sc-code-generator"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/tools/codegen/Parser/MacrosManager.cpp">
+			<Option target="sc-code-generator"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/tools/codegen/Parser/MacrosManager.hpp">
+			<Option target="sc-code-generator"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/tools/codegen/Parser/Main.cpp">
+			<Option target="sc-code-generator"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/tools/codegen/Parser/MetaDataConfig.hpp">
+			<Option target="sc-code-generator"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/tools/codegen/Parser/MetaDataManager.cpp">
+			<Option target="sc-code-generator"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/tools/codegen/Parser/MetaDataManager.hpp">
+			<Option target="sc-code-generator"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/tools/codegen/Parser/MetaUtils.cpp">
+			<Option target="sc-code-generator"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/tools/codegen/Parser/MetaUtils.hpp">
+			<Option target="sc-code-generator"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/tools/codegen/Parser/Namespace.hpp">
+			<Option target="sc-code-generator"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/tools/codegen/Parser/Precompiled.cpp">
+			<Option target="sc-code-generator"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/tools/codegen/Parser/Precompiled.hpp">
+			<Option target="sc-code-generator"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/tools/codegen/Parser/ReflectionOptions.hpp">
+			<Option target="sc-code-generator"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/tools/codegen/Parser/ReflectionParser.cpp">
+			<Option target="sc-code-generator"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/tools/codegen/Parser/ReflectionParser.hpp">
+			<Option target="sc-code-generator"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/tools/codegen/Parser/ReservedTypes.hpp">
+			<Option target="sc-code-generator"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/tools/codegen/Parser/Sha256.cpp">
+			<Option target="sc-code-generator"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/tools/codegen/Parser/Sha256.hpp">
+			<Option target="sc-code-generator"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/tools/codegen/Parser/Switches.hpp">
+			<Option target="sc-code-generator"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/tools/codegen/Parser/Types.hpp">
+			<Option target="sc-code-generator"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/cmake/FindLibClang.cmake">
+			<Option virtualFolder="CMake Files\cmake\"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/cmake/codegen.cmake">
+			<Option virtualFolder="CMake Files\cmake\"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/sc-memory/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\sc-memory\"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/sc-memory/cpp/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\sc-memory\cpp\"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/sc-memory/test/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\sc-memory\test\"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/sc-fm/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\sc-fm\"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/sc-fm/sc_fm_filesystem/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\sc-fm\sc_fm_filesystem\"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/sc-fm/sc_fm_redis/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\sc-fm\sc_fm_redis\"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/sc-kpm/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\sc-kpm\"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/sc-kpm/common/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\sc-kpm\common\"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/sc-kpm/ui/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\sc-kpm\ui\"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/sc-kpm/search/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\sc-kpm\search\"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/sc-kpm/utils/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\sc-kpm\utils\"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/sc-kpm/scp/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\sc-kpm\scp\"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/sc-network/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\sc-network\"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/sc-network/sctp_server/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\sc-network\sctp_server\"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/sc-network/sctp_client/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\sc-network\sctp_client\"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/../../../../../usr/lib/x86_64-linux-gnu/cmake/Qt5Core/Qt5CoreConfig.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\..\usr\lib\x86_64-linux-gnu\cmake\Qt5Core\"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/../../../../../usr/lib/x86_64-linux-gnu/cmake/Qt5Core/Qt5CoreConfigExtras.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\..\usr\lib\x86_64-linux-gnu\cmake\Qt5Core\"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/../../../../../usr/lib/x86_64-linux-gnu/cmake/Qt5Core/Qt5CoreConfigExtrasMkspecDir.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\..\usr\lib\x86_64-linux-gnu\cmake\Qt5Core\"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/../../../../../usr/lib/x86_64-linux-gnu/cmake/Qt5Core/Qt5CoreConfigVersion.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\..\usr\lib\x86_64-linux-gnu\cmake\Qt5Core\"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/../../../../../usr/lib/x86_64-linux-gnu/cmake/Qt5Core/Qt5CoreMacros.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\..\usr\lib\x86_64-linux-gnu\cmake\Qt5Core\"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/../../../../../usr/lib/x86_64-linux-gnu/cmake/Qt5Network/Qt5NetworkConfig.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\..\usr\lib\x86_64-linux-gnu\cmake\Qt5Network\"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/../../../../../usr/lib/x86_64-linux-gnu/cmake/Qt5Network/Qt5NetworkConfigVersion.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\..\usr\lib\x86_64-linux-gnu\cmake\Qt5Network\"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/tools/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\tools\"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/tools/builder/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\tools\builder\"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/tools/codegen/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\tools\codegen\"/>
+		</Unit>
+	</Project>
+</CodeBlocks_project_file>

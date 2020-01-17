@@ -111,6 +111,12 @@ public:
     const String& getFileExt() const;
 
 private:
+
+    void createRootEl();
+    void addElementToRootScope();
+    sElement *rootEl;
+    long long newEdgeid;
+
     //! Process string data
     bool processString(const String &data);
     /*! Builds sc-text based on parsed antlr tree

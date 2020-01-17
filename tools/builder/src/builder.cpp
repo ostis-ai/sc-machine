@@ -129,6 +129,7 @@ bool Builder::hasTranslator(const std::string &ext) const
 {
     return mTranslatorFactories.find(ext) != mTranslatorFactories.end();
 }
+
 bool Builder::hasErrors() const
 {
     return mErrors.size() > 0;
@@ -156,7 +157,6 @@ bool Builder::processFile(const String &filename)
                      filename, 0);
         return false;
     }
-
     iTranslator *translator = it->second->createInstance(mContext);
     assert(translator);
 
