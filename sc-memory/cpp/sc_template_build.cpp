@@ -215,9 +215,9 @@ protected:
       ObjectInfo * trgObj = &(m_objects[itTrg->second]);
 
       if (srcObj->IsEdge())
-        edgeDependMap.insert({obj.GetAddr().Hash(), srcObj->GetAddr().Hash()});
+        edgeDependMap.insert({ obj.GetAddr().Hash(), srcObj->GetAddr().Hash() });
       if (trgObj->IsEdge())
-        edgeDependMap.insert({obj.GetAddr().Hash(), srcObj->GetAddr().Hash()});
+        edgeDependMap.insert({ obj.GetAddr().Hash(), srcObj->GetAddr().Hash() });
 
       obj.SetSource(srcObj);
       obj.SetTarget(trgObj);
