@@ -18,7 +18,11 @@ class ObjectInfo
 {
 public:
   ObjectInfo(ScAddr const & inAddr, ScType const & inType, std::string const & inSysIdtf)
-        : m_addr(inAddr), m_type(inType), m_sysIdtf(inSysIdtf), m_source(nullptr), m_target(nullptr)
+    : m_addr(inAddr)
+    , m_type(inType)
+    , m_sysIdtf(inSysIdtf)
+    , m_source(nullptr)
+    , m_target(nullptr)
   {
   }
 
@@ -88,7 +92,8 @@ class EdgeLessFunctor
 
 public:
   explicit EdgeLessFunctor(EdgeDependMap const & edgeDependMap, ObjectVector const & objects)
-        : m_edgeDependMap(edgeDependMap), m_objects(objects)
+    : m_edgeDependMap(edgeDependMap)
+    , m_objects(objects)
   {
   }
 
@@ -106,7 +111,7 @@ public:
     return false;
   }
 
-  bool operator()(size_t const indexA, size_t const indexB) const
+  bool operator() (size_t const indexA, size_t const indexB) const
   {
     ObjectInfo const & objA = m_objects[indexA];
     ObjectInfo const & objB = m_objects[indexB];
@@ -141,10 +146,12 @@ class ScTemplateBuilder
 
 protected:
   ScTemplateBuilder(
-        ScAddr const & inScTemplateAddr,
-        ScMemoryContext & inCtx,
-        const ScTemplateParams & params)
-        : m_templateAddr(inScTemplateAddr), m_context(inCtx), m_params(params)
+    ScAddr const & inScTemplateAddr,
+    ScMemoryContext & inCtx,
+    const ScTemplateParams & params)
+    : m_templateAddr(inScTemplateAddr)
+    , m_context(inCtx)
+    , m_params(params)
   {
   }
 
