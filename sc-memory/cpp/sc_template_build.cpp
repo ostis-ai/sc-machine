@@ -155,7 +155,7 @@ protected:
   {
   }
 
-  bool operator()(ScTemplate * inTemplate)
+  bool operator() (ScTemplate * inTemplate)
   {
     // mark template to don't force order of triples
     inTemplate->m_isForceOrder = false;
