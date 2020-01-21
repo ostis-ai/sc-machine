@@ -206,7 +206,6 @@ class ScTemplateParams
   friend class ScTemplateGenerator;
 
 public:
-  ScTemplateParams(ScTemplateParams const & other) = delete;
   ScTemplateParams & operator = (ScTemplateParams const & other) = delete;
 
   explicit ScTemplateParams()

@@ -462,7 +462,7 @@ bool ScMemoryContext::HelperBuildTemplate(ScTemplate & templ, ScAddr const & tem
 bool ScMemoryContext::HelperBuildTemplate(
         ScTemplate & templ,
         ScAddr const & templAddr,
-        const ScTemplateParams & params)
+        ScTemplateParams const & params)
 {
   return templ.FromScTemplate(*this, templAddr, params);
 }
