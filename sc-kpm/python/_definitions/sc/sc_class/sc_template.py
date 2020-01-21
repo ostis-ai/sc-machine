@@ -24,7 +24,7 @@ class ScTemplateSearchResult:
     return ScTemplateSearchResultItem()
 
 
-class ScTemplateGenParams:
+class ScTemplateParams:
   def Add(self, paramName: str, value: ScAddr):
     pass
 

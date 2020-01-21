@@ -63,7 +63,7 @@ class ScMemoryContext:
   def HelperCheckEdge(self, src: ScAddr, trg: ScAddr, edgeType: ScType) -> bool:
     return False
 
-  def HelperGenTemplate(self, templ: ScTemplate, params: ScTemplateGenParams) -> ScTemplateGenResult:
+  def HelperGenTemplate(self, templ: ScTemplate, params: ScTemplateParams) -> ScTemplateGenResult:
     return ScTemplateGenResult()
 
   def HelperSearchTemplate(self, templ: ScTemplate) -> ScTemplateSearchResult:
