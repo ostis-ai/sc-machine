@@ -454,11 +454,6 @@ bool ScMemoryContext::HelperSearchTemplateInStruct(ScTemplate const & templ, ScA
   return templ.SearchInStruct(*this, scStruct, result);
 }
 
-bool ScMemoryContext::HelperBuildTemplate(ScTemplate & templ, ScAddr const & templAddr)
-{
-  return templ.FromScTemplate(*this, templAddr);
-}
-
 bool ScMemoryContext::HelperBuildTemplate(
         ScTemplate & templ,
         ScAddr const & templAddr,

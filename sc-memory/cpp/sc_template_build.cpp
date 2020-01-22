@@ -355,12 +355,6 @@ private:
   }
 };
 
-bool ScTemplate::FromScTemplate(ScMemoryContext & ctx, ScAddr const & scTemplateAddr)
-{
-  ScTemplateBuilder builder(scTemplateAddr, ctx, ScTemplateParams());
-  return builder(this);
-}
-
 bool ScTemplate::FromScTemplate(ScMemoryContext & ctx, ScAddr const & scTemplateAddr, const ScTemplateParams & params)
 {
   ScTemplateBuilder builder(scTemplateAddr, ctx, params);

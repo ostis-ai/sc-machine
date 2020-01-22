@@ -315,8 +315,7 @@ protected:
   bool SearchInStruct(ScMemoryContext & ctx, ScAddr const & scStruct, ScTemplateSearchResult & result) const;
 
   // Builds template based on template in sc-memory
-  bool FromScTemplate(ScMemoryContext & ctx, ScAddr const & scTemplateAddr);
-  bool FromScTemplate(ScMemoryContext & ctx, ScAddr const & scTemplateAddr, const ScTemplateParams & params);
+  bool FromScTemplate(ScMemoryContext & ctx, ScAddr const & scTemplateAddr, const ScTemplateParams & params = ScTemplateParams());
   bool FromScs(ScMemoryContext & ctx, std::string const & scsText);
   // End: calls by memory context
 

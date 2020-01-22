@@ -189,8 +189,7 @@ public:
   _SC_EXTERN bool HelperGenTemplate(ScTemplate const & templ, ScTemplateGenResult & result, ScTemplateParams const & params = ScTemplateParams::Empty, ScTemplateResultCode * resultCode = nullptr);
   _SC_EXTERN bool HelperSearchTemplate(ScTemplate const & templ, ScTemplateSearchResult & result);
   _SC_EXTERN bool HelperSearchTemplateInStruct(ScTemplate const & templ, ScAddr const & scStruct, ScTemplateSearchResult & result);
-  _SC_EXTERN bool HelperBuildTemplate(ScTemplate & templ, ScAddr const & templAddr);
-  _SC_EXTERN bool HelperBuildTemplate(ScTemplate & templ, ScAddr const & templAddr, const ScTemplateParams & params);
+  _SC_EXTERN bool HelperBuildTemplate(ScTemplate & templ, ScAddr const & templAddr, const ScTemplateParams & params = ScTemplateParams());
   _SC_EXTERN bool HelperBuildTemplate(ScTemplate & templ, std::string const & scsText);
 
 private:
