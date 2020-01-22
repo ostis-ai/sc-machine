@@ -12,6 +12,10 @@ tools/builder/CMakeFiles/sc-builder.dir/src/parser/scsParser.c.o: ../tools/build
 tools/builder/CMakeFiles/sc-builder.dir/src/base64/base64.cpp.o: ../tools/builder/src/base64/base64.cpp
 tools/builder/CMakeFiles/sc-builder.dir/src/base64/base64.cpp.o: ../tools/builder/src/base64/base64.h
 
+tools/builder/CMakeFiles/sc-builder.dir/src/builder.cpp.o: ../sc-memory/cpp/sc_addr.hpp
+tools/builder/CMakeFiles/sc-builder.dir/src/builder.cpp.o: ../sc-memory/cpp/sc_defines.hpp
+tools/builder/CMakeFiles/sc-builder.dir/src/builder.cpp.o: ../sc-memory/cpp/sc_platform.hpp
+tools/builder/CMakeFiles/sc-builder.dir/src/builder.cpp.o: ../sc-memory/cpp/sc_types.hpp
 tools/builder/CMakeFiles/sc-builder.dir/src/builder.cpp.o: ../sc-memory/sc-store/sc_config.h
 tools/builder/CMakeFiles/sc-builder.dir/src/builder.cpp.o: ../sc-memory/sc-store/sc_defines.h
 tools/builder/CMakeFiles/sc-builder.dir/src/builder.cpp.o: ../sc-memory/sc-store/sc_element.h
@@ -91,6 +95,10 @@ tools/builder/CMakeFiles/sc-builder.dir/src/parseutils.cpp.o: ../tools/builder/s
 tools/builder/CMakeFiles/sc-builder.dir/src/parseutils.cpp.o: ../tools/builder/src/parseutils.h
 tools/builder/CMakeFiles/sc-builder.dir/src/parseutils.cpp.o: ../tools/builder/src/types.h
 
+tools/builder/CMakeFiles/sc-builder.dir/src/scs_translator.cpp.o: ../sc-memory/cpp/sc_addr.hpp
+tools/builder/CMakeFiles/sc-builder.dir/src/scs_translator.cpp.o: ../sc-memory/cpp/sc_defines.hpp
+tools/builder/CMakeFiles/sc-builder.dir/src/scs_translator.cpp.o: ../sc-memory/cpp/sc_platform.hpp
+tools/builder/CMakeFiles/sc-builder.dir/src/scs_translator.cpp.o: ../sc-memory/cpp/sc_types.hpp
 tools/builder/CMakeFiles/sc-builder.dir/src/scs_translator.cpp.o: ../sc-memory/sc-store/sc_config.h
 tools/builder/CMakeFiles/sc-builder.dir/src/scs_translator.cpp.o: ../sc-memory/sc-store/sc_defines.h
 tools/builder/CMakeFiles/sc-builder.dir/src/scs_translator.cpp.o: ../sc-memory/sc-store/sc_element.h

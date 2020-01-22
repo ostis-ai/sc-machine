@@ -7,6 +7,7 @@
 #ifndef _scs_translator_h_
 #define _scs_translator_h_
 
+#include <sc-memory/cpp/sc_addr.hpp>
 #include "translator.h"
 
 #include "parser/scsLexer.h"
@@ -113,9 +114,10 @@ public:
 private:
 
     void createRootEl();
-    void addElementToRootScope();
+    sElement* addArcToRootScope(sElement *source, sElement *target, sc_type type, bool is_reversed, const String &idtf);
     sElement *rootEl;
-    long long newEdgeid;
+    bool isAddToRoot = false;
+    bool isMainElementAdded = false;
 
     //! Process string data
     bool processString(const String &data);
@@ -165,7 +167,7 @@ private:
      * @param idtf Identifier of element
      * @returns Returns id of element
      */
-    sElement* _addEdge(sElement *source, sElement *target, sc_type type, bool is_reversed, const String &idtf);
+    sElement* _addEdge(sElement *source, sElement *target, sc_type type, bool is_reversed, const String &idtf, bool isRoot = false);
 
     /*! Append new link into elements
      * @param idtf Link identifier if it exists

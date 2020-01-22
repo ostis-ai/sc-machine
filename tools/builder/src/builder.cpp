@@ -146,7 +146,6 @@ bool Builder::processFile(const String &filename)
                      filename, 0);
         return false;
     }
-
     std::string ext = filename.substr(n + 1, std::string::npos);
     // try to find translator factory
     tTranslatorFactories::iterator it = mTranslatorFactories.find(ext);
