@@ -1870,7 +1870,13 @@
 		<Unit filename="/home/slava/work/ostis/sc-machine/tools/builder/src/parser/scsLexer.c.rule">
 			<Option target="sc-builder"/>
 		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/tools/builder/src/parser/scsLexer.h">
+			<Option target="sc-builder"/>
+		</Unit>
 		<Unit filename="/home/slava/work/ostis/sc-machine/tools/builder/src/parser/scsParser.c">
+			<Option target="sc-builder"/>
+		</Unit>
+		<Unit filename="/home/slava/work/ostis/sc-machine/tools/builder/src/parser/scsParser.h">
 			<Option target="sc-builder"/>
 		</Unit>
 		<Unit filename="/home/slava/work/ostis/sc-machine/tools/builder/src/parseutils.cpp">
