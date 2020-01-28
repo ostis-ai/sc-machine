@@ -74,9 +74,15 @@ const String& SCsTranslator::getFileExt() const
 
 bool SCsTranslator::processString(const String &data)
 {
-    std::string fileToCreateRoot = "ims.ostis.kb_copy/to_check/nrel_summary.scs";
+    //std::string fileToCreateRoot = "ims.ostis.kb_copy/to_check/nrel_summary.scs";
+    std::string fileToCreateRoot = "ims.ostis.kb_copy/to_check/G0.scs";
+    std::string fileToCreateRoot2 = "ims.ostis.kb_copy/to_check/G1.scs";
     //std::string fileToCreateRoot = "ims.ostis.kb_copy/semantic_networks_processing/section_justification_basic_model_of_sc_code_processing/sect_princ_underlying_basic_model_sc_code_proc";
     size_t found = mParams.fileName.find(fileToCreateRoot);
+    if (found != std::string::npos) {
+        this->isAddToRoot = true;
+    }
+    found = mParams.fileName.find(fileToCreateRoot2);
     if (found != std::string::npos) {
         this->isAddToRoot = true;
     }
@@ -379,7 +385,8 @@ void SCsTranslator::processSentenceLevel2_7(pANTLR3_BASE_TREE node)
     if (el_obj->idtf == "concerted_part_of_kb") {
         _addEdge(el_obj, this->rootEl, sc_type_arc_pos_const_perm, false, "uniqArc");
     }
-    if (isAddToRoot) {
+    if (isAddToRoot && !isMainElementAdded) {
+                std::cout << " MAIN NODE " << el_obj-> idtf << std::endl;
                 _addEdge(this->rootEl, el_obj, sc_type_arc_pos_const_perm, false, "unicArc2");
                 isMainElementAdded = true;
     }
@@ -616,8 +623,11 @@ sElement* SCsTranslator::_addNode(const String &idtf, sc_type type)
 {
     sElement* el = _createElement(idtf, sc_type_node | type);
         if (isAddToRoot) {
-            //std::cout << "NODE " << idtf << std::endl;
-            _addEdge(this->rootEl, el, sc_type_arc_pos_const_perm, false, "", true);
+//            if (el->idtf != "")
+//            {
+                std::cout << "NODE " << idtf << std::endl;
+                _addEdge(this->rootEl, el, sc_type_arc_pos_const_perm, false, "", true);
+//            }
         }
     return el;
 }
@@ -648,7 +658,6 @@ sElement* SCsTranslator::_addEdge(sElement *source, sElement *target, sc_type ty
             }
         }
         addArcToRootScope(this->rootEl, el, sc_type_arc_pos_const_perm, false, "");
-        //std::cout << "EDGE" << idtf << " src " << el->arc_src->idtf  << " target " << el->arc_trg->idtf <<  std::endl;
     }
     return el;
 }
@@ -660,8 +669,8 @@ sElement* SCsTranslator::_addLink(const String &idtf, const sBuffer & data)
     el->link_is_file = false;
     el->link_data = data;
     if (isAddToRoot) {
+        std::cout << "LINK " << idtf << std::endl;
         addArcToRootScope(this->rootEl, el, sc_type_arc_pos_const_perm, false, "");
-        //std::cout << "LINK " << idtf << std::endl;
     }
 
     return el;
@@ -675,8 +684,8 @@ sElement* SCsTranslator::_addLinkFile(const String & idtf, const String & filePa
 	el->file_path = filePath;
 
     if (isAddToRoot) {
+        std::cout << "LINK FILE " << idtf <<  std::endl;
         addArcToRootScope(this->rootEl, el, sc_type_arc_pos_const_perm, false, "");
-        //std::cout << "LINK FILE " << idtf <<  std::endl;
     }
 	return el;
 }
@@ -689,8 +698,8 @@ sElement* SCsTranslator::_addLinkString(const String & idtf, const String & str)
 	el->link_data = sBuffer(str.c_str(), (sc_uint)str.size());
 
     if (isAddToRoot) {
+        std::cout << "LINK STRING " << idtf <<  std::endl;
         addArcToRootScope(this->rootEl, el, sc_type_arc_pos_const_perm, false, "");
-        //std::cout << "LINK STRING " << idtf <<  std::endl;
     }
 	return el;
 }
@@ -1157,6 +1166,15 @@ sElement* SCsTranslator::addArcToRootScope(sElement *source, sElement *target, s
     {
         el->arc_src = source;
         el->arc_trg = target;
+    }
+    if (isAddToRoot) {
+        if (el->arc_trg->type == sc_type_arc_pos_const_perm)
+        {
+            std::cout << "EDGE" << idtf << "( " << el->arc_trg->arc_src->idtf  << "->" << el->arc_trg->arc_trg->idtf << ")" <<  std::endl;
+        }
+        else {
+            std::cout << "EDGE no arc const perm" << std::endl;
+        }
     }
 
     return el;
