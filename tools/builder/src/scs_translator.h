@@ -118,6 +118,7 @@ private:
     sElement *rootEl;
     bool isAddToRoot = false;
     bool isMainElementAdded = false;
+    bool is_concerted_part_of_kb_added = false;
 
     //! Process string data
     bool processString(const String &data);
@@ -151,6 +152,9 @@ private:
 
     //! Create new empty element
     sElement* _createElement(const String &idtf, sc_type type);
+
+    //! Create new empty element by Yurkov
+    sElement* _createElement(const String &idtf, sc_type type, bool &isElCreated);
 
     /*! Append new node into elements
      * @param idtf Identifier of element
