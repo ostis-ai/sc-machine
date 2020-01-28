@@ -77,10 +77,10 @@ bool SCsTranslator::processString(const String &data)
     std::string fileToCreateRoot = "ims.ostis.kb_copy/to_check/nrel_summary.scs";
     //std::string fileToCreateRoot = "ims.ostis.kb_copy/semantic_networks_processing/section_justification_basic_model_of_sc_code_processing/sect_princ_underlying_basic_model_sc_code_proc";
     size_t found = mParams.fileName.find(fileToCreateRoot);
-//    if (found != std::string::npos) {
-//        this->isAddToRoot = true;
-//    }
-    this->isAddToRoot = true;
+    if (found != std::string::npos) {
+        this->isAddToRoot = true;
+    }
+    //this->isAddToRoot = true;
     pANTLR3_INPUT_STREAM input;
 
 #if defined( __WIN32__ ) || defined( _WIN32 )

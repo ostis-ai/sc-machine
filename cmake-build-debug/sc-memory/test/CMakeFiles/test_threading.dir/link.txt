@@ -1,1 +1,0 @@
-/usr/bin/c++  -std=c++11 -Wall -g -DSC_DEBUG -DSC_PROFILE  -rdynamic CMakeFiles/test_threading.dir/test_threading.cpp.o  -o ../../../bin/test_threading -Wl,-rpath,/home/slava/work/ostis/sc-machine/bin ../../../bin/libsc-memory.so -lglib-2.0 -lgmodule-2.0 -lglib-2.0 -lgmodule-2.0 

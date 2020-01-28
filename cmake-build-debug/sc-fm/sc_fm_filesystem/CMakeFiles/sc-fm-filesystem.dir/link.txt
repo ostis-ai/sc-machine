@@ -1,1 +1,0 @@
-/usr/bin/cc -fPIC -g -DSC_DEBUG -DSC_PROFILE  -shared -Wl,-soname,libsc-fm-filesystem.so -o ../../../bin/libsc-fm-filesystem.so CMakeFiles/sc-fm-filesystem.dir/sc_fm_filesystem.c.o -Wl,-rpath,/home/slava/work/ostis/sc-machine/bin ../../../bin/libsc-memory.so -lglib-2.0 -lgmodule-2.0 -lglib-2.0 -lgmodule-2.0 
