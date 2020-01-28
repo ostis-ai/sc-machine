@@ -180,6 +180,16 @@ bool SCsTranslator::buildScText(pANTLR3_BASE_TREE tree)
                     newType = (type & sc_type_constancy_mask) | (newType & ~sc_type_constancy_mask);
                 el->arc_trg->type = newType;
             }
+            sc_type type2 = _getTypeBySetIdtf(el->arc_trg->idtf);
+            if (type2 != 0)
+            {
+                if (isAddToRoot) {
+                    std::cout << "!!!! " << el->arc_src->idtf << " " << el->arc_trg->idtf << std::endl;
+                }
+                el->ignore = true;
+                el->arc_trg->ignore = true;
+            }
+
         }
 
         // arcs already have types
