@@ -70,10 +70,10 @@ const String& SCsTranslator::getFileExt() const
 
 bool SCsTranslator::processString(const String &data)
 {
-    std::string fileToCreateRoot = "ims.ostis.kb_copy/to_check/nrel_summary.scs";
+    //std::string fileToCreateRoot = "ims.ostis.kb_copy/to_check/nrel_summary.scs";
     //std::string fileToCreateRoot = "ims.ostis.kb_copy/to_check/G0.scs";
     //std::string fileToCreateRoot2 = "ims.ostis.kb_copy/to_check/G1.scs";
-    //std::string fileToCreateRoot = "ims.ostis.kb_copy/lib_c_agents/command_decomposition_search/lib_component_agent_of_command_decomposition_search.scs";
+    std::string fileToCreateRoot = "ims.ostis.kb_copy/lib_c_agents/command_decomposition_search/lib_component_agent_of_command_decomposition_search.scs";
     size_t found = mParams.fileName.find(fileToCreateRoot);
     if (found != std::string::npos) {
         this->isAddToRoot = true;
@@ -182,15 +182,6 @@ bool SCsTranslator::buildScText(pANTLR3_BASE_TREE tree)
                     newType = (type & sc_type_constancy_mask) | (newType & ~sc_type_constancy_mask);
                 el->arc_trg->type = newType;
             }
-            sc_type type2 = _getTypeBySetIdtf(el->arc_trg->idtf);
-            if (type2 != 0)
-            {
-                if (isAddToRoot) {
-                    std::cout << "!!!! " << el->arc_src->idtf << " " << el->arc_trg->idtf << std::endl;
-                }
-                el->ignore = true;
-                el->arc_trg->ignore = true;
-            }
         }
 
         // arcs already have types
@@ -229,7 +220,9 @@ bool SCsTranslator::buildScText(pANTLR3_BASE_TREE tree)
             assert(arc_el->type & sc_type_arc_mask);
             sc_addr addr = resolveScAddr(arc_el);
 
-            if (SC_ADDR_IS_EMPTY(addr)) continue;
+            if (SC_ADDR_IS_EMPTY(addr)) {
+                continue;
+            }
 
             createdSet.insert(arc_el);
         }
@@ -245,7 +238,7 @@ bool SCsTranslator::buildScText(pANTLR3_BASE_TREE tree)
         StringStream ss;
         ss << "Arcs not created: " << arcs.size();
         for (auto it2 = arcs.begin(); it2 != arcs.end(); ++it2) {
-            ss << " " << (*it2)->idtf;
+            ss << " " << (*it2)->arc_src->idtf << "->" << (*it2)->arc_trg->idtf << std::endl;
         }
         THROW_EXCEPT(Exception::ERR_INVALID_STATE,
                      ss.str(),
@@ -466,7 +459,6 @@ sc_addr SCsTranslator::resolveScAddr(sElement *el)
             }
         }
     }
-
     if (SC_ADDR_IS_NOT_EMPTY(addr))
     {
         sc_type t = 0;
@@ -476,7 +468,6 @@ sc_addr SCsTranslator::resolveScAddr(sElement *el)
         el->addr = addr;
         return addr;
     }
-
     // generate addr
     addr = createScAddr(el);
 
@@ -498,12 +489,12 @@ sc_addr SCsTranslator::resolveScAddr(sElement *el)
         }
 
     }
-
     return addr;
 }
 
 sc_addr SCsTranslator::createScAddr(sElement *el)
 {
+    //TODO investigate issue with long file path (lib_component_agent_of_command_decomposition_search.scs)
     sc_addr addr;
     SC_ADDR_MAKE_EMPTY(addr);
 
@@ -674,9 +665,6 @@ sElement* SCsTranslator::_addNode(const String &idtf, sc_type type)
                     }
                 //}
             }
-//            if (el->idtf != "")
-//            {
-//            }
         }
     return el;
 }
@@ -791,7 +779,6 @@ sElement* SCsTranslator::parseElementTree(pANTLR3_BASE_TREE tree, const String *
     if (tok->type == CONTENT)
     {
         res = _addNode(assignIdtf ? *assignIdtf : "", sc_type_node_struct);
-
         String content = GET_NODE_TEXT(tree);
 		bool isVar = StringUtil::startsWith(content, "_", false);
         content = content.substr(isVar ? 2 : 1, content.size() - (isVar ? 3 : 2));
