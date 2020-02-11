@@ -42,6 +42,10 @@ SCsTranslator::~SCsTranslator()
     tElementSet::iterator it, itEnd = mElementSet.end();
     for (it = mElementSet.begin(); it != itEnd; ++it)
         delete *it;
+    }
+    if (!is_file_added) {
+        std::cout << "!!!file not added " << mParams.fileName << std::endl;;
+    }
     mElementSet.clear();
 }
 
@@ -69,19 +73,19 @@ const String& SCsTranslator::getFileExt() const
 
 bool SCsTranslator::processString(const String &data)
 {
-    std::string fileToCreateRoot = "ims.ostis.kb_copy/to_check/nrel_summary.scs";
-    //std::string fileToCreateRoot = "ims.ostis.kb_copy/to_check/G0.scs";
-    //std::string fileToCreateRoot2 = "ims.ostis.kb_copy/to_check/G1.scs";
+    //std::string fileToCreateRoot = "ims.ostis.kb_copy/to_check/nrel_summary.scs";
+//    std::string fileToCreateRoot = "ims.ostis.kb_copy/to_check/G0.scs";
+//    std::string fileToCreateRoot2 = "ims.ostis.kb_copy/to_check/G1.scs";
 //    std::string fileToCreateRoot = "ims.ostis.kb_copy/lib_c_agents/command_decomposition_search/lib_component_agent_of_command_decomposition_search.scs";
-    size_t found = mParams.fileName.find(fileToCreateRoot);
-    if (found != std::string::npos) {
-        this->isAddToRoot = true;
-    }
+//    size_t found = mParams.fileName.find(fileToCreateRoot);
+//    if (found != std::string::npos) {
+//        this->isAddToRoot = true;
+//    }
 //    found = mParams.fileName.find(fileToCreateRoot2);
 //    if (found != std::string::npos) {
 //        this->isAddToRoot = true;
 //    }
-    //this->isAddToRoot = true;
+    this->isAddToRoot = true;
     pANTLR3_INPUT_STREAM input;
 
 #if defined( __WIN32__ ) || defined( _WIN32 )
@@ -372,8 +376,8 @@ void SCsTranslator::processSentenceLevel2_7(pANTLR3_BASE_TREE node)
         //sc_addr addr;
         //bool res = sc_helper_resolve_system_identifier(mContext, el_obj-> idtf.c_str(), &addr);
         //if (!res) {
-            std::cout << " MAIN NODE " << el_obj->idtf << std::endl;
-            _addEdge(this->rootEl, el_obj, sc_type_arc_pos_const_perm, false, "");
+            //std::cout << " MAIN NODE " << el_obj->idtf << std::endl;
+            //_addEdge(this->rootEl, el_obj, sc_type_arc_pos_const_perm, false, "");
         //}
         //else {
             //std::cout << " MAIN NODE duplicated " << el_obj->idtf << std::endl;
@@ -467,13 +471,25 @@ sc_addr SCsTranslator::resolveScAddr(sElement *el)
     // generate addr
     addr = createScAddr(el);
 
+
+    if (isAddToRoot) {
+        sc_addr res = sc_memory_arc_new(mContext, sc_type_arc_pos_const_perm, this->rootEl->addr, addr);
+        if (res.offset == 0 && res.seg == 0) {
+            //std::cout << "error\n";
+        }
+        else {
+            this -> is_file_added = true;
+            //std::cout << "ok\n";
+        }
+    }
+
     // store in addrs map
     if (!el->idtf.empty())
     {
         switch (_getIdentifierVisibility(el->idtf))
         {
         case IdtfSystem:
-            sc_helper_set_system_identifier(mContext, addr, el->idtf.c_str(), (sc_uint32)el->idtf.size());
+            sc_helper_set_system_identifier_new(mContext, addr, el->idtf.c_str(), (sc_uint32)el->idtf.size(), rootEl->addr, isAddToRoot);
             mSysIdtfAddrs[el->idtf] = addr;
             break;
         case IdtfLocal:
@@ -491,6 +507,11 @@ sc_addr SCsTranslator::resolveScAddr(sElement *el)
 
 sc_addr SCsTranslator::createScAddr(sElement *el)
 {
+    //TODO investigate issue with long file path (lib_component_agent_of_command_decomposition_search.scs)
+    size_t found = mParams.fileName.find("ims.ostis.kb_copy/to_check/G0.scs");
+    if (found != std::string::npos) {
+        int x =1;
+    }
     sc_addr addr;
     SC_ADDR_MAKE_EMPTY(addr);
 
@@ -611,7 +632,23 @@ sElement* SCsTranslator::_createElement(const String &idtf, sc_type type)
 
 sElement* SCsTranslator::_addNode(const String &idtf, sc_type type)
 {
-    return _createElement(idtf, sc_type_node | type);
+    bool isElCreated = true;
+    sElement* el = _createElement(idtf, sc_type_node | type, isElCreated);
+        if (isAddToRoot) {
+            if (isElCreated) {
+                //TODO top 1 feature, return after resolving links!!!
+                //sc_addr addr;
+                //bool res = sc_helper_resolve_system_identifier(mContext, idtf.c_str(), &addr);
+                //if (!res) {
+//                    sc_type type2 = _getTypeBySetIdtf(el->idtf);
+//                    if (type2 == 0) {
+//                        std::cout << "NODE " << idtf << std::endl;
+//                        _addEdge(this->rootEl, el, sc_type_arc_pos_const_perm, false, "", true);
+//                    }
+                //}
+            }
+        }
+    return el;
 }
 
 sElement* SCsTranslator::_addEdge(sElement *source, sElement *target, sc_type type, bool is_reversed, const String &idtf)
@@ -630,6 +667,16 @@ sElement* SCsTranslator::_addEdge(sElement *source, sElement *target, sc_type ty
         el->arc_trg = target;
     }
 
+//    if (isAddToRoot && !isRoot) {
+//        if (el->arc_src == this->rootEl) {
+//            return el;
+//        }
+//        sc_type type = _getTypeBySetIdtf(source->idtf);
+//        sc_type type2 = _getTypeBySetIdtf(target->idtf);
+//        if (type == 0 && type2 == 0) {
+//            addArcToRootScope(this->rootEl, el, sc_type_arc_pos_const_perm, false, "");
+//        }
+//    }
     return el;
 }
 
@@ -639,6 +686,10 @@ sElement* SCsTranslator::_addLink(const String &idtf, const sBuffer & data)
 
     el->link_is_file = false;
     el->link_data = data;
+    if (isAddToRoot) {
+        //std::cout << "LINK " << idtf << std::endl;
+        //addArcToRootScope(this->rootEl, el, sc_type_arc_pos_const_perm, false, "");
+    }
 
     return el;
 }
@@ -649,7 +700,10 @@ sElement* SCsTranslator::_addLinkFile(const String & idtf, const String & filePa
 
 	el->link_is_file = true;
 	el->file_path = filePath;
-
+    if (isAddToRoot) {
+        //std::cout << "LINK FILE " << idtf <<  std::endl;
+        //addArcToRootScope(this->rootEl, el, sc_type_arc_pos_const_perm, false, "");
+    }
 	return el;
 }
 
@@ -660,6 +714,10 @@ sElement* SCsTranslator::_addLinkString(const String & idtf, const String & str)
 	el->link_is_file = false;
 	el->link_data = sBuffer(str.c_str(), (sc_uint)str.size());
 
+    if (isAddToRoot) {
+        //std::cout << "LINK STRING " << idtf <<  std::endl;
+        //addArcToRootScope(this->rootEl, el, sc_type_arc_pos_const_perm, false, "");
+    }
 	return el;
 }
 
@@ -701,14 +759,13 @@ sElement* SCsTranslator::parseElementTree(pANTLR3_BASE_TREE tree, const String *
 
     if (tok->type == CONTENT)
     {
-        res = _addNode(assignIdtf ? *assignIdtf : "", sc_type_node_struct);
-
         String content = GET_NODE_TEXT(tree);
 		bool isVar = StringUtil::startsWith(content, "_", false);
         content = content.substr(isVar ? 2 : 1, content.size() - (isVar ? 3 : 2));
 
         if (StringUtil::startsWith(content, "*", false) && StringUtil::endsWith(content, "*", false))
         {
+            res = _addNode(assignIdtf ? *assignIdtf : "", sc_type_node_struct);
             // parse contour data
             String data = content.substr(1, content.size() - 2);
             bool autoFormatInfo = mParams.autoFormatInfo;
