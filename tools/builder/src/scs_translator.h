@@ -114,12 +114,8 @@ public:
 private:
 
     void createRootEl();
-    sElement* addArcToRootScope(sElement *source, sElement *target, sc_type type, bool is_reversed, const String &idtf);
     sElement *rootEl;
-    bool isAddToRoot = false;
-    bool isMainElementAdded = false;
     bool is_concerted_part_of_kb_added = false;
-    bool is_file_added = false;
 
     //! Process string data
     bool processString(const String &data);

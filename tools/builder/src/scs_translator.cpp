@@ -42,9 +42,6 @@ SCsTranslator::~SCsTranslator() {
     for (it = mElementSet.begin(); it != itEnd; ++it) {
         delete *it;
     }
-    if (!is_file_added) {
-        std::cout << "!!!file not added " << mParams.fileName << std::endl;;
-    }
     mElementSet.clear();
 }
 
@@ -53,7 +50,6 @@ bool SCsTranslator::translateImpl()
     // open file and read data
     bool result = true;
     std::ifstream ifs(mParams.fileName.c_str());
-    //std::cout << "!!! filename = " << mParams.fileName.c_str() << std::endl;
     if (ifs.is_open())
     {
         String data((std::istreambuf_iterator<char>(ifs)), std::istreambuf_iterator<char>());
@@ -73,19 +69,6 @@ const String& SCsTranslator::getFileExt() const
 
 bool SCsTranslator::processString(const String &data)
 {
-    //std::string fileToCreateRoot = "ims.ostis.kb_copy/to_check/nrel_summary.scs";
-//    std::string fileToCreateRoot = "ims.ostis.kb_copy/to_check/G0.scs";
-//    std::string fileToCreateRoot2 = "ims.ostis.kb_copy/to_check/G1.scs";
-//    std::string fileToCreateRoot = "ims.ostis.kb_copy/lib_c_agents/command_decomposition_search/lib_component_agent_of_command_decomposition_search.scs";
-//    size_t found = mParams.fileName.find(fileToCreateRoot);
-//    if (found != std::string::npos) {
-//        this->isAddToRoot = true;
-//    }
-//    found = mParams.fileName.find(fileToCreateRoot2);
-//    if (found != std::string::npos) {
-//        this->isAddToRoot = true;
-//    }
-    this->isAddToRoot = true;
     pANTLR3_INPUT_STREAM input;
 
 #if defined( __WIN32__ ) || defined( _WIN32 )
@@ -377,18 +360,6 @@ void SCsTranslator::processSentenceLevel2_7(pANTLR3_BASE_TREE node)
         is_concerted_part_of_kb_added = true;
         _addEdge(el_obj, this->rootEl, sc_type_arc_pos_const_perm, false, "", true);
     }
-    if (isAddToRoot && !isMainElementAdded) {
-        //sc_addr addr;
-        //bool res = sc_helper_resolve_system_identifier(mContext, el_obj-> idtf.c_str(), &addr);
-        //if (!res) {
-            //std::cout << " MAIN NODE " << el_obj->idtf << std::endl;
-            //_addEdge(this->rootEl, el_obj, sc_type_arc_pos_const_perm, false, "");
-        //}
-        //else {
-            //std::cout << " MAIN NODE duplicated " << el_obj->idtf << std::endl;
-        //}
-        isMainElementAdded = true;
-    }
 
     // no we need to parse attributes and predicates
     processAttrsIdtfList(true, node, el_obj, connector, false);
@@ -473,18 +444,7 @@ sc_addr SCsTranslator::resolveScAddr(sElement *el)
     }
     // generate addr
     addr = createScAddr(el);
-
-
-    if (isAddToRoot) {
-        sc_addr res = sc_memory_arc_new(mContext, sc_type_arc_pos_const_perm, this->rootEl->addr, addr);
-        if (res.offset == 0 && res.seg == 0) {
-            //std::cout << "error\n";
-        }
-        else {
-            this -> is_file_added = true;
-            //std::cout << "ok\n";
-        }
-    }
+    sc_memory_arc_new(mContext, sc_type_arc_pos_const_perm, this->rootEl->addr, addr);
 
     // store in addrs map
     if (!el->idtf.empty())
@@ -492,7 +452,7 @@ sc_addr SCsTranslator::resolveScAddr(sElement *el)
         switch (_getIdentifierVisibility(el->idtf))
         {
         case IdtfSystem:
-            sc_helper_set_system_identifier_new(mContext, addr, el->idtf.c_str(), (sc_uint32)el->idtf.size(), rootEl->addr, isAddToRoot);
+            sc_helper_set_system_identifier_new(mContext, addr, el->idtf.c_str(), (sc_uint32)el->idtf.size(), rootEl->addr);
             mSysIdtfAddrs[el->idtf] = addr;
             break;
         case IdtfLocal:
@@ -510,10 +470,6 @@ sc_addr SCsTranslator::resolveScAddr(sElement *el)
 sc_addr SCsTranslator::createScAddr(sElement *el)
 {
     //TODO investigate issue with long file path (lib_component_agent_of_command_decomposition_search.scs)
-    size_t found = mParams.fileName.find("ims.ostis.kb_copy/to_check/G0.scs");
-    if (found != std::string::npos) {
-        int x =1;
-    }
     sc_addr addr;
     SC_ADDR_MAKE_EMPTY(addr);
 
@@ -671,20 +627,6 @@ sElement* SCsTranslator::_addNode(const String &idtf, sc_type type)
 {
     bool isElCreated = true;
     sElement* el = _createElement(idtf, sc_type_node | type, isElCreated);
-        if (isAddToRoot) {
-            if (isElCreated) {
-                //TODO top 1 feature, return after resolving links!!!
-                //sc_addr addr;
-                //bool res = sc_helper_resolve_system_identifier(mContext, idtf.c_str(), &addr);
-                //if (!res) {
-//                    sc_type type2 = _getTypeBySetIdtf(el->idtf);
-//                    if (type2 == 0) {
-//                        std::cout << "NODE " << idtf << std::endl;
-//                        _addEdge(this->rootEl, el, sc_type_arc_pos_const_perm, false, "", true);
-//                    }
-                //}
-            }
-        }
     return el;
 }
 
@@ -723,10 +665,6 @@ sElement* SCsTranslator::_addLink(const String &idtf, const sBuffer & data)
 
     el->link_is_file = false;
     el->link_data = data;
-    if (isAddToRoot) {
-        //std::cout << "LINK " << idtf << std::endl;
-        //addArcToRootScope(this->rootEl, el, sc_type_arc_pos_const_perm, false, "");
-    }
 
     return el;
 }
@@ -738,10 +676,6 @@ sElement* SCsTranslator::_addLinkFile(const String & idtf, const String & filePa
 	el->link_is_file = true;
 	el->file_path = filePath;
 
-    if (isAddToRoot) {
-        //std::cout << "LINK FILE " << idtf <<  std::endl;
-        //addArcToRootScope(this->rootEl, el, sc_type_arc_pos_const_perm, false, "");
-    }
 	return el;
 }
 
@@ -752,10 +686,6 @@ sElement* SCsTranslator::_addLinkString(const String & idtf, const String & str)
 	el->link_is_file = false;
 	el->link_data = sBuffer(str.c_str(), (sc_uint)str.size());
 
-    if (isAddToRoot) {
-        //std::cout << "LINK STRING " << idtf <<  std::endl;
-        //addArcToRootScope(this->rootEl, el, sc_type_arc_pos_const_perm, false, "");
-    }
 	return el;
 }
 
@@ -1204,34 +1134,6 @@ void SCsTranslator::createRootEl() {
     this->rootEl->addr = addr;
     this->rootEl->idtf = "rootElement";
     this->rootEl->type = sc_type_node_struct;
-}
-
-sElement* SCsTranslator::addArcToRootScope(sElement *source, sElement *target, sc_type type, bool is_reversed, const String &idtf) {
-    assert(source && target);
-
-    sElement *el = _createElement(idtf, type);
-
-    if (is_reversed)
-    {
-        el->arc_src = target;
-        el->arc_trg = source;
-    } else
-    {
-        el->arc_src = source;
-        el->arc_trg = target;
-    }
-    if (isAddToRoot) {
-        if (el->arc_trg->type == sc_type_arc_pos_const_perm)
-        {
-            std::cout << "EDGE" << idtf << "( " << el->arc_trg->arc_src->idtf  << "->" << el->arc_trg->arc_trg->idtf << ")" <<  std::endl;
-        }
-        else {
-            std::cout << "EDGE no arc const perm" << std::endl;
-        }
-    }
-
-    return el;
-
 }
 
 // -------------
