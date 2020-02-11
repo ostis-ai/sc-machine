@@ -69,6 +69,19 @@ const String& SCsTranslator::getFileExt() const
 
 bool SCsTranslator::processString(const String &data)
 {
+    std::string fileToCreateRoot = "ims.ostis.kb_copy/to_check/nrel_summary.scs";
+    //std::string fileToCreateRoot = "ims.ostis.kb_copy/to_check/G0.scs";
+    //std::string fileToCreateRoot2 = "ims.ostis.kb_copy/to_check/G1.scs";
+//    std::string fileToCreateRoot = "ims.ostis.kb_copy/lib_c_agents/command_decomposition_search/lib_component_agent_of_command_decomposition_search.scs";
+    size_t found = mParams.fileName.find(fileToCreateRoot);
+    if (found != std::string::npos) {
+        this->isAddToRoot = true;
+    }
+//    found = mParams.fileName.find(fileToCreateRoot2);
+//    if (found != std::string::npos) {
+//        this->isAddToRoot = true;
+//    }
+    //this->isAddToRoot = true;
     pANTLR3_INPUT_STREAM input;
 
 #if defined( __WIN32__ ) || defined( _WIN32 )
@@ -351,6 +364,22 @@ void SCsTranslator::processSentenceLevel2_7(pANTLR3_BASE_TREE node)
     // determine object
     pANTLR3_BASE_TREE node_obj = (pANTLR3_BASE_TREE)node->getChild(node, 0);
     sElement *el_obj = _createElement(GET_NODE_TEXT(node_obj), 0);
+    if (el_obj->idtf == "concerted_part_of_kb" && !is_concerted_part_of_kb_added) {
+        is_concerted_part_of_kb_added = true;
+        _addEdge(el_obj, this->rootEl, sc_type_arc_pos_const_perm, false, "", true);
+    }
+    if (isAddToRoot && !isMainElementAdded) {
+        //sc_addr addr;
+        //bool res = sc_helper_resolve_system_identifier(mContext, el_obj-> idtf.c_str(), &addr);
+        //if (!res) {
+            std::cout << " MAIN NODE " << el_obj->idtf << std::endl;
+            _addEdge(this->rootEl, el_obj, sc_type_arc_pos_const_perm, false, "");
+        //}
+        //else {
+            //std::cout << " MAIN NODE duplicated " << el_obj->idtf << std::endl;
+        //}
+        isMainElementAdded = true;
+    }
 
     // no we need to parse attributes and predicates
     processAttrsIdtfList(true, node, el_obj, connector, false);
