@@ -119,6 +119,7 @@ private:
     bool isAddToRoot = false;
     bool isMainElementAdded = false;
     bool is_concerted_part_of_kb_added = false;
+    bool is_file_added = false;
 
     //! Process string data
     bool processString(const String &data);
