@@ -1129,11 +1129,12 @@ void SCsTranslator::createRootEl() {
     bool res = sc_helper_resolve_system_identifier(mContext, "rootElement", &addr);
     if (!res) {
         this->rootEl = _createElement("rootElement", sc_type_node_struct);
+    } else {
+        this->rootEl = new sElement();
+        this->rootEl->addr = addr;
+        this->rootEl->idtf = "rootElement";
+        this->rootEl->type = sc_type_node_struct;
     }
-    this->rootEl = new sElement();
-    this->rootEl->addr = addr;
-    this->rootEl->idtf = "rootElement";
-    this->rootEl->type = sc_type_node_struct;
 }
 
 // -------------
