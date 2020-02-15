@@ -150,9 +150,6 @@ private:
     //! Create new empty element
     sElement* _createElement(const String &idtf, sc_type type);
 
-    //! Create new empty element by Yurkov
-    sElement* _createElement(const String &idtf, sc_type type, bool &isElCreated);
-
     /*! Append new node into elements
      * @param idtf Identifier of element
      * @param type sc-type of node
@@ -168,7 +165,7 @@ private:
      * @param idtf Identifier of element
      * @returns Returns id of element
      */
-    sElement* _addEdge(sElement *source, sElement *target, sc_type type, bool is_reversed, const String &idtf, bool isRoot = false);
+    sElement* _addEdge(sElement *source, sElement *target, sc_type type, bool is_reversed, const String &idtf);
 
     /*! Append new link into elements
      * @param idtf Link identifier if it exists

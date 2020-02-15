@@ -223,9 +223,6 @@ bool SCsTranslator::buildScText(pANTLR3_BASE_TREE tree)
     {
         StringStream ss;
         ss << "Arcs not created: " << arcs.size();
-        for (auto it2 = arcs.begin(); it2 != arcs.end(); ++it2) {
-            ss << " " << (*it2)->arc_src->idtf << "->" << (*it2)->arc_trg->idtf << std::endl;
-        }
         THROW_EXCEPT(Exception::ERR_INVALID_STATE,
                      ss.str(),
                      mParams.fileName,
@@ -358,7 +355,7 @@ void SCsTranslator::processSentenceLevel2_7(pANTLR3_BASE_TREE node)
     sElement *el_obj = _createElement(GET_NODE_TEXT(node_obj), 0);
     if (el_obj->idtf == "concerted_part_of_kb" && !is_concerted_part_of_kb_added) {
         is_concerted_part_of_kb_added = true;
-        _addEdge(el_obj, this->rootEl, sc_type_arc_pos_const_perm, false, "", true);
+        _addEdge(el_obj, this->rootEl, sc_type_arc_pos_const_perm, false, "");
     }
 
     // no we need to parse attributes and predicates
@@ -469,7 +466,6 @@ sc_addr SCsTranslator::resolveScAddr(sElement *el)
 
 sc_addr SCsTranslator::createScAddr(sElement *el)
 {
-    //TODO investigate issue with long file path (lib_component_agent_of_command_decomposition_search.scs)
     sc_addr addr;
     SC_ADDR_MAKE_EMPTY(addr);
 
@@ -589,48 +585,12 @@ sElement* SCsTranslator::_createElement(const String &idtf, sc_type type)
     return el;
 }
 
-
-sElement* SCsTranslator::_createElement(const String &idtf, sc_type type, bool &isElCreated)
-{
-    String newIdtf = idtf;
-    if (!idtf.empty())
-    {
-        if (idtf == "...")
-        {
-            StringStream ss;
-            ss << "..." << msAutoIdtfCount++ << "...auto...";
-            newIdtf = ss.str();
-        } else {
-            tElementIdtfMap::iterator it = mElementIdtf.find(idtf);
-            if (it != mElementIdtf.end())
-            {
-                it->second->type = it->second->type | type;
-                isElCreated = false;
-                return it->second;
-            }
-        }
-    }
-
-    sElement *el = new sElement();
-
-    el->idtf = newIdtf;
-    el->type = type;
-    assert(mElementIdtf.find(newIdtf) == mElementIdtf.end());
-    if (!newIdtf.empty())
-        mElementIdtf[newIdtf] = el;
-    mElementSet.insert(el);
-
-    return el;
-}
-
 sElement* SCsTranslator::_addNode(const String &idtf, sc_type type)
 {
-    bool isElCreated = true;
-    sElement* el = _createElement(idtf, sc_type_node | type, isElCreated);
-    return el;
+    return _createElement(idtf, sc_type_node | type);
 }
 
-sElement* SCsTranslator::_addEdge(sElement *source, sElement *target, sc_type type, bool is_reversed, const String &idtf, bool isRoot)
+sElement* SCsTranslator::_addEdge(sElement *source, sElement *target, sc_type type, bool is_reversed, const String &idtf)
 {
     assert(source && target);
 
@@ -645,17 +605,6 @@ sElement* SCsTranslator::_addEdge(sElement *source, sElement *target, sc_type ty
         el->arc_src = source;
         el->arc_trg = target;
     }
-
-//    if (isAddToRoot && !isRoot) {
-//        if (el->arc_src == this->rootEl) {
-//            return el;
-//        }
-//        sc_type type = _getTypeBySetIdtf(source->idtf);
-//        sc_type type2 = _getTypeBySetIdtf(target->idtf);
-//        if (type == 0 && type2 == 0) {
-//            addArcToRootScope(this->rootEl, el, sc_type_arc_pos_const_perm, false, "");
-//        }
-//    }
     return el;
 }
 
