@@ -56,6 +56,9 @@ public:
 
 
 protected:
+    void createRootEl();
+    sc_addr rootEl;
+
     /*! Generates format relation in sc-memory by file extension
      * @param addr sc-addr of sc-link to create format relation
      * @param ext File extension
