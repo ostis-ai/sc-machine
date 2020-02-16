@@ -44,12 +44,15 @@ void parse(std::string const & appName, boost::program_options::variables_map co
         size_t pos = flags.find(";");
         if (pos == std::string::npos)
           break;
+
         std::string f = flags.substr(0, pos);
         options.arguments.emplace_back(f);
 
         flags = flags.substr(pos + 1);
       }
 
+      if (!flags.empty())
+        options.arguments.emplace_back(flags);
     }
   }
 

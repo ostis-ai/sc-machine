@@ -103,6 +103,13 @@ void ReflectionParser::Parse()
     m_sourceCache->CheckGenerator(m_options.generatorPath);
   }
 
+  if (m_options.displayDiagnostic)
+  {
+    std::cout << "Flags: " << std::endl;
+    for (auto const & f : m_options.arguments)
+      std::cout << f << std::endl;
+  }
+
   // ensure that output directory exist
   boost::filesystem::create_directory(boost::filesystem::path(m_options.outputPath));
 
@@ -155,6 +162,9 @@ bool ReflectionParser::ProcessFile(std::string const & fileName, bool inProcessM
 {
   if (!inProcessModule && m_options.useCache && !m_sourceCache->RequestGenerate(fileName))
     return true;
+
+  if (m_options.displayDiagnostic)
+    std::cout << "Processing file: " << fileName << std::endl;
 
   Clear();
 
