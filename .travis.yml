@@ -5,7 +5,7 @@ git:
 
 # sudo:required is needed for trusty images
 sudo: required
-dist: xenial
+dist: bionic
 
 # https://blog.travis-ci.com/2017-12-12-new-trusty-images-q4-launch
 # group: deprecated-2017Q4
