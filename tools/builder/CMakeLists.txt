@@ -29,4 +29,6 @@ add_dependencies(sc-builder sc-code-generator sc-kpm sc-memory)
 
 sc_codegen(sc-builder ${CMAKE_CURRENT_SOURCE_DIR}/src)
 
-add_subdirectory(tests)
+if (${SC_BUILD_TESTS})
+  add_subdirectory(tests)
+endif()
