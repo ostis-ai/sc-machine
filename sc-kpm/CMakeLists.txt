@@ -29,5 +29,5 @@ add_dependencies(sc-kpm
     sc-python
     sc-ui
     sc-search
-    sc-merge
-    sc-utils)
+    sc-utils
+)
