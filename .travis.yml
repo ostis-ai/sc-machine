@@ -40,7 +40,7 @@ jobs:
         apt:
           sources: ['ubuntu-toolchain-r-test']
           packages: [
-            'python3-pip', 
+            'python3-pip',
             'g++-7',
             'librocksdb-dev',
             'libglib2.0-dev',
@@ -55,9 +55,9 @@ jobs:
             'make',
             'cmake',
             'antlr',
-            'llvm',
             'libcurl4-openssl-dev',
-            'libclang-dev'
+            'libclang-7-dev',
+            'llvm-7'
             ]
       env: CCOMPILER='gcc-7' CXXCOMPILER='g++-7' BUILD_TYPE='Debug'
 
