@@ -115,7 +115,6 @@ private:
 
     void createRootEl();
     sElement *rootEl;
-    bool is_concerted_part_of_kb_added = false;
 
     //! Process string data
     bool processString(const String &data);

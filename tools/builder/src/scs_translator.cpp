@@ -353,10 +353,6 @@ void SCsTranslator::processSentenceLevel2_7(pANTLR3_BASE_TREE node)
     // determine object
     pANTLR3_BASE_TREE node_obj = (pANTLR3_BASE_TREE)node->getChild(node, 0);
     sElement *el_obj = _createElement(GET_NODE_TEXT(node_obj), 0);
-    if (el_obj->idtf == "concerted_part_of_kb" && !is_concerted_part_of_kb_added) {
-        is_concerted_part_of_kb_added = true;
-        _addEdge(el_obj, this->rootEl, sc_type_arc_pos_const_perm, false, "");
-    }
 
     // no we need to parse attributes and predicates
     processAttrsIdtfList(true, node, el_obj, connector, false);
@@ -441,7 +437,12 @@ sc_addr SCsTranslator::resolveScAddr(sElement *el)
     }
     // generate addr
     addr = createScAddr(el);
-    sc_memory_arc_new(mContext, sc_type_arc_pos_const_perm, this->rootEl->addr, addr);
+    if (el->idtf == "concerted_part_of_kb") {
+        sc_memory_arc_new(mContext, sc_type_arc_pos_const_perm, addr, this->rootEl->addr);
+    }
+    else {
+        sc_memory_arc_new(mContext, sc_type_arc_pos_const_perm, this->rootEl->addr, addr);
+    }
 
     // store in addrs map
     if (!el->idtf.empty())
