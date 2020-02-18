@@ -114,7 +114,11 @@ private:
 
     void createRootEl();
     sElement *rootEl;
+<<<<<<< HEAD
     bool is_concerted_part_of_kb_added = false;
+=======
+
+>>>>>>> ac95c8a... fix(sc-builder): fix adding root element in concerted_part_kb more than 1 time
     //! Process string data
     bool processString(const String &data);
     /*! Builds sc-text based on parsed antlr tree
