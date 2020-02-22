@@ -13,7 +13,7 @@ export class App {
   private _mainMenu: MainMenu = null;
   private _serverRoot: ServerRoot = null;
 
-  private _dashView: DashBoardView = null;
+  // private _dashView: DashBoardView = null;
   private _kbView: KBView = null;
   private _activeView: BaseView = null;
 
@@ -61,19 +61,19 @@ export class App {
     this._mainMenu = new MainMenu(mainDiv);
 
     // create views
-    this._dashView = new DashBoardView(mainDiv);
+    // this._dashView = new DashBoardView(mainDiv);
     this._kbView = new KBView(mainDiv);
 
     const self = this;
-    this._mainMenu.OnDashSelected(() => {
-      self.activeView = self._dashView;
-    });
+    // this._mainMenu.OnDashSelected(() => {
+    //   self.activeView = self._dashView;
+    // });
 
     this._mainMenu.OnKBSelected(() => {
       self.activeView = self._kbView;
     });
 
-    this.activeView = this._dashView;
+    this.activeView = this._kbView;
   }
 
   private OnInitStateChanged(text: string) {

@@ -35,8 +35,6 @@ export class KBView extends BaseView {
     this._scsView.onNewSearchRequest = this.OnRequestSearch.bind(this);
     this._scsView.onNewGenerateRequest = this.OnRequestGenerate.bind(this);
 
-    console.log(this._scsView);
-
     this._scgView = new SCgContainer(this.rightControls);
   }
 
@@ -68,7 +66,6 @@ export class KBView extends BaseView {
     const generateResult: ScTemplateGenerateResult = await App.Templates().DoGenerate(scsText);
     const scgStruct: SCgStruct = await App.Templates().MakeSCgStruct([generateResult]);
 
-    console.log(generateResult);
     this._scgView.ShowResult(scgStruct);
 
     return new Promise<boolean>((resolve) => {

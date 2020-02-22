@@ -51,7 +51,7 @@ export class SCsInputContainer extends ServerTemplatesListener {
 
     buttonsGroup.innerHTML = `
       <button class="ui green left bottom attached button" scs-search>Search</button>
-      <button class="ui red right bottom attached button" scs-generate>Generate</button>
+      <button class="ui red disabled right bottom attached button" scs-generate>Generate</button>
     `;
 
     this.scsSearchButton.onclick = () => {
@@ -88,7 +88,6 @@ export class SCsInputContainer extends ServerTemplatesListener {
   }
 
   public set onNewGenerateRequest(callback: OnRequestCallback) {
-    console.log(callback);
     this._onNewGenerateRequestCallback = callback;
   }
 

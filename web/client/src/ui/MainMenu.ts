@@ -75,7 +75,7 @@ class NetStatus extends MenuItem {
 export class MainMenu {
 
   private _netStatus: NetStatus = null;
-  private _dashItem: MenuItem = null;
+  // private _dashItem: MenuItem = null;
   private _kbItem: MenuItem = null;
   
   constructor(parent: HTMLElement) {
@@ -87,7 +87,7 @@ export class MainMenu {
     menu.setAttribute('class', 'ui top attached inverted icon labeled menu');
 
     this._netStatus = new NetStatus(menu);
-    this._dashItem = new MenuItem(menu, 'home', 'Dashboard');
+    // this._dashItem = new MenuItem(menu, 'home', 'Dashboard');
     this._kbItem = new MenuItem(menu, 'sitemap', 'Knowledge Base');
 
     parent.appendChild(menu);
@@ -97,11 +97,11 @@ export class MainMenu {
     this._netStatus.status = isConnected;
   }
 
-  public OnDashSelected(callback: ClickFunction) {
-    this._dashItem.OnClick = () => {
-      callback();
-    };
-  }
+  // public OnDashSelected(callback: ClickFunction) {
+  //   this._dashItem.OnClick = () => {
+  //     callback();
+  //   };
+  // }
 
   public OnKBSelected(callback: ClickFunction) {
     this._kbItem.OnClick = () => {
