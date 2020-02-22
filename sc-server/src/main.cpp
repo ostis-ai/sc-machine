@@ -23,6 +23,7 @@ int main(int argc, char *argv[]) try
       ("ext-path,e", boost::program_options::value<std::string>(), "Path to directory with sc-memory extensions")
       ("repo-path,r", boost::program_options::value<std::string>(), "Path to repository")
       ("verbose,v", "Flag to don't save sc-memory state on exit")
+      ("clear,c", "Flag to clear sc-memory on start")
       ("config-file,i", boost::program_options::value<std::string>(), "Path to configuration file");
 
   boost::program_options::variables_map vm;
@@ -45,6 +46,10 @@ int main(int argc, char *argv[]) try
   if (vm.count("verbose"))
     saveState = false;
 
+  bool clear = false;
+  if (vm.count("clear"))
+    clear = true;
+
   if (vm.count("help"))
   {
     std::cout << options_description;
@@ -61,7 +66,7 @@ int main(int argc, char *argv[]) try
   sc_memory_params params;
   sc_memory_params_clear(&params);
 
-  params.clear = SC_FALSE;
+  params.clear = clear ? SC_TRUE : SC_FALSE;
   params.config_file = configFile.c_str();
   params.enabled_exts = nullptr;
   params.ext_path = extPath.c_str();
