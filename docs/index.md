@@ -20,6 +20,7 @@
 
 - **Tools**
     * [Knowledge Base builder](tools/kb_builder.md)
+    * [Web interface](tools/web.md)
 
 - **Development**
     * [Pull Request](dev/pr.md)
