@@ -15,9 +15,6 @@
     * [Meta programming](cpp/cpp-meta.md) - *documentation of meta programming language*
     * [Templates](cpp/templates.md) - *documentation of template usage*
 
-- **Knowledge processing machine**
-    * [Translation](kpm/translation/index.md) - *agents, that support translation between SC-code and other languages (SCs, SCg, ...)*
-
 - **Tools**
     * [Knowledge Base builder](tools/kb_builder.md)
     * [Web interface](tools/web.md)

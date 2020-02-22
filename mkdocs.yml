@@ -31,8 +31,6 @@ pages:
       - Common: python/python.md
       - Library: python/library.md
       - Wrapped classes: python/cpp_wrap.md
-  - KPM Agents:
-      - SCs To SC: kpm/translation/scs2sc.md
   - Http:
       - Common: http/index.md
       - WebSocket: http/websocket.md
