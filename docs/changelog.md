@@ -3,29 +3,51 @@
  - **Build system**:
     - Add support of OSX platform
     - Fix compilation with `clang`
+    - Disable `SCP` and `SCTP` compilation by default
+    - Support of C++14
+    - Use Ubuntu 18.04 on Travis CI
+    - Upgrade `libclang` to version 7
 
  - **Tools**:
     - Support custom extensions loading in `sc-builder`
     - Add `sc-server` application to run claen `sc-memory` with extensions
+    - Refactored code generation tool
+    - Refactored knowledge base tool
 
  - **Core**:
     - Support list of enabled extensions
     - Support all possible combinations of `sc_iterator3`
+    - Support variable `sc-links`
+    - Fix bug with repo directory write attributes
+    - Fix issue with extension loading on windows
+    - Fix issue with empty content of `sc-link`
+    - Refactored file memory to use rocksdb
 
  - **C++**:
     - Implement optional search triples support
     - Fix randomical crash of unittest
     - Improve test system
+    - Replace `antlr3` with `antlr4` for `SCs-text` parsing
+    - Support of `SCs-text` aliases
+    - Support of 5 and 6 levels of `SCs-text`
+    - Refactored test system
+    - Refactored API of `ScLink` and `ScStream`
+    - Add generation of structure from `SCs-text`
 
  - **Python**:
-    - Refactoring test system
+    - Refactored test system
+    - Support SCs-templates in WebSocket protocol
     - Add support of template building from `SCs-code` string
     - Add `Aliases` method to `ScTemplateSearchResult` and `ScTemplateGenResult`
+    - Fix issue with float/double values support
+    - Add support of logs inside python modules
+    - Support `ActionAgent` states
 
  - **KPM**:
     - **web**:
         - Implement `http` module to access memory via Web interface
         - Implement web browser interface to access `sc-memory`
+    - Remove of `sc-merge` module
 
  - **Documentation**:
     - Improve `SCs-code` documentation. Add levels `5` and `6`
@@ -63,6 +85,7 @@
 - **Documentation**
     - Update documentation theme
     - Improve python library documentation
+    - Support `SCs-syntax` highlight in documentation
 
 ## v0.4.1
 
