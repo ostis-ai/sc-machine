@@ -7,7 +7,7 @@
 #ifndef _search_semantic_neighborhood_h_
 #define _search_semantic_neighborhood_h_
 
-#include <sc_memory.h>
+#include "sc-core/sc_memory.h"
 
 /*!
  * Function that implements sc-agent to search full semantic neighborhood of specified sc-element

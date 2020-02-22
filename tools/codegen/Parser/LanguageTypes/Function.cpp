@@ -6,16 +6,10 @@
 #include <boost/format.hpp>
 #include <boost/algorithm/string/join.hpp>
 
-Function::Function(const Cursor & cursor, const Namespace & currentNamespace, Class * parent)
+Function::Function(Cursor const & cursor, Namespace const & currentNamespace)
   : LanguageType(cursor, currentNamespace)
   , Invokable(cursor)
-  , m_parent(parent)
   , m_name(cursor.GetSpelling())
 {
   m_metaData.Check();
-}
-
-Function::~Function()
-{
-
 }

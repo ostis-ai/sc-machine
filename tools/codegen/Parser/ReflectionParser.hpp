@@ -7,18 +7,20 @@
 #include "MacrosManager.hpp"
 #include "Cache.hpp"
 
-#include <list>
+#include "LanguageTypes/Class.hpp"
+#include "LanguageTypes/Global.hpp"
+#include "LanguageTypes/Function.hpp"
 
-class ReflectionParser
+class ReflectionParser final
 {
 public:
 
-  ReflectionParser(const ReflectionOptions &options);
-  ~ReflectionParser(void);
+  explicit ReflectionParser(ReflectionOptions const & options);
 
-  void Parse(void);
+  void Parse();
   /** If processed file contains module, then returns false */
   bool ProcessFile(std::string const & fileName, bool InProcessModule = false);
+  void ResetCache();
 
 protected:
   void Clear();
@@ -34,6 +36,9 @@ protected:
   static std::string GetFileID(std::string const & fileName);
 
 private:
+  void buildClasses(Cursor const & cursor, Namespace & currentNamespace);
+
+private:
   ReflectionOptions m_options;
 
   CXIndex m_index;
@@ -41,11 +46,9 @@ private:
 
   std::string m_currentFile;
 
-  std::vector<class Class*> m_classes;
-  std::vector<class Global*> m_globals;
-  std::vector<class Function*> m_globalFunctions;
+  std::vector<std::unique_ptr<Class>> m_classes;
+  std::vector<std::unique_ptr<Global>> m_globals;
+  std::vector<std::unique_ptr<Function>> m_globalFunctions;
 
-  SourceCache * m_sourceCache;
-
-  void buildClasses(Cursor const & cursor, Namespace & currentNamespace);
+  std::unique_ptr<SourceCache> m_sourceCache;
 };

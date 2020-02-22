@@ -3,10 +3,7 @@
 #include "MetaDataConfig.hpp"
 #include "Cursor.hpp"
 
-LanguageType::LanguageType(
-    const Cursor &cursor,
-    const Namespace &currentNamespace
-    )
+LanguageType::LanguageType(Cursor const & cursor, Namespace const & currentNamespace)
   : m_metaData(cursor)
   , m_enabled(m_metaData.GetFlag(kMetaEnable))
   , m_ptrTypeEnabled(!m_metaData.GetFlag(kMetaDisablePtrType))
@@ -14,10 +11,9 @@ LanguageType::LanguageType(
   , m_currentNamespace(currentNamespace)
   , m_accessModifier(cursor.GetAccessModifier())
 {
-
 }
 
-const MetaDataManager &LanguageType::GetMetaData(void) const
+MetaDataManager const & LanguageType::GetMetaData() const
 {
   return m_metaData;
 }

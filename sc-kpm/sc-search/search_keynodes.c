@@ -6,12 +6,12 @@
  */
 
 #include "search_keynodes.h"
-
-#include "sc_helper.h"
-#include "sc_memory_headers.h"
 #include "search.h"
 
 #include "../sc-common/sc_keynodes.h"
+
+#include "sc-core/sc_helper.h"
+#include "sc-core/sc_memory_headers.h"
 
 #include <glib.h>
 

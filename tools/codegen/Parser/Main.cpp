@@ -2,7 +2,6 @@
 #include "ReflectionParser.hpp"
 
 #include "MetaUtils.hpp"
-#include "Switches.hpp"
 
 #include <chrono>
 #include <iostream>
@@ -15,24 +14,28 @@ void parse(std::string const & appName, boost::program_options::variables_map co
   ReflectionOptions options;
 
   options.generatorPath = appName;
-  options.targetName = cmdLine.at(kSwitchTargetName).as<std::string>();
-  options.inputPath = cmdLine.at(kSwitchInput).as<std::string>();
-  options.outputPath = cmdLine.at(kSwitchOutput).as<std::string>();
-  options.buildDirectory = cmdLine.at(kSwitchBuildDirectory).as<std::string>();
+  options.targetName = cmdLine.at("target").as<std::string>();
+  options.inputPath = cmdLine.at("source").as<std::string>();
+  options.outputPath = cmdLine.at("output").as<std::string>();
+  options.buildDirectory = cmdLine.at("build_dir").as<std::string>();
+  options.displayDiagnostic = (cmdLine.count("debug") > 0);
+  options.useCache = (cmdLine.count("cache") > 0);
 
   // default arguments
-  options.arguments =
-  { {
-      "-analyzer-display-progress",
+  options.arguments = {
+    {
       "-x",
       "c++",
       "-D__SC_REFLECTION_PARSER__",
-      "-std=c++11"
-    } };
+      "-std=c++17",
+      "-Wno-pragma-once-outside-header",
+      "-Wno-nullability-completeness"
+    }
+  };
 
-  if (cmdLine.count(kSwitchCompilerFlags))
+  if (cmdLine.count("flags"))
   {
-    auto flagsList = cmdLine.at(kSwitchCompilerFlags).as<std::vector<std::string>>();
+    auto flagsList = cmdLine.at("flags").as<std::vector<std::string>>();
 
     for (std::string & flags : flagsList)
     {
@@ -41,15 +44,16 @@ void parse(std::string const & appName, boost::program_options::variables_map co
         size_t pos = flags.find(";");
         if (pos == std::string::npos)
           break;
+
         std::string f = flags.substr(0, pos);
         options.arguments.emplace_back(f);
 
         flags = flags.substr(pos + 1);
       }
 
+      if (!flags.empty())
+        options.arguments.emplace_back(flags);
     }
-    //for (auto & flag : flags)
-    //    options.arguments.emplace_back(flag.c_str());
   }
 
   std::cout << "Generate reflection code for \"" << options.targetName << "\"" << std::endl;
@@ -63,6 +67,7 @@ void parse(std::string const & appName, boost::program_options::variables_map co
   catch (Exception e)
   {
     std::cerr << "Error: " << e.GetDescription() << std::endl;
+    parser.ResetCache();
   }
 }
 
@@ -77,34 +82,44 @@ int main(int argc, char *argv[])
 
     program.add_options()
         (
-          SWITCH_OPTION(Help),
+          "help,h",
           "Displays help information."
-          )
+        )
         (
-          SWITCH_OPTION(TargetName),
+          "target,t",
           boost::program_options::value<std::string>()->required(),
           "Input target project name."
-          )
+        )
         (
-          SWITCH_OPTION(Input),
+          "source,i",
           boost::program_options::value<std::string>()->required(),
           "Source path to parse headers in."
           )
         (
-          SWITCH_OPTION(Output),
+          "output,o",
           boost::program_options::value<std::string>()->required(),
           "Output path for generated headers."
-          )
+        )
         (
-          SWITCH_OPTION(BuildDirectory),
+          "build_dir,b",
           boost::program_options::value<std::string>()->default_value("./build"),
           "Directory that contains the build intermediate files."
-          )
+        )
         (
-          SWITCH_OPTION(CompilerFlags),
+          "flags,f",
           boost::program_options::value<std::vector<std::string>>()->multitoken()->required(),
           "Optional list of flags to pass to the compiler."
-          );
+        )
+        (
+          "debug,d",
+          boost::program_options::value<bool>()->implicit_value(false),
+          "Display compiler errors"
+        )
+        (
+          "cache,c",
+          boost::program_options::value<bool>()->implicit_value(false),
+          "Force cache usage"
+        );
 
     boost::program_options::variables_map cmdLine;
 

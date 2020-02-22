@@ -3,7 +3,6 @@
   <package id="boost_program_options-${MSVC_SUFFIX}" version="${BOOST_VERSION}" targetFramework="Native" />
   <package id="boost_system-${MSVC_SUFFIX}" version="${BOOST_VERSION}" targetFramework="Native" />
   <package id="boost_filesystem-${MSVC_SUFFIX}" version="${BOOST_VERSION}" targetFramework="Native" />
-  <package id="boost_regex-${MSVC_SUFFIX}" version="${BOOST_VERSION}" targetFramework="Native" />
   <package id="boost" version="${BOOST_VERSION}" targetFramework="Native" />
   <package id="zlib" version="1.2.8.8" targetFramework="Native" />
   <package id="glib" version="2.36.2.11" targetFramework="Native" />

@@ -7,7 +7,7 @@
 #ifndef _utils_h_
 #define _utils_h_
 
-#include "sc_memory.h"
+#include "sc-core/sc_memory.h"
 
 extern sc_memory_context * s_default_ctx;
 extern sc_memory_context * s_garbage_ctx;

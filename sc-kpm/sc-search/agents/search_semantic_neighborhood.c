@@ -10,8 +10,9 @@
 #include "search_defines.h"
 #include "search.h"
 
-#include <sc_helper.h>
-#include <sc_memory_headers.h>
+#include "sc-core/sc_helper.h"
+#include "sc-core/sc_memory_headers.h"
+
 #include <stdio.h>
 
 void search_translation(sc_addr elem, sc_addr answer, sc_bool sys_off)

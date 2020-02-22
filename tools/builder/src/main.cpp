@@ -4,12 +4,11 @@
  * (See accompanying file COPYING.MIT or copy at http://opensource.org/licenses/MIT)
  */
 
-#include "builder.h"
-#include <iostream>
-
 #include <boost/program_options.hpp>
 
-#include "sc-memory/cpp/sc_debug.hpp"
+#include "builder.hpp"
+
+#include <iostream>
 
 int main(int argc, char *argv[]) try
 {
@@ -24,8 +23,7 @@ int main(int argc, char *argv[]) try
       ("enabled-ext", boost::program_options::value<std::string>(), "Path to file with enabled extensions")
       ("clear-output,c", "Clear output directory (repository) before build")
       ("settings,s", boost::program_options::value<std::string>(), "Path to configuration file for sc-memory")
-      ("auto-formats,f", "Enable automatic formats info generation")
-      ("show-filenames,v", "Enable processing file names printing");
+      ("auto-formats,f", "Enable automatic formats info generation");
 
   boost::program_options::variables_map vm;
   boost::program_options::store(boost::program_options::command_line_parser(argc, argv).options(options_description).run(), vm);
@@ -38,37 +36,33 @@ int main(int argc, char *argv[]) try
   }
 
   BuilderParams params;
-  params.clearOutput = false;
-  params.autoFormatInfo = false;
+  params.m_clearOutput = false;
+  params.m_autoFormatInfo = false;
 
   if (vm.count("input-path"))
-    params.inputPath = vm["input-path"].as<std::string>();
+    params.m_inputPath = vm["input-path"].as<std::string>();
 
   if (vm.count("output-path"))
-    params.outputPath = vm["output-path"].as<std::string>();
+    params.m_outputPath = vm["output-path"].as<std::string>();
 
   if (vm.count("extension-path"))
-    params.extensionsPath = vm["extension-path"].as<std::string>();
+    params.m_extensionsPath = vm["extension-path"].as<std::string>();
 
   if (vm.count("clear-output"))
-    params.clearOutput = true;
+    params.m_clearOutput = true;
 
   if (vm.count("auto-formats"))
-    params.autoFormatInfo = true;
+    params.m_autoFormatInfo = true;
 
   if (vm.count("settings"))
-    params.configFile = vm["settings"].as<std::string>();
+    params.m_configFile = vm["settings"].as<std::string>();
 
   if (vm.count("enabled-ext"))
-    params.enabledExtPath = vm["enabled-ext"].as<std::string>();
-
-  params.showFileNames = vm.count("show-filenames");
+    params.m_enabledExtPath = vm["enabled-ext"].as<std::string>();
 
   Builder builder;
-  builder.initialize();
-  builder.run(params);
 
-  return builder.hasErrors() ? EXIT_SUCCESS : EXIT_FAILURE;
+  return builder.Run(params) ? EXIT_SUCCESS : EXIT_FAILURE;
 }
 catch (utils::ScException const & ex)
 {

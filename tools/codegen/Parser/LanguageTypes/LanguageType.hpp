@@ -9,10 +9,9 @@ class Cursor;
 class LanguageType
 {
 public:
-  LanguageType(Cursor const & cursor, const Namespace &currentNamespace);
-  virtual ~LanguageType(void) { }
+  LanguageType(Cursor const & cursor, Namespace const & currentNamespace);
 
-  const MetaDataManager & GetMetaData(void) const;
+  MetaDataManager const & GetMetaData() const;
 
 protected:
   MetaDataManager m_metaData;

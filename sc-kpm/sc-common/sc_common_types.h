@@ -7,7 +7,7 @@
 #ifndef _sc_common_types_h_
 #define _sc_common_types_h_
 
-#include "sc_memory.h"
+#include "sc-core/sc_memory.h"
 
 #if defined (SC_MEMORY_SELF_BUILD)
 # if defined (SC_PLATFORM_WIN)

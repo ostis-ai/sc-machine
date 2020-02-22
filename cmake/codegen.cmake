@@ -1,6 +1,6 @@
 macro(sc_codegen_ex Target SrcPath OutputPath)
     # fetch all include directories for the project target
-    get_property(DIRECTORIES TARGET ${Target} PROPERTY INCLUDE_DIRECTORIES)
+    get_target_property(DIRECTORIES ${Target} INCLUDE_DIRECTORIES)
 
     # build the include directory flags
     foreach (DIRECTORY ${DIRECTORIES})
@@ -20,14 +20,12 @@ macro(sc_codegen_ex Target SrcPath OutputPath)
         )
     elseif (${UNIX})
         set(META_FLAGS ${META_FLAGS}
-            ""
+            "-I${LIBCLANG_LIBDIR}/clang/${LIBCLANG_VERSION_STRING}/include/"
         )
     else ()
         # you can figure it out for other compilers :)
         message(FATAL_ERROR "System include directories not implemented for this compiler.")
     endif ()
-
-    include_directories(${OutputPath})
 
     if (MSVC)
         add_custom_command(
@@ -39,11 +37,12 @@ macro(sc_codegen_ex Target SrcPath OutputPath)
             --output     "${OutputPath}"
             --flags      "${META_FLAGS}"
             --build_dir  "${CMAKE_CURRENT_BINARY_DIR}"
+            --cache
         )
     else()
-        file(GLOB_RECURSE HEADER_FILES ".hpp")
+        file(GLOB_RECURSE HEADER_FILES "${SrcPath}/*.hpp")
 
-        set (CACHE_FILE "${CMAKE_CURRENT_BINARY_DIR}/${Target}.gen_cache.missed")
+        set (CACHE_FILE "${CMAKE_CURRENT_BINARY_DIR}/${Target}.gen_cache")
         add_custom_command(
             OUTPUT ${CACHE_FILE}
             COMMAND "${SC_CODEGEN_TOOL}"
@@ -52,6 +51,7 @@ macro(sc_codegen_ex Target SrcPath OutputPath)
             --output     "${OutputPath}"
             --build_dir  "${CMAKE_CURRENT_BINARY_DIR}"
             --flags      "'${META_FLAGS}'"
+            --cache
             DEPENDS ${HEADER_FILES}
         )
 
@@ -59,9 +59,14 @@ macro(sc_codegen_ex Target SrcPath OutputPath)
         add_custom_target(${SUB_TARGET} DEPENDS ${CACHE_FILE} SOURCES ${HEADER_FILES})
 
         add_dependencies(${SUB_TARGET} sc-code-generator)
-
         add_dependencies(${Target} ${SUB_TARGET})
     endif()
+
+    target_include_directories(${Target} PUBLIC ${OutputPath})
+
+    # clean stage
+    set_directory_properties(PROPERTIES ADDITIONAL_MAKE_CLEAN_FILES CACHE_FILE)
+
 endmacro(sc_codegen_ex)
 
 macro(sc_codegen Target SrcPath)

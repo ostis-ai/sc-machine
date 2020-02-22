@@ -7,7 +7,7 @@
 #ifndef _search_input_arcs_h_
 #define _search_input_arcs_h_
 
-#include <sc_memory.h>
+#include "sc-core/sc_memory.h"
 
 
 /*!

@@ -1,29 +1,27 @@
-import { Store } from 'react-redux';
 
-import {
-  ScNet, ScAddr, ScType, ScLinkContentType, ScLinkContent,
-  ScTemplate, ScTemplateSearchResult, ScTemplateResult
-} from '@ostis/sc-core';
+import { ScNet, ScAddr, ScTemplate, ScType, ScTemplateResult, ScLinkContent, ScLinkContentType } from '@ostis/sc-core';
 import { ServerKeynodes } from './ServerKeynodes';
-import * as store from '../../store';
 
-export type Store = Store<{}>;
+type CallbackIdentifierFunction = (addr: ScAddr, idtf: string) => void;
 
 export class ServerBase {
 
-  protected _client: ScNet = null;
-  protected _keynodes: ServerKeynodes = null;
-  protected _store: Store<{}> = null;
+  private _client: ScNet = null;
+  private _keynodes: ServerKeynodes = null;
 
-  constructor(client: ScNet, keynodes: ServerKeynodes, store: Store<{}>) {
+  constructor(client: ScNet, keynodes: ServerKeynodes) {
     this._client = client;
     this._keynodes = keynodes;
-    this._store = store;
+  }
+
+  public get client(): ScNet {
+    return this._client;
   }
 
   public get keynodes(): ServerKeynodes {
     return this._keynodes;
   }
+
   public get host(): string {
     return location.protocol + '//' + location.hostname + (location.port ? ':' + location.port : '');
   }
@@ -32,7 +30,39 @@ export class ServerBase {
     return `http://${this.host}/content/${addr.value}`
   }
 
-  protected GetStore(): store.Store {
-    return this._store.getState() as store.Store;
+  public async GetSystemIdentifier(addrs: ScAddr[], callback: CallbackIdentifierFunction = null) : Promise<{ [key:number]:string; }> {
+
+    let result: { [key:number]:string; } = {};
+
+    for (let a of addrs) {
+      let templ: ScTemplate = new ScTemplate();
+
+      templ.TripleWithRelation(
+        a,
+        ScType.EdgeDCommonVar,
+        [ScType.LinkVar, '_link'],
+        ScType.EdgeAccessVarPosPerm,
+        this.keynodes.kNrelSysIdtf);
+
+        let searchResult: ScTemplateResult[] = await this.client.TemplateSearch(templ);
+        if (searchResult.length > 0) {
+          let linkAddr: ScAddr = searchResult[0].Get('_link');
+          let content: ScLinkContent[] = await this.client.GetLinkContents([ linkAddr ]);
+          
+          if (content[0].type != ScLinkContentType.String) {
+            throw "System identifier should be a string";
+          }
+
+          let idtf: string = content[0].data as string;
+          result[a.value] = idtf;
+          if (callback) {
+            callback(linkAddr, idtf);
+          }
+        }
+    }
+
+    return new Promise<{ [key:number]:string; }>((resolve) => {
+      resolve(result);
+    });
   }
 };

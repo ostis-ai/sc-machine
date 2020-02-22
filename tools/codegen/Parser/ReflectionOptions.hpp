@@ -12,4 +12,6 @@ struct ReflectionOptions
   std::string generatorPath;
 
   std::vector<std::string> arguments;
+  bool displayDiagnostic = false;
+  bool useCache = false;
 };

@@ -1,0 +1,10 @@
+
+##### sc-memory
+[memory]
+max_loaded_segments = 1000
+
+[filememory]
+engine = filesystem
+
+[debug]
+is_debug = True

@@ -7,7 +7,7 @@
 #ifndef _search_identification_h_
 #define _search_identification_h_
 
-#include <sc_memory.h>
+#include "sc-core/sc_memory.h"
 
 
 /*!

@@ -4,106 +4,82 @@
  * (See accompanying file COPYING.MIT or copy at http://opensource.org/licenses/MIT)
  */
 
-#include "translator.h"
-#include "utils.h"
+#include "translator.hpp"
+#include "keynodes.hpp"
 
+#include "sc-memory/sc_memory.hpp"
+#include "sc-memory/sc_link.hpp"
 
-#define NREL_FORMAT_STR     "nrel_format"
-
-iTranslator::tStringAddrMap iTranslator::msGlobalIdtfAddrs = iTranslator::tStringAddrMap();
-
-iTranslator::iTranslator(sc_memory_context *context)
-  : mContext(context)
+Translator::Translator(ScMemoryContext & ctx)
+  : m_ctx(ctx)
 {
 }
 
-iTranslator::~iTranslator()
+bool Translator::Translate(Params const & params)
 {
+  return TranslateImpl(params);
 }
 
-bool iTranslator::translate(const TranslatorParams &params)
+void Translator::GenerateFormatInfo(ScAddr const & addr, std::string const & ext)
 {
-  mParams = params;
-  return translateImpl();
+  std::string const fmtStr = "format_" + ext;
+
+  ScAddr const formatAddr = m_ctx.HelperResolveSystemIdtf(fmtStr, ScType::NodeConstClass);
+  
+  ScTemplate templ;
+  templ.TripleWithRelation(
+    addr,
+    ScType::EdgeDCommonVar,
+    formatAddr,
+    ScType::EdgeAccessVarPosPerm,
+    Keynodes::kNrelFormat()
+  );
+
+  ScTemplateGenResult genResult;
+  auto const res = m_ctx.HelperGenTemplate(templ, genResult);
+  if (!res)
+    SC_THROW_EXCEPTION(utils::ExceptionInvalidState, "Error to generate format for sc-link: " << res.Msg());
 }
 
-void iTranslator::generateFormatInfo(sc_addr addr, const String &ext)
+void Translator::GetFileContent(std::string const & fileName, std::string & outContent)
 {
-  String fmtStr = "format_" + ext;
-
-  tStringAddrMap::iterator it = mSysIdtfAddrs.find(fmtStr);
-  sc_addr fmt_addr;
-
-  if (it != mSysIdtfAddrs.end())
+  std::ifstream ifs(fileName);
+  if (!ifs.is_open())
   {
-    fmt_addr = it->second;
+    SC_THROW_EXCEPTION(utils::ExceptionInvalidState, "Can't open file " << fileName);
   }
-  else
-  {
-    // try to find by system identifier
-    if (sc_helper_find_element_by_system_identifier(mContext, fmtStr.c_str(), (sc_uint32)fmtStr.size(), &fmt_addr) != SC_RESULT_OK)
-    {
-      fmt_addr = sc_memory_node_new(mContext, sc_type_node_class | sc_type_const);
-      sc_helper_set_system_identifier(mContext, fmt_addr, fmtStr.c_str(), (sc_uint32)fmtStr.size());
-      mSysIdtfAddrs[fmtStr] = fmt_addr;
-    }
-  }
-
-  // try to find format relation
-  sc_addr nrel_format_addr;
-  String nrel_format_str = NREL_FORMAT_STR;
-  it = mSysIdtfAddrs.find(nrel_format_str);
-  if (it != mSysIdtfAddrs.end())
-  {
-    nrel_format_addr = it->second;
-  }
-  else
-  {
-    // try to find by system identifier
-    if (sc_helper_find_element_by_system_identifier(mContext, nrel_format_str.c_str(), (sc_uint32)nrel_format_str.size(), &nrel_format_addr) != SC_RESULT_OK)
-    {
-      nrel_format_addr = sc_memory_node_new(mContext, sc_type_node_norole | sc_type_const);
-      sc_helper_set_system_identifier(mContext, nrel_format_addr, nrel_format_str.c_str(), (sc_uint32)nrel_format_str.size());
-      mSysIdtfAddrs[nrel_format_str] = nrel_format_addr;
-    }
-  }
-
-  // connect sc-link with format
-  sc_addr arc_addr = sc_memory_arc_new(mContext, sc_type_arc_common | sc_type_const, addr, fmt_addr);
-  sc_memory_arc_new(mContext, sc_type_arc_pos_const_perm, nrel_format_addr, arc_addr);
+    
+  outContent.assign((std::istreambuf_iterator<char>(ifs)), std::istreambuf_iterator<char>());
+  ifs.close();
 }
 
-
-iTranslator::eIdtfVisibility iTranslator::_getIdentifierVisibility(const String &idtf) const
+void Translator::Clean(ScMemoryContext & ctx)
 {
-  if (StringUtil::startsWith(idtf, "..", false))
-    return IdtfLocal;
-  else if (StringUtil::startsWith(idtf, ".", false))
-    return IdtfGlobal;
-
-  return IdtfSystem;
-}
-
-void iTranslator::appendScAddr(sc_addr addr, const String &idtf)
-{
-  if (idtf.empty())
+  // remove global identifers 
+  ScAddr const nrelSCsGlobalIdtf = ctx.HelperResolveSystemIdtf("nrel_scs_global_idtf");
+  if (!nrelSCsGlobalIdtf.IsValid())
+  {
+    ScConsole::PrintLine() << ScConsole::Color::Red << "Can't resolve keynode 'nrel_scs_global_idtf'";
     return;
+  }
 
-  switch (_getIdentifierVisibility(idtf))
+  ScTemplate templ;
+  templ.TripleWithRelation(
+    ScType::Unknown,
+    ScType::EdgeDCommonVar,
+    ScType::Link >> "_link",
+    ScType::EdgeAccessVarPosPerm,
+    nrelSCsGlobalIdtf);
+
+  ScTemplateSearchResult res;
+  if (ctx.HelperSearchTemplate(templ, res))
   {
-  case IdtfSystem:
-    assert(mSysIdtfAddrs.find(idtf) == mSysIdtfAddrs.end());
-    mSysIdtfAddrs[idtf] = addr;
-    break;
-
-  case IdtfLocal:
-    assert(mLocalIdtfAddrs.find(idtf) == mLocalIdtfAddrs.end());
-    mLocalIdtfAddrs[idtf] = addr;
-    break;
-
-  case IdtfGlobal:
-    assert(msGlobalIdtfAddrs.find(idtf) == msGlobalIdtfAddrs.end());
-    msGlobalIdtfAddrs[idtf] = addr;
-    break;
+    res.ForEach([&ctx](ScTemplateSearchResultItem const & item)
+    {
+      ctx.EraseElement(item["_link"]);
+    });
   }
 }
+
+
+
