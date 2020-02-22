@@ -94,6 +94,8 @@ class ServerThread(threading.Thread):
         (r"/(.*)", MainHandler),
     ])
 
+    print('Open web interface by URL: http://localhost:{}'.format(self.port))
+
     self.running = True
     self.app.listen(self.port)
 
