@@ -1,6 +1,6 @@
 import { BaseView } from './BaseView';
 import { SCsInputContainer, SCgContainer } from './kbView';
-import { ScTemplateSearchResult, ScTemplateGenerateResult } from '@ostis/sc-core';
+import { ScTemplateSearchResult, ScTemplateGenerateResult, ScAddr } from '@ostis/sc-core';
 import { App } from '../App';
 import { SCgStruct } from '@ostis/scg-js-editor';
 
@@ -34,6 +34,7 @@ export class KBView extends BaseView {
     this._scsView = new SCsInputContainer(this.leftControls);
     this._scsView.onNewSearchRequest = this.OnRequestSearch.bind(this);
     this._scsView.onNewGenerateRequest = this.OnRequestGenerate.bind(this);
+    this._scsView.onNewCreateRequest = this.OnRequestCreate.bind(this);
 
     this._scgView = new SCgContainer(this.rightControls);
   }
@@ -50,7 +51,6 @@ export class KBView extends BaseView {
 
   // --- Methods ---
   private async OnRequestSearch(scsText: string) : Promise<boolean> {
-
     const searchResult: ScTemplateSearchResult = await App.Templates().DoSearch(scsText);
     const scgStruct: SCgStruct = await App.Templates().MakeSCgStruct(searchResult);
 
@@ -67,6 +67,14 @@ export class KBView extends BaseView {
     const scgStruct: SCgStruct = await App.Templates().MakeSCgStruct([generateResult]);
 
     this._scgView.ShowResult(scgStruct);
+
+    return new Promise<boolean>((resolve) => {
+      resolve(true);
+    })
+  }
+
+  private async OnRequestCreate(scsText: string) : Promise<boolean> {
+    const createResult: ScAddr = await App.Templates().DoCreate(scsText);
 
     return new Promise<boolean>((resolve) => {
       resolve(true);

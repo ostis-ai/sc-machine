@@ -2,7 +2,7 @@ import { SCsEditor } from "@ostis/scs-js-editor";
 import { App } from "../../App";
 import { ServerTemplatesListener } from "../../utils/server/ServerTemplates";
 import { KBTemplate } from "../../utils/types";
-import { ScAddr, ScTemplateSearchResult } from "@ostis/sc-core";
+import { ScAddr } from '@ostis/sc-core';
 
 
 type OnRequestCallback = (scsText: string) => Promise<boolean>;
@@ -15,6 +15,7 @@ export class SCsInputContainer extends ServerTemplatesListener {
 
   private _onNewSeachRequestCallback: OnRequestCallback = null;
   private _onNewGenerateRequestCallback: OnRequestCallback = null;
+  private _onNewCreateRequestCallback: OnRequestCallback = null;
 
   constructor(parent: HTMLElement) {
     super();
@@ -51,7 +52,8 @@ export class SCsInputContainer extends ServerTemplatesListener {
 
     buttonsGroup.innerHTML = `
       <button class="ui green left bottom attached button" scs-search>Search</button>
-      <button class="ui red disabled right bottom attached button" scs-generate>Generate</button>
+      <button class="ui bottom attached button" scs-create>Create</button>
+      <button class="ui disabled red right bottom attached button" scs-generate>Generate</button>
     `;
 
     this.scsSearchButton.onclick = () => {
@@ -60,6 +62,10 @@ export class SCsInputContainer extends ServerTemplatesListener {
 
     this.scsGenerateButton.onclick = () => {
       this.DoGenerate(this._scsEditor.content);
+    }
+
+    this.scsCreateButton.onclick = () => {
+      this.DoCreate(this._scsEditor.content)
     }
   }
 
@@ -79,6 +85,10 @@ export class SCsInputContainer extends ServerTemplatesListener {
     return this.scsButtonsContainer.querySelector('button[scs-search]');
   }
 
+  private get scsCreateButton() : HTMLElement {
+    return this.scsButtonsContainer.querySelector('button[scs-create]');
+  }
+
   private get scsGenerateButton() : HTMLElement {
     return this.scsButtonsContainer.querySelector('button[scs-generate]');
   }
@@ -89,6 +99,10 @@ export class SCsInputContainer extends ServerTemplatesListener {
 
   public set onNewGenerateRequest(callback: OnRequestCallback) {
     this._onNewGenerateRequestCallback = callback;
+  }
+
+  public set onNewCreateRequest(callback: OnRequestCallback) {
+    this._onNewCreateRequestCallback = callback;
   }
 
   private OnTemplateSelected(templAddr: ScAddr) {
@@ -164,4 +178,13 @@ export class SCsInputContainer extends ServerTemplatesListener {
     });
   }
 
+  public async DoCreate(scsContent: string) {
+    if (this._onNewCreateRequestCallback) {
+      const result: boolean = await this._onNewCreateRequestCallback(scsContent);
+    }
+
+    return new Promise<void>((resolve) => {
+      resolve();
+    });
+  }
 };

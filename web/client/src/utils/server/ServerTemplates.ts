@@ -1,5 +1,5 @@
 import { ScNet, ScType, ScAddr, ScTemplate, 
-         ScTemplateSearchResult, ScTemplateResult, ScLinkContent, ScLinkContentType, ScTemplateGenerateResult } from '@ostis/sc-core';
+         ScTemplateSearchResult, ScTemplateResult, ScConstruction, ScLinkContent, ScLinkContentType, ScTemplateGenerateResult } from '@ostis/sc-core';
 import { ServerKeynodes } from './ServerKeynodes';
 import { ServerBase } from './ServerBase';
 import { KBTemplate } from '../types';
@@ -14,6 +14,7 @@ export class ServerTemplates extends ServerBase {
 
   private _templates: KBTemplate[] = [];
   private _listeners: ServerTemplatesListener[] = [];
+  private _addr: ScAddr = null; 
 
   constructor(client: ScNet, keynodes: ServerKeynodes) {
     super(client, keynodes);
@@ -116,9 +117,9 @@ export class ServerTemplates extends ServerBase {
 
     // get titles
     let templates: KBTemplate[] = [{
-      title: 'Unknown',
+      title: 'Example',
       addr: new ScAddr(),
-      scsContent: '/* Write your template there using SCs-code: \n * http://ostis-dev.github.io/sc-machine/other/scs/ \n */\n',
+      scsContent: '/* Write your node identifier here: \n -Press "Create" to create node with your identifier \n -Press "Search" to view result in SCg \n */\n',
     }];
     
     if (titleAddrs.length > 0) {
@@ -139,12 +140,40 @@ export class ServerTemplates extends ServerBase {
     });
   }
 
-  public async DoSearch(scsTempl: string): Promise<ScTemplateSearchResult> {
+  public async CreateNodeWithMainIdentifier(identifier: string): Promise<ScAddr> {
+    let construction = new ScConstruction();
+    construction.CreateNode(ScType.Node, 'node')
+    construction.CreateLink(ScType.Link, new ScLinkContent(identifier, ScLinkContentType.String), 'link')
+    construction.CreateEdge(ScType.EdgeDCommonConst, 'node', 'link', 'edge')
+    construction.CreateEdge(ScType.EdgeAccessConstPosPerm, this.keynodes.kNrelMainIdtf, 'edge');
+    construction.CreateEdge(ScType.EdgeAccessConstPosPerm, this.keynodes.kNrelSysIdtf, 'edge');
+    let addr = await this.client.CreateElements(construction);
+    return addr[0];
+  }
 
-    const searchResult: ScTemplateSearchResult = await this.client.TemplateSearch(scsTempl);
+  public async GetMainIdentifier(addr: ScAddr): Promise<ScTemplateSearchResult> {
+    let scTemplate = new ScTemplate();
+    let linkAlias = "link";
+    scTemplate.TripleWithRelation(addr, ScType.Unknown, [ScType.Link, linkAlias], ScType.Unknown, this.keynodes.kNrelMainIdtf);
+    let result = await this.client.TemplateSearch(scTemplate);
+    return result;
+  }
+
+  public async DoSearch(scsTempl: string): Promise<ScTemplateSearchResult> {
+    let searchResult = this.GetMainIdentifier(this._addr);
 
     return new Promise<ScTemplateSearchResult>(function (resolve) {
       resolve(searchResult);
+    });
+  }
+
+  public async DoCreate(scsTempl: string): Promise<ScAddr> {
+    const lines = scsTempl.split("\n");
+    const addr: ScAddr = await this.CreateNodeWithMainIdentifier(lines[lines.length - 1]);
+    this._addr = addr;
+    alert("Generated ScAddr value: " + addr.value);
+    return new Promise<ScAddr>((resolve) => {
+      resolve(addr);
     });
   }
     
