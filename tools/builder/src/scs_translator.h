@@ -113,9 +113,6 @@ public:
 
 private:
 
-    void createRootEl();
-    sElement *rootEl;
-
     //! Process string data
     bool processString(const String &data);
     /*! Builds sc-text based on parsed antlr tree

@@ -33,15 +33,15 @@ String trimContentData(String const & path)
 SCsTranslator::SCsTranslator(sc_memory_context *ctx)
     : iTranslator(ctx)
 {
-    createRootEl();
+    createConcertedKB();
 }
 
-SCsTranslator::~SCsTranslator() {
+SCsTranslator::~SCsTranslator()
+{
     // destroy element descrptions
     tElementSet::iterator it, itEnd = mElementSet.end();
-    for (it = mElementSet.begin(); it != itEnd; ++it) {
+    for (it = mElementSet.begin(); it != itEnd; ++it)
         delete *it;
-    }
     mElementSet.clear();
 }
 
@@ -206,9 +206,8 @@ bool SCsTranslator::buildScText(pANTLR3_BASE_TREE tree)
             assert(arc_el->type & sc_type_arc_mask);
             sc_addr addr = resolveScAddr(arc_el);
 
-            if (SC_ADDR_IS_EMPTY(addr)) {
+            if (SC_ADDR_IS_EMPTY(addr))
                 continue;
-            }
 
             createdSet.insert(arc_el);
         }
@@ -437,11 +436,13 @@ sc_addr SCsTranslator::resolveScAddr(sElement *el)
     }
     // generate addr
     addr = createScAddr(el);
-    if (el->idtf == "concerted_part_of_kb") {
-        sc_memory_arc_new(mContext, sc_type_arc_pos_const_perm, addr, this->rootEl->addr);
+    if (el->idtf == "concerted_part_of_kb")
+    {
+        sc_memory_arc_new(mContext, sc_type_arc_pos_const_perm, addr, this->concertedKB);
     }
-    else {
-        sc_memory_arc_new(mContext, sc_type_arc_pos_const_perm, this->rootEl->addr, addr);
+    else
+        {
+        sc_memory_arc_new(mContext, sc_type_arc_pos_const_perm, this->concertedKB, addr);
     }
 
     // store in addrs map
@@ -450,7 +451,7 @@ sc_addr SCsTranslator::resolveScAddr(sElement *el)
         switch (_getIdentifierVisibility(el->idtf))
         {
         case IdtfSystem:
-            sc_helper_set_system_identifier_new(mContext, addr, el->idtf.c_str(), (sc_uint32)el->idtf.size(), rootEl->addr);
+            sc_helper_set_system_identifier_new(mContext, addr, el->idtf.c_str(), (sc_uint32)el->idtf.size(), concertedKB);
             mSysIdtfAddrs[el->idtf] = addr;
             break;
         case IdtfLocal:
@@ -649,7 +650,7 @@ sElement* SCsTranslator::parseElementTree(pANTLR3_BASE_TREE tree, const String *
     sElement *res = 0;
     if (tok->type == ID_SYSTEM)
     {
-        res = _addNode(GET_NODE_TEXT(tree), 0);
+        res = _addNode(GET_NODE_TEXT(tree));
     }
 
     if (tok->type == SEP_LPAR)
@@ -1072,19 +1073,6 @@ void SCsTranslator::dumpScs(const String &fileName)
     }
 
     out.close();
-}
-
-void SCsTranslator::createRootEl() {
-    sc_addr addr;
-    bool res = sc_helper_resolve_system_identifier(mContext, "rootElement", &addr);
-    if (!res) {
-        this->rootEl = _createElement("rootElement", sc_type_node_struct);
-    } else {
-        this->rootEl = new sElement();
-        this->rootEl->addr = addr;
-        this->rootEl->idtf = "rootElement";
-        this->rootEl->type = sc_type_node_struct;
-    }
 }
 
 // -------------
