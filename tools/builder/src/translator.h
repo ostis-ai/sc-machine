@@ -56,8 +56,9 @@ public:
 
 
 protected:
-    void createRootEl();
-    sc_addr rootEl;
+    void createConcertedKB();
+    sc_addr concertedKB;
+    const char* concertedKBName = "concertedKB_hash_iF95K2";
 
     /*! Generates format relation in sc-memory by file extension
      * @param addr sc-addr of sc-link to create format relation

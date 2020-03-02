@@ -254,7 +254,7 @@ sc_result sc_helper_set_system_identifier(sc_memory_context const * ctx, sc_addr
     return SC_RESULT_OK;
 }
 
-sc_result sc_helper_set_system_identifier_new(sc_memory_context const * ctx, sc_addr addr, const sc_char* data, sc_uint32 len, sc_addr rootEl)
+sc_result sc_helper_set_system_identifier_new(sc_memory_context const * ctx, sc_addr addr, const sc_char* data, sc_uint32 len, sc_addr node_struct)
 {
     sc_iterator5 *it5 = 0;
     sc_addr *results = 0;
@@ -300,7 +300,7 @@ sc_result sc_helper_set_system_identifier_new(sc_memory_context const * ctx, sc_
         sc_stream_free(stream);
         return SC_RESULT_ERROR;
     }
-    sc_memory_arc_new(ctx, sc_type_arc_pos_const_perm, rootEl, idtf_addr);
+    sc_memory_arc_new(ctx, sc_type_arc_pos_const_perm, node_struct, idtf_addr);
 
     // we doesn't need link data anymore
     sc_stream_free(stream);
@@ -309,11 +309,11 @@ sc_result sc_helper_set_system_identifier_new(sc_memory_context const * ctx, sc_
     arc_addr = sc_memory_arc_new(ctx, sc_type_arc_common | sc_type_const, addr, idtf_addr);
     if (SC_ADDR_IS_EMPTY(arc_addr))
         return SC_RESULT_ERROR;
-    sc_memory_arc_new(ctx, sc_type_arc_pos_const_perm, rootEl, arc_addr);
+    sc_memory_arc_new(ctx, sc_type_arc_pos_const_perm, node_struct, arc_addr);
     arc_addr = sc_memory_arc_new(ctx, sc_type_arc_pos_const_perm, sc_keynodes[SC_KEYNODE_NREL_SYSTEM_IDENTIFIER], arc_addr);
     if (SC_ADDR_IS_EMPTY(arc_addr))
         return SC_RESULT_ERROR;
-    sc_memory_arc_new(ctx, sc_type_arc_pos_const_perm, rootEl, arc_addr);
+    sc_memory_arc_new(ctx, sc_type_arc_pos_const_perm, node_struct, arc_addr);
 
     return SC_RESULT_OK;
 }

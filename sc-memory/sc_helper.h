@@ -46,7 +46,7 @@ _SC_EXTERN sc_result sc_helper_set_system_identifier(sc_memory_context const * c
  * @remarks If sc-element already has system identifier, then it would be replaced. If system identifier
  * already used for another sc-element, then function returns SC_ERROR_INVALID_PARAMS
  */
-_SC_EXTERN sc_result sc_helper_set_system_identifier_new(sc_memory_context const * ctx, sc_addr addr, const sc_char* data, sc_uint32 len, sc_addr rootEl);
+_SC_EXTERN sc_result sc_helper_set_system_identifier_new(sc_memory_context const * ctx, sc_addr addr, const sc_char* data, sc_uint32 len, sc_addr node_struct);
 
 /*! Return sc-addr of system identifier for specified sc-element
  * @param el sc-addr of element to get it system identifier

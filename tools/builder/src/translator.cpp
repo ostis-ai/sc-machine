@@ -15,22 +15,25 @@ iTranslator::tStringAddrMap iTranslator::msGlobalIdtfAddrs = iTranslator::tStrin
 iTranslator::iTranslator(sc_memory_context *context)
     : mContext(context)
 {
-    createRootEl();
+    createConcertedKB();
 }
 
 iTranslator::~iTranslator()
 {
 }
 
-void iTranslator::createRootEl() {
+void iTranslator::createConcertedKB()
+{
     sc_addr addr;
-    bool res = sc_helper_resolve_system_identifier(mContext, "rootElement", &addr);
-    if (!res) {
-        this->rootEl = sc_memory_node_new(mContext, sc_type_node_struct);
-        sc_helper_set_system_identifier(mContext, this->rootEl, "rootElement", 11);
+    bool res = sc_helper_resolve_system_identifier(mContext, concertedKBName, &addr);
+    if (!res)
+    {
+        this->concertedKB = sc_memory_node_new(mContext, sc_type_node_struct);
+        sc_helper_set_system_identifier(mContext, this->concertedKB, concertedKBName, 11);
     }
-    else {
-        this->rootEl = addr;
+    else
+        {
+        this->concertedKB = addr;
     }
 }
 
@@ -57,8 +60,8 @@ void iTranslator::generateFormatInfo(sc_addr addr, const String &ext)
         if (sc_helper_find_element_by_system_identifier(mContext, fmtStr.c_str(), (sc_uint32)fmtStr.size(), &fmt_addr) != SC_RESULT_OK)
         {
             fmt_addr = sc_memory_node_new(mContext, sc_type_node_class | sc_type_const);
-            sc_memory_arc_new(mContext, sc_type_arc_pos_const_perm, this->rootEl, fmt_addr);
-            sc_helper_set_system_identifier_new(mContext, fmt_addr, fmtStr.c_str(), (sc_uint32)fmtStr.size(), this->rootEl);
+            sc_memory_arc_new(mContext, sc_type_arc_pos_const_perm, this->concertedKB, fmt_addr);
+            sc_helper_set_system_identifier_new(mContext, fmt_addr, fmtStr.c_str(), (sc_uint32)fmtStr.size(), this->concertedKB);
             mSysIdtfAddrs[fmtStr] = fmt_addr;
         }
     }
@@ -77,17 +80,17 @@ void iTranslator::generateFormatInfo(sc_addr addr, const String &ext)
         if (sc_helper_find_element_by_system_identifier(mContext, nrel_format_str.c_str(), (sc_uint32)nrel_format_str.size(), &nrel_format_addr) != SC_RESULT_OK)
         {
             nrel_format_addr = sc_memory_node_new(mContext, sc_type_node_norole | sc_type_const);
-            sc_memory_arc_new(mContext, sc_type_arc_pos_const_perm, this->rootEl, nrel_format_addr);
-            sc_helper_set_system_identifier_new(mContext, nrel_format_addr, nrel_format_str.c_str(),(sc_uint32)nrel_format_str.size(), this->rootEl);
+            sc_memory_arc_new(mContext, sc_type_arc_pos_const_perm, this->concertedKB, nrel_format_addr);
+            sc_helper_set_system_identifier_new(mContext, nrel_format_addr, nrel_format_str.c_str(),(sc_uint32)nrel_format_str.size(), this->concertedKB);
             mSysIdtfAddrs[nrel_format_str] = nrel_format_addr;
         }
     }
 
     // connect sc-link with format
     sc_addr arc_addr = sc_memory_arc_new(mContext, sc_type_arc_common | sc_type_const, addr, fmt_addr);
-    sc_memory_arc_new(mContext, sc_type_arc_pos_const_perm, this->rootEl, arc_addr);
+    sc_memory_arc_new(mContext, sc_type_arc_pos_const_perm, this->concertedKB, arc_addr);
     sc_addr x = sc_memory_arc_new(mContext, sc_type_arc_pos_const_perm, nrel_format_addr, arc_addr);
-    sc_memory_arc_new(mContext, sc_type_arc_pos_const_perm, this->rootEl, x);
+    sc_memory_arc_new(mContext, sc_type_arc_pos_const_perm, this->concertedKB, x);
 }
 
 
