@@ -61,7 +61,8 @@ void iTranslator::generateFormatInfo(sc_addr addr, const String &ext)
         {
             fmt_addr = sc_memory_node_new(mContext, sc_type_node_class | sc_type_const);
             sc_memory_arc_new(mContext, sc_type_arc_pos_const_perm, this->concertedKB, fmt_addr);
-            sc_helper_set_system_identifier_new(mContext, fmt_addr, fmtStr.c_str(), (sc_uint32)fmtStr.size(), this->concertedKB);
+            sc_helper_set_system_identifier(mContext, fmt_addr, fmtStr.c_str(), (sc_uint32)fmtStr.size());
+            addSystemIdToConcertedPart(fmt_addr);
             mSysIdtfAddrs[fmtStr] = fmt_addr;
         }
     }
@@ -81,7 +82,8 @@ void iTranslator::generateFormatInfo(sc_addr addr, const String &ext)
         {
             nrel_format_addr = sc_memory_node_new(mContext, sc_type_node_norole | sc_type_const);
             sc_memory_arc_new(mContext, sc_type_arc_pos_const_perm, this->concertedKB, nrel_format_addr);
-            sc_helper_set_system_identifier_new(mContext, nrel_format_addr, nrel_format_str.c_str(),(sc_uint32)nrel_format_str.size(), this->concertedKB);
+            sc_helper_set_system_identifier(mContext, nrel_format_addr, nrel_format_str.c_str(),(sc_uint32)nrel_format_str.size());
+            addSystemIdToConcertedPart(nrel_format_addr);
             mSysIdtfAddrs[nrel_format_str] = nrel_format_addr;
         }
     }
@@ -126,4 +128,45 @@ void iTranslator::appendScAddr(sc_addr addr, const String &idtf)
         msGlobalIdtfAddrs[idtf] = addr;
         break;
     }
+}
+
+void iTranslator::addSystemIdToConcertedPart(sc_addr addr) {
+    sc_addr sysId;
+    sc_helper_resolve_system_identifier(mContext, "nrel_system_identifier", &sysId);
+    sc_iterator5 *it = sc_iterator5_f_a_a_a_f_new(mContext,
+                                              addr,
+                                              sc_type_arc_common | sc_type_const,
+                                              0,
+                                              sc_type_arc_pos_const_perm,
+                                              sysId);
+
+    if (SC_TRUE == sc_iterator5_next(it)) {
+        sc_addr t_arc = sc_iterator5_value(it, 2);
+        sc_memory_arc_new(mContext, sc_type_arc_pos_const_perm, this->concertedKB, t_arc);
+        t_arc = sc_iterator5_value(it, 1);
+        sc_memory_arc_new(mContext, sc_type_arc_pos_const_perm, this->concertedKB, t_arc);
+        t_arc = sc_iterator5_value(it, 3);
+        sc_memory_arc_new(mContext, sc_type_arc_pos_const_perm, this->concertedKB, t_arc);
+    }
+    sc_iterator5_free(it);
+
+    //    if (node_struct!= NULL)
+//        sc_memory_arc_new(ctx, sc_type_arc_pos_const_perm, *node_struct, idtf_addr);
+//
+//    // we doesn't need link data anymore
+//    sc_stream_free(stream);
+//
+//    // setup new system identifier
+//    arc_addr = sc_memory_arc_new(ctx, sc_type_arc_common | sc_type_const, addr, idtf_addr);
+//    if (SC_ADDR_IS_EMPTY(arc_addr))
+//        return SC_RESULT_ERROR;
+//    if (node_struct!= NULL)
+//        sc_memory_arc_new(ctx, sc_type_arc_pos_const_perm, *node_struct, arc_addr);
+//
+//    arc_addr = sc_memory_arc_new(ctx, sc_type_arc_pos_const_perm, sc_keynodes[SC_KEYNODE_NREL_SYSTEM_IDENTIFIER], arc_addr);
+//    if (SC_ADDR_IS_EMPTY(arc_addr))
+//        return SC_RESULT_ERROR;
+//    if (node_struct!= NULL)
+//        sc_memory_arc_new(ctx, sc_type_arc_pos_const_perm, *node_struct, arc_addr);
+
 }

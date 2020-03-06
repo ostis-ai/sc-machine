@@ -451,7 +451,8 @@ sc_addr SCsTranslator::resolveScAddr(sElement *el)
         switch (_getIdentifierVisibility(el->idtf))
         {
         case IdtfSystem:
-            sc_helper_set_system_identifier_new(mContext, addr, el->idtf.c_str(), (sc_uint32)el->idtf.size(), concertedKB);
+            sc_helper_set_system_identifier(mContext, addr, el->idtf.c_str(), (sc_uint32)el->idtf.size());
+            addSystemIdToConcertedPart(addr);
             mSysIdtfAddrs[el->idtf] = addr;
             break;
         case IdtfLocal:
