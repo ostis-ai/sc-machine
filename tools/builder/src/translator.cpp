@@ -131,8 +131,7 @@ void iTranslator::appendScAddr(sc_addr addr, const String &idtf)
 }
 
 void iTranslator::addSystemIdToConcertedPart(sc_addr addr) {
-    sc_addr sysId;
-    sc_helper_resolve_system_identifier(mContext, "nrel_system_identifier", &sysId);
+    sc_addr sysId = sc_helper_get_system_id();
     sc_iterator5 *it = sc_iterator5_f_a_a_a_f_new(mContext,
                                               addr,
                                               sc_type_arc_common | sc_type_const,
@@ -149,24 +148,5 @@ void iTranslator::addSystemIdToConcertedPart(sc_addr addr) {
         sc_memory_arc_new(mContext, sc_type_arc_pos_const_perm, this->concertedKB, t_arc);
     }
     sc_iterator5_free(it);
-
-    //    if (node_struct!= NULL)
-//        sc_memory_arc_new(ctx, sc_type_arc_pos_const_perm, *node_struct, idtf_addr);
-//
-//    // we doesn't need link data anymore
-//    sc_stream_free(stream);
-//
-//    // setup new system identifier
-//    arc_addr = sc_memory_arc_new(ctx, sc_type_arc_common | sc_type_const, addr, idtf_addr);
-//    if (SC_ADDR_IS_EMPTY(arc_addr))
-//        return SC_RESULT_ERROR;
-//    if (node_struct!= NULL)
-//        sc_memory_arc_new(ctx, sc_type_arc_pos_const_perm, *node_struct, arc_addr);
-//
-//    arc_addr = sc_memory_arc_new(ctx, sc_type_arc_pos_const_perm, sc_keynodes[SC_KEYNODE_NREL_SYSTEM_IDENTIFIER], arc_addr);
-//    if (SC_ADDR_IS_EMPTY(arc_addr))
-//        return SC_RESULT_ERROR;
-//    if (node_struct!= NULL)
-//        sc_memory_arc_new(ctx, sc_type_arc_pos_const_perm, *node_struct, arc_addr);
 
 }
