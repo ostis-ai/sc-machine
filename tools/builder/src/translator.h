@@ -57,6 +57,7 @@ public:
 
 protected:
     void createConcertedKB();
+    void addSystemIdToConcertedPart(sc_addr addr);
     sc_addr concertedKB;
     const char* concertedKBName = "concertedKB_hash_iF95K2";
 
