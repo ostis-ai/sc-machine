@@ -329,3 +329,7 @@ sc_bool sc_helper_check_version_equal(sc_uint8 major, sc_uint8 minor, sc_uint8 p
     sc_version v = {major, minor, patch, 0};
     return sc_version_compare(&SC_VERSION, &v) == 0 ? SC_TRUE : SC_FALSE;
 }
+
+sc_addr sc_helper_get_system_id() {
+    return sc_keynodes[SC_KEYNODE_NREL_SYSTEM_IDENTIFIER];
+}
