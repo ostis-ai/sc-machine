@@ -29,7 +29,7 @@ void iTranslator::createConcertedKB()
     if (!res)
     {
         this->concertedKB = sc_memory_node_new(mContext, sc_type_node_struct);
-        sc_helper_set_system_identifier(mContext, this->concertedKB, concertedKBName, 11);
+        sc_helper_set_system_identifier(mContext, this->concertedKB, concertedKBName, 23);
     }
     else
         {
@@ -140,13 +140,12 @@ void iTranslator::addSystemIdToConcertedPart(sc_addr addr) {
                                               sysId);
 
     if (SC_TRUE == sc_iterator5_next(it)) {
-        sc_addr t_arc = sc_iterator5_value(it, 2);
-        sc_memory_arc_new(mContext, sc_type_arc_pos_const_perm, this->concertedKB, t_arc);
-        t_arc = sc_iterator5_value(it, 1);
-        sc_memory_arc_new(mContext, sc_type_arc_pos_const_perm, this->concertedKB, t_arc);
-        t_arc = sc_iterator5_value(it, 3);
-        sc_memory_arc_new(mContext, sc_type_arc_pos_const_perm, this->concertedKB, t_arc);
+        sc_addr t_arc1 = sc_iterator5_value(it, 2);
+        sc_memory_arc_new(mContext, sc_type_arc_pos_const_perm, this->concertedKB, t_arc1);
+        sc_addr t_arc2 = sc_iterator5_value(it, 1);
+        sc_memory_arc_new(mContext, sc_type_arc_pos_const_perm, this->concertedKB, t_arc2);
+        sc_addr t_arc3 = sc_iterator5_value(it, 3);
+        sc_memory_arc_new(mContext, sc_type_arc_pos_const_perm, this->concertedKB, t_arc3);
     }
     sc_iterator5_free(it);
-
 }
