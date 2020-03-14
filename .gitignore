@@ -1,6 +1,9 @@
 bin
 build
 scripts/redis*
+cmake-build-debug/*
+cmake-build-debug
+cmake-build-debug*
 
 tools/builder/src/parser/
 *.generated.*
