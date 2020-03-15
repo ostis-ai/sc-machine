@@ -22,7 +22,7 @@ file(GLOB_RECURSE HEADERS "src/*.h")
 
 set (SOURCES_C 
 	"${SC_BUILDER_DIR}/src/parser/scsLexer.c"
-	"${SC_BUILDER_DIR}/src/parser/scsParser.c" )
+	"${SC_BUILDER_DIR}/src/parser/scsParser.c")
 
 if (${WIN32})
 	set (BOOST_LIBS_LIST )
@@ -35,7 +35,7 @@ else()
 	set (ANTLR_LIB antlr3c)
 endif (${WIN32})
 
-	
+
 add_executable(sc-builder ${SOURCES} ${SOURCES_C} ${HEADERS})
 include_directories(${SC_MEMORY_SRC} ${GLIB2_INCLUDE_DIRS})
 target_link_libraries(sc-builder sc-memory ${ANTLR_LIB} ${BOOST_LIBS_LIST})
