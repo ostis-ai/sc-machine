@@ -412,7 +412,7 @@ class TestScMemoryContext(TestCase):
                  "_edge", ScType.NodeVar >> "_target")
     templ.Triple(attrAddr, ScType.EdgeAccessVarPosPerm, "_edge")
 
-    params = ScTemplateGenParams()
+    params = ScTemplateParams()
     params.Add("_target", addr2)
 
     self.assertEqual(params.Get("_target_none"), None)

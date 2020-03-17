@@ -18,7 +18,11 @@ class ObjectInfo
 {
 public:
   ObjectInfo(ScAddr const & inAddr, ScType const & inType, std::string const & inSysIdtf)
-        : m_addr(inAddr), m_type(inType), m_sysIdtf(inSysIdtf), m_source(nullptr), m_target(nullptr)
+    : m_addr(inAddr)
+    , m_type(inType)
+    , m_sysIdtf(inSysIdtf)
+    , m_source(nullptr)
+    , m_target(nullptr)
   {
   }
 
@@ -88,7 +92,8 @@ class EdgeLessFunctor
 
 public:
   explicit EdgeLessFunctor(EdgeDependMap const & edgeDependMap, ObjectVector const & objects)
-        : m_edgeDependMap(edgeDependMap), m_objects(objects)
+    : m_edgeDependMap(edgeDependMap)
+    , m_objects(objects)
   {
   }
 
@@ -106,7 +111,7 @@ public:
     return false;
   }
 
-  bool operator()(size_t const indexA, size_t const indexB) const
+  bool operator() (size_t const indexA, size_t const indexB) const
   {
     ObjectInfo const & objA = m_objects[indexA];
     ObjectInfo const & objB = m_objects[indexB];
@@ -141,14 +146,16 @@ class ScTemplateBuilder
 
 protected:
   ScTemplateBuilder(
-        ScAddr const & inScTemplateAddr,
-        ScMemoryContext & inCtx,
-        const ScTemplateParams & params)
-        : m_templateAddr(inScTemplateAddr), m_context(inCtx), m_params(params)
+    ScAddr const & inScTemplateAddr,
+    ScMemoryContext & inCtx,
+    ScTemplateParams const & params)
+    : m_templateAddr(inScTemplateAddr)
+    , m_context(inCtx)
+    , m_params(params)
   {
   }
 
-  bool operator()(ScTemplate * inTemplate)
+  bool operator() (ScTemplate * inTemplate)
   {
     // mark template to don't force order of triples
     inTemplate->m_isForceOrder = false;
@@ -233,88 +240,88 @@ protected:
         ObjectInfo const & edge = m_objects[i];
         SC_ASSERT(edge.GetType().IsVar(), ());
 
-        const ObjectInfo * src = replaceWithParam(edge.GetSource());
-        const ObjectInfo * trg = replaceWithParam(edge.GetTarget());
+        ObjectInfo const src = replaceWithParam(edge.GetSource());
+        ObjectInfo const trg = replaceWithParam(edge.GetTarget());
 
-        ScType const srcType = src->GetType();
-        ScType const trgType = trg->GetType();
+        ScType const srcType = src.GetType();
+        ScType const trgType = trg.GetType();
 
         if (srcType.IsConst())
         {
           if (trgType.IsConst())  // F_A_F
           {
             inTemplate->Triple(
-                  src->GetAddr() >> src->GetIdtf(),
+                  src.GetAddr() >> src.GetIdtf(),
                   edge.GetType() >> edge.GetIdtf(),
-                  trg->GetAddr() >> trg->GetIdtf());
+                  trg.GetAddr() >> trg.GetIdtf());
           }
           else
           {
-            if (inTemplate->HasReplacement(trg->GetIdtf())) // F_A_F
+            if (inTemplate->HasReplacement(trg.GetIdtf())) // F_A_F
             {
               inTemplate->Triple(
-                    src->GetAddr() >> src->GetIdtf(),
+                    src.GetAddr() >> src.GetIdtf(),
                     edge.GetType() >> edge.GetIdtf(),
-                    trg->GetIdtf());
+                    trg.GetIdtf());
             }
             else // F_A_A
             {
               inTemplate->Triple(
-                    src->GetAddr() >> src->GetIdtf(),
+                    src.GetAddr() >> src.GetIdtf(),
                     edge.GetType() >> edge.GetIdtf(),
-                    trgType >> trg->GetIdtf());
+                    trgType >> trg.GetIdtf());
             }
           }
         }
         else if (trgType.IsConst())
         {
-          if (inTemplate->HasReplacement(src->GetIdtf())) // F_A_F
+          if (inTemplate->HasReplacement(src.GetIdtf())) // F_A_F
           {
             inTemplate->Triple(
-                  src->GetIdtf(),
+                  src.GetIdtf(),
                   edge.GetType() >> edge.GetIdtf(),
-                  trg->GetAddr() >> trg->GetIdtf());
+                  trg.GetAddr() >> trg.GetIdtf());
           }
           else // A_A_F
           {
             inTemplate->Triple(
-                  srcType >> src->GetIdtf(),
+                  srcType >> src.GetIdtf(),
                   edge.GetType() >> edge.GetIdtf(),
-                  trg->GetAddr() >> trg->GetIdtf());
+                  trg.GetAddr() >> trg.GetIdtf());
           }
         }
         else
         {
-          bool const srcRepl = inTemplate->HasReplacement(src->GetIdtf());
-          bool const trgRepl = inTemplate->HasReplacement(trg->GetIdtf());
+          bool const srcRepl = inTemplate->HasReplacement(src.GetIdtf());
+          bool const trgRepl = inTemplate->HasReplacement(trg.GetIdtf());
 
           if (srcRepl && trgRepl) // F_A_F
           {
             inTemplate->Triple(
-                  src->GetIdtf(),
+                  src.GetIdtf(),
                   edge.GetType() >> edge.GetIdtf(),
-                  trg->GetIdtf());
+                  trg.GetIdtf());
           }
           else if (!srcRepl && trgRepl) // A_A_F
           {
             inTemplate->Triple(
-                  srcType >> src->GetIdtf(),
+                  srcType >> src.GetIdtf(),
                   edge.GetType() >> edge.GetIdtf(),
-                  trg->GetIdtf());
+                  trg.GetIdtf());
           }
           else if (srcRepl && !trgRepl) // F_A_A
           {
             inTemplate->Triple(
-                  src->GetIdtf(),
+                  src.GetIdtf(),
                   edge.GetType() >> edge.GetIdtf(),
-                  trgType >> trg->GetIdtf());
+                  trgType >> trg.GetIdtf());
           }
           else
           {
             inTemplate->Triple(
-                  srcType >> src->GetIdtf(),
+                  srcType >> src.GetIdtf(),
                   edge.GetType() >> edge.GetIdtf(),
-                  trgType >> trg->GetIdtf());
+                  trgType >> trg.GetIdtf());
           }
         }
       }
@@ -326,33 +333,27 @@ protected:
 protected:
   ScAddr m_templateAddr;
   ScMemoryContext & m_context;
-  const ScTemplateParams & m_params;
+  ScTemplateParams m_params;
 
   // all objects in template
   std::vector<ObjectInfo> m_objects;
 
 private:
-  const ObjectInfo * replaceWithParam(const ObjectInfo * templateItem)
+  ObjectInfo replaceWithParam(ObjectInfo const * templateItem) const
   {
     if (!templateItem->IsEdge())
     {
       ScAddr replacedAddr;
       if (m_params.Get(templateItem->GetIdtf(), replacedAddr))
       {
-        ScType type = m_context.GetElementType(replacedAddr);
-        std::string idtf = m_context.HelperGetSystemIdtf(replacedAddr);
-        return new ObjectInfo(replacedAddr, type, idtf);
+        ScType const type = m_context.GetElementType(replacedAddr);
+        std::string const idtf = m_context.HelperGetSystemIdtf(replacedAddr);
+        return ObjectInfo(replacedAddr, type, idtf);
       }
     }
-    return templateItem;
+    return *templateItem;
   }
 };
-
-bool ScTemplate::FromScTemplate(ScMemoryContext & ctx, ScAddr const & scTemplateAddr)
-{
-  ScTemplateBuilder builder(scTemplateAddr, ctx, ScTemplateParams());
-  return builder(this);
-}
 
 bool ScTemplate::FromScTemplate(ScMemoryContext & ctx, ScAddr const & scTemplateAddr, const ScTemplateParams & params)
 {

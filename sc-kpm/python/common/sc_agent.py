@@ -124,7 +124,7 @@ class ScAgentCommand(ScAgent):
         ScType.EdgeAccessVarPosPerm,
         ScAgent.keynodes[ScAgent.kNrelResult])
 
-    gen_res = self.module.ctx.HelperGenTemplate(templ, ScTemplateGenParams())
+    gen_res = self.module.ctx.HelperGenTemplate(templ, ScTemplateParams())
     assert gen_res.Size() > 0
 
     self.result_set = ScSet(self.module.ctx, gen_res['_result'])

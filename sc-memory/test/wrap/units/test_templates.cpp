@@ -401,6 +401,281 @@ UNIT_TEST(templates_common)
   SUBTEST_END()
 }
 
+UNIT_TEST(template_search_with_params)
+{
+  ScMemoryContext ctx(sc_access_lvl_make_min, "template_search_with_params");\
+
+  /*
+  * scs: concept_test
+  *               -> rrel_test: x_elem(* => nrel_test: y_elem;; *);
+  *               -> y_elem;;
+  */
+  ScAddr const concept_test = ctx.CreateNode(ScType::NodeConstClass);
+  SC_CHECK(concept_test.IsValid(), ());
+
+  ScAddr const x_elem = ctx.CreateNode(ScType::NodeConst);
+  SC_CHECK(x_elem.IsValid(), ());
+
+  ScAddr const y_elem = ctx.CreateNode(ScType::NodeConst);
+  SC_CHECK(y_elem.IsValid(), ());
+
+  ScAddr const rrel_test = ctx.CreateNode(ScType::NodeConstRole);
+  SC_CHECK(rrel_test.IsValid(), ());
+
+  ScAddr const nrel_test = ctx.CreateNode(ScType::NodeConstNoRole);
+  SC_CHECK(nrel_test.IsValid(), ());
+
+  ScAddr const edge1 = ctx.CreateEdge(ScType::EdgeAccessConstPosPerm, concept_test, x_elem);
+  SC_CHECK(edge1.IsValid(), ());
+
+  ScAddr const edge2 = ctx.CreateEdge(ScType::EdgeAccessConstPosPerm, rrel_test, edge1);
+  SC_CHECK(edge2.IsValid(), ());
+
+  ScAddr const edge3 = ctx.CreateEdge(ScType::EdgeAccessConstPosPerm, concept_test, y_elem);
+  SC_CHECK(edge3.IsValid(), ());
+
+  ScAddr const edge4 = ctx.CreateEdge(ScType::EdgeDCommonConst, x_elem, y_elem);
+  SC_CHECK(edge4.IsValid(), ());
+
+  ScAddr const edge5 = ctx.CreateEdge(ScType::EdgeAccessConstPosPerm, nrel_test, edge4);
+  SC_CHECK(edge5.IsValid(), ());
+
+
+  // Create template vars
+  ScAddr const _x = ctx.CreateNode(ScType::NodeVar);
+  SC_CHECK(_x.IsValid(), ());
+  SC_CHECK(ctx.HelperSetSystemIdtf("_x", _x), ());
+
+  ScAddr const _y = ctx.CreateNode(ScType::NodeVar);
+  SC_CHECK(_y.IsValid(), ());
+  SC_CHECK(ctx.HelperSetSystemIdtf("_y", _y), ());
+
+  ScAddr const _concept = ctx.CreateNode(ScType::NodeVarClass);
+  SC_CHECK(_concept.IsValid(), ());
+  SC_CHECK(ctx.HelperSetSystemIdtf("_concept", _concept), ());
+
+  ScAddr const _rrel = ctx.CreateNode(ScType::NodeVarRole);
+  SC_CHECK(_rrel.IsValid(), ());
+  SC_CHECK(ctx.HelperSetSystemIdtf("_rrel", _rrel), ());
+
+  ScAddr const _nrel = ctx.CreateNode(ScType::NodeVarNoRole);
+  SC_CHECK(_nrel.IsValid(), ());
+  SC_CHECK(ctx.HelperSetSystemIdtf("_nrel", _nrel), ());
+
+  SUBTEST_START(template_search_with_params_1)
+  {
+    /*
+    * scs of template: concept_test _-> _x;
+    */
+    ScAddr const templateEdge = ctx.CreateEdge(ScType::EdgeAccessVarPosPerm, concept_test, _x);
+    SC_CHECK(templateEdge.IsValid(), ());
+
+    ScAddr const templateStructAddr = ctx.CreateNode(ScType::NodeConstStruct);
+    SC_CHECK(templateStructAddr.IsValid(), ());
+    ScStruct templateStruct(&ctx, templateStructAddr);
+    templateStruct
+        << concept_test
+        << templateEdge
+        << _x;
+
+    ScTemplateParams templateParams;
+    templateParams.Add("_x", x_elem);
+
+    ScTemplate scTemplate;
+    SC_CHECK(ctx.HelperBuildTemplate(scTemplate, templateStructAddr, templateParams), ());
+    {
+      ScTemplateSearchResult result;
+      SC_CHECK(ctx.HelperSearchTemplate(scTemplate, result), ());
+      {
+        SC_CHECK_EQUAL(result.Size(), 1, ());
+      }
+    }
+  }
+  SUBTEST_END()
+
+  SUBTEST_START(template_search_with_params_2)
+  {
+    /*
+    * scs of template: _concept _-> x_elem; _-> y_elem;;
+    */
+    ScAddr const templateEdge1 = ctx.CreateEdge(ScType::EdgeAccessVarPosPerm, _concept, x_elem);
+    SC_CHECK(templateEdge1.IsValid(), ());
+
+    ScAddr const templateEdge2 = ctx.CreateEdge(ScType::EdgeAccessVarPosPerm, _concept, y_elem);
+    SC_CHECK(templateEdge2.IsValid(), ());
+
+    ScAddr const templateStructAddr = ctx.CreateNode(ScType::NodeConstStruct);
+    SC_CHECK(templateStructAddr.IsValid(), ());
+    ScStruct templateStruct(&ctx, templateStructAddr);
+    templateStruct
+          << _concept
+          << templateEdge1
+          << x_elem
+          << templateEdge2
+          << y_elem;
+
+    ScTemplateParams templateParams;
+    templateParams.Add("_concept", concept_test);
+
+    ScTemplate scTemplate;
+    SC_CHECK(ctx.HelperBuildTemplate(scTemplate, templateStructAddr, templateParams), ());
+    {
+      ScTemplateSearchResult result;
+      SC_CHECK(ctx.HelperSearchTemplate(scTemplate, result), ());
+      {
+        SC_CHECK_EQUAL(result.Size(), 1, ());
+      }
+    }
+  }
+  SUBTEST_END()
+
+  SUBTEST_START(template_search_with_params_3)
+  {
+    /*
+    * scs of template: concept_test _-> rrel_test:: _x;
+    */
+    ScAddr const templateEdge1 = ctx.CreateEdge(ScType::EdgeAccessVarPosPerm, concept_test, _x);
+    SC_CHECK(templateEdge1.IsValid(), ());
+
+    ScAddr const templateEdge2 = ctx.CreateEdge(ScType::EdgeAccessVarPosPerm, rrel_test, templateEdge1);
+    SC_CHECK(templateEdge2.IsValid(), ());
+
+    ScAddr const templateStructAddr = ctx.CreateNode(ScType::NodeConstStruct);
+    SC_CHECK(templateStructAddr.IsValid(), ());
+    ScStruct templateStruct(&ctx, templateStructAddr);
+    templateStruct
+          << concept_test
+          << templateEdge1
+          << _x
+          << templateEdge2
+          << rrel_test;
+
+    ScTemplateParams templateParams;
+    templateParams.Add("_x", x_elem);
+
+    ScTemplate scTemplate;
+    SC_CHECK(ctx.HelperBuildTemplate(scTemplate, templateStructAddr, templateParams), ());
+    {
+      ScTemplateSearchResult result;
+      SC_CHECK(ctx.HelperSearchTemplate(scTemplate, result), ());
+      {
+        SC_CHECK_EQUAL(result.Size(), 1, ());
+      }
+    }
+  }
+  SUBTEST_END()
+
+  SUBTEST_START(template_search_with_params_4)
+  {
+    /*
+    * scs of template: concept_test _-> _rrel:: _x;
+    */
+    ScAddr const templateEdge1 = ctx.CreateEdge(ScType::EdgeAccessVarPosPerm, concept_test, _x);
+    SC_CHECK(templateEdge1.IsValid(), ());
+
+    ScAddr const templateEdge2 = ctx.CreateEdge(ScType::EdgeAccessVarPosPerm, _rrel, templateEdge1);
+    SC_CHECK(templateEdge2.IsValid(), ());
+
+    ScAddr const templateStructAddr = ctx.CreateNode(ScType::NodeConstStruct);
+    SC_CHECK(templateStructAddr.IsValid(), ());
+    ScStruct templateStruct(&ctx, templateStructAddr);
+    templateStruct
+          << concept_test
+          << templateEdge1
+          << _x
+          << templateEdge2
+          << _rrel;
+
+    ScTemplateParams templateParams;
+    templateParams.Add("_x", x_elem);
+    templateParams.Add("_rrel", rrel_test);
+
+    ScTemplate scTemplate;
+    SC_CHECK(ctx.HelperBuildTemplate(scTemplate, templateStructAddr, templateParams), ());
+    {
+      ScTemplateSearchResult result;
+      SC_CHECK(ctx.HelperSearchTemplate(scTemplate, result), ());
+      {
+        SC_CHECK_EQUAL(result.Size(), 1, ());
+      }
+    }
+  }
+  SUBTEST_END()
+
+  SUBTEST_START(template_search_with_params_5)
+  {
+    /*
+    * scs of template: _x _=> nrel_test:: _y;
+    */
+    ScAddr const templateEdge1 = ctx.CreateEdge(ScType::EdgeDCommonVar, _x, _y);
+    SC_CHECK(templateEdge1.IsValid(), ());
+
+    ScAddr const templateEdge2 = ctx.CreateEdge(ScType::EdgeAccessVarPosPerm, nrel_test, templateEdge1);
+    SC_CHECK(templateEdge2.IsValid(), ());
+
+    ScAddr const templateStructAddr = ctx.CreateNode(ScType::NodeConstStruct);
+    SC_CHECK(templateStructAddr.IsValid(), ());
+    ScStruct templateStruct(&ctx, templateStructAddr);
+    templateStruct
+          << _x
+          << templateEdge1
+          << _y
+          << templateEdge2
+          << nrel_test;
+
+    ScTemplateParams templateParams;
+    templateParams.Add("_x", x_elem);
+    templateParams.Add("_y", y_elem);
+
+    ScTemplate scTemplate;
+    SC_CHECK(ctx.HelperBuildTemplate(scTemplate, templateStructAddr, templateParams), ());
+    {
+      ScTemplateSearchResult result;
+      SC_CHECK(ctx.HelperSearchTemplate(scTemplate, result), ());
+      {
+        SC_CHECK_EQUAL(result.Size(), 1, ());
+      }
+    }
+  }
+  SUBTEST_END()
+
+  SUBTEST_START(template_search_with_params_6)
+  {
+    /*
+    * scs of template: x_elem _=> _nrel:: _y;
+    */
+    ScAddr const templateEdge1 = ctx.CreateEdge(ScType::EdgeDCommonVar, x_elem, _y);
+    SC_CHECK(templateEdge1.IsValid(), ());
+
+    ScAddr const templateEdge2 = ctx.CreateEdge(ScType::EdgeAccessVarPosPerm, _nrel, templateEdge1);
+    SC_CHECK(templateEdge2.IsValid(), ());
+
+    ScAddr const templateStructAddr = ctx.CreateNode(ScType::NodeConstStruct);
+    SC_CHECK(templateStructAddr.IsValid(), ());
+    ScStruct templateStruct(&ctx, templateStructAddr);
+    templateStruct
+          << x_elem
+          << templateEdge1
+          << _y
+          << templateEdge2
+          << _nrel;
+
+    ScTemplateParams templateParams;
+    templateParams.Add("_y", y_elem);
+    templateParams.Add("_nrel", nrel_test);
+
+    ScTemplate scTemplate;
+    SC_CHECK(ctx.HelperBuildTemplate(scTemplate, templateStructAddr, templateParams), ());
+    {
+      ScTemplateSearchResult result;
+      SC_CHECK(ctx.HelperSearchTemplate(scTemplate, result), ());
+      {
+        SC_CHECK_EQUAL(result.Size(), 1, ());
+      }
+    }
+  }
+  SUBTEST_END()
+}
 
 UNIT_TEST(templates_2)
 {
@@ -1215,7 +1490,7 @@ UNIT_TEST(template_search_some_relations)
     _app => nrel_idtf: _idtf;;
     _app => nrel_image: _image;;
    */
-   
+
   ScAddr const deviceAddr = ctx.CreateNode(ScType::NodeConst);
   SC_CHECK(deviceAddr.IsValid(), ());
 
@@ -1323,7 +1598,7 @@ UNIT_TEST(template_search_some_relations)
 
       d.m_app = searchRes[i]["_app"];
       d.m_idtf = searchRes[i]["_idtf"];
-      d.m_image = searchRes[i]["_image"];    
+      d.m_image = searchRes[i]["_image"];
     }
 
     auto compare = [](TestData const & a, TestData const & b)
@@ -1349,7 +1624,7 @@ UNIT_TEST(template_search_some_relations)
 UNIT_TEST(template_one_edge_inclusion)
 {
   ScMemoryContext ctx(sc_access_lvl_make_min, "template_one_edge_inclusion");
-  
+
   /* In case:
       a -> b (* <- sc_node_material;; *);;
       a -> c;;
@@ -1416,7 +1691,7 @@ UNIT_TEST(scs_templates)
       ScType::NodeVar >> "_a",
       ScType::EdgeAccessVarPosPerm >> "_edge",
       ScType::NodeVarTuple >> "b");
-    
+
     ScTemplateGenResult genResult;
     SC_CHECK(ctx.HelperGenTemplate(genTempl, genResult), ());
 
