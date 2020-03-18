@@ -16,6 +16,7 @@ add_subdirectory(ui)
 add_subdirectory(search)
 add_subdirectory(merge)
 add_subdirectory(utils)
+add_subdirectory(sc-agents-common)
 
 if (${SC_KPM_SCP})
 	add_subdirectory(scp)
