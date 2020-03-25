@@ -436,7 +436,7 @@ sc_addr SCsTranslator::resolveScAddr(sElement *el)
     }
     // generate addr
     addr = createScAddr(el);
-    if (el->idtf == concertedPartSet)
+    if (el->idtf == concertedPartSetName)
     {
         sc_memory_arc_new(mContext, sc_type_arc_pos_const_perm, addr, this->concertedKB);
     }
