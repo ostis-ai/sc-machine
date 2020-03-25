@@ -130,7 +130,7 @@ void iTranslator::appendScAddr(sc_addr addr, const String &idtf)
     }
 }
 
-void iTranslator::addSystemIdToConcertedPart(sc_addr* addr) {
+void iTranslator::addSystemIdToConcertedPart(const sc_addr* addr) {
     sc_addr sysId = sc_helper_get_system_id();
     sc_iterator5 *it = sc_iterator5_f_a_a_a_f_new(mContext,
                                               *addr,
