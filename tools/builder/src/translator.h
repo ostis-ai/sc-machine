@@ -57,9 +57,10 @@ public:
 
 protected:
     void createConcertedKB();
-    void addSystemIdToConcertedPart(sc_addr addr);
+    void addSystemIdToConcertedPart(sc_addr* addr);
     sc_addr concertedKB;
     const char* concertedKBName = "concertedKB_hash_iF95K2";
+    const char* concertedPartSet = "concerted_part_of_kb";
 
     /*! Generates format relation in sc-memory by file extension
      * @param addr sc-addr of sc-link to create format relation

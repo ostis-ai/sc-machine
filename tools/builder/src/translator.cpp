@@ -62,7 +62,7 @@ void iTranslator::generateFormatInfo(sc_addr addr, const String &ext)
             fmt_addr = sc_memory_node_new(mContext, sc_type_node_class | sc_type_const);
             sc_memory_arc_new(mContext, sc_type_arc_pos_const_perm, this->concertedKB, fmt_addr);
             sc_helper_set_system_identifier(mContext, fmt_addr, fmtStr.c_str(), (sc_uint32)fmtStr.size());
-            addSystemIdToConcertedPart(fmt_addr);
+            addSystemIdToConcertedPart(&fmt_addr);
             mSysIdtfAddrs[fmtStr] = fmt_addr;
         }
     }
@@ -83,7 +83,7 @@ void iTranslator::generateFormatInfo(sc_addr addr, const String &ext)
             nrel_format_addr = sc_memory_node_new(mContext, sc_type_node_norole | sc_type_const);
             sc_memory_arc_new(mContext, sc_type_arc_pos_const_perm, this->concertedKB, nrel_format_addr);
             sc_helper_set_system_identifier(mContext, nrel_format_addr, nrel_format_str.c_str(),(sc_uint32)nrel_format_str.size());
-            addSystemIdToConcertedPart(nrel_format_addr);
+            addSystemIdToConcertedPart(&nrel_format_addr);
             mSysIdtfAddrs[nrel_format_str] = nrel_format_addr;
         }
     }
@@ -130,10 +130,10 @@ void iTranslator::appendScAddr(sc_addr addr, const String &idtf)
     }
 }
 
-void iTranslator::addSystemIdToConcertedPart(sc_addr addr) {
+void iTranslator::addSystemIdToConcertedPart(sc_addr* addr) {
     sc_addr sysId = sc_helper_get_system_id();
     sc_iterator5 *it = sc_iterator5_f_a_a_a_f_new(mContext,
-                                              addr,
+                                              *addr,
                                               sc_type_arc_common | sc_type_const,
                                               0,
                                               sc_type_arc_pos_const_perm,

@@ -439,7 +439,7 @@ sc_addr SCsTranslator::resolveScAddr(sElement *el)
 
     // generate addr
     addr = createScAddr(el);
-    if (el->idtf == "concerted_part_of_kb")
+    if (el->idtf == concertedPartSet)
     {
         sc_memory_arc_new(mContext, sc_type_arc_pos_const_perm, addr, this->concertedKB);
     }
@@ -455,7 +455,7 @@ sc_addr SCsTranslator::resolveScAddr(sElement *el)
         {
         case IdtfSystem:
             sc_helper_set_system_identifier(mContext, addr, el->idtf.c_str(), (sc_uint32)el->idtf.size());
-            addSystemIdToConcertedPart(addr);
+            addSystemIdToConcertedPart(&addr);
             mSysIdtfAddrs[el->idtf] = addr;
             break;
         case IdtfLocal:
