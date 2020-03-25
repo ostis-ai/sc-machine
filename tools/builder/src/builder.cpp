@@ -115,8 +115,8 @@ bool Builder::run(const BuilderParams &params)
 
     sc_addr concertedKB;
     sc_addr contr_iF95K2;
-    sc_helper_resolve_system_identifier(mContext, "concerted_part_of_kb", &concertedKB);
-    sc_helper_resolve_system_identifier(mContext, "concertedKB_hash_iF95K2", &contr_iF95K2);
+    sc_helper_resolve_system_identifier(mContext, concertedPartSetName, &concertedKB);
+    sc_helper_resolve_system_identifier(mContext, concertedKBName, &contr_iF95K2);
 
     sc_iterator3 *it3 = sc_iterator3_f_a_a_new(mContext,
                                                concertedKB,
