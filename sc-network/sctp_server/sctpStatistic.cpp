@@ -14,7 +14,7 @@
 
 extern "C"
 {
-#include "sc_memory.h"
+#include <sc-core/sc_memory.h>
 }
 
 

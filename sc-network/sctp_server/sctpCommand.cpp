@@ -14,9 +14,10 @@
 #include <QBuffer>
 #include <QCoreApplication>
 
-#include <limits>
-#include <assert.h>
-
+extern "C" {
+#include <sc-core/sc_memory_headers.h>
+#include <sc-core/sc_helper.h>
+}
 
 #define SCTP_READ_TIMEOUT   3000
 
