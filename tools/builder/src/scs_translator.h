@@ -7,6 +7,7 @@
 #ifndef _scs_translator_h_
 #define _scs_translator_h_
 
+#include <sc-memory/cpp/sc_addr.hpp>
 #include "translator.h"
 
 #include "parser/scsLexer.h"
@@ -111,6 +112,7 @@ public:
     const String& getFileExt() const;
 
 private:
+
     //! Process string data
     bool processString(const String &data);
     /*! Builds sc-text based on parsed antlr tree

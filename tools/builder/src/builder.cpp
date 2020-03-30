@@ -113,6 +113,23 @@ bool Builder::run(const BuilderParams &params)
     std::cout << "Links: " << stat.link_count << "(" << ((float)stat.link_count / (float)all_count) * 100 << "%)"  << std::endl;
     std::cout << "Total: " << all_count << std::endl;
 
+    sc_addr concertedKB;
+    sc_addr contr_iF95K2;
+    sc_helper_resolve_system_identifier(mContext, concertedPartSetName, &concertedKB);
+    sc_helper_resolve_system_identifier(mContext, concertedKBName, &contr_iF95K2);
+
+    sc_iterator3 *it3 = sc_iterator3_f_a_a_new(mContext,
+                                               concertedKB,
+                                               sc_type_arc_pos_const_perm,
+                                               0);
+    while (SC_TRUE == sc_iterator3_next(it3)) {
+        sc_addr t_addr = sc_iterator3_value(it3, 2);
+        if (!SC_ADDR_IS_EQUAL(t_addr,contr_iF95K2)) {
+            sc_memory_element_free(mContext, t_addr);
+        }
+    }
+    sc_iterator3_free(it3);
+
     sc_memory_context_free(mContext);
     sc_memory_shutdown(SC_TRUE);
 
@@ -129,6 +146,7 @@ bool Builder::hasTranslator(const std::string &ext) const
 {
     return mTranslatorFactories.find(ext) != mTranslatorFactories.end();
 }
+
 bool Builder::hasErrors() const
 {
     return mErrors.size() > 0;
@@ -145,7 +163,6 @@ bool Builder::processFile(const String &filename)
                      filename, 0);
         return false;
     }
-
     std::string ext = filename.substr(n + 1, std::string::npos);
     // try to find translator factory
     tTranslatorFactories::iterator it = mTranslatorFactories.find(ext);
@@ -156,7 +173,6 @@ bool Builder::processFile(const String &filename)
                      filename, 0);
         return false;
     }
-
     iTranslator *translator = it->second->createInstance(mContext);
     assert(translator);
 
