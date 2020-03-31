@@ -1,5 +1,5 @@
 import { ScNet, ScType, ScAddr, ScTemplate, 
-         ScTemplateSearchResult, ScTemplateResult, ScConstruction, ScLinkContent, ScLinkContentType, ScTemplateGenerateResult } from '@ostis/sc-core';
+         ScTemplateSearchResult, ScTemplateResult, ScConstruction, ScLinkContent, ScLinkContentType, ScTemplateGenerateResult, ResolveIdtfMap } from '@ostis/sc-core';
 import { ServerKeynodes } from './ServerKeynodes';
 import { ServerBase } from './ServerBase';
 import { KBTemplate } from '../types';
@@ -14,7 +14,6 @@ export class ServerTemplates extends ServerBase {
 
   private _templates: KBTemplate[] = [];
   private _listeners: ServerTemplatesListener[] = [];
-  private _addr: ScAddr = null; 
 
   constructor(client: ScNet, keynodes: ServerKeynodes) {
     super(client, keynodes);
@@ -57,6 +56,11 @@ export class ServerTemplates extends ServerBase {
     this._listeners.forEach(listener => {
       self.NotifyListener(listener);
     });
+  }
+
+  private GetInputText(scsTempl: string) {
+    const lines = scsTempl.split("\n");
+    return lines[lines.length - 1];
   }
 
   public async LoadTemplatesFromKB() : Promise<KBTemplate[]> {
@@ -151,16 +155,20 @@ export class ServerTemplates extends ServerBase {
     return addr[0];
   }
 
-  public async GetMainIdentifier(addr: ScAddr): Promise<ScTemplateSearchResult> {
+  public async GetMainIdentifier(identifier: string): Promise<ScTemplateSearchResult> {
     let scTemplate = new ScTemplate();
     let linkAlias = "link";
+    let addr: ScAddr = null;
+    await this.client.ResolveKeynodes([{idtf: identifier, type: ScType.Unknown}]).then(function (res: ResolveIdtfMap) {
+      addr = res[identifier];
+    });    
     scTemplate.TripleWithRelation(addr, ScType.Unknown, [ScType.Link, linkAlias], ScType.Unknown, this.keynodes.kNrelMainIdtf);
     let result = await this.client.TemplateSearch(scTemplate);
     return result;
   }
 
   public async DoSearch(scsTempl: string): Promise<ScTemplateSearchResult> {
-    let searchResult = this.GetMainIdentifier(this._addr);
+    let searchResult = this.GetMainIdentifier(this.GetInputText(scsTempl));
 
     return new Promise<ScTemplateSearchResult>(function (resolve) {
       resolve(searchResult);
@@ -168,9 +176,7 @@ export class ServerTemplates extends ServerBase {
   }
 
   public async DoCreate(scsTempl: string): Promise<ScAddr> {
-    const lines = scsTempl.split("\n");
-    const addr: ScAddr = await this.CreateNodeWithMainIdentifier(lines[lines.length - 1]);
-    this._addr = addr;
+    const addr: ScAddr = await this.CreateNodeWithMainIdentifier(this.GetInputText(scsTempl));
     alert("Generated ScAddr value: " + addr.value);
     return new Promise<ScAddr>((resolve) => {
       resolve(addr);
