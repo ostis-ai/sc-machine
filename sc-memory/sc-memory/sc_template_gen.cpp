@@ -9,14 +9,14 @@
 
 #include <algorithm>
 
-const ScTemplateGenParams ScTemplateGenParams::Empty;
+const ScTemplateParams ScTemplateParams::Empty;
 
 class ScTemplateGenerator
 {
 public:
   ScTemplateGenerator(ScTemplate::ReplacementsMap const & replacements,
                       ScTemplate::TemplateConstr3Vector const & constructions,
-                      ScTemplateGenParams const & params,
+                      ScTemplateParams const & params,
                       ScMemoryContext & context)
     : m_replacements(replacements)
     , m_constructions(constructions)
@@ -182,13 +182,13 @@ public:
 private:
   ScTemplate::ReplacementsMap const & m_replacements;
   ScTemplate::TemplateConstr3Vector const & m_constructions;
-  ScTemplateGenParams const & m_params;
+  ScTemplateParams const & m_params;
   ScMemoryContext & m_context;
   ScAddrVector m_createdElements;
 };
 
 
-ScTemplate::Result ScTemplate::Generate(ScMemoryContext & ctx, ScTemplateGenResult & result, ScTemplateGenParams const & params, ScTemplateResultCode * errorCode) const
+ScTemplate::Result ScTemplate::Generate(ScMemoryContext & ctx, ScTemplateGenResult & result, ScTemplateParams const & params, ScTemplateResultCode * errorCode) const
 {
   ScTemplateGenerator gen(m_replacements, m_constructions, params, ctx);
   ScTemplateResultCode resultCode = gen(result);

@@ -207,10 +207,10 @@ public:
   _SC_EXTERN bool HelperFindBySystemIdtf(std::string const & sysIdtf, ScAddr & outAddr);
   _SC_EXTERN ScAddr HelperFindBySystemIdtf(std::string const & sysIdtf);
 
-  _SC_EXTERN ScTemplate::Result HelperGenTemplate(ScTemplate const & templ, ScTemplateGenResult & result, ScTemplateGenParams const & params = ScTemplateGenParams::Empty, ScTemplateResultCode * resultCode = nullptr);
+  _SC_EXTERN ScTemplate::Result HelperGenTemplate(ScTemplate const & templ, ScTemplateGenResult & result, ScTemplateParams const & params = ScTemplateParams::Empty, ScTemplateResultCode * resultCode = nullptr);
   _SC_EXTERN ScTemplate::Result HelperSearchTemplate(ScTemplate const & templ, ScTemplateSearchResult & result);
   _SC_EXTERN ScTemplate::Result HelperSearchTemplateInStruct(ScTemplate const & templ, ScAddr const & scStruct, ScTemplateSearchResult & result);
-  _SC_EXTERN ScTemplate::Result HelperBuildTemplate(ScTemplate & templ, ScAddr const & templAddr);
+  _SC_EXTERN ScTemplate::Result HelperBuildTemplate(ScTemplate & templ, ScAddr const & templAddr, const ScTemplateParams & params = ScTemplateParams());
   _SC_EXTERN ScTemplate::Result HelperBuildTemplate(ScTemplate & templ, std::string const & scsText);
 
   _SC_EXTERN Stat CalculateStat() const;

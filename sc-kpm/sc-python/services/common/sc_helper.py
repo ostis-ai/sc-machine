@@ -78,7 +78,7 @@ class ScHelper:
       self.ctx.DeleteElement(searchRes[0]['_x'])
 
     # create new relation
-    params = ScTemplateGenParams()
+    params = ScTemplateParams()
     params.Add('_x', _newTarget)
 
     return self.ctx.HelperGenTemplate(templ, params)

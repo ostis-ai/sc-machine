@@ -29,7 +29,7 @@ class ScTemplateSearchResult:
   def Aliases(self) -> [str]:
     return []
 
-class ScTemplateGenParams:
+class ScTemplateParams:
   def Add(self, paramName: str, value: ScAddr):
     pass
 

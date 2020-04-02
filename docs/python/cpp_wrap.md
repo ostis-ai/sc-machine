@@ -245,7 +245,7 @@ This class wrap content of link. It allows to unpack it to `string`, `int` or `f
     * `ScLinkContent.Int`
     * `ScLinkContent.Float`
 
-## ScTemplateGenParams
+## ScTemplateParams
 
 This class accumulate parameters for a template generation. There are methods of this class:
 
@@ -254,7 +254,7 @@ This class accumulate parameters for a template generation. There are methods of
     * **valueAddr** - `ScAddr` of element that should be used with specified name (see more in [templates description](../cpp/templates.md))
 
     ```python
-    params = ScTemplateGenParams()
+    params = ScTemplateParams()
     params.Add("_item", itemAddr)
     ...
     ```
@@ -585,7 +585,7 @@ There are methods of this class:
 
 ??? tip "HelperGenTemplate(templ, params)"
     * **templ** - `ScTemplate` to generate construction
-    * **params** - `ScTemplateGenParams` parameters for construction generation
+    * **params** - `ScTemplateParams` parameters for construction generation
 
     generates construction by specified template with specified parameters. If construction generated, then returns instance of `ScTemplateGenResult`; otherwise - `None`.
 
@@ -594,7 +594,7 @@ There are methods of this class:
     templ = ScTemplate()
     ... # fill template
 
-    params = ScTemplateGenParams()
+    params = ScTemplateParams()
     ... # fill parameters
 
     result = ctx.HelperGenTemplate(templ, params)

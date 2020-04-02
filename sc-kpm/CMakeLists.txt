@@ -16,6 +16,7 @@ add_subdirectory(sc-python)
 add_subdirectory(sc-ui)
 add_subdirectory(sc-search)
 add_subdirectory(sc-utils)
+add_subdirectory(sc-agents-common)
 
 add_custom_target(sc-kpm)
 
