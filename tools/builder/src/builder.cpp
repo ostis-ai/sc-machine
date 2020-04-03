@@ -80,17 +80,6 @@ bool Builder::Run(BuilderParams const & params)
 {
   m_params = params;
 
-  // check
-  if (!boost::filesystem::is_directory(m_params.m_inputPath))
-  {
-    ScConsole::PrintLine() << ScConsole::Color::White
-      << "Directory " << ScConsole::Color::Red 
-      << m_params.m_inputPath << ScConsole::Color::White 
-      << " doesn't exist";
-
-    return false;
-  }
-
   CollectFiles();
 
   // initialize sc-memory
