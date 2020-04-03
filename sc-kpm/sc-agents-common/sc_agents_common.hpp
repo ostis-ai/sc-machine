@@ -6,9 +6,7 @@
 
 #pragma once
 
-#include <sc-core/sc_memory.h>
 #include <sc-memory/sc_module.hpp>
-
 #include "sc_agents_common.generated.hpp"
 
 class SCAgentsCommonModule : public ScModule
