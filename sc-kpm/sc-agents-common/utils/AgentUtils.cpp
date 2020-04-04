@@ -5,9 +5,7 @@
 */
 
 #include <string>
-
-#include <sc-memory/cpp/sc_wait.hpp>
-#include <sc-memory/cpp/sc_memory.hpp>
+#include <sc-memory/sc_wait.hpp>
 
 #include "AgentUtils.hpp"
 #include "IteratorUtils.hpp"

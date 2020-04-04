@@ -7,8 +7,7 @@
 #pragma once
 
 #include <string>
-
-#include <sc-memory/cpp/sc_addr.hpp>
+#include <sc-memory/sc_memory.hpp>
 
 using namespace std;
 

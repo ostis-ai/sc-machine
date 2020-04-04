@@ -37,7 +37,6 @@ along with OSTIS.  If not, see <http://www.gnu.org/licenses/>.
 #include "scp_utils.h"
 
 #include <stdio.h>
-#include <malloc.h>
 #include <stdlib.h>
 #include <math.h>
 #include <glib.h>
@@ -783,7 +782,7 @@ void printIdentifier(sc_memory_context *context, sc_addr element)
     if ((sc_type_node & type) == sc_type_node || (sc_type_link & type) == sc_type_link)
     {
 
-		if (SC_RESULT_OK == sc_helper_get_system_identifier_link(context, element, &idtf))
+    if (SC_RESULT_OK == sc_helper_get_system_identifier_link(context, element, &idtf))
         {
             sc_stream *stream;
             sc_uint32 length = 0, read_length = 0;

@@ -5,9 +5,6 @@
 */
 #include <iostream>
 
-#include <sc-memory/cpp/sc_memory.hpp>
-#include <sc-memory/cpp/sc_stream.hpp>
-
 #include "ANumberComparison.hpp"
 #include "utils/AgentUtils.hpp"
 #include "utils/CommonUtils.hpp"

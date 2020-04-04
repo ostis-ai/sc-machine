@@ -24,6 +24,7 @@
 IF (GLIB2_LIBRARIES AND GLIB2_INCLUDE_DIRS )
   # in cache already
   SET(GLIB2_FOUND TRUE)
+
 ELSE (GLIB2_LIBRARIES AND GLIB2_INCLUDE_DIRS )
 
   INCLUDE(FindPkgConfig)
@@ -63,6 +64,7 @@ ELSE (GLIB2_LIBRARIES AND GLIB2_INCLUDE_DIRS )
       /usr/lib64
       /usr/lib
       /usr/local/include
+      /usr/local/lib
       ${CMAKE_LIBRARY_PATH}
     PATH_SUFFIXES
       glib-2.0/include

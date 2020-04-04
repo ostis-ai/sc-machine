@@ -5,10 +5,10 @@ git:
 
 # sudo:required is needed for trusty images
 sudo: required
-dist: trusty
+dist: bionic
 
 # https://blog.travis-ci.com/2017-12-12-new-trusty-images-q4-launch
-group: deprecated-2017Q4
+# group: deprecated-2017Q4
 
 notifications:
   email: false
@@ -18,88 +18,54 @@ branches:
     - master
     - dev
 
-cache:
-  ccache: true
-  apt: true
-  directories:
-    - test/cache
+stages:
+  - test
 
 env:
   global:
-   - CCACHE_TEMPDIR=/tmp/.ccache-temp
-   - CCACHE_COMPRESS=1
-   - CASHER_TIME_OUT=599 # one second less than 10m to avoid 10m timeout error: https://github.com/Project-OSRM/osrm-backend/issues/2742
-   - JOBS=4
+    - JOBS=8
 
-matrix:
-  fast_finish: true
+jobs:
 
   # We override the compiler names here to yield better ccache behavior, which uses this as key
   include:
 
-    # Debug Builds
-    - os: linux
-      compiler: "gcc-6-debug"
+    - &linux-test
+      name: Tests / Linux / gcc7 / Debug
+      stage: test
+      os: linux
+      language: cpp
+      compiler: "gcc-7-debug"
       addons: &gcc6
         apt:
           sources: ['ubuntu-toolchain-r-test']
-          packages: ['g++-6', 'libglib2.0-dev', 'qt4-qmake', 'libqt4-dev', 'libantlr3c-dev', 'libboost-system-dev', 'libboost-filesystem-dev', 'libboost-program-options-dev', 'libboost-regex-dev', 'libboost-python-dev', 'python3-dev', 'python3', 'make', 'cmake', 'antlr', 'antlr3', 'libhiredis-dev', 'qtbase5-dev', 'llvm', 'libcurl4-openssl-dev', 'libclang-dev', 'libboost-regex-dev', 'ccache']
-      env: CCOMPILER='gcc-6' CXXCOMPILER='g++-6' BUILD_TYPE='Debug'
+          packages: [
+            'python3-pip',
+            'g++-7',
+            'librocksdb-dev',
+            'libglib2.0-dev',
+            'libboost-system-dev',
+            'libboost-filesystem-dev',
+            'libboost-program-options-dev',
+            'libboost-python-dev',
+            'python3-setuptools',
+            'python3-dev',
+            'python3-pip',
+            'python3',
+            'make',
+            'cmake',
+            'antlr',
+            'libcurl4-openssl-dev',
+            'libclang-7-dev',
+            'llvm-7'
+            ]
+      env: CCOMPILER='gcc-7' CXXCOMPILER='g++-7' BUILD_TYPE='Debug'
 
-    # - os: linux
-    #   compiler: "clang-3.9-debug"
-    #   addons: &clang38
-    #     apt:
-    #       sources: ['ubuntu-toolchain-r-test']
-    #       packages: ['libstdc++-4.9-dev', 'clang-3.9', 'libglib2.0-dev', 'qt4-qmake', 'libqt4-dev', 'libantlr3c-dev', 'libboost-system-dev', 'libboost-filesystem-dev', 'libboost-program-options-dev', 'libboost-regex-dev', 'libboost-python-dev', 'python3-dev', 'python3', 'make', 'cmake', 'antlr', 'antlr3', 'libhiredis-dev', 'qtbase5-dev', 'llvm', 'libcurl4-openssl-dev', 'libclang-3.9-dev', 'libclang1-3.9', 'libboost-regex-dev', 'ccache']
-    #   env: CCOMPILER='clang' CXXCOMPILER='clang++' CLANG_VERSION='3.9.0' BUILD_TYPE='Debug'
+      install: scripts/travis/install-tests.sh
+      script: scripts/travis/run-tests.sh
 
-    # Release Builds
-    - os: linux
-      compiler: "gcc-6-release"
-      addons: &gcc6
-        apt:
-          sources: ['ubuntu-toolchain-r-test']
-          packages: ['g++-6', 'libglib2.0-dev', 'qt4-qmake', 'libqt4-dev', 'libantlr3c-dev', 'libboost-system-dev', 'libboost-filesystem-dev', 'libboost-program-options-dev', 'libboost-regex-dev', 'libboost-python-dev', 'python3-dev', 'python3', 'make', 'cmake', 'antlr', 'antlr3', 'libhiredis-dev', 'qtbase5-dev', 'llvm', 'libcurl4-openssl-dev', 'libclang-dev', 'libboost-regex-dev', 'ccache']
-      env: CCOMPILER='gcc-6' CXXCOMPILER='g++-6' BUILD_TYPE='Release'
-
-    # - os: linux
-    #   compiler: "clang-3.9-release"
-    #   addons: &clang38
-    #     apt:
-    #       sources: ['ubuntu-toolchain-r-test']
-    #       packages: ['libstdc++-4.9-dev', 'clang-3.9', 'libglib2.0-dev', 'qt4-qmake', 'libqt4-dev', 'libantlr3c-dev', 'libboost-system-dev', 'libboost-filesystem-dev', 'libboost-program-options-dev', 'libboost-regex-dev', 'libboost-python-dev', 'python3-dev', 'python3', 'make', 'cmake', 'antlr', 'antlr3', 'libhiredis-dev', 'qtbase5-dev', 'llvm', 'libcurl4-openssl-dev', 'libclang-3.9-dev', 'libclang1-3.9', 'libboost-regex-dev', 'ccache']
-    #   env: CCOMPILER='clang' CXXCOMPILER='clang++' CLANG_VERSION='3.9.0' BUILD_TYPE='Release'
-
-before_install:
-  - if [[ $(uname -s) == 'Darwin' ]]; then sudo mdutil -i off /; fi;
-  - ccache --max-size=256M  # limiting the cache's size to roughly the previous job's object sizes
-
-install:
-  - |
-  - mkdir build && pushd build
-  - export CC=${CCOMPILER} CXX=${CXXCOMPILER}
-  - cmake .. -DCMAKE_BUILD_TYPE=${BUILD_TYPE} -DENABLE_CCACHE=ON -DSC_AUTO_TEST=ON -DSC_KPM_SCP=OFF
-  - echo "travis_fold:start:MAKE"\
-  - make --jobs=${JOBS}
-  - echo "travis_fold:end:MAKE"
-  - ccache -s
-  - popd
-
-script:
-  # All tests assume to be run from the build directory
-  - pushd bin
-  - echo "travis_fold:start:TEST_CPP"
-  - ./test_wrap
-  - echo "travis_fold:end:TEST_CPP"
-  - popd
-
-after_success:
-  #- |
-  #  if [ -n "${RUN_CLANG_FORMAT}" ]; then
-  #    ./scripts/format.sh # we don't want to fail just yet
-  #  fi
-  - |
-    if [ -n "${COVERAGE}" ]; then
-      bash <(curl -s https://codecov.io/bash)
-    fi
+    - <<: *linux-test
+      name: Tests / Linux / gcc7 / Release
+      compiler: "gcc-7-release"
+      env: CCOMPILER='gcc-7' CXXCOMPILER='g++-7' BUILD_TYPE='Release'
+    

@@ -25,7 +25,6 @@ along with OSTIS.  If not, see <http://www.gnu.org/licenses/>.
 #include "sc_memory_headers.h"
 
 #include <stdio.h>
-#include <malloc.h>
 #include <stdlib.h>
 #include <string.h>
 

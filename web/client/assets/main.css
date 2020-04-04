@@ -1,0 +1,98 @@
+::-webkit-scrollbar {
+    min-width: 12px;
+    width: 12px;
+    max-width: 12px;
+    min-height: 12px;
+    height: 12px;
+    max-height: 12px;
+    background: #e5e5e5;
+    box-shadow: inset 0px 0px 0px #fafafa, inset 0px 0px 0px #fafafa;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #bbb;
+    border: none;
+    border-radius: 10px;
+    border: solid 3px #e5e5e5;
+    box-shadow: inset 0px 0px 3px #999;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #b0b0b0;
+    box-shadow: inset 0px 0px 3px #888;
+}
+
+::-webkit-scrollbar-thumb:active {
+    background: #aaa;
+    box-shadow: inset 0px 0px 3px #7f7f7f;
+}
+
+::-webkit-scrollbar-button {
+    display: block;
+    height: 0px;
+}
+
+/* Pages */
+.ui.segment.container-page {
+    position: absolute;
+    left: 0px;
+    right: 0px;
+    top: 71px;
+    bottom: 0px;
+    display: block;
+    overflow-y: auto;
+    margin-top: 0px;
+    box-sizing: content-box;
+}
+
+.hidden {
+    display: none !important;
+}
+
+.base-page {
+    height: calc(100% - 175px);
+    width: 100% !important;
+}
+
+.base-page h2 {
+    padding-left: 25px !important;
+    padding-top: 20px !important;
+}
+
+.common-view {
+    height: calc(100% - 88px);
+    min-height: 350px;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+.uppercased {
+    text-transform: uppercase;
+}
+
+/* SCs-editor */
+.scs-editor-container {
+    width: 100%;
+    margin-bottom: 1px;
+    padding-right: 1px;
+    height: calc(100% - 95px);
+}
+
+.ui.list .item.selected {
+    background-color: #1B1C1D !important;
+}
+
+.ui.list .item.selected .description {
+    color: #fff !important;
+}
+
+.ui.list .item.selected:hover {
+    background-color: #1B1C1D !important;
+}
+
+/* SCg-viewer */
+#kb-scg-viewer {
+    border: #1B1C1D 1px solid;
+    padding: 0 0 0 0 !important;
+    margin-right: 30px;
+}

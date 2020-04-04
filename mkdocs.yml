@@ -11,11 +11,17 @@ pages:
   - Build:
     - Build on Linux: build/linux-build.md
     - Build on Windows: build/windows-build.md
+    - Build on OSX: build/osx-build.md
   - Development:
     - Git-workflow: dev/git-workflow.md
     - Pull requets: dev/pr.md
     - Codestyle: dev/codestyle.md
     - Unit tests: dev/test.md
+  - Common:
+    - Element types: cpp/el_types.md
+    - Configuration files: other/config.md
+    - Sctp-protocol: net/sctp.md
+    - SCs language: other/scs.md
   - API:
     - Meta programming: cpp/cpp-meta.md
     - Agents: cpp/kpm.md
@@ -25,11 +31,12 @@ pages:
       - Common: python/python.md
       - Library: python/library.md
       - Wrapped classes: python/cpp_wrap.md
-  - Common:
-    - Element types: cpp/el_types.md
-    - Configuration files: other/config.md
-    - Sctp-protocol: net/sctp.md
-    - SCs language: other/scs.md
+  - Http:
+      - Common: http/index.md
+      - WebSocket: http/websocket.md
+  - Tools:
+      - Builder: tools/kb_builder.md
+      - Web: tools/web.md
   - License: license.md
   - Changelog: changelog.md
   - Thirdparty: thirdparty.md

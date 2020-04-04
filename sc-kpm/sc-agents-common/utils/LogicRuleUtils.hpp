@@ -6,8 +6,6 @@
 
 #pragma once
 
-#include <sc-memory/cpp/sc_addr.hpp>
-
 using namespace std;
 
 namespace utils

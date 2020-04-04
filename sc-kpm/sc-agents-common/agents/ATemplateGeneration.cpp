@@ -7,9 +7,6 @@
 #include <iostream>
 #include <thread>
 
-#include <sc-memory/cpp/sc_memory.hpp>
-#include <sc-memory/cpp/sc_stream.hpp>
-
 #include "ATemplateGeneration.hpp"
 #include "utils/IteratorUtils.hpp"
 #include "utils/AgentUtils.hpp"

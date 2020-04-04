@@ -4,7 +4,7 @@
 
 #include <boost/algorithm/string/join.hpp>
 
-Invokable::Invokable(const Cursor &cursor)
+Invokable::Invokable(Cursor const & cursor)
   : m_returnType(cursor.GetReturnType().GetDisplayName())
 {
   auto type = cursor.GetType();
@@ -20,7 +20,6 @@ Invokable::Invokable(const Cursor &cursor)
     if (argument.GetKind() == CXType_Typedef)
     {
       auto declaration = argument.GetDeclaration();
-
       auto parent = declaration.GetLexicalParent();
 
       Namespace parentNamespace;
@@ -29,14 +28,11 @@ Invokable::Invokable(const Cursor &cursor)
       while (parent.GetKind() == CXCursor_Namespace)
       {
         parentNamespace.emplace_back(parent.GetDisplayName());
-
         parent = parent.GetLexicalParent();
       }
 
       // add the display name as the end of the namespace
-      parentNamespace.emplace_back(
-            argument.GetDisplayName()
-            );
+      parentNamespace.emplace_back(argument.GetDisplayName());
 
       auto qualifiedName = boost::algorithm::join(parentNamespace, "::");
 
@@ -45,9 +41,7 @@ Invokable::Invokable(const Cursor &cursor)
     // it should already be qualified
     else
     {
-      m_signature.emplace_back(
-            argument.GetDisplayName()
-            );
+      m_signature.emplace_back(argument.GetDisplayName());
     }
   }
 }

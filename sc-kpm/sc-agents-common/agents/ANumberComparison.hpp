@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include <sc-memory/cpp/kpm/sc_agent.hpp>
+#include <sc-memory/kpm/sc_agent.hpp>
 
 #include "keynodes/coreKeynodes.hpp"
 #include "../generated/ANumberComparison.generated.hpp"

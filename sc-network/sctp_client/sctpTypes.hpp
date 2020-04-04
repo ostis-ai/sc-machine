@@ -6,10 +6,8 @@
 
 #pragma once
 
-extern "C"
-{
-#include "sc-memory/sc_memory_headers.h"
-#include "sc-memory/sc_helper.h"
+extern "C" {
+#include "sc-core/sc-store/sc_types.h"
 }
 
 #include <stdint.h>

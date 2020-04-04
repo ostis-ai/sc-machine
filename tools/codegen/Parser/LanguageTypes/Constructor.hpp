@@ -3,27 +3,17 @@
 #include "LanguageType.hpp"
 #include "Invokable.hpp"
 
-class Class;
-
-class Constructor 
-    : public LanguageType
-    , public Invokable
+class Constructor final : public LanguageType, public Invokable
 {
 public:
-  Constructor(
-      const Cursor &cursor,
-      const Namespace &currentNamespace,
-      Class *parent = nullptr
-      );
+  Constructor(Cursor const & cursor, Namespace const & currentNamespace, class Class * parent);
 
-  virtual ~Constructor(void) { }
-
-  bool ShouldCompile(void) const;
+  bool ShouldCompile() const;
 
 private:
-  Class *m_parent;
+  bool isAccessible() const;
+  std::string getTemplateParameters() const;
 
-  bool isAccessible(void) const;
-
-  std::string getTemplateParameters(void) const;
+private:
+  class Class * m_parent;
 };

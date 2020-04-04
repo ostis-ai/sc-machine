@@ -275,11 +275,14 @@ This class accumulate parameters for a template generation. There are methods of
 
 This class wrap template generation result. There are methods of this class:
 
+??? tip "Aliases()"
+    returns a `dict` of all used aliases in template (where key - `alias`, value - index in generate result). Keys can be used to get result values by `__getitem__`
+
 ??? tip "Size()"
     return number of elements
 
-??? tip "\_\_getitem\_\_(replName)"
-    * **replName** - name of result parameter (`str`)
+??? tip "\_\_getitem\_\_(alias)"
+    * **alias** - name of result parameter (`str`)
 
     returns `ScAddr` by specified name. If there are no value with a specified name, then returns `None`
     ```python
@@ -293,23 +296,27 @@ This class represents one result for a search by template. There are methods of 
 ??? tip "Size()"
     return size of result (number of `ScAddr`'s equal to search construction)
 
-??? tip "\_\_getitem\_\_()"
+??? tip "\_\_getitem\_\_(name_or_index)"
     allows to get result items by any index: `int`, `str`. In case of `int` index you will just get `ScAddr` by index in result array (length equal to `Size()`) this case suitable, when you need to iterate all addrs in result.
+
     !!! warning 
         You will receive duplicate `ScAddr`'s, because result stored as array of founded triples.
 
-    When you try to get `ScAddr` with `str` it will be found by replacement name (see [templates](../cpp/templates.md) for more info). If there are no element with specified index, then returns `None`
+    When you try to get `ScAddr` with `str` it will be found by alias (see [templates](../cpp/templates.md) for more info). If there are no element with specified index, then returns `None`
     ```python
     resultSize = searchResultItem.Size()
     for i in range(resultSize):
       addr = searchResultItem[i] # iterate all addrs
 
-    addr1 = searchResultItem["replacement name"] # get by replacement name
+    addr1 = searchResultItem["alias"] # get by replacement name
     ```
 
 ## ScTemplateSearchResult
 
 This class represent list of results by template search. There are methods of this class:
+
+??? tip "Aliases()"
+    returns a `dict` of all used aliases in template (where key - `alias`, value - index in search result). Keys can be used to get result values by `__getitem__`
 
 ??? tip "Size()"
     returns number of results.
@@ -606,13 +613,14 @@ There are methods of this class:
     result = ctx.HelperSearchTemplate(templ)
     ```
 
-??? tip "HelperBuildTemplate(templAddr)"
-    * **templAddr** - `ScAddr` to sc-struct in memory, that contains a template
+??? tip "HelperBuildTemplate(data)"
+    * **data** - `ScAddr` or `str`. If it's a `ScAddr` then it should point to sc-struct in memory, that is a template. It it's a `str`, then it should contains `SCs-code` that describes template
 
-    build template from construction in memory. Returns `ScTemplate` instance. If template wasn't built, then return `None`
+    returns `ScTemplate` instance. If template wasn't built, then return `None`
 
     **Example:*
     ```python
-    templ = ctx.HelperBuildTemplate(templAddr)
+    templFromMemory = ctx.HelperBuildTemplate(templAddr)
+    templFromStr = ctx.HelperBuildTemplate('person _=> nrel_email:: _[];;')
     ... # work with template
     ```

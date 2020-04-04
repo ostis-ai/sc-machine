@@ -7,7 +7,7 @@
 #include "LanguageTypes/Class.hpp"
 #include "LanguageTypes/Field.hpp"
 
-Global::Global(const Cursor &cursor, const Namespace &currentNamespace, Class *parent)
+Global::Global(Cursor const & cursor, Namespace const & currentNamespace, Class * parent)
   : LanguageType(cursor, currentNamespace)
   , m_isConst(cursor.GetType().IsConst())
   , m_hasExplicitGetter(m_metaData.GetFlag(kMetaExplicitGetter))
@@ -18,21 +18,12 @@ Global::Global(const Cursor &cursor, const Namespace &currentNamespace, Class *p
   , m_type(cursor.GetType().GetDisplayName())
 {
   auto displayName = m_metaData.GetNativeString(kMetaDisplayName);
-
-  if (displayName.empty())
-  {
-    m_displayName = m_qualifiedName;
-  }
-  else
-  {
-    m_displayName =
-        utils::GetQualifiedName(displayName, currentNamespace);
-  }
-
+  m_displayName = displayName.empty() ? m_qualifiedName : utils::GetQualifiedName(displayName, currentNamespace);
+  
   m_metaData.Check();
 }
 
-bool Global::ShouldCompile(void) const
+bool Global::ShouldCompile() const
 {
   return isAccessible();
 }
@@ -42,7 +33,7 @@ void Global::GenerateInitCode(std::stringstream & outCode) const
 
   /// TODO: merge with field code generation
   if (m_metaData.HasProperty(Props::Keynode))
-  {   
+  {
     Field::GenerateResolveKeynodeCode(m_metaData.GetNativeString(Props::Keynode),
                                       m_displayName,
                                       Field::GetForceType(m_metaData),
@@ -55,14 +46,12 @@ void Global::GenerateInitCode(std::stringstream & outCode) const
   }
 }
 
-
-
-bool Global::isAccessible(void) const
+bool Global::isAccessible() const
 {
   return isGetterAccessible() || isSetterAccessible();
 }
 
-bool Global::isGetterAccessible(void) const
+bool Global::isGetterAccessible() const
 {
   if (m_enabled)
   {
@@ -75,7 +64,7 @@ bool Global::isGetterAccessible(void) const
   return false;
 }
 
-bool Global::isSetterAccessible(void) const
+bool Global::isSetterAccessible() const
 {
   if (m_isConst)
     return false;

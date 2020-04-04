@@ -15,12 +15,7 @@
 #include <QTimer>
 
 #include <iostream>
-
-extern "C"
-{
-#include "sc_memory.h"
-#include "sc_helper.h"
-}
+#include "sc-memory/sc_memory.hpp"
 
 #include <QNetworkInterface>
 

@@ -4,35 +4,30 @@
 
 #include <boost/algorithm/string/join.hpp>
 
-Constructor::Constructor(
-    const Cursor &cursor, 
-    const Namespace &currentNamespace, 
-    Class *parent
-)
-    : LanguageType(cursor, currentNamespace)
-    , Invokable(cursor)
-    , m_parent(parent)
+Constructor::Constructor(Cursor const & cursor, Namespace const & currentNamespace, Class * parent)
+  : LanguageType(cursor, currentNamespace)
+  , Invokable(cursor)
+  , m_parent(parent)
 {
-        
 }
 
-bool Constructor::ShouldCompile(void) const
+bool Constructor::ShouldCompile() const
 {
-    return isAccessible();
+  return isAccessible();
 }
 
-bool Constructor::isAccessible(void) const
+bool Constructor::isAccessible() const
 {
-    return m_accessModifier == CX_CXXPublic && 
-           !m_metaData.GetFlag(kMetaDisable);
+  return m_accessModifier == CX_CXXPublic &&
+      !m_metaData.GetFlag(kMetaDisable);
 }
 
-std::string Constructor::getTemplateParameters(void) const
+std::string Constructor::getTemplateParameters() const
 {
-    auto params(m_signature);
+  auto params(m_signature);
 
-    params.insert(params.begin(), m_parent->m_qualifiedName);
+  params.insert(params.begin(), m_parent->m_qualifiedName);
 
-    // parent type, arg types, ...
-    return boost::algorithm::join(params, ", ");
+  // parent type, arg types, ...
+  return boost::algorithm::join(params, ", ");
 }
