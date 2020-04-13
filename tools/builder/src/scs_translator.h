@@ -111,6 +111,7 @@ public:
     const String& getFileExt() const;
 
 private:
+
     //! Process string data
     bool processString(const String &data);
     /*! Builds sc-text based on parsed antlr tree

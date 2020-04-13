@@ -77,6 +77,8 @@ protected:
 
 
 private:
+    const char* concertedKBName = "concertedKB_hash_iF95K2";
+    const char* concertedPartSetName = "concerted_part_of_kb";
     //! Set of files to process
     typedef std::set< String > tFileSet;
     tFileSet mFileSet;

@@ -34,6 +34,7 @@ String trimContentData(String const & path)
 SCsTranslator::SCsTranslator(sc_memory_context *ctx)
     : iTranslator(ctx)
 {
+    createConcertedKB();
 }
 
 SCsTranslator::~SCsTranslator()
@@ -206,7 +207,8 @@ bool SCsTranslator::buildScText(pANTLR3_BASE_TREE tree)
             assert(arc_el->type & sc_type_arc_mask);
             sc_addr addr = resolveScAddr(arc_el);
 
-            if (SC_ADDR_IS_EMPTY(addr)) continue;
+            if (SC_ADDR_IS_EMPTY(addr))
+                continue;
 
             createdSet.insert(arc_el);
         }
@@ -437,6 +439,14 @@ sc_addr SCsTranslator::resolveScAddr(sElement *el)
 
     // generate addr
     addr = createScAddr(el);
+    if (el->idtf == concertedPartSetName)
+    {
+        sc_memory_arc_new(mContext, sc_type_arc_pos_const_perm, addr, this->concertedKB);
+    }
+    else
+        {
+        sc_memory_arc_new(mContext, sc_type_arc_pos_const_perm, this->concertedKB, addr);
+    }
 
     // store in addrs map
     if (!el->idtf.empty())
@@ -445,6 +455,7 @@ sc_addr SCsTranslator::resolveScAddr(sElement *el)
         {
         case IdtfSystem:
             sc_helper_set_system_identifier(mContext, addr, el->idtf.c_str(), (sc_uint32)el->idtf.size());
+            addSystemIdToConcertedPart(&addr);
             mSysIdtfAddrs[el->idtf] = addr;
             break;
         case IdtfLocal:
@@ -600,7 +611,6 @@ sElement* SCsTranslator::_addEdge(sElement *source, sElement *target, sc_type ty
         el->arc_src = source;
         el->arc_trg = target;
     }
-
     return el;
 }
 
@@ -620,7 +630,6 @@ sElement* SCsTranslator::_addLinkFile(const String & idtf, const String & filePa
 
 	el->link_is_file = true;
 	el->file_path = filePath;
-
 	return el;
 }
 
@@ -672,14 +681,13 @@ sElement* SCsTranslator::parseElementTree(pANTLR3_BASE_TREE tree, const String *
 
     if (tok->type == CONTENT)
     {
-        res = _addNode(assignIdtf ? *assignIdtf : "", sc_type_node_struct);
-
         String content = GET_NODE_TEXT(tree);
 		bool isVar = StringUtil::startsWith(content, "_", false);
         content = content.substr(isVar ? 2 : 1, content.size() - (isVar ? 3 : 2));
 
         if (StringUtil::startsWith(content, "*", false) && StringUtil::endsWith(content, "*", false))
         {
+            res = _addNode(assignIdtf ? *assignIdtf : "", sc_type_node_struct);
             // parse contour data
             String data = content.substr(1, content.size() - 2);
             bool autoFormatInfo = mParams.autoFormatInfo;
