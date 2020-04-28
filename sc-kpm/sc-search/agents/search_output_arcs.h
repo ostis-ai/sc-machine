@@ -7,7 +7,7 @@
 #ifndef _seach_output_arcs_h_
 #define _seach_output_arcs_h_
 
-#include <sc_memory.h>
+#include "sc-core/sc_memory.h"
 
 /*!
  * Function that implement sc-agent to search all positive, constant and permanent

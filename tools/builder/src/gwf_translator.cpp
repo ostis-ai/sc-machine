@@ -4,79 +4,50 @@
  * (See accompanying file COPYING.MIT or copy at http://opensource.org/licenses/MIT)
  */
 
-#include "gwf_translator.h"
-#include "tinyxml/tinyxml2.h"
+#include "gwf_translator.hpp"
+
+#include "utils.hpp"
+
 #include "base64/base64.h"
-#include "utils.h"
+#include "tinyxml/tinyxml2.h"
+
+#include "sc-memory/sc_memory.hpp"
 
 #include <fstream>
 #include <iostream>
+#include <unordered_map>
+
 #include <assert.h>
 
+std::string const sEdge = "arc";
+std::string const sPair = "pair";
+std::string const sBus = "bus";
+std::string const sNode = "node";
+std::string const sContour = "contour";
 
-GwfTranslator::GwfTranslator(sc_memory_context *ctx)
-  : iTranslator(ctx)
+GwfTranslator::GwfTranslator(ScMemoryContext & context)
+  : Translator(context)
 {
-
 }
 
-GwfTranslator::~GwfTranslator()
+bool GwfTranslator::TranslateImpl(Params const & params)
 {
+  std::string data;
+  GetFileContent(params.m_fileName, data);
 
-}
-
-bool GwfTranslator::translateImpl()
-{
-  // open file and read data
-  bool result = true;
-  std::ifstream ifs(mParams.fileName.c_str());
-  if (ifs.is_open())
-  {
-    String data((std::istreambuf_iterator<char>(ifs)), std::istreambuf_iterator<char>());
-    result = processString(data);
-  } else
-    return false;
-
-  ifs.close();
-
-  return result;
-}
-
-const String& GwfTranslator::getFileExt() const
-{
-  return GwfTranslatorFactory::EXTENSION;
-}
-
-
-bool GwfTranslator::processString(const String &data)
-{
   tinyxml2::XMLDocument doc;
   tinyxml2::XMLError error = doc.Parse(data.c_str());
 
   if (error != tinyxml2::XML_SUCCESS)
-  {
-    THROW_EXCEPT(Exception::ERR_PARSE,
-                 doc.GetErrorStr2(),
-                 mParams.fileName,
-                 -1);
-  }
+    PARSE_ERROR(params.m_fileName, -1, doc.GetErrorStr2());
 
   tinyxml2::XMLElement *root = doc.FirstChildElement("GWF");
   if (!root)
-  {
-    THROW_EXCEPT(Exception::ERR_PARSE,
-                 "Can't find root element",
-                 mParams.fileName,
-                 -1);
-  }
+    PARSE_ERROR(params.m_fileName, -1, "Can't find root element");
+
   root = root->FirstChildElement("staticSector");
   if (!root)
-  {
-    THROW_EXCEPT(Exception::ERR_PARSE,
-                 "Cna't find static sector",
-                 mParams.fileName,
-                 -1);
-  }
+    PARSE_ERROR(params.m_fileName, -1, "Can't find static sector");
 
   // collect elements
   std::vector<tinyxml2::XMLElement*> nodes;
@@ -84,29 +55,27 @@ bool GwfTranslator::processString(const String &data)
   std::vector<tinyxml2::XMLElement*> buses;
   std::vector<tinyxml2::XMLElement*> all;
 
-  static std::string s_arc = "arc";
-  static std::string s_pair = "pair";
-  static std::string s_bus = "bus";
-
   tinyxml2::XMLElement *el = root->FirstChildElement();
   while (el)
   {
     all.push_back(el);
-    if (el->Name() == s_arc || el->Name() == s_pair)
+    if (el->Name() == sEdge || el->Name() == sPair)
+    {
       edges.push_back(el);
-    else if (el->Name() == s_bus)
+    }
+    else if (el->Name() == sBus)
+    {
       buses.push_back(el);
+    }
     else
+    {
       nodes.push_back(el);
+    }
 
     el = el->NextSiblingElement();
   }
 
-  static std::string s_node = "node";
-  static std::string s_contour = "contour";
-
-  tStringAddrMap id_map;
-  tStringAddrMap::iterator itId;
+  std::unordered_map<std::string, ScAddr> idMap;
 
   // create all nodes
   std::vector<tinyxml2::XMLElement*>::iterator it, itEnd = nodes.end();
@@ -114,303 +83,280 @@ bool GwfTranslator::processString(const String &data)
   {
     el = *it;
 
-    String idtf = el->Attribute("idtf");
-    String id = el->Attribute("id");
-    sc_addr addr;
+    std::string const idtf = el->Attribute("idtf");
+    std::string const id = el->Attribute("id");
 
-    itId = id_map.find(id);
-    if (itId != id_map.end())
+    auto itId = idMap.find(id);
+    if (itId != idMap.end())
       continue;
 
     if (idtf.size() > 0)
     {
-      if (getScAddr(idtf, addr))
+      ScAddr const addr = GetScAddr(idtf);
+      if (addr.IsValid())
       {
-        id_map[id] = addr;
+        idMap[id] = addr;
         continue;    // skip elements that already exists
       }
     }
-
-    if (el->Name() == s_contour)
-    {
-      addr = sc_memory_node_new(mContext, sc_type_const | sc_type_node_struct);
-      appendScAddr(addr, idtf);
-    } else
-    {
-      tinyxml2::XMLElement *content = el->FirstChildElement("content");
-      if (!content)
-      {
-        THROW_EXCEPT(Exception::ERR_PARSE,
-                     "There are no child content for node with id=" + id,
-                     mParams.fileName,
-                     -1);
-      }
-
-      if (content->IntAttribute("type") == 0)
-      {
-        addr = sc_memory_node_new(mContext, convertType(el->Attribute("type")));
-        appendScAddr(addr, idtf);
-      } else
-      {
-        // need to create link
-        addr = sc_memory_link_new(mContext);
-        // setup content
-        String data = content->GetText();
-
-        if (content->IntAttribute("type") == 4)
-          data = base64_decode(data);
-
-        sc_stream *stream = sc_stream_memory_new(data.c_str(), (sc_uint)data.size(), SC_STREAM_FLAG_READ, SC_FALSE);
-        sc_memory_set_link_content(mContext, addr, stream);
-        sc_stream_free(stream);
-
-        if (mParams.autoFormatInfo)
-        {
-          String ext = StringUtil::getFileExtension(content->Attribute("file_name"));
-          if (!ext.empty())
-            generateFormatInfo(addr, ext);
-        }
-      }
-    }
-
-    if (!idtf.empty())
-      sc_helper_set_system_identifier(mContext, addr, idtf.c_str(), (sc_uint32)idtf.size());
-
-    id_map[id] = addr;
   }
-
-  // process buses
-  itEnd = buses.end();
-  for (it = buses.begin(); it != itEnd; ++it)
-  {
-    el = *it;
-
-    tStringAddrMap::iterator itOwner = id_map.find(el->Attribute("owner"));
-    if (itOwner == id_map.end())
-      continue;
-
-    id_map[el->Attribute("id")] = itOwner->second;
-  }
-
-  // now create edges
-  bool created = true;
-  while (created)
-  {
-    created = false;
-
-    itEnd = edges.end();
-    for (it = edges.begin(); it != itEnd; ++it)
-    {
-      el = *it;
-
-      sc_addr addr;
-      String id = el->Attribute("id");
-      String idtf = el->Attribute("idtf");
-
-      if (id_map.find(id) != id_map.end())
-        continue;
-
-      if (getScAddr(idtf, addr))
-        continue;
-
-      // get begin and end elements
-      tStringAddrMap::iterator itB = id_map.find(el->Attribute("id_b"));
-      if (itB == id_map.end())
-        continue;
-
-      tStringAddrMap::iterator itE = id_map.find(el->Attribute("id_e"));
-      if (itE == id_map.end())
-        continue;
-
-      // create arc
-      created = true;
-      addr = sc_memory_arc_new(mContext, convertType(el->Attribute("type")), itB->second, itE->second);
-      appendScAddr(addr, idtf);
-      id_map[id] = addr;
-
-      if (!idtf.empty())
-        sc_helper_set_system_identifier(mContext, addr, idtf.c_str(), (sc_uint32)idtf.size());
-    }
-  }
-
-  // now append elemnts into contours
-  itEnd = all.end();
-  for (it = all.begin(); it != itEnd; ++it)
-  {
-    el = *it;
-
-    tStringAddrMap::iterator itSelf = id_map.find(el->Attribute("id"));
-    if (itSelf == id_map.end())
-      continue;
-
-    tStringAddrMap::iterator itP = id_map.find(el->Attribute("parent"));
-    if (itP == id_map.end())
-      continue;
-
-    sc_memory_arc_new(mContext, sc_type_arc_pos_const_perm, itP->second, itSelf->second);
-  }
-
-  return false;
 }
-
-bool GwfTranslator::getScAddr(const String &idtf, sc_addr &addr)
+//    if (el->Name() == sContour)
+//    {
+//      AppendScAddr(m_ctx.CreateNode(ScType::NodeConstStruct, idtf);
+//    } 
+//    else
+//    {
+//      tinyxml2::XMLElement *content = el->FirstChildElement("content");
+//      if (!content)
+//        PARSE_ERROR(params.m_fileName, -1, "There are no child content for node with id=" + id);
+//
+//      if (content->IntAttribute("type") == 0)
+//      {
+//        std::string const strType = el->Attribute("type");
+//        ScAddr const addr = m_ctx.CreateNode(ConvertType(strType));
+//        appendScAddr(addr, idtf);
+//      } 
+//      else
+//      {
+//        // need to create link
+//        ScAddr const addr = m_ctx.CreateLink();
+//        
+//        // setup content
+//        std::string data = content->GetText();
+//        if (content->IntAttribute("type") == 4)
+//          data = base64_decode(data);
+//
+//        sc_stream *stream = sc_stream_memory_new(data.c_str(), (sc_uint)data.size(), SC_STREAM_FLAG_READ, SC_FALSE);
+//        sc_memory_set_link_content(mContext, addr, stream);
+//        sc_stream_free(stream);
+//
+//        if (mParams.autoFormatInfo)
+//        {
+//          String ext = StringUtil::getFileExtension(content->Attribute("file_name"));
+//          if (!ext.empty())
+//            generateFormatInfo(addr, ext);
+//        }
+//      }
+//    }
+//
+//    if (!idtf.empty())
+//      sc_helper_set_system_identifier(mContext, addr, idtf.c_str(), (sc_uint32)idtf.size());
+//
+//    id_map[id] = addr;
+//  }
+//
+//  // process buses
+//  itEnd = buses.end();
+//  for (it = buses.begin(); it != itEnd; ++it)
+//  {
+//    el = *it;
+//
+//    tStringAddrMap::iterator itOwner = id_map.find(el->Attribute("owner"));
+//    if (itOwner == id_map.end())
+//      continue;
+//
+//    id_map[el->Attribute("id")] = itOwner->second;
+//  }
+//
+//  // now create edges
+//  bool created = true;
+//  while (created)
+//  {
+//    created = false;
+//
+//    itEnd = edges.end();
+//    for (it = edges.begin(); it != itEnd; ++it)
+//    {
+//      el = *it;
+//
+//      sc_addr addr;
+//      String id = el->Attribute("id");
+//      String idtf = el->Attribute("idtf");
+//
+//      if (id_map.find(id) != id_map.end())
+//        continue;
+//
+//      if (getScAddr(idtf, addr))
+//        continue;
+//
+//      // get begin and end elements
+//      tStringAddrMap::iterator itB = id_map.find(el->Attribute("id_b"));
+//      if (itB == id_map.end())
+//        continue;
+//
+//      tStringAddrMap::iterator itE = id_map.find(el->Attribute("id_e"));
+//      if (itE == id_map.end())
+//        continue;
+//
+//      // create arc
+//      created = true;
+//      addr = sc_memory_arc_new(mContext, convertType(el->Attribute("type")), itB->second, itE->second);
+//      appendScAddr(addr, idtf);
+//      id_map[id] = addr;
+//
+//      if (!idtf.empty())
+//        sc_helper_set_system_identifier(mContext, addr, idtf.c_str(), (sc_uint32)idtf.size());
+//    }
+//  }
+//
+//  // now append elemnts into contours
+//  itEnd = all.end();
+//  for (it = all.begin(); it != itEnd; ++it)
+//  {
+//    el = *it;
+//
+//    tStringAddrMap::iterator itSelf = id_map.find(el->Attribute("id"));
+//    if (itSelf == id_map.end())
+//      continue;
+//
+//    tStringAddrMap::iterator itP = id_map.find(el->Attribute("parent"));
+//    if (itP == id_map.end())
+//      continue;
+//
+//    sc_memory_arc_new(mContext, sc_type_arc_pos_const_perm, itP->second, itSelf->second);
+//  }
+//
+//  return false;
+//}
+//
+ScAddr GwfTranslator::GetScAddr(std::string const & idtf)
 {
-  tStringAddrMap::iterator it = mLocalIdtfAddrs.find(idtf);
-  if (it != mLocalIdtfAddrs.end())
-  {
-    addr = it->second;
-    return true;
-  }
-
-  it = mSysIdtfAddrs.find(idtf);
-  if (it != mSysIdtfAddrs.end())
-  {
-    addr = it->second;
-    return true;
-  }
-
-  it = msGlobalIdtfAddrs.find(idtf);
-  if (it != msGlobalIdtfAddrs.end())
-  {
-    addr = it->second;
-    return true;
-  }
-
-  if (sc_helper_find_element_by_system_identifier(mContext, idtf.c_str(), (sc_uint32)idtf.size(), &addr) == SC_RESULT_OK)
-    return true;
-
-  return false;
+  return {};
 }
+//bool GwfTranslator::getScAddr(const String &idtf, sc_addr &addr)
+//{
+//  tStringAddrMap::iterator it = mLocalIdtfAddrs.find(idtf);
+//  if (it != mLocalIdtfAddrs.end())
+//  {
+//    addr = it->second;
+//    return true;
+//  }
+//
+//  it = mSysIdtfAddrs.find(idtf);
+//  if (it != mSysIdtfAddrs.end())
+//  {
+//    addr = it->second;
+//    return true;
+//  }
+//
+//  it = msGlobalIdtfAddrs.find(idtf);
+//  if (it != msGlobalIdtfAddrs.end())
+//  {
+//    addr = it->second;
+//    return true;
+//  }
+//
+//  if (sc_helper_find_element_by_system_identifier(mContext, idtf.c_str(), (sc_uint32)idtf.size(), &addr) == SC_RESULT_OK)
+//    return true;
+//
+//  return false;
+//}
 
-sc_type GwfTranslator::convertType(const String &type)
+ScType GwfTranslator::ConvertType(std::string const & type)
 {
   if (type == "node/-/not_define")
-    return sc_type_node;
+    return ScType::Node;
 
   if (type == "node/const/general_node" || type == "node/const/general")
-    return sc_type_node | sc_type_const;
+    return ScType::NodeConst;
 
   if (type == "node/var/general_node" || type == "node/const/var")
-    return sc_type_node | sc_type_var;
+    return ScType::NodeVar;
 
   if (type == "node/const/relation")
-    return sc_type_node | sc_type_node_norole | sc_type_const;
+    return ScType::NodeConstNoRole;
 
   if (type == "node/var/relation")
-    return sc_type_node | sc_type_node_norole | sc_type_var;
+    return ScType::NodeVarNoRole;
 
   if (type == "node/const/attribute")
-    return sc_type_node | sc_type_node_role | sc_type_const;
+    return ScType::NodeConstRole;
 
   if (type == "node/var/attribute")
-    return sc_type_node | sc_type_node_role | sc_type_var;
+    return ScType::NodeVarRole;
 
   if (type == "node/const/nopredmet")
-    return sc_type_node | sc_type_node_struct | sc_type_const;
+    return ScType::NodeConstStruct;
 
   if (type == "node/var/nopredmet")
-    return sc_type_node | sc_type_node_struct | sc_type_var;
+    return ScType::NodeVarStruct;
 
   if (type == "node/const/predmet")
-    return sc_type_node | sc_type_node_abstract | sc_type_const;
+    return ScType::NodeConstAbstract;
 
   if (type == "node/var/predmet")
-    return sc_type_node | sc_type_node_abstract | sc_type_var;
+    return ScType::NodeVarAbstract;
 
   if (type == "node/const/group")
-    return sc_type_node | sc_type_node_class | sc_type_const;
+    return ScType::NodeConstClass;
 
   if (type == "node/var/group")
-    return sc_type_node | sc_type_node_class | sc_type_var;
+    return ScType::NodeVarClass;
 
   if (type == "node/const/asymmetry" || type == "node/const/symmetry" || type == "node/const/tuple")
-    return sc_type_node | sc_type_node_tuple | sc_type_const;
+    return ScType::NodeConstTuple;
 
   if (type == "node/var/asymmetry" || type == "node/var/symmetry" || type == "node/var/tuple")
-    return sc_type_node | sc_type_node_tuple | sc_type_var;
+    return ScType::NodeVarTuple;
 
   // -------
   if (type == "arc/-/-")
-    return sc_type_arc_access;
+    return ScType::EdgeAccess;
 
   if (type == "pair/orient")
-    return sc_type_arc_common;
+    return ScType::EdgeDCommon;
 
   if (type == "pair/noorient")
-    return sc_type_edge_common;
+    return ScType::EdgeUCommon;
 
   if (type == "pair/const/synonym" || type == "pair/const/noorient")
-    return sc_type_edge_common | sc_type_const;
+    return ScType::EdgeDCommonConst;
 
   if (type == "pair/var/synonym" || type == "pair/var/noorient")
-    return sc_type_edge_common | sc_type_var;
+    return ScType::EdgeDCommonVar;
 
   if (type == "pair/const/orient")
-    return sc_type_arc_common | sc_type_const;
+    return ScType::EdgeUCommonConst;
 
   if (type == "pair/var/orient")
-    return sc_type_arc_common | sc_type_var;
+    return ScType::EdgeUCommonVar;
 
   if (type == "arc/const/fuz")
-    return sc_type_arc_access | sc_type_const | sc_type_arc_fuz | sc_type_arc_perm;
+    return ScType::EdgeAccessConstFuzPerm;
 
   if (type == "arc/var/fuz")
-    return sc_type_arc_access | sc_type_var | sc_type_arc_fuz | sc_type_arc_perm;
+    return ScType::EdgeAccessVarFuzPerm;
 
   if (type == "arc/const/fuz/temp")
-    return sc_type_arc_access | sc_type_const | sc_type_arc_fuz | sc_type_arc_temp;
+    return ScType::EdgeAccessConstFuzTemp;
 
   if (type == "arc/var/fuz/temp")
-    return sc_type_arc_access | sc_type_var | sc_type_arc_fuz | sc_type_arc_temp;
+    return ScType::EdgeAccessVarFuzTemp;
 
   if (type == "arc/const/neg")
-    return sc_type_arc_access | sc_type_const | sc_type_arc_neg | sc_type_arc_perm;
+    return ScType::EdgeAccessConstNegPerm;
 
   if (type == "arc/var/neg")
-    return sc_type_arc_access | sc_type_var | sc_type_arc_neg | sc_type_arc_perm;
+    return ScType::EdgeAccessVarNegPerm;
 
   if (type == "arc/const/neg/temp")
-    return sc_type_arc_access | sc_type_const | sc_type_arc_neg | sc_type_arc_temp;
+    return ScType::EdgeAccessConstNegTemp;
 
   if (type == "arc/var/neg/temp")
-    return sc_type_arc_access | sc_type_var | sc_type_arc_neg | sc_type_arc_temp;
+    return ScType::EdgeAccessVarNegTemp;
 
   if (type == "arc/const/pos")
-    return sc_type_arc_access | sc_type_const | sc_type_arc_pos | sc_type_arc_perm;
+    return ScType::EdgeAccessConstPosPerm;
 
   if (type == "arc/var/pos")
-    return sc_type_arc_access | sc_type_var | sc_type_arc_pos | sc_type_arc_perm;
+    return ScType::EdgeAccessVarPosPerm;
 
   if (type == "arc/const/pos/temp")
-    return sc_type_arc_access | sc_type_const | sc_type_arc_pos | sc_type_arc_temp;
+    return ScType::EdgeAccessConstPosTemp;
 
   if (type == "arc/var/pos/temp")
-    return sc_type_arc_access | sc_type_var | sc_type_arc_pos | sc_type_arc_temp;
-
-  THROW_EXCEPT(Exception::ERR_ITEM_NOT_FOUND,
-               "Can't determine type for " << type,
-               mParams.fileName, -1);
-
-  return 0;
-}
-
-// -------------------
-const String GwfTranslatorFactory::EXTENSION = "gwf";
-
-GwfTranslatorFactory::GwfTranslatorFactory()
-{
-}
-
-GwfTranslatorFactory::~GwfTranslatorFactory()
-{
-}
-
-iTranslator* GwfTranslatorFactory::createInstance(sc_memory_context *ctx)
-{
-  return new GwfTranslator(ctx);
-}
-
-const String& GwfTranslatorFactory::getFileExt() const
-{
-  return EXTENSION;
+    return ScType::EdgeAccessVarPosTemp;
+              
+  return ScType();
 }

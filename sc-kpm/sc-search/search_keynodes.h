@@ -7,7 +7,7 @@
 #ifndef _search_keynodes_h_
 #define _search_keynodes_h_
 
-#include "sc_memory.h"
+#include "sc-core/sc_memory.h"
 
 extern sc_addr keynode_question_all_output_const_pos_arc;
 extern sc_addr keynode_question_all_input_const_pos_arc;

@@ -2,6 +2,13 @@
 
 #include "LanguageType.hpp"
 
+#include "Constructor.hpp"
+#include "Field.hpp"
+#include "Function.hpp"
+#include "Global.hpp"
+#include "Method.hpp"
+
+#include <memory>
 #include <vector>
 
 struct BaseClass
@@ -24,7 +31,6 @@ class Class : public LanguageType
 
 public:
   Class(const Cursor &cursor, const Namespace &currentNamespace);
-  virtual ~Class(void);
 
   bool ShouldGenerate(void) const;
   bool IsAgent() const;
@@ -52,21 +58,19 @@ private:
   std::string m_displayName;
   std::string m_qualifiedName;
 
-  typedef std::vector<BaseClass*> tBaseClassVector;
-  tBaseClassVector m_baseClasses;
+  using BaseClassVector = std::vector<std::shared_ptr<BaseClass>>;
+  using ConstructorVector = std::vector<std::shared_ptr<Constructor>>;
+  using FieldVector = std::vector<std::shared_ptr<Field>>;
+  using StaticFieldVector = std::vector<std::shared_ptr<Global>>;
+  using MethodVector = std::vector<std::shared_ptr<Method>>;
+  using StaticMethodVector = std::vector<std::shared_ptr<Function>>;
 
-  std::vector<class Constructor*> m_constructors;
-
-  typedef std::vector<class Field*> tFieldsVector;
-  tFieldsVector m_fields;
-
-  typedef std::vector<class Global*> tStaticFieldsVector;
-  tStaticFieldsVector m_staticFields;
-
-  typedef std::vector<class Method*> tMethodVector;
-  tMethodVector m_methods;
-
-  std::vector<class Function*> m_staticMethods;
+  BaseClassVector m_baseClasses;
+  ConstructorVector m_constructors;
+  FieldVector m_fields;
+  StaticFieldVector m_staticFields;
+  MethodVector m_methods;
+  StaticMethodVector m_staticMethods;
 
   bool m_isScObject;
 

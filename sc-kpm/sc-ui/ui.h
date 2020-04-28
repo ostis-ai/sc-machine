@@ -9,7 +9,7 @@
 
 extern "C"
 {
-#include "sc_memory_headers.h"
+#include "sc-core/sc_memory_headers.h"
 }
 
 extern "C"

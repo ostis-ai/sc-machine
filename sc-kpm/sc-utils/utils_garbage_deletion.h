@@ -7,7 +7,7 @@
 #ifndef _utils_garbage_deletion_h_
 #define _utils_garbage_deletion_h_
 
-#include "sc_memory_headers.h"
+#include "sc-core/sc_memory_headers.h"
 
 sc_result agent_garbage_delete(const sc_event *event, sc_addr arg);
 

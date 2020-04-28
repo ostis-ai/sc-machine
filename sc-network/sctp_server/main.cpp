@@ -7,7 +7,7 @@
 #include <QtCore/QCoreApplication>
 #include "sctpServer.h"
 
-#include <sc-memory/cpp/utils/sc_signal_handler.hpp>
+#include <sc-memory/utils/sc_signal_handler.hpp>
 
 int main(int argc, char *argv[]) try
 {

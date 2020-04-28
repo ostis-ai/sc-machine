@@ -7,9 +7,9 @@ class Cursor;
 class Invokable
 {
 public:
-  typedef std::vector<std::string> Signature;
+  using Signature = std::vector<std::string>;
 
-  Invokable(const Cursor &cursor);
+  Invokable(Cursor const & cursor);
 
 protected:
   std::string m_returnType;

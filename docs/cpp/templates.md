@@ -2,7 +2,7 @@
 Templates is a very powerful mechanism to work with semantic network (graph). You can search and generate any constructions using templates.
 There are list of available classes to work with templates:
 * `ScTemplate` - class that represents template in C++ code;
-* `ScTemplateGenParams` - parameters that contains values of variables in template. This class usually used when you generate construction by template;
+* `ScTemplateParams` - parameters that contains values of variables in template. This class usually used when you generate construction by template;
 * `ScTemplateSearchResult` - contains result of search by template (list of found constructions);
 * `ScTemplateSearchResultItem` - represents on search result item;
 * `ScTemplateGenResult` - represent result of generation by template.

@@ -1,11 +1,11 @@
-set(SC_SEARCH_SRC ${CMAKE_CURRENT_LIST_DIR})
+file(GLOB_RECURSE SOURCES "*.c" "*.cpp" "*.h" "*.hpp")
 
-file(GLOB_RECURSE SOURCES_C "*.c")
-file(GLOB_RECURSE SOURCES_CPP "*.cpp")
-file(GLOB_RECURSE HEADERS "*.h")
+add_library (sc-search SHARED ${SOURCES})
 
-add_library (sc-search SHARED ${SOURCES_CPP} ${SOURCES_C} ${HEADERS})
-
-include_directories(${SC_SEARCH_SRC} ${SC_MEMORY_SRC} ${GLIB2_INCLUDE_DIRS})
+target_include_directories(sc-search
+  PRIVATE ${SC_MEMORY_SRC}
+  PRIVATE ${GLIB2_INCLUDE_DIRS}
+  PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}
+  )
 add_dependencies(sc-search sc-memory sc-kpm-common)
 target_link_libraries(sc-search sc-kpm-common)

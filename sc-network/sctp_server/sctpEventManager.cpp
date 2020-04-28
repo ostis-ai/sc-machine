@@ -7,6 +7,10 @@
 #include "sctpEventManager.h"
 #include "sctpCommand.h"
 
+extern "C" {
+#include <sc-core/sc-store/sc_event.h>
+}
+
 sctpEventManager* sctpEventManager::msInstance = 0;
 
 sctpEventManager::sctpEventManager()

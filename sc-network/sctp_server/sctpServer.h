@@ -14,7 +14,7 @@
 
 #include <memory>
 
-#include "sc-memory/cpp/sc_memory.hpp"
+#include "sc-memory/sc_memory.hpp"
 
 class sctpClient;
 class sctpStatistic;

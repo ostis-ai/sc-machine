@@ -9,7 +9,7 @@
 
 extern "C"
 {
-#include "sc_memory.h"
+#include "sc-core/sc_memory.h"
 }
 
 //! Setup event handler for command operations

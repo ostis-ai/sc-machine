@@ -6,11 +6,11 @@ set(SC_BIN_PATH "${CMAKE_SOURCE_DIR}/bin")
 
 set(SC_MACHINE_ROOT ${CMAKE_CURRENT_LIST_DIR})
 set(SC_MACHINE_THIRDPARTY_PATH "${SC_MACHINE_ROOT}/thirdparty")
-set(SC_MACHINE_ANTRL_DIR "${SC_MACHINE_THIRDPARTY_PATH}/antlr")
 
 option (SC_AUTO_TEST "Flag to build for automation testing" OFF)
-option (SC_KPM_SCP "Flag to build SCP module" ON)
+option (SC_KPM_SCP "Flag to build SCP module" OFF)
 option (SC_BUILD_SCTP "Flag to turn on/off sctp protocol support" ON)
+option (SC_BUILD_TESTS "Flag to build unit tests" OFF)
 
 # codegen
 if (${UNIX})
@@ -20,15 +20,9 @@ elseif (${WIN32})
 endif()
 include("${SC_MACHINE_ROOT}/cmake/codegen.cmake")
 
-if (${WIN32})
-    find_package(Java)
-else ()
-    find_package(Java REQUIRED)
-endif()
+find_package(Java)
 
 set(CMAKE_MODULE_PATH "${SC_MACHINE_ROOT}/cmake")
-
-set (JAVA_EXE ${Java_JAVA_EXECUTABLE})
 
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${SC_BIN_PATH})
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${SC_BIN_PATH})
@@ -49,14 +43,14 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
     set(CMAKE_CXX_FLAGS_RELEASE "-O3")
 
     if(${SC_AUTO_TEST})
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wdeprecated-declarations")
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wdeprecated-declarations")
     endif()
 elseif(CMAKE_CXX_COMPILER_ID MATCHES "GNU")
     set(CMAKE_CXX_FLAGS "-std=c++14 -Wall")
     set(CMAKE_CXX_FLAGS_RELEASE "-O3")        ## Optimize
     set(CMAKE_EXE_LINKER_FLAGS_RELEASE "-s")  ## Strip binary
 elseif (NOT CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14")
 endif ()
 
 set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -DSC_DEBUG -DSC_PROFILE")
@@ -69,30 +63,26 @@ if (${SC_AUTO_TEST})
     add_definitions(-DSC_BUILD_AUTO_TESTS)
 endif()
 
-
-include_directories(
-    "${SC_MACHINE_THIRDPARTY_PATH}"
-    "${SC_MACHINE_ANTRL_DIR}/cpp")
-
 # find dependencies
 if (${APPLE})
-    find_package(Boost 1.54 REQUIRED COMPONENTS filesystem python36)
+    set(Boost_USE_STATIC_LIBS ON)
+    find_package(Boost 1.67 REQUIRED COMPONENTS filesystem python37 program_options)
 
-    find_package(glib2 REQUIRED)
-#    find_package(glib2_module REQUIRED)
-    set (GLIB2_LIBRARIES "glib-2.0" "gmodule-2.0")
+    find_package(PkgConfig REQUIRED)
+    pkg_search_module(GLIB2 REQUIRED glib-2.0)
+    pkg_search_module(GLIB2_MODULE REQUIRED gmodule-2.0)
 
-    find_package(hiredis REQUIRED)
+    set (GLIB2_LIBRARIES ${GLIB_LDFLAGS} ${GLIB2_MODULE_LDFLAGS})
 
-    set(LIBCLANG_LLVM_CONFIG_EXECUTABLE "/usr/local/opt/llvm/bin/llvm-config")
+    set (LIBCLANG_LLVM_CONFIG_EXECUTABLE "/usr/local/opt/llvm/bin/llvm-config")
     find_package(LibClang REQUIRED)
 
-    find_package(PythonLibs 3.6 REQUIRED)
+    find_package(PythonLibs 3.7 REQUIRED)
     find_package(curl REQUIRED)
 
     set (LIBCURL_LIBRARIES ${CURL_LIBRARIES})
 
-    set (ANTLR_LIB antlr3c)
+    include_directories("${CMAKE_OSX_SYSROOT}/usr/include")
 
 elseif (${UNIX})
     find_package(PythonLibs 3.4 REQUIRED)
@@ -104,8 +94,7 @@ elseif (${UNIX})
     set(PY_SHORT_VERSION "${PY_VERSION_MAJOR}${PY_VERSION_MINOR}")
 
     find_package(Boost 1.54 REQUIRED COMPONENTS filesystem python-py${PY_SHORT_VERSION})
-
-    set (ANTLR_LIB antlr3c)
+    find_package(RocksDB REQUIRED)
 
     include(FindPkgConfig)
     pkg_check_modules (GLIB2 REQUIRED glib-2.0)
@@ -114,21 +103,11 @@ elseif (${UNIX})
     set (GLIB2_INCLUDE_DIRS "${GLIB2_INCLUDE_DIRS}" "/usr/lib/x86_64-linux-gnu/glib-2.0/include/" "${GLIB2_MODULE}")
     set (GLIB2_LIBRARIES "${GLIB2_LIBRARIES}" "${GLIB2_MODULE_LIBRARIES}")
 
-    pkg_check_modules(REDIS QUIET hiredis)
-    if (NOT DEFINED ${REDIS_INCLUDE_DIRS})
-        pkg_check_modules(REDIS REQUIRED libhiredis)
-    endif()
-
     if (NOT DEFINED LIBCLANG_LIBRARIES OR NOT DEFINED LIBCLANG_CXXFLAGS OR NOT DEFINED LIBCLANG_LIBDIR)
         find_package(LibClang REQUIRED)
     endif ()
 
     pkg_check_modules(LIBCURL REQUIRED libcurl)
-
-    include_directories("${SC_MACHINE_THIRDPARTY_PATH}"
-                        "${SC_MACHINE_ANTRL_DIR}/cpp")
-
-    add_definitions(-DSC_PLATFORM_UNIX)
 
     # for std::thread support
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread")
@@ -138,17 +117,11 @@ elseif (${WIN32})
 
     set(PACKAGES_PATH "${CMAKE_BINARY_DIR}/packages")
 
-    set (ANTLR_LIB antlr3c.${MSVC_SUFFIX})
-
-    if (${MSVC_VERSION} EQUAL "1800")
+    if (${MSVC_VERSION} EQUAL 1800)
         set (MSVC_SUFFIX "vc120")
-    elseif (${MSVC_VERSION} EQUAL "1900")
+    elseif (${MSVC_VERSION} EQUAL 1900)
         set (MSVC_SUFFIX "vc140")
-    elseif (${MSVC_VERSION} EQUAL "1911")
-        set (ANTLR_LIB "antlr3c.vc140")
-        set (MSVC_SUFFIX "vc141")
-    elseif (${MSVC_VERSION} EQUAL "1914")
-    set (ANTLR_LIB "antlr3c.vc140")
+    elseif (${MSVC_VERSION} GREATER_EQUAL 1911)
         set (MSVC_SUFFIX "vc141")
     endif()
 
@@ -159,15 +132,14 @@ elseif (${WIN32})
     execute_process(COMMAND "${SC_MACHINE_THIRDPARTY_PATH}/nuget.exe" install ${CMAKE_BINARY_DIR}/packages.config WORKING_DIRECTORY ${PACKAGES_PATH})
 
     set (GLIB_PATH "${PACKAGES_PATH}/glib.2.36.2.11/build/native")
-    set (REDIS_PATH "${SC_MACHINE_THIRDPARTY_PATH}/libhiredis/")
     set (BOOST_PATH "${PACKAGES_PATH}/boost.${BOOST_VERSION}/lib/native")
+    set (ROCKSDB_PATH "${SC_MACHINE_THIRDPARTY_PATH}/rocksdb")
 
     set (LIBCLANG_INCLUDE_DIRS "${SC_MACHINE_THIRDPARTY_PATH}/clang/include")
     set (LIBCLANG_LIBRARY "libclang")
 
     set (GLIB2_INCLUDE_DIRS "${GLIB_PATH}/include"
                             "${GLIB_PATH}/include/glib")
-    set (REDIS_INCLUDE_DIRS "${REDIS_PATH}")
 
     set (LIBCURL_PATH "${SC_MACHINE_THIRDPARTY_PATH}/curl")
     set (LIBCURL_RUNTIME_PATH "${LIBCURL_PATH}/bin")
@@ -178,32 +150,23 @@ elseif (${WIN32})
     set (BOOST_PYTHON_LIBRARY_RELEASE "${BOOST_PYTHON_BIN_PATH}/boost_python3-${MSVC_SUFFIX}-mt-1_64.lib")
     set (BOOST_PYTHON_LIBRARY_DEBUG "${BOOST_PYTHON_BIN_PATH}/boost_python3-${MSVC_SUFFIX}-mt-gd-1_64.lib")
 
+    set (RocksDB_INCLUDE_DIR "${ROCKSDB_PATH}/include")
+    set (RocksDB_LIBRARIES "${ROCKSDB_PATH}/rocksdb-shared.lib")
 
-
-    include_directories("${SC_MACHINE_ANTRL_DIR}/c"
-                        "${BOOST_PATH}/include"
+    include_directories("${BOOST_PATH}/include"
                         "${LIBCURL_INCLUDE_DIRS}")
 
     link_directories(
                      "${SC_MACHINE_THIRDPARTY_PATH}/clang/lib"
                      "${GLIB_PATH}/lib/v110/x64/Release/dynamic/"
-                     "${REDIS_PATH}"
-                     "${SC_MACHINE_ANTRL_DIR}"
                      "${PACKAGES_PATH}/boost_filesystem-${MSVC_SUFFIX}.${BOOST_VERSION}/lib/native/address-model-64/lib/"
                      "${PACKAGES_PATH}/boost_system-${MSVC_SUFFIX}.${BOOST_VERSION}/lib/native/address-model-64/lib/"
                      "${PACKAGES_PATH}/boost_program_options-${MSVC_SUFFIX}.${BOOST_VERSION}/lib/native/address-model-64/lib/"
-                     "${PACKAGES_PATH}/boost_regex-${MSVC_SUFFIX}.${BOOST_VERSION}/lib/native/address-model-64/lib/"
                      )
 
-
     set (GLIB2_LIBRARIES "gio-2.0.lib" "glib-2.0.lib" "gmodule-2.0.lib" "gobject-2.0.lib" "gthread-2.0.lib")
-    if (${MSVC_VERSION} EQUAL "1800")
-        set (REDIS_LIBRARIES "hiredis.vc120.lib" "WSock32.lib" "Ws2_32.lib")
-    elseif ((${MSVC_VERSION} EQUAL "1900") OR (${MSVC_VERSION} EQUAL "1911") OR (${MSVC_VERSION} EQUAL "1914"))
-        set (REDIS_LIBRARIES "hiredis.vc140.lib" "Win32_Interop.vc140.lib" "WSock32.lib" "Ws2_32.lib")
-    endif()
 
-    add_definitions(-DSC_PLATFORM_WIN -DHIREDIS_WIN -DBOOST_PYTHON_NO_LIB)
+    add_definitions(-DSC_PLATFORM_WIN -DBOOST_PYTHON_NO_LIB)
 
     # copy runtime libraries
     set (GLIB_RUNTIME_PATH "${PACKAGES_PATH}/glib.redist.2.36.2.11/build/native/bin/v110/x64/Release/dynamic")
@@ -225,6 +188,7 @@ elseif (${WIN32})
             "${LIBCURL_RUNTIME_PATH}/ssleay32.dll"
             "${BOOST_PYTHON_BIN_PATH}/boost_python3-${MSVC_SUFFIX}-mt-1_64.dll"
             "${BOOST_PYTHON_BIN_PATH}/boost_python3-${MSVC_SUFFIX}-mt-gd-1_64.dll"
+            "${ROCKSDB_PATH}/rocksdb-shared.dll"
             )
     file(COPY ${WIN_RUNTIME_LIBRARIES} DESTINATION "${SC_BIN_PATH}")
 
@@ -232,10 +196,9 @@ endif(${APPLE})
 
 message ("Python version: ${PYTHONLIBS_VERSION_STRING}")
 
-include_directories(${SC_MACHINE_ROOT} ${GLIB2_INCLUDE_DIRS})
+configure_file(${CMAKE_CURRENT_LIST_DIR}/config/config.ini.in ${CMAKE_CURRENT_LIST_DIR}/bin/config.ini)
 
 add_subdirectory(${SC_MACHINE_ROOT}/sc-memory)
-add_subdirectory(${SC_MACHINE_ROOT}/sc-fm)
 add_subdirectory(${SC_MACHINE_ROOT}/sc-kpm)
 add_subdirectory(${SC_MACHINE_ROOT}/sc-server)
 add_subdirectory(${SC_MACHINE_ROOT}/tools)
@@ -243,5 +206,7 @@ add_subdirectory(${SC_MACHINE_ROOT}/tools)
 if (${SC_BUILD_SCTP})
     add_subdirectory(${SC_MACHINE_ROOT}/sc-network)
 endif()
+
+add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/thirdparty)
 
 

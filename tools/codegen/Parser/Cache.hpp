@@ -9,7 +9,6 @@ class SourceCache
 {
 public:
   SourceCache(std::string const & path, std::string const & targetName);
-  ~SourceCache();
 
   void Load();
   void Save();
@@ -18,6 +17,8 @@ public:
   bool RequestGenerate(std::string const & fileName);
 
   static std::string FileChecksum(std::string const & fileName);
+
+  void Reset();
 private:
   using CacheMap = std::unordered_map<std::string, std::string>;
   CacheMap m_cache;

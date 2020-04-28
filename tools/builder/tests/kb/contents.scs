@@ -1,0 +1,39 @@
+
+"file://file.txt" => nrel_system_identifier:
+    [test_content_file];;
+
+"file://contents/file.txt" => nrel_system_identifier:
+    [test_content_file_2];;
+
+[string] => nrel_system_identifier:
+    [test_content_string];;
+
+[^"float: 43.567"] => nrel_system_identifier:
+    [test_content_float];;
+
+[^"double: 543.345"] => nrel_system_identifier:
+    [test_content_double];;
+
+[^"int8: 8"] => nrel_system_identifier:
+    [test_content_int8];;
+
+[^"int16: 16"] => nrel_system_identifier:
+    [test_content_int16];;
+
+[^"int32: 32"] => nrel_system_identifier:
+    [test_content_int32];;
+
+[^"int64: 64"] => nrel_system_identifier:
+    [test_content_int64];;
+
+[^"uint8: 108"] => nrel_system_identifier:
+    [test_content_uint8];;
+
+[^"uint16: 116"] => nrel_system_identifier:
+    [test_content_uint16];;
+
+[^"uint32: 132"] => nrel_system_identifier:
+    [test_content_uint32];;
+
+[^"uint64: 164"] => nrel_system_identifier:
+    [test_content_uint64];;

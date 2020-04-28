@@ -8,10 +8,11 @@
 
 #include <iostream>
 
-#include <sc-memory/cpp/sc_debug.hpp>
-#include <sc-memory/cpp/sc_memory.hpp>
-#include <sc-memory/cpp/utils/sc_signal_handler.hpp>
+#include <sc-memory/sc_debug.hpp>
+#include <sc-memory/sc_memory.hpp>
+#include <sc-memory/utils/sc_signal_handler.hpp>
 
+#include <atomic>
 #include <thread>
 
 int main(int argc, char *argv[]) try
@@ -22,6 +23,7 @@ int main(int argc, char *argv[]) try
       ("ext-path,e", boost::program_options::value<std::string>(), "Path to directory with sc-memory extensions")
       ("repo-path,r", boost::program_options::value<std::string>(), "Path to repository")
       ("verbose,v", "Flag to don't save sc-memory state on exit")
+      ("clear,c", "Flag to clear sc-memory on start")
       ("config-file,i", boost::program_options::value<std::string>(), "Path to configuration file");
 
   boost::program_options::variables_map vm;
@@ -44,13 +46,17 @@ int main(int argc, char *argv[]) try
   if (vm.count("verbose"))
     saveState = false;
 
+  bool clear = false;
+  if (vm.count("clear"))
+    clear = true;
+
   if (vm.count("help"))
   {
     std::cout << options_description;
     return 0;
   }
 
-  volatile bool isRun = true;
+  std::atomic_bool isRun = { true };
   utils::ScSignalHandler::Initialize();
   utils::ScSignalHandler::m_onTerminate = [&isRun]()
   {
@@ -60,7 +66,7 @@ int main(int argc, char *argv[]) try
   sc_memory_params params;
   sc_memory_params_clear(&params);
 
-  params.clear = SC_FALSE;
+  params.clear = clear ? SC_TRUE : SC_FALSE;
   params.config_file = configFile.c_str();
   params.enabled_exts = nullptr;
   params.ext_path = extPath.c_str();
@@ -79,5 +85,5 @@ int main(int argc, char *argv[]) try
 }
 catch (utils::ScException const & ex)
 {
-  SC_LOG_ERROR(ex.Message());
+  SC_LOG_ERROR(ex.Description());
 }

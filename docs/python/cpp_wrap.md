@@ -245,7 +245,7 @@ This class wrap content of link. It allows to unpack it to `string`, `int` or `f
     * `ScLinkContent.Int`
     * `ScLinkContent.Float`
 
-## ScTemplateGenParams
+## ScTemplateParams
 
 This class accumulate parameters for a template generation. There are methods of this class:
 
@@ -254,7 +254,7 @@ This class accumulate parameters for a template generation. There are methods of
     * **valueAddr** - `ScAddr` of element that should be used with specified name (see more in [templates description](../cpp/templates.md))
 
     ```python
-    params = ScTemplateGenParams()
+    params = ScTemplateParams()
     params.Add("_item", itemAddr)
     ...
     ```
@@ -276,13 +276,13 @@ This class accumulate parameters for a template generation. There are methods of
 This class wrap template generation result. There are methods of this class:
 
 ??? tip "Aliases()"
-    returns a list of all used aliases in template. They can be used to get result values by `__getitem__`
+    returns a `dict` of all used aliases in template (where key - `alias`, value - index in generate result). Keys can be used to get result values by `__getitem__`
 
 ??? tip "Size()"
     return number of elements
 
-??? tip "\_\_getitem\_\_(replName)"
-    * **replName** - name of result parameter (`str`)
+??? tip "\_\_getitem\_\_(alias)"
+    * **alias** - name of result parameter (`str`)
 
     returns `ScAddr` by specified name. If there are no value with a specified name, then returns `None`
     ```python
@@ -296,18 +296,19 @@ This class represents one result for a search by template. There are methods of 
 ??? tip "Size()"
     return size of result (number of `ScAddr`'s equal to search construction)
 
-??? tip "\_\_getitem\_\_()"
+??? tip "\_\_getitem\_\_(name_or_index)"
     allows to get result items by any index: `int`, `str`. In case of `int` index you will just get `ScAddr` by index in result array (length equal to `Size()`) this case suitable, when you need to iterate all addrs in result.
+
     !!! warning 
         You will receive duplicate `ScAddr`'s, because result stored as array of founded triples.
 
-    When you try to get `ScAddr` with `str` it will be found by replacement name (see [templates](../cpp/templates.md) for more info). If there are no element with specified index, then returns `None`
+    When you try to get `ScAddr` with `str` it will be found by alias (see [templates](../cpp/templates.md) for more info). If there are no element with specified index, then returns `None`
     ```python
     resultSize = searchResultItem.Size()
     for i in range(resultSize):
       addr = searchResultItem[i] # iterate all addrs
 
-    addr1 = searchResultItem["replacement name"] # get by replacement name
+    addr1 = searchResultItem["alias"] # get by replacement name
     ```
 
 ## ScTemplateSearchResult
@@ -315,7 +316,7 @@ This class represents one result for a search by template. There are methods of 
 This class represent list of results by template search. There are methods of this class:
 
 ??? tip "Aliases()"
-    returns a list of all used aliases in template. They can be used to get result values by `__getitem__`
+    returns a `dict` of all used aliases in template (where key - `alias`, value - index in search result). Keys can be used to get result values by `__getitem__`
 
 ??? tip "Size()"
     returns number of results.
@@ -584,7 +585,7 @@ There are methods of this class:
 
 ??? tip "HelperGenTemplate(templ, params)"
     * **templ** - `ScTemplate` to generate construction
-    * **params** - `ScTemplateGenParams` parameters for construction generation
+    * **params** - `ScTemplateParams` parameters for construction generation
 
     generates construction by specified template with specified parameters. If construction generated, then returns instance of `ScTemplateGenResult`; otherwise - `None`.
 
@@ -593,7 +594,7 @@ There are methods of this class:
     templ = ScTemplate()
     ... # fill template
 
-    params = ScTemplateGenParams()
+    params = ScTemplateParams()
     ... # fill parameters
 
     result = ctx.HelperGenTemplate(templ, params)
