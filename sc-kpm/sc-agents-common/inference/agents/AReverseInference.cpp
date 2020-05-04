@@ -6,9 +6,10 @@
 #include <map>
 
 #include "AReverseInference.hpp"
-#include "utils/IteratorUtils.hpp"
-#include "utils/AgentUtils.hpp"
-#include "utils/LogicRuleUtils.hpp"
+#include "common/utils/IteratorUtils.hpp"
+#include "common/utils/AgentUtils.hpp"
+#include "common/utils/LogicRuleUtils.hpp"
+#include "inference/keynodes/InferenceKeynodes.hpp"
 
 using namespace std;
 using namespace utils;
@@ -63,7 +64,7 @@ void AReverseInference::createTemplateParams(ScAddr & statement, vector<ScAddr> 
 
 vector<ScAddr> AReverseInference::findRulesWithKeyElement(ScAddr & keyElement)
 {
-  return IteratorUtils::getAllByInRelation(ms_context.get(), keyElement, CoreKeynodes::rrel_solver_key_sc_element);
+  return IteratorUtils::getAllByInRelation(ms_context.get(), keyElement, InferenceKeynodes::rrel_solver_key_sc_element);
 }
 
 vector<ScAddr> AReverseInference::getRequestKeyElementList(ScAddr & request)

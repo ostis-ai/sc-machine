@@ -6,14 +6,12 @@
 
 #include <iostream>
 #include <thread>
-
-#include <sc-memory/cpp/sc_memory.hpp>
-#include <sc-memory/cpp/sc_stream.hpp>
-
 #include "ATemplateGeneration.hpp"
-#include "utils/IteratorUtils.hpp"
-#include "utils/AgentUtils.hpp"
-#include "utils/LogicRuleUtils.hpp"
+
+#include "common/utils/IteratorUtils.hpp"
+#include "common/utils/AgentUtils.hpp"
+#include "common/utils/LogicRuleUtils.hpp"
+#include "common/keynodes/CoreKeynodes.hpp"
 
 using namespace std;
 using namespace utils;

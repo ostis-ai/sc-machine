@@ -8,8 +8,9 @@
 
 #include <sc-memory/cpp/kpm/sc_agent.hpp>
 
-#include "keynodes/coreKeynodes.hpp"
-#include "../generated/AReverseInference.generated.hpp"
+#include "inference/keynodes/InferenceKeynodes.hpp"
+
+#include "sc-kpm/sc-agents-common/generated/AReverseInference.generated.hpp"
 
 using namespace std;
 
@@ -18,7 +19,7 @@ namespace scAgentsCommon
 
 class AReverseInference : public ScAgent
 {
-  SC_CLASS(Agent, Event(CoreKeynodes::question_reverse_inference, ScEvent::Type::AddOutputEdge))
+  SC_CLASS(Agent, Event(InferenceKeynodes::question_reverse_inference, ScEvent::Type::AddOutputEdge))
   SC_GENERATED_BODY()
 
 private:

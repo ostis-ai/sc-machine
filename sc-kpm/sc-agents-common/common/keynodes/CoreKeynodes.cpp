@@ -6,7 +6,7 @@
 
 #include <sc-memory/cpp/sc_memory.hpp>
 
-#include "coreKeynodes.hpp"
+#include "CoreKeynodes.hpp"
 
 namespace scAgentsCommon
 {
@@ -16,8 +16,6 @@ ScAddr CoreKeynodes::question_initiated;
 ScAddr CoreKeynodes::question_finished;
 ScAddr CoreKeynodes::question_finished_successfully;
 ScAddr CoreKeynodes::question_finished_unsuccessfully;
-ScAddr CoreKeynodes::question_use_logic_rule;
-ScAddr CoreKeynodes::question_reverse_inference;
 ScAddr CoreKeynodes::question_numbers_comparison;
 ScAddr CoreKeynodes::nrel_answer;
 ScAddr CoreKeynodes::nrel_inclusion;
@@ -34,7 +32,6 @@ ScAddr CoreKeynodes::nrel_equal_numbers;
 ScAddr CoreKeynodes::nrel_be_more;
 ScAddr CoreKeynodes::statement;
 ScAddr CoreKeynodes::rrel_key_sc_element;
-ScAddr CoreKeynodes::rrel_solver_key_sc_element;
 ScAddr CoreKeynodes::nrel_sc_text_translation;
 ScAddr CoreKeynodes::rrel_main_key_sc_element;
 ScAddr CoreKeynodes::nrel_implication;

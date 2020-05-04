@@ -8,16 +8,17 @@
 
 #include <sc-memory/cpp/kpm/sc_agent.hpp>
 
-#include "keynodes/coreKeynodes.hpp"
+#include "common/keynodes/CoreKeynodes.hpp"
+#include "inference/keynodes/InferenceKeynodes.hpp"
 
-#include "../generated/ATemplateGeneration.generated.hpp"
+#include "sc-kpm/sc-agents-common/generated/ATemplateGeneration.generated.hpp"
 
 namespace scAgentsCommon
 {
 
 class ATemplateGeneration : public ScAgent
 {
-  SC_CLASS(Agent, Event(CoreKeynodes::question_use_logic_rule, ScEvent::Type::AddOutputEdge))
+  SC_CLASS(Agent, Event(InferenceKeynodes::question_use_logic_rule, ScEvent::Type::AddOutputEdge))
   SC_GENERATED_BODY()
 
 private:

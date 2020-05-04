@@ -9,8 +9,8 @@
 #include <sc-memory/cpp/sc_stream.hpp>
 
 #include "ANumberComparison.hpp"
-#include "utils/AgentUtils.hpp"
-#include "utils/CommonUtils.hpp"
+#include "common/utils/AgentUtils.hpp"
+#include "common/utils/CommonUtils.hpp"
 
 
 using namespace std;

@@ -4,11 +4,13 @@
 * (See accompanying file COPYING.MIT or copy at http://opensource.org/licenses/MIT)
 */
 
+#include "common/keynodes/CoreKeynodes.hpp"
+#include "common/agents/ANumberComparison.hpp"
+#include "inference/keynodes/InferenceKeynodes.hpp"
+#include "inference/agents/AReverseInference.hpp"
+#include "inference/agents/ATemplateGeneration.hpp"
+
 #include "sc_agents_common.hpp"
-#include "keynodes/coreKeynodes.hpp"
-#include "agents/ANumberComparison.hpp"
-#include "agents/ATemplateGeneration.hpp"
-#include "agents/AReverseInference.hpp"
 
 using namespace scAgentsCommon;
 
@@ -18,6 +20,9 @@ sc_result SCAgentsCommonModule::InitializeImpl()
 {
 
   if (!CoreKeynodes::InitGlobal())
+    return SC_RESULT_ERROR;
+
+  if (!InferenceKeynodes::InitGlobal())
     return SC_RESULT_ERROR;
 
   SC_AGENT_REGISTER(ANumberComparison)

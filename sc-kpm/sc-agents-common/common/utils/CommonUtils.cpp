@@ -9,7 +9,7 @@
 
 #include "CommonUtils.hpp"
 #include "IteratorUtils.hpp"
-#include "keynodes/coreKeynodes.hpp"
+#include "common/keynodes/CoreKeynodes.hpp"
 
 using namespace std;
 using namespace scAgentsCommon;
