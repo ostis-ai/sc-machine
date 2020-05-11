@@ -4,32 +4,22 @@ set(SC_AGENTS_COMMON_SRC "${SC_KPM_ROOT}/sc-agents-common")
 
 set(SOURCES
 		"sc_agents_common.cpp"
-		"common/keynodes/CoreKeynodes.cpp"
-		"common/agents/ANumberComparison.cpp"
-		"common/utils/IteratorUtils.cpp"
-		"common/utils/AgentUtils.cpp"
-		"common/utils/CommonUtils.cpp"
-		"common/utils/LogicRuleUtils.cpp"
-		"inference/keynodes/InferenceKeynodes.cpp"
-		"inference/agents/AReverseInference.cpp"
-		"inference/agents/ATemplateGeneration.cpp"
-		"inference/manager/DirectInferenceManager.cpp"
+		"keynodes/CoreKeynodes.cpp"
+		"agents/ANumberComparison.cpp"
+		"utils/IteratorUtils.cpp"
+		"utils/AgentUtils.cpp"
+		"utils/CommonUtils.cpp"
+		"utils/LogicRuleUtils.cpp"
 		)
 
 set(HEADERS
 		"sc_agents_common.hpp"
-		"common/keynodes/CoreKeynodes.hpp"
-		"common/agents/ANumberComparison.hpp"
-		"common/utils/IteratorUtils.hpp"
-		"common/utils/AgentUtils.hpp"
-		"common/utils/CommonUtils.hpp"
-		"common/utils/LogicRuleUtils.hpp"
-		"inference/keynodes/InferenceKeynodes.hpp"
-		"inference/agents/AReverseInference.hpp"
-		"inference/agents/ATemplateGeneration.hpp"
-		"inference/manager/InferenceManager.hpp"
-		"inference/manager/DirectInferenceManager.hpp"
-		"inference/model/SolutionTreeNode.hpp"
+		"keynodes/CoreKeynodes.hpp"
+		"agents/ANumberComparison.hpp"
+		"utils/IteratorUtils.hpp"
+		"utils/AgentUtils.hpp"
+		"utils/CommonUtils.hpp"
+		"utils/LogicRuleUtils.hpp"
 		)
 
 include_directories(${SC_AGENTS_COMMON_SRC} ${SC_MEMORY_SRC} ${GLIB2_INCLUDE_DIRS})

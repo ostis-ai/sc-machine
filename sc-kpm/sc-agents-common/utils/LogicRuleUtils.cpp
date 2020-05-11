@@ -9,7 +9,7 @@
 #include "AgentUtils.hpp"
 #include "IteratorUtils.hpp"
 #include "LogicRuleUtils.hpp"
-#include "common/keynodes/CoreKeynodes.hpp"
+#include "keynodes/CoreKeynodes.hpp"
 
 
 using namespace std;

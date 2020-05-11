@@ -8,20 +8,16 @@
 
 #include <sc-memory/cpp/kpm/sc_agent.hpp>
 
-#include "inference/model/SolutionTreeNode.hpp"
-
-using namespace std;
+#include "keynodes/CoreKeynodes.hpp"
+#include "sc-kpm/sc-agents-common/generated/ANumberComparison.generated.hpp"
 
 namespace scAgentsCommon
 {
 
-class InferenceManager
+class ANumberComparison : public ScAgent
 {
-public:
-  virtual SolutionTreeNode applyInference(
-        const ScAddr & targetTemplate,
-        const ScAddr & ruleSet,
-        const ScAddr & relatedNodeSet);
+  SC_CLASS(Agent, Event(CoreKeynodes::question_numbers_comparison, ScEvent::Type::AddOutputEdge))
+  SC_GENERATED_BODY()
 };
 
 } // namespace scAgentsCommon
