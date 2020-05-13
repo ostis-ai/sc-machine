@@ -26,6 +26,7 @@ ScAddr CoreKeynodes::nrel_lexicographically_less;
 ScAddr CoreKeynodes::nrel_equal_strings;
 ScAddr CoreKeynodes::rrel_1;
 ScAddr CoreKeynodes::rrel_2;
+ScAddr CoreKeynodes::rrel_3;
 ScAddr CoreKeynodes::rrel_last_added_sc_element;
 ScAddr CoreKeynodes::number;
 ScAddr CoreKeynodes::nrel_equal_numbers;
