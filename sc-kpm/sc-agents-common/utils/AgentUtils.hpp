@@ -21,28 +21,28 @@ class AgentUtils
 public:
   static ScAddr initAgentAndWaitResult(
         ScMemoryContext * ms_context,
-        ScAddr & questionName,
+        ScAddr const & questionName,
         const vector<ScAddr> & params);
 
   static ScAddr initAgent(
         ScMemoryContext * ms_context,
-        ScAddr & questionName,
+        ScAddr const & questionName,
         const vector<ScAddr> & params);
 
-  static bool waitAgentResult(ScMemoryContext * ms_context, ScAddr & questionNode);
+  static bool waitAgentResult(ScMemoryContext * ms_context, ScAddr const & questionNode);
 
   static ScAddr createQuestionNode(
         ScMemoryContext * ms_context);
 
   static void assignParamsToQuestionNode(
         ScMemoryContext * ms_context,
-        ScAddr & questionNode,
+        ScAddr const & questionNode,
         const vector<ScAddr> & params);
 
   static void finishAgentWork(
         ScMemoryContext * ms_context,
-        ScAddr & questionNode,
-        ScAddr & answer,
+        ScAddr const & questionNode,
+        ScAddr const & answer,
         bool isSuccess = true);
 };
 }

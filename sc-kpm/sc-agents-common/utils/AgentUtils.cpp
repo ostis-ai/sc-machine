@@ -20,7 +20,7 @@ namespace utils
 {
 
 void AgentUtils::assignParamsToQuestionNode(ScMemoryContext * ms_context,
-                                            ScAddr & questionNode,
+                                            ScAddr const & questionNode,
                                             const vector<ScAddr> & params)
 {
   ScAddr numberRelation, arc;
@@ -45,7 +45,7 @@ ScAddr AgentUtils::createQuestionNode(ScMemoryContext * ms_context)
   return questionNode;
 }
 
-bool AgentUtils::waitAgentResult(ScMemoryContext * ms_context, ScAddr & questionNode)
+bool AgentUtils::waitAgentResult(ScMemoryContext * ms_context, ScAddr const & questionNode)
 {
   auto check = [ms_context](ScAddr const & listenAddr, ScAddr const & edgeAddr, ScAddr const & otherAddr)
   {
@@ -55,7 +55,7 @@ bool AgentUtils::waitAgentResult(ScMemoryContext * ms_context, ScAddr & question
   return waiter.Wait(30000);
 }
 
-ScAddr AgentUtils::initAgent(ScMemoryContext * ms_context, ScAddr & questionName, const vector<ScAddr> & params)
+ScAddr AgentUtils::initAgent(ScMemoryContext * ms_context, ScAddr const & questionName, const vector<ScAddr> & params)
 {
   ScAddr questionNode = createQuestionNode(ms_context);
   assignParamsToQuestionNode(ms_context, questionNode, params);
@@ -67,7 +67,7 @@ ScAddr AgentUtils::initAgent(ScMemoryContext * ms_context, ScAddr & questionName
 
 ScAddr AgentUtils::initAgentAndWaitResult(
       ScMemoryContext * ms_context,
-      ScAddr & questionName,
+      ScAddr const & questionName,
       const vector<ScAddr> & params)
 {
   ScAddr questionNode = initAgent(ms_context, questionName, params);
@@ -80,7 +80,7 @@ ScAddr AgentUtils::initAgentAndWaitResult(
   return answer;
 }
 
-void AgentUtils::finishAgentWork(ScMemoryContext * ms_context, ScAddr & questionNode, ScAddr & answer, bool isSuccess)
+void AgentUtils::finishAgentWork(ScMemoryContext * ms_context, ScAddr const & questionNode, ScAddr const & answer, bool isSuccess)
 {
   ScAddr edgeToAnswer = ms_context->CreateEdge(ScType::EdgeDCommonConst, questionNode, answer);
   ms_context->CreateEdge(ScType::EdgeAccessConstPosPerm, CoreKeynodes::nrel_answer, edgeToAnswer);
