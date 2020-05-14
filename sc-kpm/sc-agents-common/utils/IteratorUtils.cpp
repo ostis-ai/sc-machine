@@ -66,10 +66,9 @@ ScAddr IteratorUtils::getFirstByOutRelation(ScMemoryContext * ms_context, ScAddr
 {
   ScAddr element;
   ScIterator5Ptr iterator5 = IteratorUtils::getIterator5(ms_context, node, relation);
-  while (iterator5->Next())
+  if (iterator5->Next())
   {
     element = iterator5->Get(2);
-    break;
   }
   return element;
 }
