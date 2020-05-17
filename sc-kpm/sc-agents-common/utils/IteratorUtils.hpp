@@ -35,12 +35,5 @@ public:
         ScAddr const & relation,
         bool nodeIsStart = true);
 
-  static bool addSetToOutline(ScMemoryContext * ms_context, ScAddr const & node, ScAddr const & outline);
-
-  static bool addNodeWithOutRelationToOutline(
-        ScMemoryContext * ms_context,
-        ScAddr const & node,
-        ScAddr const & relation,
-        ScAddr const & outline);
 };
 }
