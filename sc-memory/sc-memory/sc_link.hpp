@@ -84,8 +84,12 @@ public:
     }
 
     // append into set
-    if (needAppend)
-      return m_ctx.CreateEdge(ScType::EdgeAccessConstPosTemp, newType, m_addr).IsValid();
+    if (needAppend) {
+        ScAddr concertedKB = m_ctx.HelperFindBySystemIdtf("concertedKB_hash_iF95K2");
+        ScAddr x = m_ctx.CreateEdge(ScType::EdgeAccessConstPosTemp, newType, m_addr);
+        m_ctx.CreateEdge(ScType::EdgeAccessConstPosPerm, concertedKB, x);
+        return x.IsValid();
+    }
 
     return true;
   }

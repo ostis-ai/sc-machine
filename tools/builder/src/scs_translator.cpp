@@ -76,8 +76,22 @@ bool SCsTranslator::TranslateImpl(Params const & params)
   GetFileContent(params.m_fileName, data);
 
   SCsHelper scs(m_ctx, std::make_shared<impl::FileProvider>(params.m_fileName));
+  bool x = false;
+    std::string fileToCreateRoot = "ims.ostis.kb/to_check/G1.scs";
+    std::string fileToCreateRoot2 = "ims.ostis.kb/ui/languages";
+    //std::string fileToCreateRoot = "ims.ostis.kb_copy/to_check/G0.scs";
+    //std::string fileToCreateRoot2 = "ims.ostis.kb_copy/lib_c_agents/command_decomposition_search/lib_component_agent_of_command_decomposition_search.scs";
+    size_t found = params.m_fileName.find(fileToCreateRoot);
+    if (found != std::string::npos) {
+        x = true;
+    }
+//    found = params.m_fileName.find(fileToCreateRoot2);
+//    if (found != std::string::npos) {
+//        x = true;
+//    }
+    x = true;
   
-  if (!scs.GenerateBySCsText(data))
+  if (!scs.GenerateBySCsText(data, x))
   {
     SC_THROW_EXCEPTION(utils::ExceptionParseError, scs.GetLastError());
   }
