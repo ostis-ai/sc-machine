@@ -19,6 +19,8 @@ add_custom_target(GenerateParser ALL
 
 file(GLOB_RECURSE SOURCES "src/*.cpp")
 list(REMOVE_ITEM SOURCES "${SC_TOOLS_DIR}/builder/src/main.cpp")
+list(REMOVE_ITEM SOURCES "${SC_TOOLS_DIR}/builder/src/builder.cpp")
+list(REMOVE_ITEM SOURCES "${SC_TOOLS_DIR}/builder/src/builder.h")
 file(GLOB_RECURSE HEADERS "src/*.h")
 
 set (SOURCES_C
@@ -35,12 +37,13 @@ else()
 endif (${WIN32})
 
 
-add_executable(sc-builder "src/main.cpp")
-target_link_libraries(sc-builder sc-builder-lib)
-add_library(sc-builder-lib ${SOURCES} ${SOURCES_C} ${HEADERS})
+add_executable(sc-builder "src/main.cpp" "src/builder.cpp" "src/builder.h")
+
+add_library(sc-builder-lib SHARED ${SOURCES} ${SOURCES_C} ${HEADERS})
 include_directories(${SC_MEMORY_SRC} ${GLIB2_INCLUDE_DIRS})
 target_link_libraries(sc-builder-lib sc-memory sc-memory-cpp ${ANTLR_LIB} ${BOOST_LIBS_LIST})
-
 add_dependencies(sc-builder-lib GenerateParser)
+
+target_link_libraries(sc-builder sc-builder-lib)
 
 install_targets("/bin" sc-builder sc-builder-lib)
