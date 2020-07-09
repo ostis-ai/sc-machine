@@ -18,10 +18,12 @@ add_custom_target(GenerateParser ALL
 		)
 
 file(GLOB_RECURSE SOURCES "src/*.cpp")
-list(REMOVE_ITEM SOURCES "${SC_TOOLS_DIR}/builder/src/main.cpp")
-list(REMOVE_ITEM SOURCES "${SC_TOOLS_DIR}/builder/src/builder.cpp")
-list(REMOVE_ITEM SOURCES "${SC_TOOLS_DIR}/builder/src/builder.h")
+list(REMOVE_ITEM SOURCES
+		"${SC_TOOLS_DIR}/builder/src/main.cpp"
+		"${SC_TOOLS_DIR}/builder/src/builder.cpp"
+		)
 file(GLOB_RECURSE HEADERS "src/*.h")
+list(REMOVE_ITEM HEADERS "${SC_TOOLS_DIR}/builder/src/builder.h")
 
 set (SOURCES_C
 		"${SC_BUILDER_DIR}/src/parser/scsLexer.c"
