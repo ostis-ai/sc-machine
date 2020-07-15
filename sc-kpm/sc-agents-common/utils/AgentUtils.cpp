@@ -19,9 +19,10 @@ using namespace scAgentsCommon;
 namespace utils
 {
 
-void AgentUtils::assignParamsToQuestionNode(ScMemoryContext * ms_context,
-                                            ScAddr & questionNode,
-                                            const vector<ScAddr> & params)
+void AgentUtils::assignParamsToQuestionNode(
+      ScMemoryContext * ms_context,
+      const ScAddr & questionNode,
+      const vector<ScAddr> & params)
 {
   ScAddr numberRelation, arc;
   for (vector<int>::size_type i = 0; i < params.size(); i++)
@@ -45,7 +46,7 @@ ScAddr AgentUtils::createQuestionNode(ScMemoryContext * ms_context)
   return questionNode;
 }
 
-bool AgentUtils::waitAgentResult(ScMemoryContext * ms_context, ScAddr & questionNode)
+bool AgentUtils::waitAgentResult(ScMemoryContext * ms_context, const ScAddr & questionNode)
 {
   auto check = [ms_context](ScAddr const & listenAddr, ScAddr const & edgeAddr, ScAddr const & otherAddr)
   {
@@ -55,7 +56,7 @@ bool AgentUtils::waitAgentResult(ScMemoryContext * ms_context, ScAddr & question
   return waiter.Wait(30000);
 }
 
-ScAddr AgentUtils::initAgent(ScMemoryContext * ms_context, ScAddr & questionName, const vector<ScAddr> & params)
+ScAddr AgentUtils::initAgent(ScMemoryContext * ms_context, const ScAddr & questionName, const vector<ScAddr> & params)
 {
   ScAddr questionNode = createQuestionNode(ms_context);
   assignParamsToQuestionNode(ms_context, questionNode, params);
@@ -67,7 +68,7 @@ ScAddr AgentUtils::initAgent(ScMemoryContext * ms_context, ScAddr & questionName
 
 ScAddr AgentUtils::initAgentAndWaitResult(
       ScMemoryContext * ms_context,
-      ScAddr & questionName,
+      const ScAddr & questionName,
       const vector<ScAddr> & params)
 {
   ScAddr questionNode = initAgent(ms_context, questionName, params);
@@ -80,7 +81,11 @@ ScAddr AgentUtils::initAgentAndWaitResult(
   return answer;
 }
 
-void AgentUtils::finishAgentWork(ScMemoryContext * ms_context, ScAddr & questionNode,  ScAddr & answer, bool isSuccess)
+void AgentUtils::finishAgentWork(
+      ScMemoryContext * ms_context,
+      const ScAddr & questionNode,
+      const ScAddr & answer,
+      bool isSuccess)
 {
   if (answer.IsValid())
   {
@@ -90,7 +95,7 @@ void AgentUtils::finishAgentWork(ScMemoryContext * ms_context, ScAddr & question
   finishAgentWork(ms_context, questionNode, isSuccess);
 }
 
-void AgentUtils::finishAgentWork(ScMemoryContext * ms_context, ScAddr & questionNode, bool isSuccess)
+void AgentUtils::finishAgentWork(ScMemoryContext * ms_context, const ScAddr & questionNode, bool isSuccess)
 {
   ms_context->CreateEdge(ScType::EdgeAccessConstPosPerm, CoreKeynodes::question_finished, questionNode);
   ScAddr status = isSuccess

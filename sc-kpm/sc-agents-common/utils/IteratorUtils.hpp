@@ -19,28 +19,28 @@ namespace utils
 class IteratorUtils
 {
 public:
-  static ScAddr getFirstFromSet(ScMemoryContext * ms_context, ScAddr const & set);
+  static ScAddr getFirstFromSet(ScMemoryContext * ms_context, const ScAddr & set);
 
-  static vector<ScAddr> getAllWithType(ScMemoryContext * ms_context, ScAddr const & set, ScType scType);
+  static vector<ScAddr> getAllWithType(ScMemoryContext * ms_context, const ScAddr & set, ScType scType);
 
-  static vector<ScAddr> getAllByInRelation(ScMemoryContext * ms_context, ScAddr const & node, ScAddr const & relation);
+  static vector<ScAddr> getAllByInRelation(ScMemoryContext * ms_context, const ScAddr & node, const ScAddr & relation);
 
-  static ScAddr getFirstByInRelation(ScMemoryContext * ms_context, ScAddr const & node, ScAddr const & relation);
+  static ScAddr getFirstByInRelation(ScMemoryContext * ms_context, const ScAddr & node, const ScAddr & relation);
 
-  static ScAddr getFirstByOutRelation(ScMemoryContext * ms_context, ScAddr const & node, ScAddr const & relation);
+  static ScAddr getFirstByOutRelation(ScMemoryContext * ms_context, const ScAddr & node, const ScAddr & relation);
 
   static ScIterator5Ptr getIterator5(
         ScMemoryContext * ms_context,
-        ScAddr const & node,
-        ScAddr const & relation,
-        bool const nodeIsStart = true);
+        const ScAddr & node,
+        const ScAddr & relation,
+        const bool nodeIsStart = true);
 
-  static bool addSetToOutline(ScMemoryContext * ms_context, ScAddr const & node, ScAddr const & outline);
+  static bool addSetToOutline(ScMemoryContext * ms_context, const ScAddr & node, const ScAddr & outline);
 
   static bool addNodeWithOutRelationToOutline(
         ScMemoryContext * ms_context,
-        ScAddr const & node,
-        ScAddr const & relation,
-        ScAddr const & outline);
+        const ScAddr & node,
+        const ScAddr & relation,
+        const ScAddr & outline);
 };
 }

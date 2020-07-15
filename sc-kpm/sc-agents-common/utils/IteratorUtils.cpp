@@ -15,7 +15,7 @@ using namespace std;
 namespace utils
 {
 
-ScAddr IteratorUtils::getFirstFromSet(ScMemoryContext * ms_context, ScAddr const & set)
+ScAddr IteratorUtils::getFirstFromSet(ScMemoryContext * ms_context, const ScAddr & set)
 {
   ScAddr element;
   ScIterator3Ptr iterator3 = ms_context->Iterator3(set, ScType::EdgeAccessConstPosPerm, ScType::Node);
@@ -26,7 +26,7 @@ ScAddr IteratorUtils::getFirstFromSet(ScMemoryContext * ms_context, ScAddr const
   return element;
 }
 
-vector<ScAddr> IteratorUtils::getAllWithType(ScMemoryContext * ms_context, ScAddr const & set, ScType scType)
+vector<ScAddr> IteratorUtils::getAllWithType(ScMemoryContext * ms_context, const ScAddr & set, ScType scType)
 {
   vector<ScAddr> elementList;
   ScIterator3Ptr iterator3 = ms_context->Iterator3(set, ScType::EdgeAccessConstPosPerm, scType);
@@ -37,7 +37,10 @@ vector<ScAddr> IteratorUtils::getAllWithType(ScMemoryContext * ms_context, ScAdd
   return elementList;
 }
 
-vector<ScAddr> IteratorUtils::getAllByInRelation(ScMemoryContext * ms_context, ScAddr const & node, ScAddr const & relation)
+vector<ScAddr> IteratorUtils::getAllByInRelation(
+      ScMemoryContext * ms_context,
+      const ScAddr & node,
+      const ScAddr & relation)
 {
   vector<ScAddr> elementList;
   ScIterator5Ptr iterator5 = IteratorUtils::getIterator5(ms_context, node, relation, false);
@@ -49,7 +52,7 @@ vector<ScAddr> IteratorUtils::getAllByInRelation(ScMemoryContext * ms_context, S
 }
 
 
-ScAddr IteratorUtils::getFirstByInRelation(ScMemoryContext * ms_context, ScAddr const & node, ScAddr const & relation)
+ScAddr IteratorUtils::getFirstByInRelation(ScMemoryContext * ms_context, const ScAddr & node, const ScAddr & relation)
 {
   ScAddr element;
   ScIterator5Ptr iterator5 = IteratorUtils::getIterator5(ms_context, node, relation, false);
@@ -60,7 +63,7 @@ ScAddr IteratorUtils::getFirstByInRelation(ScMemoryContext * ms_context, ScAddr 
   return element;
 }
 
-ScAddr IteratorUtils::getFirstByOutRelation(ScMemoryContext * ms_context, ScAddr const & node, ScAddr const & relation)
+ScAddr IteratorUtils::getFirstByOutRelation(ScMemoryContext * ms_context, const ScAddr & node, const ScAddr & relation)
 {
   ScAddr element;
   ScIterator5Ptr iterator5 = IteratorUtils::getIterator5(ms_context, node, relation);
@@ -88,7 +91,7 @@ ScIterator5Ptr IteratorUtils::getIterator5(
   return iterator5;
 }
 
-bool IteratorUtils::addSetToOutline(ScMemoryContext * ms_context, ScAddr const & set, ScAddr const & outline)
+bool IteratorUtils::addSetToOutline(ScMemoryContext * ms_context, const ScAddr & set, const ScAddr & outline)
 {
   if (!set.IsValid() || !outline.IsValid())
     return false;
@@ -102,7 +105,7 @@ bool IteratorUtils::addSetToOutline(ScMemoryContext * ms_context, ScAddr const &
   return true;
 }
 
-bool IteratorUtils::addNodeWithOutRelationToOutline(ScMemoryContext * ms_context, ScAddr const & node,
+bool IteratorUtils::addNodeWithOutRelationToOutline(ScMemoryContext * ms_context, const ScAddr & node,
       ScAddr const & relation, ScAddr const & outline)
 {
   if (!node.IsValid() || !relation.IsValid() || !outline.IsValid())
