@@ -80,10 +80,18 @@ ScAddr AgentUtils::initAgentAndWaitResult(
   return answer;
 }
 
-void AgentUtils::finishAgentWork(ScMemoryContext * ms_context, ScAddr & questionNode, ScAddr & answer, bool isSuccess)
+void AgentUtils::finishAgentWork(ScMemoryContext * ms_context, ScAddr & questionNode,  ScAddr & answer, bool isSuccess)
 {
-  ScAddr edgeToAnswer = ms_context->CreateEdge(ScType::EdgeDCommonConst, questionNode, answer);
-  ms_context->CreateEdge(ScType::EdgeAccessConstPosPerm, CoreKeynodes::nrel_answer, edgeToAnswer);
+  if (answer.IsValid())
+  {
+    ScAddr edgeToAnswer = ms_context->CreateEdge(ScType::EdgeDCommonConst, questionNode, answer);
+    ms_context->CreateEdge(ScType::EdgeAccessConstPosPerm, CoreKeynodes::nrel_answer, edgeToAnswer);
+  }
+  finishAgentWork(ms_context, questionNode, isSuccess);
+}
+
+void AgentUtils::finishAgentWork(ScMemoryContext * ms_context, ScAddr & questionNode, bool isSuccess)
+{
   ms_context->CreateEdge(ScType::EdgeAccessConstPosPerm, CoreKeynodes::question_finished, questionNode);
   ScAddr status = isSuccess
                   ? CoreKeynodes::question_finished_successfully

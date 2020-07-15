@@ -44,5 +44,11 @@ public:
         ScAddr & questionNode,
         ScAddr & answer,
         bool isSuccess = true);
+
+static void finishAgentWork(
+      ScMemoryContext * ms_context,
+      ScAddr & questionNode,
+      bool isSuccess = true);
+
 };
 }
