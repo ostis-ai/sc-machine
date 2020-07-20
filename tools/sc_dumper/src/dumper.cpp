@@ -6,16 +6,18 @@
 #include <cstdio>
 #include <unistd.h>
 #include "model/Node.h"
+#include "model/Alias.h"
 #include <vector>
 #include <sc-core/sc_helper.h>
 
 using namespace std;
 
 std::unique_ptr<ScMemoryContext> m_ctx;
-
-ScAddr graph;
+ScAddr conceredKB;
+ScAddr nrel_sys_id;
 
 vector<Node> nodeVector;
+vector<Alias> aliasVector;
 vector<string> linkVector;
 int uniqId;
 
@@ -80,17 +82,16 @@ sc_char *saveContentFile(ScAddr element, string data, string format) {
     return cstr;
 }
 
-void run_test()
+void run_dump()
 {
     FILE *f;
     f = fopen("/home/alexander/Desktop/KnowledgeDump.scs", "w");
-    string gr = "concertedKB_hash_iF95K2";
-    graph = m_ctx->HelperFindBySystemIdtf(gr);
+    string name = "concertedKB_hash_iF95K2";
+    conceredKB = m_ctx->HelperFindBySystemIdtf(name);
+    name = "nrel_system_identifier";
+    nrel_sys_id = m_ctx->HelperFindBySystemIdtf(name);
 
-//    ScIterator3Ptr it = m_ctx->Iterator3(graph,
-//                                         ScType::EdgeAccessConstPosPerm,
-//                                         ScType::NodeConst);
-    ScIterator3Ptr it = m_ctx->Iterator3(graph,
+    ScIterator3Ptr it = m_ctx->Iterator3(conceredKB,
                                          ScType::EdgeAccessConstPosPerm,
                                          ScType::Const);
     auto x = new std::string("");
@@ -122,7 +123,13 @@ void run_test()
             }
         }
     }
+    fprintf(f, "\n");
+    for (auto & alias : aliasVector) {
+        fprintf(f, "@edge_alias_%d = %d", alias.getId(), alias.getAddr().Hash());
+        fprintf(f, ";\n");
+    }
     nodeVector.clear();
+    aliasVector.clear();
     fclose(f);
     f = fopen("/home/alexander/Desktop/KnowledgeDumpLinks.scs", "w");
     for (auto & item : linkVector) {
@@ -146,12 +153,47 @@ bool printEl2(ScAddr element, string *strBuilder) {
         catch (...) {
             strBuilder->append("fail");
         }
-        isPrinted = true;
+        return true;
     }
     if (type == ScType::LinkConst) {
         strBuilder->append("..").append(to_string(getElementIdByAddr(element)));
-        isPrinted = true;
+        return true;
     }
+    string connector;
+    if (type == ScType::EdgeDCommonConst) connector = "=>";
+    if (type == ScType::EdgeDCommonVar) connector = "_=>";
+    if (type == ScType::EdgeUCommonConst) connector = "<=>";
+    if (type == ScType::EdgeUCommonVar) connector = "_<=>";
+    if (type == ScType::EdgeAccess) connector = "..>";
+    if (type == ScType::EdgeAccessConstPosPerm) connector = "->";
+    if (type == ScType::EdgeAccessVarPosPerm) connector = "_->";
+    if (type == ScType::EdgeAccessConstNegPerm) connector = "-|>";
+    if (type == ScType::EdgeAccessVarNegPerm) connector = "_-|>";
+    if (type == ScType::EdgeAccessConstFuzPerm) connector = "-/>";
+    if (type == ScType::EdgeAccessVarFuzPerm) connector = "_-/>";
+    if (type == ScType::EdgeAccessConstPosTemp) connector = "~>";
+    if (type == ScType::EdgeAccessVarPosTemp) connector = "_~>";
+    if (type == ScType::EdgeAccessConstNegTemp) connector = "~|>";
+    if (type == ScType::EdgeAccessVarNegTemp) connector = "_~|>";
+    if (type == ScType::EdgeAccessConstFuzTemp) connector = "~/>";
+    if (type == ScType::EdgeAccessVarFuzTemp) connector = "_~/>";
+    if (!connector.empty()) {
+        strBuilder->append("@edge_alias_").append(to_string(getElementIdByAddr(element)));
+        aliasVector.emplace_back(element, getElementIdByAddr(element));
+        return true;
+    }
+    try {
+        string idtf = m_ctx -> HelperGetSystemIdtf(element);
+        if (!idtf.empty()) {
+            strBuilder->append(idtf);
+        } else {
+            strBuilder->append("..").append(to_string(getElementIdByAddr(element)));
+        }
+    }
+    catch (...) {
+        strBuilder->append("fail");
+    }
+    isPrinted = true;
     return isPrinted;
 }
 
@@ -160,30 +202,14 @@ void printEdge(ScAddr element, string connector, Node *node, string *strBuilder)
     ScAddr elem2 = m_ctx -> GetEdgeTarget(element);
     strBuilder->append("(");
 
-//    if (isAddrExist(elem1)) {
-//        int x = getElementIdByAddr(elem1);
-//        //if 0, than element have system ID (no ..)
-//        if (x!=0) {
-//            strBuilder->append("..").append(to_string(x));
-//        }
-//        else {
-//            printEl2(elem1, strBuilder);
-//        }
-//    }
-//    strBuilder->append(connector);
-//    if (isAddrExist(elem2)) {
-//        int x = getElementIdByAddr(elem2);
-//        if (x!=0) {
-//            strBuilder->append("..").append(to_string(x));
-//        }
-//        else {
-//            printEl2(elem2, strBuilder);
-//        }
-//    }
     //todo все полная ересь, переписать
     if (!printEl(elem1, strBuilder)) {
+        //if 0, than element have system ID (no ..)
         int x = getElementIdByAddr(elem1);
         if (x!=0) {
+            if (x == -1) {
+                printEl(elem1, strBuilder);
+            }
             strBuilder->append("..").append(to_string(x));
         }
         else {
@@ -192,6 +218,7 @@ void printEdge(ScAddr element, string connector, Node *node, string *strBuilder)
     }
     strBuilder->append(connector);
     if (!printEl(elem2, strBuilder)) {
+        //if 0, than element have system ID (no ..)
         int x = getElementIdByAddr(elem2);
         if (x!=0) {
             strBuilder->append("..").append(to_string(x));
@@ -212,7 +239,7 @@ bool printEl(ScAddr element, string* strBuilder)
     if (isAddrExist(element)) {
         return answer;
     }
-    Node *node = NULL;
+    Node *node = nullptr;
     ScType type = m_ctx->GetElementType(element);
     if ((type == ScType::NodeConst) | (type == ScType::NodeConstStruct)) {
         try {
@@ -231,6 +258,7 @@ bool printEl(ScAddr element, string* strBuilder)
                 uniqId++;
                 answer = true;
             }
+            return answer;
         }
         catch (...) {
             strBuilder->append("fail");
@@ -245,8 +273,9 @@ bool printEl(ScAddr element, string* strBuilder)
         nodeVector.push_back(*node);
         uniqId++;
         answer = true;
+        return answer;
     }
-    string connector = "";
+    string connector;
     if (type == ScType::EdgeDCommonConst) connector = "=>";
     if (type == ScType::EdgeDCommonVar) connector = "_=>";
     if (type == ScType::EdgeUCommonConst) connector = "<=>";
@@ -264,7 +293,7 @@ bool printEl(ScAddr element, string* strBuilder)
     if (type == ScType::EdgeAccessVarNegTemp) connector = "_~|>";
     if (type == ScType::EdgeAccessConstFuzTemp) connector = "~/>";
     if (type == ScType::EdgeAccessVarFuzTemp) connector = "_~/>";
-    if (connector != "") {
+    if (!connector.empty()) {
         printEdge(element, connector, node, strBuilder);
         answer = true;
         return answer;
@@ -278,6 +307,26 @@ bool printEl(ScAddr element, string* strBuilder)
 //        if (type == ScType::NodeConstAbstract) nodeVector.at(nodeVector.size()-1).addType("sc_node_abstract");
 //        if (type == ScType::NodeConstMaterial) nodeVector.at(nodeVector.size()-1).addType("sc_node_material");
 //    }
+    try {
+        string idtf = m_ctx -> HelperGetSystemIdtf(element);
+        if (!idtf.empty()) {
+            strBuilder->append(idtf);
+            node = new Node(element, 0);
+            nodeVector.push_back(*node);
+            answer = true;
+        }
+        else
+        {
+            node = new Node(element, uniqId);
+            nodeVector.push_back(*node);
+            strBuilder->append("..").append(to_string(uniqId));
+            uniqId++;
+            answer = true;
+        }
+    }
+    catch (...) {
+        strBuilder->append("fail");
+    }
     return answer;
 }
 
@@ -313,7 +362,7 @@ int main()
     m_ctx.reset(new ScMemoryContext(sc_access_lvl_make_max, "sc_dumper"));
 
     uniqId = 1;
-    run_test();
+    run_dump();
     m_ctx.reset();
     ScMemory::Shutdown(true);
 

@@ -20,7 +20,10 @@ bool ScSet::Append(ScAddr const & elAddr)
   if (!HasElement(elAddr)) {
       ScAddr concertedKB = m_context->HelperFindBySystemIdtf("concertedKB_hash_iF95K2");
       ScAddr x = m_context->CreateEdge(ScType::EdgeAccessConstPosPerm, m_addr, elAddr);
-      m_context->CreateEdge(ScType::EdgeAccessConstPosPerm, concertedKB, x);
+      bool isAddToRoot = false;
+      if (isAddToRoot) {
+          m_context->CreateEdge(ScType::EdgeAccessConstPosPerm, concertedKB, x);
+      }
       return x.IsValid();
   }
 

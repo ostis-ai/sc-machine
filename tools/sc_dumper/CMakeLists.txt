@@ -18,7 +18,7 @@ else()
             )
 endif (${WIN32})
 
-add_executable(sc_dumper ${SOURCES})
+add_executable(sc_dumper ${SOURCES} src/model/Alias.cpp src/model/Alias.h)
 target_include_directories(sc_dumper
         PRIVATE ${SC_MEMORY_SRC}
         PRIVATE ${GLIB2_INCLUDE_DIRS}

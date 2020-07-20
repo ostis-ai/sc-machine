@@ -28,8 +28,8 @@ protected:
   {
     m_kNrelSCsGlobalIdtf = m_ctx.HelperResolveSystemIdtf("nrel_scs_global_idtf", ScType::NodeConstNoRole);
     SC_ASSERT(m_kNrelSCsGlobalIdtf.IsValid(), ());
-    createConcertedKB();
     this->isAddToRoot=isAddToRoot;
+    this->concertedKB = m_ctx.HelperFindBySystemIdtf(concertedKBName);
   }
 
   void operator() (scs::Parser const & parser)
@@ -135,14 +135,6 @@ private:
 
     return result;
   }
-
-    void createConcertedKB() {
-        this->concertedKB = m_ctx.HelperFindBySystemIdtf(concertedKBName);
-        if (!this->concertedKB.IsValid()) {
-            this->concertedKB = m_ctx.CreateNode(ScType::NodeStruct);
-            m_ctx.HelperSetSystemIdtf(concertedKBName, this->concertedKB);
-        }
-    }
 
   ScAddr ResolveElement(scs::ParsedElement const & el)
   {
