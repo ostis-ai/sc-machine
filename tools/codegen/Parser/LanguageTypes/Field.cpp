@@ -44,7 +44,7 @@ std::string Field::GetForceType(MetaDataManager const & metaData)
   if (metaData.HasProperty(Props::ForceCreate))
   {
     std::string const value = metaData.GetNativeString(Props::ForceCreate);
-    return value.empty() ? "ScType::DumpElement" : value;
+    return value.empty() ? "ScType::Node" : value;
   }
 
   return "";

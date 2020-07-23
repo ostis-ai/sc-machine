@@ -18,13 +18,15 @@
 using namespace std;
 
 bool printEl(ScAddr element, string *strBuilder);
-bool printEl2(ScAddr element, string *strBuilder);
-void printEdge(ScAddr element, string connector, DumpElement* dumpElement, string *strBuilder);
+bool printEl3(ScAddr element, string *strBuilder);
+bool printElFinal(ScAddr element, string *strBuilder);
+void printEdge(ScAddr element, const string& connector, DumpElement* dumpElement, string *strBuilder);
 string printContent(ScAddr element);
 bool checkLinkFormat(ScAddr element, string *format);
-sc_char *saveContentFile(ScAddr element, string data, string format);
+sc_char *saveContentFile(ScAddr element, string data, const string& format);
 bool isAddrExist(ScAddr addr);
 int getElementIdByAddr(ScAddr addr);
 bool isEdge(ScAddr addr);
+string processAlias(string line);
 
 #endif //SC_MACHINE_DUMPER_H

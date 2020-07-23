@@ -16,3 +16,11 @@ ScAddr Alias::getAddr() {
 int Alias::getId() {
     return this->id;
 }
+
+std::string Alias::getEdge() {
+    return this->edge;
+}
+
+void Alias::setEdge(std::string edge) {
+    this->edge = edge;
+}

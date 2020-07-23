@@ -204,7 +204,7 @@ ElementHandle::ElementHandle(ElementID id, bool isLocal)
 
 ElementID ElementHandle::operator * () const
 {
-  //SC_ASSERT(IsValid(), ());
+  SC_ASSERT(IsValid(), ());
   return m_id;
 }
 

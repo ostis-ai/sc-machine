@@ -706,7 +706,7 @@ There are a list of element type keynodes, that can be used to specify type of a
 
 | Keynode                           | Equal sc-type                       | Equal SCg-element
 | --------------------------------- | ----------------------------------- | --------------
-| sc_node                           | ScType::DumpElement                        | ![SCg-edge](../images/scg/scg_node.png)
+| sc_node                           | ScType::Node                        | ![SCg-edge](../images/scg/scg_node.png)
 | sc_link                           | ScType::Link                        | ![SCg-edge](../images/scg/scg_link.png)
 | sc_edge_dcommon                   | ScType::EdgeDCommon                 | ![SCg-edge](../images/scg/scg_edge_common_orient.png)
 | sc_edge_ucommon                   | ScType::EdgeUCommon                 | ![SCg-edge](../images/scg/scg_edge_common.png)

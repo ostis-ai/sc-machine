@@ -39,7 +39,7 @@ struct _sc_content
  * Each element identifier contains two numbers:
  * segment identifier and element identifier. Element
  * identifier is unique for specified segment.
- * DumpElement also contains information about const and struct types.
+ * Node also contains information about const and struct types.
  * It store as a one char for each of types.
  * Each node have a pointer to content assigned with it. If pointer is null,
  * then node haven't any content data.

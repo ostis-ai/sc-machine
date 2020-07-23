@@ -14,7 +14,6 @@ using namespace std;
 
 std::unique_ptr<ScMemoryContext> m_ctx;
 ScAddr conceredKB;
-ScAddr nrel_sys_id;
 
 vector<DumpElement> nodeVector;
 vector<DumpElement> edgeVector;
@@ -64,7 +63,7 @@ bool checkLinkFormat(ScAddr element, string *format) {
     return result;
 }
 
-sc_char *saveContentFile(ScAddr element, string data, string format) {
+sc_char *saveContentFile(ScAddr element, string data, const string& format) {
     string filename = "content_";
     string answer = "file://content/";
     filename.append(to_string(element.Hash()));
@@ -89,14 +88,14 @@ void run_dump()
     f = fopen("/home/alexander/Desktop/KnowledgeDump.scs", "w");
     string name = "concertedKB_hash_iF95K2";
     conceredKB = m_ctx->HelperFindBySystemIdtf(name);
-    name = "nrel_system_identifier";
-    nrel_sys_id = m_ctx->HelperFindBySystemIdtf(name);
+
+    vector<string> outputLines;
+    auto x = new std::string("");
 
     //print all constants
     ScIterator3Ptr it = m_ctx->Iterator3(conceredKB,
                                          ScType::EdgeAccessConstPosPerm,
                                          ScType::Const);
-    auto x = new std::string("");
     while (it->Next()) {
         ScAddr t_arc =it->Get(2);
         x->clear();
@@ -105,11 +104,11 @@ void run_dump()
             x2.append(";;\n");
             size_t found = x2.find("nrel_system_identifier");
             if (found == std::string::npos) {
-                fprintf(f, "%s", x2.c_str());
+                outputLines.push_back(x2);
             }
         }
     }
-    fprintf(f, "\n");
+    outputLines.emplace_back("\n");
     //print all vars
     it = m_ctx->Iterator3(conceredKB,
                           ScType::EdgeAccessConstPosPerm,
@@ -122,15 +121,28 @@ void run_dump()
             x2.append(";;\n");
             size_t found = x2.find("nrel_system_identifier");
             if (found == std::string::npos) {
-                fprintf(f, "%s", x2.c_str());
+                outputLines.push_back(x2);
             }
         }
     }
+    //print all aliases
+    for (auto & alias : aliasVector) {
+        //fprintf(f, "@edge_alias_%d = %lu", alias.getId(), alias.getAddr().Hash());
+        x->clear();
+        if (printEl3(alias.getAddr(), x)) {
+            fprintf(f, "@edge_alias_%d = %s;;\n", alias.getId(), x->c_str());
+            alias.setEdge(*x);
+        }
+    }
     fprintf(f, "\n");
+    //print all outputLines
+    for (auto & line : outputLines) {
+        fprintf(f, "%s", processAlias(line).c_str());
+    }
     //print all node atributes
     for (auto & node : nodeVector) {
         x->clear();
-        if (printEl2(node.getAddr(), x)) {
+        if (printElFinal(node.getAddr(), x)) {
             if (!node.getTypes().empty()) {
                 fprintf(f, "%s", x->c_str());
             }
@@ -142,15 +154,10 @@ void run_dump()
             }
         }
     }
-    fprintf(f, "\n");
-    //print all aliases
-    for (auto & alias : aliasVector) {
-        fprintf(f, "@edge_alias_%d = %d", alias.getId(), alias.getAddr().Hash());
-        fprintf(f, ";\n");
-    }
     nodeVector.clear();
     edgeVector.clear();
     aliasVector.clear();
+    outputLines.clear();
     fclose(f);
     f = fopen("/home/alexander/Desktop/KnowledgeDumpLinks.scs", "w");
     for (auto & item : linkVector) {
@@ -159,10 +166,10 @@ void run_dump()
     fclose(f);
 }
 
-bool printEl2(ScAddr element, string *strBuilder) {
+bool printElFinal(ScAddr element, string *strBuilder) {
     bool isPrinted;
     ScType type = m_ctx->GetElementType(element);
-    if ((type == ScType::NodeConst) | (type == ScType::NodeConstStruct)) {
+    if (type.IsNode()) {
         try {
             string idtf = m_ctx -> HelperGetSystemIdtf(element);
             if (!idtf.empty()) {
@@ -176,29 +183,11 @@ bool printEl2(ScAddr element, string *strBuilder) {
         }
         return true;
     }
-    if (type == ScType::LinkConst) {
+    if (type.IsLink()) {
         strBuilder->append("..").append(to_string(getElementIdByAddr(element)));
         return true;
     }
-    string connector;
-    if (type == ScType::EdgeDCommonConst) connector = "=>";
-    if (type == ScType::EdgeDCommonVar) connector = "_=>";
-    if (type == ScType::EdgeUCommonConst) connector = "<=>";
-    if (type == ScType::EdgeUCommonVar) connector = "_<=>";
-    if (type == ScType::EdgeAccess) connector = "..>";
-    if (type == ScType::EdgeAccessConstPosPerm) connector = "->";
-    if (type == ScType::EdgeAccessVarPosPerm) connector = "_->";
-    if (type == ScType::EdgeAccessConstNegPerm) connector = "-|>";
-    if (type == ScType::EdgeAccessVarNegPerm) connector = "_-|>";
-    if (type == ScType::EdgeAccessConstFuzPerm) connector = "-/>";
-    if (type == ScType::EdgeAccessVarFuzPerm) connector = "_-/>";
-    if (type == ScType::EdgeAccessConstPosTemp) connector = "~>";
-    if (type == ScType::EdgeAccessVarPosTemp) connector = "_~>";
-    if (type == ScType::EdgeAccessConstNegTemp) connector = "~|>";
-    if (type == ScType::EdgeAccessVarNegTemp) connector = "_~|>";
-    if (type == ScType::EdgeAccessConstFuzTemp) connector = "~/>";
-    if (type == ScType::EdgeAccessVarFuzTemp) connector = "_~/>";
-    if (!connector.empty()) {
+    if (type.IsEdge()) {
         strBuilder->append("@edge_alias_").append(to_string(getElementIdByAddr(element)));
         aliasVector.emplace_back(element, getElementIdByAddr(element));
         return true;
@@ -219,7 +208,7 @@ bool printEl2(ScAddr element, string *strBuilder) {
     return isPrinted;
 }
 
-void printEdge(ScAddr element, string connector, DumpElement *dumpElement, string *strBuilder) {
+void printEdge(ScAddr element, const string& connector, DumpElement *dumpElement, string *strBuilder) {
     ScAddr elem1 = m_ctx -> GetEdgeSource(element);
     ScAddr elem2 = m_ctx -> GetEdgeTarget(element);
     strBuilder->append("(");
@@ -237,7 +226,7 @@ void printEdge(ScAddr element, string connector, DumpElement *dumpElement, strin
             }
         }
         else {
-            printEl2(elem1, strBuilder);
+            printElFinal(elem1, strBuilder);
         }
     }
     strBuilder->append(connector);
@@ -254,7 +243,7 @@ void printEdge(ScAddr element, string connector, DumpElement *dumpElement, strin
             }
         }
         else {
-            printEl2(elem2, strBuilder);
+            printElFinal(elem2, strBuilder);
         }
     }
     strBuilder->append(")");
@@ -269,9 +258,14 @@ bool printEl(ScAddr element, string* strBuilder)
     if (isAddrExist(element)) {
         return answer;
     }
+    return printEl3(element, strBuilder);
+}
+
+bool printEl3(ScAddr element, string* strBuilder)
+{
+    bool answer = false;
     DumpElement *dumpElement = nullptr;
     ScType type = m_ctx->GetElementType(element);
-    //if ((type == ScType::NodeConst) | (type == ScType::NodeConstStruct)) {
     if (type.IsNode()) {
         try {
             string idtf = m_ctx -> HelperGetSystemIdtf(element);
@@ -289,13 +283,20 @@ bool printEl(ScAddr element, string* strBuilder)
                 uniqId++;
                 answer = true;
             }
+            if ((type == ScType::NodeConstStruct) | (type == ScType::NodeVarStruct)) nodeVector.at(nodeVector.size()-1).addType("sc_node_struct");
+            if ((type == ScType::NodeConstTuple) | (type == ScType::NodeVarTuple)) nodeVector.at(nodeVector.size()-1).addType("sc_node_not_binary_tuple");
+            if ((type == ScType::NodeConstRole) | (type == ScType::NodeVarRole)) nodeVector.at(nodeVector.size()-1).addType("sc_node_role_relation");
+            if ((type == ScType::NodeConstNoRole) | (type == ScType::NodeVarNoRole)) nodeVector.at(nodeVector.size()-1).addType("sc_node_norole_relation");
+            if ((type == ScType::NodeConstClass) | (type == ScType::NodeVarClass)) nodeVector.at(nodeVector.size()-1).addType("sc_node_not_relation");
+            if ((type == ScType::NodeConstAbstract) | (type == ScType::NodeVarAbstract)) nodeVector.at(nodeVector.size()-1).addType("sc_node_abstract");
+            if ((type == ScType::NodeConstMaterial) | (type == ScType::NodeVarMaterial)) nodeVector.at(nodeVector.size()-1).addType("sc_node_material");
             return answer;
         }
         catch (...) {
             strBuilder->append("fail");
         }
     }
-    if (type == ScType::LinkConst) {
+    if (type.IsLink()) {
         strBuilder->append("..").append(to_string(uniqId));
         string newLink;
         newLink.append("..").append(to_string(uniqId)).append(" = [").append(printContent(element)).append("]");
@@ -329,15 +330,6 @@ bool printEl(ScAddr element, string* strBuilder)
         answer = true;
         return answer;
     }
-//    if (dumpElement!= NULL) {
-//        if (type == ScType::NodeConstStruct) nodeVector.at(nodeVector.size()-1).addType("sc_node_struct");
-//        if (type == ScType::NodeConstTuple) nodeVector.at(nodeVector.size()-1).addType("sc_node_not_binary_tuple");
-//        if (type == ScType::NodeConstRole) nodeVector.at(nodeVector.size()-1).addType("sc_node_role_relation");
-//        if (type == ScType::NodeConstNoRole) nodeVector.at(nodeVector.size()-1).addType("sc_node_norole_relation");
-//        if (type == ScType::NodeConstClass) nodeVector.at(nodeVector.size()-1).addType("sc_node_not_relation");
-//        if (type == ScType::NodeConstAbstract) nodeVector.at(nodeVector.size()-1).addType("sc_node_abstract");
-//        if (type == ScType::NodeConstMaterial) nodeVector.at(nodeVector.size()-1).addType("sc_node_material");
-//    }
     //todo THIS BLOCK IS FOR UNKNOWN TYPE
     try {
         string idtf = m_ctx -> HelperGetSystemIdtf(element);
@@ -402,6 +394,17 @@ bool isEdge(ScAddr addr) {
     return false;
 }
 
+string processAlias(string line) {
+    for (auto & alias : aliasVector) {
+        size_t found = 0;
+        while ((found = line.find(alias.getEdge())) != string::npos) {
+            string x = "@edge_alias_";
+            line.replace(found, alias.getEdge().length(), x.append(to_string(alias.getId())));
+        }
+    }
+    return line;
+}
+
 int main()
 {
     sc_memory_params params;
@@ -420,4 +423,3 @@ int main()
 
     return 0;
 }
-

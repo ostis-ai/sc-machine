@@ -37,8 +37,8 @@ This class equal to `ScType` in C++. Methods of this class:
     you can create this class with input type combinations
     ```python
     type1 = ScType() # equal to ScType.Unknown
-    type2 = ScType.DumpElement # see more constants below
-    type3 = ScType.DumpElement | ScType.Const # equal to ScType.NodeConst
+    type2 = ScType.Node # see more constants below
+    type3 = ScType.Node | ScType.Const # equal to ScType.NodeConst
     ```
 
 ??? tip "IsValid()"
@@ -61,7 +61,7 @@ This class equal to `ScType` in C++. Methods of this class:
 ??? tip "\_\_or\_\_()"
     bitwise or operator `|`. Can be used like this:
     ```python
-    type1 = ScType.DumpElement
+    type1 = ScType.Node
     type2 = ScType.Const
 
     type3 = type1 | type2
@@ -72,7 +72,7 @@ This class equal to `ScType` in C++. Methods of this class:
     bitwise and operator `&`. Can be used like this:
     ```python
     type1 = ScType.NodeConst
-    type2 = ScType.DumpElement
+    type2 = ScType.Node
 
     type3 = type1 & type2
 
@@ -103,7 +103,7 @@ This class equal to `ScType` in C++. Methods of this class:
 ??? tip "IsUnknown()"
     if type is not `Unknown`, then returns `True`; otherwise - `False`
     ```python
-    type1 = ScType.DumpElement
+    type1 = ScType.Node
     type1.IsUnknown() # return True
 
     type2 = ScType()
@@ -119,7 +119,7 @@ This class equal to `ScType` in C++. Methods of this class:
     type2 = ScType.NodeVar()
     type2.IsConst() # return False
 
-    type3 = ScType.DumpElement()
+    type3 = ScType.Node()
     type3.IsConst() # return False
 
     type4 = ScType.NodeConst()
@@ -135,7 +135,7 @@ This class equal to `ScType` in C++. Methods of this class:
     type2 = ScType.NodeVar()
     type2.IsVar() # returns True
 
-    type3= ScType.DumpElement()
+    type3= ScType.Node()
     type3.IsVar() # returns False
 
     type4 = ScType.NodeConst
@@ -145,7 +145,7 @@ This class equal to `ScType` in C++. Methods of this class:
 ??? tip "ToInt()"
     returns integer, that represents a type. Useful for debug purposes
 
-**There are some predefined types**. You can find them in [types table](../cpp/el_types.md) (see C++ table). In **Python** you should use `ScType.DumpElement` instead of `ScType::DumpElement`
+**There are some predefined types**. You can find them in [types table](../cpp/el_types.md) (see C++ table). In **Python** you should use `ScType.Node` instead of `ScType::Node`
 
 
 ## ScIterator3
@@ -485,7 +485,7 @@ There are methods of this class:
                 ScType.EdgeAccessConstPosPerm,
                 addr2,
                 ScType.EdgeAccessVarPosTemp,
-                ScType.DumpElement)
+                ScType.Node)
     while itFAFAA.Next():
       pass # process iterated constructions there
 
@@ -507,7 +507,7 @@ There are methods of this class:
                 ScType.EdgeAccessConstPosPerm,
                 ScType.NodeVar,
                 ScType.EdgeAccessVarPosTemp,
-                ScType.DumpElement)
+                ScType.Node)
     while itFAAAA.Next():
       pass # process iterated constructions there
 
@@ -528,7 +528,7 @@ There are methods of this class:
                 ScType.EdgeAccessConstPosPerm,
                 addr2,
                 ScType.EdgeAccessVarPosTemp,
-                ScType.DumpElement)
+                ScType.Node)
     while itAAFAA.Next():
       pass # process iterated constructions there
     ```
