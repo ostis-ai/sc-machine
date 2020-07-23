@@ -961,7 +961,7 @@ BOOST_PYTHON_MODULE(sc)
     .def_readonly("Unknown", &ScType::Unknown)
     .def_readonly("Const", &ScType::Const)
     .def_readonly("Var", &ScType::Var)
-    .def_readonly("Node", &ScType::Node)
+    .def_readonly("DumpElement", &ScType::Node)
     .def_readonly("Link", &ScType::Link)
 
     .def_readonly("EdgeUCommon", &ScType::EdgeUCommon)

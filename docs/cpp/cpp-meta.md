@@ -176,7 +176,7 @@ ScTemplate m_testTemplate;
     <td>
       <strong>Arguments:</strong>
       <ul>
-        <li>[<strong>optional</strong>] type of sc-element. Any value from `ScType::Node...`</li>
+        <li>[<strong>optional</strong>] type of sc-element. Any value from `ScType::DumpElement...`</li>
       </ul>
       <br/>Used just with <strong>Keynode</strong> property. Using of this property force sc-element creation, if it didn't found by system identifier.
       <hr/>
@@ -184,7 +184,7 @@ ScTemplate m_testTemplate;
 SC_PROPERTY(Keynode("device"), ForceCreate(ScType::NodeConstClass))
 static ScAddr m_device;
 
-SC_PROPERTY(Keynode("device"), ForceCreate) // default value ScType::Node
+SC_PROPERTY(Keynode("device"), ForceCreate) // default value ScType::DumpElement
 static ScAddr m_node;
       </code></pre>
     </td>

@@ -46,7 +46,7 @@ Segment size: 65535 elements
 	Arcs: 0 (0 deleted)
 	Empty: 0
 ---
---- Node creation ---
+--- DumpElement creation ---
 Time: 0.977290 s
 Nodes per second: 5116188.644108
 Segments count: 77
@@ -55,7 +55,7 @@ Segments count: 77
 	Arcs: 0 (0 deleted)
 	Empty: 46195
 ---
---- Node segmentation ---
+--- DumpElement segmentation ---
 Prepare test...
 Run test...
 Time: 0.780718 s
@@ -145,7 +145,7 @@ Segment size: 65535 elements
 	Arcs: 0 (0 deleted)
 	Empty: 0
 ---
---- Node creation ---
+--- DumpElement creation ---
 Time: 0.999375 s
 Nodes per second: 5003126.954346
 Segments count: 77
@@ -154,7 +154,7 @@ Segments count: 77
 	Arcs: 0 (0 deleted)
 	Empty: 46195
 ---
---- Node segmentation ---
+--- DumpElement segmentation ---
 Prepare test...
 Run test...
 Time: 0.851788 s
@@ -233,7 +233,7 @@ Segment size: 65535 elements
 	Arcs: 0 (0 deleted)
 	Empty: 0
 ---
---- Node creation ---
+--- DumpElement creation ---
 Time: 0.602897 s
 Nodes per second: 8293290.562069
 Segments count: 77
@@ -242,7 +242,7 @@ Segments count: 77
 	Arcs: 0 (0 deleted)
 	Empty: 46195
 ---
---- Node segmentation ---
+--- DumpElement segmentation ---
 Prepare test...
 Run test...
 Time: 0.607835 s
@@ -294,7 +294,7 @@ Segment size: 65535 elements
 	Arcs: 0 (0 deleted)
 	Empty: 0
 ---
---- Node creation ---
+--- DumpElement creation ---
 Time: 0.812629 s
 Nodes per second: 6152869.267526
 Segments count: 77
@@ -303,7 +303,7 @@ Segments count: 77
 	Arcs: 0 (0 deleted)
 	Empty: 46195
 ---
---- Node segmentation ---
+--- DumpElement segmentation ---
 Prepare test...
 Run test...
 Time: 0.834599 s

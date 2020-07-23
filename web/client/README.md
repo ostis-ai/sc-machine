@@ -75,7 +75,7 @@ Method of node generation with specified system and main identifier:
 ```js
 public async CreateNodeWithMainIdentifier(identifier: string): Promise<ScAddr> {
     let construction = new ScConstruction();
-    construction.CreateNode(ScType.Node, 'node')
+    construction.CreateNode(ScType.DumpElement, 'node')
     construction.CreateLink(ScType.Link, new ScLinkContent(identifier, ScLinkContentType.String), 'link')
     construction.CreateEdge(ScType.EdgeDCommonConst, 'node', 'link', 'edge')
     construction.CreateEdge(ScType.EdgeAccessConstPosPerm, this.keynodes.kNrelMainIdtf, 'edge');

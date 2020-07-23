@@ -5,7 +5,7 @@
 #include "dumper.h"
 #include <cstdio>
 #include <unistd.h>
-#include "model/Node.h"
+#include "model/DumpElement.h"
 #include "model/Alias.h"
 #include <vector>
 #include <sc-core/sc_helper.h>
@@ -16,7 +16,8 @@ std::unique_ptr<ScMemoryContext> m_ctx;
 ScAddr conceredKB;
 ScAddr nrel_sys_id;
 
-vector<Node> nodeVector;
+vector<DumpElement> nodeVector;
+vector<DumpElement> edgeVector;
 vector<Alias> aliasVector;
 vector<string> linkVector;
 int uniqId;
@@ -91,10 +92,28 @@ void run_dump()
     name = "nrel_system_identifier";
     nrel_sys_id = m_ctx->HelperFindBySystemIdtf(name);
 
+    //print all constants
     ScIterator3Ptr it = m_ctx->Iterator3(conceredKB,
                                          ScType::EdgeAccessConstPosPerm,
                                          ScType::Const);
     auto x = new std::string("");
+    while (it->Next()) {
+        ScAddr t_arc =it->Get(2);
+        x->clear();
+        if (printEl(t_arc, x)) {
+            string x2 = x->substr(1, x->size()-2);
+            x2.append(";;\n");
+            size_t found = x2.find("nrel_system_identifier");
+            if (found == std::string::npos) {
+                fprintf(f, "%s", x2.c_str());
+            }
+        }
+    }
+    fprintf(f, "\n");
+    //print all vars
+    it = m_ctx->Iterator3(conceredKB,
+                          ScType::EdgeAccessConstPosPerm,
+                          ScType::Var);
     while (it->Next()) {
         ScAddr t_arc =it->Get(2);
         x->clear();
@@ -124,11 +143,13 @@ void run_dump()
         }
     }
     fprintf(f, "\n");
+    //print all aliases
     for (auto & alias : aliasVector) {
         fprintf(f, "@edge_alias_%d = %d", alias.getId(), alias.getAddr().Hash());
         fprintf(f, ";\n");
     }
     nodeVector.clear();
+    edgeVector.clear();
     aliasVector.clear();
     fclose(f);
     f = fopen("/home/alexander/Desktop/KnowledgeDumpLinks.scs", "w");
@@ -139,7 +160,7 @@ void run_dump()
 }
 
 bool printEl2(ScAddr element, string *strBuilder) {
-    bool isPrinted = false;
+    bool isPrinted;
     ScType type = m_ctx->GetElementType(element);
     if ((type == ScType::NodeConst) | (type == ScType::NodeConstStruct)) {
         try {
@@ -182,6 +203,7 @@ bool printEl2(ScAddr element, string *strBuilder) {
         aliasVector.emplace_back(element, getElementIdByAddr(element));
         return true;
     }
+    //todo THIS BLOCK IS FOR UNKNOWN TYPE
     try {
         string idtf = m_ctx -> HelperGetSystemIdtf(element);
         if (!idtf.empty()) {
@@ -197,20 +219,22 @@ bool printEl2(ScAddr element, string *strBuilder) {
     return isPrinted;
 }
 
-void printEdge(ScAddr element, string connector, Node *node, string *strBuilder) {
+void printEdge(ScAddr element, string connector, DumpElement *dumpElement, string *strBuilder) {
     ScAddr elem1 = m_ctx -> GetEdgeSource(element);
     ScAddr elem2 = m_ctx -> GetEdgeTarget(element);
     strBuilder->append("(");
 
-    //todo все полная ересь, переписать
     if (!printEl(elem1, strBuilder)) {
         //if 0, than element have system ID (no ..)
         int x = getElementIdByAddr(elem1);
         if (x!=0) {
-            if (x == -1) {
-                printEl(elem1, strBuilder);
+            if (isEdge(elem1)) {
+                strBuilder->append("@edge_alias_").append(to_string(x));
+                aliasVector.emplace_back(elem1, x);
             }
-            strBuilder->append("..").append(to_string(x));
+            else {
+                strBuilder->append("..").append(to_string(x));
+            }
         }
         else {
             printEl2(elem1, strBuilder);
@@ -221,15 +245,21 @@ void printEdge(ScAddr element, string connector, Node *node, string *strBuilder)
         //if 0, than element have system ID (no ..)
         int x = getElementIdByAddr(elem2);
         if (x!=0) {
-            strBuilder->append("..").append(to_string(x));
+            if (isEdge(elem2)) {
+                strBuilder->append("@edge_alias_").append(to_string(x));
+                aliasVector.emplace_back(elem2, x);
+            }
+            else {
+                strBuilder->append("..").append(to_string(x));
+            }
         }
         else {
             printEl2(elem2, strBuilder);
         }
     }
     strBuilder->append(")");
-    node = new Node(element, uniqId);
-    nodeVector.push_back(*node);
+    dumpElement = new DumpElement(element, uniqId);
+    edgeVector.push_back(*dumpElement);
     uniqId++;
 }
 
@@ -239,21 +269,22 @@ bool printEl(ScAddr element, string* strBuilder)
     if (isAddrExist(element)) {
         return answer;
     }
-    Node *node = nullptr;
+    DumpElement *dumpElement = nullptr;
     ScType type = m_ctx->GetElementType(element);
-    if ((type == ScType::NodeConst) | (type == ScType::NodeConstStruct)) {
+    //if ((type == ScType::NodeConst) | (type == ScType::NodeConstStruct)) {
+    if (type.IsNode()) {
         try {
             string idtf = m_ctx -> HelperGetSystemIdtf(element);
             if (!idtf.empty()) {
                 strBuilder->append(idtf);
-                node = new Node(element, 0);
-                nodeVector.push_back(*node);
+                dumpElement = new DumpElement(element, 0);
+                nodeVector.push_back(*dumpElement);
                 answer = true;
             }
             else
             {
-                node = new Node(element, uniqId);
-                nodeVector.push_back(*node);
+                dumpElement = new DumpElement(element, uniqId);
+                nodeVector.push_back(*dumpElement);
                 strBuilder->append("..").append(to_string(uniqId));
                 uniqId++;
                 answer = true;
@@ -269,8 +300,8 @@ bool printEl(ScAddr element, string* strBuilder)
         string newLink;
         newLink.append("..").append(to_string(uniqId)).append(" = [").append(printContent(element)).append("]");
         linkVector.push_back(newLink);
-        node = new Node(element, uniqId);
-        nodeVector.push_back(*node);
+        dumpElement = new DumpElement(element, uniqId);
+        nodeVector.push_back(*dumpElement);
         uniqId++;
         answer = true;
         return answer;
@@ -294,11 +325,11 @@ bool printEl(ScAddr element, string* strBuilder)
     if (type == ScType::EdgeAccessConstFuzTemp) connector = "~/>";
     if (type == ScType::EdgeAccessVarFuzTemp) connector = "_~/>";
     if (!connector.empty()) {
-        printEdge(element, connector, node, strBuilder);
+        printEdge(element, connector, dumpElement, strBuilder);
         answer = true;
         return answer;
     }
-//    if (node!= NULL) {
+//    if (dumpElement!= NULL) {
 //        if (type == ScType::NodeConstStruct) nodeVector.at(nodeVector.size()-1).addType("sc_node_struct");
 //        if (type == ScType::NodeConstTuple) nodeVector.at(nodeVector.size()-1).addType("sc_node_not_binary_tuple");
 //        if (type == ScType::NodeConstRole) nodeVector.at(nodeVector.size()-1).addType("sc_node_role_relation");
@@ -307,18 +338,19 @@ bool printEl(ScAddr element, string* strBuilder)
 //        if (type == ScType::NodeConstAbstract) nodeVector.at(nodeVector.size()-1).addType("sc_node_abstract");
 //        if (type == ScType::NodeConstMaterial) nodeVector.at(nodeVector.size()-1).addType("sc_node_material");
 //    }
+    //todo THIS BLOCK IS FOR UNKNOWN TYPE
     try {
         string idtf = m_ctx -> HelperGetSystemIdtf(element);
         if (!idtf.empty()) {
             strBuilder->append(idtf);
-            node = new Node(element, 0);
-            nodeVector.push_back(*node);
+            dumpElement = new DumpElement(element, 0);
+            nodeVector.push_back(*dumpElement);
             answer = true;
         }
         else
         {
-            node = new Node(element, uniqId);
-            nodeVector.push_back(*node);
+            dumpElement = new DumpElement(element, uniqId);
+            nodeVector.push_back(*dumpElement);
             strBuilder->append("..").append(to_string(uniqId));
             uniqId++;
             answer = true;
@@ -338,6 +370,12 @@ bool isAddrExist(ScAddr addr) {
             return answer;
         }
     }
+    for (auto & node : edgeVector) {
+        if (addr == node.getAddr()) {
+            answer = true;
+            return answer;
+        }
+    }
     return answer;
 }
 
@@ -347,7 +385,21 @@ int getElementIdByAddr(ScAddr addr) {
             return node.getId();
         }
     }
+    for (auto & edge : edgeVector) {
+        if (addr == edge.getAddr()) {
+            return edge.getId();
+        }
+    }
     return -1;
+}
+
+bool isEdge(ScAddr addr) {
+    for (auto & edge : edgeVector) {
+        if (addr == edge.getAddr()) {
+            return true;
+        }
+    }
+    return false;
 }
 
 int main()

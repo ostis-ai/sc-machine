@@ -12,7 +12,7 @@
   <tr>
     <td><img src="../../images/scg/scg_node.png"></img></td>
     <td>sc_type_node</td>
-    <td>ScType::Node</td>
+    <td>ScType::DumpElement</td>
   </tr>
 
   <tr>

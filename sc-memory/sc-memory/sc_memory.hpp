@@ -190,7 +190,7 @@ public:
   /* Trying to reosolve ScAddr by it system identifier. If element with specified identifier doesn't exist
    * and type is not empty, then it would be created with specified type.
    * Look at type parameter as ForceCreate flag, that contains type.
-   * Important: Type should be any of ScType::Node...
+   * Important: Type should be any of ScType::DumpElement...
    */
   SC_DEPRECATED(0.4.0, "Use should use ScMemoryContext::HelperResolveSystemIdtf(std::string const & sysIdtf, ScType const & type)")
   _SC_EXTERN bool HelperResolveSystemIdtf(std::string const & sysIdtf, ScAddr & outAddr, ScType const & type = ScType());

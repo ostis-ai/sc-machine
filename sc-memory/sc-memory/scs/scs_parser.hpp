@@ -142,6 +142,7 @@ protected:
   ElementHandle ProcessEmptyContour();
   void ProcessContourBegin();
   ElementHandle ProcessContourEnd();
+  ElementHandle ProcessContourEndWithJoin(ElementHandle const & source);
 
   void ProcessTriple(ElementHandle const & source, ElementHandle const & edge, ElementHandle const & target);
   void ProcessAssign(std::string const & alias, ElementHandle const & value);

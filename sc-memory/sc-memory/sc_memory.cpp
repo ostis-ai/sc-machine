@@ -388,7 +388,7 @@ ScAddr ScMemoryContext::HelperResolveSystemIdtf(std::string const & sysIdtf, ScT
     if (!type.IsNode())
     {
       SC_THROW_EXCEPTION(utils::ExceptionInvalidParams,
-                         "You should provide any of ScType::Node... value as a type");
+                         "You should provide any of ScType::DumpElement... value as a type");
     }
 
     resultAddr = CreateNode(type);
