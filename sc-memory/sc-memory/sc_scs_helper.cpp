@@ -47,20 +47,23 @@ protected:
       auto const & edge = parser.GetParsedElement(t.m_edge);
       auto const & trg = parser.GetParsedElement(t.m_target);
 
+        if (src.GetType().IsEdge() | trg.GetType().IsEdge()) {
+            continue;
+        }
+
       ScAddr const srcAddr = ResolveElement(src);
       ScAddr const trgAddr = ResolveElement(trg);
 
       SC_ASSERT(srcAddr.IsValid() && trgAddr.IsValid(), ());
-      if (!edge.GetType().IsEdge())
-      {
-        SC_THROW_EXCEPTION(utils::ExceptionInvalidType,
-                           "Edge in triple has incorrect type");
+      if (!edge.GetType().IsEdge()) {
+          SC_THROW_EXCEPTION(utils::ExceptionInvalidType,
+                             "Edge in triple has incorrect type");
       }
 
       ScAddr const edgeAddr = m_ctx.CreateEdge(edge.GetType(), srcAddr, trgAddr);
-        if (isAddToRoot) {
-            m_ctx.CreateEdge(ScType::EdgeAccessConstPosPerm, this->concertedKB, edgeAddr);
-        }
+      if (isAddToRoot) {
+          m_ctx.CreateEdge(ScType::EdgeAccessConstPosPerm, this->concertedKB, edgeAddr);
+      }
       SC_ASSERT(edgeAddr.IsValid(), ());
       m_idtfCache.insert(std::make_pair(edge.GetIdtf(), edgeAddr));
     }
@@ -157,6 +160,12 @@ private:
         result = FindBySCsGlobalIdtf(el.GetIdtf());
       }
 
+      if (isAddToRoot) {
+          if (el.GetIdtf() == "..edge_0") {
+              int x=1;
+          }
+      }
+
       // create new one
       if (!result.IsValid())
       {
@@ -176,8 +185,7 @@ private:
             }
           SetupLinkContent(result, el);
         }
-        else
-        {
+        else {
           SC_THROW_EXCEPTION(utils::ExceptionInvalidState, "Incorrect element type at this state");
         }
 

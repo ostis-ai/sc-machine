@@ -229,7 +229,7 @@ idtf_set returns [ElementHandle handle]
           APPEND_ATTRS($ctx->a1->items, edge);
         }
       }
-      |
+      internal_sentence_list[$ctx->i1->handle]?
 
       (';'
       a2=attr_list? i2=idtf_common
@@ -242,9 +242,10 @@ idtf_set returns [ElementHandle handle]
             APPEND_ATTRS($ctx->a2->items, edge);
           }
         }
-
+        internal_sentence_list[$ctx->i2->handle]?
       )*
     '}'
+
   ;
 
 idtf_common returns [ElementHandle handle]
@@ -294,7 +295,7 @@ internal_sentence [ElementHandle source]
         }
       }
     }
-    //| internal_sentence_list[source]
+    | internal_sentence_list[source]
   ;
 
 internal_sentence_list [ElementHandle source]
@@ -322,7 +323,6 @@ sentence_lvl_4_list_item [ElementHandle source]
           }
       }
     }
-    | internal_sentence_list[source]
   ;
 
 sentence_lvl_common
