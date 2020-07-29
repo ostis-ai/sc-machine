@@ -47,9 +47,9 @@ protected:
       auto const & edge = parser.GetParsedElement(t.m_edge);
       auto const & trg = parser.GetParsedElement(t.m_target);
 
-        if (src.GetType().IsEdge() | trg.GetType().IsEdge()) {
-            continue;
-        }
+//        if (src.GetType().IsEdge() | trg.GetType().IsEdge()) {
+//            continue;
+//        }
 
       ScAddr const srcAddr = ResolveElement(src);
       ScAddr const trgAddr = ResolveElement(trg);

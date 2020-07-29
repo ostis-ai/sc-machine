@@ -555,8 +555,8 @@ ElementHandle Parser::ProcessContourEnd()
         for (size_t i = ind.first; i < last; ++i)
             newElements.insert(ElementHandle(ElementID(i), false));
 
-        for (size_t i = ind.second; i < lastLocal; ++i)
-            newElements.insert(ElementHandle(ElementID(i), true));
+        //for (size_t i = ind.second; i < lastLocal; ++i)
+        //    newElements.insert(ElementHandle(ElementID(i), true));
 
         size_t const tripleFirst = m_contourTriplesStack.top();
         m_contourTriplesStack.pop();
