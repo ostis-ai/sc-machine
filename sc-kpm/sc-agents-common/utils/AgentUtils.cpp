@@ -11,7 +11,7 @@
 
 #include "AgentUtils.hpp"
 #include "IteratorUtils.hpp"
-#include "keynodes/coreKeynodes.hpp"
+#include "keynodes/CoreKeynodes.hpp"
 
 using namespace std;
 using namespace scAgentsCommon;

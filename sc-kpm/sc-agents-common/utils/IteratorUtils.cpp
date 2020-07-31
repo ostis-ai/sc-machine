@@ -85,38 +85,14 @@ ScIterator5Ptr IteratorUtils::getIterator5(
 
   ScIterator5Ptr iterator5;
   if (nodeIsStart)
+  {
     iterator5 = ms_context->Iterator5(node, arcType, ScType::Unknown, ScType::EdgeAccessConstPosPerm, relation);
+  }
   else
+  {
     iterator5 = ms_context->Iterator5(ScType::Unknown, arcType, node, ScType::EdgeAccessConstPosPerm, relation);
+  }
   return iterator5;
 }
 
-bool IteratorUtils::addSetToOutline(ScMemoryContext * ms_context, const ScAddr & set, const ScAddr & outline)
-{
-  if (!set.IsValid() || !outline.IsValid())
-    return false;
-
-  ScIterator3Ptr iterator3 = ms_context->Iterator3(set, ScType::EdgeAccessConstPosPerm, ScType::Unknown);
-  while (iterator3->Next())
-  {
-    ms_context->CreateEdge(ScType::EdgeAccessConstPosPerm, outline, iterator3->Get(1));
-    ms_context->CreateEdge(ScType::EdgeAccessConstPosPerm, outline, iterator3->Get(2));
-  }
-  return true;
-}
-
-bool IteratorUtils::addNodeWithOutRelationToOutline(ScMemoryContext * ms_context, const ScAddr & node,
-      ScAddr const & relation, ScAddr const & outline)
-{
-  if (!node.IsValid() || !relation.IsValid() || !outline.IsValid())
-    return false;
-
-  ScIterator5Ptr iterator5 = IteratorUtils::getIterator5(ms_context, node, relation);
-  while (iterator5->Next())
-  {
-    for (int i = 1; i < 5; i++)
-      ms_context->CreateEdge(ScType::EdgeAccessConstPosPerm, outline, iterator5->Get(i));
-  }
-  return true;
-}
 }

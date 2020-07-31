@@ -9,7 +9,7 @@
 #include <sc-memory/cpp/sc_addr.hpp>
 #include <sc-memory/cpp/sc_object.hpp>
 
-#include "../generated/coreKeynodes.generated.hpp"
+#include "sc-kpm/sc-agents-common/generated/CoreKeynodes.generated.hpp"
 
 namespace scAgentsCommon
 {
@@ -35,12 +35,6 @@ public:
 
   SC_PROPERTY(Keynode("question_finished_unsuccessfully"), ForceCreate)
   static ScAddr question_finished_unsuccessfully;
-
-  SC_PROPERTY(Keynode("question_use_logic_rule"), ForceCreate)
-  static ScAddr question_use_logic_rule;
-
-  SC_PROPERTY(Keynode("question_reverse_inference"), ForceCreate)
-  static ScAddr question_reverse_inference;
 
   SC_PROPERTY(Keynode("question_numbers_comparison"), ForceCreate)
   static ScAddr question_numbers_comparison;
@@ -72,6 +66,9 @@ public:
   SC_PROPERTY(Keynode("rrel_2"), ForceCreate)
   static ScAddr rrel_2;
 
+  SC_PROPERTY(Keynode("rrel_3"), ForceCreate)
+  static ScAddr rrel_3;
+
   SC_PROPERTY(Keynode("rrel_last_added_sc_element"), ForceCreate)
   static ScAddr rrel_last_added_sc_element;
 
@@ -95,9 +92,6 @@ public:
 
   SC_PROPERTY(Keynode("rrel_main_key_sc_element"), ForceCreate)
   static ScAddr rrel_main_key_sc_element;
-
-  SC_PROPERTY(Keynode("rrel_solver_key_sc_element"), ForceCreate)
-  static ScAddr rrel_solver_key_sc_element;
 
   SC_PROPERTY(Keynode("nrel_implication"), ForceCreate)
   static ScAddr nrel_implication;

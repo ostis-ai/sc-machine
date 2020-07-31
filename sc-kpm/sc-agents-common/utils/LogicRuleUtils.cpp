@@ -7,9 +7,9 @@
 #include <sc-memory/cpp/sc_memory.hpp>
 
 #include "AgentUtils.hpp"
-#include "keynodes/coreKeynodes.hpp"
 #include "IteratorUtils.hpp"
 #include "LogicRuleUtils.hpp"
+#include "keynodes/CoreKeynodes.hpp"
 
 
 using namespace std;
