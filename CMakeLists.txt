@@ -210,7 +210,7 @@ add_subdirectory(${SC_MACHINE_ROOT}/sc-kpm)
 add_subdirectory(${SC_MACHINE_ROOT}/sc-network)
 add_subdirectory(${SC_MACHINE_ROOT}/tools)
 
-set(SC_EXTENSIONS_ROOT "${SC_MACHINE_ROOT}/../extensions")
+set(SC_EXTENSIONS_ROOT "${SC_MACHINE_ROOT}/../../extensions")
 if (EXISTS ${SC_EXTENSIONS_ROOT})
 	FILE(GLOB TEST ${SC_EXTENSIONS_ROOT}/*)
 	foreach(SUBDIR ${TEST})
