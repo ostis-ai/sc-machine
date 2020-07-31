@@ -16,8 +16,8 @@ namespace utils
 class LogicRuleUtils
 {
 public:
-  static ScAddr getIfStatement(ScMemoryContext * context, ScAddr & logicRule);
+  static ScAddr getIfStatement(ScMemoryContext * context, ScAddr const & logicRule);
 
-  static ScAddr getElseStatement(ScMemoryContext * context, ScAddr & logicRule);
+  static ScAddr getElseStatement(ScMemoryContext * context, ScAddr const & logicRule);
 };
 }

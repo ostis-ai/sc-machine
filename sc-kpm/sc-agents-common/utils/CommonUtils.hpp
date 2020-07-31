@@ -18,16 +18,16 @@ namespace utils
 class CommonUtils
 {
 public:
-  static bool checkType(ScMemoryContext * ms_context, ScAddr & node, ScType scType);
+  static bool checkType(ScMemoryContext * ms_context, ScAddr const & node, ScType const & scType);
 
-  static int readInt(ScMemoryContext * ms_context, ScAddr & scLink);
+  static int readInt(ScMemoryContext * ms_context, ScAddr const & scLink);
 
-  static int readNumber(ScMemoryContext * ms_context, ScAddr & number);
+  static int readNumber(ScMemoryContext * ms_context, ScAddr const & number);
 
-  static string readString(ScMemoryContext * ms_context, ScAddr & scLink);
+  static string readString(ScMemoryContext * ms_context, ScAddr const & scLink);
 
-  static string getIdtfValue(ScMemoryContext * ms_context, ScAddr & node, ScAddr & idtfRelation);
+  static string getIdtfValue(ScMemoryContext * ms_context, ScAddr const & node, ScAddr const & idtfRelation);
 
-  static int getPowerOfSet(ScMemoryContext * ms_context, ScAddr & set);
+  static int getPowerOfSet(ScMemoryContext * ms_context, ScAddr const & set);
 };
 }
