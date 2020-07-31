@@ -17,13 +17,13 @@ using namespace scAgentsCommon;
 namespace utils
 {
 
-bool CommonUtils::checkType(ScMemoryContext * ms_context, ScAddr & node, ScType scType)
+bool CommonUtils::checkType(ScMemoryContext * ms_context, const ScAddr & node, ScType scType)
 {
   ScType nodeType = ms_context->GetElementType(node);
   return (nodeType & scType) == scType;
 }
 
-int CommonUtils::readInt(ScMemoryContext * ms_context, ScAddr & scLink)
+int CommonUtils::readInt(ScMemoryContext * ms_context, const ScAddr & scLink)
 {
   ScStream stream;
   if (ms_context->GetLinkContent(scLink, stream))
@@ -40,13 +40,13 @@ int CommonUtils::readInt(ScMemoryContext * ms_context, ScAddr & scLink)
   return -1;
 }
 
-int CommonUtils::readNumber(ScMemoryContext * ms_context, ScAddr & number)
+int CommonUtils::readNumber(ScMemoryContext * ms_context, const ScAddr & number)
 {
   ScAddr scLink = IteratorUtils::getFirstByOutRelation(ms_context, number, CoreKeynodes::nrel_idtf);
   return readInt(ms_context, scLink);
 }
 
-string CommonUtils::readString(ScMemoryContext * ms_context, ScAddr & scLink)
+string CommonUtils::readString(ScMemoryContext * ms_context, const ScAddr & scLink)
 {
   string result;
   ScStream stream;
@@ -62,7 +62,7 @@ string CommonUtils::readString(ScMemoryContext * ms_context, ScAddr & scLink)
   return result;
 }
 
-string CommonUtils::getIdtfValue(ScMemoryContext * ms_context, ScAddr & node, ScAddr & idtfRelation)
+string CommonUtils::getIdtfValue(ScMemoryContext * ms_context, const ScAddr & node, const ScAddr & idtfRelation)
 {
   string value;
   ScAddr scLink = IteratorUtils::getFirstByOutRelation(ms_context, node, idtfRelation);
@@ -71,7 +71,7 @@ string CommonUtils::getIdtfValue(ScMemoryContext * ms_context, ScAddr & node, Sc
   return value;
 }
 
-int CommonUtils::getPowerOfSet(ScMemoryContext * ms_context, ScAddr & set)
+int CommonUtils::getPowerOfSet(ScMemoryContext * ms_context, const ScAddr & set)
 {
   int power = 0;
   ScIterator3Ptr iterator3 = ms_context->Iterator3(set, ScType::EdgeAccessConstPosPerm, ScType::Unknown);

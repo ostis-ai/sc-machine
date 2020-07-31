@@ -471,7 +471,10 @@ sc_addr SCsTranslator::createScAddr(sElement *el)
   }
   else if (el->type & sc_type_link)
   {
+    sc_type  newType = el->type;
+    newType = newType | (sc_type_const);
     addr = sc_memory_link_new(mContext);
+    sc_memory_change_element_subtype(mContext,addr,newType);
 
     // setup link content
     if (el->link_is_file)

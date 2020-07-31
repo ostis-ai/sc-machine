@@ -18,7 +18,12 @@ add_custom_target(GenerateParser ALL
 )
 
 file(GLOB_RECURSE SOURCES "src/*.cpp")
+list(REMOVE_ITEM SOURCES
+		"${SC_TOOLS_DIR}/builder/src/main.cpp"
+		"${SC_TOOLS_DIR}/builder/src/builder.cpp"
+		)
 file(GLOB_RECURSE HEADERS "src/*.h")
+list(REMOVE_ITEM HEADERS "${SC_TOOLS_DIR}/builder/src/builder.h")
 
 set (SOURCES_C 
 	"${SC_BUILDER_DIR}/src/parser/scsLexer.c"
@@ -33,10 +38,14 @@ else()
  			boost_system)
 endif (${WIN32})
 
-	
-add_executable(sc-builder ${SOURCES} ${SOURCES_C} ${HEADERS})
-include_directories(${SC_MEMORY_SRC} ${GLIB2_INCLUDE_DIRS})
-target_link_libraries(sc-builder sc-memory sc-memory-cpp ${ANTLR_LIB} ${BOOST_LIBS_LIST})
-add_dependencies(sc-builder GenerateParser)
 
-install_targets("/bin" sc-builder)
+add_executable(sc-builder "src/main.cpp" "src/builder.cpp" "src/builder.h")
+
+add_library(sc-builder-lib SHARED ${SOURCES} ${SOURCES_C} ${HEADERS})
+include_directories(${SC_MEMORY_SRC} ${GLIB2_INCLUDE_DIRS})
+target_link_libraries(sc-builder-lib sc-memory sc-memory-cpp ${ANTLR_LIB} ${BOOST_LIBS_LIST})
+add_dependencies(sc-builder-lib GenerateParser)
+
+target_link_libraries(sc-builder sc-builder-lib)
+
+install_targets("/bin" sc-builder sc-builder-lib)

@@ -18,7 +18,7 @@ using namespace scAgentsCommon;
 namespace utils
 {
 
-ScAddr LogicRuleUtils::getIfStatement(ScMemoryContext * context, ScAddr & logicRule)
+ScAddr LogicRuleUtils::getIfStatement(ScMemoryContext * context, const ScAddr & logicRule)
 {
   ScAddr ifStatement;
   ScAddr implEdge;
@@ -28,7 +28,7 @@ ScAddr LogicRuleUtils::getIfStatement(ScMemoryContext * context, ScAddr & logicR
   return ifStatement;
 }
 
-ScAddr LogicRuleUtils::getElseStatement(ScMemoryContext * context, ScAddr & logicRule)
+ScAddr LogicRuleUtils::getElseStatement(ScMemoryContext * context, const ScAddr & logicRule)
 {
   ScAddr implEdge;
   ScAddr elseStatement;
