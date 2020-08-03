@@ -154,10 +154,7 @@ bool GwfTranslator::processString(const String &data)
       {
         // need to create link
         addr = sc_memory_link_new(mContext);
-        sc_type *oldType = nullptr;
-        sc_memory_get_element_type(mContext, addr, oldType);
-        sc_type newType = *oldType | (sc_type_const);
-        sc_memory_change_element_subtype(mContext, addr, newType);
+
         // setup content
         String data = content->GetText();
 
