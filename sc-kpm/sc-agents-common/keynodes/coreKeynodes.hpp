@@ -9,7 +9,7 @@
 #include <sc-memory/cpp/sc_addr.hpp>
 #include <sc-memory/cpp/sc_object.hpp>
 
-#include "sc-kpm/sc-agents-common/generated/CoreKeynodes.generated.hpp"
+#include "sc-kpm/sc-agents-common/generated/coreKeynodes.generated.hpp"
 
 namespace scAgentsCommon
 {
