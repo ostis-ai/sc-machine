@@ -38,6 +38,7 @@ foreach( OUTPUTCONFIG ${CMAKE_CONFIGURATION_TYPES} )
 endforeach( OUTPUTCONFIG CMAKE_CONFIGURATION_TYPES )
 
 set(SC_MEMORY_SRC "${SC_MACHINE_ROOT}/sc-memory")
+set(SC_KPM_SRC "${SC_MACHINE_ROOT}/sc-kpm")
 
 if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fcolor-diagnostics -std=c++14")
@@ -209,4 +210,10 @@ add_subdirectory(${SC_MACHINE_ROOT}/sc-kpm)
 add_subdirectory(${SC_MACHINE_ROOT}/sc-network)
 add_subdirectory(${SC_MACHINE_ROOT}/tools)
 
-
+set(SC_EXTENSIONS_ROOT "${SC_MACHINE_ROOT}/../../extensions")
+if (EXISTS ${SC_EXTENSIONS_ROOT})
+	FILE(GLOB TEST ${SC_EXTENSIONS_ROOT}/*)
+	foreach(SUBDIR ${TEST})
+		add_subdirectory(${SUBDIR}/problem-solver/cxx ${SC_MACHINE_ROOT}/bin)
+	endforeach()
+endif()

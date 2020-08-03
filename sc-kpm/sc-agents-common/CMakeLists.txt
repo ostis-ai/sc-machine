@@ -5,9 +5,8 @@ set(SC_AGENTS_COMMON_SRC "${SC_KPM_ROOT}/sc-agents-common")
 set(SOURCES
 		"sc_agents_common.cpp"
 		"keynodes/coreKeynodes.cpp"
-		"agents/ATemplateGeneration.cpp"
 		"agents/ANumberComparison.cpp"
-		"agents/AReverseInference.cpp"
+		"utils/GenerationUtils.cpp"
 		"utils/IteratorUtils.cpp"
 		"utils/AgentUtils.cpp"
 		"utils/CommonUtils.cpp"
@@ -17,9 +16,8 @@ set(SOURCES
 set(HEADERS
 		"sc_agents_common.hpp"
 		"keynodes/coreKeynodes.hpp"
-		"agents/ATemplateGeneration.hpp"
 		"agents/ANumberComparison.hpp"
-		"agents/AReverseInference.hpp"
+		"utils/GenerationUtils.hpp"
 		"utils/IteratorUtils.hpp"
 		"utils/AgentUtils.hpp"
 		"utils/CommonUtils.hpp"
