@@ -8,7 +8,7 @@
 
 #include <sc-memory/cpp/kpm/sc_agent.hpp>
 
-#include "keynodes/CoreKeynodes.hpp"
+#include "keynodes/coreKeynodes.hpp"
 #include "sc-kpm/sc-agents-common/generated/ANumberComparison.generated.hpp"
 
 namespace scAgentsCommon

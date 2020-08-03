@@ -6,7 +6,7 @@
 
 #include <sc-memory/cpp/sc_memory.hpp>
 
-#include "CoreKeynodes.hpp"
+#include "coreKeynodes.hpp"
 
 namespace scAgentsCommon
 {

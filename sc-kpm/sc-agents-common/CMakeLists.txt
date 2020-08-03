@@ -4,7 +4,7 @@ set(SC_AGENTS_COMMON_SRC "${SC_KPM_ROOT}/sc-agents-common")
 
 set(SOURCES
 		"sc_agents_common.cpp"
-		"keynodes/CoreKeynodes.cpp"
+		"keynodes/coreKeynodes.cpp"
 		"agents/ANumberComparison.cpp"
 		"utils/GenerationUtils.cpp"
 		"utils/IteratorUtils.cpp"
@@ -15,7 +15,7 @@ set(SOURCES
 
 set(HEADERS
 		"sc_agents_common.hpp"
-		"keynodes/CoreKeynodes.hpp"
+		"keynodes/coreKeynodes.hpp"
 		"agents/ANumberComparison.hpp"
 		"utils/GenerationUtils.hpp"
 		"utils/IteratorUtils.hpp"
