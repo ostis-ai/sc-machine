@@ -623,7 +623,7 @@ sc_addr sc_storage_link_new_ext(const sc_memory_context *ctx, sc_access_levels a
   sc_element * locked_el = sc_storage_append_el_into_segments(ctx, &addr);
   if (locked_el != null_ptr)
   {
-    locked_el->flags.type = sc_type_link;
+    locked_el->flags.type = sc_type_link  | sc_type_const;
     locked_el->flags.access_levels = access_levels;
     STORAGE_CHECK_CALL(sc_storage_element_unlock(addr));
   }
