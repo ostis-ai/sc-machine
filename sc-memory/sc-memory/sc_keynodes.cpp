@@ -50,7 +50,6 @@ ScAddr ScKeynodes::kBinaryCustom;
 
 bool ScKeynodes::Init(bool force)
 {
-    bool isAddToRoot = false;
   if (ms_isInitialized && !force)
     return true;
 
@@ -66,9 +65,7 @@ bool ScKeynodes::Init(bool force)
     if (!ctx.HelperCheckEdge(kScResult, resAddr, ScType::EdgeAccessConstPosPerm))
     {
       ScAddr x = ctx.CreateEdge(ScType::EdgeAccessConstPosPerm, kScResult, resAddr);
-      if (isAddToRoot) {
-          ctx.CreateEdge(ScType::EdgeAccessConstPosPerm, concertedKB, x);
-      }
+      ctx.CreateEdge(ScType::EdgeAccessConstPosPerm, concertedKB, x);
       result = result && x.IsValid();
     }
   }
@@ -88,9 +85,7 @@ bool ScKeynodes::Init(bool force)
   for (auto const & a : states)
   {
     ScAddr x = ctx.CreateEdge(ScType::EdgeAccessConstPosPerm, kCommandStateAddr, a);
-    if (isAddToRoot) {
-        ctx.CreateEdge(ScType::EdgeAccessConstPosPerm, concertedKB, x);
-    }
+    ctx.CreateEdge(ScType::EdgeAccessConstPosPerm, concertedKB, x);
     if (!x.IsValid())
       result = true;
   }

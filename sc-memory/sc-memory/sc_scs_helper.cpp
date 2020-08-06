@@ -22,13 +22,12 @@ class StructGenerator
   friend class ::SCsHelper;
 
 protected:
-  StructGenerator(ScMemoryContext & ctx, SCsFileInterfacePtr const & fileInterface, bool isAddToRoot)
+  StructGenerator(ScMemoryContext & ctx, SCsFileInterfacePtr const & fileInterface)
     : m_fileInterface(fileInterface)
     , m_ctx(ctx)
   {
     m_kNrelSCsGlobalIdtf = m_ctx.HelperResolveSystemIdtf("nrel_scs_global_idtf", ScType::NodeConstNoRole);
     SC_ASSERT(m_kNrelSCsGlobalIdtf.IsValid(), ());
-    this->isAddToRoot=isAddToRoot;
     this->concertedKB = m_ctx.HelperFindBySystemIdtf(concertedKBName);
   }
 
@@ -61,9 +60,7 @@ protected:
       }
 
       ScAddr const edgeAddr = m_ctx.CreateEdge(edge.GetType(), srcAddr, trgAddr);
-      if (isAddToRoot) {
-          m_ctx.CreateEdge(ScType::EdgeAccessConstPosPerm, this->concertedKB, edgeAddr);
-      }
+      m_ctx.CreateEdge(ScType::EdgeAccessConstPosPerm, this->concertedKB, edgeAddr);
       SC_ASSERT(edgeAddr.IsValid(), ());
       m_idtfCache.insert(std::make_pair(edge.GetIdtf(), edgeAddr));
     }
@@ -88,21 +85,15 @@ private:
     // Generate construction manually. To avoid recursive call of ScMemoryContextEventsPendingGuard
 
     ScAddr const linkAddr = m_ctx.CreateLink();
-    if (isAddToRoot) {
-        m_ctx.CreateEdge(ScType::EdgeAccessConstPosPerm, this->concertedKB, linkAddr);
-    }
+    m_ctx.CreateEdge(ScType::EdgeAccessConstPosPerm, this->concertedKB, linkAddr);
     ScLink link(m_ctx, linkAddr);
     link.Set(idtf);
 
 
     ScAddr const edgeAddr = m_ctx.CreateEdge(ScType::EdgeDCommonConst, addr, linkAddr);
-      if (isAddToRoot) {
-          m_ctx.CreateEdge(ScType::EdgeAccessConstPosPerm, this->concertedKB, edgeAddr);
-      }
+    m_ctx.CreateEdge(ScType::EdgeAccessConstPosPerm, this->concertedKB, edgeAddr);
     ScAddr const edgeAddr2 = m_ctx.CreateEdge(ScType::EdgeAccessConstPosPerm, m_kNrelSCsGlobalIdtf, edgeAddr);
-      if (isAddToRoot) {
-          m_ctx.CreateEdge(ScType::EdgeAccessConstPosPerm, this->concertedKB, edgeAddr2);
-      }
+    m_ctx.CreateEdge(ScType::EdgeAccessConstPosPerm, this->concertedKB, edgeAddr2);
   }
 
   ScAddr FindBySCsGlobalIdtf(std::string const & idtf) const
@@ -160,12 +151,6 @@ private:
         result = FindBySCsGlobalIdtf(el.GetIdtf());
       }
 
-      if (isAddToRoot) {
-          if (el.GetIdtf() == "..edge_0") {
-              int x=1;
-          }
-      }
-
       // create new one
       if (!result.IsValid())
       {
@@ -173,16 +158,12 @@ private:
         if (type.IsNode())
         {
           result = m_ctx.CreateNode(type);
-            if (isAddToRoot) {
-                m_ctx.CreateEdge(ScType::EdgeAccessConstPosPerm, this->concertedKB, result);
-            }
+          m_ctx.CreateEdge(ScType::EdgeAccessConstPosPerm, this->concertedKB, result);
         }
         else if (type.IsLink())
         {
           result = m_ctx.CreateLink(type);
-            if (isAddToRoot) {
-                m_ctx.CreateEdge(ScType::EdgeAccessConstPosPerm, this->concertedKB, result);
-            }
+          m_ctx.CreateEdge(ScType::EdgeAccessConstPosPerm, this->concertedKB, result);
           SetupLinkContent(result, el);
         }
         else {
@@ -193,22 +174,20 @@ private:
         if (el.GetVisibility() == scs::Visibility::System)
         {
           m_ctx.HelperSetSystemIdtf(el.GetIdtf(), result);
-          if (isAddToRoot) {
-              ScAddr sysId = m_ctx.HelperFindBySystemIdtf("nrel_system_identifier");
-              ScIterator5Ptr it = m_ctx.Iterator5(result,
-                                                   ScType::EdgeDCommonConst,
-                                                   ScType::Const,
-                                                   ScType::EdgeAccessConstPosPerm,
-                                                   sysId);
-              if (it->Next()) {
-                  ScAddr obj = it->Get(1);
-                  m_ctx.CreateEdge(ScType::EdgeAccessConstPosPerm, this->concertedKB, obj);
-                  obj = it->Get(2);
-                  m_ctx.CreateEdge(ScType::EdgeAccessConstPosPerm, this->concertedKB, obj);
-                  obj = it->Get(3);
-                  m_ctx.CreateEdge(ScType::EdgeAccessConstPosPerm, this->concertedKB, obj);
-              }
-          }
+            ScAddr sysId = m_ctx.HelperFindBySystemIdtf("nrel_system_identifier");
+            ScIterator5Ptr it = m_ctx.Iterator5(result,
+                                                ScType::EdgeDCommonConst,
+                                                ScType::Const,
+                                                ScType::EdgeAccessConstPosPerm,
+                                                sysId);
+            if (it->Next()) {
+                ScAddr obj = it->Get(1);
+                m_ctx.CreateEdge(ScType::EdgeAccessConstPosPerm, this->concertedKB, obj);
+                obj = it->Get(2);
+                m_ctx.CreateEdge(ScType::EdgeAccessConstPosPerm, this->concertedKB, obj);
+                obj = it->Get(3);
+                m_ctx.CreateEdge(ScType::EdgeAccessConstPosPerm, this->concertedKB, obj);
+            }
         }
         else if (el.GetVisibility() == scs::Visibility::Global)
         {
@@ -314,7 +293,6 @@ private:
   ScAddr concertedKB;
   std::string concertedKBName = "concertedKB_hash_iF95K2";
   std::string concertedPartSetName = "concerted_part_of_kb";
-  bool isAddToRoot;
 };
 
 } // namespace impl
@@ -325,7 +303,7 @@ SCsHelper::SCsHelper(ScMemoryContext & ctx, SCsFileInterfacePtr const & fileInte
 {
 }
 
-bool SCsHelper::GenerateBySCsText(std::string const & scsText, bool isAddToRoot)
+bool SCsHelper::GenerateBySCsText(std::string const & scsText)
 {
   m_lastError = "";
   bool result = true;
@@ -342,7 +320,7 @@ bool SCsHelper::GenerateBySCsText(std::string const & scsText, bool isAddToRoot)
     }
     else
     {
-      impl::StructGenerator generate(m_ctx, m_fileInterface, isAddToRoot);
+      impl::StructGenerator generate(m_ctx, m_fileInterface);
       generate(parser);
     }
   }
