@@ -307,7 +307,8 @@ sc_result sc_helper_set_system_identifier_new(sc_memory_context const * ctx, sc_
         sc_stream_free(stream);
         return SC_RESULT_ERROR;
     }
-    if (isAddRoot) {
+    if (isAddRoot)
+    {
         sc_memory_arc_new(ctx, sc_type_arc_pos_const_perm, rootEl, idtf_addr);
     }
 

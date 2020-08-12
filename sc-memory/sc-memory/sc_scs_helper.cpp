@@ -28,7 +28,7 @@ protected:
   {
     m_kNrelSCsGlobalIdtf = m_ctx.HelperResolveSystemIdtf("nrel_scs_global_idtf", ScType::NodeConstNoRole);
     SC_ASSERT(m_kNrelSCsGlobalIdtf.IsValid(), ());
-    this->concertedKB = m_ctx.HelperFindBySystemIdtf(concertedKBName);
+    this->concertedKB = m_ctx.HelperFindBySystemIdtf(CONCERTED_KB_NAME);
   }
 
   void operator() (scs::Parser const & parser)
@@ -46,15 +46,12 @@ protected:
       auto const & edge = parser.GetParsedElement(t.m_edge);
       auto const & trg = parser.GetParsedElement(t.m_target);
 
-//        if (src.GetType().IsEdge() | trg.GetType().IsEdge()) {
-//            continue;
-//        }
-
       ScAddr const srcAddr = ResolveElement(src);
       ScAddr const trgAddr = ResolveElement(trg);
 
       SC_ASSERT(srcAddr.IsValid() && trgAddr.IsValid(), ());
-      if (!edge.GetType().IsEdge()) {
+      if (!edge.GetType().IsEdge())
+      {
           SC_THROW_EXCEPTION(utils::ExceptionInvalidType,
                              "Edge in triple has incorrect type");
       }
@@ -166,7 +163,8 @@ private:
           m_ctx.CreateEdge(ScType::EdgeAccessConstPosPerm, this->concertedKB, result);
           SetupLinkContent(result, el);
         }
-        else {
+        else
+        {
           SC_THROW_EXCEPTION(utils::ExceptionInvalidState, "Incorrect element type at this state");
         }
 
@@ -174,20 +172,6 @@ private:
         if (el.GetVisibility() == scs::Visibility::System)
         {
           m_ctx.HelperSetSystemIdtf(el.GetIdtf(), result);
-            ScAddr sysId = m_ctx.HelperFindBySystemIdtf("nrel_system_identifier");
-            ScIterator5Ptr it = m_ctx.Iterator5(result,
-                                                ScType::EdgeDCommonConst,
-                                                ScType::Const,
-                                                ScType::EdgeAccessConstPosPerm,
-                                                sysId);
-            if (it->Next()) {
-                ScAddr obj = it->Get(1);
-                m_ctx.CreateEdge(ScType::EdgeAccessConstPosPerm, this->concertedKB, obj);
-                obj = it->Get(2);
-                m_ctx.CreateEdge(ScType::EdgeAccessConstPosPerm, this->concertedKB, obj);
-                obj = it->Get(3);
-                m_ctx.CreateEdge(ScType::EdgeAccessConstPosPerm, this->concertedKB, obj);
-            }
         }
         else if (el.GetVisibility() == scs::Visibility::Global)
         {
@@ -291,7 +275,7 @@ private:
   std::unordered_map<std::string, ScAddr> m_idtfCache;
   ScAddr m_kNrelSCsGlobalIdtf;
   ScAddr concertedKB;
-  std::string concertedKBName = "concertedKB_hash_iF95K2";
+  const std::string CONCERTED_KB_NAME = "concertedKB_hash_iF95K2";
   std::string concertedPartSetName = "concerted_part_of_kb";
 };
 

@@ -138,12 +138,13 @@ scp_operand ordinal_rrels[ORDINAL_RRELS_COUNT + 1]; // 0 element reserved
 scp_operand ordinal_set_rrels[ORDINAL_RRELS_COUNT + 1]; // 0 element reserved
 
 sc_memory_context *s_default_ctx;
+const sc_char* CONCERTED_KB_NAME = "concertedKB_hash_iF95K2";
 
 #define resolve_keynode(keynode, keynode_str) \
     sc_addr concertedKb; \
-    if (sc_helper_resolve_system_identifier(s_default_ctx, "concertedKB_hash_iF95K2", &(concertedKb)) == SC_FALSE) { \
+    if (sc_helper_resolve_system_identifier(s_default_ctx, CONCERTED_KB_NAME, &(concertedKb)) == SC_FALSE) { \
         concertedKb = sc_memory_node_new(s_default_ctx, sc_type_node_struct); \
-        sc_helper_set_system_identifier(s_default_ctx, concertedKb, "concertedKB_hash_iF95K2", (sc_uint32)(strlen("concertedKB_hash_iF95K2"))); \
+        sc_helper_set_system_identifier(s_default_ctx, concertedKb, CONCERTED_KB_NAME, (sc_uint32)(strlen(CONCERTED_KB_NAME))); \
     } \
     if (sc_helper_resolve_system_identifier(s_default_ctx, keynode_str, &(keynode)) == SC_FALSE) \
     {\
