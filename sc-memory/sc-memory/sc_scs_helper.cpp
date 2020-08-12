@@ -276,7 +276,6 @@ private:
   ScAddr m_kNrelSCsGlobalIdtf;
   ScAddr concertedKB;
   const std::string CONCERTED_KB_NAME = "concertedKB_hash_iF95K2";
-  std::string concertedPartSetName = "concerted_part_of_kb";
 };
 
 } // namespace impl
