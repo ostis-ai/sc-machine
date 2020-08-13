@@ -57,13 +57,17 @@ bool ScKeynodes::Init(bool force)
   ScMemoryContext ctx(sc_access_lvl_make_min, "ScKeynodes::Init");
 
   // init sc_result set
+    //todo make as global constant
+  ScAddr concertedKB = ctx.HelperFindBySystemIdtf("concertedKB_hash_iF95K2");
   for (size_t i = 0; i < SC_RESULT_COUNT; ++i)
   {
     ScAddr const resAddr = GetResultCodeAddr(static_cast<sc_result>(i));
     result = result && resAddr.IsValid();
     if (!ctx.HelperCheckEdge(kScResult, resAddr, ScType::EdgeAccessConstPosPerm))
     {
-      result = result && ctx.CreateEdge(ScType::EdgeAccessConstPosPerm, kScResult, resAddr).IsValid();
+      ScAddr x = ctx.CreateEdge(ScType::EdgeAccessConstPosPerm, kScResult, resAddr);
+      ctx.CreateEdge(ScType::EdgeAccessConstPosPerm, concertedKB, x);
+      result = result && x.IsValid();
     }
   }
 
@@ -81,7 +85,9 @@ bool ScKeynodes::Init(bool force)
   ScAddr states[] = { kCommandFinishedAddr, kCommandInitiatedAddr, kCommandProgressdAddr };
   for (auto const & a : states)
   {
-    if (!ctx.CreateEdge(ScType::EdgeAccessConstPosPerm, kCommandStateAddr, a).IsValid())
+    ScAddr x = ctx.CreateEdge(ScType::EdgeAccessConstPosPerm, kCommandStateAddr, a);
+    ctx.CreateEdge(ScType::EdgeAccessConstPosPerm, concertedKB, x);
+    if (!x.IsValid())
       result = true;
   }
 

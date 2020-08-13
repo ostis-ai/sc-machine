@@ -1,8 +1,11 @@
 bin
-/build/
-/build-*/
-/site/
+build
 scripts/redis*
+cmake-build-debug/*
+cmake-build-debug
+
+tools/builder/src/parser/
+*.generated.*
 
 !thirdparty/*/bin/
 
@@ -11,7 +14,29 @@ manifest.json
 *.user
 *.*~
 
-.vscode
-__pycache__
-.DS_store
-.antlr
+/target/
+!.mvn/wrapper/maven-wrapper.jar
+
+### STS ###
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
+
+### IntelliJ IDEA ###
+.idea
+*.iws
+*.iml
+*.ipr
+
+### NetBeans ###
+/nbproject/private/
+/build/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+

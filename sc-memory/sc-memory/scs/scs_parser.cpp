@@ -462,7 +462,7 @@ ElementHandle Parser::ProcessConnector(std::string const & connector)
   ScType const type = TypeResolver::GetConnectorType(connector);
   SC_ASSERT(type.IsEdge(), ());
 
-  return AppendElement(GenerateEdgeIdtf(), type, TypeResolver::IsConnectorReversed(connector));
+    return AppendElement(GenerateEdgeIdtf(), type, TypeResolver::IsConnectorReversed(connector));
 }
 
 ElementHandle Parser::ProcessContent(std::string const & content, bool isVar)
@@ -536,5 +536,46 @@ ElementHandle Parser::ProcessContourEnd()
 
   return result;
 }
+
+    ElementHandle Parser::ProcessContourEndWithJoin(ElementHandle const & source)
+    {
+        SC_ASSERT(!m_contourElementsStack.empty(), ());
+        SC_ASSERT(!m_contourTriplesStack.empty(), ());
+
+        size_t const last = m_parsedElements.size();
+        size_t const lastLocal = m_parsedElementsLocal.size();
+        size_t const lastTriple = m_parsedTriples.size();
+
+        auto const ind = m_contourElementsStack.top();
+        m_contourElementsStack.pop();
+
+        std::set<ElementHandle> newElements;
+
+        // append all new elements into contour
+        for (size_t i = ind.first; i < last; ++i)
+            newElements.insert(ElementHandle(ElementID(i), false));
+
+        //for (size_t i = ind.second; i < lastLocal; ++i)
+        //    newElements.insert(ElementHandle(ElementID(i), true));
+
+        size_t const tripleFirst = m_contourTriplesStack.top();
+        m_contourTriplesStack.pop();
+
+        for (size_t i = tripleFirst; i < lastTriple; ++i)
+        {
+            auto const & t = m_parsedTriples[i];
+            newElements.insert(t.m_source);
+            newElements.insert(t.m_edge);
+            newElements.insert(t.m_target);
+        }
+
+        for (auto const & el : newElements)
+        {
+            ElementHandle const edge = ProcessConnector("->");
+            ProcessTriple(source, edge, el);
+        }
+
+        return source;
+    }
 
 }

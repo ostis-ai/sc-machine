@@ -6,22 +6,22 @@ if (${WIN32})
 
   elseif (${APPLE})
    set (BOOST_LIBS_LIST
-         Boost::filesystem 
-         Boost::program_options 
-         Boost::system
+           Boost::filesystem
+           Boost::program_options
+           Boost::system
       )
 else()
   set (BOOST_LIBS_LIST
-         boost_filesystem 
-         boost_program_options 
-         boost_system
+          boost_filesystem
+          boost_program_options
+          boost_system
       )
 endif (${WIN32})
   
 add_executable(sc-builder ${SOURCES})
-target_include_directories(sc-builder 
-  PRIVATE ${SC_MEMORY_SRC}
-  PRIVATE ${GLIB2_INCLUDE_DIRS}
+target_include_directories(sc-builder
+        PRIVATE ${SC_MEMORY_SRC}
+        PRIVATE ${GLIB2_INCLUDE_DIRS}
   )
 target_link_libraries(sc-builder sc-core sc-memory ${BOOST_LIBS_LIST})
 

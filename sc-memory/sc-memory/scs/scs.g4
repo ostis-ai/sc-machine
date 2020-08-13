@@ -77,8 +77,27 @@ contour returns [ElementHandle handle]
     }
   ;
 
+contourWithJoin returns [ElementHandle handle]
+  locals [int count = 0; ]
+  @init{ $count = 1; }
+  : CONTOUR_BEGIN
+    {
+      m_parser->ProcessContourBegin();
+    }
+    { $ctx->count > 0 }?
+    ( sentence_wrap* )
+    CONTOUR_END
+    {
+      $ctx->count--;
+      if ($ctx->count == 0)
+      {
+        //$ctx->handle = m_parser->ProcessContourEnd();
+      }
+    }
+  ;
+
 connector returns [std::string text]
-  : c=( '<>' | '>' | '<' | '..>' | '<..'
+  : c=('<>' | '>' | '<' | '..>' | '<..'
     | '->' | '<-' | '<=>' | '=>' | '<='
     | '-|>' | '<|-' | '-/>' | '</-'
     | '~>' | '<~' | '~|>' | '<|~'
@@ -107,6 +126,7 @@ sentence_wrap
 sentence
   : sentence_lvl1
   | sentence_assign
+  | sentence_assign_contour
   | sentence_lvl_common
   ;
 
@@ -128,6 +148,13 @@ sentence_assign
   : a=alias '=' i=idtf_common
     {
       m_parser->ProcessAssign($ctx->a->getText(), $ctx->i->handle);
+    }
+  ;
+
+sentence_assign_contour
+  : a=idtf_common '=' i=contourWithJoin
+    {
+      m_parser->ProcessContourEndWithJoin($ctx->a->handle);
     }
   ;
     
@@ -171,13 +198,13 @@ idtf_edge returns [ElementHandle handle]
     {
       ElementHandle const edge = m_parser->ProcessConnector($ctx->c->text);
       m_parser->ProcessTriple($ctx->src->handle, edge, $ctx->trg->handle);
-      
+
       // append attributes
       if ($ctx->attrs != nullptr)
       {
         APPEND_ATTRS($attrs.items, edge);
       }
-      
+
       $ctx->handle = edge;
     }
   ;
@@ -202,6 +229,7 @@ idtf_set returns [ElementHandle handle]
           APPEND_ATTRS($ctx->a1->items, edge);
         }
       }
+      internal_sentence_list[$ctx->i1->handle]?
 
       (';'
       a2=attr_list? i2=idtf_common
@@ -214,9 +242,10 @@ idtf_set returns [ElementHandle handle]
             APPEND_ATTRS($ctx->a2->items, edge);
           }
         }
-
+        internal_sentence_list[$ctx->i2->handle]?
       )*
     '}'
+
   ;
 
 idtf_common returns [ElementHandle handle]
@@ -266,6 +295,7 @@ internal_sentence [ElementHandle source]
         }
       }
     }
+    | internal_sentence_list[source]
   ;
 
 internal_sentence_list [ElementHandle source]
