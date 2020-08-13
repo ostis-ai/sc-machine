@@ -18,6 +18,7 @@ bool ScSet::Append(ScAddr const & elAddr)
 {
   SC_ASSERT(m_context, ());
   if (!HasElement(elAddr)) {
+      //todo make as global constant
       ScAddr concertedKB = m_context->HelperFindBySystemIdtf("concertedKB_hash_iF95K2");
       ScAddr x = m_context->CreateEdge(ScType::EdgeAccessConstPosPerm, m_addr, elAddr);
       m_context->CreateEdge(ScType::EdgeAccessConstPosPerm, concertedKB, x);

@@ -57,6 +57,7 @@ bool ScKeynodes::Init(bool force)
   ScMemoryContext ctx(sc_access_lvl_make_min, "ScKeynodes::Init");
 
   // init sc_result set
+    //todo make as global constant
   ScAddr concertedKB = ctx.HelperFindBySystemIdtf("concertedKB_hash_iF95K2");
   for (size_t i = 0; i < SC_RESULT_COUNT; ++i)
   {

@@ -86,6 +86,7 @@ void run_dump()
 {
     FILE *f;
     f = fopen("/home/alexander/Desktop/KnowledgeDump.scs", "w");
+    //todo make as global constant
     string name = "concertedKB_hash_iF95K2";
     conceredKB = m_ctx->HelperFindBySystemIdtf(name);
 

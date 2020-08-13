@@ -15,6 +15,7 @@ sc_bool sc_helper_is_initialized = SC_FALSE;
 
 sc_char **keynodes_str = 0;
 sc_addr *sc_keynodes = 0;
+const sc_char *CONCERTED_KB_NAME = "concertedKB_hash_iF95K2";
 
 sc_result resolve_nrel_system_identifier(sc_memory_context const * ctx)
 {
@@ -131,7 +132,7 @@ sc_result sc_helper_init(sc_memory_context * ctx)
     sc_addr arc2 = sc_memory_arc_new(ctx, sc_type_arc_pos_const_perm, addr, arc);
     sc_memory_arc_new(ctx, sc_type_arc_pos_const_perm, concertedKb, arc2);
     sc_keynodes[SC_KEYNODE_NREL_SYSTEM_IDENTIFIER] = addr;
-    sc_helper_set_system_identifier(ctx, concertedKb, "concertedKB_hash_iF95K2", (sc_uint32)(strlen("concertedKB_hash_iF95K2")));
+    sc_helper_set_system_identifier(ctx, concertedKb, CONCERTED_KB_NAME, (sc_uint32)(strlen(CONCERTED_KB_NAME)));
   }
 
   sc_helper_is_initialized = SC_TRUE;

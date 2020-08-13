@@ -138,6 +138,7 @@ scp_operand ordinal_rrels[ORDINAL_RRELS_COUNT + 1]; // 0 element reserved
 scp_operand ordinal_set_rrels[ORDINAL_RRELS_COUNT + 1]; // 0 element reserved
 
 sc_memory_context *s_default_ctx;
+//todo make as global constant
 const sc_char* CONCERTED_KB_NAME = "concertedKB_hash_iF95K2";
 
 #define resolve_keynode(keynode, keynode_str) \

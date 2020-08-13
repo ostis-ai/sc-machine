@@ -392,6 +392,7 @@ ScAddr ScMemoryContext::HelperResolveSystemIdtf(std::string const & sysIdtf, ScT
     }
 
     resultAddr = CreateNode(type);
+      //todo make as global constant
     ScAddr concertedKB = HelperFindBySystemIdtf("concertedKB_hash_iF95K2");
     if (resultAddr.IsValid()) {
         HelperSetSystemIdtf(sysIdtf, resultAddr);

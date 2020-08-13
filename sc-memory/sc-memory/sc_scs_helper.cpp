@@ -275,6 +275,7 @@ private:
   std::unordered_map<std::string, ScAddr> m_idtfCache;
   ScAddr m_kNrelSCsGlobalIdtf;
   ScAddr concertedKB;
+    //todo make as global constant
   const std::string CONCERTED_KB_NAME = "concertedKB_hash_iF95K2";
 };
 
