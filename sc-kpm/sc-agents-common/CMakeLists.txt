@@ -5,9 +5,8 @@ set(SC_AGENTS_COMMON_SRC "${SC_KPM_ROOT}/sc-agents-common")
 set(SOURCES
 		"sc_agents_common.cpp"
 		"keynodes/coreKeynodes.cpp"
-		"agents/ATemplateGeneration.cpp"
 		"agents/ANumberComparison.cpp"
-		"agents/AReverseInference.cpp"
+		"utils/GenerationUtils.cpp"
 		"utils/IteratorUtils.cpp"
 		"utils/AgentUtils.cpp"
 		"utils/CommonUtils.cpp"
@@ -17,20 +16,19 @@ set(SOURCES
 set(HEADERS
 		"sc_agents_common.hpp"
 		"keynodes/coreKeynodes.hpp"
-		"agents/ATemplateGeneration.hpp"
 		"agents/ANumberComparison.hpp"
-		"agents/AReverseInference.hpp"
+		"utils/GenerationUtils.hpp"
 		"utils/IteratorUtils.hpp"
 		"utils/AgentUtils.hpp"
 		"utils/CommonUtils.hpp"
 		"utils/LogicRuleUtils.hpp"
-		)
+		utils/GenerationUtils.cpp utils/GenerationUtils.hpp)
 
 include_directories(${SC_AGENTS_COMMON_SRC} ${SC_MEMORY_SRC} ${GLIB2_INCLUDE_DIRS})
 
 add_library(sc-agents-common SHARED ${SOURCES} ${HEADERS})
-target_link_libraries(sc-agents-common sc-memory sc-core sc-kpm-common)
-add_dependencies(sc-agents-common sc-memory sc-core sc-kpm-common)
+target_link_libraries(sc-agents-common sc-memory sc-kpm-common)
+add_dependencies(sc-agents-common sc-memory sc-kpm-common)
 
 sc_codegen_ex(sc-agents-common ${SC_AGENTS_COMMON_SRC} "${SC_AGENTS_COMMON_SRC}/generated")
 target_compile_definitions(sc-agents-common PRIVATE "-DSC_AGENTS_COMMON_SELF_BUILD")
