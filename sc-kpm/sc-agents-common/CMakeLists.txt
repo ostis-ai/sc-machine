@@ -1,6 +1,6 @@
 include_directories(${SC_KPM_SRC})
 
-set(SC_AGENTS_COMMON_SRC "${SC_KPM_ROOT}/sc-agents-common")
+set(SC_AGENTS_COMMON_SRC "${SC_KPM_SRC}/sc-agents-common")
 
 set(SOURCES
 		"sc_agents_common.cpp"
