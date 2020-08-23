@@ -1,3 +1,4 @@
+cmake_policy(SET CMP0048 NEW)
 project (sc-machine)
 site_name (www.ostis.net)
 cmake_minimum_required (VERSION 2.8)
