@@ -11,13 +11,14 @@
 #include <ctime>
 #include <iomanip>
 #include <iostream>
+#include "string"
 
 namespace
 {
 
 // should be synced with ScLog::Type
 const char * kTypeToStr[] = {
-    "Debug", "Info", "Warning", "Error", "Python", "PythonError"
+      "Debug", "Info", "Warning", "Error", "Python", "PythonError"
 };
 
 } // namespace
@@ -37,9 +38,21 @@ ScLog * ScLog::GetInstance()
 }
 
 ScLog::ScLog()
-  : m_mode(Type::Debug)
-  , m_isMuted(false)
+//: m_mode(Type::Debug), m_isMuted(false)
 {
+  m_isMuted = false;
+  m_mode = Type::Info;
+
+  std::string s_mode = LOG_MODE;
+  int size = sizeof(kTypeToStr) / sizeof(char *);
+  for (int i = 0; i < size; i++)
+  {
+    std::string mode = kTypeToStr[i];
+    if (s_mode == mode)
+    {
+      m_mode = Type(i);
+    }
+  }
   ASSERT(!ms_instance, ());
   ms_instance = this;
 }

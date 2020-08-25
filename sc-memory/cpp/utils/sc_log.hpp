@@ -9,6 +9,7 @@
 #include "sc_console.hpp"
 
 #include <sstream>
+#include "../generated/log_config.hpp"
 
 namespace utils
 {
