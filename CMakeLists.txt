@@ -213,5 +213,3 @@ add_subdirectory(${SC_MACHINE_ROOT}/../../problem-solver/cxx ${SC_MACHINE_ROOT}/
 
 set(LOG_MODE Info)
 configure_file(log_config.h.in ${CMAKE_CURRENT_SOURCE_DIR}/sc-memory/cpp/generated/log_config.hpp @ONLY)
-
-message("Hello: ${CMAKE_CURRENT_SOURCE_DIR}/sc_memory/cpp/generated/log_config.hpp")
