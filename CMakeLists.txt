@@ -209,3 +209,9 @@ add_subdirectory(${SC_MACHINE_ROOT}/sc-fm)
 add_subdirectory(${SC_MACHINE_ROOT}/sc-kpm)
 add_subdirectory(${SC_MACHINE_ROOT}/sc-network)
 add_subdirectory(${SC_MACHINE_ROOT}/tools)
+add_subdirectory(${SC_MACHINE_ROOT}/../../problem-solver/cxx ${SC_MACHINE_ROOT}/bin)
+
+set(LOG_MODE Info)
+configure_file(log_config.h.in ${CMAKE_CURRENT_SOURCE_DIR}/sc-memory/cpp/generated/log_config.hpp @ONLY)
+
+message("Hello: ${CMAKE_CURRENT_SOURCE_DIR}/sc_memory/cpp/generated/log_config.hpp")
