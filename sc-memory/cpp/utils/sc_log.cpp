@@ -38,7 +38,6 @@ ScLog * ScLog::GetInstance()
 }
 
 ScLog::ScLog()
-//: m_mode(Type::Debug), m_isMuted(false)
 {
   m_isMuted = false;
   m_mode = Type::Info;

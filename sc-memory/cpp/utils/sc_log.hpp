@@ -7,9 +7,10 @@
 
 #include "../sc_types.hpp"
 #include "sc_console.hpp"
+#include "../generated/log_config.hpp"
 
 #include <sstream>
-#include "../generated/log_config.hpp"
+#include "string"
 
 namespace utils
 {
