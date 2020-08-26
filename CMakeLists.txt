@@ -221,4 +221,5 @@ if (EXISTS ${SC_SUBSYSTEMS_ROOT})
 endif()
 
 set(LOG_MODE Info)
+set(LOG_OUTPUT Off)
 configure_file(log_config.h.in ${CMAKE_CURRENT_SOURCE_DIR}/sc-memory/cpp/generated/log_config.hpp @ONLY)

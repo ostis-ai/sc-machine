@@ -61,17 +61,25 @@ ScLog::~ScLog()
   ms_instance = nullptr;
 }
 
-bool ScLog::Initialize(std::string const & file_name, Type mode /*= Info*/)
+bool ScLog::Initialize(std::string const & file_name)
 {
-  m_mode = mode;
-  m_fileStream.open(file_name, std::ofstream::out | std::ofstream::trunc);
+  std::string log_output = LOG_OUTPUT;
+
+  if (log_output == flag_on)
+  {
+    std::string file_path = directory_log + file_name + extension_log;
+    m_fileStream.open(file_path, std::ofstream::out | std::ofstream::app);
+  }
   return m_fileStream.is_open();
 }
 
 void ScLog::Shutdown()
 {
-  m_fileStream.flush();
-  m_fileStream.close();
+  if (m_fileStream.is_open())
+  {
+    m_fileStream.flush();
+    m_fileStream.close();
+  }
 }
 
 void ScLog::Message(ScLog::Type type, std::string const & msg, ScConsole::Color color /*= ScConsole::Color::White*/)
@@ -98,8 +106,11 @@ void ScLog::Message(ScLog::Type type, std::string const & msg, ScConsole::Color 
     std::cout << msg << std::endl;;
     ScConsole::ResetColor();
 
-    m_fileStream << ss.str() << msg;
-    m_fileStream.flush();
+    if (m_fileStream.is_open())
+    {
+      m_fileStream << ss.str() << msg << std::endl;
+      m_fileStream.flush();
+    }
   }
 }
 

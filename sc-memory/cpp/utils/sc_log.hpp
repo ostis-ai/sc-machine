@@ -19,6 +19,7 @@ class ScLog final
 {
 protected:
   _SC_EXTERN ScLog();
+
   _SC_EXTERN ~ScLog();
 
 public:
@@ -34,11 +35,13 @@ public:
     PythonError
   };
 
-  _SC_EXTERN bool Initialize(std::string const & file_name, Type mode = Type::Info);
+  _SC_EXTERN bool Initialize(std::string const & file_name);
+
   _SC_EXTERN void Shutdown();
 
   /// TODO: thread safe
   _SC_EXTERN void Message(Type type, std::string const & msg, ScConsole::Color color = ScConsole::Color::White);
+
   _SC_EXTERN void SetMuted(bool value);
 
   _SC_EXTERN static ScLog * GetInstance();
@@ -49,6 +52,10 @@ private:
   bool m_isMuted;
 
   static ScLog * ms_instance;
+
+  std::string const flag_on = "On";
+  std::string const directory_log = "log/";
+  std::string const extension_log = ".log";
 };
 
 
