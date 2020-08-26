@@ -1,4 +1,5 @@
 bin
+generated
 /build/
 /build-*/
 /site/
