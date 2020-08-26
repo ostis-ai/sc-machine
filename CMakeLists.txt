@@ -209,16 +209,13 @@ add_subdirectory(${SC_MACHINE_ROOT}/sc-fm)
 add_subdirectory(${SC_MACHINE_ROOT}/sc-kpm)
 add_subdirectory(${SC_MACHINE_ROOT}/sc-network)
 add_subdirectory(${SC_MACHINE_ROOT}/tools)
-add_subdirectory(${SC_MACHINE_ROOT}/../../problem-solver/cxx ${SC_MACHINE_ROOT}/bin)
 
-set(SC_SUBSYSTEMS_ROOT "${SC_MACHINE_ROOT}/../../subsystems")
-if (EXISTS ${SC_SUBSYSTEMS_ROOT})
-	FILE(GLOB SUBSYSTEM_DIRS ${SC_SUBSYSTEMS_ROOT}/*)
-	foreach(SUBSYSTEM_DIR ${SUBSYSTEM_DIRS})
-		get_filename_component(SUBSYSTEM_NAME ${SUBSYSTEM_DIR} NAME)
-		add_subdirectory(${SUBSYSTEM_DIR}/problem-solver/cxx ${SC_MACHINE_ROOT}/bin/subsystems/${SUBSYSTEM_NAME})
-	endforeach()
-endif()
+if (NOT EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/bin/log)
+	execute_process(
+			COMMAND mkdir bin/log
+			WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+			OUTPUT_VARIABLE GIT_VERSION)
+endif ()
 
 set(LOG_MODE Info)
 set(LOG_OUTPUT Off)
