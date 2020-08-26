@@ -2,6 +2,6 @@
 #define LOG_CONFIG_HPP_IN
 
 #define LOG_MODE "@LOG_MODE@"
-#define LOG_OUTPUT "@LOG_OUTPUT@"
+#define LOG_OUTPUT_TYPE "@LOG_OUTPUT_TYPE@"
 
 #endif // LOG_CONFIG_HPP_IN

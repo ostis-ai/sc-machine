@@ -32,7 +32,14 @@ public:
     Warning,
     Error,
     Python,
-    PythonError
+    PythonError,
+    Off
+  };
+
+  enum class OutputType: uint8_t
+  {
+    Console=0,
+    File
   };
 
   _SC_EXTERN bool Initialize(std::string const & file_name);
@@ -49,6 +56,7 @@ public:
 private:
   std::ofstream m_fileStream;
   Type m_mode;
+  OutputType m_output_mode;
   bool m_isMuted;
 
   static ScLog * ms_instance;

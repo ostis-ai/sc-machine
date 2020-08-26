@@ -18,7 +18,11 @@ namespace
 
 // should be synced with ScLog::Type
 const char * kTypeToStr[] = {
-      "Debug", "Info", "Warning", "Error", "Python", "PythonError"
+      "Debug", "Info", "Warning", "Error", "Python", "PythonError", "Off"
+};
+
+const char * kOutputTypeToStr[] = {
+      "Console", "File"
 };
 
 } // namespace
@@ -41,10 +45,11 @@ ScLog::ScLog()
 {
   m_isMuted = false;
   m_mode = Type::Info;
+  m_output_mode = OutputType::Console;
 
   std::string s_mode = LOG_MODE;
-  int size = sizeof(kTypeToStr) / sizeof(char *);
-  for (int i = 0; i < size; i++)
+  int typeSize = sizeof(kTypeToStr) / sizeof(char *);
+  for (int i = 0; i < typeSize; i++)
   {
     std::string mode = kTypeToStr[i];
     if (s_mode == mode)
@@ -52,6 +57,18 @@ ScLog::ScLog()
       m_mode = Type(i);
     }
   }
+
+  std::string s_output_mode = LOG_OUTPUT_TYPE;
+  int outputTypeSize = sizeof(kOutputTypeToStr) / sizeof(char *);
+  for (int i = 0; i < outputTypeSize; i++)
+  {
+    std::string mode = kOutputTypeToStr[i];
+    if (s_output_mode == mode)
+    {
+      m_output_mode = OutputType(i);
+    }
+  }
+
   ASSERT(!ms_instance, ());
   ms_instance = this;
 }
@@ -63,9 +80,9 @@ ScLog::~ScLog()
 
 bool ScLog::Initialize(std::string const & file_name)
 {
-  std::string log_output = LOG_OUTPUT;
+  std::string log_output_type = LOG_OUTPUT_TYPE;
 
-  if (log_output == flag_on)
+  if (m_output_mode == OutputType::File)
   {
     std::string file_path = directory_log + file_name + extension_log;
     m_fileStream.open(file_path, std::ofstream::out | std::ofstream::app);
@@ -100,16 +117,21 @@ void ScLog::Message(ScLog::Type type, std::string const & msg, ScConsole::Color 
        << ":" << std::setw(2) << std::setfill('0') << tm.tm_sec << "]["
        << kTypeToStr[int(type)] << "]: ";
 
-    ScConsole::SetColor(ScConsole::Color::White);
-    std::cout << ss.str();
-    ScConsole::SetColor(color);
-    std::cout << msg << std::endl;;
-    ScConsole::ResetColor();
-
-    if (m_fileStream.is_open())
+    if (m_output_mode == OutputType::Console)
     {
-      m_fileStream << ss.str() << msg << std::endl;
-      m_fileStream.flush();
+      ScConsole::SetColor(ScConsole::Color::White);
+      std::cout << ss.str();
+      ScConsole::SetColor(color);
+      std::cout << msg << std::endl;;
+      ScConsole::ResetColor();
+    }
+    else
+    {
+      if (m_fileStream.is_open())
+      {
+        m_fileStream << ss.str() << msg << std::endl;
+        m_fileStream.flush();
+      }
     }
   }
 }
