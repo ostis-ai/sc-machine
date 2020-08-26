@@ -61,8 +61,7 @@ private:
 
   static ScLog * ms_instance;
 
-  std::string const flag_on = "On";
-  std::string const directory_log = "log/";
+  std::string const default_log_file = "system";
   std::string const extension_log = ".log";
 };
 

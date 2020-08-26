@@ -80,11 +80,10 @@ ScLog::~ScLog()
 
 bool ScLog::Initialize(std::string const & file_name)
 {
-  std::string log_output_type = LOG_OUTPUT_TYPE;
-
+  std::string logDir = LOG_DIR;
   if (m_output_mode == OutputType::File)
   {
-    std::string file_path = directory_log + file_name + extension_log;
+    std::string file_path = logDir + file_name + extension_log;
     m_fileStream.open(file_path, std::ofstream::out | std::ofstream::app);
   }
   return m_fileStream.is_open();
@@ -103,6 +102,11 @@ void ScLog::Message(ScLog::Type type, std::string const & msg, ScConsole::Color 
 {
   if (m_isMuted && type != Type::Error)
     return; // do nothing on mute
+
+  if (m_output_mode == OutputType::File && !m_fileStream.is_open())
+  {
+    Initialize(default_log_file);
+  }
 
   utils::ScLockScope lock(gLock);
   if (m_mode <= type)

@@ -210,13 +210,14 @@ add_subdirectory(${SC_MACHINE_ROOT}/sc-kpm)
 add_subdirectory(${SC_MACHINE_ROOT}/sc-network)
 add_subdirectory(${SC_MACHINE_ROOT}/tools)
 
-if (NOT EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/bin/log)
+if (NOT EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/log)
 	execute_process(
-			COMMAND mkdir bin/log
+			COMMAND mkdir log
 			WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
 			OUTPUT_VARIABLE GIT_VERSION)
 endif ()
+set(LOG_DIR ${CMAKE_CURRENT_SOURCE_DIR}/log/)
 
 set(LOG_MODE Info)
-set(LOG_OUTPUT_TYPE Console)
+set(LOG_OUTPUT_TYPE File)
 configure_file(log_config.h.in ${CMAKE_CURRENT_SOURCE_DIR}/sc-memory/cpp/generated/log_config.hpp @ONLY)
