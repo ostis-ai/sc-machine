@@ -20,6 +20,7 @@ const std::string kTypeToStr[] = {
       "Debug", "Info", "Warning", "Error", "Python", "PythonError", "Off"
 };
 
+// should be synced with ScLog::OutputType
 const std::string kOutputTypeToStr[] = {
       "Console", "File"
 };
@@ -47,13 +48,11 @@ ScLog::ScLog()
   m_mode = Type::Info;
   m_output_mode = OutputType::Console;
 
-  int typeSize = sizeof(kTypeToStr) / sizeof(std::string);
-  int modeIndex = FindMode(kTypeToStr, typeSize, LOG_MODE);
+  int modeIndex = FindEnumElement(kTypeToStr, LOG_MODE);
   m_mode = modeIndex != -1 ? Type(modeIndex) : Type::Info;
 
-  int outputTypeSize = sizeof(kOutputTypeToStr) / sizeof(std::string);
-  int outputTypeIndex=FindMode(kOutputTypeToStr, outputTypeSize, LOG_OUTPUT_TYPE);
-  m_output_mode=outputTypeIndex!=-1?OutputType(outputTypeIndex):OutputType::Console;
+  int outputTypeIndex = FindEnumElement(kOutputTypeToStr, LOG_OUTPUT_TYPE);
+  m_output_mode = outputTypeIndex != -1 ? OutputType(outputTypeIndex) : OutputType::Console;
 
   if (m_output_mode == OutputType::File)
   {
@@ -137,19 +136,21 @@ void ScLog::SetFileName(const std::string & file_name)
   Initialize(file_name);
 }
 
-int ScLog::FindMode(const std::string * modes, int size, std::string externalValue)
+template<size_t N>
+int ScLog::FindEnumElement(const std::string (& elements)[N], const std::string & externalValue)
 {
-  int mode = -1;
+  size_t size = N;
+  int index = -1;
   for (int i = 0; i < size; i++)
   {
-    std::string s_mode = modes[i];
-    if (externalValue == s_mode)
+    std::string mode = elements[i];
+    if (externalValue == mode)
     {
-      mode = i;
+      index = i;
       break;
     }
   }
-  return mode;
+  return index;
 }
 
 } // namespace utils

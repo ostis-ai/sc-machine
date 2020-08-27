@@ -67,7 +67,8 @@ private:
 
   bool Initialize(std::string const & file_name);
 
-  int FindMode(const std::string * modes, int size, std::string externalValue);
+  template<size_t N>
+  static int FindEnumElement(const std::string ( & elements)[N], const std::string & externalValue);
 };
 
 
