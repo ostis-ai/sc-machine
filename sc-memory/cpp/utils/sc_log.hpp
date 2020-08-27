@@ -36,15 +36,17 @@ public:
     Off
   };
 
-  enum class OutputType: uint8_t
+  enum class OutputType : uint8_t
   {
-    Console=0,
+    Console = 0,
     File
   };
 
-  _SC_EXTERN bool Initialize(std::string const & file_name);
+
 
   _SC_EXTERN void Shutdown();
+
+  _SC_EXTERN void SetFileName(std::string const & file_name);
 
   /// TODO: thread safe
   _SC_EXTERN void Message(Type type, std::string const & msg, ScConsole::Color color = ScConsole::Color::White);
@@ -61,8 +63,11 @@ private:
 
   static ScLog * ms_instance;
 
-  std::string const default_log_file = "system";
-  std::string const extension_log = ".log";
+  std::string static const DEFAULT_LOG_FILE;
+
+  bool Initialize(std::string const & file_name);
+
+  int FindMode(const std::string * modes, int size, std::string externalValue);
 };
 
 

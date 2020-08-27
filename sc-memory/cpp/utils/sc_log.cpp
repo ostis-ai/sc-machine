@@ -11,17 +11,16 @@
 #include <ctime>
 #include <iomanip>
 #include <iostream>
-#include "string"
 
 namespace
 {
 
 // should be synced with ScLog::Type
-const char * kTypeToStr[] = {
+const std::string kTypeToStr[] = {
       "Debug", "Info", "Warning", "Error", "Python", "PythonError", "Off"
 };
 
-const char * kOutputTypeToStr[] = {
+const std::string kOutputTypeToStr[] = {
       "Console", "File"
 };
 
@@ -29,6 +28,7 @@ const char * kOutputTypeToStr[] = {
 
 namespace utils
 {
+const std::string ScLog::DEFAULT_LOG_FILE = "system.log";
 
 ScLock gLock;
 ScLog * ScLog::ms_instance = nullptr;
@@ -47,26 +47,17 @@ ScLog::ScLog()
   m_mode = Type::Info;
   m_output_mode = OutputType::Console;
 
-  std::string s_mode = LOG_MODE;
-  int typeSize = sizeof(kTypeToStr) / sizeof(char *);
-  for (int i = 0; i < typeSize; i++)
-  {
-    std::string mode = kTypeToStr[i];
-    if (s_mode == mode)
-    {
-      m_mode = Type(i);
-    }
-  }
+  int typeSize = sizeof(kTypeToStr) / sizeof(std::string);
+  int modeIndex = FindMode(kTypeToStr, typeSize, LOG_MODE);
+  m_mode = modeIndex != -1 ? Type(modeIndex) : Type::Info;
 
-  std::string s_output_mode = LOG_OUTPUT_TYPE;
-  int outputTypeSize = sizeof(kOutputTypeToStr) / sizeof(char *);
-  for (int i = 0; i < outputTypeSize; i++)
+  int outputTypeSize = sizeof(kOutputTypeToStr) / sizeof(std::string);
+  int outputTypeIndex=FindMode(kOutputTypeToStr, outputTypeSize, LOG_OUTPUT_TYPE);
+  m_output_mode=outputTypeIndex!=-1?OutputType(outputTypeIndex):OutputType::Console;
+
+  if (m_output_mode == OutputType::File)
   {
-    std::string mode = kOutputTypeToStr[i];
-    if (s_output_mode == mode)
-    {
-      m_output_mode = OutputType(i);
-    }
+    Initialize(DEFAULT_LOG_FILE);
   }
 
   ASSERT(!ms_instance, ());
@@ -75,15 +66,15 @@ ScLog::ScLog()
 
 ScLog::~ScLog()
 {
+  Shutdown();
   ms_instance = nullptr;
 }
 
 bool ScLog::Initialize(std::string const & file_name)
 {
-  std::string logDir = LOG_DIR;
   if (m_output_mode == OutputType::File)
   {
-    std::string file_path = logDir + file_name + extension_log;
+    std::string file_path = LOG_DIR + file_name;
     m_fileStream.open(file_path, std::ofstream::out | std::ofstream::app);
   }
   return m_fileStream.is_open();
@@ -102,11 +93,6 @@ void ScLog::Message(ScLog::Type type, std::string const & msg, ScConsole::Color 
 {
   if (m_isMuted && type != Type::Error)
     return; // do nothing on mute
-
-  if (m_output_mode == OutputType::File && !m_fileStream.is_open())
-  {
-    Initialize(default_log_file);
-  }
 
   utils::ScLockScope lock(gLock);
   if (m_mode <= type)
@@ -143,6 +129,27 @@ void ScLog::Message(ScLog::Type type, std::string const & msg, ScConsole::Color 
 void ScLog::SetMuted(bool value)
 {
   m_isMuted = value;
+}
+
+void ScLog::SetFileName(const std::string & file_name)
+{
+  Shutdown();
+  Initialize(file_name);
+}
+
+int ScLog::FindMode(const std::string * modes, int size, std::string externalValue)
+{
+  int mode = -1;
+  for (int i = 0; i < size; i++)
+  {
+    std::string s_mode = modes[i];
+    if (externalValue == s_mode)
+    {
+      mode = i;
+      break;
+    }
+  }
+  return mode;
 }
 
 } // namespace utils
