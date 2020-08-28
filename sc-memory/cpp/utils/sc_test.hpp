@@ -29,9 +29,9 @@ public:
 
   static _SC_EXTERN void RunAll(std::string const & configPath = "sc-memory.ini", std::string const & extPath = "");
 
-protected:
-  void ShutdownMemory(bool save);
-  void InitMemory(std::string const & configPath, std::string const & extPath);
+//protected:
+  void static ShutdownMemory(bool save);
+  void static InitMemory(std::string const & configPath, std::string const & extPath);
 
 protected:
   char const * m_name;

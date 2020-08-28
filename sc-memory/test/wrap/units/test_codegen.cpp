@@ -4,26 +4,33 @@
 * (See accompanying file COPYING.MIT or copy at http://opensource.org/licenses/MIT)
 */
 
+#define CATCH_CONFIG_MAIN
+
 #include "sc-memory/cpp/utils/sc_test.hpp"
 
 #include "test_sc_object.hpp"
 #include "test_sc_agent.hpp"
 
-UNIT_TEST(codegen_keynodes)
+#include "catch2/catch.hpp"
+
+TEST_CASE("Test codegen", "[test codegen]")
+//UNIT_TEST(codegen_keynodes)
 {
+  test::ScTestUnit::InitMemory("sc-memory.ini", "");
+
   ScMemoryContext ctx(sc_access_lvl_make_min, "codegen_keynodes");
 
   ScAddr addr1 = ctx.CreateNode(ScType::Const);
-  SC_CHECK(addr1.IsValid(), ());
-  SC_CHECK(ctx.HelperSetSystemIdtf("test_keynode1", addr1), ());
+  REQUIRE(addr1.IsValid());
+  REQUIRE(ctx.HelperSetSystemIdtf("test_keynode1", addr1));
 
   ScAddr addr2 = ctx.CreateNode(ScType::Var);
-  SC_CHECK(addr2.IsValid(), ());
-  SC_CHECK(ctx.HelperSetSystemIdtf("test_keynode2", addr2), ());
+  REQUIRE(addr2.IsValid());
+  REQUIRE(ctx.HelperSetSystemIdtf("test_keynode2", addr2));
 
   ScAddr addr3 = ctx.CreateNode(ScType::Var);
-  SC_CHECK(addr3.IsValid(), ());
-  SC_CHECK(ctx.HelperSetSystemIdtf("test_keynode3", addr3), ());
+  REQUIRE(addr3.IsValid());
+  REQUIRE(ctx.HelperSetSystemIdtf("test_keynode3", addr3));
 
   n1::n2::TestObject obj1;
   obj1.Init();
@@ -35,6 +42,9 @@ UNIT_TEST(codegen_keynodes)
   SC_CHECK_EQUAL(addr3, obj1.mTestKeynode3, ());
 
   ScAddr const addrForce = ctx.HelperFindBySystemIdtf("test_keynode_force");
-  SC_CHECK(addrForce.IsValid(), ());
+  REQUIRE(addrForce.IsValid());
   SC_CHECK_EQUAL(addrForce, obj1.mTestKeynodeForce, ());
+
+  ctx.Destroy();
+  test::ScTestUnit::ShutdownMemory(false);
 }
