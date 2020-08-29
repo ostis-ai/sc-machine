@@ -32,12 +32,21 @@ public:
     Warning,
     Error,
     Python,
-    PythonError
+    PythonError,
+    Off
   };
 
-  _SC_EXTERN bool Initialize(std::string const & file_name);
+  enum class OutputType : uint8_t
+  {
+    Console = 0,
+    File
+  };
+
+
 
   _SC_EXTERN void Shutdown();
+
+  _SC_EXTERN void SetFileName(std::string const & file_name);
 
   /// TODO: thread safe
   _SC_EXTERN void Message(Type type, std::string const & msg, ScConsole::Color color = ScConsole::Color::White);
@@ -49,13 +58,17 @@ public:
 private:
   std::ofstream m_fileStream;
   Type m_mode;
+  OutputType m_output_mode;
   bool m_isMuted;
 
   static ScLog * ms_instance;
 
-  std::string const flag_on = "On";
-  std::string const directory_log = "log/";
-  std::string const extension_log = ".log";
+  std::string static const DEFAULT_LOG_FILE;
+
+  bool Initialize(std::string const & file_name);
+
+  template<size_t N>
+  static int FindEnumElement(const std::string ( & elements)[N], const std::string & externalValue);
 };
 
 
