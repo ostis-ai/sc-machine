@@ -4,11 +4,11 @@
 * (See accompanying file COPYING.MIT or copy at http://opensource.org/licenses/MIT)
 */
 
+#include "CommonUtils.hpp"
+
 #include <sc-memory/sc_iterator.hpp>
-#include <sc-memory/sc_memory.hpp>
 
 #include "IteratorUtils.hpp"
-#include "CommonUtils.hpp"
 
 using namespace std;
 

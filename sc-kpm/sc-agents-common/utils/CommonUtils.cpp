@@ -4,10 +4,10 @@
 * (See accompanying file COPYING.MIT or copy at http://opensource.org/licenses/MIT)
 */
 
-#include <sc-memory/sc_memory.hpp>
+#include "CommonUtils.hpp"
+
 #include <sc-memory/sc_stream.hpp>
 
-#include "CommonUtils.hpp"
 #include "IteratorUtils.hpp"
 #include "keynodes/coreKeynodes.hpp"
 

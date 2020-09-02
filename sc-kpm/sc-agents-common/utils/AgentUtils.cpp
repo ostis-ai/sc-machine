@@ -4,11 +4,10 @@
 * (See accompanying file COPYING.MIT or copy at http://opensource.org/licenses/MIT)
 */
 
-#include <string>
+#include "AgentUtils.hpp"
 
 #include <sc-memory/sc_wait.hpp>
 
-#include "AgentUtils.hpp"
 #include "IteratorUtils.hpp"
 #include "keynodes/coreKeynodes.hpp"
 

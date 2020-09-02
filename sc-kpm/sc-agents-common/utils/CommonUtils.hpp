@@ -8,6 +8,7 @@
 
 #include <string>
 
+#include <sc-memory/sc_memory.hpp>
 #include <sc-memory/sc_addr.hpp>
 
 using namespace std;
