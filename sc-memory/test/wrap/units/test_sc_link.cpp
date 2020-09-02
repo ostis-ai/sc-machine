@@ -4,24 +4,29 @@
 * (See accompanying file COPYING.MIT or copy at http://opensource.org/licenses/MIT)
 */
 
+#include "catch2/catch.hpp"
+
 #include "sc-memory/cpp/utils/sc_test.hpp"
 #include "sc-memory/cpp/sc_link.hpp"
 
-template <typename Type> void TestType(ScMemoryContext & ctx, Type const & value)
+template<typename Type>
+void TestType(ScMemoryContext & ctx, Type const & value)
 {
   ScAddr const linkAddr = ctx.CreateLink();
-  SC_CHECK(linkAddr.IsValid(), ());
+  REQUIRE(linkAddr.IsValid());
 
   ScLink link(ctx, linkAddr);
-  SC_CHECK_NOT(link.IsType<Type>(), ());
-  
-  SC_CHECK(link.Set(value), ());
-  SC_CHECK_EQUAL(link.Get<Type>(), value, ());
-  SC_CHECK(link.IsType<Type>(), ());
+  REQUIRE_FALSE(link.IsType<Type>());
+
+  REQUIRE(link.Set(value));
+  REQUIRE(link.Get<Type>() == value);
+  REQUIRE(link.IsType<Type>());
 }
 
-UNIT_TEST(sc_link_common)
+TEST_CASE("sc_link_common", "[test sc link]")
 {
+  test::ScTestUnit::InitMemory("sc-memory.ini", "");
+
   ScMemoryContext ctx(sc_access_lvl_make_min, "sc_link_common");
 
   TestType<std::string>(ctx, "test_string_value");
@@ -35,63 +40,76 @@ UNIT_TEST(sc_link_common)
   TestType<uint16_t>(ctx, 6757);
   TestType<uint32_t>(ctx, 672357);
   TestType<uint64_t>(ctx, 672423457);
+
+  ctx.Destroy();
+  test::ScTestUnit::ShutdownMemory(false);
 }
 
-UNIT_TEST(sc_link_reuse)
+TEST_CASE("sc_link_reuse", "[test sc link]")
 {
+  test::ScTestUnit::InitMemory("sc-memory.ini", "");
+
   ScMemoryContext ctx(sc_access_lvl_make_min, "sc_link_reuse");
 
   std::string const str = "test_string_value_2";
   ScAddr const linkAddr = ctx.CreateLink();
-  SC_CHECK(linkAddr.IsValid(), ());
+  REQUIRE(linkAddr.IsValid());
 
   ScLink link(ctx, linkAddr);
-  SC_CHECK_NOT(link.IsType<std::string>(), ());
+  REQUIRE_FALSE(link.IsType<std::string>());
 
-  SC_CHECK(link.Set(str), ());
-  SC_CHECK(link.IsType<std::string>(), ());
-  SC_CHECK_EQUAL(link.Get<std::string>(), str, ());
-  
+  REQUIRE(link.Set(str));
+  REQUIRE(link.IsType<std::string>());
+  REQUIRE_THAT(link.Get<std::string>(), Catch::Equals(str));
+
   uint64_t value = 32049809;
-  SC_CHECK(link.Set(value), ());
-  SC_CHECK(link.IsType<uint64_t>(), ());
-  SC_CHECK_NOT(link.IsType<std::string>(), ());
-  SC_CHECK_EQUAL(link.Get<uint64_t>(), value, ());
+  REQUIRE(link.Set(value));
+  REQUIRE(link.IsType<uint64_t>());
+  REQUIRE_FALSE(link.IsType<std::string>());
+  REQUIRE(link.Get<uint64_t>() == value);
+
+  ctx.Destroy();
+  test::ScTestUnit::ShutdownMemory(false);
 }
 
-UNIT_TEST(sc_link_as_string)
+TEST_CASE("sc_link_as_string", "[test sc link]")
 {
+  test::ScTestUnit::InitMemory("sc-memory.ini", "");
+
   ScMemoryContext ctx(sc_access_lvl_make_min, "sc_link_as_string");
 
   ScAddr const linkAddr = ctx.CreateLink();
-  SC_CHECK(linkAddr.IsValid(), ());
+  REQUIRE(linkAddr.IsValid());
 
   ScLink link(ctx, linkAddr);
 
-  SC_CHECK(link.Set<std::string>("76"), ());
-  SC_CHECK_EQUAL(link.GetAsString(), "76", ());
+  REQUIRE(link.Set<std::string>("76"));
+  REQUIRE_THAT(link.GetAsString(), Catch::Equals("76"));
 
-  SC_CHECK(link.Set<int8_t>(-76), ());
-  SC_CHECK_EQUAL(link.GetAsString(), "-76", ());
+  REQUIRE(link.Set<int8_t>(-76));
+  REQUIRE_THAT(link.GetAsString(), Catch::Equals("-76"));
 
-  SC_CHECK(link.Set<uint8_t>(76), ());
-  SC_CHECK_EQUAL(link.GetAsString(), "76", ());
+  REQUIRE(link.Set<uint8_t>(76));
+  REQUIRE_THAT(link.GetAsString(), Catch::Equals("76"));
 
-  SC_CHECK(link.Set<int16_t>(-760), ());
-  SC_CHECK_EQUAL(link.GetAsString(), "-760", ());
+  REQUIRE(link.Set<int16_t>(-760));
+  REQUIRE_THAT(link.GetAsString(), Catch::Equals("-760"));
 
-  SC_CHECK(link.Set<uint16_t>(760), ());
-  SC_CHECK_EQUAL(link.GetAsString(), "760", ());
+  REQUIRE(link.Set<uint16_t>(760));
+  REQUIRE_THAT(link.GetAsString(), Catch::Equals("760"));
 
-  SC_CHECK(link.Set<int32_t>(-76000), ());
-  SC_CHECK_EQUAL(link.GetAsString(), "-76000", ());
+  REQUIRE(link.Set<int32_t>(-76000));
+  REQUIRE_THAT(link.GetAsString(), Catch::Equals("-76000"));
 
-  SC_CHECK(link.Set<uint32_t>(76000), ());
-  SC_CHECK_EQUAL(link.GetAsString(), "76000", ());
+  REQUIRE(link.Set<uint32_t>(76000));
+  REQUIRE_THAT(link.GetAsString(), Catch::Equals("76000"));
 
-  SC_CHECK(link.Set<int64_t>(-7600000000), ());
-  SC_CHECK_EQUAL(link.GetAsString(), "-7600000000", ());
+  REQUIRE(link.Set<int64_t>(-7600000000));
+  REQUIRE_THAT(link.GetAsString(), Catch::Equals("-7600000000"));
 
-  SC_CHECK(link.Set<uint64_t>(7600000000), ());
-  SC_CHECK_EQUAL(link.GetAsString(), "7600000000", ());
+  REQUIRE(link.Set<uint64_t>(7600000000));
+  REQUIRE_THAT(link.GetAsString(), Catch::Equals("7600000000"));
+
+  ctx.Destroy();
+  test::ScTestUnit::ShutdownMemory(false);
 }

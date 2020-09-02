@@ -4,6 +4,8 @@
 * (See accompanying file COPYING.MIT or copy at http://opensource.org/licenses/MIT)
 */
 
+#include "catch2/catch.hpp"
+
 #include "sc-memory/cpp/sc_struct.hpp"
 #include "sc-memory/cpp/utils/sc_test.hpp"
 

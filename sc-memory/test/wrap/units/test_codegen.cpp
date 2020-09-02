@@ -6,15 +6,13 @@
 
 #define CATCH_CONFIG_MAIN
 
+#include "catch2/catch.hpp"
+
 #include "sc-memory/cpp/utils/sc_test.hpp"
 
 #include "test_sc_object.hpp"
-#include "test_sc_agent.hpp"
 
-#include "catch2/catch.hpp"
-
-TEST_CASE("Test codegen", "[test codegen]")
-//UNIT_TEST(codegen_keynodes)
+TEST_CASE("Codegen keynodes", "[test codegen]")
 {
   test::ScTestUnit::InitMemory("sc-memory.ini", "");
 

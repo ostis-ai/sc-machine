@@ -4,6 +4,8 @@
  * (See accompanying file COPYING.MIT or copy at http://opensource.org/licenses/MIT)
  */
 
+#include "catch2/catch.hpp"
+
 #include "test_sc_agent_result.hpp"
 
 #include "sc-memory/cpp/sc_wait.hpp"
@@ -20,8 +22,10 @@ SC_AGENT_ACTION_IMPLEMENTATION(ATestResultOk)
   return SC_RESULT_OK;
 }
 
-UNIT_TEST(ATestResultOk)
+TEST_CASE("ATestResultOk", "[test sc agent result]")
 {
+  test::ScTestUnit::InitMemory("sc-memory.ini", "");
+
   // uncomment to run more complex test
   //for (size_t i = 0; i < 50; ++i)
   {
@@ -33,39 +37,46 @@ UNIT_TEST(ATestResultOk)
     ScMemoryContext ctx(sc_access_lvl_make_min, "ATestResultOk");
 
     ScAddr const cmdAddr = ctx.CreateNode(ScType::NodeConst);
-    SC_CHECK(cmdAddr.IsValid(), ());
+    REQUIRE(cmdAddr.IsValid());
     ScAddr const edge = ctx.CreateEdge(
-      ScType::EdgeAccessConstPosPerm,
-      ATestResultOk::ms_keynodeTestResultOk,
-      cmdAddr);
+          ScType::EdgeAccessConstPosPerm,
+          ATestResultOk::ms_keynodeTestResultOk,
+          cmdAddr);
 
-    SC_CHECK(edge.IsValid(), ());
+    REQUIRE(edge.IsValid());
 
     ScWaitActionFinished waiter(ctx, cmdAddr);
-    waiter.SetOnWaitStartDelegate([&cmdAddr]()
-    {
-      ScMemoryContext ctxLocal(sc_access_lvl_make_min, "ATestResultOk_init");
-      ScAgentAction::InitiateCommand(ctxLocal, cmdAddr);
-    });
-    SC_CHECK(waiter.Wait(), ());
+    waiter.SetOnWaitStartDelegate(
+          [&cmdAddr]()
+          {
+            ScMemoryContext ctxLocal(sc_access_lvl_make_min, "ATestResultOk_init");
+            ScAgentAction::InitiateCommand(ctxLocal, cmdAddr);
+          });
+    REQUIRE(waiter.Wait());
 
     // check result
-    SC_CHECK_EQUAL(ScAgentAction::GetCommandResultCode(ctx, cmdAddr), SC_RESULT_OK, ());
-    SC_CHECK_EQUAL(ScAgentAction::GetCommandState(ctx, cmdAddr), ScAgentAction::State::Finished, ());
+    REQUIRE(ScAgentAction::GetCommandResultCode(ctx, cmdAddr) == SC_RESULT_OK);
+    REQUIRE(ScAgentAction::GetCommandState(ctx, cmdAddr) == ScAgentAction::State::Finished);
 
     SC_AGENT_UNREGISTER(ATestResultOk);
+
+    ctx.Destroy();
   }
+
+  test::ScTestUnit::ShutdownMemory(false);
 }
 
-UNIT_TEST(AgentResultsCommon)
+TEST_CASE("AgentResultsCommon", "[test sc agent result]")
 {
+  test::ScTestUnit::InitMemory("sc-memory.ini", "");
+
   ScAgentInit(true);
 
   auto const CheckValue = [](sc_result resCode)
   {
     ScAddr const & addr = ScKeynodes::GetResultCodeAddr(resCode);
     sc_result const res = ScKeynodes::GetResultCodeByAddr(addr);
-    SC_CHECK_EQUAL(resCode, res, ());
+    REQUIRE(resCode==res);
   };
 
   CheckValue(SC_RESULT_UNKNOWN);
@@ -79,4 +90,6 @@ UNIT_TEST(AgentResultsCommon)
   CheckValue(SC_RESULT_ERROR_NOT_FOUND);
   CheckValue(SC_RESULT_ERROR_NO_WRITE_RIGHTS);
   CheckValue(SC_RESULT_ERROR_NO_READ_RIGHTS);
+
+  test::ScTestUnit::ShutdownMemory(false);
 }

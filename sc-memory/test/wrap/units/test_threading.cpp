@@ -4,17 +4,19 @@
 * (See accompanying file COPYING.MIT or copy at http://opensource.org/licenses/MIT)
 */
 
-#include "sc-memory/cpp/sc_wait.hpp"
+#include <thread>
+#include <cstdlib>
+#include <ctime>
+#include "catch2/catch.hpp"
+
 #include "sc-memory/cpp/sc_timer.hpp"
 #include "sc-memory/cpp/utils/sc_progress.hpp"
 #include "sc-memory/cpp/utils/sc_test.hpp"
 
-#include <thread>
-#include <cstdlib>
-#include <ctime>
-
-UNIT_TEST(events_threading)
+TEST_CASE("events_threading", "[test threading]")
 {
+  test::ScTestUnit::InitMemory("sc-memory.ini", "");
+
   std::srand(unsigned(std::time(0)));
 
   ScMemoryContext ctx(sc_access_lvl_make_min, "events_threading");
@@ -30,7 +32,7 @@ UNIT_TEST(events_threading)
   for (size_t i = 0; i < nodeNum; ++i)
   {
     ScAddr const addr = ctx.CreateNode(ScType::NodeConst);
-    SC_CHECK(addr.IsValid(), ());
+    REQUIRE(addr.IsValid());
     nodes[i] = addr;
   }
 
@@ -81,7 +83,7 @@ UNIT_TEST(events_threading)
     if (v == 0)
     {
       ScAddr const e = ctx.CreateEdge(ScType::EdgeAccess, randNode(), randNode());
-      SC_CHECK(e.IsValid(), ());
+      REQUIRE(e.IsValid());
       edges.push_back(e);
 
       createEdgeCount++;
@@ -94,7 +96,7 @@ UNIT_TEST(events_threading)
         ScAddr const addr = nodes[idx];
         nodes.erase(nodes.begin() + idx);
 
-        SC_CHECK(ctx.EraseElement(addr), ());
+        REQUIRE(ctx.EraseElement(addr));
         eraseNodeCount++;
       }
     }
@@ -111,4 +113,7 @@ UNIT_TEST(events_threading)
   SC_LOG_INFO("Events per second: " << ((float)evtCount / timer.Seconds()));
   SC_LOG_INFO("Created edges: " << createEdgeCount);
   SC_LOG_INFO("Erased nodes: " << eraseNodeCount);
+
+  ctx.Destroy();
+  test::ScTestUnit::ShutdownMemory(false);
 }

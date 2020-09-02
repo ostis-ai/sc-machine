@@ -4,6 +4,8 @@
 * (See accompanying file COPYING.MIT or copy at http://opensource.org/licenses/MIT)
 */
 
+#include "catch2/catch.hpp"
+
 #include "sc-memory/cpp/utils/sc_test.hpp"
 #include "sc-memory/cpp/python/sc_python_interp.hpp"
 #include "sc-memory/cpp/python/sc_python_service.hpp"
@@ -12,26 +14,34 @@
 
 #include <thread>
 
-UNIT_TEST(Python_interp)
+TEST_CASE("Python_interp", "[test python]")
 {
-  SUBTEST_START("common")
+  test::ScTestUnit::InitMemory("sc-memory.ini", "");
+
+  SECTION("common")
   {
-    py::ScPythonInterpreter::AddModulesPath(SC_TEST_KPM_PYTHON_PATH);
+    SUBTEST_START("common")
+    {
+      py::ScPythonInterpreter::AddModulesPath(SC_TEST_KPM_PYTHON_PATH);
 
-    py::DummyService testService("sc_tests/test_common.py");
-    testService.Run();
+      py::DummyService testService("sc_tests/test_common.py");
+      testService.Run();
 
-    while (testService.IsRun())
-      std::this_thread::sleep_for(std::chrono::milliseconds(100));
+      while (testService.IsRun())
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
 
-    testService.Stop();
+      testService.Stop();
+    }
+    SUBTEST_END()
   }
-  SUBTEST_END()
+
+  test::ScTestUnit::ShutdownMemory(false);
 }
 
-
-UNIT_TEST(Python_clean)
+TEST_CASE("Python_clean", "[test python]")
 {
+  test::ScTestUnit::InitMemory("sc-memory.ini", "");
+
   py::ScPythonInterpreter::AddModulesPath(SC_TEST_KPM_PYTHON_PATH);
 
   volatile bool passed = true;
@@ -64,5 +74,7 @@ UNIT_TEST(Python_clean)
   for (auto const & t : threads)
     t->join();
   //std::this_thread::sleep_for(std::chrono::seconds(10));
-  SC_CHECK(passed, ());
+  REQUIRE(passed);
+
+  test::ScTestUnit::ShutdownMemory(false);
 }
