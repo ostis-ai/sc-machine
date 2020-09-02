@@ -13,8 +13,6 @@
 
 TEST_CASE("keynodes", "[test keynodes]")
 {
-  test::ScTestUnit::InitMemory("sc-memory.ini", "");
-
   ScMemoryContext ctx(sc_access_lvl_make_min, "keynodes");
 
   SECTION("binary_type")
@@ -43,13 +41,10 @@ TEST_CASE("keynodes", "[test keynodes]")
   }
 
   ctx.Destroy();
-  test::ScTestUnit::ShutdownMemory(false);
 }
 
 TEST_CASE("keynode_cache", "[test keynodes]")
 {
-  test::ScTestUnit::InitMemory("sc-memory.ini", "");
-
   ScMemoryContext ctx(sc_access_lvl_make_min, "keynode_cache");
 
   SECTION("basic")
@@ -71,5 +66,4 @@ TEST_CASE("keynode_cache", "[test keynodes]")
   }
 
   ctx.Destroy();
-  test::ScTestUnit::ShutdownMemory(false);
 }

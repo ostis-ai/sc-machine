@@ -88,8 +88,6 @@ private:
 
 TEST_CASE("scs_parser_error", "[test scs parser]")
 {
-  test::ScTestUnit::InitMemory("sc-memory.ini", "");
-
   ScMemoryContext ctx(sc_access_lvl_make_min, "scs_parser_error");
 
   SECTION("error_1")
@@ -107,13 +105,10 @@ TEST_CASE("scs_parser_error", "[test scs parser]")
   }
 
   ctx.Destroy();
-  test::ScTestUnit::ShutdownMemory(false);
 }
 
 TEST_CASE("scs_parser_triple", "[test scs parser]")
 {
-  test::ScTestUnit::InitMemory("sc-memory.ini", "");
-
   ScMemoryContext ctx(sc_access_lvl_make_min, "scs_parser_triple");
 
   SECTION("triple_1")
@@ -202,13 +197,10 @@ TEST_CASE("scs_parser_triple", "[test scs parser]")
   }
 
   ctx.Destroy();
-  test::ScTestUnit::ShutdownMemory(false);
 }
 
 TEST_CASE("scs_comments", "[test scs parser]")
 {
-  test::ScTestUnit::InitMemory("sc-memory.ini", "");
-
   ScMemoryContext ctx(sc_access_lvl_make_min, "scs_comments");
   scs::Parser parser(ctx);
 
@@ -249,13 +241,10 @@ TEST_CASE("scs_comments", "[test scs parser]")
   }
 
   ctx.Destroy();
-  test::ScTestUnit::ShutdownMemory(false);
 }
 
 TEST_CASE("scs_level_1", "[test scs parser]")
 {
-  test::ScTestUnit::InitMemory("sc-memory.ini", "");
-
   ScMemoryContext ctx(sc_access_lvl_make_min, "scs_level_1");
 
   SECTION("simple")
@@ -283,13 +272,10 @@ TEST_CASE("scs_level_1", "[test scs parser]")
   }
 
   ctx.Destroy();
-  test::ScTestUnit::ShutdownMemory(false);
 }
 
 TEST_CASE("scs_const_var", "[test scs parser]")
 {
-  test::ScTestUnit::InitMemory("sc-memory.ini", "");
-
   ScMemoryContext ctx(sc_access_lvl_make_min, "scs_const_var");
 
   char const * data = "_a _-> b;;";
@@ -314,13 +300,10 @@ TEST_CASE("scs_const_var", "[test scs parser]")
   }
 
   ctx.Destroy();
-  test::ScTestUnit::ShutdownMemory(false);
 }
 
 TEST_CASE("scs_level_2", "[test scs parser]")
 {
-  test::ScTestUnit::InitMemory("sc-memory.ini", "");
-
   ScMemoryContext ctx(sc_access_lvl_make_min, "scs_level_2");
 
   SECTION("simple_1")
@@ -432,13 +415,10 @@ TEST_CASE("scs_level_2", "[test scs parser]")
   SUBTEST_END()
 
   ctx.Destroy();
-  test::ScTestUnit::ShutdownMemory(false);
 }
 
 TEST_CASE("scs_level_3", "[test scs parser]")
 {
-  test::ScTestUnit::InitMemory("sc-memory.ini", "");
-
   ScMemoryContext ctx(sc_access_lvl_make_min, "scs_level_3");
 
   SECTION("simple_1")
@@ -570,13 +550,10 @@ TEST_CASE("scs_level_3", "[test scs parser]")
   }
 
   ctx.Destroy();
-  test::ScTestUnit::ShutdownMemory(false);
 }
 
 TEST_CASE("scs_level_4", "[test scs parser]")
 {
-  test::ScTestUnit::InitMemory("sc-memory.ini", "");
-
   ScMemoryContext ctx(sc_access_lvl_make_min, "scs_level_4");
 
   SECTION("simple_1")
@@ -672,13 +649,10 @@ TEST_CASE("scs_level_4", "[test scs parser]")
   }
 
   ctx.Destroy();
-  test::ScTestUnit::ShutdownMemory(false);
 }
 
 TEST_CASE("scs_types", "[test scs parser]")
 {
-  test::ScTestUnit::InitMemory("sc-memory.ini", "");
-
   ScMemoryContext ctx(sc_access_lvl_make_min, "scs_types");
 
   SECTION("nodes")
@@ -836,5 +810,4 @@ TEST_CASE("scs_types", "[test scs parser]")
   }
 
   ctx.Destroy();
-  test::ScTestUnit::ShutdownMemory(false);
 }

@@ -32,8 +32,6 @@ SC_AGENT_ACTION_IMPLEMENTATION(ATestCommandEmit)
 
 TEST_CASE("ATestCommandEmit", "[test sc agent commands]")
 {
-  test::ScTestUnit::InitMemory("sc-memory.ini", "");
-
   ScMemoryContext * ctx = new ScMemoryContext(sc_access_lvl_make_min, "ATestCommandEmit");
   ATestCommandEmit::InitGlobal();
 
@@ -58,5 +56,4 @@ TEST_CASE("ATestCommandEmit", "[test sc agent commands]")
   SC_AGENT_UNREGISTER(ATestCommandEmit);
 
   ctx->Destroy();
-  test::ScTestUnit::ShutdownMemory(false);
 }

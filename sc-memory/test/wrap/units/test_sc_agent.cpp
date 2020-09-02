@@ -37,8 +37,6 @@ SC_AGENT_ACTION_IMPLEMENTATION(ATestCommand)
 
 TEST_CASE("ATestCommand", "[test sc agent]")
 {
-  test::ScTestUnit::InitMemory("sc-memory.ini", "");
-
   ScMemoryContext ctx(sc_access_lvl_make_min, "ATestCommand");
 
   ScAddr const command_1 = CreateKeynode(ctx, "command_1");
@@ -60,7 +58,6 @@ TEST_CASE("ATestCommand", "[test sc agent]")
   SC_AGENT_UNREGISTER(ATestCommand);
 
   ctx.Destroy();
-  test::ScTestUnit::ShutdownMemory(false);
 }
 
 
@@ -76,8 +73,6 @@ SC_AGENT_IMPLEMENTATION(ATestAddInputEdge)
 
 TEST_CASE("ATestAddInputEdge", "[test sc agent]")
 {
-  test::ScTestUnit::InitMemory("sc-memory.ini", "");
-
   ScMemoryContext ctx(sc_access_lvl_make_min, "ATestAddInputEdge");
 
   ScAgentInit(true);
@@ -93,7 +88,6 @@ TEST_CASE("ATestAddInputEdge", "[test sc agent]")
   SC_AGENT_UNREGISTER(ATestAddInputEdge);
 
   ctx.Destroy();
-  test::ScTestUnit::ShutdownMemory(false);
 }
 
 
@@ -109,8 +103,6 @@ SC_AGENT_IMPLEMENTATION(ATestAddOutputEdge)
 
 TEST_CASE("ATestAddOutputEdge", "[test sc agent]")
 {
-  test::ScTestUnit::InitMemory("sc-memory.ini", "");
-
   ScMemoryContext ctx(sc_access_lvl_make_min, "ATestAddOutputEdge");
 
   ScAgentInit(true);
@@ -128,7 +120,6 @@ TEST_CASE("ATestAddOutputEdge", "[test sc agent]")
   SC_AGENT_UNREGISTER(ATestAddOutputEdge);
 
   ctx.Destroy();
-  test::ScTestUnit::ShutdownMemory(false);
 }
 
 
@@ -144,8 +135,6 @@ SC_AGENT_IMPLEMENTATION(ATestRemoveInputEdge)
 
 TEST_CASE("ATestRemoveInputEdge", "[test sc agent]")
 {
-  test::ScTestUnit::InitMemory("sc-memory.ini", "");
-
   ScMemoryContext ctx(sc_access_lvl_make_min, "ATestRemoveInputEdge");
 
   ScAgentInit(true);
@@ -164,7 +153,6 @@ TEST_CASE("ATestRemoveInputEdge", "[test sc agent]")
   SC_AGENT_UNREGISTER(ATestRemoveInputEdge);
 
   ctx.Destroy();
-  test::ScTestUnit::ShutdownMemory(false);
 }
 
 
@@ -180,8 +168,6 @@ SC_AGENT_IMPLEMENTATION(ATestRemoveOutputEdge)
 
 TEST_CASE("ATestRemoveOutputEdge", "[test sc agent]")
 {
-  test::ScTestUnit::InitMemory("sc-memory.ini", "");
-
   ScMemoryContext ctx(sc_access_lvl_make_min, "ATestRemoveOutputEdge");
 
   ScAgentInit(true);
@@ -200,7 +186,6 @@ TEST_CASE("ATestRemoveOutputEdge", "[test sc agent]")
   SC_AGENT_UNREGISTER(ATestRemoveOutputEdge);
 
   ctx.Destroy();
-  test::ScTestUnit::ShutdownMemory(false);
 }
 
 
@@ -216,8 +201,6 @@ SC_AGENT_IMPLEMENTATION(ATestRemoveElement)
 
 TEST_CASE("ATestRemoveElement", "[test sc agent]")
 {
-  test::ScTestUnit::InitMemory("sc-memory.ini", "");
-
   ScMemoryContext ctx(sc_access_lvl_make_min, "ATestRemoveElement");
 
   ScAgentInit(true);
@@ -231,7 +214,6 @@ TEST_CASE("ATestRemoveElement", "[test sc agent]")
   SC_AGENT_UNREGISTER(ATestRemoveElement);
 
   ctx.Destroy();
-  test::ScTestUnit::ShutdownMemory(false);
 }
 
 
@@ -247,8 +229,6 @@ SC_AGENT_IMPLEMENTATION(ATestContentChanged)
 
 TEST_CASE("ATestContentChanged", "[test sc agent]")
 {
-  test::ScTestUnit::InitMemory("sc-memory.ini", "");
-
   ScMemoryContext ctx(sc_access_lvl_make_min, "ATestContentChanged");
 
   ScAddr const link = ctx.CreateLink();
@@ -269,5 +249,4 @@ TEST_CASE("ATestContentChanged", "[test sc agent]")
   SC_AGENT_UNREGISTER(ATestContentChanged);
 
   ctx.Destroy();
-  test::ScTestUnit::ShutdownMemory(false);
 }

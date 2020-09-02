@@ -12,8 +12,6 @@
 
 TEST_CASE("Elements", "[test common]")
 {
-  test::ScTestUnit::InitMemory("sc-memory.ini", "");
-
   ScMemoryContext ctx(sc_access_lvl_make_min, "elements");
 
   ScAddr addr = ctx.CreateNode(ScType::Const);
@@ -45,7 +43,6 @@ TEST_CASE("Elements", "[test common]")
   REQUIRE(ctx.IsElement(link));
 
   ctx.Destroy();
-  test::ScTestUnit::ShutdownMemory(false);
 }
 
 TEST_CASE("StringUtils", "[test common]")

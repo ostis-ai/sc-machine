@@ -24,8 +24,6 @@ SC_AGENT_ACTION_IMPLEMENTATION(ATestResultOk)
 
 TEST_CASE("ATestResultOk", "[test sc agent result]")
 {
-  test::ScTestUnit::InitMemory("sc-memory.ini", "");
-
   // uncomment to run more complex test
   //for (size_t i = 0; i < 50; ++i)
   {
@@ -62,14 +60,10 @@ TEST_CASE("ATestResultOk", "[test sc agent result]")
 
     ctx.Destroy();
   }
-
-  test::ScTestUnit::ShutdownMemory(false);
 }
 
 TEST_CASE("AgentResultsCommon", "[test sc agent result]")
 {
-  test::ScTestUnit::InitMemory("sc-memory.ini", "");
-
   ScAgentInit(true);
 
   auto const CheckValue = [](sc_result resCode)
@@ -90,6 +84,4 @@ TEST_CASE("AgentResultsCommon", "[test sc agent result]")
   CheckValue(SC_RESULT_ERROR_NOT_FOUND);
   CheckValue(SC_RESULT_ERROR_NO_WRITE_RIGHTS);
   CheckValue(SC_RESULT_ERROR_NO_READ_RIGHTS);
-
-  test::ScTestUnit::ShutdownMemory(false);
 }

@@ -52,8 +52,6 @@ void testEventsFuncT(ScMemoryContext & ctx, ScAddr const & addr, PrepareF prepar
 
 TEST_CASE("Events common", "[test event]")
 {
-  test::ScTestUnit::InitMemory("sc-memory.ini", "");
-
   ScMemoryContext * ctx = new ScMemoryContext(sc_access_lvl_make_min, "events_common");
 
   SECTION("ScEventAddInputEdge")
@@ -195,20 +193,6 @@ TEST_CASE("Events common", "[test event]")
     SUBTEST_END()
   }
 
-/*
-  ctx.Destroy();
-
-  test::ScTestUnit::ShutdownMemory(false);
-}
-
-TEST_CASE("Events destroy order", "[test event]")
-//UNIT_TEST(events_destroy_order)
-{
-  test::ScTestUnit::InitMemory("sc-memory.ini", "");
-
-  ScMemoryContext * ctx = new ScMemoryContext(sc_access_lvl_make_min, "events_destroy_order");
-  */
-
   SECTION("events destroy order")
   {
     SUBTEST_START("events destroy order")
@@ -226,26 +210,6 @@ TEST_CASE("Events destroy order", "[test event]")
     }
     SUBTEST_END()
   }
-
-
-/*
-  ctx->Destroy();
-  delete ctx;
-*/
-/*
-  // delete event after context
-  //delete evt;
-
-  test::ScTestUnit::ShutdownMemory(false);
-}
-
-TEST_CASE("Events lock", "[test event]")
-//UNIT_TEST(events_lock)
-{
-  test::ScTestUnit::InitMemory("sc-memory.ini", "");
-
-  ScMemoryContext ctx(sc_access_lvl_make_min, "events_lock");
-  */
 
   SECTION("events lock")
   {
@@ -270,7 +234,7 @@ TEST_CASE("Events lock", "[test event]")
               return true;
             });
 
-      for (size_t i = 0; i < 10000; i++)
+      for (size_t i = 0; i < 10; i++)
       {
         ctx->CreateEdge(ScType::EdgeAccessConstPosPerm, node, node2);
       }
@@ -279,18 +243,6 @@ TEST_CASE("Events lock", "[test event]")
     SUBTEST_END()
   }
 
-    /*
-    ctx->Destroy();
-    test::ScTestUnit::ShutdownMemory(false);
-  }
-
-  //UNIT_TEST(pend_events)
-  TEST_CASE("Pend events", "[test event]")
-  {
-    test::ScTestUnit::InitMemory("sc-memory.ini", "");
-
-    ScMemoryContext ctx(sc_access_lvl_make_min, "pend_events");
-  */
   SECTION("pend events")
   {
     /*
@@ -375,5 +327,4 @@ TEST_CASE("Events lock", "[test event]")
   }
 
   ctx->Destroy();
-  test::ScTestUnit::ShutdownMemory(false);
 }

@@ -4,8 +4,6 @@
 * (See accompanying file COPYING.MIT or copy at http://opensource.org/licenses/MIT)
 */
 
-#define CATCH_CONFIG_MAIN
-
 #include "catch2/catch.hpp"
 
 #include "sc-memory/cpp/utils/sc_test.hpp"
@@ -14,8 +12,6 @@
 
 TEST_CASE("Codegen keynodes", "[test codegen]")
 {
-  test::ScTestUnit::InitMemory("sc-memory.ini", "");
-
   ScMemoryContext ctx(sc_access_lvl_make_min, "codegen_keynodes");
 
   ScAddr addr1 = ctx.CreateNode(ScType::Const);
@@ -44,5 +40,4 @@ TEST_CASE("Codegen keynodes", "[test codegen]")
   SC_CHECK_EQUAL(addrForce, obj1.mTestKeynodeForce, ());
 
   ctx.Destroy();
-  test::ScTestUnit::ShutdownMemory(false);
 }

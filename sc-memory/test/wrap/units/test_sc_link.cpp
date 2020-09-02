@@ -25,8 +25,6 @@ void TestType(ScMemoryContext & ctx, Type const & value)
 
 TEST_CASE("sc_link_common", "[test sc link]")
 {
-  test::ScTestUnit::InitMemory("sc-memory.ini", "");
-
   ScMemoryContext ctx(sc_access_lvl_make_min, "sc_link_common");
 
   TestType<std::string>(ctx, "test_string_value");
@@ -42,13 +40,10 @@ TEST_CASE("sc_link_common", "[test sc link]")
   TestType<uint64_t>(ctx, 672423457);
 
   ctx.Destroy();
-  test::ScTestUnit::ShutdownMemory(false);
 }
 
 TEST_CASE("sc_link_reuse", "[test sc link]")
 {
-  test::ScTestUnit::InitMemory("sc-memory.ini", "");
-
   ScMemoryContext ctx(sc_access_lvl_make_min, "sc_link_reuse");
 
   std::string const str = "test_string_value_2";
@@ -69,13 +64,10 @@ TEST_CASE("sc_link_reuse", "[test sc link]")
   REQUIRE(link.Get<uint64_t>() == value);
 
   ctx.Destroy();
-  test::ScTestUnit::ShutdownMemory(false);
 }
 
 TEST_CASE("sc_link_as_string", "[test sc link]")
 {
-  test::ScTestUnit::InitMemory("sc-memory.ini", "");
-
   ScMemoryContext ctx(sc_access_lvl_make_min, "sc_link_as_string");
 
   ScAddr const linkAddr = ctx.CreateLink();
@@ -111,5 +103,4 @@ TEST_CASE("sc_link_as_string", "[test sc link]")
   REQUIRE_THAT(link.GetAsString(), Catch::Equals("7600000000"));
 
   ctx.Destroy();
-  test::ScTestUnit::ShutdownMemory(false);
 }

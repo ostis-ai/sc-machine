@@ -15,8 +15,6 @@
 
 TEST_CASE("events_threading", "[test threading]")
 {
-  test::ScTestUnit::InitMemory("sc-memory.ini", "");
-
   std::srand(unsigned(std::time(0)));
 
   ScMemoryContext ctx(sc_access_lvl_make_min, "events_threading");
@@ -115,5 +113,4 @@ TEST_CASE("events_threading", "[test threading]")
   SC_LOG_INFO("Erased nodes: " << eraseNodeCount);
 
   ctx.Destroy();
-  test::ScTestUnit::ShutdownMemory(false);
 }

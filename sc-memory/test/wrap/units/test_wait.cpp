@@ -41,8 +41,6 @@ void EmitEvent(WaitTestData & data)
 
 TEST_CASE("waiter", "[test wait]")
 {
-  test::ScTestUnit::InitMemory("sc-memory.ini", "");
-
   ScAgentInit(true);
   ScMemoryContext ctx(sc_access_lvl_make_min, "waiter");
 
@@ -147,5 +145,4 @@ TEST_CASE("waiter", "[test wait]")
   }
 
   ctx.Destroy();
-  test::ScTestUnit::ShutdownMemory(false);
 }

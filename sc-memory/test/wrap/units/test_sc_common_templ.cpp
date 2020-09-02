@@ -12,9 +12,7 @@
 
 TEST_CASE("sc_ResolveRelationTuple", "[test sc common templ]")
 {
-  test::ScTestUnit::InitMemory("sc-memory.ini", "");
-
-  ScMemoryContext ctx(sc_access_lvl_make_min, "sc_ResolveRelationTuple");
+ ScMemoryContext ctx(sc_access_lvl_make_min, "sc_ResolveRelationTuple");
 
   ScAddr const el = ctx.CreateNode(ScType::NodeConst);
   ScAddr const relAddr = ctx.CreateNode(ScType::NodeConstNoRole);
@@ -39,13 +37,10 @@ TEST_CASE("sc_ResolveRelationTuple", "[test sc common templ]")
   REQUIRE(tuple == tuple2);
 
   ctx.Destroy();
-  test::ScTestUnit::ShutdownMemory(false);
 }
 
 TEST_CASE("sc_SetRelationValue", "[test sc common templ]")
 {
-  test::ScTestUnit::InitMemory("sc-memory.ini", "");
-
   ScMemoryContext ctx(sc_access_lvl_make_min, "sc_SetRelationValue");
 
   ScAddr const el = ctx.CreateNode(ScType::NodeConst);
@@ -84,5 +79,4 @@ TEST_CASE("sc_SetRelationValue", "[test sc common templ]")
   }
 
   ctx.Destroy();
-  test::ScTestUnit::ShutdownMemory(false);
 }

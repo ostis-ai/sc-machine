@@ -11,8 +11,6 @@
 
 TEST_CASE("Iterators", "[test iterators]")
 {
-  test::ScTestUnit::InitMemory("sc-memory.ini", "");
-
   ScMemoryContext ctx(sc_access_lvl_make_min, "iterators");
 
   ScAddr addr1 = ctx.CreateNode(ScType::Const);
@@ -261,5 +259,4 @@ TEST_CASE("Iterators", "[test iterators]")
   }
 
   ctx.Destroy();
-  test::ScTestUnit::ShutdownMemory(false);
 }

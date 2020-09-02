@@ -16,8 +16,6 @@
 
 TEST_CASE("Python_interp", "[test python]")
 {
-  test::ScTestUnit::InitMemory("sc-memory.ini", "");
-
   SECTION("common")
   {
     SUBTEST_START("common")
@@ -34,14 +32,10 @@ TEST_CASE("Python_interp", "[test python]")
     }
     SUBTEST_END()
   }
-
-  test::ScTestUnit::ShutdownMemory(false);
 }
 
 TEST_CASE("Python_clean", "[test python]")
 {
-  test::ScTestUnit::InitMemory("sc-memory.ini", "");
-
   py::ScPythonInterpreter::AddModulesPath(SC_TEST_KPM_PYTHON_PATH);
 
   volatile bool passed = true;
@@ -75,6 +69,4 @@ TEST_CASE("Python_clean", "[test python]")
     t->join();
   //std::this_thread::sleep_for(std::chrono::seconds(10));
   REQUIRE(passed);
-
-  test::ScTestUnit::ShutdownMemory(false);
 }
