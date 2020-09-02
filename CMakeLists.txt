@@ -1,3 +1,4 @@
+cmake_policy(SET CMP0048 NEW)
 project (sc-machine)
 site_name (www.ostis.net)
 cmake_minimum_required (VERSION 2.8)
@@ -37,6 +38,8 @@ foreach( OUTPUTCONFIG ${CMAKE_CONFIGURATION_TYPES} )
 endforeach( OUTPUTCONFIG CMAKE_CONFIGURATION_TYPES )
 
 set(SC_MEMORY_SRC "${SC_MACHINE_ROOT}/sc-memory")
+set(SC_KPM_SRC "${SC_MACHINE_ROOT}/sc-kpm")
+set(SC_TOOLS_SRC "${SC_MACHINE_ROOT}/tools")
 
 if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fcolor-diagnostics -std=c++14")

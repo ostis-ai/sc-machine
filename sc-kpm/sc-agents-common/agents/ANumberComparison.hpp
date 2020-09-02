@@ -9,7 +9,7 @@
 #include <sc-memory/kpm/sc_agent.hpp>
 
 #include "keynodes/coreKeynodes.hpp"
-#include "../generated/ANumberComparison.generated.hpp"
+#include "ANumberComparison.generated.hpp"
 
 namespace scAgentsCommon
 {

@@ -1,4 +1,3 @@
-set(SC_KPM_ROOT "${SC_MACHINE_ROOT}/sc-kpm")
 
 add_subdirectory(sc-common)
 
