@@ -96,7 +96,11 @@ elseif (${UNIX})
 
     set(PY_SHORT_VERSION "${PY_VERSION_MAJOR}${PY_VERSION_MINOR}")
 
-    find_package(Boost 1.54 REQUIRED COMPONENTS filesystem python-py${PY_SHORT_VERSION})
+    if (${PY_SHORT_VERSION} GREATER_EQUAL "38")
+        find_package(Boost 1.54 REQUIRED COMPONENTS filesystem python)
+    else ()
+        find_package(Boost 1.54 REQUIRED COMPONENTS filesystem python-py${PY_SHORT_VERSION})
+    endif()
     find_package(RocksDB REQUIRED)
 
     include(FindPkgConfig)
