@@ -6,4 +6,4 @@
 
 #include "sc-memory/cpp/utils/sc_test.hpp"
 
-//SC_AUTOMATION_TESTS("test_wrap")
+SC_AUTOMATION_TESTS("test_wrap")
