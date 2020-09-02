@@ -46,10 +46,10 @@ public:
         const ScAddr & answer,
         bool isSuccess = true);
 
-static void finishAgentWork(
-      ScMemoryContext * ms_context,
-      const ScAddr & questionNode,
-      bool isSuccess = true);
+  static void finishAgentWork(
+        ScMemoryContext * ms_context,
+        const ScAddr & questionNode,
+        bool isSuccess = true);
 
 };
 }
