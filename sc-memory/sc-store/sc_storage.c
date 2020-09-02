@@ -43,7 +43,7 @@ GMutex s_mutex_save;
 
 void _sc_segment_cache_lock(const sc_memory_context * ctx)
 {
-    while (g_atomic_pointer_compare_and_exchange(&segments_cache_lock_ctx, 0, ctx) == FALSE) {}
+    while (g_atomic_pointer_compare_and_exchange(&segments_cache_lock_ctx, (sc_memory_context*) 0, ctx) == FALSE) {}
 }
 
 void _sc_segment_cache_unlock(const sc_memory_context *ctx)
@@ -57,7 +57,7 @@ void _sc_segment_cache_append(const sc_memory_context * ctx, sc_segment * seg)
     sc_int32 i, idx = CONCURRENCY_TO_CACHE_IDX(ctx->id);
     for (i = 0; i < SC_SEGMENT_CACHE_SIZE; ++i)
     {
-        if (g_atomic_pointer_compare_and_exchange(&segments_cache[(idx + i) % SC_SEGMENT_CACHE_SIZE], 0, seg) == TRUE)
+        if (g_atomic_pointer_compare_and_exchange(&segments_cache[(idx + i) % SC_SEGMENT_CACHE_SIZE], (sc_segment*) 0, seg) == TRUE)
         {
             g_atomic_int_inc(&segments_cache_count);
             break;
