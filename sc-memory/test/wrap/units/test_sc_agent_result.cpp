@@ -9,7 +9,6 @@
 #include "test_sc_agent_result.hpp"
 
 #include "sc-memory/cpp/sc_wait.hpp"
-#include "sc-memory/cpp/utils/sc_test.hpp"
 
 #include <thread>
 

@@ -60,5 +60,7 @@ TEST_CASE("struct_common", "[test struct]")
     REQUIRE(iter5->Get(4) == attrAddr);
     found = true;
   }
-  SC_CHECK(found, ());
+  REQUIRE(found);
+
+  ctx.Destroy();
 }

@@ -4,8 +4,6 @@
 * (See accompanying file COPYING.MIT or copy at http://opensource.org/licenses/MIT)
 */
 
-//#define CATCH_CONFIG_RUNNER
-
 #include "catch2/catch.hpp"
 
 #include "sc-memory/cpp/sc_debug.hpp"
@@ -976,8 +974,6 @@ TEST_CASE("template_search_in_struct", "[test templates]")
     for (uint32_t i = 0; i < result.Size(); ++i)
     {
       ScTemplateSearchResultItem res1 = result[i];
-      //REQUIRE(res1["x"] == xAddr);
-      //TODO:: переделать
       bool res = (res1["_y"] == tyAddr || res1["_y"] == tgAddr) &&
                  (res1["_z"] == tzAddr || res1["_z"] == tsAddr) &&
                  (res1["_xyEdge"] == txyEdgeAddr || res1["_xyEdge"] == txgEdgeAddr) &&

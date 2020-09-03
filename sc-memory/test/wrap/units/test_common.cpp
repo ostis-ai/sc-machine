@@ -4,8 +4,6 @@
 * (See accompanying file COPYING.MIT or copy at http://opensource.org/licenses/MIT)
 */
 
-//#define CATCH_CONFIG_MAIN
-
 #include "catch2/catch.hpp"
 
 #include "sc-memory/cpp/utils/sc_test.hpp"
@@ -27,15 +25,15 @@ TEST_CASE("Elements", "[test common]")
   REQUIRE(ctx.IsElement(link));
   REQUIRE(ctx.IsElement(arc));
 
-  SC_CHECK_EQUAL(ctx.GetEdgeSource(arc), addr, ());
-  SC_CHECK_EQUAL(ctx.GetEdgeTarget(arc), link, ());
+  REQUIRE(ctx.GetEdgeSource(arc) == addr);
+  REQUIRE(ctx.GetEdgeTarget(arc) == link);
 
-  SC_CHECK_EQUAL(ctx.GetElementType(addr), ScType::NodeConst, ());
-  //SC_CHECK_EQUAL(ctx.GetElementType(link), ScType::Link, ());
-  SC_CHECK_EQUAL(ctx.GetElementType(arc), ScType::EdgeAccessConstPosPerm, ());
+  REQUIRE(ctx.GetElementType(addr) == ScType::NodeConst);
+  REQUIRE(ctx.GetElementType(link) == ScType::Link);
+  REQUIRE(ctx.GetElementType(arc) == ScType::EdgeAccessConstPosPerm);
 
   REQUIRE(ctx.SetElementSubtype(addr, ScType::Var));
-  SC_CHECK_EQUAL(ctx.GetElementType(addr), ScType::NodeVar, ());
+  REQUIRE(ctx.GetElementType(addr) == ScType::NodeVar);
 
   REQUIRE(ctx.EraseElement(addr));
   REQUIRE(!ctx.IsElement(addr));
@@ -104,7 +102,7 @@ TEST_CASE("ScAddr", "[test common]")
       ScAddr const addr1(a);
       auto const hash = addr1.Hash();
       ScAddr const addr2(hash);
-      SC_CHECK_EQUAL(addr1, addr2, ());
+      REQUIRE(addr1 == addr2);
     }
     SUBTEST_END()
   }

@@ -234,7 +234,7 @@ TEST_CASE("Events common", "[test event]")
               return true;
             });
 
-      for (size_t i = 0; i < 10; i++)
+      for (size_t i = 0; i < 10000; i++)
       {
         ctx->CreateEdge(ScType::EdgeAccessConstPosPerm, node, node2);
       }
