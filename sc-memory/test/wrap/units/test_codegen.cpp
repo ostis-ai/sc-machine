@@ -12,32 +12,44 @@
 
 TEST_CASE("Codegen keynodes", "[test codegen]")
 {
+  test::ScTestUnit::InitMemory("sc-memory.ini", "");
+
   ScMemoryContext ctx(sc_access_lvl_make_min, "codegen_keynodes");
 
-  ScAddr addr1 = ctx.CreateNode(ScType::Const);
-  REQUIRE(addr1.IsValid());
-  REQUIRE(ctx.HelperSetSystemIdtf("test_keynode1", addr1));
+  std::exception_ptr ptr;
 
-  ScAddr addr2 = ctx.CreateNode(ScType::Var);
-  REQUIRE(addr2.IsValid());
-  REQUIRE(ctx.HelperSetSystemIdtf("test_keynode2", addr2));
+  try
+  {
+    ScAddr addr1 = ctx.CreateNode(ScType::Const);
+    REQUIRE(addr1.IsValid());
+    REQUIRE(ctx.HelperSetSystemIdtf("test_keynode1", addr1));
 
-  ScAddr addr3 = ctx.CreateNode(ScType::Var);
-  REQUIRE(addr3.IsValid());
-  REQUIRE(ctx.HelperSetSystemIdtf("test_keynode3", addr3));
+    ScAddr addr2 = ctx.CreateNode(ScType::Var);
+    REQUIRE(addr2.IsValid());
+    REQUIRE(ctx.HelperSetSystemIdtf("test_keynode2", addr2));
 
-  n1::n2::TestObject obj1;
-  obj1.Init();
+    ScAddr addr3 = ctx.CreateNode(ScType::Var);
+    REQUIRE(addr3.IsValid());
+    REQUIRE(ctx.HelperSetSystemIdtf("test_keynode3", addr3));
 
-  SC_CHECK_EQUAL(addr1, obj1.mTestKeynode1, ());
-  SC_CHECK_EQUAL(addr2, obj1.mTestKeynode2, ());
+    n1::n2::TestObject obj1;
+    obj1.Init();
 
-  obj1.InitGlobal();
-  SC_CHECK_EQUAL(addr3, obj1.mTestKeynode3, ());
+    SC_CHECK_EQUAL(addr1, obj1.mTestKeynode1, ());
+    SC_CHECK_EQUAL(addr2, obj1.mTestKeynode2, ());
 
-  ScAddr const addrForce = ctx.HelperFindBySystemIdtf("test_keynode_force");
-  REQUIRE(addrForce.IsValid());
-  SC_CHECK_EQUAL(addrForce, obj1.mTestKeynodeForce, ());
+    obj1.InitGlobal();
+    SC_CHECK_EQUAL(addr3, obj1.mTestKeynode3, ());
+
+    ScAddr const addrForce = ctx.HelperFindBySystemIdtf("test_keynode_force");
+    REQUIRE(addrForce.IsValid());
+    SC_CHECK_EQUAL(addrForce, obj1.mTestKeynodeForce, ());
+  } catch (...)
+  {
+    SC_LOG_ERROR("Test \"Codegen keynodes\" failed");
+  }
 
   ctx.Destroy();
+
+  test::ScTestUnit::ShutdownMemory(false);
 }

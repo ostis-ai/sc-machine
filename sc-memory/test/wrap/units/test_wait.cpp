@@ -41,9 +41,13 @@ void EmitEvent(WaitTestData & data)
 
 TEST_CASE("waiter", "[test wait]")
 {
+  test::ScTestUnit::InitMemory("sc-memory.ini", "");
+
   ScAgentInit(true);
   ScMemoryContext ctx(sc_access_lvl_make_min, "waiter");
 
+  try
+  {
   const ScAddr addr = ctx.CreateNode(ScType::NodeConst);
   REQUIRE(addr.IsValid());
 
@@ -143,6 +147,11 @@ TEST_CASE("waiter", "[test wait]")
     }
     SUBTEST_END()
   }
-
+  } catch (...)
+  {
+    SC_LOG_ERROR("Test \"waiter\" failed")
+  }
   ctx.Destroy();
+
+  test::ScTestUnit::ShutdownMemory(false);
 }

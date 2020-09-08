@@ -8,6 +8,7 @@
 
 #include "test_sc_agent_commands.hpp"
 
+#include "sc-memory/cpp/utils/sc_test.hpp"
 #include "sc-memory/cpp/sc_wait.hpp"
 
 #include <thread>
@@ -31,28 +32,37 @@ SC_AGENT_ACTION_IMPLEMENTATION(ATestCommandEmit)
 
 TEST_CASE("ATestCommandEmit", "[test sc agent commands]")
 {
+  test::ScTestUnit::InitMemory("sc-memory.ini", "");
+
   ScMemoryContext * ctx = new ScMemoryContext(sc_access_lvl_make_min, "ATestCommandEmit");
   ATestCommandEmit::InitGlobal();
 
   SC_AGENT_REGISTER(ATestCommandEmit);
+  try
+  {
+    testInitLock.Lock();
+    ScAddr const cmd = ScAgentAction::CreateCommand(
+          *ctx,
+          ATestCommandEmit::GetCommandClassAddr(),
+          { ATestCommandEmit::ms_keynodeParam1, ATestCommandEmit::ms_keynodeParam2 });
 
-  testInitLock.Lock();
-  ScAddr const cmd = ScAgentAction::CreateCommand(
-        *ctx,
-        ATestCommandEmit::GetCommandClassAddr(),
-        { ATestCommandEmit::ms_keynodeParam1, ATestCommandEmit::ms_keynodeParam2 });
+    REQUIRE(cmd.IsValid());
 
-  REQUIRE(cmd.IsValid());
-
-  ScWaitActionFinished * waiter = new ScWaitActionFinished(*ctx, cmd);
-  waiter->SetOnWaitStartDelegate([&]()
-                                 {
-                                   ScAgentAction::InitiateCommand(*ctx, cmd);
-                                 });
-  waiter->Wait();
-  REQUIRE(ScAgentAction::GetCommandResultCode(*ctx, cmd) == SC_RESULT_OK);
-
+    ScWaitActionFinished * waiter = new ScWaitActionFinished(*ctx, cmd);
+    waiter->SetOnWaitStartDelegate(
+          [&]()
+          {
+            ScAgentAction::InitiateCommand(*ctx, cmd);
+          });
+    waiter->Wait();
+    REQUIRE(ScAgentAction::GetCommandResultCode(*ctx, cmd) == SC_RESULT_OK);
+  } catch (...)
+  {
+    SC_LOG_ERROR("Test \"ATestCommandEmit\" failed")
+  }
   SC_AGENT_UNREGISTER(ATestCommandEmit);
 
   ctx->Destroy();
+
+  test::ScTestUnit::ShutdownMemory(false);
 }

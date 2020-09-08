@@ -52,29 +52,37 @@ void testEventsFuncT(ScMemoryContext & ctx, ScAddr const & addr, PrepareF prepar
 
 TEST_CASE("Events common", "[test event]")
 {
+  test::ScTestUnit::InitMemory("sc-memory.ini", "");
+
   ScMemoryContext * ctx = new ScMemoryContext(sc_access_lvl_make_min, "events_common");
 
   SECTION("ScEventAddInputEdge")
   {
     SUBTEST_START("ScEventAddInputEdge")
     {
-      ScAddr addr;
-      auto const CreateNode = [&ctx, &addr]()
+      try
       {
-        addr = ctx->CreateNode(ScType::Unknown);
-        REQUIRE(addr.IsValid());
-      };
+        ScAddr addr;
+        auto const CreateNode = [&ctx, &addr]()
+        {
+          addr = ctx->CreateNode(ScType::Unknown);
+          REQUIRE(addr.IsValid());
+        };
 
-      auto const emitEvent = [&ctx, &addr]()
+        auto const emitEvent = [&ctx, &addr]()
+        {
+          ScAddr const addr2 = ctx->CreateNode(ScType::Unknown);
+          REQUIRE(addr2.IsValid());
+
+          ScAddr const edge = ctx->CreateEdge(ScType::EdgeAccess, addr2, addr);
+          REQUIRE(edge.IsValid());
+        };
+
+        testEventsFuncT<ScEventAddInputEdge>(*ctx, addr, CreateNode, emitEvent);
+      } catch (...)
       {
-        ScAddr const addr2 = ctx->CreateNode(ScType::Unknown);
-        REQUIRE(addr2.IsValid());
-
-        ScAddr const edge = ctx->CreateEdge(ScType::EdgeAccess, addr2, addr);
-        REQUIRE(edge.IsValid());
-      };
-
-      testEventsFuncT<ScEventAddInputEdge>(*ctx, addr, CreateNode, emitEvent);
+        SC_LOG_ERROR("Test \"ScEventAddInputEdge\" failed")
+      }
     }
     SUBTEST_END()
   }
@@ -83,23 +91,29 @@ TEST_CASE("Events common", "[test event]")
   {
     SUBTEST_START("ScEventAddOutputEdge")
     {
-      ScAddr addr;
-      auto const CreateNode = [&ctx, &addr]()
+      try
       {
-        addr = ctx->CreateNode(ScType::Unknown);
-        REQUIRE(addr.IsValid());
-      };
+        ScAddr addr;
+        auto const CreateNode = [&ctx, &addr]()
+        {
+          addr = ctx->CreateNode(ScType::Unknown);
+          REQUIRE(addr.IsValid());
+        };
 
-      auto const emitEvent = [&ctx, &addr]()
+        auto const emitEvent = [&ctx, &addr]()
+        {
+          ScAddr const addr2 = ctx->CreateNode(ScType::Unknown);
+          REQUIRE(addr2.IsValid());
+
+          ScAddr const edge = ctx->CreateEdge(ScType::EdgeAccess, addr, addr2);
+          REQUIRE(edge.IsValid());
+        };
+
+        testEventsFuncT<ScEventAddOutputEdge>(*ctx, addr, CreateNode, emitEvent);
+      } catch (...)
       {
-        ScAddr const addr2 = ctx->CreateNode(ScType::Unknown);
-        REQUIRE(addr2.IsValid());
-
-        ScAddr const edge = ctx->CreateEdge(ScType::EdgeAccess, addr, addr2);
-        REQUIRE(edge.IsValid());
-      };
-
-      testEventsFuncT<ScEventAddOutputEdge>(*ctx, addr, CreateNode, emitEvent);
+        SC_LOG_ERROR("Test \"ScEventAddOutputEdge\" failed")
+      }
     }
     SUBTEST_END()
   }
@@ -108,23 +122,29 @@ TEST_CASE("Events common", "[test event]")
   {
     SUBTEST_START("ScEventRemoveInputEdge")
     {
-      ScAddr const addr = ctx->CreateNode(ScType::Unknown);
-      REQUIRE(addr.IsValid());
-
-      ScAddr const addr2 = ctx->CreateNode(ScType::Unknown);
-      REQUIRE(addr2.IsValid());
-
-      ScAddr const edge = ctx->CreateEdge(ScType::EdgeAccess, addr, addr2);
-      REQUIRE(edge.IsValid());
-
-      auto const prepare = []()
-      {};
-      auto const emitEvent = [&ctx, &edge]()
+      try
       {
-        REQUIRE(ctx->EraseElement(edge));
-      };
+        ScAddr const addr = ctx->CreateNode(ScType::Unknown);
+        REQUIRE(addr.IsValid());
 
-      testEventsFuncT<ScEventRemoveInputEdge>(*ctx, addr2, prepare, emitEvent);
+        ScAddr const addr2 = ctx->CreateNode(ScType::Unknown);
+        REQUIRE(addr2.IsValid());
+
+        ScAddr const edge = ctx->CreateEdge(ScType::EdgeAccess, addr, addr2);
+        REQUIRE(edge.IsValid());
+
+        auto const prepare = []()
+        {};
+        auto const emitEvent = [&ctx, &edge]()
+        {
+          REQUIRE(ctx->EraseElement(edge));
+        };
+
+        testEventsFuncT<ScEventRemoveInputEdge>(*ctx, addr2, prepare, emitEvent);
+      } catch (...)
+      {
+        SC_LOG_ERROR("Test \"ScEventRemoveInputEdge\" failed")
+      }
     }
     SUBTEST_END()
   }
@@ -133,23 +153,29 @@ TEST_CASE("Events common", "[test event]")
   {
     SUBTEST_START("ScEventRemoveOutputEdge")
     {
-      ScAddr const addr = ctx->CreateNode(ScType::Unknown);
-      REQUIRE(addr.IsValid());
-
-      ScAddr const addr2 = ctx->CreateNode(ScType::Unknown);
-      REQUIRE(addr2.IsValid());
-
-      ScAddr const edge = ctx->CreateEdge(ScType::EdgeAccess, addr, addr2);
-      REQUIRE(edge.IsValid());
-
-      auto const prepare = []()
-      {};
-      auto const emitEvent = [&ctx, &edge]()
+      try
       {
-        REQUIRE(ctx->EraseElement(edge));
-      };
+        ScAddr const addr = ctx->CreateNode(ScType::Unknown);
+        REQUIRE(addr.IsValid());
 
-      testEventsFuncT<ScEventRemoveOutputEdge>(*ctx, addr, prepare, emitEvent);
+        ScAddr const addr2 = ctx->CreateNode(ScType::Unknown);
+        REQUIRE(addr2.IsValid());
+
+        ScAddr const edge = ctx->CreateEdge(ScType::EdgeAccess, addr, addr2);
+        REQUIRE(edge.IsValid());
+
+        auto const prepare = []()
+        {};
+        auto const emitEvent = [&ctx, &edge]()
+        {
+          REQUIRE(ctx->EraseElement(edge));
+        };
+
+        testEventsFuncT<ScEventRemoveOutputEdge>(*ctx, addr, prepare, emitEvent);
+      } catch (...)
+      {
+        SC_LOG_ERROR("Test \"ScEventRemoveOutputEdge\" failed")
+      }
     }
     SUBTEST_END()
   }
@@ -158,19 +184,24 @@ TEST_CASE("Events common", "[test event]")
   {
     SUBTEST_START("ScEventContentChanged")
     {
-      ScAddr const addr = ctx->CreateLink();
-      REQUIRE(addr.IsValid());
-
-      auto const prepare = []()
-      {};
-      auto const emitEvent = [&ctx, &addr]()
+      try
       {
-        std::string const value("test");
-        ScStream stream((sc_char *) value.data(), static_cast<sc_uint32>(value.size()), SC_STREAM_FLAG_READ);
-        REQUIRE(ctx->SetLinkContent(addr, stream));
-      };
+        ScAddr const addr = ctx->CreateLink();
+        REQUIRE(addr.IsValid());
 
-      testEventsFuncT<ScEventContentChanged>(*ctx, addr, prepare, emitEvent);
+        auto const prepare = []()
+        {};
+        auto const emitEvent = [&ctx, &addr]()
+        {
+          std::string const value("test");
+          ScStream stream((sc_char *) value.data(), static_cast<sc_uint32>(value.size()), SC_STREAM_FLAG_READ);
+          REQUIRE(ctx->SetLinkContent(addr, stream));
+        };
+        testEventsFuncT<ScEventContentChanged>(*ctx, addr, prepare, emitEvent);
+      } catch (...)
+      {
+        SC_LOG_ERROR("Test \"ScEventContentChanged\" failed")
+      }
     }
   }
 
@@ -178,17 +209,23 @@ TEST_CASE("Events common", "[test event]")
   {
     SUBTEST_START("ScEventEraseElement")
     {
-      ScAddr const addr = ctx->CreateNode(ScType::Unknown);
-      REQUIRE(addr.IsValid());
-
-      auto const prepare = []()
-      {};
-      auto const emitEvent = [&ctx, &addr]()
+      try
       {
-        REQUIRE(ctx->EraseElement(addr));
-      };
+        ScAddr const addr = ctx->CreateNode(ScType::Unknown);
+        REQUIRE(addr.IsValid());
 
-      testEventsFuncT<ScEventEraseElement>(*ctx, addr, prepare, emitEvent);
+        auto const prepare = []()
+        {};
+        auto const emitEvent = [&ctx, &addr]()
+        {
+          REQUIRE(ctx->EraseElement(addr));
+        };
+
+        testEventsFuncT<ScEventEraseElement>(*ctx, addr, prepare, emitEvent);
+      } catch (...)
+      {
+        SC_LOG_ERROR("Test \"ScEventEraseElement\" failed")
+      }
     }
     SUBTEST_END()
   }
@@ -197,16 +234,24 @@ TEST_CASE("Events common", "[test event]")
   {
     SUBTEST_START("events destroy order")
     {
-      ScAddr const node = ctx->CreateNode(ScType::Unknown);
-      REQUIRE(node.IsValid());
+      ScEventAddOutputEdge * evt;
+      try
+      {
+        ScAddr const node = ctx->CreateNode(ScType::Unknown);
+        REQUIRE(node.IsValid());
 
-      ScEventAddOutputEdge * evt = new ScEventAddOutputEdge(
-            *ctx, node,
-            [](ScAddr const &, ScAddr const &, ScAddr const &)
-            {
-              return true;
-            });
-      delete evt;
+        evt = new ScEventAddOutputEdge(
+              *ctx, node,
+              [](ScAddr const &, ScAddr const &, ScAddr const &)
+              {
+                return true;
+              });
+      } catch (...)
+      {
+        SC_LOG_ERROR("Test \"events destroy order\" failed")
+      }
+      if (evt != nullptr)
+        delete evt;
     }
     SUBTEST_END()
   }
@@ -215,30 +260,38 @@ TEST_CASE("Events common", "[test event]")
   {
     SUBTEST_START("events lock")
     {
-      ScAddr const node = ctx->CreateNode(ScType::NodeConst);
-      ScAddr const node2 = ctx->CreateNode(ScType::NodeConst);
-
-      ScEventAddOutputEdge * evt = new ScEventAddOutputEdge(
-            *ctx, node,
-            [](ScAddr const & addr, ScAddr const & edgeAddr, ScAddr const & otherAddr)
-            {
-              bool result = false;
-              ScMemoryContext localCtx(sc_access_lvl_make_min);
-              ScIterator3Ptr it = localCtx.Iterator3(addr, ScType::EdgeAccessConstPosPerm,
-                                                     ScType::Unknown);
-              while (it->Next())
-              {
-                result = true;
-              }
-
-              return true;
-            });
-
-      for (size_t i = 0; i < 10000; i++)
+      ScEventAddOutputEdge * evt;
+      try
       {
-        ctx->CreateEdge(ScType::EdgeAccessConstPosPerm, node, node2);
+        ScAddr const node = ctx->CreateNode(ScType::NodeConst);
+        ScAddr const node2 = ctx->CreateNode(ScType::NodeConst);
+
+        evt = new ScEventAddOutputEdge(
+              *ctx, node,
+              [](ScAddr const & addr, ScAddr const & edgeAddr, ScAddr const & otherAddr)
+              {
+                bool result = false;
+                ScMemoryContext localCtx(sc_access_lvl_make_min);
+                ScIterator3Ptr it = localCtx.Iterator3(addr, ScType::EdgeAccessConstPosPerm,
+                                                       ScType::Unknown);
+                while (it->Next())
+                {
+                  result = true;
+                }
+
+                return true;
+              });
+
+        for (size_t i = 0; i < 10000; i++)
+        {
+          ctx->CreateEdge(ScType::EdgeAccessConstPosPerm, node, node2);
+        }
+        if (evt != nullptr)
+          delete evt;
+      } catch (...)
+      {
+        SC_LOG_ERROR("Test \"events lock\" failed")
       }
-      delete evt;
     }
     SUBTEST_END()
   }
@@ -251,80 +304,89 @@ TEST_CASE("Events common", "[test event]")
      */
     SUBTEST_START("pend events")
     {
-      ScAddr const set1 = ctx->CreateNode(ScType::NodeConstClass);
-      ScAddr const rel = ctx->CreateNode(ScType::NodeConstNoRole);
-
-      static const size_t el_num = 1 << 10;
-      std::vector<ScAddr> elements(el_num);
-      for (size_t i = 0; i < el_num; ++i)
+      ScEventAddOutputEdge * evt;
+      try
       {
-        ScAddr const a = ctx->CreateNode(ScType::NodeConst);
-        REQUIRE(a.IsValid());
-        elements[i] = a;
-      }
+        ScAddr const set1 = ctx->CreateNode(ScType::NodeConstClass);
+        ScAddr const rel = ctx->CreateNode(ScType::NodeConstNoRole);
 
-      // create template for pending events check
-      ScTemplate templ;
-      for (auto const & a : elements)
+        static const size_t el_num = 1 << 10;
+        std::vector<ScAddr> elements(el_num);
+        for (size_t i = 0; i < el_num; ++i)
+        {
+          ScAddr const a = ctx->CreateNode(ScType::NodeConst);
+          REQUIRE(a.IsValid());
+          elements[i] = a;
+        }
+
+        // create template for pending events check
+        ScTemplate templ;
+        for (auto const & a : elements)
+        {
+          templ.TripleWithRelation(
+                set1,
+                ScType::EdgeDCommonVar,
+                a >> "_el",
+                ScType::EdgeAccessVarPosPerm,
+                rel);
+        }
+
+        volatile int32_t eventsCount = 0;
+        volatile int32_t passedCount = 0;
+
+        ScTemplate checkTempl;
+        size_t step = 100;
+        size_t testNum = el_num / step - 1;
+        for (size_t i = 0; i < testNum; ++i)
+        {
+          checkTempl.TripleWithRelation(
+                set1,
+                ScType::EdgeDCommonVar,
+                elements[i * step] >> "_el",
+                ScType::EdgeAccessVarPosPerm,
+                rel);
+        }
+
+        evt = new ScEventAddOutputEdge
+              (*ctx, set1,
+               [&](ScAddr const & addr, ScAddr const & edgeAddr, ScAddr const & otherAddr)
+               {
+                 ScMemoryContext localCtx(sc_access_lvl_make_min);
+
+                 ScTemplateSearchResult res;
+                 REQUIRE(localCtx.HelperSearchTemplate(checkTempl, res));
+
+                 if (res.Size() == 1)
+                   g_atomic_int_add(&passedCount, 1);
+
+                 g_atomic_int_add(&eventsCount, 1);
+
+                 return true;
+               });
+
+        ScTemplateGenResult genResult;
+        REQUIRE(ctx->HelperGenTemplate(templ, genResult));
+
+        // wait all events
+        utils::ScProgress progress("Wait events", el_num);
+        while (g_atomic_int_get(&eventsCount) < el_num)
+        {
+          progress.PrintStatus(eventsCount);
+          std::this_thread::sleep_for(std::chrono::milliseconds(10));
+        }
+
+        REQUIRE(passedCount == el_num);
+      } catch (...)
       {
-        templ.TripleWithRelation(
-              set1,
-              ScType::EdgeDCommonVar,
-              a >> "_el",
-              ScType::EdgeAccessVarPosPerm,
-              rel);
+        SC_LOG_ERROR("Test \"pend events\" failed")
       }
-
-      volatile int32_t eventsCount = 0;
-      volatile int32_t passedCount = 0;
-
-      ScTemplate checkTempl;
-      size_t step = 100;
-      size_t testNum = el_num / step - 1;
-      for (size_t i = 0; i < testNum; ++i)
-      {
-        checkTempl.TripleWithRelation(
-              set1,
-              ScType::EdgeDCommonVar,
-              elements[i * step] >> "_el",
-              ScType::EdgeAccessVarPosPerm,
-              rel);
-      }
-
-      ScEventAddOutputEdge * evt = new ScEventAddOutputEdge
-            (*ctx, set1,
-             [&](ScAddr const & addr, ScAddr const & edgeAddr, ScAddr const & otherAddr)
-             {
-               ScMemoryContext localCtx(sc_access_lvl_make_min);
-
-               ScTemplateSearchResult res;
-               REQUIRE(localCtx.HelperSearchTemplate(checkTempl, res));
-
-               if (res.Size() == 1)
-                 g_atomic_int_add(&passedCount, 1);
-
-               g_atomic_int_add(&eventsCount, 1);
-
-               return true;
-             });
-
-      ScTemplateGenResult genResult;
-      REQUIRE(ctx->HelperGenTemplate(templ, genResult));
-
-      // wait all events
-      utils::ScProgress progress("Wait events", el_num);
-      while (g_atomic_int_get(&eventsCount) < el_num)
-      {
-        progress.PrintStatus(eventsCount);
-        std::this_thread::sleep_for(std::chrono::milliseconds(10));
-      }
-
-      REQUIRE(passedCount == el_num);
-
-      delete evt;
+      if (evt != nullptr)
+        delete evt;
     }
     SUBTEST_END()
   }
 
   ctx->Destroy();
+
+  test::ScTestUnit::ShutdownMemory(false);
 }

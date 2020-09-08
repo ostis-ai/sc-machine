@@ -42,11 +42,7 @@ int ScTestUnit::RunAll(int argc, char * argv[], std::string const & configPath, 
   if (returnCode != 0)
     return returnCode;
 
-  test::ScTestUnit::InitMemory(configPath, extPath);
-
   int failed = session.run();
-
-  test::ScTestUnit::ShutdownMemory(false);
 
   return failed;
 }

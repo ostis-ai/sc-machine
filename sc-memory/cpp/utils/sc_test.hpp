@@ -15,6 +15,7 @@
 
 #include <cstdlib>
 #include <iostream>
+#include "exception"
 
 namespace test
 {
@@ -28,16 +29,12 @@ public:
         std::string const & configPath = "sc-memory.ini",
         std::string const & extPath = "");
 
-protected:
   void static ShutdownMemory(bool save);
 
   void static InitMemory(std::string const & configPath, std::string const & extPath);
 
 protected:
   char const * m_name;
-  char const * m_filename;
-
-  void (* m_fn)();
 
 private:
 

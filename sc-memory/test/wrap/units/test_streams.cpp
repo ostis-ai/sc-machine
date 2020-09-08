@@ -11,50 +11,60 @@
 
 TEST_CASE("streams", "[test_streams]")
 {
+  test::ScTestUnit::InitMemory("sc-memory.ini", "");
+
   SECTION("content_streams")
   {
     SUBTEST_START("content_streams")
     {
-      static int const length = 1024;
-      unsigned char buff[length];
-
-      for (int i = 0; i < length; ++i)
-        buff[i] = rand() % 256;
-
-      ScStream stream((sc_char *) buff, length, SC_STREAM_FLAG_READ);
-
-      REQUIRE(stream.IsValid());
-      REQUIRE(stream.HasFlag(SC_STREAM_FLAG_READ));
-      REQUIRE(stream.HasFlag(SC_STREAM_FLAG_SEEK));
-      REQUIRE(stream.HasFlag(SC_STREAM_FLAG_TELL));
-      REQUIRE_FALSE(stream.Eof());
-      REQUIRE(stream.Pos() == 0);
-      REQUIRE(stream.Size() == length);
-
-      for (int i = 0; i < length; ++i)
+      try
       {
-        unsigned char c;
-        size_t readBytes;
-        REQUIRE(stream.Read((sc_char *) &c, sizeof(c), readBytes));
-        REQUIRE(c == buff[i]);
-      }
+        static int const length = 1024;
+        unsigned char buff[length];
 
-      REQUIRE(stream.Eof());
-      REQUIRE(stream.Pos() == length);
+        for (int i = 0; i < length; ++i)
+          buff[i] = rand() % 256;
 
-      // random seek
-      static int const seekOpCount = 1000000;
-      for (int i = 0; i < seekOpCount; ++i)
+        ScStream stream((sc_char *) buff, length, SC_STREAM_FLAG_READ);
+
+        REQUIRE(stream.IsValid());
+        REQUIRE(stream.HasFlag(SC_STREAM_FLAG_READ));
+        REQUIRE(stream.HasFlag(SC_STREAM_FLAG_SEEK));
+        REQUIRE(stream.HasFlag(SC_STREAM_FLAG_TELL));
+        REQUIRE_FALSE(stream.Eof());
+        REQUIRE(stream.Pos() == 0);
+        REQUIRE(stream.Size() == length);
+
+        for (int i = 0; i < length; ++i)
+        {
+          unsigned char c;
+          size_t readBytes;
+          REQUIRE(stream.Read((sc_char *) &c, sizeof(c), readBytes));
+          REQUIRE(c == buff[i]);
+        }
+
+        REQUIRE(stream.Eof());
+        REQUIRE(stream.Pos() == length);
+
+        // random seek
+        static int const seekOpCount = 1000000;
+        for (int i = 0; i < seekOpCount; ++i)
+        {
+          sc_uint32 pos = rand() % length;
+          REQUIRE(stream.Seek(SC_STREAM_SEEK_SET, pos));
+
+          unsigned char c;
+          size_t readBytes;
+          REQUIRE(stream.Read((sc_char *) &c, sizeof(c), readBytes));
+          REQUIRE(c == buff[pos]);
+        }
+      } catch (...)
       {
-        sc_uint32 pos = rand() % length;
-        REQUIRE(stream.Seek(SC_STREAM_SEEK_SET, pos));
-
-        unsigned char c;
-        size_t readBytes;
-        REQUIRE(stream.Read((sc_char *) &c, sizeof(c), readBytes));
-        REQUIRE(c == buff[pos]);
+        SC_LOG_ERROR("Test \"content_streams\" failed")
       }
     }
     SUBTEST_END()
   }
+
+  test::ScTestUnit::ShutdownMemory(false);
 }

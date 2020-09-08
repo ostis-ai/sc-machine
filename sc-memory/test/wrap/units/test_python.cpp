@@ -16,57 +16,78 @@
 
 TEST_CASE("Python_interp", "[test python]")
 {
+  test::ScTestUnit::InitMemory("sc-memory.ini", "");
+
   SECTION("common")
   {
     SUBTEST_START("common")
     {
-      py::ScPythonInterpreter::AddModulesPath(SC_TEST_KPM_PYTHON_PATH);
+      try
+      {
+        py::ScPythonInterpreter::AddModulesPath(SC_TEST_KPM_PYTHON_PATH);
 
-      py::DummyService testService("sc_tests/test_common.py");
-      testService.Run();
+        py::DummyService testService("sc_tests/test_common.py");
+        testService.Run();
 
-      while (testService.IsRun())
-        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+        while (testService.IsRun())
+          std::this_thread::sleep_for(std::chrono::milliseconds(100));
 
-      testService.Stop();
+        testService.Stop();
+      } catch (...)
+      {
+        SC_LOG_ERROR("Test \"common\" failed")
+      }
     }
     SUBTEST_END()
   }
+
+  test::ScTestUnit::ShutdownMemory(false);
 }
 
 TEST_CASE("Python_clean", "[test python]")
 {
-  py::ScPythonInterpreter::AddModulesPath(SC_TEST_KPM_PYTHON_PATH);
+  test::ScTestUnit::InitMemory("sc-memory.ini", "");
 
-  volatile bool passed = true;
+  try
+  {
+    py::ScPythonInterpreter::AddModulesPath(SC_TEST_KPM_PYTHON_PATH);
 
-  std::vector<std::unique_ptr<std::thread>> threads;
+    volatile bool passed = true;
 
-  size_t const numTests = 50;
-  threads.resize(numTests);
-  for (size_t i = 0; i < numTests; ++i) {
-    threads[i].reset(new std::thread([&passed]()
+    std::vector<std::unique_ptr<std::thread>> threads;
+
+    size_t const numTests = 50;
+    threads.resize(numTests);
+    for (size_t i = 0; i < numTests; ++i)
     {
-      py::DummyService testService("sc_tests/test_dummy.py");
-      try
-      {
-        testService.Run();
-      }
-      catch (utils::ScException const & ex)
-      {
-        SC_LOG_ERROR(ex.Message());
-        passed = false;
-      }
-      catch (...)
-      {
-        SC_LOG_ERROR("Unknown error");
-        passed = false;
-      }
-    }));
+      threads[i].reset(new std::thread([&passed]()
+                            {
+                              py::DummyService testService("sc_tests/test_dummy.py");
+                              try
+                              {
+                                testService.Run();
+                              }
+                              catch (utils::ScException const & ex)
+                              {
+                                SC_LOG_ERROR(ex.Message());
+                                passed = false;
+                              }
+                              catch (...)
+                              {
+                                SC_LOG_ERROR("Unknown error");
+                                passed = false;
+                              }
+                            }));
+    }
+
+    for (auto const & t : threads)
+      t->join();
+    //std::this_thread::sleep_for(std::chrono::seconds(10));
+    REQUIRE(passed);
+  } catch (...)
+  {
+    SC_LOG_ERROR("Test \"Python_clean\" failed")
   }
 
-  for (auto const & t : threads)
-    t->join();
-  //std::this_thread::sleep_for(std::chrono::seconds(10));
-  REQUIRE(passed);
+  test::ScTestUnit::ShutdownMemory(false);
 }
