@@ -73,7 +73,7 @@ bool SCsTranslator::processString(const String &data)
 
 #if defined( __WIN32__ ) || defined( _WIN32 )
   input = antlr3StringStreamNew((pANTLR3_UINT8)data.c_str(), ANTLR3_ENC_UTF8, (ANTLR3_UINT32)data.length(), (pANTLR3_UINT8)"scs");
-#elif defined( __APPLE_CC__)
+#elif defined( __APPLE_CC__) || (defined( __linux__ ) && defined(ANTLR3C_NEW_VERSION))
   input = antlr3StringStreamNew((pANTLR3_UINT8)data.c_str(), ANTLR3_ENC_UTF8, data.length(), (pANTLR3_UINT8)"scs");
 #else
   input = antlr3NewAsciiStringCopyStream((pANTLR3_UINT8)data.c_str(), data.length(), (pANTLR3_UINT8)"scs");
