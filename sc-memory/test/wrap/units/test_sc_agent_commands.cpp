@@ -4,11 +4,12 @@
  * (See accompanying file COPYING.MIT or copy at http://opensource.org/licenses/MIT)
  */
 
+#include "catch2/catch.hpp"
+
 #include "test_sc_agent_commands.hpp"
 
-#include "sc-memory/cpp/sc_timer.hpp"
-#include "sc-memory/cpp/sc_wait.hpp"
 #include "sc-memory/cpp/utils/sc_test.hpp"
+#include "sc-memory/cpp/sc_wait.hpp"
 
 #include <thread>
 
@@ -29,27 +30,39 @@ SC_AGENT_ACTION_IMPLEMENTATION(ATestCommandEmit)
   return SC_RESULT_ERROR;
 }
 
-UNIT_TEST(ATestCommandEmit)
+TEST_CASE("ATestCommandEmit", "[test sc agent commands]")
 {
-  ScMemoryContext ctx(sc_access_lvl_make_min, "ATestCommandEmit");
+  test::ScTestUnit::InitMemory("sc-memory.ini", "");
+
+  ScMemoryContext * ctx = new ScMemoryContext(sc_access_lvl_make_min, "ATestCommandEmit");
   ATestCommandEmit::InitGlobal();
 
   SC_AGENT_REGISTER(ATestCommandEmit);
+  try
+  {
+    testInitLock.Lock();
+    ScAddr const cmd = ScAgentAction::CreateCommand(
+          *ctx,
+          ATestCommandEmit::GetCommandClassAddr(),
+          { ATestCommandEmit::ms_keynodeParam1, ATestCommandEmit::ms_keynodeParam2 });
 
-  testInitLock.Lock();
-  ScAddr const cmd = ScAgentAction::CreateCommand(
-    ctx,
-    ATestCommandEmit::GetCommandClassAddr(),
-    { ATestCommandEmit::ms_keynodeParam1, ATestCommandEmit::ms_keynodeParam2 });
+    REQUIRE(cmd.IsValid());
 
-  SC_CHECK(cmd.IsValid(), ());
-
-  ScWaitActionFinished waiter(ctx, cmd);
-  waiter.SetOnWaitStartDelegate([&]() {
-    ScAgentAction::InitiateCommand(ctx, cmd);
-  });
-  waiter.Wait();
-  SC_CHECK_EQUAL(ScAgentAction::GetCommandResultCode(ctx, cmd), SC_RESULT_OK, ());
-
+    ScWaitActionFinished * waiter = new ScWaitActionFinished(*ctx, cmd);
+    waiter->SetOnWaitStartDelegate(
+          [&]()
+          {
+            ScAgentAction::InitiateCommand(*ctx, cmd);
+          });
+    waiter->Wait();
+    REQUIRE(ScAgentAction::GetCommandResultCode(*ctx, cmd) == SC_RESULT_OK);
+  } catch (...)
+  {
+    SC_LOG_ERROR("Test \"ATestCommandEmit\" failed")
+  }
   SC_AGENT_UNREGISTER(ATestCommandEmit);
+
+  ctx->Destroy();
+
+  test::ScTestUnit::ShutdownMemory(false);
 }

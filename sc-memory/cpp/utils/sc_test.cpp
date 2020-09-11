@@ -4,39 +4,14 @@
 * (See accompanying file COPYING.MIT or copy at http://opensource.org/licenses/MIT)
 */
 
+#define CATCH_CONFIG_RUNNER
+
+#include "catch2/catch.hpp"
+
 #include "sc_test.hpp"
 
 namespace test
 {
-
-std::set<ScTestUnit*, ScTestUnit::TestLess> ScTestUnit::ms_tests;
-
-ScTestUnit::ScTestUnit(char const * name, char const * filename, void(*fn)())
-  : m_name(name)
-  , m_filename(filename)
-  , m_fn(fn)
-{
-  ms_tests.insert(this);
-}
-
-ScTestUnit::~ScTestUnit()
-{
-  ms_tests.erase(this);
-}
-
-void ScTestUnit::Run(std::string const & configPath, std::string const & extPath)
-{
-  SC_LOG_INFO("Run test " << m_name);
-
-  InitMemory(configPath, extPath);
-
-  if (m_fn)
-    m_fn();
-
-  ShutdownMemory(false);
-  SC_LOG_INFO_COLOR("Test " << m_name << " complete", ScConsole::Color::LightGreen);
-}
-
 void ScTestUnit::InitMemory(std::string const & configPath, std::string const & extPath)
 {
   sc_memory_params params;
@@ -59,10 +34,17 @@ void ScTestUnit::ShutdownMemory(bool save)
   ScMemory::LogUnmute();
 }
 
-void ScTestUnit::RunAll(std::string const & configPath, std::string const & extPath)
+int ScTestUnit::RunAll(int argc, char * argv[], std::string const & configPath, std::string const & extPath)
 {
-  for (ScTestUnit * unit : ms_tests)
-    unit->Run(configPath, extPath);
+  Catch::Session session;
+
+  int returnCode = session.applyCommandLine(argc, argv);
+  if (returnCode != 0)
+    return returnCode;
+
+  int failed = session.run();
+
+  return failed;
 }
 
 

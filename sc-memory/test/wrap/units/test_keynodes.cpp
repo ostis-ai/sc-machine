@@ -4,54 +4,86 @@
 * (See accompanying file COPYING.MIT or copy at http://opensource.org/licenses/MIT)
 */
 
+#include "catch2/catch.hpp"
+
 #include "sc-memory/cpp/utils/sc_test.hpp"
 
 #include "sc-memory/cpp/sc_keynodes.hpp"
 #include "sc-memory/cpp/utils/sc_keynode_cache.hpp"
 
-UNIT_TEST(keynodes)
+TEST_CASE("keynodes", "[test keynodes]")
 {
+  test::ScTestUnit::InitMemory("sc-memory.ini", "");
+
   ScMemoryContext ctx(sc_access_lvl_make_min, "keynodes");
 
-  SUBTEST_START("binary_type")
+  SECTION("binary_type")
   {
-    ScAddr keynodes[] =
+    SUBTEST_START("binary_type")
     {
-      ScKeynodes::kBinaryDouble,
-      ScKeynodes::kBinaryFloat,
-      ScKeynodes::kBinaryInt8,
-      ScKeynodes::kBinaryInt16,
-      ScKeynodes::kBinaryInt32,
-      ScKeynodes::kBinaryInt64,
-      ScKeynodes::kBinaryUInt8,
-      ScKeynodes::kBinaryUInt16,
-      ScKeynodes::kBinaryUInt32,
-      ScKeynodes::kBinaryUInt64,
-      ScKeynodes::kBinaryString
-    };
+      try
+      {
+        ScAddr keynodes[] =
+              {
+                    ScKeynodes::kBinaryDouble,
+                    ScKeynodes::kBinaryFloat,
+                    ScKeynodes::kBinaryInt8,
+                    ScKeynodes::kBinaryInt16,
+                    ScKeynodes::kBinaryInt32,
+                    ScKeynodes::kBinaryInt64,
+                    ScKeynodes::kBinaryUInt8,
+                    ScKeynodes::kBinaryUInt16,
+                    ScKeynodes::kBinaryUInt32,
+                    ScKeynodes::kBinaryUInt64,
+                    ScKeynodes::kBinaryString
+              };
 
-    for (ScAddr a : keynodes)
-      SC_CHECK(ctx.HelperCheckEdge(ScKeynodes::kBinaryType, a, ScType::EdgeAccessConstPosPerm), ());
+        for (ScAddr a : keynodes)
+          REQUIRE(ctx.HelperCheckEdge(ScKeynodes::kBinaryType, a, ScType::EdgeAccessConstPosPerm));
+      } catch (...)
+      {
+        SC_LOG_ERROR("Test \"binary_type\" failed")
+      }
+    }
+    SUBTEST_END()
   }
-  SUBTEST_END()
+
+  ctx.Destroy();
+
+  test::ScTestUnit::ShutdownMemory(false);
 }
 
-UNIT_TEST(keynode_cache)
+TEST_CASE("keynode_cache", "[test keynodes]")
 {
+  test::ScTestUnit::InitMemory("sc-memory.ini", "");
+
   ScMemoryContext ctx(sc_access_lvl_make_min, "keynode_cache");
 
-  SUBTEST_START("basic")
+  SECTION("basic")
   {
-    utils::ScKeynodeCache cache(ctx);
+    SUBTEST_START("basic")
+    {
+      try
+      {
+        utils::ScKeynodeCache cache(ctx);
 
-    ScAddr const addr = ctx.CreateNode(ScType::NodeConst);
+        ScAddr const addr = ctx.CreateNode(ScType::NodeConst);
 
-    SC_CHECK(addr.IsValid(), ());
-    SC_CHECK(ctx.HelperSetSystemIdtf("test_idtf", addr), ());
+        REQUIRE(addr.IsValid());
+        REQUIRE(ctx.HelperSetSystemIdtf("test_idtf", addr));
 
-    SC_CHECK(cache.GetKeynode("test_idtf").IsValid(), ());
-    SC_CHECK_NOT(cache.GetKeynode("other").IsValid(), ());
-    SC_CHECK_NOT(cache.GetKeynode("any_idtf").IsValid(), ());
+        REQUIRE(cache.GetKeynode("test_idtf").IsValid());
+        REQUIRE_FALSE(cache.GetKeynode("other").IsValid());
+        REQUIRE_FALSE(cache.GetKeynode("any_idtf").IsValid());
+      } catch (...)
+      {
+        SC_LOG_ERROR("Test \"basic\" failed")
+      }
+    }
+    SUBTEST_END()
   }
-  SUBTEST_END()
+
+  ctx.Destroy();
+
+  test::ScTestUnit::ShutdownMemory(false);
 }

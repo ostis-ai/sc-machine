@@ -4,6 +4,8 @@
 * (See accompanying file COPYING.MIT or copy at http://opensource.org/licenses/MIT)
 */
 
+#include "catch2/catch.hpp"
+
 #include "sc-memory/cpp/sc_wait.hpp"
 #include "sc-memory/cpp/kpm/sc_agent.hpp"
 #include "sc-memory/cpp/utils/sc_test.hpp"
@@ -15,9 +17,7 @@ namespace
 struct WaitTestData
 {
   WaitTestData(ScAddr const & addr, ScAddr const & addrFrom = ScAddr())
-    : m_addr(addr)
-    , m_addrFrom(addrFrom)
-    , m_isDone(false)
+        : m_addr(addr), m_addrFrom(addrFrom), m_isDone(false)
   {
   }
 
@@ -39,83 +39,119 @@ void EmitEvent(WaitTestData & data)
 
 }
 
-UNIT_TEST(waiter)
+TEST_CASE("waiter", "[test wait]")
 {
+  test::ScTestUnit::InitMemory("sc-memory.ini", "");
+
   ScAgentInit(true);
   ScMemoryContext ctx(sc_access_lvl_make_min, "waiter");
 
+  try
+  {
   const ScAddr addr = ctx.CreateNode(ScType::NodeConst);
-  SC_CHECK(addr.IsValid(), ());
+  REQUIRE(addr.IsValid());
 
-  SUBTEST_START(WaitValid)
+  SECTION("WaitValid")
   {
-    WaitTestData data(addr);
-    ScWaitEvent<ScEventAddInputEdge> waiter(ctx, addr);
-    waiter.SetOnWaitStartDelegate([&data]() {
-      EmitEvent(data);
-    });
-    
-    SC_CHECK(waiter.Wait(), ("Waiter timeout"));
-    SC_CHECK(data.m_isDone, ("Waiter finished, but flag is false"));
-  }
-  SUBTEST_END()
-
-  SUBTEST_START(WaitTimeOut)
-  {
-    SC_CHECK(!ScWaitEvent<ScEventAddOutputEdge>(ctx, addr).Wait(1000), ());
-  }
-  SUBTEST_END()
-
-  SUBTEST_START(WaitCondValid)
-  {
-    WaitTestData data(addr);
-    ScWaitCondition<ScEventAddInputEdge> waiter(ctx, addr, [](ScAddr const & listenAddr,
-                                                ScAddr const & edgeAddr,
-                                                ScAddr const & otherAddr)
+    SUBTEST_START("WaitValid")
     {
-      return true;
-    });
+      WaitTestData data(addr);
+      ScWaitEvent<ScEventAddInputEdge> waiter(ctx, addr);
+      waiter.SetOnWaitStartDelegate(
+            [&data]()
+            {
+              EmitEvent(data);
+            });
 
-    waiter.SetOnWaitStartDelegate([&data]() {
-      EmitEvent(data);
-    });
-
-    SC_CHECK(waiter.Wait(), ("Waiter timeout"));
-    SC_CHECK(data.m_isDone, ("Waiter finished, but failed"));
+      REQUIRE(waiter.Wait());
+      REQUIRE(data.m_isDone);
+    }
+    SUBTEST_END()
   }
-  SUBTEST_END()
 
-  SUBTEST_START(WaitCondValidFalse)
+  SECTION("WaitTimeOut")
   {
-    WaitTestData data(addr);
-
-    ScWaitCondition<ScEventAddInputEdge> waiter(ctx, addr, [](ScAddr const & listenAddr,
-                                                ScAddr const & edgeAddr,
-                                                ScAddr const & otherAddr)
+    SUBTEST_START("WaitTimeOut")
     {
-      return false;
-    });
-
-    waiter.SetOnWaitStartDelegate([&data]() {
-      EmitEvent(data);
-    });
-
-    SC_CHECK(!waiter.Wait(2000), ());
-    SC_CHECK(data.m_isDone, ());
+      REQUIRE_FALSE(ScWaitEvent<ScEventAddOutputEdge>(ctx, addr).Wait(1000));
+    }
+    SUBTEST_END()
   }
-  SUBTEST_END()
 
-  SUBTEST_START(WaitActionFinished)
+  SECTION("WaitCondValid")
   {
-    WaitTestData data(addr, ScAgentAction::GetCommandFinishedAddr());
-    
-    ScWaitActionFinished waiter(ctx, addr);
-    waiter.SetOnWaitStartDelegate([&data]() {
-      EmitEvent(data);
-    });
+    SUBTEST_START("WaitCondValid")
+    {
+      WaitTestData data(addr);
+      ScWaitCondition<ScEventAddInputEdge> waiter(ctx, addr, [](
+            ScAddr const & listenAddr,
+            ScAddr const & edgeAddr,
+            ScAddr const & otherAddr)
+      {
+        return true;
+      });
 
-    SC_CHECK(waiter.Wait(), ("Waiter timeout"));
-    SC_CHECK(data.m_isDone, ("Waiter finished"));
+      waiter.SetOnWaitStartDelegate(
+            [&data]()
+            {
+              EmitEvent(data);
+            });
+
+      REQUIRE(waiter.Wait());
+      REQUIRE(data.m_isDone);
+    }
+    SUBTEST_END()
   }
-  SUBTEST_END()
+
+  SECTION("WaitCondValidFalse")
+  {
+    SUBTEST_START("WaitCondValidFalse")
+    {
+      WaitTestData data(addr);
+
+      ScWaitCondition<ScEventAddInputEdge> waiter(ctx, addr, [](
+            ScAddr const & listenAddr,
+            ScAddr const & edgeAddr,
+            ScAddr const & otherAddr)
+      {
+        return false;
+      });
+
+      waiter.SetOnWaitStartDelegate(
+            [&data]()
+            {
+              EmitEvent(data);
+            });
+
+      REQUIRE_FALSE(waiter.Wait(2000));
+      REQUIRE(data.m_isDone);
+    }
+    SUBTEST_END()
+  }
+
+  SECTION("WaitActionFinished")
+  {
+    SUBTEST_START("WaitActionFinished")
+    {
+      WaitTestData data(addr, ScAgentAction::GetCommandFinishedAddr());
+
+      ScWaitActionFinished waiter(ctx, addr);
+      waiter.SetOnWaitStartDelegate(
+            [&data]()
+            {
+              EmitEvent(data);
+            });
+
+      REQUIRE(waiter.Wait());
+      REQUIRE(data.m_isDone);
+    }
+    SUBTEST_END()
+  }
+  } catch (...)
+  {
+    SC_LOG_ERROR("Test \"waiter\" failed")
+  }
+  ctx.Destroy();
+
+  test::ScTestUnit::ShutdownMemory(false);
 }
