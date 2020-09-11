@@ -7,7 +7,6 @@
 #pragma once
 
 #include "sc-memory/cpp/kpm/sc_agent.hpp"
-
 #include "test_sc_agent_commands.generated.hpp"
 
 class ATestCommandEmit : public ScAgentAction

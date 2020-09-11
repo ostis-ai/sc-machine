@@ -220,3 +220,29 @@ set(LOG_DIR ${CMAKE_CURRENT_SOURCE_DIR}/log/)
 set(LOG_MODE Info)
 set(LOG_OUTPUT_TYPE Console)
 configure_file(log_config.h.in ${CMAKE_CURRENT_SOURCE_DIR}/sc-memory/cpp/generated/log_config.hpp @ONLY)
+
+if (NOT EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/generated/lib)
+	execute_process(
+			COMMAND mkdir -p generated/lib
+			WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+			OUTPUT_VARIABLE GIT_VERSION)
+endif ()
+
+if (NOT EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/generated/lib/Catch2)
+	execute_process(
+			COMMAND git clone https://github.com/catchorg/Catch2.git
+			WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/generated/lib
+			OUTPUT_VARIABLE GIT_VERSION)
+	execute_process(
+			COMMAND cmake -Bbuild -H. -DBUILD_TESTING=OFF
+			WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/generated/lib/Catch2
+			OUTPUT_VARIABLE GIT_VERSION)
+	execute_process(
+			COMMAND sudo -S cmake --build build/ --target install
+			WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/generated/lib/Catch2
+			OUTPUT_VARIABLE GIT_VERSION)
+endif ()
+
+if (EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/generated/lib/Catch2)
+	add_subdirectory(generated/lib/Catch2)
+endif ()

@@ -4,8 +4,8 @@
  * (See accompanying file COPYING.MIT or copy at http://opensource.org/licenses/MIT)
  */
 
+#include "catch2/catch.hpp"
 #include "test_sc_agent.hpp"
-
 #include "sc-memory/cpp/sc_stream.hpp"
 #include "sc-memory/cpp/utils/sc_test.hpp"
 
@@ -15,8 +15,8 @@ namespace
 ScAddr CreateKeynode(ScMemoryContext & ctx, std::string const & name)
 {
   ScAddr const node = ctx.CreateNode(ScType::NodeConst);
-  SC_CHECK(node.IsValid(), ());
-  SC_CHECK(ctx.HelperSetSystemIdtf(name, node), ());
+  REQUIRE(node.IsValid());
+  REQUIRE(ctx.HelperSetSystemIdtf(name, node));
 
   return node;
 }
@@ -33,27 +33,35 @@ SC_AGENT_ACTION_IMPLEMENTATION(ATestCommand)
   return SC_RESULT_ERROR;
 }
 
-UNIT_TEST(ATestCommand)
+TEST_CASE("ATestCommand", "[test sc agent]")
 {
+  test::ScTestUnit::InitMemory("sc-memory.ini", "");
+
   ScMemoryContext ctx(sc_access_lvl_make_min, "ATestCommand");
 
   ScAddr const command_1 = CreateKeynode(ctx, "command_1");
 
   ScAgentInit(true);
   ATestCommand::InitGlobal();
-
   SC_AGENT_REGISTER(ATestCommand);
-
-  ScAddr const cmd = ctx.CreateNode(ScType::NodeConst);
-  SC_CHECK(cmd.IsValid(), ());
-  ScAddr const e1 = ctx.CreateEdge(ScType::EdgeAccessConstPosPerm, command_1, cmd);
-  SC_CHECK(e1.IsValid(), ());
-  ScAddr const e2 = ctx.CreateEdge(ScType::EdgeAccessConstPosTemp, ScAgentAction::GetCommandInitiatedAddr(), cmd);
-  SC_CHECK(e2.IsValid(), ());
-
-  SC_CHECK(ATestCommand::msWaiter.Wait(), ());
-
+  try
+  {
+    ScAddr const cmd = ctx.CreateNode(ScType::NodeConst);
+    REQUIRE(cmd.IsValid());
+    ScAddr const e1 = ctx.CreateEdge(ScType::EdgeAccessConstPosPerm, command_1, cmd);
+    REQUIRE(e1.IsValid());
+    ScAddr const e2 = ctx.CreateEdge(ScType::EdgeAccessConstPosTemp, ScAgentAction::GetCommandInitiatedAddr(), cmd);
+    REQUIRE(e2.IsValid());
+    REQUIRE(ATestCommand::msWaiter.Wait());
+  } catch (...)
+  {
+    SC_LOG_ERROR("Test \"ATestCommand\" failed")
+  }
   SC_AGENT_UNREGISTER(ATestCommand);
+
+  ctx.Destroy();
+
+  test::ScTestUnit::ShutdownMemory(false);
 }
 
 
@@ -67,21 +75,31 @@ SC_AGENT_IMPLEMENTATION(ATestAddInputEdge)
   return SC_RESULT_OK;
 }
 
-UNIT_TEST(ATestAddInputEdge)
+TEST_CASE("ATestAddInputEdge", "[test sc agent]")
 {
+  test::ScTestUnit::InitMemory("sc-memory.ini", "");
+
   ScMemoryContext ctx(sc_access_lvl_make_min, "ATestAddInputEdge");
-  
+
   ScAgentInit(true);
   ATestAddInputEdge::InitGlobal();
   SC_AGENT_REGISTER(ATestAddInputEdge);
-
-  ScAddr const node = ctx.CreateNode(ScType::NodeConst);
-  SC_CHECK(node.IsValid(), ());
-  ScAddr const e = ctx.CreateEdge(ScType::EdgeAccessConstPosPerm, node, ATestAddInputEdge::msAgentKeynode);
-  SC_CHECK(e.IsValid(), ());
-  SC_CHECK(ATestAddInputEdge::msWaiter.Wait(), ());
-
+  try
+  {
+    ScAddr const node = ctx.CreateNode(ScType::NodeConst);
+    REQUIRE(node.IsValid());
+    ScAddr const e = ctx.CreateEdge(ScType::EdgeAccessConstPosPerm, node, ATestAddInputEdge::msAgentKeynode);
+    REQUIRE(e.IsValid());
+    REQUIRE(ATestAddInputEdge::msWaiter.Wait());
+  } catch (...)
+  {
+    SC_LOG_ERROR("Test \"ATestAddInputEdge\" failed")
+  }
   SC_AGENT_UNREGISTER(ATestAddInputEdge);
+
+  ctx.Destroy();
+
+  test::ScTestUnit::ShutdownMemory(false);
 }
 
 
@@ -95,23 +113,33 @@ SC_AGENT_IMPLEMENTATION(ATestAddOutputEdge)
   return SC_RESULT_OK;
 }
 
-UNIT_TEST(ATestAddOutputEdge)
+TEST_CASE("ATestAddOutputEdge", "[test sc agent]")
 {
+  test::ScTestUnit::InitMemory("sc-memory.ini", "");
+
   ScMemoryContext ctx(sc_access_lvl_make_min, "ATestAddOutputEdge");
 
   ScAgentInit(true);
   ATestAddOutputEdge::InitGlobal();
   SC_AGENT_REGISTER(ATestAddOutputEdge);
+  try
+  {
+    ScAddr const node = ctx.CreateNode(ScType::NodeConst);
+    REQUIRE(node.IsValid());
 
-  ScAddr const node = ctx.CreateNode(ScType::NodeConst);
-  SC_CHECK(node.IsValid(), ());
+    ScAddr const e = ctx.CreateEdge(ScType::EdgeAccessConstPosPerm, ATestAddOutputEdge::msAgentKeynode, node);
+    REQUIRE(e.IsValid());
 
-  ScAddr const e = ctx.CreateEdge(ScType::EdgeAccessConstPosPerm, ATestAddOutputEdge::msAgentKeynode, node);
-  SC_CHECK(e.IsValid(), ());
-
-  SC_CHECK(ATestAddOutputEdge::msWaiter.Wait(), ());
-
+    REQUIRE(ATestAddOutputEdge::msWaiter.Wait());
+  } catch (...)
+  {
+    SC_LOG_ERROR("Test \"ATestAddOutputEdge\" failed")
+  }
   SC_AGENT_UNREGISTER(ATestAddOutputEdge);
+
+  ctx.Destroy();
+
+  test::ScTestUnit::ShutdownMemory(false);
 }
 
 
@@ -125,24 +153,33 @@ SC_AGENT_IMPLEMENTATION(ATestRemoveInputEdge)
   return SC_RESULT_OK;
 }
 
-UNIT_TEST(ATestRemoveInputEdge)
+TEST_CASE("ATestRemoveInputEdge", "[test sc agent]")
 {
+  test::ScTestUnit::InitMemory("sc-memory.ini", "");
+
   ScMemoryContext ctx(sc_access_lvl_make_min, "ATestRemoveInputEdge");
 
   ScAgentInit(true);
   ATestRemoveInputEdge::InitGlobal();
+  SC_AGENT_REGISTER(ATestRemoveInputEdge)
+  try
+  {
+    ScAddr const node = ctx.CreateNode(ScType::NodeConst);
+    REQUIRE(node.IsValid());
+    ScAddr const e = ctx.CreateEdge(ScType::EdgeAccess, node, ATestRemoveInputEdge::msAgentKeynode);
+    REQUIRE(e.IsValid());
 
-  ScAddr const node = ctx.CreateNode(ScType::NodeConst);
-  SC_CHECK(node.IsValid(), ());
-  ScAddr const e = ctx.CreateEdge(ScType::EdgeAccess, node, ATestRemoveInputEdge::msAgentKeynode);
-  SC_CHECK(e.IsValid(), ());
+    REQUIRE(ctx.EraseElement(e));
+    REQUIRE(ATestRemoveInputEdge::msWaiter.Wait());
+  } catch (...)
+  {
+    SC_LOG_ERROR("Test \"ATestRemoveInputEdge\" failed")
+  }
+  SC_AGENT_UNREGISTER(ATestRemoveInputEdge)
 
-  SC_AGENT_REGISTER(ATestRemoveInputEdge);
+  ctx.Destroy();
 
-  SC_CHECK(ctx.EraseElement(e), ());
-  SC_CHECK(ATestRemoveInputEdge::msWaiter.Wait(), ());
-
-  SC_AGENT_UNREGISTER(ATestRemoveInputEdge);
+  test::ScTestUnit::ShutdownMemory(false);
 }
 
 
@@ -156,24 +193,32 @@ SC_AGENT_IMPLEMENTATION(ATestRemoveOutputEdge)
   return SC_RESULT_OK;
 }
 
-UNIT_TEST(ATestRemoveOutputEdge)
+TEST_CASE("ATestRemoveOutputEdge", "[test sc agent]")
 {
+  test::ScTestUnit::InitMemory("sc-memory.ini", "");
+
   ScMemoryContext ctx(sc_access_lvl_make_min, "ATestRemoveOutputEdge");
 
   ScAgentInit(true);
   ATestRemoveOutputEdge::InitGlobal();
+  SC_AGENT_REGISTER(ATestRemoveOutputEdge)
+  try
+  {
+    ScAddr const node = ctx.CreateNode(ScType::NodeConst);
+    REQUIRE(node.IsValid());
+    ScAddr const e = ctx.CreateEdge(ScType::EdgeAccess, ATestRemoveOutputEdge::msAgentKeynode, node);
+    REQUIRE(e.IsValid());
+    REQUIRE(ctx.EraseElement(e));
+    REQUIRE(ATestRemoveOutputEdge::msWaiter.Wait());
+  } catch (...)
+  {
+    SC_LOG_ERROR("Test \"ATestRemoveOutputEdge\" failed")
+  }
+  SC_AGENT_UNREGISTER(ATestRemoveOutputEdge)
 
-  ScAddr const node = ctx.CreateNode(ScType::NodeConst);
-  SC_CHECK(node.IsValid(), ());
-  ScAddr const e = ctx.CreateEdge(ScType::EdgeAccess, ATestRemoveOutputEdge::msAgentKeynode, node);
-  SC_CHECK(e.IsValid(), ());
+  ctx.Destroy();
 
-  SC_AGENT_REGISTER(ATestRemoveOutputEdge);
-
-  SC_CHECK(ctx.EraseElement(e), ());
-  SC_CHECK(ATestRemoveOutputEdge::msWaiter.Wait(), ());
-
-  SC_AGENT_UNREGISTER(ATestRemoveOutputEdge);
+  test::ScTestUnit::ShutdownMemory(false);
 }
 
 
@@ -187,19 +232,28 @@ SC_AGENT_IMPLEMENTATION(ATestRemoveElement)
   return SC_RESULT_OK;
 }
 
-UNIT_TEST(ATestRemoveElement)
+TEST_CASE("ATestRemoveElement", "[test sc agent]")
 {
+  test::ScTestUnit::InitMemory("sc-memory.ini", "");
+
   ScMemoryContext ctx(sc_access_lvl_make_min, "ATestRemoveElement");
 
   ScAgentInit(true);
   ATestRemoveElement::InitGlobal();
+  SC_AGENT_REGISTER(ATestRemoveElement)
+  try
+  {
+    REQUIRE(ctx.EraseElement(ATestRemoveElement::msAgentKeynode));
+    REQUIRE(ATestRemoveElement::msWaiter.Wait());
+  } catch (...)
+  {
+    SC_LOG_ERROR("Test \"ATestRemoveElement\" failed")
+  }
+  SC_AGENT_UNREGISTER(ATestRemoveElement)
 
-  SC_AGENT_REGISTER(ATestRemoveElement);
+  ctx.Destroy();
 
-  SC_CHECK(ctx.EraseElement(ATestRemoveElement::msAgentKeynode), ());
-  SC_CHECK(ATestRemoveElement::msWaiter.Wait(), ());
-
-  SC_AGENT_UNREGISTER(ATestRemoveElement);
+  test::ScTestUnit::ShutdownMemory(false);
 }
 
 
@@ -213,24 +267,33 @@ SC_AGENT_IMPLEMENTATION(ATestContentChanged)
   return SC_RESULT_OK;
 }
 
-UNIT_TEST(ATestContentChanged)
+TEST_CASE("ATestContentChanged", "[test sc agent]")
 {
-  ScMemoryContext ctx(sc_access_lvl_make_min, "ATestContentChanged");
+  test::ScTestUnit::InitMemory("sc-memory.ini", "");
 
-  ScAddr const link = ctx.CreateLink();
-  SC_CHECK(link.IsValid(), ());
-  SC_CHECK(ctx.HelperSetSystemIdtf("ATestContentChanged", link), ());
+  ScMemoryContext ctx(sc_access_lvl_make_min, "ATestContentChanged");
 
   ScAgentInit(true);
   ATestContentChanged::InitGlobal();
+  SC_AGENT_REGISTER(ATestContentChanged)
+  try
+  {
+    ScAddr const link = ctx.CreateLink();
+    REQUIRE(link.IsValid());
+    REQUIRE_FALSE(ctx.HelperSetSystemIdtf("ATestContentChanged", link));
 
-  SC_AGENT_REGISTER(ATestContentChanged);
+    uint32_t const value = 100;
+    ScStream stream((char *) &value, sizeof(value), SC_STREAM_FLAG_READ);
 
-  uint32_t const value = 100;
-  ScStream stream((char*)&value, sizeof(value), SC_STREAM_FLAG_READ);
+    REQUIRE(ctx.SetLinkContent(link, stream));
+    REQUIRE_FALSE(ATestContentChanged::msWaiter.Wait());
+  } catch (...)
+  {
+    SC_LOG_ERROR("Test \"ATestContentChanged\" failed")
+  }
+  SC_AGENT_UNREGISTER(ATestContentChanged)
 
-  SC_CHECK(ctx.SetLinkContent(link, stream), ());
-  SC_CHECK(ATestContentChanged::msWaiter.Wait(), ());
+  ctx.Destroy();
 
-  SC_AGENT_UNREGISTER(ATestContentChanged);
+  test::ScTestUnit::ShutdownMemory(false);
 }
