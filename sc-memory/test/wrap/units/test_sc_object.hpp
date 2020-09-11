@@ -8,7 +8,6 @@
 
 #include "sc-memory/cpp/sc_addr.hpp"
 #include "sc-memory/cpp/sc_object.hpp"
-
 #include "test_sc_object.generated.hpp"
 
 namespace n1

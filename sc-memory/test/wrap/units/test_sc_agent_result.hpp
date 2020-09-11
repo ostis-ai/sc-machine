@@ -7,9 +7,7 @@
 #pragma once
 
 #include "sc-memory/cpp/kpm/sc_agent.hpp"
-
 #include "test_sc_agent_result.generated.hpp"
-
 
 class ATestResultOk: public ScAgentAction
 {

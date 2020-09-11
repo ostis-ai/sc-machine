@@ -4,10 +4,10 @@
 * (See accompanying file COPYING.MIT or copy at http://opensource.org/licenses/MIT)
 */
 
+#include <exception>
+
 #include "catch2/catch.hpp"
-
 #include "sc-memory/cpp/utils/sc_test.hpp"
-
 #include "test_sc_object.hpp"
 
 TEST_CASE("Codegen keynodes", "[test codegen]")
@@ -32,18 +32,18 @@ TEST_CASE("Codegen keynodes", "[test codegen]")
     REQUIRE(addr3.IsValid());
     REQUIRE(ctx.HelperSetSystemIdtf("test_keynode3", addr3));
 
-    n1::n2::TestObject obj1;
-    obj1.Init();
+    n1::n2::TestObject testObject;
+    testObject.Init();
 
-    SC_CHECK_EQUAL(addr1, obj1.mTestKeynode1, ());
-    SC_CHECK_EQUAL(addr2, obj1.mTestKeynode2, ());
+    SC_CHECK_EQUAL(addr1, testObject.mTestKeynode1, ());
+    SC_CHECK_EQUAL(addr2, testObject.mTestKeynode2, ());
 
-    obj1.InitGlobal();
-    SC_CHECK_EQUAL(addr3, obj1.mTestKeynode3, ());
+    testObject.InitGlobal();
+    SC_CHECK_EQUAL(addr3, testObject.mTestKeynode3, ());
 
     ScAddr const addrForce = ctx.HelperFindBySystemIdtf("test_keynode_force");
     REQUIRE(addrForce.IsValid());
-    SC_CHECK_EQUAL(addrForce, obj1.mTestKeynodeForce, ());
+    SC_CHECK_EQUAL(addrForce, testObject.mTestKeynodeForce, ());
   } catch (...)
   {
     SC_LOG_ERROR("Test \"Codegen keynodes\" failed");

@@ -5,7 +5,6 @@
 */
 
 #include "catch2/catch.hpp"
-
 #include "sc-memory/cpp/utils/sc_test.hpp"
 #include "sc-memory/cpp/sc_link.hpp"
 

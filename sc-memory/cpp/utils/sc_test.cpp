@@ -6,9 +6,9 @@
 
 #define CATCH_CONFIG_RUNNER
 
-#include "catch2/catch.hpp"
-
 #include "sc_test.hpp"
+
+#include "catch2/catch.hpp"
 
 namespace test
 {
@@ -42,10 +42,6 @@ int ScTestUnit::RunAll(int argc, char * argv[], std::string const & configPath, 
   if (returnCode != 0)
     return returnCode;
 
-  int failed = session.run();
-
-  return failed;
+  return session.run();
 }
-
-
 } // namespace test

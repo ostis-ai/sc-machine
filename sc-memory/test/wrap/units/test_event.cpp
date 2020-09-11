@@ -4,15 +4,15 @@
 * (See accompanying file COPYING.MIT or copy at http://opensource.org/licenses/MIT)
 */
 
+#include <thread>
+#include <mutex>
+
+#include "catch2/catch.hpp"
 #include "sc-memory/cpp/sc_event.hpp"
 #include "sc-memory/cpp/sc_timer.hpp"
 #include "sc-memory/cpp/sc_stream.hpp"
 #include "sc-memory/cpp/utils/sc_test.hpp"
 #include "sc-memory/cpp/utils/sc_progress.hpp"
-
-#include <thread>
-#include <mutex>
-#include "catch2/catch.hpp"
 
 extern "C"
 {

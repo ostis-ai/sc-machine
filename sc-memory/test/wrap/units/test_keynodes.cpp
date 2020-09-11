@@ -5,9 +5,7 @@
 */
 
 #include "catch2/catch.hpp"
-
 #include "sc-memory/cpp/utils/sc_test.hpp"
-
 #include "sc-memory/cpp/sc_keynodes.hpp"
 #include "sc-memory/cpp/utils/sc_keynode_cache.hpp"
 

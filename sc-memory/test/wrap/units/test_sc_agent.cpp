@@ -5,9 +5,7 @@
  */
 
 #include "catch2/catch.hpp"
-
 #include "test_sc_agent.hpp"
-
 #include "sc-memory/cpp/sc_stream.hpp"
 #include "sc-memory/cpp/utils/sc_test.hpp"
 

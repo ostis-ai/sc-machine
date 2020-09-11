@@ -228,8 +228,6 @@ if (NOT EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/generated/lib)
 			OUTPUT_VARIABLE GIT_VERSION)
 endif ()
 
-message("${CMAKE_CURRENT_SOURCE_DIR}/generated/lib/Catch2")
-
 if (NOT EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/generated/lib/Catch2)
 	execute_process(
 			COMMAND git clone https://github.com/catchorg/Catch2.git

@@ -6,16 +6,15 @@
 
 #pragma once
 
+#include <cstdlib>
+#include <iostream>
+#include <exception>
+
 #include "../sc_types.hpp"
 #include "../sc_memory.hpp"
 #include "../sc_debug.hpp"
 #include "../sc_utils.hpp"
-
 #include "../utils/sc_console.hpp"
-
-#include <cstdlib>
-#include <iostream>
-#include "exception"
 
 namespace test
 {
@@ -48,6 +47,7 @@ private:
 
   static _SC_EXTERN std::set<ScTestUnit *, TestLess> ms_tests;
 };
+
 #define _STATUS_COLOR(_expr) ((_expr) ? ScConsole::Color::Green : ScConsole::Color::Red)
 
 #define SUBTEST_START(_name) SC_LOG_INFO("Test "#_name" ...")

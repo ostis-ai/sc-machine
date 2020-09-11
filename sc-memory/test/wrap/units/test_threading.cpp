@@ -7,8 +7,8 @@
 #include <thread>
 #include <cstdlib>
 #include <ctime>
-#include "catch2/catch.hpp"
 
+#include "catch2/catch.hpp"
 #include "sc-memory/cpp/sc_timer.hpp"
 #include "sc-memory/cpp/utils/sc_progress.hpp"
 #include "sc-memory/cpp/utils/sc_test.hpp"

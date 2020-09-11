@@ -4,14 +4,12 @@
  * (See accompanying file COPYING.MIT or copy at http://opensource.org/licenses/MIT)
  */
 
+#include <thread>
+
 #include "catch2/catch.hpp"
-
 #include "test_sc_agent_result.hpp"
-
 #include "sc-memory/cpp/utils/sc_test.hpp"
 #include "sc-memory/cpp/sc_wait.hpp"
-
-#include <thread>
 
 ScAddr ATestResultOk::ms_keynodeTestResultOk;
 

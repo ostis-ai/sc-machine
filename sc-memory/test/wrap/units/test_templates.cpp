@@ -4,19 +4,17 @@
 * (See accompanying file COPYING.MIT or copy at http://opensource.org/licenses/MIT)
 */
 
-#include "catch2/catch.hpp"
+#include <algorithm>
+#include <glib.h>
+#include <random>
 
+#include "catch2/catch.hpp"
 #include "sc-memory/cpp/sc_debug.hpp"
 #include "sc-memory/cpp/sc_link.hpp"
 #include "sc-memory/cpp/sc_template.hpp"
 #include "sc-memory/cpp/sc_struct.hpp"
 #include "sc-memory/cpp/utils/sc_progress.hpp"
 #include "sc-memory/cpp/utils/sc_test.hpp"
-
-#include <glib.h>
-
-#include <random>
-#include <algorithm>
 
 namespace
 {

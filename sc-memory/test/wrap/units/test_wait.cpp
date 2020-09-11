@@ -5,7 +5,6 @@
 */
 
 #include "catch2/catch.hpp"
-
 #include "sc-memory/cpp/sc_wait.hpp"
 #include "sc-memory/cpp/kpm/sc_agent.hpp"
 #include "sc-memory/cpp/utils/sc_test.hpp"
