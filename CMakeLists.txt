@@ -237,20 +237,3 @@ if (NOT EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/generated/lib/Catch2)
 			WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/generated/lib/Catch2
 			OUTPUT_VARIABLE GIT_VERSION)
 endif ()
->>>>>>> feature/rewrite_tests_with_catch_library
-
-if (EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/generated/lib/Catch2)
-	add_subdirectory(generated/lib/Catch2)
-endif ()
-
-add_subdirectory(${SC_MACHINE_ROOT}/../../problem-solver/cxx ${SC_MACHINE_ROOT}/bin/cxx)
-add_subdirectory(${SC_MACHINE_ROOT}/../../problem-solver/py ${SC_MACHINE_ROOT}/bin/py)
-
-set(SC_SUBSYSTEMS_ROOT "${SC_MACHINE_ROOT}/../../subsystems")
-if (EXISTS ${SC_SUBSYSTEMS_ROOT})
-	FILE(GLOB SUBSYSTEM_DIRS ${SC_SUBSYSTEMS_ROOT}/*)
-	foreach(SUBSYSTEM_DIR ${SUBSYSTEM_DIRS})
-		get_filename_component(SUBSYSTEM_NAME ${SUBSYSTEM_DIR} NAME)
-		add_subdirectory(${SUBSYSTEM_DIR}/problem-solver/cxx ${SC_MACHINE_ROOT}/bin/subsystems/${SUBSYSTEM_NAME})
-	endforeach()
-endif()
