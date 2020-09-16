@@ -16,20 +16,14 @@ namespace
 {
 
 // should be synced with ScLog::Type
-const std::string kTypeToStr[] = {
-      "Debug", "Info", "Warning", "Error", "Python", "PythonError", "Off"
-};
-
-// should be synced with ScLog::OutputType
-const std::string kOutputTypeToStr[] = {
-      "Console", "File"
+const char * kTypeToStr[] = {
+      "Debug", "Info", "Warning", "Error", "Python", "PythonError"
 };
 
 } // namespace
 
 namespace utils
 {
-const std::string ScLog::DEFAULT_LOG_FILE = "system.log";
 
 ScLock gLock;
 ScLog * ScLog::ms_instance = nullptr;
@@ -43,47 +37,29 @@ ScLog * ScLog::GetInstance()
 }
 
 ScLog::ScLog()
+      : m_mode(Type::Debug)
+      , m_isMuted(false)
 {
-  m_isMuted = false;
-
-  int modeIndex = FindEnumElement(kTypeToStr, LOG_MODE);
-  m_mode = modeIndex != -1 ? Type(modeIndex) : Type::Info;
-
-  int outputTypeIndex = FindEnumElement(kOutputTypeToStr, LOG_OUTPUT_TYPE);
-  m_output_mode = outputTypeIndex != -1 ? OutputType(outputTypeIndex) : OutputType::Console;
-
-  if (m_output_mode == OutputType::File)
-  {
-    Initialize(DEFAULT_LOG_FILE);
-  }
-
   ASSERT(!ms_instance, ());
   ms_instance = this;
 }
 
 ScLog::~ScLog()
 {
-  Shutdown();
   ms_instance = nullptr;
 }
 
-bool ScLog::Initialize(std::string const & file_name)
+bool ScLog::Initialize(std::string const & file_name, Type mode /*= Info*/)
 {
-  if (m_output_mode == OutputType::File)
-  {
-    std::string file_path = LOG_DIR + file_name;
-    m_fileStream.open(file_path, std::ofstream::out | std::ofstream::app);
-  }
+  m_mode = mode;
+  m_fileStream.open(file_name, std::ofstream::out | std::ofstream::trunc);
   return m_fileStream.is_open();
 }
 
 void ScLog::Shutdown()
 {
-  if (m_fileStream.is_open())
-  {
-    m_fileStream.flush();
-    m_fileStream.close();
-  }
+  m_fileStream.flush();
+  m_fileStream.close();
 }
 
 void ScLog::Message(ScLog::Type type, std::string const & msg, ScConsole::Color color /*= ScConsole::Color::White*/)
@@ -104,51 +80,20 @@ void ScLog::Message(ScLog::Type type, std::string const & msg, ScConsole::Color 
        << ":" << std::setw(2) << std::setfill('0') << tm.tm_sec << "]["
        << kTypeToStr[int(type)] << "]: ";
 
-    if (m_output_mode == OutputType::Console)
-    {
-      ScConsole::SetColor(ScConsole::Color::White);
-      std::cout << ss.str();
-      ScConsole::SetColor(color);
-      std::cout << msg << std::endl;;
-      ScConsole::ResetColor();
-    }
-    else
-    {
-      if (m_fileStream.is_open())
-      {
-        m_fileStream << ss.str() << msg << std::endl;
-        m_fileStream.flush();
-      }
-    }
+    ScConsole::SetColor(ScConsole::Color::White);
+    std::cout << ss.str();
+    ScConsole::SetColor(color);
+    std::cout << msg << std::endl;;
+    ScConsole::ResetColor();
+
+    m_fileStream << ss.str() << msg;
+    m_fileStream.flush();
   }
 }
 
 void ScLog::SetMuted(bool value)
 {
   m_isMuted = value;
-}
-
-void ScLog::SetFileName(const std::string & file_name)
-{
-  Shutdown();
-  Initialize(file_name);
-}
-
-template<size_t N>
-int ScLog::FindEnumElement(const std::string (& elements)[N], const std::string & externalValue)
-{
-  size_t size = N;
-  int index = -1;
-  for (int i = 0; i < size; i++)
-  {
-    std::string mode = elements[i];
-    if (externalValue == mode)
-    {
-      index = i;
-      break;
-    }
-  }
-  return index;
 }
 
 } // namespace utils

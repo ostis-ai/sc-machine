@@ -5,12 +5,11 @@
 */
 #pragma once
 
-#include "../sc_type.hpp"
-#include "sc_console.hpp"
-#include "../generated/log_config.generated.hpp"
+#include <cstdint>
+#include <fstream>
+#include <string>
 
-#include <sstream>
-#include "string"
+#include "sc_console.hpp"
 
 namespace utils
 {
@@ -19,7 +18,6 @@ class ScLog final
 {
 protected:
   _SC_EXTERN ScLog();
-
   _SC_EXTERN ~ScLog();
 
 public:
@@ -32,25 +30,14 @@ public:
     Warning,
     Error,
     Python,
-    PythonError,
-    Off
+    PythonError
   };
 
-  enum class OutputType : uint8_t
-  {
-    Console = 0,
-    File
-  };
-
-
-
+  _SC_EXTERN bool Initialize(std::string const & file_name, Type mode = Type::Info);
   _SC_EXTERN void Shutdown();
-
-  _SC_EXTERN void SetFileName(std::string const & file_name);
 
   /// TODO: thread safe
   _SC_EXTERN void Message(Type type, std::string const & msg, ScConsole::Color color = ScConsole::Color::White);
-
   _SC_EXTERN void SetMuted(bool value);
 
   _SC_EXTERN static ScLog * GetInstance();
@@ -58,17 +45,9 @@ public:
 private:
   std::ofstream m_fileStream;
   Type m_mode;
-  OutputType m_output_mode;
   bool m_isMuted;
 
   static ScLog * ms_instance;
-
-  std::string static const DEFAULT_LOG_FILE;
-
-  bool Initialize(std::string const & file_name);
-
-  template<size_t N>
-  static int FindEnumElement(const std::string ( & elements)[N], const std::string & externalValue);
 };
 
 
