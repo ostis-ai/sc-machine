@@ -4,363 +4,405 @@
 * (See accompanying file COPYING.MIT or copy at http://opensource.org/licenses/MIT)
 */
 
+#include "catch2/catch.hpp"
 #include "sc-test-framework/sc_test_unit.hpp"
-
 #include "test_scs_utils.hpp"
 
-UNIT_TEST(scs_level_6_set)
+TEST_CASE("scs_level_6_set", "[test scs level 6]")
 {
-  SUBTEST_START(base)
+  SECTION("base")
   {
-    std::string const data = "@set = { a; b: c; d: e: f };;";
+    SUBTEST_START("base")
+    {
+      std::string const data = "@set = { a; b: c; d: e: f };;";
 
-    scs::Parser parser;
+      scs::Parser parser;
 
-    SC_CHECK(parser.Parse(data), (parser.GetParseError()));
+      REQUIRE(parser.Parse(data));
 
-    TripleTester tester(parser);
-    tester({
-             {
-               { ScType::NodeConstTuple, scs::Visibility::Local },
-               { ScType::EdgeAccessConstPosPerm, scs::Visibility::Local },
-               { ScType::NodeConst, "a" }
-             },
-             {
-               { ScType::NodeConstTuple, scs::Visibility::Local },
-               { ScType::EdgeAccessConstPosPerm, scs::Visibility::Local },
-               { ScType::NodeConst, "c" }
-             },
-             {
-               { ScType::NodeConst, "b" },
-               { ScType::EdgeAccessConstPosPerm, scs::Visibility::Local },
-               { ScType::EdgeAccessConstPosPerm, scs::Visibility::Local }
-             },
-             {
-               { ScType::NodeConstTuple, scs::Visibility::Local },
-               { ScType::EdgeAccessConstPosPerm, scs::Visibility::Local },
-               { ScType::NodeConst, "f" }
-             },
-             {
-               { ScType::NodeConst, "d" },
-               { ScType::EdgeAccessConstPosPerm, scs::Visibility::Local },
-               { ScType::EdgeAccessConstPosPerm, scs::Visibility::Local }
-             },
-             {
-               { ScType::NodeConst, "e" },
-               { ScType::EdgeAccessConstPosPerm, scs::Visibility::Local },
-               { ScType::EdgeAccessConstPosPerm, scs::Visibility::Local }
-             }
-           });
+      TripleTester tester(parser);
+      tester({
+                   {
+                         { ScType::NodeConstTuple, scs::Visibility::Local },
+                         { ScType::EdgeAccessConstPosPerm, scs::Visibility::Local },
+                         { ScType::NodeConst,              "a" }
+                   },
+                   {
+                         { ScType::NodeConstTuple, scs::Visibility::Local },
+                         { ScType::EdgeAccessConstPosPerm, scs::Visibility::Local },
+                         { ScType::NodeConst,              "c" }
+                   },
+                   {
+                         { ScType::NodeConst,      "b" },
+                         { ScType::EdgeAccessConstPosPerm, scs::Visibility::Local },
+                         { ScType::EdgeAccessConstPosPerm, scs::Visibility::Local }
+                   },
+                   {
+                         { ScType::NodeConstTuple, scs::Visibility::Local },
+                         { ScType::EdgeAccessConstPosPerm, scs::Visibility::Local },
+                         { ScType::NodeConst,              "f" }
+                   },
+                   {
+                         { ScType::NodeConst,      "d" },
+                         { ScType::EdgeAccessConstPosPerm, scs::Visibility::Local },
+                         { ScType::EdgeAccessConstPosPerm, scs::Visibility::Local }
+                   },
+                   {
+                         { ScType::NodeConst,      "e" },
+                         { ScType::EdgeAccessConstPosPerm, scs::Visibility::Local },
+                         { ScType::EdgeAccessConstPosPerm, scs::Visibility::Local }
+                   }
+             });
+    }
+    SUBTEST_END()
   }
-  SUBTEST_END()
 }
 
-UNIT_TEST(scs_level_6_smoke)
+TEST_CASE("scs_level_6_smoke", "[test scs level 6]")
 {
   std::vector<std::string> data = {
-    "z -> [**];;",
-    "x -> [test*];;",
-    "@a = [\\[* r-> b;; *\\]];;",
-    "@alias = u;; @alias -> [* x -> [* y -> z;; *];; *];;",
-    "y <= nrel_main_idtf: [y*];;",
-    "a -> [* z -> [begin*];; *];;",
-    "a -> [* b -> c;; *];;"
+        "z -> [**];;",
+        "x -> [test*];;",
+        "@a = [\\[* r-> b;; *\\]];;",
+        "@alias = u;; @alias -> [* x -> [* y -> z;; *];; *];;",
+        "y <= nrel_main_idtf: [y*];;",
+        "a -> [* z -> [begin*];; *];;",
+        "a -> [* b -> c;; *];;"
   };
 
   for (auto const & d : data)
   {
     scs::Parser parser;
-    SC_CHECK(parser.Parse(d), (parser.GetParseError()));
+    REQUIRE(parser.Parse(d));
   }
 }
 
-UNIT_TEST(scs_level_6_content)
+TEST_CASE("scs_level_6_content", "[test scs level 6]")
 {
-  SUBTEST_START(constant)
+  SECTION("constant")
   {
-    std::string const data = "x -> [content_const];;";
+    SUBTEST_START("constant")
+    {
+      std::string const data = "x -> [content_const];;";
 
-    scs::Parser parser;
+      scs::Parser parser;
 
-    SC_CHECK(parser.Parse(data), (parser.GetParseError()));
+      REQUIRE(parser.Parse(data));
 
-    auto const & triples = parser.GetParsedTriples();
-    SC_CHECK_EQUAL(triples.size(), 1, ());
+      auto const & triples = parser.GetParsedTriples();
+      REQUIRE(triples.size() == 1);
 
-    SPLIT_TRIPLE(triples[0]);
+      SPLIT_TRIPLE(triples[0]);
 
-    SC_CHECK_EQUAL(src.GetIdtf(), "x", ());
-    SC_CHECK_EQUAL(edge.GetType(), ScType::EdgeAccessConstPosPerm, ());
-    SC_CHECK_EQUAL(trg.GetType(), ScType::LinkConst, ());
-
-    SC_CHECK_EQUAL(trg.GetValue(), "content_const", ());
+      REQUIRE_THAT(src.GetIdtf(), Catch::Equals("x"));
+      REQUIRE(edge.GetType() == ScType::EdgeAccessConstPosPerm);
+      REQUIRE(trg.GetType() == ScType::LinkConst);
+      REQUIRE_THAT(trg.GetValue(), Catch::Equals("content_const"));
+    }
+    SUBTEST_END()
   }
-  SUBTEST_END()
 
-  SUBTEST_START(empty)
+  SECTION("empty")
   {
-    std::string const data = "x -> [];;";
+    SUBTEST_START("empty")
+    {
+      std::string const data = "x -> [];;";
 
-    scs::Parser parser;
+      scs::Parser parser;
 
-    SC_CHECK(parser.Parse(data), (parser.GetParseError()));
+      REQUIRE(parser.Parse(data));
 
-    auto const & triples = parser.GetParsedTriples();
-    SC_CHECK_EQUAL(triples.size(), 1, ());
+      auto const & triples = parser.GetParsedTriples();
+      REQUIRE(triples.size() == 1);
 
-    SPLIT_TRIPLE(triples[0]);
+      SPLIT_TRIPLE(triples[0]);
 
-    SC_CHECK_EQUAL(src.GetIdtf(), "x", ());
-    SC_CHECK_EQUAL(edge.GetType(), ScType::EdgeAccessConstPosPerm, ());
-    SC_CHECK_EQUAL(trg.GetType(), ScType::LinkConst, ());
-
-    SC_CHECK_EQUAL(trg.GetValue(), "", ());
+      REQUIRE_THAT(src.GetIdtf(), Catch::Equals("x"));
+      REQUIRE(edge.GetType() == ScType::EdgeAccessConstPosPerm);
+      REQUIRE(trg.GetType() == ScType::LinkConst);
+      REQUIRE_THAT(trg.GetValue(), Catch::Equals(""));
+    }
+    SUBTEST_END()
   }
-  SUBTEST_END()
 
-  SUBTEST_START(var)
+  SECTION("var")
   {
-    std::string const data = "x -> _[var_content];;";
+    SUBTEST_START("var")
+    {
+      std::string const data = "x -> _[var_content];;";
 
-    scs::Parser parser;
+      scs::Parser parser;
 
-    SC_CHECK(parser.Parse(data), (parser.GetParseError()));
+      REQUIRE(parser.Parse(data));
 
-    auto const & triples = parser.GetParsedTriples();
-    SC_CHECK_EQUAL(triples.size(), 1, ());
+      auto const & triples = parser.GetParsedTriples();
+      REQUIRE(triples.size() == 1);
 
-    auto const & trg = parser.GetParsedElement(triples[0].m_target);
+      auto const & trg = parser.GetParsedElement(triples[0].m_target);
 
-    SC_CHECK_EQUAL(trg.GetType(), ScType::LinkVar, ());
-    SC_CHECK_EQUAL(trg.GetValue(), "var_content", ());
+      REQUIRE(trg.GetType() == ScType::LinkVar);
+      REQUIRE_THAT(trg.GetValue(), Catch::Equals("var_content"));
+    }
+    SUBTEST_END()
   }
-  SUBTEST_END()
-
 
   auto const testContent = [](std::string const & src, std::string const & check)
   {
     scs::Parser parser;
 
-    SC_CHECK(parser.Parse(src), (parser.GetParseError()));
+    REQUIRE(parser.Parse(src));
 
     auto const & triples = parser.GetParsedTriples();
-    SC_CHECK_EQUAL(triples.size(), 1, ());
+    REQUIRE(triples.size() == 1);
 
     auto const & trg = parser.GetParsedElement(triples[0].m_target);
 
-    SC_CHECK_EQUAL(trg.GetValue(), check, ());
+    REQUIRE(trg.GetValue() == check);
   };
 
-  SUBTEST_START(escape)
+  SECTION("escape")
   {
-    testContent("x -> _[\\[test\\]];;", "[test]");
+    SUBTEST_START("escape")
+    {
+      testContent("x -> _[\\[test\\]];;", "[test]");
+    }
+    SUBTEST_END()
   }
-  SUBTEST_END()
 
-  SUBTEST_START(escape_sequence)
+  SECTION("escape_sequence")
   {
-    testContent("x -> _[\\\\\\[test\\\\\\]];;", "\\[test\\]");
+    SUBTEST_START("escape_sequence")
+    {
+      testContent("x -> _[\\\\\\[test\\\\\\]];;", "\\[test\\]");
+    }
+    SUBTEST_END()
   }
-  SUBTEST_END()
 
-  SUBTEST_START(escape_error)
+  SECTION("escape_error")
   {
-    std::string const data = "x -> _[\\test]];;";
-
-    scs::Parser parser;
-
-    SC_CHECK(!parser.Parse(data), (parser.GetParseError()));
+    SUBTEST_START("escape_error")
+    {
+      std::string const data = "x -> _[\\test]];;";
+      scs::Parser parser;
+      REQUIRE_FALSE(parser.Parse(data));
+      SC_LOG_WARNING(parser.GetParseError());
+    }
+    SUBTEST_END()
   }
-  SUBTEST_END()
 
-  SUBTEST_START(multiline)
+  SECTION("multiline")
   {
-    std::string const data = "x -> _[line1\nline2];;";
+    SUBTEST_START("multiline")
+    {
+      std::string const data = "x -> _[line1\nline2];;";
 
-    scs::Parser parser;
+      scs::Parser parser;
 
-    SC_CHECK(parser.Parse(data), (parser.GetParseError()));
+      REQUIRE(parser.Parse(data));
 
-    auto const & triples = parser.GetParsedTriples();
-    SC_CHECK_EQUAL(triples.size(), 1, ());
+      auto const & triples = parser.GetParsedTriples();
+      REQUIRE(triples.size() == 1);
 
-    auto const & trg = parser.GetParsedElement(triples[0].m_target);
+      auto const & trg = parser.GetParsedElement(triples[0].m_target);
 
-    SC_CHECK_EQUAL(trg.GetValue(), "line1\nline2", ());
+      REQUIRE_THAT(trg.GetValue(), Catch::Equals("line1\nline2"));
+    }
+    SUBTEST_END()
   }
-  SUBTEST_END()
 }
 
-UNIT_TEST(scs_level_6_contour)
+TEST_CASE("scs_level_6_contour", "[test scs level 6]")
 {
-  SUBTEST_START(empty)
+  SECTION("empty")
   {
-    std::string const data = "x -> [**];;";
-
-    scs::Parser parser;
-
-    SC_CHECK(parser.Parse(data), (parser.GetParseError()));
-
-    auto const & triples = parser.GetParsedTriples();
-    SC_CHECK_EQUAL(triples.size(), 1, ());
-
-    SPLIT_TRIPLE(triples[0]);
-
-    SC_CHECK_EQUAL(trg.GetType(), ScType::NodeConstStruct, ());
-  }
-  SUBTEST_END()
-
-  SUBTEST_START(err)
-  {
-    std::string const data = "x -> [* y -> z *];;";
-
-    scs::Parser parser;
-
-    SC_CHECK(!parser.Parse(data), ());
-  }
-  SUBTEST_END()
-
-  SUBTEST_START(base)
-  {
-    std::string const data = "x -|> [* y _=> z;; *];;";
-
-    scs::Parser parser;
-
-    SC_CHECK(parser.Parse(data), (parser.GetParseError()));
-
-    auto const & triples = parser.GetParsedTriples();
-    SC_CHECK_EQUAL(triples.size(), 5, ());
-
+    SUBTEST_START("empty")
     {
+      std::string const data = "x -> [**];;";
+
+      scs::Parser parser;
+
+      REQUIRE(parser.Parse(data));
+
+      auto const & triples = parser.GetParsedTriples();
+      REQUIRE(triples.size() == 1);
+
       SPLIT_TRIPLE(triples[0]);
 
-      SC_CHECK_EQUAL(src.GetIdtf(), "y", ());
-      SC_CHECK_EQUAL(edge.GetType(), ScType::EdgeDCommonVar, ());
-      SC_CHECK_EQUAL(trg.GetIdtf(), "z", ());
+      REQUIRE(trg.GetType() == ScType::NodeConstStruct);
     }
-
-    for (size_t i = 1; i < 4; ++i)
-    {
-      auto const & edge = parser.GetParsedElement(triples[i].m_edge);
-      SC_CHECK_EQUAL(edge.GetType(), ScType::EdgeAccessConstPosPerm, ());
-
-      auto const & src = parser.GetParsedElement(triples[i].m_source);
-      SC_CHECK_EQUAL(src.GetType(), ScType::NodeConstStruct, ());
-    }
-
-    {
-      SPLIT_TRIPLE(triples.back());
-
-      SC_CHECK_EQUAL(src.GetIdtf(), "x", ());
-      SC_CHECK_EQUAL(edge.GetType(), ScType::EdgeAccessConstNegPerm, ());
-      SC_CHECK_EQUAL(trg.GetType(), ScType::NodeConstStruct, ());
-    }
+    SUBTEST_END()
   }
-  SUBTEST_END()
 
-  SUBTEST_START(recursive)
+  SECTION("err")
   {
-    std::string const data = "x ~|> [* y _=> [* k ~> z;; *];; *];;";
-
-    scs::Parser parser;
-
-    SC_CHECK(parser.Parse(data), (parser.GetParseError()));
-
-    auto const & triples = parser.GetParsedTriples();
-    SC_CHECK_EQUAL(triples.size(), 15, ());
-
+    SUBTEST_START("err")
     {
-      SPLIT_TRIPLE(triples[0]);
-      SC_CHECK_EQUAL(src.GetIdtf(), "k", ());
-      SC_CHECK_EQUAL(edge.GetType(), ScType::EdgeAccessConstPosTemp, ());
-      SC_CHECK_EQUAL(trg.GetIdtf(), "z", ());
+      std::string const data = "x -> [* y -> z *];;";
+
+      scs::Parser parser;
+
+      REQUIRE_FALSE(parser.Parse(data));
+      SC_LOG_WARNING(parser.GetParseError());
     }
+    SUBTEST_END()
+  }
 
-    auto const checkStructEdges = [&triples, &parser](size_t idxStart, size_t idxEnd)
+  SECTION("base")
+  {
+    SUBTEST_START("base")
     {
-      for (size_t i = idxStart; i < idxEnd; ++i)
+      std::string const data = "x -|> [* y _=> z;; *];;";
+
+      scs::Parser parser;
+
+      REQUIRE(parser.Parse(data));
+
+      auto const & triples = parser.GetParsedTriples();
+      REQUIRE(triples.size() == 5);
+
+      {
+        SPLIT_TRIPLE(triples[0]);
+
+        REQUIRE_THAT(src.GetIdtf(), Catch::Equals("y"));
+        REQUIRE(edge.GetType() == ScType::EdgeDCommonVar);
+        REQUIRE_THAT(trg.GetIdtf(), Catch::Equals("z"));
+      }
+
+      for (size_t i = 1; i < 4; ++i)
       {
         auto const & edge = parser.GetParsedElement(triples[i].m_edge);
-        SC_CHECK_EQUAL(edge.GetType(), ScType::EdgeAccessConstPosPerm, ());
+        REQUIRE(edge.GetType() == ScType::EdgeAccessConstPosPerm);
 
         auto const & src = parser.GetParsedElement(triples[i].m_source);
-        SC_CHECK_EQUAL(src.GetType(), ScType::NodeConstStruct, ());
+        REQUIRE(src.GetType() == ScType::NodeConstStruct);
       }
-    };
 
-    checkStructEdges(1, 4);
+      {
+        SPLIT_TRIPLE(triples.back());
 
-    {
-      SPLIT_TRIPLE(triples[4]);
-
-      SC_CHECK_EQUAL(src.GetIdtf(), "y", ());
-      SC_CHECK_EQUAL(edge.GetType(), ScType::EdgeDCommonVar, ());
-      SC_CHECK_EQUAL(trg.GetType(), ScType::NodeConstStruct, ());
+        REQUIRE_THAT(src.GetIdtf(), Catch::Equals("x"));
+        REQUIRE(edge.GetType() == ScType::EdgeAccessConstNegPerm);
+        REQUIRE(trg.GetType() == ScType::NodeConstStruct);
+      }
     }
-
-    checkStructEdges(5, 14);
-
-    {
-      SPLIT_TRIPLE(triples[14]);
-
-      SC_CHECK_EQUAL(src.GetIdtf(), "x", ());
-      SC_CHECK_EQUAL(edge.GetType(), ScType::EdgeAccessConstNegTemp, ());
-      SC_CHECK_EQUAL(trg.GetType(), ScType::NodeConstStruct, ());
-    }
+    SUBTEST_END()
   }
-  SUBTEST_END()
 
-  SUBTEST_START(aliases)
+  SECTION("recursive")
   {
-    std::string const data = "@alias = _[];; x -> [* @alias2 = y;; @alias _~> @alias2;;*];;";
-
-    scs::Parser parser;
-
-    SC_CHECK(parser.Parse(data), (parser.GetParseError()));
-
-    auto const & triples = parser.GetParsedTriples();
-    SC_CHECK_EQUAL(triples.size(), 5, ());
-
+    SUBTEST_START("recursive")
     {
-      SPLIT_TRIPLE(triples[0]);
+      std::string const data = "x ~|> [* y _=> [* k ~> z;; *];; *];;";
 
-      SC_CHECK_EQUAL(src.GetType(), ScType::LinkVar, ());
-      SC_CHECK_EQUAL(edge.GetType(), ScType::EdgeAccessVarPosTemp, ());
-      SC_CHECK_EQUAL(trg.GetIdtf(), "y", ());
+      scs::Parser parser;
+
+      REQUIRE(parser.Parse(data));
+
+      auto const & triples = parser.GetParsedTriples();
+      REQUIRE(triples.size() == 15);
+
+      {
+        SPLIT_TRIPLE(triples[0]);
+        REQUIRE_THAT(src.GetIdtf(), Catch::Equals("k"));
+        REQUIRE(edge.GetType() == ScType::EdgeAccessConstPosTemp);
+        REQUIRE_THAT(trg.GetIdtf(), Catch::Equals("z"));
+      }
+
+      auto const checkStructEdges = [&triples, &parser](size_t idxStart, size_t idxEnd)
+      {
+        for (size_t i = idxStart; i < idxEnd; ++i)
+        {
+          auto const & edge = parser.GetParsedElement(triples[i].m_edge);
+          SC_CHECK_EQUAL(edge.GetType(), ScType::EdgeAccessConstPosPerm, ());
+
+          auto const & src = parser.GetParsedElement(triples[i].m_source);
+          SC_CHECK_EQUAL(src.GetType(), ScType::NodeConstStruct, ());
+        }
+      };
+
+      checkStructEdges(1, 4);
+
+      {
+        SPLIT_TRIPLE(triples[4]);
+
+        SC_CHECK_EQUAL(src.GetIdtf(), "y", ());
+        SC_CHECK_EQUAL(edge.GetType(), ScType::EdgeDCommonVar, ());
+        SC_CHECK_EQUAL(trg.GetType(), ScType::NodeConstStruct, ());
+      }
+
+      checkStructEdges(5, 14);
+
+      {
+        SPLIT_TRIPLE(triples[14]);
+
+        REQUIRE_THAT(src.GetIdtf(), Catch::Equals("x"));
+        REQUIRE(edge.GetType() == ScType::EdgeAccessConstNegTemp);
+        REQUIRE(trg.GetType() == ScType::NodeConstStruct);
+      }
     }
+    SUBTEST_END()
   }
-  SUBTEST_END()
 
-  SUBTEST_START(content)
+  SECTION("aliases")
   {
-    std::string const data = "x -> [* y _=> [test*];; *];;";
-
-    scs::Parser parser;
-
-    SC_CHECK(parser.Parse(data), (parser.GetParseError()));
-
-    auto const & triples = parser.GetParsedTriples();
-    SC_CHECK_EQUAL(triples.size(), 5, ());
-
+    SUBTEST_START("aliases")
     {
-      SPLIT_TRIPLE(triples[0]);
+      std::string const data = "@alias = _[];; x -> [* @alias2 = y;; @alias _~> @alias2;;*];;";
 
-      SC_CHECK_EQUAL(src.GetIdtf(), "y", ());
-      SC_CHECK_EQUAL(edge.GetType(), ScType::EdgeDCommonVar, ());
-      SC_CHECK_EQUAL(trg.GetType(), ScType::LinkConst, ());
-      SC_CHECK_EQUAL(trg.GetValue(), "test*", ());
+      scs::Parser parser;
+
+      REQUIRE(parser.Parse(data));
+
+      auto const & triples = parser.GetParsedTriples();
+      REQUIRE(triples.size() == 5);
+
+      {
+        SPLIT_TRIPLE(triples[0]);
+
+        REQUIRE(src.GetType() == ScType::LinkVar);
+        REQUIRE(edge.GetType() == ScType::EdgeAccessVarPosTemp);
+        REQUIRE_THAT(trg.GetIdtf(), Catch::Equals("y"));
+      }
     }
+    SUBTEST_END()
   }
-  SUBTEST_END()
 
-  SUBTEST_START(contour_error)
+  SECTION("content")
   {
-    std::string const data = "test -> [* x -> *];;";
+    SUBTEST_START("content")
+    {
+      std::string const data = "x -> [* y _=> [test*];; *];;";
 
-    scs::Parser parser;
+      scs::Parser parser;
 
-    SC_CHECK(!parser.Parse(data), ());
+      REQUIRE(parser.Parse(data));
+
+      auto const & triples = parser.GetParsedTriples();
+      REQUIRE(triples.size() == 5);
+
+      {
+        SPLIT_TRIPLE(triples[0]);
+
+        REQUIRE_THAT(src.GetIdtf(), Catch::Equals("y"));
+        REQUIRE(edge.GetType() == ScType::EdgeDCommonVar);
+        REQUIRE(trg.GetType() == ScType::LinkConst);
+        REQUIRE_THAT(trg.GetValue(), Catch::Equals("test*"));
+      }
+    }
+    SUBTEST_END()
   }
-  SUBTEST_END()
 
+  SECTION("contour_error")
+  {
+    SUBTEST_START("contour_error")
+    {
+      std::string const data = "test -> [* x -> *];;";
+
+      scs::Parser parser;
+
+      REQUIRE_FALSE(parser.Parse(data));
+      SC_LOG_WARNING(parser.GetParseError());
+    }
+    SUBTEST_END()
+  }
 }

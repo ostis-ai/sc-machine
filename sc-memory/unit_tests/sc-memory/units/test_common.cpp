@@ -4,282 +4,292 @@
 * (See accompanying file COPYING.MIT or copy at http://opensource.org/licenses/MIT)
 */
 
+#include "catch2/catch.hpp"
 #include "sc-test-framework/sc_test_unit.hpp"
 
-UNIT_TEST(elements)
+TEST_CASE("Elements", "[test common]")
 {
+  test::ScTestUnit::InitMemory("sc-memory.ini", "");
   ScMemoryContext ctx(sc_access_lvl_make_min, "elements");
 
-  ScAddr addr = ctx.CreateNode(ScType::Const);
-  SC_CHECK(addr.IsValid(), ());
+  try
+  {
+    ScAddr addr = ctx.CreateNode(ScType::Const);
+    REQUIRE(addr.IsValid());
 
-  ScAddr link = ctx.CreateLink();
-  SC_CHECK(link.IsValid(), ());
+    ScAddr link = ctx.CreateLink();
+    REQUIRE(link.IsValid());
 
-  ScAddr arc = ctx.CreateEdge(ScType::EdgeAccessConstPosPerm, addr, link);
-  SC_CHECK(arc.IsValid(), ());
+    ScAddr arc = ctx.CreateEdge(ScType::EdgeAccessConstPosPerm, addr, link);
+    REQUIRE(arc.IsValid());
 
-  SC_CHECK(ctx.IsElement(addr), ());
-  SC_CHECK(ctx.IsElement(link), ());
-  SC_CHECK(ctx.IsElement(arc), ());
+    REQUIRE(ctx.IsElement(addr));
+    REQUIRE(ctx.IsElement(link));
+    REQUIRE(ctx.IsElement(arc));
 
-  SC_CHECK_EQUAL(ctx.GetEdgeSource(arc), addr, ());
-  SC_CHECK_EQUAL(ctx.GetEdgeTarget(arc), link, ());
+    REQUIRE(ctx.GetEdgeSource(arc) == addr);
+    REQUIRE(ctx.GetEdgeTarget(arc) == link);
 
-  SC_CHECK_EQUAL(ctx.GetElementType(addr), ScType::NodeConst, ());
-  SC_CHECK_EQUAL(ctx.GetElementType(link), ScType::LinkConst, ());
-  SC_CHECK_EQUAL(ctx.GetElementType(arc), ScType::EdgeAccessConstPosPerm, ());
+    REQUIRE(ctx.GetElementType(addr) == ScType::NodeConst);
+    REQUIRE(ctx.GetElementType(link) == ScType::LinkConst);
+    REQUIRE(ctx.GetElementType(arc) == ScType::EdgeAccessConstPosPerm);
 
-  SC_CHECK(ctx.SetElementSubtype(addr, ScType::Var), ());
-  SC_CHECK_EQUAL(ctx.GetElementType(addr), ScType::NodeVar, ());
+    REQUIRE(ctx.SetElementSubtype(addr, ScType::Var));
+    REQUIRE(ctx.GetElementType(addr) == ScType::NodeVar);
 
-  SC_CHECK(ctx.EraseElement(addr), ());
-  SC_CHECK(!ctx.IsElement(addr), ());
-  SC_CHECK(!ctx.IsElement(arc), ());
-  SC_CHECK(ctx.IsElement(link), ());
+    REQUIRE(ctx.EraseElement(addr));
+    REQUIRE(!ctx.IsElement(addr));
+    REQUIRE(!ctx.IsElement(arc));
+    REQUIRE(ctx.IsElement(link));
+  } catch (...)
+  {
+    SC_LOG_ERROR("Test \"Elements\" failed")
+  }
+
+  ctx.Destroy();
+  test::ScTestUnit::ShutdownMemory(true);
 }
 
-UNIT_TEST(StringUtils)
+TEST_CASE("StringUtils", "[test common]")
 {
-  SUBTEST_START(simple)
+  SECTION("simple")
   {
-    std::string trimLeft = "  value";
-    std::string trimRight = "value  ";
-    std::string trim = " value  ";
-    std::string empty = "     ";
+    SUBTEST_START("simple")
+    {
+      std::string trimLeft = "  value";
+      std::string trimRight = "value  ";
+      std::string trim = " value  ";
+      std::string empty = "     ";
 
-    utils::StringUtils::TrimLeft(trimLeft);
-    SC_CHECK_EQUAL(trimLeft, "value", ());
+      try
+      {
+        utils::StringUtils::TrimLeft(trimLeft);
+        REQUIRE_THAT(trimLeft, Catch::Equals("value"));
 
-    utils::StringUtils::TrimRight(trimRight);
-    SC_CHECK_EQUAL(trimRight, "value", ());
+        utils::StringUtils::TrimRight(trimRight);
+        REQUIRE_THAT(trimRight, Catch::Equals("value"));
 
-    utils::StringUtils::Trim(trim);
-    SC_CHECK_EQUAL(trim, "value", ());
+        utils::StringUtils::Trim(trim);
+        REQUIRE_THAT(trim, Catch::Equals("value"));
 
-    utils::StringUtils::Trim(empty);
-    SC_CHECK_EQUAL(empty, "", ());
+        utils::StringUtils::Trim(empty);
+        REQUIRE_THAT(empty, Catch::Equals(""));
 
-    std::vector<std::string> res;
-    // Do not return empty item after ;
-    utils::StringUtils::SplitString("begin;end;", ';', res);
-    SC_CHECK_EQUAL(res.size(), 2, ());
-    SC_CHECK_EQUAL("begin", res[0], ());
-    SC_CHECK_EQUAL("end", res[1], ());
+        StringVector res;
+// Do not return empty item after ;
+        utils::StringUtils::SplitString("begin;end;", ';', res);
+        REQUIRE(res.size() == 2);
+        REQUIRE_THAT("begin", Catch::Equals(res[0]));
+        REQUIRE_THAT("end", Catch::Equals(res[1]));
+      } catch (...)
+      {
+        SC_LOG_ERROR("Test \"simple\" failed")
+      }
+    }
+    SUBTEST_END()
   }
-  SUBTEST_END()
 
-  SUBTEST_START(complex)
+  SECTION("complex")
   {
-    std::string value = "  value value \t\n ";
-    utils::StringUtils::Trim(value);
+    SUBTEST_START("complex")
+    {
+      std::string value = "  value value \t\n ";
+      utils::StringUtils::Trim(value);
 
-    SC_CHECK_EQUAL(value, "value value", ());
+      try
+      {
+        REQUIRE_THAT(value, Catch::Equals("value value"));
+      } catch (...)
+      {
+        SC_LOG_ERROR("Test \"complex\" failed")
+      }
+    }
+    SUBTEST_END()
   }
-  SUBTEST_END()
-
-  SUBTEST_START(ParseNumbers)
-  {
-    {
-      float resultFloat;
-      SC_CHECK(utils::StringUtils::ParseNumber("7.56", resultFloat), ());
-      SC_CHECK_EQUAL(resultFloat, 7.56f, ());
-    }
-
-    {
-      double resultDouble;
-      SC_CHECK(utils::StringUtils::ParseNumber("8.56", resultDouble), ());
-      SC_CHECK_EQUAL(resultDouble, 8.56, ());
-    }
-
-    {
-      int8_t resultInt8;
-      SC_CHECK(utils::StringUtils::ParseNumber("8", resultInt8), ())
-      SC_CHECK_EQUAL(resultInt8, 8, ());
-    }
-
-    {
-      int16_t resultInt16;
-      SC_CHECK(utils::StringUtils::ParseNumber("16", resultInt16), ())
-      SC_CHECK_EQUAL(resultInt16, 16, ());
-    }
-
-    {
-      int32_t resultInt32;
-      SC_CHECK(utils::StringUtils::ParseNumber("32", resultInt32), ())
-      SC_CHECK_EQUAL(resultInt32, 32, ());
-    }
-
-    
-    {
-      int64_t resultInt64;
-      SC_CHECK(utils::StringUtils::ParseNumber("64", resultInt64), ());
-      SC_CHECK_EQUAL(resultInt64, 64, ());
-    }
-
-    {
-      uint8_t resultUint8;
-      SC_CHECK(utils::StringUtils::ParseNumber("8", resultUint8), ());
-      SC_CHECK_EQUAL(resultUint8, 8, ());
-    }
-
-    {
-      uint16_t resultUint16;
-      SC_CHECK(utils::StringUtils::ParseNumber("16", resultUint16), ());
-      SC_CHECK_EQUAL(resultUint16, 16, ());
-    }
-
-    {
-      uint32_t resultUint32;
-      SC_CHECK(utils::StringUtils::ParseNumber("32", resultUint32), ());
-      SC_CHECK_EQUAL(resultUint32, 32, ());
-    }
-
-    {
-      uint64_t resultUint64;
-      SC_CHECK(utils::StringUtils::ParseNumber("64", resultUint64), ());
-      SC_CHECK_EQUAL(resultUint64, 64, ());
-    }
-  }
-  SUBTEST_END()
 }
 
-UNIT_TEST(ScAddr)
+TEST_CASE("ScAddr", "[test common]")
 {
-  SUBTEST_START(hash)
+  SECTION("hash")
   {
-    sc_addr a;
-    a.offset = 123;
-    a.seg = 654;
+    SUBTEST_START("hash")
+    {
+      sc_addr a;
+      a.offset = 123;
+      a.seg = 654;
 
-    ScAddr const addr1(a);
-    auto const hash = addr1.Hash();
-    ScAddr const addr2(hash);
-    SC_CHECK_EQUAL(addr1, addr2, ());
+      ScAddr const addr1(a);
+      auto const hash = addr1.Hash();
+      ScAddr const addr2(hash);
+
+      try
+      {
+        REQUIRE(addr1 == addr2);
+      } catch (...)
+      {
+        SC_LOG_ERROR("Test \"hash\" failed")
+      }
+    }
+    SUBTEST_END()
   }
-  SUBTEST_END()
 }
 
-UNIT_TEST(ScType)
+TEST_CASE("ScType", "[test common]")
 {
-  SUBTEST_START(nodes)
+  SECTION("nodes")
   {
-    SC_CHECK(ScType::Node.IsNode(), ());
+    SUBTEST_START("nodes")
+    {
+      try
+      {
+        REQUIRE(ScType::Node.IsNode());
 
-    SC_CHECK(ScType::NodeConst.IsNode(), ());
-    SC_CHECK(ScType::NodeConstAbstract.IsNode(), ());
-    SC_CHECK(ScType::NodeConstClass.IsNode(), ());
-    SC_CHECK(ScType::NodeConstMaterial.IsNode(), ());
-    SC_CHECK(ScType::NodeConstNoRole.IsNode(), ());
-    SC_CHECK(ScType::NodeConstRole.IsNode(), ());
-    SC_CHECK(ScType::NodeConstStruct.IsNode(), ());
-    SC_CHECK(ScType::NodeConstTuple.IsNode(), ());
+        REQUIRE(ScType::NodeConst.IsNode());
+        REQUIRE(ScType::NodeConstAbstract.IsNode());
+        REQUIRE(ScType::NodeConstClass.IsNode());
+        REQUIRE(ScType::NodeConstMaterial.IsNode());
+        REQUIRE(ScType::NodeConstNoRole.IsNode());
+        REQUIRE(ScType::NodeConstRole.IsNode());
+        REQUIRE(ScType::NodeConstStruct.IsNode());
+        REQUIRE(ScType::NodeConstTuple.IsNode());
 
-    SC_CHECK(ScType::NodeVar.IsNode(), ());
-    SC_CHECK(ScType::NodeVarAbstract.IsNode(), ());
-    SC_CHECK(ScType::NodeVarClass.IsNode(), ());
-    SC_CHECK(ScType::NodeVarMaterial.IsNode(), ());
-    SC_CHECK(ScType::NodeVarNoRole.IsNode(), ());
-    SC_CHECK(ScType::NodeVarRole.IsNode(), ());
-    SC_CHECK(ScType::NodeVarStruct.IsNode(), ());
-    SC_CHECK(ScType::NodeVarTuple.IsNode(), ());
+        REQUIRE(ScType::NodeVar.IsNode());
+        REQUIRE(ScType::NodeVarAbstract.IsNode());
+        REQUIRE(ScType::NodeVarClass.IsNode());
+        REQUIRE(ScType::NodeVarMaterial.IsNode());
+        REQUIRE(ScType::NodeVarNoRole.IsNode());
+        REQUIRE(ScType::NodeVarRole.IsNode());
+        REQUIRE(ScType::NodeVarStruct.IsNode());
+        REQUIRE(ScType::NodeVarTuple.IsNode());
+      } catch (...)
+      {
+        SC_LOG_ERROR("Test \"nodes\" failed")
+      }
+    }
+    SUBTEST_END()
   }
-  SUBTEST_END()
 
-  SUBTEST_START(constancy)
+  SECTION("constancy")
   {
-    SC_CHECK_NOT(ScType::Node.IsConst(), ());
-    SC_CHECK_NOT(ScType::Node.IsVar(), ());
+    SUBTEST_START("constancy")
+    {
+      try
+      {
+        REQUIRE_FALSE(ScType::Node.IsConst());
+        REQUIRE_FALSE(ScType::Node.IsVar());
 
-    SC_CHECK(ScType::LinkConst.IsConst(), ());
+        REQUIRE(ScType::LinkConst.IsConst());
 
-    SC_CHECK(ScType::NodeConst.IsConst(), ());
-    SC_CHECK(ScType::NodeConstAbstract.IsConst(), ());
-    SC_CHECK(ScType::NodeConstClass.IsConst(), ());
-    SC_CHECK(ScType::NodeConstMaterial.IsConst(), ());
-    SC_CHECK(ScType::NodeConstNoRole.IsConst(), ());
-    SC_CHECK(ScType::NodeConstRole.IsConst(), ());
-    SC_CHECK(ScType::NodeConstStruct.IsConst(), ());
-    SC_CHECK(ScType::NodeConstTuple.IsConst(), ());
-    SC_CHECK(ScType::EdgeDCommonConst.IsConst(), ());
-    SC_CHECK(ScType::EdgeUCommonConst.IsConst(), ());
-    SC_CHECK(ScType::EdgeAccessConstFuzPerm.IsConst(), ());
-    SC_CHECK(ScType::EdgeAccessConstFuzTemp.IsConst(), ());
-    SC_CHECK(ScType::EdgeAccessConstNegPerm.IsConst(), ());
-    SC_CHECK(ScType::EdgeAccessConstNegTemp.IsConst(), ());
-    SC_CHECK(ScType::EdgeAccessConstPosPerm.IsConst(), ());
-    SC_CHECK(ScType::EdgeAccessConstPosTemp.IsConst(), ());
+        REQUIRE(ScType::NodeConst.IsConst());
+        REQUIRE(ScType::NodeConstAbstract.IsConst());
+        REQUIRE(ScType::NodeConstClass.IsConst());
+        REQUIRE(ScType::NodeConstMaterial.IsConst());
+        REQUIRE(ScType::NodeConstNoRole.IsConst());
+        REQUIRE(ScType::NodeConstRole.IsConst());
+        REQUIRE(ScType::NodeConstStruct.IsConst());
+        REQUIRE(ScType::NodeConstTuple.IsConst());
+        REQUIRE(ScType::EdgeDCommonConst.IsConst());
+        REQUIRE(ScType::EdgeUCommonConst.IsConst());
+        REQUIRE(ScType::EdgeAccessConstFuzPerm.IsConst());
+        REQUIRE(ScType::EdgeAccessConstFuzTemp.IsConst());
+        REQUIRE(ScType::EdgeAccessConstNegPerm.IsConst());
+        REQUIRE(ScType::EdgeAccessConstNegTemp.IsConst());
+        REQUIRE(ScType::EdgeAccessConstPosPerm.IsConst());
+        REQUIRE(ScType::EdgeAccessConstPosTemp.IsConst());
 
-    SC_CHECK(ScType::NodeVar.IsVar(), ());
-    SC_CHECK(ScType::LinkVar.IsVar(), ());
-    SC_CHECK(ScType::NodeVarAbstract.IsVar(), ());
-    SC_CHECK(ScType::NodeVarClass.IsVar(), ());
-    SC_CHECK(ScType::NodeVarMaterial.IsVar(), ());
-    SC_CHECK(ScType::NodeVarNoRole.IsVar(), ());
-    SC_CHECK(ScType::NodeVarRole.IsVar(), ());
-    SC_CHECK(ScType::NodeVarStruct.IsVar(), ());
-    SC_CHECK(ScType::NodeVarTuple.IsVar(), ());
-    SC_CHECK(ScType::EdgeDCommonVar.IsVar(), ());
-    SC_CHECK(ScType::EdgeUCommonVar.IsVar(), ());
-    SC_CHECK(ScType::EdgeAccessVarFuzPerm.IsVar(), ());
-    SC_CHECK(ScType::EdgeAccessVarFuzTemp.IsVar(), ());
-    SC_CHECK(ScType::EdgeAccessVarNegPerm.IsVar(), ());
-    SC_CHECK(ScType::EdgeAccessVarNegTemp.IsVar(), ());
-    SC_CHECK(ScType::EdgeAccessVarPosPerm.IsVar(), ());
-    SC_CHECK(ScType::EdgeAccessVarPosTemp.IsVar(), ());
+        REQUIRE(ScType::NodeVar.IsVar());
+        REQUIRE(ScType::LinkVar.IsVar());
+        REQUIRE(ScType::NodeVarAbstract.IsVar());
+        REQUIRE(ScType::NodeVarClass.IsVar());
+        REQUIRE(ScType::NodeVarMaterial.IsVar());
+        REQUIRE(ScType::NodeVarNoRole.IsVar());
+        REQUIRE(ScType::NodeVarRole.IsVar());
+        REQUIRE(ScType::NodeVarStruct.IsVar());
+        REQUIRE(ScType::NodeVarTuple.IsVar());
+        REQUIRE(ScType::EdgeDCommonVar.IsVar());
+        REQUIRE(ScType::EdgeUCommonVar.IsVar());
+        REQUIRE(ScType::EdgeAccessVarFuzPerm.IsVar());
+        REQUIRE(ScType::EdgeAccessVarFuzTemp.IsVar());
+        REQUIRE(ScType::EdgeAccessVarNegPerm.IsVar());
+        REQUIRE(ScType::EdgeAccessVarNegTemp.IsVar());
+        REQUIRE(ScType::EdgeAccessVarPosPerm.IsVar());
+        REQUIRE(ScType::EdgeAccessVarPosTemp.IsVar());
+      } catch (...)
+      {
+        SC_LOG_ERROR("Test \"constancy\" failed")
+      }
+    }
+    SUBTEST_END()
   }
-  SUBTEST_END()
 
-  SUBTEST_START(edges)
+  SECTION("edges")
   {
-    SC_CHECK(ScType::EdgeAccess.IsEdge(), ());
-    SC_CHECK(ScType::EdgeAccessConstFuzPerm.IsEdge(), ());
-    SC_CHECK(ScType::EdgeAccessConstFuzTemp.IsEdge(), ());
-    SC_CHECK(ScType::EdgeAccessConstNegPerm.IsEdge(), ());
-    SC_CHECK(ScType::EdgeAccessConstNegTemp.IsEdge(), ());
-    SC_CHECK(ScType::EdgeAccessConstPosPerm.IsEdge(), ());
-    SC_CHECK(ScType::EdgeAccessConstPosTemp.IsEdge(), ());
-    SC_CHECK(ScType::EdgeAccessVarFuzPerm.IsEdge(), ());
-    SC_CHECK(ScType::EdgeAccessVarFuzTemp.IsEdge(), ());
-    SC_CHECK(ScType::EdgeAccessVarNegPerm.IsEdge(), ());
-    SC_CHECK(ScType::EdgeAccessVarNegTemp.IsEdge(), ());
-    SC_CHECK(ScType::EdgeAccessVarPosPerm.IsEdge(), ());
-    SC_CHECK(ScType::EdgeAccessVarPosTemp.IsEdge(), ());
-    SC_CHECK(ScType::EdgeDCommon.IsEdge(), ());
-    SC_CHECK(ScType::EdgeDCommonConst.IsEdge(), ());
-    SC_CHECK(ScType::EdgeDCommonVar.IsEdge(), ());
-    SC_CHECK(ScType::EdgeUCommon.IsEdge(), ());
-    SC_CHECK(ScType::EdgeUCommonConst.IsEdge(), ());
-    SC_CHECK(ScType::EdgeUCommonVar.IsEdge(), ());
+    SUBTEST_START("edges")
+    {
+      try
+      {
+        REQUIRE(ScType::EdgeAccess.IsEdge());
+        REQUIRE(ScType::EdgeAccessConstFuzPerm.IsEdge());
+        REQUIRE(ScType::EdgeAccessConstFuzTemp.IsEdge());
+        REQUIRE(ScType::EdgeAccessConstNegPerm.IsEdge());
+        REQUIRE(ScType::EdgeAccessConstNegTemp.IsEdge());
+        REQUIRE(ScType::EdgeAccessConstPosPerm.IsEdge());
+        REQUIRE(ScType::EdgeAccessConstPosTemp.IsEdge());
+        REQUIRE(ScType::EdgeAccessVarFuzPerm.IsEdge());
+        REQUIRE(ScType::EdgeAccessVarFuzTemp.IsEdge());
+        REQUIRE(ScType::EdgeAccessVarNegPerm.IsEdge());
+        REQUIRE(ScType::EdgeAccessVarNegTemp.IsEdge());
+        REQUIRE(ScType::EdgeAccessVarPosPerm.IsEdge());
+        REQUIRE(ScType::EdgeAccessVarPosTemp.IsEdge());
+        REQUIRE(ScType::EdgeDCommon.IsEdge());
+        REQUIRE(ScType::EdgeDCommonConst.IsEdge());
+        REQUIRE(ScType::EdgeDCommonVar.IsEdge());
+        REQUIRE(ScType::EdgeUCommon.IsEdge());
+        REQUIRE(ScType::EdgeUCommonConst.IsEdge());
+        REQUIRE(ScType::EdgeUCommonVar.IsEdge());
+      } catch (...)
+      {
+        SC_LOG_ERROR("Test \"edges\" failed")
+      }
+    }
+    SUBTEST_END()
   }
-  SUBTEST_END()
 
-  SUBTEST_START(extend)
+  SECTION("extend")
   {
-    SC_CHECK(ScType::Node.CanExtendTo(ScType::Node), ());
-    SC_CHECK(ScType::Node.CanExtendTo(ScType::NodeConst), ());
-    SC_CHECK(ScType::Node.CanExtendTo(ScType::NodeVar), ());
-    SC_CHECK(ScType::Node.CanExtendTo(ScType::NodeMaterial), ());
-    SC_CHECK(ScType::Node.CanExtendTo(ScType::NodeConstMaterial), ());
+    SUBTEST_START("extend")
+    {
+      try
+      {
+        REQUIRE(ScType::Node.CanExtendTo(ScType::Node));
+        REQUIRE(ScType::Node.CanExtendTo(ScType::NodeConst));
+        REQUIRE(ScType::Node.CanExtendTo(ScType::NodeVar));
+        REQUIRE(ScType::Node.CanExtendTo(ScType::NodeMaterial));
+        REQUIRE(ScType::Node.CanExtendTo(ScType::NodeConstMaterial));
 
-    SC_CHECK(ScType::Unknown.CanExtendTo(ScType::Node), ());
-    SC_CHECK(ScType::Unknown.CanExtendTo(ScType::NodeConst), ());
-    SC_CHECK(ScType::Unknown.CanExtendTo(ScType::EdgeAccessConstFuzPerm), ());
-    SC_CHECK(ScType::Unknown.CanExtendTo(ScType::Link), ());
-    SC_CHECK(ScType::Unknown.CanExtendTo(ScType::EdgeAccess), ());
-    SC_CHECK(ScType::Unknown.CanExtendTo(ScType::EdgeUCommon), ());
-    SC_CHECK(ScType::Unknown.CanExtendTo(ScType::EdgeDCommon), ());
+        REQUIRE(ScType::Unknown.CanExtendTo(ScType::Node));
+        REQUIRE(ScType::Unknown.CanExtendTo(ScType::NodeConst));
+        REQUIRE(ScType::Unknown.CanExtendTo(ScType::EdgeAccessConstFuzPerm));
+        REQUIRE(ScType::Unknown.CanExtendTo(ScType::Link));
+        REQUIRE(ScType::Unknown.CanExtendTo(ScType::EdgeAccess));
+        REQUIRE(ScType::Unknown.CanExtendTo(ScType::EdgeUCommon));
+        REQUIRE(ScType::Unknown.CanExtendTo(ScType::EdgeDCommon));
 
-    SC_CHECK_NOT(ScType::Node.CanExtendTo(ScType::EdgeAccess), ());
-    SC_CHECK_NOT(ScType::NodeAbstract.CanExtendTo(ScType::NodeConstMaterial), ());
-    SC_CHECK_NOT(ScType::Link.CanExtendTo(ScType::Node), ());
-    SC_CHECK_NOT(ScType::EdgeAccess.CanExtendTo(ScType::EdgeDCommon), ());
-    SC_CHECK_NOT(ScType::EdgeAccess.CanExtendTo(ScType::EdgeUCommon), ());
-    SC_CHECK_NOT(ScType::EdgeAccess.CanExtendTo(ScType::Link), ());
-    SC_CHECK_NOT(ScType::Const.CanExtendTo(ScType::Var), ());
-    SC_CHECK_NOT(ScType::EdgeAccessConstFuzPerm.CanExtendTo(ScType::EdgeAccessConstFuzTemp), ());
-    SC_CHECK_NOT(ScType::EdgeAccessConstFuzPerm.CanExtendTo(ScType::EdgeAccessConstNegPerm), ());
-    SC_CHECK_NOT(ScType::EdgeAccessConstFuzPerm.CanExtendTo(ScType::EdgeAccessVarFuzPerm), ());
+        REQUIRE_FALSE(ScType::Node.CanExtendTo(ScType::EdgeAccess));
+        REQUIRE_FALSE(ScType::NodeAbstract.CanExtendTo(ScType::NodeConstMaterial));
+        REQUIRE_FALSE(ScType::Link.CanExtendTo(ScType::Node));
+        REQUIRE_FALSE(ScType::EdgeAccess.CanExtendTo(ScType::EdgeDCommon));
+        REQUIRE_FALSE(ScType::EdgeAccess.CanExtendTo(ScType::EdgeUCommon));
+        REQUIRE_FALSE(ScType::EdgeAccess.CanExtendTo(ScType::Link));
+        REQUIRE_FALSE(ScType::Const.CanExtendTo(ScType::Var));
+        REQUIRE_FALSE(ScType::EdgeAccessConstFuzPerm.CanExtendTo(ScType::EdgeAccessConstFuzTemp));
+        REQUIRE_FALSE(ScType::EdgeAccessConstFuzPerm.CanExtendTo(ScType::EdgeAccessConstNegPerm));
+        REQUIRE_FALSE(ScType::EdgeAccessConstFuzPerm.CanExtendTo(ScType::EdgeAccessVarFuzPerm));
+      } catch (...)
+      {
+        SC_LOG_ERROR("Test \"extend\" failed")
+      }
+    }
+    SUBTEST_END()
   }
-  SUBTEST_END()
 }

@@ -28,12 +28,17 @@ public:
   void Run(std::string const & configPath, std::string const & extPath);
 
   static _SC_EXTERN void RunAll(std::string const & configPath = "", std::string const & extPath = "");
+  static _SC_EXTERN int RunAll(
+        int argc,
+        char * argv[],
+        std::string const & configPath = "sc-memory.ini",
+        std::string const & extPath = "");
 
   static _SC_EXTERN void NotifySubTest();
 
-protected:
-  virtual void ShutdownMemory(bool save);
-  virtual void InitMemory(std::string const & configPath, std::string const & extPath);
+/*protected:*/
+  static void ShutdownMemory(bool save);
+  static void InitMemory(std::string const & configPath, std::string const & extPath);
 
 protected:
   char const * m_name;
@@ -82,19 +87,8 @@ private:
 #define TEST(_expr, _msg) SC_TEST_IMPL(CHECK, _expr, _msg)
 #define TEST_NOT(_expr, _msg) SC_TEST_IMPL(CHECK, !_expr, _msg)
 
-#define SUBTEST_START(_name) \
-{ \
-  ScConsole::SetColor(ScConsole::Color::Grey); \
-  std::cout << std::endl << "\t" << #_name; \
-  ScConsole::ResetColor(); \
-  std::cout << " ... " << std::flush; \
-  test::ScTestUnit::NotifySubTest(); \
-};
-#define SUBTEST_END() \
-{ \
-  ScConsole::SetColor(SC_TEST_STATUS_COLOR(true)); \
-  std::cout << SC_TEST_STATUS(true) << std::flush; \
-};
+#define SUBTEST_START(_name) SC_LOG_INFO("Subtest "#_name" started")
+#define SUBTEST_END() SC_LOG_INFO("Subtest finished")
 
 #ifdef SC_BUILD_AUTO_TESTS
 # define SC_WAIT_KEY_IMPL()
@@ -105,11 +99,11 @@ private:
 #define SC_AUTOMATION_TESTS(__name) \
 int main(int argc, char ** argv) try \
 { \
-  utils::ScLog::GetInstance()->SetFileName(__name".log"); \
-  test::ScTestUnit::RunAll(); \
+  utils::ScLog::GetInstance()->Initialize(__name".log"); \
+  int result=test::ScTestUnit::RunAll(argc, argv); \
   utils::ScLog::GetInstance()->Shutdown(); \
   SC_WAIT_KEY_IMPL() \
-  return 0; \
+  return result; \
 } \
 catch (utils::ScException const & ex) \
 { \

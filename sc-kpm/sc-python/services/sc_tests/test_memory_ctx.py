@@ -309,7 +309,7 @@ class TestScMemoryContext(TestCase):
       "_edge")
 
     # generate by template
-    params = ScTemplateGenParams()
+    params = ScTemplateParams()
     params.Add("_target", addr2)
 
     self.assertEqual(params.Get("_target_none"), None)
