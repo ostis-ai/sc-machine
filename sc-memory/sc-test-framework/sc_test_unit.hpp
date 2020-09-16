@@ -105,7 +105,7 @@ private:
 #define SC_AUTOMATION_TESTS(__name) \
 int main(int argc, char ** argv) try \
 { \
-  utils::ScLog::GetInstance()->Initialize(__name".log"); \
+  utils::ScLog::GetInstance()->SetFileName(__name".log"); \
   test::ScTestUnit::RunAll(); \
   utils::ScLog::GetInstance()->Shutdown(); \
   SC_WAIT_KEY_IMPL() \

@@ -216,4 +216,14 @@ endif()
 
 add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/thirdparty)
 
+if (NOT EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/log)
+	execute_process(
+			COMMAND mkdir log
+			WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+			OUTPUT_VARIABLE GIT_VERSION)
+endif ()
+set(LOG_DIR ${CMAKE_CURRENT_SOURCE_DIR}/log/)
+set(LOG_MODE Info)
+set(LOG_OUTPUT_TYPE File)
+configure_file(log_config.h.in ${CMAKE_CURRENT_SOURCE_DIR}/sc-memory/sc-memory/generated/log_config.generated.hpp @ONLY)
 
