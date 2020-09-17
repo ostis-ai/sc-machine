@@ -11,12 +11,11 @@ max_threads = 32
 [redis]
 host = 127.0.0.1
 
+[python]
+modules_path = ${SC_MACHINE_ROOT}/sc-kpm/sc-python/services
 
 [debug]
 is_debug = True
 
 [web]
 path = ${SC_MACHINE_ROOT}/web
-
-[python]
-modules_path = ${SC_MACHINE_ROOT}/sc-kpm/sc-python/services;${SC_MACHINE_ROOT}/../../problem-solver/py/services

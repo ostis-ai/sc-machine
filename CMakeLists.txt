@@ -12,7 +12,7 @@ option (SC_AUTO_TEST "Flag to build for automation testing" OFF)
 option (SC_KPM_SCP "Flag to build SCP module" OFF)
 option (SC_BUILD_SCTP "Flag to turn on/off sctp protocol support" ON)
 
-set (SC_BUILD_TESTS OFF)
+set (SC_BUILD_TESTS ON)
 
 # codegen
 if (${UNIX})

@@ -16,7 +16,6 @@ namespace test
 
 std::set<ScTestUnit *, ScTestUnit::TestLess> ScTestUnit::ms_tests;
 uint32_t ScTestUnit::ms_subtestsNum = 0;
-std::atomic_bool ScTestUnit::ms_isRun = { false };
 
 ScTestUnit::ScTestUnit(char const * name, char const * filename, void(* fn)())
       : m_name(name), m_filename(filename), m_fn(fn)
@@ -106,11 +105,5 @@ int ScTestUnit::RunAll(int argc, char * argv[], std::string const & configPath, 
                      << ScConsole::Color::Green << ms_tests.size() << ScConsole::Color::Reset << " tests";
   ScConsole::Endl();*/
 }
-
-void ScTestUnit::NotifySubTest()
-{
-  ++ms_subtestsNum;
-}
-
 
 } // namespace test

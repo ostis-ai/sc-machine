@@ -14,7 +14,7 @@ public:
 
 private:
   
-  void InitMemory(std::string const & configPath, std::string const& extPath) override
+  void InitMemory(std::string const & configPath, std::string const& extPath)
   {
     sc_memory_params params;
     sc_memory_params_clear(&params);
@@ -29,7 +29,7 @@ private:
     ScMemory::LogUnmute();
   }
 
-  void ShutdownMemory(bool save) override
+  void ShutdownMemory(bool save)
   {
     ScMemory::LogMute();
     ScMemory::Shutdown(false);

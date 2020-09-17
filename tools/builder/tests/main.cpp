@@ -3,8 +3,8 @@
 
 int main(int argc, char ** argv) try
 {
-  utils::ScLog::GetInstance()->SetFileName("sc-builder-test.log");
-  test::ScTestUnit::RunAll();
+  utils::ScLog::GetInstance()->Initialize("sc-builder-test.log");
+  test::ScTestUnit::RunAll(argc, argv);
   utils::ScLog::GetInstance()->Shutdown();
   SC_WAIT_KEY_IMPL()
 
