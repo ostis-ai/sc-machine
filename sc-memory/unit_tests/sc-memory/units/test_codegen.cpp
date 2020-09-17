@@ -15,7 +15,6 @@ TEST_CASE("Codegen keynodes", "[test codegen]")
 
   try
   {
-    SC_LOG_INFO("Hello")
     ScAddr addr1 = ctx.CreateNode(ScType::Const);
     REQUIRE(addr1.IsValid());
     REQUIRE(ctx.HelperSetSystemIdtf("test_keynode1", addr1));

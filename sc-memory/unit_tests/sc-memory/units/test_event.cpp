@@ -298,33 +298,71 @@ TEST_CASE("Events common", "[test event]")
   ctx->Destroy();
   test::ScTestUnit::ShutdownMemory(false);
 }
-//TODO FIX
+
 TEST_CASE("pend_events", "[test event]")
 {
   test::ScTestUnit::InitMemory("sc-memory.ini", "");
-  ScMemoryContext * ctx = new ScMemoryContext(sc_access_lvl_make_min, "events_common");
+  ScMemoryContext ctx(sc_access_lvl_make_min, "pend_events");
 
-  /*
-   Main idea of test: create two sets with N elements, and add edges to relations.
-   * Everytime, when event emits, we should check, that whole construction exist
-   */
-  ScEventAddOutputEdge * evt;
+  volatile int32_t eventsCount = 0;
+  volatile int32_t passedCount = 0;
+
+  ScAddr const set1 = ctx.CreateNode(ScType::NodeConstClass);
+  ScAddr const rel = ctx.CreateNode(ScType::NodeConstNoRole);
+
+  static const size_t el_num = 1 << 10;
+  std::vector<ScAddr> elements(el_num);
+
+  ScTemplate templ;
+
+  ScEventAddOutputEdge * evt = new ScEventAddOutputEdge
+        (ctx, set1,
+         [&passedCount, &eventsCount, &set1, &elements, &rel](ScAddr const &, ScAddr const &,
+                                                              ScAddr const &)
+         {
+           std::shared_ptr<ScTemplate> checkTempl(new ScTemplate());
+           size_t step = 100;
+           size_t testNum = el_num / step - 1;
+           for (size_t i = 0; i < testNum; ++i)
+           {
+             checkTempl->TripleWithRelation(
+                   set1,
+                   ScType::EdgeDCommonVar,
+                   elements[i * step] >> "_el",
+                   ScType::EdgeAccessVarPosPerm,
+                   rel);
+           }
+
+           ScMemoryContext localCtx(sc_access_lvl_make_min);
+
+           ScTemplateSearchResult res;
+           REQUIRE(localCtx.HelperSearchTemplate(*checkTempl, res));
+
+           if (res.Size() == 1)
+             g_atomic_int_add(&passedCount, 1);
+
+           g_atomic_int_add(&eventsCount, 1);
+
+           localCtx.Destroy();
+           res.Clear();
+
+           return true;
+         });
+
   try
   {
-    ScAddr const set1 = ctx->CreateNode(ScType::NodeConstClass);
-    ScAddr const rel = ctx->CreateNode(ScType::NodeConstNoRole);
+    /* Main idea of test: create two sets with N elements, and add edges to relations.
+     * Everytime, when event emits, we should check, that whole construction exist
+     */
 
-    static const size_t el_num = 1 << 10;
-    std::vector<ScAddr> elements(el_num);
     for (size_t i = 0; i < el_num; ++i)
     {
-      ScAddr const a = ctx->CreateNode(ScType::NodeConst);
+      ScAddr const a = ctx.CreateNode(ScType::NodeConst);
       REQUIRE(a.IsValid());
       elements[i] = a;
     }
 
     // create template for pending events check
-    ScTemplate templ;
     for (auto const & a : elements)
     {
       templ.TripleWithRelation(
@@ -335,42 +373,8 @@ TEST_CASE("pend_events", "[test event]")
             rel);
     }
 
-    volatile int32_t eventsCount = 0;
-    volatile int32_t passedCount = 0;
-
-    ScTemplate checkTempl;
-    size_t step = 100;
-    size_t testNum = el_num / step - 1;
-    for (size_t i = 0; i < testNum; ++i)
-    {
-      checkTempl.TripleWithRelation(
-            set1,
-            ScType::EdgeDCommonVar,
-            elements[i * step] >> "_el",
-            ScType::EdgeAccessVarPosPerm,
-            rel);
-    }
-
-    evt = new ScEventAddOutputEdge(
-          *ctx, set1,
-          [&](ScAddr const & addr, ScAddr const & edgeAddr, ScAddr const & otherAddr)
-          {
-            ScMemoryContext localCtx(sc_access_lvl_make_min);
-
-            ScTemplateSearchResult res;
-            REQUIRE(localCtx.HelperSearchTemplate(checkTempl, res));
-
-            if (res.Size() == 1)
-              g_atomic_int_add(&passedCount, 1);
-
-            g_atomic_int_add(&eventsCount, 1);
-
-            localCtx.Destroy();
-            return true;
-          });
-
     ScTemplateGenResult genResult;
-    REQUIRE(ctx->HelperGenTemplate(templ, genResult));
+    REQUIRE(ctx.HelperGenTemplate(templ, genResult));
 
     // wait all events
     while (g_atomic_int_get(&eventsCount) < el_num)
@@ -378,16 +382,13 @@ TEST_CASE("pend_events", "[test event]")
       std::this_thread::sleep_for(std::chrono::milliseconds(10));
     }
 
-    std::cout << passedCount << std::endl;
-    std::cout << el_num << std::endl;
     REQUIRE(passedCount == el_num);
   } catch (...)
   {
-    SC_LOG_ERROR("Test \"pend events\" failed")
+    SC_LOG_ERROR("Test \"pend_events\" failed");
   }
-  if (evt != nullptr)
-    delete evt;
 
-  ctx->Destroy();
+  delete evt;
+  ctx.Destroy();
   test::ScTestUnit::ShutdownMemory(false);
 }
