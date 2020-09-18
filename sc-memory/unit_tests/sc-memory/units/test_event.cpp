@@ -304,6 +304,10 @@ TEST_CASE("pend_events", "[test event]")
   test::ScTestUnit::InitMemory("sc-memory.ini", "");
   ScMemoryContext ctx(sc_access_lvl_make_min, "pend_events");
 
+  /* Main idea of test: create two sets with N elements, and add edges to relations.
+   * Everytime, when event emits, we should check, that whole construction exist
+   */
+
   volatile int32_t eventsCount = 0;
   volatile int32_t passedCount = 0;
 
@@ -351,10 +355,6 @@ TEST_CASE("pend_events", "[test event]")
 
   try
   {
-    /* Main idea of test: create two sets with N elements, and add edges to relations.
-     * Everytime, when event emits, we should check, that whole construction exist
-     */
-
     for (size_t i = 0; i < el_num; ++i)
     {
       ScAddr const a = ctx.CreateNode(ScType::NodeConst);

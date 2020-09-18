@@ -6,7 +6,7 @@
 
 #include <thread>
 
-#include <test_defines.hpp>
+#include "test_defines.hpp"
 #include "catch2/catch.hpp"
 #include "sc-test-framework/sc_test_unit.hpp"
 #include "sc-memory/python/sc_python_interp.hpp"

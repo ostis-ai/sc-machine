@@ -1,6 +1,5 @@
 ﻿#include "sc_progress.hpp"
 
-#include "sc_log.hpp"
 #include "sc_console.hpp"
 
 #include <algorithm>
@@ -10,7 +9,12 @@ namespace utils
 {
 // ---------------
 ScProgress::ScProgress(std::string const & title, size_t stepsNum, size_t width)
-      : m_title(title), m_width(width), m_stepsNum(stepsNum), m_passedSteps(0), m_isComplete(false), m_isFirst(false),
+      : m_title(title),
+        m_width(width),
+        m_stepsNum(stepsNum),
+        m_passedSteps(0),
+        m_isComplete(false),
+        m_isFirst(false),
         m_prevPercent(0)
 {
   std::cout << m_title << "..." << std::endl;
