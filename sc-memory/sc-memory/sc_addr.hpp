@@ -49,6 +49,7 @@ protected:
 };
 
 using ScAddrVector = std::vector<ScAddr>;
+using ScAddrList = std::list<ScAddr>;
 
 struct RealAddrLessFunc
 {

@@ -4,30 +4,43 @@
 * (See accompanying file COPYING.MIT or copy at http://opensource.org/licenses/MIT)
 */
 
+#include "catch2/catch.hpp"
 #include "sc-test-framework/sc_test_unit.hpp"
-
 #include "test_scs_utils.hpp"
 
-UNIT_TEST(scs_level_1)
+TEST_CASE("scs_level_1", "[test scs level 1]")
 {
+  test::ScTestUnit::InitMemory("sc-memory.ini", "");
   ScMemoryContext ctx(sc_access_lvl_make_min, "scs_level_1");
 
-  SUBTEST_START(simple)
+  SECTION("simple")
   {
-    char const * data = "sc_node#a | sc_edge#e1 | sc_node#b;;";
-    scs::Parser parser;
-
-    SC_CHECK(parser.Parse(data), ());
-
-    auto const & triples = parser.GetParsedTriples();
-    SC_CHECK_EQUAL(triples.size(), 1, ());
+    SUBTEST_START("simple")
     {
-      SPLIT_TRIPLE(triples[0]);
+      try
+      {
+        char const * data = "sc_node#a | sc_edge#e1 | sc_node#b;;";
+        scs::Parser parser;
 
-      SC_CHECK_EQUAL(src.GetType(), ScType::NodeConst, ());
-      SC_CHECK_EQUAL(trg.GetType(), ScType::NodeConst, ());
-      SC_CHECK_EQUAL(edge.GetType(), ScType::EdgeUCommonConst, ());
+        REQUIRE(parser.Parse(data));
+
+        auto const & triples = parser.GetParsedTriples();
+        REQUIRE(triples.size()==1);
+        {
+          SPLIT_TRIPLE(triples[0]);
+
+          REQUIRE(src.GetType()==ScType::NodeConst);
+          REQUIRE(trg.GetType()==ScType::NodeConst);
+          REQUIRE(edge.GetType()==ScType::EdgeUCommonConst);
+        }
+      } catch (...)
+      {
+        SC_LOG_ERROR("Test \"simple\" failed");
+      }
     }
+    SUBTEST_END()
   }
-  SUBTEST_END()
+
+  ctx.Destroy();
+  test::ScTestUnit::ShutdownMemory(false);
 }

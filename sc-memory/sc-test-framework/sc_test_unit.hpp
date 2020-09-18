@@ -6,15 +6,14 @@
 
 #pragma once
 
-#include "sc-memory/sc_debug.hpp"
-#include "sc-memory/sc_memory.hpp"
-#include "sc-memory/sc_utils.hpp"
-
-#include "sc-memory/utils/sc_console.hpp"
-
 #include <atomic>
 #include <cstdlib>
 #include <iostream>
+
+#include "sc-memory/sc_debug.hpp"
+#include "sc-memory/sc_memory.hpp"
+#include "sc-memory/sc_utils.hpp"
+#include "sc-memory/utils/sc_console.hpp"
 
 namespace test
 {
@@ -27,13 +26,15 @@ public:
 
   void Run(std::string const & configPath, std::string const & extPath);
 
-  static _SC_EXTERN void RunAll(std::string const & configPath = "", std::string const & extPath = "");
+  static _SC_EXTERN int RunAll(
+        int argc,
+        char * argv[],
+        std::string const & configPath = "sc-memory.ini",
+        std::string const & extPath = "");
 
-  static _SC_EXTERN void NotifySubTest();
+  static void ShutdownMemory(bool save);
 
-protected:
-  virtual void ShutdownMemory(bool save);
-  virtual void InitMemory(std::string const & configPath, std::string const & extPath);
+  static void InitMemory(std::string const & configPath, std::string const & extPath);
 
 protected:
   char const * m_name;
@@ -52,7 +53,6 @@ private:
 
   static _SC_EXTERN std::set<ScTestUnit*, TestLess> ms_tests;
   static _SC_EXTERN uint32_t ms_subtestsNum;
-  static std::atomic_bool ms_isRun;
 };
 
 #define UNIT_TEST_CUSTOM(__name, _class) \
@@ -60,8 +60,6 @@ private:
   _class g_test_unit_##__name(#__name, __FILE__, &Test_##__name); \
   void Test_##__name()
 
-#define UNIT_TEST(__name) UNIT_TEST_CUSTOM(__name, ::test::ScTestUnit)
- 
 #define SC_TEST_STATUS_COLOR(_expr) ((_expr) ? ScConsole::Color::Green : ScConsole::Color::Red)
 #if SC_PLATFORM_WIN32
 # define SC_TEST_STATUS(_expr)  ((_expr) ? "ok" : "fail")
@@ -69,32 +67,8 @@ private:
 # define SC_TEST_STATUS(_expr)  ((_expr) ? "\u2713" : "\u274C")
 #endif
 
-#define SC_TEST_IMPL(_check, _expr, _msg) \
-{ \
-  bool const _v = _expr; \
-  std::cout << #_expr << "... "; \
-  _check(_expr, _msg); \
-  ScConsole::SetColor(SC_TEST_STATUS_COLOR(_v)); \
-  std::cout << SC_TEST_STATUS(_v) << std::endl; \
-  ScConsole::ResetColor(); \
-}
-
-#define TEST(_expr, _msg) SC_TEST_IMPL(CHECK, _expr, _msg)
-#define TEST_NOT(_expr, _msg) SC_TEST_IMPL(CHECK, !_expr, _msg)
-
-#define SUBTEST_START(_name) \
-{ \
-  ScConsole::SetColor(ScConsole::Color::Grey); \
-  std::cout << std::endl << "\t" << #_name; \
-  ScConsole::ResetColor(); \
-  std::cout << " ... " << std::flush; \
-  test::ScTestUnit::NotifySubTest(); \
-};
-#define SUBTEST_END() \
-{ \
-  ScConsole::SetColor(SC_TEST_STATUS_COLOR(true)); \
-  std::cout << SC_TEST_STATUS(true) << std::flush; \
-};
+#define SUBTEST_START(_name) SC_LOG_INFO("Subtest "#_name" started")
+#define SUBTEST_END() SC_LOG_INFO("Subtest finished")
 
 #ifdef SC_BUILD_AUTO_TESTS
 # define SC_WAIT_KEY_IMPL()
@@ -106,10 +80,10 @@ private:
 int main(int argc, char ** argv) try \
 { \
   utils::ScLog::GetInstance()->Initialize(__name".log"); \
-  test::ScTestUnit::RunAll(); \
+  int result=test::ScTestUnit::RunAll(argc, argv); \
   utils::ScLog::GetInstance()->Shutdown(); \
   SC_WAIT_KEY_IMPL() \
-  return 0; \
+  return result; \
 } \
 catch (utils::ScException const & ex) \
 { \

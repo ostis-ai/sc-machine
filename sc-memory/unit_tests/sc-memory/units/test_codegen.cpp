@@ -4,37 +4,46 @@
 * (See accompanying file COPYING.MIT or copy at http://opensource.org/licenses/MIT)
 */
 
+#include "catch2/catch.hpp"
 #include "sc-test-framework/sc_test_unit.hpp"
-
 #include "test_sc_object.hpp"
-#include "test_sc_agent.hpp"
 
-UNIT_TEST(codegen_keynodes)
+TEST_CASE("Codegen keynodes", "[test codegen]")
 {
+  test::ScTestUnit::InitMemory("sc-memory.ini", "");
   ScMemoryContext ctx(sc_access_lvl_make_min, "codegen_keynodes");
 
-  ScAddr addr1 = ctx.CreateNode(ScType::Const);
-  SC_CHECK(addr1.IsValid(), ());
-  SC_CHECK(ctx.HelperSetSystemIdtf("test_keynode1", addr1), ());
+  try
+  {
+    ScAddr addr1 = ctx.CreateNode(ScType::Const);
+    REQUIRE(addr1.IsValid());
+    REQUIRE(ctx.HelperSetSystemIdtf("test_keynode1", addr1));
 
-  ScAddr addr2 = ctx.CreateNode(ScType::Var);
-  SC_CHECK(addr2.IsValid(), ());
-  SC_CHECK(ctx.HelperSetSystemIdtf("test_keynode2", addr2), ());
+    ScAddr addr2 = ctx.CreateNode(ScType::Var);
+    REQUIRE(addr2.IsValid());
+    REQUIRE(ctx.HelperSetSystemIdtf("test_keynode2", addr2));
 
-  ScAddr addr3 = ctx.CreateNode(ScType::Var);
-  SC_CHECK(addr3.IsValid(), ());
-  SC_CHECK(ctx.HelperSetSystemIdtf("test_keynode3", addr3), ());
+    ScAddr addr3 = ctx.CreateNode(ScType::Var);
+    REQUIRE(addr3.IsValid());
+    REQUIRE(ctx.HelperSetSystemIdtf("test_keynode3", addr3));
 
-  n1::n2::TestObject obj1;
-  obj1.Init();
+    n1::n2::TestObject testObject;
+    testObject.Init();
 
-  SC_CHECK_EQUAL(addr1, obj1.mTestKeynode1, ());
-  SC_CHECK_EQUAL(addr2, obj1.mTestKeynode2, ());
+    REQUIRE(addr1 == testObject.mTestKeynode1);
+    REQUIRE(addr2 == testObject.mTestKeynode2);
 
-  obj1.InitGlobal();
-  SC_CHECK_EQUAL(addr3, obj1.mTestKeynode3, ());
+    testObject.InitGlobal();
+    REQUIRE(addr3 == testObject.mTestKeynode3);
 
-  ScAddr const addrForce = ctx.HelperFindBySystemIdtf("test_keynode_force");
-  SC_CHECK(addrForce.IsValid(), ());
-  SC_CHECK_EQUAL(addrForce, obj1.mTestKeynodeForce, ());
+    ScAddr const addrForce = ctx.HelperFindBySystemIdtf("test_keynode_force");
+    REQUIRE(addrForce.IsValid());
+    REQUIRE(addrForce == testObject.mTestKeynodeForce);
+  } catch (...)
+  {
+    SC_LOG_ERROR("Test \"Codegen keynodes\" failed");
+  }
+
+  ctx.Destroy();
+  test::ScTestUnit::ShutdownMemory(false);
 }

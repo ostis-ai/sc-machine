@@ -17,7 +17,7 @@ namespace
 
 // should be synced with ScLog::Type
 const char * kTypeToStr[] = {
-    "Debug", "Info", "Warning", "Error", "Python", "PythonError"
+      "Debug", "Info", "Warning", "Error", "Python", "PythonError"
 };
 
 } // namespace
@@ -37,8 +37,8 @@ ScLog * ScLog::GetInstance()
 }
 
 ScLog::ScLog()
-  : m_mode(Type::Debug)
-  , m_isMuted(false)
+      : m_mode(Type::Debug)
+      , m_isMuted(false)
 {
   ASSERT(!ms_instance, ());
   ms_instance = this;

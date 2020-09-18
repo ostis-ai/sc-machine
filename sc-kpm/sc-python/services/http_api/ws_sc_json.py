@@ -253,7 +253,7 @@ class ScJsonSocketHandler(websocket.WebSocketHandler):
       templ = self.makeTemplate(payload["templ"], False)
       params = payload['params']
 
-    templ_params = ScTemplateGenParams()
+    templ_params = ScTemplateParams()
     for alias, value in params.items():
       templ_params.Add(alias, ScAddr(value))
 
