@@ -6,6 +6,9 @@
 
 #pragma once
 
+#include <sc-memory/sc_memory.hpp>
+#include <sc-memory/sc_addr.hpp>
+
 using namespace std;
 
 namespace utils
@@ -14,8 +17,8 @@ namespace utils
 class LogicRuleUtils
 {
 public:
-  static ScAddr getIfStatement(ScMemoryContext * context, ScAddr & logicRule);
+  static ScAddr getIfStatement(ScMemoryContext * context, const ScAddr & logicRule);
 
-  static ScAddr getElseStatement(ScMemoryContext * context, ScAddr & logicRule);
+  static ScAddr getElseStatement(ScMemoryContext * context, const ScAddr & logicRule);
 };
 }

@@ -4,26 +4,26 @@
 * (See accompanying file COPYING.MIT or copy at http://opensource.org/licenses/MIT)
 */
 
+#define CATCH_CONFIG_RUNNER
+
 #include "sc_test_unit.hpp"
 
+#include "catch2/catch.hpp"
 #include "sc-memory/utils/sc_signal_handler.hpp"
 
 namespace test
 {
 
-std::set<ScTestUnit*, ScTestUnit::TestLess> ScTestUnit::ms_tests;
+std::set<ScTestUnit *, ScTestUnit::TestLess> ScTestUnit::ms_tests;
 uint32_t ScTestUnit::ms_subtestsNum = 0;
-std::atomic_bool ScTestUnit::ms_isRun = { false };
 
-ScTestUnit::ScTestUnit(char const * name, char const * filename, void(*fn)())
-  : m_name(name)
-  , m_filename(filename)
-  , m_fn(fn)
+ScTestUnit::ScTestUnit(char const * name, char const * filename, void(* fn)())
+      : m_name(name), m_filename(filename), m_fn(fn)
 {
   ms_tests.insert(this);
 }
 
-ScTestUnit::~ScTestUnit() 
+ScTestUnit::~ScTestUnit()
 {
   ms_tests.erase(this);
 }
@@ -74,9 +74,16 @@ void ScTestUnit::ShutdownMemory(bool save)
   ScMemory::LogUnmute();
 }
 
-void ScTestUnit::RunAll(std::string const & configPath, std::string const & extPath)
+int ScTestUnit::RunAll(int argc, char * argv[], std::string const & configPath, std::string const & extPath)
 {
-  utils::ScSignalHandler::Initialize();
+  Catch::Session session;
+
+  int returnCode = session.applyCommandLine(argc, argv);
+  if (returnCode != 0)
+    return returnCode;
+
+  return session.run();
+/*  utils::ScSignalHandler::Initialize();
   utils::ScSignalHandler::m_onTerminate = []()
   {
     ms_isRun = false;
@@ -96,13 +103,7 @@ void ScTestUnit::RunAll(std::string const & configPath, std::string const & extP
   ScConsole::Print() << "Passed "
                      << ScConsole::Color::Green << ms_subtestsNum << ScConsole::Color::Reset << " subtests in "
                      << ScConsole::Color::Green << ms_tests.size() << ScConsole::Color::Reset << " tests";
-  ScConsole::Endl();
+  ScConsole::Endl();*/
 }
-
-void ScTestUnit::NotifySubTest()
-{
-  ++ms_subtestsNum;
-}
-
 
 } // namespace test

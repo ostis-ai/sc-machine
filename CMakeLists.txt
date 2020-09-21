@@ -1,3 +1,4 @@
+cmake_policy(SET CMP0048 NEW)
 project (sc-machine)
 site_name (www.ostis.net)
 cmake_minimum_required (VERSION 2.8)
@@ -37,6 +38,8 @@ foreach( OUTPUTCONFIG ${CMAKE_CONFIGURATION_TYPES} )
 endforeach( OUTPUTCONFIG CMAKE_CONFIGURATION_TYPES )
 
 set(SC_MEMORY_SRC "${SC_MACHINE_ROOT}/sc-memory")
+set(SC_KPM_SRC "${SC_MACHINE_ROOT}/sc-kpm")
+set(SC_TOOLS_SRC "${SC_MACHINE_ROOT}/tools")
 
 if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fcolor-diagnostics -std=c++14")
@@ -93,7 +96,11 @@ elseif (${UNIX})
 
     set(PY_SHORT_VERSION "${PY_VERSION_MAJOR}${PY_VERSION_MINOR}")
 
-    find_package(Boost 1.54 REQUIRED COMPONENTS filesystem python-py${PY_SHORT_VERSION})
+    if (${PY_SHORT_VERSION} GREATER_EQUAL "38")
+        find_package(Boost 1.54 REQUIRED COMPONENTS filesystem python)
+    else ()
+        find_package(Boost 1.54 REQUIRED COMPONENTS filesystem python-py${PY_SHORT_VERSION})
+    endif()
     find_package(RocksDB REQUIRED)
 
     include(FindPkgConfig)
@@ -209,4 +216,24 @@ endif()
 
 add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/thirdparty)
 
+if (NOT EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/generated/lib)
+	execute_process(
+			COMMAND mkdir -p generated/lib
+			WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+			OUTPUT_VARIABLE GIT_VERSION)
+endif ()
 
+if (NOT EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/generated/lib/Catch2)
+	execute_process(
+			COMMAND git clone https://github.com/catchorg/Catch2.git
+			WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/generated/lib
+			OUTPUT_VARIABLE GIT_VERSION)
+	execute_process(
+			COMMAND cmake -Bbuild -H. -DBUILD_TESTING=OFF
+			WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/generated/lib/Catch2
+			OUTPUT_VARIABLE GIT_VERSION)
+	execute_process(
+			COMMAND sudo -S cmake --build build/ --target install
+			WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/generated/lib/Catch2
+			OUTPUT_VARIABLE GIT_VERSION)
+endif ()

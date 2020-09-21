@@ -7,8 +7,11 @@
 #pragma once
 
 #include <string>
-#include <sc-memory/sc_addr.hpp>
+
 #include <sc-memory/sc_memory.hpp>
+#include <sc-memory/sc_addr.hpp>
+#include <sc-memory/sc_type.hpp>
+#include <sc-memory/sc_iterator.hpp>
 
 using namespace std;
 
@@ -18,28 +21,21 @@ namespace utils
 class IteratorUtils
 {
 public:
-  static ScAddr getFirstFromSet(ScMemoryContext * ms_context, ScAddr & set);
+  static ScAddr getFirstFromSet(ScMemoryContext * ms_context, const ScAddr & set);
 
-  static vector<ScAddr> getAllWithType(ScMemoryContext * ms_context, ScAddr & set, ScType scType);
+  static vector<ScAddr> getAllWithType(ScMemoryContext * ms_context, const ScAddr & set, ScType scType);
 
-  static vector<ScAddr> getAllByInRelation(ScMemoryContext * ms_context, ScAddr & node, ScAddr & relation);
+  static vector<ScAddr> getAllByInRelation(ScMemoryContext * ms_context, const ScAddr & node, const ScAddr & relation);
 
-  static ScAddr getFirstByInRelation(ScMemoryContext * ms_context, ScAddr & node, ScAddr & relation);
+  static ScAddr getFirstByInRelation(ScMemoryContext * ms_context, const ScAddr & node, const ScAddr & relation);
 
-  static ScAddr getFirstByOutRelation(ScMemoryContext * ms_context, ScAddr & node, ScAddr & relation);
+  static ScAddr getFirstByOutRelation(ScMemoryContext * ms_context, const ScAddr & node, const ScAddr & relation);
 
   static ScIterator5Ptr getIterator5(
         ScMemoryContext * ms_context,
-        ScAddr & node,
-        ScAddr & relation,
-        bool nodeIsStart = true);
+        const ScAddr & node,
+        const ScAddr & relation,
+        const bool nodeIsStart = true);
 
-  static bool addSetToOutline(ScMemoryContext * ms_context, ScAddr & node, ScAddr & outline);
-
-  static bool addNodeWithOutRelationToOutline(
-        ScMemoryContext * ms_context,
-        ScAddr & node,
-        ScAddr & relation,
-        ScAddr & outline);
 };
 }
