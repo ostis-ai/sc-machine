@@ -83,27 +83,6 @@ int ScTestUnit::RunAll(int argc, char * argv[], std::string const & configPath, 
     return returnCode;
 
   return session.run();
-/*  utils::ScSignalHandler::Initialize();
-  utils::ScSignalHandler::m_onTerminate = []()
-  {
-    ms_isRun = false;
-  };
-
-  ScConsole::Print() << "Run " << ScConsole::Color::Green << ms_tests.size() << ScConsole::Color::Reset << " tests";
-  ScConsole::Endl();
-
-  ms_isRun = true;
-  for (ScTestUnit * unit : ms_tests)
-  {
-    unit->Run(configPath, extPath);
-    if (!ms_isRun)
-      break;
-  }
-
-  ScConsole::Print() << "Passed "
-                     << ScConsole::Color::Green << ms_subtestsNum << ScConsole::Color::Reset << " subtests in "
-                     << ScConsole::Color::Green << ms_tests.size() << ScConsole::Color::Reset << " tests";
-  ScConsole::Endl();*/
 }
 
 } // namespace test

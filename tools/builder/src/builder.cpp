@@ -275,5 +275,15 @@ std::shared_ptr<Translator> Builder::CreateTranslator(std::string const & fileEx
   return {};
 }
 
+void Builder::loadScsFile(ScMemoryContext &context, const std::string &filename) {
+    SCsTranslator translator = SCsTranslator(context);
+
+    Translator::Params translateParams;
+    translateParams.m_fileName = filename;
+    translateParams.m_autoFormatInfo = true;
+
+    translator.Translate(translateParams);
+}
+
 
 
