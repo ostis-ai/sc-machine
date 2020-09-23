@@ -42,3 +42,4 @@ sc_codegen(sc-builder-lib ${CMAKE_CURRENT_SOURCE_DIR}/src)
 if (${SC_BUILD_TESTS})
 	add_subdirectory(tests)
 endif ()
+
