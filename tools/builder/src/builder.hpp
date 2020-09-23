@@ -35,7 +35,6 @@ public:
   Builder();
 
   bool Run(BuilderParams const & options);
-  void loadScsFile(ScMemoryContext & context, const std::string & filename);
     
 protected:
   bool ProcessFile(std::string const & filename);
