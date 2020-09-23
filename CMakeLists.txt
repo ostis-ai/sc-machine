@@ -88,6 +88,14 @@ if (${APPLE})
     include_directories("${CMAKE_OSX_SYSROOT}/usr/include")
 
 elseif (${UNIX})
+    function(getLibVersion libName resultVar)
+        execute_process(COMMAND /usr/bin/dpkg -s "${libName}"
+                        COMMAND /bin/grep -oP "(?<=Version:\\s)([\\d\\.]+)(?=)"
+                        OUTPUT_VARIABLE tempVar
+                        OUTPUT_STRIP_TRAILING_WHITESPACE)
+        set(${resultVar} ${tempVar} PARENT_SCOPE)
+    endfunction()
+
     find_package(PythonLibs 3.4 REQUIRED)
 
     string(REPLACE "." ";" PY_VERSION_LIST ${PYTHONLIBS_VERSION_STRING})
@@ -96,8 +104,9 @@ elseif (${UNIX})
 
     set(PY_SHORT_VERSION "${PY_VERSION_MAJOR}${PY_VERSION_MINOR}")
 
-    if (${PY_SHORT_VERSION} GREATER_EQUAL "38")
-        find_package(Boost 1.54 REQUIRED COMPONENTS filesystem python)
+    getLibVersion(libboost-python-dev BOOST_PYTHON_VER)
+    if ("${BOOST_PYTHON_VER}" STRGREATER "1.71")
+        find_package(Boost 1.54 REQUIRED COMPONENTS filesystem python${PY_SHORT_VERSION})
     else ()
         find_package(Boost 1.54 REQUIRED COMPONENTS filesystem python-py${PY_SHORT_VERSION})
     endif()
