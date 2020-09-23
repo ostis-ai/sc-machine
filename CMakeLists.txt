@@ -47,6 +47,19 @@ set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -DSC_DEBUG -DSC_PROFILE")
 
 # find dependencies
 if (${UNIX})
+    function(getLibVersion libName resultVar)
+        execute_process(COMMAND /usr/bin/dpkg -s "${libName}"
+                        COMMAND /bin/grep -oP "(?<=Version:\\s)([\\d\\.]+)(?=)"
+                        OUTPUT_VARIABLE tempVar
+                        OUTPUT_STRIP_TRAILING_WHITESPACE)
+        set(${resultVar} ${tempVar} PARENT_SCOPE)
+    endfunction()
+    
+    getLibVersion(libantlr3c-dev ANTLR3C_VERSION)
+    if("${ANTLR3C_VERSION}" STRGREATER "3.2")
+        add_definitions(-DANTLR3C_NEW_VERSION)
+    endif()
+    
 	include(FindPkgConfig)
 	pkg_check_modules (GLIB2 REQUIRED glib-2.0)
 	pkg_check_modules (GLIB2_MODULE REQUIRED gmodule-2.0)
