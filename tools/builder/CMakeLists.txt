@@ -32,7 +32,7 @@ add_executable(sc-builder
 		)
 
 add_library(sc-builder-lib SHARED ${SOURCES})
-include_directories(${SC_MEMORY_SRC} ${GLIB2_INCLUDE_DIRS} )
+include_directories(${SC_MEMORY_SRC} ${GLIB2_INCLUDE_DIRS})
 target_link_libraries(sc-builder-lib sc-memory ${BOOST_LIBS_LIST})
 target_link_libraries(sc-builder sc-builder-lib)
 
@@ -43,8 +43,7 @@ if (${SC_BUILD_TESTS})
 	add_subdirectory(tests)
 endif ()
 
-set(SOURCES_TEST "new_test/main.cpp")
-file(GLOB UnitsGlob "new_test/*.cpp")
-add_executable(example1 ${SOURCES_TEST} ${UnitsGlob})
-target_link_libraries(example1
-		sc-test-framework)
+add_executable(alex_test_starter "test_starter.cpp" "test.cpp")
+target_link_libraries(alex_test_starter
+		sc-test-framework
+		sc-builder-lib)
