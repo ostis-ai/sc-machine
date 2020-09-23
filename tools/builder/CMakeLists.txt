@@ -43,7 +43,3 @@ if (${SC_BUILD_TESTS})
 	add_subdirectory(tests)
 endif ()
 
-add_executable(alex_test_starter "test_starter.cpp" "test.cpp")
-target_link_libraries(alex_test_starter
-		sc-test-framework
-		sc-builder-lib)
