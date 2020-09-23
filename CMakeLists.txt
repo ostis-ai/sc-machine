@@ -65,6 +65,14 @@ endif()
 
 # find dependencies
 if (${UNIX})
+    function(getLibVersion libName resultVar)
+        execute_process(COMMAND /usr/bin/dpkg -s "${libName}"
+                        COMMAND /bin/grep -oP "(?<=Version:\\s)([\\d\\.]+)(?=)"
+                        OUTPUT_VARIABLE tempVar
+                        OUTPUT_STRIP_TRAILING_WHITESPACE)
+        set(${resultVar} ${tempVar} PARENT_SCOPE)
+    endfunction()
+
     find_package(PythonLibs 3.4 REQUIRED)
 
     string(REPLACE "." ";" PY_VERSION_LIST ${PYTHONLIBS_VERSION_STRING})
@@ -73,9 +81,18 @@ if (${UNIX})
 
     set(PY_SHORT_VERSION "${PY_VERSION_MAJOR}${PY_VERSION_MINOR}")
 
-    find_package(Boost 1.54 REQUIRED COMPONENTS filesystem python-py${PY_SHORT_VERSION})
+    getLibVersion(libboost-python-dev BOOST_PYTHON_VER)
+    if ("${BOOST_PYTHON_VER}" STRGREATER "1.71")
+        find_package(Boost 1.54 REQUIRED COMPONENTS filesystem python${PY_SHORT_VERSION})
+    else ()
+        find_package(Boost 1.54 REQUIRED COMPONENTS filesystem python-py${PY_SHORT_VERSION})
+    endif()
 
     set (ANTLR_LIB antlr3c)
+    getLibVersion(libantlr3c-dev ANTLR3C_VERSION)
+    if("${ANTLR3C_VERSION}" STRGREATER "3.2")
+        add_definitions(-DANTLR3C_NEW_VERSION)
+    endif()
 
     include(FindPkgConfig)
     pkg_check_modules (GLIB2 REQUIRED glib-2.0)
@@ -213,8 +230,7 @@ add_subdirectory(${SC_MACHINE_ROOT}/tools)
 if (NOT EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/log)
 	execute_process(
 			COMMAND mkdir log
-			WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-			OUTPUT_VARIABLE GIT_VERSION)
+			WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
 endif ()
 set(LOG_DIR ${CMAKE_CURRENT_SOURCE_DIR}/log/)
 set(LOG_MODE Info)
@@ -224,23 +240,19 @@ configure_file(log_config.h.in ${CMAKE_CURRENT_SOURCE_DIR}/sc-memory/cpp/generat
 if (NOT EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/generated/lib)
 	execute_process(
 			COMMAND mkdir -p generated/lib
-			WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-			OUTPUT_VARIABLE GIT_VERSION)
+			WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
 endif ()
 
 if (NOT EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/generated/lib/Catch2)
 	execute_process(
 			COMMAND git clone https://github.com/catchorg/Catch2.git
-			WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/generated/lib
-			OUTPUT_VARIABLE GIT_VERSION)
+			WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/generated/lib)
 	execute_process(
 			COMMAND cmake -Bbuild -H. -DBUILD_TESTING=OFF
-			WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/generated/lib/Catch2
-			OUTPUT_VARIABLE GIT_VERSION)
+			WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/generated/lib/Catch2)
 	execute_process(
 			COMMAND sudo -S cmake --build build/ --target install
-			WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/generated/lib/Catch2
-			OUTPUT_VARIABLE GIT_VERSION)
+			WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/generated/lib/Catch2)
 endif ()
 
 if (EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/generated/lib/Catch2)
