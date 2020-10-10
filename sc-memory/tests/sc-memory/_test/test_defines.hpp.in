@@ -1,0 +1,3 @@
+#pragma once
+
+#define SC_TEST_KPM_PYTHON_PATH "${SC_MACHINE_ROOT}/sc-kpm/sc-python/services"

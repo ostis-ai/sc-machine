@@ -1,0 +1,1 @@
+#define BUILDER_REPO_PATH "${SC_BIN_PATH}/sc-builder-test-repo"

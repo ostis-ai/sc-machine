@@ -13,4 +13,8 @@ echo "travis_fold:start:MAKE"
 make -j${JOBS}
 echo "travis_fold:end:MAKE"
 
+echo "travis_fold:start:builder_kb"
+../bin/sc-builder -i ../tools/builder/tests/kb -o ../bin/sc-builder-test-repo -c -f
+echo "travis_fold:end:builder_kb"
+
 popd

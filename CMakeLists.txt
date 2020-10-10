@@ -3,6 +3,8 @@ project (sc-machine)
 site_name (www.ostis.net)
 cmake_minimum_required (VERSION 2.8)
 
+include(CTest)
+
 set(SC_BIN_PATH "${CMAKE_CURRENT_LIST_DIR}/bin")
 
 set(SC_MACHINE_ROOT ${CMAKE_CURRENT_LIST_DIR})
@@ -215,6 +217,12 @@ message ("Python version: ${PYTHONLIBS_VERSION_STRING}")
 
 configure_file(${CMAKE_CURRENT_LIST_DIR}/config/config.ini.in ${CMAKE_CURRENT_LIST_DIR}/bin/config.ini)
 
+if (${SC_BUILD_TESTS})
+    include (cmake/tests.cmake)
+endif()
+
+add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/thirdparty)
+
 add_subdirectory(${SC_MACHINE_ROOT}/sc-memory)
 add_subdirectory(${SC_MACHINE_ROOT}/sc-kpm)
 add_subdirectory(${SC_MACHINE_ROOT}/sc-server)
@@ -224,7 +232,6 @@ if (${SC_BUILD_SCTP})
     add_subdirectory(${SC_MACHINE_ROOT}/sc-network)
 endif()
 
-add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/thirdparty)
 
 if (NOT EXISTS ${CMAKE_CURRENT_LIST_DIR}/generated/lib)
 	execute_process(

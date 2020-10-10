@@ -2,23 +2,10 @@
 
 set -eo pipefail
 
-pushd bin
+pushd build
 
-echo "travis_fold:start:TEST_SCS"
-./test_scs
-echo "travis_fold:end:TEST_SCS"
-
-echo "travis_fold:start:TEST_MEMORY"
-./sc-memory-tests
-echo "travis_fold:end:TEST_MEMORY"
+echo "travis_fold:start:TEST"
+ctest -C Debug -V
+echo "travis_fold:end:TEST"
 
 popd
-
-echo "travis_fold:start:TEST_BUILDER"
-pushd scripts/tests
-./builder_test_kb.sh
-popd
-pushd bin
-./sc-builder-test
-popd
-echo "travis_fold:end:TEST_BUILDER"
