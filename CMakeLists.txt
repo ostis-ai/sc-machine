@@ -11,7 +11,8 @@ set(SC_MACHINE_THIRDPARTY_PATH "${SC_MACHINE_ROOT}/thirdparty")
 option (SC_AUTO_TEST "Flag to build for automation testing" OFF)
 option (SC_KPM_SCP "Flag to build SCP module" OFF)
 option (SC_BUILD_SCTP "Flag to turn on/off sctp protocol support" ON)
-option (SC_BUILD_TESTS "Flag to build unit tests" OFF)
+# Flag to build unit tests. Option is replaced with set because of option unpredictable behavior
+set(SC_BUILD_TESTS ON)
 
 # codegen
 if (${UNIX})
