@@ -3,7 +3,7 @@
 
 int main(int argc, char ** argv) try
 {
-  utils::ScLog::GetInstance()->Initialize("sc-builder-test.log");
+  utils::ScLog::GetInstance()->SetFileName("sc-builder-test");
   test::ScTestUnit::RunAll(argc, argv);
   utils::ScLog::GetInstance()->Shutdown();
   SC_WAIT_KEY_IMPL()
