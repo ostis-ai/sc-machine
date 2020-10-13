@@ -229,30 +229,28 @@ add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/thirdparty)
 if (NOT EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/generated/lib)
 	execute_process(
 			COMMAND mkdir -p generated/lib
-			WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-			OUTPUT_VARIABLE GIT_VERSION)
+			WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
 endif ()
 
+set(CATCH2_VER v2.13.2)
 if (NOT EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/generated/lib/Catch2)
+	message ("Cloning Catch2 ${CATCH2_VER}...")
 	execute_process(
-			COMMAND git clone https://github.com/catchorg/Catch2.git
+			COMMAND git clone --depth 1 --branch ${CATCH2_VER} https://github.com/catchorg/Catch2.git
 			WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/generated/lib
-			OUTPUT_VARIABLE GIT_VERSION)
+			ERROR_QUIET)
 	execute_process(
 			COMMAND cmake -Bbuild -H. -DBUILD_TESTING=OFF
-			WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/generated/lib/Catch2
-			OUTPUT_VARIABLE GIT_VERSION)
+			WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/generated/lib/Catch2)
 	execute_process(
 			COMMAND sudo -S cmake --build build/ --target install
-			WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/generated/lib/Catch2
-			OUTPUT_VARIABLE GIT_VERSION)
+			WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/generated/lib/Catch2)
 endif ()
 
 if (NOT EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/log)
 	execute_process(
 			COMMAND mkdir log
-			WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-			OUTPUT_VARIABLE GIT_VERSION)
+			WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
 endif ()
 set(LOG_DIR ${CMAKE_CURRENT_SOURCE_DIR}/log/)
 set(LOG_MODE Info)
