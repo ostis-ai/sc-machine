@@ -245,11 +245,9 @@ endif ()
 
 set(CATCH2_VER v2.13.2)
 if (NOT EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/generated/lib/Catch2)
-	message ("Cloning Catch2 ${CATCH2_VER}...")
 	execute_process(
 			COMMAND git clone --depth 1 --branch ${CATCH2_VER} https://github.com/catchorg/Catch2.git
-			WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/generated/lib
-			ERROR_QUIET)
+			WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/generated/lib)
 	execute_process(
 			COMMAND cmake -Bbuild -H. -DBUILD_TESTING=OFF
 			WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/generated/lib/Catch2)
