@@ -285,108 +285,118 @@ bool GwfTranslator::getScAddr(const String &idtf, sc_addr &addr)
 
 sc_type GwfTranslator::convertType(const String &type)
 {
-  if (type == "node/-/not_define")
+  if (type == "node/-/not_define" || type == "node/-/-/not_define")
     return sc_type_node;
 
-  if (type == "node/const/general_node" || type == "node/const/general")
+  if (type == "node/const/general_node" || type == "node/const/general" || type == "node/const/perm/general")
     return sc_type_node | sc_type_const;
 
-  if (type == "node/var/general_node" || type == "node/const/var")
+  if (type == "node/var/general_node" || type == "node/const/var" || type == "node/var/perm/general")
     return sc_type_node | sc_type_var;
 
-  if (type == "node/const/relation")
+  if (type == "node/const/relation" || type == "node/const/perm/relation")
     return sc_type_node | sc_type_node_norole | sc_type_const;
 
-  if (type == "node/var/relation")
+  if (type == "node/var/relation" || type == "node/var/perm/relation")
     return sc_type_node | sc_type_node_norole | sc_type_var;
 
-  if (type == "node/const/attribute")
+  if (type == "node/const/attribute" || type == "node/const/perm/role")
     return sc_type_node | sc_type_node_role | sc_type_const;
 
-  if (type == "node/var/attribute")
+  if (type == "node/var/attribute" || type == "node/var/perm/role")
     return sc_type_node | sc_type_node_role | sc_type_var;
 
-  if (type == "node/const/nopredmet")
+  if (type == "node/const/nopredmet" || type == "node/const/perm/struct")
     return sc_type_node | sc_type_node_struct | sc_type_const;
 
-  if (type == "node/var/nopredmet")
+  if (type == "node/var/nopredmet" || type == "node/var/perm/struct")
     return sc_type_node | sc_type_node_struct | sc_type_var;
 
-  if (type == "node/const/predmet")
+  if (type == "node/const/predmet" || type == "node/const/perm/terminal")
     return sc_type_node | sc_type_node_abstract | sc_type_const;
 
-  if (type == "node/var/predmet")
+  if (type == "node/var/predmet" || type == "node/var/perm/terminal")
     return sc_type_node | sc_type_node_abstract | sc_type_var;
 
-  if (type == "node/const/group")
+  if (type == "node/const/group" || type == "node/const/perm/group")
     return sc_type_node | sc_type_node_class | sc_type_const;
 
-  if (type == "node/var/group")
+  if (type == "node/var/group" || type == "node/var/perm/group")
     return sc_type_node | sc_type_node_class | sc_type_var;
 
-  if (type == "node/const/asymmetry" || type == "node/const/symmetry" || type == "node/const/tuple")
+  if (type == "node/const/asymmetry" || type == "node/const/symmetry" || type == "node/const/tuple" ||
+      type == "node/const/perm/tuple")
     return sc_type_node | sc_type_node_tuple | sc_type_const;
 
-  if (type == "node/var/asymmetry" || type == "node/var/symmetry" || type == "node/var/tuple")
+  if (type == "node/var/asymmetry" || type == "node/var/symmetry" || type == "node/var/tuple" ||
+      type == "node/var/perm/tuple")
     return sc_type_node | sc_type_node_tuple | sc_type_var;
 
   // -------
   if (type == "arc/-/-")
     return sc_type_arc_access;
 
-  if (type == "pair/orient")
+  if (type == "pair/orient" || type == "pair/-/-/-/orient")
     return sc_type_arc_common;
 
-  if (type == "pair/noorient")
+  if (type == "pair/noorient" || type == "pair/-/-/-/noorient")
     return sc_type_edge_common;
 
-  if (type == "pair/const/synonym" || type == "pair/const/noorient")
+  if (type == "pair/const/synonym" || type == "pair/const/noorient" || type == "pair/const/-/perm/noorien")
     return sc_type_edge_common | sc_type_const;
 
-  if (type == "pair/var/synonym" || type == "pair/var/noorient")
+  if (type == "pair/var/synonym" || type == "pair/var/noorient" || type == "pair/var/-/perm/noorien")
     return sc_type_edge_common | sc_type_var;
 
-  if (type == "pair/const/orient")
+  if (type == "pair/const/orient" || type == "pair/const/-/perm/orient")
     return sc_type_arc_common | sc_type_const;
 
-  if (type == "pair/var/orient")
+  if (type == "pair/var/orient" || type == "pair/var/-/perm/orient")
     return sc_type_arc_common | sc_type_var;
 
-  if (type == "arc/const/fuz")
+  if (type == "arc/const/fuz" || type == "pair/const/fuz/perm/orient/membership")
     return sc_type_arc_access | sc_type_const | sc_type_arc_fuz | sc_type_arc_perm;
 
-  if (type == "arc/var/fuz")
+  if (type == "arc/var/fuz" || type == "pair/var/fuz/perm/orient/membership")
     return sc_type_arc_access | sc_type_var | sc_type_arc_fuz | sc_type_arc_perm;
 
-  if (type == "arc/const/fuz/temp")
+  if (type == "arc/const/fuz/temp" || type == "pair/const/fuz/temp/orient/membership")
     return sc_type_arc_access | sc_type_const | sc_type_arc_fuz | sc_type_arc_temp;
 
-  if (type == "arc/var/fuz/temp")
+  if (type == "arc/var/fuz/temp" || type == "pair/var/fuz/temp/orient/membership")
     return sc_type_arc_access | sc_type_var | sc_type_arc_fuz | sc_type_arc_temp;
 
-  if (type == "arc/const/neg")
+  if (type == "arc/const/neg" || type == "pair/const/neg/perm/orient/membership")
     return sc_type_arc_access | sc_type_const | sc_type_arc_neg | sc_type_arc_perm;
 
-  if (type == "arc/var/neg")
+  if (type == "arc/var/neg" || type == "pair/var/neg/perm/orient/membership")
     return sc_type_arc_access | sc_type_var | sc_type_arc_neg | sc_type_arc_perm;
 
-  if (type == "arc/const/neg/temp")
+  if (type == "arc/const/neg/temp" || type == "pair/const/neg/temp/orient/membership")
     return sc_type_arc_access | sc_type_const | sc_type_arc_neg | sc_type_arc_temp;
 
-  if (type == "arc/var/neg/temp")
+  if (type == "arc/var/neg/temp" || type == "pair/var/neg/temp/orient/membership")
     return sc_type_arc_access | sc_type_var | sc_type_arc_neg | sc_type_arc_temp;
 
-  if (type == "arc/const/pos")
+  if (type == "arc/const/pos" || type == "pair/const/pos/perm/orient/membership")
     return sc_type_arc_access | sc_type_const | sc_type_arc_pos | sc_type_arc_perm;
 
-  if (type == "arc/var/pos")
+  if (type == "arc/var/pos" || type == "pair/var/pos/perm/orient/membership")
     return sc_type_arc_access | sc_type_var | sc_type_arc_pos | sc_type_arc_perm;
 
-  if (type == "arc/const/pos/temp")
+  if (type == "arc/const/pos/temp" || type == "pair/const/pos/temp/orient/membership")
     return sc_type_arc_access | sc_type_const | sc_type_arc_pos | sc_type_arc_temp;
 
-  if (type == "arc/var/pos/temp")
+  if (type == "arc/var/pos/temp" || type == "pair/var/pos/temp/orient/membership")
     return sc_type_arc_access | sc_type_var | sc_type_arc_pos | sc_type_arc_temp;
+
+  // Return default type when not supported
+  std::basic_string<char> mainType = type.substr(0, 4);
+  if (mainType == "node")
+      return sc_type_node | sc_type_const;
+
+  if (mainType == "pair" || mainType == "arc/")
+      return sc_type_arc_access | sc_type_const | sc_type_arc_pos | sc_type_arc_perm;
 
   THROW_EXCEPT(Exception::ERR_ITEM_NOT_FOUND,
                "Can't determine type for " << type,
