@@ -391,6 +391,10 @@ sc_type GwfTranslator::convertType(const String &type)
     return sc_type_arc_access | sc_type_var | sc_type_arc_pos | sc_type_arc_temp;
 
   // Return default type when not supported
+  StringStream ss;
+  ss << "Replacing unsupported type " << type << " in " << mParams.fileName;
+  mWarnings.push_back(ss.str());
+
   std::basic_string<char> mainType = type.substr(0, 4);
   if (mainType == "node")
       return sc_type_node | sc_type_const;

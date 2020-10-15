@@ -29,8 +29,7 @@ struct TranslatorParams
 class iTranslator
 {
 public:
-
-
+  typedef std::list<std::string> tStringList;
   typedef enum
   {
     IdtfSystem = 0,
@@ -54,7 +53,7 @@ public:
   //! Returns supported file extension
   virtual const std::string& getFileExt() const = 0;
 
-
+  tStringList getWarnings() const { return mWarnings; }
 protected:
   /*! Generates format relation in sc-memory by file extension
    * @param addr sc-addr of sc-link to create format relation
@@ -71,6 +70,8 @@ protected:
 protected:
   //! Translator parameters
   TranslatorParams mParams;
+
+  tStringList mWarnings;
 
   typedef std::map<String, sc_addr> tStringAddrMap;
   //! Map that contains global identifiers

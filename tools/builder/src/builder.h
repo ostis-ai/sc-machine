@@ -89,6 +89,9 @@ private:
   typedef std::list<std::string> tStringList;
   tStringList mErrors;
 
+  //! List of warnings;
+  tStringList mWarnings;
+
   //! Builder parameters
   BuilderParams mParams;
 
