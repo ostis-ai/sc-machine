@@ -99,9 +99,16 @@ bool Builder::run(const BuilderParams &params)
   // print errors
   std::cout << std::endl << "-------" << std::endl << "Errors:" << std::endl;
   int idx = 1;
-  tStringList::iterator itErr, itErrEnd = mErrors.end();
-  for (itErr = mErrors.begin(); itErr != itErrEnd; ++itErr)
-    std::cout << "[" << idx++ << "]\t" << *itErr << std::endl;
+  tStringList::iterator listIter, listEnd = mErrors.end();
+  for (listIter = mErrors.begin(); listIter != listEnd; ++listIter)
+    std::cout << "[" << idx++ << "]\t" << *listIter << std::endl;
+
+  // print warnings
+  std::cout << std::endl << "-------" << std::endl << "Warnings:" << std::endl;
+  idx = 1;
+  listEnd = mWarnings.end();
+  for (listIter = mWarnings.begin(); listIter != listEnd; ++listIter)
+      std::cout << "[" << idx++ << "]\t" << *listIter << std::endl;
 
   // print statistics
   sc_stat stat;
@@ -168,6 +175,7 @@ bool Builder::processFile(const String &filename)
   translateParams.autoFormatInfo = mParams.autoFormatInfo;
 
   bool result = translator->translate(translateParams);
+  mWarnings.splice(mWarnings.end(), translator->getWarnings());
   delete translator;
 
   return result;
