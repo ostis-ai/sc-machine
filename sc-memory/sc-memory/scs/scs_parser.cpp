@@ -575,6 +575,8 @@ ElementHandle Parser::ProcessContourEnd()
             ProcessTriple(source, edge, el);
         }
 
+        ParsedElement & srcEl = GetParsedElementRef(source);
+        srcEl.m_type = ScType::NodeConstStruct;
         return source;
     }
 
