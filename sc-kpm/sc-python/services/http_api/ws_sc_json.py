@@ -207,12 +207,7 @@ class ScJsonSocketHandler(websocket.WebSocketHandler):
         is_required = True
         if len(triple) == 4:
           options = triple[3]
-          try:
-            is_required = options['is_required']
-          except KeyError:
-            is_required = True
-
-        templ.Triple(src, edg, trg, is_required)
+        templ.Triple(src, edg, trg)
       else:
         templ.Triple(src, edg, trg)
 

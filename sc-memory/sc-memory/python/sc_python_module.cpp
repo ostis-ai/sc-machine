@@ -685,24 +685,21 @@ class PyTemplate
 public:
   PyTemplate() : m_impl(new ScTemplate()) {}
 
-  void Triple(bp::object & param1, bp::object & param2, bp::object & param3, bool isRequired = true)
+  void Triple(bp::object & param1, bp::object & param2, bp::object & param3)
   {
     m_impl->Triple(ResolveTemplateParam(param1),
                    ResolveTemplateParam(param2),
-                   ResolveTemplateParam(param3),
-                   isRequired ? ScTemplate::TripleFlag::Required : ScTemplate::TripleFlag::NotRequired);
+                   ResolveTemplateParam(param3));
   }
 
   void TripleWithRelation(bp::object & param1, bp::object & param2,
-                          bp::object & param3, bp::object & param4, bp::object & param5,
-                          bool isRequired = true)
+                          bp::object & param3, bp::object & param4, bp::object & param5)
   {
     m_impl->TripleWithRelation(ResolveTemplateParam(param1),
                                ResolveTemplateParam(param2),
                                ResolveTemplateParam(param3),
                                ResolveTemplateParam(param4),
-                               ResolveTemplateParam(param5),
-                               isRequired ? ScTemplate::TripleFlag::Required : ScTemplate::TripleFlag::NotRequired);
+                               ResolveTemplateParam(param5));
   }
 
   bool HasReplacement(std::string const & name)
@@ -840,8 +837,6 @@ public:
 } // namespace impl
 
 BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(ScMemoryContext_CreateLink_overload, ScMemoryContext::CreateLink, 0, 1)
-BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(PyTemplate_Triple_overload, impl::PyTemplate::Triple, 3, 4)
-BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(PyTemplate_TripleWithRelation_overload, impl::PyTemplate::TripleWithRelation, 5, 6)
 
 BOOST_PYTHON_MODULE(sc)
 {
@@ -927,8 +922,8 @@ BOOST_PYTHON_MODULE(sc)
 
 
   bp::class_<impl::PyTemplate>("ScTemplate", bp::init<>())
-    .def("Triple", &impl::PyTemplate::Triple, PyTemplate_Triple_overload())
-    .def("TripleWithRelation", &impl::PyTemplate::TripleWithRelation, PyTemplate_TripleWithRelation_overload())
+    .def("Triple", &impl::PyTemplate::Triple)
+    .def("TripleWithRelation", &impl::PyTemplate::TripleWithRelation)
     .def("HasReplacement", &impl::PyTemplate::HasReplacement)
     ;
 

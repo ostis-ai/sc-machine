@@ -398,13 +398,6 @@ public:
           break;
         }
 
-        if (!didIter[orderIndex] && !constr.IsRequired())
-        {
-          applyResult(ScAddr::Empty, ScAddr::Empty, ScAddr::Empty);
-          didIter[orderIndex] = true;
-          isFinished = false;
-        }
-
         if (isFinished) // finish iterator
         {
           iterators.pop();
