@@ -32,7 +32,7 @@ TEST_F(ScTemplateBuildTest, double_attrs)
   auto const testOrder = [this](std::vector<ScAddr> const & addrs)
   {
     ScAddr const structAddr = m_ctx->CreateNode(ScType::NodeConstStruct);
-    ScStruct st(m_ctx.get(), structAddr);
+    ScStruct st(*m_ctx, structAddr);
 
     for (auto const & a : addrs)
       st << a;
@@ -68,7 +68,7 @@ TEST_F(ScTemplateBuildTest, edge_from_edge)
   auto const testOrder = [this](std::vector<ScAddr> const & addrs)
   {
     ScAddr const structAddr = m_ctx->CreateNode(ScType::NodeConstStruct);
-    ScStruct st(m_ctx.get(), structAddr);
+    ScStruct st(*m_ctx, structAddr);
 
     for (auto const & a : addrs)
       st << a;
