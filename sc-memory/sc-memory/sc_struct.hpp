@@ -12,7 +12,7 @@
 class ScSet
 {
 public:
-  _SC_EXTERN ScSet(class ScMemoryContext * ctx, ScAddr const & setAddr);
+  _SC_EXTERN ScSet(class ScMemoryContext & ctx, ScAddr const & setAddr);
 
   /* Append element into sc-set. If element already exist, then doesn't append it and return false; otherwise returns true. */
   _SC_EXTERN bool Append(ScAddr const & elAddr);
@@ -39,13 +39,13 @@ public:
   /// TODO: implement +, -, == operators
 private:
   ScAddr m_addr;
-  ScMemoryContext * m_context;
+  ScMemoryContext & m_context;
 };
 
 class ScStruct : public ScSet
 {
 public:
-  _SC_EXTERN ScStruct(ScMemoryContext * ctx, ScAddr const & structAddr)
+  _SC_EXTERN ScStruct(ScMemoryContext & ctx, ScAddr const & structAddr)
     : ScSet(ctx, structAddr)
   {
     // TODO: check type of struct element

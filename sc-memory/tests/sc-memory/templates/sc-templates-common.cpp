@@ -330,7 +330,7 @@ TEST_F(ScTemplateCommonTest, a_a_a)
   // create template
   ScAddr const templStructAddr = m_ctx->CreateNode(ScType::NodeConstStruct);
   EXPECT_TRUE(templStructAddr.IsValid());
-  ScStruct templStruct(m_ctx.get(), templStructAddr);
+  ScStruct templStruct(*m_ctx, templStructAddr);
 
   templStruct
         << _structAddr
