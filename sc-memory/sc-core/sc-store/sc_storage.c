@@ -793,9 +793,6 @@ sc_result sc_storage_change_element_subtype(const sc_memory_context *ctx, sc_add
   sc_element *el = null_ptr;
   sc_result r = SC_RESULT_OK;
 
-  if (type & sc_type_element_mask)
-    return SC_RESULT_ERROR_INVALID_PARAMS;
-
   if (sc_storage_element_lock(addr, &el) != SC_RESULT_OK)
     return SC_RESULT_ERROR;
 

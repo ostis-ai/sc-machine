@@ -104,6 +104,34 @@ TEST_CASE("SCsHelper_GenerateBySCs_FileURL", "[test scs helper]")
   test::ScTestUnit::ShutdownMemory(false);
 }
 
+TEST_CASE("SCsHelper_ChangeElementType", "[test scs helper]")
+{
+    std::string const data = "sc_node_struct -> a;;";
+
+    test::ScTestUnit::InitMemory("sc-memory.ini", "");
+    ScMemoryContext ctx(sc_access_lvl_make_max, "SCsHelper_ChangeElementType");
+
+    try
+    {
+        ScAddr node = ctx.CreateNode(ScType::Node);
+        ctx.HelperSetSystemIdtf("a", node);
+
+        SCsHelper helper(ctx, std::make_shared<TestFileInterface>());
+        REQUIRE(helper.GenerateBySCsText(data));
+
+        ScAddr element = ctx.HelperFindBySystemIdtf("a");
+
+        ScType const linkType = ctx.GetElementType(element);
+        REQUIRE(linkType == ScType::NodeConstStruct);
+    } catch (...)
+    {
+        SC_LOG_ERROR("Test \"SCsHelper_ChangeElementType\" failed")
+    }
+
+    ctx.Destroy();
+    test::ScTestUnit::ShutdownMemory(false);
+}
+
 TEST_CASE("SCsHelper_GenerateBySCs_Aliases", "[test scs helper]")
 {
   std::string const content = "SCsHelper_GenerateBySCs_Aliases";

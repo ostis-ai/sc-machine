@@ -367,6 +367,30 @@ TEST_CASE("scs_level_6_contour", "[test scs level 6]")
     SUBTEST_END()
   }
 
+    SECTION("changing_type")
+    {
+        SUBTEST_START("changing_type")
+        {
+            std::string const data =
+                    "a -> b;;"
+                    "sc_node_struct -> a;;";
+
+            scs::Parser parser;
+
+            REQUIRE(parser.Parse(data));
+
+            auto const & triples = parser.GetParsedTriples();
+            REQUIRE(triples.size() == 1);
+
+            {
+                SPLIT_TRIPLE(triples[0]);
+
+                REQUIRE(src.GetType() == ScType::NodeConstStruct);
+            }
+        }
+        SUBTEST_END()
+    }
+
   SECTION("content")
   {
     SUBTEST_START("content")
