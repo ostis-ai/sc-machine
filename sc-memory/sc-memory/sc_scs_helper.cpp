@@ -33,10 +33,15 @@ protected:
 
   void operator() (scs::Parser const & parser)
   {
-    // generate aliases
-    auto const & aliases = parser.GetAliases();
-    for (auto const & it : aliases)
-      ResolveElement(parser.GetParsedElement(it.second));
+      // generate aliases
+      auto const & aliases = parser.GetAliases();
+      for (auto const & it : aliases) {
+          const auto & parsedElement = parser.GetParsedElement(it.second);
+          if (!parsedElement.GetType().IsEdge())
+          {
+              ResolveElement(parsedElement);
+          }
+      }
 
     // generate triples
     auto const & triples = parser.GetParsedTriples();
