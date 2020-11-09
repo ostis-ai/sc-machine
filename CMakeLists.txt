@@ -3,7 +3,7 @@ project (sc-machine)
 site_name (www.ostis.net)
 cmake_minimum_required (VERSION 2.8)
 
-set(SC_BIN_PATH "${CMAKE_SOURCE_DIR}/bin")
+set(SC_BIN_PATH "${CMAKE_CURRENT_LIST_DIR}/bin")
 
 set(SC_MACHINE_ROOT ${CMAKE_CURRENT_LIST_DIR})
 set(SC_MACHINE_THIRDPARTY_PATH "${SC_MACHINE_ROOT}/thirdparty")
@@ -226,31 +226,31 @@ endif()
 
 add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/thirdparty)
 
-if (NOT EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/generated/lib)
+if (NOT EXISTS ${CMAKE_CURRENT_LIST_DIR}/generated/lib)
 	execute_process(
 			COMMAND mkdir -p generated/lib
-			WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
+			WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR})
 endif ()
 
 set(CATCH2_VER v2.13.2)
-if (NOT EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/generated/lib/Catch2)
+if (NOT EXISTS ${CMAKE_CURRENT_LIST_DIR}/generated/lib/Catch2)
 	execute_process(
 			COMMAND git clone --depth 1 --branch ${CATCH2_VER} https://github.com/catchorg/Catch2.git
-			WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/generated/lib)
+			WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}/generated/lib)
 	execute_process(
 			COMMAND cmake -Bbuild -H. -DBUILD_TESTING=OFF
-			WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/generated/lib/Catch2)
+			WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}/generated/lib/Catch2)
 	execute_process(
 			COMMAND sudo -S cmake --build build/ --target install
-			WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/generated/lib/Catch2)
+			WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}/generated/lib/Catch2)
 endif ()
 
-if (NOT EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/log)
+if (NOT EXISTS ${CMAKE_CURRENT_LIST_DIR}/log)
 	execute_process(
 			COMMAND mkdir log
-			WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
+			WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR})
 endif ()
-set(LOG_DIR ${CMAKE_CURRENT_SOURCE_DIR}/log/)
+set(LOG_DIR ${CMAKE_CURRENT_LIST_DIR}/log/)
 set(LOG_MODE Info)
 set(LOG_OUTPUT_TYPE Console)
-configure_file(log_config.h.in ${CMAKE_CURRENT_SOURCE_DIR}/sc-memory/sc-memory/generated/log_config.hpp @ONLY)
+configure_file(${CMAKE_CURRENT_LIST_DIR}/log_config.h.in ${CMAKE_CURRENT_LIST_DIR}/sc-memory/sc-memory/generated/log_config.hpp @ONLY)
