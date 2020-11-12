@@ -162,6 +162,49 @@ TEST_CASE("SCsHelper_GenerateBySCs_Aliases", "[test scs helper]")
   test::ScTestUnit::ShutdownMemory(false);
 }
 
+TEST_CASE("SCsHelper_ProcessEdgeAlias", "[test scs helper]")
+{
+    std::string const data = "@edge_alias = (c -> b);;"
+                             "a -> @edge_alias;;";
+
+    test::ScTestUnit::InitMemory("sc-memory.ini", "");
+    ScMemoryContext ctx(sc_access_lvl_make_max, "SCsHelper_ProcessEdgeAlias");
+
+    try
+    {
+        SCsHelper helper(ctx, std::make_shared<TestFileInterface>());
+        REQUIRE(helper.GenerateBySCsText(data));
+
+        ScAddr const aAddr = ctx.HelperResolveSystemIdtf("a");
+        REQUIRE(aAddr.IsValid());
+
+        ScAddr const bAddr = ctx.HelperResolveSystemIdtf("b");
+        REQUIRE(bAddr.IsValid());
+
+        ScAddr const cAddr = ctx.HelperResolveSystemIdtf("c");
+        REQUIRE(cAddr.IsValid());
+
+        ScTemplate templ;
+        templ.TripleWithRelation(
+                cAddr,
+                ScType::EdgeAccessVarPosPerm,
+                bAddr,
+                ScType::EdgeAccessVarPosPerm,
+                aAddr);
+
+        ScTemplateSearchResult result;
+        REQUIRE(ctx.HelperSearchTemplate(templ, result));
+        REQUIRE(result.Size() == 1);
+
+    } catch (...)
+    {
+        SC_LOG_ERROR("Test \"SCsHelper_ProcessEdgeAlias\" failed")
+    }
+
+    ctx.Destroy();
+    test::ScTestUnit::ShutdownMemory(false);
+}
+
 TEST_CASE("SCsHelper_GenerateBySCs_Contents", "[test scs helper]")
 {
   std::string const dataString = "v_string -> [string];;";
