@@ -68,12 +68,6 @@ set(SC_MEMORY_SRC "${SC_MACHINE_ROOT}/sc-memory")
 set(SC_KPM_SRC "${SC_MACHINE_ROOT}/sc-kpm")
 set(SC_TOOLS_SRC "${SC_MACHINE_ROOT}/tools")
 
-if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fcolor-diagnostics -std=c++14")
-     if(NOT ${SC_COVERAGE})
-        set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O3")
-     endif()
-
 
 if (${SC_USE_SANITIZER} STREQUAL "address")
     set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fsanitize=address -O1 -fno-omit-frame-pointer")
@@ -88,6 +82,10 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
     if (${SC_USE_SANITIZER} STREQUAL "none")
         set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O3")
     endif()
+
+    if(NOT ${SC_COVERAGE})
+        set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O3")
+     endif()
     
     if(${SC_AUTO_TEST})
         set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wdeprecated-declarations")
