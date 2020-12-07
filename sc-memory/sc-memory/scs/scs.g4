@@ -152,7 +152,7 @@ sentence_assign
   ;
 
 sentence_assign_contour
-  : a=idtf_common '=' i=contourWithJoin
+  : a=idtf_system '=' i=contourWithJoin
     {
       m_parser->ProcessContourEndWithJoin($ctx->a->handle);
     }
