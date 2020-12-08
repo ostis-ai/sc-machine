@@ -376,7 +376,7 @@ ElementHandle Parser::AppendElement(std::string idtf,
     auto & container = isLocal ? m_parsedElementsLocal : m_parsedElements;
 
     elId = ElementHandle(ElementID(container.size()), isLocal);
-    container.emplace_back(el);
+    container.emplace_back(std::move(el));
     m_idtfToParsedElement[idtf] = elId;
   }
 
@@ -435,10 +435,13 @@ void Parser::ProcessTriple(ElementHandle const & source, ElementHandle const & e
         SC_THROW_EXCEPTION(utils::ExceptionParseError,
                            "Can't merge types for element " + targetEl.GetIdtf());
       }
+
+      if (!m_contourTriplesStack.empty())
+        m_parsedTriples.emplace_back(src, e, trg);
     }
     else
     {
-      m_parsedTriples.emplace_back(ParsedTriple(src, e, trg));
+      m_parsedTriples.emplace_back(src, e, trg);
     }
   };
 
@@ -489,13 +492,17 @@ ElementHandle Parser::ProcessEmptyContour()
   return AppendElement(GenerateContourIdtf(), ScType::NodeConstStruct);
 }
 
-void Parser::ProcessContourBegin()
+ElementHandle Parser::ProcessContourBegin()
 {
+  ElementHandle const result = AppendElement(GenerateContourIdtf(), ScType::NodeConstStruct);
+
   m_contourElementsStack.push(std::make_pair(m_parsedElements.size(), m_parsedElementsLocal.size()));
   m_contourTriplesStack.push(m_parsedTriples.size());
+
+  return result;
 }
 
-ElementHandle Parser::ProcessContourEnd()
+void Parser::ProcessContourEnd(ElementHandle const & contourHandle)
 {
   SC_ASSERT(!m_contourElementsStack.empty(), ());
   SC_ASSERT(!m_contourTriplesStack.empty(), ());
@@ -504,7 +511,6 @@ ElementHandle Parser::ProcessContourEnd()
   size_t const lastLocal = m_parsedElementsLocal.size();
   size_t const lastTriple = m_parsedTriples.size();
 
-  ElementHandle const result = AppendElement(GenerateContourIdtf(), ScType::NodeConstStruct);
   auto const ind = m_contourElementsStack.top();
   m_contourElementsStack.pop();
 
@@ -522,7 +528,8 @@ ElementHandle Parser::ProcessContourEnd()
 
   for (size_t i = tripleFirst; i < lastTriple; ++i)
   {
-    auto const & t = m_parsedTriples[i];
+    auto & t = m_parsedTriples[i];
+
     newElements.insert(t.m_source);
     newElements.insert(t.m_edge);
     newElements.insert(t.m_target);
@@ -531,10 +538,8 @@ ElementHandle Parser::ProcessContourEnd()
   for (auto const & el : newElements)
   {
     ElementHandle const edge = ProcessConnector("->");
-    ProcessTriple(result, edge, el);
+    ProcessTriple(contourHandle, edge, el);
   }
-
-  return result;
 }
 
     ElementHandle Parser::ProcessContourEndWithJoin(ElementHandle const & source)

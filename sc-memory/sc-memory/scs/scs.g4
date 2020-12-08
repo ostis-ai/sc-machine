@@ -63,7 +63,7 @@ contour returns [ElementHandle handle]
   @init{ $count = 1; }
   : CONTOUR_BEGIN
     {
-      m_parser->ProcessContourBegin();
+      $ctx->handle = m_parser->ProcessContourBegin();
     }
     { $ctx->count > 0 }?
     ( sentence_wrap* )
@@ -72,7 +72,7 @@ contour returns [ElementHandle handle]
       $ctx->count--;
       if ($ctx->count == 0)
       {
-        $ctx->handle = m_parser->ProcessContourEnd();
+        m_parser->ProcessContourEnd($ctx->handle);
       }
     }
   ;
@@ -130,8 +130,17 @@ sentence
   | sentence_lvl_common
   ;
 
-alias
+idtf_alias returns [ElementHandle handle]
   : ALIAS_SYMBOLS
+    {
+      std::string const _alias = $ALIAS_SYMBOLS->getText();
+      $ctx->handle = m_parser->ResolveAlias(_alias);
+      if (!$ctx->handle.IsValid())
+      {
+        PARSE_ERROR($ctx->start->getLine(), $ctx->start->getCharPositionInLine(),
+          "Can't resolve alias `" << _alias << "`. You should assign an alias before use.");
+      }
+    }
   ;
 
 idtf_system returns [ElementHandle handle]
@@ -145,9 +154,9 @@ idtf_system returns [ElementHandle handle]
 
 
 sentence_assign
-  : a=alias '=' i=idtf_common
+  : ALIAS_SYMBOLS '=' i=idtf_common
     {
-      m_parser->ProcessAssign($ctx->a->getText(), $ctx->i->handle);
+      m_parser->ProcessAssign($ALIAS_SYMBOLS->getText(), $ctx->i->handle);
     }
   ;
 
@@ -190,9 +199,9 @@ idtf_lvl1 returns [ElementHandle handle]
   ;
 
 idtf_edge returns [ElementHandle handle]
-  : '(' src=idtf_system
+  : '(' src=idtf_atomic
         c=connector attrs=attr_list?
-        trg=idtf_system
+        trg=idtf_atomic
     ')'
 
     {
@@ -245,31 +254,29 @@ idtf_set returns [ElementHandle handle]
         internal_sentence_list[$ctx->i2->handle]?
       )*
     '}'
-
   ;
 
-idtf_common returns [ElementHandle handle]
-  : a=alias 
-    { 
-      std::string const _alias = $ctx->a->getText();
-      $ctx->handle = m_parser->ResolveAlias(_alias);
-      if (!$ctx->handle.IsValid())
-      {
-        PARSE_ERROR($ctx->start->getLine(), $ctx->start->getCharPositionInLine(),
-          "Can't resolve alias `" << _alias << "`. You should use assigment of alias before usage.");
-      }
-    }
-    | is=idtf_system { $ctx->handle = $ctx->is->handle; }
-  | ie=idtf_edge { $ctx->handle = $ctx->ie->handle; }
-  | iset=idtf_set { $ctx->handle = $ctx->iset->handle; }
-    | ct=contour { $ctx->handle = $ctx->ct->handle; }
-  | cn=content { $ctx->handle = $ctx->cn->handle; }
-  | LINK
+idtf_atomic returns [ElementHandle handle]
+  : a=idtf_alias { $ctx->handle = $ctx->a->handle; }
+  | is=idtf_system { $ctx->handle = $ctx->is->handle; }
+  ;
+
+idtf_url returns [ElementHandle handle]
+  : LINK
     {
       std::string const value = $LINK->getText();
       SC_ASSERT(value.size() > 1, ());
       $ctx->handle = m_parser->ProcessFileURL(value.substr(1, value.size() - 2));
     }
+  ;
+
+idtf_common returns [ElementHandle handle]
+  : a=idtf_atomic { $ctx->handle = $ctx->a->handle; }
+  | ie=idtf_edge { $ctx->handle = $ctx->ie->handle; }
+  | iset=idtf_set { $ctx->handle = $ctx->iset->handle; }
+  | ct=contour { $ctx->handle = $ctx->ct->handle; }
+  | cn=content { $ctx->handle = $ctx->cn->handle; }
+  | u=idtf_url { $ctx->handle = $ctx->u->handle; }
   ;
 
 idtf_list returns [std::vector<ElementHandle> items]
