@@ -478,7 +478,10 @@ sc_result sc_storage_element_free(sc_memory_context *ctx, sc_addr addr)
         sum.len = SC_CHECKSUM_LEN;
       }
 
-      STORAGE_CHECK_CALL(sc_fs_storage_remove_content_addr(addr, &sum));
+      if (sc_element_is_checksum_empty(el) == SC_FALSE)
+      {
+        STORAGE_CHECK_CALL(sc_fs_storage_remove_content_addr(addr, &sum));
+      }
     }
     else if (el->flags.type & sc_type_arc_mask)
     {
