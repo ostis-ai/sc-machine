@@ -63,7 +63,7 @@ contour returns [ElementHandle handle]
   @init{ $count = 1; }
   : CONTOUR_BEGIN
     {
-      m_parser->ProcessContourBegin();
+      $ctx->handle = m_parser->ProcessContourBegin();
     }
     { $ctx->count > 0 }?
     ( sentence_wrap* )
@@ -72,7 +72,7 @@ contour returns [ElementHandle handle]
       $ctx->count--;
       if ($ctx->count == 0)
       {
-        $ctx->handle = m_parser->ProcessContourEnd();
+        m_parser->ProcessContourEnd($ctx->handle);
       }
     }
   ;

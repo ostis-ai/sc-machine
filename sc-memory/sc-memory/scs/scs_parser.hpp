@@ -88,7 +88,9 @@ struct ParsedTriple
   ElementHandle const m_edge;
   ElementHandle const m_target;
 
-  ParsedTriple(ElementHandle const & s, ElementHandle const & e, ElementHandle const & t)
+  ParsedTriple(ElementHandle const & s,
+               ElementHandle const & e,
+               ElementHandle const & t)
     : m_source(s)
     , m_edge(e)
     , m_target(t)
@@ -140,8 +142,8 @@ protected:
   ElementHandle ProcessFileURL(std::string const & fileURL);
 
   ElementHandle ProcessEmptyContour();
-  void ProcessContourBegin();
-  ElementHandle ProcessContourEnd();
+  ElementHandle ProcessContourBegin();
+  void ProcessContourEnd(ElementHandle const & contourHandle);
   ElementHandle ProcessContourEndWithJoin(ElementHandle const & source);
 
   void ProcessTriple(ElementHandle const & source, ElementHandle const & edge, ElementHandle const & target);
