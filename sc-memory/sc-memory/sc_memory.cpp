@@ -392,27 +392,8 @@ ScAddr ScMemoryContext::HelperResolveSystemIdtf(std::string const & sysIdtf, ScT
     }
 
     resultAddr = CreateNode(type);
-      //todo make as global constant
-    ScAddr concertedKB = HelperFindBySystemIdtf("concertedKB_hash_iF95K2");
-    if (resultAddr.IsValid()) {
-        HelperSetSystemIdtf(sysIdtf, resultAddr);
-        CreateEdge(ScType::EdgeAccessConstPosPerm, concertedKB, resultAddr);
-        ScAddr sysId = HelperFindBySystemIdtf("nrel_system_identifier");
-        ScIterator5Ptr it = Iterator5(resultAddr,
-                                      ScType::EdgeDCommonConst,
-                                      ScType::Const,
-                                      ScType::EdgeAccessConstPosPerm,
-                                      sysId);
-        if (it->Next()) {
-            ScAddr obj = it->Get(1);
-            CreateEdge(ScType::EdgeAccessConstPosPerm, concertedKB, obj);
-            obj = it->Get(2);
-            CreateEdge(ScType::EdgeAccessConstPosPerm, concertedKB, obj);
-            obj = it->Get(3);
-            CreateEdge(ScType::EdgeAccessConstPosPerm, concertedKB, obj);
-        }
-    }
-
+    if (resultAddr.IsValid())
+      HelperSetSystemIdtf(sysIdtf, resultAddr);
   }
   return resultAddr;
 }

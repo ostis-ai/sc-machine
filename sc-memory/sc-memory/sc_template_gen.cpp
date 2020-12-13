@@ -82,9 +82,6 @@ public:
       }
 
       ScAddr const edge = m_context.CreateEdge(values[1].m_typeValue.UpConstType(), addr1, addr2);
-        //todo make as global constant
-      ScAddr concertedKB = m_context.HelperFindBySystemIdtf("concertedKB_hash_iF95K2");
-      m_context.CreateEdge(ScType::EdgeAccessConstPosPerm, concertedKB, edge);
       if (!edge.IsValid())
       {
         isError = true;
@@ -111,16 +108,10 @@ public:
     if (type.IsNode())
     {
       addr = m_context.CreateNode(type);
-        //todo make as global constant
-      ScAddr concertedKB = m_context.HelperFindBySystemIdtf("concertedKB_hash_iF95K2");
-      m_context.CreateEdge(ScType::EdgeAccessConstPosPerm, concertedKB, addr);
     }
     else if (type.IsLink())
     {
       addr = m_context.CreateLink();
-        //todo make as global constant
-      ScAddr concertedKB = m_context.HelperFindBySystemIdtf("concertedKB_hash_iF95K2");
-      m_context.CreateEdge(ScType::EdgeAccessConstPosPerm, concertedKB, addr);
     }
 
     if (addr.IsValid())
