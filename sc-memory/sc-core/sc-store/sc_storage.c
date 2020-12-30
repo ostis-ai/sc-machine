@@ -796,6 +796,9 @@ sc_result sc_storage_change_element_subtype(const sc_memory_context *ctx, sc_add
   sc_element *el = null_ptr;
   sc_result r = SC_RESULT_OK;
 
+  if (!(type & sc_type_element_mask))
+    return SC_RESULT_ERROR_INVALID_PARAMS;
+
   if (sc_storage_element_lock(addr, &el) != SC_RESULT_OK)
     return SC_RESULT_ERROR;
 
@@ -803,6 +806,23 @@ sc_result sc_storage_change_element_subtype(const sc_memory_context *ctx, sc_add
   {
     r = SC_RESULT_ERROR_INVALID_STATE;
     goto unlock;
+  }
+
+  sc_type old_type = el->flags.type;
+
+  if (old_type & sc_type_node)
+  {
+    if (!(type & sc_type_node_mask))
+      return SC_RESULT_ERROR_INVALID_PARAMS;
+  }
+  else if ((old_type & sc_type_arc_mask))
+  {
+    if (!(type & sc_type_arc_mask))
+      return SC_RESULT_ERROR_INVALID_PARAMS;
+  }
+  else if ((old_type & sc_type_link))
+  {
+    return SC_RESULT_ERROR_INVALID_PARAMS;
   }
 
   if (sc_access_lvl_check_write(ctx->access_levels, el->flags.access_levels))
