@@ -92,12 +92,12 @@ sc_addr sc_storage_arc_new_ext(sc_memory_context * ctx, sc_type type, sc_addr be
  */
 sc_result sc_storage_get_element_type(sc_memory_context const * ctx, sc_addr addr, sc_type * result);
 
-/*! Change element sub-type
+/*! Change element type
  * @param addr sc-addr of element to set new type
- * @param type New sub-type of sc-element (this type must be: type & sc_type_element_mask == 0)
- * @return If sub-type changed, then returns SC_RESULT_OK; otherwise returns SC_RESULT_ERROR
+ * @param type New type of sc-element
+ * @return If type changed, then returns SC_RESULT_OK; otherwise returns SC_RESULT_ERROR
  */
-sc_result sc_storage_change_element_subtype(sc_memory_context const * ctx, sc_addr addr, sc_type type);
+sc_result sc_storage_change_element_type(sc_memory_context const * ctx, sc_addr addr, sc_type type);
 
 /*! Returns sc-addr of begin element of specified arc
  * @param addr sc-addr of arc to get begin element

@@ -76,23 +76,6 @@ TEST_F(SCsHelperTest, GenerateBySCs_FileURL)
   EXPECT_EQ(link.GetAsString(), "content: file://test.scs");
 }
 
-TEST_F(SCsHelperTest, GenerateBySCs_ChangeElementType)
-{
-  std::string const data = "sc_node_struct -> a;;";
-
-  SCsHelper helper(*m_ctx, std::make_shared<TestFileInterface>());
-
-  ScAddr node = m_ctx->CreateNode(ScType::Node);
-  m_ctx->HelperSetSystemIdtf("a", node);
-
-  EXPECT_TRUE(helper.GenerateBySCsText(data));
-
-  ScAddr element = m_ctx->HelperFindBySystemIdtf("a");
-
-  ScType const linkType = m_ctx->GetElementType(element);
-  EXPECT_EQ(linkType, ScType::NodeConstStruct);
-}
-
 TEST_F(SCsHelperTest, GenerateBySCs_Aliases)
 {
   std::string const content = "SCsHelper_GenerateBySCs_Aliases";

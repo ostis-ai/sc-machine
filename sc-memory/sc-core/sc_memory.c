@@ -283,7 +283,7 @@ sc_result sc_memory_get_element_type(sc_memory_context const * ctx, sc_addr addr
 
 sc_result sc_memory_change_element_subtype(sc_memory_context const * ctx, sc_addr addr, sc_type type)
 {
-  return sc_storage_change_element_subtype(ctx, addr, type);
+  return sc_storage_change_element_type(ctx, addr, type);
 }
 
 sc_result sc_memory_get_arc_begin(sc_memory_context const * ctx, sc_addr addr, sc_addr *result)
