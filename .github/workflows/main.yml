@@ -9,9 +9,8 @@ on:
 
 jobs:
   check_pr_commits:
-    # The type of runner that the job will run on
+    name: Check commit messages
     runs-on: ubuntu-latest
-    # name: Check commit messages
 
     steps:
       - name: GS Commit Message Checker
@@ -33,3 +32,48 @@ jobs:
           checkAllCommitMessages: true # optional, default is false
           # you must provide GITHUB_TOKEN to this input if checkAllCommitMessages is true
           accessToken: ${{ secrets.GITHUB_TOKEN }} # optional, default is false
+  run_tests:
+    name: ${{matrix.config.name}}
+    runs-on: ${{matrix.config.os}}
+
+    strategy:
+      fail-fast: false
+      matrix:
+        config:
+          - {
+            name: "Ubuntu latest, GCC",
+            os: ubuntu-latest,
+            build_type: "Debug",
+            cc: "gcc",
+            cxx: "g++"
+          }
+          - {
+            name: "Ubuntu latest, GCC, Release",
+            os: ubuntu-latest,
+            build_type: "Release",
+            cc: "gcc",
+            cxx: "g++"
+          }
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v1
+        with:
+          submodules: recursive
+
+      - name: Install dependencies
+        id: install_deps
+        run: scripts/ci/install-deps.sh
+
+      - name: Build
+        id: run_cmake
+        env:
+          CC: ${{ matrix.config.cc }}
+          CCX: ${{ matrix.config.cxx }}
+          BUILD_TYPE: ${{ matrix.config.build_type }}
+        run: scripts/ci/install-tests.sh
+
+      - name: Run tests
+        id: run_tests
+        run: scripts/ci/run-tests.sh
+
