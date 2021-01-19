@@ -181,19 +181,16 @@ private:
       {
         ScType const & newType = el.GetType();
         ScType const & oldType = m_ctx.GetElementType(result);
-        if (newType != oldType)
+        if (oldType.CanExtendTo(newType))
         {
-          if (oldType.CanExtendTo(newType))
+          m_ctx.SetElementSubtype(result, *newType);
+        }
+        else
+        {
+          //Type NodeConst means that element have been called by system Id, that is why need to ignore this case as error
+          if (newType != ScType::NodeConst)
           {
-            m_ctx.SetElementSubtype(result, *newType);
-          }
-          else
-          {
-            //Type NodeConst means that element have been called by system Id, that is why need to ignore this case as error
-            if (newType != ScType::NodeConst)
-            {
-              SC_THROW_EXCEPTION(utils::ExceptionInvalidType, "Duplicate element type for " + el.GetIdtf());
-            }
+            SC_THROW_EXCEPTION(utils::ExceptionInvalidType, "Duplicate element type for " + el.GetIdtf());
           }
         }
       }

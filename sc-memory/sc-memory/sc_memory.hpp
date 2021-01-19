@@ -107,7 +107,7 @@ public:
   //! Returns type of sc-element. If there are any error, then returns ScType::Unknown
   _SC_EXTERN ScType GetElementType(ScAddr const & addr) const;
 
-  /*! Change subtype of sc-element ((type & sc_type_element_mask) & (old_type & sc_type_element_mask) == 0).
+  /*! Change subtype of sc-element.
      * Return true, if there are no any errors; otherwise return false.
      */
   _SC_EXTERN bool SetElementSubtype(ScAddr const & addr, sc_type subtype);

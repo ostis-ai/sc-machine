@@ -94,8 +94,7 @@ sc_result sc_storage_get_element_type(sc_memory_context const * ctx, sc_addr add
 
 /*! Change element subtype
  * @param addr sc-addr of element to set new subtype
- * @param type New type of sc-element (this basic type must be the same as type of existing element:
- * (type & sc_type_element_mask) & (old_type & sc_type_element_mask) == 0)
+ * @param type New type of sc-element
  * @return If type changed, then returns SC_RESULT_OK; otherwise returns SC_RESULT_ERROR
  */
 sc_result sc_storage_change_element_subtype(sc_memory_context const * ctx, sc_addr addr, sc_type type);
