@@ -78,26 +78,38 @@ TEST_F(SCsHelperTest, GenerateBySCs_FileURL)
 
 TEST_F(SCsHelperTest, GenerateBySCs_ChangeElementType)
 {
-  std::string const data1 = "sc_node_struct -> a;;";
-  std::string const data2 = "sc_node_tuple -> a;;";
+  std::string const data = "sc_node_struct -> a;;";
 
   SCsHelper helper(*m_ctx, std::make_shared<TestFileInterface>());
 
   ScAddr node = m_ctx->CreateNode(ScType::Node);
   m_ctx->HelperSetSystemIdtf("a", node);
 
-  EXPECT_TRUE(helper.GenerateBySCsText(data1));
+  EXPECT_TRUE(helper.GenerateBySCsText(data));
 
   ScType const nodeType = m_ctx->GetElementType(node);
   EXPECT_EQ(nodeType, ScType::NodeConstStruct);
+}
 
-  EXPECT_FALSE(helper.GenerateBySCsText(data2));
+TEST_F(SCsHelperTest, GenerateBySCs_ChangeElementTypeNegative)
+{
+  std::string const data = "sc_node_tuple -> a;;";
+
+  SCsHelper helper(*m_ctx, std::make_shared<TestFileInterface>());
+
+  ScAddr node = m_ctx->CreateNode(ScType::NodeConstStruct);
+  m_ctx->HelperSetSystemIdtf("a", node);
+
+  EXPECT_FALSE(helper.GenerateBySCsText(data));
+
+  ScType const nodeType = m_ctx->GetElementType(node);
+
   EXPECT_EQ(nodeType, ScType::NodeConstStruct);
 }
 
 TEST_F(SCsHelperTest, GenerateBySCs_UsingExistingNonBasicElement)
 {
-  std::string const data = "b -> a;;";
+  std::string const data = "sc_node_struct -> a;;";
 
   SCsHelper helper(*m_ctx, std::make_shared<TestFileInterface>());
 

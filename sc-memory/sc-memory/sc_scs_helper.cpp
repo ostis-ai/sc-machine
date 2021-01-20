@@ -187,8 +187,7 @@ private:
         }
         else
         {
-          //Type NodeConst means that element have been called by system Id, that is why need to ignore this case as error
-          if (newType != ScType::NodeConst)
+          if (!newType.CanExtendTo(oldType))
           {
             SC_THROW_EXCEPTION(utils::ExceptionInvalidType, "Duplicate element type for " + el.GetIdtf());
           }
