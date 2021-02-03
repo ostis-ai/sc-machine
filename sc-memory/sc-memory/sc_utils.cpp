@@ -64,11 +64,14 @@ bool StringUtils::EndsWith(std::string const & str, std::string const & pattern,
 std::string StringUtils::GetFileExtension(std::string const & filename)
 {
   // get file extension
-  size_t n = filename.rfind(".");
+  std::string path = filename;
+  std::replace(path.begin(), path.end(), '\\', '/');
+  size_t start = path.find_last_of('/');
+  size_t n = path.find(".", start);
   if (n == std::string::npos)
     return {};
 
-  return filename.substr(n + 1, std::string::npos);
+  return path.substr(n + 1, std::string::npos);
 }
 
 void StringUtils::SplitFilename(std::string const & qualifiedName, std::string & outBasename, std::string & outPath)
