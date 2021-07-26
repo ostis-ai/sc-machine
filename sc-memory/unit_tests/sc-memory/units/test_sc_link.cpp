@@ -118,6 +118,12 @@ TEST_CASE("sc_link_as_string", "[test sc link]")
 
     REQUIRE(link.Set<uint64_t>(7600000000));
     REQUIRE_THAT(link.GetAsString(), Catch::Equals("7600000000"));
+
+    REQUIRE(link.Set<std::string>(""));
+    REQUIRE_THAT(link.GetAsString(), Catch::Equals(""));
+
+    REQUIRE(link.Set<std::string>("test"));
+    REQUIRE_THAT(link.GetAsString(), Catch::Equals("test"));
   } catch (...)
   {
     SC_LOG_ERROR("Test \"sc_link_as_string\" failed")

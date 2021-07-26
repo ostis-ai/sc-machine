@@ -101,15 +101,20 @@ public:
   {
     if (!IsType<Type>())
     {
-      SC_THROW_EXCEPTION(utils::ExceptionInvalidParams,
-                         "You use incorrect type. Use IsType<>() to check it");
+      SC_THROW_EXCEPTION(utils::ExceptionInvalidType,
+                         "You've used incorrect type. Use IsType<>() to check it");
     }
     ScStreamPtr const stream = m_ctx.GetLinkContent(m_addr);
+
+    // Check for empty content.
+    if (!stream)
+      return Type();
+
     Type result;
-    if (!stream || !Stream2Value(stream, result))
+    if (!Stream2Value(stream, result))
     {
       SC_THROW_EXCEPTION(utils::ExceptionCritical,
-                         "Error to get value of " + std::to_string(m_addr.Hash()));
+                         "Failed to get the value of " + std::to_string(m_addr.Hash()));
     }
 
     return result;
