@@ -973,6 +973,7 @@ sc_result sc_storage_set_link_content(sc_memory_context *ctx, sc_addr addr, cons
       G_STATIC_ASSERT(SC_CHECKSUM_LEN < 256);
       el->flags.type |= sc_flag_link_self_container;
 
+      el->content.data[0] = (sc_uint8)len;
       if (len > 0)
       {
         char buff[SC_CHECKSUM_LEN];
@@ -980,7 +981,6 @@ sc_result sc_storage_set_link_content(sc_memory_context *ctx, sc_addr addr, cons
         STORAGE_CHECK_CALL(sc_stream_read_data(stream, &buff[0], len, &read));
         g_assert(read == len);
 
-        el->content.data[0] = (sc_uint8)len;
         memcpy(&el->content.data[1], &buff[0], len);
       }
       result = SC_RESULT_OK;
@@ -1040,13 +1040,11 @@ sc_result sc_storage_get_link_content(const sc_memory_context *ctx, sc_addr addr
       gchar *buff = g_new0(gchar, len);
       memcpy(buff, &el->content.data[1], len);
       *stream = sc_stream_memory_new(buff, len, SC_STREAM_FLAG_READ, SC_TRUE);
-
-      res = SC_RESULT_OK;
     } else
     {
       *stream = 0;
-      res = SC_RESULT_ERROR;
     }
+    res = SC_RESULT_OK;
   } else
   {
     // prepare checksum

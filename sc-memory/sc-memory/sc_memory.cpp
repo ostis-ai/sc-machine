@@ -335,10 +335,10 @@ ScStreamPtr ScMemoryContext::GetLinkContent(ScAddr const & addr)
   SC_ASSERT(IsValid(), ());
 
   sc_stream * s = nullptr;
-  if (sc_memory_get_link_content(m_context, *addr, &s) != SC_RESULT_OK)
+  if (sc_memory_get_link_content(m_context, *addr, &s) != SC_RESULT_OK || s == nullptr)
     return ScStreamPtr();
 
-  return std::make_unique<ScStream>(s);
+  return std::make_shared<ScStream>(s);
 }
 
 bool ScMemoryContext::FindLinksByContent(ScStreamPtr const & stream, ScAddrVector & found)
