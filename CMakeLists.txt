@@ -5,14 +5,24 @@ cmake_minimum_required (VERSION 2.8)
 
 set(SC_BIN_PATH "${CMAKE_CURRENT_LIST_DIR}/bin")
 
-set(SC_MACHINE_ROOT ${CMAKE_CURRENT_LIST_DIR})
-set(SC_MACHINE_THIRDPARTY_PATH "${SC_MACHINE_ROOT}/thirdparty")
+set (SC_MACHINE_ROOT ${CMAKE_CURRENT_LIST_DIR})
+set (SC_MACHINE_THIRDPARTY_PATH "${SC_MACHINE_ROOT}/thirdparty")
 
 option (SC_AUTO_TEST "Flag to build for automation testing" OFF)
 option (SC_KPM_SCP "Flag to build SCP module" OFF)
 option (SC_BUILD_SCTP "Flag to turn on/off sctp protocol support" ON)
 # Flag to build unit tests. Option is replaced with set because of option unpredictable behavior
 set(SC_BUILD_TESTS OFF)
+
+if (${SC_BUILD_ARM64})
+    check_c_compiler_flag("-arch arm64" IS_ARM64_SUPPORTED)
+    if (${IS_ARM64_SUPPORTED})
+        set (CMAKE_OSX_ARCHITECTURES "arm64" CACHE STRING "Used architecture" FORCE)
+        message ("-- Architecture: arm64")
+    else()
+        message (FATAL_ERROR "Arm64 platform is not supported by compiler")
+    endif()
+endif()
 
 # codegen
 if (${UNIX})
@@ -78,8 +88,9 @@ if (${APPLE})
 
     set (GLIB2_LIBRARIES ${GLIB_LDFLAGS} ${GLIB2_MODULE_LDFLAGS})
 
-    set (LIBCLANG_LLVM_CONFIG_EXECUTABLE "/usr/local/opt/llvm/bin/llvm-config")
-    find_package(LibClang REQUIRED)
+    if (NOT DEFINED LIBCLANG_LIBRARIES OR NOT DEFINED LIBCLANG_CXXFLAGS OR NOT DEFINED LIBCLANG_LIBDIR)
+        find_package(LibClang REQUIRED)
+    endif ()
 
     find_package(PythonLibs 3.7 REQUIRED)
     find_package(curl REQUIRED)

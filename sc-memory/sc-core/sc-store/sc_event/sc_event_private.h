@@ -20,7 +20,6 @@
 #define SC_EVENT_REQUEST_DESTROY  (1 << 31)
 #define SC_EVENT_REF_COUNT_MASK (~SC_EVENT_REQUEST_DESTROY)
 
-#pragma pack(push, 1)
 /*! Structure that contains information about event
  */
 struct _sc_event
@@ -45,7 +44,6 @@ struct _sc_event
   sc_access_levels access_levels;
 
 };
-#pragma pack(pop)
 
 
 //! Function to initialize sc-events module

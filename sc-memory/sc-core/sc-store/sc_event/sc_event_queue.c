@@ -11,14 +11,12 @@
 #include "../../sc_memory_private.h"
 #include "../../sc_memory.h"
 
-#pragma pack(push, 1)
 typedef struct
 {
   sc_event * evt;
   sc_addr edge_addr;
   sc_addr other_addr;
 } sc_event_pool_worker_data;
-#pragma pack(pop)
 
 sc_event_pool_worker_data * sc_event_pool_worker_data_new(sc_event * evt, sc_addr edge_addr, sc_addr other_addr)
 {
