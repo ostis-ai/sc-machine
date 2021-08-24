@@ -901,7 +901,7 @@ eSctpErrorCode sctpCommand::processGetLinkContent(quint32 cmdFlags, quint32 cmdI
   if (params->readRawData((char*)&addr, sizeof(addr)) != sizeof(addr))
     return SCTP_ERROR_CMD_READ_PARAMS;
 
-  eSctpResultCode resCode = (sc_memory_get_link_content(mContext, addr, &stream) == SC_RESULT_OK) ? SCTP_RESULT_OK : SCTP_RESULT_FAIL;
+  eSctpResultCode resCode = (sc_memory_get_link_content(mContext, addr, &stream) == SC_RESULT_OK && stream != null_ptr) ? SCTP_RESULT_OK : SCTP_RESULT_FAIL;
 
 
   if (resCode == SCTP_RESULT_OK)
