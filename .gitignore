@@ -44,3 +44,7 @@ manifest.json
 /nbdist/
 /.nb-gradle/
 
+__pycache__
+.DS_store
+.antlr
+.cache
