@@ -15,7 +15,6 @@ sc_bool sc_helper_is_initialized = SC_FALSE;
 
 sc_char **keynodes_str = 0;
 sc_addr *sc_keynodes = 0;
-const sc_char *CONCERTED_KB_NAME = "concertedKB_hash_iF95K2";
 
 sc_result resolve_nrel_system_identifier(sc_memory_context const * ctx)
 {
@@ -115,12 +114,8 @@ sc_result sc_helper_init(sc_memory_context * ctx)
   if (resolve_nrel_system_identifier(ctx) != SC_RESULT_OK)
   {
     g_message("Can't resovle nrel_system_identifier node. Create the last one");
-    sc_addr concertedKb;
-    concertedKb = sc_memory_node_new(ctx, sc_type_node_struct);
     sc_addr addr = sc_memory_node_new(ctx, sc_type_const | sc_type_node_norole);
-    sc_memory_arc_new(ctx, sc_type_arc_pos_const_perm, concertedKb, addr);
     sc_addr link = sc_memory_link_new(ctx);
-    sc_memory_arc_new(ctx, sc_type_arc_pos_const_perm, concertedKb, link);
     sc_stream *stream = sc_stream_memory_new(keynodes_str[SC_KEYNODE_NREL_SYSTEM_IDENTIFIER],
                                              (sc_uint)(sizeof(sc_uchar) * strlen(keynodes_str[SC_KEYNODE_NREL_SYSTEM_IDENTIFIER])),
                                              SC_STREAM_FLAG_READ, SC_FALSE);
@@ -128,11 +123,8 @@ sc_result sc_helper_init(sc_memory_context * ctx)
     sc_stream_free(stream);
 
     sc_addr arc = sc_memory_arc_new(ctx, sc_type_arc_common | sc_type_const, addr, link);
-    sc_memory_arc_new(ctx, sc_type_arc_pos_const_perm, concertedKb, arc);
-    sc_addr arc2 = sc_memory_arc_new(ctx, sc_type_arc_pos_const_perm, addr, arc);
-    sc_memory_arc_new(ctx, sc_type_arc_pos_const_perm, concertedKb, arc2);
+    sc_memory_arc_new(ctx, sc_type_arc_pos_const_perm, addr, arc);
     sc_keynodes[SC_KEYNODE_NREL_SYSTEM_IDENTIFIER] = addr;
-    sc_helper_set_system_identifier(ctx, concertedKb, CONCERTED_KB_NAME, (sc_uint32)(strlen(CONCERTED_KB_NAME)));
   }
 
   sc_helper_is_initialized = SC_TRUE;
@@ -260,77 +252,6 @@ sc_result sc_helper_set_system_identifier(sc_memory_context * ctx, sc_addr addr,
     return SC_RESULT_ERROR;
 
   return SC_RESULT_OK;
-}
-
-sc_result sc_helper_set_system_identifier_new(sc_memory_context const * ctx, sc_addr addr, const sc_char* data, sc_uint32 len, sc_addr rootEl, sc_bool isAddRoot)
-{
-    sc_iterator5 *it5 = 0;
-    sc_addr *results = 0;
-    sc_uint32 results_count = 0;
-    sc_stream *stream = 0;
-    sc_uint32 i = 0;
-    sc_addr idtf_addr, arc_addr;
-
-    SC_ADDR_MAKE_EMPTY(idtf_addr)
-    g_assert(sc_keynodes != 0);
-
-    // check if specified system identifier already used
-    stream = sc_stream_memory_new(data, sizeof(sc_char) * len, SC_STREAM_FLAG_READ, SC_FALSE);
-    if (sc_memory_find_links_with_content(ctx, stream, &results, &results_count) == SC_RESULT_OK)
-    {
-        for (i = 0; i < results_count; i++)
-        {
-            it5 = sc_iterator5_a_a_f_a_f_new(ctx,
-                                             0,
-                                             sc_type_arc_common | sc_type_const,
-                                             results[i],
-                                             sc_type_arc_pos_const_perm,
-                                             sc_keynodes[SC_KEYNODE_NREL_SYSTEM_IDENTIFIER]);
-            if (sc_iterator5_next(it5))
-            {
-                // don't foget to free allocated memory before return error
-                sc_iterator5_free(it5);
-                sc_stream_free(stream);
-                g_free(results);
-                return SC_RESULT_ERROR_INVALID_PARAMS;
-            }
-
-            sc_iterator5_free(it5);
-        }
-
-        g_free(results);
-    }
-
-    // if there are no elements with specified system identitifier, then we can use it
-    idtf_addr = sc_memory_link_new(ctx);
-    if (sc_memory_set_link_content(ctx, idtf_addr, stream) != SC_RESULT_OK)
-    {
-        sc_stream_free(stream);
-        return SC_RESULT_ERROR;
-    }
-    if (isAddRoot)
-    {
-        sc_memory_arc_new(ctx, sc_type_arc_pos_const_perm, rootEl, idtf_addr);
-    }
-
-    // we doesn't need link data anymore
-    sc_stream_free(stream);
-
-    // setup new system identifier
-    arc_addr = sc_memory_arc_new(ctx, sc_type_arc_common | sc_type_const, addr, idtf_addr);
-    if (SC_ADDR_IS_EMPTY(arc_addr))
-        return SC_RESULT_ERROR;
-    if (isAddRoot) {
-        sc_memory_arc_new(ctx, sc_type_arc_pos_const_perm, rootEl, arc_addr);
-    }
-    arc_addr = sc_memory_arc_new(ctx, sc_type_arc_pos_const_perm, sc_keynodes[SC_KEYNODE_NREL_SYSTEM_IDENTIFIER], arc_addr);
-    if (SC_ADDR_IS_EMPTY(arc_addr))
-        return SC_RESULT_ERROR;
-    if (isAddRoot) {
-        sc_memory_arc_new(ctx, sc_type_arc_pos_const_perm, rootEl, arc_addr);
-    }
-
-    return SC_RESULT_OK;
 }
 
 sc_result sc_helper_get_system_identifier_link(sc_memory_context const * ctx, sc_addr el, sc_addr *sys_idtf_addr)

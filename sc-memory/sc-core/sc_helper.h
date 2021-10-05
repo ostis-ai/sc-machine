@@ -30,9 +30,6 @@ typedef enum _sc_keynode sc_keynode;
  */
 _SC_EXTERN sc_result sc_helper_find_element_by_system_identifier(sc_memory_context const * ctx, const sc_char* data, sc_uint32 len, sc_addr *result_addr);
 
- //TODO tempoorary method, remove after finish sc dump feature
-_SC_EXTERN sc_result sc_helper_set_system_identifier_new(sc_memory_context const * ctx, sc_addr addr, const sc_char* data, sc_uint32 len, sc_addr rootEl, sc_bool isAddRoot);
-
 /*! Setup new system identifier for specified sc-element
  * @param addr sc-addr of sc-element to setup new system identifier
  * @param data Buffer that contains system identifier for sc-element (must be an UTF-8 encoded)
