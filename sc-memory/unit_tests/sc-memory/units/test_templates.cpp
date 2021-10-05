@@ -1390,6 +1390,250 @@ TEST_CASE("template_edge_from_edge", "[test templates]")
   test::ScTestUnit::ShutdownMemory(false);
 }
 
+
+//                _tuple --------> addr1
+//                   |      ||
+//                   |======|| <---- norole
+//                   |
+//                  \/
+//                _addr2
+//
+TEST_CASE("template_edge_from_edge_to_edge", "[test templates]")
+{
+  test::ScTestUnit::InitMemory("sc-memory.ini", "");
+  ScMemoryContext ctx(sc_access_lvl_make_min, "template_edge_from_edge_to_edge");
+
+  try
+  {
+    ScAddr const addr1 = ctx.CreateNode(ScType::NodeConst);
+    REQUIRE(addr1.IsValid());
+    ScAddr const addr2 = ctx.CreateNode(ScType::NodeVar);
+    REQUIRE(addr2.IsValid());
+    ScAddr const addrTuple = ctx.CreateNode(ScType::NodeVarTuple);
+    REQUIRE(addrTuple.IsValid());
+    ScAddr const addrNoRole = ctx.CreateNode(ScType::NodeConstNoRole);
+    REQUIRE(addrNoRole.IsValid());
+
+    ScAddr const edge1 = ctx.CreateEdge(ScType::EdgeAccessVarPosPerm, addrTuple, addr1);
+    REQUIRE(edge1.IsValid());
+    ScAddr const edge2 = ctx.CreateEdge(ScType::EdgeAccessVarPosPerm, addrTuple, addr2);
+    REQUIRE(edge2.IsValid());
+    ScAddr const commonEdge = ctx.CreateEdge(ScType::EdgeDCommonVar, edge1, edge2);
+    REQUIRE(commonEdge.IsValid());
+    ScAddr const edgeToCommon = ctx.CreateEdge(ScType::EdgeAccessVarPosPerm, addrNoRole, commonEdge);
+    REQUIRE(edgeToCommon.IsValid());
+
+    auto const testOrder = [&ctx, addr1, addrNoRole](ScAddrVector const & addrs)
+    {
+      ScAddr const structAddr = ctx.CreateNode(ScType::NodeConstStruct);
+      ScStruct st(&ctx, structAddr);
+
+      for (auto const & a : addrs)
+        st << a;
+
+      ScTemplate templ;
+      REQUIRE(ctx.HelperBuildTemplate(templ, structAddr));
+
+      ScTemplateGenResult result;
+      REQUIRE(ctx.HelperGenTemplate(templ, result));
+
+      ScIterator3Ptr it3 = ctx.Iterator3(
+            ScType::NodeConstTuple,
+            ScType::EdgeAccessConstPosPerm,
+            addr1);
+      REQUIRE(it3->Next());
+
+      ScIterator5Ptr it5 = ctx.Iterator5(
+            it3->Get(1),
+            ScType::EdgeDCommonConst,
+            ScType::EdgeAccessConstPosPerm,
+            ScType::EdgeAccessConstPosPerm,
+            addrNoRole);
+      REQUIRE(it5->Next());
+      REQUIRE(it5->Get(1).IsValid());
+    };
+
+    SECTION("forward_order")
+    {
+      SUBTEST_START("forward_order")
+      {
+        try
+        {
+          testOrder({ addr1, addr2, addrTuple, addrNoRole, edge1, edge2, commonEdge, edgeToCommon });
+        } catch (...)
+        {
+          SC_LOG_ERROR("Test \"forward_order\" failed")
+        }
+      }
+      SUBTEST_END()
+    }
+
+    SECTION("test_order")
+    {
+      SUBTEST_START("test_order")
+      {
+        try
+        {
+          testOrder({ edge1, edge2, edgeToCommon, commonEdge, addrTuple, addr1, addr2, addrNoRole });
+        } catch (...)
+        {
+          SC_LOG_ERROR("Test \"test_order\" failed")
+        }
+      }
+      SUBTEST_END()
+    }
+
+  } catch (...)
+  {
+    SC_LOG_ERROR("Test \"template_edge_from_edge\" failed")
+  }
+
+  ctx.Destroy();
+  test::ScTestUnit::ShutdownMemory(false);
+}
+
+//
+//                _addr2-------     _addr3   _addr4
+//                   /\       |       ||        |
+//                   |        |       ||        |
+//                   |        |       ||        |====
+//                   |        |       ||<--------   ||
+//                   |        |<=======             ||
+//                   |<--------                     ||
+//                   |                              ||
+//                   |<==============================
+//                   |                /\
+//                   |                 |
+//                 addr1---------------
+//
+TEST_CASE("template_high_edge_dependence_power", "[test templates]")
+{
+  test::ScTestUnit::InitMemory("sc-memory.ini", "");
+  ScMemoryContext ctx(sc_access_lvl_make_min, "template_high_edge_dependence_power");
+
+  try
+  {
+    ScAddr const addr1 = ctx.CreateNode(ScType::NodeConst);
+    REQUIRE(addr1.IsValid());
+    ScAddr const addr2 = ctx.CreateNode(ScType::NodeVar);
+    REQUIRE(addr2.IsValid());
+    ScAddr const addr3 = ctx.CreateNode(ScType::NodeVar);
+    REQUIRE(addr3.IsValid());
+    ScAddr const addr4 = ctx.CreateNode(ScType::NodeVar);
+    REQUIRE(addr4.IsValid());
+
+    ScAddr const edge1 = ctx.CreateEdge(ScType::EdgeAccessVarPosPerm, addr1, addr2);
+    REQUIRE(edge1.IsValid());
+    ScAddr const edge2 = ctx.CreateEdge(ScType::EdgeAccessVarPosPerm, addr2, edge1);
+    REQUIRE(edge2.IsValid());
+    ScAddr const edge3 = ctx.CreateEdge(ScType::EdgeDCommonVar, addr3, edge2);
+    REQUIRE(edge3.IsValid());
+    ScAddr const edge4 = ctx.CreateEdge(ScType::EdgeAccessVarPosPerm, addr4, edge3);
+    REQUIRE(edge4.IsValid());
+    ScAddr const edge5 = ctx.CreateEdge(ScType::EdgeAccessVarPosPerm, addr1, edge4);
+    REQUIRE(edge5.IsValid());
+    ScAddr const edge6 = ctx.CreateEdge(ScType::EdgeDCommonVar, edge5, edge2);
+    REQUIRE(edge6.IsValid());
+    ScAddr const edge7 = ctx.CreateEdge(ScType::EdgeAccessVarPosPerm, addr1, edge6);
+    REQUIRE(edge7.IsValid());
+
+    auto const testOrder = [&ctx, addr1](ScAddrVector const & addrs)
+    {
+      ScAddr const structAddr = ctx.CreateNode(ScType::NodeConstStruct);
+      ScStruct st(&ctx, structAddr);
+
+      for (auto const & a : addrs)
+        st << a;
+
+      ScTemplate templ;
+      REQUIRE(ctx.HelperBuildTemplate(templ, structAddr));
+
+      ScTemplateGenResult result;
+      REQUIRE(ctx.HelperGenTemplate(templ, result));
+
+      ScIterator3Ptr it3 = ctx.Iterator3(
+            addr1,
+            ScType::EdgeAccessConstPosPerm,
+            ScType::NodeConst);
+      REQUIRE(it3->Next());
+
+      it3 = ctx.Iterator3(
+            ScType::NodeConst, // addr2 value
+            ScType::EdgeAccessConstPosPerm,
+            it3->Get(1));
+      REQUIRE(it3->Next());
+
+      ScAddr const edge2 = it3->Get(1);
+
+      it3 = ctx.Iterator3(
+            ScType::NodeConst, // addr3 value
+            ScType::EdgeDCommonConst,
+            edge2);
+      REQUIRE(it3->Next());
+
+      it3 = ctx.Iterator3(
+            ScType::NodeConst, // addr4 value
+            ScType::EdgeAccessConstPosPerm,
+            it3->Get(1));
+      REQUIRE(it3->Next());
+
+      it3 = ctx.Iterator3(
+            addr1,
+            ScType::EdgeAccessConstPosPerm,
+            it3->Get(1));
+      REQUIRE(it3->Next());
+
+      ScIterator5Ptr it5 = ctx.Iterator5(
+            it3->Get(1),
+            ScType::EdgeDCommonConst,
+            ScType::EdgeAccessConstPosPerm,
+            ScType::EdgeAccessConstPosPerm,
+            addr1);
+      REQUIRE(it5->Next());
+      REQUIRE(it5->Get(1).IsValid());
+    };
+
+    SECTION("forward_order")
+    {
+      SUBTEST_START("forward_order")
+      {
+        try
+        {
+          testOrder({ addr1, addr2, addr3, addr4,
+                      edge1, edge2, edge3, edge4, edge5, edge6, edge7 });
+        } catch (...)
+        {
+          SC_LOG_ERROR("Test \"forward_order\" failed")
+        }
+      }
+      SUBTEST_END()
+    }
+
+    SECTION("test_order")
+    {
+      SUBTEST_START("test_order")
+      {
+        try
+        {
+          testOrder({ edge1, edge2, edge3, edge4, edge5, edge6, edge7,
+                      addr1, addr2, addr3, addr4});
+        } catch (...)
+        {
+          SC_LOG_ERROR("Test \"test_order\" failed")
+        }
+      }
+      SUBTEST_END()
+    }
+
+  } catch (...)
+  {
+    SC_LOG_ERROR("Test \"template_edge_from_edge\" failed")
+  }
+
+  ctx.Destroy();
+  test::ScTestUnit::ShutdownMemory(false);
+}
+
 // https://github.com/ostis-dev/sc-machine/issues/224
 TEST_CASE("template_issue_224", "[test templates]")
 {
