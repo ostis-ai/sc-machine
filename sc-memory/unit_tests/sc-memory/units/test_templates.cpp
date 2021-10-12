@@ -1485,7 +1485,7 @@ TEST_CASE("template_edge_from_edge_to_edge", "[test templates]")
 
   } catch (...)
   {
-    SC_LOG_ERROR("Test \"template_edge_from_edge\" failed")
+    SC_LOG_ERROR("Test \"template_edge_from_edge_to_edge\" failed")
   }
 
   ctx.Destroy();
@@ -1603,7 +1603,7 @@ TEST_CASE("template_high_edge_dependence_power", "[test templates]")
                       edge1, edge2, edge3, edge4, edge5, edge6, edge7 });
         } catch (...)
         {
-          SC_LOG_ERROR("Test \"forward_order\" failed")
+          SC_LOG_ERROR("Test \"template_high_edge_dependence_power\" failed")
         }
       }
       SUBTEST_END()
@@ -1628,6 +1628,134 @@ TEST_CASE("template_high_edge_dependence_power", "[test templates]")
   } catch (...)
   {
     SC_LOG_ERROR("Test \"template_edge_from_edge\" failed")
+  }
+
+  ctx.Destroy();
+  test::ScTestUnit::ShutdownMemory(false);
+}
+
+//
+//                _addr2-------     _addr3   _addr4
+//                   /\       |       ||        |
+//                   |        |       ||        |
+//                   |        |       ||        |====
+//                   |        |       ||<--------   ||
+//                   |        |<=======             ||
+//                   |<--------                     ||
+//                   |                              ||
+//                   |<==============================
+//                   |                /\
+//                   |                 |
+//                 addr1---------------
+//
+TEST_CASE("template_high_edge_dependence_power_search", "[test templates]")
+{
+  test::ScTestUnit::InitMemory("sc-memory.ini", "");
+  ScMemoryContext ctx(sc_access_lvl_make_min, "template_high_edge_dependence_power_search");
+
+  try
+  {
+    ScAddr const addr1 = ctx.CreateNode(ScType::NodeConst);
+    ctx.HelperSetSystemIdtf("_addr1", addr1);
+    REQUIRE(addr1.IsValid());
+    ScAddr const addr2 = ctx.CreateNode(ScType::NodeVar);
+    ctx.HelperSetSystemIdtf("_addr2", addr2);
+    REQUIRE(addr2.IsValid());
+    ScAddr const addr3 = ctx.CreateNode(ScType::NodeVar);
+    ctx.HelperSetSystemIdtf("_addr3", addr3);
+    REQUIRE(addr3.IsValid());
+    ScAddr const addr4 = ctx.CreateNode(ScType::NodeVar);
+    ctx.HelperSetSystemIdtf("_addr4", addr4);
+    REQUIRE(addr4.IsValid());
+
+    ScAddr const edge1 = ctx.CreateEdge(ScType::EdgeAccessVarPosPerm, addr1, addr2);
+    ctx.HelperSetSystemIdtf("_edge1", edge1);
+    REQUIRE(edge1.IsValid());
+    ScAddr const edge2 = ctx.CreateEdge(ScType::EdgeAccessVarPosPerm, addr2, edge1);
+    ctx.HelperSetSystemIdtf("_edge2", edge2);
+    REQUIRE(edge2.IsValid());
+    ScAddr const edge3 = ctx.CreateEdge(ScType::EdgeDCommonVar, addr3, edge2);
+    ctx.HelperSetSystemIdtf("_edge3", edge3);
+    REQUIRE(edge3.IsValid());
+    ScAddr const edge4 = ctx.CreateEdge(ScType::EdgeAccessVarPosPerm, addr4, edge3);
+    ctx.HelperSetSystemIdtf("_edge4", edge4);
+    REQUIRE(edge4.IsValid());
+    ScAddr const edge5 = ctx.CreateEdge(ScType::EdgeAccessVarPosPerm, addr1, edge4);
+    ctx.HelperSetSystemIdtf("_edge5", edge5);
+    REQUIRE(edge5.IsValid());
+    ScAddr const edge6 = ctx.CreateEdge(ScType::EdgeDCommonVar, edge5, edge2);
+    ctx.HelperSetSystemIdtf("_edge6", edge6);
+    REQUIRE(edge6.IsValid());
+    ScAddr const edge7 = ctx.CreateEdge(ScType::EdgeAccessVarPosPerm, addr1, edge6);
+    ctx.HelperSetSystemIdtf("_edge7", edge7);
+    REQUIRE(edge7.IsValid());
+
+    auto const testOrder = [&ctx](ScAddrVector const & addrs)
+    {
+      ScAddr const structAddr = ctx.CreateNode(ScType::NodeConstStruct);
+      ScStruct st(&ctx, structAddr);
+
+      for (auto const & a : addrs)
+        st << a;
+
+      ScTemplate templ;
+      REQUIRE(ctx.HelperBuildTemplate(templ, structAddr));
+
+      ScTemplateGenResult genResult;
+      REQUIRE(ctx.HelperGenTemplate(templ, genResult));
+
+      ScTemplateSearchResult searchResult;
+      REQUIRE(ctx.HelperSearchTemplate(templ, searchResult));
+
+      REQUIRE(searchResult[0]["_addr1"].IsValid());
+      REQUIRE(searchResult[0]["_addr2"].IsValid());
+      REQUIRE(searchResult[0]["_addr3"].IsValid());
+      REQUIRE(searchResult[0]["_addr4"].IsValid());
+
+      REQUIRE(searchResult[0]["_edge1"].IsValid());
+      REQUIRE(searchResult[0]["_edge2"].IsValid());
+      REQUIRE(searchResult[0]["_edge3"].IsValid());
+      REQUIRE(searchResult[0]["_edge4"].IsValid());
+      REQUIRE(searchResult[0]["_edge5"].IsValid());
+      REQUIRE(searchResult[0]["_edge6"].IsValid());
+      REQUIRE(searchResult[0]["_edge7"].IsValid());
+    };
+
+    SECTION("forward_order")
+    {
+      SUBTEST_START("forward_order")
+      {
+        try
+        {
+          testOrder({ addr1, addr2, addr3, addr4,
+                      edge1, edge2, edge3, edge4, edge5, edge6, edge7 });
+        } catch (...)
+        {
+          SC_LOG_ERROR("Test \"template_high_edge_dependence_power_search\" failed")
+        }
+      }
+      SUBTEST_END()
+    }
+
+    SECTION("test_order")
+    {
+      SUBTEST_START("test_order")
+      {
+        try
+        {
+          testOrder({ edge1, edge2, edge3, edge4, edge5, edge6, edge7,
+                      addr1, addr2, addr3, addr4});
+        } catch (...)
+        {
+          SC_LOG_ERROR("Test \"test_order\" failed")
+        }
+      }
+      SUBTEST_END()
+    }
+
+  } catch (...)
+  {
+    SC_LOG_ERROR("Test \"template_high_edge_dependence_power_search\" failed")
   }
 
   ctx.Destroy();

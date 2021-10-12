@@ -10,7 +10,6 @@
 
 #include <algorithm>
 #include <iostream>
-#include <utility>
 
 namespace
 {
@@ -18,16 +17,23 @@ namespace
 class ObjectInfo
 {
 public:
-  ObjectInfo(ScAddr const & inAddr, ScType const & inType, std::string inSysIdtf)
+  ObjectInfo(ScAddr const & inAddr, ScType const & inType, std::string const & inSysIdtf)
     : m_addr(inAddr)
     , m_type(inType)
-    , m_sysIdtf(std::move(inSysIdtf))
+    , m_sysIdtf(inSysIdtf)
+    , m_srcHash(0)
+    , m_trgHash(0)
   {
   }
 
   inline bool IsEdge() const
   {
     return m_type.IsEdge();
+  }
+
+  inline bool IsUnknown() const
+  {
+    return m_type.IsUnknown();
   }
 
   inline ScAddr const & GetAddr() const
@@ -45,10 +51,38 @@ public:
     return m_type;
   }
 
+  inline ScAddr::HashType GetHash() const
+  {
+    return m_addr.Hash();
+  }
+
+  inline void SetSourceHash(ScAddr::HashType const & srcHash)
+  {
+    m_srcHash = srcHash;
+  }
+
+  inline void SetTargetHash(ScAddr::HashType const & trgHash)
+  {
+    m_trgHash = trgHash;
+  }
+
+  inline ScAddr::HashType const & GetSourceHash() const
+  {
+    return m_srcHash;
+  }
+
+  inline ScAddr::HashType const & GetTargetHash() const
+  {
+    return m_trgHash;
+  }
+
 private:
   ScAddr m_addr;
   ScType m_type;
   std::string m_sysIdtf;
+
+  ScAddr::HashType m_srcHash;
+  ScAddr::HashType m_trgHash;
 };
 
 }
@@ -56,7 +90,7 @@ private:
 class ScTemplateBuilder
 {
   friend class ScTemplate;
-  using EdgeDependMap = std::unordered_multimap<ScAddr::HashType, ScAddr::HashType>;
+  using EdgeDependenceMap = std::unordered_multimap<ScAddr::HashType, ScAddr::HashType>;
   using ObjectToIdtfMap = std::map<ScAddr::HashType, ObjectInfo>;
   using ScAddrHashVector = std::vector<ScAddr::HashType>;
 
@@ -90,176 +124,66 @@ protected:
     while (iter->Next())
     {
       ScAddr const objAddr = iter->Get(2);
-      std::string objIdtf = m_context.HelperGetSystemIdtf(objAddr);
 
-      if (objIdtf.empty())
-      {
-        objIdtf = "..obj_" + std::to_string(index++);
-      }
-
-      ScAddr::HashType const objHash = objAddr.Hash();
-      ScType const objType = m_context.GetElementType(objAddr);
-
-      if (objType.IsUnknown())
-      {
+      ObjectInfo obj = CollectObjectInfo(objAddr, index++);
+      if (obj.IsUnknown())
         return ScTemplate::Result(false, "Can't determine type of ScElement"); // template corrupted
-      }
-
-      m_elements.insert({objHash, ObjectInfo(objAddr, objType, objIdtf)});
 
       ScAddr objSrc, objTrg;
-      if (objType.IsEdge() && m_context.GetEdgeInfo(objAddr, objSrc, objTrg))
+      if (obj.IsEdge() && m_context.GetEdgeInfo(objAddr, objSrc, objTrg))
       {
+        obj.SetSourceHash(objSrc.Hash());
+        obj.SetTargetHash(objTrg.Hash());
+
         ScType const srcType = m_context.GetElementType(objSrc),
               trgType = m_context.GetElementType(objTrg);
-
         if (!srcType.IsEdge() && !trgType.IsEdge())
         {
-          auto const & it = std::find(independentEdges.begin(), independentEdges.end(), objHash);
+          auto const & it = std::find(independentEdges.begin(), independentEdges.end(), obj.GetHash());
           if (it == independentEdges.end())
-          {
-            independentEdges.emplace_back(objHash);
-          }
+            independentEdges.emplace_back(obj.GetHash());
         }
         if (srcType.IsEdge())
-        {
-          m_edgeDependenceMap.insert({objHash, objSrc.Hash()});
-        }
+          m_edgeDependenceMap.insert({obj.GetHash(), objSrc.Hash()});
         if (trgType.IsEdge())
-        {
-          m_edgeDependenceMap.insert({objHash, objTrg.Hash()});
-        }
+          m_edgeDependenceMap.insert({obj.GetHash(), objTrg.Hash()});
       }
+
+      m_elements.insert({obj.GetHash(), obj});
     }
 
     // split edges set by their power
     std::vector<ScAddrHashVector> powerDependentEdges;
     powerDependentEdges.emplace_back(independentEdges);
-    size_t size = powerDependentEdges.size();
-
-    for (auto const & hPair : m_edgeDependenceMap)
-    {
-      index = GetEdgeDependencePower(hPair.first, hPair.second);
-      if (index >= powerDependentEdges.size())
-      {
-        while (size <= index)
-        {
-          powerDependentEdges.emplace_back(ScAddrHashVector());
-          size++;
-        }
-      }
-
-      auto const & equalDependentEdges = powerDependentEdges.at(index);
-      auto const & equalDependentEdgesIt = std::find(equalDependentEdges.begin(), equalDependentEdges.end(), hPair.first);
-      if (equalDependentEdgesIt == equalDependentEdges.end())
-      {
-        powerDependentEdges.at(index).emplace_back(hPair.first);
-      }
-    }
+    SplitEdgesByDependencePower(powerDependentEdges);
 
     // make tuple of partitions set subsets
     ScAddrHashVector edges;
     edges.reserve(512);
     for (auto const & equalDependentEdges : powerDependentEdges)
-    {
       for (auto const & edge : equalDependentEdges)
-      {
         edges.emplace_back(edge);
-      }
-    }
 
-    // form template
+    // build template
     for (auto const i : edges)
     {
       ObjectInfo const & edge = m_elements.at(i);
       SC_ASSERT(edge.GetType().IsVar(), ());
 
-      ScAddr srcAddr, trgAddr;
-      m_context.GetEdgeInfo(edge.GetAddr(), srcAddr, trgAddr);
-      ObjectInfo const src = replaceWithParam(&m_elements.at(srcAddr.Hash()));
-      ObjectInfo const trg = replaceWithParam(&m_elements.at(trgAddr.Hash()));
+      ObjectInfo const src = ReplaceWithParam(&m_elements.at(edge.GetSourceHash()));
+      ObjectInfo const trg = ReplaceWithParam(&m_elements.at(edge.GetTargetHash()));
 
-      ScType const srcType = src.GetType();
-      ScType const trgType = trg.GetType();
+      auto const & param = [&inTemplate](ObjectInfo const & obj) -> ScTemplateItemValue
+      {
+        return obj.GetType().IsConst()
+          ? obj.GetAddr() >> obj.GetIdtf()
+          : (inTemplate->HasReplacement(obj.GetIdtf()) ? obj.GetIdtf() : obj.GetType() >> obj.GetIdtf());
+      };
 
-      if (srcType.IsConst())
-      {
-        if (trgType.IsConst())  // F_A_F
-        {
-          inTemplate->Triple(
-                src.GetAddr() >> src.GetIdtf(),
-                edge.GetType() >> edge.GetIdtf(),
-                trg.GetAddr() >> trg.GetIdtf());
-        }
-        else
-        {
-          if (inTemplate->HasReplacement(trg.GetIdtf())) // F_A_F
-          {
-            inTemplate->Triple(
-                  src.GetAddr() >> src.GetIdtf(),
-                  edge.GetType() >> edge.GetIdtf(),
-                  trg.GetIdtf());
-          }
-          else // F_A_A
-          {
-            inTemplate->Triple(
-                  src.GetAddr() >> src.GetIdtf(),
-                  edge.GetType() >> edge.GetIdtf(),
-                  trgType >> trg.GetIdtf());
-          }
-        }
-      }
-      else if (trgType.IsConst())
-      {
-        if (inTemplate->HasReplacement(src.GetIdtf())) // F_A_F
-        {
-          inTemplate->Triple(
-                src.GetIdtf(),
-                edge.GetType() >> edge.GetIdtf(),
-                trg.GetAddr() >> trg.GetIdtf());
-        }
-        else // A_A_F
-        {
-          inTemplate->Triple(
-                srcType >> src.GetIdtf(),
-                edge.GetType() >> edge.GetIdtf(),
-                trg.GetAddr() >> trg.GetIdtf());
-        }
-      }
-      else
-      {
-        bool const srcRepl = inTemplate->HasReplacement(src.GetIdtf());
-        bool const trgRepl = inTemplate->HasReplacement(trg.GetIdtf());
-
-        if (srcRepl && trgRepl) // F_A_F
-        {
-          inTemplate->Triple(
-                src.GetIdtf(),
-                edge.GetType() >> edge.GetIdtf(),
-                trg.GetIdtf());
-        }
-        else if (!srcRepl && trgRepl) // A_A_F
-        {
-          inTemplate->Triple(
-                srcType >> src.GetIdtf(),
-                edge.GetType() >> edge.GetIdtf(),
-                trg.GetIdtf());
-        }
-        else if (srcRepl && !trgRepl) // F_A_A
-        {
-          inTemplate->Triple(
-                src.GetIdtf(),
-                edge.GetType() >> edge.GetIdtf(),
-                trgType >> trg.GetIdtf());
-        }
-        else
-        {
-          inTemplate->Triple(
-                srcType >> src.GetIdtf(),
-                edge.GetType() >> edge.GetIdtf(),
-                trgType >> trg.GetIdtf());
-        }
-      }
+      inTemplate->Triple(
+            param(src),
+            edge.GetType() >> edge.GetIdtf(),
+            param(trg));
     }
 
     return ScTemplate::Result(true);
@@ -272,22 +196,51 @@ protected:
 
   // all objects in template
   ObjectToIdtfMap m_elements;
-  EdgeDependMap m_edgeDependenceMap;
+  EdgeDependenceMap m_edgeDependenceMap;
 
 private:
-  ObjectInfo replaceWithParam(ObjectInfo const * templateItem) const
+  ObjectInfo CollectObjectInfo(ScAddr const & objAddr, size_t const index) const
+  {
+    ScType const objType = m_context.GetElementType(objAddr);
+    std::string objIdtf = m_context.HelperGetSystemIdtf(objAddr);
+
+    if (objIdtf.empty())
+      objIdtf = "..obj_" + std::to_string(index);
+
+    return {objAddr, objType, objIdtf};
+  }
+
+  void SplitEdgesByDependencePower(std::vector<ScAddrHashVector> & powerDependentEdges)
+  {
+    size_t size = powerDependentEdges.size();
+
+    for (auto const & hPair : m_edgeDependenceMap)
+    {
+      size_t power = GetEdgeDependencePower(hPair.first, hPair.second);
+      if (power >= powerDependentEdges.size())
+      {
+        while (size <= power)
+        {
+          powerDependentEdges.emplace_back(ScAddrHashVector());
+          size++;
+        }
+      }
+
+      auto const & equalDependentEdges = powerDependentEdges.at(power);
+      auto const & equalDependentEdgesIt = std::find(equalDependentEdges.begin(), equalDependentEdges.end(), hPair.first);
+      if (equalDependentEdgesIt == equalDependentEdges.end())
+        powerDependentEdges.at(power).emplace_back(hPair.first);
+    }
+  }
+
+  ObjectInfo ReplaceWithParam(ObjectInfo const * templateItem) const
   {
     if (!templateItem->IsEdge())
     {
       ScAddr replacedAddr;
       if (m_params.Get(templateItem->GetIdtf(), replacedAddr))
-      {
-        ScType const type = m_context.GetElementType(replacedAddr);
-        std::string const idtf = m_context.HelperGetSystemIdtf(replacedAddr);
-        return {replacedAddr, type, idtf};
-      }
+        return CollectObjectInfo(replacedAddr, 0);
     }
-
     return *templateItem;
   }
 
@@ -296,7 +249,6 @@ private:
   {
     size_t max = 0;
     DefineEdgeDependencePower(edge, otherEdge, max, 1);
-
     return max;
   }
 
@@ -310,9 +262,7 @@ private:
       size_t incPower = power + 1;
 
       if (DefineEdgeDependencePower(it->second, otherEdge, max, incPower) == incPower && power > max)
-      {
         max = power;
-      }
     }
     return power;
   }
