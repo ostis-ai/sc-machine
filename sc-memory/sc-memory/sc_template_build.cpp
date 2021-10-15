@@ -21,8 +21,8 @@ public:
     : m_addr(inAddr)
     , m_type(inType)
     , m_sysIdtf(inSysIdtf)
-    , m_source(nullptr)
-    , m_target(nullptr)
+    , m_srcHash(0)
+    , m_trgHash(0)
   {
   }
 
@@ -31,14 +31,9 @@ public:
     return m_type.IsEdge();
   }
 
-  inline ObjectInfo const * GetSource() const
+  inline bool IsUnknown() const
   {
-    return m_source;
-  }
-
-  inline ObjectInfo const * GetTarget() const
-  {
-    return m_target;
+    return m_type.IsUnknown();
   }
 
   inline ScAddr const & GetAddr() const
@@ -56,23 +51,29 @@ public:
     return m_type;
   }
 
-  inline void SetSource(ObjectInfo * src)
+  inline ScAddr::HashType GetHash() const
   {
-    m_source = src;
+    return m_addr.Hash();
   }
 
-  inline void SetTarget(ObjectInfo * trg)
+  inline void SetSourceHash(ScAddr::HashType const & srcHash)
   {
-    m_target = trg;
+    m_srcHash = srcHash;
   }
 
-  inline uint32_t CalculateEdgeRank() const
+  inline void SetTargetHash(ScAddr::HashType const & trgHash)
   {
-    SC_ASSERT(IsEdge(), ());
-    SC_ASSERT(m_source, ());
-    SC_ASSERT(m_target, ());
-    return (m_source->GetType().IsConst() ? 1 : 0) +
-           (m_target->GetType().IsConst() ? 1 : 0);
+    m_trgHash = trgHash;
+  }
+
+  inline ScAddr::HashType const & GetSourceHash() const
+  {
+    return m_srcHash;
+  }
+
+  inline ScAddr::HashType const & GetTargetHash() const
+  {
+    return m_trgHash;
   }
 
 private:
@@ -80,69 +81,18 @@ private:
   ScType m_type;
   std::string m_sysIdtf;
 
-  // edge data
-  ObjectInfo * m_source;
-  ObjectInfo * m_target;
+  ScAddr::HashType m_srcHash;
+  ScAddr::HashType m_trgHash;
 };
 
-class EdgeLessFunctor
-{
-  using EdgeDependMap = std::unordered_multimap<ScAddr::HashType, ScAddr::HashType>;
-  using ObjectVector = std::vector<ObjectInfo>;
-
-public:
-  explicit EdgeLessFunctor(EdgeDependMap const & edgeDependMap, ObjectVector const & objects)
-    : m_edgeDependMap(edgeDependMap)
-    , m_objects(objects)
-  {
-  }
-
-  // returns true, when edge srouce/target objects depend on otherEdge construction
-  bool IsEdgeDependOnOther(ScAddr::HashType const & edge, ScAddr::HashType const & otherEdge) const
-  {
-    // TODO: support possible loops
-    auto const range = m_edgeDependMap.equal_range(edge);
-    for (auto it = range.first; it != range.second; ++it)
-    {
-      if (it->second || IsEdgeDependOnOther(it->second, otherEdge))
-        return true;
-    }
-
-    return false;
-  }
-
-  bool operator() (size_t const indexA, size_t const indexB) const
-  {
-    ObjectInfo const & objA = m_objects[indexA];
-    ObjectInfo const & objB = m_objects[indexB];
-
-    SC_ASSERT(objA.IsEdge(), ());
-    SC_ASSERT(objB.IsEdge(), ());
-
-    if (IsEdgeDependOnOther(objA.GetAddr().Hash(), objB.GetAddr().Hash()))
-      return false;
-    else if (IsEdgeDependOnOther(objB.GetAddr().Hash(), objA.GetAddr().Hash()))
-      return true;
-
-    uint32_t const rankA = objA.CalculateEdgeRank();
-    uint32_t const rankB = objB.CalculateEdgeRank();
-
-    if (rankA != rankB)
-      return rankA > rankB;
-
-    return objA.GetAddr().Hash() < objB.GetAddr().Hash();
-  }
-
-private:
-  EdgeDependMap const & m_edgeDependMap;
-  ObjectVector const & m_objects;
-};
-
-} // namespace
+}
 
 class ScTemplateBuilder
 {
   friend class ScTemplate;
+  using EdgeDependenceMap = std::unordered_multimap<ScAddr::HashType, ScAddr::HashType>;
+  using ObjectToIdtfMap = std::map<ScAddr::HashType, ObjectInfo>;
+  using ScAddrHashVector = std::vector<ScAddr::HashType>;
 
 protected:
   ScTemplateBuilder(
@@ -161,170 +111,79 @@ protected:
     inTemplate->m_isForceOrder = false;
 
     // TODO: add struct blocking
-    // TODO: provide error codes
-    std::unordered_map<ScAddr::HashType, size_t> addrToObjectIndex;
-    std::unordered_multimap<ScAddr::HashType, ScAddr::HashType> edgeDependMap;
-    std::vector<size_t> edgeIndices;
-
-    m_objects.reserve(1024);
-    edgeIndices.reserve(512);
+    ScAddrHashVector independentEdges;
+    independentEdges.reserve(512);
 
     size_t index = 0;
-
     ScIterator3Ptr iter = m_context.Iterator3(
           m_templateAddr,
           *ScType::EdgeAccessConstPosPerm,
           *ScType());
 
+    // define edges set and independent edges set
     while (iter->Next())
     {
       ScAddr const objAddr = iter->Get(2);
-      ScAddr::HashType const objHash = objAddr.Hash();
 
-      auto const it = addrToObjectIndex.find(objHash);
-      if (it != addrToObjectIndex.end())
-        continue; // object already exist
-      addrToObjectIndex[objHash] = m_objects.size();
-
-      ScType const objType = m_context.GetElementType(objAddr);
-      if (objType.IsUnknown())
+      ObjectInfo obj = CollectObjectInfo(objAddr, index++);
+      if (obj.IsUnknown())
         return ScTemplate::Result(false, "Can't determine type of ScElement"); // template corrupted
 
-      std::string objIdtf = m_context.HelperGetSystemIdtf(objAddr);
-      if (objIdtf.empty())
-        objIdtf = "..obj_" + std::to_string(index++);
+      ScAddr objSrc, objTrg;
+      if (obj.IsEdge() && m_context.GetEdgeInfo(objAddr, objSrc, objTrg))
+      {
+        obj.SetSourceHash(objSrc.Hash());
+        obj.SetTargetHash(objTrg.Hash());
 
-      if (objType.IsEdge())
-        edgeIndices.emplace_back(m_objects.size());
+        ScType const srcType = m_context.GetElementType(objSrc),
+              trgType = m_context.GetElementType(objTrg);
+        if (!srcType.IsEdge() && !trgType.IsEdge())
+        {
+          auto const & it = std::find(independentEdges.begin(), independentEdges.end(), obj.GetHash());
+          if (it == independentEdges.end())
+            independentEdges.emplace_back(obj.GetHash());
+        }
+        if (srcType.IsEdge())
+          m_edgeDependenceMap.insert({obj.GetHash(), objSrc.Hash()});
+        if (trgType.IsEdge())
+          m_edgeDependenceMap.insert({obj.GetHash(), objTrg.Hash()});
+      }
 
-      m_objects.emplace_back(objAddr, objType, objIdtf);
+      m_elements.insert({obj.GetHash(), obj});
     }
 
-    // iterate all edges and determine source/target objects
-    for (auto const i : edgeIndices)
-    {
-      ObjectInfo & obj = m_objects[i];
+    // split edges set by their power
+    std::vector<ScAddrHashVector> powerDependentEdges;
+    powerDependentEdges.emplace_back(independentEdges);
+    SplitEdgesByDependencePower(powerDependentEdges);
 
-      // determine source and target objects
-      ScAddr src, trg;
-      if (!m_context.GetEdgeInfo(obj.GetAddr(), src, trg))
-        return ScTemplate::Result(false, "Edge removed during parse"); // edge already doesn't exist
-
-      auto const itSrc = addrToObjectIndex.find(src.Hash());
-      if (itSrc == addrToObjectIndex.end())
-        return ScTemplate::Result(false, "Edge source removed during parse");; // edge source doesn't exist in template
-
-      auto const itTrg = addrToObjectIndex.find(trg.Hash());
-      if (itTrg == addrToObjectIndex.end())
-        return ScTemplate::Result(false, "Edge target removed during parse");; // target source doesn't exist in template
-
-      ObjectInfo * srcObj = &(m_objects[itSrc->second]);
-      ObjectInfo * trgObj = &(m_objects[itTrg->second]);
-
-      if (srcObj->IsEdge())
-        edgeDependMap.insert({ obj.GetAddr().Hash(), srcObj->GetAddr().Hash() });
-      if (trgObj->IsEdge())
-        edgeDependMap.insert({ obj.GetAddr().Hash(), srcObj->GetAddr().Hash() });
-
-      obj.SetSource(srcObj);
-      obj.SetTarget(trgObj);
-    }
-
-    // now need to sort edges for suitable search order
-    std::sort(edgeIndices.begin(), edgeIndices.end(), EdgeLessFunctor(edgeDependMap, m_objects));
+    // make tuple of partitions set subsets
+    ScAddrHashVector edges;
+    edges.reserve(512);
+    for (auto const & equalDependentEdges : powerDependentEdges)
+      for (auto const & edge : equalDependentEdges)
+        edges.emplace_back(edge);
 
     // build template
+    for (auto const i : edges)
     {
-      for (auto const i : edgeIndices)
+      ObjectInfo const & edge = m_elements.at(i);
+      SC_ASSERT(edge.GetType().IsVar(), ());
+
+      ObjectInfo const src = ReplaceWithParam(&m_elements.at(edge.GetSourceHash()));
+      ObjectInfo const trg = ReplaceWithParam(&m_elements.at(edge.GetTargetHash()));
+
+      auto const & param = [&inTemplate](ObjectInfo const & obj) -> ScTemplateItemValue
       {
-        ObjectInfo const & edge = m_objects[i];
-        SC_ASSERT(edge.GetType().IsVar(), ());
+        return obj.GetType().IsConst()
+          ? obj.GetAddr() >> obj.GetIdtf()
+          : (inTemplate->HasReplacement(obj.GetIdtf()) ? obj.GetIdtf() : obj.GetType() >> obj.GetIdtf());
+      };
 
-        ObjectInfo const src = replaceWithParam(edge.GetSource());
-        ObjectInfo const trg = replaceWithParam(edge.GetTarget());
-
-        ScType const srcType = src.GetType();
-        ScType const trgType = trg.GetType();
-
-        if (srcType.IsConst())
-        {
-          if (trgType.IsConst())  // F_A_F
-          {
-            inTemplate->Triple(
-                  src.GetAddr() >> src.GetIdtf(),
-                  edge.GetType() >> edge.GetIdtf(),
-                  trg.GetAddr() >> trg.GetIdtf());
-          }
-          else
-          {
-            if (inTemplate->HasReplacement(trg.GetIdtf())) // F_A_F
-            {
-              inTemplate->Triple(
-                    src.GetAddr() >> src.GetIdtf(),
-                    edge.GetType() >> edge.GetIdtf(),
-                    trg.GetIdtf());
-            }
-            else // F_A_A
-            {
-              inTemplate->Triple(
-                    src.GetAddr() >> src.GetIdtf(),
-                    edge.GetType() >> edge.GetIdtf(),
-                    trgType >> trg.GetIdtf());
-            }
-          }
-        }
-        else if (trgType.IsConst())
-        {
-          if (inTemplate->HasReplacement(src.GetIdtf())) // F_A_F
-          {
-            inTemplate->Triple(
-                  src.GetIdtf(),
-                  edge.GetType() >> edge.GetIdtf(),
-                  trg.GetAddr() >> trg.GetIdtf());
-          }
-          else // A_A_F
-          {
-            inTemplate->Triple(
-                  srcType >> src.GetIdtf(),
-                  edge.GetType() >> edge.GetIdtf(),
-                  trg.GetAddr() >> trg.GetIdtf());
-          }
-        }
-        else
-        {
-          bool const srcRepl = inTemplate->HasReplacement(src.GetIdtf());
-          bool const trgRepl = inTemplate->HasReplacement(trg.GetIdtf());
-
-          if (srcRepl && trgRepl) // F_A_F
-          {
-            inTemplate->Triple(
-                  src.GetIdtf(),
-                  edge.GetType() >> edge.GetIdtf(),
-                  trg.GetIdtf());
-          }
-          else if (!srcRepl && trgRepl) // A_A_F
-          {
-            inTemplate->Triple(
-                  srcType >> src.GetIdtf(),
-                  edge.GetType() >> edge.GetIdtf(),
-                  trg.GetIdtf());
-          }
-          else if (srcRepl && !trgRepl) // F_A_A
-          {
-            inTemplate->Triple(
-                  src.GetIdtf(),
-                  edge.GetType() >> edge.GetIdtf(),
-                  trgType >> trg.GetIdtf());
-          }
-          else
-          {
-            inTemplate->Triple(
-                  srcType >> src.GetIdtf(),
-                  edge.GetType() >> edge.GetIdtf(),
-                  trgType >> trg.GetIdtf());
-          }
-        }
-      }
+      inTemplate->Triple(
+            param(src),
+            edge.GetType() >> edge.GetIdtf(),
+            param(trg));
     }
 
     return ScTemplate::Result(true);
@@ -336,22 +195,76 @@ protected:
   ScTemplateParams m_params;
 
   // all objects in template
-  std::vector<ObjectInfo> m_objects;
+  ObjectToIdtfMap m_elements;
+  EdgeDependenceMap m_edgeDependenceMap;
 
 private:
-  ObjectInfo replaceWithParam(ObjectInfo const * templateItem) const
+  ObjectInfo CollectObjectInfo(ScAddr const & objAddr, size_t const index) const
+  {
+    ScType const objType = m_context.GetElementType(objAddr);
+    std::string objIdtf = m_context.HelperGetSystemIdtf(objAddr);
+
+    if (objIdtf.empty())
+      objIdtf = "..obj_" + std::to_string(index);
+
+    return {objAddr, objType, objIdtf};
+  }
+
+  void SplitEdgesByDependencePower(std::vector<ScAddrHashVector> & powerDependentEdges)
+  {
+    size_t size = powerDependentEdges.size();
+
+    for (auto const & hPair : m_edgeDependenceMap)
+    {
+      size_t power = GetEdgeDependencePower(hPair.first, hPair.second);
+      if (power >= powerDependentEdges.size())
+      {
+        while (size <= power)
+        {
+          powerDependentEdges.emplace_back(ScAddrHashVector());
+          size++;
+        }
+      }
+
+      auto const & equalDependentEdges = powerDependentEdges.at(power);
+      auto const & equalDependentEdgesIt = std::find(equalDependentEdges.begin(), equalDependentEdges.end(), hPair.first);
+      if (equalDependentEdgesIt == equalDependentEdges.end())
+        powerDependentEdges.at(power).emplace_back(hPair.first);
+    }
+  }
+
+  ObjectInfo ReplaceWithParam(ObjectInfo const * templateItem) const
   {
     if (!templateItem->IsEdge())
     {
       ScAddr replacedAddr;
       if (m_params.Get(templateItem->GetIdtf(), replacedAddr))
-      {
-        ScType const type = m_context.GetElementType(replacedAddr);
-        std::string const idtf = m_context.HelperGetSystemIdtf(replacedAddr);
-        return ObjectInfo(replacedAddr, type, idtf);
-      }
+        return CollectObjectInfo(replacedAddr, 0);
     }
     return *templateItem;
+  }
+
+  // get edge dependence power from other edge
+  inline size_t GetEdgeDependencePower(ScAddr::HashType const & edge, ScAddr::HashType const & otherEdge) const
+  {
+    size_t max = 0;
+    DefineEdgeDependencePower(edge, otherEdge, max, 1);
+    return max;
+  }
+
+  // count edge dependence power from other edge
+  inline size_t DefineEdgeDependencePower(ScAddr::HashType const & edge, ScAddr::HashType const & otherEdge,
+                                          size_t & max, size_t power) const
+  {
+    auto const range = m_edgeDependenceMap.equal_range(edge);
+    for (auto it = range.first; it != range.second; ++it)
+    {
+      size_t incPower = power + 1;
+
+      if (DefineEdgeDependencePower(it->second, otherEdge, max, incPower) == incPower && power > max)
+        max = power;
+    }
+    return power;
   }
 };
 
