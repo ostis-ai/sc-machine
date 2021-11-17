@@ -1762,6 +1762,68 @@ TEST_CASE("template_high_edge_dependence_power_search", "[test templates]")
   test::ScTestUnit::ShutdownMemory(false);
 }
 
+TEST_CASE("template_replacement_naming", "[test templates]")
+{
+  test::ScTestUnit::InitMemory("sc-memory.ini", "");
+  ScMemoryContext ctx(sc_access_lvl_make_min, "template_replacement_naming");
+
+  try
+  {
+    ScAddr const addr1 = ctx.CreateNode(ScType::NodeConst);
+    ctx.HelperSetSystemIdtf("addr1", addr1);
+    REQUIRE(addr1.IsValid());
+    ScAddr const addr2 = ctx.CreateLink(ScType::LinkVar);
+    REQUIRE(addr2.IsValid());
+    ScAddr const addr3 = ctx.CreateLink(ScType::LinkVar);
+    REQUIRE(addr2.IsValid());
+
+    ScAddr const edge1 = ctx.CreateEdge(ScType::EdgeAccessVarPosPerm, addr1, addr2);
+    REQUIRE(edge1.IsValid());
+    ScAddr const edge2 = ctx.CreateEdge(ScType::EdgeAccessVarPosPerm, addr1, addr3);
+    REQUIRE(edge1.IsValid());
+
+
+    auto const testReplacement = [&ctx](ScAddrVector const & addrs)
+    {
+      ScAddr const structAddr = ctx.CreateNode(ScType::NodeConstStruct);
+      ScStruct st(&ctx, structAddr);
+
+      for (auto const & a : addrs)
+        st << a;
+
+      ScTemplate templ;
+      REQUIRE(ctx.HelperBuildTemplate(templ, structAddr));
+
+      ScTemplateGenResult genResult;
+      REQUIRE(ctx.HelperGenTemplate(templ, genResult));
+
+      ScTemplateSearchResult searchResult;
+      REQUIRE(ctx.HelperSearchTemplate(templ, searchResult));
+
+      REQUIRE(searchResult[0]["addr1"].IsValid());
+
+      ScIterator3Ptr it3 = ctx.Iterator3(
+            searchResult[0]["addr1"],
+            ScType::EdgeAccessConstPosPerm,
+            ScType::LinkConst);
+      REQUIRE(it3->Next());
+      REQUIRE(ctx.GetElementType(it3->Get(2)) == ScType::LinkConst);
+
+      REQUIRE(it3->Next());
+      REQUIRE(ctx.GetElementType(it3->Get(2)) == ScType::LinkConst);
+    };
+
+    testReplacement({ addr1, addr2, addr3, edge1, edge2 });
+
+  } catch (...)
+  {
+    SC_LOG_ERROR("Test \"template_replacement_naming\" failed")
+  }
+
+  ctx.Destroy();
+  test::ScTestUnit::ShutdownMemory(false);
+}
+
 // https://github.com/ostis-dev/sc-machine/issues/224
 TEST_CASE("template_issue_224", "[test templates]")
 {
