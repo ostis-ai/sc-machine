@@ -125,7 +125,7 @@ protected:
     {
       ScAddr const objAddr = iter->Get(2);
 
-      ObjectInfo obj = CollectObjectInfo(objAddr, index++);
+      ObjectInfo obj = CollectObjectInfo(objAddr, "..obj_" + std::to_string(index++));
       if (obj.IsUnknown())
         return ScTemplate::Result(false, "Can't determine type of ScElement"); // template corrupted
 
@@ -199,13 +199,13 @@ protected:
   EdgeDependenceMap m_edgeDependenceMap;
 
 private:
-  ObjectInfo CollectObjectInfo(ScAddr const & objAddr, size_t const index) const
+  ObjectInfo CollectObjectInfo(ScAddr const & objAddr, std::string const & repl_idtf = "") const
   {
     ScType const objType = m_context.GetElementType(objAddr);
     std::string objIdtf = m_context.HelperGetSystemIdtf(objAddr);
 
-    if (objIdtf.empty())
-      objIdtf = "..obj_" + std::to_string(index);
+    if (!repl_idtf.empty() && objIdtf.empty())
+      objIdtf = repl_idtf;
 
     return {objAddr, objType, objIdtf};
   }
@@ -239,7 +239,7 @@ private:
     {
       ScAddr replacedAddr;
       if (m_params.Get(templateItem->GetIdtf(), replacedAddr))
-        return CollectObjectInfo(replacedAddr, 0);
+        return CollectObjectInfo(replacedAddr);
     }
     return *templateItem;
   }
