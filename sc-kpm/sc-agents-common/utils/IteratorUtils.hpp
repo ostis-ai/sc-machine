@@ -13,6 +13,8 @@
 #include <sc-memory/sc_type.hpp>
 #include <sc-memory/sc_iterator.hpp>
 
+#include "sc-agents-common/keynodes/coreKeynodes.hpp"
+
 using namespace std;
 
 namespace utils
@@ -21,7 +23,13 @@ namespace utils
 class IteratorUtils
 {
 public:
-  static ScAddr getFirstFromSet(ScMemoryContext * ms_context, const ScAddr & set);
+  static ScAddr getFirstFromSet(ScMemoryContext * ms_context, const ScAddr & set, bool get_strictly_first = false);
+
+  static ScAddr getNextFromSet(
+        ScMemoryContext * ms_context,
+        const ScAddr & set,
+        const ScAddr & previous,
+        const ScAddr & sequenceRelation = scAgentsCommon::CoreKeynodes::nrel_basic_sequence);
 
   static vector<ScAddr> getAllWithType(ScMemoryContext * ms_context, const ScAddr & set, ScType scType);
 

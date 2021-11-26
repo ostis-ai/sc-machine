@@ -15,14 +15,70 @@ using namespace std;
 namespace utils
 {
 
-ScAddr IteratorUtils::getFirstFromSet(ScMemoryContext * ms_context, const ScAddr & set)
+ScAddr IteratorUtils::getFirstFromSet(ScMemoryContext * ms_context, const ScAddr & set,  bool get_strictly_first)
 {
   ScAddr element;
-  ScIterator3Ptr iterator3 = ms_context->Iterator3(set, ScType::EdgeAccessConstPosPerm, ScType::Node);
-  if (iterator3->Next())
+  if (get_strictly_first)
   {
-    element = iterator3->Get(2);
+    ScIterator5Ptr iterator5 = ms_context->Iterator5(
+          set,
+          ScType::EdgeAccessConstPosPerm,
+          ScType::Node,
+          ScType::EdgeAccessConstPosPerm,
+          scAgentsCommon::CoreKeynodes::rrel_1);
+    if (iterator5->Next())
+    {
+      element = iterator5->Get(2);
+    }
   }
+  else
+  {
+    ScIterator3Ptr iterator3 = ms_context->Iterator3(set, ScType::EdgeAccessConstPosPerm, ScType::Node);
+    if (iterator3->Next())
+    {
+        element = iterator3->Get(2);
+    }
+  }
+  return element;
+}
+
+ScAddr IteratorUtils::getNextFromSet(
+      ScMemoryContext * ms_context,
+      const ScAddr & set,
+      const ScAddr & previous,
+      const ScAddr & sequenceRelation)
+{
+  ScAddr element;
+  std::string const NEXT_ELEMENT_ALIAS = "_next_element";
+  std::string const NEXT_ELEMENT_ACCESS_ARC_ALIAS = "_next_element_access_arc";
+  std::string const PREVIOUS_ELEMENT_ACCESS_ARC_ALIAS = "_previous_element_access_arc";
+
+  ScTemplate scTemplate;
+  scTemplate.Triple(
+        set,
+        ScType::EdgeAccessVarPosPerm >> PREVIOUS_ELEMENT_ACCESS_ARC_ALIAS,
+        previous);
+  scTemplate.Triple(
+        set,
+        ScType::EdgeAccessVarPosPerm >> NEXT_ELEMENT_ACCESS_ARC_ALIAS,
+        ScType::NodeVar >> NEXT_ELEMENT_ALIAS);
+  scTemplate.TripleWithRelation(
+        PREVIOUS_ELEMENT_ACCESS_ARC_ALIAS,
+        ScType::EdgeDCommonVar,
+        NEXT_ELEMENT_ACCESS_ARC_ALIAS,
+        ScType::EdgeAccessVarPosPerm,
+        sequenceRelation);
+  ScTemplateSearchResult searchResult;
+  ms_context->HelperSearchTemplate(scTemplate, searchResult);
+  if (searchResult.Size() == 1)
+  {
+    element = searchResult[0][NEXT_ELEMENT_ALIAS];
+  }
+  else if (searchResult.Size() > 1)
+  {
+    throw std::runtime_error("Found several sets of rules following the previous one. Error in the sequence.");
+  }
+
   return element;
 }
 
