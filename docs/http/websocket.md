@@ -613,9 +613,14 @@ This command allow to work with ScLink contents.
           "addr": 3123    // ScAddr of ScLink to change content
         },
         {
-          // Comman to get link content
+          // command to get link content
           "command": "get",
           "addr": 232       // ScAddr of ScLink to get content
+        },
+        {
+          // command to get link by content
+          "command": "find",
+          "data": "exist"   // content could be a string, number
         },
         ... // any commands
       ]
@@ -642,6 +647,11 @@ List of possible content types:
           "value": 56.7,  // value will be a null, if content doesn't exist
           "type": "float"
         },
+        // for find command it returns list of ScAddrs
+        [
+          324,     // will be a empty list, if addr doesn't exist
+          423      // can be a list with multiple addrs, if content exist in several links
+        ]
         ... // other command results
       ]
     }
