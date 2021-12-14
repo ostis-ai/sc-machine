@@ -275,9 +275,9 @@ class ScJsonSocketHandler(websocket.WebSocketHandler):
     result = []
     for cmd in payload:
       t = cmd['command']
-      a = ScAddr(cmd['addr'])
 
       if t == 'set':
+        a = ScAddr(cmd['addr'])
         contentType = cmd['type']
         value = cmd['data']
 
@@ -291,6 +291,7 @@ class ScJsonSocketHandler(websocket.WebSocketHandler):
         result.append(ctx.SetLinkContent(a, value))
         
       elif t == 'get':
+        a = ScAddr(cmd['addr'])
         content = ctx.GetLinkContent(a)
         value = None
         ctype = None
@@ -311,6 +312,11 @@ class ScJsonSocketHandler(websocket.WebSocketHandler):
             'value': value,
             'type': ctype
         })
+
+      elif t == 'find':
+        value = cmd['data']
+        addrs = ctx.FindLinksByContent(value)
+        result.append([addr.ToInt() for addr in addrs])
 
     return result
 
@@ -348,7 +354,7 @@ class ScJsonSocketHandler(websocket.WebSocketHandler):
         elif evtType == 'content_change':
           createFunc = self.event_manager.CreateEventContentChanged
         elif evtType == 'delete_element':
-          createFunc == self.event_manager.CreateEventEraseElement
+          createFunc = self.event_manager.CreateEventEraseElement
 
         assert createFunc != None
 
