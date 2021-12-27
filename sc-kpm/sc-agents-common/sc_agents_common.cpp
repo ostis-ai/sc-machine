@@ -5,7 +5,6 @@
 */
 
 #include "keynodes/coreKeynodes.hpp"
-#include "agents/ANumberComparison.hpp"
 
 #include "sc_agents_common.hpp"
 
