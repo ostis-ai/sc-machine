@@ -19,14 +19,10 @@ sc_result SCAgentsCommonModule::InitializeImpl()
   if (!CoreKeynodes::InitGlobal())
     return SC_RESULT_ERROR;
 
-  SC_AGENT_REGISTER(ANumberComparison)
-
   return SC_RESULT_OK;
 }
 
 sc_result SCAgentsCommonModule::ShutdownImpl()
 {
-  SC_AGENT_UNREGISTER(ANumberComparison)
-
   return SC_RESULT_OK;
 }

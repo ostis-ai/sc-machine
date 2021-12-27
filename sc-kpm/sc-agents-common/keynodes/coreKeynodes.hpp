@@ -36,9 +36,6 @@ public:
   SC_PROPERTY(Keynode("question_finished_unsuccessfully"), ForceCreate)
   static ScAddr question_finished_unsuccessfully;
 
-  SC_PROPERTY(Keynode("question_numbers_comparison"), ForceCreate)
-  static ScAddr question_numbers_comparison;
-
   SC_PROPERTY(Keynode("nrel_answer"), ForceCreate)
   static ScAddr nrel_answer;
 
