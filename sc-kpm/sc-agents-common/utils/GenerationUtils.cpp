@@ -4,6 +4,8 @@
 * (See accompanying file COPYING.MIT or copy at http://opensource.org/licenses/MIT)
 */
 
+#include <algorithm>
+
 #include "GenerationUtils.hpp"
 
 #include <sc-memory/sc_iterator.hpp>
@@ -15,6 +17,17 @@ using namespace std;
 
 namespace utils
 {
+
+ScAddr GenerationUtils::wrapInSet(ScMemoryContext * ms_context, const ScAddrVector & addrVector)
+{
+  ScAddr set = ms_context->CreateNode(ScType::NodeConst);
+  std::for_each(addrVector.begin(), addrVector.end(), [&ms_context, &set](const auto & element)
+  {
+    ms_context->CreateEdge(ScType::EdgeAccessConstPosPerm, set, element);
+  });
+
+  return set;
+}
 
 bool GenerationUtils::addSetToOutline(ScMemoryContext * ms_context, ScAddr const & set, ScAddr const & outline)
 {
