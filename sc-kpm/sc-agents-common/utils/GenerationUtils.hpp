@@ -21,7 +21,10 @@ class GenerationUtils
 {
 public:
 
-  static ScAddr wrapInSet(ScMemoryContext * ms_context, const ScAddrVector & addrVector);
+  static ScAddr wrapInSet(
+        ScMemoryContext * ms_context,
+        const ScAddrVector & addrVector,
+        const ScType & setType = ScType::NodeConst);
 
   static bool addSetToOutline(ScMemoryContext * ms_context, ScAddr const & node, ScAddr const & outline);
 

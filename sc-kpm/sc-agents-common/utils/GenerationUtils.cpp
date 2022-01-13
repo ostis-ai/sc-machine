@@ -18,9 +18,9 @@ using namespace std;
 namespace utils
 {
 
-ScAddr GenerationUtils::wrapInSet(ScMemoryContext * ms_context, const ScAddrVector & addrVector)
+ScAddr GenerationUtils::wrapInSet(ScMemoryContext * ms_context, const ScAddrVector & addrVector, const ScType & setType)
 {
-  ScAddr set = ms_context->CreateNode(ScType::NodeConst);
+  ScAddr set = ms_context->CreateNode(setType);
   std::for_each(addrVector.begin(), addrVector.end(), [&ms_context, &set](const auto & element)
   {
     ms_context->CreateEdge(ScType::EdgeAccessConstPosPerm, set, element);
