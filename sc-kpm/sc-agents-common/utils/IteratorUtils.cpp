@@ -23,7 +23,7 @@ ScAddr IteratorUtils::getFirstFromSet(ScMemoryContext * ms_context, const ScAddr
     ScIterator5Ptr iterator5 = ms_context->Iterator5(
           set,
           ScType::EdgeAccessConstPosPerm,
-          ScType::Node,
+          ScType::Unknown,
           ScType::EdgeAccessConstPosPerm,
           scAgentsCommon::CoreKeynodes::rrel_1);
     if (iterator5->Next())
@@ -33,7 +33,7 @@ ScAddr IteratorUtils::getFirstFromSet(ScMemoryContext * ms_context, const ScAddr
   }
   else
   {
-    ScIterator3Ptr iterator3 = ms_context->Iterator3(set, ScType::EdgeAccessConstPosPerm, ScType::Node);
+    ScIterator3Ptr iterator3 = ms_context->Iterator3(set, ScType::EdgeAccessConstPosPerm, ScType::Unknown);
     if (iterator3->Next())
     {
         element = iterator3->Get(2);
