@@ -29,6 +29,17 @@ ScAddr GenerationUtils::wrapInSet(ScMemoryContext * ms_context, const ScAddrVect
   return set;
 }
 
+bool GenerationUtils::addToSet(ScMemoryContext * ms_context, const ScAddr & set, const ScAddr & element)
+{
+  if (!ms_context->HelperCheckEdge(set, element, ScType::EdgeAccessConstPosPerm))
+  {
+    ms_context->CreateEdge(ScType::EdgeAccessConstPosPerm, set, element);
+    return true;
+  }
+
+  return false;
+}
+
 bool GenerationUtils::addSetToOutline(ScMemoryContext * ms_context, ScAddr const & set, ScAddr const & outline)
 {
   if (!set.IsValid() || !outline.IsValid())
