@@ -26,6 +26,8 @@ public:
         const ScAddrVector & addrVector,
         const ScType & setType = ScType::NodeConst);
 
+  static bool addToSet(ScMemoryContext * ms_context, const ScAddr & set, const ScAddr & element);
+
   static bool addSetToOutline(ScMemoryContext * ms_context, ScAddr const & node, ScAddr const & outline);
 
   static bool addNodeWithOutRelationToOutline(
