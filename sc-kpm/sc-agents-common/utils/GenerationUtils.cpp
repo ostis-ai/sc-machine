@@ -10,13 +10,63 @@
 
 #include <sc-memory/sc_iterator.hpp>
 
+#include "keynodes/coreKeynodes.hpp"
 #include "IteratorUtils.hpp"
 #include "CommonUtils.hpp"
 
+using namespace scAgentsCommon;
 using namespace std;
 
 namespace utils
 {
+
+ScAddr GenerationUtils::wrapInOrientedSetBySequenceRelation(
+      ScMemoryContext * ms_context,
+      const ScAddrVector & addrVector,
+      const ScType & setType
+)
+{
+  ScAddr set = ms_context->CreateNode(setType);
+  if (addrVector.empty())
+  {
+    return set;
+  }
+
+  ScAddr prevEdge = ms_context->CreateEdge(ScType::EdgeAccessConstPosPerm, set, addrVector.at(0));
+  ms_context->CreateEdge(ScType::EdgeAccessConstPosPerm, CoreKeynodes::rrel_1, prevEdge);
+
+  for (size_t i = 1; i < addrVector.size(); ++i)
+  {
+    ScAddr edge = ms_context->CreateEdge(ScType::EdgeAccessConstPosPerm, set, addrVector.at(i));
+    edge = ms_context->CreateEdge(ScType::EdgeDCommonConst, prevEdge, edge);
+    ms_context->CreateEdge(ScType::EdgeAccessConstPosPerm, CoreKeynodes::nrel_basic_sequence, edge);
+  }
+
+  return set;
+}
+
+ScAddr GenerationUtils::wrapInOrientedSet(
+      ScMemoryContext * ms_context,
+      const ScAddrVector & addrVector,
+      const ScType & setType
+)
+{
+  const size_t maxRrelCountExceeded = 10;
+  SC_ASSERT(addrVector.size() < maxRrelCountExceeded, ());
+
+  ScAddr set = ms_context->CreateNode(setType);
+  for (size_t i = 0; i < addrVector.size(); ++i)
+  {
+    ScAddr edge = ms_context->CreateEdge(ScType::EdgeAccessConstPosPerm, set, addrVector.at(i));
+    ms_context->CreateEdge(
+        ScType::EdgeAccessConstPosPerm,
+        ms_context->HelperResolveSystemIdtf("rrel_" + std::to_string(i + 1)),
+        edge
+    );
+  }
+
+  return set;
+}
 
 ScAddr GenerationUtils::wrapInSet(ScMemoryContext * ms_context, const ScAddrVector & addrVector, const ScType & setType)
 {
