@@ -20,6 +20,17 @@ namespace utils
 class GenerationUtils
 {
 public:
+  static ScAddr wrapInOrientedSetBySequenceRelation(
+        ScMemoryContext * ms_context,
+        const ScAddrVector & addrVector,
+        const ScType & setType = ScType::NodeConst
+  );
+
+  static ScAddr wrapInOrientedSet(
+        ScMemoryContext * ms_context,
+        const ScAddrVector & addrVector,
+        const ScType & setType = ScType::NodeConst
+  );
 
   static ScAddr wrapInSet(
         ScMemoryContext * ms_context,
