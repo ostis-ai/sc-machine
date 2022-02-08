@@ -30,5 +30,7 @@ public:
   static string getIdtfValue(ScMemoryContext * ms_context, const ScAddr & node, const ScAddr & idtfRelation);
 
   static int getPowerOfSet(ScMemoryContext * ms_context, const ScAddr & set);
+
+  static bool isEmpty(ScMemoryContext * ms_context, const ScAddr & set);
 };
 }

@@ -79,4 +79,10 @@ int CommonUtils::getPowerOfSet(ScMemoryContext * ms_context, const ScAddr & set)
     power++;
   return power;
 }
+
+bool CommonUtils::isEmpty(ScMemoryContext * ms_context, const ScAddr & set)
+{
+  ScIterator3Ptr iterator3 = ms_context->Iterator3(set, ScType::EdgeAccessConstPosPerm, ScType::Unknown);
+  return !iterator3->Next();
+}
 }
