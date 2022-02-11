@@ -79,6 +79,14 @@ ScAddr GenerationUtils::wrapInSet(ScMemoryContext * ms_context, const ScAddrVect
   return set;
 }
 
+void GenerationUtils::addToSet(ScMemoryContext * ms_context, const ScAddr & set, const ScAddrVector & elements)
+{
+  for (auto const & element : elements)
+  {
+    GenerationUtils::addToSet(ms_context, set, element);
+  }
+}
+
 bool GenerationUtils::addToSet(ScMemoryContext * ms_context, const ScAddr & set, const ScAddr & element)
 {
   if (!ms_context->HelperCheckEdge(set, element, ScType::EdgeAccessConstPosPerm))
