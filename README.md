@@ -1,17 +1,7 @@
-**Chat:**
-
-[![Join the chat at https://gitter.im/ostis-dev/sc-machine](https://badges.gitter.im/ostis-dev/sc-machine.svg)](https://gitter.im/ostis-dev/sc-machine?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
-
-**Documentation**
-[http://ostis-dev.github.io/sc-machine/](http://ostis-dev.github.io/sc-machine/)
-
-**Master:** 
-[![Build Status](https://travis-ci.com/ostis-dev/sc-machine.svg?branch=master)](https://travis-ci.com/ostis-dev/sc-machine)
-
 Clone:
 
 ```sh
-git clone https://github.com/ostis-dev/sc-machine.git
+git clone https://github.com/ostis-ai/sc-machine.git
 cd sc-machine
 ```
 
@@ -62,3 +52,6 @@ cd sc-machine/scripts
 
 Open URL http://localhost:8090/ in web browser:
 ![](https://i.imgur.com/wibISSV.png)
+
+
+*This repository continues the development of [this sc-machine](https://github.com/ostis-dev/sc-machine) from version 0.6.0.*
