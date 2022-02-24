@@ -23,6 +23,8 @@ void AgentUtils::assignParamsToQuestionNode(
       const ScAddr & questionNode,
       const vector<ScAddr> & params)
 {
+  SC_CHECK_PARAM(questionNode, ("Invalid question node address"))
+
   for (size_t i = 0; i < params.size(); i++)
   {
     ScAddr edge = ms_context->CreateEdge(ScType::EdgeAccessConstPosPerm, questionNode, params.at(i));
@@ -40,6 +42,8 @@ ScAddr AgentUtils::createQuestionNode(ScMemoryContext * ms_context)
 
 bool AgentUtils::waitAgentResult(ScMemoryContext * ms_context, const ScAddr & questionNode, const uint32_t waitTime)
 {
+  SC_CHECK_PARAM(questionNode, ("Invalid question node address"))
+
   auto check = [ms_context](ScAddr const & listenAddr, ScAddr const & edgeAddr, ScAddr const & otherAddr)
   {
     return ms_context->HelperCheckEdge(CoreKeynodes::nrel_answer, edgeAddr, ScType::EdgeAccessConstPosPerm);
@@ -50,6 +54,8 @@ bool AgentUtils::waitAgentResult(ScMemoryContext * ms_context, const ScAddr & qu
 
 ScAddr AgentUtils::initAgent(ScMemoryContext * ms_context, const ScAddr & questionClass, const vector<ScAddr> & params)
 {
+  SC_CHECK_PARAM(questionClass, ("Invalid question class address"))
+
   ScAddr questionNode = createQuestionNode(ms_context);
   assignParamsToQuestionNode(ms_context, questionNode, params);
 
@@ -63,6 +69,8 @@ ScAddr AgentUtils::initAgentAndWaitResult(
       const ScAddr & questionClass,
       const vector<ScAddr> & params)
 {
+  SC_CHECK_PARAM(questionClass, ("Invalid question class address"))
+
   ScAddr questionNode = initAgent(ms_context, questionClass, params);
   if (waitAgentResult(ms_context, questionNode))
   {
@@ -75,10 +83,13 @@ ScAddr AgentUtils::initAgentAndWaitResult(
 void AgentUtils::finishAgentWork(
       ScMemoryContext * ms_context,
       const ScAddr & questionNode,
-      const ScAddr & answer,
+      const ScAddr & answerNode,
       bool isSuccess)
 {
-  ScAddr edgeToAnswer = ms_context->CreateEdge(ScType::EdgeDCommonConst, questionNode, answer);
+  SC_CHECK_PARAM(questionNode, ("Invalid question node address"))
+  SC_CHECK_PARAM(answerNode, ("Invalid answer"))
+
+  ScAddr edgeToAnswer = ms_context->CreateEdge(ScType::EdgeDCommonConst, questionNode, answerNode);
   ms_context->CreateEdge(ScType::EdgeAccessConstPosPerm, CoreKeynodes::nrel_answer, edgeToAnswer);
 
   finishAgentWork(ms_context, questionNode, isSuccess);
@@ -90,8 +101,10 @@ void AgentUtils::finishAgentWork(
       const ScAddrVector & answerElements,
       bool isSuccess)
 {
-  ScAddr answer = GenerationUtils::wrapInSet(ms_context, answerElements, ScType::NodeConstStruct);
-  ScAddr edgeToAnswer = ms_context->CreateEdge(ScType::EdgeDCommonConst, questionNode, answer);
+  SC_CHECK_PARAM(questionNode, ("Invalid question node address"))
+
+  ScAddr answerNode = GenerationUtils::wrapInSet(ms_context, answerElements, ScType::NodeConstStruct);
+  ScAddr edgeToAnswer = ms_context->CreateEdge(ScType::EdgeDCommonConst, questionNode, answerNode);
   ms_context->CreateEdge(ScType::EdgeAccessConstPosPerm, CoreKeynodes::nrel_answer, edgeToAnswer);
 
   finishAgentWork(ms_context, questionNode, isSuccess);
@@ -99,6 +112,8 @@ void AgentUtils::finishAgentWork(
 
 void AgentUtils::finishAgentWork(ScMemoryContext * ms_context, const ScAddr & questionNode, bool isSuccess)
 {
+  SC_CHECK_PARAM(questionNode, ("Invalid question node address"))
+
   ms_context->CreateEdge(ScType::EdgeAccessConstPosPerm, CoreKeynodes::question_finished, questionNode);
   ScAddr statusNode = isSuccess
                   ? CoreKeynodes::question_finished_successfully
