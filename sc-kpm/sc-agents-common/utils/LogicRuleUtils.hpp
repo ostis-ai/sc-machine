@@ -21,4 +21,5 @@ public:
 
   static ScAddr getElseStatement(ScMemoryContext * context, const ScAddr & logicRule);
 };
+
 }

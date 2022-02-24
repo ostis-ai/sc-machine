@@ -22,28 +22,33 @@ class AgentUtils
 public:
   static ScAddr initAgentAndWaitResult(
         ScMemoryContext * ms_context,
-        const ScAddr & questionName,
+        const ScAddr & questionClass,
         const vector<ScAddr> & params);
 
-  static ScAddr initAgent(
-        ScMemoryContext * ms_context,
-        const ScAddr & questionName,
-        const vector<ScAddr> & params);
+  static ScAddr initAgent(ScMemoryContext * ms_context, const ScAddr & questionClass, const vector<ScAddr> & params);
 
-  static bool waitAgentResult(ScMemoryContext * ms_context, const ScAddr & questionNode);
+  static bool waitAgentResult(ScMemoryContext * ms_context, const ScAddr & questionNode, uint32_t waitTime = 30000);
 
-  static ScAddr createQuestionNode(
-        ScMemoryContext * ms_context);
+  static ScAddr createQuestionNode(ScMemoryContext * ms_context);
 
   static void assignParamsToQuestionNode(
         ScMemoryContext * ms_context,
         const ScAddr & questionNode,
         const vector<ScAddr> & params);
 
+  SC_DEPRECATED(0.6.0, "AgentUtils::finishAgentWork"
+                       "(ScMemoryContext * ms_context, const ScAddr & questionNode, "
+                       "const ScAddrVector & answerElements, bool isSuccess = true) instead of.")
   static void finishAgentWork(
         ScMemoryContext * ms_context,
         const ScAddr & questionNode,
         const ScAddr & answer,
+        bool isSuccess = true);
+
+  static void finishAgentWork(
+        ScMemoryContext * ms_context,
+        const ScAddr & questionNode,
+        const ScAddrVector & answerElements,
         bool isSuccess = true);
 
   static void finishAgentWork(

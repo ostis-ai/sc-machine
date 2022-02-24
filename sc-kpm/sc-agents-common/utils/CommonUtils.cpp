@@ -17,10 +17,10 @@ using namespace scAgentsCommon;
 namespace utils
 {
 
-bool CommonUtils::checkType(ScMemoryContext * ms_context, const ScAddr & node, ScType scType)
+bool CommonUtils::checkType(ScMemoryContext * ms_context, const ScAddr & element, ScType scType)
 {
-  ScType nodeType = ms_context->GetElementType(node);
-  return (nodeType & scType) == scType;
+  ScType elementType = ms_context->GetElementType(element);
+  return (elementType & scType) == scType;
 }
 
 int CommonUtils::readInt(ScMemoryContext * ms_context, const ScAddr & scLink)
@@ -42,7 +42,7 @@ int CommonUtils::readInt(ScMemoryContext * ms_context, const ScAddr & scLink)
 
 int CommonUtils::readNumber(ScMemoryContext * ms_context, const ScAddr & number)
 {
-  ScAddr scLink = IteratorUtils::getFirstByOutRelation(ms_context, number, CoreKeynodes::nrel_idtf);
+  ScAddr scLink = IteratorUtils::getAnyByOutRelation(ms_context, number, CoreKeynodes::nrel_idtf);
   return readInt(ms_context, scLink);
 }
 
@@ -65,13 +65,18 @@ string CommonUtils::readString(ScMemoryContext * ms_context, const ScAddr & scLi
 string CommonUtils::getIdtfValue(ScMemoryContext * ms_context, const ScAddr & node, const ScAddr & idtfRelation)
 {
   string value;
-  ScAddr scLink = IteratorUtils::getFirstByOutRelation(ms_context, node, idtfRelation);
+  ScAddr scLink = IteratorUtils::getAnyByOutRelation(ms_context, node, idtfRelation);
   if (scLink.IsValid())
     value = CommonUtils::readString(ms_context, scLink);
   return value;
 }
 
 int CommonUtils::getPowerOfSet(ScMemoryContext * ms_context, const ScAddr & set)
+{
+  return getSetPower(ms_context, set);
+}
+
+size_t CommonUtils::getSetPower(ScMemoryContext * ms_context, const ScAddr & set)
 {
   int power = 0;
   ScIterator3Ptr iterator3 = ms_context->Iterator3(set, ScType::EdgeAccessConstPosPerm, ScType::Unknown);
@@ -85,4 +90,5 @@ bool CommonUtils::isEmpty(ScMemoryContext * ms_context, const ScAddr & set)
   ScIterator3Ptr iterator3 = ms_context->Iterator3(set, ScType::EdgeAccessConstPosPerm, ScType::Unknown);
   return !iterator3->Next();
 }
+
 }
