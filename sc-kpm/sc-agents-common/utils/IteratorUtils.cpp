@@ -14,18 +14,24 @@
 using namespace std;
 using namespace scAgentsCommon;
 
+std::map<size_t, ScAddr> orderRelationsMap;
+
 namespace utils
 {
 
 ScAddr IteratorUtils::getRoleRelation(ScMemoryContext * ms_context, const size_t & index)
 {
-  ScAddr relation = orderRelations.at(index);
-  if (!relation.IsValid())
+  size_t minRrelCountExceeded = 1;
+  SC_ASSERT(index >= minRrelCountExceeded, ());
+
+  auto relationIter = orderRelationsMap.find(index);
+  if (relationIter == orderRelationsMap.end())
   {
-    relation = ms_context->HelperResolveSystemIdtf("rrel_" + to_string(index), ScType::NodeConstRole);
-    orderRelations.at(index) = relation;
+    ScAddr relation = ms_context->HelperResolveSystemIdtf("rrel_" + to_string(index), ScType::NodeConstRole);
+    orderRelationsMap.insert({ index, relation });
+    return relation;
   }
-  return relation;
+  return relationIter->second;
 }
 
 ScAddr IteratorUtils::getFirstFromSet(ScMemoryContext * ms_context, const ScAddr & set, bool getStrictlyFirst)
@@ -60,7 +66,7 @@ ScAddr IteratorUtils::getNextFromSet(
 {
   SC_CHECK_PARAM(set, ("Invalid set address"))
   SC_CHECK_PARAM(previous, ("Invalid previous element address"))
-  SC_CHECK_PARAM(previous, ("Invalid sequence relation address"))
+  SC_CHECK_PARAM(sequenceRelation, ("Invalid sequence relation address"))
 
   std::string const NEXT_ELEMENT_ALIAS = "_next_element";
   std::string const NEXT_ELEMENT_ACCESS_ARC_ALIAS = "_next_element_access_arc";
@@ -91,11 +97,11 @@ ScAddr IteratorUtils::getNextFromSet(
   return {};
 }
 
-vector<ScAddr> IteratorUtils::getAllWithType(ScMemoryContext * ms_context, const ScAddr & set, ScType scType)
+ScAddrVector IteratorUtils::getAllWithType(ScMemoryContext * ms_context, const ScAddr & set, ScType scType)
 {
   SC_CHECK_PARAM(set, ("Invalid set address"))
 
-  vector<ScAddr> elementList;
+  ScAddrVector elementList;
   ScIterator3Ptr iterator3 = ms_context->Iterator3(set, ScType::EdgeAccessConstPosPerm, scType);
   while (iterator3->Next())
   {
@@ -104,15 +110,15 @@ vector<ScAddr> IteratorUtils::getAllWithType(ScMemoryContext * ms_context, const
   return elementList;
 }
 
-vector<ScAddr> IteratorUtils::getAllByInRelation(
+ScAddrVector IteratorUtils::getAllByInRelation(
       ScMemoryContext * ms_context,
       const ScAddr & node,
       const ScAddr & relation)
 {
   SC_CHECK_PARAM(node, ("Invalid node address"))
-  SC_CHECK_PARAM(node, ("Invalid relation address"))
+  SC_CHECK_PARAM(relation, ("Invalid relation address"))
 
-  vector<ScAddr> elementList;
+  ScAddrVector elementList;
   ScIterator5Ptr iterator5 = IteratorUtils::getIterator5(ms_context, node, relation, false);
   while (iterator5->Next())
   {
@@ -130,7 +136,7 @@ ScAddr IteratorUtils::getFirstByInRelation(ScMemoryContext * ms_context, const S
 ScAddr IteratorUtils::getAnyByInRelation(ScMemoryContext * ms_context, const ScAddr & node, const ScAddr & relation)
 {
   SC_CHECK_PARAM(node, ("Invalid node address"))
-  SC_CHECK_PARAM(node, ("Invalid relation address"))
+  SC_CHECK_PARAM(relation, ("Invalid relation address"))
 
   ScIterator5Ptr iterator5 = IteratorUtils::getIterator5(ms_context, node, relation, false);
   if (iterator5->Next())
@@ -148,7 +154,7 @@ ScAddr IteratorUtils::getFirstByOutRelation(ScMemoryContext * ms_context, const 
 ScAddr IteratorUtils::getAnyByOutRelation(ScMemoryContext * ms_context, const ScAddr & node, const ScAddr & relation)
 {
   SC_CHECK_PARAM(node, ("Invalid node address"))
-  SC_CHECK_PARAM(node, ("Invalid relation address"))
+  SC_CHECK_PARAM(relation, ("Invalid relation address"))
 
   ScIterator5Ptr iterator5 = IteratorUtils::getIterator5(ms_context, node, relation);
   if (iterator5->Next())
@@ -165,7 +171,7 @@ ScIterator5Ptr IteratorUtils::getIterator5(
       bool const isBeginNode)
 {
   SC_CHECK_PARAM(node, ("Invalid node address"))
-  SC_CHECK_PARAM(node, ("Invalid relation address"))
+  SC_CHECK_PARAM(relation, ("Invalid relation address"))
 
   bool isRole = CommonUtils::checkType(ms_context, relation, ScType::NodeConstRole);
   ScType edgeType = isRole ? ScType::EdgeAccessConstPosPerm : ScType::EdgeDCommonConst;

@@ -21,14 +21,14 @@ namespace utils
 void AgentUtils::assignParamsToQuestionNode(
       ScMemoryContext * ms_context,
       const ScAddr & questionNode,
-      const vector<ScAddr> & params)
+      const ScAddrVector & params)
 {
   SC_CHECK_PARAM(questionNode, ("Invalid question node address"))
 
   for (size_t i = 0; i < params.size(); i++)
   {
     ScAddr edge = ms_context->CreateEdge(ScType::EdgeAccessConstPosPerm, questionNode, params.at(i));
-    ScAddr relation = IteratorUtils::getRoleRelation(ms_context, i);
+    ScAddr relation = IteratorUtils::getRoleRelation(ms_context, i + 1);
     ms_context->CreateEdge(ScType::EdgeAccessConstPosPerm, relation, edge);
   }
 }
@@ -52,22 +52,22 @@ bool AgentUtils::waitAgentResult(ScMemoryContext * ms_context, const ScAddr & qu
   return waiter.Wait(waitTime);
 }
 
-ScAddr AgentUtils::initAgent(ScMemoryContext * ms_context, const ScAddr & questionClass, const vector<ScAddr> & params)
+ScAddr AgentUtils::initAgent(ScMemoryContext * ms_context, const ScAddr & questionClass, const ScAddrVector & params)
 {
   SC_CHECK_PARAM(questionClass, ("Invalid question class address"))
 
   ScAddr questionNode = createQuestionNode(ms_context);
   assignParamsToQuestionNode(ms_context, questionNode, params);
 
-  ms_context->CreateEdge(ScType::EdgeAccessConstPosPerm, CoreKeynodes::question_initiated, questionNode);
   ms_context->CreateEdge(ScType::EdgeAccessConstPosPerm, questionClass, questionNode);
+  ms_context->CreateEdge(ScType::EdgeAccessConstPosPerm, CoreKeynodes::question_initiated, questionNode);
   return questionNode;
 }
 
 ScAddr AgentUtils::initAgentAndWaitResult(
       ScMemoryContext * ms_context,
       const ScAddr & questionClass,
-      const vector<ScAddr> & params)
+      const ScAddrVector & params)
 {
   SC_CHECK_PARAM(questionClass, ("Invalid question class address"))
 
@@ -87,7 +87,7 @@ void AgentUtils::finishAgentWork(
       bool isSuccess)
 {
   SC_CHECK_PARAM(questionNode, ("Invalid question node address"))
-  SC_CHECK_PARAM(answerNode, ("Invalid answer"))
+  SC_CHECK_PARAM(answerNode, ("Invalid answer node address"))
 
   ScAddr edgeToAnswer = ms_context->CreateEdge(ScType::EdgeDCommonConst, questionNode, answerNode);
   ms_context->CreateEdge(ScType::EdgeAccessConstPosPerm, CoreKeynodes::nrel_answer, edgeToAnswer);
