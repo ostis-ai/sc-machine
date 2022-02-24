@@ -58,7 +58,7 @@ ScAddr GenerationUtils::wrapInOrientedSet(
     ScAddr edge = ms_context->CreateEdge(ScType::EdgeAccessConstPosPerm, set, addrVector.at(i));
     ms_context->CreateEdge(
         ScType::EdgeAccessConstPosPerm,
-        IteratorUtils::getRoleRelation(ms_context, i),
+        IteratorUtils::getRoleRelation(ms_context, i + 1),
         edge
     );
   }

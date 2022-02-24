@@ -54,6 +54,11 @@ int CommonUtils::readNumber(ScMemoryContext * ms_context, const ScAddr & number)
 
 string CommonUtils::readString(ScMemoryContext * ms_context, const ScAddr & scLink)
 {
+  return getLinkContent(ms_context, scLink);
+}
+
+string CommonUtils::getLinkContent(ScMemoryContext * ms_context, const ScAddr & scLink)
+{
   SC_CHECK_PARAM(scLink, ("Invalid link address"))
 
   string result;
@@ -72,10 +77,15 @@ string CommonUtils::readString(ScMemoryContext * ms_context, const ScAddr & scLi
 
 string CommonUtils::getIdtfValue(ScMemoryContext * ms_context, const ScAddr & node, const ScAddr & idtfRelation)
 {
+  return getIdtf(ms_context, node, idtfRelation);
+}
+
+string CommonUtils::getIdtf(ScMemoryContext * ms_context, const ScAddr & node, const ScAddr & idtfRelation)
+{
   string value;
   ScAddr scLink = IteratorUtils::getAnyByOutRelation(ms_context, node, idtfRelation);
   if (scLink.IsValid())
-    value = CommonUtils::readString(ms_context, scLink);
+    value = CommonUtils::getLinkContent(ms_context, scLink);
   return value;
 }
 

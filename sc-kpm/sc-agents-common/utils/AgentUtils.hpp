@@ -6,9 +6,6 @@
 
 #pragma once
 
-#include <string>
-#include <vector>
-
 #include <sc-memory/sc_memory.hpp>
 #include <sc-memory/sc_addr.hpp>
 
@@ -23,9 +20,9 @@ public:
   static ScAddr initAgentAndWaitResult(
         ScMemoryContext * ms_context,
         const ScAddr & questionClass,
-        const vector<ScAddr> & params);
+        const ScAddrVector & params);
 
-  static ScAddr initAgent(ScMemoryContext * ms_context, const ScAddr & questionClass, const vector<ScAddr> & params);
+  static ScAddr initAgent(ScMemoryContext * ms_context, const ScAddr & questionClass, const ScAddrVector & params);
 
   static bool waitAgentResult(ScMemoryContext * ms_context, const ScAddr & questionNode, uint32_t waitTime = 30000);
 
@@ -34,9 +31,9 @@ public:
   static void assignParamsToQuestionNode(
         ScMemoryContext * ms_context,
         const ScAddr & questionNode,
-        const vector<ScAddr> & params);
+        const ScAddrVector & params);
 
-  SC_DEPRECATED(0.6.0, "AgentUtils::finishAgentWork"
+  SC_DEPRECATED(0.6.0, "Use AgentUtils::finishAgentWork"
                        "(ScMemoryContext * ms_context, const ScAddr & questionNode, "
                        "const ScAddrVector & answerElements, bool isSuccess = true) instead of.")
   static void finishAgentWork(
@@ -57,4 +54,5 @@ public:
         bool isSuccess = true);
 
 };
+
 }
