@@ -47,24 +47,37 @@ public:
         * (more scores - should be search first).
         * Also need to store all replacements that need to be resolved
         */
+      auto const CalculateScore = [this](ScTemplateConstr3 const & constr)
+      {
+        uint8_t score = 0;
+        auto const & values = constr.GetValues();
+        if (values[1].IsAddr() && values[0].IsAssign() && values[2].IsAssign())
+          score += kScoreEdge;
+        else if (values[0].IsAddr() && values[1].IsAssign() && values[2].IsAddr())
+          score += kScoreOther * 3; // should be a sum of (f_a_a and a_a_f)
+        else if (values[0].IsAddr() || values[2].IsAddr())
+          score += kScoreOther * 2;
+        else
+        {
+          for (auto const & other: m_template.m_constructions)
+          {
+            auto const & otherValues = other.GetValues();
+            if (values[1].m_replacementName == otherValues[2].m_replacementName)
+            {
+              score += kScoreOther;
+              break;
+            }
+          }
+        }
+
+        return score;
+      };
+
       std::vector<uint8_t> tripleScores(m_template.m_constructions.size());
       std::unordered_map<std::string, std::vector<size_t>> replDependMap;
       for (size_t i = 0; i < m_template.m_constructions.size(); ++i)
       {
         ScTemplateConstr3 const & triple = m_template.m_constructions[i];
-        auto const CalculateScore = [](ScTemplateConstr3 const & constr)
-        {
-          uint8_t score = 0;
-          auto const & values = constr.GetValues();
-          if (values[1].IsAddr() && values[0].IsAssign() && values[2].IsAssign())
-            score += kScoreEdge;
-          else if (values[0].IsAddr() && values[1].IsAssign() && values[2].IsAddr())
-            score += kScoreOther * 2; // should be a sum of (f_a_a and a_a_f)
-          else if (values[0].IsAddr() || values[2].IsAddr())
-            score += kScoreOther;
-
-          return score;
-        };
         tripleScores[i] = CalculateScore(triple);
         // doesn't add edges into depend map
         auto const TryAppendRepl = [&](ScTemplateItemValue const & value, size_t idx)
@@ -74,7 +87,7 @@ public:
             replDependMap[value.m_replacementName].push_back((i << 2) + idx);
         };
 
-        // do not use loop, to make it faster (not all compilators will make a linear code)
+        // do not use loop, to make it faster (not all compilers will make a linear code)
         TryAppendRepl(triple.GetValues()[0], 0);
         TryAppendRepl(triple.GetValues()[1], 1);
         TryAppendRepl(triple.GetValues()[2], 2);
@@ -125,12 +138,12 @@ public:
           usedReplacements.insert(name);
         }
 
-        // find next non used triple
+        // find next non-used triple
         while (isTripleCached[preCache[preCacheIdx]])
           preCacheIdx++;
 
         size_t bestTripleIdx = preCache[preCacheIdx];
-        // now update scores of resolved triples and find best one scores
+        // now update scores of resolved triples and find the best one scores
         for (size_t idx : resolvedTriples)
         {
           // unpack it
@@ -256,9 +269,7 @@ public:
     }
 
     //// unknown iterator type
-    //SC_THROW_EXCEPTION(utils::ExceptionInvalidState, "Unknown iterator type");
-
-    return ScIterator3Ptr();
+    return {};
   }
 
   bool CheckInStruct(ScAddr const & addr)
@@ -324,7 +335,15 @@ public:
       if (newIteration)
       {
         it = CreateIterator(constr);
-        iterators.push(it);
+
+        if (it)
+        {
+          iterators.push(it);
+        }
+        else
+        {
+          continue;
+        }
       }
       else
       {
@@ -345,7 +364,7 @@ public:
       {
         edges[orderIndex] = res2;
 
-        // do not make cycle for optimization issues (remove comparsion expresion)
+        // do not make cycle for optimization issues (remove comparison expression)
         m_resultAddrs[resultIdx] = res1;
         m_resultAddrs[resultIdx + 1] = res2;
         m_resultAddrs[resultIdx + 2] = res3;

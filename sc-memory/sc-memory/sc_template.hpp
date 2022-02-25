@@ -416,9 +416,6 @@ public:
     {
       SC_THROW_EXCEPTION(utils::ExceptionItemNotFound, "Can't find replacement " + name);
     }
-
-    static ScAddr empty;
-    return empty;
   }
 
   SC_DEPRECATED(0.3.0, "Use ScTemplateGenResult::Size instead")
