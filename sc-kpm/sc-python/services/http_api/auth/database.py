@@ -36,7 +36,7 @@ class DataBase:
     #     return datetime.date.fromtimestamp(time.time() + tornado.options.options.user_key_expire_time)
 
     def is_user_valid(self, name, pass_hash):
-        selected_user = self._session().query(User).filter(User.name == name and User.pass_hash == pass_hash).first()
+        selected_user = self._session().query(User).filter(User.name == name, User.pass_hash == pass_hash).first()
         return selected_user is not None
 
     def update_user(self, u):
