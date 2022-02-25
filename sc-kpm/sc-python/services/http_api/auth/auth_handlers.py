@@ -3,21 +3,17 @@ import jwt
 import time
 import tornado
 
-import constants as cnt
+from http_api.auth import constants as cnt
+from http_api.auth.database import DataBase
 
 
-class PrintTestHandler(tornado.web.RequestHandler):
-    def get(self):
-        print("Test")
-
-
-class Token(tornado.web.RequestHandler):
+class TokenHandler(tornado.web.RequestHandler):
     def post(self):
-        database = db.DataBase()
+        database = DataBase()
         username = self.get_argument(cnt.USER, False)
         pass_hash = self.get_argument(cnt.PASS, False)
         if database.is_user_valid(username, pass_hash):
-            access_token_data = Token._generate_access_token()
+            access_token_data = TokenHandler._generate_access_token()
             response = json.dumps({
                 cnt.ACCESS_TOKEN: access_token_data.decode(),
                 cnt.TOKEN_TYPE: cnt.JWT,
@@ -29,7 +25,7 @@ class Token(tornado.web.RequestHandler):
 
     @staticmethod
     def _generate_access_token():
-        with open('private.pem', 'rb') as file:
+        with open('../sc-machine/sc-kpm/sc-python/services/http_api/auth/private.pem', 'rb') as file:
             private_key = file.read()
         payload = {
             "iss": cnt.ISSUER,
@@ -40,13 +36,16 @@ class Token(tornado.web.RequestHandler):
 
 
 # TODO: add user info validation
-class AddUser(tornado.web.RequestHandler):
+class AddUserHandler(tornado.web.RequestHandler):
     def post(self):
-        database = db.DataBase()
-        username = self.get_argument('user', False)
-        pass_hash = self.get_argument('pass', False)
-        email = self.get_argument('email', False)
-        if not (username and pass_hash and email):
+        database = DataBase()
+        username = self.get_argument(cnt.USER, False)
+        pass_hash = self.get_argument(cnt.PASS, False)
+        if not (username and pass_hash):
             raise tornado.web.HTTPError(400, cnt.MSG_INVALID_REQUEST)
         else:
-            database.add_user(username, pass_hash, email)
+            database.add_user(username, pass_hash)
+            response = json.dumps({
+                cnt.USER: username
+            })
+            self.write(response)
