@@ -1,15 +1,17 @@
-from sqlalchemy import Column, ForeignKey, Integer, TIMESTAMP, String
+from sqlalchemy import Column, Integer, String
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import relationship
 
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
+
+import http_api.auth.constants as cnt
+from http_api.auth.config import params
 
 Base = declarative_base()
 
 
 class User(Base):
-    __tablename__ = 'user'
+    __tablename__ = cnt.USER
     id = Column(Integer, primary_key=True, unique=True)
     name = Column(String(255), nullable=False)
     pass_hash = Column(String(255), nullable=False)
@@ -17,7 +19,7 @@ class User(Base):
 
 class DataBase:
     def __init__(self):
-        self.engine = create_engine('sqlite:///' + '../sc-machine/sc-kpm/sc-python/services/http_api/auth/data.db')
+        self.engine = create_engine(params[cnt.SQLITE_DB_PATH])
         self.session = None
 
     def __del__(self):
@@ -31,9 +33,6 @@ class DataBase:
         if not self.session:
             self.session = sessionmaker(bind=self.engine)()
         return self.session
-
-    # def new_expire_time(self):
-    #     return datetime.date.fromtimestamp(time.time() + tornado.options.options.user_key_expire_time)
 
     def is_user_valid(self, name, pass_hash):
         selected_user = self._session().query(User).filter(User.name == name, User.pass_hash == pass_hash).first()
