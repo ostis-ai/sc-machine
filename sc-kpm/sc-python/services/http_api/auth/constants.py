@@ -1,6 +1,6 @@
 ACCESS_TOKEN = 'access_token'
-JWT_LIFE_SPAN = 1800
-ISSUER = 'sc-auth-server'
+JWT_LIFE_SPAN = 'jwt_life_span'
+ISSUER = 'issuer'
 USER = 'user'
 PASS = 'pass'
 EXPIRES_IN = 'expires_in'
@@ -9,7 +9,6 @@ JWT = 'JWT'
 SQLITE_DB_PATH = 'sqlite_db_path'
 PRIVATE_KEY = 'private_key'
 USERNAME_PATTERN = 'username_pattern'
-
-# messages
-MSG_ACCESS_DENIED = 'Access denied'
-MSG_INVALID_REQUEST = 'Invalid request'
+PASSWORD_PATTERN = 'password_pattern'
+MSG_ACCESS_DENIED = 'msg_access_denied'
+MSG_INVALID_REQUEST = 'msg_invalid_request'
