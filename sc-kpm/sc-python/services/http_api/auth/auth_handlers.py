@@ -6,7 +6,7 @@ import tornado
 from http_api.auth import constants as cnt
 from http_api.auth.database import DataBase
 from http_api.auth.config import params
-from http_api.auth.validators import username_validator
+from http_api.auth.validators import password_validator, username_validator
 
 
 class TokenHandler(tornado.web.RequestHandler):
@@ -23,7 +23,7 @@ class TokenHandler(tornado.web.RequestHandler):
             })
             self.write(response)
         else:
-            raise tornado.web.HTTPError(403, cnt.MSG_ACCESS_DENIED)
+            raise tornado.web.HTTPError(403, params[cnt.MSG_ACCESS_DENIED])
 
     @staticmethod
     def _generate_access_token() -> bytes:
@@ -41,10 +41,10 @@ class TokenHandler(tornado.web.RequestHandler):
 class AddUserHandler(tornado.web.RequestHandler):
     def post(self) -> None:
         database = DataBase()
-        username = self.get_argument(cnt.USER, False)
-        pass_hash = self.get_argument(cnt.PASS, False)
-        if not (username and pass_hash and username_validator.validate(username)):
-            raise tornado.web.HTTPError(400, cnt.MSG_INVALID_REQUEST)
+        username = self.get_argument(cnt.USER, None)
+        pass_hash = self.get_argument(cnt.PASS, None)
+        if not (username_validator.validate(username) and password_validator.validate(pass_hash)):
+            raise tornado.web.HTTPError(400, params[cnt.MSG_INVALID_REQUEST])
         else:
             database.add_user(username, pass_hash)
             response = json.dumps({
