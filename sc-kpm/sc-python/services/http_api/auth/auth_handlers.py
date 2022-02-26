@@ -19,7 +19,7 @@ class TokenHandler(tornado.web.RequestHandler):
             response = json.dumps({
                 cnt.ACCESS_TOKEN: access_token_data.decode(),
                 cnt.TOKEN_TYPE: cnt.JWT,
-                cnt.EXPIRES_IN: cnt.JWT_LIFE_SPAN
+                cnt.EXPIRES_IN: params[cnt.JWT_LIFE_SPAN]
             })
         else:
             response = get_response_message(params[cnt.MSG_CODES][cnt.MSG_USER_NOT_FOUND])
@@ -30,8 +30,8 @@ class TokenHandler(tornado.web.RequestHandler):
         with open(params[cnt.PRIVATE_KEY], 'rb') as file:
             private_key = file.read()
         payload = {
-            "iss": cnt.ISSUER,
-            "exp": time.time() + cnt.JWT_LIFE_SPAN,
+            "iss": params[cnt.ISSUER],
+            "exp": time.time() + params[cnt.JWT_LIFE_SPAN],
         }
         access_token = jwt.encode(payload, key=private_key, algorithm='HS256')
         return access_token
