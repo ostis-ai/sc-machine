@@ -14,4 +14,11 @@ params = {
     # messages
     cnt.MSG_ACCESS_DENIED: 'Access denied',
     cnt.MSG_INVALID_REQUEST: 'Invalid request',
+    # message codes
+    cnt.MSG_CODES: {
+        cnt.MSG_ALL_DONE: 0,
+        cnt.MSG_INVALID_USERNAME: 1,
+        cnt.MSG_INVALID_PASSWORD: 2,
+        cnt.MSG_USER_NOT_FOUND: 3,
+    }
 }

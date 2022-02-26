@@ -21,9 +21,9 @@ class TokenHandler(tornado.web.RequestHandler):
                 cnt.TOKEN_TYPE: cnt.JWT,
                 cnt.EXPIRES_IN: cnt.JWT_LIFE_SPAN
             })
-            self.write(response)
         else:
-            raise tornado.web.HTTPError(403, params[cnt.MSG_ACCESS_DENIED])
+            response = get_response_message(params[cnt.MSG_CODES][cnt.MSG_USER_NOT_FOUND])
+        self.write(response)
 
     @staticmethod
     def _generate_access_token() -> bytes:
@@ -43,11 +43,18 @@ class AddUserHandler(tornado.web.RequestHandler):
         database = DataBase()
         username = self.get_argument(cnt.USER, None)
         pass_hash = self.get_argument(cnt.PASS, None)
-        if not (username_validator.validate(username) and password_validator.validate(pass_hash)):
-            raise tornado.web.HTTPError(400, params[cnt.MSG_INVALID_REQUEST])
+        if not (username_validator.validate(username)):
+            response = get_response_message(params[cnt.MSG_CODES][cnt.MSG_INVALID_USERNAME])
+        elif not (password_validator.validate(pass_hash)):
+            response = get_response_message(params[cnt.MSG_CODES][cnt.MSG_INVALID_PASSWORD])
         else:
             database.add_user(username, pass_hash)
-            response = json.dumps({
-                cnt.USER: username
-            })
-            self.write(response)
+            response = get_response_message(params[cnt.MSG_CODES][cnt.MSG_ALL_DONE])
+        self.write(response)
+
+
+def get_response_message(msg_code: int) -> str:
+    response = json.dumps({
+        cnt.MSG_CODE: msg_code
+    })
+    return response

@@ -18,14 +18,11 @@ class User(Base):
 
 
 class DataBase:
-    def __init__(self):
+    def __init__(self) -> None:
         self.engine = create_engine(params[cnt.SQLITE_DB_PATH])
         self.session = None
 
-    def __del__(self):
-        pass
-
-    def init(self):
+    def init(self) -> None:
         Base.metadata.create_all(self.engine)
         self._session().commit()
 
