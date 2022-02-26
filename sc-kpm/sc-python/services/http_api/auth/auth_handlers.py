@@ -5,10 +5,12 @@ import tornado
 
 from http_api.auth import constants as cnt
 from http_api.auth.database import DataBase
+from http_api.auth.config import params
+from http_api.auth.validators import username_validator
 
 
 class TokenHandler(tornado.web.RequestHandler):
-    def post(self):
+    def post(self) -> None:
         database = DataBase()
         username = self.get_argument(cnt.USER, False)
         pass_hash = self.get_argument(cnt.PASS, False)
@@ -24,8 +26,8 @@ class TokenHandler(tornado.web.RequestHandler):
             raise tornado.web.HTTPError(403, cnt.MSG_ACCESS_DENIED)
 
     @staticmethod
-    def _generate_access_token():
-        with open('../sc-machine/sc-kpm/sc-python/services/http_api/auth/private.pem', 'rb') as file:
+    def _generate_access_token() -> bytes:
+        with open(params[cnt.PRIVATE_KEY], 'rb') as file:
             private_key = file.read()
         payload = {
             "iss": cnt.ISSUER,
@@ -37,11 +39,11 @@ class TokenHandler(tornado.web.RequestHandler):
 
 # TODO: add user info validation
 class AddUserHandler(tornado.web.RequestHandler):
-    def post(self):
+    def post(self) -> None:
         database = DataBase()
         username = self.get_argument(cnt.USER, False)
         pass_hash = self.get_argument(cnt.PASS, False)
-        if not (username and pass_hash):
+        if not (username and pass_hash and username_validator.validate(username)):
             raise tornado.web.HTTPError(400, cnt.MSG_INVALID_REQUEST)
         else:
             database.add_user(username, pass_hash)
