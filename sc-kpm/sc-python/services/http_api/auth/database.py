@@ -35,6 +35,10 @@ class DataBase:
         selected_user = self._session().query(User).filter(User.name == name, User.pass_hash == pass_hash).first()
         return selected_user is not None
 
+    def is_such_user_in_base(self, name):
+        selected_user = self._session().query(User).filter(User.name == name).first()
+        return selected_user is not None
+
     def update_user(self, u):
         self._session().merge(u)
         self._session().commit()

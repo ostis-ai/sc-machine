@@ -5,6 +5,7 @@ params = {
     # path params
     cnt.SQLITE_DB_PATH: 'sqlite:///' + '../sc-machine/sc-kpm/sc-python/services/http_api/auth/data.db',
     cnt.PRIVATE_KEY: '../sc-machine/sc-kpm/sc-python/services/http_api/auth/private.pem',
+    cnt.PUBLIC_KEY: '../sc-machine/sc-kpm/sc-python/services/http_api/auth/public.pem',
     # validator params
     cnt.USERNAME_PATTERN: '^[a-zA-Z][a-zA-Z0-9-_.]{1,20}$',
     cnt.PASSWORD_PATTERN: '^(?=.*\\d)(?=.*[a-z])(?=.*[A-Z])(?!.*\\s).*$',
@@ -20,5 +21,6 @@ params = {
         cnt.MSG_INVALID_USERNAME: 1,
         cnt.MSG_INVALID_PASSWORD: 2,
         cnt.MSG_USER_NOT_FOUND: 3,
+        cnt.MSG_USER_IS_IN_BASE: 4,
     }
 }
