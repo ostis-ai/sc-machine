@@ -6,7 +6,7 @@ import tornado
 from http_api.auth import constants as cnt
 from http_api.auth.database import DataBase
 from http_api.auth.config import params
-from http_api.auth.validators import password_validator, username_validator
+from http_api.auth.validators import password_validator, username_validator, TokenValidator
 
 
 class TokenHandler(tornado.web.RequestHandler):
@@ -16,6 +16,7 @@ class TokenHandler(tornado.web.RequestHandler):
         pass_hash = self.get_argument(cnt.PASS, False)
         if database.is_user_valid(username, pass_hash):
             access_token_data = TokenHandler._generate_access_token()
+            # print(TokenValidator.verify_access_token(access_token_data))
             response = json.dumps({
                 cnt.ACCESS_TOKEN: access_token_data.decode(),
                 cnt.TOKEN_TYPE: cnt.JWT,
@@ -33,7 +34,7 @@ class TokenHandler(tornado.web.RequestHandler):
             "iss": params[cnt.ISSUER],
             "exp": time.time() + params[cnt.JWT_LIFE_SPAN],
         }
-        access_token = jwt.encode(payload, key=private_key, algorithm='HS256')
+        access_token = jwt.encode(payload, key=private_key, algorithm='RS256')
         return access_token
 
 
