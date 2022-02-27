@@ -41,7 +41,8 @@ public:
         preCache[i] = i;
 
       static const size_t kScoreEdge = 5;
-      static const size_t kScoreOther = 1;
+      static const size_t kScoreOther = 2;
+      static const size_t kScorePoweredEdge = 1;
 
       /** First of all we need to calculate scores for all triples
         * (more scores - should be search first).
@@ -54,9 +55,9 @@ public:
         if (values[1].IsAddr() && values[0].IsAssign() && values[2].IsAssign())
           score += kScoreEdge;
         else if (values[0].IsAddr() && values[1].IsAssign() && values[2].IsAddr())
-          score += kScoreOther * 3; // should be a sum of (f_a_a and a_a_f)
+          score += kScoreOther * 2; // should be a sum of (f_a_a and a_a_f)
         else if (values[0].IsAddr() || values[2].IsAddr())
-          score += kScoreOther * 2;
+          score += kScoreOther;
         else
         {
           for (auto const & other: m_template.m_constructions)
@@ -64,7 +65,7 @@ public:
             auto const & otherValues = other.GetValues();
             if (values[1].m_replacementName == otherValues[2].m_replacementName)
             {
-              score += kScoreOther;
+              score += kScorePoweredEdge;
               break;
             }
           }
@@ -98,6 +99,14 @@ public:
       {
         return (tripleScores[a] > tripleScores[b]);
       });
+
+      for (unsigned char & tripleScore : tripleScores)
+      {
+        if (tripleScore == kScorePoweredEdge)
+        {
+          tripleScore = 0;
+        }
+      }
 
       // now we need to append triples, in order, when previous resolve replacement for a next one
       ScTemplate::ProcessOrder & cache = m_template.m_searchCachedOrder;
