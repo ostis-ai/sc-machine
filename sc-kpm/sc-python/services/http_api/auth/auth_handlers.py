@@ -18,6 +18,7 @@ class TokenHandler(tornado.web.RequestHandler):
             access_token_data = TokenHandler._generate_access_token()
             # print(TokenValidator.verify_access_token(access_token_data))
             response = json.dumps({
+                cnt.MSG_CODE: params[cnt.MSG_CODES][cnt.MSG_ALL_DONE],
                 cnt.ACCESS_TOKEN: access_token_data.decode(),
                 cnt.TOKEN_TYPE: cnt.JWT,
                 cnt.EXPIRES_IN: params[cnt.JWT_LIFE_SPAN]
@@ -48,6 +49,8 @@ class AddUserHandler(tornado.web.RequestHandler):
             response = get_response_message(params[cnt.MSG_CODES][cnt.MSG_INVALID_USERNAME])
         elif not (password_validator.validate(pass_hash)):
             response = get_response_message(params[cnt.MSG_CODES][cnt.MSG_INVALID_PASSWORD])
+        elif database.is_such_user_in_base(username):
+            response = get_response_message(params[cnt.MSG_CODES][cnt.MSG_USER_IS_IN_BASE])
         else:
             database.add_user(username, pass_hash)
             response = get_response_message(params[cnt.MSG_CODES][cnt.MSG_ALL_DONE])

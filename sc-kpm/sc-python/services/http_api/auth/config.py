@@ -21,5 +21,6 @@ params = {
         cnt.MSG_INVALID_USERNAME: 1,
         cnt.MSG_INVALID_PASSWORD: 2,
         cnt.MSG_USER_NOT_FOUND: 3,
+        cnt.MSG_USER_IS_IN_BASE: 4,
     }
 }
