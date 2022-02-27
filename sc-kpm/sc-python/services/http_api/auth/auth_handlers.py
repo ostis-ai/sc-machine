@@ -16,7 +16,7 @@ class TokenHandler(tornado.web.RequestHandler):
         pass_hash = self.get_argument(cnt.PASS, False)
         if database.is_user_valid(username, pass_hash):
             access_token_data = TokenHandler._generate_access_token()
-            # print(TokenValidator.verify_access_token(access_token_data))
+            print(TokenValidator.verify_access_token(access_token_data))
             response = json.dumps({
                 cnt.MSG_CODE: params[cnt.MSG_CODES][cnt.MSG_ALL_DONE],
                 cnt.ACCESS_TOKEN: access_token_data.decode(),
@@ -32,9 +32,10 @@ class TokenHandler(tornado.web.RequestHandler):
         with open(params[cnt.PRIVATE_KEY], 'rb') as file:
             private_key = file.read()
         payload = {
-            "iss": params[cnt.ISSUER],
-            "exp": time.time() + params[cnt.JWT_LIFE_SPAN],
+            cnt.ISS: params[cnt.ISSUER],
+            cnt.EXP: time.time() + params[cnt.JWT_LIFE_SPAN],
         }
+        print(payload)
         access_token = jwt.encode(payload, key=private_key, algorithm='RS256')
         return access_token
 

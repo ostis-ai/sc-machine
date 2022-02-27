@@ -25,7 +25,7 @@ class TokenValidator:
             public_key = file.read()
         try:
             jwt.decode(access_token, public_key,
-                       issuer=cnt.ISSUER,
+                       issuer=params[cnt.ISSUER],
                        algorithm='RS256')
         except (jwt.exceptions.InvalidTokenError,
                 jwt.exceptions.InvalidSignatureError,
