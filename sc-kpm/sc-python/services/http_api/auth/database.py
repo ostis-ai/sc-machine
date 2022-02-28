@@ -1,8 +1,8 @@
-from sqlalchemy import Column, Integer, String
+from sqlalchemy import Column, Integer, String, ForeignKey
 from sqlalchemy.ext.declarative import declarative_base
 
 from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy.orm import sessionmaker, relationship
 
 import http_api.auth.constants as cnt
 from http_api.auth.config import params
@@ -15,6 +15,14 @@ class User(Base):
     id = Column(Integer, primary_key=True, unique=True)
     name = Column(String(255), nullable=False)
     pass_hash = Column(String(255), nullable=False)
+    role_id = Column(Integer, ForeignKey('role.id'))
+    role = relationship("Role")
+
+
+class Role(Base):
+    __tablename__ = cnt.ROLE
+    id = Column(Integer, primary_key=True, unique=True)
+    name = Column(String(255), nullable=False)
 
 
 class DataBase:
