@@ -41,9 +41,11 @@ class TokenHandler(tornado.web.RequestHandler):
 # TODO: add user info validation
 class AddUserHandler(tornado.web.RequestHandler):
     def post(self) -> None:
+        access_token = self.get_argument(cnt.ACCESS_TOKEN, None)
+        if access_token is None or not TokenValidator.verify_access_token(access_token):
+            raise tornado.web.HTTPError(403, params[cnt.MSG_ACCESS_DENIED])
         database = DataBase()
-        username = self.get_argument(cnt.USER, None)
-        pass_hash = self.get_argument(cnt.PASS, None)
+        username, pass_hash = self.get_argument(cnt.USER, None), self.get_argument(cnt.PASS, None)
         if not (username_validator.validate(username)):
             response = get_response_message(params[cnt.MSG_CODES][cnt.MSG_INVALID_USERNAME])
         elif not (password_validator.validate(pass_hash)):
