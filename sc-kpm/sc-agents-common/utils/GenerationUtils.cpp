@@ -28,9 +28,7 @@ ScAddr GenerationUtils::wrapInOrientedSetBySequenceRelation(
 {
   ScAddr set = ms_context->CreateNode(setType);
   if (addrVector.empty())
-  {
     return set;
-  }
 
   ScAddr prevEdge = ms_context->CreateEdge(ScType::EdgeAccessConstPosPerm, set, addrVector.at(0));
   ms_context->CreateEdge(ScType::EdgeAccessConstPosPerm, CoreKeynodes::rrel_1, prevEdge);
@@ -60,7 +58,7 @@ ScAddr GenerationUtils::wrapInOrientedSet(
     ScAddr edge = ms_context->CreateEdge(ScType::EdgeAccessConstPosPerm, set, addrVector.at(i));
     ms_context->CreateEdge(
         ScType::EdgeAccessConstPosPerm,
-        ms_context->HelperResolveSystemIdtf("rrel_" + std::to_string(i + 1)),
+        IteratorUtils::getRoleRelation(ms_context, i + 1),
         edge
     );
   }
@@ -147,4 +145,5 @@ bool GenerationUtils::generateRelationBetween(
   }
   return isSuccess;
 }
+
 }

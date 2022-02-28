@@ -91,6 +91,9 @@ ScAddr SetOperationsUtils::complementSets(
     const ScType & resultType
 )
 {
+  SC_CHECK_PARAM(firstSet, ("Invalid first set address"))
+  SC_CHECK_PARAM(secondSet, ("Invalid second set address"))
+
   ScAddr resultSet = context->CreateNode(resultType);
 
   ScIterator3Ptr secondIter3 = context->Iterator3(
@@ -118,7 +121,10 @@ bool SetOperationsUtils::compareSets(
     const ScAddr & secondSet
 )
 {
-  bool isEqual = CommonUtils::getPowerOfSet(context, firstSet) == CommonUtils::getPowerOfSet(context, secondSet);
+  SC_CHECK_PARAM(firstSet, ("Invalid first set address"))
+  SC_CHECK_PARAM(secondSet, ("Invalid second set address"))
+
+  bool isEqual = CommonUtils::getSetPower(context, firstSet) == CommonUtils::getSetPower(context, secondSet);
   if (!isEqual)
   {
     return false;
