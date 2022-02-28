@@ -94,24 +94,26 @@ public:
 
 #define SC_NOT_IMPLEMENTED(_msg) SC_THROW_EXCEPTION(utils::ExceptionNotImplemented, _msg)
 
-#define _ASSERT_IMPL(_expr, _msg, _file, _line) \
+#define _ASSERT_IMPL(_exception_class, _expr, _msg, _file, _line) \
 { \
   if (!(_expr)) \
 { \
   std::string _message = ::utils::impl::Message("SC_ASSERT("#_expr")", ::utils::impl::Message _msg); \
-  THROW_EXCEPTION(::utils::ExceptionAssert, _message, _file, _line); \
+  THROW_EXCEPTION(_exception_class, _message, _file, _line); \
 } \
 }
 
 #if SC_DEBUG_MODE
-#	define SC_ASSERT(_expr, _msg) { _ASSERT_IMPL( _expr, _msg, __FILE__, __LINE__ ); }
+#	define SC_ASSERT(_expr, _msg) { _ASSERT_IMPL(::utils::ExceptionAssert, _expr, _msg, __FILE__, __LINE__ ); }
 // will be removed use SC_ASSERT instead
-#	define ASSERT(_expr, _msg) { _ASSERT_IMPL(_expr, _msg, __FILE__, __LINE__); }
+#	define ASSERT(_expr, _msg) { _ASSERT_IMPL(::utils::ExceptionAssert, _expr, _msg, __FILE__, __LINE__); }
 #else
 #	define SC_ASSERT(_expr, _msg) ((void)0)
 // will be removed use SC_ASSERT instead
 #	define ASSERT(_expr, _msg) ((void)0)
 #endif
+
+#	define SC_CHECK_PARAM(_expr, _msg) { _ASSERT_IMPL(::utils::ExceptionInvalidParams, (_expr).IsValid(), _msg, __FILE__, __LINE__ ); }
 
 #define _CHECK_IMPL(_expr, _msg, _name) \
   do \

@@ -6,8 +6,6 @@
 
 #pragma once
 
-#include <string>
-
 #include <sc-memory/sc_memory.hpp>
 #include <sc-memory/sc_addr.hpp>
 #include <sc-memory/sc_type.hpp>
@@ -23,7 +21,12 @@ namespace utils
 class IteratorUtils
 {
 public:
-  static ScAddr getFirstFromSet(ScMemoryContext * ms_context, const ScAddr & set, bool get_strictly_first = false);
+  static ScAddr getRoleRelation(ScMemoryContext * ms_context, size_t const & index);
+
+  SC_DEPRECATED(0.6.0, "Use IteratorUtils::getAnyFromSet(ScMemoryContext * ms_context, const ScAddr & set) instead of.")
+  static ScAddr getFirstFromSet(ScMemoryContext * ms_context, const ScAddr & set, bool getStrictlyFirst = false);
+
+  static ScAddr getAnyFromSet(ScMemoryContext * ms_context, const ScAddr & set);
 
   static ScAddr getNextFromSet(
         ScMemoryContext * ms_context,
@@ -31,19 +34,27 @@ public:
         const ScAddr & previous,
         const ScAddr & sequenceRelation = scAgentsCommon::CoreKeynodes::nrel_basic_sequence);
 
-  static vector<ScAddr> getAllWithType(ScMemoryContext * ms_context, const ScAddr & set, ScType scType);
+  static ScAddrVector getAllWithType(ScMemoryContext * ms_context, const ScAddr & set, ScType scType);
 
-  static vector<ScAddr> getAllByInRelation(ScMemoryContext * ms_context, const ScAddr & node, const ScAddr & relation);
+  static ScAddrVector getAllByInRelation(ScMemoryContext * ms_context, const ScAddr & node, const ScAddr & relation);
 
+  SC_DEPRECATED(0.6.0, "Use IteratorUtils::getAnyByInRelation"
+                       "(ScMemoryContext * ms_context, const ScAddr & node, const ScAddr & relation) instead of.")
   static ScAddr getFirstByInRelation(ScMemoryContext * ms_context, const ScAddr & node, const ScAddr & relation);
 
+  static ScAddr getAnyByInRelation(ScMemoryContext * ms_context, const ScAddr & node, const ScAddr & relation);
+
+  SC_DEPRECATED(0.6.0, "Use IteratorUtils::getAnyByOutRelation"
+                       "(ScMemoryContext * ms_context, const ScAddr & node, const ScAddr & relation) instead of.")
   static ScAddr getFirstByOutRelation(ScMemoryContext * ms_context, const ScAddr & node, const ScAddr & relation);
+
+  static ScAddr getAnyByOutRelation(ScMemoryContext * ms_context, const ScAddr & node, const ScAddr & relation);
 
   static ScIterator5Ptr getIterator5(
         ScMemoryContext * ms_context,
         const ScAddr & node,
         const ScAddr & relation,
-        const bool nodeIsStart = true);
-
+        bool nodeIsStart = true);
 };
+
 }

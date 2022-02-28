@@ -18,9 +18,11 @@ namespace utils
 
 ScAddr LogicRuleUtils::getIfStatement(ScMemoryContext * context, const ScAddr & logicRule)
 {
+  SC_CHECK_PARAM(logicRule, ("Invalid logic rule address"))
+
   ScAddr ifStatement;
   ScAddr implEdge;
-  implEdge = IteratorUtils::getFirstByOutRelation(context, logicRule, CoreKeynodes::rrel_main_key_sc_element);
+  implEdge = IteratorUtils::getAnyByOutRelation(context, logicRule, CoreKeynodes::rrel_main_key_sc_element);
   if (context->HelperCheckEdge(CoreKeynodes::nrel_implication, implEdge, ScType::EdgeAccessConstPosPerm))
     ifStatement = context->GetEdgeSource(implEdge);
   return ifStatement;
@@ -28,13 +30,14 @@ ScAddr LogicRuleUtils::getIfStatement(ScMemoryContext * context, const ScAddr & 
 
 ScAddr LogicRuleUtils::getElseStatement(ScMemoryContext * context, const ScAddr & logicRule)
 {
+  SC_CHECK_PARAM(logicRule, ("Invalid logic rule address"))
+
   ScAddr implEdge;
   ScAddr elseStatement;
-  implEdge = IteratorUtils::getFirstByOutRelation(context, logicRule, CoreKeynodes::rrel_main_key_sc_element);
+  implEdge = IteratorUtils::getAnyByOutRelation(context, logicRule, CoreKeynodes::rrel_main_key_sc_element);
   if (context->HelperCheckEdge(CoreKeynodes::nrel_implication, implEdge, ScType::EdgeAccessConstPosPerm))
     elseStatement = context->GetEdgeTarget(implEdge);
   return elseStatement;
 }
-
 
 }
