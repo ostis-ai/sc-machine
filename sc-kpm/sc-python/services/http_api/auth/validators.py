@@ -1,5 +1,6 @@
 import re
 import jwt
+import tornado
 
 import http_api.auth.constants as cnt
 from http_api.auth.config import params
@@ -33,6 +34,15 @@ class TokenValidator:
                 jwt.exceptions.ExpiredSignatureError):
             return False
         return True
+
+    @staticmethod
+    def validate(post):
+        def wrapper(self):
+            access_token = self.get_argument(cnt.ACCESS_TOKEN, None)
+            if access_token is None or not TokenValidator.verify_access_token(access_token):
+                raise tornado.web.HTTPError(403, params[cnt.MSG_ACCESS_DENIED])
+            post(self)
+        return wrapper
 
 
 username_validator = CredentialsValidator(params[cnt.USERNAME_PATTERN])
