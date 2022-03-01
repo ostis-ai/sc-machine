@@ -1,13 +1,22 @@
 from sqlalchemy import Column, Integer, String, ForeignKey
+from sqlalchemy.engine import Engine
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.declarative import declarative_base
 
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, event
 from sqlalchemy.orm import sessionmaker, relationship
 
 import http_api.auth.constants as cnt
 from http_api.auth.config import params
 
 Base = declarative_base()
+
+
+@event.listens_for(Engine, "connect")
+def set_sqlite_pragma(dbapi_connection, connection_record):
+    cursor = dbapi_connection.cursor()
+    cursor.execute("PRAGMA foreign_keys=ON")
+    cursor.close()
 
 
 class User(Base):
@@ -32,6 +41,9 @@ class DataBase:
 
     def init(self) -> None:
         Base.metadata.create_all(self.engine)
+        for key, value in params[cnt.ROLES].items():
+            role = Role(id=value, name=key)
+            self._session().merge(role)
         self._session().commit()
 
     def _session(self):
@@ -51,8 +63,11 @@ class DataBase:
         self._session().merge(u)
         self._session().commit()
 
-    def add_user(self, name, pass_hash):
-        new_user = User(name=str(name),
-                        pass_hash=str(pass_hash))
-        self._session().add(new_user)
-        self._session().commit()
+    def add_user(self, name, pass_hash, role_id):
+        new_user = User(name=str(name), pass_hash=str(pass_hash), role_id=int(role_id))
+        try:
+            self._session().add(new_user)
+            self._session().commit()
+        except IntegrityError:
+            return False
+        return True

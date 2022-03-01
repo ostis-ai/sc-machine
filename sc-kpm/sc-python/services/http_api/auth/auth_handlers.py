@@ -42,19 +42,22 @@ class TokenHandler(tornado.web.RequestHandler):
 class AddUserHandler(tornado.web.RequestHandler):
     def post(self) -> None:
         access_token = self.get_argument(cnt.ACCESS_TOKEN, None)
-        if access_token is None or not TokenValidator.verify_access_token(access_token):
-            raise tornado.web.HTTPError(403, params[cnt.MSG_ACCESS_DENIED])
+        # if access_token is None or not TokenValidator.verify_access_token(access_token):
+        #     raise tornado.web.HTTPError(403, params[cnt.MSG_ACCESS_DENIED])
         database = DataBase()
         username, pass_hash = self.get_argument(cnt.USER, None), self.get_argument(cnt.PASS, None)
-        if not (username_validator.validate(username)):
+        role = self.get_argument(cnt.ROLE, None)
+        if not username_validator.validate(username):
             response = get_response_message(params[cnt.MSG_CODES][cnt.MSG_INVALID_USERNAME])
-        elif not (password_validator.validate(pass_hash)):
+        elif not password_validator.validate(pass_hash):
             response = get_response_message(params[cnt.MSG_CODES][cnt.MSG_INVALID_PASSWORD])
         elif database.is_such_user_in_base(username):
             response = get_response_message(params[cnt.MSG_CODES][cnt.MSG_USER_IS_IN_BASE])
         else:
-            database.add_user(username, pass_hash)
-            response = get_response_message(params[cnt.MSG_CODES][cnt.MSG_ALL_DONE])
+            user_added = database.add_user(username, pass_hash, role)
+            all_done_mes = params[cnt.MSG_CODES][cnt.MSG_ALL_DONE]
+            invalid_role_mes = params[cnt.MSG_CODES][cnt.MSG_INVALID_ROLE]
+            response = get_response_message(all_done_mes) if user_added else get_response_message(invalid_role_mes)
         self.write(response)
 
 
