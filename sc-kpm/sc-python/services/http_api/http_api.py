@@ -95,7 +95,7 @@ class ServerThread(threading.Thread):
         (r"/ws_json", ScJsonSocketHandler, { 'evt_manager': self.module.events, 'ioloop': ioloop }),
         (r"/content/([0-9]+)", ContentHandler),
         (r'/assets/(.*)', self.staticHandler, {'path': self.assets_path}),
-        (r'/auth/add_user$', AddUserHandler),
+        (r'/admin/add_user$', AddUserHandler),
         (r'/auth/token$', TokenHandler),
 
         # should be a last
