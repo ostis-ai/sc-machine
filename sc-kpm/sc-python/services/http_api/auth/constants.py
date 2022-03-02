@@ -1,6 +1,8 @@
-# user credentials
+# database
 USER = 'user'
-PASS = 'pass'
+# user credentials
+USERNAME = 'username'
+PASSWORD = 'password'
 # roles
 ROLE = 'role'
 ROLES = 'roles'
@@ -28,7 +30,8 @@ EXPIRES_IN = 'expires_in'
 TOKEN_TYPE = 'token_type'
 JWT = 'JWT'
 ACCESS_TOKEN = 'access_token'
-JWT_LIFE_SPAN = 'jwt_life_span'
+ACCESS_TOKEN_LIFE_SPAN = 'access_token_life_span'
+REFRESH_TOKEN_LIFE_SPAN = 'refresh_token_life_span'
 ISSUER = 'issuer'
 # paths
 SQLITE_DB_PATH = 'sqlite_db_path'

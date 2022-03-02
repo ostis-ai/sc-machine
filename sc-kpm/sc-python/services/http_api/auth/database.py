@@ -23,7 +23,7 @@ class User(Base):
     __tablename__ = cnt.USER
     id = Column(Integer, primary_key=True, unique=True)
     name = Column(String(255), nullable=False)
-    pass_hash = Column(String(255), nullable=False)
+    password = Column(String(255), nullable=False)
     role_id = Column(Integer, ForeignKey('role.id'))
     role = relationship("Role")
 
@@ -63,8 +63,8 @@ class DataBase:
         self._session().merge(u)
         self._session().commit()
 
-    def add_user(self, name, pass_hash, role_id):
-        new_user = User(name=str(name), pass_hash=str(pass_hash), role_id=int(role_id))
+    def add_user(self, name, password, role_id):
+        new_user = User(name=str(name), password=str(password), role_id=int(role_id))
         try:
             self._session().add(new_user)
             self._session().commit()

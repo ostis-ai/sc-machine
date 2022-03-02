@@ -46,7 +46,7 @@ class TokenValidator:
         return wrapper
 
     @staticmethod
-    def validate_socket(on_message):
+    def validate_json(on_message):
         def wrapper(self, msg):
             socket_params = json.loads(msg)
             access_token = params[cnt.ACCESS_TOKEN] if cnt.ACCESS_TOKEN in params else None
