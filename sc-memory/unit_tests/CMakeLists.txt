@@ -15,3 +15,4 @@ target_link_libraries(sc-core-threading-test sc-core)
 
 add_subdirectory(scs)
 add_subdirectory(sc-memory)
+add_subdirectory(performance)

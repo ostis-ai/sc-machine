@@ -3,6 +3,7 @@ Clone:
 ```sh
 git clone https://github.com/ostis-ai/sc-machine.git
 cd sc-machine
+git submodule update --init --recursive
 ```
 
 Install dependencies:

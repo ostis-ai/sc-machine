@@ -10,6 +10,8 @@ tools/builder/src/parser/
 *.generated.*
 
 !thirdparty/*/bin/
+thirdparty/benchmark/
+thirdparty/googletest/
 
 sc-machine.json
 manifest.json
