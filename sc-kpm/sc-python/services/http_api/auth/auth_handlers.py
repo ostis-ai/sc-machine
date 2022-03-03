@@ -51,8 +51,6 @@ class GetTokensHandler(BaseHandler):
     def post(self) -> None:
         database = DataBase()
         username, password = self._get_user_credentials()
-        print(username)
-        print(password)
         if database.is_user_valid(username, password):
             access_token_data = _generate_token(TokenType.ACCESS)
             refresh_token_data = _generate_token(TokenType.REFRESH)

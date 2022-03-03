@@ -74,9 +74,11 @@ class DataBase:
 
     def delete_user_by_id(self, user_id: str) -> int:
         delete_users_count = self._session().query(User).filter(User.id == user_id).delete()
+        self._session().commit()
         return delete_users_count
 
     def update_user_by_id(self, user_id: int, username: str, password: str, role: str) -> bool:
         updated_users_count = self._session().query(User).filter(User.id == user_id).\
             update({cnt.NAME: username, cnt.PASSWORD: password, cnt.ROLE_ID: role})
+        self._session().commit()
         return updated_users_count
