@@ -51,8 +51,8 @@ class DataBase:
             self.session = sessionmaker(bind=self.engine)()
         return self.session
 
-    def is_user_valid(self, name, pass_hash):
-        selected_user = self._session().query(User).filter(User.name == name, User.pass_hash == pass_hash).first()
+    def is_user_valid(self, name, password):
+        selected_user = self._session().query(User).filter(User.name == name, User.password == password).first()
         return selected_user is not None
 
     def is_such_user_in_base(self, name):
@@ -63,11 +63,20 @@ class DataBase:
         self._session().merge(u)
         self._session().commit()
 
-    def add_user(self, name, password, role_id):
-        new_user = User(name=str(name), password=str(password), role_id=int(role_id))
+    def add_user(self, username: str, password: str, role: int) -> bool:
+        new_user = User(name=str(username), password=str(password), role_id=int(role))
         try:
             self._session().add(new_user)
             self._session().commit()
         except IntegrityError:
             return False
         return True
+
+    def delete_user_by_id(self, user_id: str) -> int:
+        delete_users_count = self._session().query(User).filter(User.id == user_id).delete()
+        return delete_users_count
+
+    def update_user_by_id(self, user_id: int, username: str, password: str, role: str) -> bool:
+        updated_users_count = self._session().query(User).filter(User.id == user_id).\
+            update({cnt.NAME: username, cnt.PASSWORD: password, cnt.ROLE_ID: role})
+        return updated_users_count

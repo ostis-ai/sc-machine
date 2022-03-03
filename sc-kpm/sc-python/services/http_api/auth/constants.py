@@ -1,5 +1,8 @@
 # database
 USER = 'user'
+USER_ID = 'user_id'
+ROLE_ID = 'role_id'
+NAME = 'name'
 # user credentials
 USERNAME = 'username'
 PASSWORD = 'password'
@@ -21,6 +24,8 @@ MSG_INVALID_PASSWORD = 'msg_invalid_password'
 MSG_INVALID_ROLE = 'msg_invalid_role'
 MSG_USER_NOT_FOUND = 'msg_user_not_found'
 MSG_USER_IS_IN_BASE = 'msg_user_is_in_base'
+MSG_USER_DELETED = 'msg_user_deleted'
+MSG_USER_UPDATED = 'msg_user_updated'
 MSG_CODE = 'msg_code'
 MSG_CODES = 'msg_codes'
 # token properties and keys
@@ -29,8 +34,10 @@ EXP = 'exp'
 EXPIRES_IN = 'expires_in'
 TOKEN_TYPE = 'token_type'
 JWT = 'JWT'
+TOKEN = 'token'
 ACCESS_TOKEN = 'access_token'
 ACCESS_TOKEN_LIFE_SPAN = 'access_token_life_span'
+REFRESH_TOKEN = 'refresh_token'
 REFRESH_TOKEN_LIFE_SPAN = 'refresh_token_life_span'
 ISSUER = 'issuer'
 # paths
