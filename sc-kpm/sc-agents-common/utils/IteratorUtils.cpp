@@ -31,7 +31,9 @@ ScAddr IteratorUtils::getRoleRelation(ScMemoryContext * ms_context, const size_t
     orderRelationsMap.insert({ index, relation });
     return relation;
   }
-  return relationIter->second;
+  // @todo: Implement common memory for tests with caching
+  // return relationIter->second;
+  return ms_context->HelperResolveSystemIdtf("rrel_" + to_string(index), ScType::NodeConstRole);
 }
 
 ScAddr IteratorUtils::getFirstFromSet(ScMemoryContext * ms_context, const ScAddr & set, bool getStrictlyFirst)
@@ -80,7 +82,7 @@ ScAddr IteratorUtils::getNextFromSet(
   scTemplate.Triple(
         set,
         ScType::EdgeAccessVarPosPerm >> NEXT_ELEMENT_ACCESS_ARC_ALIAS,
-        ScType::NodeVar >> NEXT_ELEMENT_ALIAS);
+        ScType::Unknown >> NEXT_ELEMENT_ALIAS);
   scTemplate.TripleWithRelation(
         PREVIOUS_ELEMENT_ACCESS_ARC_ALIAS,
         ScType::EdgeDCommonVar,
