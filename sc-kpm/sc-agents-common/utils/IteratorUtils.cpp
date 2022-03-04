@@ -80,7 +80,7 @@ ScAddr IteratorUtils::getNextFromSet(
   scTemplate.Triple(
         set,
         ScType::EdgeAccessVarPosPerm >> NEXT_ELEMENT_ACCESS_ARC_ALIAS,
-        ScType::NodeVar >> NEXT_ELEMENT_ALIAS);
+        ScType::Unknown >> NEXT_ELEMENT_ALIAS);
   scTemplate.TripleWithRelation(
         PREVIOUS_ELEMENT_ACCESS_ARC_ALIAS,
         ScType::EdgeDCommonVar,
