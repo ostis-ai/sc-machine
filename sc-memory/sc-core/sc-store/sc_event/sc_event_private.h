@@ -7,6 +7,7 @@
 #ifndef _sc_event_private_h_
 #define _sc_event_private_h_
 
+#include "../sc_event.h"
 #include "../sc_types.h"
 
 /* Events life cycle:

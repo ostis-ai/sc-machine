@@ -43,7 +43,7 @@ typedef void * sc_pointer;
 #define SC_FALSE 0
 #define SC_TRUE 1
 
-typedef sc_int sc_bool;
+typedef sc_uint8 sc_bool;
 
 // types limits
 #define SC_MININT8 ((sc_int8)0x80)
@@ -113,9 +113,10 @@ typedef sc_uint16 sc_type;
 #define sc_type_arc_neg (sc_type)0x100
 #define sc_type_arc_fuz (sc_type)0x200
 
-// sc-element premanently
-#define sc_type_arc_temp (sc_type)0x400
-#define sc_type_arc_perm (sc_type)0x800
+
+// sc-element permanently
+#define sc_type_arc_temp        (sc_type)0x400
+#define sc_type_arc_perm        (sc_type)0x800
 
 // struct node types
 #define sc_type_node_tuple (sc_type)(0x80)

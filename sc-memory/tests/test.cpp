@@ -697,7 +697,7 @@ int main(int argc, char *argv[])
   printf("sc_element: %zd, sc_addr: %zd, sc_arc: %zd, sc_content: %zd", sizeof(sc_element), sizeof(sc_addr), sizeof(sc_arc_info), sizeof(sc_content));
 
   g_test_init(&argc, &argv, NULL);
-  /// TODO: add test for verion utils
+  /// TODO: add test for version utils
 
   g_test_add_func("/common/save", test_save);
   g_test_add_func("/common/context", test_context);
