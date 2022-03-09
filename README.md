@@ -50,6 +50,13 @@ cd sc-machine/scripts
 ./run_sc_server.sh
 ```
 
+For running sc-server in authorization server mode, you need to generate a key pair. This can be done with next commands:
+
+```sh
+openssl genrsa -out private.pem 2048
+openssl rsa -in private.pem -pubout -outform PEM -out public.pem
+```
+
 Open URL http://localhost:8090/ in web browser:
 ![](https://i.imgur.com/wibISSV.png)
 
