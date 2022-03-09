@@ -13,7 +13,7 @@ class BaseVerifier:
 
 
 class CredentialsVerifier(BaseVerifier):
-    def validate(self, string: str) -> bool:
+    def verify(self, string: str) -> bool:
         return string is not None and super().verify(string)
 
 

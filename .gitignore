@@ -42,3 +42,6 @@ manifest.json
 /nbdist/
 /.nb-gradle/
 
+### SC-server keys ###
+/sc-kpm/sc-python/services/http_api/auth/*.pem
+

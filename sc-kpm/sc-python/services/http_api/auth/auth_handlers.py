@@ -28,7 +28,6 @@ def _generate_token(token_type: TokenType) -> bytes:
 class BaseHandler(tornado.web.RequestHandler):
     def set_default_headers(self):
         self.set_header("Access-Control-Allow-Origin", "*")
-        self.set_header("Access-Control-Allow-Headers", "x-requested-with")
         self.set_header("Access-Control-Allow-Headers", "Content-Type")
         self.set_header('Access-Control-Allow-Methods', 'POST, GET, OPTIONS')
 
@@ -47,7 +46,7 @@ class BaseHandler(tornado.web.RequestHandler):
         return res
 
 
-class GetTokensHandler(BaseHandler):
+class TokensHandler(BaseHandler):
     def post(self) -> None:
         database = DataBase()
         username, password = self._get_user_credentials()
@@ -78,7 +77,7 @@ class GetTokensHandler(BaseHandler):
         return username, password
 
 
-class GetAccessTokenHandler(BaseHandler):
+class AccessTokenHandler(BaseHandler):
     @TokenValidator.validate_typed_token(TokenType.REFRESH)
     def post(self) -> None:
         access_token_data = _generate_token(TokenType.ACCESS)
@@ -91,12 +90,12 @@ class GetAccessTokenHandler(BaseHandler):
         self.write(response)
 
 
-class AddUserHandler(BaseHandler):
+class UserHandler(BaseHandler):
     @TokenValidator.validate_typed_token(TokenType.ACCESS)
     def post(self) -> None:
         database = DataBase()
         request_params = self._get_request_params([cnt.USERNAME, cnt.PASSWORD, cnt.ROLE])
-        if not username_verifier.validate(request_params[cnt.USERNAME]):
+        if not username_verifier.verify(request_params[cnt.USERNAME]):
             response = get_response_message(params[cnt.MSG_CODES][cnt.MSG_INVALID_USERNAME])
         elif database.is_such_user_in_base(request_params[cnt.USERNAME]):
             response = get_response_message(params[cnt.MSG_CODES][cnt.MSG_USER_IS_IN_BASE])
@@ -107,20 +106,16 @@ class AddUserHandler(BaseHandler):
             response = get_response_message(all_done_mes) if user_added else get_response_message(invalid_role_mes)
         self.write(response)
 
-
-class DeleteUserHandler(BaseHandler):
     @TokenValidator.validate_typed_token(TokenType.ACCESS)
-    def post(self) -> None:
+    def delete(self) -> None:
         database = DataBase()
         request_params = self._get_request_params([cnt.USER_ID])
         database.delete_user_by_id(request_params[cnt.USER_ID])
         response = get_response_message(params[cnt.MSG_CODES][cnt.MSG_ALL_DONE])
         self.write(response)
 
-
-class UpdateUserHandler(BaseHandler):
     @TokenValidator.validate_typed_token(TokenType.ACCESS)
-    def post(self) -> None:
+    def put(self) -> None:
         database = DataBase()
         post_args = self._get_request_params([cnt.USER_ID, cnt.USERNAME, cnt.PASSWORD, cnt.ROLE])
         database.update_user_by_id(**post_args)
