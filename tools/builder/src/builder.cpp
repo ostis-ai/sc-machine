@@ -14,8 +14,6 @@
 #include <fstream>
 #include <unordered_set>
 
-#include <assert.h>
-
 namespace impl
 {
 std::unordered_set<std::string> gSupportedFormats = {"scs", "scsi"};

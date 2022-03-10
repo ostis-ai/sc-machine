@@ -83,12 +83,15 @@ TEST_CASE("sc-links", "[test sc-links common]")
   ScMemoryContext ctx(sc_access_lvl_make_min, "sc-links common");
 
   ScAddr formulaAddr = ctx.CreateNode(ScType::NodeConst);
-  ctx.HelperSetSystemIdtf("atomic_formula", formulaAddr);
+  REQUIRE(ctx.HelperSetSystemIdtf("atomic_formula", formulaAddr));
   sc_string_tree_show();
   ScAddr gotten = ctx.HelperFindBySystemIdtf("atomic_formula");
   REQUIRE(formulaAddr == gotten);
   std::string idtf = ctx.HelperGetSystemIdtf(formulaAddr);
   REQUIRE(idtf == "atomic_formula");
+
+  ScAddr addr = ctx.CreateNode(ScType::NodeConst);
+  REQUIRE(ctx.HelperSetSystemIdtf("node1", addr));
 
   ctx.Destroy();
   test::ScTestUnit::ShutdownMemory(true);

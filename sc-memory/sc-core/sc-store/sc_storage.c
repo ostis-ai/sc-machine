@@ -934,12 +934,18 @@ unlock:
 
 sc_result sc_storage_set_link_content(sc_memory_context * ctx, sc_addr addr, const sc_stream * stream)
 {
-  sc_element *el;
+  g_assert(ctx != null_ptr);
+  g_assert(stream != null_ptr);
+
+  sc_element *el = null_ptr;
   sc_result result = SC_RESULT_ERROR;
   sc_access_levels access_lvl;
 
   if (sc_storage_element_lock(addr, &el) != SC_RESULT_OK)
-    return SC_RESULT_ERROR;
+  {
+    result = SC_RESULT_ERROR;
+    goto unlock;
+  }
 
   if (sc_element_is_valid(el) == SC_FALSE)
   {
@@ -1022,6 +1028,8 @@ unlock:
 
 sc_result sc_storage_get_link_content(const sc_memory_context * ctx, sc_addr addr, sc_stream ** stream)
 {
+  g_assert(ctx != null_ptr);
+
   sc_element *el = null_ptr;
   sc_result result = SC_RESULT_ERROR;
 
@@ -1066,38 +1074,39 @@ unlock:
 
 sc_result sc_storage_find_links_with_content(const sc_memory_context *ctx, const sc_stream *stream, sc_addr **addrs, sc_uint32 *result_count)
 {
-  sc_assert(stream != null_ptr);
-  sc_check_sum check_sum;
-
-  sc_result result = SC_RESULT_ERROR;
+  g_assert(ctx != null_ptr);
+  g_assert(stream != null_ptr);
 
   *addrs = null_ptr;
   *result_count = 0;
 
   sc_addr found;
+  sc_result result = sc_storage_find_link_with_content(ctx, stream, &found);
+  if (result != SC_RESULT_OK || !SC_ADDR_IS_NOT_EMPTY(found))
+    return SC_RESULT_ERROR;
 
-  result = sc_storage_find_link_with_content(ctx, stream, &found);
-  if (result == SC_RESULT_OK && SC_ADDR_IS_NOT_EMPTY(found))
+  sc_element *el = null_ptr;
+  if (sc_storage_element_lock(found, &el) != SC_RESULT_OK)
   {
-    // check read rights
-    sc_uint32 i, passed = 0;
-    *addrs = g_new0(sc_addr, 1);
+    result = SC_RESULT_ERROR;
+    goto unlock;
+  }
 
-    sc_element *el = 0;
+  if (!sc_access_lvl_check_read(ctx->access_levels, el->flags.access_levels))
+  {
+    result = SC_RESULT_ERROR_NO_READ_RIGHTS;
+    g_free(el);
+    goto unlock;
+  }
 
-    if (sc_storage_element_lock(found, &el) != SC_RESULT_OK)
-    {
-      *addrs = 0;
-      return SC_RESULT_ERROR;
-    }
+  *addrs = g_new0(sc_addr, 1);
+  (*addrs)[0] = found;
+  *result_count = 1;
+  result = SC_RESULT_OK;
 
-    if (sc_access_lvl_check_read(ctx->access_levels, el->flags.access_levels))
-    {
-      (*addrs)[0] = found;
-      *result_count = 1;
-    }
-
-    STORAGE_CHECK_CALL(sc_storage_element_unlock(found));
+unlock:
+  {
+    STORAGE_CHECK_CALL(sc_storage_element_unlock(found))
   }
 
   return result;
@@ -1105,37 +1114,46 @@ sc_result sc_storage_find_links_with_content(const sc_memory_context *ctx, const
 
 sc_result sc_storage_find_link_with_content(const sc_memory_context *ctx, const sc_stream *stream, sc_addr *found)
 {
+  g_assert(ctx != null_ptr);
   g_assert(stream != null_ptr);
 
-  sc_char * data = null_ptr;
+  sc_result result = SC_RESULT_ERROR;
+  SC_ADDR_MAKE_EMPTY(*found)
+
+  sc_char *data = null_ptr;
   sc_uint16 size = 0;
-  if (sc_link_get_content(stream, &data, &size) == SC_TRUE)
+  if (sc_link_get_content(stream, &data, &size) != SC_TRUE)
+    return SC_RESULT_ERROR;
+
+  sc_addr addr = sc_string_tree_get_sc_link(data);
+  if (!SC_ADDR_IS_NOT_EMPTY(addr))
   {
-    sc_addr addr = sc_string_tree_get_sc_link(data);
-    if (SC_ADDR_IS_NOT_EMPTY(addr))
-    {
-      // check read rights
-      sc_element * el;
-      if (sc_storage_element_lock(addr, &el) != SC_RESULT_OK)
-      {
-        found = null_ptr;
-        return SC_RESULT_ERROR;
-      }
-
-			if (!sc_access_lvl_check_read(ctx->access_levels, el->flags.access_levels))
-      {
-        return SC_RESULT_ERROR_NO_READ_RIGHTS;
-      }
-
-      STORAGE_CHECK_CALL(sc_storage_element_unlock(addr));
-
-      *found = addr;
-    }
-    else
-      return SC_RESULT_ERROR;
+    g_free(data);
+    return SC_RESULT_ERROR;
   }
 
-  return SC_RESULT_OK;
+  sc_element *el = null_ptr;
+  if (sc_storage_element_lock(addr, &el) != SC_RESULT_OK)
+  {
+    goto unlock;
+  }
+
+  if (!sc_access_lvl_check_read(ctx->access_levels, el->flags.access_levels))
+  {
+    g_free(el);
+    result = SC_RESULT_ERROR_NO_READ_RIGHTS;
+    goto unlock;
+  }
+
+  *found = addr;
+  result = SC_RESULT_OK;
+
+unlock:
+  {
+    STORAGE_CHECK_CALL(sc_storage_element_unlock(addr))
+  }
+
+  return result;
 }
 
 sc_result sc_storage_set_access_levels(

@@ -51,7 +51,7 @@ sc_memory_context * sc_memory_initialize(const sc_memory_params * params)
 
   g_message("Configuration:");
   g_message("\tmax_loaded_segments: %d", sc_config_get_max_loaded_segments());
-  g_message("sc-element size: %zd", sizeof(sc_element));
+  g_message("\tsc-element size: %zd", sizeof(sc_element));
 
   if (sc_storage_initialize(params->repo_path, params->clear) != SC_TRUE)
     return null_ptr;

@@ -78,7 +78,7 @@ sc_string_tree_node* sc_string_tree_append_to_node(sc_string_tree_node *node, sc
   node->addr = addr;
   node->next[0] = parent;
   node->parent_id = parent_id;
-  node->size = strlen(sc_string);
+  node->size = size;
   table->nodes[sc_addr_to_hash(addr)] = node;
 
   return node;
@@ -175,7 +175,7 @@ sc_addr sc_string_tree_get_sc_link_from_node(sc_string_tree_node *node, const sc
   sc_uint16 i = 1;
   sc_uint16 counter = 0;
 
-  for (; i < sc_string_tree_children_size() && counter < strlen(sc_string); )
+  for (; i < sc_string_tree_children_size() && counter < strlen(sc_string);)
   {
     sc_uint16 num = sc_char_to_sc_int(sc_string[counter]);
     if (node->next[i] != null_ptr && i == num)

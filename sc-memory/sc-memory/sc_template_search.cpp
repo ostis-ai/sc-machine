@@ -354,7 +354,7 @@ public:
       };
 
       // make one iteration
-      if (it.get())
+      if (it.get() && it->IsValid())
       {
         bool isFinished = true;
 
@@ -392,7 +392,7 @@ public:
       }
       else  // special checks and search
       {
-        SC_THROW_EXCEPTION(utils::ExceptionInvalidState, "Invalid state during template search");
+        //SC_THROW_EXCEPTION(utils::ExceptionInvalidState, "Invalid state during template search");
       }
     } while (!iterators.empty());
   }

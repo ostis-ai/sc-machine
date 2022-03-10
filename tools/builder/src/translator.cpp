@@ -55,7 +55,7 @@ void Translator::GetFileContent(std::string const & fileName, std::string & outC
 
 void Translator::Clean(ScMemoryContext & ctx)
 {
-  // remove global identifers 
+  // remove global identifiers
   ScAddr const nrelSCsGlobalIdtf = ctx.HelperResolveSystemIdtf("nrel_scs_global_idtf");
   if (!nrelSCsGlobalIdtf.IsValid())
   {

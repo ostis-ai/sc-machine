@@ -399,7 +399,7 @@ ScAddr ScMemoryContext::HelperResolveSystemIdtf(std::string const & sysIdtf, ScT
 
     resultAddr = CreateNode(type);
     if (resultAddr.IsValid())
-      HelperSetSystemIdtf(sysIdtf, resultAddr);
+      SC_ASSERT(HelperSetSystemIdtf(sysIdtf, resultAddr), ());
   }
   return resultAddr;
 }
