@@ -51,13 +51,17 @@ public:
   template <typename Type>
   inline bool Stream2Value(ScStreamPtr const & stream, Type & outValue) const
   {
-    if (stream->Size() != sizeof(Type))
-      return false;
+    size_t size = stream->Size();
 
     size_t readBytes = 0;
-    stream->Read((sc_char *)(&outValue), sizeof(Type), readBytes);
-    if (sizeof(Type) != readBytes)
+    auto * str = new sc_char[size];
+    stream->Read(str, size, readBytes);
+
+    if (size != readBytes)
       return false;
+
+    outValue = std::stod(str);
+    delete []str;
 
     return true;
   }

@@ -1095,14 +1095,13 @@ sc_result sc_storage_find_links_with_content(const sc_memory_context *ctx, const
     if (!sc_access_lvl_check_read(ctx->access_levels, el->flags.access_levels))
     {
       result = SC_RESULT_ERROR_NO_READ_RIGHTS;
-      g_free(el);
       goto unlock;
     }
 
     if (*result_addrs == null_ptr)
       *result_addrs = g_new0(sc_addr, ++(*result_count));
     else
-      *result_addrs = g_realloc(*result_addrs, ++(*result_count));
+      *result_addrs = g_renew(sc_addr, *result_addrs, ++(*result_count));
 
     *result_addrs[(*result_count) - 1] = found;
     result = SC_RESULT_OK;
@@ -1139,7 +1138,6 @@ sc_result sc_storage_find_link_with_content(const sc_memory_context *ctx, const 
   sc_addr addr = sc_string_tree_get_sc_link(data);
   if (SC_ADDR_IS_EMPTY(addr))
   {
-    g_free(data);
     return SC_RESULT_ERROR;
   }
 
@@ -1149,7 +1147,6 @@ sc_result sc_storage_find_link_with_content(const sc_memory_context *ctx, const 
 
   if (!sc_access_lvl_check_read(ctx->access_levels, el->flags.access_levels))
   {
-    g_free(el);
     result = SC_RESULT_ERROR_NO_READ_RIGHTS;
     goto unlock;
   }

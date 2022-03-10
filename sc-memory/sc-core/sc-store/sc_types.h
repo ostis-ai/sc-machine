@@ -68,6 +68,8 @@ typedef sc_uint8 sc_bool;
 typedef sc_uint16 sc_addr_seg;
 typedef sc_uint16 sc_addr_offset;
 
+typedef sc_uint16 sc_addr_hash;
+
 //! Structure to store sc-element address
 struct _sc_addr
 {
@@ -233,7 +235,6 @@ struct _sc_stat
 
 typedef struct _sc_check_sum sc_check_sum;
 typedef struct _sc_arc sc_arc;
-typedef struct _sc_content sc_content;
 typedef struct _sc_arc_info sc_arc_info;
 typedef sc_uint8 sc_access_levels;
 typedef struct _sc_element_locks sc_element_locks;

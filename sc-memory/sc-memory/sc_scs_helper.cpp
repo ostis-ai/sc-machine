@@ -13,6 +13,7 @@
 #include "scs/scs_parser.hpp"
 
 #include <regex>
+#include <utility>
 
 namespace impl
 {
@@ -21,8 +22,8 @@ class StructGenerator
   friend class ::SCsHelper;
 
 protected:
-  StructGenerator(ScMemoryContext & ctx, SCsFileInterfacePtr const & fileInterface)
-    : m_fileInterface(fileInterface)
+  StructGenerator(ScMemoryContext & ctx, SCsFileInterfacePtr  fileInterface)
+    : m_fileInterface(std::move(fileInterface))
     , m_ctx(ctx)
   {
     m_kNrelSCsGlobalIdtf = m_ctx.HelperResolveSystemIdtf("nrel_scs_global_idtf", ScType::NodeConstNoRole);
@@ -169,15 +170,14 @@ private:
       }
       else
       {
-        ScType const & newType = el.GetType();
-        ScType const & oldType = m_ctx.GetElementType(result);
-        if (oldType.CanExtendTo(newType))
+        ScType const &newType = el.GetType();
+        ScType const &oldType = m_ctx.GetElementType(result);
+        if (newType != oldType)
         {
-          m_ctx.SetElementSubtype(result, *newType);
-        }
-        else
-        {
-          if (!newType.CanExtendTo(oldType))
+          if (oldType.CanExtendTo(newType))
+          {
+            m_ctx.SetElementSubtype(result, *newType);
+          } else if (!newType.CanExtendTo(oldType))
           {
             SC_THROW_EXCEPTION(utils::ExceptionInvalidType, "Duplicate element type for " + el.GetIdtf());
           }
@@ -222,9 +222,8 @@ private:
     }
     else
     {
-      // chekc if it's a number format
-      std::regex const rNumber(
-          "^\\^\"(int8|int16|int32|int64|uint8|uint16|uint32|uint64|float|double)\\s*:\\s*([0-9]+|[0-9]+[.][0-9]+)\"$");
+      // check if it's a number format
+      std::regex const rNumber("^\\^\"(int8|int16|int32|int64|uint8|uint16|uint32|uint64|float|double)\\s*:\\s*([0-9]+|[0-9]+[.][0-9]+)\"$");
       std::smatch result;
       if (std::regex_match(el.GetValue(), result, rNumber))
       {

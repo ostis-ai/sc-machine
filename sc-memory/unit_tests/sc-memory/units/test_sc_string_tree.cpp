@@ -4,6 +4,7 @@
 * (See accompanying file COPYING.MIT or copy at http://opensource.org/licenses/MIT)
 */
 
+#include <glib.h>
 #include "catch2/catch.hpp"
 #include "sc-test-framework/sc_test_unit.hpp"
 #include "sc-memory/sc_link.hpp"
@@ -124,6 +125,8 @@ TEST_CASE("sc-link-content-changed", "[test sc-links content changed]")
 
   REQUIRE(ctx.FindLinksByContent("content1").empty());
   REQUIRE(ctx.FindLinksByContent("content2").empty());
+
+  sc_string_tree_show();
 
   ctx.Destroy();
   test::ScTestUnit::ShutdownMemory(true);

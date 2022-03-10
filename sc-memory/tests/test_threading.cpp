@@ -246,7 +246,7 @@ int main(int argc, char *argv[])
   params.config_file = "sc-memory.ini";
   params.ext_path = 0;
 
-  printf("sc_element: %zd, sc_addr: %zd, sc_arc: %zd, sc_content: %zd\n", sizeof(sc_element), sizeof(sc_addr), sizeof(sc_arc_info), sizeof(sc_content));
+  printf("sc_element: %zd, sc_addr: %zd, sc_arc: %zd\n", sizeof(sc_element), sizeof(sc_addr), sizeof(sc_arc_info));
 
   g_test_init(&argc, &argv, NULL);
   g_test_add_func("/threading/create_save", test_save);
