@@ -38,7 +38,7 @@ public:
   _SC_EXTERN static ScAddr kCommandInitiatedAddr;
 
   SC_PROPERTY(Keynode("command_in_progress"), ForceCreate(ScType::NodeConstClass))
-  _SC_EXTERN static ScAddr kCommandProgressdAddr;
+  _SC_EXTERN static ScAddr kCommandProgressedAddr;
 
   SC_PROPERTY(Keynode("command_finished"), ForceCreate(ScType::NodeConstClass))
   _SC_EXTERN static ScAddr kCommandFinishedAddr;

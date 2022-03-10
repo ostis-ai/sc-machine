@@ -54,8 +54,12 @@ sc_result ScAgentAction::Run(ScAddr const & listenAddr, ScAddr const & edgeAddr,
     if (m_memoryCtx.HelperCheckEdge(m_cmdClassAddr, cmdAddr, ScType::EdgeAccessConstPosPerm))
     {
       m_memoryCtx.EraseElement(edgeAddr);
+<<<<<<< HEAD
       ScAddr progressAddr =
           m_memoryCtx.CreateEdge(ScType::EdgeAccessConstPosTemp, ScKeynodes::kCommandProgressdAddr, cmdAddr);
+=======
+      ScAddr progressAddr = m_memoryCtx.CreateEdge(ScType::EdgeAccessConstPosTemp, ScKeynodes::kCommandProgressedAddr, cmdAddr);
+>>>>>>> [memory] Add opportunity for multiple links with the same content
       assert(progressAddr.IsValid());
       ScAddr resultAddr = m_memoryCtx.CreateNode(ScType::NodeConstStruct);
       assert(resultAddr.IsValid());
@@ -136,7 +140,7 @@ bool ScAgentAction::InitiateCommand(ScMemoryContext & ctx, ScAddr const & cmdAdd
   // TODO: add blocks (locks) to prevent adding command to initiated set twicely
 
   // check if command is in progress
-  if (ctx.HelperCheckEdge(ScKeynodes::kCommandProgressdAddr, cmdAddr, ScType::EdgeAccessConstPosTemp))
+  if (ctx.HelperCheckEdge(ScKeynodes::kCommandProgressedAddr, cmdAddr, ScType::EdgeAccessConstPosTemp))
     return false;
 
   if (ctx.HelperCheckEdge(ScKeynodes::kCommandInitiatedAddr, cmdAddr, ScType::EdgeAccessConstPosTemp))
@@ -213,7 +217,7 @@ ScAgentAction::State ScAgentAction::GetCommandState(ScMemoryContext & ctx, ScAdd
     return State::Finished;
   else if (stateAddr == ScKeynodes::kCommandInitiatedAddr)
     return State::Initiated;
-  else if (stateAddr == ScKeynodes::kCommandProgressdAddr)
+  else if (stateAddr == ScKeynodes::kCommandProgressedAddr)
     return State::Progress;
 
   return State::Unknown;

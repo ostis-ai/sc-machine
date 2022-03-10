@@ -14,7 +14,7 @@ bool ScKeynodes::ms_isInitialized = false;
 
 ScAddr ScKeynodes::kCommandStateAddr;
 ScAddr ScKeynodes::kCommandInitiatedAddr;
-ScAddr ScKeynodes::kCommandProgressdAddr;
+ScAddr ScKeynodes::kCommandProgressedAddr;
 ScAddr ScKeynodes::kCommandFinishedAddr;
 ScAddr ScKeynodes::kNrelResult;
 ScAddr ScKeynodes::kNrelCommonTemplate;
@@ -78,7 +78,7 @@ bool ScKeynodes::Init(bool force)
   }
 
   // command states
-  ScAddr states[] = {kCommandFinishedAddr, kCommandInitiatedAddr, kCommandProgressdAddr};
+  ScAddr states[] = { kCommandFinishedAddr, kCommandInitiatedAddr, kCommandProgressedAddr };
   for (auto const & a : states)
   {
     if (!ctx.CreateEdge(ScType::EdgeAccessConstPosPerm, kCommandStateAddr, a).IsValid())

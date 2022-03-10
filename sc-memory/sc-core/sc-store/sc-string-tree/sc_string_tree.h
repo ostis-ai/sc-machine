@@ -14,8 +14,9 @@ typedef struct _sc_string_tree_node
   struct _sc_string_tree_node **next;
   sc_bool is_terminal;
   sc_uint16 parent_id;
-  sc_uint16 size;
-  sc_addr addr;
+  sc_uint16 string_size;
+  sc_addr *addrs;
+  sc_uint16 addrs_size;
 } sc_string_tree_node;
 
 typedef struct _sc_string_tree
@@ -31,9 +32,13 @@ typedef struct _sc_string_tree_addr_table
 
 sc_bool sc_string_tree_initialize();
 
+sc_bool sc_string_tree_shutdown();
+
 sc_uint16 sc_string_tree_children_size();
 
 sc_string_tree_node* _sc_string_tree_node_initialize();
+
+sc_string_tree_node* _sc_string_tree_get_next_node(sc_string_tree_node *node, sc_char ch);
 
 sc_string_tree_node* sc_string_tree_append_to_node(sc_string_tree_node *node, sc_addr addr, const sc_char *sc_string, sc_uint16 size);
 
@@ -50,6 +55,10 @@ sc_bool sc_string_tree_is_in(const sc_char *sc_string);
 sc_addr sc_string_tree_get_sc_link_from_node(sc_string_tree_node *node, const sc_char *sc_string);
 
 sc_addr sc_string_tree_get_sc_link(const sc_char *sc_string);
+
+sc_bool sc_string_tree_get_sc_links_from_node(sc_string_tree_node *node, const sc_char *sc_string, sc_addr **addrs, sc_uint16 *size);
+
+sc_bool sc_string_tree_get_sc_links(const sc_char *sc_string, sc_addr **addrs, sc_uint16 *size);
 
 sc_char* sc_string_tree_get_sc_string_from_node(sc_string_tree_node *node, sc_addr addr, sc_uint16 size, sc_uint16 *count);
 

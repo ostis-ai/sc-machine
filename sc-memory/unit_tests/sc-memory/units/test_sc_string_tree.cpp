@@ -6,6 +6,7 @@
 
 #include "catch2/catch.hpp"
 #include "sc-test-framework/sc_test_unit.hpp"
+#include "sc-memory/sc_link.hpp"
 
 extern "C"
 {
@@ -84,14 +85,45 @@ TEST_CASE("sc-links", "[test sc-links common]")
 
   ScAddr formulaAddr = ctx.CreateNode(ScType::NodeConst);
   REQUIRE(ctx.HelperSetSystemIdtf("atomic_formula", formulaAddr));
-  sc_string_tree_show();
-  ScAddr gotten = ctx.HelperFindBySystemIdtf("atomic_formula");
-  REQUIRE(formulaAddr == gotten);
-  std::string idtf = ctx.HelperGetSystemIdtf(formulaAddr);
-  REQUIRE(idtf == "atomic_formula");
+  REQUIRE(formulaAddr == ctx.HelperFindBySystemIdtf("atomic_formula"));
+  REQUIRE("atomic_formula" == ctx.HelperGetSystemIdtf(formulaAddr));
 
-  ScAddr addr = ctx.CreateNode(ScType::NodeConst);
-  REQUIRE(ctx.HelperSetSystemIdtf("node1", addr));
+  ScAddr node1 = ctx.CreateNode(ScType::NodeConst);
+  REQUIRE(node1.IsValid());
+  REQUIRE(ctx.HelperSetSystemIdtf("node1", node1));
+  REQUIRE("node1" == ctx.HelperGetSystemIdtf(node1));
+
+  ScAddr node2 = ctx.HelperResolveSystemIdtf("_node2", ScType::NodeVarStruct);
+  REQUIRE(node2.IsValid());
+  REQUIRE("_node2" == ctx.HelperGetSystemIdtf(node2));
+
+  ctx.Destroy();
+  test::ScTestUnit::ShutdownMemory(true);
+}
+
+TEST_CASE("sc-link-content-changed", "[test sc-links content changed]")
+{
+  test::ScTestUnit::InitMemory("sc-memory.ini", "");
+  ScMemoryContext ctx(sc_access_lvl_make_min, "sc-link content changed");
+
+  ScAddr linkAddr = ctx.CreateLink();
+  REQUIRE(linkAddr.IsValid());
+  ScLink link = ScLink(ctx, linkAddr);
+
+  std::string str = "content1";
+  REQUIRE(link.Set(str));
+  REQUIRE(str == link.GetAsString());
+
+  str = "content2";
+  REQUIRE(link.Set(str));
+  REQUIRE(str == link.GetAsString());
+
+  str = "content3";
+  REQUIRE(link.Set(str));
+  REQUIRE(str == link.GetAsString());
+
+  REQUIRE(ctx.FindLinksByContent("content1").empty());
+  REQUIRE(ctx.FindLinksByContent("content2").empty());
 
   ctx.Destroy();
   test::ScTestUnit::ShutdownMemory(true);

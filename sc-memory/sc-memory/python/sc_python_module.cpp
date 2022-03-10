@@ -988,6 +988,7 @@ BOOST_PYTHON_MODULE(sc)
       .value("Unknown", SC_RESULT_UNKNOWN);
 
   bp::class_<ScKeynodes>("ScKeynodesImpl", bp::no_init)
+<<<<<<< HEAD
       .def(
           "GetResultCodeAddr",
           bp::make_function(&ScKeynodes::GetResultCodeAddr, bp::return_value_policy<bp::return_by_value>()))
@@ -1000,6 +1001,17 @@ BOOST_PYTHON_MODULE(sc)
       .def_readonly("kCommandInitiatedAddr", &ScKeynodes::kCommandInitiatedAddr)
       .def_readonly("kCommandProgressdAddr", &ScKeynodes::kCommandProgressdAddr)
       .def_readonly("kCommandFinishedAddr", &ScKeynodes::kCommandFinishedAddr);
+=======
+    .def("GetResultCodeAddr", bp::make_function(&ScKeynodes::GetResultCodeAddr, bp::return_value_policy<bp::return_by_value>()))
+    .staticmethod("GetResultCodeAddr")
+    .def("GetResultCodeByAddr", bp::make_function(&ScKeynodes::GetResultCodeByAddr, bp::return_value_policy<bp::return_by_value>()))
+    .staticmethod("GetResultCodeByAddr")
+    .def_readonly("kCommandStateAddr", &ScKeynodes::kCommandStateAddr)
+    .def_readonly("kCommandInitiatedAddr", &ScKeynodes::kCommandInitiatedAddr)
+    .def_readonly("kCommandProgressedAddr", &ScKeynodes::kCommandProgressedAddr)
+    .def_readonly("kCommandFinishedAddr", &ScKeynodes::kCommandFinishedAddr)
+    ;
+>>>>>>> [memory] Add opportunity for multiple links with the same content
 
   bp::class_<impl::ScAgentCommandImpl>("ScAgentCommandImpl", bp::no_init)
       .def("CreateCommand", &impl::ScAgentCommandImpl::CreateCommand)

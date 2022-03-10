@@ -155,12 +155,11 @@ sc_bool sc_storage_initialize(const char * path, sc_bool clear)
   segments = sc_mem_new(sc_segment *, SC_ADDR_SEG_MAX);
 
   sc_bool result = sc_string_tree_initialize();
-  if (result == SC_FALSE)
-    return SC_FALSE;
+  g_assert(result);
 
   if (clear == SC_FALSE)
   {
-    // @todo: implement read from local database
+    // @todo: Implement read from local database
   }
 
   is_initialized = SC_TRUE;
@@ -172,21 +171,23 @@ sc_bool sc_storage_initialize(const char * path, sc_bool clear)
 
 void sc_storage_shutdown(sc_bool save_state)
 {
-  sc_uint idx = 0;
   sc_assert(segments != null_ptr);
 
-  // @todo: implement write to local database
+  // @todo: Implement write to local database
 
+  sc_uint idx;
   for (idx = 0; idx < SC_ADDR_SEG_MAX; idx++)
   {
     if (segments[idx] == null_ptr)
-      continue;  // skip segments, that are not loaded
+      continue; // skip segments, that are not loaded
     sc_segment_free(segments[idx]);
   }
 
   sc_mem_free(segments);
   segments = null_ptr;
   segments_num = 0;
+
+  sc_string_tree_shutdown();
 
   is_initialized = SC_FALSE;
   _sc_segment_cache_clear();
@@ -472,22 +473,7 @@ sc_result sc_storage_element_free(sc_memory_context * ctx, sc_addr addr)
 
     if (el->flags.type & sc_type_link)
     {
-      sc_check_sum sum;
-
-      if (el->flags.type & sc_flag_link_self_container)
-      {
-        sc_link_self_container_calculate_checksum(el, &sum);
-      }
-      else
-      {
-        sc_mem_cpy(&sum.data[0], el->content.data, SC_CHECKSUM_LEN);
-        sum.len = SC_CHECKSUM_LEN;
-      }
-
-      if (sc_element_is_checksum_empty(el) == SC_FALSE)
-      {
-        //STORAGE_CHECK_CALL(sc_fs_storage_remove_content_addr(addr, &sum));
-      }
+      // @todo: Implement effective sc-strings remove
     }
     else if (el->flags.type & sc_type_arc_mask)
     {
@@ -616,6 +602,7 @@ sc_addr sc_storage_node_new_ext(const sc_memory_context * ctx, sc_type type, sc_
   {
     SC_ADDR_MAKE_EMPTY(addr);
   }
+
   return addr;
 }
 
@@ -1071,42 +1058,66 @@ unlock:
   return result;
 }
 
-
-sc_result sc_storage_find_links_with_content(const sc_memory_context *ctx, const sc_stream *stream, sc_addr **addrs, sc_uint32 *result_count)
+sc_result sc_storage_find_links_with_content(const sc_memory_context *ctx, const sc_stream *stream, sc_addr **result_addrs, sc_uint32 *result_count)
 {
   g_assert(ctx != null_ptr);
   g_assert(stream != null_ptr);
 
-  *addrs = null_ptr;
+  *result_addrs = null_ptr;
   *result_count = 0;
 
-  sc_addr found;
-  sc_result result = sc_storage_find_link_with_content(ctx, stream, &found);
-  if (result != SC_RESULT_OK || !SC_ADDR_IS_NOT_EMPTY(found))
+  sc_char *data = null_ptr;
+  sc_uint16 size = 0;
+  if (sc_link_get_content(stream, &data, &size) != SC_TRUE)
     return SC_RESULT_ERROR;
 
-  sc_element *el = null_ptr;
-  if (sc_storage_element_lock(found, &el) != SC_RESULT_OK)
-  {
-    result = SC_RESULT_ERROR;
-    goto unlock;
-  }
+  sc_addr *found_addrs;
+  sc_uint32 addrs_size = 0;
 
-  if (!sc_access_lvl_check_read(ctx->access_levels, el->flags.access_levels))
-  {
-    result = SC_RESULT_ERROR_NO_READ_RIGHTS;
-    g_free(el);
-    goto unlock;
-  }
+  sc_result result = sc_string_tree_get_sc_links(data, &found_addrs, &addrs_size);
+  if (result != SC_RESULT_OK || found_addrs == null_ptr || addrs_size == 0)
+    return SC_RESULT_ERROR;
 
-  *addrs = g_new0(sc_addr, 1);
-  (*addrs)[0] = found;
-  *result_count = 1;
-  result = SC_RESULT_OK;
+  sc_uint32 i;
+  for (i = 0; i < addrs_size; ++i)
+  {
+    sc_addr found = found_addrs[i];
+    if (SC_ADDR_IS_EMPTY(found))
+      continue;
+
+    sc_element *el = null_ptr;
+    if (sc_storage_element_lock(found, &el) != SC_RESULT_OK)
+    {
+      result = SC_RESULT_ERROR;
+      goto unlock;
+    }
+
+    if (!sc_access_lvl_check_read(ctx->access_levels, el->flags.access_levels))
+    {
+      result = SC_RESULT_ERROR_NO_READ_RIGHTS;
+      g_free(el);
+      goto unlock;
+    }
+
+    if (*result_addrs == null_ptr)
+      *result_addrs = g_new0(sc_addr, ++(*result_count));
+    else
+      *result_addrs = g_realloc(*result_addrs, ++(*result_count));
+
+    *result_addrs[(*result_count) - 1] = found;
+    result = SC_RESULT_OK;
 
 unlock:
-  {
-    STORAGE_CHECK_CALL(sc_storage_element_unlock(found))
+    {
+      STORAGE_CHECK_CALL(sc_storage_element_unlock(found))
+    }
+
+    if (result != SC_RESULT_OK)
+    {
+      *result_addrs = null_ptr;
+      *result_count = 0;
+      break;
+    }
   }
 
   return result;
@@ -1126,7 +1137,7 @@ sc_result sc_storage_find_link_with_content(const sc_memory_context *ctx, const 
     return SC_RESULT_ERROR;
 
   sc_addr addr = sc_string_tree_get_sc_link(data);
-  if (!SC_ADDR_IS_NOT_EMPTY(addr))
+  if (SC_ADDR_IS_EMPTY(addr))
   {
     g_free(data);
     return SC_RESULT_ERROR;
@@ -1134,9 +1145,7 @@ sc_result sc_storage_find_link_with_content(const sc_memory_context *ctx, const 
 
   sc_element *el = null_ptr;
   if (sc_storage_element_lock(addr, &el) != SC_RESULT_OK)
-  {
-    goto unlock;
-  }
+    return SC_RESULT_ERROR;
 
   if (!sc_access_lvl_check_read(ctx->access_levels, el->flags.access_levels))
   {
@@ -1310,7 +1319,6 @@ sc_result sc_storage_save(sc_memory_context const * ctx)
   }
 
   // @todo: Implement save to local database
-  //sc_fs_storage_write_to_path(segments);
 
   g_mutex_unlock(&s_mutex_free);
 

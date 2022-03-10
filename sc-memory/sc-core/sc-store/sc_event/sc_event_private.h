@@ -66,7 +66,7 @@ sc_result sc_event_notify_element_deleted(sc_addr element);
  * If \ctx is in a pending mode, then event will be pend for emit
  * @param ctx pointer to context, that emits event
  * @param el sc-addr of element that emitting event
- * @param el_access Acces level of \p el
+ * @param el_access Access level of \p el
  * @param type Emitting event type
  * @param edge sc-addr of added/remove edge (just for specified events)
  * @param other_el sc-addr of the second element of edge. If \p el is a source, then \p other_el is a target.

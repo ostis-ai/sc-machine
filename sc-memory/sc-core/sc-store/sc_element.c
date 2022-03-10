@@ -16,17 +16,6 @@ void sc_element_set_type(sc_element * element, sc_type type)
   element->flags.type = sc_flags_remove(type);
 }
 
-sc_bool sc_element_is_checksum_empty(sc_element * element)
-{
-  sc_assert(element->flags.type & sc_type_link);
-  sc_uint32 i = 0;
-  for (; i < SC_CHECKSUM_LEN; ++i)
-    if (element->content.data[i] != 0)
-      return SC_FALSE;
-
-  return SC_TRUE;
-}
-
 sc_bool sc_element_is_request_deletion(sc_element * element)
 {
   return (element->flags.type & sc_flag_request_deletion) ? SC_TRUE : SC_FALSE;
