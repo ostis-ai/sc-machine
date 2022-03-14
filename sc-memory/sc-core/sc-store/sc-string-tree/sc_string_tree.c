@@ -10,7 +10,7 @@
 #include <glib.h>
 
 static const sc_uint8 s_min_sc_char = 1;
-static const sc_uint8 s_max_sc_char = 62;
+static const sc_uint8 s_max_sc_char = 63;
 static const sc_uint32 s_default_links_num = (sc_uint32)2 << 16;
 
 sc_string_tree *tree;
@@ -28,13 +28,10 @@ sc_bool sc_string_tree_initialize()
 
   tree = g_new0(sc_string_tree, 1);
   tree->root = _sc_string_tree_node_initialize();
-  table = g_new0(sc_string_tree_addr_table, 1);
 
+  table = g_new0(sc_string_tree_addr_table, 1);
   table->size = s_default_links_num;
-  table->nodes = g_new0(sc_string_tree_node*, table->size);
-  sc_uint32 i;
-  for (i = 0; i < table->size; ++i)
-    table->nodes[i] = null_ptr;
+  table->nodes = g_new0(sc_string_tree_node*, s_default_links_num);
 
   return SC_TRUE;
 }
@@ -81,12 +78,7 @@ inline sc_string_tree_node* _sc_string_tree_get_next_node(sc_string_tree_node *n
   return node->next[num];
 }
 
-inline sc_string_tree_node* _sc_string_tree_get_parent(sc_string_tree_node *node)
-{
-  return node->next[0];
-}
-
-sc_string_tree_node* sc_string_tree_append_to_node(sc_string_tree_node *node, sc_addr addr, const sc_char *sc_string, sc_uint32 size)
+sc_string_tree_node* sc_string_tree_append_to_node(sc_string_tree_node *node, sc_addr addr, sc_char *sc_string, sc_uint32 size)
 {
   sc_uint32 i;
   sc_string_tree_node *parent = null_ptr;
@@ -98,10 +90,10 @@ sc_string_tree_node* sc_string_tree_append_to_node(sc_string_tree_node *node, sc
     if (node->next[num] == null_ptr)
     {
       node->next[num] = _sc_string_tree_node_initialize();
-
       node->next[0] = parent;
       node->parent_id = parent_id;
     }
+
     parent = node;
     parent_id = num;
 
@@ -118,40 +110,40 @@ sc_string_tree_node* sc_string_tree_append_to_node(sc_string_tree_node *node, sc
   sc_uint32 hash = sc_addr_to_hash(addr);
   node->hashes[node->hashes_size - 1] = hash;
 
-  if (table->size <= hash)
-  {
-    table->size = hash + 1;
-    table->nodes = g_renew(sc_string_tree_node*, table->nodes, table->size);
-  }
   table->nodes[hash] = node;
 
   return node;
 }
 
-sc_string_tree_node* sc_string_tree_append(sc_addr addr, const sc_char *sc_string, sc_uint32 size)
+sc_string_tree_node* sc_string_tree_append(sc_addr addr, sc_char *sc_string, sc_uint32 size)
 {
   sc_char *old_string = sc_string_tree_get_sc_string(addr);
   if (old_string != null_ptr)
   {
-    sc_string_tree_node * node = table->nodes[sc_addr_to_hash(addr)];
-    sc_addr_hash *hashes = node->hashes;
+    sc_string_tree_node *node = table->nodes[sc_addr_to_hash(addr)];
 
-    sc_uint8 i;
-    for (i = 0; i < node->hashes_size; ++i)
+    if (SC_STRING_TREE_NODE_IS_VALID(node))
     {
-      sc_addr other;
-      other.seg = SC_ADDR_LOCAL_SEG_FROM_INT(hashes[i]);
-      other.offset = SC_ADDR_LOCAL_OFFSET_FROM_INT(hashes[i]);
+      sc_addr_hash *hashes = node->hashes;
 
-      if (SC_ADDR_IS_EQUAL(other, other))
-        node->hashes[i] = 0;
+      sc_uint8 i;
+      for (i = 0; i < node->hashes_size; ++i)
+      {
+        sc_addr other;
+        other.seg = SC_ADDR_LOCAL_SEG_FROM_INT(hashes[i]);
+        other.offset = SC_ADDR_LOCAL_OFFSET_FROM_INT(hashes[i]);
+
+        if (SC_ADDR_IS_EQUAL(other, other))
+          node->hashes[i] = 0;
+      }
     }
   }
 
-  return sc_string_tree_append_to_node(tree->root, addr, sc_string, size);
+  sc_string_tree_node *node = sc_string_tree_append_to_node(tree->root, addr, sc_string, size);
+  return node;
 }
 
-sc_string_tree_node * sc_string_tree_remove_from_node(sc_string_tree_node *node, const sc_char *sc_string, sc_uint32 index)
+sc_string_tree_node* sc_string_tree_remove_from_node(sc_string_tree_node *node, const sc_char *sc_string, sc_uint32 index)
 {
   sc_uint32 string_size = strlen(sc_string);
   sc_uint8 num;
@@ -303,7 +295,7 @@ sc_char* sc_string_tree_get_sc_string(sc_addr addr)
     return null_ptr;
 
   sc_uint32 count = 0;
-  return sc_string_tree_get_sc_string_from_node(node, addr,  &count);
+  return sc_string_tree_get_sc_string_from_node(node, addr, &count);
 }
 
 void sc_string_tree_get_sc_string_ext(sc_addr addr, sc_char **sc_string, sc_uint32 *size)
@@ -330,9 +322,9 @@ void sc_string_tree_show_from_node(sc_string_tree_node *node, sc_char *tab)
     if (node->next[i])
     {
       if (node->hashes_size != 0)
-        printf("%s%c[%d]\n", tab, sc_int_to_sc_char(i, node->mask), node->hashes_size);
+        printf("%s%c[%d]\n", tab, sc_int_to_sc_char(i, 0), node->hashes_size);
       else
-        printf("%s%c\n", tab, sc_int_to_sc_char(i, node->mask));
+        printf("%s%c\n", tab, sc_int_to_sc_char(i, 0));
 
       sc_char * new_tab = g_new0(sc_char, strlen(tab) + 6);
       strcpy(new_tab, tab);
@@ -359,7 +351,10 @@ inline void sc_char_to_sc_int(sc_uchar ch, sc_uint8 *ch_num, sc_uint8 *mask)
     num += 12 + (ch - 'a'); // 12 - 37
 
   else if (ch >= 'A' && ch <= 'Z')
+  {
+    *mask |= 0x1;
     num += 12 + (ch - 'A'); // 12 - 37
+  }
 
   else if (ch == '=')
     num = 38;
@@ -436,6 +431,16 @@ inline void sc_char_to_sc_int(sc_uchar ch, sc_uint8 *ch_num, sc_uint8 *mask)
   else if (ch == '#')
     num = 62;
 
+//
+//  else if (ch >= ' ' && ch <= '/')
+//    num += 38 + (ch - ' '); // 38 - 53
+//
+//  else if (ch >= ':' && ch <= '?')
+//    num += 53 + (ch - ':'); // 54 - 59
+//
+//  else if (ch >= '[' && ch <= '`')
+//    num += 58 + (ch - ':'); // 60 - 65
+
   *ch_num = num;
 }
 
@@ -446,8 +451,13 @@ inline sc_uchar sc_int_to_sc_char(sc_uint8 num, sc_uint8 mask)
   if (num >= 2 && num <= 11)
     ch = (sc_char)('0' + (num - 2)); // 2 - 11
 
-  else if (num >= 12 && num <= 38)
-    ch = (sc_char)('a' + (num - 13)); // 12 - 37
+  else if (num >= 12 && num <= 37)
+  {
+    if (mask & 0x1)
+      ch = (sc_char)('A' + (num - 13)); // 12 - 37
+    else
+      ch = (sc_char)('a' + (num - 13)); // 12 - 37
+  }
 
   else if (num == 38)
     ch = '=';
@@ -523,6 +533,15 @@ inline sc_uchar sc_int_to_sc_char(sc_uint8 num, sc_uint8 mask)
 
   else if (num == 62)
     ch = '#';
+
+//  else if (num >= 38 && num <= 53)
+//    ch = (sc_char)(' ' + (num - 39)); // 38 - 53
+//
+//  else if (num >= 54 && num <= 59)
+//    ch = (sc_char)(':' + (num - 55)); // 54 - 59
+//
+//  else if (num >= 60 && num <= 65)
+//    ch = (sc_char)('[' + (num - 61)); // 60 - 65
 
   return ch;
 }

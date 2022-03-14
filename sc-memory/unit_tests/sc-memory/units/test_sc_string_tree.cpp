@@ -5,6 +5,7 @@
 */
 
 #include <glib.h>
+#include <iomanip>
 #include "catch2/catch.hpp"
 #include "sc-test-framework/sc_test_unit.hpp"
 #include "sc-memory/sc_link.hpp"

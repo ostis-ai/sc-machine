@@ -10,12 +10,7 @@
 #include "sc_types.h"
 #include "sc_stream.h"
 
-/*! Calculates checksum for data in stream
- * @param stream Pointer to data stream for checksum calculation
- * @param check_sum Pointer to structure, that contains calculated checksum
- * @return If checksum calculated, then return SC_TRUE; otherwise return SC_FALSE
- */
-sc_bool sc_link_calculate_checksum(const sc_stream * stream, sc_check_sum * check_sum);
+sc_bool sc_link_calculate_checksum(const sc_stream *stream, sc_char **hash_string);
 
 sc_bool sc_link_get_content(const sc_stream *stream, sc_char **content, sc_uint16 *size);
 

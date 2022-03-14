@@ -12,6 +12,7 @@
 #include "sc-store/sc_config.h"
 #include "sc_helper_private.h"
 #include "sc-store/sc_event/sc_event_private.h"
+#include "sc-store/sc-string-tree/sc_string_tree.h"
 
 #include "sc-store/sc-base/sc_allocator.h"
 #include "sc-store/sc-base/sc_assert_utils.h"
@@ -52,6 +53,7 @@ sc_memory_context * sc_memory_initialize(const sc_memory_params * params)
   g_message("Configuration:");
   g_message("\tmax_loaded_segments: %d", sc_config_get_max_loaded_segments());
   g_message("\tsc-element size: %zd", sizeof(sc_element));
+  g_message("\tsc-string-node size: %zd", sizeof(sc_string_tree_node));
 
   if (sc_storage_initialize(params->repo_path, params->clear) != SC_TRUE)
     return null_ptr;

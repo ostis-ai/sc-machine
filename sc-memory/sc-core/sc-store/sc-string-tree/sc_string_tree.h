@@ -13,8 +13,8 @@ typedef struct _sc_string_tree_node
 {
   struct _sc_string_tree_node **next;
   sc_addr_hash *hashes;
-  sc_uint8 parent_id;
   sc_uint8 hashes_size;
+  sc_uint8 parent_id;
   sc_uint8 mask;
 } sc_string_tree_node;
 
@@ -40,9 +40,9 @@ sc_string_tree_node* _sc_string_tree_node_initialize();
 
 sc_string_tree_node* _sc_string_tree_get_next_node(sc_string_tree_node *node, sc_char ch);
 
-sc_string_tree_node* sc_string_tree_append_to_node(sc_string_tree_node *node, sc_addr addr, const sc_char *sc_string, sc_uint32 size);
+sc_string_tree_node* sc_string_tree_append_to_node(sc_string_tree_node *node, sc_addr addr, sc_char *sc_string, sc_uint32 size);
 
-sc_string_tree_node* sc_string_tree_append(sc_addr addr, const sc_char *sc_string, sc_uint32 size);
+sc_string_tree_node* sc_string_tree_append(sc_addr addr, sc_char *sc_string, sc_uint32 size);
 
 sc_string_tree_node* sc_string_tree_remove_from_node(sc_string_tree_node *node, const sc_char *sc_string, sc_uint32 index);
 
