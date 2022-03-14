@@ -2,6 +2,7 @@ import json
 import jwt
 import tornado
 from enum import Enum
+from pathlib import Path
 
 import http_api.auth.constants as cnt
 from http_api.auth.config import params
@@ -15,7 +16,7 @@ class TokenType(Enum):
 class TokenValidator:
     @staticmethod
     def _validate_token(token):
-        with open(params[cnt.PUBLIC_KEY], 'rb') as file:
+        with open(params[cnt.PUBLIC_KEY_PATH], 'rb') as file:
             public_key = file.read()
         try:
             jwt.decode(token, public_key,

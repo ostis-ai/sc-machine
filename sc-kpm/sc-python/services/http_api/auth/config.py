@@ -4,8 +4,8 @@ import http_api.auth.constants as cnt
 params = {
     # path params
     cnt.SQLITE_DB_PATH: 'sqlite:///' + '../sc-machine/sc-kpm/sc-python/services/http_api/auth/database.db',
-    cnt.PRIVATE_KEY: '../sc-machine/sc-kpm/sc-python/services/http_api/auth/private.pem',
-    cnt.PUBLIC_KEY: '../sc-machine/sc-kpm/sc-python/services/http_api/auth/public.pem',
+    cnt.PRIVATE_KEY_PATH: '../sc-machine/sc-kpm/sc-python/services/http_api/auth/private.pem',
+    cnt.PUBLIC_KEY_PATH: '../sc-machine/sc-kpm/sc-python/services/http_api/auth/public.pem',
     # validator patters
     cnt.USERNAME_PATTERN: '^[a-zA-Z][a-zA-Z0-9-_.]{1,20}$',
     # token params

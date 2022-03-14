@@ -2,6 +2,8 @@ import json
 import jwt
 import time
 import tornado
+import OpenSSL.crypto as crypto
+from os.path import isfile
 from typing import Dict, List
 
 from http_api.auth import constants as cnt
@@ -12,7 +14,9 @@ from http_api.auth.verifiers import username_verifier
 
 
 def _generate_token(token_type: TokenType) -> bytes:
-    with open(params[cnt.PRIVATE_KEY], 'rb') as file:
+    if not isfile(params[cnt.PRIVATE_KEY_PATH]):
+        _generate_keys()
+    with open(params[cnt.PRIVATE_KEY_PATH], 'rb') as file:
         private_key = file.read()
     access_token_life_span = params[cnt.ACCESS_TOKEN_LIFE_SPAN]
     refresh_token_life_span = params[cnt.REFRESH_TOKEN_LIFE_SPAN]
@@ -23,6 +27,15 @@ def _generate_token(token_type: TokenType) -> bytes:
     }
     token = jwt.encode(payload, key=private_key, algorithm='RS256')
     return token
+
+
+def _generate_keys() -> None:
+    pkey = crypto.PKey()
+    pkey.generate_key(type=crypto.TYPE_RSA, bits=2048)
+    with open(params[cnt.PRIVATE_KEY_PATH], "wb") as f:
+        f.write(crypto.dump_privatekey(crypto.FILETYPE_PEM, pkey))
+    with open(params[cnt.PUBLIC_KEY_PATH], "wb") as f:
+        f.write(crypto.dump_publickey(crypto.FILETYPE_PEM, pkey))
 
 
 class BaseHandler(tornado.web.RequestHandler):

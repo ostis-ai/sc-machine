@@ -42,5 +42,5 @@ REFRESH_TOKEN_LIFE_SPAN = 'refresh_token_life_span'
 ISSUER = 'issuer'
 # paths
 SQLITE_DB_PATH = 'sqlite_db_path'
-PRIVATE_KEY = 'private_key'
-PUBLIC_KEY = 'public_key'
+PRIVATE_KEY_PATH = 'private_key'
+PUBLIC_KEY_PATH = 'public_key'
