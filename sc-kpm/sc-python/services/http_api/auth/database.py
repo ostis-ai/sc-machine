@@ -70,6 +70,10 @@ class DataBase:
         selected_user = self._session().query(User).filter(User.name == name).first()
         return selected_user is not None
 
+    def is_such_role_in_base(self, role_id):
+        selected_role = self._session().query(Role).filter(Role.id == role_id).first()
+        return selected_role is not None
+
     def get_user_by_id(self, id: int):
         user_info = self._session().query(User).filter(User.id == id).first()
         return user_info.serialize if user_info is not None else None
