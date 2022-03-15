@@ -2,7 +2,6 @@ import json
 import jwt
 import tornado
 from enum import Enum
-from pathlib import Path
 
 import http_api.auth.constants as cnt
 from http_api.auth.config import params

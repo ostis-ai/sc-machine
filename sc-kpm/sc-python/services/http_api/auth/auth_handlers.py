@@ -85,9 +85,9 @@ class TokensHandler(BaseHandler):
 
     def _get_user_credentials(self):
         data = json.loads(self.request.body)
-        username = data[cnt.USERNAME] if cnt.USERNAME in data else False
+        name = data[cnt.NAME] if cnt.NAME in data else False
         password = data[cnt.PASSWORD] if cnt.PASSWORD in data else False
-        return username, password
+        return name, password
 
 
 class AccessTokenHandler(BaseHandler):
@@ -106,11 +106,12 @@ class AccessTokenHandler(BaseHandler):
 class UserHandler(BaseHandler):
     @TokenValidator.validate_typed_token(TokenType.ACCESS)
     def post(self) -> None:
+        """ Add new user """
         database = DataBase()
-        request_params = self._get_request_params([cnt.USERNAME, cnt.PASSWORD, cnt.ROLE])
-        if not username_verifier.verify(request_params[cnt.USERNAME]):
+        request_params = self._get_request_params([cnt.NAME, cnt.PASSWORD, cnt.ROLE_ID])
+        if not username_verifier.verify(request_params[cnt.NAME]):
             response = get_response_message(params[cnt.MSG_CODES][cnt.MSG_INVALID_USERNAME])
-        elif database.is_such_user_in_base(request_params[cnt.USERNAME]):
+        elif database.is_such_user_in_base(request_params[cnt.NAME]):
             response = get_response_message(params[cnt.MSG_CODES][cnt.MSG_USER_IS_IN_BASE])
         else:
             user_added = database.add_user(**request_params)
@@ -120,19 +121,48 @@ class UserHandler(BaseHandler):
         self.write(response)
 
     @TokenValidator.validate_typed_token(TokenType.ACCESS)
-    def delete(self) -> None:
+    def get(self) -> None:
+        """ Get info about user """
         database = DataBase()
-        request_params = self._get_request_params([cnt.USER_ID])
-        database.delete_user_by_id(request_params[cnt.USER_ID])
+        request_params = self._get_request_params([cnt.ID])
+        human_info = database.get_user_by_id(**request_params)
+        if human_info is not None:
+            response = {
+                cnt.ID: human_info[cnt.ID],
+                cnt.NAME: human_info[cnt.NAME],
+                cnt.ROLE: human_info[cnt.ROLE]
+            }
+        else:
+            response = get_response_message(params[cnt.MSG_CODES][cnt.MSG_USER_NOT_FOUND])
+        self.write(response)
+
+    @TokenValidator.validate_typed_token(TokenType.ACCESS)
+    def delete(self) -> None:
+        """ Delete user """
+        database = DataBase()
+        request_params = self._get_request_params([cnt.ID])
+        database.delete_user_by_id(**request_params)
         response = get_response_message(params[cnt.MSG_CODES][cnt.MSG_ALL_DONE])
         self.write(response)
 
     @TokenValidator.validate_typed_token(TokenType.ACCESS)
     def put(self) -> None:
+        """ Update user """
         database = DataBase()
-        post_args = self._get_request_params([cnt.USER_ID, cnt.USERNAME, cnt.PASSWORD, cnt.ROLE])
+        post_args = self._get_request_params([cnt.ID, cnt.NAME, cnt.PASSWORD, cnt.ROLE_ID])
         database.update_user_by_id(**post_args)
         response = get_response_message(params[cnt.MSG_CODES][cnt.MSG_ALL_DONE])
+        self.write(response)
+
+
+class UsersListHandler(BaseHandler):
+    @TokenValidator.validate_typed_token(TokenType.ACCESS)
+    def get(self) -> None:
+        database = DataBase()
+        users = database.get_users()
+        response = {
+            cnt.USERS: users
+        }
         self.write(response)
 
 

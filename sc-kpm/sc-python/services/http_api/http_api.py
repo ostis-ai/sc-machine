@@ -8,7 +8,7 @@ import tornado
 from ws_sc_json import ScJsonSocketHandler
 from common import ScModule
 from keynodes import Keynodes
-from auth.auth_handlers import AccessTokenHandler, TokensHandler, UserHandler
+from auth.auth_handlers import AccessTokenHandler, TokensHandler, UserHandler, UsersListHandler
 from auth.database import DataBase
 
 from sc import *
@@ -97,6 +97,7 @@ class ServerThread(threading.Thread):
         (r'/assets/(.*)', self.staticHandler, {'path': self.assets_path}),
         # admin role functions
         (r'/admin/user$', UserHandler),
+        (r'/admin/users$', UsersListHandler),
         # token handlers
         (r'/auth/get_tokens$', TokensHandler),
         (r'/auth/get_access_token$', AccessTokenHandler),

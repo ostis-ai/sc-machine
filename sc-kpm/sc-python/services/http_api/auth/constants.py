@@ -1,13 +1,12 @@
-# database
+# database and common
 USER = 'user'
-USER_ID = 'user_id'
-ROLE_ID = 'role_id'
+USERS = 'users'
+ID = 'id'
 NAME = 'name'
-# user credentials
-USERNAME = 'username'
 PASSWORD = 'password'
-# roles
+ROLE_ID = 'role_id'
 ROLE = 'role'
+# roles
 ROLES = 'roles'
 ADMIN_ROLE = 'admin_role'
 ASSISTANT_ROLE = 'assistant_role'
