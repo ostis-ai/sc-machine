@@ -4,6 +4,8 @@
     - Migrate test system to `gtest`
     - Remove optional search triples support
 
+- **Build system**:
+    - Remove antlr4 static dependency, use shared library instead
 ## v0.6.0
 
  - **Build system**:
