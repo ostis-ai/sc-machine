@@ -23,8 +23,15 @@ params = {
         cnt.MSG_INVALID_ROLE: 3,
         cnt.MSG_USER_NOT_FOUND: 4,
         cnt.MSG_USER_IS_IN_BASE: 5,
-        cnt.MSG_USER_DELETED: 6,
-        cnt.MSG_USER_UPDATED: 7,
+    },
+    # messages text
+    cnt.MSG_TEXT: {
+        cnt.MSG_ALL_DONE: "All done",
+        cnt.MSG_INVALID_USERNAME: "User name is incorrect",
+        cnt.MSG_INVALID_PASSWORD: "User password is incorrect",
+        cnt.MSG_INVALID_ROLE: "User role is invalid",
+        cnt.MSG_USER_NOT_FOUND: "User not found in database",
+        cnt.MSG_USER_IS_IN_BASE: "User already exists in database",
     },
     # roles
     cnt.ROLES: {

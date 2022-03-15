@@ -127,11 +127,11 @@ class UserHandler(BaseHandler):
         request_params = self._get_request_params([cnt.ID])
         human_info = database.get_user_by_id(**request_params)
         if human_info is not None:
-            response = {
+            response = json.dumps({
                 cnt.ID: human_info[cnt.ID],
                 cnt.NAME: human_info[cnt.NAME],
                 cnt.ROLE: human_info[cnt.ROLE]
-            }
+            })
         else:
             response = get_response_message(params[cnt.MSG_CODES][cnt.MSG_USER_NOT_FOUND])
         self.write(response)
@@ -160,14 +160,15 @@ class UsersListHandler(BaseHandler):
     def get(self) -> None:
         database = DataBase()
         users = database.get_users()
-        response = {
+        response = json.dumps({
             cnt.USERS: users
-        }
+        })
         self.write(response)
 
 
 def get_response_message(msg_code: int) -> str:
     response = json.dumps({
-        cnt.MSG_CODE: msg_code
+        cnt.MSG_CODE: msg_code,
+        cnt.MSG_TEXT: params[cnt.MSG_TEXT][msg_code],
     })
     return response
