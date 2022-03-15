@@ -8,7 +8,8 @@ import tornado
 from ws_sc_json import ScJsonSocketHandler
 from common import ScModule
 from keynodes import Keynodes
-from auth.auth_handlers import AccessTokenHandler, TokensHandler, UserHandler, UsersListHandler
+from auth.admin_handlers import UserHandler, UsersListHandler
+from auth.auth_handlers import AccessTokenHandler, TokensHandler
 from auth.database import DataBase
 
 from sc import *
