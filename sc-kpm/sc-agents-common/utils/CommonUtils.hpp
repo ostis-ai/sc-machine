@@ -35,7 +35,21 @@ public:
                        "(ScMemoryContext * ms_context, const ScAddr & node, const ScAddr & idtfRelation) instead of.")
   static string getIdtfValue(ScMemoryContext * ms_context, const ScAddr & node, const ScAddr & idtfRelation);
 
-  static string getIdtf(ScMemoryContext * ms_context, const ScAddr & node, const ScAddr & idtfRelation);
+  static string getIdtf(
+        ScMemoryContext * ms_context,
+        const ScAddr & node,
+        const ScAddr & idtfRelation,
+        const ScAddrVector & linkClasses = {});
+
+  static string getMainIdtf(ScMemoryContext *ms_context, const ScAddr &node, const ScAddrVector & linkClasses = {});
+
+  static void setIdtf(
+        ScMemoryContext *ms_context,
+        const ScAddr &node,
+        const ScAddr &relation,
+        const string &identifier);
+
+  static void setMainIdtf(ScMemoryContext * ms_context, const ScAddr & node, const string & identifier);
 
   SC_DEPRECATED(0.6.0, "Use CommonUtils::getSetPower"
                        "(ScMemoryContext * ms_context, const ScAddr & set) instead of.")
