@@ -20,7 +20,6 @@ namespace sctp
 
 #define SCTP_ADDR_SIZE      (sizeof(ScRealAddr))
 
-#pragma pack(push,1)
 struct RequestHeader
 {
   sc_uint8 commandType;
@@ -75,8 +74,6 @@ struct ResultHeader
   uint32_t resultSize;
 };
 
-
-#pragma pack(pop)
 
 class Iterator
 {

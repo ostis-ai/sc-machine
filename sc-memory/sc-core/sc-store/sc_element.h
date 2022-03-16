@@ -21,7 +21,7 @@ struct _sc_arc_info
 };
 
 
-#define SC_CHECKSUM_LEN 32//(sizeof(sc_arc_info) - sizeof(sc_uint32))
+#define SC_CHECKSUM_LEN 32 //(sizeof(sc_arc_info) - sizeof(sc_uint32))
 
 /*! Structure to store content information
  * Data field store checksum for data, that stores in specified sc-link.
