@@ -2,7 +2,7 @@ name: CI
 
 on:
   pull_request:
-    branches: [ master ]
+    branches: [ main ]
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
@@ -19,7 +19,7 @@ jobs:
         uses: GsActions/commit-message-checker@v1
         with:
           # A regex pattern to check if a commit message is valid.
-          pattern: "((\\[(builder|changelog|ci|cmake|codegen|core|doc|docs|git|python|sc-kpm|sc-memory|sc-network|sc-server|scripts|scs|test|tests|thirdparty|web)\\])+(.)+)|(Review fixes)$"
+          pattern: "((\\[(builder|changelog|ci|codegen|doc|docs|python|test|tests|memory|tools|review|refactor)\\])+(.)+)|(Review fixes)$"
           # Expression flags change how the expression is interpreted.
           flags: # optional, default is gm
           # A error message which will be returned in case of an error.
@@ -63,7 +63,7 @@ jobs:
 
       - name: Install dependencies
         id: install_deps
-        run: scripts/ci/install-deps.sh
+        run: scripts/install_deps_ubuntu.sh
 
       - name: Build
         id: run_cmake
@@ -71,7 +71,7 @@ jobs:
           CC: ${{ matrix.config.cc }}
           CCX: ${{ matrix.config.cxx }}
           BUILD_TYPE: ${{ matrix.config.build_type }}
-        run: scripts/ci/install-tests.sh
+        run: scripts/ci/make-tests.sh
 
       - name: Run tests
         id: run_tests

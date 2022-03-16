@@ -13,8 +13,7 @@ set (SC_MACHINE_THIRDPARTY_PATH "${SC_MACHINE_ROOT}/thirdparty")
 option (SC_AUTO_TEST "Flag to build for automation testing" OFF)
 option (SC_KPM_SCP "Flag to build SCP module" OFF)
 option (SC_BUILD_SCTP "Flag to turn on/off sctp protocol support" ON)
-# Flag to build unit tests. Option is replaced with set because of option unpredictable behavior
-set(SC_BUILD_TESTS OFF)
+option (SC_BUILD_TESTS "Flag to build unit tests" OFF)
 
 if (${SC_BUILD_ARM64})
     check_c_compiler_flag("-arch arm64" IS_ARM64_SUPPORTED)
