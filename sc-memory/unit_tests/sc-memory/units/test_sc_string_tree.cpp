@@ -103,6 +103,35 @@ TEST_CASE("sc-links", "[test sc-links common]")
   test::ScTestUnit::ShutdownMemory(true);
 }
 
+TEST_CASE("sc-links-complex", "[test sc-links common]")
+{
+  test::ScTestUnit::InitMemory("sc-memory.ini", "");
+  ScMemoryContext ctx(sc_access_lvl_make_min, "sc-links complex");
+
+  ScAddr formulaAddr = ctx.CreateNode(ScType::NodeConst);
+  REQUIRE(ctx.HelperSetSystemIdtf("atomic_formula", formulaAddr));
+  REQUIRE(formulaAddr == ctx.HelperFindBySystemIdtf("atomic_formula"));
+  REQUIRE("atomic_formula" == ctx.HelperGetSystemIdtf(formulaAddr));
+
+  ScAddr node1 = ctx.CreateNode(ScType::NodeConst);
+  REQUIRE(node1.IsValid());
+  REQUIRE(!ctx.HelperSetSystemIdtf("atomic_formula", node1));
+  REQUIRE(ctx.HelperGetSystemIdtf(node1).empty());
+
+  node1 = ctx.CreateNode(ScType::NodeConst);
+  REQUIRE(node1.IsValid());
+  REQUIRE(node1 != ctx.HelperResolveSystemIdtf("atomic_formula", ScType::NodeConst));
+  REQUIRE(formulaAddr == ctx.HelperResolveSystemIdtf("atomic_formula", ScType::NodeConst));
+  REQUIRE("atomic_formula" == ctx.HelperGetSystemIdtf(formulaAddr));
+
+  ScAddr node2 = ctx.HelperResolveSystemIdtf("_node2", ScType::NodeVarStruct);
+  REQUIRE(node2.IsValid());
+  REQUIRE("_node2" == ctx.HelperGetSystemIdtf(node2));
+
+  ctx.Destroy();
+  test::ScTestUnit::ShutdownMemory(true);
+}
+
 TEST_CASE("sc-link-content-changed", "[test sc-links content changed]")
 {
   test::ScTestUnit::InitMemory("sc-memory.ini", "");
@@ -124,6 +153,7 @@ TEST_CASE("sc-link-content-changed", "[test sc-links content changed]")
   REQUIRE(link.Set(str));
   REQUIRE(str == link.GetAsString());
 
+  REQUIRE(!ctx.FindLinksByContent("content3").empty());
   REQUIRE(ctx.FindLinksByContent("content1").empty());
   REQUIRE(ctx.FindLinksByContent("content2").empty());
 

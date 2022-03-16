@@ -113,25 +113,25 @@ sc_result sc_memory_init_ext(sc_char const * ext_path, const sc_char ** enabled_
 
 void sc_memory_shutdown(sc_bool save_state)
 {
-  //sc_events_stop_processing();
+  sc_events_stop_processing();
 
   sc_memory_shutdown_ext();
 
-  //sc_events_shutdown();
+  sc_events_shutdown();
   sc_config_shutdown();
 
   //sc_helper_shutdown();
 
   sc_storage_shutdown(save_state);
 
-  //sc_memory_context_free(s_memory_default_ctx);
+  sc_memory_context_free(s_memory_default_ctx);
   s_memory_default_ctx = 0;
 
   /// todo: clear contexts
   g_hash_table_destroy(s_context_hash_table);
   s_context_hash_table = null_ptr;
   s_context_id_last = 0;
-  //g_assert(s_context_id_count == 0);
+  g_assert(s_context_id_count == 0);
 }
 
 void sc_memory_shutdown_ext()

@@ -432,7 +432,7 @@ bool ScPythonInterpreter::Initialize(std::string const & name)
 
 void ScPythonInterpreter::Shutdown()
 {
-  //SC_ASSERT(gMainThread != nullptr, ());
+  SC_ASSERT(gMainThread != nullptr, ());
   gMainThread = nullptr;
 
   ms_modulePaths.clear();
