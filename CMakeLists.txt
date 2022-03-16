@@ -239,19 +239,6 @@ if (NOT EXISTS ${CMAKE_CURRENT_LIST_DIR}/generated/lib)
 			WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR})
 endif ()
 
-set(CATCH2_VER v2.13.2)
-if (NOT EXISTS ${CMAKE_CURRENT_LIST_DIR}/generated/lib/Catch2)
-	execute_process(
-			COMMAND git clone --depth 1 --branch ${CATCH2_VER} https://github.com/catchorg/Catch2.git
-			WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}/generated/lib)
-	execute_process(
-			COMMAND cmake -Bbuild -H. -DBUILD_TESTING=OFF
-			WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}/generated/lib/Catch2)
-	execute_process(
-			COMMAND sudo -S cmake --build build/ --target install
-			WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}/generated/lib/Catch2)
-endif ()
-
 if (NOT EXISTS ${CMAKE_CURRENT_LIST_DIR}/log)
 	execute_process(
 			COMMAND mkdir log
