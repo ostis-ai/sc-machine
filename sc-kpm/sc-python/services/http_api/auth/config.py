@@ -20,23 +20,15 @@ params = {
         cnt.MSG_ALL_DONE: 0,
         cnt.MSG_INVALID_USERNAME: 1,
         cnt.MSG_INVALID_PASSWORD: 2,
-        cnt.MSG_INVALID_ROLE: 3,
-        cnt.MSG_USER_NOT_FOUND: 4,
-        cnt.MSG_USER_IS_IN_BASE: 5,
+        cnt.MSG_USER_NOT_FOUND: 3,
+        cnt.MSG_USER_IS_IN_BASE: 4,
     },
     # messages text
     cnt.MSG_TEXT: {
         cnt.MSG_ALL_DONE: "All done",
         cnt.MSG_INVALID_USERNAME: "User name is incorrect",
         cnt.MSG_INVALID_PASSWORD: "User password is incorrect",
-        cnt.MSG_INVALID_ROLE: "User role is invalid",
         cnt.MSG_USER_NOT_FOUND: "User not found in database",
         cnt.MSG_USER_IS_IN_BASE: "User already exists in database",
-    },
-    # roles
-    cnt.ROLES: {
-        cnt.ASSISTANT_ROLE: 0,
-        cnt.PATIENT_ROLE: 1,
-        cnt.ADMIN_ROLE: 255,
     }
 }

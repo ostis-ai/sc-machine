@@ -24,26 +24,16 @@ class User(Base):
     id = Column(Integer, primary_key=True, unique=True)
     name = Column(String(255), nullable=False)
     password = Column(String(255), nullable=False)
-    role_id = Column(Integer, ForeignKey('role.id'))
-    role = relationship('Role')
 
     def __repr__(self):
-        return '<id={}, name={}, role={}>'.format(self.id, self.name, self.role)
+        return '<id={}, name={}>'.format(self.id, self.name)
 
     @property
     def serialize(self):
         return {
             cnt.ID: self.id,
-            cnt.NAME: self.name,
-            cnt.ROLE: self.role.name
+            cnt.NAME: self.name
         }
-
-
-class Role(Base):
-    __tablename__ = cnt.ROLE
-    id = Column(Integer, primary_key=True, unique=True)
-    name = Column(String(255), nullable=False)
-
 
 class DataBase:
     def __init__(self) -> None:
@@ -52,9 +42,6 @@ class DataBase:
 
     def init(self) -> None:
         Base.metadata.create_all(self.engine)
-        for key, value in params[cnt.ROLES].items():
-            role = Role(id=value, name=key)
-            self._session().merge(role)
         self._session().commit()
 
     def _session(self):
@@ -70,10 +57,6 @@ class DataBase:
         selected_user = self._session().query(User).filter(User.name == name).first()
         return selected_user is not None
 
-    def is_such_role_in_base(self, role_id):
-        selected_role = self._session().query(Role).filter(Role.id == role_id).first()
-        return selected_role is not None
-
     def get_user_by_id(self, id: int):
         user_info = self._session().query(User).filter(User.id == id).first()
         return user_info.serialize if user_info is not None else None
@@ -87,8 +70,8 @@ class DataBase:
         self._session().merge(u)
         self._session().commit()
 
-    def add_user(self, name: str, password: str, role_id: int) -> bool:
-        new_user = User(name=str(name), password=str(password), role_id=int(role_id))
+    def add_user(self, name: str, password: str) -> bool:
+        new_user = User(name=str(name), password=str(password))
         try:
             self._session().add(new_user)
             self._session().commit()
@@ -101,8 +84,8 @@ class DataBase:
         self._session().commit()
         return delete_users_count
 
-    def update_user_by_id(self, id: int, name: str, password: str, role_id: str) -> bool:
+    def update_user_by_id(self, id: int, name: str, password: str) -> bool:
         updated_users_count = self._session().query(User).filter(User.id == id).\
-            update({cnt.NAME: name, cnt.PASSWORD: password, cnt.ROLE_ID: role_id})
+            update({cnt.NAME: name, cnt.PASSWORD: password)
         self._session().commit()
         return updated_users_count

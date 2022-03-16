@@ -8,15 +8,13 @@ from http_api.auth.validators import TokenValidator, TokenType
 from http_api.auth.verifiers import username_verifier
 
 
-def _verify_user_info_in_database(database: DataBase, name: str, password: str, role_id: str) -> str:
+def _verify_user_info_in_database(database: DataBase, name: str, password: str) -> str:
     if not username_verifier.verify(name):
         message_desc = cnt.MSG_INVALID_USERNAME
     elif len(password.strip()) == 0:
         message_desc = cnt.MSG_INVALID_PASSWORD
     elif database.is_such_user_in_base(name):
         message_desc = cnt.MSG_USER_IS_IN_BASE
-    elif not database.is_such_role_in_base(role_id):
-        message_desc = cnt.MSG_INVALID_ROLE
     else:
         message_desc = cnt.MSG_ALL_DONE
     return message_desc
@@ -27,12 +25,11 @@ class UserHandler(BaseHandler):
     def post(self) -> None:
         """ Add new user """
         database = DataBase()
-        request_params = self._get_request_params([cnt.NAME, cnt.PASSWORD, cnt.ROLE_ID])
+        request_params = self._get_request_params([cnt.NAME, cnt.PASSWORD])
         msg_desc = _verify_user_info_in_database(
             database,
             name=request_params[cnt.NAME],
             password=request_params[cnt.PASSWORD],
-            role_id=request_params[cnt.ROLE_ID]
         )
         response = get_response_message(msg_desc)
         if msg_desc == cnt.MSG_ALL_DONE:
@@ -48,8 +45,7 @@ class UserHandler(BaseHandler):
         if human_info is not None:
             response = json.dumps({
                 cnt.ID: human_info[cnt.ID],
-                cnt.NAME: human_info[cnt.NAME],
-                cnt.ROLE: human_info[cnt.ROLE]
+                cnt.NAME: human_info[cnt.NAME]
             })
         else:
             response = get_response_message(cnt.MSG_USER_NOT_FOUND)
@@ -68,12 +64,11 @@ class UserHandler(BaseHandler):
     def put(self) -> None:
         """ Update user """
         database = DataBase()
-        request_params = self._get_request_params([cnt.ID, cnt.NAME, cnt.PASSWORD, cnt.ROLE_ID])
+        request_params = self._get_request_params([cnt.ID, cnt.NAME, cnt.PASSWORD])
         msg_desc = _verify_user_info_in_database(
             database,
             name=request_params[cnt.NAME],
-            password=request_params[cnt.PASSWORD],
-            role_id=request_params[cnt.ROLE_ID]
+            password=request_params[cnt.PASSWORD]
         )
         response = get_response_message(msg_desc)
         if msg_desc == cnt.MSG_ALL_DONE:
