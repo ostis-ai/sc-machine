@@ -112,23 +112,31 @@ ScAddrVector IteratorUtils::getAllWithType(ScMemoryContext * ms_context, const S
   return elementList;
 }
 
-ScAddrVector IteratorUtils::getAllByInRelation(
+ScAddrVector IteratorUtils::getAllByRelation(
       ScMemoryContext * ms_context,
       const ScAddr & node,
-      const ScAddr & relation)
+      const ScAddr & relation,
+      bool nodeIsStart)
 {
   SC_CHECK_PARAM(node, ("Invalid node address"))
   SC_CHECK_PARAM(relation, ("Invalid relation address"))
 
   ScAddrVector elementList;
-  ScIterator5Ptr iterator5 = IteratorUtils::getIterator5(ms_context, node, relation, false);
+  ScIterator5Ptr iterator5 = IteratorUtils::getIterator5(ms_context, node, relation, nodeIsStart);
   while (iterator5->Next())
   {
-    elementList.push_back(iterator5->Get(0));
+    elementList.push_back(iterator5->Get(nodeIsStart ? 2 : 0));
   }
   return elementList;
 }
 
+ScAddrVector IteratorUtils::getAllByInRelation(
+      ScMemoryContext * ms_context,
+      const ScAddr & node,
+      const ScAddr & relation)
+{
+  return getAllByRelation(ms_context, node, relation, false);
+}
 
 ScAddr IteratorUtils::getFirstByInRelation(ScMemoryContext * ms_context, const ScAddr & node, const ScAddr & relation)
 {
@@ -151,6 +159,14 @@ ScAddr IteratorUtils::getAnyByInRelation(ScMemoryContext * ms_context, const ScA
 ScAddr IteratorUtils::getFirstByOutRelation(ScMemoryContext * ms_context, const ScAddr & node, const ScAddr & relation)
 {
   return getAnyByOutRelation(ms_context, node, relation);
+}
+
+ScAddrVector IteratorUtils::getAllByOutRelation(
+      ScMemoryContext * ms_context,
+      const ScAddr & node,
+      const ScAddr & relation)
+{
+  return getAllByRelation(ms_context, node, relation, true);
 }
 
 ScAddr IteratorUtils::getAnyByOutRelation(ScMemoryContext * ms_context, const ScAddr & node, const ScAddr & relation)
