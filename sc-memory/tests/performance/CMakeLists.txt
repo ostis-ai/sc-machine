@@ -11,7 +11,6 @@ target_include_directories(sc-memory-performance-tests
 
 target_link_libraries(sc-memory-performance-tests
   sc-memory
-  sc-test-framework
   benchmark)
 
 sc_codegen(sc-memory-performance-tests ${CMAKE_CURRENT_LIST_DIR})

@@ -25,48 +25,37 @@ TEST_F(ScPythonTest, python_unittest)
 
 TEST_F(ScPythonTest, smoke)
 {
-  test::ScTestUnit::InitMemory("sc-memory.ini", "");
+  py::ScPythonInterpreter::AddModulesPath(SC_TEST_KPM_PYTHON_PATH);
 
-  try
-  {
-    py::ScPythonInterpreter::AddModulesPath(SC_TEST_KPM_PYTHON_PATH);
+  volatile bool passed = true;
 
-    volatile bool passed = true;
+  std::vector<std::unique_ptr<std::thread>> threads;
 
-    std::vector<std::unique_ptr<std::thread>> threads;
-
-    size_t const numTests = 50;
-    threads.resize(numTests);
-    for (size_t i = 0; i < numTests; ++i)
-    {
-      threads[i].reset(
-            new std::thread([&passed]()
-                            {
-                              py::DummyService testService("sc_tests/test_dummy.py");
-                              try
-                              {
-                                testService.Run();
-                              }
-                              catch (utils::ScException const & ex)
-                              {
-                                SC_LOG_ERROR(ex.Message());
-                                passed = false;
-                              }
-                              catch (...)
-                              {
-                                SC_LOG_ERROR("Unknown error");
-                                passed = false;
-                              }
-                            }));
-    }
-
-    for (auto const & t : threads)
-      t->join();
-    REQUIRE(passed);
-  } catch (...)
-  {
-    SC_LOG_ERROR("Test \"Python_clean\" failed")
+  size_t const numTests = 50;
+  threads.resize(numTests);
+  for (size_t i = 0; i < numTests; ++i) {
+    threads[i].reset(new std::thread([&passed]()
+                                     {
+                                       py::DummyService testService("sc_tests/test_dummy.py");
+                                       try
+                                       {
+                                         testService.Run();
+                                       }
+                                       catch (utils::ScException const & ex)
+                                       {
+                                         SC_LOG_ERROR(ex.Description());
+                                         passed = false;
+                                       }
+                                       catch (...)
+                                       {
+                                         SC_LOG_ERROR("Unknown error");
+                                         passed = false;
+                                       }
+                                     }));
   }
+
+  for (auto const & t : threads)
+    t->join();
 
   EXPECT_TRUE(passed);
 }
