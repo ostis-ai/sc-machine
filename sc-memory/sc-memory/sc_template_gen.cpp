@@ -38,9 +38,6 @@ public:
 
       checkEdge(values[0]);
       checkEdge(values[2]);
-
-      if (!constr.IsRequired())
-        SC_THROW_EXCEPTION(utils::ExceptionInvalidParams, "You can't use triples with isRequired param equal to false");
     }
   }
 

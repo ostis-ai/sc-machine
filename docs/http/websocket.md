@@ -265,42 +265,10 @@ This request search constructions by specified template.
           {
             "type": "alias",
             "value": "_edge1"  // ref to first triple element
-          },
-          // last field is an options. You should to use it, when you need to override defaults
-          {
-            "is_required": false
           }
         ],
         ...
       ]
-    }
-    ```
-
-There are decription options value for an each triple in template:
-
-- `is_required`: _default value is_ `true`. This option can be used to make triple optional in a search (use `false` value for that)
-
-!!! quote "Response"
-
-    ```json
-    {
-      ..., // common response data
-      "payload": {
-        /* this map contains index of specified alias in
-        * result addrs list
-        */
-        "aliases": {
-          "trg": 2,
-          "edge1": 1,
-          "edge2": 4
-        },
-        "addrs": [
-          [23123, 412, 423, 231342, 282, 412], // addrs for 1st result
-          [23123, 6734, 85643, 231342, 4234, 6734], // addrs for 2nd result
-          [23123, 7256, 252, 0, 0, 0],    // doens't found triple with is_required = false
-          ...
-        ]
-      }
     }
     ```
 

@@ -100,6 +100,8 @@ bool GwfTranslator::TranslateImpl(Params const & params)
       }
     }
   }
+
+  return true;
 }
 //    if (el->Name() == sContour)
 //    {

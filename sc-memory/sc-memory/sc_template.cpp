@@ -34,22 +34,20 @@ ScTemplateItemValue operator >> (ScType const & value, std::string const & replN
 ScTemplate::ScTemplate(bool forceOrder /* = false */)
   : m_currentReplPos(0)
   , m_isForceOrder(forceOrder)
-  , m_hasRequired(false)
-  , m_hasOptional(false)
   , m_isSearchCacheValid(false)
 {
   m_constructions.reserve(16);
 }
 
-ScTemplate & ScTemplate::operator() (ScTemplateItemValue const & param1, ScTemplateItemValue const & param2, ScTemplateItemValue const & param3, ScTemplate::TripleFlag isRequired /* = ScTemplate::TripleFlag::Required */)
+ScTemplate & ScTemplate::operator() (ScTemplateItemValue const & param1, ScTemplateItemValue const & param2, ScTemplateItemValue const & param3)
 {
-  return Triple(param1, param2, param3, isRequired);
+  return Triple(param1, param2, param3);
 }
 
 ScTemplate & ScTemplate::operator() (ScTemplateItemValue const & param1, ScTemplateItemValue const & param2, ScTemplateItemValue const & param3,
-                                     ScTemplateItemValue const & param4, ScTemplateItemValue const & param5, ScTemplate::TripleFlag isRequired /* = ScTemplate::TripleFlag::Required */)
+                                     ScTemplateItemValue const & param4, ScTemplateItemValue const & param5)
 {
-  return TripleWithRelation(param1, param2, param3, param4, param5, isRequired);
+  return TripleWithRelation(param1, param2, param3, param4, param5);
 }
 
 void ScTemplate::Clear()
@@ -78,20 +76,10 @@ bool ScTemplate::HasReplacement(std::string const & repl) const
 
 ScTemplate & ScTemplate::Triple(ScTemplateItemValue const & param1,
                                 ScTemplateItemValue const & param2,
-                                ScTemplateItemValue const & param3,
-                                ScTemplate::TripleFlag isRequired /* = ScTemplate::TripleFlag::Required */)
+                                ScTemplateItemValue const & param3)
 {
   size_t const replPos = m_constructions.size() * 3;
-  m_constructions.emplace_back(ScTemplateConstr3(param1, param2, param3, m_constructions.size(), isRequired));
-
-  if (isRequired == ScTemplate::TripleFlag::Required)
-  {
-    m_hasRequired = true;
-  }
-  else
-  {
-    m_hasOptional = true;
-  }
+  m_constructions.emplace_back(ScTemplateConstr3(param1, param2, param3, m_constructions.size()));
 
   if (!param2.m_replacementName.empty() &&
       (param2.m_replacementName == param1.m_replacementName || param2.m_replacementName == param3.m_replacementName))
@@ -142,7 +130,7 @@ ScTemplate & ScTemplate::Triple(ScTemplateItemValue const & param1,
 
 ScTemplate & ScTemplate::TripleWithRelation(ScTemplateItemValue const & param1, ScTemplateItemValue const & param2,
                                             ScTemplateItemValue const & param3, ScTemplateItemValue const & param4,
-                                            ScTemplateItemValue const & param5, ScTemplate::TripleFlag isRequired /* = ScTemplate::TripleFlag::Required */)
+                                            ScTemplateItemValue const & param5)
 {
   size_t const replPos = m_constructions.size() * 3;
 
@@ -156,8 +144,8 @@ ScTemplate & ScTemplate::TripleWithRelation(ScTemplateItemValue const & param1, 
     edgeCommonItem.m_replacementName = ss.str();
   }
 
-  Triple(param1, edgeCommonItem, param3, isRequired);
-  Triple(param5, param4, edgeCommonItem.m_replacementName.c_str(), isRequired);
+  Triple(param1, edgeCommonItem, param3);
+  Triple(param5, param4, edgeCommonItem.m_replacementName.c_str());
 
   return *this;
 }

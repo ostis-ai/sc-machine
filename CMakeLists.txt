@@ -3,6 +3,8 @@ project (sc-machine)
 site_name (www.ostis.net)
 cmake_minimum_required (VERSION 2.8)
 
+include(CTest)
+
 set(SC_BIN_PATH "${CMAKE_CURRENT_LIST_DIR}/bin")
 
 set (SC_MACHINE_ROOT ${CMAKE_CURRENT_LIST_DIR})
@@ -226,6 +228,12 @@ message ("Python version: ${PYTHONLIBS_VERSION_STRING}")
 
 configure_file(${CMAKE_CURRENT_LIST_DIR}/config/config.ini.in ${CMAKE_CURRENT_LIST_DIR}/bin/config.ini)
 
+if (${SC_BUILD_TESTS})
+    include (cmake/tests.cmake)
+endif()
+
+add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/thirdparty)
+
 add_subdirectory(${SC_MACHINE_ROOT}/sc-memory)
 add_subdirectory(${SC_MACHINE_ROOT}/sc-kpm)
 add_subdirectory(${SC_MACHINE_ROOT}/sc-server)
@@ -235,25 +243,11 @@ if (${SC_BUILD_SCTP})
     add_subdirectory(${SC_MACHINE_ROOT}/sc-network)
 endif()
 
-add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/thirdparty)
 
 if (NOT EXISTS ${CMAKE_CURRENT_LIST_DIR}/generated/lib)
 	execute_process(
 			COMMAND mkdir -p generated/lib
 			WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR})
-endif ()
-
-set(CATCH2_VER v2.13.2)
-if (NOT EXISTS ${CMAKE_CURRENT_LIST_DIR}/generated/lib/Catch2)
-	execute_process(
-			COMMAND git clone --depth 1 --branch ${CATCH2_VER} https://github.com/catchorg/Catch2.git
-			WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}/generated/lib)
-	execute_process(
-			COMMAND cmake -Bbuild -H. -DBUILD_TESTING=OFF
-			WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}/generated/lib/Catch2)
-	execute_process(
-			COMMAND sudo -S cmake --build build/ --target install
-			WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}/generated/lib/Catch2)
 endif ()
 
 if (NOT EXISTS ${CMAKE_CURRENT_LIST_DIR}/log)

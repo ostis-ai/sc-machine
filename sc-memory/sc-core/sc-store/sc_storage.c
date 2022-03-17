@@ -805,8 +805,11 @@ sc_result sc_storage_change_element_subtype(const sc_memory_context *ctx, sc_add
     goto unlock;
   }
 
+  if ((el->flags.type & sc_type_element_mask) != (type & sc_type_element_mask))
+    return SC_RESULT_ERROR_INVALID_PARAMS;
+
   if (sc_access_lvl_check_write(ctx->access_levels, el->flags.access_levels))
-    el->flags.type = (el->flags.type & sc_type_element_mask) | (type & ~sc_type_element_mask);
+    el->flags.type = type;
   else
     r = SC_RESULT_ERROR_NO_WRITE_RIGHTS;
 

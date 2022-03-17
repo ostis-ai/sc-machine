@@ -1,16 +1,10 @@
-#include "../test_unit.hpp"
+#include <gtest/gtest.h>
 
-UNIT_TEST_CUSTOM(Builder_Base, BuilderTestUnit)
+#include "builder_test.hpp"
+
+TEST_F(ScBuilderTest, Smoke)
 {
   ScMemoryContext ctx("Builder_Base");
-
-  /*
-  base 
-    <- test_element;
-    => nrel_main_idtf:
-        [base]
-        (* <- lang_en;; *);;
-  */
 
   std::string const scsData =
     "base"
@@ -20,8 +14,8 @@ UNIT_TEST_CUSTOM(Builder_Base, BuilderTestUnit)
     "    (* _<- lang_en;; *);;";
 
   ScTemplate templ;
-  SC_CHECK(ctx.HelperBuildTemplate(templ, scsData), ()); 
+  EXPECT_TRUE(ctx.HelperBuildTemplate(templ, scsData));
 
   ScTemplateSearchResult res;
-  SC_CHECK(ctx.HelperSearchTemplate(templ, res), ());
+  EXPECT_TRUE(ctx.HelperSearchTemplate(templ, res));
 }

@@ -1,3 +1,9 @@
+## v0.7.0 - WIP
+
+ - **C++**:
+    - Migrate test system to `gtest`
+    - Remove optional search triples support
+
 ## v0.6.0
 
  - **Build system**:
@@ -25,7 +31,7 @@
 
  - **C++**:
     - Implement optional search triples support
-    - Fix randomical crash of unittest
+    - Fix random crash of unittest
     - Improve test system
     - Replace `antlr3` with `antlr4` for `SCs-text` parsing
     - Support of `SCs-text` aliases
