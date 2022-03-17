@@ -47,9 +47,14 @@ public:
         ScMemoryContext *ms_context,
         const ScAddr &node,
         const ScAddr &relation,
-        const string &identifier);
+        const string &identifier,
+        const ScAddrVector & linkClasses = {});
 
-  static void setMainIdtf(ScMemoryContext * ms_context, const ScAddr & node, const string & identifier);
+  static void setMainIdtf(
+        ScMemoryContext * ms_context,
+        const ScAddr & node,
+        const string & identifier,
+        const ScAddrVector & linkClasses = {});
 
   SC_DEPRECATED(0.6.0, "Use CommonUtils::getSetPower"
                        "(ScMemoryContext * ms_context, const ScAddr & set) instead of.")

@@ -129,20 +129,29 @@ void CommonUtils::setIdtf(
       ScMemoryContext * ms_context,
       const ScAddr & node,
       const ScAddr & relation,
-      const string & identifier)
+      const string & identifier,
+      const ScAddrVector & linkClasses)
 {
   ScAddr link = ms_context->CreateLink();
   shared_ptr<ScStream> identifierStream;
   identifierStream = ScStreamConverter::StreamFromString(identifier);
   ms_context->SetLinkContent(link, identifierStream);
+  for (ScAddr linkClass : linkClasses)
+  {
+    ms_context->CreateEdge(ScType::EdgeAccessConstPosPerm, linkClass, link);
+  }
 
   utils::GenerationUtils::generateRelationBetween(ms_context, node, link, relation);
 }
 
-void CommonUtils::setMainIdtf(ScMemoryContext * ms_context, const ScAddr & node, const string & identifier)
+void CommonUtils::setMainIdtf(
+      ScMemoryContext * ms_context,
+      const ScAddr & node,
+      const string & identifier,
+      const ScAddrVector & linkClasses)
 {
   ScAddr mainIdtfNode = CoreKeynodes::nrel_main_idtf;
-  setIdtf(ms_context, node, mainIdtfNode, identifier);
+  setIdtf(ms_context, node, mainIdtfNode, identifier, linkClasses);
 }
 
 int CommonUtils::getPowerOfSet(ScMemoryContext * ms_context, const ScAddr & set)
