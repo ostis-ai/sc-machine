@@ -86,6 +86,6 @@ class DataBase:
 
     def update_user_by_id(self, id: int, name: str, password: str) -> bool:
         updated_users_count = self._session().query(User).filter(User.id == id).\
-            update({cnt.NAME: name, cnt.PASSWORD: password)
+            update({cnt.NAME: name, cnt.PASSWORD: password})
         self._session().commit()
         return updated_users_count

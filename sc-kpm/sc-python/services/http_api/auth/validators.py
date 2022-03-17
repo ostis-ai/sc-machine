@@ -18,7 +18,7 @@ class TokenValidator:
         with open(params[cnt.PUBLIC_KEY_PATH], 'rb') as file:
             public_key = file.read()
         try:
-            jwt.decode(token, public_key,
+            payload = jwt.decode(token, public_key,
                        issuer=params[cnt.ISSUER],
                        algorithm='RS256')
         except (jwt.exceptions.InvalidTokenError,
@@ -26,6 +26,7 @@ class TokenValidator:
                 jwt.exceptions.InvalidIssuerError,
                 jwt.exceptions.ExpiredSignatureError):
             return False
+        print(payload['username'])
         return True
 
     @staticmethod
