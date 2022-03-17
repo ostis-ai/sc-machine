@@ -56,8 +56,11 @@ class UserHandler(BaseHandler):
         """ Delete user """
         database = DataBase()
         request_params = self._get_request_params([cnt.ID])
-        database.delete_user_by_id(**request_params)
-        response = get_response_message(cnt.MSG_ALL_DONE)
+        delete_users_count = database.delete_user_by_id(**request_params)
+        if delete_users_count == 0:
+            response = get_response_message(cnt.MSG_USER_NOT_FOUND)
+        else:
+            response = get_response_message(cnt.MSG_ALL_DONE)
         self.write(response)
 
     @TokenValidator.validate_typed_token(TokenType.ACCESS)
@@ -72,7 +75,9 @@ class UserHandler(BaseHandler):
         )
         response = get_response_message(msg_desc)
         if msg_desc == cnt.MSG_ALL_DONE:
-            database.update_user_by_id(**request_params)
+            updates_users_count = database.update_user_by_id(**request_params)
+            if updates_users_count == 0:
+                response = get_response_message(cnt.MSG_USER_NOT_FOUND)
         self.write(response)
 
 

@@ -26,7 +26,6 @@ class TokenValidator:
                 jwt.exceptions.InvalidIssuerError,
                 jwt.exceptions.ExpiredSignatureError):
             return False
-        print(payload['username'])
         return True
 
     @staticmethod
