@@ -1,2 +1,4 @@
 termcolor
 tornado
+pyopenssl
+sqlalchemy
