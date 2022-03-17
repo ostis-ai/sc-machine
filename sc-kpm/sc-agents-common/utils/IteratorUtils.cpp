@@ -116,16 +116,16 @@ ScAddrVector IteratorUtils::getAllByRelation(
       ScMemoryContext * ms_context,
       const ScAddr & node,
       const ScAddr & relation,
-      bool nodeIsStart)
+      bool isBeginNode)
 {
   SC_CHECK_PARAM(node, ("Invalid node address"))
   SC_CHECK_PARAM(relation, ("Invalid relation address"))
 
   ScAddrVector elementList;
-  ScIterator5Ptr iterator5 = IteratorUtils::getIterator5(ms_context, node, relation, nodeIsStart);
+  ScIterator5Ptr iterator5 = IteratorUtils::getIterator5(ms_context, node, relation, isBeginNode);
   while (iterator5->Next())
   {
-    elementList.push_back(iterator5->Get(nodeIsStart ? 2 : 0));
+    elementList.push_back(iterator5->Get(isBeginNode ? 2 : 0));
   }
   return elementList;
 }

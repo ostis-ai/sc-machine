@@ -40,7 +40,7 @@ public:
         ScMemoryContext * ms_context,
         const ScAddr & node,
         const ScAddr & relation,
-        bool nodeIsStart = true);
+        bool isBeginNode = true);
 
   static ScAddrVector getAllByInRelation(ScMemoryContext * ms_context, const ScAddr & node, const ScAddr & relation);
 
