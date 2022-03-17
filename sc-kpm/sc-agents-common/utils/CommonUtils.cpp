@@ -133,8 +133,7 @@ void CommonUtils::setIdtf(
       const ScAddrVector & linkClasses)
 {
   ScAddr link = ms_context->CreateLink();
-  shared_ptr<ScStream> identifierStream;
-  identifierStream = ScStreamConverter::StreamFromString(identifier);
+  shared_ptr<ScStream> identifierStream = ScStreamConverter::StreamFromString(identifier);
   ms_context->SetLinkContent(link, identifierStream);
   for (ScAddr linkClass : linkClasses)
   {
