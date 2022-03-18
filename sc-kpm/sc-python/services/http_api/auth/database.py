@@ -66,10 +66,6 @@ class DataBase:
         users_info = [x.serialize for x in users_info.all()]
         return users_info
 
-    def update_user(self, u):
-        self._session().merge(u)
-        self._session().commit()
-
     def add_user(self, name: str, password: str) -> bool:
         new_user = User(name=str(name), password=str(password))
         try:
