@@ -228,7 +228,7 @@ message ("Python version: ${PYTHONLIBS_VERSION_STRING}")
 configure_file(${CMAKE_CURRENT_LIST_DIR}/config/config.ini.in ${CMAKE_CURRENT_LIST_DIR}/bin/config.ini)
 
 if (${SC_BUILD_TESTS})
-    include (cmake/tests.cmake)
+    include (${CMAKE_CURRENT_LIST_DIR}/cmake/tests.cmake)
 endif()
 
 add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/thirdparty)
