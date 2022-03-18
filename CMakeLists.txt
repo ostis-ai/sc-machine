@@ -15,6 +15,11 @@ option (SC_KPM_SCP "Flag to build SCP module" OFF)
 option (SC_BUILD_SCTP "Flag to turn on/off sctp protocol support" ON)
 option (SC_BUILD_TESTS "Flag to build unit tests" OFF)
 
+
+set(SC_USE_SANITIZER "none" CACHE STRING "Build with specified sanitizer")
+set_property(CACHE SC_USE_SANITIZER PROPERTY STRINGS none address memory)
+
+
 if (${SC_BUILD_ARM64})
     check_c_compiler_flag("-arch arm64" IS_ARM64_SUPPORTED)
     if (${IS_ARM64_SUPPORTED})
@@ -53,17 +58,31 @@ set(SC_MEMORY_SRC "${SC_MACHINE_ROOT}/sc-memory")
 set(SC_KPM_SRC "${SC_MACHINE_ROOT}/sc-kpm")
 set(SC_TOOLS_SRC "${SC_MACHINE_ROOT}/tools")
 
+
+if (${SC_USE_SANITIZER} STREQUAL "address")
+    set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fsanitize=address -O1 -fno-omit-frame-pointer")
+    set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=address -O1 -fno-omit-frame-pointer")
+elseif (${SC_USE_SANITIZER} STREQUAL "memory")
+    set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fsanitize=memory -fPIE -pie -fno-omit-frame-pointer")
+    set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=memory -fPIE -pie -fno-omit-frame-pointer")
+endif()
+
+
 if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fcolor-diagnostics -std=c++14")
-    set(CMAKE_CXX_FLAGS_RELEASE "-O3")
-
+    if (${SC_USE_SANITIZER} STREQUAL "none")
+        set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O3")
+    endif()
+    
     if(${SC_AUTO_TEST})
         set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wdeprecated-declarations")
     endif()
 elseif(CMAKE_CXX_COMPILER_ID MATCHES "GNU")
-    set(CMAKE_CXX_FLAGS "-std=c++14 -Wall")
-    set(CMAKE_CXX_FLAGS_RELEASE "-O3")        ## Optimize
-    set(CMAKE_EXE_LINKER_FLAGS_RELEASE "-s")  ## Strip binary
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14 -Wall")
+    if (${SC_USE_SANITIZER} STREQUAL "none")
+        set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O3")        ## Optimize
+        set(CMAKE_EXE_LINKER_FLAGS_RELEASE "${CMAKE_EXE_LINKER_FLAGS_RELEASE} -s")  ## Strip binary
+    endif()
 elseif (NOT CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14")
 endif ()
@@ -73,6 +92,11 @@ set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -DSC_DEBUG -DSC_PROFILE")
 
 set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} -DNDEBUG")
 set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -DNDEBUG")
+
+
+message ("CMAKE_C_FLAGS: ${CMAKE_C_FLAGS}")
+message ("CMAKE_CXX_FLAGS: ${CMAKE_CXX_FLAGS}")
+
 
 if (${SC_AUTO_TEST})
     add_definitions(-DSC_BUILD_AUTO_TESTS)
@@ -228,7 +252,7 @@ message ("Python version: ${PYTHONLIBS_VERSION_STRING}")
 configure_file(${CMAKE_CURRENT_LIST_DIR}/config/config.ini.in ${CMAKE_CURRENT_LIST_DIR}/bin/config.ini)
 
 if (${SC_BUILD_TESTS})
-    include (${CMAKE_CURRENT_LIST_DIR}/cmake/tests.cmake)
+    include (cmake/tests.cmake)
 endif()
 
 add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/thirdparty)
