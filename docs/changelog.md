@@ -4,6 +4,8 @@
     - Migrate test system to `gtest`
     - Remove optional search triples support
 
+ - **Build system**
+    - update macOS install_deps script
 ## v0.6.0
 
  - **Build system**:

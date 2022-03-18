@@ -1,4 +1,4 @@
-Clone:
+## Clone
 
 ```sh
 git clone https://github.com/ostis-ai/sc-machine.git
@@ -6,7 +6,9 @@ cd sc-machine
 git submodule update --init --recursive
 ```
 
-Install dependencies:
+## Install dependencies
+
+### Debian-based (Ubuntu, Debian, Mint)
 
 ```sh
 cd scripts
@@ -15,7 +17,19 @@ cd ..
 pip3 install -r requirements.txt
 ```
 
-Build sc-machine:
+### macOS
+```sh
+cd scripts
+./install_deps_macOS.sh
+cd ..
+pip3 install -r requirements.txt
+```
+Please note: you should add Qt5 to `PATH` variable. A way to do this in default macOS shell (`zsh`):
+```sh
+echo 'export PATH="/opt/homebrew/opt/qt@5/bin:$PATH"' >> ~/.zshrc
+```
+
+## Build sc-machine
 ```sh
 cd sc-machine
 mkdir build
