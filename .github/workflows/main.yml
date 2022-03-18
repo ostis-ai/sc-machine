@@ -71,6 +71,7 @@ jobs:
           CC: ${{ matrix.config.cc }}
           CCX: ${{ matrix.config.cxx }}
           BUILD_TYPE: ${{ matrix.config.build_type }}
+          COVERAGE: OFF
         run: scripts/ci/make-tests.sh
 
       - name: Run tests
