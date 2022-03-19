@@ -58,13 +58,20 @@ set(SC_MEMORY_SRC "${SC_MACHINE_ROOT}/sc-memory")
 set(SC_KPM_SRC "${SC_MACHINE_ROOT}/sc-kpm")
 set(SC_TOOLS_SRC "${SC_MACHINE_ROOT}/tools")
 
+message(${CMAKE_CXX_COMPILER_ID})
+message(${CMAKE_C_COMPILER_ID})
+
 
 if (${SC_USE_SANITIZER} STREQUAL "address")
     set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fsanitize=address -O1 -fno-omit-frame-pointer")
     set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=address -O1 -fno-omit-frame-pointer")
 elseif (${SC_USE_SANITIZER} STREQUAL "memory")
-    set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fsanitize=memory -fPIE -pie -fno-omit-frame-pointer")
-    set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=memory -fPIE -pie -fno-omit-frame-pointer")
+    if (CMAKE_C_COMPILER_ID MATCHES "Clang")
+        set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fsanitize=memory -fPIE -pie -fno-omit-frame-pointer")
+    endif()
+    if (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+        set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=memory -fPIE -pie -fno-omit-frame-pointer")
+    endif()
 endif()
 
 
