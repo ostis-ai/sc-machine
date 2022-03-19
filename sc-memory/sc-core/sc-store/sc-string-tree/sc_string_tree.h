@@ -87,18 +87,16 @@ void sc_string_tree_show();
 
 void sc_string_tree_visit_node_from_node(
       sc_string_tree_node *node,
-      void (*callable)(sc_string_tree_node*, void*),
-      void *dest);
+      void (*callable)(sc_string_tree_node*, void**),
+      void **dest);
 
-void sc_string_tree_write_nodes(void (*callable)(sc_string_tree_node*, void*), void *dest);
-
-void sc_string_tree_write_node(sc_string_tree_node *node, void *dest);
+void sc_string_tree_visit_nodes(void (*callable)(sc_string_tree_node*, void**), void **dest);
 
 void sc_string_tree_links_hashes_show();
 
-void sc_char_to_sc_int(sc_uchar ch, sc_uint8 *ch_num, sc_uint8 *mask);
+void sc_char_to_sc_int(sc_char ch, sc_uint8 *ch_num, sc_uint8 *mask);
 
-sc_uchar sc_int_to_sc_char(sc_uint8 num, sc_uint8 mask);
+sc_char sc_int_to_sc_char(sc_uint8 num, sc_uint8 mask);
 
 sc_uint32 sc_addr_to_hash(sc_addr addr);
 

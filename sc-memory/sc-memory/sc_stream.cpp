@@ -39,7 +39,7 @@ ScStream::~ScStream()
 void ScStream::Reset()
 {
   if (m_stream)
-    sc_stream_free(m_stream);
+    //sc_stream_free(m_stream);
   m_stream = nullptr;
 }
 

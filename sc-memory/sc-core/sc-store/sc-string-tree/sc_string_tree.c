@@ -50,6 +50,7 @@ sc_bool sc_string_tree_shutdown()
   if (tree == null_ptr)
     return SC_FALSE;
 
+  g_free(tree);
   tree = null_ptr;
 
   g_free(links_hashes_tree);
@@ -66,12 +67,7 @@ inline sc_uint8 sc_string_tree_children_size()
 inline sc_string_tree_node* _sc_string_tree_node_initialize()
 {
   sc_string_tree_node *node = g_new0(sc_string_tree_node, 1);
-
   node->next = g_new0(sc_string_tree_node*, sc_string_tree_children_size());
-
-  sc_uint8 i;
-  for (i = 0; i < sc_string_tree_children_size(); ++i)
-    node->next[i] = null_ptr;
 
   node->data = null_ptr;
   node->mask = 0x0;
@@ -86,28 +82,30 @@ inline sc_string_tree_node* _sc_string_tree_get_next_node(sc_string_tree_node *n
   sc_uint8 num;
   sc_char_to_sc_int(ch, &num, &node->mask);
 
-  if (num == 0)
-    return null_ptr;
-
-  return node->next[num];
+  return num == 0 ? null_ptr : node->next[num];
 }
 
 sc_string_tree_node* sc_string_tree_append_to_node(sc_string_tree_node *node, sc_char *sc_string, sc_uint32 size)
 {
+  sc_char **sc_string_ptr = g_new0(sc_char*, 1);
+  *sc_string_ptr = sc_string;
+
   sc_uint32 i = 0;
   sc_uint32 saved_offset_size = size;
   while (i < size)
   {
     sc_uint8 num;
-    sc_char_to_sc_int(sc_string[i], &num, &node->mask);
+    sc_char_to_sc_int(**sc_string_ptr, &num, &node->mask);
     if (SC_STRING_TREE_NODE_IS_NOT_VALID(node->next[num]))
     {
       node->next[num] = _sc_string_tree_node_initialize();
 
-      node->next[num]->offset = &sc_string[i];
-      node->next[num]->offset_size = size - i;
+      sc_string_tree_node *temp = node->next[num];
 
-      node = node->next[num];
+      temp->offset = *sc_string_ptr;
+      temp->offset_size = size - i;
+
+      node = temp;
 
       break;
     }
@@ -116,38 +114,48 @@ sc_string_tree_node* sc_string_tree_append_to_node(sc_string_tree_node *node, sc
       sc_string_tree_node *moving = node->next[num];
 
       sc_uint32 j = 0;
-      for (; i < size && j < moving->offset_size && tolower(moving->offset[j]) == tolower(sc_string[i]); ++i, ++j);
+      for (; i < size && j < moving->offset_size && tolower(moving->offset[j]) == tolower(**sc_string_ptr);
+          ++i, ++j, ++(*sc_string_ptr));
 
       if (j != moving->offset_size)
       {
         saved_offset_size = moving->offset_size;
 
         node->next[num] = _sc_string_tree_node_initialize();
-        node->next[num]->offset = moving->offset;
-        node->next[num]->offset_size = j;
+
+        sc_string_tree_node *temp = node->next[num];
+
+        temp->offset = moving->offset;
+        temp->offset_size = j;
       }
 
       node = node->next[num];
 
       if (j < moving->offset_size)
       {
-        sc_char_to_sc_int(node->offset[j], &num, &node->mask);
+        sc_char *offset_ptr = &*(node->offset + j);
+
+        sc_char_to_sc_int(*offset_ptr, &num, &node->mask);
         if (node->next[num] == null_ptr)
         {
           node->next[num] = moving;
 
-          node->next[num]->offset = &node->offset[j];
-          node->next[num]->offset_size = saved_offset_size - j;
+          sc_string_tree_node *temp = node->next[num];
+
+          temp->offset = offset_ptr;
+          temp->offset_size = saved_offset_size - j;
         }
       }
     }
     else
     {
       node = node->next[num];
+      (*sc_string_ptr)++;
       ++i;
     }
   }
 
+  g_free(sc_string_ptr);
   return node;
 }
 
@@ -156,18 +164,29 @@ sc_string_tree_node* sc_string_tree_append(sc_addr addr, sc_char *sc_string, sc_
   sc_link_content *old_content = sc_string_tree_get_content(addr);
   if (old_content != null_ptr && old_content->sc_string != null_ptr && old_content->node != null_ptr)
   {
+    sc_uint8 hashes_size = old_content->node->data->value_size;
     sc_addr_hash *hashes = old_content->node->data->value;
 
-    sc_uint8 i;
-    for (i = 0; i < old_content->node->data->value_size; ++i)
+    sc_addr_hash **temp = g_new0(sc_addr_hash*, 1);
+    *temp = old_content->node->data->value;
+
+    sc_uint8 i = 0;
+    while (i++ < hashes_size)
     {
+      sc_addr_hash hash = *hashes;
+
       sc_addr other;
-      other.seg = SC_ADDR_LOCAL_SEG_FROM_INT(hashes[i]);
-      other.offset = SC_ADDR_LOCAL_OFFSET_FROM_INT(hashes[i]);
+      other.seg = SC_ADDR_LOCAL_SEG_FROM_INT(hash);
+      other.offset = SC_ADDR_LOCAL_OFFSET_FROM_INT(hash);
 
       if (SC_ADDR_IS_EQUAL(other, addr))
-        ((sc_addr_hash*)old_content->node->data->value)[i] = 0;
+        *hashes = 0;
+
+      hashes++;
     }
+
+    old_content->node->data->value = *temp;
+    g_free(temp);
   }
 
   sc_string_tree_node *node = sc_string_tree_append_to_node(tree->root, sc_string, size);
@@ -181,12 +200,13 @@ sc_string_tree_node* sc_string_tree_append(sc_addr addr, sc_char *sc_string, sc_
   else
     node->data->value = g_renew(sc_addr_hash, node->data->value, ++node->data->value_size);
 
-  sc_uint32 hash = sc_addr_to_hash(addr);
+  sc_addr_hash hash = sc_addr_to_hash(addr);
   ((sc_addr_hash*)node->data->value)[node->data->value_size - 1] = hash;
 
   sc_char *hash_str = sc_addr_to_str(addr);
+  sc_addr_hash hash_str_len = strlen(hash_str);
   sc_string_tree_node *link_hash_node
-      = sc_string_tree_append_to_node(links_hashes_tree->root, hash_str, strlen(hash_str));
+      = sc_string_tree_append_to_node(links_hashes_tree->root, hash_str, hash_str_len);
 
   if (link_hash_node->data == null_ptr)
   {
@@ -199,7 +219,7 @@ sc_string_tree_node* sc_string_tree_append(sc_addr addr, sc_char *sc_string, sc_
 
   sc_link_content *content = g_new0(sc_link_content, 1);
 
-  content->sc_string = g_new0(sc_char, size);
+  content->sc_string = g_new0(sc_char, size + 1);
   content->string_size = size;
   memcpy(content->sc_string, sc_string, size);
 
@@ -222,8 +242,18 @@ sc_string_tree_node* sc_string_tree_remove_from_node(sc_string_tree_node *node, 
       return node;
   }
 
-  if (node->data != null_ptr && index == string_size)
-    return null_ptr;
+  if (index == string_size)
+  {
+    sc_char *str = g_new0(sc_char, node->offset_size + 1);
+    memcpy(str, node->offset, node->offset_size);
+
+    if (strcmp(str, sc_string + (string_size - node->offset_size)) == 0)
+    {
+      g_free(str);
+      return null_ptr;
+    }
+    g_free(str);
+  }
 
   return node;
 }
@@ -235,9 +265,9 @@ sc_bool sc_string_tree_remove(const sc_char *sc_string)
 
 sc_string_tree_node* sc_string_tree_get_last_node_from_node(sc_string_tree_node *node, const sc_char *sc_string)
 {
-  sc_uint32 i;
+  sc_uint32 i = 0;
   sc_uint32 string_size = strlen(sc_string);
-  for (i = 0; i < string_size;)
+  while (i < string_size)
   {
     sc_string_tree_node *next = _sc_string_tree_get_next_node(node, sc_string[i]);
     if (SC_STRING_TREE_NODE_IS_VALID(next))
@@ -250,7 +280,17 @@ sc_string_tree_node* sc_string_tree_get_last_node_from_node(sc_string_tree_node 
   }
 
   if (i == string_size)
-    return node;
+  {
+    sc_char *str = g_new0(sc_char, node->offset_size + 1);
+    memcpy(str, node->offset, node->offset_size);
+
+    if (strcmp(str, sc_string + (string_size - node->offset_size)) == 0)
+    {
+      g_free(str);
+      return node;
+    }
+    g_free(str);
+  }
 
   return null_ptr;
 }
@@ -279,8 +319,14 @@ void* sc_string_tree_get_data_from_node(sc_string_tree_node *node, const sc_char
 
 sc_addr sc_string_tree_get_sc_link(const sc_char *sc_string)
 {
+  sc_addr empty;
+  SC_ADDR_MAKE_EMPTY(empty)
+
   sc_addr_hash *addr_hash = sc_string_tree_get_data_from_node(tree->root, sc_string);
-  if (addr_hash != null_ptr && *addr_hash != 0)
+  if (addr_hash == null_ptr)
+    return empty;
+
+  if (*addr_hash != 0)
   {
     sc_addr addr;
     addr.seg = SC_ADDR_LOCAL_SEG_FROM_INT(*addr_hash);
@@ -288,8 +334,18 @@ sc_addr sc_string_tree_get_sc_link(const sc_char *sc_string)
     return addr;
   }
 
-  sc_addr empty;
-  SC_ADDR_MAKE_EMPTY(empty)
+  while (*addr_hash == 0)
+  {
+    if (*addr_hash != 0)
+    {
+      sc_addr addr;
+      addr.seg = SC_ADDR_LOCAL_SEG_FROM_INT(*addr_hash);
+      addr.offset = SC_ADDR_LOCAL_OFFSET_FROM_INT(*addr_hash);
+    }
+
+    addr_hash++;
+  }
+
   return empty;
 }
 
@@ -312,29 +368,36 @@ sc_bool sc_string_tree_get_datas_from_node(sc_string_tree_node *node, const sc_c
 
 sc_bool sc_string_tree_get_sc_links(const sc_char *sc_string, sc_addr **links, sc_uint32 *size)
 {
-  sc_addr_hash * addr_hashes;
+  sc_addr_hash *addr_hashes = null_ptr;
   sc_uint32 found_size = 0;
-  sc_bool result = sc_string_tree_get_datas_from_node(tree->root, sc_string, (void **) &addr_hashes, &found_size);
+  sc_bool result = sc_string_tree_get_datas_from_node(tree->root, sc_string, (void**)&addr_hashes, &found_size);
 
+  sc_addr **temps = null_ptr;
   *links = null_ptr;
   *size = 0;
-  sc_uint32 i;
-  for (i = 0; i < found_size; ++i)
+  sc_uint32 i = 0;
+
+  *links = g_new0(sc_addr, found_size);
+  temps = g_new0(sc_addr*, 1);
+  *temps = *links;
+
+  while (i++ < found_size)
   {
     sc_addr addr;
-    addr.seg = SC_ADDR_LOCAL_SEG_FROM_INT(addr_hashes[i]);
-    addr.offset = SC_ADDR_LOCAL_OFFSET_FROM_INT(addr_hashes[i]);
+    sc_addr_hash hash = *addr_hashes++;
+    addr.seg = SC_ADDR_LOCAL_SEG_FROM_INT(hash);
+    addr.offset = SC_ADDR_LOCAL_OFFSET_FROM_INT(hash);
 
     if (SC_ADDR_IS_NOT_EMPTY(addr))
     {
-      if (*links == null_ptr)
-        *links = g_new0(sc_addr, ++*size);
-      else
-        *links = g_renew(sc_addr, *links, ++*size);
-
-      (*links)[*size - 1] = addr;
+      **temps = addr;
+      ++*temps;
+      ++*size;
     }
   }
+
+  *links = memcpy(*links, *links, *size);
+  g_free(temps);
 
   return result;
 }
@@ -350,7 +413,7 @@ sc_char* sc_string_tree_get_sc_string(sc_addr addr)
     return null_ptr;
 
   sc_uint32 len = content->string_size;
-  sc_char *copy = g_new0(sc_char, len);
+  sc_char *copy = g_new0(sc_char, len + 1);
   return memcpy(copy, content->sc_string, len);
 }
 
@@ -386,12 +449,21 @@ void sc_string_tree_get_sc_string_ext(sc_addr addr, sc_char **sc_string, sc_uint
   {
     *sc_string = null_ptr;
     *size = 0;
+    return;
   }
 
   sc_link_content *content = sc_string_tree_get_data_from_node(links_hashes_tree->root, sc_addr_to_str(addr));
+  if (content == null_ptr)
+  {
+    *sc_string = null_ptr;
+    *size = 0;
+    return;
+  }
 
-  *sc_string = content->sc_string;
-  *size = content->string_size;
+  sc_uint32 len = content->string_size;
+  *sc_string = g_new0(sc_char, len + 1);
+  memcpy(*sc_string, content->sc_string, len);
+  *size = len;
 }
 
 void sc_string_tree_show_from_node(sc_string_tree_node *node, sc_char *tab)
@@ -399,11 +471,12 @@ void sc_string_tree_show_from_node(sc_string_tree_node *node, sc_char *tab)
   sc_uint8 i;
   for (i = 1; i < sc_string_tree_children_size(); ++i)
   {
-    if (node->next[i] != null_ptr)
+    sc_string_tree_node *next = node->next[i];
+
+    if (SC_STRING_TREE_NODE_IS_VALID(next))
     {
-      sc_string_tree_node *next = node->next[i];
-      sc_char *str = g_new0(sc_char, node->next[i]->offset_size);
-      memcpy(str, node->next[i]->offset, node->next[i]->offset_size);
+      sc_char *str = g_new0(sc_char, next->offset_size + 1);
+      memcpy(str, next->offset, next->offset_size);
       sc_uchar ch = sc_int_to_sc_char(i, 0);
 
       if (next->data != null_ptr && next->data->value_size != 0)
@@ -411,11 +484,15 @@ void sc_string_tree_show_from_node(sc_string_tree_node *node, sc_char *tab)
       else
         printf("%s%c {%s}\n", tab, ch, str);
 
+      g_free(str);
+
       sc_char *new_tab = g_new0(sc_char, strlen(tab) + 6);
       strcpy(new_tab, tab);
       strcat(new_tab, "|----\0");
 
       sc_string_tree_show_from_node(next, new_tab);
+
+      g_free(new_tab);
     }
   }
 }
@@ -427,15 +504,14 @@ void sc_string_tree_show()
   printf("----------------------------------------------\n");
 }
 
-void sc_string_tree_visit_node_from_node(sc_string_tree_node *node, void (*callable)(sc_string_tree_node*, void*), void *dest)
+void sc_string_tree_visit_node_from_node(sc_string_tree_node *node, void (*callable)(sc_string_tree_node*, void**), void **dest)
 {
   sc_uint8 i;
   for (i = 1; i < sc_string_tree_children_size(); ++i)
   {
-    if (node->next[i] != null_ptr)
+    sc_string_tree_node *next = node->next[i];
+    if (next != null_ptr)
     {
-      sc_string_tree_node *next = node->next[i];
-
       if (next->data != null_ptr && next->data->value != null_ptr && next->data->value_size != 0)
         callable(next, dest);
 
@@ -444,30 +520,9 @@ void sc_string_tree_visit_node_from_node(sc_string_tree_node *node, void (*calla
   }
 }
 
-void sc_string_tree_write_nodes(void (*callable)(sc_string_tree_node*, void*), void *dest)
+void sc_string_tree_visit_nodes(void (*callable)(sc_string_tree_node*, void**), void **dest)
 {
   sc_string_tree_visit_node_from_node(links_hashes_tree->root, callable, dest);
-}
-
-void sc_string_tree_write_node(sc_string_tree_node *node, void *dest)
-{
-  FILE *file = dest;
-  sc_link_content *content = node->data->value;
-
-  if (content->node->mask & 0xF0)
-    return;
-
-  sc_addr_hash *hashes = content->node->data->value;
-  sc_uint8 hashes_size = content->node->data->value_size;
-
-  content->node->mask |= 0xF0;
-
-  sc_uint32 i;
-  for (i = 0; i < hashes_size; ++i)
-  {
-    if (hashes[i] != 0)
-      fprintf(file, "%d :: \"%s\"\n", hashes[i], content->sc_string);
-  }
 }
 
 void sc_string_tree_links_hashes_show()
@@ -475,14 +530,14 @@ void sc_string_tree_links_hashes_show()
   sc_string_tree_show_from_node(links_hashes_tree->root, "\0");
 }
 
-inline void sc_char_to_sc_int(sc_uchar ch, sc_uint8 *ch_num, sc_uint8 *mask)
+inline void sc_char_to_sc_int(sc_char ch, sc_uint8 *ch_num, sc_uint8 *mask)
 {
-  *ch_num = (sc_uint8)ch;
+  *ch_num = 128 + (sc_uint8)ch;
 }
 
-inline sc_uchar sc_int_to_sc_char(sc_uint8 num, sc_uint8 mask)
+inline sc_char sc_int_to_sc_char(sc_uint8 num, sc_uint8 mask)
 {
-  return (sc_uchar)num;
+  return (sc_char)(num - 128);
 }
 
 inline sc_uint32 sc_addr_to_hash(sc_addr addr)
@@ -507,10 +562,6 @@ inline sc_char* itora(sc_uint32 num)
     *index++ = (sc_char)((num % 10) | '0');
     num /= 10;
   }
-
-  sc_char *end = result + 10;
-  while (index != end)
-    *index++ = '\0';
 
   return result;
 }

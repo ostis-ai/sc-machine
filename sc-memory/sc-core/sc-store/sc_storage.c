@@ -16,6 +16,7 @@
 
 #include "sc_event/sc_event_private.h"
 #include "../sc_memory_private.h"
+#include "sc_fs_storage.h"
 
 #include "sc-base/sc_allocator.h"
 #include "sc-base/sc_atomic.h"
@@ -37,7 +38,6 @@ sc_bool is_initialized = SC_FALSE;
 sc_memory_context * segments_cache_lock_ctx = null_ptr;
 sc_int32 segments_cache_count = 0;
 sc_segment* segments_cache[SC_SEGMENT_CACHE_SIZE]; // cache of segments that have empty elements
-const sc_char *path = null_ptr;
 
 GMutex s_mutex_free;
 GMutex s_mutex_save;
@@ -150,37 +150,25 @@ result:
 
 // -----------------------------------------------------------------------------
 
-sc_bool sc_storage_initialize(const char *save_path, sc_bool clear)
+sc_bool sc_storage_initialize(const char *path, sc_bool clear)
 {
   sc_assert(segments == null_ptr);
   sc_assert(is_initialized == SC_FALSE);
 
-  path = "/home/nikita/ostis-apps/cim-models-storage-module/ostis-web-platform/save.txt";
   segments = sc_mem_new(sc_segment*, SC_ADDR_SEG_MAX);
 
-  sc_bool result = sc_string_tree_initialize();
-  g_assert(result);
+  sc_bool result = sc_fs_storage_initialize(path, clear);
+  if (result == SC_FALSE)
+    return SC_FALSE;
 
   if (clear == SC_FALSE)
   {
-    // @todo: Implement read from local database
+    sc_fs_storage_read_from_path(segments, &segments_num);
+    sc_fs_storage_read_strings();
   }
 
   is_initialized = SC_TRUE;
-
-  memset(&(segments_cache[0]), 0, sizeof(sc_segment *) * SC_SEGMENT_CACHE_SIZE);
-
-  return SC_TRUE;
-}
-
-sc_bool sc_storage_write_strings(const sc_char *save_path)
-{
-  FILE *file = fopen(save_path, "w+");
-  g_assert(file != NULL);
-
-  sc_string_tree_write_nodes(sc_string_tree_write_node, file);
-
-  fclose(file);
+  memset(&(segments_cache[0]), 0, sizeof(sc_segment*) * SC_SEGMENT_CACHE_SIZE);
 
   return SC_TRUE;
 }
@@ -188,6 +176,8 @@ sc_bool sc_storage_write_strings(const sc_char *save_path)
 void sc_storage_shutdown(sc_bool save_state)
 {
   sc_assert(segments != null_ptr);
+
+  sc_fs_storage_shutdown(segments, save_state);
 
   sc_uint idx;
   for (idx = 0; idx < SC_ADDR_SEG_MAX; idx++)
@@ -197,13 +187,10 @@ void sc_storage_shutdown(sc_bool save_state)
     sc_segment_free(segments[idx]);
   }
 
-  sc_mem_free(segments);
+  g_message("Shutdown sc-storage");
+	sc_mem_free(segments);
   segments = null_ptr;
   segments_num = 0;
-
-  sc_string_tree_show();
-  sc_storage_write_strings(path);
-  sc_string_tree_shutdown();
 
   is_initialized = SC_FALSE;
   _sc_segment_cache_clear();
@@ -972,7 +959,7 @@ sc_result sc_storage_set_link_content(sc_memory_context * ctx, sc_addr addr, con
   }
 
   sc_char *data = null_ptr;
-  sc_uint16 size = 0;
+  sc_uint32 size = 0;
   if (sc_link_get_content(stream, &data, &size) == SC_FALSE)
   {
     result = SC_RESULT_ERROR_NO_READ_RIGHTS;
@@ -1013,13 +1000,15 @@ sc_result sc_storage_set_link_content(sc_memory_context * ctx, sc_addr addr, con
   }
   sc_assert(result == SC_RESULT_OK);
     el->flags.type |= sc_flag_link_self_container;
-    sc_string_tree_append(addr, data, strlen(data));
+
+    if (data != null_ptr)
+      sc_string_tree_append(addr, data, strlen(data));
     result = SC_RESULT_OK;
   }
 
-  sc_addr empty;
-  SC_ADDR_MAKE_EMPTY(empty);
-  sc_event_emit(ctx, addr, access_lvl, SC_EVENT_CONTENT_CHANGED, empty, empty);
+  //sc_addr empty;
+  //SC_ADDR_MAKE_EMPTY(empty);
+  //sc_event_emit(ctx, addr, access_lvl, SC_EVENT_CONTENT_CHANGED, empty, empty);
 
 unlock:
 {
@@ -1059,9 +1048,16 @@ sc_result sc_storage_get_link_content(const sc_memory_context * ctx, sc_addr add
 
   if (el->flags.type & sc_flag_link_self_container)
   {
-    sc_char *sc_string;
-    sc_uint32 size;
+    sc_uint32 size = 0;
+    sc_char *sc_string = null_ptr;
     sc_string_tree_get_sc_string_ext(addr, &sc_string, &size);
+
+    if (sc_string == null_ptr)
+    {
+      size = 1;
+      sc_string = g_new0(sc_char, size);
+    }
+
     *stream = sc_stream_memory_new(sc_string, size, SC_STREAM_FLAG_READ, SC_TRUE);
     result = SC_RESULT_OK;
   }
@@ -1083,19 +1079,19 @@ sc_result sc_storage_find_links_with_content(const sc_memory_context *ctx, const
   *result_count = 0;
 
   sc_char *sc_string = null_ptr;
-  sc_uint16 size = 0;
+  sc_uint32 size = 0;
   if (sc_link_get_content(stream, &sc_string, &size) != SC_TRUE)
     return SC_RESULT_ERROR;
 
-  sc_addr *found_addrs;
-  sc_uint32 addrs_size = 0;
-
-  sc_result result = sc_string_tree_get_sc_links(sc_string, &found_addrs, &addrs_size);
-  if (result != SC_RESULT_OK || found_addrs == null_ptr || addrs_size == 0)
+  sc_addr *found_addrs = null_ptr;
+  sc_result result = sc_string_tree_get_sc_links(sc_string, &found_addrs, result_count);
+  if (result != SC_RESULT_OK || found_addrs == null_ptr || result_count == 0)
     return SC_RESULT_ERROR;
 
+  *result_addrs = g_new0(sc_addr, *result_count);
+
   sc_uint32 i;
-  for (i = 0; i < addrs_size; ++i)
+  for (i = 0; i < *result_count; ++i)
   {
     sc_addr found = found_addrs[i];
     if (SC_ADDR_IS_EMPTY(found))
@@ -1114,13 +1110,7 @@ sc_result sc_storage_find_links_with_content(const sc_memory_context *ctx, const
       goto unlock;
     }
 
-    if (*result_addrs == null_ptr)
-      *result_addrs = g_new0(sc_addr, ++(*result_count));
-    else
-      *result_addrs = g_renew(sc_addr, *result_addrs, ++(*result_count));
-
-    *result_addrs[(*result_count) - 1] = found;
-    result = SC_RESULT_OK;
+    (*result_addrs)[i] = found;
 
 unlock:
     {
@@ -1147,7 +1137,7 @@ sc_result sc_storage_find_link_with_content(const sc_memory_context *ctx, const 
   SC_ADDR_MAKE_EMPTY(*found)
 
   sc_char *sc_string = null_ptr;
-  sc_uint16 size = 0;
+  sc_uint32 size = 0;
   if (sc_link_get_content(stream, &sc_string, &size) != SC_TRUE)
     return SC_RESULT_ERROR;
 
@@ -1331,7 +1321,8 @@ sc_result sc_storage_save(sc_memory_context const * ctx)
     sc_segment_lock(seg);
   }
 
-  // @todo: Implement save to local database
+  sc_fs_storage_write_to_path(segments);
+  sc_fs_storage_write_strings();
 
   g_mutex_unlock(&s_mutex_free);
 

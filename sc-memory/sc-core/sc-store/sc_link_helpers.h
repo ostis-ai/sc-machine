@@ -12,7 +12,7 @@
 
 sc_bool sc_link_calculate_checksum(const sc_stream *stream, sc_char **hash_string);
 
-sc_bool sc_link_get_content(const sc_stream *stream, sc_char **content, sc_uint16 *size);
+sc_bool sc_link_get_content(const sc_stream *stream, sc_char **content, sc_uint32 *size);
 
 /*! Calculates checksum for sc-link, when it is self container for it's data
  * @param el Pointer to sc-link

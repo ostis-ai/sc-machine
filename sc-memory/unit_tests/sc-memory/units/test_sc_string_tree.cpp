@@ -77,7 +77,7 @@ TEST_CASE("sc-strings-complex", "[test sc-string tree complex]")
   sc_string_tree_show();
 
   ctx.Destroy();
-  test::ScTestUnit::ShutdownMemory(true);
+  test::ScTestUnit::ShutdownMemory(false);
 }
 
 TEST_CASE("sc-links", "[test sc-links common]")
@@ -100,17 +100,18 @@ TEST_CASE("sc-links", "[test sc-links common]")
   REQUIRE("_node2" == ctx.HelperGetSystemIdtf(node2));
 
   ctx.Destroy();
-  test::ScTestUnit::ShutdownMemory(true);
+  test::ScTestUnit::ShutdownMemory(false);
 }
 
-TEST_CASE("sc-links-complex", "[test sc-links common]")
+TEST_CASE("sc-links-smoke", "[test sc-links smoke]")
 {
   test::ScTestUnit::InitMemory("sc-memory.ini", "");
-  ScMemoryContext ctx(sc_access_lvl_make_min, "sc-links complex");
+  ScMemoryContext ctx(sc_access_lvl_make_min, "sc-links smoke");
 
   ScAddr formulaAddr = ctx.CreateNode(ScType::NodeConst);
   REQUIRE(ctx.HelperSetSystemIdtf("atomic_formula", formulaAddr));
   REQUIRE(formulaAddr == ctx.HelperFindBySystemIdtf("atomic_formula"));
+  REQUIRE("atomic_formula" == ctx.HelperGetSystemIdtf(formulaAddr));
   REQUIRE("atomic_formula" == ctx.HelperGetSystemIdtf(formulaAddr));
 
   ScAddr node1 = ctx.CreateNode(ScType::NodeConst);
@@ -124,12 +125,33 @@ TEST_CASE("sc-links-complex", "[test sc-links common]")
   REQUIRE(formulaAddr == ctx.HelperResolveSystemIdtf("atomic_formula", ScType::NodeConst));
   REQUIRE("atomic_formula" == ctx.HelperGetSystemIdtf(formulaAddr));
 
+  REQUIRE(ctx.FindLinksByContent("atomic_formula").size() == 1);
+
+  ScAddr linkAddr = ctx.CreateLink();
+  ScLink link = ScLink(ctx, linkAddr);
+  std::string str = "atomic_formula";
+  link.Set(str);
+  REQUIRE("atomic_formula" == link.GetAsString());
+
+  ScAddrVector linkList = ctx.FindLinksByContent("atomic_formula");
+  REQUIRE(linkList.size() == 2);
+  REQUIRE(linkList[0].IsValid());
+  REQUIRE(linkList[1].IsValid());
+
+  str = "non_atomic_formula";
+  link.Set(str);
+  REQUIRE("non_atomic_formula" == link.GetAsString());
+
+  REQUIRE(ctx.FindLinksByContent("atomic_formula").size() == 1);
+
+  REQUIRE(ctx.FindLinksByContent("non_atomic_formula").size() == 1);
+
   ScAddr node2 = ctx.HelperResolveSystemIdtf("_node2", ScType::NodeVarStruct);
   REQUIRE(node2.IsValid());
   REQUIRE("_node2" == ctx.HelperGetSystemIdtf(node2));
 
   ctx.Destroy();
-  test::ScTestUnit::ShutdownMemory(true);
+  test::ScTestUnit::ShutdownMemory(false);
 }
 
 TEST_CASE("sc-link-content-changed", "[test sc-links content changed]")
@@ -143,6 +165,9 @@ TEST_CASE("sc-link-content-changed", "[test sc-links content changed]")
 
   std::string str = "content1";
   REQUIRE(link.Set(str));
+
+  sc_string_tree_show();
+
   REQUIRE(str == link.GetAsString());
 
   str = "content2";
@@ -155,10 +180,35 @@ TEST_CASE("sc-link-content-changed", "[test sc-links content changed]")
 
   REQUIRE(!ctx.FindLinksByContent("content3").empty());
   REQUIRE(ctx.FindLinksByContent("content1").empty());
+  REQUIRE(ctx.FindLinksByContent("content1").empty());
   REQUIRE(ctx.FindLinksByContent("content2").empty());
 
   sc_string_tree_show();
 
   ctx.Destroy();
-  test::ScTestUnit::ShutdownMemory(true);
+  test::ScTestUnit::ShutdownMemory(false);
+}
+
+TEST_CASE("set system idtf", "[test set system idtf]")
+{
+  test::ScTestUnit::InitMemory("sc-memory.ini", "");
+  ScMemoryContext ctx(sc_access_lvl_make_min, "set system idtf");
+
+  ScAddr timestamp = ctx.CreateNode(ScType::NodeConstClass);
+  REQUIRE(ctx.HelperSetSystemIdtf("2022.03.21 16:07:47", timestamp));
+  REQUIRE("2022.03.21 16:07:47" == ctx.HelperGetSystemIdtf(timestamp));
+
+  REQUIRE(!ctx.FindLinksByContent("2022.03.21 16:07:47").empty());
+
+  timestamp = ctx.CreateNode(ScType::NodeConstClass);
+  REQUIRE(ctx.HelperSetSystemIdtf("2022.03.21 16:07:48", timestamp));
+  REQUIRE("2022.03.21 16:07:48" == ctx.HelperGetSystemIdtf(timestamp));
+
+  REQUIRE(!ctx.FindLinksByContent("2022.03.21 16:07:48").empty());
+  REQUIRE(!ctx.FindLinksByContent("2022.03.21 16:07:47").empty());
+
+  sc_string_tree_show();
+
+  ctx.Destroy();
+  test::ScTestUnit::ShutdownMemory(false);
 }

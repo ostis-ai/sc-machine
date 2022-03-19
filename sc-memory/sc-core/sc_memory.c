@@ -120,7 +120,7 @@ void sc_memory_shutdown(sc_bool save_state)
   sc_events_shutdown();
   sc_config_shutdown();
 
-  //sc_helper_shutdown();
+  sc_helper_shutdown();
 
   sc_storage_shutdown(save_state);
 

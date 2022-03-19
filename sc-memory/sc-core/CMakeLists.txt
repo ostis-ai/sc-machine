@@ -4,12 +4,8 @@ file(GLOB_RECURSE SOURCES "*.c" "*.h" "*.cpp" "*.hpp")
 
 add_library (sc-core SHARED ${SOURCES})
 
-target_include_directories(sc-core 
-  PRIVATE ${GLIB2_INCLUDE_DIRS} 
-  PRIVATE ${RocksDB_INCLUDE_DIR}
-  )
-target_link_libraries(sc-core ${GLIB2_LIBRARIES} ${RocksDB_LIBRARIES})
-
+target_include_directories(sc-core PRIVATE ${GLIB2_INCLUDE_DIRS})
+target_link_libraries(sc-core ${GLIB2_LIBRARIES})
 if(${SC_COVERAGE})
   if (CMAKE_CXX_COMPILER_ID MATCHES "GNU")
 	  target_link_libraries(sc-core gcov)

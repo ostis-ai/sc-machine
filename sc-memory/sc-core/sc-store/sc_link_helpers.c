@@ -11,7 +11,6 @@
 #include <glib.h>
 
 #define SC_DEFAULT_CHECKSUM G_CHECKSUM_SHA256
-#define SC_CHECKSUM_LEN 32
 #define SC_DEFAULT_BUFFER 1024
 
 sc_bool sc_link_calculate_checksum(const sc_stream *stream, sc_char **hash_string)
@@ -38,7 +37,7 @@ sc_bool sc_link_calculate_checksum(const sc_stream *stream, sc_char **hash_strin
   const sc_char *result = null_ptr;
   result = g_checksum_get_string(checksum);
 
-  *hash_string = g_new0(sc_char, strlen(result));
+  *hash_string = g_new0(sc_char, strlen(result) + 1);
   memcpy(*hash_string, &(result[0]), strlen(result));
 
   g_checksum_free(checksum);
@@ -48,7 +47,7 @@ sc_bool sc_link_calculate_checksum(const sc_stream *stream, sc_char **hash_strin
   return SC_TRUE;
 }
 
-sc_bool sc_link_get_content(const sc_stream *stream, sc_char **content, sc_uint16 *size)
+sc_bool sc_link_get_content(const sc_stream *stream, sc_char **content, sc_uint32 *size)
 {
   sc_stream_seek(stream, SC_STREAM_SEEK_SET, 0);
 
@@ -59,17 +58,16 @@ sc_bool sc_link_get_content(const sc_stream *stream, sc_char **content, sc_uint1
   if (length == 0)
     return SC_TRUE;
 
-  sc_char *buffer = g_new0(sc_char, length);
-  sc_uint32 data_read;
-  if (sc_stream_read_data(stream, buffer, length, &data_read) == SC_RESULT_ERROR)
+  *content = g_new0(sc_char, length + 1);
+  if (sc_stream_read_data(stream, *content, length, (sc_uint32 *)size) == SC_RESULT_ERROR)
     return SC_FALSE;
 
-  if (length != data_read)
+  if (length != *size)
+  {
+    *content = null_ptr;
+    *size = 0;
     return SC_FALSE;
-
-  *content = g_new0(sc_char, length);
-  memcpy(*content, &(buffer[0]), length);
-  *size = length;
+  }
 
   return SC_TRUE;
 }

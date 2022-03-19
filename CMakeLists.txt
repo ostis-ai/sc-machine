@@ -72,7 +72,6 @@ sc_target_dependencies("${SC_MACHINE_ROOT}/packages.config.in" ${SC_MACHINE_THIR
 message("CMAKE_C_FLAGS: ${CMAKE_C_FLAGS}")
 message("CMAKE_CXX_FLAGS: ${CMAKE_CXX_FLAGS}")
 
-add_subdirectory(${SC_MACHINE_ROOT}/thirdparty)
 
 add_subdirectory(${SC_MACHINE_ROOT}/sc-memory)
 add_subdirectory(${SC_MACHINE_ROOT}/sc-kpm)
