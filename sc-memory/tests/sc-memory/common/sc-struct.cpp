@@ -12,7 +12,7 @@ TEST_F(ScStructTest, common)
   ScAddr const structAddr = m_ctx->CreateNode(ScType::NodeConstStruct);
   EXPECT_TRUE(structAddr.IsValid());
 
-  ScStruct st(m_ctx.get(), structAddr);
+  ScStruct st(*m_ctx, structAddr);
 
   ScAddr const addr1 = m_ctx->CreateNode(ScType::NodeConstClass);
   EXPECT_TRUE(addr1.IsValid());

@@ -22,7 +22,7 @@ TEST_F(ScTemplateSearchInStructTest, search_in_struct)
   EXPECT_TRUE(templateAddr.IsValid());
 
   ScAddr xAddr, _yAddr, _zAddr, _xyEdgeAddr, _zxyEdgeAddr;
-  ScStruct templStruct(m_ctx.get(), templateAddr);
+  ScStruct templStruct(*m_ctx, templateAddr);
   {
     xAddr = m_ctx->CreateNode(ScType::NodeConst);
     EXPECT_TRUE(xAddr.IsValid());
@@ -66,7 +66,7 @@ TEST_F(ScTemplateSearchInStructTest, search_in_struct)
   ScAddr tyAddr, txAddr, tgAddr, tuAddr, tzAddr, tsAddr,
          tyuEdgeAddr, txyEdgeAddr, txgEdgeAddr, tzxyEdgeAddr, tsxgEdgeAddr;
 
-  ScStruct testStruct(m_ctx.get(), testStructAddr);
+  ScStruct testStruct(*m_ctx, testStructAddr);
   {
     txAddr = xAddr;
 
