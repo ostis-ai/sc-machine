@@ -1,7 +1,0 @@
-# web interface
-build
-node_modules
-
-assets/bundle.*
-package-lock.json
-yarn.lock
