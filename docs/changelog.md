@@ -4,8 +4,12 @@
     - Migrate test system to `gtest`
     - Remove optional search triples support
 
- - **Build system**
+- **Build system**
     - update macOS install_deps script
+ 
+ - **Web**
+    - Moved React web interface in a separate [new repository.](https://github.com/ostis-ai/react-sc-web-ui-template)
+
 ## v0.6.0
 
  - **Build system**:
