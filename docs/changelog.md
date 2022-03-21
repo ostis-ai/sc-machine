@@ -4,6 +4,9 @@
     - Migrate test system to `gtest`
     - Remove optional search triples support
 
+ - **Build system**:
+    - Add sanitizers
+
 ## v0.6.0
 
  - **Build system**:
