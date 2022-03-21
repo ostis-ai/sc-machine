@@ -40,8 +40,8 @@ class UserHandler(BaseHandler):
     def get(self) -> None:
         """ Get info about user """
         database = DataBase()
-        request_params = self._get_request_params([cnt.ID])
-        human_info = database.get_user_by_id(**request_params)
+        request_params = self._get_request_params([cnt.NAME])
+        human_info = database.get_user_by_name(**request_params)
         if human_info is not None:
             response = json.dumps({
                 cnt.ID: human_info[cnt.ID],
@@ -55,8 +55,8 @@ class UserHandler(BaseHandler):
     def delete(self) -> None:
         """ Delete user """
         database = DataBase()
-        request_params = self._get_request_params([cnt.ID])
-        delete_users_count = database.delete_user_by_id(**request_params)
+        request_params = self._get_request_params([cnt.NAME])
+        delete_users_count = database.delete_user_by_name(**request_params)
         if delete_users_count == 0:
             response = get_response_message(cnt.MSG_USER_NOT_FOUND)
         else:
@@ -67,15 +67,15 @@ class UserHandler(BaseHandler):
     def put(self) -> None:
         """ Update user """
         database = DataBase()
-        request_params = self._get_request_params([cnt.ID, cnt.NAME, cnt.PASSWORD])
+        request_params = self._get_request_params([cnt.NAME, cnt.NEW_NAME, cnt.PASSWORD])
         msg_desc = _verify_user_info_in_database(
             database,
-            name=request_params[cnt.NAME],
+            name=request_params[cnt.NEW_NAME],
             password=request_params[cnt.PASSWORD]
         )
         response = get_response_message(msg_desc)
         if msg_desc == cnt.MSG_ALL_DONE:
-            updates_users_count = database.update_user_by_id(**request_params)
+            updates_users_count = database.update_user_by_name(**request_params)
             if updates_users_count == 0:
                 response = get_response_message(cnt.MSG_USER_NOT_FOUND)
         self.write(response)

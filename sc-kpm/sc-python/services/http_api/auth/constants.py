@@ -4,6 +4,7 @@ USERS = 'users'
 ID = 'id'
 NAME = 'name'
 PASSWORD = 'password'
+NEW_NAME ='new_name'
 # patterns
 USERNAME_PATTERN = 'username_pattern'
 PASSWORD_PATTERN = 'password_pattern'

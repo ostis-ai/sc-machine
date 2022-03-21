@@ -57,8 +57,8 @@ class DataBase:
         selected_user = self._session().query(User).filter(User.name == name).first()
         return selected_user is not None
 
-    def get_user_by_id(self, id: int):
-        user_info = self._session().query(User).filter(User.id == id).first()
+    def get_user_by_name(self, name: str):
+        user_info = self._session().query(User).filter(User.name == name).first()
         return user_info.serialize if user_info is not None else None
 
     def get_users(self):
@@ -75,13 +75,13 @@ class DataBase:
             return False
         return True
 
-    def delete_user_by_id(self, id: str) -> int:
-        delete_users_count = self._session().query(User).filter(User.id == id).delete()
+    def delete_user_by_name(self, name: str) -> int:
+        delete_users_count = self._session().query(User).filter(User.name == name).delete()
         self._session().commit()
         return delete_users_count
 
-    def update_user_by_id(self, id: int, name: str, password: str) -> bool:
-        updated_users_count = self._session().query(User).filter(User.id == id).\
-            update({cnt.NAME: name, cnt.PASSWORD: password})
+    def update_user_by_name(self, name: str, new_name: str, password: str) -> bool:
+        updated_users_count = self._session().query(User).filter(User.name == name).\
+            update({cnt.NAME: new_name, cnt.PASSWORD: password})
         self._session().commit()
         return updated_users_count
