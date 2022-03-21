@@ -24,6 +24,8 @@ cmake .. -DCMAKE_BUILD_TYPE=Release # use Debug for debug build
 make
 ```
 
+Use `cmake` with `-DSC_USE_SANITIZER` option to run build with address or memory sanitizer. As far as `gcc` compiler doesn't support MemorySanitizer you should use `clang` for it. (*example:* cmake -B build -DSC_USE_SANITIZER=memory -D CMAKE_CXX_COMPILER=clang++ -D CMAKE_C_COMPILER=clang)
+
 Build knowledge base (from sc-machine/kb folder):
 ```sh
 cd sc-machine/scripts
