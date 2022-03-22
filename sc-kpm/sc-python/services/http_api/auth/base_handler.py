@@ -1,6 +1,7 @@
 import json
 import tornado
 
+from http_api.auth import constants as cnt
 from typing import Dict, List
 
 
@@ -23,3 +24,11 @@ class BaseHandler(tornado.web.RequestHandler):
             param = request_params[arg_name] if arg_name in request_params else None
             res[arg_name] = param
         return res
+
+    def _get_user_credentials(self):
+        data = json.loads(self.request.body)
+        name = data[cnt.NAME] if cnt.NAME in data else False
+        password = data[cnt.PASSWORD] if cnt.PASSWORD in data else False
+        return name, password
+
+
