@@ -21,7 +21,7 @@ def _verify_user_info_in_database(database: DataBase, name: str, password: str) 
 
 
 def _check_if_user_in_base(database: DataBase, name: str) -> str:
-    if database.is_such_user_in_base(name):
+    if not  database.is_such_user_in_base(name):
         message_desc = cnt.MSG_USER_NOT_FOUND
     else:
         message_desc = cnt.MSG_ALL_DONE

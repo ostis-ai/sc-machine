@@ -15,16 +15,17 @@ class TokenType(Enum):
 class TokenValidator:
     @staticmethod
     def _validate_token(token):
-        with open(params[cnt.PUBLIC_KEY_PATH], 'rb') as file:
-            public_key = file.read()
         try:
-            payload = jwt.decode(token, public_key,
-                       issuer=params[cnt.ISSUER],
-                       algorithm='RS256')
+            with open(params[cnt.PUBLIC_KEY_PATH], 'rb') as file:
+                public_key = file.read()
+                jwt.decode(token, public_key,
+                        issuer=params[cnt.ISSUER],
+                        algorithm='RS256')
         except (jwt.exceptions.InvalidTokenError,
                 jwt.exceptions.InvalidSignatureError,
                 jwt.exceptions.InvalidIssuerError,
-                jwt.exceptions.ExpiredSignatureError):
+                jwt.exceptions.ExpiredSignatureError,
+                FileNotFoundError):
             return False
         return True
 
