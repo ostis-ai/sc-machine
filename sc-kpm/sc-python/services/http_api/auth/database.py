@@ -1,10 +1,10 @@
-from sqlalchemy import Column, Integer, String, ForeignKey
+from sqlalchemy import Column, Integer, String
 from sqlalchemy.engine import Engine
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.declarative import declarative_base
 
 from sqlalchemy import create_engine, event
-from sqlalchemy.orm import sessionmaker, relationship
+from sqlalchemy.orm import sessionmaker
 
 import http_api.auth.constants as cnt
 from http_api.auth.config import params
@@ -35,6 +35,7 @@ class User(Base):
             cnt.NAME: self.name
         }
 
+
 class DataBase:
     def __init__(self) -> None:
         self.engine = create_engine(params[cnt.SQLITE_DB_PATH])
@@ -56,10 +57,6 @@ class DataBase:
     def is_such_user_in_base(self, name):
         selected_user = self._session().query(User).filter(User.name == name).first()
         return selected_user is not None
-
-    def get_user_by_name(self, name: str):
-        user_info = self._session().query(User).filter(User.name == name).first()
-        return user_info.serialize if user_info is not None else None
 
     def get_users(self):
         users_info = self._session().query(User)
