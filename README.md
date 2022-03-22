@@ -66,13 +66,11 @@ Current endpoints for auth service:
 3. **127.0.0.1:8090/admin/user** - admin endpoint (need specific type of request for correct work), **for this operation needs access token**:
 **POST-request:** add new user,
 **DELETE-request:** delete user by user name,
-**PUT-request:** change user record by user name,
-**GET-request:** get user's info by user name (only id is returned).
+**PUT-request:** change user record by user name.
 _**Examples:**_
 **POST request-body:** {"name": "alex123", "password": "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3", "access_token": "..."}
 **DELETE request-body:** {"name": "alex123", "access_token": "..."}
 **PUT request-body:** {"name": "alex123", "new_name": "alex234", "password": "...", "access_token": "..."}
-**GET request-body:** {"name": "alex234",  "access_token": "..."}
 4.  **127.0.0.1:8090/admin/users** - get users list, **for this operation needs access token**
 **GET request-body:** {"access_token": "..."}
 
