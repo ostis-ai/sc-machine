@@ -19,6 +19,13 @@ def _verify_user_info_in_database(database: DataBase, name: str, password: str) 
         message_desc = cnt.MSG_ALL_DONE
     return message_desc
 
+def _check_if_user_in_base(database: DataBase, name: str) -> str:
+    if database.is_such_user_in_base(name):
+        message_desc = cnt.MSG_USER_NOT_FOUND
+    else:
+        message_desc = cnt.MSG_ALL_DONE
+    return message_desc
+
 
 class UserHandler(BaseHandler):
     @TokenValidator.validate_typed_token(TokenType.ACCESS)
@@ -68,11 +75,16 @@ class UserHandler(BaseHandler):
         """ Update user """
         database = DataBase()
         request_params = self._get_request_params([cnt.NAME, cnt.NEW_NAME, cnt.PASSWORD])
-        msg_desc = _verify_user_info_in_database(
-            database,
-            name=request_params[cnt.NEW_NAME],
-            password=request_params[cnt.PASSWORD]
-        )
+        msg_desc = _check_if_user_in_base(
+                database,
+                name=request_params[cnt.NAME])
+        response = get_response_message(msg_desc)
+        if msg_desc == cnt.MSG_ALL_DONE:
+            msg_desc = _verify_user_info_in_database(
+                database,
+                name=request_params[cnt.NEW_NAME],
+                password=request_params[cnt.PASSWORD]
+            )
         response = get_response_message(msg_desc)
         if msg_desc == cnt.MSG_ALL_DONE:
             updates_users_count = database.update_user_by_name(**request_params)
