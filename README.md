@@ -24,9 +24,10 @@ cd scripts
 cd ..
 pip3 install -r requirements.txt
 ```
-Please note: you should add Qt5 to `PATH` variable. A way to do this in default macOS shell (`zsh`):
+Please note: you should add Qt5 and LLVM to `PATH` variable. To do this, after installing dependencies execute the following commands (considering you use `zsh` as your shell):
 ```sh
-echo 'export PATH="/opt/homebrew/opt/qt@5/bin:$PATH"' >> ~/.zshrc
+echo 'export PATH="'$HOMEBREW_PREFIX'/opt/qt@5/bin:$PATH"' >> ~/.zshrc
+echo 'export PATH="'$HOMEBREW_PREFIX'/opt/llvm/bin:$PATH"' >> ~/.zshrc
 ```
 
 ## Build sc-machine
