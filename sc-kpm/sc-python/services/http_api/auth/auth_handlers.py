@@ -60,7 +60,7 @@ class TokensHandler(BaseHandler):
                 }
             })
         else:
-            response = get_response_message(params[cnt.MSG_CODES][cnt.MSG_USER_NOT_FOUND])
+            response = get_response_message(cnt.MSG_USER_NOT_FOUND)
         self.write(response)
 
 
