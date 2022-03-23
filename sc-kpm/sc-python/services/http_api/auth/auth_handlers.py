@@ -1,4 +1,5 @@
 import json
+from os import read
 import jwt
 import time
 import OpenSSL.crypto as crypto
@@ -62,10 +63,27 @@ class TokensHandler(BaseHandler):
             response = get_response_message(params[cnt.MSG_CODES][cnt.MSG_USER_NOT_FOUND])
         self.write(response)
 
+
+    def _get_user_credentials(self):
+        data = json.loads(self.request.body)
+        name = data[cnt.NAME] if cnt.NAME in data else False
+        password = data[cnt.PASSWORD] if cnt.PASSWORD in data else False
+        return name, password
+
+
+
 class AccessTokenHandler(BaseHandler):
     @TokenValidator.validate_typed_token(TokenType.REFRESH)
     def post(self) -> None:
-        username, _ = self._get_user_credentials()
+        try:
+            with open(params[cnt.PUBLIC_KEY_PATH], 'rb') as file:
+                    public_key = file.read()
+        except FileNotFoundError:
+            raise Exception(FileNotFoundError)
+        request_params = json.loads(self.request.body)
+        username = jwt.decode(request_params[cnt.REFRESH_TOKEN], public_key,
+            issuer=params[cnt.ISSUER],
+            algorithm='RS256')[cnt.USERNAME]
         access_token_data = _generate_token(TokenType.ACCESS, username)
         response = json.dumps({
             cnt.MSG_CODE: params[cnt.MSG_CODES][cnt.MSG_ALL_DONE],
