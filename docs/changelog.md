@@ -3,6 +3,8 @@
  - **C++**:
     - Migrate test system to `gtest`
     - Remove optional search triples support
+    - Add sanitizers
+
 
 - **Build system**
     - update macOS install_deps script
