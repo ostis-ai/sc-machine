@@ -25,6 +25,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Moved React web interface in a separate [new repository.](https://github.com/ostis-ai/react-sc-web-ui-template)
 - Remove optional search triples support
 
+ - **Tools**
+    - Add build_kb
+
 ## v0.6.0
 
  - **Build system**:
