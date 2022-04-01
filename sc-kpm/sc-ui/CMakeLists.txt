@@ -9,3 +9,7 @@ target_include_directories(sc-ui
 	)
 add_dependencies(sc-ui sc-core sc-kpm-common)
 target_link_libraries(sc-ui sc-kpm-common)
+
+if (${SC_CLANG_FORMAT_CODE})
+	target_clangformat_setup(sc-ui)
+endif ()

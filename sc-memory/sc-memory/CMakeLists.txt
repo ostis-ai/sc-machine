@@ -54,3 +54,7 @@ add_dependencies(sc-memory
   SCsParser)
 
 target_compile_definitions(sc-memory PRIVATE "-DSC_MEMORY_SELF_BUILD")
+
+if (${SC_CLANG_FORMAT_CODE})
+	target_clangformat_setup(sc-memory)
+endif ()

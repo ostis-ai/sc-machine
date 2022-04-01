@@ -26,3 +26,7 @@ else()
 endif (${WIN32})
 
 target_link_libraries(sc-code-generator ${LIBCLANG_LIBRARY} ${BOOST_LIBS_LIST})
+
+if (${SC_CLANG_FORMAT_CODE})
+	target_clangformat_setup(sc-code-generator)
+endif ()

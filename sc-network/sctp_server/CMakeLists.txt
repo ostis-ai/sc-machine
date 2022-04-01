@@ -9,3 +9,7 @@ target_link_libraries(sctp-server sc-memory sc-core ${BOOST_LIBS_LIST} Qt5::Core
 		Qt5::Network)
 
 add_dependencies(sctp-server sc-kpm sc-memory sc-core)
+
+if (${SC_CLANG_FORMAT_CODE})
+	target_clangformat_setup(sctp-server)
+endif ()

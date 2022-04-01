@@ -26,3 +26,7 @@ add_dependencies(sc-server
   sc-kpm
   sc-memory
 )
+
+if (${SC_CLANG_FORMAT_CODE})
+	target_clangformat_setup(sc-server)
+endif ()
