@@ -13,24 +13,15 @@
 
 namespace utils
 {
-
 void StringUtils::ToLowerCase(std::string & str)
 {
-  std::transform(
-    str.begin(),
-    str.end(),
-    str.begin(),
-    tolower);
+  std::transform(str.begin(), str.end(), str.begin(), tolower);
 }
 
 //-----------------------------------------------------------------------
 void StringUtils::ToUpperCase(std::string & str)
 {
-  std::transform(
-    str.begin(),
-    str.end(),
-    str.begin(),
-    toupper);
+  std::transform(str.begin(), str.end(), str.begin(), toupper);
 }
 
 bool StringUtils::StartsWith(std::string const & str, std::string const & pattern, bool lowerCase)
@@ -92,7 +83,6 @@ void StringUtils::SplitFilename(std::string const & qualifiedName, std::string &
     outBasename = path.substr(i + 1, path.size() - i - 1);
     outPath = path.substr(0, i + 1);
   }
-
 }
 
 void StringUtils::SplitString(std::string const & str, char delim, std::vector<std::string> & outList)
@@ -106,51 +96,52 @@ void StringUtils::SplitString(std::string const & str, char delim, std::vector<s
 
 std::string StringUtils::NormalizeFilePath(std::string const & init, bool makeLowerCase)
 {
-  const char* bufferSrc = init.c_str();
+  const char * bufferSrc = init.c_str();
   int pathLen = (int)init.size();
   int indexSrc = 0;
   int indexDst = 0;
   int metaPathArea = 0;
 
   char reservedBuf[1024];
-  char* bufferDst = reservedBuf;
+  char * bufferDst = reservedBuf;
   bool isDestAllocated = false;
   if (pathLen > 1023)
   {
-    //if source path is to long ensure we don't do a buffer overrun by allocating some
-    //new memory
+    // if source path is to long ensure we don't do a buffer overrun by allocating some
+    // new memory
     isDestAllocated = true;
     bufferDst = new char[pathLen + 1];
   }
 
-  //The outer loop loops over directories
+  // The outer loop loops over directories
   while (indexSrc < pathLen)
   {
     if ((bufferSrc[indexSrc] == '\\') || (bufferSrc[indexSrc] == '/'))
     {
-      //check if we have a directory delimiter if so skip it (we should already
-      //have written such a delimiter by this point
+      // check if we have a directory delimiter if so skip it (we should already
+      // have written such a delimiter by this point
       ++indexSrc;
       continue;
     }
     else
     {
-      //check if there is a directory to skip of type ".\"
-      if ((bufferSrc[indexSrc] == '.') &&
-        ((bufferSrc[indexSrc + 1] == '\\') || (bufferSrc[indexSrc + 1] == '/')))
+      // check if there is a directory to skip of type ".\"
+      if ((bufferSrc[indexSrc] == '.') && ((bufferSrc[indexSrc + 1] == '\\') || (bufferSrc[indexSrc + 1] == '/')))
       {
         indexSrc += 2;
         continue;
       }
 
-      //check if there is a directory to skip of type "..\"
-      else if ((bufferSrc[indexSrc] == '.') && (bufferSrc[indexSrc + 1] == '.') &&
-        ((bufferSrc[indexSrc + 2] == '\\') || (bufferSrc[indexSrc + 2] == '/')))
+      // check if there is a directory to skip of type "..\"
+      else if (
+          (bufferSrc[indexSrc] == '.') && (bufferSrc[indexSrc + 1] == '.') &&
+          ((bufferSrc[indexSrc + 2] == '\\') || (bufferSrc[indexSrc + 2] == '/')))
       {
         if (indexDst > metaPathArea)
         {
-          //skip a directory backward in the destination path
-          do {
+          // skip a directory backward in the destination path
+          do
+          {
             --indexDst;
           } while ((indexDst > metaPathArea) && (bufferDst[indexDst - 1] != '/'));
           indexSrc += 3;
@@ -158,23 +149,26 @@ std::string StringUtils::NormalizeFilePath(std::string const & init, bool makeLo
         }
         else
         {
-          //we are about to write "..\" to the destination buffer
-          //ensure we will not remove this in future "skip directories"
+          // we are about to write "..\" to the destination buffer
+          // ensure we will not remove this in future "skip directories"
           metaPathArea += 3;
         }
       }
     }
 
-    //transfer the current directory name from the source to the destination
+    // transfer the current directory name from the source to the destination
     while (indexSrc < pathLen)
     {
       char curChar = bufferSrc[indexSrc];
-      if (makeLowerCase) curChar = tolower(curChar);
-      if ((curChar == '\\') || (curChar == '/')) curChar = '/';
+      if (makeLowerCase)
+        curChar = tolower(curChar);
+      if ((curChar == '\\') || (curChar == '/'))
+        curChar = '/';
       bufferDst[indexDst] = curChar;
       ++indexDst;
       ++indexSrc;
-      if (curChar == '/') break;
+      if (curChar == '/')
+        break;
     }
   }
   bufferDst[indexDst] = 0;
@@ -188,8 +182,10 @@ std::string StringUtils::NormalizeFilePath(std::string const & init, bool makeLo
   return normalized;
 }
 
-
-std::string StringUtils::ReplaceAll(std::string const & source, std::string const & replaceWhat, std::string const & replaceWithWhat)
+std::string StringUtils::ReplaceAll(
+    std::string const & source,
+    std::string const & replaceWhat,
+    std::string const & replaceWithWhat)
 {
   std::string result = source;
   std::string::size_type pos = 0;
@@ -245,4 +241,4 @@ int Random::Int()
   return std::rand();
 }
 
-} // namespace utils
+}  // namespace utils

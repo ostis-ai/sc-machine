@@ -4,7 +4,6 @@
 
 namespace Props
 {
-
 const std::string Body = "GenBody";
 const std::string Keynode = "Keynode";
 const std::string Template = "Template";
@@ -14,21 +13,19 @@ const std::string AgentCommandClass = "CmdClass";
 const std::string Event = "Event";
 const std::string LoadOrder = "LoadOrder";
 
-} // namespace Props
+}  // namespace Props
 
 namespace Classes
 {
-
 const std::string Object = "ScObject";
 const std::string Agent = "ScAgent";
 const std::string AgentAction = "ScAgentAction";
 const std::string Module = "ScModule";
 
-} // namespace Classes
+}  // namespace Classes
 
 namespace ParserMeta
 {
-
 const std::string ParentClass = "ParentClass";
 
-} // namespace ParserMeta
+}  // namespace ParserMeta

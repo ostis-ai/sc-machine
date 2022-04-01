@@ -26,10 +26,10 @@ sc_pointer sc_thread()
 sc_memory_context * s_memory_default_ctx = 0;
 sc_uint16 s_context_id_last = 1;
 sc_uint32 s_context_id_count = 0;
-GHashTable *s_context_hash_table = 0;
+GHashTable * s_context_hash_table = 0;
 GMutex s_concurrency_mutex;
 
-void sc_memory_params_clear(sc_memory_params *params)
+void sc_memory_params_clear(sc_memory_params * params)
 {
   params->clear = SC_FALSE;
   params->config_file = 0;
@@ -38,7 +38,7 @@ void sc_memory_params_clear(sc_memory_params *params)
   params->enabled_exts = 0;
 }
 
-sc_memory_context* sc_memory_initialize(const sc_memory_params *params)
+sc_memory_context * sc_memory_initialize(const sc_memory_params * params)
 {
   g_log_set_always_fatal(G_LOG_LEVEL_CRITICAL);
 
@@ -46,7 +46,7 @@ sc_memory_context* sc_memory_initialize(const sc_memory_params *params)
 
   s_context_hash_table = g_hash_table_new(g_direct_hash, g_direct_equal);
 
-  char *v_str = sc_version_string_new(&SC_VERSION);
+  char * v_str = sc_version_string_new(&SC_VERSION);
   g_message("Version: %s", v_str);
   sc_version_string_free(v_str);
 
@@ -58,7 +58,8 @@ sc_memory_context* sc_memory_initialize(const sc_memory_params *params)
     return 0;
 
   s_memory_default_ctx = sc_memory_context_new(sc_access_lvl_make(SC_ACCESS_LVL_MAX_VALUE, SC_ACCESS_LVL_MAX_VALUE));
-  sc_memory_context *helper_ctx = sc_memory_context_new(sc_access_lvl_make(SC_ACCESS_LVL_MIN_VALUE, SC_ACCESS_LVL_MAX_VALUE));
+  sc_memory_context * helper_ctx =
+      sc_memory_context_new(sc_access_lvl_make(SC_ACCESS_LVL_MIN_VALUE, SC_ACCESS_LVL_MAX_VALUE));
   if (sc_helper_init(helper_ctx) != SC_RESULT_OK)
     goto error;
   sc_memory_context_free(helper_ctx);
@@ -76,13 +77,13 @@ sc_memory_context* sc_memory_initialize(const sc_memory_params *params)
   }
 
   return s_memory_default_ctx;
-  
+
 error:
-  {
-    if (helper_ctx)
-      sc_memory_context_free(helper_ctx);
-    sc_memory_context_free(s_memory_default_ctx);
-  }
+{
+  if (helper_ctx)
+    sc_memory_context_free(helper_ctx);
+  sc_memory_context_free(s_memory_default_ctx);
+}
   return (s_memory_default_ctx = null_ptr);
 }
 
@@ -108,7 +109,6 @@ sc_result sc_memory_init_ext(sc_char const * ext_path, const sc_char ** enabled_
 
   return ext_res;
 }
-
 
 void sc_memory_shutdown(sc_bool save_state)
 {
@@ -138,14 +138,14 @@ void sc_memory_shutdown_ext()
   sc_ext_shutdown();
 }
 
-sc_memory_context* sc_memory_context_new(sc_uint8 levels)
+sc_memory_context * sc_memory_context_new(sc_uint8 levels)
 {
   return sc_memory_context_new_impl(levels);
 }
 
-sc_memory_context* sc_memory_context_new_impl(sc_uint8 levels)
+sc_memory_context * sc_memory_context_new_impl(sc_uint8 levels)
 {
-  sc_memory_context *ctx = g_new0(sc_memory_context, 1);
+  sc_memory_context * ctx = g_new0(sc_memory_context, 1);
   sc_uint32 index = 0;
 
   ctx->access_levels = levels;
@@ -156,7 +156,8 @@ sc_memory_context* sc_memory_context_new_impl(sc_uint8 levels)
     goto error;
 
   index = (s_context_id_last + 1) % G_MAXUINT32;
-  while (index == 0 || (index != s_context_id_last && g_hash_table_lookup(s_context_hash_table, GINT_TO_POINTER(index))))
+  while (index == 0 ||
+         (index != s_context_id_last && g_hash_table_lookup(s_context_hash_table, GINT_TO_POINTER(index))))
     index = (index + 1) % G_MAXUINT32;
 
   if (index != s_context_id_last)
@@ -164,17 +165,18 @@ sc_memory_context* sc_memory_context_new_impl(sc_uint8 levels)
     ctx->id = index;
     s_context_id_last = index;
     g_hash_table_insert(s_context_hash_table, GINT_TO_POINTER(ctx->id), (gpointer)ctx);
-  } else
+  }
+  else
     goto error;
 
   s_context_id_count++;
   goto result;
 
 error:
-  {
-    g_free(ctx);
-    ctx = 0;
-  }
+{
+  g_free(ctx);
+  ctx = 0;
+}
 
 result:
   g_mutex_unlock(&s_concurrency_mutex);
@@ -182,18 +184,18 @@ result:
   return ctx;
 }
 
-void sc_memory_context_free(sc_memory_context *ctx)
+void sc_memory_context_free(sc_memory_context * ctx)
 {
   sc_memory_context_free_impl(ctx);
 }
 
-void sc_memory_context_free_impl(sc_memory_context *ctx)
+void sc_memory_context_free_impl(sc_memory_context * ctx)
 {
   g_assert(ctx != 0);
 
   g_mutex_lock(&s_concurrency_mutex);
 
-  sc_memory_context *c = g_hash_table_lookup(s_context_hash_table, GINT_TO_POINTER(ctx->id));
+  sc_memory_context * c = g_hash_table_lookup(s_context_hash_table, GINT_TO_POINTER(ctx->id));
   g_assert(c == ctx);
   g_hash_table_remove(s_context_hash_table, GINT_TO_POINTER(ctx->id));
   s_context_id_count--;
@@ -231,10 +233,11 @@ void sc_memory_context_emit_events(sc_memory_context * ctx)
   while (ctx->pend_events)
   {
     item = ctx->pend_events;
-    evt_params = (sc_event_emit_params*)item->data;
+    evt_params = (sc_event_emit_params *)item->data;
 
-    sc_event_emit_impl(ctx, evt_params->el, evt_params->el_access, evt_params->type, evt_params->edge, evt_params->other_el);
-    
+    sc_event_emit_impl(
+        ctx, evt_params->el, evt_params->el_access, evt_params->type, evt_params->edge, evt_params->other_el);
+
     g_free(evt_params);
 
     ctx->pend_events = g_slist_delete_link(ctx->pend_events, ctx->pend_events);
@@ -276,7 +279,7 @@ sc_addr sc_memory_arc_new(sc_memory_context * ctx, sc_type type, sc_addr beg, sc
   return sc_storage_arc_new(ctx, type, beg, end);
 }
 
-sc_result sc_memory_get_element_type(sc_memory_context const * ctx, sc_addr addr, sc_type *result)
+sc_result sc_memory_get_element_type(sc_memory_context const * ctx, sc_addr addr, sc_type * result)
 {
   return sc_storage_get_element_type(ctx, addr, result);
 }
@@ -286,33 +289,40 @@ sc_result sc_memory_change_element_subtype(sc_memory_context const * ctx, sc_add
   return sc_storage_change_element_subtype(ctx, addr, type);
 }
 
-sc_result sc_memory_get_arc_begin(sc_memory_context const * ctx, sc_addr addr, sc_addr *result)
+sc_result sc_memory_get_arc_begin(sc_memory_context const * ctx, sc_addr addr, sc_addr * result)
 {
   return sc_storage_get_arc_begin(ctx, addr, result);
 }
 
-sc_result sc_memory_get_arc_end(sc_memory_context const * ctx, sc_addr addr, sc_addr *result)
+sc_result sc_memory_get_arc_end(sc_memory_context const * ctx, sc_addr addr, sc_addr * result)
 {
   return sc_storage_get_arc_end(ctx, addr, result);
 }
 
-sc_result sc_memory_get_arc_info(sc_memory_context const * ctx, sc_addr addr, 
-                                 sc_addr * result_start_addr, sc_addr * result_end_addr)
+sc_result sc_memory_get_arc_info(
+    sc_memory_context const * ctx,
+    sc_addr addr,
+    sc_addr * result_start_addr,
+    sc_addr * result_end_addr)
 {
   return sc_storage_get_arc_info(ctx, addr, result_start_addr, result_end_addr);
 }
 
-sc_result sc_memory_set_link_content(sc_memory_context * ctx, sc_addr addr, const sc_stream *stream)
+sc_result sc_memory_set_link_content(sc_memory_context * ctx, sc_addr addr, const sc_stream * stream)
 {
   return sc_storage_set_link_content(ctx, addr, stream);
 }
 
-sc_result sc_memory_get_link_content(sc_memory_context const * ctx, sc_addr addr, sc_stream **stream)
+sc_result sc_memory_get_link_content(sc_memory_context const * ctx, sc_addr addr, sc_stream ** stream)
 {
   return sc_storage_get_link_content(ctx, addr, stream);
 }
 
-sc_result sc_memory_find_links_with_content(sc_memory_context const * ctx, sc_stream const * stream, sc_addr **result, sc_uint32 *result_count)
+sc_result sc_memory_find_links_with_content(
+    sc_memory_context const * ctx,
+    sc_stream const * stream,
+    sc_addr ** result,
+    sc_uint32 * result_count)
 {
   return sc_storage_find_links_with_content(ctx, stream, result, result_count);
 }
@@ -322,7 +332,11 @@ void sc_memory_free_buff(sc_pointer buff)
   g_free(buff);
 }
 
-sc_result sc_memory_set_element_access_levels(sc_memory_context const * ctx, sc_addr addr, sc_access_levels access_levels, sc_access_levels * new_value)
+sc_result sc_memory_set_element_access_levels(
+    sc_memory_context const * ctx,
+    sc_addr addr,
+    sc_access_levels access_levels,
+    sc_access_levels * new_value)
 {
   return sc_storage_set_access_levels(ctx, addr, access_levels, new_value);
 }
@@ -332,7 +346,7 @@ sc_result sc_memory_get_element_access_levels(sc_memory_context const * ctx, sc_
   return sc_storage_get_access_levels(ctx, addr, result);
 }
 
-sc_result sc_memory_stat(sc_memory_context const * ctx, sc_stat *stat)
+sc_result sc_memory_stat(sc_memory_context const * ctx, sc_stat * stat)
 {
   return sc_storage_get_elements_stat(stat);
 }

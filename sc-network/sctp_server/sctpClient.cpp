@@ -12,7 +12,7 @@
 #include <QHostAddress>
 #include <QDebug>
 
-sctpClient::sctpClient(QObject *parent, int socketDescriptor)
+sctpClient::sctpClient(QObject * parent, int socketDescriptor)
   : QThread(parent)
   , mSocket(0)
   , mCommand(0)
@@ -61,7 +61,7 @@ void sctpClient::run()
   delete mCommand;
   mCommand = 0;
 
-  //deleteLater(); // shedule destroy in main thread
+  // deleteLater(); // shedule destroy in main thread
 }
 
 void sctpClient::processCommands()

@@ -22,4 +22,4 @@ extern "C"
  */
 sc_result ui_check_cmd_type(sc_addr cmd_addr, sc_addr cmd_class);
 
-#endif // _uiUtils_h_
+#endif  // _uiUtils_h_

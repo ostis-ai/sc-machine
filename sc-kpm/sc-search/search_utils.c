@@ -41,7 +41,7 @@ void appendIntoAnswer(sc_addr answer, sc_addr el)
 
 void finish_question(sc_addr question)
 {
-  sc_iterator3 *it = null_ptr;
+  sc_iterator3 * it = null_ptr;
   sc_addr arc;
 
   arc = sc_memory_arc_new(s_default_ctx, sc_type_arc_pos_const_perm, keynode_question_finished, question);

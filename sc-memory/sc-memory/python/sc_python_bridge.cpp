@@ -1,21 +1,20 @@
 /*
-* This source file is part of an OSTIS project. For the latest info, see http://ostis.net
-* Distributed under the MIT License
-* (See accompanying file COPYING.MIT or copy at http://opensource.org/licenses/MIT)
-*/
+ * This source file is part of an OSTIS project. For the latest info, see http://ostis.net
+ * Distributed under the MIT License
+ * (See accompanying file COPYING.MIT or copy at http://opensource.org/licenses/MIT)
+ */
 
 #include "sc_python_bridge.hpp"
 
 namespace py
 {
-
 ScPythonBridge::ScPythonBridge()
   : m_isInitialized(false)
   , m_isFinished(false)
 {
 }
 
-bool ScPythonBridge::WaitReady(uint32_t timeOutMS/* = 10000*/)
+bool ScPythonBridge::WaitReady(uint32_t timeOutMS /* = 10000*/)
 {
   return m_initWait.Wait(timeOutMS);
 }
@@ -88,4 +87,4 @@ std::string const & ScPythonBridge::GetInitParams() const
   return m_initParams;
 }
 
-}
+}  // namespace py

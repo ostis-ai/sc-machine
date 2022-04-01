@@ -6,8 +6,7 @@
 
 namespace
 {
-
-size_t CurlWrite_CallbackFunc_StdString(void *contents, size_t size, size_t nmemb, std::string * s)
+size_t CurlWrite_CallbackFunc_StdString(void * contents, size_t size, size_t nmemb, std::string * s)
 {
   size_t newLength = size * nmemb;
   size_t oldLength = s->size();
@@ -17,35 +16,34 @@ size_t CurlWrite_CallbackFunc_StdString(void *contents, size_t size, size_t nmem
   }
   catch (std::bad_alloc &)
   {
-    //handle memory problem
+    // handle memory problem
     return 0;
   }
 
-  std::copy((char*)contents, (char*)contents + newLength, s->begin() + oldLength);
+  std::copy((char *)contents, (char *)contents + newLength, s->begin() + oldLength);
   return size * nmemb;
 }
 
-} // namespace
-
+}  // namespace
 
 ScHttpRequest::ScHttpRequest(std::string const & url)
   : m_handle(nullptr)
   , m_type(Type::GET)
 {
-  m_handle = (void*)curl_easy_init();
+  m_handle = (void *)curl_easy_init();
   if (!url.empty())
     SetURL(url);
 }
 
 ScHttpRequest::~ScHttpRequest()
 {
-  curl_easy_cleanup((CURL*)m_handle);
+  curl_easy_cleanup((CURL *)m_handle);
 }
 
 void ScHttpRequest::Perform()
 {
-  CURL * curl = (CURL*)m_handle;
-  
+  CURL * curl = (CURL *)m_handle;
+
   if (m_type == Type::POST)
   {
     curl_easy_setopt(curl, CURLOPT_POST, 1L);
@@ -78,7 +76,7 @@ void ScHttpRequest::Perform()
 
 void ScHttpRequest::SetURL(std::string const & url)
 {
-  CURLcode const r = curl_easy_setopt((CURL*)m_handle, CURLOPT_URL, url.c_str());
+  CURLcode const r = curl_easy_setopt((CURL *)m_handle, CURLOPT_URL, url.c_str());
   SC_ASSERT(r == CURLE_OK, ());
 }
 

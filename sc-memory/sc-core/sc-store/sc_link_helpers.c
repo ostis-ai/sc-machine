@@ -14,12 +14,12 @@
 
 #define SC_DEFAULT_CHECKSUM G_CHECKSUM_SHA256
 
-sc_bool sc_link_calculate_checksum(const sc_stream *stream, sc_check_sum *check_sum)
+sc_bool sc_link_calculate_checksum(const sc_stream * stream, sc_check_sum * check_sum)
 {
   sc_char buffer[1024];
   sc_uint32 data_read;
-  const gchar *result = 0;
-  GChecksum *checksum = g_checksum_new(SC_DEFAULT_CHECKSUM);
+  const gchar * result = 0;
+  GChecksum * checksum = g_checksum_new(SC_DEFAULT_CHECKSUM);
 
   g_assert(stream != 0);
   g_assert(check_sum != 0);
@@ -35,7 +35,7 @@ sc_bool sc_link_calculate_checksum(const sc_stream *stream, sc_check_sum *check_
       return SC_FALSE;
     }
 
-    g_checksum_update(checksum, (guchar*)buffer, data_read);
+    g_checksum_update(checksum, (guchar *)buffer, data_read);
   }
 
   // store results
@@ -52,13 +52,10 @@ sc_bool sc_link_calculate_checksum(const sc_stream *stream, sc_check_sum *check_
   return SC_TRUE;
 }
 
-sc_bool sc_link_self_container_calculate_checksum(sc_element *el, sc_check_sum *sum)
+sc_bool sc_link_self_container_calculate_checksum(sc_element * el, sc_check_sum * sum)
 {
-  sc_stream *stream = sc_stream_memory_new(&el->content.data[1], el->content.data[0], SC_STREAM_FLAG_READ, SC_FALSE);
+  sc_stream * stream = sc_stream_memory_new(&el->content.data[1], el->content.data[0], SC_STREAM_FLAG_READ, SC_FALSE);
   sc_bool r = sc_link_calculate_checksum(stream, sum);
   sc_stream_free(stream);
   return r;
 }
-
-
-

@@ -20,7 +20,7 @@ class ScStream
   friend class ScMemoryContext;
 
   ScStream(ScStream const & other) = delete;
-  ScStream & operator = (ScStream const & other) = delete;
+  ScStream & operator=(ScStream const & other) = delete;
 
 public:
   _SC_EXTERN explicit ScStream();
@@ -53,7 +53,7 @@ public:
   bool ReadType(Type & value)
   {
     size_t readBytes = 0;
-    return Read((sc_char*)&value, sizeof(Type), readBytes) && (readBytes == sizeof(Type));
+    return Read((sc_char *)&value, sizeof(Type), readBytes) && (readBytes == sizeof(Type));
   }
 
 protected:
@@ -72,11 +72,9 @@ private:
   MemoryBufferPtr m_buffer;
 };
 
-
 class ScStreamConverter
 {
-  public:
-
+public:
   static _SC_EXTERN bool StreamToString(ScStreamPtr const & stream, std::string & outString);
   static _SC_EXTERN ScStreamPtr StreamFromString(std::string const & str);
 };
@@ -84,19 +82,53 @@ class ScStreamConverter
 template <typename T>
 inline ScStreamPtr ScStreamMakeReadT(T const & value)
 {
-  static_assert (std::is_arithmetic<T>::value, "Just simple arithmetic types are supported");
-  return std::make_shared<ScStream>((sc_char*)&value, sizeof(T), SC_STREAM_FLAG_READ | SC_STREAM_FLAG_SEEK | SC_STREAM_FLAG_TELL);
+  static_assert(std::is_arithmetic<T>::value, "Just simple arithmetic types are supported");
+  return std::make_shared<ScStream>(
+      (sc_char *)&value, sizeof(T), SC_STREAM_FLAG_READ | SC_STREAM_FLAG_SEEK | SC_STREAM_FLAG_TELL);
 }
 
 // TODO: implement with enable_if
-inline ScStreamPtr ScStreamMakeRead(std::string const & value) { return ScStreamConverter::StreamFromString(value); }
-inline ScStreamPtr ScStreamMakeRead(uint8_t const & value) { return ScStreamMakeReadT(value); }
-inline ScStreamPtr ScStreamMakeRead(uint16_t const & value) { return ScStreamMakeReadT(value); }
-inline ScStreamPtr ScStreamMakeRead(uint32_t const & value) { return ScStreamMakeReadT(value); }
-inline ScStreamPtr ScStreamMakeRead(uint64_t const & value) { return ScStreamMakeReadT(value); }
-inline ScStreamPtr ScStreamMakeRead(int8_t const & value) { return ScStreamMakeReadT(value); }
-inline ScStreamPtr ScStreamMakeRead(int16_t const & value) { return ScStreamMakeReadT(value); }
-inline ScStreamPtr ScStreamMakeRead(int32_t const & value) { return ScStreamMakeReadT(value); }
-inline ScStreamPtr ScStreamMakeRead(int64_t const & value) { return ScStreamMakeReadT(value); }
-inline ScStreamPtr ScStreamMakeRead(float const & value) { return ScStreamMakeReadT(value); }
-inline ScStreamPtr ScStreamMakeRead(double const & value) { return ScStreamMakeReadT(value); }
+inline ScStreamPtr ScStreamMakeRead(std::string const & value)
+{
+  return ScStreamConverter::StreamFromString(value);
+}
+inline ScStreamPtr ScStreamMakeRead(uint8_t const & value)
+{
+  return ScStreamMakeReadT(value);
+}
+inline ScStreamPtr ScStreamMakeRead(uint16_t const & value)
+{
+  return ScStreamMakeReadT(value);
+}
+inline ScStreamPtr ScStreamMakeRead(uint32_t const & value)
+{
+  return ScStreamMakeReadT(value);
+}
+inline ScStreamPtr ScStreamMakeRead(uint64_t const & value)
+{
+  return ScStreamMakeReadT(value);
+}
+inline ScStreamPtr ScStreamMakeRead(int8_t const & value)
+{
+  return ScStreamMakeReadT(value);
+}
+inline ScStreamPtr ScStreamMakeRead(int16_t const & value)
+{
+  return ScStreamMakeReadT(value);
+}
+inline ScStreamPtr ScStreamMakeRead(int32_t const & value)
+{
+  return ScStreamMakeReadT(value);
+}
+inline ScStreamPtr ScStreamMakeRead(int64_t const & value)
+{
+  return ScStreamMakeReadT(value);
+}
+inline ScStreamPtr ScStreamMakeRead(float const & value)
+{
+  return ScStreamMakeReadT(value);
+}
+inline ScStreamPtr ScStreamMakeRead(double const & value)
+{
+  return ScStreamMakeReadT(value);
+}

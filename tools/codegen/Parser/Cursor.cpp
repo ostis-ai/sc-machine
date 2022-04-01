@@ -2,7 +2,7 @@
 
 #include "MetaUtils.hpp"
 
-Cursor::Cursor(const CXCursor &handle)
+Cursor::Cursor(const CXCursor & handle)
   : m_handle(handle)
 {
   CXSourceLocation loc = clang_getCursorLocation(m_handle);
@@ -69,7 +69,6 @@ CX_CXXAccessSpecifier Cursor::GetAccessModifier(void) const
   return clang_getCXXAccessSpecifier(m_handle);
 }
 
-
 CursorType Cursor::GetType(void) const
 {
   return clang_getCursorType(m_handle);
@@ -89,8 +88,7 @@ Cursor::List Cursor::GetChildren(void) const
 {
   List children;
 
-  auto visitor = [](CXCursor cursor, CXCursor parent, CXClientData data)
-  {
+  auto visitor = [](CXCursor cursor, CXCursor parent, CXClientData data) {
     auto container = static_cast<List *>(data);
 
     container->emplace_back(cursor);
@@ -106,7 +104,7 @@ Cursor::List Cursor::GetChildren(void) const
   return children;
 }
 
-void Cursor::VisitChildren(Visitor visitor, void *data)
+void Cursor::VisitChildren(Visitor visitor, void * data)
 {
   clang_visitChildren(m_handle, visitor, data);
 }

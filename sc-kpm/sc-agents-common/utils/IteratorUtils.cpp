@@ -1,8 +1,8 @@
 /*
-* This source file is part of an OSTIS project. For the latest info, see http://ostis.net
-* Distributed under the MIT License
-* (See accompanying file COPYING.MIT or copy at http://opensource.org/licenses/MIT)
-*/
+ * This source file is part of an OSTIS project. For the latest info, see http://ostis.net
+ * Distributed under the MIT License
+ * (See accompanying file COPYING.MIT or copy at http://opensource.org/licenses/MIT)
+ */
 
 #include "CommonUtils.hpp"
 
@@ -18,7 +18,6 @@ std::map<size_t, ScAddr> orderRelationsMap;
 
 namespace utils
 {
-
 ScAddr IteratorUtils::getRoleRelation(ScMemoryContext * ms_context, const size_t & index)
 {
   size_t minRrelCountExceeded = 1;
@@ -28,7 +27,7 @@ ScAddr IteratorUtils::getRoleRelation(ScMemoryContext * ms_context, const size_t
   if (relationIter == orderRelationsMap.end())
   {
     ScAddr relation = ms_context->HelperResolveSystemIdtf("rrel_" + to_string(index), ScType::NodeConstRole);
-    orderRelationsMap.insert({ index, relation });
+    orderRelationsMap.insert({index, relation});
     return relation;
   }
   // @todo: Implement common memory for tests with caching
@@ -61,10 +60,10 @@ ScAddr IteratorUtils::getAnyFromSet(ScMemoryContext * ms_context, const ScAddr &
 }
 
 ScAddr IteratorUtils::getNextFromSet(
-      ScMemoryContext * ms_context,
-      const ScAddr & set,
-      const ScAddr & previous,
-      const ScAddr & sequenceRelation)
+    ScMemoryContext * ms_context,
+    const ScAddr & set,
+    const ScAddr & previous,
+    const ScAddr & sequenceRelation)
 {
   SC_CHECK_PARAM(set, ("Invalid set address"))
   SC_CHECK_PARAM(previous, ("Invalid previous element address"))
@@ -75,20 +74,15 @@ ScAddr IteratorUtils::getNextFromSet(
   std::string const PREVIOUS_ELEMENT_ACCESS_ARC_ALIAS = "_previous_element_access_arc";
 
   ScTemplate scTemplate;
+  scTemplate.Triple(set, ScType::EdgeAccessVarPosPerm >> PREVIOUS_ELEMENT_ACCESS_ARC_ALIAS, previous);
   scTemplate.Triple(
-        set,
-        ScType::EdgeAccessVarPosPerm >> PREVIOUS_ELEMENT_ACCESS_ARC_ALIAS,
-        previous);
-  scTemplate.Triple(
-        set,
-        ScType::EdgeAccessVarPosPerm >> NEXT_ELEMENT_ACCESS_ARC_ALIAS,
-        ScType::Unknown >> NEXT_ELEMENT_ALIAS);
+      set, ScType::EdgeAccessVarPosPerm >> NEXT_ELEMENT_ACCESS_ARC_ALIAS, ScType::Unknown >> NEXT_ELEMENT_ALIAS);
   scTemplate.TripleWithRelation(
-        PREVIOUS_ELEMENT_ACCESS_ARC_ALIAS,
-        ScType::EdgeDCommonVar,
-        NEXT_ELEMENT_ACCESS_ARC_ALIAS,
-        ScType::EdgeAccessVarPosPerm,
-        sequenceRelation);
+      PREVIOUS_ELEMENT_ACCESS_ARC_ALIAS,
+      ScType::EdgeDCommonVar,
+      NEXT_ELEMENT_ACCESS_ARC_ALIAS,
+      ScType::EdgeAccessVarPosPerm,
+      sequenceRelation);
   ScTemplateSearchResult searchResult;
   ms_context->HelperSearchTemplate(scTemplate, searchResult);
 
@@ -113,10 +107,10 @@ ScAddrVector IteratorUtils::getAllWithType(ScMemoryContext * ms_context, const S
 }
 
 ScAddrVector IteratorUtils::getAllByRelation(
-      ScMemoryContext * ms_context,
-      const ScAddr & node,
-      const ScAddr & relation,
-      bool isBeginNode)
+    ScMemoryContext * ms_context,
+    const ScAddr & node,
+    const ScAddr & relation,
+    bool isBeginNode)
 {
   SC_CHECK_PARAM(node, ("Invalid node address"))
   SC_CHECK_PARAM(relation, ("Invalid relation address"))
@@ -131,9 +125,9 @@ ScAddrVector IteratorUtils::getAllByRelation(
 }
 
 ScAddrVector IteratorUtils::getAllByInRelation(
-      ScMemoryContext * ms_context,
-      const ScAddr & node,
-      const ScAddr & relation)
+    ScMemoryContext * ms_context,
+    const ScAddr & node,
+    const ScAddr & relation)
 {
   return getAllByRelation(ms_context, node, relation, false);
 }
@@ -162,9 +156,9 @@ ScAddr IteratorUtils::getFirstByOutRelation(ScMemoryContext * ms_context, const 
 }
 
 ScAddrVector IteratorUtils::getAllByOutRelation(
-      ScMemoryContext * ms_context,
-      const ScAddr & node,
-      const ScAddr & relation)
+    ScMemoryContext * ms_context,
+    const ScAddr & node,
+    const ScAddr & relation)
 {
   return getAllByRelation(ms_context, node, relation, true);
 }
@@ -183,10 +177,10 @@ ScAddr IteratorUtils::getAnyByOutRelation(ScMemoryContext * ms_context, const Sc
 }
 
 ScIterator5Ptr IteratorUtils::getIterator5(
-      ScMemoryContext * ms_context,
-      ScAddr const & node,
-      ScAddr const & relation,
-      bool const isBeginNode)
+    ScMemoryContext * ms_context,
+    ScAddr const & node,
+    ScAddr const & relation,
+    bool const isBeginNode)
 {
   SC_CHECK_PARAM(node, ("Invalid node address"))
   SC_CHECK_PARAM(relation, ("Invalid relation address"))
@@ -206,4 +200,4 @@ ScIterator5Ptr IteratorUtils::getIterator5(
   return iterator5;
 }
 
-}
+}  // namespace utils

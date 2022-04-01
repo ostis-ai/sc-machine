@@ -15,13 +15,12 @@
  */
 class _SC_EXTERN ScObject
 {
-
 protected:
   explicit ScObject();
   virtual ~ScObject();
 
   ScObject(ScObject const & other);
-  ScObject & operator = (ScObject const & other);
+  ScObject & operator=(ScObject const & other);
 
 public:
   /// TODO: Need mechanism to call that function automaticaly after object construction
@@ -29,8 +28,8 @@ public:
 
 private:
   /** This method override genarates by code generator, and initialize all
-      * meta data for this object. It calls from ScObject constructors
-      */
+   * meta data for this object. It calls from ScObject constructors
+   */
   virtual bool _InitInternal() = 0;
 
 private:

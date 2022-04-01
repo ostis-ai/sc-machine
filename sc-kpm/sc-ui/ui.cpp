@@ -38,7 +38,6 @@ _SC_EXT_EXTERN sc_result sc_module_initialize()
 
 _SC_EXT_EXTERN sc_result sc_module_shutdown()
 {
-
   ui_shutdown_translators();
   ui_shutdown_commands();
 

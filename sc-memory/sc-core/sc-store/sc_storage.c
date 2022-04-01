@@ -23,7 +23,7 @@
 #include <glib.h>
 
 // segments array
-sc_segment **segments = 0;
+sc_segment ** segments = 0;
 // number of segments
 sc_uint32 segments_num = 0;
 
@@ -32,9 +32,9 @@ const sc_uint16 s_max_storage_cache_attempts = 10;
 
 sc_bool is_initialized = SC_FALSE;
 
-sc_memory_context *segments_cache_lock_ctx = 0;
+sc_memory_context * segments_cache_lock_ctx = 0;
 sc_int32 segments_cache_count = 0;
-sc_segment* segments_cache[SC_SEGMENT_CACHE_SIZE]; // cache of segments that have empty elements
+sc_segment * segments_cache[SC_SEGMENT_CACHE_SIZE];  // cache of segments that have empty elements
 
 GMutex s_mutex_free;
 GMutex s_mutex_save;
@@ -43,10 +43,12 @@ GMutex s_mutex_save;
 
 void _sc_segment_cache_lock(const sc_memory_context * ctx)
 {
-  while (g_atomic_pointer_compare_and_exchange(&segments_cache_lock_ctx, (sc_memory_context*) 0, ctx) == FALSE) {}
+  while (g_atomic_pointer_compare_and_exchange(&segments_cache_lock_ctx, (sc_memory_context *)0, ctx) == FALSE)
+  {
+  }
 }
 
-void _sc_segment_cache_unlock(const sc_memory_context *ctx)
+void _sc_segment_cache_unlock(const sc_memory_context * ctx)
 {
   g_assert(g_atomic_pointer_get(&segments_cache_lock_ctx) == ctx);
   g_atomic_pointer_set(&segments_cache_lock_ctx, 0);
@@ -58,7 +60,8 @@ void _sc_segment_cache_append(sc_segment * seg)
   sc_int32 i, idx = CONCURRENCY_TO_CACHE_IDX(cidx);
   for (i = 0; i < SC_SEGMENT_CACHE_SIZE; ++i)
   {
-    if (g_atomic_pointer_compare_and_exchange(&segments_cache[(idx + i) % SC_SEGMENT_CACHE_SIZE], (sc_segment*) 0, seg) == TRUE)
+    if (g_atomic_pointer_compare_and_exchange(
+            &segments_cache[(idx + i) % SC_SEGMENT_CACHE_SIZE], (sc_segment *)0, seg) == TRUE)
     {
       g_atomic_int_inc(&segments_cache_count);
       break;
@@ -66,7 +69,7 @@ void _sc_segment_cache_append(sc_segment * seg)
   }
 }
 
-void _sc_segment_cache_remove(const sc_memory_context *ctx, sc_segment *seg)
+void _sc_segment_cache_remove(const sc_memory_context * ctx, sc_segment * seg)
 {
   sc_int32 i, idx = CONCURRENCY_TO_CACHE_IDX(ctx->id);
   for (i = 0; i < SC_SEGMENT_CACHE_SIZE; ++i)
@@ -92,7 +95,7 @@ void _sc_segment_cache_update()
   sc_int32 i;
   for (i = 0; i < g_atomic_int_get(&segments_num); ++i)
   {
-    sc_segment *s = g_atomic_pointer_get(&(segments[i]));
+    sc_segment * s = g_atomic_pointer_get(&(segments[i]));
     // need to check pointer, because segments_num increments earlier, then segments appends into array
     if (s != null_ptr)
     {
@@ -105,13 +108,13 @@ void _sc_segment_cache_update()
   }
 }
 
-sc_segment* _sc_segment_cache_get(const sc_memory_context *ctx)
+sc_segment * _sc_segment_cache_get(const sc_memory_context * ctx)
 {
   _sc_segment_cache_lock(ctx);
 
   g_mutex_lock(&s_mutex_save);
 
-  sc_segment *seg = 0;
+  sc_segment * seg = 0;
   if (g_atomic_int_get(&segments_cache_count) > 0)
   {
     sc_int32 i, idx = CONCURRENCY_TO_CACHE_IDX(ctx->id);
@@ -133,23 +136,22 @@ sc_segment* _sc_segment_cache_get(const sc_memory_context *ctx)
   _sc_segment_cache_append(seg);
 
 result:
-  {
-    _sc_segment_cache_unlock(ctx);
-    g_mutex_unlock(&s_mutex_save);
-  }
+{
+  _sc_segment_cache_unlock(ctx);
+  g_mutex_unlock(&s_mutex_save);
+}
 
   return seg;
 }
 
-
 // -----------------------------------------------------------------------------
 
-sc_bool sc_storage_initialize(const char *path, sc_bool clear)
+sc_bool sc_storage_initialize(const char * path, sc_bool clear)
 {
-  g_assert( segments == (sc_segment**)0 );
-  g_assert( !is_initialized );
+  g_assert(segments == (sc_segment **)0);
+  g_assert(!is_initialized);
 
-  segments = g_new0(sc_segment*, SC_ADDR_SEG_MAX);
+  segments = g_new0(sc_segment *, SC_ADDR_SEG_MAX);
 
   sc_bool res = sc_fs_storage_initialize(path, clear);
   if (res == SC_FALSE)
@@ -160,7 +162,7 @@ sc_bool sc_storage_initialize(const char *path, sc_bool clear)
 
   is_initialized = SC_TRUE;
 
-  memset(&(segments_cache[0]), 0, sizeof(sc_segment*) * SC_SEGMENT_CACHE_SIZE);
+  memset(&(segments_cache[0]), 0, sizeof(sc_segment *) * SC_SEGMENT_CACHE_SIZE);
 
   return SC_TRUE;
 }
@@ -168,19 +170,19 @@ sc_bool sc_storage_initialize(const char *path, sc_bool clear)
 void sc_storage_shutdown(sc_bool save_state)
 {
   sc_uint idx = 0;
-  g_assert( segments != (sc_segment**)0 );
-
+  g_assert(segments != (sc_segment **)0);
 
   sc_fs_storage_shutdown(segments, save_state);
 
   for (idx = 0; idx < SC_ADDR_SEG_MAX; idx++)
   {
-    if (segments[idx] == null_ptr) continue; // skip segments, that are not loaded
+    if (segments[idx] == null_ptr)
+      continue;  // skip segments, that are not loaded
     sc_segment_free(segments[idx]);
   }
 
   g_free(segments);
-  segments = (sc_segment**)0;
+  segments = (sc_segment **)0;
   segments_num = 0;
 
   is_initialized = SC_FALSE;
@@ -192,9 +194,9 @@ sc_bool sc_storage_is_initialized()
   return is_initialized;
 }
 
-sc_bool sc_storage_is_element(const sc_memory_context *ctx, sc_addr addr)
+sc_bool sc_storage_is_element(const sc_memory_context * ctx, sc_addr addr)
 {
-  sc_element *el = 0;
+  sc_element * el = 0;
   sc_bool res = SC_TRUE;
 
   if (sc_storage_element_lock(addr, &el) != SC_RESULT_OK)
@@ -208,11 +210,11 @@ sc_bool sc_storage_is_element(const sc_memory_context *ctx, sc_addr addr)
   return res;
 }
 
-sc_element* sc_storage_append_el_into_segments(const sc_memory_context *ctx, sc_addr *addr)
+sc_element * sc_storage_append_el_into_segments(const sc_memory_context * ctx, sc_addr * addr)
 {
-  sc_segment * seg = (sc_segment*)0x1;
+  sc_segment * seg = (sc_segment *)0x1;
 
-  g_assert( addr != 0 );
+  g_assert(addr != 0);
   SC_ADDR_MAKE_EMPTY(*addr);
 
   if (g_atomic_int_get(&segments_num) >= sc_config_get_max_loaded_segments())
@@ -222,12 +224,12 @@ sc_element* sc_storage_append_el_into_segments(const sc_memory_context *ctx, sc_
   // try to find segment with empty slots
   while (seg != 0)
   {
-    sc_segment *seg = _sc_segment_cache_get(ctx);
+    sc_segment * seg = _sc_segment_cache_get(ctx);
 
     if (seg == null_ptr)
       break;
 
-    sc_element *el = sc_segment_lock_empty_element(ctx, seg, &addr->offset);
+    sc_element * el = sc_segment_lock_empty_element(ctx, seg, &addr->offset);
     if (el != null_ptr)
     {
       addr->seg = seg->num;
@@ -247,10 +249,10 @@ sc_element* sc_storage_append_el_into_segments(const sc_memory_context *ctx, sc_
   return null_ptr;
 }
 
-sc_addr sc_storage_element_new_access(const sc_memory_context *ctx, sc_type type, sc_access_levels access_levels)
+sc_addr sc_storage_element_new_access(const sc_memory_context * ctx, sc_type type, sc_access_levels access_levels)
 {
   sc_addr addr;
-  sc_element *res = 0;
+  sc_element * res = 0;
 
   res = sc_storage_append_el_into_segments(ctx, &addr);
   if (res != null_ptr)
@@ -267,16 +269,16 @@ sc_addr sc_storage_element_new_access(const sc_memory_context *ctx, sc_type type
   return addr;
 }
 
-sc_result sc_storage_element_free(sc_memory_context *ctx, sc_addr addr)
+sc_result sc_storage_element_free(sc_memory_context * ctx, sc_addr addr)
 {
   GHashTable *remove_table = 0, *lock_table = 0;
-  GSList *remove_list = 0;
+  GSList * remove_list = 0;
   sc_result result = SC_RESULT_OK;
 
   g_mutex_lock(&s_mutex_free);
 
   // first of all we need to collect and lock all elements
-  sc_element *el;
+  sc_element * el;
   if (sc_storage_element_lock(addr, &el) != SC_RESULT_OK)
   {
     g_mutex_unlock(&s_mutex_free);
@@ -329,7 +331,7 @@ sc_result sc_storage_element_free(sc_memory_context *ctx, sc_addr addr)
     if (el->flags.type & sc_type_arc_mask)
     {
       // lock begin and end elements of arc
-      sc_element *el2 = 0;
+      sc_element * el2 = 0;
       p_addr = GUINT_TO_POINTER(SC_ADDR_LOCAL_TO_INT(el->arc.begin));
       if ((el2 = g_hash_table_lookup(lock_table, p_addr)) == null_ptr)
       {
@@ -400,7 +402,7 @@ sc_result sc_storage_element_free(sc_memory_context *ctx, sc_addr addr)
     while (SC_ADDR_IS_NOT_EMPTY(_addr))
     {
       gpointer p_addr = GUINT_TO_POINTER(SC_ADDR_LOCAL_TO_INT(_addr));
-      sc_element *el2 = g_hash_table_lookup(remove_table, p_addr);
+      sc_element * el2 = g_hash_table_lookup(remove_table, p_addr);
 
       if (el2 == null_ptr)
       {
@@ -424,7 +426,7 @@ sc_result sc_storage_element_free(sc_memory_context *ctx, sc_addr addr)
     while (SC_ADDR_IS_NOT_EMPTY(_addr))
     {
       gpointer p_addr = GUINT_TO_POINTER(SC_ADDR_LOCAL_TO_INT(_addr));
-      sc_element *el2 = g_hash_table_lookup(remove_table, p_addr);
+      sc_element * el2 = g_hash_table_lookup(remove_table, p_addr);
 
       if (el2 == null_ptr)
       {
@@ -492,7 +494,7 @@ sc_result sc_storage_element_free(sc_memory_context *ctx, sc_addr addr)
       if (SC_ADDR_IS_NOT_EMPTY(prev_arc))
       {
         p_addr = GUINT_TO_POINTER(SC_ADDR_LOCAL_TO_INT(prev_arc));
-        sc_element *prev_el_arc = g_hash_table_lookup(lock_table, p_addr);
+        sc_element * prev_el_arc = g_hash_table_lookup(lock_table, p_addr);
         g_assert(prev_el_arc != null_ptr);
         prev_el_arc->arc.next_out_arc = next_arc;
       }
@@ -500,12 +502,12 @@ sc_result sc_storage_element_free(sc_memory_context *ctx, sc_addr addr)
       if (SC_ADDR_IS_NOT_EMPTY(next_arc))
       {
         p_addr = GUINT_TO_POINTER(SC_ADDR_LOCAL_TO_INT(next_arc));
-        sc_element *next_el_arc = g_hash_table_lookup(lock_table, p_addr);
+        sc_element * next_el_arc = g_hash_table_lookup(lock_table, p_addr);
         g_assert(next_el_arc != null_ptr);
         next_el_arc->arc.prev_out_arc = prev_arc;
       }
 
-      sc_element *b_el = g_hash_table_lookup(lock_table, GUINT_TO_POINTER(SC_ADDR_LOCAL_TO_INT(el->arc.begin)));
+      sc_element * b_el = g_hash_table_lookup(lock_table, GUINT_TO_POINTER(SC_ADDR_LOCAL_TO_INT(el->arc.begin)));
       sc_bool need_unlock = SC_FALSE;
       if (b_el == null_ptr)
       {
@@ -527,7 +529,7 @@ sc_result sc_storage_element_free(sc_memory_context *ctx, sc_addr addr)
       if (SC_ADDR_IS_NOT_EMPTY(prev_arc))
       {
         p_addr = GUINT_TO_POINTER(SC_ADDR_LOCAL_TO_INT(prev_arc));
-        sc_element *prev_el_arc = g_hash_table_lookup(lock_table, p_addr);
+        sc_element * prev_el_arc = g_hash_table_lookup(lock_table, p_addr);
         g_assert(prev_el_arc != null_ptr);
         prev_el_arc->arc.next_in_arc = next_arc;
       }
@@ -535,13 +537,13 @@ sc_result sc_storage_element_free(sc_memory_context *ctx, sc_addr addr)
       if (SC_ADDR_IS_NOT_EMPTY(next_arc))
       {
         p_addr = GUINT_TO_POINTER(SC_ADDR_LOCAL_TO_INT(next_arc));
-        sc_element *next_el_arc = g_hash_table_lookup(lock_table, p_addr);
+        sc_element * next_el_arc = g_hash_table_lookup(lock_table, p_addr);
         g_assert(next_el_arc != null_ptr);
         next_el_arc->arc.prev_in_arc = prev_arc;
       }
 
       need_unlock = SC_FALSE;
-      sc_element *e_el = g_hash_table_lookup(lock_table, GUINT_TO_POINTER(SC_ADDR_LOCAL_TO_INT(el->arc.end)));
+      sc_element * e_el = g_hash_table_lookup(lock_table, GUINT_TO_POINTER(SC_ADDR_LOCAL_TO_INT(el->arc.end)));
       if (e_el == null_ptr)
       {
         STORAGE_CHECK_CALL(sc_storage_element_lock(el->arc.end, &e_el));
@@ -589,14 +591,14 @@ unlock:
   return result;
 }
 
-sc_addr sc_storage_node_new(const sc_memory_context *ctx, sc_type type)
+sc_addr sc_storage_node_new(const sc_memory_context * ctx, sc_type type)
 {
   return sc_storage_node_new_ext(ctx, type, ctx->access_levels);
 }
 
-sc_addr sc_storage_node_new_ext(const sc_memory_context *ctx, sc_type type, sc_access_levels access_levels)
+sc_addr sc_storage_node_new_ext(const sc_memory_context * ctx, sc_type type, sc_access_levels access_levels)
 {
-  g_assert( !(sc_type_arc_mask & type) );
+  g_assert(!(sc_type_arc_mask & type));
 
   sc_addr addr;
   sc_element * locked_el = sc_storage_append_el_into_segments(ctx, &addr);
@@ -613,12 +615,12 @@ sc_addr sc_storage_node_new_ext(const sc_memory_context *ctx, sc_type type, sc_a
   return addr;
 }
 
-sc_addr sc_storage_link_new(const sc_memory_context *ctx, sc_bool is_const)
+sc_addr sc_storage_link_new(const sc_memory_context * ctx, sc_bool is_const)
 {
   return sc_storage_link_new_ext(ctx, ctx->access_levels, is_const);
 }
 
-sc_addr sc_storage_link_new_ext(const sc_memory_context *ctx, sc_access_levels access_levels, sc_bool is_const)
+sc_addr sc_storage_link_new_ext(const sc_memory_context * ctx, sc_access_levels access_levels, sc_bool is_const)
 {
   sc_addr addr;
 
@@ -637,16 +639,21 @@ sc_addr sc_storage_link_new_ext(const sc_memory_context *ctx, sc_access_levels a
   return addr;
 }
 
-sc_addr sc_storage_arc_new(sc_memory_context *ctx, sc_type type, sc_addr beg, sc_addr end)
+sc_addr sc_storage_arc_new(sc_memory_context * ctx, sc_type type, sc_addr beg, sc_addr end)
 {
   return sc_storage_arc_new_ext(ctx, type, beg, end, ctx->access_levels);
 }
 
-sc_addr sc_storage_arc_new_ext(sc_memory_context *ctx, sc_type type, sc_addr beg, sc_addr end, sc_access_levels access_levels)
+sc_addr sc_storage_arc_new_ext(
+    sc_memory_context * ctx,
+    sc_type type,
+    sc_addr beg,
+    sc_addr end,
+    sc_access_levels access_levels)
 {
   sc_addr addr;
 
-  g_assert( !(sc_type_node & type) );
+  g_assert(!(sc_type_node & type));
 
   sc_result r;
   SC_ADDR_MAKE_EMPTY(addr);
@@ -658,7 +665,7 @@ sc_addr sc_storage_arc_new_ext(sc_memory_context *ctx, sc_type type, sc_addr beg
   {
     sc_element *beg_el = 0, *end_el = 0;
     sc_element *f_out_arc = 0, *f_in_arc = 0;
-    sc_element *tmp_el = 0;
+    sc_element * tmp_el = 0;
     sc_bool should_break = SC_FALSE;
 
     // try to lock begin and end elements
@@ -739,24 +746,24 @@ sc_addr sc_storage_arc_new_ext(sc_memory_context *ctx, sc_type type, sc_addr beg
     beg_el->first_out_arc = addr;
     end_el->first_in_arc = addr;
 
-unlock:
+  unlock:
+  {
+    if (beg_el)
     {
-      if (beg_el)
-      {
-        if (f_out_arc)
-          sc_storage_element_unlock(first_out_arc);
-        sc_storage_element_unlock(beg);
-      }
-      if (end_el)
-      {
-        if (f_in_arc)
-          sc_storage_element_unlock(first_in_arc);
-        sc_storage_element_unlock(end);
-      }
-
-      if (tmp_el)
-        sc_storage_element_unlock(addr);
+      if (f_out_arc)
+        sc_storage_element_unlock(first_out_arc);
+      sc_storage_element_unlock(beg);
     }
+    if (end_el)
+    {
+      if (f_in_arc)
+        sc_storage_element_unlock(first_in_arc);
+      sc_storage_element_unlock(end);
+    }
+
+    if (tmp_el)
+      sc_storage_element_unlock(addr);
+  }
 
     if (should_break == SC_TRUE)
       break;
@@ -765,9 +772,9 @@ unlock:
   return addr;
 }
 
-sc_result sc_storage_get_element_type(const sc_memory_context *ctx, sc_addr addr, sc_type *result)
+sc_result sc_storage_get_element_type(const sc_memory_context * ctx, sc_addr addr, sc_type * result)
 {
-  sc_element *el = null_ptr;
+  sc_element * el = null_ptr;
   sc_result r = SC_RESULT_OK;
 
   if (sc_storage_element_lock(addr, &el) != SC_RESULT_OK)
@@ -785,15 +792,15 @@ sc_result sc_storage_get_element_type(const sc_memory_context *ctx, sc_addr addr
     r = SC_RESULT_ERROR_NO_READ_RIGHTS;
 
 unlock:
-  {
-    sc_storage_element_unlock(addr);
-  }
+{
+  sc_storage_element_unlock(addr);
+}
   return r;
 }
 
-sc_result sc_storage_change_element_subtype(const sc_memory_context *ctx, sc_addr addr, sc_type type)
+sc_result sc_storage_change_element_subtype(const sc_memory_context * ctx, sc_addr addr, sc_type type)
 {
-  sc_element *el = null_ptr;
+  sc_element * el = null_ptr;
   sc_result r = SC_RESULT_OK;
 
   if (sc_storage_element_lock(addr, &el) != SC_RESULT_OK)
@@ -814,15 +821,15 @@ sc_result sc_storage_change_element_subtype(const sc_memory_context *ctx, sc_add
     r = SC_RESULT_ERROR_NO_WRITE_RIGHTS;
 
 unlock:
-  {
-    sc_storage_element_unlock(addr);
-  }
+{
+  sc_storage_element_unlock(addr);
+}
   return r;
 }
 
-sc_result sc_storage_get_arc_begin(const sc_memory_context *ctx, sc_addr addr, sc_addr *result)
+sc_result sc_storage_get_arc_begin(const sc_memory_context * ctx, sc_addr addr, sc_addr * result)
 {
-  sc_element *el = null_ptr;
+  sc_element * el = null_ptr;
   sc_result res = SC_RESULT_ERROR_INVALID_TYPE;
 
   if (sc_storage_element_lock(addr, &el) != SC_RESULT_OK)
@@ -841,19 +848,20 @@ sc_result sc_storage_get_arc_begin(const sc_memory_context *ctx, sc_addr addr, s
       *result = el->arc.begin;
       res = SC_RESULT_OK;
     }
-  } else
+  }
+  else
     res = SC_RESULT_ERROR_NO_READ_RIGHTS;
 
 unlock:
-  {
-    sc_storage_element_unlock(addr);
-  }
+{
+  sc_storage_element_unlock(addr);
+}
   return res;
 }
 
-sc_result sc_storage_get_arc_end(const sc_memory_context *ctx, sc_addr addr, sc_addr *result)
+sc_result sc_storage_get_arc_end(const sc_memory_context * ctx, sc_addr addr, sc_addr * result)
 {
-  sc_element *el = null_ptr;
+  sc_element * el = null_ptr;
   sc_result res = SC_RESULT_ERROR_INVALID_TYPE;
 
   if (sc_storage_element_lock(addr, &el) != SC_RESULT_OK)
@@ -872,19 +880,24 @@ sc_result sc_storage_get_arc_end(const sc_memory_context *ctx, sc_addr addr, sc_
       *result = el->arc.end;
       res = SC_RESULT_OK;
     }
-  } else
+  }
+  else
     res = SC_RESULT_ERROR_NO_READ_RIGHTS;
 
 unlock:
-  {
-    sc_storage_element_unlock(addr);
-  }
+{
+  sc_storage_element_unlock(addr);
+}
   return res;
 }
 
-sc_result sc_storage_get_arc_info(sc_memory_context const * ctx, sc_addr addr, sc_addr * result_begin_addr, sc_addr * result_end_addr)
+sc_result sc_storage_get_arc_info(
+    sc_memory_context const * ctx,
+    sc_addr addr,
+    sc_addr * result_begin_addr,
+    sc_addr * result_end_addr)
 {
-  sc_element *el = null_ptr;
+  sc_element * el = null_ptr;
   sc_result res = SC_RESULT_ERROR_INVALID_TYPE;
 
   if (sc_storage_element_lock(addr, &el) != SC_RESULT_OK)
@@ -909,15 +922,15 @@ sc_result sc_storage_get_arc_info(sc_memory_context const * ctx, sc_addr addr, s
     res = SC_RESULT_ERROR_NO_READ_RIGHTS;
 
 unlock:
-  {
-    sc_storage_element_unlock(addr);
-  }
+{
+  sc_storage_element_unlock(addr);
+}
   return res;
 }
 
-sc_result sc_storage_set_link_content(sc_memory_context *ctx, sc_addr addr, const sc_stream *stream)
+sc_result sc_storage_set_link_content(sc_memory_context * ctx, sc_addr addr, const sc_stream * stream)
 {
-  sc_element *el;
+  sc_element * el;
   sc_check_sum check_sum;
   sc_result result = SC_RESULT_ERROR;
   sc_access_levels access_lvl;
@@ -1000,16 +1013,16 @@ sc_result sc_storage_set_link_content(sc_memory_context *ctx, sc_addr addr, cons
   sc_event_emit(ctx, addr, access_lvl, SC_EVENT_CONTENT_CHANGED, empty, empty);
 
 unlock:
-  {
-    STORAGE_CHECK_CALL(sc_storage_element_unlock(addr));
-  }
+{
+  STORAGE_CHECK_CALL(sc_storage_element_unlock(addr));
+}
 
   return result;
 }
 
-sc_result sc_storage_get_link_content(const sc_memory_context *ctx, sc_addr addr, sc_stream **stream)
+sc_result sc_storage_get_link_content(const sc_memory_context * ctx, sc_addr addr, sc_stream ** stream)
 {
-  sc_element *el = null_ptr;
+  sc_element * el = null_ptr;
   sc_result res = SC_RESULT_ERROR;
 
   if (sc_storage_element_lock(addr, &el) != SC_RESULT_OK)
@@ -1040,15 +1053,17 @@ sc_result sc_storage_get_link_content(const sc_memory_context *ctx, sc_addr addr
     if (len != 0)
     {
       g_assert(len < SC_CHECKSUM_LEN);
-      gchar *buff = g_new0(gchar, len);
+      gchar * buff = g_new0(gchar, len);
       memcpy(buff, &el->content.data[1], len);
       *stream = sc_stream_memory_new(buff, len, SC_STREAM_FLAG_READ, SC_TRUE);
-    } else
+    }
+    else
     {
       *stream = 0;
     }
     res = SC_RESULT_OK;
-  } else
+  }
+  else
   {
     // prepare checksum
     sc_check_sum checksum;
@@ -1059,14 +1074,18 @@ sc_result sc_storage_get_link_content(const sc_memory_context *ctx, sc_addr addr
   }
 
 unlock:
-  {
-    STORAGE_CHECK_CALL(sc_storage_element_unlock(addr));
-  }
+{
+  STORAGE_CHECK_CALL(sc_storage_element_unlock(addr));
+}
 
   return res;
 }
 
-sc_result sc_storage_find_links_with_content(const sc_memory_context *ctx, const sc_stream *stream, sc_addr **result, sc_uint32 *result_count)
+sc_result sc_storage_find_links_with_content(
+    const sc_memory_context * ctx,
+    const sc_stream * stream,
+    sc_addr ** result,
+    sc_uint32 * result_count)
 {
   g_assert(stream != 0);
   sc_check_sum check_sum;
@@ -1088,7 +1107,7 @@ sc_result sc_storage_find_links_with_content(const sc_memory_context *ctx, const
       *result = g_new0(sc_addr, tmp_res_count);
       for (i = 0; i < tmp_res_count; ++i)
       {
-        sc_element *el = 0;
+        sc_element * el = 0;
 
         if (sc_storage_element_lock(tmp_res[i], &el) != SC_RESULT_OK)
         {
@@ -1122,9 +1141,13 @@ sc_result sc_storage_find_links_with_content(const sc_memory_context *ctx, const
   return r;
 }
 
-sc_result sc_storage_set_access_levels(const sc_memory_context *ctx, sc_addr addr, sc_access_levels access_levels, sc_access_levels * new_value)
+sc_result sc_storage_set_access_levels(
+    const sc_memory_context * ctx,
+    sc_addr addr,
+    sc_access_levels access_levels,
+    sc_access_levels * new_value)
 {
-  sc_element *el = 0;
+  sc_element * el = 0;
   sc_result r = SC_RESULT_OK;
 
   if (sc_storage_element_lock(addr, &el) != SC_RESULT_OK)
@@ -1144,9 +1167,9 @@ sc_result sc_storage_set_access_levels(const sc_memory_context *ctx, sc_addr add
   return r;
 }
 
-sc_result sc_storage_get_access_levels(const sc_memory_context *ctx, sc_addr addr, sc_access_levels * result)
+sc_result sc_storage_get_access_levels(const sc_memory_context * ctx, sc_addr addr, sc_access_levels * result)
 {
-  sc_element *el = null_ptr;
+  sc_element * el = null_ptr;
   sc_result r = SC_RESULT_OK;
 
   if (sc_storage_element_lock(addr, &el) != SC_RESULT_OK)
@@ -1163,12 +1186,11 @@ sc_result sc_storage_get_access_levels(const sc_memory_context *ctx, sc_addr add
   return r;
 }
 
-
-sc_result sc_storage_get_elements_stat(sc_stat *stat)
+sc_result sc_storage_get_elements_stat(sc_stat * stat)
 {
   /// @todo implement function
 
-  g_assert( stat != (sc_stat*)0 );
+  g_assert(stat != (sc_stat *)0);
 
   memset(stat, 0, sizeof(sc_stat));
   stat->segments_count = sc_storage_get_segments_count();
@@ -1176,7 +1198,7 @@ sc_result sc_storage_get_elements_stat(sc_stat *stat)
   sc_int32 i;
   for (i = 0; i < g_atomic_int_get(&segments_num); ++i)
   {
-    sc_segment *seg = segments[i];
+    sc_segment * seg = segments[i];
     sc_segment_collect_elements_stat(seg, stat);
   }
 
@@ -1195,15 +1217,15 @@ sc_result sc_storage_erase_element_from_segment(sc_addr addr)
 }
 
 // ------------------------------
-sc_element_meta* sc_storage_get_element_meta(sc_addr addr)
+sc_element_meta * sc_storage_get_element_meta(sc_addr addr)
 {
   g_assert(addr.seg < SC_ADDR_SEG_MAX);
-  sc_segment *segment = g_atomic_pointer_get(&segments[addr.seg]);
+  sc_segment * segment = g_atomic_pointer_get(&segments[addr.seg]);
   g_assert(segment != null_ptr);
   return sc_segment_get_meta(segment, addr.offset);
 }
 
-sc_result sc_storage_element_lock(sc_addr addr, sc_element **el)
+sc_result sc_storage_element_lock(sc_addr addr, sc_element ** el)
 {
   if (addr.seg >= SC_ADDR_SEG_MAX)
   {
@@ -1211,7 +1233,7 @@ sc_result sc_storage_element_lock(sc_addr addr, sc_element **el)
     return SC_RESULT_ERROR;
   }
 
-  sc_segment *segment = g_atomic_pointer_get(&segments[addr.seg]);
+  sc_segment * segment = g_atomic_pointer_get(&segments[addr.seg]);
   if (segment == 0)
   {
     *el = 0;
@@ -1222,7 +1244,7 @@ sc_result sc_storage_element_lock(sc_addr addr, sc_element **el)
   return SC_RESULT_OK;
 }
 
-sc_result sc_storage_element_lock_try(sc_addr addr, sc_uint16 max_attempts, sc_element **el)
+sc_result sc_storage_element_lock_try(sc_addr addr, sc_uint16 max_attempts, sc_element ** el)
 {
   if (addr.seg >= SC_ADDR_SEG_MAX)
   {
@@ -1230,7 +1252,7 @@ sc_result sc_storage_element_lock_try(sc_addr addr, sc_uint16 max_attempts, sc_e
     return SC_RESULT_ERROR;
   }
 
-  sc_segment *segment = g_atomic_pointer_get(&segments[addr.seg]);
+  sc_segment * segment = g_atomic_pointer_get(&segments[addr.seg]);
   if (segment == 0)
   {
     *el = 0;

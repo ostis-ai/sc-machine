@@ -10,7 +10,6 @@
 #include <QObject>
 #include <QThread>
 
-
 class QTcpSocket;
 class sctpCommand;
 
@@ -18,7 +17,7 @@ class sctpClient : public QThread
 {
   Q_OBJECT
 public:
-  explicit sctpClient(QObject *parent, int socketDescriptor);
+  explicit sctpClient(QObject * parent, int socketDescriptor);
   virtual ~sctpClient();
 
   void run();
@@ -28,14 +27,14 @@ protected:
 
 private:
   //! Pointer to client socket
-  QTcpSocket *mSocket;
+  QTcpSocket * mSocket;
   //! Pointer to command processing class
-  sctpCommand *mCommand;
+  sctpCommand * mCommand;
 
   int mSocketDescriptor;
 
 signals:
-  void done(sctpClient *client);
+  void done(sctpClient * client);
 };
 
-#endif // CLIENTTHREAD_H
+#endif  // CLIENTTHREAD_H

@@ -51,7 +51,9 @@ class ScWait
 public:
   using DelegateFunc = std::function<void(void)>;
 
-  virtual ~ScWait() {}
+  virtual ~ScWait()
+  {
+  }
 
   void Resolve()
   {
@@ -79,23 +81,28 @@ private:
 };
 
 /* Class implements event wait logic.
-* Should be alive, while Memory context is alive.
-*/
+ * Should be alive, while Memory context is alive.
+ */
 template <typename EventClassT>
 class ScWaitEvent : public ScWait
 {
 public:
   ScWaitEvent(const ScMemoryContext & ctx, const ScAddr & addr)
-    : m_event(ctx, addr,
-              std::bind(&ScWaitEvent<EventClassT>::OnEvent,
-                        this,
-                        std::placeholders::_1,
-                        std::placeholders::_2,
-                        std::placeholders::_3))
+    : m_event(
+          ctx,
+          addr,
+          std::bind(
+              &ScWaitEvent<EventClassT>::OnEvent,
+              this,
+              std::placeholders::_1,
+              std::placeholders::_2,
+              std::placeholders::_3))
   {
   }
 
-  virtual ~ScWaitEvent() {}
+  virtual ~ScWaitEvent()
+  {
+  }
 
 protected:
   bool OnEvent(ScAddr const & listenAddr, ScAddr const & edgeAddr, ScAddr const & otherAddr)
@@ -108,18 +115,19 @@ protected:
     return false;
   }
 
-  virtual bool OnEventImpl(ScAddr const & listenAddr, ScAddr const & edgeAddr, ScAddr const & otherAddr) { return true; }
+  virtual bool OnEventImpl(ScAddr const & listenAddr, ScAddr const & edgeAddr, ScAddr const & otherAddr)
+  {
+    return true;
+  }
 
 private:
   EventClassT m_event;
 };
 
-
-template<typename EventClassT>
-class ScWaitCondition final : public ScWaitEvent <EventClassT>
+template <typename EventClassT>
+class ScWaitCondition final : public ScWaitEvent<EventClassT>
 {
 public:
-
   using DelegateCheckFunc = std::function<bool(ScAddr const &, ScAddr const &, ScAddr const &)>;
 
   ScWaitCondition(const ScMemoryContext & ctx, const ScAddr & addr, DelegateCheckFunc func)
@@ -150,4 +158,5 @@ private:
 };
 
 #define SC_WAIT_CHECK(_func) std::bind(_func, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3)
-#define SC_WAIT_CHECK_MEMBER(_class, _func) std::bind(_class, _func, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3)
+#define SC_WAIT_CHECK_MEMBER(_class, _func) \
+  std::bind(_class, _func, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3)

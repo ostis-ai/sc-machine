@@ -9,7 +9,8 @@
 
 #include <sc-memory/utils/sc_signal_handler.hpp>
 
-int main(int argc, char *argv[]) try
+int main(int argc, char * argv[])
+try
 {
   QCoreApplication a(argc, argv);
 
@@ -19,15 +20,14 @@ int main(int argc, char *argv[]) try
 
   sctpServer server;
   utils::ScSignalHandler::Initialize();
-  utils::ScSignalHandler::m_onTerminate = [&server]()
-  {
+  utils::ScSignalHandler::m_onTerminate = [&server]() {
     server.stop();
   };
 
   if (!server.start(config))
     exit(1);
 
-  //QObject::connect(&a, SIGNAL(aboutToQuit()), &server, SLOT(stop()));
+  // QObject::connect(&a, SIGNAL(aboutToQuit()), &server, SLOT(stop()));
 
   return a.exec();
 }

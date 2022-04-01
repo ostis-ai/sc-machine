@@ -14,14 +14,13 @@ struct _sc_arc_info
 {
   sc_addr begin;
   sc_addr end;
-  sc_addr next_out_arc; // sc-addr of next output arc in list
-  sc_addr next_in_arc; // sc-addr of next input arc in list
-  sc_addr prev_out_arc; // sc-addr of pevious output arc in list
-  sc_addr prev_in_arc; // sc-addr of previous input arc in list
+  sc_addr next_out_arc;  // sc-addr of next output arc in list
+  sc_addr next_in_arc;   // sc-addr of next input arc in list
+  sc_addr prev_out_arc;  // sc-addr of pevious output arc in list
+  sc_addr prev_in_arc;   // sc-addr of previous input arc in list
 };
 
-
-#define SC_CHECKSUM_LEN 32 //(sizeof(sc_arc_info) - sizeof(sc_uint32))
+#define SC_CHECKSUM_LEN 32  //(sizeof(sc_arc_info) - sizeof(sc_uint32))
 
 /*! Structure to store content information
  * Data field store checksum for data, that stores in specified sc-link.
@@ -60,14 +59,14 @@ struct _sc_content
 
 struct _sc_element_locks
 {
-  sc_uint8 out_inp:1;
-  sc_uint8 del:1;
-  sc_uint8 change:1;
-  sc_uint8 read:1;
+  sc_uint8 out_inp : 1;
+  sc_uint8 del : 1;
+  sc_uint8 change : 1;
+  sc_uint8 read : 1;
 };
 
-#define SC_ELID_REFS_MASK   0xffff
-#define SC_IT_REFS_MASK     (0xffff << 16)
+#define SC_ELID_REFS_MASK 0xffff
+#define SC_IT_REFS_MASK (0xffff << 16)
 
 struct _sc_element_flags
 {
@@ -79,8 +78,8 @@ struct _sc_element_meta
 {
   union
   {
-    sc_element_locks locks; // bits access
-    sc_uint8 locks_data; // one byte
+    sc_element_locks locks;  // bits access
+    sc_uint8 locks_data;     // one byte
   };
 
   sc_uint32 ref_count;
@@ -100,11 +99,11 @@ struct _sc_element
 };
 
 /// All functions must be called for locked sc-elements
-void sc_element_set_type(sc_element *element, sc_type type);
+void sc_element_set_type(sc_element * element, sc_type type);
 
-sc_bool sc_element_is_checksum_empty(sc_element *element);
+sc_bool sc_element_is_checksum_empty(sc_element * element);
 
-sc_bool sc_element_is_request_deletion(sc_element *element);
-sc_bool sc_element_is_valid(sc_element *element);
+sc_bool sc_element_is_request_deletion(sc_element * element);
+sc_bool sc_element_is_valid(sc_element * element);
 
 #endif

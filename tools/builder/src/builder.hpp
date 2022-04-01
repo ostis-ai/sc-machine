@@ -22,9 +22,9 @@ struct BuilderParams
   //! Path to file with a list of enabled extensions
   std::string m_enabledExtPath;
   //! Flag to clear output
-  bool m_clearOutput:1;
+  bool m_clearOutput : 1;
   //! Flag to generate format information based on file extensions
-  bool m_autoFormatInfo:1;
+  bool m_autoFormatInfo : 1;
   //! Path to configuration file
   std::string m_configFile;
 };
@@ -35,7 +35,7 @@ public:
   Builder();
 
   bool Run(BuilderParams const & options);
-    
+
 protected:
   bool ProcessFile(std::string const & filename);
 
@@ -43,7 +43,7 @@ protected:
   void CollectFiles();
 
   std::shared_ptr<class Translator> CreateTranslator(std::string const & fileExt);
-  
+
 private:
   std::list<std::string> m_files;
 

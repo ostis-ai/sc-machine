@@ -1,8 +1,8 @@
 /*
-* This source file is part of an OSTIS project. For the latest info, see http://ostis.net
-* Distributed under the MIT License
-* (See accompanying file COPYING.MIT or copy at http://opensource.org/licenses/MIT)
-*/
+ * This source file is part of an OSTIS project. For the latest info, see http://ostis.net
+ * Distributed under the MIT License
+ * (See accompanying file COPYING.MIT or copy at http://opensource.org/licenses/MIT)
+ */
 
 #pragma once
 
@@ -14,17 +14,16 @@
 
 namespace py
 {
-
 class ScPythonBridge
 {
 public:
   using CloseFunc = std::function<void()>;
 
   ScPythonBridge();
-    
+
   /* Waits until bridge would be initialized
-  * Returns true, when bridge initialized correctly; otherwise - false
-  */
+   * Returns true, when bridge initialized correctly; otherwise - false
+   */
   bool WaitReady(uint32_t timeOutMS = 10000);
   bool IsInitialized() const;
   bool IsFinished() const;
@@ -56,4 +55,4 @@ public:
 
 using ScPythonBridgePtr = std::shared_ptr<ScPythonBridge>;
 
-} // py
+}  // namespace py

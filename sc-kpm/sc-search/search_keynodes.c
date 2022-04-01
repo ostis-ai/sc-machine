@@ -15,7 +15,6 @@
 
 #include <glib.h>
 
-
 sc_addr keynode_question_all_output_const_pos_arc;
 sc_addr keynode_question_all_input_const_pos_arc;
 sc_addr keynode_question_all_output_const_pos_arc_with_rel;
@@ -58,17 +57,22 @@ sc_addr keynode_rrel_2;
 
 const char keynode_question_all_output_const_pos_arc_str[] = "question_search_all_output_const_pos_arcs";
 const char keynode_question_all_input_const_pos_arc_str[] = "question_search_all_input_const_pos_arcs";
-const char keynode_question_all_output_const_pos_arc_with_rel_str[] = "question_search_all_output_const_pos_arcs_with_rel";
-const char keynode_question_all_input_const_pos_arc_with_rel_str[] = "question_search_all_input_const_pos_arcs_with_rel";
+const char keynode_question_all_output_const_pos_arc_with_rel_str[] =
+    "question_search_all_output_const_pos_arcs_with_rel";
+const char keynode_question_all_input_const_pos_arc_with_rel_str[] =
+    "question_search_all_input_const_pos_arcs_with_rel";
 const char keynode_question_full_semantic_neighborhood_str[] = "question_search_full_semantic_neighborhood";
 const char keynode_question_decomposition_str[] = "question_search_decomposition";
 const char keynode_question_all_identifiers_str[] = "question_search_all_identifiers";
 const char keynode_question_all_identified_elements_str[] = "question_search_all_identified_elements";
 const char keynode_question_search_full_pattern_str[] = "question_full_pattern_search";
 
-const char keynode_question_search_all_subclasses_in_quasybinary_relation_str[] = "question_search_all_subclasses_in_quasybinary_relation";
-const char keynode_question_search_all_superclasses_in_quasybinary_relation_str[] = "question_search_all_superclasses_in_quasybinary_relation";
-const char keynode_question_search_links_of_relation_connected_with_element_str[] = "question_search_links_of_relation_connected_with_element";
+const char keynode_question_search_all_subclasses_in_quasybinary_relation_str[] =
+    "question_search_all_subclasses_in_quasybinary_relation";
+const char keynode_question_search_all_superclasses_in_quasybinary_relation_str[] =
+    "question_search_all_superclasses_in_quasybinary_relation";
+const char keynode_question_search_links_of_relation_connected_with_element_str[] =
+    "question_search_links_of_relation_connected_with_element";
 
 const char keynode_question_initiated_str[] = "question_initiated";
 const char keynode_question_str[] = "question";
@@ -97,7 +101,6 @@ const char keynode_languages_str[] = "languages";
 
 sc_result search_keynodes_initialize()
 {
-
   RESOLVE_KEYNODE(s_default_ctx, keynode_question_all_output_const_pos_arc);
   RESOLVE_KEYNODE(s_default_ctx, keynode_question_all_input_const_pos_arc);
   RESOLVE_KEYNODE(s_default_ctx, keynode_question_all_output_const_pos_arc_with_rel);

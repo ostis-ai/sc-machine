@@ -2,7 +2,6 @@
 
 namespace py
 {
-
 ScPythonMainThread::ScPythonMainThread()
 {
   Py_Initialize();
@@ -19,7 +18,6 @@ ScPythonMainThread::~ScPythonMainThread()
 
   Py_Finalize();
 }
-
 
 // ------------------------------
 ScPythonSubThread::ScPythonSubThread()
@@ -42,4 +40,4 @@ ScPythonSubThread::~ScPythonSubThread()
   PyGILState_Release(m_mainGILState);
 }
 
-} // namespace py
+}  // namespace py

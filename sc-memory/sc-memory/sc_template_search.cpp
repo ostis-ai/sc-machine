@@ -15,9 +15,7 @@
 class ScTemplateSearch
 {
 public:
-  ScTemplateSearch(ScTemplate const & templ,
-                   ScMemoryContext & context,
-                   ScAddr const & scStruct)
+  ScTemplateSearch(ScTemplate const & templ, ScMemoryContext & context, ScAddr const & scStruct)
     : m_template(templ)
     , m_context(context)
     , m_struct(scStruct)
@@ -44,22 +42,21 @@ public:
       static const size_t kScoreOther = 1;
 
       /** First of all we need to calculate scores for all triples
-        * (more scores - should be search first).
-        * Also need to store all replacements that need to be resolved
-        */
+       * (more scores - should be search first).
+       * Also need to store all replacements that need to be resolved
+       */
       std::vector<uint8_t> tripleScores(m_template.m_constructions.size());
       std::unordered_map<std::string, std::vector<size_t>> replDependMap;
       for (size_t i = 0; i < m_template.m_constructions.size(); ++i)
       {
         ScTemplateConstr3 const & triple = m_template.m_constructions[i];
-        auto const CalculateScore = [](ScTemplateConstr3 const & constr)
-        {
+        auto const CalculateScore = [](ScTemplateConstr3 const & constr) {
           uint8_t score = 0;
           auto const & values = constr.GetValues();
           if (values[1].IsAddr() && values[0].IsAssign() && values[2].IsAssign())
             score += kScoreEdge;
           else if (values[0].IsAddr() && values[1].IsAssign() && values[2].IsAddr())
-            score += kScoreOther * 2; // should be a sum of (f_a_a and a_a_f)
+            score += kScoreOther * 2;  // should be a sum of (f_a_a and a_a_f)
           else if (values[0].IsAddr() || values[2].IsAddr())
             score += kScoreOther;
 
@@ -67,8 +64,7 @@ public:
         };
         tripleScores[i] = CalculateScore(triple);
         // doesn't add edges into depend map
-        auto const TryAppendRepl = [&](ScTemplateItemValue const & value, size_t idx)
-        {
+        auto const TryAppendRepl = [&](ScTemplateItemValue const & value, size_t idx) {
           SC_ASSERT(idx < 3, ());
           if (!value.IsAddr() && !value.m_replacementName.empty())
             replDependMap[value.m_replacementName].push_back((i << 2) + idx);
@@ -81,8 +77,7 @@ public:
       }
 
       // sort by scores
-      std::sort(preCache.begin(), preCache.end(), [&](size_t a, size_t b)
-      {
+      std::sort(preCache.begin(), preCache.end(), [&](size_t a, size_t b) {
         return (tripleScores[a] > tripleScores[b]);
       });
 
@@ -206,8 +201,7 @@ public:
     ScAddr const addr1 = ResolveAddr(value1);
     ScAddr const addr2 = ResolveAddr(value2);
 
-    auto const PrepareType = [](ScType const & type)
-    {
+    auto const PrepareType = [](ScType const & type) {
       if (type.HasConstancyFlag())
         return type.UpConstType();
 
@@ -218,22 +212,22 @@ public:
     {
       if (!addr1.IsValid())
       {
-        if (addr2.IsValid()) // F_A_F
+        if (addr2.IsValid())  // F_A_F
         {
           return m_context.Iterator3(addr0, PrepareType(value1.m_typeValue), addr2);
         }
-        else // F_A_A
+        else  // F_A_A
         {
           return m_context.Iterator3(addr0, PrepareType(value1.m_typeValue), PrepareType(value2.m_typeValue));
         }
       }
       else
       {
-        if (addr2.IsValid()) // F_F_F
+        if (addr2.IsValid())  // F_F_F
         {
           return m_context.Iterator3(addr0, addr1, addr2);
         }
-        else // F_F_A
+        else  // F_F_A
         {
           return m_context.Iterator3(addr0, addr1, PrepareType(value2.m_typeValue));
         }
@@ -241,22 +235,22 @@ public:
     }
     else if (addr2.IsValid())
     {
-      if (addr1.IsValid()) // A_F_F
+      if (addr1.IsValid())  // A_F_F
       {
         return m_context.Iterator3(PrepareType(value0.m_typeValue), addr1, addr2);
       }
-      else // A_A_F
+      else  // A_A_F
       {
         return m_context.Iterator3(PrepareType(value0.m_typeValue), PrepareType(value1.m_typeValue), addr2);
       }
     }
-    else if (addr1.IsValid() && !addr2.IsValid()) // A_F_A
+    else if (addr1.IsValid() && !addr2.IsValid())  // A_F_A
     {
       return m_context.Iterator3(PrepareType(value0.m_typeValue), addr1, PrepareType(value2.m_typeValue));
     }
 
     //// unknown iterator type
-    //SC_THROW_EXCEPTION(utils::ExceptionInvalidState, "Unknown iterator type");
+    // SC_THROW_EXCEPTION(utils::ExceptionInvalidState, "Unknown iterator type");
 
     return ScIterator3Ptr();
   }
@@ -339,10 +333,7 @@ public:
         it = iterators.top();
       }
 
-      auto const applyResult = [&](ScAddr const & res1,
-                                   ScAddr const & res2,
-                                   ScAddr const & res3)
-      {
+      auto const applyResult = [&](ScAddr const & res1, ScAddr const & res2, ScAddr const & res3) {
         edges[orderIndex] = res2;
 
         // do not make cycle for optimization issues (remove comparsion expresion)
@@ -379,16 +370,14 @@ public:
           // check if search in structure
           if (m_struct.IsValid())
           {
-            if (!CheckInStruct(addr1) ||
-                !CheckInStruct(addr2) ||
-                !CheckInStruct(addr3))
+            if (!CheckInStruct(addr1) || !CheckInStruct(addr2) || !CheckInStruct(addr3))
             {
               continue;
             }
           }
 
           auto const res = m_usedEdges.insert(addr2);
-          if (!res.second) // don't iterate the same edge twicely
+          if (!res.second)  // don't iterate the same edge twicely
             continue;
 
           applyResult(addr1, addr2, addr3);
@@ -398,20 +387,20 @@ public:
           break;
         }
 
-        if (isFinished) // finish iterator
+        if (isFinished)  // finish iterator
         {
           iterators.pop();
           newIteration = false;
         }
       }
-      else // special checks and search
+      else  // special checks and search
       {
         SC_THROW_EXCEPTION(utils::ExceptionInvalidState, "Invalid state during template search");
       }
     } while (!iterators.empty());
   }
 
-  ScTemplate::Result operator () (ScTemplateSearchResult & result)
+  ScTemplate::Result operator()(ScTemplateSearchResult & result)
   {
     // if (!m_template.m_hasRequired)
     //  SC_THROW_EXCEPTION(utils::ExceptionInvalidParams, "Templates just with optional triples doesn't supported.");
@@ -454,7 +443,10 @@ ScTemplate::Result ScTemplate::Search(ScMemoryContext & ctx, ScTemplateSearchRes
   return search(result);
 }
 
-ScTemplate::Result ScTemplate::SearchInStruct(ScMemoryContext & ctx, ScAddr const & scStruct, ScTemplateSearchResult & result) const
+ScTemplate::Result ScTemplate::SearchInStruct(
+    ScMemoryContext & ctx,
+    ScAddr const & scStruct,
+    ScTemplateSearchResult & result) const
 {
   ScTemplateSearch search(*this, ctx, scStruct);
   return search(result);

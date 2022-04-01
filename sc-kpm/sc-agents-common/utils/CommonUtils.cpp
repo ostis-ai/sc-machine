@@ -1,8 +1,8 @@
 /*
-* This source file is part of an OSTIS project. For the latest info, see http://ostis.net
-* Distributed under the MIT License
-* (See accompanying file COPYING.MIT or copy at http://opensource.org/licenses/MIT)
-*/
+ * This source file is part of an OSTIS project. For the latest info, see http://ostis.net
+ * Distributed under the MIT License
+ * (See accompanying file COPYING.MIT or copy at http://opensource.org/licenses/MIT)
+ */
 
 #include "CommonUtils.hpp"
 
@@ -17,7 +17,6 @@ using namespace scAgentsCommon;
 
 namespace utils
 {
-
 bool CommonUtils::checkType(ScMemoryContext * ms_context, const ScAddr & element, ScType scType)
 {
   SC_CHECK_PARAM(element, ("Invalid element address"))
@@ -82,10 +81,10 @@ string CommonUtils::getIdtfValue(ScMemoryContext * ms_context, const ScAddr & no
 }
 
 string CommonUtils::getIdtf(
-      ScMemoryContext * ms_context,
-      const ScAddr & node,
-      const ScAddr & idtfRelation,
-      const ScAddrVector & linkClasses)
+    ScMemoryContext * ms_context,
+    const ScAddr & node,
+    const ScAddr & idtfRelation,
+    const ScAddrVector & linkClasses)
 {
   string value;
   ScAddr scLink;
@@ -116,21 +115,18 @@ string CommonUtils::getIdtf(
   return value;
 }
 
-string CommonUtils::getMainIdtf(
-      ScMemoryContext * ms_context,
-      const ScAddr & node,
-      const ScAddrVector & linkClasses)
+string CommonUtils::getMainIdtf(ScMemoryContext * ms_context, const ScAddr & node, const ScAddrVector & linkClasses)
 {
   ScAddr mainIdtfNode = CoreKeynodes::nrel_main_idtf;
   return getIdtf(ms_context, node, mainIdtfNode, linkClasses);
 }
 
 void CommonUtils::setIdtf(
-      ScMemoryContext * ms_context,
-      const ScAddr & node,
-      const ScAddr & relation,
-      const string & identifier,
-      const ScAddrVector & linkClasses)
+    ScMemoryContext * ms_context,
+    const ScAddr & node,
+    const ScAddr & relation,
+    const string & identifier,
+    const ScAddrVector & linkClasses)
 {
   ScAddr link = ms_context->CreateLink();
   shared_ptr<ScStream> identifierStream = ScStreamConverter::StreamFromString(identifier);
@@ -144,10 +140,10 @@ void CommonUtils::setIdtf(
 }
 
 void CommonUtils::setMainIdtf(
-      ScMemoryContext * ms_context,
-      const ScAddr & node,
-      const string & identifier,
-      const ScAddrVector & linkClasses)
+    ScMemoryContext * ms_context,
+    const ScAddr & node,
+    const string & identifier,
+    const ScAddrVector & linkClasses)
 {
   ScAddr mainIdtfNode = CoreKeynodes::nrel_main_idtf;
   setIdtf(ms_context, node, mainIdtfNode, identifier, linkClasses);
@@ -155,7 +151,7 @@ void CommonUtils::setMainIdtf(
 
 int CommonUtils::getPowerOfSet(ScMemoryContext * ms_context, const ScAddr & set)
 {
-  return (int) getSetPower(ms_context, set);
+  return (int)getSetPower(ms_context, set);
 }
 
 size_t CommonUtils::getSetPower(ScMemoryContext * ms_context, const ScAddr & set)
@@ -177,4 +173,4 @@ bool CommonUtils::isEmpty(ScMemoryContext * ms_context, const ScAddr & set)
   return !iterator3->Next();
 }
 
-}
+}  // namespace utils

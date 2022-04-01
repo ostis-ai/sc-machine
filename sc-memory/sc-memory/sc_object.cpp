@@ -6,7 +6,6 @@
 
 #include "sc_object.hpp"
 
-
 ScObject::ScObject()
   : m_isInitialized(false)
   , m_initResult(false)
@@ -15,15 +14,13 @@ ScObject::ScObject()
 
 ScObject::~ScObject()
 {
-
 }
 
 ScObject::ScObject(ScObject const & other)
 {
-
 }
 
-ScObject & ScObject::operator = (ScObject const & other)
+ScObject & ScObject::operator=(ScObject const & other)
 {
   return *this;
 }
