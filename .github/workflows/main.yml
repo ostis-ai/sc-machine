@@ -23,7 +23,7 @@ jobs:
           # Expression flags change how the expression is interpreted.
           flags: # optional, default is gm
           # A error message which will be returned in case of an error.
-          error: "One of commit messages or PR title have incorrect formatting. Please read the documentation: https://github.com/ostis-dev/sc-machine/blob/master/docs/dev/pr.md"
+          error: "One of commit messages or PR title have incorrect formatting. Please read the documentation: https://github.com/ostis-ai/sc-machine/blob/main/docs/dev/pr.md"
           # Setting this input to true will exclude the Pull Request title from the check.
           excludeTitle: true # optional, default is false
           # Setting this input to true will exclude the Pull Request description from the check.
@@ -66,6 +66,10 @@ jobs:
       - name: Install dependencies
         id: install_deps
         run: scripts/install_deps_ubuntu.sh
+
+      - name: Checking the code with clang
+        run: |
+          ./scripts/ci/check-formatting.sh
 
       - name: Build
         id: run_cmake
