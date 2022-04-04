@@ -8,9 +8,7 @@ import tornado
 from ws_sc_json import ScJsonSocketHandler
 from common import ScModule
 from keynodes import Keynodes
-from auth.admin_handlers import UserHandler, UsersListHandler
-from auth.auth_handlers import AccessTokenHandler, TokensHandler
-from auth.database import DataBase
+from auth.admin_handlers import UserHandler
 
 from sc import *
 
@@ -88,20 +86,13 @@ class ServerThread(threading.Thread):
     asyncio.set_event_loop(asyncio.new_event_loop())
     ioloop = tornado.ioloop.IOLoop.instance()
 
-    # prepare database
-    database = DataBase()
-    database.init()
-
     self.app = tornado.web.Application([
         (r"/ws_json", ScJsonSocketHandler, { 'evt_manager': self.module.events, 'ioloop': ioloop }),
         (r"/content/([0-9]+)", ContentHandler),
         (r'/assets/(.*)', self.staticHandler, {'path': self.assets_path}),
         # admin role functions
         (r'/admin/user$', UserHandler),
-        (r'/admin/users$', UsersListHandler),
         # token handlers
-        (r'/auth/get_tokens$', TokensHandler),
-        (r'/auth/get_access_token$', AccessTokenHandler),
         # should be a last
         (r"/(.*)", MainHandler),
     ])
