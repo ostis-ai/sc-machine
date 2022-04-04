@@ -1,4 +1,6 @@
-## Clone
+[![codecov](https://codecov.io/gh/ostis-ai/sc-machine/branch/main/graph/badge.svg?token=WU8O9Z1DNL)](https://codecov.io/gh/ostis-ai/sc-machine)
+
+## Clone:
 
 ```sh
 git clone https://github.com/ostis-ai/sc-machine.git

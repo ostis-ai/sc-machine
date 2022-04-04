@@ -14,6 +14,13 @@ option (SC_AUTO_TEST "Flag to build for automation testing" OFF)
 option (SC_KPM_SCP "Flag to build SCP module" OFF)
 option (SC_BUILD_SCTP "Flag to turn on/off sctp protocol support" ON)
 option (SC_BUILD_TESTS "Flag to build unit tests" OFF)
+option (SC_COVERAGE "Flag to generate coverage report" OFF)
+
+# Coverage
+if(${SC_COVERAGE})
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -g -O0 --coverage")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -O0 --coverage")
+endif()
 
 if (${SC_BUILD_ARM64})
     check_c_compiler_flag("-arch arm64" IS_ARM64_SUPPORTED)
@@ -55,14 +62,18 @@ set(SC_TOOLS_SRC "${SC_MACHINE_ROOT}/tools")
 
 if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fcolor-diagnostics -std=c++14")
-    set(CMAKE_CXX_FLAGS_RELEASE "-O3")
+     if(NOT ${SC_COVERAGE})
+        set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O3")
+     endif()
 
     if(${SC_AUTO_TEST})
         set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wdeprecated-declarations")
     endif()
 elseif(CMAKE_CXX_COMPILER_ID MATCHES "GNU")
     set(CMAKE_CXX_FLAGS "-std=c++14 -Wall")
-    set(CMAKE_CXX_FLAGS_RELEASE "-O3")        ## Optimize
+     if(NOT ${SC_COVERAGE})
+        set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O3")        ## Optimize
+     endif()
     set(CMAKE_EXE_LINKER_FLAGS_RELEASE "-s")  ## Strip binary
 elseif (NOT CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14")

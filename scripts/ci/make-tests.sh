@@ -7,7 +7,7 @@ pip3 install --user -r requirements.txt
 mkdir build
 pushd build
 
-cmake .. -DCMAKE_BUILD_TYPE=${BUILD_TYPE} -DSC_AUTO_TEST=ON -DSC_BUILD_TESTS=ON -DSC_KPM_SCP=OFF
+cmake .. -DCMAKE_BUILD_TYPE=${BUILD_TYPE} -DSC_COVERAGE=${COVERAGE} -DSC_AUTO_TEST=ON -DSC_BUILD_TESTS=ON -DSC_KPM_SCP=OFF
 echo ::group::Make
 make -j$(nproc)
 echo ::endgroup::

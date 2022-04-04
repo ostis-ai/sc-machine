@@ -8,5 +8,5 @@ target_include_directories(sc-core
   PRIVATE ${GLIB2_INCLUDE_DIRS} 
   PRIVATE ${RocksDB_INCLUDE_DIR}
   )
-target_link_libraries(sc-core ${GLIB2_LIBRARIES} ${RocksDB_LIBRARIES})
+target_link_libraries(sc-core ${GLIB2_LIBRARIES} ${RocksDB_LIBRARIES} gcov)
 target_compile_definitions(sc-core PRIVATE "-DSC_MEMORY_SELF_BUILD")

@@ -45,14 +45,16 @@ jobs:
             os: ubuntu-latest,
             build_type: "Debug",
             cc: "gcc",
-            cxx: "g++"
+            cxx: "g++",
+            coverage: "OFF"
           }
           - {
             name: "Ubuntu latest, GCC, Release",
             os: ubuntu-latest,
             build_type: "Release",
             cc: "gcc",
-            cxx: "g++"
+            cxx: "g++",
+            coverage: "ON"
           }
 
     steps:
@@ -71,9 +73,30 @@ jobs:
           CC: ${{ matrix.config.cc }}
           CCX: ${{ matrix.config.cxx }}
           BUILD_TYPE: ${{ matrix.config.build_type }}
+          COVERAGE: ${{ matrix.config.coverage }}
         run: scripts/ci/make-tests.sh
+
+      - name: Prepare coverage
+        if: ${{ matrix.config.build_type == 'Release'}}
+        id: prepare_coverage
+        run: scripts/ci/prepare-coverage.sh
 
       - name: Run tests
         id: run_tests
         run: scripts/ci/run-tests.sh
 
+      - name: Export coverage report
+        if: ${{ matrix.config.build_type == 'Release'}}
+        id: export_coverage
+        run: scripts/ci/export-coverage.sh
+
+      - name: Upload coverage report to CodeCov
+        if: ${{ matrix.config.build_type == 'Release'}}
+        uses: codecov/codecov-action@v2
+        with:
+          directory: ${{github.workspace}}/build
+          files: coverage.info
+          flags: unittests
+          fail_ci_if_error: true
+          name: codecov-umbrella
+          verbose: true
