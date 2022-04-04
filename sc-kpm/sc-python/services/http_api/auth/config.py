@@ -3,13 +3,10 @@ import http_api.auth.constants as cnt
 
 params = {
     # path params
-    cnt.PRIVATE_KEY_PATH: '../sc-machine/sc-kpm/sc-python/services/http_api/auth/private.pem',
     cnt.PUBLIC_KEY_PATH: '../sc-machine/sc-kpm/sc-python/services/http_api/auth/public.pem',
     # validator patters
     cnt.USERNAME_PATTERN: '^[a-zA-Z][a-zA-Z0-9-_.]{1,20}$',
     # token params
-    cnt.ACCESS_TOKEN_LIFE_SPAN: 1800,
-    cnt.REFRESH_TOKEN_LIFE_SPAN: 2592000,
     cnt.ISSUER: 'sc-auth-server',
     # messages
     cnt.MSG_ACCESS_DENIED: 'Access denied',
