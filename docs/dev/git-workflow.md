@@ -35,3 +35,11 @@ git rebase --abort
 
 ### Common rules
 * use `git rebase` instead of `merge`. [More documentation about this command](https://git-scm.com/docs/git-rebase) This command just try to apply your commits (from current branch to commits in specified branch)
+
+### Git hooks
+
+To setup `pre-commit` hook run:
+```shell
+cd sc-machine
+pre-commit install
+```
