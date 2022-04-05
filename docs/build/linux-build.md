@@ -41,7 +41,7 @@ cd sc-machine
 ./scripts/ci/make-tests.sh
 ```
 
-## CLangFormat code check
+## Code formatting with CLangFormat
 
 To check code with CLangFormat run:
 ```shell
@@ -52,6 +52,12 @@ cmake .. -DSC_CLANG_FORMAT_CODE=ON
 make clangformat_check
 ```
 
+or
+```shell
+cd sc-machine
+./scripts/ci/check-formatting.sh
+```
+
 To format code with CLangFormat run:
 ```shell
 cd sc-machine
@@ -59,9 +65,4 @@ mkdir build
 cd build
 cmake .. -DSC_CLANG_FORMAT_CODE=ON
 make clangformat
-```
-or
-```shell
-cd sc-machine
-./scripts/ci/check-formatting.sh
 ```
