@@ -13,7 +13,6 @@
 
 namespace
 {
-
 class ObjectInfo
 {
 public:
@@ -85,7 +84,7 @@ private:
   ScAddr::HashType m_trgHash;
 };
 
-}
+}  // namespace
 
 class ScTemplateBuilder
 {
@@ -95,17 +94,14 @@ class ScTemplateBuilder
   using ScAddrHashVector = std::vector<ScAddr::HashType>;
 
 protected:
-  ScTemplateBuilder(
-    ScAddr const & inScTemplateAddr,
-    ScMemoryContext & inCtx,
-    ScTemplateParams const & params)
+  ScTemplateBuilder(ScAddr const & inScTemplateAddr, ScMemoryContext & inCtx, ScTemplateParams const & params)
     : m_templateAddr(inScTemplateAddr)
     , m_context(inCtx)
     , m_params(params)
   {
   }
 
-  ScTemplate::Result operator() (ScTemplate * inTemplate)
+  ScTemplate::Result operator()(ScTemplate * inTemplate)
   {
     // mark template to don't force order of triples
     inTemplate->m_isForceOrder = false;
@@ -115,10 +111,7 @@ protected:
     independentEdges.reserve(512);
 
     size_t index = 0;
-    ScIterator3Ptr iter = m_context.Iterator3(
-          m_templateAddr,
-          *ScType::EdgeAccessConstPosPerm,
-          *ScType());
+    ScIterator3Ptr iter = m_context.Iterator3(m_templateAddr, *ScType::EdgeAccessConstPosPerm, *ScType());
 
     // define edges set and independent edges set
     while (iter->Next())
@@ -127,7 +120,7 @@ protected:
 
       ObjectInfo obj = CollectObjectInfo(objAddr, "..obj_" + std::to_string(index++));
       if (obj.IsUnknown())
-        return ScTemplate::Result(false, "Can't determine type of ScElement"); // template corrupted
+        return ScTemplate::Result(false, "Can't determine type of ScElement");  // template corrupted
 
       ScAddr objSrc, objTrg;
       if (obj.IsEdge() && m_context.GetEdgeInfo(objAddr, objSrc, objTrg))
@@ -135,8 +128,7 @@ protected:
         obj.SetSourceHash(objSrc.Hash());
         obj.SetTargetHash(objTrg.Hash());
 
-        ScType const srcType = m_context.GetElementType(objSrc),
-              trgType = m_context.GetElementType(objTrg);
+        ScType const srcType = m_context.GetElementType(objSrc), trgType = m_context.GetElementType(objTrg);
         if (!srcType.IsEdge() && !trgType.IsEdge())
         {
           auto const & it = std::find(independentEdges.begin(), independentEdges.end(), obj.GetHash());
@@ -173,17 +165,13 @@ protected:
       ObjectInfo const src = ReplaceWithParam(&m_elements.at(edge.GetSourceHash()));
       ObjectInfo const trg = ReplaceWithParam(&m_elements.at(edge.GetTargetHash()));
 
-      auto const & param = [&inTemplate](ObjectInfo const & obj) -> ScTemplateItemValue
-      {
+      auto const & param = [&inTemplate](ObjectInfo const & obj) -> ScTemplateItemValue {
         return obj.GetType().IsConst()
-          ? obj.GetAddr() >> obj.GetIdtf()
-          : (inTemplate->HasReplacement(obj.GetIdtf()) ? obj.GetIdtf() : obj.GetType() >> obj.GetIdtf());
+                   ? obj.GetAddr() >> obj.GetIdtf()
+                   : (inTemplate->HasReplacement(obj.GetIdtf()) ? obj.GetIdtf() : obj.GetType() >> obj.GetIdtf());
       };
 
-      inTemplate->Triple(
-            param(src),
-            edge.GetType() >> edge.GetIdtf(),
-            param(trg));
+      inTemplate->Triple(param(src), edge.GetType() >> edge.GetIdtf(), param(trg));
     }
 
     return ScTemplate::Result(true);
@@ -227,7 +215,8 @@ private:
       }
 
       auto const & equalDependentEdges = powerDependentEdges.at(power);
-      auto const & equalDependentEdgesIt = std::find(equalDependentEdges.begin(), equalDependentEdges.end(), hPair.first);
+      auto const & equalDependentEdgesIt =
+          std::find(equalDependentEdges.begin(), equalDependentEdges.end(), hPair.first);
       if (equalDependentEdgesIt == equalDependentEdges.end())
         powerDependentEdges.at(power).emplace_back(hPair.first);
     }
@@ -253,8 +242,11 @@ private:
   }
 
   // count edge dependence power from other edge
-  inline size_t DefineEdgeDependencePower(ScAddr::HashType const & edge, ScAddr::HashType const & otherEdge,
-                                          size_t & max, size_t power) const
+  inline size_t DefineEdgeDependencePower(
+      ScAddr::HashType const & edge,
+      ScAddr::HashType const & otherEdge,
+      size_t & max,
+      size_t power) const
   {
     auto const range = m_edgeDependenceMap.equal_range(edge);
     for (auto it = range.first; it != range.second; ++it)
@@ -268,7 +260,10 @@ private:
   }
 };
 
-ScTemplate::Result ScTemplate::FromScTemplate(ScMemoryContext & ctx, ScAddr const & scTemplateAddr, const ScTemplateParams & params)
+ScTemplate::Result ScTemplate::FromScTemplate(
+    ScMemoryContext & ctx,
+    ScAddr const & scTemplateAddr,
+    const ScTemplateParams & params)
 {
   ScTemplateBuilder builder(scTemplateAddr, ctx, params);
   return builder(this);

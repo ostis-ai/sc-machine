@@ -19,10 +19,10 @@ public:
   virtual ~uiTranslateFromSc();
 
   /*! Run translation.
-     * @param input_addr sc-addr of sc-construction, that need to be translated
-     * @param format_addr sc-addr of output format
-     */
-  void translate(const sc_addr &input_addr, const sc_addr &format_addr);
+   * @param input_addr sc-addr of sc-construction, that need to be translated
+   * @param format_addr sc-addr of output format
+   */
+  void translate(const sc_addr & input_addr, const sc_addr & format_addr);
 
 protected:
   //! Collect objects that need to be translated
@@ -32,11 +32,11 @@ protected:
   virtual void runImpl() = 0;
 
   //! Check if sc-element need to be translated
-  bool isNeedToTranslate(const sc_addr &addr) const;
+  bool isNeedToTranslate(const sc_addr & addr) const;
 
 public:
   //! Build id from specified sc-addr
-  static String buildId(const sc_addr &addr);
+  static String buildId(const sc_addr & addr);
 
 protected:
   //! Sc-addr of input construction
@@ -51,4 +51,4 @@ protected:
   String mOutputData;
 };
 
-#endif // _uiTranslator_h_
+#endif  // _uiTranslator_h_

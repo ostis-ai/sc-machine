@@ -11,7 +11,7 @@
 sc_memory_context * s_default_ctx = 0;
 sc_memory_context * s_garbage_ctx = 0;
 
-sc_event *event_garbage_deletion;
+sc_event * event_garbage_deletion;
 
 _SC_EXT_EXTERN sc_result sc_module_initialize()
 {
@@ -21,7 +21,8 @@ _SC_EXT_EXTERN sc_result sc_module_initialize()
   if (utils_keynodes_initialize() != SC_RESULT_OK)
     return SC_RESULT_ERROR;
 
-  event_garbage_deletion = sc_event_new(s_default_ctx, keynode_sc_garbage, SC_EVENT_ADD_OUTPUT_ARC, 0, agent_garbage_delete, 0);
+  event_garbage_deletion =
+      sc_event_new(s_default_ctx, keynode_sc_garbage, SC_EVENT_ADD_OUTPUT_ARC, 0, agent_garbage_delete, 0);
   if (event_garbage_deletion == null_ptr)
     return SC_RESULT_ERROR;
 

@@ -2,7 +2,7 @@
 ## Clone
 
 ```sh
-git clone https://github.com/ostis-dev/sc-machine.git
+git clone https://github.com/ostis-ai/sc-machine.git
 cd sc-machine
 ```
 

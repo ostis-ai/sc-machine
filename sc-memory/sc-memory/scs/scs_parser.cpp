@@ -16,13 +16,16 @@
 
 #if SC_DEBUG_MODE
 /// TODO: @deniskoronchik: make as cmake parameter
-#   define SCS_DEBUG_TOKEN 1
+#  define SCS_DEBUG_TOKEN 1
 #endif
 
 #if SCS_DEBUG_TOKEN
-#   define DEBUG_TOKEN(__msg) { std::cout << __msg << std::endl; }
+#  define DEBUG_TOKEN(__msg) \
+    { \
+      std::cout << __msg << std::endl; \
+    }
 #else
-#   define DEBUG_TOKEN(__msg)
+#  define DEBUG_TOKEN(__msg)
 #endif
 
 #include "scsLexer.h"
@@ -53,12 +56,11 @@ std::string UnescapeContent(std::string const & content)
     {
       auto const nextSymbol = result[pos + 1];
       if (nextSymbol == '\\' || nextSymbol == '[' || nextSymbol == ']')
-        result.replace(pos, 2, { nextSymbol });
+        result.replace(pos, 2, {nextSymbol});
     }
 
     ++pos;
   }
-
 
   return result;
 }
@@ -66,44 +68,64 @@ std::string UnescapeContent(std::string const & content)
 class ErrorListener : public antlr4::ANTLRErrorListener
 {
 protected:
-  void syntaxError(antlr4::Recognizer *, antlr4::Token *, size_t line,
-                   size_t charPositionInLine, std::string const & msg, std::exception_ptr) override
+  void syntaxError(
+      antlr4::Recognizer *,
+      antlr4::Token *,
+      size_t line,
+      size_t charPositionInLine,
+      std::string const & msg,
+      std::exception_ptr) override
   {
-    SC_THROW_EXCEPTION(utils::ExceptionParseError, "Parse error at line " << line << "," << charPositionInLine << ": " << msg);
+    SC_THROW_EXCEPTION(
+        utils::ExceptionParseError, "Parse error at line " << line << "," << charPositionInLine << ": " << msg);
   }
 
-  void reportAmbiguity(antlr4::Parser *, antlr4::dfa::DFA const &, size_t, size_t, bool,
-                       antlrcpp::BitSet const &, antlr4::atn::ATNConfigSet *) override
+  void reportAmbiguity(
+      antlr4::Parser *,
+      antlr4::dfa::DFA const &,
+      size_t,
+      size_t,
+      bool,
+      antlrcpp::BitSet const &,
+      antlr4::atn::ATNConfigSet *) override
   {
     SC_THROW_EXCEPTION(utils::ExceptionParseError, "reportAmbiguity");
   }
 
-
-  void reportAttemptingFullContext(antlr4::Parser *, antlr4::dfa::DFA const &, size_t, size_t,
-                                   antlrcpp::BitSet const &, antlr4::atn::ATNConfigSet *) override
+  void reportAttemptingFullContext(
+      antlr4::Parser *,
+      antlr4::dfa::DFA const &,
+      size_t,
+      size_t,
+      antlrcpp::BitSet const &,
+      antlr4::atn::ATNConfigSet *) override
   {
     SC_THROW_EXCEPTION(utils::ExceptionParseError, "reportAttemptingFullContext");
   }
 
-
-  void reportContextSensitivity(antlr4::Parser *, antlr4::dfa::DFA const &, size_t, size_t,
-                                size_t, antlr4::atn::ATNConfigSet *) override
+  void reportContextSensitivity(
+      antlr4::Parser *,
+      antlr4::dfa::DFA const &,
+      size_t,
+      size_t,
+      size_t,
+      antlr4::atn::ATNConfigSet *) override
   {
     SC_THROW_EXCEPTION(utils::ExceptionParseError, "reportContextSensitivity");
   }
-
 };
 
-}
+}  // namespace
 
 namespace scs
 {
 
-ParsedElement::ParsedElement(std::string const & idtf,
-                             ScType const & type,
-                             bool isReversed,
-                             std::string const & value /* = "" */,
-                             bool isURL /* = false */)
+ParsedElement::ParsedElement(
+    std::string const & idtf,
+    ScType const & type,
+    bool isReversed,
+    std::string const & value /* = "" */,
+    bool isURL /* = false */)
   : m_idtf(idtf)
   , m_type(type)
   , m_visibility(Visibility::System)
@@ -202,7 +224,7 @@ ElementHandle::ElementHandle(ElementID id, bool isLocal)
 {
 }
 
-ElementID ElementHandle::operator * () const
+ElementID ElementHandle::operator*() const
 {
   SC_ASSERT(IsValid(), ());
   return m_id;
@@ -218,31 +240,30 @@ bool ElementHandle::IsValid() const
   return m_id != INVALID_ID;
 }
 
-bool ElementHandle::operator == (ElementHandle const & other) const
+bool ElementHandle::operator==(ElementHandle const & other) const
 {
   return (m_id == other.m_id) && (m_isLocal == other.m_isLocal);
 }
 
-bool ElementHandle::operator != (ElementHandle const & other) const
+bool ElementHandle::operator!=(ElementHandle const & other) const
 {
   return !(*this == other);
 }
 
-ElementHandle & ElementHandle::operator = (ElementHandle const & other)
+ElementHandle & ElementHandle::operator=(ElementHandle const & other)
 {
   m_id = other.m_id;
   m_isLocal = other.m_isLocal;
   return *this;
 }
 
-bool ElementHandle::operator < (ElementHandle const & other) const
+bool ElementHandle::operator<(ElementHandle const & other) const
 {
   if (m_id == other.m_id)
     return m_isLocal < other.m_isLocal;
 
   return m_id < other.m_id;
 }
-
 
 // ---------------------------------------
 
@@ -294,8 +315,9 @@ ParsedElement & Parser::GetParsedElementRef(ElementHandle const & elID)
 
   if (*elID >= container.size())
   {
-    SC_THROW_EXCEPTION(utils::ExceptionItemNotFound,
-                       std::string("ElementId{") + std::to_string(*elID) + ", " + std::to_string(elID.IsLocal()) + "}");
+    SC_THROW_EXCEPTION(
+        utils::ExceptionItemNotFound,
+        std::string("ElementId{") + std::to_string(*elID) + ", " + std::to_string(elID.IsLocal()) + "}");
   }
 
   return container[*elID];
@@ -307,8 +329,9 @@ ParsedElement const & Parser::GetParsedElement(ElementHandle const & elID) const
 
   if (*elID >= container.size())
   {
-    SC_THROW_EXCEPTION(utils::ExceptionItemNotFound,
-                       std::string("ElementId{") + std::to_string(*elID) + ", " + std::to_string(elID.IsLocal()) + "}");
+    SC_THROW_EXCEPTION(
+        utils::ExceptionItemNotFound,
+        std::string("ElementId{") + std::to_string(*elID) + ", " + std::to_string(elID.IsLocal()) + "}");
   }
 
   return container[*elID];
@@ -349,11 +372,12 @@ std::string Parser::GenerateContourIdtf()
   return std::string("..contour_") + std::to_string(m_idtfCounter++);
 }
 
-ElementHandle Parser::AppendElement(std::string idtf,
-                                    ScType const & type,
-                                    bool isConnectorReversed,
-                                    std::string const & value /* = "" */,
-                                    bool isURL /* = false */)
+ElementHandle Parser::AppendElement(
+    std::string idtf,
+    ScType const & type,
+    bool isConnectorReversed,
+    std::string const & value /* = "" */,
+    bool isURL /* = false */)
 {
   SC_CHECK_GREAT(idtf.size(), 0, ());
   if (TypeResolver::IsUnnamed(idtf))
@@ -417,8 +441,7 @@ void Parser::ProcessTriple(ElementHandle const & source, ElementHandle const & e
   ParsedElement const & edgeEl = GetParsedElement(edge);
   SC_ASSERT(edgeEl.GetType().IsEdge(), ("edge has invalid type"));
 
-  auto addEdge = [this, &edgeEl](ElementHandle const & src, ElementHandle const & e, ElementHandle const & trg)
-  {
+  auto addEdge = [this, &edgeEl](ElementHandle const & src, ElementHandle const & e, ElementHandle const & trg) {
     ParsedElement const & srcEl = GetParsedElement(src);
     std::string const & idtf = srcEl.GetIdtf();
     if (edgeEl.GetType() == ScType::EdgeAccessConstPosPerm && scs::TypeResolver::IsKeynodeType(idtf))
@@ -432,8 +455,7 @@ void Parser::ProcessTriple(ElementHandle const & source, ElementHandle const & e
       }
       else
       {
-        SC_THROW_EXCEPTION(utils::ExceptionParseError,
-                           "Can't merge types for element " + targetEl.GetIdtf());
+        SC_THROW_EXCEPTION(utils::ExceptionParseError, "Can't merge types for element " + targetEl.GetIdtf());
       }
 
       if (!m_contourTriplesStack.empty())
@@ -465,7 +487,7 @@ ElementHandle Parser::ProcessConnector(std::string const & connector)
   ScType const type = TypeResolver::GetConnectorType(connector);
   SC_ASSERT(type.IsEdge(), ());
 
-    return AppendElement(GenerateEdgeIdtf(), type, TypeResolver::IsConnectorReversed(connector));
+  return AppendElement(GenerateEdgeIdtf(), type, TypeResolver::IsConnectorReversed(connector));
 }
 
 ElementHandle Parser::ProcessContent(std::string const & content, bool isVar)
@@ -542,47 +564,47 @@ void Parser::ProcessContourEnd(ElementHandle const & contourHandle)
   }
 }
 
-    ElementHandle Parser::ProcessContourEndWithJoin(ElementHandle const & source)
-    {
-        SC_ASSERT(!m_contourElementsStack.empty(), ());
-        SC_ASSERT(!m_contourTriplesStack.empty(), ());
+ElementHandle Parser::ProcessContourEndWithJoin(ElementHandle const & source)
+{
+  SC_ASSERT(!m_contourElementsStack.empty(), ());
+  SC_ASSERT(!m_contourTriplesStack.empty(), ());
 
-        size_t const last = m_parsedElements.size();
-        size_t const lastLocal = m_parsedElementsLocal.size();
-        size_t const lastTriple = m_parsedTriples.size();
+  size_t const last = m_parsedElements.size();
+  size_t const lastLocal = m_parsedElementsLocal.size();
+  size_t const lastTriple = m_parsedTriples.size();
 
-        auto const ind = m_contourElementsStack.top();
-        m_contourElementsStack.pop();
+  auto const ind = m_contourElementsStack.top();
+  m_contourElementsStack.pop();
 
-        std::set<ElementHandle> newElements;
+  std::set<ElementHandle> newElements;
 
-        // append all new elements into contour
-        for (size_t i = ind.first; i < last; ++i)
-            newElements.insert(ElementHandle(ElementID(i), false));
+  // append all new elements into contour
+  for (size_t i = ind.first; i < last; ++i)
+    newElements.insert(ElementHandle(ElementID(i), false));
 
-        //for (size_t i = ind.second; i < lastLocal; ++i)
-        //    newElements.insert(ElementHandle(ElementID(i), true));
+  // for (size_t i = ind.second; i < lastLocal; ++i)
+  //     newElements.insert(ElementHandle(ElementID(i), true));
 
-        size_t const tripleFirst = m_contourTriplesStack.top();
-        m_contourTriplesStack.pop();
+  size_t const tripleFirst = m_contourTriplesStack.top();
+  m_contourTriplesStack.pop();
 
-        for (size_t i = tripleFirst; i < lastTriple; ++i)
-        {
-            auto const & t = m_parsedTriples[i];
-            newElements.insert(t.m_source);
-            newElements.insert(t.m_edge);
-            newElements.insert(t.m_target);
-        }
+  for (size_t i = tripleFirst; i < lastTriple; ++i)
+  {
+    auto const & t = m_parsedTriples[i];
+    newElements.insert(t.m_source);
+    newElements.insert(t.m_edge);
+    newElements.insert(t.m_target);
+  }
 
-        for (auto const & el : newElements)
-        {
-            ElementHandle const edge = ProcessConnector("->");
-            ProcessTriple(source, edge, el);
-        }
+  for (auto const & el : newElements)
+  {
+    ElementHandle const edge = ProcessConnector("->");
+    ProcessTriple(source, edge, el);
+  }
 
-        ParsedElement & srcEl = GetParsedElementRef(source);
-        srcEl.m_type = ScType::NodeConstStruct;
-        return source;
-    }
-
+  ParsedElement & srcEl = GetParsedElementRef(source);
+  srcEl.m_type = ScType::NodeConstStruct;
+  return source;
 }
+
+}  // namespace scs

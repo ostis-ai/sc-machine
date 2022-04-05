@@ -23,15 +23,12 @@ void parse(std::string const & appName, boost::program_options::variables_map co
 
   // default arguments
   options.arguments = {
-    {
-      "-x",
-      "c++",
-      "-D__SC_REFLECTION_PARSER__",
-      "-std=c++17",
-      "-Wno-pragma-once-outside-header",
-      "-Wno-nullability-completeness"
-    }
-  };
+      {"-x",
+       "c++",
+       "-D__SC_REFLECTION_PARSER__",
+       "-std=c++17",
+       "-Wno-pragma-once-outside-header",
+       "-Wno-nullability-completeness"}};
 
   if (cmdLine.count("flags"))
   {
@@ -71,7 +68,7 @@ void parse(std::string const & appName, boost::program_options::variables_map co
   }
 }
 
-int main(int argc, char *argv[])
+int main(int argc, char * argv[])
 {
   auto start = std::chrono::system_clock::now();
 
@@ -80,46 +77,18 @@ int main(int argc, char *argv[])
   {
     boost::program_options::options_description program("SC Reflection Parser");
 
-    program.add_options()
-        (
-          "help,h",
-          "Displays help information."
-        )
-        (
-          "target,t",
-          boost::program_options::value<std::string>()->required(),
-          "Input target project name."
-        )
-        (
-          "source,i",
-          boost::program_options::value<std::string>()->required(),
-          "Source path to parse headers in."
-          )
-        (
-          "output,o",
-          boost::program_options::value<std::string>()->required(),
-          "Output path for generated headers."
-        )
-        (
-          "build_dir,b",
-          boost::program_options::value<std::string>()->default_value("./build"),
-          "Directory that contains the build intermediate files."
-        )
-        (
-          "flags,f",
-          boost::program_options::value<std::vector<std::string>>()->multitoken()->required(),
-          "Optional list of flags to pass to the compiler."
-        )
-        (
-          "debug,d",
-          boost::program_options::value<bool>()->implicit_value(false),
-          "Display compiler errors"
-        )
-        (
-          "cache,c",
-          boost::program_options::value<bool>()->implicit_value(false),
-          "Force cache usage"
-        );
+    program.add_options()("help,h", "Displays help information.")(
+        "target,t", boost::program_options::value<std::string>()->required(), "Input target project name.")(
+        "source,i", boost::program_options::value<std::string>()->required(), "Source path to parse headers in.")(
+        "output,o", boost::program_options::value<std::string>()->required(), "Output path for generated headers.")(
+        "build_dir,b",
+        boost::program_options::value<std::string>()->default_value("./build"),
+        "Directory that contains the build intermediate files.")(
+        "flags,f",
+        boost::program_options::value<std::vector<std::string>>()->multitoken()->required(),
+        "Optional list of flags to pass to the compiler.")(
+        "debug,d", boost::program_options::value<bool>()->implicit_value(false), "Display compiler errors")(
+        "cache,c", boost::program_options::value<bool>()->implicit_value(false), "Force cache usage");
 
     boost::program_options::variables_map cmdLine;
 
@@ -137,7 +106,7 @@ int main(int argc, char *argv[])
     std::string const appName = argv[0];
     parse(appName, cmdLine);
   }
-  catch (std::exception &e)
+  catch (std::exception & e)
   {
     utils::FatalError(e.what());
   }
@@ -148,10 +117,8 @@ int main(int argc, char *argv[])
 
   auto duration = std::chrono::system_clock::now() - start;
 
-  std::cout << "Completed in "
-            << std::chrono::duration_cast<std::chrono::milliseconds>(duration).count()
-            << "ms" << std::endl;
+  std::cout << "Completed in " << std::chrono::duration_cast<std::chrono::milliseconds>(duration).count() << "ms"
+            << std::endl;
 
   return EXIT_SUCCESS;
 }
-

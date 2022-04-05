@@ -7,4 +7,3 @@
 #pragma once
 
 #include "sc-core/sc-store/sc_platform.h"
-

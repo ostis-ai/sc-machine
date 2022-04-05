@@ -59,13 +59,13 @@ bool ScSet::HasElement(ScAddr const & elAddr) const
   return m_context.HelperCheckEdge(m_addr, elAddr, ScType::EdgeAccessConstPosPerm);
 }
 
-ScSet & ScSet::operator << (ScAddr const & elAddr)
+ScSet & ScSet::operator<<(ScAddr const & elAddr)
 {
   Append(elAddr);
   return *this;
 }
 
-ScSet & ScSet::operator << (ScTemplateGenResult const & res)
+ScSet & ScSet::operator<<(ScTemplateGenResult const & res)
 {
   size_t const res_num = res.Size();
   for (size_t i = 0; i < res_num; ++i)
@@ -74,13 +74,13 @@ ScSet & ScSet::operator << (ScTemplateGenResult const & res)
   return *this;
 }
 
-ScSet & ScSet::operator >> (ScAddr const & elAddr)
+ScSet & ScSet::operator>>(ScAddr const & elAddr)
 {
   Remove(elAddr);
   return *this;
 }
 
-ScAddr const & ScSet::operator * () const
+ScAddr const & ScSet::operator*() const
 {
   return m_addr;
 }

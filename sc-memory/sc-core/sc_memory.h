@@ -14,23 +14,23 @@
 
 struct _sc_memory_params
 {
-  const sc_char *repo_path;
-  const sc_char *config_file;
-  const sc_char *ext_path;
-  const sc_char **enabled_exts; // null-terminated list of extension names that should be loaded
+  const sc_char * repo_path;
+  const sc_char * config_file;
+  const sc_char * ext_path;
+  const sc_char ** enabled_exts;  // null-terminated list of extension names that should be loaded
   sc_bool clear;
 };
 
 typedef struct _sc_memory_params sc_memory_params;
 
 //! Function to clear memory parameters
-_SC_EXTERN void sc_memory_params_clear(sc_memory_params *params);
+_SC_EXTERN void sc_memory_params_clear(sc_memory_params * params);
 
 /*! Initialize sc-memory with specified path to repository
  * @param params Pointer to initialization parameters
  * @returns Returns pointer to created sc-memory context
  */
-_SC_EXTERN sc_memory_context* sc_memory_initialize(const sc_memory_params *params);
+_SC_EXTERN sc_memory_context * sc_memory_initialize(const sc_memory_params * params);
 
 /*! Initialize sc-memory extensions in specified directory
  * @param enabled_list Null terminated list of extensions names, that should be loaded. If it's a null value, then all
@@ -51,12 +51,12 @@ _SC_EXTERN void sc_memory_shutdown_ext();
  * context creation, then function returns 0
  * @note Do not use one context in different threads.
  */
-_SC_EXTERN sc_memory_context* sc_memory_context_new(sc_uint8 levels);
+_SC_EXTERN sc_memory_context * sc_memory_context_new(sc_uint8 levels);
 
 /*! Function that destroys created memory context. You can use that function
  * just for contexts, that were created with @see sc_memory_context_new
  */
-_SC_EXTERN void sc_memory_context_free(sc_memory_context *ctx);
+_SC_EXTERN void sc_memory_context_free(sc_memory_context * ctx);
 
 /*! Start events pending mode for a context.
  * In that mode all events emit will be pending until
@@ -68,7 +68,6 @@ _SC_EXTERN void sc_memory_context_pending_begin(sc_memory_context * ctx);
  * Call this function emits of all pended events for this context
  */
 _SC_EXTERN void sc_memory_context_pending_end(sc_memory_context * ctx);
-
 
 //! Check if sc-memory is initialized
 _SC_EXTERN sc_bool sc_memory_is_initialized();
@@ -144,8 +143,11 @@ _SC_EXTERN sc_result sc_memory_get_arc_end(sc_memory_context const * ctx, sc_add
  * Call logic equal to calls sc_memory_get_arc_begin and sc_memory_get_arc_end,
  * but this one do this work faster.
  */
-_SC_EXTERN sc_result sc_memory_get_arc_info(sc_memory_context const * ctx, sc_addr addr,	
-                                            sc_addr * result_start_addr, sc_addr * result_end_addr);
+_SC_EXTERN sc_result sc_memory_get_arc_info(
+    sc_memory_context const * ctx,
+    sc_addr addr,
+    sc_addr * result_start_addr,
+    sc_addr * result_end_addr);
 
 /*! Setup content data for specified sc-link
  * @param addr sc-addr of sc-link to setup content
@@ -158,7 +160,7 @@ _SC_EXTERN sc_result sc_memory_get_arc_info(sc_memory_context const * ctx, sc_ad
  * </ul>
 
  */
-_SC_EXTERN sc_result sc_memory_set_link_content(sc_memory_context * ctx, sc_addr addr, sc_stream const *stream);
+_SC_EXTERN sc_result sc_memory_set_link_content(sc_memory_context * ctx, sc_addr addr, sc_stream const * stream);
 
 /*! Returns content of specified sc-link
  * @param addr sc-addr of sc-link to return content data
@@ -172,7 +174,7 @@ _SC_EXTERN sc_result sc_memory_set_link_content(sc_memory_context * ctx, sc_addr
  * </ul>
 
  */
-_SC_EXTERN sc_result sc_memory_get_link_content(sc_memory_context const * ctx, sc_addr addr, sc_stream **stream);
+_SC_EXTERN sc_result sc_memory_get_link_content(sc_memory_context const * ctx, sc_addr addr, sc_stream ** stream);
 
 /*! Search sc-link addrs by specified checksum
  * @param stream Pointert to stream that contains data for search
@@ -184,18 +186,27 @@ _SC_EXTERN sc_result sc_memory_get_link_content(sc_memory_context const * ctx, s
  * sc-addrs
  * @attention \p result array need to be free after usage
  */
-_SC_EXTERN sc_result sc_memory_find_links_with_content(sc_memory_context const * ctx, sc_stream const * stream, sc_addr **result, sc_uint32 *result_count);
+_SC_EXTERN sc_result sc_memory_find_links_with_content(
+    sc_memory_context const * ctx,
+    sc_stream const * stream,
+    sc_addr ** result,
+    sc_uint32 * result_count);
 
 /*! Free buffer allocated for links content find result
  */
 _SC_EXTERN void sc_memory_free_buff(sc_pointer buff);
 
-/*! Setup new access levele for sc-element. New access levels will be a minimum from context access levels and parameter \b access_levels
+/*! Setup new access levele for sc-element. New access levels will be a minimum from context access levels and parameter
+ * \b access_levels
  * @param addr sc-add of sc-element to change access levels
  * @param access_levels New access levels
  * @param new_value Pointer to structure that contains new value of access levels. This pointer can be a NULL.
  */
-_SC_EXTERN sc_result sc_memory_set_element_access_levels(sc_memory_context const * ctx, sc_addr addr, sc_access_levels access_levels, sc_access_levels * new_value);
+_SC_EXTERN sc_result sc_memory_set_element_access_levels(
+    sc_memory_context const * ctx,
+    sc_addr addr,
+    sc_access_levels access_levels,
+    sc_access_levels * new_value);
 
 /*! Get access levels of sc-element
  * @param addr sc-addr of sc-element to get access levels
@@ -203,19 +214,18 @@ _SC_EXTERN sc_result sc_memory_set_element_access_levels(sc_memory_context const
  *
  * @return If access levele returned in \b result, then return SC_RESULT_OK; otherwise returns error code
  */
-_SC_EXTERN sc_result sc_memory_get_element_access_levels(sc_memory_context const * ctx, sc_addr addr, sc_access_levels * result);
+_SC_EXTERN sc_result
+sc_memory_get_element_access_levels(sc_memory_context const * ctx, sc_addr addr, sc_access_levels * result);
 
 /*! Collect statistic information about current state of sc-memory
  * @param stat Pointer to structure, that will contains statistics info
  * @return If info collected without errors, then return SC_RESULT_OK; otherwise return SC_RESULT_ERROR
  */
-_SC_EXTERN sc_result sc_memory_stat(sc_memory_context const * ctx, sc_stat *stat);
+_SC_EXTERN sc_result sc_memory_stat(sc_memory_context const * ctx, sc_stat * stat);
 
 /*! Save sc-memory state.
  * Calls from application, when request to save memory state
  */
 _SC_EXTERN sc_result sc_memory_save(sc_memory_context const * ctx);
-
-
 
 #endif

@@ -15,19 +15,19 @@
 #include <atomic>
 #include <thread>
 
-int main(int argc, char *argv[]) try
+int main(int argc, char * argv[])
+try
 {
   boost::program_options::options_description options_description("Builder usage");
-  options_description.add_options()
-      ("help", "Display this message")
-      ("ext-path,e", boost::program_options::value<std::string>(), "Path to directory with sc-memory extensions")
-      ("repo-path,r", boost::program_options::value<std::string>(), "Path to repository")
-      ("verbose,v", "Flag to don't save sc-memory state on exit")
-      ("clear,c", "Flag to clear sc-memory on start")
-      ("config-file,i", boost::program_options::value<std::string>(), "Path to configuration file");
+  options_description.add_options()("help", "Display this message")(
+      "ext-path,e", boost::program_options::value<std::string>(), "Path to directory with sc-memory extensions")(
+      "repo-path,r", boost::program_options::value<std::string>(), "Path to repository")(
+      "verbose,v", "Flag to don't save sc-memory state on exit")("clear,c", "Flag to clear sc-memory on start")(
+      "config-file,i", boost::program_options::value<std::string>(), "Path to configuration file");
 
   boost::program_options::variables_map vm;
-  boost::program_options::store(boost::program_options::command_line_parser(argc, argv).options(options_description).run(), vm);
+  boost::program_options::store(
+      boost::program_options::command_line_parser(argc, argv).options(options_description).run(), vm);
   boost::program_options::notify(vm);
 
   std::string configFile;
@@ -56,10 +56,9 @@ int main(int argc, char *argv[]) try
     return 0;
   }
 
-  std::atomic_bool isRun = { true };
+  std::atomic_bool isRun = {true};
   utils::ScSignalHandler::Initialize();
-  utils::ScSignalHandler::m_onTerminate = [&isRun]()
-  {
+  utils::ScSignalHandler::m_onTerminate = [&isRun]() {
     isRun = false;
   };
 
@@ -81,7 +80,7 @@ int main(int argc, char *argv[]) try
 
   ScMemory::Shutdown(saveState);
 
-  return EXIT_SUCCESS; // : EXIT_FAILURE;
+  return EXIT_SUCCESS;  // : EXIT_FAILURE;
 }
 catch (utils::ScException const & ex)
 {

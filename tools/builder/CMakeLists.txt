@@ -36,6 +36,10 @@ include_directories(${SC_MEMORY_SRC} ${GLIB2_INCLUDE_DIRS})
 target_link_libraries(sc-builder-lib sc-memory ${BOOST_LIBS_LIST})
 target_link_libraries(sc-builder sc-builder-lib)
 
+if (${SC_CLANG_FORMAT_CODE})
+	target_clangformat_setup(sc-builder)
+endif ()
+
 install_targets("/bin" sc-builder sc-builder-lib)
 sc_codegen(sc-builder-lib ${CMAKE_CURRENT_SOURCE_DIR}/src)
 

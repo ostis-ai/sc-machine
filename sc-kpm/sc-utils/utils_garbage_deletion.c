@@ -7,7 +7,7 @@
 #include "utils_garbage_deletion.h"
 #include "utils.h"
 
-sc_result agent_garbage_delete(const sc_event *event, sc_addr arg)
+sc_result agent_garbage_delete(const sc_event * event, sc_addr arg)
 {
   //! TODO: when sc-memory will start event in many threads (not in one), then need to check if element exists
   /// because it can be already deleted as an input or outout arc of element deleted in other thread
@@ -28,7 +28,7 @@ sc_result agent_garbage_delete(const sc_event *event, sc_addr arg)
   else
   {
     sc_uint32 count = 0;
-    sc_iterator3 *it = sc_iterator3_f_a_a_new(s_garbage_ctx, addr, 0, 0);
+    sc_iterator3 * it = sc_iterator3_f_a_a_new(s_garbage_ctx, addr, 0, 0);
     while (sc_iterator3_next(it) == SC_TRUE)
       ++count;
     sc_iterator3_free(it);

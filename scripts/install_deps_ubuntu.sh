@@ -4,4 +4,4 @@ sudo apt-get install -y librocksdb-dev \
                      libboost-filesystem-dev libboost-program-options-dev \
                      make cmake antlr gcc g++ llvm-7 \
                      libcurl4-openssl-dev libclang-7-dev libboost-python-dev \
-                     python3-dev python3 python3-pip python3-setuptools
+                     python3-dev python3 python3-pip python3-setuptools clang-format

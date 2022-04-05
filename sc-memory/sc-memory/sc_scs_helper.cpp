@@ -16,7 +16,6 @@
 
 namespace impl
 {
-
 class StructGenerator
 {
   friend class ::SCsHelper;
@@ -30,17 +29,18 @@ protected:
     SC_ASSERT(m_kNrelSCsGlobalIdtf.IsValid(), ());
   }
 
-  void operator() (scs::Parser const & parser)
+  void operator()(scs::Parser const & parser)
   {
-      // generate aliases
-      auto const & aliases = parser.GetAliases();
-      for (auto const & it : aliases) {
-          const auto & parsedElement = parser.GetParsedElement(it.second);
-          if (!parsedElement.GetType().IsEdge())
-          {
-              ResolveElement(parsedElement);
-          }
+    // generate aliases
+    auto const & aliases = parser.GetAliases();
+    for (auto const & it : aliases)
+    {
+      const auto & parsedElement = parser.GetParsedElement(it.second);
+      if (!parsedElement.GetType().IsEdge())
+      {
+        ResolveElement(parsedElement);
       }
+    }
 
     // generate triples
     auto const & triples = parser.GetParsedTriples();
@@ -56,8 +56,7 @@ protected:
       SC_ASSERT(srcAddr.IsValid() && trgAddr.IsValid(), ());
       if (!edge.GetType().IsEdge())
       {
-          SC_THROW_EXCEPTION(utils::ExceptionInvalidType,
-                             "Edge in triple has incorrect type");
+        SC_THROW_EXCEPTION(utils::ExceptionInvalidType, "Edge in triple has incorrect type");
       }
 
       ScAddr const edgeAddr = m_ctx.CreateEdge(edge.GetType(), srcAddr, trgAddr);
@@ -65,10 +64,8 @@ protected:
       m_idtfCache.insert(std::make_pair(edge.GetIdtf(), edgeAddr));
     }
 
-    parser.ForEachParsedElement([this](scs::ParsedElement const & el)
-    {
-      if (m_idtfCache.find(el.GetIdtf()) == m_idtfCache.end() &&
-          !el.GetType().IsEdge() &&
+    parser.ForEachParsedElement([this](scs::ParsedElement const & el) {
+      if (m_idtfCache.find(el.GetIdtf()) == m_idtfCache.end() && !el.GetType().IsEdge() &&
           !scs::TypeResolver::IsKeynodeType(el.GetIdtf()))
       {
         ResolveElement(el);
@@ -77,7 +74,6 @@ protected:
   }
 
 private:
-
   void SetSCsGlobalIdtf(std::string const & idtf, ScAddr const & addr)
   {
     SC_ASSERT(m_kNrelSCsGlobalIdtf.IsValid(), ());
@@ -87,8 +83,6 @@ private:
     ScAddr const linkAddr = m_ctx.CreateLink();
     ScLink link(m_ctx, linkAddr);
     link.Set(idtf);
-
-
 
     ScAddr const edgeAddr = m_ctx.CreateEdge(ScType::EdgeDCommonConst, addr, linkAddr);
     m_ctx.CreateEdge(ScType::EdgeAccessConstPosPerm, m_kNrelSCsGlobalIdtf, edgeAddr);
@@ -106,19 +100,15 @@ private:
       ScTemplate templ;
 
       templ.TripleWithRelation(
-        ScType::Unknown >> "_el",
-        ScType::EdgeDCommonVar,
-        addr,
-        ScType::EdgeAccessVarPosPerm,
-        m_kNrelSCsGlobalIdtf);
+          ScType::Unknown >> "_el", ScType::EdgeDCommonVar, addr, ScType::EdgeAccessVarPosPerm, m_kNrelSCsGlobalIdtf);
 
       ScTemplateSearchResult searchResult;
       if (m_ctx.HelperSearchTemplate(templ, searchResult))
       {
         if (result.IsValid() || searchResult.Size() > 1)
         {
-          SC_THROW_EXCEPTION(utils::ExceptionInvalidState,
-                             "There are more then 1 element with global identifier: " << idtf);
+          SC_THROW_EXCEPTION(
+              utils::ExceptionInvalidState, "There are more then 1 element with global identifier: " << idtf);
         }
 
         result = searchResult[0]["_el"];
@@ -203,7 +193,8 @@ private:
     return result;
   }
 
-  template <typename T> bool SetLinkContentT(ScAddr const & linkAddr, std::string const & value)
+  template <typename T>
+  bool SetLinkContentT(ScAddr const & linkAddr, std::string const & value)
   {
     T number;
     auto const result = utils::StringUtils::ParseNumber<T>(value, number);
@@ -232,7 +223,8 @@ private:
     else
     {
       // chekc if it's a number format
-      std::regex const rNumber("^\\^\"(int8|int16|int32|int64|uint8|uint16|uint32|uint64|float|double)\\s*:\\s*([0-9]+|[0-9]+[.][0-9]+)\"$");
+      std::regex const rNumber(
+          "^\\^\"(int8|int16|int32|int64|uint8|uint16|uint32|uint64|float|double)\\s*:\\s*([0-9]+|[0-9]+[.][0-9]+)\"$");
       std::smatch result;
       if (std::regex_match(el.GetValue(), result, rNumber))
       {
@@ -264,14 +256,12 @@ private:
           result = SetLinkContentT<uint64_t>(linkAddr, value);
         else
         {
-          SC_THROW_EXCEPTION(utils::ExceptionInvalidType,
-                             "Unsupported link binary type: " + type);
+          SC_THROW_EXCEPTION(utils::ExceptionInvalidType, "Unsupported link binary type: " + type);
         }
 
         if (!result)
         {
-          SC_THROW_EXCEPTION(utils::ExceptionInvalidState,
-                             "Can't parse value from: " + el.GetValue());
+          SC_THROW_EXCEPTION(utils::ExceptionInvalidState, "Can't parse value from: " + el.GetValue());
         }
       }
       else
@@ -290,7 +280,7 @@ private:
   ScAddr m_kNrelSCsGlobalIdtf;
 };
 
-} // namespace impl
+}  // namespace impl
 
 SCsHelper::SCsHelper(ScMemoryContext & ctx, SCsFileInterfacePtr const & fileInterface)
   : m_ctx(ctx)

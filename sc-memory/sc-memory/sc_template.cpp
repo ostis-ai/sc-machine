@@ -9,22 +9,22 @@
 
 #include <algorithm>
 
-ScTemplateItemValue operator >> (ScAddr const & value, char const * replName)
+ScTemplateItemValue operator>>(ScAddr const & value, char const * replName)
 {
   return ScTemplateItemValue(value, replName);
 }
 
-ScTemplateItemValue operator >> (ScAddr const & value, std::string const & replName)
+ScTemplateItemValue operator>>(ScAddr const & value, std::string const & replName)
 {
   return ScTemplateItemValue(value, replName.c_str());
 }
 
-ScTemplateItemValue operator >> (ScType const & value, char const * replName)
+ScTemplateItemValue operator>>(ScType const & value, char const * replName)
 {
   return ScTemplateItemValue(value, replName);
 }
 
-ScTemplateItemValue operator >> (ScType const & value, std::string const & replName)
+ScTemplateItemValue operator>>(ScType const & value, std::string const & replName)
 {
   return ScTemplateItemValue(value, replName.c_str());
 }
@@ -39,13 +39,20 @@ ScTemplate::ScTemplate(bool forceOrder /* = false */)
   m_constructions.reserve(16);
 }
 
-ScTemplate & ScTemplate::operator() (ScTemplateItemValue const & param1, ScTemplateItemValue const & param2, ScTemplateItemValue const & param3)
+ScTemplate & ScTemplate::operator()(
+    ScTemplateItemValue const & param1,
+    ScTemplateItemValue const & param2,
+    ScTemplateItemValue const & param3)
 {
   return Triple(param1, param2, param3);
 }
 
-ScTemplate & ScTemplate::operator() (ScTemplateItemValue const & param1, ScTemplateItemValue const & param2, ScTemplateItemValue const & param3,
-                                     ScTemplateItemValue const & param4, ScTemplateItemValue const & param5)
+ScTemplate & ScTemplate::operator()(
+    ScTemplateItemValue const & param1,
+    ScTemplateItemValue const & param2,
+    ScTemplateItemValue const & param3,
+    ScTemplateItemValue const & param4,
+    ScTemplateItemValue const & param5)
 {
   return TripleWithRelation(param1, param2, param3, param4, param5);
 }
@@ -74,9 +81,10 @@ bool ScTemplate::HasReplacement(std::string const & repl) const
   return (m_replacements.find(repl) != m_replacements.end());
 }
 
-ScTemplate & ScTemplate::Triple(ScTemplateItemValue const & param1,
-                                ScTemplateItemValue const & param2,
-                                ScTemplateItemValue const & param3)
+ScTemplate & ScTemplate::Triple(
+    ScTemplateItemValue const & param1,
+    ScTemplateItemValue const & param2,
+    ScTemplateItemValue const & param3)
 {
   size_t const replPos = m_constructions.size() * 3;
   m_constructions.emplace_back(ScTemplateConstr3(param1, param2, param3, m_constructions.size()));
@@ -97,8 +105,7 @@ ScTemplate & ScTemplate::Triple(ScTemplateItemValue const & param1,
       SC_THROW_EXCEPTION(utils::ExceptionInvalidParams, "You should to use variable types in template");
     }
 
-    if ((value.m_itemType == ScTemplateItemValue::Type::Addr) &&
-        !value.m_addrValue.IsValid())
+    if ((value.m_itemType == ScTemplateItemValue::Type::Addr) && !value.m_addrValue.IsValid())
     {
       SC_THROW_EXCEPTION(utils::ExceptionInvalidParams, "You can't use empty ScAddr");
     }
@@ -112,8 +119,8 @@ ScTemplate & ScTemplate::Triple(ScTemplateItemValue const & param1,
       }
 
       /* Store type there, if replacement for any type.
-      * That allows to use it before original type will processed
-      */
+       * That allows to use it before original type will processed
+       */
       size_t const constrIdx = replPos / 3;
       SC_ASSERT(constrIdx < m_constructions.size(), ());
       ScTemplateItemValue const & valueType = m_constructions[constrIdx].m_values[i];
@@ -128,9 +135,12 @@ ScTemplate & ScTemplate::Triple(ScTemplateItemValue const & param1,
   return *this;
 }
 
-ScTemplate & ScTemplate::TripleWithRelation(ScTemplateItemValue const & param1, ScTemplateItemValue const & param2,
-                                            ScTemplateItemValue const & param3, ScTemplateItemValue const & param4,
-                                            ScTemplateItemValue const & param5)
+ScTemplate & ScTemplate::TripleWithRelation(
+    ScTemplateItemValue const & param1,
+    ScTemplateItemValue const & param2,
+    ScTemplateItemValue const & param3,
+    ScTemplateItemValue const & param4,
+    ScTemplateItemValue const & param5)
 {
   size_t const replPos = m_constructions.size() * 3;
 

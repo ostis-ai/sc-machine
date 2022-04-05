@@ -10,8 +10,7 @@
 
 namespace utils
 {
-
-void ToString(const CXString &str, std::string &output)
+void ToString(const CXString & str, std::string & output)
 {
   auto cstr = clang_getCString(str);
 
@@ -32,16 +31,16 @@ std::string GetQualifiedName(const std::string & displayName, const Namespace & 
   return name;
 }
 
-std::string GetQualifiedName(const Cursor &cursor, const Namespace &currentNamespace)
+std::string GetQualifiedName(const Cursor & cursor, const Namespace & currentNamespace)
 {
   return GetQualifiedName(cursor.GetSpelling(), currentNamespace);
 }
 
-void FatalError(const std::string &error)
+void FatalError(const std::string & error)
 {
   std::cerr << "Error: " << error << std::endl;
 
   exit(EXIT_FAILURE);
 }
 
-} // namespace utils
+}  // namespace utils

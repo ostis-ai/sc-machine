@@ -1,8 +1,8 @@
 /*
-* This source file is part of an OSTIS project. For the latest info, see http://ostis.net
-* Distributed under the MIT License
-* (See accompanying file COPYING.MIT or copy at http://opensource.org/licenses/MIT)
-*/
+ * This source file is part of an OSTIS project. For the latest info, see http://ostis.net
+ * Distributed under the MIT License
+ * (See accompanying file COPYING.MIT or copy at http://opensource.org/licenses/MIT)
+ */
 
 #include "sc_agent.hpp"
 
@@ -11,11 +11,10 @@
 
 namespace
 {
-
 bool gInitializeResult = false;
 bool gIsInitialized = false;
 
-} // namespace
+}  // namespace
 
 bool ScAgentInit(bool force /* = false */)
 {
@@ -28,7 +27,6 @@ bool ScAgentInit(bool force /* = false */)
   return gInitializeResult;
 }
 
-
 ScAgent::ScAgent(char const * name, sc_uint8 accessLvl)
   : m_memoryCtx(accessLvl, name)
 {
@@ -37,7 +35,6 @@ ScAgent::ScAgent(char const * name, sc_uint8 accessLvl)
 ScAgent::~ScAgent()
 {
 }
-
 
 // ---------------------------
 ScAgentAction::ScAgentAction(ScAddr const & cmdClassAddr, char const * name, sc_uint8 accessLvl)
@@ -61,7 +58,8 @@ sc_result ScAgentAction::Run(ScAddr const & listenAddr, ScAddr const & edgeAddr,
     if (m_memoryCtx.HelperCheckEdge(m_cmdClassAddr, cmdAddr, ScType::EdgeAccessConstPosPerm))
     {
       m_memoryCtx.EraseElement(edgeAddr);
-      ScAddr progressAddr = m_memoryCtx.CreateEdge(ScType::EdgeAccessConstPosTemp, ScKeynodes::kCommandProgressdAddr, cmdAddr);
+      ScAddr progressAddr =
+          m_memoryCtx.CreateEdge(ScType::EdgeAccessConstPosTemp, ScKeynodes::kCommandProgressdAddr, cmdAddr);
       assert(progressAddr.IsValid());
       ScAddr resultAddr = m_memoryCtx.CreateNode(ScType::NodeConstStruct);
       assert(resultAddr.IsValid());
@@ -85,11 +83,8 @@ sc_result ScAgentAction::Run(ScAddr const & listenAddr, ScAddr const & edgeAddr,
 
 ScAddr ScAgentAction::GetParam(ScAddr const & cmdAddr, ScAddr const & relationAddr, ScType const & paramType) const
 {
-  ScIterator5Ptr iter = m_memoryCtx.Iterator5(cmdAddr,
-                                              ScType::EdgeAccessConstPosPerm,
-                                              paramType,
-                                              ScType::EdgeAccessConstPosPerm,
-                                              relationAddr);
+  ScIterator5Ptr iter = m_memoryCtx.Iterator5(
+      cmdAddr, ScType::EdgeAccessConstPosPerm, paramType, ScType::EdgeAccessConstPosPerm, relationAddr);
 
   if (!iter->Next())
     return ScAddr();
@@ -120,7 +115,9 @@ ScAddr const & ScAgentAction::GetNrelResultAddr()
 ScAddr ScAgentAction::CreateCommand(ScMemoryContext & ctx, ScAddr const & cmdClassAddr, ScAddrVector const & params)
 {
   if (params.size() >= ScKeynodes::GetRrelIndexNum())
-    SC_THROW_EXCEPTION(utils::ExceptionInvalidParams, "You should use <= " + std::to_string(ScKeynodes::GetRrelIndexNum()) + " params");
+    SC_THROW_EXCEPTION(
+        utils::ExceptionInvalidParams,
+        "You should use <= " + std::to_string(ScKeynodes::GetRrelIndexNum()) + " params");
 
   SC_ASSERT(cmdClassAddr.IsValid(), ());
 
@@ -152,11 +149,13 @@ bool ScAgentAction::InitiateCommand(ScMemoryContext & ctx, ScAddr const & cmdAdd
   return ctx.CreateEdge(ScType::EdgeAccessConstPosTemp, ScKeynodes::kCommandInitiatedAddr, cmdAddr).IsValid();
 }
 
-bool ScAgentAction::InitiateCommandWait(ScMemoryContext & ctx, ScAddr const & cmdAddr, uint32_t waitTimeOutMS/* = 5000 */)
+bool ScAgentAction::InitiateCommandWait(
+    ScMemoryContext & ctx,
+    ScAddr const & cmdAddr,
+    uint32_t waitTimeOutMS /* = 5000 */)
 {
   ScWaitActionFinished waiter(ctx, cmdAddr);
-  waiter.SetOnWaitStartDelegate([&]()
-  {
+  waiter.SetOnWaitStartDelegate([&]() {
     ScAgentAction::InitiateCommand(ctx, cmdAddr);
   });
   return waiter.Wait(waitTimeOutMS);
@@ -165,11 +164,11 @@ bool ScAgentAction::InitiateCommandWait(ScMemoryContext & ctx, ScAddr const & cm
 ScAddr ScAgentAction::GetCommandResultAddr(ScMemoryContext & ctx, ScAddr const & cmdAddr)
 {
   ScIterator5Ptr it = ctx.Iterator5(
-    cmdAddr,
-    ScType::EdgeDCommonConst,
-    ScType::NodeConstStruct,
-    ScType::EdgeAccessConstPosPerm,
-    ScKeynodes::kNrelResult);
+      cmdAddr,
+      ScType::EdgeDCommonConst,
+      ScType::NodeConstStruct,
+      ScType::EdgeAccessConstPosPerm,
+      ScKeynodes::kNrelResult);
 
   if (it->Next())
     return it->Get(2);
@@ -190,14 +189,8 @@ ScAddr ScAgentAction::GetCommandResultCodeAddr(ScMemoryContext & ctx, ScAddr con
     return ScAddr();
 
   ScTemplate templ;
-  templ.Triple(
-    ScKeynodes::kScResult,
-    ScType::EdgeAccessVarPosPerm,
-    ScType::NodeVarClass >> "result_class");
-  templ.Triple(
-    "result_class",
-    ScType::EdgeAccessVarPosPerm,
-    resultAddr);
+  templ.Triple(ScKeynodes::kScResult, ScType::EdgeAccessVarPosPerm, ScType::NodeVarClass >> "result_class");
+  templ.Triple("result_class", ScType::EdgeAccessVarPosPerm, resultAddr);
 
   ScTemplateSearchResult searchResult;
   if (!ctx.HelperSearchTemplate(templ, searchResult))
@@ -209,10 +202,7 @@ ScAddr ScAgentAction::GetCommandResultCodeAddr(ScMemoryContext & ctx, ScAddr con
 
 ScAgentAction::State ScAgentAction::GetCommandState(ScMemoryContext & ctx, ScAddr const & cmdAddr)
 {
-  ScIterator3Ptr it = ctx.Iterator3(
-    ScType::NodeConstClass,
-    ScType::EdgeAccessConstPosTemp,
-    cmdAddr);
+  ScIterator3Ptr it = ctx.Iterator3(ScType::NodeConstClass, ScType::EdgeAccessConstPosTemp, cmdAddr);
 
   ScAddr stateAddr;
   while (it->Next())

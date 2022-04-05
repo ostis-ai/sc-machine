@@ -10,82 +10,69 @@
 namespace scs
 {
 
-TypeResolver::MapType TypeResolver::ms_connectorToType =
-{
-  {">",    ScType::EdgeDCommon},
-  {"<",    ScType::EdgeDCommon},
-  {"<>",   ScType::EdgeUCommon},
-  {"..>",  ScType::EdgeAccess},
-  {"<..",  ScType::EdgeAccess},
-  {"<=>",  ScType::EdgeUCommonConst},
-  {"_<=>", ScType::EdgeUCommonVar},
-  {"=>",   ScType::EdgeDCommonConst},
-  {"<=",   ScType::EdgeDCommonConst},
-  {"_=>",  ScType::EdgeDCommonVar},
-  {"_<=",  ScType::EdgeDCommonVar},
-  {"->",   ScType::EdgeAccessConstPosPerm},
-  {"<-",   ScType::EdgeAccessConstPosPerm},
-  {"_->",  ScType::EdgeAccessVarPosPerm},
-  {"_<-",  ScType::EdgeAccessVarPosPerm},
-  {"-|>",  ScType::EdgeAccessConstNegPerm},
-  {"<|-",  ScType::EdgeAccessConstNegPerm},
-  {"_-|>", ScType::EdgeAccessVarNegPerm},
-  {"_<|-", ScType::EdgeAccessVarNegPerm},
-  {"-/>",  ScType::EdgeAccessConstFuzPerm},
-  {"</-",  ScType::EdgeAccessConstFuzPerm},
-  {"_-/>", ScType::EdgeAccessVarFuzPerm},
-  {"_</-", ScType::EdgeAccessVarFuzPerm},
-  {"~>",   ScType::EdgeAccessConstPosTemp},
-  {"<~",   ScType::EdgeAccessConstPosTemp},
-  {"_~>",  ScType::EdgeAccessVarPosTemp},
-  {"_<~",  ScType::EdgeAccessVarPosTemp},
-  {"~|>",  ScType::EdgeAccessConstNegTemp},
-  {"<|~",  ScType::EdgeAccessConstNegTemp},
-  {"_~|>", ScType::EdgeAccessVarNegTemp},
-  {"_<|~", ScType::EdgeAccessVarNegTemp},
-  {"~/>",  ScType::EdgeAccessConstFuzTemp},
-  {"</~",  ScType::EdgeAccessConstFuzTemp},
-  {"_~/>", ScType::EdgeAccessVarFuzTemp},
-  {"_</~", ScType::EdgeAccessVarFuzTemp}
-};
+TypeResolver::MapType TypeResolver::ms_connectorToType = {
+    {">", ScType::EdgeDCommon},
+    {"<", ScType::EdgeDCommon},
+    {"<>", ScType::EdgeUCommon},
+    {"..>", ScType::EdgeAccess},
+    {"<..", ScType::EdgeAccess},
+    {"<=>", ScType::EdgeUCommonConst},
+    {"_<=>", ScType::EdgeUCommonVar},
+    {"=>", ScType::EdgeDCommonConst},
+    {"<=", ScType::EdgeDCommonConst},
+    {"_=>", ScType::EdgeDCommonVar},
+    {"_<=", ScType::EdgeDCommonVar},
+    {"->", ScType::EdgeAccessConstPosPerm},
+    {"<-", ScType::EdgeAccessConstPosPerm},
+    {"_->", ScType::EdgeAccessVarPosPerm},
+    {"_<-", ScType::EdgeAccessVarPosPerm},
+    {"-|>", ScType::EdgeAccessConstNegPerm},
+    {"<|-", ScType::EdgeAccessConstNegPerm},
+    {"_-|>", ScType::EdgeAccessVarNegPerm},
+    {"_<|-", ScType::EdgeAccessVarNegPerm},
+    {"-/>", ScType::EdgeAccessConstFuzPerm},
+    {"</-", ScType::EdgeAccessConstFuzPerm},
+    {"_-/>", ScType::EdgeAccessVarFuzPerm},
+    {"_</-", ScType::EdgeAccessVarFuzPerm},
+    {"~>", ScType::EdgeAccessConstPosTemp},
+    {"<~", ScType::EdgeAccessConstPosTemp},
+    {"_~>", ScType::EdgeAccessVarPosTemp},
+    {"_<~", ScType::EdgeAccessVarPosTemp},
+    {"~|>", ScType::EdgeAccessConstNegTemp},
+    {"<|~", ScType::EdgeAccessConstNegTemp},
+    {"_~|>", ScType::EdgeAccessVarNegTemp},
+    {"_<|~", ScType::EdgeAccessVarNegTemp},
+    {"~/>", ScType::EdgeAccessConstFuzTemp},
+    {"</~", ScType::EdgeAccessConstFuzTemp},
+    {"_~/>", ScType::EdgeAccessVarFuzTemp},
+    {"_</~", ScType::EdgeAccessVarFuzTemp}};
 
-TypeResolver::MapType TypeResolver::ms_keynodeToType =
-{
-  {"sc_node",                   ScType::Node},
-  {"sc_link",                   ScType::Link},
-  {"sc_arc_common",             ScType::EdgeDCommon},
-  {"sc_edge_dcommon",           ScType::EdgeDCommon},
-  {"sc_edge",                   ScType::EdgeUCommon},
-  {"sc_edge_ucommon",           ScType::EdgeUCommon},
-  {"sc_arc_main",               ScType::EdgeAccessConstPosPerm},
-  {"sc_edge_main",              ScType::EdgeAccessConstPosPerm},
-  {"sc_arc_access",             ScType::EdgeAccess},
-  {"sc_edge_access",            ScType::EdgeAccess},
+TypeResolver::MapType TypeResolver::ms_keynodeToType = {
+    {"sc_node", ScType::Node},
+    {"sc_link", ScType::Link},
+    {"sc_arc_common", ScType::EdgeDCommon},
+    {"sc_edge_dcommon", ScType::EdgeDCommon},
+    {"sc_edge", ScType::EdgeUCommon},
+    {"sc_edge_ucommon", ScType::EdgeUCommon},
+    {"sc_arc_main", ScType::EdgeAccessConstPosPerm},
+    {"sc_edge_main", ScType::EdgeAccessConstPosPerm},
+    {"sc_arc_access", ScType::EdgeAccess},
+    {"sc_edge_access", ScType::EdgeAccess},
 
-  {"sc_node_tuple",             ScType::NodeTuple},
-  {"sc_node_struct",            ScType::NodeStruct},
-  {"sc_node_role_relation",     ScType::NodeRole},
-  {"sc_node_norole_relation",   ScType::NodeNoRole},
-  {"sc_node_class",             ScType::NodeClass},
-  {"sc_node_abstract",          ScType::NodeAbstract},
-  {"sc_node_material",          ScType::NodeMaterial},
+    {"sc_node_tuple", ScType::NodeTuple},
+    {"sc_node_struct", ScType::NodeStruct},
+    {"sc_node_role_relation", ScType::NodeRole},
+    {"sc_node_norole_relation", ScType::NodeNoRole},
+    {"sc_node_class", ScType::NodeClass},
+    {"sc_node_abstract", ScType::NodeAbstract},
+    {"sc_node_material", ScType::NodeMaterial},
 
-  // backward compatibility
-  {"sc_node_not_relation",      ScType::NodeClass},
-  {"sc_node_not_binary_tuple",  ScType::NodeTuple}
-};
+    // backward compatibility
+    {"sc_node_not_relation", ScType::NodeClass},
+    {"sc_node_not_binary_tuple", ScType::NodeTuple}};
 
 TypeResolver::IsType TypeResolver::ms_reversedConnectors =
-{
-  "<", "<..",
-  "<=", "_<=",
-  "<-", "_<-",
-  "<|-", "_<|-",
-  "</-", "_</-",
-  "<~", "_<~",
-  "<|~", "_<|~",
-  "</~", "_</~"
-};
+    {"<", "<..", "<=", "_<=", "<-", "_<-", "<|-", "_<|-", "</-", "_</-", "<~", "_<~", "<|~", "_<|~", "</~", "_</~"};
 
 ScType const & TypeResolver::GetConnectorType(std::string const & connectorAlias)
 {
@@ -131,4 +118,4 @@ bool TypeResolver::IsUnnamed(std::string const & alias)
   return (alias == "...");
 }
 
-}
+}  // namespace scs

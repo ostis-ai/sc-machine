@@ -16,7 +16,7 @@ protected:
 public:
   _SC_EXTERN std::string const & GetData() const;
   _SC_EXTERN std::string GetResultCodeString() const;
-  
+
   _SC_EXTERN bool IsSuccess() const;
 
 private:

@@ -18,4 +18,4 @@ sc_result ui_initialize_commands();
 //! Destroy event handlers for command operations
 void ui_shutdown_commands();
 
-#endif // _ui_command_h_
+#endif  // _ui_command_h_

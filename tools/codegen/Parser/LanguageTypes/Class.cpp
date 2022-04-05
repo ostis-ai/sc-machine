@@ -10,21 +10,17 @@
 
 #include <boost/algorithm/string.hpp>
 
-BaseClass::BaseClass(const Cursor &cursor)
+BaseClass::BaseClass(const Cursor & cursor)
   : name(cursor.GetType().GetCanonicalType().GetDisplayName())
 {
-
 }
 
 bool BaseClass::IsNative() const
 {
-  return (name == Classes::Object ||
-          name == Classes::Agent ||
-          name == Classes::AgentAction ||
-          name == Classes::Module);
+  return (name == Classes::Object || name == Classes::Agent || name == Classes::AgentAction || name == Classes::Module);
 }
 
-Class::Class(const Cursor &cursor, const Namespace &currentNamespace)
+Class::Class(const Cursor & cursor, const Namespace & currentNamespace)
   : LanguageType(cursor, currentNamespace)
   , m_name(cursor.GetDisplayName())
   , m_qualifiedName(cursor.GetType().GetDisplayName())
@@ -33,11 +29,10 @@ Class::Class(const Cursor &cursor, const Namespace &currentNamespace)
   m_isScObject = false;
   m_displayName = cursor.GetSpelling();
 
-  for (auto &child : cursor.GetChildren())
+  for (auto & child : cursor.GetChildren())
   {
     switch (child.GetKind())
     {
-
     case CXCursor_CXXBaseSpecifier:
     {
       auto baseClass = new BaseClass(child);
@@ -55,7 +50,7 @@ Class::Class(const Cursor &cursor, const Namespace &currentNamespace)
         m_metaData.SetProperty(ParserMeta::ParentClass, baseClass->name);
       }
     }
-      break;
+    break;
 
       // constructor
     case CXCursor_Constructor:
@@ -96,7 +91,6 @@ Class::Class(const Cursor &cursor, const Namespace &currentNamespace)
     default:
       break;
     }
-
   }
 
   m_metaData.Check();
@@ -189,10 +183,11 @@ void Class::GenerateStaticFieldsInitCode(std::stringstream & outCode) const
   if (IsActionAgent())
   {
     outCode << "\t";
-    Field::GenerateResolveKeynodeCode(m_metaData.GetNativeString(Props::AgentCommandClass),
-                                      "ms_cmdClass_" + m_displayName,
-                                      "ScType::NodeConstClass",
-                                      outCode);
+    Field::GenerateResolveKeynodeCode(
+        m_metaData.GetNativeString(Props::AgentCommandClass),
+        "ms_cmdClass_" + m_displayName,
+        "ScType::NodeConstClass",
+        outCode);
     outCode << " \\\n";
   }
 }
@@ -226,7 +221,9 @@ void Class::GenerateDeclarations(std::stringstream & outCode) const
 
       outCode << "\\\nprotected: ";
       outCode << "\\\n\t" << constrCode;
-      outCode << m_displayName << "(ScAddr const & cmdClassAddr, char const * name, sc_uint8 accessLvl) : Super(cmdClassAddr, name, accessLvl) {}";
+      outCode << m_displayName
+              << "(ScAddr const & cmdClassAddr, char const * name, sc_uint8 accessLvl) : Super(cmdClassAddr, name, "
+                 "accessLvl) {}";
     }
     else
     {
@@ -257,8 +254,8 @@ void Class::GenerateDeclarations(std::stringstream & outCode) const
       outCode << "\\\nprotected: ";
       outCode << "\\\n	" << constrCode;
       outCode << m_displayName << "(char const * name, sc_uint8 accessLvl) : Super(name, accessLvl) {}";
-      outCode << "\\\n	virtual sc_result Run(ScAddr const & listenAddr, ScAddr const & edgeAddr, ScAddr const & otherAddr) override; ";
-
+      outCode << "\\\n	virtual sc_result Run(ScAddr const & listenAddr, ScAddr const & edgeAddr, ScAddr const & "
+                 "otherAddr) override; ";
     }
 
     outCode << "\\\nprivate:";
@@ -275,10 +272,13 @@ void Class::GenerateDeclarations(std::stringstream & outCode) const
     {
       outCode << "\\\n  static ScAddr const & GetCommandClassAddr() { return ms_cmdClass_" << m_displayName << "; }";
     }
-    outCode << "\\\n	static bool handler_emit" << "(ScAddr const & addr, ScAddr const & edgeAddr, ScAddr const & otherAddr)";
+    outCode << "\\\n	static bool handler_emit"
+            << "(ScAddr const & addr, ScAddr const & edgeAddr, ScAddr const & otherAddr)";
     outCode << "\\\n	{";
-    outCode << "\\\n		" << m_displayName << " Instance(" << instConstructParams << "\"" << m_displayName << "\", sc_access_lvl_make_min);";
-    outCode << "\\\n		" << "return Instance.Run(addr, edgeAddr, otherAddr) == SC_RESULT_OK;";
+    outCode << "\\\n		" << m_displayName << " Instance(" << instConstructParams << "\"" << m_displayName
+            << "\", sc_access_lvl_make_min);";
+    outCode << "\\\n		"
+            << "return Instance.Run(addr, edgeAddr, otherAddr) == SC_RESULT_OK;";
     outCode << "\\\n	}";
 
     // register/unregister
@@ -286,16 +286,19 @@ void Class::GenerateDeclarations(std::stringstream & outCode) const
     outCode << "\\\n	{";
     outCode << "\\\n		SC_ASSERT(!ms_event.get(), ());";
     outCode << "\\\n		SC_ASSERT(!ms_context.get(), ());";
-    outCode << "\\\n		ms_context.reset(new ScMemoryContext(sc_access_lvl_make_min, \"handler_" << m_displayName << "\"));";
-    outCode << "\\\n		ms_event.reset(new ScEvent(*ms_context, " << listenAddr << ", "
-            << eventType << ", &" << m_displayName << "::handler_emit" << "));";
+    outCode << "\\\n		ms_context.reset(new ScMemoryContext(sc_access_lvl_make_min, \"handler_" << m_displayName
+            << "\"));";
+    outCode << "\\\n		ms_event.reset(new ScEvent(*ms_context, " << listenAddr << ", " << eventType << ", &"
+            << m_displayName << "::handler_emit"
+            << "));";
     outCode << "\\\n        if (ms_event.get())";
     outCode << "\\\n        {";
 
     /// TODO: Use common log system
     if (isActionAgent)
     {
-      outCode << "\\\n            SC_LOG_INFO(\"Register agent " << m_displayName << " to action " << m_metaData.GetNativeString(Props::AgentCommandClass) << "\");";
+      outCode << "\\\n            SC_LOG_INFO(\"Register agent " << m_displayName << " to action "
+              << m_metaData.GetNativeString(Props::AgentCommandClass) << "\");";
     }
     else
     {
@@ -315,7 +318,7 @@ void Class::GenerateDeclarations(std::stringstream & outCode) const
     outCode << "\\\n		ms_context.reset();";
     outCode << "\\\n	}";
   }
-  else if (IsModule())	// overrides for modules
+  else if (IsModule())  // overrides for modules
   {
     outCode << "\\\npublic:";
     outCode << "\\\n	sc_result InitializeGenerated()";
@@ -325,7 +328,6 @@ void Class::GenerateDeclarations(std::stringstream & outCode) const
 
     outCode << "\\\n		if (!ScAgentInit(false))";
     outCode << "\\\n			return SC_RESULT_ERROR;";
-
 
     outCode << "\\\n		return InitializeImpl();";
     outCode << "\\\n	}";

@@ -18,8 +18,7 @@ bool Constructor::ShouldCompile() const
 
 bool Constructor::isAccessible() const
 {
-  return m_accessModifier == CX_CXXPublic &&
-      !m_metaData.GetFlag(kMetaDisable);
+  return m_accessModifier == CX_CXXPublic && !m_metaData.GetFlag(kMetaDisable);
 }
 
 std::string Constructor::getTemplateParameters() const

@@ -35,10 +35,11 @@ public:
 
   _SC_EXTERN static void LogMute();
   _SC_EXTERN static void LogUnmute();
-protected:
 
+protected:
   static void RegisterContext(ScMemoryContext const * ctx);
   static void UnregisterContext(ScMemoryContext const * ctx);
+
 private:
   static bool HasMemoryContext(ScMemoryContext const * ctx);
 
@@ -72,10 +73,16 @@ public:
 
   // Disable object copying
   ScMemoryContext(ScMemoryContext const & other) = delete;
-  ScMemoryContext & operator = (ScMemoryContext const & other) = delete;
+  ScMemoryContext & operator=(ScMemoryContext const & other) = delete;
 
-  sc_memory_context const * operator * () const { return m_context; }
-  sc_memory_context const * GetRealContext() const { return m_context; }
+  sc_memory_context const * operator*() const
+  {
+    return m_context;
+  }
+  sc_memory_context const * GetRealContext() const
+  {
+    return m_context;
+  }
 
   //! Call this function, when you request to destroy real memory context, before destructor calls for this object
   _SC_EXTERN void Destroy();
@@ -87,7 +94,10 @@ public:
   void EndEventsPending();
 
   // returns copy, because of Python wrapper
-  std::string const & GetName() const { return m_name; }
+  std::string const & GetName() const
+  {
+    return m_name;
+  }
 
   _SC_EXTERN bool IsValid() const;
 
@@ -108,8 +118,8 @@ public:
   _SC_EXTERN ScType GetElementType(ScAddr const & addr) const;
 
   /*! Change subtype of sc-element.
-     * Return true, if there are no any errors; otherwise return false.
-     */
+   * Return true, if there are no any errors; otherwise return false.
+   */
   _SC_EXTERN bool SetElementSubtype(ScAddr const & addr, sc_type subtype);
 
   _SC_EXTERN ScAddr GetEdgeSource(ScAddr const & edgeAddr) const;
@@ -128,7 +138,8 @@ public:
   SC_DEPRECATED(0.6.0, "Use `ScAddrList FindLinksByContent(ScStreamPtr const & stream)` instead.")
   _SC_EXTERN bool FindLinksByContent(ScStreamPtr const & stream, ScAddrVector & found);
   _SC_EXTERN ScAddrVector FindLinksByContent(ScStreamPtr const & stream);
-  template <typename TContentType> ScAddrVector FindLinksByContent(TContentType const & value)
+  template <typename TContentType>
+  ScAddrVector FindLinksByContent(TContentType const & value)
   {
     return FindLinksByContent(ScStreamMakeRead(value));
   }
@@ -137,33 +148,33 @@ public:
   _SC_EXTERN bool Save();
 
   template <typename ParamType1, typename ParamType2, typename ParamType3, typename ParamType4, typename ParamType5>
-  std::shared_ptr<TIterator5<ParamType1, ParamType2, ParamType3, ParamType4, ParamType5>> Iterator5(ParamType1 const & param1,
-                                                                                                    ParamType2 const & param2,
-                                                                                                    ParamType3 const & param3,
-                                                                                                    ParamType4 const & param4,
-                                                                                                    ParamType5 const & param5)
+  std::shared_ptr<TIterator5<ParamType1, ParamType2, ParamType3, ParamType4, ParamType5>> Iterator5(
+      ParamType1 const & param1,
+      ParamType2 const & param2,
+      ParamType3 const & param3,
+      ParamType4 const & param4,
+      ParamType5 const & param5)
   {
     return std::shared_ptr<TIterator5<ParamType1, ParamType2, ParamType3, ParamType4, ParamType5>>(
-      new TIterator5<ParamType1, ParamType2, ParamType3, ParamType4, ParamType5>(*this, param1, param2, param3, param4, param5));
+        new TIterator5<ParamType1, ParamType2, ParamType3, ParamType4, ParamType5>(
+            *this, param1, param2, param3, param4, param5));
   }
 
   template <typename ParamType1, typename ParamType2, typename ParamType3>
-  std::shared_ptr<TIterator3<ParamType1, ParamType2, ParamType3>> Iterator3(ParamType1 const & param1,
-                                                                            ParamType2 const & param2,
-                                                                            ParamType3 const & param3)
+  std::shared_ptr<TIterator3<ParamType1, ParamType2, ParamType3>> Iterator3(
+      ParamType1 const & param1,
+      ParamType2 const & param2,
+      ParamType3 const & param3)
   {
     return std::shared_ptr<TIterator3<ParamType1, ParamType2, ParamType3>>(
-      new TIterator3<ParamType1, ParamType2, ParamType3>(*this, param1, param2, param3));
+        new TIterator3<ParamType1, ParamType2, ParamType3>(*this, param1, param2, param3));
   }
 
   /* Make iteration by triples, and call fn function for each result.
    * fn function should have 3 parameters (ScAddr const & source, ScAddr const & edge, ScAddr const & target)
    */
   template <typename ParamType1, typename ParamType2, typename ParamType3, typename FnT>
-  void ForEachIter3(ParamType1 const & param1,
-                    ParamType2 const & param2,
-                    ParamType3 const & param3,
-                    FnT && fn)
+  void ForEachIter3(ParamType1 const & param1, ParamType2 const & param2, ParamType3 const & param3, FnT && fn)
   {
     ScIterator3Ptr it = Iterator3(param1, param2, param3);
     while (it->Next())
@@ -174,13 +185,20 @@ public:
    * fn function should have 5 parameters
    * (ScAddr const & source, ScAddr const & edge, ScAddr const & target, ScAddr const & attrEdge, ScAddr const & attr)
    */
-  template <typename ParamType1, typename ParamType2, typename ParamType3, typename ParamType4, typename ParamType5, typename FnT>
-  void ForEachIter5(ParamType1 const & param1,
-                    ParamType2 const & param2,
-                    ParamType3 const & param3,
-                    ParamType4 const & param4,
-                    ParamType5 const & param5,
-                    FnT && fn)
+  template <
+      typename ParamType1,
+      typename ParamType2,
+      typename ParamType3,
+      typename ParamType4,
+      typename ParamType5,
+      typename FnT>
+  void ForEachIter5(
+      ParamType1 const & param1,
+      ParamType2 const & param2,
+      ParamType3 const & param3,
+      ParamType4 const & param4,
+      ParamType5 const & param5,
+      FnT && fn)
   {
     ScIterator5Ptr it = Iterator5(param1, param2, param3, param4, param5);
     while (it->Next())
@@ -192,8 +210,13 @@ public:
    * Look at type parameter as ForceCreate flag, that contains type.
    * Important: Type should be any of ScType::Node...
    */
-  SC_DEPRECATED(0.4.0, "Use should use ScMemoryContext::HelperResolveSystemIdtf(std::string const & sysIdtf, ScType const & type)")
-  _SC_EXTERN bool HelperResolveSystemIdtf(std::string const & sysIdtf, ScAddr & outAddr, ScType const & type = ScType());
+  SC_DEPRECATED(
+      0.4.0,
+      "Use should use ScMemoryContext::HelperResolveSystemIdtf(std::string const & sysIdtf, ScType const & type)")
+  _SC_EXTERN bool HelperResolveSystemIdtf(
+      std::string const & sysIdtf,
+      ScAddr & outAddr,
+      ScType const & type = ScType());
   _SC_EXTERN ScAddr HelperResolveSystemIdtf(std::string const & sysIdtf, ScType const & type = ScType());
 
   _SC_EXTERN bool HelperSetSystemIdtf(std::string const & sysIdtf, ScAddr const & addr);
@@ -207,10 +230,20 @@ public:
   _SC_EXTERN bool HelperFindBySystemIdtf(std::string const & sysIdtf, ScAddr & outAddr);
   _SC_EXTERN ScAddr HelperFindBySystemIdtf(std::string const & sysIdtf);
 
-  _SC_EXTERN ScTemplate::Result HelperGenTemplate(ScTemplate const & templ, ScTemplateGenResult & result, ScTemplateParams const & params = ScTemplateParams::Empty, ScTemplateResultCode * resultCode = nullptr);
+  _SC_EXTERN ScTemplate::Result HelperGenTemplate(
+      ScTemplate const & templ,
+      ScTemplateGenResult & result,
+      ScTemplateParams const & params = ScTemplateParams::Empty,
+      ScTemplateResultCode * resultCode = nullptr);
   _SC_EXTERN ScTemplate::Result HelperSearchTemplate(ScTemplate const & templ, ScTemplateSearchResult & result);
-  _SC_EXTERN ScTemplate::Result HelperSearchTemplateInStruct(ScTemplate const & templ, ScAddr const & scStruct, ScTemplateSearchResult & result);
-  _SC_EXTERN ScTemplate::Result HelperBuildTemplate(ScTemplate & templ, ScAddr const & templAddr, const ScTemplateParams & params = ScTemplateParams());
+  _SC_EXTERN ScTemplate::Result HelperSearchTemplateInStruct(
+      ScTemplate const & templ,
+      ScAddr const & scStruct,
+      ScTemplateSearchResult & result);
+  _SC_EXTERN ScTemplate::Result HelperBuildTemplate(
+      ScTemplate & templ,
+      ScAddr const & templAddr,
+      const ScTemplateParams & params = ScTemplateParams());
   _SC_EXTERN ScTemplate::Result HelperBuildTemplate(ScTemplate & templ, std::string const & scsText);
 
   _SC_EXTERN Stat CalculateStat() const;
@@ -237,4 +270,3 @@ public:
 private:
   ScMemoryContext & m_ctx;
 };
-

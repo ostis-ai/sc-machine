@@ -34,14 +34,13 @@ void sc_event_pool_worker_data_destroy(sc_event_pool_worker_data * data)
   g_free(data);
 }
 
-
 void sc_event_pool_worker(gpointer data, gpointer user_data)
 {
   g_assert(data != null_ptr);
-  sc_event_pool_worker_data * work_data = (sc_event_pool_worker_data*)data;
+  sc_event_pool_worker_data * work_data = (sc_event_pool_worker_data *)data;
 
   g_assert(work_data->evt != null_ptr);
-  if (work_data->evt->callback != null_ptr)    // TODO: cleanup in 0.4.0
+  if (work_data->evt->callback != null_ptr)  // TODO: cleanup in 0.4.0
   {
     work_data->evt->callback(work_data->evt, work_data->edge_addr);
   }
@@ -56,7 +55,7 @@ void sc_event_pool_worker(gpointer data, gpointer user_data)
 
 sc_event_queue * sc_event_queue_new()
 {
-  sc_event_queue *queue = g_new0(sc_event_queue, 1);
+  sc_event_queue * queue = g_new0(sc_event_queue, 1);
   queue->running = SC_TRUE;
   g_mutex_init(&queue->mutex);
   queue->thread_pool = g_thread_pool_new(sc_event_pool_worker, (gpointer)0, g_get_num_processors(), FALSE, 0);
@@ -64,7 +63,7 @@ sc_event_queue * sc_event_queue_new()
   return queue;
 }
 
-void sc_event_queue_stop_processing(sc_event_queue *queue)
+void sc_event_queue_stop_processing(sc_event_queue * queue)
 {
   g_assert(queue != 0);
 
@@ -80,10 +79,9 @@ void sc_event_queue_stop_processing(sc_event_queue *queue)
     queue->running = SC_FALSE;
     g_mutex_unlock(&queue->mutex);
   }
-
 }
 
-void sc_event_queue_destroy_wait(sc_event_queue *queue)
+void sc_event_queue_destroy_wait(sc_event_queue * queue)
 {
   g_assert(queue != 0);
 
@@ -111,11 +109,10 @@ void sc_event_queue_append(sc_event_queue * queue, sc_event * evt, sc_addr edge,
   g_mutex_unlock(&queue->mutex);
 }
 
-void sc_event_queue_remove(sc_event_queue *queue, sc_event *event)
+void sc_event_queue_remove(sc_event_queue * queue, sc_event * event)
 {
   g_assert(queue != 0);
   g_mutex_lock(&queue->mutex);
 
   g_mutex_unlock(&queue->mutex);
 }
-

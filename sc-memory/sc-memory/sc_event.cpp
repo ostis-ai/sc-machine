@@ -15,7 +15,6 @@
 
 namespace
 {
-
 sc_event_type ConvertEventType(ScEvent::Type type)
 {
   switch (type)
@@ -39,17 +38,21 @@ sc_event_type ConvertEventType(ScEvent::Type type)
     return SC_EVENT_CONTENT_CHANGED;
   }
 
-  SC_THROW_EXCEPTION(utils::ExceptionNotImplemented,
-                     "Unsupported event type " + std::to_string(int(type)));
+  SC_THROW_EXCEPTION(utils::ExceptionNotImplemented, "Unsupported event type " + std::to_string(int(type)));
   return SC_EVENT_UNKNOWN;
 }
 
-}
+}  // namespace
 
-ScEvent::ScEvent(const ScMemoryContext & ctx, const ScAddr & addr, Type eventType, ScEvent::DelegateFunc func /*= DelegateFunc()*/)
+ScEvent::ScEvent(
+    const ScMemoryContext & ctx,
+    const ScAddr & addr,
+    Type eventType,
+    ScEvent::DelegateFunc func /*= DelegateFunc()*/)
 {
   m_delegate = func;
-  m_event = sc_event_new_ex(*ctx, *addr, ConvertEventType(eventType), (sc_pointer)this, &ScEvent::Handler, &ScEvent::HandlerDelete);
+  m_event = sc_event_new_ex(
+      *ctx, *addr, ConvertEventType(eventType), (sc_pointer)this, &ScEvent::Handler, &ScEvent::HandlerDelete);
 }
 
 ScEvent::~ScEvent()
@@ -65,12 +68,13 @@ void ScEvent::RemoveDelegate()
 
 sc_result ScEvent::Handler(sc_event const * evt, sc_addr edge, sc_addr other_el)
 {
-  ScEvent * eventObj = (ScEvent*)sc_event_get_data(evt);
+  ScEvent * eventObj = (ScEvent *)sc_event_get_data(evt);
   SC_ASSERT(eventObj != nullptr, ());
 
   if (eventObj->m_delegate)
   {
-    return eventObj->m_delegate(ScAddr(sc_event_get_element(evt)), ScAddr(edge), ScAddr(other_el)) ? SC_RESULT_OK : SC_RESULT_ERROR;
+    return eventObj->m_delegate(ScAddr(sc_event_get_element(evt)), ScAddr(edge), ScAddr(other_el)) ? SC_RESULT_OK
+                                                                                                   : SC_RESULT_ERROR;
   }
 
   return SC_RESULT_ERROR;
@@ -78,7 +82,7 @@ sc_result ScEvent::Handler(sc_event const * evt, sc_addr edge, sc_addr other_el)
 
 sc_result ScEvent::HandlerDelete(sc_event const * evt)
 {
-  ScEvent * eventObj = (ScEvent*)sc_event_get_data(evt);
+  ScEvent * eventObj = (ScEvent *)sc_event_get_data(evt);
   SC_ASSERT(eventObj != nullptr, ());
 
   utils::ScLockScope(eventObj->m_lock);

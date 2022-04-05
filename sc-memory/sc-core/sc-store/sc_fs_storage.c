@@ -20,29 +20,23 @@
 
 #define BuffSize 256 * 1024
 
-gchar *repo_path = 0;
-gchar segments_path[MAX_PATH_LENGTH]; // Path to file, where stored segments in correct state
+gchar * repo_path = 0;
+gchar segments_path[MAX_PATH_LENGTH];  // Path to file, where stored segments in correct state
 #define SC_DIR_PERMISSIONS -1
 
-const gchar *seg_meta = "_meta";
-const gchar *addr_key_group = "addrs";
+const gchar * seg_meta = "_meta";
+const gchar * addr_key_group = "addrs";
 
 // ----------------------------------------------
-void _get_segment_path(const gchar *path_dir,
-                       sc_uint id,
-                       sc_uint max_path_len,
-                       gchar *res)
+void _get_segment_path(const gchar * path_dir, sc_uint id, sc_uint max_path_len, gchar * res)
 {
   g_snprintf(res, max_path_len, "%s/%.10d", path_dir, id);
 }
 
-void _get_segment_checksum_path(const gchar *path,
-                                sc_uint max_path_len,
-                                gchar * res)
+void _get_segment_checksum_path(const gchar * path, sc_uint max_path_len, gchar * res)
 {
   g_snprintf(res, max_path_len, "%s.checksum", path);
 }
-
 
 int _checksum_type()
 {
@@ -64,18 +58,18 @@ guint8 * _checksum_seg(sc_segment const * seg)
   if (checksum)
   {
     g_checksum_reset(checksum);
-    g_checksum_update(checksum, (guchar*)(&seg->elements[0]), SC_SEG_ELEMENTS_SIZE_BYTE);
+    g_checksum_update(checksum, (guchar *)(&seg->elements[0]), SC_SEG_ELEMENTS_SIZE_BYTE);
 
     length = _checksum_get_size();
     result = g_new0(guint8, length);
     g_checksum_get_digest(checksum, result, &length);
-    g_assert( length == _checksum_get_size() );
+    g_assert(length == _checksum_get_size());
   }
 
   return result;
 }
 
-void _sc_fm_remove_dir(const char *path)
+void _sc_fm_remove_dir(const char * path)
 {
   char tmp_path[MAX_PATH_LENGTH];
   gchar const * fname = 0;
@@ -85,7 +79,7 @@ void _sc_fm_remove_dir(const char *path)
     return;
 
   dir = g_dir_open(path, 0, 0);
-  g_assert( dir != (GDir*)0 );
+  g_assert(dir != (GDir *)0);
 
   // calculate files
   fname = g_dir_read_name(dir);
@@ -111,7 +105,7 @@ void _sc_fm_remove_dir(const char *path)
 }
 
 // ----------------------------------------------
-sc_bool _sc_fs_mkdirs(const char *path)
+sc_bool _sc_fs_mkdirs(const char * path)
 {
 #if SC_PLATFORM_LINUX || SC_PLATFORM_MAC
   int const mode = 0755;
@@ -124,12 +118,12 @@ sc_bool _sc_fs_mkdirs(const char *path)
   return SC_TRUE;
 }
 
-sc_bool sc_fs_storage_initialize(const gchar *path, sc_bool clear)
+sc_bool sc_fs_storage_initialize(const gchar * path, sc_bool clear)
 {
   g_message("Initialize sc-storage from path: %s", path);
   g_snprintf(segments_path, MAX_PATH_LENGTH, "%s/segments.scdb", path);
   repo_path = g_strdup(path);
-  
+
   sc_fm_init(repo_path);
 
   // clear repository if needs
@@ -150,7 +144,7 @@ sc_bool sc_fs_storage_initialize(const gchar *path, sc_bool clear)
   return SC_TRUE;
 }
 
-sc_bool sc_fs_storage_shutdown(sc_segment **segments, sc_bool save_segments)
+sc_bool sc_fs_storage_shutdown(sc_segment ** segments, sc_bool save_segments)
 {
   g_message("Shutdown sc-storage");
 
@@ -168,7 +162,7 @@ sc_bool sc_fs_storage_shutdown(sc_segment **segments, sc_bool save_segments)
   return res;
 }
 
-sc_bool sc_fs_storage_read_from_path(sc_segment **segments, sc_uint32 *segments_num)
+sc_bool sc_fs_storage_read_from_path(sc_segment ** segments, sc_uint32 * segments_num)
 {
   if (g_file_test(repo_path, G_FILE_TEST_IS_DIR) == FALSE)
   {
@@ -206,7 +200,9 @@ sc_bool sc_fs_storage_read_from_path(sc_segment **segments, sc_uint32 *segments_
       return SC_FALSE;
     }
 
-    if ((g_io_channel_read_chars(in_file, (gchar*)&header_size, sizeof(header_size), &bytes_num, null_ptr) != G_IO_STATUS_NORMAL) || (bytes_num != sizeof(header_size)))
+    if ((g_io_channel_read_chars(in_file, (gchar *)&header_size, sizeof(header_size), &bytes_num, null_ptr) !=
+         G_IO_STATUS_NORMAL) ||
+        (bytes_num != sizeof(header_size)))
     {
       g_critical("Can't read header size");
       return SC_FALSE;
@@ -218,7 +214,9 @@ sc_bool sc_fs_storage_read_from_path(sc_segment **segments, sc_uint32 *segments_
       return SC_FALSE;
     }
 
-    if ((g_io_channel_read_chars(in_file, (gchar*)&header, sizeof(header), &bytes_num, null_ptr) != G_IO_STATUS_NORMAL) || (bytes_num != sizeof(header)))
+    if ((g_io_channel_read_chars(in_file, (gchar *)&header, sizeof(header), &bytes_num, null_ptr) !=
+         G_IO_STATUS_NORMAL) ||
+        (bytes_num != sizeof(header)))
     {
       g_critical("Can't read header of segments: %s", segments_path);
       return SC_FALSE;
@@ -239,7 +237,7 @@ sc_bool sc_fs_storage_read_from_path(sc_segment **segments, sc_uint32 *segments_
       seg = sc_segment_new(i);
       segments[i] = seg;
 
-      g_io_channel_read_chars(in_file, (gchar*)seg->elements, SC_SEG_ELEMENTS_SIZE_BYTE, &bytes_num, null_ptr);
+      g_io_channel_read_chars(in_file, (gchar *)seg->elements, SC_SEG_ELEMENTS_SIZE_BYTE, &bytes_num, null_ptr);
       sc_segment_loaded(seg);
       if (bytes_num != SC_SEG_ELEMENTS_SIZE_BYTE)
       {
@@ -247,7 +245,7 @@ sc_bool sc_fs_storage_read_from_path(sc_segment **segments, sc_uint32 *segments_
         is_valid = SC_FALSE;
         break;
       }
-      g_checksum_update(checksum, (guchar*)seg->elements, SC_SEG_ELEMENTS_SIZE_BYTE);
+      g_checksum_update(checksum, (guchar *)seg->elements, SC_SEG_ELEMENTS_SIZE_BYTE);
     }
 
     if (is_valid == SC_TRUE)
@@ -257,7 +255,8 @@ sc_bool sc_fs_storage_read_from_path(sc_segment **segments, sc_uint32 *segments_
       if (bytes_num != SC_STORAGE_SEG_CHECKSUM_SIZE)
         is_valid = SC_FALSE;
       else
-        is_valid = (memcmp(calculated_checksum, header.checksum, SC_STORAGE_SEG_CHECKSUM_SIZE) == 0) ? SC_TRUE : SC_FALSE;
+        is_valid =
+            (memcmp(calculated_checksum, header.checksum, SC_STORAGE_SEG_CHECKSUM_SIZE) == 0) ? SC_TRUE : SC_FALSE;
     }
 
     if (is_valid == SC_FALSE)
@@ -302,10 +301,10 @@ static GIOChannel * _open_tmp_file(gchar ** tmp_file_name)
   return result;
 }
 
-sc_bool sc_fs_storage_write_to_path(sc_segment **segments)
+sc_bool sc_fs_storage_write_to_path(sc_segment ** segments)
 {
   sc_uint32 idx = 0, header_size = 0;
-  const sc_segment *segment = 0;
+  const sc_segment * segment = 0;
   sc_fs_storage_segments_header header;
   GChecksum * checksum = null_ptr;
   GIOChannel * output = null_ptr;
@@ -340,9 +339,9 @@ sc_bool sc_fs_storage_write_to_path(sc_segment **segments)
   {
     segment = segments[idx];
     if (segment == null_ptr)
-      break; // stop save, because we allocate segment in order
+      break;  // stop save, because we allocate segment in order
 
-    g_checksum_update(checksum, (guchar*)segment->elements, SC_SEG_ELEMENTS_SIZE_BYTE);
+    g_checksum_update(checksum, (guchar *)segment->elements, SC_SEG_ELEMENTS_SIZE_BYTE);
   }
 
   header.segments_num = idx;
@@ -350,14 +349,17 @@ sc_bool sc_fs_storage_write_to_path(sc_segment **segments)
   g_checksum_get_digest(checksum, header.checksum, &bytes);
 
   header_size = sizeof(header);
-  if (g_io_channel_write_chars(output, (gchar*)&header_size, sizeof(header_size), &bytes, null_ptr) != G_IO_STATUS_NORMAL || bytes != sizeof(header_size))
+  if (g_io_channel_write_chars(output, (gchar *)&header_size, sizeof(header_size), &bytes, null_ptr) !=
+          G_IO_STATUS_NORMAL ||
+      bytes != sizeof(header_size))
   {
     g_error("Can't write header size: %s", tmp_filename);
     result = SC_FALSE;
     goto clean;
   }
 
-  if (g_io_channel_write_chars(output, (gchar*)&header, header_size, &bytes, null_ptr) != G_IO_STATUS_NORMAL || bytes != header_size)
+  if (g_io_channel_write_chars(output, (gchar *)&header, header_size, &bytes, null_ptr) != G_IO_STATUS_NORMAL ||
+      bytes != header_size)
   {
     g_error("Can't write header: %s", tmp_filename);
     result = SC_FALSE;
@@ -369,7 +371,9 @@ sc_bool sc_fs_storage_write_to_path(sc_segment **segments)
     segment = segments[idx];
     g_assert(segment != null_ptr);
 
-    if (g_io_channel_write_chars(output, (gchar*)segment->elements, SC_SEG_ELEMENTS_SIZE_BYTE, &bytes, null_ptr) != G_IO_STATUS_NORMAL || bytes != SC_SEG_ELEMENTS_SIZE_BYTE)
+    if (g_io_channel_write_chars(output, (gchar *)segment->elements, SC_SEG_ELEMENTS_SIZE_BYTE, &bytes, null_ptr) !=
+            G_IO_STATUS_NORMAL ||
+        bytes != SC_SEG_ELEMENTS_SIZE_BYTE)
     {
       g_error("Can't write segment %d into %s", idx, tmp_filename);
       result = SC_FALSE;
@@ -399,20 +403,19 @@ sc_bool sc_fs_storage_write_to_path(sc_segment **segments)
   }
 
 clean:
-  {
-    if (tmp_filename)
-      g_free(tmp_filename);
-    if (checksum)
-      g_checksum_free(checksum);
-    if (output)
-      g_io_channel_shutdown(output, TRUE, null_ptr);
-  }
+{
+  if (tmp_filename)
+    g_free(tmp_filename);
+  if (checksum)
+    g_checksum_free(checksum);
+  if (output)
+    g_io_channel_shutdown(output, TRUE, null_ptr);
+}
 
   return result;
 }
 
-
-sc_result sc_fs_storage_write_content(sc_addr addr, const sc_check_sum *check_sum, const sc_stream *stream)
+sc_result sc_fs_storage_write_content(sc_addr addr, const sc_check_sum * check_sum, const sc_stream * stream)
 {
   if (sc_fm_write_stream(check_sum, stream) == SC_RESULT_OK)
   {
@@ -424,28 +427,27 @@ sc_result sc_fs_storage_write_content(sc_addr addr, const sc_check_sum *check_su
   return SC_RESULT_ERROR_IO;
 }
 
-sc_result sc_fs_storage_add_content_addr(sc_addr addr, const sc_check_sum *check_sum)
+sc_result sc_fs_storage_add_content_addr(sc_addr addr, const sc_check_sum * check_sum)
 {
   return sc_fm_addr_ref_append(addr, check_sum);
 }
 
-sc_result sc_fs_storage_remove_content_addr(sc_addr addr, const sc_check_sum *check_sum)
+sc_result sc_fs_storage_remove_content_addr(sc_addr addr, const sc_check_sum * check_sum)
 {
   return sc_fm_addr_ref_remove(addr, check_sum);
 }
 
-sc_result sc_fs_storage_find_links_with_content(const sc_check_sum *check_sum, sc_addr **result, sc_uint32 *result_count)
+sc_result sc_fs_storage_find_links_with_content(
+    const sc_check_sum * check_sum,
+    sc_addr ** result,
+    sc_uint32 * result_count)
 {
   return sc_fm_find(check_sum, result, result_count);
 }
 
-sc_result sc_fs_storage_get_checksum_content(const sc_check_sum *check_sum, sc_stream **stream)
+sc_result sc_fs_storage_get_checksum_content(const sc_check_sum * check_sum, sc_stream ** stream)
 {
   *stream = sc_fm_read_stream_new(check_sum);
 
   return stream ? SC_RESULT_OK : SC_RESULT_ERROR_IO;
 }
-
-
-
-

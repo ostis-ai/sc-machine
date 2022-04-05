@@ -1,21 +1,19 @@
 /*
-* This source file is part of an OSTIS project. For the latest info, see http://ostis.net
-* Distributed under the MIT License
-* (See accompanying file COPYING.MIT or copy at http://opensource.org/licenses/MIT)
-*/
+ * This source file is part of an OSTIS project. For the latest info, see http://ostis.net
+ * Distributed under the MIT License
+ * (See accompanying file COPYING.MIT or copy at http://opensource.org/licenses/MIT)
+ */
 
 #include "LogicRuleUtils.hpp"
 
 #include "IteratorUtils.hpp"
 #include "keynodes/coreKeynodes.hpp"
 
-
 using namespace std;
 using namespace scAgentsCommon;
 
 namespace utils
 {
-
 ScAddr LogicRuleUtils::getIfStatement(ScMemoryContext * context, const ScAddr & logicRule)
 {
   SC_CHECK_PARAM(logicRule, ("Invalid logic rule address"))
@@ -40,4 +38,4 @@ ScAddr LogicRuleUtils::getElseStatement(ScMemoryContext * context, const ScAddr 
   return elseStatement;
 }
 
-}
+}  // namespace utils

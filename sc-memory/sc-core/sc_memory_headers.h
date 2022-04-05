@@ -16,5 +16,4 @@
 #include "sc-store/sc_stream_memory.h"
 #include "sc-store/sc_config.h"
 
-
 #endif

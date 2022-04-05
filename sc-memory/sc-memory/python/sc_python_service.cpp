@@ -5,7 +5,6 @@
 
 namespace py
 {
-
 ScPythonService::ScPythonService(std::string const & scriptName)
   : m_scriptName(scriptName)
 {
@@ -29,16 +28,13 @@ void ScPythonService::Run(std::string const & params)
   m_bridge->SetInitParams(params);
 
   // Run script in a separate thread
-  m_workThread.reset(new std::thread([&]
-  {
+  m_workThread.reset(new std::thread([&] {
     py::ScPythonInterpreter::RunScript(
-      m_scriptName,
-      ScMemoryContext(sc_access_lvl_make_min, m_scriptName.c_str()),
-      m_bridge);
+        m_scriptName, ScMemoryContext(sc_access_lvl_make_min, m_scriptName.c_str()), m_bridge);
 
     SC_LOG_UNLOAD("Python service " + m_scriptName);
   }));
-  
+
   // wait until bridge starts
   m_bridge->WaitReady();
 }
@@ -55,5 +51,4 @@ bool ScPythonService::IsRun() const
   return !m_bridge->IsFinished();
 }
 
-
-}
+}  // namespace py

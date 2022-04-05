@@ -14,11 +14,10 @@ struct _sc_version
   sc_uint8 major;
   sc_uint8 minor;
   sc_uint8 patch;
-  const char *suffix;
+  const char * suffix;
 };
 
 typedef struct _sc_version sc_version;
-
 
 extern const sc_version SC_VERSION;
 
@@ -28,16 +27,16 @@ extern const sc_version SC_VERSION;
  * If version @p a and @p b equal, then returns 0.
  * @note This function ignores suffixes
  */
-_SC_EXTERN sc_int32 sc_version_compare(const sc_version *a, const sc_version *b);
+_SC_EXTERN sc_int32 sc_version_compare(const sc_version * a, const sc_version * b);
 
 /*! Returns newvly-alocated string that represents version.
  * The returned string should be freed with sc_version_string_free when no longer needed.
  */
-_SC_EXTERN char* sc_version_string_new(const sc_version *v);
+_SC_EXTERN char * sc_version_string_new(const sc_version * v);
 
 /*! Frees string that represents sc-version
  */
-_SC_EXTERN void sc_version_string_free(char *str);
+_SC_EXTERN void sc_version_string_free(char * str);
 
 _SC_EXTERN sc_uint32 sc_version_to_int(sc_version const * version);
 _SC_EXTERN void sc_version_from_int(sc_uint32 value, sc_version * version);

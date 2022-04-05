@@ -20,10 +20,14 @@ struct MacrosInfo
     , m_line(0)
     , m_column(0)
   {
-
   }
 
-  MacrosInfo(std::string const & name, std::string const & code, size_t line, size_t column, std::string const & filename)
+  MacrosInfo(
+      std::string const & name,
+      std::string const & code,
+      size_t line,
+      size_t column,
+      std::string const & filename)
     : m_name(name)
     , m_code(code)
     , m_line(line)
@@ -53,18 +57,16 @@ struct MacrosInfo
     return (m_type != MT_NONE);
   }
 
-  bool operator == (MacrosInfo const & other) const
+  bool operator==(MacrosInfo const & other) const
   {
-    return (m_name == other.m_name) && (m_fileName == other.m_fileName)
-        && (m_line == other.m_line) && (m_column == other.m_column)
-        && (m_type == other.m_type);
+    return (m_name == other.m_name) && (m_fileName == other.m_fileName) && (m_line == other.m_line) &&
+           (m_column == other.m_column) && (m_type == other.m_type);
   }
 
   static bool RequestProcess(std::string const & name)
   {
     return (name == "SC_CLASS") || (name == "SC_PROPERTY") || (name == "SC_GENERATED_BODY");
   }
-
 
   std::string m_name;
   std::string m_code;
@@ -88,11 +90,12 @@ public:
   void Clear();
 
 private:
-  bool FindMacrosInternal(MacrosInfo::Type type, size_t line, std::string const & fileName, MacrosInfo & outResult) const;
+  bool FindMacrosInternal(MacrosInfo::Type type, size_t line, std::string const & fileName, MacrosInfo & outResult)
+      const;
 
 private:
-  using MacrosLineMap = std::map< size_t, MacrosInfo>;
-  using MacrosTypedMap = std::map< MacrosInfo::Type, MacrosLineMap>;
+  using MacrosLineMap = std::map<size_t, MacrosInfo>;
+  using MacrosTypedMap = std::map<MacrosInfo::Type, MacrosLineMap>;
 
   MacrosTypedMap m_macrosStorage;
 };

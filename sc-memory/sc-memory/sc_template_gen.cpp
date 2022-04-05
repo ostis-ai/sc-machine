@@ -14,10 +14,11 @@ const ScTemplateParams ScTemplateParams::Empty;
 class ScTemplateGenerator
 {
 public:
-  ScTemplateGenerator(ScTemplate::ReplacementsMap const & replacements,
-                      ScTemplate::TemplateConstr3Vector const & constructions,
-                      ScTemplateParams const & params,
-                      ScMemoryContext & context)
+  ScTemplateGenerator(
+      ScTemplate::ReplacementsMap const & replacements,
+      ScTemplate::TemplateConstr3Vector const & constructions,
+      ScTemplateParams const & params,
+      ScMemoryContext & context)
     : m_replacements(replacements)
     , m_constructions(constructions)
     , m_params(params)
@@ -28,12 +29,13 @@ public:
     {
       auto values = constr.GetValues();
       if (values[1].IsFixed())
-        SC_THROW_EXCEPTION(utils::ExceptionInvalidParams, "You can't use fixed value for edge in triple for template generation");
+        SC_THROW_EXCEPTION(
+            utils::ExceptionInvalidParams, "You can't use fixed value for edge in triple for template generation");
 
-      auto checkEdge = [](ScTemplateItemValue const & value)
-      {
+      auto checkEdge = [](ScTemplateItemValue const & value) {
         if (value.IsAssign() && (!value.IsType() || value.m_typeValue.IsEdge()))
-          SC_THROW_EXCEPTION(utils::ExceptionInvalidParams, "You can't use edges as a source/target element in triple for generation");
+          SC_THROW_EXCEPTION(
+              utils::ExceptionInvalidParams, "You can't use edges as a source/target element in triple for generation");
       };
 
       checkEdge(values[0]);
@@ -41,10 +43,10 @@ public:
     }
   }
 
-  ScTemplateResultCode operator() (ScTemplateGenResult & result)
+  ScTemplateResultCode operator()(ScTemplateGenResult & result)
   {
     if (!checkParams())
-      return ScTemplateResultCode::InvalidParams;	/// TODO: Provide error
+      return ScTemplateResultCode::InvalidParams;  /// TODO: Provide error
 
     ScMemoryContextEventsPendingGuard guard(m_context);
 
@@ -184,8 +186,11 @@ private:
   ScAddrVector m_createdElements;
 };
 
-
-ScTemplate::Result ScTemplate::Generate(ScMemoryContext & ctx, ScTemplateGenResult & result, ScTemplateParams const & params, ScTemplateResultCode * errorCode) const
+ScTemplate::Result ScTemplate::Generate(
+    ScMemoryContext & ctx,
+    ScTemplateGenResult & result,
+    ScTemplateParams const & params,
+    ScTemplateResultCode * errorCode) const
 {
   ScTemplateGenerator gen(m_replacements, m_constructions, params, ctx);
   ScTemplateResultCode resultCode = gen(result);
@@ -195,4 +200,3 @@ ScTemplate::Result ScTemplate::Generate(ScMemoryContext & ctx, ScTemplateGenResu
 
   return ScTemplate::Result(resultCode == ScTemplateResultCode::Success);
 }
-

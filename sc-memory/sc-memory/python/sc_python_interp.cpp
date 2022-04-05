@@ -21,16 +21,15 @@ extern "C"
 
 namespace
 {
-
 std::unordered_set<std::string> gAddedModulePaths;
 
-template<typename Func, typename... Args>
+template <typename Func, typename... Args>
 void CallPythonFunctionNoGIL(Func & f, Args... args)
 {
   f(args...);
 }
 
-template<typename Func, typename... Args>
+template <typename Func, typename... Args>
 void CallPythonFunction(Func & f, Args... args)
 {
   py::WithGIL gil;
@@ -39,9 +38,18 @@ void CallPythonFunction(Func & f, Args... args)
 
 struct PyObjectWrap
 {
-  PyObjectWrap() : m_object(nullptr) {}
-  explicit PyObjectWrap(PyObject * obj) : m_object(obj) {}
-  ~PyObjectWrap() { Clear(); }
+  PyObjectWrap()
+    : m_object(nullptr)
+  {
+  }
+  explicit PyObjectWrap(PyObject * obj)
+    : m_object(obj)
+  {
+  }
+  ~PyObjectWrap()
+  {
+    Clear();
+  }
 
   void Clear()
   {
@@ -58,7 +66,7 @@ struct PyObjectWrap
     m_object = obj;
   }
 
-  PyObject* operator * () const
+  PyObject * operator*() const
   {
     return m_object;
   }
@@ -90,7 +98,7 @@ void PyLoadModulePathFromConfig(py::ScPythonInterpreter::ModulePathSet & outValu
 
 void AddModuleSearchPaths(py::ScPythonInterpreter::ModulePathSet const & modulePath)
 {
-  PyObject* sysPath = PySys_GetObject("path");
+  PyObject * sysPath = PySys_GetObject("path");
   for (auto const & p : modulePath)
   {
     if (gAddedModulePaths.find(p) == gAddedModulePaths.end())
@@ -125,14 +133,11 @@ protected:
     SC_ASSERT(evt != nullptr, ("Should receive valid event pointer"));
     m_event.reset(evt);
 
-    evt->SetDelegate(std::bind(&PyScEvent::OnEvent, this,
-                               std::placeholders::_1,
-                               std::placeholders::_2,
-                               std::placeholders::_3));
+    evt->SetDelegate(
+        std::bind(&PyScEvent::OnEvent, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3));
   }
 
 public:
-
   ~PyScEvent()
   {
     Destroy();
@@ -182,7 +187,6 @@ private:
   std::unique_ptr<ScEvent> m_event;
   EventID m_id;
 };
-
 
 class PyBridgeWrap
 {
@@ -251,11 +255,11 @@ public:
     {
       py::WithGIL gil;
       CallPythonFunctionNoGIL(
-        m_eventDelegate,
-        bp::object(params.m_id),
-        bp::object(params.m_addr),
-        bp::object(params.m_edgeAddr),
-        bp::object(params.m_otherAddr));
+          m_eventDelegate,
+          bp::object(params.m_id),
+          bp::object(params.m_addr),
+          bp::object(params.m_edgeAddr),
+          bp::object(params.m_otherAddr));
     }
   }
 
@@ -266,8 +270,7 @@ public:
 
     if (it == m_events.end())
     {
-      SC_THROW_EXCEPTION(utils::ExceptionItemNotFound,
-                         "Can't find event with ID: " + std::to_string(evtID));
+      SC_THROW_EXCEPTION(utils::ExceptionItemNotFound, "Can't find event with ID: " + std::to_string(evtID));
     }
 
     ClearEvent(it->second);
@@ -333,7 +336,9 @@ public:
     SC_LOG_PYTHON(str);
   }
 
-  void Flush() {}
+  void Flush()
+  {
+  }
 };
 
 class PythonLogError
@@ -348,53 +353,51 @@ public:
     SC_LOG_PYTHON_ERROR(str);
   }
 
-  void Flush() {}
+  void Flush()
+  {
+  }
 };
 
-} // namespace
+}  // namespace
 
-  // small boost python module for bridge utils
+// small boost python module for bridge utils
 BOOST_PYTHON_MODULE(scb)
 {
   bp::register_ptr_to_python<boost::shared_ptr<PyScEvent>>();
   bp::register_ptr_to_python<boost::shared_ptr<PyBridgeWrap>>();
 
   bp::class_<PythonLog>("CppLog", bp::init<>())
-    .def("write", bp::make_function(&PythonLog::Write))
-    .def("flush", bp::make_function(&PythonLog::Flush));
+      .def("write", bp::make_function(&PythonLog::Write))
+      .def("flush", bp::make_function(&PythonLog::Flush));
 
   bp::class_<PythonLogError>("CppLogError", bp::init<>())
-    .def("write", bp::make_function(&PythonLogError::Write))
-    .def("flush", bp::make_function(&PythonLogError::Flush));
+      .def("write", bp::make_function(&PythonLogError::Write))
+      .def("flush", bp::make_function(&PythonLogError::Flush));
 
   bp::enum_<ScEvent::Type>("ScPythonEventType")
-    .value("AddInputEdge", ScEvent::Type::AddInputEdge)
-    .value("AddOutputEdge", ScEvent::Type::AddOutputEdge)
-    .value("ContentChanged", ScEvent::Type::ContentChanged)
-    .value("EraseElement", ScEvent::Type::EraseElement)
-    .value("RemoveInputEdge", ScEvent::Type::RemoveInputEdge)
-    .value("RemoveOutputEdge", ScEvent::Type::RemoveOutputEdge)
-    ;
+      .value("AddInputEdge", ScEvent::Type::AddInputEdge)
+      .value("AddOutputEdge", ScEvent::Type::AddOutputEdge)
+      .value("ContentChanged", ScEvent::Type::ContentChanged)
+      .value("EraseElement", ScEvent::Type::EraseElement)
+      .value("RemoveInputEdge", ScEvent::Type::RemoveInputEdge)
+      .value("RemoveOutputEdge", ScEvent::Type::RemoveOutputEdge);
 
   bp::class_<PyScEvent, boost::noncopyable>("ScPythonEvent", bp::no_init)
-    .def("Destroy", bp::make_function(&PyScEvent::Destroy))
-    .def("GetID", bp::make_function(&PyScEvent::GetID))
-    ;
+      .def("Destroy", bp::make_function(&PyScEvent::Destroy))
+      .def("GetID", bp::make_function(&PyScEvent::GetID));
 
   bp::class_<PyBridgeWrap, boost::noncopyable>("ScPythonBridge", bp::no_init)
-    .def("Ready", bp::make_function(&PyBridgeWrap::Ready))
-    .def("Finish", bp::make_function(&PyBridgeWrap::Finish))
-    .def("SubscribeEvent", bp::make_function(&PyBridgeWrap::SubscribeEvent))
-    .def("DestroyEvent", bp::make_function(&PyBridgeWrap::DestroyEvent))
-    .def_readwrite("onClose", &PyBridgeWrap::m_closeDelegate)
-    .def_readwrite("onEvent", &PyBridgeWrap::m_eventDelegate)
-    .def("InitParams", bp::make_function(&PyBridgeWrap::GetInitParams))
-    ;
+      .def("Ready", bp::make_function(&PyBridgeWrap::Ready))
+      .def("Finish", bp::make_function(&PyBridgeWrap::Finish))
+      .def("SubscribeEvent", bp::make_function(&PyBridgeWrap::SubscribeEvent))
+      .def("DestroyEvent", bp::make_function(&PyBridgeWrap::DestroyEvent))
+      .def_readwrite("onClose", &PyBridgeWrap::m_closeDelegate)
+      .def_readwrite("onEvent", &PyBridgeWrap::m_eventDelegate)
+      .def("InitParams", bp::make_function(&PyBridgeWrap::GetInitParams));
 }
 
 namespace py
 {
-
 bool ScPythonInterpreter::ms_isInitialized = false;
 std::wstring ScPythonInterpreter::ms_name;
 utils::ScLock ScPythonInterpreter::ms_lock;
@@ -438,7 +441,10 @@ void ScPythonInterpreter::Shutdown()
   ms_isInitialized = false;
 }
 
-void ScPythonInterpreter::RunScript(std::string const & scriptName, ScMemoryContext const & ctx, ScPythonBridgePtr bridge /* = nullptr */)
+void ScPythonInterpreter::RunScript(
+    std::string const & scriptName,
+    ScMemoryContext const & ctx,
+    ScPythonBridgePtr bridge /* = nullptr */)
 {
   ScPythonSubThread subThreadScope;
 
@@ -451,8 +457,7 @@ void ScPythonInterpreter::RunScript(std::string const & scriptName, ScMemoryCont
     auto const it = ms_foundModules.find(scriptName);
     if (it == ms_foundModules.end())
     {
-      SC_THROW_EXCEPTION(utils::ExceptionItemNotFound,
-                         "Can't find " << scriptName << " module");
+      SC_THROW_EXCEPTION(utils::ExceptionItemNotFound, "Can't find " << scriptName << " module");
     }
 
     moduleName = it->first;
@@ -463,7 +468,7 @@ void ScPythonInterpreter::RunScript(std::string const & scriptName, ScMemoryCont
   p /= moduleName;
   std::string const filePath = p.string();
 
-  //PyEvalLock lock;
+  // PyEvalLock lock;
   bp::object mainModule((bp::handle<>(bp::borrowed(PyImport_AddModule("__main__")))));
   bp::object mainNamespace = mainModule.attr("__dict__");
   try
@@ -471,13 +476,12 @@ void ScPythonInterpreter::RunScript(std::string const & scriptName, ScMemoryCont
     bp::dict globalNamespace;
     globalNamespace["__builtins__"] = mainNamespace["__builtins__"];
     std::stringstream initCode;
-    initCode
-      << "from scb import *" << std::endl
-      << "from sc import *" << std::endl
-      << "import sys" << std::endl
-      << "sys.path.append('" << p.parent_path().string() << "')" << std::endl
-      << "sys.stdout = CppLog()" << std::endl
-      << "sys.stderr = CppLogError()" << std::endl;
+    initCode << "from scb import *" << std::endl
+             << "from sc import *" << std::endl
+             << "import sys" << std::endl
+             << "sys.path.append('" << p.parent_path().string() << "')" << std::endl
+             << "sys.stdout = CppLog()" << std::endl
+             << "sys.stderr = CppLogError()" << std::endl;
     bp::exec(initCode.str().c_str(), globalNamespace, globalNamespace);
 
     std::unique_ptr<PyBridgeWrap> bridgeWrap;
@@ -509,8 +513,7 @@ void ScPythonInterpreter::RunScript(std::string const & scriptName, ScMemoryCont
   catch (...)
   {
     PyErr_Print();
-    SC_THROW_EXCEPTION(utils::ExceptionInvalidState,
-                       "Error during code run " << filePath);
+    SC_THROW_EXCEPTION(utils::ExceptionInvalidState, "Error during code run " << filePath);
   }
 }
 
@@ -544,7 +547,8 @@ void ScPythonInterpreter::CollectModulesInPath(std::string const & modulePath)
     if (!boost::filesystem::is_directory(*itPath))
     {
       boost::filesystem::path const p = *itPath;
-      std::string filename = utils::StringUtils::ReplaceAll(boost::filesystem::relativePath(root, p).string(), "\\", "/");
+      std::string filename =
+          utils::StringUtils::ReplaceAll(boost::filesystem::relativePath(root, p).string(), "\\", "/");
       std::string ext = utils::StringUtils::GetFileExtension(filename);
       utils::StringUtils::ToLowerCase(ext);
 
@@ -553,8 +557,8 @@ void ScPythonInterpreter::CollectModulesInPath(std::string const & modulePath)
         auto const itModule = ms_foundModules.find(filename);
         if (itModule != ms_foundModules.end())
         {
-          SC_THROW_EXCEPTION(utils::ExceptionInvalidState,
-                              "Module " << itModule->first << " already exist in " << itModule->second);
+          SC_THROW_EXCEPTION(
+              utils::ExceptionInvalidState, "Module " << itModule->first << " already exist in " << itModule->second);
         }
 
         ms_foundModules.insert(std::make_pair(filename, modulePath));
@@ -582,4 +586,4 @@ void ScPythonInterpreter::CollectModulesInPath(std::string const & modulePath)
   }
 }
 
-} // namesapce py
+}  // namespace py

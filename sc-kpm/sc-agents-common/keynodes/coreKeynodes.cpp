@@ -1,14 +1,13 @@
 /*
-* This source file is part of an OSTIS project. For the latest info, see http://ostis.net
-* Distributed under the MIT License
-* (See accompanying file COPYING.MIT or copy at http://opensource.org/licenses/MIT)
-*/
+ * This source file is part of an OSTIS project. For the latest info, see http://ostis.net
+ * Distributed under the MIT License
+ * (See accompanying file COPYING.MIT or copy at http://opensource.org/licenses/MIT)
+ */
 
 #include "coreKeynodes.hpp"
 
 namespace scAgentsCommon
 {
-
 ScAddr CoreKeynodes::question;
 ScAddr CoreKeynodes::question_initiated;
 ScAddr CoreKeynodes::question_finished;
@@ -38,4 +37,4 @@ ScAddr CoreKeynodes::cardinality;
 ScAddr CoreKeynodes::lang_ru;
 ScAddr CoreKeynodes::nrel_basic_sequence;
 
-}
+}  // namespace scAgentsCommon

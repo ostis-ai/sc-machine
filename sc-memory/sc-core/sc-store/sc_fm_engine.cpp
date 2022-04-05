@@ -30,14 +30,13 @@ using MutexGuard = std::lock_guard<std::mutex>;
 
 namespace
 {
-
 bool CreateDBInstance()
 {
   rocksdb::Options options;
   options.create_if_missing = true;
-//  options.error_if_exists = true;
+  //  options.error_if_exists = true;
 
-//  _sc_fm_remove_dir(gInstancePath.c_str());
+  //  _sc_fm_remove_dir(gInstancePath.c_str());
   _sc_fs_mkdirs(gInstancePath.c_str());
   rocksdb::Status status = rocksdb::DB::Open(options, gInstancePath, &gDBInstance);
   if (!status.ok())
@@ -50,7 +49,7 @@ void DestroyDBInstance()
 {
   assert(gDBInstance);
   gDBInstance->SyncWAL();
-//  gDBInstance->Close();
+  //  gDBInstance->Close();
   delete gDBInstance;
 
   gDBInstance = nullptr;
@@ -77,8 +76,7 @@ std::string DataToStringBuffer(AddrsVector const & addrs)
   uint8_t const * pSize = (uint8_t const *)(&size);
   uint8_t const * pData = (uint8_t const *)(addrs.data());
 
-  return std::string(pSize, pSize + sizeof(size)) + 
-    std::string(pData, pData + sizeof(sc_addr) * size);
+  return std::string(pSize, pSize + sizeof(size)) + std::string(pData, pData + sizeof(sc_addr) * size);
 }
 
 AddrsVector StringBufferToData(std::string const & data)
@@ -97,12 +95,12 @@ AddrsVector StringBufferToData(std::string const & data)
 
 #define SC_RES(expr) (expr) ? SC_RESULT_OK : SC_RESULT_ERROR;
 
-}
+}  // namespace
 
 sc_result sc_fm_init(const sc_char * repo_path)
 {
   MutexGuard lock(gMutex);
-  gInstancePath = std::string (repo_path) + "/file_memory";
+  gInstancePath = std::string(repo_path) + "/file_memory";
   return SC_RES(CreateDBInstance());
 }
 
@@ -124,7 +122,7 @@ sc_stream * sc_fm_read_stream_new(const sc_check_sum * check_sum)
 
   if (status.ok())
   {
-    sc_char * data = (sc_char*)malloc(value.size());
+    sc_char * data = (sc_char *)malloc(value.size());
     if (data == nullptr)
       return nullptr;
 
@@ -148,8 +146,7 @@ sc_result sc_fm_write_stream(const sc_check_sum * check_sum, const sc_stream * s
 
   if (res != SC_RESULT_OK)
     return SC_RESULT_ERROR_IO;
-  
-    
+
   sc_char buffer[1024];
   std::string data;
 
@@ -164,20 +161,20 @@ sc_result sc_fm_write_stream(const sc_check_sum * check_sum, const sc_stream * s
 
   assert(gDBInstance);
   rocksdb::WriteOptions options;
-//  options.sync = true;
+  //  options.sync = true;
   rocksdb::Status status = gDBInstance->Put(options, MakeContentKey(check_sum), data);
 
   return SC_RES(status.ok());
 }
 
-sc_result sc_fm_addr_ref_append(sc_addr addr, const sc_check_sum *check_sum)
+sc_result sc_fm_addr_ref_append(sc_addr addr, const sc_check_sum * check_sum)
 {
   MutexGuard lock(gMutex);
 
   assert(gDBInstance);
 
   std::string const key = MakeAddrsKey(check_sum);
-  std::string value;  
+  std::string value;
 
   rocksdb::ReadOptions readOptions;
   rocksdb::Status status = gDBInstance->Get(readOptions, key, &value);
@@ -195,14 +192,14 @@ sc_result sc_fm_addr_ref_append(sc_addr addr, const sc_check_sum *check_sum)
   return SC_RES(status.ok());
 }
 
-sc_result sc_fm_addr_ref_remove(sc_addr addr, const sc_check_sum *check_sum)
+sc_result sc_fm_addr_ref_remove(sc_addr addr, const sc_check_sum * check_sum)
 {
   MutexGuard lock(gMutex);
 
   assert(gDBInstance);
 
   std::string const key = MakeAddrsKey(check_sum);
-  std::string value;  
+  std::string value;
 
   rocksdb::ReadOptions readOptions;
   rocksdb::Status status = gDBInstance->Get(readOptions, key, &value);
@@ -235,14 +232,14 @@ sc_result sc_fm_addr_ref_remove(sc_addr addr, const sc_check_sum *check_sum)
   return SC_RES(status.ok());
 }
 
-sc_result sc_fm_find(const sc_check_sum *check_sum, sc_addr **result, sc_uint32 *result_count)
+sc_result sc_fm_find(const sc_check_sum * check_sum, sc_addr ** result, sc_uint32 * result_count)
 {
   MutexGuard lock(gMutex);
 
   assert(gDBInstance);
-  
+
   std::string const key = MakeAddrsKey(check_sum);
-  std::string value;  
+  std::string value;
 
   rocksdb::ReadOptions readOptions;
   rocksdb::Status status = gDBInstance->Get(readOptions, key, &value);
@@ -255,7 +252,7 @@ sc_result sc_fm_find(const sc_check_sum *check_sum, sc_addr **result, sc_uint32 
   *result_count = sc_uint32(addrs.size());
 
   size_t const resultBytes = sizeof(sc_addr) * addrs.size();
-  *result = (sc_addr*)malloc(resultBytes);
+  *result = (sc_addr *)malloc(resultBytes);
   memcpy(*result, addrs.data(), resultBytes);
 
   return SC_RESULT_OK;
@@ -281,7 +278,7 @@ sc_result sc_fm_save()
   assert(gDBInstance);
   rocksdb::FlushOptions options;
   options.wait = true;
-  
+
   rocksdb::Status status = gDBInstance->Flush(options);
   return SC_RES(status.ok());
 }

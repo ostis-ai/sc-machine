@@ -28,27 +28,23 @@
 #include "sc_base64.hpp"
 #include <iostream>
 
-
 namespace
 {
 static const std::string base64_chars =
-  "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-  "abcdefghijklmnopqrstuvwxyz"
-  "0123456789+/";
-
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+    "abcdefghijklmnopqrstuvwxyz"
+    "0123456789+/";
 
 static inline bool is_base64(unsigned char c)
 {
   return (isalnum(c) || (c == '+') || (c == '/'));
 }
 
-} // namespace
+}  // namespace
 
 namespace ScBase64
 {
-
-
-std::string Encode(unsigned char const* bytes_to_encode, unsigned int in_len)
+std::string Encode(unsigned char const * bytes_to_encode, unsigned int in_len)
 {
   std::string ret;
   int i = 0;
@@ -87,11 +83,9 @@ std::string Encode(unsigned char const* bytes_to_encode, unsigned int in_len)
 
     while ((i++ < 3))
       ret += '=';
-
   }
 
   return ret;
-
 }
 
 std::string Decode(std::string const & encoded_string)
@@ -105,7 +99,8 @@ std::string Decode(std::string const & encoded_string)
 
   while (in_len-- && (encoded_string[in_] != '=') && is_base64(encoded_string[in_]))
   {
-    char_array_4[i++] = encoded_string[in_]; in_++;
+    char_array_4[i++] = encoded_string[in_];
+    in_++;
     if (i == 4)
     {
       for (i = 0; i < 4; i++)
@@ -133,10 +128,11 @@ std::string Decode(std::string const & encoded_string)
     char_array_3[1] = ((char_array_4[1] & 0xf) << 4) + ((char_array_4[2] & 0x3c) >> 2);
     char_array_3[2] = ((char_array_4[2] & 0x3) << 6) + char_array_4[3];
 
-    for (j = 0; (j < i - 1); j++) ret += char_array_3[j];
+    for (j = 0; (j < i - 1); j++)
+      ret += char_array_3[j];
   }
 
   return ret;
 }
 
-} // namespace ScBase64
+}  // namespace ScBase64

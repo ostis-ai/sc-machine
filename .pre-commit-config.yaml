@@ -1,0 +1,8 @@
+repos:
+  - repo: local
+    hooks:
+      - id: clang-format-check
+        name: clang-format-check
+        exclude: (generated/|thidrparty/|scs/|/json)
+        entry: scripts/ci/check-formatting.sh
+        language: script

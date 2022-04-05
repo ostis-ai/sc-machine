@@ -10,3 +10,8 @@ target_include_directories(sc-core
   )
 target_link_libraries(sc-core ${GLIB2_LIBRARIES} ${RocksDB_LIBRARIES} gcov)
 target_compile_definitions(sc-core PRIVATE "-DSC_MEMORY_SELF_BUILD")
+
+if (${SC_CLANG_FORMAT_CODE})
+	target_clangformat_setup(sc-core)
+endif ()
+

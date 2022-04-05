@@ -4,12 +4,10 @@
 
 MacrosManager::MacrosManager()
 {
-
 }
 
 MacrosManager::~MacrosManager()
 {
-
 }
 
 bool MacrosManager::AddMacros(MacrosInfo const & inMacros)
@@ -40,7 +38,7 @@ bool MacrosManager::FindMacros(size_t line, std::string const & fileName, Macros
   count += classMacros.IsValid() ? 1 : 0;
   count += propertyMacros.IsValid() ? 1 : 0;
 
-  if (count > 1) // invalid state
+  if (count > 1)  // invalid state
   {
     std::cout << "More that one SC_... macros used at line " << line << " in " << fileName << std::endl;
   }
@@ -66,7 +64,11 @@ void MacrosManager::Clear()
   m_macrosStorage = MacrosTypedMap();
 }
 
-bool MacrosManager::FindMacrosInternal(MacrosInfo::Type type, size_t line, std::string const & fileName, MacrosInfo & outResult) const
+bool MacrosManager::FindMacrosInternal(
+    MacrosInfo::Type type,
+    size_t line,
+    std::string const & fileName,
+    MacrosInfo & outResult) const
 {
   MacrosTypedMap::const_iterator itTyped = m_macrosStorage.find(type);
   if (itTyped != m_macrosStorage.end())

@@ -6,10 +6,9 @@
 #include <string>
 #include <vector>
 
-class  ScHttpRequest
+class ScHttpRequest
 {
 public:
-
   enum class Type : uint8_t
   {
     GET,

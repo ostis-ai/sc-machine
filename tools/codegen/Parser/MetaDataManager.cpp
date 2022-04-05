@@ -7,13 +7,13 @@
 MetaDataManager::MetaDataManager(Cursor const & cursor)
 {
   m_lineNumber = cursor.GetLineNumber() - 1;
-  for (auto &child : cursor.GetChildren())
+  for (auto & child : cursor.GetChildren())
   {
     if (child.GetKind() != CXCursor_AnnotateAttr)
       continue;
 
     auto const props = ExtractProperties(child);
-    for (auto &prop : props)
+    for (auto & prop : props)
       m_properties[prop.first] = prop.second;
   }
 }
@@ -75,14 +75,14 @@ std::string MetaDataManager::GetNativeString(std::string const & key) const
     return "";
 
   static const std::regex quotedString(
-        // opening quote
-        "(?:\\s*\")"
-        // actual string contents
-        "([^\"]*)"
-        // closing quote
-        "\"");
+      // opening quote
+      "(?:\\s*\")"
+      // actual string contents
+      "([^\"]*)"
+      // closing quote
+      "\"");
 
-    std::smatch match;
+  std::smatch match;
 
   if (std::regex_match(search->second, match, quotedString))
   {
@@ -99,23 +99,22 @@ std::vector<MetaDataManager::Property> MetaDataManager::ExtractProperties(Cursor
   std::vector<Property> properties;
 
   static const std::regex propertyList(
-        // property name
-        "([a-zA-Z\\:]+)"
-        // optional whitespace before
-        "(?:\\s*)"
-        // constructor
-        "("
-        // opening paren
-        "\\("
-        // arguments
-        "([^\\)]*)"
-        // closing paren
-        "\\)"
-        // end constructor
-        ")?"
-        // optional comma/whitespace
-        "(?:(\\s|,)*)"
-        );
+      // property name
+      "([a-zA-Z\\:]+)"
+      // optional whitespace before
+      "(?:\\s*)"
+      // constructor
+      "("
+      // opening paren
+      "\\("
+      // arguments
+      "([^\\)]*)"
+      // closing paren
+      "\\)"
+      // end constructor
+      ")?"
+      // optional comma/whitespace
+      "(?:(\\s|,)*)");
 
   auto const meta = cursor.GetDisplayName();
   auto start = meta.cbegin();
@@ -171,7 +170,8 @@ void MetaDataManager::Check() const
 
   if (hasTemplate && GetNativeString(Props::Template).empty())
   {
-    EMIT_ERROR_LINE("Can't use empty " << Props::Template << ". You should specify system identifier of sc-structure in it");
+    EMIT_ERROR_LINE(
+        "Can't use empty " << Props::Template << ". You should specify system identifier of sc-structure in it");
   }
 
   std::string const cmdClass = GetNativeString(Props::AgentCommandClass);
@@ -194,7 +194,5 @@ void MetaDataManager::Check() const
     {
       EMIT_ERROR_LINE("Don't use empty " << Props::AgentCommandClass);
     }
-
   }
-
 }

@@ -19,6 +19,7 @@ public:
   static std::string FileChecksum(std::string const & fileName);
 
   void Reset();
+
 private:
   using CacheMap = std::unordered_map<std::string, std::string>;
   CacheMap m_cache;

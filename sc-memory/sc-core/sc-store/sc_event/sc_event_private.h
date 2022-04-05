@@ -17,7 +17,7 @@
  *   After that destroy event.
  */
 
-#define SC_EVENT_REQUEST_DESTROY  (1 << 31)
+#define SC_EVENT_REQUEST_DESTROY (1 << 31)
 #define SC_EVENT_REF_COUNT_MASK (~SC_EVENT_REQUEST_DESTROY)
 
 /*! Structure that contains information about event
@@ -42,9 +42,7 @@ struct _sc_event
   volatile sc_pointer thread_lock;
   //! Access levels
   sc_access_levels access_levels;
-
 };
-
 
 //! Function to initialize sc-events module
 sc_bool sc_events_initialize();
@@ -52,7 +50,8 @@ sc_bool sc_events_initialize();
 //! Function to shutdown sc-events module
 void sc_events_shutdown();
 
-//! Waits while all emited events will be processed, then returns. After calling that function all new emited events will be ignored
+//! Waits while all emited events will be processed, then returns. After calling that function all new emited events
+//! will be ignored
 void sc_events_stop_processing();
 
 /*! Notificate about sc-element deletion.
@@ -73,11 +72,23 @@ sc_result sc_event_notify_element_deleted(sc_addr element);
  * If \p el is a target, then \p other_el is a source.
  * @return If event emitted without any errors, then return SC_OK; otherwise return SC_ERROR code
  */
-sc_result sc_event_emit(sc_memory_context * ctx, sc_addr el, sc_access_levels el_acces, sc_event_type type, sc_addr edge, sc_addr other_el);
+sc_result sc_event_emit(
+    sc_memory_context * ctx,
+    sc_addr el,
+    sc_access_levels el_acces,
+    sc_event_type type,
+    sc_addr edge,
+    sc_addr other_el);
 
 /*! Emit event immediately
  */
-sc_result sc_event_emit_impl(sc_memory_context const * ctx, sc_addr el, sc_access_levels el_access, sc_event_type type, sc_addr edge, sc_addr other_el);
+sc_result sc_event_emit_impl(
+    sc_memory_context const * ctx,
+    sc_addr el,
+    sc_access_levels el_access,
+    sc_event_type type,
+    sc_addr edge,
+    sc_addr other_el);
 
 /* Remove reference from event.
  * Remove reference from an event

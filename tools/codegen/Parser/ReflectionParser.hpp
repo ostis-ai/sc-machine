@@ -14,7 +14,6 @@
 class ReflectionParser final
 {
 public:
-
   explicit ReflectionParser(ReflectionOptions const & options);
 
   void Parse();

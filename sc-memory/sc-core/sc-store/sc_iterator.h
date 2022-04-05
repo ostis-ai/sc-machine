@@ -16,4 +16,4 @@
  * iterators.
  */
 
-#endif // SC_ITERATOR_H
+#endif  // SC_ITERATOR_H

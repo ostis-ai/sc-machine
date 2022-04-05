@@ -1,8 +1,8 @@
 /*
-* This source file is part of an OSTIS project. For the latest info, see http://ostis.net
-* Distributed under the MIT License
-* (See accompanying file COPYING.MIT or copy at http://opensource.org/licenses/MIT)
-*/
+ * This source file is part of an OSTIS project. For the latest info, see http://ostis.net
+ * Distributed under the MIT License
+ * (See accompanying file COPYING.MIT or copy at http://opensource.org/licenses/MIT)
+ */
 
 #include "sc_log.hpp"
 #include "../sc_debug.hpp"
@@ -14,18 +14,13 @@
 
 namespace
 {
-
 // should be synced with ScLog::Type
-const std::string kTypeToStr[] = {
-      "Debug", "Info", "Warning", "Error", "Python", "PythonError", "Off"
-};
+const std::string kTypeToStr[] = {"Debug", "Info", "Warning", "Error", "Python", "PythonError", "Off"};
 
 // should be synced with ScLog::OutputType
-const std::string kOutputTypeToStr[] = {
-      "Console", "File"
-};
+const std::string kOutputTypeToStr[] = {"Console", "File"};
 
-} // namespace
+}  // namespace
 
 namespace utils
 {
@@ -91,7 +86,7 @@ void ScLog::Shutdown()
 void ScLog::Message(ScLog::Type type, std::string const & msg, ScConsole::Color color /*= ScConsole::Color::White*/)
 {
   if (m_isMuted && type != Type::Error)
-    return; // do nothing on mute
+    return;  // do nothing on mute
 
   utils::ScLockScope lock(gLock);
   if (m_mode <= type)
@@ -101,17 +96,16 @@ void ScLog::Message(ScLog::Type type, std::string const & msg, ScConsole::Color 
     std::tm tm = *std::localtime(&t);
 
     std::stringstream ss;
-    ss << "[" << std::setw(2) << std::setfill('0') << tm.tm_hour
-       << ":" << std::setw(2) << std::setfill('0') << tm.tm_min
-       << ":" << std::setw(2) << std::setfill('0') << tm.tm_sec << "]["
-       << kTypeToStr[int(type)] << "]: ";
+    ss << "[" << std::setw(2) << std::setfill('0') << tm.tm_hour << ":" << std::setw(2) << std::setfill('0')
+       << tm.tm_min << ":" << std::setw(2) << std::setfill('0') << tm.tm_sec << "][" << kTypeToStr[int(type)] << "]: ";
 
     if (m_output_mode == OutputType::Console)
     {
       ScConsole::SetColor(ScConsole::Color::White);
       std::cout << ss.str();
       ScConsole::SetColor(color);
-      std::cout << msg << std::endl;;
+      std::cout << msg << std::endl;
+      ;
       ScConsole::ResetColor();
     }
     else
@@ -136,8 +130,8 @@ void ScLog::SetFileName(const std::string & file_name)
   Initialize(file_name);
 }
 
-template<size_t N>
-int ScLog::FindEnumElement(const std::string (& elements)[N], const std::string & externalValue)
+template <size_t N>
+int ScLog::FindEnumElement(const std::string (&elements)[N], const std::string & externalValue)
 {
   size_t size = N;
   int index = -1;
@@ -153,4 +147,4 @@ int ScLog::FindEnumElement(const std::string (& elements)[N], const std::string 
   return index;
 }
 
-} // namespace utils
+}  // namespace utils

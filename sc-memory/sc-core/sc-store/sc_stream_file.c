@@ -11,15 +11,15 @@
 #include <glib.h>
 
 #define SC_STREAM_FILE_FD_CHECK \
-  FILE *fd = (FILE*)stream->handler; \
+  FILE * fd = (FILE *)stream->handler; \
   g_assert(stream != 0); \
   if (fd == 0) \
-{ \
-  g_message("File handler is null"); \
-  return SC_RESULT_ERROR; \
+  { \
+    g_message("File handler is null"); \
+    return SC_RESULT_ERROR; \
   }
 
-sc_result sc_stream_file_read(const sc_stream *stream, sc_char *data, sc_uint32 length, sc_uint32 *bytes_read)
+sc_result sc_stream_file_read(const sc_stream * stream, sc_char * data, sc_uint32 length, sc_uint32 * bytes_read)
 {
   SC_STREAM_FILE_FD_CHECK;
 
@@ -27,7 +27,7 @@ sc_result sc_stream_file_read(const sc_stream *stream, sc_char *data, sc_uint32 
   return SC_RESULT_OK;
 }
 
-sc_result sc_stream_file_write(const sc_stream *stream, sc_char *data, sc_uint32 length, sc_uint32 *bytes_written)
+sc_result sc_stream_file_write(const sc_stream * stream, sc_char * data, sc_uint32 length, sc_uint32 * bytes_written)
 {
   SC_STREAM_FILE_FD_CHECK;
 
@@ -39,7 +39,7 @@ sc_result sc_stream_file_write(const sc_stream *stream, sc_char *data, sc_uint32
   return SC_RESULT_OK;
 }
 
-sc_result sc_stream_file_seek(const sc_stream *stream, sc_stream_seek_origin origin, sc_uint32 offset)
+sc_result sc_stream_file_seek(const sc_stream * stream, sc_stream_seek_origin origin, sc_uint32 offset)
 {
   int whence = 0;
   SC_STREAM_FILE_FD_CHECK;
@@ -65,14 +65,14 @@ sc_result sc_stream_file_seek(const sc_stream *stream, sc_stream_seek_origin ori
   return SC_RESULT_ERROR;
 }
 
-sc_result sc_stream_file_tell(const sc_stream *stream, sc_uint32 *position)
+sc_result sc_stream_file_tell(const sc_stream * stream, sc_uint32 * position)
 {
   SC_STREAM_FILE_FD_CHECK;
   *position = ftell(fd);
   return SC_RESULT_OK;
 }
 
-sc_result sc_stream_file_free_handler(const sc_stream *stream)
+sc_result sc_stream_file_free_handler(const sc_stream * stream)
 {
   SC_STREAM_FILE_FD_CHECK;
   if (fclose(fd) == 0)
@@ -81,7 +81,7 @@ sc_result sc_stream_file_free_handler(const sc_stream *stream)
   return SC_RESULT_ERROR;
 }
 
-sc_bool sc_stream_file_eof(const sc_stream *stream)
+sc_bool sc_stream_file_eof(const sc_stream * stream)
 {
   SC_STREAM_FILE_FD_CHECK;
 
@@ -91,15 +91,14 @@ sc_bool sc_stream_file_eof(const sc_stream *stream)
   return SC_TRUE;
 }
 
-
-sc_stream* sc_stream_file_new(const sc_char *file_name, sc_uint8 flags)
+sc_stream * sc_stream_file_new(const sc_char * file_name, sc_uint8 flags)
 {
-  sc_stream *stream = 0;
-  FILE *fd = 0;
+  sc_stream * stream = 0;
+  FILE * fd = 0;
 
   if (flags & SC_STREAM_FLAG_READ)
   {
-    g_assert(!(flags & SC_STREAM_FLAG_APPEND)); // couldn't support append in read mode
+    g_assert(!(flags & SC_STREAM_FLAG_APPEND));  // couldn't support append in read mode
     fd = fopen(file_name, "rb");
   }
   else
@@ -120,7 +119,7 @@ sc_stream* sc_stream_file_new(const sc_char *file_name, sc_uint8 flags)
   stream = g_new0(sc_stream, 1);
 
   stream->flags = flags | SC_STREAM_FLAG_TELL | SC_STREAM_FLAG_SEEK;
-  stream->handler = (void*)fd;
+  stream->handler = (void *)fd;
 
   stream->read_func = &sc_stream_file_read;
   stream->write_func = &sc_stream_file_write;

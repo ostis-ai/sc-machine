@@ -22,7 +22,7 @@ public:
   {
   }
 
-  ScTemplate::Result operator () (ScTemplate * templ)
+  ScTemplate::Result operator()(ScTemplate * templ)
   {
     // mark template to don't force order of triples
     templ->m_isForceOrder = false;
@@ -41,8 +41,8 @@ protected:
 
     ScTemplate::Result result(true);
 
-    auto const MakeTemplItem = [&passed, &keynodes, &result](scs::ParsedElement const & el, ScTemplateItemValue & outValue) -> bool
-    {
+    auto const MakeTemplItem = [&passed, &keynodes, &result](
+                                   scs::ParsedElement const & el, ScTemplateItemValue & outValue) -> bool {
       std::string const & idtf = el.GetIdtf();
       bool const isUnnamed = scs::TypeResolver::IsUnnamed(idtf);
       bool const isPassed = (passed.find(idtf) != passed.end());
@@ -84,9 +84,7 @@ protected:
 
       ScTemplateItemValue srcItem, edgeItem, trgItem;
 
-      if (!MakeTemplItem(src, srcItem) ||
-          !MakeTemplItem(edge, edgeItem) ||
-          !MakeTemplItem(trg, trgItem))
+      if (!MakeTemplItem(src, srcItem) || !MakeTemplItem(edge, edgeItem) || !MakeTemplItem(trg, trgItem))
       {
         break;
       }
