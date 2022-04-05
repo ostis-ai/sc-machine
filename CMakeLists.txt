@@ -17,7 +17,7 @@ option (SC_BUILD_TESTS "Flag to build unit tests" OFF)
 option (SC_COVERAGE "Flag to generate coverage report" OFF)
 
 # Coverage
-if(${SC_COVERAGE})
+if(${SC_COVERAGE} AND CMAKE_CXX_COMPILER_ID MATCHES "GNU")
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -g -O0 --coverage")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -O0 --coverage")
 endif()
