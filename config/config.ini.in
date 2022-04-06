@@ -16,6 +16,3 @@ modules_path = ${SC_MACHINE_ROOT}/sc-kpm/sc-python/services
 
 [debug]
 is_debug = True
-
-[web]
-path = ${SC_MACHINE_ROOT}/web
