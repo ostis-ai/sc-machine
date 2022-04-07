@@ -1,4 +1,3 @@
-
 import tornado
 
 from tornado import websocket
@@ -8,6 +7,8 @@ import json
 import sys
 import traceback
 import threading
+from auth.validators import TokenValidator
+import jwt
 
 clients = []
 
@@ -38,9 +39,16 @@ class ScJsonSocketHandler(websocket.WebSocketHandler):
     return True
 
   def open(self):
-    if self not in clients:
-      clients.append(self)
-    self.alive = True
+    if 'token' in self.request.arguments:
+        token = self.request.arguments['token'][0]
+        if TokenValidator._validate_token(token):
+            if self not in clients:
+                clients.append(self)
+                self.alive = True
+        else:
+            self.close()
+    else:
+        self.close()
 
   def on_close(self):
     if self in clients:

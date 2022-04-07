@@ -5,7 +5,6 @@ params = {
     # path params
     cnt.PUBLIC_KEY_PATH: '../sc-machine/sc-kpm/sc-python/services/http_api/auth/public.pem',
     # validator patters
-    cnt.USERNAME_PATTERN: '^[a-zA-Z][a-zA-Z0-9-_.]{1,20}$',
     # token params
     cnt.ISSUER: 'sc-auth-server',
     # messages
