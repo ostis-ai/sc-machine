@@ -8,10 +8,14 @@ if (${WIN32})
 elseif (${APPLE})
   set (BOOST_LIBS_LIST
     Boost::program_options
+    Boost::filesystem
+    Boost::dl
     )
 else()
   set (BOOST_LIBS_LIST
     boost_program_options
+    boost_filesystem
+    dl
     )
 endif (${WIN32})
   
