@@ -3,7 +3,6 @@ from os.path import join, abspath, relpath, commonprefix, isdir, exists
 import os
 import shutil
 import re
-import sys
 
 paths = set()
 
@@ -48,7 +47,7 @@ def copy_kb(output_path: str):
         print(e)
 
 
-def parse_config(path: str):
+def parse_config(path: str) -> dict:
     config_dict = {'src': '', 'path': '', 'log': '', 'filename': ''}
     with open(path, mode='r') as config:
         reading_state = False
@@ -58,7 +57,7 @@ def parse_config(path: str):
                 reading_state = True
             elif re.search(r'\[.+\]', line):
                 reading_state = False
-            if line.startswith(';'): 
+            if line.startswith('#'): 
                 continue
             if line.find("Source = ") != -1 and reading_state:
                 config_dict.update({'src': line.replace('Source = ', '')})
@@ -94,17 +93,17 @@ def main(root_repo_path: str, output_path: str, logfile: str, repo_filename: str
     if conf['src'] == '':
         root_repo_path = abspath(root_repo_path)
     elif root_repo_path == os.getcwd():
-        root_repo_path = relpath(ostis_path, conf['src'])
+        root_repo_path = relpath(conf['src'], ostis_path)
 
     if conf['path'] == '':
         output_path = abspath(output_path)
     elif output_path == os.getcwd():
-        output_path = relpath(ostis_path, conf['path'])
+        output_path = relpath(conf['path'], ostis_path)
 
     if conf['log'] == '':
         logfile = abspath(logfile)
     elif logfile == join(os.getcwd(), "prepare.log"):
-        logfile = relpath(ostis_path, conf['log'])
+        logfile = relpath(conf['log'], ostis_path)
         logfile = join(logfile, 'prepare.log')
 
     if conf['filename'] != '' and repo_filename == 'repo.path':
