@@ -11,36 +11,47 @@
 #include <sc-memory/sc_debug.hpp>
 #include <sc-memory/sc_memory.hpp>
 #include <sc-memory/utils/sc_signal_handler.hpp>
+#include "utils/parser.hpp"
 
 #include <atomic>
 #include <thread>
+#include <map>
 
 int main(int argc, char * argv[])
 try
 {
   boost::program_options::options_description options_description("Builder usage");
-  options_description.add_options()("help", "Display this message")(
-      "ext-path,e", boost::program_options::value<std::string>(), "Path to directory with sc-memory extensions")(
-      "repo-path,r", boost::program_options::value<std::string>(), "Path to repository")(
-      "verbose,v", "Flag to don't save sc-memory state on exit")("clear,c", "Flag to clear sc-memory on start")(
-      "config-file,i", boost::program_options::value<std::string>(), "Path to configuration file");
+  options_description.add_options()
+      ("help", "Display this message")
+      ("extensions,e", boost::program_options::value<std::string>(), "Path to directory with sc-memory extensions")
+      ("kb", boost::program_options::value<std::string>(), "Path to kb.bin folder")
+      ("verbose,v", "Flag to don't save sc-memory state on exit")
+      ("clear", "Flag to clear sc-memory on start")
+      ("config,c", boost::program_options::value<std::string>(), "Path to configuration file");
 
   boost::program_options::variables_map vm;
   boost::program_options::store(
       boost::program_options::command_line_parser(argc, argv).options(options_description).run(), vm);
   boost::program_options::notify(vm);
 
+
   std::string configFile;
-  if (vm.count("config-file"))
-    configFile = vm["config-file"].as<std::string>();
+  if (vm.count("config"))
+    configFile = vm["config"].as<std::string>();
+
+  std::map<std::string, std::string> conf_file = parse_config(configFile);
 
   std::string extPath;
-  if (vm.count("ext-path"))
-    extPath = vm["ext-path"].as<std::string>();
+  if (vm.count("extensions"))
+    extPath = vm["extensions"].as<std::string>();
+  else
+    extPath = conf_file["ext"];
 
   std::string repoPath;
-  if (vm.count("repo-path"))
-    repoPath = vm["repo-path"].as<std::string>();
+  if (vm.count("kb"))
+    repoPath = vm["kb"].as<std::string>();
+  else
+    repoPath = conf_file["path"];
 
   bool saveState = true;
   if (vm.count("verbose"))
@@ -56,7 +67,7 @@ try
     return 0;
   }
 
-  std::atomic_bool isRun = {true};
+  std::atomic_bool isRun = { true };
   utils::ScSignalHandler::Initialize();
   utils::ScSignalHandler::m_onTerminate = [&isRun]() {
     isRun = false;
