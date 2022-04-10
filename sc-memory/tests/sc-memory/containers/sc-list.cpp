@@ -1,12 +1,4 @@
-/*
-* This source file is part of an OSTIS project. For the latest info, see http://ostis.net
-* Distributed under the MIT License
-* (See accompanying file COPYING.MIT or copy at http://opensource.org/licenses/MIT)
-*/
-
-#include <glib.h>
-#include "catch2/catch.hpp"
-#include "sc-test-framework/sc_test_unit.hpp"
+#include <gtest/gtest.h>
 
 extern "C"
 {
@@ -15,18 +7,22 @@ extern "C"
 #include "sc-core/sc-store/sc-container/sc-iterator/sc_container_iterator.h"
 }
 
+#include "sc_test.hpp"
+
 sc_bool scalar_compare(void * value, void * other)
 {
   return *(sc_uint8 *)value == *(sc_uint8 *)other;
 }
 
-TEST_CASE("sc-list", "[test sc-list]")
+using ScListTest = ScMemoryTest;
+
+TEST_F(ScListTest, sc_list)
 {
   sc_list * list;
   sc_list_init(&list);
 
   sc_uint8 size = 10;
-  sc_uint8 * values = g_new(sc_uint8, size);
+  auto * values = new sc_uint8 [size];
   sc_uint8 i = 0;
   for (; i < size; ++i)
   {
@@ -35,7 +31,7 @@ TEST_CASE("sc-list", "[test sc-list]")
   }
 
   sc_uint8 v = 5;
-  g_assert(sc_list_remove_if(list, (void *)(&v), 1, scalar_compare));
+  EXPECT_TRUE(sc_list_remove_if(list, (void *)(&v), 1, scalar_compare));
 
   sc_struct_node * last;
   i = list->size;
@@ -47,21 +43,21 @@ TEST_CASE("sc-list", "[test sc-list]")
     if (i == 5)
       --i;
 
-    g_assert(value == i);
+    EXPECT_TRUE(value == i);
   }
 
-  g_assert(sc_list_pop_back(list) == nullptr);
-  g_free(values);
+  EXPECT_TRUE(sc_list_pop_back(list) == nullptr);
+  free(values);
   sc_list_destroy(list);
 }
 
-TEST_CASE("sc-list-iterator", "[test sc-list-iterator]")
+TEST_F(ScListTest, sc_list_iterator)
 {
   sc_list * list;
   sc_list_init(&list);
 
   sc_uint8 size = 10;
-  sc_uint8 * values = g_new(sc_uint8, size);
+  auto * values = new sc_uint8 [size];
   sc_uint8 i = 0;
   for (; i < size; ++i)
   {
@@ -77,10 +73,10 @@ TEST_CASE("sc-list-iterator", "[test sc-list-iterator]")
     data = sc_iterator_get(it);
     sc_uint8 value = *(sc_uint8 *)data->value;
 
-    g_assert(value == i);
+    EXPECT_TRUE(value == i);
     ++i;
   }
-  g_assert(i == size);
+  EXPECT_TRUE(i == size);
 
   i = size - 1;
   sc_iterator_reset(it);
@@ -89,12 +85,13 @@ TEST_CASE("sc-list-iterator", "[test sc-list-iterator]")
     data = sc_iterator_get(it);
     sc_uint8 value = *(sc_uint8 *)data->value;
 
-    g_assert(value == i);
+    EXPECT_TRUE(value == i);
     --i;
   }
-  g_assert(i == 255);
+  EXPECT_TRUE(i == 255);
 
-  g_free(values);
+  free(values);
   sc_iterator_destroy(it);
   sc_list_destroy(list);
 }
+
