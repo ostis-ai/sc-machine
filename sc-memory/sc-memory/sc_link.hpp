@@ -56,7 +56,7 @@ public:
     size_t size = stream->Size();
 
     size_t readBytes = 0;
-    auto * str = (sc_char*)calloc(sizeof(sc_char), size + 1);
+    auto * str = (sc_char *)calloc(sizeof(sc_char), size + 1);
     stream->Read(str, size, readBytes);
 
     if (size != readBytes)

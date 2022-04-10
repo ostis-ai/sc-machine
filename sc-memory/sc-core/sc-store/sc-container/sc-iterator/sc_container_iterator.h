@@ -11,14 +11,12 @@
 
 #include "../sc_struct_node.h"
 
-
 typedef struct _sc_iterator
 {
   sc_struct_node * begin;
   sc_struct_node * end;
   sc_struct_node * current;
 } sc_iterator;
-
 
 sc_iterator * sc_iterator_init(sc_struct_node * begin, sc_struct_node * end);
 

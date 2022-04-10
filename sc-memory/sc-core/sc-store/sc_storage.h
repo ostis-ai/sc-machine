@@ -178,7 +178,8 @@ sc_result sc_storage_find_links_with_content(
     sc_addr ** result,
     sc_uint32 * result_count);
 
-/*! Setup new access levels to sc-element. New access levels will be a minimum from context access levels and parameter \b access_levels
+/*! Setup new access levels to sc-element. New access levels will be a minimum from context access levels and parameter
+ * \b access_levels
  * @param addr sc-addr of sc-element to change access levels
  * @param access_levels new access levels
  * @param new_value new value of access levels for sc-element. This parameter can be NULL

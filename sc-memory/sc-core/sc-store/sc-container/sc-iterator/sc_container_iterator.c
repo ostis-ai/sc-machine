@@ -8,7 +8,6 @@
 
 #include <glib.h>
 
-
 sc_iterator * sc_iterator_init(sc_struct_node * begin, sc_struct_node * end)
 {
   sc_iterator * it = g_new0(sc_iterator, 1);

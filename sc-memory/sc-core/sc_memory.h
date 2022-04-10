@@ -192,7 +192,8 @@ _SC_EXTERN sc_result sc_memory_find_links_with_content(
     sc_addr ** result,
     sc_uint32 * result_count);
 
-_SC_EXTERN sc_result sc_memory_find_link_with_content(sc_memory_context const * ctx, sc_stream const * stream, sc_addr *found);
+_SC_EXTERN sc_result
+sc_memory_find_link_with_content(sc_memory_context const * ctx, sc_stream const * stream, sc_addr * found);
 
 /*! Free buffer allocated for links content find result
  */

@@ -9,7 +9,6 @@
 #include "sc_defines.h"
 #include "sc_segment.h"
 #include "sc_element.h"
-#include "sc-container/sc-string-tree/sc_string_tree.h"
 #include "sc_link_helpers.h"
 #include "sc_config.h"
 #include "sc_stream_memory.h"
@@ -37,7 +36,7 @@ sc_bool is_initialized = SC_FALSE;
 
 sc_memory_context * segments_cache_lock_ctx = null_ptr;
 sc_int32 segments_cache_count = 0;
-sc_segment* segments_cache[SC_SEGMENT_CACHE_SIZE]; // cache of segments that have empty elements
+sc_segment * segments_cache[SC_SEGMENT_CACHE_SIZE];  // cache of segments that have empty elements
 
 GMutex s_mutex_free;
 GMutex s_mutex_save;
@@ -150,7 +149,7 @@ result:
 
 // -----------------------------------------------------------------------------
 
-sc_bool sc_storage_initialize(const char *path, sc_bool clear)
+sc_bool sc_storage_initialize(const char * path, sc_bool clear)
 {
   sc_assert(segments == null_ptr);
   sc_assert(is_initialized == SC_FALSE);
@@ -168,7 +167,7 @@ sc_bool sc_storage_initialize(const char *path, sc_bool clear)
   }
 
   is_initialized = SC_TRUE;
-  memset(&(segments_cache[0]), 0, sizeof(sc_segment*) * SC_SEGMENT_CACHE_SIZE);
+  memset(&(segments_cache[0]), 0, sizeof(sc_segment *) * SC_SEGMENT_CACHE_SIZE);
 
   return SC_TRUE;
 }
@@ -183,7 +182,7 @@ void sc_storage_shutdown(sc_bool save_state)
   for (idx = 0; idx < SC_ADDR_SEG_MAX; idx++)
   {
     if (segments[idx] == null_ptr)
-      continue; // skip segments, that are not loaded
+      continue;  // skip segments, that are not loaded
     sc_segment_free(segments[idx]);
   }
 
@@ -219,7 +218,7 @@ sc_bool sc_storage_is_element(const sc_memory_context * ctx, sc_addr addr)
 
 sc_element * sc_storage_append_el_into_segments(const sc_memory_context * ctx, sc_addr * addr)
 {
-  sc_segment *seg = (sc_segment*)0x1;
+  sc_segment * seg = (sc_segment *)0x1;
 
   sc_assert(addr != null_ptr);
   SC_ADDR_MAKE_EMPTY(*addr);
@@ -927,7 +926,7 @@ sc_result sc_storage_set_link_content(sc_memory_context * ctx, sc_addr addr, con
   g_assert(ctx != null_ptr);
   g_assert(stream != null_ptr);
 
-  sc_element *el = null_ptr;
+  sc_element * el = null_ptr;
   sc_result result = SC_RESULT_ERROR;
   sc_access_levels access_lvl;
 
@@ -958,7 +957,7 @@ sc_result sc_storage_set_link_content(sc_memory_context * ctx, sc_addr addr, con
     goto unlock;
   }
 
-  sc_char *data = null_ptr;
+  sc_char * data = null_ptr;
   sc_uint32 size = 0;
   if (sc_link_get_content(stream, &data, &size) == SC_FALSE)
   {
@@ -1002,13 +1001,13 @@ sc_result sc_storage_set_link_content(sc_memory_context * ctx, sc_addr addr, con
     el->flags.type |= sc_flag_link_self_container;
 
     if (data != null_ptr)
-      sc_string_tree_append(addr, data, strlen(data));
+      sc_fs_storage_append_sc_link(addr, data, strlen(data));
     result = SC_RESULT_OK;
   }
 
-  //sc_addr empty;
-  //SC_ADDR_MAKE_EMPTY(empty);
-  //sc_event_emit(ctx, addr, access_lvl, SC_EVENT_CONTENT_CHANGED, empty, empty);
+  // sc_addr empty;
+  // SC_ADDR_MAKE_EMPTY(empty);
+  // sc_event_emit(ctx, addr, access_lvl, SC_EVENT_CONTENT_CHANGED, empty, empty);
 
 unlock:
 {
@@ -1022,7 +1021,7 @@ sc_result sc_storage_get_link_content(const sc_memory_context * ctx, sc_addr add
 {
   g_assert(ctx != null_ptr);
 
-  sc_element *el = null_ptr;
+  sc_element * el = null_ptr;
   sc_result result = SC_RESULT_ERROR;
 
   if (sc_storage_element_lock(addr, &el) != SC_RESULT_OK)
@@ -1049,8 +1048,8 @@ sc_result sc_storage_get_link_content(const sc_memory_context * ctx, sc_addr add
   if (el->flags.type & sc_flag_link_self_container)
   {
     sc_uint32 size = 0;
-    sc_char *sc_string = null_ptr;
-    sc_string_tree_get_sc_string_ext(addr, &sc_string, &size);
+    sc_char * sc_string = null_ptr;
+    sc_fs_storage_get_sc_string_ext(addr, &sc_string, &size);
 
     if (sc_string == null_ptr)
     {
@@ -1070,7 +1069,11 @@ unlock:
   return result;
 }
 
-sc_result sc_storage_find_links_with_content(const sc_memory_context *ctx, const sc_stream *stream, sc_addr **result_addrs, sc_uint32 *result_count)
+sc_result sc_storage_find_links_with_content(
+    const sc_memory_context * ctx,
+    const sc_stream * stream,
+    sc_addr ** result_addrs,
+    sc_uint32 * result_count)
 {
   g_assert(ctx != null_ptr);
   g_assert(stream != null_ptr);
@@ -1078,13 +1081,13 @@ sc_result sc_storage_find_links_with_content(const sc_memory_context *ctx, const
   *result_addrs = null_ptr;
   *result_count = 0;
 
-  sc_char *sc_string = null_ptr;
+  sc_char * sc_string = null_ptr;
   sc_uint32 size = 0;
   if (sc_link_get_content(stream, &sc_string, &size) != SC_TRUE)
     return SC_RESULT_ERROR;
 
-  sc_addr *found_addrs = null_ptr;
-  sc_result result = sc_string_tree_get_sc_links(sc_string, &found_addrs, result_count);
+  sc_addr * found_addrs = null_ptr;
+  sc_result result = sc_fs_storage_get_sc_links(sc_string, &found_addrs, result_count);
   if (result != SC_RESULT_OK || found_addrs == null_ptr || result_count == 0)
     return SC_RESULT_ERROR;
 
@@ -1097,7 +1100,7 @@ sc_result sc_storage_find_links_with_content(const sc_memory_context *ctx, const
     if (SC_ADDR_IS_EMPTY(found))
       continue;
 
-    sc_element *el = null_ptr;
+    sc_element * el = null_ptr;
     if (sc_storage_element_lock(found, &el) != SC_RESULT_OK)
     {
       result = SC_RESULT_ERROR;
@@ -1112,10 +1115,10 @@ sc_result sc_storage_find_links_with_content(const sc_memory_context *ctx, const
 
     (*result_addrs)[i] = found;
 
-unlock:
-    {
-      STORAGE_CHECK_CALL(sc_storage_element_unlock(found))
-    }
+  unlock:
+  {
+    STORAGE_CHECK_CALL(sc_storage_element_unlock(found))
+  }
 
     if (result != SC_RESULT_OK)
     {
@@ -1128,7 +1131,7 @@ unlock:
   return result;
 }
 
-sc_result sc_storage_find_link_with_content(const sc_memory_context *ctx, const sc_stream *stream, sc_addr *found)
+sc_result sc_storage_find_link_with_content(const sc_memory_context * ctx, const sc_stream * stream, sc_addr * found)
 {
   g_assert(ctx != null_ptr);
   g_assert(stream != null_ptr);
@@ -1136,18 +1139,18 @@ sc_result sc_storage_find_link_with_content(const sc_memory_context *ctx, const 
   sc_result result = SC_RESULT_ERROR;
   SC_ADDR_MAKE_EMPTY(*found)
 
-  sc_char *sc_string = null_ptr;
+  sc_char * sc_string = null_ptr;
   sc_uint32 size = 0;
   if (sc_link_get_content(stream, &sc_string, &size) != SC_TRUE)
     return SC_RESULT_ERROR;
 
-  sc_addr addr = sc_string_tree_get_sc_link(sc_string);
+  sc_addr addr = sc_fs_storage_get_sc_link(sc_string);
   if (SC_ADDR_IS_EMPTY(addr))
   {
     return SC_RESULT_ERROR;
   }
 
-  sc_element *el = null_ptr;
+  sc_element * el = null_ptr;
   if (sc_storage_element_lock(addr, &el) != SC_RESULT_OK)
     return SC_RESULT_ERROR;
 
@@ -1161,9 +1164,9 @@ sc_result sc_storage_find_link_with_content(const sc_memory_context *ctx, const 
   result = SC_RESULT_OK;
 
 unlock:
-  {
-    STORAGE_CHECK_CALL(sc_storage_element_unlock(addr))
-  }
+{
+  STORAGE_CHECK_CALL(sc_storage_element_unlock(addr))
+}
 
   return result;
 }

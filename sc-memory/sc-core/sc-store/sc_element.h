@@ -20,16 +20,6 @@ struct _sc_arc_info
   sc_addr prev_in_arc;   // sc-addr of previous input arc in list
 };
 
-#define SC_CHECKSUM_LEN 32  //(sizeof(sc_arc_info) - sizeof(sc_uint32))
-
-/*! Structure to store content information
- * Data field store checksum for data, that stores in specified sc-link.
- */
-struct _sc_content
-{
-  char data[SC_CHECKSUM_LEN];
-};
-
 /* Structure to store information for sc-elements.
  * It used just for unify working with node and arc elements.
  * When you get that structure, you need to check it type and
@@ -97,7 +87,7 @@ struct _sc_element
 /// All functions must be called for locked sc-elements
 void sc_element_set_type(sc_element * element, sc_type type);
 
-sc_bool sc_element_is_request_deletion(sc_element *element);
-sc_bool sc_element_is_valid(sc_element *element);
+sc_bool sc_element_is_request_deletion(sc_element * element);
+sc_bool sc_element_is_valid(sc_element * element);
 
 #endif

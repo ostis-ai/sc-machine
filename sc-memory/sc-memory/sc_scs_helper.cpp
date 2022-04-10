@@ -23,7 +23,7 @@ class StructGenerator
   friend class ::SCsHelper;
 
 protected:
-  StructGenerator(ScMemoryContext & ctx, SCsFileInterfacePtr  fileInterface)
+  StructGenerator(ScMemoryContext & ctx, SCsFileInterfacePtr fileInterface)
     : m_fileInterface(std::move(fileInterface))
     , m_ctx(ctx)
   {
@@ -171,14 +171,15 @@ private:
       }
       else
       {
-        ScType const &newType = el.GetType();
-        ScType const &oldType = m_ctx.GetElementType(result);
+        ScType const & newType = el.GetType();
+        ScType const & oldType = m_ctx.GetElementType(result);
         if (newType != oldType)
         {
           if (oldType.CanExtendTo(newType))
           {
             m_ctx.SetElementSubtype(result, *newType);
-          } else if (!newType.CanExtendTo(oldType))
+          }
+          else if (!newType.CanExtendTo(oldType))
           {
             SC_THROW_EXCEPTION(utils::ExceptionInvalidType, "Duplicate element type for " + el.GetIdtf());
           }
@@ -224,7 +225,8 @@ private:
     else
     {
       // check if it's a number format
-      std::regex const rNumber("^\\^\"(int8|int16|int32|int64|uint8|uint16|uint32|uint64|float|double)\\s*:\\s*([0-9]+|[0-9]+[.][0-9]+)\"$");
+      std::regex const rNumber(
+          "^\\^\"(int8|int16|int32|int64|uint8|uint16|uint32|uint64|float|double)\\s*:\\s*([0-9]+|[0-9]+[.][0-9]+)\"$");
       std::smatch result;
       if (std::regex_match(el.GetValue(), result, rNumber))
       {

@@ -54,12 +54,8 @@ sc_result ScAgentAction::Run(ScAddr const & listenAddr, ScAddr const & edgeAddr,
     if (m_memoryCtx.HelperCheckEdge(m_cmdClassAddr, cmdAddr, ScType::EdgeAccessConstPosPerm))
     {
       m_memoryCtx.EraseElement(edgeAddr);
-<<<<<<< HEAD
       ScAddr progressAddr =
-          m_memoryCtx.CreateEdge(ScType::EdgeAccessConstPosTemp, ScKeynodes::kCommandProgressdAddr, cmdAddr);
-=======
-      ScAddr progressAddr = m_memoryCtx.CreateEdge(ScType::EdgeAccessConstPosTemp, ScKeynodes::kCommandProgressedAddr, cmdAddr);
->>>>>>> [memory] Add opportunity for multiple links with the same content
+          m_memoryCtx.CreateEdge(ScType::EdgeAccessConstPosTemp, ScKeynodes::kCommandProgressedAddr, cmdAddr);
       assert(progressAddr.IsValid());
       ScAddr resultAddr = m_memoryCtx.CreateNode(ScType::NodeConstStruct);
       assert(resultAddr.IsValid());

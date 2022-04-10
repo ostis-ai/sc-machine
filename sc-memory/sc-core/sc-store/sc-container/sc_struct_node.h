@@ -9,7 +9,6 @@
 
 #include "../sc_types.h"
 
-
 typedef struct _sc_struct_node_data
 {
   void * value;
@@ -22,7 +21,6 @@ typedef struct _sc_struct_node
   struct _sc_struct_node * prev;
   sc_struct_node_data * data;
 } sc_struct_node;
-
 
 sc_struct_node * sc_struct_node_init(void * value, sc_uint32 size);
 

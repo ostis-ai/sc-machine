@@ -19,14 +19,15 @@ sc_bool sc_helper_is_initialized = SC_FALSE;
 sc_char ** keynodes_str = null_ptr;
 sc_addr * sc_keynodes = null_ptr;
 
-sc_result resolve_nrel_system_identifier(sc_memory_context const *ctx)
+sc_result resolve_nrel_system_identifier(sc_memory_context const * ctx)
 {
   sc_addr found;
-  sc_stream *stream = sc_stream_memory_new(
-        keynodes_str[SC_KEYNODE_NREL_SYSTEM_IDENTIFIER],
-        (sc_uint)(sizeof(sc_uchar) * strlen(keynodes_str[SC_KEYNODE_NREL_SYSTEM_IDENTIFIER])),
-        SC_STREAM_FLAG_READ, SC_FALSE);
-  sc_iterator5 *it = null_ptr;
+  sc_stream * stream = sc_stream_memory_new(
+      keynodes_str[SC_KEYNODE_NREL_SYSTEM_IDENTIFIER],
+      (sc_uint)(sizeof(sc_uchar) * strlen(keynodes_str[SC_KEYNODE_NREL_SYSTEM_IDENTIFIER])),
+      SC_STREAM_FLAG_READ,
+      SC_FALSE);
+  sc_iterator5 * it = null_ptr;
   sc_bool result = SC_FALSE;
   sc_addr addr1, addr2;
 
@@ -34,12 +35,12 @@ sc_result resolve_nrel_system_identifier(sc_memory_context const *ctx)
   if (sc_memory_find_link_with_content(ctx, stream, &found) == SC_RESULT_OK)
   {
     it = sc_iterator5_a_a_f_a_a_new(
-          ctx,
-          sc_type_node | sc_type_const | sc_type_node_norole,
-          sc_type_arc_common | sc_type_const,
-          found,
-          sc_type_arc_pos_const_perm,
-          sc_type_const | sc_type_node | sc_type_node_norole);
+        ctx,
+        sc_type_node | sc_type_const | sc_type_node_norole,
+        sc_type_arc_common | sc_type_const,
+        found,
+        sc_type_arc_pos_const_perm,
+        sc_type_const | sc_type_node | sc_type_node_norole);
 
     while (sc_iterator5_next(it))
     {
@@ -94,7 +95,7 @@ void _destroy_keynodes_str()
   sc_mem_free(keynodes_str);
 }
 
-sc_result sc_helper_init(sc_memory_context *ctx)
+sc_result sc_helper_init(sc_memory_context * ctx)
 {
   sc_message("Initialize sc-helper");
 
@@ -109,11 +110,11 @@ sc_result sc_helper_init(sc_memory_context *ctx)
     sc_addr addr = sc_memory_node_new(ctx, sc_type_const | sc_type_node_norole);
     sc_addr link = sc_memory_link_new(ctx);
 
-    sc_stream *stream = sc_stream_memory_new(
-          keynodes_str[SC_KEYNODE_NREL_SYSTEM_IDENTIFIER],
-          (sc_uint)(sizeof(sc_uchar) * strlen(keynodes_str[SC_KEYNODE_NREL_SYSTEM_IDENTIFIER])),
-          SC_STREAM_FLAG_READ,
-          SC_FALSE);
+    sc_stream * stream = sc_stream_memory_new(
+        keynodes_str[SC_KEYNODE_NREL_SYSTEM_IDENTIFIER],
+        (sc_uint)(sizeof(sc_uchar) * strlen(keynodes_str[SC_KEYNODE_NREL_SYSTEM_IDENTIFIER])),
+        SC_STREAM_FLAG_READ,
+        SC_FALSE);
     if (sc_memory_set_link_content(ctx, link, stream) != SC_RESULT_OK)
     {
       sc_stream_free(stream);
@@ -139,8 +140,11 @@ void sc_helper_shutdown()
   _destroy_keynodes_str();
 }
 
-
-sc_result sc_helper_find_element_by_system_identifier(sc_memory_context const *ctx, const sc_char *data, sc_uint32 len, sc_addr *result_addr)
+sc_result sc_helper_find_element_by_system_identifier(
+    sc_memory_context const * ctx,
+    const sc_char * data,
+    sc_uint32 len,
+    sc_addr * result_addr)
 {
   g_assert(ctx != null_ptr);
   g_assert(data != null_ptr);
@@ -149,8 +153,8 @@ sc_result sc_helper_find_element_by_system_identifier(sc_memory_context const *c
   g_assert(sc_keynodes != null_ptr);
 
   sc_addr found;
-  sc_stream *stream = null_ptr;
-  sc_iterator5 *it = null_ptr;
+  sc_stream * stream = null_ptr;
+  sc_iterator5 * it = null_ptr;
   sc_bool result = SC_FALSE;
 
   sc_assert(sc_helper_is_initialized == SC_TRUE);
@@ -162,12 +166,12 @@ sc_result sc_helper_find_element_by_system_identifier(sc_memory_context const *c
   if (sc_memory_find_link_with_content(ctx, stream, &found) == SC_RESULT_OK)
   {
     it = sc_iterator5_a_a_f_a_f_new(
-          ctx,
-          0,
-          sc_type_arc_common | sc_type_const,
-          found,
-          sc_type_arc_pos_const_perm,
-          sc_keynodes[SC_KEYNODE_NREL_SYSTEM_IDENTIFIER]);
+        ctx,
+        0,
+        sc_type_arc_common | sc_type_const,
+        found,
+        sc_type_arc_pos_const_perm,
+        sc_keynodes[SC_KEYNODE_NREL_SYSTEM_IDENTIFIER]);
     if (sc_iterator5_next(it))
     {
       result = SC_TRUE;
@@ -181,15 +185,15 @@ sc_result sc_helper_find_element_by_system_identifier(sc_memory_context const *c
   return result == SC_TRUE ? SC_RESULT_OK : SC_RESULT_ERROR;
 }
 
-sc_result sc_helper_set_system_identifier(sc_memory_context *ctx, sc_addr addr, const sc_char* data, sc_uint32 len)
+sc_result sc_helper_set_system_identifier(sc_memory_context * ctx, sc_addr addr, const sc_char * data, sc_uint32 len)
 {
   g_assert(ctx != null_ptr);
 
   g_assert(sc_keynodes != null_ptr);
 
   sc_addr found;
-  sc_iterator5 *it5 = null_ptr;
-  sc_stream *stream = null_ptr;
+  sc_iterator5 * it5 = null_ptr;
+  sc_stream * stream = null_ptr;
   sc_addr idtf_addr, arc_addr;
   SC_ADDR_MAKE_EMPTY(idtf_addr);
 
@@ -198,12 +202,12 @@ sc_result sc_helper_set_system_identifier(sc_memory_context *ctx, sc_addr addr, 
   if (sc_memory_find_link_with_content(ctx, stream, &found) == SC_RESULT_OK)
   {
     it5 = sc_iterator5_a_a_f_a_f_new(
-          ctx,
-          0,
-          sc_type_arc_common | sc_type_const,
-          found,
-          sc_type_arc_pos_const_perm,
-          sc_keynodes[SC_KEYNODE_NREL_SYSTEM_IDENTIFIER]);
+        ctx,
+        0,
+        sc_type_arc_common | sc_type_const,
+        found,
+        sc_type_arc_pos_const_perm,
+        sc_keynodes[SC_KEYNODE_NREL_SYSTEM_IDENTIFIER]);
     if (sc_iterator5_next(it5))
     {
       // don't forget to free allocated memory before return error
@@ -239,20 +243,20 @@ sc_result sc_helper_set_system_identifier(sc_memory_context *ctx, sc_addr addr, 
   return SC_RESULT_OK;
 }
 
-sc_result sc_helper_get_system_identifier_link(sc_memory_context const *ctx, sc_addr el, sc_addr *sys_idtf_addr)
+sc_result sc_helper_get_system_identifier_link(sc_memory_context const * ctx, sc_addr el, sc_addr * sys_idtf_addr)
 {
   g_assert(ctx != null_ptr);
 
-  sc_iterator5 *it = null_ptr;
+  sc_iterator5 * it = null_ptr;
   sc_result result = SC_RESULT_ERROR;
 
   it = sc_iterator5_f_a_a_a_f_new(
-        ctx,
-        el,
-        sc_type_arc_common | sc_type_const,
-        sc_type_link,
-        sc_type_arc_pos_const_perm,
-        sc_keynodes[SC_KEYNODE_NREL_SYSTEM_IDENTIFIER]);
+      ctx,
+      el,
+      sc_type_arc_common | sc_type_const,
+      sc_type_link,
+      sc_type_arc_pos_const_perm,
+      sc_keynodes[SC_KEYNODE_NREL_SYSTEM_IDENTIFIER]);
   g_assert(it != null_ptr);
 
   while (sc_iterator5_next(it) == SC_TRUE)
@@ -266,7 +270,7 @@ sc_result sc_helper_get_system_identifier_link(sc_memory_context const *ctx, sc_
   return result;
 }
 
-sc_result sc_helper_get_keynode(sc_memory_context const *ctx, sc_keynode keynode, sc_addr *keynode_addr)
+sc_result sc_helper_get_keynode(sc_memory_context const * ctx, sc_keynode keynode, sc_addr * keynode_addr)
 {
   g_assert(ctx != null_ptr);
 
@@ -278,7 +282,7 @@ sc_result sc_helper_get_keynode(sc_memory_context const *ctx, sc_keynode keynode
   return SC_RESULT_OK;
 }
 
-sc_bool sc_helper_resolve_system_identifier(sc_memory_context const *ctx, const char *system_idtf, sc_addr *result)
+sc_bool sc_helper_resolve_system_identifier(sc_memory_context const * ctx, const char * system_idtf, sc_addr * result)
 {
   g_assert(ctx != null_ptr);
 
@@ -294,11 +298,11 @@ sc_bool sc_helper_resolve_system_identifier(sc_memory_context const *ctx, const 
   return SC_TRUE;
 }
 
-sc_bool sc_helper_check_arc(sc_memory_context const *ctx, sc_addr beg_el, sc_addr end_el, sc_type arc_type)
+sc_bool sc_helper_check_arc(sc_memory_context const * ctx, sc_addr beg_el, sc_addr end_el, sc_type arc_type)
 {
   g_assert(ctx != null_ptr);
 
-  sc_iterator3 *it = null_ptr;
+  sc_iterator3 * it = null_ptr;
   sc_bool res = SC_FALSE;
 
   it = sc_iterator3_f_a_f_new(ctx, beg_el, arc_type, end_el);

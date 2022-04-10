@@ -4,7 +4,6 @@
 * (See accompanying file COPYING.MIT or copy at http://opensource.org/licenses/MIT)
 */
 
-#include <glib.h>
 #include <iomanip>
 #include "catch2/catch.hpp"
 #include "sc-test-framework/sc_test_unit.hpp"
@@ -12,7 +11,8 @@
 
 extern "C"
 {
-#include "sc-core/sc-store/sc-container/sc-string-tree/sc_string_tree.h"
+#include "sc-core/sc-store/sc_fs_storage.h"
+#include "sc-core/sc-store/sc-container/sc-dictionary/sc_dictionary.h"
 }
 
 TEST_CASE("sc-strings-complex", "[test sc-string tree complex]")
@@ -20,61 +20,60 @@ TEST_CASE("sc-strings-complex", "[test sc-string tree complex]")
   test::ScTestUnit::InitMemory("sc-memory.ini", "");
   ScMemoryContext ctx(sc_access_lvl_make_min, "sc-strings-complex");
 
+  sc_dictionary * dictionary;
+  REQUIRE(sc_dictionary_initialize(&dictionary));
+
   sc_addr addr1 = sc_memory_link_new(ctx.GetRealContext());
   sc_char * str1 = "concept_set1";
-  sc_string_tree_append(addr1, str1, strlen(str1));
-  REQUIRE(strcmp(str1, sc_string_tree_get_sc_string(addr1)) == 0);
-  REQUIRE(sc_string_tree_is_in(str1));
+  sc_dictionary_append(dictionary, str1, strlen(str1), &addr1);
+  REQUIRE(sc_dictionary_is_in(dictionary, str1));
 
   sc_addr addr2 = sc_memory_link_new(ctx.GetRealContext());
   sc_char * str2 = "concept_letter";
-  sc_string_tree_append(addr2, str2, strlen(str2));
-  REQUIRE(strcmp(str2, sc_string_tree_get_sc_string(addr2)) == 0);
-  REQUIRE(sc_string_tree_is_in(str2));
-  REQUIRE(sc_string_tree_is_in(str1));
+  sc_dictionary_append(dictionary, str2, strlen(str2), &addr2);
+  REQUIRE(sc_dictionary_is_in(dictionary, str2));
+  REQUIRE(sc_dictionary_is_in(dictionary, str1));
 
   sc_addr addr3 = sc_memory_link_new(ctx.GetRealContext());
   sc_char * str3 = "sc_node_norole_relation";
-  sc_string_tree_append(addr3, str3, strlen(str3));
-  REQUIRE(strcmp(str3, sc_string_tree_get_sc_string(addr3)) == 0);
-  REQUIRE(sc_string_tree_is_in(str3));
-  REQUIRE(sc_string_tree_is_in(str2));
-  REQUIRE(sc_string_tree_is_in(str1));
+  sc_dictionary_append(dictionary, str3, strlen(str3), &addr3);
+  REQUIRE(sc_dictionary_is_in(dictionary, str3));
+  REQUIRE(sc_dictionary_is_in(dictionary, str2));
+  REQUIRE(sc_dictionary_is_in(dictionary, str1));
 
   sc_addr addr4 = sc_memory_link_new(ctx.GetRealContext());
   sc_char * str4 = "sc_node_role_relation";
-  sc_string_tree_append(addr4, str4, strlen(str4));
-  REQUIRE(strcmp(str4, sc_string_tree_get_sc_string(addr4)) == 0);
-  REQUIRE(sc_string_tree_is_in(str4));
-  REQUIRE(sc_string_tree_is_in(str3));
-  REQUIRE(sc_string_tree_is_in(str2));
-  REQUIRE(sc_string_tree_is_in(str1));
+  sc_dictionary_append(dictionary, str4, strlen(str4), &addr4);
+  REQUIRE(sc_dictionary_is_in(dictionary, str4));
+  REQUIRE(sc_dictionary_is_in(dictionary, str3));
+  REQUIRE(sc_dictionary_is_in(dictionary, str2));
+  REQUIRE(sc_dictionary_is_in(dictionary, str1));
 
-  REQUIRE(sc_string_tree_remove(str4));
-  REQUIRE(!sc_string_tree_is_in(str4));
-  REQUIRE(sc_string_tree_is_in(str3));
-  REQUIRE(sc_string_tree_is_in(str2));
-  REQUIRE(sc_string_tree_is_in(str1));
+  REQUIRE(sc_dictionary_remove(dictionary, str4));
+  REQUIRE(!sc_dictionary_is_in(dictionary, str4));
+  REQUIRE(sc_dictionary_is_in(dictionary, str3));
+  REQUIRE(sc_dictionary_is_in(dictionary, str2));
+  REQUIRE(sc_dictionary_is_in(dictionary, str1));
 
-  REQUIRE(sc_string_tree_remove(str3));
-  REQUIRE(!sc_string_tree_is_in(str4));
-  REQUIRE(!sc_string_tree_is_in(str3));
-  REQUIRE(sc_string_tree_is_in(str2));
-  REQUIRE(sc_string_tree_is_in(str1));
+  REQUIRE(sc_dictionary_remove(dictionary, str3));
+  REQUIRE(!sc_dictionary_is_in(dictionary, str4));
+  REQUIRE(!sc_dictionary_is_in(dictionary, str3));
+  REQUIRE(sc_dictionary_is_in(dictionary, str2));
+  REQUIRE(sc_dictionary_is_in(dictionary, str1));
 
-  REQUIRE(sc_string_tree_remove(str2));
-  REQUIRE(!sc_string_tree_is_in(str4));
-  REQUIRE(!sc_string_tree_is_in(str3));
-  REQUIRE(!sc_string_tree_is_in(str2));
-  REQUIRE(sc_string_tree_is_in(str1));
+  REQUIRE(sc_dictionary_remove(dictionary, str2));
+  REQUIRE(!sc_dictionary_is_in(dictionary, str4));
+  REQUIRE(!sc_dictionary_is_in(dictionary, str3));
+  REQUIRE(!sc_dictionary_is_in(dictionary, str2));
+  REQUIRE(sc_dictionary_is_in(dictionary, str1));
 
-  REQUIRE(sc_string_tree_remove(str1));
-  REQUIRE(!sc_string_tree_is_in(str4));
-  REQUIRE(!sc_string_tree_is_in(str3));
-  REQUIRE(!sc_string_tree_is_in(str2));
-  REQUIRE(!sc_string_tree_is_in(str1));
+  REQUIRE(sc_dictionary_remove(dictionary, str1));
+  REQUIRE(!sc_dictionary_is_in(dictionary, str4));
+  REQUIRE(!sc_dictionary_is_in(dictionary, str3));
+  REQUIRE(!sc_dictionary_is_in(dictionary, str2));
+  REQUIRE(!sc_dictionary_is_in(dictionary, str1));
 
-  sc_string_tree_show();
+  sc_dictionary_show(dictionary);
 
   ctx.Destroy();
   test::ScTestUnit::ShutdownMemory(false);
@@ -166,8 +165,6 @@ TEST_CASE("sc-link-content-changed", "[test sc-links content changed]")
   std::string str = "content1";
   REQUIRE(link.Set(str));
 
-  sc_string_tree_show();
-
   REQUIRE(str == link.GetAsString());
 
   str = "content2";
@@ -182,8 +179,6 @@ TEST_CASE("sc-link-content-changed", "[test sc-links content changed]")
   REQUIRE(ctx.FindLinksByContent("content1").empty());
   REQUIRE(ctx.FindLinksByContent("content1").empty());
   REQUIRE(ctx.FindLinksByContent("content2").empty());
-
-  sc_string_tree_show();
 
   ctx.Destroy();
   test::ScTestUnit::ShutdownMemory(false);
@@ -206,8 +201,6 @@ TEST_CASE("set system idtf", "[test set system idtf]")
 
   REQUIRE(!ctx.FindLinksByContent("2022.03.21 16:07:48").empty());
   REQUIRE(!ctx.FindLinksByContent("2022.03.21 16:07:47").empty());
-
-  sc_string_tree_show();
 
   ctx.Destroy();
   test::ScTestUnit::ShutdownMemory(false);

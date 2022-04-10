@@ -19,7 +19,6 @@ typedef struct _sc_list
   sc_uint32 size;
 } sc_list;
 
-
 sc_bool sc_list_init(sc_list ** list);
 
 sc_bool sc_list_destroy(sc_list * list);
@@ -30,9 +29,12 @@ sc_struct_node * sc_list_push_back(sc_list * list, void * value, sc_uint32 size)
 
 sc_struct_node * sc_list_pop_back(sc_list * list);
 
-sc_bool sc_list_remove_if(sc_list * list, void * value, sc_uint32 size, sc_bool (*predicate)(void * value, void * other));
+sc_bool sc_list_remove_if(
+    sc_list * list,
+    void * value,
+    sc_uint32 size,
+    sc_bool (*predicate)(void * value, void * other));
 
 sc_iterator * sc_list_iterator(sc_list * list);
-
 
 #endif

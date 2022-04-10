@@ -24,13 +24,8 @@ GMutex events_table_mutex;
 #define TABLE_KEY(__Addr) GUINT_TO_POINTER(SC_ADDR_LOCAL_TO_INT(__Addr))
 
 // Pointer to hash table that contains events
-<<<<<<< HEAD
 GHashTable * events_table = null_ptr;
 sc_event_queue * event_queue = null_ptr;
-=======
-GHashTable *events_table = null_ptr;
-sc_event_queue *event_queue = null_ptr;
->>>>>>> [memory][sc-dictionary] Add opportunity for multiple links with the same content
 
 guint events_table_hash_func(gconstpointer pointer)
 {
@@ -45,11 +40,7 @@ gboolean events_table_equal_func(gconstpointer a, gconstpointer b)
 //! Inserts specified event into events table
 sc_result insert_event_into_table(sc_event * event)
 {
-<<<<<<< HEAD
   GSList * element_events_list = null_ptr;
-=======
-  GSList *element_events_list = null_ptr;
->>>>>>> [memory][sc-dictionary] Add opportunity for multiple links with the same content
 
   EVENTS_TABLE_LOCK;
 
@@ -70,20 +61,12 @@ sc_result insert_event_into_table(sc_event * event)
 //! Remove specified sc-event from events table
 sc_result remove_event_from_table(sc_event * event)
 {
-<<<<<<< HEAD
   GSList * element_events_list = null_ptr;
   sc_assert(events_table != null_ptr);
 
   EVENTS_TABLE_LOCK;
-=======
-  g_assert(events_table != null_ptr);
 
-  GSList *element_events_list = null_ptr;
-
-  EVENTS_TABLE_LOCK
->>>>>>> [memory][sc-dictionary] Add opportunity for multiple links with the same content
-
-  element_events_list = (GSList*)g_hash_table_lookup(events_table, TABLE_KEY(event->element));
+  element_events_list = (GSList *)g_hash_table_lookup(events_table, TABLE_KEY(event->element));
   if (element_events_list == null_ptr)
   {
     EVENTS_TABLE_UNLOCK;
@@ -276,24 +259,17 @@ unref:
 
 sc_result sc_event_notify_element_deleted(sc_addr element)
 {
-<<<<<<< HEAD
+  EVENTS_TABLE_LOCK;
+
   GSList * element_events_list = null_ptr;
   sc_event * evt = null_ptr;
 
-  EVENTS_TABLE_LOCK;
-=======
-  GSList *element_events_list = null_ptr;
-  sc_event *evt = null_ptr;
-
-  EVENTS_TABLE_LOCK
-
->>>>>>> [memory][sc-dictionary] Add opportunity for multiple links with the same content
   // do nothing, if there are no registered events
   if (events_table == null_ptr)
     goto result;
 
   // lookup for all registered to specified sc-element events
-  element_events_list = (GSList*)g_hash_table_lookup(events_table, TABLE_KEY(element));
+  element_events_list = (GSList *)g_hash_table_lookup(events_table, TABLE_KEY(element));
   if (element_events_list)
   {
     g_hash_table_remove(events_table, TABLE_KEY(element));
@@ -313,9 +289,9 @@ sc_result sc_event_notify_element_deleted(sc_addr element)
   }
 
 result:
-  {
-    EVENTS_TABLE_UNLOCK
-  }
+{
+  EVENTS_TABLE_UNLOCK;
+}
 
   return SC_RESULT_OK;
 }
@@ -352,28 +328,20 @@ sc_result sc_event_emit_impl(
     sc_addr edge,
     sc_addr other_el)
 {
-<<<<<<< HEAD
   GSList * element_events_list = null_ptr;
   sc_event * event = null_ptr;
-=======
-  GSList *element_events_list = null_ptr;
-  sc_event *event = null_ptr;
->>>>>>> [memory][sc-dictionary] Add opportunity for multiple links with the same content
 
   sc_assert(SC_ADDR_IS_NOT_EMPTY(el));
 
-  EVENTS_TABLE_LOCK
+  EVENTS_TABLE_LOCK;
 
   // if table is empty, then do nothing
   if (events_table == null_ptr)
     goto result;
 
   // lookup for all registered to specified sc-element events
-<<<<<<< HEAD
   element_events_list = (GSList *)g_hash_table_lookup(events_table, TABLE_KEY(el));
-=======
-  element_events_list = (GSList*)g_hash_table_lookup(events_table, TABLE_KEY(el));
->>>>>>> [memory][sc-dictionary] Add opportunity for multiple links with the same content
+
   while (element_events_list != null_ptr)
   {
     event = (sc_event *)element_events_list->data;
@@ -389,9 +357,9 @@ sc_result sc_event_emit_impl(
   }
 
 result:
-  {
-    EVENTS_TABLE_UNLOCK
-  }
+{
+  EVENTS_TABLE_UNLOCK;
+}
 
   return SC_RESULT_OK;
 }

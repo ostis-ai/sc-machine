@@ -586,8 +586,4 @@ void ScPythonInterpreter::CollectModulesInPath(std::string const & modulePath)
   }
 }
 
-<<<<<<< HEAD
 }  // namespace py
-=======
-} // namespace py
->>>>>>> [memory] Implement the first prefix sc-strings tree version, remove rocksdb

@@ -78,7 +78,7 @@ bool ScKeynodes::Init(bool force)
   }
 
   // command states
-  ScAddr states[] = { kCommandFinishedAddr, kCommandInitiatedAddr, kCommandProgressedAddr };
+  ScAddr states[] = {kCommandFinishedAddr, kCommandInitiatedAddr, kCommandProgressedAddr};
   for (auto const & a : states)
   {
     if (!ctx.CreateEdge(ScType::EdgeAccessConstPosPerm, kCommandStateAddr, a).IsValid())

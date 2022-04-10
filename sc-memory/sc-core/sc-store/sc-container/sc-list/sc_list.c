@@ -8,7 +8,6 @@
 
 #include <glib.h>
 
-
 sc_bool sc_list_init(sc_list ** list)
 {
   if (list == null_ptr)
@@ -103,7 +102,11 @@ sc_struct_node * sc_list_pop_back(sc_list * list)
   return temp;
 }
 
-sc_bool sc_list_remove_if(sc_list * list, void * value, sc_uint32 size, sc_bool (*predicate)(void * value, void * other))
+sc_bool sc_list_remove_if(
+    sc_list * list,
+    void * value,
+    sc_uint32 size,
+    sc_bool (*predicate)(void * value, void * other))
 {
   if (list == null_ptr)
     return SC_FALSE;

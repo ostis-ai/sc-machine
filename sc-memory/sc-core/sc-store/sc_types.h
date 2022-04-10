@@ -46,9 +46,9 @@ typedef void * sc_pointer;
 typedef sc_uint8 sc_bool;
 
 // type limits
-#define SC_MININT8	((sc_int8)  0x80)
-#define SC_MAXINT8	((sc_int8)  0x7f)
-#define SC_MAXUINT8	((sc_uint8) 0xff)
+#define SC_MININT8 ((sc_int8)0x80)
+#define SC_MAXINT8 ((sc_int8)0x7f)
+#define SC_MAXUINT8 ((sc_uint8)0xff)
 
 #define SC_MININT16 ((sc_int16)0x8000)
 #define SC_MAXINT16 ((sc_int16)0x7fff)
@@ -115,10 +115,9 @@ typedef sc_uint16 sc_type;
 #define sc_type_arc_neg (sc_type)0x100
 #define sc_type_arc_fuz (sc_type)0x200
 
-
 // sc-element permanently
-#define sc_type_arc_temp        (sc_type)0x400
-#define sc_type_arc_perm        (sc_type)0x800
+#define sc_type_arc_temp (sc_type)0x400
+#define sc_type_arc_perm (sc_type)0x800
 
 // struct node types
 #define sc_type_node_tuple (sc_type)(0x80)
@@ -183,18 +182,18 @@ typedef sc_uint16 sc_type;
 enum _sc_result
 {
   // SC_RESULT_ERROR should be 0 anytime
-  SC_RESULT_ERROR = 0,                // unknown error
-  // SC_RESULT_OK should be 1 anytime
-  SC_RESULT_OK = 1,                   // no any error
-  SC_RESULT_ERROR_INVALID_PARAMS,     // invalid function parameters error
-  SC_RESULT_ERROR_INVALID_TYPE,       // invalid type error
-  SC_RESULT_ERROR_IO,                 // input/output error
-  SC_RESULT_ERROR_INVALID_STATE,      // invalid state of processed object
-  SC_RESULT_ERROR_NOT_FOUND,          // item not found
-  SC_RESULT_ERROR_NO_WRITE_RIGHTS,    // no rights to change or delete object
-  SC_RESULT_ERROR_NO_READ_RIGHTS,     // no rights to read object
-  SC_RESULT_NO,                       // no any result
-  SC_RESULT_UNKNOWN,                  // result unknown
+  SC_RESULT_ERROR = 0,              // unknown error
+                                    // SC_RESULT_OK should be 1 anytime
+  SC_RESULT_OK = 1,                 // no any error
+  SC_RESULT_ERROR_INVALID_PARAMS,   // invalid function parameters error
+  SC_RESULT_ERROR_INVALID_TYPE,     // invalid type error
+  SC_RESULT_ERROR_IO,               // input/output error
+  SC_RESULT_ERROR_INVALID_STATE,    // invalid state of processed object
+  SC_RESULT_ERROR_NOT_FOUND,        // item not found
+  SC_RESULT_ERROR_NO_WRITE_RIGHTS,  // no rights to change or delete object
+  SC_RESULT_ERROR_NO_READ_RIGHTS,   // no rights to read object
+  SC_RESULT_NO,                     // no any result
+  SC_RESULT_UNKNOWN,                // result unknown
 
   // add atomic types before
   SC_RESULT_COUNT,  // number of result types
@@ -233,8 +232,7 @@ struct _sc_stat
   sc_uint32 segments_count;
 };
 
-
-typedef struct _sc_arc  sc_arc;
+typedef struct _sc_arc sc_arc;
 typedef struct _sc_arc_info sc_arc_info;
 typedef sc_uint8 sc_access_levels;
 typedef struct _sc_element_locks sc_element_locks;

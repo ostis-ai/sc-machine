@@ -8,7 +8,6 @@
 
 #include <glib.h>
 
-
 inline sc_struct_node * sc_struct_node_init(void * value, sc_uint32 size)
 {
   sc_struct_node * node = g_new0(sc_struct_node, 1);
