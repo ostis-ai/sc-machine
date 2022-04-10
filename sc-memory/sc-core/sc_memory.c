@@ -12,7 +12,7 @@
 #include "sc-store/sc_config.h"
 #include "sc_helper_private.h"
 #include "sc-store/sc_event/sc_event_private.h"
-#include "sc-store/sc-string-tree/sc_string_tree.h"
+#include "sc-store/sc-container/sc-string-tree/sc_string_tree.h"
 
 #include "sc-store/sc-base/sc_allocator.h"
 #include "sc-store/sc-base/sc_assert_utils.h"

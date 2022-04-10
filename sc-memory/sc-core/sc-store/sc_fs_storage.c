@@ -11,7 +11,7 @@
 #include "sc_config.h"
 
 #include "../sc_memory_version.h"
-#include "sc-string-tree/sc_string_tree.h"
+#include "sc-container/sc-string-tree/sc_string_tree.h"
 
 #include <memory.h>
 #include <glib.h>
@@ -345,13 +345,13 @@ void sc_fs_storage_write_nodes(void (*callable)(sc_string_tree_node*, void**), G
 
 void sc_fs_storage_write_node(sc_string_tree_node *node, void **dest)
 {
-  sc_link_content *content = node->data->value;
+  sc_link_content *content = (sc_link_content*)node->data_list->begin->data->value;
 
   if (content->node->mask & 0xF0)
     return;
 
-  sc_addr_hash *hashes = content->node->data->value;
-  sc_uint8 hashes_size = content->node->data->value_size;
+  sc_addr_hash *hashes = sc_list_to_hashes_array(content->node->data_list);
+  sc_uint8 hashes_size = content->node->data_list->size;
 
   content->node->mask |= 0xF0;
 

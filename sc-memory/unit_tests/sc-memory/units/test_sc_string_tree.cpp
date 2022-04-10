@@ -12,7 +12,7 @@
 
 extern "C"
 {
-#include "sc-core/sc-store/sc-string-tree/sc_string_tree.h"
+#include "sc-core/sc-store/sc-container/sc-string-tree/sc_string_tree.h"
 }
 
 TEST_CASE("sc-strings-complex", "[test sc-string tree complex]")

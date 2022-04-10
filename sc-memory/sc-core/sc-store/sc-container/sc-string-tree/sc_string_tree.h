@@ -7,20 +7,16 @@
 #ifndef _sc_string_tree_h_
 #define _sc_string_tree_h_
 
-#include "../sc_types.h"
+#include "../../sc_types.h"
+#include "../sc-list/sc_list.h"
 
-typedef struct _sc_string_tree_node_data
-{
-  void *value;
-  sc_uint8 value_size;
-} sc_string_tree_node_data;
 
 typedef struct _sc_string_tree_node
 {
   struct _sc_string_tree_node **next;
   sc_char *offset;
   sc_uint16 offset_size;
-  sc_string_tree_node_data *data;
+  sc_list *data_list;
   sc_uint8 mask;
 } sc_string_tree_node;
 
@@ -67,7 +63,11 @@ void* sc_string_tree_get_data_from_node(sc_string_tree_node *node, const sc_char
 
 sc_addr sc_string_tree_get_sc_link(const sc_char *sc_string);
 
-sc_bool sc_string_tree_get_datas_from_node(sc_string_tree_node *node, const sc_char *sc_string, void **data, sc_uint32 *size);
+sc_list* sc_string_tree_get_datas_from_node(sc_string_tree_node *node, const sc_char *sc_string);
+
+sc_addr* sc_list_to_addr_array(sc_list * list);
+
+sc_addr_hash* sc_list_to_hashes_array(sc_list * list);
 
 sc_bool sc_string_tree_get_sc_links(const sc_char *sc_string, sc_addr **links, sc_uint32 *size);
 

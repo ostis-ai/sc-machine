@@ -9,7 +9,7 @@
 #include "sc_defines.h"
 #include "sc_segment.h"
 #include "sc_element.h"
-#include "sc-string-tree/sc_string_tree.h"
+#include "sc-container/sc-string-tree/sc_string_tree.h"
 #include "sc_link_helpers.h"
 #include "sc_config.h"
 #include "sc_stream_memory.h"

@@ -69,7 +69,7 @@ inline sc_string_tree_node* _sc_string_tree_node_initialize()
   sc_string_tree_node *node = g_new0(sc_string_tree_node, 1);
   node->next = g_new0(sc_string_tree_node*, sc_string_tree_children_size());
 
-  node->data = null_ptr;
+  node->data_list = null_ptr;
   node->mask = 0x0;
   node->offset = null_ptr;
   node->offset_size = 0;
@@ -159,72 +159,49 @@ sc_string_tree_node* sc_string_tree_append_to_node(sc_string_tree_node *node, sc
   return node;
 }
 
+sc_bool sc_hashes_compare(void *hash, void *other)
+{
+  return *(sc_addr_hash*)hash == *(sc_addr_hash*)other;
+}
+
 sc_string_tree_node* sc_string_tree_append(sc_addr addr, sc_char *sc_string, sc_uint32 size)
 {
   sc_link_content *old_content = sc_string_tree_get_content(addr);
   if (old_content != null_ptr && old_content->sc_string != null_ptr && old_content->node != null_ptr)
   {
-    sc_uint8 hashes_size = old_content->node->data->value_size;
-    sc_addr_hash *hashes = old_content->node->data->value;
+    sc_list *data_list = old_content->node->data_list;
+    sc_addr_hash other = sc_addr_to_hash(addr);
 
-    sc_addr_hash **temp = g_new0(sc_addr_hash*, 1);
-    *temp = old_content->node->data->value;
-
-    sc_uint8 i = 0;
-    while (i++ < hashes_size)
-    {
-      sc_addr_hash hash = *hashes;
-
-      sc_addr other;
-      other.seg = SC_ADDR_LOCAL_SEG_FROM_INT(hash);
-      other.offset = SC_ADDR_LOCAL_OFFSET_FROM_INT(hash);
-
-      if (SC_ADDR_IS_EQUAL(other, addr))
-        *hashes = 0;
-
-      hashes++;
-    }
-
-    old_content->node->data->value = *temp;
-    g_free(temp);
+    sc_list_remove_if(data_list, &other, 1, sc_hashes_compare);
   }
 
   sc_string_tree_node *node = sc_string_tree_append_to_node(tree->root, sc_string, size);
+  if (node->data_list == null_ptr)
+    sc_list_init(&node->data_list);
 
-  if (node->data == null_ptr)
-  {
-    node->data = g_new0(sc_string_tree_node_data, 1);
-    node->data->value_size = 0;
-    node->data->value = g_new0(sc_addr_hash, ++node->data->value_size);
-  }
-  else
-    node->data->value = g_renew(sc_addr_hash, node->data->value, ++node->data->value_size);
-
-  sc_addr_hash hash = sc_addr_to_hash(addr);
-  ((sc_addr_hash*)node->data->value)[node->data->value_size - 1] = hash;
+  sc_addr_hash *hash = g_new0(sc_addr_hash, 1);
+  *hash = sc_addr_to_hash(addr);
+  sc_list_push_back(node->data_list, hash, 1);
 
   sc_char *hash_str = sc_addr_to_str(addr);
   sc_addr_hash hash_str_len = strlen(hash_str);
   sc_string_tree_node *link_hash_node
       = sc_string_tree_append_to_node(links_hashes_tree->root, hash_str, hash_str_len);
 
-  if (link_hash_node->data == null_ptr)
-  {
-    link_hash_node->data = g_new0(sc_string_tree_node_data, 1);
-    link_hash_node->data->value_size = 1;
-  }
+  if (link_hash_node->data_list == null_ptr)
+    sc_list_init(&link_hash_node->data_list);
 
-  if (link_hash_node->data->value != null_ptr)
-    g_free(link_hash_node->data->value);
+  if (link_hash_node->data_list->size != 0)
+    g_free(sc_list_pop_back(link_hash_node->data_list));
 
   sc_link_content *content = g_new0(sc_link_content, 1);
 
   content->sc_string = g_new0(sc_char, size + 1);
   content->string_size = size;
   memcpy(content->sc_string, sc_string, size);
-
   content->node = &(*node);
-  link_hash_node->data->value = content;
+
+  sc_list_push_back(link_hash_node->data_list, content, 1);
 
   return node;
 }
@@ -299,7 +276,7 @@ sc_bool sc_string_tree_is_in_from_node(sc_string_tree_node *node, const sc_char 
 {
   sc_string_tree_node *last = sc_string_tree_get_last_node_from_node(node, sc_string);
 
-  return last != null_ptr && last->data != null_ptr;
+  return last != null_ptr && last->data_list != null_ptr;
 }
 
 sc_bool sc_string_tree_is_in(const sc_char *sc_string)
@@ -311,8 +288,8 @@ void* sc_string_tree_get_data_from_node(sc_string_tree_node *node, const sc_char
 {
   sc_string_tree_node *last = sc_string_tree_get_last_node_from_node(node, sc_string);
 
-  if (last != null_ptr && last->data != null_ptr)
-    return last->data->value;
+  if (last != null_ptr && last->data_list != null_ptr && last->data_list->begin != null_ptr)
+    return last->data_list->begin->data->value;
 
   return null_ptr;
 }
@@ -323,10 +300,7 @@ sc_addr sc_string_tree_get_sc_link(const sc_char *sc_string)
   SC_ADDR_MAKE_EMPTY(empty)
 
   sc_addr_hash *addr_hash = sc_string_tree_get_data_from_node(tree->root, sc_string);
-  if (addr_hash == null_ptr)
-    return empty;
-
-  if (*addr_hash != 0)
+  if (addr_hash != null_ptr)
   {
     sc_addr addr;
     addr.seg = SC_ADDR_LOCAL_SEG_FROM_INT(*addr_hash);
@@ -334,72 +308,72 @@ sc_addr sc_string_tree_get_sc_link(const sc_char *sc_string)
     return addr;
   }
 
-  while (*addr_hash == 0)
-  {
-    if (*addr_hash != 0)
-    {
-      sc_addr addr;
-      addr.seg = SC_ADDR_LOCAL_SEG_FROM_INT(*addr_hash);
-      addr.offset = SC_ADDR_LOCAL_OFFSET_FROM_INT(*addr_hash);
-    }
-
-    addr_hash++;
-  }
-
   return empty;
 }
 
-sc_bool sc_string_tree_get_datas_from_node(sc_string_tree_node *node, const sc_char *sc_string, void **data, sc_uint32 *size)
+sc_list* sc_string_tree_get_datas_from_node(sc_string_tree_node *node, const sc_char *sc_string)
 {
   sc_string_tree_node *last = sc_string_tree_get_last_node_from_node(node, sc_string);
 
-  if (last != null_ptr && last->data != null_ptr && last->data->value_size != 0)
-  {
-    *data = last->data->value;
-    *size = last->data->value_size;
+  if (last != null_ptr)
+    return last->data_list;
 
-    return SC_TRUE;
+  return SC_FALSE;
+}
+
+sc_addr* sc_list_to_addr_array(sc_list * list)
+{
+  sc_addr *addrs = g_new0(sc_addr, list->size);
+  sc_addr **temp = g_new0(sc_addr*, 1);
+  *temp = addrs;
+
+  sc_iterator *it = sc_list_iterator(list);
+  while (sc_iterator_next(it))
+  {
+    sc_addr_hash hash = *(sc_addr_hash*)sc_iterator_get(it)->value;
+    sc_addr addr;
+    addr.offset = SC_ADDR_LOCAL_OFFSET_FROM_INT(hash);
+    addr.seg = SC_ADDR_LOCAL_SEG_FROM_INT(hash);
+
+    **temp = addr;
+    ++*temp;
   }
 
-  *data = null_ptr;
-  *size = 0;
-  return SC_FALSE;
+  return addrs;
+}
+
+sc_addr_hash* sc_list_to_hashes_array(sc_list * list)
+{
+  sc_addr_hash *hashes = g_new0(sc_addr_hash, list->size);
+  sc_addr_hash **temp = g_new0(sc_addr_hash*, 1);
+  *temp = hashes;
+
+  sc_iterator *it = sc_list_iterator(list);
+  while (sc_iterator_next(it))
+  {
+    **temp = *(sc_addr_hash*)sc_iterator_get(it)->value;
+    ++*temp;
+  }
+
+  return hashes;
 }
 
 sc_bool sc_string_tree_get_sc_links(const sc_char *sc_string, sc_addr **links, sc_uint32 *size)
 {
-  sc_addr_hash *addr_hashes = null_ptr;
-  sc_uint32 found_size = 0;
-  sc_bool result = sc_string_tree_get_datas_from_node(tree->root, sc_string, (void**)&addr_hashes, &found_size);
+  sc_list *list = sc_string_tree_get_datas_from_node(tree->root, sc_string);
 
-  sc_addr **temps = null_ptr;
-  *links = null_ptr;
-  *size = 0;
-  sc_uint32 i = 0;
-
-  *links = g_new0(sc_addr, found_size);
-  temps = g_new0(sc_addr*, 1);
-  *temps = *links;
-
-  while (i++ < found_size)
+  if (list == null_ptr)
   {
-    sc_addr addr;
-    sc_addr_hash hash = *addr_hashes++;
-    addr.seg = SC_ADDR_LOCAL_SEG_FROM_INT(hash);
-    addr.offset = SC_ADDR_LOCAL_OFFSET_FROM_INT(hash);
-
-    if (SC_ADDR_IS_NOT_EMPTY(addr))
-    {
-      **temps = addr;
-      ++*temps;
-      ++*size;
-    }
+    *links = null_ptr;
+    *size = 0;
+    return SC_FALSE;
   }
 
+  *links = sc_list_to_addr_array(list);
+  *size = list->size;
   *links = memcpy(*links, *links, *size);
-  g_free(temps);
 
-  return result;
+  return SC_TRUE;
 }
 
 sc_char* sc_string_tree_get_sc_string(sc_addr addr)
@@ -479,8 +453,8 @@ void sc_string_tree_show_from_node(sc_string_tree_node *node, sc_char *tab)
       memcpy(str, next->offset, next->offset_size);
       sc_uchar ch = sc_int_to_sc_char(i, 0);
 
-      if (next->data != null_ptr && next->data->value_size != 0)
-        printf("%s%c[%d] {%s}\n", tab, ch, next->data->value_size, str);
+      if (next->data_list != null_ptr && next->data_list->size != 0)
+        printf("%s%c[%d] {%s}\n", tab, ch, next->data_list->size, str);
       else
         printf("%s%c {%s}\n", tab, ch, str);
 
@@ -512,7 +486,7 @@ void sc_string_tree_visit_node_from_node(sc_string_tree_node *node, void (*calla
     sc_string_tree_node *next = node->next[i];
     if (next != null_ptr)
     {
-      if (next->data != null_ptr && next->data->value != null_ptr && next->data->value_size != 0)
+      if (next->data_list != null_ptr && next->data_list->size != 0)
         callable(next, dest);
 
       sc_string_tree_visit_node_from_node(next, callable, dest);

@@ -16,10 +16,6 @@
 #include "sc-memory/utils/sc_progress.hpp"
 #include "sc-test-framework/sc_test_unit.hpp"
 #include "dummy_file_interface.hpp"
-extern "C"
-{
-#include "sc-core/sc-store/sc-string-tree/sc_string_tree.h"
-}
 
 namespace
 {
