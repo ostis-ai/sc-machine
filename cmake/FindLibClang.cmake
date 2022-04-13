@@ -49,6 +49,7 @@ if (NOT LIBCLANG_LLVM_CONFIG_EXECUTABLE)
         foreach(minor RANGE 9 0)
             list(APPEND llvm_config_names 
                 "llvm-config"
+                "llvm-config-10"
                 "llvm-config-7"
                 "llvm-config-6.${minor}"
                 "llvm-config-5.${minor}"
