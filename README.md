@@ -35,7 +35,7 @@ echo 'export PATH="'$HOMEBREW_PREFIX'/opt/llvm/bin:$PATH"' >> ~/.zshrc
 ## Build sc-machine
 ```sh
 cd sc-machine/scripts
-./make_all.sh -DCMAKE_BUILD_TYPE=Release #use Debug for debug build
+./make_all.sh #You can also pass all CMake generation arguments there
 ```
 or, alternatively
 ```sh
