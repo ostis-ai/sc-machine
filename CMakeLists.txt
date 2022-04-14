@@ -18,7 +18,7 @@ option (SC_COVERAGE "Flag to generate coverage report" OFF)
 option (SC_CLANG_FORMAT_CODE "flag to add clangformat and clangformat_check targets" OFF)
 
 # Coverage
-if(${SC_COVERAGE})
+if(${SC_COVERAGE} AND CMAKE_CXX_COMPILER_ID MATCHES "GNU")
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -g -O0 --coverage")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -O0 --coverage")
 endif()
