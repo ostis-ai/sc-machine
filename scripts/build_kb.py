@@ -110,7 +110,7 @@ def main(args: dict):
     if isdir(kb_to_prepare):
         shutil.rmtree(kb_to_prepare)
 
-    search_knowledge_bases(conf["repo_folder"], conf["output_path"], conf["repo_path_name"])
+    search_knowledge_bases(conf["repo_folder"], conf["output_path"], conf["repo_file_name"])
 
     if not paths:
         print("No KBs were found")
@@ -134,7 +134,7 @@ if __name__ == '__main__':
     parser.add_argument('-l', '--logfile', dest="errors_file_path",
                         help="Errors file path - in case of unsuccessful preparation, log will appear at this location. Taken from the config file unless overwritten by this flag.")
 
-    parser.add_argument('-f', '--filename', dest="repo_path_name",
+    parser.add_argument('-f', '--filename', dest="repo_file_name",
                         help="Repo file name - a filename for repo file that will be used in all subsequent KBs. Default: repo.path", default="repo.path")
 
     parser.add_argument('-c', '--config', dest='config_file_path',

@@ -52,6 +52,7 @@ try
     repoPath = vm["kb"].as<std::string>();
   else
     repoPath = conf_file["path"];
+  repoPath.append("kb.bin/");
 
   bool saveState = true;
   if (vm.count("verbose"))

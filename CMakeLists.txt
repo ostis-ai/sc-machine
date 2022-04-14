@@ -230,7 +230,6 @@ elseif (${WIN32})
 #
 endif(${UNIX})
 
-configure_file(${CMAKE_CURRENT_LIST_DIR}/config/config.ini.in ${CMAKE_CURRENT_LIST_DIR}/bin/config.ini)
 
 if (${SC_BUILD_TESTS})
     include (${CMAKE_CURRENT_LIST_DIR}/cmake/tests.cmake)
