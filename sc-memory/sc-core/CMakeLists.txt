@@ -16,5 +16,5 @@ if(${SC_COVERAGE})
     message(SEND_ERROR "Currently, code coverage is supported only with GCC as a compiler")
   endif()
 endif()
-endif()
+
 target_compile_definitions(sc-core PRIVATE "-DSC_MEMORY_SELF_BUILD")
