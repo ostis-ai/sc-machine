@@ -6,6 +6,7 @@
 
 - **Build system**
     - update macOS install_deps script
+    - Multithreaded build process used by default
  
  - **Web**
     - Moved React web interface in a separate [new repository.](https://github.com/ostis-ai/react-sc-web-ui-template)
