@@ -34,11 +34,14 @@ echo 'export PATH="'$HOMEBREW_PREFIX'/opt/llvm/bin:$PATH"' >> ~/.zshrc
 
 ## Build sc-machine
 ```sh
+cd sc-machine/scripts
+./make_all.sh -DCMAKE_BUILD_TYPE=Release #use Debug for debug build
+```
+or, alternatively
+```sh
 cd sc-machine
-mkdir build
-cd build
-cmake .. -DCMAKE_BUILD_TYPE=Release # use Debug for debug build
-make
+cmake -B build -DCMAKE_BUILD_TYPE=Release
+cmake --build build -j$(nproc) #-j flag for paralleled build process
 ```
 
 ## Build knowledge base (from sc-machine/kb folder):
