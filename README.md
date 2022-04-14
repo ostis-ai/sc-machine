@@ -51,24 +51,24 @@ Additional CMake flags can be used to build tests, format code or analyze memory
 
 ## Build knowledge base
 
-This repo provides *build_kb.py* script to build and prepare knowledge base (KB).
+This repo provides *build_kb.py* script to prepare and build knowledge base (KB). Note that you will need to run a server with a path to a compiled KB in the next step.
 
-### Usage
-`python3 scripts/build_kb.py -i <path/to/KB/folder> -o <path/to/output/dir>`
-Additionally you can define repo file name (`-f <name>`), logfile location (`-l <path/to/logfile/dir>`) or config file path
-(`-c <path/to/config/file>`).
+### Usage example
+```sh
+cd sc-machine
+python3 scripts/build_kb.py ../ims.ostis.kb -c config/sc-machine.ini
+```
+
+Default config file saves compiled KB one level above sc-machine, `sc-machine/..`
+
+Alternatively, you can use `build_kb.py` without a config file to define output path and other settings manually:
+```sh
+cd sc-machine
+build_kb.py [-o OUTPUT_PATH] [-l ERRORS_FILE_PATH] [-f REPO_FILE_NAME] repo_folder
+```
 To get more information, use `python3 scripts/build_kb.py -h`
 
 **Note: flags have higher priority than config file.**
-
-*Example:*
-```sh
-# This command will parse repo.path in current directory
-# and create kb.bin and prepared_kb in ../ directory. 
-# If errors occured when preparing KB, ./prepare.log will be created
-
-python3 scripts/build_kb.py ./ -o ../ -f repo.path -l ./
-```
 
 ### repo.path example
 ```sh
@@ -76,78 +76,19 @@ python3 scripts/build_kb.py ./ -o ../ -f repo.path -l ./
 # Here you can specify path to one or several kb folders
 # Paths can be relative
 ../ims.ostis.kb
+#../custom_kb
 ```
 
 ## Servers
 
 sc-machine provides two network protocols to interact with:
-
-1. **sc-server**: use `./sctipts/run_sc_sever.sh` script to run sc-server
-2. **sctp server**: use `./sctipts/run_sctp.sh` script to run sctp server
+1. **sc-server**: use `python3 scripts/run_sc_sever.py -c config/sc-machine.ini` to run sc-server with the default config file.
+  To get more information, use `python3 scripts/run_sc_server.py -h`
+2. **sctp server**: use `python3 scripts/run_sctp.py -c config/sc-machine.ini` to run sctp server.
+  To get more information, use `python3 scripts/run_sctp.py -h`
 
 ## Config
 
-To customize *sc-machine* usage you can create your own config file.
-
-Allowed options:
-1. [Network]
-  - `Port` - port for redis connection
-2. [Repo]
-  - `Source` - directory containing repo file
-  - `Log` - directory where error log file will be stored
-  - `Path` - path to compiled knowledge base folder
-  - `SavePeriod` - time before KB save
-3. [Extensions]
-  - `Directory` - directory with sc-machine extensions
-4. [Stat]
-  - `UpdatePeriod` - time before KB update
-  - `Path` - path to folder with sctp statistic
-5. [memory]
-  - `max_loaded_segments` - number of maximum loaded segments from kb
-6. [filememory]
-  - `engine` - engine used for reading KB (only redis supported!)
-7. [kpm]
-  - `threads` - maximum number of threads
-8. [redis]
-  - `host` - host of redis 
-9. [python]
-  - `modules_path` - path to `sc-kpm/sc-python/services`
-10. [debug]
-  - `is_debug` - debug mode enable (True|False)
-
-*Config file example*:
-```ini
-[Network]
-Port = 55770
-[Repo]
-Source = ./
-Logfile = ./
-Path = ../kb.bin
-SavePeriod = 3600
-[Extensions]
-Directory = ../bin/extensions
-[Stat]
-UpdatePeriod = 1800
-Path = /tmp/sctp_stat
-##### sc-memory
-[memory]
-max_loaded_segments = 1000
-
-[filememory]
-engine = redis
-
-[kpm]
-max_threads = 32
-
-[redis]
-host = 127.0.0.1
-
-[python]
-modules_path = /sc-machine/sc-kpm/sc-python/services
-
-[debug]
-is_debug = True
-
-```
+This repository provides a default configuration for sc-machine. To customize *sc-machine* usage you can create your own config file. You can check docs at [docs/other/config.md](docs/other/config.md)
 
 *This repository continues the development of [this sc-machine](https://github.com/ostis-dev/sc-machine) from version 0.6.0.*

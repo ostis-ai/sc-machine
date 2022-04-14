@@ -16,8 +16,11 @@
 
 #include <iostream>
 #include "sc-memory/sc_memory.hpp"
+#include "utils/parser.hpp"
+#include <map>
 
 #include <QNetworkInterface>
+
 
 sctpServer::sctpServer(QObject * parent)
   : QTcpServer(parent)
@@ -98,11 +101,11 @@ bool sctpServer::start(const QString & config)
 
 void sctpServer::parseConfig(const QString & config_path)
 {
-  QSettings settings(config_path, QSettings::IniFormat);
+  std::map<std::string, std::string> conf_file = parse_config(config_path.toStdString());
 
   bool result = false;
-  qDebug() << settings.value("Network/Port").toString();
-  mPort = settings.value("Network/Port").toUInt(&result);
+  qDebug() << QString::fromStdString(conf_file["port"]);
+  mPort = QString::fromStdString(conf_file["port"]).toUInt(&result);
 
   if (!result)
   {
@@ -110,30 +113,30 @@ void sctpServer::parseConfig(const QString & config_path)
     exit(0);
   }
 
-  mRepoPath = settings.value("Repo/Path").toString();
+  mRepoPath = QString::fromStdString(conf_file["path"]);
   if (mRepoPath.isEmpty())
   {
     qDebug() << "Path to repo is empty\n";
     exit(0);
   }
 
-  mSavePeriod = settings.value("Repo/SavePeriod").toUInt(&result);
+  mSavePeriod = QString::fromStdString(conf_file["save_period"]).toUInt(&result);
   if (!result)
   {
     qWarning() << "Can't parse save period. Use default value: 3600 (1h)";
     mSavePeriod = 3600;
   }
 
-  mExtPath = settings.value("Extensions/Directory").toString();
+  mExtPath = QString::fromStdString(conf_file["ext"]);
 
-  mStatUpdatePeriod = settings.value("Stat/UpdatePeriod").toUInt(&result);
+  mStatUpdatePeriod = QString::fromStdString(conf_file["update_period"]).toUInt(&result);
   if (!result)
     qWarning() << "Can't parse period statistic from configuration file\n";
   if (mStatUpdatePeriod > 0 && mStatUpdatePeriod < 60)
     qWarning() << "Statistics update period is very short, it would be take much processor time. Recomend to make it "
                   "more long";
 
-  mStatPath = settings.value("Stat/Path").toString();
+  mStatPath = QString::fromStdString(conf_file["stat_path"]);
   if (mStatPath.isEmpty() && mStatUpdatePeriod > 0)
   {
     qDebug() << "Path to store statistics is empty\n";
