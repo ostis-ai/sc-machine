@@ -120,20 +120,9 @@ sc_bool sc_list_remove_if(
     {
       if (node->prev != null_ptr)
         node->prev->next = node->next;
-      else
-      {
-        node = node->next;
-        node->prev = null_ptr;
-      }
 
       if (node->next != null_ptr)
         node->next->prev = node->prev;
-      else
-      {
-        node = node->prev;
-        node->next = null_ptr;
-      }
-
 
       is_removed = SC_TRUE;
 
