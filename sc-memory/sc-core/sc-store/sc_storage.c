@@ -15,7 +15,7 @@
 
 #include "sc_event/sc_event_private.h"
 #include "../sc_memory_private.h"
-#include "sc_fs_storage.h"
+#include "sc-fs-storage/sc_fs_storage.h"
 
 #include "sc-base/sc_allocator.h"
 #include "sc-base/sc_atomic.h"

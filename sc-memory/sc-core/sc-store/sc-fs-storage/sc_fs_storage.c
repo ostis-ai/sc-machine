@@ -10,11 +10,11 @@
 
 #include "sc_fs_storage.h"
 
-#include "sc_segment.h"
+#include "sc_fs_storage_private.h"
+#include "../sc_segment.h"
+#include "../sc_config.h"
 
-#include "sc_config.h"
-
-#include "../sc_memory_version.h"
+#include "../../sc_memory_version.h"
 
 #define BUFFER_SIZE 256 * 1024
 
@@ -64,6 +64,33 @@ void _sc_fm_remove_dir(const sc_char * path)
 
   g_dir_close(directory);
   g_rmdir(path);
+}
+
+inline sc_uint32 sc_addr_to_hash(sc_addr addr)
+{
+  return SC_ADDR_LOCAL_TO_INT(addr);
+}
+
+sc_char * itora(sc_uint32 num)
+{
+  sc_char * result = g_new0(char, 10);
+  sc_char * index = result;
+
+  while (num > 0)
+  {
+    *index++ = (sc_char)((num % 10) | '0');
+    num /= 10;
+  }
+
+  return result;
+}
+
+inline sc_char * sc_addr_to_str(sc_addr addr)
+{
+  sc_uint32 hash = sc_addr_to_hash(addr);
+
+  // !reverse translation for more effectively work
+  return itora(hash);
 }
 
 // ----------------------------------------------
@@ -121,10 +148,10 @@ sc_bool sc_fs_storage_shutdown(sc_segment ** segments, sc_bool save_segments)
   }
 
   g_message("Shutdown sc-dictionary");
-  if (sc_dictionary_shutdown(links_dictionary) == SC_FALSE)
+  if (sc_dictionary_destroy(links_dictionary) == SC_FALSE)
     g_critical("Can't shutdown sc-dictionary");
 
-  if (sc_dictionary_shutdown(strings_dictionary) == SC_FALSE)
+  if (sc_dictionary_destroy(strings_dictionary) == SC_FALSE)
     g_critical("Can't shutdown sc-dictionary");
 
   g_free(repo_path);
@@ -139,7 +166,7 @@ sc_bool sc_hashes_compare(void * hash, void * other)
   return *(sc_addr_hash *)hash == *(sc_addr_hash *)other;
 }
 
-void _sc_fs_storage_append_sc_string_reference(
+void _sc_fs_storage_append_sc_string_sc_link_reference(
     sc_addr addr,
     sc_dictionary_node * node,
     sc_char * sc_string,
@@ -157,34 +184,37 @@ void _sc_fs_storage_append_sc_string_reference(
     g_free(sc_list_pop_back(link_hash_node->data_list));
 
   sc_link_content * content = g_new0(sc_link_content, 1);
-
   content->sc_string = g_new0(sc_char, size + 1);
   content->string_size = size;
   memcpy(content->sc_string, sc_string, size);
   content->node = &(*node);
 
-  sc_list_push_back(link_hash_node->data_list, content, 1);
+  sc_list_push_back(link_hash_node->data_list, content);
 }
 
 sc_dictionary_node * _sc_fs_storage_append_sc_link_unique(sc_char * sc_string, sc_uint32 size, sc_addr addr)
 {
+  sc_addr_hash other = sc_addr_to_hash(addr);
+
   sc_link_content * old_content = sc_fs_storage_get_link_content(addr);
   if (old_content != null_ptr && old_content->sc_string != null_ptr && old_content->node != null_ptr)
   {
+    if (strcmp(old_content->sc_string, sc_string) == 0)
+      return old_content->node;
+
     sc_list * data_list = old_content->node->data_list;
-    sc_addr_hash other = sc_addr_to_hash(addr);
-    sc_list_remove_if(data_list, &other, 1, sc_hashes_compare);
+    sc_list_remove_if(data_list, &other, sc_hashes_compare);
   }
 
   sc_addr_hash * hash = g_new0(sc_addr_hash, 1);
-  *hash = sc_addr_to_hash(addr);
+  *hash = other;
   return sc_dictionary_append(links_dictionary, sc_string, size, hash);
 }
 
 sc_dictionary_node * sc_fs_storage_append_sc_link(sc_addr addr, sc_char * sc_string, sc_uint32 size)
 {
   sc_dictionary_node * node = _sc_fs_storage_append_sc_link_unique(sc_string, size, addr);
-  _sc_fs_storage_append_sc_string_reference(addr, node, sc_string, size);
+  _sc_fs_storage_append_sc_string_sc_link_reference(addr, node, sc_string, size);
 
   return node;
 }
@@ -198,7 +228,7 @@ sc_addr * sc_list_to_addr_array(sc_list * list)
   sc_iterator * it = sc_list_iterator(list);
   while (sc_iterator_next(it))
   {
-    sc_addr_hash hash = *(sc_addr_hash *)sc_iterator_get(it)->value;
+    sc_addr_hash hash = *(sc_addr_hash *)sc_iterator_get(it);
     sc_addr addr;
     addr.offset = SC_ADDR_LOCAL_OFFSET_FROM_INT(hash);
     addr.seg = SC_ADDR_LOCAL_SEG_FROM_INT(hash);
@@ -206,6 +236,7 @@ sc_addr * sc_list_to_addr_array(sc_list * list)
     **temp = addr;
     ++*temp;
   }
+  g_free(temp);
 
   return addrs;
 }
@@ -219,7 +250,7 @@ sc_addr_hash * sc_list_to_hashes_array(sc_list * list)
   sc_iterator * it = sc_list_iterator(list);
   while (sc_iterator_next(it))
   {
-    **temp = *(sc_addr_hash *)sc_iterator_get(it)->value;
+    **temp = *(sc_addr_hash *)sc_iterator_get(it);
     ++*temp;
   }
 
@@ -229,7 +260,7 @@ sc_addr_hash * sc_list_to_hashes_array(sc_list * list)
 sc_addr sc_fs_storage_get_sc_link(const sc_char * sc_string)
 {
   sc_addr empty;
-  SC_ADDR_MAKE_EMPTY(empty)
+  SC_ADDR_MAKE_EMPTY(empty);
 
   sc_addr_hash * addr_hash = sc_dictionary_get_data_from_node(links_dictionary->root, sc_string);
   if (addr_hash != null_ptr)
@@ -480,7 +511,7 @@ sc_bool sc_fs_storage_write_to_path(sc_segment ** segments)
     if (segment == null_ptr)
       break;  // stop save, because we allocate segment in order
 
-    g_checksum_update(checksum, (guchar *)segment->elements, SC_SEG_ELEMENTS_SIZE_BYTE);
+    g_checksum_update(checksum, (sc_uchar *)segment->elements, SC_SEG_ELEMENTS_SIZE_BYTE);
   }
 
   header.segments_num = idx;
@@ -488,12 +519,12 @@ sc_bool sc_fs_storage_write_to_path(sc_segment ** segments)
   g_checksum_get_digest(checksum, header.checksum, &bytes);
 
   sc_uint32 header_size = sizeof(header);
-  if (g_io_channel_write_chars(output, (gchar *)&header_size, sizeof(header_size), &bytes, null_ptr) !=
+  if (g_io_channel_write_chars(output, (sc_char *)&header_size, sizeof(header_size), &bytes, null_ptr) !=
           G_IO_STATUS_NORMAL ||
       bytes != sizeof(header_size))
     g_error("Can't write header size: %s", tmp_filename);
 
-  if (g_io_channel_write_chars(output, (gchar *)&header, header_size, &bytes, null_ptr) != G_IO_STATUS_NORMAL ||
+  if (g_io_channel_write_chars(output, (sc_char *)&header, header_size, &bytes, null_ptr) != G_IO_STATUS_NORMAL ||
       bytes != header_size)
     g_error("Can't write header: %s", tmp_filename);
 
@@ -502,7 +533,7 @@ sc_bool sc_fs_storage_write_to_path(sc_segment ** segments)
     segment = segments[idx];
     g_assert(segment != null_ptr);
 
-    if (g_io_channel_write_chars(output, (gchar *)segment->elements, SC_SEG_ELEMENTS_SIZE_BYTE, &bytes, null_ptr) !=
+    if (g_io_channel_write_chars(output, (sc_char *)segment->elements, SC_SEG_ELEMENTS_SIZE_BYTE, &bytes, null_ptr) !=
             G_IO_STATUS_NORMAL ||
         bytes != SC_SEG_ELEMENTS_SIZE_BYTE)
       g_error("Can't write segment %d into %s", idx, tmp_filename);
@@ -544,15 +575,15 @@ void sc_fs_storage_write_nodes(
 
 void sc_fs_storage_write_node(sc_dictionary_node * node, void ** dest)
 {
-  sc_link_content * content = (sc_link_content *)node->data_list->begin->data->value;
+  sc_link_content * content = (sc_link_content *)node->data_list->begin->data;
 
-  if (content->node->mask & 0xF0)
+  if (!sc_dc_node_access_lvl_check_read(content->node))
     return;
 
   sc_addr_hash * hashes = sc_list_to_hashes_array(content->node->data_list);
   sc_uint8 hashes_size = content->node->data_list->size;
 
-  content->node->mask |= 0xF0;
+  sc_dc_node_access_lvl_make_no_read(content->node);
 
   GIOChannel * strings_channel = dest[0];
   g_assert(strings_channel != null_ptr);
@@ -660,22 +691,22 @@ sc_bool sc_fs_storage_read_strings()
   while (SC_TRUE)
   {
     sc_uint8 hashes_size = 0;
-    if (g_io_channel_read_chars(in_file, (gchar *)&hashes_size, sizeof(hashes_size), &bytes_num, null_ptr) !=
+    if (g_io_channel_read_chars(in_file, (sc_char *)&hashes_size, sizeof(hashes_size), &bytes_num, null_ptr) !=
         G_IO_STATUS_NORMAL)
       break;
 
     sc_addr_hash * hashes = g_new0(sc_addr_hash, hashes_size);
-    if (g_io_channel_read_chars(in_file, (gchar *)hashes, sizeof(sc_addr_hash) * hashes_size, &bytes_num, null_ptr) !=
+    if (g_io_channel_read_chars(in_file, (sc_char *)hashes, sizeof(sc_addr_hash) * hashes_size, &bytes_num, null_ptr) !=
         G_IO_STATUS_NORMAL)
       break;
 
     sc_uint32 string_size = 0;
-    if (g_io_channel_read_chars(in_file, (gchar *)&string_size, sizeof(string_size), &bytes_num, null_ptr) !=
+    if (g_io_channel_read_chars(in_file, (sc_char *)&string_size, sizeof(string_size), &bytes_num, null_ptr) !=
         G_IO_STATUS_NORMAL)
       break;
 
     sc_char * string = g_new0(sc_char, string_size);
-    if (g_io_channel_read_chars(in_file, (gchar *)string, string_size, &bytes_num, null_ptr) != G_IO_STATUS_NORMAL)
+    if (g_io_channel_read_chars(in_file, (sc_char *)string, string_size, &bytes_num, null_ptr) != G_IO_STATUS_NORMAL)
       break;
 
     sc_uint8 i;
@@ -694,7 +725,7 @@ sc_bool sc_fs_storage_read_strings()
 
   g_io_channel_shutdown(in_file, SC_FALSE, null_ptr);
 
-  g_message("SC-dictionary loaded");
+  g_message("Sc-dictionary loaded");
 
   return SC_TRUE;
 }

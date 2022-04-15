@@ -15,7 +15,6 @@ static const sc_uint8 s_min_sc_char = 1;
 static const sc_uint8 s_max_sc_char = 255;
 
 #define SC_DICTIONARY_NODE_IS_VALID(__node) ((__node) != null_ptr)
-
 #define SC_DICTIONARY_NODE_IS_NOT_VALID(__node) ((__node) == null_ptr)
 
 sc_bool sc_dictionary_initialize(sc_dictionary ** dictionary)
@@ -29,7 +28,7 @@ sc_bool sc_dictionary_initialize(sc_dictionary ** dictionary)
   return SC_TRUE;
 }
 
-sc_bool sc_dictionary_shutdown(sc_dictionary * dictionary)
+sc_bool sc_dictionary_destroy(sc_dictionary * dictionary)
 {
   if (dictionary == null_ptr)
     return SC_FALSE;
@@ -49,9 +48,10 @@ inline sc_dictionary_node * _sc_dictionary_node_initialize()
   node->next = g_new0(sc_dictionary_node *, _sc_dictionary_children_size());
 
   node->data_list = null_ptr;
-  node->mask = 0x0;
   node->offset = null_ptr;
   node->offset_size = 0;
+
+  sc_dc_node_access_lvl_make_read(node);
 
   return node;
 }
@@ -75,6 +75,7 @@ sc_dictionary_node * sc_dictionary_append_to_node(sc_dictionary_node * node, sc_
   {
     sc_uint8 num;
     sc_char_to_sc_int(**sc_string_ptr, &num, &node->mask);
+    // define prefix
     if (SC_DICTIONARY_NODE_IS_NOT_VALID(node->next[num]))
     {
       node->next[num] = _sc_dictionary_node_initialize();
@@ -88,14 +89,14 @@ sc_dictionary_node * sc_dictionary_append_to_node(sc_dictionary_node * node, sc_
 
       break;
     }
+    // visit next substring
     else if (node->next[num]->offset != null_ptr)
     {
       sc_dictionary_node * moving = node->next[num];
 
       sc_uint32 j = 0;
       for (; i < size && j < moving->offset_size && tolower(moving->offset[j]) == tolower(**sc_string_ptr);
-           ++i, ++j, ++(*sc_string_ptr))
-        ;
+             ++i, ++j, ++*sc_string_ptr);
 
       if (j != moving->offset_size)
       {
@@ -111,6 +112,7 @@ sc_dictionary_node * sc_dictionary_append_to_node(sc_dictionary_node * node, sc_
 
       node = node->next[num];
 
+      // insert intermediate node for prefix end branching
       if (j < moving->offset_size)
       {
         sc_char * offset_ptr = &*(node->offset + j);
@@ -130,7 +132,7 @@ sc_dictionary_node * sc_dictionary_append_to_node(sc_dictionary_node * node, sc_
     else
     {
       node = node->next[num];
-      (*sc_string_ptr)++;
+      ++*sc_string_ptr;
       ++i;
     }
   }
@@ -142,10 +144,11 @@ sc_dictionary_node * sc_dictionary_append_to_node(sc_dictionary_node * node, sc_
 sc_dictionary_node * sc_dictionary_append(sc_dictionary * dictionary, sc_char * sc_string, sc_uint32 size, void * value)
 {
   sc_dictionary_node * node = sc_dictionary_append_to_node(dictionary->root, sc_string, size);
+
   if (node->data_list == null_ptr)
     sc_list_init(&node->data_list);
 
-  sc_list_push_back(node->data_list, value, 1);
+  sc_list_push_back(node->data_list, value);
   return node;
 }
 
@@ -154,6 +157,7 @@ sc_dictionary_node * sc_dictionary_remove_from_node(
     const sc_char * sc_string,
     sc_uint32 index)
 {
+  // check prefixes matching
   sc_uint32 string_size = strlen(sc_string);
   sc_uint8 num = 0;
   sc_char_to_sc_int(sc_string[index], &num, &node->mask);
@@ -165,6 +169,7 @@ sc_dictionary_node * sc_dictionary_remove_from_node(
       return node;
   }
 
+  // check suffixes matching
   if (index == string_size)
   {
     sc_char * str = g_new0(sc_char, node->offset_size + 1);
@@ -188,6 +193,7 @@ sc_bool sc_dictionary_remove(sc_dictionary * dictionary, const sc_char * sc_stri
 
 sc_dictionary_node * sc_dictionary_get_last_node_from_node(sc_dictionary_node * node, const sc_char * sc_string)
 {
+  // check prefixes matching
   sc_uint32 i = 0;
   sc_uint32 string_size = strlen(sc_string);
   while (i < string_size)
@@ -202,6 +208,7 @@ sc_dictionary_node * sc_dictionary_get_last_node_from_node(sc_dictionary_node * 
       break;
   }
 
+  // check suffixes matching
   if (i == string_size)
   {
     sc_char * str = g_new0(sc_char, node->offset_size + 1);
@@ -222,7 +229,7 @@ sc_bool sc_dictionary_is_in_from_node(sc_dictionary_node * node, const sc_char *
 {
   sc_dictionary_node * last = sc_dictionary_get_last_node_from_node(node, sc_string);
 
-  return last != null_ptr && last->data_list != null_ptr;
+  return SC_DICTIONARY_NODE_IS_VALID(last) && last->data_list != null_ptr;
 }
 
 sc_bool sc_dictionary_is_in(sc_dictionary * dictionary, const sc_char * sc_string)
@@ -234,8 +241,8 @@ void * sc_dictionary_get_data_from_node(sc_dictionary_node * node, const sc_char
 {
   sc_dictionary_node * last = sc_dictionary_get_last_node_from_node(node, sc_string);
 
-  if (last != null_ptr && last->data_list != null_ptr && last->data_list->begin != null_ptr)
-    return last->data_list->begin->data->value;
+  if (SC_DICTIONARY_NODE_IS_VALID(last) && last->data_list != null_ptr && last->data_list->begin != null_ptr)
+    return last->data_list->begin->data;
 
   return null_ptr;
 }
@@ -244,7 +251,7 @@ sc_list * sc_dictionary_get_datas_from_node(sc_dictionary_node * node, const sc_
 {
   sc_dictionary_node * last = sc_dictionary_get_last_node_from_node(node, sc_string);
 
-  if (last != null_ptr)
+  if (SC_DICTIONARY_NODE_IS_VALID(last))
     return last->data_list;
 
   return SC_FALSE;
@@ -283,9 +290,9 @@ void sc_dictionary_show_from_node(sc_dictionary_node * node, sc_char * tab)
 
 void sc_dictionary_show(sc_dictionary * dictionary)
 {
-  printf("----------------sc-string tree----------------\n");
+  printf("----------------sc-dictionary----------------\n");
   sc_dictionary_show_from_node(dictionary->root, "\0");
-  printf("----------------------------------------------\n");
+  printf("---------------------------------------------\n");
 }
 
 void sc_dictionary_visit_node_from_node(
@@ -297,7 +304,7 @@ void sc_dictionary_visit_node_from_node(
   for (i = 1; i < _sc_dictionary_children_size(); ++i)
   {
     sc_dictionary_node * next = node->next[i];
-    if (next != null_ptr)
+    if (SC_DICTIONARY_NODE_IS_VALID(next))
     {
       if (next->data_list != null_ptr && next->data_list->size != 0)
         callable(next, dest);
@@ -317,36 +324,11 @@ void sc_dictionary_visit_nodes(
 
 inline void sc_char_to_sc_int(sc_char ch, sc_uint8 * ch_num, sc_uint8 * mask)
 {
+  // @todo: Implement mask setups for rights checking and memory optimization
   *ch_num = 128 + (sc_uint8)ch;
 }
 
 inline sc_char sc_int_to_sc_char(sc_uint8 num, sc_uint8 mask)
 {
   return (sc_char)(num - 128);
-}
-
-inline sc_uint32 sc_addr_to_hash(sc_addr addr)
-{
-  return SC_ADDR_LOCAL_TO_INT(addr);
-}
-
-inline sc_char * sc_addr_to_str(sc_addr addr)
-{
-  sc_uint32 hash = sc_addr_to_hash(addr);
-
-  return itora(hash);
-}
-
-inline sc_char * itora(sc_uint32 num)
-{
-  sc_char * result = g_new0(char, 10);
-  sc_char * index = result;
-
-  while (num > 0)
-  {
-    *index++ = (sc_char)((num % 10) | '0');
-    num /= 10;
-  }
-
-  return result;
 }

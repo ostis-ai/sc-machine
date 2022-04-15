@@ -24,6 +24,4 @@ void sc_char_to_sc_int(sc_char ch, sc_uint8 * ch_num, sc_uint8 * mask);
 
 sc_char sc_int_to_sc_char(sc_uint8 num, sc_uint8 mask);
 
-sc_char * itora(sc_uint32 num);
-
 #endif

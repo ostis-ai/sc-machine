@@ -53,7 +53,7 @@ void sc_iterator_reset(sc_iterator * it)
   it->current = null_ptr;
 }
 
-sc_struct_node_data * sc_iterator_get(sc_iterator * it)
+void * sc_iterator_get(sc_iterator * it)
 {
   if (it == null_ptr || it->current == null_ptr)
     return null_ptr;
@@ -61,7 +61,11 @@ sc_struct_node_data * sc_iterator_get(sc_iterator * it)
   return it->current->data;
 }
 
-void sc_iterator_destroy(sc_iterator * it)
+sc_bool sc_iterator_destroy(sc_iterator * it)
 {
+  if (it == null_ptr)
+    return SC_FALSE;
+
   g_free(it);
+  return SC_TRUE;
 }

@@ -27,18 +27,18 @@ TEST_F(ScListTest, sc_list)
   for (; i < size; ++i)
   {
     values[i] = i;
-    sc_list_push_back(list, (void *)(&values[i]), 1);
+    sc_list_push_back(list, (void *)(&values[i]));
   }
 
   sc_uint8 v = 5;
-  EXPECT_TRUE(sc_list_remove_if(list, (void *)(&v), 1, scalar_compare));
+  EXPECT_TRUE(sc_list_remove_if(list, (void *)(&v), scalar_compare));
 
   sc_struct_node * last;
   i = list->size;
   for (; i >= 0 && i <= list->size; --i)
   {
     last = sc_list_pop_back(list);
-    sc_uint8 value = *(sc_uint8 *)last->data->value;
+    sc_uint8 value = *(sc_uint8 *)last->data;
 
     if (i == 5)
       --i;
@@ -62,16 +62,16 @@ TEST_F(ScListTest, sc_list_iterator)
   for (; i < size; ++i)
   {
     values[i] = i;
-    sc_list_push_back(list, (void *)(&values[i]), 1);
+    sc_list_push_back(list, (void *)(&values[i]));
   }
 
   i = 0;
-  sc_struct_node_data * data;
+  void * data;
   sc_iterator * it = sc_list_iterator(list);
   while (sc_iterator_next(it))
   {
     data = sc_iterator_get(it);
-    sc_uint8 value = *(sc_uint8 *)data->value;
+    sc_uint8 value = *(sc_uint8 *)data;
 
     EXPECT_TRUE(value == i);
     ++i;
@@ -83,7 +83,7 @@ TEST_F(ScListTest, sc_list_iterator)
   while (sc_iterator_prev(it))
   {
     data = sc_iterator_get(it);
-    sc_uint8 value = *(sc_uint8 *)data->value;
+    sc_uint8 value = *(sc_uint8 *)data;
 
     EXPECT_TRUE(value == i);
     --i;

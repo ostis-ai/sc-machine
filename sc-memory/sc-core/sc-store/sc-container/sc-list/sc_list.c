@@ -41,19 +41,17 @@ sc_bool sc_list_destroy(sc_list * list)
   return SC_TRUE;
 }
 
-sc_struct_node * sc_list_push(sc_list * list, sc_struct_node * node, void * value, sc_uint32 size)
+sc_struct_node * sc_list_push(sc_list * list, sc_struct_node * node, void * data)
 {
-  memcpy(value, value, size);
-
   if (list == null_ptr)
     return null_ptr;
 
-  if (value == null_ptr || size == 0)
+  if (data == null_ptr)
     return null_ptr;
 
   if (node == null_ptr)
   {
-    list->begin = sc_struct_node_init(value, size);
+    list->begin = sc_struct_node_init(data);
     list->size = 1;
 
     if (list->end == null_ptr)
@@ -61,13 +59,14 @@ sc_struct_node * sc_list_push(sc_list * list, sc_struct_node * node, void * valu
 
     list->begin->next = list->end;
     list->end->prev = list->begin;
+    list->end->next = null_ptr;
     list->end->data = null_ptr;
 
     return list->begin;
   }
 
   sc_struct_node * temp = node->next;
-  node->next = sc_struct_node_init(value, size);
+  node->next = sc_struct_node_init(data);
   node->next->prev = node;
   node->next->next = temp;
   temp->prev = node->next;
@@ -77,9 +76,9 @@ sc_struct_node * sc_list_push(sc_list * list, sc_struct_node * node, void * valu
   return node->next;
 }
 
-sc_struct_node * sc_list_push_back(sc_list * list, void * value, sc_uint32 size)
+sc_struct_node * sc_list_push_back(sc_list * list, void * data)
 {
-  return sc_list_push(list, list->end ? list->end->prev : null_ptr, value, size);
+  return sc_list_push(list, list->end ? list->end->prev : null_ptr, data);
 }
 
 sc_struct_node * sc_list_pop_back(sc_list * list)
@@ -104,9 +103,8 @@ sc_struct_node * sc_list_pop_back(sc_list * list)
 
 sc_bool sc_list_remove_if(
     sc_list * list,
-    void * value,
-    sc_uint32 size,
-    sc_bool (*predicate)(void * value, void * other))
+    void * data,
+    sc_bool (*predicate)(void * data, void * other))
 {
   if (list == null_ptr)
     return SC_FALSE;
@@ -118,18 +116,30 @@ sc_bool sc_list_remove_if(
   {
     temp = node;
 
-    if (node->data != null_ptr && predicate(node->data->value, value) && node->data->size == size)
+    if (node->data != null_ptr && predicate(node->data, data))
     {
       if (node->prev != null_ptr)
         node->prev->next = node->next;
+      else
+      {
+        node = node->next;
+        node->prev = null_ptr;
+      }
 
       if (node->next != null_ptr)
         node->next->prev = node->prev;
+      else
+      {
+        node = node->prev;
+        node->next = null_ptr;
+      }
+
 
       is_removed = SC_TRUE;
 
       node = node->next;
       g_free(temp);
+      temp = null_ptr;
 
       --list->size;
 
