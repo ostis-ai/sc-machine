@@ -254,7 +254,12 @@ sc_list * sc_dictionary_get_datas_from_node(sc_dictionary_node * node, const sc_
   if (SC_DICTIONARY_NODE_IS_VALID(last))
     return last->data_list;
 
-  return SC_FALSE;
+  return null_ptr;
+}
+
+sc_list * sc_dictionary_get(sc_dictionary * dictionary, const sc_char * sc_string)
+{
+  return sc_dictionary_get_datas_from_node(dictionary->root, sc_string);
 }
 
 void sc_dictionary_show_from_node(sc_dictionary_node * node, sc_char * tab)

@@ -134,6 +134,13 @@ void * sc_dictionary_get_data_from_node(sc_dictionary_node * node, const sc_char
  */
 sc_list * sc_dictionary_get_datas_from_node(sc_dictionary_node * node, const sc_char * sc_string);
 
+/*! Gets datas from a terminal sc-dictionary node where string ends.
+ * @param node A sc-dictionary
+ * @param sc_string A string to retrieve datas by it
+ * @returns Returns Datas from a sc-dictionary node where string ends
+ */
+sc_list * sc_dictionary_get(sc_dictionary * dictionary, const sc_char * sc_string);
+
 /*! Visits all sc-dictionary nodes starting with specified node and shows a terminal node datas with routes.
  * @param node A sc-dictionary node to start visiting
  * @param sc_string A tabulation for print procedure

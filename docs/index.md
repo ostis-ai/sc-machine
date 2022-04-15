@@ -6,7 +6,7 @@
     * [macOS](build/osx-build.md)
     * [CMake flags](build/cmake-flags.md)
 - **Common**
-    * [Config](other/config.md) - *desciption of a configuration file*
+    * [Config](other/config.md) - *description of a configuration file*
     * [Sc-element types](cpp/el_types.md) - *detailed description of supported element types*
     * [SCs-language](other/scs.md) - *documentation on SCs-language with examples*
 
@@ -15,6 +15,7 @@
     * [Knowledge processing machine](cpp/kpm.md) - *documentation on Knowledge Processing Machine API*
     * [Meta programming](cpp/cpp-meta.md) - *documentation of meta programming language*
     * [Templates](cpp/templates.md) - *documentation of template usage*
+    * [Sc-dictionary](storage/sc-dictionary.md) - *documentation of file storage*
 
 - **Tools**
     * [Knowledge Base builder](tools/kb_builder.md)
