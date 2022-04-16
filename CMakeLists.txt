@@ -71,22 +71,21 @@ set(SC_KPM_SRC "${SC_MACHINE_ROOT}/sc-kpm")
 set(SC_TOOLS_SRC "${SC_MACHINE_ROOT}/tools")
 
 
-if (${SC_USE_SANITIZER} STREQUAL "address")
-    set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fsanitize=address -O1 -fno-omit-frame-pointer")
-    set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=address -O1 -fno-omit-frame-pointer")
-elseif (${SC_USE_SANITIZER} STREQUAL "memory")
-    if (CMAKE_C_COMPILER_ID MATCHES "Clang")
-        set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fsanitize=memory -fPIE -pie -fno-omit-frame-pointer")
+if (NOT ${SC_USE_SANITIZER} STREQUAL "none")
+    if (CMAKE_C_COMPILER_ID MATCHES "GNU" OR CMAKE_CXX_COMPILER_ID MATCHES "GNU")
+        message("Sanitizers are supported only by Clang")
     else()
-        message("Memory sanitizer is supported only by Clang")
-    endif()
-    if (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
-        set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=memory -fPIE -pie -fno-omit-frame-pointer")
-    else()
-        message("Memory sanitizer is supported only by Clang")
+        if (${SC_USE_SANITIZER} STREQUAL "address")
+            set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fsanitize=address -O1 -fno-omit-frame-pointer")
+            set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=address -O1 -fno-omit-frame-pointer")
+        elseif (${SC_USE_SANITIZER} STREQUAL "memory")
+            set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fsanitize=memory -fPIE -pie -fno-omit-frame-pointer")
+            set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=memory -fPIE -pie -fno-omit-frame-pointer")
+        endif()
     endif()
 endif()
     
+
 if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fcolor-diagnostics -std=c++14")
     if (${SC_USE_SANITIZER} STREQUAL "none")
@@ -267,7 +266,7 @@ elseif (${WIN32})
             "${ROCKSDB_PATH}/rocksdb-shared.dll"
             )
     file(COPY ${WIN_RUNTIME_LIBRARIES} DESTINATION "${SC_BIN_PATH}")
-
+#
 endif(${APPLE})
 
 message ("Python version: ${PYTHONLIBS_VERSION_STRING}")
