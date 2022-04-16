@@ -45,7 +45,9 @@ cmake --build build -j$(nproc) #-j flag for paralleled build process
 ```
 
 ## Build knowledge base (from sc-machine/kb folder):
-Use `cmake` with `-DSC_USE_SANITIZER` option to run build with address or memory sanitizer. As far as `gcc` compiler doesn't support MemorySanitizer you should use `clang` for it. (*example:* `cmake -B build -DSC_USE_SANITIZER=memory -D CMAKE_CXX_COMPILER=clang++ -D CMAKE_C_COMPILER=clang`)
+Use `cmake` with `-DSC_USE_SANITIZER` option to run build with address or memory sanitizer.(*example:* `cmake -B build -DSC_USE_SANITIZER=memory -D CMAKE_CXX_COMPILER=clang++ -D CMAKE_C_COMPILER=clang`)
+
+**Note: sanitizers are supported only by clang compiler**
 
 ```sh
 cd sc-machine/scripts
