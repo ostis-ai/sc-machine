@@ -14,6 +14,8 @@ sc_uint8 _sc_dictionary_children_size();
 
 sc_dictionary_node * _sc_dictionary_node_initialize();
 
+void sc_dictionary_node_destroy(sc_dictionary_node * node, void ** dest);
+
 sc_dictionary_node * _sc_dictionary_get_next_node(sc_dictionary_node * node, sc_char ch);
 
 sc_addr * sc_list_to_addr_array(sc_list * list);

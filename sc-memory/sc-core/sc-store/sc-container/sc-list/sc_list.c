@@ -101,10 +101,7 @@ sc_struct_node * sc_list_pop_back(sc_list * list)
   return temp;
 }
 
-sc_bool sc_list_remove_if(
-    sc_list * list,
-    void * data,
-    sc_bool (*predicate)(void * data, void * other))
+sc_bool sc_list_remove_if(sc_list * list, void * data, sc_bool (*predicate)(void * data, void * other))
 {
   if (list == null_ptr)
     return SC_FALSE;

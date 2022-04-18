@@ -71,8 +71,13 @@ Common API methods of sc-dictionary implementation and their description are rep
   </tr>
 
   <tr>
-    <td>void sc_dictionary_visit_nodes(sc_dictionary * dictionary, void (*callable)(sc_dictionary_node *, void **), void ** dest)</td>
-    <td>It visits all nodes and call specified routine for them. A result of procedure completion saves into 'dest'.</td>
+    <td>void sc_dictionary_visit_down_nodes(sc_dictionary * dictionary, void (*callable)(sc_dictionary_node *, void **), void ** dest)</td>
+    <td>It visits up down all nodes and call specified routine for them. A result of procedure completion saves into 'dest'.</td>
+  </tr>
+
+  <tr>
+    <td>void sc_dictionary_visit_up_nodes(sc_dictionary * dictionary, void (*callable)(sc_dictionary_node *, void **), void ** dest)</td>
+    <td>It visits down up all nodes and call specified routine for them. A result of procedure completion saves into 'dest'.</td>
   </tr>
 </table>
 

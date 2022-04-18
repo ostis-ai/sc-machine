@@ -15,9 +15,9 @@
 //! A sc-list container to store data in linear order
 typedef struct _sc_list
 {
-  sc_struct_node * begin; // root element in sc-list
-  sc_struct_node * end;   // last element in sc-list
-  sc_uint32 size;         // sc-list elements size
+  sc_struct_node * begin;  // root element in sc-list
+  sc_struct_node * end;    // last element in sc-list
+  sc_uint32 size;          // sc-list elements size
 } sc_list;
 
 /*! Initializes sc-list.
@@ -57,10 +57,7 @@ sc_struct_node * sc_list_pop_back(sc_list * list);
  * @param list A sc-list pointer
  * @returns Returns Popped node.
  */
-sc_bool sc_list_remove_if(
-    sc_list * list,
-    void * data,
-    sc_bool (*predicate)(void * data, void * other));
+sc_bool sc_list_remove_if(sc_list * list, void * data, sc_bool (*predicate)(void * data, void * other));
 
 /*! Gets sc-list forward-backward iterator.
  * @param list A sc-list pointer

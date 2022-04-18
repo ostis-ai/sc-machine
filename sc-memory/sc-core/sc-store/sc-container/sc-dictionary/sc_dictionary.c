@@ -33,7 +33,10 @@ sc_bool sc_dictionary_destroy(sc_dictionary * dictionary)
   if (dictionary == null_ptr)
     return SC_FALSE;
 
+  sc_dictionary_visit_up_nodes(dictionary, sc_dictionary_node_destroy, null_ptr);
+  g_free(dictionary->root);
   g_free(dictionary);
+
   return SC_TRUE;
 }
 
@@ -56,16 +59,27 @@ inline sc_dictionary_node * _sc_dictionary_node_initialize()
   return node;
 }
 
+void sc_dictionary_node_destroy(sc_dictionary_node * node, void ** dest)
+{
+  g_free(node->data_list);
+  node->data_list = null_ptr;
+  node->next = null_ptr;
+
+  g_free(node);
+}
+
 inline sc_dictionary_node * _sc_dictionary_get_next_node(sc_dictionary_node * node, sc_char ch)
 {
   sc_uint8 num;
   sc_char_to_sc_int(ch, &num, &node->mask);
 
-  return num == 0 ? null_ptr : node->next[num];
+  return num == 0 || node->next == null_ptr ? null_ptr : node->next[num];
 }
 
 sc_dictionary_node * sc_dictionary_append_to_node(sc_dictionary_node * node, sc_char * sc_string, sc_uint32 size)
 {
+  memcpy(sc_string, sc_string, size);
+
   sc_char ** sc_string_ptr = g_new0(sc_char *, 1);
   *sc_string_ptr = sc_string;
 
@@ -96,7 +110,8 @@ sc_dictionary_node * sc_dictionary_append_to_node(sc_dictionary_node * node, sc_
 
       sc_uint32 j = 0;
       for (; i < size && j < moving->offset_size && tolower(moving->offset[j]) == tolower(**sc_string_ptr);
-             ++i, ++j, ++*sc_string_ptr);
+           ++i, ++j, ++*sc_string_ptr)
+        ;
 
       if (j != moving->offset_size)
       {
@@ -300,7 +315,7 @@ void sc_dictionary_show(sc_dictionary * dictionary)
   printf("---------------------------------------------\n");
 }
 
-void sc_dictionary_visit_node_from_node(
+void sc_dictionary_visit_down_node_from_node(
     sc_dictionary_node * node,
     void (*callable)(sc_dictionary_node *, void **),
     void ** dest)
@@ -314,17 +329,46 @@ void sc_dictionary_visit_node_from_node(
       if (next->data_list != null_ptr && next->data_list->size != 0)
         callable(next, dest);
 
-      sc_dictionary_visit_node_from_node(next, callable, dest);
+      sc_dictionary_visit_down_node_from_node(next, callable, dest);
     }
   }
 }
 
-void sc_dictionary_visit_nodes(
+void sc_dictionary_visit_down_nodes(
     sc_dictionary * dictionary,
     void (*callable)(sc_dictionary_node *, void **),
     void ** dest)
 {
-  sc_dictionary_visit_node_from_node(dictionary->root, callable, dest);
+  sc_dictionary_visit_down_node_from_node(dictionary->root, callable, dest);
+}
+
+void sc_dictionary_visit_up_node_from_node(
+    sc_dictionary_node * node,
+    void (*callable)(sc_dictionary_node *, void **),
+    void ** dest)
+{
+  sc_uint8 i;
+  for (i = 1; i < _sc_dictionary_children_size(); ++i)
+  {
+    sc_dictionary_node * next = node->next[i];
+    if (SC_DICTIONARY_NODE_IS_VALID(next))
+    {
+      if (next->data_list != null_ptr && next->data_list->size != 0)
+      {
+        sc_dictionary_visit_up_node_from_node(next, callable, dest);
+
+        callable(next, dest);
+      }
+    }
+  }
+}
+
+void sc_dictionary_visit_up_nodes(
+    sc_dictionary * dictionary,
+    void (*callable)(sc_dictionary_node *, void **),
+    void ** dest)
+{
+  sc_dictionary_visit_up_node_from_node(dictionary->root, callable, dest);
 }
 
 inline void sc_char_to_sc_int(sc_char ch, sc_uint8 * ch_num, sc_uint8 * mask)

@@ -63,4 +63,6 @@ TEST_F(ScDictionaryTest, smoke)
   EXPECT_FALSE(sc_dictionary_is_in(dictionary, str3));
   EXPECT_FALSE(sc_dictionary_is_in(dictionary, str2));
   EXPECT_FALSE(sc_dictionary_is_in(dictionary, str1));
+
+  sc_dictionary_destroy(dictionary);
 }

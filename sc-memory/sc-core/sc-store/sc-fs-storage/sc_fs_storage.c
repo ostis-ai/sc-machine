@@ -150,9 +150,11 @@ sc_bool sc_fs_storage_shutdown(sc_segment ** segments, sc_bool save_segments)
   g_message("Shutdown sc-dictionary");
   if (sc_dictionary_destroy(links_dictionary) == SC_FALSE)
     g_critical("Can't shutdown sc-dictionary");
+  links_dictionary = null_ptr;
 
   if (sc_dictionary_destroy(strings_dictionary) == SC_FALSE)
     g_critical("Can't shutdown sc-dictionary");
+  strings_dictionary = null_ptr;
 
   g_free(repo_path);
 
@@ -568,7 +570,7 @@ void sc_fs_storage_write_nodes(
   dest[0] = strings_dest;
   dest[1] = links_dest;
 
-  sc_dictionary_visit_nodes(strings_dictionary, callable, (void **)dest);
+  sc_dictionary_visit_down_nodes(strings_dictionary, callable, (void **)dest);
 
   g_free(dest);
 }

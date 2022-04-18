@@ -1005,9 +1005,9 @@ sc_result sc_storage_set_link_content(sc_memory_context * ctx, sc_addr addr, con
     result = SC_RESULT_OK;
   }
 
-  // sc_addr empty;
-  // SC_ADDR_MAKE_EMPTY(empty);
-  // sc_event_emit(ctx, addr, access_lvl, SC_EVENT_CONTENT_CHANGED, empty, empty);
+  sc_addr empty;
+  SC_ADDR_MAKE_EMPTY(empty);
+  sc_event_emit(ctx, addr, access_lvl, SC_EVENT_CONTENT_CHANGED, empty, empty);
 
 unlock:
 {

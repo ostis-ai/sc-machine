@@ -14,9 +14,9 @@
 //! A sc-container iterator to visit elements in sc-containers
 typedef struct _sc_iterator
 {
-  sc_struct_node * begin;   // a start iterating element
-  sc_struct_node * end;     // a finite iterating element
-  sc_struct_node * current; // a current iterating element
+  sc_struct_node * begin;    // a start iterating element
+  sc_struct_node * end;      // a finite iterating element
+  sc_struct_node * current;  // a current iterating element
 } sc_iterator;
 
 /*! Initializes sc-container-iterator.

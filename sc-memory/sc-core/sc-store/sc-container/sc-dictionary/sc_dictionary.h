@@ -26,11 +26,11 @@
 //! A sc-dictionary structure node to store prefixes
 typedef struct _sc_dictionary_node
 {
-  struct _sc_dictionary_node ** next;   // a pointer to sc-dictionary node children pointers
-  sc_char * offset;                     // a pointer to substring of node string
-  sc_uint16 offset_size;                // size to substring of node string
-  sc_list * data_list;                  // data list
-  sc_uint8 mask;                        // mask for rights checking and memory optimization
+  struct _sc_dictionary_node ** next;  // a pointer to sc-dictionary node children pointers
+  sc_char * offset;                    // a pointer to substring of node string
+  sc_uint16 offset_size;               // size to substring of node string
+  sc_list * data_list;                 // data list
+  sc_uint8 mask;                       // mask for rights checking and memory optimization
 } sc_dictionary_node;
 
 //! A sc-dictionary structure node to store pairs of <string, object> type
@@ -69,11 +69,7 @@ sc_dictionary_node * sc_dictionary_append_to_node(sc_dictionary_node * node, sc_
  * @param data A pointer to data storing by appended string
  * @returns Returns A sc-dictionary node where appended string ends
  */
-sc_dictionary_node * sc_dictionary_append(
-    sc_dictionary * dictionary,
-    sc_char * sc_string,
-    sc_uint32 size,
-    void * data);
+sc_dictionary_node * sc_dictionary_append(sc_dictionary * dictionary, sc_char * sc_string, sc_uint32 size, void * data);
 
 /*! Removes a string from a sc-dictionary by a common prefix with another string started in sc-dictionary node, if such
  * exists. A common prefix doesn't remove form sc-dictionary if it contains in another string.
@@ -152,22 +148,44 @@ void sc_dictionary_show_from_node(sc_dictionary_node * node, sc_char * tab);
  */
 void sc_dictionary_show(sc_dictionary * dictionary);
 
-/*! Visits all sc-dictionary nodes starting with specified node and calls procedure with it and its data.
+/*! Visits all sc-dictionary nodes starting with specified node and calls procedure with it and its data. A method
+ * completes down iterating visiting.
  * @param node A sc-dictionary node to start visiting
  * @param callable A callable object (procedure)
  * @param[out] dest A pointer to procedure result pointer
  */
-void sc_dictionary_visit_node_from_node(
+void sc_dictionary_visit_down_node_from_node(
     sc_dictionary_node * node,
     void (*callable)(sc_dictionary_node *, void **),
     void ** dest);
 
-/*! Visits all sc-dictionary nodes and calls procedure with it and its data.
+/*! Visits all sc-dictionary nodes and calls procedure with it and its data. A method completes down iterating visiting.
  * @param node A sc-dictionary
  * @param callable A callable object (procedure)
  * @param[out] dest A pointer to procedure result pointer
  */
-void sc_dictionary_visit_nodes(
+void sc_dictionary_visit_down_nodes(
+    sc_dictionary * dictionary,
+    void (*callable)(sc_dictionary_node *, void **),
+    void ** dest);
+
+/*! Visits all sc-dictionary nodes starting with specified node and calls procedure with it and its data. A method
+ * completes up iterating visiting.
+ * @param node A sc-dictionary node to start visiting
+ * @param callable A callable object (procedure)
+ * @param[out] dest A pointer to procedure result pointer
+ */
+void sc_dictionary_visit_up_node_from_node(
+    sc_dictionary_node * node,
+    void (*callable)(sc_dictionary_node *, void **),
+    void ** dest);
+
+/*! Visits all sc-dictionary nodes and calls procedure with it and its data. A method completes up iterating visiting.
+ * @param node A sc-dictionary
+ * @param callable A callable object (procedure)
+ * @param[out] dest A pointer to procedure result pointer
+ */
+void sc_dictionary_visit_up_nodes(
     sc_dictionary * dictionary,
     void (*callable)(sc_dictionary_node *, void **),
     void ** dest);

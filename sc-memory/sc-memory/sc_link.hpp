@@ -63,7 +63,7 @@ public:
       return false;
 
     outValue = std::stod(str);
-    delete []str;
+    delete[] str;
 
     return true;
   }
