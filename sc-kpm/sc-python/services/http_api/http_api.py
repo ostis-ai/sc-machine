@@ -8,7 +8,6 @@ import tornado
 from ws_sc_json import ScJsonSocketHandler
 from common import ScModule
 from keynodes import Keynodes
-from auth.admin_handlers import UserHandler
 
 from sc import *
 
@@ -90,8 +89,6 @@ class ServerThread(threading.Thread):
         (r"/ws_json", ScJsonSocketHandler, { 'evt_manager': self.module.events, 'ioloop': ioloop }),
         (r"/content/([0-9]+)", ContentHandler),
         (r'/assets/(.*)', self.staticHandler, {'path': self.assets_path}),
-        # admin role functions
-        (r'/admin/user$', UserHandler),
         # token handlers
         # should be a last
         (r"/(.*)", MainHandler),

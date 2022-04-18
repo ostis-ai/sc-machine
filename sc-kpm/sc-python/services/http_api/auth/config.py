@@ -4,6 +4,7 @@ import http_api.auth.constants as cnt
 params = {
     # path params
     cnt.PUBLIC_KEY_PATH: '../sc-machine/sc-kpm/sc-python/services/http_api/auth/public.pem',
+    cnt.AUTH_FLAG: False,
     # validator patters
     # token params
     cnt.ISSUER: 'sc-auth-server',

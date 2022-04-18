@@ -50,27 +50,8 @@ cd sc-machine/scripts
 ./run_sc_server.sh
 ```
 
-For running sc-server in authorization server mode, you need a key pair. Current version of http service supports autogeneration of these keys. However you can done this manually with next commands:
+For running sc-server in authorization server mode, you need to place public key in `sc/machine/sc-kpm/sc-python/services/http_api/auth/` and set AUTH_FLAG: True in config file. 
 
-
-Current endpoints for auth service:
-
-3. **127.0.0.1:8090/admin/user** - admin endpoint (need specific type of request for correct work), **for this operation needs access token**:
-**POST-request:** add new user,
-_**Examples:**_
-**POST request-body:** {"name": "alex123", "role: patient", "lang": "ru", "access_token": "..."}
-
-Current credentials to test: login - **admin**, password - **a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3** (SHA256 hash)
-All added endpoints respond with specific message codes.
-There are eight of them
-        **cnt.MSG_ALL_DONE: 0,
-        cnt.MSG_INVALID_USERNAME: 1,
-        cnt.MSG_INVALID_PASSWORD: 2,
-        cnt.MSG_USER_NOT_FOUND: 3,
-        cnt.MSG_USER_IS_IN_BASE: 4**
-
-Required additional packages:
-**json, jwt, tornado**
 
 Open URL http://localhost:8090/ in web browser:
 ![](https://i.imgur.com/wibISSV.png)

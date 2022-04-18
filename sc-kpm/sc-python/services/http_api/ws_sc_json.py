@@ -9,6 +9,8 @@ import traceback
 import threading
 from auth.validators import TokenValidator
 import jwt
+from auth.config import params
+import auth.constants as cnt
 
 clients = []
 
@@ -39,16 +41,21 @@ class ScJsonSocketHandler(websocket.WebSocketHandler):
     return True
 
   def open(self):
-    if 'token' in self.request.arguments:
-        token = self.request.arguments['token'][0]
-        if TokenValidator._validate_token(token):
-            if self not in clients:
-                clients.append(self)
-                self.alive = True
+    if params[cnt.AUTH_FLAG]:
+        if 'token' in self.request.arguments:
+            token = self.request.arguments['token'][0]
+            if TokenValidator._validate_token(token):
+                if self not in clients:
+                    clients.append(self)
+                    self.alive = True
+            else:
+                self.close()
         else:
             self.close()
     else:
-        self.close()
+        if self not in clients:
+            clients.append(self)
+            self.alive = True
 
   def on_close(self):
     if self in clients:
