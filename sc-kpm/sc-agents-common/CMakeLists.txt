@@ -1,6 +1,12 @@
 set(SC_AGENTS_COMMON_SRC "${SC_KPM_SRC}/sc-agents-common")
 
-file(GLOB_RECURSE SOURCES "*.cpp" "*.hpp")
+file(GLOB_RECURSE SOURCES
+		"sc_agents_common.hpp"
+		"sc_agents_common.cpp"
+		"agents/*"
+		keynodes/*
+		tests/keynodes/*
+		utils/*)
 
 include_directories(${SC_AGENTS_COMMON_SRC} ${SC_MEMORY_SRC} ${SC_KPM_SRC})
 
@@ -12,4 +18,8 @@ target_compile_definitions(sc-agents-common PRIVATE "-DSC_AGENTS_COMMON_SELF_BUI
 
 if (${SC_CLANG_FORMAT_CODE})
 	target_clangformat_setup(sc-agents-common)
+endif ()
+
+if (${SC_BUILD_TESTS})
+	include(${CMAKE_CURRENT_LIST_DIR}/tests/tests.cmake)
 endif ()

@@ -1,0 +1,5 @@
+@link0 = [template_example];;
+
+test_action_node_without_parameter_node
+<- action_generate_by_template_with_param_resolving;
+-> rrel_1: @link0;;

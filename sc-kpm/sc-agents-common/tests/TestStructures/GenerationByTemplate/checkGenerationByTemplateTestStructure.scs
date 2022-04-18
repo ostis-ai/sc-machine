@@ -1,0 +1,34 @@
+..node0 <- sc_node;;
+..node1 <- sc_node;;
+..node2 <- sc_node;;
+..node3 <- sc_node;;
+
+@link0 = [template_example];;
+@link1 = [_login];;
+@link2 = [text];;
+@link3 = [sc_link];;
+@link4 = [_role];;
+@link5 = [test_concept];;
+@link6 = [sc_node_class];;
+@link7 = [_lang];;
+@link8 = [test_lang];;
+@link9 = [sc_node_class];;
+
+
+success_test_action_node
+<- action_generate_by_template_with_param_resolving;
+-> rrel_1: @link0;
+-> rrel_2: ..node0;;
+
+@pair0 = (@link1 => ..node1);;
+@pair1 = (..node0 -> @pair0);;
+@pair2 = (@link2 => @link3);;
+@pair3 = (..node1 -> @pair2);;
+@pair4 = (@link4 => ..node2);;
+@pair5 = (..node0 -> @pair4);;
+@pair6 = (@link5 => @link6);;
+@pair7 = (..node2 -> @pair6);;
+@pair8 = (@link7 => ..node3);;
+@pair9 = (..node0 -> @pair8);;
+@pair10 = (@link8 => @link9);;
+@pair11 = (..node3 -> @pair10);;

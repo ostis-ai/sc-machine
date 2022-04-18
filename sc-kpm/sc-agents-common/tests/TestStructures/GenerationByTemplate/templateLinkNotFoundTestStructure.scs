@@ -1,0 +1,15 @@
+..node0 <- sc_node;;
+..node1 <- sc_node;;
+
+@link0 = [_login];;
+@link1 = [text];;
+@link2 = [sc_link];;
+
+test_action_node_without_link
+<- action_generate_by_template_with_param_resolving;
+-> rrel_2: ..node0;;
+
+@pair0 = (@link0 => ..node1);;
+@pair1 = (..node0 -> @pair0);;
+@pair2 = (@link1 => @link2);;
+@pair3 = (..node1 -> @pair2);;

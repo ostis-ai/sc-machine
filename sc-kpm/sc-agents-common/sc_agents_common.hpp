@@ -9,6 +9,8 @@
 #include <sc-memory/sc_memory.hpp>
 #include <sc-memory/sc_module.hpp>
 
+#include "agents/GenerationByTemplateAgent.hpp"
+
 #include "sc_agents_common.generated.hpp"
 
 class SCAgentsCommonModule : public ScModule

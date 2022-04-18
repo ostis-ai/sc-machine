@@ -102,6 +102,9 @@ public:
 
   SC_PROPERTY(Keynode("nrel_basic_sequence"), ForceCreate)
   static ScAddr nrel_basic_sequence;
+
+  SC_PROPERTY(Keynode("action_generate_by_template_with_param_resolving"), ForceCreate)
+  static ScAddr action_generate_by_template_with_param_resolving;
 };
 
 }  // namespace scAgentsCommon

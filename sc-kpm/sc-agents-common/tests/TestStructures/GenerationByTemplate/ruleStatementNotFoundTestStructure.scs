@@ -1,0 +1,17 @@
+..node0 <- sc_node;;
+..node1 <- sc_node;;
+
+@link0 = [template_version];;
+@link1 = [_login];;
+@link2 = [text];;
+@link3 = [sc_link];;
+
+test_action_node_without_rule
+<- action_generate_by_template_with_param_resolving;
+-> rrel_1: @link0;
+-> rrel_2: ..node0;;
+
+@pair0 = (@link1 => ..node1);;
+@pair1 = (..node0 -> @pair0);;
+@pair2 = (@link2 => @link3);;
+@pair3 = (..node1 -> @pair2);;

@@ -17,10 +17,14 @@ sc_result SCAgentsCommonModule::InitializeImpl()
   if (!CoreKeynodes::InitGlobal())
     return SC_RESULT_ERROR;
 
+  SC_AGENT_REGISTER(GenerationByTemplateAgent)
+
   return SC_RESULT_OK;
 }
 
 sc_result SCAgentsCommonModule::ShutdownImpl()
 {
+  SC_AGENT_UNREGISTER(GenerationByTemplateAgent)
+
   return SC_RESULT_OK;
 }

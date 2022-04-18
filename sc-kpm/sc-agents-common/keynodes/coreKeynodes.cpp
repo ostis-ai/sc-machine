@@ -36,5 +36,6 @@ ScAddr CoreKeynodes::atomic_logical_formula;
 ScAddr CoreKeynodes::cardinality;
 ScAddr CoreKeynodes::lang_ru;
 ScAddr CoreKeynodes::nrel_basic_sequence;
+ScAddr CoreKeynodes::action_generate_by_template_with_param_resolving;
 
 }  // namespace scAgentsCommon

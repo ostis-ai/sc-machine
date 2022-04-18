@@ -1,0 +1,37 @@
+nrel_second
+  <- sc_node_norole_relation;;
+
+_lang
+  <- sc_node_class;;
+
+_role
+  <- sc_node_class;;
+
+sc_link
+  <- sc_node_class;;
+
+nrel_first
+  <- sc_node_norole_relation;;
+
+languages
+  <- sc_node_class;;
+
+atomic_logical_formula
+  <- sc_node_class;;
+
+@link0 = _[   ];;
+@link0 => nrel_system_identifier: [_login];;
+
+
+template_example = [*
+@pair0 = (_user _=> @link0);;
+@pair1 = (nrel_second _-> @pair0);;
+@pair2 = (sc_link _-> @link0);;
+@pair3 = (_role _-> _user);;
+@pair4 = (_user _=> _lang);;
+@pair5 = (nrel_first _-> @pair4);;
+@pair6 = (languages _-> _lang);;
+*];;
+
+template_example
+<- atomic_logical_formula;;
