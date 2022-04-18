@@ -78,8 +78,6 @@ inline sc_dictionary_node * _sc_dictionary_get_next_node(sc_dictionary_node * no
 
 sc_dictionary_node * sc_dictionary_append_to_node(sc_dictionary_node * node, sc_char * sc_string, sc_uint32 size)
 {
-  memcpy(sc_string, sc_string, size);
-
   sc_char ** sc_string_ptr = g_new0(sc_char *, 1);
   *sc_string_ptr = sc_string;
 

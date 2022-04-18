@@ -261,50 +261,22 @@ public:
 
   int32_t AsInt() const
   {
-    if (m_buffer->Size() == sizeof(int8_t))
-    {
-      int8_t value = 0;
-      m_buffer->Read(&value, sizeof(value));
-      return int32_t(value);
-    }
-    else if (m_buffer->Size() == sizeof(int16_t))
-    {
-      int16_t value = 0;
-      m_buffer->Read(&value, sizeof(value));
-      return int32_t(value);
-    }
-    else if (m_buffer->Size() == sizeof(int32_t))
-    {
-      int32_t value = 0;
-      m_buffer->Read(&value, sizeof(value));
-      return value;
-    }
+    auto * str = new sc_char[m_buffer->Size()];
+    m_buffer->Read(str, m_buffer->Size());
 
-    SC_THROW_EXCEPTION(utils::ExceptionInvalidType, "Size of content should be equal to 1, 2 or 4 bytes");
+    int32_t value = std::stoi(str);
 
-    return 0;
+    return value;
   }
 
   double AsDouble() const
   {
-    if (m_buffer->Size() == sizeof(float))
-    {
-      float value = 0.0;
-      m_buffer->Read(&value, sizeof(value));
-      return value;
-    }
-    else if (m_buffer->Size() == sizeof(double))
-    {
-      double value = 0.0;
-      m_buffer->Read(&value, sizeof(value));
-      return value;
-    }
+    auto * str = new sc_char[m_buffer->Size()];
+    m_buffer->Read(str, m_buffer->Size());
 
-    SC_THROW_EXCEPTION(
-        utils::ExceptionInvalidType,
-        "Size of content should be equal to " << sizeof(double) << " or " << sizeof(float) << " bytes");
+    double value = std::stod(str);
 
-    return std::numeric_limits<double>::min();
+    return value;
   }
 
   bp::object AsBinary() const
@@ -372,20 +344,24 @@ bool _context_setLinkContent(ScMemoryContext & self, ScAddr const & linkAddr, bp
   if (content.is_none() || !linkAddr.IsValid())
     return false;
 
+  ScLink link(self, linkAddr);
   bp::extract<int32_t> l(content);
   if (l.check())
-    return _set_contentT(self, linkAddr, l);
+  {
+    int32_t value = std::stoi(std::to_string(l));
+    return link.Set(value);
+  }
 
   bp::extract<double> d(content);
   if (d.check())
-    return _set_contentT(self, linkAddr, d);
+  {
+    double value = std::stoi(std::to_string(d));
+    return link.Set(value);
+  }
 
   bp::extract<std::string> s(content);
   if (s.check())
-  {
-    ScStreamPtr stream = ScStreamMakeRead(std::string(s));
-    return self.SetLinkContent(linkAddr, stream);
-  }
+    return link.Set(std::string(s));
 
   return false;
 }

@@ -47,7 +47,10 @@ public:
   inline void Value2Stream(Type const & value, ScStreamPtr & stream) const
   {
     std::string str = std::to_string(value);
-    stream.reset(new ScStream(str.c_str(), str.size(), SC_STREAM_FLAG_READ | SC_STREAM_FLAG_SEEK));
+    auto * chars = new sc_char[str.size()];
+    strcpy(chars, str.c_str());
+
+    stream.reset(new ScStream(chars, str.size(), SC_STREAM_FLAG_READ | SC_STREAM_FLAG_SEEK));
   }
 
   template <typename Type>
