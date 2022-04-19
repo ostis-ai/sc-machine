@@ -1,5 +1,5 @@
 cd ..
 mkdir -p build
 cd build
-cmake ..
+cmake .. $@
 make -j$(nproc)
