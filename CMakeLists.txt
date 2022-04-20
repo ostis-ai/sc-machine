@@ -72,7 +72,7 @@ set(SC_TOOLS_SRC "${SC_MACHINE_ROOT}/tools")
 
 
 if (NOT ${SC_USE_SANITIZER} STREQUAL "none")
-    if (CMAKE_C_COMPILER_ID MATCHES "GNU" OR CMAKE_CXX_COMPILER_ID MATCHES "GNU")
+    if (NOT CMAKE_CXX_COMPILER_ID MATCHES ".*Clang" OR NOT CMAKE_C_COMPILER_ID MATCHES ".*Clang")
         message("Sanitizers are supported only by Clang")
     else()
         if (${SC_USE_SANITIZER} STREQUAL "address")
