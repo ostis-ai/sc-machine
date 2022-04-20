@@ -1,0 +1,45 @@
+name: Sanitizers
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+jobs:
+  run_sanitizers:
+    name: ${{ matrix.config.name }}
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        config:
+          - { name: "Sanitizer - address", sanitizer: "address" }
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v1
+        with:
+          submodules: recursive
+
+      - name: Install dependencies
+        id: install_deps
+        run: scripts/install_deps_ubuntu.sh
+
+      - name: Build
+        id: run_cmake
+        env:
+          CC: clang
+          CXX: clang++
+          BUILD_TYPE: Release
+          COVERAGE: OFF
+          SANITIZER_TYPE: ${{ matrix.config.sanitizer }}
+        run: scripts/ci/make-tests.sh
+
+      - name: Run tests
+        id: run_tests
+        run: scripts/ci/run-tests.sh
