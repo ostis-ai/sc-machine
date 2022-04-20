@@ -37,14 +37,16 @@ echo 'export PATH="'$HOMEBREW_PREFIX'/opt/llvm/bin:$PATH"' >> ~/.zshrc
 cd sc-machine/scripts
 ./make_all.sh #You can also pass all CMake generation arguments there
 ```
-or, alternatively
+or, alternatively (requires CMake 3.13+)
 ```sh
 cd sc-machine
 cmake -B build -DCMAKE_BUILD_TYPE=Release
 cmake --build build -j$(nproc) #-j flag for paralleled build process
 ```
+Additional CMake flags can be used to build tests, format code or analyze memory leaks, check [our build docs](docs/build/cmake-flags.md) for more info.
 
-## Build knowledge base (from sc-machine/kb folder):
+## Build knowledge base (from sc-machine/kb folder)
+
 ```sh
 cd sc-machine/scripts
 ./build_kb.sh
