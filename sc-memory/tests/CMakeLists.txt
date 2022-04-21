@@ -13,6 +13,9 @@ target_include_directories(sc-core-threading-test
   )
 target_link_libraries(sc-core-threading-test sc-core)
 
-add_subdirectory(performance)
+if(${SC_BUILD_BENCH})
+  add_subdirectory(performance)
+endif()
+
 include (${CMAKE_CURRENT_LIST_DIR}/sc-memory/tests.cmake)
 include (${CMAKE_CURRENT_LIST_DIR}/scs/tests.cmake)
