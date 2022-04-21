@@ -14,6 +14,7 @@ option (SC_AUTO_TEST "Flag to build for automation testing" OFF)
 option (SC_KPM_SCP "Flag to build SCP module" OFF)
 option (SC_BUILD_SCTP "Flag to turn on/off sctp protocol support" ON)
 option (SC_BUILD_TESTS "Flag to build unit tests" OFF)
+option (SC_BUILD_BENCH "Flag to build benchmark" OFF)
 option (SC_COVERAGE "Flag to generate coverage report" OFF)
 option (SC_CLANG_FORMAT_CODE "flag to add clangformat and clangformat_check targets" OFF)
 
