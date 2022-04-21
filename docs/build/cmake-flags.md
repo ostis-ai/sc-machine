@@ -5,11 +5,7 @@ cmake -B build -DSC_BUILD_TESTS=ON -DSC_AUTO_TEST=ON -DSC_KPM_SCP=OFF
 cmake --build build -j$(nproc)
 ```
 
-or:
-```sh
-cd sc-machine
-./scripts/ci/make-tests.sh
-```
+Additionally you can use `-DSC_BUILD_BENCH=ON` flag to build performance tests
 
 
 ## Building with sanitizers
