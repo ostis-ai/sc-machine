@@ -32,10 +32,9 @@ class Gwf2SCs:
         input = params.input
         files = Gwf2SCs.collect_files(input)
 
-        file_id = 1
         files = [file for file in files if os.path.splitext(file)[1] == Gwf2SCs.GWF_FORMAT]
 
-        for f in files:
+        for file_id, f in enumerate(files, start=1):
             file = os.path.join(input, f)
             file_info = colored(f'[{file_id}/{len(files)}]: {f} - ', color='white')
 
@@ -56,7 +55,6 @@ class Gwf2SCs:
                 self.log_error(f, error)
                 return
 
-            file_id += 1
 
     @staticmethod
     def parse_gwf(input_path, elements):

@@ -64,7 +64,7 @@ Default config file saves compiled KB one level above sc-machine, `sc-machine/..
 Alternatively, you can use `build_kb.py` without a config file to define output path and other settings manually:
 ```sh
 cd sc-machine
-build_kb.py [-o OUTPUT_PATH] [-l ERRORS_FILE_PATH] [-f REPO_FILE_NAME] repo_folder
+build_kb.py [-o OUTPUT_PATH] [-l ERRORS_FILE_PATH] REPO_FILE
 ```
 To get more information, use `python3 scripts/build_kb.py -h`
 

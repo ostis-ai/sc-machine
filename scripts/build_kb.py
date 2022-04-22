@@ -1,9 +1,11 @@
 import argparse
-from os.path import join, abspath, relpath, commonprefix, isdir, exists, dirname
+from os.path import join, abspath, relpath, commonprefix, isdir, isfile, exists, dirname, basename
 import os
 import shutil
 import re
+import configparser
 
+FILENAME = "repo.path"
 paths = set()
 
 #A dir that contains the dir that contains this script - so that sc-machine/scripts/build_kb.py would become sc-machine
@@ -17,23 +19,31 @@ prepare_scripts = [
 ]
 
 
-def search_knowledge_bases(root_path: str, output_path: str, filename: str):
+REPO_FILE = "repo_file"
+OUTPUT_PATH = "output_path"
+LOGFILE_PATH = "errors_file_path"
+CONFIG_PATH = "config_file_path"
+
+
+def search_knowledge_bases(root_path: str):
     if isdir(root_path):
-        try:
-            with open(join(root_path, filename), 'r') as root_file:
-                for line in root_file.readlines():
-                    line = line.replace('\n', '')
-                    # note: with current implementation, line is considered a comment if it's the first character in the line
-                    if line in paths or line.startswith('#'):
-                       continue
-                    else:
-                        absolute_path = abspath(join(root_path, line))
-                        paths.add(absolute_path)
-                        search_knowledge_bases(
-                        absolute_path, output_path, filename)
-        except FileNotFoundError:
-            #this branch will be used when a subsequent KB doesn't have any dependencies
-            pass
+        paths.add(root_path)
+    
+    # if the line is a file, we presume it's a repo file and recursively read from it
+    elif isfile(root_path):
+        with open(join(root_path), 'r') as root_file:
+            for line in root_file.readlines():
+                line = line.replace('\n', '')
+                absolute_path = abspath(join(dirname(root_path), line))
+                # note: with current implementation, line is considered a comment if it's the first character in the line
+                #ignore paths we've already checked, comments and empty lines
+                if absolute_path in paths or line.startswith('#') or re.match(r"^\s*$", line):
+                    continue
+                else:
+                    #recursively check each repo entry
+                    search_knowledge_bases(absolute_path)
+                    
+
     else:
         print("Folder", root_path, "is not found.")
         exit(1)
@@ -53,23 +63,12 @@ def copy_kb(output_path: str):
 
 
 def parse_config(path: str) -> dict:
-    config_dict = {'repo_folder': '', 'output_path': '', 'errors_file_path': ''}
-    with open(path, mode='r') as config:
-        reading_state = False
-        for line in config.readlines():
-            line = line.replace('\n', '')
-            if line == '[Repo]':
-                reading_state = True
-            elif re.search(r'\[.+\]', line):
-                reading_state = False
-            if line.startswith('#'): 
-                continue
-            if line.find("Path = ") != -1 and reading_state:
-                #TODO: name the field in a more declarative way when sctp will be deleted.
-                line = line.replace("Path = ", "")
-                config_dict.update({'output_path': abspath(join(dirname(path), line))})
-            if line.find("Logfile = ") != -1 and reading_state:
-                config_dict.update({'errors_file_path': abspath(join(dirname(path), line.replace("Logfile = ", ""), "prepare.log"))})
+    config_dict = {REPO_FILE: '', OUTPUT_PATH: '', LOGFILE_PATH: ''}
+    config = configparser.ConfigParser()
+    config.read(path)
+    config_dict.update({'output_path': abspath(join(dirname(path), config['Repo']['Path']))})
+    config_dict.update({'errors_file_path': abspath(join(dirname(path), config['Repo']['Logfile'], "prepare.log"))})
+
     return config_dict
 
 
@@ -98,7 +97,7 @@ def main(args: dict):
      
     for key in args.keys():
         if args[key] is not None:
-            if key in ["repo_folder", "output_path", "errors_file_path"]: 
+            if key in [REPO_FILE, OUTPUT_PATH, LOGFILE_PATH]: 
                 flag = abspath(join(os.getcwd(), args[key]))
             else: flag = args[key] 
             conf[key] = flag
@@ -110,7 +109,7 @@ def main(args: dict):
     if isdir(kb_to_prepare):
         shutil.rmtree(kb_to_prepare)
 
-    search_knowledge_bases(conf["repo_folder"], conf["output_path"], conf["repo_file_name"])
+    search_knowledge_bases(conf[REPO_FILE])
 
     if not paths:
         print("No KBs were found")
@@ -125,8 +124,8 @@ def main(args: dict):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
 
-    parser.add_argument( dest="repo_folder", type=str,
-                        help="The entrypoint folder, should contain a repo file, see -f option to change the name")
+    parser.add_argument(dest=REPO_FILE, type=str,
+                        help="The entrypoint repo file. Folder paths in this file ")
 
     parser.add_argument('-o', '--output', dest="output_path",
                         help="Destination path - path where KB binaries will be stored. Taken from the config file unless overwritten by this flag.")
@@ -134,10 +133,7 @@ if __name__ == '__main__':
     parser.add_argument('-l', '--logfile', dest="errors_file_path",
                         help="Errors file path - in case of unsuccessful preparation, log will appear at this location. Taken from the config file unless overwritten by this flag.")
 
-    parser.add_argument('-f', '--filename', dest="repo_file_name",
-                        help="Repo file name - a filename for repo file that will be used in all subsequent KBs. Default: repo.path", default="repo.path")
-
-    parser.add_argument('-c', '--config', dest='config_file_path',
+    parser.add_argument('-c', '--config', dest=CONFIG_PATH,
                         help="Config file path - path to the sc-machine config file (Note: config file has lower priority than flags!)")
 
     args = parser.parse_args()
