@@ -4,6 +4,7 @@ import asyncio
 import os
 import threading
 import tornado
+from pathlib import Path
 
 from ws_sc_json import ScJsonSocketHandler
 from common import ScModule
@@ -12,6 +13,18 @@ from keynodes import Keynodes
 from sc import *
 
 self_path = os.path.dirname(__file__)
+
+def check_auth():
+    path = os.path.join(Path(__file__).parent.parent.parent.parent.parent,"CMakeLists.txt")
+    try:
+        with open(path, 'r') as file:
+            if "option(AUTH_ENABLED ON)" in file.read():
+                return True
+            else:
+                return False
+    except Exception:
+        return False
+
 
 
 class DebugStaticFileHandler(tornado.web.StaticFileHandler):
@@ -75,7 +88,8 @@ class ServerThread(threading.Thread):
     self.staticHandler = DebugStaticFileHandler
     if not isDebug:
       staticHandler = tornado.web.StaticFileHandler
-    
+
+    self.auth = check_auth()
     self.port = port
     self.app = None
     self.module = module
@@ -86,10 +100,9 @@ class ServerThread(threading.Thread):
     ioloop = tornado.ioloop.IOLoop.instance()
 
     self.app = tornado.web.Application([
-        (r"/ws_json", ScJsonSocketHandler, { 'evt_manager': self.module.events, 'ioloop': ioloop }),
+        (r"/ws_json", ScJsonSocketHandler, { 'evt_manager': self.module.events, 'ioloop': ioloop, 'auth': self.auth }),
         (r"/content/([0-9]+)", ContentHandler),
         (r'/assets/(.*)', self.staticHandler, {'path': self.assets_path}),
-        # token handlers
         # should be a last
         (r"/(.*)", MainHandler),
     ])

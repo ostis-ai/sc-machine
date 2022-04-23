@@ -7,11 +7,6 @@ import http_api.auth.constants as cnt
 from http_api.auth.config import params
 
 
-class TokenType(Enum):
-    ACCESS = 0
-    REFRESH = 1
-
-
 class TokenValidator:
     @staticmethod
     def _validate_token(token):
