@@ -13,7 +13,7 @@ namespace scAgentsCommon
 {
 SC_AGENT_IMPLEMENTATION(GenerationByTemplateAgent)
 {
-  ScAddr questionNode = m_memoryCtx.GetEdgeTarget(edgeAddr);
+  ScAddr questionNode = otherAddr;
   if (!checkActionClass(questionNode))
     return SC_RESULT_OK;
 
@@ -36,9 +36,15 @@ SC_AGENT_IMPLEMENTATION(GenerationByTemplateAgent)
     return SC_RESULT_ERROR;
   }
 
-  std::string linkContent = utils::CommonUtils::getLinkContent(&m_memoryCtx, templateLinkAddr);
+  std::string templateIdtf = utils::CommonUtils::getLinkContent(&m_memoryCtx, templateLinkAddr);
+  if (templateIdtf.empty())
+  {
+    SC_LOG_ERROR("GenerationByTemplateAgent: template name string is empty.")
+    utils::AgentUtils::finishAgentWork(&m_memoryCtx, questionNode, false);
+    return SC_RESULT_ERROR;
+  }
 
-  ScAddr ruleStatement = m_memoryCtx.HelperFindBySystemIdtf(linkContent);
+  ScAddr ruleStatement = m_memoryCtx.HelperFindBySystemIdtf(templateIdtf);
   if (!ruleStatement.IsValid())
   {
     SC_LOG_ERROR("GenerationByTemplateAgent: rule statement not found.")

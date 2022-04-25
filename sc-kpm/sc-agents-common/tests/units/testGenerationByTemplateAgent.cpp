@@ -1,6 +1,6 @@
 /*
-* Copyright (c) 2022 Intelligent Semantic Systems LLC, All rights reserved.
-*/
+ * Copyright (c) 2022 Intelligent Semantic Systems LLC, All rights reserved.
+ */
 
 #include <gtest/gtest.h>
 
