@@ -1,13 +1,18 @@
-## v0.7.0 - WIP
+## v0.6.2 - WIP
+
+## v0.6.1
 
  - **C++**:
     - Migrate test system to `gtest`
     - Remove optional search triples support
+    - Add common utils
+    - Add search by template with params
     - Add sanitizers
-
-
+    - Add benchmarks
+    - Add clang code formatting
+    
 - **Build system**
-    - update macOS install_deps script
+    - Update macOS install_deps script
     - Multithreaded build process used by default
  
  - **Web**
