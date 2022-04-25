@@ -5,7 +5,6 @@ file(GLOB_RECURSE SOURCES
 		"sc_agents_common.cpp"
 		"agents/*"
 		keynodes/*
-		tests/keynodes/*
 		utils/*)
 
 include_directories(${SC_AGENTS_COMMON_SRC} ${SC_MEMORY_SRC} ${SC_KPM_SRC})
