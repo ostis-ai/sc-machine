@@ -121,64 +121,25 @@ if (${SC_AUTO_TEST})
 endif()
 
 # find dependencies
-if (${APPLE})
-    set(Boost_USE_STATIC_LIBS ON)
-    find_package(Boost 1.67 REQUIRED COMPONENTS filesystem python37 program_options)
+if(${UNIX})
 
-    find_package(PkgConfig REQUIRED)
-    pkg_search_module(GLIB2 REQUIRED glib-2.0)
-    pkg_search_module(GLIB2_MODULE REQUIRED gmodule-2.0)
+  find_package(Boost 1.71 REQUIRED COMPONENTS filesystem python system program_options)
 
-    set (GLIB2_LIBRARIES ${GLIB_LDFLAGS} ${GLIB2_MODULE_LDFLAGS})
+  find_package(Python3 COMPONENTS Interpreter Development REQUIRED)
 
-    if (NOT DEFINED LIBCLANG_LIBRARIES OR NOT DEFINED LIBCLANG_CXXFLAGS OR NOT DEFINED LIBCLANG_LIBDIR)
-        find_package(LibClang REQUIRED)
-    endif ()
+  find_package(RocksDB REQUIRED)
 
-    find_package(PythonLibs 3.7 REQUIRED)
-    find_package(curl REQUIRED)
+  find_package(PkgConfig REQUIRED)
+  pkg_search_module(GLIB2 REQUIRED glib-2.0)
+  pkg_search_module(GLIB2_MODULE REQUIRED gmodule-2.0)
 
-    set (LIBCURL_LIBRARIES ${CURL_LIBRARIES})
+  set(GLIB2_LIBRARIES ${GLIB_LDFLAGS} ${GLIB2_MODULE_LDFLAGS})
 
-    include_directories("${CMAKE_OSX_SYSROOT}/usr/include")
+  if (NOT DEFINED LIBCLANG_LIBRARIES OR NOT DEFINED LIBCLANG_CXXFLAGS OR NOT DEFINED LIBCLANG_LIBDIR)
+    find_package(LibClang REQUIRED)
+  endif ()
 
-elseif (${UNIX})
-    function(getLibVersion libName resultVar)
-        execute_process(COMMAND /usr/bin/dpkg -s "${libName}"
-                        COMMAND /bin/grep -oP "(?<=Version:\\s)([\\d\\.]+)(?=)"
-                        OUTPUT_VARIABLE tempVar
-                        OUTPUT_STRIP_TRAILING_WHITESPACE)
-        set(${resultVar} ${tempVar} PARENT_SCOPE)
-    endfunction()
-
-    find_package(PythonLibs 3.4 REQUIRED)
-
-    string(REPLACE "." ";" PY_VERSION_LIST ${PYTHONLIBS_VERSION_STRING})
-    list(GET PY_VERSION_LIST 0 PY_VERSION_MAJOR)
-    list(GET PY_VERSION_LIST 1 PY_VERSION_MINOR)
-
-    set(PY_SHORT_VERSION "${PY_VERSION_MAJOR}${PY_VERSION_MINOR}")
-
-    getLibVersion(libboost-python-dev BOOST_PYTHON_VER)
-    if ("${BOOST_PYTHON_VER}" STRGREATER "1.71")
-        find_package(Boost 1.54 REQUIRED COMPONENTS filesystem python${PY_SHORT_VERSION})
-    else ()
-        find_package(Boost 1.54 REQUIRED COMPONENTS filesystem python-py${PY_SHORT_VERSION})
-    endif()
-    find_package(RocksDB REQUIRED)
-
-    include(FindPkgConfig)
-    pkg_check_modules (GLIB2 REQUIRED glib-2.0)
-    pkg_check_modules (GLIB2_MODULE REQUIRED gmodule-2.0)
-
-    set (GLIB2_INCLUDE_DIRS "${GLIB2_INCLUDE_DIRS}" "/usr/lib/x86_64-linux-gnu/glib-2.0/include/" "${GLIB2_MODULE}")
-    set (GLIB2_LIBRARIES "${GLIB2_LIBRARIES}" "${GLIB2_MODULE_LIBRARIES}")
-
-    if (NOT DEFINED LIBCLANG_LIBRARIES OR NOT DEFINED LIBCLANG_CXXFLAGS OR NOT DEFINED LIBCLANG_LIBDIR)
-        find_package(LibClang REQUIRED)
-    endif ()
-
-    pkg_check_modules(LIBCURL REQUIRED libcurl)
+  pkg_check_modules(LIBCURL REQUIRED libcurl)
 
     # for std::thread support
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread")
@@ -263,9 +224,7 @@ elseif (${WIN32})
             )
     file(COPY ${WIN_RUNTIME_LIBRARIES} DESTINATION "${SC_BIN_PATH}")
 #
-endif(${APPLE})
-
-message ("Python version: ${PYTHONLIBS_VERSION_STRING}")
+endif(${UNIX})
 
 configure_file(${CMAKE_CURRENT_LIST_DIR}/config/config.ini.in ${CMAKE_CURRENT_LIST_DIR}/bin/config.ini)
 

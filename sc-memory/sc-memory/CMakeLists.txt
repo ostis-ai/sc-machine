@@ -29,7 +29,7 @@ target_include_directories(sc-memory
       PRIVATE ${GLIB2_INCLUDE_DIRS}
       PRIVATE ${SC_MACHINE_ANTRL_DIR}/runtime/src
       PRIVATE ${SC_MEMORY_SRC}
-      PRIVATE ${PYTHON_INCLUDE_DIRS})
+      PRIVATE ${Python3_INCLUDE_DIRS})
 
 if (${WIN32})
   target_link_libraries(sc-memory
@@ -42,7 +42,7 @@ elseif (${UNIX})
                         sc-core
                         antlr4_static
                         ${LIBCURL_LIBRARIES}
-                        ${PYTHON_LIBRARIES}
+                        ${Python3_LIBRARIES}
                         ${Boost_LIBRARIES})
 endif(${WIN32})
 
