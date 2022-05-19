@@ -43,7 +43,8 @@ class ScJsonSocketHandler(websocket.WebSocketHandler):
 
   def check_valid(self):
       if 'token' in self.request.arguments:
-            token = self.request.arguments['token'][0]
+            token = self.request.arguments['token'][0].decode("utf-8")
+            print(token)
             if TokenValidator._validate_token(token):
                 return True
       return False

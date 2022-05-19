@@ -20,6 +20,7 @@ class TokenValidator:
                 jwt.exceptions.InvalidSignatureError,
                 jwt.exceptions.InvalidIssuerError,
                 jwt.exceptions.ExpiredSignatureError,
-                FileNotFoundError):
+                FileNotFoundError) as e:
+            print(e)
             return False
         return True
