@@ -9,6 +9,8 @@ from pathlib import Path
 from ws_sc_json import ScJsonSocketHandler
 from common import ScModule
 from keynodes import Keynodes
+from http_api.auth.config import params
+import http_api.auth.constants as cnt
 
 from sc import *
 
@@ -18,13 +20,12 @@ def check_auth():
     path = os.path.join(Path(__file__).parent.parent.parent.parent.parent, "CMakeLists.txt")
     try:
         with open(path, 'r') as file:
-            if "option(AUTH_ENABLED ON)" in file.read():
+            if params[cnt.AUTH_FLAG_STRING] in file.read():
                 return True
             else:
                 return False
     except Exception:
         return False
-
 
 
 class DebugStaticFileHandler(tornado.web.StaticFileHandler):

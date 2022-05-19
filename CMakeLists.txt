@@ -5,7 +5,7 @@ cmake_minimum_required (VERSION 2.8)
 
 include(CTest)
 
-option(AUTH-ENABLED OFF)
+option(AUTH_ENABLED OFF)
 set(SC_BIN_PATH "${CMAKE_CURRENT_LIST_DIR}/bin")
 
 set (SC_MACHINE_ROOT ${CMAKE_CURRENT_LIST_DIR})
