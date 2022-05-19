@@ -17,16 +17,15 @@ extern "C"
 #include <sc-core/sc_memory.h>
 }
 
+sctpStatistic * sctpStatistic::mInstance = 0;
 
-sctpStatistic* sctpStatistic::mInstance = 0;
-
-sctpStatistic* sctpStatistic::getInstance()
+sctpStatistic * sctpStatistic::getInstance()
 {
   Q_ASSERT(mInstance != 0);
   return mInstance;
 }
 
-sctpStatistic::sctpStatistic(QObject *parent)
+sctpStatistic::sctpStatistic(QObject * parent)
   : QObject(parent)
   , mStatUpdatePeriod(0)
   , mStatUpdateTimer(0)
@@ -42,7 +41,7 @@ sctpStatistic::~sctpStatistic()
   mInstance = 0;
 }
 
-bool sctpStatistic::initialize(const QString &statDirPath, quint32 updatePeriod, sc_memory_context const * context)
+bool sctpStatistic::initialize(const QString & statDirPath, quint32 updatePeriod, sc_memory_context const * context)
 {
   mStatPath = statDirPath;
   mStatUpdatePeriod = updatePeriod;
@@ -91,7 +90,6 @@ void sctpStatistic::shutdown()
   mFsMutex = 0;
 }
 
-
 void sctpStatistic::update()
 {
   QMutexLocker dataLocker(mDataMutex);
@@ -105,7 +103,8 @@ void sctpStatistic::update()
 
   // determine date
   QDateTime dateTime(QDateTime::currentDateTime());
-  QString statFileName = QString("%1_%2_%3").arg(dateTime.date().day()).arg(dateTime.date().month()).arg(dateTime.date().year());
+  QString statFileName =
+      QString("%1_%2_%3").arg(dateTime.date().day()).arg(dateTime.date().month()).arg(dateTime.date().year());
   QDir statDir(mStatPath);
   QString statFilePath = statDir.filePath(statFileName);
 
@@ -119,20 +118,21 @@ void sctpStatistic::update()
     // read exist information in file
     if (file.open(QFile::ReadOnly))
     {
-      if (file.read((char*)&stat.mCount, sizeof(stat.mCount)) != sizeof(stat.mCount))
+      if (file.read((char *)&stat.mCount, sizeof(stat.mCount)) != sizeof(stat.mCount))
         stat.mCount = 0;
 
       if (stat.mCount > 0)
       {
         int bytesToRead = sizeof(sStatItem) * stat.mCount;
         stat.mItems = new sStatItem[stat.mCount + 1];
-        if (file.read((char*)&stat.mItems[0], bytesToRead) != bytesToRead)
+        if (file.read((char *)&stat.mItems[0], bytesToRead) != bytesToRead)
           stat.mCount = 0;
       }
 
       file.close();
-    }else
-      qCritical() << "Can't open statistic file: " <<  statFilePath;
+    }
+    else
+      qCritical() << "Can't open statistic file: " << statFilePath;
   }
 
   // collect information
@@ -158,11 +158,12 @@ void sctpStatistic::update()
   // save to file
   if (file.open(QFile::WriteOnly))
   {
-    file.write((char*)&stat.mCount, sizeof(stat.mCount));
-    file.write((char*)stat.mItems, sizeof(sStatItem) * stat.mCount);
+    file.write((char *)&stat.mCount, sizeof(stat.mCount));
+    file.write((char *)stat.mItems, sizeof(sStatItem) * stat.mCount);
 
     file.close();
-  }else
+  }
+  else
     qCritical() << "Can't write statistic file: " << statFilePath;
 
   memset(&mCurrentStat, 0, sizeof(mCurrentStat));
@@ -170,7 +171,7 @@ void sctpStatistic::update()
   mStatUpdateTimer->singleShot(mStatUpdatePeriod * 1000, this, SLOT(update()));
 }
 
-void sctpStatistic::getStatisticsInTimeRange(quint64 beg_time, quint64 end_time, tStatItemVector &result)
+void sctpStatistic::getStatisticsInTimeRange(quint64 beg_time, quint64 end_time, tStatItemVector & result)
 {
   QMutexLocker fsLocker(mFsMutex);
 
@@ -188,7 +189,8 @@ void sctpStatistic::getStatisticsInTimeRange(quint64 beg_time, quint64 end_time,
   {
     // build date from file name
     QStringList values = fileName.split("_");
-    if (values.size() != 3) continue; //! TODO: error reports
+    if (values.size() != 3)
+      continue;  //! TODO: error reports
 
     fileDate.setDate(QDate(values[2].toInt(), values[1].toInt(), values[0].toInt()));
 
@@ -202,14 +204,14 @@ void sctpStatistic::getStatisticsInTimeRange(quint64 beg_time, quint64 end_time,
       // read exist information in file
       if (file.open(QFile::ReadOnly))
       {
-        if (file.read((char*)&stat.mCount, sizeof(stat.mCount)) != sizeof(stat.mCount))
+        if (file.read((char *)&stat.mCount, sizeof(stat.mCount)) != sizeof(stat.mCount))
           stat.mCount = 0;
 
         if (stat.mCount > 0)
         {
           int bytesToRead = sizeof(sStatItem) * stat.mCount;
           stat.mItems = new sStatItem[stat.mCount];
-          if (file.read((char*)stat.mItems, bytesToRead) == bytesToRead)
+          if (file.read((char *)stat.mItems, bytesToRead) == bytesToRead)
           {
             // iterate internal data
             for (quint32 idx = 0; idx < stat.mCount; idx++)
@@ -221,15 +223,16 @@ void sctpStatistic::getStatisticsInTimeRange(quint64 beg_time, quint64 end_time,
               else
               {
                 if (stat.mItems[idx].mTime > end_time)
-                  break; // do not process file, because we gone out of range
+                  break;  // do not process file, because we gone out of range
               }
             }
-          }//! TODO report error
+          }  //! TODO report error
         }
 
         file.close();
-      }else
-        qCritical() << "Can't open statistic file: " <<  statFilePath;
+      }
+      else
+        qCritical() << "Can't open statistic file: " << statFilePath;
     }
   }
 

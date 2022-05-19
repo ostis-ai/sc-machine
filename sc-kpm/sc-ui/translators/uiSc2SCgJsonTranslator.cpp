@@ -17,7 +17,6 @@ uiSc2SCgJsonTranslator::uiSc2SCgJsonTranslator()
 
 uiSc2SCgJsonTranslator::~uiSc2SCgJsonTranslator()
 {
-
 }
 
 void uiSc2SCgJsonTranslator::runImpl()
@@ -29,7 +28,7 @@ void uiSc2SCgJsonTranslator::runImpl()
 
   mOutputData = "[";
 
-  sc_iterator3 *it = sc_iterator3_f_a_a_new(s_default_ctx, mInputConstructionAddr, sc_type_arc_pos_const_perm, 0);
+  sc_iterator3 * it = sc_iterator3_f_a_a_new(s_default_ctx, mInputConstructionAddr, sc_type_arc_pos_const_perm, 0);
   while (sc_iterator3_next(it) == SC_TRUE)
   {
     el_type = 0;
@@ -54,10 +53,10 @@ void uiSc2SCgJsonTranslator::runImpl()
 
       sc_addr beg_addr;
       if (sc_memory_get_arc_begin(s_default_ctx, addr, &beg_addr) != SC_RESULT_OK)
-        continue; //! TODO error logging
+        continue;  //! TODO error logging
       sc_addr end_addr;
       if (sc_memory_get_arc_end(s_default_ctx, addr, &end_addr) != SC_RESULT_OK)
-        continue; //! TODO error logging
+        continue;  //! TODO error logging
 
       attrs["begin"] = buildId(beg_addr);
       attrs["end"] = buildId(end_addr);
@@ -90,7 +89,7 @@ void uiSc2SCgJsonTranslator::runImpl()
 }
 
 // ------------------------------------------------------------------------------
-sc_result uiSc2SCgJsonTranslator::ui_translate_sc2scg_json(const sc_event *event, sc_addr arg)
+sc_result uiSc2SCgJsonTranslator::ui_translate_sc2scg_json(const sc_event * event, sc_addr arg)
 {
   sc_addr cmd_addr, input_addr, format_addr;
 

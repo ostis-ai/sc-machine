@@ -8,9 +8,9 @@
 
 namespace utils
 {
-
 // Simple cache that stores list of values.
-template <typename KeyT, typename ValueT> class Cache
+template <typename KeyT, typename ValueT>
+class Cache
 {
   SC_DISALLOW_COPY(Cache);
 
@@ -27,9 +27,10 @@ public:
   void Init(uint32_t logCacheSize)
   {
     SC_ASSERT(logCacheSize > 0 && logCacheSize < 32, (logCacheSize));
-    static_assert((std::is_same<KeyT, uint32_t>::value ||
-                   std::is_same<KeyT, uint64_t>::value ||
-                   std::is_same<KeyT, std::string>::value), "");
+    static_assert(
+        (std::is_same<KeyT, uint32_t>::value || std::is_same<KeyT, uint64_t>::value ||
+         std::is_same<KeyT, std::string>::value),
+        "");
 
     m_cache.reset(new Data[uint64_t(1) << logCacheSize]);
     m_hashMask = uint32_t(1 << logCacheSize) - 1;
@@ -63,17 +64,20 @@ public:
 
   inline void ResetValue(uint32_t i, uint32_t & value)
   {
-    for (value = 0; Index(value) == i; ++value);
+    for (value = 0; Index(value) == i; ++value)
+      ;
   }
 
   inline void ResetValue(uint32_t i, uint64_t & value)
   {
-    for (value = 0; Index(value) == i; ++value);
+    for (value = 0; Index(value) == i; ++value)
+      ;
   }
 
   inline void ResetValue(uint32_t i, std::string & value)
   {
-    for (value = ""; Index(value) == i; value += " ");
+    for (value = ""; Index(value) == i; value += " ")
+      ;
   }
 
   template <typename F>
@@ -122,7 +126,11 @@ private:
   // TODO: Consider using separate arrays for keys and values, to save on padding.
   struct Data
   {
-    Data() : m_Key(), m_Value() {}
+    Data()
+      : m_Key()
+      , m_Value()
+    {
+    }
     KeyT m_Key;
     ValueT m_Value;
   };
@@ -131,5 +139,4 @@ private:
   uint32_t m_hashMask;
 };
 
-
-} // namespace utils
+}  // namespace utils

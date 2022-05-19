@@ -5,5 +5,3 @@
  */
 
 #include "sc_module.hpp"
-
-

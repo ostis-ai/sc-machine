@@ -9,3 +9,7 @@ target_include_directories(sc-search
   )
 add_dependencies(sc-search sc-memory sc-kpm-common)
 target_link_libraries(sc-search sc-kpm-common)
+
+if (${SC_CLANG_FORMAT_CODE})
+	target_clangformat_setup(sc-search)
+endif ()

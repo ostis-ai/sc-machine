@@ -9,6 +9,6 @@
 
 #include "sc-core/sc_memory_headers.h"
 
-sc_result agent_garbage_delete(const sc_event *event, sc_addr arg);
+sc_result agent_garbage_delete(const sc_event * event, sc_addr arg);
 
 #endif

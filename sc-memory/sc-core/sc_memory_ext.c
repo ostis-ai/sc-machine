@@ -9,7 +9,7 @@
 #include <glib.h>
 #include <gmodule.h>
 
-GList *modules_priority_list = 0;
+GList * modules_priority_list = 0;
 
 //! Type of module function
 typedef sc_result (*fModuleFunc)();
@@ -17,8 +17,8 @@ typedef sc_uint32 (*fModulePriorityFunc)();
 
 typedef struct _sc_module_info
 {
-  GModule *ptr;
-  gchar *path;
+  GModule * ptr;
+  gchar * path;
   sc_uint32 priority;
   fModuleFunc init_func;
   fModuleFunc shut_func;
@@ -26,7 +26,7 @@ typedef struct _sc_module_info
 
 void sc_module_info_free(gpointer mi)
 {
-  sc_module_info *info = (sc_module_info*)mi;
+  sc_module_info * info = (sc_module_info *)mi;
 
   if (info->path)
     g_free(info->path);
@@ -37,8 +37,8 @@ void sc_module_info_free(gpointer mi)
 
 gint sc_priority_less(gconstpointer a, gconstpointer b)
 {
-  sc_module_info *ma = (sc_module_info*)a;
-  sc_module_info *mb = (sc_module_info*)b;
+  sc_module_info * ma = (sc_module_info *)a;
+  sc_module_info * mb = (sc_module_info *)b;
 
   if (ma->priority < mb->priority)
     return -1;
@@ -53,10 +53,10 @@ gint sc_priority_great(gconstpointer a, gconstpointer b)
   return sc_priority_less(b, a);
 }
 
-sc_result sc_ext_initialize(const sc_char *ext_dir_path, const sc_char ** enabled_list)
+sc_result sc_ext_initialize(const sc_char * ext_dir_path, const sc_char ** enabled_list)
 {
-  GDir *ext_dir = null_ptr;
-  const gchar *file_name = 0;
+  GDir * ext_dir = null_ptr;
+  const gchar * file_name = 0;
   fModuleFunc func = 0;
 
 #if SC_IS_PLATFORM_MAC
@@ -111,7 +111,7 @@ sc_result sc_ext_initialize(const sc_char *ext_dir_path, const sc_char ** enable
         goto next;
     }
 
-    sc_module_info *mi = g_new0(sc_module_info, 1);
+    sc_module_info * mi = g_new0(sc_module_info, 1);
     mi->path = g_module_build_path(ext_dir_path, file_name);
 
     // open module
@@ -125,14 +125,14 @@ sc_result sc_ext_initialize(const sc_char *ext_dir_path, const sc_char ** enable
     // skip non module files
     if (g_str_has_suffix(file_name, moduleSuffix) == TRUE)
     {
-      if (g_module_symbol(mi->ptr, "sc_module_initialize", (gpointer*) &func) == FALSE)
+      if (g_module_symbol(mi->ptr, "sc_module_initialize", (gpointer *)&func) == FALSE)
       {
         g_warning("Can't find 'sc_module_initialize' symbol in module: %s", mi->path);
         goto clean;
       }
       mi->init_func = func;
 
-      if (g_module_symbol(mi->ptr, "sc_module_shutdown", (gpointer*) &func) == FALSE)
+      if (g_module_symbol(mi->ptr, "sc_module_shutdown", (gpointer *)&func) == FALSE)
       {
         g_warning("Can't find 'sc_module_shutdown' symbol in module: %s", mi->path);
         goto clean;
@@ -140,7 +140,7 @@ sc_result sc_ext_initialize(const sc_char *ext_dir_path, const sc_char ** enable
       mi->shut_func = func;
 
       fModulePriorityFunc pfunc;
-      if (g_module_symbol(mi->ptr, "sc_module_load_priority", (gpointer*)&pfunc) == FALSE)
+      if (g_module_symbol(mi->ptr, "sc_module_load_priority", (gpointer *)&pfunc) == FALSE)
         mi->priority = G_MAXUINT32;
       else
         mi->priority = pfunc();
@@ -149,25 +149,24 @@ sc_result sc_ext_initialize(const sc_char *ext_dir_path, const sc_char ** enable
     modules_priority_list = g_list_insert_sorted(modules_priority_list, (gpointer)mi, sc_priority_less);
     goto next;
 
-clean:
-    {
-      sc_module_info_free(mi);
-    }
+  clean:
+  {
+    sc_module_info_free(mi);
+  }
 
-next:
-    {
-      file_name = g_dir_read_name(ext_dir);
-    }
+  next:
+  {
+    file_name = g_dir_read_name(ext_dir);
+  }
   }
 
   g_dir_close(ext_dir);
 
-
   // initialize modules
-  GList *item = modules_priority_list;
+  GList * item = modules_priority_list;
   while (item != null_ptr)
   {
-    sc_module_info *module = (sc_module_info*)item->data;
+    sc_module_info * module = (sc_module_info *)item->data;
     g_message("Initialize module: %s", module->path);
     if (module->init_func() != SC_RESULT_OK)
     {
@@ -186,10 +185,10 @@ next:
 void sc_ext_shutdown()
 {
   modules_priority_list = g_list_sort(modules_priority_list, sc_priority_great);
-  GList *item = modules_priority_list;
+  GList * item = modules_priority_list;
   while (item != null_ptr)
   {
-    sc_module_info *module = (sc_module_info*)item->data;
+    sc_module_info * module = (sc_module_info *)item->data;
     g_message("Shutdown module: %s", module->path);
     if (module->ptr != null_ptr)
     {

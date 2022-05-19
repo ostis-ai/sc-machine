@@ -24,16 +24,15 @@ class sctpServer : public QTcpServer
 {
   Q_OBJECT
 public:
-  explicit sctpServer(QObject *parent = 0);
+  explicit sctpServer(QObject * parent = 0);
   virtual ~sctpServer();
 
   //! Starts server
-  bool start(const QString &config);
+  bool start(const QString & config);
 
 protected:
   //! Parse configuration file
-  void parseConfig(const QString &config_path);
-
+  void parseConfig(const QString & config_path);
 
 protected:
   void incomingConnection(qintptr socketDescriptor);
@@ -48,27 +47,25 @@ private:
 
   QString mStatPath;
   quint32 mStatUpdatePeriod;
-  sctpStatistic *mStatistic;
+  sctpStatistic * mStatistic;
 
   quint32 mSavePeriod;
 
-  QSet<sctpClient*> mClients;
+  QSet<sctpClient *> mClients;
 
   //! Event manager instance
-  sctpEventManager *mEventManager;
+  sctpEventManager * mEventManager;
   //! Pointer to default memory context
   std::unique_ptr<ScMemoryContext> mContext;
 
 signals:
-
 
 public slots:
   void stop();
 
   void onSave();
 
-  void clientDestroyed(QObject *client);
-
+  void clientDestroyed(QObject * client);
 };
 
-#endif // SERVER_H
+#endif  // SERVER_H

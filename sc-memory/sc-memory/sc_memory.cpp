@@ -31,18 +31,22 @@ extern "C"
 
 namespace
 {
-
 GMutex gContextMutex;
 struct ContextMutexLock
 {
-  ContextMutexLock() { g_mutex_lock(&gContextMutex); }
-  ~ContextMutexLock() { g_mutex_unlock(&gContextMutex); }
+  ContextMutexLock()
+  {
+    g_mutex_lock(&gContextMutex);
+  }
+  ~ContextMutexLock()
+  {
+    g_mutex_unlock(&gContextMutex);
+  }
 };
 
 bool gIsLogMuted = false;
 
-void _logPrintHandler(gchar const * log_domain, GLogLevelFlags log_level,
-  gchar const * message, gpointer user_data)
+void _logPrintHandler(gchar const * log_domain, GLogLevelFlags log_level, gchar const * message, gpointer user_data)
 {
   if (gIsLogMuted)
     return;
@@ -70,9 +74,9 @@ void _logPrintHandler(gchar const * log_domain, GLogLevelFlags log_level,
   };
 }
 
-unsigned int gContextGounter;
+unsigned int gContextCounter;
 
-} // namespace
+}  // namespace
 
 // ------------------
 
@@ -82,7 +86,7 @@ ScMemory::MemoryContextList ScMemory::ms_contexts;
 bool ScMemory::Initialize(sc_memory_params const & params)
 {
   std::srand(unsigned(std::time(0)));
-  gContextGounter = 0;
+  gContextCounter = 0;
 
   g_log_set_default_handler(_logPrintHandler, nullptr);
 
@@ -183,7 +187,7 @@ ScMemoryContext::ScMemoryContext(sc_uint8 accessLevels, std::string const & name
   if (name.empty())
   {
     std::stringstream ss;
-    ss << "Context_" << gContextGounter;
+    ss << "Context_" << gContextCounter;
     m_name = ss.str();
   }
   else
@@ -248,7 +252,7 @@ ScAddr ScMemoryContext::CreateNode(ScType const & type)
   return ScAddr(sc_memory_node_new(m_context, *type));
 }
 
-ScAddr ScMemoryContext::CreateLink(ScType const & type/* = ScType::LinkConst */)
+ScAddr ScMemoryContext::CreateLink(ScType const & type /* = ScType::LinkConst */)
 {
   SC_ASSERT(type == ScType::LinkConst || type == ScType::LinkVar, ());
   SC_ASSERT(IsValid(), ());
@@ -302,7 +306,8 @@ ScAddr ScMemoryContext::GetEdgeTarget(ScAddr const & edgeAddr) const
 bool ScMemoryContext::GetEdgeInfo(ScAddr const & edgeAddr, ScAddr & outSourceAddr, ScAddr & outTargetAddr) const
 {
   SC_ASSERT(IsValid(), ());
-  if (sc_memory_get_arc_info(m_context, *edgeAddr, &outSourceAddr.m_realAddr, &outTargetAddr.m_realAddr) != SC_RESULT_OK)
+  if (sc_memory_get_arc_info(m_context, *edgeAddr, &outSourceAddr.m_realAddr, &outTargetAddr.m_realAddr) !=
+      SC_RESULT_OK)
   {
     outSourceAddr.Reset();
     outTargetAddr.Reset();
@@ -373,13 +378,16 @@ bool ScMemoryContext::Save()
   return (sc_memory_save(m_context) == SC_RESULT_OK);
 }
 
-bool ScMemoryContext::HelperResolveSystemIdtf(std::string const & sysIdtf, ScAddr & outAddr, ScType const & type/* = ScType()*/)
+bool ScMemoryContext::HelperResolveSystemIdtf(
+    std::string const & sysIdtf,
+    ScAddr & outAddr,
+    ScType const & type /* = ScType()*/)
 {
   outAddr = HelperResolveSystemIdtf(sysIdtf, type);
   return outAddr.IsValid();
 }
 
-ScAddr ScMemoryContext::HelperResolveSystemIdtf(std::string const & sysIdtf, ScType const & type/* = ScType()*/)
+ScAddr ScMemoryContext::HelperResolveSystemIdtf(std::string const & sysIdtf, ScType const & type /* = ScType()*/)
 {
   SC_ASSERT(IsValid(), ());
   ScAddr resultAddr = HelperFindBySystemIdtf(sysIdtf);
@@ -387,8 +395,7 @@ ScAddr ScMemoryContext::HelperResolveSystemIdtf(std::string const & sysIdtf, ScT
   {
     if (!type.IsNode())
     {
-      SC_THROW_EXCEPTION(utils::ExceptionInvalidParams,
-                         "You should provide any of ScType::Node... value as a type");
+      SC_THROW_EXCEPTION(utils::ExceptionInvalidParams, "You should provide any of ScType::Node... value as a type");
     }
 
     resultAddr = CreateNode(type);
@@ -401,7 +408,8 @@ ScAddr ScMemoryContext::HelperResolveSystemIdtf(std::string const & sysIdtf, ScT
 bool ScMemoryContext::HelperSetSystemIdtf(std::string const & sysIdtf, ScAddr const & addr)
 {
   SC_ASSERT(IsValid(), ());
-  return (sc_helper_set_system_identifier(m_context, *addr, sysIdtf.c_str(), (sc_uint32)sysIdtf.size()) == SC_RESULT_OK);
+  return (
+      sc_helper_set_system_identifier(m_context, *addr, sysIdtf.c_str(), (sc_uint32)sysIdtf.size()) == SC_RESULT_OK);
 }
 
 std::string ScMemoryContext::HelperGetSystemIdtf(ScAddr const & addr)
@@ -439,18 +447,25 @@ bool ScMemoryContext::HelperCheckEdge(ScAddr const & begin, ScAddr end, ScType c
 bool ScMemoryContext::HelperFindBySystemIdtf(std::string const & sysIdtf, ScAddr & outAddr)
 {
   SC_ASSERT(IsValid(), ());
-  return (sc_helper_find_element_by_system_identifier(m_context, sysIdtf.c_str(), (sc_uint32)sysIdtf.size(), &outAddr.m_realAddr) == SC_RESULT_OK);
+  return (
+      sc_helper_find_element_by_system_identifier(
+          m_context, sysIdtf.c_str(), (sc_uint32)sysIdtf.size(), &outAddr.m_realAddr) == SC_RESULT_OK);
 }
 
 ScAddr ScMemoryContext::HelperFindBySystemIdtf(std::string const & sysIdtf)
 {
   ScAddr result;
   SC_ASSERT(IsValid(), ());
-  sc_helper_find_element_by_system_identifier(m_context, sysIdtf.c_str(), (sc_uint32)sysIdtf.size(), &result.m_realAddr);
+  sc_helper_find_element_by_system_identifier(
+      m_context, sysIdtf.c_str(), (sc_uint32)sysIdtf.size(), &result.m_realAddr);
   return result;
 }
 
-ScTemplate::Result ScMemoryContext::HelperGenTemplate(ScTemplate const & templ, ScTemplateGenResult & result, ScTemplateParams const & params, ScTemplateResultCode * resultCode)
+ScTemplate::Result ScMemoryContext::HelperGenTemplate(
+    ScTemplate const & templ,
+    ScTemplateGenResult & result,
+    ScTemplateParams const & params,
+    ScTemplateResultCode * resultCode)
 {
   return templ.Generate(*this, result, params, resultCode);
 }
@@ -460,15 +475,18 @@ ScTemplate::Result ScMemoryContext::HelperSearchTemplate(ScTemplate const & temp
   return templ.Search(*this, result);
 }
 
-ScTemplate::Result ScMemoryContext::HelperSearchTemplateInStruct(ScTemplate const & templ, ScAddr const & scStruct, ScTemplateSearchResult & result)
+ScTemplate::Result ScMemoryContext::HelperSearchTemplateInStruct(
+    ScTemplate const & templ,
+    ScAddr const & scStruct,
+    ScTemplateSearchResult & result)
 {
   return templ.SearchInStruct(*this, scStruct, result);
 }
 
 ScTemplate::Result ScMemoryContext::HelperBuildTemplate(
-        ScTemplate & templ,
-        ScAddr const & templAddr,
-        ScTemplateParams const & params)
+    ScTemplate & templ,
+    ScAddr const & templAddr,
+    ScTemplateParams const & params)
 {
   return templ.FromScTemplate(*this, templAddr, params);
 }

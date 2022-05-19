@@ -26,3 +26,14 @@ else()
 endif (${WIN32})
 
 target_link_libraries(sc-code-generator ${LIBCLANG_LIBRARY} ${BOOST_LIBS_LIST})
+
+if (${SC_CLANG_FORMAT_CODE})
+	target_clangformat_setup(sc-code-generator)
+endif ()
+
+if (CMAKE_C_COMPILER_ID MATCHES "Clang" AND CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+    if (NOT ${SC_USE_SANITIZER} STREQUAL "none")
+        target_compile_options(sc-code-generator PRIVATE -fno-sanitize=${SC_USE_SANITIZER})
+        target_link_options(sc-code-generator PRIVATE -fno-sanitize=${SC_USE_SANITIZER})
+    endif()
+endif()

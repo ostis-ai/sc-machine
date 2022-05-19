@@ -32,8 +32,7 @@
 
 namespace ScBase64
 {
+_SC_EXTERN std::string Encode(unsigned char const *, unsigned int len);
+_SC_EXTERN std::string Decode(std::string const & s);
 
-_SC_EXTERN std::string Encode(unsigned char const*, unsigned int len);
-_SC_EXTERN std::string Decode(std::string const& s);
-
-}
+}  // namespace ScBase64

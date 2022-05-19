@@ -7,7 +7,6 @@
 
 #include "sc-memory/sc_type.hpp"
 
-
 #include <unordered_map>
 #include <unordered_set>
 
@@ -33,4 +32,4 @@ private:
   static MapType ms_connectorToType;
   static IsType ms_reversedConnectors;
 };
-}
+}  // namespace scs

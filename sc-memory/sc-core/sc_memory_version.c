@@ -8,26 +8,31 @@
 
 #include <glib.h>
 
-const sc_version SC_VERSION = { 0, 6, 0, "" };
+const sc_version SC_VERSION = {0, 6, 0, ""};
 
-
-sc_int32 sc_version_compare(const sc_version *a, const sc_version *b)
+sc_int32 sc_version_compare(const sc_version * a, const sc_version * b)
 {
   g_assert(a && b);
 
-  if (a->major < b->major) return -1;
-  if (a->major > b->major) return 1;
+  if (a->major < b->major)
+    return -1;
+  if (a->major > b->major)
+    return 1;
 
-  if (a->minor < b->minor) return -1;
-  if (a->minor > b->minor) return 1;
+  if (a->minor < b->minor)
+    return -1;
+  if (a->minor > b->minor)
+    return 1;
 
-  if (a->patch < b->patch) return -1;
-  if (a->patch > b->patch) return 1;
+  if (a->patch < b->patch)
+    return -1;
+  if (a->patch > b->patch)
+    return 1;
 
   return 0;
 }
 
-char* sc_version_string_new(const sc_version *v)
+char * sc_version_string_new(const sc_version * v)
 {
   if (v->suffix)
     return g_strdup_printf("%u.%u.%u %s", v->major, v->minor, v->patch, v->suffix);
@@ -35,7 +40,7 @@ char* sc_version_string_new(const sc_version *v)
   return g_strdup_printf("%u.%u.%u", v->major, v->minor, v->patch);
 }
 
-void sc_version_string_free(char *str)
+void sc_version_string_free(char * str)
 {
   g_assert(str != 0);
   g_free(str);

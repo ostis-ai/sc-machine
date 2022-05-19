@@ -13,7 +13,6 @@ extern "C"
 #include <glib.h>
 }
 
-
 // ------------- Keynodes ----------------------
 const char keynode_user_str[] = "ui_user";
 const char keynode_command_translate_from_sc_str[] = "ui_command_translate_from_sc";
@@ -21,13 +20,11 @@ const char keynode_nrel_user_answer_formats_str[] = "ui_nrel_user_answer_formats
 const char keynode_rrel_source_sc_construction_str[] = "ui_rrel_source_sc_construction";
 const char keynode_rrel_output_format_str[] = "ui_rrel_output_format";
 
-
 const char keynode_question_nrel_answer_str[] = "nrel_answer";
 const char keynode_question_finished_str[] = "question_finished";
 const char keynode_nrel_authors_str[] = "nrel_authors";
 const char keynode_nrel_translation_str[] = "nrel_translation";
 const char keynode_nrel_format_str[] = "nrel_format";
-
 
 const char keynode_command_generate_instance_str[] = "ui_command_generate_instance";
 const char keynode_command_initiated_str[] = "ui_command_initiated";
@@ -44,7 +41,6 @@ const char keynode_format_scg_json_str[] = "format_scg_json";
 const char keynode_format_scn_json_str[] = "format_scn_json";
 
 const char keynode_system_element_str[] = "system_element";
-
 
 sc_addr keynode_user;
 sc_addr keynode_command_translate_from_sc;
@@ -76,7 +72,6 @@ sc_addr keynode_system_element;
 
 sc_addr ui_keynode_rrel_order[RREL_ORDER_COUNT];
 sc_addr ui_keynode_arg[UI_ARG_COUNT];
-
 
 // -------------------------------------------------
 sc_bool initialize_keynodes()
@@ -115,7 +110,8 @@ sc_bool initialize_keynodes()
     if (sc_helper_resolve_system_identifier(s_default_ctx, ss.str().c_str(), &(ui_keynode_rrel_order[i])) == SC_FALSE)
     {
       ui_keynode_rrel_order[i] = sc_memory_node_new(s_default_ctx, 0);
-      if (sc_helper_set_system_identifier(s_default_ctx, ui_keynode_rrel_order[i], ss.str().c_str(), (sc_uint32)ss.str().size()) != SC_RESULT_OK)
+      if (sc_helper_set_system_identifier(
+              s_default_ctx, ui_keynode_rrel_order[i], ss.str().c_str(), (sc_uint32)ss.str().size()) != SC_RESULT_OK)
         return SC_FALSE;
     }
   }
@@ -127,11 +123,11 @@ sc_bool initialize_keynodes()
     if (sc_helper_resolve_system_identifier(s_default_ctx, ss.str().c_str(), &(ui_keynode_arg[i])) == SC_FALSE)
     {
       ui_keynode_rrel_order[i] = sc_memory_node_new(s_default_ctx, 0);
-      if (sc_helper_set_system_identifier(s_default_ctx, ui_keynode_rrel_order[i], ss.str().c_str(), (sc_uint32)ss.str().size()) != SC_RESULT_OK)
+      if (sc_helper_set_system_identifier(
+              s_default_ctx, ui_keynode_rrel_order[i], ss.str().c_str(), (sc_uint32)ss.str().size()) != SC_RESULT_OK)
         return SC_FALSE;
     }
   }
 
   return SC_TRUE;
 }
-

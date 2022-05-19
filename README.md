@@ -1,11 +1,16 @@
-Clone:
+[![codecov](https://codecov.io/gh/ostis-ai/sc-machine/branch/main/graph/badge.svg?token=WU8O9Z1DNL)](https://codecov.io/gh/ostis-ai/sc-machine)
+
+## Clone:
 
 ```sh
 git clone https://github.com/ostis-ai/sc-machine.git
 cd sc-machine
+git submodule update --init --recursive
 ```
 
-Install dependencies:
+## Install dependencies
+
+### Debian-based (Ubuntu, Debian, Mint)
 
 ```sh
 cd scripts
@@ -14,40 +19,37 @@ cd ..
 pip3 install -r requirements.txt
 ```
 
-Build sc-machine:
+### macOS
 ```sh
-cd sc-machine
-mkdir build
-cd build
-cmake .. -DCMAKE_BUILD_TYPE=Release # use Debug for debug build
-make
+cd scripts
+./install_deps_macOS.sh
+cd ..
+pip3 install -r requirements.txt
+```
+Please note: you should add Qt5 and LLVM to `PATH` variable. To do this, after installing dependencies execute the following commands (considering you use `zsh` as your shell):
+```sh
+echo 'export PATH="'$HOMEBREW_PREFIX'/opt/qt@5/bin:$PATH"' >> ~/.zshrc
+echo 'export PATH="'$HOMEBREW_PREFIX'/opt/llvm/bin:$PATH"' >> ~/.zshrc
 ```
 
-Build knowledge base (from sc-machine/kb folder):
+## Build sc-machine
+```sh
+cd sc-machine/scripts
+./make_all.sh #You can also pass all CMake generation arguments there
+```
+or, alternatively (requires CMake 3.13+)
+```sh
+cd sc-machine
+cmake -B build -DCMAKE_BUILD_TYPE=Release
+cmake --build build -j$(nproc) #-j flag for paralleled build process
+```
+Additional CMake flags can be used to build tests, format code or analyze memory leaks, check [our build docs](docs/build/cmake-flags.md) for more info.
+
+## Build knowledge base (from sc-machine/kb folder)
+
 ```sh
 cd sc-machine/scripts
 ./build_kb.sh
-```
-
-Build web interface:
-- Install yarn
-```sh
-sudo apt remove cmdtest
-curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | sudo apt-key add -
-echo "deb https://dl.yarnpkg.com/debian/ stable main" | sudo tee /etc/apt/sources.list.d/yarn.list
-sudo apt update
-sudo apt install yarn
-```
-- Build
-```sh
-cd sc-machine/web/client
-yarn && yarn run webpack-dev
-```
-
-Run sc-server:
-```sh
-cd sc-machine/scripts
-./run_sc_server.sh
 ```
 
 For running sc-server in authorization server mode, you need to place public key in `sc/machine/sc-kpm/sc-python/services/http_api/auth/` and set AUTH_FLAG: True in config file. 
@@ -55,6 +57,5 @@ For running sc-server in authorization server mode, you need to place public key
 
 Open URL http://localhost:8090/ in web browser:
 ![](https://i.imgur.com/wibISSV.png)
-
 
 *This repository continues the development of [this sc-machine](https://github.com/ostis-dev/sc-machine) from version 0.6.0.*

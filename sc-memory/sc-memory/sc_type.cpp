@@ -1,8 +1,8 @@
 /*
-* This source file is part of an OSTIS project. For the latest info, see http://ostis.net
-* Distributed under the MIT License
-* (See accompanying file COPYING.MIT or copy at http://opensource.org/licenses/MIT)
-*/
+ * This source file is part of an OSTIS project. For the latest info, see http://ostis.net
+ * Distributed under the MIT License
+ * (See accompanying file COPYING.MIT or copy at http://opensource.org/licenses/MIT)
+ */
 
 #include "sc_type.hpp"
 
@@ -19,7 +19,6 @@ ScType const ScType::EdgeAccessConstFuzPerm(sc_type_const | sc_type_arc_access |
 ScType const ScType::EdgeAccessConstPosTemp(sc_type_const | sc_type_arc_access | sc_type_arc_temp | sc_type_arc_pos);
 ScType const ScType::EdgeAccessConstNegTemp(sc_type_const | sc_type_arc_access | sc_type_arc_temp | sc_type_arc_neg);
 ScType const ScType::EdgeAccessConstFuzTemp(sc_type_const | sc_type_arc_access | sc_type_arc_temp | sc_type_arc_fuz);
-
 
 ScType const ScType::EdgeUCommonVar(sc_type_edge_common | sc_type_var);
 ScType const ScType::EdgeDCommonVar(sc_type_arc_common | sc_type_var);

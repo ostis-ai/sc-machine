@@ -22,3 +22,7 @@ target_include_directories(scp
 add_dependencies(scp sc-core)
 
 target_link_libraries(scp sc-core)
+
+if (${SC_CLANG_FORMAT_CODE})
+	target_clangformat_setup(scp)
+endif ()

@@ -1,143 +1,137 @@
-#include "../test_unit.hpp"
+#include <gtest/gtest.h>
 
 #include "sc-memory/sc_link.hpp"
 
-UNIT_TEST_CUSTOM(Builder_Visibility, BuilderTestUnit)
+#include "builder_test.hpp"
+
+namespace
 {
-  ScMemoryContext ctx("Builder_Visibility");
 
+std::string GetIdtf(ScMemoryContext & ctx, ScAddr const& addr)
+{
   ScAddr const nrelIdtf = ctx.HelperResolveSystemIdtf("nrel_idtf", ScType::NodeConstNoRole);
-  SC_CHECK(nrelIdtf.IsValid(), ());
+  EXPECT_TRUE(nrelIdtf.IsValid());
 
-  auto const GetIdtf = [&nrelIdtf, &ctx](ScAddr const& addr) -> std::string
+  ScTemplate templ;
+  templ.TripleWithRelation(
+    addr,
+    ScType::EdgeDCommonVar,
+    ScType::Link >> "_link",
+    ScType::EdgeAccessVarPosPerm,
+    nrelIdtf);
+
+  ScTemplateSearchResult result;
+  EXPECT_TRUE(ctx.HelperSearchTemplate(templ, result));
+  EXPECT_EQ(result.Size(), 1u);
+
+  ScAddr const linkAddr = result[0]["_link"];
+  EXPECT_TRUE(linkAddr.IsValid());
+
+  ScLink link(ctx, linkAddr);
+  EXPECT_TRUE(link.IsType<std::string>());
+
+  return link.Get<std::string>();
+};
+
+} // namespace
+
+TEST_F(ScBuilderTest, visibility_sys_idtf)
+{
+  ScAddr const visFirst = m_ctx->HelperResolveSystemIdtf("visibility_first");
+  EXPECT_TRUE(visFirst.IsValid());
+
+  ScAddr const visSecond = m_ctx->HelperResolveSystemIdtf("visibility_second");
+  EXPECT_TRUE(visSecond.IsValid());
+
+  ScAddr const element = m_ctx->HelperResolveSystemIdtf("visibility_sys_idtf");
+  EXPECT_TRUE(element.IsValid());
+
+  ScTemplate templ;
+  templ.Triple(
+    visFirst,
+    ScType::EdgeAccessVarPosPerm,
+    element);
+
+  templ.Triple(
+    visSecond,
+    ScType::EdgeAccessVarPosPerm,
+    element);
+
+  ScTemplateSearchResult result;
+  EXPECT_TRUE(m_ctx->HelperSearchTemplate(templ, result));
+}
+
+TEST_F(ScBuilderTest, visibility_global)
+{
+  ScAddr const visFirst = m_ctx->HelperResolveSystemIdtf("visibility_first_global");
+  EXPECT_TRUE(visFirst.IsValid());
+
+  ScAddr const visSecond = m_ctx->HelperResolveSystemIdtf("visibility_second_global");
+  EXPECT_TRUE(visSecond.IsValid());
+
+  ScTemplate templ;
+  templ.Triple(
+    visFirst,
+    ScType::EdgeAccessVarPosTemp,
+    ScType::Node >> ".visibility_global");
+
+  templ.Triple(
+    visSecond,
+    ScType::EdgeAccessVarPosTemp,
+    ".visibility_global");
+
+  ScTemplateSearchResult result;
+  EXPECT_TRUE(m_ctx->HelperSearchTemplate(templ, result));
+  EXPECT_EQ(result.Size(), 1u);
+
+  ScAddr const element = result[0][".visibility_global"];
+  EXPECT_TRUE(element.IsValid());
+
+  EXPECT_EQ(GetIdtf(*m_ctx, element), ".visibility_global");
+}
+
+TEST_F(ScBuilderTest, visibility_local)
+{
+  ScAddr const visFirst = m_ctx->HelperResolveSystemIdtf("visibility_first_local");
+  EXPECT_TRUE(visFirst.IsValid());
+
+  ScAddr const visSecond = m_ctx->HelperResolveSystemIdtf("visibility_second_local");
+  EXPECT_TRUE(visSecond.IsValid());
+
+  ScAddr const visLocal = m_ctx->HelperResolveSystemIdtf("visibility_local");
+  EXPECT_TRUE(visLocal.IsValid());
+
+  ScTemplate templ;
+  templ.Triple(
+    visLocal,
+    ScType::EdgeAccessVarPosPerm,
+    ScType::NodeVar >> "_local");
+
+  ScTemplateSearchResult result;
+  EXPECT_TRUE(m_ctx->HelperSearchTemplate(templ, result));
+  EXPECT_EQ(result.Size(), 2u);
+
+  std::map<std::string, ScAddr> elements;
+  for (size_t i = 0; i < result.Size(); ++i)
   {
-    ScTemplate templ;
+    auto const & item = result[i];
+    ScAddr const a = item["_local"];
 
-    templ.TripleWithRelation(
-      addr,
-      ScType::EdgeDCommonVar,
-      ScType::Link >> "_link",
-      ScType::EdgeAccessVarPosPerm,
-      nrelIdtf);
+    EXPECT_TRUE(a.IsValid());
 
-    ScTemplateSearchResult result;
-    SC_CHECK(ctx.HelperSearchTemplate(templ, result), ());
-    SC_CHECK_EQUAL(result.Size(), 1, ());
+    std::string const idtf = GetIdtf(*m_ctx, a);
+    EXPECT_FALSE(idtf.empty());
 
-    ScAddr const linkAddr = result[0]["_link"];
-    SC_CHECK(linkAddr.IsValid(), ());
-
-    ScLink link(ctx, linkAddr);
-    SC_CHECK(link.IsType<std::string>(), ());
-
-    return link.Get<std::string>();
-  };
-
-  SUBTEST_START(system_idtf)
-  {
-    ScAddr const visFirst = ctx.HelperResolveSystemIdtf("visibility_first");
-    SC_CHECK(visFirst.IsValid(), ());
-
-    ScAddr const visSecond = ctx.HelperResolveSystemIdtf("visibility_second");
-    SC_CHECK(visSecond.IsValid(), ());
-
-    ScAddr const element = ctx.HelperResolveSystemIdtf("visibility_sys_idtf");
-    SC_CHECK(element.IsValid(), ());
-
-    ScTemplate templ;
-
-    templ.Triple(
-      visFirst,
-      ScType::EdgeAccessVarPosPerm,
-      element);
-
-    templ.Triple(
-      visSecond,
-      ScType::EdgeAccessVarPosPerm,
-      element);
-
-    ScTemplateSearchResult result;
-    SC_CHECK(ctx.HelperSearchTemplate(templ, result), ());
+    elements[idtf] = a;
   }
-  SUBTEST_END()
 
-  SUBTEST_START(global)
-  {
-    ScAddr const visFirst = ctx.HelperResolveSystemIdtf("visibility_first_global");
-    SC_CHECK(visFirst.IsValid(), ());
+  EXPECT_EQ(elements.size(), 2u);
 
-    ScAddr const visSecond = ctx.HelperResolveSystemIdtf("visibility_second_global");
-    SC_CHECK(visSecond.IsValid(), ());
+  ScAddr const localFirst = elements["..visibility_local_first"];
+  EXPECT_TRUE(localFirst.IsValid());
 
-    ScTemplate templ;
+  ScAddr const localSecond = elements["..visibility_local_second"];
+  EXPECT_TRUE(localSecond.IsValid());
 
-    templ.Triple(
-      visFirst,
-      ScType::EdgeAccessVarPosTemp,
-      ScType::Node >> ".visibility_global");
-
-    templ.Triple(
-      visSecond,
-      ScType::EdgeAccessVarPosTemp,
-      ".visibility_global");
-
-    ScTemplateSearchResult result;
-    SC_CHECK(ctx.HelperSearchTemplate(templ, result), ());
-    SC_CHECK_EQUAL(result.Size(), 1, ());
-
-    ScAddr const element = result[0][".visibility_global"];
-    SC_CHECK(element.IsValid(), ());
-
-    SC_CHECK_EQUAL(GetIdtf(element), ".visibility_global", ());
-  }
-  SUBTEST_END()
-
-  SUBTEST_START(local)
-  {
-    ScAddr const visFirst = ctx.HelperResolveSystemIdtf("visibility_first_local");
-    SC_CHECK(visFirst.IsValid(), ());
-
-    ScAddr const visSecond = ctx.HelperResolveSystemIdtf("visibility_second_local");
-    SC_CHECK(visSecond.IsValid(), ());
-
-    ScAddr const visLocal = ctx.HelperResolveSystemIdtf("visibility_local");
-    SC_CHECK(visLocal.IsValid(), ());
-
-    ScTemplate templ;
-
-    templ.Triple(
-      visLocal,
-      ScType::EdgeAccessVarPosPerm,
-      ScType::NodeVar >> "_local");
-
-    ScTemplateSearchResult result;
-    SC_CHECK(ctx.HelperSearchTemplate(templ, result), ());
-
-    SC_CHECK_EQUAL(result.Size(), 2, ());
-
-    std::map<std::string, ScAddr> elements;
-    for (size_t i = 0; i < result.Size(); ++i)
-    {
-      auto const & item = result[i];
-      ScAddr const a = item["_local"];
-
-      SC_CHECK(a.IsValid(), ());
-
-      std::string const idtf = GetIdtf(a);
-      SC_CHECK(!idtf.empty(), ());
-
-      elements[idtf] = a;
-    }
-
-    SC_CHECK_EQUAL(elements.size(), 2, ());
-
-    ScAddr const localFirst = elements["..visibility_local_first"];
-    SC_CHECK(localFirst.IsValid(), ());
-
-    ScAddr const localSecond = elements["..visibility_local_second"];
-    SC_CHECK(localSecond.IsValid(), ());
-
-    SC_CHECK(localFirst != localSecond, ());
-  }
-  SUBTEST_END()
+  EXPECT_NE(localFirst, localSecond);
 }

@@ -7,7 +7,7 @@
 #include "sc-core/sc_memory.h"
 
 #ifndef _search_functions_h_
-#define _search_functions_h_
+#  define _search_functions_h_
 
 /*! Creates new answer node. It automaticaly appends into system elements set
  * @returns Returns sc-addr of created node

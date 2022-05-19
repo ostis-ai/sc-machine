@@ -14,9 +14,9 @@ extern "C"
 
 extern "C"
 {
-// --------------- Module ----------------
-_SC_EXT_EXTERN sc_result sc_module_initialize();
-_SC_EXT_EXTERN sc_result sc_module_shutdown();
+  // --------------- Module ----------------
+  _SC_EXT_EXTERN sc_result sc_module_initialize();
+  _SC_EXT_EXTERN sc_result sc_module_shutdown();
 }
 
 #endif

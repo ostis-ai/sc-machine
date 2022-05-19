@@ -2,21 +2,17 @@
 ## Clone
 
 ```sh
-git clone https://github.com/ostis-dev/sc-machine.git
+git clone https://github.com/ostis-ai/sc-machine.git
 cd sc-machine
 ```
 
 ## Install dependencies
 
-### Setup Java
-
-Use package: https://support.apple.com/kb/dl1572?locale=en_US
-
 ### Setup build packages with brew
 
 ```sh
 cd scripts
-./install_deps_osx.sh
+./install_deps_macOS.sh
 cd ..
 pip3 --user -r requirements.txt
 ```
@@ -25,8 +21,6 @@ pip3 --user -r requirements.txt
 
 ```sh
 cd sc-machine
-mkdir build
-cd build
-cmake .. -DCMAKE_BUILD_TYPE=Release # use Debug for debug build
-make
+cmake -B build -DCMAKE_BUILD_TYPE=Release # use Debug for debug build
+cmake --build build -j$(nproc)
 ```

@@ -1,0 +1,4 @@
+scsLexer.*
+scsParser.*
+*.tokens
+*.interp

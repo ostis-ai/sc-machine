@@ -28,6 +28,4 @@ private:
   std::string m_displayName;
   std::string m_qualifiedName;
   std::string m_type;
-
-  
 };

@@ -6,7 +6,6 @@
 
 namespace sc
 {
-
 /* Create construction:
  * elAddr <= relAddr: {};;
  * If construction exist, then returns exist tuple addr; otherwise create new one.
@@ -25,11 +24,7 @@ ScAddr SetRelationValue(ScMemoryContext & ctx, ScAddr const & elAddr, ScAddr con
   ScTemplate templ;
 
   templ.TripleWithRelation(
-    elAddr,
-    ScType::EdgeDCommonVar,
-    ScType::Link >> "_link",
-    ScType::EdgeAccessVarPosPerm,
-    relAddr);
+      elAddr, ScType::EdgeDCommonVar, ScType::Link >> "_link", ScType::EdgeAccessVarPosPerm, relAddr);
 
   ScAddr linkAddr;
   ScTemplateSearchResult res;
@@ -44,10 +39,8 @@ ScAddr SetRelationValue(ScMemoryContext & ctx, ScAddr const & elAddr, ScAddr con
 
     if (!linkAddr.IsValid())
     {
-      SC_THROW_EXCEPTION(utils::ExceptionInvalidState,
-                         "Can't create value relation");
+      SC_THROW_EXCEPTION(utils::ExceptionInvalidState, "Can't create value relation");
     }
-
   }
 
   ScLink link(ctx, linkAddr);
@@ -56,4 +49,4 @@ ScAddr SetRelationValue(ScMemoryContext & ctx, ScAddr const & elAddr, ScAddr con
   return linkAddr;
 }
 
-} // namespace sc
+}  // namespace sc

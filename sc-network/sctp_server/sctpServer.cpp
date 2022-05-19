@@ -19,7 +19,7 @@
 
 #include <QNetworkInterface>
 
-sctpServer::sctpServer(QObject *parent)
+sctpServer::sctpServer(QObject * parent)
   : QTcpServer(parent)
   , mPort(0)
   , mStatistic(0)
@@ -32,10 +32,9 @@ sctpServer::~sctpServer()
 {
   if (mStatistic)
     delete mStatistic;
-
 }
 
-bool sctpServer::start(const QString &config)
+bool sctpServer::start(const QString & config)
 {
   parseConfig(config);
 
@@ -48,9 +47,10 @@ bool sctpServer::start(const QString &config)
   QString ipAddress;
   QList<QHostAddress> ipAddressesList = QNetworkInterface::allAddresses();
   // use the first non-localhost IPv4 address
-  for (int i = 0; i < ipAddressesList.size(); ++i) {
-    if (ipAddressesList.at(i) != QHostAddress::LocalHost &&
-        ipAddressesList.at(i).toIPv4Address()) {
+  for (int i = 0; i < ipAddressesList.size(); ++i)
+  {
+    if (ipAddressesList.at(i) != QHostAddress::LocalHost && ipAddressesList.at(i).toIPv4Address())
+    {
       ipAddress = ipAddressesList.at(i).toString();
       break;
     }
@@ -59,8 +59,7 @@ bool sctpServer::start(const QString &config)
   // if we did not find one, use IPv4 localhost
   if (ipAddress.isEmpty())
     ipAddress = QHostAddress(QHostAddress::LocalHost).toString();
-  QString message = QObject::tr("The server is running on\nIP: %1\tport: %2\n")
-      .arg(ipAddress).arg(serverPort());
+  QString message = QObject::tr("The server is running on\nIP: %1\tport: %2\n").arg(ipAddress).arg(serverPort());
   qDebug() << message.toUtf8().constData();
 
   // initialize sc-memory
@@ -97,7 +96,7 @@ bool sctpServer::start(const QString &config)
   return true;
 }
 
-void sctpServer::parseConfig(const QString &config_path)
+void sctpServer::parseConfig(const QString & config_path)
 {
   QSettings settings(config_path, QSettings::IniFormat);
 
@@ -131,7 +130,8 @@ void sctpServer::parseConfig(const QString &config_path)
   if (!result)
     qWarning() << "Can't parse period statistic from configuration file\n";
   if (mStatUpdatePeriod > 0 && mStatUpdatePeriod < 60)
-    qWarning() << "Statistics update period is very short, it would be take much processor time. Recomend to make it more long";
+    qWarning() << "Statistics update period is very short, it would be take much processor time. Recomend to make it "
+                  "more long";
 
   mStatPath = settings.value("Stat/Path").toString();
   if (mStatPath.isEmpty() && mStatUpdatePeriod > 0)
@@ -143,9 +143,9 @@ void sctpServer::parseConfig(const QString &config_path)
 
 void sctpServer::incomingConnection(qintptr socketDescriptor)
 {
-  sctpClient *client = new sctpClient(this, socketDescriptor);
+  sctpClient * client = new sctpClient(this, socketDescriptor);
   connect(client, SIGNAL(finished()), client, SLOT(deleteLater()));
-  connect(client, SIGNAL(destroyed(QObject*)), this, SLOT(clientDestroyed(QObject*)));
+  connect(client, SIGNAL(destroyed(QObject *)), this, SLOT(clientDestroyed(QObject *)));
   mClients.insert(client);
   client->start();
 }
@@ -163,9 +163,9 @@ void sctpServer::stop()
   exit(0);
 }
 
-void sctpServer::clientDestroyed(QObject *client)
+void sctpServer::clientDestroyed(QObject * client)
 {
-  QSet<sctpClient*>::iterator it = mClients.find(static_cast<sctpClient*>(client));
+  QSet<sctpClient *>::iterator it = mClients.find(static_cast<sctpClient *>(client));
   if (it == mClients.end())
     qWarning("Recieve event from non existing client");
 

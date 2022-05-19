@@ -7,27 +7,25 @@
 
 namespace py
 {
-
 class ScPythonService
 {
-
 protected:
   _SC_EXTERN explicit ScPythonService(std::string const & scriptName);
   _SC_EXTERN ~ScPythonService();
 
 public:
   /** Run specified service. `params` string will be passed into python module initialization function.
-    * If you want to implement your own logic on start, then
-    * override RunImpl function.
-    */
+   * If you want to implement your own logic on start, then
+   * override RunImpl function.
+   */
   _SC_EXTERN void Run(std::string const & params = "");
 
   /** Stops run of this service. This function doesn't returns until service thread stoped
-    */
+   */
   _SC_EXTERN void Stop();
 
   /** Check if it still runs
-    */
+   */
   _SC_EXTERN bool IsRun() const;
 
 protected:
@@ -42,9 +40,9 @@ protected:
   }
 
 private:
-  std::string m_scriptName; // name of script to run
-  ScPythonBridgePtr m_bridge; // special bridge to communicate with python script
-  std::unique_ptr<std::thread> m_workThread; // thread where script runs
+  std::string m_scriptName;                   // name of script to run
+  ScPythonBridgePtr m_bridge;                 // special bridge to communicate with python script
+  std::unique_ptr<std::thread> m_workThread;  // thread where script runs
 };
 
 // Implementation of dummy python service. Used commonly for test issues
@@ -57,21 +55,33 @@ public:
   }
 
 private:
-  void RunImpl() override {}
-  void StopImpl() override {}
+  void RunImpl() override
+  {
+  }
+  void StopImpl() override
+  {
+  }
 };
-
 
 #define PYTHON_DECLARE_SERVICE(__name) \
-class __name##PythonService : public py::ScPythonService \
-{ \
-public:\
-  explicit __name##PythonService(std::string const & scriptName) \
-    : py::ScPythonService(scriptName) {} \
-  virtual ~__name##PythonService() {} \
-private: \
-  void RunImpl() final override {} \
-  void StopImpl() final override {} \
-};
+  class __name##PythonService : public py::ScPythonService \
+  { \
+  public: \
+    explicit __name##PythonService(std::string const & scriptName) \
+      : py::ScPythonService(scriptName) \
+    { \
+    } \
+    virtual ~__name##PythonService() \
+    { \
+    } \
+\
+  private: \
+    void RunImpl() final override \
+    { \
+    } \
+    void StopImpl() final override \
+    { \
+    } \
+  };
 
-} // namespace py
+}  // namespace py

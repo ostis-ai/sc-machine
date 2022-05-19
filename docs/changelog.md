@@ -1,3 +1,29 @@
+# Changelog
+All notable changes to this project will be documented in this file.
+
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
+and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+## [Unreleased]
+
+## [0.6.1] - 27.04.2022
+### Added
+- Search by template with params in C++ API
+- Sanitizers
+- Benchmarks
+- Clang code formatting
+- Common utils for C++ API
+
+### Changed
+- Migrate test system to `gtest`
+- Update macOS install_deps script
+- Multithreaded build process used by default
+- Move changelog to [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) format
+
+### Removed
+- Moved React web interface in a separate [new repository.](https://github.com/ostis-ai/react-sc-web-ui-template)
+- Remove optional search triples support
+
 ## v0.6.0
 
  - **Build system**:
@@ -25,7 +51,7 @@
 
  - **C++**:
     - Implement optional search triples support
-    - Fix randomical crash of unittest
+    - Fix random crash of unittest
     - Improve test system
     - Replace `antlr3` with `antlr4` for `SCs-text` parsing
     - Support of `SCs-text` aliases
@@ -155,3 +181,6 @@
 * Implement ref counter for sc-elements
 * Cover whole functionality of `C++` API by unit tests
 * Implement `C++` API
+
+[unreleased]: https://github.com/ostis-ai/sc-machine/compare/0.6.1...HEAD
+[0.6.1]: https://github.com/ostis-ai/sc-machine/compare/0.6.0...0.6.1

@@ -6,7 +6,6 @@
 
 #include "sc_stream.hpp"
 
-
 ScStream::ScStream()
   : m_stream(0)
 {
@@ -108,7 +107,7 @@ bool ScStream::HasFlag(sc_uint8 flag)
 // ---------------
 
 ScStreamMemory::ScStreamMemory(MemoryBufferPtr const & buff)
-  : ScStream (static_cast<sc_char const *>(buff->Data()), sc_uint(buff->Size()), SC_STREAM_FLAG_READ)
+  : ScStream(static_cast<sc_char const *>(buff->Data()), sc_uint(buff->Size()), SC_STREAM_FLAG_READ)
   , m_buffer(buff)
 {
 }
@@ -129,10 +128,9 @@ bool ScStreamConverter::StreamToString(ScStreamPtr const & stream, std::string &
   if (stream->Read(data, bytesCount, readBytes) && (readBytes == bytesCount))
     outString.assign(data, data + bytesCount);
 
-  delete []data;
+  delete[] data;
 
   return true;
-
 }
 
 ScStreamPtr ScStreamConverter::StreamFromString(std::string const & str)

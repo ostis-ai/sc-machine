@@ -7,11 +7,10 @@
 
 namespace py
 {
-
 class ScPythonMemoryModule
 {
 public:
   static void Initialize();
 };
 
-} // py
+}  // namespace py

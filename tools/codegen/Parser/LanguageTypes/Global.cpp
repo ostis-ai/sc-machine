@@ -19,7 +19,7 @@ Global::Global(Cursor const & cursor, Namespace const & currentNamespace, Class 
 {
   auto displayName = m_metaData.GetNativeString(kMetaDisplayName);
   m_displayName = displayName.empty() ? m_qualifiedName : utils::GetQualifiedName(displayName, currentNamespace);
-  
+
   m_metaData.Check();
 }
 
@@ -30,19 +30,15 @@ bool Global::ShouldCompile() const
 
 void Global::GenerateInitCode(std::stringstream & outCode) const
 {
-
   /// TODO: merge with field code generation
   if (m_metaData.HasProperty(Props::Keynode))
   {
-    Field::GenerateResolveKeynodeCode(m_metaData.GetNativeString(Props::Keynode),
-                                      m_displayName,
-                                      Field::GetForceType(m_metaData),
-                                      outCode);
+    Field::GenerateResolveKeynodeCode(
+        m_metaData.GetNativeString(Props::Keynode), m_displayName, Field::GetForceType(m_metaData), outCode);
   }
   else if (m_metaData.HasProperty(Props::Template))
   {
-    Field::GenerateTemplateBuildCode(m_metaData.GetNativeString(Props::Template),
-                                     m_displayName, outCode);
+    Field::GenerateTemplateBuildCode(m_metaData.GetNativeString(Props::Template), m_displayName, outCode);
   }
 }
 

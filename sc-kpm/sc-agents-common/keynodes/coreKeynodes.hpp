@@ -1,8 +1,8 @@
 /*
-* This source file is part of an OSTIS project. For the latest info, see http://ostis.net
-* Distributed under the MIT License
-* (See accompanying file COPYING.MIT or copy at http://opensource.org/licenses/MIT)
-*/
+ * This source file is part of an OSTIS project. For the latest info, see http://ostis.net
+ * Distributed under the MIT License
+ * (See accompanying file COPYING.MIT or copy at http://opensource.org/licenses/MIT)
+ */
 
 #pragma once
 
@@ -13,14 +13,12 @@
 
 namespace scAgentsCommon
 {
-
 class CoreKeynodes : public ScObject
 {
   SC_CLASS()
   SC_GENERATED_BODY()
 
 public:
-
   SC_PROPERTY(Keynode("question"), ForceCreate)
   static ScAddr question;
 
@@ -106,4 +104,4 @@ public:
   static ScAddr nrel_basic_sequence;
 };
 
-} // namespace scAgentsCommon
+}  // namespace scAgentsCommon

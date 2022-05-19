@@ -18,7 +18,6 @@ uiSc2ScsTranslator::uiSc2ScsTranslator()
 
 uiSc2ScsTranslator::~uiSc2ScsTranslator()
 {
-
 }
 
 void uiSc2ScsTranslator::runImpl()
@@ -29,18 +28,17 @@ void uiSc2ScsTranslator::runImpl()
 
   bool first = true;
   // get command arguments (keywords)
-  sc_iterator5 *it5 = sc_iterator5_a_a_f_a_f_new(s_default_ctx,
-                                                 sc_type_node | sc_type_const,
-                                                 sc_type_arc_common | sc_type_const,
-                                                 mInputConstructionAddr,
-                                                 sc_type_arc_pos_const_perm,
-                                                 keynode_question_nrel_answer);
+  sc_iterator5 * it5 = sc_iterator5_a_a_f_a_f_new(
+      s_default_ctx,
+      sc_type_node | sc_type_const,
+      sc_type_arc_common | sc_type_const,
+      mInputConstructionAddr,
+      sc_type_arc_pos_const_perm,
+      keynode_question_nrel_answer);
   if (sc_iterator5_next(it5) == SC_TRUE)
   {
-    sc_iterator3 *it3 = sc_iterator3_f_a_a_new(s_default_ctx,
-                                               sc_iterator5_value(it5, 0),
-                                               sc_type_arc_pos_const_perm,
-                                               0);
+    sc_iterator3 * it3 =
+        sc_iterator3_f_a_a_new(s_default_ctx, sc_iterator5_value(it5, 0), sc_type_arc_pos_const_perm, 0);
     while (sc_iterator3_next(it3) == SC_TRUE)
     {
       sc_addr addr = sc_iterator3_value(it3, 2);
@@ -69,7 +67,7 @@ void uiSc2ScsTranslator::runImpl()
   tScAddrToScTypeMap::iterator it, itEnd = mObjects.end();
   for (it = mObjects.begin(); it != itEnd; ++it)
   {
-    const sc_addr &arc_addr = it->first;
+    const sc_addr & arc_addr = it->first;
     sc_type arc_type = it->second;
 
     // skip non arc objects
@@ -79,16 +77,16 @@ void uiSc2ScsTranslator::runImpl()
     sc_addr arc_beg, arc_end;
     // get begin and end arc elements
     if (sc_memory_get_arc_begin(s_default_ctx, arc_addr, &arc_beg) != SC_RESULT_OK)
-      continue; //! TODO logging
+      continue;  //! TODO logging
 
     if (isNeedToTranslate(arc_beg) == false)
-      continue; //! TODO logging
+      continue;  //! TODO logging
 
     if (sc_memory_get_arc_end(s_default_ctx, arc_addr, &arc_end) != SC_RESULT_OK)
-      continue; //! TODO logging
+      continue;  //! TODO logging
 
     if (isNeedToTranslate(arc_end) == false)
-      continue; //! TODO logging
+      continue;  //! TODO logging
 
     sc_type beg_type, end_type;
     tScAddrToScTypeMap::iterator itTmp = mObjects.find(arc_beg);
@@ -110,14 +108,13 @@ void uiSc2ScsTranslator::runImpl()
     ss << "[{ \"addr\": \"" << buildId(arc_beg) << "\", \"type\": " << beg_type << "}, ";
     ss << "{ \"addr\": \"" << buildId(arc_addr) << "\", \"type\": " << arc_type << "}, ";
     ss << "{ \"addr\": \"" << buildId(arc_end) << "\", \"type\": " << end_type << "}]";
-
   }
 
   ss << "]}";
   mOutputData = ss.str();
 }
 
-void uiSc2ScsTranslator::resolveSystemIdentifier(const sc_addr &addr, String &idtf)
+void uiSc2ScsTranslator::resolveSystemIdentifier(const sc_addr & addr, String & idtf)
 {
   tSystemIdentifiersMap::iterator it = mSystemIdentifiers.find(addr);
   if (it != mSystemIdentifiers.end())
@@ -130,9 +127,8 @@ void uiSc2ScsTranslator::resolveSystemIdentifier(const sc_addr &addr, String &id
   mSystemIdentifiers[addr] = idtf;
 }
 
-
 // -------------------------------------------------------
-sc_result uiSc2ScsTranslator::ui_translate_sc2scs(const sc_event *event, sc_addr arg)
+sc_result uiSc2ScsTranslator::ui_translate_sc2scs(const sc_event * event, sc_addr arg)
 {
   sc_addr cmd_addr, input_addr, format_addr;
 

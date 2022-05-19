@@ -28,13 +28,13 @@ typedef std::vector<sc_addr> tScAddrVector;
 typedef std::map<sc_addr, sc_type> tScAddrToScTypeMap;
 typedef std::map<sc_addr, sc_addr> tScAddrToScAddrMap;
 typedef std::pair<sc_addr, sc_addr> tScAddrPair;
-typedef std::list< tScAddrPair > tScAddrPairList;
+typedef std::list<tScAddrPair> tScAddrPairList;
 typedef std::map<String, String> tStringStringMap;
 
 // --- operators ---
-bool operator < (const sc_addr &addr1, const sc_addr &addr2);
-bool operator == (const sc_addr &addr1, const sc_addr &addr2);
-bool operator != (const sc_addr &addr1, const sc_addr &addr2);
+bool operator<(const sc_addr & addr1, const sc_addr & addr2);
+bool operator==(const sc_addr & addr1, const sc_addr & addr2);
+bool operator!=(const sc_addr & addr1, const sc_addr & addr2);
 
 extern sc_memory_context * s_default_ctx;
 

@@ -13,7 +13,6 @@ extern "C"
 #include "sc-core/sc_memory_headers.h"
 }
 
-
 namespace
 {
 namespace bp = boost::python;
@@ -26,7 +25,6 @@ void translateException(utils::ScException const & e)
 
 namespace impl
 {
-
 class PyTemplateGenResult
 {
 public:
@@ -187,7 +185,9 @@ private:
 class PyTemplateItemValue
 {
 public:
-  PyTemplateItemValue() {}
+  PyTemplateItemValue()
+  {
+  }
 
   PyTemplateItemValue(ScAddr const & addr, std::string const & replName = std::string())
     : m_item(new ScTemplateItemValue(addr, replName.c_str()))
@@ -236,7 +236,9 @@ public:
     static uint8_t Float;
   };
 
-  PyLinkContent() {}
+  PyLinkContent()
+  {
+  }
 
   explicit PyLinkContent(ScStream const & stream, uint8_t t)
     : m_type(t)
@@ -244,7 +246,7 @@ public:
     m_buffer.reset(new MemoryBufferSafe());
     m_buffer->Reinit(stream.Size());
     size_t readBytes = 0;
-    stream.Read((sc_char*)m_buffer->Data(), stream.Size(), readBytes);
+    stream.Read((sc_char *)m_buffer->Data(), stream.Size(), readBytes);
   }
 
   uint8_t GetType() const
@@ -254,7 +256,7 @@ public:
 
   std::string AsString() const
   {
-    char const * data = (char const*)m_buffer->CData();
+    char const * data = (char const *)m_buffer->CData();
     return std::string(data, data + m_buffer->Size());
   }
 
@@ -279,8 +281,7 @@ public:
       return value;
     }
 
-    SC_THROW_EXCEPTION(utils::ExceptionInvalidType,
-                       "Size of content should be equal to 1, 2 or 4 bytes");
+    SC_THROW_EXCEPTION(utils::ExceptionInvalidType, "Size of content should be equal to 1, 2 or 4 bytes");
 
     return 0;
   }
@@ -300,15 +301,16 @@ public:
       return value;
     }
 
-    SC_THROW_EXCEPTION(utils::ExceptionInvalidType,
-                         "Size of content should be equal to " << sizeof(double) << " or " << sizeof(float) << " bytes");
+    SC_THROW_EXCEPTION(
+        utils::ExceptionInvalidType,
+        "Size of content should be equal to " << sizeof(double) << " or " << sizeof(float) << " bytes");
 
     return std::numeric_limits<double>::min();
   }
 
   bp::object AsBinary() const
   {
-    PyObject * buff = PyMemoryView_FromMemory((char*)m_buffer->Data(), m_buffer->Size(), PyBUF_READ);
+    PyObject * buff = PyMemoryView_FromMemory((char *)m_buffer->Data(), m_buffer->Size(), PyBUF_READ);
     return boost::python::object(boost::python::handle<>(buff));
   }
 
@@ -342,8 +344,7 @@ bp::list _context_FindLinksByContent(ScMemoryContext & self, bp::object const & 
   }
   else
   {
-    SC_THROW_EXCEPTION(utils::ExceptionNotImplemented,
-                       "Just string content type now supported");
+    SC_THROW_EXCEPTION(utils::ExceptionNotImplemented, "Just string content type now supported");
   }
 
   return result;
@@ -464,61 +465,46 @@ protected:
 using PyIterator3 = PyIteratorWrap<ScIterator3Ptr>;
 using PyIterator5 = PyIteratorWrap<ScIterator5Ptr>;
 
-bp::object _context_iterator3(ScMemoryContext & self,
-                              bp::object & param1,
-                              bp::object & param2,
-                              bp::object & param3)
+bp::object _context_iterator3(ScMemoryContext & self, bp::object & param1, bp::object & param2, bp::object & param3)
 {
   bp::extract<ScType> pt2(param2);
-  if (!pt2.check()) // second parameter should be a type anyway
+  if (!pt2.check())  // second parameter should be a type anyway
     return bp::object();
 
   bp::extract<ScAddr> pa1(param1);
   if (pa1.check())
   {
     bp::extract<ScAddr> pa3(param3);
-    if (pa3.check()) // f_a_f
-      return bp::object(
-            boost::shared_ptr<PyIterator3>(
-              new PyIterator3(
-                self.Iterator3(static_cast<ScAddr>(pa1),
-                               static_cast<ScType>(pt2),
-                               static_cast<ScAddr>(pa3)))));
+    if (pa3.check())  // f_a_f
+      return bp::object(boost::shared_ptr<PyIterator3>(new PyIterator3(
+          self.Iterator3(static_cast<ScAddr>(pa1), static_cast<ScType>(pt2), static_cast<ScAddr>(pa3)))));
 
     bp::extract<ScType> pt3(param3);
-    if (pt3.check()) // f_a_a
-      return bp::object(
-            boost::shared_ptr<PyIterator3>(
-              new PyIterator3(
-                self.Iterator3(static_cast<ScAddr>(pa1),
-                               static_cast<ScType>(pt2),
-                               static_cast<ScType>(pt3)))));
+    if (pt3.check())  // f_a_a
+      return bp::object(boost::shared_ptr<PyIterator3>(new PyIterator3(
+          self.Iterator3(static_cast<ScAddr>(pa1), static_cast<ScType>(pt2), static_cast<ScType>(pt3)))));
   }
 
   bp::extract<ScType> pt1(param1);
   if (pt1.check())
   {
     bp::extract<ScAddr> pa3(param3);
-    if (pa3.check()) // a_a_f
-      return bp::object(
-            boost::shared_ptr<PyIterator3>(
-              new PyIterator3(
-                self.Iterator3(static_cast<ScType>(pt1),
-                               static_cast<ScType>(pt2),
-                               static_cast<ScAddr>(pa3)))));
+    if (pa3.check())  // a_a_f
+      return bp::object(boost::shared_ptr<PyIterator3>(new PyIterator3(
+          self.Iterator3(static_cast<ScType>(pt1), static_cast<ScType>(pt2), static_cast<ScAddr>(pa3)))));
   }
 
   return bp::object();
 }
 
-bp::object _context_iterator5(ScMemoryContext & self,
-                              bp::object & param1,
-                              bp::object & param2,
-                              bp::object & param3,
-                              bp::object & param4,
-                              bp::object & param5)
+bp::object _context_iterator5(
+    ScMemoryContext & self,
+    bp::object & param1,
+    bp::object & param2,
+    bp::object & param3,
+    bp::object & param4,
+    bp::object & param5)
 {
-
   // param2 and param4 are always ScType
   bp::extract<ScType> pt2(param2);
   if (!pt2.check())
@@ -535,26 +521,22 @@ bp::object _context_iterator5(ScMemoryContext & self,
     if (pa3.check())
     {
       bp::extract<ScAddr> pa5(param5);
-      if (pa5.check()) // f_a_f_a_f
-        return bp::object(
-              boost::shared_ptr<PyIterator5>(
-                new PyIterator5(
-                  self.Iterator5(static_cast<ScAddr>(pa1),
-                                 static_cast<ScType>(pt2),
-                                 static_cast<ScAddr>(pa3),
-                                 static_cast<ScType>(pt4),
-                                 static_cast<ScAddr>(pa5)))));
+      if (pa5.check())  // f_a_f_a_f
+        return bp::object(boost::shared_ptr<PyIterator5>(new PyIterator5(self.Iterator5(
+            static_cast<ScAddr>(pa1),
+            static_cast<ScType>(pt2),
+            static_cast<ScAddr>(pa3),
+            static_cast<ScType>(pt4),
+            static_cast<ScAddr>(pa5)))));
 
       bp::extract<ScType> pt5(param5);
-      if (pt5.check()) // f_a_f_a_a
-        return bp::object(
-              boost::shared_ptr<PyIterator5>(
-                new PyIterator5(
-                  self.Iterator5(static_cast<ScAddr>(pa1),
-                                 static_cast<ScType>(pt2),
-                                 static_cast<ScAddr>(pa3),
-                                 static_cast<ScType>(pt4),
-                                 static_cast<ScType>(pt5)))));
+      if (pt5.check())  // f_a_f_a_a
+        return bp::object(boost::shared_ptr<PyIterator5>(new PyIterator5(self.Iterator5(
+            static_cast<ScAddr>(pa1),
+            static_cast<ScType>(pt2),
+            static_cast<ScAddr>(pa3),
+            static_cast<ScType>(pt4),
+            static_cast<ScType>(pt5)))));
     }
 
     bp::extract<ScType> pt3(param3);
@@ -562,26 +544,22 @@ bp::object _context_iterator5(ScMemoryContext & self,
       return bp::object();
 
     bp::extract<ScAddr> pa5(param5);
-    if (pa5.check()) // f_a_a_a_f
-      return bp::object(
-            boost::shared_ptr<PyIterator5>(
-              new PyIterator5(
-                self.Iterator5(static_cast<ScAddr>(pa1),
-                               static_cast<ScType>(pt2),
-                               static_cast<ScType>(pt3),
-                               static_cast<ScType>(pt4),
-                               static_cast<ScAddr>(pa5)))));
+    if (pa5.check())  // f_a_a_a_f
+      return bp::object(boost::shared_ptr<PyIterator5>(new PyIterator5(self.Iterator5(
+          static_cast<ScAddr>(pa1),
+          static_cast<ScType>(pt2),
+          static_cast<ScType>(pt3),
+          static_cast<ScType>(pt4),
+          static_cast<ScAddr>(pa5)))));
 
     bp::extract<ScType> pt5(param5);
-    if (pt5.check()) // f_a_a_a_a
-      return bp::object(
-            boost::shared_ptr<PyIterator5>(
-              new PyIterator5(
-                self.Iterator5(static_cast<ScAddr>(pa1),
-                               static_cast<ScType>(pt2),
-                               static_cast<ScType>(pt3),
-                               static_cast<ScType>(pt4),
-                               static_cast<ScType>(pt5)))));
+    if (pt5.check())  // f_a_a_a_a
+      return bp::object(boost::shared_ptr<PyIterator5>(new PyIterator5(self.Iterator5(
+          static_cast<ScAddr>(pa1),
+          static_cast<ScType>(pt2),
+          static_cast<ScType>(pt3),
+          static_cast<ScType>(pt4),
+          static_cast<ScType>(pt5)))));
   }
 
   bp::extract<ScType> pt1(param1);
@@ -592,38 +570,36 @@ bp::object _context_iterator5(ScMemoryContext & self,
       return bp::object();
 
     bp::extract<ScAddr> pa5(param5);
-    if (pa5.check()) // a_a_f_a_f
-      return bp::object(
-            boost::shared_ptr<PyIterator5>(
-              new PyIterator5(
-                self.Iterator5(static_cast<ScType>(pt1),
-                               static_cast<ScType>(pt2),
-                               static_cast<ScAddr>(pa3),
-                               static_cast<ScType>(pt4),
-                               static_cast<ScAddr>(pa5)))));
+    if (pa5.check())  // a_a_f_a_f
+      return bp::object(boost::shared_ptr<PyIterator5>(new PyIterator5(self.Iterator5(
+          static_cast<ScType>(pt1),
+          static_cast<ScType>(pt2),
+          static_cast<ScAddr>(pa3),
+          static_cast<ScType>(pt4),
+          static_cast<ScAddr>(pa5)))));
 
     bp::extract<ScType> pt5(param5);
-    if (pt5.check()) // a_a_f_a_a
-      return bp::object(
-            boost::shared_ptr<PyIterator5>(
-              new PyIterator5(
-                self.Iterator5(static_cast<ScType>(pt1),
-                               static_cast<ScType>(pt2),
-                               static_cast<ScAddr>(pa3),
-                               static_cast<ScType>(pt4),
-                               static_cast<ScType>(pt5)))));
+    if (pt5.check())  // a_a_f_a_a
+      return bp::object(boost::shared_ptr<PyIterator5>(new PyIterator5(self.Iterator5(
+          static_cast<ScType>(pt1),
+          static_cast<ScType>(pt2),
+          static_cast<ScAddr>(pa3),
+          static_cast<ScType>(pt4),
+          static_cast<ScType>(pt5)))));
   }
 
   return bp::object();
 }
 
-bp::object _context_helperResolveSysIdtf(ScMemoryContext & self, bp::object & idtf, bp::object const & type = bp::object())
+bp::object _context_helperResolveSysIdtf(
+    ScMemoryContext & self,
+    bp::object & idtf,
+    bp::object const & type = bp::object())
 {
   bp::extract<std::string> se(idtf);
   if (!se.check())
   {
-    SC_THROW_EXCEPTION(utils::ExceptionInvalidType,
-                       "First parameter should have an instance of str");
+    SC_THROW_EXCEPTION(utils::ExceptionInvalidType, "First parameter should have an instance of str");
   }
   ScType rawType;
 
@@ -632,8 +608,7 @@ bp::object _context_helperResolveSysIdtf(ScMemoryContext & self, bp::object & id
     bp::extract<ScType> te(type);
     if (!te.check())
     {
-      SC_THROW_EXCEPTION(utils::ExceptionInvalidType,
-                         "Second parameter should be None or instance of ScType")
+      SC_THROW_EXCEPTION(utils::ExceptionInvalidType, "Second parameter should be None or instance of ScType")
     }
     rawType = static_cast<ScType>(te);
   }
@@ -648,8 +623,7 @@ bp::object _context_helperFindBySystemIdtf(ScMemoryContext & self, bp::object & 
   bp::extract<std::string> se(idtf);
   if (!se.check())
   {
-    SC_THROW_EXCEPTION(utils::ExceptionInvalidType,
-                       "First parameter should have an instance of str");
+    SC_THROW_EXCEPTION(utils::ExceptionInvalidType, "First parameter should have an instance of str");
   }
 
   std::string const idtfValue = static_cast<std::string>(se);
@@ -675,34 +649,37 @@ ScTemplateItemValue ResolveTemplateParam(bp::object & p)
   if (te.check())
     return ScTemplateItemValue(static_cast<ScType>(te));
 
-  SC_THROW_EXCEPTION(utils::ExceptionInvalidType,
-                     "Parameter to template should be ScAddr, ScType, string or replacement");
-  return{};
+  SC_THROW_EXCEPTION(
+      utils::ExceptionInvalidType, "Parameter to template should be ScAddr, ScType, string or replacement");
+  return {};
 };
 
 class PyTemplate
 {
 public:
-  PyTemplate() : m_impl(new ScTemplate()) {}
-
-  void Triple(bp::object & param1, bp::object & param2, bp::object & param3, bool isRequired = true)
+  PyTemplate()
+    : m_impl(new ScTemplate())
   {
-    m_impl->Triple(ResolveTemplateParam(param1),
-                   ResolveTemplateParam(param2),
-                   ResolveTemplateParam(param3),
-                   isRequired ? ScTemplate::TripleFlag::Required : ScTemplate::TripleFlag::NotRequired);
   }
 
-  void TripleWithRelation(bp::object & param1, bp::object & param2,
-                          bp::object & param3, bp::object & param4, bp::object & param5,
-                          bool isRequired = true)
+  void Triple(bp::object & param1, bp::object & param2, bp::object & param3)
   {
-    m_impl->TripleWithRelation(ResolveTemplateParam(param1),
-                               ResolveTemplateParam(param2),
-                               ResolveTemplateParam(param3),
-                               ResolveTemplateParam(param4),
-                               ResolveTemplateParam(param5),
-                               isRequired ? ScTemplate::TripleFlag::Required : ScTemplate::TripleFlag::NotRequired);
+    m_impl->Triple(ResolveTemplateParam(param1), ResolveTemplateParam(param2), ResolveTemplateParam(param3));
+  }
+
+  void TripleWithRelation(
+      bp::object & param1,
+      bp::object & param2,
+      bp::object & param3,
+      bp::object & param4,
+      bp::object & param5)
+  {
+    m_impl->TripleWithRelation(
+        ResolveTemplateParam(param1),
+        ResolveTemplateParam(param2),
+        ResolveTemplateParam(param3),
+        ResolveTemplateParam(param4),
+        ResolveTemplateParam(param5));
   }
 
   bool HasReplacement(std::string const & name)
@@ -722,7 +699,10 @@ private:
 class PyTemplateGenParams
 {
 public:
-  PyTemplateGenParams() : m_impl(new ScTemplateParams()) {}
+  PyTemplateGenParams()
+    : m_impl(new ScTemplateParams())
+  {
+  }
 
   void Add(std::string const & paramName, ScAddr const & value)
   {
@@ -791,8 +771,7 @@ bp::object _context_helperBuildTemplate(ScMemoryContext & self, bp::object & dat
       return bp::object(templ);
   }
 
-  SC_THROW_EXCEPTION(utils::ExceptionInvalidType,
-                    "Second parameter should be ScAddr or string");
+  SC_THROW_EXCEPTION(utils::ExceptionInvalidType, "Second parameter should be ScAddr or string");
 
   return bp::object();
 }
@@ -837,11 +816,9 @@ public:
   }
 };
 
-} // namespace impl
+}  // namespace impl
 
 BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(ScMemoryContext_CreateLink_overload, ScMemoryContext::CreateLink, 0, 1)
-BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(PyTemplate_Triple_overload, impl::PyTemplate::Triple, 3, 4)
-BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(PyTemplate_TripleWithRelation_overload, impl::PyTemplate::TripleWithRelation, 5, 6)
 
 BOOST_PYTHON_MODULE(sc)
 {
@@ -851,208 +828,197 @@ BOOST_PYTHON_MODULE(sc)
   def("getScConfigValue", bp::make_function(&impl::GetConfigValue));
 
   bp::class_<ScMemoryContext, boost::noncopyable>("ScMemoryContext", bp::no_init)
-    .def("Create", &impl::_context_CreateInstance, bp::return_value_policy<bp::manage_new_object>())
-    .staticmethod("Create")
-    .def("CreateNode", &ScMemoryContext::CreateNode, bp::return_value_policy<bp::return_by_value>())
-    .def("CreateEdge", &ScMemoryContext::CreateEdge)
-    .def("CreateLink", &ScMemoryContext::CreateLink, ScMemoryContext_CreateLink_overload(bp::args("type"), "Create sc-link"))
-    .def("DeleteElement", &ScMemoryContext::EraseElement)
-    .def("GetName", &ScMemoryContext::GetName, bp::return_value_policy<bp::return_by_value>())
-    .def("IsElement", &ScMemoryContext::IsElement)
-    .def("GetElementType", &ScMemoryContext::GetElementType)
-    .def("FindLinksByContent", impl::_context_FindLinksByContent)
-    .def("GetEdgeInfo", impl::_context_getEdgeInfo)
-    .def("SetLinkContent", impl::_context_setLinkContent)
-    .def("GetLinkContent", impl::_context_getLinkContent)
-    .def("Iterator3", impl::_context_iterator3)
-    .def("Iterator5", impl::_context_iterator5)
-    .def("HelperResolveSystemIdtf", impl::_context_helperResolveSysIdtf)
-    .def("HelperSetSystemIdtf", &ScMemoryContext::HelperSetSystemIdtf)
-    .def("HelperGetSystemIdtf", &ScMemoryContext::HelperGetSystemIdtf)
-    .def("HelperFindBySystemIdtf", impl::_context_helperFindBySystemIdtf)
-    .def("HelperCheckEdge", &ScMemoryContext::HelperCheckEdge)
-    .def("HelperGenTemplate", impl::_context_helperGenTemplate)
-    .def("HelperSearchTemplate", impl::_context_helperSearchTemplate)
-    .def("HelperBuildTemplate", impl::_context_helperBuildTemplate)
-    ;
+      .def("Create", &impl::_context_CreateInstance, bp::return_value_policy<bp::manage_new_object>())
+      .staticmethod("Create")
+      .def("CreateNode", &ScMemoryContext::CreateNode, bp::return_value_policy<bp::return_by_value>())
+      .def("CreateEdge", &ScMemoryContext::CreateEdge)
+      .def(
+          "CreateLink",
+          &ScMemoryContext::CreateLink,
+          ScMemoryContext_CreateLink_overload(bp::args("type"), "Create sc-link"))
+      .def("DeleteElement", &ScMemoryContext::EraseElement)
+      .def("GetName", &ScMemoryContext::GetName, bp::return_value_policy<bp::return_by_value>())
+      .def("IsElement", &ScMemoryContext::IsElement)
+      .def("GetElementType", &ScMemoryContext::GetElementType)
+      .def("FindLinksByContent", impl::_context_FindLinksByContent)
+      .def("GetEdgeInfo", impl::_context_getEdgeInfo)
+      .def("SetLinkContent", impl::_context_setLinkContent)
+      .def("GetLinkContent", impl::_context_getLinkContent)
+      .def("Iterator3", impl::_context_iterator3)
+      .def("Iterator5", impl::_context_iterator5)
+      .def("HelperResolveSystemIdtf", impl::_context_helperResolveSysIdtf)
+      .def("HelperSetSystemIdtf", &ScMemoryContext::HelperSetSystemIdtf)
+      .def("HelperGetSystemIdtf", &ScMemoryContext::HelperGetSystemIdtf)
+      .def("HelperFindBySystemIdtf", impl::_context_helperFindBySystemIdtf)
+      .def("HelperCheckEdge", &ScMemoryContext::HelperCheckEdge)
+      .def("HelperGenTemplate", impl::_context_helperGenTemplate)
+      .def("HelperSearchTemplate", impl::_context_helperSearchTemplate)
+      .def("HelperBuildTemplate", impl::_context_helperBuildTemplate);
 
   bp::class_<impl::PyIterator3, boost::shared_ptr<impl::PyIterator3>, boost::noncopyable>("ScIterator3", bp::no_init)
-    .def("Next", &impl::PyIterator3::Next)
-    .def("IsValid", &impl::PyIterator3::IsValid)
-    .def("Get", &impl::PyIterator3::Get)
-    ;
+      .def("Next", &impl::PyIterator3::Next)
+      .def("IsValid", &impl::PyIterator3::IsValid)
+      .def("Get", &impl::PyIterator3::Get);
 
   bp::class_<impl::PyIterator5, boost::shared_ptr<impl::PyIterator5>>("ScIterator5", bp::no_init)
-    .def("Next", &impl::PyIterator5::Next)
-    .def("IsValid", &impl::PyIterator5::IsValid)
-    .def("Get", &impl::PyIterator5::Get)
-    ;
+      .def("Next", &impl::PyIterator5::Next)
+      .def("IsValid", &impl::PyIterator5::IsValid)
+      .def("Get", &impl::PyIterator5::Get);
 
   bp::class_<impl::PyLinkContent>("ScLinkContent", bp::no_init)
-    .def("AsString", &impl::PyLinkContent::AsString)
-    .def("AsInt", &impl::PyLinkContent::AsInt)
-    .def("AsFloat", &impl::PyLinkContent::AsDouble)
-    .def("AsBinary", &impl::PyLinkContent::AsBinary)
-    .def("GetType", &impl::PyLinkContent::GetType)
-    .def_readonly("String", &impl::PyLinkContent::Type::String)
-    .def_readonly("Int", &impl::PyLinkContent::Type::Int)
-    .def_readonly("Float", &impl::PyLinkContent::Type::Float)
-    ;
+      .def("AsString", &impl::PyLinkContent::AsString)
+      .def("AsInt", &impl::PyLinkContent::AsInt)
+      .def("AsFloat", &impl::PyLinkContent::AsDouble)
+      .def("AsBinary", &impl::PyLinkContent::AsBinary)
+      .def("GetType", &impl::PyLinkContent::GetType)
+      .def_readonly("String", &impl::PyLinkContent::Type::String)
+      .def_readonly("Int", &impl::PyLinkContent::Type::Int)
+      .def_readonly("Float", &impl::PyLinkContent::Type::Float);
 
   bp::class_<impl::PyTemplateGenResult>("ScTemplateGenResult", bp::no_init)
-    .def("Size", &impl::PyTemplateGenResult::Size)
-    .def("__getitem__", &impl::PyTemplateGenResult::Get)
-    .def("Aliases", &impl::PyTemplateGenResult::GetReplaceAliases)
-    ;
+      .def("Size", &impl::PyTemplateGenResult::Size)
+      .def("__getitem__", &impl::PyTemplateGenResult::Get)
+      .def("Aliases", &impl::PyTemplateGenResult::GetReplaceAliases);
 
   bp::class_<impl::PyTemplateSearchResultItem>("ScTemplateSearchResultItem", bp::no_init)
-    .def("Size", &impl::PyTemplateSearchResultItem::Size)
-    .def("__getitem__", &impl::PyTemplateSearchResultItem::Get)
-    ;
+      .def("Size", &impl::PyTemplateSearchResultItem::Size)
+      .def("__getitem__", &impl::PyTemplateSearchResultItem::Get);
 
   bp::class_<impl::PyTemplateSearchResult>("ScTemplateSearchResult", bp::no_init)
-    .def("Size", &impl::PyTemplateSearchResult::Size)
-    .def("__getitem__", &impl::PyTemplateSearchResult::Get)
-    .def("Aliases", &impl::PyTemplateSearchResult::GetReplaceAliases)
-    ;
+      .def("Size", &impl::PyTemplateSearchResult::Size)
+      .def("__getitem__", &impl::PyTemplateSearchResult::Get)
+      .def("Aliases", &impl::PyTemplateSearchResult::GetReplaceAliases);
 
-  bp::class_<impl::PyTemplateItemValue>("ScTemplateItemValue", bp::no_init)
-    ;
+  bp::class_<impl::PyTemplateItemValue>("ScTemplateItemValue", bp::no_init);
 
   bp::class_<impl::PyTemplateGenParams>("ScTemplateParams", bp::init<>())
-    .def("Add", &impl::PyTemplateGenParams::Add)
-    .def("Get", &impl::PyTemplateGenParams::Get)
-    .def("IsEmpty", &impl::PyTemplateGenParams::IsEmpty)
-    ;
-
+      .def("Add", &impl::PyTemplateGenParams::Add)
+      .def("Get", &impl::PyTemplateGenParams::Get)
+      .def("IsEmpty", &impl::PyTemplateGenParams::IsEmpty);
 
   bp::class_<impl::PyTemplate>("ScTemplate", bp::init<>())
-    .def("Triple", &impl::PyTemplate::Triple, PyTemplate_Triple_overload())
-    .def("TripleWithRelation", &impl::PyTemplate::TripleWithRelation, PyTemplate_TripleWithRelation_overload())
-    .def("HasReplacement", &impl::PyTemplate::HasReplacement)
-    ;
+      .def("Triple", &impl::PyTemplate::Triple)
+      .def("TripleWithRelation", &impl::PyTemplate::TripleWithRelation)
+      .def("HasReplacement", &impl::PyTemplate::HasReplacement);
 
   bp::class_<ScAddr>("ScAddr", bp::init<>())
-    .def(bp::init<ScAddr::HashType>())
-    .def("IsValid", &ScAddr::IsValid)
-    .def("ToInt", &ScAddr::Hash)
-    .def("__eq__", &ScAddr::operator==)
-    .def("__ne__", &ScAddr::operator!=)
-    .def("__rshift__", impl::_scAddrToRShift)
-    .def("rshift", impl::_scAddrToRShift)
-    ;
+      .def(bp::init<ScAddr::HashType>())
+      .def("IsValid", &ScAddr::IsValid)
+      .def("ToInt", &ScAddr::Hash)
+      .def("__eq__", &ScAddr::operator==)
+      .def("__ne__", &ScAddr::operator!=)
+      .def("__rshift__", impl::_scAddrToRShift)
+      .def("rshift", impl::_scAddrToRShift);
 
   bp::class_<ScType>("ScType", bp::init<>())
-    .def(bp::init<ScType::RealType>())
-    .def("__eq__", &ScType::operator==)
-    .def("__ne__", &ScType::operator!=)
-    .def("__or__", &ScType::operator|)
-    .def("__and__", &ScType::operator&)
-    .def("__rshift__", impl::_scTypeToRShift)
-    .def("rshift", impl::_scTypeToRShift)
-    .def("IsLink", &ScType::IsLink)
-    .def("IsEdge", &ScType::IsEdge)
-    .def("IsNode", &ScType::IsNode)
-    .def("IsUnknown", &ScType::IsUnknown)
-    .def("IsConst", &ScType::IsConst)
-    .def("IsVar", &ScType::IsVar)
-    .def("ToInt", &ScType::operator*)
+      .def(bp::init<ScType::RealType>())
+      .def("__eq__", &ScType::operator==)
+      .def("__ne__", &ScType::operator!=)
+      .def("__or__", &ScType::operator|)
+      .def("__and__", &ScType::operator&)
+      .def("__rshift__", impl::_scTypeToRShift)
+      .def("rshift", impl::_scTypeToRShift)
+      .def("IsLink", &ScType::IsLink)
+      .def("IsEdge", &ScType::IsEdge)
+      .def("IsNode", &ScType::IsNode)
+      .def("IsUnknown", &ScType::IsUnknown)
+      .def("IsConst", &ScType::IsConst)
+      .def("IsVar", &ScType::IsVar)
+      .def("ToInt", &ScType::operator*)
 
-    .def_readonly("Unknown", &ScType::Unknown)
-    .def_readonly("Const", &ScType::Const)
-    .def_readonly("Var", &ScType::Var)
-    .def_readonly("Node", &ScType::Node)
-    .def_readonly("Link", &ScType::Link)
+      .def_readonly("Unknown", &ScType::Unknown)
+      .def_readonly("Const", &ScType::Const)
+      .def_readonly("Var", &ScType::Var)
+      .def_readonly("Node", &ScType::Node)
+      .def_readonly("Link", &ScType::Link)
 
-    .def_readonly("EdgeUCommon", &ScType::EdgeUCommon)
-    .def_readonly("EdgeDCommon", &ScType::EdgeDCommon)
-    .def_readonly("EdgeUCommonConst", &ScType::EdgeUCommonConst)
-    .def_readonly("EdgeDCommonConst", &ScType::EdgeDCommonConst)
-    .def_readonly("EdgeAccess", &ScType::EdgeAccess)
-    .def_readonly("EdgeAccessConstPosPerm", &ScType::EdgeAccessConstPosPerm)
-    .def_readonly("EdgeAccessConstNegPerm", &ScType::EdgeAccessConstNegPerm)
-    .def_readonly("EdgeAccessConstFuzPerm", &ScType::EdgeAccessConstFuzPerm)
-    .def_readonly("EdgeAccessConstPosTemp", &ScType::EdgeAccessConstPosTemp)
-    .def_readonly("EdgeAccessConstNegTemp", &ScType::EdgeAccessConstNegTemp)
-    .def_readonly("EdgeAccessConstFuzTemp", &ScType::EdgeAccessConstFuzTemp)
-    .def_readonly("EdgeUCommonVar", &ScType::EdgeUCommonVar)
-    .def_readonly("EdgeDCommonVar", &ScType::EdgeDCommonVar)
-    .def_readonly("EdgeAccessVarPosPerm", &ScType::EdgeAccessVarPosPerm)
-    .def_readonly("EdgeAccessVarNegPerm", &ScType::EdgeAccessVarNegPerm)
-    .def_readonly("EdgeAccessVarFuzPerm", &ScType::EdgeAccessVarFuzPerm)
-    .def_readonly("EdgeAccessVarPosTemp", &ScType::EdgeAccessVarPosTemp)
-    .def_readonly("EdgeAccessVarNegTemp", &ScType::EdgeAccessVarNegTemp)
-    .def_readonly("EdgeAccessVarFuzTemp", &ScType::EdgeAccessVarFuzTemp)
+      .def_readonly("EdgeUCommon", &ScType::EdgeUCommon)
+      .def_readonly("EdgeDCommon", &ScType::EdgeDCommon)
+      .def_readonly("EdgeUCommonConst", &ScType::EdgeUCommonConst)
+      .def_readonly("EdgeDCommonConst", &ScType::EdgeDCommonConst)
+      .def_readonly("EdgeAccess", &ScType::EdgeAccess)
+      .def_readonly("EdgeAccessConstPosPerm", &ScType::EdgeAccessConstPosPerm)
+      .def_readonly("EdgeAccessConstNegPerm", &ScType::EdgeAccessConstNegPerm)
+      .def_readonly("EdgeAccessConstFuzPerm", &ScType::EdgeAccessConstFuzPerm)
+      .def_readonly("EdgeAccessConstPosTemp", &ScType::EdgeAccessConstPosTemp)
+      .def_readonly("EdgeAccessConstNegTemp", &ScType::EdgeAccessConstNegTemp)
+      .def_readonly("EdgeAccessConstFuzTemp", &ScType::EdgeAccessConstFuzTemp)
+      .def_readonly("EdgeUCommonVar", &ScType::EdgeUCommonVar)
+      .def_readonly("EdgeDCommonVar", &ScType::EdgeDCommonVar)
+      .def_readonly("EdgeAccessVarPosPerm", &ScType::EdgeAccessVarPosPerm)
+      .def_readonly("EdgeAccessVarNegPerm", &ScType::EdgeAccessVarNegPerm)
+      .def_readonly("EdgeAccessVarFuzPerm", &ScType::EdgeAccessVarFuzPerm)
+      .def_readonly("EdgeAccessVarPosTemp", &ScType::EdgeAccessVarPosTemp)
+      .def_readonly("EdgeAccessVarNegTemp", &ScType::EdgeAccessVarNegTemp)
+      .def_readonly("EdgeAccessVarFuzTemp", &ScType::EdgeAccessVarFuzTemp)
 
-    .def_readonly("NodeConst", &ScType::NodeConst)
-    .def_readonly("NodeVar", &ScType::NodeVar)
-    .def_readonly("LinkConst", &ScType::LinkConst)
-    .def_readonly("LinkVar", &ScType::LinkVar)
+      .def_readonly("NodeConst", &ScType::NodeConst)
+      .def_readonly("NodeVar", &ScType::NodeVar)
+      .def_readonly("LinkConst", &ScType::LinkConst)
+      .def_readonly("LinkVar", &ScType::LinkVar)
 
-    .def_readonly("NodeConstStruct", &ScType::NodeConstStruct)
-    .def_readonly("NodeConstTuple", &ScType::NodeConstTuple)
-    .def_readonly("NodeConstRole", &ScType::NodeConstRole)
-    .def_readonly("NodeConstNoRole", &ScType::NodeConstNoRole)
-    .def_readonly("NodeConstClass", &ScType::NodeConstClass)
-    .def_readonly("NodeConstAbstract", &ScType::NodeConstAbstract)
-    .def_readonly("NodeConstMaterial", &ScType::NodeConstMaterial)
+      .def_readonly("NodeConstStruct", &ScType::NodeConstStruct)
+      .def_readonly("NodeConstTuple", &ScType::NodeConstTuple)
+      .def_readonly("NodeConstRole", &ScType::NodeConstRole)
+      .def_readonly("NodeConstNoRole", &ScType::NodeConstNoRole)
+      .def_readonly("NodeConstClass", &ScType::NodeConstClass)
+      .def_readonly("NodeConstAbstract", &ScType::NodeConstAbstract)
+      .def_readonly("NodeConstMaterial", &ScType::NodeConstMaterial)
 
-    .def_readonly("NodeVarStruct", &ScType::NodeVarStruct)
-    .def_readonly("NodeVarTuple", &ScType::NodeVarTuple)
-    .def_readonly("NodeVarRole", &ScType::NodeVarRole)
-    .def_readonly("NodeVarNoRole", &ScType::NodeVarNoRole)
-    .def_readonly("NodeVarClass", &ScType::NodeVarClass)
-    .def_readonly("NodeVarAbstract", &ScType::NodeVarAbstract)
-    .def_readonly("NodeVarMaterial", &ScType::NodeVarMaterial)
-    ;
+      .def_readonly("NodeVarStruct", &ScType::NodeVarStruct)
+      .def_readonly("NodeVarTuple", &ScType::NodeVarTuple)
+      .def_readonly("NodeVarRole", &ScType::NodeVarRole)
+      .def_readonly("NodeVarNoRole", &ScType::NodeVarNoRole)
+      .def_readonly("NodeVarClass", &ScType::NodeVarClass)
+      .def_readonly("NodeVarAbstract", &ScType::NodeVarAbstract)
+      .def_readonly("NodeVarMaterial", &ScType::NodeVarMaterial);
 
   bp::enum_<sc_result>("ScResult")
-    .value("Ok", SC_RESULT_OK)
-    .value("Error", SC_RESULT_ERROR)
-    .value("ErrorInvalidParams", SC_RESULT_ERROR_INVALID_PARAMS)
-    .value("ErrorInvalidType", SC_RESULT_ERROR_INVALID_TYPE)
-    .value("ErrorIO", SC_RESULT_ERROR_IO)
-    .value("ErrorInvalidState", SC_RESULT_ERROR_INVALID_STATE)
-    .value("ErrorNotFound", SC_RESULT_ERROR_NOT_FOUND)
-    .value("ErrorNoWriteRights", SC_RESULT_ERROR_NO_WRITE_RIGHTS)
-    .value("ErrorNoReadRights", SC_RESULT_ERROR_NO_READ_RIGHTS)
-    .value("ErrorNoRights", SC_RESULT_ERROR_NO_RIGHTS)
-    .value("No", SC_RESULT_NO)
-    .value("Unknown", SC_RESULT_UNKNOWN)
-    ;
+      .value("Ok", SC_RESULT_OK)
+      .value("Error", SC_RESULT_ERROR)
+      .value("ErrorInvalidParams", SC_RESULT_ERROR_INVALID_PARAMS)
+      .value("ErrorInvalidType", SC_RESULT_ERROR_INVALID_TYPE)
+      .value("ErrorIO", SC_RESULT_ERROR_IO)
+      .value("ErrorInvalidState", SC_RESULT_ERROR_INVALID_STATE)
+      .value("ErrorNotFound", SC_RESULT_ERROR_NOT_FOUND)
+      .value("ErrorNoWriteRights", SC_RESULT_ERROR_NO_WRITE_RIGHTS)
+      .value("ErrorNoReadRights", SC_RESULT_ERROR_NO_READ_RIGHTS)
+      .value("ErrorNoRights", SC_RESULT_ERROR_NO_RIGHTS)
+      .value("No", SC_RESULT_NO)
+      .value("Unknown", SC_RESULT_UNKNOWN);
 
   bp::class_<ScKeynodes>("ScKeynodesImpl", bp::no_init)
-    .def("GetResultCodeAddr", bp::make_function(&ScKeynodes::GetResultCodeAddr, bp::return_value_policy<bp::return_by_value>()))
-    .staticmethod("GetResultCodeAddr")
-    .def("GetResultCodeByAddr", bp::make_function(&ScKeynodes::GetResultCodeByAddr, bp::return_value_policy<bp::return_by_value>()))
-    .staticmethod("GetResultCodeByAddr")
-    .def_readonly("kCommandStateAddr", &ScKeynodes::kCommandStateAddr)
-    .def_readonly("kCommandInitiatedAddr", &ScKeynodes::kCommandInitiatedAddr)
-    .def_readonly("kCommandProgressdAddr", &ScKeynodes::kCommandProgressdAddr)
-    .def_readonly("kCommandFinishedAddr", &ScKeynodes::kCommandFinishedAddr)
-    ;
+      .def(
+          "GetResultCodeAddr",
+          bp::make_function(&ScKeynodes::GetResultCodeAddr, bp::return_value_policy<bp::return_by_value>()))
+      .staticmethod("GetResultCodeAddr")
+      .def(
+          "GetResultCodeByAddr",
+          bp::make_function(&ScKeynodes::GetResultCodeByAddr, bp::return_value_policy<bp::return_by_value>()))
+      .staticmethod("GetResultCodeByAddr")
+      .def_readonly("kCommandStateAddr", &ScKeynodes::kCommandStateAddr)
+      .def_readonly("kCommandInitiatedAddr", &ScKeynodes::kCommandInitiatedAddr)
+      .def_readonly("kCommandProgressdAddr", &ScKeynodes::kCommandProgressdAddr)
+      .def_readonly("kCommandFinishedAddr", &ScKeynodes::kCommandFinishedAddr);
 
   bp::class_<impl::ScAgentCommandImpl>("ScAgentCommandImpl", bp::no_init)
-    .def("CreateCommand", &impl::ScAgentCommandImpl::CreateCommand)
-    .staticmethod("CreateCommand")
-    .def("RunCommand", &impl::ScAgentCommandImpl::RunCommand)
-    .staticmethod("RunCommand")
-    .def("RunCommandWait", &impl::ScAgentCommandImpl::RunCommandWait)
-    .staticmethod("RunCommandWait")
-    .def("GetCommandResultAddr", &impl::ScAgentCommandImpl::GetCommandResultAddr)
-    .staticmethod("GetCommandResultAddr")
-    ;
+      .def("CreateCommand", &impl::ScAgentCommandImpl::CreateCommand)
+      .staticmethod("CreateCommand")
+      .def("RunCommand", &impl::ScAgentCommandImpl::RunCommand)
+      .staticmethod("RunCommand")
+      .def("RunCommandWait", &impl::ScAgentCommandImpl::RunCommandWait)
+      .staticmethod("RunCommandWait")
+      .def("GetCommandResultAddr", &impl::ScAgentCommandImpl::GetCommandResultAddr)
+      .staticmethod("GetCommandResultAddr");
 }
 
-} // namespace
+}  // namespace
 
 namespace py
 {
-
 void ScPythonMemoryModule::Initialize()
 {
   PyImport_AppendInittab("sc", &PyInit_sc);
 }
 
-} // namespace py
-
+}  // namespace py

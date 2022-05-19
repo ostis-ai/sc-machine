@@ -11,7 +11,7 @@
 #include "uiKeynodes.h"
 #include "uiUtils.h"
 
-uiSCnSentenceNode::uiSCnSentenceNode(sScElementInfo *keywordEl)
+uiSCnSentenceNode::uiSCnSentenceNode(sScElementInfo * keywordEl)
   : mParent(0)
   , mType(ST_KEYWORD)
   , mElementInfo(keywordEl)
@@ -28,7 +28,6 @@ uiSCnSentenceNode::uiSCnSentenceNode()
   , mType(ST_NODE)
   , mElementInfo(0)
 {
-
 }
 
 void uiSCnSentenceNode::buildTree()
@@ -54,10 +53,10 @@ void uiSCnSentenceNode::buildTree()
 
   if (mType == ST_PREDICATE)
   {
-    sScElementInfo *el = (mParent->mElementInfo == mElementInfo->target) ? mElementInfo->source : mElementInfo->target;
+    sScElementInfo * el = (mParent->mElementInfo == mElementInfo->target) ? mElementInfo->source : mElementInfo->target;
     assert(el);
 
-    uiSCnSentenceNode *child = new uiSCnSentenceNode();
+    uiSCnSentenceNode * child = new uiSCnSentenceNode();
     child->mType = ST_NODE;
     child->mElementInfo = el;
     _appendChildNode(child);
@@ -71,12 +70,10 @@ void uiSCnSentenceNode::buildTree()
 
 void uiSCnSentenceNode::balance()
 {
-
 }
 
-const String& uiSCnSentenceNode::json()
+const String & uiSCnSentenceNode::json()
 {
-
   StringStream ss;
 
   ss << "{";
@@ -90,7 +87,8 @@ const String& uiSCnSentenceNode::json()
   {
     assert(mChildSentences.size() == 1);
     ss << ", \"SCNode\" : " << (*mChildSentences.begin())->json();
-  } else
+  }
+  else
   {
     ss << ", \"SCArcs\": [";
 
@@ -98,7 +96,7 @@ const String& uiSCnSentenceNode::json()
     tSentenceNodeList::iterator it, itEnd = mChildSentences.end();
     for (it = mChildSentences.begin(); it != itEnd; ++it)
     {
-      uiSCnSentenceNode *sentence = *it;
+      uiSCnSentenceNode * sentence = *it;
       assert(sentence->mType == ST_PREDICATE);
 
       if (it != mChildSentences.begin())
@@ -115,9 +113,9 @@ const String& uiSCnSentenceNode::json()
   return mJSONData;
 }
 
-uiSCnSentenceNode* uiSCnSentenceNode::createChildNode(uiSCnSentenceNode::eSentenceNodeType type)
+uiSCnSentenceNode * uiSCnSentenceNode::createChildNode(uiSCnSentenceNode::eSentenceNodeType type)
 {
-  uiSCnSentenceNode *child = new uiSCnSentenceNode();
+  uiSCnSentenceNode * child = new uiSCnSentenceNode();
   child->mType = type;
   _appendChildNode(child);
   return child;
@@ -132,7 +130,7 @@ void uiSCnSentenceNode::destroyChilds()
     delete *it;
 }
 
-void uiSCnSentenceNode::_removeChildNode(uiSCnSentenceNode *child)
+void uiSCnSentenceNode::_removeChildNode(uiSCnSentenceNode * child)
 {
   assert(child->mParent == this);
   child->mParent = 0;
@@ -147,7 +145,7 @@ void uiSCnSentenceNode::_removeChildNode(uiSCnSentenceNode *child)
   }
 }
 
-void uiSCnSentenceNode::_appendChildNode(uiSCnSentenceNode *child)
+void uiSCnSentenceNode::_appendChildNode(uiSCnSentenceNode * child)
 {
   assert(child->mParent != this);
 
@@ -158,7 +156,7 @@ void uiSCnSentenceNode::_appendChildNode(uiSCnSentenceNode *child)
   mChildSentences.push_back(child);
 }
 
-bool uiSCnSentenceNode::_hasChildNode(uiSCnSentenceNode *child) const
+bool uiSCnSentenceNode::_hasChildNode(uiSCnSentenceNode * child) const
 {
   tSentenceNodeList::const_iterator it, itEnd = mChildSentences.end();
   for (it = mChildSentences.begin(); it != itEnd; ++it)
@@ -170,16 +168,13 @@ bool uiSCnSentenceNode::_hasChildNode(uiSCnSentenceNode *child) const
   return false;
 }
 
-void uiSCnSentenceNode::_createChildPredicate(sScElementInfo *arc)
+void uiSCnSentenceNode::_createChildPredicate(sScElementInfo * arc)
 {
   assert(arc->type & sc_type_arc_mask);
 
-  uiSCnSentenceNode *child = createChildNode(ST_PREDICATE);
+  uiSCnSentenceNode * child = createChildNode(ST_PREDICATE);
   child->mElementInfo = arc;
 }
-
-
-
 
 // ---------------------------------------------------------------------------------------------------
 uiSc2SCnJsonTranslator::uiSc2SCnJsonTranslator()
@@ -190,24 +185,23 @@ uiSc2SCnJsonTranslator::uiSc2SCnJsonTranslator()
 uiSc2SCnJsonTranslator::~uiSc2SCnJsonTranslator()
 {
   if (mScElementsInfoPool)
-    delete []mScElementsInfoPool;
+    delete[] mScElementsInfoPool;
 }
 
 void uiSc2SCnJsonTranslator::runImpl()
 {
   // get command arguments
-  sc_iterator5 *it5 = sc_iterator5_a_a_f_a_f_new(s_default_ctx,
-                                                 sc_type_node | sc_type_const,
-                                                 sc_type_arc_common | sc_type_const,
-                                                 mInputConstructionAddr,
-                                                 sc_type_arc_pos_const_perm,
-                                                 keynode_question_nrel_answer);
+  sc_iterator5 * it5 = sc_iterator5_a_a_f_a_f_new(
+      s_default_ctx,
+      sc_type_node | sc_type_const,
+      sc_type_arc_common | sc_type_const,
+      mInputConstructionAddr,
+      sc_type_arc_pos_const_perm,
+      keynode_question_nrel_answer);
   if (sc_iterator5_next(it5) == SC_TRUE)
   {
-    sc_iterator3 *it3 = sc_iterator3_f_a_a_new(s_default_ctx,
-                                               sc_iterator5_value(it5, 0),
-                                               sc_type_arc_pos_const_perm,
-                                               0);
+    sc_iterator3 * it3 =
+        sc_iterator3_f_a_a_new(s_default_ctx, sc_iterator5_value(it5, 0), sc_type_arc_pos_const_perm, 0);
     while (sc_iterator3_next(it3) == SC_TRUE)
       mKeywordsList.push_back(sc_iterator3_value(it3, 2));
     sc_iterator3_free(it3);
@@ -216,14 +210,12 @@ void uiSc2SCnJsonTranslator::runImpl()
 
   collectScElementsInfo();
 
-
-
   mOutputData = "[";
 
   tScAddrList::iterator it, itEnd = mKeywordsList.end();
   for (it = mKeywordsList.begin(); it != itEnd; ++it)
   {
-    uiSCnSentenceNode *sentence = new uiSCnSentenceNode(mScElementsInfo[*it]);
+    uiSCnSentenceNode * sentence = new uiSCnSentenceNode(mScElementsInfo[*it]);
     mRootSentences.push_back(sentence);
   }
 
@@ -251,31 +243,25 @@ void uiSc2SCnJsonTranslator::runImpl()
   mRootSentences.clear();
 
   mOutputData += "]";
-  //qDebug() << "Result: " << QString().fromStdString(mOutputData);
+  // qDebug() << "Result: " << QString().fromStdString(mOutputData);
 }
 
 String uiSc2SCnJsonTranslator::translateElement(sc_addr addr, bool isKeyword)
 {
-
   return "";
 }
 
 bool uiSc2SCnJsonTranslator::isInOutputConstruction(sc_addr addr) const
 {
-  sc_iterator3 *it3 = sc_iterator3_f_a_f_new(s_default_ctx,
-                                             mInputConstructionAddr,
-                                             sc_type_arc_pos_const_perm,
-                                             addr);
+  sc_iterator3 * it3 = sc_iterator3_f_a_f_new(s_default_ctx, mInputConstructionAddr, sc_type_arc_pos_const_perm, addr);
   bool result = (sc_iterator3_next(it3) == SC_TRUE);
   sc_iterator3_free(it3);
   return result;
 }
 
-
-
 void uiSc2SCnJsonTranslator::collectScElementsInfo()
 {
-  sc_uint32 elementsCount =(sc_uint32) mObjects.size();
+  sc_uint32 elementsCount = (sc_uint32)mObjects.size();
   mScElementsInfoPool = new sScElementInfo[elementsCount];
 
   sc_uint32 poolUsed = 0;
@@ -300,7 +286,7 @@ void uiSc2SCnJsonTranslator::collectScElementsInfo()
     arcAddr = it->first;
     elType = it->second;
 
-    sScElementInfo *elInfo = mScElementsInfo[arcAddr];
+    sScElementInfo * elInfo = mScElementsInfo[arcAddr];
     elInfo->isInSentenceTree = false;
     elInfo->visualType = sScElementInfo::VT_NODE;
 
@@ -310,16 +296,15 @@ void uiSc2SCnJsonTranslator::collectScElementsInfo()
 
     // get begin/end addrs
     if (sc_memory_get_arc_begin(s_default_ctx, arcAddr, &begAddr) != SC_RESULT_OK)
-      continue; // @todo process errors
+      continue;  // @todo process errors
     if (sc_memory_get_arc_end(s_default_ctx, arcAddr, &endAddr) != SC_RESULT_OK)
-      continue; // @todo process errors
-
+      continue;  // @todo process errors
 
     elInfo->srcAddr = begAddr;
     elInfo->trgAddr = endAddr;
 
-    sScElementInfo *begInfo = mScElementsInfo[begAddr];
-    sScElementInfo *endInfo = mScElementsInfo[endAddr];
+    sScElementInfo * begInfo = mScElementsInfo[begAddr];
+    sScElementInfo * endInfo = mScElementsInfo[endAddr];
 
     elInfo->source = begInfo;
     elInfo->target = endInfo;
@@ -335,7 +320,7 @@ void uiSc2SCnJsonTranslator::collectScElementsInfo()
   tScElemetsInfoMap::iterator itInfo, itInfoEnd = mScElementsInfo.begin();
   for (itInfo = mScElementsInfo.begin(); itInfo != itInfoEnd; ++itInfo)
   {
-    sScElementInfo *el = itInfo->second;
+    sScElementInfo * el = itInfo->second;
 
     // possible sc-lement can be visualized as set
     if (el->type & sc_type_node_tuple)
@@ -346,17 +331,14 @@ void uiSc2SCnJsonTranslator::collectScElementsInfo()
     // possible sc-element can be visualized as contour
     if (el->type & sc_type_node_struct)
     {
-
     }
-
   }
 
   // construct tree of sentences
-
 }
 
 // -------------------------------------
-sc_result uiSc2SCnJsonTranslator::ui_translate_sc2scn(const sc_event *event, sc_addr arg)
+sc_result uiSc2SCnJsonTranslator::ui_translate_sc2scn(const sc_event * event, sc_addr arg)
 {
   sc_addr cmd_addr, input_addr, format_addr;
 
@@ -377,5 +359,3 @@ sc_result uiSc2SCnJsonTranslator::ui_translate_sc2scn(const sc_event *event, sc_
 
   return SC_RESULT_OK;
 }
-
-

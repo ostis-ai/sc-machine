@@ -25,4 +25,4 @@ sc_result sc_fm_clear();
 sc_result sc_fm_save();
 sc_result sc_fm_clean_state();
 
-#endif // _sc_fm_engine_h_
+#endif  // _sc_fm_engine_h_

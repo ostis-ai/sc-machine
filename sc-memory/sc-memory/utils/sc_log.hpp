@@ -1,8 +1,8 @@
 /*
-* This source file is part of an OSTIS project. For the latest info, see http://ostis.net
-* Distributed under the MIT License
-* (See accompanying file COPYING.MIT or copy at http://opensource.org/licenses/MIT)
-*/
+ * This source file is part of an OSTIS project. For the latest info, see http://ostis.net
+ * Distributed under the MIT License
+ * (See accompanying file COPYING.MIT or copy at http://opensource.org/licenses/MIT)
+ */
 #pragma once
 
 #include "sc_console.hpp"
@@ -14,7 +14,6 @@
 
 namespace utils
 {
-
 class ScLog final
 {
 protected:
@@ -23,7 +22,6 @@ protected:
   _SC_EXTERN ~ScLog();
 
 public:
-
   // should be synced with kTypeToStr in cpp
   enum class Type : uint8_t
   {
@@ -41,8 +39,6 @@ public:
     Console = 0,
     File
   };
-
-
 
   _SC_EXTERN void Shutdown();
 
@@ -67,29 +63,63 @@ private:
 
   bool Initialize(std::string const & file_name);
 
-  template<size_t N>
-  static int FindEnumElement(const std::string ( & elements)[N], const std::string & externalValue);
+  template <size_t N>
+  static int FindEnumElement(const std::string (&elements)[N], const std::string & externalValue);
 };
 
-
 #define SC_LOG_COLOR(__type, __msg, __color) \
-{ std::stringstream ss; ss << __msg; ::utils::ScLog::GetInstance()->Message(__type, ss.str(), __color); }
+  { \
+    std::stringstream ss; \
+    ss << __msg; \
+    ::utils::ScLog::GetInstance()->Message(__type, ss.str(), __color); \
+  }
 
 #define SC_LOG(__type, __msg) SC_LOG_COLOR(__type, __msg, ScConsole::Color::White)
 
+#define SC_LOG_DEBUG(__msg) \
+  { \
+    SC_LOG_COLOR(::utils::ScLog::Type::Debug, __msg, ScConsole::Color::LightBlue) \
+  }
+#define SC_LOG_INFO(__msg) \
+  { \
+    SC_LOG_COLOR(::utils::ScLog::Type::Info, __msg, ScConsole::Color::Grey) \
+  }
+#define SC_LOG_WARNING(__msg) \
+  { \
+    SC_LOG_COLOR(::utils::ScLog::Type::Warning, __msg, ScConsole::Color::Yellow) \
+  }
+#define SC_LOG_ERROR(__msg) \
+  { \
+    SC_LOG_COLOR(::utils::ScLog::Type::Error, __msg, ScConsole::Color::Red) \
+  }
+#define SC_LOG_PYTHON(__msg) \
+  { \
+    SC_LOG_COLOR(::utils::ScLog::Type::Python, __msg, ScConsole::Color::DarkGrey) \
+  }
+#define SC_LOG_PYTHON_ERROR(__msg) \
+  { \
+    SC_LOG_COLOR(::utils::ScLog::Type::PythonError, __msg, ScConsole::Color::LightRed) \
+  }
+#define SC_LOG_INFO_COLOR(__msg, __color) \
+  { \
+    SC_LOG_COLOR(::utils::ScLog::Type::Info, __msg, __color) \
+  }
 
-#define SC_LOG_DEBUG(__msg) { SC_LOG_COLOR(::utils::ScLog::Type::Debug, __msg, ScConsole::Color::LightBlue) }
-#define SC_LOG_INFO(__msg) { SC_LOG_COLOR(::utils::ScLog::Type::Info, __msg, ScConsole::Color::Grey) }
-#define SC_LOG_WARNING(__msg) { SC_LOG_COLOR(::utils::ScLog::Type::Warning, __msg, ScConsole::Color::Yellow) }
-#define SC_LOG_ERROR(__msg) { SC_LOG_COLOR(::utils::ScLog::Type::Error, __msg, ScConsole::Color::Red) }
-#define SC_LOG_PYTHON(__msg) { SC_LOG_COLOR(::utils::ScLog::Type::Python, __msg, ScConsole::Color::DarkGrey) }
-#define SC_LOG_PYTHON_ERROR(__msg) { SC_LOG_COLOR(::utils::ScLog::Type::PythonError, __msg, ScConsole::Color::LightRed) }
-#define SC_LOG_INFO_COLOR(__msg, __color) { SC_LOG_COLOR(::utils::ScLog::Type::Info, __msg, __color) }
+#define SC_LOG_INIT(__msg) \
+  { \
+    SC_LOG_INFO("[init] " << __msg) \
+  }
+#define SC_LOG_SHUTDOWN(__msg) \
+  { \
+    SC_LOG_INFO("[shutdown] " << __msg) \
+  }
+#define SC_LOG_LOAD(__msg) \
+  { \
+    SC_LOG_INFO("[load] " << __msg) \
+  }
+#define SC_LOG_UNLOAD(__msg) \
+  { \
+    SC_LOG_INFO("[unload] " << __msg) \
+  }
 
-#define SC_LOG_INIT(__msg) { SC_LOG_INFO("[init] " << __msg) }
-#define SC_LOG_SHUTDOWN(__msg) { SC_LOG_INFO("[shutdown] " << __msg) }
-#define SC_LOG_LOAD(__msg) { SC_LOG_INFO("[load] " << __msg) }
-#define SC_LOG_UNLOAD(__msg) { SC_LOG_INFO("[unload] " << __msg) }
-
-
-} // namesapce utils
+}  // namespace utils

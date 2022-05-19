@@ -3,10 +3,9 @@
 
 #include "MetaUtils.hpp"
 
-CursorType::CursorType(const CXType &handle)
+CursorType::CursorType(const CXType & handle)
   : m_handle(handle)
 {
-
 }
 
 std::string CursorType::GetDisplayName(void) const

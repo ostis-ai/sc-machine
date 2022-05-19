@@ -113,20 +113,13 @@ std::string ScLink::GetAsString() const
   return "";
 }
 
-
 bool ScLink::_DetermineTypeEdgeImpl(ScAddr & outEdge, ScAddr & outType) const
 {
   // set type
   ScTemplate templ;
-  templ.Triple(
-    ScKeynodes::kBinaryType,
-    ScType::EdgeAccessVarPosPerm,
-    ScType::NodeVarClass >> "_type");
+  templ.Triple(ScKeynodes::kBinaryType, ScType::EdgeAccessVarPosPerm, ScType::NodeVarClass >> "_type");
 
-  templ.Triple(
-    "_type",
-    ScType::EdgeAccessVarPosTemp >> "_edge",
-    m_addr);
+  templ.Triple("_type", ScType::EdgeAccessVarPosTemp >> "_edge", m_addr);
 
   ScTemplateSearchResult res;
   if (m_ctx.HelperSearchTemplate(templ, res))
@@ -139,4 +132,3 @@ bool ScLink::_DetermineTypeEdgeImpl(ScAddr & outEdge, ScAddr & outType) const
 
   return false;
 }
-

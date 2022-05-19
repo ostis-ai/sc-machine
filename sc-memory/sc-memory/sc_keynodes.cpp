@@ -78,7 +78,7 @@ bool ScKeynodes::Init(bool force)
   }
 
   // command states
-  ScAddr states[] = { kCommandFinishedAddr, kCommandInitiatedAddr, kCommandProgressdAddr };
+  ScAddr states[] = {kCommandFinishedAddr, kCommandInitiatedAddr, kCommandProgressdAddr};
   for (auto const & a : states)
   {
     if (!ctx.CreateEdge(ScType::EdgeAccessConstPosPerm, kCommandStateAddr, a).IsValid())
@@ -87,11 +87,9 @@ bool ScKeynodes::Init(bool force)
 
   // binary types
   {
-    ScSet set(&ctx, kBinaryType);
-    set << kBinaryDouble << kBinaryFloat << kBinaryString
-        << kBinaryInt8 << kBinaryInt16 << kBinaryInt32 << kBinaryInt64
-        << kBinaryUInt8 << kBinaryUInt16 << kBinaryUInt32 << kBinaryUInt64
-        << kBinaryCustom;
+    ScSet set(ctx, kBinaryType);
+    set << kBinaryDouble << kBinaryFloat << kBinaryString << kBinaryInt8 << kBinaryInt16 << kBinaryInt32 << kBinaryInt64
+        << kBinaryUInt8 << kBinaryUInt16 << kBinaryUInt32 << kBinaryUInt64 << kBinaryCustom;
   }
 
   ms_isInitialized = true;
@@ -167,13 +165,12 @@ sc_result ScKeynodes::GetResultCodeByAddr(ScAddr const & resultClassAddr)
   return SC_RESULT_UNKNOWN;
 }
 
-
 ScAddr const & ScKeynodes::GetRrelIndex(size_t idx)
 {
   if (idx >= kKeynodeRrelListNum)
   {
-    SC_THROW_EXCEPTION(utils::ExceptionInvalidParams,
-                       "You should use index in range[0; " + std::to_string(kKeynodeRrelListNum) + "]");
+    SC_THROW_EXCEPTION(
+        utils::ExceptionInvalidParams, "You should use index in range[0; " + std::to_string(kKeynodeRrelListNum) + "]");
   }
 
   return kKeynodeRrelList[idx];

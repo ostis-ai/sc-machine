@@ -21,5 +21,4 @@ sc_result sc_helper_init(sc_memory_context const * ctx);
  */
 void sc_helper_shutdown();
 
-
 #endif

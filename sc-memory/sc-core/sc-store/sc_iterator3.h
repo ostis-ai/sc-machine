@@ -11,14 +11,13 @@
 #include "sc_types.h"
 #include "sc_element.h"
 
-
 //! sc-iterator types
 typedef enum
 {
-  sc_iterator3_f_a_a = 0, // outgoing edges
-  sc_iterator3_a_a_f,     // ingoing edges
-  sc_iterator3_f_a_f,     // edge between source and target
-  sc_iterator3_a_f_a,		  // find source/target elements of edge
+  sc_iterator3_f_a_a = 0,  // outgoing edges
+  sc_iterator3_a_a_f,      // ingoing edges
+  sc_iterator3_f_a_f,      // edge between source and target
+  sc_iterator3_a_f_a,      // find source/target elements of edge
   // just for clean template search
   sc_iterator3_f_f_a,
   sc_iterator3_a_f_f,
@@ -43,10 +42,10 @@ struct _sc_iterator_param
  */
 struct _sc_iterator3
 {
-  sc_iterator3_type type;          // iterator type (search template)
+  sc_iterator3_type type;         // iterator type (search template)
   sc_iterator_param params[3];    // parameters array
   sc_addr results[3];             // results array (same size as params)
-  const sc_memory_context *ctx;   // pointer to used memory context
+  const sc_memory_context * ctx;  // pointer to used memory context
   sc_bool finished;
 };
 
@@ -56,7 +55,11 @@ struct _sc_iterator3
  * @param end_type Type of end element for output arcs, to iterate
  * @return If iterator created, then return pointer to it; otherwise return null
  */
-_SC_EXTERN sc_iterator3 * sc_iterator3_f_a_a_new(sc_memory_context const * ctx, sc_addr el, sc_type arc_type, sc_type end_type);
+_SC_EXTERN sc_iterator3 * sc_iterator3_f_a_a_new(
+    sc_memory_context const * ctx,
+    sc_addr el,
+    sc_type arc_type,
+    sc_type end_type);
 
 /*! Create iterator to find input arcs for specified element
  * @param beg_type Type of begin element for input arcs, to iterate
@@ -64,7 +67,11 @@ _SC_EXTERN sc_iterator3 * sc_iterator3_f_a_a_new(sc_memory_context const * ctx, 
  * @param el sc-addr of element to iterate input arcs
  * @return If iterator created, then return pointer to it; otherwise return null
  */
-_SC_EXTERN sc_iterator3 * sc_iterator3_a_a_f_new(sc_memory_context const * ctx, sc_type beg_type, sc_type arc_type, sc_addr el);
+_SC_EXTERN sc_iterator3 * sc_iterator3_a_a_f_new(
+    sc_memory_context const * ctx,
+    sc_type beg_type,
+    sc_type arc_type,
+    sc_addr el);
 
 /*! Create iterator to find arcs between two specified elements
  * @param el_beg sc-addr of begin element
@@ -72,25 +79,51 @@ _SC_EXTERN sc_iterator3 * sc_iterator3_a_a_f_new(sc_memory_context const * ctx, 
  * @param el_end sc-addr of end element
  * @return If iterator created, then return pointer to it; otherwise return null
  */
-_SC_EXTERN sc_iterator3 * sc_iterator3_f_a_f_new(sc_memory_context const * ctx, sc_addr el_beg, sc_type arc_type, sc_addr el_end);
+_SC_EXTERN sc_iterator3 * sc_iterator3_f_a_f_new(
+    sc_memory_context const * ctx,
+    sc_addr el_beg,
+    sc_type arc_type,
+    sc_addr el_end);
 
 /*! Create iterator to determine edge source and target
  */
-_SC_EXTERN sc_iterator3 * sc_iterator3_a_f_a_new(sc_memory_context const * ctx, sc_type beg_type, sc_addr arc_addr, sc_type end_type);
+_SC_EXTERN sc_iterator3 * sc_iterator3_a_f_a_new(
+    sc_memory_context const * ctx,
+    sc_type beg_type,
+    sc_addr arc_addr,
+    sc_type end_type);
 
 // Requried for clean template search algorithm
-_SC_EXTERN sc_iterator3 * sc_iterator3_f_f_a_new(sc_memory_context const * ctx, sc_addr beg_addr, sc_addr edge_addr, sc_type end_type);
-_SC_EXTERN sc_iterator3 * sc_iterator3_a_f_f_new(sc_memory_context const * ctx, sc_type beg_type, sc_addr edge_addr, sc_addr end_addr);
-_SC_EXTERN sc_iterator3 * sc_iterator3_f_f_f_new(sc_memory_context const * ctx, sc_addr beg_addr, sc_addr edge_addr, sc_addr end_addr);
+_SC_EXTERN sc_iterator3 * sc_iterator3_f_f_a_new(
+    sc_memory_context const * ctx,
+    sc_addr beg_addr,
+    sc_addr edge_addr,
+    sc_type end_type);
+_SC_EXTERN sc_iterator3 * sc_iterator3_a_f_f_new(
+    sc_memory_context const * ctx,
+    sc_type beg_type,
+    sc_addr edge_addr,
+    sc_addr end_addr);
+_SC_EXTERN sc_iterator3 * sc_iterator3_f_f_f_new(
+    sc_memory_context const * ctx,
+    sc_addr beg_addr,
+    sc_addr edge_addr,
+    sc_addr end_addr);
 
 /*! Create new sc-iterator-3
  * @param type Iterator type (search template)
  * @param p1 First iterator parameter
  * @param p2 Second iterator parameter
  * @param p3 Third iterator parameter
- * @return Pointer to created iterator. If parameters invalid for specified iterator type, or type is not a sc-iterator-3, then return 0
+ * @return Pointer to created iterator. If parameters invalid for specified iterator type, or type is not a
+ * sc-iterator-3, then return 0
  */
-_SC_EXTERN sc_iterator3 * sc_iterator3_new(sc_memory_context const * ctx, sc_iterator3_type type, sc_iterator_param p1, sc_iterator_param p2, sc_iterator_param p3);
+_SC_EXTERN sc_iterator3 * sc_iterator3_new(
+    sc_memory_context const * ctx,
+    sc_iterator3_type type,
+    sc_iterator_param p1,
+    sc_iterator_param p2,
+    sc_iterator_param p3);
 
 /*! Destroy iterator and free allocated memory
  * @param it Pointer to sc-iterator that need to be destroyed

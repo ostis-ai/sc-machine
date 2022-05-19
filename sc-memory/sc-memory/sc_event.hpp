@@ -30,7 +30,11 @@ public:
     ContentChanged
   };
 
-  explicit _SC_EXTERN ScEvent(class ScMemoryContext const & ctx, const ScAddr & addr, Type eventType, DelegateFunc func = DelegateFunc());
+  explicit _SC_EXTERN ScEvent(
+      class ScMemoryContext const & ctx,
+      const ScAddr & addr,
+      Type eventType,
+      DelegateFunc func = DelegateFunc());
   virtual _SC_EXTERN ~ScEvent();
 
   // Don't allow copying of events
@@ -71,6 +75,7 @@ public:
 class ScEventAddInputEdge final : public ScEvent
 {
   friend class ScMemoryContext;
+
 public:
   _SC_EXTERN ScEventAddInputEdge(const ScMemoryContext & ctx, const ScAddr & addr, ScEvent::DelegateFunc func)
     : ScEvent(ctx, addr, ScEvent::Type::AddInputEdge, func)
@@ -81,6 +86,7 @@ public:
 class ScEventRemoveOutputEdge final : public ScEvent
 {
   friend class ScMemoryContext;
+
 public:
   _SC_EXTERN ScEventRemoveOutputEdge(const ScMemoryContext & ctx, const ScAddr & addr, ScEvent::DelegateFunc func)
     : ScEvent(ctx, addr, ScEvent::Type::RemoveOutputEdge, func)
@@ -91,6 +97,7 @@ public:
 class ScEventRemoveInputEdge final : public ScEvent
 {
   friend class ScMemoryContext;
+
 public:
   _SC_EXTERN ScEventRemoveInputEdge(const ScMemoryContext & ctx, const ScAddr & addr, ScEvent::DelegateFunc func)
     : ScEvent(ctx, addr, ScEvent::Type::RemoveInputEdge, func)
@@ -101,6 +108,7 @@ public:
 class ScEventEraseElement final : public ScEvent
 {
   friend class ScMemoryContext;
+
 public:
   _SC_EXTERN ScEventEraseElement(const ScMemoryContext & ctx, const ScAddr & addr, ScEvent::DelegateFunc func)
     : ScEvent(ctx, addr, ScEvent::Type::EraseElement, func)
@@ -111,6 +119,7 @@ public:
 class ScEventContentChanged final : public ScEvent
 {
   friend class ScMemoryContext;
+
 public:
   _SC_EXTERN ScEventContentChanged(const ScMemoryContext & ctx, const ScAddr & addr, ScEvent::DelegateFunc func)
     : ScEvent(ctx, addr, ScEvent::Type::ContentChanged, func)

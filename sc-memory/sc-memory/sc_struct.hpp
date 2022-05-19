@@ -12,9 +12,10 @@
 class ScSet
 {
 public:
-  _SC_EXTERN ScSet(class ScMemoryContext * ctx, ScAddr const & setAddr);
+  _SC_EXTERN ScSet(class ScMemoryContext & ctx, ScAddr const & setAddr);
 
-  /* Append element into sc-set. If element already exist, then doesn't append it and return false; otherwise returns true. */
+  /* Append element into sc-set. If element already exist, then doesn't append it and return false; otherwise returns
+   * true. */
   _SC_EXTERN bool Append(ScAddr const & elAddr);
   _SC_EXTERN bool Append(ScAddr const & elAddr, ScAddr const & attrAddr);
 
@@ -22,16 +23,16 @@ public:
   _SC_EXTERN bool Remove(ScAddr const & elAddr);
 
   /* Operator equal to append */
-  _SC_EXTERN ScSet & operator << (ScAddr const & elAddr);
-  _SC_EXTERN ScSet & operator << (class ScTemplateGenResult const & res);
+  _SC_EXTERN ScSet & operator<<(ScAddr const & elAddr);
+  _SC_EXTERN ScSet & operator<<(class ScTemplateGenResult const & res);
 
   /* Operator equal to remove */
-  _SC_EXTERN ScSet & operator >> (ScAddr const & elAddr);
+  _SC_EXTERN ScSet & operator>>(ScAddr const & elAddr);
 
   /* Check if specified element exist in set */
   _SC_EXTERN bool HasElement(ScAddr const & elAddr) const;
 
-  _SC_EXTERN ScAddr const & operator * () const;
+  _SC_EXTERN ScAddr const & operator*() const;
 
   /* Check if set has no elements */
   _SC_EXTERN bool IsEmpty() const;
@@ -39,15 +40,15 @@ public:
   /// TODO: implement +, -, == operators
 private:
   ScAddr m_addr;
-  ScMemoryContext * m_context;
+  ScMemoryContext & m_context;
 };
 
 class ScStruct : public ScSet
 {
 public:
-  _SC_EXTERN ScStruct(ScMemoryContext * ctx, ScAddr const & structAddr)
+  _SC_EXTERN ScStruct(ScMemoryContext & ctx, ScAddr const & structAddr)
     : ScSet(ctx, structAddr)
   {
     // TODO: check type of struct element
-  }  
+  }
 };

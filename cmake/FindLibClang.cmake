@@ -46,8 +46,17 @@ if (NOT LIBCLANG_LLVM_CONFIG_EXECUTABLE)
     set(LIBCLANG_LLVM_CONFIG_EXECUTABLE $ENV{LIBCLANG_LLVM_CONFIG_EXECUTABLE})
     if (NOT LIBCLANG_LLVM_CONFIG_EXECUTABLE)
         set(llvm_config_names llvm-config)
-        foreach(minor RANGE 9 1)
-            list(APPEND llvm_config_names "llvm-config-${minor}" "llvm-config-3.${minor}" "llvm-config-mp-3.${minor}")
+        foreach(minor RANGE 9 0)
+            list(APPEND llvm_config_names 
+                "llvm-config"
+                "llvm-config-10"
+                "llvm-config-7"
+                "llvm-config-6.${minor}"
+                "llvm-config-5.${minor}"
+                "llvm-config-${minor}"
+                "llvm-config-3.${minor}"
+                "llvm-config-mp-3.${minor}"
+                )
         endforeach ()
         find_program(LIBCLANG_LLVM_CONFIG_EXECUTABLE NAMES ${llvm_config_names})
     endif ()

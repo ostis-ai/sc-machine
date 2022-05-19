@@ -8,7 +8,7 @@
 #include "sc_memory.hpp"
 #include "sc_template.hpp"
 
-ScSet::ScSet(ScMemoryContext * ctx, ScAddr const & structAddr)
+ScSet::ScSet(ScMemoryContext & ctx, ScAddr const & structAddr)
   : m_addr(structAddr)
   , m_context(ctx)
 {
@@ -16,27 +16,25 @@ ScSet::ScSet(ScMemoryContext * ctx, ScAddr const & structAddr)
 
 bool ScSet::Append(ScAddr const & elAddr)
 {
-  SC_ASSERT(m_context, ());
   if (!HasElement(elAddr))
-    return m_context->CreateEdge(ScType::EdgeAccessConstPosPerm, m_addr, elAddr).IsValid();
+    return m_context.CreateEdge(ScType::EdgeAccessConstPosPerm, m_addr, elAddr).IsValid();
 
   return false;
 }
 
 bool ScSet::Append(ScAddr const & elAddr, ScAddr const & attrAddr)
 {
-  SC_ASSERT(m_context, ());
   if (!HasElement(elAddr))
   {
-    ScAddr const edge = m_context->CreateEdge(ScType::EdgeAccessConstPosPerm, m_addr, elAddr);
+    ScAddr const edge = m_context.CreateEdge(ScType::EdgeAccessConstPosPerm, m_addr, elAddr);
     if (edge.IsValid())
     {
-      ScAddr const edge2 = m_context->CreateEdge(ScType::EdgeAccessConstPosPerm, attrAddr, edge);
+      ScAddr const edge2 = m_context.CreateEdge(ScType::EdgeAccessConstPosPerm, attrAddr, edge);
       if (edge2.IsValid())
         return true;
 
       // cleanup
-      m_context->EraseElement(edge);
+      m_context.EraseElement(edge);
     }
   }
 
@@ -45,12 +43,11 @@ bool ScSet::Append(ScAddr const & elAddr, ScAddr const & attrAddr)
 
 bool ScSet::Remove(ScAddr const & elAddr)
 {
-  SC_ASSERT(m_context, ());
   bool found = false;
-  ScIterator3Ptr iter = m_context->Iterator3(m_addr, ScType::EdgeAccessConstPosPerm, elAddr);
+  ScIterator3Ptr iter = m_context.Iterator3(m_addr, ScType::EdgeAccessConstPosPerm, elAddr);
   while (iter->Next())
   {
-    m_context->EraseElement(iter->Get(1));
+    m_context.EraseElement(iter->Get(1));
     found = true;
   }
 
@@ -59,17 +56,16 @@ bool ScSet::Remove(ScAddr const & elAddr)
 
 bool ScSet::HasElement(ScAddr const & elAddr) const
 {
-  SC_ASSERT(m_context, ());
-  return m_context->HelperCheckEdge(m_addr, elAddr, ScType::EdgeAccessConstPosPerm);
+  return m_context.HelperCheckEdge(m_addr, elAddr, ScType::EdgeAccessConstPosPerm);
 }
 
-ScSet & ScSet::operator << (ScAddr const & elAddr)
+ScSet & ScSet::operator<<(ScAddr const & elAddr)
 {
   Append(elAddr);
   return *this;
 }
 
-ScSet & ScSet::operator << (ScTemplateGenResult const & res)
+ScSet & ScSet::operator<<(ScTemplateGenResult const & res)
 {
   size_t const res_num = res.Size();
   for (size_t i = 0; i < res_num; ++i)
@@ -78,20 +74,19 @@ ScSet & ScSet::operator << (ScTemplateGenResult const & res)
   return *this;
 }
 
-ScSet & ScSet::operator >> (ScAddr const & elAddr)
+ScSet & ScSet::operator>>(ScAddr const & elAddr)
 {
   Remove(elAddr);
   return *this;
 }
 
-ScAddr const & ScSet::operator * () const
+ScAddr const & ScSet::operator*() const
 {
   return m_addr;
 }
 
 bool ScSet::IsEmpty() const
 {
-  SC_ASSERT(m_context, ());
-  ScIterator3Ptr iter = m_context->Iterator3(m_addr, SC_TYPE(sc_type_arc_pos_const_perm), SC_TYPE(0));
+  ScIterator3Ptr const iter = m_context.Iterator3(m_addr, ScType::EdgeAccessConstPosPerm, ScType::Unknown);
   return !iter->Next();
 }
