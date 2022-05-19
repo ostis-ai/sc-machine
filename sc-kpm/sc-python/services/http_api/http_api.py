@@ -15,7 +15,7 @@ from sc import *
 self_path = os.path.dirname(__file__)
 
 def check_auth():
-    path = os.path.join(Path(__file__).parent.parent.parent.parent.parent,"CMakeLists.txt")
+    path = os.path.join(Path(__file__).parent.parent.parent.parent.parent, "CMakeLists.txt")
     try:
         with open(path, 'r') as file:
             if "option(AUTH_ENABLED ON)" in file.read():
@@ -100,7 +100,7 @@ class ServerThread(threading.Thread):
     ioloop = tornado.ioloop.IOLoop.instance()
 
     self.app = tornado.web.Application([
-        (r"/ws_json", ScJsonSocketHandler, { 'evt_manager': self.module.events, 'ioloop': ioloop, 'auth': self.auth }),
+        (r"/ws_json", ScJsonSocketHandler, { 'evt_manager': self.module.events, 'ioloop': ioloop, 'auth': self.auth}),
         (r"/content/([0-9]+)", ContentHandler),
         (r'/assets/(.*)', self.staticHandler, {'path': self.assets_path}),
         # should be a last

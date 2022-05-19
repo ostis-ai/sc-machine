@@ -21,7 +21,7 @@ class WsJsonApiTest(testing.AsyncTestCase):
     ioloop = tornado.ioloop.IOLoop.instance()
 
     app = web.Application([
-        (r"/", wsh.ScJsonSocketHandler, {'evt_manager': module.events, 'ioloop': ioloop}),
+        (r"/", wsh.ScJsonSocketHandler, {'evt_manager': module.events, 'ioloop': ioloop, 'auth': False}),
     ])
     server = httpserver.HTTPServer(app)
     socket, self.port = testing.bind_unused_port()

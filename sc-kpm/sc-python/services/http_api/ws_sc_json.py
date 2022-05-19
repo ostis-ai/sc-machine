@@ -7,10 +7,10 @@ import json
 import sys
 import traceback
 import threading
-from auth.validators import TokenValidator
+from http_api.auth.validators import TokenValidator
 import jwt
-from auth.config import params
-import auth.constants as cnt
+from http_api.auth.config import params
+import http_api.auth.constants as cnt
 
 clients = []
 
