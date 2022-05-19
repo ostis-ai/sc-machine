@@ -1,4 +1,3 @@
-
 import tornado
 
 from tornado import websocket
@@ -8,6 +7,10 @@ import json
 import sys
 import traceback
 import threading
+from auth.validators import TokenValidator
+import jwt
+from auth.config import params
+import auth.constants as cnt
 
 clients = []
 
@@ -28,19 +31,35 @@ class EventHandler:
 
 class ScJsonSocketHandler(websocket.WebSocketHandler):
 
-  def initialize(self, evt_manager, ioloop):
+  def initialize(self, evt_manager, ioloop, auth):
     self.events = {}
     self.event_manager = evt_manager
     self.alive = False
     self.ioloop = ioloop
+    self.auth = auth
 
   def check_origin(self, origin):
     return True
 
+  def check_valid(self):
+      if 'token' in self.request.arguments:
+            token = self.request.arguments['token'][0].decode("utf-8")
+            print(token)
+            if TokenValidator._validate_token(token):
+                return True
+      return False
+
   def open(self):
+    if self.auth:
+        if not self.check_valid():
+            self.alive = False
+            self.close()
     if self not in clients:
-      clients.append(self)
-    self.alive = True
+        clients.append(self)
+        self.alive = True
+
+  def is_alive(self):
+      return self.alive
 
   def on_close(self):
     if self in clients:
@@ -53,6 +72,9 @@ class ScJsonSocketHandler(websocket.WebSocketHandler):
     self.events.clear()
 
   def on_message(self, msg):
+    if not self.is_alive:
+        return
+
     params = json.loads(msg)
     status = False
 

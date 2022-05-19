@@ -19,4 +19,6 @@ manifest.json
 __pycache__
 .DS_store
 .antlr
-.cache
+
+### SC-server keys ###
+/sc-kpm/sc-python/services/http_api/auth/*.pem
