@@ -10,6 +10,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add `;` after `SC_ASSERT` calls in projects that use sc-machine
 
 ### Added
+- Implement `sc-dictionary`. Replace `rocksdb` string storage to `sc-dictionary` storage. Add opportunity to switch
+  rocksdb and sc-dictionary
 - Implement `sc-dictionary`. Replace `rocksdb` string storage to `sc-dictionary` storage
 - Wrap and separate allocating, assertion, notification and atomic lock free procedures
 - Add tests module for sc-agents-utils

@@ -64,12 +64,8 @@ void _logPrintHandler(gchar const * log_domain, GLogLevelFlags log_level, gchar 
 
   case G_LOG_LEVEL_INFO:
   case G_LOG_LEVEL_MESSAGE:
-  {
-    std::stringstream ss;
-    ss << message;
-    ::utils::ScLog::GetInstance()->Message(::utils::ScLog::Type::Info, ss.str(), ScConsole::Color::Grey);
+    SC_LOG_INFO(message);
     break;
-  }
 
   default:
     SC_LOG_DEBUG(message);

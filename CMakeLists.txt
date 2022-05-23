@@ -22,6 +22,8 @@ option(SC_AUTO_TEST "Flag to build for automation testing" OFF)
 option(SC_BUILD_TESTS "Flag to build unit tests" ON)
 option(SC_BUILD_BENCH "Flag to build benchmark" OFF)
 
+set(SC_FILE_MEMORY Dictionary)
+
 code_coverage(SC_COVERAGE "Flag to generate coverage report" OFF "-g -O0 --coverage")
 option(SC_CLANG_FORMAT_CODE "Flag to add clangformat and clangformat_check targets" OFF)
 sanitizer(SC_USE_SANITIZER "Build with specified sanitizer" "none")
@@ -64,6 +66,12 @@ elseif(${CMAKE_CXX_COMPILER_ID} MATCHES "GNU")
     set(CMAKE_EXE_LINKER_FLAGS_RELEASE "${CMAKE_EXE_LINKER_FLAGS_RELEASE} -s") ## Strip binary
 elseif (NOT ${CMAKE_CXX_COMPILER_ID} MATCHES "MSVC")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14")
+endif()
+
+if(${SC_FILE_MEMORY} MATCHES "Dictionary")
+	add_definitions(-DSC_DICTIONARY_FS_STORAGE)
+elseif(${SC_FILE_MEMORY} MATCHES "Rocksdb")
+	add_definitions(-DSC_ROCKSDB_FS_STORAGE)
 endif()
 
 include("${SC_MACHINE_ROOT}/dependencies.cmake")

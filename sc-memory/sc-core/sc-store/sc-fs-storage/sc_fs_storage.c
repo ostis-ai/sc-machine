@@ -4,27 +4,25 @@
  * (See accompanying file COPYING.MIT or copy at http://opensource.org/licenses/MIT)
  */
 
-#include <memory.h>
 #include <glib.h>
 #include <glib/gstdio.h>
 
 #include "sc_fs_storage.h"
 
-#include "sc_fs_storage_private.h"
+#ifdef SC_DICTIONARY_FS_STORAGE
+#  include "sc_dictionary_fs_storage.h"
+#elif SC_ROCKSDB_FS_STORAGE
+#  include "sc_rocksdb_fs_storage.h"
+#  include "../sc_link_helpers.h"
+#endif
+
+#include "sc_file_system.h"
+
 #include "../sc_segment.h"
-#include "../sc_config.h"
-
 #include "../../sc_memory_version.h"
-
-#define BUFFER_SIZE 256 * 1024
 
 sc_char * repo_path = 0;
 sc_char segments_path[MAX_PATH_LENGTH];
-sc_char strings_path[MAX_PATH_LENGTH];
-sc_char links_path[MAX_PATH_LENGTH];
-
-sc_dictionary * links_dictionary;
-sc_dictionary * strings_dictionary;
 
 int _checksum_type()
 {
@@ -36,95 +34,20 @@ sc_uint8 _checksum_get_size()
   return (sc_uint8)g_checksum_type_get_length(_checksum_type());
 }
 
-void _sc_fm_remove_dir(const sc_char * path)
-{
-  if (g_file_test(path, G_FILE_TEST_IS_DIR) == SC_FALSE)
-    return;
-
-  GDir * directory = g_dir_open(path, 0, 0);
-  g_assert(directory != null_ptr);
-
-  // calculate files
-  sc_char tmp_path[MAX_PATH_LENGTH];
-  sc_char const * file = g_dir_read_name(directory);
-  while (file != null_ptr)
-  {
-    g_snprintf(tmp_path, MAX_PATH_LENGTH, "%s/%s", path, file);
-
-    if (g_file_test(tmp_path, G_FILE_TEST_IS_REGULAR) == SC_TRUE)
-    {
-      if (g_remove(tmp_path) == -1)
-        g_critical("Can't remove file: %s", tmp_path);
-    }
-    else if (g_file_test(tmp_path, G_FILE_TEST_IS_DIR) == SC_TRUE)
-      _sc_fm_remove_dir(tmp_path);
-
-    file = g_dir_read_name(directory);
-  }
-
-  g_dir_close(directory);
-  g_rmdir(path);
-}
-
-inline sc_uint32 sc_addr_to_hash(sc_addr addr)
-{
-  return SC_ADDR_LOCAL_TO_INT(addr);
-}
-
-sc_char * itora(sc_uint32 num)
-{
-  sc_char * result = g_new0(char, 10);
-  sc_char * index = result;
-
-  while (num > 0)
-  {
-    *index++ = (sc_char)((num % 10) | '0');
-    num /= 10;
-  }
-
-  return result;
-}
-
-inline sc_char * sc_addr_to_str(sc_addr addr)
-{
-  sc_uint32 hash = sc_addr_to_hash(addr);
-
-  // !reverse translation for more effectively work
-  return itora(hash);
-}
-
 // ----------------------------------------------
-
-sc_bool _sc_fs_mkdirs(const sc_char * path)
-{
-#if SC_PLATFORM_LINUX || SC_PLATFORM_MAC
-  int const mode = 0755;
-#else
-  int const mode = 0;
-#endif
-  if (g_mkdir_with_parents(repo_path, mode) == -1)
-    return SC_FALSE;
-
-  return SC_TRUE;
-}
 
 sc_bool sc_fs_storage_initialize(const sc_char * path, sc_bool clear)
 {
-  g_message("Initialize sc-dictionary from path: %s", path);
-  sc_bool result = sc_dictionary_initialize(&links_dictionary);
-  if (result == SC_FALSE)
-    return SC_FALSE;
-
-  result = sc_dictionary_initialize(&strings_dictionary);
-  if (result == SC_FALSE)
-    return SC_FALSE;
-
   g_message("Initialize sc-storage from path: %s", path);
   g_snprintf(segments_path, MAX_PATH_LENGTH, "%s/segments.scdb", path);
-  g_snprintf(strings_path, MAX_PATH_LENGTH, "%s/strings.scdb", path);
-  g_snprintf(links_path, MAX_PATH_LENGTH, "%s/links.scdb", path);
 
   repo_path = g_strdup(path);
+
+#ifdef SC_DICTIONARY_FS_STORAGE
+  sc_dictionary_fs_storage_initialize(repo_path);
+#elif SC_ROCKSDB_FS_STORAGE
+  sc_rocksdb_fs_storage_initialize(repo_path);
+#endif
 
   // clear repository if it needs
   if (clear == SC_TRUE)
@@ -132,6 +55,15 @@ sc_bool sc_fs_storage_initialize(const sc_char * path, sc_bool clear)
     g_message("Clear memory");
     if (g_file_test(segments_path, G_FILE_TEST_IS_REGULAR) && g_remove(segments_path) != 0)
       g_error("Can't remove segments file: %s", segments_path);
+
+    g_message("Clear file memory");
+#ifdef SC_ROCKSDB_FS_STORAGE
+    if (sc_rocksdb_fs_storage_clear() != SC_RESULT_OK)
+    {
+      g_critical("Can't clear file memory");
+      return SC_FALSE;
+    }
+#endif
   }
 
   return SC_TRUE;
@@ -142,127 +74,64 @@ sc_bool sc_fs_storage_shutdown(sc_segment ** segments, sc_bool save_segments)
   if (save_segments == SC_TRUE)
   {
     g_message("Write segments");
-    sc_fs_storage_write_to_path(segments);
-    g_message("Write sc-dictionary");
-    sc_fs_storage_write_strings();
+    sc_fs_storage_save(segments);
   }
 
-  g_message("Shutdown sc-dictionary");
-  if (sc_dictionary_destroy(links_dictionary) == SC_FALSE)
-    g_critical("Can't shutdown sc-dictionary");
-  links_dictionary = null_ptr;
-
-  if (sc_dictionary_destroy(strings_dictionary) == SC_FALSE)
-    g_critical("Can't shutdown sc-dictionary");
-  strings_dictionary = null_ptr;
+#ifdef SC_DICTIONARY_FS_STORAGE
+  sc_dictionary_fs_storage_shutdown();
+#elif SC_ROCKSDB_FS_STORAGE
+  sc_rocksdb_fs_storage_shutdown();
+#endif
 
   g_free(repo_path);
-
   g_message("Shutdown sc-fs-storage");
 
   return SC_FALSE;
 }
 
-sc_bool sc_hashes_compare(void * hash, void * other)
+void sc_fs_storage_append_sc_link(sc_element * element, sc_addr addr, sc_char * sc_string, sc_uint32 size)
 {
-  return *(sc_addr_hash *)hash == *(sc_addr_hash *)other;
-}
+#ifdef SC_DICTIONARY_FS_STORAGE
+  sc_dictionary_fs_storage_append_sc_link(addr, sc_string, size);
+#elif SC_ROCKSDB_FS_STORAGE
+  sc_char * current_string;
+  sc_uint32 current_size = 0;
+  sc_fs_storage_get_sc_string_ext(element, addr, &current_string, &current_size);
 
-void _sc_fs_storage_append_sc_string_sc_link_reference(
-    sc_addr addr,
-    sc_dictionary_node * node,
-    sc_char * sc_string,
-    sc_uint32 size)
-{
-  sc_char * hash_str = sc_addr_to_str(addr);
-  sc_addr_hash hash_str_len = strlen(hash_str);
-
-  sc_dictionary_node * link_hash_node = sc_dictionary_append_to_node(strings_dictionary->root, hash_str, hash_str_len);
-
-  if (link_hash_node->data_list == null_ptr)
-    sc_list_init(&link_hash_node->data_list);
-
-  if (link_hash_node->data_list->size != 0)
-    g_free(sc_list_pop_back(link_hash_node->data_list));
-
-  sc_link_content * content = g_new0(sc_link_content, 1);
-  content->sc_string = g_new0(sc_char, size + 1);
-  content->string_size = size;
-  memcpy(content->sc_string, sc_string, size);
-  content->node = &(*node);
-
-  sc_list_push_back(link_hash_node->data_list, content);
-}
-
-sc_dictionary_node * _sc_fs_storage_append_sc_link_unique(sc_char * sc_string, sc_uint32 size, sc_addr addr)
-{
-  sc_addr_hash other = sc_addr_to_hash(addr);
-
-  sc_link_content * old_content = sc_fs_storage_get_link_content(addr);
-  if (old_content != null_ptr && old_content->sc_string != null_ptr && old_content->node != null_ptr)
+  if (current_size != 0 && current_string != null_ptr)
   {
-    if (strcmp(old_content->sc_string, sc_string) == 0)
-      return old_content->node;
-
-    sc_list * data_list = old_content->node->data_list;
-    sc_list_remove_if(data_list, &other, sc_hashes_compare);
+    sc_check_sum * check_sum;
+    sc_link_calculate_checksum(current_string, current_size, &check_sum);
+    sc_rocksdb_fs_storage_addr_ref_remove(addr, check_sum);
   }
 
-  sc_addr_hash * hash = g_new0(sc_addr_hash, 1);
-  *hash = other;
-  return sc_dictionary_append(links_dictionary, sc_string, size, hash);
-}
+  sc_check_sum * check_sum;
+  sc_link_calculate_checksum(sc_string, size, &check_sum);
+  sc_rocksdb_fs_storage_addr_ref_append(addr, check_sum);
 
-sc_dictionary_node * sc_fs_storage_append_sc_link(sc_addr addr, sc_char * sc_string, sc_uint32 size)
-{
-  sc_dictionary_node * node = _sc_fs_storage_append_sc_link_unique(sc_string, size, addr);
-  _sc_fs_storage_append_sc_string_sc_link_reference(addr, node, sc_string, size);
-
-  return node;
-}
-
-sc_addr * sc_list_to_addr_array(sc_list * list)
-{
-  sc_addr * addrs = g_new0(sc_addr, list->size);
-  sc_addr ** temp = g_new0(sc_addr *, 1);
-  *temp = addrs;
-
-  sc_iterator * it = sc_list_iterator(list);
-  while (sc_iterator_next(it))
-  {
-    sc_addr_hash hash = *(sc_addr_hash *)sc_iterator_get(it);
-    sc_addr addr;
-    addr.offset = SC_ADDR_LOCAL_OFFSET_FROM_INT(hash);
-    addr.seg = SC_ADDR_LOCAL_SEG_FROM_INT(hash);
-
-    **temp = addr;
-    ++*temp;
-  }
-  g_free(temp);
-
-  return addrs;
-}
-
-sc_addr_hash * sc_list_to_hashes_array(sc_list * list)
-{
-  sc_addr_hash * hashes = g_new0(sc_addr_hash, list->size);
-  sc_addr_hash ** temp = g_new0(sc_addr_hash *, 1);
-  *temp = hashes;
-
-  sc_iterator * it = sc_list_iterator(list);
-  while (sc_iterator_next(it))
-  {
-    **temp = *(sc_addr_hash *)sc_iterator_get(it);
-    ++*temp;
-  }
-
-  return hashes;
+  memcpy(element->content.data, check_sum->data, check_sum->len);
+  sc_rocksdb_fs_storage_write_stream(check_sum, sc_string);
+#endif
 }
 
 sc_addr sc_fs_storage_get_sc_link(const sc_char * sc_string)
 {
+#ifdef SC_DICTIONARY_FS_STORAGE
+  return sc_dictionary_fs_storage_get_sc_link(sc_string);
+#elif SC_ROCKSDB_FS_STORAGE
+  sc_check_sum * check_sum;
+  sc_link_calculate_checksum(sc_string, strlen(sc_string), &check_sum);
+
+  sc_addr * addrs;
+  sc_uint32 size = 0;
+  sc_rocksdb_fs_storage_find(check_sum, &addrs, &size);
+
+  if (size != 0)
+    return *addrs;
+
   sc_addr empty;
   SC_ADDR_MAKE_EMPTY(empty);
+<<<<<<< HEAD
 
   sc_addr_hash * addr_hash = sc_dictionary_get_data_from_node(links_dictionary->root, sc_string);
   if (addr_hash != null_ptr)
@@ -273,89 +142,46 @@ sc_addr sc_fs_storage_get_sc_link(const sc_char * sc_string)
     return addr;
   }
 
+=======
+>>>>>>> [memory][fs-storage] Add opportunity to switch between file system storages
   return empty;
+#endif
 }
 
 sc_bool sc_fs_storage_get_sc_links(const sc_char * sc_string, sc_addr ** links, sc_uint32 * size)
 {
-  sc_list * list = sc_dictionary_get_datas_from_node(links_dictionary->root, sc_string);
+#ifdef SC_DICTIONARY_FS_STORAGE
+  return sc_dictionary_fs_storage_get_sc_links(sc_string, links, size);
+#elif SC_ROCKSDB_FS_STORAGE
+  sc_check_sum * check_sum;
+  sc_link_calculate_checksum(sc_string, strlen(sc_string), &check_sum);
 
-  if (list == null_ptr)
+  return sc_rocksdb_fs_storage_find(check_sum, links, size);
+#endif
+}
+
+void sc_fs_storage_get_sc_string_ext(sc_element * element, sc_addr addr, sc_char ** sc_string, sc_uint32 * size)
+{
+#ifdef SC_DICTIONARY_FS_STORAGE
+  return sc_dictionary_fs_storage_get_sc_string_ext(addr, sc_string, size);
+#elif SC_ROCKSDB_FS_STORAGE
+  sc_check_sum check_sum;
+  memcpy(check_sum.data, element->content.data, SC_CHECKSUM_LEN);
+  check_sum.len = SC_CHECKSUM_LEN;
+
+  sc_char * data = sc_rocksdb_fs_storage_read_stream_new(&check_sum);
+
+  if (data != null_ptr)
   {
-    *links = null_ptr;
-    *size = 0;
-    return SC_FALSE;
+    *sc_string = data;
+    *size = strlen(data);
   }
-
-  *links = sc_list_to_addr_array(list);
-  *size = list->size;
-  *links = memcpy(*links, *links, *size);
-
-  return SC_TRUE;
-}
-
-sc_char * sc_fs_storage_get_sc_string(sc_addr addr)
-{
-  if (SC_ADDR_IS_EMPTY(addr))
-    return null_ptr;
-
-  sc_link_content * content = sc_dictionary_get_data_from_node(strings_dictionary->root, sc_addr_to_str(addr));
-
-  if (content == null_ptr || content->sc_string == null_ptr)
-    return null_ptr;
-
-  sc_uint32 len = content->string_size;
-  sc_char * copy = g_new0(sc_char, len + 1);
-  return memcpy(copy, content->sc_string, len);
-}
-
-sc_dictionary_node * sc_fs_storage_get_node(sc_addr addr)
-{
-  if (SC_ADDR_IS_EMPTY(addr))
-    return null_ptr;
-
-  sc_link_content * content = sc_dictionary_get_data_from_node(strings_dictionary->root, sc_addr_to_str(addr));
-
-  if (content == null_ptr || content->node == null_ptr)
-    return null_ptr;
-
-  return content->node;
-}
-
-sc_link_content * sc_fs_storage_get_link_content(sc_addr addr)
-{
-  if (SC_ADDR_IS_EMPTY(addr))
-    return null_ptr;
-
-  sc_link_content * content = sc_dictionary_get_data_from_node(strings_dictionary->root, sc_addr_to_str(addr));
-
-  if (content == null_ptr || content->node == null_ptr || content->sc_string == null_ptr)
-    return null_ptr;
-
-  return content;
-}
-
-void sc_fs_storage_get_sc_string_ext(sc_addr addr, sc_char ** sc_string, sc_uint32 * size)
-{
-  if (SC_ADDR_IS_EMPTY(addr))
+  else
   {
     *sc_string = null_ptr;
     *size = 0;
-    return;
   }
-
-  sc_link_content * content = sc_dictionary_get_data_from_node(strings_dictionary->root, sc_addr_to_str(addr));
-  if (content == null_ptr)
-  {
-    *sc_string = null_ptr;
-    *size = 0;
-    return;
-  }
-
-  sc_uint32 len = content->string_size;
-  *sc_string = g_new0(sc_char, len + 1);
-  memcpy(*sc_string, content->sc_string, len);
-  *size = len;
+#endif
 }
 
 // dictionary read, write and save methods
@@ -471,28 +297,24 @@ sc_bool sc_fs_storage_read_from_path(sc_segment ** segments, sc_uint32 * segment
 
   g_message("Segments loaded: %u", *segments_num);
 
+#ifdef SC_DICTIONARY_FS_STORAGE
+  sc_dictionary_fs_storage_read_strings();
+#endif
+
   return SC_TRUE;
-}
-
-static GIOChannel * _open_tmp_file(sc_char ** tmp_file_name, sc_char * prefix)
-{
-  *tmp_file_name = g_strdup_printf("%s/%s_%lu", repo_path, prefix, (sc_ulong)g_get_real_time());
-
-  GIOChannel * result = g_io_channel_new_file(*tmp_file_name, "w", null_ptr);
-  return result;
 }
 
 sc_bool sc_fs_storage_write_to_path(sc_segment ** segments)
 {
   if (!g_file_test(repo_path, G_FILE_TEST_IS_DIR))
   {
-    if (!_sc_fs_mkdirs(repo_path))
+    if (!sc_fs_mkdirs(repo_path))
       g_error("Can't create a directory %s", repo_path);
   }
 
   // create temporary file
   gchar * tmp_filename = null_ptr;
-  GIOChannel * output = _open_tmp_file(&tmp_filename, "segments");
+  GIOChannel * output = sc_fs_open_tmp_file(repo_path, &tmp_filename, "segments");
 
   sc_fs_storage_segments_header header;
   memset(&header, 0, sizeof(sc_fs_storage_segments_header));
@@ -561,173 +383,13 @@ sc_bool sc_fs_storage_write_to_path(sc_segment ** segments)
   return SC_TRUE;
 }
 
-void sc_fs_storage_write_nodes(
-    void (*callable)(sc_dictionary_node *, void **),
-    GIOChannel * strings_dest,
-    GIOChannel * links_dest)
+sc_bool sc_fs_storage_save(sc_segment ** segments)
 {
-  GIOChannel ** dest = g_new0(GIOChannel *, 2);
-  dest[0] = strings_dest;
-  dest[1] = links_dest;
-
-  sc_dictionary_visit_down_nodes(strings_dictionary, callable, (void **)dest);
-
-  g_free(dest);
-}
-
-void sc_fs_storage_write_node(sc_dictionary_node * node, void ** dest)
-{
-  sc_link_content * content = (sc_link_content *)node->data_list->begin->data;
-
-  if (!sc_dc_node_access_lvl_check_read(content->node))
-    return;
-
-  sc_addr_hash * hashes = sc_list_to_hashes_array(content->node->data_list);
-  sc_uint8 hashes_size = content->node->data_list->size;
-
-  sc_dc_node_access_lvl_make_no_read(content->node);
-
-  GIOChannel * strings_channel = dest[0];
-  g_assert(strings_channel != null_ptr);
-  GIOChannel * links_channel = dest[1];
-  g_assert(links_channel != null_ptr);
-
-  gsize bytes;
-  if (g_io_channel_write_chars(strings_channel, (sc_char *)&hashes_size, sizeof(hashes_size), &bytes, null_ptr) !=
-      G_IO_STATUS_NORMAL)
-    g_error("Can't write string hashes size %d into %s", hashes_size, strings_path);
-
-  if (g_io_channel_write_chars(
-          strings_channel, (sc_char *)hashes, sizeof(sc_addr_hash) * hashes_size, &bytes, null_ptr) !=
-      G_IO_STATUS_NORMAL)
-    g_error("Can't write string hashes %llu into %s", *hashes, strings_path);
-
-  if (g_io_channel_write_chars(
-          strings_channel, (sc_char *)&content->string_size, sizeof(content->string_size), &bytes, null_ptr) !=
-      G_IO_STATUS_NORMAL)
-    g_error("Can't write sc-string size %d into %s", hashes_size, strings_path);
-
-  if (g_io_channel_write_chars(strings_channel, content->sc_string, content->string_size, &bytes, null_ptr) !=
-      G_IO_STATUS_NORMAL)
-    g_error("Can't write sc-string %s into %s", content->sc_string, strings_path);
-
-  if (g_io_channel_write_chars(
-          links_channel, (sc_char *)hashes, sizeof(sc_addr_hash) * hashes_size, &bytes, null_ptr) != G_IO_STATUS_NORMAL)
-    g_error("Can't write string hashes %llu into %s", *hashes, links_path);
-}
-
-sc_bool sc_fs_storage_write_strings()
-{
-  if (!g_file_test(repo_path, G_FILE_TEST_IS_DIR))
-  {
-    if (!_sc_fs_mkdirs(repo_path))
-      g_error("Can't create a directory %s", repo_path);
-  }
-
-  sc_char * strings_filename = null_ptr;
-  GIOChannel * output_strings = _open_tmp_file(&strings_filename, "strings");
-  g_io_channel_set_encoding(output_strings, null_ptr, null_ptr);
-
-  sc_char * links_filename = null_ptr;
-  GIOChannel * output_links = _open_tmp_file(&links_filename, "links");
-  g_io_channel_set_encoding(output_links, null_ptr, null_ptr);
-
-  sc_fs_storage_write_nodes(sc_fs_storage_write_node, output_strings, output_links);
-
-  if (g_file_test(strings_filename, G_FILE_TEST_IS_REGULAR))
-  {
-    g_io_channel_shutdown(output_strings, SC_TRUE, null_ptr);
-    output_strings = null_ptr;
-
-    if (g_rename(strings_filename, strings_path) != 0)
-      g_error("Can't rename %s -> %s", strings_filename, strings_path);
-  }
-
-  if (g_file_test(links_filename, G_FILE_TEST_IS_REGULAR))
-  {
-    g_io_channel_shutdown(output_links, SC_TRUE, null_ptr);
-    output_links = null_ptr;
-
-    if (g_rename(links_filename, links_path) != 0)
-      g_error("Can't rename %s -> %s", links_filename, links_path);
-  }
-
-  if (strings_filename != null_ptr)
-    g_free(strings_filename);
-  if (output_strings != null_ptr)
-    g_io_channel_shutdown(output_strings, SC_TRUE, null_ptr);
-
-  if (links_filename != null_ptr)
-    g_free(links_filename);
-  if (output_links != null_ptr)
-    g_io_channel_shutdown(output_links, SC_TRUE, null_ptr);
-
-  return SC_TRUE;
-}
-
-sc_bool sc_fs_storage_read_strings()
-{
-  if (g_file_test(repo_path, G_FILE_TEST_IS_DIR) == SC_FALSE)
-    g_error("%s isn't a directory.", repo_path);
-
-  if (g_file_test(strings_path, G_FILE_TEST_IS_REGULAR) == SC_FALSE)
-  {
-    g_message("There are no strings in %s", strings_path);
-    return SC_FALSE;
-  }
-
-  GIOChannel * in_file = g_io_channel_new_file(strings_path, "r", null_ptr);
-  if (in_file == null_ptr)
-  {
-    g_critical("Can't open strings from: %s", strings_path);
-    return SC_FALSE;
-  }
-
-  if (g_io_channel_set_encoding(in_file, null_ptr, null_ptr) != G_IO_STATUS_NORMAL)
-  {
-    g_critical("Can't setup encoding: %s", strings_path);
-    return SC_FALSE;
-  }
-
-  gsize bytes_num = 0;
-  while (SC_TRUE)
-  {
-    sc_uint8 hashes_size = 0;
-    if (g_io_channel_read_chars(in_file, (sc_char *)&hashes_size, sizeof(hashes_size), &bytes_num, null_ptr) !=
-        G_IO_STATUS_NORMAL)
-      break;
-
-    sc_addr_hash * hashes = g_new0(sc_addr_hash, hashes_size);
-    if (g_io_channel_read_chars(in_file, (sc_char *)hashes, sizeof(sc_addr_hash) * hashes_size, &bytes_num, null_ptr) !=
-        G_IO_STATUS_NORMAL)
-      break;
-
-    sc_uint32 string_size = 0;
-    if (g_io_channel_read_chars(in_file, (sc_char *)&string_size, sizeof(string_size), &bytes_num, null_ptr) !=
-        G_IO_STATUS_NORMAL)
-      break;
-
-    sc_char * string = g_new0(sc_char, string_size);
-    if (g_io_channel_read_chars(in_file, (sc_char *)string, string_size, &bytes_num, null_ptr) != G_IO_STATUS_NORMAL)
-      break;
-
-    sc_uint8 i;
-    for (i = 0; i < hashes_size; ++i)
-    {
-      if (hashes[i] == 0)
-        continue;
-
-      sc_addr addr;
-      addr.seg = SC_ADDR_LOCAL_SEG_FROM_INT(hashes[i]);
-      addr.offset = SC_ADDR_LOCAL_OFFSET_FROM_INT(hashes[i]);
-
-      sc_fs_storage_append_sc_link(addr, string, string_size);
-    }
-  }
-
-  g_io_channel_shutdown(in_file, SC_FALSE, null_ptr);
-
-  g_message("Sc-dictionary loaded");
-
-  return SC_TRUE;
+  sc_bool result = sc_fs_storage_write_to_path(segments);
+#ifdef SC_DICTIONARY_FS_STORAGE
+  result &= sc_dictionary_fs_storage_write_strings();
+#elif SC_ROCKSDB_FS_STORAGE
+  result &= sc_rocksdb_fs_storage_save();
+#endif
+  return result;
 }

@@ -163,7 +163,6 @@ sc_bool sc_storage_initialize(const char * path, sc_bool clear)
   if (clear == SC_FALSE)
   {
     sc_fs_storage_read_from_path(segments, &segments_num);
-    sc_fs_storage_read_strings();
   }
 
   is_initialized = SC_TRUE;
@@ -1001,7 +1000,7 @@ sc_result sc_storage_set_link_content(sc_memory_context * ctx, sc_addr addr, con
     el->flags.type |= sc_flag_link_self_container;
 
     if (data != null_ptr)
-      sc_fs_storage_append_sc_link(addr, data, strlen(data));
+      sc_fs_storage_append_sc_link(el, addr, data, strlen(data));
     result = SC_RESULT_OK;
   }
 
@@ -1049,7 +1048,7 @@ sc_result sc_storage_get_link_content(const sc_memory_context * ctx, sc_addr add
   {
     sc_uint32 size = 0;
     sc_char * sc_string = null_ptr;
-    sc_fs_storage_get_sc_string_ext(addr, &sc_string, &size);
+    sc_fs_storage_get_sc_string_ext(el, addr, &sc_string, &size);
 
     if (sc_string == null_ptr)
     {
@@ -1324,8 +1323,7 @@ sc_result sc_storage_save(sc_memory_context const * ctx)
     sc_segment_lock(seg);
   }
 
-  sc_fs_storage_write_to_path(segments);
-  sc_fs_storage_write_strings();
+  sc_fs_storage_save(segments);
 
   g_mutex_unlock(&s_mutex_free);
 

@@ -7,45 +7,23 @@
 #include "sc_link_helpers.h"
 #include "sc_element.h"
 
-#include <memory.h>
 #include <glib.h>
+#ifdef SC_ROCKSDB_FS_STORAGE
+#  include <memory.h>
 
-#define SC_DEFAULT_CHECKSUM G_CHECKSUM_SHA256
-#define SC_DEFAULT_BUFFER 1024
+#  define SC_DEFAULT_CHECKSUM G_CHECKSUM_SHA256
 
-sc_bool sc_link_calculate_checksum(const sc_stream * stream, sc_char ** hash_string)
+sc_bool sc_link_calculate_checksum(const sc_char * sc_string, sc_uint32 size, sc_check_sum ** check_sum)
 {
-  g_assert(stream != null_ptr);
+  *check_sum = g_new0(sc_check_sum, 1);
+  (*check_sum)->len = (sc_uint8)g_checksum_type_get_length(SC_DEFAULT_CHECKSUM);
 
-  GChecksum * checksum = g_checksum_new(SC_DEFAULT_CHECKSUM);
-  g_checksum_reset(checksum);
-
-  sc_stream_seek(stream, SC_STREAM_SEEK_SET, 0);
-
-  sc_char buffer[SC_DEFAULT_BUFFER];
-  sc_uint32 data_read;
-  while (sc_stream_eof(stream) == SC_FALSE)
-  {
-    if (sc_stream_read_data(stream, buffer, SC_DEFAULT_BUFFER, &data_read) == SC_RESULT_ERROR)
-    {
-      g_checksum_free(checksum);
-      return SC_FALSE;
-    }
-    g_checksum_update(checksum, (guchar *)buffer, data_read);
-  }
-
-  const sc_char * result = null_ptr;
-  result = g_checksum_get_string(checksum);
-
-  *hash_string = g_new0(sc_char, strlen(result) + 1);
-  memcpy(*hash_string, &(result[0]), strlen(result));
-
-  g_checksum_free(checksum);
-
-  sc_stream_seek(stream, SC_STREAM_SEEK_SET, 0);
+  const gchar * result = g_compute_checksum_for_string(SC_DEFAULT_CHECKSUM, sc_string, size);
+  memcpy((*check_sum)->data, result, (*check_sum)->len);
 
   return SC_TRUE;
 }
+#endif
 
 sc_bool sc_link_get_content(const sc_stream * stream, sc_char ** content, sc_uint32 * size)
 {
