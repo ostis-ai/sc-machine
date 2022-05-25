@@ -3,9 +3,13 @@ project (sc-machine)
 site_name (www.ostis.net)
 cmake_minimum_required (VERSION 2.8)
 
+include(${CMAKE_CURRENT_LIST_DIR}/macro/setup_project_version.cmake)
+set (SC_MACHINE_VERSION "0.6.1")
+setup_project_version(SC_MACHINE)
+
 include(CTest)
 
-set(SC_BIN_PATH "${CMAKE_CURRENT_LIST_DIR}/bin")
+set (SC_BIN_PATH "${CMAKE_CURRENT_LIST_DIR}/bin")
 
 set (SC_MACHINE_ROOT ${CMAKE_CURRENT_LIST_DIR})
 set (SC_MACHINE_THIRDPARTY_PATH "${SC_MACHINE_ROOT}/thirdparty")
