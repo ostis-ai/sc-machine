@@ -1,5 +1,5 @@
 import argparse
-from os.path import join, abspath, relpath, commonprefix, isdir, isfile, exists, dirname, basename
+from os.path import join, abspath, relpath, commonprefix, isdir, isfile, exists, dirname
 import os
 import shutil
 import re
@@ -99,7 +99,8 @@ def main(args: dict):
         if args[key] is not None:
             if key in [REPO_FILE, OUTPUT_PATH, LOGFILE_PATH]: 
                 flag = abspath(join(os.getcwd(), args[key]))
-            else: flag = args[key] 
+            else:
+                flag = args[key] 
             conf[key] = flag
     # output the final configuration for the script, just to be sure about what's going on.
     print("args:", conf)
