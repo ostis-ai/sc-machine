@@ -15,12 +15,13 @@
 #include <QTimer>
 
 #include <iostream>
-#include "sc-memory/sc_memory.hpp"
-#include "utils/parser.hpp"
 #include <map>
 
-#include <QNetworkInterface>
+#include "sc-memory/sc_memory.hpp"
 
+#include "utils/parser.hpp"
+
+#include <QNetworkInterface>
 
 sctpServer::sctpServer(QObject * parent)
   : QTcpServer(parent)
@@ -104,8 +105,9 @@ void sctpServer::parseConfig(const QString & config_path)
   std::map<std::string, std::string> conf_file = parse_config(config_path.toStdString());
 
   bool result = false;
-  qDebug() << QString::fromStdString(conf_file["port"]);
-  mPort = QString::fromStdString(conf_file["port"]).toUInt(&result);
+  QString port_number = QString::fromStdString(conf_file["port"]);
+  qDebug() << port_number;
+  mPort = port_number.toUInt(&result);
 
   if (!result)
   {

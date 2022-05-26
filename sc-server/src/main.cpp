@@ -7,56 +7,53 @@
 #include <boost/program_options.hpp>
 
 #include <iostream>
+#include <atomic>
+#include <thread>
+#include <map>
 
 #include <sc-memory/sc_debug.hpp>
 #include <sc-memory/sc_memory.hpp>
 #include <sc-memory/utils/sc_signal_handler.hpp>
-#include "utils/parser.hpp"
 
-#include <atomic>
-#include <thread>
-#include <map>
+#include "utils/parser.hpp"
 
 int main(int argc, char * argv[])
 try
 {
   boost::program_options::options_description options_description("Builder usage");
-  options_description.add_options()
-      ("help", "Display this message")
-      ("extensions,e", boost::program_options::value<std::string>(), "Path to directory with sc-memory extensions")
-      ("kb", boost::program_options::value<std::string>(), "Path to kb.bin folder")
-      ("verbose,v", "Flag to don't save sc-memory state on exit")
-      ("clear", "Flag to clear sc-memory on start")
-      ("config,c", boost::program_options::value<std::string>(), "Path to configuration file");
+  options_description.add_options()("help", "Display this message")(
+      "extensions,e", boost::program_options::value<std::string>(), "Path to directory with sc-memory extensions")(
+      "kb", boost::program_options::value<std::string>(), "Path to kb.bin folder")(
+      "verbose,v", "Flag to don't save sc-memory state on exit")("clear", "Flag to clear sc-memory on start")(
+      "config,c", boost::program_options::value<std::string>(), "Path to configuration file");
 
   boost::program_options::variables_map vm;
   boost::program_options::store(
       boost::program_options::command_line_parser(argc, argv).options(options_description).run(), vm);
   boost::program_options::notify(vm);
 
-
-  std::string configFile;
+  std::string config_file;
   if (vm.count("config"))
-    configFile = vm["config"].as<std::string>();
+    config_file = vm["config"].as<std::string>();
 
-  std::map<std::string, std::string> conf_file = parse_config(configFile);
+  std::map<std::string, std::string> conf_file = parse_config(config_file);
 
-  std::string extPath;
+  std::string ext_path;
   if (vm.count("extensions"))
-    extPath = vm["extensions"].as<std::string>();
+    ext_path = vm["extensions"].as<std::string>();
   else
-    extPath = conf_file["ext"];
+    ext_path = conf_file["ext"];
 
-  std::string repoPath;
+  std::string repo_path;
   if (vm.count("kb"))
-    repoPath = vm["kb"].as<std::string>();
+    repo_path = vm["kb"].as<std::string>();
   else
-    repoPath = conf_file["path"];
-  repoPath.append("kb.bin/");
+    repo_path = conf_file["path"];
+  repo_path.append("kb.bin/");
 
-  bool saveState = true;
+  bool save_state = true;
   if (vm.count("verbose"))
-    saveState = false;
+    save_state = false;
 
   bool clear = false;
   if (vm.count("clear"))
@@ -68,29 +65,29 @@ try
     return 0;
   }
 
-  std::atomic_bool isRun = { true };
+  std::atomic_bool is_run = {true};
   utils::ScSignalHandler::Initialize();
-  utils::ScSignalHandler::m_onTerminate = [&isRun]() {
-    isRun = false;
+  utils::ScSignalHandler::m_onTerminate = [&is_run]() {
+    is_run = false;
   };
 
   sc_memory_params params;
   sc_memory_params_clear(&params);
 
   params.clear = clear ? SC_TRUE : SC_FALSE;
-  params.config_file = configFile.c_str();
+  params.config_file = config_file.c_str();
   params.enabled_exts = nullptr;
-  params.ext_path = extPath.c_str();
-  params.repo_path = repoPath.c_str();
+  params.ext_path = ext_path.c_str();
+  params.repo_path = repo_path.c_str();
 
   ScMemory::Initialize(params);
 
-  while (isRun)
+  while (is_run)
   {
     std::this_thread::sleep_for(std::chrono::milliseconds(1000));
   }
 
-  ScMemory::Shutdown(saveState);
+  ScMemory::Shutdown(save_state);
 
   return EXIT_SUCCESS;  // : EXIT_FAILURE;
 }

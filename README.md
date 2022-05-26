@@ -17,9 +17,6 @@ git submodule update --init --recursive
 ```sh
 cd scripts
 ./install_deps_ubuntu.sh
-cd ..
-pip3 install wheel setuptools
-pip3 install -r requirements.txt
 ```
 
 ### macOS
@@ -83,9 +80,9 @@ To get more information, use `python3 scripts/build_kb.py -h`
 
 sc-machine provides two network protocols to interact with:
 1. **sc-server**: use `python3 scripts/run_sc_sever.py -c config/sc-machine.ini` to run sc-server with the default config file.
-  To get more information, use `python3 scripts/run_sc_server.py -h`
+  To get more information use `python3 scripts/run_sc_server.py -h`
 2. **sctp server**: use `python3 scripts/run_sctp.py -c config/sc-machine.ini` to run sctp server.
-  To get more information, use `python3 scripts/run_sctp.py -h`
+  To get more information use `python3 scripts/run_sctp.py -h`
 
 ## Config
 
