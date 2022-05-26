@@ -6,7 +6,8 @@
 
 #include "sc_memory_version.h"
 
-#include <glib.h>
+#include "sc_allocator.h"
+#include "sc_assert_utils.h"
 
 const sc_version SC_VERSION = {
     SC_MACHINE_VERSION_MAJOR,
@@ -16,7 +17,7 @@ const sc_version SC_VERSION = {
 
 sc_int32 sc_version_compare(const sc_version * a, const sc_version * b)
 {
-  g_assert(a && b);
+  sc_assert(a && b);
 
   if (a->major < b->major)
     return -1;
@@ -38,27 +39,27 @@ sc_int32 sc_version_compare(const sc_version * a, const sc_version * b)
 
 char * sc_version_string_new(const sc_version * v)
 {
-  if (v->suffix)
+  if (v->suffix != null_ptr)
     return g_strdup_printf("%u.%u.%u %s", v->major, v->minor, v->patch, v->suffix);
 
   return g_strdup_printf("%u.%u.%u", v->major, v->minor, v->patch);
 }
 
-void sc_version_string_free(char * str)
+void sc_version_string_free(sc_char * str)
 {
-  g_assert(str != 0);
-  g_free(str);
+  sc_assert(str != null_ptr);
+  sc_mem_free(str);
 }
 
 sc_uint32 sc_version_to_int(sc_version const * version)
 {
-  g_assert(version);
+  sc_assert(version != null_ptr);
   return (version->major << 16) | (version->minor << 8) | version->patch;
 }
 
 void sc_version_from_int(sc_uint32 value, sc_version * version)
 {
-  g_assert(version);
+  sc_assert(version != null_ptr);
   version->patch = value & 0xff;
   version->minor = value >> 8 & 0xff;
   version->major = value >> 16 & 0xff;

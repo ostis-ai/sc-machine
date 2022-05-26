@@ -9,7 +9,7 @@
 
 #include "sc_types.h"
 
-/*! Iniitalize sc-memory configuration from specified configuration file
+/*! Initialize sc-memory configuration from specified configuration file
  * @param file_path Path to configuration file
  */
 void sc_config_initialize(const sc_char * file_path);
@@ -20,7 +20,7 @@ void sc_config_shutdown();
 
 /*! Return number of segments, that can be loaded into memory at one moment
  */
-sc_int32 sc_config_get_max_loaded_segments();
+sc_uint32 sc_config_get_max_loaded_segments();
 
 //! Returns file memory engine
 const sc_char * sc_config_fm_engine();
@@ -34,24 +34,24 @@ const sc_char * sc_config_fm_engine();
  * parsed.
  * @attention Returned value managed by sc_confing and shouldn't be freed
  */
-_SC_EXTERN const char * sc_config_get_value_string(const char * group, const char * key);
+_SC_EXTERN const sc_char * sc_config_get_value_string(const sc_char * group, const sc_char * key);
 
 /*!
  * Returns the value associated with the key as an integer, or 0 if the key was not found or could not be parsed.
  * @see sc_config_get_value_string
  */
-_SC_EXTERN int sc_config_get_value_int(const char * group, const char * key);
+_SC_EXTERN sc_int sc_config_get_value_int(const sc_char * group, const sc_char * key);
 
 /*!
  * Returns the value associated with the key as a boolean, or SC_FALSE if the key was not found or could not be parsed.
  * @see sc_config_get_value_string
  */
-_SC_EXTERN sc_bool sc_config_get_value_boolean(const char * group, const char * key);
+_SC_EXTERN sc_bool sc_config_get_value_boolean(const sc_char * group, const sc_char * key);
 
 /*!
  * Returns the value associated with the key as a float, or 0.0 if the key was not found or could not be parsed.
  * @see sc_config_get_value_string
  */
-_SC_EXTERN float sc_config_get_value_float(const char * group, const char * key);
+_SC_EXTERN float sc_config_get_value_float(const sc_char * group, const sc_char * key);
 
 #endif

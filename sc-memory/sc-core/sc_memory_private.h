@@ -37,7 +37,7 @@ extern sc_memory_context * s_memory_default_ctx;
 
 /*! Function that create memory context with specified params
  * @param levels Access levels, you can create it with macros @see sc_access_level_make
- * @returns Retursn pointer to create memory context. If there were any errors during
+ * @returns Returns pointer to create memory context. If there were any errors during
  * context creation, then function returns 0
  * @note Do not use one context in different threads.
  */

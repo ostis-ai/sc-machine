@@ -7,7 +7,8 @@
 #include "sc_iterator.h"
 #include "sc_storage.h"
 
-#include <glib.h>
+#include "sc_allocator.h"
+#include "sc_assert_utils.h"
 
 sc_iterator5 * sc_iterator5_new(
     const sc_memory_context * ctx,
@@ -23,31 +24,33 @@ sc_iterator5 * sc_iterator5_new(
   {
   case sc_iterator5_f_a_a_a_f:
     if (p1.is_type || !p2.is_type || !p3.is_type || !p4.is_type || p5.is_type)
-      return (sc_iterator5 *)null_ptr;
+      return null_ptr;
     break;
   case sc_iterator5_a_a_f_a_f:
     if (!p1.is_type || !p2.is_type || p3.is_type || !p4.is_type || p5.is_type)
-      return (sc_iterator5 *)null_ptr;
+      return null_ptr;
     break;
   case sc_iterator5_f_a_f_a_f:
     if (p1.is_type || !p2.is_type || p3.is_type || !p4.is_type || p5.is_type)
-      return (sc_iterator5 *)null_ptr;
+      return null_ptr;
     break;
   case sc_iterator5_f_a_f_a_a:
     if (p1.is_type || !p2.is_type || p3.is_type || !p4.is_type || !p5.is_type)
-      return (sc_iterator5 *)null_ptr;
+      return null_ptr;
     break;
   case sc_iterator5_f_a_a_a_a:
     if (p1.is_type || !p2.is_type || !p3.is_type || !p4.is_type || !p5.is_type)
-      return (sc_iterator5 *)null_ptr;
+      return null_ptr;
     break;
   case sc_iterator5_a_a_f_a_a:
     if (!p1.is_type || !p2.is_type || p3.is_type || !p4.is_type || !p5.is_type)
-      return (sc_iterator5 *)null_ptr;
+      return null_ptr;
     break;
-  };
+  default:
+    return null_ptr;
+  }
 
-  sc_iterator5 * it = g_new0(sc_iterator5, 1);
+  sc_iterator5 * it = sc_mem_new(sc_iterator5, 1);
 
   it->params[0] = p1;
   it->params[1] = p2;
@@ -96,11 +99,11 @@ sc_iterator5 * sc_iterator5_new(
     it->it_attr = null_ptr;
     it->results[0] = p1.addr;
     break;
-  };
+  }
 
   if (it->it_main == null_ptr)
   {
-    g_free(it);
+    sc_mem_free(it);
     it = 0;
   }
 
@@ -254,14 +257,14 @@ void sc_iterator5_free(sc_iterator5 * it)
     sc_iterator3_free(it->it_attr);
   if (it->it_main != null_ptr)
     sc_iterator3_free(it->it_main);
-  g_free(it);
+  sc_mem_free(it);
 }
 
 sc_bool _sc_iterator5_a_a_f_a_f_next(sc_iterator5 * it)
 {
-  SC_ADDR_MAKE_EMPTY(it->results[0])
-  SC_ADDR_MAKE_EMPTY(it->results[1])
-  SC_ADDR_MAKE_EMPTY(it->results[3])
+  SC_ADDR_MAKE_EMPTY(it->results[0]);
+  SC_ADDR_MAKE_EMPTY(it->results[1]);
+  SC_ADDR_MAKE_EMPTY(it->results[3]);
 
   if (it->it_attr != null_ptr && sc_iterator3_next(it->it_attr))
   {
@@ -298,15 +301,13 @@ sc_bool _sc_iterator5_a_a_f_a_f_next(sc_iterator5 * it)
     it->results[3] = it->it_attr->results[1];
     return SC_TRUE;
   }
-
-  return SC_FALSE;
 }
 
 sc_bool _sc_iterator5_f_a_a_a_f_next(sc_iterator5 * it)
 {
-  SC_ADDR_MAKE_EMPTY(it->results[1])
-  SC_ADDR_MAKE_EMPTY(it->results[2])
-  SC_ADDR_MAKE_EMPTY(it->results[3])
+  SC_ADDR_MAKE_EMPTY(it->results[1]);
+  SC_ADDR_MAKE_EMPTY(it->results[2]);
+  SC_ADDR_MAKE_EMPTY(it->results[3]);
 
   if (it->it_attr != null_ptr && sc_iterator3_next(it->it_attr))
   {
@@ -343,14 +344,12 @@ sc_bool _sc_iterator5_f_a_a_a_f_next(sc_iterator5 * it)
     it->results[3] = it->it_attr->results[1];
     return SC_TRUE;
   }
-
-  return SC_FALSE;
 }
 
 sc_bool _sc_iterator5_f_a_f_a_f_next(sc_iterator5 * it)
 {
-  SC_ADDR_MAKE_EMPTY(it->results[1])
-  SC_ADDR_MAKE_EMPTY(it->results[3])
+  SC_ADDR_MAKE_EMPTY(it->results[1]);
+  SC_ADDR_MAKE_EMPTY(it->results[3]);
 
   if (it->it_attr != null_ptr && sc_iterator3_next(it->it_attr))
   {
@@ -385,15 +384,13 @@ sc_bool _sc_iterator5_f_a_f_a_f_next(sc_iterator5 * it)
     it->results[3] = it->it_attr->results[1];
     return SC_TRUE;
   }
-
-  return SC_FALSE;
 }
 
 sc_bool _sc_iterator5_f_a_f_a_a_next(sc_iterator5 * it)
 {
-  SC_ADDR_MAKE_EMPTY(it->results[1])
-  SC_ADDR_MAKE_EMPTY(it->results[3])
-  SC_ADDR_MAKE_EMPTY(it->results[4])
+  SC_ADDR_MAKE_EMPTY(it->results[1]);
+  SC_ADDR_MAKE_EMPTY(it->results[3]);
+  SC_ADDR_MAKE_EMPTY(it->results[4]);
 
   if (it->it_attr != null_ptr && sc_iterator3_next(it->it_attr))
   {
@@ -430,16 +427,14 @@ sc_bool _sc_iterator5_f_a_f_a_a_next(sc_iterator5 * it)
     it->results[4] = it->it_attr->results[0];
     return SC_TRUE;
   }
-
-  return SC_FALSE;
 }
 
 sc_bool _sc_iterator5_f_a_a_a_a_next(sc_iterator5 * it)
 {
-  SC_ADDR_MAKE_EMPTY(it->results[1])
-  SC_ADDR_MAKE_EMPTY(it->results[2])
-  SC_ADDR_MAKE_EMPTY(it->results[3])
-  SC_ADDR_MAKE_EMPTY(it->results[4])
+  SC_ADDR_MAKE_EMPTY(it->results[1]);
+  SC_ADDR_MAKE_EMPTY(it->results[2]);
+  SC_ADDR_MAKE_EMPTY(it->results[3]);
+  SC_ADDR_MAKE_EMPTY(it->results[4]);
 
   if (it->it_attr != null_ptr && sc_iterator3_next(it->it_attr))
   {
@@ -478,16 +473,14 @@ sc_bool _sc_iterator5_f_a_a_a_a_next(sc_iterator5 * it)
     it->results[4] = it->it_attr->results[0];
     return SC_TRUE;
   }
-
-  return SC_FALSE;
 }
 
 sc_bool _sc_iterator5_a_a_f_a_a_next(sc_iterator5 * it)
 {
-  SC_ADDR_MAKE_EMPTY(it->results[1])
-  SC_ADDR_MAKE_EMPTY(it->results[0])
-  SC_ADDR_MAKE_EMPTY(it->results[3])
-  SC_ADDR_MAKE_EMPTY(it->results[4])
+  SC_ADDR_MAKE_EMPTY(it->results[1]);
+  SC_ADDR_MAKE_EMPTY(it->results[0]);
+  SC_ADDR_MAKE_EMPTY(it->results[3]);
+  SC_ADDR_MAKE_EMPTY(it->results[4]);
 
   if (it->it_attr != null_ptr && sc_iterator3_next(it->it_attr))
   {
@@ -525,8 +518,6 @@ sc_bool _sc_iterator5_a_a_f_a_a_next(sc_iterator5 * it)
     it->results[4] = it->it_attr->results[0];
     return SC_TRUE;
   }
-
-  return SC_FALSE;
 }
 
 sc_bool sc_iterator5_next(sc_iterator5 * it)
@@ -553,15 +544,15 @@ sc_bool sc_iterator5_next(sc_iterator5 * it)
 
   case sc_iterator5_a_a_f_a_a:
     return _sc_iterator5_a_a_f_a_a_next(it);
-  };
+  }
 
   return SC_FALSE;
 }
 
 sc_addr sc_iterator5_value(sc_iterator5 * it, sc_uint vid)
 {
-  g_assert(it != 0);
-  g_assert(vid < 5);
+  sc_assert(it != null_ptr);
+  sc_assert(vid < 5);
 
   return it->results[vid];
 }

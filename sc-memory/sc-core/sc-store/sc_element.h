@@ -16,7 +16,7 @@ struct _sc_arc_info
   sc_addr end;
   sc_addr next_out_arc;  // sc-addr of next output arc in list
   sc_addr next_in_arc;   // sc-addr of next input arc in list
-  sc_addr prev_out_arc;  // sc-addr of pevious output arc in list
+  sc_addr prev_out_arc;  // sc-addr of previous output arc in list
   sc_addr prev_in_arc;   // sc-addr of previous input arc in list
 };
 
@@ -39,7 +39,7 @@ struct _sc_content
  * segment identifier and element identifier. Element
  * identifier is unique for specified segment.
  * Node also contains information about const and struct types.
- * It store as a one char for each of types.
+ * It stores as a one char for each of types.
  * Each node have a pointer to content assigned with it. If pointer is null,
  * then node haven't any content data.
  * Last part of node information is a pointers to the lists of input and output arcs.

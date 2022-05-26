@@ -10,7 +10,7 @@
 #include "sc_iterator3.h"
 #include "sc_iterator5.h"
 
-/* All sc-iterators contains timestamp, so sc-elements can't be physicaly
+/* All sc-iterators contains timestamp, so sc-elements can't be physically
  * deleted as garbage, while there are some iterators, that can include them in
  * iteration results. So we store sequence of timestamps, that was used to create
  * iterators.

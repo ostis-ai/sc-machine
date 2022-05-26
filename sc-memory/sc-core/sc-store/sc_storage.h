@@ -13,10 +13,10 @@
 
 #if SC_DEBUG_MODE
 #  define STORAGE_CHECK_CALL(x) \
-    { \
+    ({ \
       sc_result __r = x; \
-      g_assert(__r == SC_RESULT_OK); \
-    }
+      sc_assert(__r == SC_RESULT_OK); \
+    })
 #else
 #  define STORAGE_CHECK_CALL(x) \
     { \
@@ -121,7 +121,7 @@ sc_result sc_storage_get_arc_begin(sc_memory_context const * ctx, sc_addr addr, 
 
 /*! Returns sc-addr of end element of specified arc
  * @param addr sc-addr of arc to get end element
- * @param result PoOinter to result container
+ * @param result Pointer to result container
  * @return If input params are correct and end element resolved, then return SC_OK.
  * If element with specified addr isn't an arc, then return SC_INVALID_TYPE
  */
@@ -163,7 +163,7 @@ sc_result sc_storage_set_link_content(sc_memory_context * ctx, sc_addr addr, con
 sc_result sc_storage_get_link_content(sc_memory_context const * ctx, sc_addr addr, sc_stream ** stream);
 
 /*! Search sc-link addrs by specified data
- * @param stream Pointert to stream that contains data for search
+ * @param stream Pointer to stream that contains data for search
  * @param result Pointer to result container
  * @param result_count Container for results count
  * @return If sc-links with specified checksum found, then sc-addrs of found link
@@ -200,7 +200,7 @@ sc_uint sc_storage_get_segments_count();
 
 /*! Get statistics information about elements
  * @param stat Pointer to structure that store statistic
- * @return If statictics info collect without any errors, then return SC_OK;
+ * @return If statistics info collect without any errors, then return SC_OK;
  * otherwise return SC_ERROR
  */
 sc_result sc_storage_get_elements_stat(sc_stat * stat);
@@ -221,7 +221,7 @@ sc_result sc_storage_element_unlock(sc_addr addr);
 //! Adds reference to a specified sc-element
 void sc_storage_element_ref(sc_addr addr);
 /*! Removes reference from a specified sc-element
- * @param addr sc_addr of element to remvoe reference
+ * @param addr sc_addr of element to remove reference
  * @return If last reference removed from sc-element, then elements cell frees and this function returns SC_TRUE;
  * otherwise - returns SC_FALSE and element is still alive. DO NOT work with this sc-element if function returns SC_TRUE
  */

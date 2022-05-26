@@ -4,22 +4,28 @@
  * (See accompanying file COPYING.MIT or copy at http://opensource.org/licenses/MIT)
  */
 
-#include <glib.h>
 #include "sc_event.h"
-#include "sc_storage.h"
+
 #include "sc_event/sc_event_private.h"
 #include "sc_event/sc_event_queue.h"
+
+#include "sc_storage.h"
 #include "../sc_memory_private.h"
 
+#include "sc_allocator.h"
+#include "sc_atomic.h"
+#include "sc_assert_utils.h"
+#include "sc_message.h"
+
 GMutex events_table_mutex;
-#define EVENTS_TABLE_LOCK g_mutex_lock(&events_table_mutex);
-#define EVENTS_TABLE_UNLOCK g_mutex_unlock(&events_table_mutex);
+#define EVENTS_TABLE_LOCK g_mutex_lock(&events_table_mutex)
+#define EVENTS_TABLE_UNLOCK g_mutex_unlock(&events_table_mutex)
 
 #define TABLE_KEY(__Addr) GUINT_TO_POINTER(SC_ADDR_LOCAL_TO_INT(__Addr))
 
 // Pointer to hash table that contains events
-GHashTable * events_table = 0;
-sc_event_queue * event_queue = 0;
+GHashTable * events_table = null_ptr;
+sc_event_queue * event_queue = null_ptr;
 
 guint events_table_hash_func(gconstpointer pointer)
 {
@@ -34,11 +40,11 @@ gboolean events_table_equal_func(gconstpointer a, gconstpointer b)
 //! Inserts specified event into events table
 sc_result insert_event_into_table(sc_event * event)
 {
-  GSList * element_events_list = 0;
+  GSList * element_events_list = null_ptr;
 
-  EVENTS_TABLE_LOCK
+  EVENTS_TABLE_LOCK;
 
-  // first of all, if table doesn't exist, then create it
+  // the first if table doesn't exist, then create it
   if (events_table == null_ptr)
     events_table = g_hash_table_new(events_table_hash_func, events_table_equal_func);
 
@@ -47,7 +53,7 @@ sc_result insert_event_into_table(sc_event * event)
   element_events_list = g_slist_append(element_events_list, (gpointer)event);
   g_hash_table_insert(events_table, TABLE_KEY(event->element), (gpointer)element_events_list);
 
-  EVENTS_TABLE_UNLOCK
+  EVENTS_TABLE_UNLOCK;
 
   return SC_RESULT_OK;
 }
@@ -55,15 +61,15 @@ sc_result insert_event_into_table(sc_event * event)
 //! Remove specified sc-event from events table
 sc_result remove_event_from_table(sc_event * event)
 {
-  GSList * element_events_list = 0;
-  g_assert(events_table != null_ptr);
+  GSList * element_events_list = null_ptr;
+  sc_assert(events_table != null_ptr);
 
-  EVENTS_TABLE_LOCK
+  EVENTS_TABLE_LOCK;
 
   element_events_list = (GSList *)g_hash_table_lookup(events_table, TABLE_KEY(event->element));
   if (element_events_list == null_ptr)
   {
-    EVENTS_TABLE_UNLOCK
+    EVENTS_TABLE_UNLOCK;
     return SC_RESULT_ERROR_INVALID_PARAMS;
   }
 
@@ -85,7 +91,7 @@ sc_result remove_event_from_table(sc_event * event)
     events_table = null_ptr;
   }
 
-  EVENTS_TABLE_UNLOCK
+  EVENTS_TABLE_UNLOCK;
   return SC_RESULT_OK;
 }
 
@@ -101,7 +107,7 @@ sc_bool _sc_event_try_emit(sc_event * evt)
   }
   else
   {
-    g_assert(evt->ref_count < SC_EVENT_REF_COUNT_MASK);
+    sc_assert(evt->ref_count < SC_EVENT_REF_COUNT_MASK);
     evt->ref_count++;
   }
 
@@ -112,7 +118,7 @@ sc_bool _sc_event_try_emit(sc_event * evt)
 sc_bool sc_event_unref(sc_event * evt)
 {
   sc_event_lock(evt);
-  evt->ref_count--;
+  --evt->ref_count;
   sc_event_unlock(evt);
 
   return SC_FALSE;
@@ -127,7 +133,7 @@ sc_event * sc_event_new(
     fEventCallback callback,
     fDeleteCallback delete_callback)
 {
-  g_assert(callback != null_ptr);
+  sc_assert(callback != null_ptr);
 
   if (SC_ADDR_IS_EMPTY(el))
     return null_ptr;
@@ -136,11 +142,11 @@ sc_event * sc_event_new(
   sc_event * event = null_ptr;
   if (sc_storage_get_access_levels(ctx, el, &levels) != SC_RESULT_OK ||
       !sc_access_lvl_check_read(ctx->access_levels, levels))
-    return 0;
+    return null_ptr;
 
   sc_storage_element_ref(el);
 
-  event = g_new0(sc_event, 1);
+  event = sc_mem_new(sc_event, 1);
   event->element = el;
   event->type = type;
   event->callback = callback;
@@ -153,7 +159,7 @@ sc_event * sc_event_new(
   // register created event
   if (insert_event_into_table(event) != SC_RESULT_OK)
   {
-    g_free(event);
+    sc_mem_free(event);
     return null_ptr;
   }
 
@@ -168,7 +174,7 @@ sc_event * sc_event_new_ex(
     fEventCallbackEx callback,
     fDeleteCallback delete_callback)
 {
-  g_assert(callback != null_ptr);
+  sc_assert(callback != null_ptr);
 
   if (SC_ADDR_IS_EMPTY(el))
     return null_ptr;
@@ -177,11 +183,11 @@ sc_event * sc_event_new_ex(
   sc_event * event = null_ptr;
   if (sc_storage_get_access_levels(ctx, el, &levels) != SC_RESULT_OK ||
       !sc_access_lvl_check_read(ctx->access_levels, levels))
-    return 0;
+    return null_ptr;
 
   sc_storage_element_ref(el);
 
-  event = g_new0(sc_event, 1);
+  event = sc_mem_new(sc_event, 1);
   event->element = el;
   event->type = type;
   event->callback_ex = callback;
@@ -194,7 +200,7 @@ sc_event * sc_event_new_ex(
   // register created event
   if (insert_event_into_table(event) != SC_RESULT_OK)
   {
-    g_free(event);
+    sc_mem_free(event);
     return null_ptr;
   }
 
@@ -227,7 +233,7 @@ unref:
   sc_event_unref(evt);
 }
 
-  // whait while will be available for a destroy
+  // wait while will be available for destroy
   while (SC_TRUE)
   {
     sc_event_lock(evt);
@@ -239,7 +245,7 @@ unref:
         evt->delete_callback(evt);
 
       sc_event_unlock(evt);
-      g_free(evt);
+      sc_mem_free(evt);
       break;
     }
     sc_event_unlock(evt);
@@ -252,15 +258,15 @@ unref:
 
 sc_result sc_event_notify_element_deleted(sc_addr element)
 {
-  GSList * element_events_list = 0;
-  sc_event * evt = 0;
+  GSList * element_events_list = null_ptr;
+  sc_event * evt = null_ptr;
 
-  EVENTS_TABLE_LOCK
+  EVENTS_TABLE_LOCK;
   // do nothing, if there are no registered events
   if (events_table == null_ptr)
     goto result;
 
-  // lookup for all registered to specified sc-elemen events
+  // lookup for all registered to specified sc-element events
   element_events_list = (GSList *)g_hash_table_lookup(events_table, TABLE_KEY(element));
   if (element_events_list)
   {
@@ -298,7 +304,7 @@ sc_result sc_event_emit(
 {
   if (ctx->flags & SC_CONTEXT_FLAG_PENDING_EVENTS)
   {
-    sc_event_emit_params * params = g_new0(sc_event_emit_params, 1);
+    sc_event_emit_params * params = sc_mem_new(sc_event_emit_params, 1);
     params->el = el;
     params->el_access = el_access;
     params->type = type;
@@ -320,10 +326,10 @@ sc_result sc_event_emit_impl(
     sc_addr edge,
     sc_addr other_el)
 {
-  GSList * element_events_list = 0;
-  sc_event * event = 0;
+  GSList * element_events_list = null_ptr;
+  sc_event * event = null_ptr;
 
-  g_assert(SC_ADDR_IS_NOT_EMPTY(el));
+  sc_assert(SC_ADDR_IS_NOT_EMPTY(el));
 
   EVENTS_TABLE_LOCK;
 
@@ -331,7 +337,7 @@ sc_result sc_event_emit_impl(
   if (events_table == null_ptr)
     goto result;
 
-  // lookup for all registered to specified sc-elemen events
+  // lookup for all registered to specified sc-element events
   element_events_list = (GSList *)g_hash_table_lookup(events_table, TABLE_KEY(el));
   while (element_events_list != null_ptr)
   {
@@ -340,7 +346,7 @@ sc_result sc_event_emit_impl(
     if (event->type == type && sc_access_lvl_check_read(event->access_levels, el_access) &&
         _sc_event_try_emit(event) == SC_TRUE)
     {
-      g_assert(event->callback != null_ptr || event->callback_ex != null_ptr);
+      sc_assert(event->callback != null_ptr || event->callback_ex != null_ptr);
       sc_event_queue_append(event_queue, event, edge, other_el);
     }
 
@@ -357,33 +363,34 @@ result:
 
 sc_event_type sc_event_get_type(const sc_event * event)
 {
-  g_assert(event != 0);
+  sc_assert(event != null_ptr);
   return event->type;
 }
 
 sc_pointer sc_event_get_data(const sc_event * event)
 {
-  g_assert(event != 0);
+  sc_assert(event != null_ptr);
   return event->data;
 }
 
 sc_addr sc_event_get_element(const sc_event * event)
 {
-  g_assert(event != 0);
+  sc_assert(event != null_ptr);
   return event->element;
 }
 
 void sc_event_lock(sc_event * evt)
 {
-  sc_pointer const thread = sc_thread();
-  while (TRUE)
+  sc_pointer thread = sc_thread();
+  while (SC_TRUE)
   {
-    sc_memory_context * locked_thread = g_atomic_pointer_get(&evt->thread_lock);
+    sc_memory_context * locked_thread = sc_atomic_pointer_get((void **)&evt->thread_lock);
     if (locked_thread == thread)
       return;
 
     if ((locked_thread != null_ptr) ||
-        g_atomic_pointer_compare_and_exchange(&evt->thread_lock, locked_thread, thread) == FALSE)
+        sc_atomic_pointer_compare_and_exchange((void **)&evt->thread_lock, (void *)locked_thread, (void *)thread) ==
+            SC_FALSE)
     {
       g_usleep(rand() % 10);
     }
@@ -396,12 +403,12 @@ void sc_event_lock(sc_event * evt)
 
 void sc_event_unlock(sc_event * evt)
 {
-  sc_pointer const thread = sc_thread();
-  sc_memory_context * locked_thread = g_atomic_pointer_get(&evt->thread_lock);
+  sc_pointer thread = sc_thread();
+  sc_memory_context * locked_thread = sc_atomic_pointer_get((void **)&evt->thread_lock);
   if (locked_thread != thread)
-    g_critical("Invalid state of event lock");
+    sc_critical("Invalid state of event lock");
 
-  g_atomic_pointer_set(&evt->thread_lock, 0);
+  sc_atomic_pointer_set(&evt->thread_lock, null_ptr);
 }
 
 // --------
@@ -414,7 +421,7 @@ sc_bool sc_events_initialize()
 void sc_events_shutdown()
 {
   sc_event_queue_destroy_wait(event_queue);
-  event_queue = 0;
+  event_queue = null_ptr;
 }
 
 void sc_events_stop_processing()

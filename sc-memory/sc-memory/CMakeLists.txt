@@ -29,17 +29,21 @@ target_include_directories(sc-memory
       PRIVATE ${GLIB2_INCLUDE_DIRS}
       PRIVATE ${SC_MACHINE_ANTRL_DIR}/runtime/src
       PRIVATE ${SC_MEMORY_SRC}
+	  PRIVATE ${SC_MEMORY_SRC}/sc-base
       PRIVATE ${Python3_INCLUDE_DIRS})
 
 if (${WIN32})
   target_link_libraries(sc-memory
-                        sc-core ${LIBCURL_LIBRARIES} ${PYTHON_LIBRARY_RELEASE}
+                        sc-core
+		  				sc-base
+		  				${LIBCURL_LIBRARIES} ${PYTHON_LIBRARY_RELEASE}
                         antlr4_static
                         debug ${BOOST_PYTHON_LIBRARY_DEBUG}
                         optimized ${BOOST_PYTHON_LIBRARY_RELEASE})
 elseif (${UNIX})
   target_link_libraries(sc-memory
                         sc-core
+		  				sc-base
                         antlr4_static
                         ${LIBCURL_LIBRARIES}
                         ${Python3_LIBRARIES}
@@ -49,6 +53,7 @@ endif(${WIN32})
 sc_codegen_ex(sc-memory ${CMAKE_CURRENT_SOURCE_DIR} "${CMAKE_CURRENT_SOURCE_DIR}/generated")
 add_dependencies(sc-memory 
   sc-core
+  sc-base
   sc-code-generator
   antlr4_static
   SCsParser)

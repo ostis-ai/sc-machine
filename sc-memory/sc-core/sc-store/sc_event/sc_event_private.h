@@ -36,7 +36,7 @@ struct _sc_event
   fEventCallbackEx callback_ex;
   //! Pointer to callback function, that calls, when subscribed sc-element deleted
   fDeleteCallback delete_callback;
-  //! Reference count (just references from queue). Higest bit used for SC_EVENT_REQUEST_DESTROY
+  //! Reference count (just references from queue). The highest bit used for SC_EVENT_REQUEST_DESTROY
   volatile sc_uint32 ref_count;
   //! Context lock
   volatile sc_pointer thread_lock;
@@ -50,11 +50,11 @@ sc_bool sc_events_initialize();
 //! Function to shutdown sc-events module
 void sc_events_shutdown();
 
-//! Waits while all emited events will be processed, then returns. After calling that function all new emited events
+//! Waits while all emitted events will be processed, then returns. After calling that function all new emitted events
 //! will be ignored
 void sc_events_stop_processing();
 
-/*! Notificate about sc-element deletion.
+/*! Notify about sc-element deletion.
  * @param element sc-addr of deleted sc-element
  * @remarks This function call deletion callback function for event.
  * And destroy all events for deleted sc-element
@@ -75,7 +75,7 @@ sc_result sc_event_notify_element_deleted(sc_addr element);
 sc_result sc_event_emit(
     sc_memory_context * ctx,
     sc_addr el,
-    sc_access_levels el_acces,
+    sc_access_levels el_access,
     sc_event_type type,
     sc_addr edge,
     sc_addr other_el);

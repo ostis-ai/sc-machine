@@ -15,7 +15,7 @@
 #  define SC_DEBUG_MODE 0
 #endif
 
-/*! Bound empty slot serach
+/*! Bound empty slot search
  *
  * Can be used just with USE_SEGMENT_EMPTY_SLOT_BUFFER = 0
  */

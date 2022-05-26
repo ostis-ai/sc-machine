@@ -37,7 +37,7 @@ struct _sc_segment
 };
 
 /*! Create new segment with specified size.
- * @param num Number of created intance in sc-memory
+ * @param num Number of created instance in sc-memory
  */
 sc_segment * sc_segment_new(sc_addr_seg num);
 
@@ -52,13 +52,6 @@ void sc_segment_erase_element(sc_segment * seg, sc_uint16 offset);
 
 //! Returns number of stored sc-elements in segment
 sc_uint32 sc_segment_get_elements_count(sc_segment * seg);
-
-/*! Deletes garbage in specified segment
- * @param oldet_time_stamp Oldest timestamp, that can be used
- * @param seg Poitnet to segment to delete garbage
- * @returns Returns number of freed cells
- */
-// sc_uint32 sc_segment_free_garbage(sc_segment *seg, sc_uint32 oldest_time_stamp);
 
 /*! Check if segment has any empty slots
  * @param segment Pointer to segment for check
@@ -75,7 +68,7 @@ sc_element_meta * sc_segment_get_meta(sc_segment * seg, sc_addr_offset offset);
 // ---------------------- locks --------------------------
 /*! Function to lock any empty element
  * @param seg Pointer to segment where to lock empty element
- * @param offset Poitner to container for locked element offset
+ * @param offset Pointer to container for locked element offset
  * @returns Returns pointer to locked empty element. If there are no any empty element found,
  * then returns 0
  */
@@ -97,7 +90,7 @@ sc_element * sc_segment_lock_element_try(sc_segment * seg, sc_addr_offset offset
  */
 void sc_segment_unlock_element(sc_segment * seg, sc_addr_offset offset);
 
-//! Locks segment section. This funciton doesn't returns control, while part wouldn't be locked.
+//! Locks segment section. This function doesn't returns control, while part wouldn't be locked.
 void sc_segment_section_lock(sc_segment_section * section);
 /*! Try to lock segment section. If section already locked, then this function returns false; otherwise it locks section
  * and returns true

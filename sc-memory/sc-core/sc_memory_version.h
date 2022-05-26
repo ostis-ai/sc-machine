@@ -29,7 +29,7 @@ extern const sc_version SC_VERSION;
  */
 _SC_EXTERN sc_int32 sc_version_compare(const sc_version * a, const sc_version * b);
 
-/*! Returns newvly-alocated string that represents version.
+/*! Returns newly-allocated string that represents version.
  * The returned string should be freed with sc_version_string_free when no longer needed.
  */
 _SC_EXTERN char * sc_version_string_new(const sc_version * v);

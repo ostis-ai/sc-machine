@@ -12,10 +12,10 @@
 
 /*! Initialize extensions from specified directory.
  * This function find all available extensions in specified directory and try to load them.
- * @param ext_dir_path Path to directory, that contains extensions. This function doens't take
+ * @param ext_dir_path Path to directory, that contains extensions. This function doesn't take
  * ownership on this parameter, so you need to free it after end using the last one.
- * @param enabled_list Null terminated list of enabled extension names. If it null, then all extensions in a deirectory
- * will be loaded. Ohterwise just extensions in a list will be loaded.
+ * @param enabled_list Null terminated list of enabled extension names. If it null, then all extensions in a directory
+ * will be loaded. Otherwise just extensions in a list will be loaded.
  * @return If specified directory doesn't exist, then return SC_ERROR_INVALID_PARAMS. If
  * there are any other errors to load extensions, then return SC_ERROR
  */
@@ -25,4 +25,4 @@ sc_result sc_ext_initialize(const sc_char * ext_dir_path, const sc_char ** enabl
  */
 void sc_ext_shutdown();
 
-#endif  // _sc_memory_h_
+#endif  // _sc_memory_ext_h_
