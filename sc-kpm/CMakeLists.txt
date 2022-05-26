@@ -31,3 +31,7 @@ add_dependencies(sc-kpm
     sc-search
     sc-utils
 )
+
+if (${SC_BUILD_TESTS})
+	include(${CMAKE_CURRENT_LIST_DIR}/tests/tests.cmake)
+endif ()
