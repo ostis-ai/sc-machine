@@ -7,7 +7,7 @@
 #include "sc_stream.hpp"
 
 ScStream::ScStream()
-  : m_stream(0)
+  : m_stream(nullptr)
 {
 }
 
@@ -40,12 +40,12 @@ void ScStream::Reset()
 {
   if (m_stream)
     sc_stream_free(m_stream);
-  m_stream = 0;
+  m_stream = nullptr;
 }
 
 bool ScStream::IsValid() const
 {
-  return m_stream != 0;
+  return m_stream != nullptr;
 }
 
 bool ScStream::Read(sc_char * buff, size_t buffLen, size_t & readBytes) const
@@ -112,16 +112,14 @@ ScStreamMemory::ScStreamMemory(MemoryBufferPtr const & buff)
 {
 }
 
-ScStreamMemory::~ScStreamMemory()
-{
-}
+ScStreamMemory::~ScStreamMemory() = default;
 
 // --------------------------------
 bool ScStreamConverter::StreamToString(ScStreamPtr const & stream, std::string & outString)
 {
   size_t const bytesCount = stream->Size();
   if (bytesCount == 0)
-    return false;
+    return SC_FALSE;
 
   char * data = new char[bytesCount];
   size_t readBytes;
@@ -130,7 +128,7 @@ bool ScStreamConverter::StreamToString(ScStreamPtr const & stream, std::string &
 
   delete[] data;
 
-  return true;
+  return SC_TRUE;
 }
 
 ScStreamPtr ScStreamConverter::StreamFromString(std::string const & str)

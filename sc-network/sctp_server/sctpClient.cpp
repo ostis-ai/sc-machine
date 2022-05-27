@@ -14,15 +14,13 @@
 
 sctpClient::sctpClient(QObject * parent, int socketDescriptor)
   : QThread(parent)
-  , mSocket(0)
-  , mCommand(0)
+  , mSocket(nullptr)
+  , mCommand(nullptr)
   , mSocketDescriptor(socketDescriptor)
 {
 }
 
-sctpClient::~sctpClient()
-{
-}
+sctpClient::~sctpClient() = default;
 
 void sctpClient::run()
 {
@@ -56,17 +54,17 @@ void sctpClient::run()
   mSocket->close();
 
   delete mSocket;
-  mSocket = 0;
+  mSocket = nullptr;
 
   delete mCommand;
-  mCommand = 0;
+  mCommand = nullptr;
 
-  // deleteLater(); // shedule destroy in main thread
+  // deleteLater(); // schedule destroy in main thread
 }
 
 void sctpClient::processCommands()
 {
-  while (mSocket->bytesAvailable() >= mCommand->cmdHeaderSize())
+  while (mSocket->bytesAvailable() >= sctpCommand::cmdHeaderSize())
   {
     eSctpErrorCode errCode = mCommand->processCommand(mSocket, mSocket);
     if (errCode != SCTP_NO_ERROR)

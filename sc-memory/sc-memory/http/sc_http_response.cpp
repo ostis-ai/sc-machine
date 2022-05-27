@@ -2,8 +2,10 @@
 
 #include <curl/curl.h>
 
-ScHttpResponse::ScHttpResponse(std::string const & data, uint8_t resultCode)
-  : m_data(data)
+#include <utility>
+
+ScHttpResponse::ScHttpResponse(std::string data, uint8_t resultCode)
+  : m_data(std::move(data))
   , m_resultCode(resultCode)
 {
 }

@@ -13,12 +13,12 @@
 class ScTimer
 {
 public:
-  _SC_EXTERN ScTimer(double timeoutSec = -1.0);
+  _SC_EXTERN explicit ScTimer(double timeoutSec = -1.0);
 
   // Returns number of seconds elapsed from timer start
   _SC_EXTERN double Seconds() const;
 
-  // Returns true, if time since start to Now is more then timesoutSec (that passed into constructor)
+  // Returns true, if time since start to Now is more than timeoutSec (that passed into constructor)
   _SC_EXTERN bool IsTimeOut() const;
 
 private:

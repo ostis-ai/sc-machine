@@ -82,7 +82,7 @@ sc_memory_context * sc_memory_initialize(const sc_memory_params * params)
 
 error:
 {
-  if (helper_ctx)
+  if (helper_ctx != null_ptr)
     sc_memory_context_free(helper_ctx);
   sc_memory_context_free(s_memory_default_ctx);
 }
@@ -97,15 +97,15 @@ sc_result sc_memory_init_ext(sc_char const * ext_path, const sc_char ** enabled_
   switch (ext_res)
   {
   case SC_RESULT_OK:
-    g_message("Modules initialization finished");
+    sc_message("Modules initialization finished");
     break;
 
   case SC_RESULT_ERROR_INVALID_PARAMS:
-    g_warning("Extensions directory '%s' doesn't exist", ext_path);
+    sc_warning("Extensions directory '%s' doesn't exist", ext_path);
     break;
 
   default:
-    g_warning("Unknown error while initialize extensions");
+    sc_warning("Unknown error while initialize extensions");
     break;
   }
 
@@ -171,7 +171,7 @@ sc_memory_context * sc_memory_context_new_impl(sc_uint8 levels)
   else
     goto error;
 
-  s_context_id_count++;
+  ++s_context_id_count;
   goto result;
 
 error:
@@ -200,7 +200,7 @@ void sc_memory_context_free_impl(sc_memory_context * ctx)
   sc_memory_context * c = g_hash_table_lookup(s_context_hash_table, GINT_TO_POINTER(ctx->id));
   sc_assert(c == ctx);
   g_hash_table_remove(s_context_hash_table, GINT_TO_POINTER(ctx->id));
-  s_context_id_count--;
+  --s_context_id_count;
 
   g_mutex_unlock(&s_concurrency_mutex);
 

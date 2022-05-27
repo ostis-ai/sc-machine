@@ -16,7 +16,7 @@ namespace utils
 {
 ScAddr LogicRuleUtils::getIfStatement(ScMemoryContext * context, const ScAddr & logicRule)
 {
-  SC_CHECK_PARAM(logicRule, ("Invalid logic rule address"))
+  SC_CHECK_PARAM(logicRule, ("Invalid logic rule address"));
 
   ScAddr ifStatement;
   ScAddr implEdge;
@@ -28,7 +28,7 @@ ScAddr LogicRuleUtils::getIfStatement(ScMemoryContext * context, const ScAddr & 
 
 ScAddr LogicRuleUtils::getElseStatement(ScMemoryContext * context, const ScAddr & logicRule)
 {
-  SC_CHECK_PARAM(logicRule, ("Invalid logic rule address"))
+  SC_CHECK_PARAM(logicRule, ("Invalid logic rule address"));
 
   ScAddr implEdge;
   ScAddr elseStatement;

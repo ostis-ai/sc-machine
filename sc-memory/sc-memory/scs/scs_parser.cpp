@@ -570,7 +570,6 @@ ElementHandle Parser::ProcessContourEndWithJoin(ElementHandle const & source)
   SC_ASSERT(!m_contourTriplesStack.empty(), ());
 
   size_t const last = m_parsedElements.size();
-  size_t const lastLocal = m_parsedElementsLocal.size();
   size_t const lastTriple = m_parsedTriples.size();
 
   auto const ind = m_contourElementsStack.top();
@@ -581,9 +580,6 @@ ElementHandle Parser::ProcessContourEndWithJoin(ElementHandle const & source)
   // append all new elements into contour
   for (size_t i = ind.first; i < last; ++i)
     newElements.insert(ElementHandle(ElementID(i), false));
-
-  // for (size_t i = ind.second; i < lastLocal; ++i)
-  //     newElements.insert(ElementHandle(ElementID(i), true));
 
   size_t const tripleFirst = m_contourTriplesStack.top();
   m_contourTriplesStack.pop();

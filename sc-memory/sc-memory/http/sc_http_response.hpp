@@ -11,7 +11,7 @@ class ScHttpResponse
 protected:
   friend class ScHttpRequest;
 
-  _SC_EXTERN ScHttpResponse(std::string const & data, uint8_t resultCode);
+  _SC_EXTERN ScHttpResponse(std::string data, uint8_t resultCode);
 
 public:
   _SC_EXTERN std::string const & GetData() const;

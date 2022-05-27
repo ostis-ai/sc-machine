@@ -40,7 +40,7 @@ public:
   //! Check if current position at the end of file
   _SC_EXTERN bool Eof() const;
 
-  //! Returns lenght of stream in bytes
+  //! Returns length of stream in bytes
   _SC_EXTERN size_t Size() const;
 
   //! Returns current position of stream

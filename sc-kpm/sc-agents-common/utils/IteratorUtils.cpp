@@ -49,7 +49,7 @@ ScAddr IteratorUtils::getFirstFromSet(ScMemoryContext * ms_context, const ScAddr
 
 ScAddr IteratorUtils::getAnyFromSet(ScMemoryContext * ms_context, const ScAddr & set)
 {
-  SC_CHECK_PARAM(set, ("Invalid set address"))
+  SC_CHECK_PARAM(set, ("Invalid set address"));
 
   ScIterator3Ptr iterator3 = ms_context->Iterator3(set, ScType::EdgeAccessConstPosPerm, ScType::Unknown);
   if (iterator3->Next())
@@ -65,9 +65,9 @@ ScAddr IteratorUtils::getNextFromSet(
     const ScAddr & previous,
     const ScAddr & sequenceRelation)
 {
-  SC_CHECK_PARAM(set, ("Invalid set address"))
-  SC_CHECK_PARAM(previous, ("Invalid previous element address"))
-  SC_CHECK_PARAM(sequenceRelation, ("Invalid sequence relation address"))
+  SC_CHECK_PARAM(set, ("Invalid set address"));
+  SC_CHECK_PARAM(previous, ("Invalid previous element address"));
+  SC_CHECK_PARAM(sequenceRelation, ("Invalid sequence relation address"));
 
   std::string const NEXT_ELEMENT_ALIAS = "_next_element";
   std::string const NEXT_ELEMENT_ACCESS_ARC_ALIAS = "_next_element_access_arc";
@@ -95,7 +95,7 @@ ScAddr IteratorUtils::getNextFromSet(
 
 ScAddrVector IteratorUtils::getAllWithType(ScMemoryContext * ms_context, const ScAddr & set, ScType scType)
 {
-  SC_CHECK_PARAM(set, ("Invalid set address"))
+  SC_CHECK_PARAM(set, ("Invalid set address"));
 
   ScAddrVector elementList;
   ScIterator3Ptr iterator3 = ms_context->Iterator3(set, ScType::EdgeAccessConstPosPerm, scType);
@@ -112,8 +112,8 @@ ScAddrVector IteratorUtils::getAllByRelation(
     const ScAddr & relation,
     bool isBeginNode)
 {
-  SC_CHECK_PARAM(node, ("Invalid node address"))
-  SC_CHECK_PARAM(relation, ("Invalid relation address"))
+  SC_CHECK_PARAM(node, ("Invalid node address"));
+  SC_CHECK_PARAM(relation, ("Invalid relation address"));
 
   ScAddrVector elementList;
   ScIterator5Ptr iterator5 = IteratorUtils::getIterator5(ms_context, node, relation, isBeginNode);
@@ -139,8 +139,8 @@ ScAddr IteratorUtils::getFirstByInRelation(ScMemoryContext * ms_context, const S
 
 ScAddr IteratorUtils::getAnyByInRelation(ScMemoryContext * ms_context, const ScAddr & node, const ScAddr & relation)
 {
-  SC_CHECK_PARAM(node, ("Invalid node address"))
-  SC_CHECK_PARAM(relation, ("Invalid relation address"))
+  SC_CHECK_PARAM(node, ("Invalid node address"));
+  SC_CHECK_PARAM(relation, ("Invalid relation address"));
 
   ScIterator5Ptr iterator5 = IteratorUtils::getIterator5(ms_context, node, relation, false);
   if (iterator5->Next())
@@ -165,8 +165,8 @@ ScAddrVector IteratorUtils::getAllByOutRelation(
 
 ScAddr IteratorUtils::getAnyByOutRelation(ScMemoryContext * ms_context, const ScAddr & node, const ScAddr & relation)
 {
-  SC_CHECK_PARAM(node, ("Invalid node address"))
-  SC_CHECK_PARAM(relation, ("Invalid relation address"))
+  SC_CHECK_PARAM(node, ("Invalid node address"));
+  SC_CHECK_PARAM(relation, ("Invalid relation address"));
 
   ScIterator5Ptr iterator5 = IteratorUtils::getIterator5(ms_context, node, relation);
   if (iterator5->Next())
@@ -182,8 +182,8 @@ ScIterator5Ptr IteratorUtils::getIterator5(
     ScAddr const & relation,
     bool const isBeginNode)
 {
-  SC_CHECK_PARAM(node, ("Invalid node address"))
-  SC_CHECK_PARAM(relation, ("Invalid relation address"))
+  SC_CHECK_PARAM(node, ("Invalid node address"));
+  SC_CHECK_PARAM(relation, ("Invalid relation address"));
 
   ScIterator5Ptr iterator5;
   if (isBeginNode)

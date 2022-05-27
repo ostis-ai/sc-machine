@@ -10,16 +10,17 @@
 
 #include <algorithm>
 #include <iostream>
+#include <utility>
 
 namespace
 {
 class ObjectInfo
 {
 public:
-  ObjectInfo(ScAddr const & inAddr, ScType const & inType, std::string const & inSysIdtf)
+  ObjectInfo(ScAddr const & inAddr, ScType const & inType, std::string inSysIdtf)
     : m_addr(inAddr)
     , m_type(inType)
-    , m_sysIdtf(inSysIdtf)
+    , m_sysIdtf(std::move(inSysIdtf))
     , m_srcHash(0)
     , m_trgHash(0)
   {

@@ -12,6 +12,7 @@
 #ifdef GLIB
 #  include <glib.h>
 #  include <memory.h>
+#  include "sc_assert_utils.h"
 #endif
 
 #define sc_mem_new(struct_type, n_structs) g_new0(struct_type, n_structs)
@@ -20,7 +21,11 @@
 
 #define sc_mem_cpy(source, dest, n_structs) memcpy(source, dest, n_structs)
 
-#define sc_mem_free(pointer) g_free(pointer)
+#define sc_mem_free(pointer) \
+  ({ \
+    sc_assert(pointer != 0); \
+    g_free(pointer); \
+  })
 
 #undef GLIB
 

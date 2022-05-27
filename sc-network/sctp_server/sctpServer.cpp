@@ -11,8 +11,8 @@
 
 #include <QSettings>
 #include <QDebug>
-#include <QThreadPool>
 #include <QTimer>
+#include <QNetworkInterface>
 
 #include <iostream>
 #include <map>
@@ -21,21 +21,18 @@
 
 #include "utils/parser.hpp"
 
-#include <QNetworkInterface>
-
 sctpServer::sctpServer(QObject * parent)
   : QTcpServer(parent)
   , mPort(0)
-  , mStatistic(0)
+  , mStatistic(nullptr)
   , mSavePeriod(0)
-  , mEventManager(0)
+  , mEventManager(nullptr)
 {
 }
 
 sctpServer::~sctpServer()
 {
-  if (mStatistic)
-    delete mStatistic;
+  delete mStatistic;
 }
 
 bool sctpServer::start(const QString & config)
@@ -51,11 +48,11 @@ bool sctpServer::start(const QString & config)
   QString ipAddress;
   QList<QHostAddress> ipAddressesList = QNetworkInterface::allAddresses();
   // use the first non-localhost IPv4 address
-  for (int i = 0; i < ipAddressesList.size(); ++i)
+  for (const auto & i : ipAddressesList)
   {
-    if (ipAddressesList.at(i) != QHostAddress::LocalHost && ipAddressesList.at(i).toIPv4Address())
+    if (i != QHostAddress::LocalHost && i.toIPv4Address())
     {
-      ipAddress = ipAddressesList.at(i).toString();
+      ipAddress = i.toString();
       break;
     }
   }
@@ -82,8 +79,8 @@ bool sctpServer::start(const QString & config)
 
   ScMemory::Initialize(params);
 
-  mContext.reset(new ScMemoryContext(sc_access_lvl_make_max, "SctpServer"));
-  if (mContext.get() == nullptr)
+  mContext = std::make_unique<ScMemoryContext>(sc_access_lvl_make_max, "SctpServer");
+  if (mContext == nullptr)
     return false;
 
   mEventManager = new sctpEventManager();
@@ -95,7 +92,7 @@ bool sctpServer::start(const QString & config)
     mStatistic->initialize(mStatPath, mStatUpdatePeriod, mContext->GetRealContext());
   }
 
-  QTimer::singleShot(mSavePeriod * 1000, this, SLOT(onSave()));
+  QTimer::singleShot((int)mSavePeriod * 1000, this, SLOT(onSave()));
 
   return true;
 }
@@ -135,7 +132,7 @@ void sctpServer::parseConfig(const QString & config_path)
   if (!result)
     qWarning() << "Can't parse period statistic from configuration file\n";
   if (mStatUpdatePeriod > 0 && mStatUpdatePeriod < 60)
-    qWarning() << "Statistics update period is very short, it would be take much processor time. Recomend to make it "
+    qWarning() << "Statistics update period is very short, it would be take much processor time. Recommend to make it "
                   "more long";
 
   mStatPath = QString::fromStdString(conf_file["stat_path"]);
@@ -148,7 +145,7 @@ void sctpServer::parseConfig(const QString & config_path)
 
 void sctpServer::incomingConnection(qintptr socketDescriptor)
 {
-  sctpClient * client = new sctpClient(this, socketDescriptor);
+  auto * client = new sctpClient(this, (int)socketDescriptor);
   connect(client, SIGNAL(finished()), client, SLOT(deleteLater()));
   connect(client, SIGNAL(destroyed(QObject *)), this, SLOT(clientDestroyed(QObject *)));
   mClients.insert(client);
@@ -161,7 +158,7 @@ void sctpServer::stop()
 
   mEventManager->shutdown();
   delete mEventManager;
-  mEventManager = 0;
+  mEventManager = nullptr;
 
   ScMemory::Shutdown(true);
 
@@ -170,9 +167,9 @@ void sctpServer::stop()
 
 void sctpServer::clientDestroyed(QObject * client)
 {
-  QSet<sctpClient *>::iterator it = mClients.find(static_cast<sctpClient *>(client));
+  QSet<sctpClient *>::iterator it = mClients.find(dynamic_cast<sctpClient *>(client));
   if (it == mClients.end())
-    qWarning("Recieve event from non existing client");
+    qWarning("Receive event from non existing client");
 
   mClients.erase(it);
 }

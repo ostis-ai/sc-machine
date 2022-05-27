@@ -19,7 +19,7 @@ namespace utils
 {
 bool CommonUtils::checkType(ScMemoryContext * ms_context, const ScAddr & element, ScType scType)
 {
-  SC_CHECK_PARAM(element, ("Invalid element address"))
+  SC_CHECK_PARAM(element, ("Invalid element address"));
 
   ScType elementType = ms_context->GetElementType(element);
   return (elementType & scType) == scType;
@@ -27,7 +27,7 @@ bool CommonUtils::checkType(ScMemoryContext * ms_context, const ScAddr & element
 
 int CommonUtils::readInt(ScMemoryContext * ms_context, const ScAddr & scLink)
 {
-  SC_CHECK_PARAM(scLink, ("Invalid number node address"))
+  SC_CHECK_PARAM(scLink, ("Invalid number node address"));
 
   const ScStreamPtr stream = ms_context->GetLinkContent(scLink);
   if (stream->IsValid())
@@ -46,7 +46,7 @@ int CommonUtils::readInt(ScMemoryContext * ms_context, const ScAddr & scLink)
 
 int CommonUtils::readNumber(ScMemoryContext * ms_context, const ScAddr & number)
 {
-  SC_CHECK_PARAM(number, ("Invalid number node address"))
+  SC_CHECK_PARAM(number, ("Invalid number node address"));
 
   ScAddr scLink = IteratorUtils::getAnyByOutRelation(ms_context, number, CoreKeynodes::nrel_idtf);
   return readInt(ms_context, scLink);
@@ -59,7 +59,7 @@ string CommonUtils::readString(ScMemoryContext * ms_context, const ScAddr & scLi
 
 string CommonUtils::getLinkContent(ScMemoryContext * ms_context, const ScAddr & scLink)
 {
-  SC_CHECK_PARAM(scLink, ("Invalid link address"))
+  SC_CHECK_PARAM(scLink, ("Invalid link address"));
 
   string result;
   const ScStreamPtr stream = ms_context->GetLinkContent(scLink);
@@ -156,7 +156,7 @@ int CommonUtils::getPowerOfSet(ScMemoryContext * ms_context, const ScAddr & set)
 
 size_t CommonUtils::getSetPower(ScMemoryContext * ms_context, const ScAddr & set)
 {
-  SC_CHECK_PARAM(set, ("Invalid set address"))
+  SC_CHECK_PARAM(set, ("Invalid set address"));
 
   int power = 0;
   ScIterator3Ptr iterator3 = ms_context->Iterator3(set, ScType::EdgeAccessConstPosPerm, ScType::Unknown);
@@ -167,7 +167,7 @@ size_t CommonUtils::getSetPower(ScMemoryContext * ms_context, const ScAddr & set
 
 bool CommonUtils::isEmpty(ScMemoryContext * ms_context, const ScAddr & set)
 {
-  SC_CHECK_PARAM(set, ("Invalid set address"))
+  SC_CHECK_PARAM(set, ("Invalid set address"));
 
   ScIterator3Ptr iterator3 = ms_context->Iterator3(set, ScType::EdgeAccessConstPosPerm, ScType::Unknown);
   return !iterator3->Next();

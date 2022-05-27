@@ -32,9 +32,7 @@ ScAgent::ScAgent(char const * name, sc_uint8 accessLvl)
 {
 }
 
-ScAgent::~ScAgent()
-{
-}
+ScAgent::~ScAgent() = default;
 
 // ---------------------------
 ScAgentAction::ScAgentAction(ScAddr const & cmdClassAddr, char const * name, sc_uint8 accessLvl)
@@ -44,9 +42,7 @@ ScAgentAction::ScAgentAction(ScAddr const & cmdClassAddr, char const * name, sc_
 {
 }
 
-ScAgentAction::~ScAgentAction()
-{
-}
+ScAgentAction::~ScAgentAction() = default;
 
 sc_result ScAgentAction::Run(ScAddr const & listenAddr, ScAddr const & edgeAddr, ScAddr const & otherAddr)
 {
@@ -87,7 +83,7 @@ ScAddr ScAgentAction::GetParam(ScAddr const & cmdAddr, ScAddr const & relationAd
       cmdAddr, ScType::EdgeAccessConstPosPerm, paramType, ScType::EdgeAccessConstPosPerm, relationAddr);
 
   if (!iter->Next())
-    return ScAddr();
+    return {};
 
   return iter->Get(2);
 }
@@ -173,7 +169,7 @@ ScAddr ScAgentAction::GetCommandResultAddr(ScMemoryContext & ctx, ScAddr const &
   if (it->Next())
     return it->Get(2);
 
-  return ScAddr();
+  return {};
 }
 
 sc_result ScAgentAction::GetCommandResultCode(ScMemoryContext & ctx, ScAddr const & cmdAddr)
@@ -186,7 +182,7 @@ ScAddr ScAgentAction::GetCommandResultCodeAddr(ScMemoryContext & ctx, ScAddr con
 {
   ScAddr const resultAddr = GetCommandResultAddr(ctx, cmdAddr);
   if (!resultAddr.IsValid())
-    return ScAddr();
+    return {};
 
   ScTemplate templ;
   templ.Triple(ScKeynodes::kScResult, ScType::EdgeAccessVarPosPerm, ScType::NodeVarClass >> "result_class");
@@ -194,7 +190,7 @@ ScAddr ScAgentAction::GetCommandResultCodeAddr(ScMemoryContext & ctx, ScAddr con
 
   ScTemplateSearchResult searchResult;
   if (!ctx.HelperSearchTemplate(templ, searchResult))
-    return ScAddr();
+    return {};
 
   SC_ASSERT(searchResult.Size() == 1, ());
   return searchResult[0]["result_class"];

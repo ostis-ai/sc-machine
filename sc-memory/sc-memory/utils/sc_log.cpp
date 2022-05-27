@@ -54,7 +54,7 @@ ScLog::ScLog()
     Initialize(DEFAULT_LOG_FILE);
   }
 
-  ASSERT(!ms_instance, ());
+  SC_ASSERT(!ms_instance, ());
   ms_instance = this;
 }
 
@@ -105,7 +105,7 @@ void ScLog::Message(ScLog::Type type, std::string const & msg, ScConsole::Color 
       std::cout << ss.str();
       ScConsole::SetColor(color);
       std::cout << msg << std::endl;
-      ;
+
       ScConsole::ResetColor();
     }
     else

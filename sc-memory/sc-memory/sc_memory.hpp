@@ -21,9 +21,6 @@ extern "C"
 
 class ScMemoryContext;
 
-/// TODO: replace with ScType
-#define SC_TYPE(__t__) ((sc_type)(__t__))
-
 class ScMemory
 {
   friend class ScMemoryContext;
@@ -67,8 +64,8 @@ public:
   };
 
 public:
-  _SC_EXTERN ScMemoryContext(sc_uint8 accessLevels, std::string const & name = "");
-  _SC_EXTERN ScMemoryContext(std::string const & name);
+  _SC_EXTERN explicit ScMemoryContext(sc_uint8 accessLevels, std::string const & name = "");
+  _SC_EXTERN explicit ScMemoryContext(std::string const & name);
   _SC_EXTERN ~ScMemoryContext();
 
   // Disable object copying
@@ -205,7 +202,7 @@ public:
       fn(it->Get(0), it->Get(1), it->Get(2), it->Get(3), it->Get(4));
   }
 
-  /* Trying to reosolve ScAddr by it system identifier. If element with specified identifier doesn't exist
+  /* Trying to resolve ScAddr by it system identifier. If element with specified identifier doesn't exist
    * and type is not empty, then it would be created with specified type.
    * Look at type parameter as ForceCreate flag, that contains type.
    * Important: Type should be any of ScType::Node...
@@ -256,7 +253,7 @@ private:
 class ScMemoryContextEventsPendingGuard
 {
 public:
-  _SC_EXTERN ScMemoryContextEventsPendingGuard(ScMemoryContext & ctx)
+  _SC_EXTERN explicit ScMemoryContextEventsPendingGuard(ScMemoryContext & ctx)
     : m_ctx(ctx)
   {
     m_ctx.BeingEventsPending();

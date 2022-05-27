@@ -608,7 +608,7 @@ bp::object _context_helperResolveSysIdtf(
     bp::extract<ScType> te(type);
     if (!te.check())
     {
-      SC_THROW_EXCEPTION(utils::ExceptionInvalidType, "Second parameter should be None or instance of ScType")
+      SC_THROW_EXCEPTION(utils::ExceptionInvalidType, "Second parameter should be None or instance of ScType");
     }
     rawType = static_cast<ScType>(te);
   }

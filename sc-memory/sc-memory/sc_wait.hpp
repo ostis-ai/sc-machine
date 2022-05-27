@@ -12,6 +12,7 @@
 #include <condition_variable>
 #include <chrono>
 #include <mutex>
+#include <utility>
 
 /* Class implements common wait logic.
  */
@@ -51,9 +52,7 @@ class ScWait
 public:
   using DelegateFunc = std::function<void(void)>;
 
-  virtual ~ScWait()
-  {
-  }
+  virtual ~ScWait() = default;
 
   void Resolve()
   {
@@ -132,12 +131,12 @@ public:
 
   ScWaitCondition(const ScMemoryContext & ctx, const ScAddr & addr, DelegateCheckFunc func)
     : ScWaitEvent<EventClassT>(ctx, addr)
-    , m_checkFunc(func)
+    , m_checkFunc(std::move(func))
   {
   }
 
 private:
-  virtual bool OnEventImpl(ScAddr const & listenAddr, ScAddr const & edgeAddr, ScAddr const & otherAddr) override
+  bool OnEventImpl(ScAddr const & listenAddr, ScAddr const & edgeAddr, ScAddr const & otherAddr) override
   {
     return m_checkFunc(listenAddr, edgeAddr, otherAddr);
   }
@@ -154,7 +153,7 @@ public:
   _SC_EXTERN ScWaitActionFinished(ScMemoryContext const & ctx, ScAddr const & actionAddr);
 
 private:
-  virtual bool OnEventImpl(ScAddr const & listenAddr, ScAddr const & edgeAddr, ScAddr const & otherAddr) override;
+  bool OnEventImpl(ScAddr const & listenAddr, ScAddr const & edgeAddr, ScAddr const & otherAddr) override;
 };
 
 #define SC_WAIT_CHECK(_func) std::bind(_func, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3)
