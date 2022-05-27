@@ -76,50 +76,18 @@ private:
 
 #define SC_LOG(__type, __msg) SC_LOG_COLOR(__type, __msg, ScConsole::Color::White)
 
-#define SC_LOG_DEBUG(__msg) \
-  { \
-    SC_LOG_COLOR(::utils::ScLog::Type::Debug, __msg, ScConsole::Color::LightBlue) \
-  }
-#define SC_LOG_INFO(__msg) \
-  { \
-    SC_LOG_COLOR(::utils::ScLog::Type::Info, __msg, ScConsole::Color::Grey) \
-  }
-#define SC_LOG_WARNING(__msg) \
-  { \
-    SC_LOG_COLOR(::utils::ScLog::Type::Warning, __msg, ScConsole::Color::Yellow) \
-  }
-#define SC_LOG_ERROR(__msg) \
-  { \
-    SC_LOG_COLOR(::utils::ScLog::Type::Error, __msg, ScConsole::Color::Red) \
-  }
-#define SC_LOG_PYTHON(__msg) \
-  { \
-    SC_LOG_COLOR(::utils::ScLog::Type::Python, __msg, ScConsole::Color::DarkGrey) \
-  }
+#define SC_LOG_DEBUG(__msg) ({SC_LOG_COLOR(::utils::ScLog::Type::Debug, __msg, ScConsole::Color::LightBlue)})
+#define SC_LOG_INFO(__msg) ({SC_LOG_COLOR(::utils::ScLog::Type::Info, __msg, ScConsole::Color::Grey)})
+#define SC_LOG_WARNING(__msg) ({SC_LOG_COLOR(::utils::ScLog::Type::Warning, __msg, ScConsole::Color::Yellow)})
+#define SC_LOG_ERROR(__msg) ({SC_LOG_COLOR(::utils::ScLog::Type::Error, __msg, ScConsole::Color::Red)})
+#define SC_LOG_PYTHON(__msg) ({SC_LOG_COLOR(::utils::ScLog::Type::Python, __msg, ScConsole::Color::DarkGrey)})
 #define SC_LOG_PYTHON_ERROR(__msg) \
-  { \
-    SC_LOG_COLOR(::utils::ScLog::Type::PythonError, __msg, ScConsole::Color::LightRed) \
-  }
-#define SC_LOG_INFO_COLOR(__msg, __color) \
-  { \
-    SC_LOG_COLOR(::utils::ScLog::Type::Info, __msg, __color) \
-  }
+  ({SC_LOG_COLOR(::utils::ScLog::Type::PythonError, __msg, ScConsole::Color::LightRed)})
+#define SC_LOG_INFO_COLOR(__msg, __color) ({SC_LOG_COLOR(::utils::ScLog::Type::Info, __msg, __color)})
 
-#define SC_LOG_INIT(__msg) \
-  { \
-    SC_LOG_INFO("[init] " << __msg) \
-  }
-#define SC_LOG_SHUTDOWN(__msg) \
-  { \
-    SC_LOG_INFO("[shutdown] " << __msg) \
-  }
-#define SC_LOG_LOAD(__msg) \
-  { \
-    SC_LOG_INFO("[load] " << __msg) \
-  }
-#define SC_LOG_UNLOAD(__msg) \
-  { \
-    SC_LOG_INFO("[unload] " << __msg) \
-  }
+#define SC_LOG_INIT(__msg) ({ SC_LOG_INFO("[init] " << __msg); })
+#define SC_LOG_SHUTDOWN(__msg) ({ SC_LOG_INFO("[shutdown] " << __msg); })
+#define SC_LOG_LOAD(__msg) ({ SC_LOG_INFO("[load] " << __msg); })
+#define SC_LOG_UNLOAD(__msg) ({ SC_LOG_INFO("[unload] " << __msg); })
 
 }  // namespace utils
