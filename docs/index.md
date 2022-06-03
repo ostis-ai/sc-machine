@@ -3,7 +3,8 @@
 - **Building**
     * [Linux](build/linux-build.md)
     * [Windows](build/windows-build.md)
-
+    * [macOS](build/osx-build.md)
+    * [CMake flags](build/cmake-flags.md)
 - **Common**
     * [Config](other/config.md) - *desciption of a configuration file*
     * [Sc-element types](cpp/el_types.md) - *detailed description of supported element types*
