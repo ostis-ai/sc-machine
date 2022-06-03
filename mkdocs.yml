@@ -6,7 +6,7 @@ extra_javascript:
   - _assets/scg.min.js
   - _assets/main.js
 
-pages:
+nav:
   - Home: index.md
   - Build:
     - Build on Linux: build/linux-build.md
@@ -35,7 +35,6 @@ pages:
       - WebSocket: http/websocket.md
   - Tools:
       - Builder: tools/kb_builder.md
-      - Web: tools/web.md
   - License: license.md
   - Changelog: changelog.md
   - Thirdparty: thirdparty.md
