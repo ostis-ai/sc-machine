@@ -17,7 +17,7 @@
 
 #include "utils/parser.hpp"
 
-#include "sc-json-socket-server/sc_js_server.hpp"
+#include "sc-json-socket-server/sc_server_factory.hpp"
 
 int main(int argc, char * argv[])
 try
@@ -57,6 +57,8 @@ try
   if (vm.count("verbose"))
     save_state = false;
 
+  SC_UNUSED(saveState);
+
   bool clear = false;
   if (vm.count("clear"))
     clear = true;
@@ -82,15 +84,19 @@ try
   params.ext_path = ext_path.c_str();
   params.repo_path = repo_path.c_str();
 
-  ScMemory::Initialize(params);
-
-  ScJSServer server;
+  SC_LOG_INIT("Initialize json-based sc-server");
+  ScJSServer * server = ScServerFactory::ConfigureScJSServer(params);
   try
   {
-    server.Run(8090);
-  } catch (std::exception const & e)
+    server->Run();
+  }
+  catch (std::exception const & e)
   {
-    server.Stop();
+    SC_LOG_ERROR("[sc-server] " + std::string(e.what()));
+    server->Stop();
+    delete server;
+
+    return EXIT_FAILURE;
   }
 
   while (is_run)
@@ -98,9 +104,10 @@ try
     std::this_thread::sleep_for(std::chrono::milliseconds(1000));
   }
 
-  ScMemory::Shutdown(save_state);
+  server->Stop();
+  delete server;
 
-  return EXIT_SUCCESS;  // : EXIT_FAILURE;
+  return EXIT_SUCCESS;
 }
 catch (utils::ScException const & ex)
 {
