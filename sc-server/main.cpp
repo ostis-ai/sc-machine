@@ -85,7 +85,13 @@ try
   ScMemory::Initialize(params);
 
   ScJSServer server;
-  server.Run(8090);
+  try
+  {
+    server.Run(8090);
+  } catch (std::exception const & e)
+  {
+    server.Stop();
+  }
 
   while (is_run)
   {

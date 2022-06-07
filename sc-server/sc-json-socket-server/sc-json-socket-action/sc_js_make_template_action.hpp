@@ -33,7 +33,7 @@ protected:
       context->HelperBuildTemplate(*scTemplate, payload.get<std::string>());
       return scTemplate;
     }
-    else if (payload.find("type") == payload.end())
+    else if (payload.find("type") != payload.end())
     {
       std::string const & type = payload["type"];
       auto const & value = payload["value"];
