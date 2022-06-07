@@ -19,9 +19,11 @@ using websocketpp::lib::placeholders::_2;
 using websocketpp::lib::bind;
 
 
-class ScJSServer {
+class ScJSServer
+{
 public:
-  ScJSServer() {
+  ScJSServer()
+  {
     m_instance = new ScWebSocketServerCore();
 
     Initialize();
@@ -34,6 +36,16 @@ public:
     m_instance->run();
   }
 
+  void Stop()
+  {
+    m_instance->stop();
+  }
+
+  ~ScJSServer()
+  {
+    delete m_instance;
+  }
+
 private:
   ScWebSocketServerCore * m_instance;
 
@@ -44,11 +56,14 @@ private:
   {
     try
     {
-      auto const & responsePayload = ScJSHandler().Handle(ScJSPayload::parse(msg->get_payload()));
       std::cout << msg->get_payload() << std::endl;
+      auto const & responsePayload = ScJSHandler().Handle(ScJSPayload::parse(msg->get_payload()));
 
-      server->send(hdl, responsePayload.dump(), ScWebSocketMessageType::text);
-    } catch (ScWebSocketException const & e) {
+      std::string const & responseText = responsePayload.dump();
+      server->send(hdl, responseText, ScWebSocketMessageType::text);
+      std::cout << responseText << std::endl;
+    } catch (ScWebSocketException const & e)
+    {
 
     }
   }
