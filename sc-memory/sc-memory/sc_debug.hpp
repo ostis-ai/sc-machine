@@ -100,15 +100,6 @@ public:
   }
 };
 
-#define error(__str) \
-  { \
-    throw ScException(__str); \
-  }
-#define error_invalid_params(__str) \
-  { \
-    throw ScExceptionInvalidParams(__str); \
-  }
-
 // Asserts
 #define THROW_EXCEPTION(_exception_class, _msg, _file, _line) \
   ({ \

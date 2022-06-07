@@ -17,6 +17,8 @@
 
 #include "utils/parser.hpp"
 
+#include "sc-json-socket-server/sc_js_server.hpp"
+
 int main(int argc, char * argv[])
 try
 {
@@ -81,6 +83,9 @@ try
   params.repo_path = repo_path.c_str();
 
   ScMemory::Initialize(params);
+
+  ScJSServer server;
+  server.Run(8090);
 
   while (is_run)
   {
