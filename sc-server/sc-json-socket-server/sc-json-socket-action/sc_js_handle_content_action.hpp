@@ -4,7 +4,6 @@
 
 #include "sc-memory/sc_link.hpp"
 
-
 class ScJSHandleContentAction : public ScJSAction
 {
 public:
@@ -22,15 +21,15 @@ public:
         std::string const & contentType = atom["type"];
         std::string const & data = atom["data"];
 
-        ScLink link {*context, linkAddr};
+        ScLink link{*context, linkAddr};
         responsePayload.push_back(link.Set(data));
       }
       else if (type == "get")
       {
         ScAddr const & linkAddr = ScAddr(atom["addr"].get<size_t>());
-        ScLink link {*context, linkAddr};
+        ScLink link{*context, linkAddr};
 
-        responsePayload.push_back({ {"value", link.Get<std::string>()}, {"type", "string"} });
+        responsePayload.push_back({{"value", link.Get<std::string>()}, {"type", "string"}});
       }
       else if (type == "find")
       {
@@ -44,7 +43,7 @@ public:
         stream->Write(sc_string, data.size(), written);
         ScAddrVector const & vector = context->FindLinksByContent(stream);
         std::vector<size_t> hashes;
-        for (auto const & addr: vector)
+        for (auto const & addr : vector)
           hashes.push_back(addr.Hash());
 
         responsePayload.push_back(hashes);

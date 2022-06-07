@@ -4,7 +4,6 @@
 
 #include "algorithm"
 
-
 class ScJSEventsManager
 {
 public:
@@ -18,7 +17,7 @@ public:
 
   size_t Add(ScEvent * event)
   {
-    m_events.insert({ counter, event });
+    m_events.insert({counter, event});
     return counter++;
   }
 

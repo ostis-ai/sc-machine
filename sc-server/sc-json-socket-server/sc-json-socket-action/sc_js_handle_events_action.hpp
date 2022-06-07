@@ -5,7 +5,6 @@
 
 #include "sc-memory/sc_event.hpp"
 
-
 class ScJSHandleEventsAction : public ScJSAction
 {
 public:
@@ -35,7 +34,7 @@ public:
     {
       requestPayload = requestPayload["delete"];
 
-      for (auto & atom: requestPayload)
+      for (auto & atom : requestPayload)
         delete eventsManager->Remove(atom.get<size_t>());
     }
 
@@ -44,11 +43,11 @@ public:
 
 protected:
   std::map<std::string, ScEvent::Type> events = {
-        { "add_outgoing_edge", ScEvent::Type::AddOutputEdge },
-        { "add_ingoing_edge", ScEvent::Type::AddInputEdge },
-        { "remove_outgoing_edge", ScEvent::Type::RemoveOutputEdge },
-        { "remove_ingoing_edge", ScEvent::Type::RemoveInputEdge },
-        { "content_change", ScEvent::Type::ContentChanged },
-        { "delete_element", ScEvent::Type::EraseElement },
+      {"add_outgoing_edge", ScEvent::Type::AddOutputEdge},
+      {"add_ingoing_edge", ScEvent::Type::AddInputEdge},
+      {"remove_outgoing_edge", ScEvent::Type::RemoveOutputEdge},
+      {"remove_ingoing_edge", ScEvent::Type::RemoveInputEdge},
+      {"content_change", ScEvent::Type::ContentChanged},
+      {"delete_element", ScEvent::Type::EraseElement},
   };
 };

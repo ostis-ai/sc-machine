@@ -2,7 +2,6 @@
 
 #include "sc_js_action.hpp"
 
-
 class ScJSHandleKeynodesAction : public ScJSAction
 {
 public:

@@ -4,7 +4,6 @@
 
 #include "sc-memory/sc_link.hpp"
 
-
 class ScJSCreateElementsAction : public ScJSAction
 {
 public:
@@ -12,8 +11,7 @@ public:
   {
     ScJSPayload responsePayload;
 
-    auto const & resolveAddr = [&responsePayload](ScJSPayload const & json) -> ScAddr
-    {
+    auto const & resolveAddr = [&responsePayload](ScJSPayload const & json) -> ScAddr {
       ScJSPayload const & sub = json["value"];
       if (json["type"] == "ref")
         return ScAddr(responsePayload[sub.get<size_t>()].get<size_t>());
@@ -39,7 +37,7 @@ public:
       else if (element == "link")
       {
         created = context->CreateLink(type);
-        ScLink link {*context, created};
+        ScLink link{*context, created};
         link.Set(atom["content"].get<std::string>());
       }
 

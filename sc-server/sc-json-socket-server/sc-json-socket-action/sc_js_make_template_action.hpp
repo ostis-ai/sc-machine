@@ -2,7 +2,6 @@
 
 #include "sc_js_action.hpp"
 
-
 class ScJSMakeTemplateAction : public ScJSAction
 {
 protected:
@@ -55,8 +54,7 @@ protected:
 
   ScTemplate * makeTemplate(ScJSPayload const & triples)
   {
-    auto const & convertItemToParam = [](ScJSPayload paramItem) -> ScTemplateItemValue
-    {
+    auto const & convertItemToParam = [](ScJSPayload paramItem) -> ScTemplateItemValue {
       std::string const & paramType = paramItem["type"];
       size_t const & paramValue = paramItem["value"].get<size_t>();
 

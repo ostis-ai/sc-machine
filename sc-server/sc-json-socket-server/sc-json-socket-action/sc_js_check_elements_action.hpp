@@ -2,7 +2,6 @@
 
 #include "sc_js_action.hpp"
 
-
 class ScJSCheckElementsAction : public ScJSAction
 {
 public:
@@ -12,7 +11,7 @@ public:
 
     for (auto & hash : requestPayload)
     {
-      ScAddr const addr {hash.get<size_t>()};
+      ScAddr const addr{hash.get<size_t>()};
 
       size_t type = 0;
       if (addr.IsValid())
