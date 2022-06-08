@@ -21,11 +21,7 @@
 
 #define sc_mem_cpy(source, dest, n_structs) memcpy(source, dest, n_structs)
 
-#define sc_mem_free(pointer) \
-  ({ \
-    sc_assert(pointer != 0); \
-    g_free(pointer); \
-  })
+#define sc_mem_free(pointer) g_free(pointer)
 
 #undef GLIB
 

@@ -16,9 +16,9 @@
 #include "sc-store/sc_event.h"
 #include "sc-store/sc_event/sc_event_private.h"
 
-#include "sc_allocator.h"
-#include "sc_assert_utils.h"
-#include "sc_message.h"
+#include "sc-store/sc-base/sc_allocator.h"
+#include "sc-store/sc-base/sc_assert_utils.h"
+#include "sc-store/sc-base/sc_message.h"
 
 sc_pointer sc_thread()
 {

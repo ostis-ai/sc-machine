@@ -19,10 +19,10 @@
 #include "sc_event/sc_event_private.h"
 #include "../sc_memory_private.h"
 
-#include "sc_allocator.h"
-#include "sc_atomic.h"
-#include "sc_assert_utils.h"
-#include "sc_message.h"
+#include "sc-base/sc_allocator.h"
+#include "sc-base/sc_atomic.h"
+#include "sc-base/sc_assert_utils.h"
+#include "sc-base/sc_message.h"
 
 // segments array
 sc_segment ** segments = null_ptr;

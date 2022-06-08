@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 ### Added
-- Endure allocating, assertion, notification and atomic lock free procedures
+- Wrap and separate allocating, assertion, notification and atomic lock free procedures
 - Add tests module for sc-agents-utils
 - Add opportunity to configure sc-machine version from CMakeLists.txt
 - Add scripts to build kb, run sctp-server and run sc-server

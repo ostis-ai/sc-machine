@@ -8,8 +8,8 @@
 
 #include <gmodule.h>
 
-#include "sc_allocator.h"
-#include "sc_message.h"
+#include "sc-store/sc-base/sc_allocator.h"
+#include "sc-store/sc-base/sc_message.h"
 
 GList * modules_priority_list = null_ptr;
 

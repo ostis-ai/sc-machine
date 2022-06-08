@@ -10,7 +10,7 @@
 
 extern "C"
 {
-#include "sc_atomic.h"
+#include "sc-core/sc-store/sc-base/sc_atomic.h"
 }
 
 namespace utils

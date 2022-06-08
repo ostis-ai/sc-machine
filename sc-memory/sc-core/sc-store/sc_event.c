@@ -12,10 +12,10 @@
 #include "sc_storage.h"
 #include "../sc_memory_private.h"
 
-#include "sc_allocator.h"
-#include "sc_atomic.h"
-#include "sc_assert_utils.h"
-#include "sc_message.h"
+#include "sc-base/sc_allocator.h"
+#include "sc-base/sc_atomic.h"
+#include "sc-base/sc_assert_utils.h"
+#include "sc-base/sc_message.h"
 
 GMutex events_table_mutex;
 #define EVENTS_TABLE_LOCK g_mutex_lock(&events_table_mutex)

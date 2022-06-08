@@ -9,9 +9,9 @@
 
 #include <stdio.h>
 
-#include "sc_allocator.h"
-#include "sc_assert_utils.h"
-#include "sc_message.h"
+#include "sc-base/sc_allocator.h"
+#include "sc-base/sc_assert_utils.h"
+#include "sc-base/sc_message.h"
 
 #define SC_STREAM_FILE_FD_CHECK(stream) \
   ({ \

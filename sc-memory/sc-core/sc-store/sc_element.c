@@ -8,7 +8,7 @@
 
 #include "sc_types.h"
 
-#include "sc_assert_utils.h"
+#include "sc-base/sc_assert_utils.h"
 
 void sc_element_set_type(sc_element * element, sc_type type)
 {

@@ -8,7 +8,7 @@
 
 #include <glib.h>
 
-#include "sc_allocator.h"
+#include "sc-base/sc_allocator.h"
 
 const char str_group_memory[] = "memory";
 const char str_group_fm[] = "filememory";

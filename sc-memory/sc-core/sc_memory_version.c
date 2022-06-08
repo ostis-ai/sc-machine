@@ -6,8 +6,8 @@
 
 #include "sc_memory_version.h"
 
-#include "sc_allocator.h"
-#include "sc_assert_utils.h"
+#include "sc-store/sc-base/sc_allocator.h"
+#include "sc-store/sc-base/sc_assert_utils.h"
 
 const sc_version SC_VERSION = {
     SC_MACHINE_VERSION_MAJOR,

@@ -9,8 +9,8 @@
 #include "sc_storage.h"
 #include "../sc_memory_private.h"
 
-#include "sc_allocator.h"
-#include "sc_assert_utils.h"
+#include "sc-base/sc_allocator.h"
+#include "sc-base/sc_assert_utils.h"
 
 const sc_uint32 s_max_iterator_lock_attempts = 10;
 

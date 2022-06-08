@@ -8,8 +8,8 @@
 #include "../sc_event.h"
 #include "sc_event_private.h"
 
-#include "sc_allocator.h"
-#include "sc_assert_utils.h"
+#include "../sc-base/sc_allocator.h"
+#include "../sc-base/sc_assert_utils.h"
 
 typedef struct
 {

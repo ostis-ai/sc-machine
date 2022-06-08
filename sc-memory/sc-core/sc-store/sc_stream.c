@@ -7,9 +7,9 @@
 #include "sc_stream.h"
 #include "sc_stream_private.h"
 
-#include "sc_allocator.h"
-#include "sc_assert_utils.h"
-#include "sc_message.h"
+#include "sc-base/sc_allocator.h"
+#include "sc-base/sc_assert_utils.h"
+#include "sc-base/sc_message.h"
 
 sc_result sc_stream_free(sc_stream * stream)
 {
