@@ -2,8 +2,9 @@
 
 #include "sc-memory/sc_memory.hpp"
 
-#include "sc_js_actions_handler.hpp"
 #include "sc_js_lib.hpp"
+#include "sc_js_actions_handler.hpp"
+#include "sc_js_events_handler.hpp"
 
 class ScJSServer
 {
@@ -20,24 +21,27 @@ public:
     m_logPath = logPath;
   }
 
-  ScJSServer(sc_memory_params params)
+  explicit ScJSServer(sc_memory_params params)
   {
+    ScMemory::Initialize(params);
+
     m_instance = new ScWSServerCore();
     m_handler = new ScJSActionsHandler();
-
-    ScMemory::Initialize(params);
+    m_events_handler = new ScJSEventsHandler();
 
     Initialize();
   }
 
   void Run()
   {
-    SC_LOG_INFO("\nhost: ");
-    SC_LOG_INFO("\nport: " + std::to_string(m_port));
-    SC_LOG_INFO("\nlogger: " + (m_logPath.empty() ? "console" : "file " + m_logPath));
+    SC_LOG_INFO("[sc-server] Socket data");
+    SC_LOG_INFO("\thost: ");
+    SC_LOG_INFO("\tport: " + std::to_string(m_port));
+    SC_LOG_INFO("\tlogger: " + (m_logPath.empty() ? "console" : "file " + m_logPath));
 
     m_instance->listen(m_port);
     m_instance->start_accept();
+    SC_LOG_INFO("[sc-server] Connection opened");
     m_instance->run();
   }
 
@@ -51,9 +55,19 @@ public:
     return m_handler->Handle(requestMessage);
   }
 
+  std::string HandleEvent(std::string const & requestMessage, ScWSConnectionHandle & hdl)
+  {
+    m_events_handler->SetServer(m_instance);
+    m_events_handler->SetConnection(&hdl);
+
+    if (m_events_handler->IsConnectionValid())
+      return m_events_handler->Handle(requestMessage);
+
+    return "";
+  }
+
   void SetMessageHandler(ScWSMessageHandler handler)
   {
-    SC_LOG_INFO("Set \"" + std::string(typeid(handler).name()) + "\" message handler");
     m_instance->set_message_handler(std::move(handler));
   }
 
@@ -86,6 +100,7 @@ public:
   {
     delete m_instance;
     delete m_handler;
+    delete m_events_handler;
 
     ScMemory::Shutdown();
   }
@@ -96,11 +111,13 @@ private:
 
   ScWSServerCore * m_instance;
   ScJSActionsHandler * m_handler;
+  ScJSEventsHandler * m_events_handler;
 
   void Initialize()
   {
+    SC_LOG_INFO("[sc-server] Clear channels");
     m_instance->clear_access_channels(ScWSServerLogMessages::all);
-    SC_LOG_INFO("Clean channels");
+    m_instance->clear_error_channels(ScWSServerLogErrors::all);
     m_instance->init_asio();
 
     if (!m_logPath.empty())

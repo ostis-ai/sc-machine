@@ -5,7 +5,7 @@
 class ScWSActionsHandler
 {
 public:
-  virtual std::string Handle(std::string const & requestMassage) = 0;
+  virtual std::string Handle(std::string const & requestMessageText) = 0;
 
   virtual ~ScWSActionsHandler() = default;
 };

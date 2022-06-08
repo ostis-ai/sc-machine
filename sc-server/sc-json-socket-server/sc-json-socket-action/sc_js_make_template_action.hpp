@@ -10,19 +10,20 @@ protected:
     ScTemplateParams templParams;
     if (payload.find("templ") != payload.end())
     {
-      payload = payload["templ"];
       auto const & rowParams = payload["params"];
+      payload = payload["templ"];
 
-      for (const auto & rowParam : rowParams)
+      for (auto it = rowParams.begin(); it != rowParams.end(); it++)
       {
-        auto const & value = rowParam[rowParam.type_name()];
+        auto const & key = it.key();
+        auto const & value = it.value();
         if (value.is_string())
         {
-          ScAddr const & addr = context->HelperFindBySystemIdtf(value);
-          templParams.Add(rowParam.type_name(), addr);
+          ScAddr const & addr = context->HelperFindBySystemIdtf(value.get<std::string>());
+          templParams.Add(key, addr);
         }
         else
-          templParams.Add(rowParam.type_name(), ScAddr(value.get<size_t>()));
+          templParams.Add(key, ScAddr(value.get<size_t>()));
       }
     }
 
@@ -56,22 +57,24 @@ protected:
   {
     auto const & convertItemToParam = [](ScJSPayload paramItem) -> ScTemplateItemValue {
       std::string const & paramType = paramItem["type"];
-      size_t const & paramValue = paramItem["value"].get<size_t>();
+      auto const & paramValue = paramItem["value"];
 
       ScTemplateItemValue param;
-      if (paramItem.find("alias") == paramItem.end())
+      if (paramItem["alias"].is_null())
       {
         if (paramType == "type")
-          param = ScType(paramValue);
+          param = ScType(paramValue.get<size_t>());
         else if (paramType == "addr")
-          param = ScAddr(paramValue);
+          param = ScAddr(paramValue.get<size_t>());
+        else if (paramType == "alias")
+          param = paramValue.get<std::string>();
       }
       else
       {
         if (paramType == "type")
-          param = ScType(paramValue) >> paramItem["alias"];
+          param = ScType(paramValue.get<size_t>()) >> paramItem["alias"];
         else if (paramType == "addr")
-          param = ScAddr(paramValue) >> paramItem["alias"];
+          param = ScAddr(paramValue.get<size_t>()) >> paramItem["alias"];
       }
 
       return param;

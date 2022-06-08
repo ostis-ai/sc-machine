@@ -21,6 +21,11 @@ public:
     return counter++;
   }
 
+  size_t Next() const
+  {
+    return counter;
+  }
+
   ScEvent * Remove(size_t index)
   {
     auto const & it = m_events.find(index);
@@ -34,6 +39,8 @@ public:
   {
     for (auto const & pair : m_events)
       delete pair.second;
+
+    delete m_instance;
   }
 
 private:

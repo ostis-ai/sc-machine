@@ -4,11 +4,10 @@ void ScJSMessageHandler::OnMessage(ScJSServer * server, ScWSConnectionHandle con
 {
   try
   {
-    server->LogMessage(ScWSServerLogMessages::message_payload, "[request] " + msg->get_payload());
-    auto const & responseText = server->HandleRequest(ScJSPayload::parse(msg->get_payload()));
-
-    server->LogMessage(ScWSServerLogMessages::message_payload, "[response] " + responseText);
-    server->Send(hdl, responseText, ScWSMessageType::text);
+    if (IsEvent(msg->get_payload()))
+      OnEvent(server, hdl, msg);
+    else
+      OnAction(server, hdl, msg);
   }
   catch (ScWSException const & e)
   {
@@ -19,3 +18,22 @@ void ScJSMessageHandler::OnMessage(ScJSServer * server, ScWSConnectionHandle con
     server->LogError(ScWSServerLogErrors::library, e.Description());
   }
 }
+
+void ScJSMessageHandler::OnAction(ScJSServer * server, ScWSConnectionHandle const & hdl, ScWSMessagePtr const & msg)
+{
+  server->LogMessage(ScWSServerLogMessages::message_payload, "[request] " + msg->get_payload());
+  auto const & responseText = server->HandleRequest(msg->get_payload());
+
+  server->LogMessage(ScWSServerLogMessages::message_payload, "[response] " + responseText);
+  server->Send(hdl, responseText, ScWSMessageType::text);
+}
+
+void ScJSMessageHandler::OnEvent(ScJSServer * server, ScWSConnectionHandle const & hdl, ScWSMessagePtr const & msg)
+{
+  server->LogMessage(ScWSServerLogMessages::message_payload, "[event] " + msg->get_payload());
+  auto const & responseText = server->HandleEvent(msg->get_payload(), const_cast<ScWSConnectionHandle &>(hdl));
+
+  server->LogMessage(ScWSServerLogMessages::message_payload, "[event response] " + responseText);
+  server->Send(hdl, responseText, ScWSMessageType::text);
+}
+

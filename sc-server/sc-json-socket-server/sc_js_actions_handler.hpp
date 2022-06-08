@@ -16,8 +16,6 @@ public:
 
   std::string Handle(std::string const & requestMessageText) override;
 
-  std::string GenerateResponseText(size_t requestId, sc_bool status, ScJSPayload const & responsePayload);
-
   ~ScJSActionsHandler() override
   {
     delete m_context;
@@ -37,6 +35,7 @@ private:
       {"search_template", new ScJSTemplateSearchAction()},
       {"generate_template", new ScJSTemplateGenerateAction()},
       {"content", new ScJSHandleContentAction()},
-      {"events", new ScJSHandleEventsAction()},
   };
+
+  static std::string GenerateResponseText(size_t requestId, sc_bool status, ScJSPayload const & responsePayload);
 };

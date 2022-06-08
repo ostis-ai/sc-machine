@@ -14,7 +14,7 @@ std::string ScJSActionsHandler::Handle(std::string const & requestMessageText)
   {
     auto * action = it->second;
     responsePayload = action->Complete(m_context, requestPayload);
-    status = !responsePayload.is_null() == SC_FALSE;
+    status = SC_TRUE;
   }
   else
   {

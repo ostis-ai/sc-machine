@@ -35,13 +35,7 @@ public:
       {
         std::string const & data = atom["data"];
 
-        ScStreamPtr stream;
-        auto * sc_string = new sc_char[data.size()];
-        std::strcpy(sc_string, data.c_str());
-        size_t written = 0;
-
-        stream->Write(sc_string, data.size(), written);
-        ScAddrVector const & vector = context->FindLinksByContent(stream);
+        ScAddrVector const & vector = context->FindLinksByContent(data);
         std::vector<size_t> hashes;
         for (auto const & addr : vector)
           hashes.push_back(addr.Hash());
