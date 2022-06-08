@@ -17,7 +17,7 @@ public:
       auto const & item = result[i];
 
       std::vector<size_t> hashesTriple{};
-      for (size_t j = 0; j < result.Size(); ++j)
+      for (size_t j = 0; j < item.Size(); ++j)
         hashesTriple.push_back(item[j].Hash());
 
       hashesVectors.push_back(hashesTriple);
