@@ -3,7 +3,6 @@
 #include <string>
 
 #include "sc_ws_actions_handler.hpp"
-#include "sc_js_payload.hpp"
 #include "sc-json-socket-action/sc_js_action_defines.hpp"
 
 class ScJSActionsHandler : public ScWSActionsHandler

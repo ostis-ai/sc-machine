@@ -3,7 +3,7 @@ set (SC_SERVER_DIR "${SC_MACHINE_ROOT}/sc-server")
 file(GLOB_RECURSE SOURCES "*.cpp")
 file(GLOB_RECURSE HEADERS "*.hpp")
 
-add_subdirectory(sc-json-socket-server)
+add_subdirectory(src/sc-json-socket-server)
 
 add_executable(sc-server ${SOURCES} ${HEADERS})
 target_include_directories(sc-server

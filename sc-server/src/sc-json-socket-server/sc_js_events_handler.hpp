@@ -5,7 +5,7 @@
 #include "sc-memory/sc_memory.hpp"
 
 #include "sc_js_lib.hpp"
-#include "sc_js_payload.hpp"
+#include "sc-json-socket-action/sc_js_action_defines.hpp"
 #include "sc_ws_actions_handler.hpp"
 #include "sc-json-socket-action/sc_js_events.hpp"
 
