@@ -19,7 +19,7 @@
 
 #include "sc-json-socket-server/sc_server_factory.hpp"
 
-int main(int argc, char * argv[])
+sc_int main(sc_int argc, sc_char * argv[])
 try
 {
   boost::program_options::options_description options_description("Builder usage");
@@ -51,13 +51,12 @@ try
     repo_path = vm["kb"].as<std::string>();
   else
     repo_path = conf_file["path"];
-  repo_path.append("kb.bin/");
+  repo_path.append("kb.bin");
 
   bool save_state = true;
   if (vm.count("verbose"))
     save_state = false;
-
-  SC_UNUSED(saveState);
+  SC_UNUSED(save_state);
 
   bool clear = false;
   if (vm.count("clear"))

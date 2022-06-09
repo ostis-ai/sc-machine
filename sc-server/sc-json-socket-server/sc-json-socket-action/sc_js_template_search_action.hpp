@@ -10,27 +10,20 @@ public:
     ScTemplateSearchResult result;
     auto * scTemplate = getTemplate(context, requestPayload);
     context->HelperSearchTemplate(*scTemplate, result);
+    delete scTemplate;
 
     std::vector<std::vector<size_t>> hashesVectors;
     for (size_t i = 0; i < result.Size(); ++i)
     {
       auto const & item = result[i];
 
-      std::vector<size_t> hashesTriple{};
-      for (size_t j = 0; j < item.Size(); ++j)
-        hashesTriple.push_back(item[j].Hash());
+      std::vector<size_t> vector;
+      for (size_t j = 0; j != item.Size(); ++j)
+        vector.push_back(item[j].Hash());
 
-      hashesVectors.push_back(hashesTriple);
+      hashesVectors.push_back(vector);
     }
-    delete scTemplate;
 
-    auto const & replacements = result.GetReplacements();
-    std::set<std::string> aliases;
-    std::transform(
-        replacements.begin(), replacements.end(), std::inserter(aliases, aliases.end()), [](auto const & pair) {
-          return pair.first;
-        });
-
-    return {{"aliases", aliases}, {"addrs", hashesVectors}};
+    return {{"aliases",  result.GetReplacements()}, {"addrs", hashesVectors}};
   }
 };

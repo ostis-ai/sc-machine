@@ -53,7 +53,7 @@ sc_memory_context * sc_memory_initialize(const sc_memory_params * params)
   sc_message("Configuration:");
   sc_message("\tmax_loaded_segments: %d", sc_config_get_max_loaded_segments());
   sc_message("\tsc-element size: %zd", sizeof(sc_element));
-  sc_message("\tsc-string-node size: %zd", sizeof(sc_dictionary_node));
+	sc_message("\tsc-string-node size: %zd", sizeof(sc_dictionary_node));
 
   if (sc_storage_initialize(params->repo_path, params->clear) != SC_TRUE)
     return null_ptr;
