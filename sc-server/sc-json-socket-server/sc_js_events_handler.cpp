@@ -16,21 +16,33 @@ std::string ScJSEventsHandler::Handle(std::string const & requestMessageText)
 
   ScJSPayload responsePayload;
   if (requestPayload["create"].is_null() == SC_FALSE)
-    HandleCreate(requestPayload["create"]);
+    responsePayload = HandleCreate(requestPayload["create"]);
   else if (requestPayload["delete"].is_null() == SC_FALSE)
-    HandleDelete(requestPayload["delete"]);
+    responsePayload = HandleDelete(requestPayload["delete"]);
 
   return GenerateResponseText(requestMessage["id"], SC_FALSE, SC_TRUE, responsePayload);
 }
 
 ScJSPayload ScJSEventsHandler::HandleCreate(ScJSPayload const & message)
 {
-  auto const onEmitEvent = [this](size_t id, ScAddr const & addr, ScAddr const & edgeAddr, ScAddr const & otherAddr)
-      -> sc_bool
+  auto const onEmitEvent = [this](
+        size_t id,
+        ScWSConnectionHandle * handle,
+        ScAddr const & addr,
+        ScAddr const & edgeAddr,
+        ScAddr const & otherAddr) -> sc_bool
   {
     ScJSPayload responsePayload = ScJSPayload({addr.Hash(), edgeAddr.Hash(), otherAddr.Hash()});
     std::string responseText = GenerateResponseText(id, SC_TRUE, SC_TRUE, responsePayload);
-    m_server->send(*m_hdl, responseText, ScWSMessageType::text);
+
+    try
+    {
+      m_server->send(*handle, responseText, ScWSMessageType::text);
+    }
+    catch (ScWSException const & e)
+    {
+      m_server->get_elog().write(ScWSServerLogErrors::warn, "Connection loosed " + std::string(e.what()));
+    }
 
     return SC_TRUE;
   };
@@ -44,7 +56,7 @@ ScJSPayload ScJSEventsHandler::HandleCreate(ScJSPayload const & message)
     auto const & it = events.find(type);
     if (it != events.end())
     {
-      auto * event = new ScEvent(*m_context, addr, it->second, bind(onEmitEvent, m_manager->Next(), ::_1, ::_2, ::_3));
+      auto * event = new ScEvent(*m_context, addr, it->second, bind(onEmitEvent, m_manager->Next(), m_hdl, ::_1, ::_2, ::_3));
       responsePayload.push_back(m_manager->Add(event));
     }
   }

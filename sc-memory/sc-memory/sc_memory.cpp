@@ -90,10 +90,8 @@ bool ScMemory::Initialize(sc_memory_params const & params)
   g_log_set_default_handler(_logPrintHandler, nullptr);
 
   ScHttp::Init();
-  auto newParams = params;
-  newParams.ext_path = nullptr;
 
-  ms_globalContext = sc_memory_initialize(&newParams);
+  ms_globalContext = sc_memory_initialize(&params);
   if (ms_globalContext == nullptr)
     return false;
 

@@ -17,8 +17,8 @@ std::map<std::string, std::string> parse_config(std::string conf)
   std::ifstream config(conf);
   if (!config)
   {
-    std::cerr << "File " << conf << " not found!" << std::endl;
-    return std::map<std::string, std::string>();
+    SC_LOG_DEBUG("File " + conf + " not found!");
+    return {};
   }
 
   std::set<std::string> options;
