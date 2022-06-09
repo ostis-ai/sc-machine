@@ -26,12 +26,11 @@ std::string ScJSEventsHandler::Handle(std::string const & requestMessageText)
 ScJSPayload ScJSEventsHandler::HandleCreate(ScJSPayload const & message)
 {
   auto const onEmitEvent = [this](
-        size_t id,
-        ScWSConnectionHandle * handle,
-        ScAddr const & addr,
-        ScAddr const & edgeAddr,
-        ScAddr const & otherAddr) -> sc_bool
-  {
+                               size_t id,
+                               ScWSConnectionHandle * handle,
+                               ScAddr const & addr,
+                               ScAddr const & edgeAddr,
+                               ScAddr const & otherAddr) -> sc_bool {
     ScJSPayload responsePayload = ScJSPayload({addr.Hash(), edgeAddr.Hash(), otherAddr.Hash()});
     std::string responseText = GenerateResponseText(id, SC_TRUE, SC_TRUE, responsePayload);
 
@@ -56,7 +55,8 @@ ScJSPayload ScJSEventsHandler::HandleCreate(ScJSPayload const & message)
     auto const & it = events.find(type);
     if (it != events.end())
     {
-      auto * event = new ScEvent(*m_context, addr, it->second, bind(onEmitEvent, m_manager->Next(), m_hdl, ::_1, ::_2, ::_3));
+      auto * event =
+          new ScEvent(*m_context, addr, it->second, bind(onEmitEvent, m_manager->Next(), m_hdl, ::_1, ::_2, ::_3));
       responsePayload.push_back(m_manager->Add(event));
     }
   }
