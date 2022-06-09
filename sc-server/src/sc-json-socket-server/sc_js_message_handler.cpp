@@ -36,4 +36,3 @@ void ScJSMessageHandler::OnEvent(ScJSServer * server, ScWSConnectionHandle const
   server->LogMessage(ScWSServerLogMessages::message_payload, "[event response] " + responseText);
   server->Send(hdl, responseText, ScWSMessageType::text);
 }
-

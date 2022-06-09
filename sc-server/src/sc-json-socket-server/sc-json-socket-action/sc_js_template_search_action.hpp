@@ -24,6 +24,6 @@ public:
       hashesVectors.push_back(vector);
     }
 
-    return {{"aliases",  result.GetReplacements()}, {"addrs", hashesVectors}};
+    return {{"aliases", result.GetReplacements()}, {"addrs", hashesVectors}};
   }
 };
