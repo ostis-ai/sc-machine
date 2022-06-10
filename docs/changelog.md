@@ -17,6 +17,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - Fix scs-grammar. Add opportunity to specificate a structure into this structure itself
 
+### Removed
+- Remove scp-interpreter
+
 
 ## [0.6.1] - 27.04.2022
 ### Added

@@ -19,10 +19,6 @@ add_subdirectory(sc-agents-common)
 
 add_custom_target(sc-kpm)
 
-if (${SC_KPM_SCP})
-    # TODO: add new SCP version
-endif()
-
 add_dependencies(sc-kpm
     sc-kpm-common
     sc-python
