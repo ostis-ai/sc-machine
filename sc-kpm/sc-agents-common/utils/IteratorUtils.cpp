@@ -185,17 +185,14 @@ ScIterator5Ptr IteratorUtils::getIterator5(
   SC_CHECK_PARAM(node, ("Invalid node address"))
   SC_CHECK_PARAM(relation, ("Invalid relation address"))
 
-  bool isRole = CommonUtils::checkType(ms_context, relation, ScType::NodeConstRole);
-  ScType edgeType = isRole ? ScType::EdgeAccessConstPosPerm : ScType::EdgeDCommonConst;
-
   ScIterator5Ptr iterator5;
   if (isBeginNode)
   {
-    iterator5 = ms_context->Iterator5(node, edgeType, ScType::Unknown, ScType::EdgeAccessConstPosPerm, relation);
+    iterator5 = ms_context->Iterator5(node, ScType::Unknown, ScType::Unknown, ScType::Unknown, relation);
   }
   else
   {
-    iterator5 = ms_context->Iterator5(ScType::Unknown, edgeType, node, ScType::EdgeAccessConstPosPerm, relation);
+    iterator5 = ms_context->Iterator5(ScType::Unknown, ScType::Unknown, node, ScType::Unknown, relation);
   }
   return iterator5;
 }
