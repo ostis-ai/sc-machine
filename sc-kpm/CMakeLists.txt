@@ -20,8 +20,7 @@ add_subdirectory(sc-agents-common)
 add_custom_target(sc-kpm)
 
 if (${SC_KPM_SCP})
-    add_subdirectory(scp)
-    add_dependencies(sc-kpm scp)
+    # TODO: add new SCP version
 endif()
 
 add_dependencies(sc-kpm
