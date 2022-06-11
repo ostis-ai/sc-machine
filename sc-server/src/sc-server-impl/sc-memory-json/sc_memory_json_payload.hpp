@@ -2,4 +2,4 @@
 
 #include <nlohmann/json.hpp>
 
-using ScJSPayload = nlohmann::json;
+using ScMemoryJsonPayload = nlohmann::json;

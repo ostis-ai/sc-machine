@@ -1,11 +1,11 @@
 #pragma once
 
-#include "sc_js_make_template_action.hpp"
+#include "sc_memory_make_template_json_action.hpp"
 
-class ScJSTemplateSearchAction : public ScJSMakeTemplateAction
+class ScMemoryTemplateSearchJsonAction : public ScMemoryMakeTemplateJsonAction
 {
 public:
-  ScJSPayload Complete(ScMemoryContext * context, ScJSPayload requestPayload) override
+  ScMemoryJsonPayload Complete(ScMemoryContext * context, ScMemoryJsonPayload requestPayload) override
   {
     ScTemplateSearchResult result;
     auto * scTemplate = getTemplate(context, requestPayload);

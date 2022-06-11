@@ -17,7 +17,7 @@
 
 #include "utils/parser.hpp"
 
-#include "sc-json-socket-server/sc_server_factory.hpp"
+#include "sc-server-impl/sc_server_factory.hpp"
 
 sc_int main(sc_int argc, sc_char * argv[])
 try
@@ -84,7 +84,7 @@ try
   params.repo_path = repo_path.c_str();
 
   SC_LOG_INIT("Initialize json-based sc-server");
-  ScJSServer * server = ScServerFactory::ConfigureScJSServer(params);
+  ScServer * server = ScServerFactory::ConfigureScServer(params);
   try
   {
     server->Run();

@@ -1,15 +1,15 @@
 #pragma once
 
-#include "sc_js_action.hpp"
+#include "sc_memory_json_action.hpp"
 
 #include "sc-memory/sc_link.hpp"
 
-class ScJSHandleContentAction : public ScJSAction
+class ScMemoryHandleLinkContentJsonAction : public ScMemoryJsonAction
 {
 public:
-  ScJSPayload Complete(ScMemoryContext * context, ScJSPayload requestPayload) override
+  ScMemoryJsonPayload Complete(ScMemoryContext * context, ScMemoryJsonPayload requestPayload) override
   {
-    ScJSPayload responsePayload;
+    ScMemoryJsonPayload responsePayload;
 
     for (auto & atom : requestPayload)
     {
