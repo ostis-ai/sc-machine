@@ -1,11 +1,13 @@
 #include "sc_js_events_handler.hpp"
 
-ScJSEventsHandler::ScJSEventsHandler()
+ScJSEventsHandler::ScJSEventsHandler(ScWSServerCore * server, ScWSServerConnections * connections)
 {
   m_context = new ScMemoryContext("sc-json-socket-events-handler");
   m_manager = ScJSEventsManager::GetInstance();
 
-  m_server = nullptr;
+  m_server = server;
+  m_connections = connections;
+
   m_hdl = nullptr;
 }
 
@@ -36,7 +38,8 @@ ScJSPayload ScJSEventsHandler::HandleCreate(ScJSPayload const & message)
 
     try
     {
-      m_server->send(*handle, responseText, ScWSMessageType::text);
+      if (m_connections->find(handle->lock()) != m_connections->end())
+         m_server->send(handle->lock(), responseText, ScWSMessageType::text);
     }
     catch (ScWSException const & e)
     {

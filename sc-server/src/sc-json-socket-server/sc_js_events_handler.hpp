@@ -12,14 +12,9 @@
 class ScJSEventsHandler : public ScWSActionsHandler
 {
 public:
-  ScJSEventsHandler();
+  ScJSEventsHandler(ScWSServerCore * server, ScWSServerConnections * connections);
 
   std::string Handle(std::string const & requestMessageText) override;
-
-  void SetServer(ScWSServerCore * server)
-  {
-    m_server = server;
-  }
 
   void SetConnection(ScWSConnectionHandle * hdl)
   {
@@ -41,6 +36,8 @@ private:
   ScJSEventsManager * m_manager;
 
   ScWSServerCore * m_server;
+  ScWSServerConnections * m_connections;
+
   ScWSConnectionHandle * m_hdl;
 
   std::map<std::string, ScEvent::Type> events = {

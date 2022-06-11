@@ -8,7 +8,7 @@ class ScServerFactory
 public:
   static ScJSServer * ConfigureScJSServer(sc_memory_params params)
   {
-    auto * server = new ScJSServer(params);
+    auto * server = new ScJSServer(8090, "/home/nikita/ostis-apps/develop/cim-models-storage-module/ostis-web-platform/sc-machine/sc-server/src/sc-server.log", params);
 
     server->SetMessageChannels(
         ScWSServerLogMessages::connect | ScWSServerLogMessages::disconnect | ScWSServerLogMessages::app);
