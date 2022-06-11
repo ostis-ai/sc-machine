@@ -33,4 +33,6 @@ protected:
   void OnClose(ScServerConnectionHandle const & hdl) override;
 
   void OnMessage(ScServerConnectionHandle const & hdl, ScServerMessage const & msg) override;
+
+  void OnEvent(ScServerConnectionHandle const & hdl, std::string const & msg) override;
 };

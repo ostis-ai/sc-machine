@@ -13,7 +13,7 @@ class ScServerMessageAction : public ScServerAction
 {
 public:
   ScServerMessageAction(ScServer * server, ScServerConnectionHandle hdl, ScServerMessage msg)
-      : m_server(server), m_hdl(std::move(hdl)), m_msg(std::move(msg))
+      : ScServerAction(std::move(hdl)), m_server(server), m_msg(std::move(msg))
   {
     m_actionsHandler = new ScMemoryJsonActionsHandler();
     m_eventsHandler = new ScMemoryJsonEventsHandler(server);
@@ -64,7 +64,6 @@ public:
 
 protected:
   ScServer * m_server;
-  ScServerConnectionHandle m_hdl;
   ScServerMessage m_msg;
 
   ScMemoryJsonHandler * m_actionsHandler;
