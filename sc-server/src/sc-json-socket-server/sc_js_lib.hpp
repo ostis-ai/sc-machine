@@ -4,12 +4,17 @@
 #include <websocketpp/config/core.hpp>
 #include <websocketpp/config/asio_no_tls.hpp>
 
+#include <set>
+
 using ScWSServerCore = websocketpp::server<websocketpp::config::asio>;
 using ScWSConnectionHandle = websocketpp::connection_hdl;
+using ScWSServerConnections = std::set<ScWSConnectionHandle, std::owner_less<ScWSConnectionHandle>>;
 
 using ScWSMessagePtr = ScWSServerCore::message_ptr;
 using ScWSMessageType = websocketpp::frame::opcode::value;
 using ScWSMessageHandler = ScWSServerCore::message_handler;
+using ScWSOpenHandler = websocketpp::open_handler;
+using ScWSCloseHandler = websocketpp::close_handler;
 
 using ScWSException = websocketpp::exception;
 

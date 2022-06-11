@@ -9,25 +9,28 @@
 class ScJSServer
 {
 public:
+  explicit ScJSServer(sc_memory_params params)
+    : ScJSServer(8090, "", params)
+  {
+  }
+
   explicit ScJSServer(size_t port, sc_memory_params params)
     : ScJSServer(port, "", params)
   {
   }
 
   explicit ScJSServer(size_t port, std::string const & logPath, sc_memory_params params)
-    : ScJSServer(params)
   {
     m_port = port;
     m_logPath = logPath;
-  }
 
-  explicit ScJSServer(sc_memory_params params)
-  {
     ScMemory::Initialize(params);
 
     m_instance = new ScWSServerCore();
+    m_connections = new ScWSServerConnections();
+
     m_handler = new ScJSActionsHandler();
-    m_events_handler = new ScJSEventsHandler();
+    m_events_handler = new ScJSEventsHandler(m_instance, m_connections);
 
     Initialize();
   }
@@ -57,7 +60,6 @@ public:
 
   std::string HandleEvent(std::string const & requestMessage, ScWSConnectionHandle & hdl)
   {
-    m_events_handler->SetServer(m_instance);
     m_events_handler->SetConnection(&hdl);
 
     if (m_events_handler->IsConnectionValid())
@@ -106,10 +108,12 @@ public:
   }
 
 private:
-  size_t m_port = 8090;
+  size_t m_port;
   std::string m_logPath;
 
   ScWSServerCore * m_instance;
+  ScWSServerConnections * m_connections;
+
   ScJSActionsHandler * m_handler;
   ScJSEventsHandler * m_events_handler;
 
@@ -122,10 +126,13 @@ private:
 
     if (!m_logPath.empty())
     {
-      std::ofstream log;
-      log.open(m_logPath);
-      m_instance->get_alog().set_ostream(&log);
-      m_instance->get_elog().set_ostream(&log);
+      auto * log = new std::ofstream();
+      log->open(m_logPath);
+      m_instance->get_alog().set_ostream(log);
+      m_instance->get_elog().set_ostream(log);
     }
+
+    m_instance->set_open_handler(bind([this](ScWSConnectionHandle const & hdl){m_connections->insert(hdl);}, ::_1));
+    m_instance->set_close_handler(bind([this](ScWSConnectionHandle const & hdl){m_connections->erase(hdl);}, ::_1));
   }
 };
