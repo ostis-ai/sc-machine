@@ -25,6 +25,10 @@ public:
 
       responsePayload.push_back(keynode.Hash());
     }
+
+    if (responsePayload.is_null())
+      return "{}"_json;
+
     return responsePayload;
   }
 };

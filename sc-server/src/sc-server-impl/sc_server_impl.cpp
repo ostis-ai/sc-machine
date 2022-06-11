@@ -49,7 +49,14 @@ eternal void ScServerImpl::EmitActions()
 
     ScServerLock guard(m_connection_lock);
 
-    action->Emit();
+    try
+    {
+      action->Emit();
+    }
+    catch (std::exception const & e)
+    {
+      LogError(ScServerLogErrors::devel, e.what());
+    }
     delete action;
   }
 }
@@ -77,6 +84,15 @@ void ScServerImpl::OnMessage(ScServerConnectionHandle const & hdl, ScServerMessa
   {
     ScServerLock guard(m_action_lock);
     m_actions->push(new ScServerMessageAction(this, hdl, msg));
+  }
+  m_action_cond.notify_one();
+}
+
+void ScServerImpl::OnEvent(ScServerConnectionHandle const & hdl, std::string const & msg)
+{
+  {
+    ScServerLock guard(m_action_lock);
+    m_actions->push(new ScServerEventCallbackAction(this, hdl, msg));
   }
   m_action_cond.notify_one();
 }

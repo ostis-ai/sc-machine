@@ -62,6 +62,11 @@ public:
     return m_connections;
   }
 
+  ScServerActions * GetActions()
+  {
+    return m_actions;
+  }
+
   void Send(ScServerConnectionHandle const & hdl, std::string const & message, ScServerMessageType type)
   {
     m_instance->send(hdl, message, type);
@@ -86,6 +91,8 @@ public:
   {
     m_instance->set_access_channels(channels);
   }
+
+  virtual void OnEvent(ScServerConnectionHandle const & hdl, std::string const & msg) = 0;
 
   virtual ~ScServer()
   {

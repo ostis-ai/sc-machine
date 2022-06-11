@@ -6,7 +6,6 @@ ScMemoryJsonEventsHandler::ScMemoryJsonEventsHandler(ScServer * server)
   m_manager = ScMemoryJsonEventsManager::GetInstance();
 
   m_server = server;
-  m_connections = m_server->GetConnections();
 }
 
 std::string ScMemoryJsonEventsHandler::Handle(ScServerConnectionHandle const & hdl, std::string const & requestMessageText)
@@ -25,8 +24,9 @@ std::string ScMemoryJsonEventsHandler::Handle(ScServerConnectionHandle const & h
 
 ScMemoryJsonPayload ScMemoryJsonEventsHandler::HandleCreate(ScServerConnectionHandle const & hdl, ScMemoryJsonPayload const & message)
 {
-  auto const onEmitEvent = [this](
+  auto const onEmitEvent = [](
                                size_t id,
+                               ScServer * server,
                                ScServerConnectionHandle const & handle,
                                ScAddr const & addr,
                                ScAddr const & edgeAddr,
@@ -34,15 +34,8 @@ ScMemoryJsonPayload ScMemoryJsonEventsHandler::HandleCreate(ScServerConnectionHa
     ScMemoryJsonPayload responsePayload = ScMemoryJsonPayload({addr.Hash(), edgeAddr.Hash(), otherAddr.Hash()});
     std::string responseText = GenerateResponseText(id, SC_TRUE, SC_TRUE, responsePayload);
 
-    try
-    {
-      if (m_server != nullptr && !m_connections->empty() && m_connections->find(handle) != m_connections->end())
-         m_server->Send(handle, responseText, ScServerMessageType::text);
-    }
-    catch (ScServerException const & e)
-    {
-      m_server->LogError(ScServerLogErrors::warn, "Connection loosed " + std::string(e.what()));
-    }
+    if (server != nullptr)
+      server->OnEvent(handle, responseText);
 
     return SC_TRUE;
   };
@@ -57,7 +50,7 @@ ScMemoryJsonPayload ScMemoryJsonEventsHandler::HandleCreate(ScServerConnectionHa
     if (it != events.end())
     {
       auto * event =
-          new ScEvent(*m_context, addr, it->second, bind(onEmitEvent, m_manager->Next(), hdl, ::_1, ::_2, ::_3));
+          new ScEvent(*m_context, addr, it->second, bind(onEmitEvent, m_manager->Next(), m_server, hdl, ::_1, ::_2, ::_3));
       responsePayload.push_back(m_manager->Add(event));
     }
   }

@@ -19,7 +19,7 @@ public:
 
   std::string Handle(ScServerConnectionHandle const & hdl, std::string const & requestMessageText) override;
 
-  ~ScMemoryJsonEventsHandler()
+  ~ScMemoryJsonEventsHandler() override
   {
     delete m_context;
   }
@@ -29,7 +29,6 @@ private:
   ScMemoryJsonEventsManager * m_manager;
 
   ScServer * m_server;
-  ScServerConnections * m_connections;
 
   std::map<std::string, ScEvent::Type> events = {
       {"add_outgoing_edge", ScEvent::Type::AddOutputEdge},

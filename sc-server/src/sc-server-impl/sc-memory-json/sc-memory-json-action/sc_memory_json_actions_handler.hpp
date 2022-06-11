@@ -15,7 +15,7 @@ public:
 
   std::string Handle(ScServerConnectionHandle const & hdl, std::string const & requestMessageText) override;
 
-  ~ScMemoryJsonActionsHandler()
+  ~ScMemoryJsonActionsHandler() override
   {
     delete m_context;
 

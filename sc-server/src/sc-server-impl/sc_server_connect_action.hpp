@@ -9,7 +9,7 @@ class ScServerConnectAction : public ScServerAction
 {
 public:
   ScServerConnectAction(ScServer * server, ScServerConnectionHandle hdl)
-      : m_server(server), m_hdl(std::move(hdl))
+      : ScServerAction(std::move(hdl)), m_server(server)
   {
   }
 
@@ -22,5 +22,4 @@ public:
 
 protected:
   ScServer * m_server;
-  ScServerConnectionHandle m_hdl;
 };
