@@ -1,11 +1,11 @@
 #pragma once
 
-#include "sc_js_action.hpp"
+#include "sc_memory_json_action.hpp"
 
-class ScJSMakeTemplateAction : public ScJSAction
+class ScMemoryMakeTemplateJsonAction : public ScMemoryJsonAction
 {
 protected:
-  ScTemplate * getTemplate(ScMemoryContext * context, ScJSPayload payload)
+  ScTemplate * getTemplate(ScMemoryContext * context, ScMemoryJsonPayload payload)
   {
     ScTemplateParams templParams;
     if (payload.find("templ") != payload.end())
@@ -53,9 +53,9 @@ protected:
       return makeTemplate(payload);
   }
 
-  ScTemplate * makeTemplate(ScJSPayload const & triples)
+  ScTemplate * makeTemplate(ScMemoryJsonPayload const & triples)
   {
-    auto const & convertItemToParam = [](ScJSPayload paramItem) -> ScTemplateItemValue {
+    auto const & convertItemToParam = [](ScMemoryJsonPayload paramItem) -> ScTemplateItemValue {
       std::string const & paramType = paramItem["type"];
       auto const & paramValue = paramItem["value"];
 

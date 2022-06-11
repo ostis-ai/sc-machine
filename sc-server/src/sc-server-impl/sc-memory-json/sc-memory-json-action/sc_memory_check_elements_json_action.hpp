@@ -1,13 +1,13 @@
 #pragma once
 
-#include "sc_js_action.hpp"
+#include "sc_memory_json_action.hpp"
 
-class ScJSCheckElementsAction : public ScJSAction
+class ScMemoryCheckElementsJsonAction : public ScMemoryJsonAction
 {
 public:
-  ScJSPayload Complete(ScMemoryContext * context, ScJSPayload requestPayload) override
+  ScMemoryJsonPayload Complete(ScMemoryContext * context, ScMemoryJsonPayload requestPayload) override
   {
-    ScJSPayload responsePayload;
+    ScMemoryJsonPayload responsePayload;
 
     for (auto & hash : requestPayload)
     {

@@ -1,18 +1,18 @@
 #pragma once
 
-#include "sc_js_action.hpp"
+#include "sc_memory_json_action.hpp"
 
 #include "sc-memory/sc_link.hpp"
 
-class ScJSCreateElementsAction : public ScJSAction
+class ScMemoryCreateElementsJsonAction : public ScMemoryJsonAction
 {
 public:
-  ScJSPayload Complete(ScMemoryContext * context, ScJSPayload requestPayload) override
+  ScMemoryJsonPayload Complete(ScMemoryContext * context, ScMemoryJsonPayload requestPayload) override
   {
-    ScJSPayload responsePayload;
+    ScMemoryJsonPayload responsePayload;
 
-    auto const & resolveAddr = [&responsePayload](ScJSPayload const & json) -> ScAddr {
-      ScJSPayload const & sub = json["value"];
+    auto const & resolveAddr = [&responsePayload](ScMemoryJsonPayload const & json) -> ScAddr {
+      ScMemoryJsonPayload const & sub = json["value"];
       if (json["type"] == "ref")
         return ScAddr(responsePayload[sub.get<size_t>()].get<size_t>());
 

@@ -4,13 +4,13 @@
 
 #include "algorithm"
 
-class ScJSEventsManager
+class ScMemoryJsonEventsManager
 {
 public:
-  static ScJSEventsManager * GetInstance()
+  static ScMemoryJsonEventsManager * GetInstance()
   {
     if (m_instance == nullptr)
-      m_instance = new ScJSEventsManager();
+      m_instance = new ScMemoryJsonEventsManager();
 
     return m_instance;
   }
@@ -35,7 +35,7 @@ public:
     return nullptr;
   }
 
-  ~ScJSEventsManager()
+  ~ScMemoryJsonEventsManager()
   {
     for (auto const & pair : m_events)
       delete pair.second;
@@ -44,9 +44,9 @@ public:
   }
 
 private:
-  static ScJSEventsManager * m_instance;
+  static ScMemoryJsonEventsManager * m_instance;
   std::unordered_map<size_t, ScEvent *> m_events;
   size_t counter = 0;
 
-  ScJSEventsManager() = default;
+  ScMemoryJsonEventsManager() = default;
 };
