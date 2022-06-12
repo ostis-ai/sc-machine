@@ -7,8 +7,6 @@
 
 #include "sc_console.hpp"
 
-#include "../generated/sc_log_config.hpp"
-
 #include <sstream>
 #include <fstream>
 #include "string"
