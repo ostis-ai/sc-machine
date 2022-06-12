@@ -66,7 +66,8 @@ contour returns [ElementHandle handle]
       $ctx->handle = m_parser->ProcessContourBegin();
     }
     { $ctx->count > 0 }?
-    ( sentence_wrap* )
+    ( (sentence_wrap
+	| (sentence_lvl_4_list_item[$ctx->handle] ';;'))* )
     CONTOUR_END
     {
       $ctx->count--;
@@ -77,7 +78,8 @@ contour returns [ElementHandle handle]
     }
   ;
 
-contourWithJoin returns [ElementHandle handle]
+contourWithJoin[ElementHandle contourHandle]
+  returns [ElementHandle handle]
   locals [int count = 0; ]
   @init{ $count = 1; }
   : CONTOUR_BEGIN
@@ -85,7 +87,8 @@ contourWithJoin returns [ElementHandle handle]
       m_parser->ProcessContourBegin();
     }
     { $ctx->count > 0 }?
-    ( sentence_wrap* )
+    ( (sentence_wrap
+	| (sentence_lvl_4_list_item[$contourHandle] ';;'))* )
     CONTOUR_END
     {
       $ctx->count--;
@@ -161,7 +164,7 @@ sentence_assign
   ;
 
 sentence_assign_contour
-  : a=idtf_system '=' i=contourWithJoin
+  : a=idtf_system '=' i=contourWithJoin[$ctx->a->handle]
     {
       m_parser->ProcessContourEndWithJoin($ctx->a->handle);
     }

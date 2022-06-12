@@ -14,6 +14,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add default python modules paths to python initialization
 - United config file
 
+### Changed
+- Fix scs-grammar. Add opportunity to specificate a structure into this structure itself
+
+
 ## [0.6.1] - 27.04.2022
 ### Added
 - Search by template with params in C++ API
