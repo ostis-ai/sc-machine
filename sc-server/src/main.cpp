@@ -9,64 +9,54 @@
 #include <iostream>
 #include <atomic>
 #include <thread>
-#include <map>
 
 #include <sc-memory/sc_debug.hpp>
 #include <sc-memory/sc_memory.hpp>
 #include <sc-memory/utils/sc_signal_handler.hpp>
 
-#include "utils/parser.hpp"
+#include "utils/sc_config.hpp"
 
-#include "sc-server-impl/sc_server_factory.hpp"
+#include "sc_server_factory.hpp"
 
 sc_int main(sc_int argc, sc_char * argv[])
 try
 {
-  boost::program_options::options_description options_description("Builder usage");
-  options_description.add_options()("help", "Display this message")(
-      "extensions,e", boost::program_options::value<std::string>(), "Path to directory with sc-memory extensions")(
+  boost::program_options::options_description options("Sc-server usage");
+  options.add_options()("help", "Display this message")(
+      "config,c", boost::program_options::value<std::string>(), "Path to configuration file")(
+      "host,h", boost::program_options::value<std::string>(), "Sc-server host name, ip-address")(
+      "port,p", boost::program_options::value<size_t>(), "Sc-server port")(
+      "extensions_path,e", boost::program_options::value<std::string>(), "Path to directory with sc-memory extensions")(
       "kb", boost::program_options::value<std::string>(), "Path to kb.bin folder")(
-      "verbose,v", "Flag to don't save sc-memory state on exit")("clear", "Flag to clear sc-memory on start")(
-      "config,c", boost::program_options::value<std::string>(), "Path to configuration file");
+      "verbose,v", "Flag to don't save sc-memory state on exit")(
+      "clear", "Flag to clear sc-memory on start");
 
   boost::program_options::variables_map vm;
-  boost::program_options::store(
-      boost::program_options::command_line_parser(argc, argv).options(options_description).run(), vm);
+  boost::program_options::store(boost::program_options::command_line_parser(argc, argv).options(options).run(), vm);
   boost::program_options::notify(vm);
-
-  std::string config_file;
-  if (vm.count("config"))
-    config_file = vm["config"].as<std::string>();
-
-  std::map<std::string, std::string> conf_file = parse_config(config_file);
-
-  std::string ext_path;
-  if (vm.count("extensions"))
-    ext_path = vm["extensions"].as<std::string>();
-  else
-    ext_path = conf_file["ext"];
-
-  std::string repo_path;
-  if (vm.count("kb"))
-    repo_path = vm["kb"].as<std::string>();
-  else
-    repo_path = conf_file["path"];
-  repo_path.append("kb.bin");
-
-  bool save_state = true;
-  if (vm.count("verbose"))
-    save_state = false;
-  SC_UNUSED(save_state);
-
-  bool clear = false;
-  if (vm.count("clear"))
-    clear = true;
 
   if (vm.count("help"))
   {
-    std::cout << options_description;
-    return 0;
+    std::cout << options;
+    return EXIT_SUCCESS;
   }
+
+  ScServerParams params;
+  for (auto const & it : vm)
+    params.insert({it.first, it.second.as<std::string>()});
+
+  std::string configFile;
+  if (vm.count("config"))
+    configFile = vm["config"].as<std::string>();
+
+  ScConfig config{configFile};
+  auto memoryConfig = config["sc-memory"];
+  for (auto const & key : *memoryConfig)
+    params.insert({key, memoryConfig[key]});
+
+  auto serverConfig = config["sc-server"];
+  for (auto const & key : *serverConfig)
+    params.insert({key, serverConfig[key]});
 
   std::atomic_bool is_run = {true};
   utils::ScSignalHandler::Initialize();
@@ -74,16 +64,6 @@ try
     is_run = false;
   };
 
-  sc_memory_params params;
-  sc_memory_params_clear(&params);
-
-  params.clear = clear ? SC_TRUE : SC_FALSE;
-  params.config_file = config_file.c_str();
-  params.enabled_exts = nullptr;
-  params.ext_path = ext_path.c_str();
-  params.repo_path = repo_path.c_str();
-
-  SC_LOG_INIT("Initialize json-based sc-server");
   ScServer * server = ScServerFactory::ConfigureScServer(params);
   try
   {
@@ -91,7 +71,7 @@ try
   }
   catch (std::exception const & e)
   {
-    SC_LOG_ERROR("[sc-server] " + std::string(e.what()));
+    server->LogError(0, std::string(e.what()));
     server->Stop();
     delete server;
 

@@ -1,0 +1,15 @@
+##### sc-memory
+[sc-memory]
+max_loaded_segments = 1000
+max_threads = 32
+
+save_period = 3600
+update_period = 1800
+
+extensions_path = @SC_MACHINE_ROOT@/bin/extensions
+
+##### sc-server
+[sc-server]
+host = localhost
+port = 8090
+log_file = @SC_MACHINE_ROOT@/sc-server.log
