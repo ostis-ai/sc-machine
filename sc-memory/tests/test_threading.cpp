@@ -240,11 +240,8 @@ void test_save()
 int main(int argc, char *argv[])
 {
   sc_memory_params_clear(&params);
-
   params.clear = SC_TRUE;
   params.repo_path = "repo";
-  params.config_file = "sc-memory.ini";
-  params.ext_path = 0;
 
   printf("sc_element: %zd, sc_addr: %zd, sc_arc: %zd\n", sizeof(sc_element), sizeof(sc_addr), sizeof(sc_arc_info));
 

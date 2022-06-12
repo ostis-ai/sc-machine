@@ -6,7 +6,11 @@
 
 #include "sc_memory.h"
 #include "sc_memory_private.h"
+<<<<<<< HEAD
 #include "sc_memory_params.h"
+=======
+
+>>>>>>> [tools][config] Unify config using
 #include "sc_memory_ext.h"
 #include "sc_helper_private.h"
 
@@ -40,8 +44,15 @@ sc_memory_context * sc_memory_initialize(const sc_memory_params * params)
 
 	sc_message("Sc-memory version: %s", params->version);
 	sc_message("\tClean memory on shutdown: %s", params->clear ? "On" : "Off");
-	sc_message("\tDebug: %s", params->debug ? "On" : "Off");
+	sc_message("\tRepo path: %s", params->repo_path);
 	sc_message("\tExtension path: %s", params->ext_path);
+	sc_message("\tSave period: %d", params->save_period);
+	sc_message("\tUpdate period: %d", params->update_period);
+
+	sc_message("Sc-memory debug:");
+	sc_message("\tDebug type: %s", params->debug_type);
+	sc_message("\tDebug mode: %s", params->debug_mode);
+	sc_message("\tDebug file: %s", params->debug_file);
 
 	sc_message("Sc-memory configuration:");
 	sc_message("\tmax loaded segments: %d", params->max_loaded_segments);

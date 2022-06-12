@@ -10,5 +10,5 @@ cmake --build build -j$(nproc)
 echo ::endgroup::
 
 pushd build
-../bin/sc-builder -i ../tools/builder/tests/kb -o ../bin/sc-builder-test-repo -c -f
+../bin/sc-builder -i ../sc-tools/sc-builder/tests/kb -o ../bin/sc-builder-test-repo --clear -f
 popd

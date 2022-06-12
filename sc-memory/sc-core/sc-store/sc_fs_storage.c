@@ -328,7 +328,6 @@ sc_bool sc_fs_storage_write_to_path(sc_segment ** segments)
   memset(&header, 0, sizeof(sc_fs_storage_segments_header));
   header.segments_num = 0;
   header.timestamp = g_get_real_time();
-  header.version = sc_version_to_int(&SC_VERSION);
 
   g_io_channel_set_encoding(output, null_ptr, null_ptr);
 

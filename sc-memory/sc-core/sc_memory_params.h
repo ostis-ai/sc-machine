@@ -13,12 +13,20 @@ typedef struct _sc_memory_params
 {
   const sc_char * version;
   sc_bool clear;
-  sc_bool debug;
+  const sc_char * repo_path;
   const sc_char * ext_path;
   const sc_char ** enabled_exts;
-  sc_uint8 max_loaded_segments;
+  sc_uint32 save_period;
+  sc_uint32 update_period;
+
+  const sc_char * debug_type;
+  const sc_char * debug_mode;
+  const sc_char * debug_file;
+
+  sc_uint32 max_loaded_segments;
   sc_uint8 max_threads;
-  const sc_char * repo_path;
 } sc_memory_params;
+
+_SC_EXTERN void sc_memory_params_clear(sc_memory_params * params);
 
 #endif
