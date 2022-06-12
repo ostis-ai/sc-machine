@@ -10,27 +10,27 @@ void ScServerImpl::Initialize()
   m_instance->set_close_handler(bind(&ScServerImpl::OnClose, this, ::_1));
   m_instance->set_message_handler(bind(&ScServerImpl::OnMessage, this, ::_1, ::_2));
 
-  SC_LOG_INFO("[sc-server] Clear channels");
+  LogMessage(ScServerLogMessages::app, "Clear channels");
   m_instance->clear_access_channels(ScServerLogMessages::all);
   m_instance->clear_error_channels(ScServerLogErrors::all);
 
   if (!m_logPath.empty())
   {
-    auto * log = new std::ofstream();
-    log->open(m_logPath);
-    m_instance->get_alog().set_ostream(log);
-    m_instance->get_elog().set_ostream(log);
+    m_log = new std::ofstream();
+    m_log->open(m_logPath);
+    m_instance->get_alog().set_ostream(m_log);
+    m_instance->get_elog().set_ostream(m_log);
   }
 
-  SC_LOG_INFO("[sc-server] Socket data");
-  SC_LOG_INFO("\thost: ");
-  SC_LOG_INFO("\tport: " + std::to_string(m_port));
-  SC_LOG_INFO("\tlogger: " + (m_logPath.empty() ? "console" : "file " + m_logPath));
+  LogMessage(ScServerLogMessages::app, "Sc-server socket data");
+  LogMessage(ScServerLogMessages::app, "\tHost name: ");
+  LogMessage(ScServerLogMessages::app, "\tPort: " + std::to_string(m_port));
+  LogMessage(ScServerLogMessages::app, "\tLogger: " + (m_logPath.empty() ? "console" : "file " + m_logPath));
 }
 
 void ScServerImpl::AfterInitialize()
 {
-  SC_LOG_INFO("[sc-server] Connection opened");
+  LogMessage(ScServerLogMessages::app, "Connection opened");
 }
 
 eternal void ScServerImpl::EmitActions()

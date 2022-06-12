@@ -12,8 +12,8 @@ using ScServerCondVar = std::condition_variable;
 class ScServerImpl : public ScServer
 {
 public:
-  explicit ScServerImpl(ScServerPort port, std::string const & logPath, sc_memory_params params)
-      : ScServer(port, logPath, params)
+  explicit ScServerImpl(std::string host, ScServerPort port, std::string const & logPath, sc_memory_params params)
+      : ScServer(host, port, logPath, params)
   {
   }
 

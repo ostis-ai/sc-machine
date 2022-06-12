@@ -12,17 +12,18 @@ class ScServer
 {
 public:
   explicit ScServer(sc_memory_params params)
-    : ScServer(8090, "", params)
+    : ScServer("localhost", 8090, "", params)
   {
   }
 
-  explicit ScServer(size_t port, sc_memory_params params)
-    : ScServer(port, "", params)
+  explicit ScServer(std::string hostName, size_t port, sc_memory_params params)
+    : ScServer(std::move(hostName), port, "", params)
   {
   }
 
-  explicit ScServer(size_t port, std::string const & logPath, sc_memory_params params)
+  explicit ScServer(std::string const & hostName, size_t port, std::string const & logPath, sc_memory_params params)
   {
+    m_hostName = hostName;
     m_port = port;
     m_logPath = logPath;
 
@@ -104,12 +105,18 @@ public:
     delete m_connections;
     m_connections = nullptr;
 
+    delete m_log;
+    m_log = nullptr;
+
     ScMemory::Shutdown();
   }
 
 protected:
+  std::string m_hostName;
   ScServerPort m_port;
   std::string m_logPath;
+
+  std::ofstream * m_log;
 
   ScServerCore * m_instance;
   ScServerActions * m_actions;
