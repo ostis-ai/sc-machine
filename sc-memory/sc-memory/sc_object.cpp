@@ -12,9 +12,7 @@ ScObject::ScObject()
 {
 }
 
-ScObject::~ScObject()
-{
-}
+ScObject::~ScObject() = default;
 
 ScObject::ScObject(ScObject const & other)
 {

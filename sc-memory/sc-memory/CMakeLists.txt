@@ -33,7 +33,8 @@ target_include_directories(sc-memory
 
 if (${WIN32})
   target_link_libraries(sc-memory
-                        sc-core ${LIBCURL_LIBRARIES} ${PYTHON_LIBRARY_RELEASE}
+                        sc-core
+                        ${LIBCURL_LIBRARIES} ${PYTHON_LIBRARY_RELEASE}
                         antlr4_static
                         debug ${BOOST_PYTHON_LIBRARY_DEBUG}
                         optimized ${BOOST_PYTHON_LIBRARY_RELEASE})

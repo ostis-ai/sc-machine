@@ -20,8 +20,7 @@ extern "C"
 #include <array>
 #include <unordered_set>
 #include <unordered_map>
-#include <assert.h>
-#include <stdint.h>
+#include <cassert>
 #include <cstdint>
 
 #include <fstream>
@@ -174,7 +173,7 @@ public:
       return false;
 
     auto const CheckMask = [&extType](RealType const & mask) {
-      return !(extType.m_realType != (extType.m_realType & mask));
+      return extType.m_realType == (extType.m_realType & mask);
     };
 
     if (IsLink())

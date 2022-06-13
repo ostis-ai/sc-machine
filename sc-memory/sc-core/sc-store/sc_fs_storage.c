@@ -5,6 +5,7 @@
  */
 
 #include "sc_fs_storage.h"
+
 #include "sc_segment.h"
 #include "sc_stream_file.h"
 #include "sc_config.h"

@@ -14,7 +14,7 @@
  */
 typedef sc_result (*fStreamRead)(const sc_stream * stream, sc_char * data, sc_uint32 length, sc_uint32 * bytes_read);
 
-/*! Pointer to stream write function. This function write data into pointer from specifed \i buffer
+/*! Pointer to stream write function. This function write data into pointer from specified \i buffer
  * with fixed \i length and return number of bytes, that has been written
  */
 typedef sc_result (

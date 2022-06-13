@@ -16,26 +16,28 @@
 #include "sc-store/sc_event.h"
 #include "sc-store/sc_event/sc_event_private.h"
 
-#include <glib.h>
+#include "sc-store/sc-base/sc_allocator.h"
+#include "sc-store/sc-base/sc_assert_utils.h"
+#include "sc-store/sc-base/sc_message.h"
 
 sc_pointer sc_thread()
 {
   return (sc_pointer)g_thread_self();
 }
 
-sc_memory_context * s_memory_default_ctx = 0;
+sc_memory_context * s_memory_default_ctx = null_ptr;
 sc_uint16 s_context_id_last = 1;
 sc_uint32 s_context_id_count = 0;
-GHashTable * s_context_hash_table = 0;
+GHashTable * s_context_hash_table = null_ptr;
 GMutex s_concurrency_mutex;
 
 void sc_memory_params_clear(sc_memory_params * params)
 {
   params->clear = SC_FALSE;
-  params->config_file = 0;
-  params->ext_path = 0;
-  params->repo_path = 0;
-  params->enabled_exts = 0;
+  params->config_file = null_ptr;
+  params->ext_path = null_ptr;
+  params->repo_path = null_ptr;
+  params->enabled_exts = null_ptr;
 }
 
 sc_memory_context * sc_memory_initialize(const sc_memory_params * params)
@@ -46,7 +48,7 @@ sc_memory_context * sc_memory_initialize(const sc_memory_params * params)
 
   s_context_hash_table = g_hash_table_new(g_direct_hash, g_direct_equal);
 
-  char * v_str = sc_version_string_new(&SC_VERSION);
+  sc_char * v_str = sc_version_string_new(&SC_VERSION);
   g_message("Version: %s", v_str);
   sc_version_string_free(v_str);
 
@@ -55,7 +57,7 @@ sc_memory_context * sc_memory_initialize(const sc_memory_params * params)
   g_message("sc-element size: %zd", sizeof(sc_element));
 
   if (sc_storage_initialize(params->repo_path, params->clear) != SC_TRUE)
-    return 0;
+    return null_ptr;
 
   s_memory_default_ctx = sc_memory_context_new(sc_access_lvl_make(SC_ACCESS_LVL_MAX_VALUE, SC_ACCESS_LVL_MAX_VALUE));
   sc_memory_context * helper_ctx =
@@ -66,7 +68,7 @@ sc_memory_context * sc_memory_initialize(const sc_memory_params * params)
 
   if (sc_events_initialize() == SC_FALSE)
   {
-    g_error("Error while initialize events module");
+    sc_error("Error while initialize events module");
     goto error;
   }
 
@@ -80,7 +82,7 @@ sc_memory_context * sc_memory_initialize(const sc_memory_params * params)
 
 error:
 {
-  if (helper_ctx)
+  if (helper_ctx != null_ptr)
     sc_memory_context_free(helper_ctx);
   sc_memory_context_free(s_memory_default_ctx);
 }
@@ -95,15 +97,15 @@ sc_result sc_memory_init_ext(sc_char const * ext_path, const sc_char ** enabled_
   switch (ext_res)
   {
   case SC_RESULT_OK:
-    g_message("Modules initialization finished");
+    sc_message("Modules initialization finished");
     break;
 
   case SC_RESULT_ERROR_INVALID_PARAMS:
-    g_warning("Extensions directory '%s' doesn't exist", ext_path);
+    sc_warning("Extensions directory '%s' doesn't exist", ext_path);
     break;
 
   default:
-    g_warning("Unknown error while initialize extensions");
+    sc_warning("Unknown error while initialize extensions");
     break;
   }
 
@@ -124,13 +126,13 @@ void sc_memory_shutdown(sc_bool save_state)
   sc_storage_shutdown(save_state);
 
   sc_memory_context_free(s_memory_default_ctx);
-  s_memory_default_ctx = 0;
+  s_memory_default_ctx = null_ptr;
 
   /// todo: clear contexts
   g_hash_table_destroy(s_context_hash_table);
-  s_context_hash_table = 0;
+  s_context_hash_table = null_ptr;
   s_context_id_last = 0;
-  g_assert(s_context_id_count == 0);
+  sc_assert(s_context_id_count == 0);
 }
 
 void sc_memory_shutdown_ext()
@@ -145,12 +147,12 @@ sc_memory_context * sc_memory_context_new(sc_uint8 levels)
 
 sc_memory_context * sc_memory_context_new_impl(sc_uint8 levels)
 {
-  sc_memory_context * ctx = g_new0(sc_memory_context, 1);
+  sc_memory_context * ctx = sc_mem_new(sc_memory_context, 1);
   sc_uint32 index = 0;
 
   ctx->access_levels = levels;
 
-  // setup concurency id
+  // setup concurrency id
   g_mutex_lock(&s_concurrency_mutex);
   if (s_context_id_count >= G_MAXUINT32)
     goto error;
@@ -169,13 +171,13 @@ sc_memory_context * sc_memory_context_new_impl(sc_uint8 levels)
   else
     goto error;
 
-  s_context_id_count++;
+  ++s_context_id_count;
   goto result;
 
 error:
 {
-  g_free(ctx);
-  ctx = 0;
+  sc_mem_free(ctx);
+  ctx = null_ptr;
 }
 
 result:
@@ -191,45 +193,45 @@ void sc_memory_context_free(sc_memory_context * ctx)
 
 void sc_memory_context_free_impl(sc_memory_context * ctx)
 {
-  g_assert(ctx != 0);
+  sc_assert(ctx != null_ptr);
 
   g_mutex_lock(&s_concurrency_mutex);
 
   sc_memory_context * c = g_hash_table_lookup(s_context_hash_table, GINT_TO_POINTER(ctx->id));
-  g_assert(c == ctx);
+  sc_assert(c == ctx);
   g_hash_table_remove(s_context_hash_table, GINT_TO_POINTER(ctx->id));
-  s_context_id_count--;
+  --s_context_id_count;
 
   g_mutex_unlock(&s_concurrency_mutex);
 
-  g_free(ctx);
+  sc_mem_free(ctx);
 }
 
 void sc_memory_context_pending_begin(sc_memory_context * ctx)
 {
-  g_assert((ctx->flags & SC_CONTEXT_FLAG_PENDING_EVENTS) == 0);
+  sc_assert((ctx->flags & SC_CONTEXT_FLAG_PENDING_EVENTS) == 0);
   ctx->flags |= SC_CONTEXT_FLAG_PENDING_EVENTS;
 }
 
 void sc_memory_context_pending_end(sc_memory_context * ctx)
 {
-  g_assert((ctx->flags & SC_CONTEXT_FLAG_PENDING_EVENTS) != 0);
+  sc_assert((ctx->flags & SC_CONTEXT_FLAG_PENDING_EVENTS) != 0);
   ctx->flags = ctx->flags & (~SC_CONTEXT_FLAG_PENDING_EVENTS);
   sc_memory_context_emit_events(ctx);
 }
 
 void sc_memory_context_pend_event(sc_memory_context * ctx, sc_event_emit_params * params)
 {
-  g_assert((ctx->flags & SC_CONTEXT_FLAG_PENDING_EVENTS) != 0);
+  sc_assert((ctx->flags & SC_CONTEXT_FLAG_PENDING_EVENTS) != 0);
   ctx->pend_events = g_slist_append(ctx->pend_events, params);
 }
 
 void sc_memory_context_emit_events(sc_memory_context * ctx)
 {
-  GSList * item = NULL;
-  sc_event_emit_params * evt_params = NULL;
+  GSList * item = null_ptr;
+  sc_event_emit_params * evt_params = null_ptr;
 
-  g_assert((ctx->flags & SC_CONTEXT_FLAG_PENDING_EVENTS) == 0);
+  sc_assert((ctx->flags & SC_CONTEXT_FLAG_PENDING_EVENTS) == 0);
   while (ctx->pend_events)
   {
     item = ctx->pend_events;
@@ -238,7 +240,7 @@ void sc_memory_context_emit_events(sc_memory_context * ctx)
     sc_event_emit_impl(
         ctx, evt_params->el, evt_params->el_access, evt_params->type, evt_params->edge, evt_params->other_el);
 
-    g_free(evt_params);
+    sc_mem_free(evt_params);
 
     ctx->pend_events = g_slist_delete_link(ctx->pend_events, ctx->pend_events);
   }
@@ -329,7 +331,7 @@ sc_result sc_memory_find_links_with_content(
 
 void sc_memory_free_buff(sc_pointer buff)
 {
-  g_free(buff);
+  sc_mem_free(buff);
 }
 
 sc_result sc_memory_set_element_access_levels(

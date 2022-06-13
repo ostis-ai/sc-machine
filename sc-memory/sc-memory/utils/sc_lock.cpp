@@ -10,7 +10,7 @@
 
 extern "C"
 {
-#include <glib.h>
+#include "sc-core/sc-store/sc-base/sc_atomic.h"
 }
 
 namespace utils
@@ -23,7 +23,7 @@ ScLock::ScLock()
 
 void ScLock::Lock()
 {
-  while (g_atomic_int_compare_and_exchange(&m_locked, 0, 1) == FALSE)
+  while (sc_atomic_int_compare_and_exchange(&m_locked, 0, 1) == FALSE)
   {
     std::this_thread::sleep_for(std::chrono::microseconds(1));
   }
@@ -31,12 +31,12 @@ void ScLock::Lock()
 
 void ScLock::Unlock()
 {
-  g_atomic_int_set(&m_locked, 0);
+  sc_atomic_int_set(&m_locked, 0);
 }
 
 bool ScLock::IsLocked() const
 {
-  return g_atomic_int_get(&m_locked) == 1;
+  return sc_atomic_int_get(&m_locked) == 1;
 }
 
 }  // namespace utils

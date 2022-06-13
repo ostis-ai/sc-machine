@@ -109,8 +109,6 @@ std::string ScLink::GetAsString() const
   default:
     return "";
   }
-
-  return "";
 }
 
 bool ScLink::_DetermineTypeEdgeImpl(ScAddr & outEdge, ScAddr & outType) const

@@ -6,11 +6,11 @@
 
 #pragma once
 
+#include <utility>
+
 #include "sc_addr.hpp"
 #include "sc_type.hpp"
 #include "sc_utils.hpp"
-
-#define SC_REPL(x) (char const *)(x)
 
 struct ScTemplateItemValue
 {
@@ -27,12 +27,12 @@ struct ScTemplateItemValue
     m_itemType = Type::Type;
   }
 
-  ScTemplateItemValue(ScAddr const & addr, char const * replName = 0)
+  ScTemplateItemValue(ScAddr const & addr, char const * replName = nullptr)
   {
     SetAddr(addr, replName);
   }
 
-  ScTemplateItemValue(ScType const & type, char const * replName = 0)
+  ScTemplateItemValue(ScType const & type, char const * replName = nullptr)
   {
     SetType(type, replName);
   }
@@ -77,7 +77,7 @@ struct ScTemplateItemValue
     return (m_itemType == type);
   }
 
-  void SetAddr(ScAddr const & addr, char const * replName = 0)
+  void SetAddr(ScAddr const & addr, char const * replName = nullptr)
   {
     m_itemType = Type::Addr;
     m_addrValue = addr;
@@ -85,7 +85,7 @@ struct ScTemplateItemValue
       m_replacementName = replName;
   }
 
-  void SetType(ScType const & type, char const * replName = 0)
+  void SetType(ScType const & type, char const * replName = nullptr)
   {
     m_itemType = Type::Type;
     m_typeValue = type;
@@ -98,18 +98,6 @@ struct ScTemplateItemValue
     m_itemType = Type::Replace;
     if (name)
       m_replacementName = name;
-  }
-
-  SC_DEPRECATED(0.3.0, "Use ScTemplateItemValue::isFixed instead")
-  bool CanBeAddr() const
-  {
-    return m_itemType == Type::Addr || m_itemType == Type::Replace;
-  }
-
-  SC_DEPRECATED(0.3.0, "Use ScTemplateItemValue::isAssign instead")
-  bool CanBeType() const
-  {
-    return m_itemType == Type::Type;
   }
 
   Type m_itemType;
@@ -209,9 +197,7 @@ class ScTemplateParams
 public:
   ScTemplateParams & operator=(ScTemplateParams const & other) = delete;
 
-  explicit ScTemplateParams()
-  {
-  }
+  explicit ScTemplateParams() = default;
 
   SC_DEPRECATED(0.4.0, "You should to use ScTemplateParams::Add")
   _SC_EXTERN ScTemplateParams & add(std::string const & varIdtf, ScAddr const & value)
@@ -270,11 +256,11 @@ public:
   public:
     explicit Result(bool result, std::string errorMsg = "")
       : m_result(result)
-      , m_msg(errorMsg)
+      , m_msg(std::move(errorMsg))
     {
     }
 
-    operator bool() const
+    explicit operator bool() const
     {
       return m_result;
     }
@@ -399,9 +385,7 @@ class ScTemplateGenResult
   friend class ScSet;
 
 public:
-  ScTemplateGenResult()
-  {
-  }
+  ScTemplateGenResult() = default;
 
   ScAddr const & operator[](std::string const & name) const
   {

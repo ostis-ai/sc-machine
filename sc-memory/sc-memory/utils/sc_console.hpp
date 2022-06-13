@@ -155,7 +155,7 @@ public:
 
 namespace impl
 {
-std::string const & GetANSIColor(ScConsole::Color const c);
+std::string const & GetANSIColor(ScConsole::Color c);
 }
 
 template <>

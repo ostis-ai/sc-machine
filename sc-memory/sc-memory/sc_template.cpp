@@ -119,7 +119,7 @@ ScTemplate & ScTemplate::Triple(
       }
 
       /* Store type there, if replacement for any type.
-       * That allows to use it before original type will processed
+       * That allows to use it before original type will process
        */
       size_t const constrIdx = replPos / 3;
       SC_ASSERT(constrIdx < m_constructions.size(), ());

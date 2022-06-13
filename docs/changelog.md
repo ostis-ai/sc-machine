@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 ### Added
+- Wrap and separate allocating, assertion, notification and atomic lock free procedures
 - Add tests module for sc-agents-utils
 - Add opportunity to configure sc-machine version from CMakeLists.txt
 - Add scripts to build kb, run sctp-server and run sc-server
@@ -15,6 +16,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - United config file
 
 ### Changed
+- Correct typos
+- Fix warnings in sc-memory modules
 - Fix scs-grammar. Add opportunity to specificate a structure into this structure itself
 
 ### Removed

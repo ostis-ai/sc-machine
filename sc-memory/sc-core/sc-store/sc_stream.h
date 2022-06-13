@@ -46,7 +46,7 @@ typedef enum _sc_stream_seek_origin sc_stream_seek_origin;
 /*! Free specified stream
  * @param stream Pointer to data stream for freeing
  * @return If stream has been freed without any errors, then return SC_OK; otherwise return SC_ERROR
- * @remarks After calling this function \p stream pointer woldn't be a valid.
+ * @remarks After calling this function \p stream pointer wouldn't be a valid.
  */
 _SC_EXTERN sc_result sc_stream_free(sc_stream * stream);
 
@@ -94,7 +94,7 @@ _SC_EXTERN sc_result sc_stream_get_length(const sc_stream * stream, sc_uint32 * 
 /*! Returns current position in stream
  * @param stream Stream pointer to get position
  * @param position Pointer to result container
- * @return If correct position returned, thern return SC_OK; otherwise return SC_ERROR
+ * @return If correct position returned, then return SC_OK; otherwise return SC_ERROR
  */
 _SC_EXTERN sc_result sc_stream_get_position(const sc_stream * stream, sc_uint32 * position);
 

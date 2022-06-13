@@ -7,9 +7,9 @@
 #include "sc_event_queue.h"
 #include "../sc_event.h"
 #include "sc_event_private.h"
-#include "../sc_storage.h"
-#include "../../sc_memory_private.h"
-#include "../../sc_memory.h"
+
+#include "../sc-base/sc_allocator.h"
+#include "../sc-base/sc_assert_utils.h"
 
 typedef struct
 {
@@ -20,7 +20,7 @@ typedef struct
 
 sc_event_pool_worker_data * sc_event_pool_worker_data_new(sc_event * evt, sc_addr edge_addr, sc_addr other_addr)
 {
-  sc_event_pool_worker_data * data = g_new0(sc_event_pool_worker_data, 1);
+  sc_event_pool_worker_data * data = sc_mem_new(sc_event_pool_worker_data, 1);
   data->evt = evt;
   data->edge_addr = edge_addr;
   data->other_addr = other_addr;
@@ -30,17 +30,17 @@ sc_event_pool_worker_data * sc_event_pool_worker_data_new(sc_event * evt, sc_add
 
 void sc_event_pool_worker_data_destroy(sc_event_pool_worker_data * data)
 {
-  g_assert(data != null_ptr);
-  g_free(data);
+  sc_assert(data != null_ptr);
+  sc_mem_free(data);
 }
 
 void sc_event_pool_worker(gpointer data, gpointer user_data)
 {
-  g_assert(data != null_ptr);
+  sc_assert(data != null_ptr);
   sc_event_pool_worker_data * work_data = (sc_event_pool_worker_data *)data;
 
-  g_assert(work_data->evt != null_ptr);
-  if (work_data->evt->callback != null_ptr)  // TODO: cleanup in 0.4.0
+  sc_assert(work_data->evt != null_ptr);
+  if (work_data->evt->callback != null_ptr)
   {
     work_data->evt->callback(work_data->evt, work_data->edge_addr);
   }
@@ -55,17 +55,18 @@ void sc_event_pool_worker(gpointer data, gpointer user_data)
 
 sc_event_queue * sc_event_queue_new()
 {
-  sc_event_queue * queue = g_new0(sc_event_queue, 1);
+  sc_event_queue * queue = sc_mem_new(sc_event_queue, 1);
   queue->running = SC_TRUE;
   g_mutex_init(&queue->mutex);
-  queue->thread_pool = g_thread_pool_new(sc_event_pool_worker, (gpointer)0, g_get_num_processors(), FALSE, 0);
+  queue->thread_pool =
+      g_thread_pool_new(sc_event_pool_worker, null_ptr, (sc_int32)g_get_num_processors(), SC_FALSE, null_ptr);
 
   return queue;
 }
 
 void sc_event_queue_stop_processing(sc_event_queue * queue)
 {
-  g_assert(queue != 0);
+  sc_assert(queue != null_ptr);
 
   sc_bool is_running = SC_FALSE;
 
@@ -83,22 +84,22 @@ void sc_event_queue_stop_processing(sc_event_queue * queue)
 
 void sc_event_queue_destroy_wait(sc_event_queue * queue)
 {
-  g_assert(queue != 0);
+  sc_assert(queue != null_ptr);
 
   if (queue->thread_pool)
   {
     g_mutex_lock(&queue->mutex);
-    g_thread_pool_free(queue->thread_pool, FALSE, TRUE);
-    queue->thread_pool = 0;
+    g_thread_pool_free(queue->thread_pool, SC_FALSE, SC_TRUE);
+    queue->thread_pool = null_ptr;
     g_mutex_unlock(&queue->mutex);
   }
 
-  g_free(queue);
+  sc_mem_free(queue);
 }
 
 void sc_event_queue_append(sc_event_queue * queue, sc_event * evt, sc_addr edge, sc_addr other_el)
 {
-  g_assert(queue != 0);
+  sc_assert(queue != null_ptr);
 
   g_mutex_lock(&queue->mutex);
   if (queue->running == SC_TRUE)
@@ -111,7 +112,7 @@ void sc_event_queue_append(sc_event_queue * queue, sc_event * evt, sc_addr edge,
 
 void sc_event_queue_remove(sc_event_queue * queue, sc_event * event)
 {
-  g_assert(queue != 0);
+  sc_assert(queue != null_ptr);
   g_mutex_lock(&queue->mutex);
 
   g_mutex_unlock(&queue->mutex);

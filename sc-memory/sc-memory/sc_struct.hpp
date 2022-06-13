@@ -19,7 +19,7 @@ public:
   _SC_EXTERN bool Append(ScAddr const & elAddr);
   _SC_EXTERN bool Append(ScAddr const & elAddr, ScAddr const & attrAddr);
 
-  /* Remove element from sc-tructure and returns true, if element removed. */
+  /* Remove element from sc-structure and returns true, if element removed. */
   _SC_EXTERN bool Remove(ScAddr const & elAddr);
 
   /* Operator equal to append */

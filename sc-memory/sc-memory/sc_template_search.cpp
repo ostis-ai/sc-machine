@@ -249,10 +249,7 @@ public:
       return m_context.Iterator3(PrepareType(value0.m_typeValue), addr1, PrepareType(value2.m_typeValue));
     }
 
-    //// unknown iterator type
-    // SC_THROW_EXCEPTION(utils::ExceptionInvalidState, "Unknown iterator type");
-
-    return ScIterator3Ptr();
+    return {};
   }
 
   bool CheckInStruct(ScAddr const & addr)
@@ -336,7 +333,7 @@ public:
       auto const applyResult = [&](ScAddr const & res1, ScAddr const & res2, ScAddr const & res3) {
         edges[orderIndex] = res2;
 
-        // do not make cycle for optimization issues (remove comparsion expresion)
+        // do not make cycle for optimization issues (remove comparison expression)
         m_resultAddrs[resultIdx] = res1;
         m_resultAddrs[resultIdx + 1] = res2;
         m_resultAddrs[resultIdx + 2] = res3;
@@ -377,7 +374,7 @@ public:
           }
 
           auto const res = m_usedEdges.insert(addr2);
-          if (!res.second)  // don't iterate the same edge twicely
+          if (!res.second)  // don't iterate the same edge twice
             continue;
 
           applyResult(addr1, addr2, addr3);

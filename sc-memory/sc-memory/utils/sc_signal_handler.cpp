@@ -12,7 +12,7 @@
 #if SC_IS_PLATFORM_WIN32
 #  include <windows.h>
 #elif SC_IS_PLATFORM_LINUX || SC_IS_PLATFORM_MAC
-#  include <signal.h>
+#  include <csignal>
 #else
 #  error "Not supported platform"
 #endif
@@ -71,7 +71,9 @@ void ScSignalHandler::Initialize()
     SC_LOG_ERROR("Can't initialize signal handler");
   }
 #elif SC_IS_PLATFORM_LINUX || SC_IS_PLATFORM_MAC
-  struct sigaction sigIntHandler;
+  struct sigaction sigIntHandler
+  {
+  };
 
   sigIntHandler.sa_handler = handlers::sc_signal_handler;
   sigemptyset(&sigIntHandler.sa_mask);

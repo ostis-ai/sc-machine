@@ -24,8 +24,8 @@ public:
     , m_params(params)
     , m_context(context)
   {
-    // check if it valid
-    for (auto constr : m_constructions)
+    // check if it is valid
+    for (const auto & constr : m_constructions)
     {
       auto values = constr.GetValues();
       if (values[1].IsFixed())
@@ -57,9 +57,8 @@ public:
     size_t resultIdx = 0;
     bool isError = false;
 
-    for (auto it = m_constructions.begin(); it != m_constructions.end(); ++it)
+    for (const auto & item : m_constructions)
     {
-      ScTemplateConstr3 const & item = *it;
       auto const & values = item.GetValues();
 
       // check that the third argument isn't a command to generate edge
@@ -138,7 +137,7 @@ public:
       return createNodeLink(itemValue.m_typeValue.UpConstType());
     case ScTemplateItemValue::Type::Replace:
     {
-      ScTemplate::ReplacementsMap::const_iterator it = m_replacements.find(itemValue.m_replacementName);
+      auto it = m_replacements.find(itemValue.m_replacementName);
       if (it != m_replacements.end())
       {
         SC_ASSERT(it->second < resultAddrs.size(), ());
@@ -149,19 +148,19 @@ public:
       break;
     }
 
-    return ScAddr();
+    return {};
   }
 
   void cleanupCreated()
   {
-    for (ScAddrVector::iterator it = m_createdElements.begin(); it != m_createdElements.end(); ++it)
-      m_context.EraseElement(*it);
+    for (auto & m_createdElement : m_createdElements)
+      m_context.EraseElement(m_createdElement);
     m_createdElements.clear();
   }
 
   bool checkParams() const
   {
-    for (auto const it : m_params.m_values)
+    for (auto const & it : m_params.m_values)
     {
       ScTemplate::ReplacementsMap::const_iterator const itRepl = m_replacements.find(it.first);
 

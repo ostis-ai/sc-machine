@@ -58,7 +58,7 @@ std::string StringUtils::GetFileExtension(std::string const & filename)
   std::string path = filename;
   std::replace(path.begin(), path.end(), '\\', '/');
   size_t start = path.find_last_of('/');
-  size_t n = path.find(".", start);
+  size_t n = path.find('.', start);
   if (n == std::string::npos)
     return {};
 
@@ -189,7 +189,7 @@ std::string StringUtils::ReplaceAll(
 {
   std::string result = source;
   std::string::size_type pos = 0;
-  while (1)
+  while (true)
   {
     pos = result.find(replaceWhat, pos);
     if (pos == std::string::npos)

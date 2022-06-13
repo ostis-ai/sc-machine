@@ -9,6 +9,7 @@ target_include_directories(sc-core
   PRIVATE ${RocksDB_INCLUDE_DIR}
   )
 target_link_libraries(sc-core ${GLIB2_LIBRARIES} ${RocksDB_LIBRARIES})
+
 if(${SC_COVERAGE})
   if (CMAKE_CXX_COMPILER_ID MATCHES "GNU")
 	  target_link_libraries(sc-core gcov)

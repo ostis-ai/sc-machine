@@ -10,7 +10,7 @@ namespace py
 class ScPythonService
 {
 protected:
-  _SC_EXTERN explicit ScPythonService(std::string const & scriptName);
+  _SC_EXTERN explicit ScPythonService(std::string scriptName);
   _SC_EXTERN ~ScPythonService();
 
 public:

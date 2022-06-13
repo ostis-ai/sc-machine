@@ -28,8 +28,8 @@ void ScProgress::PrintStatus(size_t passedStep)
   m_isComplete = (progress >= 1.f);
   progress = std::min(std::max(0.f, progress), 1.f);
 
-  size_t const filledNum = (size_t)((float)m_width * progress);
-  size_t const percentInt = (size_t)((float)100 * progress);
+  auto const filledNum = (size_t)((float)m_width * progress);
+  auto const percentInt = (size_t)((float)100 * progress);
 
   if (m_isFirst || (m_prevPercent != percentInt))
   {

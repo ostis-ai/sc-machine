@@ -13,7 +13,7 @@
 #include <memory>
 #include <string>
 
-#include <assert.h>
+#include <cassert>
 #include <memory.h>
 
 // Got it there: https://github.com/mapsme/omim/blob/136f12af3adde05623008f71d07bb996fe5801a5/base/macros.hpp
@@ -138,8 +138,7 @@ public:
 
   void Clear()
   {
-    if (m_data)
-      delete[] m_data;
+    delete[] m_data;
     m_data = nullptr;
     m_size = 0;
   }

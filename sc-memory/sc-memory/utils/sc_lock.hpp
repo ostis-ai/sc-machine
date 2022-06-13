@@ -32,7 +32,7 @@ private:
 
 struct ScLockScope
 {
-  ScLockScope(ScLock & lock)
+  explicit ScLockScope(ScLock & lock)
     : m_lock(lock)
   {
     m_lock.Lock();

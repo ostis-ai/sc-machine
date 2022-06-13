@@ -82,13 +82,13 @@ struct TripleResult
             "\nShould be: " << std::endl
                             << " m_source: " << m_source << ", " << std::endl
                             << " m_edge: " << m_edge << ", " << std::endl
-                            << " m_target: " << m_target << std::endl)
+                            << " m_target: " << m_target << std::endl);
 
       auto const elToString = [](scs::ParsedElement const & el) -> std::string
       {
         std::stringstream ss;
 
-        SC_LOG_ERROR("m_type: " << *el.GetType() << ", m_idtf: \"" << el.GetIdtf() << "\"")
+        SC_LOG_ERROR("m_type: " << *el.GetType() << ", m_idtf: \"" << el.GetIdtf() << "\"");
 
         return ss.str();
       };
@@ -97,7 +97,7 @@ struct TripleResult
             "\nParsed: " << std::endl
                          << " m_source: " << elToString(src) << std::endl
                          << " m_edge: " << elToString(edge) << std::endl
-                         << " m_target: " << elToString(trg) << std::endl)
+                         << " m_target: " << elToString(trg) << std::endl);
 
       throw ex;
     }

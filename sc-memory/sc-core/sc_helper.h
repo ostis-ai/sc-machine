@@ -22,7 +22,7 @@ typedef enum _sc_keynode sc_keynode;
  * @param data Buffer that contains system identifier for sc-element (must be an UTF-8 encoded)
  * @param len Length of data buffer
  * @param result_addr Pointer to result container
- * @return If sc-element with spefcified system identifier found, then return SC_RESULT_OK and result_addr
+ * @return If sc-element with specified system identifier found, then return SC_RESULT_OK and result_addr
  * contains sc-addr of this one; otherwise return SC_RESULT_ERROR. If there are more then one sc-elements with
  * specified system identifier, then return SC_RESULT_ERROR_INVALID_STATE, but result_addr will contains sc-addr
  * of firstly found sc-element.

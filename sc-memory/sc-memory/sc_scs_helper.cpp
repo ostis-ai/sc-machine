@@ -282,9 +282,9 @@ private:
 
 }  // namespace impl
 
-SCsHelper::SCsHelper(ScMemoryContext & ctx, SCsFileInterfacePtr const & fileInterface)
+SCsHelper::SCsHelper(ScMemoryContext & ctx, SCsFileInterfacePtr fileInterface)
   : m_ctx(ctx)
-  , m_fileInterface(fileInterface)
+  , m_fileInterface(std::move(fileInterface))
 {
 }
 

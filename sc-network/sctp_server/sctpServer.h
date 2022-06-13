@@ -46,7 +46,7 @@ private:
   QString mExtPath;
 
   QString mStatPath;
-  quint32 mStatUpdatePeriod;
+  quint32 mStatUpdatePeriod{};
   sctpStatistic * mStatistic;
 
   quint32 mSavePeriod;

@@ -20,7 +20,6 @@
 #include <cstdlib>
 #include <ctime>
 #include <iostream>
-#include <sstream>
 
 extern "C"
 {
@@ -71,7 +70,7 @@ void _logPrintHandler(gchar const * log_domain, GLogLevelFlags log_level, gchar 
   default:
     SC_LOG_DEBUG(message);
     break;
-  };
+  }
 }
 
 unsigned int gContextCounter;
@@ -80,12 +79,12 @@ unsigned int gContextCounter;
 
 // ------------------
 
-sc_memory_context * ScMemory::ms_globalContext = 0;
+sc_memory_context * ScMemory::ms_globalContext = nullptr;
 ScMemory::MemoryContextList ScMemory::ms_contexts;
 
 bool ScMemory::Initialize(sc_memory_params const & params)
 {
-  std::srand(unsigned(std::time(0)));
+  std::srand(unsigned(std::time(nullptr)));
   gContextCounter = 0;
 
   g_log_set_default_handler(_logPrintHandler, nullptr);
@@ -113,7 +112,7 @@ void ScMemory::Shutdown(bool saveState /* = true */)
 
   ScKeynodes::Shutdown();
 
-  if (ms_contexts.size() > 0)
+  if (!ms_contexts.empty())
   {
     std::stringstream description;
     description << "There are " << ms_contexts.size() << " contexts, wasn't destroyed, before Memory::shutdown:";
@@ -124,7 +123,7 @@ void ScMemory::Shutdown(bool saveState /* = true */)
   }
 
   sc_memory_shutdown(SC_BOOL(saveState));
-  ms_globalContext = 0;
+  ms_globalContext = nullptr;
 
   ScHttp::Shutdown();
   py::ScPythonInterpreter::Shutdown();
@@ -181,7 +180,7 @@ bool ScMemory::HasMemoryContext(ScMemoryContext const * ctx)
 // ---------------
 
 ScMemoryContext::ScMemoryContext(sc_uint8 accessLevels, std::string const & name)
-  : m_context(0)
+  : m_context(nullptr)
 {
   m_context = sc_memory_context_new(accessLevels);
   if (name.empty())
@@ -215,7 +214,7 @@ void ScMemoryContext::Destroy()
     ScMemory::UnregisterContext(this);
 
     sc_memory_context_free(m_context);
-    m_context = 0;
+    m_context = nullptr;
   }
 }
 
@@ -231,7 +230,7 @@ void ScMemoryContext::EndEventsPending()
 
 bool ScMemoryContext::IsValid() const
 {
-  return m_context != 0;
+  return m_context != nullptr;
 }
 
 bool ScMemoryContext::IsElement(ScAddr const & addr) const
@@ -341,7 +340,7 @@ ScStreamPtr ScMemoryContext::GetLinkContent(ScAddr const & addr)
 
   sc_stream * s = nullptr;
   if (sc_memory_get_link_content(m_context, *addr, &s) != SC_RESULT_OK || s == nullptr)
-    return ScStreamPtr();
+    return {};
 
   return std::make_shared<ScStream>(s);
 }
@@ -430,7 +429,7 @@ std::string ScMemoryContext::HelperGetSystemIdtf(ScAddr const & addr)
     }
   }
 
-  return std::string("");
+  return {};
 }
 
 bool ScMemoryContext::HelperCheckArc(ScAddr const & begin, ScAddr end, sc_type arcType)
@@ -501,7 +500,7 @@ ScMemoryContext::Stat ScMemoryContext::CalculateStat() const
   sc_stat stat;
   sc_memory_stat(m_context, &stat);
 
-  Stat res;
+  Stat res{};
   res.m_edgesNum = uint32_t(stat.arc_count);
   res.m_linksNum = uint32_t(stat.link_count);
   res.m_nodesNum = uint32_t(stat.node_count);

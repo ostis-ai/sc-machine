@@ -21,16 +21,17 @@
 #  include <termios.h>    // for getch() and kbhit()
 #  include <unistd.h>     // for getch(), kbhit() and (u)sleep()
 #  include <sys/ioctl.h>  // for getkey()
-#  include <sys/types.h>  // for kbhit()
-#  include <sys/time.h>   // for kbhit()
+#  include <ctime>        // for kbhit()
 
 /// Function: getch
 /// Get character without waiting for Return to be pressed.
 /// Windows has this in conio.h
-int getch(void)
+int getch()
 {
   // Here be magic.
-  struct termios oldt, newt;
+  struct termios oldt
+  {
+  }, newt{};
   int ch;
   tcgetattr(STDIN_FILENO, &oldt);
   newt = oldt;
@@ -44,7 +45,7 @@ int getch(void)
 /// Function: kbhit
 /// Determines if keyboard has been hit.
 /// Windows has this in conio.h
-int kbhit(void)
+int kbhit()
 {
   // Here be dragons.
   static struct termios oldt, newt;
@@ -58,10 +59,12 @@ int kbhit(void)
   newt.c_cc[VTIME] = 1;  // minimum characters to wait for
   tcsetattr(STDIN_FILENO, TCSANOW, &newt);
   ioctl(0, FIONREAD, &cnt);  // Read count
-  struct timeval tv;
+  struct timeval tv
+  {
+  };
   tv.tv_sec = 0;
   tv.tv_usec = 100;
-  select(STDIN_FILENO + 1, NULL, NULL, NULL, &tv);  // A small time delay
+  select(STDIN_FILENO + 1, nullptr, nullptr, nullptr, &tv);  // A small time delay
   tcsetattr(STDIN_FILENO, TCSANOW, &oldt);
   return cnt;  // Return number of characters
 }
@@ -114,7 +117,7 @@ const std::string ANSI_EMPTY = "";
 ///
 /// Note:
 /// Only Arrows, Esc, Enter and Space are currently working properly.
-ScConsole::KeyCode GetKey(void)
+ScConsole::KeyCode GetKey()
 {
 #if !SC_IS_PLATFORM_WIN32
   int cnt = kbhit();  // for ANSI escapes processing
@@ -215,7 +218,7 @@ ScConsole::KeyCode GetKey(void)
   }
 }
 
-int nb_getch(void)
+int nb_getch()
 {
   if (kbhit())
     return getch();
@@ -445,7 +448,7 @@ void ScConsole::Clear()
 
 void ScConsole::SetString(std::string const & str)
 {
-  unsigned int len = static_cast<unsigned int>(str.size());
+  auto len = static_cast<unsigned int>(str.size());
 
 #if SC_IS_PLATFORM_WIN32 && !defined(SC_CONSOLE_USE_ANSI)
   const char * const s = str.data();
@@ -490,7 +493,9 @@ int ScConsole::GetRowsNum()
   ioctl(STDIN_FILENO, TIOCGSIZE, &ts);
   return ts.ts_lines;
 #  elif defined(TIOCGWINSZ)
-  struct winsize ts;
+  struct winsize ts
+  {
+  };
   ioctl(STDIN_FILENO, TIOCGWINSZ, &ts);
   return ts.ws_row;
 #  else   // TIOCGSIZE
@@ -517,7 +522,9 @@ int ScConsole::GetColsNum()
   ioctl(STDIN_FILENO, TIOCGSIZE, &ts);
   return ts.ts_cols;
 #  elif defined(TIOCGWINSZ)
-  struct winsize ts;
+  struct winsize ts
+  {
+  };
   ioctl(STDIN_FILENO, TIOCGWINSZ, &ts);
   return ts.ws_col;
 #  else   // TIOCGSIZE

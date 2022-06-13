@@ -77,10 +77,10 @@ struct _sc_addr
 
 //! Make sc-addr empty
 #define SC_ADDR_MAKE_EMPTY(addr) \
-  { \
+  ({ \
     (addr).seg = 0; \
     (addr).offset = 0; \
-  }
+  })
 //! Check if specified sc-addr is empty
 #define SC_ADDR_IS_EMPTY(addr) (((addr).seg == 0) && ((addr).offset == 0))
 #define SC_ADDR_IS_NOT_EMPTY(addr) (!SC_ADDR_IS_EMPTY(addr))
@@ -200,7 +200,7 @@ enum _sc_result
 
 // contents
 #define SC_MAX_CHECKSUM_LEN 32
-//! Structure to store checksum informaiton
+//! Structure to store checksum information
 struct _sc_check_sum
 {
   char data[SC_MAX_CHECKSUM_LEN];  // maximum checksum length
