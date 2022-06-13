@@ -15,7 +15,7 @@
     * [Knowledge processing machine](cpp/kpm.md) - *documentation on Knowledge Processing Machine API*
     * [Meta programming](cpp/cpp-meta.md) - *documentation of meta programming language*
     * [Templates](cpp/templates.md) - *documentation of template usage*
-    * [Sc-dictionary](storage/sc-dictionary.md) - *documentation of file storage*
+    * [File storage](storage/sc-dictionary.md) - *documentation of file storage*
 
 - **Tools**
     * [Knowledge Base builder](tools/kb_builder.md)

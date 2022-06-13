@@ -29,6 +29,3 @@ cd sc-machine
 cd scripts
 ./make_all.sh #You can also pass all CMake generation arguments there
 ```
-
-To build with `Sc-dictionary` or `Rocksdb` file system storage change variable `SC_FILE_MEMORY` in CMakeLists.txt by
-`Dictionary` or `Rocksdb` alternatively.

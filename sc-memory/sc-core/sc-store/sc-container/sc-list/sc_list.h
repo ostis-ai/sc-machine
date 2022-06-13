@@ -32,6 +32,12 @@ sc_bool sc_list_init(sc_list ** list);
  */
 sc_bool sc_list_destroy(sc_list * list);
 
+/*! Free a sc-list values.
+ * @param list A sc-dictionary pointer to clear
+ * @returns Returns SC_TRUE, if a sc-dictionary exists; otherwise return SC_FALSE.
+ */
+sc_bool sc_list_clear(sc_list * list);
+
 /*! Pushes data in sc-list node after specified, adding new node.
  * @param list A sc-list pointer
  * @param node A node after that new node inserts to store data

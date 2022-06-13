@@ -69,9 +69,9 @@ elseif (NOT ${CMAKE_CXX_COMPILER_ID} MATCHES "MSVC")
 endif()
 
 if(${SC_FILE_MEMORY} MATCHES "Dictionary")
-	add_definitions(-DSC_DICTIONARY_FS_STORAGE)
+    add_definitions(-DSC_DICTIONARY_FS_STORAGE)
 elseif(${SC_FILE_MEMORY} MATCHES "Rocksdb")
-	add_definitions(-DSC_ROCKSDB_FS_STORAGE)
+    add_definitions(-DSC_ROCKSDB_FS_STORAGE)
 endif()
 
 include("${SC_MACHINE_ROOT}/dependencies.cmake")

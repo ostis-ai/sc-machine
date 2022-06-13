@@ -41,6 +41,22 @@ sc_bool sc_list_destroy(sc_list * list)
   return SC_TRUE;
 }
 
+sc_bool sc_list_clear(sc_list * list)
+{
+  if (list == null_ptr)
+    return SC_FALSE;
+
+  sc_struct_node * node = list->begin;
+  while (node != null_ptr)
+  {
+    g_free(node->data);
+    node->data = null_ptr;
+    node = node->next;
+  }
+
+  return SC_TRUE;
+}
+
 sc_struct_node * sc_list_push(sc_list * list, sc_struct_node * node, void * data)
 {
   if (list == null_ptr)
@@ -111,8 +127,6 @@ sc_bool sc_list_remove_if(sc_list * list, void * data, sc_bool (*predicate)(void
   sc_struct_node * temp;
   while (node != null_ptr)
   {
-    temp = node;
-
     if (node->data != null_ptr && predicate(node->data, data))
     {
       if (node->prev != null_ptr)
@@ -123,13 +137,8 @@ sc_bool sc_list_remove_if(sc_list * list, void * data, sc_bool (*predicate)(void
 
       is_removed = SC_TRUE;
 
-      node = node->next;
-      g_free(temp);
       temp = null_ptr;
-
       --list->size;
-
-      continue;
     }
 
     node = node->next;

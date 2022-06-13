@@ -5,6 +5,9 @@ cmake -B build -DSC_BUILD_TESTS=ON -DSC_AUTO_TEST=ON
 cmake --build build -j$(nproc)
 ```
 
+To build with `Sc-dictionary` or `Rocksdb` file system storage change variable `SC_FILE_MEMORY` in CMakeLists.txt by 
+`Dictionary` or `Rocksdb` alternatively.
+
 Additionally you can use `-DSC_BUILD_BENCH=ON` flag to build performance tests
 
 

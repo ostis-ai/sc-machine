@@ -22,7 +22,7 @@ TEST_F(ScListTest, sc_list)
   sc_list_init(&list);
 
   sc_uint8 size = 10;
-  auto * values = new sc_uint8 [size];
+  auto * values = (sc_uint8 *)malloc(sizeof(sc_uint8) * size);
   sc_uint8 i = 0;
   for (; i < size; ++i)
   {
@@ -57,7 +57,7 @@ TEST_F(ScListTest, sc_list_iterator)
   sc_list_init(&list);
 
   sc_uint8 size = 10;
-  auto * values = new sc_uint8 [size];
+  auto * values = (sc_uint8 *)malloc(sizeof(sc_uint8) * size);
   sc_uint8 i = 0;
   for (; i < size; ++i)
   {

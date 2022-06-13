@@ -28,6 +28,7 @@ macro(sc_linux_target_dependencies)
     find_package(Python3 COMPONENTS Interpreter Development REQUIRED)
 
     if(${SC_FILE_MEMORY} MATCHES "Rocksdb")
+	    execute_process(COMMAND sudo apt-get install -y librocksdb-dev)
 	    find_package(RocksDB REQUIRED)
     endif()
 

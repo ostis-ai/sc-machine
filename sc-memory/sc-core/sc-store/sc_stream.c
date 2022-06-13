@@ -122,3 +122,28 @@ sc_bool sc_stream_check_flag(const sc_stream * stream, sc_uint8 flag)
   sc_assert(stream != null_ptr);
   return (stream->flags & flag) ? SC_TRUE : SC_FALSE;
 }
+
+sc_bool sc_stream_get_data(const sc_stream * stream, sc_char ** data, sc_uint32 * size)
+{
+  sc_stream_seek(stream, SC_STREAM_SEEK_SET, 0);
+
+  sc_uint32 length = 0;
+  if (sc_stream_get_length(stream, &length) == SC_RESULT_ERROR)
+    return SC_FALSE;
+
+  if (length == 0)
+    return SC_TRUE;
+
+  *data = g_new0(sc_char, length + 1);
+  if (sc_stream_read_data(stream, *data, length, (sc_uint32 *)size) == SC_RESULT_ERROR)
+    return SC_FALSE;
+
+  if (length != *size)
+  {
+    *data = null_ptr;
+    *size = 0;
+    return SC_FALSE;
+  }
+
+  return SC_TRUE;
+}

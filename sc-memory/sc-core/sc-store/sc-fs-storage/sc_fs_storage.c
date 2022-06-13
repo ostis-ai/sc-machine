@@ -38,7 +38,6 @@ sc_uint8 _checksum_get_size()
 
 sc_bool sc_fs_storage_initialize(const sc_char * path, sc_bool clear)
 {
-  g_message("Initialize sc-storage from path: %s", path);
   g_snprintf(segments_path, MAX_PATH_LENGTH, "%s/segments.scdb", path);
 
   repo_path = g_strdup(path);
@@ -84,7 +83,6 @@ sc_bool sc_fs_storage_shutdown(sc_segment ** segments, sc_bool save_segments)
 #endif
 
   g_free(repo_path);
-  g_message("Shutdown sc-fs-storage");
 
   return SC_FALSE;
 }
@@ -290,6 +288,7 @@ sc_bool sc_fs_storage_read_from_path(sc_segment ** segments, sc_uint32 * segment
 
     g_checksum_free(checksum);
     g_io_channel_shutdown(in_file, SC_FALSE, null_ptr);
+    g_free(in_file);
 
     if (is_valid == SC_FALSE)
       return SC_FALSE;
@@ -367,6 +366,7 @@ sc_bool sc_fs_storage_write_to_path(sc_segment ** segments)
   if (g_file_test(tmp_filename, G_FILE_TEST_IS_REGULAR))
   {
     g_io_channel_shutdown(output, SC_TRUE, NULL);
+    g_free(output);
     output = null_ptr;
 
     if (g_rename(tmp_filename, segments_path) != 0)
@@ -378,7 +378,10 @@ sc_bool sc_fs_storage_write_to_path(sc_segment ** segments)
   if (checksum != null_ptr)
     g_checksum_free(checksum);
   if (output != null_ptr)
+  {
     g_io_channel_shutdown(output, SC_TRUE, null_ptr);
+    g_free(output);
+  }
 
   return SC_TRUE;
 }

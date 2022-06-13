@@ -48,9 +48,16 @@ sc_bool sc_dictionary_initialize(sc_dictionary ** dictionary);
 
 /*! Destroys a sc-dictionary
  * @param dictionary A sc-dictionary pointer to destroy
+ * @param node_destroy A painter to sc-dictionary node destroy method that passes that node and additional args
  * @returns Returns SC_TRUE, if a sc-dictionary exists; otherwise return SC_FALSE.
  */
-sc_bool sc_dictionary_destroy(sc_dictionary * dictionary);
+sc_bool sc_dictionary_destroy(sc_dictionary * dictionary, void (*node_destroy)(sc_dictionary_node *, void **));
+
+/*! Destroys a sc-dictionary node
+ * @param node A sc-dictionary node pointer to destroy
+ * @param args An additional args used with node destroying
+ */
+void sc_dictionary_node_destroy(sc_dictionary_node * node, void ** args);
 
 /*! Appends a string to a sc-dictionary by a common prefix with another string started in sc-dictionary node, if such
  * exists.
@@ -81,8 +88,11 @@ sc_dictionary_node * sc_dictionary_append(sc_dictionary * dictionary, sc_char * 
  */
 sc_dictionary_node * sc_dictionary_remove_from_node(
     sc_dictionary_node * node,
+    sc_uint8 node_index,
+    sc_dictionary_node * parent,
     const sc_char * sc_string,
-    sc_uint32 index);
+    sc_uint32 index,
+    sc_uint8 * removable_index);
 
 /*! Removes a string from a sc-dictionary by a common prefix with another string started in sc-dictionary node, if such
  * exists. A common prefix doesn't remove form sc-dictionary if it contains in another string.

@@ -46,11 +46,14 @@ public:
   template <typename Type>
   inline void Value2Stream(Type const & value, ScStreamPtr & stream) const
   {
-    std::string str = std::to_string(value);
-    auto * chars = new sc_char[str.size()];
-    strcpy(chars, str.c_str());
+    std::stringstream stringStream;
+    stringStream << (int64_t)value;
+    std::string const str = stringStream.str();
 
-    stream.reset(new ScStream(chars, str.size(), SC_STREAM_FLAG_READ | SC_STREAM_FLAG_SEEK));
+    auto * copy = (sc_char *)calloc(str.size(), sizeof(sc_char));
+    memcpy(copy, str.c_str(), str.size());
+
+    stream.reset(new ScStream(copy, str.size(), SC_STREAM_FLAG_READ | SC_STREAM_FLAG_SEEK));
   }
 
   template <typename Type>
@@ -59,14 +62,17 @@ public:
     size_t size = stream->Size();
 
     size_t readBytes = 0;
-    auto * str = new sc_char[size];
-    stream->Read(str, size, readBytes);
+    std::string str;
+    str.resize(size);
+    stream->Read((sc_char *)str.c_str(), size, readBytes);
 
     if (size != readBytes)
       return false;
 
-    outValue = std::stod(str);
-    delete[] str;
+    int64_t copy;
+    std::stringstream streamString(str);
+    streamString >> copy;
+    outValue = (Type)copy;
 
     return true;
   }

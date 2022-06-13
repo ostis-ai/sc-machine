@@ -28,13 +28,13 @@ sc_bool sc_dictionary_initialize(sc_dictionary ** dictionary)
   return SC_TRUE;
 }
 
-sc_bool sc_dictionary_destroy(sc_dictionary * dictionary)
+sc_bool sc_dictionary_destroy(sc_dictionary * dictionary, void (*node_destroy)(sc_dictionary_node *, void **))
 {
   if (dictionary == null_ptr)
     return SC_FALSE;
 
-  sc_dictionary_visit_up_nodes(dictionary, sc_dictionary_node_destroy, null_ptr);
-  g_free(dictionary->root);
+  sc_dictionary_visit_up_nodes(dictionary, node_destroy, null_ptr);
+  node_destroy(dictionary->root, null_ptr);
   g_free(dictionary);
 
   return SC_TRUE;
@@ -59,11 +59,19 @@ inline sc_dictionary_node * _sc_dictionary_node_initialize()
   return node;
 }
 
-void sc_dictionary_node_destroy(sc_dictionary_node * node, void ** dest)
+void sc_dictionary_node_destroy(sc_dictionary_node * node, void ** args)
 {
-  g_free(node->data_list);
+  (void) args;
+
+  sc_list_clear(node->data_list);
+  sc_list_destroy(node->data_list);
   node->data_list = null_ptr;
+
+  g_free(node->next);
   node->next = null_ptr;
+
+  node->offset = null_ptr;
+  node->offset_size = 0;
 
   g_free(node);
 }
@@ -161,14 +169,19 @@ sc_dictionary_node * sc_dictionary_append(sc_dictionary * dictionary, sc_char * 
   if (node->data_list == null_ptr)
     sc_list_init(&node->data_list);
 
-  sc_list_push_back(node->data_list, value);
+  void * copy = g_new0(void, sizeof(value));
+  *(void **)copy = *(void **)value;
+  sc_list_push_back(node->data_list, copy);
   return node;
 }
 
 sc_dictionary_node * sc_dictionary_remove_from_node(
     sc_dictionary_node * node,
+    sc_uint8 node_index,
+    sc_dictionary_node * parent,
     const sc_char * sc_string,
-    sc_uint32 index)
+    sc_uint32 index,
+    sc_uint8 * removable_index)
 {
   // check prefixes matching
   sc_uint32 string_size = strlen(sc_string);
@@ -176,10 +189,16 @@ sc_dictionary_node * sc_dictionary_remove_from_node(
   sc_char_to_sc_int(sc_string[index], &num, &node->mask);
   if (num != 0 && SC_DICTIONARY_NODE_IS_VALID(node->next[num]))
   {
-    node->next[num] = sc_dictionary_remove_from_node(node->next[num], sc_string, index + node->next[num]->offset_size);
+    sc_dictionary_node * removable = sc_dictionary_remove_from_node(
+        node->next[num],
+        num,
+        node,
+        sc_string,
+        index + node->next[num]->offset_size,
+        removable_index);
 
     if (SC_DICTIONARY_NODE_IS_VALID(node->next[num]))
-      return node;
+      return removable;
   }
 
   // check suffixes matching
@@ -191,17 +210,29 @@ sc_dictionary_node * sc_dictionary_remove_from_node(
     if (strcmp(str, sc_string + (string_size - node->offset_size)) == 0)
     {
       g_free(str);
-      return null_ptr;
+
+      *removable_index = node_index;
+      return parent;
     }
     g_free(str);
   }
 
-  return node;
+  return null_ptr;
 }
 
 sc_bool sc_dictionary_remove(sc_dictionary * dictionary, const sc_char * sc_string)
 {
-  return sc_dictionary_remove_from_node(dictionary->root, sc_string, 0) != null_ptr;
+  sc_uint8 index = 0;
+  sc_dictionary_node * node = sc_dictionary_remove_from_node(dictionary->root, 0, null_ptr, sc_string, 0, &index);
+
+  sc_bool result = node->next[index] != null_ptr;
+  if (index != 0 && result == SC_TRUE)
+  {
+    sc_dictionary_node_destroy(node->next[index], null_ptr);
+    node->next[index] = null_ptr;
+  }
+
+  return result;
 }
 
 sc_dictionary_node * sc_dictionary_get_last_node_from_node(sc_dictionary_node * node, const sc_char * sc_string)
@@ -324,8 +355,7 @@ void sc_dictionary_visit_down_node_from_node(
     sc_dictionary_node * next = node->next[i];
     if (SC_DICTIONARY_NODE_IS_VALID(next))
     {
-      if (next->data_list != null_ptr && next->data_list->size != 0)
-        callable(next, dest);
+      callable(next, dest);
 
       sc_dictionary_visit_down_node_from_node(next, callable, dest);
     }
@@ -351,12 +381,9 @@ void sc_dictionary_visit_up_node_from_node(
     sc_dictionary_node * next = node->next[i];
     if (SC_DICTIONARY_NODE_IS_VALID(next))
     {
-      if (next->data_list != null_ptr && next->data_list->size != 0)
-      {
-        sc_dictionary_visit_up_node_from_node(next, callable, dest);
+      sc_dictionary_visit_up_node_from_node(next, callable, dest);
 
-        callable(next, dest);
-      }
+      callable(next, dest);
     }
   }
 }

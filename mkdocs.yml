@@ -30,6 +30,8 @@ nav:
       - Common: python/python.md
       - Library: python/library.md
       - Wrapped classes: python/cpp_wrap.md
+    - File storage:
+      - Sc-dictionary-based file storage: storage/sc_dictionary.md
   - Http:
       - Common: http/index.md
       - WebSocket: http/websocket.md

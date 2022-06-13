@@ -31,7 +31,7 @@ sc_bool sc_fs_storage_initialize(const char * path, sc_bool clear);
 //! Shutdowns file system storage
 sc_bool sc_fs_storage_shutdown(sc_segment ** segments, sc_bool save_segments);
 
-/*! Appends sc-link to sc-dictionary by its string content.
+/*! Appends sc-link to file system storage by its string content.
  * @param element An appendable sc-link
  * @param addr An appendable sc-link address
  * @param sc_string A key string
@@ -39,13 +39,13 @@ sc_bool sc_fs_storage_shutdown(sc_segment ** segments, sc_bool save_segments);
  */
 void sc_fs_storage_append_sc_link(sc_element * element, sc_addr addr, sc_char * sc_string, sc_uint32 size);
 
-/*! Gets sc-link from sc-dictionary by its string content.
+/*! Gets sc-link from file system storage by its string content.
  * @param sc_string A key string
  * @returns A sc-link.
  */
 sc_addr sc_fs_storage_get_sc_link(const sc_char * sc_string);
 
-/*! Gets sc-links from sc-dictionary by it string content.
+/*! Gets sc-links from file system storage by it string content.
  * @param sc_string A key string
  * @param[out] links A pointer to sc-links
  * @param[out] size A sc-links size
@@ -67,7 +67,7 @@ void sc_fs_storage_get_sc_string_ext(sc_element * element, sc_addr addr, sc_char
  */
 sc_bool sc_fs_storage_read_from_path(sc_segment ** segments, sc_uint32 * segments_num);
 
-/*! Saves segments to file system.
+/*! Saves segments to file system storage.
  * @param segments Pointer to array that contains segment pointers to save.
  */
 sc_bool sc_fs_storage_write_to_path(sc_segment ** segments);

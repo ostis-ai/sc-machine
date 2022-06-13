@@ -13,11 +13,11 @@
 #  include "sc_dictionary_fs_storage.h"
 #  include "sc_file_system.h"
 
-sc_char * file_path = 0;
+sc_char * file_path = null_ptr;
+sc_char addrs_hashes_path[MAX_PATH_LENGTH];
 sc_char strings_path[MAX_PATH_LENGTH];
-sc_char links_path[MAX_PATH_LENGTH];
 
-sc_dictionary * links_dictionary;
+sc_dictionary * addrs_hashes_dictionary;
 sc_dictionary * strings_dictionary;
 
 inline sc_uint32 sc_addr_to_hash(sc_addr addr)
@@ -27,7 +27,16 @@ inline sc_uint32 sc_addr_to_hash(sc_addr addr)
 
 sc_char * itora(sc_uint32 num)
 {
-  sc_char * result = g_new0(char, 10);
+  sc_uint32 copy_num = num;
+
+  sc_uint32 size = 0;
+  while (copy_num > 0)
+  {
+    copy_num /= 10;
+    ++size;
+  }
+
+  sc_char * result = g_new0(sc_char, size + 1);
   sc_char * index = result;
 
   while (num > 0)
@@ -54,7 +63,7 @@ sc_bool sc_dictionary_fs_storage_initialize(const sc_char * path)
   file_path = strdup(path);
 
   g_message("Initialize sc-dictionary from path: %s", path);
-  sc_bool result = sc_dictionary_initialize(&links_dictionary);
+  sc_bool result = sc_dictionary_initialize(&addrs_hashes_dictionary);
   if (result == SC_FALSE)
     return SC_FALSE;
 
@@ -62,22 +71,39 @@ sc_bool sc_dictionary_fs_storage_initialize(const sc_char * path)
   if (result == SC_FALSE)
     return SC_FALSE;
 
-  g_message("Initialize sc-storage from path: %s", path);
   g_snprintf(strings_path, MAX_PATH_LENGTH, "%s/strings.scdb", path);
-  g_snprintf(links_path, MAX_PATH_LENGTH, "%s/links.scdb", path);
+  g_snprintf(addrs_hashes_path, MAX_PATH_LENGTH, "%s/links.scdb", path);
 
   return SC_TRUE;
 }
 
+void _sc_addrs_hashes_dictionary_node_destroy(sc_dictionary_node * node, void ** args)
+{
+  sc_dictionary_node_destroy(node, args);
+}
+
+void _sc_strings_dictionary_node_destroy(sc_dictionary_node * node, void ** args)
+{
+  if (node->data_list != null_ptr)
+  {
+    sc_link_content * content = (sc_link_content *)node->data_list->begin->data;
+    g_free(content->sc_string);
+    content->sc_string = null_ptr;
+    content->string_size = 0;
+  }
+
+  sc_dictionary_node_destroy(node, args);
+}
+
 sc_bool sc_dictionary_fs_storage_shutdown()
 {
-  g_message("Shutdown sc-dictionary");
-  if (sc_dictionary_destroy(links_dictionary) == SC_FALSE)
-    g_critical("Can't shutdown sc-dictionary");
-  links_dictionary = null_ptr;
+  g_message("Shutdown sc-dictionary fs-storage");
+  if (sc_dictionary_destroy(addrs_hashes_dictionary, _sc_addrs_hashes_dictionary_node_destroy) == SC_FALSE)
+    g_critical("Can't shutdown sc-dictionary fs-storage");
+  addrs_hashes_dictionary = null_ptr;
 
-  if (sc_dictionary_destroy(strings_dictionary) == SC_FALSE)
-    g_critical("Can't shutdown sc-dictionary");
+  if (sc_dictionary_destroy(strings_dictionary, _sc_strings_dictionary_node_destroy) == SC_FALSE)
+    g_critical("Can't shutdown sc-dictionary fs-storage");
   strings_dictionary = null_ptr;
 
   return SC_FALSE;
@@ -95,7 +121,7 @@ void _sc_dictionary_fs_storage_append_sc_string_sc_link_reference(
     sc_uint32 size)
 {
   sc_char * hash_str = sc_addr_to_str(addr);
-  sc_addr_hash hash_str_len = strlen(hash_str);
+  sc_uint32 hash_str_len = strlen(hash_str);
 
   sc_dictionary_node * link_hash_node = sc_dictionary_append_to_node(strings_dictionary->root, hash_str, hash_str_len);
 
@@ -103,12 +129,15 @@ void _sc_dictionary_fs_storage_append_sc_string_sc_link_reference(
     sc_list_init(&link_hash_node->data_list);
 
   if (link_hash_node->data_list->size != 0)
-    g_free(sc_list_pop_back(link_hash_node->data_list));
+  {
+    sc_struct_node * popped_node = sc_list_pop_back(link_hash_node->data_list);
+    g_free(popped_node->data);
+    g_free(popped_node);
+  }
 
   sc_link_content * content = g_new0(sc_link_content, 1);
-  content->sc_string = g_new0(sc_char, size + 1);
   content->string_size = size;
-  memcpy(content->sc_string, sc_string, size);
+  content->sc_string = sc_string;
   content->node = &(*node);
 
   sc_list_push_back(link_hash_node->data_list, content);
@@ -128,9 +157,7 @@ sc_dictionary_node * _sc_dictionary_fs_storage_append_sc_link_unique(sc_char * s
     sc_list_remove_if(data_list, &other, sc_hashes_compare);
   }
 
-  sc_addr_hash * hash = g_new0(sc_addr_hash, 1);
-  *hash = other;
-  return sc_dictionary_append(links_dictionary, sc_string, size, hash);
+  return sc_dictionary_append(addrs_hashes_dictionary, sc_string, size, &other);
 }
 
 sc_dictionary_node * sc_dictionary_fs_storage_append_sc_link(sc_addr addr, sc_char * sc_string, sc_uint32 size)
@@ -159,6 +186,7 @@ sc_addr * sc_list_to_addr_array(sc_list * list)
     ++*temp;
   }
   g_free(temp);
+  sc_iterator_destroy(it);
 
   return addrs;
 }
@@ -175,6 +203,8 @@ sc_addr_hash * sc_list_to_hashes_array(sc_list * list)
     **temp = *(sc_addr_hash *)sc_iterator_get(it);
     ++*temp;
   }
+  g_free(temp);
+  sc_iterator_destroy(it);
 
   return hashes;
 }
@@ -184,7 +214,7 @@ sc_addr sc_dictionary_fs_storage_get_sc_link(const sc_char * sc_string)
   sc_addr empty;
   SC_ADDR_MAKE_EMPTY(empty)
 
-  sc_addr_hash * addr_hash = sc_dictionary_get_data_from_node(links_dictionary->root, sc_string);
+  sc_addr_hash * addr_hash = sc_dictionary_get_data_from_node(addrs_hashes_dictionary->root, sc_string);
   if (addr_hash != null_ptr)
   {
     sc_addr addr;
@@ -198,7 +228,7 @@ sc_addr sc_dictionary_fs_storage_get_sc_link(const sc_char * sc_string)
 
 sc_bool sc_dictionary_fs_storage_get_sc_links(const sc_char * sc_string, sc_addr ** links, sc_uint32 * size)
 {
-  sc_list * list = sc_dictionary_get_datas_from_node(links_dictionary->root, sc_string);
+  sc_list * list = sc_dictionary_get_datas_from_node(addrs_hashes_dictionary->root, sc_string);
 
   if (list == null_ptr)
   {
@@ -247,7 +277,9 @@ sc_link_content * sc_dictionary_fs_storage_get_link_content(sc_addr addr)
   if (SC_ADDR_IS_EMPTY(addr))
     return null_ptr;
 
-  sc_link_content * content = sc_dictionary_get_data_from_node(strings_dictionary->root, sc_addr_to_str(addr));
+  sc_char * hash = sc_addr_to_str(addr);
+  sc_link_content * content = sc_dictionary_get_data_from_node(strings_dictionary->root, hash);
+  g_free(hash);
 
   if (content == null_ptr || content->node == null_ptr || content->sc_string == null_ptr)
     return null_ptr;
@@ -294,6 +326,9 @@ void sc_fs_storage_write_nodes(
 
 void sc_fs_storage_write_node(sc_dictionary_node * node, void ** dest)
 {
+  if (node->data_list == null_ptr || node->data_list->size == 0)
+    return;
+
   sc_link_content * content = (sc_link_content *)node->data_list->begin->data;
 
   if (!sc_dc_node_access_lvl_check_read(content->node))
@@ -330,7 +365,9 @@ void sc_fs_storage_write_node(sc_dictionary_node * node, void ** dest)
 
   if (g_io_channel_write_chars(
           links_channel, (sc_char *)hashes, sizeof(sc_addr_hash) * hashes_size, &bytes, null_ptr) != G_IO_STATUS_NORMAL)
-    g_error("Can't write string hashes %llu into %s", *hashes, links_path);
+    g_error("Can't write string hashes %llu into %s", *hashes, addrs_hashes_path);
+
+  g_free(hashes);
 }
 
 sc_bool sc_dictionary_fs_storage_write_strings()
@@ -348,6 +385,7 @@ sc_bool sc_dictionary_fs_storage_write_strings()
   if (g_file_test(strings_filename, G_FILE_TEST_IS_REGULAR))
   {
     g_io_channel_shutdown(output_strings, SC_TRUE, null_ptr);
+    g_free(output_strings);
     output_strings = null_ptr;
 
     if (g_rename(strings_filename, strings_path) != 0)
@@ -357,21 +395,28 @@ sc_bool sc_dictionary_fs_storage_write_strings()
   if (g_file_test(links_filename, G_FILE_TEST_IS_REGULAR))
   {
     g_io_channel_shutdown(output_links, SC_TRUE, null_ptr);
+    g_free(output_links);
     output_links = null_ptr;
 
-    if (g_rename(links_filename, links_path) != 0)
-      g_error("Can't rename %s -> %s", links_filename, links_path);
+    if (g_rename(links_filename, addrs_hashes_path) != 0)
+      g_error("Can't rename %s -> %s", links_filename, addrs_hashes_path);
   }
 
   if (strings_filename != null_ptr)
     g_free(strings_filename);
   if (output_strings != null_ptr)
+  {
     g_io_channel_shutdown(output_strings, SC_TRUE, null_ptr);
+    g_free(output_strings);
+  }
 
   if (links_filename != null_ptr)
     g_free(links_filename);
   if (output_links != null_ptr)
+  {
     g_io_channel_shutdown(output_links, SC_TRUE, null_ptr);
+    g_free(output_links);
+  }
 
   return SC_TRUE;
 }
@@ -431,11 +476,14 @@ sc_bool sc_dictionary_fs_storage_read_strings()
 
       sc_dictionary_fs_storage_append_sc_link(addr, string, string_size);
     }
+
+    g_free(hashes);
   }
 
   g_io_channel_shutdown(in_file, SC_FALSE, null_ptr);
+  g_free(in_file);
 
-  g_message("Sc-dictionary loaded");
+  g_message("Sc-dictionary fs-storage loaded");
 
   return SC_TRUE;
 }
