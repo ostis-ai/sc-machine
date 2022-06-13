@@ -1,7 +1,7 @@
 ## Building tests:
 ```sh
 cd sc-machine
-cmake -B build -DSC_BUILD_TESTS=ON -DSC_AUTO_TEST=ON -DSC_KPM_SCP=OFF
+cmake -B build -DSC_BUILD_TESTS=ON -DSC_AUTO_TEST=ON
 cmake --build build -j$(nproc)
 ```
 
