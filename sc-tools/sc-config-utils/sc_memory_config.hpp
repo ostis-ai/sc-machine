@@ -3,6 +3,8 @@
 #include <utility>
 #include <map>
 
+#include "sc-memory/sc_memory.hpp"
+
 #include "sc-config/sc_config.hpp"
 #include "sc-core/sc_memory_params.h"
 #include "sc-core/sc_memory_version.h"

@@ -1,5 +1,7 @@
 #pragma once
 
+#include <utility>
+
 #include "sc-memory/sc_memory.hpp"
 
 #include "sc_server_defines.hpp"
@@ -21,12 +23,9 @@ public:
   {
   }
 
-  explicit ScServer(std::string const & hostName, size_t port, std::string const & logPath, sc_memory_params params)
+  explicit ScServer(std::string hostName, size_t port, std::string  logPath, sc_memory_params params)
+    : m_hostName(std::move(hostName)), m_port(port), m_logPath(std::move(logPath))
   {
-    m_hostName = hostName;
-    m_port = port;
-    m_logPath = logPath;
-
     ScMemory::Initialize(params);
 
     m_instance = new ScServerCore();
@@ -44,16 +43,39 @@ public:
 
     AfterInitialize();
 
-    std::thread t(bind(&ScServer::EmitActions, &*this));
+    m_actionsThread = std::thread(&ScServer::EmitActions, &*this);
 
-    m_instance->run();
-
-    t.join();
+    m_ioThread = std::thread(&ScServerCore::run, &*m_instance);
   }
 
   void Stop()
   {
-    m_instance->stop();
+    if (m_actionsThread.joinable())
+      m_actionsThread.join();
+
+    if (m_ioThread.joinable())
+    {
+      m_instance->stop();
+      m_ioThread.join();
+    }
+  }
+
+  void Shutdown()
+  {
+    Stop();
+
+    delete m_instance;
+    m_instance = nullptr;
+
+    delete m_actions;
+    m_actions = nullptr;
+    delete m_connections;
+    m_connections = nullptr;
+
+    delete m_log;
+    m_log = nullptr;
+
+    ScMemory::Shutdown();
   }
 
   virtual void EmitActions() = 0;
@@ -61,11 +83,6 @@ public:
   ScServerConnections * GetConnections()
   {
     return m_connections;
-  }
-
-  ScServerActions * GetActions()
-  {
-    return m_actions;
   }
 
   void Send(ScServerConnectionHandle const & hdl, std::string const & message, ScServerMessageType type)
@@ -97,18 +114,7 @@ public:
 
   virtual ~ScServer()
   {
-    delete m_instance;
-    m_instance = nullptr;
-
-    delete m_actions;
-    m_actions = nullptr;
-    delete m_connections;
-    m_connections = nullptr;
-
-    delete m_log;
-    m_log = nullptr;
-
-    ScMemory::Shutdown();
+    Shutdown();
   }
 
 protected:
@@ -116,7 +122,10 @@ protected:
   ScServerPort m_port;
   std::string m_logPath;
 
-  std::ofstream * m_log;
+  std::ofstream * m_log{};
+
+  std::thread m_ioThread;
+  std::thread m_actionsThread;
 
   ScServerCore * m_instance;
   ScServerActions * m_actions;

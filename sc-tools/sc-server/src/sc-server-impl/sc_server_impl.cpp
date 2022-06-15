@@ -4,15 +4,25 @@
 
 #define forever while (SC_TRUE)
 
+ScServerImpl::ScServerImpl(sc_memory_params const & params)
+  : ScServer(params)
+{
+}
+
+ScServerImpl::ScServerImpl(std::string const & host, ScServerPort port, std::string const & logPath, sc_memory_params const & params)
+  : ScServer(host, port, logPath, params)
+{
+}
+
 void ScServerImpl::Initialize()
 {
   m_instance->set_open_handler(bind(&ScServerImpl::OnOpen, this, ::_1));
   m_instance->set_close_handler(bind(&ScServerImpl::OnClose, this, ::_1));
   m_instance->set_message_handler(bind(&ScServerImpl::OnMessage, this, ::_1, ::_2));
 
-  LogMessage(ScServerLogMessages::app, "Clear channels");
   m_instance->clear_access_channels(ScServerLogMessages::all);
   m_instance->clear_error_channels(ScServerLogErrors::all);
+  LogMessage(ScServerLogMessages::app, "Clear channels");
 
   if (!m_logPath.empty())
   {
@@ -37,17 +47,17 @@ eternal void ScServerImpl::EmitActions()
 {
   forever
   {
-    ScServerUniqueLock lock(m_action_lock);
+    ScServerUniqueLock lock(m_actionLock);
 
     while (m_actions->empty())
-      m_action_cond.wait(lock);
+      m_actionCond.wait(lock);
 
     ScServerAction * action = m_actions->front();
     m_actions->pop();
 
     lock.unlock();
 
-    ScServerLock guard(m_connection_lock);
+    ScServerLock guard(m_connectionLock);
 
     try
     {
@@ -64,35 +74,35 @@ eternal void ScServerImpl::EmitActions()
 void ScServerImpl::OnOpen(ScServerConnectionHandle const & hdl)
 {
   {
-    ScServerLock guard(m_action_lock);
+    ScServerLock guard(m_actionLock);
     m_actions->push(new ScServerConnectAction(this, hdl));
   }
-  m_action_cond.notify_one();
+  m_actionCond.notify_one();
 }
 
 void ScServerImpl::OnClose(ScServerConnectionHandle const & hdl)
 {
   {
-    ScServerLock guard(m_action_lock);
+    ScServerLock guard(m_actionLock);
     m_actions->push(new ScServerDisconnectAction(this, hdl));
   }
-  m_action_cond.notify_one();
+  m_actionCond.notify_one();
 }
 
 void ScServerImpl::OnMessage(ScServerConnectionHandle const & hdl, ScServerMessage const & msg)
 {
   {
-    ScServerLock guard(m_action_lock);
+    ScServerLock guard(m_actionLock);
     m_actions->push(new ScServerMessageAction(this, hdl, msg));
   }
-  m_action_cond.notify_one();
+  m_actionCond.notify_one();
 }
 
 void ScServerImpl::OnEvent(ScServerConnectionHandle const & hdl, std::string const & msg)
 {
   {
-    ScServerLock guard(m_action_lock);
+    ScServerLock guard(m_actionLock);
     m_actions->push(new ScServerEventCallbackAction(this, hdl, msg));
   }
-  m_action_cond.notify_one();
+  m_actionCond.notify_one();
 }
