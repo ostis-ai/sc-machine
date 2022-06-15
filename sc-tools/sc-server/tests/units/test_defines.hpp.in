@@ -1,0 +1,1 @@
+#define SC_SERVER_REPO_PATH "${SC_BIN_PATH}/sc-server-test-repo"

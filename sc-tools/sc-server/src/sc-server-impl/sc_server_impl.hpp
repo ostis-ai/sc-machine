@@ -12,17 +12,16 @@ using ScServerCondVar = std::condition_variable;
 class ScServerImpl : public ScServer
 {
 public:
-  explicit ScServerImpl(std::string host, ScServerPort port, std::string const & logPath, sc_memory_params params)
-    : ScServer(host, port, logPath, params)
-  {
-  }
+  explicit ScServerImpl(sc_memory_params const & params);
+
+  explicit ScServerImpl(std::string const & host, ScServerPort port, std::string const & logPath, sc_memory_params const & params);
 
   eternal void EmitActions() override;
 
 protected:
-  ScServerMutex m_action_lock;
-  ScServerMutex m_connection_lock;
-  ScServerCondVar m_action_cond;
+  ScServerMutex m_actionLock;
+  ScServerMutex m_connectionLock;
+  ScServerCondVar m_actionCond;
 
   void Initialize() override;
 

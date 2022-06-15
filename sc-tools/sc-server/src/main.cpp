@@ -11,7 +11,6 @@
 #include <thread>
 
 #include <sc-memory/sc_debug.hpp>
-#include <sc-memory/sc_memory.hpp>
 #include <sc-memory/utils/sc_signal_handler.hpp>
 
 #include "sc-config/sc_config.hpp"
@@ -68,37 +67,42 @@ try
 
   ScMemoryConfig memoryConfig{config, memoryParams};
 
-  std::atomic_bool is_run = {true};
+  std::atomic_bool isRun = {SC_TRUE};
   utils::ScSignalHandler::Initialize();
-  utils::ScSignalHandler::m_onTerminate = [&is_run]() {
-    is_run = false;
+  utils::ScSignalHandler::m_onTerminate = [&isRun]() {
+    isRun = SC_FALSE;
   };
 
-  ScServer * server = ScServerFactory::ConfigureScServer(serverParams, memoryConfig.GetParams());
+  auto server = ScServerFactory::ConfigureScServer(serverParams, memoryConfig.GetParams());
   try
   {
     server->Run();
   }
+  catch (utils::ScException const & e)
+  {
+    SC_LOG_ERROR(e.Description());
+    server->Stop();
+
+    return EXIT_FAILURE;
+  }
   catch (std::exception const & e)
   {
-    server->LogError(0, std::string(e.what()));
+    SC_LOG_ERROR(e.what());
     server->Stop();
-    delete server;
 
     return EXIT_FAILURE;
   }
 
-  while (is_run)
+  while (isRun)
   {
     std::this_thread::sleep_for(std::chrono::milliseconds(1000));
   }
 
   server->Stop();
-  delete server;
 
   return EXIT_SUCCESS;
 }
-catch (utils::ScException const & ex)
+catch (utils::ScException const & e)
 {
-  SC_LOG_ERROR(ex.Description());
+  SC_LOG_ERROR(e.Description());
 }
