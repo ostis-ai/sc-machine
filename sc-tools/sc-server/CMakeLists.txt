@@ -37,7 +37,7 @@ target_link_libraries(sc-server-lib sc-memory ${BOOST_LIBS_LIST})
 target_link_libraries(sc-server sc-server-lib sc-config-utils)
 
 if (${SC_CLANG_FORMAT_CODE})
-	target_clangformat_setup(sc-server)
+	target_clangformat_setup(sc-server sc-server-lib)
 endif ()
 
 install_targets("/bin" sc-server sc-server-lib)
