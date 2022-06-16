@@ -75,7 +75,7 @@ jobs:
         id: run_cmake
         env:
           CC: ${{ matrix.config.cc }}
-          CCX: ${{ matrix.config.cxx }}
+          CXX: ${{ matrix.config.cxx }}
           BUILD_TYPE: ${{ matrix.config.build_type }}
           COVERAGE: ${{ matrix.config.coverage }}
         run: scripts/ci/make-tests.sh
