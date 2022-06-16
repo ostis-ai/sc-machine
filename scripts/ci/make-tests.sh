@@ -11,4 +11,5 @@ echo ::endgroup::
 
 pushd build
 ../bin/sc-builder -i ../sc-tools/sc-builder/tests/kb -o ../bin/sc-builder-test-repo --clear -f
+../bin/sc-builder -i ../sc-tools/sc-server/tests/kb -o ../bin/sc-server-test-repo --clear -f
 popd
