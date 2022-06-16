@@ -7,7 +7,7 @@ using ScServerUniqueLock = std::unique_lock<ScServerMutex>;
 using ScServerLock = std::lock_guard<ScServerMutex>;
 using ScServerCondVar = std::condition_variable;
 
-#define eternal [[noreturn]]
+using ScServerActions = std::queue<ScServerAction *>;
 
 class ScServerImpl : public ScServer
 {
@@ -16,12 +16,18 @@ public:
 
   explicit ScServerImpl(std::string const & host, ScServerPort port, std::string const & logPath, sc_memory_params const & params);
 
-  eternal void EmitActions() override;
+  void EmitActions() override;
+
+  ~ScServerImpl() override;
 
 protected:
   ScServerMutex m_actionLock;
   ScServerMutex m_connectionLock;
   ScServerCondVar m_actionCond;
+
+  std::atomic<sc_bool> m_actionsRun;
+
+  ScServerActions * m_actions;
 
   void Initialize() override;
 

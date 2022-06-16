@@ -36,19 +36,15 @@ protected:
     params.repo_path = SC_SERVER_REPO_PATH;
 
     m_server = std::make_unique<ScServerImpl>("localhost", 8765, "", params);
-    m_serverThread = std::thread(&ScServerImpl::Run, &*m_server);
+    m_server->Run();
   }
 
   void Shutdown()
   {
-    sleep(3);
-    std::thread stopThread(&ScServerImpl::Shutdown, &*m_server);
-    m_serverThread.join();
-    stopThread.join();
+    m_server->Stop();
   }
 
 protected:
   std::unique_ptr<ScMemoryContext> m_ctx;
   std::unique_ptr<ScServer> m_server;
-  std::thread m_serverThread;
 };
