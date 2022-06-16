@@ -47,6 +47,7 @@ protected:
   {
     ScMemory::LogMute();
     m_server->Stop();
+    m_server = nullptr;
     ScMemory::LogUnmute();
   }
 

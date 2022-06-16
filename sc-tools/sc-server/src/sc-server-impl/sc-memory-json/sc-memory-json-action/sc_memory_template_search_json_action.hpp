@@ -8,9 +8,9 @@ public:
   ScMemoryJsonPayload Complete(ScMemoryContext * context, ScMemoryJsonPayload requestPayload) override
   {
     ScTemplateSearchResult result;
-    auto * scTemplate = getTemplate(context, requestPayload);
-    context->HelperSearchTemplate(*scTemplate, result);
-    delete scTemplate;
+    auto const & pair = getTemplate(context, requestPayload);
+    context->HelperSearchTemplate(*pair.first, result);
+    delete pair.first;
 
     std::vector<std::vector<size_t>> hashesVectors;
     for (size_t i = 0; i < result.Size(); ++i)

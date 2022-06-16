@@ -5,7 +5,7 @@
 class ScMemoryMakeTemplateJsonAction : public ScMemoryJsonAction
 {
 protected:
-  ScTemplate * getTemplate(ScMemoryContext * context, ScMemoryJsonPayload payload)
+  std::pair<ScTemplate *, ScTemplateParams> getTemplate(ScMemoryContext * context, ScMemoryJsonPayload payload)
   {
     ScTemplateParams templParams;
     if (payload.find("templ") != payload.end())
@@ -27,30 +27,31 @@ protected:
       }
     }
 
+    ScTemplate * scTemplate;
     if (payload.is_string())
     {
-      auto * scTemplate = new ScTemplate();
-      context->HelperBuildTemplate(*scTemplate, payload.get<std::string>());
-      return scTemplate;
+      scTemplate = new ScTemplate();
+      std::string templateStr = payload.get<std::string>();
+      context->HelperBuildTemplate(*scTemplate, templateStr);
     }
     else if (payload.find("type") != payload.end())
     {
-      std::string const & type = payload["type"];
+      std::string const & type = payload["type"].get<std::string>();
       auto const & value = payload["value"];
 
-      auto * scTemplate = new ScTemplate();
+      scTemplate = new ScTemplate();
       if (type == "addr")
-        context->HelperBuildTemplate(*scTemplate, ScAddr(value.get<size_t>()));
+        context->HelperBuildTemplate(*scTemplate, ScAddr(value.get<size_t>()), templParams);
       else if (type == "idtf")
       {
-        ScAddr const & templateStruct = context->HelperFindBySystemIdtf(value);
-        context->HelperBuildTemplate(*scTemplate, templateStruct);
+        ScAddr const & templateStruct = context->HelperFindBySystemIdtf(value.get<std::string>());
+        context->HelperBuildTemplate(*scTemplate, templateStruct, templParams);
       }
-
-      return scTemplate;
     }
     else
-      return makeTemplate(payload);
+      scTemplate = makeTemplate(payload);
+
+    return {scTemplate, templParams};
   }
 
   ScTemplate * makeTemplate(ScMemoryJsonPayload const & triples)

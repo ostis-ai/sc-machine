@@ -221,3 +221,294 @@ TEST_F(ScServerTest, HandleContent)
 
   client.Stop();
 }
+
+TEST_F(ScServerTest, SearchTemplate)
+{
+  ScAddr const & addr = m_ctx->CreateNode(ScType::NodeConst);
+  ScAddr const & link = m_ctx->CreateLink();
+  ScAddr const & noroleAddr = m_ctx->CreateNode(ScType::NodeConstNoRole);
+
+  ScAddr const & edge = m_ctx->CreateEdge(ScType::EdgeDCommonConst, addr, link);
+  m_ctx->CreateEdge(ScType::EdgeAccessConstPosPerm, noroleAddr, edge);
+
+  ScClient client;
+  EXPECT_TRUE(client.Connect(m_server->GetUri()));
+  client.Run();
+
+  ScMemoryJsonPayload payload;
+  payload["templ"] = ScMemoryJsonPayload::array({
+      {
+          {
+              {"type", "type"},
+              {"value", sc_type_node | sc_type_var},
+              {"alias", "_src"},
+          },
+          {
+              {"type", "type"},
+              {"value", sc_type_edge_common | sc_type_var},
+              {"alias", "_edge1"},
+          },
+          {
+              {"type", "type"},
+              {"value", sc_type_link | sc_type_var},
+              {"alias", "_trg"},
+
+          },
+      },
+      {{
+           {"type", "addr"},
+           {"value", noroleAddr.Hash()},
+       },
+       {
+           {"type", "type"},
+           {"value", sc_type_arc_pos_var_perm},
+           {"alias", "_edge2"},
+       },
+       {
+           {"type", "alias"},
+           {"value", "_edge1"},
+       }},
+  });
+  payload["params"]["_src"] = addr.Hash();
+  payload["params"]["_trg"] = link.Hash();
+  std::string const payloadString = ScMemoryJsonConverter::From(0, "search_template", payload);
+  WAIT_SERVER;
+  EXPECT_TRUE(client.Send(payloadString));
+
+  WAIT_SERVER;
+  auto const response = client.GetResponsePayload();
+  EXPECT_FALSE(response.is_null());
+
+  auto const & addrs = response["addrs"][0].get<std::vector<size_t>>();
+  EXPECT_FALSE(addrs.empty());
+  EXPECT_TRUE(ScAddr(addrs[0]) == addr);
+  EXPECT_TRUE(ScAddr(addrs[2]) == link);
+  EXPECT_TRUE(ScAddr(addrs[3]) == noroleAddr);
+
+  client.Stop();
+}
+
+TEST_F(ScServerTest, SearchStringTemplate)
+{
+  ScAddr const & addr1 = m_ctx->HelperResolveSystemIdtf("node1", ScType::NodeConst);
+  ScAddr const & addr2 = m_ctx->HelperResolveSystemIdtf("node2", ScType::NodeConst);
+  ScAddr const & noroleAddr = m_ctx->HelperResolveSystemIdtf("norole1", ScType::NodeConstNoRole);
+
+  ScAddr const & edge = m_ctx->CreateEdge(ScType::EdgeDCommonConst, addr1, addr2);
+  m_ctx->CreateEdge(ScType::EdgeAccessConstPosPerm, noroleAddr, edge);
+
+  ScClient client;
+  EXPECT_TRUE(client.Connect(m_server->GetUri()));
+  client.Run();
+
+  ScMemoryJsonPayload payload;
+  payload["templ"] = "@alias = (_node1 _=> _node2);; norole1 _-> @alias;;";
+  std::string const payloadString = ScMemoryJsonConverter::From(0, "search_template", payload);
+  WAIT_SERVER;
+  EXPECT_TRUE(client.Send(payloadString));
+
+  WAIT_SERVER;
+  auto const response = client.GetResponsePayload();
+  EXPECT_FALSE(response.is_null());
+
+  auto const & addrs = response["addrs"][0].get<std::vector<size_t>>();
+  EXPECT_FALSE(addrs.empty());
+  EXPECT_TRUE(ScAddr(addrs[0]) == addr1);
+  EXPECT_TRUE(ScAddr(addrs[2]) == addr2);
+  EXPECT_TRUE(ScAddr(addrs[3]) == noroleAddr);
+
+  client.Stop();
+}
+
+TEST_F(ScServerTest, SearchTemplateByIdtf)
+{
+  ScClient client;
+  EXPECT_TRUE(client.Connect(m_server->GetUri()));
+  client.Run();
+
+  ScMemoryJsonPayload payload;
+  payload["templ"]["type"] = "idtf";
+  payload["templ"]["value"] = "test_template_1";
+  std::string const payloadString = ScMemoryJsonConverter::From(0, "search_template", payload);
+  WAIT_SERVER;
+  EXPECT_TRUE(client.Send(payloadString));
+
+  WAIT_SERVER;
+  auto const response = client.GetResponsePayload();
+  EXPECT_FALSE(response.is_null());
+
+  auto const & addrs = response["addrs"][0].get<std::vector<size_t>>();
+  EXPECT_FALSE(addrs.empty());
+  EXPECT_TRUE(ScAddr(addrs[0]).IsValid());
+  EXPECT_TRUE(ScAddr(addrs[1]).IsValid());
+  EXPECT_TRUE(ScAddr(addrs[2]).IsValid());
+
+  client.Stop();
+}
+
+TEST_F(ScServerTest, SearchTemplateByAddr)
+{
+  ScClient client;
+  EXPECT_TRUE(client.Connect(m_server->GetUri()));
+  client.Run();
+
+  ScMemoryJsonPayload payload;
+  payload["templ"]["type"] = "addr";
+  payload["templ"]["value"] = m_ctx->HelperFindBySystemIdtf("test_template_1").Hash();
+  std::string const payloadString = ScMemoryJsonConverter::From(0, "search_template", payload);
+  WAIT_SERVER;
+  EXPECT_TRUE(client.Send(payloadString));
+
+  WAIT_SERVER;
+  auto const response = client.GetResponsePayload();
+  EXPECT_FALSE(response.is_null());
+
+  auto const & addrs = response["addrs"][0].get<std::vector<size_t>>();
+  EXPECT_FALSE(addrs.empty());
+  EXPECT_TRUE(ScAddr(addrs[0]).IsValid());
+  EXPECT_TRUE(ScAddr(addrs[1]).IsValid());
+  EXPECT_TRUE(ScAddr(addrs[2]).IsValid());
+
+  client.Stop();
+}
+
+TEST_F(ScServerTest, GenerateTemplate)
+{
+  ScAddr const & addr = m_ctx->CreateNode(ScType::NodeConst);
+  ScAddr const & link = m_ctx->CreateLink();
+  ScAddr const & noroleAddr = m_ctx->CreateNode(ScType::NodeConstNoRole);
+
+  ScClient client;
+  EXPECT_TRUE(client.Connect(m_server->GetUri()));
+  client.Run();
+
+  ScMemoryJsonPayload payload;
+  payload["templ"] = ScMemoryJsonPayload::array({
+      {
+          {
+              {"type", "type"},
+              {"value", sc_type_node | sc_type_var},
+              {"alias", "_src"},
+          },
+          {
+              {"type", "type"},
+              {"value", sc_type_edge_common | sc_type_var},
+              {"alias", "_edge1"},
+          },
+          {
+              {"type", "type"},
+              {"value", sc_type_link | sc_type_var},
+              {"alias", "_trg"},
+
+          },
+      },
+      {{
+           {"type", "addr"},
+           {"value", noroleAddr.Hash()},
+       },
+       {
+           {"type", "type"},
+           {"value", sc_type_arc_pos_var_perm},
+           {"alias", "_edge2"},
+       },
+       {
+           {"type", "alias"},
+           {"value", "_edge1"},
+       }},
+  });
+  payload["params"]["_src"] = addr.Hash();
+  payload["params"]["_trg"] = link.Hash();
+  std::string const payloadString = ScMemoryJsonConverter::From(0, "generate_template", payload);
+  WAIT_SERVER;
+  EXPECT_TRUE(client.Send(payloadString));
+  std::cout << payloadString << std::endl;
+
+  WAIT_SERVER;
+  auto const response = client.GetResponsePayload();
+  EXPECT_FALSE(response.is_null());
+
+  auto const & addrs = response["addrs"].get<std::vector<size_t>>();
+  EXPECT_FALSE(addrs.empty());
+  EXPECT_TRUE(ScAddr(addrs[0]) == addr);
+  EXPECT_TRUE(ScAddr(addrs[2]) == link);
+  EXPECT_TRUE(ScAddr(addrs[3]) == noroleAddr);
+
+  client.Stop();
+}
+
+TEST_F(ScServerTest, GenerateStringTemplate)
+{
+  ScClient client;
+  EXPECT_TRUE(client.Connect(m_server->GetUri()));
+  client.Run();
+
+  ScMemoryJsonPayload payload;
+  payload["templ"] = "@alias = (_node1 _=> _node2);;";
+  std::string const payloadString = ScMemoryJsonConverter::From(0, "generate_template", payload);
+  WAIT_SERVER;
+  EXPECT_TRUE(client.Send(payloadString));
+
+  WAIT_SERVER;
+  auto const response = client.GetResponsePayload();
+  EXPECT_FALSE(response.is_null());
+
+  auto const & addrs = response["addrs"].get<std::vector<size_t>>();
+  EXPECT_FALSE(addrs.empty());
+  EXPECT_TRUE(ScAddr(addrs[0]).IsValid());
+  EXPECT_TRUE(ScAddr(addrs[1]).IsValid());
+  EXPECT_TRUE(ScAddr(addrs[2]).IsValid());
+
+  client.Stop();
+}
+
+TEST_F(ScServerTest, GenerateTemplateByIdtf)
+{
+  ScClient client;
+  EXPECT_TRUE(client.Connect(m_server->GetUri()));
+  client.Run();
+
+  ScMemoryJsonPayload payload;
+  payload["templ"]["type"] = "idtf";
+  payload["templ"]["value"] = "test_template_1";
+  std::string const payloadString = ScMemoryJsonConverter::From(0, "generate_template", payload);
+  WAIT_SERVER;
+  EXPECT_TRUE(client.Send(payloadString));
+
+  WAIT_SERVER;
+  auto const response = client.GetResponsePayload();
+  EXPECT_FALSE(response.is_null());
+
+  auto const & addrs = response["addrs"].get<std::vector<size_t>>();
+  EXPECT_FALSE(addrs.empty());
+  EXPECT_TRUE(ScAddr(addrs[0]).IsValid());
+  EXPECT_TRUE(ScAddr(addrs[1]).IsValid());
+  EXPECT_TRUE(ScAddr(addrs[2]).IsValid());
+
+  client.Stop();
+}
+
+TEST_F(ScServerTest, GenerateTemplateByAddr)
+{
+  ScClient client;
+  EXPECT_TRUE(client.Connect(m_server->GetUri()));
+  client.Run();
+
+  ScMemoryJsonPayload payload;
+  payload["templ"]["type"] = "addr";
+  payload["templ"]["value"] = m_ctx->HelperFindBySystemIdtf("test_template_1").Hash();
+  std::string const payloadString = ScMemoryJsonConverter::From(0, "generate_template", payload);
+  WAIT_SERVER;
+  EXPECT_TRUE(client.Send(payloadString));
+
+  WAIT_SERVER;
+  auto const response = client.GetResponsePayload();
+  EXPECT_FALSE(response.is_null());
+
+  auto const & addrs = response["addrs"].get<std::vector<size_t>>();
+  EXPECT_FALSE(addrs.empty());
+  EXPECT_TRUE(ScAddr(addrs[0]).IsValid());
+  EXPECT_TRUE(ScAddr(addrs[1]).IsValid());
+  EXPECT_TRUE(ScAddr(addrs[2]).IsValid());
+
+  client.Stop();
+}
