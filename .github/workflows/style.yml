@@ -45,7 +45,7 @@ jobs:
 
       - name: Install dependencies
         id: install_deps
-        run: sudo apt-get install -y clang-format
+        run: ./scripts/install_deps_ubuntu.sh
 
       - name: Checking the code with clang
         run: |
