@@ -78,6 +78,7 @@ jobs:
           CXX: ${{ matrix.config.cxx }}
           BUILD_TYPE: ${{ matrix.config.build_type }}
           COVERAGE: ${{ matrix.config.coverage }}
+          SANITIZER_TYPE: none
         run: scripts/ci/make-tests.sh
 
       - name: Prepare coverage
