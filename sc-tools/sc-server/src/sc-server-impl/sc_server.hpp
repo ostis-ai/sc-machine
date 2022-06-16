@@ -8,28 +8,20 @@
 
 #include "sc_server_action.hpp"
 
-using ScServerActions = std::queue<ScServerAction *>;
-
 class ScServer
 {
 public:
-  explicit ScServer(sc_memory_params params)
-    : ScServer("localhost", 8090, "", params)
-  {
-  }
-
   explicit ScServer(std::string hostName, size_t port, sc_memory_params params)
     : ScServer(std::move(hostName), port, "", params)
   {
   }
 
-  explicit ScServer(std::string hostName, size_t port, std::string  logPath, sc_memory_params params)
+  explicit ScServer(std::string hostName, size_t port, std::string logPath, sc_memory_params params)
     : m_hostName(std::move(hostName)), m_port(port), m_logPath(std::move(logPath))
   {
     ScMemory::Initialize(params);
 
     m_instance = new ScServerCore();
-    m_actions = new ScServerActions();
     m_connections = new ScServerConnections();
   }
 
@@ -41,20 +33,26 @@ public:
     m_instance->listen(m_port);
     m_instance->start_accept();
 
-    AfterInitialize();
-
+    LogMessage(ScServerLogMessages::devel, "Start actions processing");
     m_actionsThread = std::thread(&ScServer::EmitActions, &*this);
 
+    LogMessage(ScServerLogMessages::devel, "Start input-output processing");
     m_ioThread = std::thread(&ScServerCore::run, &*m_instance);
   }
 
   void Stop()
   {
+    AfterInitialize();
+
     if (m_actionsThread.joinable())
+    {
+      LogMessage(ScServerLogMessages::devel, "Close actions processing");
       m_actionsThread.join();
+    }
 
     if (m_ioThread.joinable())
     {
+      LogMessage(ScServerLogMessages::devel, "Close input-output processing");
       m_instance->stop();
       m_ioThread.join();
     }
@@ -62,13 +60,11 @@ public:
 
   void Shutdown()
   {
-    Stop();
+    LogMessage(ScServerLogMessages::devel, "Shutdown sc-server");
 
     delete m_instance;
     m_instance = nullptr;
 
-    delete m_actions;
-    m_actions = nullptr;
     delete m_connections;
     m_connections = nullptr;
 
@@ -124,11 +120,7 @@ protected:
 
   std::ofstream * m_log{};
 
-  std::thread m_ioThread;
-  std::thread m_actionsThread;
-
   ScServerCore * m_instance;
-  ScServerActions * m_actions;
   ScServerConnections * m_connections;
 
   virtual void Initialize() = 0;
@@ -140,4 +132,8 @@ protected:
   virtual void OnClose(ScServerConnectionHandle const & hdl) = 0;
 
   virtual void OnMessage(ScServerConnectionHandle const & hdl, ScServerMessage const & msg) = 0;
+
+private:
+  std::thread m_ioThread;
+  std::thread m_actionsThread;
 };

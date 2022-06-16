@@ -2,15 +2,13 @@
 
 #include "sc_server_action_defines.hpp"
 
-#define forever while (SC_TRUE)
-
 ScServerImpl::ScServerImpl(sc_memory_params const & params)
-  : ScServer(params)
+  : ScServerImpl("localhost", 8090, "", params)
 {
 }
 
 ScServerImpl::ScServerImpl(std::string const & host, ScServerPort port, std::string const & logPath, sc_memory_params const & params)
-  : ScServer(host, port, logPath, params)
+  : ScServer(host, port, logPath, params), m_actionsRun(SC_TRUE), m_actions(new ScServerActions())
 {
 }
 
@@ -40,17 +38,21 @@ void ScServerImpl::Initialize()
 
 void ScServerImpl::AfterInitialize()
 {
-  LogMessage(ScServerLogMessages::app, "Connection opened");
+  m_actionsRun = SC_FALSE;
+  m_actionCond.notify_one();
 }
 
-eternal void ScServerImpl::EmitActions()
+void ScServerImpl::EmitActions()
 {
-  forever
+  while (m_actionsRun == SC_TRUE)
   {
     ScServerUniqueLock lock(m_actionLock);
 
-    while (m_actions->empty())
+    while (m_actions->empty() && m_actionsRun)
       m_actionCond.wait(lock);
+
+    if (m_actionsRun == SC_FALSE)
+      break;
 
     ScServerAction * action = m_actions->front();
     m_actions->pop();
@@ -105,4 +107,9 @@ void ScServerImpl::OnEvent(ScServerConnectionHandle const & hdl, std::string con
     m_actions->push(new ScServerEventCallbackAction(this, hdl, msg));
   }
   m_actionCond.notify_one();
+}
+
+ScServerImpl::~ScServerImpl()
+{
+  delete m_actions;
 }
