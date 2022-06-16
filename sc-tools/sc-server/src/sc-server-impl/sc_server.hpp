@@ -23,6 +23,9 @@ public:
 
     m_instance = new ScServerCore();
     m_connections = new ScServerConnections();
+
+    m_instance->clear_access_channels(ScServerLogMessages::all);
+    m_instance->clear_error_channels(ScServerLogErrors::all);
   }
 
   void Run()
@@ -30,7 +33,7 @@ public:
     Initialize();
 
     m_instance->init_asio();
-    m_instance->listen(m_port);
+    m_instance->listen({boost::asio::ip::address::from_string(m_hostName), sc_uint16(m_port)});
     m_instance->start_accept();
 
     LogMessage(ScServerLogMessages::devel, "Start actions processing");
@@ -75,6 +78,11 @@ public:
   }
 
   virtual void EmitActions() = 0;
+
+  std::string GetUri()
+  {
+    return "ws://" + m_hostName + ":" + std::to_string(m_port);
+  }
 
   ScServerConnections * GetConnections()
   {

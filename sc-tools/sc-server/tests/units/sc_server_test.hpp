@@ -35,13 +35,19 @@ protected:
     params.clear = SC_FALSE;
     params.repo_path = SC_SERVER_REPO_PATH;
 
-    m_server = std::make_unique<ScServerImpl>("localhost", 8765, "", params);
+    ScMemory::LogMute();
+    m_server = std::make_unique<ScServerImpl>("127.0.0.1", 8765, "test-sc-server.log", params);
+    m_server->SetMessageChannels(ScServerLogMessages::all);
+    m_server->SetErrorChannels(ScServerLogErrors::all);
     m_server->Run();
+    ScMemory::LogUnmute();
   }
 
   void Shutdown()
   {
+    ScMemory::LogMute();
     m_server->Stop();
+    ScMemory::LogUnmute();
   }
 
 protected:

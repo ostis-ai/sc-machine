@@ -3,7 +3,7 @@
 #include "sc_server_action_defines.hpp"
 
 ScServerImpl::ScServerImpl(sc_memory_params const & params)
-  : ScServerImpl("localhost", 8090, "", params)
+  : ScServerImpl("127.0.0.1", 8090, "", params)
 {
 }
 
@@ -18,10 +18,6 @@ void ScServerImpl::Initialize()
   m_instance->set_close_handler(bind(&ScServerImpl::OnClose, this, ::_1));
   m_instance->set_message_handler(bind(&ScServerImpl::OnMessage, this, ::_1, ::_2));
 
-  m_instance->clear_access_channels(ScServerLogMessages::all);
-  m_instance->clear_error_channels(ScServerLogErrors::all);
-  LogMessage(ScServerLogMessages::app, "Clear channels");
-
   if (!m_logPath.empty())
   {
     m_log = new std::ofstream();
@@ -30,10 +26,12 @@ void ScServerImpl::Initialize()
     m_instance->get_elog().set_ostream(m_log);
   }
 
-  LogMessage(ScServerLogMessages::app, "Sc-server socket data");
-  LogMessage(ScServerLogMessages::app, "\tHost name: ");
-  LogMessage(ScServerLogMessages::app, "\tPort: " + std::to_string(m_port));
-  LogMessage(ScServerLogMessages::app, "\tLogger: " + (m_logPath.empty() ? "console" : "file " + m_logPath));
+  {
+    LogMessage(ScServerLogMessages::app, "Sc-server socket data");
+    LogMessage(ScServerLogMessages::app, "\tHost name: " + m_hostName);
+    LogMessage(ScServerLogMessages::app, "\tPort: " + std::to_string(m_port));
+    LogMessage(ScServerLogMessages::app, "\tLogger: " + (m_logPath.empty() ? "console" : "file " + m_logPath));
+  }
 }
 
 void ScServerImpl::AfterInitialize()
