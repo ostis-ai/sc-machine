@@ -8,30 +8,6 @@ on:
   workflow_dispatch:
 
 jobs:
-  check_pr_commits:
-    name: Check commit messages
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: GS Commit Message Checker
-        # You may pin to the exact commit or the version.
-        # uses: GsActions/commit-message-checker@9d8708beab99f811c5fe3a4f98acc4b2f2ba8496
-        uses: GsActions/commit-message-checker@v1
-        with:
-          # A regex pattern to check if a commit message is valid.
-          pattern: "((\\[(builder|changelog|ci|codegen|doc|docs|docker|test|tests|memory|tools|review|refactor|git|cmake)\\])+(.)+)|(Review fixes)$"
-          # Expression flags change how the expression is interpreted.
-          flags: # optional, default is gm
-          # A error message which will be returned in case of an error.
-          error: "One of commit messages or PR title have incorrect formatting. Please read the documentation: https://github.com/ostis-ai/sc-machine/blob/main/docs/dev/pr.md"
-          # Setting this input to true will exclude the Pull Request title from the check.
-          excludeTitle: true # optional, default is false
-          # Setting this input to true will exclude the Pull Request description from the check.
-          excludeDescription: true # optional, default is false
-          # Setting this input to true will check all Pull Request commits
-          checkAllCommitMessages: true # optional, default is false
-          # you must provide GITHUB_TOKEN to this input if checkAllCommitMessages is true
-          accessToken: ${{ secrets.GITHUB_TOKEN }} # optional, default is false
   run_tests:
     name: ${{matrix.config.name}}
     runs-on: ${{matrix.config.os}}
@@ -87,20 +63,11 @@ jobs:
         id: install_deps
         run: scripts/install_deps_ubuntu.sh --dev --rocksdb
 
-      - name: Checking the code with clang
-        run: |
-          ./scripts/ci/check-formatting.sh
-
-      - name: Restore build caches
-        uses: hendrikmuhs/ccache-action@v1.2
-        with:
-          key: ${{ github.job }}-${{ matrix.config.os}}-${{ matrix.config.cxx }}-${{ matrix.config.build_type }}-${{ matrix.config.file_memory }}
-
       - name: Build
         id: run_cmake
         env:
           CC: ${{ matrix.config.cc }}
-          CCX: ${{ matrix.config.cxx }}
+          CXX: ${{ matrix.config.cxx }}
           FILE_MEMORY: ${{ matrix.config.file_memory }}
           BUILD_TYPE: ${{ matrix.config.build_type }}
           COVERAGE: ${{ matrix.config.coverage }}
