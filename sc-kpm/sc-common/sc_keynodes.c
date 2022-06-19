@@ -6,7 +6,7 @@
 
 #include "sc_keynodes.h"
 
-#include <glib.h>
+#include "sc-core/sc-store/sc-base/sc_message.h"
 
 sc_result sc_common_resolve_keynode(sc_memory_context const * ctx, char const * sys_idtf, sc_addr * keynode)
 {

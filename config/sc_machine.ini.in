@@ -9,6 +9,5 @@ repo_path = @SC_MACHINE_ROOT@/kb.bin
 extensions_path = @SC_MACHINE_ROOT@/bin/extensions
 
 [sc-server]
-host = localhost
-port = 8090
-log_file = @SC_MACHINE_ROOT@/sc-server.log
+host = 127.0.0.1
+port = 8095

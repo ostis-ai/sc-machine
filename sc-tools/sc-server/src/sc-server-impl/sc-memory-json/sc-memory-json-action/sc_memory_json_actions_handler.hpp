@@ -17,6 +17,7 @@ public:
 
   ~ScMemoryJsonActionsHandler() override
   {
+    m_context->Destroy();
     delete m_context;
 
     for (auto const & it : m_actions)

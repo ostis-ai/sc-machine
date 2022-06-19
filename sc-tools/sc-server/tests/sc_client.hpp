@@ -18,6 +18,14 @@ public:
     Initialize();
   }
 
+  ScClient(ScClient & client)
+  {
+    m_instance = client.m_instance;
+    m_thread = std::move(client.m_thread);
+    m_connection = client.m_connection;
+    m_currentPayload = client.m_currentPayload;
+  }
+
   sc_bool Connect(std::string const & uri)
   {
     ScClientErrorCode code;

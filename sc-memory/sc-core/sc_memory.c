@@ -6,15 +6,13 @@
 
 #include "sc_memory.h"
 #include "sc_memory_private.h"
-<<<<<<< HEAD
 #include "sc_memory_params.h"
-=======
 
->>>>>>> [tools][config] Unify config using
 #include "sc_memory_ext.h"
 #include "sc_helper_private.h"
 
 #include "sc-store/sc_storage.h"
+#include "sc-store/sc_types.h"
 
 #include "sc-store/sc_event.h"
 
@@ -24,11 +22,6 @@
 #include "sc-store/sc-base/sc_allocator.h"
 #include "sc-store/sc-base/sc_assert_utils.h"
 #include "sc-store/sc-base/sc_message.h"
-
-sc_pointer sc_thread()
-{
-  return (sc_pointer)g_thread_self();
-}
 
 sc_memory_context * s_memory_default_ctx = null_ptr;
 sc_uint16 s_context_id_last = 1;
@@ -42,23 +35,23 @@ sc_memory_context * sc_memory_initialize(const sc_memory_params * params)
 
   s_context_hash_table = g_hash_table_new(g_direct_hash, g_direct_equal);
 
-	sc_message("Sc-memory version: %s", params->version);
-	sc_message("\tClean memory on shutdown: %s", params->clear ? "On" : "Off");
-	sc_message("\tRepo path: %s", params->repo_path);
-	sc_message("\tExtension path: %s", params->ext_path);
-	sc_message("\tSave period: %d", params->save_period);
-	sc_message("\tUpdate period: %d", params->update_period);
+  sc_message("Sc-memory version: %s", params->version);
+  sc_message("\tClean memory on shutdown: %s", params->clear ? "On" : "Off");
+  sc_message("\tRepo path: %s", params->repo_path);
+  sc_message("\tExtension path: %s", params->ext_path);
+  sc_message("\tSave period: %d", params->save_period);
+  sc_message("\tUpdate period: %d", params->update_period);
 
-	sc_message("Sc-memory debug:");
-	sc_message("\tDebug type: %s", params->debug_type);
-	sc_message("\tDebug mode: %s", params->debug_mode);
-	sc_message("\tDebug file: %s", params->debug_file);
+  sc_message("Sc-memory debug:");
+  sc_message("\tDebug type: %s", params->debug_type);
+  sc_message("\tDebug mode: %s", params->debug_mode);
+  sc_message("\tDebug file: %s", params->debug_file);
 
-	sc_message("Sc-memory configuration:");
-	sc_message("\tmax loaded segments: %d", params->max_loaded_segments);
-	sc_message("\tmax threads: %d", params->max_threads);
-	sc_message("\tsc-element size: %zd", sizeof(sc_element));
-	sc_message("\tsc-string-node size: %zd", sizeof(sc_dictionary_node));
+  sc_message("Sc-memory configuration:");
+  sc_message("\tmax loaded segments: %d", params->max_loaded_segments);
+  sc_message("\tmax threads: %d", params->max_threads);
+  sc_message("\tsc-element size: %zd", sizeof(sc_element));
+  sc_message("\tsc-string-node size: %zd", sizeof(sc_dictionary_node));
 
   if (sc_storage_initialize(params->repo_path, params->clear) != SC_TRUE)
     return null_ptr;

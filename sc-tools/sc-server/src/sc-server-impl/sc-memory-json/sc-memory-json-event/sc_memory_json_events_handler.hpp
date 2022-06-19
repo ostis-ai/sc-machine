@@ -21,6 +21,7 @@ public:
 
   ~ScMemoryJsonEventsHandler() override
   {
+    m_context->Destroy();
     delete m_context;
   }
 

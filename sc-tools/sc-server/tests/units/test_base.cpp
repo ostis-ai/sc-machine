@@ -421,7 +421,6 @@ TEST_F(ScServerTest, GenerateTemplate)
   std::string const payloadString = ScMemoryJsonConverter::From(0, "generate_template", payload);
   WAIT_SERVER;
   EXPECT_TRUE(client.Send(payloadString));
-  std::cout << payloadString << std::endl;
 
   WAIT_SERVER;
   auto const response = client.GetResponsePayload();

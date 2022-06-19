@@ -101,6 +101,8 @@ bool ScMemory::Initialize(sc_memory_params const & params)
   ScKeynodes::Init();
   ScAgentInit(true);
 
+  SC_LOG_INFO("Memory initialized");
+
   return (ms_globalContext != nullptr);
 }
 
