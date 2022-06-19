@@ -39,7 +39,7 @@ char * sc_version_string_new(const sc_version * v)
   return g_strdup_printf("%u.%u.%u", v->major, v->minor, v->patch);
 }
 
-void sc_version_strinsc_mem_free(sc_char * str)
+void sc_version_string_free(sc_char * str)
 {
   sc_assert(str != null_ptr);
   sc_mem_free(str);

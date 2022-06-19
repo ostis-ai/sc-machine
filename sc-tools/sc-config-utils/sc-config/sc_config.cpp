@@ -25,6 +25,8 @@ ScConfigGroup::ScConfigGroup(sc_config * config, std::string group)
 
     element = element->next;
   }
+
+  g_list_free(keys);
 }
 
 std::string ScConfigGroup::operator[](std::string const & key) const

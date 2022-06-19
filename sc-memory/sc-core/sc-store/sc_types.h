@@ -258,4 +258,4 @@ typedef enum _sc_result sc_result;
 typedef enum _sc_event_type sc_event_type;
 typedef struct _sc_stat sc_stat;
 
-_SC_EXTERN sc_pointer sc_thread();
+#define sc_thread() (sc_pointer) g_thread_self()

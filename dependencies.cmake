@@ -24,8 +24,8 @@ endmacro()
 macro(sc_linux_target_dependencies)
     set(SC_CODEGEN_TOOL "${SC_BIN_PATH}/sc-code-generator")
 
-    find_package(Boost 1.71 REQUIRED COMPONENTS filesystem python system program_options)
-    find_package(websocketcpp REQUIRED 0.8.3)
+    find_package(Boost 1.71 REQUIRED COMPONENTS filesystem system program_options)
+    find_package(websocketpp REQUIRED 0.8.3)
 
     if(${SC_FILE_MEMORY} MATCHES "Rocksdb")
 	    execute_process(COMMAND sudo apt-get install -y librocksdb-dev)
