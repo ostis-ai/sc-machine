@@ -49,3 +49,7 @@ add_subdirectory(${SC_MACHINE_ROOT}/thirdparty)
 add_subdirectory(${SC_MACHINE_ROOT}/sc-memory)
 add_subdirectory(${SC_MACHINE_ROOT}/sc-kpm)
 add_subdirectory(${SC_MACHINE_ROOT}/tools)
+
+if (${SC_BUILD_SCTP})
+	add_subdirectory(${SC_MACHINE_ROOT}/sc-network)
+endif()
