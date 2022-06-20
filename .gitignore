@@ -6,6 +6,7 @@ generated
 scripts/redis*
 cmake-build-debug
 cmake-build-release
+cmake-build-debug-coverage
 
 !thirdparty/*/bin/
 
