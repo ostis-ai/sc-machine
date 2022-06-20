@@ -1,112 +1,36 @@
+cmake_minimum_required(VERSION 2.8)
+project(sc-machine)
+site_name(www.ostis.net)
 cmake_policy(SET CMP0048 NEW)
-project (sc-machine)
-site_name (www.ostis.net)
-cmake_minimum_required (VERSION 2.8)
 
-include(${CMAKE_CURRENT_LIST_DIR}/macro/setup_project_version.cmake)
-set (SC_MACHINE_VERSION "0.6.1")
-setup_project_version(SC_MACHINE)
-
-include(CTest)
-
-set (SC_BIN_PATH "${CMAKE_CURRENT_LIST_DIR}/bin")
-
-set (SC_MACHINE_ROOT ${CMAKE_CURRENT_LIST_DIR})
-set (SC_MACHINE_THIRDPARTY_PATH "${SC_MACHINE_ROOT}/thirdparty")
-
-option (SC_AUTO_TEST "Flag to build for automation testing" OFF)
-option (SC_BUILD_SCTP "Flag to turn on/off sctp protocol support" ON)
-option (SC_BUILD_TESTS "Flag to build unit tests" OFF)
-option (SC_BUILD_BENCH "Flag to build benchmark" OFF)
-option (SC_COVERAGE "Flag to generate coverage report" OFF)
-option (SC_CLANG_FORMAT_CODE "flag to add clangformat and clangformat_check targets" OFF)
-
-# Coverage
-if(${SC_COVERAGE} AND CMAKE_CXX_COMPILER_ID MATCHES "GNU")
-    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -g -O0 --coverage")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -O0 --coverage")
-endif()
-
-if(${SC_CLANG_FORMAT_CODE})
-	include(${CMAKE_CURRENT_LIST_DIR}/cmake/ClangFormat.cmake)
-endif()
-
-
-set(SC_USE_SANITIZER "none" CACHE STRING "Build with specified sanitizer")
-set_property(CACHE SC_USE_SANITIZER PROPERTY STRINGS none address memory)
-
-
-if (${SC_BUILD_ARM64})
-    check_c_compiler_flag("-arch arm64" IS_ARM64_SUPPORTED)
-    if (${IS_ARM64_SUPPORTED})
-        set (CMAKE_OSX_ARCHITECTURES "arm64" CACHE STRING "Used architecture" FORCE)
-        message ("-- Architecture: arm64")
-    else()
-        message (FATAL_ERROR "Arm64 platform is not supported by compiler")
-    endif()
-endif()
-
-# codegen
-if (${UNIX})
-    set(SC_CODEGEN_TOOL "${SC_BIN_PATH}/sc-code-generator")
-elseif (${WIN32})
-    set(SC_CODEGEN_TOOL "${SC_BIN_PATH}/sc-code-generator.exe")
-endif()
-include("${SC_MACHINE_ROOT}/cmake/codegen.cmake")
-
-find_package(Java)
+set(SC_MACHINE_ROOT ${CMAKE_CURRENT_LIST_DIR})
+include(${SC_MACHINE_ROOT}/macro/macros.cmake)
+project_version(SC_MACHINE "0.6.1")
+project_config("${SC_MACHINE_ROOT}/config" "sc-machine.ini.in" "sc-machine.ini")
 
 set(CMAKE_MODULE_PATH "${SC_MACHINE_ROOT}/cmake")
-
+set(SC_BIN_PATH "${SC_MACHINE_ROOT}/bin")
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${SC_BIN_PATH})
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${SC_BIN_PATH})
+set(SC_EXTENSIONS_DIRECTORY "${SC_BIN_PATH}/extensions")
+set(SC_MACHINE_THIRDPARTY_PATH "${SC_MACHINE_ROOT}/thirdparty")
 
-set(SC_EXTENSION_DIRECTORY "${SC_BIN_PATH}/extensions")
+auto_tests(SC_AUTO_TEST "Flag to build for automation testing" OFF)
+build_tests(SC_BUILD_TESTS "Flag to build unit tests" ON ${CMAKE_MODULE_PATH})
+option(SC_BUILD_BENCH "Flag to build benchmark" OFF)
+option(SC_BUILD_SCTP "Flag to turn on/off sctp protocol support" ON)
 
-# for multi-config builds (e.g. msvc)
-foreach( OUTPUTCONFIG ${CMAKE_CONFIGURATION_TYPES} )
-    string( TOUPPER ${OUTPUTCONFIG} OUTPUTCONFIG )
-    set( CMAKE_RUNTIME_OUTPUT_DIRECTORY_${OUTPUTCONFIG} ${SC_BIN_PATH} )
-    set( CMAKE_LIBRARY_OUTPUT_DIRECTORY_${OUTPUTCONFIG} ${SC_BIN_PATH} )
-endforeach( OUTPUTCONFIG CMAKE_CONFIGURATION_TYPES )
+code_coverage(SC_COVERAGE "Flag to generate coverage report" OFF "-g -O0 --coverage")
+clang_format(SC_CLANG_FORMAT_CODE "Flag to add clangformat and clangformat_check targets" OFF ${CMAKE_MODULE_PATH})
+no_sanitizer(SC_USE_SANITIZER "Build with specified sanitizer")
+codegen(SC_CODEGEN_TOOL "Tool to generate template code" ${SC_BIN_PATH} ${CMAKE_MODULE_PATH})
+logger(SC_MACHINE_LOG "Memory messages logger" "${SC_MACHINE_ROOT}/log/sc-machine.log" Debug Console)
+
+compiler(CMAKE_CXX_COMPILER_ID ${SC_COVERAGE} ${SC_USE_SANITIZER} ${SC_AUTO_TEST})
 
 set(SC_MEMORY_SRC "${SC_MACHINE_ROOT}/sc-memory")
 set(SC_KPM_SRC "${SC_MACHINE_ROOT}/sc-kpm")
 set(SC_TOOLS_SRC "${SC_MACHINE_ROOT}/tools")
-
-
-if (NOT ${SC_USE_SANITIZER} STREQUAL "none")
-    if (NOT CMAKE_CXX_COMPILER_ID MATCHES ".*Clang" OR NOT CMAKE_C_COMPILER_ID MATCHES ".*Clang")
-        message("Sanitizers are supported only by Clang")
-    else()
-        if (${SC_USE_SANITIZER} STREQUAL "address")
-            set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fsanitize=address -O1 -fno-omit-frame-pointer")
-            set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=address -O1 -fno-omit-frame-pointer")
-        elseif (${SC_USE_SANITIZER} STREQUAL "memory")
-            set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fsanitize=memory -fPIE -pie -fno-omit-frame-pointer")
-            set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=memory -fPIE -pie -fno-omit-frame-pointer")
-        endif()
-    endif()
-endif()
-    
-
-if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fcolor-diagnostics -std=c++14")
-    if (${SC_USE_SANITIZER} STREQUAL "none" AND NOT ${SC_COVERAGE})
-        set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O3")
-    endif()
-    if(${SC_AUTO_TEST})
-        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wdeprecated-declarations")
-    endif()
-elseif(CMAKE_CXX_COMPILER_ID MATCHES "GNU")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14 -Wall")
-    if (${SC_USE_SANITIZER} STREQUAL "none" AND NOT ${SC_COVERAGE})
-        set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O3")        ## Optimize
-    endif()
-    set(CMAKE_EXE_LINKER_FLAGS_RELEASE "${CMAKE_EXE_LINKER_FLAGS_RELEASE} -s")  ## Strip binary
-elseif (NOT CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14")
-endif ()
 
 set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -DSC_DEBUG -DSC_PROFILE")
 set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -DSC_DEBUG -DSC_PROFILE")
@@ -114,151 +38,14 @@ set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -DSC_DEBUG -DSC_PROFILE")
 set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} -DNDEBUG")
 set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -DNDEBUG")
 
+message("CMAKE_C_FLAGS: ${CMAKE_C_FLAGS}")
+message("CMAKE_CXX_FLAGS: ${CMAKE_CXX_FLAGS}")
 
-message ("CMAKE_C_FLAGS: ${CMAKE_C_FLAGS}")
-message ("CMAKE_CXX_FLAGS: ${CMAKE_CXX_FLAGS}")
+include("${SC_MACHINE_ROOT}/dependencies.cmake")
+sc_target_dependencies("${SC_MACHINE_ROOT}/packages.config.in" ${SC_MACHINE_THIRDPARTY_PATH} {$SC_MACHINE_BIN_PATH})
 
-
-if (${SC_AUTO_TEST})
-    add_definitions(-DSC_BUILD_AUTO_TESTS)
-endif()
-
-# find dependencies
-if(${UNIX})
-
-  find_package(Boost 1.71 REQUIRED COMPONENTS filesystem python system program_options)
-
-  find_package(Python3 COMPONENTS Interpreter Development REQUIRED)
-
-  find_package(RocksDB REQUIRED)
-
-  find_package(PkgConfig REQUIRED)
-  pkg_search_module(GLIB2 REQUIRED glib-2.0)
-  pkg_search_module(GLIB2_MODULE REQUIRED gmodule-2.0)
-
-  set(GLIB2_LIBRARIES ${GLIB_LDFLAGS} ${GLIB2_MODULE_LDFLAGS})
-
-  if (NOT DEFINED LIBCLANG_LIBRARIES OR NOT DEFINED LIBCLANG_CXXFLAGS OR NOT DEFINED LIBCLANG_LIBDIR)
-    find_package(LibClang REQUIRED)
-  endif ()
-
-  pkg_check_modules(LIBCURL REQUIRED libcurl)
-
-    # for std::thread support
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread")
-
-elseif (${WIN32})
-    find_package(PythonLibs 3.6 REQUIRED)
-
-    set(PACKAGES_PATH "${CMAKE_BINARY_DIR}/packages")
-
-    if (${MSVC_VERSION} EQUAL 1800)
-        set (MSVC_SUFFIX "vc120")
-    elseif (${MSVC_VERSION} EQUAL 1900)
-        set (MSVC_SUFFIX "vc140")
-    elseif (${MSVC_VERSION} GREATER_EQUAL 1911)
-        set (MSVC_SUFFIX "vc141")
-    endif()
-
-    set (BOOST_VERSION "1.64.0.0")
-    configure_file("${SC_MACHINE_ROOT}/packages.config.in" "${CMAKE_BINARY_DIR}/packages.config")
-
-    file(MAKE_DIRECTORY ${PACKAGES_PATH})
-    execute_process(COMMAND "${SC_MACHINE_THIRDPARTY_PATH}/nuget.exe" install ${CMAKE_BINARY_DIR}/packages.config WORKING_DIRECTORY ${PACKAGES_PATH})
-
-    set (GLIB_PATH "${PACKAGES_PATH}/glib.2.36.2.11/build/native")
-    set (BOOST_PATH "${PACKAGES_PATH}/boost.${BOOST_VERSION}/lib/native")
-    set (ROCKSDB_PATH "${SC_MACHINE_THIRDPARTY_PATH}/rocksdb")
-
-    set (LIBCLANG_INCLUDE_DIRS "${SC_MACHINE_THIRDPARTY_PATH}/clang/include")
-    set (LIBCLANG_LIBRARY "libclang")
-
-    set (GLIB2_INCLUDE_DIRS "${GLIB_PATH}/include"
-                            "${GLIB_PATH}/include/glib")
-
-    set (LIBCURL_PATH "${SC_MACHINE_THIRDPARTY_PATH}/curl")
-    set (LIBCURL_RUNTIME_PATH "${LIBCURL_PATH}/bin")
-    set (LIBCURL_INCLUDE_DIRS "${LIBCURL_PATH}/include")
-    set (LIBCURL_LIBRARIES "${LIBCURL_PATH}/lib/libcurl.lib" "WSock32.lib" "Ws2_32.lib")
-
-    set (BOOST_PYTHON_BIN_PATH "${SC_MACHINE_THIRDPARTY_PATH}/boost")
-    set (BOOST_PYTHON_LIBRARY_RELEASE "${BOOST_PYTHON_BIN_PATH}/boost_python3-${MSVC_SUFFIX}-mt-1_64.lib")
-    set (BOOST_PYTHON_LIBRARY_DEBUG "${BOOST_PYTHON_BIN_PATH}/boost_python3-${MSVC_SUFFIX}-mt-gd-1_64.lib")
-
-    set (RocksDB_INCLUDE_DIR "${ROCKSDB_PATH}/include")
-    set (RocksDB_LIBRARIES "${ROCKSDB_PATH}/rocksdb-shared.lib")
-
-    include_directories("${BOOST_PATH}/include"
-                        "${LIBCURL_INCLUDE_DIRS}")
-
-    link_directories(
-                     "${SC_MACHINE_THIRDPARTY_PATH}/clang/lib"
-                     "${GLIB_PATH}/lib/v110/x64/Release/dynamic/"
-                     "${PACKAGES_PATH}/boost_filesystem-${MSVC_SUFFIX}.${BOOST_VERSION}/lib/native/address-model-64/lib/"
-                     "${PACKAGES_PATH}/boost_system-${MSVC_SUFFIX}.${BOOST_VERSION}/lib/native/address-model-64/lib/"
-                     "${PACKAGES_PATH}/boost_program_options-${MSVC_SUFFIX}.${BOOST_VERSION}/lib/native/address-model-64/lib/"
-                     )
-
-    set (GLIB2_LIBRARIES "gio-2.0.lib" "glib-2.0.lib" "gmodule-2.0.lib" "gobject-2.0.lib" "gthread-2.0.lib")
-
-    add_definitions(-DSC_PLATFORM_WIN -DBOOST_PYTHON_NO_LIB)
-
-    # copy runtime libraries
-    set (GLIB_RUNTIME_PATH "${PACKAGES_PATH}/glib.redist.2.36.2.11/build/native/bin/v110/x64/Release/dynamic")
-    set (INTL_RUNTIME_PATH "${PACKAGES_PATH}/libintl.redist.0.18.2.10/build/native/bin/v110/x64/Release/dynamic/cdecl")
-    set (ZLIB_RUNTIME_PATH "${PACKAGES_PATH}/zlib.v120.windesktop.msvcstl.dyn.rt-dyn.1.2.8.8/lib/native/v120/windesktop/msvcstl/dyn/rt-dyn/x64/Release")
-    set (FFI_RUNTIME_PATH "${PACKAGES_PATH}/libffi.redist.3.0.10.3/build/native/bin/x64/v110/dynamic/Release")
-    set (CLANG_RUNTIME_PATH "${SC_MACHINE_THIRDPARTY_PATH}/clang")
-    set (WIN_RUNTIME_LIBRARIES
-            "${GLIB_RUNTIME_PATH}/glib-2-vs10.dll"
-            "${GLIB_RUNTIME_PATH}/gmodule-2-vs10.dll"
-            "${GLIB_RUNTIME_PATH}/gio-2-vs10.dll"
-            "${GLIB_RUNTIME_PATH}/gobject-2-vs10.dll"
-            "${INTL_RUNTIME_PATH}/libintl.dll"
-            "${ZLIB_RUNTIME_PATH}/zlib.dll"
-            "${FFI_RUNTIME_PATH}/libffi.dll"
-            "${CLANG_RUNTIME_PATH}/libclang.dll"
-            "${LIBCURL_RUNTIME_PATH}/libcurl.dll"
-            "${LIBCURL_RUNTIME_PATH}/libeay32.dll"
-            "${LIBCURL_RUNTIME_PATH}/ssleay32.dll"
-            "${BOOST_PYTHON_BIN_PATH}/boost_python3-${MSVC_SUFFIX}-mt-1_64.dll"
-            "${BOOST_PYTHON_BIN_PATH}/boost_python3-${MSVC_SUFFIX}-mt-gd-1_64.dll"
-            "${ROCKSDB_PATH}/rocksdb-shared.dll"
-            )
-    file(COPY ${WIN_RUNTIME_LIBRARIES} DESTINATION "${SC_BIN_PATH}")
-#
-endif(${UNIX})
-
-configure_file(${CMAKE_CURRENT_LIST_DIR}/config/sc-machine.ini.in ${CMAKE_CURRENT_LIST_DIR}/config/sc-machine.ini)
-
-if (${SC_BUILD_TESTS})
-    include (${CMAKE_CURRENT_LIST_DIR}/cmake/tests.cmake)
-endif()
-
-add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/thirdparty)
+add_subdirectory(${SC_MACHINE_ROOT}/thirdparty)
 
 add_subdirectory(${SC_MACHINE_ROOT}/sc-memory)
 add_subdirectory(${SC_MACHINE_ROOT}/sc-kpm)
-add_subdirectory(${SC_MACHINE_ROOT}/sc-server)
 add_subdirectory(${SC_MACHINE_ROOT}/tools)
-
-if (${SC_BUILD_SCTP})
-    add_subdirectory(${SC_MACHINE_ROOT}/sc-network)
-endif()
-
-
-if (NOT EXISTS ${CMAKE_CURRENT_LIST_DIR}/generated/lib)
-	execute_process(
-			COMMAND mkdir -p generated/lib
-			WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR})
-endif ()
-
-if (NOT EXISTS ${CMAKE_CURRENT_LIST_DIR}/log)
-	execute_process(
-			COMMAND mkdir log
-			WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR})
-endif ()
-set(LOG_DIR ${CMAKE_CURRENT_LIST_DIR}/log/)
-set(LOG_MODE Info)
-set(LOG_OUTPUT_TYPE Console)
-configure_file(${CMAKE_CURRENT_LIST_DIR}/log_config.h.in ${CMAKE_CURRENT_LIST_DIR}/sc-memory/sc-memory/generated/log_config.hpp @ONLY)

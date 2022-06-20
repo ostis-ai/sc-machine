@@ -1,0 +1,6 @@
+macro(clang_format _NAME _INFO _MODE _FOLDER)
+	option(${_NAME} ${_INFO} ${_MODE})
+	if(${_NAME})
+		include(${_FOLDER}/ClangFormat.cmake)
+	endif()
+endmacro()
