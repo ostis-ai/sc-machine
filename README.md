@@ -84,6 +84,9 @@ sc-machine provides two network protocols to interact with:
 2. **sctp server**: use `python3 scripts/run_sctp.py -c config/sc-machine.ini` to run sctp server.
   To get more information use `python3 scripts/run_sctp.py -h`
 
+There is also `healthcheck.py` script to test sc-server and sctp-server health state.
+It uses [py-sc-client](https://github.com/ostis-ai/py-sc-client) so you need to install it with `pip3 install py-sc-client`.
+
 ## Config
 
 This repository provides a default configuration for sc-machine. To customize *sc-machine* usage you can create your own config file. You can check docs at [docs/other/config.md](docs/other/config.md)
