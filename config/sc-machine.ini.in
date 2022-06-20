@@ -8,7 +8,6 @@ SavePeriod = 3600
 Directory = ../bin/extensions
 [Stat]
 UpdatePeriod = 1800
-Path = /tmp/sctp_stat
 
 ##### sc-memory
 [memory]

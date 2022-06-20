@@ -1,8 +1,5 @@
 ### Config file example:
 ```ini
-[Network]
-#port for sctp connection
-Port = 55770
 [Repo]
 # directory where KB build error log file will be stored
 Logfile = ./
@@ -16,8 +13,6 @@ Directory = ../bin/extensions
 [Stat]
 # period (in seconds) to update sc-memory stat
 UpdatePeriod = 1800
-# path to save stat
-Path = /tmp/sctp_stat
 
 [memory]
 # Maximum number of segments. By default: 65536

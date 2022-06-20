@@ -21,7 +21,6 @@ set(SC_MACHINE_THIRDPARTY_PATH "${SC_MACHINE_ROOT}/thirdparty")
 option(SC_AUTO_TEST "Flag to build for automation testing" OFF)
 option(SC_BUILD_TESTS "Flag to build unit tests" ON)
 option(SC_BUILD_BENCH "Flag to build benchmark" OFF)
-option(SC_BUILD_SCTP "Flag to turn on/off sctp protocol support" ON)
 
 code_coverage(SC_COVERAGE "Flag to generate coverage report" OFF "-g -O0 --coverage")
 option(SC_CLANG_FORMAT_CODE "Flag to add clangformat and clangformat_check targets" OFF)
@@ -47,10 +46,6 @@ endif()
 
 if(${SC_CLANG_FORMAT_CODE})
     include(${CMAKE_MODULE_PATH}/ClangFormat.cmake)
-endif()
-
-if(${SC_BUILD_SCTP})
-    add_subdirectory(${SC_MACHINE_ROOT}/sc-network)
 endif()
 
 if(${CMAKE_CXX_COMPILER_ID} MATCHES "Clang")

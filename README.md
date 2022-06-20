@@ -27,9 +27,8 @@ cd ..
 pip3 install wheel setuptools
 pip3 install -r requirements.txt
 ```
-Please note: you should add Qt5 and LLVM to `PATH` variable. To do this, after installing dependencies execute the following commands (considering you use `zsh` as your shell):
+Please note: you should add LLVM to `PATH` variable. To do this, after installing dependencies execute the following commands (considering you use `zsh` as your shell):
 ```sh
-echo 'export PATH="'$HOMEBREW_PREFIX'/opt/qt@5/bin:$PATH"' >> ~/.zshrc
 echo 'export PATH="'$HOMEBREW_PREFIX'/opt/llvm/bin:$PATH"' >> ~/.zshrc
 ```
 
@@ -78,11 +77,8 @@ To get more information, use `python3 scripts/build_kb.py -h`
 
 ## Servers
 
-sc-machine provides two network protocols to interact with:
-1. **sc-server**: use `python3 scripts/run_sc_sever.py -c config/sc-machine.ini` to run sc-server with the default config file.
-  To get more information use `python3 scripts/run_sc_server.py -h`
-2. **sctp server**: use `python3 scripts/run_sctp.py -c config/sc-machine.ini` to run sctp server.
-  To get more information use `python3 scripts/run_sctp.py -h`
+Sc-machine provides network protocol to interact with **sc-server** - use `python3 scripts/run_sc_sever.py -c config/sc-machine.ini` to run sc-server with the default config file.
+To get more information use `python3 scripts/run_sc_server.py -h`
 
 ## Config
 
