@@ -6,7 +6,7 @@ Knowledge processing machine (KPM) - is a set of modules. Each module contains i
 Module - is a dynamic library. That implement specified module class.
 To create module you need to do next steps:
 
- 1. Create directory for you module in sc-kpm. For example: `sc-kpm/nl`;
+ 1. Create directory for your module in sc-kpm. For example: `sc-kpm/nl`;
  2. Go to created directory;
  3. Create file `CMakeLists.txt` with content (replace nl (module name) to yours one:
 
@@ -302,7 +302,7 @@ ScEventEraseElement evt(ctx, addr, callback);
   <tr>
     <td><strong>ScEventContentChanged</strong></td>
     <td>
-      <img src="../../images/sc-events/sc-event-content.png"></img>
+      <img src="../images/sc-events/sc-event-content.png"></img>
       <br/>
       Callback calls when content of <code>listenAddr</code> changed.
       <hr/>
