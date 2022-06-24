@@ -1,0 +1,7 @@
+macro(code_coverage _MODULE_COVERAGE _INFO _MODE _CONFIG)
+    option(${_MODULE_COVERAGE} ${_INFO} ${_MODE})
+    if(${_MODULE_COVERAGE} AND CMAKE_CXX_COMPILER_ID MATCHES "GNU")
+        set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${_CONFIG}")
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${_CONFIG}")
+    endif()
+endmacro()

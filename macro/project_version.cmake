@@ -1,0 +1,25 @@
+macro(project_version _PACKAGE _VERSION)
+    set(${_PACKAGE}_VERSION ${_VERSION})
+
+    string(REGEX MATCHALL "[0-9]+" _VERSION_COMPONENTS "${${_PACKAGE}_VERSION}")
+    list(LENGTH _VERSION_COMPONENTS _LEN)
+    if(${_LEN} GREATER 0)
+	    list(GET _VERSION_COMPONENTS 0 ${_PACKAGE}_VERSION_MAJOR)
+    endif()
+    if(${_LEN} GREATER 1)
+	    list(GET _VERSION_COMPONENTS 1 ${_PACKAGE}_VERSION_MINOR)
+    endif()
+    if(${_LEN} GREATER 2)
+	    list(GET _VERSION_COMPONENTS 2 ${_PACKAGE}_VERSION_PATCH)
+    endif()
+    if(${_LEN} GREATER 3)
+	    list(GET _VERSION_COMPONENTS 3 ${_PACKAGE}_VERSION_SUFFIX)
+    endif()
+
+    add_definitions(
+        -D${_PACKAGE}_VERSION_MAJOR=${${_PACKAGE}_VERSION_MAJOR}
+        -D${_PACKAGE}_VERSION_MINOR=${${_PACKAGE}_VERSION_MINOR}
+        -D${_PACKAGE}_VERSION_PATCH=${${_PACKAGE}_VERSION_PATCH}
+        -D${_PACKAGE}_VERSION_SUFFIX=${${_PACKAGE}_VERSION_SUFFIX}
+    )
+endmacro()

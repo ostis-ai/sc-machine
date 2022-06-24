@@ -43,10 +43,10 @@ ScLog::ScLog()
   m_mode = Type::Info;
   m_output_mode = OutputType::Console;
 
-  int modeIndex = FindEnumElement(kTypeToStr, LOG_MODE);
+  int modeIndex = FindEnumElement(kTypeToStr, SC_MACHINE_LOG_MODE);
   m_mode = modeIndex != -1 ? Type(modeIndex) : Type::Info;
 
-  int outputTypeIndex = FindEnumElement(kOutputTypeToStr, LOG_OUTPUT_TYPE);
+  int outputTypeIndex = FindEnumElement(kOutputTypeToStr, SC_MACHINE_LOG_TYPE);
   m_output_mode = outputTypeIndex != -1 ? OutputType(outputTypeIndex) : OutputType::Console;
 
   if (m_output_mode == OutputType::File)
@@ -68,7 +68,7 @@ bool ScLog::Initialize(std::string const & file_name)
 {
   if (m_output_mode == OutputType::File)
   {
-    std::string file_path = LOG_DIR + file_name;
+    std::string file_path = SC_MACHINE_LOG_DIR + file_name;
     m_fileStream.open(file_path, std::ofstream::out | std::ofstream::app);
   }
   return m_fileStream.is_open();
