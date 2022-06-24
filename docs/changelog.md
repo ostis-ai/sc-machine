@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 
 ## [Unreleased]
+### Breaking actions
+- Add `;` after `SC_LOG_INFO`, `SC_LOG_DEBUG`, `SC_LOG_WARNING` and `SC_LOG_ERROR` calls in projects that use sc-machine
+- Add `;` after `SC_ASSERT` calls in projects that use sc-machine
+
 ### Added
 - Wrap and separate allocating, assertion, notification and atomic lock free procedures
 - Add tests module for sc-agents-utils
