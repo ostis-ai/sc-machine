@@ -13,6 +13,18 @@
 
 #define SC_STORAGE_SEG_CHECKSUM_SIZE 64
 
+typedef struct _sc_fs_storage
+{
+  sc_bool (*initialize)(const sc_char *);
+  sc_bool (*shutdown)();
+  sc_bool (*clear)();
+  sc_bool (*fill)();
+  sc_bool (*save)();
+  sc_bool (*append_sc_link)(sc_element *, sc_addr, sc_char *, sc_uint32);
+  sc_bool (*get_sc_links)(const sc_char * sc_string, sc_addr ** links, sc_uint32 * size);
+  void (*get_sc_string_ext)(sc_element * element, sc_addr addr, sc_char ** sc_string, sc_uint32 * size);
+} sc_fs_storage;
+
 typedef struct _sc_fs_storage_segments_header
 {
   sc_uint32 version;
@@ -37,13 +49,7 @@ sc_bool sc_fs_storage_shutdown(sc_segment ** segments, sc_bool save_segments);
  * @param sc_string A key string
  * @param size A key string size
  */
-void sc_fs_storage_append_sc_link(sc_element * element, sc_addr addr, sc_char * sc_string, sc_uint32 size);
-
-/*! Gets sc-link from file system storage by its string content.
- * @param sc_string A key string
- * @returns A sc-link.
- */
-sc_addr sc_fs_storage_get_sc_link(const sc_char * sc_string);
+sc_bool sc_fs_storage_append_sc_link(sc_element * element, sc_addr addr, sc_char * sc_string, sc_uint32 size);
 
 /*! Gets sc-links from file system storage by it string content.
  * @param sc_string A key string

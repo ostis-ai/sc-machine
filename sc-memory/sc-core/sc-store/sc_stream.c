@@ -134,7 +134,7 @@ sc_bool sc_stream_get_data(const sc_stream * stream, sc_char ** data, sc_uint32 
   if (length == 0)
     return SC_TRUE;
 
-  *data = g_new0(sc_char, length + 1);
+  *data = sc_mem_new(sc_char, length + 1);
   if (sc_stream_read_data(stream, *data, length, (sc_uint32 *)size) == SC_RESULT_ERROR)
     return SC_FALSE;
 

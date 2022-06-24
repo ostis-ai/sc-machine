@@ -47,7 +47,7 @@ public:
   inline void Value2Stream(Type const & value, ScStreamPtr & stream) const
   {
     std::stringstream stringStream;
-    stringStream << (int64_t)value;
+    stringStream << value;
     std::string const str = stringStream.str();
 
     auto * copy = (sc_char *)calloc(str.size(), sizeof(sc_char));
@@ -69,10 +69,8 @@ public:
     if (size != readBytes)
       return false;
 
-    int64_t copy;
     std::stringstream streamString(str);
-    streamString >> copy;
-    outValue = (Type)copy;
+    streamString >> outValue;
 
     return true;
   }

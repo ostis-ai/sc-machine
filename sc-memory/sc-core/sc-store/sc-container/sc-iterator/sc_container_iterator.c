@@ -6,11 +6,11 @@
 
 #include "sc_container_iterator.h"
 
-#include <glib.h>
+#include "../../sc-base/sc_allocator.h"
 
 sc_iterator * sc_iterator_init(sc_struct_node * begin, sc_struct_node * end)
 {
-  sc_iterator * it = g_new0(sc_iterator, 1);
+  sc_iterator * it = sc_mem_new(sc_iterator, 1);
   it->begin = begin;
   it->end = end;
   it->current = null_ptr;
@@ -66,6 +66,6 @@ sc_bool sc_iterator_destroy(sc_iterator * it)
   if (it == null_ptr)
     return SC_FALSE;
 
-  g_free(it);
+  sc_mem_free(it);
   return SC_TRUE;
 }

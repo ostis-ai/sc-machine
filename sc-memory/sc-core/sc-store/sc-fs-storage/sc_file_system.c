@@ -6,13 +6,15 @@
 
 #include "sc_file_system.h"
 
+#include "../sc-base/sc_assert_utils.h"
+
 void sc_fs_rmdir(const sc_char * path)
 {
   if (g_file_test(path, G_FILE_TEST_IS_DIR) == SC_FALSE)
     return;
 
   GDir * directory = g_dir_open(path, 0, 0);
-  g_assert(directory != null_ptr);
+  sc_assert(directory != null_ptr);
 
   // calculate files
   sc_char tmp_path[MAX_PATH_LENGTH];

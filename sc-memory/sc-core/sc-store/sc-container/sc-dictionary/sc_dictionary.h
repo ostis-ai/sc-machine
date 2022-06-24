@@ -126,12 +126,12 @@ sc_bool sc_dictionary_is_in(sc_dictionary * dictionary, const sc_char * sc_strin
  */
 sc_dictionary_node * sc_dictionary_get_last_node_from_node(sc_dictionary_node * node, const sc_char * sc_string);
 
-/*! Gets data from a terminal sc-dictionary node where string ends.
+/*! Gets first data from a terminal sc-dictionary node where string ends.
  * @param node A sc-dictionary node where common prefix may be started
  * @param sc_string A string to retrieve data by it
  * @returns Returns Data from a sc-dictionary node where string ends
  */
-void * sc_dictionary_get_data_from_node(sc_dictionary_node * node, const sc_char * sc_string);
+void * sc_dictionary_get_first_data_from_node(sc_dictionary_node * node, const sc_char * sc_string);
 
 /*! Gets datas from a terminal sc-dictionary node where string ends.
  * @param node A sc-dictionary node where common prefix may be started

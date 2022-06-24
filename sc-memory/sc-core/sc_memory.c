@@ -48,7 +48,7 @@ sc_memory_context * sc_memory_initialize(const sc_memory_params * params)
 
   sc_char * v_str = sc_version_string_new(&SC_VERSION);
   g_message("Version: %s", v_str);
-  sc_version_string_free(v_str);
+  sc_version_strinsc_mem_free(v_str);
 
   g_message("Configuration:");
   g_message("\tmax_loaded_segments: %d", sc_config_get_max_loaded_segments());
@@ -131,7 +131,7 @@ void sc_memory_shutdown(sc_bool save_state)
   g_hash_table_destroy(s_context_hash_table);
   s_context_hash_table = null_ptr;
   s_context_id_last = 0;
-  g_assert(s_context_id_count == 0);
+  sc_assert(s_context_id_count == 0);
 }
 
 void sc_memory_shutdown_ext()

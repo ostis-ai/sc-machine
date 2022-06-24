@@ -6,14 +6,14 @@
 
 #include "sc_list.h"
 
-#include <glib.h>
+#include "../../sc-base/sc_allocator.h"
 
 sc_bool sc_list_init(sc_list ** list)
 {
   if (list == null_ptr)
     return SC_FALSE;
 
-  *list = g_new0(sc_list, 1);
+  *list = sc_mem_new(sc_list, 1);
   (*list)->begin = null_ptr;
   (*list)->end = null_ptr;
   (*list)->size = 0;
@@ -33,10 +33,10 @@ sc_bool sc_list_destroy(sc_list * list)
     temp = node;
     node = node->next;
 
-    g_free(temp);
+    sc_mem_free(temp);
   }
 
-  g_free(list);
+  sc_mem_free(list);
 
   return SC_TRUE;
 }
@@ -49,7 +49,7 @@ sc_bool sc_list_clear(sc_list * list)
   sc_struct_node * node = list->begin;
   while (node != null_ptr)
   {
-    g_free(node->data);
+    sc_mem_free(node->data);
     node->data = null_ptr;
     node = node->next;
   }
@@ -71,7 +71,7 @@ sc_struct_node * sc_list_push(sc_list * list, sc_struct_node * node, void * data
     list->size = 1;
 
     if (list->end == null_ptr)
-      list->end = g_new0(sc_struct_node, 1);
+      list->end = sc_mem_new(sc_struct_node, 1);
 
     list->begin->next = list->end;
     list->end->prev = list->begin;

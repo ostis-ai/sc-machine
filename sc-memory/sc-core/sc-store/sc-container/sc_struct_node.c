@@ -6,11 +6,11 @@
 
 #include "sc_struct_node.h"
 
-#include <glib.h>
+#include "../sc-base/sc_allocator.h"
 
 inline sc_struct_node * sc_struct_node_init(void * data)
 {
-  sc_struct_node * node = g_new0(sc_struct_node, 1);
+  sc_struct_node * node = sc_mem_new(sc_struct_node, 1);
   node->next = null_ptr;
   node->prev = null_ptr;
 

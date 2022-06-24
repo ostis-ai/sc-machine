@@ -154,7 +154,7 @@ sc_bool sc_storage_initialize(const char * path, sc_bool clear)
   sc_assert(segments == null_ptr);
   sc_assert(is_initialized == SC_FALSE);
 
-  segments = sc_mem_new(sc_segment*, SC_ADDR_SEG_MAX);
+  segments = sc_mem_new(sc_segment *, SC_ADDR_SEG_MAX);
 
   sc_bool result = sc_fs_storage_initialize(path, clear);
   if (result == SC_FALSE)
@@ -186,7 +186,7 @@ void sc_storage_shutdown(sc_bool save_state)
   }
 
   g_message("Shutdown sc-storage");
-	sc_mem_free(segments);
+  sc_mem_free(segments);
   segments = null_ptr;
   segments_num = 0;
 
@@ -922,8 +922,8 @@ unlock:
 
 sc_result sc_storage_set_link_content(sc_memory_context * ctx, sc_addr addr, const sc_stream * stream)
 {
-  g_assert(ctx != null_ptr);
-  g_assert(stream != null_ptr);
+  sc_assert(ctx != null_ptr);
+  sc_assert(stream != null_ptr);
 
   sc_element * el = null_ptr;
   sc_result result = SC_RESULT_ERROR;
@@ -940,8 +940,6 @@ sc_result sc_storage_set_link_content(sc_memory_context * ctx, sc_addr addr, con
     result = SC_RESULT_ERROR_INVALID_STATE;
     goto unlock;
   }
-
-  sc_assert(stream != null_ptr);
 
   access_lvl = el->flags.access_levels;
   if (!sc_access_lvl_check_write(ctx->access_levels, access_lvl))
@@ -965,38 +963,6 @@ sc_result sc_storage_set_link_content(sc_memory_context * ctx, sc_addr addr, con
   }
   else
   {
-    sc_uint32 len = 0;
-    STORAGE_CHECK_CALL(sc_stream_get_length(stream, &len));
-    if (len >= SC_CHECKSUM_LEN)
-    {
-      el->flags.type &= ~sc_flag_link_self_container;
-
-      result = sc_fs_storage_write_content(addr, &check_sum, stream);
-      sc_mem_cpy(el->content.data, check_sum.data, check_sum.len);
-    }
-    else
-    {
-      G_STATIC_ASSERT(SC_CHECKSUM_LEN < 256);
-      el->flags.type |= sc_flag_link_self_container;
-
-      el->content.data[0] = (sc_char)len;
-      if (len > 0)
-      {
-        char buff[SC_CHECKSUM_LEN];
-        sc_uint32 read = 0;
-        STORAGE_CHECK_CALL(sc_stream_read_data(stream, &buff[0], len, &read));
-        sc_assert(read == len);
-
-        sc_mem_cpy(&el->content.data[1], &buff[0], len);
-      }
-      result = SC_RESULT_OK;
-
-      sc_check_sum sum;
-      STORAGE_CHECK_CALL(sc_link_calculate_checksum(stream, &sum));
-      sc_fs_storage_add_content_addr(addr, &sum);
-    }
-  }
-  sc_assert(result == SC_RESULT_OK);
     el->flags.type |= sc_flag_link_self_container;
 
     if (data != null_ptr)
@@ -1018,7 +984,7 @@ unlock:
 
 sc_result sc_storage_get_link_content(const sc_memory_context * ctx, sc_addr addr, sc_stream ** stream)
 {
-  g_assert(ctx != null_ptr);
+  sc_assert(ctx != null_ptr);
 
   sc_element * el = null_ptr;
   sc_result result = SC_RESULT_ERROR;
@@ -1053,7 +1019,7 @@ sc_result sc_storage_get_link_content(const sc_memory_context * ctx, sc_addr add
     if (sc_string == null_ptr)
     {
       size = 1;
-      sc_string = g_new0(sc_char, size);
+      sc_string = sc_mem_new(sc_char, size);
     }
 
     *stream = sc_stream_memory_new(sc_string, size, SC_STREAM_FLAG_READ, SC_TRUE);
@@ -1074,8 +1040,8 @@ sc_result sc_storage_find_links_with_content(
     sc_addr ** result_addrs,
     sc_uint32 * result_count)
 {
-  g_assert(ctx != null_ptr);
-  g_assert(stream != null_ptr);
+  sc_assert(ctx != null_ptr);
+  sc_assert(stream != null_ptr);
 
   *result_addrs = null_ptr;
   *result_count = 0;
@@ -1087,11 +1053,11 @@ sc_result sc_storage_find_links_with_content(
 
   sc_addr * found_addrs = null_ptr;
   sc_result result = sc_fs_storage_get_sc_links(sc_string, &found_addrs, result_count);
-  g_free(sc_string);
+  sc_mem_free(sc_string);
   if (result != SC_RESULT_OK || found_addrs == null_ptr || result_count == 0)
     return SC_RESULT_ERROR;
 
-  *result_addrs = g_new0(sc_addr, *result_count);
+  *result_addrs = sc_mem_new(sc_addr, *result_count);
 
   sc_uint32 i;
   for (i = 0; i < *result_count; ++i)
@@ -1117,7 +1083,7 @@ sc_result sc_storage_find_links_with_content(
 
   unlock:
   {
-    STORAGE_CHECK_CALL(sc_storage_element_unlock(found))
+    STORAGE_CHECK_CALL(sc_storage_element_unlock(found));
   }
 
     if (result != SC_RESULT_OK)
@@ -1127,7 +1093,7 @@ sc_result sc_storage_find_links_with_content(
       break;
     }
   }
-  g_free(found_addrs);
+  sc_mem_free(found_addrs);
 
   return result;
 }

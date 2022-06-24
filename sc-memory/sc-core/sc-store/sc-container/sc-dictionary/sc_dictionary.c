@@ -5,11 +5,12 @@
  */
 
 #include <stdio.h>
-#include <glib.h>
 #include <ctype.h>
 
 #include "sc_dictionary.h"
 #include "sc_dictionary_private.h"
+
+#include "../../sc-base/sc_allocator.h"
 
 static const sc_uint8 s_min_sc_char = 1;
 static const sc_uint8 s_max_sc_char = 255;
@@ -22,7 +23,7 @@ sc_bool sc_dictionary_initialize(sc_dictionary ** dictionary)
   if (*dictionary != null_ptr)
     return SC_FALSE;
 
-  *dictionary = g_new0(sc_dictionary, 1);
+  *dictionary = sc_mem_new(sc_dictionary, 1);
   (*dictionary)->root = _sc_dictionary_node_initialize();
 
   return SC_TRUE;
@@ -35,7 +36,7 @@ sc_bool sc_dictionary_destroy(sc_dictionary * dictionary, void (*node_destroy)(s
 
   sc_dictionary_visit_up_nodes(dictionary, node_destroy, null_ptr);
   node_destroy(dictionary->root, null_ptr);
-  g_free(dictionary);
+  sc_mem_free(dictionary);
 
   return SC_TRUE;
 }
@@ -47,8 +48,8 @@ inline sc_uint8 _sc_dictionary_children_size()
 
 inline sc_dictionary_node * _sc_dictionary_node_initialize()
 {
-  sc_dictionary_node * node = g_new0(sc_dictionary_node, 1);
-  node->next = g_new0(sc_dictionary_node *, _sc_dictionary_children_size());
+  sc_dictionary_node * node = sc_mem_new(sc_dictionary_node, 1);
+  node->next = sc_mem_new(sc_dictionary_node *, _sc_dictionary_children_size());
 
   node->data_list = null_ptr;
   node->offset = null_ptr;
@@ -61,19 +62,19 @@ inline sc_dictionary_node * _sc_dictionary_node_initialize()
 
 void sc_dictionary_node_destroy(sc_dictionary_node * node, void ** args)
 {
-  (void) args;
+  (void)args;
 
   sc_list_clear(node->data_list);
   sc_list_destroy(node->data_list);
   node->data_list = null_ptr;
 
-  g_free(node->next);
+  sc_mem_free(node->next);
   node->next = null_ptr;
 
   node->offset = null_ptr;
   node->offset_size = 0;
 
-  g_free(node);
+  sc_mem_free(node);
 }
 
 inline sc_dictionary_node * _sc_dictionary_get_next_node(sc_dictionary_node * node, sc_char ch)
@@ -86,7 +87,7 @@ inline sc_dictionary_node * _sc_dictionary_get_next_node(sc_dictionary_node * no
 
 sc_dictionary_node * sc_dictionary_append_to_node(sc_dictionary_node * node, sc_char * sc_string, sc_uint32 size)
 {
-  sc_char ** sc_string_ptr = g_new0(sc_char *, 1);
+  sc_char ** sc_string_ptr = sc_mem_new(sc_char *, 1);
   *sc_string_ptr = sc_string;
 
   sc_uint32 i = 0;
@@ -158,7 +159,7 @@ sc_dictionary_node * sc_dictionary_append_to_node(sc_dictionary_node * node, sc_
     }
   }
 
-  g_free(sc_string_ptr);
+  sc_mem_free(sc_string_ptr);
   return node;
 }
 
@@ -169,7 +170,7 @@ sc_dictionary_node * sc_dictionary_append(sc_dictionary * dictionary, sc_char * 
   if (node->data_list == null_ptr)
     sc_list_init(&node->data_list);
 
-  void * copy = g_new0(void, sizeof(value));
+  void * copy = sc_mem_new(void, sizeof(value));
   *(void **)copy = *(void **)value;
   sc_list_push_back(node->data_list, copy);
   return node;
@@ -190,12 +191,7 @@ sc_dictionary_node * sc_dictionary_remove_from_node(
   if (num != 0 && SC_DICTIONARY_NODE_IS_VALID(node->next[num]))
   {
     sc_dictionary_node * removable = sc_dictionary_remove_from_node(
-        node->next[num],
-        num,
-        node,
-        sc_string,
-        index + node->next[num]->offset_size,
-        removable_index);
+        node->next[num], num, node, sc_string, index + node->next[num]->offset_size, removable_index);
 
     if (SC_DICTIONARY_NODE_IS_VALID(node->next[num]))
       return removable;
@@ -204,17 +200,17 @@ sc_dictionary_node * sc_dictionary_remove_from_node(
   // check suffixes matching
   if (index == string_size)
   {
-    sc_char * str = g_new0(sc_char, node->offset_size + 1);
-    memcpy(str, node->offset, node->offset_size);
+    sc_char * str = sc_mem_new(sc_char, node->offset_size + 1);
+    sc_mem_cpy(str, node->offset, node->offset_size);
 
     if (strcmp(str, sc_string + (string_size - node->offset_size)) == 0)
     {
-      g_free(str);
+      sc_mem_free(str);
 
       *removable_index = node_index;
       return parent;
     }
-    g_free(str);
+    sc_mem_free(str);
   }
 
   return null_ptr;
@@ -255,15 +251,15 @@ sc_dictionary_node * sc_dictionary_get_last_node_from_node(sc_dictionary_node * 
   // check suffixes matching
   if (i == string_size)
   {
-    sc_char * str = g_new0(sc_char, node->offset_size + 1);
-    memcpy(str, node->offset, node->offset_size);
+    sc_char * str = sc_mem_new(sc_char, node->offset_size + 1);
+    sc_mem_cpy(str, node->offset, node->offset_size);
 
     if (strcmp(str, sc_string + (string_size - node->offset_size)) == 0)
     {
-      g_free(str);
+      sc_mem_free(str);
       return node;
     }
-    g_free(str);
+    sc_mem_free(str);
   }
 
   return null_ptr;
@@ -281,7 +277,7 @@ sc_bool sc_dictionary_is_in(sc_dictionary * dictionary, const sc_char * sc_strin
   return sc_dictionary_is_in_from_node(dictionary->root, sc_string);
 }
 
-void * sc_dictionary_get_data_from_node(sc_dictionary_node * node, const sc_char * sc_string)
+void * sc_dictionary_get_first_data_from_node(sc_dictionary_node * node, const sc_char * sc_string)
 {
   sc_dictionary_node * last = sc_dictionary_get_last_node_from_node(node, sc_string);
 
@@ -315,8 +311,8 @@ void sc_dictionary_show_from_node(sc_dictionary_node * node, sc_char * tab)
 
     if (SC_DICTIONARY_NODE_IS_VALID(next))
     {
-      sc_char * str = g_new0(sc_char, next->offset_size + 1);
-      memcpy(str, next->offset, next->offset_size);
+      sc_char * str = sc_mem_new(sc_char, next->offset_size + 1);
+      sc_mem_cpy(str, next->offset, next->offset_size);
       sc_uchar ch = sc_int_to_sc_char(i, 0);
 
       if (next->data_list != null_ptr && next->data_list->size != 0)
@@ -324,15 +320,15 @@ void sc_dictionary_show_from_node(sc_dictionary_node * node, sc_char * tab)
       else
         printf("%s%c {%s}\n", tab, ch, str);
 
-      g_free(str);
+      sc_mem_free(str);
 
-      sc_char * new_tab = g_new0(sc_char, strlen(tab) + 6);
+      sc_char * new_tab = sc_mem_new(sc_char, strlen(tab) + 6);
       strcpy(new_tab, tab);
       strcat(new_tab, "|----\0");
 
       sc_dictionary_show_from_node(next, new_tab);
 
-      g_free(new_tab);
+      sc_mem_free(new_tab);
     }
   }
 }

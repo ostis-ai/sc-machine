@@ -9,13 +9,15 @@
 extern "C"
 {
 #  include "sc_rocksdb_fs_storage.h"
-#  include "sc_fs_storage.h"
+#  include "../sc_link_helpers.h"
 
 #  include "sc_file_system.h"
 #  include "../sc_stream_memory.h"
+#  include "../sc-base/sc_allocator.h"
 }
 
 #  include "rocksdb/db.h"
+#  include "../sc_element.h"
 
 #  include <iostream>
 #  include <mutex>
@@ -54,7 +56,7 @@ void DestroyDBInstance()
 
 std::string ChecksumToString(sc_check_sum const * check_sum)
 {
-  return std::string(check_sum->data, check_sum->data + check_sum->len);
+  return {check_sum->data, check_sum->data + check_sum->len};
 }
 
 std::string MakeAddrsKey(sc_check_sum const * check_sum)
@@ -94,17 +96,44 @@ ScAddrsVector StringBufferToData(std::string const & data)
 
 }  // namespace
 
-sc_result sc_rocksdb_fs_storage_initialize(const sc_char * repo_path)
+sc_bool sc_rocksdb_fs_storage_initialize(const sc_char * repo_path)
 {
   MutexGuard lock(gMutex);
   gInstancePath = std::string(repo_path) + "/file_memory";
   return SC_RES(CreateDBInstance());
 }
 
-void sc_rocksdb_fs_storage_shutdown()
+sc_bool sc_rocksdb_fs_storage_shutdown()
 {
   MutexGuard lock(gMutex);
   DestroyDBInstance();
+
+  return SC_TRUE;
+}
+
+sc_bool sc_rocksdb_fs_storage_clear()
+{
+  MutexGuard lock(gMutex);
+
+  assert(gDBInstance);
+  DestroyDBInstance();
+
+  rocksdb::Options options;
+  rocksdb::DestroyDB(gInstancePath, options).ok();
+
+  return SC_RES(CreateDBInstance());
+}
+
+sc_bool sc_rocksdb_fs_storage_save()
+{
+  MutexGuard lock(gMutex);
+
+  assert(gDBInstance);
+  rocksdb::FlushOptions options;
+  options.wait = true;
+
+  rocksdb::Status status = gDBInstance->Flush(options);
+  return SC_RES(status.ok());
 }
 
 sc_char * sc_rocksdb_fs_storage_read_stream_new(const sc_check_sum * check_sum)
@@ -119,11 +148,11 @@ sc_char * sc_rocksdb_fs_storage_read_stream_new(const sc_check_sum * check_sum)
 
   if (status.ok())
   {
-    auto * data = g_new0(sc_char, value.size() + 1);
+    auto * data = sc_mem_new(sc_char, value.size() + 1);
     if (data == nullptr)
       return nullptr;
 
-    memcpy(data, value.c_str(), value.size());
+    sc_mem_cpy(data, value.c_str(), value.size());
     return data;
   }
 
@@ -227,40 +256,60 @@ sc_result sc_rocksdb_fs_storage_find(const sc_check_sum * check_sum, sc_addr ** 
 
   size_t const resultBytes = sizeof(sc_addr) * addrs.size();
   *result = (sc_addr *)malloc(resultBytes);
-  memcpy(*result, addrs.data(), resultBytes);
+  sc_mem_cpy(*result, addrs.data(), resultBytes);
 
   return SC_RESULT_OK;
 }
 
-sc_result sc_rocksdb_fs_storage_clear()
+sc_bool sc_rocksdb_fs_storage_append_sc_link(sc_element * element, sc_addr addr, sc_char * sc_string, sc_uint32 size)
 {
-  MutexGuard lock(gMutex);
+  sc_char * current_string;
+  sc_uint32 current_size = 0;
+  sc_rocksdb_fs_storage_get_sc_string_ext(element, addr, &current_string, &current_size);
 
-  assert(gDBInstance);
-  DestroyDBInstance();
+  if (current_size != 0 && current_string != null_ptr)
+  {
+    sc_check_sum * check_sum;
+    sc_link_calculate_checksum(current_string, current_size, &check_sum);
+    sc_rocksdb_fs_storage_addr_ref_remove(addr, check_sum);
+  }
 
-  rocksdb::Options options;
-  rocksdb::DestroyDB(gInstancePath, options).ok();
+  sc_check_sum * check_sum;
+  sc_link_calculate_checksum(sc_string, size, &check_sum);
+  sc_rocksdb_fs_storage_addr_ref_append(addr, check_sum);
 
-  return SC_RES(CreateDBInstance());
+  sc_mem_cpy(element->content.data, check_sum->data, check_sum->len);
+  sc_rocksdb_fs_storage_write_stream(check_sum, sc_string);
+
+  return SC_TRUE;
 }
 
-sc_result sc_rocksdb_fs_storage_save()
+sc_bool sc_rocksdb_fs_storage_get_sc_links(const sc_char * sc_string, sc_addr ** links, sc_uint32 * size)
 {
-  MutexGuard lock(gMutex);
+  sc_check_sum * check_sum;
+  sc_link_calculate_checksum(sc_string, strlen(sc_string), &check_sum);
 
-  assert(gDBInstance);
-  rocksdb::FlushOptions options;
-  options.wait = true;
-
-  rocksdb::Status status = gDBInstance->Flush(options);
-  return SC_RES(status.ok());
+  return sc_rocksdb_fs_storage_find(check_sum, links, size);
 }
 
-sc_result sc_rocksdb_fs_storage_clean_state()
+void sc_rocksdb_fs_storage_get_sc_string_ext(sc_element * element, sc_addr addr, sc_char ** sc_string, sc_uint32 * size)
 {
-  MutexGuard lock(gMutex);
-  return SC_RESULT_OK;
+  sc_check_sum check_sum;
+  sc_mem_cpy(check_sum.data, element->content.data, SC_CHECKSUM_LEN);
+  check_sum.len = SC_CHECKSUM_LEN;
+
+  sc_char * data = sc_rocksdb_fs_storage_read_stream_new(&check_sum);
+
+  if (data != null_ptr)
+  {
+    *sc_string = data;
+    *size = strlen(data);
+  }
+  else
+  {
+    *sc_string = (sc_char *)null_ptr;
+    *size = 0;
+  }
 }
 
 #endif

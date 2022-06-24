@@ -34,7 +34,7 @@ sc_result resolve_nrel_system_identifier(sc_memory_context const * ctx)
   sc_uint32 num = 0;
   if (sc_memory_find_links_with_content(ctx, stream, &addrs, &num) == SC_RESULT_OK)
   {
-    sc_addr ** addrs_ptr = g_new0(sc_addr *, 1);
+    sc_addr ** addrs_ptr = sc_mem_new(sc_addr *, 1);
     *addrs_ptr = addrs;
 
     for (sc_uint32 i = 0; i < num; ++i, ++*addrs_ptr)
@@ -65,8 +65,8 @@ sc_result resolve_nrel_system_identifier(sc_memory_context const * ctx)
             sc_stream_free(stream);
             g_error("There are more then one sc-elements with system identifier nrel_system_identifier");
 
-            g_free(addrs);
-            g_free(addrs_ptr);
+            sc_mem_free(addrs);
+            sc_mem_free(addrs_ptr);
             return SC_RESULT_ERROR;
           }
         }
@@ -75,10 +75,10 @@ sc_result resolve_nrel_system_identifier(sc_memory_context const * ctx)
       sc_iterator5_free(it);
     }
 
-    g_free(addrs_ptr);
+    sc_mem_free(addrs_ptr);
   }
 
-  g_free(addrs);
+  sc_mem_free(addrs);
   sc_stream_free(stream);
 
   return result == SC_TRUE ? SC_RESULT_OK : SC_RESULT_ERROR;
@@ -86,8 +86,10 @@ sc_result resolve_nrel_system_identifier(sc_memory_context const * ctx)
 
 void _init_keynodes_str()
 {
-  keynodes_str = g_new0(gchar*, SC_KEYNODE_COUNT);
-  keynodes_str[SC_KEYNODE_NREL_SYSTEM_IDENTIFIER] = "nrel_system_identifier";
+  gsize bytes_read = 0, bytes_written = 0;
+  keynodes_str = sc_mem_new(gchar *, SC_KEYNODE_COUNT);
+  keynodes_str[SC_KEYNODE_NREL_SYSTEM_IDENTIFIER] =
+      g_locale_to_utf8("nrel_system_identifier", -1, &bytes_read, &bytes_written, 0);
 
   // check for errors
   sc_uint32 i;
@@ -158,22 +160,15 @@ sc_result sc_helper_find_element_by_system_identifier(
     sc_uint32 len,
     sc_addr * result_addr)
 {
-  g_assert(ctx != null_ptr);
-  g_assert(data != null_ptr);
-
-  g_assert(sc_helper_is_initialized == SC_TRUE);
-  g_assert(sc_keynodes != null_ptr);
-
-  sc_bool result = SC_FALSE;
-<<<<<<< HEAD
+  sc_assert(ctx != null_ptr);
+  sc_assert(data != null_ptr);
 
   sc_assert(sc_helper_is_initialized == SC_TRUE);
   sc_assert(sc_keynodes != null_ptr);
-  SC_ADDR_MAKE_EMPTY(*result_addr);
-=======
+
+  sc_bool result = SC_FALSE;
   sc_stream * stream = null_ptr;
-  SC_ADDR_MAKE_EMPTY(*result_addr)
->>>>>>> [memory] Fix memory leaks in sc-containers
+  SC_ADDR_MAKE_EMPTY(*result_addr);
 
   // try to find sc-link with that contains system identifier value
   sc_addr * addrs;
@@ -181,7 +176,7 @@ sc_result sc_helper_find_element_by_system_identifier(
   stream = sc_stream_memory_new(data, sizeof(sc_char) * len, SC_STREAM_FLAG_READ, SC_FALSE);
   if (sc_memory_find_links_with_content(ctx, stream, &addrs, &num) == SC_RESULT_OK)
   {
-    sc_addr ** addrs_ptr = g_new0(sc_addr *, 1);
+    sc_addr ** addrs_ptr = sc_mem_new(sc_addr *, 1);
     *addrs_ptr = addrs;
 
     for (sc_uint32 i = 0; i < num; ++i, ++*addrs_ptr)
@@ -205,8 +200,8 @@ sc_result sc_helper_find_element_by_system_identifier(
           // don't forget to free allocated memory before return error
           sc_iterator5_free(it);
           sc_stream_free(stream);
-          g_free(addrs);
-          g_free(addrs_ptr);
+          sc_mem_free(addrs);
+          sc_mem_free(addrs_ptr);
           return SC_RESULT_ERROR_INVALID_STATE;
         }
       }
@@ -214,9 +209,9 @@ sc_result sc_helper_find_element_by_system_identifier(
       sc_iterator5_free(it);
     }
 
-    g_free(addrs_ptr);
+    sc_mem_free(addrs_ptr);
   }
-  g_free(addrs);
+  sc_mem_free(addrs);
   sc_stream_free(stream);
 
   return result == SC_TRUE ? SC_RESULT_OK : SC_RESULT_ERROR;
@@ -224,9 +219,9 @@ sc_result sc_helper_find_element_by_system_identifier(
 
 sc_result sc_helper_set_system_identifier(sc_memory_context * ctx, sc_addr addr, const sc_char * data, sc_uint32 len)
 {
-  g_assert(ctx != null_ptr);
+  sc_assert(ctx != null_ptr);
 
-  g_assert(sc_keynodes != null_ptr);
+  sc_assert(sc_keynodes != null_ptr);
 
   sc_stream * stream = null_ptr;
   sc_addr idtf_addr, arc_addr;
@@ -236,7 +231,7 @@ sc_result sc_helper_set_system_identifier(sc_memory_context * ctx, sc_addr addr,
   stream = sc_stream_memory_new(data, sizeof(sc_char) * len, SC_STREAM_FLAG_READ, SC_FALSE);
   if (sc_helper_find_element_by_system_identifier(ctx, data, len, &idtf_addr) == SC_RESULT_OK)
   {
-    g_free(stream);
+    sc_mem_free(stream);
     return SC_RESULT_ERROR;
   }
 
@@ -266,7 +261,7 @@ sc_result sc_helper_set_system_identifier(sc_memory_context * ctx, sc_addr addr,
 
 sc_result sc_helper_get_system_identifier_link(sc_memory_context const * ctx, sc_addr el, sc_addr * sys_idtf_addr)
 {
-  g_assert(ctx != null_ptr);
+  sc_assert(ctx != null_ptr);
 
   sc_iterator5 * it = null_ptr;
   sc_result result = SC_RESULT_ERROR;
@@ -278,7 +273,7 @@ sc_result sc_helper_get_system_identifier_link(sc_memory_context const * ctx, sc
       sc_type_link,
       sc_type_arc_pos_const_perm,
       sc_keynodes[SC_KEYNODE_NREL_SYSTEM_IDENTIFIER]);
-  g_assert(it != null_ptr);
+  sc_assert(it != null_ptr);
 
   while (sc_iterator5_next(it) == SC_TRUE)
   {
@@ -293,7 +288,7 @@ sc_result sc_helper_get_system_identifier_link(sc_memory_context const * ctx, sc
 
 sc_result sc_helper_get_keynode(sc_memory_context const * ctx, sc_keynode keynode, sc_addr * keynode_addr)
 {
-  g_assert(ctx != null_ptr);
+  sc_assert(ctx != null_ptr);
 
   if ((sc_helper_is_initialized == SC_FALSE) || (sc_keynodes == null_ptr))
     return SC_RESULT_ERROR;
@@ -305,7 +300,7 @@ sc_result sc_helper_get_keynode(sc_memory_context const * ctx, sc_keynode keynod
 
 sc_bool sc_helper_resolve_system_identifier(sc_memory_context const * ctx, const char * system_idtf, sc_addr * result)
 {
-  g_assert(ctx != null_ptr);
+  sc_assert(ctx != null_ptr);
 
   if (system_idtf == null_ptr)
   {
@@ -321,7 +316,7 @@ sc_bool sc_helper_resolve_system_identifier(sc_memory_context const * ctx, const
 
 sc_bool sc_helper_check_arc(sc_memory_context const * ctx, sc_addr beg_el, sc_addr end_el, sc_type arc_type)
 {
-  g_assert(ctx != null_ptr);
+  sc_assert(ctx != null_ptr);
 
   sc_iterator3 * it = null_ptr;
   sc_bool res = SC_FALSE;

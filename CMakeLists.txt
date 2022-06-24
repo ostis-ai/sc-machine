@@ -22,7 +22,7 @@ option(SC_AUTO_TEST "Flag to build for automation testing" OFF)
 option(SC_BUILD_TESTS "Flag to build unit tests" ON)
 option(SC_BUILD_BENCH "Flag to build benchmark" OFF)
 
-set(SC_FILE_MEMORY Dictionary)
+set(SC_FILE_MEMORY Rocksdb)
 
 code_coverage(SC_COVERAGE "Flag to generate coverage report" OFF "-g -O0 --coverage")
 option(SC_CLANG_FORMAT_CODE "Flag to add clangformat and clangformat_check targets" OFF)
@@ -68,9 +68,9 @@ elseif (NOT ${CMAKE_CXX_COMPILER_ID} MATCHES "MSVC")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14")
 endif()
 
-if(${SC_FILE_MEMORY} MATCHES "Dictionary")
+if(${SC_FILE_MEMORY} STREQUAL "Dictionary")
     add_definitions(-DSC_DICTIONARY_FS_STORAGE)
-elseif(${SC_FILE_MEMORY} MATCHES "Rocksdb")
+elseif(${SC_FILE_MEMORY} STREQUAL "Rocksdb")
     add_definitions(-DSC_ROCKSDB_FS_STORAGE)
 endif()
 
@@ -80,6 +80,7 @@ sc_target_dependencies("${SC_MACHINE_ROOT}/packages.config.in" ${SC_MACHINE_THIR
 message("CMAKE_C_FLAGS: ${CMAKE_C_FLAGS}")
 message("CMAKE_CXX_FLAGS: ${CMAKE_CXX_FLAGS}")
 
+add_subdirectory(${SC_MACHINE_ROOT}/thirdparty)
 
 add_subdirectory(${SC_MACHINE_ROOT}/sc-memory)
 add_subdirectory(${SC_MACHINE_ROOT}/sc-kpm)

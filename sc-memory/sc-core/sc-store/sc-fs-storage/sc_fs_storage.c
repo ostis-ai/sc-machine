@@ -4,27 +4,21 @@
  * (See accompanying file COPYING.MIT or copy at http://opensource.org/licenses/MIT)
  */
 
-#include <glib.h>
-#include <glib/gstdio.h>
-
 #include "sc_fs_storage.h"
-
-#ifdef SC_DICTIONARY_FS_STORAGE
-#  include "sc_dictionary_fs_storage.h"
-#elif SC_ROCKSDB_FS_STORAGE
-#  include "sc_rocksdb_fs_storage.h"
-#  include "../sc_link_helpers.h"
-#endif
 
 #include "sc_file_system.h"
 
 #include "../sc_segment.h"
 #include "../../sc_memory_version.h"
+#include "sc_fs_storage_builder.h"
 
-sc_char * repo_path = 0;
+#include "../sc-base/sc_allocator.h"
+
+sc_fs_storage * storage_instance;
+sc_char * repo_path = null_ptr;
 sc_char segments_path[MAX_PATH_LENGTH];
 
-int _checksum_type()
+sc_int32 _checksum_type()
 {
   return G_CHECKSUM_SHA512;
 }
@@ -38,15 +32,12 @@ sc_uint8 _checksum_get_size()
 
 sc_bool sc_fs_storage_initialize(const sc_char * path, sc_bool clear)
 {
-  g_snprintf(segments_path, MAX_PATH_LENGTH, "%s/segments.scdb", path);
+  storage_instance = sc_fs_storage_build();
 
+  g_snprintf(segments_path, MAX_PATH_LENGTH, "%s/segments.scdb", path);
   repo_path = g_strdup(path);
 
-#ifdef SC_DICTIONARY_FS_STORAGE
-  sc_dictionary_fs_storage_initialize(repo_path);
-#elif SC_ROCKSDB_FS_STORAGE
-  sc_rocksdb_fs_storage_initialize(repo_path);
-#endif
+  storage_instance->initialize(repo_path);
 
   // clear repository if it needs
   if (clear == SC_TRUE)
@@ -56,13 +47,11 @@ sc_bool sc_fs_storage_initialize(const sc_char * path, sc_bool clear)
       g_error("Can't remove segments file: %s", segments_path);
 
     g_message("Clear file memory");
-#ifdef SC_ROCKSDB_FS_STORAGE
-    if (sc_rocksdb_fs_storage_clear() != SC_RESULT_OK)
+    if (storage_instance->clear != null_ptr && storage_instance->clear() != SC_RESULT_OK)
     {
       g_critical("Can't clear file memory");
       return SC_FALSE;
     }
-#endif
   }
 
   return SC_TRUE;
@@ -76,110 +65,28 @@ sc_bool sc_fs_storage_shutdown(sc_segment ** segments, sc_bool save_segments)
     sc_fs_storage_save(segments);
   }
 
-#ifdef SC_DICTIONARY_FS_STORAGE
-  sc_dictionary_fs_storage_shutdown();
-#elif SC_ROCKSDB_FS_STORAGE
-  sc_rocksdb_fs_storage_shutdown();
-#endif
+  storage_instance->shutdown();
 
-  g_free(repo_path);
+  sc_mem_free(repo_path);
+
+  sc_mem_free(storage_instance);
 
   return SC_FALSE;
 }
 
-void sc_fs_storage_append_sc_link(sc_element * element, sc_addr addr, sc_char * sc_string, sc_uint32 size)
+sc_bool sc_fs_storage_append_sc_link(sc_element * element, sc_addr addr, sc_char * sc_string, sc_uint32 size)
 {
-#ifdef SC_DICTIONARY_FS_STORAGE
-  sc_dictionary_fs_storage_append_sc_link(addr, sc_string, size);
-#elif SC_ROCKSDB_FS_STORAGE
-  sc_char * current_string;
-  sc_uint32 current_size = 0;
-  sc_fs_storage_get_sc_string_ext(element, addr, &current_string, &current_size);
-
-  if (current_size != 0 && current_string != null_ptr)
-  {
-    sc_check_sum * check_sum;
-    sc_link_calculate_checksum(current_string, current_size, &check_sum);
-    sc_rocksdb_fs_storage_addr_ref_remove(addr, check_sum);
-  }
-
-  sc_check_sum * check_sum;
-  sc_link_calculate_checksum(sc_string, size, &check_sum);
-  sc_rocksdb_fs_storage_addr_ref_append(addr, check_sum);
-
-  memcpy(element->content.data, check_sum->data, check_sum->len);
-  sc_rocksdb_fs_storage_write_stream(check_sum, sc_string);
-#endif
-}
-
-sc_addr sc_fs_storage_get_sc_link(const sc_char * sc_string)
-{
-#ifdef SC_DICTIONARY_FS_STORAGE
-  return sc_dictionary_fs_storage_get_sc_link(sc_string);
-#elif SC_ROCKSDB_FS_STORAGE
-  sc_check_sum * check_sum;
-  sc_link_calculate_checksum(sc_string, strlen(sc_string), &check_sum);
-
-  sc_addr * addrs;
-  sc_uint32 size = 0;
-  sc_rocksdb_fs_storage_find(check_sum, &addrs, &size);
-
-  if (size != 0)
-    return *addrs;
-
-  sc_addr empty;
-  SC_ADDR_MAKE_EMPTY(empty);
-<<<<<<< HEAD
-
-  sc_addr_hash * addr_hash = sc_dictionary_get_data_from_node(links_dictionary->root, sc_string);
-  if (addr_hash != null_ptr)
-  {
-    sc_addr addr;
-    addr.seg = SC_ADDR_LOCAL_SEG_FROM_INT(*addr_hash);
-    addr.offset = SC_ADDR_LOCAL_OFFSET_FROM_INT(*addr_hash);
-    return addr;
-  }
-
-=======
->>>>>>> [memory][fs-storage] Add opportunity to switch between file system storages
-  return empty;
-#endif
+  return storage_instance->append_sc_link(element, addr, sc_string, size);
 }
 
 sc_bool sc_fs_storage_get_sc_links(const sc_char * sc_string, sc_addr ** links, sc_uint32 * size)
 {
-#ifdef SC_DICTIONARY_FS_STORAGE
-  return sc_dictionary_fs_storage_get_sc_links(sc_string, links, size);
-#elif SC_ROCKSDB_FS_STORAGE
-  sc_check_sum * check_sum;
-  sc_link_calculate_checksum(sc_string, strlen(sc_string), &check_sum);
-
-  return sc_rocksdb_fs_storage_find(check_sum, links, size);
-#endif
+  return storage_instance->get_sc_links(sc_string, links, size);
 }
 
 void sc_fs_storage_get_sc_string_ext(sc_element * element, sc_addr addr, sc_char ** sc_string, sc_uint32 * size)
 {
-#ifdef SC_DICTIONARY_FS_STORAGE
-  return sc_dictionary_fs_storage_get_sc_string_ext(addr, sc_string, size);
-#elif SC_ROCKSDB_FS_STORAGE
-  sc_check_sum check_sum;
-  memcpy(check_sum.data, element->content.data, SC_CHECKSUM_LEN);
-  check_sum.len = SC_CHECKSUM_LEN;
-
-  sc_char * data = sc_rocksdb_fs_storage_read_stream_new(&check_sum);
-
-  if (data != null_ptr)
-  {
-    *sc_string = data;
-    *size = strlen(data);
-  }
-  else
-  {
-    *sc_string = null_ptr;
-    *size = 0;
-  }
-#endif
+  storage_instance->get_sc_string_ext(element, addr, &*sc_string, size);
 }
 
 // dictionary read, write and save methods
@@ -201,7 +108,7 @@ sc_bool sc_fs_storage_read_from_path(sc_segment ** segments, sc_uint32 * segment
     GIOChannel * in_file = g_io_channel_new_file(segments_path, "r", null_ptr);
     sc_bool is_valid = SC_TRUE;
 
-    g_assert(_checksum_get_size() == SC_STORAGE_SEG_CHECKSUM_SIZE);
+    sc_assert(_checksum_get_size() == SC_STORAGE_SEG_CHECKSUM_SIZE);
     if (in_file == null_ptr)
     {
       g_critical("Can't open segments from: %s", segments_path);
@@ -244,7 +151,7 @@ sc_bool sc_fs_storage_read_from_path(sc_segment ** segments, sc_uint32 * segment
     GChecksum * checksum = null_ptr;
     /// TODO: Check version
     checksum = g_checksum_new(_checksum_type());
-    g_assert(checksum);
+    sc_assert(checksum);
 
     g_checksum_reset(checksum);
 
@@ -288,7 +195,7 @@ sc_bool sc_fs_storage_read_from_path(sc_segment ** segments, sc_uint32 * segment
 
     g_checksum_free(checksum);
     g_io_channel_shutdown(in_file, SC_FALSE, null_ptr);
-    g_free(in_file);
+    sc_mem_free(in_file);
 
     if (is_valid == SC_FALSE)
       return SC_FALSE;
@@ -296,9 +203,10 @@ sc_bool sc_fs_storage_read_from_path(sc_segment ** segments, sc_uint32 * segment
 
   g_message("Segments loaded: %u", *segments_num);
 
-#ifdef SC_DICTIONARY_FS_STORAGE
-  sc_dictionary_fs_storage_read_strings();
-#endif
+  if (storage_instance->fill)
+  {
+    storage_instance->fill();
+  }
 
   return SC_TRUE;
 }
@@ -354,7 +262,7 @@ sc_bool sc_fs_storage_write_to_path(sc_segment ** segments)
   for (idx = 0; idx < header.segments_num; ++idx)
   {
     segment = segments[idx];
-    g_assert(segment != null_ptr);
+    sc_assert(segment != null_ptr);
 
     if (g_io_channel_write_chars(output, (sc_char *)segment->elements, SC_SEG_ELEMENTS_SIZE_BYTE, &bytes, null_ptr) !=
             G_IO_STATUS_NORMAL ||
@@ -366,7 +274,7 @@ sc_bool sc_fs_storage_write_to_path(sc_segment ** segments)
   if (g_file_test(tmp_filename, G_FILE_TEST_IS_REGULAR))
   {
     g_io_channel_shutdown(output, SC_TRUE, NULL);
-    g_free(output);
+    sc_mem_free(output);
     output = null_ptr;
 
     if (g_rename(tmp_filename, segments_path) != 0)
@@ -374,13 +282,13 @@ sc_bool sc_fs_storage_write_to_path(sc_segment ** segments)
   }
 
   if (tmp_filename != null_ptr)
-    g_free(tmp_filename);
+    sc_mem_free(tmp_filename);
   if (checksum != null_ptr)
     g_checksum_free(checksum);
   if (output != null_ptr)
   {
     g_io_channel_shutdown(output, SC_TRUE, null_ptr);
-    g_free(output);
+    sc_mem_free(output);
   }
 
   return SC_TRUE;
@@ -389,10 +297,6 @@ sc_bool sc_fs_storage_write_to_path(sc_segment ** segments)
 sc_bool sc_fs_storage_save(sc_segment ** segments)
 {
   sc_bool result = sc_fs_storage_write_to_path(segments);
-#ifdef SC_DICTIONARY_FS_STORAGE
-  result &= sc_dictionary_fs_storage_write_strings();
-#elif SC_ROCKSDB_FS_STORAGE
-  result &= sc_rocksdb_fs_storage_save();
-#endif
+  storage_instance->save();
   return result;
 }
