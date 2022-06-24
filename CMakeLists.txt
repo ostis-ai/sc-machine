@@ -6,7 +6,10 @@ cmake_policy(SET CMP0048 NEW)
 set(SC_MACHINE_ROOT ${CMAKE_CURRENT_LIST_DIR})
 include(${SC_MACHINE_ROOT}/macro/macros.cmake)
 project_version(SC_MACHINE "0.6.1")
-project_config("${SC_MACHINE_ROOT}/config" "sc-machine.ini.in" "sc-machine.ini")
+
+set(SC_MACHINE_CONFIG "${SC_MACHINE_ROOT}/config")
+configure_file("${SC_MACHINE_CONFIG}/sc-machine.ini.in" "${SC_MACHINE_CONFIG}/sc-machine.ini")
+logger(SC_MACHINE_LOG "Memory messages logger" "${SC_MACHINE_ROOT}/log/sc-machine.log" Debug Console)
 
 set(CMAKE_MODULE_PATH "${SC_MACHINE_ROOT}/cmake")
 set(SC_BIN_PATH "${SC_MACHINE_ROOT}/bin")
@@ -15,18 +18,14 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${SC_BIN_PATH})
 set(SC_EXTENSIONS_DIRECTORY "${SC_BIN_PATH}/extensions")
 set(SC_MACHINE_THIRDPARTY_PATH "${SC_MACHINE_ROOT}/thirdparty")
 
-auto_tests(SC_AUTO_TEST "Flag to build for automation testing" OFF)
-build_tests(SC_BUILD_TESTS "Flag to build unit tests" ON ${CMAKE_MODULE_PATH})
+option(SC_AUTO_TEST "Flag to build for automation testing" OFF)
+option(SC_BUILD_TESTS "Flag to build unit tests" ON)
 option(SC_BUILD_BENCH "Flag to build benchmark" OFF)
 option(SC_BUILD_SCTP "Flag to turn on/off sctp protocol support" ON)
 
 code_coverage(SC_COVERAGE "Flag to generate coverage report" OFF "-g -O0 --coverage")
-clang_format(SC_CLANG_FORMAT_CODE "Flag to add clangformat and clangformat_check targets" OFF ${CMAKE_MODULE_PATH})
-no_sanitizer(SC_USE_SANITIZER "Build with specified sanitizer")
-codegen(SC_CODEGEN_TOOL "Tool to generate template code" ${SC_BIN_PATH} ${CMAKE_MODULE_PATH})
-logger(SC_MACHINE_LOG "Memory messages logger" "${SC_MACHINE_ROOT}/log/sc-machine.log" Debug Console)
-
-compiler(CMAKE_CXX_COMPILER_ID ${SC_COVERAGE} ${SC_USE_SANITIZER} ${SC_AUTO_TEST})
+option(SC_CLANG_FORMAT_CODE "Flag to add clangformat and clangformat_check targets" OFF)
+sanitizer(SC_USE_SANITIZER "Build with specified sanitizer" "none")
 
 set(SC_MEMORY_SRC "${SC_MACHINE_ROOT}/sc-memory")
 set(SC_KPM_SRC "${SC_MACHINE_ROOT}/sc-kpm")
@@ -38,18 +37,48 @@ set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -DSC_DEBUG -DSC_PROFILE")
 set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} -DNDEBUG")
 set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -DNDEBUG")
 
-message("CMAKE_C_FLAGS: ${CMAKE_C_FLAGS}")
-message("CMAKE_CXX_FLAGS: ${CMAKE_CXX_FLAGS}")
+if(${SC_AUTO_TEST})
+    add_definitions(-DSC_BUILD_AUTO_TESTS)
+endif()
+
+if(${SC_BUILD_TESTS})
+    include(${CMAKE_MODULE_PATH}/tests.cmake)
+endif()
+
+if(${SC_CLANG_FORMAT_CODE})
+    include(${CMAKE_MODULE_PATH}/ClangFormat.cmake)
+endif()
+
+if(${SC_BUILD_SCTP})
+    add_subdirectory(${SC_MACHINE_ROOT}/sc-network)
+endif()
+
+if(${CMAKE_CXX_COMPILER_ID} MATCHES "Clang")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fcolor-diagnostics -std=c++14")
+    if (${SC_USE_SANITIZER} STREQUAL "none" AND NOT ${SC_COVERAGE})
+        set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O3")
+    endif()
+    if(${SC_AUTO_TEST})
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wdeprecated-declarations")
+    endif()
+elseif(${CMAKE_CXX_COMPILER_ID} MATCHES "GNU")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14 -Wall")
+    if(${SC_USE_SANITIZER} STREQUAL "none" AND NOT ${SC_COVERAGE})
+	    set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O3") ## Optimize
+    endif()
+    set(CMAKE_EXE_LINKER_FLAGS_RELEASE "${CMAKE_EXE_LINKER_FLAGS_RELEASE} -s") ## Strip binary
+elseif (NOT ${CMAKE_CXX_COMPILER_ID} MATCHES "MSVC")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14")
+endif()
 
 include("${SC_MACHINE_ROOT}/dependencies.cmake")
 sc_target_dependencies("${SC_MACHINE_ROOT}/packages.config.in" ${SC_MACHINE_THIRDPARTY_PATH} {$SC_MACHINE_BIN_PATH})
+
+message("CMAKE_C_FLAGS: ${CMAKE_C_FLAGS}")
+message("CMAKE_CXX_FLAGS: ${CMAKE_CXX_FLAGS}")
 
 add_subdirectory(${SC_MACHINE_ROOT}/thirdparty)
 
 add_subdirectory(${SC_MACHINE_ROOT}/sc-memory)
 add_subdirectory(${SC_MACHINE_ROOT}/sc-kpm)
 add_subdirectory(${SC_MACHINE_ROOT}/tools)
-
-if (${SC_BUILD_SCTP})
-	add_subdirectory(${SC_MACHINE_ROOT}/sc-network)
-endif()

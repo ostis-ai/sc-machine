@@ -1,8 +1,0 @@
-macro(codegen _NAME _INFO _LOCATION _CMAKE_FOLDER)
-	if (${UNIX})
-		set(${_NAME} "${_LOCATION}/sc-code-generator")
-	elseif (${WIN32})
-		set(${_NAME} "${_LOCATION}/sc-code-generator.exe")
-	endif()
-	include("${_CMAKE_FOLDER}/codegen.cmake")
-endmacro()
