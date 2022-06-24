@@ -34,8 +34,9 @@ ScAddr GenerationUtils::wrapInOrientedSetBySequenceRelation(
   for (size_t i = 1; i < addrVector.size(); ++i)
   {
     ScAddr edge = ms_context->CreateEdge(ScType::EdgeAccessConstPosPerm, set, addrVector.at(i));
-    edge = ms_context->CreateEdge(ScType::EdgeDCommonConst, prevEdge, edge);
-    ms_context->CreateEdge(ScType::EdgeAccessConstPosPerm, CoreKeynodes::nrel_basic_sequence, edge);
+    ScAddr sequenceEdge = ms_context->CreateEdge(ScType::EdgeDCommonConst, prevEdge, edge);
+    ms_context->CreateEdge(ScType::EdgeAccessConstPosPerm, CoreKeynodes::nrel_basic_sequence, sequenceEdge);
+    prevEdge = edge;
   }
 
   return set;
