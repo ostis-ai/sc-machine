@@ -22,12 +22,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - Simplify main CMakeLists.txt
 - Add tools macros for main CMakeLists.txt
-- Separate dependencies specifying form main CMakeLists.txt
+- Separate dependencies specifying from main CMakeLists.txt
 - Correct typos
 - Fix warnings in sc-memory modules
 - Fix scs-grammar. Add opportunity to specificate a structure into this structure itself
 
 ### Removed
+- Remove sctp-server
 - Remove scp-interpreter
 
 
