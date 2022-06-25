@@ -13,6 +13,7 @@
 #include "sc_fs_storage_builder.h"
 
 #include "../sc-base/sc_allocator.h"
+#include "../sc-base/sc_message.h"
 
 sc_fs_storage * storage_instance;
 sc_char * repo_path = null_ptr;
@@ -42,14 +43,14 @@ sc_bool sc_fs_storage_initialize(const sc_char * path, sc_bool clear)
   // clear repository if it needs
   if (clear == SC_TRUE)
   {
-    g_message("Clear memory");
+    sc_message("Clear memory");
     if (g_file_test(segments_path, G_FILE_TEST_IS_REGULAR) && g_remove(segments_path) != 0)
-      g_error("Can't remove segments file: %s", segments_path);
+      sc_error("Can't remove segments file: %s", segments_path);
 
-    g_message("Clear file memory");
+    sc_message("Clear file memory");
     if (storage_instance->clear != null_ptr && storage_instance->clear() != SC_RESULT_OK)
     {
-      g_critical("Can't clear file memory");
+      sc_critical("Can't clear file memory");
       return SC_FALSE;
     }
   }
@@ -61,7 +62,7 @@ sc_bool sc_fs_storage_shutdown(sc_segment ** segments, sc_bool save_segments)
 {
   if (save_segments == SC_TRUE)
   {
-    g_message("Write segments");
+    sc_message("Write segments");
     sc_fs_storage_save(segments);
   }
 
@@ -94,12 +95,12 @@ sc_bool sc_fs_storage_read_from_path(sc_segment ** segments, sc_uint32 * segment
 {
   if (g_file_test(repo_path, G_FILE_TEST_IS_DIR) == SC_FALSE)
   {
-    g_error("%s isn't a directory.", repo_path);
+    sc_error("%s isn't a directory.", repo_path);
   }
 
   if (g_file_test(segments_path, G_FILE_TEST_IS_REGULAR) == SC_FALSE)
   {
-    g_message("There are no segments in %s", segments_path);
+    sc_message("There are no segments in %s", segments_path);
     return SC_FALSE;
   }
 
@@ -111,13 +112,13 @@ sc_bool sc_fs_storage_read_from_path(sc_segment ** segments, sc_uint32 * segment
     sc_assert(_checksum_get_size() == SC_STORAGE_SEG_CHECKSUM_SIZE);
     if (in_file == null_ptr)
     {
-      g_critical("Can't open segments from: %s", segments_path);
+      sc_critical("Can't open segments from: %s", segments_path);
       return SC_FALSE;
     }
 
     if (g_io_channel_set_encoding(in_file, null_ptr, null_ptr) != G_IO_STATUS_NORMAL)
     {
-      g_critical("Can't setup encoding: %s", segments_path);
+      sc_critical("Can't setup encoding: %s", segments_path);
       return SC_FALSE;
     }
 
@@ -127,14 +128,14 @@ sc_bool sc_fs_storage_read_from_path(sc_segment ** segments, sc_uint32 * segment
          G_IO_STATUS_NORMAL) ||
         (bytes_num != sizeof(header_size)))
     {
-      g_critical("Can't read header size");
+      sc_critical("Can't read header size");
       return SC_FALSE;
     }
 
     sc_fs_storage_segments_header header;
     if (header_size != sizeof(header))
     {
-      g_critical("Invalid header size %d != %d", header_size, (int)sizeof(header));
+      sc_critical("Invalid header size %d != %d", header_size, (int)sizeof(header));
       return SC_FALSE;
     }
 
@@ -142,7 +143,7 @@ sc_bool sc_fs_storage_read_from_path(sc_segment ** segments, sc_uint32 * segment
          G_IO_STATUS_NORMAL) ||
         (bytes_num != sizeof(header)))
     {
-      g_critical("Can't read header of segments: %s", segments_path);
+      sc_critical("Can't read header of segments: %s", segments_path);
       return SC_FALSE;
     }
 
@@ -167,7 +168,7 @@ sc_bool sc_fs_storage_read_from_path(sc_segment ** segments, sc_uint32 * segment
       sc_segment_loaded(seg);
       if (bytes_num != SC_SEG_ELEMENTS_SIZE_BYTE)
       {
-        g_error("Error while read data for segment: %d", i);
+        sc_error("Error while read data for segment: %d", i);
       }
       g_checksum_update(checksum, (sc_uchar *)seg->elements, SC_SEG_ELEMENTS_SIZE_BYTE);
     }
@@ -201,7 +202,7 @@ sc_bool sc_fs_storage_read_from_path(sc_segment ** segments, sc_uint32 * segment
       return SC_FALSE;
   }
 
-  g_message("Segments loaded: %u", *segments_num);
+  sc_message("Segments loaded: %u", *segments_num);
 
   if (storage_instance->fill)
   {
@@ -216,7 +217,7 @@ sc_bool sc_fs_storage_write_to_path(sc_segment ** segments)
   if (!g_file_test(repo_path, G_FILE_TEST_IS_DIR))
   {
     if (!sc_fs_mkdirs(repo_path))
-      g_error("Can't create a directory %s", repo_path);
+      sc_error("Can't create a directory %s", repo_path);
   }
 
   // create temporary file
@@ -253,11 +254,11 @@ sc_bool sc_fs_storage_write_to_path(sc_segment ** segments)
   if (g_io_channel_write_chars(output, (sc_char *)&header_size, sizeof(header_size), &bytes, null_ptr) !=
           G_IO_STATUS_NORMAL ||
       bytes != sizeof(header_size))
-    g_error("Can't write header size: %s", tmp_filename);
+    sc_error("Can't write header size: %s", tmp_filename);
 
   if (g_io_channel_write_chars(output, (sc_char *)&header, header_size, &bytes, null_ptr) != G_IO_STATUS_NORMAL ||
       bytes != header_size)
-    g_error("Can't write header: %s", tmp_filename);
+    sc_error("Can't write header: %s", tmp_filename);
 
   for (idx = 0; idx < header.segments_num; ++idx)
   {
@@ -267,7 +268,7 @@ sc_bool sc_fs_storage_write_to_path(sc_segment ** segments)
     if (g_io_channel_write_chars(output, (sc_char *)segment->elements, SC_SEG_ELEMENTS_SIZE_BYTE, &bytes, null_ptr) !=
             G_IO_STATUS_NORMAL ||
         bytes != SC_SEG_ELEMENTS_SIZE_BYTE)
-      g_error("Can't write segment %d into %s", idx, tmp_filename);
+      sc_error("Can't write segment %d into %s", idx, tmp_filename);
   }
 
   // rename main file
@@ -278,7 +279,7 @@ sc_bool sc_fs_storage_write_to_path(sc_segment ** segments)
     output = null_ptr;
 
     if (g_rename(tmp_filename, segments_path) != 0)
-      g_error("Can't rename %s -> %s", tmp_filename, segments_path);
+      sc_error("Can't rename %s -> %s", tmp_filename, segments_path);
   }
 
   if (tmp_filename != null_ptr)

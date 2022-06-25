@@ -14,6 +14,7 @@ extern "C"
 #  include "sc_file_system.h"
 #  include "../sc_stream_memory.h"
 #  include "../sc-base/sc_allocator.h"
+#  include "../sc-base/sc_message.h"
 }
 
 #  include "rocksdb/db.h"
@@ -99,12 +100,15 @@ ScAddrsVector StringBufferToData(std::string const & data)
 sc_bool sc_rocksdb_fs_storage_initialize(const sc_char * repo_path)
 {
   MutexGuard lock(gMutex);
+
+  sc_message("Initialize sc-rocksdb fs-storage from path: %s", repo_path);
   gInstancePath = std::string(repo_path) + "/file_memory";
   return SC_RES(CreateDBInstance());
 }
 
 sc_bool sc_rocksdb_fs_storage_shutdown()
 {
+  sc_message("Shutdown sc-rocksdb fs-storage");
   MutexGuard lock(gMutex);
   DestroyDBInstance();
 

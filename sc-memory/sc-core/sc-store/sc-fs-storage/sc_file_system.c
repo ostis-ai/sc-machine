@@ -7,6 +7,7 @@
 #include "sc_file_system.h"
 
 #include "../sc-base/sc_assert_utils.h"
+#include "../sc-base/sc_message.h"
 
 void sc_fs_rmdir(const sc_char * path)
 {
@@ -26,7 +27,7 @@ void sc_fs_rmdir(const sc_char * path)
     if (g_file_test(tmp_path, G_FILE_TEST_IS_REGULAR) == SC_TRUE)
     {
       if (g_remove(tmp_path) == -1)
-        g_critical("Can't remove file: %s", tmp_path);
+        sc_critical("Can't remove file: %s", tmp_path);
     }
     else if (g_file_test(tmp_path, G_FILE_TEST_IS_DIR) == SC_TRUE)
       sc_fs_rmdir(tmp_path);

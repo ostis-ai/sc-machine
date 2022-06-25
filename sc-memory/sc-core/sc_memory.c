@@ -47,13 +47,13 @@ sc_memory_context * sc_memory_initialize(const sc_memory_params * params)
   s_context_hash_table = g_hash_table_new(g_direct_hash, g_direct_equal);
 
   sc_char * v_str = sc_version_string_new(&SC_VERSION);
-  g_message("Version: %s", v_str);
+  sc_message("Version: %s", v_str);
   sc_version_strinsc_mem_free(v_str);
 
-  g_message("Configuration:");
-  g_message("\tmax_loaded_segments: %d", sc_config_get_max_loaded_segments());
-  g_message("\tsc-element size: %zd", sizeof(sc_element));
-  g_message("\tsc-string-node size: %zd", sizeof(sc_dictionary_node));
+  sc_message("Configuration:");
+  sc_message("\tmax_loaded_segments: %d", sc_config_get_max_loaded_segments());
+  sc_message("\tsc-element size: %zd", sizeof(sc_element));
+  sc_message("\tsc-string-node size: %zd", sizeof(sc_dictionary_node));
 
   if (sc_storage_initialize(params->repo_path, params->clear) != SC_TRUE)
     return null_ptr;

@@ -63,7 +63,7 @@ sc_result resolve_nrel_system_identifier(sc_memory_context const * ctx)
           {
             sc_iterator5_free(it);
             sc_stream_free(stream);
-            g_error("There are more then one sc-elements with system identifier nrel_system_identifier");
+            sc_error("There are more then one sc-elements with system identifier nrel_system_identifier");
 
             sc_mem_free(addrs);
             sc_mem_free(addrs_ptr);
@@ -119,7 +119,7 @@ sc_result sc_helper_init(sc_memory_context * ctx)
 
   if (resolve_nrel_system_identifier(ctx) != SC_RESULT_OK)
   {
-    g_message("Can't resolve nrel_system_identifier node. Create the last one");
+    sc_message("Can't resolve nrel_system_identifier node. Create the last one");
 
     sc_addr addr = sc_memory_node_new(ctx, sc_type_const | sc_type_node_norole);
     sc_addr link = sc_memory_link_new(ctx);

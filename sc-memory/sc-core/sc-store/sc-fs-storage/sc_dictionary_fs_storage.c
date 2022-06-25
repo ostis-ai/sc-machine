@@ -10,6 +10,8 @@
 #  include "sc_file_system.h"
 
 #  include "../sc-base/sc_allocator.h"
+#  include "../sc-base/sc_assert_utils.h"
+#  include "../sc-base/sc_message.h"
 
 sc_char * file_path = null_ptr;
 sc_char addrs_hashes_path[MAX_PATH_LENGTH];
@@ -60,7 +62,7 @@ sc_bool sc_dictionary_fs_storage_initialize(const sc_char * path)
 {
   file_path = strdup(path);
 
-  g_message("Initialize sc-dictionary from path: %s", path);
+  sc_message("Initialize sc-dictionary fs-storage from path: %s", path);
   sc_bool result = sc_dictionary_initialize(&addrs_hashes_dictionary);
   if (result == SC_FALSE)
     return SC_FALSE;
@@ -94,13 +96,13 @@ void _sc_strings_dictionary_node_destroy(sc_dictionary_node * node, void ** args
 
 sc_bool sc_dictionary_fs_storage_shutdown()
 {
-  g_message("Shutdown sc-dictionary fs-storage");
+  sc_message("Shutdown sc-dictionary fs-storage");
   if (sc_dictionary_destroy(addrs_hashes_dictionary, _sc_addrs_hashes_dictionary_node_destroy) == SC_FALSE)
-    g_critical("Can't shutdown sc-dictionary fs-storage");
+    sc_critical("Can't shutdown sc-dictionary fs-storage");
   addrs_hashes_dictionary = null_ptr;
 
   if (sc_dictionary_destroy(strings_dictionary, _sc_strings_dictionary_node_destroy) == SC_FALSE)
-    g_critical("Can't shutdown sc-dictionary fs-storage");
+    sc_critical("Can't shutdown sc-dictionary fs-storage");
   strings_dictionary = null_ptr;
 
   return SC_FALSE;
@@ -324,32 +326,32 @@ void sc_fs_storage_write_node(sc_dictionary_node * node, void ** dest)
   sc_dc_node_access_lvl_make_no_read(content->node);
 
   GIOChannel * strings_channel = dest[0];
-  g_assert(strings_channel != null_ptr);
+  sc_assert(strings_channel != null_ptr);
   GIOChannel * links_channel = dest[1];
-  g_assert(links_channel != null_ptr);
+  sc_assert(links_channel != null_ptr);
 
   gsize bytes;
   if (g_io_channel_write_chars(strings_channel, (sc_char *)&hashes_size, sizeof(hashes_size), &bytes, null_ptr) !=
       G_IO_STATUS_NORMAL)
-    g_error("Can't write string hashes size %d into %s", hashes_size, strings_path);
+    sc_error("Can't write string hashes size %d into %s", hashes_size, strings_path);
 
   if (g_io_channel_write_chars(
           strings_channel, (sc_char *)hashes, sizeof(sc_addr_hash) * hashes_size, &bytes, null_ptr) !=
       G_IO_STATUS_NORMAL)
-    g_error("Can't write string hashes %llu into %s", *hashes, strings_path);
+    sc_error("Can't write string hashes %llu into %s", *hashes, strings_path);
 
   if (g_io_channel_write_chars(
           strings_channel, (sc_char *)&content->string_size, sizeof(content->string_size), &bytes, null_ptr) !=
       G_IO_STATUS_NORMAL)
-    g_error("Can't write sc-string size %d into %s", hashes_size, strings_path);
+    sc_error("Can't write sc-string size %d into %s", hashes_size, strings_path);
 
   if (g_io_channel_write_chars(strings_channel, content->sc_string, content->string_size, &bytes, null_ptr) !=
       G_IO_STATUS_NORMAL)
-    g_error("Can't write sc-string %s into %s", content->sc_string, strings_path);
+    sc_error("Can't write sc-string %s into %s", content->sc_string, strings_path);
 
   if (g_io_channel_write_chars(
           links_channel, (sc_char *)hashes, sizeof(sc_addr_hash) * hashes_size, &bytes, null_ptr) != G_IO_STATUS_NORMAL)
-    g_error("Can't write string hashes %llu into %s", *hashes, addrs_hashes_path);
+    sc_error("Can't write string hashes %llu into %s", *hashes, addrs_hashes_path);
 
   sc_mem_free(hashes);
 }
@@ -373,7 +375,7 @@ sc_bool sc_dictionary_fs_storage_save()
     output_strings = null_ptr;
 
     if (g_rename(strings_filename, strings_path) != 0)
-      g_error("Can't rename %s -> %s", strings_filename, strings_path);
+      sc_error("Can't rename %s -> %s", strings_filename, strings_path);
   }
 
   if (g_file_test(links_filename, G_FILE_TEST_IS_REGULAR))
@@ -383,7 +385,7 @@ sc_bool sc_dictionary_fs_storage_save()
     output_links = null_ptr;
 
     if (g_rename(links_filename, addrs_hashes_path) != 0)
-      g_error("Can't rename %s -> %s", links_filename, addrs_hashes_path);
+      sc_error("Can't rename %s -> %s", links_filename, addrs_hashes_path);
   }
 
   if (strings_filename != null_ptr)
@@ -409,20 +411,20 @@ sc_bool sc_dictionary_fs_storage_fill()
 {
   if (g_file_test(strings_path, G_FILE_TEST_IS_REGULAR) == SC_FALSE)
   {
-    g_message("There are no strings in %s", strings_path);
+    sc_message("There are no strings in %s", strings_path);
     return SC_FALSE;
   }
 
   GIOChannel * in_file = g_io_channel_new_file(strings_path, "r", null_ptr);
   if (in_file == null_ptr)
   {
-    g_critical("Can't open strings from: %s", strings_path);
+    sc_critical("Can't open strings from: %s", strings_path);
     return SC_FALSE;
   }
 
   if (g_io_channel_set_encoding(in_file, null_ptr, null_ptr) != G_IO_STATUS_NORMAL)
   {
-    g_critical("Can't setup encoding: %s", strings_path);
+    sc_critical("Can't setup encoding: %s", strings_path);
     return SC_FALSE;
   }
 
@@ -467,7 +469,7 @@ sc_bool sc_dictionary_fs_storage_fill()
   g_io_channel_shutdown(in_file, SC_FALSE, null_ptr);
   sc_mem_free(in_file);
 
-  g_message("Sc-dictionary fs-storage loaded");
+  sc_message("Sc-dictionary fs-storage loaded");
 
   return SC_TRUE;
 }

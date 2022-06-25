@@ -41,16 +41,36 @@ jobs:
       matrix:
         config:
           - {
-            name: "Ubuntu latest, GCC",
+            name: "Ubuntu latest, GCC, Sc-dictionary fs-storage",
             os: ubuntu-latest,
+            file_memory: "Dictionary",
             build_type: "Debug",
             cc: "gcc",
             cxx: "g++",
             coverage: "OFF"
           }
           - {
-            name: "Ubuntu latest, GCC, Release",
+            name: "Ubuntu latest, GCC, Sc-rocksdb fs-storage",
             os: ubuntu-latest,
+            file_memory: "Rocksdb",
+            build_type: "Debug",
+            cc: "gcc",
+            cxx: "g++",
+            coverage: "OFF"
+          }
+          - {
+            name: "Ubuntu latest, GCC, Release, Sc-dictionary fs-storage",
+            os: ubuntu-latest,
+            file_memory: "Dictionary",
+            build_type: "Release",
+            cc: "gcc",
+            cxx: "g++",
+            coverage: "ON"
+          }
+          - {
+            name: "Ubuntu latest, GCC, Release, Sc-rocksdb fs-storage",
+            os: ubuntu-latest,
+            file_memory: "Rocksdb",
             build_type: "Release",
             cc: "gcc",
             cxx: "g++",
@@ -76,6 +96,7 @@ jobs:
         env:
           CC: ${{ matrix.config.cc }}
           CCX: ${{ matrix.config.cxx }}
+          FILE_MEMORY: ${{ matrix.config.file_memory }}
           BUILD_TYPE: ${{ matrix.config.build_type }}
           COVERAGE: ${{ matrix.config.coverage }}
         run: scripts/ci/make-tests.sh

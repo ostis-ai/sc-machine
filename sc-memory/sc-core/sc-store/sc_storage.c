@@ -185,7 +185,7 @@ void sc_storage_shutdown(sc_bool save_state)
     sc_segment_free(segments[idx]);
   }
 
-  g_message("Shutdown sc-storage");
+  sc_message("Shutdown sc-storage");
   sc_mem_free(segments);
   segments = null_ptr;
   segments_num = 0;
