@@ -1,8 +1,8 @@
 APP_ROOT_PATH=$(cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && cd .. && pwd)
 
 sudo apt-get update
-sudo apt-get install -y librocksdb-dev \
-                     libglib2.0-dev libboost-system-dev \
+sudo apt-get install -y \
+                     qt5-qmake qtbase5-dev libglib2.0-dev libboost-system-dev \
                      libboost-filesystem-dev libboost-program-options-dev \
                      make cmake antlr gcc g++ llvm \
                      libcurl4-openssl-dev libclang-dev libboost-python-dev \

@@ -99,11 +99,9 @@ TEST_F(SCsHelperTest, GenerateBySCs_Contents)
   std::string const dataString = "v_string -> [string];;";
   std::string const dataFloat  = "v_float -> [^\"float:7\"];;";
   std::string const dataDouble = "v_double -> [^\"double:8\"];;";
-  std::string const dataInt8   = "v_int8 -> [^\"int8:9\"];;";
   std::string const dataInt16  = "v_int16 -> [^\"int16:10\"];;";
   std::string const dataInt32  = "v_int32 -> [^\"int32:11\"];;";
   std::string const dataInt64  = "v_int64 -> [^\"int64:12\"];;";
-  std::string const dataUint8  = "v_uint8 -> [^\"uint8:13\"];;";
   std::string const dataUint16 = "v_uint16 -> [^\"uint16:14\"];;";
   std::string const dataUint32 = "v_uint32 -> [^\"uint32:15\"];;";
   std::string const dataUint64 = "v_uint64 -> [^\"uint64:16\"];;";
@@ -146,12 +144,6 @@ TEST_F(SCsHelperTest, GenerateBySCs_Contents)
   }
 
   {
-    ScLink const linkInt8(*m_ctx, testLink(dataInt8, "v_int8"));
-    EXPECT_EQ(linkInt8.DetermineType(), ScLink::Type::Int8);
-    EXPECT_EQ(linkInt8.Get<int8_t>(), 9);
-  }
-
-  {
     ScLink const linkInt16(*m_ctx, testLink(dataInt16, "v_int16"));
     EXPECT_EQ(linkInt16.DetermineType(), ScLink::Type::Int16);
     EXPECT_EQ(linkInt16.Get<int16_t>(), 10);
@@ -167,12 +159,6 @@ TEST_F(SCsHelperTest, GenerateBySCs_Contents)
     ScLink const linkInt64(*m_ctx, testLink(dataInt64, "v_int64"));
     EXPECT_EQ(linkInt64.DetermineType(), ScLink::Type::Int64);
     EXPECT_EQ(linkInt64.Get<int64_t>(), 12);
-  }
-
-  {
-    ScLink const linkUint8(*m_ctx, testLink(dataUint8, "v_uint8"));
-    EXPECT_EQ(linkUint8.DetermineType(), ScLink::Type::UInt8);
-    EXPECT_EQ(linkUint8.Get<uint8_t>(), 13u);
   }
 
   {

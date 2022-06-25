@@ -20,7 +20,8 @@ struct _sc_arc_info
   sc_addr prev_in_arc;   // sc-addr of previous input arc in list
 };
 
-#define SC_CHECKSUM_LEN 32  //(sizeof(sc_arc_info) - sizeof(sc_uint32))
+#ifdef SC_ROCKSDB_FS_STORAGE
+#  define SC_CHECKSUM_LEN 32  //(sizeof(sc_arc_info) - sizeof(sc_uint32))
 
 /*! Structure to store content information
  * Data field store checksum for data, that stores in specified sc-link.
@@ -29,6 +30,7 @@ struct _sc_content
 {
   char data[SC_CHECKSUM_LEN];
 };
+#endif
 
 /* Structure to store information for sc-elements.
  * It used just for unify working with node and arc elements.
@@ -47,7 +49,7 @@ struct _sc_content
  * Size of each array is fixed and equivalent to ARC_SEG_SIZE value.
  *
  * All arcs have next_arc and prev_arc addr's. Each element store addr of begin and end arcs.
- * Arcs values: next_out_arc and next_in_arc store next arcs in output and input arcs list.
+ * Arc values: next_out_arc and next_in_arc store next arcs in output and input arcs list.
  * So if you need to iterate all output arcs for specified element, then you need to use such code:
  * sc_element *arc = sc_storage_get_element(el->first_output_arc);
  * while (!addr_empty(arc->incident->next_out_arc))
@@ -91,17 +93,20 @@ struct _sc_element
 
   sc_addr first_out_arc;
   sc_addr first_in_arc;
+
+#ifdef SC_DICTIONARY_FS_STORAGE
+  sc_arc_info arc;
+#elif SC_ROCKSDB_FS_STORAGE
   union
   {
     sc_content content;
     sc_arc_info arc;
   };
+#endif
 };
 
 /// All functions must be called for locked sc-elements
 void sc_element_set_type(sc_element * element, sc_type type);
-
-sc_bool sc_element_is_checksum_empty(sc_element * element);
 
 sc_bool sc_element_is_request_deletion(sc_element * element);
 sc_bool sc_element_is_valid(sc_element * element);

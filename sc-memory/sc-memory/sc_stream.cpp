@@ -40,7 +40,6 @@ void ScStream::Reset()
 {
   if (m_stream)
     sc_stream_free(m_stream);
-  m_stream = nullptr;
 }
 
 bool ScStream::IsValid() const

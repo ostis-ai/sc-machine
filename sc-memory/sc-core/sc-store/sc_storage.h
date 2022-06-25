@@ -143,7 +143,7 @@ sc_result sc_storage_get_arc_info(
  * returns on of error codes:
  * <ul>
  * <li>SC_INVALID_TYPE - element with \p addr isn't a sc-link</li>
- * <li>SC_ERROR_INVALID_PARAMS - element with specifed \p addr doesn't exist
+ * <li>SC_ERROR_INVALID_PARAMS - element with specified \p addr doesn't exist
  * <li>SC_ERROR - unknown error</li>
  * </ul>
  */
@@ -156,7 +156,7 @@ sc_result sc_storage_set_link_content(sc_memory_context * ctx, sc_addr addr, con
  * returns on of error codes:
  * <ul>
  * <li>SC_INVALID_TYPE - element with \p addr isn't a sc-link</li>
- * <li>SC_ERROR_INVALID_PARAMS - element with specifed \p addr doesn't exist
+ * <li>SC_ERROR_INVALID_PARAMS - element with specified \p addr doesn't exist
  * <li>SC_ERROR - unknown error</li>
  * </ul>
  */

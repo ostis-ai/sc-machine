@@ -9,6 +9,7 @@
 
 #include "sc-base/sc_allocator.h"
 #include "sc-base/sc_assert_utils.h"
+#include "sc-base/sc_message.h"
 
 struct _sc_memory_buffer
 {
@@ -114,7 +115,7 @@ sc_stream * sc_stream_memory_new(const sc_char * buffer, sc_uint buffer_size, sc
 {
   if (flags & SC_STREAM_FLAG_WRITE || flags & SC_STREAM_FLAG_APPEND)
   {
-    g_message("Memory stream doesn't support SC_STREAM_APPEND and SC_STREAM_WRITE flags");
+    sc_message("Memory stream doesn't support SC_STREAM_APPEND and SC_STREAM_WRITE flags");
     return null_ptr;
   }
 

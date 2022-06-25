@@ -26,7 +26,11 @@ macro(sc_linux_target_dependencies)
 
     find_package(Boost 1.71 REQUIRED COMPONENTS filesystem python system program_options)
     find_package(Python3 COMPONENTS Interpreter Development REQUIRED)
-    find_package(RocksDB REQUIRED)
+
+    if(${SC_FILE_MEMORY} MATCHES "Rocksdb")
+	    execute_process(COMMAND sudo apt-get install -y librocksdb-dev)
+	    find_package(RocksDB REQUIRED)
+    endif()
 
     find_package(PkgConfig REQUIRED)
     pkg_search_module(GLIB2 REQUIRED glib-2.0)
@@ -67,7 +71,9 @@ macro(sc_win_target_dependencies _PACKAGES_CONFIG _THIRDPARTY_PATH _BIN_PATH)
 
     set(GLIB_PATH "${PACKAGES_PATH}/glib.2.36.2.11/build/native")
     set(BOOST_PATH "${PACKAGES_PATH}/boost.${BOOST_VERSION}/lib/native")
-    set(ROCKSDB_PATH "${_THIRDPARTY_PATH}/rocksdb")
+    if (${SC_FILE_MEMORY} MATCHES "Rocksdb")
+	    set(ROCKSDB_PATH "${SC_MACHINE_THIRDPARTY_PATH}/rocksdb")
+    endif()
 
     set(LIBCLANG_INCLUDE_DIRS "${_THIRDPARTY_PATH}/clang/include")
     set(LIBCLANG_LIBRARY "libclang")
@@ -83,8 +89,10 @@ macro(sc_win_target_dependencies _PACKAGES_CONFIG _THIRDPARTY_PATH _BIN_PATH)
     set(BOOST_PYTHON_LIBRARY_RELEASE "${BOOST_PYTHON_BIN_PATH}/boost_python3-${MSVC_SUFFIX}-mt-1_64.lib")
     set(BOOST_PYTHON_LIBRARY_DEBUG "${BOOST_PYTHON_BIN_PATH}/boost_python3-${MSVC_SUFFIX}-mt-gd-1_64.lib")
 
-    set(RocksDB_INCLUDE_DIR "${ROCKSDB_PATH}/include")
-    set(RocksDB_LIBRARIES "${ROCKSDB_PATH}/rocksdb-shared.lib")
+    if(${SC_FILE_MEMORY} MATCHES "Rocksdb")
+	    set(RocksDB_INCLUDE_DIR "${ROCKSDB_PATH}/include")
+	    set(RocksDB_LIBRARIES "${ROCKSDB_PATH}/rocksdb-shared.lib")
+    endif()
 
     include_directories("${BOOST_PATH}/include" "${LIBCURL_INCLUDE_DIRS}")
 

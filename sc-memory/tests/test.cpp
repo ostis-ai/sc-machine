@@ -569,9 +569,6 @@ void test_links()
     char const *data = "short content";
     char const *data2 = "very large content, that will be store in file memory";
 
-    g_assert(strlen(data) < SC_CHECKSUM_LEN);
-    g_assert(strlen(data2) >= SC_CHECKSUM_LEN);
-
     sc_addr link1 = sc_memory_link_new(ctx);
     sc_addr link2 = sc_memory_link_new(ctx);
 
@@ -694,10 +691,10 @@ int main(int argc, char *argv[])
   params.config_file = "sc-memory.ini";
   params.ext_path = 0;
 
-  printf("sc_element: %zd, sc_addr: %zd, sc_arc: %zd, sc_content: %zd", sizeof(sc_element), sizeof(sc_addr), sizeof(sc_arc_info), sizeof(sc_content));
+  printf("sc_element: %zd, sc_addr: %zd, sc_arc: %zd", sizeof(sc_element), sizeof(sc_addr), sizeof(sc_arc_info));
 
   g_test_init(&argc, &argv, NULL);
-  /// TODO: add test for verion utils
+  /// TODO: add test for version utils
 
   g_test_add_func("/common/save", test_save);
   g_test_add_func("/common/context", test_context);

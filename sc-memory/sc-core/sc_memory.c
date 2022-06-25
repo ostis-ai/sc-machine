@@ -8,13 +8,11 @@
 #include "sc_memory_version.h"
 #include "sc_memory_private.h"
 #include "sc-store/sc_storage.h"
-#include "sc-store/sc_element.h"
 #include "sc_memory_ext.h"
-#include "sc_helper.h"
 #include "sc-store/sc_config.h"
 #include "sc_helper_private.h"
-#include "sc-store/sc_event.h"
 #include "sc-store/sc_event/sc_event_private.h"
+#include "sc-store/sc-container/sc-dictionary/sc_dictionary.h"
 
 #include "sc-store/sc-base/sc_allocator.h"
 #include "sc-store/sc-base/sc_assert_utils.h"
@@ -49,12 +47,13 @@ sc_memory_context * sc_memory_initialize(const sc_memory_params * params)
   s_context_hash_table = g_hash_table_new(g_direct_hash, g_direct_equal);
 
   sc_char * v_str = sc_version_string_new(&SC_VERSION);
-  g_message("Version: %s", v_str);
-  sc_version_string_free(v_str);
+  sc_message("Version: %s", v_str);
+  sc_version_strinsc_mem_free(v_str);
 
-  g_message("Configuration:");
-  g_message("\tmax_loaded_segments: %d", sc_config_get_max_loaded_segments());
-  g_message("sc-element size: %zd", sizeof(sc_element));
+  sc_message("Configuration:");
+  sc_message("\tmax_loaded_segments: %d", sc_config_get_max_loaded_segments());
+  sc_message("\tsc-element size: %zd", sizeof(sc_element));
+  sc_message("\tsc-string-node size: %zd", sizeof(sc_dictionary_node));
 
   if (sc_storage_initialize(params->repo_path, params->clear) != SC_TRUE)
     return null_ptr;
@@ -126,7 +125,7 @@ void sc_memory_shutdown(sc_bool save_state)
   sc_storage_shutdown(save_state);
 
   sc_memory_context_free(s_memory_default_ctx);
-  s_memory_default_ctx = null_ptr;
+  s_memory_default_ctx = 0;
 
   /// todo: clear contexts
   g_hash_table_destroy(s_context_hash_table);

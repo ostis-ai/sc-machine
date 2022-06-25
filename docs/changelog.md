@@ -6,11 +6,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 
 ## [Unreleased]
-### Breaking actions
 - Add `;` after `SC_LOG_INFO`, `SC_LOG_DEBUG`, `SC_LOG_WARNING` and `SC_LOG_ERROR` calls in projects that use sc-machine
 - Add `;` after `SC_ASSERT` calls in projects that use sc-machine
 
 ### Added
+- Add ci for `rocksdb` and `sc-dictionary`
+- Implement `sc-dictionary`. Add opportunity to switch `rocksdb` and `sc-dictionary`
 - Wrap and separate allocating, assertion, notification and atomic lock free procedures
 - Add tests module for sc-agents-utils
 - Add opportunity to configure sc-machine version from CMakeLists.txt

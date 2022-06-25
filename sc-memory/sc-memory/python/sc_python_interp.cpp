@@ -409,7 +409,7 @@ ScPythonMainThread * gMainThread = nullptr;
 
 bool ScPythonInterpreter::Initialize(std::string const & name)
 {
-  SC_ASSERT(!ms_isInitialized, ("You can't initialize this class twicely."));
+  SC_ASSERT(!ms_isInitialized, ("You can't initialize this class twice."));
   ms_name.assign(name.begin(), name.end());
 
   ScPythonMemoryModule::Initialize();
@@ -421,7 +421,7 @@ bool ScPythonInterpreter::Initialize(std::string const & name)
   ModulePathSet modulePaths;
   PyLoadModulePathFromConfig(modulePaths);
 
-  SC_LOG_INIT("Initialize python iterpreter version " << PY_VERSION);
+  SC_LOG_INIT("Initialize python interpreter version " << PY_VERSION);
   SC_LOG_INFO("Collect python modules...");
   CollectModules(modulePaths);
   SC_LOG_INFO("Collected " << ms_foundModules.size() << " python modules");

@@ -354,7 +354,7 @@ public:
       };
 
       // make one iteration
-      if (it.get())
+      if (it.get() && it->IsValid())
       {
         bool isFinished = true;
 

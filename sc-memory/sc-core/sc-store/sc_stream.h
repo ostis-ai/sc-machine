@@ -105,4 +105,12 @@ _SC_EXTERN sc_result sc_stream_get_position(const sc_stream * stream, sc_uint32 
  */
 _SC_EXTERN sc_bool sc_stream_check_flag(const sc_stream * stream, sc_uint8 flag);
 
+/*! Check and get data from stream
+ * @param stream Stream pointer to read data
+ * @param data Data buffer double pointer, that will used to store data (fixed size)
+ * @param size Size of data buffer
+ * @return If data has been read without any errors, then return SC_OK; otherwise return SC_ERROR
+ */
+_SC_EXTERN sc_bool sc_stream_get_data(const sc_stream * stream, sc_char ** data, sc_uint32 * size);
+
 #endif

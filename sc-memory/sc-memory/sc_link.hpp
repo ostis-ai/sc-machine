@@ -11,6 +11,8 @@
 #include "sc_keynodes.hpp"
 #include "sc_template.hpp"
 
+#include <cstring>
+
 /* This class wraps specified sc-link and provide functionality
  * to work with it. For example: get/set content, check content type
  */
@@ -44,19 +46,31 @@ public:
   template <typename Type>
   inline void Value2Stream(Type const & value, ScStreamPtr & stream) const
   {
-    stream.reset(new ScStream((sc_char *)(&value), sizeof(value), SC_STREAM_FLAG_READ | SC_STREAM_FLAG_SEEK));
+    std::stringstream stringStream;
+    stringStream << value;
+    std::string const str = stringStream.str();
+
+    auto * copy = (sc_char *)calloc(str.size(), sizeof(sc_char));
+    memcpy(copy, str.c_str(), str.size());
+
+    stream.reset(new ScStream(copy, str.size(), SC_STREAM_FLAG_READ | SC_STREAM_FLAG_SEEK));
   }
 
   template <typename Type>
   inline bool Stream2Value(ScStreamPtr const & stream, Type & outValue) const
   {
-    if (stream->Size() != sizeof(Type))
-      return false;
+    size_t size = stream->Size();
 
     size_t readBytes = 0;
-    stream->Read((sc_char *)(&outValue), sizeof(Type), readBytes);
-    if (sizeof(Type) != readBytes)
+    std::string str;
+    str.resize(size);
+    stream->Read((sc_char *)str.c_str(), size, readBytes);
+
+    if (size != readBytes)
       return false;
+
+    std::stringstream streamString(str);
+    streamString >> outValue;
 
     return true;
   }
