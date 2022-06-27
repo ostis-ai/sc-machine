@@ -91,6 +91,11 @@ jobs:
         run: |
           ./scripts/ci/check-formatting.sh
 
+      - name: Restore build caches
+        uses: hendrikmuhs/ccache-action@v1.2
+        with:
+          key: ${{ github.job }}-${{ matrix.config.os}}-${{ matrix.config.cxx }}-${{ matrix.config.build_type }}-${{ matrix.config.file_memory }}
+
       - name: Build
         id: run_cmake
         env:
