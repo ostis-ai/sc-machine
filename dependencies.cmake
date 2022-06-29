@@ -28,7 +28,6 @@ macro(sc_linux_target_dependencies)
     find_package(websocketpp REQUIRED 0.8.3)
 
     if(${SC_FILE_MEMORY} MATCHES "Rocksdb")
-	    execute_process(COMMAND sudo apt-get install -y librocksdb-dev)
 	    find_package(RocksDB REQUIRED)
     endif()
 
