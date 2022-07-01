@@ -251,7 +251,7 @@ This class accumulate parameters for a template generation. There are methods of
 
 ??? tip "Add(paramName, valueAddr)"
     * **paramName** - parameter name (`str`)
-    * **valueAddr** - `ScAddr` of element that should be used with specified name (see more in [templates description](../cpp/templates.md))
+    * **valueAddr** - `ScAddr` of element that should be used with specified name (see more in [templates description](../sc-search/templates.md))
 
     ```python
     params = ScTemplateParams()

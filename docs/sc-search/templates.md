@@ -8,7 +8,7 @@ There are list of available classes to work with templates:
 * `ScTemplateGenResult` - represent result of generation by template.
 
 ## ScTemplate
-Class to work with templates in c++. Before reading this paragraph you need to read common [information about types](el_types.md).
+Class to work with templates in c++. Before reading this paragraph you need to read common [information about types](../cpp/el_types.md).
 
 Let use `f` symbols for constant parameter of template. Let use `a` symbol for a variable parameter of template. Then template to search all output edges from specified sc-element will be a triple:
 * where first element is known `f`;
@@ -32,7 +32,7 @@ There are some methods available for `ScTemplate` class:
     <td>f_a_a</td>
     <td>
       <strong>Graphical representation</strong>
-      <br/><scg src="../../images/templates/template_triple_f_a_a_example.gwf"></scg>
+      <br/><scg src="../images/templates/template_triple_f_a_a_example.gwf"></scg>
       <br/><strong>Equal C++ code</strong>
       <br/>
 <pre><code class="cpp hljs">
@@ -53,7 +53,7 @@ templ.Triple(
   <tr>
     <td>f_a_f</td>
     <td><strong>Graphical representation</strong>
-    <br/><scg src="../../images/templates/template_triple_f_a_f_example.gwf"></scg>
+    <br/><scg src="../images/templates/template_triple_f_a_f_example.gwf"></scg>
     <br/><strong>Equal C++ code</strong>
     <br/>
 <pre><code class="cpp hljs">
@@ -73,7 +73,7 @@ templ.Triple(
   <tr>
     <td>a_a_f</td>
     <td><strong>Graphical representation</strong>
-    <br/><scg src="../../images/templates/template_triple_a_a_f_example.gwf"></scg>
+    <br/><scg src="../images/templates/template_triple_a_a_f_example.gwf"></scg>
     <br/><strong>Equal C++ code</strong>
     <br/>
 <pre><code class="cpp hljs">
@@ -92,7 +92,7 @@ templ.Triple(
 
 When template search engine works, it tries to traverse graph by simple (triple) template in order they specified. For example we need to check if specified sc-element (`_device`) is included into `device` set and `device_enabled` set:
 
-<scg src="../../images/templates/template_example_2.gwf"></scg>
+<scg src="../images/templates/template_example_2.gwf"></scg>
 
 **Code** that generates equal template
 ```cpp
@@ -133,7 +133,7 @@ templ.Triple(
 );
 ```
 
-Also you can generate templates using [SCs-code](/other/scs.md). Example code:
+Also you can generate templates using [SCs-code](../other/scs.md). Example code:
 
 ```cpp
 ScTemplate templ; 
@@ -146,7 +146,7 @@ ctx.HelperBuildTemplate(templ, data);
 
 During template building all constants will be resolved by their system identifier (in example: `device`, `device_enabled`), so in result `templ` will be contain template:
 
-<scg src="../../images/templates/template_example_2.gwf"></scg>
+<scg src="../images/templates/template_example_2.gwf"></scg>
 
 ## Search
 

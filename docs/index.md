@@ -12,9 +12,9 @@
 
 - **C++ API**
     * [Common](cpp/common.md) - *documentation on common principles of C++ API*
-    * [Knowledge processing machine](cpp/kpm.md) - *documentation on Knowledge Processing Machine API*
+    * [Knowledge processing machine](sc-kpm/kpm.md) - *documentation on Knowledge Processing Machine API*
     * [Meta programming](cpp/cpp-meta.md) - *documentation of meta programming language*
-    * [Templates](cpp/templates.md) - *documentation of template usage*
+    * [Templates](sc-search/templates.md) - *documentation of template usage*
     * [File storage](storage/sc-dictionary.md) - *documentation of file storage*
 
 - **Tools**
