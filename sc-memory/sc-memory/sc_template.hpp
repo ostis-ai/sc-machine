@@ -260,7 +260,7 @@ public:
     {
     }
 
-    explicit operator bool() const
+    operator bool() const
     {
       return m_result;
     }
