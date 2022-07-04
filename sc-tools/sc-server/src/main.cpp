@@ -44,26 +44,16 @@ try
   if (vm.count("config"))
     configFile = vm["config"].as<std::string>();
 
-  ScParams serverParams;
   std::vector<std::string> keys = {"host", "port"};
-  for (auto const & key : keys)
-  {
-    if (vm.count(key))
-      serverParams.insert({key, vm[key].as<std::string>()});
-  }
+  ScParams serverParams{vm, keys};
 
   ScConfig config{configFile};
   auto serverConfig = config["sc-server"];
   for (auto const & key : *serverConfig)
     serverParams.insert({key, serverConfig[key]});
 
-  ScParams memoryParams;
   keys = {"extensions_path", "repo_path", "verbose", "clear"};
-  for (auto const & key : keys)
-  {
-    if (vm.count(key))
-      memoryParams.insert({key, vm[key].as<std::string>()});
-  }
+  ScParams memoryParams{vm, keys};
 
   ScMemoryConfig memoryConfig{config, memoryParams};
 
