@@ -52,13 +52,8 @@ try
   if (vm.count("config"))
     config = vm["config"].as<std::string>();
 
-  ScParams memoryParams;
   std::vector<std::string> keys = {"extensions_path", "verbose", "clear"};
-  for (auto const & key : keys)
-  {
-    if (vm.count(key))
-      memoryParams.insert({key, vm[key].as<std::string>()});
-  }
+  ScParams memoryParams{vm, keys};
   memoryParams.insert({"repo_path", vm["output_path"].as<std::string>()});
 
   ScMemoryConfig memoryConfig{config, memoryParams};
