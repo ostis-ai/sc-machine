@@ -151,7 +151,7 @@ sc_json_command_handle_keynodes
 sc_json_command_answer_handle_keynodes
   : '"payload"' ':'
     '['
-        (BOOL ',')*
+        (SC_ADDR_HASH ',')*
     ']' ','
   ;
 
