@@ -22,7 +22,7 @@ option(SC_AUTO_TEST "Flag to build for automation testing" OFF)
 option(SC_BUILD_TESTS "Flag to build unit tests" ON)
 option(SC_BUILD_BENCH "Flag to build benchmark" OFF)
 
-option(SC_FILE_MEMORY "Sc-fs-storage type" Dictionary)
+set(SC_FILE_MEMORY "Dictionary" CACHE STRING "Sc-fs-storage type")
 
 code_coverage(SC_COVERAGE "Flag to generate coverage report" OFF "-g -O0 --coverage")
 option(SC_CLANG_FORMAT_CODE "Flag to add clangformat and clangformat_check targets" OFF)
