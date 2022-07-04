@@ -76,9 +76,6 @@ public:
   SC_PROPERTY(Keynode("nrel_be_more"), ForceCreate)
   static ScAddr nrel_be_more;
 
-  SC_PROPERTY(Keynode("statement"), ForceCreate)
-  static ScAddr statement;
-
   SC_PROPERTY(Keynode("rrel_key_sc_element"), ForceCreate)
   static ScAddr rrel_key_sc_element;
 
@@ -87,12 +84,6 @@ public:
 
   SC_PROPERTY(Keynode("rrel_main_key_sc_element"), ForceCreate)
   static ScAddr rrel_main_key_sc_element;
-
-  SC_PROPERTY(Keynode("nrel_implication"), ForceCreate)
-  static ScAddr nrel_implication;
-
-  SC_PROPERTY(Keynode("atomic_logical_formula"), ForceCreate)
-  static ScAddr atomic_logical_formula;
 
   SC_PROPERTY(Keynode("cardinality"), ForceCreate)
   static ScAddr cardinality;

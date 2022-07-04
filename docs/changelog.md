@@ -29,6 +29,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix scs-grammar. Add opportunity to specificate a structure into this structure itself
 
 ### Removed
+- Move logic rule utils and keynodes to [ostis-inference](https://github.com/ostis-apps/ostis-inference)
 - Remove sctp-server
 - Remove scp-interpreter
 
