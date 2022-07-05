@@ -1,31 +1,58 @@
 #pragma once
 
-#include <unordered_set>
+#include <algorithm>
+#include <vector>
 
 #include "sc-core/sc-store/sc_types.h"
 
 class ScOptions
 {
 public:
-  ScOptions(sc_int32 const & argc, char ** argv)
+  ScOptions(sc_int const & argc, char ** argv)
   {
-    for (sc_uint32 i = 1; i < argc; ++i)
-      m_tokens.insert(argv[i]);
+    for (sc_int i = 1; i < argc; ++i)
+      m_tokens.emplace_back(argv[i]);
   }
-  std::string operator[](std::string const & option) const
+  std::pair<std::string, std::string> operator[](std::vector<std::string> const & options) const
   {
-    auto it = m_tokens.find(option);
-    if (it != m_tokens.end() && ++it != m_tokens.end())
-      return *it;
+    for (auto const & item : options)
+    {
+      std::string const & option = Upstream(item);
+
+      auto it = std::find(m_tokens.begin(), m_tokens.end(), option);
+      if (it != m_tokens.end() && ++it != m_tokens.end())
+        return {item, *it};
+    }
 
     return {};
   }
 
-  bool Has(std::string const & option) const
+  bool Has(std::vector<std::string> const & options) const
   {
-    return m_tokens.find(option) != m_tokens.end();
+    for (auto const & item : options)
+    {
+      std::string const & option = Upstream(item);
+
+      if (std::find(m_tokens.begin(), m_tokens.end(), option) != m_tokens.end())
+        return SC_TRUE;
+    }
+
+    return SC_FALSE;
   }
 
 private:
-  std::unordered_set<std::string> m_tokens;
+  std::vector<std::string> m_tokens;
+
+  std::string Upstream(std::string const & option) const
+  {
+    std::stringstream stream;
+    stream << "-";
+
+    if (option.length() > 1)
+      stream << "-";
+
+    stream << option;
+
+    return stream.str();
+  }
 };
