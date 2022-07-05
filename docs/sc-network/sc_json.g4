@@ -293,7 +293,7 @@ sc_json_command_handle_events
         ']' ',')?
         ('"delete"' ':'
         '['
-            (SC_ADDR_HASH ',')*
+            (NUMBER ',')*
         ']' ',')?
     '}' ','
   ;
