@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add `;` after `SC_ASSERT` calls in projects that use sc-machine
 
 ### Added
+- Automatic usage of ccache to speed up builds
 - Add ci for `rocksdb` and `sc-dictionary`
 - Implement `sc-dictionary`. Add opportunity to switch `rocksdb` and `sc-dictionary`
 - Wrap and separate allocating, assertion, notification and atomic lock free procedures
@@ -19,7 +20,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - New flag options for build_kb
 - Add default python modules paths to python initialization
 - United config file
-- Automatic usage of ccache to speed up builds
 
 ### Changed
 - Simplify main CMakeLists.txt
