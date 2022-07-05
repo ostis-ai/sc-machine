@@ -6,19 +6,30 @@
 #include "sc-memory/sc_memory.hpp"
 
 #include "sc-config/sc_config.hpp"
+#include "sc_options.hpp"
+
 #include "sc-core/sc_memory_params.h"
 #include "sc-core/sc_memory_version.h"
 
 class ScParams
 {
 public:
-  explicit ScParams(boost::program_options::variables_map const & map, std::vector<std::string> const & keys)
+  explicit ScParams(ScOptions const & options, std::vector<std::vector<std::string>> const & keysSet)
   {
-    for (auto const & key : keys)
+    for (auto const & keys : keysSet)
     {
-      if (map.count(key))
-        m_params.insert({key, map[key].as<std::string>()});
+      if (options.Has(keys))
+      {
+        auto const & result = options[keys].second;
+        for (auto const & key : keys)
+          m_params.insert({key, result});
+      }
     }
+  }
+
+  ScParams(ScParams && object) noexcept
+  {
+    m_params = object.m_params;
   }
 
   void insert(std::pair<std::string, std::string> const & pair)
@@ -26,9 +37,13 @@ public:
     m_params.insert(pair);
   }
 
-  std::string at(std::string const & key) const
+  std::string const & at(std::string const & key) const
   {
-    return m_params.at(key);
+    if (m_params.count(key))
+      return m_params.at(key);
+
+    static std::string empty;
+    return empty;
   }
 
   bool count(std::string const & key) const
@@ -65,11 +80,12 @@ public:
     sc_version version = {
         SC_MACHINE_VERSION_MAJOR, SC_MACHINE_VERSION_MINOR, SC_MACHINE_VERSION_PATCH, SC_MACHINE_VERSION_SUFFIX};
 
+    std::cout << m_params.at("repo_path").c_str() << std::endl;
     m_memoryParams.version = (sc_char const *)sc_version_string_new(&version);
     m_memoryParams.clear = m_params.count("clear") ? SC_TRUE : SC_FALSE;
-    m_memoryParams.repo_path = (sc_char const *)m_params.at("repo_path").c_str();
+    m_memoryParams.repo_path = m_params.at("repo_path").c_str();
     m_memoryParams.ext_path =
-        (sc_char const *)(m_params.count("extensions_path") ? m_params.at("extensions_path").c_str() : null_ptr);
+        m_params.count("extensions_path") ? m_params.at("extensions_path").c_str() : (sc_char const *)null_ptr;
     m_memoryParams.enabled_exts = nullptr;
     m_memoryParams.save_period = m_params.count("save_period") ? std::stoi(m_params.at("save_period")) : 32000;
     m_memoryParams.update_period = m_params.count("update_period") ? std::stoi(m_params.at("update_period")) : 16000;

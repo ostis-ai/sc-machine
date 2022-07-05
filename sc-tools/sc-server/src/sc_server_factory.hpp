@@ -6,5 +6,5 @@
 class ScServerFactory
 {
 public:
-  static std::unique_ptr<ScServer> ConfigureScServer(const ScParams& serverParams, sc_memory_params memoryParams);
+  static std::unique_ptr<ScServer> ConfigureScServer(const ScParams & serverParams, sc_memory_params memoryParams);
 };
