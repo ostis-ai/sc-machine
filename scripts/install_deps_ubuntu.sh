@@ -1,5 +1,6 @@
 APP_ROOT_PATH=$(cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && cd .. && pwd)
 
+sudo add-apt-repository universe
 sudo apt-get update
 sudo apt-get install -y \
                      libglib2.0-dev libboost-system-dev \
