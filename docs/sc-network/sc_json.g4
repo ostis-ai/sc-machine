@@ -21,6 +21,7 @@ sc_json_command_type_and_payload
   | sc_json_command_search_template
   | sc_json_command_generate_template
   | sc_json_command_handle_events
+  | sc_json_command_answer_init_event
   ;
 
 sc_json_command_answer
@@ -302,6 +303,14 @@ sc_json_command_answer_handle_events
   : '"payload"' ':'
     '['
         (SC_ADDR_HASH ',')*
+    ']' ','
+  ;
+
+sc_json_command_answer_init_event
+  : '"event"' ':' '1' ','
+    '"payload"' ':'
+    '['
+	    (SC_ADDR_HASH ',')*
     ']' ','
   ;
 
