@@ -1,5 +1,4 @@
-ARG VARIANT="bullseye"
-FROM debian:${VARIANT}-slim as base
+FROM debian:11.4-slim as base
 
 ENV CCACHE_DIR=/ccache
 USER root
@@ -10,9 +9,15 @@ COPY requirements.txt /tmp/sc-machine/requirements.txt
 RUN apt update && apt install -y --no-install-recommends sudo && /tmp/sc-machine/scripts/install_deps_ubuntu.sh
 
 #build using ccache
-FROM base as builder
+FROM base as devdeps
 RUN /tmp/sc-machine/scripts/install_deps_ubuntu.sh --dev
 WORKDIR /sc-machine
+
+FROM devdeps as devcontainer
+RUN apt install -y --no-install-recommends git cppcheck valgrind gdb bash-completion ninja-build
+ENTRYPOINT ["/bin/bash"]
+
+FROM devdeps as builder
 COPY . .
 RUN --mount=type=cache,target=/ccache/ ./scripts/make_all.sh
 
@@ -20,7 +25,7 @@ RUN --mount=type=cache,target=/ccache/ ./scripts/make_all.sh
 FROM base AS final
 
 COPY --from=builder /sc-machine/scripts /sc-machine/scripts 
-COPY --from=builder /sc-machine/config  /sc-machine/config 
+COPY --from=builder /sc-machine/config /sc-machine/config 
 COPY --from=builder /sc-machine/bin /sc-machine/bin
 WORKDIR /sc-machine/scripts
 
