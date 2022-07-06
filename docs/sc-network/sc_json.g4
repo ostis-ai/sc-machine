@@ -204,7 +204,7 @@ sc_json_command_template_payload
   : '"payload"' ':'
     '{'
         '"templ"' ':'
-        '['
+        ('['
             ('['
                 (
                 '{'
@@ -239,11 +239,19 @@ sc_json_command_template_payload
                 )
             ']' ',')*
         ']' ','
+        |
+		scs_text ','
+		| '{' '"type"' ':' '"addr"' ',' '"value"' ':' SC_ADDR_HASH ',' '}' ','
+	    | '{' '"type"' ':' '"idtf"' ',' '"value"' ':' SC_NODE_IDTF ',''}' ',')
         '"params"' ':'
         '{'
-            (SC_ALIAS ':' SC_ADDR_HASH ',')*
+            (SC_ALIAS ':' (SC_ADDR_HASH | SC_ALIAS) ',')*
         '}' ','
     '}' ','
+  ;
+
+scs_text
+  : STRING_CONTENT
   ;
 
 sc_json_command_answer_search_template
