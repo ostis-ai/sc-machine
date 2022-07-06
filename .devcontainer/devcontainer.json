@@ -1,0 +1,30 @@
+// For format details, see https://aka.ms/devcontainer.json.
+{
+	"name": "sc-machine_devcontainer",
+	"build": {
+		"dockerfile": "../Dockerfile",
+		"target": "devcontainer",
+		"context": "..",
+		"args": { "VARIANT": "debian-11" }
+	},
+	"runArgs": ["--cap-add=SYS_PTRACE", "--security-opt", "seccomp=unconfined"],
+
+	// Configure tool-specific properties.
+	"customizations": {
+		// Configure properties specific to VS Code.
+		"vscode": {
+			// Add the IDs of extensions you want installed when the container is created.
+			"extensions": [
+				"ms-vscode.cpptools",
+				"ms-vscode.cmake-tools",
+				"vadimcn.vscode-lldb",
+				"xaver.clang-format"
+		
+			]
+		}
+	},
+
+	// Use 'forwardPorts' to make a list of ports inside the container available locally.
+	"forwardPorts": [8090],
+	"mounts": ["source=sc-machine_ccache,target=/ccache,type=volume"]
+}
