@@ -17,7 +17,7 @@ try
 
   if (options.Has({"help"}) || !options.Has({"input_path", "i"}) || !options.Has({"output_path", "o"}))
   {
-    std::cout << "**********************SC-BUILDER USAGE************************\n"
+    std::cout << "SC-BUILDER USAGE\n\n"
               << "--config|-c -- Path to configuration file\n"
               << "--input_path|-i -- Path to directory with sources\n"
               << "--output_path|-o -- Path to output directory (repository)\n"
@@ -25,8 +25,7 @@ try
               << "--enabled_ext -- Path to file with enabled extensions\n"
               << "--auto_formats|-f -- Enable automatic formats info generation\n"
               << "--clear -- Flag to clear sc-memory on start\n"
-              << "--help -- Display this message\n"
-              << "**************************************************************\n";
+              << "--help -- Display this message\n\n";
     return EXIT_SUCCESS;
   }
 
