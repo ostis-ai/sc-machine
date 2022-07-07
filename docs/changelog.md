@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add `;` after `SC_ASSERT` calls in projects that use sc-machine
 
 ### Added
+- Excludes for files and folders in repo.path
 - Automatic usage of ccache to speed up builds
 - Add ci for `rocksdb` and `sc-dictionary`
 - Implement `sc-dictionary`. Add opportunity to switch `rocksdb` and `sc-dictionary`
