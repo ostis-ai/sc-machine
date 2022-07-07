@@ -8,7 +8,7 @@ public:
   ScMemoryJsonPayload Complete(ScMemoryContext * context, ScMemoryJsonPayload requestPayload) override
   {
     ScTemplateGenResult result;
-    auto const & pair = getTemplate(context, requestPayload);
+    auto const & pair = GetTemplate(context, requestPayload);
     context->HelperGenTemplate(*pair.first, result, pair.second);
     delete pair.first;
 

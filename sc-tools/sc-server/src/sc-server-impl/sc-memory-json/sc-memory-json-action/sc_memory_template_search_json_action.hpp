@@ -8,7 +8,7 @@ public:
   ScMemoryJsonPayload Complete(ScMemoryContext * context, ScMemoryJsonPayload requestPayload) override
   {
     ScTemplateSearchResult result;
-    auto const & pair = getTemplate(context, requestPayload);
+    auto const & pair = GetTemplate(context, requestPayload);
     context->HelperSearchTemplate(*pair.first, result);
     delete pair.first;
 

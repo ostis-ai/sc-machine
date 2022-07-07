@@ -5,10 +5,10 @@
 class ScMemoryMakeTemplateJsonAction : public ScMemoryJsonAction
 {
 protected:
-  std::pair<ScTemplate *, ScTemplateParams> getTemplate(ScMemoryContext * context, ScMemoryJsonPayload payload)
+  std::pair<ScTemplate *, ScTemplateParams> GetTemplate(ScMemoryContext * context, ScMemoryJsonPayload payload)
   {
     ScTemplateParams templParams;
-    if (payload.find("templ") != payload.end())
+    if (payload["templ"].is_null() == SC_FALSE)
     {
       auto const & rowParams = payload["params"];
       payload = payload["templ"];
@@ -49,12 +49,12 @@ protected:
       }
     }
     else
-      scTemplate = makeTemplate(payload);
+      scTemplate = MakeTemplate(payload);
 
     return {scTemplate, templParams};
   }
 
-  ScTemplate * makeTemplate(ScMemoryJsonPayload const & triples)
+  ScTemplate * MakeTemplate(ScMemoryJsonPayload const & triples)
   {
     auto const & convertItemToParam = [](ScMemoryJsonPayload paramItem) -> ScTemplateItemValue {
       std::string const & paramType = paramItem["type"];
