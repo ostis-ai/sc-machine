@@ -6,7 +6,7 @@
 
 using ScMemoryJsonPayload = nlohmann::json;
 
-#define WAIT_SERVER sleep(1)
+#define WAIT_SERVER std::this_thread::sleep_for(std::chrono::milliseconds(10))
 
 class ScClient
 {
@@ -16,14 +16,6 @@ public:
     m_instance = new ScClientCore();
 
     Initialize();
-  }
-
-  ScClient(ScClient & client)
-  {
-    m_instance = client.m_instance;
-    m_thread = std::move(client.m_thread);
-    m_connection = client.m_connection;
-    m_currentPayload = client.m_currentPayload;
   }
 
   sc_bool Connect(std::string const & uri)
@@ -83,8 +75,9 @@ private:
   {
     m_instance->clear_access_channels(ScServerLogMessages::all);
     m_instance->set_error_channels(ScServerLogErrors::all);
-    m_instance->set_message_handler(bind(&ScClient::OnMessage, this, ::_1, ::_2));
 
     m_instance->init_asio();
+
+    m_instance->set_message_handler(bind(&ScClient::OnMessage, this, ::_1, ::_2));
   }
 };

@@ -30,9 +30,11 @@ public:
 
   void Run()
   {
+    m_instance->init_asio();
+    m_instance->set_reuse_addr(SC_TRUE);
+
     Initialize();
 
-    m_instance->init_asio();
     m_instance->listen({boost::asio::ip::address::from_string(m_hostName), sc_uint16(m_port)});
     m_instance->start_accept();
 
