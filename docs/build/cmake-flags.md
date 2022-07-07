@@ -1,3 +1,6 @@
+## Build cache:
+This project uses ccache automatically if it's available in the system. To disable this, use flag `-DAUTO_CCACHE=OFF`
+
 ## Building tests:
 ```sh
 cd sc-machine
