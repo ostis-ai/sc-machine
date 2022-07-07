@@ -19,7 +19,7 @@ set(SC_EXTENSIONS_DIRECTORY "${SC_BIN_PATH}/extensions")
 set(SC_MACHINE_THIRDPARTY_PATH "${SC_MACHINE_ROOT}/thirdparty")
 
 option(SC_AUTO_TEST "Flag to build for automation testing" OFF)
-option(SC_BUILD_TESTS "Flag to build unit tests" ON)
+option(SC_BUILD_TESTS "Flag to build unit tests" OFF)
 option(SC_BUILD_BENCH "Flag to build benchmark" OFF)
 
 set(SC_FILE_MEMORY "Dictionary" CACHE STRING "Sc-fs-storage type")
