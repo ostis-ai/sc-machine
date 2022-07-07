@@ -23,8 +23,8 @@ nav:
     - SCs language: other/scs.md
   - API:
     - Meta programming: cpp/cpp-meta.md
-    - Agents: cpp/kpm.md
-    - Template: cpp/templates.md
+    - Agents: sc-kpm/kpm.md
+    - Template: sc-search/templates.md
     - Common: cpp/common.md
     - Python:
       - Common: python/python.md
@@ -32,11 +32,8 @@ nav:
       - Wrapped classes: python/cpp_wrap.md
     - File storage:
       - Sc-dictionary-based file storage: storage/sc_dictionary.md
-  - Http:
-      - Common: http/index.md
-      - WebSocket: http/websocket.md
   - Tools:
-      - Builder: tools/kb_builder.md
+      - Builder: sc-tools/kb_builder.md
   - License: license.md
   - Changelog: changelog.md
   - Thirdparty: thirdparty.md

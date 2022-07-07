@@ -6,3 +6,4 @@ Based on refactored code from: [CPP-Reflection](https://github.com/AustinBrunkho
 * [RocksDB](https://rocksdb.org/)
 * [Antlr 4](https://github.com/antlr/antlr4)
 * [libclang](https://clang.llvm.org/docs/Tooling.html)
+* [Websocketcpp](https://docs.websocketpp.org/)

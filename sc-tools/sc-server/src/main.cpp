@@ -24,7 +24,7 @@ try
 
   if (options.Has({"help"}))
   {
-    std::cout << "**********************SC-SERVER USAGE************************\n"
+    std::cout << "SC-SERVER USAGE\n\n"
               << "--config|-c -- Path to configuration file\n"
               << "--host|-h -- Sc-server host name, ip-address\n"
               << "--port|-p -- Sc-server port\n"
@@ -32,8 +32,7 @@ try
               << "--repo|-path -- Path to kb.bin folder\n"
               << "--verbose|-v -- Flag to don't save sc-memory state on exit\n"
               << "--clear -- Flag to clear sc-memory on start\n"
-              << "--help -- Display this message\n"
-              << "**************************************************************\n";
+              << "--help -- Display this message\n\n";
     return EXIT_SUCCESS;
   }
 
