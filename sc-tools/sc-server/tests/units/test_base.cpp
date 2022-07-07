@@ -222,6 +222,94 @@ TEST_F(ScServerTest, HandleContent)
   client.Stop();
 }
 
+TEST_F(ScServerTest, HandleIntContent)
+{
+  ScClient client;
+  EXPECT_TRUE(client.Connect(m_server->GetUri()));
+  client.Run();
+
+  ScAddr const & link = m_ctx->CreateLink();
+
+  std::string const payloadString = ScMemoryJsonConverter::From(
+      0,
+      "content",
+      ScMemoryJsonPayload::array({
+          {
+              {"command", "set"},
+              {"type", "int"},
+              {"data", 100},
+              {"addr", link.Hash()},
+          },
+          {
+              {"command", "get"},
+              {"addr", link.Hash()},
+          },
+          {
+              {"command", "find"},
+              {"data", 100},
+          },
+      }));
+  WAIT_SERVER;
+  EXPECT_TRUE(client.Send(payloadString));
+
+  WAIT_SERVER;
+  WAIT_SERVER;
+  auto const response = client.GetResponsePayload();
+  EXPECT_FALSE(response.is_null());
+
+  EXPECT_TRUE(response[0].get<sc_bool>());
+  EXPECT_TRUE(response[1]["value"].get<sc_int>() == 100);
+  auto const & links = response[2].get<std::vector<size_t>>();
+  EXPECT_FALSE(links.empty());
+  EXPECT_TRUE(std::find(links.begin(), links.end(), link.Hash()) != links.end());
+
+  client.Stop();
+}
+
+TEST_F(ScServerTest, HandleFloatContent)
+{
+  ScClient client;
+  EXPECT_TRUE(client.Connect(m_server->GetUri()));
+  client.Run();
+
+  ScAddr const & link = m_ctx->CreateLink();
+
+  std::string const payloadString = ScMemoryJsonConverter::From(
+      0,
+      "content",
+      ScMemoryJsonPayload::array({
+          {
+              {"command", "set"},
+              {"type", "float"},
+              {"data", 10.53f},
+              {"addr", link.Hash()},
+          },
+          {
+              {"command", "get"},
+              {"addr", link.Hash()},
+          },
+          {
+              {"command", "find"},
+              {"data", 10.53f},
+          },
+      }));
+  WAIT_SERVER;
+  EXPECT_TRUE(client.Send(payloadString));
+
+  WAIT_SERVER;
+  WAIT_SERVER;
+  auto const response = client.GetResponsePayload();
+  EXPECT_FALSE(response.is_null());
+
+  EXPECT_TRUE(response[0].get<sc_bool>());
+  EXPECT_TRUE(response[1]["value"].get<float>() == 10.53f);
+  auto const & links = response[2].get<std::vector<size_t>>();
+  EXPECT_FALSE(links.empty());
+  EXPECT_TRUE(std::find(links.begin(), links.end(), link.Hash()) != links.end());
+
+  client.Stop();
+}
+
 TEST_F(ScServerTest, SearchTemplate)
 {
   ScAddr const & addr = m_ctx->CreateNode(ScType::NodeConst);
