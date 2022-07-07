@@ -58,6 +58,19 @@ public:
     if (m_ioThread.joinable())
     {
       LogMessage(ScServerLogMessages::devel, "Close input-output processing");
+
+      for (auto & it : *m_connections)
+      {
+        try
+        {
+          m_instance->close(it, websocketpp::close::status::normal, "");
+        }
+        catch (std::exception const & ex)
+        {
+          LogError(ScServerLogErrors::devel, ex.what());
+        }
+      }
+
       m_instance->stop();
       m_ioThread.join();
     }
