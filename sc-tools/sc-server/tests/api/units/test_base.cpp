@@ -1,11 +1,11 @@
-#include <gtest/gtest.h>
+#include "gtest/gtest.h"
 
 #include "sc-core/sc-store/sc_types.h"
 #include "sc-memory/sc_type.hpp"
 #include "sc_server_test.hpp"
-#include "../sc_client.hpp"
+#include "../../sc_client.hpp"
 
-#include "../sc_memory_json_converter.hpp"
+#include "../../sc_memory_json_converter.hpp"
 
 TEST_F(ScServerTest, CreateElements)
 {
