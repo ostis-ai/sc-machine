@@ -24,7 +24,7 @@ void ScServerImpl::Initialize()
   m_instance->set_close_handler(bind(&ScServerImpl::OnClose, this, ::_1));
   m_instance->set_message_handler(bind(&ScServerImpl::OnMessage, this, ::_1, ::_2));
 
-  if (!m_logPath.empty())
+  if (m_logPath.empty() == SC_FALSE)
   {
     m_log = new std::ofstream();
     m_log->open(m_logPath);
@@ -42,6 +42,9 @@ void ScServerImpl::Initialize()
 
 void ScServerImpl::AfterInitialize()
 {
+  while (m_actions->empty() == SC_FALSE)
+    ;
+
   m_actionsRun = SC_FALSE;
   m_actionCond.notify_one();
 }
@@ -75,6 +78,11 @@ void ScServerImpl::EmitActions()
     }
     delete action;
   }
+}
+
+sc_bool ScServerImpl::IsWorkable()
+{
+  return m_actions->empty() == SC_FALSE;
 }
 
 void ScServerImpl::OnOpen(ScServerConnectionHandle const & hdl)

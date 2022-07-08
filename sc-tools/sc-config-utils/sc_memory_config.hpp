@@ -86,7 +86,6 @@ public:
     sc_version version = {
         SC_MACHINE_VERSION_MAJOR, SC_MACHINE_VERSION_MINOR, SC_MACHINE_VERSION_PATCH, SC_MACHINE_VERSION_SUFFIX};
 
-    std::cout << m_params.at("repo_path").c_str() << std::endl;
     m_memoryParams.version = (sc_char const *)sc_version_string_new(&version);
     m_memoryParams.clear = m_params.count("clear") ? SC_TRUE : SC_FALSE;
     m_memoryParams.repo_path = m_params.at("repo_path").c_str();

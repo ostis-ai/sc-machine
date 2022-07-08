@@ -53,6 +53,8 @@ public:
 
   void Stop()
   {
+    m_instance->stop_listening();
+
     AfterInitialize();
 
     if (m_actionsThread.joinable())
@@ -99,6 +101,8 @@ public:
   }
 
   virtual void EmitActions() = 0;
+
+  virtual sc_bool IsWorkable() = 0;
 
   std::string GetUri()
   {

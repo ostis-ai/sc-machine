@@ -24,6 +24,8 @@ public:
 
   void EmitActions() override;
 
+  sc_bool IsWorkable() override;
+
   ~ScServerImpl() override;
 
 protected:
