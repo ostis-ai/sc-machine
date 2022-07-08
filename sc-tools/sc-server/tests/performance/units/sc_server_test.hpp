@@ -40,13 +40,10 @@ public:
 
     InitContext();
     Setup(objectsNum);
-
-    WaitServer();
   }
 
   void Shutdown()
   {
-    WaitServer();
     DestroyContext();
 
     ScMemory::LogMute();
@@ -68,7 +65,8 @@ public:
 
   void WaitServer()
   {
-    std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+    while (m_server->IsWorkable())
+      ;
   }
 
   virtual void Setup(size_t objectsNum)
