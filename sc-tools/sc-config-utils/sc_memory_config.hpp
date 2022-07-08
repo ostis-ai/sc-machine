@@ -17,6 +17,11 @@
 #include "sc-core/sc_memory_params.h"
 #include "sc-core/sc_memory_version.h"
 
+#define DEFAULT_SAVE_PERIOD 32000
+#define DEFAULT_UPDATE_PERIOD 16000
+#define DEFAULT_MAX_THREADS 32
+#define DEFAULT_MAX_LOADED_SEGMENTS 1000
+
 class ScParams
 {
 public:
@@ -92,16 +97,20 @@ public:
     m_memoryParams.ext_path =
         m_params.count("extensions_path") ? m_params.at("extensions_path").c_str() : (sc_char const *)null_ptr;
     m_memoryParams.enabled_exts = nullptr;
-    m_memoryParams.save_period = m_params.count("save_period") ? std::stoi(m_params.at("save_period")) : 32000;
-    m_memoryParams.update_period = m_params.count("update_period") ? std::stoi(m_params.at("update_period")) : 16000;
+    m_memoryParams.save_period =
+        m_params.count("save_period") ? std::stoi(m_params.at("save_period")) : DEFAULT_SAVE_PERIOD;
+    m_memoryParams.update_period =
+        m_params.count("update_period") ? std::stoi(m_params.at("update_period")) : DEFAULT_UPDATE_PERIOD;
 
     m_memoryParams.debug_type = (sc_char const *)SC_MACHINE_LOG_TYPE;
     m_memoryParams.debug_mode = (sc_char const *)SC_MACHINE_LOG_MODE;
     m_memoryParams.debug_file = (sc_char const *)SC_MACHINE_LOG_DIR;
 
-    m_memoryParams.max_threads = m_params.count("max_threads") ? std::stoi(m_params.at("max_threads")) : 32;
-    m_memoryParams.max_loaded_segments =
-        m_params.count("max_loaded_segments") ? std::stoi(m_params.at("max_loaded_segments")) : 1000;
+    m_memoryParams.max_threads =
+        m_params.count("max_threads") ? std::stoi(m_params.at("max_threads")) : DEFAULT_MAX_THREADS;
+    m_memoryParams.max_loaded_segments = m_params.count("max_loaded_segments")
+                                             ? std::stoi(m_params.at("max_loaded_segments"))
+                                             : DEFAULT_MAX_LOADED_SEGMENTS;
 
     return m_memoryParams;
   }
