@@ -12,6 +12,7 @@
 #  include "../sc-base/sc_allocator.h"
 #  include "../sc-base/sc_assert_utils.h"
 #  include "../sc-base/sc_message.h"
+#  include "../sc-container/sc-string/sc_string.h"
 
 sc_char * file_path = null_ptr;
 sc_char strings_path[MAX_PATH_LENGTH];
@@ -85,8 +86,10 @@ void _sc_strings_dictionary_node_destroy(sc_dictionary_node * node, void ** args
   if (node->data_list != null_ptr)
   {
     sc_link_content * content = (sc_link_content *)node->data_list->begin->data;
+    sc_mem_free(content->sc_string);
     content->sc_string = null_ptr;
     content->string_size = 0;
+    content->node = null_ptr;
   }
 
   sc_dictionary_node_destroy(node, args);
@@ -122,6 +125,8 @@ void _sc_dictionary_fs_storage_append_sc_string_sc_link_reference(
 
   sc_dictionary_node * link_hash_node = sc_dictionary_append_to_node(strings_dictionary->root, hash_str, hash_str_len);
 
+  sc_mem_free(hash_str);
+
   if (link_hash_node->data_list == null_ptr)
     sc_list_init(&link_hash_node->data_list);
 
@@ -134,7 +139,7 @@ void _sc_dictionary_fs_storage_append_sc_string_sc_link_reference(
 
   sc_link_content * content = sc_mem_new(sc_link_content, 1);
   content->string_size = size;
-  content->sc_string = sc_string;
+  sc_str_cpy(content->sc_string, sc_string, content->string_size);
   content->node = &(*node);
 
   sc_list_push_back(link_hash_node->data_list, content);
@@ -448,6 +453,7 @@ sc_bool sc_dictionary_fs_storage_fill()
     }
 
     sc_mem_free(hashes);
+    sc_mem_free(string);
   }
 
   g_io_channel_shutdown(in_file, SC_FALSE, null_ptr);
