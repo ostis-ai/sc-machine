@@ -23,6 +23,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - United config file
 
 ### Changed
+- Fix gwf2scs-translator. Add opportunity to parse russian identifiers
 - Simplify main CMakeLists.txt
 - Add tools macros for main CMakeLists.txt
 - Separate dependencies specifying from main CMakeLists.txt
