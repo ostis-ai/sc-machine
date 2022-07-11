@@ -11,7 +11,11 @@ std::unique_ptr<ScServer> ScServerFactory::ConfigureScServer(
     sc_memory_params memoryParams)
 {
   std::unique_ptr<ScServer> server = std::unique_ptr<ScServer>(new ScServerImpl(
-      serverParams.at("host"), std::stoi(serverParams.at("port")), serverParams.at("log_file"), memoryParams));
+      serverParams.at("host"),
+      std::stoi(serverParams.at("port")),
+      serverParams.at("log_file"),
+      std::stoi(serverParams.at("sync_actions")),
+      memoryParams));
 
   server->SetMessageChannels(ScServerLogMessages::connect | ScServerLogMessages::disconnect | ScServerLogMessages::app);
   server->SetErrorChannels(ScServerLogErrors::all);
