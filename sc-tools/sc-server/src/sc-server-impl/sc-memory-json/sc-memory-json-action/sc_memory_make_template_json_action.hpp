@@ -14,7 +14,7 @@ protected:
   std::pair<ScTemplate *, ScTemplateParams> GetTemplate(ScMemoryContext * context, ScMemoryJsonPayload payload)
   {
     ScTemplateParams templParams;
-    if (payload["templ"].is_null() == SC_FALSE)
+    if (payload.find("templ") != payload.end())
     {
       auto const & rowParams = payload["params"];
       payload = payload["templ"];
