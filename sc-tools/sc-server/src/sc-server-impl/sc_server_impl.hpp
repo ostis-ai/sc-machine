@@ -20,7 +20,12 @@ class ScServerImpl : public ScServer
 public:
   explicit ScServerImpl(sc_memory_params const & params);
 
-  explicit ScServerImpl(std::string const & host, ScServerPort port, std::string const & logPath, sc_memory_params const & params);
+  explicit ScServerImpl(
+      std::string const & host,
+      ScServerPort port,
+      std::string const & logPath,
+      sc_bool syncActions,
+      sc_memory_params const & params);
 
   void EmitActions() override;
 
@@ -32,6 +37,7 @@ protected:
   ScServerMutex m_actionLock;
   ScServerMutex m_connectionLock;
   ScServerCondVar m_actionCond;
+  sc_bool syncActions;
 
   std::atomic<sc_bool> m_actionsRun;
 

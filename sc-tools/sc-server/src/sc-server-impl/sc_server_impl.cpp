@@ -9,12 +9,20 @@
 #include "sc_server_action_defines.hpp"
 
 ScServerImpl::ScServerImpl(sc_memory_params const & params)
-  : ScServerImpl("127.0.0.1", 8090, "", params)
+  : ScServerImpl("127.0.0.1", 8090, "", SC_FALSE, params)
 {
 }
 
-ScServerImpl::ScServerImpl(std::string const & host, ScServerPort port, std::string const & logPath, sc_memory_params const & params)
-  : ScServer(host, port, logPath, params), m_actionsRun(SC_TRUE), m_actions(new ScServerActions())
+ScServerImpl::ScServerImpl(
+    std::string const & host,
+    ScServerPort port,
+    std::string const & logPath,
+    sc_bool syncActions,
+    sc_memory_params const & params)
+  : ScServer(host, port, logPath, params),
+  m_actionsRun(SC_TRUE),
+  m_actions(new ScServerActions()),
+  syncActions(syncActions)
 {
 }
 
@@ -105,11 +113,16 @@ void ScServerImpl::OnClose(ScServerConnectionHandle const & hdl)
 
 void ScServerImpl::OnMessage(ScServerConnectionHandle const & hdl, ScServerMessage const & msg)
 {
+  if (syncActions == SC_TRUE)
   {
-    ScServerLock guard(m_actionLock);
-    m_actions->push(new ScServerMessageAction(this, hdl, msg));
+    {
+      ScServerLock guard(m_actionLock);
+      m_actions->push(new ScServerMessageAction(this, hdl, msg));
+    }
+    m_actionCond.notify_one();
   }
-  m_actionCond.notify_one();
+  else
+    ScServerMessageAction(this, hdl, msg).Emit();
 }
 
 void ScServerImpl::OnEvent(ScServerConnectionHandle const & hdl, std::string const & msg)

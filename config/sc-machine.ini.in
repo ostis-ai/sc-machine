@@ -12,3 +12,4 @@ extensions_path = @SC_MACHINE_ROOT@/bin/extensions
 host = 127.0.0.1
 port = 8090
 log_file = @SC_MACHINE_ROOT@/log/sc-server.log
+sync_actions = 0
