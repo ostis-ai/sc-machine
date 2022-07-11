@@ -31,7 +31,7 @@ public:
     std::uniform_int_distribution<> distribution(MIN_TEST_SERVER_PORT, MAX_TEST_SERVER_PORT);
     std::mt19937 generator(random_device());
 
-    m_server = std::make_unique<ScServerImpl>("127.0.0.1", distribution(generator), "test-sc-server-bench.log", params);
+    m_server = std::make_unique<ScServerImpl>("127.0.0.1", distribution(generator), "test-sc-server-bench.log", SC_TRUE, params);
     m_server->SetMessageChannels(ScServerLogMessages::all);
     m_server->SetErrorChannels(ScServerLogErrors::all);
     m_server->Run();

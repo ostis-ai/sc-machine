@@ -42,7 +42,7 @@ protected:
     params.repo_path = SC_SERVER_REPO_PATH;
 
     ScMemory::LogMute();
-    m_server = std::make_unique<ScServerImpl>("127.0.0.1", 8765, "test-sc-server.log", params);
+    m_server = std::make_unique<ScServerImpl>("127.0.0.1", 8765, "test-sc-server.log", SC_TRUE, params);
     m_server->SetMessageChannels(ScServerLogMessages::all);
     m_server->SetErrorChannels(ScServerLogErrors::all);
     m_server->Run();
