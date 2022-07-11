@@ -17,23 +17,8 @@ public:
   {
     ScMemoryJsonPayload responsePayload;
 
-    if (requestPayload.is_array())
+    auto const & process = [&context, &responsePayload, this](ScMemoryJsonPayload const & atom)
     {
-      for (auto & atom : requestPayload)
-      {
-        std::string const & type = atom["command"];
-
-        if (type == "set")
-          responsePayload.push_back(SetContent(context, atom));
-        else if (type == "get")
-          responsePayload.push_back(GetContent(context, atom));
-        else if (type == "find")
-          responsePayload.push_back(FindLinksByContent(context, atom));
-      }
-    }
-    else
-    {
-      auto const & atom = requestPayload;
       std::string const & type = atom["command"];
 
       if (type == "set")
@@ -42,7 +27,15 @@ public:
         responsePayload.push_back(GetContent(context, atom));
       else if (type == "find")
         responsePayload.push_back(FindLinksByContent(context, atom));
+    };
+
+    if (requestPayload.is_array())
+    {
+      for (auto & atom : requestPayload)
+        process(atom);
     }
+    else
+      process(requestPayload);
 
     return responsePayload;
   }
