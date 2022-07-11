@@ -1098,6 +1098,31 @@ sc_result sc_storage_find_links_with_content(
   return result;
 }
 
+sc_result sc_storage_find_links_with_content_substring(
+    const sc_memory_context * ctx,
+    const sc_stream * stream,
+    sc_addr ** result_addrs,
+    sc_uint32 * result_count)
+{
+  sc_assert(ctx != null_ptr);
+  sc_assert(stream != null_ptr);
+
+  *result_addrs = null_ptr;
+  *result_count = 0;
+
+  sc_char * sc_string = null_ptr;
+  sc_uint32 size = 0;
+  if (sc_stream_get_data(stream, &sc_string, &size) != SC_TRUE)
+    return SC_RESULT_ERROR;
+
+  sc_result result = sc_fs_storage_get_sc_links_by_substr(sc_string, result_addrs, result_count);
+  sc_mem_free(sc_string);
+  if (result != SC_RESULT_OK)
+    return SC_RESULT_ERROR;
+
+  return result;
+}
+
 sc_result sc_storage_set_access_levels(
     const sc_memory_context * ctx,
     sc_addr addr,

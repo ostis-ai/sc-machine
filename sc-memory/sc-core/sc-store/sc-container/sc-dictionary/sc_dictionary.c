@@ -231,6 +231,26 @@ sc_bool sc_dictionary_remove(sc_dictionary * dictionary, const sc_char * sc_stri
   return result;
 }
 
+sc_dictionary_node * sc_dictionary_get_node_from_node(sc_dictionary_node * node, const sc_char * sc_string)
+{
+  // check prefixes matching
+  sc_uint32 i = 0;
+  sc_uint32 string_size = strlen(sc_string);
+  while (i < string_size)
+  {
+    sc_dictionary_node * next = _sc_dictionary_get_next_node(node, sc_string[i]);
+    if (SC_DICTIONARY_NODE_IS_VALID(next))
+    {
+      node = next;
+      i += node->offset_size;
+    }
+    else
+      break;
+  }
+
+  return node;
+}
+
 sc_dictionary_node * sc_dictionary_get_last_node_from_node(sc_dictionary_node * node, const sc_char * sc_string)
 {
   // check prefixes matching
@@ -300,6 +320,33 @@ sc_list * sc_dictionary_get_datas_from_node(sc_dictionary_node * node, const sc_
 sc_list * sc_dictionary_get(sc_dictionary * dictionary, const sc_char * sc_string)
 {
   return sc_dictionary_get_datas_from_node(dictionary->root, sc_string);
+}
+
+void _sc_dictionary_update_list(sc_dictionary_node * node, void ** args)
+{
+  if (node->data_list != null_ptr)
+  {
+    sc_list * full_list = args[0];
+
+    sc_iterator * it = sc_list_iterator(node->data_list);
+    while (sc_iterator_next(it))
+      sc_list_push_back(full_list, sc_iterator_get(it));
+
+    sc_iterator_destroy(it);
+  }
+}
+
+sc_list * sc_dictionary_get_by_substr(sc_dictionary * dictionary, const sc_char * sc_substr)
+{
+  sc_dictionary_node * node = sc_dictionary_get_node_from_node(dictionary->root, sc_substr);
+
+  sc_list * full_list;
+  sc_list_init(&full_list);
+
+  sc_dictionary_visit_down_node_from_node(node, _sc_dictionary_update_list, (void **)&full_list);
+  _sc_dictionary_update_list(node, (void **)&full_list);
+
+  return full_list;
 }
 
 void sc_dictionary_show_from_node(sc_dictionary_node * node, sc_char * tab)

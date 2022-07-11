@@ -85,6 +85,11 @@ sc_bool sc_fs_storage_get_sc_links(const sc_char * sc_string, sc_addr ** links, 
   return storage_instance->get_sc_links(sc_string, links, size);
 }
 
+sc_bool sc_fs_storage_get_sc_links_by_substr(const sc_char * sc_substr, sc_addr ** links, sc_uint32 * size)
+{
+  return storage_instance->get_sc_links_by_substr(sc_substr, links, size);
+}
+
 void sc_fs_storage_get_sc_string_ext(sc_element * element, sc_addr addr, sc_char ** sc_string, sc_uint32 * size)
 {
   storage_instance->get_sc_string_ext(element, addr, &*sc_string, size);

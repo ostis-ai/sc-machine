@@ -178,6 +178,22 @@ sc_result sc_storage_find_links_with_content(
     sc_addr ** result,
     sc_uint32 * result_count);
 
+/*! Search sc-link addrs by specified data substring
+ * @param stream Pointer to stream that contains data for search
+ * @param result Pointer to result container of sc-links with specified data started with substring
+ * @param result_count Container for results count
+ * @return If sc-links with specified checksum found, then sc-addrs of found link
+ * writes into \p result array and function returns SC_OK; otherwise \p result will contain
+ * empty sc-addr and function returns SC_OK. In any case \p result_count contains number of found
+ * sc-addrs
+ * @attention \p result array need to be free after usage
+ */
+sc_result sc_storage_find_links_with_content_substring(
+    const sc_memory_context * ctx,
+    const sc_stream * stream,
+    sc_addr ** result_addrs,
+    sc_uint32 * result_count);
+
 /*! Setup new access levels to sc-element. New access levels will be a minimum from context access levels and parameter
  * \b access_levels
  * @param addr sc-addr of sc-element to change access levels

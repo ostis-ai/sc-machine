@@ -210,7 +210,25 @@ sc_addr_hash * sc_list_to_hashes_array(sc_list * list)
 
 sc_bool sc_dictionary_fs_storage_get_sc_links(const sc_char * sc_string, sc_addr ** links, sc_uint32 * size)
 {
-  sc_list * list = sc_dictionary_get_datas_from_node(addrs_hashes_dictionary->root, sc_string);
+  sc_list * list = sc_dictionary_get(addrs_hashes_dictionary, sc_string);
+
+  if (list == null_ptr)
+  {
+    *links = null_ptr;
+    *size = 0;
+    return SC_FALSE;
+  }
+
+  *links = sc_list_to_addr_array(list);
+  *size = list->size;
+  *links = sc_mem_cpy(*links, *links, *size);
+
+  return SC_TRUE;
+}
+
+sc_bool sc_dictionary_fs_storage_get_sc_links_by_substr(const sc_char * sc_substr, sc_addr ** links, sc_uint32 * size)
+{
+  sc_list * list = sc_dictionary_get_by_substr(addrs_hashes_dictionary, sc_substr);
 
   if (list == null_ptr)
   {

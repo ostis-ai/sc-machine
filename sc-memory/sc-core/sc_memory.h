@@ -192,6 +192,22 @@ _SC_EXTERN sc_result sc_memory_find_links_with_content(
     sc_addr ** result,
     sc_uint32 * result_count);
 
+/*! Search sc-link addrs by specified checksum substring
+ * @param stream Pointert to stream that contains data substring for search
+ * @param result Pointer to result container of sc-links
+ * @param result_count Container for results count
+ * @return If sc-links with specified checksum found, then sc-addrs of found link
+ * writes into \p result array and function returns SC_RESULT_OK; otherwise \p result will contain
+ * empty sc-addr and function returns SC_RESULT_OK. In any case \p result_count contains number of found
+ * sc-addrs
+ * @attention \p result array need to be free after usage
+ */
+_SC_EXTERN sc_result sc_memory_find_links_with_content_substring(
+    sc_memory_context const * ctx,
+    sc_stream const * stream,
+    sc_addr ** result,
+    sc_uint32 * result_count);
+
 /*! Free buffer allocated for links content find result
  */
 _SC_EXTERN void sc_memory_free_buff(sc_pointer buff);

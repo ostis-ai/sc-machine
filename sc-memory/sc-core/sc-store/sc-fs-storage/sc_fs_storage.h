@@ -22,6 +22,7 @@ typedef struct _sc_fs_storage
   sc_bool (*save)();
   sc_bool (*append_sc_link)(sc_element *, sc_addr, sc_char *, sc_uint32);
   sc_bool (*get_sc_links)(const sc_char * sc_string, sc_addr ** links, sc_uint32 * size);
+  sc_bool (*get_sc_links_by_substr)(const sc_char * sc_substr, sc_addr ** links, sc_uint32 * size);
   void (*get_sc_string_ext)(sc_element * element, sc_addr addr, sc_char ** sc_string, sc_uint32 * size);
 } sc_fs_storage;
 
@@ -38,7 +39,7 @@ typedef struct _sc_fs_storage_segments_header
  * @param path Path to store on file system.
  * @param clear Flag to initialize empty storage
  */
-sc_bool sc_fs_storage_initialize(const char * path, sc_bool clear);
+sc_bool sc_fs_storage_initialize(const sc_char * path, sc_bool clear);
 
 //! Shutdowns file system storage
 sc_bool sc_fs_storage_shutdown(sc_segment ** segments, sc_bool save_segments);
@@ -58,6 +59,14 @@ sc_bool sc_fs_storage_append_sc_link(sc_element * element, sc_addr addr, sc_char
  * @returns SC_TRUE, if sc-links exist.
  */
 sc_bool sc_fs_storage_get_sc_links(const sc_char * sc_string, sc_addr ** links, sc_uint32 * size);
+
+/*! Gets sc-links from file system storage by it substring content.
+ * @param sc_substr A key substring
+ * @param[out] links A pointer to sc-links
+ * @param[out] size A sc-links size
+ * @returns SC_TRUE, if sc-links exist.
+ */
+sc_bool sc_fs_storage_get_sc_links_by_substr(const sc_char * sc_substr, sc_addr ** links, sc_uint32 * size);
 
 /*! Gets sc-link content string with its size.
  * @param addr A sc-link

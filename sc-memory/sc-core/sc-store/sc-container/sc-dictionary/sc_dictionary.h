@@ -141,11 +141,18 @@ void * sc_dictionary_get_first_data_from_node(sc_dictionary_node * node, const s
 sc_list * sc_dictionary_get_datas_from_node(sc_dictionary_node * node, const sc_char * sc_string);
 
 /*! Gets datas from a terminal sc-dictionary node where string ends.
- * @param node A sc-dictionary
+ * @param dictionary A sc-dictionary
  * @param sc_string A string to retrieve datas by it
  * @returns Returns Datas from a sc-dictionary node where string ends
  */
 sc_list * sc_dictionary_get(sc_dictionary * dictionary, const sc_char * sc_string);
+
+/*! Gets datas from a sc-dictionary nodes where substring ends.
+ * @param dictionary A sc-dictionary
+ * @param sc_substr A substring to retrieve datas by it
+ * @returns Returns Datas from a sc-dictionary node where string ends
+ */
+sc_list * sc_dictionary_get_by_substr(sc_dictionary * dictionary, const sc_char * sc_substr);
 
 /*! Visits all sc-dictionary nodes starting with specified node and shows a terminal node datas with routes.
  * @param node A sc-dictionary node to start visiting

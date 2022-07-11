@@ -141,6 +141,13 @@ public:
     return FindLinksByContent(ScStreamMakeRead(value));
   }
 
+  template <typename TContentType>
+  ScAddrVector FindLinksByContentSubstring(TContentType const & value)
+  {
+    return FindLinksByContentSubstring(ScStreamMakeRead(value));
+  }
+  _SC_EXTERN ScAddrVector FindLinksByContentSubstring(ScStreamPtr const & stream);
+
   //! Saves memory state
   _SC_EXTERN bool Save();
 
