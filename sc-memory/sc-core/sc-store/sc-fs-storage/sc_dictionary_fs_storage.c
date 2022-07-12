@@ -252,7 +252,9 @@ sc_char * sc_dictionary_fs_storage_get_sc_string(sc_addr addr)
   if (SC_ADDR_IS_EMPTY(addr))
     return null_ptr;
 
-  sc_link_content * content = sc_dictionary_get_first_data_from_node(strings_dictionary->root, sc_addr_to_str(addr));
+  sc_char * hash = sc_addr_to_str(addr);
+  sc_link_content * content = sc_dictionary_get_first_data_from_node(strings_dictionary->root, hash);
+  sc_mem_free(hash);
 
   if (content == null_ptr || content->sc_string == null_ptr)
     return null_ptr;
@@ -267,7 +269,9 @@ sc_dictionary_node * sc_dictionary_fs_storage_get_node(sc_addr addr)
   if (SC_ADDR_IS_EMPTY(addr))
     return null_ptr;
 
-  sc_link_content * content = sc_dictionary_get_first_data_from_node(strings_dictionary->root, sc_addr_to_str(addr));
+  sc_char * hash = sc_addr_to_str(addr);
+  sc_link_content * content = sc_dictionary_get_first_data_from_node(strings_dictionary->root, hash);
+  sc_mem_free(hash);
 
   if (content == null_ptr || content->node == null_ptr)
     return null_ptr;
@@ -303,7 +307,9 @@ void sc_dictionary_fs_storage_get_sc_string_ext(
     return;
   }
 
-  sc_link_content * content = sc_dictionary_get_first_data_from_node(strings_dictionary->root, sc_addr_to_str(addr));
+  sc_char * hash = sc_addr_to_str(addr);
+  sc_link_content * content = sc_dictionary_get_first_data_from_node(strings_dictionary->root, hash);
+  sc_mem_free(hash);
   if (content == null_ptr)
   {
     *sc_string = null_ptr;
