@@ -10,6 +10,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add `;` after `SC_ASSERT` calls in projects that use sc-machine
 
 ### Added
+- Initial development container support
+- You can now run sc-machine in Docker 
 - Unite configuration for sc-server and sc-builder
 - Write docs in scn-latex for sc-server
 - Implement sc-memory configurator
