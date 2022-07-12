@@ -131,11 +131,15 @@ TEST_F(ScDictionaryTest, find_by_substr)
 
   list = sc_dictionary_get_by_substr(dictionary, "letters");
   it = sc_list_iterator(list);
-  while (sc_iterator_next(it))
-  {
-    auto const addr = SC_ADDR_LOCAL_TO_INT(*(sc_addr*)sc_iterator_get(it));
-    EXPECT_TRUE(SC_ADDR_LOCAL_TO_INT(addr4) == addr);
-  }
+  EXPECT_TRUE(sc_iterator_next(it));
+  auto const addr = SC_ADDR_LOCAL_TO_INT(*(sc_addr*)sc_iterator_get(it));
+  EXPECT_TRUE(SC_ADDR_LOCAL_TO_INT(addr4) == addr);
+  sc_iterator_destroy(it);
+  sc_list_destroy(list);
+
+  list = sc_dictionary_get_by_substr(dictionary, "letters_big_small");
+  it = sc_list_iterator(list);
+  EXPECT_FALSE(sc_iterator_next(it));
   sc_iterator_destroy(it);
   sc_list_destroy(list);
 }

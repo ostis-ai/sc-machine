@@ -248,6 +248,10 @@ TEST_F(ScLinkTest, find_by_substr)
   EXPECT_TRUE(ctx.FindLinksByContentSubstring("cont").size() == 3);
   EXPECT_TRUE(ctx.FindLinksByContentSubstring("content").size() == 2);
   EXPECT_TRUE(ctx.FindLinksByContentSubstring("con").size() == 3);
+  EXPECT_TRUE(ctx.FindLinksByContentSubstring("content2").empty());
+  EXPECT_TRUE(ctx.FindLinksByContentSubstring("contents").size() == 1);
+  EXPECT_TRUE(ctx.FindLinksByContentSubstring("contents_2").size() == 1);
+  EXPECT_TRUE(ctx.FindLinksByContentSubstring("contents_26").empty());
 
   ctx.Destroy();
 }
