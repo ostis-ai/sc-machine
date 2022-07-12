@@ -131,7 +131,7 @@ sc_dictionary_node * sc_dictionary_append_to_node(sc_dictionary_node * node, sc_
         sc_dictionary_node * temp = node->next[num];
 
         temp->offset_size = j;
-        sc_str_cpy(temp->offset, moving->offset, temp->offset_size);
+        temp->offset = moving->offset;
       }
 
       node = node->next[num];
@@ -410,7 +410,7 @@ void sc_dictionary_visit_down_node_from_node(
     void ** dest)
 {
   sc_uint8 i;
-  for (i = 1; i < _sc_dictionary_children_size(); ++i)
+  for (i = 0; i < _sc_dictionary_children_size(); ++i)
   {
     sc_dictionary_node * next = node->next[i];
     if (SC_DICTIONARY_NODE_IS_VALID(next))

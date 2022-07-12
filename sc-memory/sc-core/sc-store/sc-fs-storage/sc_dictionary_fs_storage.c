@@ -224,7 +224,6 @@ sc_bool sc_dictionary_fs_storage_get_sc_links(const sc_char * sc_string, sc_addr
 
   *links = sc_list_to_addr_array(list);
   *size = list->size;
-  *links = sc_mem_cpy(*links, *links, *size);
 
   return SC_TRUE;
 }
