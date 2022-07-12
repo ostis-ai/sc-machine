@@ -185,7 +185,7 @@ class Buffer:
 
 class SCsWriter:
     kNrelSystemIdtf = "nrel_system_identifier"
-    kNrelMainIdtf = "nrel_main_identifier"
+    kNrelMainIdtf = "nrel_main_idtf"
 
     def __init__(self, output_path):
         self.output_path = output_path
