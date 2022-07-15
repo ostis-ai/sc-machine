@@ -1,6 +1,16 @@
 import re
 from os import path
 
+import string
+
+diff = ord('а') - ord('a')
+lang_alphabet = {chr(ord(x) + diff) for x in string.ascii_lowercase}
+
+def is_russian_language(text: str) -> bool:
+    if len(lang_alphabet.intersection(set(text.lower()))):
+        return True
+    return False
+
 NodeTypeSets = {
 
     "node/-/-/not_define": ["sc_node"],
@@ -270,10 +280,11 @@ class SCsWriter:
                 el["idtf"] = "{}".format(idtf[1:].replace("-", "_"))
 
         if main_idtf is not None:
+            lang = "lang_ru" if is_russian_language(main_idtf) else "lang_en"
             if main_idtf.startswith("["):
-                buffer.write("\n{}\n => {}: {};;\n".format(el["idtf"], self.kNrelMainIdtf, main_idtf))
+                buffer.write("\n{}\n => {}: {} (* <- {};; *);;\n".format(el["idtf"], self.kNrelMainIdtf, main_idtf, lang))
             else:
-                buffer.write("\n{}\n => {}: [{}];;\n".format(el["idtf"], self.kNrelMainIdtf, main_idtf))
+                buffer.write("\n{}\n => {}: [{}] (* <- {};; *);;\n".format(el["idtf"], self.kNrelMainIdtf, main_idtf, lang))
 
     @staticmethod
     def make_alias(prefix, element_id):
