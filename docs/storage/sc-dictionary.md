@@ -71,6 +71,12 @@ Common API methods of sc-dictionary implementation and their description are rep
   </tr>
 
   <tr>
+    <td>sc_list * sc_dictionary_get_by_substr(sc_dictionary * dictionary, const sc_char * sc_substr)</td>
+    <td>It gets data or data array by key substring, that is a prefix of found links contents. If sc-dictionary has not such key string, 
+        then method returns empty sc-list.</td>
+  </tr>
+
+  <tr>
     <td>void sc_dictionary_visit_down_nodes(sc_dictionary * dictionary, void (*callable)(sc_dictionary_node *, void **), void ** dest)</td>
     <td>It visits up down all nodes and call specified routine for them. A result of procedure completion saves into 'dest'.</td>
   </tr>

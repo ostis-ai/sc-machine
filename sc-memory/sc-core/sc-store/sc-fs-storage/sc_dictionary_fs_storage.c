@@ -14,7 +14,6 @@
 #  include "../sc-base/sc_message.h"
 
 sc_char * file_path = null_ptr;
-sc_char addrs_hashes_path[MAX_PATH_LENGTH];
 sc_char strings_path[MAX_PATH_LENGTH];
 
 sc_dictionary * addrs_hashes_dictionary;
@@ -72,7 +71,6 @@ sc_bool sc_dictionary_fs_storage_initialize(const sc_char * path)
     return SC_FALSE;
 
   g_snprintf(strings_path, MAX_PATH_LENGTH, "%s/strings.scdb", path);
-  g_snprintf(addrs_hashes_path, MAX_PATH_LENGTH, "%s/links.scdb", path);
 
   return SC_TRUE;
 }
@@ -210,7 +208,25 @@ sc_addr_hash * sc_list_to_hashes_array(sc_list * list)
 
 sc_bool sc_dictionary_fs_storage_get_sc_links(const sc_char * sc_string, sc_addr ** links, sc_uint32 * size)
 {
-  sc_list * list = sc_dictionary_get_datas_from_node(addrs_hashes_dictionary->root, sc_string);
+  sc_list * list = sc_dictionary_get(addrs_hashes_dictionary, sc_string);
+
+  if (list == null_ptr)
+  {
+    *links = null_ptr;
+    *size = 0;
+    return SC_FALSE;
+  }
+
+  *links = sc_list_to_addr_array(list);
+  *size = list->size;
+  *links = sc_mem_cpy(*links, *links, *size);
+
+  return SC_TRUE;
+}
+
+sc_bool sc_dictionary_fs_storage_get_sc_links_by_substr(const sc_char * sc_substr, sc_addr ** links, sc_uint32 * size)
+{
+  sc_list * list = sc_dictionary_get_by_substr(addrs_hashes_dictionary, sc_substr);
 
   if (list == null_ptr)
   {
@@ -296,14 +312,10 @@ void sc_dictionary_fs_storage_get_sc_string_ext(
   *size = len;
 }
 
-void sc_fs_storage_write_nodes(
-    void (*callable)(sc_dictionary_node *, void **),
-    GIOChannel * strings_dest,
-    GIOChannel * links_dest)
+void sc_fs_storage_write_nodes(void (*callable)(sc_dictionary_node *, void **), GIOChannel * strings_dest)
 {
   GIOChannel ** dest = sc_mem_new(GIOChannel *, 2);
   dest[0] = strings_dest;
-  dest[1] = links_dest;
 
   sc_dictionary_visit_down_nodes(strings_dictionary, callable, (void **)dest);
 
@@ -327,8 +339,6 @@ void sc_fs_storage_write_node(sc_dictionary_node * node, void ** dest)
 
   GIOChannel * strings_channel = dest[0];
   sc_assert(strings_channel != null_ptr);
-  GIOChannel * links_channel = dest[1];
-  sc_assert(links_channel != null_ptr);
 
   gsize bytes;
   if (g_io_channel_write_chars(strings_channel, (sc_char *)&hashes_size, sizeof(hashes_size), &bytes, null_ptr) !=
@@ -349,10 +359,6 @@ void sc_fs_storage_write_node(sc_dictionary_node * node, void ** dest)
       G_IO_STATUS_NORMAL)
     sc_error("Can't write sc-string %s into %s", content->sc_string, strings_path);
 
-  if (g_io_channel_write_chars(
-          links_channel, (sc_char *)hashes, sizeof(sc_addr_hash) * hashes_size, &bytes, null_ptr) != G_IO_STATUS_NORMAL)
-    sc_error("Can't write string hashes %llu into %s", *hashes, addrs_hashes_path);
-
   sc_mem_free(hashes);
 }
 
@@ -362,11 +368,7 @@ sc_bool sc_dictionary_fs_storage_save()
   GIOChannel * output_strings = sc_fs_open_tmp_file(file_path, &strings_filename, "strings");
   g_io_channel_set_encoding(output_strings, null_ptr, null_ptr);
 
-  sc_char * links_filename = null_ptr;
-  GIOChannel * output_links = sc_fs_open_tmp_file(file_path, &links_filename, "links");
-  g_io_channel_set_encoding(output_links, null_ptr, null_ptr);
-
-  sc_fs_storage_write_nodes(sc_fs_storage_write_node, output_strings, output_links);
+  sc_fs_storage_write_nodes(sc_fs_storage_write_node, output_strings);
 
   if (g_file_test(strings_filename, G_FILE_TEST_IS_REGULAR))
   {
@@ -378,30 +380,12 @@ sc_bool sc_dictionary_fs_storage_save()
       sc_error("Can't rename %s -> %s", strings_filename, strings_path);
   }
 
-  if (g_file_test(links_filename, G_FILE_TEST_IS_REGULAR))
-  {
-    g_io_channel_shutdown(output_links, SC_TRUE, null_ptr);
-    sc_mem_free(output_links);
-    output_links = null_ptr;
-
-    if (g_rename(links_filename, addrs_hashes_path) != 0)
-      sc_error("Can't rename %s -> %s", links_filename, addrs_hashes_path);
-  }
-
   if (strings_filename != null_ptr)
     sc_mem_free(strings_filename);
   if (output_strings != null_ptr)
   {
     g_io_channel_shutdown(output_strings, SC_TRUE, null_ptr);
     sc_mem_free(output_strings);
-  }
-
-  if (links_filename != null_ptr)
-    sc_mem_free(links_filename);
-  if (output_links != null_ptr)
-  {
-    g_io_channel_shutdown(output_links, SC_TRUE, null_ptr);
-    sc_mem_free(output_links);
   }
 
   return SC_TRUE;

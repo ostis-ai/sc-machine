@@ -265,6 +265,56 @@ sc_result sc_rocksdb_fs_storage_find(const sc_check_sum * check_sum, sc_addr ** 
   return SC_RESULT_OK;
 }
 
+sc_result sc_rocksdb_fs_storage_find_by_substr(const sc_char * sc_substr, sc_addr ** result, sc_uint32 * result_count)
+{
+  MutexGuard lock(gMutex);
+
+  assert(gDBInstance);
+
+  rocksdb::ReadOptions readOptions;
+  auto const & it = gDBInstance->NewIterator(readOptions);
+  it->SeekToFirst();
+
+  ScAddrsVector foundAddrs;
+  while (it->Valid())
+  {
+    auto const & slice = it->value();
+
+    std::string str{slice.data()};
+    str.resize(slice.size());
+
+    if (str.find(sc_substr) != std::string::npos)
+    {
+      sc_check_sum * check_sum;
+      sc_link_calculate_checksum(str.c_str(), str.size(), &check_sum);
+
+      std::string const key = MakeAddrsKey(check_sum);
+      std::string value;
+
+      rocksdb::Status status = gDBInstance->Get(readOptions, key, &value);
+      if (!status.ok())
+      {
+        it->Next();
+        continue;
+      }
+
+      ScAddrsVector addrs = StringBufferToData(value);
+
+      foundAddrs.insert(foundAddrs.cend(), addrs.cbegin(), addrs.cend());
+    }
+
+    it->Next();
+  }
+
+  *result_count = sc_uint32(foundAddrs.size());
+
+  size_t const resultBytes = sizeof(sc_addr) * foundAddrs.size();
+  *result = (sc_addr *)malloc(resultBytes);
+  sc_mem_cpy(*result, foundAddrs.data(), resultBytes);
+
+  return SC_RESULT_OK;
+}
+
 sc_bool sc_rocksdb_fs_storage_append_sc_link(sc_element * element, sc_addr addr, sc_char * sc_string, sc_uint32 size)
 {
   sc_char * current_string;
@@ -294,6 +344,11 @@ sc_bool sc_rocksdb_fs_storage_get_sc_links(const sc_char * sc_string, sc_addr **
   sc_link_calculate_checksum(sc_string, strlen(sc_string), &check_sum);
 
   return sc_rocksdb_fs_storage_find(check_sum, links, size);
+}
+
+sc_bool sc_rocksdb_fs_storage_get_sc_links_by_substr(const sc_char * sc_substr, sc_addr ** links, sc_uint32 * size)
+{
+  return sc_rocksdb_fs_storage_find_by_substr(sc_substr, links, size);
 }
 
 void sc_rocksdb_fs_storage_get_sc_string_ext(sc_element * element, sc_addr addr, sc_char ** sc_string, sc_uint32 * size)

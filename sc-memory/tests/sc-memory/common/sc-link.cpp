@@ -214,3 +214,44 @@ TEST_F(ScLinkTest, set_system_idtf)
 
   ctx.Destroy();
 }
+
+TEST_F(ScLinkTest, find_by_substr)
+{
+  ScMemoryContext ctx(sc_access_lvl_make_min, "sc_links_content_changed");
+
+  ScAddr linkAddr = ctx.CreateLink();
+  EXPECT_TRUE(linkAddr.IsValid());
+  ScLink link1 = ScLink(ctx, linkAddr);
+  std::string str = "content1";
+  EXPECT_TRUE(link1.Set(str));
+  EXPECT_TRUE(str == link1.GetAsString());
+
+  linkAddr = ctx.CreateLink();
+  EXPECT_TRUE(linkAddr.IsValid());
+  ScLink link2 = ScLink(ctx, linkAddr);
+  str = "continue";
+  EXPECT_TRUE(link2.Set(str));
+  EXPECT_TRUE(str == link2.GetAsString());
+
+  linkAddr = ctx.CreateLink();
+  EXPECT_TRUE(linkAddr.IsValid());
+  ScLink link3 = ScLink(ctx, linkAddr);
+  str = "contents_25";
+  EXPECT_TRUE(link3.Set(str));
+  EXPECT_TRUE(str == link3.GetAsString());
+
+  EXPECT_FALSE(ctx.FindLinksByContent("content1").empty());
+  EXPECT_FALSE(ctx.FindLinksByContent("continue").empty());
+  EXPECT_FALSE(ctx.FindLinksByContent("contents_25").empty());
+
+  EXPECT_TRUE(ctx.FindLinksByContentSubstring("content1").size() == 1);
+  EXPECT_TRUE(ctx.FindLinksByContentSubstring("cont").size() == 3);
+  EXPECT_TRUE(ctx.FindLinksByContentSubstring("content").size() == 2);
+  EXPECT_TRUE(ctx.FindLinksByContentSubstring("con").size() == 3);
+  EXPECT_TRUE(ctx.FindLinksByContentSubstring("content2").empty());
+  EXPECT_TRUE(ctx.FindLinksByContentSubstring("contents").size() == 1);
+  EXPECT_TRUE(ctx.FindLinksByContentSubstring("contents_2").size() == 1);
+  EXPECT_TRUE(ctx.FindLinksByContentSubstring("contents_26").empty());
+
+  ctx.Destroy();
+}

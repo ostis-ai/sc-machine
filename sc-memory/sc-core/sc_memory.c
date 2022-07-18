@@ -328,6 +328,15 @@ sc_result sc_memory_find_links_with_content(
   return sc_storage_find_links_with_content(ctx, stream, result, result_count);
 }
 
+sc_result sc_memory_find_links_with_content_substring(
+    sc_memory_context const * ctx,
+    sc_stream const * stream,
+    sc_addr ** result,
+    sc_uint32 * result_count)
+{
+  return sc_storage_find_links_with_content_substring(ctx, stream, result, result_count);
+}
+
 void sc_memory_free_buff(sc_pointer buff)
 {
   sc_mem_free(buff);
