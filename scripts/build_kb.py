@@ -104,8 +104,8 @@ def prepare_kb(kb_to_prepare: str, logfile: str):
 def build_kb(bin_folder: str, kb_to_build: str):
     bin_folder = join(bin_folder, "kb.bin")
     os.makedirs(bin_folder, exist_ok=True)
-    # call sc-builder with required parameters
-    os.system(" ".join([join(ostis_path, "bin/sc-builder"), "-f", "-c", "-i", kb_to_build, "-o", bin_folder, "-e", join(ostis_path, "bin/extensions")]))
+    # call sc-builder with required parameters and return the exitcode of the command
+    return os.system(" ".join([join(ostis_path, "bin/sc-builder"), "-f", "-c", "-i", kb_to_build, "-o", bin_folder, "-e", join(ostis_path, "bin/extensions")]))
 
 
 
@@ -139,8 +139,10 @@ def main(args: dict):
 
     copy_kb(conf["output_path"])
     prepare_kb(kb_to_prepare, conf["errors_file_path"])
-    build_kb(conf["output_path"], kb_to_prepare)
+    exitcode = build_kb(conf["output_path"], kb_to_prepare)
     shutil.rmtree(kb_to_prepare)
+    # exit with non-null code in case sc-builder encountered an error
+    exit(exitcode)
 
 
 if __name__ == '__main__':
