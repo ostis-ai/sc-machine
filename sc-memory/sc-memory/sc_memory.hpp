@@ -129,7 +129,28 @@ public:
   _SC_EXTERN ScAddr GetArcEnd(ScAddr const & arcAddr) const;
 
   _SC_EXTERN bool SetLinkContent(ScAddr const & addr, ScStreamPtr const & stream);
+  template <typename TContentType>
+  bool SetLinkContent(ScAddr const & addr, TContentType const & value)
+  {
+    return SetLinkContent(addr, ScStreamMakeRead(value));
+  }
+
   _SC_EXTERN ScStreamPtr GetLinkContent(ScAddr const & addr);
+  template <typename TContentType>
+  bool GetLinkContent(ScAddr const & addr, TContentType & typedContent)
+  {
+    std::string content;
+    ScStreamPtr const & ptr = GetLinkContent(addr);
+    if (ptr != nullptr && ptr->IsValid() && ScStreamConverter::StreamToString(ptr, content))
+    {
+      std::stringstream streamString(content);
+      streamString >> typedContent;
+
+      return SC_TRUE;
+    }
+
+    return SC_FALSE;
+  }
 
   //! Returns true, if any links found
   SC_DEPRECATED(0.6.0, "Use `ScAddrList FindLinksByContent(ScStreamPtr const & stream)` instead.")

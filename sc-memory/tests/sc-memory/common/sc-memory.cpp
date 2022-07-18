@@ -54,3 +54,16 @@ TEST_F(ScMemoryTest, FindByLinkContent)
   ScAddrVector const result = m_ctx->FindLinksByContent(linkContent1);
   EXPECT_EQ(result.size(), 1u);
 }
+
+TEST_F(ScMemoryTest, LinkContentStringApi)
+{
+  ScAddr const linkAddr1 = m_ctx->CreateLink();
+  EXPECT_TRUE(linkAddr1.IsValid());
+
+  std::string str;
+  EXPECT_FALSE(m_ctx->GetLinkContent(linkAddr1, str));
+
+  EXPECT_TRUE(m_ctx->SetLinkContent(linkAddr1, "content"));
+  EXPECT_TRUE(m_ctx->GetLinkContent(linkAddr1, str));
+  EXPECT_TRUE(str == "content");
+}
