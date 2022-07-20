@@ -22,7 +22,6 @@ Possible tags:
   * `[refactor]` - use, when you made commit with some code refactoring;
   * `[changelog]` - use, when you update changelog;
   * `[docs]` - use, when you update documentation;
-  * `[python]` - use, when you made commit with python module changes;
   * `[ci]` - changes in `ci` configuration or scripts;
   * `[git]` - changes in `git` configuration;
   * `[cmake]` - changes in `cmake` build system.
