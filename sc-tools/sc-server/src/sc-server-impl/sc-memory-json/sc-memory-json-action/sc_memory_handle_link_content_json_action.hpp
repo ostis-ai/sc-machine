@@ -68,7 +68,7 @@ private:
 
     ScMemoryJsonPayload answer;
     if (link.IsType<std::string>() || link.DetermineType() == ScLink::Type::Unknown)
-      return {{"value", link.GetAsString()}, {"type", "string"}};
+      return {{"value", link.Get<std::string>()}, {"type", "string"}};
     else if (link.DetermineType() >= ScLink::Type::Int8 && link.DetermineType() <= ScLink::Type::UInt64)
       return {{"value", link.Get<sc_int>()}, {"type", "int"}};
     else if (link.IsType<double>() || link.IsType<float>())
