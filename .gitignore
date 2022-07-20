@@ -9,7 +9,6 @@ cmake-build-debug-coverage
 
 !thirdparty/*/bin/
 
-*/sc-machine.ini
 */sc-machine.log
 */sc-server.log
 sc-machine.json

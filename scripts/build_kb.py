@@ -19,7 +19,6 @@ prepare_scripts = [
     join(kb_scripts_path, 'gwf_to_scs.py')
 ]
 
-
 REPO_FILE = "repo_file"
 OUTPUT_PATH = "output_path"
 LOGFILE_PATH = "errors_file_path"
@@ -29,14 +28,15 @@ CONFIG_PATH = "config_file_path"
 def search_knowledge_bases(root_path: str):
     if isdir(root_path):
         paths.add(root_path)
-    
+
     # if the line is a file, we presume it's a repo file and recursively read from it
     elif isfile(root_path):
         with open(join(root_path), 'r') as root_file:
             for line in root_file.readlines():
                 # ignore comments and empty lines
                 line = line.replace('\n', '')
-                # note: with current implementation, line is considered a comment if it's the first character in the line
+                # note: with current implementation, line is considered a comment if it's the first character
+                # in the line
                 if line.startswith('#') or re.match(r"^\s*$", line):
                     continue
                 elif line.startswith('!'):
@@ -48,11 +48,12 @@ def search_knowledge_bases(root_path: str):
                     if absolute_path not in paths:
                         # recursively check each repo entry
                         search_knowledge_bases(absolute_path)
-                    
+
 
     else:
         print("Folder", root_path, "is not found.")
         exit(1)
+
 
 # return a file/dir name if it shouldn't be copied (returns .git folder and paths inside exclude_paths)
 def ignore_files(directory, contents):
@@ -65,9 +66,10 @@ def ignore_files(directory, contents):
                 ignored_files.add(f)
             # ignore glob patterns defined in exclude_patterns using shutil.ignore_patterns func factory
             ignored_files.update(shutil.ignore_patterns(*exclude_patterns)(directory, contents))
-            
+
     # return a set of filenames that should be excluded
     return ignored_files
+
 
 def copy_kb(output_path: str):
     prepared_kb = join(output_path, "prepared_kb")
@@ -85,10 +87,11 @@ def copy_kb(output_path: str):
 def parse_config(path: str) -> dict:
     config_dict = {REPO_FILE: '', OUTPUT_PATH: '', LOGFILE_PATH: ''}
     config = configparser.ConfigParser()
-    if path != None:
+    if path is not None:
         config.read(path)
-        config_dict.update({'output_path': abspath(join(dirname(path), config['Repo']['Path']))})
-        config_dict.update({'errors_file_path': abspath(join(dirname(path), config['Repo']['Logfile'], "prepare.log"))})
+        config_dict.update({'output_path': abspath(join(dirname(path), config['sc-memory']['repo_path']))})
+        config_dict.update(
+            {'errors_file_path': abspath(join(dirname(path), config['sc-builder']['log_file'], "prepare.log"))})
 
     return config_dict
 
@@ -102,11 +105,10 @@ def prepare_kb(kb_to_prepare: str, logfile: str):
 
 
 def build_kb(bin_folder: str, kb_to_build: str):
-    bin_folder = join(bin_folder, "kb.bin")
     os.makedirs(bin_folder, exist_ok=True)
     # call sc-builder with required parameters and return the exitcode of the command
-    return os.system(" ".join([join(ostis_path, "bin/sc-builder"), "-f", "--clear", "-i", kb_to_build, "-o", bin_folder, "-e", join(ostis_path, "bin/extensions")]))
-
+    return os.system(" ".join([join(ostis_path, "bin/sc-builder"), "-f", "--clear", "-i", kb_to_build, "-o", bin_folder,
+                               "-e", join(ostis_path, "bin/extensions")]))
 
 
 def main(args: dict):
@@ -115,13 +117,13 @@ def main(args: dict):
     # absolutize paths passed as flags
 
     # rewrite options which were given by flags
-     
+
     for key in args.keys():
         if args[key] is not None:
-            if key in [REPO_FILE, OUTPUT_PATH, LOGFILE_PATH]: 
+            if key in [REPO_FILE, OUTPUT_PATH, LOGFILE_PATH]:
                 flag = abspath(join(os.getcwd(), args[key]))
             else:
-                flag = args[key] 
+                flag = args[key]
             conf[key] = flag
     # output the final configuration for the script, just to be sure about what's going on.
     print("args:", conf)
@@ -151,14 +153,17 @@ if __name__ == '__main__':
     parser.add_argument(dest=REPO_FILE, type=str,
                         help="The entrypoint repo file. Folder paths in this file ")
 
-    parser.add_argument('-o', '--output', dest="output_path",
-                        help="Destination path - path where KB binaries will be stored. Taken from the config file unless overwritten by this flag.")
+    parser.add_argument('-o', '--output_path', dest="output_path",
+                        help="Destination path - path where KB binaries will be stored. Taken from the config file "
+                             "unless overwritten by this flag.")
 
-    parser.add_argument('-l', '--logfile', dest="errors_file_path",
-                        help="Errors file path - in case of unsuccessful preparation, log will appear at this location. Taken from the config file unless overwritten by this flag.")
+    parser.add_argument('-l', '--log_file', dest="errors_file_path",
+                        help="Errors file path - in case of unsuccessful preparation, log will appear at this "
+                             "location. Taken from the config file unless overwritten by this flag.")
 
     parser.add_argument('-c', '--config', dest=CONFIG_PATH,
-                        help="Config file path - path to the sc-machine config file (Note: config file has lower priority than flags!)")
+                        help="Config file path - path to the sc-machine config file (Note: config file has lower "
+                             "priority than flags!)")
 
     args = parser.parse_args()
 
