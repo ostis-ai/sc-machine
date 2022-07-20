@@ -45,7 +45,7 @@ try
   if (options.Has({"config", "c"}))
     config = options[{"config", "c"}].second;
 
-  std::vector<std::vector<std::string>> keys = {{"extensions_path", "e"}, {"verbose", "v"}, {"clear", "c"}};
+  std::vector<std::vector<std::string>> keys = {{"extensions_path", "e"}, {"verbose", "v"}, {"clear"}};
   ScParams memoryParams{options, keys};
   memoryParams.insert({"repo_path", options[{"output_path", "o"}].second});
 

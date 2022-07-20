@@ -56,7 +56,7 @@ void Translator::GetFileContent(std::string const & fileName, std::string & outC
 void Translator::Clean(ScMemoryContext & ctx)
 {
   // remove global identifiers
-  ScAddr const nrelSCsGlobalIdtf = ctx.HelperResolveSystemIdtf("nrel_scs_global_idtf");
+  ScAddr const nrelSCsGlobalIdtf = ctx.HelperResolveSystemIdtf("nrel_scs_global_idtf", ScType::NodeConstNoRole);
   if (!nrelSCsGlobalIdtf.IsValid())
   {
     ScConsole::PrintLine() << ScConsole::Color::Red << "Can't resolve keynode 'nrel_scs_global_idtf'";

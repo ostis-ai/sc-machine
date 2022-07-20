@@ -15,7 +15,7 @@
 namespace
 {
 // should be synced with ScLog::Type
-const std::string kTypeToStr[] = {"Debug", "Info", "Warning", "Error", "Python", "PythonError", "Off"};
+const std::string kTypeToStr[] = {"Debug", "Info", "Warning", "Error"};
 
 // should be synced with ScLog::OutputType
 const std::string kOutputTypeToStr[] = {"Console", "File"};
