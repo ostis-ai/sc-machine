@@ -11,7 +11,7 @@ save_period = 3600
 update_period = 1800
 
 # Path to compiled knowledge base folder (kb.bin should be inside this folder)
-repo_path = /path/to/kb.bin
+repo_path = /path/to/kb.bin # or ~/kb.bin, sign '~' will be replaced by absolute path to this config file 
 # Path to sc-memory shared library extensions
 extensions_path = /path/to/sc-machine/bin/extensions
 

@@ -57,6 +57,11 @@ public:
 
   ScConfigGroup operator[](std::string const & group) const;
 
+  std::string GetDirectory() const
+  {
+    return m_path.substr(0, m_path.rfind('/'));
+  }
+
   ~ScConfig();
 
 private:

@@ -82,7 +82,7 @@ float sc_config_get_value_float(sc_config * config, sc_char const * group, sc_ch
 sc_bool sc_config_get_value_boolean(sc_config * config, sc_char const * group, sc_char const * key)
 {
   sc_char const * str_value = sc_config_get_value_string(config, group, key);
-  if (str_value == 0)
+  if (str_value == null_ptr)
     return SC_FALSE;
 
   if (g_str_equal(str_value, "true") || g_str_equal(str_value, "True") || g_str_equal(str_value, "1"))

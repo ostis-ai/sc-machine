@@ -29,7 +29,7 @@ try
               << "--host|-h -- Sc-server host name, ip-address\n"
               << "--port|-p -- Sc-server port\n"
               << "--extensions_path|-e -- Path to directory with sc-memory extensions\n"
-              << "--repo|-path -- Path to kb.bin folder\n"
+              << "--repo_path|-r -- Path to kb.bin folder\n"
               << "--verbose|-v -- Flag to don't save sc-memory state on exit\n"
               << "--clear -- Flag to clear sc-memory on start\n"
               << "--help -- Display this message\n\n";

@@ -82,7 +82,7 @@ For more complex KB setups (with several folders across the filesystem, for exam
 
 ## Servers
 
-Sc-machine provides network protocol to interact with **sc-server** - use `python3 scripts/run_sc_sever.py -c config/sc-machine.ini` to run sc-server with the default config file.
+Sc-machine provides network protocol to interact with **sc-server** - use `python3 scripts/run_sc_server.py -c config/sc-machine.ini` to run sc-server with the default config file.
 To get more information use `python3 scripts/run_sc_server.py -h`
 
 ## Config

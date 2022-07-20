@@ -8,23 +8,6 @@ list(REMOVE_ITEM SOURCES
 		"${CMAKE_CURRENT_SOURCE_DIR}/src/builder.hpp"
 		)
 
-if (${WIN32})
-  set (BOOST_LIBS_LIST)
-
-  elseif (${APPLE})
-   set (BOOST_LIBS_LIST
-         Boost::filesystem
-         Boost::program_options
-         Boost::system
-      )
-else()
-  set (BOOST_LIBS_LIST
-         boost_filesystem
-         boost_program_options
-         boost_system
-      )
-endif (${WIN32})
-
 add_executable(sc-builder
 		"${CMAKE_CURRENT_SOURCE_DIR}/src/main.cpp"
 		"${CMAKE_CURRENT_SOURCE_DIR}/src/builder.cpp"
@@ -33,7 +16,7 @@ add_executable(sc-builder
 
 add_library(sc-builder-lib SHARED ${SOURCES})
 include_directories(${SC_MEMORY_SRC} ${GLIB2_INCLUDE_DIRS} ${SC_BUILDER_ROOT}/../sc-config-utils)
-target_link_libraries(sc-builder-lib sc-memory ${BOOST_LIBS_LIST})
+target_link_libraries(sc-builder-lib sc-memory )
 target_link_libraries(sc-builder sc-builder-lib sc-config-utils)
 
 if (${SC_CLANG_FORMAT_CODE})

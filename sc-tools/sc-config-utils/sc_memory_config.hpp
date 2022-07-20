@@ -81,8 +81,19 @@ public:
     if (config.IsValid())
     {
       ScConfigGroup group = config[m_groupName];
+      std::string const & dir = config.GetDirectory();
       for (auto const & key : *group)
-        m_params.insert({key, group[key]});
+      {
+        std::string const & value = group[key];
+        std::stringstream stream;
+
+        if (group[key][0] == '~')
+          stream << dir << value.substr(1);
+        else
+          stream << value;
+
+        m_params.insert({key, stream.str()});
+      }
     }
   }
 
