@@ -1,13 +1,11 @@
-set(SC_KPM_PYTHON_PATH "${SC_MACHINE_ROOT}/sc-kpm/sc-python/services")
-
 file(GLOB_RECURSE SOURCES "*.cpp" "*.hpp")
 
 add_executable(sc-memory-performance-tests ${SOURCES})
 
 target_include_directories(sc-memory-performance-tests
   PRIVATE ${GLIB2_INCLUDE_DIRS}
-	PRIVATE ${SC_MEMORY_SRC}
-	PRIVATE "${CMAKE_CURRENT_BINARY_DIR}/sc-memory-tests_gen/")
+` PRIVATE ${SC_MEMORY_SRC}
+  PRIVATE "${CMAKE_CURRENT_BINARY_DIR}/sc-memory-tests_gen/")
 
 target_link_libraries(sc-memory-performance-tests
   sc-memory

@@ -105,7 +105,7 @@ def build_kb(bin_folder: str, kb_to_build: str):
     bin_folder = join(bin_folder, "kb.bin")
     os.makedirs(bin_folder, exist_ok=True)
     # call sc-builder with required parameters and return the exitcode of the command
-    return os.system(" ".join([join(ostis_path, "bin/sc-builder"), "-f", "-clear", "-i", kb_to_build, "-o", bin_folder, "-e", join(ostis_path, "bin/extensions")]))
+    return os.system(" ".join([join(ostis_path, "bin/sc-builder"), "-f", "--clear", "-i", kb_to_build, "-o", bin_folder, "-e", join(ostis_path, "bin/extensions")]))
 
 
 

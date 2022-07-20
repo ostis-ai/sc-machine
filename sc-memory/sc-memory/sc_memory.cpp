@@ -93,8 +93,6 @@ bool ScMemory::Initialize(sc_memory_params const & params)
   if (ms_globalContext == nullptr)
     return false;
 
-  sc_memory_init_ext(params.ext_path, params.enabled_exts);
-
   ScKeynodes::Init();
   ScAgentInit(true);
 
