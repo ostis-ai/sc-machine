@@ -45,7 +45,14 @@ public:
       {
         created = context->CreateLink(type);
         ScLink link{*context, created};
-        link.Set(atom["content"].get<std::string>());
+
+        auto const & content = atom["content"];
+        if (content.is_string())
+          link.Set(atom["content"].get<std::string>());
+        else if (content.is_number_integer())
+          link.Set(atom["content"].get<sc_int>());
+        else if (content.is_number_float())
+          link.Set(atom["content"].get<float>());
       }
 
       responsePayload.push_back(created.Hash());
