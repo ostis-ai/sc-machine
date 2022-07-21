@@ -19,7 +19,7 @@ using sc_list = GList;
 class ScConfigGroup
 {
 public:
-  explicit ScConfigGroup(sc_config * config, std::string group);
+  explicit ScConfigGroup(sc_config * config, std::string config_path, std::string group);
 
   std::string operator[](std::string const & key) const;
 
@@ -29,6 +29,7 @@ public:
 
 private:
   sc_config * m_config;
+  std::string m_config_path;
   std::string m_group;
   std::vector<std::string> m_keys;
 };

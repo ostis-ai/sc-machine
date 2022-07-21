@@ -19,8 +19,12 @@ extensions_path = /path/to/sc-machine/bin/extensions
 # Sc-server socket data
 host = 127.0.0.1
 port = 8090
+
 # Sc-server log file
 log_file = /path/to/sc-machine/log/sc-server.log
+# Sc-server log file
+log_level = Info # it can be 'Debug' or 'Error' also
+
 # Sc-server mode to synchronize all actions in it
 sync_actions = 0
 ```

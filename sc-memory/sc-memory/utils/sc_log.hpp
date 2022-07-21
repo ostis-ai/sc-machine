@@ -58,7 +58,7 @@ private:
 
   std::string static const DEFAULT_LOG_FILE;
 
-  bool Initialize(std::string const & file_name);
+  bool Initialize();
 
   template <size_t N>
   static int FindEnumElement(const std::string (&elements)[N], const std::string & externalValue);

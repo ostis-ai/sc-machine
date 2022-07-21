@@ -52,7 +52,7 @@ This repo provides *build_kb.py* script to prepare and build knowledge base (KB)
 ### Usage example
 ```sh
 cd sc-machine
-python3 scripts/build_kb.py ../ims.ostis.kb -c config/sc-machine.ini
+python3 scripts/build_kb.py ../ims.ostis.kb -c config/sc-machine.ini -o kb.bin
 ```
 
 Default config file saves compiled KB one level above sc-machine, `sc-machine/..`

@@ -6,6 +6,10 @@
 
 #include "sc_server_factory.hpp"
 
+#define SC_SERVER_INFO "Info"
+#define SC_SERVER_DEBUG "Debug"
+#define SC_SERVER_ERROR "Error"
+
 std::unique_ptr<ScServer> ScServerFactory::ConfigureScServer(
     const ScParams & serverParams,
     sc_memory_params memoryParams)
@@ -17,7 +21,13 @@ std::unique_ptr<ScServer> ScServerFactory::ConfigureScServer(
       std::stoi(serverParams.at("sync_actions")),
       memoryParams));
 
-  server->SetMessageChannels(ScServerLogMessages::connect | ScServerLogMessages::disconnect | ScServerLogMessages::app);
+  std::string const & logLevel = serverParams.at("log_level");
+  if (logLevel == SC_SERVER_INFO)
+    server->SetMessageChannels(ScServerLogMessages::app);
+  else if (logLevel == SC_SERVER_DEBUG)
+    server->SetMessageChannels(ScServerLogMessages::all);
+  else if (logLevel == SC_SERVER_ERROR)
+    server->SetMessageChannels(ScServerLogMessages::fail);
   server->SetErrorChannels(ScServerLogErrors::all);
 
   return server;
