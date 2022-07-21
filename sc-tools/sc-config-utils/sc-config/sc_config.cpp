@@ -7,6 +7,8 @@
 #include "sc_config.hpp"
 
 #include <string>
+#include <sstream>
+#include <utility>
 #include <vector>
 
 extern "C"
@@ -14,8 +16,9 @@ extern "C"
 #include "sc_config.h"
 }
 
-ScConfigGroup::ScConfigGroup(sc_config * config, std::string group)
+ScConfigGroup::ScConfigGroup(sc_config * config, std::string config_path, std::string group)
   : m_config(config)
+  , m_config_path(std::move(config_path))
   , m_group(std::move(group))
 {
   sc_list * keys = g_hash_table_get_keys(m_config);
@@ -37,7 +40,14 @@ ScConfigGroup::ScConfigGroup(sc_config * config, std::string group)
 
 std::string ScConfigGroup::operator[](std::string const & key) const
 {
-  return sc_config_get_value_string(m_config, m_group.c_str(), key.c_str());
+  std::string const & value = sc_config_get_value_string(m_config, m_group.c_str(), key.c_str());
+  std::stringstream stream;
+  if (value[0] == '~')
+    stream << m_config_path << value.substr(1);
+  else
+    stream << value;
+
+  return stream.str();
 }
 
 std::vector<std::string> ScConfigGroup::operator*() const
@@ -58,7 +68,7 @@ sc_bool ScConfig::IsValid() const
 
 ScConfigGroup ScConfig::operator[](std::string const & group) const
 {
-  return ScConfigGroup(this->m_instance, group);
+  return ScConfigGroup(this->m_instance, this->GetDirectory(), group);
 }
 
 ScConfig::~ScConfig()
