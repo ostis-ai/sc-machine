@@ -1,0 +1,1161 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.3.1, mkdocs-material-8.3.9">
+    
+    
+      
+        <title>Common - SC-machine</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.1d29e8d0.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.cbb835fc.min.css">
+        
+      
+      
+    
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../_assets/main.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="" data-md-color-primary="none" data-md-color-accent="none">
+  
+    
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#sclink" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="SC-machine" class="md-header__button md-logo" aria-label="SC-machine" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            SC-machine
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Common
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" aria-label="Clear" tabindex="-1">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="SC-machine" class="md-nav__button md-logo" aria-label="SC-machine" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    SC-machine
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        Home
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_2" type="checkbox" id="__nav_2" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_2">
+          Build
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Build" data-md-level="1">
+        <label class="md-nav__title" for="__nav_2">
+          <span class="md-nav__icon md-icon"></span>
+          Build
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../build/linux-build/" class="md-nav__link">
+        Build on Linux
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../build/windows-build/" class="md-nav__link">
+        Build on Windows
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../build/osx-build/" class="md-nav__link">
+        Build on OSX
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../build/cmake-flags/" class="md-nav__link">
+        CMake Flags
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3" type="checkbox" id="__nav_3" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_3">
+          Development
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Development" data-md-level="1">
+        <label class="md-nav__title" for="__nav_3">
+          <span class="md-nav__icon md-icon"></span>
+          Development
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../dev/git-workflow/" class="md-nav__link">
+        Git-workflow
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../dev/pr/" class="md-nav__link">
+        Pull requets
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../dev/codestyle/" class="md-nav__link">
+        Codestyle
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4" type="checkbox" id="__nav_4" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_4">
+          Common
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Common" data-md-level="1">
+        <label class="md-nav__title" for="__nav_4">
+          <span class="md-nav__icon md-icon"></span>
+          Common
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../el_types/" class="md-nav__link">
+        Element types
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../other/config/" class="md-nav__link">
+        Configuration files
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../other/scs/" class="md-nav__link">
+        SCs language
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+    
+  
+  
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_5" type="checkbox" id="__nav_5" checked>
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_5">
+          API
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="API" data-md-level="1">
+        <label class="md-nav__title" for="__nav_5">
+          <span class="md-nav__icon md-icon"></span>
+          API
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cpp-meta/" class="md-nav__link">
+        Meta programming
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../kpm.md" class="md-nav__link">
+        Agents
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../templates.md" class="md-nav__link">
+        Template
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+    
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+      
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          Common
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        Common
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#sclink" class="md-nav__link">
+    ScLink
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#common-constructions" class="md-nav__link">
+    Common constructions
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#iterators" class="md-nav__link">
+    Iterators
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#http" class="md-nav__link">
+    HTTP
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_5_5" type="checkbox" id="__nav_5_5" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_5_5">
+          Python
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Python" data-md-level="2">
+        <label class="md-nav__title" for="__nav_5_5">
+          <span class="md-nav__icon md-icon"></span>
+          Python
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../python/python/" class="md-nav__link">
+        Common
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../python/library/" class="md-nav__link">
+        Library
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../python/cpp_wrap/" class="md-nav__link">
+        Wrapped classes
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_5_6" type="checkbox" id="__nav_5_6" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_5_6">
+          File storage
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="File storage" data-md-level="2">
+        <label class="md-nav__title" for="__nav_5_6">
+          <span class="md-nav__icon md-icon"></span>
+          File storage
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../storage/sc_dictionary.md" class="md-nav__link">
+        Sc-dictionary-based file storage
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_6" type="checkbox" id="__nav_6" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_6">
+          Http
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Http" data-md-level="1">
+        <label class="md-nav__title" for="__nav_6">
+          <span class="md-nav__icon md-icon"></span>
+          Http
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../http/index.md" class="md-nav__link">
+        Common
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../http/websocket.md" class="md-nav__link">
+        WebSocket
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_7" type="checkbox" id="__nav_7" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_7">
+          Tools
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Tools" data-md-level="1">
+        <label class="md-nav__title" for="__nav_7">
+          <span class="md-nav__icon md-icon"></span>
+          Tools
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tools/kb_builder.md" class="md-nav__link">
+        Builder
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../license/" class="md-nav__link">
+        License
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../changelog/" class="md-nav__link">
+        Changelog
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../thirdparty/" class="md-nav__link">
+        Thirdparty
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#sclink" class="md-nav__link">
+    ScLink
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#common-constructions" class="md-nav__link">
+    Common constructions
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#iterators" class="md-nav__link">
+    Iterators
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#http" class="md-nav__link">
+    HTTP
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          <div class="md-content" data-md-component="content">
+            <article class="md-content__inner md-typeset">
+              
+                
+
+
+<h2 id="sclink">ScLink</h2>
+<p>Include file: <code>#include &lt;sc-memory/cpp/sc_link.hpp&gt;</code></p>
+<p>There is a special wrapped class <code>ScLink</code> that makes work with sc-links simple. It allows to set/get common types values.
+Supported types: <code>uint8_t</code>, <code>uint16_t</code>, <code>uint32_t</code>, <code>uint64_t</code>, <code>int8_t</code>, <code>int16_t</code>, <code>int32_t</code>, <code>int64_t</code>, <code>float</code>, <code>double</code>, <code>std::string</code>.</p>
+<div class="note">If you try to get <code>Type1</code> value, but in memory stores <code>Type2</code> value, then function <code>Get&ltType&gt()</code> will throws an exception <code>ExceptionInvalidParams</code></div>
+
+<p>Example:
+<div class="highlight"><pre><span></span><code><span class="p">...</span><span class="w"></span>
+<span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">str</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;any text value&quot;</span><span class="p">;</span><span class="w"></span>
+<span class="n">ScLink</span><span class="w"> </span><span class="nf">link</span><span class="p">(</span><span class="n">linkAddr</span><span class="p">);</span><span class="w"></span>
+<span class="n">link</span><span class="p">.</span><span class="n">Set</span><span class="p">(</span><span class="n">str</span><span class="p">);</span><span class="w"></span>
+<span class="n">link</span><span class="p">.</span><span class="n">IsType</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&gt;</span><span class="p">();</span><span class="w"> </span><span class="c1">// will return true</span>
+<span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">value</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">link</span><span class="p">.</span><span class="n">Get</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&gt;</span><span class="p">();</span><span class="w"> </span><span class="c1">// value == str</span>
+
+<span class="p">...</span><span class="w"></span>
+
+<span class="kt">uint32_t</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">ivalue</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">473</span><span class="p">;</span><span class="w"></span>
+<span class="n">link</span><span class="p">.</span><span class="n">Set</span><span class="p">(</span><span class="n">ivalue</span><span class="p">);</span><span class="w"></span>
+<span class="n">link</span><span class="p">.</span><span class="n">IsType</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&gt;</span><span class="p">();</span><span class="w"> </span><span class="c1">// returns false</span>
+<span class="n">link</span><span class="p">.</span><span class="n">IsType</span><span class="o">&lt;</span><span class="kt">uint32_t</span><span class="o">&gt;</span><span class="p">();</span><span class="w"> </span><span class="c1">// returns true</span>
+<span class="n">link</span><span class="p">.</span><span class="n">IsType</span><span class="o">&lt;</span><span class="kt">uint8_t</span><span class="o">&gt;</span><span class="p">();</span><span class="w"> </span><span class="c1">// returns false</span>
+
+<span class="p">...</span><span class="w"></span>
+
+<span class="n">link</span><span class="p">.</span><span class="n">Get</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&gt;</span><span class="p">();</span><span class="w"> </span><span class="c1">// throws ExceptionInvalidParams</span>
+<span class="n">link</span><span class="p">.</span><span class="n">Get</span><span class="o">&lt;</span><span class="kt">uint32_t</span><span class="o">&gt;</span><span class="p">();</span><span class="w"> </span><span class="c1">// returns stored value</span>
+<span class="n">link</span><span class="p">.</span><span class="n">IsType</span><span class="o">&lt;</span><span class="kt">uint8_t</span><span class="o">&gt;</span><span class="p">();</span><span class="w"> </span><span class="c1">// throws ExceptionInvalidParams</span>
+<span class="p">...</span><span class="w"></span>
+</code></pre></div></p>
+<hr />
+<p>Also you can get type of specified <code>ScLink</code>:
+<div class="highlight"><pre><span></span><code><span class="n">ScLink</span><span class="w"> </span><span class="n">link</span><span class="p">;</span><span class="w"></span>
+<span class="n">link</span><span class="p">.</span><span class="n">Set</span><span class="o">&lt;</span><span class="kt">uint32_t</span><span class="o">&gt;</span><span class="p">(</span><span class="mi">32</span><span class="p">);</span><span class="w"></span>
+<span class="n">link</span><span class="p">.</span><span class="n">DetermineType</span><span class="p">();</span><span class="w"> </span><span class="c1">// will return ScLink::Type::UInt32</span>
+</code></pre></div></p>
+<p>See <code>ScLink::Types</code> for full list of supported ones.</p>
+<hr />
+<p>You can get value of any ScLink as <code>std::string</code>:
+<div class="highlight"><pre><span></span><code><span class="n">ScLink</span><span class="w"> </span><span class="n">link</span><span class="p">;</span><span class="w"></span>
+<span class="n">link</span><span class="p">.</span><span class="n">Set</span><span class="o">&lt;</span><span class="kt">uint32_t</span><span class="o">&gt;</span><span class="p">(</span><span class="mi">32</span><span class="p">);</span><span class="w"></span>
+<span class="n">link</span><span class="p">.</span><span class="n">GetAsString</span><span class="p">();</span><span class="w"> </span><span class="c1">// will return &quot;32&quot;</span>
+</code></pre></div></p>
+<h2 id="common-constructions">Common constructions</h2>
+<p>Include file: <code>#include &lt;sc-memory/cpp/sc_common_templ.hpp&gt;</code></p>
+<p>There are some function that allows to make a common routine work:</p>
+<ul>
+<li><code>sc::ResolveRelationTuple</code> - allow to ensure that specified <code>quasy_binary</code> relation between tuple and specified element exists. Returns <code>ScAddr</code> of tuple. This function check if specified construction exists, and if it doesn't then generate it by template. Used template for check/generation:
+<scg src="../images/sc_ResolveRelationTuple.gwf"></scg></li>
+</ul>
+<p>Example:
+<div class="highlight"><pre><span></span><code><span class="n">ScAddr</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">tuple</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">sc</span><span class="o">::</span><span class="n">ResolveRelationTuple</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span><span class="w"> </span><span class="n">el</span><span class="p">,</span><span class="w"> </span><span class="n">relAddr</span><span class="p">);</span><span class="w"></span>
+<span class="c1">// where:</span>
+<span class="c1">// el - is a ScAddr of element to ensure tuple exist</span>
+<span class="c1">// relAddr - is a ScAddr of quasy_binary relation</span>
+</code></pre></div></p>
+<hr />
+<ul>
+<li><code>sc::SetRelationValue</code> - create sc-link linked to <code>el</code> by relation <code>rel</code>. If it already exist, than changes it value to new one. Returns <code>ScAddr</code> of sc-link. Used template for check/generation:
+<scg src="../images/sc_SetRelationValue.gwf"></scg></li>
+</ul>
+<p>Example:
+<div class="highlight"><pre><span></span><code><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">value1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;test_value&quot;</span><span class="p">;</span><span class="w"></span>
+<span class="n">ScAddr</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">linkAddr1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">sc</span><span class="o">::</span><span class="n">SetRelationValue</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span><span class="w"> </span><span class="n">el</span><span class="p">,</span><span class="w"> </span><span class="n">relAddr1</span><span class="p">,</span><span class="w"> </span><span class="n">value1</span><span class="p">);</span><span class="w"></span>
+
+<span class="kt">uint32_t</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">value2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">57</span><span class="p">;</span><span class="w"></span>
+<span class="n">ScAddr</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">linkAddr2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">sc</span><span class="o">::</span><span class="n">SetRelationValue</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span><span class="w"> </span><span class="n">el</span><span class="p">,</span><span class="w"> </span><span class="n">relAddr1</span><span class="p">,</span><span class="w"> </span><span class="n">value2</span><span class="p">);</span><span class="w"></span>
+
+<span class="n">SC_ASSERT</span><span class="p">(</span><span class="n">linkAddr1</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">linkAddr2</span><span class="p">,</span><span class="w"> </span><span class="p">());</span><span class="w"> </span><span class="c1">// should be valid (ScAddr of link doesn&#39;t changed)</span>
+</code></pre></div></p>
+<h2 id="iterators">Iterators</h2>
+<p>You can use 3-element iterators and 5-element iterators from c++ code. Image below shows numeration
+of elements in 3-element (left) and 5-element (right) iterators.
+<img alt="Iterators element numeration" src="../images/iterators_scheme.png" /></p>
+<p>For both of them you have two approaches.
+First approach to use simple while loop. It suitable, when you need to break this loop depending on logic:
+<div class="highlight"><pre><span></span><code><span class="p">...</span><span class="w"></span>
+<span class="c1">// example of f_a_a iterator</span>
+<span class="n">ScIterator3Ptr</span><span class="w"> </span><span class="n">it3</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ctx</span><span class="p">.</span><span class="n">Iterator3</span><span class="p">(</span><span class="w"></span>
+<span class="w">            </span><span class="n">set</span><span class="p">,</span><span class="w"></span>
+<span class="w">            </span><span class="n">ScType</span><span class="o">::</span><span class="n">EdgeAccessConstPosPerm</span><span class="p">,</span><span class="w"></span>
+<span class="w">            </span><span class="n">ScType</span><span class="o">::</span><span class="n">Unknown</span><span class="p">);</span><span class="w"></span>
+<span class="k">while</span><span class="w"> </span><span class="p">(</span><span class="n">it3</span><span class="o">-&gt;</span><span class="n">Next</span><span class="p">())</span><span class="w"></span>
+<span class="p">{</span><span class="w"></span>
+<span class="w">  </span><span class="c1">// to get values use it3-&gt;Get(index), where index in range [0; 2]</span>
+<span class="w">  </span><span class="p">...</span><span class="w"> </span><span class="c1">// there is you code</span>
+<span class="p">}</span><span class="w"></span>
+
+<span class="p">...</span><span class="w"></span>
+<span class="c1">// example of f_a_a_a_f iterator</span>
+<span class="n">ScIterator5Ptr</span><span class="w"> </span><span class="n">it5</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ctx</span><span class="p">.</span><span class="n">Iterator5</span><span class="p">(</span><span class="w"></span>
+<span class="w">        </span><span class="n">objAddr</span><span class="p">,</span><span class="w"></span>
+<span class="w">        </span><span class="n">ScType</span><span class="o">::</span><span class="n">EdgeDCommonConst</span><span class="p">,</span><span class="w"></span>
+<span class="w">        </span><span class="n">ScType</span><span class="o">::</span><span class="n">NodeConstAbstract</span><span class="p">,</span><span class="w"></span>
+<span class="w">        </span><span class="n">ScType</span><span class="o">::</span><span class="n">EdgeAccessConstPosPerm</span><span class="p">,</span><span class="w"></span>
+<span class="w">        </span><span class="n">Keynodes</span><span class="o">::</span><span class="n">nrel_mass</span><span class="p">);</span><span class="w"></span>
+
+
+<span class="k">while</span><span class="w"> </span><span class="p">(</span><span class="n">it5</span><span class="o">-&gt;</span><span class="n">Next</span><span class="p">())</span><span class="w"></span>
+<span class="p">{</span><span class="w"></span>
+<span class="w">  </span><span class="c1">// to get values use it5-&gt;Get(index), where index in range [0; 4]</span>
+<span class="w">  </span><span class="p">...</span><span class="w"> </span><span class="c1">// there is you code</span>
+<span class="p">}</span><span class="w"></span>
+</code></pre></div></p>
+<p>Second approach allows you iterate 3-element and 5-element constructions with less code, and suitable when
+you need to iterate all results. <strong>Use it if you need to iterate all results. Because it more clearly.</strong>
+<div class="highlight"><pre><span></span><code><span class="p">...</span><span class="w"></span>
+<span class="n">ctx</span><span class="p">.</span><span class="n">ForEachIter3</span><span class="p">(</span><span class="w"></span>
+<span class="w">    </span><span class="n">set</span><span class="p">,</span><span class="w"></span>
+<span class="w">    </span><span class="n">ScType</span><span class="o">::</span><span class="n">EdgeAccessConstPosPerm</span><span class="p">,</span><span class="w"></span>
+<span class="w">    </span><span class="n">ScType</span><span class="o">::</span><span class="n">Unknown</span><span class="p">,</span><span class="w"></span>
+<span class="w">    </span><span class="p">[]</span><span class="w"> </span><span class="p">(</span><span class="n">ScAddr</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">src</span><span class="p">,</span><span class="w"> </span><span class="n">ScAddr</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">edge</span><span class="p">,</span><span class="w"> </span><span class="n">ScAddr</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">trg</span><span class="p">)</span><span class="w"></span>
+<span class="p">{</span><span class="w"></span>
+<span class="w">  </span><span class="c1">// src equal to 0 value of iterator</span>
+<span class="w">  </span><span class="c1">// edge equal to 1 value of iterator</span>
+<span class="w">  </span><span class="c1">// trg equal to 2 value of iterator</span>
+<span class="w">  </span><span class="p">...</span><span class="w"> </span><span class="c1">// there is you code</span>
+<span class="p">});</span><span class="w"></span>
+
+<span class="p">...</span><span class="w"></span>
+<span class="n">ctx</span><span class="p">.</span><span class="n">ForEachIter5</span><span class="p">(</span><span class="w"></span>
+<span class="w">  </span><span class="n">objAddr</span><span class="p">,</span><span class="w"></span>
+<span class="w">  </span><span class="n">ScType</span><span class="o">::</span><span class="n">EdgeDCommonConst</span><span class="p">,</span><span class="w"></span>
+<span class="w">  </span><span class="n">ScType</span><span class="o">::</span><span class="n">NodeConstAbstract</span><span class="p">,</span><span class="w"></span>
+<span class="w">  </span><span class="n">ScType</span><span class="o">::</span><span class="n">EdgeAccessConstPosPerm</span><span class="p">,</span><span class="w"></span>
+<span class="w">  </span><span class="n">Keynodes</span><span class="o">::</span><span class="n">nrel_mass</span><span class="w"></span>
+<span class="w">  </span><span class="p">[]</span><span class="w"> </span><span class="p">(</span><span class="n">ScAddr</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">src</span><span class="p">,</span><span class="w"> </span><span class="n">ScAddr</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">edge</span><span class="p">,</span><span class="w"> </span><span class="n">ScAddr</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">trg</span><span class="p">,</span><span class="w"> </span><span class="n">ScAddr</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">edgeAttr</span><span class="p">,</span><span class="w"> </span><span class="n">ScAddr</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">attr</span><span class="p">)</span><span class="w"></span>
+<span class="p">{</span><span class="w"></span>
+<span class="w">  </span><span class="c1">// src equal to 0 value of iterator</span>
+<span class="w">  </span><span class="c1">// edge equal to 1 value of iterator</span>
+<span class="w">  </span><span class="c1">// trg equal to 2 value of iterator</span>
+<span class="w">  </span><span class="c1">// edgeAttr equal to 3 value of iterator</span>
+<span class="w">  </span><span class="c1">// attr equal to 4 value of iterator</span>
+<span class="w">  </span><span class="p">...</span><span class="w"> </span><span class="c1">// there is you code</span>
+<span class="p">});</span><span class="w"></span>
+</code></pre></div></p>
+<h1 id="http">HTTP</h1>
+<p>You can use <code>ScHttpRequest</code> class to make requests using <code>HTTP</code> protocol:
+<div class="highlight"><pre><span></span><code><span class="p">...</span><span class="w"></span>
+
+<span class="n">ScHttpRequest</span><span class="w"> </span><span class="n">request</span><span class="p">(</span><span class="s">&quot;http://any.url&quot;</span><span class="p">);</span><span class="w"></span>
+<span class="n">request</span><span class="p">.</span><span class="n">SetType</span><span class="p">(</span><span class="n">ScHttpRequest</span><span class="o">::</span><span class="n">Type</span><span class="o">::</span><span class="n">POST</span><span class="p">);</span><span class="w"></span>
+<span class="n">request</span><span class="p">.</span><span class="n">SetData</span><span class="p">(</span><span class="s">&quot;any data&quot;</span><span class="p">);</span><span class="w"></span>
+
+<span class="n">request</span><span class="p">.</span><span class="n">AddHeader</span><span class="p">(</span><span class="s">&quot;Content-Type: application/json&quot;</span><span class="p">);</span><span class="w"></span>
+<span class="n">request</span><span class="p">.</span><span class="n">AddHeader</span><span class="p">(...);</span><span class="w"></span>
+
+<span class="n">request</span><span class="p">.</span><span class="n">Perform</span><span class="p">();</span><span class="w"></span>
+<span class="k">auto</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">response</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">request</span><span class="p">.</span><span class="n">GetResponse</span><span class="p">();</span><span class="w"></span>
+<span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">response</span><span class="p">.</span><span class="n">IsPtrValid</span><span class="p">()</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">response</span><span class="o">-&gt;</span><span class="n">IsSuccess</span><span class="p">())</span><span class="w"></span>
+<span class="p">{</span><span class="w"></span>
+<span class="w">  </span><span class="k">auto</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">responseStr</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">response</span><span class="o">-&gt;</span><span class="n">GetData</span><span class="p">();</span><span class="w"></span>
+<span class="w">  </span><span class="c1">// process responseStr</span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="nb">true</span><span class="p">;</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
+
+<span class="p">...</span><span class="w"></span>
+</code></pre></div></p>
+
+              
+            </article>
+            
+          </div>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+    <nav class="md-footer__inner md-grid" aria-label="Footer" >
+      
+        
+        <a href="../cpp-meta/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Meta programming" rel="prev">
+          <div class="md-footer__button md-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+          </div>
+          <div class="md-footer__title">
+            <div class="md-ellipsis">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              Meta programming
+            </div>
+          </div>
+        </a>
+      
+      
+        
+        <a href="../../python/python/" class="md-footer__link md-footer__link--next" aria-label="Next: Common" rel="next">
+          <div class="md-footer__title">
+            <div class="md-ellipsis">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              Common
+            </div>
+          </div>
+          <div class="md-footer__button md-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4Z"/></svg>
+          </div>
+        </a>
+      
+    </nav>
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    <script id="__config" type="application/json">{"base": "../..", "features": [], "search": "../../assets/javascripts/workers/search.b97dbffb.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version.title": "Select version"}}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.6c7ad80a.min.js"></script>
+      
+        <script src="../../_assets/scg.min.js"></script>
+      
+        <script src="../../_assets/main.js"></script>
+      
+    
+  </body>
+</html>

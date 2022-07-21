@@ -1,0 +1,1797 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.3.1, mkdocs-material-8.3.9">
+    
+    
+      
+        <title>SCs language - SC-machine</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.1d29e8d0.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.cbb835fc.min.css">
+        
+      
+      
+    
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../_assets/main.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="" data-md-color-primary="none" data-md-color-accent="none">
+  
+    
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#common" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="SC-machine" class="md-header__button md-logo" aria-label="SC-machine" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            SC-machine
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              SCs language
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" aria-label="Clear" tabindex="-1">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="SC-machine" class="md-nav__button md-logo" aria-label="SC-machine" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    SC-machine
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        Home
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_2" type="checkbox" id="__nav_2" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_2">
+          Build
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Build" data-md-level="1">
+        <label class="md-nav__title" for="__nav_2">
+          <span class="md-nav__icon md-icon"></span>
+          Build
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../build/linux-build/" class="md-nav__link">
+        Build on Linux
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../build/windows-build/" class="md-nav__link">
+        Build on Windows
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../build/osx-build/" class="md-nav__link">
+        Build on OSX
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../build/cmake-flags/" class="md-nav__link">
+        CMake Flags
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3" type="checkbox" id="__nav_3" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_3">
+          Development
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Development" data-md-level="1">
+        <label class="md-nav__title" for="__nav_3">
+          <span class="md-nav__icon md-icon"></span>
+          Development
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../dev/git-workflow/" class="md-nav__link">
+        Git-workflow
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../dev/pr/" class="md-nav__link">
+        Pull requets
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../dev/codestyle/" class="md-nav__link">
+        Codestyle
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+    
+  
+  
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4" type="checkbox" id="__nav_4" checked>
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_4">
+          Common
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Common" data-md-level="1">
+        <label class="md-nav__title" for="__nav_4">
+          <span class="md-nav__icon md-icon"></span>
+          Common
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../cpp/el_types/" class="md-nav__link">
+        Element types
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../config/" class="md-nav__link">
+        Configuration files
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+    
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+      
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          SCs language
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        SCs language
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#common" class="md-nav__link">
+    Common
+  </a>
+  
+    <nav class="md-nav" aria-label="Common">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#comments" class="md-nav__link">
+    Comments
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#link-to-files" class="md-nav__link">
+    Link to files
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#names" class="md-nav__link">
+    Names
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#aliases" class="md-nav__link">
+    Aliases
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#scs-level-1" class="md-nav__link">
+    SCs level 1
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#scs-level-2" class="md-nav__link">
+    SCs level 2
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#scs-level-3" class="md-nav__link">
+    SCs level 3
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#scs-level-4" class="md-nav__link">
+    SCs level 4
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_5" type="checkbox" id="__nav_5" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_5">
+          API
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="API" data-md-level="1">
+        <label class="md-nav__title" for="__nav_5">
+          <span class="md-nav__icon md-icon"></span>
+          API
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../cpp/cpp-meta/" class="md-nav__link">
+        Meta programming
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../cpp/kpm.md" class="md-nav__link">
+        Agents
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../cpp/templates.md" class="md-nav__link">
+        Template
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../cpp/common/" class="md-nav__link">
+        Common
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_5_5" type="checkbox" id="__nav_5_5" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_5_5">
+          Python
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Python" data-md-level="2">
+        <label class="md-nav__title" for="__nav_5_5">
+          <span class="md-nav__icon md-icon"></span>
+          Python
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../python/python/" class="md-nav__link">
+        Common
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../python/library/" class="md-nav__link">
+        Library
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../python/cpp_wrap/" class="md-nav__link">
+        Wrapped classes
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_5_6" type="checkbox" id="__nav_5_6" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_5_6">
+          File storage
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="File storage" data-md-level="2">
+        <label class="md-nav__title" for="__nav_5_6">
+          <span class="md-nav__icon md-icon"></span>
+          File storage
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../storage/sc_dictionary.md" class="md-nav__link">
+        Sc-dictionary-based file storage
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_6" type="checkbox" id="__nav_6" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_6">
+          Http
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Http" data-md-level="1">
+        <label class="md-nav__title" for="__nav_6">
+          <span class="md-nav__icon md-icon"></span>
+          Http
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../http/index.md" class="md-nav__link">
+        Common
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../http/websocket.md" class="md-nav__link">
+        WebSocket
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_7" type="checkbox" id="__nav_7" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_7">
+          Tools
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Tools" data-md-level="1">
+        <label class="md-nav__title" for="__nav_7">
+          <span class="md-nav__icon md-icon"></span>
+          Tools
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tools/kb_builder.md" class="md-nav__link">
+        Builder
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../license/" class="md-nav__link">
+        License
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../changelog/" class="md-nav__link">
+        Changelog
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../thirdparty/" class="md-nav__link">
+        Thirdparty
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#common" class="md-nav__link">
+    Common
+  </a>
+  
+    <nav class="md-nav" aria-label="Common">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#comments" class="md-nav__link">
+    Comments
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#link-to-files" class="md-nav__link">
+    Link to files
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#names" class="md-nav__link">
+    Names
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#aliases" class="md-nav__link">
+    Aliases
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#scs-level-1" class="md-nav__link">
+    SCs level 1
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#scs-level-2" class="md-nav__link">
+    SCs level 2
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#scs-level-3" class="md-nav__link">
+    SCs level 3
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#scs-level-4" class="md-nav__link">
+    SCs level 4
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          <div class="md-content" data-md-component="content">
+            <article class="md-content__inner md-typeset">
+              
+                
+
+
+  <h1>SCs language</h1>
+
+<h3 id="common">Common</h3>
+<p>SCs-code - is a text representation of SC-code. Whole text consist of sentences, that
+separated by <code>;;</code> symbols.</p>
+<h4 id="comments">Comments</h4>
+<p>You can use C-style comments in SCs text:
+<div class="highlight"><pre><span></span><code>// one line comment
+fruit -&gt; apple;
+/* Multiline
+ * comment
+ */
+</code></pre></div></p>
+<h4 id="link-to-files">Link to files</h4>
+<p>To make an <code>sc-link</code> into specified file you can use special type identifier:
+<div class="highlight"><pre><span></span><code>&quot;file://&lt;file name&gt;&quot;
+</code></pre></div></p>
+<ul>
+<li><code>"file://&lt;file name&gt;"</code> - is a relative path to a file. According to a file, where it used;</li>
+<li><code>"file:///&lt;file_name&gt;"</code> - is an absolute path to a file.</li>
+</ul>
+<h4 id="names">Names</h4>
+<p>There are some tricks with object names:</p>
+<ul>
+<li><code>...</code> - is an unnamed object;</li>
+<li><code>_&lt;object name&gt;</code> - all object names, that starts with symbol <code>_</code> represents a variable type of objects.</li>
+</ul>
+<p>Objects identifier visibility. By default all objects with name <code>x</code> are visible anywhere.
+After translating it into memory this object will have a <strong>system identifier</strong> equal to <code>x</code>.
+So if you use <code>x</code> in different <em>scs</em> files, then you designate the same object in them
+(would be the same element in a knowledge base).</p>
+<p>Sometimes you need to designate the same objects in different files, but do not generate a
+<strong>system identifier</strong> in memory for it. In this case you should to prefix it name with a <code>.</code> symbol.
+For example: <code>.x</code>.</p>
+<p>In case, when you need to make a named object just local for an <em>scs</em> file,
+then you should to use <code>..</code> prefix (example: <code>..x</code>).</p>
+<p>So a rule to build identifier is:</p>
+<div class="highlight"><pre><span></span><code>[visibility][variable]&lt;identifier&gt;
+</code></pre></div>
+<p>For example identifier <code>.._x</code> localy visible variable identifier.</p>
+<h4 id="aliases">Aliases</h4>
+<p>You can use alias for any sc-element by using <code>=</code> operator. There are some examples:</p>
+<div class="highlight"><pre><span></span><code>@file_alias = &quot;file://...&quot;;;
+@link_alias = [];;
+@element_alias = element_idtf;;
+@edge_alias = (c -&gt; b);;
+@alias_to_alias = @other_alias;;
+</code></pre></div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Aliases visible just in a file scope. 
+You should define alias before usage.</p>
+</div>
+<hr />
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>SCs-code is splitted into levels. Each level allows to minimize number of string symbols to represent the same structures.</p>
+</div>
+<h3 id="scs-level-1">SCs level 1</h3>
+<p>SCs-code level 1 - is a simple representation of SC-code. It represents it
+with just simple triples. Each triple contains <code>subject</code>, <code>predicate</code>, <code>object</code>
+that are splitted by <code>|</code> symbol. Line <code>subject | predicate | object;;</code> is a sentence.</p>
+<p>Identifier of <code>subject</code>, <code>predicate</code>, <code>object</code> build with rule:</p>
+<div class="highlight"><pre><span></span><code>&lt;type&gt;#&lt;identifier&gt;
+</code></pre></div>
+<p>Where <code>type</code> - is an element type specification. It can be one of possible values:</p>
+<ul>
+<li><code>sc_node</code> - equal to <img alt="SCg-node" src="../../images/scg/scg_node.png" />;</li>
+<li><code>sc_link</code> - equal to <img alt="SCg-link" src="../../images/scg/scg_link.png" />;</li>
+<li><code>sc_edge_dcommon</code> - equal to <img alt="SCg-edge" src="../../images/scg/scg_edge_common_orient.png" />;</li>
+<li><code>sc_edge_ucommon</code> - equal to <img alt="SCg-edge" src="../../images/scg/scg_edge_common.png" />;</li>
+<li><code>sc_edge_main</code> - equal to <img alt="SCg-edge" src="../../images/scg/scg_edge_const_pos_perm.png" />;</li>
+<li><code>sc_edge_access</code> - equal to <img alt="SCg-edge" src="../../images/scg/scg_edge_access.png" />.</li>
+</ul>
+<hr/>
+
+<p><strong>Examples</strong></p>
+<table>
+  <tr>
+    <th>SCg construction</th>
+    <th>Equal SCs-level 1 text</th>
+  </tr>
+
+  <tr>
+    <td><scg src="../../images/scs/scs_example_level_1.gwf"></scg></td>
+    <td>
+      <pre>
+        <code class="js hljs javascript">
+// append set of apples into fruit set
+sc_node#fruit | sc_edge_main#... | sc_node#apple;;
+// append set of bananas into fruit set
+sc_node#fruit | sc_edge_main#... | sc_node#banana;;
+        </code>
+      </pre>
+    </td>
+  </tr>
+
+  <tr>
+    <td width="50%"><scg src="../../images/scs/scs_example_level_1_2.gwf"></scg></td>
+    <td>
+      <pre>
+        <code class="js hljs javascript">
+sc_node#apple | sc_edge_dcommon#..e | "file://apple.png";;
+/*append edge from nrel_image relation into
+  edge between apple set and it's image*/
+sc_node#nrel_image | sc_edge_main#... | sc_edge_dcommon#..e;;
+        </code>
+      </pre>
+    </td>
+  </tr>
+</table>
+
+<p>SCs-level 1 allows you to represent any kind of SC-code construction. It's a low-level
+representation and commonly used as a transport format, that is very simple for parsing.</p>
+<h3 id="scs-level-2">SCs level 2</h3>
+<p>This level of SCs-text add two new features:</p>
+<ul>
+<li>using of extended alphabet of edges;</li>
+<li>using of compound identifiers of an edges.</li>
+</ul>
+<p>On this level you can make sentences by rule:
+<div class="highlight"><pre><span></span><code>&lt;element&gt; &lt;edge&gt; &lt;element&gt;;;
+</code></pre></div></p>
+<p>Where <code>&lt;edge&gt;</code> can be on of values:</p>
+<table>
+  <tr>
+    <th>SCs</th>
+    <th>SCg equivalent</th>
+  </tr>
+  <tr>
+    <td>`<` or `>`</td>
+    <td><img src="../../images/scg/scg_edge_common_orient.png"></img></td>
+  </tr>
+  <tr>
+    <td>`<>`</td>
+    <td><img src="../../images/scg/scg_edge_common.png"></img></td>
+  </tr>
+  <tr>
+    <td>`<..` or `..>`</td>
+    <td><img src="../../images/scg/scg_edge_access.png"></img></td>
+  </tr>
+  <tr>
+    <td>`<=>`</td>
+    <td><img src="../../images/scg/scg_edge_const_common.png"></img></td>
+  </tr>
+  <tr>
+    <td>`_<=>`</td>
+    <td><img src="../../images/scg/scg_edge_var_common.png"></img></td>
+  </tr>
+  <tr>
+    <td>`<=` or `=>`</td>
+    <td><img src="../../images/scg/scg_edge_const_common_orient.png"></img></td>
+  </tr>
+  <tr>
+    <td>`_<=` or `_=>`</td>
+    <td><img src="../../images/scg/scg_edge_var_common_orient.png"></img></td>
+  </tr>
+  <tr>
+    <td>`<-` or `->`</td>
+    <td><img src="../../images/scg/scg_edge_const_pos_perm.png"></img></td>
+  </tr>
+  <tr>
+    <td>`_<-` or `_->`</td>
+    <td><img src="../../images/scg/scg_edge_var_pos_perm.png"></img></td>
+  </tr>
+  <tr>
+    <td>`<|-` or `-|>`</td>
+    <td><img src="../../images/scg/scg_edge_const_neg_perm.png"></img></td>
+  </tr>
+  <tr>
+    <td>`_<|-` or `_-|>`</td>
+    <td><img src="../../images/scg/scg_edge_var_neg_perm.png"></img></td>
+  </tr>
+  <tr>
+    <td>`<!---` or `-/-->`</td>
+    <td><img src="../../images/scg/scg_edge_const_fuz_perm.png"></img></td>
+  </tr>
+  <tr>
+    <td>`_<!---` or `_-/-->`</td>
+    <td><img src="../../images/scg/scg_edge_var_fuz_perm.png"></img></td>
+  </tr>
+  <tr>
+    <td>`<~` or `~>`</td>
+    <td><img src="../../images/scg/scg_edge_const_pos_temp.png"></img></td>
+  </tr>
+  <tr>
+    <td>`_<~` or `_~>`</td>
+    <td><img src="../../images/scg/scg_edge_var_pos_temp.png"></img></td>
+  </tr>
+  <tr>
+    <td>`<|~` or `~|>`</td>
+    <td><img src="../../images/scg/scg_edge_const_neg_temp.png"></img></td>
+  </tr>
+  <tr>
+    <td>`_<|~` or `_~|>`</td>
+    <td><img src="../../images/scg/scg_edge_var_neg_temp.png"></img></td>
+  </tr>
+  <tr>
+    <td>`<!--~` or `~/-->`</td>
+    <td><img src="../../images/scg/scg_edge_const_fuz_temp.png"></img></td>
+  </tr>
+  <tr>
+    <td>`_<!--~` or `_~/-->`</td>
+    <td><img src="../../images/scg/scg_edge_var_fuz_temp.png"></img></td>
+  </tr>
+</table>
+
+<hr/>
+
+<table>
+  <tr>
+    <th>SCg construction</th>
+    <th>Equal SCs-level 2 text</th>
+  </tr>
+
+  <tr>
+    <td><scg src="../../images/scs/scs_example_level_1.gwf"></scg></td>
+    <td>
+      <pre>
+        <code class="js hljs javascript">
+fruit -> apple;;
+// backward direction
+banana <- fruit;;
+        </code>
+      </pre>
+    </td>
+  </tr>
+</table>
+
+<hr/>
+<p>Compound identifier of an edge builds as a sentence in SCs-level 2, but without
+<code>;;</code> separator and inside brackets <code>()</code>: <code>(&lt;element&gt; &lt;edge&gt; &lt;element&gt;)</code>.
+So that allows to simplify usage of an edge as a source or target of another one.</p>
+<hr/>
+
+<p><strong>Examples</strong></p>
+<table>
+  <tr>
+    <th>SCg construction</th>
+    <th>Equal SCs-level 2 text</th>
+  </tr>
+
+  <tr>
+    <td width="50%"><scg src="../../images/scs/scs_example_level_1_2.gwf"></scg></td>
+    <td>
+      <pre>
+        <code class="js hljs javascript">
+nrel_image -> (fruit => "file://apple.png");;
+        </code>
+      </pre>
+    </td>
+  </tr>
+
+  <tr>
+    <td><scg src="../../images/scs/scs_example_level_2.gwf"></scg></td>
+    <td>
+      <pre>
+        <code class="js hljs javascript">
+d -> (c -> (a -> b));;
+        </code>
+      </pre>
+    </td>
+  </tr>
+
+  <tr>
+    <td><scg src="../../images/scs/scs_example_level_2_2.gwf"></scg></td>
+    <td>
+      <pre>
+        <code class="js hljs javascript">
+(a -> b) -> (c <- d);;
+        </code>
+      </pre>
+    </td>
+  </tr>
+
+</table>
+
+<h3 id="scs-level-3">SCs level 3</h3>
+<p>This level of SCs-text allows to minimize symbols to represent constructions like this one:
+<scg src="../../images/scs/scs_example_level_3.gwf"></scg></p>
+<div class="highlight"><pre><span></span><code>c -&gt; (a -&gt; b);;
+</code></pre></div>
+<p>To do that you should use sentence like this:</p>
+<div class="highlight"><pre><span></span><code>&lt;object&gt; &lt;edge&gt; &lt;attribute&gt;: &lt;object&gt;
+</code></pre></div>
+<p>For this example it would be like this:</p>
+<div class="highlight"><pre><span></span><code>a -&gt; c: b;;
+</code></pre></div>
+<p>In case, when output edge from <code>c</code> is an variable, then use <code>::</code> splitter instead of <code>:</code>:</p>
+<div class="highlight"><pre><span></span><code>a -&gt; c:: b;;
+</code></pre></div>
+<p>equal to:</p>
+<div class="highlight"><pre><span></span><code>c _-&gt; (a -&gt; b);;
+</code></pre></div>
+<div class="note">
+<b>Note</b>: you can use <code>:</code>, <code>::</code> just to replace <code>-></code> or <code>_-></code> edges.
+</div>
+
+<hr/>
+
+<p><strong>Examples</strong></p>
+<table>
+  <tr>
+    <th>SCg construction</th>
+    <th>Equal SCs-level 3 text</th>
+  </tr>
+
+  <tr>
+    <td><scg src="../../images/scs/scs_example_level_1_2.gwf"></scg></td>
+    <td>
+      <pre>
+        <code class="js hljs javascript">
+apple => nrel_image: "file://apple.png";;
+        </code>
+      </pre>
+    </td>
+  </tr>
+
+  <tr>
+    <td><scg src="../../images/scs/scs_example_level_3_2.gwf"></scg></td>
+    <td>
+      <div class="note">
+        <b>Note</b>: it is possible to use any number of <code>:</code>, <code>::</code> in one sentence.
+      </div>
+      <pre>
+        <code class="js hljs javascript">
+a -> c: d:: b;;
+        </code>
+      </pre>
+    </td>
+  </tr>
+</table>
+
+<h3 id="scs-level-4">SCs level 4</h3>
+<p>This level of SCs-text allows to combine many setences with one element into one.
+For that pupropses used ';' symbol. So if we have some sentences like:</p>
+<div class="highlight"><pre><span></span><code>x -&gt; y;;
+x &lt;- z;;
+x =&gt; h: r;;
+</code></pre></div>
+<p>Then using SCs level 4 we can write them like this:</p>
+<div class="highlight"><pre><span></span><code>x -&gt; y;
+  &lt;- z;
+  =&gt; h: r;;
+</code></pre></div>
+<p>Another words, this level of SCs text, allows to use source element one time.</p>
+<hr/>
+
+<p><strong>Examples</strong></p>
+<table>
+  <tr>
+    <th>SCg construction</th>
+    <th>Equal SCs-level 4 text</th>
+  </tr>
+
+  <tr>
+    <td><scg src="../../images/scs/scs_example_level_1.gwf"></scg></td>
+    <td>
+      <pre>
+        <code class="js hljs javascript">
+fruit -> apple;
+      -> banana;;
+        </code>
+      </pre>
+    </td>
+  <tr>
+
+  <tr>
+    <td><scg src="../../images/scs/scs_example_level_4.gwf"></scg></td>
+    <td>
+      <pre>
+        <code class="js hljs javascript">
+a -> c: d: b;
+  -> e;
+  -> g: f;;
+        </code>
+      </pre>
+    </td>
+  </tr>
+<table>
+
+### SCs level 5
+
+Internal sentences added to `SCs-text` on this level. They are wrapped by `(* ... *)` brackets.
+This type of sentences allow to describe connections of an element inplace.
+You can place these internal sentences after `object` element in triple (`subject -> object (* ... *);;`), but before `;;` separator.
+You can use level `2-4` sentences inside this one. But there is a just one rule: 
+
+!!! note ""
+    You doesn't need to specify start element for each sentece. Because object (for which internal sentece builds) is going to be a subject for all internal sentences 
+
+Look at the examples, to understand how it works:
+
+
+<table>
+  <tr>
+    <th>SCs-level 2-4</th>
+    <th>SCs-level 5</th>
+    <th>Description</th>
+  </tr>
+
+  <tr>
+    <td>
+      <pre><code class="js hljs javascript">
+set -> attr: item;;
+item -> subitem;;
+        </code></pre>
+    </td>
+    <td>
+      <pre><code class="js hljs javascript">
+set
+  -> attr: item 
+    (*
+      -> subitem;;
+    *);;
+      </code></pre>
+    </td>
+    <td>
+    This is a simple example, that allow to make an <code>SCs-text</code> more readable and useful. In this case text has a sublevels, that allow 
+    to read it faster.
+    </td>
+  </tr>
+
+  <tr>
+    <td>
+      <pre>
+        <code class="js hljs javascript">
+set -> attr: item;;
+item -> subitem;;
+item -> attr2: subitem2;;
+        </code>
+      </pre>
+    </td>
+    <td>
+      <pre>
+        <code class="js hljs javascript">
+set 
+  -> attr: item
+  (* 
+    -> subitem;;
+    -> attr2:
+      subitem2;;
+  *);;
+        </code>
+      </pre>
+    </td>
+    <td>
+    You can use as more as you need sentences in <code>(* *)</code>, but all of them should be separated by <code>;;</code>.
+    </td>
+  </tr>
+
+  <tr>
+    <td>
+      <pre><code class="js hljs javascript">
+@en_idtf = [sc-element];;
+@ru_idtf = [sc-элемент];;
+@en_idtf <- lang_en;;
+@ru_idtf <- lang_ru;;
+sc_element 
+  => nrel_main_idtf: 
+    @en_idtf;
+    @ru_idtf;;
+      </code></pre>
+    </td>
+    <td>
+      <pre><code class="js hljs javascript">
+sc_element
+  => nrel_main_idtf:
+    [sc-element]
+    (* <- lang_en;; *);
+  => nrel_main_idtf:
+    [sc-элемент]
+    (* <- lang_ru;; *);;
+        </code></pre>
+    </td>
+    <td>
+    This type of syntax is very useful, when you need to specify some meta information on <code>sc-link</code>'s.
+    In this example we specify two main identifiers for a <code>sc_element</code>. One is an english (<code>lang_en</code>) identifier,
+    another one is a russian (<code>lang_ru</code>).
+    </td>
+  </tr>
+
+</table>
+
+### SCs level 6
+
+There are some new complex aliases, that adds by this level of `SCs-text`:
+
+* `[...]` - this is a short representation of `sc-link` with a content. You can create `sc-link` with a specified content
+by using this feature. There are all possible cases:
+<table>
+  <tr>
+    <th>Type</th>
+    <th>Description</th>
+    <th>Example</th>
+  </tr>
+    <tr>
+      <td>`string`</td>
+      <td>You can write any string that you wish inside <code>[ ... ]</code> alias</td>
+      <td>
+        <pre><code class="js hljs javascript">
+x -> [any string];;
+x -> [this is a 
+ multiline text];;
+        </code></pre>
+      </td>
+    </tr>
+    <tr>
+      <td>`number`</td>
+      <td>You can specify a number as a binary data. To do that, just use syntax:
+        <code>[^"type: value"]</code>. Where <code>type</code> is a one of possible types:
+        <ul> 
+          <li><code>int</code> - signed integer value (32 bit). You can also use such types for an integer:
+            <code>int8</code>, <code>int16</code>, <code>int32</code>, <code>int64</code>
+          </li>
+          <li><code>uint</code> - unsigned integer value (32 bit). You can also use such type for an unsigned integer:
+            <code>uint8</code>, <code>uint16</code>, <code>uint32</code>, <code>uint64</code>
+          </li>
+          <li><code>float</code> - 32-bit float value</li>
+          <li><code>double</code> - 64-bit float value</li>
+        </ul>
+      </td>
+      <td>
+        <pre><code class="js hljs javascript">
+x -> [^"float: 435.2346"];;
+x -> [^"int8: 7"];;
+x -> [^"uint: 781236"];;
+        </code></pre>
+      </td>
+    </tr>
+</table>
+
+* `[* ... *]` this is a short representation of <code>sc-structure</code>. You can use just <code>SCs-text</code> inside this brackets.
+  So these brackets will designate an <code>sc-structure</code> (<code>sc-node</code> with a type <code>sc_node_struct</code>). All elements inside
+  brackets will have ingoing edge (type <code>sc_edge_main</code>) from that <code>sc-node</code>.
+  <table>
+    <tr>
+      <th>SCs-text level 2-5</th>
+      <th>SCs-text level 6</th>
+    </tr>
+
+    <tr>
+      <td>
+        <pre><code class="js hljs javascript">
+@edge_alias = (set -> item);;
+struct -> set; item; @edge_alias;;
+        </code></pre>
+      </td>
+      <td>
+        <pre><code class="js hljs javascript">
+@struct = [ set -> item;; ];;
+        </code></pre>
+      </td>
+    </tr>
+  </table>
+
+!!! important "Thats important"
+    `SCs-text` inside `[* ... *]` has the same rules and semantic, like it was be in a separated file
+
+* `{ ... }` this is a short representation of set. This feature allow to make sets in very fast way.
+  Syntax looks like:
+
+  <div class="highlight"><pre><span></span><code>@set = {
+  element1;
+  attr2: element2;
+  ...
+  last_element // no semicolon after last element
+}
+</code></pre></div>
+
+<table>
+  <tr>
+    <th>SCs-text level 2-5</th>
+    <th>SCs-text level 6</th>
+    <th>Comments</th>
+  </tr>
+
+  <tr>
+    <td>
+      <pre><code class="js hljs javascript">
+set
+  <- sc_node_tuple;
+  -> element1;
+  -> attr2: element2;
+  -> element3;;
+      </code></pre>
+    </td>
+    <td>
+      <pre><code class="js hljs javascript">
+@set = {
+  element1;
+  attr2: element2;
+  element3 // no semicolon
+};;
+      </code></pre>
+    </td>
+    <td>Using set looks much cleaner. You can use even attributes on it</td>
+  </tr>
+
+  <tr>
+    <td>
+      <pre><code class="js hljs javascript">
+meta_set 
+  <- sc_node_tuple;
+  -> set1;
+  -> set2;;
+
+set1
+  <- sc_node_tuple;
+  -> element1;
+  -> attr2: element2;
+  -> element3;;
+
+set2
+  <- sc_node_tuple;
+  -> element5;
+  -> element6;;
+
+set3
+  <- sc_node_tuple;
+  -> element10;;
+
+element 
+  => nrel_relation:
+    set3;;
+      </code></pre>
+    </td>
+    <td>
+      <pre><code class="js hljs javascript">
+@meta_set = {
+  {
+    element1;
+    attr2: element2;
+    element3
+  };
+  {
+    element5;
+    element6
+  }
+};;
+
+element 
+  => nrel_relation:
+  {
+    element10
+  };;
+      </code></pre>
+    </td>
+    <td>You can use set alias inside any other complex aliases and triples.</td>
+  </tr>
+</table>
+
+
+### Keynodes
+
+There are a list of element type keynodes, that can be used to specify type of an element:
+
+| Keynode                           | Equal sc-type                       | Equal SCg-element
+| --------------------------------- | ----------------------------------- | --------------
+| sc_node                           | ScType::Node                        | ![SCg-edge](../images/scg/scg_node.png)
+| sc_link                           | ScType::Link                        | ![SCg-edge](../images/scg/scg_link.png)
+| sc_edge_dcommon                   | ScType::EdgeDCommon                 | ![SCg-edge](../images/scg/scg_edge_common_orient.png)
+| sc_edge_ucommon                   | ScType::EdgeUCommon                 | ![SCg-edge](../images/scg/scg_edge_common.png)
+| sc_edge_main                      | ScType::EdgeAccessConstPosPerm      | ![SCg-edge](../images/scg/scg_edge_const_pos_perm.png)
+| sc_edge_access                    | ScType::EdgeAccess                  | ![SCg-edge](../images/scg/scg_edge_access.png)
+| sc_node_tuple                     | ScType::NodeTuple                   | ![SCg-edge](../images/scg/scg_node_const_tuple.png) ![SCg-edge](../images/scg/scg_node_var_tuple.png)
+| sc_node_struct                    | ScType::NodeStruct                  | ![SCg-edge](../images/scg/scg_node_const_struct.png) ![SCg-edge](../images/scg/scg_node_var_struct.png)
+| sc_node_role_relation             | ScType::NodeRole                    | ![SCg-edge](../images/scg/scg_node_const_role.png) ![SCg-edge](../images/scg/scg_node_var_role.png)
+| sc_node_norole_relation           | ScType::NodeNoRole                  | ![SCg-edge](../images/scg/scg_node_const_norole.png) ![SCg-edge](../images/scg/scg_node_var_norole.png)
+| sc_node_class                     | ScType::NodeClass                   | ![SCg-edge](../images/scg/scg_node_const_class.png) ![SCg-edge](../images/scg/scg_node_var_class.png)
+| sc_node_abstract                  | ScType::NodeAbstract                | ![SCg-edge](../images/scg/scg_node_const_abstract.png) ![SCg-edge](../images/scg/scg_node_var_abstract.png)
+| sc_node_material                  | ScType::NodeMaterial                | ![SCg-edge](../images/scg/scg_node_const_material.png) ![SCg-edge](../images/scg/scg_node_var_material.png)
+
+There are old keynodes, that used for backward compatibility:
+
+| Keynode                   | Equal sc-type | New keynode |
+| ------------------------- | ------------- | ----------- |
+| sc_arc_main               | ScType::EdgeAccessConstPosPerm | sc_edge_main |
+| sc_edge                   | ScType::EdgeUCommon | sc_edge_ucommon |
+| sc_arc_common             | ScType::EdgeDCommon | sc_edge_dcommon |
+| sc_arc_access             | ScType::EdgeAccess  | sc_edge_access |
+| sc_node_not_relation      | ScType::NodeClass | sc_node_class |
+| sc_node_not_binary_tuple  | ScType::NodeTuple | sc_node_tuple |
+
+There is an example of usage:
+
+<table>
+  <tr>
+    <th>SCs-code</th>
+    <th>Equal SCg-code</th>
+  </tr>
+  <tr>
+    <td>
+      <pre>
+a <- sc_node_class;;
+a _-> _b;;
+_b <- sc_node_material;;
+      </pre>
+    </td>
+    <td><scg src="../images/scs_keynodes_old_example_1.gwf"></scg></td>
+  </tr>
+  <tr>
+    <td>
+      <pre>
+_x => nrel_y: t;;
+nrel_y <- sc_node_norole_relation;;
+      </pre>
+    </td>
+    <td><scg src="../images/scs_keynodes_old_example_2.gwf"></scg></td>
+  </tr>
+</table>
+
+              
+            </article>
+            
+          </div>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+    <nav class="md-footer__inner md-grid" aria-label="Footer" >
+      
+        
+        <a href="../config/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Configuration files" rel="prev">
+          <div class="md-footer__button md-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+          </div>
+          <div class="md-footer__title">
+            <div class="md-ellipsis">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              Configuration files
+            </div>
+          </div>
+        </a>
+      
+      
+        
+        <a href="../../cpp/cpp-meta/" class="md-footer__link md-footer__link--next" aria-label="Next: Meta programming" rel="next">
+          <div class="md-footer__title">
+            <div class="md-ellipsis">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              Meta programming
+            </div>
+          </div>
+          <div class="md-footer__button md-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4Z"/></svg>
+          </div>
+        </a>
+      
+    </nav>
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    <script id="__config" type="application/json">{"base": "../..", "features": [], "search": "../../assets/javascripts/workers/search.b97dbffb.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version.title": "Select version"}}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.6c7ad80a.min.js"></script>
+      
+        <script src="../../_assets/scg.min.js"></script>
+      
+        <script src="../../_assets/main.js"></script>
+      
+    
+  </body>
+</html>

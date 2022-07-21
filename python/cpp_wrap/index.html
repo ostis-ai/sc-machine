@@ -1,0 +1,1730 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.3.1, mkdocs-material-8.3.9">
+    
+    
+      
+        <title>Wrapped classes - SC-machine</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.1d29e8d0.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.cbb835fc.min.css">
+        
+      
+      
+    
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../_assets/main.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="" data-md-color-primary="none" data-md-color-accent="none">
+  
+    
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#global" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="SC-machine" class="md-header__button md-logo" aria-label="SC-machine" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            SC-machine
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Wrapped classes
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" aria-label="Clear" tabindex="-1">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="SC-machine" class="md-nav__button md-logo" aria-label="SC-machine" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    SC-machine
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        Home
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_2" type="checkbox" id="__nav_2" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_2">
+          Build
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Build" data-md-level="1">
+        <label class="md-nav__title" for="__nav_2">
+          <span class="md-nav__icon md-icon"></span>
+          Build
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../build/linux-build/" class="md-nav__link">
+        Build on Linux
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../build/windows-build/" class="md-nav__link">
+        Build on Windows
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../build/osx-build/" class="md-nav__link">
+        Build on OSX
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../build/cmake-flags/" class="md-nav__link">
+        CMake Flags
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3" type="checkbox" id="__nav_3" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_3">
+          Development
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Development" data-md-level="1">
+        <label class="md-nav__title" for="__nav_3">
+          <span class="md-nav__icon md-icon"></span>
+          Development
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../dev/git-workflow/" class="md-nav__link">
+        Git-workflow
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../dev/pr/" class="md-nav__link">
+        Pull requets
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../dev/codestyle/" class="md-nav__link">
+        Codestyle
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4" type="checkbox" id="__nav_4" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_4">
+          Common
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Common" data-md-level="1">
+        <label class="md-nav__title" for="__nav_4">
+          <span class="md-nav__icon md-icon"></span>
+          Common
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../cpp/el_types/" class="md-nav__link">
+        Element types
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../other/config/" class="md-nav__link">
+        Configuration files
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../other/scs/" class="md-nav__link">
+        SCs language
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+    
+  
+  
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_5" type="checkbox" id="__nav_5" checked>
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_5">
+          API
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="API" data-md-level="1">
+        <label class="md-nav__title" for="__nav_5">
+          <span class="md-nav__icon md-icon"></span>
+          API
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../cpp/cpp-meta/" class="md-nav__link">
+        Meta programming
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../cpp/kpm.md" class="md-nav__link">
+        Agents
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../cpp/templates.md" class="md-nav__link">
+        Template
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../cpp/common/" class="md-nav__link">
+        Common
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+    
+  
+  
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_5_5" type="checkbox" id="__nav_5_5" checked>
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_5_5">
+          Python
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Python" data-md-level="2">
+        <label class="md-nav__title" for="__nav_5_5">
+          <span class="md-nav__icon md-icon"></span>
+          Python
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../python/" class="md-nav__link">
+        Common
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../library/" class="md-nav__link">
+        Library
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+    
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+      
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          Wrapped classes
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        Wrapped classes
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#global" class="md-nav__link">
+    Global
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#scaddr" class="md-nav__link">
+    ScAddr
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#sctype" class="md-nav__link">
+    ScType
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#sciterator3" class="md-nav__link">
+    ScIterator3
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#sciterator5" class="md-nav__link">
+    ScIterator5
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#sclinkcontent" class="md-nav__link">
+    ScLinkContent
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#sctemplateparams" class="md-nav__link">
+    ScTemplateParams
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#sctemplategenresult" class="md-nav__link">
+    ScTemplateGenResult
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#sctemplatesearchresultitem" class="md-nav__link">
+    ScTemplateSearchResultItem
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#sctemplatesearchresult" class="md-nav__link">
+    ScTemplateSearchResult
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#scmemorycontext" class="md-nav__link">
+    ScMemoryContext
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_5_6" type="checkbox" id="__nav_5_6" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_5_6">
+          File storage
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="File storage" data-md-level="2">
+        <label class="md-nav__title" for="__nav_5_6">
+          <span class="md-nav__icon md-icon"></span>
+          File storage
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../storage/sc_dictionary.md" class="md-nav__link">
+        Sc-dictionary-based file storage
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_6" type="checkbox" id="__nav_6" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_6">
+          Http
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Http" data-md-level="1">
+        <label class="md-nav__title" for="__nav_6">
+          <span class="md-nav__icon md-icon"></span>
+          Http
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../http/index.md" class="md-nav__link">
+        Common
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../http/websocket.md" class="md-nav__link">
+        WebSocket
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_7" type="checkbox" id="__nav_7" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_7">
+          Tools
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Tools" data-md-level="1">
+        <label class="md-nav__title" for="__nav_7">
+          <span class="md-nav__icon md-icon"></span>
+          Tools
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tools/kb_builder.md" class="md-nav__link">
+        Builder
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../license/" class="md-nav__link">
+        License
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../changelog/" class="md-nav__link">
+        Changelog
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../thirdparty/" class="md-nav__link">
+        Thirdparty
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#global" class="md-nav__link">
+    Global
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#scaddr" class="md-nav__link">
+    ScAddr
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#sctype" class="md-nav__link">
+    ScType
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#sciterator3" class="md-nav__link">
+    ScIterator3
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#sciterator5" class="md-nav__link">
+    ScIterator5
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#sclinkcontent" class="md-nav__link">
+    ScLinkContent
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#sctemplateparams" class="md-nav__link">
+    ScTemplateParams
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#sctemplategenresult" class="md-nav__link">
+    ScTemplateGenResult
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#sctemplatesearchresultitem" class="md-nav__link">
+    ScTemplateSearchResultItem
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#sctemplatesearchresult" class="md-nav__link">
+    ScTemplateSearchResult
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#scmemorycontext" class="md-nav__link">
+    ScMemoryContext
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          <div class="md-content" data-md-component="content">
+            <article class="md-content__inner md-typeset">
+              
+                
+
+
+  <h1>Wrapped classes</h1>
+
+<h2 id="global">Global</h2>
+<ul>
+<li><code>getScConfigValue</code> - function that returns value from a sc-memory config file.
+<div class="highlight"><pre><span></span><code><span class="n">configValue</span> <span class="o">=</span> <span class="n">getScConfigValue</span><span class="p">(</span><span class="s1">&#39;group&#39;</span><span class="p">,</span> <span class="s1">&#39;value&#39;</span><span class="p">)</span>
+</code></pre></div></li>
+</ul>
+<h2 id="scaddr">ScAddr</h2>
+<p>This class represents <code>ScAddr</code> in C++. Methods of this class:</p>
+<details class="tip">
+<summary>IsValid()</summary>
+<p>if <code>ScAddr</code> is valid, then returns <code>True</code>; otherwise - <code>False</code></p>
+</details>
+<details class="tip">
+<summary>ToInt()</summary>
+<p>convert addr value to integer (equal C++ <code>ScAddr::Hash</code>). <em>Useful for debug purposes</em>.</p>
+</details>
+<details class="tip">
+<summary>__eq__()</summary>
+<p>equal operator <code>==</code>. Can be used like this:</p>
+<div class="highlight"><pre><span></span><code><span class="k">if</span> <span class="n">addr1</span> <span class="o">==</span> <span class="n">addr2</span><span class="p">:</span>
+  <span class="k">pass</span> <span class="c1"># do something</span>
+</code></pre></div>
+</details>
+<details class="tip">
+<summary>__ne__()</summary>
+<p>not equal operator <code>!=</code>. Can be used like this:
+<div class="highlight"><pre><span></span><code><span class="k">if</span> <span class="n">addr1</span> <span class="o">!=</span> <span class="n">addr2</span><span class="p">:</span>
+  <span class="k">pass</span> <span class="c1"># do something</span>
+</code></pre></div></p>
+</details>
+<h2 id="sctype">ScType</h2>
+<p>This class equal to <code>ScType</code> in C++. Methods of this class:</p>
+<details class="tip">
+<summary>constructor</summary>
+<p>you can create this class with input type combinations
+<div class="highlight"><pre><span></span><code><span class="n">type1</span> <span class="o">=</span> <span class="n">ScType</span><span class="p">()</span> <span class="c1"># equal to ScType.Unknown</span>
+<span class="n">type2</span> <span class="o">=</span> <span class="n">ScType</span><span class="o">.</span><span class="n">Node</span> <span class="c1"># see more constants below</span>
+<span class="n">type3</span> <span class="o">=</span> <span class="n">ScType</span><span class="o">.</span><span class="n">Node</span> <span class="o">|</span> <span class="n">ScType</span><span class="o">.</span><span class="n">Const</span> <span class="c1"># equal to ScType.NodeConst</span>
+</code></pre></div></p>
+</details>
+<details class="tip">
+<summary>IsValid()</summary>
+<p>if type is not <code>ScType.Unknown</code>, then returns <code>True</code>; otherwise - <code>False</code></p>
+</details>
+<details class="tip">
+<summary>__eq__()</summary>
+<p>equal operator <code>==</code>. Can be used like this:
+<div class="highlight"><pre><span></span><code><span class="k">if</span> <span class="n">type1</span> <span class="o">==</span> <span class="n">type2</span><span class="p">:</span>
+  <span class="k">pass</span> <span class="c1"># do something</span>
+</code></pre></div></p>
+</details>
+<details class="tip">
+<summary>__ne__()</summary>
+<p>not equal operator <code>!=</code>. Can be used like this:
+<div class="highlight"><pre><span></span><code><span class="k">if</span> <span class="n">type1</span> <span class="o">!=</span> <span class="n">type2</span><span class="p">:</span>
+  <span class="k">pass</span> <span class="c1"># do something</span>
+</code></pre></div></p>
+</details>
+<details class="tip">
+<summary>__or__()</summary>
+<p>bitwise or operator <code>|</code>. Can be used like this:
+<div class="highlight"><pre><span></span><code><span class="n">type1</span> <span class="o">=</span> <span class="n">ScType</span><span class="o">.</span><span class="n">Node</span>
+<span class="n">type2</span> <span class="o">=</span> <span class="n">ScType</span><span class="o">.</span><span class="n">Const</span>
+
+<span class="n">type3</span> <span class="o">=</span> <span class="n">type1</span> <span class="o">|</span> <span class="n">type2</span>
+<span class="n">type3</span> <span class="o">==</span> <span class="n">ScType</span><span class="o">.</span><span class="n">NodeConst</span> <span class="c1"># will be True</span>
+</code></pre></div></p>
+</details>
+<details class="tip">
+<summary>__and__()</summary>
+<p>bitwise and operator <code>&amp;</code>. Can be used like this:
+<div class="highlight"><pre><span></span><code><span class="n">type1</span> <span class="o">=</span> <span class="n">ScType</span><span class="o">.</span><span class="n">NodeConst</span>
+<span class="n">type2</span> <span class="o">=</span> <span class="n">ScType</span><span class="o">.</span><span class="n">Node</span>
+
+<span class="n">type3</span> <span class="o">=</span> <span class="n">type1</span> <span class="o">&amp;</span> <span class="n">type2</span>
+
+<span class="n">type3</span> <span class="o">==</span> <span class="n">type1</span> <span class="c1"># will be True</span>
+</code></pre></div></p>
+</details>
+<details class="tip">
+<summary>IsLink()</summary>
+<p>if type represents a link, then returns <code>True</code>; otherwise - <code>False</code>
+<div class="highlight"><pre><span></span><code><span class="n">type1</span> <span class="o">=</span> <span class="n">ScType</span><span class="o">.</span><span class="n">LinkConst</span>
+<span class="n">type1</span><span class="o">.</span><span class="n">IsLink</span><span class="p">()</span> <span class="c1"># returns True</span>
+</code></pre></div></p>
+</details>
+<details class="tip">
+<summary>IsEdge()</summary>
+<p>if type represents an edge, then returns <code>True</code>; otherwise - <code>False</code>
+<div class="highlight"><pre><span></span><code><span class="n">type1</span> <span class="o">=</span> <span class="n">ScType</span><span class="o">.</span><span class="n">EdgeAccessConstFuzPerm</span>
+<span class="n">type1</span><span class="o">.</span><span class="n">IsEdge</span><span class="p">()</span> <span class="c1"># return True</span>
+</code></pre></div></p>
+</details>
+<details class="tip">
+<summary>IsNode()</summary>
+<p>if type represents a node, then returns <code>True</code>; otherwise - <code>False</code>
+<div class="highlight"><pre><span></span><code><span class="n">type1</span> <span class="o">=</span> <span class="n">ScType</span><span class="o">.</span><span class="n">NodeConst</span>
+<span class="n">type1</span><span class="o">.</span><span class="n">IsNode</span><span class="p">()</span> <span class="c1"># returns True</span>
+</code></pre></div></p>
+</details>
+<details class="tip">
+<summary>IsUnknown()</summary>
+<p>if type is not <code>Unknown</code>, then returns <code>True</code>; otherwise - <code>False</code>
+<div class="highlight"><pre><span></span><code><span class="n">type1</span> <span class="o">=</span> <span class="n">ScType</span><span class="o">.</span><span class="n">Node</span>
+<span class="n">type1</span><span class="o">.</span><span class="n">IsUnknown</span><span class="p">()</span> <span class="c1"># return True</span>
+
+<span class="n">type2</span> <span class="o">=</span> <span class="n">ScType</span><span class="p">()</span>
+<span class="n">type2</span><span class="o">.</span><span class="n">IsUnknown</span><span class="p">()</span> <span class="c1"># return False</span>
+</code></pre></div></p>
+</details>
+<details class="tip">
+<summary>IsConst()</summary>
+<p>if type represents constant, then returns <code>True</code>; otherwise - <code>False</code>
+<div class="highlight"><pre><span></span><code><span class="n">type1</span> <span class="o">=</span> <span class="n">ScType</span><span class="p">()</span>
+<span class="n">type1</span><span class="o">.</span><span class="n">IsConst</span><span class="p">()</span> <span class="c1"># returns False</span>
+
+<span class="n">type2</span> <span class="o">=</span> <span class="n">ScType</span><span class="o">.</span><span class="n">NodeVar</span><span class="p">()</span>
+<span class="n">type2</span><span class="o">.</span><span class="n">IsConst</span><span class="p">()</span> <span class="c1"># return False</span>
+
+<span class="n">type3</span> <span class="o">=</span> <span class="n">ScType</span><span class="o">.</span><span class="n">Node</span><span class="p">()</span>
+<span class="n">type3</span><span class="o">.</span><span class="n">IsConst</span><span class="p">()</span> <span class="c1"># return False</span>
+
+<span class="n">type4</span> <span class="o">=</span> <span class="n">ScType</span><span class="o">.</span><span class="n">NodeConst</span><span class="p">()</span>
+<span class="n">type4</span><span class="o">.</span><span class="n">IsConst</span><span class="p">()</span> <span class="c1"># returns True</span>
+</code></pre></div></p>
+</details>
+<details class="tip">
+<summary>IsVar()</summary>
+<p>if type represents variable, then returns <code>True</code>; otherwise - <code>False</code>
+<div class="highlight"><pre><span></span><code><span class="n">type1</span> <span class="o">=</span> <span class="n">ScType</span><span class="p">()</span>
+<span class="n">type1</span><span class="o">.</span><span class="n">IsVar</span><span class="p">()</span> <span class="c1"># returns False</span>
+
+<span class="n">type2</span> <span class="o">=</span> <span class="n">ScType</span><span class="o">.</span><span class="n">NodeVar</span><span class="p">()</span>
+<span class="n">type2</span><span class="o">.</span><span class="n">IsVar</span><span class="p">()</span> <span class="c1"># returns True</span>
+
+<span class="n">type3</span><span class="o">=</span> <span class="n">ScType</span><span class="o">.</span><span class="n">Node</span><span class="p">()</span>
+<span class="n">type3</span><span class="o">.</span><span class="n">IsVar</span><span class="p">()</span> <span class="c1"># returns False</span>
+
+<span class="n">type4</span> <span class="o">=</span> <span class="n">ScType</span><span class="o">.</span><span class="n">NodeConst</span>
+<span class="n">type4</span><span class="o">.</span><span class="n">IsVar</span><span class="p">()</span> <span class="c1"># returns False</span>
+</code></pre></div></p>
+</details>
+<details class="tip">
+<summary>ToInt()</summary>
+<p>returns integer, that represents a type. Useful for debug purposes</p>
+</details>
+<p><strong>There are some predefined types</strong>. You can find them in <a href="../../cpp/el_types/">types table</a> (see C++ table). In <strong>Python</strong> you should use <code>ScType.Node</code> instead of <code>ScType::Node</code></p>
+<h2 id="sciterator3">ScIterator3</h2>
+<p>This class represents iterator for a triples (see <a href="../../cpp/common/#iterators">iterators description</a>). There are a list of available methods:</p>
+<details class="tip">
+<summary>Next()</summary>
+<p>move iterator to next triple. Returns <code>True</code> if moved to next triple; otherwise - <code>False</code>. Example of usage:
+<div class="highlight"><pre><span></span><code><span class="k">while</span> <span class="n">it3</span><span class="o">.</span><span class="n">Next</span><span class="p">():</span>
+  <span class="o">...</span> <span class="c1"># do something</span>
+</code></pre></div></p>
+</details>
+<details class="tip">
+<summary>Get(idx)</summary>
+<ul>
+<li><strong>idx</strong> - <code>number</code> that represents values index. Ыhould be in range <code>[0; 2]</code></li>
+</ul>
+<p>returns <code>ScAddr</code> of specified element in current triple. Example of usage:
+<div class="highlight"><pre><span></span><code><span class="k">while</span> <span class="n">it3</span><span class="o">.</span><span class="n">Next</span><span class="p">():</span>
+  <span class="n">src</span> <span class="o">=</span> <span class="n">it3</span><span class="o">.</span><span class="n">Get</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>  <span class="c1"># source element in triple</span>
+  <span class="n">edge</span> <span class="o">=</span> <span class="n">it3</span><span class="o">.</span><span class="n">Get</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="c1"># edge in triple</span>
+  <span class="n">trg</span> <span class="o">=</span> <span class="n">it3</span><span class="o">.</span><span class="n">Get</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>  <span class="c1"># target element in triple</span>
+  <span class="o">...</span>
+</code></pre></div></p>
+</details>
+<details class="tip">
+<summary>IsValid()</summary>
+<p>returns <code>True</code> if iterator is valid; otherwise - <code>False</code></p>
+</details>
+<h2 id="sciterator5">ScIterator5</h2>
+<p>This class represents iterator of 5-element constructions (see <a href="../../cpp/common/#iterators">iterators description</a>). There are a list of available methods:</p>
+<details class="tip">
+<summary>Next()</summary>
+<p>move iterator to next 5-element construction. Returns <code>True</code> if moved to next construction; otherwise - <code>False</code>. Example of usage:
+<div class="highlight"><pre><span></span><code><span class="k">while</span> <span class="n">it5</span><span class="o">.</span><span class="n">Next</span><span class="p">():</span>
+  <span class="o">...</span> <span class="c1"># do something</span>
+</code></pre></div></p>
+</details>
+<details class="tip">
+<summary>Get(idx)</summary>
+<ul>
+<li><strong>idx</strong> - <code>number</code>  that represents values index. Ыhould be in range <code>[0; 4]</code></li>
+</ul>
+<p>returns <code>ScAddr</code> of specified element in current construction. Example of usage:
+<div class="highlight"><pre><span></span><code><span class="k">while</span> <span class="n">it5</span><span class="o">.</span><span class="n">Next</span><span class="p">():</span>
+  <span class="n">src</span> <span class="o">=</span> <span class="n">it5</span><span class="o">.</span><span class="n">Get</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>      <span class="c1"># source element in triple</span>
+  <span class="n">edge</span> <span class="o">=</span> <span class="n">it5</span><span class="o">.</span><span class="n">Get</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>     <span class="c1"># edge in triple</span>
+  <span class="n">trg</span> <span class="o">=</span> <span class="n">it5</span><span class="o">.</span><span class="n">Get</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>      <span class="c1"># target element in triple</span>
+  <span class="n">attrEdge</span> <span class="o">=</span> <span class="n">it5</span><span class="o">.</span><span class="n">Get</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span> <span class="c1"># edge from attribute set</span>
+  <span class="n">attr</span> <span class="o">=</span> <span class="n">it5</span><span class="o">.</span><span class="n">Get</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>     <span class="c1"># attribute set</span>
+  <span class="o">...</span>
+</code></pre></div></p>
+</details>
+<details class="tip">
+<summary>IsValid()</summary>
+<p>returns <code>True</code> if iterator is valid; otherwise - <code>False</code></p>
+</details>
+<h2 id="sclinkcontent">ScLinkContent</h2>
+<p>This class wrap content of link. It allows to unpack it to <code>string</code>, <code>int</code> or <code>float</code>. There are methods of this class:</p>
+<details class="tip">
+<summary>AsString()</summary>
+<p>get content of a link as <code>string</code> value.
+<div class="highlight"><pre><span></span><code><span class="n">content</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">.</span><span class="n">GetLinkContent</span><span class="p">(</span><span class="n">linkAddr</span><span class="p">)</span>
+<span class="n">stringValue</span> <span class="o">=</span> <span class="n">content</span><span class="o">.</span><span class="n">AsString</span><span class="p">()</span>
+</code></pre></div></p>
+</details>
+<details class="tip">
+<summary>AsInt()</summary>
+<p>get content of a link as <code>int</code> value. If length of content not equal to 8 bytes, then <code>ExceptionInvalidType</code> will be raised.
+<div class="highlight"><pre><span></span><code><span class="n">content</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">.</span><span class="n">GetLinkContent</span><span class="p">(</span><span class="n">linkAddr</span><span class="p">)</span>
+<span class="n">intValue</span> <span class="o">=</span> <span class="n">content</span><span class="o">.</span><span class="n">AsInt</span><span class="p">()</span>
+</code></pre></div></p>
+</details>
+<details class="tip">
+<summary>AsFloat()</summary>
+<p>get content of a link as <code>float</code> value. If length of content not equal to 8 bytes, then <code>ExceptionInvalidType</code> will be raised.
+<div class="highlight"><pre><span></span><code><span class="n">content</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">.</span><span class="n">GetLinkContent</span><span class="p">(</span><span class="n">linkAddr</span><span class="p">)</span>
+<span class="n">floatValue</span> <span class="o">=</span> <span class="n">content</span><span class="o">.</span><span class="n">AsFloat</span><span class="p">()</span>
+</code></pre></div></p>
+</details>
+<details class="tip">
+<summary>AsBinary()</summary>
+<p>get content of a link as <code>memoryview</code> value.
+<div class="highlight"><pre><span></span><code><span class="n">content</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">.</span><span class="n">GetLinkContent</span><span class="p">(</span><span class="n">linkAddr</span><span class="p">)</span>
+<span class="n">binaryValue</span> <span class="o">=</span> <span class="n">content</span><span class="o">.</span><span class="n">AsBinary</span><span class="p">()</span>
+</code></pre></div></p>
+<div class="admonition danger">
+<p class="admonition-title">Danger</p>
+<p>Object <code>content</code> should be alive until memory used</p>
+</div>
+</details>
+<details class="tip">
+<summary>GetType()</summary>
+<p>return type of content. There are possible values:</p>
+<ul>
+<li><code>ScLinkContent.String</code></li>
+<li><code>ScLinkContent.Int</code></li>
+<li><code>ScLinkContent.Float</code></li>
+</ul>
+</details>
+<h2 id="sctemplateparams">ScTemplateParams</h2>
+<p>This class accumulate parameters for a template generation. There are methods of this class:</p>
+<details class="tip">
+<summary>Add(paramName, valueAddr)</summary>
+<ul>
+<li><strong>paramName</strong> - parameter name (<code>str</code>)</li>
+<li><strong>valueAddr</strong> - <code>ScAddr</code> of element that should be used with specified name (see more in <a href="../../sc-search/templates/">templates description</a>)</li>
+</ul>
+<div class="highlight"><pre><span></span><code><span class="n">params</span> <span class="o">=</span> <span class="n">ScTemplateParams</span><span class="p">()</span>
+<span class="n">params</span><span class="o">.</span><span class="n">Add</span><span class="p">(</span><span class="s2">&quot;_item&quot;</span><span class="p">,</span> <span class="n">itemAddr</span><span class="p">)</span>
+<span class="o">...</span>
+</code></pre></div>
+</details>
+<details class="tip">
+<summary>Get(paramName)</summary>
+<ul>
+<li><strong>paramName</strong> - name of parameter (<code>str</code>)</li>
+</ul>
+<p>returns value of parameter with a specified name. If parameter with specified identifier exists, then returns it <code>ScAddr</code>; otherwise - <code>None</code>
+<div class="highlight"><pre><span></span><code><span class="n">addr</span> <span class="o">=</span> <span class="n">params</span><span class="o">.</span><span class="n">Get</span><span class="p">(</span><span class="s2">&quot;_item&quot;</span><span class="p">)</span>
+</code></pre></div></p>
+</details>
+<details class="tip">
+<summary>IsEmpty()</summary>
+<p>if there are no any parameters added, then returns <code>True</code>; otherwise - <code>False</code></p>
+</details>
+<h2 id="sctemplategenresult">ScTemplateGenResult</h2>
+<p>This class wrap template generation result. There are methods of this class:</p>
+<details class="tip">
+<summary>Aliases()</summary>
+<p>returns a <code>dict</code> of all used aliases in template (where key - <code>alias</code>, value - index in generate result). Keys can be used to get result values by <code>__getitem__</code></p>
+</details>
+<details class="tip">
+<summary>Size()</summary>
+<p>return number of elements</p>
+</details>
+<details class="tip">
+<summary>__getitem__(alias)</summary>
+<ul>
+<li><strong>alias</strong> - name of result parameter (<code>str</code>)</li>
+</ul>
+<p>returns <code>ScAddr</code> by specified name. If there are no value with a specified name, then returns <code>None</code>
+<div class="highlight"><pre><span></span><code><span class="n">addr</span> <span class="o">=</span> <span class="n">genResult</span><span class="p">[</span><span class="s2">&quot;node1&quot;</span><span class="p">]</span>
+</code></pre></div></p>
+</details>
+<h2 id="sctemplatesearchresultitem">ScTemplateSearchResultItem</h2>
+<p>This class represents one result for a search by template. There are methods of this class:</p>
+<details class="tip">
+<summary>Size()</summary>
+<p>return size of result (number of <code>ScAddr</code>'s equal to search construction)</p>
+</details>
+<details class="tip">
+<summary>__getitem__(name_or_index)</summary>
+<p>allows to get result items by any index: <code>int</code>, <code>str</code>. In case of <code>int</code> index you will just get <code>ScAddr</code> by index in result array (length equal to <code>Size()</code>) this case suitable, when you need to iterate all addrs in result.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>You will receive duplicate <code>ScAddr</code>'s, because result stored as array of founded triples.</p>
+</div>
+<p>When you try to get <code>ScAddr</code> with <code>str</code> it will be found by alias (see <a href="../cpp/templates.md">templates</a> for more info). If there are no element with specified index, then returns <code>None</code>
+<div class="highlight"><pre><span></span><code><span class="n">resultSize</span> <span class="o">=</span> <span class="n">searchResultItem</span><span class="o">.</span><span class="n">Size</span><span class="p">()</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">resultSize</span><span class="p">):</span>
+  <span class="n">addr</span> <span class="o">=</span> <span class="n">searchResultItem</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="c1"># iterate all addrs</span>
+
+<span class="n">addr1</span> <span class="o">=</span> <span class="n">searchResultItem</span><span class="p">[</span><span class="s2">&quot;alias&quot;</span><span class="p">]</span> <span class="c1"># get by replacement name</span>
+</code></pre></div></p>
+</details>
+<h2 id="sctemplatesearchresult">ScTemplateSearchResult</h2>
+<p>This class represent list of results by template search. There are methods of this class:</p>
+<details class="tip">
+<summary>Aliases()</summary>
+<p>returns a <code>dict</code> of all used aliases in template (where key - <code>alias</code>, value - index in search result). Keys can be used to get result values by <code>__getitem__</code></p>
+</details>
+<details class="tip">
+<summary>Size()</summary>
+<p>returns number of results.</p>
+</details>
+<details class="tip">
+<summary>__getitem__()</summary>
+<p>get result by specified index (<code>int</code> should be less then <code>Size()</code>).
+<div class="highlight"><pre><span></span><code><span class="n">resultNum</span> <span class="o">=</span> <span class="n">searchResult</span><span class="o">.</span><span class="n">Size</span><span class="p">()</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">resultNum</span><span class="p">):</span>
+  <span class="n">searchResultItem</span> <span class="o">=</span> <span class="n">searchResult</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+
+  <span class="c1"># work with searchResultItem there see (ScTemplateSearchResult)</span>
+</code></pre></div></p>
+</details>
+<h2 id="scmemorycontext">ScMemoryContext</h2>
+<p>This class implements context, that allows you to work with memory.</p>
+<div class="admonition danger">
+<p class="admonition-title">Danger</p>
+<p><strong>DO NOT use same context in different threads</strong></p>
+</div>
+<p>There are methods of this class:</p>
+<details class="tip">
+<summary>CreateNode(type)</summary>
+<ul>
+<li><strong>type</strong> - <code>ScType</code> of a node</li>
+</ul>
+<p>create node with specified type. Returns <code>ScAddr</code> of created node. If returned <code>ScAddr</code> is not valid (<code>IsValid()</code>), then node wasn't created.
+<div class="highlight"><pre><span></span><code><span class="n">nodeAddr</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">.</span><span class="n">CreateNode</span><span class="p">(</span><span class="n">ScType</span><span class="o">.</span><span class="n">NodeConst</span><span class="p">)</span>
+</code></pre></div></p>
+</details>
+<details class="tip">
+<summary>CreateEdge(type, src, trg)</summary>
+<ul>
+<li><strong>type</strong> - <code>ScType</code> of edge</li>
+<li><strong>src</strong> - <code>ScAddr</code> of source edge element</li>
+<li><strong>trg</strong> - <code>ScAddr</code> of target edge element</li>
+</ul>
+<p>create edge between <code>src</code> and <code>trg</code> elements. Returns <code>ScAddr</code> of created edge, but if returned <code>ScAddr</code> is not valid, then edge wasn't created.</p>
+<p><strong>Example:</strong>
+<div class="highlight"><pre><span></span><code><span class="n">edgeAddr</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">.</span><span class="n">CreateEdge</span><span class="p">(</span><span class="n">ScType</span><span class="o">.</span><span class="n">EdgeAccessConstPosPerm</span><span class="p">,</span> <span class="n">srcAddr</span><span class="p">,</span> <span class="n">trgAddr</span><span class="p">)</span>
+</code></pre></div></p>
+</details>
+<details class="tip">
+<summary>CreateLink()</summary>
+<p>create link. Returns <code>ScAddr</code> of created link, but if returned <code>ScAddr</code> is not valid, then link wasn't created</p>
+<p><strong>Example:</strong>
+<div class="highlight"><pre><span></span><code><span class="n">linkAddr</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">.</span><span class="n">CreateLink</span><span class="p">()</span>
+</code></pre></div></p>
+</details>
+<details class="tip">
+<summary>GetName()</summary>
+<p>returns name of context. Useful in debug purposes</p>
+</details>
+<details class="tip">
+<summary>IsElement(addr)</summary>
+<ul>
+<li><strong>addr</strong> - <code>ScAddr</code> of element to check</li>
+</ul>
+<p>if element exist, then returns <code>True</code>; otherwise - <code>False</code></p>
+<p><strong>Example:</strong>
+<div class="highlight"><pre><span></span><code><span class="n">ctx</span><span class="o">.</span><span class="n">IsElement</span><span class="p">(</span><span class="n">elementAddr</span><span class="p">)</span>
+</code></pre></div></p>
+</details>
+<details class="tip">
+<summary>GetElementType(addr)</summary>
+<ul>
+<li><strong>addr</strong> - <code>ScAddr</code> of element to get type</li>
+</ul>
+<p>returns type of specified element. If element doesn't exist, then returns <code>ScType.Unknown</code></p>
+<p><strong>Example:</strong>
+<div class="highlight"><pre><span></span><code><span class="n">t</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">.</span><span class="n">GetElementType</span><span class="p">(</span><span class="n">elementAddr</span><span class="p">)</span>
+</code></pre></div></p>
+</details>
+<details class="tip">
+<summary>GetEdgeInfo(addr)</summary>
+<ul>
+<li><strong>addr</strong> - <code>ScAddr</code> of edge</li>
+</ul>
+<p>returns tuple <code>(src, trg)</code>, where:</p>
+<ul>
+<li><code>src</code> - is a <code>ScAddr</code> of edge source element;</li>
+<li><code>trg</code> - target element.</li>
+</ul>
+<p>If <code>addr</code> point to element that doesn't exist, or is not an edge, then returns <code>(None, None)</code>.</p>
+<p><strong>Example:</strong>
+<div class="highlight"><pre><span></span><code><span class="n">src</span><span class="p">,</span> <span class="n">trg</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">.</span><span class="n">GetEdgeInfo</span><span class="p">(</span><span class="n">edgeAddr</span><span class="p">)</span>
+</code></pre></div></p>
+</details>
+<details class="tip">
+<summary>SetLinkContent(addr, content)</summary>
+<ul>
+<li><strong>addr</strong> - <code>ScAddr</code> of sc-link to set content</li>
+<li><strong>content</strong> - content of sc-link, that should be set. Type of <code>content</code> should be one of: <code>int</code>, <code>float</code>, <code>string</code>.</li>
+</ul>
+<p>Change content of sc-link. If content changed, then returns <code>True</code>; otherwise - <code>False</code></p>
+<p><strong>Example:</strong>
+<div class="highlight"><pre><span></span><code><span class="o">...</span>
+<span class="n">ctx</span><span class="o">.</span><span class="n">SetLinkContent</span><span class="p">(</span><span class="n">linkAddr1</span><span class="p">,</span> <span class="mi">56</span><span class="p">)</span>
+<span class="o">...</span>
+<span class="n">ctx</span><span class="o">.</span><span class="n">SetLinkContent</span><span class="p">(</span><span class="n">linkAddr1</span><span class="p">,</span> <span class="mf">56.0</span><span class="p">)</span>
+<span class="o">...</span>
+<span class="n">ctx</span><span class="o">.</span><span class="n">SetLinkContent</span><span class="p">(</span><span class="n">linkAddr1</span><span class="p">,</span> <span class="s2">&quot;any text&quot;</span><span class="p">)</span>
+<span class="o">...</span>
+</code></pre></div></p>
+</details>
+<details class="tip">
+<summary>GetLinkContent(addr)</summary>
+<ul>
+<li><strong>addr</strong> - <code>ScAddr</code> of sc-link</li>
+</ul>
+<p>returns content of a specified link. If specified <code>addr</code> is not a link, or it doesn't exist, then returns <code>None</code>. Returned value has type <code>ScLinkContent</code>.</p>
+<p><strong>Example:</strong>
+<div class="highlight"><pre><span></span><code><span class="o">...</span>
+
+<span class="n">value</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">.</span><span class="n">GetLinkContent</span><span class="p">(</span><span class="n">elementAddr</span><span class="p">)</span>
+<span class="k">if</span> <span class="n">value</span><span class="p">:</span>
+  <span class="nb">print</span> <span class="p">(</span><span class="n">value</span><span class="p">)</span>
+
+<span class="o">...</span>
+</code></pre></div></p>
+</details>
+<details class="tip">
+<summary>Iterator3(param1, param2, param3)</summary>
+<ul>
+<li><strong>param1</strong>, <strong>param2</strong>, <strong>param3</strong> - could be on of a type: <code>ScAddr</code>, <code>ScType</code></li>
+</ul>
+<p>create iterator for a specified triple template. For more information about iterators see <a href="../../cpp/common/#iterators">iterators description</a>. If iterator created, then return <code>ScIterator3</code> object; otherwise - <code>None</code></p>
+<p><strong>Example:</strong>
+<div class="highlight"><pre><span></span><code><span class="n">itFAA</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">.</span><span class="n">Iterator3</span><span class="p">(</span><span class="n">addr1</span><span class="p">,</span> <span class="n">ScType</span><span class="o">.</span><span class="n">EdgeAccessConstPosPerm</span><span class="p">,</span> <span class="n">ScType</span><span class="o">.</span><span class="n">NodeVar</span><span class="p">)</span>
+<span class="k">while</span> <span class="n">itFAA</span><span class="o">.</span><span class="n">Next</span><span class="p">():</span>
+  <span class="k">pass</span> <span class="c1"># process iterated constructions there</span>
+
+<span class="o">...</span>
+
+<span class="n">itFAF</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">.</span><span class="n">Iterator3</span><span class="p">(</span><span class="n">addr1</span><span class="p">,</span> <span class="n">ScType</span><span class="o">.</span><span class="n">EdgeAccessConstPosPerm</span><span class="p">,</span> <span class="n">addr2</span><span class="p">)</span>
+<span class="k">while</span> <span class="n">itFAF</span><span class="o">.</span><span class="n">Next</span><span class="p">():</span>
+  <span class="k">pass</span> <span class="c1"># process iterated constructions there</span>
+
+<span class="o">...</span>
+
+<span class="n">itAAF</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">.</span><span class="n">Iterator3</span><span class="p">(</span><span class="n">ScType</span><span class="o">.</span><span class="n">NodeConst</span><span class="p">,</span> <span class="n">ScType</span><span class="o">.</span><span class="n">EdgeAccessConstPosPerm</span><span class="p">,</span> <span class="n">addr2</span><span class="p">)</span>
+<span class="k">while</span> <span class="n">itAAF</span><span class="o">.</span><span class="n">Next</span><span class="p">():</span>
+  <span class="k">pass</span> <span class="c1"># process iterated constructions there</span>
+</code></pre></div></p>
+</details>
+<details class="tip">
+<summary>Iterator5(param1, param2, param3, param4, param5)</summary>
+<ul>
+<li><strong>param1</strong>, <strong>param2</strong>, <strong>param3</strong>, <strong>param4</strong>, <strong>param5</strong> - could be on of a type <code>ScAddr</code>, <code>ScType</code></li>
+</ul>
+<p>create iterator for a specified 5-element construction. For more information about iterators see <a href="../../cpp/common/#iterators">iterators description</a>. If iterator created, then return <code>ScIterator5</code> object; otherwise - <code>None</code></p>
+<p><strong>Example:</strong>
+<div class="highlight"><pre><span></span><code><span class="n">itFAFAF</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">.</span><span class="n">Iterator5</span><span class="p">(</span>
+            <span class="n">addr1</span><span class="p">,</span>
+            <span class="n">ScType</span><span class="o">.</span><span class="n">EdgeAccessConstPosPerm</span><span class="p">,</span>
+            <span class="n">addr2</span><span class="p">,</span>
+            <span class="n">ScType</span><span class="o">.</span><span class="n">EdgeAccessVarPosTemp</span><span class="p">,</span>
+            <span class="n">attr</span><span class="p">)</span>
+<span class="k">while</span> <span class="n">itFAFAF</span><span class="o">.</span><span class="n">Next</span><span class="p">():</span>
+  <span class="k">pass</span> <span class="c1"># process iterated constructions there</span>
+
+<span class="o">...</span>
+
+<span class="n">itFAFAA</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">.</span><span class="n">Iterator5</span><span class="p">(</span>
+            <span class="n">addr1</span><span class="p">,</span>
+            <span class="n">ScType</span><span class="o">.</span><span class="n">EdgeAccessConstPosPerm</span><span class="p">,</span>
+            <span class="n">addr2</span><span class="p">,</span>
+            <span class="n">ScType</span><span class="o">.</span><span class="n">EdgeAccessVarPosTemp</span><span class="p">,</span>
+            <span class="n">ScType</span><span class="o">.</span><span class="n">Node</span><span class="p">)</span>
+<span class="k">while</span> <span class="n">itFAFAA</span><span class="o">.</span><span class="n">Next</span><span class="p">():</span>
+  <span class="k">pass</span> <span class="c1"># process iterated constructions there</span>
+
+<span class="o">...</span>
+
+<span class="n">itFAAAF</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">.</span><span class="n">Iterator5</span><span class="p">(</span>
+            <span class="n">addr1</span><span class="p">,</span>
+            <span class="n">ScType</span><span class="o">.</span><span class="n">EdgeAccessConstPosPerm</span><span class="p">,</span>
+            <span class="n">ScType</span><span class="o">.</span><span class="n">NodeVar</span><span class="p">,</span>
+            <span class="n">ScType</span><span class="o">.</span><span class="n">EdgeAccessVarPosTemp</span><span class="p">,</span>
+            <span class="n">attr</span><span class="p">)</span>
+<span class="k">while</span> <span class="n">itFAAAF</span><span class="o">.</span><span class="n">Next</span><span class="p">():</span>
+  <span class="k">pass</span> <span class="c1"># process iterated constructions there</span>
+
+<span class="o">...</span>
+
+<span class="n">itFAAAA</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">.</span><span class="n">Iterator5</span><span class="p">(</span>
+            <span class="n">addr1</span><span class="p">,</span>
+            <span class="n">ScType</span><span class="o">.</span><span class="n">EdgeAccessConstPosPerm</span><span class="p">,</span>
+            <span class="n">ScType</span><span class="o">.</span><span class="n">NodeVar</span><span class="p">,</span>
+            <span class="n">ScType</span><span class="o">.</span><span class="n">EdgeAccessVarPosTemp</span><span class="p">,</span>
+            <span class="n">ScType</span><span class="o">.</span><span class="n">Node</span><span class="p">)</span>
+<span class="k">while</span> <span class="n">itFAAAA</span><span class="o">.</span><span class="n">Next</span><span class="p">():</span>
+  <span class="k">pass</span> <span class="c1"># process iterated constructions there</span>
+
+<span class="o">...</span>
+<span class="n">itAAFAF</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">.</span><span class="n">Iterator5</span><span class="p">(</span>
+            <span class="n">ScType</span><span class="o">.</span><span class="n">NodeConst</span><span class="p">,</span>
+            <span class="n">ScType</span><span class="o">.</span><span class="n">EdgeAccessConstPosPerm</span><span class="p">,</span>
+            <span class="n">addr2</span><span class="p">,</span>
+            <span class="n">ScType</span><span class="o">.</span><span class="n">EdgeAccessVarPosTemp</span><span class="p">,</span>
+            <span class="n">attr</span><span class="p">)</span>
+<span class="k">while</span> <span class="n">itAAFAF</span><span class="o">.</span><span class="n">Next</span><span class="p">():</span>
+  <span class="k">pass</span> <span class="c1"># process iterated constructions there</span>
+
+<span class="o">...</span>
+
+<span class="n">itAAFAA</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">.</span><span class="n">Iterator5</span><span class="p">(</span>
+            <span class="n">ScType</span><span class="o">.</span><span class="n">NodeConst</span><span class="p">,</span>
+            <span class="n">ScType</span><span class="o">.</span><span class="n">EdgeAccessConstPosPerm</span><span class="p">,</span>
+            <span class="n">addr2</span><span class="p">,</span>
+            <span class="n">ScType</span><span class="o">.</span><span class="n">EdgeAccessVarPosTemp</span><span class="p">,</span>
+            <span class="n">ScType</span><span class="o">.</span><span class="n">Node</span><span class="p">)</span>
+<span class="k">while</span> <span class="n">itAAFAA</span><span class="o">.</span><span class="n">Next</span><span class="p">():</span>
+  <span class="k">pass</span> <span class="c1"># process iterated constructions there</span>
+</code></pre></div></p>
+</details>
+<details class="tip">
+<summary>HelperResolveSystemIdtf(idtf, type)</summary>
+<ul>
+<li><strong>idtf</strong> - <code>str</code> that represents a system identifier of sc-element</li>
+<li><strong>type</strong> - <code>ScType</code> of sc-element</li>
+</ul>
+<p>resolve element by system identifier. This function tries to find element with specified system identifier - <code>idtf</code>. If element wasn't found and type is valid (<code>ScType.IsValid()</code>), then new element will be created with specified system identifier and type. If <code>type</code> is <code>None</code>, then new element wouldn't created and function returns invalid <code>ScAddr</code>. In other cases function returns <code>ScAddr</code> of element with specified system identifier.</p>
+<p><strong>Example:</strong>
+<div class="highlight"><pre><span></span><code><span class="n">addr</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">.</span><span class="n">HelperResolveSystemIdtf</span><span class="p">(</span><span class="s2">&quot;nrel_main_idtf&quot;</span><span class="p">,</span> <span class="n">ScType</span><span class="o">.</span><span class="n">NodeConstNoRole</span><span class="p">)</span>
+</code></pre></div></p>
+</details>
+<details class="tip">
+<summary>HelperSetSystemIdtf(idtf, addr)</summary>
+<ul>
+<li><strong>idtf</strong> - <code>str</code> new identifier of sc-element</li>
+<li><strong>addr</strong> - <code>ScAddr</code> of element</li>
+</ul>
+<p>set specified system identifier - <code>idtf</code>, to element with specified <code>addr</code>. If identifier changed, then returns <code>True</code>; otherwise - <code>False</code></p>
+<p><strong>Example:</strong>
+<div class="highlight"><pre><span></span><code><span class="k">if</span> <span class="n">ctx</span><span class="o">.</span><span class="n">HelperSetSystemIdtf</span><span class="p">(</span><span class="s2">&quot;new_idtf&quot;</span><span class="p">,</span> <span class="n">addr</span><span class="p">):</span>
+  <span class="k">pass</span> <span class="c1"># identifier changed</span>
+<span class="k">else</span><span class="p">:</span>
+  <span class="k">pass</span> <span class="c1"># identifier not changed</span>
+</code></pre></div></p>
+</details>
+<details class="tip">
+<summary>HelperGetSystemIdtf(addr)</summary>
+<ul>
+<li><strong>addr</strong> - <code>ScAddr</code> of sc-element to get identifier</li>
+</ul>
+<p>returns system identifier of a specified element. If system identifier exist, then it returns as a non empty string; otherwise result string would be empty.</p>
+<p><strong>Example:</strong>
+<div class="highlight"><pre><span></span><code><span class="n">idtfValue</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">.</span><span class="n">HelperGetSystemIdtf</span><span class="p">(</span><span class="n">addr</span><span class="p">)</span>
+</code></pre></div></p>
+</details>
+<details class="tip">
+<summary>HelperCheckEdge(srcAddr, trgAddr, edgeType)</summary>
+<ul>
+<li><strong>srcAddr</strong> - <code>ScAddr</code> of source edge sc-element</li>
+<li><strong>trgAddr</strong> - <code>ScAddr</code> of target edge sc-element</li>
+<li><strong>edgeType</strong> - <code>ScType</code> of edge to check</li>
+</ul>
+<p>if there are one or more edge with a specified type (<code>edgeType</code>) between <code>srcAddr</code> and <code>trgAddr</code> elements, then returns <code>True</code>; otherwise - <code>False</code></p>
+<p><strong>Example:</strong>
+<div class="highlight"><pre><span></span><code><span class="k">if</span> <span class="n">ctx</span><span class="o">.</span><span class="n">HelperCheckEdge</span><span class="p">(</span><span class="n">addr1</span><span class="p">,</span> <span class="n">addr2</span><span class="p">,</span> <span class="n">ScType</span><span class="o">.</span><span class="n">EdgeAccessConstPosPerm</span><span class="p">):</span>
+  <span class="k">pass</span> <span class="c1"># edge between addr1 and addr2 exist</span>
+<span class="k">else</span><span class="p">:</span>
+  <span class="k">pass</span> <span class="c1"># edge doesn&#39;t exists</span>
+</code></pre></div></p>
+</details>
+<details class="tip">
+<summary>HelperGenTemplate(templ, params)</summary>
+<ul>
+<li><strong>templ</strong> - <code>ScTemplate</code> to generate construction</li>
+<li><strong>params</strong> - <code>ScTemplateParams</code> parameters for construction generation</li>
+</ul>
+<p>generates construction by specified template with specified parameters. If construction generated, then returns instance of <code>ScTemplateGenResult</code>; otherwise - <code>None</code>.</p>
+<p><strong>Example:</strong>
+<div class="highlight"><pre><span></span><code><span class="n">templ</span> <span class="o">=</span> <span class="n">ScTemplate</span><span class="p">()</span>
+<span class="o">...</span> <span class="c1"># fill template</span>
+
+<span class="n">params</span> <span class="o">=</span> <span class="n">ScTemplateParams</span><span class="p">()</span>
+<span class="o">...</span> <span class="c1"># fill parameters</span>
+
+<span class="n">result</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">.</span><span class="n">HelperGenTemplate</span><span class="p">(</span><span class="n">templ</span><span class="p">,</span> <span class="n">params</span><span class="p">)</span>
+</code></pre></div></p>
+</details>
+<details class="tip">
+<summary>HelperSearchTemplate(templ)</summary>
+<ul>
+<li><strong>templ</strong> - <code>ScTemplate</code> to search construction</li>
+</ul>
+<p>searches construction by specified template. Returns <code>ScTemplateSearchResult</code> object instance. If it <code>Size()</code> equal to 0, then nothing was found</p>
+<p><strong>Example:</strong>
+<div class="highlight"><pre><span></span><code><span class="n">templ</span> <span class="o">=</span> <span class="n">ScTemplate</span><span class="p">()</span>
+<span class="o">...</span> <span class="c1"># fill template</span>
+
+<span class="n">result</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">.</span><span class="n">HelperSearchTemplate</span><span class="p">(</span><span class="n">templ</span><span class="p">)</span>
+</code></pre></div></p>
+</details>
+<details class="tip">
+<summary>HelperBuildTemplate(data)</summary>
+<ul>
+<li><strong>data</strong> - <code>ScAddr</code> or <code>str</code>. If it's a <code>ScAddr</code> then it should point to sc-struct in memory, that is a template. It it's a <code>str</code>, then it should contains <code>SCs-code</code> that describes template</li>
+</ul>
+<p>returns <code>ScTemplate</code> instance. If template wasn't built, then return <code>None</code></p>
+<p>*<em>Example:</em>
+<div class="highlight"><pre><span></span><code><span class="n">templFromMemory</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">.</span><span class="n">HelperBuildTemplate</span><span class="p">(</span><span class="n">templAddr</span><span class="p">)</span>
+<span class="n">templFromStr</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">.</span><span class="n">HelperBuildTemplate</span><span class="p">(</span><span class="s1">&#39;person _=&gt; nrel_email:: _[];;&#39;</span><span class="p">)</span>
+<span class="o">...</span> <span class="c1"># work with template</span>
+</code></pre></div></p>
+</details>
+
+              
+            </article>
+            
+          </div>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+    <nav class="md-footer__inner md-grid" aria-label="Footer" >
+      
+        
+        <a href="../library/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Library" rel="prev">
+          <div class="md-footer__button md-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+          </div>
+          <div class="md-footer__title">
+            <div class="md-ellipsis">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              Library
+            </div>
+          </div>
+        </a>
+      
+      
+        
+        <a href="../../license/" class="md-footer__link md-footer__link--next" aria-label="Next: License" rel="next">
+          <div class="md-footer__title">
+            <div class="md-ellipsis">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              License
+            </div>
+          </div>
+          <div class="md-footer__button md-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4Z"/></svg>
+          </div>
+        </a>
+      
+    </nav>
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    <script id="__config" type="application/json">{"base": "../..", "features": [], "search": "../../assets/javascripts/workers/search.b97dbffb.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version.title": "Select version"}}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.6c7ad80a.min.js"></script>
+      
+        <script src="../../_assets/scg.min.js"></script>
+      
+        <script src="../../_assets/main.js"></script>
+      
+    
+  </body>
+</html>

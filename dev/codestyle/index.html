@@ -1,0 +1,1318 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.3.1, mkdocs-material-8.3.9">
+    
+    
+      
+        <title>Codestyle - SC-machine</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.1d29e8d0.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.cbb835fc.min.css">
+        
+      
+      
+    
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../_assets/main.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="" data-md-color-primary="none" data-md-color-accent="none">
+  
+    
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#c-style-guide" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="SC-machine" class="md-header__button md-logo" aria-label="SC-machine" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            SC-machine
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Codestyle
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" aria-label="Clear" tabindex="-1">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="SC-machine" class="md-nav__button md-logo" aria-label="SC-machine" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    SC-machine
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        Home
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_2" type="checkbox" id="__nav_2" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_2">
+          Build
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Build" data-md-level="1">
+        <label class="md-nav__title" for="__nav_2">
+          <span class="md-nav__icon md-icon"></span>
+          Build
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../build/linux-build/" class="md-nav__link">
+        Build on Linux
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../build/windows-build/" class="md-nav__link">
+        Build on Windows
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../build/osx-build/" class="md-nav__link">
+        Build on OSX
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../build/cmake-flags/" class="md-nav__link">
+        CMake Flags
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+    
+  
+  
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3" type="checkbox" id="__nav_3" checked>
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_3">
+          Development
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Development" data-md-level="1">
+        <label class="md-nav__title" for="__nav_3">
+          <span class="md-nav__icon md-icon"></span>
+          Development
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../git-workflow/" class="md-nav__link">
+        Git-workflow
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../pr/" class="md-nav__link">
+        Pull requets
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+    
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          Codestyle
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        Codestyle
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#clangformat" class="md-nav__link">
+    ClangFormat
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#formatting-exampleguidereference" class="md-nav__link">
+    Formatting Example/Guide/Reference
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tips-and-hints" class="md-nav__link">
+    Tips and Hints
+  </a>
+  
+    <nav class="md-nav" aria-label="Tips and Hints">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#some-useful-macros" class="md-nav__link">
+    Some useful macros:
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4" type="checkbox" id="__nav_4" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_4">
+          Common
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Common" data-md-level="1">
+        <label class="md-nav__title" for="__nav_4">
+          <span class="md-nav__icon md-icon"></span>
+          Common
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../cpp/el_types/" class="md-nav__link">
+        Element types
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../other/config/" class="md-nav__link">
+        Configuration files
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../other/scs/" class="md-nav__link">
+        SCs language
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_5" type="checkbox" id="__nav_5" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_5">
+          API
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="API" data-md-level="1">
+        <label class="md-nav__title" for="__nav_5">
+          <span class="md-nav__icon md-icon"></span>
+          API
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../cpp/cpp-meta/" class="md-nav__link">
+        Meta programming
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../cpp/kpm.md" class="md-nav__link">
+        Agents
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../cpp/templates.md" class="md-nav__link">
+        Template
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../cpp/common/" class="md-nav__link">
+        Common
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_5_5" type="checkbox" id="__nav_5_5" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_5_5">
+          Python
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Python" data-md-level="2">
+        <label class="md-nav__title" for="__nav_5_5">
+          <span class="md-nav__icon md-icon"></span>
+          Python
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../python/python/" class="md-nav__link">
+        Common
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../python/library/" class="md-nav__link">
+        Library
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../python/cpp_wrap/" class="md-nav__link">
+        Wrapped classes
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_5_6" type="checkbox" id="__nav_5_6" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_5_6">
+          File storage
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="File storage" data-md-level="2">
+        <label class="md-nav__title" for="__nav_5_6">
+          <span class="md-nav__icon md-icon"></span>
+          File storage
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../storage/sc_dictionary.md" class="md-nav__link">
+        Sc-dictionary-based file storage
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_6" type="checkbox" id="__nav_6" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_6">
+          Http
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Http" data-md-level="1">
+        <label class="md-nav__title" for="__nav_6">
+          <span class="md-nav__icon md-icon"></span>
+          Http
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../http/index.md" class="md-nav__link">
+        Common
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../http/websocket.md" class="md-nav__link">
+        WebSocket
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_7" type="checkbox" id="__nav_7" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_7">
+          Tools
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Tools" data-md-level="1">
+        <label class="md-nav__title" for="__nav_7">
+          <span class="md-nav__icon md-icon"></span>
+          Tools
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tools/kb_builder.md" class="md-nav__link">
+        Builder
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../license/" class="md-nav__link">
+        License
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../changelog/" class="md-nav__link">
+        Changelog
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../thirdparty/" class="md-nav__link">
+        Thirdparty
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#clangformat" class="md-nav__link">
+    ClangFormat
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#formatting-exampleguidereference" class="md-nav__link">
+    Formatting Example/Guide/Reference
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tips-and-hints" class="md-nav__link">
+    Tips and Hints
+  </a>
+  
+    <nav class="md-nav" aria-label="Tips and Hints">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#some-useful-macros" class="md-nav__link">
+    Some useful macros:
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          <div class="md-content" data-md-component="content">
+            <article class="md-content__inner md-typeset">
+              
+                
+
+
+<h1 id="c-style-guide">C++ Style Guide</h1>
+<p>In general, <a href="https://google.github.io/styleguide/cppguide.html">Google's coding standard</a> is used, and we strongly encourage to read it.</p>
+<p>Below are our specific (but not all!) exceptions to the Google's coding standard:</p>
+<ul>
+<li>All code should conform to C++11 standard</li>
+<li>We use <code>.cpp</code> and <code>.hpp</code> files, not <code>.cc</code> and <code>.h</code> (<code>.c</code> and <code>.h</code> are used for C code), in UTF-8 encoding.</li>
+<li>File names are lowercase with underscores, like <code>sc_memory.cpp</code>.</li>
+<li>We use <code>#pragma once</code> instead of the <code>#define</code> Guard in header files.</li>
+<li>Includes are sorted and grouped by directory, there should be newlines between different directories.</li>
+<li>Order of directories in includes: "current_dir/current_file.hpp", other includes from the same dir, includes from other dirs sorted by name.</li>
+</ul>
+<div class="highlight"><pre><span></span><code><span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;../test.hpp&quot;</span><span class="cp"></span>
+
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;hash/hmac.h&quot;</span><span class="cp"></span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;hash/sha256.h&quot;</span><span class="cp"></span>
+
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;sc-memory/cpp/sc_wait.hpp&quot;</span><span class="cp"></span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;sc-memory/cpp/kpm/sc_agent.hpp&quot;</span><span class="cp"></span>
+
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;curl/curl.h&gt;</span><span class="cp"></span>
+
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;rapidjson/document.h&gt;</span><span class="cp"></span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;rapidjson/stringbuffer.h&gt;</span><span class="cp"></span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;rapidjson/writer.h&gt;</span><span class="cp"></span>
+</code></pre></div>
+<ul>
+<li>We ARE using C++ exceptions.</li>
+<li>We are using all features of C++11.</li>
+</ul>
+<p>Naming and formatting</p>
+<ul>
+<li>We ALWAYS use two spaces indent and don't use tabs. <em>If you see old formated file, then change format of it in separated commit.</em></li>
+<li>We don't have hardcoded line width, but keep it reasonable to fit on the screen.</li>
+<li>Doxygen-style comments can be used.</li>
+<li>Underscores are allowed only in prefixes for member variables and namespace names, like <code>int m_keynodeAddr; namespace sc_utils</code>.</li>
+<li>Don't use <code>using namespace std</code> or other namepsaces globaly. You can use them localy in test cpp files or functions.</li>
+<li>Use right-to-left order for variables/params: <code>ScAddr const &amp; addr</code> (reference to the const <code>ScAddr</code>).</li>
+<li>In one line <code>if</code>, <code>for</code>, <code>while</code> we do not use brackets. If one line <code>for</code> or <code>while</code> is combined with one line <code>if</code>, do use brackets for cycle.</li>
+</ul>
+<div class="highlight"><pre><span></span><code><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="n">ScAddr</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">addr</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">listOfAddr</span><span class="p">)</span><span class="w"></span>
+<span class="w">  </span><span class="n">ctx</span><span class="p">.</span><span class="n">EraseElement</span><span class="p">(</span><span class="n">addr</span><span class="p">);</span><span class="w"></span>
+
+<span class="p">...</span><span class="w"></span>
+
+<span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="n">ScAddr</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">addr</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">listOfAddr</span><span class="p">)</span><span class="w"></span>
+<span class="p">{</span><span class="w"></span>
+<span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">addr</span><span class="p">.</span><span class="n">IsValid</span><span class="p">())</span><span class="w"></span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="nb">true</span><span class="p">;</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
+</code></pre></div>
+<ul>
+<li>Space after the keyword in conditions and loops. Space after <code>;</code> in <code>for</code> loop.</li>
+<li>Space between binary operators: <code>x = y * y + z * z</code>.</li>
+<li>Space after double dash <code>x = isValid ? 2 : 1;</code>.</li>
+<li>We use <code>using</code> keyword instead of <code>typedef</code>.</li>
+<li>Compile-time constants must be named in camelCase, starting with a lower-case <code>k</code>, e.g. <code>kCompileTimeConstant</code> and marked as <code>constexpr</code> when possible.</li>
+<li>Values of enum classes must be named in CamelCase, e.g. <code>enum class Color { Red, Green, LightBlue };</code>.</li>
+<li>
+<p>Macros and C-style enums must be named in UPPER_CASE, and enum values must be prefixed with a capitalized enum name.</p>
+<p>Note that macros complicate debugging, and old-style enums have dangerous implicit conversions to integers, and tend to clutter
+containing namespaces. Avoid them when possible - use <code>const</code> or <code>constexpr</code> instead of macros, and enum classes instead of enums.</p>
+</li>
+</ul>
+<p><strong>Code should compile without warnings!. Just deprecated warning could be present for a short time. But if you see them, then try to fix it in a separate commit</strong></p>
+<h2 id="clangformat">ClangFormat</h2>
+<p>Most of our coding style is specified in a configuration file for <a href="http://clang.llvm.org/docs/ClangFormat.html">ClangFormat</a>.
+To automatically format a file, install <code>clang-format</code> and run:</p>
+<div class="codehilite"><pre><span></span><code>clang-format -i file.cpp file.hpp other_file.cpp
+</code></pre></div>
+
+<h2 id="formatting-exampleguidereference">Formatting Example/Guide/Reference</h2>
+<div class="highlight"><pre><span></span><code><span class="cp">#pragma once</span>
+
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;sc_addr.hpp&quot;</span><span class="cp"></span>
+
+<span class="kt">uint16_t</span><span class="w"> </span><span class="k">constexpr</span><span class="w"> </span><span class="n">kBufferSize</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">255</span><span class="p">;</span><span class="w"></span>
+
+<span class="c1">// C-style enums are ALL_CAPS. But remember that C++11 enum classes are preferred.</span>
+<span class="k">enum</span><span class="w"> </span><span class="nc">Type</span><span class="w"></span>
+<span class="p">{</span><span class="w"></span>
+<span class="w">  </span><span class="n">TYPE_INTEGER</span><span class="p">,</span><span class="w"></span>
+<span class="w">  </span><span class="n">TYPE_FLOAT</span><span class="p">,</span><span class="w"></span>
+<span class="w">  </span><span class="n">TYPE_STRING</span><span class="w"></span>
+<span class="p">};</span><span class="w"></span>
+
+<span class="k">using</span><span class="w"> </span><span class="n">TMyTypeStartsWithCapitalTLetter</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kt">double</span><span class="p">;</span><span class="w"></span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">ComplexClass</span><span class="w"></span>
+<span class="p">{</span><span class="w"></span>
+<span class="k">public</span><span class="o">:</span><span class="w"></span>
+<span class="w">  </span><span class="n">Complex</span><span class="p">(</span><span class="kt">double</span><span class="w"> </span><span class="n">rePart</span><span class="p">,</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="n">imPart</span><span class="p">)</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">m_re</span><span class="p">(</span><span class="n">rePart</span><span class="p">),</span><span class="w"> </span><span class="n">m_im</span><span class="p">(</span><span class="n">imPart</span><span class="p">)</span><span class="w"> </span><span class="p">{}</span><span class="w"></span>
+<span class="w">  </span><span class="kt">double</span><span class="w"> </span><span class="n">Modulus</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="w"></span>
+<span class="w">  </span><span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="kt">double</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">rere</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">m_re</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">m_re</span><span class="p">;</span><span class="w"></span>
+<span class="w">    </span><span class="kt">double</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">imim</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">m_im</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">m_im</span><span class="p">;</span><span class="w"></span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">sqrt</span><span class="p">(</span><span class="n">rere</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">imim</span><span class="p">);</span><span class="w"></span>
+<span class="w">  </span><span class="p">}</span><span class="w"></span>
+<span class="w">  </span><span class="kt">double</span><span class="w"> </span><span class="n">OneLineMethod</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">m_re</span><span class="p">;</span><span class="w"> </span><span class="p">}</span><span class="w"></span>
+<span class="k">private</span><span class="o">:</span><span class="w"></span>
+<span class="w">  </span><span class="c1">// We use m_ prefix for member variables.</span>
+<span class="w">  </span><span class="kt">double</span><span class="w"> </span><span class="n">m_re</span><span class="p">;</span><span class="w"></span>
+<span class="w">  </span><span class="kt">double</span><span class="w"> </span><span class="n">m_im</span><span class="p">;</span><span class="w"></span>
+<span class="p">};</span><span class="w"></span>
+
+<span class="k">namespace</span><span class="w"></span>
+<span class="p">{</span><span class="w"></span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">CamelCaseFunctionName</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">lowerCamelCaseVar</span><span class="p">)</span><span class="w"></span>
+<span class="p">{</span><span class="w"></span>
+<span class="w">  </span><span class="k">static</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">counter</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"></span>
+<span class="w">  </span><span class="n">counter</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="n">lowerCamelCaseVar</span><span class="p">;</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
+<span class="p">}</span><span class="w">  </span><span class="c1">// namespace</span>
+
+<span class="k">namespace</span><span class="w"> </span><span class="nn">lower_case</span><span class="w"></span>
+<span class="p">{</span><span class="w"></span>
+<span class="k">template</span><span class="w"> </span><span class="o">&lt;</span><span class="k">class</span><span class="w"> </span><span class="nc">TTemplateTypeStartsWithCapitalTLetter</span><span class="o">&gt;</span><span class="w"></span>
+<span class="kt">void</span><span class="w"> </span><span class="n">SomeFoo</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">b</span><span class="p">,</span><span class="w"></span>
+<span class="w">             </span><span class="n">TTemplateTypeStartsWithCapitalTLetter</span><span class="w"> </span><span class="cm">/* We avoid compilation warnings. */</span><span class="p">)</span><span class="w"></span>
+<span class="p">{</span><span class="w"></span>
+<span class="w">  </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">a</span><span class="p">;</span><span class="w"> </span><span class="o">++</span><span class="n">i</span><span class="p">)</span><span class="w"></span>
+<span class="w">  </span><span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="c1">// IMPORTANT! We DON&#39;T use one-liners for if statements for easier debugging.</span>
+<span class="w">    </span><span class="c1">// The following syntax is invalid: if (i &lt; b) Bar(i);</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">i</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">b</span><span class="p">)</span><span class="w"></span>
+<span class="w">      </span><span class="n">Bar</span><span class="p">(</span><span class="n">i</span><span class="p">);</span><span class="w"></span>
+<span class="w">    </span><span class="k">else</span><span class="w"></span>
+<span class="w">    </span><span class="p">{</span><span class="w"></span>
+<span class="w">      </span><span class="n">Bar</span><span class="p">(</span><span class="n">i</span><span class="p">);</span><span class="w"></span>
+<span class="w">      </span><span class="n">Bar</span><span class="p">(</span><span class="n">b</span><span class="p">);</span><span class="w"></span>
+<span class="w">      </span><span class="c1">// Commented out the call.</span>
+<span class="w">      </span><span class="c1">// Bar(c);</span>
+<span class="w">    </span><span class="p">}</span><span class="w"></span>
+<span class="w">  </span><span class="p">}</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
+<span class="p">}</span><span class="w">  </span><span class="c1">// namespace lower_case</span>
+
+<span class="c1">// Switch formatting.</span>
+<span class="kt">int</span><span class="w"> </span><span class="n">Foo</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">a</span><span class="p">)</span><span class="w"></span>
+<span class="p">{</span><span class="w"></span>
+<span class="w">  </span><span class="k">switch</span><span class="w"> </span><span class="p">(</span><span class="n">a</span><span class="p">)</span><span class="w"></span>
+<span class="w">  </span><span class="p">{</span><span class="w"></span>
+<span class="w">  </span><span class="k">case</span><span class="w"> </span><span class="mi">1</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="n">Bar</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span><span class="w"></span>
+<span class="w">    </span><span class="k">break</span><span class="p">;</span><span class="w"></span>
+<span class="w">  </span><span class="k">case</span><span class="w"> </span><span class="mi">2</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="n">Bar</span><span class="p">(</span><span class="mi">2</span><span class="p">);</span><span class="w"></span>
+<span class="w">    </span><span class="k">break</span><span class="p">;</span><span class="w"></span>
+<span class="w">  </span><span class="p">}</span><span class="w"></span>
+<span class="w">  </span><span class="k">case</span><span class="w"> </span><span class="mi">3</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="k">default</span><span class="o">:</span><span class="w"></span>
+<span class="w">    </span><span class="n">Bar</span><span class="p">(</span><span class="mi">3</span><span class="p">);</span><span class="w"></span>
+<span class="w">    </span><span class="k">break</span><span class="p">;</span><span class="w"></span>
+<span class="w">  </span><span class="p">}</span><span class="w"></span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
+
+<span class="c1">// Loops formatting.</span>
+
+<span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">condition</span><span class="p">)</span><span class="w"></span>
+<span class="w">  </span><span class="n">foo</span><span class="p">();</span><span class="w"></span>
+<span class="k">else</span><span class="w"></span>
+<span class="w">  </span><span class="n">bar</span><span class="p">();</span><span class="w"></span>
+
+<span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">condition</span><span class="p">)</span><span class="w"></span>
+<span class="p">{</span><span class="w"></span>
+<span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">condition</span><span class="p">)</span><span class="w"></span>
+<span class="w">    </span><span class="n">foo</span><span class="p">();</span><span class="w"></span>
+<span class="w">  </span><span class="k">else</span><span class="w"></span>
+<span class="w">    </span><span class="n">bar</span><span class="p">();</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
+
+<span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">size_t</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">size</span><span class="p">;</span><span class="w"> </span><span class="o">++</span><span class="n">i</span><span class="p">)</span><span class="w"></span>
+<span class="w">  </span><span class="n">foo</span><span class="p">(</span><span class="n">i</span><span class="p">);</span><span class="w"></span>
+
+<span class="k">while</span><span class="w"> </span><span class="p">(</span><span class="nb">true</span><span class="p">)</span><span class="w"></span>
+<span class="p">{</span><span class="w"></span>
+<span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">condition</span><span class="p">)</span><span class="w"></span>
+<span class="w">    </span><span class="k">break</span><span class="p">;</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
+
+<span class="c1">// Space after the keyword.</span>
+<span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">condition</span><span class="p">)</span><span class="w"></span>
+<span class="p">{</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
+
+<span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">size_t</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mi">5</span><span class="p">;</span><span class="w"> </span><span class="o">++</span><span class="n">i</span><span class="p">)</span><span class="w"></span>
+<span class="p">{</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
+
+<span class="k">while</span><span class="w"> </span><span class="p">(</span><span class="n">condition</span><span class="p">)</span><span class="w"></span>
+<span class="p">{</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
+
+<span class="k">switch</span><span class="w"> </span><span class="p">(</span><span class="n">i</span><span class="p">)</span><span class="w"></span>
+<span class="p">{</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
+
+<span class="c1">// Space between operators, and don&#39;t use space between unary operator and expression.</span>
+<span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"></span>
+<span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">-5</span><span class="p">;</span><span class="w"></span>
+<span class="o">++</span><span class="n">x</span><span class="p">;</span><span class="w"></span>
+<span class="n">x</span><span class="o">--</span><span class="p">;</span><span class="w"></span>
+<span class="n">x</span><span class="w"> </span><span class="o">*=</span><span class="w"> </span><span class="mi">5</span><span class="p">;</span><span class="w"></span>
+<span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">x</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="o">!</span><span class="n">y</span><span class="p">)</span><span class="w"></span>
+<span class="p">{</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
+<span class="n">v</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">w</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">z</span><span class="p">;</span><span class="w"></span>
+<span class="n">v</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">w</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="p">(</span><span class="n">x</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">z</span><span class="p">);</span><span class="w"></span>
+
+<span class="c1">// Space after double dash. And full sentences in comments.</span>
+</code></pre></div>
+<h2 id="tips-and-hints">Tips and Hints</h2>
+<ul>
+<li>If you see outdated code which can be improved - DO IT NOW (but in the separate pull request).</li>
+<li>Your code should work at least on [mac|win|linux][x86|x86_64] [android|ios] platforms.</li>
+<li>Your code should compile well with gcc 4.8+ and clang 3.5+</li>
+<li>Try to avoid using any new 3party library if it is not fully tested and supported on supported platforms.</li>
+<li>Cover your code with unit tests.</li>
+<li>If you don't have enough time to make it right, leave a <code>// TODO(DeveloperName): need to fix it</code> comment.</li>
+</ul>
+<h3 id="some-useful-macros">Some useful macros:</h3>
+<ul>
+<li>macroses to check compilation platform</li>
+</ul>
+<p><div class="highlight"><pre><span></span><code><span class="cp">#if SC_IS_PLATFORM_WIN32</span>
+<span class="w">  </span><span class="c1">// windows platform</span>
+<span class="cp">#endif</span>
+
+<span class="cp">#if SC_IS_PLATFORM_LINUX</span>
+<span class="w"> </span><span class="c1">// linux platform</span>
+<span class="cp">#endif</span>
+<span class="cp">#if SC_IS_PLATFORM_MAC</span>
+<span class="w"> </span><span class="c1">// OSX (mac) platform</span>
+<span class="cp">#endif</span>
+
+<span class="cp">#if SC_IS_PLATFORM_IOS</span>
+<span class="w"> </span><span class="c1">// iOS platform</span>
+<span class="cp">#endif</span>
+
+<span class="cp">#if SC_IS_PLATFORM_ANDROID</span>
+<span class="w"> </span><span class="c1">// android platform</span>
+<span class="cp">#endif</span>
+</code></pre></div>
+- Check code in runtime for Debug builds:</p>
+<div class="highlight"><pre><span></span><code><span class="n">SC_ASSERT</span><span class="p">(</span><span class="n">expr</span><span class="p">,</span><span class="w"> </span><span class="p">(</span><span class="s">&quot;message&quot;</span><span class="p">));</span><span class="w"></span>
+<span class="n">SC_ASSERT</span><span class="p">(</span><span class="n">expr</span><span class="p">,</span><span class="w"> </span><span class="p">());</span><span class="w"> </span><span class="c1">// no message</span>
+</code></pre></div>
+<ul>
+<li>Check if code compiles in Debug mode:</li>
+</ul>
+<div class="highlight"><pre><span></span><code><span class="cp">#if SC_DEBUG_MODE</span>
+<span class="w"> </span><span class="c1">// compiles in debug</span>
+<span class="cp">#endif</span>
+</code></pre></div>
+<ul>
+<li>Check code in runtime for any type of build. Prefer <code>SC_CHECK_...</code> to <code>SC_CHECK</code>:</li>
+</ul>
+<div class="highlight"><pre><span></span><code><span class="n">SC_CHECK</span><span class="p">(</span><span class="n">expr</span><span class="p">,</span><span class="w"> </span><span class="p">(</span><span class="s">&quot;message&quot;</span><span class="p">));</span><span class="w"></span>
+<span class="n">SC_CHECK</span><span class="p">(</span><span class="n">expr</span><span class="p">,</span><span class="w"> </span><span class="p">());</span><span class="w"> </span><span class="c1">// no message</span>
+
+<span class="n">SC_CHECK_NOT</span><span class="p">(</span><span class="n">expr</span><span class="p">,</span><span class="w"> </span><span class="p">());</span><span class="w"> </span><span class="c1">// equal to SC_CHECK(!expr, ());</span>
+<span class="n">SC_CHECK_EQUAL</span><span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="n">b</span><span class="p">,</span><span class="w"> </span><span class="p">());</span><span class="w"> </span><span class="c1">// equal to SC_CHECK(a == b, ());</span>
+<span class="n">SC_CHECK_NOT_EQUAL</span><span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="n">b</span><span class="p">,</span><span class="w"> </span><span class="p">());</span><span class="w"> </span><span class="c1">// equal to SC_CHECK(a != b, ());</span>
+<span class="n">SC_CHECK_GREAT</span><span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="n">b</span><span class="p">,</span><span class="w"> </span><span class="p">());</span><span class="w"> </span><span class="c1">// equal to SC_CHECK(a &gt; b, ());</span>
+<span class="n">SC_CHECK_GREAT_EQ</span><span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="n">b</span><span class="p">,</span><span class="w"> </span><span class="p">());</span><span class="w"> </span><span class="c1">// equal to SC_CHECK(a &gt;= b, ());</span>
+<span class="n">SC_CHECK_LESS</span><span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="n">b</span><span class="p">,</span><span class="w"> </span><span class="p">());</span><span class="w"> </span><span class="c1">// equal to SC_CHECK(a &lt; b, ());</span>
+<span class="n">SC_CHECK_LESS_EQ</span><span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="n">b</span><span class="p">,</span><span class="w"> </span><span class="p">());</span><span class="w"> </span><span class="c1">// equal to SC_CHECK(a &lt;= b, ());</span>
+</code></pre></div>
+<ul>
+<li>Logging:</li>
+<li><code>SC_LOG_DEBUG(msg)</code> - print message in Debug builds. Prefix: <code>[Debug]</code></li>
+<li><code>SC_LOG_INFO(msg)</code></li>
+<li><code>SC_LOG_WARNING(msg)</code></li>
+<li><code>SC_LOG_ERROR(msg)</code></li>
+<li>
+<p><code>SC_LOG_INFO_COLOR(msg, color)</code> - print colored info message. Look color constants in <code>ScConsole::Color</code></p>
+</li>
+<li>
+<p>Declare your own exceptions:</p>
+</li>
+</ul>
+<p><div class="highlight"><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">MyException</span><span class="w"> </span><span class="k">final</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">public</span><span class="w"> </span><span class="n">ScException</span><span class="w"></span>
+<span class="p">{</span><span class="w"></span>
+<span class="k">public</span><span class="o">:</span><span class="w"></span>
+<span class="w">    </span><span class="k">explicit</span><span class="w"> </span><span class="n">MyException</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">msg</span><span class="p">)</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">ScException</span><span class="p">(</span><span class="s">&quot;My: &quot;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">msg</span><span class="p">)</span><span class="w"> </span><span class="p">{}</span><span class="w"></span>
+<span class="p">};</span><span class="w"></span>
+</code></pre></div>
+- Throw exceptions with <code>SC_THROW_EXCEPTION(exceptionName, message)</code>:</p>
+<div class="highlight"><pre><span></span><code><span class="n">SC_THROW_EXCEPTION</span><span class="p">(</span><span class="n">MyException</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;my message&quot;</span><span class="p">)</span><span class="w"></span>
+</code></pre></div>
+<ul>
+<li>Exception for a non implemented parts of code
+<div class="highlight"><pre><span></span><code><span class="n">SC_NOT_IMPLEMENTED</span><span class="p">(</span><span class="s">&quot;message&quot;</span><span class="p">)</span><span class="w"></span>
+</code></pre></div></li>
+</ul>
+
+              
+            </article>
+            
+          </div>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+    <nav class="md-footer__inner md-grid" aria-label="Footer" >
+      
+        
+        <a href="../pr/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Pull requets" rel="prev">
+          <div class="md-footer__button md-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+          </div>
+          <div class="md-footer__title">
+            <div class="md-ellipsis">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              Pull requets
+            </div>
+          </div>
+        </a>
+      
+      
+        
+        <a href="../../cpp/el_types/" class="md-footer__link md-footer__link--next" aria-label="Next: Element types" rel="next">
+          <div class="md-footer__title">
+            <div class="md-ellipsis">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              Element types
+            </div>
+          </div>
+          <div class="md-footer__button md-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4Z"/></svg>
+          </div>
+        </a>
+      
+    </nav>
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    <script id="__config" type="application/json">{"base": "../..", "features": [], "search": "../../assets/javascripts/workers/search.b97dbffb.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version.title": "Select version"}}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.6c7ad80a.min.js"></script>
+      
+        <script src="../../_assets/scg.min.js"></script>
+      
+        <script src="../../_assets/main.js"></script>
+      
+    
+  </body>
+</html>

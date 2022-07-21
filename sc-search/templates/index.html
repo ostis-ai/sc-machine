@@ -1,0 +1,1055 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.3.1, mkdocs-material-8.3.9">
+    
+    
+      
+        <title>Templates - SC-machine</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.1d29e8d0.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.cbb835fc.min.css">
+        
+      
+      
+    
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../_assets/main.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="" data-md-color-primary="none" data-md-color-accent="none">
+  
+    
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#sctemplate" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="SC-machine" class="md-header__button md-logo" aria-label="SC-machine" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            SC-machine
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Templates
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" aria-label="Clear" tabindex="-1">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="SC-machine" class="md-nav__button md-logo" aria-label="SC-machine" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    SC-machine
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        Home
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_2" type="checkbox" id="__nav_2" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_2">
+          Build
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Build" data-md-level="1">
+        <label class="md-nav__title" for="__nav_2">
+          <span class="md-nav__icon md-icon"></span>
+          Build
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../build/linux-build/" class="md-nav__link">
+        Build on Linux
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../build/windows-build/" class="md-nav__link">
+        Build on Windows
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../build/osx-build/" class="md-nav__link">
+        Build on OSX
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../build/cmake-flags/" class="md-nav__link">
+        CMake Flags
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3" type="checkbox" id="__nav_3" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_3">
+          Development
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Development" data-md-level="1">
+        <label class="md-nav__title" for="__nav_3">
+          <span class="md-nav__icon md-icon"></span>
+          Development
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../dev/git-workflow/" class="md-nav__link">
+        Git-workflow
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../dev/pr/" class="md-nav__link">
+        Pull requets
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../dev/codestyle/" class="md-nav__link">
+        Codestyle
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4" type="checkbox" id="__nav_4" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_4">
+          Common
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Common" data-md-level="1">
+        <label class="md-nav__title" for="__nav_4">
+          <span class="md-nav__icon md-icon"></span>
+          Common
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../cpp/el_types/" class="md-nav__link">
+        Element types
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../other/config/" class="md-nav__link">
+        Configuration files
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../other/scs/" class="md-nav__link">
+        SCs language
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_5" type="checkbox" id="__nav_5" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_5">
+          API
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="API" data-md-level="1">
+        <label class="md-nav__title" for="__nav_5">
+          <span class="md-nav__icon md-icon"></span>
+          API
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../cpp/cpp-meta/" class="md-nav__link">
+        Meta programming
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../cpp/kpm.md" class="md-nav__link">
+        Agents
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../cpp/templates.md" class="md-nav__link">
+        Template
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../cpp/common/" class="md-nav__link">
+        Common
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_5_5" type="checkbox" id="__nav_5_5" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_5_5">
+          Python
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Python" data-md-level="2">
+        <label class="md-nav__title" for="__nav_5_5">
+          <span class="md-nav__icon md-icon"></span>
+          Python
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../python/python/" class="md-nav__link">
+        Common
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../python/library/" class="md-nav__link">
+        Library
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../python/cpp_wrap/" class="md-nav__link">
+        Wrapped classes
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_5_6" type="checkbox" id="__nav_5_6" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_5_6">
+          File storage
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="File storage" data-md-level="2">
+        <label class="md-nav__title" for="__nav_5_6">
+          <span class="md-nav__icon md-icon"></span>
+          File storage
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../storage/sc_dictionary.md" class="md-nav__link">
+        Sc-dictionary-based file storage
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_6" type="checkbox" id="__nav_6" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_6">
+          Http
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Http" data-md-level="1">
+        <label class="md-nav__title" for="__nav_6">
+          <span class="md-nav__icon md-icon"></span>
+          Http
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../http/index.md" class="md-nav__link">
+        Common
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../http/websocket.md" class="md-nav__link">
+        WebSocket
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_7" type="checkbox" id="__nav_7" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_7">
+          Tools
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Tools" data-md-level="1">
+        <label class="md-nav__title" for="__nav_7">
+          <span class="md-nav__icon md-icon"></span>
+          Tools
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tools/kb_builder.md" class="md-nav__link">
+        Builder
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../license/" class="md-nav__link">
+        License
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../changelog/" class="md-nav__link">
+        Changelog
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../thirdparty/" class="md-nav__link">
+        Thirdparty
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#sctemplate" class="md-nav__link">
+    ScTemplate
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#search" class="md-nav__link">
+    Search
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#search-in-construction" class="md-nav__link">
+    Search in construction
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#generate" class="md-nav__link">
+    Generate
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          <div class="md-content" data-md-component="content">
+            <article class="md-content__inner md-typeset">
+              
+                
+
+
+  <h1>Templates</h1>
+
+<p>Templates is a very powerful mechanism to work with semantic network (graph). You can search and generate any constructions using templates.
+There are list of available classes to work with templates:
+* <code>ScTemplate</code> - class that represents template in C++ code;
+* <code>ScTemplateParams</code> - parameters that contains values of variables in template. This class usually used when you generate construction by template;
+* <code>ScTemplateSearchResult</code> - contains result of search by template (list of found constructions);
+* <code>ScTemplateSearchResultItem</code> - represents on search result item;
+* <code>ScTemplateGenResult</code> - represent result of generation by template.</p>
+<h2 id="sctemplate">ScTemplate</h2>
+<p>Class to work with templates in c++. Before reading this paragraph you need to read common <a href="../../cpp/el_types/">information about types</a>.</p>
+<p>Let use <code>f</code> symbols for constant parameter of template. Let use <code>a</code> symbol for a variable parameter of template. Then template to search all output edges from specified sc-element will be a triple:
+* where first element is known <code>f</code>;
+* second and third elements need to be found <code>a</code>.</p>
+<p>There are possible 3 types of simple templates:
+* <code>f_a_a</code> - template to find all outgoing edges from a specified sc-element;
+* <code>f_a_f</code> - template to find all edges between two specified sc-elements;
+* <code>a_a_f</code> - template to find all ingoing edges to a specified sc-element.</p>
+<p>There are some methods available for <code>ScTemplate</code> class:
+* <code>triple</code> - method that adds triple construction into template. There are some examples of using this function to produce simple templates:</p>
+<table>
+  <tr>
+    <th>Template</th>
+    <th>Description</th>
+  </tr>
+
+  <tr>
+    <td>f_a_a</td>
+    <td>
+      <strong>Graphical representation</strong>
+      <br/><scg src="../images/templates/template_triple_f_a_a_example.gwf"></scg>
+      <br/><strong>Equal C++ code</strong>
+      <br/>
+<pre><code class="cpp hljs">
+ScTemplate templ;
+templ.Triple(
+  param1,
+  ScType::EDGE_ACCESS_VAR_POS_PERM,
+  ScType::NODE_VAR
+);
+</code></pre>
+
+      <br/>This triple template using to traverse output edges from specified sc-element.
+      <br/>There <code>param1</code> is a known <code>ScAddr</code> of sc-element. It must be a valid (use <code>ScAddr::IsValid</code> method to check). Where <code>_param2</code> and <code>_param3</code> are <code>ScType</code> for compare by search engine. When search engine will traverse output edges from <code>param1</code>. Construction will be added into traverse result, where output edge from <code>param1</code>, will suitable to specified type <code>_param2</code>, and type of target element of this edge will be sutable for a type <code>_param3</code>.
+      <br/>You can use any type of <code>_param3</code> (including edges) depending on construction you want to find. But <code>_param2</code> should be any type of variable edge.
+    </td>
+  </tr>
+
+  <tr>
+    <td>f_a_f</td>
+    <td><strong>Graphical representation</strong>
+    <br/><scg src="../images/templates/template_triple_f_a_f_example.gwf"></scg>
+    <br/><strong>Equal C++ code</strong>
+    <br/>
+<pre><code class="cpp hljs">
+ScTemplate templ;
+templ.Triple(
+  param1,
+  ScType::EDGE_ACCESS_VAR_POS_PERM,
+  param3
+);
+</code></pre>
+    <br/>This triple template using to find edge between <code>param1</code> and <code>param3</code>.
+    <br/>There are <code>param1</code> and <code>param3</code> a known <code>ScAddr</code> of sc-elements. Edge type <code>_param2</code> should be variable.
+
+    </td>
+  </tr>
+
+  <tr>
+    <td>a_a_f</td>
+    <td><strong>Graphical representation</strong>
+    <br/><scg src="../images/templates/template_triple_a_a_f_example.gwf"></scg>
+    <br/><strong>Equal C++ code</strong>
+    <br/>
+<pre><code class="cpp hljs">
+ScTemplate templ;
+templ.Triple(
+  ScType::NODE_VAR,
+  ScType::EDGE_ACCESS_VAR_POS_PERM,
+  param3
+);
+</code></pre>
+    <br/>This triple template using to traverse input edges from specified sc-element.
+    <br/>There <code>param3</code> is a known <code>ScAddr</code> of sc-element. You can use any type of <code>_param1</code> (including edges) depending on construction you want to find. But <code>_param2</code> should be any type of variable edge.
+    </td>
+  </tr>
+</table>
+
+<p>When template search engine works, it tries to traverse graph by simple (triple) template in order they specified. For example we need to check if specified sc-element (<code>_device</code>) is included into <code>device</code> set and <code>device_enabled</code> set:</p>
+<p><scg src="../images/templates/template_example_2.gwf"></scg></p>
+<p><strong>Code</strong> that generates equal template
+<div class="highlight"><pre><span></span><code><span class="n">ScAddr</span><span class="w"> </span><span class="n">device_addr</span><span class="p">,</span><span class="w"> </span><span class="n">device_enabled_addr</span><span class="p">;</span><span class="w"></span>
+<span class="p">...</span><span class="w"></span>
+
+<span class="n">ScTemplate</span><span class="w"> </span><span class="n">templ</span><span class="p">;</span><span class="w"></span>
+<span class="n">templ</span><span class="p">.</span><span class="n">Triple</span><span class="p">(</span><span class="w"></span>
+<span class="w">  </span><span class="n">device_addr</span><span class="p">,</span><span class="w">    </span><span class="c1">// sc-addr of device node</span>
+<span class="w">  </span><span class="n">ScType</span><span class="o">::</span><span class="n">EDGE_ACCESS_VAR_POS_PERM</span><span class="p">,</span><span class="w"></span>
+<span class="w">  </span><span class="n">ScType</span><span class="o">::</span><span class="n">NODE_VAR</span><span class="w"> </span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="s">&quot;_device_instance&quot;</span><span class="w"></span>
+<span class="p">);</span><span class="w"></span>
+<span class="n">templ</span><span class="p">.</span><span class="n">Triple</span><span class="p">(</span><span class="w"></span>
+<span class="w">  </span><span class="n">device_enabled_addr</span><span class="p">,</span><span class="w">    </span><span class="c1">// sc-addr of device_enabled node</span>
+<span class="w">  </span><span class="n">ScType</span><span class="o">::</span><span class="n">EDGE_ACCESS_VAR_POS_PERM</span><span class="p">,</span><span class="w"></span>
+<span class="w">  </span><span class="s">&quot;_device_instance&quot;</span><span class="w"></span>
+<span class="p">);</span><span class="w"></span>
+</code></pre></div>
+In code you can see a construction <code>ScType::NODE_VAR &gt;&gt; "_device_instance"</code> - this is a naming for a template element. It allows to set name for a specified sc-element in template, and use it many times in different triples. You can see, that in the second triple we use this name <code>"_device_instance"</code>. That means, that we need to place search result from a first triple into the second. So the second triple is a <code>f_a_f</code> style triple.</p>
+<p>So if you want to use the same element <code>_x</code> in different triples, and you doesn't know it <code>ScAddr</code>, then just use two main rules:
+* set name of this element in a first occurrence of this element in template triples. You need to use <code>&gt;&gt;</code> operator to do this (see code below, last element of first triple);
+* when you need to use named element in next triples, then just use it name instread of <code>ScType</code> or <code>ScAddr</code> (see code below, first element if second triple).</p>
+<p><strong>Example code with naming</strong></p>
+<div class="highlight"><pre><span></span><code><span class="n">ScTemplateTempl</span><span class="p">;</span><span class="w"></span>
+<span class="n">templ</span><span class="p">.</span><span class="n">Triple</span><span class="p">(</span><span class="w"></span>
+<span class="w">  </span><span class="n">any_addr</span><span class="p">,</span><span class="w"> </span><span class="c1">// sc-addr of known sc-element</span>
+<span class="w">  </span><span class="n">ScType</span><span class="o">::</span><span class="n">EDGE_ACCESS_VAR_POS_PERM</span><span class="p">,</span><span class="w">  </span><span class="c1">// type of unknown edge</span>
+<span class="w">  </span><span class="n">ScType</span><span class="o">::</span><span class="n">NODE_VAR</span><span class="w"> </span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="s">&quot;_x&quot;</span><span class="w">  </span><span class="c1">// type and name for an unknown sc-element</span>
+<span class="p">);</span><span class="w"></span>
+<span class="n">templ</span><span class="p">.</span><span class="n">Triple</span><span class="p">(</span><span class="w"></span>
+<span class="w">  </span><span class="s">&quot;_x&quot;</span><span class="p">,</span><span class="w">  </span><span class="c1">// say that is the same element as the last on in a previous triple</span>
+<span class="w">  </span><span class="n">ScType</span><span class="o">::</span><span class="n">EDGE_ACCESS_VAR_POS_PERM</span><span class="p">,</span><span class="w">  </span><span class="c1">// type of unknown edge</span>
+<span class="w">  </span><span class="n">ScType</span><span class="o">::</span><span class="n">NODE_VAR</span><span class="w">  </span><span class="c1">// type of unknown sc-element</span>
+<span class="p">);</span><span class="w"></span>
+</code></pre></div>
+<p>Also you can generate templates using <a href="../../other/scs/">SCs-code</a>. Example code:</p>
+<div class="highlight"><pre><span></span><code><span class="n">ScTemplate</span><span class="w"> </span><span class="n">templ</span><span class="p">;</span><span class="w"> </span>
+<span class="kt">char</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>
+<span class="w">  </span><span class="s">&quot;_device_instance&quot;</span><span class="w"></span>
+<span class="w">  </span><span class="s">&quot;  _&lt;- device;&quot;</span><span class="w"></span>
+<span class="w">  </span><span class="s">&quot;  _&lt;- device_enabled;;&quot;</span><span class="p">;</span><span class="w"></span>
+<span class="n">ctx</span><span class="p">.</span><span class="n">HelperBuildTemplate</span><span class="p">(</span><span class="n">templ</span><span class="p">,</span><span class="w"> </span><span class="n">data</span><span class="p">);</span><span class="w"></span>
+</code></pre></div>
+<p>During template building all constants will be resolved by their system identifier (in example: <code>device</code>, <code>device_enabled</code>), so in result <code>templ</code> will be contain template:</p>
+<p><scg src="../images/templates/template_example_2.gwf"></scg></p>
+<h2 id="search">Search</h2>
+<p>Search algorithm trying to find all possible variants of specified construction. It use any constants (available <code>ScAddr</code>'s from parameters to find equal constructions in sc-memory).</p>
+<h2 id="search-in-construction">Search in construction</h2>
+<p>Do the same as <a href="#search">Search</a>, but check if all elements of found constructions are in a specified set.</p>
+<p>Example:</p>
+<div class="highlight"><pre><span></span><code><span class="n">ScTemplate</span><span class="w"> </span><span class="n">templ</span><span class="p">;</span><span class="w"> </span>
+<span class="n">templ</span><span class="p">.</span><span class="n">Triple</span><span class="p">(</span><span class="w"></span>
+<span class="w">  </span><span class="n">anyAddr</span><span class="w"> </span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="s">&quot;_anyAddr&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">  </span><span class="n">ScType</span><span class="o">::</span><span class="n">EdgeAccessVarPosPerm</span><span class="w"> </span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="s">&quot;_edge&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">  </span><span class="n">ScType</span><span class="o">::</span><span class="n">NodeVar</span><span class="w"> </span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="s">&quot;_trgAddr&quot;</span><span class="p">);</span><span class="w"></span>
+
+<span class="n">ctx</span><span class="p">.</span><span class="n">HelperSearchTemplateInStruct</span><span class="p">(</span><span class="n">templ</span><span class="p">,</span><span class="w"> </span><span class="n">anyStructAddr</span><span class="p">,</span><span class="w"> </span><span class="n">result</span><span class="p">)</span><span class="w"></span>
+</code></pre></div>
+<h2 id="generate">Generate</h2>
+
+              
+            </article>
+            
+          </div>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    <script id="__config" type="application/json">{"base": "../..", "features": [], "search": "../../assets/javascripts/workers/search.b97dbffb.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version.title": "Select version"}}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.6c7ad80a.min.js"></script>
+      
+        <script src="../../_assets/scg.min.js"></script>
+      
+        <script src="../../_assets/main.js"></script>
+      
+    
+  </body>
+</html>

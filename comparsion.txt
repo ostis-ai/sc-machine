@@ -1,0 +1,394 @@
+---------- 02.09.12 ------------
+
+Initialize sc-core...
+Create temporary segment...
+---
+Test node allocation
+Number of nodes: 5000000
+Elapsed time: 2.001837 s
+Nodes per second: 2497705.857170
+---
+Test node segmentation
+Number of process nodes: 5000000
+2500000 of 5000000 nodes will be deleted
+Elapsed time: 3.191011 s
+Nodes per second: 1566901.524313
+---
+Test arcs creation
+Number of arcs: 5000000
+Elapsed time: 10.909703 s
+Arcs per second: 458307.618457
+
+Press any key...
+
+Shutdown sc-core...
+
+>>>>
+
+** Message: Initialize sc-storage from path: repo
+
+** Message: There are no segments directory in repo
+Segment loading speed: 0.000000 seg/sec
+Commands:
+0 - exit
+1 - test allocation
+2 - test sc-addr utilities
+3 - test arc deletion
+4 - test iterators
+
+Command: 1
+
+----- Test 1 -----
+Element size: 52 bytes
+Segment size: 65535 elements
+--- Storage statistics: ---
+ 	Nodes: 0 (0 deleted)
+	Arcs: 0 (0 deleted)
+	Empty: 0
+---
+--- Node creation ---
+Time: 0.977290 s
+Nodes per second: 5116188.644108
+Segments count: 77
+--- Storage statistics: ---
+ 	Nodes: 5000000 (0 deleted)
+	Arcs: 0 (0 deleted)
+	Empty: 46195
+---
+--- Node segmentation ---
+Prepare test...
+Run test...
+Time: 0.780718 s
+Elements per second: 6404361.113744
+Segments count: 115
+Element free calls: 0
+--- Storage statistics: ---
+ 	Nodes: 7500000 (2500000 deleted)
+	Arcs: 0 (0 deleted)
+	Empty: 36525
+---
+--- Arcs creation ---
+Prepare...
+Run...
+Timer: 2.726624s
+Arcs per second: 1833769.525978
+Segments count: 191
+--- Storage statistics: ---
+ 	Nodes: 7500000 (2500000 deleted)
+	Arcs: 5000000 (0 deleted)
+	Empty: 17185
+---
+
+----- Finished -----
+Commands:
+0 - exit
+1 - test allocation
+2 - test sc-addr utilities
+3 - test arc deletion
+4 - test iterators
+
+Command: 0
+
+----- Test 0 -----
+
+----- Finished -----
+** Message: Shutdown sc-storage
+
+** Message: Write storage into repo
+
+
+===== Results =====
+>>> oldNodes = 2497705.857170
+>>> oldNodesSeg = 1566901.524313
+>>> oldArcs = 458307.618457
+>>> newNodes = 5116188.644108
+>>> newNodesSeg = 6404361.113744
+>>> newArcs = 1833769.525978
+>>> newNodes / oldNodes * 100
+204.83551453512004
+>>> newNodesSeg / oldNodesSeg * 100
+408.7277352386239
+>>> newArcs / oldArcs * 100
+400.11761797716014
+
+
+
+============================
+
+---------- 25.12.12 ------------
+# simple mutex synchronization (lock, unlock recursive mutex in sc_memory functions)
+
+MD5: 16
+SHA1: 20
+SHA256: 32
+** Message: Initialize sc-storage from path: repo
+
+** Message: There are no segments directory in repo
+Segment loading speed: 0.000000 seg/sec
+Commands:
+0 - exit
+1 - test allocation
+2 - test sc-addr utilities
+3 - test arc deletion
+4 - test iterators
+5 - test contents
+6 - test content finding
+7 - test events
+
+Command: 1
+
+----- Test 1 -----
+Element size: 64 bytes
+Segment size: 65535 elements
+--- Storage statistics: ---
+ 	Nodes: 0 (0 deleted)
+	Arcs: 0 (0 deleted)
+	Empty: 0
+---
+--- Node creation ---
+Time: 0.999375 s
+Nodes per second: 5003126.954346
+Segments count: 77
+--- Storage statistics: ---
+ 	Nodes: 5000000 (0 deleted)
+	Arcs: 0 (0 deleted)
+	Empty: 46195
+---
+--- Node segmentation ---
+Prepare test...
+Run test...
+Time: 0.851788 s
+Elements per second: 5870005.212565
+Segments count: 115
+Element free calls: 0
+--- Storage statistics: ---
+ 	Nodes: 7500000 (2500000 deleted)
+	Arcs: 0 (0 deleted)
+	Empty: 36525
+---
+--- Arcs creation ---
+Prepare...
+Run...
+Timer: 2.349745s
+Arcs per second: 2127890.473222
+Segments count: 191
+--- Storage statistics: ---
+ 	Nodes: 7500000 (2500000 deleted)
+	Arcs: 5000000 (0 deleted)
+	Empty: 17185
+---
+
+----- Finished -----
+Commands:
+0 - exit
+1 - test allocation
+2 - test sc-addr utilities
+3 - test arc deletion
+4 - test iterators
+5 - test contents
+6 - test content finding
+7 - test events
+
+Command: 0
+
+----- Test 0 -----
+
+----- Finished -----
+** Message: Shutdown sc-storage
+
+** Message: Write storage into repo
+Segments save speed: 10.245190 seg/sec
+
+
+---------- 12.02.13 ------------
+==== improved synchronization routines, disabled for internal ====
+denis@denis-HP-Pavilion-dv6-Notebook-PC:~/develop/sc-machine/bin$ ./test 
+MD5: 16
+SHA1: 20
+SHA256: 32
+Element size: 56
+** Message: Initialize sc-storage from path: repo
+
+** Message: There are no segments directory in repo
+Segment loading speed: 0.000000 seg/sec
+Commands:
+0 - exit
+1 - test allocation
+2 - test sc-addr utilities
+3 - test arc deletion
+4 - test iterators
+5 - test contents
+6 - test content finding
+7 - test events
+8 - test garbage deletion
+9 - run grabage collection
+
+Command: 1
+
+----- Test 1 -----
+Element size: 56 bytes
+Segment size: 65535 elements
+--- Storage statistics: ---
+ 	Nodes: 0 (0 deleted)
+	Arcs: 0 (0 deleted)
+	Empty: 0
+---
+--- Node creation ---
+Time: 0.602897 s
+Nodes per second: 8293290.562069
+Segments count: 77
+--- Storage statistics: ---
+ 	Nodes: 5000000 (0 deleted)
+	Arcs: 0 (0 deleted)
+	Empty: 46195
+---
+--- Node segmentation ---
+Prepare test...
+Run test...
+Time: 0.607835 s
+Elements per second: 8225916.572754
+Segments count: 115
+Element free calls: 0
+--- Storage statistics: ---
+ 	Nodes: 7500000 (2500000 deleted)
+	Arcs: 0 (0 deleted)
+	Empty: 36525
+---
+--- Arcs creation ---
+Prepare...
+Run...
+Timer: 2.372862s
+Arcs per second: 2107160.045548
+Segments count: 191
+--- Storage statistics: ---
+ 	Nodes: 7500000 (2500000 deleted)
+	Arcs: 5000000 (0 deleted)
+	Empty: 17185
+---
+
+----- Finished -----
+Commands:
+0 - exit
+1 - test allocation
+2 - test sc-addr utilities
+3 - test arc deletion
+4 - test iterators
+5 - test contents
+6 - test content finding
+7 - test events
+8 - test garbage deletion
+9 - run grabage collection
+
+Command: 
+
+
+---------- 20.02.13 ------------
+=== Test rewrited to sc_memory interface with lock/unlock ===
+Command: 1
+
+----- Test 1 -----
+Element size: 56 bytes
+Segment size: 65535 elements
+--- Storage statistics: ---
+ 	Nodes: 0 (0 deleted)
+	Arcs: 0 (0 deleted)
+	Empty: 0
+---
+--- Node creation ---
+Time: 0.812629 s
+Nodes per second: 6152869.267526
+Segments count: 77
+--- Storage statistics: ---
+ 	Nodes: 5000000 (0 deleted)
+	Arcs: 0 (0 deleted)
+	Empty: 46195
+---
+--- Node segmentation ---
+Prepare test...
+Run test...
+Time: 0.834599 s
+Elements per second: 5990901.019532
+Segments count: 115
+Element free calls: 0
+--- Storage statistics: ---
+ 	Nodes: 7500000 (2500000 deleted)
+	Arcs: 0 (0 deleted)
+	Empty: 36525
+---
+--- Arcs creation ---
+Prepare...
+Run...
+Timer: 2.627222s
+Arcs per second: 1903150.932810
+Segments count: 191
+--- Storage statistics: ---
+ 	Nodes: 7500000 (2500000 deleted)
+	Arcs: 5000000 (0 deleted)
+	Empty: 17185
+---
+
+---------- 12.12.13 ------------
+
+REDIS file memory
+MD5: 16
+SHA1: 20
+SHA256: 32
+Element size: 56
+** Message: Run with configuration
+** Message: 	max_loaded_segments: 20
+** Message: Initialize sc-storage from path: repo
+** Message: 	File memory engine: redis
+** Message: Initialize file memory engine from: libsc-fm-redis.so
+** Message: Connect to redis server 127.0.0.1:6379
+** Message: 	Switch redis database
+** Message: Clear file memory
+Segment loading speed: 0.000000 seg/sec
+test contents
+----- Test 5 -----
+Segments count: 0
+--- Storage statistics: ---
+ 	Nodes: 0 (0 deleted)
+	Arcs: 0 (0 deleted)
+	Links: 0 (0 deleted)
+	Empty: 0
+---
+Create 20000 links
+Created links: 20000
+Links per second: 2881.149832
+Segments count: 1
+--- Storage statistics: ---
+ 	Nodes: 0 (0 deleted)
+	Arcs: 0 (0 deleted)
+	Links: 20000 (0 deleted)
+	Empty: 45535
+---
+
+----- Finished -----
+
+test content finding
+
+----- Test 6 -----
+Segments count: 1
+--- Storage statistics: ---
+ 	Nodes: 0 (0 deleted)
+	Arcs: 0 (0 deleted)
+	Links: 20000 (0 deleted)
+	Empty: 45535
+---
+Created links: 20000
+Links per second: 10306.489223
+Segments count: 1
+--- Storage statistics: ---
+ 	Nodes: 0 (0 deleted)
+	Arcs: 0 (0 deleted)
+	Links: 20000 (0 deleted)
+	Empty: 45535
+---
+
+----- Finished -----
+
+
+
+---------- dd.mm.yy ------------
+
+
