@@ -23,7 +23,7 @@ std::unique_ptr<ScServer> ScServerFactory::ConfigureScServer(
 
   std::string const & logLevel = serverParams.at("log_level");
   if (logLevel == SC_SERVER_INFO)
-    server->SetMessageChannels(ScServerLogMessages::connect);
+    server->SetMessageChannels(ScServerLogMessages::devel);
   else if (logLevel == SC_SERVER_DEBUG)
     server->SetMessageChannels(
         ScServerLogMessages::connect | ScServerLogMessages::disconnect | ScServerLogMessages::app);
