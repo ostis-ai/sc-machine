@@ -24,7 +24,6 @@ const std::string kOutputTypeToStr[] = {"Console", "File"};
 
 namespace utils
 {
-const std::string ScLog::DEFAULT_LOG_FILE = "system.log";
 
 ScLock gLock;
 ScLog * ScLog::ms_instance = nullptr;
@@ -64,11 +63,11 @@ ScLog::~ScLog()
   ms_instance = nullptr;
 }
 
-bool ScLog::Initialize(std::string const & file_name)
+bool ScLog::Initialize()
 {
   if (m_output_mode == OutputType::File)
   {
-    std::string file_path = SC_MACHINE_LOG_DIR + file_name;
+    std::string file_path = SC_MACHINE_LOG_DIR;
     m_fileStream.open(file_path, std::ofstream::out | std::ofstream::app);
   }
   return m_fileStream.is_open();
