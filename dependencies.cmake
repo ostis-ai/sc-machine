@@ -24,8 +24,8 @@ endmacro()
 macro(sc_linux_target_dependencies)
     set(SC_CODEGEN_TOOL "${SC_BIN_PATH}/sc-code-generator")
 
-    find_package(Boost 1.71 REQUIRED COMPONENTS filesystem python system program_options)
-    find_package(Python3 COMPONENTS Interpreter Development REQUIRED)
+    find_package(Boost 1.71 REQUIRED COMPONENTS filesystem system program_options)
+    find_package(websocketpp REQUIRED 0.8.3)
 
     if(${SC_FILE_MEMORY} MATCHES "Rocksdb")
 	    execute_process(COMMAND sudo apt-get install -y librocksdb-dev)
@@ -85,10 +85,6 @@ macro(sc_win_target_dependencies _PACKAGES_CONFIG _THIRDPARTY_PATH _BIN_PATH)
     set(LIBCURL_INCLUDE_DIRS "${LIBCURL_PATH}/include")
     set(LIBCURL_LIBRARIES "${LIBCURL_PATH}/lib/libcurl.lib" "WSock32.lib" "Ws2_32.lib")
 
-    set(BOOST_PYTHON_BIN_PATH "${SC_MACHINE_THIRDPARTY_PATH}/boost")
-    set(BOOST_PYTHON_LIBRARY_RELEASE "${BOOST_PYTHON_BIN_PATH}/boost_python3-${MSVC_SUFFIX}-mt-1_64.lib")
-    set(BOOST_PYTHON_LIBRARY_DEBUG "${BOOST_PYTHON_BIN_PATH}/boost_python3-${MSVC_SUFFIX}-mt-gd-1_64.lib")
-
     if(${SC_FILE_MEMORY} MATCHES "Rocksdb")
 	    set(RocksDB_INCLUDE_DIR "${ROCKSDB_PATH}/include")
 	    set(RocksDB_LIBRARIES "${ROCKSDB_PATH}/rocksdb-shared.lib")
@@ -123,8 +119,6 @@ macro(sc_win_target_dependencies _PACKAGES_CONFIG _THIRDPARTY_PATH _BIN_PATH)
         "${ZLIB_RUNTIME_PATH}/zlib.dll"
         "${FFI_RUNTIME_PATH}/libffi.dll"
         "${CLANG_RUNTIME_PATH}/libclang.dll"
-        "${BOOST_PYTHON_BIN_PATH}/boost_python3-${MSVC_SUFFIX}-mt-1_64.dll"
-        "${BOOST_PYTHON_BIN_PATH}/boost_python3-${MSVC_SUFFIX}-mt-gd-1_64.dll"
         "${LIBCURL_RUNTIME_PATH}/libcurl.dll"
         "${LIBCURL_RUNTIME_PATH}/libeay32.dll"
         "${LIBCURL_RUNTIME_PATH}/ssleay32.dll"

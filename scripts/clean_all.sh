@@ -10,6 +10,6 @@ make clean
 
 echo -en '\E[47;31m'"\033[1mClean builder\033[0m\n"
 tput sgr0
-cd ../../tools/builder
+cd ../../tools/sc-builder
 make clean
 ~                       

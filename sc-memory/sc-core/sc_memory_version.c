@@ -9,12 +9,6 @@
 #include "sc-store/sc-base/sc_allocator.h"
 #include "sc-store/sc-base/sc_assert_utils.h"
 
-const sc_version SC_VERSION = {
-    SC_MACHINE_VERSION_MAJOR,
-    SC_MACHINE_VERSION_MINOR,
-    SC_MACHINE_VERSION_PATCH,
-    SC_MACHINE_VERSION_SUFFIX};
-
 sc_int32 sc_version_compare(const sc_version * a, const sc_version * b)
 {
   sc_assert(a && b);
@@ -45,7 +39,7 @@ char * sc_version_string_new(const sc_version * v)
   return g_strdup_printf("%u.%u.%u", v->major, v->minor, v->patch);
 }
 
-void sc_version_strinsc_mem_free(sc_char * str)
+void sc_version_string_free(sc_char * str)
 {
   sc_assert(str != null_ptr);
   sc_mem_free(str);

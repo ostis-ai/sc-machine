@@ -31,8 +31,6 @@ extern "C"
 #  define NOMINMAX
 #endif
 
-using StringVector = std::vector<std::string>;
-
 class ScMemoryContext;
 class ScAddr;
 
@@ -46,7 +44,7 @@ public:
   {
   }
 
-  explicit ScType(RealType type)
+  explicit ScType(RealType type) noexcept
     : m_realType(type)
   {
   }

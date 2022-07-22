@@ -9,22 +9,9 @@
 
 #include "sc-store/sc_types.h"
 #include "sc-store/sc_stream.h"
+#include "sc_memory_params.h"
 
 // Public functions that used by developer
-
-struct _sc_memory_params
-{
-  const sc_char * repo_path;
-  const sc_char * config_file;
-  const sc_char * ext_path;
-  const sc_char ** enabled_exts;  // null-terminated list of extension names that should be loaded
-  sc_bool clear;
-};
-
-typedef struct _sc_memory_params sc_memory_params;
-
-//! Function to clear memory parameters
-_SC_EXTERN void sc_memory_params_clear(sc_memory_params * params);
 
 /*! Initialize sc-memory with specified path to repository
  * @param params Pointer to initialization parameters
