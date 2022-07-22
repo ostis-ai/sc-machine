@@ -30,10 +30,7 @@ ScLog * ScLog::ms_instance = nullptr;
 
 ScLog * ScLog::SetUp(std::string const & logType, std::string const & logFile, std::string const & logLevel)
 {
-  if (!ms_instance)
-    return new ScLog(logType, logFile, logLevel);
-
-  return ms_instance;
+  return new ScLog(logType, logFile, logLevel);
 }
 
 ScLog * ScLog::GetInstance()
