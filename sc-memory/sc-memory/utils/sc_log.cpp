@@ -29,6 +29,7 @@ ScLog * ScLog::ms_instance = nullptr;
 
 ScLog * ScLog::SetUp(std::string const & logType, std::string const & logFile, std::string const & logLevel)
 {
+  delete ms_instance;
   return new ScLog(logType, logFile, logLevel);
 }
 
