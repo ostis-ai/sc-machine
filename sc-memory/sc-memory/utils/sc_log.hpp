@@ -18,6 +18,8 @@ class ScLog final
 protected:
   _SC_EXTERN ScLog();
 
+  _SC_EXTERN explicit ScLog(std::string const & logType, std::string const & logFile, std::string const & logLevel);
+
   _SC_EXTERN ~ScLog();
 
 public:
@@ -28,8 +30,6 @@ public:
     Info,
     Warning,
     Error,
-    Python,
-    PythonError,
     Off
   };
 
@@ -38,6 +38,11 @@ public:
     Console = 0,
     File
   };
+
+  _SC_EXTERN static ScLog * SetUp(
+      std::string const & logType,
+      std::string const & logFile,
+      std::string const & logLevel);
 
   _SC_EXTERN void Shutdown();
 
@@ -58,9 +63,7 @@ private:
 
   static ScLog * ms_instance;
 
-  std::string static const DEFAULT_LOG_FILE;
-
-  bool Initialize(std::string const & file_name);
+  bool Initialize(std::string const & logFile);
 
   template <size_t N>
   static int FindEnumElement(const std::string (&elements)[N], const std::string & externalValue);
@@ -79,9 +82,6 @@ private:
 #define SC_LOG_INFO(__msg) ({SC_LOG_COLOR(::utils::ScLog::Type::Info, __msg, ScConsole::Color::Grey)})
 #define SC_LOG_WARNING(__msg) ({SC_LOG_COLOR(::utils::ScLog::Type::Warning, __msg, ScConsole::Color::Yellow)})
 #define SC_LOG_ERROR(__msg) ({SC_LOG_COLOR(::utils::ScLog::Type::Error, __msg, ScConsole::Color::Red)})
-#define SC_LOG_PYTHON(__msg) ({SC_LOG_COLOR(::utils::ScLog::Type::Python, __msg, ScConsole::Color::DarkGrey)})
-#define SC_LOG_PYTHON_ERROR(__msg) \
-  ({SC_LOG_COLOR(::utils::ScLog::Type::PythonError, __msg, ScConsole::Color::LightRed)})
 #define SC_LOG_INFO_COLOR(__msg, __color) ({SC_LOG_COLOR(::utils::ScLog::Type::Info, __msg, __color)})
 
 #define SC_LOG_INIT(__msg) ({ SC_LOG_INFO("[init] " << __msg); })

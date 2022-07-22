@@ -10,7 +10,8 @@
 #include "sc_segment.h"
 #include "sc_element.h"
 #include "sc_link_helpers.h"
-#include "sc_config.h"
+#include "sc_event.h"
+#include "sc_iterator.h"
 #include "sc_stream_memory.h"
 
 #include "sc_event/sc_event_private.h"
@@ -221,9 +222,6 @@ sc_element * sc_storage_append_el_into_segments(const sc_memory_context * ctx, s
 
   sc_assert(addr != null_ptr);
   SC_ADDR_MAKE_EMPTY(*addr);
-
-  if (sc_atomic_int_get(&segments_num) >= sc_config_get_max_loaded_segments())
-    return null_ptr;
 
   /// @todo store segment with empty slots
   // try to find segment with empty slots

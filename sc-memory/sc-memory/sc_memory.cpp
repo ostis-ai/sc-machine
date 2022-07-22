@@ -13,8 +13,6 @@
 
 #include "http/sc_http.hpp"
 
-#include "python/sc_python_interp.hpp"
-
 #include "utils/sc_log.hpp"
 
 #include <cstdlib>
@@ -90,24 +88,25 @@ bool ScMemory::Initialize(sc_memory_params const & params)
   g_log_set_default_handler(_logPrintHandler, nullptr);
 
   ScHttp::Init();
-  auto newParams = params;
-  newParams.ext_path = nullptr;
 
-  ms_globalContext = sc_memory_initialize(&newParams);
+  ms_globalContext = sc_memory_initialize(&params);
   if (ms_globalContext == nullptr)
     return false;
 
-  py::ScPythonInterpreter::Initialize("sc-memory");
-  sc_memory_init_ext(params.ext_path, params.enabled_exts);
-
   ScKeynodes::Init();
   ScAgentInit(true);
+
+  SC_LOG_INFO("Memory initialized");
+
+  utils::ScLog::SetUp(params.log_type, params.log_file, params.log_level);
 
   return (ms_globalContext != nullptr);
 }
 
 void ScMemory::Shutdown(bool saveState /* = true */)
 {
+  utils::ScLog::SetUp("Console", "", "Info");
+
   sc_memory_shutdown_ext();
 
   ScKeynodes::Shutdown();
@@ -126,7 +125,6 @@ void ScMemory::Shutdown(bool saveState /* = true */)
   ms_globalContext = nullptr;
 
   ScHttp::Shutdown();
-  py::ScPythonInterpreter::Shutdown();
 
   g_log_set_default_handler(g_log_default_handler, nullptr);
 }

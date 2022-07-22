@@ -18,7 +18,7 @@
     * [File storage](storage/sc-dictionary.md) - *documentation of file storage*
 
 - **Tools**
-    * [Knowledge Base builder](tools/kb_builder.md)
+    * [Knowledge Base builder](sc-tools/kb_builder.md)
 
 - **Development**
     * [Pull Request](dev/pr.md)
