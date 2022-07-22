@@ -90,13 +90,15 @@ def parse_config(path: str) -> dict:
     if path is not None:
         config.read(path)
 
+        path_to_file = os.path.abspath(path).rsplit('/', 1)[0]
+
         output_path = config['sc-builder']['output_path']
-        config_dict.update({
-            'output_path': abspath(join(dirname(path), output_path[1:] if output_path[0] == '~' else output_path))})
+        config_dict.update(
+            {'output_path': path_to_file + output_path[1:] if output_path[0] == '~' else output_path})
 
         log_file = config['sc-builder']['log_file']
         config_dict.update(
-            {'errors_file_path': join(dirname(path), log_file[1:] if log_file[0] == '~' else log_file)})
+            {'errors_file_path': path_to_file + log_file[1:] if log_file[0] == '~' else log_file})
 
     return config_dict
 
