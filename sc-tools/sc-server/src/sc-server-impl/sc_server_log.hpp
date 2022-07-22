@@ -26,30 +26,23 @@ public:
     logFile = DefineFile(logType, logFile);
     logLevel = DefineLevel(logLevel);
 
-    {
-      m_server->get_alog().write(ScServerLogMessages::app, "Sc-server log");
-      m_server->get_alog().write(ScServerLogMessages::app, "\tLog type: " + logType);
-      m_server->get_alog().write(ScServerLogMessages::app, "\tLog file: " + (logFile.empty() ? "No" : logFile));
-      m_server->get_alog().write(ScServerLogMessages::app, "\tLog level: " + logLevel);
-    }
-
     if (logFile.empty() == SC_FALSE)
     {
       m_instance = new std::ofstream();
       m_instance->open(logFile);
 
       m_server->get_alog().set_ostream(m_instance);
+      m_server->get_elog().set_ostream(m_instance);
+    }
+    else
+    {
+      m_instance = nullptr;
+      m_server->get_alog().set_ostream();
+      m_server->get_elog().set_ostream();
     }
 
     m_server->clear_access_channels(ScServerLogMessages::all);
     m_server->clear_error_channels(ScServerLogErrors::all);
-
-    if (logFile.empty() == SC_FALSE)
-    {
-      m_instance->open(logFile);
-      m_server->get_alog().set_ostream(m_instance);
-      m_server->get_elog().set_ostream(m_instance);
-    }
 
     if (logLevel == SC_SERVER_DEBUG_LEVEL)
       m_server->set_access_channels(ScServerLogMessages::all);

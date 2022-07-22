@@ -33,6 +33,13 @@ public:
       LogMessage(ScServerLogMessages::app, "\tHost name: " + m_hostName);
       LogMessage(ScServerLogMessages::app, "\tPort: " + std::to_string(m_port));
     }
+    {
+      LogMessage(ScServerLogMessages::app, "Sc-server log");
+      LogMessage(ScServerLogMessages::app, "\tLog type: " + logType);
+      LogMessage(ScServerLogMessages::app,
+                 "\tLog file: " + ((logType != SC_SERVER_FILE_TYPE || logFile.empty()) ? "No" : logFile));
+      LogMessage(ScServerLogMessages::app, "\tLog level: " + logLevel);
+    }
     m_log = new ScServerLog(m_instance, logType, logFile, logLevel);
 
     ScMemory::Initialize(params);
@@ -95,18 +102,18 @@ public:
     delete m_log;
     m_log = new ScServerLog(m_instance, SC_SERVER_CONSOLE_TYPE, "", SC_SERVER_INFO_LEVEL);
 
+    delete m_connections;
+    m_connections = nullptr;
+
+    ScMemory::Shutdown();
+
     LogMessage(ScServerLogMessages::app, "Shutdown sc-server");
 
     delete m_instance;
     m_instance = nullptr;
 
-    delete m_connections;
-    m_connections = nullptr;
-
     delete m_log;
     m_log = nullptr;
-
-    ScMemory::Shutdown();
   }
 
   virtual void EmitActions() = 0;

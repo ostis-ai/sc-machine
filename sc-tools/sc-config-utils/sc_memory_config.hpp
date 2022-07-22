@@ -118,8 +118,7 @@ public:
 
     m_memoryParams.log_type = m_params.count("log_type") ? m_params.at("log_type").c_str() : DEFAULT_LOG_TYPE;
     m_memoryParams.log_file = m_params.count("log_file") ? m_params.at("log_file").c_str() : DEFAULT_LOG_FILE;
-    m_memoryParams.log_level =
-        m_params.count("log_level") ? m_params.at("log_level").c_str() : DEFAULT_LOG_LEVEL;
+    m_memoryParams.log_level = m_params.count("log_level") ? m_params.at("log_level").c_str() : DEFAULT_LOG_LEVEL;
 
     m_memoryParams.max_threads =
         m_params.count("max_threads") ? std::stoi(m_params.at("max_threads")) : DEFAULT_MAX_THREADS;
