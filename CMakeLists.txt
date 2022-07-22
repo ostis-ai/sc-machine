@@ -8,7 +8,6 @@ include(${SC_MACHINE_ROOT}/macro/macros.cmake)
 project_version(SC_MACHINE "0.6.1")
 
 set(SC_MACHINE_CONFIG "${SC_MACHINE_ROOT}/config")
-logger(SC_MACHINE_LOG "Memory messages logger" "${SC_MACHINE_ROOT}/sc-memory.log" Debug File)
 
 set(CMAKE_MODULE_PATH "${SC_MACHINE_ROOT}/cmake")
 set(SC_BIN_PATH "${SC_MACHINE_ROOT}/bin")

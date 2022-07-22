@@ -19,7 +19,11 @@ using sc_list = GList;
 class ScConfigGroup
 {
 public:
-  explicit ScConfigGroup(sc_config * config, std::string config_path, std::string group);
+  explicit ScConfigGroup(
+      sc_config * config,
+      std::string configPath,
+      std::vector<std::string> pathKeys,
+      std::string group);
 
   std::string operator[](std::string const & key) const;
 
@@ -29,7 +33,8 @@ public:
 
 private:
   sc_config * m_config;
-  std::string m_config_path;
+  std::string m_configPath;
+  std::vector<std::string> m_pathKeys;
   std::string m_group;
   std::vector<std::string> m_keys;
 };
@@ -37,7 +42,7 @@ private:
 class ScConfig
 {
 public:
-  explicit ScConfig(std::string path);
+  explicit ScConfig(std::string path, std::vector<std::string> paths = {});
 
   sc_bool IsValid() const;
 
@@ -60,13 +65,14 @@ public:
 
   std::string GetDirectory() const
   {
-    return m_path.substr(0, m_path.rfind('/'));
+    return m_path.substr(0, m_path.rfind('/') + 1);
   }
 
   ~ScConfig();
 
 private:
   std::string m_path;
+  std::vector<std::string> m_pathKeys;
   sc_config * m_instance{};
 
   sc_bool m_result;

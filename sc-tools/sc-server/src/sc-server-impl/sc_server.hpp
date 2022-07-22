@@ -11,27 +11,41 @@
 #include "sc-memory/sc_memory.hpp"
 
 #include "sc_server_defines.hpp"
+#include "sc_server_log.hpp"
 
 #include "sc_server_action.hpp"
 
 class ScServer
 {
 public:
-  explicit ScServer(std::string hostName, size_t port, sc_memory_params params)
-    : ScServer(std::move(hostName), port, "", params)
+  explicit ScServer(
+      std::string hostName,
+      size_t port,
+      std::string const & logType,
+      std::string const & logFile,
+      std::string const & logLevel,
+      sc_memory_params params)
+    : m_hostName(std::move(hostName)), m_port(port)
   {
-  }
+    m_instance = new ScServerCore();
+    {
+      LogMessage(ScServerLogMessages::app, "Sc-server socket data");
+      LogMessage(ScServerLogMessages::app, "\tHost name: " + m_hostName);
+      LogMessage(ScServerLogMessages::app, "\tPort: " + std::to_string(m_port));
+    }
+    {
+      LogMessage(ScServerLogMessages::app, "Sc-server log");
+      LogMessage(ScServerLogMessages::app, "\tLog type: " + logType);
+      LogMessage(ScServerLogMessages::app,
+                 "\tLog file: " + ((logType != SC_SERVER_FILE_TYPE || logFile.empty()) ? "No" : logFile));
+      LogMessage(ScServerLogMessages::app, "\tLog level: " + logLevel);
+    }
+    LogMessage(ScServerLogMessages::app, "Sc-server initialized");
+    m_log = new ScServerLog(m_instance, logType, logFile, logLevel);
 
-  explicit ScServer(std::string hostName, size_t port, std::string logPath, sc_memory_params params)
-    : m_hostName(std::move(hostName)), m_port(port), m_logPath(std::move(logPath))
-  {
     ScMemory::Initialize(params);
 
-    m_instance = new ScServerCore();
     m_connections = new ScServerConnections();
-
-    m_instance->clear_access_channels(ScServerLogMessages::all);
-    m_instance->clear_error_channels(ScServerLogErrors::all);
   }
 
   void Run()
@@ -44,10 +58,10 @@ public:
     m_instance->listen({boost::asio::ip::address::from_string(m_hostName), sc_uint16(m_port)});
     m_instance->start_accept();
 
-    LogMessage(ScServerLogMessages::devel, "Start actions processing");
+    LogMessage(ScServerLogMessages::app, "Start actions processing");
     m_actionsThread = std::thread(&ScServer::EmitActions, &*this);
 
-    LogMessage(ScServerLogMessages::devel, "Start input-output processing");
+    LogMessage(ScServerLogMessages::app, "Start input-output processing");
     m_ioThread = std::thread(&ScServerCore::run, &*m_instance);
   }
 
@@ -59,13 +73,13 @@ public:
 
     if (m_actionsThread.joinable())
     {
-      LogMessage(ScServerLogMessages::devel, "Close actions processing");
+      LogMessage(ScServerLogMessages::app, "Close actions processing");
       m_actionsThread.join();
     }
 
     if (m_ioThread.joinable())
     {
-      LogMessage(ScServerLogMessages::devel, "Close input-output processing");
+      LogMessage(ScServerLogMessages::app, "Close input-output processing");
 
       for (auto & it : *m_connections)
       {
@@ -86,18 +100,21 @@ public:
 
   void Shutdown()
   {
-    LogMessage(ScServerLogMessages::devel, "Shutdown sc-server");
-
-    delete m_instance;
-    m_instance = nullptr;
+    delete m_log;
+    m_log = new ScServerLog(m_instance, SC_SERVER_CONSOLE_TYPE, "", SC_SERVER_INFO_LEVEL);
 
     delete m_connections;
     m_connections = nullptr;
 
+    ScMemory::Shutdown();
+
+    LogMessage(ScServerLogMessages::app, "Shutdown sc-server");
+
+    delete m_instance;
+    m_instance = nullptr;
+
     delete m_log;
     m_log = nullptr;
-
-    ScMemory::Shutdown();
   }
 
   virtual void EmitActions() = 0;
@@ -149,12 +166,11 @@ public:
 protected:
   std::string m_hostName;
   ScServerPort m_port;
-  std::string m_logPath;
-
-  std::ofstream * m_log{};
 
   ScServerCore * m_instance;
   ScServerConnections * m_connections;
+
+  ScServerLog * m_log;
 
   virtual void Initialize() = 0;
 

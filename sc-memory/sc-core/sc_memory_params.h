@@ -19,9 +19,9 @@ typedef struct _sc_memory_params
   sc_uint32 save_period;
   sc_uint32 update_period;
 
-  const sc_char * debug_type;
-  const sc_char * debug_mode;
-  const sc_char * debug_file;
+  const sc_char * log_type;
+  const sc_char * log_file;
+  const sc_char * log_level;
 
   sc_uint32 max_loaded_segments;
   sc_uint8 max_threads;

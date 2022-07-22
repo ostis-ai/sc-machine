@@ -18,6 +18,8 @@ class ScLog final
 protected:
   _SC_EXTERN ScLog();
 
+  _SC_EXTERN explicit ScLog(std::string const & logType, std::string const & logFile, std::string const & logLevel);
+
   _SC_EXTERN ~ScLog();
 
 public:
@@ -36,6 +38,11 @@ public:
     Console = 0,
     File
   };
+
+  _SC_EXTERN static ScLog * SetUp(
+      std::string const & logType,
+      std::string const & logFile,
+      std::string const & logLevel);
 
   _SC_EXTERN void Shutdown();
 
@@ -56,9 +63,7 @@ private:
 
   static ScLog * ms_instance;
 
-  std::string static const DEFAULT_LOG_FILE;
-
-  bool Initialize();
+  bool Initialize(std::string const & logFile);
 
   template <size_t N>
   static int FindEnumElement(const std::string (&elements)[N], const std::string & externalValue);

@@ -124,7 +124,7 @@ sc_bool sc_list_remove_if(sc_list * list, void * data, sc_bool (*predicate)(void
 
   sc_bool is_removed = SC_FALSE;
   sc_struct_node * node = list->begin;
-  sc_struct_node * temp;
+  sc_struct_node * temp = null_ptr;
   while (node != null_ptr)
   {
     if (node->data != null_ptr && predicate(node->data, data))
@@ -135,13 +135,15 @@ sc_bool sc_list_remove_if(sc_list * list, void * data, sc_bool (*predicate)(void
       if (node->next != null_ptr)
         node->next->prev = node->prev;
 
+      temp = node;
+      node = node->next;
+      sc_mem_free(temp);
       is_removed = SC_TRUE;
 
-      temp = null_ptr;
       --list->size;
     }
-
-    node = node->next;
+    else
+      node = node->next;
   }
 
   if (list->size == 0)

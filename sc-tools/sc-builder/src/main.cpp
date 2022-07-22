@@ -49,7 +49,7 @@ try
   ScParams memoryParams{options, keys};
   memoryParams.insert({"repo_path", options[{"output_path", "o"}].second});
 
-  ScMemoryConfig memoryConfig{config, std::move(memoryParams)};
+  ScMemoryConfig memoryConfig{config, {"repo_path", "extensions_path", "log_file"}, std::move(memoryParams)};
 
   Builder builder;
   return builder.Run(params, memoryConfig.GetParams()) ? EXIT_SUCCESS : EXIT_FAILURE;

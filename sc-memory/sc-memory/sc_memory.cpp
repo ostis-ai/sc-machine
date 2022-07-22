@@ -98,11 +98,15 @@ bool ScMemory::Initialize(sc_memory_params const & params)
 
   SC_LOG_INFO("Memory initialized");
 
+  utils::ScLog::SetUp(params.log_type, params.log_file, params.log_level);
+
   return (ms_globalContext != nullptr);
 }
 
 void ScMemory::Shutdown(bool saveState /* = true */)
 {
+  utils::ScLog::SetUp("Console", "", "Info");
+
   sc_memory_shutdown_ext();
 
   ScKeynodes::Shutdown();

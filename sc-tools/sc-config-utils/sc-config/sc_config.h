@@ -15,6 +15,10 @@
 typedef GHashTable sc_config;
 typedef GList sc_list;
 
+#define sc_config_get_keys(config) g_hash_table_get_keys(config)
+#define sc_list_get_first(list) g_list_first(list)
+#define sc_list_free(list) g_list_free(list)
+
 /*! Initialize sc-memory configuration from specified configuration file
  * @param config Config table
  * @param file_path Path to configuration file

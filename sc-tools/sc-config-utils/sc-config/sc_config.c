@@ -52,8 +52,12 @@ sc_bool sc_config_initialize(sc_config ** config, sc_char const * file_path)
 void sc_config_shutdown(sc_config * config)
 {
   // empty memory allocated for values table
-  g_hash_table_remove_all(config);
-  g_hash_table_destroy(config);
+  if (config != null_ptr)
+  {
+    g_hash_table_remove_all(config);
+    g_hash_table_destroy(config);
+  }
+
   config = null_ptr;
 }
 

@@ -21,6 +21,9 @@
 #define DEFAULT_UPDATE_PERIOD 16000
 #define DEFAULT_MAX_THREADS 32
 #define DEFAULT_MAX_LOADED_SEGMENTS 1000
+#define DEFAULT_LOG_TYPE "Console"
+#define DEFAULT_LOG_FILE ""
+#define DEFAULT_LOG_LEVEL "Info"
 
 class ScParams
 {
@@ -69,8 +72,12 @@ private:
 class ScMemoryConfig
 {
 public:
-  explicit ScMemoryConfig(std::string const & path, ScParams params, std::string groupName = "sc-memory")
-    : ScMemoryConfig(ScConfig(path), std::move(params), std::move(groupName))
+  explicit ScMemoryConfig(
+      std::string const & path,
+      std::vector<std::string> const & pathKeys,
+      ScParams params,
+      std::string groupName = "sc-memory")
+    : ScMemoryConfig(ScConfig(path, pathKeys), std::move(params), std::move(groupName))
   {
   }
 
@@ -81,18 +88,12 @@ public:
     if (config.IsValid())
     {
       ScConfigGroup group = config[m_groupName];
-      std::string const & dir = config.GetDirectory();
       for (auto const & key : *group)
       {
         std::string const & value = group[key];
         std::stringstream stream;
 
-        if (group[key][0] == '~')
-          stream << dir << value.substr(1);
-        else
-          stream << value;
-
-        m_params.insert({key, stream.str()});
+        m_params.insert({key, value});
       }
     }
   }
@@ -113,9 +114,9 @@ public:
     m_memoryParams.update_period =
         m_params.count("update_period") ? std::stoi(m_params.at("update_period")) : DEFAULT_UPDATE_PERIOD;
 
-    m_memoryParams.debug_type = (sc_char const *)SC_MACHINE_LOG_TYPE;
-    m_memoryParams.debug_mode = (sc_char const *)SC_MACHINE_LOG_MODE;
-    m_memoryParams.debug_file = (sc_char const *)SC_MACHINE_LOG_DIR;
+    m_memoryParams.log_type = m_params.count("log_type") ? m_params.at("log_type").c_str() : DEFAULT_LOG_TYPE;
+    m_memoryParams.log_file = m_params.count("log_file") ? m_params.at("log_file").c_str() : DEFAULT_LOG_FILE;
+    m_memoryParams.log_level = m_params.count("log_level") ? m_params.at("log_level").c_str() : DEFAULT_LOG_LEVEL;
 
     m_memoryParams.max_threads =
         m_params.count("max_threads") ? std::stoi(m_params.at("max_threads")) : DEFAULT_MAX_THREADS;

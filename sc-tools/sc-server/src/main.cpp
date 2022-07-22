@@ -43,7 +43,8 @@ try
   std::vector<std::vector<std::string>> keys = {{"host", "h"}, {"port", "p"}};
   ScParams serverParams{options, keys};
 
-  ScConfig config{configFile};
+  std::vector<std::string> const pathKeys = {"repo_path", "extensions_path", "log_file"};
+  ScConfig config{configFile, pathKeys};
   auto serverConfig = config["sc-server"];
   for (auto const & key : *serverConfig)
     serverParams.insert({key, serverConfig[key]});
@@ -52,12 +53,6 @@ try
   ScParams memoryParams{options, keys};
 
   ScMemoryConfig memoryConfig{config, std::move(memoryParams)};
-
-  std::atomic_bool isRun = {SC_TRUE};
-  utils::ScSignalHandler::Initialize();
-  utils::ScSignalHandler::m_onTerminate = [&isRun]() {
-    isRun = SC_FALSE;
-  };
 
   auto server = ScServerFactory::ConfigureScServer(serverParams, memoryConfig.GetParams());
   try
@@ -78,6 +73,12 @@ try
 
     return EXIT_FAILURE;
   }
+
+  std::atomic_bool isRun = {SC_TRUE};
+  utils::ScSignalHandler::Initialize();
+  utils::ScSignalHandler::m_onTerminate = [&isRun]() {
+    isRun = SC_FALSE;
+  };
 
   while (isRun)
   {

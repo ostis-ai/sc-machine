@@ -174,28 +174,16 @@ void BM_ServerRanged(benchmark::State & state)
   test.Shutdown();
 }
 
-BENCHMARK_TEMPLATE(BM_ServerRanged, TestScServerComplex)
-    ->Unit(benchmark::TimeUnit::kMicrosecond)
-    ->Iterations(1000);
+BENCHMARK_TEMPLATE(BM_ServerRanged, TestScServerComplex)->Unit(benchmark::TimeUnit::kMicrosecond)->Iterations(1000);
 
-BENCHMARK_TEMPLATE(BM_ServerRanged, TestCreateNode)
-    ->Unit(benchmark::TimeUnit::kMicrosecond)
-    ->Iterations(1000);
+BENCHMARK_TEMPLATE(BM_ServerRanged, TestCreateNode)->Unit(benchmark::TimeUnit::kMicrosecond)->Iterations(1000);
 
-BENCHMARK_TEMPLATE(BM_ServerRanged, TestCreateEdge)
-    ->Unit(benchmark::TimeUnit::kMicrosecond)
-    ->Iterations(1000);
+BENCHMARK_TEMPLATE(BM_ServerRanged, TestCreateEdge)->Unit(benchmark::TimeUnit::kMicrosecond)->Iterations(1000);
 
-BENCHMARK_TEMPLATE(BM_ServerRanged, TestCreateLink)
-    ->Unit(benchmark::TimeUnit::kMicrosecond)
-    ->Iterations(1000);
+BENCHMARK_TEMPLATE(BM_ServerRanged, TestCreateLink)->Unit(benchmark::TimeUnit::kMicrosecond)->Iterations(1000);
 
-BENCHMARK_TEMPLATE(BM_ServerRanged, TestRemoveElements)
-    ->Unit(benchmark::TimeUnit::kMicrosecond)
-    ->Iterations(1000);
+BENCHMARK_TEMPLATE(BM_ServerRanged, TestRemoveElements)->Unit(benchmark::TimeUnit::kMicrosecond)->Iterations(1000);
 
-BENCHMARK_TEMPLATE(BM_ServerRanged, TestSearchTemplate)
-    ->Unit(benchmark::TimeUnit::kMicrosecond)
-    ->Iterations(1000);
+BENCHMARK_TEMPLATE(BM_ServerRanged, TestSearchTemplate)->Unit(benchmark::TimeUnit::kMicrosecond)->Iterations(1000);
 
 BENCHMARK_MAIN();

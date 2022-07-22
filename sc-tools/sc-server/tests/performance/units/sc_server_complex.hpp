@@ -14,10 +14,8 @@ class TestScServerComplex : public TestScServer
 public:
   void Run(std::unique_ptr<ScClient> const & client)
   {
-    std::string const payloadString = ScMemoryJsonConverter::From(
-        0,
-        "create_elements",
-        m_payloads[random() % m_payloads.size()]);
+    std::string const payloadString =
+        ScMemoryJsonConverter::From(0, "create_elements", m_payloads[random() % m_payloads.size()]);
     client->Send(payloadString);
   }
 
@@ -56,8 +54,7 @@ public:
                 {"type", sc_type_link | sc_type_const},
                 {"content", "edge_end"},
             },
-        })
-    };
+        })};
   }
 
 private:

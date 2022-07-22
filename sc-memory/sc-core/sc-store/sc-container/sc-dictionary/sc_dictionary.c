@@ -267,6 +267,9 @@ sc_dictionary_node * sc_dictionary_get_node_from_node(sc_dictionary_node * node,
 
 sc_dictionary_node * sc_dictionary_get_last_node_from_node(sc_dictionary_node * node, const sc_char * sc_string)
 {
+  if (sc_string == null_ptr)
+    return null_ptr;
+
   // check prefixes matching
   sc_uint32 i = 0;
   sc_uint32 string_size = strlen(sc_string);
@@ -436,7 +439,7 @@ void sc_dictionary_visit_up_node_from_node(
     void ** dest)
 {
   sc_uint8 i;
-  for (i = 1; i < _sc_dictionary_children_size(); ++i)
+  for (i = 0; i < _sc_dictionary_children_size(); ++i)
   {
     sc_dictionary_node * next = node->next[i];
     if (SC_DICTIONARY_NODE_IS_VALID(next))

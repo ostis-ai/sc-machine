@@ -9,24 +9,31 @@
 #include <string>
 #include <sstream>
 #include <utility>
+#include <algorithm>
 #include <vector>
 
 extern "C"
 {
+#include "sc-core/sc-store/sc-container/sc-string/sc_string.h"
 #include "sc_config.h"
 }
 
-ScConfigGroup::ScConfigGroup(sc_config * config, std::string config_path, std::string group)
+ScConfigGroup::ScConfigGroup(
+    sc_config * config,
+    std::string configPath,
+    std::vector<std::string> pathKeys,
+    std::string group)
   : m_config(config)
-  , m_config_path(std::move(config_path))
+  , m_configPath(std::move(configPath))
+  , m_pathKeys(std::move(pathKeys))
   , m_group(std::move(group))
 {
-  sc_list * keys = g_hash_table_get_keys(m_config);
+  sc_list * keys = sc_config_get_keys(m_config);
 
-  sc_list * element = g_list_first(keys);
+  sc_list * element = sc_list_get_first(keys);
   while (element != null_ptr)
   {
-    if (g_str_has_prefix((sc_char *)element->data, m_group.c_str()))
+    if (sc_str_has_prefix((sc_char *)element->data, m_group.c_str()))
     {
       std::string groupKey = std::string((sc_char *)element->data);
       m_keys.push_back(groupKey.erase(0, m_group.size() + 1));
@@ -35,17 +42,23 @@ ScConfigGroup::ScConfigGroup(sc_config * config, std::string config_path, std::s
     element = element->next;
   }
 
-  g_list_free(keys);
+  sc_list_free(keys);
 }
 
 std::string ScConfigGroup::operator[](std::string const & key) const
 {
   std::string const & value = sc_config_get_value_string(m_config, m_group.c_str(), key.c_str());
   std::stringstream stream;
-  if (value[0] == '~')
-    stream << m_config_path << value.substr(1);
-  else
+
+  auto const & it = std::find(m_pathKeys.cbegin(), m_pathKeys.cend(), key);
+
+  if (it == m_pathKeys.cend())
+    return value;
+
+  if (value[0] == '/')
     stream << value;
+  else
+    stream << m_configPath << value;
 
   return stream.str();
 }
@@ -55,8 +68,9 @@ std::vector<std::string> ScConfigGroup::operator*() const
   return m_keys;
 }
 
-ScConfig::ScConfig(std::string path)
+ScConfig::ScConfig(std::string path, std::vector<std::string> paths)
   : m_path(std::move(path))
+  , m_pathKeys(std::move(paths))
 {
   m_result = sc_config_initialize(&m_instance, m_path.c_str());
 }
@@ -68,7 +82,7 @@ sc_bool ScConfig::IsValid() const
 
 ScConfigGroup ScConfig::operator[](std::string const & group) const
 {
-  return ScConfigGroup(this->m_instance, this->GetDirectory(), group);
+  return ScConfigGroup(this->m_instance, this->GetDirectory(), this->m_pathKeys, group);
 }
 
 ScConfig::~ScConfig()

@@ -16,4 +16,6 @@
     sc_mem_cpy(copy, string, size); \
   })
 
+#define sc_str_has_prefix(str, prefix) g_str_has_prefix(str, prefix)
+
 #endif
