@@ -49,9 +49,7 @@ public:
 
     for (size_t i = 0; i < edgeNum; ++i)
       m_ctx->CreateEdge(
-          ScType::EdgeAccessConstPosPerm,
-          m_nodes[random() % m_nodes.size()],
-          m_nodes[random() % m_nodes.size()]);
+          ScType::EdgeAccessConstPosPerm, m_nodes[random() % m_nodes.size()], m_nodes[random() % m_nodes.size()]);
   }
 
 private:

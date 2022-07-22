@@ -113,10 +113,8 @@ public:
     m_memoryParams.update_period =
         m_params.count("update_period") ? std::stoi(m_params.at("update_period")) : DEFAULT_UPDATE_PERIOD;
 
-    m_memoryParams.log_type =
-        m_params.count("log_type") ? m_params.at("log_type").c_str() : (sc_char const *)null_ptr;
-    m_memoryParams.log_file =
-        m_params.count("log_file") ? m_params.at("log_file").c_str() : (sc_char const *)null_ptr;
+    m_memoryParams.log_type = m_params.count("log_type") ? m_params.at("log_type").c_str() : (sc_char const *)null_ptr;
+    m_memoryParams.log_file = m_params.count("log_file") ? m_params.at("log_file").c_str() : (sc_char const *)null_ptr;
     m_memoryParams.log_level =
         m_params.count("log_level") ? m_params.at("log_level").c_str() : (sc_char const *)null_ptr;
 

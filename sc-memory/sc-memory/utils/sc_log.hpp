@@ -40,7 +40,9 @@ public:
   };
 
   _SC_EXTERN static ScLog * SetUp(
-      std::string const & logType, std::string const & logFile, std::string const & logLevel);
+      std::string const & logType,
+      std::string const & logFile,
+      std::string const & logLevel);
 
   _SC_EXTERN void Shutdown();
 

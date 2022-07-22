@@ -24,7 +24,6 @@ const std::string kOutputTypeToStr[] = {"Console", "File"};
 
 namespace utils
 {
-
 ScLock gLock;
 ScLog * ScLog::ms_instance = nullptr;
 
