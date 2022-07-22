@@ -92,7 +92,7 @@ def parse_config(path: str) -> dict:
 
         path_to_file = os.path.abspath(path).rsplit('/', 1)[0]
 
-        output_path = config['sc-builder']['output_path']
+        output_path = config['sc-memory']['repo_path']
         config_dict.update(
             {'output_path': path_to_file + output_path[1:] if output_path[0] == '~' else output_path})
 
