@@ -89,7 +89,11 @@ def parse_config(path: str) -> dict:
     config = configparser.ConfigParser()
     if path is not None:
         config.read(path)
-        config_dict.update({'output_path': abspath(join(dirname(path), config['sc-memory']['repo_path']))})
+
+        output_path = config['sc-builder']['output_path']
+        config_dict.update({
+            'output_path': abspath(join(dirname(path), output_path[1:] if output_path[0] == '~' else output_path))})
+
         log_file = config['sc-builder']['log_file']
         config_dict.update(
             {'errors_file_path': join(dirname(path), log_file[1:] if log_file[0] == '~' else log_file)})
