@@ -105,6 +105,8 @@ bool ScMemory::Initialize(sc_memory_params const & params)
 
 void ScMemory::Shutdown(bool saveState /* = true */)
 {
+  utils::ScLog::SetUp("Console", "", "Info");
+
   sc_memory_shutdown_ext();
 
   ScKeynodes::Shutdown();

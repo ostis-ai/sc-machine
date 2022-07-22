@@ -92,6 +92,9 @@ public:
 
   void Shutdown()
   {
+    delete m_log;
+    m_log = new ScServerLog(m_instance, SC_SERVER_CONSOLE_TYPE, "", SC_SERVER_INFO_LEVEL);
+
     LogMessage(ScServerLogMessages::app, "Shutdown sc-server");
 
     delete m_instance;

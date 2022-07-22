@@ -18,7 +18,7 @@ class ScLog final
 protected:
   _SC_EXTERN ScLog();
 
-  _SC_EXTERN ScLog(std::string const & logType, std::string const & logFile, std::string const & logLevel);
+  _SC_EXTERN explicit ScLog(std::string const & logType, std::string const & logFile, std::string const & logLevel);
 
   _SC_EXTERN ~ScLog();
 
