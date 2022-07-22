@@ -8,18 +8,27 @@
 
 #include "sc_server_action_defines.hpp"
 
+#define DEFAULT_HOST "127.0.0.1"
+#define DEFAULT_PORT 8090
+
+#define DEFAULT_LOG_TYPE "Console"
+#define DEFAULT_LOG_FILE ""
+#define DEFAULT_LOG_LEVEL "Debug"
+
 ScServerImpl::ScServerImpl(sc_memory_params const & params)
-  : ScServerImpl("127.0.0.1", 8090, "", SC_FALSE, params)
+  : ScServerImpl(DEFAULT_HOST, DEFAULT_PORT, DEFAULT_LOG_TYPE, DEFAULT_LOG_FILE, DEFAULT_LOG_LEVEL, SC_FALSE, params)
 {
 }
 
 ScServerImpl::ScServerImpl(
     std::string const & host,
     ScServerPort port,
-    std::string const & logPath,
+    std::string const & logType,
+    std::string const & logFile,
+    std::string const & logLevel,
     sc_bool syncActions,
     sc_memory_params const & params)
-  : ScServer(host, port, logPath, params),
+  : ScServer(host, port, logType, logFile, logLevel, params),
   m_actionsRun(SC_TRUE),
   m_actions(new ScServerActions()),
   syncActions(syncActions)
@@ -31,21 +40,6 @@ void ScServerImpl::Initialize()
   m_instance->set_open_handler(bind(&ScServerImpl::OnOpen, this, ::_1));
   m_instance->set_close_handler(bind(&ScServerImpl::OnClose, this, ::_1));
   m_instance->set_message_handler(bind(&ScServerImpl::OnMessage, this, ::_1, ::_2));
-
-  if (m_logPath.empty() == SC_FALSE)
-  {
-    m_log = new std::ofstream();
-    m_log->open(m_logPath);
-    m_instance->get_alog().set_ostream(m_log);
-    m_instance->get_elog().set_ostream(m_log);
-  }
-
-  {
-    LogMessage(ScServerLogMessages::app, "Sc-server socket data");
-    LogMessage(ScServerLogMessages::app, "\tHost name: " + m_hostName);
-    LogMessage(ScServerLogMessages::app, "\tPort: " + std::to_string(m_port));
-    LogMessage(ScServerLogMessages::app, "\tLogger: " + (m_logPath.empty() ? "console" : "file " + m_logPath));
-  }
 }
 
 void ScServerImpl::AfterInitialize()

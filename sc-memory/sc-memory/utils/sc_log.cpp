@@ -24,9 +24,14 @@ const std::string kOutputTypeToStr[] = {"Console", "File"};
 
 namespace utils
 {
-
 ScLock gLock;
 ScLog * ScLog::ms_instance = nullptr;
+
+ScLog * ScLog::SetUp(std::string const & logType, std::string const & logFile, std::string const & logLevel)
+{
+  delete ms_instance;
+  return new ScLog(logType, logFile, logLevel);
+}
 
 ScLog * ScLog::GetInstance()
 {
@@ -39,18 +44,27 @@ ScLog * ScLog::GetInstance()
 ScLog::ScLog()
 {
   m_isMuted = false;
+
   m_mode = Type::Info;
   m_output_mode = OutputType::Console;
 
-  int modeIndex = FindEnumElement(kTypeToStr, SC_MACHINE_LOG_MODE);
+  SC_ASSERT(!ms_instance, ());
+  ms_instance = this;
+}
+
+ScLog::ScLog(std::string const & logType, std::string const & logFile, std::string const & logLevel)
+{
+  m_isMuted = false;
+
+  int modeIndex = FindEnumElement(kTypeToStr, logLevel);
   m_mode = modeIndex != -1 ? Type(modeIndex) : Type::Info;
 
-  int outputTypeIndex = FindEnumElement(kOutputTypeToStr, SC_MACHINE_LOG_TYPE);
+  int outputTypeIndex = FindEnumElement(kOutputTypeToStr, logType);
   m_output_mode = outputTypeIndex != -1 ? OutputType(outputTypeIndex) : OutputType::Console;
 
   if (m_output_mode == OutputType::File)
   {
-    Initialize(DEFAULT_LOG_FILE);
+    Initialize(logFile);
   }
 
   SC_ASSERT(!ms_instance, ());
@@ -63,13 +77,11 @@ ScLog::~ScLog()
   ms_instance = nullptr;
 }
 
-bool ScLog::Initialize()
+bool ScLog::Initialize(std::string const & logFile)
 {
   if (m_output_mode == OutputType::File)
-  {
-    std::string file_path = SC_MACHINE_LOG_DIR;
-    m_fileStream.open(file_path, std::ofstream::out | std::ofstream::app);
-  }
+    m_fileStream.open(logFile, std::ofstream::out | std::ofstream::app);
+
   return m_fileStream.is_open();
 }
 
