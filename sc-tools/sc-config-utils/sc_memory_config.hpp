@@ -36,10 +36,7 @@ public:
       {
         auto const & result = options[keys].second;
         for (auto const & key : keys)
-        {
-          std::cout << result << std::endl;
           m_params.insert({key, result});
-        }
       }
     }
   }
