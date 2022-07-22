@@ -91,7 +91,7 @@ def parse_config(path: str) -> dict:
         config.read(path)
         config_dict.update({'output_path': abspath(join(dirname(path), config['sc-memory']['repo_path']))})
         config_dict.update(
-            {'errors_file_path': abspath(join(dirname(path), config['sc-builder']['log_file'], "prepare.log"))})
+            {'errors_file_path': join(dirname(path), config['sc-builder']['log_file'])})
 
     return config_dict
 

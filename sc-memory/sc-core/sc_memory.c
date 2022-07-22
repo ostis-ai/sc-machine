@@ -42,10 +42,10 @@ sc_memory_context * sc_memory_initialize(const sc_memory_params * params)
   sc_message("\tSave period: %d", params->save_period);
   sc_message("\tUpdate period: %d", params->update_period);
 
-  sc_message("Sc-memory debug:");
-  sc_message("\tDebug type: %s", params->debug_type);
-  sc_message("\tDebug mode: %s", params->debug_mode);
-  sc_message("\tDebug file: %s", params->debug_file);
+  sc_message("Sc-memory log:");
+  sc_message("\tLog type: %s", params->log_type);
+  sc_message("\tLog file: %s", params->log_file);
+  sc_message("\tLog level: %s", params->log_level);
 
   sc_message("Sc-memory configuration:");
   sc_message("\tmax loaded segments: %d", params->max_loaded_segments);

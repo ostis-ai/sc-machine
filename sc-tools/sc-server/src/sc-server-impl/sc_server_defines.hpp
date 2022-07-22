@@ -30,3 +30,10 @@ using websocketpp::lib::bind;
 using websocketpp::lib::placeholders::_1;
 using websocketpp::lib::placeholders::_2;
 using websocketpp::lib::placeholders::_3;
+
+#define SC_SERVER_DEBUG_LEVEL "Debug"
+#define SC_SERVER_INFO_LEVEL "Info"
+#define SC_SERVER_ERROR_LEVEL "Error"
+
+#define SC_SERVER_CONSOLE_TYPE "Console"
+#define SC_SERVER_FILE_TYPE "File"

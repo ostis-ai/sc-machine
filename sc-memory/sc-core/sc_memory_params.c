@@ -16,9 +16,9 @@ void sc_memory_params_clear(sc_memory_params * params)
   params->save_period = 3600;    // seconds
   params->update_period = 1200;  // seconds
 
-  params->debug_type = (sc_char const *)null_ptr;
-  params->debug_mode = (sc_char const *)null_ptr;
-  params->debug_file = (sc_char const *)null_ptr;
+  params->log_type = (sc_char const *)null_ptr;
+  params->log_file = (sc_char const *)null_ptr;
+  params->log_level = (sc_char const *)null_ptr;
 
   params->max_loaded_segments = 1000;
   params->max_threads = 32;
