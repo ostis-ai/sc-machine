@@ -18,7 +18,22 @@ jobs:
       fail-fast: false
       matrix:
         config:
-          - { name: "Sanitizer - address", sanitizer: "address" }
+          - {
+            name: "Sanitizer for sc-dictionary fs-storage - address",
+            os: ubuntu-latest,
+            file_memory: "Dictionary",
+            sanitizer: "address",
+            cc: clang,
+            cxx: clang++,
+          }
+          - {
+            name: "Sanitizer for sc-rocksdb fs-storage - address",
+            os: ubuntu-latest,
+            file_memory: "Rocksdb",
+            sanitizer: "address",
+            cc: clang,
+            cxx: clang++,
+          }
 
     steps:
       - name: Checkout
@@ -38,10 +53,10 @@ jobs:
       - name: Build
         id: run_cmake
         env:
-          CC: clang
-          CXX: clang++
-          FILE_MEMORY: "Dictionary"
-          BUILD_TYPE: Release
+          CC: ${{ matrix.config.cc }}
+          CXX: ${{ matrix.config.cxx }}
+          FILE_MEMORY: ${{ matrix.config.file_memory }}
+          BUILD_TYPE: ${{ matrix.config.build_type }}
           COVERAGE: OFF
           SANITIZER_TYPE: ${{ matrix.config.sanitizer }}
         run: scripts/ci/make-tests.sh
