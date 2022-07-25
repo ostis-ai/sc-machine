@@ -11,6 +11,7 @@
 #include "sc_dictionary_private.h"
 
 #include "../../sc-base/sc_allocator.h"
+#include "../../sc-container/sc-string/sc_string.h"
 
 static const sc_uint8 s_min_sc_char = 1;
 static const sc_uint8 s_max_sc_char = 255;
@@ -71,6 +72,7 @@ void sc_dictionary_node_destroy(sc_dictionary_node * node, void ** args)
   sc_mem_free(node->next);
   node->next = null_ptr;
 
+  sc_mem_free(node->offset);
   node->offset = null_ptr;
   node->offset_size = 0;
 
@@ -103,8 +105,8 @@ sc_dictionary_node * sc_dictionary_append_to_node(sc_dictionary_node * node, sc_
 
       sc_dictionary_node * temp = node->next[num];
 
-      temp->offset = *sc_string_ptr;
       temp->offset_size = size - i;
+      sc_str_cpy(temp->offset, *sc_string_ptr, temp->offset_size);
 
       node = temp;
 
@@ -128,8 +130,8 @@ sc_dictionary_node * sc_dictionary_append_to_node(sc_dictionary_node * node, sc_
 
         sc_dictionary_node * temp = node->next[num];
 
-        temp->offset = moving->offset;
         temp->offset_size = j;
+        temp->offset = moving->offset;
       }
 
       node = node->next[num];
@@ -137,18 +139,15 @@ sc_dictionary_node * sc_dictionary_append_to_node(sc_dictionary_node * node, sc_
       // insert intermediate node for prefix end branching
       if (j < moving->offset_size)
       {
-        sc_char * offset_ptr = &*(node->offset + j);
+        sc_char * offset_ptr = &*(moving->offset + j);
 
         sc_char_to_sc_int(*offset_ptr, &num, &node->mask);
-        if (node->next[num] == null_ptr)
-        {
-          node->next[num] = moving;
+        node->next[num] = &*moving;
 
-          sc_dictionary_node * temp = node->next[num];
+        sc_dictionary_node * temp = node->next[num];
 
-          temp->offset = offset_ptr;
-          temp->offset_size = saved_offset_size - j;
-        }
+        temp->offset_size = saved_offset_size - j;
+        sc_str_cpy(temp->offset, offset_ptr, temp->offset_size);
       }
     }
     else
@@ -411,7 +410,7 @@ void sc_dictionary_visit_down_node_from_node(
     void ** dest)
 {
   sc_uint8 i;
-  for (i = 1; i < _sc_dictionary_children_size(); ++i)
+  for (i = 0; i < _sc_dictionary_children_size(); ++i)
   {
     sc_dictionary_node * next = node->next[i];
     if (SC_DICTIONARY_NODE_IS_VALID(next))

@@ -969,6 +969,7 @@ sc_result sc_storage_set_link_content(sc_memory_context * ctx, sc_addr addr, con
       sc_fs_storage_append_sc_link(el, addr, data, strlen(data));
     result = SC_RESULT_OK;
   }
+  sc_mem_free(data);
 
   sc_addr empty;
   SC_ADDR_MAKE_EMPTY(empty);
