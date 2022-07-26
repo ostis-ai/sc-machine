@@ -1,92 +1,31 @@
 [![codecov](https://codecov.io/gh/ostis-ai/sc-machine/branch/main/graph/badge.svg?token=WU8O9Z1DNL)](https://codecov.io/gh/ostis-ai/sc-machine)
+[![docker](https://img.shields.io/docker/v/ostis/sc-machine?arch=amd64&label=Docker&logo=Docker&sort=date)](https://hub.docker.com/r/ostis/sc-machine)
 
-## Documentation: [GitHub Pages](https://ostis-ai.github.io/sc-machine)
+# Documentation: [GitHub Pages](https://ostis-ai.github.io/sc-machine)
 
-## Clone:
+# Quick start
+You can use our [OSTIS Web platform](https://github.com/ostis-ai/ostis-web-platform) project to get up and running quickly.
+# Installation
+## Docker
+We're providing a Docker image for this project. Head to [Installing with Docker](https://ostis-ai.github.io/sc-machine/docker) section of our docs to try it out!
+## Native
+Please refer to the docs for your OS: [Build on Linux](https://ostis-ai.github.io/sc-machine/build/linux-build/) or [Build on macOS](https://ostis-ai.github.io/sc-machine/build/osx-build/)
 
+# Usage
+Typical usage case is to install platform using Docker or by building from sources, build knowledge base and start `sc-server` for other apps.
+
+For that, you can do the following:
 ```sh
-git clone https://github.com/ostis-ai/sc-machine.git
-cd sc-machine
-git submodule update --init --recursive
-```
-
-## Install dependencies
-
-### Debian-based (Ubuntu, Debian, Mint)
-
-```sh
-cd scripts
-./install_deps_ubuntu.sh
-```
-
-### macOS
-```sh
-cd scripts
-./install_deps_macOS.sh
-cd ..
-pip3 install wheel setuptools
-pip3 install -r requirements.txt
-```
-Please note: you should add LLVM to `PATH` variable. To do this, after installing dependencies execute the following commands (considering you use `zsh` as your shell):
-```sh
-echo 'export PATH="'$HOMEBREW_PREFIX'/opt/llvm/bin:$PATH"' >> ~/.zshrc
-```
-
-## Build sc-machine
-```sh
-cd sc-machine/scripts
-./make_all.sh #You can also pass all CMake generation arguments there
-```
-or, alternatively (requires CMake 3.13+)
-```sh
-cd sc-machine
-cmake -B build -DCMAKE_BUILD_TYPE=Release
-cmake --build build -j$(nproc) #-j flag for paralleled build process
-```
-Additional CMake flags can be used to build tests, format code or analyze memory leaks, check [our build docs](docs/build/cmake-flags.md) for more info.
-
-## Build knowledge base
-
-This repo provides *build_kb.py* script to prepare and build knowledge base (KB). Note that you will need to run a server with a path to a compiled KB in the next step.
-
-### Usage example
-```sh
-cd sc-machine
-python3 scripts/build_kb.py ../ims.ostis.kb -c config/sc-machine.ini -o kb.bin
-```
-
-Default config file saves compiled KB one level above sc-machine, `sc-machine/..`
-
-Alternatively, you can use `build_kb.py` without a config file to define output path and other settings manually:
-```sh
-cd sc-machine
-build_kb.py [-o OUTPUT_PATH] [-l ERRORS_FILE_PATH] REPO_FILE
-```
-To get more information, use `python3 scripts/build_kb.py -h`
-
-**Note: flags have higher priority than config file.**
-
-For more complex KB setups (with several folders across the filesystem, for example), we've created an internal file format called `repo.path`. It allows you to specify all the folders that should be built into the KB or exclude some files or subfolders
-### repo.path example
-```sh
-# Comments should start with hashtag as a first character in the line
-# Here you can specify path to one or several kb folders
-# Paths can be relative
-../ims.ostis.kb
-/full/path/to/kb
-../custom_kb
-# you can also exclude files or folders by adding a "!" symbol at the beginning of the line
-!../ims.ostis.kb/ims/ostis_tech
-!../custom_kb/test.scs
-```
-
-## Servers
-
-Sc-machine provides network protocol to interact with **sc-server** - use `python3 scripts/run_sc_server.py -c config/sc-machine.ini` to run sc-server with the default config file.
-To get more information use `python3 scripts/run_sc_server.py -h`
+#build kb
+python3 scripts/build_kb.py -c config/sc-machine.ini <path to KB or repo.path file>
+#launch server
+python3 scripts/run_sc_server.py -c config/sc-machine.ini
+``` 
+To get more information about these scripts use `-h` flags upon their launch.
 
 ## Config
 
-This repository provides a default configuration for sc-machine. To customize *sc-machine* usage you can create your own config file. You can check docs at [docs/other/config.md](docs/other/config.md)
+This repository provides a default configuration for sc-machine. To customize *sc-machine* usage you can [create your own config file](https://ostis-ai.github.io/sc-machine/other/config).
 
-*This repository continues the development of [this sc-machine](https://github.com/ostis-dev/sc-machine) from version 0.6.0.*
+
+##### *This repository continues the development of [this sc-machine](https://github.com/ostis-dev/sc-machine) from version 0.6.0.*
