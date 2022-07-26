@@ -1,4 +1,3 @@
-
 ## Clone
 
 ```sh
@@ -7,14 +6,16 @@ cd sc-machine
 ```
 
 ## Install dependencies
-
-### Setup build packages with brew
-
 ```sh
 cd scripts
 ./install_deps_macOS.sh
 cd ..
 pip3 --user -r requirements.txt
+```
+
+Please note: you should add LLVM to `PATH` variable. To do this, after installing dependencies execute the following commands (considering you use `zsh` as your shell):
+```sh
+echo 'export PATH="'$HOMEBREW_PREFIX'/opt/llvm/bin:$PATH"' >> ~/.zshrc
 ```
 
 ## Build
