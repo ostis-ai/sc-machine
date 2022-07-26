@@ -67,15 +67,12 @@ private:
     ScLink link{*context, linkAddr};
 
     ScMemoryJsonPayload answer;
-    if (link.IsType<std::string>() || link.DetermineType() == ScLink::Type::Custom
-        || link.DetermineType() == ScLink::Type::Unknown)
-      return {{"value", link.Get<std::string>()}, {"type", "string"}};
-    else if (link.DetermineType() >= ScLink::Type::Int8 && link.DetermineType() <= ScLink::Type::UInt64)
+    if (link.DetermineType() >= ScLink::Type::Int8 && link.DetermineType() <= ScLink::Type::UInt64)
       return {{"value", link.Get<sc_int>()}, {"type", "int"}};
     else if (link.IsType<double>() || link.IsType<float>())
       return {{"value", link.Get<float>()}, {"type", "float"}};
-
-    return {};
+    else
+      return {{"value", link.Get<std::string>()}, {"type", "string"}};
   }
 
   std::vector<size_t> FindLinksByContent(ScMemoryContext * context, ScMemoryJsonPayload const & atom)

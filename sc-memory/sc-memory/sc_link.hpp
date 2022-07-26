@@ -110,10 +110,6 @@ public:
   template <typename Type>
   Type Get() const
   {
-    if (!IsType<Type>())
-    {
-      SC_THROW_EXCEPTION(utils::ExceptionInvalidType, "You've used incorrect type. Use IsType<>() to check it");
-    }
     ScStreamPtr const stream = m_ctx.GetLinkContent(m_addr);
 
     // Check for empty content.
