@@ -18,6 +18,7 @@ nav:
     - Git-workflow: dev/git-workflow.md
     - Pull requets: dev/pr.md
     - Codestyle: dev/codestyle.md
+    - Dev container: dev/devcontainer.md
   - Common:
     - Element types: cpp/el_types.md
     - Configuration files: other/config.md
