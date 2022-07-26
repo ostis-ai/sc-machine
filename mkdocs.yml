@@ -22,6 +22,7 @@ nav:
     - Element types: cpp/el_types.md
     - Configuration files: other/config.md
     - SCs language: other/scs.md
+    - KB repo file: other/repofile.md
   - API:
     - Meta programming: cpp/cpp-meta.md
     - Agents: sc-kpm/kpm.md
