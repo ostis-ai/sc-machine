@@ -10,6 +10,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add `;` after `SC_ASSERT` calls in projects that use sc-machine
 
 ### Added
+- Unite configuration for sc-server and sc-builder
+- Write docs in scn-latex for sc-server
+- Implement sc-memory configurator
+- Implement sc-options for sc-server and sc-builder usages
+- Implement sc-server on C++
 - Add string API for set and get link content
 - Add opportunity to search sc-links in `sc-dictionary` by content substr
 - Excludes for files and folders in repo.path
@@ -25,6 +30,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - United config file
 
 ### Changed
+- Unify sc-builder and sc-server config and params usage
+- Change sc-machine config file structure
 - Fix gwf2scs-translator. Add opportunity to parse russian identifiers
 - Simplify main CMakeLists.txt
 - Add tools macros for main CMakeLists.txt
@@ -34,6 +41,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix scs-grammar. Add opportunity to specificate a structure into this structure itself
 
 ### Removed
+- Remove boost usage for options parsing in sc-server and sc-builder
+- Unlink boost-python-lib from sc-machine
+- Remove mkdocs for sc-server
+- Remove sc-python-interpreter support
+- Remove sc-python-module support
+- Remove python sc-server
 - Move logic rule utils and keynodes to [ostis-inference](https://github.com/ostis-apps/ostis-inference)
 - Remove sctp-server
 - Remove scp-interpreter

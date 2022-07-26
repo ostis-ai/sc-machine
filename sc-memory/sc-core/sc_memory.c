@@ -5,12 +5,17 @@
  */
 
 #include "sc_memory.h"
-#include "sc_memory_version.h"
 #include "sc_memory_private.h"
-#include "sc-store/sc_storage.h"
+#include "sc_memory_params.h"
+
 #include "sc_memory_ext.h"
-#include "sc-store/sc_config.h"
 #include "sc_helper_private.h"
+
+#include "sc-store/sc_storage.h"
+#include "sc-store/sc_types.h"
+
+#include "sc-store/sc_event.h"
+
 #include "sc-store/sc_event/sc_event_private.h"
 #include "sc-store/sc-container/sc-dictionary/sc_dictionary.h"
 
@@ -18,40 +23,33 @@
 #include "sc-store/sc-base/sc_assert_utils.h"
 #include "sc-store/sc-base/sc_message.h"
 
-sc_pointer sc_thread()
-{
-  return (sc_pointer)g_thread_self();
-}
-
 sc_memory_context * s_memory_default_ctx = null_ptr;
 sc_uint16 s_context_id_last = 1;
 sc_uint32 s_context_id_count = 0;
 GHashTable * s_context_hash_table = null_ptr;
 GMutex s_concurrency_mutex;
 
-void sc_memory_params_clear(sc_memory_params * params)
-{
-  params->clear = SC_FALSE;
-  params->config_file = null_ptr;
-  params->ext_path = null_ptr;
-  params->repo_path = null_ptr;
-  params->enabled_exts = null_ptr;
-}
-
 sc_memory_context * sc_memory_initialize(const sc_memory_params * params)
 {
   g_log_set_always_fatal(G_LOG_LEVEL_CRITICAL);
 
-  sc_config_initialize(params->config_file);
-
   s_context_hash_table = g_hash_table_new(g_direct_hash, g_direct_equal);
 
-  sc_char * v_str = sc_version_string_new(&SC_VERSION);
-  sc_message("Version: %s", v_str);
-  sc_version_strinsc_mem_free(v_str);
+  sc_message("Sc-memory version: %s", params->version);
+  sc_message("\tClean memory on shutdown: %s", params->clear ? "On" : "Off");
+  sc_message("\tRepo path: %s", params->repo_path);
+  sc_message("\tExtension path: %s", params->ext_path);
+  sc_message("\tSave period: %d", params->save_period);
+  sc_message("\tUpdate period: %d", params->update_period);
 
-  sc_message("Configuration:");
-  sc_message("\tmax_loaded_segments: %d", sc_config_get_max_loaded_segments());
+  sc_message("Sc-memory log:");
+  sc_message("\tLog type: %s", params->log_type);
+  sc_message("\tLog file: %s", params->log_file);
+  sc_message("\tLog level: %s", params->log_level);
+
+  sc_message("Sc-memory configuration:");
+  sc_message("\tmax loaded segments: %d", params->max_loaded_segments);
+  sc_message("\tmax threads: %d", params->max_threads);
   sc_message("\tsc-element size: %zd", sizeof(sc_element));
   sc_message("\tsc-string-node size: %zd", sizeof(sc_dictionary_node));
 
@@ -118,7 +116,6 @@ void sc_memory_shutdown(sc_bool save_state)
   sc_memory_shutdown_ext();
 
   sc_events_shutdown();
-  sc_config_shutdown();
 
   sc_helper_shutdown();
 

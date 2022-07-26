@@ -343,7 +343,10 @@ sc_bool sc_rocksdb_fs_storage_get_sc_links(const sc_char * sc_string, sc_addr **
   sc_check_sum * check_sum;
   sc_link_calculate_checksum(sc_string, strlen(sc_string), &check_sum);
 
-  return sc_rocksdb_fs_storage_find(check_sum, links, size);
+  sc_result result = sc_rocksdb_fs_storage_find(check_sum, links, size);
+  sc_mem_free(check_sum);
+
+  return result;
 }
 
 sc_bool sc_rocksdb_fs_storage_get_sc_links_by_substr(const sc_char * sc_substr, sc_addr ** links, sc_uint32 * size)

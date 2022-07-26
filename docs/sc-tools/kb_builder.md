@@ -32,10 +32,9 @@ that contains list of allowed extensions. Example of file content:
 
 ```
 sc-utils
-sc-python
 ```
 
-In that case just `sc-utils` and `sc-python` extensions will be loaded during knowledge base build process.
+In that case just `sc-utils` extensions will be loaded during knowledge base build process.
 
 Example of usage:
 

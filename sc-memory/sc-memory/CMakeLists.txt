@@ -28,22 +28,18 @@ add_library (sc-memory SHARED ${SOURCES} ${SOURCES_PARSER})
 target_include_directories(sc-memory
       PRIVATE ${GLIB2_INCLUDE_DIRS}
       PRIVATE ${SC_MACHINE_ANTRL_DIR}/runtime/src
-      PRIVATE ${SC_MEMORY_SRC}
-      PRIVATE ${Python3_INCLUDE_DIRS})
+      PRIVATE ${SC_MEMORY_SRC})
 
 if (${WIN32})
   target_link_libraries(sc-memory
                         sc-core
-                        ${LIBCURL_LIBRARIES} ${PYTHON_LIBRARY_RELEASE}
-                        antlr4_static
-                        debug ${BOOST_PYTHON_LIBRARY_DEBUG}
-                        optimized ${BOOST_PYTHON_LIBRARY_RELEASE})
+                        ${LIBCURL_LIBRARIES}
+                        antlr4_static)
 elseif (${UNIX})
   target_link_libraries(sc-memory
                         sc-core
                         antlr4_static
                         ${LIBCURL_LIBRARIES}
-                        ${Python3_LIBRARIES}
                         ${Boost_LIBRARIES})
 endif(${WIN32})
 

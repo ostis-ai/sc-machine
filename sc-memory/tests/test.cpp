@@ -635,10 +635,10 @@ std::string genIdtf(int idx)
 void test_save()
 {
   sc_memory_params p;
+  sc_memory_params_clear(&p);
   p.clear = SC_TRUE;
   p.repo_path = "repo";
-  p.config_file = "sc-memory.ini";
-  p.ext_path = 0;
+
   std::vector<sc_addr> addrs;
 
   static sc_uint32 const ADDRS_COUNT = 3000;
@@ -684,12 +684,10 @@ void test_save()
 // ---------------------------
 int main(int argc, char *argv[])
 {
-  sc_memory_params_clear(&params);
-
-  params.clear = SC_TRUE;
-  params.repo_path = "repo";
-  params.config_file = "sc-memory.ini";
-  params.ext_path = 0;
+  sc_memory_params p;
+  sc_memory_params_clear(&p);
+  p.clear = SC_FALSE;
+  p.repo_path = "repo";
 
   printf("sc_element: %zd, sc_addr: %zd, sc_arc: %zd", sizeof(sc_element), sizeof(sc_addr), sizeof(sc_arc_info));
 
