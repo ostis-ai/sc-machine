@@ -33,7 +33,7 @@ jobs:
 
       - name: Install dependencies
         id: install_deps
-        run: scripts/install_deps_ubuntu.sh
+        run: scripts/install_deps_ubuntu.sh --dev --rocksdb
 
       - name: Restore build caches
         uses: hendrikmuhs/ccache-action@v1.2
