@@ -176,6 +176,11 @@ sc_json_command_handle_link_contents
              '"command' ':' '"find"' ','
              '"data"' ':' NUMBER_CONTENT | STRING_CONTENT ','
          '}' ','
+         |
+         '{'
+              '"command' ':' '"find_by_substr"' ','
+			  '"data"' ':' NUMBER_CONTENT | STRING_CONTENT ','
+          '}' ','
      )*']' ','
   ;
 

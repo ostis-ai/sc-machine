@@ -210,6 +210,10 @@ TEST_F(ScServerTest, HandleContent)
               {"command", "find"},
               {"data", "some content"},
           },
+          {
+              {"command", "find_by_substr"},
+              {"data", "some"},
+          },
       }));
   WAIT_SERVER;
   EXPECT_TRUE(client.Send(payloadString));
@@ -221,7 +225,10 @@ TEST_F(ScServerTest, HandleContent)
 
   EXPECT_TRUE(response[0].get<sc_bool>());
   EXPECT_TRUE(response[1]["value"].get<std::string>() == "some content");
-  auto const & links = response[2].get<std::vector<size_t>>();
+  auto links = response[2].get<std::vector<size_t>>();
+  EXPECT_FALSE(links.empty());
+  EXPECT_TRUE(std::find(links.begin(), links.end(), link.Hash()) != links.end());
+  links = response[3].get<std::vector<size_t>>();
   EXPECT_FALSE(links.empty());
   EXPECT_TRUE(std::find(links.begin(), links.end(), link.Hash()) != links.end());
 
@@ -254,6 +261,10 @@ TEST_F(ScServerTest, HandleIntContent)
               {"command", "find"},
               {"data", 100},
           },
+          {
+              {"command", "find_by_substr"},
+              {"data", 100},
+          },
       }));
   WAIT_SERVER;
   EXPECT_TRUE(client.Send(payloadString));
@@ -265,7 +276,10 @@ TEST_F(ScServerTest, HandleIntContent)
 
   EXPECT_TRUE(response[0].get<sc_bool>());
   EXPECT_TRUE(response[1]["value"].get<sc_int>() == 100);
-  auto const & links = response[2].get<std::vector<size_t>>();
+  auto links = response[2].get<std::vector<size_t>>();
+  EXPECT_FALSE(links.empty());
+  EXPECT_TRUE(std::find(links.begin(), links.end(), link.Hash()) != links.end());
+  links = response[3].get<std::vector<size_t>>();
   EXPECT_FALSE(links.empty());
   EXPECT_TRUE(std::find(links.begin(), links.end(), link.Hash()) != links.end());
 

@@ -27,6 +27,8 @@ public:
         responsePayload.push_back(GetContent(context, atom));
       else if (type == "find")
         responsePayload.push_back(FindLinksByContent(context, atom));
+      else if (type == "find_by_substr")
+        responsePayload.push_back(FindLinksByContentSubstring(context, atom));
     };
 
     if (requestPayload.is_array())
@@ -65,15 +67,12 @@ private:
     ScLink link{*context, linkAddr};
 
     ScMemoryJsonPayload answer;
-    if (link.IsType<std::string>() || link.DetermineType() == ScLink::Type::Custom
-        || link.DetermineType() == ScLink::Type::Unknown)
-      return {{"value", link.Get<std::string>()}, {"type", "string"}};
-    else if (link.DetermineType() >= ScLink::Type::Int8 && link.DetermineType() <= ScLink::Type::UInt64)
+    if (link.DetermineType() >= ScLink::Type::Int8 && link.DetermineType() <= ScLink::Type::UInt64)
       return {{"value", link.Get<sc_int>()}, {"type", "int"}};
     else if (link.IsType<double>() || link.IsType<float>())
       return {{"value", link.Get<float>()}, {"type", "float"}};
-
-    return {};
+    else
+      return {{"value", link.Get<std::string>()}, {"type", "string"}};
   }
 
   std::vector<size_t> FindLinksByContent(ScMemoryContext * context, ScMemoryJsonPayload const & atom)
@@ -89,6 +88,28 @@ private:
       std::stringstream stream;
       stream << data.get<float>();
       vector = context->FindLinksByContent(stream.str());
+    }
+
+    std::vector<size_t> hashes;
+    for (auto const & addr : vector)
+      hashes.push_back(addr.Hash());
+
+    return hashes;
+  }
+
+  std::vector<size_t> FindLinksByContentSubstring(ScMemoryContext * context, ScMemoryJsonPayload const & atom)
+  {
+    auto const & data = atom["data"];
+    ScAddrVector vector;
+    if (data.is_string())
+      vector = context->FindLinksByContentSubstring(data.get<std::string>());
+    else if (data.is_number_integer())
+      vector = context->FindLinksByContentSubstring(std::to_string(data.get<sc_int>()));
+    else if (data.is_number_float())
+    {
+      std::stringstream stream;
+      stream << data.get<float>();
+      vector = context->FindLinksByContentSubstring(stream.str());
     }
 
     std::vector<size_t> hashes;
