@@ -1,54 +1,36 @@
-name: CI
+name: Sanitizers
 
 on:
   pull_request:
-    branches: [ main ]
+    branches: [main]
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
 jobs:
-  run_tests:
-    name: ${{matrix.config.name}}
-    runs-on: ${{matrix.config.os}}
+  run_sanitizers:
+    name: ${{ matrix.config.name }}
+    runs-on: ubuntu-latest
 
     strategy:
       fail-fast: false
       matrix:
         config:
           - {
-            name: "Ubuntu latest, GCC, Sc-dictionary fs-storage",
+            name: "Sanitizer for sc-dictionary fs-storage - address",
             os: ubuntu-latest,
             file_memory: "Dictionary",
-            build_type: "Debug",
-            cc: "gcc",
-            cxx: "g++",
+            sanitizer: "address",
+            cc: clang,
+            cxx: clang++,
           }
           - {
-            name: "Ubuntu latest, GCC, Sc-rocksdb fs-storage",
+            name: "Sanitizer for sc-rocksdb fs-storage - address",
             os: ubuntu-latest,
             file_memory: "Rocksdb",
-            build_type: "Debug",
-            cc: "gcc",
-            cxx: "g++",
-            coverage: "OFF"
-          }
-          - {
-            name: "Ubuntu latest, GCC, Release, Sc-dictionary fs-storage",
-            os: ubuntu-latest,
-            file_memory: "Dictionary",
-            build_type: "Release",
-            cc: "gcc",
-            cxx: "g++",
-            coverage: "ON"
-          }
-          - {
-            name: "Ubuntu latest, GCC, Release, Sc-rocksdb fs-storage",
-            os: ubuntu-latest,
-            file_memory: "Rocksdb",
-            build_type: "Release",
-            cc: "gcc",
-            cxx: "g++",
+            sanitizer: "address",
+            cc: clang,
+            cxx: clang++,
           }
 
     steps:
@@ -74,7 +56,7 @@ jobs:
           FILE_MEMORY: ${{ matrix.config.file_memory }}
           BUILD_TYPE: ${{ matrix.config.build_type }}
           COVERAGE: OFF
-          SANITIZER_TYPE: none
+          SANITIZER_TYPE: ${{ matrix.config.sanitizer }}
         run: scripts/ci/make-tests.sh
 
       - name: Run tests

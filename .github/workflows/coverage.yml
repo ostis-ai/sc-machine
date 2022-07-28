@@ -1,0 +1,74 @@
+name: Coverage
+
+on:
+  pull_request:
+    branches: [ main ]
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+jobs:
+  run_coverage:
+    name: Coverage
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        config:
+          - {
+            name: "Coverage for sc-dictionary fs-storage",
+            os: ubuntu-latest,
+            file_memory: "Dictionary",
+            build_type: "Debug",
+            cc: "gcc",
+            cxx: "g++",
+          }
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v1
+        with:
+          submodules: recursive
+
+      - name: Install dependencies
+        id: install_deps
+        run: scripts/install_deps_ubuntu.sh --dev --rocksdb
+
+      - name: Restore build caches
+        uses: hendrikmuhs/ccache-action@v1.2
+        with:
+          key: ${{ github.job }}-${{ matrix.config.os }}-${{ matrix.config.cxx }}-${{ matrix.config.build_type }}-${{ matrix.config.file_memory }}
+
+      - name: Build
+        id: run_cmake
+        env:
+          CC: ${{ matrix.config.cc }}
+          CXX: ${{ matrix.config.cxx }}
+          FILE_MEMORY: ${{ matrix.config.file_memory }}
+          BUILD_TYPE: ${{ matrix.config.build_type }}
+          COVERAGE: ON
+          SANITIZER_TYPE: none
+        run: scripts/ci/make-tests.sh
+
+      - name: Prepare coverage
+        id: prepare_coverage
+        run: scripts/ci/prepare-coverage.sh
+
+      - name: Run tests
+        id: run_tests
+        run: scripts/ci/run-tests.sh
+
+      - name: Export coverage report
+        id: export_coverage
+        run: scripts/ci/export-coverage.sh
+
+      - name: Upload coverage report to CodeCov
+        uses: codecov/codecov-action@v2
+        with:
+          directory: ${{github.workspace}}/build
+          files: coverage.info
+          flags: unittests
+          fail_ci_if_error: true
+          name: codecov-umbrella
+          verbose: true
