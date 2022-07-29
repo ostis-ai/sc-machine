@@ -155,6 +155,26 @@
 	\scnrelto{синтаксическое правило}{ответ на команду создания sc-элементов}
 \scnaddlevel{-1}
 
+\scnhaselement{Правило, задающее синтаксис \textit{команды создания sc-элементов по фрагменту SCs-текста}}
+\scnaddlevel{1}
+\scnrelboth{семантическая эквивалентность}{\scnfileimage{\includegraphics[scale=0.95]{images/create_elements_by_scs_command}}}
+\scnaddlevel{1}
+\scniselement{Язык описания грамматики языков ANTLR}
+\scntext{интерпретация}{В списке описаний создаваемых sc-элементов сообщения этой команды вместо описания создаваемого отдельного sc-элемента указывается фрагмент SCs-текста.}
+\scnaddlevel{-1}
+\scnrelto{синтаксическое правило}{команда создания sc-элементов по фрагменту SCs-текста}
+\scnaddlevel{-1}
+
+\scnhaselement{Правило, задающее синтаксис \textit{ответа на команду создания sc-элементов по фрагменту SCs-текста}}
+\scnaddlevel{1}
+\scnrelboth{семантическая эквивалентность}{\scnfileimage{\includegraphics[scale=0.95]{images/create_elements_by_scs_command_answer}}}
+\scnaddlevel{1}
+\scniselement{Язык описания грамматики языков ANTLR}
+\scntext{интерпретация}{Сообщением \textit{ответа на команду создания sc-элементов} является список результатов обработки переданных SCs-текстов. Нулевой статус говорит о том, что обработка соотвествующего SCs-текста завершилась безуспешно.}
+\scnaddlevel{-1}
+\scnrelto{синтаксическое правило}{ответ на команду создания sc-элементов по фрагменту SCs-текста}
+\scnaddlevel{-1}
+
 \scnhaselement{Правило, задающее синтаксис \textit{команды получения соответствующих типов sc-элементов}}
 \scnaddlevel{1}
 	\scnrelboth{семантическая эквивалентность}{\scnfileimage{\includegraphics[scale=0.95]{images/check_elements_command}}}
