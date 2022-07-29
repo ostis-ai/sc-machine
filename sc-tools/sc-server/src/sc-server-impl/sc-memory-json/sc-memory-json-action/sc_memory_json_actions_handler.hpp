@@ -36,6 +36,7 @@ private:
   std::map<std::string, ScMemoryJsonAction *> m_actions = {
       {"keynodes", new ScMemoryHandleKeynodesJsonAction()},
       {"create_elements", new ScMemoryCreateElementsJsonAction()},
+      {"create_elements_by_scs", new ScMemoryCreateElementsByScsJsonAction()},
       {"check_elements", new ScMemoryCheckElementsJsonAction()},
       {"delete_elements", new ScMemoryDeleteElementsJsonAction()},
       {"search_template", new ScMemoryTemplateSearchJsonAction()},
