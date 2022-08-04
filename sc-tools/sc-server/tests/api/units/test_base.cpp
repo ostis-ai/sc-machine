@@ -74,6 +74,38 @@ TEST_F(ScServerTest, CreateElements)
   client.Stop();
 }
 
+TEST_F(ScServerTest, CreateElementsBySCs)
+{
+  ScClient client;
+  EXPECT_TRUE(client.Connect(m_server->GetUri()));
+  client.Run();
+
+  std::string const payloadString = ScMemoryJsonConverter::From(
+      0,
+      "create_elements_by_scs",
+      ScMemoryJsonPayload::array({
+          "concept_set -> set1;;",
+          "concept_set -> ",
+      }));
+  WAIT_SERVER;
+  EXPECT_TRUE(client.Send(payloadString));
+
+  WAIT_SERVER;
+  auto const response = client.GetResponsePayload();
+  EXPECT_FALSE(response.is_null());
+
+  ScAddr const & classSet = m_ctx->HelperFindBySystemIdtf("concept_set");
+  EXPECT_TRUE(classSet.IsValid());
+  ScAddr const & set1 = m_ctx->HelperFindBySystemIdtf("set1");
+  EXPECT_TRUE(set1.IsValid());
+  EXPECT_TRUE(m_ctx->HelperCheckEdge(classSet, set1, ScType::EdgeAccessConstPosPerm));
+  EXPECT_TRUE(response[0].get<sc_bool>());
+
+  EXPECT_FALSE(response[1].get<sc_bool>());
+
+  client.Stop();
+}
+
 TEST_F(ScServerTest, CheckElements)
 {
   ScClient client;

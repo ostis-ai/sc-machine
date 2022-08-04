@@ -14,6 +14,7 @@ sc_json_command
 
 sc_json_command_type_and_payload
   : sc_json_command_create_elements
+  | sc_json_command_create_elements_by_scs
   | sc_json_command_check_elements
   | sc_json_command_delete_elements
   | sc_json_command_handle_keynodes
@@ -34,6 +35,7 @@ sc_json_command_answer
 
 sc_json_command_answer_payload
   : sc_json_command_answer_create_elements
+  | sc_json_command_answer_create_elements_by_scs
   | sc_json_command_answer_check_elements
   | sc_json_command_answer_delete_elements
   | sc_json_command_answer_handle_keynodes
@@ -94,6 +96,8 @@ sc_json_command_create_elements
             '}' ','
             )
         '}' ','
+        |
+        scs_text ','
     )*']' ','
   ;
 
@@ -101,6 +105,22 @@ sc_json_command_answer_create_elements
   : '"payload"' ':'
     '['
         (SC_ADDR_HASH ',')*
+    ']' ','
+  ;
+
+sc_json_command_create_elements_by_scs
+  : '"type"' ':' '"create_elements_by_scs"' ','
+    '"payload"' ':'
+    '['(
+        scs_text ','
+    )*']' ','
+  ;
+
+sc_json_command_answer_create_elements_by_scs
+  : '"type"' ':' '"check_elements"' ','
+    '"payload"' ':'
+    '['
+        (BOOL ',')*
     ']' ','
   ;
 
