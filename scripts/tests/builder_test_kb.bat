@@ -1,1 +1,0 @@
-"../../bin/sc-builder.exe" -i "../../tools/builder/tests/kb" -o "../../bin/sc-builder-test-repo" -c -f
