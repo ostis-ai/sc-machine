@@ -8,6 +8,7 @@
 
 #include <algorithm>
 #include <vector>
+#include <sstream>
 
 #include "sc-core/sc-store/sc_types.h"
 
