@@ -50,7 +50,7 @@ public:
 private:
   std::vector<std::string> m_tokens;
 
-  std::string Upstream(std::string const & option) const
+  static std::string Upstream(std::string const & option)
   {
     std::stringstream stream;
     stream << "-";
