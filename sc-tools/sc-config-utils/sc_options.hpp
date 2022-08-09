@@ -8,6 +8,7 @@
 
 #include <algorithm>
 #include <vector>
+#include <sstream>
 
 #include "sc-core/sc-store/sc_types.h"
 
@@ -49,7 +50,7 @@ public:
 private:
   std::vector<std::string> m_tokens;
 
-  std::string Upstream(std::string const & option) const
+  static std::string Upstream(std::string const & option)
   {
     std::stringstream stream;
     stream << "-";
