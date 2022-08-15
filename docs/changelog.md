@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add `;` after `SC_ASSERT` calls in projects that use sc-machine
 
 ### Added
+- Write sc-machine idea into readme
 - Add create elements by scs-helper through sc-server
 - Add ci workflow for sanitizers
 - Add find links by substring in sc-server

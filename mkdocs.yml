@@ -30,7 +30,7 @@ nav:
     - Template: sc-search/templates.md
     - Common: cpp/common.md
     - File storage:
-      - Sc-dictionary-based file storage: storage/sc_dictionary.md
+      - Sc-dictionary-based file storage: storage/sc-dictionary.md
   - Tools:
       - Builder: sc-tools/kb_builder.md
   - License: license.md
