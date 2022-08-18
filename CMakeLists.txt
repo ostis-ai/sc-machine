@@ -10,10 +10,12 @@ project_version(SC_MACHINE "0.6.1")
 set(SC_MACHINE_CONFIG "${SC_MACHINE_ROOT}/config")
 
 set(CMAKE_MODULE_PATH "${SC_MACHINE_ROOT}/cmake")
-set(SC_BIN_PATH "${SC_MACHINE_ROOT}/bin")
+# CMAKE_BINARY_DIR is a path to the top level of the build tree (i.e to the "build" folder). Placing a "bin" folder nearby
+set(SC_BIN_PATH "${CMAKE_BINARY_DIR}/../bin")
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${SC_BIN_PATH})
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${SC_BIN_PATH})
 set(SC_EXTENSIONS_DIRECTORY "${SC_BIN_PATH}/extensions")
+message("Binary output dir:" ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
 set(SC_MACHINE_THIRDPARTY_PATH "${SC_MACHINE_ROOT}/thirdparty")
 
 option(SC_AUTO_TEST "Flag to build for automation testing" OFF)
