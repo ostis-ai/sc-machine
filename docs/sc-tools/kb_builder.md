@@ -11,8 +11,6 @@ Builder usage:
   --version                   Displays version number
   -i [ --input-path ] arg     Path to directory with sources
   -o [ --output-path ] arg    Path to output directory (repository)
-  -e [ --extension-path ] arg Path to extensions directory
-  --enabled-ext arg           Path to file with enabled extensions
   -c [ --clear-output ]       Clear output directory (repository) before build
   -s [ --settings ] arg       Path to configuration file for sc-memory
   -f [ --auto-formats ]       Enable automatic formats info generation
