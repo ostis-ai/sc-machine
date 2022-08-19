@@ -112,8 +112,7 @@ def prepare_kb(kb_to_prepare: str, logfile: str):
 def build_kb(kb_bin_folder: str, kb_to_build: str, ostis_path: str):
     os.makedirs(kb_bin_folder, exist_ok=True)
     # call sc-builder with required parameters and return the exitcode of the command
-    return os.system(" ".join([join(ostis_path, "sc-builder"), "-f", "--clear", "-i", kb_to_build, "-o", kb_bin_folder,
-                               "-e", join(ostis_path, "extensions")]))
+    return os.system(" ".join([join(ostis_path, "sc-builder"), "-f", "--clear", "-i", kb_to_build, "-o", kb_bin_folder]))
 
 
 def main(args: dict):
