@@ -21,7 +21,6 @@ try
               << "--config|-c -- Path to configuration file\n"
               << "--input_path|-i -- Path to directory with sources\n"
               << "--output_path|-o -- Path to output directory (repository)\n"
-              << "--extensions_path|-e -- Path to directory with sc-memory extensions\n"
               << "--enabled_ext -- Path to file with enabled extensions\n"
               << "--auto_formats|-f -- Enable automatic formats info generation\n"
               << "--clear -- Flag to clear sc-memory on start\n"
@@ -45,11 +44,11 @@ try
   if (options.Has({"config", "c"}))
     config = options[{"config", "c"}].second;
 
-  std::vector<std::vector<std::string>> keys = {{"extensions_path", "e"}, {"verbose", "v"}, {"clear"}};
+  std::vector<std::vector<std::string>> keys = {{"verbose", "v"}, {"clear"}};
   ScParams memoryParams{options, keys};
   memoryParams.insert({"repo_path", options[{"output_path", "o"}].second});
 
-  ScMemoryConfig memoryConfig{config, {"repo_path", "extensions_path", "log_file"}, std::move(memoryParams)};
+  ScMemoryConfig memoryConfig{config, {"repo_path", "log_file"}, std::move(memoryParams)};
 
   Builder builder;
   return builder.Run(params, memoryConfig.GetParams()) ? EXIT_SUCCESS : EXIT_FAILURE;
