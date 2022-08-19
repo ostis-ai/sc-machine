@@ -28,6 +28,7 @@ class ScMemory
 public:
   //! Returns true, on memory initialized; otherwise returns false
   _SC_EXTERN static bool Initialize(sc_memory_params const & params);
+  _SC_EXTERN static bool IsInitialized();
   _SC_EXTERN static void Shutdown(bool saveState = true);
 
   _SC_EXTERN static void LogMute();
