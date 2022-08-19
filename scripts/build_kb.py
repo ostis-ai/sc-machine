@@ -134,7 +134,7 @@ def main(args: dict):
     print("args:", conf)
 
     if not exists(join(conf[OSTIS_PATH], "sc-builder")):
-        print("OSTIS binaries are not found. Check if the binary path exists and contains necessary files. Is the project built?")
+        print("OSTIS binaries are not found. Check if the binary path exists and contains necessary files. You may have compiled the project in a non-default location (pass -b flag to override binary location) or didn't build the project successfully.")
         exit(1)
 
     # prepared_kb will appear in the same folder as kb.bin
