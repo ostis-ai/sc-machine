@@ -14,7 +14,8 @@ function usage() {
 USAGE
     exit 1
 }
-sudo add-apt-repository universe
+sudo apt-get update && sudo apt-get install -y --no-install-recommends software-properties-common
+sudo add-apt-repository -y universe
 sudo apt-get update
 packagelist_runtime=(
     libcurl4
@@ -73,7 +74,7 @@ while [ "$1" != "" ]; do
     shift # remove the current value for `$1` and use the next
 done
 
-sudo apt-get install -y --no-install-recommends ${packages[@]}
+sudo apt-get install -y --no-install-recommends "${packages[@]}"
 
 pip3 install wheel setuptools
-pip3 install -r ${APP_ROOT_PATH}/requirements.txt
+pip3 install -r "${APP_ROOT_PATH}"/requirements.txt

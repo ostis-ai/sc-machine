@@ -103,6 +103,11 @@ bool ScMemory::Initialize(sc_memory_params const & params)
   return (ms_globalContext != nullptr);
 }
 
+bool ScMemory::IsInitialized()
+{
+  return ms_globalContext != nullptr;
+}
+
 void ScMemory::Shutdown(bool saveState /* = true */)
 {
   utils::ScLog::SetUp("Console", "", "Info");
