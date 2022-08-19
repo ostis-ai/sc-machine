@@ -7,8 +7,6 @@ set(SC_MACHINE_ROOT ${CMAKE_CURRENT_LIST_DIR})
 include(${SC_MACHINE_ROOT}/macro/macros.cmake)
 project_version(SC_MACHINE "0.6.1")
 
-set(SC_MACHINE_CONFIG "${SC_MACHINE_ROOT}/config")
-
 set(CMAKE_MODULE_PATH "${SC_MACHINE_ROOT}/cmake")
 # CMAKE_BINARY_DIR is a path to the top level of the build tree (i.e to the "build" folder). Placing a "bin" folder nearby
 set(SC_BIN_PATH "${CMAKE_BINARY_DIR}/../bin")
@@ -85,6 +83,13 @@ elseif(${SC_FILE_MEMORY} STREQUAL "Rocksdb")
 	message("Build with sc-rocksdb fs-storage")
     add_definitions(-DSC_ROCKSDB_FS_STORAGE)
 endif()
+
+# for multi-config builds (e.g. msvc)
+foreach(OUTPUT_CONFIG ${CMAKE_CONFIGURATION_TYPES})
+    string(TOUPPER ${OUTPUT_CONFIG} OUTPUT_CONFIG)
+    set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_${OUTPUT_CONFIG} ${SC_EXTENSIONS_DIRECTORY})
+    set(CMAKE_LIBRARY_OUTPUT_DIRECTORY_${OUTPUT_CONFIG} ${SC_EXTENSIONS_DIRECTORY})
+endforeach(OUTPUT_CONFIG CMAKE_CONFIGURATION_TYPES)
 
 include("${SC_MACHINE_ROOT}/dependencies.cmake")
 sc_target_dependencies("${SC_MACHINE_ROOT}/packages.config.in" ${SC_MACHINE_THIRDPARTY_PATH} {$SC_MACHINE_BIN_PATH})
