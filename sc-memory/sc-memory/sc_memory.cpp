@@ -11,8 +11,6 @@
 
 #include "kpm/sc_agent.hpp"
 
-#include "http/sc_http.hpp"
-
 #include "utils/sc_log.hpp"
 
 #include <cstdlib>
@@ -87,8 +85,6 @@ bool ScMemory::Initialize(sc_memory_params const & params)
 
   g_log_set_default_handler(_logPrintHandler, nullptr);
 
-  ScHttp::Init();
-
   ms_globalContext = sc_memory_initialize(&params);
   if (ms_globalContext == nullptr)
     return false;
@@ -128,8 +124,6 @@ void ScMemory::Shutdown(bool saveState /* = true */)
 
   sc_memory_shutdown(SC_BOOL(saveState));
   ms_globalContext = nullptr;
-
-  ScHttp::Shutdown();
 
   g_log_set_default_handler(g_log_default_handler, nullptr);
 }
