@@ -6,24 +6,24 @@
 
 #include "sc_debug.hpp"
 
+#include <utility>
+
 namespace utils
 {
-ScException::ScException(std::string const & description, std::string const & msg)
-  : m_description(description)
-  , m_msg(msg)
+ScException::ScException(std::string description, std::string msg)
+  : m_description(std::move(description))
+  , m_msg(std::move(msg))
 {
 }
 
-ScException::~ScException() throw()
-{
-}
+ScException::~ScException() noexcept = default;
 
-const char * ScException::Description() const throw()
+const sc_char * ScException::Description() const noexcept
 {
   return m_description.c_str();
 }
 
-const char * ScException::Message() const throw()
+const sc_char * ScException::Message() const noexcept
 {
   return m_msg.c_str();
 }
