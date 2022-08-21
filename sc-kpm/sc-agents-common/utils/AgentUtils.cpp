@@ -8,8 +8,8 @@
 
 #include <sc-memory/sc_wait.hpp>
 
-#include "IteratorUtils.hpp"
 #include "GenerationUtils.hpp"
+#include "IteratorUtils.hpp"
 #include "keynodes/coreKeynodes.hpp"
 
 using namespace std;

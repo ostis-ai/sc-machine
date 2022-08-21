@@ -11,19 +11,18 @@ extern "C"
 #include "sc-core/sc_memory.h"
 }
 
-#include <string>
-#include <sstream>
-#include <map>
-#include <set>
-#include <vector>
-#include <list>
 #include <array>
-#include <unordered_set>
-#include <unordered_map>
 #include <cassert>
 #include <cstdint>
-
 #include <fstream>
+#include <list>
+#include <map>
+#include <set>
+#include <sstream>
+#include <string>
+#include <unordered_map>
+#include <unordered_set>
+#include <vector>
 
 #include "sc_defines.hpp"
 

@@ -6,16 +6,15 @@
 
 #include "sc_event.h"
 
+#include "sc-base/sc_allocator.h"
+#include "sc-base/sc_assert_utils.h"
+#include "sc-base/sc_atomic.h"
+#include "sc-base/sc_message.h"
 #include "sc_event/sc_event_private.h"
 #include "sc_event/sc_event_queue.h"
-
 #include "sc_storage.h"
-#include "../sc_memory_private.h"
 
-#include "sc-base/sc_allocator.h"
-#include "sc-base/sc_atomic.h"
-#include "sc-base/sc_assert_utils.h"
-#include "sc-base/sc_message.h"
+#include "../sc_memory_private.h"
 
 GMutex events_table_mutex;
 #define EVENTS_TABLE_LOCK g_mutex_lock(&events_table_mutex)

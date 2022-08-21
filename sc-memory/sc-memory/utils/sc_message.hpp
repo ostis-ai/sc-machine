@@ -1,7 +1,5 @@
 #pragma once
 
-#include "../sc_defines.hpp"
-
 #include <array>
 #include <list>
 #include <map>
@@ -12,6 +10,8 @@
 #include <unordered_set>
 #include <utility>
 #include <vector>
+
+#include "../sc_defines.hpp"
 
 template <typename T>
 inline std::string DebugPrint(T const & t);

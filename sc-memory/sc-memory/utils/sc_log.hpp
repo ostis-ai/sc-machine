@@ -5,10 +5,11 @@
  */
 #pragma once
 
+#include <fstream>
+#include <sstream>
+
 #include "sc_console.hpp"
 
-#include <sstream>
-#include <fstream>
 #include "string"
 
 namespace utils

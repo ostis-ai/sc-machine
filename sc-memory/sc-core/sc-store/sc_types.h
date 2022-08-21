@@ -7,10 +7,11 @@
 #ifndef _sc_types_h_
 #  define _sc_types_h_
 
-#  include "sc_defines.h"
 #  include <memory.h>
 #  include <stdlib.h>
 #  include <string.h>
+
+#  include "sc_defines.h"
 
 #  ifndef null_ptr
 #    define null_ptr ((void *)0)

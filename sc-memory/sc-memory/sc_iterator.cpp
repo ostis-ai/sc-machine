@@ -5,6 +5,7 @@
  */
 
 #include "sc_iterator.hpp"
+
 #include "sc_memory.hpp"
 
 template <>

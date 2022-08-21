@@ -8,8 +8,8 @@
 
 extern "C"
 {
-#include "sc-core/sc_memory_headers.h"
 #include "sc-core/sc_helper.h"
+#include "sc-core/sc_memory_headers.h"
 }
 
 #include "sc_addr.hpp"

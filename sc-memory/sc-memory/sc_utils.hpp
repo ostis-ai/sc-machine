@@ -6,15 +6,14 @@
 
 #pragma once
 
-#include "sc_debug.hpp"
-
+#include <cassert>
 #include <cstdint>
 #include <exception>
+#include <memory.h>
 #include <memory>
 #include <string>
 
-#include <cassert>
-#include <memory.h>
+#include "sc_debug.hpp"
 
 // Got it there: https://github.com/mapsme/omim/blob/136f12af3adde05623008f71d07bb996fe5801a5/base/macros.hpp
 #define ARRAY_SIZE(X) sizeof(::my::impl::ArraySize(X))

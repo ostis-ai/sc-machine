@@ -1,7 +1,6 @@
 #include "sc_http_response.hpp"
 
 #include <curl/curl.h>
-
 #include <utility>
 
 ScHttpResponse::ScHttpResponse(std::string data, uint8_t resultCode)

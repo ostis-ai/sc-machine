@@ -7,10 +7,10 @@
 #ifndef _sc_memory_private_h_
 #define _sc_memory_private_h_
 
+#include <glib.h>
+
 #include "sc-store/sc_element.h"
 #include "sc-store/sc_types.h"
-
-#include <glib.h>
 
 struct _sc_event_emit_params
 {

@@ -1,8 +1,8 @@
 #pragma once
 
-#include "../sc_utils.hpp"
-
 #include <memory>
+
+#include "../sc_utils.hpp"
 
 // Got it there: https://github.com/mapsme/omim/blob/master/base/cache.hpp
 

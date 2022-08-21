@@ -4,10 +4,10 @@
  * (See accompanying file COPYING.MIT or copy at http://opensource.org/licenses/MIT)
  */
 
-#include "uiPrecompiled.h"
 #include "uiSc2SCgJsonTranslator.h"
 
 #include "uiKeynodes.h"
+#include "uiPrecompiled.h"
 #include "uiTranslators.h"
 #include "uiUtils.h"
 

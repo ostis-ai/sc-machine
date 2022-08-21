@@ -1,10 +1,10 @@
 #pragma once
 
 #include <assert.h>
-#include <vector>
 #include <list>
 #include <set>
 #include <sstream>
+#include <vector>
 
 #include "ReservedTypes.hpp"
 

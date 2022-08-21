@@ -1,8 +1,8 @@
 #include "sc_http_request.hpp"
 
-#include "sc-memory/sc_debug.hpp"
-
 #include <curl/curl.h>
+
+#include "sc-memory/sc_debug.hpp"
 
 namespace
 {

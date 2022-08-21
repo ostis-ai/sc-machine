@@ -4,9 +4,10 @@
  * (See accompanying file COPYING.MIT or copy at http://opensource.org/licenses/MIT)
  */
 
-#include "uiPrecompiled.h"
 #include "uiTranslatorFromSc.h"
+
 #include "uiKeynodes.h"
+#include "uiPrecompiled.h"
 
 uiTranslateFromSc::uiTranslateFromSc()
 {

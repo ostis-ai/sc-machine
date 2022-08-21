@@ -6,15 +6,13 @@
 
 #pragma once
 
-#include "gtest/gtest.h"
+#include <memory>
 
 #include "sc-memory/sc_memory.hpp"
 
-#include "../../test_defines.hpp"
-
 #include "../../../src/sc-server-impl/sc_server_impl.hpp"
-
-#include <memory>
+#include "../../test_defines.hpp"
+#include "gtest/gtest.h"
 
 class ScServerTest : public testing::Test
 {

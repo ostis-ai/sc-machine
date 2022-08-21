@@ -8,11 +8,11 @@
 
 // Originaly got it there: https://github.com/tapio/rlutil/blob/master/rlutil.h
 
-#include "../sc_defines.hpp"
-
 #include <cinttypes>
 #include <iostream>
 #include <string>
+
+#include "../sc_defines.hpp"
 
 class ScConsole final
 {

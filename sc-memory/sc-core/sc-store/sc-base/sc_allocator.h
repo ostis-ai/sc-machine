@@ -12,6 +12,7 @@
 #ifdef GLIB
 #  include <glib.h>
 #  include <memory.h>
+
 #  include "sc_assert_utils.h"
 #endif
 

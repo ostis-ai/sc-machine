@@ -5,6 +5,7 @@
  */
 
 #include "utils_garbage_deletion.h"
+
 #include "utils.h"
 
 sc_result agent_garbage_delete(const sc_event * event, sc_addr arg)

@@ -5,6 +5,7 @@
  */
 
 #include "sc_keynodes.hpp"
+
 #include "sc_struct.hpp"
 
 size_t const kKeynodeRrelListNum = 20;

@@ -6,12 +6,12 @@
 
 #include "sc_segment.h"
 
-#include "sc_element.h"
-#include "../sc_memory_private.h"
-
 #include "sc-base/sc_allocator.h"
-#include "sc-base/sc_atomic.h"
 #include "sc-base/sc_assert_utils.h"
+#include "sc-base/sc_atomic.h"
+#include "sc_element.h"
+
+#include "../sc_memory_private.h"
 
 sc_segment * sc_segment_new(sc_addr_seg num)
 {

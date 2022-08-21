@@ -6,16 +6,14 @@
 
 #pragma once
 
-#include <utility>
 #include <map>
-
-#include "sc-memory/sc_memory.hpp"
+#include <utility>
 
 #include "sc-config/sc_config.hpp"
-#include "sc_options.hpp"
-
 #include "sc-core/sc_memory_params.h"
 #include "sc-core/sc_memory_version.h"
+#include "sc-memory/sc_memory.hpp"
+#include "sc_options.hpp"
 
 #define DEFAULT_SAVE_PERIOD 32000
 #define DEFAULT_UPDATE_PERIOD 16000

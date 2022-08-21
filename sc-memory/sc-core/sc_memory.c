@@ -5,23 +5,19 @@
  */
 
 #include "sc_memory.h"
-#include "sc_memory_private.h"
-#include "sc_memory_params.h"
-
-#include "sc_memory_ext.h"
-#include "sc_helper_private.h"
-
-#include "sc-store/sc_storage.h"
-#include "sc-store/sc_types.h"
-
-#include "sc-store/sc_event.h"
-
-#include "sc-store/sc_event/sc_event_private.h"
-#include "sc-store/sc-container/sc-dictionary/sc_dictionary.h"
 
 #include "sc-store/sc-base/sc_allocator.h"
 #include "sc-store/sc-base/sc_assert_utils.h"
 #include "sc-store/sc-base/sc_message.h"
+#include "sc-store/sc-container/sc-dictionary/sc_dictionary.h"
+#include "sc-store/sc_event.h"
+#include "sc-store/sc_event/sc_event_private.h"
+#include "sc-store/sc_storage.h"
+#include "sc-store/sc_types.h"
+#include "sc_helper_private.h"
+#include "sc_memory_ext.h"
+#include "sc_memory_params.h"
+#include "sc_memory_private.h"
 
 sc_memory_context * s_memory_default_ctx = null_ptr;
 sc_uint16 s_context_id_last = 1;

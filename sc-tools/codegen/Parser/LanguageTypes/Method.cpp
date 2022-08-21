@@ -1,7 +1,7 @@
-#include "LanguageTypes/Class.hpp"
 #include "LanguageTypes/Method.hpp"
 
 #include "Cursor.hpp"
+#include "LanguageTypes/Class.hpp"
 
 Method::Method(Cursor const & cursor, Namespace const & currentNamespace)
   : LanguageType(cursor, currentNamespace)

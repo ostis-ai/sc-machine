@@ -4,8 +4,9 @@
  * (See accompanying file COPYING.MIT or copy at http://opensource.org/licenses/MIT)
  */
 
-#include "uiPrecompiled.h"
 #include "uiUtils.h"
+
+#include "uiPrecompiled.h"
 
 sc_result ui_check_cmd_type(sc_addr cmd_addr, sc_addr cmd_class)
 {

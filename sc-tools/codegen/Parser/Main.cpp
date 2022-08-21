@@ -1,13 +1,11 @@
-#include "ReflectionOptions.hpp"
-#include "ReflectionParser.hpp"
-
-#include "MetaUtils.hpp"
-
+#include <boost/program_options.hpp>
 #include <chrono>
 #include <iostream>
 #include <string>
 
-#include <boost/program_options.hpp>
+#include "MetaUtils.hpp"
+#include "ReflectionOptions.hpp"
+#include "ReflectionParser.hpp"
 
 void parse(std::string const & appName, boost::program_options::variables_map const & cmdLine)
 {

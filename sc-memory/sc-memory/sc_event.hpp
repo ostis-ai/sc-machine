@@ -6,12 +6,12 @@
 
 #pragma once
 
+#include <functional>
+
 #include "sc_addr.hpp"
 #include "sc_utils.hpp"
 
 #include "utils/sc_lock.hpp"
-
-#include <functional>
 
 /* Base class for sc-events
  */

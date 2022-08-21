@@ -4,14 +4,13 @@
  * (See accompanying file COPYING.MIT or copy at http://opensource.org/licenses/MIT)
  */
 
-#include "gtest/gtest.h"
-
 #include "sc-core/sc-store/sc_types.h"
 #include "sc-memory/sc_type.hpp"
 #include "sc_server_test.hpp"
-#include "../../sc_client.hpp"
 
+#include "../../sc_client.hpp"
 #include "../../sc_memory_json_converter.hpp"
+#include "gtest/gtest.h"
 
 TEST_F(ScServerTest, CreateElements)
 {

@@ -5,9 +5,9 @@
  */
 
 #include "sc_link_helpers.h"
-#include "sc_element.h"
 
 #include "sc-base/sc_allocator.h"
+#include "sc_element.h"
 
 #ifdef SC_ROCKSDB_FS_STORAGE
 #  include <memory.h>

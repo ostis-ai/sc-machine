@@ -6,9 +6,9 @@
 
 #pragma once
 
+#include "utils/sc_console.hpp"
 #include "utils/sc_log.hpp"
 #include "utils/sc_message.hpp"
-#include "utils/sc_console.hpp"
 
 namespace utils
 {

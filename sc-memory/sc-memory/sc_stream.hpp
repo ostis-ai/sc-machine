@@ -11,9 +11,9 @@ extern "C"
 #include "sc-core/sc_memory_headers.h"
 }
 
-#include "sc_utils.hpp"
-
 #include <type_traits>
+
+#include "sc_utils.hpp"
 
 class ScStream
 {

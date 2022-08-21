@@ -1,10 +1,11 @@
 #pragma once
 
-#include "../sc_defines.hpp"
-#include "sc_http_response.hpp"
-
 #include <string>
 #include <vector>
+
+#include "sc_http_response.hpp"
+
+#include "../sc_defines.hpp"
 
 class ScHttpRequest
 {

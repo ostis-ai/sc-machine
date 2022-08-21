@@ -7,10 +7,10 @@
 #ifndef _search_operations_h_
 #define _search_operations_h_
 
+#include "agents/search_identifiers.h"
 #include "agents/search_input_arcs.h"
 #include "agents/search_output_arcs.h"
 #include "agents/search_semantic_neighborhood.h"
-#include "agents/search_identifiers.h"
 #include "agents/search_structure.h"
 
 #endif

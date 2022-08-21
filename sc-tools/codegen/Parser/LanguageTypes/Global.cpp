@@ -1,11 +1,10 @@
-#include "Cursor.hpp"
-
-#include "MetaDataConfig.hpp"
-#include "MetaUtils.hpp"
-
 #include "LanguageTypes/Global.hpp"
+
+#include "Cursor.hpp"
 #include "LanguageTypes/Class.hpp"
 #include "LanguageTypes/Field.hpp"
+#include "MetaDataConfig.hpp"
+#include "MetaUtils.hpp"
 
 Global::Global(Cursor const & cursor, Namespace const & currentNamespace, Class * parent)
   : LanguageType(cursor, currentNamespace)

@@ -4,13 +4,13 @@
  * (See accompanying file COPYING.MIT or copy at http://opensource.org/licenses/MIT)
  */
 
-#include "uiPrecompiled.h"
 #include "uiTranslators.h"
-#include "uiKeynodes.h"
 
-#include "translators/uiSc2ScsJsonTranslator.h"
 #include "translators/uiSc2SCgJsonTranslator.h"
 #include "translators/uiSc2SCnJsonTranslator.h"
+#include "translators/uiSc2ScsJsonTranslator.h"
+#include "uiKeynodes.h"
+#include "uiPrecompiled.h"
 
 sc_event * ui_translator_sc2scs_event = (sc_event *)null_ptr;
 sc_event * ui_translator_sc2scg_json_event = (sc_event *)null_ptr;

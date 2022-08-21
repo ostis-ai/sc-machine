@@ -1,10 +1,10 @@
 #include "Cache.hpp"
-#include "Sha256.hpp"
 
+#include <boost/filesystem/operations.hpp>
 #include <fstream>
 #include <streambuf>
 
-#include <boost/filesystem/operations.hpp>
+#include "Sha256.hpp"
 
 SourceCache::SourceCache(std::string const & path, std::string const & targetName)
   : m_cacheFileName(path + "/" + targetName + ".gen_cache")

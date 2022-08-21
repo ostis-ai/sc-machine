@@ -7,12 +7,12 @@
 #ifndef _sc_memory_headers_h_
 #define _sc_memory_headers_h_
 
-#include "sc_memory.h"
-#include "sc_memory_version.h"
 #include "sc-store/sc_event.h"
 #include "sc-store/sc_iterator.h"
 #include "sc-store/sc_stream.h"
 #include "sc-store/sc_stream_file.h"
 #include "sc-store/sc_stream_memory.h"
+#include "sc_memory.h"
+#include "sc_memory_version.h"
 
 #endif

@@ -1,7 +1,7 @@
 #pragma once
 
-#include "LanguageType.hpp"
 #include "Invokable.hpp"
+#include "LanguageType.hpp"
 
 class Function final
   : public LanguageType

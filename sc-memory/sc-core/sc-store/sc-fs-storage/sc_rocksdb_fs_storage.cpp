@@ -9,20 +9,21 @@
 extern "C"
 {
 #  include "sc_rocksdb_fs_storage.h"
-#  include "../sc_link_helpers.h"
 
 #  include "sc_file_system.h"
-#  include "../sc_stream_memory.h"
+
 #  include "../sc-base/sc_allocator.h"
 #  include "../sc-base/sc_message.h"
+#  include "../sc_link_helpers.h"
+#  include "../sc_stream_memory.h"
 }
-
-#  include "rocksdb/db.h"
-#  include "../sc_element.h"
 
 #  include <iostream>
 #  include <mutex>
 #  include <vector>
+
+#  include "../sc_element.h"
+#  include "rocksdb/db.h"
 
 rocksdb::DB * gDBInstance = nullptr;
 std::string gInstancePath;

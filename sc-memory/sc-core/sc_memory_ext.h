@@ -7,8 +7,9 @@
 #ifndef _sc_memory_ext_h_
 #define _sc_memory_ext_h_
 
-#include "sc-store/sc_types.h"
 #include <gmodule.h>
+
+#include "sc-store/sc_types.h"
 
 /*! Initialize extensions from specified directory.
  * This function find all available extensions in specified directory and try to load them.

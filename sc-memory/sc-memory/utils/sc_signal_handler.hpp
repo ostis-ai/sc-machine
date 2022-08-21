@@ -4,9 +4,9 @@
  * (See accompanying file COPYING.MIT or copy at http://opensource.org/licenses/MIT)
  */
 
-#include "../sc_defines.hpp"
-
 #include <functional>
+
+#include "../sc_defines.hpp"
 
 namespace utils
 {

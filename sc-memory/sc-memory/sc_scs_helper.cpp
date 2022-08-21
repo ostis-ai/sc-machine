@@ -6,15 +6,14 @@
 
 #include "sc_scs_helper.hpp"
 
+#include <glib.h>
+#include <regex>
+#include <utility>
+
 #include "sc_debug.hpp"
 #include "sc_link.hpp"
 #include "sc_memory.hpp"
-
 #include "scs/scs_parser.hpp"
-
-#include <regex>
-#include <utility>
-#include <glib.h>
 
 namespace impl
 {

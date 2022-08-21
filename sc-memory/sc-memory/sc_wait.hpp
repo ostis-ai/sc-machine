@@ -6,13 +6,13 @@
 
 #pragma once
 
-#include "sc_event.hpp"
-#include "sc_timer.hpp"
-
-#include <condition_variable>
 #include <chrono>
+#include <condition_variable>
 #include <mutex>
 #include <utility>
+
+#include "sc_event.hpp"
+#include "sc_timer.hpp"
 
 /* Class implements common wait logic.
  */

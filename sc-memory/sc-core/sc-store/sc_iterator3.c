@@ -4,13 +4,13 @@
  * (See accompanying file COPYING.MIT or copy at http://opensource.org/licenses/MIT)
  */
 
-#include "sc_iterator.h"
-#include "sc_element.h"
-#include "sc_storage.h"
-#include "../sc_memory_private.h"
-
 #include "sc-base/sc_allocator.h"
 #include "sc-base/sc_assert_utils.h"
+#include "sc_element.h"
+#include "sc_iterator.h"
+#include "sc_storage.h"
+
+#include "../sc_memory_private.h"
 
 const sc_uint32 s_max_iterator_lock_attempts = 10;
 

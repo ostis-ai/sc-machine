@@ -1,12 +1,11 @@
 #include "MetaUtils.hpp"
 
+#include <boost/algorithm/string/join.hpp>
+#include <iostream>
+
 #include "Cursor.hpp"
 #include "CursorType.hpp"
 #include "Types.hpp"
-
-#include <iostream>
-
-#include <boost/algorithm/string/join.hpp>
 
 namespace utils
 {

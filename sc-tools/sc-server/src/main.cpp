@@ -4,17 +4,15 @@
  * (See accompanying file COPYING.MIT or copy at http://opensource.org/licenses/MIT)
  */
 
-#include <iostream>
 #include <atomic>
-#include <thread>
-
+#include <iostream>
 #include <sc-memory/sc_debug.hpp>
 #include <sc-memory/utils/sc_signal_handler.hpp>
+#include <thread>
 
 #include "sc-config/sc_config.hpp"
 #include "sc_memory_config.hpp"
 #include "sc_options.hpp"
-
 #include "sc_server_factory.hpp"
 
 sc_int main(sc_int argc, sc_char * argv[])

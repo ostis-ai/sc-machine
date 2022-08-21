@@ -1,10 +1,9 @@
 #include "ReflectionParser.hpp"
 
-#include <iostream>
-#include <fstream>
-
 #include <boost/algorithm/string.hpp>
 #include <boost/filesystem.hpp>
+#include <fstream>
+#include <iostream>
 
 #define RECURSE_NAMESPACES(kind, cursor, method, ns) \
   if (kind == CXCursor_Namespace) \

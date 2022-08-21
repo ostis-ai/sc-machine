@@ -6,10 +6,10 @@
 
 #pragma once
 
-#include "sc-memory/sc_memory.hpp"
-
 #include <list>
 #include <string>
+
+#include "sc-memory/sc_memory.hpp"
 
 struct BuilderParams
 {

@@ -7,9 +7,9 @@
 #ifndef _sc_storage_h_
 #define _sc_storage_h_
 
-#include "sc_types.h"
 #include "sc_defines.h"
 #include "sc_stream.h"
+#include "sc_types.h"
 
 #if SC_DEBUG_MODE
 #  define STORAGE_CHECK_CALL(x) \

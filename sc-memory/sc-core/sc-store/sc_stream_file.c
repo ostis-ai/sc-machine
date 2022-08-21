@@ -5,13 +5,13 @@
  */
 
 #include "sc_stream_file.h"
-#include "sc_stream_private.h"
 
 #include <stdio.h>
 
 #include "sc-base/sc_allocator.h"
 #include "sc-base/sc_assert_utils.h"
 #include "sc-base/sc_message.h"
+#include "sc_stream_private.h"
 
 #define SC_STREAM_FILE_FD_CHECK(stream) \
   ({ \

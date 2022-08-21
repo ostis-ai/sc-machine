@@ -6,12 +6,12 @@
 
 #pragma once
 
+#include <cstring>
+
+#include "sc_keynodes.hpp"
 #include "sc_memory.hpp"
 #include "sc_stream.hpp"
-#include "sc_keynodes.hpp"
 #include "sc_template.hpp"
-
-#include <cstring>
 
 /* This class wraps specified sc-link and provide functionality
  * to work with it. For example: get/set content, check content type

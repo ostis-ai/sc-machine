@@ -1,9 +1,9 @@
 ﻿#include "sc_progress.hpp"
 
-#include "sc_console.hpp"
-
 #include <algorithm>
 #include <iostream>
+
+#include "sc_console.hpp"
 
 namespace utils
 {

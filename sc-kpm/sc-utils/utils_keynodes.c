@@ -5,9 +5,11 @@
  */
 
 #include "utils_keynodes.h"
+
+#include <glib.h>
+
 #include "../sc-common/sc_keynodes.h"
 #include "utils.h"
-#include <glib.h>
 
 const char keynode_sc_garbage_str[] = "sc_garbage";
 

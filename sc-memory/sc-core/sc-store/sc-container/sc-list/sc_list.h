@@ -8,9 +8,8 @@
 #define _sc_list_h_
 
 #include "../../sc_types.h"
-
-#include "../sc_struct_node.h"
 #include "../sc-iterator/sc_container_iterator.h"
+#include "../sc_struct_node.h"
 
 //! A sc-list container to store data in linear order
 typedef struct _sc_list

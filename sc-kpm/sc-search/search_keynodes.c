@@ -6,14 +6,14 @@
  */
 
 #include "search_keynodes.h"
-#include "search.h"
 
-#include "../sc-common/sc_keynodes.h"
+#include <glib.h>
 
 #include "sc-core/sc_helper.h"
 #include "sc-core/sc_memory_headers.h"
 
-#include <glib.h>
+#include "../sc-common/sc_keynodes.h"
+#include "search.h"
 
 sc_addr keynode_question_all_output_const_pos_arc;
 sc_addr keynode_question_all_input_const_pos_arc;

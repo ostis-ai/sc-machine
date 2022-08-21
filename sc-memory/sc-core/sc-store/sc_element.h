@@ -7,8 +7,8 @@
 #ifndef _sc_element_h_
 #define _sc_element_h_
 
-#include "sc_types.h"
 #include "sc_defines.h"
+#include "sc_types.h"
 
 struct _sc_arc_info
 {

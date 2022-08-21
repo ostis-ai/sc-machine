@@ -7,9 +7,9 @@
 #ifndef _ui_precompiled_h_
 #define _ui_precompiled_h_
 
-#include "uiTypes.h"
 #include "ui.h"
 #include "uiKeynodes.h"
+#include "uiTypes.h"
 #include "uiUtils.h"
 
 extern "C"

@@ -6,9 +6,8 @@
 
 #include "sc_element.h"
 
-#include "sc_types.h"
-
 #include "sc-base/sc_assert_utils.h"
+#include "sc_types.h"
 
 void sc_element_set_type(sc_element * element, sc_type type)
 {

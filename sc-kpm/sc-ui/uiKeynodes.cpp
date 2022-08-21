@@ -4,13 +4,15 @@
  * (See accompanying file COPYING.MIT or copy at http://opensource.org/licenses/MIT)
  */
 
-#include "uiPrecompiled.h"
 #include "uiKeynodes.h"
+
+#include "uiPrecompiled.h"
 
 extern "C"
 {
-#include "../sc-common/sc_keynodes.h"
 #include <glib.h>
+
+#include "../sc-common/sc_keynodes.h"
 }
 
 // ------------- Keynodes ----------------------

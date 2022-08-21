@@ -5,11 +5,12 @@
  */
 
 #include "sc_event_queue.h"
-#include "../sc_event.h"
+
 #include "sc_event_private.h"
 
 #include "../sc-base/sc_allocator.h"
 #include "../sc-base/sc_assert_utils.h"
+#include "../sc_event.h"
 
 typedef struct
 {

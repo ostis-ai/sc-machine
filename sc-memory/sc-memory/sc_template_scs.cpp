@@ -4,10 +4,9 @@
  * (See accompanying file COPYING.MIT or copy at http://opensource.org/licenses/MIT)
  */
 
-#include "sc_template.hpp"
-#include "sc_memory.hpp"
 #include "sc_debug.hpp"
-
+#include "sc_memory.hpp"
+#include "sc_template.hpp"
 #include "scs/scs_parser.hpp"
 
 #include "utils/sc_keynode_cache.hpp"

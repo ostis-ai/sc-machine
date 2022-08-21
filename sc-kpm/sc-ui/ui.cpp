@@ -4,12 +4,12 @@
  * (See accompanying file COPYING.MIT or copy at http://opensource.org/licenses/MIT)
  */
 
-#include "uiPrecompiled.h"
 #include "ui.h"
 
-#include "uiTranslators.h"
 #include "uiCommands.h"
 #include "uiKeynodes.h"
+#include "uiPrecompiled.h"
+#include "uiTranslators.h"
 
 extern "C"
 {

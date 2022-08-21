@@ -7,8 +7,8 @@
 #ifndef _sc_link_helpers_h_
 #define _sc_link_helpers_h_
 
-#include "sc_types.h"
 #include "sc_stream.h"
+#include "sc_types.h"
 
 #ifdef SC_ROCKSDB_FS_STORAGE
 /*! Caclulates checksum for data in stream

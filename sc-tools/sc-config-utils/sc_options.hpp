@@ -7,8 +7,8 @@
 #pragma once
 
 #include <algorithm>
-#include <vector>
 #include <sstream>
+#include <vector>
 
 #include "sc-core/sc-store/sc_types.h"
 

@@ -1,15 +1,14 @@
 #pragma once
 
-#include "LanguageType.hpp"
+#include <memory>
+#include <vector>
 
 #include "Constructor.hpp"
 #include "Field.hpp"
 #include "Function.hpp"
 #include "Global.hpp"
+#include "LanguageType.hpp"
 #include "Method.hpp"
-
-#include <memory>
-#include <vector>
 
 struct BaseClass
 {

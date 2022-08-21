@@ -5,6 +5,7 @@
  */
 
 #include "SetOperationsUtils.hpp"
+
 #include "CommonUtils.hpp"
 
 namespace utils

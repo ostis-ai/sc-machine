@@ -5,12 +5,14 @@
  */
 
 #include "sc_log.hpp"
-#include "../sc_debug.hpp"
-#include "sc_lock.hpp"
 
 #include <ctime>
 #include <iomanip>
 #include <iostream>
+
+#include "sc_lock.hpp"
+
+#include "../sc_debug.hpp"
 
 namespace
 {

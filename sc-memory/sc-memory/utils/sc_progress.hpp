@@ -6,9 +6,9 @@
 
 #pragma once
 
-#include "../sc_defines.hpp"
-
 #include <string>
+
+#include "../sc_defines.hpp"
 
 namespace utils
 {

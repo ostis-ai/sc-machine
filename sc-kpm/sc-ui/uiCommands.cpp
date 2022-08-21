@@ -4,12 +4,13 @@
  * (See accompanying file COPYING.MIT or copy at http://opensource.org/licenses/MIT)
  */
 
-#include "uiPrecompiled.h"
 #include "uiCommands.h"
-#include "uiKeynodes.h"
-#include "uiDefines.h"
 
 #include <stdio.h>
+
+#include "uiDefines.h"
+#include "uiKeynodes.h"
+#include "uiPrecompiled.h"
 
 // -------------------- Events ----------------------
 sc_event * event_ui_start_answer_translation = 0;

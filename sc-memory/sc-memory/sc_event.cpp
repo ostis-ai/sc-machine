@@ -5,9 +5,10 @@
  */
 
 #include "sc_event.hpp"
-#include "sc_utils.hpp"
+
 #include "sc_addr.hpp"
 #include "sc_memory.hpp"
+#include "sc_utils.hpp"
 
 #include "utils/sc_log.hpp"
 

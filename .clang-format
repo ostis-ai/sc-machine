@@ -1,16 +1,15 @@
-Language:        Cpp
-# BasedOnStyle:  Google
+Language: Cpp
 AccessModifierOffset: -2
 AlignAfterOpenBracket: AlwaysBreak
 AlignConsecutiveAssignments: false
 AlignConsecutiveDeclarations: false
 AlignEscapedNewlines: DontAlign
-AlignOperands:   true
+AlignOperands: true
 AlignTrailingComments: true
 AllowAllArgumentsOnNextLine: true
 AllowAllConstructorInitializersOnNextLine: false
 AllowAllParametersOfDeclarationOnNextLine: false
-AllowShortBlocksOnASingleLine: false
+AllowShortBlocksOnASingleLine: Never
 AllowShortCaseLabelsOnASingleLine: false
 AllowShortFunctionsOnASingleLine: None
 AllowShortLambdasOnASingleLine: Empty
@@ -23,21 +22,21 @@ AlwaysBreakTemplateDeclarations: Yes
 BinPackArguments: false
 BinPackParameters: false
 BraceWrapping:   
-  AfterCaseLabel:  true
-  AfterClass:      true
+  AfterCaseLabel: true
+  AfterClass: true
   AfterControlStatement: Always
-  AfterEnum:       true
-  AfterFunction:   true
-  AfterNamespace:  true
+  AfterEnum: true
+  AfterFunction: true
+  AfterNamespace: true
   AfterObjCDeclaration: false
-  AfterStruct:     true
-  AfterUnion:      true
+  AfterStruct: true
+  AfterUnion: true
   AfterExternBlock: true
-  BeforeCatch:     true
-  BeforeElse:      true
-#  BeforeLambdaBody: true
-#  BeforeWhile:     true
-  IndentBraces:    false
+  BeforeCatch: true
+  BeforeElse: true
+  #BeforeLambdaBody: true
+  #BeforeWhile: true
+  IndentBraces: false
   SplitEmptyFunction: true
   SplitEmptyRecord: true
   SplitEmptyNamespace: true
@@ -51,15 +50,15 @@ BreakConstructorInitializersBeforeComma: false
 BreakConstructorInitializers: BeforeComma
 BreakAfterJavaFieldAnnotations: false
 BreakStringLiterals: true
-ColumnLimit:     120
-CommentPragmas:  '^\s*(\*)?\s*\\.+'
+ColumnLimit: 120
+CommentPragmas: '^\s*(\*)?\s*\\.+'
 CompactNamespaces: false
 ConstructorInitializerAllOnOneLineOrOnePerLine: false
 ConstructorInitializerIndentWidth: 2
 ContinuationIndentWidth: 4
 Cpp11BracedListStyle: true
 DerivePointerAlignment: false
-DisableFormat:   false
+DisableFormat: false
 # EmptyLineBeforeAccessModifier: Always
 ExperimentalAutoDetectBinPacking: false
 FixNamespaceComments: true
@@ -69,27 +68,43 @@ ForEachMacros:
   - BOOST_FOREACH
 IncludeBlocks:   Regroup
 IncludeCategories:
-  - Regex:           '^<(gtest|gmock)/.*'
+  - Regex:           '^<(gtest|gmock)*'
     Priority:        1
 
-  - Regex:           '^<sc-memory/*.*'
+  - Regex:           '<glib.h>'
+    Priority:        2
+
+  - Regex:           '^<(~(sc-core)|~(sc-memory)|~(sc-kpm))*'
+    Priority:        3
+
+  - Regex:           '^<sc-core/*.*'
     Priority:        11
+
+  - Regex:           '^<sc-memory/*.*'
+    Priority:        21
+
+  - Regex:           '^<sc-kpm/*.*'
+    Priority:        31
   
   - Regex:           '^"sc_*.*'
-    Priority:        21
-  
-  - Regex:           '.*'
-    Priority:        100
+    Priority:        41
+
+  - Regex:           '^"~(generated)*'
+    Priority:        51
+
+  - Regex:           '^"generated/*'
+    Priority:        61
+
 # IncludeIsMainRegex: '([-_](test|unittest))?$'
 IndentCaseLabels: false
 IndentPPDirectives: AfterHash
-IndentWidth:     2
+IndentWidth: 2
 IndentWrappedFunctionNames: false
 JavaScriptQuotes: Leave
 JavaScriptWrapImports: true
 KeepEmptyLinesAtTheStartOfBlocks: false
 MacroBlockBegin: ''
-MacroBlockEnd:   ''
+MacroBlockEnd: ''
 MaxEmptyLinesToKeep: 1
 NamespaceIndentation: None
 ObjCBinPackProtocolList: Never
@@ -106,7 +121,7 @@ PenaltyExcessCharacter: 1000
 PenaltyReturnTypeOnItsOwnLine: 2000
 PointerAlignment: Middle
 RawStringFormats: 
-  - Language:        Cpp
+  - Language: Cpp
     Delimiters:      
       - cc
       - CC
@@ -116,8 +131,8 @@ RawStringFormats:
       - 'c++'
       - 'C++'
     CanonicalDelimiter: ''
-    BasedOnStyle:    google
-  - Language:        TextProto
+    BasedOnStyle: google
+  - Language: TextProto
     Delimiters:      
       - pb
       - PB
@@ -132,9 +147,9 @@ RawStringFormats:
       - ParseTextOrDie
       - ParseTextProtoOrDie
     CanonicalDelimiter: ''
-    BasedOnStyle:    google
-ReflowComments:  true
-SortIncludes:    false
+    BasedOnStyle: google
+ReflowComments: true
+#SortIncludes: Never
 SortUsingDeclarations: true
 SpaceAfterCStyleCast: false
 SpaceAfterLogicalNot: false
@@ -148,15 +163,12 @@ SpaceBeforeParens: ControlStatements
 SpaceBeforeRangeBasedForLoopColon: true
 SpaceInEmptyParentheses: false
 SpacesBeforeTrailingComments: 2
-SpacesInAngles:  false
+SpacesInAngles: false
 SpacesInContainerLiterals: false
 SpacesInCStyleCastParentheses: false
 SpacesInParentheses: false
 SpacesInSquareBrackets: false
-Standard:        Auto
-StatementMacros: 
-  - Q_UNUSED
-  - QT_REQUIRE_VERSION
-TabWidth:        2
-UseTab:          Never
+Standard: c++14
+TabWidth: 2
+UseTab: Never
 ...

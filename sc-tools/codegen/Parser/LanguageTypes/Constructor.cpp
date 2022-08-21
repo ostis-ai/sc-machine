@@ -1,8 +1,9 @@
-#include "Class.hpp"
 #include "Constructor.hpp"
-#include "MetaDataConfig.hpp"
 
 #include <boost/algorithm/string/join.hpp>
+
+#include "Class.hpp"
+#include "MetaDataConfig.hpp"
 
 Constructor::Constructor(Cursor const & cursor, Namespace const & currentNamespace, Class * parent)
   : LanguageType(cursor, currentNamespace)

@@ -6,10 +6,10 @@
 
 #include "sc_config.hpp"
 
-#include <string>
-#include <sstream>
-#include <utility>
 #include <algorithm>
+#include <sstream>
+#include <string>
+#include <utility>
 #include <vector>
 
 extern "C"

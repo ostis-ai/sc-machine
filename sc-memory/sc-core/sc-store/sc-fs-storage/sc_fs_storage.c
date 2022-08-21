@@ -7,13 +7,12 @@
 #include "sc_fs_storage.h"
 
 #include "sc_file_system.h"
-
-#include "../sc_segment.h"
-#include "../../sc_memory_version.h"
 #include "sc_fs_storage_builder.h"
 
+#include "../../sc_memory_version.h"
 #include "../sc-base/sc_allocator.h"
 #include "../sc-base/sc_message.h"
+#include "../sc_segment.h"
 
 sc_fs_storage * storage_instance;
 sc_char * repo_path = null_ptr;

@@ -12,13 +12,13 @@ extern "C"
 #include "sc-core/sc_memory_headers.h"
 }
 
-#include <string>
-#include <sstream>
-#include <map>
-#include <list>
-#include <vector>
 #include <assert.h>
+#include <list>
+#include <map>
+#include <sstream>
 #include <stdint.h>
+#include <string>
+#include <vector>
 
 typedef std::string String;
 typedef std::stringstream StringStream;

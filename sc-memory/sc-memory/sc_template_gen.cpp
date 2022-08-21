@@ -4,10 +4,10 @@
  * (See accompanying file COPYING.MIT or copy at http://opensource.org/licenses/MIT)
  */
 
-#include "sc_template.hpp"
-#include "sc_memory.hpp"
-
 #include <algorithm>
+
+#include "sc_memory.hpp"
+#include "sc_template.hpp"
 
 const ScTemplateParams ScTemplateParams::Empty;
 

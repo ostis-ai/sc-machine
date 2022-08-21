@@ -5,6 +5,7 @@
  */
 
 #include "sc_struct.hpp"
+
 #include "sc_memory.hpp"
 #include "sc_template.hpp"
 

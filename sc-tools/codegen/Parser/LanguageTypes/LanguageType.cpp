@@ -1,7 +1,7 @@
 #include "LanguageType.hpp"
 
-#include "MetaDataConfig.hpp"
 #include "Cursor.hpp"
+#include "MetaDataConfig.hpp"
 
 LanguageType::LanguageType(Cursor const & cursor, Namespace const & currentNamespace)
   : m_metaData(cursor)

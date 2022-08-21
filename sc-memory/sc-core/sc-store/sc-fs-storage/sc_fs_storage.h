@@ -7,9 +7,9 @@
 #ifndef _sc_fs_storage_h_
 #define _sc_fs_storage_h_
 
-#include "../sc_types.h"
 #include "../sc_defines.h"
 #include "../sc_stream.h"
+#include "../sc_types.h"
 
 #define SC_STORAGE_SEG_CHECKSUM_SIZE 64
 

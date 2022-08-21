@@ -5,19 +5,18 @@
  */
 
 #include "sc_memory.hpp"
-#include "sc_keynodes.hpp"
-#include "sc_utils.hpp"
-#include "sc_stream.hpp"
-
-#include "kpm/sc_agent.hpp"
-
-#include "http/sc_http.hpp"
-
-#include "utils/sc_log.hpp"
 
 #include <cstdlib>
 #include <ctime>
 #include <iostream>
+
+#include "sc_keynodes.hpp"
+#include "sc_stream.hpp"
+#include "sc_utils.hpp"
+
+#include "http/sc_http.hpp"
+#include "kpm/sc_agent.hpp"
+#include "utils/sc_log.hpp"
 
 extern "C"
 {

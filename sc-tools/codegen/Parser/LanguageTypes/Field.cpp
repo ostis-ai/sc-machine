@@ -1,9 +1,8 @@
-#include "Cursor.hpp"
-
-#include "MetaDataConfig.hpp"
-
-#include "LanguageTypes/Class.hpp"
 #include "LanguageTypes/Field.hpp"
+
+#include "Cursor.hpp"
+#include "LanguageTypes/Class.hpp"
+#include "MetaDataConfig.hpp"
 
 Field::Field(Cursor const & cursor, Namespace const & currentNamespace)
   : LanguageType(cursor, currentNamespace)

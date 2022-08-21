@@ -5,8 +5,9 @@
  */
 
 #include "utils.h"
-#include "utils_keynodes.h"
+
 #include "utils_garbage_deletion.h"
+#include "utils_keynodes.h"
 
 sc_memory_context * s_default_ctx = 0;
 sc_memory_context * s_garbage_ctx = 0;

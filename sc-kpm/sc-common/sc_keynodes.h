@@ -9,7 +9,6 @@
 
 #include "sc-core/sc_helper.h"
 #include "sc-core/sc_memory.h"
-
 #include "sc_common_types.h"
 
 _SC_KPM_EXTERN sc_result

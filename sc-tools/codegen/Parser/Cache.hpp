@@ -1,8 +1,8 @@
 #pragma once
 
-#include "Types.hpp"
-
 #include <unordered_map>
+
+#include "Types.hpp"
 
 // Class works with cache of checksums of processed files
 class SourceCache

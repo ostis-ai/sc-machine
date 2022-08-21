@@ -1,14 +1,14 @@
 #include "Class.hpp"
+
+#include <boost/algorithm/string.hpp>
+
+#include "../ReservedTypes.hpp"
 #include "Constructor.hpp"
 #include "Cursor.hpp"
 #include "Field.hpp"
+#include "Function.hpp"
 #include "Global.hpp"
 #include "Method.hpp"
-#include "Function.hpp"
-
-#include "../ReservedTypes.hpp"
-
-#include <boost/algorithm/string.hpp>
 
 BaseClass::BaseClass(const Cursor & cursor)
   : name(cursor.GetType().GetCanonicalType().GetDisplayName())

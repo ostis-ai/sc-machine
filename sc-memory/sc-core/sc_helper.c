@@ -5,13 +5,13 @@
  */
 
 #include "sc_helper.h"
-#include "sc_memory_headers.h"
-
-#include "string.h"
 
 #include "sc-store/sc-base/sc_allocator.h"
 #include "sc-store/sc-base/sc_assert_utils.h"
 #include "sc-store/sc-base/sc_message.h"
+#include "sc_memory_headers.h"
+
+#include "string.h"
 
 // sc-helper initialization flag
 sc_bool sc_helper_is_initialized = SC_FALSE;

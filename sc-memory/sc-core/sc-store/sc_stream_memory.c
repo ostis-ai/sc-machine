@@ -5,11 +5,11 @@
  */
 
 #include "sc_stream_memory.h"
-#include "sc_stream_private.h"
 
 #include "sc-base/sc_allocator.h"
 #include "sc-base/sc_assert_utils.h"
 #include "sc-base/sc_message.h"
+#include "sc_stream_private.h"
 
 struct _sc_memory_buffer
 {

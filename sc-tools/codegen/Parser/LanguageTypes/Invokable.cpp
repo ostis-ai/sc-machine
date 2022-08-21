@@ -1,8 +1,8 @@
-#include "Cursor.hpp"
-
 #include "LanguageTypes/Invokable.hpp"
 
 #include <boost/algorithm/string/join.hpp>
+
+#include "Cursor.hpp"
 
 Invokable::Invokable(Cursor const & cursor)
   : m_returnType(cursor.GetReturnType().GetDisplayName())

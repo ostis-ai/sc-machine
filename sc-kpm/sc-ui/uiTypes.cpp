@@ -4,8 +4,9 @@
  * (See accompanying file COPYING.MIT or copy at http://opensource.org/licenses/MIT)
  */
 
-#include "uiPrecompiled.h"
 #include "uiTypes.h"
+
+#include "uiPrecompiled.h"
 
 bool operator<(const sc_addr & addr1, const sc_addr & addr2)
 {

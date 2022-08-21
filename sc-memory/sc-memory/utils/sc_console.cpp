@@ -7,9 +7,9 @@
 #include "sc_console.hpp"
 
 /// Common C++ headers
+#include <cstdio>  // for getch()
 #include <iostream>
 #include <string>
-#include <cstdio>  // for getch()
 
 #if SC_IS_PLATFORM_WIN32
 #  include <windows.h>  // for WinAPI and Sleep()
@@ -18,10 +18,10 @@
 #  define getch _getch
 #  define kbhit _kbhit
 #else
+#  include <ctime>        // for kbhit()
+#  include <sys/ioctl.h>  // for getkey()
 #  include <termios.h>    // for getch() and kbhit()
 #  include <unistd.h>     // for getch(), kbhit() and (u)sleep()
-#  include <sys/ioctl.h>  // for getkey()
-#  include <ctime>        // for kbhit()
 
 /// Function: getch
 /// Get character without waiting for Return to be pressed.

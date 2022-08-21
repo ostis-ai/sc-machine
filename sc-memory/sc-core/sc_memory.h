@@ -7,8 +7,8 @@
 #ifndef _sc_memory_h_
 #define _sc_memory_h_
 
-#include "sc-store/sc_types.h"
 #include "sc-store/sc_stream.h"
+#include "sc-store/sc_types.h"
 #include "sc_memory_params.h"
 
 // Public functions that used by developer

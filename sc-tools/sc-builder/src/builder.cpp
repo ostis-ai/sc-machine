@@ -5,15 +5,16 @@
  */
 
 #include "builder.hpp"
-#include "keynodes.hpp"
+
+#include <boost/algorithm/string.hpp>
+#include <boost/filesystem.hpp>
+#include <fstream>
+#include <memory>
+#include <unordered_set>
+
 #include "scs_translator.hpp"
 
-#include <boost/filesystem.hpp>
-#include <memory>
-#include <boost/algorithm/string.hpp>
-
-#include <fstream>
-#include <unordered_set>
+#include "keynodes.hpp"
 
 namespace impl
 {

@@ -4,11 +4,11 @@
  * (See accompanying file COPYING.MIT or copy at http://opensource.org/licenses/MIT)
  */
 
-#include "builder.hpp"
-
 #include <iostream>
 
 #include "sc_memory_config.hpp"
+
+#include "builder.hpp"
 
 sc_int main(sc_int argc, sc_char * argv[])
 try

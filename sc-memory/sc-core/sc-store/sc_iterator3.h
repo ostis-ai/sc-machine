@@ -8,8 +8,8 @@
 #define _sc_iterator3_h_
 
 #include "sc_defines.h"
-#include "sc_types.h"
 #include "sc_element.h"
+#include "sc_types.h"
 
 //! sc-iterator types
 typedef enum

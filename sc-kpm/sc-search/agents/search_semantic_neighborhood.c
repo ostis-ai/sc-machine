@@ -5,15 +5,16 @@
  */
 
 #include "search_semantic_neighborhood.h"
-#include "search_keynodes.h"
-#include "search_utils.h"
-#include "search_defines.h"
-#include "search.h"
+
+#include <stdio.h>
 
 #include "sc-core/sc_helper.h"
 #include "sc-core/sc_memory_headers.h"
 
-#include <stdio.h>
+#include "search.h"
+#include "search_defines.h"
+#include "search_keynodes.h"
+#include "search_utils.h"
 
 void search_translation(sc_addr elem, sc_addr answer, sc_bool sys_off)
 {

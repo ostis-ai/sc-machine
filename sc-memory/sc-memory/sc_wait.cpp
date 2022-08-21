@@ -5,6 +5,7 @@
  */
 
 #include "sc_wait.hpp"
+
 #include "kpm/sc_agent.hpp"
 
 ScWaitActionFinished::ScWaitActionFinished(ScMemoryContext const & ctx, ScAddr const & actionAddr)

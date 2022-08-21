@@ -4,15 +4,14 @@
  * (See accompanying file COPYING.MIT or copy at http://opensource.org/licenses/MIT)
  */
 
-#include <algorithm>
-
 #include "GenerationUtils.hpp"
 
+#include <algorithm>
 #include <sc-memory/sc_iterator.hpp>
 
-#include "keynodes/coreKeynodes.hpp"
-#include "IteratorUtils.hpp"
 #include "CommonUtils.hpp"
+#include "IteratorUtils.hpp"
+#include "keynodes/coreKeynodes.hpp"
 
 using namespace scAgentsCommon;
 using namespace std;

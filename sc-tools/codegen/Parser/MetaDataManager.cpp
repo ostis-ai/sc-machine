@@ -1,8 +1,9 @@
 #include "MetaDataManager.hpp"
-#include "ReflectionParser.hpp"
 
 #include <iostream>
 #include <regex>
+
+#include "ReflectionParser.hpp"
 
 MetaDataManager::MetaDataManager(Cursor const & cursor)
 {

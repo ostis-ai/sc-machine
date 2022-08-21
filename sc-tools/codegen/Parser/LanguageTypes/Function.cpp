@@ -1,10 +1,10 @@
-#include "Cursor.hpp"
-
 #include "LanguageTypes/Function.hpp"
-#include "LanguageTypes/Class.hpp"
 
-#include <boost/format.hpp>
 #include <boost/algorithm/string/join.hpp>
+#include <boost/format.hpp>
+
+#include "Cursor.hpp"
+#include "LanguageTypes/Class.hpp"
 
 Function::Function(Cursor const & cursor, Namespace const & currentNamespace)
   : LanguageType(cursor, currentNamespace)

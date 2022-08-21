@@ -6,13 +6,11 @@
 
 #pragma once
 
-#include "../sc_object.hpp"
-#include "../sc_memory.hpp"
-#include "../sc_keynodes.hpp"
-
-#include "../utils/sc_log.hpp"
-
 #include "../generated/sc_agent.generated.hpp"
+#include "../sc_keynodes.hpp"
+#include "../sc_memory.hpp"
+#include "../sc_object.hpp"
+#include "../utils/sc_log.hpp"
 
 /* Call this function before agent module usage.
  * If module initialized, then returns true; otherwise returns false

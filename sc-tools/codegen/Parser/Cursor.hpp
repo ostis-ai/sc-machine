@@ -1,8 +1,8 @@
 #pragma once
 
-#include "CursorType.hpp"
-
 #include <vector>
+
+#include "CursorType.hpp"
 
 class Cursor
 {

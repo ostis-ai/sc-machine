@@ -7,11 +7,11 @@
 #ifndef _sc_segment_h_
 #define _sc_segment_h_
 
-#include "sc_types.h"
+#include <glib.h>
+
 #include "sc_defines.h"
 #include "sc_element.h"
-
-#include <glib.h>
+#include "sc_types.h"
 
 #define SC_SEG_ELEMENTS_SIZE_BYTE (sizeof(sc_element) * SC_SEGMENT_ELEMENTS_COUNT)
 

@@ -4,10 +4,11 @@
  * (See accompanying file COPYING.MIT or copy at http://opensource.org/licenses/MIT)
  */
 
-#include <stdio.h>
-#include <ctype.h>
-
 #include "sc_dictionary.h"
+
+#include <ctype.h>
+#include <stdio.h>
+
 #include "sc_dictionary_private.h"
 
 #include "../../sc-base/sc_allocator.h"

@@ -5,13 +5,14 @@
  */
 
 #include "search_output_arcs.h"
-#include "search_keynodes.h"
-#include "search_utils.h"
-#include "search_defines.h"
-#include "search.h"
 
 #include "sc-core/sc_helper.h"
 #include "sc-core/sc_memory_headers.h"
+
+#include "search.h"
+#include "search_defines.h"
+#include "search_keynodes.h"
+#include "search_utils.h"
 
 sc_result agent_search_all_const_pos_output_arc(const sc_event * event, sc_addr arg)
 {

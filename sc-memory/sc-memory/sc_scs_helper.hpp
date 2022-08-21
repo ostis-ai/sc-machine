@@ -6,9 +6,9 @@
 
 #pragma once
 
-#include "sc_stream.hpp"
-
 #include <memory>
+
+#include "sc_stream.hpp"
 
 class SCsFileInterface
 {

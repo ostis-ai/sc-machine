@@ -6,11 +6,12 @@
 
 #pragma once
 
-#include "sc_object.hpp"
 #include "sc_addr.hpp"
-#include "kpm/sc_agent.hpp"
+#include "sc_object.hpp"
 
 #include "generated/sc_module.generated.hpp"
+
+#include "kpm/sc_agent.hpp"
 
 class ScModule : public ScObject
 {

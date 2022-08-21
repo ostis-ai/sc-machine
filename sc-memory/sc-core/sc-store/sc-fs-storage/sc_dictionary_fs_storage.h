@@ -7,11 +7,10 @@
 #ifndef _sc_dictionary_fs_storage_h_
 #define _sc_dictionary_fs_storage_h_
 
-#include "../sc_types.h"
+#include "../sc-container/sc-dictionary/sc_dictionary.h"
 #include "../sc_defines.h"
 #include "../sc_stream.h"
-
-#include "../sc-container/sc-dictionary/sc_dictionary.h"
+#include "../sc_types.h"
 
 typedef struct _sc_link_content
 {

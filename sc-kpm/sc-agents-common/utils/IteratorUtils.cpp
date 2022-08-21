@@ -4,12 +4,12 @@
  * (See accompanying file COPYING.MIT or copy at http://opensource.org/licenses/MIT)
  */
 
-#include "CommonUtils.hpp"
+#include "IteratorUtils.hpp"
 
 #include <sc-memory/sc_iterator.hpp>
 
+#include "CommonUtils.hpp"
 #include "keynodes/coreKeynodes.hpp"
-#include "IteratorUtils.hpp"
 
 using namespace std;
 using namespace scAgentsCommon;

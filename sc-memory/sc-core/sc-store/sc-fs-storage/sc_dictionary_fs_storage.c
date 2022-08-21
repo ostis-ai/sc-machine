@@ -7,6 +7,7 @@
 #ifdef SC_DICTIONARY_FS_STORAGE
 
 #  include "sc_dictionary_fs_storage.h"
+
 #  include "sc_file_system.h"
 
 #  include "../sc-base/sc_allocator.h"

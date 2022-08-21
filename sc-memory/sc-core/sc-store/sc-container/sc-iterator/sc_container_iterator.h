@@ -8,7 +8,6 @@
 #define _sc_container_iterator_h_
 
 #include "../../sc_types.h"
-
 #include "../sc_struct_node.h"
 
 //! A sc-container iterator to visit elements in sc-containers

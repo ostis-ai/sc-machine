@@ -1,15 +1,12 @@
 #pragma once
 
-#include "ReflectionOptions.hpp"
-
-#include "Cursor.hpp"
-
-#include "MacrosManager.hpp"
 #include "Cache.hpp"
-
+#include "Cursor.hpp"
 #include "LanguageTypes/Class.hpp"
-#include "LanguageTypes/Global.hpp"
 #include "LanguageTypes/Function.hpp"
+#include "LanguageTypes/Global.hpp"
+#include "MacrosManager.hpp"
+#include "ReflectionOptions.hpp"
 
 class ReflectionParser final
 {

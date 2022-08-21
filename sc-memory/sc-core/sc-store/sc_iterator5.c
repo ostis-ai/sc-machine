@@ -4,11 +4,10 @@
  * (See accompanying file COPYING.MIT or copy at http://opensource.org/licenses/MIT)
  */
 
-#include "sc_iterator.h"
-#include "sc_storage.h"
-
 #include "sc-base/sc_allocator.h"
 #include "sc-base/sc_assert_utils.h"
+#include "sc_iterator.h"
+#include "sc_storage.h"
 
 sc_iterator5 * sc_iterator5_new(
     const sc_memory_context * ctx,

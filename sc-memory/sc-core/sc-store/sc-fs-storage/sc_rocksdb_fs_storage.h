@@ -7,8 +7,8 @@
 #ifndef _sc_rocksdb_fs_storage_h_
 #define _sc_rocksdb_fs_storage_h_
 
-#include "../sc_types.h"
 #include "../sc_stream.h"
+#include "../sc_types.h"
 
 /*! Initialize sc-rocksdb fs-storage in specified path
  * @param path Path to store on sc-rocksdb fs-storage.

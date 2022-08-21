@@ -6,24 +6,23 @@
 
 #include "sc_storage.h"
 
-#include "sc_defines.h"
-#include "sc_segment.h"
-#include "sc_element.h"
-#include "sc_link_helpers.h"
-#include "sc_event.h"
-#include "sc_iterator.h"
-#include "sc_stream_memory.h"
-
-#include "sc_event/sc_event_private.h"
-#include "../sc_memory_private.h"
-#include "sc-fs-storage/sc_fs_storage.h"
+#include <stdio.h>
 
 #include "sc-base/sc_allocator.h"
-#include "sc-base/sc_atomic.h"
 #include "sc-base/sc_assert_utils.h"
+#include "sc-base/sc_atomic.h"
 #include "sc-base/sc_message.h"
+#include "sc-fs-storage/sc_fs_storage.h"
+#include "sc_defines.h"
+#include "sc_element.h"
+#include "sc_event.h"
+#include "sc_event/sc_event_private.h"
+#include "sc_iterator.h"
+#include "sc_link_helpers.h"
+#include "sc_segment.h"
+#include "sc_stream_memory.h"
 
-#include <stdio.h>
+#include "../sc_memory_private.h"
 
 // segments array
 sc_segment ** segments = null_ptr;

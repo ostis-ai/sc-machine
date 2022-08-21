@@ -5,9 +5,10 @@
  */
 
 #include "sc_template.hpp"
-#include "sc_memory.hpp"
 
 #include <algorithm>
+
+#include "sc_memory.hpp"
 
 ScTemplateItemValue operator>>(ScAddr const & value, char const * replName)
 {

@@ -4,13 +4,12 @@
  * (See accompanying file COPYING.MIT or copy at http://opensource.org/licenses/MIT)
  */
 
-#include "sc_template.hpp"
+#include <algorithm>
+#include <stack>
 
 #include "sc_debug.hpp"
 #include "sc_memory.hpp"
-
-#include <algorithm>
-#include <stack>
+#include "sc_template.hpp"
 
 class ScTemplateSearch
 {
