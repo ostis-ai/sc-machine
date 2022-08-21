@@ -27,11 +27,11 @@ sc_event * event_question_search_links_of_relation_connected_with_element;
 
 // --------------------- Module ------------------------
 
-_SC_EXT_EXTERN sc_result sc_module_initialize()
+sc_result sc_module_initialize()
 {
-  s_default_ctx = sc_memory_context_new(sc_access_lvl_make_min);
+  s_default_ctx = sc_memory_context_new(sc_access_lvl_make_max);
 
-  if (search_keynodes_initialize() != SC_RESULT_OK)
+  if (search_keynodes_initialize(s_default_ctx) != SC_RESULT_OK)
     return SC_RESULT_ERROR;
 
   event_question_search_all_output_arcs = sc_event_new(
@@ -122,7 +122,7 @@ _SC_EXT_EXTERN sc_result sc_module_initialize()
   return SC_RESULT_OK;
 }
 
-_SC_EXT_EXTERN sc_result sc_module_shutdown()
+sc_result sc_module_shutdown()
 {
   if (event_question_search_all_output_arcs)
     sc_event_destroy(event_question_search_all_output_arcs);
