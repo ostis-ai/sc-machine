@@ -1,1 +1,3 @@
-#define BUILDER_REPO_PATH "${SC_BIN_PATH}/sc-builder-test-repo"
+#define SC_BUILDER_REPO_PATH "${SC_BIN_PATH}/sc-builder-test-repo"
+#define SC_BUILDER_KB "${CMAKE_CURRENT_LIST_DIR}/kb"
+#define SC_BUILDER_INI "${CMAKE_CURRENT_LIST_DIR}/sc-builder-test.ini"

@@ -31,7 +31,7 @@ protected:
     sc_memory_params_clear(&params);
 
     params.clear = SC_FALSE;
-    params.repo_path = BUILDER_REPO_PATH;
+    params.repo_path = SC_BUILDER_REPO_PATH;
 
     ScMemory::LogMute();
     ScMemory::Initialize(params);
