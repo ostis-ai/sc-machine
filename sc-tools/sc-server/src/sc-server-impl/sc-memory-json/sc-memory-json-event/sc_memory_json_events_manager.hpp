@@ -36,7 +36,12 @@ public:
   {
     auto const & it = m_events.find(index);
     if (it != m_events.end())
-      return m_events.find(index)->second;
+    {
+      auto const & pair = m_events.find(index);
+      auto * e = pair->second;
+      pair->second = nullptr;
+      return e;
+    }
 
     return nullptr;
   }
