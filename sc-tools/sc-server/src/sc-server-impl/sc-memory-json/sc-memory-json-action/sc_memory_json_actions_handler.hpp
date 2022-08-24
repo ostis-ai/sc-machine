@@ -14,21 +14,11 @@
 class ScMemoryJsonActionsHandler : public ScMemoryJsonHandler
 {
 public:
-  ScMemoryJsonActionsHandler()
-  {
-    m_context = new ScMemoryContext("sc-json-socket-actions-handler");
-  }
+  explicit ScMemoryJsonActionsHandler(ScServer * server);
 
-  std::string Handle(ScServerConnectionHandle const & hdl, std::string const & requestMessageText) override;
+  ~ScMemoryJsonActionsHandler() override;
 
-  ~ScMemoryJsonActionsHandler() override
-  {
-    m_context->Destroy();
-    delete m_context;
-
-    for (auto const & it : m_actions)
-      delete it.second;
-  }
+  std::string Handle(ScServerConnectionHandle const & hdl, std::string const & requestMessage) override;
 
 private:
   ScMemoryContext * m_context;
@@ -43,6 +33,13 @@ private:
       {"generate_template", new ScMemoryTemplateGenerateJsonAction()},
       {"content", new ScMemoryHandleLinkContentJsonAction()},
   };
+
+  std::vector<ScMemoryJsonPayload> ParseRequestMessage(std::string const & requestMessage);
+
+  ScMemoryJsonPayload JsonifyRequestMessage(std::string const & requestMessage);
+
+  ScMemoryJsonPayload HandleRequestPayload(
+      std::string const & requestType, ScMemoryJsonPayload const & requestPayload, sc_bool & result);
 
   static std::string GenerateResponseText(
       size_t requestId,

@@ -35,7 +35,16 @@ public:
       if (m_helper == nullptr)
         m_helper = new SCsHelper{*context, std::make_shared<DummyFileInterface>()};
 
-      sc_bool result = m_helper->GenerateBySCsText(scs);
+      sc_bool result = SC_FALSE;
+
+      try
+      {
+        result = m_helper->GenerateBySCsText(scs);
+      }
+      catch (utils::ScException const & e)
+      {
+      }
+
       responsePayload.push_back(result);
     }
 

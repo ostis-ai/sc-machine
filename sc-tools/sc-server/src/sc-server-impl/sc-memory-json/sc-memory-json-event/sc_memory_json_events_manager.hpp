@@ -50,6 +50,7 @@ public:
   {
     for (auto const & pair : m_events)
       delete pair.second;
+    m_events.clear();
 
     delete m_instance;
   }

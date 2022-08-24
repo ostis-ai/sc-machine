@@ -7,19 +7,24 @@
 #include "sc_memory_json_events_handler.hpp"
 
 ScMemoryJsonEventsHandler::ScMemoryJsonEventsHandler(ScServer * server)
+  : ScMemoryJsonHandler(server)
 {
   m_context = new ScMemoryContext("sc-json-socket-events-handler");
   m_manager = ScMemoryJsonEventsManager::GetInstance();
+}
 
-  m_server = server;
+ScMemoryJsonEventsHandler::~ScMemoryJsonEventsHandler()
+{
+  m_context->Destroy();
+  delete m_context;
 }
 
 std::string ScMemoryJsonEventsHandler::Handle(
     ScServerConnectionHandle const & hdl,
-    std::string const & requestMessageText)
+    std::string const & requestMessage)
 {
-  ScMemoryJsonPayload const & requestMessage = ScMemoryJsonPayload::parse(requestMessageText);
-  ScMemoryJsonPayload requestPayload = requestMessage["payload"];
+  ScMemoryJsonPayload const & requestJson = ScMemoryJsonPayload::parse(requestMessage);
+  ScMemoryJsonPayload requestPayload = requestJson["payload"];
 
   ScMemoryJsonPayload responsePayload;
   if (requestPayload["create"].is_null() == SC_FALSE)
@@ -27,7 +32,7 @@ std::string ScMemoryJsonEventsHandler::Handle(
   else if (requestPayload["delete"].is_null() == SC_FALSE)
     responsePayload = HandleDelete(hdl, requestPayload["delete"]);
 
-  return GenerateResponseText(requestMessage["id"], SC_FALSE, SC_TRUE, responsePayload);
+  return GenerateResponseText(requestJson["id"], SC_FALSE, SC_TRUE, responsePayload);
 }
 
 ScMemoryJsonPayload ScMemoryJsonEventsHandler::HandleCreate(
