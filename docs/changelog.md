@@ -38,6 +38,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - United config file
 
 ### Changed
+- Up codecov target from 40% to 75%
 - Up codecov level from 62% to 78%
 - Separate ci workflow: check pr-commit, codestyle and tests
 - Revamped README.md
