@@ -20,7 +20,7 @@ public:
 
   static bool IsConnectorReversed(std::string const & connectorAlias);
   static bool IsConst(std::string const & idtf);
-  static bool IsEdgeAttrConst(std::string const & attr);
+  static std::string GetEdgeAttr(std::string const & attr);
   static bool IsKeynodeType(std::string const & alias);
   static bool IsUnnamed(std::string const & alias);
 
@@ -28,6 +28,7 @@ private:
   using MapType = std::unordered_map<std::string, ScType>;
   using IsType = std::unordered_set<std::string>;
 
+  static std::unordered_map<std::string, std::string> ms_attrToEdgeType;
   static MapType ms_keynodeToType;
   static MapType ms_connectorToType;
   static IsType ms_reversedConnectors;
