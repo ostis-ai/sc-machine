@@ -43,6 +43,7 @@ public:
       }
       catch (utils::ScException const & e)
       {
+        SC_LOG_ERROR(e.Message());
       }
 
       responsePayload.push_back(result);

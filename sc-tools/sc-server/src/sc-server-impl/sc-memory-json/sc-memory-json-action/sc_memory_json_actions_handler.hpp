@@ -18,10 +18,15 @@ public:
 
   ~ScMemoryJsonActionsHandler() override;
 
-  std::string Handle(ScServerConnectionHandle const & hdl, std::string const & requestMessage) override;
-
 private:
   ScMemoryContext * m_context;
+
+  ScMemoryJsonPayload HandleRequestPayload(
+      ScServerConnectionHandle const & hdl,
+      std::string const & requestType,
+      ScMemoryJsonPayload const & requestPayload,
+      sc_bool & status,
+      sc_bool & isEvent) override;
 
   std::map<std::string, ScMemoryJsonAction *> m_actions = {
       {"keynodes", new ScMemoryHandleKeynodesJsonAction()},
@@ -33,16 +38,4 @@ private:
       {"generate_template", new ScMemoryTemplateGenerateJsonAction()},
       {"content", new ScMemoryHandleLinkContentJsonAction()},
   };
-
-  std::vector<ScMemoryJsonPayload> ParseRequestMessage(std::string const & requestMessage);
-
-  ScMemoryJsonPayload JsonifyRequestMessage(std::string const & requestMessage);
-
-  ScMemoryJsonPayload HandleRequestPayload(
-      std::string const & requestType, ScMemoryJsonPayload const & requestPayload, sc_bool & result);
-
-  static std::string GenerateResponseText(
-      size_t requestId,
-      sc_bool status,
-      ScMemoryJsonPayload const & responsePayload);
 };

@@ -19,34 +19,43 @@ ScMemoryJsonEventsHandler::~ScMemoryJsonEventsHandler()
   delete m_context;
 }
 
-std::string ScMemoryJsonEventsHandler::Handle(
+ScMemoryJsonPayload ScMemoryJsonEventsHandler::HandleRequestPayload(
     ScServerConnectionHandle const & hdl,
-    std::string const & requestMessage)
+    std::string const & requestType,
+    ScMemoryJsonPayload const & requestPayload,
+    sc_bool & status,
+    sc_bool & isEvent)
 {
-  ScMemoryJsonPayload const & requestJson = ScMemoryJsonPayload::parse(requestMessage);
-  ScMemoryJsonPayload requestPayload = requestJson["payload"];
+  status = SC_FALSE;
+  isEvent = SC_TRUE;
 
   ScMemoryJsonPayload responsePayload;
   if (requestPayload["create"].is_null() == SC_FALSE)
+  {
     responsePayload = HandleCreate(hdl, requestPayload["create"]);
+    status = SC_TRUE;
+  }
   else if (requestPayload["delete"].is_null() == SC_FALSE)
+  {
     responsePayload = HandleDelete(hdl, requestPayload["delete"]);
+    status = SC_TRUE;
+  }
 
-  return GenerateResponseText(requestJson["id"], SC_FALSE, SC_TRUE, responsePayload);
+  return responsePayload;
 }
 
 ScMemoryJsonPayload ScMemoryJsonEventsHandler::HandleCreate(
     ScServerConnectionHandle const & hdl,
     ScMemoryJsonPayload const & message)
 {
-  auto const onEmitEvent = [](size_t id,
+  auto const & onEmitEvent = [this](size_t id,
                               ScServer * server,
                               ScServerConnectionHandle const & handle,
                               ScAddr const & addr,
                               ScAddr const & edgeAddr,
                               ScAddr const & otherAddr) -> sc_bool {
-    ScMemoryJsonPayload responsePayload = ScMemoryJsonPayload({addr.Hash(), edgeAddr.Hash(), otherAddr.Hash()});
-    std::string responseText = GenerateResponseText(id, SC_TRUE, SC_TRUE, responsePayload);
+    ScMemoryJsonPayload const & responsePayload = ScMemoryJsonPayload({addr.Hash(), edgeAddr.Hash(), otherAddr.Hash()});
+    std::string responseText = FormResponseMessage(id, SC_TRUE, SC_TRUE, responsePayload).dump();
 
     if (server != nullptr)
       server->OnEvent(handle, responseText);
@@ -82,14 +91,4 @@ ScMemoryJsonPayload ScMemoryJsonEventsHandler::HandleDelete(
     delete m_manager->Remove(atom.get<size_t>());
 
   return message;
-}
-
-std::string ScMemoryJsonEventsHandler::GenerateResponseText(
-    size_t requestId,
-    sc_bool event,
-    sc_bool status,
-    ScMemoryJsonPayload const & responsePayload)
-{
-  return ScMemoryJsonPayload({{"id", requestId}, {"event", event}, {"status", status}, {"payload", responsePayload}})
-      .dump();
 }

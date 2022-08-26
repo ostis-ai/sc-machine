@@ -25,8 +25,6 @@ public:
 
   ~ScMemoryJsonEventsHandler() override;
 
-  std::string Handle(ScServerConnectionHandle const & hdl, std::string const & requestMessage) override;
-
 private:
   ScMemoryContext * m_context;
   ScMemoryJsonEventsManager * m_manager;
@@ -40,13 +38,14 @@ private:
       {"delete_element", ScEvent::Type::EraseElement},
   };
 
+  ScMemoryJsonPayload HandleRequestPayload(
+      ScServerConnectionHandle const & hdl,
+      std::string const & requestType,
+      ScMemoryJsonPayload const & requestPayload,
+      sc_bool & status,
+      sc_bool & isEvent) override;
+
   ScMemoryJsonPayload HandleCreate(ScServerConnectionHandle const & hdl, ScMemoryJsonPayload const & message);
 
   ScMemoryJsonPayload HandleDelete(ScServerConnectionHandle const & hdl, ScMemoryJsonPayload const & message);
-
-  static std::string GenerateResponseText(
-      size_t requestId,
-      sc_bool event,
-      sc_bool status,
-      ScMemoryJsonPayload const & responsePayload);
 };
