@@ -15,7 +15,7 @@ add_executable(sc-server
 )
 
 add_library(sc-server-lib SHARED ${SOURCES})
-include_directories(${SC_MEMORY_SRC} ${GLIB2_INCLUDE_DIRS} ${SC_SERVER_ROOT}/../sc-config-utils)
+include_directories(${SC_MEMORY_SRC} ${SC_CONFIG_UTILS_SRC} ${GLIB2_INCLUDE_DIRS})
 target_link_libraries(sc-server-lib sc-memory)
 target_link_libraries(sc-server sc-server-lib sc-config-utils)
 

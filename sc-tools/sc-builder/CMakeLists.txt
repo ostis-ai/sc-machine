@@ -1,22 +1,20 @@
-set(SC_BUILDER_ROOT ${CMAKE_CURRENT_LIST_DIR})
-
 file(GLOB_RECURSE SOURCES "src/*.cpp" "src/*.h" "src/*.hpp")
 
 list(REMOVE_ITEM SOURCES
-    "${SC_BUILDER_ROOT}/src/main.cpp"
-    "${SC_BUILDER_ROOT}/src/builder.cpp"
-    "${SC_BUILDER_ROOT}/src/builder.hpp"
+    "${SC_BUILDER_SRC}/src/main.cpp"
+    "${SC_BUILDER_SRC}/src/builder.cpp"
+    "${SC_BUILDER_SRC}/src/builder.hpp"
 )
 
 add_executable(sc-builder
-    "${SC_BUILDER_ROOT}/src/main.cpp"
-    "${SC_BUILDER_ROOT}/src/builder.cpp"
-    "${SC_BUILDER_ROOT}/src/builder.hpp"
+    "${SC_BUILDER_SRC}/src/main.cpp"
+    "${SC_BUILDER_SRC}/src/builder.cpp"
+    "${SC_BUILDER_SRC}/src/builder.hpp"
 )
 
 add_library(sc-builder-lib SHARED ${SOURCES})
-include_directories(${SC_MEMORY_SRC} ${GLIB2_INCLUDE_DIRS} ${SC_BUILDER_ROOT}/../sc-config-utils)
-target_link_libraries(sc-builder-lib sc-memory )
+include_directories(${SC_MEMORY_SRC} ${SC_CONFIG_UTILS_SRC} ${GLIB2_INCLUDE_DIRS})
+target_link_libraries(sc-builder-lib sc-memory)
 target_link_libraries(sc-builder sc-builder-lib sc-config-utils)
 
 if(${SC_CLANG_FORMAT_CODE})
@@ -24,7 +22,7 @@ if(${SC_CLANG_FORMAT_CODE})
 endif()
 
 install_targets("/bin" sc-builder sc-builder-lib)
-sc_codegen(sc-builder-lib ${SC_BUILDER_ROOT}/src)
+sc_codegen(sc-builder-lib ${SC_BUILDER_SRC}/src)
 
 if(${SC_BUILD_TESTS})
     include(tests/tests.cmake)

@@ -1,10 +1,13 @@
-set(SC_CONFIG_UTILS_SRC ${CMAKE_CURRENT_LIST_DIR})
-
 file(GLOB_RECURSE SOURCES "*.c" "*.h" "*.cpp" "*.hpp")
+
+include_directories(${SC_CONFIG_UTILS_SRC} ${GLIB2_INCLUDE_DIRS})
 
 add_library(sc-config-utils SHARED ${SOURCES})
 
-target_include_directories(sc-config-utils PRIVATE ${SC_MEMORY_SRC} ${GLIB2_INCLUDE_DIRS})
+target_include_directories(sc-config-utils
+    PRIVATE ${SC_MEMORY_SRC}
+    PRIVATE ${GLIB2_INCLUDE_DIRS}
+)
 target_link_libraries(sc-config-utils sc-memory ${GLIB2_LIBRARIES})
 if(${SC_COVERAGE})
     if (CMAKE_CXX_COMPILER_ID MATCHES "GNU")
