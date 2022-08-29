@@ -1,4 +1,4 @@
-set(SC_SERVER_ROOT ${CMAKE_CURRENT_SOURCE_DIR})
+set(SC_SERVER_ROOT ${CMAKE_CURRENT_LIST_DIR})
 
 file(GLOB_RECURSE SOURCES "src/*.cpp" "src/*.h" "src/*.hpp")
 
@@ -27,8 +27,8 @@ install_targets("/bin" sc-server sc-server-lib)
 sc_codegen(sc-server-lib ${SC_SERVER_ROOT}/src)
 
 configure_file(
-    "${CMAKE_CURRENT_LIST_DIR}/tests/test_defines.hpp.in"
-    "${CMAKE_CURRENT_LIST_DIR}/tests/test_defines.hpp"
+    "${SC_SERVER_ROOT}/tests/test_defines.hpp.in"
+    "${SC_SERVER_ROOT}/tests/test_defines.hpp"
 )
 
 if(${SC_BUILD_TESTS})
