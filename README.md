@@ -56,7 +56,7 @@ To run sc-server, you can do the following:
 #build kb
 python3 scripts/build_kb.py -c config/sc-machine.ini <path to kb folder with SCs and SCg sources or repo.path file>
 #launch server
-python3 scripts/run_sc_server.py -c config/sc-machine.ini
+./bin/sc-server -c config/sc-machine.ini
 ``` 
 
 You can use `healthcheck.py` script to check memory state in sc-server.
