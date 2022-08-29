@@ -28,7 +28,7 @@ sanitizer(SC_USE_SANITIZER "Build with specified sanitizer" "none")
 
 set(SC_MEMORY_SRC "${SC_MACHINE_ROOT}/sc-memory")
 set(SC_KPM_SRC "${SC_MACHINE_ROOT}/sc-kpm")
-set(SC_TOOLS_SRC "${SC_MACHINE_ROOT}/tools")
+set(SC_TOOLS_SRC "${SC_MACHINE_ROOT}/sc-tools")
 
 set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -DSC_DEBUG -DSC_PROFILE")
 set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -DSC_DEBUG -DSC_PROFILE")
@@ -77,10 +77,10 @@ if(CCACHE_PROGRAM AND ${AUTO_CCACHE})
 endif()
 
 if(${SC_FILE_MEMORY} STREQUAL "Dictionary")
-	message("Build with sc-dictionary fs-storage")
+    message("Build with sc-dictionary fs-storage")
     add_definitions(-DSC_DICTIONARY_FS_STORAGE)
 elseif(${SC_FILE_MEMORY} STREQUAL "Rocksdb")
-	message("Build with sc-rocksdb fs-storage")
+    message("Build with sc-rocksdb fs-storage")
     add_definitions(-DSC_ROCKSDB_FS_STORAGE)
 endif()
 
