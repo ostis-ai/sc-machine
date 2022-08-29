@@ -42,6 +42,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- Update commit badges
 - Up codecov target from 40% to 75%
 - Up codecov level from 62% to 78%
 - Separate ci workflow: check pr-commit, codestyle and tests
