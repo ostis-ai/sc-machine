@@ -6,10 +6,43 @@
 
 #include "gtest/gtest.h"
 
-#include "sc-memory/sc_link.hpp"
-
 #include "sc_server_test.hpp"
 #include "../../sc_client.hpp"
+
+#include "sc_options.hpp"
+#include "sc-config/sc_config.hpp"
+#include "sc_memory_config.hpp"
+
+TEST(ScServer, RunStop)
+{
+  ScOptions options{1, nullptr};
+
+  std::string configFile = SC_SERVER_INI;
+
+  ScParams serverParams{options, {}};
+
+  ScConfig config{configFile, {}};
+  auto serverConfig = config["sc-server"];
+  for (auto const & key : *serverConfig)
+    serverParams.insert({key, serverConfig[key]});
+
+  ScParams memoryParams{options, {}};
+  memoryParams.insert({"repo_path", SC_SERVER_REPO_PATH});
+
+  ScMemoryConfig memoryConfig{config, std::move(memoryParams)};
+
+  auto server = std::unique_ptr<ScServer>(new ScServerImpl(
+      serverParams.at("host"),
+      std::stoi(serverParams.at("port")),
+      serverParams.at("log_type"),
+      serverParams.at("log_file"),
+      serverParams.at("log_level"),
+      std::stoi(serverParams.at("sync_actions")),
+      memoryConfig.GetParams()));
+
+  server->Run();
+  server->Stop();
+}
 
 TEST_F(ScServerTest, Connection)
 {

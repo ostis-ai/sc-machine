@@ -1,6 +1,19 @@
 #include <gtest/gtest.h>
 
 #include "sc-memory/sc_memory.hpp"
+#include "sc-memory/utils/sc_base64.hpp"
+
+TEST(ScStringUtils, Base64)
+{
+  std::string const & testString = "OSTIS Technology";
+  std::string const & encodedString
+      = ScBase64::Encode(reinterpret_cast<sc_uchar const *>(testString.c_str()), testString.size());
+
+  std::string const & decodedString =
+      ScBase64::Decode(encodedString);
+
+  EXPECT_EQ(testString, decodedString);
+}
 
 TEST(StringUtils, Trim)
 {

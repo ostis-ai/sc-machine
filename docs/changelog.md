@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add `;` after `SC_ASSERT` calls in projects that use sc-machine
 
 ### Added
+- Add tests for sc-search agents in sc-kpm
 - Write sc-machine idea into readme
 - Add create elements by scs-helper through sc-server
 - Add ci workflow for sanitizers
@@ -37,7 +38,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - United config file
 
 ### Changed
-- Up codecov target from 40% to 60%
+- Up codecov target from 40% to 75%
+- Up codecov level from 62% to 78%
 - Separate ci workflow: check pr-commit, codestyle and tests
 - Revamped README.md
 - Unify sc-builder and sc-server config and params usage
@@ -51,6 +53,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix scs-grammar. Add opportunity to specificate a structure into this structure itself
 
 ### Removed
+- Remove legacy gwf-translator for 0.3.0 gwf sources from sc-builder
+- Remove legacy glib-based tests
 - Remove boost usage for options parsing in sc-server and sc-builder
 - Unlink boost-python-lib from sc-machine
 - Remove mkdocs for sc-server
