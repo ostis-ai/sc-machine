@@ -1,11 +1,11 @@
 import argparse
-from os.path import join, abspath, relpath, commonprefix, isdir, isfile, exists, dirname
+from os.path import join, abspath, relpath, commonprefix, isdir, isfile, exists, dirname, basename, splitext
 import os
 import shutil
 import re
 import configparser
 
-FILENAME = "repo.path"
+REPO_FILE_EXT = ".path"
 paths = set()
 exclude_paths = set()
 exclude_patterns = frozenset([".git*"])
@@ -24,11 +24,12 @@ CONFIG_PATH = "config_file_path"
 OSTIS_PATH = "ostis_path"
 
 def search_knowledge_bases(root_path: str):
-    if isdir(root_path):
-        paths.add(root_path)
 
-    # if the line is a file, we presume it's a repo file and recursively read from it
-    elif isfile(root_path):
+    if not exists(root_path):
+        print(root_path, "does not exist.")
+        exit(1)
+
+    elif splitext(root_path)[1] == REPO_FILE_EXT:
         with open(join(root_path), 'r') as root_file:
             for line in root_file.readlines():
                 # ignore comments and empty lines
@@ -47,10 +48,8 @@ def search_knowledge_bases(root_path: str):
                         # recursively check each repo entry
                         search_knowledge_bases(absolute_path)
 
-
     else:
-        print("Folder", root_path, "is not found.")
-        exit(1)
+        paths.add(root_path)
 
 
 # return a file/dir name if it shouldn't be copied (returns .git folder and paths inside exclude_paths)
