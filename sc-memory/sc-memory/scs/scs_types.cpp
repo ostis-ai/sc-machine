@@ -10,6 +10,12 @@
 namespace scs
 {
 
+std::unordered_map<std::string, std::string> TypeResolver::ms_attrToEdgeType = {
+    {":", "->"},
+    {"::", "_->"},
+    {"|:", "-|>"},
+};
+
 TypeResolver::MapType TypeResolver::ms_connectorToType = {
     {">", ScType::EdgeDCommon},
     {"<", ScType::EdgeDCommon},
@@ -103,9 +109,10 @@ bool TypeResolver::IsConst(std::string const & idtf)
   return (idtf[i] != '_');
 }
 
-bool TypeResolver::IsEdgeAttrConst(std::string const & attr)
+std::string TypeResolver::GetEdgeAttr(std::string const & attr)
 {
-  return (attr == ":");
+  auto const & it = ms_attrToEdgeType.find(attr);
+  return it->second;
 }
 
 bool TypeResolver::IsKeynodeType(std::string const & alias)
