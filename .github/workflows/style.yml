@@ -19,7 +19,7 @@ jobs:
         uses: GsActions/commit-message-checker@v1
         with:
           # A regex pattern to check if a commit message is valid.
-          pattern: "((\\[(builder|changelog|ci|codegen|doc|docs|docker|test|tests|memory|tools|review|refactor|scripts|git|cmake)\\])+(.)+)|(Review fixes)$"
+          pattern: "((\\[(builder|changelog|ci|codegen|config|doc|docs|docker|test|tests|memory|tools|review|refactor|scripts|git|cmake)\\])+(.)+)|(Review fixes)$"
           # Expression flags change how the expression is interpreted.
           flags: # optional, default is gm
           # A error message which will be returned in case of an error.
