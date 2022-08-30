@@ -31,7 +31,9 @@ public:
   {
     try
     {
-      if (IsEvent(m_msg->get_payload()))
+      if (IsHealthCheck(m_msg->get_payload()))
+        OnHealthCheck(m_hdl, m_msg);
+      else if (IsEvent(m_msg->get_payload()))
         OnEvent(m_hdl, m_msg);
       else
         OnAction(m_hdl, m_msg);
@@ -64,6 +66,31 @@ public:
     m_server->Send(hdl, responseText, ScServerMessageType::text);
   }
 
+  void OnHealthCheck(ScServerConnectionHandle const & hdl, ScServerMessage const & msg)
+  {
+    std::string response;
+    try
+    {
+      auto * context = new ScMemoryContext(sc_access_lvl_make_max);
+
+      ScAddr const & tempAddr = context->CreateNode(ScType::NodeConst);
+      context->EraseElement(tempAddr);
+
+      delete context;
+
+      response = "OK";
+      m_server->LogMessage(ScServerLogMessages::app, "I'm alive...");
+    }
+    catch (utils::ScException const & e)
+    {
+      SC_LOG_ERROR(e.Description());
+      response = "NO";
+      m_server->LogMessage(ScServerLogMessages::app, "I'm died...");
+    }
+
+    m_server->Send(hdl, response, ScServerMessageType::text);
+  }
+
   ~ScServerMessageAction() override
   {
     delete m_actionsHandler;
@@ -81,5 +108,11 @@ protected:
   {
     ScMemoryJsonPayload const & payload = ScMemoryJsonPayload::parse(message);
     return payload["type"] == "events";
+  }
+
+  static sc_bool IsHealthCheck(std::string const & message)
+  {
+    ScMemoryJsonPayload const & payload = ScMemoryJsonPayload::parse(message);
+    return payload["type"] == "healthcheck";
   }
 };
