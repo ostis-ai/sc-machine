@@ -1,23 +1,34 @@
 import argparse
 
 import json
-from websocket import create_connection
+from websocket import create_connection, _exceptions
 
 SC_SERVER_HOST = "host"
 SC_SERVER_PORT = "port"
 
 SC_SERVER_HOST_DEFAULT = "localhost"
 SC_SERVER_PORT_DEFAULT = "8090"
+SC_SERVER_CONNECT_TIMEOUT = 5  # seconds
 
 
 def main(args: dict):
     try:
-        ws = create_connection(f"ws://{args[SC_SERVER_HOST]}:{args[SC_SERVER_PORT]}")
+        ws = create_connection(f"ws://{args[SC_SERVER_HOST]}:{args[SC_SERVER_PORT]}", timeout=SC_SERVER_CONNECT_TIMEOUT)
+    except _exceptions.WebSocketTimeoutException as e:
+        print("Connection sc-server timed out")
+        exit(1)
     except Exception as e:
         print(e)
         exit(1)
+
     ws.send(json.dumps({"type": "healthcheck"}))
-    result = ws.recv()
+
+    try:
+        result = ws.recv()
+    except _exceptions.WebSocketTimeoutException as e:
+        print("Sc-server response timed out")
+        exit(1)
+
     ws.close()
     if result == "OK":
         exit(0)

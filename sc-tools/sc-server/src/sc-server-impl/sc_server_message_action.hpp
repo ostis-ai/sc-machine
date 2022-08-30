@@ -85,7 +85,7 @@ public:
     {
       SC_LOG_ERROR(e.Description());
       response = "NO";
-      m_server->LogMessage(ScServerLogMessages::app, "I'm died...");
+      m_server->LogMessage(ScServerLogMessages::app, "I've died...");
     }
 
     m_server->Send(hdl, response, ScServerMessageType::text);
