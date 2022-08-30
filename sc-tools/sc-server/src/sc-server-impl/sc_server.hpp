@@ -85,7 +85,7 @@ public:
       {
         try
         {
-          m_instance->close(it, websocketpp::close::status::normal, "");
+          m_instance->close(it, websocketpp::close::status::normal, "I finish work");
         }
         catch (std::exception const & ex)
         {
@@ -154,6 +154,11 @@ public:
   void SetErrorChannels(ScServerLogChannel channels)
   {
     m_instance->set_access_channels(channels);
+  }
+
+  void CloseConnection(ScServerConnectionHandle const & hdl, ScServerCloseCode const code, std::string const & reason)
+  {
+    m_instance->close(hdl, code, reason);
   }
 
   virtual void OnEvent(ScServerConnectionHandle const & hdl, std::string const & msg) = 0;

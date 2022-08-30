@@ -89,6 +89,7 @@ public:
     }
 
     m_server->Send(hdl, response, ScServerMessageType::text);
+    m_server->CloseConnection(hdl, websocketpp::close::status::normal, "Status checked");
   }
 
   ~ScServerMessageAction() override

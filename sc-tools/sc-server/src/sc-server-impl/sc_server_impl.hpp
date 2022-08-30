@@ -55,7 +55,5 @@ protected:
 
   void OnMessage(ScServerConnectionHandle const & hdl, ScServerMessage const & msg) override;
 
-  void OnHTTP(ScServerConnectionHandle const & hdl);
-
   void OnEvent(ScServerConnectionHandle const & hdl, std::string const & msg) override;
 };
