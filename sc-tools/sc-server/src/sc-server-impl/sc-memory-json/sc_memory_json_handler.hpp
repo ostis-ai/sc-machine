@@ -34,7 +34,7 @@ protected:
 
   virtual ScMemoryJsonPayload ResponseRequestMessage(
       ScServerConnectionHandle const & hdl,
-      size_t const requestId,
+      size_t requestId,
       std::string const & requestType,
       ScMemoryJsonPayload const & requestPayload);
 
@@ -42,12 +42,14 @@ protected:
       ScServerConnectionHandle const & hdl,
       std::string const & requestType,
       ScMemoryJsonPayload const & requestPayload,
+      ScMemoryJsonPayload & errorsPayload,
       sc_bool & status,
       sc_bool & isEvent) = 0;
 
-  virtual ScMemoryJsonPayload FormResponseMessage(
+  static ScMemoryJsonPayload FormResponseMessage(
       size_t requestId,
       sc_bool event,
       sc_bool status,
+      ScMemoryJsonPayload const & errorsPayload,
       ScMemoryJsonPayload const & responsePayload);
 };

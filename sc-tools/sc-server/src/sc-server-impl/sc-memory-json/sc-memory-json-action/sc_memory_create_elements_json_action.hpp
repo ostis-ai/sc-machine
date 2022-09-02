@@ -14,7 +14,8 @@
 class ScMemoryCreateElementsJsonAction : public ScMemoryJsonAction
 {
 public:
-  ScMemoryJsonPayload Complete(ScMemoryContext * context, ScMemoryJsonPayload requestPayload) override
+  ScMemoryJsonPayload Complete(
+      ScMemoryContext * context, ScMemoryJsonPayload requestPayload, ScMemoryJsonPayload & errorsPayload) override
   {
     ScMemoryJsonPayload responsePayload;
 

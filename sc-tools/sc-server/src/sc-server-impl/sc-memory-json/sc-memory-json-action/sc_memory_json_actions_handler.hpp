@@ -25,6 +25,7 @@ private:
       ScServerConnectionHandle const & hdl,
       std::string const & requestType,
       ScMemoryJsonPayload const & requestPayload,
+      ScMemoryJsonPayload & errorsPayload,
       sc_bool & status,
       sc_bool & isEvent) override;
 

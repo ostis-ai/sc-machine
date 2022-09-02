@@ -23,6 +23,7 @@ ScMemoryJsonPayload ScMemoryJsonEventsHandler::HandleRequestPayload(
     ScServerConnectionHandle const & hdl,
     std::string const & requestType,
     ScMemoryJsonPayload const & requestPayload,
+    ScMemoryJsonPayload & errorsPayload,
     sc_bool & status,
     sc_bool & isEvent)
 {
@@ -30,12 +31,12 @@ ScMemoryJsonPayload ScMemoryJsonEventsHandler::HandleRequestPayload(
   isEvent = SC_TRUE;
 
   ScMemoryJsonPayload responsePayload;
-  if (requestPayload["create"].is_null() == SC_FALSE)
+  if (requestPayload.find("create") != requestPayload.cend())
   {
     responsePayload = HandleCreate(hdl, requestPayload["create"]);
     status = SC_TRUE;
   }
-  else if (requestPayload["delete"].is_null() == SC_FALSE)
+  else if (requestPayload.find("delete") != requestPayload.cend())
   {
     responsePayload = HandleDelete(hdl, requestPayload["delete"]);
     status = SC_TRUE;
@@ -54,8 +55,14 @@ ScMemoryJsonPayload ScMemoryJsonEventsHandler::HandleCreate(
                               ScAddr const & addr,
                               ScAddr const & edgeAddr,
                               ScAddr const & otherAddr) -> sc_bool {
-    ScMemoryJsonPayload const & responsePayload = ScMemoryJsonPayload({addr.Hash(), edgeAddr.Hash(), otherAddr.Hash()});
-    std::string responseText = FormResponseMessage(id, SC_TRUE, SC_TRUE, responsePayload).dump();
+    ScMemoryJsonPayload const & responsePayload = {addr.Hash(), edgeAddr.Hash(), otherAddr.Hash()};
+    ScMemoryJsonPayload const & errorsPayload = ScMemoryJsonPayload::object({});
+    sc_bool const event = SC_TRUE;
+    sc_bool const status = SC_FALSE;
+
+    ScMemoryJsonPayload const & responseTextJson
+        = FormResponseMessage(id, event, status, errorsPayload, responsePayload);
+    std::string const responseText = responseTextJson.dump();
 
     if (server != nullptr)
       server->OnEvent(handle, responseText);

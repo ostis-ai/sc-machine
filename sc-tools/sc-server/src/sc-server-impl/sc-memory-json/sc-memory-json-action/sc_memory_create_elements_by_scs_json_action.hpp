@@ -25,28 +25,32 @@ protected:
 class ScMemoryCreateElementsByScsJsonAction : public ScMemoryJsonAction
 {
 public:
-  ScMemoryJsonPayload Complete(ScMemoryContext * context, ScMemoryJsonPayload requestPayload) override
+  ScMemoryJsonPayload Complete(
+      ScMemoryContext * context, ScMemoryJsonPayload requestPayload, ScMemoryJsonPayload & errorsPayload) override
   {
     ScMemoryJsonPayload responsePayload;
 
+    sc_uint32 i = 0;
     for (auto & atom : requestPayload)
     {
       std::string const & scs = atom.get<std::string>();
       if (m_helper == nullptr)
         m_helper = new SCsHelper{*context, std::make_shared<DummyFileInterface>()};
 
-      sc_bool result = SC_FALSE;
+      sc_bool textGenResult = SC_FALSE;
 
       try
       {
-        result = m_helper->GenerateBySCsText(scs);
+        textGenResult = m_helper->GenerateBySCsText(scs);
       }
       catch (utils::ScException const & e)
       {
         SC_LOG_ERROR(e.Message());
+        errorsPayload.update({i, e.Message()});
       }
 
-      responsePayload.push_back(result);
+      responsePayload.push_back(textGenResult);
+      ++i;
     }
 
     if (responsePayload.is_null())

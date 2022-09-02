@@ -61,6 +61,7 @@ TEST_F(ScServerTest, CreateElements)
   EXPECT_TRUE(client.Send(payloadString));
 
   WAIT_SERVER;
+  std::this_thread::sleep_for(std::chrono::milliseconds(10000));
   auto const response = client.GetResponsePayload();
   EXPECT_FALSE(response.is_null());
 

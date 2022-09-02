@@ -43,7 +43,7 @@ protected:
 
     ScMemory::LogMute();
     m_server =
-        std::make_unique<ScServerImpl>("127.0.0.1", 8765, "File", "test-sc-server.log", "Error", SC_TRUE, params);
+        std::make_unique<ScServerImpl>("127.0.0.1", 8865, "File", "test-sc-server.log", "Error", SC_TRUE, params);
     m_server->SetMessageChannels(ScServerLogMessages::all);
     m_server->SetErrorChannels(ScServerLogErrors::all);
     m_server->Run();

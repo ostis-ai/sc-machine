@@ -63,25 +63,26 @@ ScMemoryJsonPayload ScMemoryJsonHandler::ResponseRequestMessage(
 
   sc_bool isEvent = SC_FALSE;
   ScMemoryJsonPayload responsePayload;
+  ScMemoryJsonPayload errorsPayload = ScMemoryJsonPayload::object({});
   try
   {
-    responsePayload = HandleRequestPayload(hdl, requestType, requestPayload, status, isEvent);
+    responsePayload = HandleRequestPayload(hdl, requestType, requestPayload, errorsPayload, status, isEvent);
   }
   catch (ScServerException const & e)
   {
-    responsePayload = e.m_msg;
+    errorsPayload = e.m_msg;
   }
   catch (utils::ScException const & e)
   {
-    responsePayload = e.Description();
+    errorsPayload = e.Description();
   }
   catch (std::exception const & e)
   {
-    responsePayload = e.what();
+    errorsPayload = e.what();
   }
   catch (...)
   {
-    responsePayload = "Undefined error occurred";
+    errorsPayload = "Undefined error occurred";
   }
 
   if (status == SC_FALSE)
@@ -89,14 +90,15 @@ ScMemoryJsonPayload ScMemoryJsonHandler::ResponseRequestMessage(
     m_server->LogError(ScServerLogErrors::rerror, responsePayload);
   }
 
-  return FormResponseMessage(requestId, isEvent, status, responsePayload);
+  return FormResponseMessage(requestId, isEvent, status, errorsPayload, responsePayload);
 }
 
 ScMemoryJsonPayload ScMemoryJsonHandler::FormResponseMessage(
     size_t requestId,
     sc_bool event,
     sc_bool status,
+    ScMemoryJsonPayload const & errorsPayload,
     ScMemoryJsonPayload const & responsePayload)
 {
-  return ScMemoryJsonPayload({{"id", requestId}, {"event", event}, {"status", status}, {"payload", responsePayload}});
+  return ScMemoryJsonPayload({{"id", requestId}, {"event", event}, {"status", status}, {"errors", errorsPayload}, {"payload", responsePayload}});
 }

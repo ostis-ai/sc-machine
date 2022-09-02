@@ -23,11 +23,12 @@ ScMemoryJsonActionsHandler::~ScMemoryJsonActionsHandler()
 }
 
 ScMemoryJsonPayload ScMemoryJsonActionsHandler::HandleRequestPayload(
-      ScServerConnectionHandle const & hdl,
-      std::string const & requestType,
-      ScMemoryJsonPayload const & requestPayload,
-      sc_bool & status,
-      sc_bool & isEvent)
+    ScServerConnectionHandle const & hdl,
+    std::string const & requestType,
+    ScMemoryJsonPayload const & requestPayload,
+    ScMemoryJsonPayload & errorsPayload,
+    sc_bool & status,
+    sc_bool & isEvent)
 {
   status = SC_FALSE;
   isEvent = SC_FALSE;
@@ -36,13 +37,13 @@ ScMemoryJsonPayload ScMemoryJsonActionsHandler::HandleRequestPayload(
   auto const & it = m_actions.find(requestType);
   if (it == m_actions.end())
   {
-    responsePayload = "Unsupported request type: " + requestType;
-    m_server->LogError(ScServerLogErrors::rerror, responsePayload);
+    errorsPayload = "Unsupported request type: " + requestType;
+    m_server->LogError(ScServerLogErrors::rerror, errorsPayload);
     return responsePayload;
   }
 
   auto * action = it->second;
-  responsePayload = action->Complete(m_context, requestPayload);
+  responsePayload = action->Complete(m_context, requestPayload, errorsPayload);
 
   status = SC_TRUE;
   return responsePayload;
