@@ -45,6 +45,6 @@ ScMemoryJsonPayload ScMemoryJsonActionsHandler::HandleRequestPayload(
   auto * action = it->second;
   responsePayload = action->Complete(m_context, requestPayload, errorsPayload);
 
-  status = SC_TRUE;
+  status = errorsPayload.empty();
   return responsePayload;
 }

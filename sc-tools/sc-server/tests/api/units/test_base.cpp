@@ -139,6 +139,9 @@ TEST_F(ScServerTest, CreateElementsBySCs)
   auto const response = client.GetResponseMessage();
   EXPECT_FALSE(response.is_null());
   auto const & responsePayload = response["payload"];
+  EXPECT_FALSE(responsePayload.is_null());
+  EXPECT_FALSE(response["status"].get<sc_bool>());
+  EXPECT_FALSE(response["errors"][0]["message"].is_null());
 
   ScAddr const & classSet = m_ctx->HelperFindBySystemIdtf("concept_set");
   EXPECT_TRUE(classSet.IsValid());
@@ -165,9 +168,41 @@ TEST_F(ScServerTest, CreateEmptyElementsBySCs)
   auto const response = client.GetResponseMessage();
   EXPECT_FALSE(response.is_null());
   auto const & responsePayload = response["payload"];
+  EXPECT_FALSE(responsePayload.is_null());
+  EXPECT_TRUE(response["status"].get<sc_bool>());
+  EXPECT_TRUE(response["errors"].empty());
 
-  EXPECT_TRUE(responsePayload.is_object());
+  EXPECT_TRUE(responsePayload.is_array());
   EXPECT_TRUE(responsePayload.empty());
+
+  client.Stop();
+}
+
+TEST_F(ScServerTest, CreateElementsByWrongSCs)
+{
+  ScClient client;
+  EXPECT_TRUE(client.Connect(m_server->GetUri()));
+  client.Run();
+
+  std::string const payloadString = ScMemoryJsonConverter::From(
+      0,
+      "create_elements_by_scs",
+      ScMemoryJsonPayload::array({
+          "concept_set -> node;",
+          "concept_set -> ",
+      }));
+  EXPECT_TRUE(client.Send(payloadString));
+
+  auto const response = client.GetResponseMessage();
+  EXPECT_FALSE(response.is_null());
+  auto const & responsePayload = response["payload"];
+  EXPECT_FALSE(responsePayload.is_null());
+  EXPECT_FALSE(response["status"].get<sc_bool>());
+  EXPECT_FALSE(response["errors"].empty());
+  EXPECT_TRUE(response["errors"].size() == 2);
+
+  EXPECT_TRUE(responsePayload.is_array());
+  EXPECT_FALSE(responsePayload.empty());
 
   client.Stop();
 }

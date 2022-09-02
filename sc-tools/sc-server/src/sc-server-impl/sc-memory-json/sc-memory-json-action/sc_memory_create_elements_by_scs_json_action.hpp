@@ -28,7 +28,7 @@ public:
   ScMemoryJsonPayload Complete(
       ScMemoryContext * context, ScMemoryJsonPayload requestPayload, ScMemoryJsonPayload & errorsPayload) override
   {
-    ScMemoryJsonPayload responsePayload;
+    ScMemoryJsonPayload responsePayload = ScMemoryJsonPayload::array({});
 
     sc_uint32 i = 0;
     for (auto & atom : requestPayload)
@@ -41,12 +41,13 @@ public:
 
       try
       {
-        textGenResult = m_helper->GenerateBySCsText(scs);
+         m_helper->GenerateBySCsTextLazy(scs);
+         textGenResult = SC_TRUE;
       }
       catch (utils::ScException const & e)
       {
         SC_LOG_ERROR(e.Message());
-        errorsPayload.update({i, e.Message()});
+        errorsPayload.push_back({{"ref", i}, {"message", e.Message()}});
       }
 
       responsePayload.push_back(textGenResult);

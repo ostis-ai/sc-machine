@@ -30,26 +30,27 @@ ScMemoryJsonPayload ScMemoryJsonEventsHandler::HandleRequestPayload(
   status = SC_FALSE;
   isEvent = SC_TRUE;
 
+  errorsPayload = ScMemoryJsonPayload::array({});
+
   ScMemoryJsonPayload responsePayload;
   if (requestPayload.find("create") != requestPayload.cend())
-  {
-    responsePayload = HandleCreate(hdl, requestPayload["create"]);
-    status = SC_TRUE;
-  }
+    responsePayload = HandleCreate(hdl, requestPayload["create"], errorsPayload);
   else if (requestPayload.find("delete") != requestPayload.cend())
-  {
-    responsePayload = HandleDelete(hdl, requestPayload["delete"]);
-    status = SC_TRUE;
-  }
+    responsePayload = HandleDelete(hdl, requestPayload["delete"], errorsPayload);
+  else
+    errorsPayload = "Unknown event request";
+
+  status = errorsPayload.empty();
 
   return responsePayload;
 }
 
 ScMemoryJsonPayload ScMemoryJsonEventsHandler::HandleCreate(
     ScServerConnectionHandle const & hdl,
-    ScMemoryJsonPayload const & message)
+    ScMemoryJsonPayload const & message,
+    ScMemoryJsonPayload & errorsPayload)
 {
-  auto const & onEmitEvent = [this](size_t id,
+  auto const & onEmitEvent = [](size_t id,
                               ScServer * server,
                               ScServerConnectionHandle const & handle,
                               ScAddr const & addr,
@@ -90,7 +91,8 @@ ScMemoryJsonPayload ScMemoryJsonEventsHandler::HandleCreate(
 
 ScMemoryJsonPayload ScMemoryJsonEventsHandler::HandleDelete(
     ScServerConnectionHandle const & hdl,
-    ScMemoryJsonPayload const & message)
+    ScMemoryJsonPayload const & message,
+    ScMemoryJsonPayload & errorsPayload)
 {
   SC_UNUSED(hdl);
 

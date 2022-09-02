@@ -63,7 +63,7 @@ ScMemoryJsonPayload ScMemoryJsonHandler::ResponseRequestMessage(
 
   sc_bool isEvent = SC_FALSE;
   ScMemoryJsonPayload responsePayload;
-  ScMemoryJsonPayload errorsPayload = ScMemoryJsonPayload::object({});
+  ScMemoryJsonPayload errorsPayload = ScMemoryJsonPayload::array({});
   try
   {
     responsePayload = HandleRequestPayload(hdl, requestType, requestPayload, errorsPayload, status, isEvent);
@@ -85,7 +85,7 @@ ScMemoryJsonPayload ScMemoryJsonHandler::ResponseRequestMessage(
     errorsPayload = "Undefined error occurred";
   }
 
-  if (status == SC_FALSE)
+  if (status == SC_FALSE && errorsPayload.is_string())
   {
     m_server->LogError(ScServerLogErrors::rerror, errorsPayload.get<std::string>());
   }

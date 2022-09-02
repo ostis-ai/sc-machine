@@ -46,7 +46,9 @@ private:
       sc_bool & status,
       sc_bool & isEvent) override;
 
-  ScMemoryJsonPayload HandleCreate(ScServerConnectionHandle const & hdl, ScMemoryJsonPayload const & message);
+  ScMemoryJsonPayload HandleCreate(
+      ScServerConnectionHandle const & hdl, ScMemoryJsonPayload const & message, ScMemoryJsonPayload & errorsPayload);
 
-  ScMemoryJsonPayload HandleDelete(ScServerConnectionHandle const & hdl, ScMemoryJsonPayload const & message);
+  ScMemoryJsonPayload HandleDelete(
+      ScServerConnectionHandle const & hdl, ScMemoryJsonPayload const & message, ScMemoryJsonPayload & errorsPayload);
 };
