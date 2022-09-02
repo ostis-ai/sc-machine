@@ -87,7 +87,7 @@ ScMemoryJsonPayload ScMemoryJsonHandler::ResponseRequestMessage(
 
   if (status == SC_FALSE)
   {
-    m_server->LogError(ScServerLogErrors::rerror, responsePayload);
+    m_server->LogError(ScServerLogErrors::rerror, errorsPayload.get<std::string>());
   }
 
   return FormResponseMessage(requestId, isEvent, status, errorsPayload, responsePayload);

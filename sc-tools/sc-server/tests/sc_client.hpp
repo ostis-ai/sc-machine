@@ -12,15 +12,12 @@
 
 using ScMemoryJsonPayload = nlohmann::json;
 
-#define WAIT_SERVER std::this_thread::sleep_for(std::chrono::milliseconds(100))
-
 class ScClient
 {
 public:
   ScClient()
+    : m_instance(new ScClientCore()), m_isNewMessage(SC_FALSE)
   {
-    m_instance = new ScClientCore();
-
     Initialize();
   }
 
@@ -50,6 +47,8 @@ public:
 
   sc_bool Send(std::string const & msg)
   {
+    std::this_thread::sleep_for(std::chrono::milliseconds(100));
+
     ScClientErrorCode code;
     m_instance->send(m_connection, msg, ScServerMessageType::text, code);
 
@@ -58,11 +57,18 @@ public:
 
   void OnMessage(ScServerConnectionHandle const & hdl, ScServerMessage const & msg)
   {
-    m_currentPayload = ScMemoryJsonPayload::parse(msg->get_payload())["payload"];
+    m_currentPayload = ScMemoryJsonPayload::parse(msg->get_payload());
+    m_isNewMessage = SC_TRUE;
   }
 
-  ScMemoryJsonPayload GetResponsePayload()
+  ScMemoryJsonPayload GetResponseMessage()
   {
+    while (!m_isNewMessage)
+    {
+      std::this_thread::sleep_for(std::chrono::milliseconds(100));
+    }
+
+    m_isNewMessage = SC_FALSE;
     return m_currentPayload;
   }
 
@@ -75,6 +81,8 @@ private:
   ScClientCore * m_instance;
   ScClientConnection m_connection;
   std::thread m_thread;
+
+  sc_bool m_isNewMessage;
   ScMemoryJsonPayload m_currentPayload;
 
   void Initialize()
