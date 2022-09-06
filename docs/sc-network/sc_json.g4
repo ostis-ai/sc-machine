@@ -13,7 +13,8 @@ sc_json_command
   ;
 
 sc_json_command_type_and_payload
-  : sc_json_command_create_elements
+  : sc_json_command_healthcheck
+  | sc_json_command_create_elements
   | sc_json_command_create_elements_by_scs
   | sc_json_command_check_elements
   | sc_json_command_delete_elements
@@ -34,7 +35,8 @@ sc_json_command_answer
   ;
 
 sc_json_command_answer_payload
-  : sc_json_command_answer_create_elements
+  : sc_json_command_answer_healthcheck
+  | sc_json_command_answer_create_elements
   | sc_json_command_answer_create_elements_by_scs
   | sc_json_command_answer_check_elements
   | sc_json_command_answer_delete_elements
@@ -43,6 +45,15 @@ sc_json_command_answer_payload
   | sc_json_command_answer_search_template
   | sc_json_command_answer_generate_template
   | sc_json_command_answer_handle_events
+  ;
+
+sc_json_command_healthcheck
+  : '"type"' ':' '"healthcheck"'
+  ;
+
+sc_json_command_answer_healthcheck
+  : '"OK"'
+  | '"NO"'
   ;
 
 sc_json_command_create_elements
