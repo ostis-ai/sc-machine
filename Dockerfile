@@ -6,7 +6,8 @@ USER root
 #install runtime dependencies
 COPY scripts/install_deps_ubuntu.sh /tmp/sc-machine/scripts/install_deps_ubuntu.sh
 COPY requirements.txt /tmp/sc-machine/requirements.txt
-RUN apt update && apt install -y --no-install-recommends sudo && /tmp/sc-machine/scripts/install_deps_ubuntu.sh
+# tini is an init system to forward interrupt signals properly
+RUN apt update && apt install -y --no-install-recommends sudo tini && /tmp/sc-machine/scripts/install_deps_ubuntu.sh
 
 #build using ccache
 FROM base as devdeps
@@ -31,4 +32,4 @@ WORKDIR /sc-machine/scripts
 
 EXPOSE 8090
 
-ENTRYPOINT ["/bin/bash", "/sc-machine/scripts/docker_entrypoint.sh"]
+ENTRYPOINT ["/usr/bin/tini", "--", "/sc-machine/scripts/docker_entrypoint.sh"]
