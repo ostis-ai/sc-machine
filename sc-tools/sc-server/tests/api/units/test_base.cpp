@@ -57,20 +57,22 @@ TEST_F(ScServerTest, CreateElements)
               {"content", 100.0f},
           },
       }));
-  WAIT_SERVER;
   EXPECT_TRUE(client.Send(payloadString));
 
-  WAIT_SERVER;
-  auto const response = client.GetResponsePayload();
+  auto const response = client.GetResponseMessage();
   EXPECT_FALSE(response.is_null());
+  auto const & responsePayload = response["payload"];
+  EXPECT_FALSE(responsePayload.is_null());
+  EXPECT_TRUE(response["status"].get<sc_bool>());
+  EXPECT_TRUE(response["errors"].empty());
 
-  ScAddr const & src = ScAddr(response[0].get<size_t>());
+  ScAddr const & src = ScAddr(responsePayload[0].get<size_t>());
   EXPECT_TRUE(src.IsValid());
   EXPECT_TRUE(m_ctx->GetElementType(src).IsNode());
-  ScAddr const & edge = ScAddr(response[2].get<size_t>());
+  ScAddr const & edge = ScAddr(responsePayload[2].get<size_t>());
   EXPECT_TRUE(edge.IsValid());
   EXPECT_TRUE(m_ctx->GetElementType(edge).IsEdge());
-  ScAddr const & trg = ScAddr(response[1].get<size_t>());
+  ScAddr const & trg = ScAddr(responsePayload[1].get<size_t>());
   EXPECT_TRUE(trg.IsValid());
   EXPECT_TRUE(m_ctx->GetElementType(trg).IsLink());
 
@@ -81,13 +83,13 @@ TEST_F(ScServerTest, CreateElements)
   EXPECT_TRUE(iter3->Next());
   EXPECT_TRUE(iter3->Get(1) == edge);
 
-  ScAddr const & linkInt = ScAddr(response[3].get<size_t>());
+  ScAddr const & linkInt = ScAddr(responsePayload[3].get<size_t>());
   EXPECT_TRUE(linkInt.IsValid());
   sc_int contentInt;
   m_ctx->GetLinkContent(linkInt, contentInt);
   EXPECT_EQ(contentInt, 100);
 
-  ScAddr const & linkFloat = ScAddr(response[4].get<size_t>());
+  ScAddr const & linkFloat = ScAddr(responsePayload[4].get<size_t>());
   EXPECT_TRUE(linkFloat.IsValid());
   float contentFloat;
   m_ctx->GetLinkContent(linkFloat, contentFloat);
@@ -103,15 +105,18 @@ TEST_F(ScServerTest, CreateEmptyElements)
   client.Run();
 
   std::string const payloadString = ScMemoryJsonConverter::From(0, "create_elements", ScMemoryJsonPayload::array({}));
-  WAIT_SERVER;
+
   EXPECT_TRUE(client.Send(payloadString));
 
-  WAIT_SERVER;
-  auto const response = client.GetResponsePayload();
+  auto const response = client.GetResponseMessage();
   EXPECT_FALSE(response.is_null());
+  auto const & responsePayload = response["payload"];
+  EXPECT_FALSE(responsePayload.is_null());
+  EXPECT_TRUE(response["status"].get<sc_bool>());
+  EXPECT_TRUE(response["errors"].empty());
 
-  EXPECT_TRUE(response.is_object());
-  EXPECT_TRUE(response.empty());
+  EXPECT_TRUE(responsePayload.is_object());
+  EXPECT_TRUE(responsePayload.empty());
 
   client.Stop();
 }
@@ -129,21 +134,23 @@ TEST_F(ScServerTest, CreateElementsBySCs)
           "concept_set -> set1;;",
           "concept_set -> ",
       }));
-  WAIT_SERVER;
   EXPECT_TRUE(client.Send(payloadString));
 
-  WAIT_SERVER;
-  auto const response = client.GetResponsePayload();
+  auto const response = client.GetResponseMessage();
   EXPECT_FALSE(response.is_null());
+  auto const & responsePayload = response["payload"];
+  EXPECT_FALSE(responsePayload.is_null());
+  EXPECT_FALSE(response["status"].get<sc_bool>());
+  EXPECT_FALSE(response["errors"][0]["message"].is_null());
 
   ScAddr const & classSet = m_ctx->HelperFindBySystemIdtf("concept_set");
   EXPECT_TRUE(classSet.IsValid());
   ScAddr const & set1 = m_ctx->HelperFindBySystemIdtf("set1");
   EXPECT_TRUE(set1.IsValid());
   EXPECT_TRUE(m_ctx->HelperCheckEdge(classSet, set1, ScType::EdgeAccessConstPosPerm));
-  EXPECT_TRUE(response[0].get<sc_bool>());
+  EXPECT_TRUE(responsePayload[0].get<sc_bool>());
 
-  EXPECT_FALSE(response[1].get<sc_bool>());
+  EXPECT_FALSE(responsePayload[1].get<sc_bool>());
 
   client.Stop();
 }
@@ -156,15 +163,46 @@ TEST_F(ScServerTest, CreateEmptyElementsBySCs)
 
   std::string const payloadString =
       ScMemoryJsonConverter::From(0, "create_elements_by_scs", ScMemoryJsonPayload::array({}));
-  WAIT_SERVER;
   EXPECT_TRUE(client.Send(payloadString));
 
-  WAIT_SERVER;
-  auto const response = client.GetResponsePayload();
+  auto const response = client.GetResponseMessage();
   EXPECT_FALSE(response.is_null());
+  auto const & responsePayload = response["payload"];
+  EXPECT_FALSE(responsePayload.is_null());
+  EXPECT_TRUE(response["status"].get<sc_bool>());
+  EXPECT_TRUE(response["errors"].empty());
 
-  EXPECT_TRUE(response.is_object());
-  EXPECT_TRUE(response.empty());
+  EXPECT_TRUE(responsePayload.is_array());
+  EXPECT_TRUE(responsePayload.empty());
+
+  client.Stop();
+}
+
+TEST_F(ScServerTest, CreateElementsByWrongSCs)
+{
+  ScClient client;
+  EXPECT_TRUE(client.Connect(m_server->GetUri()));
+  client.Run();
+
+  std::string const payloadString = ScMemoryJsonConverter::From(
+      0,
+      "create_elements_by_scs",
+      ScMemoryJsonPayload::array({
+          "concept_set -> node;",
+          "concept_set -> ",
+      }));
+  EXPECT_TRUE(client.Send(payloadString));
+
+  auto const response = client.GetResponseMessage();
+  EXPECT_FALSE(response.is_null());
+  auto const & responsePayload = response["payload"];
+  EXPECT_FALSE(responsePayload.is_null());
+  EXPECT_FALSE(response["status"].get<sc_bool>());
+  EXPECT_FALSE(response["errors"].empty());
+  EXPECT_TRUE(response["errors"].size() == 2);
+
+  EXPECT_TRUE(responsePayload.is_array());
+  EXPECT_FALSE(responsePayload.empty());
 
   client.Stop();
 }
@@ -187,18 +225,20 @@ TEST_F(ScServerTest, CheckElements)
           edge.Hash(),
           trg.Hash(),
       }));
-  WAIT_SERVER;
   EXPECT_TRUE(client.Send(payloadString));
 
-  WAIT_SERVER;
-  auto const response = client.GetResponsePayload();
+  auto const response = client.GetResponseMessage();
   EXPECT_FALSE(response.is_null());
+  auto const & responsePayload = response["payload"];
+  EXPECT_FALSE(responsePayload.is_null());
+  EXPECT_TRUE(response["status"].get<sc_bool>());
+  EXPECT_TRUE(response["errors"].empty());
 
-  ScType const & srcType = ScType(response[0].get<size_t>());
+  ScType const & srcType = ScType(responsePayload[0].get<size_t>());
   EXPECT_TRUE(m_ctx->GetElementType(src) == srcType);
-  ScType const & edgeType = ScType(response[1].get<size_t>());
+  ScType const & edgeType = ScType(responsePayload[1].get<size_t>());
   EXPECT_TRUE(m_ctx->GetElementType(edge) == edgeType);
-  ScType const & trgType = ScType(response[2].get<size_t>());
+  ScType const & trgType = ScType(responsePayload[2].get<size_t>());
   EXPECT_TRUE(m_ctx->GetElementType(trg) == trgType);
 
   ScIterator3Ptr const iter3 = m_ctx->Iterator3(src, ScType::EdgeDCommonConst, trg);
@@ -225,12 +265,14 @@ TEST_F(ScServerTest, DeleteElements)
           edge.Hash(),
           trg.Hash(),
       }));
-  WAIT_SERVER;
   EXPECT_TRUE(client.Send(payloadString));
 
-  WAIT_SERVER;
-  auto const response = client.GetResponsePayload();
+  auto const response = client.GetResponseMessage();
   EXPECT_FALSE(response.is_null());
+  auto const & responsePayload = response["payload"];
+  EXPECT_FALSE(responsePayload.is_null());
+  EXPECT_TRUE(response["status"].get<sc_bool>());
+  EXPECT_TRUE(response["errors"].empty());
 
   ScIterator3Ptr const iter3 = m_ctx->Iterator3(src, ScType::EdgeAccessConstPosPerm, trg);
   EXPECT_FALSE(iter3->IsValid());
@@ -258,19 +300,19 @@ TEST_F(ScServerTest, HandleKeynodes)
               {"idtf", "any_system_identifier"},
           },
       }));
-  WAIT_SERVER;
   EXPECT_TRUE(client.Send(payloadString));
 
-  WAIT_SERVER;
-  WAIT_SERVER;
-  WAIT_SERVER;
-  auto const response = client.GetResponsePayload();
+  auto const response = client.GetResponseMessage();
   EXPECT_FALSE(response.is_null());
+  auto const & responsePayload = response["payload"];
+  EXPECT_FALSE(responsePayload.is_null());
+  EXPECT_TRUE(response["status"].get<sc_bool>());
+  EXPECT_TRUE(response["errors"].empty());
 
-  ScAddr const & addr1 = ScAddr(response[0].get<size_t>());
+  ScAddr const & addr1 = ScAddr(responsePayload[0].get<size_t>());
   EXPECT_TRUE(addr1.IsValid());
   EXPECT_TRUE(m_ctx->GetElementType(addr1) == ScType::NodeConstClass);
-  ScAddr const & addr2 = ScAddr(response[1].get<size_t>());
+  ScAddr const & addr2 = ScAddr(responsePayload[1].get<size_t>());
   EXPECT_TRUE(addr2.IsValid());
   EXPECT_TRUE(m_ctx->GetElementType(addr2) == ScType::NodeConstClass);
   EXPECT_TRUE(addr1 == addr2);
@@ -286,15 +328,17 @@ TEST_F(ScServerTest, HandleEmptyKeynodes)
   client.Run();
 
   std::string const payloadString = ScMemoryJsonConverter::From(0, "keynodes", ScMemoryJsonPayload::array({}));
-  WAIT_SERVER;
   EXPECT_TRUE(client.Send(payloadString));
 
-  WAIT_SERVER;
-  auto const response = client.GetResponsePayload();
+  auto const response = client.GetResponseMessage();
   EXPECT_FALSE(response.is_null());
+  auto const & responsePayload = response["payload"];
+  EXPECT_FALSE(responsePayload.is_null());
+  EXPECT_TRUE(response["status"].get<sc_bool>());
+  EXPECT_TRUE(response["errors"].empty());
 
-  EXPECT_TRUE(response.is_object());
-  EXPECT_TRUE(response.empty());
+  EXPECT_TRUE(responsePayload.is_object());
+  EXPECT_TRUE(responsePayload.empty());
 
   client.Stop();
 }
@@ -330,20 +374,21 @@ TEST_F(ScServerTest, HandleContent)
               {"data", "some"},
           },
       }));
-  WAIT_SERVER;
   EXPECT_TRUE(client.Send(payloadString));
 
-  WAIT_SERVER;
-  WAIT_SERVER;
-  auto const response = client.GetResponsePayload();
+  auto const response = client.GetResponseMessage();
   EXPECT_FALSE(response.is_null());
+  auto const & responsePayload = response["payload"];
+  EXPECT_FALSE(responsePayload.is_null());
+  EXPECT_TRUE(response["status"].get<sc_bool>());
+  EXPECT_TRUE(response["errors"].empty());
 
-  EXPECT_TRUE(response[0].get<sc_bool>());
-  EXPECT_TRUE(response[1]["value"].get<std::string>() == "some content");
-  auto links = response[2].get<std::vector<size_t>>();
+  EXPECT_TRUE(responsePayload[0].get<sc_bool>());
+  EXPECT_TRUE(responsePayload[1]["value"].get<std::string>() == "some content");
+  auto links = responsePayload[2].get<std::vector<size_t>>();
   EXPECT_FALSE(links.empty());
   EXPECT_TRUE(std::find(links.begin(), links.end(), link.Hash()) != links.end());
-  links = response[3].get<std::vector<size_t>>();
+  links = responsePayload[3].get<std::vector<size_t>>();
   EXPECT_FALSE(links.empty());
   EXPECT_TRUE(std::find(links.begin(), links.end(), link.Hash()) != links.end());
 
@@ -367,15 +412,16 @@ TEST_F(ScServerTest, HandleContentOld)
           {"data", "content"},
           {"addr", link.Hash()},
       });
-  WAIT_SERVER;
   EXPECT_TRUE(client.Send(payloadString));
 
-  WAIT_SERVER;
-  WAIT_SERVER;
-  auto const response = client.GetResponsePayload();
+  auto const response = client.GetResponseMessage();
   EXPECT_FALSE(response.is_null());
+  auto const & responsePayload = response["payload"];
+  EXPECT_FALSE(responsePayload.is_null());
+  EXPECT_TRUE(response["status"].get<sc_bool>());
+  EXPECT_TRUE(response["errors"].empty());
 
-  EXPECT_TRUE(response[0].get<sc_bool>());
+  EXPECT_TRUE(responsePayload[0].get<sc_bool>());
   std::string content;
   m_ctx->GetLinkContent(link, content);
   EXPECT_TRUE(content == "content");
@@ -414,20 +460,21 @@ TEST_F(ScServerTest, HandleIntContent)
               {"data", 100},
           },
       }));
-  WAIT_SERVER;
   EXPECT_TRUE(client.Send(payloadString));
 
-  WAIT_SERVER;
-  WAIT_SERVER;
-  auto const response = client.GetResponsePayload();
+  auto const response = client.GetResponseMessage();
   EXPECT_FALSE(response.is_null());
+  auto const & responsePayload = response["payload"];
+  EXPECT_FALSE(responsePayload.is_null());
+  EXPECT_TRUE(response["status"].get<sc_bool>());
+  EXPECT_TRUE(response["errors"].empty());
 
-  EXPECT_TRUE(response[0].get<sc_bool>());
-  EXPECT_TRUE(response[1]["value"].get<sc_int>() == 100);
-  auto links = response[2].get<std::vector<size_t>>();
+  EXPECT_TRUE(responsePayload[0].get<sc_bool>());
+  EXPECT_TRUE(responsePayload[1]["value"].get<sc_int>() == 100);
+  auto links = responsePayload[2].get<std::vector<size_t>>();
   EXPECT_FALSE(links.empty());
   EXPECT_TRUE(std::find(links.begin(), links.end(), link.Hash()) != links.end());
-  links = response[3].get<std::vector<size_t>>();
+  links = responsePayload[3].get<std::vector<size_t>>();
   EXPECT_FALSE(links.empty());
   EXPECT_TRUE(std::find(links.begin(), links.end(), link.Hash()) != links.end());
 
@@ -465,20 +512,21 @@ TEST_F(ScServerTest, HandleFloatContent)
               {"data", 10.53f},
           },
       }));
-  WAIT_SERVER;
   EXPECT_TRUE(client.Send(payloadString));
 
-  WAIT_SERVER;
-  WAIT_SERVER;
-  auto const response = client.GetResponsePayload();
+  auto const response = client.GetResponseMessage();
   EXPECT_FALSE(response.is_null());
+  auto const & responsePayload = response["payload"];
+  EXPECT_FALSE(responsePayload.is_null());
+  EXPECT_TRUE(response["status"].get<sc_bool>());
+  EXPECT_TRUE(response["errors"].empty());
 
-  EXPECT_TRUE(response[0].get<sc_bool>());
-  EXPECT_TRUE(response[1]["value"].get<float>() == 10.53f);
-  auto links = response[2].get<std::vector<size_t>>();
+  EXPECT_TRUE(responsePayload[0].get<sc_bool>());
+  EXPECT_TRUE(responsePayload[1]["value"].get<float>() == 10.53f);
+  auto links = responsePayload[2].get<std::vector<size_t>>();
   EXPECT_FALSE(links.empty());
   EXPECT_TRUE(std::find(links.begin(), links.end(), link.Hash()) != links.end());
-  links = response[3].get<std::vector<size_t>>();
+  links = responsePayload[3].get<std::vector<size_t>>();
   EXPECT_FALSE(links.empty());
   EXPECT_TRUE(std::find(links.begin(), links.end(), link.Hash()) != links.end());
 
@@ -537,14 +585,16 @@ TEST_F(ScServerTest, SearchTemplate)
   payload["params"]["_src"] = addr.Hash();
   payload["params"]["_trg"] = link.Hash();
   std::string const payloadString = ScMemoryJsonConverter::From(0, "search_template", payload);
-  WAIT_SERVER;
   EXPECT_TRUE(client.Send(payloadString));
 
-  WAIT_SERVER;
-  auto const response = client.GetResponsePayload();
+  auto const response = client.GetResponseMessage();
   EXPECT_FALSE(response.is_null());
+  auto const & responsePayload = response["payload"];
+  EXPECT_FALSE(responsePayload.is_null());
+  EXPECT_TRUE(response["status"].get<sc_bool>());
+  EXPECT_TRUE(response["errors"].empty());
 
-  auto const & addrs = response["addrs"][0].get<std::vector<size_t>>();
+  auto const & addrs = responsePayload["addrs"][0].get<std::vector<size_t>>();
   EXPECT_FALSE(addrs.empty());
   EXPECT_TRUE(ScAddr(addrs[0]) == addr);
   EXPECT_TRUE(ScAddr(addrs[2]) == link);
@@ -569,14 +619,16 @@ TEST_F(ScServerTest, SearchStringTemplate)
   ScMemoryJsonPayload payload;
   payload["templ"] = "@alias = (_node1 _=> _node2);; norole1 _-> @alias;;";
   std::string const payloadString = ScMemoryJsonConverter::From(0, "search_template", payload);
-  WAIT_SERVER;
   EXPECT_TRUE(client.Send(payloadString));
 
-  WAIT_SERVER;
-  auto const response = client.GetResponsePayload();
+  auto const response = client.GetResponseMessage();
   EXPECT_FALSE(response.is_null());
+  auto const & responsePayload = response["payload"];
+  EXPECT_FALSE(responsePayload.is_null());
+  EXPECT_TRUE(response["status"].get<sc_bool>());
+  EXPECT_TRUE(response["errors"].empty());
 
-  auto const & addrs = response["addrs"][0].get<std::vector<size_t>>();
+  auto const & addrs = responsePayload["addrs"][0].get<std::vector<size_t>>();
   EXPECT_FALSE(addrs.empty());
   EXPECT_TRUE(ScAddr(addrs[0]) == addr1);
   EXPECT_TRUE(ScAddr(addrs[2]) == addr2);
@@ -595,14 +647,16 @@ TEST_F(ScServerTest, SearchTemplateByIdtf)
   payload["templ"]["type"] = "idtf";
   payload["templ"]["value"] = "test_template_1";
   std::string const payloadString = ScMemoryJsonConverter::From(0, "search_template", payload);
-  WAIT_SERVER;
   EXPECT_TRUE(client.Send(payloadString));
 
-  WAIT_SERVER;
-  auto const response = client.GetResponsePayload();
+  auto const response = client.GetResponseMessage();
   EXPECT_FALSE(response.is_null());
+  auto const & responsePayload = response["payload"];
+  EXPECT_FALSE(responsePayload.is_null());
+  EXPECT_TRUE(response["status"].get<sc_bool>());
+  EXPECT_TRUE(response["errors"].empty());
 
-  auto const & addrs = response["addrs"][0].get<std::vector<size_t>>();
+  auto const & addrs = responsePayload["addrs"][0].get<std::vector<size_t>>();
   EXPECT_FALSE(addrs.empty());
   EXPECT_TRUE(ScAddr(addrs[0]).IsValid());
   EXPECT_TRUE(ScAddr(addrs[1]).IsValid());
@@ -621,14 +675,16 @@ TEST_F(ScServerTest, SearchTemplateByAddr)
   payload["templ"]["type"] = "addr";
   payload["templ"]["value"] = m_ctx->HelperFindBySystemIdtf("test_template_1").Hash();
   std::string const payloadString = ScMemoryJsonConverter::From(0, "search_template", payload);
-  WAIT_SERVER;
   EXPECT_TRUE(client.Send(payloadString));
 
-  WAIT_SERVER;
-  auto const response = client.GetResponsePayload();
+  auto const response = client.GetResponseMessage();
   EXPECT_FALSE(response.is_null());
+  auto const & responsePayload = response["payload"];
+  EXPECT_FALSE(responsePayload.is_null());
+  EXPECT_TRUE(response["status"].get<sc_bool>());
+  EXPECT_TRUE(response["errors"].empty());
 
-  auto const & addrs = response["addrs"][0].get<std::vector<size_t>>();
+  auto const & addrs = responsePayload["addrs"][0].get<std::vector<size_t>>();
   EXPECT_FALSE(addrs.empty());
   EXPECT_TRUE(ScAddr(addrs[0]).IsValid());
   EXPECT_TRUE(ScAddr(addrs[1]).IsValid());
@@ -686,15 +742,16 @@ TEST_F(ScServerTest, GenerateTemplate)
   payload["params"]["_src"] = addr.Hash();
   payload["params"]["_trg"] = link.Hash();
   std::string const payloadString = ScMemoryJsonConverter::From(0, "generate_template", payload);
-  WAIT_SERVER;
   EXPECT_TRUE(client.Send(payloadString));
 
-  WAIT_SERVER;
-  WAIT_SERVER;
-  auto const response = client.GetResponsePayload();
+  auto const response = client.GetResponseMessage();
   EXPECT_FALSE(response.is_null());
+  auto const & responsePayload = response["payload"];
+  EXPECT_FALSE(responsePayload.is_null());
+  EXPECT_TRUE(response["status"].get<sc_bool>());
+  EXPECT_TRUE(response["errors"].empty());
 
-  auto const & addrs = response["addrs"].get<std::vector<size_t>>();
+  auto const & addrs = responsePayload["addrs"].get<std::vector<size_t>>();
   EXPECT_FALSE(addrs.empty());
   EXPECT_TRUE(ScAddr(addrs[0]) == addr);
   EXPECT_TRUE(ScAddr(addrs[1]).IsValid());
@@ -713,14 +770,16 @@ TEST_F(ScServerTest, GenerateStringTemplate)
   ScMemoryJsonPayload payload;
   payload["templ"] = "@alias = (_node1 _=> _node2);;";
   std::string const payloadString = ScMemoryJsonConverter::From(0, "generate_template", payload);
-  WAIT_SERVER;
   EXPECT_TRUE(client.Send(payloadString));
 
-  WAIT_SERVER;
-  auto const response = client.GetResponsePayload();
+  auto const response = client.GetResponseMessage();
   EXPECT_FALSE(response.is_null());
+  auto const & responsePayload = response["payload"];
+  EXPECT_FALSE(responsePayload.is_null());
+  EXPECT_TRUE(response["status"].get<sc_bool>());
+  EXPECT_TRUE(response["errors"].empty());
 
-  auto const & addrs = response["addrs"].get<std::vector<size_t>>();
+  auto const & addrs = responsePayload["addrs"].get<std::vector<size_t>>();
   EXPECT_FALSE(addrs.empty());
   EXPECT_TRUE(ScAddr(addrs[0]).IsValid());
   EXPECT_TRUE(ScAddr(addrs[1]).IsValid());
@@ -739,14 +798,16 @@ TEST_F(ScServerTest, GenerateTemplateByIdtf)
   payload["templ"]["type"] = "idtf";
   payload["templ"]["value"] = "test_template_1";
   std::string const payloadString = ScMemoryJsonConverter::From(0, "generate_template", payload);
-  WAIT_SERVER;
   EXPECT_TRUE(client.Send(payloadString));
 
-  WAIT_SERVER;
-  auto const response = client.GetResponsePayload();
+  auto const response = client.GetResponseMessage();
   EXPECT_FALSE(response.is_null());
+  auto const & responsePayload = response["payload"];
+  EXPECT_FALSE(responsePayload.is_null());
+  EXPECT_TRUE(response["status"].get<sc_bool>());
+  EXPECT_TRUE(response["errors"].empty());
 
-  auto const & addrs = response["addrs"].get<std::vector<size_t>>();
+  auto const & addrs = responsePayload["addrs"].get<std::vector<size_t>>();
   EXPECT_FALSE(addrs.empty());
   EXPECT_TRUE(ScAddr(addrs[0]).IsValid());
   EXPECT_TRUE(ScAddr(addrs[1]).IsValid());
@@ -765,14 +826,16 @@ TEST_F(ScServerTest, GenerateTemplateByAddr)
   payload["templ"]["type"] = "addr";
   payload["templ"]["value"] = m_ctx->HelperFindBySystemIdtf("test_template_1").Hash();
   std::string const payloadString = ScMemoryJsonConverter::From(0, "generate_template", payload);
-  WAIT_SERVER;
   EXPECT_TRUE(client.Send(payloadString));
 
-  WAIT_SERVER;
-  auto const response = client.GetResponsePayload();
-  EXPECT_FALSE(response.is_null());
+  auto const response = client.GetResponseMessage();
+  auto const & responsePayload = response["payload"];
+  EXPECT_FALSE(responsePayload.is_null());
+  EXPECT_FALSE(responsePayload.is_null());
+  EXPECT_TRUE(response["status"].get<sc_bool>());
+  EXPECT_TRUE(response["errors"].empty());
 
-  auto const & addrs = response["addrs"].get<std::vector<size_t>>();
+  auto const & addrs = responsePayload["addrs"].get<std::vector<size_t>>();
   EXPECT_FALSE(addrs.empty());
   EXPECT_TRUE(ScAddr(addrs[0]).IsValid());
   EXPECT_TRUE(ScAddr(addrs[1]).IsValid());
@@ -801,28 +864,29 @@ TEST_F(ScServerTest, HandleEvents)
               },
           }),
       }}));
-  WAIT_SERVER;
-  WAIT_SERVER;
   EXPECT_TRUE(client.Send(payloadString));
 
-  WAIT_SERVER;
-  WAIT_SERVER;
-  auto response = client.GetResponsePayload();
+  auto response = client.GetResponseMessage();
   EXPECT_FALSE(response.is_null());
+  auto responsePayload = response["payload"];
+  EXPECT_FALSE(responsePayload.is_null());
+  EXPECT_TRUE(response["status"].get<sc_bool>());
+  EXPECT_TRUE(response["errors"].empty());
 
-  EXPECT_TRUE(response[0].get<sc_int>() == 0);
+  EXPECT_TRUE(responsePayload[0].get<sc_int>() == 0);
 
   ScAddr const & addr2 = m_ctx->CreateNode(ScType::NodeConst);
   ScAddr const & edge = m_ctx->CreateEdge(ScType::EdgeAccessConstPosPerm, addr1, addr2);
 
-  WAIT_SERVER;
-  WAIT_SERVER;
-  response = client.GetResponsePayload();
+  std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+  response = client.GetResponseMessage();
   EXPECT_FALSE(response.is_null());
 
-  EXPECT_TRUE(response[0].get<uint64_t>() == addr1.Hash());
-  EXPECT_TRUE(response[1].get<uint64_t>() == edge.Hash());
-  EXPECT_TRUE(response[2].get<uint64_t>() == addr2.Hash());
+  responsePayload = response["payload"];
+
+  EXPECT_TRUE(responsePayload[0].get<uint64_t>() == addr1.Hash());
+  EXPECT_TRUE(responsePayload[1].get<uint64_t>() == edge.Hash());
+  EXPECT_TRUE(responsePayload[2].get<uint64_t>() == addr2.Hash());
 
   payloadString = ScMemoryJsonConverter::From(
       0,
@@ -832,16 +896,16 @@ TEST_F(ScServerTest, HandleEvents)
             ScMemoryJsonPayload::array({
                 0,
             })}}));
-  WAIT_SERVER;
-  WAIT_SERVER;
   EXPECT_TRUE(client.Send(payloadString));
 
-  WAIT_SERVER;
-  WAIT_SERVER;
-  response = client.GetResponsePayload();
+  response = client.GetResponseMessage();
   EXPECT_FALSE(response.is_null());
 
-  EXPECT_TRUE(response[0].get<sc_int>() == 0);
+  responsePayload = response["payload"];
+  EXPECT_TRUE(responsePayload[0].get<sc_int>() == 0);
+  EXPECT_FALSE(responsePayload.is_null());
+  EXPECT_TRUE(response["status"].get<sc_bool>());
+  EXPECT_TRUE(response["errors"].empty());
 
   payloadString = ScMemoryJsonConverter::From(
       0,
@@ -852,15 +916,15 @@ TEST_F(ScServerTest, HandleEvents)
                 0,
                 1,
             })}}));
-  WAIT_SERVER;
-  WAIT_SERVER;
   EXPECT_TRUE(client.Send(payloadString));
 
-  WAIT_SERVER;
-  WAIT_SERVER;
-  response = client.GetResponsePayload();
+  response = client.GetResponseMessage();
   EXPECT_FALSE(response.is_null());
-  EXPECT_TRUE(response.is_array());
+  responsePayload = response["payload"];
+  EXPECT_FALSE(responsePayload.is_null());
+  EXPECT_TRUE(responsePayload.is_array());
+  EXPECT_TRUE(response["status"].get<sc_bool>());
+  EXPECT_TRUE(response["errors"].empty());
 
   client.Stop();
 }
@@ -871,14 +935,12 @@ TEST_F(ScServerTest, Unknown)
   EXPECT_TRUE(client.Connect(m_server->GetUri()));
   client.Run();
 
-  ScMemoryJsonPayload payload;
-  std::string const payloadString = ScMemoryJsonConverter::From(0, "unknown", payload);
-  WAIT_SERVER;
+  std::string const payloadString
+    = ScMemoryJsonConverter::From(0, "unknown", ScMemoryJsonPayload::object({}));
   EXPECT_TRUE(client.Send(payloadString));
 
-  WAIT_SERVER;
-  auto const response = client.GetResponsePayload();
-  EXPECT_TRUE(response.is_null());
+  auto const response = client.GetResponseMessage();
+  EXPECT_TRUE(response["payload"].is_null());
 
   client.Stop();
 }

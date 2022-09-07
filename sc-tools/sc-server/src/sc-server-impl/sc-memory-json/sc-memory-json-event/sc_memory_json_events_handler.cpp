@@ -7,41 +7,63 @@
 #include "sc_memory_json_events_handler.hpp"
 
 ScMemoryJsonEventsHandler::ScMemoryJsonEventsHandler(ScServer * server)
+  : ScMemoryJsonHandler(server)
 {
   m_context = new ScMemoryContext("sc-json-socket-events-handler");
   m_manager = ScMemoryJsonEventsManager::GetInstance();
-
-  m_server = server;
 }
 
-std::string ScMemoryJsonEventsHandler::Handle(
-    ScServerConnectionHandle const & hdl,
-    std::string const & requestMessageText)
+ScMemoryJsonEventsHandler::~ScMemoryJsonEventsHandler()
 {
-  ScMemoryJsonPayload const & requestMessage = ScMemoryJsonPayload::parse(requestMessageText);
-  ScMemoryJsonPayload requestPayload = requestMessage["payload"];
+  m_context->Destroy();
+  delete m_context;
+}
+
+ScMemoryJsonPayload ScMemoryJsonEventsHandler::HandleRequestPayload(
+    ScServerConnectionHandle const & hdl,
+    std::string const & requestType,
+    ScMemoryJsonPayload const & requestPayload,
+    ScMemoryJsonPayload & errorsPayload,
+    sc_bool & status,
+    sc_bool & isEvent)
+{
+  status = SC_FALSE;
+  isEvent = SC_TRUE;
+
+  errorsPayload = ScMemoryJsonPayload::array({});
 
   ScMemoryJsonPayload responsePayload;
-  if (requestPayload["create"].is_null() == SC_FALSE)
-    responsePayload = HandleCreate(hdl, requestPayload["create"]);
-  else if (requestPayload["delete"].is_null() == SC_FALSE)
-    responsePayload = HandleDelete(hdl, requestPayload["delete"]);
+  if (requestPayload.find("create") != requestPayload.cend())
+    responsePayload = HandleCreate(hdl, requestPayload["create"], errorsPayload);
+  else if (requestPayload.find("delete") != requestPayload.cend())
+    responsePayload = HandleDelete(hdl, requestPayload["delete"], errorsPayload);
+  else
+    errorsPayload = "Unknown event request";
 
-  return GenerateResponseText(requestMessage["id"], SC_FALSE, SC_TRUE, responsePayload);
+  status = errorsPayload.empty();
+
+  return responsePayload;
 }
 
 ScMemoryJsonPayload ScMemoryJsonEventsHandler::HandleCreate(
     ScServerConnectionHandle const & hdl,
-    ScMemoryJsonPayload const & message)
+    ScMemoryJsonPayload const & message,
+    ScMemoryJsonPayload & errorsPayload)
 {
-  auto const onEmitEvent = [](size_t id,
+  auto const & onEmitEvent = [](size_t id,
                               ScServer * server,
                               ScServerConnectionHandle const & handle,
                               ScAddr const & addr,
                               ScAddr const & edgeAddr,
                               ScAddr const & otherAddr) -> sc_bool {
-    ScMemoryJsonPayload responsePayload = ScMemoryJsonPayload({addr.Hash(), edgeAddr.Hash(), otherAddr.Hash()});
-    std::string responseText = GenerateResponseText(id, SC_TRUE, SC_TRUE, responsePayload);
+    ScMemoryJsonPayload const & responsePayload = {addr.Hash(), edgeAddr.Hash(), otherAddr.Hash()};
+    ScMemoryJsonPayload const & errorsPayload = ScMemoryJsonPayload::object({});
+    sc_bool const event = SC_TRUE;
+    sc_bool const status = SC_FALSE;
+
+    ScMemoryJsonPayload const & responseTextJson
+        = FormResponseMessage(id, event, status, errorsPayload, responsePayload);
+    std::string const responseText = responseTextJson.dump();
 
     if (server != nullptr)
       server->OnEvent(handle, responseText);
@@ -69,7 +91,8 @@ ScMemoryJsonPayload ScMemoryJsonEventsHandler::HandleCreate(
 
 ScMemoryJsonPayload ScMemoryJsonEventsHandler::HandleDelete(
     ScServerConnectionHandle const & hdl,
-    ScMemoryJsonPayload const & message)
+    ScMemoryJsonPayload const & message,
+    ScMemoryJsonPayload & errorsPayload)
 {
   SC_UNUSED(hdl);
 
@@ -77,14 +100,4 @@ ScMemoryJsonPayload ScMemoryJsonEventsHandler::HandleDelete(
     delete m_manager->Remove(atom.get<size_t>());
 
   return message;
-}
-
-std::string ScMemoryJsonEventsHandler::GenerateResponseText(
-    size_t requestId,
-    sc_bool event,
-    sc_bool status,
-    ScMemoryJsonPayload const & responsePayload)
-{
-  return ScMemoryJsonPayload({{"id", requestId}, {"event", event}, {"status", status}, {"payload", responsePayload}})
-      .dump();
 }

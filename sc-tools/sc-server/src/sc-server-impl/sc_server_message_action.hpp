@@ -23,7 +23,7 @@ public:
     , m_server(server)
     , m_msg(std::move(msg))
   {
-    m_actionsHandler = new ScMemoryJsonActionsHandler();
+    m_actionsHandler = new ScMemoryJsonActionsHandler(server);
     m_eventsHandler = new ScMemoryJsonEventsHandler(server);
   }
 

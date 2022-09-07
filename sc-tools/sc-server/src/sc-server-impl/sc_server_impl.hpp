@@ -39,7 +39,7 @@ protected:
   ScServerMutex m_actionLock;
   ScServerMutex m_connectionLock;
   ScServerCondVar m_actionCond;
-  sc_bool syncActions;
+  sc_bool m_syncActions;
 
   std::atomic<sc_bool> m_actionsRun;
 
