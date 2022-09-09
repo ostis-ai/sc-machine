@@ -31,11 +31,19 @@ class ScWait
       m_cond.notify_one();
     }
 
-    bool Wait(uint32_t timeout_ms)
+    bool Wait(uint32_t timeout_ms, std::function<void(void)> const & initializationFunction)
     {
       std::unique_lock<std::mutex> lock(m_mutex);
+
+      sc_bool actionPerformed = SC_FALSE;
       while (!m_isResolved)
       {
+        if (actionPerformed == SC_FALSE)
+        {
+          initializationFunction();
+          actionPerformed = SC_TRUE;
+        }
+
         if (m_cond.wait_for(lock, std::chrono::milliseconds(timeout_ms)) == std::cv_status::timeout)
           return false;
       }
@@ -59,19 +67,26 @@ public:
     m_impl.Resolve();
   }
 
+  SC_DEPRECATED(
+      0.7.0,
+      "Use Wait"
+      "(uint32_t timeout_ms = 5000, DelegateFunc const & initializationFunction = []() -> void {})"
+      " with passing function into it instead of.")
   void SetOnWaitStartDelegate(DelegateFunc const & startDelegate)
   {
     m_waitStartDelegate = startDelegate;
   }
 
-  bool Wait(uint32_t timeout_ms = 5000)
+  bool Wait(
+      uint32_t timeout_ms = 5000,
+      DelegateFunc const & initializationFunction = []() -> void {})
   {
     if (m_waitStartDelegate)
       m_waitStartDelegate();
 
     SC_ASSERT(timeout_ms < 60000, ("Too big timeout (it should be less then a minute)"));
 
-    return m_impl.Wait(timeout_ms);
+    return m_impl.Wait(timeout_ms, initializationFunction);
   }
 
 private:

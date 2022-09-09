@@ -119,7 +119,7 @@ TEST_F(ScWaitTest, CondValidFalse)
   EXPECT_TRUE(data.m_isDone);
 }
 
-TEST_F(ScWaitTest, ActionFinished)
+TEST_F(ScWaitTest, ActionFinishedViaWaitStartDelegate)
 {
   WaitTestData data(m_addr, ScAgentAction::GetCommandFinishedAddr());
 
@@ -129,5 +129,17 @@ TEST_F(ScWaitTest, ActionFinished)
   });
 
   EXPECT_TRUE(waiter.Wait());
+  EXPECT_TRUE(data.m_isDone);
+}
+
+TEST_F(ScWaitTest, ActionFinished)
+{
+  WaitTestData data(m_addr, ScAgentAction::GetCommandFinishedAddr());
+
+  ScWaitActionFinished waiter(*m_ctx, m_addr);
+
+  EXPECT_TRUE(waiter.Wait(5000, [&data]() {
+        EmitEvent(data);
+      }));
   EXPECT_TRUE(data.m_isDone);
 }

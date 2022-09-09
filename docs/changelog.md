@@ -42,6 +42,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- Fix logic of waiting for action results
 - Entrypoint of Docker image is now easier to work with
 - Update commit badges
 - Up codecov target from 40% to 75%
