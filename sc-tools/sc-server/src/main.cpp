@@ -13,7 +13,6 @@
 
 #include "sc-config/sc_config.hpp"
 #include "sc_memory_config.hpp"
-#include "sc_options.hpp"
 
 #include "sc_server_factory.hpp"
 
@@ -54,22 +53,35 @@ try
 
   ScMemoryConfig memoryConfig{config, std::move(memoryParams)};
 
-  auto server = ScServerFactory::ConfigureScServer(serverParams, memoryConfig.GetParams());
+  sc_bool status = SC_FALSE;
+  std::unique_ptr<ScServer> server;
   try
   {
+    server = ScServerFactory::ConfigureScServer(serverParams, memoryConfig.GetParams());
     server->Run();
+    status = SC_TRUE;
   }
   catch (utils::ScException const & e)
   {
-    SC_LOG_ERROR(e.Description());
-    server->Stop();
-
-    return EXIT_FAILURE;
+    server->ClearLogOptions();
+    server->LogError(ScServerLogErrors::rerror, e.Description());
   }
   catch (std::exception const & e)
   {
-    SC_LOG_ERROR(e.what());
-    server->Stop();
+    server->ClearLogOptions();
+    server->LogError(ScServerLogErrors::rerror, e.what());
+  }
+
+  if (status == SC_FALSE)
+  {
+    try
+    {
+      server->Stop();
+    }
+    catch (std::exception const & e)
+    {
+      server->LogError(ScServerLogErrors::rerror, e.what());
+    }
 
     return EXIT_FAILURE;
   }

@@ -10,6 +10,8 @@
 #include "utils/sc_message.hpp"
 #include "utils/sc_console.hpp"
 
+#include "sc-core/sc-store/sc_types.h"
+
 namespace utils
 {
 /// -----------------------
@@ -17,11 +19,11 @@ namespace utils
 class ScException : public std::exception
 {
 public:
-  _SC_EXTERN ScException(std::string const & description, std::string const & msg);
-  _SC_EXTERN virtual ~ScException() throw();
+  _SC_EXTERN ScException(std::string description, std::string msg);
+  _SC_EXTERN ~ScException() noexcept override;
 
-  _SC_EXTERN const char * Description() const throw();
-  _SC_EXTERN const char * Message() const throw();
+  _SC_EXTERN const sc_char * Description() const noexcept;
+  _SC_EXTERN const sc_char * Message() const noexcept;
 
 private:
   std::string m_description;

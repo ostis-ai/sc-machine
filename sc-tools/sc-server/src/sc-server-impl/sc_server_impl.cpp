@@ -29,9 +29,9 @@ ScServerImpl::ScServerImpl(
     sc_bool syncActions,
     sc_memory_params const & params)
   : ScServer(host, port, logType, logFile, logLevel, params),
+  m_syncActions(syncActions),
   m_actionsRun(SC_TRUE),
-  m_actions(new ScServerActions()),
-  syncActions(syncActions)
+  m_actions(new ScServerActions())
 {
 }
 
@@ -107,7 +107,7 @@ void ScServerImpl::OnClose(ScServerConnectionHandle const & hdl)
 
 void ScServerImpl::OnMessage(ScServerConnectionHandle const & hdl, ScServerMessage const & msg)
 {
-  if (syncActions == SC_TRUE)
+  if (m_syncActions == SC_TRUE)
   {
     {
       ScServerLock guard(m_actionLock);

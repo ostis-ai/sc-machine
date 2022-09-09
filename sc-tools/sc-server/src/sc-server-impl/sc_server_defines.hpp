@@ -19,6 +19,7 @@ using ScServerConnections = std::set<ScServerConnectionHandle, std::owner_less<S
 
 using ScServerMessage = ScServerCore::message_ptr;
 using ScServerMessageType = websocketpp::frame::opcode::value;
+using ScServerCloseCode = websocketpp::close::status::value;
 
 using ScServerException = websocketpp::exception;
 

@@ -2,14 +2,10 @@ file(GLOB_RECURSE SOURCES "src/*.cpp" "src/*.h" "src/*.hpp")
 
 list(REMOVE_ITEM SOURCES
     "${SC_BUILDER_SRC}/src/main.cpp"
-    "${SC_BUILDER_SRC}/src/builder.cpp"
-    "${SC_BUILDER_SRC}/src/builder.hpp"
 )
 
 add_executable(sc-builder
     "${SC_BUILDER_SRC}/src/main.cpp"
-    "${SC_BUILDER_SRC}/src/builder.cpp"
-    "${SC_BUILDER_SRC}/src/builder.hpp"
 )
 
 add_library(sc-builder-lib SHARED ${SOURCES})

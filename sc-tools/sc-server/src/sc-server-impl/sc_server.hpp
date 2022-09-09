@@ -25,7 +25,8 @@ public:
       std::string const & logFile,
       std::string const & logLevel,
       sc_memory_params params)
-    : m_hostName(std::move(hostName)), m_port(port)
+    : m_hostName(std::move(hostName))
+    , m_port(port)
   {
     m_instance = new ScServerCore();
     {
@@ -36,8 +37,9 @@ public:
     {
       LogMessage(ScServerLogMessages::app, "Sc-server log");
       LogMessage(ScServerLogMessages::app, "\tLog type: " + logType);
-      LogMessage(ScServerLogMessages::app,
-                 "\tLog file: " + ((logType != SC_SERVER_FILE_TYPE || logFile.empty()) ? "No" : logFile));
+      LogMessage(
+          ScServerLogMessages::app,
+          "\tLog file: " + ((logType != SC_SERVER_FILE_TYPE || logFile.empty()) ? "No" : logFile));
       LogMessage(ScServerLogMessages::app, "\tLog level: " + logLevel);
     }
     LogMessage(ScServerLogMessages::app, "Sc-server initialized");
@@ -85,7 +87,7 @@ public:
       {
         try
         {
-          m_instance->close(it, websocketpp::close::status::normal, "");
+          m_instance->close(it, websocketpp::close::status::normal, "I finish work");
         }
         catch (std::exception const & ex)
         {
@@ -100,8 +102,7 @@ public:
 
   void Shutdown()
   {
-    delete m_log;
-    m_log = new ScServerLog(m_instance, SC_SERVER_CONSOLE_TYPE, "", SC_SERVER_INFO_LEVEL);
+    ClearLogOptions();
 
     delete m_connections;
     m_connections = nullptr;
@@ -146,6 +147,12 @@ public:
     m_instance->get_elog().write(channel, errorMessage);
   }
 
+  void ClearLogOptions()
+  {
+    delete m_log;
+    m_log = new ScServerLog(m_instance, SC_SERVER_CONSOLE_TYPE, "", SC_SERVER_INFO_LEVEL);
+  }
+
   void SetMessageChannels(ScServerLogChannel channels)
   {
     m_instance->set_access_channels(channels);
@@ -154,6 +161,11 @@ public:
   void SetErrorChannels(ScServerLogChannel channels)
   {
     m_instance->set_access_channels(channels);
+  }
+
+  void CloseConnection(ScServerConnectionHandle const & hdl, ScServerCloseCode const code, std::string const & reason)
+  {
+    m_instance->close(hdl, code, reason);
   }
 
   virtual void OnEvent(ScServerConnectionHandle const & hdl, std::string const & msg) = 0;

@@ -6,38 +6,45 @@
 
 #include "sc_memory_json_actions_handler.hpp"
 
-std::string ScMemoryJsonActionsHandler::Handle(
-    ScServerConnectionHandle const & hdl,
-    std::string const & requestMessageText)
+ScMemoryJsonActionsHandler::ScMemoryJsonActionsHandler(ScServer * server)
+  : ScMemoryJsonHandler(server)
 {
-  ScMemoryJsonPayload const & requestMessage = ScMemoryJsonPayload::parse(requestMessageText);
-
-  ScMemoryJsonPayload const & requestType = requestMessage["type"];
-  ScMemoryJsonPayload const & requestPayload = requestMessage["payload"];
-
-  sc_bool status = SC_TRUE;
-  ScMemoryJsonPayload responsePayload;
-  auto const & it = m_actions.find(requestType);
-  if (it != m_actions.end())
-  {
-    auto * action = it->second;
-    responsePayload = action->Complete(m_context, requestPayload);
-    status = SC_TRUE;
-  }
-  else
-  {
-    responsePayload = ScMemoryJsonPayload::parse("Unsupported request type: " + requestType.get<std::string>());
-    status = SC_FALSE;
-  }
-
-  return GenerateResponseText(requestMessage["id"], status, responsePayload);
+  m_context = new ScMemoryContext("sc-json-socket-actions-handler");
 }
 
-std::string ScMemoryJsonActionsHandler::GenerateResponseText(
-    size_t requestId,
-    sc_bool status,
-    ScMemoryJsonPayload const & responsePayload)
+ScMemoryJsonActionsHandler::~ScMemoryJsonActionsHandler()
 {
-  return ScMemoryJsonPayload({{"id", requestId}, {"event", SC_FALSE}, {"status", status}, {"payload", responsePayload}})
-      .dump();
+  m_context->Destroy();
+  delete m_context;
+
+  for (auto const & it : m_actions)
+    delete it.second;
+  m_actions.clear();
+}
+
+ScMemoryJsonPayload ScMemoryJsonActionsHandler::HandleRequestPayload(
+    ScServerConnectionHandle const & hdl,
+    std::string const & requestType,
+    ScMemoryJsonPayload const & requestPayload,
+    ScMemoryJsonPayload & errorsPayload,
+    sc_bool & status,
+    sc_bool & isEvent)
+{
+  status = SC_FALSE;
+  isEvent = SC_FALSE;
+
+  ScMemoryJsonPayload responsePayload;
+  auto const & it = m_actions.find(requestType);
+  if (it == m_actions.end())
+  {
+    errorsPayload = "Unsupported request type: " + requestType;
+    m_server->LogError(ScServerLogErrors::rerror, errorsPayload);
+    return responsePayload;
+  }
+
+  auto * action = it->second;
+  responsePayload = action->Complete(m_context, requestPayload, errorsPayload);
+
+  status = errorsPayload.empty();
+  return responsePayload;
 }

@@ -18,5 +18,4 @@ void ScsLoader::loadScsFile(ScMemoryContext &context, const std::string &filenam
     translateParams.m_autoFormatInfo = true;
 
     translator.Translate(translateParams);
-
 }

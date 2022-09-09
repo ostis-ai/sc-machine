@@ -18,11 +18,6 @@ public:
 
   virtual void Emit() = 0;
 
-  ScServerConnectionHandle GetHandle()
-  {
-    return m_hdl;
-  }
-
   virtual ~ScServerAction() = default;
 
 protected:

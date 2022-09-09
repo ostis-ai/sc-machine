@@ -23,19 +23,11 @@ class ScMemoryJsonEventsHandler : public ScMemoryJsonHandler
 public:
   explicit ScMemoryJsonEventsHandler(ScServer * server);
 
-  std::string Handle(ScServerConnectionHandle const & hdl, std::string const & requestMessageText) override;
-
-  ~ScMemoryJsonEventsHandler() override
-  {
-    m_context->Destroy();
-    delete m_context;
-  }
+  ~ScMemoryJsonEventsHandler() override;
 
 private:
   ScMemoryContext * m_context;
   ScMemoryJsonEventsManager * m_manager;
-
-  ScServer * m_server;
 
   std::map<std::string, ScEvent::Type> events = {
       {"add_outgoing_edge", ScEvent::Type::AddOutputEdge},
@@ -46,13 +38,17 @@ private:
       {"delete_element", ScEvent::Type::EraseElement},
   };
 
-  ScMemoryJsonPayload HandleCreate(ScServerConnectionHandle const & hdl, ScMemoryJsonPayload const & message);
+  ScMemoryJsonPayload HandleRequestPayload(
+      ScServerConnectionHandle const & hdl,
+      std::string const & requestType,
+      ScMemoryJsonPayload const & requestPayload,
+      ScMemoryJsonPayload & errorsPayload,
+      sc_bool & status,
+      sc_bool & isEvent) override;
 
-  ScMemoryJsonPayload HandleDelete(ScServerConnectionHandle const & hdl, ScMemoryJsonPayload const & message);
+  ScMemoryJsonPayload HandleCreate(
+      ScServerConnectionHandle const & hdl, ScMemoryJsonPayload const & message, ScMemoryJsonPayload & errorsPayload);
 
-  static std::string GenerateResponseText(
-      size_t requestId,
-      sc_bool event,
-      sc_bool status,
-      ScMemoryJsonPayload const & responsePayload);
+  ScMemoryJsonPayload HandleDelete(
+      ScServerConnectionHandle const & hdl, ScMemoryJsonPayload const & message, ScMemoryJsonPayload & errorsPayload);
 };

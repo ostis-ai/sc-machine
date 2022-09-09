@@ -16,10 +16,10 @@ protected:
     ScTemplateParams templParams;
     if (payload.find("templ") != payload.end())
     {
-      auto const & rowParams = payload["params"];
+      auto const rowParams = payload["params"];
       payload = payload["templ"];
 
-      for (auto it = rowParams.begin(); it != rowParams.end(); it++)
+      for (auto it = rowParams.cbegin(); it != rowParams.cend(); it++)
       {
         auto const & key = it.key();
         auto const & value = it.value();

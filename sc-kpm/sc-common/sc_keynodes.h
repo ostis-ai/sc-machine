@@ -17,6 +17,6 @@ sc_common_resolve_keynode(sc_memory_context const * ctx, char const * sys_idtf, 
 
 #define RESOLVE_KEYNODE(ctx, keynode) \
   if (sc_common_resolve_keynode(ctx, keynode##_str, &keynode) != SC_RESULT_OK) \
-    return SC_RESULT_ERROR;
+  return SC_RESULT_ERROR
 
 #endif

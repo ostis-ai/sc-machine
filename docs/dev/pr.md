@@ -12,16 +12,18 @@ Message text should start from an upper case letter. If commit doesn't fix or im
 
 Possible tags:
 
-  * `[cpp]` - use, when you made changes in cpp wrapper code;
-  * `[memory]` - use, when you made changes in c core code;
-  * `[tests]` or `[test]` - use, when you made changes in tests;
-  * `[tools]` - use, when you made changes in tools;
-  * `[builder]` - use, when you made changes in builder tools;
-  * `[codegen]` - use, when you made changes in code generator;
-  * `[review]` - use, when you made commit with review fixes;
-  * `[refactor]` - use, when you made commit with some code refactoring;
-  * `[changelog]` - use, when you update changelog;
-  * `[docs]` - use, when you update documentation;
+  * `[cpp]` - changes in cpp wrapper code;
+  * `[memory]` - changes in c core code;
+  * `[tests]` or `[test]` - changes in tests;
+  * `[tools]` - changes in tools;
+  * `[builder]` - changes in builder tools;
+  * `[codegen]` - changes in code generator;
+  * `[review]` - commits with review fixes;
+  * `[refactor]` - commits with some code refactoring;
+  * `[changelog]` - use when you update changelog;
+  * `[docs]` - use when you update documentation;
+  * `[docker]` - changes in Dockerfile, .dockerignore or Docker image build pipeline
+  * `[scripts]` - updates in the `sc-machine/scripts` files
   * `[ci]` - changes in `ci` configuration or scripts;
   * `[git]` - changes in `git` configuration;
   * `[cmake]` - changes in `cmake` build system.

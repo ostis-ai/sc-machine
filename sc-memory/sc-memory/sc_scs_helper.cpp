@@ -320,6 +320,22 @@ bool SCsHelper::GenerateBySCsText(std::string const & scsText)
   return result;
 }
 
+void SCsHelper::GenerateBySCsTextLazy(const std::string & scsText)
+{
+  ScMemoryContextEventsPendingGuard guard(m_ctx);
+
+  scs::Parser parser;
+  if (!parser.Parse(scsText))
+  {
+    SC_THROW_EXCEPTION(utils::ExceptionParseError, parser.GetParseError());
+  }
+  else
+  {
+    impl::StructGenerator generate(m_ctx, m_fileInterface);
+    generate(parser);
+  }
+}
+
 std::string const & SCsHelper::GetLastError() const
 {
   return m_lastError;

@@ -1,6 +1,6 @@
 make_tests_from_folder(${CMAKE_CURRENT_LIST_DIR}/units
     NAME sc-server-tests
-    DEPENDS sc-memory sc-server-lib
+    DEPENDS sc-memory sc-server-lib sc-config-utils
     INCLUDES ${SC_MEMORY_SRC} ${GLIB2_LIBRARIES}
 )
 
