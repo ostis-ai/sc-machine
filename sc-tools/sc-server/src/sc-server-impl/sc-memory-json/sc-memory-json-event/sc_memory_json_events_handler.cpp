@@ -28,7 +28,7 @@ ScMemoryJsonPayload ScMemoryJsonEventsHandler::HandleRequestPayload(
     sc_bool & isEvent)
 {
   status = SC_FALSE;
-  isEvent = SC_TRUE;
+  isEvent = SC_FALSE;
 
   errorsPayload = ScMemoryJsonPayload::array({});
 
@@ -59,7 +59,7 @@ ScMemoryJsonPayload ScMemoryJsonEventsHandler::HandleCreate(
     ScMemoryJsonPayload const & responsePayload = {addr.Hash(), edgeAddr.Hash(), otherAddr.Hash()};
     ScMemoryJsonPayload const & errorsPayload = ScMemoryJsonPayload::object({});
     sc_bool const event = SC_TRUE;
-    sc_bool const status = SC_FALSE;
+    sc_bool const status = SC_TRUE;
 
     ScMemoryJsonPayload const & responseTextJson
         = FormResponseMessage(id, event, status, errorsPayload, responsePayload);

@@ -52,6 +52,22 @@ TEST_F(ScServerTest, Connection)
   client.Stop();
 }
 
+TEST_F(ScServerTest, HealthcheckOK)
+{
+  ScClient client;
+  EXPECT_TRUE(client.Connect(m_server->GetUri()));
+  client.Run();
+
+  std::string const payloadString = R"({"type": "healthcheck"})";
+  EXPECT_TRUE(client.Send(payloadString));
+
+  auto const response = client.GetResponseMessage();
+  EXPECT_FALSE(response.is_null());
+  EXPECT_TRUE(response.get<std::string>() == "OK");
+
+  client.Stop();
+}
+
 void TEST_N_CONNECTIONS(std::unique_ptr<ScServer> const & server, size_t const amount)
 {
   size_t const CONNECTIONS = amount;
