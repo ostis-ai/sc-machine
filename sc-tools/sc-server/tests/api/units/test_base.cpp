@@ -872,6 +872,7 @@ TEST_F(ScServerTest, HandleEvents)
   EXPECT_FALSE(responsePayload.is_null());
   EXPECT_TRUE(response["status"].get<sc_bool>());
   EXPECT_TRUE(response["errors"].empty());
+  EXPECT_FALSE(response["event"].get<sc_bool>());
 
   EXPECT_TRUE(responsePayload[0].get<sc_int>() == 0);
 
@@ -881,6 +882,7 @@ TEST_F(ScServerTest, HandleEvents)
   std::this_thread::sleep_for(std::chrono::milliseconds(1000));
   response = client.GetResponseMessage();
   EXPECT_FALSE(response.is_null());
+  EXPECT_TRUE(response["event"].get<sc_bool>());
 
   responsePayload = response["payload"];
 
@@ -925,6 +927,7 @@ TEST_F(ScServerTest, HandleEvents)
   EXPECT_TRUE(responsePayload.is_array());
   EXPECT_TRUE(response["status"].get<sc_bool>());
   EXPECT_TRUE(response["errors"].empty());
+  EXPECT_FALSE(response["event"].get<sc_bool>());
 
   client.Stop();
 }
