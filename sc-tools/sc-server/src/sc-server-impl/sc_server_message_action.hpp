@@ -68,7 +68,7 @@ public:
 
   void OnHealthCheck(ScServerConnectionHandle const & hdl, ScServerMessage const & msg)
   {
-    std::string response;
+    ScMemoryJsonPayload response;
     try
     {
       auto * context = new ScMemoryContext(sc_access_lvl_make_max);
@@ -88,7 +88,7 @@ public:
       m_server->LogMessage(ScServerLogMessages::app, "I've died...");
     }
 
-    m_server->Send(hdl, response, ScServerMessageType::text);
+    m_server->Send(hdl, response.dump(), ScServerMessageType::text);
     m_server->CloseConnection(hdl, websocketpp::close::status::normal, "Status checked");
   }
 
