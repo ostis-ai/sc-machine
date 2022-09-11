@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Codeql analysis
 - Script run_tests.sh
 - Tests for fs-memory
 - Intersect/unite search by strings in fs-memory
