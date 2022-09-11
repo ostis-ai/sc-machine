@@ -49,4 +49,4 @@ jobs:
 
       - name: Checking the code with clang
         run: |
-          ./scripts/ci/check-formatting.sh
+          ./scripts/clang/check_formatting.sh
