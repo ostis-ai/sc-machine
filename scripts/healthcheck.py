@@ -30,7 +30,7 @@ def main(args: dict):
         exit(1)
 
     ws.close()
-    if json.dump(result) == "OK":
+    if result == "OK":
         exit(0)
     else:
         exit(1)
