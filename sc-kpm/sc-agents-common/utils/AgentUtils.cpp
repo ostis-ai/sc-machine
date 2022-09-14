@@ -17,6 +17,8 @@ using namespace scAgentsCommon;
 
 namespace utils
 {
+sc_uint32 const AgentUtils::DEFAULT_WAIT_TIME = 30000;
+
 void AgentUtils::assignParamsToQuestionNode(
     ScMemoryContext * ms_context,
     const ScAddr & questionNode,
@@ -39,7 +41,7 @@ ScAddr AgentUtils::createQuestionNode(ScMemoryContext * ms_context)
   return questionNode;
 }
 
-bool AgentUtils::waitAgentResult(ScMemoryContext * ms_context, const ScAddr & questionNode, const uint32_t waitTime)
+bool AgentUtils::waitAgentResult(ScMemoryContext * ms_context, const ScAddr & questionNode, const sc_uint32 waitTime)
 {
   SC_CHECK_PARAM(questionNode, ("Invalid question node address"));
 
@@ -50,32 +52,98 @@ bool AgentUtils::waitAgentResult(ScMemoryContext * ms_context, const ScAddr & qu
   return waiter.Wait(waitTime);
 }
 
+ScAddr AgentUtils::formActionNode(ScMemoryContext * ms_context, const ScAddr & actionClass, const ScAddrVector & params)
+{
+  SC_CHECK_PARAM(actionClass, ("Invalid action class address"));
+
+  ScAddr actionNode = createQuestionNode(ms_context);
+  assignParamsToQuestionNode(ms_context, actionNode, params);
+
+  ms_context->CreateEdge(ScType::EdgeAccessConstPosPerm, actionClass, actionNode);
+
+  return actionNode;
+}
+
 ScAddr AgentUtils::initAgent(ScMemoryContext * ms_context, const ScAddr & questionClass, const ScAddrVector & params)
+{
+  return initAction(ms_context, questionClass, params);
+}
+
+ScAddr AgentUtils::initAction(ScMemoryContext * ms_context, const ScAddr & questionClass, const ScAddrVector & params)
 {
   SC_CHECK_PARAM(questionClass, ("Invalid question class address"));
 
-  ScAddr questionNode = createQuestionNode(ms_context);
-  assignParamsToQuestionNode(ms_context, questionNode, params);
+  ScAddr questionNode = formActionNode(ms_context, questionClass, params);
 
-  ms_context->CreateEdge(ScType::EdgeAccessConstPosPerm, questionClass, questionNode);
   ms_context->CreateEdge(ScType::EdgeAccessConstPosPerm, CoreKeynodes::question_initiated, questionNode);
+
   return questionNode;
+}
+
+bool AgentUtils::applyAction(
+    ScMemoryContext * ms_context,
+    const ScAddr & actionClass,
+    const ScAddrVector & params,
+    const sc_uint32 & waitTime)
+{
+  ScAddr actionNode = formActionNode(ms_context, actionClass, params);
+
+  return applyAction(ms_context, actionNode, waitTime);
+}
+
+bool AgentUtils::applyAction(ScMemoryContext * ms_context, const ScAddr & actionNode, const sc_uint32 & waitTime)
+{
+  auto check = [](ScAddr const & listenAddr, ScAddr const & edgeAddr, ScAddr const & otherAddr) {
+    return otherAddr == scAgentsCommon::CoreKeynodes::question_finished;
+  };
+
+  auto initialize = [ms_context, actionNode]() {
+    ms_context->CreateEdge(
+        ScType::EdgeAccessConstPosPerm, scAgentsCommon::CoreKeynodes::question_initiated, actionNode);
+  };
+
+  ScWaitCondition<ScEventAddInputEdge> waiter(*ms_context, actionNode, SC_WAIT_CHECK(check));
+  return waiter.Wait(waitTime, initialize);
 }
 
 ScAddr AgentUtils::initAgentAndWaitResult(
     ScMemoryContext * ms_context,
-    const ScAddr & questionClass,
-    const ScAddrVector & params)
+    const ScAddr & actionClass,
+    const ScAddrVector & params,
+    const sc_uint32 & waitTime)
 {
-  SC_CHECK_PARAM(questionClass, ("Invalid question class address"));
+  return getActionResultIfExists(ms_context, actionClass, params, waitTime);
+}
 
-  ScAddr questionNode = initAgent(ms_context, questionClass, params);
-  if (waitAgentResult(ms_context, questionNode))
-  {
-    ScAddr nrelAnswer = CoreKeynodes::nrel_answer;
-    return IteratorUtils::getAnyByOutRelation(ms_context, questionNode, nrelAnswer);
-  }
-  return {};
+ScAddr AgentUtils::getActionResultIfExists(
+    ScMemoryContext * ms_context,
+    const ScAddr & actionClass,
+    const ScAddrVector & params,
+    const sc_uint32 & waitTime)
+{
+  SC_CHECK_PARAM(actionClass, ("Invalid action class address"));
+
+  ScAddr actionNode = formActionNode(ms_context, actionClass, params);
+
+  ScAddr result;
+  if (applyAction(ms_context, actionNode))
+    result = IteratorUtils::getAnyByOutRelation(ms_context, actionNode, CoreKeynodes::nrel_answer);
+
+  return result;
+}
+
+ScAddr AgentUtils::getActionResultIfExists(
+    ScMemoryContext * ms_context,
+    const ScAddr & actionNode,
+    const sc_uint32 & waitTime)
+{
+  SC_CHECK_PARAM(actionNode, ("Invalid action node address"));
+
+  ScAddr result;
+  if (applyAction(ms_context, actionNode))
+    result = IteratorUtils::getAnyByOutRelation(ms_context, actionNode, CoreKeynodes::nrel_answer);
+
+  return result;
 }
 
 void AgentUtils::finishAgentWork(
