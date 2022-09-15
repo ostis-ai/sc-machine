@@ -12,6 +12,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add `;` after `SC_ASSERT` calls in projects that use sc-machine
 
 ### Added
+
+- Test for utils for work with actions and their results
 - Handle and save sc-server subcommands errors
 - Add sc-server healthcheck
 - Add tests for sc-search agents in sc-kpm
@@ -42,6 +44,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- Updade action utils to use the new logic for waiting for action results
 - Fix logic of waiting for action results
 - Entrypoint of Docker image is now easier to work with
 - Update commit badges
