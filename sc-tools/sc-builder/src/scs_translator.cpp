@@ -10,6 +10,7 @@
 #include "sc-memory/sc_scs_helper.hpp"
 
 #include "sc-memory/utils/sc_base64.hpp"
+#include "sc-memory/utils/sc_exec.hpp"
 
 #include <boost/filesystem/path.hpp>
 
@@ -22,8 +23,8 @@ namespace impl
 class FileProvider : public SCsFileInterface
 {
 public:
-  explicit FileProvider(std::string parentPath, std::set<std::string> base64Formats)
-    : m_parentPath(std::move(parentPath)), m_base64Formats(std::move(base64Formats))
+  explicit FileProvider(std::string parentPath)
+    : m_parentPath(std::move(parentPath))
   {
   }
 
@@ -53,16 +54,9 @@ public:
 
       std::string const extension = fullPath.substr(fullPath.rfind('.'));
 
-      if (m_base64Formats.find(extension) == m_base64Formats.cend())
+      if (IsBinary(fullPath))
       {
-        return std::make_shared<ScStream>(fullPath, SC_STREAM_FLAG_READ);
-      }
-      else
-      {
-        std::ifstream fin(fullPath, std::ios::in | std::ios::binary);
-        std::ostringstream oss;
-        oss << fin.rdbuf();
-        std::string data(oss.str());
+        std::string data = GetBinaryFileContent(fullPath);
 
         data = ScBase64::Encode(reinterpret_cast<sc_uchar const *>(data.c_str()), data.size());
         auto * rowData = new sc_char[data.size()];
@@ -70,18 +64,39 @@ public:
 
         return std::make_shared<ScStream>(rowData, data.size(), SC_STREAM_FLAG_READ);
       }
+      else
+      {
+        return std::make_shared<ScStream>(fullPath, SC_STREAM_FLAG_READ);
+      }
     }
     else
     {
       SC_THROW_EXCEPTION(utils::ExceptionParseError, "Can't process file content by url " << fileURL);
     }
-
-    return {};
   }
 
 private:
   std::string m_parentPath;
-  std::set<std::string> m_base64Formats;
+
+  static sc_bool IsBinary(std::string const & fullFilePath)
+  {
+    ScExec exec{{"file", "-b", "--mime-encoding", fullFilePath}};
+    std::string fileType;
+    exec >> fileType;
+
+    return fileType == "binary";
+  }
+
+  static std::string GetBinaryFileContent(std::string const & fullFilePath)
+  {
+    std::ifstream fin{fullFilePath, std::ios::in | std::ios::binary};
+    std::ostringstream oss;
+    oss << fin.rdbuf();
+    std::string data(oss.str());
+    fin.close();
+
+    return data;
+  }
 };
 
 } // namespace impl
@@ -96,10 +111,7 @@ bool SCsTranslator::TranslateImpl(Params const & params)
   std::string data;
   GetFileContent(params.m_fileName, data);
 
-  SCsHelper scs(
-      m_ctx,
-      std::make_shared<impl::FileProvider>(
-          params.m_fileName, std::set<std::string>({".pdf", ".png", ".jpeg", ".jpg", ".gif"})));
+  SCsHelper scs(m_ctx, std::make_shared<impl::FileProvider>(params.m_fileName));
   
   if (!scs.GenerateBySCsText(data))
   {
