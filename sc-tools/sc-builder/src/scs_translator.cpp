@@ -9,9 +9,12 @@
 #include "sc-memory/sc_memory.hpp"
 #include "sc-memory/sc_scs_helper.hpp"
 
+#include "sc-memory/utils/sc_base64.hpp"
+
 #include <boost/filesystem/path.hpp>
 
 #include <regex>
+#include <utility>
 
 namespace impl
 {
@@ -19,8 +22,8 @@ namespace impl
 class FileProvider : public SCsFileInterface
 {
 public:
-  explicit FileProvider(std::string const& parentPath)
-    : m_parentPath(parentPath)
+  explicit FileProvider(std::string parentPath, std::set<std::string> base64Formats)
+    : m_parentPath(std::move(parentPath)), m_base64Formats(std::move(base64Formats))
   {
   }
 
@@ -48,12 +51,29 @@ public:
         fullPath = match[3];
       }
 
-      return std::make_shared<ScStream>(fullPath, SC_STREAM_FLAG_READ);
+      std::string const extension = fullPath.substr(fullPath.rfind('.'));
+
+      if (m_base64Formats.find(extension) == m_base64Formats.cend())
+      {
+        return std::make_shared<ScStream>(fullPath, SC_STREAM_FLAG_READ);
+      }
+      else
+      {
+        std::ifstream fin(fullPath, std::ios::in | std::ios::binary);
+        std::ostringstream oss;
+        oss << fin.rdbuf();
+        std::string data(oss.str());
+
+        data = ScBase64::Encode(reinterpret_cast<sc_uchar const *>(data.c_str()), data.size());
+        auto * rowData = new sc_char[data.size()];
+        memcpy(rowData, data.c_str(), data.size());
+
+        return std::make_shared<ScStream>(rowData, data.size(), SC_STREAM_FLAG_READ);
+      }
     }
     else
     {
-      SC_THROW_EXCEPTION(utils::ExceptionParseError,
-                         "Can't process file content by url " << fileURL);
+      SC_THROW_EXCEPTION(utils::ExceptionParseError, "Can't process file content by url " << fileURL);
     }
 
     return {};
@@ -61,6 +81,7 @@ public:
 
 private:
   std::string m_parentPath;
+  std::set<std::string> m_base64Formats;
 };
 
 } // namespace impl
@@ -75,7 +96,10 @@ bool SCsTranslator::TranslateImpl(Params const & params)
   std::string data;
   GetFileContent(params.m_fileName, data);
 
-  SCsHelper scs(m_ctx, std::make_shared<impl::FileProvider>(params.m_fileName));
+  SCsHelper scs(
+      m_ctx,
+      std::make_shared<impl::FileProvider>(
+          params.m_fileName, std::set<std::string>({".pdf", ".png", ".jpeg", ".jpg", ".gif"})));
   
   if (!scs.GenerateBySCsText(data))
   {

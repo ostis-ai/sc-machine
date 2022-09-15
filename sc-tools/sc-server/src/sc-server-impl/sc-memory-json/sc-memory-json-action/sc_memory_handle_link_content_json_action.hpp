@@ -75,21 +75,7 @@ private:
     else if (link.IsType<double>() || link.IsType<float>())
       return {{"value", link.Get<float>()}, {"type", "float"}};
     else
-    {
-      std::string content = link.Get<std::string>();
-      ScMemoryJsonPayload const & contentJson = content;
-
-      try
-      {
-        content = contentJson.dump() = contentJson.get<std::string>();
-        return {{"value", content}, {"type", "string"}};
-      }
-      catch (ScMemoryJsonPayload::type_error const & e)
-      {
-        content = ScBase64::Encode(reinterpret_cast<sc_uchar const *>(content.c_str()), content.size());
-        return {{"value", content}, {"type", "string"}, {"coding", "base64"}};
-      }
-    }
+      return {{"value", link.Get<std::string>()}, {"type", "string"}};
   }
 
   std::vector<size_t> FindLinksByContent(ScMemoryContext * context, ScMemoryJsonPayload const & atom)
