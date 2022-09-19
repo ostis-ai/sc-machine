@@ -7,6 +7,6 @@
 	url = https://github.com/google/benchmark.git
 
 [submodule "sc-component-manager"]
-	path = sc-tools/sc-component-manager
+	path = sc-tools/subsystems/sc-component-manager
 	url = https://github.com/MksmOrlov/sc-component-manager
 	branch = feature/cli_structure
