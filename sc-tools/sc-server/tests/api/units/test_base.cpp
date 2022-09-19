@@ -938,8 +938,7 @@ TEST_F(ScServerTest, Unknown)
   EXPECT_TRUE(client.Connect(m_server->GetUri()));
   client.Run();
 
-  std::string const payloadString
-    = ScMemoryJsonConverter::From(0, "unknown", ScMemoryJsonPayload::object({}));
+  std::string const payloadString = ScMemoryJsonConverter::From(0, "unknown", ScMemoryJsonPayload::object({}));
   EXPECT_TRUE(client.Send(payloadString));
 
   auto const response = client.GetResponseMessage();
