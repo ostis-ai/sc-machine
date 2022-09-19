@@ -8,5 +8,5 @@
 
 [submodule "sc-component-manager"]
 	path = sc-tools/subsystems/sc-component-manager
-	url = https://github.com/MksmOrlov/sc-component-manager
-	branch = feature/cli_structure
+	url = https://github.com/ostis-ai/sc-component-manager
+	branch = command-search
