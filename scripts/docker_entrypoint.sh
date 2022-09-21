@@ -8,7 +8,9 @@ SCRIPTS_PATH=$(cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd)
 function usage() {
     cat <<USAGE
 
-    Usage: $0 [--rebuild_kb <PATH>] [sc-server args]
+    Usage: 
+        $0 build [KB path]
+        $0 serve [sc-server args]
 
     Options:
         build <PATH>:       rebuilds KB from sources (provide absolute path to the source folder or repo.path file)
