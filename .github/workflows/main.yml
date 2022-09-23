@@ -17,16 +17,16 @@ jobs:
       matrix:
         config:
           - {
-            name: "Ubuntu latest, GCC, Sc-dictionary fs-storage",
-            os: ubuntu-latest,
+            name: "Ubuntu 20.04, GCC, Sc-dictionary fs-storage",
+            os: ubuntu-20.04,
             file_memory: "Dictionary",
             build_type: "Debug",
             cc: "gcc",
             cxx: "g++",
           }
           - {
-            name: "Ubuntu latest, GCC, Sc-rocksdb fs-storage",
-            os: ubuntu-latest,
+            name: "Ubuntu 20.04, GCC, Sc-rocksdb fs-storage",
+            os: ubuntu-20.04,
             file_memory: "Rocksdb",
             build_type: "Debug",
             cc: "gcc",
@@ -34,8 +34,8 @@ jobs:
             coverage: "OFF"
           }
           - {
-            name: "Ubuntu latest, GCC, Release, Sc-dictionary fs-storage",
-            os: ubuntu-latest,
+            name: "Ubuntu 20.04, GCC, Release, Sc-dictionary fs-storage",
+            os: ubuntu-20.04,
             file_memory: "Dictionary",
             build_type: "Release",
             cc: "gcc",
@@ -43,8 +43,42 @@ jobs:
             coverage: "ON"
           }
           - {
-            name: "Ubuntu latest, GCC, Release, Sc-rocksdb fs-storage",
-            os: ubuntu-latest,
+            name: "Ubuntu 20.04, GCC, Release, Sc-rocksdb fs-storage",
+            os: ubuntu-20.04,
+            file_memory: "Rocksdb",
+            build_type: "Release",
+            cc: "gcc",
+            cxx: "g++",
+          }
+          - {
+            name: "Ubuntu 22.04, GCC, Sc-dictionary fs-storage",
+            os: ubuntu-22.04,
+            file_memory: "Dictionary",
+            build_type: "Debug",
+            cc: "gcc",
+            cxx: "g++",
+          }
+          - {
+            name: "Ubuntu 22.04, GCC, Sc-rocksdb fs-storage",
+            os: ubuntu-22.04,
+            file_memory: "Rocksdb",
+            build_type: "Debug",
+            cc: "gcc",
+            cxx: "g++",
+            coverage: "OFF"
+          }
+          - {
+            name: "Ubuntu 22.04, GCC, Release, Sc-dictionary fs-storage",
+            os: ubuntu-22.04,
+            file_memory: "Dictionary",
+            build_type: "Release",
+            cc: "gcc",
+            cxx: "g++",
+            coverage: "ON"
+          }
+          - {
+            name: "Ubuntu 22.04, GCC, Release, Sc-rocksdb fs-storage",
+            os: ubuntu-22.04,
             file_memory: "Rocksdb",
             build_type: "Release",
             cc: "gcc",
