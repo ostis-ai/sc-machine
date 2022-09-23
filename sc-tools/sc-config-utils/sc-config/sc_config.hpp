@@ -12,6 +12,7 @@
 extern "C"
 {
 #include "sc_config.h"
+#include <typeinfo>
 }
 
 using sc_list = GList;
