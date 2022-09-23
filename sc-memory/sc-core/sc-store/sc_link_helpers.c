@@ -5,12 +5,10 @@
  */
 
 #include "sc_link_helpers.h"
-#include "sc_element.h"
 
 #include "sc-base/sc_allocator.h"
 
 #ifdef SC_ROCKSDB_FS_STORAGE
-#  include <memory.h>
 
 #  define SC_DEFAULT_CHECKSUM G_CHECKSUM_SHA256
 
