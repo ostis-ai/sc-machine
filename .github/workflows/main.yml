@@ -45,7 +45,7 @@ jobs:
         run: |
           scripts/install_deps_macOS.sh
           pip3 install --user -r requirements.txt
-          echo 'export PATH="'$HOMEBREW_PREFIX'/opt/llvm/bin:$PATH"' >> ~/.zshrc
+          echo 'export PATH="$(brew --prefix llvm)/bin:$PATH"' >> ~/.zshrc
           source ~/.zshrc
 
       - name: Install dependencies (Ubuntu)

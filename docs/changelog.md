@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Ci for ubuntu-22.04 and latest macOS
 - Add ScExec class to execute system commands
 - Test for utils for work with actions and their results
 - Handle and save sc-server subcommands errors
@@ -46,8 +47,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- Fix glib casts on ubuntu-20.04 and macOS
 - Store binary content as base64 string
-- Updade action utils to use the new logic for waiting for action results
+- Update action utils to use the new logic for waiting for action results
 - Fix logic of waiting for action results
 - Entrypoint of Docker image is now easier to work with
 - Update commit badges
