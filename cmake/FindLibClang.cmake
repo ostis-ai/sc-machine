@@ -62,6 +62,8 @@ if (NOT LIBCLANG_LLVM_CONFIG_EXECUTABLE)
     endif ()
     if (LIBCLANG_LLVM_CONFIG_EXECUTABLE)
         message(STATUS "llvm-config executable found: ${LIBCLANG_LLVM_CONFIG_EXECUTABLE}")
+   elseif(APPLE)
+        find_program(LIBCLANG_LLVM_CONFIG_EXECUTABLE NAMES ${llvm_config_names} HINTS "$ENV{HOMEBREW_PREFIX}/opt/llvm/bin")
     endif ()
 endif ()
 

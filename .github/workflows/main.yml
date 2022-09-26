@@ -2,7 +2,7 @@ name: Tests
 
 on:
   pull_request:
-    branches: [ main ]
+    branches: [main]
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
@@ -15,24 +15,11 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [
-          macos-latest,
-          ubuntu-20.04,
-          ubuntu-22.04
-        ]
-        file_memory: [
-          "Dictionary",
-          "Rocksdb"
-        ]
-        build_type: [
-          "Debug",
-          "Release"
-        ]
+        os: [macos-latest, ubuntu-20.04, ubuntu-22.04]
+        file_memory: ["Dictionary", "Rocksdb"]
+        build_type: ["Debug", "Release"]
         config:
-          - {
-            cc: "gcc",
-            cxx: "g++"
-          }
+          - { cc: "gcc", cxx: "g++" }
         exclude:
           - os: macos-latest
             file_memory: "Rocksdb"
@@ -48,8 +35,6 @@ jobs:
         run: |
           scripts/install_deps_macOS.sh
           pip3 install --user -r requirements.txt
-          echo 'export PATH="$(brew --prefix llvm)/bin:$PATH"' >> ~/.zshrc
-          source ~/.zshrc
 
       - name: Install dependencies (Ubuntu)
         if: startswith(matrix.os, 'ubuntu')
