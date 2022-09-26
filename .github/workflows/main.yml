@@ -33,6 +33,9 @@ jobs:
             cc: "gcc",
             cxx: "g++"
           }
+        exclude:
+          - os: macos-latest
+            file_memory: "Rocksdb"
 
     steps:
       - name: Checkout
