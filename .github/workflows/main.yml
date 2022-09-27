@@ -59,3 +59,10 @@ jobs:
       - name: Run tests
         id: run_tests
         run: scripts/ci/run-tests.sh
+
+      - name: Run sc-server
+        id: run_sc_server
+        run: |
+          mkdir kb
+          bin/sc-builder -i kb -o kb.bin --clear -f
+          bin/sc-server -t -c config/sc-machine.ini -r kb.bin

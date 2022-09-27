@@ -19,8 +19,5 @@ jobs:
         run: |
           mkdir kb
           DOCKER_BUILDKIT=1 docker build . -t ubuntu/sc-machine:local
-          docker run -d --rm -e REBUILD_KB=1 -v ${ls}/kb:/kb -v kb_binary:/kb.bin ubuntu/sc-machine:local serve
-          sleep 120
-          pip3 install websocket-client
-          python3 scripts/healthcheck.py --host 0.0.0.0
-          docker stop
+          docker run --rm -e REBUILD_KB=1 -t -h 0.0.0.0 -c sc-machine/config/sc-machine.ini -v ${ls}/kb:/kb -v kb_binary:/kb.bin ubuntu/sc-machine:local serve
+          docker rm $(docker ps -a -q)
