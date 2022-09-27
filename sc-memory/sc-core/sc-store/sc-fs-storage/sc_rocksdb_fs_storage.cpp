@@ -10,12 +10,11 @@ extern "C"
 {
 #  include "sc_rocksdb_fs_storage.h"
 #  include "../sc_link_helpers.h"
-
 #  include "sc_file_system.h"
-#  include "../sc_stream_memory.h"
+}
+
 #  include "../sc-base/sc_allocator.h"
 #  include "../sc-base/sc_message.h"
-}
 
 #  include "rocksdb/db.h"
 #  include "../sc_element.h"
@@ -23,6 +22,7 @@ extern "C"
 #  include <iostream>
 #  include <mutex>
 #  include <vector>
+#  include <string>
 
 rocksdb::DB * gDBInstance = nullptr;
 std::string gInstancePath;
@@ -219,7 +219,7 @@ sc_result sc_rocksdb_fs_storage_addr_ref_remove(sc_addr addr, const sc_check_sum
   {
     if (SC_ADDR_IS_EQUAL(addrs[i], addr))
     {
-      addrs.erase(addrs.begin() + i);
+      addrs.erase(addrs.begin() + (sc_int64)i);
       break;
     }
   }

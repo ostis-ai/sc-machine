@@ -7,15 +7,12 @@
 #ifndef _sc_file_system_h_
 #define _sc_file_system_h_
 
-#include <glib.h>
-#include <glib/gstdio.h>
-
 #include "../sc_types.h"
 
 void sc_fs_rmdir(const sc_char * path);
 
 sc_bool sc_fs_mkdirs(const sc_char * path);
 
-GIOChannel * sc_fs_open_tmp_file(const sc_char * path, sc_char ** tmp_file_name, sc_char * prefix);
+void * sc_fs_open_tmp_file(const sc_char * path, sc_char ** tmp_file_name, sc_char * prefix);
 
 #endif

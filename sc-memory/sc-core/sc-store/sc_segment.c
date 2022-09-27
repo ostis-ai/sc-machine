@@ -268,7 +268,7 @@ lock:
     goto lock;
   }
 
-  sc_atomic_pointer_set(&section->thread_lock, thread);
+  sc_atomic_pointer_set((void **)&section->thread_lock, thread);
   sc_atomic_int_inc(&section->lock_count);
 
   sc_atomic_int_set(&section->internal_lock, 0);
@@ -299,7 +299,7 @@ lock:
     goto lock;
   }
 
-  sc_atomic_pointer_set(&section->thread_lock, thread);
+  sc_atomic_pointer_set((void **)&section->thread_lock, thread);
   sc_atomic_int_inc(&section->lock_count);
 
   sc_atomic_int_set(&section->internal_lock, 0);
@@ -317,7 +317,7 @@ void sc_segment_section_unlock(sc_segment_section * section)
   sc_assert(sc_atomic_pointer_get((void **)&section->thread_lock) == sc_thread());
 
   if (sc_atomic_int_dec_and_test(&section->lock_count) == SC_TRUE)
-    sc_atomic_pointer_set(&section->thread_lock, 0);
+    sc_atomic_pointer_set((void **)&section->thread_lock, 0);
 
   sc_atomic_int_set(&section->internal_lock, 0);
 }

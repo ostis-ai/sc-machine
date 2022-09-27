@@ -12,7 +12,7 @@
 #include "../../sc_memory_version.h"
 #include "sc_fs_storage_builder.h"
 
-#include "../sc-base/sc_allocator.h"
+#include "glib/gstdio.h"
 #include "../sc-base/sc_message.h"
 
 sc_fs_storage * storage_instance;
@@ -227,7 +227,7 @@ sc_bool sc_fs_storage_write_to_path(sc_segment ** segments)
 
   // create temporary file
   gchar * tmp_filename = null_ptr;
-  GIOChannel * output = sc_fs_open_tmp_file(repo_path, &tmp_filename, "segments");
+  void * output = sc_fs_open_tmp_file(repo_path, &tmp_filename, "segments");
 
   sc_fs_storage_segments_header header;
   memset(&header, 0, sizeof(sc_fs_storage_segments_header));

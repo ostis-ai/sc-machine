@@ -411,7 +411,7 @@ void sc_event_unlock(sc_event * evt)
   if (locked_thread != thread)
     sc_critical("Invalid state of event lock");
 
-  sc_atomic_pointer_set(&evt->thread_lock, null_ptr);
+  sc_atomic_pointer_set((void **)&evt->thread_lock, null_ptr);
 }
 
 // --------

@@ -23,7 +23,7 @@ ScLock::ScLock()
 
 void ScLock::Lock()
 {
-  while (sc_atomic_int_compare_and_exchange(&m_locked, 0, 1) == FALSE)
+  while (sc_atomic_int_compare_and_exchange((int *)&m_locked, 0, 1) == FALSE)
   {
     std::this_thread::sleep_for(std::chrono::microseconds(1));
   }

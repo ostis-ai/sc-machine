@@ -14,6 +14,8 @@
 #  include "../sc-base/sc_message.h"
 #  include "../sc-container/sc-string/sc_string.h"
 
+#  include <glib/gstdio.h>
+
 sc_char * file_path = null_ptr;
 sc_char strings_path[MAX_PATH_LENGTH];
 

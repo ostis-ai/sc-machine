@@ -9,6 +9,9 @@
 #include "../sc-base/sc_assert_utils.h"
 #include "../sc-base/sc_message.h"
 
+#include "glib.h"
+#include "glib/gstdio.h"
+
 void sc_fs_rmdir(const sc_char * path)
 {
   if (g_file_test(path, G_FILE_TEST_IS_DIR) == SC_FALSE)
@@ -52,7 +55,7 @@ sc_bool sc_fs_mkdirs(const sc_char * path)
   return SC_TRUE;
 }
 
-GIOChannel * sc_fs_open_tmp_file(const sc_char * path, sc_char ** tmp_file_name, sc_char * prefix)
+void * sc_fs_open_tmp_file(const sc_char * path, sc_char ** tmp_file_name, sc_char * prefix)
 {
   *tmp_file_name = g_strdup_printf("%s/%s_%lu", path, prefix, (sc_ulong)g_get_real_time());
 
