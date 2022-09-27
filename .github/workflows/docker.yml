@@ -6,15 +6,21 @@ on:
 
 jobs:
   build:
-    name: ${{ matrix.os }}
-    runs-on: ${{ matrix.os }}
-
-    strategy:
-      fail-fast: false
-      matrix:
-        os: [ macos-latest, ubuntu-20.04, ubuntu-22.04, windows-latest ]
+    name: Build and Run
+    runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v3
-    - name: Build the Docker image
-      run: docker run --rm -i -e REBUILD_KB=1 -v sc-tools/sc-builder/tests/kb:/kb -v kb_binary:/kb.bin ostis/sc-machine:latest serve
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          submodules: recursive
+
+      - name: Run the Docker image
+        run: |
+          mkdir kb
+          DOCKER_BUILDKIT=1 docker build . -t ubuntu/sc-machine:local
+          docker run -d --rm -e REBUILD_KB=1 -v ${ls}/kb:/kb -v kb_binary:/kb.bin ubuntu/sc-machine:local serve
+          sleep 120
+          pip3 install websocket-client
+          python3 scripts/healthcheck.py --host 0.0.0.0
+          docker stop
