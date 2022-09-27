@@ -63,7 +63,15 @@ if (NOT LIBCLANG_LLVM_CONFIG_EXECUTABLE)
     if (LIBCLANG_LLVM_CONFIG_EXECUTABLE)
         message(STATUS "llvm-config executable found: ${LIBCLANG_LLVM_CONFIG_EXECUTABLE}")
    elseif(APPLE)
-        find_program(LIBCLANG_LLVM_CONFIG_EXECUTABLE NAMES ${llvm_config_names} HINTS "$ENV{HOMEBREW_PREFIX}/opt/llvm/bin")
+        execute_process(
+            COMMAND brew --prefix llvm@14
+            RESULT_VARIABLE BREW_LLVM
+            OUTPUT_VARIABLE BREW_LLVM_DIR
+            OUTPUT_STRIP_TRAILING_WHITESPACE
+        )
+        if (${BREW_LLVM} EQUAL 0)
+            find_program(LIBCLANG_LLVM_CONFIG_EXECUTABLE NAMES ${llvm_config_names} HINTS "${BREW_LLVM_DIR}/bin")
+        endif()
     endif ()
 endif ()
 
