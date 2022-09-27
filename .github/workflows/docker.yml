@@ -1,0 +1,20 @@
+name: Docker
+
+on:
+  pull_request:
+    branches: [main]
+
+jobs:
+  build:
+    name: ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ macos-latest, ubuntu-20.04, ubuntu-22.04, windows-latest ]
+
+    steps:
+    - uses: actions/checkout@v3
+    - name: Build the Docker image
+      run: docker run --rm -i -e REBUILD_KB=1 -v sc-tools/sc-builder/tests/kb:/kb -v kb_binary:/kb.bin ostis/sc-machine:latest serve
