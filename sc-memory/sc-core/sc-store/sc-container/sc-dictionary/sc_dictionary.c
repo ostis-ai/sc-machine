@@ -252,7 +252,7 @@ sc_dictionary_node * sc_dictionary_get_node_from_node(sc_dictionary_node * node,
     sc_char * str = sc_mem_new(sc_char, node->offset_size + 1);
     sc_mem_cpy(str, node->offset, node->offset_size);
 
-    if (strstr(str, sc_string + (string_size - node->offset_size)) != null_ptr)
+    if (strstr(sc_string, str) != null_ptr)
     {
       sc_mem_free(str);
       return node;
