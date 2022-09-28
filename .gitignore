@@ -25,3 +25,15 @@ __pycache__
 .DS_store
 .antlr
 .cache
+
+# docs
+
+*.aux
+*.bbl
+*.bcf
+*.blg
+*.fdb_latexmk
+*.fls
+*.log
+*.pdf
+*.run.xml
