@@ -5,6 +5,8 @@
 
 #include "sc_test.hpp"
 
+#include <algorithm>
+
 template <typename Type> void TestType(ScMemoryContext & ctx, Type const & value)
 {
   ScAddr const linkAddr = ctx.CreateLink();
@@ -253,6 +255,57 @@ TEST_F(ScLinkTest, find_links_by_substr)
   EXPECT_TRUE(ctx.FindLinksByContentSubstring("contents").empty());
   EXPECT_TRUE(ctx.FindLinksByContentSubstring("cotents_2").size() == 1);
   EXPECT_TRUE(ctx.FindLinksByContentSubstring("cotents_26").empty());
+
+  ctx.Destroy();
+}
+
+TEST_F(ScLinkTest, find_strings_by_substr)
+{
+  ScMemoryContext ctx(sc_access_lvl_make_min, "sc_links_content_changed");
+
+  ScAddr linkAddr = ctx.CreateLink();
+  EXPECT_TRUE(linkAddr.IsValid());
+  ScLink link1 = ScLink(ctx, linkAddr);
+  std::string str = "some coten";
+  EXPECT_TRUE(link1.Set(str));
+  EXPECT_TRUE(str == link1.GetAsString());
+
+  linkAddr = ctx.CreateLink();
+  EXPECT_TRUE(linkAddr.IsValid());
+  ScLink link2 = ScLink(ctx, linkAddr);
+  str = "ton_content";
+  EXPECT_TRUE(link2.Set(str));
+  EXPECT_TRUE(str == link2.GetAsString());
+
+  linkAddr = ctx.CreateLink();
+  EXPECT_TRUE(linkAddr.IsValid());
+  ScLink link3 = ScLink(ctx, linkAddr);
+  str = "content_tents_25";
+  EXPECT_TRUE(link3.Set(str));
+  EXPECT_TRUE(str == link3.GetAsString());
+
+  EXPECT_FALSE(ctx.FindStringsBySubstring("some coten").empty());
+  EXPECT_FALSE(ctx.FindStringsBySubstring("ton_content").empty());
+  EXPECT_FALSE(ctx.FindStringsBySubstring("content_tents_25").empty());
+
+  auto strings = ctx.FindStringsBySubstring("some coten");
+  EXPECT_TRUE(ctx.FindStringsBySubstring("some coten").size() == 1);
+  EXPECT_TRUE(strings[0] == "some coten");
+
+  strings = ctx.FindStringsBySubstring("cont");
+  EXPECT_TRUE(strings.size() == 2);
+  EXPECT_TRUE(std::find(strings.begin(), strings.end(), "ton_content") != strings.end());
+  EXPECT_TRUE(std::find(strings.begin(), strings.end(), "content_tents_25") != strings.end());
+
+  strings = ctx.FindStringsBySubstring("25");
+  EXPECT_TRUE(strings.size() == 1);
+  EXPECT_TRUE(std::find(strings.begin(), strings.end(), "content_tents_25") != strings.end());
+
+  strings = ctx.FindStringsBySubstring("co");
+  EXPECT_TRUE(strings.size() >= 3);
+  EXPECT_TRUE(std::find(strings.begin(), strings.end(), "some coten") != strings.end());
+  EXPECT_TRUE(std::find(strings.begin(), strings.end(), "ton_content") != strings.end());
+  EXPECT_TRUE(std::find(strings.begin(), strings.end(), "content_tents_25") != strings.end());
 
   ctx.Destroy();
 }
