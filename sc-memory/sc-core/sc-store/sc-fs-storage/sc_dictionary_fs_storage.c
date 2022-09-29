@@ -243,6 +243,7 @@ sc_bool sc_dictionary_fs_storage_get_sc_links_by_substr(const sc_char * sc_subst
 
   *links = sc_list_to_addr_array(list);
   *size = list->size;
+  sc_list_destroy(list);
 
   return SC_TRUE;
 }
@@ -274,7 +275,8 @@ sc_char ** sc_list_to_strings_array(sc_list * list)
   sc_iterator * it = sc_list_iterator(list);
   while (sc_iterator_next(it))
   {
-    **temp = sc_iterator_get(it);
+    sc_char * str = sc_iterator_get(it);
+    sc_str_cpy(**temp, str, strlen(str));
     ++*temp;
   }
   sc_mem_free(temp);
@@ -306,6 +308,7 @@ sc_bool sc_dictionary_fs_storage_get_sc_strings_by_substr(
 
   *strings = sc_list_to_strings_array(list);
   *size = list->size;
+  sc_list_destroy(list);
 
   return SC_TRUE;
 }

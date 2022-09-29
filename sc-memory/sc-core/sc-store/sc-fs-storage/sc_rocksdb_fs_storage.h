@@ -41,13 +41,24 @@ sc_bool sc_rocksdb_fs_storage_append_sc_link(sc_element * element, sc_addr addr,
  */
 sc_bool sc_rocksdb_fs_storage_get_sc_links(const sc_char * sc_string, sc_addr ** links, sc_uint32 * size);
 
-/*! Gets sc-links from sc-rocksdb by it substring content.
+/*! Finds sc-links in sc-rocksdb by it substring content.
  * @param sc_substr A key substring
  * @param[out] links A pointer to sc-links
  * @param[out] size A sc-links size
  * @returns SC_TRUE, if sc-links exist.
  */
-sc_bool sc_rocksdb_fs_storage_get_sc_links_by_substr(const sc_char * sc_substr, sc_addr ** links, sc_uint32 * size);
+sc_bool sc_rocksdb_fs_storage_find_sc_links_by_substr(const sc_char * sc_substr, sc_addr ** links, sc_uint32 * size);
+
+/*! Gets sc-strings from sc-rocksdb by it substring.
+ * @param sc_substr A key substring
+ * @param[out] strings A pointer to sc-string array
+ * @param[out] size A sc-links size
+ * @returns SC_TRUE, if sc-strings array exist.
+ */
+sc_bool sc_rocksdb_fs_storage_find_sc_strings_by_substr(
+    const sc_char * sc_substr,
+    sc_char *** strings,
+    sc_uint32 * size);
 
 /*! Gets sc-link content string with its size.
  * @param addr A sc-link

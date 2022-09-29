@@ -402,7 +402,10 @@ std::vector<std::string> ScMemoryContext::FindStringsBySubstring(ScStreamPtr con
   if (sc_memory_find_strings_by_substring(m_context, str, &result, &resultCount) == SC_RESULT_OK)
   {
     for (sc_uint32 i = 0; i < resultCount; ++i)
+    {
       contents.emplace_back(result[i]);
+      sc_memory_free_buff(result[i]);
+    }
 
     if (result)
       sc_memory_free_buff(result);

@@ -14,6 +14,7 @@ extern "C"
 }
 
 #  include "../sc-base/sc_allocator.h"
+#  include "../sc-container/sc-string/sc_string.h"
 #  include "../sc-base/sc_message.h"
 
 #  include "rocksdb/db.h"
@@ -265,7 +266,10 @@ sc_result sc_rocksdb_fs_storage_find(const sc_check_sum * check_sum, sc_addr ** 
   return SC_RESULT_OK;
 }
 
-sc_result sc_rocksdb_fs_storage_find_by_substr(const sc_char * sc_substr, sc_addr ** result, sc_uint32 * result_count)
+sc_bool sc_rocksdb_fs_storage_find_sc_links_by_substr(
+    const sc_char * sc_substr,
+    sc_addr ** result,
+    sc_uint32 * result_count)
 {
   MutexGuard lock(gMutex);
 
@@ -312,7 +316,49 @@ sc_result sc_rocksdb_fs_storage_find_by_substr(const sc_char * sc_substr, sc_add
   *result = (sc_addr *)malloc(resultBytes);
   sc_mem_cpy(*result, foundAddrs.data(), resultBytes);
 
-  return SC_RESULT_OK;
+  return SC_TRUE;
+}
+
+sc_bool sc_rocksdb_fs_storage_find_sc_strings_by_substr(
+    const sc_char * sc_substr,
+    sc_char *** result,
+    sc_uint32 * result_count)
+{
+  MutexGuard lock(gMutex);
+
+  assert(gDBInstance);
+
+  rocksdb::ReadOptions readOptions;
+  auto const & it = gDBInstance->NewIterator(readOptions);
+  it->SeekToFirst();
+
+  std::vector<std::string> foundStrings;
+  while (it->Valid())
+  {
+    auto const & slice = it->value();
+
+    std::string str{slice.data()};
+    str.resize(slice.size());
+
+    if (str.find(sc_substr) != std::string::npos)
+    {
+      foundStrings.emplace_back(str);
+    }
+
+    it->Next();
+  }
+
+  *result_count = sc_uint32(foundStrings.size());
+
+  size_t const resultBytes = sizeof(sc_char *) * foundStrings.size();
+  *result = (sc_char **)malloc(resultBytes);
+  for (size_t i = 0; i < foundStrings.size(); ++i)
+  {
+    std::string str = foundStrings[i];
+    sc_str_cpy((*result)[i], str.c_str(), str.size());
+  }
+
+  return SC_TRUE;
 }
 
 sc_bool sc_rocksdb_fs_storage_append_sc_link(sc_element * element, sc_addr addr, sc_char * sc_string, sc_uint32 size)
@@ -347,11 +393,6 @@ sc_bool sc_rocksdb_fs_storage_get_sc_links(const sc_char * sc_string, sc_addr **
   sc_mem_free(check_sum);
 
   return result;
-}
-
-sc_bool sc_rocksdb_fs_storage_get_sc_links_by_substr(const sc_char * sc_substr, sc_addr ** links, sc_uint32 * size)
-{
-  return sc_rocksdb_fs_storage_find_by_substr(sc_substr, links, size);
 }
 
 void sc_rocksdb_fs_storage_get_sc_string_ext(sc_element * element, sc_addr addr, sc_char ** sc_string, sc_uint32 * size)

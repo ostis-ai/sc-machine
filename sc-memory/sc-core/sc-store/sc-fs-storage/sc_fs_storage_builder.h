@@ -36,7 +36,8 @@ sc_fs_storage * sc_fs_storage_build()
   storage->clear = sc_rocksdb_fs_storage_clear;
   storage->append_sc_link = sc_rocksdb_fs_storage_append_sc_link;
   storage->get_sc_links = sc_rocksdb_fs_storage_get_sc_links;
-  storage->get_sc_links_by_substr = sc_rocksdb_fs_storage_get_sc_links_by_substr;
+  storage->get_sc_links_by_substr = sc_rocksdb_fs_storage_find_sc_links_by_substr;
+  storage->get_sc_strings_by_substr = sc_rocksdb_fs_storage_find_sc_strings_by_substr;
   storage->get_sc_string_ext = sc_rocksdb_fs_storage_get_sc_string_ext;
 #endif
 
