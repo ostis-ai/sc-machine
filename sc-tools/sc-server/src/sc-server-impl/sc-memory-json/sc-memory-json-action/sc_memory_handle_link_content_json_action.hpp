@@ -30,8 +30,10 @@ public:
         responsePayload.push_back(GetContent(context, atom));
       else if (type == "find")
         responsePayload.push_back(FindLinksByContent(context, atom));
-      else if (type == "find_by_substr")
+      else if (type == "find_by_substr" || type == "find_links_by_substr")
         responsePayload.push_back(FindLinksByContentSubstring(context, atom));
+      else if (type == "find_strings_by_substr")
+        responsePayload.push_back(FindStringsBySubstring(context, atom));
     };
 
     if (requestPayload.is_array())
@@ -120,5 +122,23 @@ private:
       hashes.push_back(addr.Hash());
 
     return hashes;
+  }
+
+  std::vector<std::string> FindStringsBySubstring(ScMemoryContext * context, ScMemoryJsonPayload const & atom)
+  {
+    auto const & data = atom["data"];
+    std::vector<std::string> vector;
+    if (data.is_string())
+      vector = context->FindStringsBySubstring(data.get<std::string>());
+    else if (data.is_number_integer())
+      vector = context->FindStringsBySubstring(std::to_string(data.get<sc_int>()));
+    else if (data.is_number_float())
+    {
+      std::stringstream stream;
+      stream << data.get<float>();
+      vector = context->FindStringsBySubstring(stream.str());
+    }
+
+    return vector;
   }
 };
