@@ -69,7 +69,10 @@ sc_bool sc_dictionary_fs_storage_get_sc_links_by_substr(const sc_char * sc_subst
  * @param[out] size A sc-strings size
  * @returns SC_TRUE, if sc-links exist.
  */
-sc_bool sc_dictionary_fs_storage_get_sc_strings_by_substr(const sc_char * sc_substr, sc_char *** strings, sc_uint32 * size);
+sc_bool sc_dictionary_fs_storage_get_sc_strings_by_substr(
+    const sc_char * sc_substr,
+    sc_char *** strings,
+    sc_uint32 * size);
 
 /*! Gets sc-link content.
  * @param addr A sc-link with content

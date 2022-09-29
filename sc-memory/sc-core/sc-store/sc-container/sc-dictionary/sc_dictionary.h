@@ -138,7 +138,9 @@ sc_bool sc_dictionary_is_in(sc_dictionary * dictionary, const sc_char * sc_strin
  * @returns Returns A sc-dictionary node where string ends
  */
 sc_dictionary_node * sc_dictionary_get_last_node_from_node(
-    sc_dictionary * dictionary, sc_dictionary_node * node, const sc_char * sc_string);
+    sc_dictionary * dictionary,
+    sc_dictionary_node * node,
+    const sc_char * sc_string);
 
 /*! Gets first data from a terminal sc-dictionary node where string ends.
  * @param dictionary A sc-dictionary pointer
@@ -147,7 +149,9 @@ sc_dictionary_node * sc_dictionary_get_last_node_from_node(
  * @returns Returns Data from a sc-dictionary node where string ends
  */
 void * sc_dictionary_get_first_data_from_node(
-    sc_dictionary * dictionary, sc_dictionary_node * node, const sc_char * sc_string);
+    sc_dictionary * dictionary,
+    sc_dictionary_node * node,
+    const sc_char * sc_string);
 
 /*! Gets datas from a terminal sc-dictionary node where string ends.
  * @param dictionary A sc-dictionary pointer
@@ -156,7 +160,9 @@ void * sc_dictionary_get_first_data_from_node(
  * @returns Returns Datas from a sc-dictionary node where string ends
  */
 sc_list * sc_dictionary_get_datas_from_node(
-    sc_dictionary * dictionary, sc_dictionary_node * node, const sc_char * sc_string);
+    sc_dictionary * dictionary,
+    sc_dictionary_node * node,
+    const sc_char * sc_string);
 
 /*! Gets datas from a terminal sc-dictionary node where string ends.
  * @param dictionary A sc-dictionary pointer

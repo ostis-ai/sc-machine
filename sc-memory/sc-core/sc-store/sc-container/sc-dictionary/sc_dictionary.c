@@ -78,7 +78,10 @@ void sc_dictionary_node_destroy(sc_dictionary_node * node, void ** args)
   sc_mem_free(node);
 }
 
-inline sc_dictionary_node * _sc_dictionary_get_next_node(sc_dictionary * dictionary, sc_dictionary_node * node, sc_char ch)
+inline sc_dictionary_node * _sc_dictionary_get_next_node(
+    sc_dictionary * dictionary,
+    sc_dictionary_node * node,
+    sc_char ch)
 {
   sc_uint8 num;
   dictionary->char_to_int(ch, &num, &node->mask);
@@ -220,8 +223,8 @@ sc_dictionary_node * sc_dictionary_remove_from_node(
 sc_bool sc_dictionary_remove(sc_dictionary * dictionary, const sc_char * sc_string)
 {
   sc_uint8 index = 0;
-  sc_dictionary_node * node
-      = sc_dictionary_remove_from_node(dictionary, dictionary->root, 0, null_ptr, sc_string, 0, &index);
+  sc_dictionary_node * node =
+      sc_dictionary_remove_from_node(dictionary, dictionary->root, 0, null_ptr, sc_string, 0, &index);
 
   sc_bool result = node->next[index] != null_ptr;
   if (index != 0 && result == SC_TRUE)
@@ -234,7 +237,9 @@ sc_bool sc_dictionary_remove(sc_dictionary * dictionary, const sc_char * sc_stri
 }
 
 sc_dictionary_node * sc_dictionary_get_last_node_from_node(
-    sc_dictionary * dictionary, sc_dictionary_node * node, const sc_char * sc_string)
+    sc_dictionary * dictionary,
+    sc_dictionary_node * node,
+    const sc_char * sc_string)
 {
   if (sc_string == null_ptr)
     return null_ptr;
@@ -284,7 +289,9 @@ sc_bool sc_dictionary_is_in(sc_dictionary * dictionary, const sc_char * sc_strin
 }
 
 void * sc_dictionary_get_first_data_from_node(
-    sc_dictionary * dictionary, sc_dictionary_node * node, const sc_char * sc_string)
+    sc_dictionary * dictionary,
+    sc_dictionary_node * node,
+    const sc_char * sc_string)
 {
   sc_dictionary_node * last = sc_dictionary_get_last_node_from_node(dictionary, node, sc_string);
 
@@ -295,7 +302,9 @@ void * sc_dictionary_get_first_data_from_node(
 }
 
 sc_list * sc_dictionary_get_datas_from_node(
-    sc_dictionary * dictionary, sc_dictionary_node * node, const sc_char * sc_string)
+    sc_dictionary * dictionary,
+    sc_dictionary_node * node,
+    const sc_char * sc_string)
 {
   sc_dictionary_node * last = sc_dictionary_get_last_node_from_node(dictionary, node, sc_string);
 
