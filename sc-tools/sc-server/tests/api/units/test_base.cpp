@@ -373,6 +373,14 @@ TEST_F(ScServerTest, HandleContent)
               {"command", "find_by_substr"},
               {"data", "some"},
           },
+          {
+              {"command", "find_links_by_substr"},
+              {"data", "some"},
+          },
+          {
+              {"command", "find_strings_by_substr"},
+              {"data", "some"},
+          },
       }));
   EXPECT_TRUE(client.Send(payloadString));
 
@@ -391,6 +399,12 @@ TEST_F(ScServerTest, HandleContent)
   links = responsePayload[3].get<std::vector<size_t>>();
   EXPECT_FALSE(links.empty());
   EXPECT_TRUE(std::find(links.begin(), links.end(), link.Hash()) != links.end());
+  links = responsePayload[4].get<std::vector<size_t>>();
+  EXPECT_FALSE(links.empty());
+  EXPECT_TRUE(std::find(links.begin(), links.end(), link.Hash()) != links.end());
+  auto strings = responsePayload[5].get<std::vector<std::string>>();
+  EXPECT_FALSE(strings.empty());
+  EXPECT_TRUE(std::find(strings.begin(), strings.end(), "some content") != strings.end());
 
   client.Stop();
 }
@@ -459,6 +473,14 @@ TEST_F(ScServerTest, HandleIntContent)
               {"command", "find_by_substr"},
               {"data", 100},
           },
+          {
+              {"command", "find_links_by_substr"},
+              {"data", 100},
+          },
+          {
+              {"command", "find_strings_by_substr"},
+              {"data", 100},
+          },
       }));
   EXPECT_TRUE(client.Send(payloadString));
 
@@ -477,6 +499,12 @@ TEST_F(ScServerTest, HandleIntContent)
   links = responsePayload[3].get<std::vector<size_t>>();
   EXPECT_FALSE(links.empty());
   EXPECT_TRUE(std::find(links.begin(), links.end(), link.Hash()) != links.end());
+  links = responsePayload[4].get<std::vector<size_t>>();
+  EXPECT_FALSE(links.empty());
+  EXPECT_TRUE(std::find(links.begin(), links.end(), link.Hash()) != links.end());
+  auto strings = responsePayload[5].get<std::vector<std::string>>();
+  EXPECT_FALSE(strings.empty());
+  EXPECT_TRUE(std::find(strings.begin(), strings.end(), "100") != strings.end());
 
   client.Stop();
 }
@@ -511,6 +539,14 @@ TEST_F(ScServerTest, HandleFloatContent)
               {"command", "find_by_substr"},
               {"data", 10.53f},
           },
+          {
+              {"command", "find_links_by_substr"},
+              {"data", 10.53f},
+          },
+          {
+              {"command", "find_strings_by_substr"},
+              {"data", 10.53f},
+          },
       }));
   EXPECT_TRUE(client.Send(payloadString));
 
@@ -529,6 +565,12 @@ TEST_F(ScServerTest, HandleFloatContent)
   links = responsePayload[3].get<std::vector<size_t>>();
   EXPECT_FALSE(links.empty());
   EXPECT_TRUE(std::find(links.begin(), links.end(), link.Hash()) != links.end());
+  links = responsePayload[4].get<std::vector<size_t>>();
+  EXPECT_FALSE(links.empty());
+  EXPECT_TRUE(std::find(links.begin(), links.end(), link.Hash()) != links.end());
+  auto strings = responsePayload[5].get<std::vector<std::string>>();
+  EXPECT_FALSE(links.empty());
+  EXPECT_TRUE(std::find(strings.begin(), strings.end(), "10.53") != strings.end());
 
   client.Stop();
 }
