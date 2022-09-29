@@ -163,11 +163,11 @@ _SC_EXTERN sc_result sc_memory_set_link_content(sc_memory_context * ctx, sc_addr
  */
 _SC_EXTERN sc_result sc_memory_get_link_content(sc_memory_context const * ctx, sc_addr addr, sc_stream ** stream);
 
-/*! Search sc-link addrs by specified checksum
+/*! Search sc-link addrs by specified string
  * @param stream Pointert to stream that contains data for search
  * @param result Pointer to result container
  * @param result_count Container for results count
- * @return If sc-links with specified checksum found, then sc-addrs of found link
+ * @return If sc-links with specified string found, then sc-addrs of found link
  * writes into \p result array and function returns SC_RESULT_OK; otherwise \p result will contain
  * empty sc-addr and function returns SC_RESULT_OK. In any case \p result_count contains number of found
  * sc-addrs
@@ -179,20 +179,34 @@ _SC_EXTERN sc_result sc_memory_find_links_with_content(
     sc_addr ** result,
     sc_uint32 * result_count);
 
-/*! Search sc-link addrs by specified checksum substring
- * @param stream Pointert to stream that contains data substring for search
+/*! Search sc-link addrs by specified substring
+ * @param stream Pointer to stream that contains data substring for search
  * @param result Pointer to result container of sc-links
  * @param result_count Container for results count
- * @return If sc-links with specified checksum found, then sc-addrs of found link
- * writes into \p result array and function returns SC_RESULT_OK; otherwise \p result will contain
- * empty sc-addr and function returns SC_RESULT_OK. In any case \p result_count contains number of found
- * sc-addrs
+ * @return If sc-links with specified substring found, then sc-addrs of found link
+ * writes into \p result array and function returns SC_RESULT_OK; otherwise function returns SC_RESULT_OK.
+ * In any case \p result_count contains number of found sc-addrs.
  * @attention \p result array need to be free after usage
  */
-_SC_EXTERN sc_result sc_memory_find_links_with_content_substring(
+_SC_EXTERN sc_result sc_memory_find_links_by_content_substring(
     sc_memory_context const * ctx,
     sc_stream const * stream,
     sc_addr ** result,
+    sc_uint32 * result_count);
+
+/*! Search sc-strings array by specified substring
+ * @param stream Pointer to stream that contains data substring for search
+ * @param result Pointer to result container of sc-strings
+ * @param result_count Container for results count
+ * @return If sc-links with specified checksum found, then found strings
+ * writes into \p result array and function returns SC_RESULT_OK; otherwise function returns SC_RESULT_OK.
+ * In any case \p result_count contains number of found sc-strings.
+ * @attention \p result array need to be free after usage
+ */
+_SC_EXTERN sc_result sc_memory_find_strings_by_substring(
+    sc_memory_context const * ctx,
+    sc_stream const * stream,
+    sc_char *** result,
     sc_uint32 * result_count);
 
 /*! Free buffer allocated for links content find result

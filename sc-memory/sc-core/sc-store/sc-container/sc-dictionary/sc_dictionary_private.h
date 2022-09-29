@@ -10,18 +10,12 @@
 #include "../../sc_types.h"
 #include "../sc-list/sc_list.h"
 
-sc_uint8 _sc_dictionary_children_size();
+sc_dictionary_node * _sc_dictionary_node_initialize(sc_uint8 children_size);
 
-sc_dictionary_node * _sc_dictionary_node_initialize();
-
-sc_dictionary_node * _sc_dictionary_get_next_node(sc_dictionary_node * node, sc_char ch);
+sc_dictionary_node * _sc_dictionary_get_next_node(sc_dictionary * dictionary, sc_dictionary_node * node, sc_char ch);
 
 sc_addr * sc_list_to_addr_array(sc_list * list);
 
 sc_addr_hash * sc_list_to_hashes_array(sc_list * list);
-
-void sc_char_to_sc_int(sc_char ch, sc_uint8 * ch_num, sc_uint8 * mask);
-
-sc_char sc_int_to_sc_char(sc_uint8 num, sc_uint8 mask);
 
 #endif
