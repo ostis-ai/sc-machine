@@ -22,7 +22,7 @@ public:
 
     auto const & process = [&context, &responsePayload, this](ScMemoryJsonPayload const & atom)
     {
-      std::string const & type = atom["command"];
+      std::string const & type = atom["command"].get<std::string>();
 
       if (type == "set")
         responsePayload.push_back(SetContent(context, atom));
@@ -51,7 +51,7 @@ private:
   sc_bool SetContent(ScMemoryContext * context, ScMemoryJsonPayload const & atom)
   {
     ScAddr const & linkAddr = ScAddr(atom["addr"].get<size_t>());
-    std::string const & contentType = atom["type"];
+    std::string const & contentType = atom["type"].get<std::string>();
     auto const & data = atom["data"];
 
     ScLink link{*context, linkAddr};

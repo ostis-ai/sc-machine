@@ -63,7 +63,7 @@ protected:
   ScTemplate * MakeTemplate(ScMemoryJsonPayload const & triples)
   {
     auto const & convertItemToParam = [](ScMemoryJsonPayload paramItem) -> ScTemplateItemValue {
-      std::string const & paramType = paramItem["type"];
+      std::string const & paramType = paramItem["type"].get<std::string>();
       auto const & paramValue = paramItem["value"];
 
       ScTemplateItemValue param;
@@ -78,10 +78,11 @@ protected:
       }
       else
       {
+        std::string const alias = paramItem["alias"].get<std::string>();
         if (paramType == "type")
-          param = ScType(paramValue.get<size_t>()) >> paramItem["alias"];
+          param = ScType(paramValue.get<size_t>()) >> alias;
         else if (paramType == "addr")
-          param = ScAddr(paramValue.get<size_t>()) >> paramItem["alias"];
+          param = ScAddr(paramValue.get<size_t>()) >> alias;
       }
 
       return param;

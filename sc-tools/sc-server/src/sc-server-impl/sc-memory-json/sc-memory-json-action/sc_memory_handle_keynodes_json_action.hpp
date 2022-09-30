@@ -18,8 +18,8 @@ public:
 
     for (auto & atom : requestPayload)
     {
-      std::string const & idtf = atom["idtf"];
-      std::string const & type = atom["command"];
+      std::string const & idtf = atom["idtf"].get<std::string>();
+      std::string const & type = atom["command"].get<std::string>();
 
       ScAddr keynode;
       if (type == "find")
