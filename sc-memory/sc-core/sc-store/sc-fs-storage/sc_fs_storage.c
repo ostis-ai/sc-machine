@@ -100,7 +100,7 @@ sc_bool sc_fs_storage_read_from_path(sc_segment ** segments, sc_uint32 * segment
 {
   if (g_file_test(repo_path, G_FILE_TEST_IS_DIR) == SC_FALSE)
   {
-    sc_error("%s isn't a directory.", repo_path);
+    sc_fs_mkdirs(repo_path);
   }
 
   if (g_file_test(segments_path, G_FILE_TEST_IS_REGULAR) == SC_FALSE)
