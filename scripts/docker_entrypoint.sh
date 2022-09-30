@@ -40,12 +40,12 @@ if [ "$REBUILD_KB" -eq 1 ]; then
 fi
 
 # if arguments were provided, use them instead of the default ones.
-if [ -e "$1" ]; then
+if [ $# -eq 0 ]; then
     # you should provide the config file path and host settings yourself in case you want to use custom options!
-    "$SCRIPTS_PATH"/../bin/sc-server "$@"
-else
     echo "Using default arguments."
     "$SCRIPTS_PATH"/../bin/sc-server -c "$SCRIPTS_PATH"/../config/sc-machine.ini -h 0.0.0.0
+else
+    "$SCRIPTS_PATH"/../bin/sc-server "$@"
 fi
 }
 

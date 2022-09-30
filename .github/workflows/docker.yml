@@ -18,6 +18,5 @@ jobs:
       - name: Run the Docker image
         run: |
           mkdir kb
-          DOCKER_BUILDKIT=1 docker build . -t ubuntu/sc-machine:local
-          docker run --rm -e REBUILD_KB=1 -t -h 0.0.0.0 -c sc-machine/config/sc-machine.ini -v ${ls}/kb:/kb -v kb_binary:/kb.bin ubuntu/sc-machine:local serve
-          docker rm $(docker ps -a -q)
+          DOCKER_BUILDKIT=1 docker build . -t ostis/sc-machine:latest
+          docker compose up -d --wait
