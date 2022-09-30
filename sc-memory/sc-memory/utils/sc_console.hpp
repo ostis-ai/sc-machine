@@ -159,7 +159,7 @@ std::string const & GetANSIColor(ScConsole::Color c);
 }
 
 template <>
-inline ScConsole::Output & ScConsole::Output::operator<< <ScConsole::Color>(ScConsole::Color v)
+inline ScConsole::Output & ScConsole::Output::operator<<<ScConsole::Color>(ScConsole::Color v)
 {
   ScConsole::SetColor(v);
   // std::cout << impl::GetANSIColor(v);

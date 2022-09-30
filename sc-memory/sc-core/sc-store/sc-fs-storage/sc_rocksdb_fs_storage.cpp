@@ -415,4 +415,22 @@ void sc_rocksdb_fs_storage_get_sc_string_ext(sc_element * element, sc_addr addr,
   }
 }
 
+sc_bool sc_rocksdb_fs_storage_remove_sc_string(sc_element * element, sc_addr addr)
+{
+  sc_char * string;
+  sc_uint32 size = 0;
+  sc_rocksdb_fs_storage_get_sc_string_ext(element, addr, &string, &size);
+
+  if (size != 0 && string != null_ptr)
+  {
+    sc_check_sum * check_sum;
+    sc_link_calculate_checksum(string, size, &check_sum);
+    sc_rocksdb_fs_storage_addr_ref_remove(addr, check_sum);
+
+    return SC_TRUE;
+  }
+
+  return SC_FALSE;
+}
+
 #endif

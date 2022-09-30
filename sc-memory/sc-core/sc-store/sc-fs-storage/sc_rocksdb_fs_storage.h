@@ -78,4 +78,11 @@ void sc_rocksdb_fs_storage_get_sc_string_ext(
  */
 sc_char * sc_rocksdb_fs_storage_get_sc_string(sc_addr addr);
 
+/*! Removes sc-link content string from sc-rocksdb.
+ * @param element A sc-link element
+ * @param addr A sc-link addr
+ * @returns SC_TRUE, if such sc-link exists in sc-rocksdb.
+ */
+sc_bool sc_rocksdb_fs_storage_remove_sc_string(sc_element * element, sc_addr addr);
+
 #endif  // _sc_rocksdb_fs_storage_h_
