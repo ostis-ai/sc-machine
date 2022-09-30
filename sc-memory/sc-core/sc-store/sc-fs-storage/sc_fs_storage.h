@@ -25,6 +25,7 @@ typedef struct _sc_fs_storage
   sc_bool (*get_sc_links_by_substr)(const sc_char * sc_substr, sc_addr ** links, sc_uint32 * size);
   sc_bool (*get_sc_strings_by_substr)(const sc_char * sc_substr, sc_char *** strings, sc_uint32 * size);
   void (*get_sc_string_ext)(sc_element * element, sc_addr addr, sc_char ** sc_string, sc_uint32 * size);
+  sc_bool (*remove_sc_string)(sc_element * element, sc_addr addr);
 } sc_fs_storage;
 
 typedef struct _sc_fs_storage_segments_header
@@ -83,6 +84,13 @@ sc_bool sc_fs_storage_get_sc_strings_by_substr(const sc_char * sc_substr, sc_cha
  * @param[out] size A content string size
  */
 void sc_fs_storage_get_sc_string_ext(sc_element * element, sc_addr addr, sc_char ** sc_string, sc_uint32 * size);
+
+/*! Removes sc-link content string from file system storage.
+ * @param element A sc-link element
+ * @param addr A sc-link addr
+ * @returns SC_TRUE, if such sc-string exists.
+ */
+sc_bool sc_fs_storage_remove_sc_string(sc_element * element, sc_addr addr);
 
 /*! Loads segments from file system storage.
  * @param segments Pointer to segments array

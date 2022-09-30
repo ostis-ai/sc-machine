@@ -28,6 +28,7 @@ sc_fs_storage * sc_fs_storage_build()
   storage->get_sc_links_by_substr = sc_dictionary_fs_storage_get_sc_links_by_substr;
   storage->get_sc_strings_by_substr = sc_dictionary_fs_storage_get_sc_strings_by_substr;
   storage->get_sc_string_ext = sc_dictionary_fs_storage_get_sc_string_ext;
+  storage->remove_sc_string = sc_dictionary_fs_storage_remove_sc_string;
 #elif SC_ROCKSDB_FS_STORAGE
   storage->initialize = sc_rocksdb_fs_storage_initialize;
   storage->shutdown = sc_rocksdb_fs_storage_shutdown;
@@ -39,6 +40,7 @@ sc_fs_storage * sc_fs_storage_build()
   storage->get_sc_links_by_substr = sc_rocksdb_fs_storage_find_sc_links_by_substr;
   storage->get_sc_strings_by_substr = sc_rocksdb_fs_storage_find_sc_strings_by_substr;
   storage->get_sc_string_ext = sc_rocksdb_fs_storage_get_sc_string_ext;
+  storage->remove_sc_string = sc_dictionary_fs_storage_remove_sc_string;
 #endif
 
   return storage;

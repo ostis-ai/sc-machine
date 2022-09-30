@@ -472,7 +472,7 @@ sc_result sc_storage_element_free(sc_memory_context * ctx, sc_addr addr)
 
     if (el->flags.type & sc_type_link)
     {
-      // @todo: Implement effective sc-strings remove
+      sc_fs_storage_remove_sc_string(el, addr);
     }
     else if (el->flags.type & sc_type_arc_mask)
     {

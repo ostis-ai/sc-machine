@@ -100,6 +100,11 @@ void sc_fs_storage_get_sc_string_ext(sc_element * element, sc_addr addr, sc_char
   storage_instance->get_sc_string_ext(element, addr, &*sc_string, size);
 }
 
+sc_bool sc_fs_storage_remove_sc_string(sc_element * element, sc_addr addr)
+{
+  return storage_instance->remove_sc_string(element, addr);
+}
+
 // dictionary read, write and save methods
 sc_bool sc_fs_storage_read_from_path(sc_segment ** segments, sc_uint32 * segments_num)
 {

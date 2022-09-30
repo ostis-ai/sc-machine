@@ -11,6 +11,7 @@
 
 #include "sc-memory/utils/sc_base64.hpp"
 #include "sc-memory/utils/sc_exec.hpp"
+#include "sc-core/sc-store/sc-container/sc-string/sc_string.h"
 
 #include <boost/filesystem/path.hpp>
 
@@ -59,8 +60,8 @@ public:
         std::string data = GetBinaryFileContent(fullPath);
 
         data = ScBase64::Encode(reinterpret_cast<sc_uchar const *>(data.c_str()), data.size());
-        auto * rowData = new sc_char[data.size()];
-        memcpy(rowData, data.c_str(), data.size());
+        sc_char * rowData;
+        sc_str_cpy(rowData, (sc_pointer)data.c_str(), data.size());
 
         return std::make_shared<ScStream>(rowData, data.size(), SC_STREAM_FLAG_READ);
       }

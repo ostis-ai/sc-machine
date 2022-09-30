@@ -393,6 +393,14 @@ void sc_dictionary_fs_storage_get_sc_string_ext(
   *size = len;
 }
 
+sc_bool sc_dictionary_fs_storage_remove_sc_string(sc_element * element, sc_addr addr)
+{
+  sc_char * hash_str = sc_addr_to_str(addr);
+  sc_bool result = sc_dictionary_remove(strings_dictionary, hash_str);
+  sc_mem_free(hash_str);
+  return result;
+}
+
 void sc_fs_storage_write_nodes(void (*callable)(sc_dictionary_node *, void **), GIOChannel * strings_dest)
 {
   GIOChannel ** dest = sc_mem_new(GIOChannel *, 2);

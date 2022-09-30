@@ -81,7 +81,7 @@ sc_bool sc_dictionary_fs_storage_get_sc_strings_by_substr(
 sc_link_content * sc_dictionary_fs_storage_get_link_content(sc_addr addr);
 
 /*! Gets sc-link content string with its size.
- * @param addr A sc-link
+ * @param element A sc-link
  * @param addr A sc-link addr
  * @param[out] sc_string A content string
  * @param[out] size A content string size
@@ -97,6 +97,13 @@ void sc_dictionary_fs_storage_get_sc_string_ext(
  * @returns A content string.
  */
 sc_char * sc_dictionary_fs_storage_get_sc_string(sc_addr addr);
+
+/*! Removes sc-link content string from sc-dictionary.
+ * @param element A sc-link element
+ * @param addr A sc-link addr
+ * @returns SC_TRUE, if such sc-link exists in sc-dictionary.
+ */
+sc_bool sc_dictionary_fs_storage_remove_sc_string(sc_element * element, sc_addr addr);
 
 sc_uint32 sc_addr_to_hash(sc_addr addr);
 

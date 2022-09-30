@@ -89,12 +89,12 @@ inline sc_dictionary_node * _sc_dictionary_get_next_node(
   return node->next == null_ptr ? null_ptr : node->next[num];
 }
 
-sc_dictionary_node * sc_dictionary_append_to_node(sc_dictionary * dictionary, sc_char * sc_string, sc_uint32 size)
+sc_dictionary_node * sc_dictionary_append_to_node(sc_dictionary * dictionary, const sc_char * sc_string, sc_uint32 size)
 {
   sc_dictionary_node * node = dictionary->root;
 
   sc_char ** sc_string_ptr = sc_mem_new(sc_char *, 1);
-  *sc_string_ptr = sc_string;
+  *sc_string_ptr = (sc_char *)sc_string;
 
   sc_uint32 i = 0;
   sc_uint32 saved_offset_size = size;
@@ -166,7 +166,11 @@ sc_dictionary_node * sc_dictionary_append_to_node(sc_dictionary * dictionary, sc
   return node;
 }
 
-sc_dictionary_node * sc_dictionary_append(sc_dictionary * dictionary, sc_char * sc_string, sc_uint32 size, void * value)
+sc_dictionary_node * sc_dictionary_append(
+    sc_dictionary * dictionary,
+    const sc_char * sc_string,
+    sc_uint32 size,
+    void * value)
 {
   sc_dictionary_node * node = sc_dictionary_append_to_node(dictionary, sc_string, size);
 
@@ -182,39 +186,32 @@ sc_dictionary_node * sc_dictionary_append(sc_dictionary * dictionary, sc_char * 
 sc_dictionary_node * sc_dictionary_remove_from_node(
     sc_dictionary * dictionary,
     sc_dictionary_node * node,
-    sc_uint8 node_index,
-    sc_dictionary_node * parent,
     const sc_char * sc_string,
-    sc_uint32 index,
-    sc_uint8 * removable_index)
+    sc_uint32 index)
 {
   // check prefixes matching
   sc_uint32 string_size = strlen(sc_string);
-  sc_uint8 num = 0;
-  dictionary->char_to_int(sc_string[index], &num, &node->mask);
-  if (num != 0 && SC_DICTIONARY_NODE_IS_VALID(node->next[num]))
-  {
-    sc_dictionary_node * removable = sc_dictionary_remove_from_node(
-        dictionary, node->next[num], num, node, sc_string, index + node->next[num]->offset_size, removable_index);
 
+  if (index < string_size)
+  {
+    sc_uint8 num = 0;
+    dictionary->char_to_int(sc_string[index], &num, &node->mask);
     if (SC_DICTIONARY_NODE_IS_VALID(node->next[num]))
-      return removable;
+    {
+      sc_dictionary_node * next = node->next[num];
+      sc_dictionary_node * removable =
+          sc_dictionary_remove_from_node(dictionary, next, sc_string, index + next->offset_size);
+
+      if (SC_DICTIONARY_NODE_IS_VALID(next))
+        return removable;
+    }
   }
 
   // check suffixes matching
   if (index == string_size)
   {
-    sc_char * str = sc_mem_new(sc_char, node->offset_size + 1);
-    sc_mem_cpy(str, node->offset, node->offset_size);
-
-    if (strcmp(str, sc_string + (string_size - node->offset_size)) == 0)
-    {
-      sc_mem_free(str);
-
-      *removable_index = node_index;
-      return parent;
-    }
-    sc_mem_free(str);
+    if (strcmp(node->offset, sc_string + (string_size - node->offset_size)) == 0)
+      return node;
   }
 
   return null_ptr;
@@ -222,15 +219,13 @@ sc_dictionary_node * sc_dictionary_remove_from_node(
 
 sc_bool sc_dictionary_remove(sc_dictionary * dictionary, const sc_char * sc_string)
 {
-  sc_uint8 index = 0;
-  sc_dictionary_node * node =
-      sc_dictionary_remove_from_node(dictionary, dictionary->root, 0, null_ptr, sc_string, 0, &index);
+  sc_dictionary_node * node = sc_dictionary_remove_from_node(dictionary, dictionary->root, sc_string, 0);
 
-  sc_bool result = node->next[index] != null_ptr;
-  if (index != 0 && result == SC_TRUE)
+  sc_bool result = node != null_ptr;
+  if (result == SC_TRUE)
   {
-    sc_dictionary_node_destroy(node->next[index], null_ptr);
-    node->next[index] = null_ptr;
+    sc_list_destroy(node->data_list);
+    node->data_list = null_ptr;
   }
 
   return result;

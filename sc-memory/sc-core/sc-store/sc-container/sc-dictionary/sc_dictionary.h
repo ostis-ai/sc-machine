@@ -75,7 +75,10 @@ void sc_dictionary_node_destroy(sc_dictionary_node * node, void ** args);
  * @param size An appendable string size
  * @returns Returns A sc-dictionary node where appended string is ended
  */
-sc_dictionary_node * sc_dictionary_append_to_node(sc_dictionary * dictionary, sc_char * sc_string, sc_uint32 size);
+sc_dictionary_node * sc_dictionary_append_to_node(
+    sc_dictionary * dictionary,
+    const sc_char * sc_string,
+    sc_uint32 size);
 
 /*! Appends a string to a sc-dictionary by a common prefix with another string started in sc-dictionary node, if such
  * exists. In end sc-dictionary node stores pointer to data by string.
@@ -85,7 +88,11 @@ sc_dictionary_node * sc_dictionary_append_to_node(sc_dictionary * dictionary, sc
  * @param data A pointer to data storing by appended string
  * @returns Returns A sc-dictionary node where appended string ends
  */
-sc_dictionary_node * sc_dictionary_append(sc_dictionary * dictionary, sc_char * sc_string, sc_uint32 size, void * data);
+sc_dictionary_node * sc_dictionary_append(
+    sc_dictionary * dictionary,
+    const sc_char * sc_string,
+    sc_uint32 size,
+    void * data);
 
 /*! Removes a string from a sc-dictionary by a common prefix with another string started in sc-dictionary node, if such
  * exists. A common prefix doesn't remove form sc-dictionary if it contains in another string.
@@ -99,11 +106,8 @@ sc_dictionary_node * sc_dictionary_append(sc_dictionary * dictionary, sc_char * 
 sc_dictionary_node * sc_dictionary_remove_from_node(
     sc_dictionary * dictionary,
     sc_dictionary_node * node,
-    sc_uint8 node_index,
-    sc_dictionary_node * parent,
     const sc_char * sc_string,
-    sc_uint32 index,
-    sc_uint8 * removable_index);
+    sc_uint32 index);
 
 /*! Removes a string from a sc-dictionary by a common prefix with another string started in sc-dictionary node, if such
  * exists. A common prefix doesn't remove form sc-dictionary if it contains in another string.
