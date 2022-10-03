@@ -4,7 +4,6 @@
  * (See accompanying file COPYING.MIT or copy at http://opensource.org/licenses/MIT)
  */
 
-#include <stdio.h>
 #include <ctype.h>
 
 #include "sc_dictionary.h"
@@ -19,8 +18,7 @@
 sc_bool sc_dictionary_initialize(
     sc_dictionary ** dictionary,
     sc_uint8 children_size,
-    void (*char_to_int)(sc_char, sc_uint8 *, sc_uint8 *),
-    void (*int_to_char)(sc_uint8, sc_uint8, sc_char *))
+    void (*char_to_int)(sc_char, sc_uint8 *, sc_uint8 *))
 {
   if (*dictionary != null_ptr)
     return SC_FALSE;
@@ -29,7 +27,6 @@ sc_bool sc_dictionary_initialize(
   (*dictionary)->size = children_size;
   (*dictionary)->root = _sc_dictionary_node_initialize(children_size);
   (*dictionary)->char_to_int = char_to_int;
-  (*dictionary)->int_to_char = int_to_char;
 
   return SC_TRUE;
 }
@@ -271,16 +268,11 @@ sc_dictionary_node * sc_dictionary_get_last_node_from_node(
   return null_ptr;
 }
 
-sc_bool sc_dictionary_is_in_from_node(sc_dictionary * dictionary, sc_dictionary_node * node, const sc_char * sc_string)
-{
-  sc_dictionary_node * last = sc_dictionary_get_last_node_from_node(dictionary, node, sc_string);
-
-  return SC_DICTIONARY_NODE_IS_VALID(last) && last->data_list != null_ptr;
-}
-
 sc_bool sc_dictionary_is_in(sc_dictionary * dictionary, const sc_char * sc_string)
 {
-  return sc_dictionary_is_in_from_node(dictionary, dictionary->root, sc_string);
+  sc_dictionary_node * last = sc_dictionary_get_last_node_from_node(dictionary, dictionary->root, sc_string);
+
+  return SC_DICTIONARY_NODE_IS_VALID(last) && last->data_list != null_ptr;
 }
 
 void * sc_dictionary_get_first_data_from_node(
@@ -296,61 +288,14 @@ void * sc_dictionary_get_first_data_from_node(
   return null_ptr;
 }
 
-sc_list * sc_dictionary_get_datas_from_node(
-    sc_dictionary * dictionary,
-    sc_dictionary_node * node,
-    const sc_char * sc_string)
+sc_list * sc_dictionary_get(sc_dictionary * dictionary, const sc_char * sc_string)
 {
-  sc_dictionary_node * last = sc_dictionary_get_last_node_from_node(dictionary, node, sc_string);
+  sc_dictionary_node * last = sc_dictionary_get_last_node_from_node(dictionary, dictionary->root, sc_string);
 
   if (SC_DICTIONARY_NODE_IS_VALID(last))
     return last->data_list;
 
   return null_ptr;
-}
-
-sc_list * sc_dictionary_get(sc_dictionary * dictionary, const sc_char * sc_string)
-{
-  return sc_dictionary_get_datas_from_node(dictionary, dictionary->root, sc_string);
-}
-
-void sc_dictionary_show_from_node(sc_dictionary * dictionary, sc_dictionary_node * node, sc_char * tab)
-{
-  sc_uint8 i;
-  for (i = 0; i < dictionary->size; ++i)
-  {
-    sc_dictionary_node * next = node->next[i];
-
-    if (SC_DICTIONARY_NODE_IS_VALID(next))
-    {
-      sc_char * str = sc_mem_new(sc_char, next->offset_size + 1);
-      sc_mem_cpy(str, next->offset, next->offset_size);
-      sc_char ch;
-      dictionary->int_to_char(i, 0, &ch);
-
-      if (next->data_list != null_ptr && next->data_list->size != 0)
-        printf("%s%c[%d] {%s}\n", tab, ch, next->data_list->size, str);
-      else
-        printf("%s%c {%s}\n", tab, ch, str);
-
-      sc_mem_free(str);
-
-      sc_char * new_tab = sc_mem_new(sc_char, strlen(tab) + 6);
-      strcpy(new_tab, tab);
-      strcat(new_tab, "|----\0");
-
-      sc_dictionary_show_from_node(dictionary, next, new_tab);
-
-      sc_mem_free(new_tab);
-    }
-  }
-}
-
-void sc_dictionary_show(sc_dictionary * dictionary)
-{
-  printf("----------------sc-dictionary----------------\n");
-  sc_dictionary_show_from_node(dictionary, dictionary->root, "\0");
-  printf("---------------------------------------------\n");
 }
 
 void sc_dictionary_visit_down_node_from_node(

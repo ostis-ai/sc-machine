@@ -12,6 +12,7 @@
 
 #  include "../sc-base/sc_message.h"
 #  include "../sc-container/sc-string/sc_string.h"
+#  include "../sc-container/sc-dictionary/sc_dictionary_private.h"
 
 #  include <glib/gstdio.h>
 
@@ -29,18 +30,12 @@ sc_bool sc_dictionary_fs_storage_initialize(const sc_char * path)
 
   sc_message("Initialize sc-dictionary fs-storage from path: %s", path);
   sc_bool result = sc_dictionary_initialize(
-      &addrs_hashes_dictionary,
-      _sc_dictionary_addr_hashes_children_size(),
-      _sc_dictionary_addr_hashes_char_to_int,
-      _sc_dictionary_addr_hashes_int_to_char);
+      &addrs_hashes_dictionary, _sc_dictionary_addr_hashes_children_size(), _sc_dictionary_addr_hashes_char_to_int);
   if (result == SC_FALSE)
     return SC_FALSE;
 
   result = sc_dictionary_initialize(
-      &strings_dictionary,
-      _sc_dictionary_strings_children_size(),
-      _sc_dictionary_strings_char_to_int,
-      _sc_dictionary_strings_int_to_char);
+      &strings_dictionary, _sc_dictionary_strings_children_size(), _sc_dictionary_strings_char_to_int);
   if (result == SC_FALSE)
     return SC_FALSE;
 

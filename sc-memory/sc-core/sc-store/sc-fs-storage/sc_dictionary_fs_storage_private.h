@@ -61,11 +61,6 @@ void _sc_dictionary_addr_hashes_char_to_int(sc_char ch, sc_uint8 * ch_num, sc_ui
   *ch_num = 128 + (sc_uint8)ch;
 }
 
-void _sc_dictionary_addr_hashes_int_to_char(sc_uint8 num, sc_uint8 mask, sc_char * ch)
-{
-  *ch = (sc_char)(num - 128);
-}
-
 sc_uint8 _sc_dictionary_strings_children_size()
 {
   const sc_uint8 max_sc_char = 10;
@@ -77,11 +72,6 @@ sc_uint8 _sc_dictionary_strings_children_size()
 void _sc_dictionary_strings_char_to_int(sc_char ch, sc_uint8 * ch_num, sc_uint8 * mask)
 {
   *ch_num = (sc_uint8)ch - 48;
-}
-
-void _sc_dictionary_strings_int_to_char(sc_uint8 num, sc_uint8 mask, sc_char * ch)
-{
-  *ch = (sc_char)(num + 48);
 }
 
 #endif

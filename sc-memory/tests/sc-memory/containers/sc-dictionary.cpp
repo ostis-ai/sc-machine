@@ -22,19 +22,13 @@ void _test_sc_dictionary_addr_hashes_char_to_int(sc_char ch, sc_uint8 * ch_num, 
   *ch_num = 128 + (sc_uint8)ch;
 }
 
-void _test_sc_dictionary_addr_hashes_int_to_char(sc_uint8 num, sc_uint8 mask, sc_char * ch)
-{
-  *ch = (sc_char)(num - 128);
-}
-
 TEST_F(ScDictionaryTest, smoke)
 {
   sc_dictionary * dictionary = nullptr;
   EXPECT_TRUE(sc_dictionary_initialize(
       &dictionary,
       _test_sc_dictionary_addr_hashes_children_size(),
-      _test_sc_dictionary_addr_hashes_char_to_int,
-      _test_sc_dictionary_addr_hashes_int_to_char));
+      _test_sc_dictionary_addr_hashes_char_to_int));
 
   sc_addr addr1 = sc_memory_link_new(m_ctx->GetRealContext());
   sc_char const * str1 = "concept_set1";
