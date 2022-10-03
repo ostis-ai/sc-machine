@@ -122,7 +122,7 @@ sc_dictionary_node * _sc_dictionary_fs_storage_append_sc_link_unique(sc_char * s
 {
   sc_addr_hash other = sc_addr_to_hash(addr);
 
-  sc_link_content * old_content = sc_dictionary_fs_storage_get_link_content(addr);
+  sc_link_content * old_content = sc_dictionary_fs_storage_get_sc_link_content(addr);
   if (old_content != null_ptr && old_content->sc_string != null_ptr && old_content->node != null_ptr)
   {
     if (strcmp(old_content->sc_string, sc_string) == 0)
@@ -135,7 +135,11 @@ sc_dictionary_node * _sc_dictionary_fs_storage_append_sc_link_unique(sc_char * s
   return sc_dictionary_append(addrs_hashes_dictionary, sc_string, size, &other);
 }
 
-sc_bool sc_dictionary_fs_storage_append_sc_link(sc_element * element, sc_addr addr, sc_char * sc_string, sc_uint32 size)
+sc_bool sc_dictionary_fs_storage_append_sc_link_content(
+    sc_element * element,
+    sc_addr addr,
+    sc_char * sc_string,
+    sc_uint32 size)
 {
   sc_dictionary_node * node = _sc_dictionary_fs_storage_append_sc_link_unique(sc_string, size, addr);
   _sc_dictionary_fs_storage_append_sc_string_sc_link_reference(addr, node, sc_string, size);
@@ -184,7 +188,7 @@ sc_addr_hash * sc_list_to_hashes_array(sc_list * list)
   return hashes;
 }
 
-sc_bool sc_dictionary_fs_storage_get_sc_links(const sc_char * sc_string, sc_addr ** links, sc_uint32 * size)
+sc_bool sc_dictionary_fs_storage_get_sc_links_by_content(const sc_char * sc_string, sc_addr ** links, sc_uint32 * size)
 {
   sc_list * list = sc_dictionary_get(addrs_hashes_dictionary, sc_string);
 
@@ -223,7 +227,10 @@ void _sc_dictionary_fs_storage_update_links_list(sc_dictionary_node * node, void
   }
 }
 
-sc_bool sc_dictionary_fs_storage_get_sc_links_by_substr(const sc_char * sc_substr, sc_addr ** links, sc_uint32 * size)
+sc_bool sc_dictionary_fs_storage_get_sc_links_by_content_substr(
+    const sc_char * sc_substr,
+    sc_addr ** links,
+    sc_uint32 * size)
 {
   sc_list * list;
   sc_list_init(&list);
@@ -285,7 +292,7 @@ sc_char ** sc_list_to_strings_array(sc_list * list)
   return strings;
 }
 
-sc_bool sc_dictionary_fs_storage_get_sc_strings_by_substr(
+sc_bool sc_dictionary_fs_storage_get_sc_links_contents_by_content_substr(
     const sc_char * sc_substr,
     sc_char *** strings,
     sc_uint32 * size)
@@ -313,41 +320,7 @@ sc_bool sc_dictionary_fs_storage_get_sc_strings_by_substr(
   return SC_TRUE;
 }
 
-sc_char * sc_dictionary_fs_storage_get_sc_string(sc_addr addr)
-{
-  if (SC_ADDR_IS_EMPTY(addr))
-    return null_ptr;
-
-  sc_char * hash = sc_addr_to_str(addr);
-  sc_link_content * content =
-      sc_dictionary_get_first_data_from_node(strings_dictionary, strings_dictionary->root, hash);
-  sc_mem_free(hash);
-
-  if (content == null_ptr || content->sc_string == null_ptr)
-    return null_ptr;
-
-  sc_uint32 len = content->string_size;
-  sc_char * copy = sc_mem_new(sc_char, len + 1);
-  return sc_mem_cpy(copy, content->sc_string, len);
-}
-
-sc_dictionary_node * sc_dictionary_fs_storage_get_node(sc_addr addr)
-{
-  if (SC_ADDR_IS_EMPTY(addr))
-    return null_ptr;
-
-  sc_char * hash = sc_addr_to_str(addr);
-  sc_link_content * content =
-      sc_dictionary_get_first_data_from_node(strings_dictionary, strings_dictionary->root, hash);
-  sc_mem_free(hash);
-
-  if (content == null_ptr || content->node == null_ptr)
-    return null_ptr;
-
-  return content->node;
-}
-
-sc_link_content * sc_dictionary_fs_storage_get_link_content(sc_addr addr)
+sc_link_content * sc_dictionary_fs_storage_get_sc_link_content(sc_addr addr)
 {
   if (SC_ADDR_IS_EMPTY(addr))
     return null_ptr;
@@ -363,7 +336,7 @@ sc_link_content * sc_dictionary_fs_storage_get_link_content(sc_addr addr)
   return content;
 }
 
-void sc_dictionary_fs_storage_get_sc_string_ext(
+void sc_dictionary_fs_storage_get_sc_link_content_ext(
     sc_element * element,
     sc_addr addr,
     sc_char ** sc_string,
@@ -393,7 +366,7 @@ void sc_dictionary_fs_storage_get_sc_string_ext(
   *size = len;
 }
 
-sc_bool sc_dictionary_fs_storage_remove_sc_string(sc_element * element, sc_addr addr)
+sc_bool sc_dictionary_fs_storage_remove_sc_link_content(sc_element * element, sc_addr addr)
 {
   sc_char * hash_str = sc_addr_to_str(addr);
   sc_bool result = sc_dictionary_remove(strings_dictionary, hash_str);
@@ -533,7 +506,7 @@ sc_bool sc_dictionary_fs_storage_fill()
       addr.seg = SC_ADDR_LOCAL_SEG_FROM_INT(hashes[i]);
       addr.offset = SC_ADDR_LOCAL_OFFSET_FROM_INT(hashes[i]);
 
-      sc_dictionary_fs_storage_append_sc_link(null_ptr, addr, string, string_size);
+      sc_dictionary_fs_storage_append_sc_link_content(null_ptr, addr, string, string_size);
     }
 
     sc_mem_free(hashes);

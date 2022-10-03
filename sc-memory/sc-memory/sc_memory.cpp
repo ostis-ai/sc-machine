@@ -390,7 +390,7 @@ ScAddrVector ScMemoryContext::FindLinksByContentSubstring(ScStreamPtr const & st
   return contents;
 }
 
-std::vector<std::string> ScMemoryContext::FindStringsBySubstring(ScStreamPtr const & stream)
+std::vector<std::string> ScMemoryContext::FindLinksContentsByContentSubstring(ScStreamPtr const & stream)
 {
   SC_ASSERT(IsValid(), ());
   std::vector<std::string> contents;
@@ -399,7 +399,7 @@ std::vector<std::string> ScMemoryContext::FindStringsBySubstring(ScStreamPtr con
   sc_uint32 resultCount = 0;
 
   sc_stream * str = stream->m_stream;
-  if (sc_memory_find_strings_by_substring(m_context, str, &result, &resultCount) == SC_RESULT_OK)
+  if (sc_memory_find_links_contents_by_content_substring(m_context, str, &result, &resultCount) == SC_RESULT_OK)
   {
     for (sc_uint32 i = 0; i < resultCount; ++i)
     {

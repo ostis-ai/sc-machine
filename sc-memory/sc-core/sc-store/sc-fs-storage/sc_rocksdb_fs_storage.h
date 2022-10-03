@@ -31,7 +31,11 @@ sc_bool sc_rocksdb_fs_storage_save();
  * @param size A key string size
  * @returns SC_TRUE, if link was added
  */
-sc_bool sc_rocksdb_fs_storage_append_sc_link(sc_element * element, sc_addr addr, sc_char * sc_string, sc_uint32 size);
+sc_bool sc_rocksdb_fs_storage_append_sc_link_content(
+    sc_element * element,
+    sc_addr addr,
+    sc_char * sc_string,
+    sc_uint32 size);
 
 /*! Gets sc-links from sc-rocksdb by it string content.
  * @param sc_string A key string
@@ -39,7 +43,7 @@ sc_bool sc_rocksdb_fs_storage_append_sc_link(sc_element * element, sc_addr addr,
  * @param[out] size A sc-links size
  * @returns SC_TRUE, if sc-links exist.
  */
-sc_bool sc_rocksdb_fs_storage_get_sc_links(const sc_char * sc_string, sc_addr ** links, sc_uint32 * size);
+sc_bool sc_rocksdb_fs_storage_get_sc_links_by_content(const sc_char * sc_string, sc_addr ** links, sc_uint32 * size);
 
 /*! Finds sc-links in sc-rocksdb by it substring content.
  * @param sc_substr A key substring
@@ -47,7 +51,10 @@ sc_bool sc_rocksdb_fs_storage_get_sc_links(const sc_char * sc_string, sc_addr **
  * @param[out] size A sc-links size
  * @returns SC_TRUE, if sc-links exist.
  */
-sc_bool sc_rocksdb_fs_storage_find_sc_links_by_substr(const sc_char * sc_substr, sc_addr ** links, sc_uint32 * size);
+sc_bool sc_rocksdb_fs_storage_find_sc_links_by_content_substr(
+    const sc_char * sc_substr,
+    sc_addr ** links,
+    sc_uint32 * size);
 
 /*! Gets sc-strings from sc-rocksdb by it substring.
  * @param sc_substr A key substring
@@ -55,7 +62,7 @@ sc_bool sc_rocksdb_fs_storage_find_sc_links_by_substr(const sc_char * sc_substr,
  * @param[out] size A sc-links size
  * @returns SC_TRUE, if sc-strings array exist.
  */
-sc_bool sc_rocksdb_fs_storage_find_sc_strings_by_substr(
+sc_bool sc_rocksdb_fs_storage_find_sc_links_contents_by_content_substr(
     const sc_char * sc_substr,
     sc_char *** strings,
     sc_uint32 * size);
@@ -66,23 +73,17 @@ sc_bool sc_rocksdb_fs_storage_find_sc_strings_by_substr(
  * @param[out] sc_string A content string
  * @param[out] size A content string size
  */
-void sc_rocksdb_fs_storage_get_sc_string_ext(
+void sc_rocksdb_fs_storage_get_sc_link_content_ext(
     sc_element * element,
     sc_addr addr,
     sc_char ** sc_string,
     sc_uint32 * size);
-
-/*! Gets sc-link content string.
- * @param addr A sc-link
- * @returns A content string.
- */
-sc_char * sc_rocksdb_fs_storage_get_sc_string(sc_addr addr);
 
 /*! Removes sc-link content string from sc-rocksdb.
  * @param element A sc-link element
  * @param addr A sc-link addr
  * @returns SC_TRUE, if such sc-link exists in sc-rocksdb.
  */
-sc_bool sc_rocksdb_fs_storage_remove_sc_string(sc_element * element, sc_addr addr);
+sc_bool sc_rocksdb_fs_storage_remove_sc_link_content(sc_element * element, sc_addr addr);
 
 #endif  // _sc_rocksdb_fs_storage_h_

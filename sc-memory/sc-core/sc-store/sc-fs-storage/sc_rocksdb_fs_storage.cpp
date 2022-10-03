@@ -266,7 +266,7 @@ sc_result sc_rocksdb_fs_storage_find(const sc_check_sum * check_sum, sc_addr ** 
   return SC_RESULT_OK;
 }
 
-sc_bool sc_rocksdb_fs_storage_find_sc_links_by_substr(
+sc_bool sc_rocksdb_fs_storage_find_sc_links_by_content_substr(
     const sc_char * sc_substr,
     sc_addr ** result,
     sc_uint32 * result_count)
@@ -319,7 +319,7 @@ sc_bool sc_rocksdb_fs_storage_find_sc_links_by_substr(
   return SC_TRUE;
 }
 
-sc_bool sc_rocksdb_fs_storage_find_sc_strings_by_substr(
+sc_bool sc_rocksdb_fs_storage_find_sc_links_contents_by_content_substr(
     const sc_char * sc_substr,
     sc_char *** result,
     sc_uint32 * result_count)
@@ -361,11 +361,15 @@ sc_bool sc_rocksdb_fs_storage_find_sc_strings_by_substr(
   return SC_TRUE;
 }
 
-sc_bool sc_rocksdb_fs_storage_append_sc_link(sc_element * element, sc_addr addr, sc_char * sc_string, sc_uint32 size)
+sc_bool sc_rocksdb_fs_storage_append_sc_link_content(
+    sc_element * element,
+    sc_addr addr,
+    sc_char * sc_string,
+    sc_uint32 size)
 {
   sc_char * current_string;
   sc_uint32 current_size = 0;
-  sc_rocksdb_fs_storage_get_sc_string_ext(element, addr, &current_string, &current_size);
+  sc_rocksdb_fs_storage_get_sc_link_content_ext(element, addr, &current_string, &current_size);
 
   if (current_size != 0 && current_string != null_ptr)
   {
@@ -384,7 +388,7 @@ sc_bool sc_rocksdb_fs_storage_append_sc_link(sc_element * element, sc_addr addr,
   return SC_TRUE;
 }
 
-sc_bool sc_rocksdb_fs_storage_get_sc_links(const sc_char * sc_string, sc_addr ** links, sc_uint32 * size)
+sc_bool sc_rocksdb_fs_storage_get_sc_links_by_content(const sc_char * sc_string, sc_addr ** links, sc_uint32 * size)
 {
   sc_check_sum * check_sum;
   sc_link_calculate_checksum(sc_string, strlen(sc_string), &check_sum);
@@ -395,7 +399,11 @@ sc_bool sc_rocksdb_fs_storage_get_sc_links(const sc_char * sc_string, sc_addr **
   return result;
 }
 
-void sc_rocksdb_fs_storage_get_sc_string_ext(sc_element * element, sc_addr addr, sc_char ** sc_string, sc_uint32 * size)
+void sc_rocksdb_fs_storage_get_sc_link_content_ext(
+    sc_element * element,
+    sc_addr addr,
+    sc_char ** sc_string,
+    sc_uint32 * size)
 {
   sc_check_sum check_sum;
   sc_mem_cpy(check_sum.data, element->content.data, SC_CHECKSUM_LEN);
@@ -415,11 +423,11 @@ void sc_rocksdb_fs_storage_get_sc_string_ext(sc_element * element, sc_addr addr,
   }
 }
 
-sc_bool sc_rocksdb_fs_storage_remove_sc_string(sc_element * element, sc_addr addr)
+sc_bool sc_rocksdb_fs_storage_remove_sc_link_content(sc_element * element, sc_addr addr)
 {
   sc_char * string;
   sc_uint32 size = 0;
-  sc_rocksdb_fs_storage_get_sc_string_ext(element, addr, &string, &size);
+  sc_rocksdb_fs_storage_get_sc_link_content_ext(element, addr, &string, &size);
 
   if (size != 0 && string != null_ptr)
   {

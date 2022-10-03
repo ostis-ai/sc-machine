@@ -203,7 +203,7 @@ _SC_EXTERN sc_result sc_memory_find_links_by_content_substring(
  * In any case \p result_count contains number of found sc-strings.
  * @attention \p result array need to be free after usage
  */
-_SC_EXTERN sc_result sc_memory_find_strings_by_substring(
+_SC_EXTERN sc_result sc_memory_find_links_contents_by_content_substring(
     sc_memory_context const * ctx,
     sc_stream const * stream,
     sc_char *** result,

@@ -472,7 +472,7 @@ sc_result sc_storage_element_free(sc_memory_context * ctx, sc_addr addr)
 
     if (el->flags.type & sc_type_link)
     {
-      sc_fs_storage_remove_sc_string(el, addr);
+      sc_fs_storage_remove_sc_link_content(el, addr);
     }
     else if (el->flags.type & sc_type_arc_mask)
     {
@@ -1013,7 +1013,7 @@ sc_result sc_storage_get_link_content(const sc_memory_context * ctx, sc_addr add
   {
     sc_uint32 size = 0;
     sc_char * sc_string = null_ptr;
-    sc_fs_storage_get_sc_string_ext(el, addr, &sc_string, &size);
+    sc_fs_storage_get_sc_link_content_ext(el, addr, &sc_string, &size);
 
     if (sc_string == null_ptr)
     {
@@ -1051,7 +1051,7 @@ sc_result sc_storage_find_links_with_content(
     return SC_RESULT_ERROR;
 
   sc_addr * found_addrs = null_ptr;
-  sc_result result = sc_fs_storage_get_sc_links(sc_string, &found_addrs, result_count);
+  sc_result result = sc_fs_storage_get_sc_links_by_content(sc_string, &found_addrs, result_count);
   sc_mem_free(sc_string);
   if (result != SC_RESULT_OK || found_addrs == null_ptr || result_count == 0)
     return SC_RESULT_ERROR;
@@ -1114,7 +1114,7 @@ sc_result sc_storage_find_links_by_content_substring(
   if (sc_stream_get_data(stream, &sc_string, &size) != SC_TRUE)
     return SC_RESULT_ERROR;
 
-  sc_result result = sc_fs_storage_get_sc_links_by_substr(sc_string, result_addrs, result_count);
+  sc_result result = sc_fs_storage_get_sc_links_by_content_substr(sc_string, result_addrs, result_count);
   sc_mem_free(sc_string);
   if (result != SC_RESULT_OK)
     return SC_RESULT_ERROR;
@@ -1122,7 +1122,7 @@ sc_result sc_storage_find_links_by_content_substring(
   return result;
 }
 
-sc_result sc_storage_find_strings_by_substring(
+sc_result sc_storage_find_links_contents_by_content_substring(
     const sc_memory_context * ctx,
     const sc_stream * stream,
     sc_char *** result_strings,
@@ -1139,7 +1139,7 @@ sc_result sc_storage_find_strings_by_substring(
   if (sc_stream_get_data(stream, &sc_string, &size) != SC_TRUE)
     return SC_RESULT_ERROR;
 
-  sc_result result = sc_fs_storage_get_sc_strings_by_substr(sc_string, result_strings, result_count);
+  sc_result result = sc_fs_storage_get_sc_links_contents_by_content_substr(sc_string, result_strings, result_count);
   sc_mem_free(sc_string);
   if (result != SC_RESULT_OK)
     return SC_RESULT_ERROR;

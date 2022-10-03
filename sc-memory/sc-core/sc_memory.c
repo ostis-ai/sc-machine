@@ -334,13 +334,13 @@ sc_result sc_memory_find_links_by_content_substring(
   return sc_storage_find_links_by_content_substring(ctx, stream, result, result_count);
 }
 
-sc_result sc_memory_find_strings_by_substring(
+sc_result sc_memory_find_links_contents_by_content_substring(
     sc_memory_context const * ctx,
     sc_stream const * stream,
     sc_char *** result,
     sc_uint32 * result_count)
 {
-  return sc_storage_find_strings_by_substring(ctx, stream, result, result_count);
+  return sc_storage_find_links_contents_by_content_substring(ctx, stream, result, result_count);
 }
 
 void sc_memory_free_buff(sc_pointer buff)

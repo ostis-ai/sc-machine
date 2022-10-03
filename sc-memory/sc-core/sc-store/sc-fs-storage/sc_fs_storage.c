@@ -77,32 +77,35 @@ sc_bool sc_fs_storage_shutdown(sc_segment ** segments, sc_bool save_segments)
 
 sc_bool sc_fs_storage_append_sc_link(sc_element * element, sc_addr addr, sc_char * sc_string, sc_uint32 size)
 {
-  return storage_instance->append_sc_link(element, addr, sc_string, size);
+  return storage_instance->append_sc_link_content(element, addr, sc_string, size);
 }
 
-sc_bool sc_fs_storage_get_sc_links(const sc_char * sc_string, sc_addr ** links, sc_uint32 * size)
+sc_bool sc_fs_storage_get_sc_links_by_content(const sc_char * sc_string, sc_addr ** links, sc_uint32 * size)
 {
-  return storage_instance->get_sc_links(sc_string, links, size);
+  return storage_instance->get_sc_links_by_content(sc_string, links, size);
 }
 
-sc_bool sc_fs_storage_get_sc_links_by_substr(const sc_char * sc_substr, sc_addr ** links, sc_uint32 * size)
+sc_bool sc_fs_storage_get_sc_links_by_content_substr(const sc_char * sc_substr, sc_addr ** links, sc_uint32 * size)
 {
-  return storage_instance->get_sc_links_by_substr(sc_substr, links, size);
+  return storage_instance->get_sc_links_by_content_substring(sc_substr, links, size);
 }
 
-sc_bool sc_fs_storage_get_sc_strings_by_substr(const sc_char * sc_substr, sc_char *** strings, sc_uint32 * size)
+sc_bool sc_fs_storage_get_sc_links_contents_by_content_substr(
+    const sc_char * sc_substr,
+    sc_char *** strings,
+    sc_uint32 * size)
 {
-  return storage_instance->get_sc_strings_by_substr(sc_substr, strings, size);
+  return storage_instance->get_sc_links_contents_by_content_substring(sc_substr, strings, size);
 }
 
-void sc_fs_storage_get_sc_string_ext(sc_element * element, sc_addr addr, sc_char ** sc_string, sc_uint32 * size)
+void sc_fs_storage_get_sc_link_content_ext(sc_element * element, sc_addr addr, sc_char ** sc_string, sc_uint32 * size)
 {
-  storage_instance->get_sc_string_ext(element, addr, &*sc_string, size);
+  storage_instance->get_sc_link_content_ext(element, addr, &*sc_string, size);
 }
 
-sc_bool sc_fs_storage_remove_sc_string(sc_element * element, sc_addr addr)
+sc_bool sc_fs_storage_remove_sc_link_content(sc_element * element, sc_addr addr)
 {
-  return storage_instance->remove_sc_string(element, addr);
+  return storage_instance->remove_sc_link_content(element, addr);
 }
 
 // dictionary read, write and save methods
