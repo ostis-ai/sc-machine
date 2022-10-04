@@ -302,6 +302,7 @@ TEST_F(ScLinkTest, find_strings_by_substr)
   EXPECT_TRUE(std::find(strings.begin(), strings.end(), "content_tents_25") != strings.end());
 
   strings = ctx.FindLinksContentsByContentSubstring("co");
+  // there are another links as system identifiers of resolve keynodes after sc-server start
   EXPECT_TRUE(strings.size() >= 3);
   EXPECT_TRUE(std::find(strings.begin(), strings.end(), "some coten") != strings.end());
   EXPECT_TRUE(std::find(strings.begin(), strings.end(), "ton_content") != strings.end());

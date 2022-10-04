@@ -16,9 +16,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Implement sc-link content removing from sc-storage
 - Add command to find links contents by content substring into sc-server
-- Implement find links contents by content substring and sc-server
-- Ci for docker build and run
-- Ci for ubuntu-22.04 and latest macOS
+- Implement find links contents by content substring into sc-server
+- CI for docker build and run
+- CI for ubuntu-22.04 and latest macOS
 - Add ScExec class to execute system commands
 - Test for utils for work with actions and their results
 - Handle and save sc-server subcommands errors
@@ -26,7 +26,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add tests for sc-search agents in sc-kpm
 - Write sc-machine idea into readme
 - Add create elements by scs-helper through sc-server
-- Add ci workflow for sanitizers
+- Add CI workflow for sanitizers
 - Add find links by substring in sc-server
 - Initial development container support
 - You can now run sc-machine in Docker
@@ -39,7 +39,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add opportunity to search sc-links in `sc-dictionary` by content substr
 - Excludes for files and folders in repo.path
 - Automatic usage of ccache to speed up builds
-- Add ci for `rocksdb` and `sc-dictionary`
+- Add CI for `rocksdb` and `sc-dictionary`
 - Implement `sc-dictionary`. Add opportunity to switch `rocksdb` and `sc-dictionary`
 - Wrap and separate allocating, assertion, notification and atomic lock free procedures
 - Add tests module for sc-agents-utils
