@@ -14,7 +14,7 @@ function usage() {
         build <PATH>:       rebuilds KB from sources (provide absolute path to the source folder or repo.path file)
         serve <args>:       Starts sc-server. Arguments passed to this command will be redirected to sc-server binary. If no arguments were given, uses "-h 0.0.0.0 -c /sc-machine/config/sc-machine.ini" as default sc-server arguments. Add these settings yourself if you are planning to use custom arguments.
 
-        Setting REBUILD_KB evironment variable inside the container will trigger a KB rebuild. Setting custom starting point for build_kb.py can be done using KB_PATH environment variable, "/kb" is used as a default KB_PATH.
+        Setting REBUILD_KB environment variable inside the container will trigger a KB rebuild. Setting custom starting point for build_kb.py can be done using KB_PATH environment variable, "/kb" is used as a default KB_PATH.
 
 USAGE
     "$SCRIPTS_PATH"/../bin/sc-server --help
@@ -40,12 +40,12 @@ if [ "$REBUILD_KB" -eq 1 ]; then
 fi
 
 # if arguments were provided, use them instead of the default ones.
-if [ -e "$1" ]; then
+if [ $# -eq 0 ]; then
     # you should provide the config file path and host settings yourself in case you want to use custom options!
-    "$SCRIPTS_PATH"/../bin/sc-server "$@"
-else
     echo "Using default arguments."
     "$SCRIPTS_PATH"/../bin/sc-server -c "$SCRIPTS_PATH"/../config/sc-machine.ini -h 0.0.0.0
+else
+    "$SCRIPTS_PATH"/../bin/sc-server "$@"
 fi
 }
 

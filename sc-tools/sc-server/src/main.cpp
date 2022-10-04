@@ -31,7 +31,8 @@ try
               << "--repo_path|-r -- Path to kb.bin folder\n"
               << "--verbose|-v -- Flag to don't save sc-memory state on exit\n"
               << "--clear -- Flag to clear sc-memory on start\n"
-              << "--help -- Display this message\n\n";
+              << "--help -- Display this message\n"
+              << "--test|-t -- Flag to test sc-server, run and stop it\n\n";
     return EXIT_SUCCESS;
   }
 
@@ -86,7 +87,7 @@ try
     return EXIT_FAILURE;
   }
 
-  std::atomic_bool isRun = {SC_TRUE};
+  std::atomic_bool isRun = {!options.Has({"test", "t"})};
   utils::ScSignalHandler::Initialize();
   utils::ScSignalHandler::m_onTerminate = [&isRun]() {
     isRun = SC_FALSE;

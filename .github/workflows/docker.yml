@@ -1,0 +1,22 @@
+name: Docker
+
+on:
+  pull_request:
+    branches: [main]
+
+jobs:
+  build:
+    name: Build and Run
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          submodules: recursive
+
+      - name: Run the Docker image
+        run: |
+          mkdir kb
+          DOCKER_BUILDKIT=1 docker build . -t ostis/sc-machine:latest
+          docker compose up -d --wait
