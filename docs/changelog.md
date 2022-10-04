@@ -14,6 +14,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Implement sc-link content removing from sc-storage
+- Add command to find links contents by content substring into sc-server
+- Implement find links contents by content substring and sc-server
+- Ci for docker build and run
 - Ci for ubuntu-22.04 and latest macOS
 - Add ScExec class to execute system commands
 - Test for utils for work with actions and their results
@@ -47,6 +51,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- Fix sc-server json casts to strings
+- Check sc-server run in tests
+- Flag --tests for sc-server to run and quick stop it
 - Fix glib casts on ubuntu-20.04 and macOS
 - Store binary content as base64 string
 - Update action utils to use the new logic for waiting for action results
@@ -69,6 +76,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Removed
 
+- Remove find by substring logic from sc-dictionary
 - Remove legacy gwf-translator for 0.3.0 gwf sources from sc-builder
 - Remove legacy glib-based tests
 - Remove boost usage for options parsing in sc-server and sc-builder
