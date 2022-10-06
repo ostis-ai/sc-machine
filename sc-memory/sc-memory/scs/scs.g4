@@ -222,63 +222,67 @@ idtf_edge returns [ElementHandle handle]
   ;
   
 idtf_set returns [ElementHandle handle]
-  locals [ElementHandle prevEdge]
-  : sb=('{' | '<')
-      { 
-        std::string const setIdtf = "..set_" + std::to_string($ctx->start->getLine()) + "_" + std::to_string($ctx->start->getCharPositionInLine());
-        $ctx->handle = m_parser->ProcessIdentifier(setIdtf);
-        ElementHandle const typeEdge = m_parser->ProcessConnector("->");
-        ElementHandle const typeClass = m_parser->ProcessIdentifier("sc_node_tuple");
+  : '{' ctx_s=idtf_set_elements["set"] { $ctx->handle = $ctx->ctx_s->handle; } '}'
+  | '<' ctx_v=idtf_set_elements["vector"] { $ctx->handle = $ctx->ctx_v->handle; } '>'
+  ;
 
-        m_parser->ProcessTriple(typeClass, typeEdge, $ctx->handle);
+idtf_set_elements [std::string setType]
+  returns [ElementHandle handle]
+  locals [ElementHandle prevEdge]
+  : {
+      std::string const setIdtf = "..set_" + std::to_string($ctx->start->getLine()) + "_" + std::to_string($ctx->start->getCharPositionInLine());
+      $ctx->handle = m_parser->ProcessIdentifier(setIdtf);
+      ElementHandle const typeEdge = m_parser->ProcessConnector("->");
+      ElementHandle const typeClass = m_parser->ProcessIdentifier("sc_node_tuple");
+
+      m_parser->ProcessTriple(typeClass, typeEdge, $ctx->handle);
+    }
+  a1=attr_list? i1=idtf_common
+    {
+      ElementHandle const edge = m_parser->ProcessConnector("->");
+      m_parser->ProcessTriple($ctx->handle, edge, $ctx->i1->handle);
+
+      if ($ctx->a1 != nullptr)
+      {
+        APPEND_ATTRS($ctx->a1->items, edge);
       }
-    a1=attr_list? i1=idtf_common 
+
+      if ($ctx->setType == "vector")
+      {
+        ElementHandle const relEdge = m_parser->ProcessConnector("->");
+        ElementHandle const rel = m_parser->ProcessIdentifier("rrel_1");
+        m_parser->ProcessTriple(rel, relEdge, edge);
+
+        $ctx->prevEdge = edge;
+      }
+    }
+    internal_sentence_list[$ctx->i1->handle]?
+
+    (';'
+    a2=attr_list? i2=idtf_common
       {
         ElementHandle const edge = m_parser->ProcessConnector("->");
-        m_parser->ProcessTriple($ctx->handle, edge, $ctx->i1->handle);
-        
-        if ($ctx->a1 != nullptr)
+        m_parser->ProcessTriple($ctx->handle, edge, $ctx->i2->handle);
+
+        if ($ctx->a2 != nullptr)
         {
-          APPEND_ATTRS($ctx->a1->items, edge);
+          APPEND_ATTRS($ctx->a2->items, edge);
         }
 
-        if ($ctx->sb->getText() == "<")
+        if ($ctx->setType == "vector")
         {
+          ElementHandle const seqEdge = m_parser->ProcessConnector("=>");
+          m_parser->ProcessTriple($ctx->prevEdge, seqEdge, edge);
+
           ElementHandle const relEdge = m_parser->ProcessConnector("->");
-          ElementHandle const rel = m_parser->ProcessIdentifier("rrel_1");
-          m_parser->ProcessTriple(rel, relEdge, edge);
+          ElementHandle const rel = m_parser->ProcessIdentifier("nrel_basic_sequence");
+          m_parser->ProcessTriple(rel, relEdge, seqEdge);
 
           $ctx->prevEdge = edge;
         }
       }
-      internal_sentence_list[$ctx->i1->handle]?
-
-      (';'
-      a2=attr_list? i2=idtf_common
-        {
-          ElementHandle const edge = m_parser->ProcessConnector("->");
-          m_parser->ProcessTriple($ctx->handle, edge, $ctx->i2->handle);
-          
-          if ($ctx->a2 != nullptr)
-          {
-            APPEND_ATTRS($ctx->a2->items, edge);
-          }
-
-          if ($ctx->sb->getText() == "<")
-          {
-            ElementHandle const seqEdge = m_parser->ProcessConnector("=>");
-            m_parser->ProcessTriple($ctx->prevEdge, seqEdge, edge);
-
-            ElementHandle const relEdge = m_parser->ProcessConnector("->");
-            ElementHandle const rel = m_parser->ProcessIdentifier("nrel_basic_sequence");
-            m_parser->ProcessTriple(rel, relEdge, seqEdge);
-
-            $ctx->prevEdge = edge;
-          }
-        }
-        internal_sentence_list[$ctx->i2->handle]?
-      )*
-    se=('}' | '>')
+      internal_sentence_list[$ctx->i2->handle]?
+    )*
   ;
 
 idtf_atomic returns [ElementHandle handle]
