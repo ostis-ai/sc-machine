@@ -222,7 +222,8 @@ idtf_edge returns [ElementHandle handle]
   ;
   
 idtf_set returns [ElementHandle handle]
-  : '{' 
+  locals [ElementHandle prevEdge]
+  : sb=('{' | '<')
       { 
         std::string const setIdtf = "..set_" + std::to_string($ctx->start->getLine()) + "_" + std::to_string($ctx->start->getCharPositionInLine());
         $ctx->handle = m_parser->ProcessIdentifier(setIdtf);
@@ -240,6 +241,15 @@ idtf_set returns [ElementHandle handle]
         {
           APPEND_ATTRS($ctx->a1->items, edge);
         }
+
+        if ($ctx->sb->getText() == "<")
+        {
+          ElementHandle const relEdge = m_parser->ProcessConnector("->");
+          ElementHandle const rel = m_parser->ProcessIdentifier("rrel_1");
+          m_parser->ProcessTriple(rel, relEdge, edge);
+
+          $ctx->prevEdge = edge;
+        }
       }
       internal_sentence_list[$ctx->i1->handle]?
 
@@ -253,10 +263,22 @@ idtf_set returns [ElementHandle handle]
           {
             APPEND_ATTRS($ctx->a2->items, edge);
           }
+
+          if ($ctx->sb->getText() == "<")
+          {
+            ElementHandle const seqEdge = m_parser->ProcessConnector("=>");
+            m_parser->ProcessTriple($ctx->prevEdge, seqEdge, edge);
+
+            ElementHandle const relEdge = m_parser->ProcessConnector("->");
+            ElementHandle const rel = m_parser->ProcessIdentifier("nrel_basic_sequence");
+            m_parser->ProcessTriple(rel, relEdge, seqEdge);
+
+            $ctx->prevEdge = edge;
+          }
         }
         internal_sentence_list[$ctx->i2->handle]?
       )*
-    '}'
+    se=('}' | '>')
   ;
 
 idtf_atomic returns [ElementHandle handle]

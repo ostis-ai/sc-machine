@@ -91,3 +91,52 @@ TEST(scs_level_4, simple_2)
   EXPECT_EQ(triples[2].m_edge, triples[3].m_target);
   EXPECT_EQ(triples[2].m_edge, triples[4].m_target);
 }
+
+TEST(scs_level_4, vector_simple_1)
+{
+  char const * data = "set1 -> <el1; el2>;;";
+
+  scs::Parser parser;
+  EXPECT_TRUE(parser.Parse(data));
+
+  TripleTester tester(parser);
+  tester({
+      {
+          { ScType::NodeConstTuple, scs::Visibility::Local },
+          { ScType::EdgeAccessConstPosPerm, scs::Visibility::Local },
+          { ScType::NodeConst, "el1" },
+      },
+      {
+          { ScType::NodeConst, "rrel_1" },
+          { ScType::EdgeAccessConstPosPerm, scs::Visibility::Local },
+          { ScType::EdgeAccessConstPosPerm, scs::Visibility::Local }
+      },
+      {
+          { ScType::NodeConstTuple, scs::Visibility::Local },
+          { ScType::EdgeAccessConstPosPerm, scs::Visibility::Local },
+          { ScType::NodeConst, "el2" },
+      },
+      {
+          { ScType::EdgeAccessConstPosPerm, scs::Visibility::Local },
+          { ScType::EdgeDCommonConst, scs::Visibility::Local },
+          { ScType::EdgeAccessConstPosPerm, scs::Visibility::Local }
+      },
+      {
+          { ScType::NodeConst, "nrel_basic_sequence" },
+          { ScType::EdgeAccessConstPosPerm, scs::Visibility::Local },
+          { ScType::EdgeDCommonConst, scs::Visibility::Local }
+      },
+      {
+          { ScType::NodeConst, "set1" },
+          { ScType::EdgeAccessConstPosPerm, scs::Visibility::Local },
+          { ScType::NodeConstTuple, scs::Visibility::Local }
+      },
+  });
+
+  auto const & triples = parser.GetParsedTriples();
+
+  EXPECT_EQ(triples.size(), 6u);
+
+  EXPECT_EQ(triples[1].m_target, triples[0].m_edge);
+  EXPECT_EQ(triples[3].m_target, triples[2].m_edge);
+}
