@@ -170,6 +170,13 @@ public:
   }
   _SC_EXTERN ScAddrVector FindLinksByContentSubstring(ScStreamPtr const & stream);
 
+  template <typename TContentType>
+  std::vector<std::string> FindLinksContentsByContentSubstring(TContentType const & value)
+  {
+    return FindLinksContentsByContentSubstring(ScStreamMakeRead(value));
+  }
+  _SC_EXTERN std::vector<std::string> FindLinksContentsByContentSubstring(ScStreamPtr const & stream);
+
   //! Saves memory state
   _SC_EXTERN bool Save();
 

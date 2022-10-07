@@ -378,10 +378,34 @@ ScAddrVector ScMemoryContext::FindLinksByContentSubstring(ScStreamPtr const & st
   sc_uint32 resultCount = 0;
 
   sc_stream * str = stream->m_stream;
-  if (sc_memory_find_links_with_content_substring(m_context, str, &result, &resultCount) == SC_RESULT_OK)
+  if (sc_memory_find_links_by_content_substring(m_context, str, &result, &resultCount) == SC_RESULT_OK)
   {
     for (sc_uint32 i = 0; i < resultCount; ++i)
       contents.push_back(ScAddr(result[i]));
+
+    if (result)
+      sc_memory_free_buff(result);
+  }
+
+  return contents;
+}
+
+std::vector<std::string> ScMemoryContext::FindLinksContentsByContentSubstring(ScStreamPtr const & stream)
+{
+  SC_ASSERT(IsValid(), ());
+  std::vector<std::string> contents;
+
+  sc_char ** result = nullptr;
+  sc_uint32 resultCount = 0;
+
+  sc_stream * str = stream->m_stream;
+  if (sc_memory_find_links_contents_by_content_substring(m_context, str, &result, &resultCount) == SC_RESULT_OK)
+  {
+    for (sc_uint32 i = 0; i < resultCount; ++i)
+    {
+      contents.emplace_back(result[i]);
+      sc_memory_free_buff(result[i]);
+    }
 
     if (result)
       sc_memory_free_buff(result);

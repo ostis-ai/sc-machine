@@ -22,7 +22,7 @@ public:
 
     auto const & process = [&context, &responsePayload, this](ScMemoryJsonPayload const & atom)
     {
-      std::string const & type = atom["command"];
+      std::string const & type = atom["command"].get<std::string>();
 
       if (type == "set")
         responsePayload.push_back(SetContent(context, atom));
@@ -30,8 +30,10 @@ public:
         responsePayload.push_back(GetContent(context, atom));
       else if (type == "find")
         responsePayload.push_back(FindLinksByContent(context, atom));
-      else if (type == "find_by_substr")
+      else if (type == "find_by_substr" || type == "find_links_by_substr")
         responsePayload.push_back(FindLinksByContentSubstring(context, atom));
+      else if (type == "find_strings_by_substr")
+        responsePayload.push_back(FindLinksContentsByContentSubstring(context, atom));
     };
 
     if (requestPayload.is_array())
@@ -49,7 +51,7 @@ private:
   sc_bool SetContent(ScMemoryContext * context, ScMemoryJsonPayload const & atom)
   {
     ScAddr const & linkAddr = ScAddr(atom["addr"].get<size_t>());
-    std::string const & contentType = atom["type"];
+    std::string const & contentType = atom["type"].get<std::string>();
     auto const & data = atom["data"];
 
     ScLink link{*context, linkAddr};
@@ -120,5 +122,23 @@ private:
       hashes.push_back(addr.Hash());
 
     return hashes;
+  }
+
+  std::vector<std::string> FindLinksContentsByContentSubstring(ScMemoryContext * context, ScMemoryJsonPayload const & atom)
+  {
+    auto const & data = atom["data"];
+    std::vector<std::string> vector;
+    if (data.is_string())
+      vector = context->FindLinksContentsByContentSubstring(data.get<std::string>());
+    else if (data.is_number_integer())
+      vector = context->FindLinksContentsByContentSubstring(std::to_string(data.get<sc_int>()));
+    else if (data.is_number_float())
+    {
+      std::stringstream stream;
+      stream << data.get<float>();
+      vector = context->FindLinksContentsByContentSubstring(stream.str());
+    }
+
+    return vector;
   }
 };

@@ -36,6 +36,10 @@ sc_bool sc_list_destroy(sc_list * list)
     sc_mem_free(temp);
   }
 
+  list->begin = null_ptr;
+  list->end = null_ptr;
+  list->size = 0;
+
   sc_mem_free(list);
 
   return SC_TRUE;

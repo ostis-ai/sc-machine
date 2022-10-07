@@ -21,7 +21,7 @@ public:
 
     auto const & resolveAddr = [&responsePayload](ScMemoryJsonPayload const & json) -> ScAddr {
       ScMemoryJsonPayload const & sub = json["value"];
-      if (json["type"] == "ref")
+      if (json["type"].get<std::string>() == "ref")
         return ScAddr(responsePayload[sub.get<size_t>()].get<size_t>());
 
       return ScAddr(sub.get<size_t>());
@@ -29,7 +29,7 @@ public:
 
     for (auto & atom : requestPayload)
     {
-      std::string const & element = atom["el"];
+      std::string const & element = atom["el"].get<std::string>();
       ScType const & type = ScType(atom["type"].get<size_t>());
 
       ScAddr created;
@@ -49,11 +49,11 @@ public:
 
         auto const & content = atom["content"];
         if (content.is_string())
-          link.Set(atom["content"].get<std::string>());
+          link.Set(content.get<std::string>());
         else if (content.is_number_integer())
-          link.Set(atom["content"].get<sc_int>());
+          link.Set(content.get<sc_int>());
         else if (content.is_number_float())
-          link.Set(atom["content"].get<float>());
+          link.Set(content.get<float>());
       }
 
       responsePayload.push_back(created.Hash());

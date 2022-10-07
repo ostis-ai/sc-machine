@@ -21,7 +21,10 @@ sc_bool sc_config_initialize(sc_config ** config, sc_char const * file_path)
   GKeyFile * key_file = g_key_file_new();
 
   if (file_path == null_ptr || g_key_file_load_from_file(key_file, file_path, G_KEY_FILE_NONE, null_ptr) == SC_FALSE)
+  {
+    g_key_file_free(key_file);
     return SC_FALSE;
+  }
 
   // load all values into hash table
   *config =
