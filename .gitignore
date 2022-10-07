@@ -11,6 +11,7 @@ cmake-build-debug-coverage
 
 sc-machine.ini
 kb.bin
+kb
 sc-memory.log
 sc-server.log
 sc-machine.json

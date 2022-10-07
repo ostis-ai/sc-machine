@@ -10,27 +10,27 @@ nav:
   - Home: index.md
   - Installation with Docker: docker.md
   - Build:
-    - Build on Linux: build/linux-build.md
-    - Build on Windows: build/windows-build.md
-    - Build on OSX: build/osx-build.md
-    - CMake Flags: build/cmake-flags.md
+      - Build on Linux: build/linux-build.md
+      - Build on Windows: build/windows-build.md
+      - Build on OSX: build/osx-build.md
+      - CMake Flags: build/cmake-flags.md
   - Development:
-    - Git-workflow: dev/git-workflow.md
-    - Pull requets: ../CONTRIBUTING.md
-    - Codestyle: dev/codestyle.md
-    - Dev container: dev/devcontainer.md
+      - Git-workflow: dev/git-workflow.md
+      - Pull requets: ../CONTRIBUTING.md
+      - Codestyle: dev/codestyle.md
+      - Dev container: dev/devcontainer.md
   - Common:
-    - Element types: cpp/el_types.md
-    - Configuration files: other/config.md
-    - SCs language: other/scs.md
-    - KB repo file: other/repofile.md
+      - Element types: cpp/el_types.md
+      - Configuration files: other/config.md
+      - SCs language: other/scs.md
+      - KB repo file: other/repofile.md
   - API:
-    - Meta programming: cpp/cpp-meta.md
-    - Agents: sc-kpm/kpm.md
-    - Template: sc-search/templates.md
-    - Common: cpp/common.md
-    - File storage:
-      - Sc-dictionary-based file storage: storage/sc-dictionary.md
+      - Meta programming: cpp/cpp-meta.md
+      - Agents: sc-kpm/kpm.md
+      - Template: sc-search/templates.md
+      - Common: cpp/common.md
+      - File storage:
+          - Sc-dictionary-based file storage: storage/sc-dictionary.md
   - Tools:
       - Builder: sc-tools/kb_builder.md
   - License: license.md
@@ -42,5 +42,8 @@ theme: material
 markdown_extensions:
   - admonition
   - codehilite
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.inlinehilite
   - pymdownx.details
   - pymdownx.superfences

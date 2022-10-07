@@ -1,6 +1,6 @@
 services:
   machine:
-    image: ostis/sc-machine
+    image: ostis/sc-machine:latest
     build:
       context: .
     volumes:
