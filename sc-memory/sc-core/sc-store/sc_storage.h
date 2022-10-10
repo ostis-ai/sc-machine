@@ -181,6 +181,7 @@ sc_result sc_storage_find_links_with_content(
  * @param stream Pointer to stream that contains data for search
  * @param result_addrs Pointer to result container of sc-links with specified data started with substring
  * @param result_count Container for results count
+ * @param max_length_to_search_as_prefix Search by prefix as substring length <= max_length_to_search_as_prefix
  * @return If sc-links with specified substring found, then sc-addrs of found link
  * writes into \p result array and function returns SC_RESULT_OK; otherwise function returns SC_RESULT_OK.
  * In any case \p result_count contains number of found sc-addrs.
@@ -190,12 +191,14 @@ sc_result sc_storage_find_links_by_content_substring(
     const sc_memory_context * ctx,
     const sc_stream * stream,
     sc_addr ** result_addrs,
-    sc_uint32 * result_count);
+    sc_uint32 * result_count,
+    sc_uint32 max_length_to_search_as_prefix);
 
 /*! Search sc-strings by specified substring
  * @param stream Pointer to stream that contains data for search
  * @param result_strings Pointer to result container of sc-strings with substring
  * @param result_count Container for results count
+ * @param max_length_to_search_as_prefix Search by prefix as substring length <= max_length_to_search_as_prefix
  * @return If sc-strings with specified substring found, then they
  * writes into \p result array and function returns SC_RESULT_OK; otherwise function returns SC_RESULT_OK.
  * In any case \p result_count contains number of found sc-strings.
@@ -205,7 +208,8 @@ sc_result sc_storage_find_links_contents_by_content_substring(
     const sc_memory_context * ctx,
     const sc_stream * stream,
     sc_char *** result_strings,
-    sc_uint32 * result_count);
+    sc_uint32 * result_count,
+    sc_uint32 max_length_to_search_as_prefix);
 
 /*! Setup new access levels to sc-element. New access levels will be a minimum from context access levels and parameter
  * \b access_levels

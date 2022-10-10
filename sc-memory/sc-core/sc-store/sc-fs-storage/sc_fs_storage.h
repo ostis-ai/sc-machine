@@ -22,9 +22,16 @@ typedef struct _sc_fs_storage
   sc_bool (*save)();
   sc_bool (*append_sc_link_content)(sc_element *, sc_addr, sc_char *, sc_uint32);
   sc_bool (*get_sc_links_by_content)(const sc_char * sc_string, sc_addr ** links, sc_uint32 * size);
-  sc_bool (*get_sc_links_by_content_substring)(const sc_char * sc_substr, sc_addr ** links, sc_uint32 * size);
-  sc_bool (
-      *get_sc_links_contents_by_content_substring)(const sc_char * sc_substr, sc_char *** strings, sc_uint32 * size);
+  sc_bool (*get_sc_links_by_content_substring)(
+      const sc_char * sc_substr,
+      sc_addr ** links,
+      sc_uint32 * size,
+      sc_uint32 max_length_to_search_as_prefix);
+  sc_bool (*get_sc_links_contents_by_content_substring)(
+      const sc_char * sc_substr,
+      sc_char *** strings,
+      sc_uint32 * size,
+      sc_uint32 max_length_to_search_as_prefix);
   void (*get_sc_link_content_ext)(sc_element * element, sc_addr addr, sc_char ** sc_string, sc_uint32 * size);
   sc_bool (*remove_sc_link_content)(sc_element * element, sc_addr addr);
 } sc_fs_storage;
@@ -67,20 +74,27 @@ sc_bool sc_fs_storage_get_sc_links_by_content(const sc_char * sc_string, sc_addr
  * @param sc_substr A key substring
  * @param[out] links A pointer to sc-links
  * @param[out] size A sc-links size
+ * @param max_length_to_search_as_prefix Search by prefix as substring length <= max_length_to_search_as_prefix
  * @returns SC_TRUE, if such sc-links exist.
  */
-sc_bool sc_fs_storage_get_sc_links_by_content_substr(const sc_char * sc_substr, sc_addr ** links, sc_uint32 * size);
+sc_bool sc_fs_storage_get_sc_links_by_content_substr(
+    const sc_char * sc_substr,
+    sc_addr ** links,
+    sc_uint32 * size,
+    sc_uint32 max_length_to_search_as_prefix);
 
 /*! Gets sc-strings from file system storage by it substring content.
  * @param sc_substr A key substring
  * @param[out] strings A pointer to sc-strings array
  * @param[out] size A sc-strings array size
+ * @param max_length_to_search_as_prefix Search by prefix as substring length <= max_length_to_search_as_prefix
  * @returns SC_TRUE, if such sc-strings exist.
  */
 sc_bool sc_fs_storage_get_sc_links_contents_by_content_substr(
     const sc_char * sc_substr,
     sc_char *** strings,
-    sc_uint32 * size);
+    sc_uint32 * size,
+    sc_uint32 max_length_to_search_as_prefix);
 
 /*! Gets sc-link content string with its size.
  * @param addr A sc-link

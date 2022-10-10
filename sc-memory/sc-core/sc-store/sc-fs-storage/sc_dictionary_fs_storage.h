@@ -59,23 +59,27 @@ sc_bool sc_dictionary_fs_storage_get_sc_links_by_content(const sc_char * sc_stri
  * @param sc_substr A key substring
  * @param[out] links A pointer to sc-links
  * @param[out] size A sc-links size
+ * @param max_length_to_search_as_prefix Search by prefix as substring length <= max_length_to_search_as_prefix
  * @returns SC_TRUE, if sc-links exist.
  */
 sc_bool sc_dictionary_fs_storage_get_sc_links_by_content_substr(
     const sc_char * sc_substr,
     sc_addr ** links,
-    sc_uint32 * size);
+    sc_uint32 * size,
+    sc_uint32 max_length_to_search_as_prefix);
 
 /*! Gets sc-strings from sc-dictionary by it substring content.
  * @param sc_substr A key substring
  * @param[out] strings A pointer to sc-strings array
  * @param[out] size A sc-strings size
+ * @param max_length_to_search_as_prefix Search by prefix as substring length <= max_length_to_search_as_prefix
  * @returns SC_TRUE, if sc-links exist.
  */
 sc_bool sc_dictionary_fs_storage_get_sc_links_contents_by_content_substr(
     const sc_char * sc_substr,
     sc_char *** strings,
-    sc_uint32 * size);
+    sc_uint32 * size,
+    sc_uint32 max_length_to_search_as_prefix);
 
 /*! Gets sc-link content.
  * @param addr A sc-link with content

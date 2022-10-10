@@ -210,7 +210,12 @@ void _sc_dictionary_fs_storage_update_links_list(sc_dictionary_node * node, void
       return;
 
     sc_char * substring = args[1];
-    if (strstr(content->sc_string, substring) != null_ptr)
+    sc_uint8 max_str_length_to_search_as_prefix = *(sc_uint32 *)args[2];
+    sc_bool const is_prefix =
+        strlen(substring) <= max_str_length_to_search_as_prefix && sc_str_has_prefix(content->sc_string, substring);
+    sc_bool const is_substr =
+        strlen(substring) > max_str_length_to_search_as_prefix && strstr(content->sc_string, substring) != null_ptr;
+    if (is_prefix || is_substr)
     {
       sc_list * full_list = args[0];
 
@@ -225,14 +230,16 @@ void _sc_dictionary_fs_storage_update_links_list(sc_dictionary_node * node, void
 sc_bool sc_dictionary_fs_storage_get_sc_links_by_content_substr(
     const sc_char * sc_substr,
     sc_addr ** links,
-    sc_uint32 * size)
+    sc_uint32 * size,
+    sc_uint32 max_length_to_search_as_prefix)
 {
   sc_list * list;
   sc_list_init(&list);
 
-  void * args[2];
+  void * args[3];
   args[0] = list;
   args[1] = (void *)sc_substr;
+  args[2] = (void *)&max_length_to_search_as_prefix;
   sc_dictionary_visit_down_node_from_node(
       strings_dictionary, strings_dictionary->root, _sc_dictionary_fs_storage_update_links_list, args);
 
@@ -260,7 +267,12 @@ void _sc_dictionary_fs_storage_update_strings_list(sc_dictionary_node * node, vo
       return;
 
     sc_char * substring = args[1];
-    if (strstr(content->sc_string, substring) != null_ptr)
+    sc_uint8 max_str_length_to_search_as_prefix = *(sc_uint32 *)args[2];
+    sc_bool const is_prefix =
+        strlen(substring) <= max_str_length_to_search_as_prefix && sc_str_has_prefix(content->sc_string, substring);
+    sc_bool const is_substr =
+        strlen(substring) > max_str_length_to_search_as_prefix && strstr(content->sc_string, substring) != null_ptr;
+    if (is_prefix || is_substr)
     {
       sc_list * full_list = args[0];
       sc_list_push_back(full_list, content->sc_string);
@@ -290,14 +302,16 @@ sc_char ** sc_list_to_strings_array(sc_list * list)
 sc_bool sc_dictionary_fs_storage_get_sc_links_contents_by_content_substr(
     const sc_char * sc_substr,
     sc_char *** strings,
-    sc_uint32 * size)
+    sc_uint32 * size,
+    sc_uint32 max_length_to_search_as_prefix)
 {
   sc_list * list;
   sc_list_init(&list);
 
-  void * args[2];
+  void * args[3];
   args[0] = list;
   args[1] = (void *)sc_substr;
+  args[2] = (void *)&max_length_to_search_as_prefix;
   sc_dictionary_visit_down_node_from_node(
       strings_dictionary, strings_dictionary->root, _sc_dictionary_fs_storage_update_strings_list, args);
 

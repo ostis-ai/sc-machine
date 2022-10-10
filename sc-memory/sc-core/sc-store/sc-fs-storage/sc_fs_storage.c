@@ -85,17 +85,23 @@ sc_bool sc_fs_storage_get_sc_links_by_content(const sc_char * sc_string, sc_addr
   return storage_instance->get_sc_links_by_content(sc_string, links, size);
 }
 
-sc_bool sc_fs_storage_get_sc_links_by_content_substr(const sc_char * sc_substr, sc_addr ** links, sc_uint32 * size)
+sc_bool sc_fs_storage_get_sc_links_by_content_substr(
+    const sc_char * sc_substr,
+    sc_addr ** links,
+    sc_uint32 * size,
+    sc_uint32 max_length_to_search_as_prefix)
 {
-  return storage_instance->get_sc_links_by_content_substring(sc_substr, links, size);
+  return storage_instance->get_sc_links_by_content_substring(sc_substr, links, size, max_length_to_search_as_prefix);
 }
 
 sc_bool sc_fs_storage_get_sc_links_contents_by_content_substr(
     const sc_char * sc_substr,
     sc_char *** strings,
-    sc_uint32 * size)
+    sc_uint32 * size,
+    sc_uint32 max_length_to_search_as_prefix)
 {
-  return storage_instance->get_sc_links_contents_by_content_substring(sc_substr, strings, size);
+  return storage_instance->get_sc_links_contents_by_content_substring(
+      sc_substr, strings, size, max_length_to_search_as_prefix);
 }
 
 void sc_fs_storage_get_sc_link_content_ext(sc_element * element, sc_addr addr, sc_char ** sc_string, sc_uint32 * size)

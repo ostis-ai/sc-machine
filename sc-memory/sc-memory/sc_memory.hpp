@@ -164,18 +164,22 @@ public:
   }
 
   template <typename TContentType>
-  ScAddrVector FindLinksByContentSubstring(TContentType const & value)
+  ScAddrVector FindLinksByContentSubstring(TContentType const & value, size_t maxLengthToSearchAsPrefix = 0)
   {
-    return FindLinksByContentSubstring(ScStreamMakeRead(value));
+    return FindLinksByContentSubstring(ScStreamMakeRead(value), maxLengthToSearchAsPrefix);
   }
-  _SC_EXTERN ScAddrVector FindLinksByContentSubstring(ScStreamPtr const & stream);
+  _SC_EXTERN ScAddrVector FindLinksByContentSubstring(ScStreamPtr const & stream, size_t maxLengthToSearchAsPrefix = 0);
 
   template <typename TContentType>
-  std::vector<std::string> FindLinksContentsByContentSubstring(TContentType const & value)
+  std::vector<std::string> FindLinksContentsByContentSubstring(
+      TContentType const & value,
+      size_t maxLengthToSearchAsPrefix = 0)
   {
-    return FindLinksContentsByContentSubstring(ScStreamMakeRead(value));
+    return FindLinksContentsByContentSubstring(ScStreamMakeRead(value), maxLengthToSearchAsPrefix);
   }
-  _SC_EXTERN std::vector<std::string> FindLinksContentsByContentSubstring(ScStreamPtr const & stream);
+  _SC_EXTERN std::vector<std::string> FindLinksContentsByContentSubstring(
+      ScStreamPtr const & stream,
+      size_t maxLengthToSearchAsPrefix = 0);
 
   //! Saves memory state
   _SC_EXTERN bool Save();

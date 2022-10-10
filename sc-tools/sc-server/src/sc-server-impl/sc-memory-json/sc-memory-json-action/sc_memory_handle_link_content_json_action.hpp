@@ -107,14 +107,14 @@ private:
     auto const & data = atom["data"];
     ScAddrVector vector;
     if (data.is_string())
-      vector = context->FindLinksByContentSubstring(data.get<std::string>());
+      vector = context->FindLinksByContentSubstring(data.get<std::string>(), maxLengthToSearchAsPrefix);
     else if (data.is_number_integer())
-      vector = context->FindLinksByContentSubstring(std::to_string(data.get<sc_int>()));
+      vector = context->FindLinksByContentSubstring(std::to_string(data.get<sc_int>()), maxLengthToSearchAsPrefix);
     else if (data.is_number_float())
     {
       std::stringstream stream;
       stream << data.get<float>();
-      vector = context->FindLinksByContentSubstring(stream.str());
+      vector = context->FindLinksByContentSubstring(stream.str(), maxLengthToSearchAsPrefix);
     }
 
     std::vector<size_t> hashes;
@@ -129,16 +129,19 @@ private:
     auto const & data = atom["data"];
     std::vector<std::string> vector;
     if (data.is_string())
-      vector = context->FindLinksContentsByContentSubstring(data.get<std::string>());
+      vector = context->FindLinksContentsByContentSubstring(data.get<std::string>(), maxLengthToSearchAsPrefix);
     else if (data.is_number_integer())
-      vector = context->FindLinksContentsByContentSubstring(std::to_string(data.get<sc_int>()));
+      vector = context->FindLinksContentsByContentSubstring(std::to_string(data.get<sc_int>()), maxLengthToSearchAsPrefix);
     else if (data.is_number_float())
     {
       std::stringstream stream;
       stream << data.get<float>();
-      vector = context->FindLinksContentsByContentSubstring(stream.str());
+      vector = context->FindLinksContentsByContentSubstring(stream.str(), maxLengthToSearchAsPrefix);
     }
 
     return vector;
   }
+
+private:
+  sc_uint32 const maxLengthToSearchAsPrefix = 4;
 };
