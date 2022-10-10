@@ -21,6 +21,5 @@
     * [Knowledge Base builder](sc-tools/kb_builder.md)
 
 - **Development**
-    * [Pull Request](../CONTRIBUTING.md)
     * [Git workflow](dev/git-workflow.md)
     * [Codestyle](dev/codestyle.md)
