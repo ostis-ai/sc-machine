@@ -369,7 +369,7 @@ ScAddrVector ScMemoryContext::FindLinksByContent(ScStreamPtr const & stream)
   return contents;
 }
 
-ScAddrVector ScMemoryContext::FindLinksByContentSubstring(ScStreamPtr const & stream)
+ScAddrVector ScMemoryContext::FindLinksByContentSubstring(ScStreamPtr const & stream, size_t maxLengthToSearchAsPrefix)
 {
   SC_ASSERT(IsValid(), ());
   ScAddrVector contents;
@@ -378,7 +378,8 @@ ScAddrVector ScMemoryContext::FindLinksByContentSubstring(ScStreamPtr const & st
   sc_uint32 resultCount = 0;
 
   sc_stream * str = stream->m_stream;
-  if (sc_memory_find_links_by_content_substring(m_context, str, &result, &resultCount) == SC_RESULT_OK)
+  if (sc_memory_find_links_by_content_substring(m_context, str, &result, &resultCount, maxLengthToSearchAsPrefix) ==
+      SC_RESULT_OK)
   {
     for (sc_uint32 i = 0; i < resultCount; ++i)
       contents.push_back(ScAddr(result[i]));
@@ -390,7 +391,9 @@ ScAddrVector ScMemoryContext::FindLinksByContentSubstring(ScStreamPtr const & st
   return contents;
 }
 
-std::vector<std::string> ScMemoryContext::FindLinksContentsByContentSubstring(ScStreamPtr const & stream)
+std::vector<std::string> ScMemoryContext::FindLinksContentsByContentSubstring(
+    ScStreamPtr const & stream,
+    size_t maxLengthToSearchAsPrefix)
 {
   SC_ASSERT(IsValid(), ());
   std::vector<std::string> contents;
@@ -399,7 +402,8 @@ std::vector<std::string> ScMemoryContext::FindLinksContentsByContentSubstring(Sc
   sc_uint32 resultCount = 0;
 
   sc_stream * str = stream->m_stream;
-  if (sc_memory_find_links_contents_by_content_substring(m_context, str, &result, &resultCount) == SC_RESULT_OK)
+  if (sc_memory_find_links_contents_by_content_substring(
+          m_context, str, &result, &resultCount, maxLengthToSearchAsPrefix) == SC_RESULT_OK)
   {
     for (sc_uint32 i = 0; i < resultCount; ++i)
     {

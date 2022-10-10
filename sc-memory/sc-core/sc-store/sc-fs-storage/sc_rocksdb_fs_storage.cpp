@@ -269,7 +269,8 @@ sc_result sc_rocksdb_fs_storage_find(const sc_check_sum * check_sum, sc_addr ** 
 sc_bool sc_rocksdb_fs_storage_find_sc_links_by_content_substr(
     const sc_char * sc_substr,
     sc_addr ** result,
-    sc_uint32 * result_count)
+    sc_uint32 * result_count,
+    sc_uint32 max_length_to_search_as_prefix)
 {
   MutexGuard lock(gMutex);
 
@@ -287,7 +288,11 @@ sc_bool sc_rocksdb_fs_storage_find_sc_links_by_content_substr(
     std::string str{slice.data()};
     str.resize(slice.size());
 
-    if (str.find(sc_substr) != std::string::npos)
+    sc_bool const isPrefix = strlen(sc_substr) <= max_length_to_search_as_prefix &&
+                             strcmp(str.substr(0, strlen(sc_substr)).c_str(), sc_substr) == 0;
+    sc_bool const isSubstr =
+        strlen(sc_substr) > max_length_to_search_as_prefix && str.find(sc_substr) != std::string::npos;
+    if (isPrefix || isSubstr)
     {
       sc_check_sum * check_sum;
       sc_link_calculate_checksum(str.c_str(), str.size(), &check_sum);
@@ -322,7 +327,8 @@ sc_bool sc_rocksdb_fs_storage_find_sc_links_by_content_substr(
 sc_bool sc_rocksdb_fs_storage_find_sc_links_contents_by_content_substr(
     const sc_char * sc_substr,
     sc_char *** result,
-    sc_uint32 * result_count)
+    sc_uint32 * result_count,
+    sc_uint32 max_length_to_search_as_prefix)
 {
   MutexGuard lock(gMutex);
 
@@ -340,7 +346,11 @@ sc_bool sc_rocksdb_fs_storage_find_sc_links_contents_by_content_substr(
     std::string str{slice.data()};
     str.resize(slice.size());
 
-    if (str.find(sc_substr) != std::string::npos)
+    sc_bool const isPrefix = strlen(sc_substr) <= max_length_to_search_as_prefix &&
+                             strcmp(str.substr(0, strlen(sc_substr)).c_str(), sc_substr) == 0;
+    sc_bool const isSubstr =
+        strlen(sc_substr) > max_length_to_search_as_prefix && str.find(sc_substr) != std::string::npos;
+    if (isPrefix || isSubstr)
     {
       foundStrings.emplace_back(str);
     }

@@ -1101,7 +1101,8 @@ sc_result sc_storage_find_links_by_content_substring(
     const sc_memory_context * ctx,
     const sc_stream * stream,
     sc_addr ** result_addrs,
-    sc_uint32 * result_count)
+    sc_uint32 * result_count,
+    sc_uint32 max_length_to_search_as_prefix)
 {
   sc_assert(ctx != null_ptr);
   sc_assert(stream != null_ptr);
@@ -1114,7 +1115,8 @@ sc_result sc_storage_find_links_by_content_substring(
   if (sc_stream_get_data(stream, &sc_string, &size) != SC_TRUE)
     return SC_RESULT_ERROR;
 
-  sc_result result = sc_fs_storage_get_sc_links_by_content_substr(sc_string, result_addrs, result_count);
+  sc_result result = sc_fs_storage_get_sc_links_by_content_substr(
+      sc_string, result_addrs, result_count, max_length_to_search_as_prefix);
   sc_mem_free(sc_string);
   if (result != SC_RESULT_OK)
     return SC_RESULT_ERROR;
@@ -1126,7 +1128,8 @@ sc_result sc_storage_find_links_contents_by_content_substring(
     const sc_memory_context * ctx,
     const sc_stream * stream,
     sc_char *** result_strings,
-    sc_uint32 * result_count)
+    sc_uint32 * result_count,
+    sc_uint32 max_length_to_search_as_prefix)
 {
   sc_assert(ctx != null_ptr);
   sc_assert(stream != null_ptr);
@@ -1139,7 +1142,8 @@ sc_result sc_storage_find_links_contents_by_content_substring(
   if (sc_stream_get_data(stream, &sc_string, &size) != SC_TRUE)
     return SC_RESULT_ERROR;
 
-  sc_result result = sc_fs_storage_get_sc_links_contents_by_content_substr(sc_string, result_strings, result_count);
+  sc_result result = sc_fs_storage_get_sc_links_contents_by_content_substr(
+      sc_string, result_strings, result_count, max_length_to_search_as_prefix);
   sc_mem_free(sc_string);
   if (result != SC_RESULT_OK)
     return SC_RESULT_ERROR;

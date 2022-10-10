@@ -54,7 +54,8 @@ sc_bool sc_rocksdb_fs_storage_get_sc_links_by_content(const sc_char * sc_string,
 sc_bool sc_rocksdb_fs_storage_find_sc_links_by_content_substr(
     const sc_char * sc_substr,
     sc_addr ** links,
-    sc_uint32 * size);
+    sc_uint32 * size,
+    sc_uint32 max_length_to_search_as_prefix);
 
 /*! Gets sc-strings from sc-rocksdb by it substring.
  * @param sc_substr A key substring
@@ -65,7 +66,8 @@ sc_bool sc_rocksdb_fs_storage_find_sc_links_by_content_substr(
 sc_bool sc_rocksdb_fs_storage_find_sc_links_contents_by_content_substr(
     const sc_char * sc_substr,
     sc_char *** strings,
-    sc_uint32 * size);
+    sc_uint32 * size,
+    sc_uint32 max_length_to_search_as_prefix);
 
 /*! Gets sc-link content string with its size.
  * @param addr A sc-link
