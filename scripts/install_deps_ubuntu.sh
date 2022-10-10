@@ -18,6 +18,7 @@ sudo apt-get update && sudo apt-get install -y --no-install-recommends software-
 sudo add-apt-repository -y universe
 sudo apt-get update
 packagelist_runtime=(
+    file
     libcurl4
     libglib2.0-dev
     libboost-system-dev
