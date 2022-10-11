@@ -7,11 +7,13 @@ cd sc-machine
 
 ## Install dependencies
 
+Note: you will need [Homebrew](https://docs.brew.sh/Installation) installed and configured on your Mac.
+
 ```sh
 cd scripts
 ./install_deps_macOS.sh
 cd ..
-pip3 --user -r requirements.txt
+pip3 install -r requirements.txt
 ```
 
 ## Build
