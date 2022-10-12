@@ -52,6 +52,6 @@ jobs:
         with:
           push: true
           tags: ostis/sc-machine:latest,ostis/sc-machine:${{ github.ref_name }}
-          platforms: linux/amd64,linux/arm64,linux/arm/v7
+          platforms: linux/amd64,linux/arm64
           cache-from: type=registry,ref=ostis/sc-machine:buildcache
           cache-to: type=registry,ref=ostis/sc-machine:buildcache,mode=max
