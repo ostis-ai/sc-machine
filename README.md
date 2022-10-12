@@ -38,11 +38,12 @@ Both declarative (data, data structures, documentation, tasks specification, etc
 
 - A brief user manual and developer docs are hosted on our [GitHub Pages](https://ostis-ai.github.io/sc-machine).
 - Full documentation, including:
+
   - core concepts
   - rationale behind the SC-machine
   - system design
   - software interfaces
-  
+
   is redistributed in a form of the [SCn-TeX document](https://github.com/ostis-ai/ostis-web-platform/blob/develop/docs/main.pdf).
 
 ## Quick start
@@ -57,17 +58,17 @@ SC-machine is a core of any OSTIS-system, so you can use a reference system name
   If you do not have the option to deploy the system using Docker, please refer to the docs for your OS:
   [Build on Linux](https://ostis-ai.github.io/sc-machine/build/linux-build/) or [Build on macOS](https://ostis-ai.github.io/sc-machine/build/osx-build/) respectively.
 
-  Note: currently, the SC-machine isn't *natively* supported on Windows.
+  Note: currently, the SC-machine isn't _natively_ supported on Windows.
 
 ## Usage
 
 - Docker
-  
+
   ```sh
   # build kb
   docker run --rm -it -v <full path to kb sources>:/kb -v sc-machine_kb:/kb.bin ostis/sc-machine:latest build /kb
   # run sc-server
-  docker run --rm -it -v sc-machine_kb:/kb.bin ostis/sc-machine:latest serve
+  docker run --rm -it -v sc-machine_kb:/kb.bin -p 8090:8090 ostis/sc-machine:latest serve
   ```
 
 - Native
@@ -83,7 +84,7 @@ Most of these commands have a help page bundled inside, so if you have any quest
 
 ## Config
 
-This repository provides a default configuration for the SC-machine. To customize the *SC-machine* to suit your needs you can [create your own config file](https://ostis-ai.github.io/sc-machine/other/config).
+This repository provides a default configuration for the SC-machine. To customize the _SC-machine_ to suit your needs you can [create your own config file](https://ostis-ai.github.io/sc-machine/other/config).
 
 ## Feedback
 
@@ -94,4 +95,4 @@ Feel free to check our [issues page](https://github.com/ostis-ai/sc-machine/issu
 
 Distributed under the MIT License. Check [COPYING.MIT](COPYING.MIT) for more information.
 
-##### *This repository continues the development of [ostis-dev/sc-machine](https://github.com/ostis-dev/sc-machine) from version 0.6.0.*
+##### _This repository continues the development of [ostis-dev/sc-machine](https://github.com/ostis-dev/sc-machine) from version 0.6.0._

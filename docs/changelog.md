@@ -7,10 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+
+## [0.7.0-Rebirth] - 12.10.2022
+
+### Breaking changes
+
 - Binaries are built in the `bin` folder located near the CMake build tree. This will affect any project using sc-machine as a CMake subproject.
-- Add `;` after `SC_LOG_INFO`, `SC_LOG_DEBUG`, `SC_LOG_WARNING` and `SC_LOG_ERROR` calls in projects that use sc-machine
-- Add `;` after `SC_ASSERT` calls in projects that use sc-machine
-- Remind that all binary content are stored in sc-fs-storage as base64 string
+- Add `;` after `SC_LOG_INFO`, `SC_LOG_DEBUG`, `SC_LOG_WARNING` and `SC_LOG_ERROR` calls in projects that use sc-machine.
+- Add `;` after `SC_ASSERT` calls in projects that use sc-machine.
+- Remind that all binary content are stored in sc-fs-storage as base64 string.
+- sctp-server was removed, move to sc-server usage.
+- SC-machine doesn't support ubuntu versions lower than 20.04.
 
 ### Added
 

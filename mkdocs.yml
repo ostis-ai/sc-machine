@@ -16,7 +16,6 @@ nav:
       - CMake Flags: build/cmake-flags.md
   - Development:
       - Git-workflow: dev/git-workflow.md
-      - Pull requets: ../CONTRIBUTING.md
       - Codestyle: dev/codestyle.md
       - Dev container: dev/devcontainer.md
   - Common:

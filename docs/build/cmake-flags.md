@@ -35,7 +35,7 @@ cmake --build build --target clangformat_check
 or
 ```sh
 cd sc-machine
-./scripts/ci/check-formatting.sh
+./scripts/clang/check_formatting.sh
 ```
 
 To format code with CLangFormat run:
@@ -43,4 +43,10 @@ To format code with CLangFormat run:
 cd sc-machine
 cmake -B build -DSC_CLANG_FORMAT_CODE=ON
 cmake --build build --target clangformat
+```
+
+or
+```sh
+cd sc-machine
+./scripts/clang/format_code.sh
 ```

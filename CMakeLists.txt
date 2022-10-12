@@ -1,11 +1,11 @@
-cmake_minimum_required(VERSION 2.8)
+cmake_minimum_required(VERSION 2.8.12)
 project(sc-machine)
 site_name(www.ostis.net)
 cmake_policy(SET CMP0048 NEW)
 
 set(SC_MACHINE_ROOT ${CMAKE_CURRENT_LIST_DIR})
 include(${SC_MACHINE_ROOT}/macro/macros.cmake)
-project_version(SC_MACHINE "0.6.1")
+project_version(SC_MACHINE "0.7.0-Rebirth")
 
 set(CMAKE_MODULE_PATH "${SC_MACHINE_ROOT}/cmake")
 # CMAKE_BINARY_DIR is a path to the top level of the build tree (i.e to the "build" folder). Placing a "bin" folder nearby
