@@ -64,6 +64,9 @@ public:
   SC_PROPERTY(Keynode("rrel_3"), ForceCreate)
   static ScAddr rrel_3;
 
+  SC_PROPERTY(Keynode("rrel_last"), ForceCreate)
+  static ScAddr rrel_last;
+
   SC_PROPERTY(Keynode("rrel_last_added_sc_element"), ForceCreate)
   static ScAddr rrel_last_added_sc_element;
 
@@ -90,6 +93,9 @@ public:
 
   SC_PROPERTY(Keynode("lang_ru"), ForceCreate)
   static ScAddr lang_ru;
+
+  SC_PROPERTY(Keynode("lang_en;"), ForceCreate)
+  static ScAddr lang_en;
 
   SC_PROPERTY(Keynode("nrel_basic_sequence"), ForceCreate)
   static ScAddr nrel_basic_sequence;
