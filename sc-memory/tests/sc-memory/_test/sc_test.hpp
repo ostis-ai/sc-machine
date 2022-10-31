@@ -30,6 +30,7 @@ protected:
 
     params.clear = SC_TRUE;
     params.repo_path = "repo";
+    params.log_level = "Debug";
 
     ScMemory::LogMute();
     ScMemory::Initialize(params);
