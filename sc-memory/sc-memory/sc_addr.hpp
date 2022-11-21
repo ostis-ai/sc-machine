@@ -14,6 +14,7 @@ extern "C"
 #include <cstdint>
 #include <list>
 #include <vector>
+#include <queue>
 
 using ScRealAddr = sc_addr;
 
@@ -51,6 +52,7 @@ protected:
 };
 
 using ScAddrVector = std::vector<ScAddr>;
+using ScAddrQueue = std::queue<ScAddr>;
 using ScAddrList = std::list<ScAddr>;
 
 struct RealAddrLessFunc
