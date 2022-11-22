@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Oriented sets representation (<a, ..., b>) in SCs
 
 ## [0.7.0-Rebirth] - 12.10.2022
 
