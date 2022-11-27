@@ -15,6 +15,7 @@ sc_memory_context * s_default_ctx = 0;
 
 sc_event * event_question_search_atomic_commands;
 sc_event * event_question_search_all_nodes_in_set;
+sc_event * event_question_search_tooltip;
 sc_event * event_question_search_all_output_arcs;
 sc_event * event_question_search_all_input_arcs;
 sc_event * event_question_search_all_output_arcs_with_rel;
@@ -56,6 +57,17 @@ sc_result sc_module_initialize()
       0
       );
   if (event_question_search_all_nodes_in_set == null_ptr)
+    return SC_RESULT_ERROR;
+
+  event_question_search_tooltip = sc_event_new(
+      s_default_ctx,
+      keynode_question_initiated,
+      SC_EVENT_ADD_OUTPUT_ARC,
+      0,
+      agent_search_tooltip,
+      0
+      );
+  if (event_question_search_tooltip == null_ptr)
     return SC_RESULT_ERROR;
 
   event_question_search_all_output_arcs = sc_event_new(
@@ -152,6 +164,8 @@ sc_result sc_module_shutdown()
     sc_event_destroy(event_question_search_atomic_commands);
   if (event_question_search_all_nodes_in_set)
     sc_event_destroy(event_question_search_all_nodes_in_set);
+  if (event_question_search_tooltip)
+    sc_event_destroy(event_question_search_tooltip);
   if (event_question_search_all_output_arcs)
     sc_event_destroy(event_question_search_all_output_arcs);
   if (event_question_search_all_input_arcs)

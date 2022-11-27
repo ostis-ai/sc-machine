@@ -7,6 +7,7 @@
 #ifndef _search_operations_h_
 #define _search_operations_h_
 
+#include "agents/search_nodes.h"
 #include "agents/search_commands.h"
 #include "agents/search_tooltip.h"
 #include "agents/search_input_arcs.h"

@@ -17,6 +17,7 @@
 
 sc_addr keynode_question_search_atomic_commands;
 sc_addr keynode_question_search_all_nodes_in_set;
+sc_addr keynode_question_search_tooltip;
 
 sc_addr keynode_question_all_output_const_pos_arc;
 sc_addr keynode_question_all_input_const_pos_arc;
@@ -34,6 +35,10 @@ sc_addr keynode_question_search_full_pattern;
 sc_addr keynode_ui_main_menu;
 sc_addr keynode_ui_user_command_class_atom;
 sc_addr keynode_nrel_ui_commands_decomposition;
+sc_addr keynode_sc_definition;
+sc_addr keynode_sc_explanation;
+sc_addr keynode_sc_note;
+sc_addr keynode_nrel_sc_text_translation_value;
 
 sc_addr keynode_question;
 sc_addr keynode_question_initiated;
@@ -64,6 +69,7 @@ sc_addr keynode_rrel_2;
 
 const char keynode_question_search_atomic_commands_str[] = "question_search_atomic_commands";
 const char keynode_question_search_all_nodes_in_set_str[] = "question_search_all_nodes_in_set";
+const char keynode_question_search_tooltip_str[] = "question_search_tooltip";
 
 const char keynode_question_all_output_const_pos_arc_str[] = "question_search_all_output_const_pos_arcs";
 const char keynode_question_all_input_const_pos_arc_str[] = "question_search_all_input_const_pos_arcs";
@@ -87,6 +93,10 @@ const char keynode_question_search_links_of_relation_connected_with_element_str[
 const char keynode_ui_main_menu_str[] = "keynode_ui_main_menu";
 const char keynode_ui_user_command_class_atom_str[] = "keynode_ui_user_command_class_atom";
 const char keynode_nrel_ui_commands_decomposition_str[] = "keynode_nrel_ui_commands_decomposition";
+const char keynode_sc_definition_str[] = "keynode_sc_definition";
+const char keynode_sc_explanation_str[] = "keynode_sc_explanation";
+const char keynode_sc_note_str[] = "keynode_sc_note";
+const char keynode_nrel_sc_text_translation_value_str[] = "keynode_nrel_sc_text_translation_value";
 
 const char keynode_question_initiated_str[] = "question_initiated";
 const char keynode_question_str[] = "question";
@@ -117,6 +127,7 @@ sc_result search_keynodes_initialize(const sc_memory_context * ctx)
 {
   RESOLVE_KEYNODE(ctx, keynode_question_search_atomic_commands);
   RESOLVE_KEYNODE(ctx, keynode_question_search_all_nodes_in_set);
+  RESOLVE_KEYNODE(ctx, keynode_question_search_tooltip);
 
   RESOLVE_KEYNODE(ctx, keynode_question_all_output_const_pos_arc);
   RESOLVE_KEYNODE(ctx, keynode_question_all_input_const_pos_arc);
@@ -135,6 +146,10 @@ sc_result search_keynodes_initialize(const sc_memory_context * ctx)
   RESOLVE_KEYNODE(ctx, keynode_ui_main_menu);
   RESOLVE_KEYNODE(ctx, keynode_ui_user_command_class_atom);
   RESOLVE_KEYNODE(ctx, keynode_nrel_ui_commands_decomposition);
+  RESOLVE_KEYNODE(ctx, keynode_sc_definition);
+  RESOLVE_KEYNODE(ctx, keynode_sc_explanation);
+  RESOLVE_KEYNODE(ctx, keynode_sc_note);
+  RESOLVE_KEYNODE(ctx, keynode_nrel_sc_text_translation_value);
 
   RESOLVE_KEYNODE(ctx, keynode_question_initiated);
   RESOLVE_KEYNODE(ctx, keynode_question);

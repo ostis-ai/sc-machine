@@ -11,6 +11,7 @@
 
 extern sc_addr keynode_question_search_atomic_commands;
 extern sc_addr keynode_question_search_all_nodes_in_set;
+extern sc_addr keynode_question_search_tooltip;
 extern sc_addr keynode_question_all_output_const_pos_arc;
 extern sc_addr keynode_question_all_input_const_pos_arc;
 extern sc_addr keynode_question_all_output_const_pos_arc_with_rel;
@@ -27,6 +28,10 @@ extern sc_addr keynode_question_search_full_pattern;
 extern sc_addr keynode_ui_main_menu;
 extern sc_addr keynode_ui_user_command_class_atom;
 extern sc_addr keynode_nrel_ui_commands_decomposition;
+extern sc_addr keynode_sc_definition;
+extern sc_addr keynode_sc_explanation;
+extern sc_addr keynode_sc_note;
+extern sc_addr keynode_nrel_sc_text_translation_value;
 
 extern sc_addr keynode_nrel_answer;
 extern sc_addr keynode_quasybinary_relation;
