@@ -10,6 +10,7 @@
 #include "sc-core/sc_memory.h"
 
 extern sc_addr keynode_question_search_atomic_commands;
+extern sc_addr keynode_question_search_all_nodes_in_set;
 extern sc_addr keynode_question_all_output_const_pos_arc;
 extern sc_addr keynode_question_all_input_const_pos_arc;
 extern sc_addr keynode_question_all_output_const_pos_arc_with_rel;

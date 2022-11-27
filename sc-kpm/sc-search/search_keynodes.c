@@ -16,6 +16,7 @@
 #include <glib.h>
 
 sc_addr keynode_question_search_atomic_commands;
+sc_addr keynode_question_search_all_nodes_in_set;
 
 sc_addr keynode_question_all_output_const_pos_arc;
 sc_addr keynode_question_all_input_const_pos_arc;
@@ -62,6 +63,7 @@ sc_addr keynode_rrel_1;
 sc_addr keynode_rrel_2;
 
 const char keynode_question_search_atomic_commands_str[] = "question_search_atomic_commands";
+const char keynode_question_search_all_nodes_in_set_str[] = "question_search_all_nodes_in_set";
 
 const char keynode_question_all_output_const_pos_arc_str[] = "question_search_all_output_const_pos_arcs";
 const char keynode_question_all_input_const_pos_arc_str[] = "question_search_all_input_const_pos_arcs";
@@ -114,6 +116,7 @@ const char keynode_languages_str[] = "languages";
 sc_result search_keynodes_initialize(const sc_memory_context * ctx)
 {
   RESOLVE_KEYNODE(ctx, keynode_question_search_atomic_commands);
+  RESOLVE_KEYNODE(ctx, keynode_question_search_all_nodes_in_set);
 
   RESOLVE_KEYNODE(ctx, keynode_question_all_output_const_pos_arc);
   RESOLVE_KEYNODE(ctx, keynode_question_all_input_const_pos_arc);
