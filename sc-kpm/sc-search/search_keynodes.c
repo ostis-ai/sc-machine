@@ -15,6 +15,8 @@
 
 #include <glib.h>
 
+sc_addr keynode_question_search_atomic_commands;
+
 sc_addr keynode_question_all_output_const_pos_arc;
 sc_addr keynode_question_all_input_const_pos_arc;
 sc_addr keynode_question_all_output_const_pos_arc_with_rel;
@@ -27,6 +29,10 @@ sc_addr keynode_question_search_all_superclasses_in_quasybinary_relation;
 sc_addr keynode_question_search_all_subclasses_in_quasybinary_relation;
 sc_addr keynode_question_search_links_of_relation_connected_with_element;
 sc_addr keynode_question_search_full_pattern;
+
+sc_addr keynode_ui_main_menu;
+sc_addr keynode_ui_user_command_class_atom;
+sc_addr keynode_nrel_ui_commands_decomposition;
 
 sc_addr keynode_question;
 sc_addr keynode_question_initiated;
@@ -55,6 +61,8 @@ sc_addr keynode_languages;
 sc_addr keynode_rrel_1;
 sc_addr keynode_rrel_2;
 
+const char keynode_question_search_atomic_commands_str[] = "question_search_atomic_commands";
+
 const char keynode_question_all_output_const_pos_arc_str[] = "question_search_all_output_const_pos_arcs";
 const char keynode_question_all_input_const_pos_arc_str[] = "question_search_all_input_const_pos_arcs";
 const char keynode_question_all_output_const_pos_arc_with_rel_str[] =
@@ -73,6 +81,10 @@ const char keynode_question_search_all_superclasses_in_quasybinary_relation_str[
     "question_search_all_superclasses_in_quasybinary_relation";
 const char keynode_question_search_links_of_relation_connected_with_element_str[] =
     "question_search_links_of_relation_connected_with_element";
+
+const char keynode_ui_main_menu_str[] = "keynode_ui_main_menu";
+const char keynode_ui_user_command_class_atom_str[] = "keynode_ui_user_command_class_atom";
+const char keynode_nrel_ui_commands_decomposition_str[] = "keynode_nrel_ui_commands_decomposition";
 
 const char keynode_question_initiated_str[] = "question_initiated";
 const char keynode_question_str[] = "question";
@@ -101,6 +113,8 @@ const char keynode_languages_str[] = "languages";
 
 sc_result search_keynodes_initialize(const sc_memory_context * ctx)
 {
+  RESOLVE_KEYNODE(ctx, keynode_question_search_atomic_commands);
+
   RESOLVE_KEYNODE(ctx, keynode_question_all_output_const_pos_arc);
   RESOLVE_KEYNODE(ctx, keynode_question_all_input_const_pos_arc);
   RESOLVE_KEYNODE(ctx, keynode_question_all_output_const_pos_arc_with_rel);
@@ -114,6 +128,10 @@ sc_result search_keynodes_initialize(const sc_memory_context * ctx)
   RESOLVE_KEYNODE(ctx, keynode_question_search_all_superclasses_in_quasybinary_relation);
   RESOLVE_KEYNODE(ctx, keynode_question_search_links_of_relation_connected_with_element);
   RESOLVE_KEYNODE(ctx, keynode_question_search_full_pattern);
+
+  RESOLVE_KEYNODE(ctx, keynode_ui_main_menu);
+  RESOLVE_KEYNODE(ctx, keynode_ui_user_command_class_atom);
+  RESOLVE_KEYNODE(ctx, keynode_nrel_ui_commands_decomposition);
 
   RESOLVE_KEYNODE(ctx, keynode_question_initiated);
   RESOLVE_KEYNODE(ctx, keynode_question);
