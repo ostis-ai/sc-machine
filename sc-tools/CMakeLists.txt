@@ -5,6 +5,7 @@ add_subdirectory(codegen)
 add_subdirectory(sc-config-utils)
 add_subdirectory(sc-server)
 add_subdirectory(sc-builder)
+add_subdirectory(sc-component-manager)
 
 add_custom_target(sc-tools)
 

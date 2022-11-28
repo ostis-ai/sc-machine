@@ -5,3 +5,7 @@
 [submodule "benchmark"]
 	path = thirdparty/benchmark
 	url = https://github.com/google/benchmark.git
+
+[submodule "sc-component-manager"]
+	path = sc-tools/sc-component-manager
+	url = https://github.com/ostis-ai/sc-component-manager
