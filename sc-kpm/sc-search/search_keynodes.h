@@ -31,7 +31,7 @@ extern sc_addr keynode_nrel_ui_commands_decomposition;
 extern sc_addr keynode_sc_definition;
 extern sc_addr keynode_sc_explanation;
 extern sc_addr keynode_sc_note;
-extern sc_addr keynode_nrel_sc_text_translation_value;
+extern sc_addr keynode_nrel_sc_text_translation;
 
 extern sc_addr keynode_nrel_answer;
 extern sc_addr keynode_quasybinary_relation;
