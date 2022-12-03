@@ -76,7 +76,7 @@ sc_result agent_search_tooltip(const sc_event * event, sc_addr arg)
     connect_answer_to_question(question, answer);
     finish_question(question);
 
-    printf("start agent_search_tooltip\n");
+    printf("finish agent_search_tooltip\n");
     return SC_RESULT_OK;
 }
 
@@ -97,7 +97,6 @@ sc_bool find_tooltip(sc_addr node, sc_addr lang, sc_addr class, sc_addr * toolti
 
   while (sc_iterator5_next(it_over_key_sc_elements))
   {
-    printf("it_over_key_sc_elements");
     key_sc_element = sc_iterator5_value(it_over_key_sc_elements, 0);
     if (sc_helper_check_arc(
         s_default_ctx,
@@ -112,11 +111,9 @@ sc_bool find_tooltip(sc_addr node, sc_addr lang, sc_addr class, sc_addr * toolti
           sc_type_arc_common | sc_type_const,
           key_sc_element,
           sc_type_arc_pos_const_perm,
-          keynode_nrel_sc_text_translation_value
-          );
+          keynode_nrel_sc_text_translation);
       while (sc_iterator5_next(it_over_sc_text_translation_values))
       {
-        printf("it_over_sc_text_translation_values");
         sc_text_translation_value = sc_iterator5_value(it_over_sc_text_translation_values, 0);
         it_over_text_links = sc_iterator3_f_a_a_new(
             s_default_ctx,
@@ -126,7 +123,6 @@ sc_bool find_tooltip(sc_addr node, sc_addr lang, sc_addr class, sc_addr * toolti
             );
         while (sc_iterator3_next(it_over_text_links))
         {
-          printf("it_over_text_links");
           if (sc_helper_check_arc(
                   s_default_ctx,
                   lang,

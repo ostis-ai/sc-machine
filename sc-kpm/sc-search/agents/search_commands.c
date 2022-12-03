@@ -6,16 +6,22 @@
 
 #include "sc-core/sc_helper.h"
 #include "sc-core/sc_memory_headers.h"
+#include <sc-core/sc-store/sc_stream_private.h>
 
+#include <stdio.h>
+#include <stdlib.h>
 
 void process_command_decompositions(sc_addr command, sc_addr answer, sc_addr checked_commands);
 
 sc_result agent_search_atomic_commands(const sc_event * event, sc_addr arg)
 {
+  printf("start agent_search_atomic_commands\n");
   sc_addr question, answer, checked_commands;
 
   if (!sc_memory_get_arc_end(s_default_ctx, arg, &question))
     return SC_RESULT_ERROR_INVALID_PARAMS;
+
+  printf("agent_search_atomic_commands arg is question\n");
 
   if (sc_helper_check_arc(
           s_default_ctx,
@@ -25,22 +31,24 @@ sc_result agent_search_atomic_commands(const sc_event * event, sc_addr arg)
           ) == SC_FALSE)
     return SC_RESULT_ERROR_INVALID_TYPE;
 
-  answer = create_answer_node();
+  printf("agent_search_atomic_commands question is correct\n");
 
+  answer = create_answer_node();
   checked_commands = sc_memory_node_new(s_default_ctx, sc_type_node | sc_type_const);
 
   process_command_decompositions(keynode_ui_main_menu, answer, checked_commands);
-
   sc_memory_element_free(s_default_ctx, checked_commands);
 
   connect_answer_to_question(question, answer);
   finish_question(question);
 
+  printf("finish agent_search_atomic_commands\n");
   return SC_RESULT_OK;
 }
 
 void process_command_decompositions(sc_addr command, sc_addr answer, sc_addr checked_commands)
 {
+  sc_memory_arc_new(s_default_ctx, sc_type_arc_pos_const_perm, checked_commands, command);
   sc_iterator3 *it_over_decomposition_elements;
   sc_iterator5 *it_over_command_decompositions;
 
@@ -60,27 +68,28 @@ void process_command_decompositions(sc_addr command, sc_addr answer, sc_addr che
         sc_iterator5_value(it_over_command_decompositions, 0),
         sc_type_arc_pos_const_perm,
         sc_type_node | sc_type_const
-        );
+    );
 
     while (sc_iterator3_next(it_over_decomposition_elements) == SC_TRUE)
     {
       sc_addr command_child = sc_iterator3_value(it_over_decomposition_elements, 2);
-      if (sc_helper_check_arc(
-              s_default_ctx,
-              keynode_ui_user_command_class_atom,
-              command_child,
-              sc_type_arc_pos_const_perm
-              ) == SC_TRUE)
-        appendIntoAnswer(answer, command_child);
-
-      if (sc_helper_check_arc(
-              s_default_ctx,
-              checked_commands,
-              command_child,
-              sc_type_arc_pos_const_perm
-              ) == SC_FALSE)
+      sc_bool command_child_is_atom = sc_helper_check_arc(
+                                          s_default_ctx,
+                                          keynode_ui_user_command_class_atom,
+                                          command_child,
+                                          sc_type_arc_pos_const_perm) == SC_TRUE;
+      if (command_child_is_atom)
       {
-        sc_memory_arc_new(s_default_ctx, sc_type_arc_pos_const_perm, checked_commands, command_child);
+        appendIntoAnswer(answer, command_child);
+      }
+
+      sc_bool child_command_wasnt_checked = sc_helper_check_arc(
+                                                s_default_ctx,
+                                                checked_commands,
+                                                command_child,
+                                                sc_type_arc_pos_const_perm) == SC_FALSE;
+      if (child_command_wasnt_checked)
+      {
         process_command_decompositions(command_child, answer, checked_commands);
       }
     }
