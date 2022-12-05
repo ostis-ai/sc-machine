@@ -40,7 +40,7 @@ public:
 
       static const size_t kScoreEdge = 5;
       static const size_t kScoreOther = 2;
-      static const size_t kScorePoweredEdge = 1;
+      static const size_t kScorePoweredElement = 1;
 
       auto const CalculateScore = [this](ScTemplateConstr3 const & constr) {
         uint8_t score = 0;
@@ -56,9 +56,10 @@ public:
           for (auto const & other : m_template.m_constructions)
           {
             auto const & otherValues = other.GetValues();
-            if (values[1].m_replacementName == otherValues[2].m_replacementName)
+            if (values[1].m_replacementName == otherValues[2].m_replacementName ||
+                values[2].m_replacementName == otherValues[0].m_replacementName)
             {
-              score += kScorePoweredEdge;
+              score += kScorePoweredElement;
               break;
             }
           }
@@ -94,14 +95,6 @@ public:
       std::sort(preCache.begin(), preCache.end(), [&](size_t a, size_t b) {
         return (tripleScores[a] > tripleScores[b]);
       });
-
-      for (unsigned char & tripleScore : tripleScores)
-      {
-        if (tripleScore == kScorePoweredEdge)
-        {
-          tripleScore = 0;
-        }
-      }
 
       // now we need to append triples, in order, when previous resolve replacement for a next one
       ScTemplate::ProcessOrder & cache = m_template.m_searchCachedOrder;
