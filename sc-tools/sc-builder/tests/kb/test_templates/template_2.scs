@@ -1,0 +1,10 @@
+@template = [*
+    message _=> nrel_test_relation:: _set;;
+    _set _-> _structure;;
+    _structure _-> _test_class;;
+*];;
+@template => nrel_system_identifier: [test_template_small];;
+
+message => nrel_test_relation: ..set1;;
+..set1 -> ..struct1;;
+..struct1 -> ..class1;;
