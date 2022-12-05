@@ -45,3 +45,28 @@ TEST_F(ScBuilderTest, Smoke)
   ScTemplateSearchResult res;
   EXPECT_TRUE(ctx.HelperSearchTemplate(templ, res));
 }
+
+TEST_F(ScBuilderTest, TemplateWithVarTriplesBig)
+{
+  ScAddr checkTemplateStructure = m_ctx->HelperFindBySystemIdtf("test_template_big");
+
+  ScTemplate checkTemplate;
+  EXPECT_TRUE(m_ctx->HelperBuildTemplate(checkTemplate, checkTemplateStructure));
+
+  ScTemplateGenResult genResult;
+  EXPECT_TRUE(m_ctx->HelperGenTemplate(checkTemplate, genResult));
+
+  ScTemplateSearchResult searchResult;
+  EXPECT_TRUE(m_ctx->HelperSearchTemplate(checkTemplate, searchResult));
+}
+
+TEST_F(ScBuilderTest, TemplateWithVarTriplesSmall)
+{
+  ScAddr checkTemplateStructure = m_ctx->HelperFindBySystemIdtf("test_template_small");
+
+  ScTemplate checkTemplate;
+  EXPECT_TRUE(m_ctx->HelperBuildTemplate(checkTemplate, checkTemplateStructure));
+
+  ScTemplateSearchResult searchResult;
+  EXPECT_TRUE(m_ctx->HelperSearchTemplate(checkTemplate, searchResult));
+}
