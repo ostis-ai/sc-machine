@@ -39,7 +39,34 @@ public:
         preCache[i] = i;
 
       static const size_t kScoreEdge = 5;
-      static const size_t kScoreOther = 1;
+      static const size_t kScoreOther = 2;
+      static const size_t kScorePoweredElement = 1;
+
+      auto const CalculateScore = [this](ScTemplateConstr3 const & constr) {
+        uint8_t score = 0;
+        auto const & values = constr.GetValues();
+        if (values[1].IsAddr() && values[0].IsAssign() && values[2].IsAssign())
+          score += kScoreEdge;
+        else if (values[0].IsAddr() && values[1].IsAssign() && values[2].IsAddr())
+          score += kScoreOther * 2;  // should be a sum of (f_a_a and a_a_f)
+        else if (values[0].IsAddr() || values[2].IsAddr())
+          score += kScoreOther;
+        else
+        {
+          for (auto const & other : m_template.m_constructions)
+          {
+            auto const & otherValues = other.GetValues();
+            if (values[1].m_replacementName == otherValues[2].m_replacementName ||
+                values[2].m_replacementName == otherValues[0].m_replacementName)
+            {
+              score += kScorePoweredElement;
+              break;
+            }
+          }
+        }
+
+        return score;
+      };
 
       /** First of all we need to calculate scores for all triples
        * (more scores - should be search first).
@@ -50,18 +77,6 @@ public:
       for (size_t i = 0; i < m_template.m_constructions.size(); ++i)
       {
         ScTemplateConstr3 const & triple = m_template.m_constructions[i];
-        auto const CalculateScore = [](ScTemplateConstr3 const & constr) {
-          uint8_t score = 0;
-          auto const & values = constr.GetValues();
-          if (values[1].IsAddr() && values[0].IsAssign() && values[2].IsAssign())
-            score += kScoreEdge;
-          else if (values[0].IsAddr() && values[1].IsAssign() && values[2].IsAddr())
-            score += kScoreOther * 2;  // should be a sum of (f_a_a and a_a_f)
-          else if (values[0].IsAddr() || values[2].IsAddr())
-            score += kScoreOther;
-
-          return score;
-        };
         tripleScores[i] = CalculateScore(triple);
         // doesn't add edges into depend map
         auto const TryAppendRepl = [&](ScTemplateItemValue const & value, size_t idx) {
@@ -70,7 +85,7 @@ public:
             replDependMap[value.m_replacementName].push_back((i << 2) + idx);
         };
 
-        // do not use loop, to make it faster (not all compilators will make a linear code)
+        // do not use loop, to make it faster (not all compilers will make a linear code)
         TryAppendRepl(triple.GetValues()[0], 0);
         TryAppendRepl(triple.GetValues()[1], 1);
         TryAppendRepl(triple.GetValues()[2], 2);
