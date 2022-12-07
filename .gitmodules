@@ -8,4 +8,4 @@
 
 [submodule "sc-component-manager"]
 	path = sc-tools/sc-component-manager
-	url = https://github.com/ostis-ai/sc-component-manager.git
+	url = https://github.com/ostis-ai/sc-component-manager
