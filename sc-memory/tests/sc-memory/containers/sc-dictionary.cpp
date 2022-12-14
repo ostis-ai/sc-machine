@@ -100,7 +100,7 @@ TEST_F(ScDictionaryTest, smoke)
   sc_dictionary_destroy(dictionary, sc_dictionary_node_destroy);
 }
 
-TEST_F(ScDictionaryTest, user_check)
+TEST_F(ScDictionaryTest, CorrespondenceCheck)
 {
   sc_dictionary * dictionary = nullptr;
   EXPECT_TRUE(sc_dictionary_initialize(
