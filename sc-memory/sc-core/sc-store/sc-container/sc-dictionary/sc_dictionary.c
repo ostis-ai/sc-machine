@@ -61,7 +61,6 @@ void sc_dictionary_node_destroy(sc_dictionary_node * node, void ** args)
 {
   (void)args;
 
-  sc_list_clear(node->data_list);
   sc_list_destroy(node->data_list);
   node->data_list = null_ptr;
 
@@ -132,7 +131,7 @@ sc_dictionary_node * sc_dictionary_append_to_node(sc_dictionary * dictionary, co
         sc_dictionary_node * temp = node->next[num];
 
         temp->offset_size = j;
-        temp->offset = moving->offset;
+        sc_str_cpy(temp->offset, moving->offset, temp->offset_size);
       }
 
       node = node->next[num];
@@ -143,12 +142,14 @@ sc_dictionary_node * sc_dictionary_append_to_node(sc_dictionary * dictionary, co
         sc_char * offset_ptr = &*(moving->offset + j);
 
         dictionary->char_to_int(*offset_ptr, &num, &node->mask);
+        sc_char * moving_offset_copy = moving->offset;
         node->next[num] = &*moving;
 
         sc_dictionary_node * temp = node->next[num];
 
         temp->offset_size = saved_offset_size - j;
         sc_str_cpy(temp->offset, offset_ptr, temp->offset_size);
+        sc_mem_free(moving_offset_copy);
       }
     }
     else
@@ -174,9 +175,7 @@ sc_dictionary_node * sc_dictionary_append(
   if (node->data_list == null_ptr)
     sc_list_init(&node->data_list);
 
-  void * copy = sc_mem_new(void, sizeof(value));
-  *(void **)copy = *(void **)value;
-  sc_list_push_back(node->data_list, copy);
+  sc_list_push_back(node->data_list, value);
   return node;
 }
 
@@ -242,7 +241,9 @@ sc_dictionary_node * sc_dictionary_get_last_node_from_node(
   while (i < string_size)
   {
     sc_dictionary_node * next = _sc_dictionary_get_next_node(dictionary, node, sc_string[i]);
-    if (SC_DICTIONARY_NODE_IS_VALID(next))
+    sc_char * copy = sc_string + i;
+    if (SC_DICTIONARY_NODE_IS_VALID(next)
+      && (sc_str_has_prefix(copy, next->offset) || strcmp(copy, next->offset) == 0))
     {
       node = next;
       i += node->offset_size;
@@ -252,17 +253,9 @@ sc_dictionary_node * sc_dictionary_get_last_node_from_node(
   }
 
   // check suffixes matching
-  if (i == string_size)
+  if (i == string_size && strcmp(node->offset, sc_string + (string_size - node->offset_size)) == 0)
   {
-    sc_char * str = sc_mem_new(sc_char, node->offset_size + 1);
-    sc_mem_cpy(str, node->offset, node->offset_size);
-
-    if (strcmp(str, sc_string + (string_size - node->offset_size)) == 0)
-    {
-      sc_mem_free(str);
-      return node;
-    }
-    sc_mem_free(str);
+    return node;
   }
 
   return null_ptr;
