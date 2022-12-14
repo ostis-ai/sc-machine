@@ -183,20 +183,21 @@ sc_dictionary_node * sc_dictionary_remove_from_node(
     sc_dictionary * dictionary,
     sc_dictionary_node * node,
     const sc_char * sc_string,
-    sc_uint32 index)
+    sc_uint32 i)
 {
   // check prefixes matching
   sc_uint32 string_size = strlen(sc_string);
 
-  if (index < string_size)
+  if (i < string_size)
   {
     sc_uint8 num = 0;
-    dictionary->char_to_int(sc_string[index], &num, &node->mask);
-    if (SC_DICTIONARY_NODE_IS_VALID(node->next[num]))
+    dictionary->char_to_int(sc_string[i], &num, &node->mask);
+    sc_dictionary_node * next = node->next[num];
+    if (SC_DICTIONARY_NODE_IS_VALID(node->next[num]) &&
+        (sc_str_has_prefix(sc_string + i, next->offset) || strcmp(sc_string + i, next->offset) == 0))
     {
-      sc_dictionary_node * next = node->next[num];
       sc_dictionary_node * removable =
-          sc_dictionary_remove_from_node(dictionary, next, sc_string, index + next->offset_size);
+          sc_dictionary_remove_from_node(dictionary, next, sc_string, i + next->offset_size);
 
       if (SC_DICTIONARY_NODE_IS_VALID(next))
         return removable;
@@ -204,10 +205,9 @@ sc_dictionary_node * sc_dictionary_remove_from_node(
   }
 
   // check suffixes matching
-  if (index == string_size)
+  if (i == string_size && strcmp(node->offset, sc_string + (string_size - node->offset_size)) == 0)
   {
-    if (strcmp(node->offset, sc_string + (string_size - node->offset_size)) == 0)
-      return node;
+    return node;
   }
 
   return null_ptr;
@@ -241,9 +241,8 @@ sc_dictionary_node * sc_dictionary_get_last_node_from_node(
   while (i < string_size)
   {
     sc_dictionary_node * next = _sc_dictionary_get_next_node(dictionary, node, sc_string[i]);
-    sc_char * copy = sc_string + i;
-    if (SC_DICTIONARY_NODE_IS_VALID(next)
-      && (sc_str_has_prefix(copy, next->offset) || strcmp(copy, next->offset) == 0))
+    if (SC_DICTIONARY_NODE_IS_VALID(next) &&
+        (sc_str_has_prefix(sc_string + i, next->offset) || strcmp(sc_string + i, next->offset) == 0))
     {
       node = next;
       i += node->offset_size;
