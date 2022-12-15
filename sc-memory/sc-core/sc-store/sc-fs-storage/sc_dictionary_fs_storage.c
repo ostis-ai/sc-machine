@@ -380,7 +380,9 @@ void sc_dictionary_fs_storage_get_sc_link_content_ext(
 sc_bool sc_dictionary_fs_storage_remove_sc_link_content(sc_element * element, sc_addr addr)
 {
   sc_char * hash_str = sc_addr_to_str(addr);
+  sc_link_content * content = sc_dictionary_fs_storage_get_sc_link_content(addr);
   sc_bool result = sc_dictionary_remove(strings_dictionary, hash_str);
+  result &= sc_dictionary_remove(addrs_hashes_dictionary, content->sc_string);
   sc_mem_free(hash_str);
   return result;
 }
