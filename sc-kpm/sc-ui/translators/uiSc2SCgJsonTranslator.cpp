@@ -91,7 +91,7 @@ void uiSc2SCgJsonTranslator::runImpl()
 // ------------------------------------------------------------------------------
 sc_result uiSc2SCgJsonTranslator::ui_translate_sc2scg_json(const sc_event * event, sc_addr arg)
 {
-  sc_addr cmd_addr, input_addr, format_addr;
+  sc_addr cmd_addr, input_addr, format_addr, lang_addr;
 
   if (sc_memory_get_arc_end(s_default_ctx, arg, &cmd_addr) != SC_RESULT_OK)
     return SC_RESULT_ERROR;
@@ -99,13 +99,13 @@ sc_result uiSc2SCgJsonTranslator::ui_translate_sc2scg_json(const sc_event * even
   if (ui_check_cmd_type(cmd_addr, keynode_command_translate_from_sc) != SC_RESULT_OK)
     return SC_RESULT_ERROR;
 
-  if (ui_translate_command_resolve_arguments(cmd_addr, &format_addr, &input_addr) != SC_RESULT_OK)
+  if (ui_translate_command_resolve_arguments(cmd_addr, &format_addr, &input_addr, &lang_addr) != SC_RESULT_OK)
     return SC_RESULT_ERROR;
 
   if (format_addr == keynode_format_scg_json)
   {
     uiSc2SCgJsonTranslator translator;
-    translator.translate(input_addr, format_addr);
+    translator.translate(input_addr, format_addr, lang_addr);
   }
 
   return SC_RESULT_OK;

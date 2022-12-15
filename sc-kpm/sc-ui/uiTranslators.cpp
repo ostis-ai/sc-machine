@@ -4,6 +4,7 @@
  * (See accompanying file COPYING.MIT or copy at http://opensource.org/licenses/MIT)
  */
 
+#include <iostream>
 #include "uiPrecompiled.h"
 #include "uiTranslators.h"
 #include "uiKeynodes.h"
@@ -46,14 +47,15 @@ void ui_shutdown_translators()
     sc_event_destroy(ui_translator_sc2scn_json_event);
 }
 
-sc_result ui_translate_command_resolve_arguments(sc_addr cmd_addr, sc_addr * output_fmt_addr, sc_addr * source_addr)
+sc_result ui_translate_command_resolve_arguments(
+  sc_addr cmd_addr, sc_addr * output_fmt_addr, sc_addr * source_addr, sc_addr * lang_addr)
 {
-  sc_iterator5 * it = (sc_iterator5 *)null_ptr;
   sc_bool fmt_found = SC_FALSE;
   sc_bool source_found = SC_FALSE;
+  sc_bool lang_found = SC_FALSE;
 
   // resolve output format
-  it = sc_iterator5_f_a_a_a_f_new(
+  sc_iterator5 * it = sc_iterator5_f_a_a_a_f_new(
       s_default_ctx,
       cmd_addr,
       sc_type_arc_pos_const_perm,
@@ -92,20 +94,75 @@ sc_result ui_translate_command_resolve_arguments(sc_addr cmd_addr, sc_addr * out
   if (source_found == SC_FALSE)
     return SC_RESULT_ERROR;
 
+  // resolve language
+  it = sc_iterator5_f_a_a_a_f_new(
+    s_default_ctx,
+    cmd_addr,
+    sc_type_arc_pos_const_perm,
+    sc_type_node | sc_type_const,
+    sc_type_arc_pos_const_perm,
+    keynode_rrel_user_lang);
+
+  while (sc_iterator5_next(it) == SC_TRUE)
+  {
+    *lang_addr = sc_iterator5_value(it, 2);
+    lang_found = SC_TRUE;
+  }
+
+  sc_iterator5_free(it);
+
+  if (lang_found == SC_FALSE)
+    return SC_RESULT_ERROR;
+
   return SC_RESULT_OK;
 }
 
-sc_bool ui_translate_resolve_system_identifier(sc_addr el, String & sys_idtf)
+sc_result ui_get_main_identifier_link(sc_memory_context * ctx, sc_addr el, sc_addr lang_addr, sc_addr * main_idtf_addr)
+{
+  sc_result result = SC_RESULT_ERROR;
+
+  sc_iterator5 * it5 = sc_iterator5_f_a_a_a_f_new(
+    ctx,
+    el,
+    sc_type_arc_common | sc_type_const,
+    sc_type_link,
+    sc_type_arc_pos_const_perm,
+    keynode_nrel_main_idtf
+  );
+  while (sc_iterator5_next(it5) == SC_TRUE)
+  {
+    sc_addr link_addr = sc_iterator5_value(it5, 2);
+    sc_iterator3 * it3 = sc_iterator3_f_a_f_new(
+      ctx,
+      lang_addr,
+      sc_type_arc_pos_const_perm,
+      link_addr
+    );
+
+    if (sc_iterator3_next(it3) == SC_TRUE)
+    {
+      *main_idtf_addr = link_addr;
+      result = SC_RESULT_OK;
+    }
+  }
+
+  sc_iterator5_free(it5);
+
+  return result;
+}
+
+sc_bool ui_translate_get_identifier(sc_addr el, sc_addr lang_addr, String & sys_idtf)
 {
   sc_addr sys_idtf_addr;
-  sc_stream * idtf_stream = 0;
+  sc_stream * idtf_stream = nullptr;
   sc_uint32 idtf_length = 0;
   sc_uint32 read_bytes = 0;
   sc_bool result = SC_FALSE;
   sc_char buffer[32];
 
   sys_idtf = "";
-  if (sc_helper_get_system_identifier_link(s_default_ctx, el, &sys_idtf_addr) == SC_RESULT_OK)
+  if (ui_get_main_identifier_link(s_default_ctx, el, lang_addr, &sys_idtf_addr) == SC_RESULT_OK
+    || sc_helper_get_system_identifier_link(s_default_ctx, el, &sys_idtf_addr) == SC_RESULT_OK)
   {
     if (sc_memory_get_link_content(s_default_ctx, sys_idtf_addr, &idtf_stream) == SC_RESULT_OK)
     {
@@ -123,10 +180,7 @@ sc_bool ui_translate_resolve_system_identifier(sc_addr el, String & sys_idtf)
 
   if (result == SC_FALSE)
   {
-    StringStream ss;
-
-    ss << el.seg << "_" << el.offset;
-    sys_idtf = ss.str();
+    sys_idtf = "...";
     return SC_FALSE;
   }
 

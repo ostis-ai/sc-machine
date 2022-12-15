@@ -25,8 +25,8 @@ protected:
   //! @copydoc uiTranslateFromSc::runImpl
   void runImpl();
 
-  //! Resolve system identifier for specified sc-addr
-  void resolveSystemIdentifier(const sc_addr & addr, String & idtf);
+  //! Get main or system identifier for specified sc-addr
+  void getIdentifier(const sc_addr & addr, const sc_addr & lang_addr, String & idtf);
 
 protected:
   //! Map of resolved system identifiers

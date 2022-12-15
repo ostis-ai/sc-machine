@@ -16,6 +16,7 @@ extern sc_addr keynode_user;
 extern sc_addr keynode_command_translate_from_sc;
 extern sc_addr keynode_nrel_user_answer_formats;
 extern sc_addr keynode_rrel_source_sc_construction;
+extern sc_addr keynode_rrel_user_lang;
 extern sc_addr keynode_rrel_output_format;
 
 extern sc_addr keynode_question_nrel_answer;
@@ -23,6 +24,8 @@ extern sc_addr keynode_question_finished;
 extern sc_addr keynode_nrel_authors;
 extern sc_addr keynode_nrel_translation;
 extern sc_addr keynode_nrel_format;
+extern sc_addr keynode_nrel_system_identifier;
+extern sc_addr keynode_nrel_main_idtf;
 
 extern sc_addr keynode_command_generate_instance;
 extern sc_addr keynode_command_initiated;

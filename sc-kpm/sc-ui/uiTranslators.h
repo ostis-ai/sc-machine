@@ -27,17 +27,19 @@ void ui_shutdown_translators();
  * @return If format and source construction resolved, then return SC_RESULT_OK;
  * otherwise return SC_RESULT_ERROR code
  */
-sc_result ui_translate_command_resolve_arguments(sc_addr cmd_addr, sc_addr * output_fmt_addr, sc_addr * source_addr);
+sc_result ui_translate_command_resolve_arguments(
+  sc_addr cmd_addr, sc_addr * output_fmt_addr, sc_addr * source_addr, sc_addr * lang_addr);
 
-/*! Resolve system identifier of specified sc-elmenet. This function
- * tries to find system identifier and return string, that represent it.
- * If it doesn't exist, then this function returns generated string "segment_offset"
+/*! Get identifier of specified sc-elmenet. This function
+ * tries to find main or system identifier and return string, that represent it.
+ * If it doesn't exist, then this function returns generated string "..."
  * based on sc-element
- * @param el sc-addr of sc-element ot resolve system identifier
+ * @param el sc-addr of sc-element of gotten identifier
+ * @param el sc-addr of sc-element of language
  * @param sys_idtf Reference to string that will contain result.
  * @return If system identifier was founeded, then return SC_TRUE. If it was generated,
  * then return SC_FALSE. If sys_idtf is null, then there are some errors in function.
  */
-sc_bool ui_translate_resolve_system_identifier(sc_addr el, String & sys_idtf);
+sc_bool ui_translate_get_identifier(sc_addr el, sc_addr lang_addr, String & sys_idtf);
 
 #endif  // _ui_translators_h_
