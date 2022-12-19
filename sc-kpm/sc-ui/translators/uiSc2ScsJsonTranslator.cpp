@@ -22,11 +22,9 @@ uiSc2ScsTranslator::~uiSc2ScsTranslator()
 
 void uiSc2ScsTranslator::runImpl()
 {
-  StringStream ss;
-  ss << "{";
-  ss << "\"keywords\" : [";
+  sc_json result;
 
-  bool first = true;
+  sc_json keywords = sc_json::array();
   // get command arguments (keywords)
   sc_iterator5 * it5 = sc_iterator5_a_a_f_a_f_new(
       s_default_ctx,
@@ -49,21 +47,20 @@ void uiSc2ScsTranslator::runImpl()
       sc_type type;
       sc_memory_get_element_type(s_default_ctx, addr, &type);
 
-      if (!first)
-        ss << ",";
-      else
-        first = false;
+      sc_json keyword;
+      keyword["addr"] = uiSc2ScsTranslator::buildId(addr);
+      keyword["type"] = type;
 
-      ss << "{ \"addr\": \"" << uiSc2ScsTranslator::buildId(addr) << "\", \"type\" : " << type << "}";
+      keywords.push_back(keyword);
     }
     sc_iterator3_free(it3);
   }
   sc_iterator5_free(it5);
 
-  ss << "], \"triples\": [";
+  result["keywords"] = keywords;
 
+  sc_json triples = sc_json::array();
   tScAddrSet constrAddrs;
-  first = true;
   // iterate all arcs and translate them
   auto const itEnd = mObjects.cend();
   for (auto it = mObjects.cbegin(); it != itEnd; ++it)
@@ -101,22 +98,20 @@ void uiSc2ScsTranslator::runImpl()
     else
       sc_memory_get_element_type(s_default_ctx, arc_end, &end_type);
 
-    if (!first)
-      ss << ", ";
-    else
-      first = false;
-
     constrAddrs.insert(arc_beg);
     constrAddrs.insert(arc_end);
 
-    ss << "[{ \"addr\": \"" << buildId(arc_beg) << "\", \"type\": " << beg_type << "}, ";
-    ss << "{ \"addr\": \"" << buildId(arc_addr) << "\", \"type\": " << arc_type << "}, ";
-    ss << "{ \"addr\": \"" << buildId(arc_end) << "\", \"type\": " << end_type << "}]";
+    sc_json triple = sc_json::array();
+    triple.push_back({ { "addr", buildId(arc_beg) }, { "type", beg_type } });
+    triple.push_back({ { "addr", buildId(arc_addr) }, { "type", arc_type } });
+    triple.push_back({ { "addr", buildId(arc_end) }, { "type", end_type } });
+
+    triples.push_back(triple);
   }
 
-  ss << "], \"identifiers\": {";
+  result["triples"] = triples;
 
-  first = SC_TRUE;
+  sc_json identifiers;
   auto constrItEnd = constrAddrs.cend();
   for (auto it = constrAddrs.cbegin(); it != constrItEnd; ++it)
   {
@@ -124,16 +119,12 @@ void uiSc2ScsTranslator::runImpl()
     String idtf;
     getIdentifier(addr, mOutputLanguageAddr, idtf);
 
-    if (!first)
-      ss << ", ";
-    else
-      first = false;
-
-    ss << "\"" << buildId(*it) << "\": \"" << idtf << "\"";
+    identifiers[buildId(*it)] = idtf;
   }
 
-  ss << "}}";
-  mOutputData = ss.str();
+  result["identifiers"] = identifiers;
+
+  mOutputData = result.dump();
 }
 
 void uiSc2ScsTranslator::getIdentifier(const sc_addr & addr, const sc_addr & lang_addr, String & idtf)

@@ -30,6 +30,8 @@ struct _sc_addr_hash {
   }
 };
 
+#include "nlohmann/json.hpp"
+
 typedef std::list<sc_addr> tScAddrList;
 typedef std::vector<sc_addr> tScAddrVector;
 typedef std::map<sc_addr, sc_type> tScAddrToScTypeMap;
@@ -38,6 +40,8 @@ typedef std::pair<sc_addr, sc_addr> tScAddrPair;
 typedef std::list<tScAddrPair> tScAddrPairList;
 typedef std::map<String, String> tStringStringMap;
 typedef std::unordered_set<sc_addr, _sc_addr_hash> tScAddrSet;
+
+typedef nlohmann::json sc_json;
 
 // --- operators ---
 bool operator<(const sc_addr & addr1, const sc_addr & addr2);
