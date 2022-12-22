@@ -19,7 +19,7 @@ sudo add-apt-repository -y universe
 sudo apt-get update
 packagelist_runtime=(
     file
-    libcurl4
+    curl
     libglib2.0-dev
     libboost-system-dev
     libboost-filesystem-dev
@@ -76,6 +76,7 @@ while [ "$1" != "" ]; do
 done
 
 sudo apt-get install -y --no-install-recommends "${packages[@]}"
+sudo apt autoremove
 
 pip3 install wheel setuptools
 pip3 install -r "${APP_ROOT_PATH}"/requirements.txt
