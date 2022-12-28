@@ -4,7 +4,6 @@
  * (See accompanying file COPYING.MIT or copy at http://opensource.org/licenses/MIT)
  */
 
-#include <iostream>
 #include "uiPrecompiled.h"
 #include "uiTranslators.h"
 #include "uiKeynodes.h"
@@ -55,7 +54,7 @@ sc_result ui_translate_command_resolve_arguments(
 {
   sc_bool fmt_found = SC_FALSE;
   sc_bool source_found = SC_FALSE;
-  sc_bool lang_found = SC_FALSE;
+  SC_ADDR_MAKE_EMPTY(*lang_addr);
 
   // resolve output format
   sc_iterator5 * it = sc_iterator5_f_a_a_a_f_new(
@@ -109,13 +108,9 @@ sc_result ui_translate_command_resolve_arguments(
   while (sc_iterator5_next(it) == SC_TRUE)
   {
     *lang_addr = sc_iterator5_value(it, 2);
-    lang_found = SC_TRUE;
   }
 
   sc_iterator5_free(it);
-
-  if (lang_found == SC_FALSE)
-    return SC_RESULT_ERROR;
 
   return SC_RESULT_OK;
 }

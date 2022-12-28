@@ -111,18 +111,24 @@ void uiSc2ScsTranslator::runImpl()
 
   result["triples"] = triples;
 
-  sc_json identifiers;
-  auto constrItEnd = constrAddrs.cend();
-  for (auto it = constrAddrs.cbegin(); it != constrItEnd; ++it)
+  if (SC_ADDR_IS_EMPTY(mOutputLanguageAddr))
   {
-    const sc_addr addr = *it;
-    String idtf;
-    getIdentifier(addr, mOutputLanguageAddr, idtf);
-
-    identifiers[buildId(*it)] = idtf;
+    result["identifiers"] = sc_json::array();
   }
+  else
+  {
+    sc_json identifiers;
+    auto constrItEnd = constrAddrs.cend();
+    for (auto it = constrAddrs.cbegin(); it != constrItEnd; ++it) {
+      const sc_addr addr = *it;
+      String idtf;
+      getIdentifier(addr, mOutputLanguageAddr, idtf);
 
-  result["identifiers"] = identifiers;
+      identifiers[buildId(*it)] = idtf;
+    }
+
+    result["identifiers"] = identifiers;
+  }
 
   mOutputData = result.dump();
 }

@@ -32,7 +32,7 @@ struct _sc_addr_hash
   }
 };
 
-#include "nlohmann/json.hpp"
+#include <nlohmann/json.hpp>
 
 typedef std::list<sc_addr> tScAddrList;
 typedef std::vector<sc_addr> tScAddrVector;
