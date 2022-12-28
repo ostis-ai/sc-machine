@@ -28,7 +28,10 @@ void ui_shutdown_translators();
  * otherwise return SC_RESULT_ERROR code
  */
 sc_result ui_translate_command_resolve_arguments(
-  sc_addr cmd_addr, sc_addr * output_fmt_addr, sc_addr * source_addr, sc_addr * lang_addr);
+    sc_addr cmd_addr,
+    sc_addr * output_fmt_addr,
+    sc_addr * source_addr,
+    sc_addr * lang_addr);
 
 /*! Get identifier of specified sc-elmenet. This function
  * tries to find main or system identifier and return string, that represent it.

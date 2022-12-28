@@ -27,8 +27,8 @@ void uiTranslateFromSc::translate(const sc_addr & input_addr, const sc_addr & fo
   runImpl();
 
   // write into sc-link
-  sc_stream * result_data_stream
-    = sc_stream_memory_new(mOutputData.c_str(), (sc_uint)mOutputData.size(), SC_STREAM_FLAG_READ, SC_FALSE);
+  sc_stream * result_data_stream =
+      sc_stream_memory_new(mOutputData.c_str(), (sc_uint)mOutputData.size(), SC_STREAM_FLAG_READ, SC_FALSE);
 
   sc_addr result_addr = sc_memory_link_new(s_default_ctx);
   sc_memory_set_link_content(s_default_ctx, result_addr, result_data_stream);

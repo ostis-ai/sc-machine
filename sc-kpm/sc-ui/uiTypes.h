@@ -24,8 +24,10 @@ extern "C"
 typedef std::string String;
 typedef std::stringstream StringStream;
 
-struct _sc_addr_hash {
-  auto operator()(const sc_addr & addr) const -> size_t {
+struct _sc_addr_hash
+{
+  auto operator()(const sc_addr & addr) const -> size_t
+  {
     return SC_ADDR_LOCAL_TO_INT(addr);
   }
 };

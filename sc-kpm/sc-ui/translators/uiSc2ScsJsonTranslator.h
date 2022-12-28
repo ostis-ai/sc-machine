@@ -31,7 +31,7 @@ protected:
 protected:
   //! Map of resolved system identifiers
   typedef std::map<sc_addr, String> tSystemIdentifiersMap;
-  tSystemIdentifiersMap mSystemIdentifiers;
+  tSystemIdentifiersMap mIdentifiers;
 };
 
 #endif

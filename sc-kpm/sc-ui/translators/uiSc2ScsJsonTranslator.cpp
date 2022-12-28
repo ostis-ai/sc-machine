@@ -102,9 +102,9 @@ void uiSc2ScsTranslator::runImpl()
     constrAddrs.insert(arc_end);
 
     sc_json triple = sc_json::array();
-    triple.push_back({ { "addr", buildId(arc_beg) }, { "type", beg_type } });
-    triple.push_back({ { "addr", buildId(arc_addr) }, { "type", arc_type } });
-    triple.push_back({ { "addr", buildId(arc_end) }, { "type", end_type } });
+    triple.push_back({{"addr", buildId(arc_beg)}, {"type", beg_type}});
+    triple.push_back({{"addr", buildId(arc_addr)}, {"type", arc_type}});
+    triple.push_back({{"addr", buildId(arc_end)}, {"type", end_type}});
 
     triples.push_back(triple);
   }
@@ -129,15 +129,15 @@ void uiSc2ScsTranslator::runImpl()
 
 void uiSc2ScsTranslator::getIdentifier(const sc_addr & addr, const sc_addr & lang_addr, String & idtf)
 {
-  auto it = mSystemIdentifiers.find(addr);
-  if (it != mSystemIdentifiers.end())
+  auto it = mIdentifiers.find(addr);
+  if (it != mIdentifiers.end())
   {
     idtf = it->second;
     return;
   }
 
   ui_translate_get_identifier(addr, lang_addr, idtf);
-  mSystemIdentifiers[addr] = idtf;
+  mIdentifiers[addr] = idtf;
 }
 
 // -------------------------------------------------------
