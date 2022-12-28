@@ -122,9 +122,16 @@ void uiSc2ScsTranslator::runImpl()
     for (auto it = constrAddrs.cbegin(); it != constrItEnd; ++it) {
       const sc_addr addr = *it;
       String idtf;
-      getIdentifier(addr, mOutputLanguageAddr, idtf);
+      bool idtf_exists = getIdentifier(addr, mOutputLanguageAddr, idtf);
 
-      identifiers[buildId(*it)] = idtf;
+      if (idtf_exists)
+      {
+        identifiers[buildId(*it)] = idtf;
+      }
+      else
+      {
+        identifiers[buildId(*it)] = sc_json();
+      }
     }
 
     result["identifiers"] = identifiers;
@@ -133,17 +140,23 @@ void uiSc2ScsTranslator::runImpl()
   mOutputData = result.dump();
 }
 
-void uiSc2ScsTranslator::getIdentifier(const sc_addr & addr, const sc_addr & lang_addr, String & idtf)
+bool uiSc2ScsTranslator::getIdentifier(const sc_addr & addr, const sc_addr & lang_addr, String & idtf)
 {
   auto it = mIdentifiers.find(addr);
   if (it != mIdentifiers.end())
   {
     idtf = it->second;
-    return;
+    return true;
   }
 
-  ui_translate_get_identifier(addr, lang_addr, idtf);
-  mIdentifiers[addr] = idtf;
+  bool result = ui_translate_get_identifier(addr, lang_addr, idtf);
+
+  if (result)
+  {
+    mIdentifiers[addr] = idtf;
+  }
+
+  return result;
 }
 
 // -------------------------------------------------------

@@ -26,7 +26,7 @@ protected:
   void runImpl();
 
   //! Get main or system identifier for specified sc-addr
-  void getIdentifier(const sc_addr & addr, const sc_addr & lang_addr, String & idtf);
+  bool getIdentifier(const sc_addr & addr, const sc_addr & lang_addr, String & idtf);
 
 protected:
   //! Map of resolved system identifiers
