@@ -11,6 +11,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Oriented sets representation (<a, ..., b>) in SCs
 
+### Changed
+
+- Add language parameter for sc2scs-json-translator to get elements identifiers
+- Append to sc2scs-json elements main/system identifiers
+- Replace row strings by nlohmann-json in sc2scs-json-translator
+
 ### Fixed
 
 - Add curl to installation script

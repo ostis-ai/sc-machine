@@ -119,7 +119,8 @@ void uiSc2ScsTranslator::runImpl()
   {
     sc_json identifiers;
     auto constrItEnd = constrAddrs.cend();
-    for (auto it = constrAddrs.cbegin(); it != constrItEnd; ++it) {
+    for (auto it = constrAddrs.cbegin(); it != constrItEnd; ++it)
+    {
       const sc_addr addr = *it;
       String idtf;
       bool idtf_exists = getIdentifier(addr, mOutputLanguageAddr, idtf);
