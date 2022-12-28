@@ -13,8 +13,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
-- Dependence order in var template search triples
 - Add curl to installation script
+- Merging identifiers in sc-dictionary ([192](https://github.com/ostis-ai/sc-machine/issues/192))
+- Dependence order in var template search triples ([186](https://github.com/ostis-ai/sc-machine/issues/186))
 
 ## [0.7.0-Rebirth] - 12.10.2022
 

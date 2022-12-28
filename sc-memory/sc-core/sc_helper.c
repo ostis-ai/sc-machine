@@ -231,7 +231,7 @@ sc_result sc_helper_set_system_identifier(sc_memory_context * ctx, sc_addr addr,
   stream = sc_stream_memory_new(data, sizeof(sc_char) * len, SC_STREAM_FLAG_READ, SC_FALSE);
   if (sc_helper_find_element_by_system_identifier(ctx, data, len, &idtf_addr) == SC_RESULT_OK)
   {
-    sc_mem_free(stream);
+    sc_stream_free(stream);
     return SC_RESULT_ERROR;
   }
 

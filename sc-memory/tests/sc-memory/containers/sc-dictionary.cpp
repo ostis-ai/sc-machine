@@ -99,3 +99,134 @@ TEST_F(ScDictionaryTest, smoke)
 
   sc_dictionary_destroy(dictionary, sc_dictionary_node_destroy);
 }
+
+TEST_F(ScDictionaryTest, CorrespondenceCheck)
+{
+  sc_dictionary * dictionary = nullptr;
+  EXPECT_TRUE(sc_dictionary_initialize(
+    &dictionary,
+    _test_sc_dictionary_addr_hashes_children_size(),
+    _test_sc_dictionary_addr_hashes_char_to_int));
+
+  sc_addr addr1 = sc_memory_link_new(m_ctx->GetRealContext());
+  sc_char const * str1 = "users_1";
+  sc_dictionary_append(dictionary, str1, strlen(str1), &addr1);
+  EXPECT_TRUE(sc_dictionary_is_in(dictionary, str1));
+  EXPECT_FALSE(sc_dictionary_is_in(dictionary, "users_1_1"));
+  EXPECT_FALSE(sc_dictionary_is_in(dictionary, "users_1_2"));
+  EXPECT_FALSE(sc_dictionary_is_in(dictionary, "users_2"));
+  EXPECT_FALSE(sc_dictionary_is_in(dictionary, "users_2_1"));
+  EXPECT_FALSE(sc_dictionary_is_in(dictionary, "users_2_2"));
+
+  sc_addr addr2 = sc_memory_link_new(m_ctx->GetRealContext());
+  sc_char const * str2 = "users_1_1";
+  sc_dictionary_append(dictionary, str2, strlen(str2), &addr2);
+  EXPECT_TRUE(sc_dictionary_is_in(dictionary, str2));
+  EXPECT_TRUE(sc_dictionary_is_in(dictionary, str1));
+  EXPECT_FALSE(sc_dictionary_is_in(dictionary, "users_1_2"));
+  EXPECT_FALSE(sc_dictionary_is_in(dictionary, "users_2"));
+  EXPECT_FALSE(sc_dictionary_is_in(dictionary, "users_2_1"));
+  EXPECT_FALSE(sc_dictionary_is_in(dictionary, "users_2_2"));
+
+  sc_addr addr3 = sc_memory_link_new(m_ctx->GetRealContext());
+  sc_char const * str3 = "users_1_2";
+  sc_dictionary_append(dictionary, str3, strlen(str3), &addr3);
+  EXPECT_TRUE(sc_dictionary_is_in(dictionary, str3));
+  EXPECT_TRUE(sc_dictionary_is_in(dictionary, str2));
+  EXPECT_TRUE(sc_dictionary_is_in(dictionary, str1));
+  EXPECT_FALSE(sc_dictionary_is_in(dictionary, "users_2"));
+  EXPECT_FALSE(sc_dictionary_is_in(dictionary, "users_2_1"));
+  EXPECT_FALSE(sc_dictionary_is_in(dictionary, "users_2_2"));
+
+  sc_addr addr4 = sc_memory_link_new(m_ctx->GetRealContext());
+  sc_char const * str4 = "users_2";
+  sc_dictionary_append(dictionary, str4, strlen(str4), &addr4);
+  EXPECT_TRUE(sc_dictionary_is_in(dictionary, str4));
+  EXPECT_TRUE(sc_dictionary_is_in(dictionary, str3));
+  EXPECT_TRUE(sc_dictionary_is_in(dictionary, str2));
+  EXPECT_TRUE(sc_dictionary_is_in(dictionary, str1));
+  EXPECT_FALSE(sc_dictionary_is_in(dictionary, "users_2_1"));
+  EXPECT_FALSE(sc_dictionary_is_in(dictionary, "users_2_2"));
+
+  sc_addr addr5 = sc_memory_link_new(m_ctx->GetRealContext());
+  sc_char const * str5 = "users_2_1";
+  sc_dictionary_append(dictionary, str5, strlen(str5), &addr5);
+  EXPECT_TRUE(sc_dictionary_is_in(dictionary, str5));
+  EXPECT_TRUE(sc_dictionary_is_in(dictionary, str4));
+  EXPECT_TRUE(sc_dictionary_is_in(dictionary, str3));
+  EXPECT_TRUE(sc_dictionary_is_in(dictionary, str2));
+  EXPECT_TRUE(sc_dictionary_is_in(dictionary, str1));
+  EXPECT_FALSE(sc_dictionary_is_in(dictionary, "users_2_2"));
+
+  sc_addr addr6 = sc_memory_link_new(m_ctx->GetRealContext());
+  sc_char const * str6 = "users_2_2";
+  sc_dictionary_append(dictionary, str6, strlen(str6), &addr6);
+  EXPECT_TRUE(sc_dictionary_is_in(dictionary, str6));
+  EXPECT_TRUE(sc_dictionary_is_in(dictionary, str5));
+  EXPECT_TRUE(sc_dictionary_is_in(dictionary, str4));
+  EXPECT_TRUE(sc_dictionary_is_in(dictionary, str3));
+  EXPECT_TRUE(sc_dictionary_is_in(dictionary, str2));
+  EXPECT_TRUE(sc_dictionary_is_in(dictionary, str1));
+
+  sc_list * list = sc_dictionary_get(dictionary, str1);
+  sc_iterator * it = sc_list_iterator(list);
+  while (sc_iterator_next(it))
+  {
+    sc_addr const linkAddr = *(sc_addr *)sc_iterator_get(it);
+    EXPECT_TRUE(addr1.seg == linkAddr.seg);
+    EXPECT_TRUE(addr1.offset == linkAddr.offset);
+  }
+  sc_iterator_destroy(it);
+
+  list = sc_dictionary_get(dictionary, str2);
+  it = sc_list_iterator(list);
+  while (sc_iterator_next(it))
+  {
+    sc_addr const linkAddr = *(sc_addr *)sc_iterator_get(it);
+    EXPECT_TRUE(addr2.seg == linkAddr.seg);
+    EXPECT_TRUE(addr2.offset == linkAddr.offset);
+  }
+  sc_iterator_destroy(it);
+
+  list = sc_dictionary_get(dictionary, str3);
+  it = sc_list_iterator(list);
+  while (sc_iterator_next(it))
+  {
+    sc_addr const linkAddr = *(sc_addr *)sc_iterator_get(it);
+    EXPECT_TRUE(addr3.seg == linkAddr.seg);
+    EXPECT_TRUE(addr3.offset == linkAddr.offset);
+  }
+  sc_iterator_destroy(it);
+
+  list = sc_dictionary_get(dictionary, str4);
+  it = sc_list_iterator(list);
+  while (sc_iterator_next(it))
+  {
+    sc_addr const linkAddr = *(sc_addr *)sc_iterator_get(it);
+    EXPECT_TRUE(addr4.seg == linkAddr.seg);
+    EXPECT_TRUE(addr4.offset == linkAddr.offset);
+  }
+  sc_iterator_destroy(it);
+
+  list = sc_dictionary_get(dictionary, str5);
+  it = sc_list_iterator(list);
+  while (sc_iterator_next(it))
+  {
+    sc_addr const linkAddr = *(sc_addr *)sc_iterator_get(it);
+    EXPECT_TRUE(addr5.seg == linkAddr.seg);
+    EXPECT_TRUE(addr5.offset == linkAddr.offset);
+  }
+  sc_iterator_destroy(it);
+
+  list = sc_dictionary_get(dictionary, str6);
+  it = sc_list_iterator(list);
+  while (sc_iterator_next(it))
+  {
+    sc_addr const linkAddr = *(sc_addr *)sc_iterator_get(it);
+    EXPECT_TRUE(addr6.seg == linkAddr.seg);
+    EXPECT_TRUE(addr6.offset == linkAddr.offset);
+  }
+  sc_iterator_destroy(it);
+
+  sc_dictionary_destroy(dictionary, sc_dictionary_node_destroy);
+}

@@ -58,6 +58,8 @@ void _sc_strings_dictionary_node_destroy(sc_dictionary_node * node, void ** args
     content->sc_string = null_ptr;
     content->string_size = 0;
     content->node = null_ptr;
+
+    sc_mem_free(content);
   }
 
   sc_dictionary_node_destroy(node, args);
@@ -79,7 +81,7 @@ sc_bool sc_dictionary_fs_storage_shutdown()
 
 sc_bool sc_hashes_compare(void * hash, void * other)
 {
-  return *(sc_addr_hash *)hash == *(sc_addr_hash *)other;
+  return (sc_addr_hash)hash == (sc_addr_hash)other;
 }
 
 void _sc_dictionary_fs_storage_append_sc_string_sc_link_reference(
@@ -124,10 +126,10 @@ sc_dictionary_node * _sc_dictionary_fs_storage_append_sc_link_unique(sc_char * s
       return old_content->node;
 
     sc_list * data_list = old_content->node->data_list;
-    sc_list_remove_if(data_list, &other, sc_hashes_compare);
+    sc_list_remove_if(data_list, (void *)other, sc_hashes_compare);
   }
 
-  return sc_dictionary_append(addrs_hashes_dictionary, sc_string, size, &other);
+  return sc_dictionary_append(addrs_hashes_dictionary, sc_string, size, (void *)other);
 }
 
 sc_bool sc_dictionary_fs_storage_append_sc_link_content(
@@ -151,7 +153,7 @@ sc_addr * sc_list_to_addr_array(sc_list * list)
   sc_iterator * it = sc_list_iterator(list);
   while (sc_iterator_next(it))
   {
-    sc_addr_hash hash = *(sc_addr_hash *)sc_iterator_get(it);
+    sc_addr_hash hash = (sc_addr_hash)sc_iterator_get(it);
     sc_addr addr;
     addr.offset = SC_ADDR_LOCAL_OFFSET_FROM_INT(hash);
     addr.seg = SC_ADDR_LOCAL_SEG_FROM_INT(hash);
@@ -174,7 +176,7 @@ sc_addr_hash * sc_list_to_hashes_array(sc_list * list)
   sc_iterator * it = sc_list_iterator(list);
   while (sc_iterator_next(it))
   {
-    **temp = *(sc_addr_hash *)sc_iterator_get(it);
+    **temp = (sc_addr_hash)sc_iterator_get(it);
     ++*temp;
   }
   sc_mem_free(temp);
