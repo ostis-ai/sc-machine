@@ -407,6 +407,9 @@ void sc_fs_storage_write_node(sc_dictionary_node * node, void ** dest)
   if (!sc_dc_node_access_lvl_check_read(content->node))
     return;
 
+  if (content->node->data_list == null_ptr || content->node->data_list->size == 0)
+    return;
+
   sc_addr_hash * hashes = sc_list_to_hashes_array(content->node->data_list);
   sc_uint8 hashes_size = content->node->data_list->size;
 
