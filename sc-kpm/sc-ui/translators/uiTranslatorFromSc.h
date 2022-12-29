@@ -21,8 +21,9 @@ public:
   /*! Run translation.
    * @param input_addr sc-addr of sc-construction, that need to be translated
    * @param format_addr sc-addr of output format
+   * @param lang_addr sc-addr of user language
    */
-  void translate(const sc_addr & input_addr, const sc_addr & format_addr);
+  void translate(const sc_addr & input_addr, const sc_addr & format_addr, const sc_addr & lang_addr);
 
 protected:
   //! Collect objects that need to be translated
@@ -43,6 +44,8 @@ protected:
   sc_addr mInputConstructionAddr;
   //! Sc-addr of output format
   sc_addr mOutputFormatAddr;
+  //! Sc-addr of output language
+  sc_addr mOutputLanguageAddr;
 
   // Maps of elements to translate
   tScAddrToScTypeMap mObjects;

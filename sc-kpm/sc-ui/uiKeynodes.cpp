@@ -19,12 +19,15 @@ const char keynode_command_translate_from_sc_str[] = "ui_command_translate_from_
 const char keynode_nrel_user_answer_formats_str[] = "ui_nrel_user_answer_formats";
 const char keynode_rrel_source_sc_construction_str[] = "ui_rrel_source_sc_construction";
 const char keynode_rrel_output_format_str[] = "ui_rrel_output_format";
+const char keynode_rrel_user_lang_str[] = "ui_rrel_user_lang";
 
 const char keynode_question_nrel_answer_str[] = "nrel_answer";
 const char keynode_question_finished_str[] = "question_finished";
 const char keynode_nrel_authors_str[] = "nrel_authors";
 const char keynode_nrel_translation_str[] = "nrel_translation";
 const char keynode_nrel_format_str[] = "nrel_format";
+const char keynode_nrel_system_identifier_str[] = "nrel_system_identifier";
+const char keynode_nrel_main_idtf_str[] = "nrel_main_idtf";
 
 const char keynode_command_generate_instance_str[] = "ui_command_generate_instance";
 const char keynode_command_initiated_str[] = "ui_command_initiated";
@@ -47,12 +50,15 @@ sc_addr keynode_command_translate_from_sc;
 sc_addr keynode_nrel_user_answer_formats;
 sc_addr keynode_rrel_source_sc_construction;
 sc_addr keynode_rrel_output_format;
+sc_addr keynode_rrel_user_lang;
 
 sc_addr keynode_question_nrel_answer;
 sc_addr keynode_question_finished;
 sc_addr keynode_nrel_authors;
 sc_addr keynode_nrel_translation;
 sc_addr keynode_nrel_format;
+sc_addr keynode_nrel_system_identifier;
+sc_addr keynode_nrel_main_idtf;
 
 sc_addr keynode_command_generate_instance;
 sc_addr keynode_command_initiated;
@@ -84,8 +90,11 @@ sc_bool initialize_keynodes()
   RESOLVE_KEYNODE(s_default_ctx, keynode_nrel_user_answer_formats);
   RESOLVE_KEYNODE(s_default_ctx, keynode_rrel_source_sc_construction);
   RESOLVE_KEYNODE(s_default_ctx, keynode_rrel_output_format);
+  RESOLVE_KEYNODE(s_default_ctx, keynode_rrel_user_lang);
   RESOLVE_KEYNODE(s_default_ctx, keynode_nrel_translation);
   RESOLVE_KEYNODE(s_default_ctx, keynode_nrel_format);
+  RESOLVE_KEYNODE(s_default_ctx, keynode_nrel_system_identifier);
+  RESOLVE_KEYNODE(s_default_ctx, keynode_nrel_main_idtf);
 
   RESOLVE_KEYNODE(s_default_ctx, keynode_command_generate_instance);
   RESOLVE_KEYNODE(s_default_ctx, keynode_command_initiated);

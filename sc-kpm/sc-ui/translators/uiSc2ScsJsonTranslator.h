@@ -25,13 +25,13 @@ protected:
   //! @copydoc uiTranslateFromSc::runImpl
   void runImpl();
 
-  //! Resolve system identifier for specified sc-addr
-  void resolveSystemIdentifier(const sc_addr & addr, String & idtf);
+  //! Get main or system identifier for specified sc-addr
+  bool getIdentifier(const sc_addr & addr, const sc_addr & lang_addr, String & idtf);
 
 protected:
   //! Map of resolved system identifiers
   typedef std::map<sc_addr, String> tSystemIdentifiersMap;
-  tSystemIdentifiersMap mSystemIdentifiers;
+  tSystemIdentifiersMap mIdentifiers;
 };
 
 #endif

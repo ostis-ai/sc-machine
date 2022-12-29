@@ -22,11 +22,9 @@ uiSc2ScsTranslator::~uiSc2ScsTranslator()
 
 void uiSc2ScsTranslator::runImpl()
 {
-  StringStream ss;
-  ss << "{";
-  ss << "\"keywords\" : [";
+  sc_json result;
 
-  bool first = true;
+  sc_json keywords = sc_json::array();
   // get command arguments (keywords)
   sc_iterator5 * it5 = sc_iterator5_a_a_f_a_f_new(
       s_default_ctx,
@@ -49,23 +47,23 @@ void uiSc2ScsTranslator::runImpl()
       sc_type type;
       sc_memory_get_element_type(s_default_ctx, addr, &type);
 
-      if (!first)
-        ss << ",";
-      else
-        first = false;
+      sc_json keyword;
+      keyword["addr"] = uiSc2ScsTranslator::buildId(addr);
+      keyword["type"] = type;
 
-      ss << "{ \"addr\": \"" << uiSc2ScsTranslator::buildId(addr) << "\", \"type\" : " << type << "}";
+      keywords.push_back(keyword);
     }
     sc_iterator3_free(it3);
   }
   sc_iterator5_free(it5);
 
-  ss << "], \"triples\": [";
+  result["keywords"] = keywords;
 
-  first = true;
+  sc_json triples = sc_json::array();
+  tScAddrSet constrAddrs;
   // iterate all arcs and translate them
-  tScAddrToScTypeMap::iterator it, itEnd = mObjects.end();
-  for (it = mObjects.begin(); it != itEnd; ++it)
+  auto const itEnd = mObjects.cend();
+  for (auto it = mObjects.cbegin(); it != itEnd; ++it)
   {
     const sc_addr & arc_addr = it->first;
     sc_type arc_type = it->second;
@@ -89,7 +87,7 @@ void uiSc2ScsTranslator::runImpl()
       continue;  //! TODO logging
 
     sc_type beg_type, end_type;
-    tScAddrToScTypeMap::iterator itTmp = mObjects.find(arc_beg);
+    auto itTmp = mObjects.find(arc_beg);
     if (itTmp != mObjects.end())
       beg_type = itTmp->second;
     else
@@ -100,37 +98,72 @@ void uiSc2ScsTranslator::runImpl()
     else
       sc_memory_get_element_type(s_default_ctx, arc_end, &end_type);
 
-    if (!first)
-      ss << ", ";
-    else
-      first = false;
+    constrAddrs.insert(arc_beg);
+    constrAddrs.insert(arc_end);
 
-    ss << "[{ \"addr\": \"" << buildId(arc_beg) << "\", \"type\": " << beg_type << "}, ";
-    ss << "{ \"addr\": \"" << buildId(arc_addr) << "\", \"type\": " << arc_type << "}, ";
-    ss << "{ \"addr\": \"" << buildId(arc_end) << "\", \"type\": " << end_type << "}]";
+    sc_json triple = sc_json::array();
+    triple.push_back({{"addr", buildId(arc_beg)}, {"type", beg_type}});
+    triple.push_back({{"addr", buildId(arc_addr)}, {"type", arc_type}});
+    triple.push_back({{"addr", buildId(arc_end)}, {"type", end_type}});
+
+    triples.push_back(triple);
   }
 
-  ss << "]}";
-  mOutputData = ss.str();
+  result["triples"] = triples;
+
+  if (SC_ADDR_IS_EMPTY(mOutputLanguageAddr))
+  {
+    result["identifiers"] = sc_json::array();
+  }
+  else
+  {
+    sc_json identifiers;
+    auto constrItEnd = constrAddrs.cend();
+    for (auto it = constrAddrs.cbegin(); it != constrItEnd; ++it)
+    {
+      const sc_addr addr = *it;
+      String idtf;
+      bool idtf_exists = getIdentifier(addr, mOutputLanguageAddr, idtf);
+
+      if (idtf_exists)
+      {
+        identifiers[buildId(*it)] = idtf;
+      }
+      else
+      {
+        identifiers[buildId(*it)] = sc_json();
+      }
+    }
+
+    result["identifiers"] = identifiers;
+  }
+
+  mOutputData = result.dump();
 }
 
-void uiSc2ScsTranslator::resolveSystemIdentifier(const sc_addr & addr, String & idtf)
+bool uiSc2ScsTranslator::getIdentifier(const sc_addr & addr, const sc_addr & lang_addr, String & idtf)
 {
-  tSystemIdentifiersMap::iterator it = mSystemIdentifiers.find(addr);
-  if (it != mSystemIdentifiers.end())
+  auto it = mIdentifiers.find(addr);
+  if (it != mIdentifiers.end())
   {
     idtf = it->second;
-    return;
+    return true;
   }
 
-  ui_translate_resolve_system_identifier(addr, idtf);
-  mSystemIdentifiers[addr] = idtf;
+  bool result = ui_translate_get_identifier(addr, lang_addr, idtf);
+
+  if (result)
+  {
+    mIdentifiers[addr] = idtf;
+  }
+
+  return result;
 }
 
 // -------------------------------------------------------
 sc_result uiSc2ScsTranslator::ui_translate_sc2scs(const sc_event * event, sc_addr arg)
 {
-  sc_addr cmd_addr, input_addr, format_addr;
+  sc_addr cmd_addr, input_addr, format_addr, lang_addr;
 
   if (sc_memory_get_arc_end(s_default_ctx, arg, &cmd_addr) != SC_RESULT_OK)
     return SC_RESULT_ERROR;
@@ -138,13 +171,13 @@ sc_result uiSc2ScsTranslator::ui_translate_sc2scs(const sc_event * event, sc_add
   if (ui_check_cmd_type(cmd_addr, keynode_command_translate_from_sc) != SC_RESULT_OK)
     return SC_RESULT_ERROR;
 
-  if (ui_translate_command_resolve_arguments(cmd_addr, &format_addr, &input_addr) != SC_RESULT_OK)
+  if (ui_translate_command_resolve_arguments(cmd_addr, &format_addr, &input_addr, &lang_addr) != SC_RESULT_OK)
     return SC_RESULT_ERROR;
 
   if (format_addr == keynode_format_scs_json)
   {
     uiSc2ScsTranslator translator;
-    translator.translate(input_addr, format_addr);
+    translator.translate(input_addr, format_addr, lang_addr);
   }
 
   return SC_RESULT_OK;
