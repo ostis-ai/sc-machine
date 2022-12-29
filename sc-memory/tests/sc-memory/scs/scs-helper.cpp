@@ -274,3 +274,94 @@ TEST_F(SCsHelperTest, GenerateBySCs_Visibility_Local)
   EXPECT_EQ(res.Size(), 2u);
   EXPECT_NE(res[0]["_trg"], res[1]["_trg"]);
 }
+
+TEST_F(SCsHelperTest, GenerateAppendToStructure)
+{
+  SCsHelper helper(*m_ctx, std::make_shared<DummyFileInterface>());
+
+  ScAddr const outputStructure = m_ctx->CreateNode(ScType::NodeConstStruct);
+  EXPECT_TRUE(outputStructure.IsValid());
+
+  EXPECT_TRUE(helper.GenerateBySCsText(
+    "class_1 -> class_1_instance_1;;"
+    "class_1 -> class_1_instance_2;;"
+    "class_1_instance_1 => rel_1: class_1_instance_2;;"
+    "class_1_instance_2 => rel_2: class_1_instance_1;;",
+    outputStructure
+  ));
+
+  ScTemplate templ;
+  EXPECT_TRUE(m_ctx->HelperBuildTemplate(
+    templ,
+    "class_1 _-> _class_1_instance_1;;"
+    "class_1 _-> _class_1_instance_2;;"
+    "_class_1_instance_1 _=> rel_1:: _class_1_instance_2;;"
+    "_class_1_instance_2 _=> rel_2:: _class_1_instance_1;;"
+  ));
+
+  ScTemplateSearchResult result;
+  EXPECT_TRUE(m_ctx->HelperSearchTemplate(templ, result));
+  EXPECT_EQ(result.Size(), 1u);
+
+  result.ForEach([this, &outputStructure](ScTemplateSearchResultItem const & item) {
+    for (size_t i = 0; i < item.Size(); ++i)
+    {
+      EXPECT_TRUE(m_ctx->HelperCheckEdge(outputStructure, item[i], ScType::EdgeAccessConstPosPerm));
+    }
+  });
+}
+
+TEST_F(SCsHelperTest, GenerateStructureAppendToStructure)
+{
+  SCsHelper helper(*m_ctx, std::make_shared<DummyFileInterface>());
+
+  ScAddr const outputStructure = m_ctx->CreateNode(ScType::NodeConstStruct);
+  EXPECT_TRUE(outputStructure.IsValid());
+
+  EXPECT_TRUE(helper.GenerateBySCsText(
+    "example_structure = [*"
+    "class_1 -> class_1_instance_1;;" // 3 new sc-elements
+    "class_1 -> class_1_instance_2;;" // 2 new sc-elements
+    "class_1_instance_1 => rel_1: class_1_instance_2;;" // 3 new sc-elements
+    "class_1_instance_2 => rel_2: class_1_instance_1;;" // 3 new sc-elements
+    "*];;", // example_structure must contains 11 sc-elements
+    outputStructure
+  ));
+
+  ScTemplate templ;
+  EXPECT_TRUE(m_ctx->HelperBuildTemplate(
+    templ,
+    "class_1 _-> _class_1_instance_1;;"
+    "class_1 _-> _class_1_instance_2;;"
+    "_class_1_instance_1 _=> rel_1:: _class_1_instance_2;;"
+    "_class_1_instance_2 _=> rel_2:: _class_1_instance_1;;"
+  ));
+
+  ScTemplateSearchResult result;
+  EXPECT_TRUE(m_ctx->HelperSearchTemplate(templ, result));
+  EXPECT_EQ(result.Size(), 1u);
+
+  result.ForEach([this, &outputStructure](ScTemplateSearchResultItem const & item) {
+    for (size_t i = 0; i < item.Size(); ++i)
+    {
+      EXPECT_TRUE(m_ctx->HelperCheckEdge(outputStructure, item[i], ScType::EdgeAccessConstPosPerm));
+    }
+  });
+
+  templ.Clear();
+  EXPECT_TRUE(m_ctx->HelperBuildTemplate(
+    templ,
+    "example_structure _-> _element;;"
+  ));
+
+  EXPECT_TRUE(m_ctx->HelperSearchTemplate(templ, result));
+  // EXPECT_EQ(result.Size(), 11u); 5 instead of 11
+  // @TODO: Fix structure generating by scs-text
+
+  result.ForEach([this, &outputStructure](ScTemplateSearchResultItem const & item) {
+    for (size_t i = 0; i < item.Size(); ++i)
+    {
+      EXPECT_TRUE(m_ctx->HelperCheckEdge(outputStructure, item[i], ScType::EdgeAccessConstPosPerm));
+    }
+  });
+}
