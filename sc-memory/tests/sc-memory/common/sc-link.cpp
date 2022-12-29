@@ -365,3 +365,20 @@ TEST_F(ScLinkTest, find_strings_by_substr_as_prefix)
 
   ctx.Destroy();
 }
+
+TEST_F(ScLinkTest, links_deletion)
+{
+  ScMemoryContext ctx(sc_access_lvl_make_min, "sc_links_content_changed");
+
+  ScAddr const & linkAddr1 = ctx.CreateLink(ScType::LinkConst);
+  EXPECT_TRUE(linkAddr1.IsValid());
+
+  EXPECT_TRUE(ctx.SetLinkContent(linkAddr1, "link_content_example"));
+  EXPECT_TRUE(ctx.FindLinksByContent("link_content_example").size() == 1);
+
+  EXPECT_TRUE(ctx.EraseElement(linkAddr1));
+
+  EXPECT_TRUE(ctx.FindLinksByContent("link_content_example").empty());
+
+  ctx.Destroy();
+}
