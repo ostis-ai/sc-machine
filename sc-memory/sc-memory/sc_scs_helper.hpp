@@ -7,6 +7,7 @@
 #pragma once
 
 #include "sc_stream.hpp"
+#include "sc_addr.hpp"
 
 #include <memory>
 
@@ -26,8 +27,8 @@ class SCsHelper final
 public:
   _SC_EXTERN SCsHelper(ScMemoryContext & ctx, SCsFileInterfacePtr fileInterface);
 
-  _SC_EXTERN bool GenerateBySCsText(std::string const & scsText);
-  _SC_EXTERN void GenerateBySCsTextLazy(std::string const & scsText);
+  _SC_EXTERN bool GenerateBySCsText(std::string const & scsText, ScAddr const & outputStructure = ScAddr::Empty);
+  _SC_EXTERN void GenerateBySCsTextLazy(std::string const & scsText, ScAddr const & outputStructure = ScAddr::Empty);
   _SC_EXTERN std::string const & GetLastError() const;
 
 private:

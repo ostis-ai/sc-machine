@@ -23,9 +23,10 @@ class StructGenerator
   friend class ::SCsHelper;
 
 protected:
-  StructGenerator(ScMemoryContext & ctx, SCsFileInterfacePtr fileInterface)
-    : m_fileInterface(std::move(fileInterface))
-    , m_ctx(ctx)
+  StructGenerator(ScMemoryContext & ctx, SCsFileInterfacePtr fileInterface, ScAddr const & outputStructure)
+    : m_ctx(ctx)
+    , m_fileInterface(std::move(fileInterface))
+    , m_outputStructure(outputStructure)
   {
     m_kNrelSCsGlobalIdtf = m_ctx.HelperResolveSystemIdtf("nrel_scs_global_idtf", ScType::NodeConstNoRole);
     SC_ASSERT(m_kNrelSCsGlobalIdtf.IsValid(), ());
@@ -64,6 +65,11 @@ protected:
       ScAddr const edgeAddr = m_ctx.CreateEdge(edge.GetType(), srcAddr, trgAddr);
       SC_ASSERT(edgeAddr.IsValid(), ());
       m_idtfCache.insert(std::make_pair(edge.GetIdtf(), edgeAddr));
+
+      if (m_outputStructure.IsValid())
+      {
+        AppendToOutputStructure(srcAddr, edgeAddr, trgAddr);
+      }
     }
 
     parser.ForEachParsedElement([this](scs::ParsedElement const & el) {
@@ -76,6 +82,16 @@ protected:
   }
 
 private:
+  template <class... Args>
+  void AppendToOutputStructure(Args const &... addrs)
+  {
+    std::vector<ScAddr> addrVector{addrs...};
+    for (ScAddr const & addr : addrVector)
+    {
+      m_ctx.CreateEdge(ScType::EdgeAccessConstPosPerm, m_outputStructure, addr);
+    }
+  }
+
   void SetSCsGlobalIdtf(std::string const & idtf, ScAddr const & addr)
   {
     SC_ASSERT(m_kNrelSCsGlobalIdtf.IsValid(), ());
@@ -275,8 +291,9 @@ private:
   }
 
 private:
-  SCsFileInterfacePtr m_fileInterface;
   ScMemoryContext & m_ctx;
+  SCsFileInterfacePtr m_fileInterface;
+  ScAddr m_outputStructure;
 
   std::unordered_map<std::string, ScAddr> m_idtfCache;
   ScAddr m_kNrelSCsGlobalIdtf;
@@ -290,7 +307,7 @@ SCsHelper::SCsHelper(ScMemoryContext & ctx, SCsFileInterfacePtr fileInterface)
 {
 }
 
-bool SCsHelper::GenerateBySCsText(std::string const & scsText)
+bool SCsHelper::GenerateBySCsText(std::string const & scsText, ScAddr const & outputStructure)
 {
   m_lastError = "";
   bool result = true;
@@ -307,7 +324,7 @@ bool SCsHelper::GenerateBySCsText(std::string const & scsText)
     }
     else
     {
-      impl::StructGenerator generate(m_ctx, m_fileInterface);
+      impl::StructGenerator generate(m_ctx, m_fileInterface, outputStructure);
       generate(parser);
     }
   }
@@ -320,7 +337,7 @@ bool SCsHelper::GenerateBySCsText(std::string const & scsText)
   return result;
 }
 
-void SCsHelper::GenerateBySCsTextLazy(const std::string & scsText)
+void SCsHelper::GenerateBySCsTextLazy(const std::string & scsText, ScAddr const & outputStructure)
 {
   ScMemoryContextEventsPendingGuard guard(m_ctx);
 
@@ -331,7 +348,7 @@ void SCsHelper::GenerateBySCsTextLazy(const std::string & scsText)
   }
   else
   {
-    impl::StructGenerator generate(m_ctx, m_fileInterface);
+    impl::StructGenerator generate(m_ctx, m_fileInterface, outputStructure);
     generate(parser);
   }
 }
