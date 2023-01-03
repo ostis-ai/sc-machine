@@ -439,16 +439,17 @@ sc_bool sc_rocksdb_fs_storage_remove_sc_link_content(sc_element * element, sc_ad
   sc_uint32 size = 0;
   sc_rocksdb_fs_storage_get_sc_link_content_ext(element, addr, &string, &size);
 
-  if (size != 0 && string != null_ptr)
+  if (string == null_ptr)
   {
-    sc_check_sum * check_sum;
-    sc_link_calculate_checksum(string, size, &check_sum);
-    sc_rocksdb_fs_storage_addr_ref_remove(addr, check_sum);
-
-    return SC_TRUE;
+    string = sc_mem_new(sc_char, 1);
+    string[0] = '\0';
   }
 
-  return SC_FALSE;
+  sc_check_sum * check_sum;
+  sc_link_calculate_checksum(string, size, &check_sum);
+  sc_result result = sc_rocksdb_fs_storage_addr_ref_remove(addr, check_sum);
+
+  return result == SC_RESULT_OK;
 }
 
 #endif

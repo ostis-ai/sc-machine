@@ -365,3 +365,62 @@ TEST_F(ScLinkTest, find_strings_by_substr_as_prefix)
 
   ctx.Destroy();
 }
+
+TEST_F(ScLinkTest, links_deletion)
+{
+  ScMemoryContext ctx(sc_access_lvl_make_min, "links_deletion");
+
+  ScAddr const & linkAddr1 = ctx.CreateLink(ScType::LinkConst);
+  EXPECT_TRUE(linkAddr1.IsValid());
+  EXPECT_TRUE(ctx.SetLinkContent(linkAddr1, "link_content_example"));
+  EXPECT_TRUE(ctx.FindLinksByContent("link_content_example").size() == 1);
+
+  ScAddr const & linkAddr2 = ctx.CreateLink(ScType::LinkConst);
+  EXPECT_TRUE(linkAddr2.IsValid());
+  EXPECT_TRUE(ctx.SetLinkContent(linkAddr2, "link_content_example"));
+  EXPECT_TRUE(ctx.FindLinksByContent("link_content_example").size() == 2);
+
+  EXPECT_TRUE(ctx.EraseElement(linkAddr1));
+  EXPECT_TRUE(ctx.FindLinksByContent("link_content_example").size() == 1);
+
+  EXPECT_TRUE(ctx.EraseElement(linkAddr2));
+  EXPECT_TRUE(ctx.FindLinksByContent("link_content_example").empty());
+
+  ctx.Destroy();
+}
+
+TEST_F(ScLinkTest, link_deletion_repeteded)
+{
+  ScMemoryContext ctx(sc_access_lvl_make_min, "link_deletion_repeated");
+
+  ScAddr const & linkAddr1 = ctx.CreateLink(ScType::LinkConst);
+  EXPECT_TRUE(linkAddr1.IsValid());
+  EXPECT_TRUE(ctx.SetLinkContent(linkAddr1, "link_content_example"));
+  EXPECT_TRUE(ctx.FindLinksByContent("link_content_example").size() == 1);
+
+  EXPECT_TRUE(ctx.EraseElement(linkAddr1));
+  EXPECT_TRUE(ctx.FindLinksByContent("link_content_example").empty());
+
+  EXPECT_FALSE(ctx.EraseElement(linkAddr1));
+  EXPECT_TRUE(ctx.FindLinksByContent("link_content_example").empty());
+
+  ctx.Destroy();
+}
+
+TEST_F(ScLinkTest, empty_link_deletion)
+{
+  ScMemoryContext ctx(sc_access_lvl_make_min, "empty_link_deletion");
+
+  ScAddr const & linkAddr1 = ctx.CreateLink(ScType::LinkConst);
+  EXPECT_TRUE(linkAddr1.IsValid());
+  EXPECT_TRUE(ctx.SetLinkContent(linkAddr1, ""));
+  EXPECT_TRUE(ctx.FindLinksByContent("").size() == 1);
+
+  EXPECT_TRUE(ctx.EraseElement(linkAddr1));
+  EXPECT_TRUE(ctx.FindLinksByContent("").empty());
+
+  EXPECT_FALSE(ctx.EraseElement(linkAddr1));
+  EXPECT_TRUE(ctx.FindLinksByContent("").empty());
+
+  ctx.Destroy();
+}

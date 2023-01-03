@@ -205,7 +205,8 @@ sc_dictionary_node * sc_dictionary_remove_from_node(
   }
 
   // check suffixes matching
-  if (i == string_size && strcmp(node->offset, sc_string + (string_size - node->offset_size)) == 0)
+  if (i == string_size &&
+      (node->offset == null_ptr || strcmp(node->offset, sc_string + (string_size - node->offset_size)) == 0))
   {
     return node;
   }
@@ -213,15 +214,18 @@ sc_dictionary_node * sc_dictionary_remove_from_node(
   return null_ptr;
 }
 
-sc_bool sc_dictionary_remove(sc_dictionary * dictionary, const sc_char * sc_string)
+sc_bool sc_dictionary_remove(
+    sc_dictionary * dictionary,
+    const sc_char * sc_string,
+    void * data,
+    sc_bool (*predicate)(void * data, void * other))
 {
   sc_dictionary_node * node = sc_dictionary_remove_from_node(dictionary, dictionary->root, sc_string, 0);
 
   sc_bool result = node != null_ptr;
   if (result == SC_TRUE)
   {
-    sc_list_destroy(node->data_list);
-    node->data_list = null_ptr;
+    sc_list_remove_if(node->data_list, data, predicate);
   }
 
   return result;
@@ -232,9 +236,6 @@ sc_dictionary_node * sc_dictionary_get_last_node_from_node(
     sc_dictionary_node * node,
     const sc_char * sc_string)
 {
-  if (sc_string == null_ptr)
-    return null_ptr;
-
   // check prefixes matching
   sc_uint32 i = 0;
   sc_uint32 string_size = strlen(sc_string);
@@ -252,7 +253,8 @@ sc_dictionary_node * sc_dictionary_get_last_node_from_node(
   }
 
   // check suffixes matching
-  if (i == string_size && strcmp(node->offset, sc_string + (string_size - node->offset_size)) == 0)
+  if (i == string_size &&
+      (node->offset == null_ptr || strcmp(node->offset, sc_string + (string_size - node->offset_size)) == 0))
   {
     return node;
   }
@@ -264,7 +266,7 @@ sc_bool sc_dictionary_is_in(sc_dictionary * dictionary, const sc_char * sc_strin
 {
   sc_dictionary_node * last = sc_dictionary_get_last_node_from_node(dictionary, dictionary->root, sc_string);
 
-  return SC_DICTIONARY_NODE_IS_VALID(last) && last->data_list != null_ptr;
+  return SC_DICTIONARY_NODE_IS_VALID(last) && last->data_list != null_ptr && last->data_list->size != 0;
 }
 
 void * sc_dictionary_get_first_data_from_node(

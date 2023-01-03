@@ -22,6 +22,11 @@ void _test_sc_dictionary_addr_hashes_char_to_int(sc_char ch, sc_uint8 * ch_num, 
   *ch_num = 128 + (sc_uint8)ch;
 }
 
+sc_bool _test_sc_hashes_compare(void * hash, void * other)
+{
+  return SC_ADDR_IS_EQUAL(*(sc_addr *)hash, *(sc_addr *)other);
+}
+
 TEST_F(ScDictionaryTest, smoke)
 {
   sc_dictionary * dictionary = nullptr;
@@ -59,6 +64,7 @@ TEST_F(ScDictionaryTest, smoke)
   auto const checkAfterRemove
       = [dictionary](
             sc_char const * stringToRemove,
+            sc_addr const addrToRemove,
             std::unordered_map<sc_char const *, sc_addr> const & toCheckExistence,
             std::unordered_map<sc_char const *, sc_addr> const & toCheckNonExistence) {
     auto const checkExistence = [dictionary](sc_char const * string, sc_addr addr) {
@@ -76,7 +82,7 @@ TEST_F(ScDictionaryTest, smoke)
       checkExistence(item.first, item.second);
     }
 
-    EXPECT_TRUE(sc_dictionary_remove(dictionary, stringToRemove));
+    EXPECT_TRUE(sc_dictionary_remove(dictionary, stringToRemove, (void *)&addrToRemove, _test_sc_hashes_compare));
 
     auto const checkNonExistence = [dictionary](sc_char const * string, sc_addr addr) {
       EXPECT_FALSE(sc_dictionary_is_in(dictionary, string));
@@ -92,10 +98,10 @@ TEST_F(ScDictionaryTest, smoke)
     }
   };
 
-  checkAfterRemove(str1, {{str2, addr2}, {str3, addr3}, {str4, addr4}}, {{str1, addr1}});
-  checkAfterRemove(str2, {{str3, addr3}, {str4, addr4}}, {{str1, addr1}, {str2, addr2}});
-  checkAfterRemove(str3, {{str4, addr4}}, {{str1, addr1}, {str2, addr2}, {str3, addr3}});
-  checkAfterRemove(str4, {}, {{str1, addr1}, {str2, addr2}, {str3, addr3}, {str4, addr4}});
+  checkAfterRemove(str1, addr1, {{str2, addr2}, {str3, addr3}, {str4, addr4}}, {{str1, addr1}});
+  checkAfterRemove(str2, addr2, {{str3, addr3}, {str4, addr4}}, {{str1, addr1}, {str2, addr2}});
+  checkAfterRemove(str3, addr3, {{str4, addr4}}, {{str1, addr1}, {str2, addr2}, {str3, addr3}});
+  checkAfterRemove(str4, addr4, {}, {{str1, addr1}, {str2, addr2}, {str3, addr3}, {str4, addr4}});
 
   sc_dictionary_destroy(dictionary, sc_dictionary_node_destroy);
 }

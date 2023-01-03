@@ -53,8 +53,8 @@ Common API methods of sc-dictionary implementation and their description are rep
   </tr>
 
   <tr>
-    <td>sc_bool sc_dictionary_remove(sc_dictionary * dictionary, const sc_char * sc_string)</td>
-    <td>It removes key string and data stored by it from sc-dictionary. If sc-dictionary has not such key string, 
+    <td>sc_bool sc_dictionary_remove(sc_dictionary * dictionary, const sc_char * sc_string, void * data, sc_bool (*predicate)(void * data, void * other))</td>
+    <td>It removes data stored by predicate function from sc-dictionary. If sc-dictionary has not such key string, 
         then method returns SC_FALSE.</td>
   </tr>
 

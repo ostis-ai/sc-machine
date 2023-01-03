@@ -20,6 +20,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- Link deletion ([193](https://github.com/ostis-ai/sc-machine/issues/193)
 - Add curl to installation script
 - Merging identifiers in sc-dictionary ([192](https://github.com/ostis-ai/sc-machine/issues/192))
 - Dependence order in var template search triples ([186](https://github.com/ostis-ai/sc-machine/issues/186))

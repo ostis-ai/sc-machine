@@ -51,7 +51,7 @@ void _sc_addrs_hashes_dictionary_node_destroy(sc_dictionary_node * node, void **
 
 void _sc_strings_dictionary_node_destroy(sc_dictionary_node * node, void ** args)
 {
-  if (node->data_list != null_ptr)
+  if (node->data_list != null_ptr && node->data_list->size != 0)
   {
     sc_link_content * content = (sc_link_content *)node->data_list->begin->data;
     sc_mem_free(content->sc_string);
@@ -379,9 +379,26 @@ void sc_dictionary_fs_storage_get_sc_link_content_ext(
 
 sc_bool sc_dictionary_fs_storage_remove_sc_link_content(sc_element * element, sc_addr addr)
 {
-  sc_char * hash_str = sc_addr_to_str(addr);
-  sc_bool result = sc_dictionary_remove(strings_dictionary, hash_str);
-  sc_mem_free(hash_str);
+  sc_char * hash = sc_addr_to_str(addr);
+  sc_dictionary_node * node = sc_dictionary_get_last_node_from_node(strings_dictionary, strings_dictionary->root, hash);
+  sc_mem_free(hash);
+
+  if (node == null_ptr)
+    return SC_FALSE;
+
+  if (node->data_list == null_ptr)
+    return SC_TRUE;
+
+  sc_link_content * content = node->data_list->begin->data;
+  sc_list_destroy(node->data_list);
+  node->data_list = null_ptr;
+
+  void * addr_hash = (sc_addr_hash *)sc_addr_to_hash(addr);
+  sc_bool result = sc_dictionary_remove(addrs_hashes_dictionary, content->sc_string, addr_hash, sc_hashes_compare);
+
+  sc_mem_free(content->sc_string);
+  sc_mem_free(content);
+
   return result;
 }
 
@@ -403,6 +420,9 @@ void sc_fs_storage_write_node(sc_dictionary_node * node, void ** dest)
   sc_link_content * content = (sc_link_content *)node->data_list->begin->data;
 
   if (!sc_dc_node_access_lvl_check_read(content->node))
+    return;
+
+  if (content->node->data_list == null_ptr || content->node->data_list->size == 0)
     return;
 
   sc_addr_hash * hashes = sc_list_to_hashes_array(content->node->data_list);
