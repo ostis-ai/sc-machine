@@ -264,7 +264,7 @@ sc_bool sc_dictionary_is_in(sc_dictionary * dictionary, const sc_char * sc_strin
 {
   sc_dictionary_node * last = sc_dictionary_get_last_node_from_node(dictionary, dictionary->root, sc_string);
 
-  return SC_DICTIONARY_NODE_IS_VALID(last) && last->data_list != null_ptr;
+  return SC_DICTIONARY_NODE_IS_VALID(last) && last->data_list != null_ptr && last->data_list->size != 0;
 }
 
 void * sc_dictionary_get_first_data_from_node(

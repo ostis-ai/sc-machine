@@ -383,11 +383,14 @@ sc_bool sc_dictionary_fs_storage_remove_sc_link_content(sc_element * element, sc
   sc_dictionary_node * node = sc_dictionary_get_last_node_from_node(strings_dictionary, strings_dictionary->root, hash);
   sc_mem_free(hash);
 
+  if (node == null_ptr)
+    return SC_FALSE;
+
   sc_link_content * content = node->data_list->begin->data;
   sc_list_destroy(node->data_list);
   node->data_list = null_ptr;
 
-  void * addr_hash = (void *)sc_addr_to_hash(addr);
+  void * addr_hash = (sc_addr_hash *)sc_addr_to_hash(addr);
   sc_bool result = sc_dictionary_remove(addrs_hashes_dictionary, content->sc_string, addr_hash, sc_hashes_compare);
 
   sc_mem_free(content->sc_string);
