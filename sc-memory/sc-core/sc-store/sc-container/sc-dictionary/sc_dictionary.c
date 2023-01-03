@@ -214,7 +214,10 @@ sc_dictionary_node * sc_dictionary_remove_from_node(
 }
 
 sc_bool sc_dictionary_remove(
-    sc_dictionary * dictionary, const sc_char * sc_string, void * data, sc_bool (*predicate)(void * data, void * other))
+    sc_dictionary * dictionary,
+    const sc_char * sc_string,
+    void * data,
+    sc_bool (*predicate)(void * data, void * other))
 {
   sc_dictionary_node * node = sc_dictionary_remove_from_node(dictionary, dictionary->root, sc_string, 0);
 
