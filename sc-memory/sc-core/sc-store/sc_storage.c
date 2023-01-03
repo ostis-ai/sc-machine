@@ -963,8 +963,13 @@ sc_result sc_storage_set_link_content(sc_memory_context * ctx, sc_addr addr, con
   {
     el->flags.type |= sc_flag_link_self_container;
 
-    if (data != null_ptr)
-      sc_fs_storage_append_sc_link(el, addr, data, strlen(data));
+    if (data == null_ptr)
+    {
+      data = sc_mem_new(sc_char, 1);
+      data[0] = '\0';
+    }
+
+    sc_fs_storage_append_sc_link(el, addr, data, strlen(data));
     result = SC_RESULT_OK;
   }
   sc_mem_free(data);
@@ -1049,6 +1054,12 @@ sc_result sc_storage_find_links_with_content(
   sc_uint32 size = 0;
   if (sc_stream_get_data(stream, &sc_string, &size) != SC_TRUE)
     return SC_RESULT_ERROR;
+
+  if (sc_string == null_ptr)
+  {
+    sc_string = sc_mem_new(sc_char, 1);
+    sc_string[0] = '\0';
+  }
 
   sc_addr * found_addrs = null_ptr;
   sc_result result = sc_fs_storage_get_sc_links_by_content(sc_string, &found_addrs, result_count);

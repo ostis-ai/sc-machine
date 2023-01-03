@@ -386,6 +386,9 @@ sc_bool sc_dictionary_fs_storage_remove_sc_link_content(sc_element * element, sc
   if (node == null_ptr)
     return SC_FALSE;
 
+  if (node->data_list == null_ptr)
+    return SC_TRUE;
+
   sc_link_content * content = node->data_list->begin->data;
   sc_list_destroy(node->data_list);
   node->data_list = null_ptr;
