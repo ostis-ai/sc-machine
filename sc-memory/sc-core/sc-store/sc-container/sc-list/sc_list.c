@@ -141,6 +141,10 @@ sc_bool sc_list_remove_if(sc_list * list, void * data, sc_bool (*predicate)(void
 
       temp = node;
       node = node->next;
+
+      if (temp == list->begin)
+        list->begin = node;
+
       sc_mem_free(temp);
       is_removed = SC_TRUE;
 

@@ -82,11 +82,14 @@ sc_dictionary_node * sc_dictionary_append(
 /*! Removes a string from a sc-dictionary by a common prefix with another string started in sc-dictionary node, if such
  * exists. A common prefix doesn't remove form sc-dictionary if it contains in another string.
  * @param sc_dictionary A sc-dictionary where common prefix may be started
- * @param sc_string A removable string
+ * @param sc_string A key string
+ * @param data A pointer to removable data
+ * @param predicate A predicate function what to delete
  * @returns Returns If a string was removed then function returns SC_TRUE; otherwise return SC_FALSE.
  * @note If a string isn't in sc-dictionary then SC_FALSE will be returned
  */
-sc_bool sc_dictionary_remove(sc_dictionary * dictionary, const sc_char * sc_string);
+sc_bool sc_dictionary_remove(
+    sc_dictionary * dictionary, const sc_char * sc_string, void * data, sc_bool (*predicate)(void * data, void * other));
 
 /*! Checks, if a string is in a sc-dictionary by a common prefix with another string started in sc-dictionary
  * node, if such exists.

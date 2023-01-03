@@ -372,12 +372,18 @@ TEST_F(ScLinkTest, links_deletion)
 
   ScAddr const & linkAddr1 = ctx.CreateLink(ScType::LinkConst);
   EXPECT_TRUE(linkAddr1.IsValid());
-
   EXPECT_TRUE(ctx.SetLinkContent(linkAddr1, "link_content_example"));
   EXPECT_TRUE(ctx.FindLinksByContent("link_content_example").size() == 1);
 
-  EXPECT_TRUE(ctx.EraseElement(linkAddr1));
+  ScAddr const & linkAddr2 = ctx.CreateLink(ScType::LinkConst);
+  EXPECT_TRUE(linkAddr2.IsValid());
+  EXPECT_TRUE(ctx.SetLinkContent(linkAddr2, "link_content_example"));
+  EXPECT_TRUE(ctx.FindLinksByContent("link_content_example").size() == 2);
 
+  EXPECT_TRUE(ctx.EraseElement(linkAddr1));
+  EXPECT_TRUE(ctx.FindLinksByContent("link_content_example").size() == 1);
+
+  EXPECT_TRUE(ctx.EraseElement(linkAddr2));
   EXPECT_TRUE(ctx.FindLinksByContent("link_content_example").empty());
 
   ctx.Destroy();

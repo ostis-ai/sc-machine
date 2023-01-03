@@ -213,15 +213,15 @@ sc_dictionary_node * sc_dictionary_remove_from_node(
   return null_ptr;
 }
 
-sc_bool sc_dictionary_remove(sc_dictionary * dictionary, const sc_char * sc_string)
+sc_bool sc_dictionary_remove(
+    sc_dictionary * dictionary, const sc_char * sc_string, void * data, sc_bool (*predicate)(void * data, void * other))
 {
   sc_dictionary_node * node = sc_dictionary_remove_from_node(dictionary, dictionary->root, sc_string, 0);
 
   sc_bool result = node != null_ptr;
   if (result == SC_TRUE)
   {
-    sc_list_destroy(node->data_list);
-    node->data_list = null_ptr;
+    sc_list_remove_if(node->data_list, data, predicate);
   }
 
   return result;
