@@ -138,9 +138,8 @@ protected:
   ElementHandle ProcessFileURL(std::string const & fileURL);
 
   ElementHandle ProcessEmptyContour();
-  ElementHandle ProcessContourBegin();
+  void ProcessContourBegin();
   void ProcessContourEnd(ElementHandle const & contourHandle);
-  ElementHandle ProcessContourEndWithJoin(ElementHandle const & source);
 
   void ProcessTriple(ElementHandle const & source, ElementHandle const & edge, ElementHandle const & target);
   void ProcessAssign(std::string const & alias, ElementHandle const & value);
