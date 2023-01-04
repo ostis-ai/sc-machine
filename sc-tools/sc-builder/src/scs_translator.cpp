@@ -113,8 +113,8 @@ bool SCsTranslator::TranslateImpl(Params const & params)
   GetFileContent(params.m_fileName, data);
 
   SCsHelper scs(m_ctx, std::make_shared<impl::FileProvider>(params.m_fileName));
-  
-  if (!scs.GenerateBySCsText(data))
+
+  if (!scs.GenerateBySCsText(data, params.m_outputStructure))
   {
     SC_THROW_EXCEPTION(utils::ExceptionParseError, scs.GetLastError());
   }
