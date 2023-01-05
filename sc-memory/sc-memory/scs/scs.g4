@@ -57,45 +57,18 @@ content returns [ElementHandle handle]
     }
   ;
 
-
-contour returns [ElementHandle handle]
-  locals [int count = 0; ]
-  @init{ $count = 1; }
+contour[ElementHandle contourHandle = ElementHandle()]
+  returns [ElementHandle handle]
   : CONTOUR_BEGIN
     {
-      $ctx->handle = m_parser->ProcessContourBegin();
+      $ctx->handle = $contourHandle.IsValid() ? $contourHandle : m_parser->ProcessEmptyContour();
+      m_parser->ProcessContourBegin();
     }
-    { $ctx->count > 0 }?
     ( (sentence_wrap
 	| (sentence_lvl_4_list_item[$ctx->handle] ';;'))* )
     CONTOUR_END
     {
-      $ctx->count--;
-      if ($ctx->count == 0)
-      {
-        m_parser->ProcessContourEnd($ctx->handle);
-      }
-    }
-  ;
-
-contourWithJoin[ElementHandle contourHandle]
-  returns [ElementHandle handle]
-  locals [int count = 0; ]
-  @init{ $count = 1; }
-  : CONTOUR_BEGIN
-    {
-      m_parser->ProcessContourBegin();
-    }
-    { $ctx->count > 0 }?
-    ( (sentence_wrap
-	| (sentence_lvl_4_list_item[$contourHandle] ';;'))* )
-    CONTOUR_END
-    {
-      $ctx->count--;
-      if ($ctx->count == 0)
-      {
-        //$ctx->handle = m_parser->ProcessContourEnd();
-      }
+      m_parser->ProcessContourEnd($ctx->handle);
     }
   ;
 
@@ -164,10 +137,7 @@ sentence_assign
   ;
 
 sentence_assign_contour
-  : a=idtf_system '=' i=contourWithJoin[$ctx->a->handle]
-    {
-      m_parser->ProcessContourEndWithJoin($ctx->a->handle);
-    }
+  : a=idtf_system '=' contour[$ctx->a->handle]
   ;
     
 idtf_lvl1_preffix returns [std::string text]
@@ -303,7 +273,7 @@ idtf_common returns [ElementHandle handle]
   : a=idtf_atomic { $ctx->handle = $ctx->a->handle; }
   | ie=idtf_edge { $ctx->handle = $ctx->ie->handle; }
   | iset=idtf_set { $ctx->handle = $ctx->iset->handle; }
-  | ct=contour { $ctx->handle = $ctx->ct->handle; }
+  | ct=contour[] { $ctx->handle = $ctx->ct->handle; }
   | cn=content { $ctx->handle = $ctx->cn->handle; }
   | u=idtf_url { $ctx->handle = $ctx->u->handle; }
   ;

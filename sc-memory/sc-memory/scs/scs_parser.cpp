@@ -48,7 +48,7 @@ std::string UnescapeContent(std::string const & content)
   std::string::size_type pos = 0;
   while (true)
   {
-    pos = result.find("\\", pos);
+    pos = result.find('\\', pos);
     if (pos == std::string::npos)
       break;
 
@@ -277,7 +277,6 @@ Parser::Parser()
 
 bool Parser::Parse(std::string const & str)
 {
-  // TODO: gather result
   bool result = true;
 
   std::string fName;
@@ -514,14 +513,10 @@ ElementHandle Parser::ProcessEmptyContour()
   return AppendElement(GenerateContourIdtf(), ScType::NodeConstStruct);
 }
 
-ElementHandle Parser::ProcessContourBegin()
+void Parser::ProcessContourBegin()
 {
-  ElementHandle const result = AppendElement(GenerateContourIdtf(), ScType::NodeConstStruct);
-
-  m_contourElementsStack.push(std::make_pair(m_parsedElements.size(), m_parsedElementsLocal.size()));
+  m_contourElementsStack.emplace(m_parsedElements.size(), m_parsedElementsLocal.size());
   m_contourTriplesStack.push(m_parsedTriples.size());
-
-  return result;
 }
 
 void Parser::ProcessContourEnd(ElementHandle const & contourHandle)
@@ -562,45 +557,6 @@ void Parser::ProcessContourEnd(ElementHandle const & contourHandle)
     ElementHandle const edge = ProcessConnector("->");
     ProcessTriple(contourHandle, edge, el);
   }
-}
-
-ElementHandle Parser::ProcessContourEndWithJoin(ElementHandle const & source)
-{
-  SC_ASSERT(!m_contourElementsStack.empty(), ());
-  SC_ASSERT(!m_contourTriplesStack.empty(), ());
-
-  size_t const last = m_parsedElements.size();
-  size_t const lastTriple = m_parsedTriples.size();
-
-  auto const ind = m_contourElementsStack.top();
-  m_contourElementsStack.pop();
-
-  std::set<ElementHandle> newElements;
-
-  // append all new elements into contour
-  for (size_t i = ind.first; i < last; ++i)
-    newElements.insert(ElementHandle(ElementID(i), false));
-
-  size_t const tripleFirst = m_contourTriplesStack.top();
-  m_contourTriplesStack.pop();
-
-  for (size_t i = tripleFirst; i < lastTriple; ++i)
-  {
-    auto const & t = m_parsedTriples[i];
-    newElements.insert(t.m_source);
-    newElements.insert(t.m_edge);
-    newElements.insert(t.m_target);
-  }
-
-  for (auto const & el : newElements)
-  {
-    ElementHandle const edge = ProcessConnector("->");
-    ProcessTriple(source, edge, el);
-  }
-
-  ParsedElement & srcEl = GetParsedElementRef(source);
-  srcEl.m_type = ScType::NodeConstStruct;
-  return source;
 }
 
 }  // namespace scs
