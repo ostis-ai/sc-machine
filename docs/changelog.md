@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Append generated elements by `SCs-helper` into requested output structure
 - Oriented sets representation (<a, ..., b>) in SCs
+- Build docs in SCn format
 
 ### Changed
 
