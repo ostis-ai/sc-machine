@@ -7,6 +7,8 @@
 #ifndef _sc_helper_h_
 #define _sc_helper_h_
 
+#define REGEX_SYSTEM_IDTF "([a-z]|[A-Z]|'_'|'.'|[0-9])+"
+
 #include "sc_memory.h"
 
 //! Enumeration of sc-keynodes
@@ -76,4 +78,9 @@ sc_helper_resolve_system_identifier(sc_memory_context const * ctx, const char * 
  */
 _SC_EXTERN sc_bool sc_helper_check_arc(sc_memory_context const * ctx, sc_addr beg_el, sc_addr end_el, sc_type arc_type);
 
+/*! Check if system identifier is valid
+ * @param data system identifier
+ * @return If system identifier is valid, then return SC_TRUE; otherwise return SC_FALSE.
+ */
+_SC_EXTERN sc_result sc_helper_check_system_identifier(const sc_char * data);
 #endif  // _sc_helper_h_
