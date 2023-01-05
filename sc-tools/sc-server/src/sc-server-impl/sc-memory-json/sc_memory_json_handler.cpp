@@ -10,7 +10,7 @@ std::string ScMemoryJsonHandler::Handle(ScServerConnectionHandle const & hdl, st
 {
   std::vector<ScMemoryJsonPayload> requestData = ParseRequestMessage(requestMessage);
   if (requestData.empty())
-    return "Invalid request message";
+    return ScMemoryJsonPayload("Invalid request message").dump();
 
   std::string const & requestType = requestData.at(0).get<std::string>();
   ScMemoryJsonPayload const & requestPayload = requestData.at(1);
@@ -40,17 +40,7 @@ std::vector<ScMemoryJsonPayload> ScMemoryJsonHandler::ParseRequestMessage(std::s
 
 ScMemoryJsonPayload ScMemoryJsonHandler::JsonifyRequestMessage(std::string const & requestMessage)
 {
-  ScMemoryJsonPayload json;
-  try
-  {
-    json = ScMemoryJsonPayload::parse(requestMessage);
-  }
-  catch (ScMemoryJsonPayload::parse_error const & e)
-  {
-    m_server->LogError(ScServerLogErrors::rerror, e.what());
-  }
-
-  return json;
+  return ScMemoryJsonPayload::accept(requestMessage) ? ScMemoryJsonPayload::parse(requestMessage) : ScMemoryJsonPayload();
 }
 
 ScMemoryJsonPayload ScMemoryJsonHandler::ResponseRequestMessage(

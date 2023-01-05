@@ -31,9 +31,11 @@ public:
   {
     try
     {
-      if (IsHealthCheck(m_msg->get_payload()))
+      std::string messageType = GetMessageType(m_msg);
+
+      if (IsHealthCheck(messageType))
         OnHealthCheck(m_hdl, m_msg);
-      else if (IsEvent(m_msg->get_payload()))
+      else if (IsEvent(messageType))
         OnEvent(m_hdl, m_msg);
       else
         OnAction(m_hdl, m_msg);
@@ -105,15 +107,24 @@ protected:
   ScMemoryJsonHandler * m_actionsHandler;
   ScMemoryJsonHandler * m_eventsHandler;
 
-  static sc_bool IsEvent(std::string const & message)
+  static std::string GetMessageType(ScServerMessage const & msg)
   {
-    ScMemoryJsonPayload const & payload = ScMemoryJsonPayload::parse(message);
-    return payload["type"] == "events";
+    if (ScMemoryJsonPayload::accept(msg->get_payload()))
+    {
+      ScMemoryJsonPayload const & payload = ScMemoryJsonPayload::parse(msg->get_payload());
+      return payload["type"].get<std::string>();
+    }
+
+    return "";
   }
 
-  static sc_bool IsHealthCheck(std::string const & message)
+  static sc_bool IsEvent(std::string const & messageType)
   {
-    ScMemoryJsonPayload const & payload = ScMemoryJsonPayload::parse(message);
-    return payload["type"] == "healthcheck";
+    return messageType == "events";
+  }
+
+  static sc_bool IsHealthCheck(std::string const & messageType)
+  {
+    return messageType == "healthcheck";
   }
 };
