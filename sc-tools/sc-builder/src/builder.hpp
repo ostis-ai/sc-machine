@@ -24,7 +24,7 @@ struct BuilderParams
   //! Result structure system identifier
   std::string m_resultStructureSystemIdtf;
   //! Flag to create result structure
-  bool m_resultStructureUpload;
+  bool m_resultStructureUpload = SC_FALSE;
 };
 
 class Builder

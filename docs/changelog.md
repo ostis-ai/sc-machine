@@ -9,9 +9,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- Add validation of system identifier
 - Fix memory clear parameter reading from config file
 - Add output structure builder feature to config
+- Add validation of system identifier
 - Append generated elements by `SCs-helper` into requested output structure
 - Oriented sets representation (<a, ..., b>) in SCs
 - Build docs in SCn format
