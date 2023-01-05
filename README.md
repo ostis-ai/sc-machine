@@ -46,6 +46,8 @@ Both declarative (data, data structures, documentation, tasks specification, etc
 
   is redistributed in a form of the [SCn-TeX document](https://github.com/ostis-ai/ostis-web-platform/blob/develop/docs/main.pdf).
 
+  or **alternatively** you can build sc-machine documentation only. To do that refer to the [scn-latex-plugin](https://github.com/ostis-ai/scn-latex-plugin) documentation.
+
 ## Quick start
 
 SC-machine is a core of any OSTIS-system, so you can use a reference system named [OSTIS Web platform](https://github.com/ostis-ai/ostis-web-platform) to get it up and running quickly.
