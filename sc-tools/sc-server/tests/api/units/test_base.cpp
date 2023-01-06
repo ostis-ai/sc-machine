@@ -988,3 +988,19 @@ TEST_F(ScServerTest, Unknown)
 
   client.Stop();
 }
+
+TEST_F(ScServerTest, UnknownJson)
+{
+  ScClient client;
+  EXPECT_TRUE(client.Connect(m_server->GetUri()));
+  client.Run();
+
+  std::string const payloadString = "unknown";
+  EXPECT_TRUE(client.Send(payloadString));
+
+  auto const response = client.GetResponseMessage();
+  EXPECT_TRUE(response.is_string());
+  EXPECT_FALSE(response.get<std::string>().empty());
+
+  client.Stop();
+}
