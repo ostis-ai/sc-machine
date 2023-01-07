@@ -329,34 +329,30 @@ sc_result sc_memory_get_link_content(sc_memory_context const * ctx, sc_addr addr
   return sc_storage_get_link_content(ctx, addr, stream);
 }
 
-sc_result sc_memory_find_links_with_content(
+sc_result sc_memory_find_links_with_content_string(
     sc_memory_context const * ctx,
     sc_stream const * stream,
-    sc_addr ** result,
-    sc_uint32 * result_count)
+    sc_list ** result)
 {
-  return sc_storage_find_links_with_content(ctx, stream, result, result_count);
+  return sc_storage_find_links_with_content_string(ctx, stream, result);
 }
 
 sc_result sc_memory_find_links_by_content_substring(
     sc_memory_context const * ctx,
     sc_stream const * stream,
-    sc_addr ** result,
-    sc_uint32 * result_count,
+    sc_list ** result,
     sc_uint32 max_length_to_search_as_prefix)
 {
-  return sc_storage_find_links_by_content_substring(ctx, stream, result, result_count, max_length_to_search_as_prefix);
+  return sc_storage_find_links_by_content_substring(ctx, stream, result, max_length_to_search_as_prefix);
 }
 
 sc_result sc_memory_find_links_contents_by_content_substring(
     sc_memory_context const * ctx,
     sc_stream const * stream,
-    sc_char *** result,
-    sc_uint32 * result_count,
+    sc_list ** result,
     sc_uint32 max_length_to_search_as_prefix)
 {
-  return sc_storage_find_links_contents_by_content_substring(
-      ctx, stream, result, result_count, max_length_to_search_as_prefix);
+  return sc_storage_find_links_contents_by_content_substring(ctx, stream, result, max_length_to_search_as_prefix);
 }
 
 void sc_memory_free_buff(sc_pointer buff)

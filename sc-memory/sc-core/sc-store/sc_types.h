@@ -96,6 +96,9 @@ struct _sc_addr
 #  define SC_ADDR_LOCAL_TO_INT(addr) (sc_uint32)(((addr).seg << 16) | ((addr).offset & 0xffff))
 #  define SC_ADDR_LOCAL_OFFSET_FROM_INT(v) (sc_uint16)((v)&0x0000ffff)
 #  define SC_ADDR_LOCAL_SEG_FROM_INT(v) SC_ADDR_LOCAL_OFFSET_FROM_INT(v >> 16)
+#  define SC_ADDR_LOCAL_FROM_INT(hash, addr) \
+    addr.seg = SC_ADDR_LOCAL_SEG_FROM_INT(hash); \
+    addr.offset = SC_ADDR_LOCAL_OFFSET_FROM_INT(hash)
 
 typedef sc_uint16 sc_type;
 

@@ -383,17 +383,18 @@ ScAddrVector ScMemoryContext::FindLinksByContent(ScStreamPtr const & stream)
   SC_ASSERT(IsValid(), ());
   ScAddrVector contents;
 
-  sc_addr * result = nullptr;
-  sc_uint32 resultCount = 0;
+  sc_list * result = nullptr;
 
   sc_stream * str = stream->m_stream;
-  if (sc_memory_find_links_with_content(m_context, str, &result, &resultCount) == SC_RESULT_OK)
+  if (sc_memory_find_links_with_content_string(m_context, str, &result) == SC_RESULT_OK)
   {
-    for (sc_uint32 i = 0; i < resultCount; ++i)
-      contents.push_back(ScAddr(result[i]));
-
-    if (result)
-      sc_memory_free_buff(result);
+    sc_iterator * it = sc_list_iterator(result);
+    while (sc_iterator_next(it))
+    {
+      auto addr_hash = (sc_addr_hash)sc_iterator_get(it);
+      contents.emplace_back(addr_hash);
+    }
+    sc_iterator_destroy(it);
   }
 
   return contents;
@@ -404,18 +405,19 @@ ScAddrVector ScMemoryContext::FindLinksByContentSubstring(ScStreamPtr const & st
   SC_ASSERT(IsValid(), ());
   ScAddrVector contents;
 
-  sc_addr * result = nullptr;
-  sc_uint32 resultCount = 0;
+  sc_list * result = nullptr;
 
   sc_stream * str = stream->m_stream;
-  if (sc_memory_find_links_by_content_substring(m_context, str, &result, &resultCount, maxLengthToSearchAsPrefix) ==
-      SC_RESULT_OK)
+  if (sc_memory_find_links_by_content_substring(m_context, str, &result, maxLengthToSearchAsPrefix) == SC_RESULT_OK)
   {
-    for (sc_uint32 i = 0; i < resultCount; ++i)
-      contents.push_back(ScAddr(result[i]));
-
-    if (result)
-      sc_memory_free_buff(result);
+    sc_iterator * it = sc_list_iterator(result);
+    while (sc_iterator_next(it))
+    {
+      auto addr_hash = (sc_addr_hash)sc_iterator_get(it);
+      contents.emplace_back(addr_hash);
+    }
+    sc_iterator_destroy(it);
+    sc_list_destroy(result);
   }
 
   return contents;
@@ -428,21 +430,20 @@ std::vector<std::string> ScMemoryContext::FindLinksContentsByContentSubstring(
   SC_ASSERT(IsValid(), ());
   std::vector<std::string> contents;
 
-  sc_char ** result = nullptr;
-  sc_uint32 resultCount = 0;
+  sc_list * result = nullptr;
 
   sc_stream * str = stream->m_stream;
-  if (sc_memory_find_links_contents_by_content_substring(
-          m_context, str, &result, &resultCount, maxLengthToSearchAsPrefix) == SC_RESULT_OK)
+  if (sc_memory_find_links_contents_by_content_substring(m_context, str, &result, maxLengthToSearchAsPrefix) ==
+      SC_RESULT_OK)
   {
-    for (sc_uint32 i = 0; i < resultCount; ++i)
+    sc_iterator * it = sc_list_iterator(result);
+    while (sc_iterator_next(it))
     {
-      contents.emplace_back(result[i]);
-      sc_memory_free_buff(result[i]);
+      auto string = (sc_char *)sc_iterator_get(it);
+      contents.emplace_back(string);
     }
-
-    if (result)
-      sc_memory_free_buff(result);
+    sc_iterator_destroy(it);
+    sc_list_destroy(result);
   }
 
   return contents;

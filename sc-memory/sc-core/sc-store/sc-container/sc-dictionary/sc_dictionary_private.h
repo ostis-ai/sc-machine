@@ -12,11 +12,10 @@
 
 sc_dictionary_node * _sc_dictionary_node_initialize(sc_uint8 children_size);
 
-sc_dictionary_node * _sc_dictionary_get_next_node(sc_dictionary * dictionary, sc_dictionary_node * node, sc_char ch);
-
-sc_addr * sc_list_to_addr_array(sc_list * list);
-
-sc_addr_hash * sc_list_to_hashes_array(sc_list * list);
+sc_dictionary_node * _sc_dictionary_get_next_node(
+    const sc_dictionary * dictionary,
+    const sc_dictionary_node * node,
+    sc_char ch);
 
 /*! Appends a string to a sc-dictionary by a common prefix with another string started in sc-dictionary node, if such
  * exists.
@@ -35,7 +34,7 @@ sc_dictionary_node * sc_dictionary_append_to_node(
  * @param dictionary A sc-dictionary pointer
  * @param node A sc-dictionary node where common prefix may be started
  * @param sc_string A removable string
- * @param size Removable string size
+ * @param sc_string_size Removable string size
  * @returns Returns A sc-dictionary node where removable string or its prefix starts
  * @note If string isn't in sc-dictionary then null_pointer will be returned
  */
@@ -43,18 +42,21 @@ sc_dictionary_node * sc_dictionary_remove_from_node(
     sc_dictionary * dictionary,
     sc_dictionary_node * node,
     const sc_char * sc_string,
+    sc_uint32 sc_string_size,
     sc_uint32 index);
 
 /*! Gets a terminal sc-dictionary node where string ends.
  * @param dictionary A sc-dictionary pointer
  * @param node A sc-dictionary node where common prefix may be started
  * @param sc_string A string to retrieve data by it
+ * @param sc_string_size A string size
  * @returns Returns A sc-dictionary node where string ends
  */
-sc_dictionary_node * sc_dictionary_get_last_node_from_node(
-    sc_dictionary * dictionary,
-    sc_dictionary_node * node,
-    const sc_char * sc_string);
+const sc_dictionary_node * sc_dictionary_get_last_node_from_node(
+    const sc_dictionary * dictionary,
+    const sc_dictionary_node * node,
+    const sc_char * sc_string,
+    sc_uint32 sc_string_size);
 
 /*! Visits all sc-dictionary nodes starting with specified node and calls procedure with it and its data. A method
  * completes down iterating visiting.

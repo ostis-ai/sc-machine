@@ -22,6 +22,7 @@
 #include "sc-base/sc_atomic.h"
 #include "sc-base/sc_assert_utils.h"
 #include "sc-base/sc_message.h"
+#include "sc-container/sc-string/sc_string.h"
 
 #include <stdio.h>
 
@@ -504,7 +505,7 @@ sc_result sc_storage_element_free(sc_memory_context * ctx, sc_addr addr)
 
     if (el->flags.type & sc_type_link)
     {
-      sc_fs_storage_remove_sc_link_content(el, addr);
+      sc_fs_storage_remove_sc_link_content_string(el, addr);
     }
     else if (el->flags.type & sc_type_arc_mask)
     {
@@ -988,9 +989,9 @@ sc_result sc_storage_set_link_content(sc_memory_context * ctx, sc_addr addr, con
     goto unlock;
   }
 
-  sc_char * data = null_ptr;
-  sc_uint32 size = 0;
-  if (sc_stream_get_data(stream, &data, &size) == SC_FALSE)
+  sc_char * sc_string = null_ptr;
+  sc_uint32 sc_string_size = 0;
+  if (sc_stream_get_data(stream, &sc_string, &sc_string_size) == SC_FALSE)
   {
     result = SC_RESULT_ERROR_NO_READ_RIGHTS;
     goto unlock;
@@ -999,16 +1000,13 @@ sc_result sc_storage_set_link_content(sc_memory_context * ctx, sc_addr addr, con
   {
     el->flags.type |= sc_flag_link_self_container;
 
-    if (data == null_ptr)
-    {
-      data = sc_mem_new(sc_char, 1);
-      data[0] = '\0';
-    }
+    if (sc_string == null_ptr)
+      sc_string_empty(sc_string);
 
-    sc_fs_storage_append_sc_link(el, addr, data, strlen(data));
+    sc_fs_storage_append_sc_link_content_string(el, addr, sc_string, sc_string_size);
     result = SC_RESULT_OK;
   }
-  sc_mem_free(data);
+  sc_mem_free(sc_string);
 
   sc_addr empty;
   SC_ADDR_MAKE_EMPTY(empty);
@@ -1052,17 +1050,14 @@ sc_result sc_storage_get_link_content(const sc_memory_context * ctx, sc_addr add
 
   if (el->flags.type & sc_flag_link_self_container)
   {
-    sc_uint32 size = 0;
+    sc_uint32 sc_string_size = 0;
     sc_char * sc_string = null_ptr;
-    sc_fs_storage_get_sc_link_content_ext(el, addr, &sc_string, &size);
+    sc_fs_storage_get_sc_link_content_string_ext(el, addr, &sc_string, &sc_string_size);
 
     if (sc_string == null_ptr)
-    {
-      size = 1;
-      sc_string = sc_mem_new(sc_char, size);
-    }
+      sc_string_empty(sc_string);
 
-    *stream = sc_stream_memory_new(sc_string, size, SC_STREAM_FLAG_READ, SC_TRUE);
+    *stream = sc_stream_memory_new(sc_string, sc_string_size, SC_STREAM_FLAG_READ, SC_TRUE);
     result = SC_RESULT_OK;
   }
 
@@ -1074,72 +1069,32 @@ unlock:
   return result;
 }
 
-sc_result sc_storage_find_links_with_content(
+sc_result sc_storage_find_links_with_content_string(
     const sc_memory_context * ctx,
     const sc_stream * stream,
-    sc_addr ** result_addrs,
-    sc_uint32 * result_count)
+    sc_list ** result_addrs)
 {
   sc_assert(ctx != null_ptr);
   sc_assert(stream != null_ptr);
 
   *result_addrs = null_ptr;
-  *result_count = 0;
 
   sc_char * sc_string = null_ptr;
-  sc_uint32 size = 0;
-  if (sc_stream_get_data(stream, &sc_string, &size) != SC_TRUE)
+  sc_uint32 sc_string_size = 0;
+  if (sc_stream_get_data(stream, &sc_string, &sc_string_size) != SC_TRUE)
     return SC_RESULT_ERROR;
 
   if (sc_string == null_ptr)
   {
-    sc_string = sc_mem_new(sc_char, 1);
-    sc_string[0] = '\0';
+    sc_string_size = 0;
+    sc_string_empty(sc_string);
   }
 
-  sc_addr * found_addrs = null_ptr;
-  sc_result result = sc_fs_storage_get_sc_links_by_content(sc_string, &found_addrs, result_count);
+  sc_result result = sc_fs_storage_get_sc_links_by_content_string(sc_string, sc_string_size, result_addrs);
   sc_mem_free(sc_string);
-  if (result != SC_RESULT_OK || found_addrs == null_ptr || result_count == 0)
+
+  if (result != SC_RESULT_OK || result_addrs == null_ptr || *result_addrs == 0)
     return SC_RESULT_ERROR;
-
-  *result_addrs = sc_mem_new(sc_addr, *result_count);
-
-  sc_uint32 i;
-  for (i = 0; i < *result_count; ++i)
-  {
-    sc_addr found = found_addrs[i];
-    if (SC_ADDR_IS_EMPTY(found))
-      continue;
-
-    sc_element * el = null_ptr;
-    if (sc_storage_element_lock(found, &el) != SC_RESULT_OK)
-    {
-      result = SC_RESULT_ERROR;
-      goto unlock;
-    }
-
-    if (!sc_access_lvl_check_read(ctx->access_levels, el->flags.access_levels))
-    {
-      result = SC_RESULT_ERROR_NO_READ_RIGHTS;
-      goto unlock;
-    }
-
-    (*result_addrs)[i] = found;
-
-  unlock:
-  {
-    STORAGE_CHECK_CALL(sc_storage_element_unlock(found));
-  }
-
-    if (result != SC_RESULT_OK)
-    {
-      *result_addrs = null_ptr;
-      *result_count = 0;
-      break;
-    }
-  }
-  sc_mem_free(found_addrs);
 
   return result;
 }
@@ -1147,24 +1102,26 @@ sc_result sc_storage_find_links_with_content(
 sc_result sc_storage_find_links_by_content_substring(
     const sc_memory_context * ctx,
     const sc_stream * stream,
-    sc_addr ** result_addrs,
-    sc_uint32 * result_count,
+    sc_list ** result_addrs,
     sc_uint32 max_length_to_search_as_prefix)
 {
   sc_assert(ctx != null_ptr);
   sc_assert(stream != null_ptr);
 
   *result_addrs = null_ptr;
-  *result_count = 0;
 
   sc_char * sc_string = null_ptr;
-  sc_uint32 size = 0;
-  if (sc_stream_get_data(stream, &sc_string, &size) != SC_TRUE)
+  sc_uint32 sc_string_size = 0;
+  if (sc_stream_get_data(stream, &sc_string, &sc_string_size) != SC_TRUE)
     return SC_RESULT_ERROR;
 
-  sc_result result = sc_fs_storage_get_sc_links_by_content_substr(
-      sc_string, result_addrs, result_count, max_length_to_search_as_prefix);
+  if (sc_string == null_ptr)
+    sc_string_empty(sc_string);
+
+  sc_result result = sc_fs_storage_get_sc_links_by_content_substring(
+      sc_string, sc_string_size, result_addrs, max_length_to_search_as_prefix);
   sc_mem_free(sc_string);
+
   if (result != SC_RESULT_OK)
     return SC_RESULT_ERROR;
 
@@ -1174,23 +1131,24 @@ sc_result sc_storage_find_links_by_content_substring(
 sc_result sc_storage_find_links_contents_by_content_substring(
     const sc_memory_context * ctx,
     const sc_stream * stream,
-    sc_char *** result_strings,
-    sc_uint32 * result_count,
+    sc_list ** result_strings,
     sc_uint32 max_length_to_search_as_prefix)
 {
   sc_assert(ctx != null_ptr);
   sc_assert(stream != null_ptr);
 
   *result_strings = null_ptr;
-  *result_count = 0;
 
   sc_char * sc_string = null_ptr;
-  sc_uint32 size = 0;
-  if (sc_stream_get_data(stream, &sc_string, &size) != SC_TRUE)
+  sc_uint32 sc_string_size = 0;
+  if (sc_stream_get_data(stream, &sc_string, &sc_string_size) != SC_TRUE)
     return SC_RESULT_ERROR;
 
-  sc_result result = sc_fs_storage_get_sc_links_contents_by_content_substr(
-      sc_string, result_strings, result_count, max_length_to_search_as_prefix);
+  if (sc_string == null_ptr)
+    sc_string_empty(sc_string);
+
+  sc_result result = sc_fs_storage_get_sc_links_contents_by_content_substring(
+      sc_string, sc_string_size, result_strings, max_length_to_search_as_prefix);
   sc_mem_free(sc_string);
   if (result != SC_RESULT_OK)
     return SC_RESULT_ERROR;

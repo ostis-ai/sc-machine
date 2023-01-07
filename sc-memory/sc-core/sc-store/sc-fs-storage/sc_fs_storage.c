@@ -75,43 +75,55 @@ sc_bool sc_fs_storage_shutdown(sc_segment ** segments, sc_bool save_segments)
   return SC_FALSE;
 }
 
-sc_bool sc_fs_storage_append_sc_link(sc_element * element, sc_addr addr, sc_char * sc_string, sc_uint32 size)
+sc_bool sc_fs_storage_append_sc_link_content_string(
+    const sc_element * element,
+    const sc_addr addr,
+    const sc_char * sc_string,
+    const sc_uint32 sc_string_size)
 {
-  return storage_instance->append_sc_link_content(element, addr, sc_string, size);
+  return storage_instance->append_sc_link_content_string(element, addr, sc_string, sc_string_size);
 }
 
-sc_bool sc_fs_storage_get_sc_links_by_content(const sc_char * sc_string, sc_addr ** links, sc_uint32 * size)
+sc_bool sc_fs_storage_get_sc_links_by_content_string(
+    const sc_char * sc_string,
+    const sc_uint32 sc_string_size,
+    sc_list ** links)
 {
-  return storage_instance->get_sc_links_by_content(sc_string, links, size);
+  return storage_instance->get_sc_links_by_content_string(sc_string, sc_string_size, links);
 }
 
-sc_bool sc_fs_storage_get_sc_links_by_content_substr(
-    const sc_char * sc_substr,
-    sc_addr ** links,
-    sc_uint32 * size,
+sc_bool sc_fs_storage_get_sc_links_by_content_substring(
+    const sc_char * sc_substring,
+    const sc_uint32 sc_substring_size,
+    sc_list ** links,
     sc_uint32 max_length_to_search_as_prefix)
 {
-  return storage_instance->get_sc_links_by_content_substring(sc_substr, links, size, max_length_to_search_as_prefix);
+  return storage_instance->get_sc_links_by_content_substring(
+      sc_substring, sc_substring_size, links, max_length_to_search_as_prefix);
 }
 
-sc_bool sc_fs_storage_get_sc_links_contents_by_content_substr(
-    const sc_char * sc_substr,
-    sc_char *** strings,
-    sc_uint32 * size,
+sc_bool sc_fs_storage_get_sc_links_contents_by_content_substring(
+    const sc_char * sc_substring,
+    const sc_uint32 sc_substring_size,
+    sc_list ** strings,
     sc_uint32 max_length_to_search_as_prefix)
 {
   return storage_instance->get_sc_links_contents_by_content_substring(
-      sc_substr, strings, size, max_length_to_search_as_prefix);
+      sc_substring, sc_substring_size, strings, max_length_to_search_as_prefix);
 }
 
-void sc_fs_storage_get_sc_link_content_ext(sc_element * element, sc_addr addr, sc_char ** sc_string, sc_uint32 * size)
+void sc_fs_storage_get_sc_link_content_string_ext(
+    const sc_element * element,
+    sc_addr addr,
+    sc_char ** sc_string,
+    sc_uint32 * size)
 {
-  storage_instance->get_sc_link_content_ext(element, addr, &*sc_string, size);
+  storage_instance->get_sc_link_content_string_ext(element, addr, &*sc_string, size);
 }
 
-sc_bool sc_fs_storage_remove_sc_link_content(sc_element * element, sc_addr addr)
+sc_bool sc_fs_storage_remove_sc_link_content_string(const sc_element * element, sc_addr addr)
 {
-  return storage_instance->remove_sc_link_content(element, addr);
+  return storage_instance->remove_sc_link_content_string(element, addr);
 }
 
 // dictionary read, write and save methods

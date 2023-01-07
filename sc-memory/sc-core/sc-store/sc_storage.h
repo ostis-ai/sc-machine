@@ -10,6 +10,7 @@
 #include "sc_types.h"
 #include "sc_defines.h"
 #include "sc_stream.h"
+#include "sc-container/sc-list/sc_list.h"
 
 #if SC_DEBUG_MODE
 #  define STORAGE_CHECK_CALL(x) \
@@ -169,17 +170,15 @@ sc_result sc_storage_get_link_content(sc_memory_context const * ctx, sc_addr add
 /*! Search sc-link addrs by specified data
  * @param stream Pointer to stream that contains data for search
  * @param result_addrs Pointer to result container
- * @param result_count Container for results count
  * @return If sc-links with specified content found, then sc-addrs of found link
  * writes into \p result array and function returns SC_OK; otherwise \p function returns SC_OK.
  * In any case \p result_count contains number of found sc-addrs.
  * @attention \p result array need to be free after usage
  */
-sc_result sc_storage_find_links_with_content(
+sc_result sc_storage_find_links_with_content_string(
     sc_memory_context const * ctx,
     sc_stream const * stream,
-    sc_addr ** result_addrs,
-    sc_uint32 * result_count);
+    sc_list ** result_addrs);
 
 /*! Search sc-link addrs by specified data substring
  * @param stream Pointer to stream that contains data for search
@@ -194,14 +193,12 @@ sc_result sc_storage_find_links_with_content(
 sc_result sc_storage_find_links_by_content_substring(
     const sc_memory_context * ctx,
     const sc_stream * stream,
-    sc_addr ** result_addrs,
-    sc_uint32 * result_count,
+    sc_list ** result_addrs,
     sc_uint32 max_length_to_search_as_prefix);
 
 /*! Search sc-strings by specified substring
  * @param stream Pointer to stream that contains data for search
  * @param result_strings Pointer to result container of sc-strings with substring
- * @param result_count Container for results count
  * @param max_length_to_search_as_prefix Search by prefix as substring length <= max_length_to_search_as_prefix
  * @return If sc-strings with specified substring found, then they
  * writes into \p result array and function returns SC_RESULT_OK; otherwise function returns SC_RESULT_OK.
@@ -211,8 +208,7 @@ sc_result sc_storage_find_links_by_content_substring(
 sc_result sc_storage_find_links_contents_by_content_substring(
     const sc_memory_context * ctx,
     const sc_stream * stream,
-    sc_char *** result_strings,
-    sc_uint32 * result_count,
+    sc_list ** result_strings,
     sc_uint32 max_length_to_search_as_prefix);
 
 /*! Setup new access levels to sc-element. New access levels will be a minimum from context access levels and parameter
@@ -220,7 +216,6 @@ sc_result sc_storage_find_links_contents_by_content_substring(
  * @param addr sc-addr of sc-element to change access levels
  * @param access_levels new access levels
  * @param new_value new value of access levels for sc-element. This parameter can be NULL
- *
  * @return Returns SC_RESULT_OK, when access level changed; otherwise it returns error code
  */
 sc_result sc_storage_set_access_levels(

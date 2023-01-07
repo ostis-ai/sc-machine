@@ -10,6 +10,8 @@
 #include "../../sc-base/sc_allocator.h"
 #include "../../sc_types.h"
 
+#define sc_string_empty(string) ({ sc_string = sc_mem_new(sc_char, 1); })
+
 #define sc_str_cpy(copy, string, size) \
   ({ \
     copy = sc_mem_new(sc_char, size + 1); \
@@ -17,5 +19,20 @@
   })
 
 #define sc_str_has_prefix(str, prefix) g_str_has_prefix(str, prefix)
+
+#define sc_str_len(string) strlen(string)
+
+#define sc_int_to_str_int(number, string) \
+  sc_uint32 length = (number == 0) ? 1 : snprintf(null_ptr, 0, "%llu", number); \
+  string = sc_mem_new(sc_char, length + 1); \
+  gcvt(number, length, string)
+
+#define sc_str_find(str, substring) strstr(str, substring) != null_ptr
+
+#define sc_str_find_position(str, substring) (sc_uint64)(strstr(str, substring) - str + 1)
+
+#define sc_str_find_get(str, substring) strstr(str, substring)
+
+#define sc_str_cmp(str, other) strcmp(str, other) == 0
 
 #endif
