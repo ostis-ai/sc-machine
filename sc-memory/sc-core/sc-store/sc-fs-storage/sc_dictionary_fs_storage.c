@@ -296,8 +296,7 @@ void sc_dictionary_fs_storage_get_sc_link_content_string_ext(
   }
 
   sc_uint32 len = content->string_size;
-  *sc_string = sc_mem_new(sc_char, len + 1);
-  sc_mem_cpy(*sc_string, content->sc_string, len);
+  sc_str_cpy(*sc_string, content->sc_string, len);
   *size = len;
 }
 
