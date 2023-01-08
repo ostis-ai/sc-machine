@@ -31,6 +31,11 @@ ScStream::ScStream(sc_char const * buffer, size_t bufferSize, sc_uint8 flags)
   m_stream = sc_stream_memory_new(buffer, (sc_uint)bufferSize, flags, SC_FALSE);
 }
 
+ScStream::ScStream(sc_char * buffer, size_t bufferSize, sc_uint8 flags, sc_bool dataOwner)
+{
+  m_stream = sc_stream_memory_new(buffer, (sc_uint)bufferSize, flags, dataOwner);
+}
+
 ScStream::~ScStream()
 {
   Reset();

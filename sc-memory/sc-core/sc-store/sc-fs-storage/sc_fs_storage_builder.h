@@ -36,12 +36,13 @@ sc_fs_storage * sc_fs_storage_build()
   storage->fill = null_ptr;
   storage->save = sc_rocksdb_fs_storage_save;
   storage->clear = sc_rocksdb_fs_storage_clear;
-  storage->append_sc_link_content = sc_rocksdb_fs_storage_append_sc_link_content;
-  storage->get_sc_links_by_content = sc_rocksdb_fs_storage_get_sc_links_by_content;
-  storage->get_sc_links_by_content_substring = sc_rocksdb_fs_storage_find_sc_links_by_content_substr;
-  storage->get_sc_links_contents_by_content_substring = sc_rocksdb_fs_storage_find_sc_links_contents_by_content_substr;
-  storage->get_sc_link_content_ext = sc_rocksdb_fs_storage_get_sc_link_content_ext;
-  storage->remove_sc_link_content = sc_rocksdb_fs_storage_remove_sc_link_content;
+  storage->append_sc_link_content_string = sc_rocksdb_fs_storage_append_sc_link_content_string;
+  storage->get_sc_links_by_content_string = sc_rocksdb_fs_storage_get_sc_links_by_content_string;
+  storage->get_sc_links_by_content_substring = sc_rocksdb_fs_storage_find_sc_links_by_content_substring;
+  storage->get_sc_links_contents_by_content_substring =
+      sc_rocksdb_fs_storage_find_sc_links_contents_by_content_substring;
+  storage->get_sc_link_content_string_ext = sc_rocksdb_fs_storage_get_sc_link_content_string_ext;
+  storage->remove_sc_link_content_string = sc_rocksdb_fs_storage_remove_sc_link_content_string;
 #endif
 
   return storage;

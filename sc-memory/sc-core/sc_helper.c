@@ -78,6 +78,7 @@ sc_result resolve_nrel_system_identifier(sc_memory_context const * ctx)
     sc_iterator_destroy(addrs_it);
   }
 
+  sc_list_destroy(addrs);
   sc_stream_free(stream);
 
   return result == SC_TRUE ? SC_RESULT_OK : SC_RESULT_ERROR;
@@ -260,7 +261,9 @@ sc_result sc_helper_find_element_by_system_identifier_ext(
 
     sc_iterator_destroy(addrs_it);
   }
+
   sc_stream_free(stream);
+  sc_list_destroy(addrs);
 
   return result == SC_TRUE ? SC_RESULT_OK : SC_RESULT_ERROR;
 }

@@ -396,6 +396,7 @@ ScAddrVector ScMemoryContext::FindLinksByContent(ScStreamPtr const & stream)
     }
     sc_iterator_destroy(it);
   }
+  sc_list_destroy(result);
 
   return contents;
 }
@@ -417,8 +418,8 @@ ScAddrVector ScMemoryContext::FindLinksByContentSubstring(ScStreamPtr const & st
       contents.emplace_back(addr_hash);
     }
     sc_iterator_destroy(it);
-    sc_list_destroy(result);
   }
+  sc_list_destroy(result);
 
   return contents;
 }
@@ -441,10 +442,11 @@ std::vector<std::string> ScMemoryContext::FindLinksContentsByContentSubstring(
     {
       auto string = (sc_char *)sc_iterator_get(it);
       contents.emplace_back(string);
+      free(string);
     }
     sc_iterator_destroy(it);
-    sc_list_destroy(result);
   }
+  sc_list_destroy(result);
 
   return contents;
 }

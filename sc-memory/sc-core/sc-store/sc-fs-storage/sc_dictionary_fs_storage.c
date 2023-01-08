@@ -165,7 +165,14 @@ sc_bool sc_dictionary_fs_storage_get_sc_links_by_content_string(
 {
   sc_list * list = sc_dictionary_get(addrs_hashes_dictionary, sc_string, sc_string_size);
 
-  *links = list;
+  sc_list_init(*links);
+  sc_iterator * it = sc_list_iterator(list);
+  while (sc_iterator_next(it))
+  {
+    sc_list_push_back(*links, sc_iterator_get(it));
+  }
+  sc_iterator_destroy(it);
+
   return list == null_ptr ? SC_FALSE : SC_TRUE;
 }
 
@@ -233,7 +240,9 @@ void _sc_dictionary_fs_storage_update_strings_list(sc_dictionary_node * node, vo
     if (is_prefix || is_substr)
     {
       sc_list * full_list = args[0];
-      sc_list_push_back(full_list, content->sc_string);
+      sc_char * copy;
+      sc_str_cpy(copy, content->sc_string, content->string_size);
+      sc_list_push_back(full_list, copy);
     }
   }
 }

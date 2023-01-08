@@ -24,6 +24,7 @@ extern "C"
 #  include <mutex>
 #  include <vector>
 #  include <string>
+#  include <sstream>
 
 rocksdb::DB * gDBInstance = nullptr;
 std::string gInstancePath;
@@ -71,27 +72,35 @@ std::string MakeContentKey(sc_check_sum const * check_sum)
   return ChecksumToString(check_sum) + "_content";
 }
 
-std::string DataToStringBuffer(ScAddrsVector const & addrs)
+std::string DataToStringBuffer(sc_list * addrs)
 {
-  size_t const size = addrs.size();
-  auto const * pSize = (uint8_t const *)(&size);
-  auto const * pData = (uint8_t const *)(addrs.data());
+  std::ostringstream stream;
+  stream << "@addrs";
 
-  return std::string(pSize, pSize + sizeof(size)) + std::string(pData, pData + sizeof(sc_addr) * size);
+  sc_iterator * it = sc_list_iterator(addrs);
+  while (sc_iterator_next(it))
+  {
+    auto addr_hash = (sc_addr_hash)sc_iterator_get(it);
+    stream << addr_hash << ",";
+  }
+  sc_iterator_destroy(it);
+
+  return stream.str();
 }
 
-ScAddrsVector StringBufferToData(std::string const & data)
+void StringBufferToData(std::string const & data, sc_list * result)
 {
-  size_t size = 0;
-  assert(data.size() >= sizeof(size));
+  std::stringstream stream{data.substr(6)};
 
-  auto const * pData = (uint8_t const *)data.data();
-  size = *((size_t const *)pData);
+  sc_addr_hash addr_hash;
+  while (stream)
+  {
+    if (stream >> addr_hash)
+      sc_list_push_back(result, (void *)addr_hash);
 
-  auto const * pAddrs = (sc_addr const *)(pData + sizeof(size));
-  assert(data.size() == (sizeof(size) + sizeof(sc_addr) * size));
-
-  return {pAddrs, pAddrs + size};
+    sc_char ch;
+    stream >> ch;
+  }
 }
 
 #  define SC_RES(expr) (expr) ? SC_RESULT_OK : SC_RESULT_ERROR;
@@ -187,20 +196,29 @@ sc_result sc_rocksdb_fs_storage_addr_ref_append(sc_addr addr, const sc_check_sum
   rocksdb::ReadOptions readOptions;
   rocksdb::Status status = gDBInstance->Get(readOptions, key, &value);
 
-  ScAddrsVector addrs;
+  sc_list * addrs;
+  sc_list_init(&addrs);
 
   if (status.ok())
-    addrs = StringBufferToData(value);
+    StringBufferToData(value, addrs);
 
-  addrs.push_back(addr);
+  sc_addr_hash addr_hash = SC_ADDR_LOCAL_TO_INT(addr);
+  sc_list_push_back(addrs, (void *)addr_hash);
 
   rocksdb::WriteOptions writeOptions;
   status = gDBInstance->Put(writeOptions, key, DataToStringBuffer(addrs));
 
+  sc_list_destroy(addrs);
+
   return SC_RES(status.ok());
 }
 
-sc_result sc_rocksdb_fs_storage_addr_ref_remove(sc_addr addr, const sc_check_sum * check_sum)
+sc_bool sc_hashes_compare(void * hash, void * other)
+{
+  return (sc_addr_hash)hash == (sc_addr_hash)other;
+}
+
+sc_result sc_rocksdb_fs_storage_addr_ref_remove(const sc_addr addr, const sc_check_sum * check_sum)
 {
   MutexGuard lock(gMutex);
 
@@ -215,17 +233,14 @@ sc_result sc_rocksdb_fs_storage_addr_ref_remove(sc_addr addr, const sc_check_sum
   if (!status.ok())
     return SC_RESULT_ERROR_IO;
 
-  ScAddrsVector addrs = StringBufferToData(value);
-  for (size_t i = 0; i < addrs.size(); ++i)
-  {
-    if (SC_ADDR_IS_EQUAL(addrs[i], addr))
-    {
-      addrs.erase(addrs.begin() + (sc_int64)i);
-      break;
-    }
-  }
+  sc_list * addrs;
+  sc_list_init(&addrs);
+  StringBufferToData(value, addrs);
 
-  if (addrs.empty())
+  sc_addr_hash addr_hash = SC_ADDR_LOCAL_TO_INT(addr);
+  sc_list_remove_if(addrs, (void *)addr_hash, sc_hashes_compare);
+
+  if (addrs->size == 0)
   {
     rocksdb::WriteOptions writeOptions;
     status = gDBInstance->Delete(writeOptions, key);
@@ -237,10 +252,12 @@ sc_result sc_rocksdb_fs_storage_addr_ref_remove(sc_addr addr, const sc_check_sum
     status = gDBInstance->Put(writeOptions, key, DataToStringBuffer(addrs));
   }
 
+  sc_list_destroy(addrs);
+
   return SC_RES(status.ok());
 }
 
-sc_result sc_rocksdb_fs_storage_find(const sc_check_sum * check_sum, sc_addr ** result, sc_uint32 * result_count)
+sc_result sc_rocksdb_fs_storage_find(const sc_check_sum * check_sum, sc_list * result)
 {
   MutexGuard lock(gMutex);
 
@@ -255,21 +272,31 @@ sc_result sc_rocksdb_fs_storage_find(const sc_check_sum * check_sum, sc_addr ** 
   if (!status.ok())
     return SC_RESULT_ERROR_IO;
 
-  ScAddrsVector addrs = StringBufferToData(value);
-
-  *result_count = sc_uint32(addrs.size());
-
-  size_t const resultBytes = sizeof(sc_addr) * addrs.size();
-  *result = (sc_addr *)malloc(resultBytes);
-  sc_mem_cpy(*result, addrs.data(), resultBytes);
+  StringBufferToData(value, result);
 
   return SC_RESULT_OK;
 }
 
-sc_bool sc_rocksdb_fs_storage_find_sc_links_by_content_substr(
-    const sc_char * sc_substr,
-    sc_addr ** result,
-    sc_uint32 * result_count,
+sc_bool _sc_rocksdb_fs_storage_is_app_string(
+    const std::string & str,
+    const sc_char * substring,
+    sc_uint32 substring_size,
+    sc_uint32 max_length_to_search_as_prefix)
+{
+  if (str.find("@addrs") != std::string::npos)
+    return SC_FALSE;
+
+  sc_bool const isPrefix =
+      substring_size <= max_length_to_search_as_prefix && sc_str_cmp(str.substr(0, substring_size).c_str(), substring);
+  sc_bool const isSubstr = substring_size > max_length_to_search_as_prefix && str.find(substring) != std::string::npos;
+
+  return isPrefix || isSubstr;
+}
+
+sc_bool sc_rocksdb_fs_storage_find_sc_links_by_content_substring(
+    const sc_char * sc_substring,
+    const sc_uint32 sc_substring_size,
+    sc_list ** result,
     sc_uint32 max_length_to_search_as_prefix)
 {
   MutexGuard lock(gMutex);
@@ -280,7 +307,7 @@ sc_bool sc_rocksdb_fs_storage_find_sc_links_by_content_substr(
   auto const & it = gDBInstance->NewIterator(readOptions);
   it->SeekToFirst();
 
-  ScAddrsVector foundAddrs;
+  sc_list_init(result);
   while (it->Valid())
   {
     auto const & slice = it->value();
@@ -288,11 +315,7 @@ sc_bool sc_rocksdb_fs_storage_find_sc_links_by_content_substr(
     std::string str{slice.data()};
     str.resize(slice.size());
 
-    sc_bool const isPrefix = strlen(sc_substr) <= max_length_to_search_as_prefix &&
-                             strcmp(str.substr(0, strlen(sc_substr)).c_str(), sc_substr) == 0;
-    sc_bool const isSubstr =
-        strlen(sc_substr) > max_length_to_search_as_prefix && str.find(sc_substr) != std::string::npos;
-    if (isPrefix || isSubstr)
+    if (_sc_rocksdb_fs_storage_is_app_string(str, sc_substring, sc_substring_size, max_length_to_search_as_prefix))
     {
       sc_check_sum * check_sum;
       sc_link_calculate_checksum(str.c_str(), str.size(), &check_sum);
@@ -307,27 +330,19 @@ sc_bool sc_rocksdb_fs_storage_find_sc_links_by_content_substr(
         continue;
       }
 
-      ScAddrsVector addrs = StringBufferToData(value);
-
-      foundAddrs.insert(foundAddrs.cend(), addrs.cbegin(), addrs.cend());
+      StringBufferToData(value, *result);
     }
 
     it->Next();
   }
 
-  *result_count = sc_uint32(foundAddrs.size());
-
-  size_t const resultBytes = sizeof(sc_addr) * foundAddrs.size();
-  *result = (sc_addr *)malloc(resultBytes);
-  sc_mem_cpy(*result, foundAddrs.data(), resultBytes);
-
   return SC_TRUE;
 }
 
-sc_bool sc_rocksdb_fs_storage_find_sc_links_contents_by_content_substr(
-    const sc_char * sc_substr,
-    sc_char *** result,
-    sc_uint32 * result_count,
+sc_bool sc_rocksdb_fs_storage_find_sc_links_contents_by_content_substring(
+    const sc_char * sc_substring,
+    const sc_uint32 sc_substring_size,
+    sc_list ** result,
     sc_uint32 max_length_to_search_as_prefix)
 {
   MutexGuard lock(gMutex);
@@ -338,7 +353,7 @@ sc_bool sc_rocksdb_fs_storage_find_sc_links_contents_by_content_substr(
   auto const & it = gDBInstance->NewIterator(readOptions);
   it->SeekToFirst();
 
-  std::vector<std::string> foundStrings;
+  sc_list_init(result);
   while (it->Valid())
   {
     auto const & slice = it->value();
@@ -346,72 +361,67 @@ sc_bool sc_rocksdb_fs_storage_find_sc_links_contents_by_content_substr(
     std::string str{slice.data()};
     str.resize(slice.size());
 
-    sc_bool const isPrefix = strlen(sc_substr) <= max_length_to_search_as_prefix &&
-                             strcmp(str.substr(0, strlen(sc_substr)).c_str(), sc_substr) == 0;
-    sc_bool const isSubstr =
-        strlen(sc_substr) > max_length_to_search_as_prefix && str.find(sc_substr) != std::string::npos;
-    if (isPrefix || isSubstr)
+    if (_sc_rocksdb_fs_storage_is_app_string(str, sc_substring, sc_substring_size, max_length_to_search_as_prefix))
     {
-      foundStrings.emplace_back(str);
+      sc_char * copy;
+      sc_str_cpy(copy, str.c_str(), str.size());
+      sc_list_push_back(*result, copy);
     }
 
     it->Next();
   }
 
-  *result_count = sc_uint32(foundStrings.size());
-
-  size_t const resultBytes = sizeof(sc_char *) * foundStrings.size();
-  *result = (sc_char **)malloc(resultBytes);
-  for (size_t i = 0; i < foundStrings.size(); ++i)
-  {
-    std::string str = foundStrings[i];
-    sc_str_cpy((*result)[i], str.c_str(), str.size());
-  }
-
   return SC_TRUE;
 }
 
-sc_bool sc_rocksdb_fs_storage_append_sc_link_content(
-    sc_element * element,
-    sc_addr addr,
-    sc_char * sc_string,
-    sc_uint32 size)
+sc_bool sc_rocksdb_fs_storage_append_sc_link_content_string(
+    const sc_element * element,
+    const sc_addr addr,
+    const sc_char * sc_string,
+    const sc_uint32 size)
 {
   sc_char * current_string;
   sc_uint32 current_size = 0;
-  sc_rocksdb_fs_storage_get_sc_link_content_ext(element, addr, &current_string, &current_size);
+  sc_rocksdb_fs_storage_get_sc_link_content_string_ext(element, addr, &current_string, &current_size);
 
   if (current_size != 0 && current_string != null_ptr)
   {
     sc_check_sum * check_sum;
     sc_link_calculate_checksum(current_string, current_size, &check_sum);
     sc_rocksdb_fs_storage_addr_ref_remove(addr, check_sum);
+    sc_mem_free(check_sum);
   }
+  sc_mem_free(current_string);
 
   sc_check_sum * check_sum;
   sc_link_calculate_checksum(sc_string, size, &check_sum);
   sc_rocksdb_fs_storage_addr_ref_append(addr, check_sum);
 
-  sc_mem_cpy(element->content.data, check_sum->data, check_sum->len);
+  sc_mem_cpy(((sc_element *)element)->content.data, check_sum->data, check_sum->len);
   sc_rocksdb_fs_storage_write_stream(check_sum, sc_string);
+  sc_mem_free(check_sum);
 
   return SC_TRUE;
 }
 
-sc_bool sc_rocksdb_fs_storage_get_sc_links_by_content(const sc_char * sc_string, sc_addr ** links, sc_uint32 * size)
+sc_bool sc_rocksdb_fs_storage_get_sc_links_by_content_string(
+    const sc_char * sc_string,
+    const sc_uint32 sc_string_size,
+    sc_list ** links)
 {
   sc_check_sum * check_sum;
-  sc_link_calculate_checksum(sc_string, strlen(sc_string), &check_sum);
+  sc_link_calculate_checksum(sc_string, sc_string_size, &check_sum);
 
-  sc_result result = sc_rocksdb_fs_storage_find(check_sum, links, size);
+  sc_list_init(links);
+  sc_result result = sc_rocksdb_fs_storage_find(check_sum, *links);
   sc_mem_free(check_sum);
 
   return result;
 }
 
-void sc_rocksdb_fs_storage_get_sc_link_content_ext(
-    sc_element * element,
-    sc_addr addr,
+void sc_rocksdb_fs_storage_get_sc_link_content_string_ext(
+    const sc_element * element,
+    const sc_addr addr,
     sc_char ** sc_string,
     sc_uint32 * size)
 {
@@ -424,7 +434,7 @@ void sc_rocksdb_fs_storage_get_sc_link_content_ext(
   if (data != null_ptr)
   {
     *sc_string = data;
-    *size = strlen(data);
+    *size = sc_str_len(data);
   }
   else
   {
@@ -433,21 +443,21 @@ void sc_rocksdb_fs_storage_get_sc_link_content_ext(
   }
 }
 
-sc_bool sc_rocksdb_fs_storage_remove_sc_link_content(sc_element * element, sc_addr addr)
+sc_bool sc_rocksdb_fs_storage_remove_sc_link_content_string(const sc_element * element, const sc_addr addr)
 {
-  sc_char * string;
-  sc_uint32 size = 0;
-  sc_rocksdb_fs_storage_get_sc_link_content_ext(element, addr, &string, &size);
+  sc_char * sc_string;
+  sc_uint32 sc_string_size = 0;
+  sc_rocksdb_fs_storage_get_sc_link_content_string_ext(element, addr, &sc_string, &sc_string_size);
 
-  if (string == null_ptr)
-  {
-    string = sc_mem_new(sc_char, 1);
-    string[0] = '\0';
-  }
+  if (sc_string == null_ptr)
+    sc_string_empty(sc_string);
 
   sc_check_sum * check_sum;
-  sc_link_calculate_checksum(string, size, &check_sum);
+  sc_link_calculate_checksum(sc_string, sc_string_size, &check_sum);
+  sc_mem_free(sc_string);
+
   sc_result result = sc_rocksdb_fs_storage_addr_ref_remove(addr, check_sum);
+  sc_mem_free(check_sum);
 
   return result == SC_RESULT_OK;
 }
