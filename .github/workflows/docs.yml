@@ -1,20 +1,11 @@
-name: Deploy docs
-on:
-  push:
-    branches:
-      - main
-jobs:
-  deploy:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-python@v2
-        with:
-          python-version: 3.x
-      - run: pip install mkdocs-material 
-      - run: mkdocs gh-deploy --force
+name: Build tex docs
 
-  build:
+on:
+  pull_request:
+    branches: [main]
+
+jobs:
+  build_docs:
     name: Build tex documentation
     runs-on: ubuntu-latest
 
@@ -24,35 +15,25 @@ jobs:
         with:
           submodules: recursive
 
-      - name: Install dependencies
-        run: |
-          apt-get update && apt-get install -y perl wget git texlive
-          tlmgr install collection-fontsrecommended latemk
-          tlmgr install microtype \
-          etoolbox \
-          changepage \
-          ragged2e \
-          xcolor \
-          mathtools \
-          enumitem \
-          tocloft \
-          silence \
-          background \
-          xkeyval \
-          pgf \
-          everypage \
-          csquotes \
-          biblatex \
-          biber \
-          cyrillic \
-          babel-russian \
-          lh \
-          import \
-          ulem
-     
-     - name: Build docs
+      - name: Compile LaTeX document
         env: 
-          TEXINPUTS: docs/scn
+          TEXINPUTS: "./scn:"
+        uses: xu-cheng/latex-action@v2
+        with:
+          working_directory: docs
+          root_file: main.tex
+
+  docker_docs:
+    name: Build tex docs in docker
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          submodules: recursive
+
+      - name: Run the Docker image
         run: |
           cd docs
-          latexmk -halt-on-error -pdf -bibtex ./main.tex
+          docker run --rm -v ${PWD}:/workdir ostis/scn-latex-plugin:latest ./main.tex 
