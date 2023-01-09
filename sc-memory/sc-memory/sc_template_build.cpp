@@ -104,9 +104,6 @@ protected:
 
   ScTemplate::Result operator()(ScTemplate * inTemplate)
   {
-    // mark template to don't force order of triples
-    inTemplate->m_isForceOrder = false;
-
     // TODO: add struct blocking
     ScAddrHashVector independentEdges;
     independentEdges.reserve(512);

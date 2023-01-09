@@ -32,9 +32,6 @@ ScTemplateItemValue operator >> (ScType const & value, std::string const & replN
 // --------------------------------
 
 ScTemplate::ScTemplate(bool forceOrder /* = false */)
-    : m_isForceOrder(forceOrder)
-    , m_hasRequired(false)
-    , m_hasOptional(false)
 {
   m_constructions.reserve(16);
   m_orderedConstructions.reserve(7);
@@ -70,7 +67,6 @@ ScTemplate & ScTemplate::operator() (
 void ScTemplate::Clear()
 {
   m_constructions.clear();
-  m_replacements.clear();
   m_constants.clear();
   m_orderedConstructions.clear();
 }
@@ -92,9 +88,7 @@ ScTemplate & ScTemplate::Triple(
     ScTemplate::TripleFlag isRequired /* = ScTemplate::TripleFlag::Required */)
 {
   size_t const replPos = m_constructions.size() * 3;
-  m_constructions.emplace_back(ScTemplateConstr3(param1, param2, param3, m_constructions.size(), isRequired));
-
-  isRequired == ScTemplate::TripleFlag::Required ? m_hasRequired = true : m_hasOptional = true;
+  m_constructions.emplace_back(param1, param2, param3, m_constructions.size(), isRequired);
 
   if (!param2.m_replacementName.empty() &&
       (param2.m_replacementName == param1.m_replacementName || param2.m_replacementName == param3.m_replacementName))
@@ -175,19 +169,19 @@ inline ScConstr3Type ScTemplate::GetPriority(ScTemplateConstr3 const & constr)
   ScTemplateItemValue const & item2 = constr.m_values[1];
   ScTemplateItemValue const & item3 = constr.m_values[2];
 
-  if (item1.IsAssign() && item2.IsFixed() && item3.IsAssign())
+  if (item2.IsFixed())
     return ScConstr3Type::AFA;
 
-  else if (item1.IsFixed() && item2.IsAssign() && item3.IsFixed())
+  else if (item1.IsFixed() && item3.IsFixed())
     return ScConstr3Type::FAF;
 
-  else if (item1.IsAssign() && item2.IsAssign() && item3.IsFixed())
+  else if (item3.IsFixed())
     return ScConstr3Type::AAF;
 
-  else if (item1.IsFixed() && item2.IsAssign() && item3.IsFixed() && item3.m_typeValue.IsEdge())
+  else if (item1.IsFixed() && (item3.m_typeValue.IsEdge() || item3.m_typeValue.IsUnknown()))
     return ScConstr3Type::FAE;
 
-  else if (item1.IsFixed() && item2.IsAssign() && item3.IsFixed())
+  else if (item1.IsFixed())
     return ScConstr3Type::FAN;
 
   else

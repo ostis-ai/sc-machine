@@ -65,12 +65,12 @@ struct ScTemplateItemValue
 
   inline bool IsFixed() const
   {
-    return (IsAddr() || IsReplacement());
+    return IsAddr() || (IsReplacement() && m_addrValue.IsValid());
   }
 
   inline bool IsAssign() const
   {
-    return (m_itemType == Type::Type);
+    return m_itemType == Type::Type;
   }
 
   inline bool IsItemType(Type type) const
@@ -370,8 +370,8 @@ class ScTemplate final
  protected:
   // Begin: calls by memory context
   Result Generate(ScMemoryContext & ctx, ScTemplateGenResult & result, ScTemplateParams const & params, ScTemplateResultCode * errorCode = nullptr) const;
-  Result Search(ScMemoryContext & ctx, ScTemplateSearchResult & result) const;
-  Result SearchInStruct(ScMemoryContext & ctx, ScAddr const & scStruct, ScTemplateSearchResult & result) const;
+  Result Search(ScMemoryContext & ctx, ScTemplateSearchResult & result);
+  Result SearchInStruct(ScMemoryContext & ctx, ScAddr const & scStruct, ScTemplateSearchResult & result);
 
   // Builds template based on template in sc-memory
   Result FromScTemplate(ScMemoryContext & ctx, ScAddr const & scTemplateAddr, const ScTemplateParams & params = ScTemplateParams());
@@ -388,9 +388,6 @@ class ScTemplate final
   std::map<std::string, ScTemplateConstr3> m_itemsToConstructs;
   std::unordered_set<std::string> m_itemsNames;
 
-  bool m_isForceOrder : 1;
-  bool m_hasRequired : 1;
-  bool m_hasOptional : 1;
   /* Caches (used to prevent processing order update on each search/gen)
    * Caches are mutable, to prevent changes of template in search and generation, they can access just a cache.
    * That because template passed into them by const reference.
