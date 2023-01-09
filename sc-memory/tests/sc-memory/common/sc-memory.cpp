@@ -5,7 +5,6 @@
 
 #include "sc_test.hpp"
 
-
 TEST_F(ScMemoryTest, LinkContent)
 {
   std::string str("test content string");
@@ -66,4 +65,17 @@ TEST_F(ScMemoryTest, LinkContentStringApi)
   EXPECT_TRUE(m_ctx->SetLinkContent(linkAddr1, "content"));
   EXPECT_TRUE(m_ctx->GetLinkContent(linkAddr1, str));
   EXPECT_TRUE(str == "content");
+}
+
+TEST_F(ScMemoryTest, ResolveNodeWithRussianIdtf)
+{
+  std::string russianIdtf = "узел";
+  ScAddr russianNode = m_ctx->CreateNode(ScType::NodeConstClass);
+  EXPECT_FALSE(m_ctx->HelperSetSystemIdtf(russianIdtf, russianNode));
+  EXPECT_FALSE(m_ctx->HelperFindBySystemIdtf(russianIdtf, russianNode));
+
+  std::string englishIdtf = "russianNode";
+  ScAddr englishNode = m_ctx->CreateNode(ScType::NodeConstClass);
+  EXPECT_TRUE(m_ctx->HelperSetSystemIdtf(englishIdtf, englishNode));
+  EXPECT_EQ(m_ctx->HelperFindBySystemIdtf(englishIdtf), englishNode);
 }

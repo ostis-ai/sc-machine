@@ -8,6 +8,7 @@
 #include "sc_memory_headers.h"
 
 #include "string.h"
+#include "regex.h"
 
 #include "sc-store/sc-base/sc_allocator.h"
 #include "sc-store/sc-base/sc_assert_utils.h"
@@ -154,6 +155,18 @@ void sc_helper_shutdown()
   _destroy_keynodes_str();
 }
 
+sc_result sc_helper_check_system_identifier(const sc_char * data)
+{
+  regex_t regex;
+  regcomp(&regex, REGEX_SYSTEM_IDTF, REG_EXTENDED);
+
+  if (regexec(&regex, data, 0, NULL, 0) == 0)
+  {
+    return SC_RESULT_OK;
+  }
+  return SC_RESULT_ERROR;
+}
+
 sc_result sc_helper_find_element_by_system_identifier(
     sc_memory_context const * ctx,
     const sc_char * data,
@@ -170,6 +183,10 @@ sc_result sc_helper_find_element_by_system_identifier(
   sc_stream * stream = null_ptr;
   SC_ADDR_MAKE_EMPTY(*result_addr);
 
+  if (sc_helper_check_system_identifier(data) != SC_RESULT_OK)
+  {
+    return SC_RESULT_ERROR;
+  }
   // try to find sc-link with that contains system identifier value
   sc_addr * addrs;
   sc_uint32 num = 0;
@@ -222,6 +239,11 @@ sc_result sc_helper_set_system_identifier(sc_memory_context * ctx, sc_addr addr,
   sc_assert(ctx != null_ptr);
 
   sc_assert(sc_keynodes != null_ptr);
+
+  if (sc_helper_check_system_identifier(data) != SC_RESULT_OK)
+  {
+    return SC_RESULT_ERROR;
+  }
 
   sc_stream * stream = null_ptr;
   sc_addr idtf_addr, arc_addr;
