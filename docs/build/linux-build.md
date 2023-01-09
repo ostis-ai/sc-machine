@@ -5,6 +5,7 @@ This instruction is intended to be used on Debian-based distros. For other distr
 ```sh
 git clone https://github.com/ostis-ai/sc-machine.git
 cd sc-machine
+git submodule update --init --recursive
 ```
 
 ## Install dependencies
