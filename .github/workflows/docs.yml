@@ -13,3 +13,46 @@ jobs:
           python-version: 3.x
       - run: pip install mkdocs-material 
       - run: mkdocs gh-deploy --force
+
+  build:
+    name: Build tex documentation
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout 
+        uses: actions/checkout@v3
+        with:
+          submodules: recursive
+
+      - name: Install dependencies
+        run: |
+          apt-get update && apt-get install -y perl wget git texlive
+          tlmgr install collection-fontsrecommended latemk
+          tlmgr install microtype \
+          etoolbox \
+          changepage \
+          ragged2e \
+          xcolor \
+          mathtools \
+          enumitem \
+          tocloft \
+          silence \
+          background \
+          xkeyval \
+          pgf \
+          everypage \
+          csquotes \
+          biblatex \
+          biber \
+          cyrillic \
+          babel-russian \
+          lh \
+          import \
+          ulem
+     
+     - name: Build docs
+        env: 
+          TEXINPUTS: docs/scn
+        run: |
+          cd docs
+          latexmk -halt-on-error -pdf -bibtex ./main.tex

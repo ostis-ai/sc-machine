@@ -56,14 +56,6 @@ jobs:
           SANITIZER_TYPE: none
         run: scripts/ci/make-tests.sh
 
-      - name: Build documentation
-        id: build_docs
-        env:
-          TEXINPUTS: docs/scn
-        run: |
-          cd docs
-          latexmk -halt-on-error -pdf -bibtex ./main.tex
-
       - name: Run tests
         id: run_tests
         run: scripts/ci/run-tests.sh
