@@ -10,418 +10,337 @@
 #include "sc_memory.hpp"
 
 #include <algorithm>
-#include <stack>
 
 class ScTemplateSearch
 {
-public:
-  ScTemplateSearch(ScTemplate const & templ, ScMemoryContext & context, ScAddr const & scStruct)
-    : m_template(templ)
-    , m_context(context)
-    , m_struct(scStruct)
+ public:
+  ScTemplateSearch(ScTemplate const & templ,
+                   ScMemoryContext & context,
+                   ScAddr const & scStruct)
+      : m_template(templ)
+      , m_context(context)
+      , m_struct(scStruct)
   {
-    UpdateSearchCache();
+    PrepareSearch();
   }
 
-  void UpdateSearchCache()
+  void PrepareSearch()
   {
-    if (m_template.m_isForceOrder)
+    for (auto const & construct : m_template.m_constructions)
     {
-      m_template.m_searchCachedOrder.resize(m_template.m_constructions.size());
-      for (size_t i = 0; i < m_template.m_constructions.size(); ++i)
-        m_template.m_searchCachedOrder[i] = i;
-    }
-    else if (!m_template.IsSearchCacheValid() && !m_template.m_constructions.empty())
-    {
-      // update it
-      ScTemplate::ProcessOrder preCache(m_template.m_constructions.size());
-      for (size_t i = 0; i < preCache.size(); ++i)
-        preCache[i] = i;
+      auto & values = construct.GetValues();
+      ScTemplateItemValue const & item1 = values[0];
+      ScTemplateItemValue const & item2 = values[1];
+      ScTemplateItemValue const & item3 = values[2];
 
-      static const size_t kScoreEdge = 5;
-      static const size_t kScoreOther = 2;
-      static const size_t kScorePoweredElement = 1;
+      for (auto const & otherConstruct : m_template.m_constructions)
+      {
+        auto & otherValues = otherConstruct.GetValues();
+        ScTemplateItemValue const & otherItem1 = otherValues[0];
+        ScTemplateItemValue const & otherItem2 = otherValues[1];
+        ScTemplateItemValue const & otherItem3 = otherValues[2];
 
-      auto const CalculateScore = [this](ScTemplateConstr3 const & constr) {
-        uint8_t score = 0;
-        auto const & values = constr.GetValues();
-        if (values[1].IsAddr() && values[0].IsAssign() && values[2].IsAssign())
-          score += kScoreEdge;
-        else if (values[0].IsAddr() && values[1].IsAssign() && values[2].IsAddr())
-          score += kScoreOther * 2;  // should be a sum of (f_a_a and a_a_f)
-        else if (values[0].IsAddr() || values[2].IsAddr())
-          score += kScoreOther;
-        else
+        if (construct.m_index == otherConstruct.m_index)
+          continue;
+
+        auto const TryAddDependence = [&](
+            ScTemplateItemValue const & item,
+            ScTemplateItemValue const & otherItem1,
+            ScTemplateItemValue const & otherItem2,
+            ScTemplateItemValue const & otherItem3)
         {
-          for (auto const & other : m_template.m_constructions)
+          sc_bool withItem1Equal = item.m_replacementName == otherItem1.m_replacementName;
+          sc_bool withItem2Equal = item.m_replacementName == otherItem2.m_replacementName;
+          sc_bool withItem3Equal = item.m_replacementName == otherItem3.m_replacementName;
+
+          if (!item.m_replacementName.empty() && (withItem1Equal || withItem2Equal || withItem3Equal))
           {
-            auto const & otherValues = other.GetValues();
-            if (values[1].m_replacementName == otherValues[2].m_replacementName ||
-                values[2].m_replacementName == otherValues[0].m_replacementName)
+            std::stringstream stream;
+            stream << item.m_replacementName << construct.m_index;
+
+            if (m_itemsToConstructs.find(stream.str()) == m_itemsToConstructs.end())
+              m_itemsToConstructs.insert({ stream.str(), &otherConstruct });
+
+            if (withItem1Equal)
             {
-              score += kScorePoweredElement;
-              break;
+              m_itemsToItems.insert({ stream.str(), 0u });
+            }
+            if (withItem2Equal)
+            {
+              m_itemsToItems.insert({ stream.str(), 1u });
+            }
+            if (withItem3Equal)
+            {
+              m_itemsToItems.insert({ stream.str(), 2u });
             }
           }
-        }
-
-        return score;
-      };
-
-      /** First of all we need to calculate scores for all triples
-       * (more scores - should be search first).
-       * Also need to store all replacements that need to be resolved
-       */
-      std::vector<uint8_t> tripleScores(m_template.m_constructions.size());
-      std::unordered_map<std::string, std::vector<size_t>> replDependMap;
-      for (size_t i = 0; i < m_template.m_constructions.size(); ++i)
-      {
-        ScTemplateConstr3 const & triple = m_template.m_constructions[i];
-        tripleScores[i] = CalculateScore(triple);
-        // doesn't add edges into depend map
-        auto const TryAppendRepl = [&](ScTemplateItemValue const & value, size_t idx) {
-          SC_ASSERT(idx < 3, ());
-          if (!value.IsAddr() && !value.m_replacementName.empty())
-            replDependMap[value.m_replacementName].push_back((i << 2) + idx);
         };
 
-        // do not use loop, to make it faster (not all compilers will make a linear code)
-        TryAppendRepl(triple.GetValues()[0], 0);
-        TryAppendRepl(triple.GetValues()[1], 1);
-        TryAppendRepl(triple.GetValues()[2], 2);
+        TryAddDependence(item1, otherItem1, otherItem2, otherItem3);
+        TryAddDependence(item2, otherItem1, otherItem2, otherItem3);
+        TryAddDependence(item3, otherItem1, otherItem2, otherItem3);
       }
-
-      // sort by scores
-      std::sort(preCache.begin(), preCache.end(), [&](size_t a, size_t b) {
-        return (tripleScores[a] > tripleScores[b]);
-      });
-
-      // now we need to append triples, in order, when previous resolve replacement for a next one
-      ScTemplate::ProcessOrder & cache = m_template.m_searchCachedOrder;
-      cache.resize(preCache.size());
-
-      std::vector<bool> isTripleCached(cache.size(), false);
-      std::unordered_set<std::string> usedReplacements;
-
-      size_t preCacheIdx = 1;
-      size_t orderIdx = 1;
-      cache[0] = preCache[0];
-      isTripleCached[cache[0]] = true;
-      while (orderIdx < cache.size())
-      {
-        size_t const curTripleIdx = cache[orderIdx - 1];
-        auto const & triple = m_template.m_constructions[curTripleIdx];
-
-        // get resolved replacements by the last triple
-        std::vector<std::string> resolvedReplacements;
-        resolvedReplacements.reserve(3);
-        for (auto const & value : triple.GetValues())
-        {
-          if (!value.m_replacementName.empty())
-            resolvedReplacements.emplace_back(value.m_replacementName);
-        }
-
-        // collect triples, that depend on resolved replacements and update their scores
-        std::unordered_set<size_t> resolvedTriples;
-        for (auto const & name : resolvedReplacements)
-        {
-          if (usedReplacements.find(name) != usedReplacements.end())
-            continue;
-
-          auto const it = replDependMap.find(name);
-          if (it != replDependMap.end())
-            resolvedTriples.insert(it->second.begin(), it->second.end());
-
-          usedReplacements.insert(name);
-        }
-
-        // find next non used triple
-        while (isTripleCached[preCache[preCacheIdx]])
-          preCacheIdx++;
-
-        size_t bestTripleIdx = preCache[preCacheIdx];
-        // now update scores of resolved triples and find best one scores
-        for (size_t idx : resolvedTriples)
-        {
-          // unpack it
-          size_t const tripleIdx = idx >> 2;
-
-          if (isTripleCached[tripleIdx])
-            continue;
-
-          // for a constants see initial calculation
-          if (idx == 1)
-            tripleScores[tripleIdx] += kScoreEdge;
-          else
-            tripleScores[tripleIdx] += kScoreOther;
-
-          // check if it better
-          if (tripleScores[bestTripleIdx] < tripleScores[tripleIdx])
-            bestTripleIdx = tripleIdx;
-        }
-
-        // append new best triple
-        cache[orderIdx++] = bestTripleIdx;
-        isTripleCached[bestTripleIdx] = true;
-      }
-
-      m_template.m_isSearchCacheValid = true;
     }
   }
 
-  ScAddr const & ResolveAddr(ScTemplateItemValue const & value) const
+  inline bool IsStructureValid()
+  {
+    return m_struct.IsValid();
+  }
+
+  inline bool IsInStructure(ScAddr const & addr)
+  {
+    return m_context.HelperCheckEdge(m_struct, addr, ScType::EdgeAccessConstPosPerm);
+  }
+
+  ScAddr const & ResolveAddr(ScTemplateItemValue const & value, ScAddrVector const & resultAddrs) const
   {
     switch (value.m_itemType)
     {
-    case ScTemplateItemValue::Type::Addr:
-      return value.m_addrValue;
+      case ScTemplateItemValue::Type::Addr:
+        return value.m_addrValue;
 
-    case ScTemplateItemValue::Type::Replace:
-    {
-      auto it = m_template.m_replacements.find(value.m_replacementName);
-      SC_ASSERT(it != m_template.m_replacements.end(), ());
-      SC_ASSERT(it->second < m_resultAddrs.size(), ());
-      return m_resultAddrs[it->second];
-    }
-
-    case ScTemplateItemValue::Type::Type:
-    {
-      if (!value.m_replacementName.empty())
+      case ScTemplateItemValue::Type::Replace:
       {
         auto it = m_template.m_replacements.find(value.m_replacementName);
         SC_ASSERT(it != m_template.m_replacements.end(), ());
-        SC_ASSERT(it->second < m_resultAddrs.size(), ());
-        return m_resultAddrs[it->second];
+        SC_ASSERT(it->second < resultAddrs.size(), ());
+        return resultAddrs[it->second];
       }
-      break;
-    }
 
-    default:
-      break;
-    };
+      case ScTemplateItemValue::Type::Type:
+      {
+        if (!value.m_replacementName.empty())
+        {
+          auto it = m_template.m_replacements.find(value.m_replacementName);
+          SC_ASSERT(it != m_template.m_replacements.end(), ());
+          SC_ASSERT(it->second < resultAddrs.size(), ());
+          return resultAddrs[it->second];
+        }
+        break;
+      }
+
+      default:
+        break;
+    }
 
     static ScAddr empty;
     return empty;
   }
 
-  ScIterator3Ptr CreateIterator(ScTemplateConstr3 const & constr)
+  ScIterator3Ptr CreateIterator(
+      ScTemplateItemValue const & value1,
+      ScTemplateItemValue const & value2,
+      ScTemplateItemValue const & value3,
+      ScAddrVector const & resultAddrs)
   {
-    auto const & values = constr.GetValues();
+    ScAddr const addr1 = ResolveAddr(value1, resultAddrs);
+    ScAddr const addr2 = ResolveAddr(value2, resultAddrs);
+    ScAddr const addr3 = ResolveAddr(value3, resultAddrs);
 
-    ScTemplateItemValue const & value0 = values[0];
-    ScTemplateItemValue const & value1 = values[1];
-    ScTemplateItemValue const & value2 = values[2];
-
-    ScAddr const addr0 = ResolveAddr(value0);
-    ScAddr const addr1 = ResolveAddr(value1);
-    ScAddr const addr2 = ResolveAddr(value2);
-
-    auto const PrepareType = [](ScType const & type) {
+    auto const PrepareType = [](ScType const & type)
+    {
       if (type.HasConstancyFlag())
         return type.UpConstType();
 
       return type;
     };
 
-    if (addr0.IsValid())
+    if (addr1.IsValid())
     {
-      if (!addr1.IsValid())
+      if (!addr2.IsValid())
       {
-        if (addr2.IsValid())  // F_A_F
+        if (addr3.IsValid()) // F_A_F
         {
-          return m_context.Iterator3(addr0, PrepareType(value1.m_typeValue), addr2);
+          return m_context.Iterator3(addr1, PrepareType(value2.m_typeValue), addr3);
         }
-        else  // F_A_A
+        else // F_A_A
         {
-          return m_context.Iterator3(addr0, PrepareType(value1.m_typeValue), PrepareType(value2.m_typeValue));
+          return m_context.Iterator3(addr1, PrepareType(value2.m_typeValue), PrepareType(value3.m_typeValue));
         }
       }
       else
       {
-        if (addr2.IsValid())  // F_F_F
+        if (addr3.IsValid()) // F_F_F
         {
-          return m_context.Iterator3(addr0, addr1, addr2);
+          return m_context.Iterator3(addr1, addr2, addr3);
         }
-        else  // F_F_A
+        else // F_F_A
         {
-          return m_context.Iterator3(addr0, addr1, PrepareType(value2.m_typeValue));
+          return m_context.Iterator3(addr1, addr2, PrepareType(value3.m_typeValue));
         }
       }
     }
-    else if (addr2.IsValid())
+    else if (addr3.IsValid())
     {
-      if (addr1.IsValid())  // A_F_F
+      if (addr2.IsValid()) // A_F_F
       {
-        return m_context.Iterator3(PrepareType(value0.m_typeValue), addr1, addr2);
+        return m_context.Iterator3(PrepareType(value1.m_typeValue), addr2, addr3);
       }
-      else  // A_A_F
+      else // A_A_F
       {
-        return m_context.Iterator3(PrepareType(value0.m_typeValue), PrepareType(value1.m_typeValue), addr2);
+        return m_context.Iterator3(PrepareType(value1.m_typeValue), PrepareType(value2.m_typeValue), addr3);
       }
     }
-    else if (addr1.IsValid() && !addr2.IsValid())  // A_F_A
+    else if (addr2.IsValid() && !addr3.IsValid()) // A_F_A
     {
-      return m_context.Iterator3(PrepareType(value0.m_typeValue), addr1, PrepareType(value2.m_typeValue));
+      return m_context.Iterator3(PrepareType(value1.m_typeValue), addr2, PrepareType(value3.m_typeValue));
     }
 
     return {};
   }
 
-  bool CheckInStruct(ScAddr const & addr)
+  ScTemplateConstr3 * FindDependedConstruction(ScTemplateItemValue const & value, ScTemplateConstr3 const & construct)
   {
-    StructCache::const_iterator it = m_structCache.find(addr);
-    if (it != m_structCache.end())
-      return true;
+    std::stringstream stream;
+    stream << value.m_replacementName << construct.m_index;
 
-    if (m_context.HelperCheckEdge(m_struct, addr, ScType::EdgeAccessConstPosPerm))
-    {
-      m_structCache.insert(addr);
-      return true;
-    }
+    auto const & found = m_itemsToConstructs.find(stream.str());
+    if (found != m_itemsToConstructs.cend())
+      return &found->second;
 
-    return false;
+    return nullptr;
   }
 
-  void RefReplacement(ScTemplateItemValue const & v, ScAddr const & addr)
+  void ReplaceInDependedConstruction(ScTemplateItemValue const & value, ScTemplateConstr3 const & construct, ScAddr replAddr)
   {
-    if (!v.m_replacementName.empty())
+    std::stringstream stream;
+    stream << value.m_replacementName << construct.m_index;
+
+    auto const & found = m_itemsToItems.find(stream.str());
+    if (found != m_itemsToItems.cend())
     {
-      auto it = m_template.m_replacements.find(v.m_replacementName);
-      SC_ASSERT(it != m_template.m_replacements.end(), ());
-      if (addr.IsValid())
-        m_resultAddrs[it->second] = addr;
-      m_replRefs[it->second]++;
+      auto const & foundConstruct = m_itemsToConstructs.find(stream.str());
+      if (foundConstruct != m_itemsToConstructs.cend())
+      {
+        foundConstruct->second.SetAddr(found->second, replAddr);
+      }
     }
   }
 
-  void UnrefReplacement(ScTemplateItemValue const & v)
+  bool DoDependenceIteration(
+      ScTemplateConstr3 const & construct,
+      ScTemplateSearchResult & result,
+      ScAddrVector & resultAddrs,
+      std::list<ScTemplateConstr3> & foundConstructs,
+      size_t & itNum,
+      size_t & elementNum)
   {
-    if (!v.m_replacementName.empty())
-    {
-      auto it = m_template.m_replacements.find(v.m_replacementName);
-      SC_ASSERT(it != m_template.m_replacements.end(), ());
+    auto const & values = construct.GetValues();
 
-      m_replRefs[it->second]--;
-      if (m_replRefs[it->second] == 0)
-        m_resultAddrs[it->second].Reset();
+    ScTemplateItemValue const & value1 = values[0];
+    ScTemplateItemValue const & value2 = values[1];
+    ScTemplateItemValue const & value3 = values[2];
+
+    ScIterator3Ptr it = CreateIterator(value1, value2, value3, resultAddrs);
+
+    auto const & TryDoNextDependenceIteration = [this, &result](
+        ScTemplateItemValue const & item,
+        ScAddr const & itemAddr,
+        ScTemplateConstr3 const & construct,
+        ScAddrVector & resultAddrs,
+        std::list<ScTemplateConstr3> & foundConstructs,
+        size_t & itNum,
+        size_t & elementNum) {
+      ReplaceInDependedConstruction(item, construct, itemAddr);
+
+      auto * nextConstruct = FindDependedConstruction(item, construct);
+      if (nextConstruct == nullptr)
+      {
+        return;
+      }
+
+      if (itNum == m_template.m_constructions.size() - 1)
+      {
+        result.m_results.push_back(resultAddrs);
+      }
+
+      std::cout << "Before " << itNum << std::endl;
+
+      if (std::find(foundConstructs.cbegin(), foundConstructs.cend(), *nextConstruct) == foundConstructs.cend())
+      {
+        ++itNum;
+        elementNum += 3;
+
+        foundConstructs.push_back(*nextConstruct);
+        DoDependenceIteration(*nextConstruct, result, resultAddrs, foundConstructs, itNum, elementNum);
+      }
+
+      std::cout << "After " << itNum << std::endl;
+
+      if (itNum == m_template.m_constructions.size() - 1)
+      {
+        result.m_results.push_back(resultAddrs);
+      }
+    };
+
+    while (it.get() && it->IsValid() && it->Next())
+    {
+      ScAddr const & addr1 = it->Get(0);
+      ScAddr const & addr2 = it->Get(1);
+      ScAddr const & addr3 = it->Get(2);
+
+      resultAddrs[elementNum] = addr1;
+      resultAddrs[elementNum + 1] = addr2;
+      resultAddrs[elementNum + 2] = addr3;
+
+      ScAddrVector & copiedAddrs{resultAddrs};
+      std::list<ScTemplateConstr3> & copiedConstructs{foundConstructs};
+
+      // check construction for that it is in structure
+      if (IsStructureValid() && (!IsInStructure(addr1) || !IsInStructure(addr2) || !IsInStructure(addr3)))
+        continue;
+
+      TryDoNextDependenceIteration(value1, addr1, construct, copiedAddrs, copiedConstructs, itNum, elementNum);
+      TryDoNextDependenceIteration(value2, addr2, construct, copiedAddrs, copiedConstructs, itNum, elementNum);
+      TryDoNextDependenceIteration(value3, addr3, construct, copiedAddrs, copiedConstructs, itNum, elementNum);
     }
+
+    return true;
   }
 
   void DoIterations(ScTemplateSearchResult & result)
   {
-    std::stack<ScIterator3Ptr> iterators;
-    std::vector<bool> didIter(m_template.m_constructions.size(), false);
-    std::vector<ScAddr> edges(m_template.m_constructions.size());
-    size_t const finishIdx = m_template.m_constructions.size() - 1;
-    bool newIteration = true;
+    if (m_template.m_constructions.empty())
+      return;
 
-    do
+    auto const & DoStartIteration = [this, &result](ScTemplateConstr3 const & construct) {
+      size_t itNum = 0;
+      size_t elementNum = 0;
+
+      std::vector<ScAddr> resultAddrs;
+      resultAddrs.resize(CalculateOneResultSize());
+
+      std::list<ScTemplateConstr3> resultConstructs;
+      DoDependenceIteration(construct, result, resultAddrs, resultConstructs, itNum, elementNum);
+    };
+
+    auto & constructs = m_template.m_orderedConstructions;
+    for (auto const & equalConstructs : constructs)
     {
-      size_t const orderIndex = newIteration ? iterators.size() : iterators.size() - 1;
-      size_t const constrIndex = m_template.m_searchCachedOrder[orderIndex];
-
-      SC_ASSERT(constrIndex < m_template.m_constructions.size(), ());
-      size_t const resultIdx = constrIndex * 3;
-
-      ScTemplateConstr3 const & constr = m_template.m_constructions[constrIndex];
-      auto const & values = constr.GetValues();
-
-      ScIterator3Ptr it;
-      if (newIteration)
+      if (!equalConstructs.empty())
       {
-        it = CreateIterator(constr);
-        iterators.push(it);
-      }
-      else
-      {
-        UnrefReplacement(values[0]);
-        UnrefReplacement(values[1]);
-        UnrefReplacement(values[2]);
+        ScTemplateConstr3 const & construct = equalConstructs.front();
 
-        auto const itEdge = m_usedEdges.find(edges[orderIndex]);
-        if (itEdge != m_usedEdges.end())
-          m_usedEdges.erase(itEdge);
-
-        it = iterators.top();
-      }
-
-      auto const applyResult = [&](ScAddr const & res1, ScAddr const & res2, ScAddr const & res3) {
-        edges[orderIndex] = res2;
-
-        // do not make cycle for optimization issues (remove comparison expression)
-        m_resultAddrs[resultIdx] = res1;
-        m_resultAddrs[resultIdx + 1] = res2;
-        m_resultAddrs[resultIdx + 2] = res3;
-
-        RefReplacement(values[0], res1);
-        RefReplacement(values[1], res2);
-        RefReplacement(values[2], res3);
-
-        if (orderIndex == finishIdx)
+        if (IsStructureValid())
         {
-          result.m_results.push_back(m_resultAddrs);
-          newIteration = false;
+          DoStartIteration(construct);
         }
         else
         {
-          newIteration = true;
-        }
-      };
-
-      // make one iteration
-      if (it.get() && it->IsValid())
-      {
-        bool isFinished = true;
-
-        while (it->Next())
-        {
-          ScAddr const addr1 = it->Get(0);
-          ScAddr const addr2 = it->Get(1);
-          ScAddr const addr3 = it->Get(2);
-
-          // check if search in structure
-          if (m_struct.IsValid())
-          {
-            if (!CheckInStruct(addr1) || !CheckInStruct(addr2) || !CheckInStruct(addr3))
-            {
-              continue;
-            }
-          }
-
-          auto const res = m_usedEdges.insert(addr2);
-          if (!res.second)  // don't iterate the same edge twice
-            continue;
-
-          applyResult(addr1, addr2, addr3);
-
-          didIter[orderIndex] = true;
-          isFinished = false;
-          break;
+          DoStartIteration(construct);
         }
 
-        if (isFinished)  // finish iterator
-        {
-          iterators.pop();
-          newIteration = false;
-        }
+        break;
       }
-      else  // special checks and search
-      {
-        SC_THROW_EXCEPTION(utils::ExceptionInvalidState, "Invalid state during template search");
-      }
-    } while (!iterators.empty());
+    }
   }
 
-  ScTemplate::Result operator()(ScTemplateSearchResult & result)
+  ScTemplate::Result operator () (ScTemplateSearchResult & result)
   {
-    // if (!m_template.m_hasRequired)
-    //  SC_THROW_EXCEPTION(utils::ExceptionInvalidParams, "Templates just with optional triples doesn't supported.");
-
     result.Clear();
 
     result.m_replacements = m_template.m_replacements;
-    m_resultAddrs.resize(CalculateOneResultSize());
-    m_replRefs.resize(m_resultAddrs.size(), 0);
 
     DoIterations(result);
 
@@ -433,18 +352,20 @@ public:
     return m_template.m_constructions.size() * 3;
   }
 
-private:
+ private:
   ScTemplate const & m_template;
   ScMemoryContext & m_context;
   ScAddr const m_struct;
 
-  using StructCache = std::unordered_set<ScAddr, ScAddrHashFunc<uint32_t>>;
-  StructCache m_structCache;
+  using ScAddrSet = std::unordered_set<ScAddr, ScAddrHashFunc<uint32_t>>;
+  ScAddrSet m_structCache;
 
   using UsedEdges = std::set<ScAddr, ScAddLessFunc>;
   UsedEdges m_usedEdges;
 
-  ScAddrVector m_resultAddrs;
+  std::map<std::string, ScTemplateConstr3 *> m_itemsToConstructs;
+  std::map<std::string, size_t> m_itemsToItems;
+
   using ReplRefs = std::vector<uint32_t>;
   ReplRefs m_replRefs;
 };
@@ -455,10 +376,7 @@ ScTemplate::Result ScTemplate::Search(ScMemoryContext & ctx, ScTemplateSearchRes
   return search(result);
 }
 
-ScTemplate::Result ScTemplate::SearchInStruct(
-    ScMemoryContext & ctx,
-    ScAddr const & scStruct,
-    ScTemplateSearchResult & result) const
+ScTemplate::Result ScTemplate::SearchInStruct(ScMemoryContext & ctx, ScAddr const & scStruct, ScTemplateSearchResult & result) const
 {
   ScTemplateSearch search(*this, ctx, scStruct);
   return search(result);
