@@ -27,7 +27,6 @@ __pycache__
 .cache
 
 # docs
-
 *.aux
 *.bbl
 *.bcf
