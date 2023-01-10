@@ -5,7 +5,7 @@ on:
     branches: [main]
 
 jobs:
-  build_docs:
+ build_docs:
     name: Build tex documentation
     runs-on: ubuntu-latest
 
@@ -22,18 +22,3 @@ jobs:
         with:
           working_directory: docs
           root_file: main.tex
-
-  docker_docs:
-    name: Build tex docs in docker
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-        with:
-          submodules: recursive
-
-      - name: Run the Docker image
-        run: |
-          cd docs
-          docker run --rm -v ${PWD}:/workdir ostis/scn-latex-plugin:latest ./main.tex 
