@@ -104,7 +104,7 @@ public:
         SC_MACHINE_VERSION_MAJOR, SC_MACHINE_VERSION_MINOR, SC_MACHINE_VERSION_PATCH, SC_MACHINE_VERSION_SUFFIX};
 
     m_memoryParams.version = (sc_char const *)sc_version_string_new(&version);
-    m_memoryParams.clear = m_params.count("clear") ? SC_TRUE : SC_FALSE;
+    m_memoryParams.clear = m_params.count("clear") ? (m_params.at("clear") == "true" ? SC_TRUE : SC_FALSE) : SC_FALSE;
     m_memoryParams.repo_path = m_params.at("repo_path").c_str();
     m_memoryParams.ext_path =
         m_params.count("extensions_path") ? m_params.at("extensions_path").c_str() : (sc_char const *)null_ptr;

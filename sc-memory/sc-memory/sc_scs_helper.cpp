@@ -88,7 +88,10 @@ private:
     std::vector<ScAddr> addrVector{addrs...};
     for (ScAddr const & addr : addrVector)
     {
-      m_ctx.CreateEdge(ScType::EdgeAccessConstPosPerm, m_outputStructure, addr);
+      if (!m_ctx.HelperCheckEdge(m_outputStructure, addr, ScType::EdgeAccessConstPosPerm))
+      {
+        m_ctx.CreateEdge(ScType::EdgeAccessConstPosPerm, m_outputStructure, addr);
+      }
     }
   }
 

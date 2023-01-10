@@ -20,6 +20,10 @@ public:
     std::string m_fileName;
     //! Flag to generate format information based on file extensions
     bool m_autoFormatInfo;
+    //! Flag to create result structure
+    bool m_resultStructureUpload;
+    //! output structure
+    ScAddr m_outputStructure;
   };
       
   explicit Translator(class ScMemoryContext & context);

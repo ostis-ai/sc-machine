@@ -9,6 +9,7 @@
 #include <iostream>
 
 #include "sc_memory_config.hpp"
+#include "sc_builder_config.hpp"
 
 sc_int main(sc_int argc, sc_char * argv[])
 try
@@ -48,9 +49,10 @@ try
   memoryParams.insert({"repo_path", options[{"output_path", "o"}].second});
 
   ScMemoryConfig memoryConfig{config, {"repo_path", "log_file"}, std::move(memoryParams)};
+  ScBuilderConfig builderConfig{ScConfig(config, {"repo_path", "log_file"}), std::move(params)};
 
   Builder builder;
-  return builder.Run(params, memoryConfig.GetParams()) ? EXIT_SUCCESS : EXIT_FAILURE;
+  return builder.Run(builderConfig.GetParams(), memoryConfig.GetParams()) ? EXIT_SUCCESS : EXIT_FAILURE;
 }
 catch (utils::ScException const & ex)
 {

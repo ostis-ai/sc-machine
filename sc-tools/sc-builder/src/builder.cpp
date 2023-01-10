@@ -88,6 +88,11 @@ bool Builder::Run(BuilderParams const & params, sc_memory_params const & memoryP
 
   std::cout << "Build knowledge base from sources... " << std::endl;
 
+  if (m_params.m_resultStructureUpload)
+  {
+    m_outputStructure = m_ctx->HelperResolveSystemIdtf(m_params.m_resultStructureSystemIdtf, ScType::NodeConstStruct);
+  }
+
   // process founded files
   size_t done = 0;
   for (auto const & fileName : m_files)
@@ -166,6 +171,8 @@ bool Builder::ProcessFile(std::string const & fileName)
   Translator::Params translateParams;
   translateParams.m_fileName = fileName;
   translateParams.m_autoFormatInfo = m_params.m_autoFormatInfo;
+  translateParams.m_resultStructureUpload = m_params.m_resultStructureUpload;
+  translateParams.m_outputStructure = m_outputStructure;
 
   return translator->Translate(translateParams);
 }
