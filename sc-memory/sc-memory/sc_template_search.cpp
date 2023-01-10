@@ -63,8 +63,11 @@ class ScTemplateSearch
 
             std::string const key = stream.str();
             auto * ptr = (ScTemplateConstr3 *)(&otherConstruct);
-            if (m_itemsToConstructs.find(key) == m_itemsToConstructs.end())
-              m_itemsToConstructs.insert({ key, ptr });
+            auto const & found = m_itemsToConstructs.find(key);
+            if (found == m_itemsToConstructs.end())
+              m_itemsToConstructs.insert({ key, { ptr } });
+            else
+              found->second.insert(ptr);
           }
         };
 
@@ -184,10 +187,10 @@ class ScTemplateSearch
     return {};
   }
 
-  ScTemplateConstr3 * FindDependedConstruction(ScTemplateItemValue const & value, ScTemplateConstr3 const & construct)
+  std::set<ScTemplateConstr3 *> FindDependedConstruction(ScTemplateItemValue const & value, ScTemplateConstr3 const & construct)
   {
     if (value.m_replacementName.empty())
-      return nullptr;
+      return {};
 
     std::stringstream stream;
     stream << value.m_replacementName << construct.m_index;
@@ -196,15 +199,17 @@ class ScTemplateSearch
     if (found != m_itemsToConstructs.cend())
       return found->second;
 
-    return nullptr;
+    return {};
   }
+
+  using UsedEdges = std::unordered_set<ScAddr, ScAddrHashFunc<uint32_t>>;
 
   bool DoDependenceIteration(
       ScTemplateConstr3 const & construct,
       ScTemplateSearchResult & result,
       ScAddrVector & resultAddrs,
-      ScAddrList & resultFoundEdges,
-      std::list<size_t> & foundConstructs,
+      UsedEdges & resultFoundEdges,
+      std::unordered_set<size_t> & foundConstructs,
       size_t & itNum,
       size_t & elementNum)
   {
@@ -220,20 +225,19 @@ class ScTemplateSearch
         ScTemplateItemValue const & item,
         ScAddr const & itemAddr,
         ScAddrVector & resultAddrs,
-        ScAddrList & foundEdges,
-        std::list<size_t> & foundConstructs,
+        UsedEdges & foundEdges,
+        std::unordered_set<size_t> & foundConstructs,
         size_t & itNum,
         size_t & elementNum) {
 
-      auto * nextConstruct = FindDependedConstruction(item, construct);
-      if (nextConstruct == nullptr)
-      {
-        return;
-      }
+      std::set<ScTemplateConstr3 *> nextConstructs = FindDependedConstruction(item, construct);
 
-      if (std::find(foundConstructs.cbegin(), foundConstructs.cend(), nextConstruct->m_index) == foundConstructs.cend())
+      for (ScTemplateConstr3 * nextConstruct : nextConstructs)
       {
-        DoDependenceIteration(*nextConstruct, result, resultAddrs, foundEdges, foundConstructs, itNum, elementNum);
+        if (foundConstructs.find(nextConstruct->m_index) == foundConstructs.cend())
+        {
+          DoDependenceIteration(*nextConstruct, result, resultAddrs, foundEdges, foundConstructs, itNum, elementNum);
+        }
       }
     };
 
@@ -249,8 +253,8 @@ class ScTemplateSearch
 
     bool isStart = true;
 
-    std::list<size_t> copiedConstructs{foundConstructs};
-    ScAddrList copiedEdges{resultFoundEdges};
+    std::unordered_set<size_t> copiedConstructs{foundConstructs};
+    UsedEdges copiedEdges{resultFoundEdges};
     for (; it->IsValid() && it->Next(); copiedConstructs = foundConstructs, copiedEdges = resultFoundEdges)
     {
       if (isStart)
@@ -266,7 +270,7 @@ class ScTemplateSearch
       ScAddr const & addr1 = it->Get(0);
       ScAddr const & addr2 = it->Get(1);
 
-      if (std::find(copiedEdges.cbegin(), copiedEdges.cend(), addr2) != copiedEdges.cend())
+      if (copiedEdges.find(addr2) != copiedEdges.cend())
         continue;
 
       ScAddr const & addr3 = it->Get(2);
@@ -280,8 +284,8 @@ class ScTemplateSearch
       ++itNum;
       elementNum += 3;
 
-      copiedConstructs.push_back(construct.m_index);
-      copiedEdges.push_back(addr2);
+      copiedConstructs.insert(construct.m_index);
+      copiedEdges.insert(addr2);
 
       if (itNum == m_template.m_constructions.size())
       {
@@ -313,8 +317,8 @@ class ScTemplateSearch
 
       std::vector<ScAddr> resultAddrs;
       resultAddrs.resize(CalculateOneResultSize());
-      std::list<size_t> resultConstructs;
-      std::list<ScAddr> foundEdges;
+      std::unordered_set<size_t> resultConstructs;
+      UsedEdges foundEdges;
 
       DoDependenceIteration(construct, result, resultAddrs, foundEdges, resultConstructs, itNum, elementNum);
     };
@@ -352,16 +356,7 @@ class ScTemplateSearch
   ScMemoryContext & m_context;
   ScAddr const m_struct;
 
-  using ScAddrSet = std::unordered_set<ScAddr, ScAddrHashFunc<uint32_t>>;
-  ScAddrSet m_structCache;
-
-  using UsedEdges = std::set<ScAddr, ScAddLessFunc>;
-  UsedEdges m_usedEdges;
-
-  std::map<std::string, ScTemplateConstr3 *> m_itemsToConstructs;
-
-  using ReplRefs = std::vector<uint32_t>;
-  ReplRefs m_replRefs;
+  std::map<std::string, std::set<ScTemplateConstr3 *>> m_itemsToConstructs;
 };
 
 ScTemplate::Result ScTemplate::Search(ScMemoryContext & ctx, ScTemplateSearchResult & result)
