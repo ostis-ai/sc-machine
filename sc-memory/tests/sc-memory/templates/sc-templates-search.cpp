@@ -295,9 +295,9 @@ TEST_F(ScTemplateSearchTest, links_with_relation)
     auto const & d1 = foundData[i];
     auto const & d2 = data[i];
 
-    EXPECT_EQ(d1.m_app, d2.m_app);
-    EXPECT_EQ(d1.m_idtf, d2.m_idtf);
-    EXPECT_EQ(d1.m_image, d2.m_image);
+    EXPECT_TRUE(d1.m_app == d2.m_app);
+    EXPECT_TRUE(d1.m_idtf == d2.m_idtf);
+    EXPECT_TRUE(d1.m_image == d2.m_image);
   }
 }
 

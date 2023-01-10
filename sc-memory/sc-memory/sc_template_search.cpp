@@ -13,16 +13,16 @@
 
 class ScTemplateSearch
 {
- public:
-  ScTemplateSearch(ScTemplate & templ,
-                   ScMemoryContext & context,
-                   ScAddr const & scStruct)
-      : m_template(templ)
-      , m_context(context)
-      , m_struct(scStruct)
+public:
+  ScTemplateSearch(ScTemplate & templ, ScMemoryContext & context, ScAddr const & scStruct)
+    : m_template(templ)
+    , m_context(context)
+    , m_struct(scStruct)
   {
     PrepareSearch();
   }
+
+  using ScTemplateGroupedConstructions = ScTemplate::ScTemplateGroupedConstructions;
 
   void PrepareSearch()
   {
@@ -33,7 +33,7 @@ class ScTemplateSearch
       ScTemplateItemValue const & item2 = values[1];
       ScTemplateItemValue const & item3 = values[2];
 
-      for (auto const & otherConstruct : m_template.m_constructions)
+      for (auto & otherConstruct : m_template.m_constructions)
       {
         auto & otherValues = otherConstruct.GetValues();
         ScTemplateItemValue const & otherItem1 = otherValues[0];
@@ -43,18 +43,16 @@ class ScTemplateSearch
         if (construct.m_index == otherConstruct.m_index)
           continue;
 
-        auto const TryAddDependence = [&](
-            ScTemplateItemValue const & item,
-            ScTemplateItemValue const & otherItem1,
-            ScTemplateItemValue const & otherItem2,
-            ScTemplateItemValue const & otherItem3)
-        {
+        auto const TryAddDependence = [&](ScTemplateItemValue const & item,
+                                          ScTemplateItemValue const & otherItem1,
+                                          ScTemplateItemValue const & otherItem2,
+                                          ScTemplateItemValue const & otherItem3) {
           if (item.m_replacementName.empty())
             return;
 
-          sc_bool withItem1Equal = item.m_replacementName == otherItem1.m_replacementName;
-          sc_bool withItem2Equal = item.m_replacementName == otherItem2.m_replacementName;
-          sc_bool withItem3Equal = item.m_replacementName == otherItem3.m_replacementName;
+          sc_bool const withItem1Equal = item.m_replacementName == otherItem1.m_replacementName;
+          sc_bool const withItem2Equal = item.m_replacementName == otherItem2.m_replacementName;
+          sc_bool const withItem3Equal = item.m_replacementName == otherItem3.m_replacementName;
 
           if (withItem1Equal || withItem2Equal || withItem3Equal)
           {
@@ -62,12 +60,11 @@ class ScTemplateSearch
             stream << item.m_replacementName << construct.m_index;
 
             std::string const key = stream.str();
-            auto * ptr = (ScTemplateConstr3 *)(&otherConstruct);
             auto const & found = m_itemsToConstructs.find(key);
-            if (found == m_itemsToConstructs.end())
-              m_itemsToConstructs.insert({ key, { ptr } });
+            if (found == m_itemsToConstructs.cend())
+              m_itemsToConstructs.insert({key, {otherConstruct}});
             else
-              found->second.insert(ptr);
+              found->second.insert(otherConstruct);
           }
         };
 
@@ -88,37 +85,40 @@ class ScTemplateSearch
     return m_context.HelperCheckEdge(m_struct, addr, ScType::EdgeAccessConstPosPerm);
   }
 
-  ScAddr const & ResolveAddr(ScTemplateItemValue const & value, ScAddrVector const & resultAddrs, ScTemplateSearchResult & result) const
+  ScAddr const & ResolveAddr(
+      ScTemplateItemValue const & value,
+      ScAddrVector const & resultAddrs,
+      ScTemplateSearchResult & result) const
   {
     static ScAddr empty;
 
     switch (value.m_itemType)
     {
-      case ScTemplateItemValue::Type::Addr:
-        return value.m_addrValue;
+    case ScTemplateItemValue::Type::Addr:
+      return value.m_addrValue;
 
-      case ScTemplateItemValue::Type::Replace:
+    case ScTemplateItemValue::Type::Replace:
+    {
+      auto it = result.m_replacements.find(value.m_replacementName);
+      if (it == result.m_replacements.end())
+        return empty;
+      return resultAddrs[it->second];
+    }
+
+    case ScTemplateItemValue::Type::Type:
+    {
+      if (!value.m_replacementName.empty())
       {
         auto it = result.m_replacements.find(value.m_replacementName);
         if (it == result.m_replacements.end())
           return empty;
         return resultAddrs[it->second];
       }
+      break;
+    }
 
-      case ScTemplateItemValue::Type::Type:
-      {
-        if (!value.m_replacementName.empty())
-        {
-          auto it = result.m_replacements.find(value.m_replacementName);
-          if (it == result.m_replacements.end())
-            return empty;
-          return resultAddrs[it->second];
-        }
-        break;
-      }
-
-      default:
-        break;
+    default:
+      break;
     }
 
     return empty;
@@ -135,8 +135,7 @@ class ScTemplateSearch
     ScAddr const addr2 = ResolveAddr(value2, resultAddrs, result);
     ScAddr const addr3 = ResolveAddr(value3, resultAddrs, result);
 
-    auto const PrepareType = [](ScType const & type)
-    {
+    auto const PrepareType = [](ScType const & type) {
       if (type.HasConstancyFlag())
         return type.UpConstType();
 
@@ -147,22 +146,22 @@ class ScTemplateSearch
     {
       if (!addr2.IsValid())
       {
-        if (addr3.IsValid()) // F_A_F
+        if (addr3.IsValid())  // F_A_F
         {
           return m_context.Iterator3(addr1, PrepareType(value2.m_typeValue), addr3);
         }
-        else // F_A_A
+        else  // F_A_A
         {
           return m_context.Iterator3(addr1, PrepareType(value2.m_typeValue), PrepareType(value3.m_typeValue));
         }
       }
       else
       {
-        if (addr3.IsValid()) // F_F_F
+        if (addr3.IsValid())  // F_F_F
         {
           return m_context.Iterator3(addr1, addr2, addr3);
         }
-        else // F_F_A
+        else  // F_F_A
         {
           return m_context.Iterator3(addr1, addr2, PrepareType(value3.m_typeValue));
         }
@@ -170,16 +169,16 @@ class ScTemplateSearch
     }
     else if (addr3.IsValid())
     {
-      if (addr2.IsValid()) // A_F_F
+      if (addr2.IsValid())  // A_F_F
       {
         return m_context.Iterator3(PrepareType(value1.m_typeValue), addr2, addr3);
       }
-      else // A_A_F
+      else  // A_A_F
       {
         return m_context.Iterator3(PrepareType(value1.m_typeValue), PrepareType(value2.m_typeValue), addr3);
       }
     }
-    else if (addr2.IsValid() && !addr3.IsValid()) // A_F_A
+    else if (addr2.IsValid() && !addr3.IsValid())  // A_F_A
     {
       return m_context.Iterator3(PrepareType(value1.m_typeValue), addr2, PrepareType(value3.m_typeValue));
     }
@@ -187,7 +186,9 @@ class ScTemplateSearch
     return {};
   }
 
-  std::set<ScTemplateConstr3 *> FindDependedConstruction(ScTemplateItemValue const & value, ScTemplateConstr3 const & construct)
+  ScTemplateGroupedConstructions FindDependedConstruction(
+      ScTemplateItemValue const & value,
+      ScTemplateConstr3 const & construct)
   {
     if (value.m_replacementName.empty())
       return {};
@@ -202,46 +203,103 @@ class ScTemplateSearch
     return {};
   }
 
+  std::list<ScTemplateGroupedConstructions> GetEqualConstructions(
+      ScTemplateGroupedConstructions const & constructs,
+      std::unordered_set<size_t> const & allFoundConstructs,
+      ScTemplateGroupedConstructions const & currentIterableConstructs)
+  {
+    auto const & IsConstructsEqual = [](ScTemplateConstr3 const & construct,
+                                        ScTemplateConstr3 const & otherConstruct) -> bool {
+      auto const & constructValues = construct.GetValues();
+      auto const & otherConstructValues = otherConstruct.GetValues();
+
+      return constructValues[0].m_typeValue == otherConstructValues[0].m_typeValue &&
+             constructValues[0].m_addrValue == otherConstructValues[0].m_addrValue &&
+             constructValues[1].m_typeValue == otherConstructValues[1].m_typeValue &&
+             constructValues[1].m_addrValue == otherConstructValues[1].m_addrValue &&
+             constructValues[2].m_typeValue == otherConstructValues[2].m_typeValue &&
+             constructValues[2].m_addrValue == otherConstructValues[2].m_addrValue;
+    };
+
+    std::unordered_set<size_t> checkedConstructs;
+
+    std::list<ScTemplateGroupedConstructions> equalConstructsList;
+    for (ScTemplateConstr3 const & construct : constructs)
+    {
+      if (checkedConstructs.find(construct.m_index) != checkedConstructs.cend())
+        continue;
+
+      ScTemplateGroupedConstructions equalConstructs;
+      for (ScTemplateConstr3 & otherConstruct : constructs)
+      {
+        if (allFoundConstructs.find(otherConstruct.m_index) == allFoundConstructs.cend() &&
+            std::find_if(
+                currentIterableConstructs.cbegin(),
+                currentIterableConstructs.cend(),
+                [&](ScTemplateConstr3 const & other) {
+                  return other == otherConstruct;
+                }) == currentIterableConstructs.cend() &&
+            IsConstructsEqual(construct, otherConstruct))
+        {
+          equalConstructs.insert(otherConstruct);
+          checkedConstructs.insert(otherConstruct.m_index);
+        }
+      }
+
+      if (!equalConstructs.empty())
+      {
+        equalConstructsList.push_back(equalConstructs);
+      }
+    }
+
+    return equalConstructsList;
+  }
+
   using UsedEdges = std::unordered_set<ScAddr, ScAddrHashFunc<uint32_t>>;
 
-  bool DoDependenceIteration(
-      ScTemplateConstr3 const & construct,
-      ScTemplateSearchResult & result,
-      ScAddrVector & resultAddrs,
-      UsedEdges & resultFoundEdges,
+  void DoDependenceIteration(
+      ScTemplateGroupedConstructions const & constructs,
+      std::unordered_set<size_t> & checkedConstructs,
       std::unordered_set<size_t> & foundConstructs,
-      size_t & itNum,
-      size_t & elementNum)
+      UsedEdges & checkedEdges,
+      ScAddrVector & resultAddrs,
+      ScTemplateSearchResult & result,
+      bool & isFinished)
   {
-    auto const & values = construct.GetValues();
+    auto const & TryDoNextDependenceIteration = [this, &result](
+                                                    ScTemplateConstr3 const & construct,
+                                                    ScTemplateItemValue const & item,
+                                                    ScAddr const & itemAddr,
+                                                    std::unordered_set<size_t> & checkedConstructs,
+                                                    std::unordered_set<size_t> & foundConstructs,
+                                                    UsedEdges & checkedEdges,
+                                                    ScAddrVector & resultAddrs,
+                                                    ScTemplateGroupedConstructions const & currentIterableConstructs,
+                                                    bool & isFinished,
+                                                    bool & isLast) {
+      ScTemplateGroupedConstructions const & nextConstructs = FindDependedConstruction(item, construct);
+      std::list<ScTemplateGroupedConstructions> const & equalConstructsList =
+          GetEqualConstructions(nextConstructs, checkedConstructs, currentIterableConstructs);
 
-    ScTemplateItemValue const & value1 = values[0];
-    ScTemplateItemValue const & value2 = values[1];
-    ScTemplateItemValue const & value3 = values[2];
-
-    ScIterator3Ptr const it = CreateIterator(value1, value2, value3, resultAddrs, result);
-
-    auto const & TryDoNextDependenceIteration = [this, &result, &construct](
-        ScTemplateItemValue const & item,
-        ScAddr const & itemAddr,
-        ScAddrVector & resultAddrs,
-        UsedEdges & foundEdges,
-        std::unordered_set<size_t> & foundConstructs,
-        size_t & itNum,
-        size_t & elementNum) {
-
-      std::set<ScTemplateConstr3 *> nextConstructs = FindDependedConstruction(item, construct);
-
-      for (ScTemplateConstr3 * nextConstruct : nextConstructs)
+      isLast = false;
+      if (equalConstructsList.empty())
       {
-        if (foundConstructs.find(nextConstruct->m_index) == foundConstructs.cend())
-        {
-          DoDependenceIteration(*nextConstruct, result, resultAddrs, foundEdges, foundConstructs, itNum, elementNum);
-        }
+        isFinished = true;
+        isLast = true;
+      }
+
+      for (auto const & equalConstructs : equalConstructsList)
+      {
+        DoDependenceIteration(
+            equalConstructs, checkedConstructs, foundConstructs, checkedEdges, resultAddrs, result, isFinished);
       }
     };
 
-    auto const & UpdateResults = [&result](ScTemplateItemValue const & value, ScAddr const & addr, size_t const elementNum, ScAddrVector & resultAddrs) {
+    auto const & UpdateResults = [&result](
+                                     ScTemplateItemValue const & value,
+                                     ScAddr const & addr,
+                                     size_t const elementNum,
+                                     ScAddrVector & resultAddrs) {
       resultAddrs[elementNum] = addr;
 
       if (value.m_replacementName.empty())
@@ -251,59 +309,138 @@ class ScTemplateSearch
         result.m_replacements[value.m_replacementName] = elementNum;
     };
 
-    bool isStart = true;
+    ScTemplateConstr3 construct = *constructs.begin();
 
-    std::unordered_set<size_t> copiedConstructs{foundConstructs};
-    UsedEdges copiedEdges{resultFoundEdges};
-    for (; it->IsValid() && it->Next(); copiedConstructs = foundConstructs, copiedEdges = resultFoundEdges)
+    auto const & values = construct.GetValues();
+
+    ScTemplateItemValue value1 = values[0];
+    ScTemplateItemValue value2 = values[1];
+    ScTemplateItemValue value3 = values[2];
+
+    ScIterator3Ptr const it = CreateIterator(value1, value2, value3, resultAddrs, result);
+
+    size_t count = 0;
+    bool isAllChildrenFinished = false;
+    bool isLast = false;
+
+    std::unordered_set<size_t> const currentCheckedConstructs{checkedConstructs};
+    std::unordered_set<size_t> const currentFoundConstructs{foundConstructs};
+    UsedEdges const currentCheckedEdges{checkedEdges};
+    ScAddrVector const currentResultAddrs{resultAddrs};
+    for (; it->Next(); ++count)
     {
-      if (isStart)
+      checkedConstructs = std::unordered_set<size_t>{currentCheckedConstructs};
+      checkedEdges = UsedEdges{currentCheckedEdges};
+
+      if (isAllChildrenFinished && count == constructs.size())
       {
-        isStart = false;
+        count = 0;
+        foundConstructs = std::unordered_set<size_t>{currentFoundConstructs};
+        resultAddrs.assign(currentResultAddrs.cbegin(), currentResultAddrs.cend());
       }
-      else
-      {
-        --itNum;
-        elementNum -= 3;
-      }
+
+      ScAddr const & addr2 = it->Get(1);
+      if (checkedEdges.find(addr2) != checkedEdges.cend())
+        return;
 
       ScAddr const & addr1 = it->Get(0);
-      ScAddr const & addr2 = it->Get(1);
-
-      if (copiedEdges.find(addr2) != copiedEdges.cend())
-        continue;
-
       ScAddr const & addr3 = it->Get(2);
 
-      ScAddrVector copiedAddrs{resultAddrs};
+      // check construction for that it is in structure
+      if (IsStructureValid() && (!IsInStructure(addr1) || !IsInStructure(addr2) || !IsInStructure(addr3)))
+        return;
 
-      UpdateResults(value1, addr1, elementNum, copiedAddrs);
-      UpdateResults(value2, addr2, elementNum + 1, copiedAddrs);
-      UpdateResults(value3, addr3, elementNum + 2, copiedAddrs);
+      checkedEdges.insert(addr2);
 
-      ++itNum;
-      elementNum += 3;
-
-      copiedConstructs.insert(construct.m_index);
-      copiedEdges.insert(addr2);
-
-      if (itNum == m_template.m_constructions.size())
+      for (ScTemplateConstr3 const & otherConstruct : constructs)
       {
-        result.m_results.push_back(copiedAddrs);
+        construct = otherConstruct;
+
+        if (checkedConstructs.find(construct.m_index) != checkedConstructs.cend())
+        {
+          return;
+        }
+        checkedConstructs.insert(construct.m_index);
+
+        value1 = construct.GetValues()[0];
+        value2 = construct.GetValues()[1];
+        value3 = construct.GetValues()[2];
+
+        // don't use cycle to call this function
+        size_t const idx = construct.m_index * 3;
+        UpdateResults(value1, addr1, idx, resultAddrs);
+        UpdateResults(value2, addr2, idx + 1, resultAddrs);
+        UpdateResults(value3, addr3, idx + 2, resultAddrs);
+
+        // find next depended on constructions and analyse result
+        {
+          bool isChildFinished = false;
+          bool isNoChild = false;
+          TryDoNextDependenceIteration(
+              construct,
+              value2,
+              addr2,
+              checkedConstructs,
+              foundConstructs,
+              checkedEdges,
+              resultAddrs,
+              constructs,
+              isChildFinished,
+              isNoChild);
+          isAllChildrenFinished = isChildFinished;
+          isLast = isNoChild;
+          TryDoNextDependenceIteration(
+              construct,
+              value1,
+              addr1,
+              checkedConstructs,
+              foundConstructs,
+              checkedEdges,
+              resultAddrs,
+              constructs,
+              isChildFinished,
+              isNoChild);
+          isAllChildrenFinished &= isChildFinished;
+          isLast &= isNoChild;
+          TryDoNextDependenceIteration(
+              construct,
+              value3,
+              addr3,
+              checkedConstructs,
+              foundConstructs,
+              checkedEdges,
+              resultAddrs,
+              constructs,
+              isChildFinished,
+              isNoChild);
+          isAllChildrenFinished &= isChildFinished;
+          isLast &= isNoChild;
+
+          if (isAllChildrenFinished)
+          {
+            break;
+          }
+          else
+          {
+            checkedConstructs.erase(construct.m_index);
+          }
+        }
       }
-      else
-      {
-        // check construction for that it is in structure
-        if (IsStructureValid() && (!IsInStructure(addr1) || !IsInStructure(addr2) || !IsInStructure(addr3)))
-          continue;
 
-        TryDoNextDependenceIteration(value2, addr2, copiedAddrs, copiedEdges, copiedConstructs, itNum, elementNum);
-        TryDoNextDependenceIteration(value1, addr1, copiedAddrs, copiedEdges, copiedConstructs, itNum, elementNum);
-        TryDoNextDependenceIteration(value3, addr3, copiedAddrs, copiedEdges, copiedConstructs, itNum, elementNum);
+      if (isAllChildrenFinished)
+      {
+        //std::cout << "Decrease on " << 1 << " to " << foundConstructs.size() << " with "
+        //          << currentCheckedConstructs.size() << " and is last " << isLast << std::endl;
+
+        foundConstructs.insert(construct.m_index);
+        if (isLast && currentCheckedConstructs.size() + foundConstructs.size() >= m_template.m_constructions.size())
+        {
+          result.m_results.emplace_back(resultAddrs);
+        }
       }
     }
 
-    return true;
+    isFinished = count != 0 && isAllChildrenFinished;
   }
 
   void DoIterations(ScTemplateSearchResult & result)
@@ -311,33 +448,46 @@ class ScTemplateSearch
     if (m_template.m_constructions.empty())
       return;
 
-    auto const & DoStartIteration = [this, &result](ScTemplateConstr3 const & construct) {
-      size_t itNum = 0;
-      size_t elementNum = 0;
-
+    auto const & DoStartIteration = [this, &result](ScTemplateGroupedConstructions const & constructions) {
       std::vector<ScAddr> resultAddrs;
       resultAddrs.resize(CalculateOneResultSize());
-      std::unordered_set<size_t> resultConstructs;
-      UsedEdges foundEdges;
+      std::unordered_set<size_t> checkedConstructs;
+      checkedConstructs.reserve(CalculateOneResultSize());
+      std::unordered_set<size_t> foundConstructs;
+      checkedConstructs.reserve(CalculateOneResultSize());
+      UsedEdges checkedEdges;
+      checkedEdges.reserve(CalculateOneResultSize());
 
-      DoDependenceIteration(construct, result, resultAddrs, foundEdges, resultConstructs, itNum, elementNum);
+      bool isAllChildrenFinished = false;
+
+      std::list<ScTemplateGroupedConstructions> const & equalConstructionsList =
+          GetEqualConstructions(constructions, checkedConstructs, {});
+      for (ScTemplateGroupedConstructions const & equalConstructions : equalConstructionsList)
+      {
+        DoDependenceIteration(
+            equalConstructions,
+            checkedConstructs,
+            foundConstructs,
+            checkedEdges,
+            resultAddrs,
+            result,
+            isAllChildrenFinished);
+      }
     };
 
-    auto & constructs = m_template.m_orderedConstructions;
-    for (auto const & equalConstructs : constructs)
+    auto const & constructs = m_template.m_orderedConstructions;
+    for (ScTemplateGroupedConstructions const & equalConstructs : constructs)
     {
       if (!equalConstructs.empty())
       {
-        ScTemplateConstr3 const & construct = equalConstructs.front();
-
-        DoStartIteration(construct);
+        DoStartIteration(equalConstructs);
 
         break;
       }
     }
   }
 
-  ScTemplate::Result operator () (ScTemplateSearchResult & result)
+  ScTemplate::Result operator()(ScTemplateSearchResult & result)
   {
     result.Clear();
 
@@ -351,12 +501,12 @@ class ScTemplateSearch
     return m_template.m_constructions.size() * 3;
   }
 
- private:
+private:
   ScTemplate & m_template;
   ScMemoryContext & m_context;
   ScAddr const m_struct;
 
-  std::map<std::string, std::set<ScTemplateConstr3 *>> m_itemsToConstructs;
+  std::map<std::string, ScTemplateGroupedConstructions> m_itemsToConstructs;
 };
 
 ScTemplate::Result ScTemplate::Search(ScMemoryContext & ctx, ScTemplateSearchResult & result)
@@ -365,7 +515,10 @@ ScTemplate::Result ScTemplate::Search(ScMemoryContext & ctx, ScTemplateSearchRes
   return search(result);
 }
 
-ScTemplate::Result ScTemplate::SearchInStruct(ScMemoryContext & ctx, ScAddr const & scStruct, ScTemplateSearchResult & result)
+ScTemplate::Result ScTemplate::SearchInStruct(
+    ScMemoryContext & ctx,
+    ScAddr const & scStruct,
+    ScTemplateSearchResult & result)
 {
   ScTemplateSearch search(*this, ctx, scStruct);
   return search(result);

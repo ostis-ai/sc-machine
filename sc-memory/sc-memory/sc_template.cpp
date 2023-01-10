@@ -9,24 +9,24 @@
 
 #include <algorithm>
 
-ScTemplateItemValue operator >> (ScAddr const & value, char const * replName)
+ScTemplateItemValue operator>>(ScAddr const & value, char const * replName)
 {
-  return { value, replName };
+  return {value, replName};
 }
 
-ScTemplateItemValue operator >> (ScAddr const & value, std::string const & replName)
+ScTemplateItemValue operator>>(ScAddr const & value, std::string const & replName)
 {
-  return { value, replName.c_str() };
+  return {value, replName.c_str()};
 }
 
-ScTemplateItemValue operator >> (ScType const & value, char const * replName)
+ScTemplateItemValue operator>>(ScType const & value, char const * replName)
 {
-  return { value, replName };
+  return {value, replName};
 }
 
-ScTemplateItemValue operator >> (ScType const & value, std::string const & replName)
+ScTemplateItemValue operator>>(ScType const & value, std::string const & replName)
 {
-  return { value, replName.c_str() };
+  return {value, replName.c_str()};
 }
 
 // --------------------------------
@@ -34,18 +34,17 @@ ScTemplateItemValue operator >> (ScType const & value, std::string const & replN
 ScTemplate::ScTemplate(bool forceOrder /* = false */)
 {
   m_constructions.reserve(16);
-  m_orderedConstructions.reserve(7);
 
-  m_orderedConstructions.emplace_back();
-  m_orderedConstructions.emplace_back();
-  m_orderedConstructions.emplace_back();
-  m_orderedConstructions.emplace_back();
-  m_orderedConstructions.emplace_back();
-  m_orderedConstructions.emplace_back();
-  m_orderedConstructions.emplace_back();
+  auto const constr3TypeCount = (size_t)ScConstr3Type::ScConstr3TypeCount;
+  m_orderedConstructions.reserve(constr3TypeCount);
+
+  for (size_t i = 0; i < constr3TypeCount; ++i)
+  {
+    m_orderedConstructions.emplace_back();
+  }
 }
 
-ScTemplate & ScTemplate::operator() (
+ScTemplate & ScTemplate::operator()(
     ScTemplateItemValue const & param1,
     ScTemplateItemValue const & param2,
     ScTemplateItemValue const & param3,
@@ -54,12 +53,13 @@ ScTemplate & ScTemplate::operator() (
   return Triple(param1, param2, param3, isRequired);
 }
 
-ScTemplate & ScTemplate::operator() (
+ScTemplate & ScTemplate::operator()(
     ScTemplateItemValue const & param1,
     ScTemplateItemValue const & param2,
     ScTemplateItemValue const & param3,
     ScTemplateItemValue const & param4,
-    ScTemplateItemValue const & param5, ScTemplate::TripleFlag isRequired /* = ScTemplate::TripleFlag::Required */)
+    ScTemplateItemValue const & param5,
+    ScTemplate::TripleFlag isRequired /* = ScTemplate::TripleFlag::Required */)
 {
   return TripleWithRelation(param1, param2, param3, param4, param5, isRequired);
 }
@@ -119,8 +119,8 @@ ScTemplate & ScTemplate::Triple(
       m_itemsNames.insert(value.m_replacementName);
 
       /* Store type there, if replacement for any type.
-      * That allows to use it before original type will be processed
-      */
+       * That allows to use it before original type will be processed
+       */
       size_t const constrIdx = replPos / 3;
       SC_ASSERT(constrIdx < m_constructions.size(), ());
       ScTemplateItemValue const & valueType = m_constructions[constrIdx].m_values[i];
@@ -130,9 +130,9 @@ ScTemplate & ScTemplate::Triple(
     }
   }
 
-  ScConstr3Type priority = GetPriority(constr3);
-  size_t pr = int(priority);
-  m_orderedConstructions[pr].push_back(constr3);
+  ScConstr3Type const priority = GetPriority(constr3);
+  size_t const pr = int(priority);
+  m_orderedConstructions[pr].insert(constr3);
 
   return *this;
 }
