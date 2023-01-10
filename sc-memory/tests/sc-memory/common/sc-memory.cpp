@@ -79,3 +79,12 @@ TEST_F(ScMemoryTest, ResolveNodeWithRussianIdtf)
   EXPECT_TRUE(m_ctx->HelperSetSystemIdtf(englishIdtf, englishNode));
   EXPECT_EQ(m_ctx->HelperFindBySystemIdtf(englishIdtf), englishNode);
 }
+
+TEST_F(ScMemoryTest, TestResultStruct)
+{
+  ScAddr resultStruct = m_ctx->HelperFindBySystemIdtf("resultStructure");
+  EXPECT_TRUE(resultStruct.IsValid());
+  ScAddr testKeynode = m_ctx->HelperFindBySystemIdtf("rrel_1");
+  EXPECT_TRUE(testKeynode.IsValid());
+  EXPECT_TRUE(m_ctx->HelperCheckEdge(resultStruct, testKeynode, ScType::EdgeAccessConstPosPerm));
+}

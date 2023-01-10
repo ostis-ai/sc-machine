@@ -32,6 +32,9 @@ protected:
     params.repo_path = "repo";
     params.log_level = "Debug";
 
+    params.result_structure_upload = SC_TRUE;
+    params.result_structure_system_idtf = "resultStructure";
+
     ScMemory::LogMute();
     ScMemory::Initialize(params);
     ScMemory::LogUnmute();
