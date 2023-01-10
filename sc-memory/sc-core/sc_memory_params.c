@@ -30,4 +30,7 @@ void sc_memory_params_clear(sc_memory_params * params)
 
   params->max_loaded_segments = DEFAULT_MAX_LOADED_SEGMENTS;
   params->max_threads = DEFAULT_MAX_THREADS;
+
+  params->result_structure_system_idtf = (sc_char const *)null_ptr;
+  params->result_structure_upload = SC_FALSE;
 }

@@ -22,7 +22,7 @@ private:
 
 public:
   // Just for internal usage
-  static _SC_EXTERN bool Init(bool force = false);
+  static _SC_EXTERN bool Init(bool force = false, sc_char const * result_structure_system_idtf = (sc_char*)null_ptr);
   static void Shutdown();
 
   static _SC_EXTERN ScAddr const & GetResultCodeAddr(sc_result resCode);

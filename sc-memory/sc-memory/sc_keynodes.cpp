@@ -48,7 +48,7 @@ ScAddr ScKeynodes::kBinaryUInt64;
 ScAddr ScKeynodes::kBinaryString;
 ScAddr ScKeynodes::kBinaryCustom;
 
-bool ScKeynodes::Init(bool force)
+bool ScKeynodes::Init(bool force, sc_char const * result_structure_system_idtf)
 {
   if (ms_isInitialized && !force)
     return true;
@@ -56,14 +56,25 @@ bool ScKeynodes::Init(bool force)
   bool result = ScKeynodes::InitGlobal();
   ScMemoryContext ctx(sc_access_lvl_make_min, "ScKeynodes::Init");
 
+  ScAddr resultStruct;
+
+  if (result_structure_system_idtf != null_ptr)
+    resultStruct = ctx.HelperResolveSystemIdtf(result_structure_system_idtf, ScType::NodeConstStruct);
+
+  SC_LOG_ERROR(resultStruct.IsValid());
+
   // init sc_result set
   for (size_t i = 0; i < SC_RESULT_COUNT; ++i)
   {
     ScAddr const resAddr = GetResultCodeAddr(static_cast<sc_result>(i));
     result = result && resAddr.IsValid();
+    
     if (!ctx.HelperCheckEdge(kScResult, resAddr, ScType::EdgeAccessConstPosPerm))
     {
-      result = result && ctx.CreateEdge(ScType::EdgeAccessConstPosPerm, kScResult, resAddr).IsValid();
+      ScAddr resEdge = ctx.CreateEdge(ScType::EdgeAccessConstPosPerm, kScResult, resAddr);
+      result = result && resEdge.IsValid();
+      if (result && resultStruct.IsValid())
+        ctx.CreateEdge(ScType::EdgeAccessConstPosPerm, resultStruct, resEdge);
     }
   }
 
@@ -75,6 +86,8 @@ bool ScKeynodes::Init(bool force)
     if (!item.IsValid())
       result = false;
     SC_ASSERT(item.IsValid(), ());
+    if (resultStruct.IsValid())
+      ctx.CreateEdge(ScType::EdgeAccessConstPosPerm, resultStruct, item);
   }
 
   // command states
@@ -86,10 +99,29 @@ bool ScKeynodes::Init(bool force)
   }
 
   // binary types
+
+  ScAddr binaryTypes[] = {
+      kBinaryDouble,
+      kBinaryFloat,
+      kBinaryString,
+      kBinaryInt8,
+      kBinaryInt16,
+      kBinaryInt32,
+      kBinaryInt64,
+      kBinaryUInt8,
+      kBinaryUInt16,
+      kBinaryUInt32,
+      kBinaryUInt64,
+      kBinaryCustom};
+
+  for (auto const & binaryType : binaryTypes)
   {
-    ScSet set(ctx, kBinaryType);
-    set << kBinaryDouble << kBinaryFloat << kBinaryString << kBinaryInt8 << kBinaryInt16 << kBinaryInt32 << kBinaryInt64
-        << kBinaryUInt8 << kBinaryUInt16 << kBinaryUInt32 << kBinaryUInt64 << kBinaryCustom;
+    ScAddr binaryTypeEdge = ctx.CreateEdge(ScType::EdgeAccessConstPosPerm, kBinaryType, binaryType);
+    if (resultStruct.IsValid())
+    {
+      ctx.CreateEdge(ScType::EdgeAccessConstPosPerm, resultStruct, binaryType);
+      ctx.CreateEdge(ScType::EdgeAccessConstPosPerm, resultStruct, binaryTypeEdge);
+    }
   }
 
   ms_isInitialized = true;

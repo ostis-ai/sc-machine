@@ -124,6 +124,15 @@ public:
                                              ? std::stoi(m_params.at("max_loaded_segments"))
                                              : DEFAULT_MAX_LOADED_SEGMENTS;
 
+    m_memoryParams.result_structure_upload =
+        m_params.count("result_structure_upload")
+            ? (m_params.at("result_structure_upload") == "true" ? SC_TRUE : SC_FALSE)
+            : SC_FALSE;
+
+    m_memoryParams.result_structure_system_idtf = m_params.count("result_structure_system_idtf")
+                                                      ? m_params.at("result_structure_system_idtf").c_str()
+                                                      : (sc_char *)null_ptr;
+
     return m_memoryParams;
   }
 
