@@ -2,8 +2,27 @@
 
 #include "sc-memory/sc_link.hpp"
 #include "sc-memory/sc_memory.hpp"
+#include <algorithm>
 
 #include "sc_test.hpp"
+
+void checkConnectionInStruct(
+    ScMemoryContext * m_ctx,
+    ScAddr const & keynodeAddr,
+    ScAddr const & otherKeynodeAddr,
+    ScAddr const & resultStruct)
+{
+  ScIterator3Ptr it3 = m_ctx->Iterator3(keynodeAddr, ScType::EdgeAccessConstPosPerm, otherKeynodeAddr);
+  while (it3->Next())
+  {
+    bool checkEdge = m_ctx->HelperCheckEdge(resultStruct, it3->Get(1), ScType::EdgeAccessConstPosPerm);
+    EXPECT_TRUE(checkEdge);
+    if (checkEdge == SC_FALSE)
+      SC_LOG_ERROR(
+          "Edge between %s" + m_ctx->HelperGetSystemIdtf(keynodeAddr) + " and %s" +
+          m_ctx->HelperGetSystemIdtf(otherKeynodeAddr) + " doesn't belong to resultStruct");
+  };
+}
 
 TEST_F(ScMemoryTest, LinkContent)
 {
@@ -80,11 +99,67 @@ TEST_F(ScMemoryTest, ResolveNodeWithRussianIdtf)
   EXPECT_EQ(m_ctx->HelperFindBySystemIdtf(englishIdtf), englishNode);
 }
 
-TEST_F(ScMemoryTest, TestResultStruct)
+TEST_F(ScMemoryTestWithResultStruct, TestResultStruct)
 {
-  ScAddr resultStruct = m_ctx->HelperFindBySystemIdtf("resultStructure");
+  ScAddr const & resultStruct = m_ctx->HelperFindBySystemIdtf("resultStructure");
   EXPECT_TRUE(resultStruct.IsValid());
-  ScAddr testKeynode = m_ctx->HelperFindBySystemIdtf("rrel_1");
-  EXPECT_TRUE(testKeynode.IsValid());
-  EXPECT_TRUE(m_ctx->HelperCheckEdge(resultStruct, testKeynode, ScType::EdgeAccessConstPosPerm));
-}
+  ScMemoryContext * context = m_ctx.get();
+
+  ScAddrVector const & keynodesAddrs = {
+      ScKeynodes::kCommandStateAddr,
+      ScKeynodes::kCommandInitiatedAddr,
+      ScKeynodes::kCommandProgressedAddr,
+      ScKeynodes::kCommandFinishedAddr,
+      ScKeynodes::kNrelResult,
+      ScKeynodes::kNrelCommonTemplate,
+      ScKeynodes::kNrelIdtf,
+      ScKeynodes::kNrelFormat,
+      ScKeynodes::kScResult,
+      ScKeynodes::kBinaryType};
+
+  ScAddrVector const & resultCodes = {
+      ScKeynodes::kScResultOk,
+      ScKeynodes::kScResultNo,
+      ScKeynodes::kScResultUnknown,
+      ScKeynodes::kScResultError,
+      ScKeynodes::kScResultErrorInvalidParams,
+      ScKeynodes::kScResultErrorInvalidType,
+      ScKeynodes::kScResultErrorIO,
+      ScKeynodes::kScResultInvalidState,
+      ScKeynodes::kScResultErrorNotFound,
+      ScKeynodes::kScResultErrorNoWriteRights,
+      ScKeynodes::kScResultErrorNoReadRights};
+
+  ScAddrVector const & binaryTypes = {
+      ScKeynodes::kBinaryDouble,
+      ScKeynodes::kBinaryFloat,
+      ScKeynodes::kBinaryString,
+      ScKeynodes::kBinaryInt8,
+      ScKeynodes::kBinaryInt16,
+      ScKeynodes::kBinaryInt32,
+      ScKeynodes::kBinaryInt64,
+      ScKeynodes::kBinaryUInt8,
+      ScKeynodes::kBinaryUInt16,
+      ScKeynodes::kBinaryUInt32,
+      ScKeynodes::kBinaryUInt64,
+      ScKeynodes::kBinaryCustom};
+
+  std::vector<ScAddrVector> const & keynodesVectors = {keynodesAddrs, resultCodes, binaryTypes};
+
+  ScAddrVector allKeynodes;
+  for (ScAddrVector const & keynodes : keynodesVectors)
+  {
+    allKeynodes.insert(allKeynodes.begin(), keynodes.begin(), keynodes.end());
+  }
+
+  SC_LOG_ERROR(allKeynodes.size());
+
+  for (ScAddr const & keynodeAddr : allKeynodes)
+  {
+    EXPECT_TRUE(m_ctx->HelperCheckEdge(resultStruct, keynodeAddr, ScType::EdgeAccessConstPosPerm));
+    std::for_each(
+        allKeynodes.begin(), allKeynodes.end(), [context, keynodeAddr, resultStruct](ScAddr otherKeynodeAddr) {
+          checkConnectionInStruct(context, keynodeAddr, otherKeynodeAddr, resultStruct);
+        });
+  }
+};
