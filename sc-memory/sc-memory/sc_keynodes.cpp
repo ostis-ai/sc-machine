@@ -50,7 +50,13 @@ ScAddr ScKeynodes::kBinaryCustom;
 
 bool ScKeynodes::Init(bool force, sc_char const * result_structure_system_idtf)
 {
-  ScAddrVector keynodesAddrs = {
+  if (ms_isInitialized && !force)
+    return true;
+
+  bool result = ScKeynodes::InitGlobal();
+  ScMemoryContext ctx(sc_access_lvl_make_min, "ScKeynodes::Init");
+
+  ScAddrVector const & keynodesAddrs = {
       kCommandStateAddr,
       kCommandInitiatedAddr,
       kCommandProgressedAddr,
@@ -59,22 +65,23 @@ bool ScKeynodes::Init(bool force, sc_char const * result_structure_system_idtf)
       kNrelCommonTemplate,
       kNrelIdtf,
       kNrelFormat,
-      kScResult};
+      kScResult,
+      kBinaryType};
 
-  ScAddrVector resultCodes = {
-      kScResultOk,
-      kScResultNo,
-      kScResultUnknown,
+  ScAddrVector const & resultCodes = {
       kScResultError,
+      kScResultOk,
       kScResultErrorInvalidParams,
       kScResultErrorInvalidType,
       kScResultErrorIO,
       kScResultInvalidState,
       kScResultErrorNotFound,
       kScResultErrorNoWriteRights,
-      kScResultErrorNoReadRights};
+      kScResultErrorNoReadRights,
+      kScResultNo,
+      kScResultUnknown};
 
-  ScAddrVector binaryTypes = {
+  ScAddrVector const & binaryTypes = {
       kBinaryDouble,
       kBinaryFloat,
       kBinaryString,
@@ -88,41 +95,35 @@ bool ScKeynodes::Init(bool force, sc_char const * result_structure_system_idtf)
       kBinaryUInt64,
       kBinaryCustom};
 
-  std::vector<ScAddrVector> keynodeVectors = {keynodesAddrs, resultCodes, binaryTypes};
-
-  if (ms_isInitialized && !force)
-    return true;
-
-  bool result = ScKeynodes::InitGlobal();
-  ScMemoryContext ctx(sc_access_lvl_make_min, "ScKeynodes::Init");
+  ScAddrVector const & states = {kCommandFinishedAddr, kCommandInitiatedAddr, kCommandProgressedAddr};
 
   ScAddr resultStruct;
+  bool resultStructValid = SC_FALSE;
 
   if (result_structure_system_idtf != null_ptr)
   {
     resultStruct = ctx.HelperResolveSystemIdtf(result_structure_system_idtf, ScType::NodeConstStruct);
+    resultStructValid = resultStruct.IsValid();
 
-    for (ScAddrVector keynodes : keynodeVectors)
+    for (ScAddr const & keynodeAddr : keynodesAddrs)
     {
-      for (ScAddr keynodeAddr : keynodes)
-      {
-        ctx.CreateEdge(ScType::EdgeAccessConstPosPerm, resultStruct, keynodeAddr);
-      }
+      ctx.CreateEdge(ScType::EdgeAccessConstPosPerm, resultStruct, keynodeAddr);
     }
   }
 
-  // init sc_result set 
-  // Decrease performance if change to vector iteration
-  for (size_t i = 0; i < SC_RESULT_COUNT; ++i)
+  // init sc_result set
+  for (ScAddr const & resAddr : resultCodes)
   {
-    ScAddr const resAddr = GetResultCodeAddr(static_cast<sc_result>(i));
-    result = result && resAddr.IsValid();
+    result &= resAddr.IsValid();
     if (!ctx.HelperCheckEdge(kScResult, resAddr, ScType::EdgeAccessConstPosPerm))
     {
-      ScAddr resEdge = ctx.CreateEdge(ScType::EdgeAccessConstPosPerm, kScResult, resAddr);
-      result = result && resEdge.IsValid();
-      if (result && resultStruct.IsValid())
+      ScAddr const & resEdge = ctx.CreateEdge(ScType::EdgeAccessConstPosPerm, kScResult, resAddr);
+      result &= resEdge.IsValid();
+      if (result && resultStructValid)
+      {
         ctx.CreateEdge(ScType::EdgeAccessConstPosPerm, resultStruct, resEdge);
+        ctx.CreateEdge(ScType::EdgeAccessConstPosPerm, resultStruct, resAddr);
+      }
     }
   }
 
@@ -134,29 +135,36 @@ bool ScKeynodes::Init(bool force, sc_char const * result_structure_system_idtf)
     if (!item.IsValid())
       result = false;
     SC_ASSERT(item.IsValid(), ());
-    if (resultStruct.IsValid())
+    if (resultStructValid)
+    {
       ctx.CreateEdge(ScType::EdgeAccessConstPosPerm, resultStruct, item);
+    }
   }
 
   // command states
-  ScAddr states[] = {kCommandFinishedAddr, kCommandInitiatedAddr, kCommandProgressedAddr};
-  for (auto const & a : states)
+  for (ScAddr const & st : states)
   {
-    ScAddr commandStateEdge = ctx.CreateEdge(ScType::EdgeAccessConstPosPerm, kCommandStateAddr, a);
-    if (resultStruct.IsValid())
+    ScAddr const & commandStateEdge = ctx.CreateEdge(ScType::EdgeAccessConstPosPerm, kCommandStateAddr, st);
+    if (resultStructValid)
+    {
+      ctx.CreateEdge(ScType::EdgeAccessConstPosPerm, resultStruct, st);
       ctx.CreateEdge(ScType::EdgeAccessConstPosPerm, resultStruct, commandStateEdge);
+    }
     if (!commandStateEdge.IsValid())
       result = true;
   }
 
   // binary types
-
-  for (auto const & binaryType : binaryTypes)
+  for (ScAddr const & binaryType : binaryTypes)
   {
-    ScAddr binaryTypeEdge = ctx.CreateEdge(ScType::EdgeAccessConstPosPerm, kBinaryType, binaryType);
-    if (resultStruct.IsValid())
+    if (!ctx.HelperCheckEdge(kBinaryType, binaryType, ScType::EdgeAccessConstPosPerm))
     {
-      ctx.CreateEdge(ScType::EdgeAccessConstPosPerm, resultStruct, binaryTypeEdge);
+      ScAddr const & binaryTypeEdge = ctx.CreateEdge(ScType::EdgeAccessConstPosPerm, kBinaryType, binaryType);
+      if (resultStructValid && binaryTypeEdge.IsValid())
+      {
+        ctx.CreateEdge(ScType::EdgeAccessConstPosPerm, resultStruct, binaryType);
+        ctx.CreateEdge(ScType::EdgeAccessConstPosPerm, resultStruct, binaryTypeEdge);
+      }
     }
   }
 
