@@ -50,6 +50,46 @@ ScAddr ScKeynodes::kBinaryCustom;
 
 bool ScKeynodes::Init(bool force, sc_char const * result_structure_system_idtf)
 {
+  ScAddrVector keynodesAddrs = {
+      kCommandStateAddr,
+      kCommandInitiatedAddr,
+      kCommandProgressedAddr,
+      kCommandFinishedAddr,
+      kNrelResult,
+      kNrelCommonTemplate,
+      kNrelIdtf,
+      kNrelFormat,
+      kScResult};
+
+  ScAddrVector resultCodes = {
+      kScResultOk,
+      kScResultNo,
+      kScResultUnknown,
+      kScResultError,
+      kScResultErrorInvalidParams,
+      kScResultErrorInvalidType,
+      kScResultErrorIO,
+      kScResultInvalidState,
+      kScResultErrorNotFound,
+      kScResultErrorNoWriteRights,
+      kScResultErrorNoReadRights};
+
+  ScAddrVector binaryTypes = {
+      kBinaryDouble,
+      kBinaryFloat,
+      kBinaryString,
+      kBinaryInt8,
+      kBinaryInt16,
+      kBinaryInt32,
+      kBinaryInt64,
+      kBinaryUInt8,
+      kBinaryUInt16,
+      kBinaryUInt32,
+      kBinaryUInt64,
+      kBinaryCustom};
+
+  std::vector<ScAddrVector> keynodeVectors = {keynodesAddrs, resultCodes, binaryTypes};
+
   if (ms_isInitialized && !force)
     return true;
 
@@ -59,16 +99,24 @@ bool ScKeynodes::Init(bool force, sc_char const * result_structure_system_idtf)
   ScAddr resultStruct;
 
   if (result_structure_system_idtf != null_ptr)
+  {
     resultStruct = ctx.HelperResolveSystemIdtf(result_structure_system_idtf, ScType::NodeConstStruct);
 
-  SC_LOG_ERROR(resultStruct.IsValid());
+    for (ScAddrVector keynodes : keynodeVectors)
+    {
+      for (ScAddr keynodeAddr : keynodes)
+      {
+        ctx.CreateEdge(ScType::EdgeAccessConstPosPerm, resultStruct, keynodeAddr);
+      }
+    }
+  }
 
-  // init sc_result set
+  // init sc_result set 
+  // Decrease performance if change to vector iteration
   for (size_t i = 0; i < SC_RESULT_COUNT; ++i)
   {
     ScAddr const resAddr = GetResultCodeAddr(static_cast<sc_result>(i));
     result = result && resAddr.IsValid();
-    
     if (!ctx.HelperCheckEdge(kScResult, resAddr, ScType::EdgeAccessConstPosPerm))
     {
       ScAddr resEdge = ctx.CreateEdge(ScType::EdgeAccessConstPosPerm, kScResult, resAddr);
@@ -94,32 +142,20 @@ bool ScKeynodes::Init(bool force, sc_char const * result_structure_system_idtf)
   ScAddr states[] = {kCommandFinishedAddr, kCommandInitiatedAddr, kCommandProgressedAddr};
   for (auto const & a : states)
   {
-    if (!ctx.CreateEdge(ScType::EdgeAccessConstPosPerm, kCommandStateAddr, a).IsValid())
+    ScAddr commandStateEdge = ctx.CreateEdge(ScType::EdgeAccessConstPosPerm, kCommandStateAddr, a);
+    if (resultStruct.IsValid())
+      ctx.CreateEdge(ScType::EdgeAccessConstPosPerm, resultStruct, commandStateEdge);
+    if (!commandStateEdge.IsValid())
       result = true;
   }
 
   // binary types
-
-  ScAddr binaryTypes[] = {
-      kBinaryDouble,
-      kBinaryFloat,
-      kBinaryString,
-      kBinaryInt8,
-      kBinaryInt16,
-      kBinaryInt32,
-      kBinaryInt64,
-      kBinaryUInt8,
-      kBinaryUInt16,
-      kBinaryUInt32,
-      kBinaryUInt64,
-      kBinaryCustom};
 
   for (auto const & binaryType : binaryTypes)
   {
     ScAddr binaryTypeEdge = ctx.CreateEdge(ScType::EdgeAccessConstPosPerm, kBinaryType, binaryType);
     if (resultStruct.IsValid())
     {
-      ctx.CreateEdge(ScType::EdgeAccessConstPosPerm, resultStruct, binaryType);
       ctx.CreateEdge(ScType::EdgeAccessConstPosPerm, resultStruct, binaryTypeEdge);
     }
   }
