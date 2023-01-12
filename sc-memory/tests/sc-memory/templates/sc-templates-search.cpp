@@ -301,6 +301,81 @@ TEST_F(ScTemplateSearchTest, links_with_relation)
   }
 }
 
+TEST_F(ScTemplateSearchTest, nodes_with_two_class)
+{
+  /**
+   * class1 _-> _element;;
+   * class2 _-> _element;;
+   */
+
+  ScAddr const classAddr1 = m_ctx->CreateNode(ScType::NodeConstClass);
+  EXPECT_TRUE(classAddr1.IsValid());
+
+  ScAddr const classAddr2 = m_ctx->CreateNode(ScType::NodeConstClass);
+  EXPECT_TRUE(classAddr2.IsValid());
+
+  struct TestData
+  {
+    ScAddr m_addr;
+    ScAddr m_classEdge1;
+    ScAddr m_classEdge2;
+  };
+
+  std::vector<TestData> data(50);
+  for (auto & d : data)
+  {
+    d.m_addr = m_ctx->CreateNode(ScType::NodeConstAbstract);
+    EXPECT_TRUE(d.m_addr.IsValid());
+
+    d.m_classEdge1 = m_ctx->CreateEdge(ScType::EdgeAccessConstPosPerm, classAddr1, d.m_addr);
+    EXPECT_TRUE(d.m_classEdge1.IsValid());
+
+    d.m_classEdge2 = m_ctx->CreateEdge(ScType::EdgeAccessConstPosPerm, classAddr2, d.m_addr);
+    EXPECT_TRUE(d.m_classEdge2.IsValid());
+  }
+
+  ScTemplate templ;
+  templ.Triple(
+      classAddr1,
+      ScType::EdgeAccessVarPosPerm >> "_class_edge1",
+      ScType::NodeVar >> "_node");
+  templ.Triple(
+      classAddr2,
+      ScType::EdgeAccessVarPosPerm >> "_class_edge2",
+      "_node");
+
+  ScTemplateSearchResult searchRes;
+  EXPECT_TRUE(m_ctx->HelperSearchTemplate(templ, searchRes));
+
+  EXPECT_EQ(searchRes.Size(), data.size());
+  std::vector<TestData> foundData(data.size());
+  for (size_t i = 0; i < searchRes.Size(); ++i)
+  {
+    auto & d = foundData[i];
+
+    d.m_addr = searchRes[i]["_node"];
+    d.m_classEdge1 = searchRes[i]["_class_edge1"];
+    d.m_classEdge2 = searchRes[i]["_class_edge2"];
+  }
+
+  auto compare = [](TestData const & a, TestData const & b)
+  {
+    return (a.m_addr.Hash() < b.m_addr.Hash());
+  };
+  std::sort(data.begin(), data.end(), compare);
+  std::sort(foundData.begin(), foundData.end(), compare);
+
+  for (size_t i = 0; i < searchRes.Size(); ++i)
+  {
+    auto const & d1 = foundData[i];
+    auto const & d2 = data[i];
+
+    EXPECT_EQ(d1.m_addr, d2.m_addr);
+    EXPECT_EQ(d1.m_classEdge1, d2.m_classEdge1);
+    EXPECT_EQ(d1.m_classEdge2, d2.m_classEdge2);
+  }
+}
+
 TEST_F(ScTemplateSearchTest, result_deduplication)
 {
   /**
