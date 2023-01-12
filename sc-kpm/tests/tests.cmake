@@ -14,7 +14,7 @@ sc_codegen_ex(sc-utils-test-agents ${SC_UTILS_TEST_AGENTS_SRC} ${SC_UTILS_TEST_A
 
 make_tests_from_folder(${CMAKE_CURRENT_LIST_DIR}/sc-agents
     NAME sc-kpm-core-agents-tests
-    DEPENDS sc-memory sc-search
+    DEPENDS sc-memory sc-search sc-agents-common
     INCLUDES ${SC_MEMORY_SRC} ${SC_KPM_SRC} ${SC_MEMORY_SRC}/tests/sc-memory/_test
 )
 

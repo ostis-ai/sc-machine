@@ -5,6 +5,7 @@
  */
 
 #include "keynodes/coreKeynodes.hpp"
+#include "agents/EraseElementsAgent.hpp"
 
 #include "sc_agents_common.hpp"
 
@@ -17,10 +18,13 @@ sc_result SCAgentsCommonModule::InitializeImpl()
   if (!CoreKeynodes::InitGlobal())
     return SC_RESULT_ERROR;
 
+  SC_AGENT_REGISTER(EraseElementsAgent);
+
   return SC_RESULT_OK;
 }
 
 sc_result SCAgentsCommonModule::ShutdownImpl()
 {
+  SC_AGENT_UNREGISTER(EraseElementsAgent);
   return SC_RESULT_OK;
 }
