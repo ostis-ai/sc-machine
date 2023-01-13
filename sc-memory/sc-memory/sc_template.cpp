@@ -66,8 +66,11 @@ ScTemplate & ScTemplate::operator()(
 
 void ScTemplate::Clear()
 {
+  for (auto * construct : m_constructions)
+    delete construct;
   m_constructions.clear();
-  m_constants.clear();
+
+  m_namesToAddrs.clear();
   m_orderedConstructions.clear();
 }
 
@@ -88,16 +91,16 @@ ScTemplate & ScTemplate::Triple(
     ScTemplate::TripleFlag isRequired /* = ScTemplate::TripleFlag::Required */)
 {
   size_t const replPos = m_constructions.size() * 3;
-  m_constructions.emplace_back(param1, param2, param3, m_constructions.size(), isRequired);
+  m_constructions.emplace_back(new ScTemplateConstr3(param1, param2, param3, m_constructions.size(), isRequired));
 
   if (!param2.m_replacementName.empty() &&
       (param2.m_replacementName == param1.m_replacementName || param2.m_replacementName == param3.m_replacementName))
     SC_THROW_EXCEPTION(utils::ExceptionInvalidParams, "You can't use equal replacement for an edge and source/target");
 
-  ScTemplateConstr3 & constr3 = m_constructions.back();
+  ScTemplateConstr3 * constr3 = m_constructions.back();
   for (size_t i = 0; i < 3; ++i)
   {
-    ScTemplateItemValue & value = constr3.m_values[i];
+    ScTemplateItemValue & value = constr3->m_values[i];
 
     if (value.IsAssign() && value.m_typeValue.HasConstancyFlag() && !value.m_typeValue.IsVar())
       SC_THROW_EXCEPTION(utils::ExceptionInvalidParams, "You should to use variable types in template");
@@ -105,15 +108,24 @@ ScTemplate & ScTemplate::Triple(
     if (value.IsAddr() && !value.m_addrValue.IsValid())
       SC_THROW_EXCEPTION(utils::ExceptionInvalidParams, "You can't use empty ScAddr");
 
-    if (value.IsFixed() && std::find(m_constants.begin(), m_constants.end(), value.m_addrValue) != m_constants.end())
-      m_constants.push_back(value.m_addrValue);
-
     if (!value.m_replacementName.empty())
     {
+      if (value.IsAddr())
+      {
+        m_namesToAddrs[value.m_replacementName] = value.m_addrValue;
+      }
+      else
+      {
+        if (m_namesToAddrs[value.m_replacementName].IsValid())
+        {
+          value.SetAddr(m_namesToAddrs[value.m_replacementName]);
+        }
+      }
+
       if (value.m_itemType != ScTemplateItemValue::Type::Replace)
       {
         if (m_replacements.find(value.m_replacementName) == m_replacements.end())
-          m_replacements[value.m_replacementName] = replPos + i;
+          m_replacements.insert({value.m_replacementName, replPos + i});
       }
 
       m_itemsNames.insert(value.m_replacementName);
@@ -123,7 +135,7 @@ ScTemplate & ScTemplate::Triple(
        */
       size_t const constrIdx = replPos / 3;
       SC_ASSERT(constrIdx < m_constructions.size(), ());
-      ScTemplateItemValue const & valueType = m_constructions[constrIdx].m_values[i];
+      ScTemplateItemValue const & valueType = m_constructions[constrIdx]->m_values[i];
 
       if (valueType.IsType())
         value.m_typeValue = valueType.m_typeValue;
@@ -163,11 +175,11 @@ ScTemplate & ScTemplate::TripleWithRelation(
   return *this;
 }
 
-inline ScConstr3Type ScTemplate::GetPriority(ScTemplateConstr3 const & constr)
+inline ScConstr3Type ScTemplate::GetPriority(ScTemplateConstr3 * constr)
 {
-  ScTemplateItemValue const & item1 = constr.m_values[0];
-  ScTemplateItemValue const & item2 = constr.m_values[1];
-  ScTemplateItemValue const & item3 = constr.m_values[2];
+  ScTemplateItemValue const & item1 = constr->m_values[0];
+  ScTemplateItemValue const & item2 = constr->m_values[1];
+  ScTemplateItemValue const & item3 = constr->m_values[2];
 
   if (item2.IsFixed())
     return ScConstr3Type::AFA;
@@ -178,10 +190,21 @@ inline ScConstr3Type ScTemplate::GetPriority(ScTemplateConstr3 const & constr)
   else if (item3.IsFixed())
     return ScConstr3Type::AAF;
 
-  else if (item1.IsFixed() && (item3.m_typeValue.IsEdge() || item3.m_typeValue.IsUnknown()))
-    return ScConstr3Type::FAE;
+  else if (item1.IsFixed() && (!item3.m_typeValue.IsEdge() && !item3.m_typeValue.IsUnknown()))
+  {
+    auto const & it = m_replacements.find(item3.m_replacementName);
+    if (it != m_replacements.cend())
+    {
+      size_t const constrIdx = it->second / 3;
+      if (constrIdx == constr->m_index ||
+          (constrIdx >= m_constructions.size() && !m_constructions[constrIdx]->m_values[1].m_typeValue.IsEdge()))
+      {
+        return ScConstr3Type::FAE;
+      }
+    }
+  }
 
-  else if (item1.IsFixed())
+  if (item1.IsFixed())
     return ScConstr3Type::FAN;
 
   else

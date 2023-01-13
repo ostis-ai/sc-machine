@@ -27,7 +27,7 @@ public:
     // check if it is valid
     for (const auto & constr : m_constructions)
     {
-      auto values = constr.GetValues();
+      auto values = constr->GetValues();
       if (values[1].IsFixed())
         SC_THROW_EXCEPTION(
             utils::ExceptionInvalidParams, "You can't use fixed value for edge in triple for template generation");
@@ -59,7 +59,7 @@ public:
 
     for (const auto & item : m_constructions)
     {
-      auto const & values = item.GetValues();
+      auto const & values = item->GetValues();
 
       // check that the third argument isn't a command to generate edge
       SC_ASSERT(!(values[2].m_itemType == ScTemplateItemValue::Type::Type && values[2].m_typeValue.IsEdge()), ());
@@ -167,8 +167,8 @@ public:
       if (itRepl == m_replacements.end())
         return false;
 
-      ScTemplateConstr3 const & constr = m_constructions[itRepl->second / 3];
-      ScType const & itemType = constr.GetValues()[itRepl->second % 3].m_typeValue;
+      ScTemplateConstr3 * constr = m_constructions[itRepl->second / 3];
+      ScType const & itemType = constr->GetValues()[itRepl->second % 3].m_typeValue;
       /// TODO: check subtype of objects. Can't replace tuple with no tuple object
       if (itemType.HasConstancyFlag() && (!itemType.IsVar() || itemType.IsEdge()))
         return false;

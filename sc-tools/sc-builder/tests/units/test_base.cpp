@@ -165,11 +165,35 @@ TEST_F(ScBuilderTest, TemplateWithVarTriplesBig)
   ScTemplate checkTemplate;
   EXPECT_TRUE(m_ctx->HelperBuildTemplate(checkTemplate, checkTemplateStructure));
 
-  ScTemplateGenResult genResult;
-  EXPECT_TRUE(m_ctx->HelperGenTemplate(checkTemplate, genResult));
+  size_t const constrCount = 50;
+  for (size_t i = 0; i < constrCount; ++i)
+  {
+    ScTemplateGenResult genResult;
+    EXPECT_TRUE(m_ctx->HelperGenTemplate(checkTemplate, genResult));
+  }
 
   ScTemplateSearchResult searchResult;
   EXPECT_TRUE(m_ctx->HelperSearchTemplate(checkTemplate, searchResult));
+  EXPECT_EQ(searchResult.Size(), constrCount);
+}
+
+TEST_F(ScBuilderTest, TemplateWithVarTriplesBig2)
+{
+  ScAddr checkTemplateStructure = m_ctx->HelperFindBySystemIdtf("test_template_big_2");
+
+  ScTemplate checkTemplate;
+  EXPECT_TRUE(m_ctx->HelperBuildTemplate(checkTemplate, checkTemplateStructure));
+
+  size_t const constrCount = 50;
+  for (size_t i = 0; i < constrCount; ++i)
+  {
+    ScTemplateGenResult genResult;
+    EXPECT_TRUE(m_ctx->HelperGenTemplate(checkTemplate, genResult));
+  }
+
+  ScTemplateSearchResult searchResult;
+  EXPECT_TRUE(m_ctx->HelperSearchTemplate(checkTemplate, searchResult));
+  EXPECT_EQ(searchResult.Size(), constrCount);
 }
 
 TEST_F(ScBuilderTest, TemplateWithVarTriplesSmall)

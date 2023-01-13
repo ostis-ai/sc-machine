@@ -221,23 +221,23 @@ protected:
 template <typename HashType>
 struct ScTemplateConstr3HashFunc
 {
-  HashType operator()(std::reference_wrapper<ScTemplateConstr3> const & constr);
+  HashType operator()(ScTemplateConstr3 * constr);
 };
 
 template <>
 struct ScTemplateConstr3HashFunc<size_t>
 {
-  size_t operator()(std::reference_wrapper<ScTemplateConstr3> const & constr) const
+  size_t operator()(ScTemplateConstr3 * constr) const
   {
-    return constr.get().m_index;
+    return constr->m_index;
   }
 };
 
 struct ScTemplateConstr3EqualFunc
 {
-  bool operator()(std::reference_wrapper<ScTemplateConstr3> const & a, std::reference_wrapper<ScTemplateConstr3> const & b) const
+  bool operator()(ScTemplateConstr3 * a, ScTemplateConstr3 * b) const
   {
-    return a.get().m_index, b.get().m_index;
+    return a->m_index == b->m_index;
   }
 };
 
@@ -363,14 +363,21 @@ public:
   ScTemplate(ScTemplate const & other) = delete;
   ScTemplate & operator=(ScTemplate const & other) = delete;
 
-  using ReplacementsMap = std::map<std::string, size_t>;
-  using TemplateConstr3Vector = std::vector<ScTemplateConstr3>;
+  using ReplacementsMap = std::unordered_multimap<std::string, size_t>;
+  using TemplateConstr3Vector = std::vector<ScTemplateConstr3 *>;
   using ProcessOrder = std::vector<size_t>;
 
   /*  If forceOrder flag is true, then search will be run in the same order,
    * that was used for a triples append
    */
   _SC_EXTERN explicit ScTemplate(bool forceOrder = false);
+
+  _SC_EXTERN ~ScTemplate()
+  {
+    for (auto * construct : m_constructions)
+      delete construct;
+    m_constructions.clear();
+  }
 
   _SC_EXTERN ScTemplate & operator()(
       ScTemplateItemValue const & param1,
@@ -443,19 +450,14 @@ protected:
   ReplacementsMap m_replacements;
   // Store construction (triples)
   TemplateConstr3Vector m_constructions;
-  ScAddrVector m_constants;
 
-  using ScTemplateGroupedConstructions = std::unordered_set<std::reference_wrapper<ScTemplateConstr3>, ScTemplateConstr3HashFunc<size_t>, ScTemplateConstr3EqualFunc>;
+  using ScTemplateGroupedConstructions =
+      std::unordered_set<ScTemplateConstr3 *, ScTemplateConstr3HashFunc<size_t>, ScTemplateConstr3EqualFunc>;
   std::vector<ScTemplateGroupedConstructions> m_orderedConstructions;
   std::unordered_set<std::string> m_itemsNames;
+  std::map<std::string, ScAddr> m_namesToAddrs;
 
-  /* Caches (used to prevent processing order update on each search/gen)
-   * Caches are mutable, to prevent changes of template in search and generation, they can access just a cache.
-   * That because template passed into them by const reference.
-   */
-  mutable ProcessOrder m_searchCachedOrder;
-
-  ScConstr3Type GetPriority(ScTemplateConstr3 const & constr);
+  ScConstr3Type GetPriority(ScTemplateConstr3 * constr);
 };
 
 class ScTemplateGenResult
