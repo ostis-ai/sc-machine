@@ -7,6 +7,7 @@
 #pragma once
 
 #include <utility>
+#include <functional>
 
 #include "sc_addr.hpp"
 #include "sc_type.hpp"
@@ -248,6 +249,7 @@ _SC_EXTERN ScTemplateItemValue operator>>(ScType const & value, std::string cons
 
 class ScTemplateGenResult;
 class ScTemplateSearchResult;
+class ScTemplateSearchResultItem;
 
 enum class ScTemplateResultCode : uint8_t
 {
@@ -365,7 +367,6 @@ public:
 
   using ReplacementsMap = std::unordered_multimap<std::string, size_t>;
   using TemplateConstr3Vector = std::vector<ScTemplateConstr3 *>;
-  using ProcessOrder = std::vector<size_t>;
 
   /*  If forceOrder flag is true, then search will be run in the same order,
    * that was used for a triples append
@@ -452,10 +453,12 @@ protected:
   TemplateConstr3Vector m_constructions;
 
   using ScTemplateGroupedConstructions =
-      std::unordered_set<ScTemplateConstr3 *, ScTemplateConstr3HashFunc<size_t>, ScTemplateConstr3EqualFunc>;
+      std::unordered_set<size_t>;
   std::vector<ScTemplateGroupedConstructions> m_orderedConstructions;
   std::unordered_set<std::string> m_itemsNames;
   std::map<std::string, ScAddr> m_namesToAddrs;
+  std::map<std::string, ScType> m_namesToTypes;
+  std::function<void(ScTemplateSearchResultItem const & resultItem)> m_callback;
 
   ScConstr3Type GetPriority(ScTemplateConstr3 * constr);
 };

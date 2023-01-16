@@ -62,9 +62,9 @@ public:
             std::string const key = stream.str();
             auto const & found = m_itemsToConstructs.find(key);
             if (found == m_itemsToConstructs.cend())
-              m_itemsToConstructs.insert({key, {otherConstruct}});
+              m_itemsToConstructs.insert({key, {otherConstruct->m_index}});
             else
-              found->second.insert(otherConstruct);
+              found->second.insert(otherConstruct->m_index);
           }
         };
 
@@ -220,31 +220,50 @@ public:
     }
   }
 
-  bool IsConstructsEqual(
-      ScTemplateConstr3 const * construct,
-      ScTemplateConstr3 const * otherConstruct,
-      ScAddrVector const & resultAddrs,
-      ScTemplateSearchResult & result)
+  bool IsConstructsEqual(ScTemplateConstr3 const * construct, ScTemplateConstr3 const * otherConstruct)
   {
     auto const & constructValues = construct->GetValues();
     auto const & otherConstructValues = otherConstruct->GetValues();
 
     auto const & IsConstructsItemsEqual =
-        [&resultAddrs, &result](ScTemplateItemValue const & value, ScTemplateItemValue const & otherValue) -> bool {
-      bool const isEqual =
-          (value.m_typeValue == otherValue.m_typeValue || value.m_typeValue.IsUnknown() ||
-           otherValue.m_typeValue.IsUnknown() || value.m_typeValue.CanExtendTo(otherValue.m_typeValue) ||
-           otherValue.m_typeValue.CanExtendTo(value.m_typeValue)) &&
-          value.m_addrValue == otherValue.m_addrValue;
-
-      if (!resultAddrs.empty())
+        [this](ScTemplateItemValue const & value, ScTemplateItemValue const & otherValue) -> bool {
+      bool isEqual = value.m_typeValue == otherValue.m_typeValue;
+      if (!isEqual)
       {
-        auto const & valueFound = result.m_replacements.find(value.m_replacementName);
-        if (valueFound != result.m_replacements.cend())
+        auto found = m_template.m_namesToTypes.find(value.m_replacementName);
+        if (found == m_template.m_namesToTypes.cend())
         {
-          auto const & otherValueFound = result.m_replacements.find(value.m_replacementName);
-          return otherValueFound != result.m_replacements.cend() && isEqual &&
-                 resultAddrs[valueFound->second] == resultAddrs[otherValueFound->second];
+          found = m_template.m_namesToTypes.find(value.m_replacementName);
+          if (found != m_template.m_namesToTypes.cend())
+          {
+            isEqual = value.m_typeValue == found->second;
+          }
+        }
+        else
+        {
+          isEqual = found->second == otherValue.m_typeValue;
+        }
+      }
+
+      if (isEqual)
+      {
+        isEqual = value.m_addrValue == otherValue.m_addrValue;
+      }
+
+      if (!isEqual)
+      {
+        auto found = m_template.m_namesToAddrs.find(value.m_replacementName);
+        if (found == m_template.m_namesToAddrs.cend())
+        {
+          found = m_template.m_namesToAddrs.find(value.m_replacementName);
+          if (found != m_template.m_namesToAddrs.cend())
+          {
+            isEqual = value.m_addrValue == found->second;
+          }
+        }
+        else
+        {
+          isEqual = found->second == otherValue.m_addrValue;
         }
       }
 
@@ -275,8 +294,9 @@ public:
 
     std::unordered_set<size_t> iteratedConstructs;
 
-    for (ScTemplateConstr3 const * construct : constructs)
+    for (size_t const idx : constructs)
     {
+      ScTemplateConstr3 * construct = m_template.m_constructions[idx];
       if (iteratedConstructs.find(construct->m_index) != iteratedConstructs.cend())
         continue;
 
@@ -287,12 +307,12 @@ public:
             std::find_if(
                 currentIterableConstructs.cbegin(),
                 currentIterableConstructs.cend(),
-                [&](ScTemplateConstr3 const * other) {
-                  return *other == *otherConstruct;
+                [&](size_t const otherIdx) {
+                  return idx == otherIdx;
                 }) == currentIterableConstructs.cend() &&
-            IsConstructsEqual(construct, otherConstruct, resultAddrs, result))
+            IsConstructsEqual(construct, otherConstruct))
         {
-          equalConstructs.insert(otherConstruct);
+          equalConstructs.insert(otherConstruct->m_index);
           iteratedConstructs.insert(otherConstruct->m_index);
         }
       }
@@ -360,7 +380,7 @@ public:
           resultAddrs[++constructIdx] = ScAddr::Empty;
         };
 
-    ScTemplateConstr3 * construct = *constructs.begin();
+    ScTemplateConstr3 * construct = m_template.m_constructions[*constructs.begin()];
 
     bool isAllChildrenFinished = false;
     bool isLast = false;
@@ -401,9 +421,9 @@ public:
       if (IsStructureValid() && (!IsInStructure(addr1) || !IsInStructure(addr2) || !IsInStructure(addr3)))
         return;
 
-      for (ScTemplateConstr3 * otherConstruct : constructs)
+      for (size_t const constructIdx : constructs)
       {
-        construct = otherConstruct;
+        construct = m_template.m_constructions[constructIdx];
 
         if (checkedConstructs.find(construct->m_index) != checkedConstructs.cend())
         {
@@ -508,6 +528,10 @@ public:
         if (checkedConstructs.size() == m_template.m_constructions.size())
         {
           result.m_results.emplace_back(resultAddrs);
+          if (m_callback)
+          {
+            m_callback(result[result.Size() - 1]);
+          }
         }
       }
     }
@@ -550,6 +574,7 @@ public:
   ScTemplate::Result operator()(ScTemplateSearchResult & result)
   {
     result.Clear();
+    m_callback = m_template.m_callback;
 
     DoIterations(result);
 
@@ -565,6 +590,7 @@ private:
   ScTemplate & m_template;
   ScMemoryContext & m_context;
   ScAddr const m_struct;
+  std::function<void(ScTemplateSearchResultItem const & resultItem)> m_callback;
 
   std::map<std::string, ScTemplateGroupedConstructions> m_itemsToConstructs;
 };

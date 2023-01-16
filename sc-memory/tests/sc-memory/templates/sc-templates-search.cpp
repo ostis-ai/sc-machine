@@ -410,3 +410,47 @@ TEST_F(ScTemplateSearchTest, result_deduplication)
   EXPECT_EQ(searchResult[0]["b"], genResult["b"]);
   EXPECT_EQ(searchResult[0]["c"], genResult["c"]);
 }
+
+TEST_F(ScTemplateSearchTest, equal_constructions)
+{
+  ScAddr const & begin = m_ctx->HelperResolveSystemIdtf("begin", ScType::NodeConstClass);
+  ScAddr const & history = m_ctx->HelperResolveSystemIdtf("history", ScType::NodeConstClass);
+  ScAddr const & nrel_changes_history = m_ctx->HelperResolveSystemIdtf("nrel_changes_history", ScType::NodeConstNoRole);
+  ScAddr const & nrel_model_version = m_ctx->HelperResolveSystemIdtf("nrel_model_version", ScType::NodeConstNoRole);
+
+  ScTemplate initVersionSearchTemplate;
+  initVersionSearchTemplate.Triple(
+      begin,
+      ScType::EdgeAccessVarPosPerm >> "_begin_date_parameter_access_arc",
+      ScType::NodeVarClass >> "_begin_date_parameter");
+  initVersionSearchTemplate.TripleWithRelation(
+      ScType::NodeVar >> "_unchanged_sd_version",
+      ScType::EdgeDCommonVar >> "_version_pair_arc",
+      ScType::NodeVar >> "_changed_sd_version",
+      ScType::EdgeAccessVarPosPerm >> "_begin_date_parameter_relation_access_arc",
+      "_begin_date_parameter");
+  initVersionSearchTemplate.Triple(
+      ScType::NodeVarStruct >> "_changes_history",
+      ScType::EdgeAccessVarPosPerm >> "_changes_history_access_arc",
+      "_version_pair_arc");
+  initVersionSearchTemplate.Triple(
+      history, ScType::EdgeAccessVarPosPerm >> "_history_access_arc", "_changes_history");
+  initVersionSearchTemplate.TripleWithRelation(
+      ScType::NodeVarStruct >> "_model_example",
+      ScType::EdgeDCommonVar >> "_changes_history_pair_arc",
+      "_changes_history",
+      ScType::EdgeAccessVarPosPerm >> "_nrel_changes_history_access_arc",
+      nrel_changes_history);
+  initVersionSearchTemplate.TripleWithRelation(
+      "_model_example",
+      ScType::EdgeDCommonVar >> "_nrel_model_version_pair_arc",
+      "_version_pair_arc",
+      ScType::EdgeAccessVarPosPerm >> "_nrel_model_version_access_arc",
+      nrel_model_version);
+  ScTemplateGenResult genResult;
+  EXPECT_TRUE(m_ctx->HelperGenTemplate(initVersionSearchTemplate, genResult));
+
+  ScTemplateSearchResult searchResult;
+  EXPECT_TRUE(m_ctx->HelperSearchTemplate(initVersionSearchTemplate, searchResult));
+  EXPECT_TRUE(searchResult.Size() == 1);
+}

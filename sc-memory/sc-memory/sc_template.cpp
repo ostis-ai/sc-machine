@@ -116,10 +116,16 @@ ScTemplate & ScTemplate::Triple(
       }
       else
       {
-        if (m_namesToAddrs[value.m_replacementName].IsValid())
+        auto const & found = m_namesToAddrs.find(value.m_replacementName);
+        if (found != m_namesToAddrs.cend())
         {
-          value.SetAddr(m_namesToAddrs[value.m_replacementName]);
+          value.SetAddr(found->second);
         }
+      }
+
+      if (value.IsType())
+      {
+        m_namesToTypes[value.m_replacementName] = value.m_typeValue;
       }
 
       if (value.m_itemType != ScTemplateItemValue::Type::Replace)
@@ -144,7 +150,7 @@ ScTemplate & ScTemplate::Triple(
 
   ScConstr3Type const priority = GetPriority(constr3);
   size_t const pr = int(priority);
-  m_orderedConstructions[pr].insert(constr3);
+  m_orderedConstructions[pr].insert(constr3->m_index);
 
   return *this;
 }
