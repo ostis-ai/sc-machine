@@ -48,7 +48,7 @@ ScAddr ScKeynodes::kBinaryUInt64;
 ScAddr ScKeynodes::kBinaryString;
 ScAddr ScKeynodes::kBinaryCustom;
 
-bool ScKeynodes::Init(bool force, sc_char const * result_structure_system_idtf)
+bool ScKeynodes::Init(bool force, sc_char const * init_memory_generated_structure)
 {
   if (ms_isInitialized && !force)
     return true;
@@ -97,17 +97,18 @@ bool ScKeynodes::Init(bool force, sc_char const * result_structure_system_idtf)
 
   ScAddrVector const & states = {kCommandFinishedAddr, kCommandInitiatedAddr, kCommandProgressedAddr};
 
-  ScAddr resultStruct;
-  bool resultStructValid = SC_FALSE;
+  ScAddr initMemoryGeneratedStructure;
+  bool initMemoryGeneratedStructureValid = SC_FALSE;
 
-  if (result_structure_system_idtf != null_ptr)
+  if (init_memory_generated_structure != null_ptr)
   {
-    resultStruct = ctx.HelperResolveSystemIdtf(result_structure_system_idtf, ScType::NodeConstStruct);
-    resultStructValid = resultStruct.IsValid();
+    initMemoryGeneratedStructure =
+        ctx.HelperResolveSystemIdtf(init_memory_generated_structure, ScType::NodeConstStruct);
+    initMemoryGeneratedStructureValid = initMemoryGeneratedStructure.IsValid();
 
     for (ScAddr const & keynodeAddr : keynodesAddrs)
     {
-      ctx.CreateEdge(ScType::EdgeAccessConstPosPerm, resultStruct, keynodeAddr);
+      ctx.CreateEdge(ScType::EdgeAccessConstPosPerm, initMemoryGeneratedStructure, keynodeAddr);
     }
   }
 
@@ -119,10 +120,10 @@ bool ScKeynodes::Init(bool force, sc_char const * result_structure_system_idtf)
     {
       ScAddr const & resEdge = ctx.CreateEdge(ScType::EdgeAccessConstPosPerm, kScResult, resAddr);
       result &= resEdge.IsValid();
-      if (result && resultStructValid)
+      if (result && initMemoryGeneratedStructureValid)
       {
-        ctx.CreateEdge(ScType::EdgeAccessConstPosPerm, resultStruct, resEdge);
-        ctx.CreateEdge(ScType::EdgeAccessConstPosPerm, resultStruct, resAddr);
+        ctx.CreateEdge(ScType::EdgeAccessConstPosPerm, initMemoryGeneratedStructure, resEdge);
+        ctx.CreateEdge(ScType::EdgeAccessConstPosPerm, initMemoryGeneratedStructure, resAddr);
       }
     }
   }
@@ -134,10 +135,10 @@ bool ScKeynodes::Init(bool force, sc_char const * result_structure_system_idtf)
     item = ctx.HelperResolveSystemIdtf("rrel_" + std::to_string(i + 1), ScType::NodeConstRole);
     if (!item.IsValid())
       result = false;
-    SC_ASSERT(item.IsValid(), ());
-    if (resultStructValid)
+    SC_ASSERT(item.IsValid(), ("Keynode `rrel_" + std::to_string(i + 1) + "` is not valid"));
+    if (initMemoryGeneratedStructureValid)
     {
-      ctx.CreateEdge(ScType::EdgeAccessConstPosPerm, resultStruct, item);
+      ctx.CreateEdge(ScType::EdgeAccessConstPosPerm, initMemoryGeneratedStructure, item);
     }
   }
 
@@ -145,10 +146,10 @@ bool ScKeynodes::Init(bool force, sc_char const * result_structure_system_idtf)
   for (ScAddr const & st : states)
   {
     ScAddr const & commandStateEdge = ctx.CreateEdge(ScType::EdgeAccessConstPosPerm, kCommandStateAddr, st);
-    if (resultStructValid)
+    if (initMemoryGeneratedStructureValid)
     {
-      ctx.CreateEdge(ScType::EdgeAccessConstPosPerm, resultStruct, st);
-      ctx.CreateEdge(ScType::EdgeAccessConstPosPerm, resultStruct, commandStateEdge);
+      ctx.CreateEdge(ScType::EdgeAccessConstPosPerm, initMemoryGeneratedStructure, st);
+      ctx.CreateEdge(ScType::EdgeAccessConstPosPerm, initMemoryGeneratedStructure, commandStateEdge);
     }
     if (!commandStateEdge.IsValid())
       result = true;
@@ -160,10 +161,10 @@ bool ScKeynodes::Init(bool force, sc_char const * result_structure_system_idtf)
     if (!ctx.HelperCheckEdge(kBinaryType, binaryType, ScType::EdgeAccessConstPosPerm))
     {
       ScAddr const & binaryTypeEdge = ctx.CreateEdge(ScType::EdgeAccessConstPosPerm, kBinaryType, binaryType);
-      if (resultStructValid && binaryTypeEdge.IsValid())
+      if (initMemoryGeneratedStructureValid && binaryTypeEdge.IsValid())
       {
-        ctx.CreateEdge(ScType::EdgeAccessConstPosPerm, resultStruct, binaryType);
-        ctx.CreateEdge(ScType::EdgeAccessConstPosPerm, resultStruct, binaryTypeEdge);
+        ctx.CreateEdge(ScType::EdgeAccessConstPosPerm, initMemoryGeneratedStructure, binaryType);
+        ctx.CreateEdge(ScType::EdgeAccessConstPosPerm, initMemoryGeneratedStructure, binaryTypeEdge);
       }
     }
   }

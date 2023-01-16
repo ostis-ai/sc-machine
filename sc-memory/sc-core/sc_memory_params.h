@@ -26,8 +26,8 @@ typedef struct _sc_memory_params
   sc_uint32 max_loaded_segments;
   sc_uint8 max_threads;
 
-  const sc_char * result_structure_system_idtf;
-  sc_bool result_structure_upload;
+  const sc_char * init_memory_generated_structure;
+  sc_bool init_memory_generated_upload;
 } sc_memory_params;
 
 _SC_EXTERN void sc_memory_params_clear(sc_memory_params * params);
