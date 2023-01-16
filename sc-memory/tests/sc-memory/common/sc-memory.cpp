@@ -10,17 +10,17 @@ void checkConnectionInStruct(
     ScMemoryContext * m_ctx,
     ScAddr const & keynodeAddr,
     ScAddr const & otherKeynodeAddr,
-    ScAddr const & resultStruct)
+    ScAddr const & structure)
 {
-  ScIterator3Ptr it3 = m_ctx->Iterator3(keynodeAddr, ScType::EdgeAccessConstPosPerm, otherKeynodeAddr);
+  ScIterator3Ptr const it3 = m_ctx->Iterator3(keynodeAddr, ScType::EdgeAccessConstPosPerm, otherKeynodeAddr);
   while (it3->Next())
   {
-    bool checkEdge = m_ctx->HelperCheckEdge(resultStruct, it3->Get(1), ScType::EdgeAccessConstPosPerm);
+    bool checkEdge = m_ctx->HelperCheckEdge(structure, it3->Get(1), ScType::EdgeAccessConstPosPerm);
     EXPECT_TRUE(checkEdge);
     if (checkEdge == SC_FALSE)
       SC_LOG_ERROR(
           "Edge between %s" + m_ctx->HelperGetSystemIdtf(keynodeAddr) + " and %s" +
-          m_ctx->HelperGetSystemIdtf(otherKeynodeAddr) + " doesn't belong to resultStruct");
+          m_ctx->HelperGetSystemIdtf(otherKeynodeAddr) + " doesn't belong to struct");
   };
 }
 
@@ -99,10 +99,10 @@ TEST_F(ScMemoryTest, ResolveNodeWithRussianIdtf)
   EXPECT_EQ(m_ctx->HelperFindBySystemIdtf(englishIdtf), englishNode);
 }
 
-TEST_F(ScMemoryTestWithResultStruct, TestResultStruct)
+TEST_F(ScMemoryTestWithInitMemoryGeneratedStructure, TestInitMemoryGeneratedStructure)
 {
-  ScAddr const & resultStruct = m_ctx->HelperFindBySystemIdtf("resultStructure");
-  EXPECT_TRUE(resultStruct.IsValid());
+  ScAddr const & initMemoryGeneratedStructure = m_ctx->HelperFindBySystemIdtf("result_structure");
+  EXPECT_TRUE(initMemoryGeneratedStructure.IsValid());
   ScMemoryContext * context = m_ctx.get();
 
   ScAddrVector const & keynodesAddrs = {
@@ -152,14 +152,14 @@ TEST_F(ScMemoryTestWithResultStruct, TestResultStruct)
     allKeynodes.insert(allKeynodes.begin(), keynodes.begin(), keynodes.end());
   }
 
-  SC_LOG_ERROR(allKeynodes.size());
-
   for (ScAddr const & keynodeAddr : allKeynodes)
   {
-    EXPECT_TRUE(m_ctx->HelperCheckEdge(resultStruct, keynodeAddr, ScType::EdgeAccessConstPosPerm));
+    EXPECT_TRUE(m_ctx->HelperCheckEdge(initMemoryGeneratedStructure, keynodeAddr, ScType::EdgeAccessConstPosPerm));
     std::for_each(
-        allKeynodes.begin(), allKeynodes.end(), [context, keynodeAddr, resultStruct](ScAddr otherKeynodeAddr) {
-          checkConnectionInStruct(context, keynodeAddr, otherKeynodeAddr, resultStruct);
+        allKeynodes.begin(),
+        allKeynodes.end(),
+        [context, keynodeAddr, initMemoryGeneratedStructure](ScAddr otherKeynodeAddr) {
+          checkConnectionInStruct(context, keynodeAddr, otherKeynodeAddr, initMemoryGeneratedStructure);
         });
   }
 };

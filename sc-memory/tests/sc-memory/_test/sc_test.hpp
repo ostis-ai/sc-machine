@@ -48,11 +48,11 @@ protected:
   std::unique_ptr<ScMemoryContext> m_ctx;
 };
 
-class ScMemoryTestWithResultStruct : public ScMemoryTest
+class ScMemoryTestWithInitMemoryGeneratedStructure : public ScMemoryTest
 {
   virtual void SetUp()
   {
-    ScMemoryTestWithResultStruct::Initialize();
+    ScMemoryTestWithInitMemoryGeneratedStructure::Initialize();
     m_ctx = std::make_unique<ScMemoryContext>(sc_access_lvl_make_min, "test");
   }
 
@@ -65,8 +65,8 @@ class ScMemoryTestWithResultStruct : public ScMemoryTest
     params.repo_path = "repo";
     params.log_level = "Debug";
 
-    params.result_structure_upload = SC_TRUE;
-    params.result_structure_system_idtf = "resultStructure";
+    params.init_memory_generated_upload = SC_TRUE;
+    params.init_memory_generated_structure = "result_structure";
 
     ScMemory::LogMute();
     ScMemory::Initialize(params);

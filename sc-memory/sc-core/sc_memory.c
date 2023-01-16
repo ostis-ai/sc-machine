@@ -54,8 +54,8 @@ sc_memory_context * sc_memory_initialize(const sc_memory_params * params)
   sc_message("\tsc-string-node size: %zd", sizeof(sc_dictionary_node));
 
   sc_message("Sc-memory build configuration:");
-  sc_message("\tResult structure upload: %s", params->result_structure_upload ? "On" : "Off");
-  sc_message("\tResult structure system idtf: %s", params->result_structure_system_idtf);
+  sc_message("\tResult structure upload: %s", params->init_memory_generated_upload ? "On" : "Off");
+  sc_message("\tInit memory generated structure: %s", params->init_memory_generated_structure);
 
   if (sc_storage_initialize(params->repo_path, params->clear) != SC_TRUE)
     return null_ptr;

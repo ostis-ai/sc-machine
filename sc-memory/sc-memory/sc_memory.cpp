@@ -89,7 +89,8 @@ bool ScMemory::Initialize(sc_memory_params const & params)
   if (ms_globalContext == nullptr)
     return false;
 
-  ScKeynodes::Init(false, params.result_structure_upload ? params.result_structure_system_idtf : (sc_char *)null_ptr);
+  ScKeynodes::Init(
+      false, params.init_memory_generated_upload ? params.init_memory_generated_structure : (sc_char *)null_ptr);
   ScAgentInit(true);
 
   SC_LOG_INFO("Memory initialized");
