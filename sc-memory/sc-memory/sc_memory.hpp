@@ -110,6 +110,10 @@ public:
 
   //! Check if element exists with specified addr
   _SC_EXTERN bool IsElement(ScAddr const & addr) const;
+
+  _SC_EXTERN size_t GetElementOutputArcsCount(ScAddr const & addr) const;
+  _SC_EXTERN size_t GetElementInputArcsCount(ScAddr const & addr) const;
+
   //! Erase element from sc-memory and returns true on success; otherwise returns false.
   _SC_EXTERN bool EraseElement(ScAddr const & addr);
 

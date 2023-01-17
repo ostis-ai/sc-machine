@@ -50,6 +50,10 @@ sc_element * sc_storage_append_el_into_segments(const sc_memory_context * ctx, s
  */
 sc_bool sc_storage_is_element(const sc_memory_context * ctx, sc_addr addr);
 
+sc_uint32 sc_storage_get_element_output_arcs_count(const sc_memory_context * ctx, sc_addr addr);
+
+sc_uint32 sc_storage_get_element_input_arcs_count(const sc_memory_context * ctx, sc_addr addr);
+
 /*! Create new sc-element in storage.
  * Only for internal usage.
  */

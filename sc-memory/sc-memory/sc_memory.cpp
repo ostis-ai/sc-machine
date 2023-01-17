@@ -254,6 +254,18 @@ bool ScMemoryContext::IsElement(ScAddr const & addr) const
   return (sc_memory_is_element(m_context, *addr) == SC_TRUE);
 }
 
+size_t ScMemoryContext::GetElementOutputArcsCount(ScAddr const & addr) const
+{
+  SC_ASSERT(IsValid(), ());
+  return sc_memory_get_element_output_arcs_count(m_context, *addr);
+}
+
+size_t ScMemoryContext::GetElementInputArcsCount(ScAddr const & addr) const
+{
+  SC_ASSERT(IsValid(), ());
+  return sc_memory_get_element_input_arcs_count(m_context, *addr);
+}
+
 bool ScMemoryContext::EraseElement(ScAddr const & addr)
 {
   SC_ASSERT(IsValid(), ());

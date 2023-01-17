@@ -216,6 +216,36 @@ sc_bool sc_storage_is_element(const sc_memory_context * ctx, sc_addr addr)
   return res;
 }
 
+sc_uint32 sc_storage_get_element_output_arcs_count(const sc_memory_context * ctx, sc_addr addr)
+{
+  sc_element * el = null_ptr;
+  sc_uint32 count = 0;
+
+  if (sc_storage_element_lock(addr, &el) != SC_RESULT_OK)
+    return count;
+
+  count = el->output_arcs_count;
+
+  sc_storage_element_unlock(addr);
+
+  return count;
+}
+
+sc_uint32 sc_storage_get_element_input_arcs_count(const sc_memory_context * ctx, sc_addr addr)
+{
+  sc_element * el = null_ptr;
+  sc_uint32 count = 0;
+
+  if (sc_storage_element_lock(addr, &el) != SC_RESULT_OK)
+    return count;
+
+  count = el->input_arcs_count;
+
+  sc_storage_element_unlock(addr);
+
+  return count;
+}
+
 sc_element * sc_storage_append_el_into_segments(const sc_memory_context * ctx, sc_addr * addr)
 {
   sc_segment * seg = (sc_segment *)0x1;
@@ -237,6 +267,8 @@ sc_element * sc_storage_append_el_into_segments(const sc_memory_context * ctx, s
     {
       addr->seg = seg->num;
       el->flags.access_levels = sc_access_lvl_min(ctx->access_levels, el->flags.access_levels);
+      el->input_arcs_count = 0;
+      el->output_arcs_count = 0;
 
       sc_element_meta * meta = sc_segment_get_meta(seg, addr->offset);
       sc_assert(meta != null_ptr);
@@ -687,12 +719,12 @@ sc_addr sc_storage_arc_new_ext(
 
     // lock arcs to change output/input list
     sc_addr first_out_arc = beg_el->first_out_arc;
-    if (SC_ADDR_IS_NOT_EMPTY(first_out_arc))
-    {
+    if (SC_ADDR_IS_NOT_EMPTY(first_out_arc)) {
       r = sc_storage_element_lock_try(first_out_arc, s_max_storage_lock_attempts, &f_out_arc);
       if (f_out_arc == null_ptr)
         goto unlock;
     }
+    ++beg_el->output_arcs_count;
 
     sc_addr first_in_arc = end_el->first_in_arc;
     if (SC_ADDR_IS_NOT_EMPTY(first_in_arc))
@@ -701,6 +733,7 @@ sc_addr sc_storage_arc_new_ext(
       if (f_in_arc == null_ptr)
         goto unlock;
     }
+    ++end_el->input_arcs_count;
 
     // get new element
     tmp_el = sc_storage_append_el_into_segments(ctx, &addr);

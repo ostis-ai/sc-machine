@@ -26,6 +26,26 @@ public:
 
   void PrepareSearch()
   {
+    auto const & constructsWithConstBeginElement = m_template.m_orderedConstructions[(size_t)ScConstr3Type::FAE];
+    size_t priorityConstructIdx = -1;
+    size_t minOutputArcsCount = -1;
+    for (size_t const constructIdx : constructsWithConstBeginElement)
+    {
+      ScTemplateConstr3 const * construct = m_template.m_constructions[constructIdx];
+      size_t const count = m_context.GetElementOutputArcsCount(construct->GetValues()[0].m_addrValue);
+
+      if (minOutputArcsCount == -1 || count < minOutputArcsCount)
+      {
+        priorityConstructIdx = constructIdx;
+        minOutputArcsCount = count;
+      }
+    }
+
+    if (priorityConstructIdx != -1)
+    {
+      m_template.m_orderedConstructions[(size_t)ScConstr3Type::FAE].insert(priorityConstructIdx);
+    }
+
     for (auto const * construct : m_template.m_constructions)
     {
       auto & values = construct->GetValues();

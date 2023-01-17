@@ -94,6 +94,9 @@ struct _sc_element
   sc_addr first_out_arc;
   sc_addr first_in_arc;
 
+  sc_uint32 input_arcs_count;
+  sc_uint32 output_arcs_count;
+
 #ifdef SC_DICTIONARY_FS_STORAGE
   sc_arc_info arc;
 #elif SC_ROCKSDB_FS_STORAGE

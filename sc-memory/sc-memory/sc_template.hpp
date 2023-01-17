@@ -319,9 +319,10 @@ enum class ScConstr3Type : uint8_t
   AFA = 1,
   FAF = 2,
   AAF = 3,
+  PFAE = 4,
   FAE = 4,
-  FAN = 5,
-  AAA = 6,
+  FAN = 6,
+  AAA = 7,
 
   ScConstr3TypeCount
 };
