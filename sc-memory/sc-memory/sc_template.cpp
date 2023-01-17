@@ -36,12 +36,7 @@ ScTemplate::ScTemplate(bool forceOrder /* = false */)
   m_constructions.reserve(16);
 
   auto const constr3TypeCount = (size_t)ScConstr3Type::ScConstr3TypeCount;
-  m_orderedConstructions.reserve(constr3TypeCount);
-
-  for (size_t i = 0; i < constr3TypeCount; ++i)
-  {
-    m_orderedConstructions.emplace_back();
-  }
+  m_orderedConstructions.resize(constr3TypeCount);
 }
 
 ScTemplate & ScTemplate::operator()(
@@ -72,6 +67,7 @@ void ScTemplate::Clear()
 
   m_namesToAddrs.clear();
   m_orderedConstructions.clear();
+  m_orderedConstructions.resize((int)ScConstr3Type::ScConstr3TypeCount);
 }
 
 bool ScTemplate::IsEmpty() const

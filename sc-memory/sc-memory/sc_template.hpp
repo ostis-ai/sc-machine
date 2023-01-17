@@ -320,7 +320,7 @@ enum class ScConstr3Type : uint8_t
   FAF = 2,
   AAF = 3,
   PFAE = 4,
-  FAE = 4,
+  FAE = 5,
   FAN = 6,
   AAA = 7,
 
@@ -436,8 +436,8 @@ protected:
       ScTemplateGenResult & result,
       ScTemplateParams const & params,
       ScTemplateResultCode * errorCode = nullptr) const;
-  Result Search(ScMemoryContext & ctx, ScTemplateSearchResult & result);
-  Result SearchInStruct(ScMemoryContext & ctx, ScAddr const & scStruct, ScTemplateSearchResult & result);
+  Result Search(ScMemoryContext & ctx, ScTemplateSearchResult & result) const;
+  Result SearchInStruct(ScMemoryContext & ctx, ScAddr const & scStruct, ScTemplateSearchResult & result) const;
 
   // Builds template based on template in sc-memory
   Result FromScTemplate(
@@ -453,8 +453,7 @@ protected:
   // Store construction (triples)
   TemplateConstr3Vector m_constructions;
 
-  using ScTemplateGroupedConstructions =
-      std::unordered_set<size_t>;
+  using ScTemplateGroupedConstructions = std::unordered_set<size_t>;
   std::vector<ScTemplateGroupedConstructions> m_orderedConstructions;
   std::unordered_set<std::string> m_itemsNames;
   std::map<std::string, ScAddr> m_namesToAddrs;

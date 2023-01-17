@@ -14,8 +14,8 @@
 class ScTemplateSearch
 {
 public:
-  ScTemplateSearch(ScTemplate & templ, ScMemoryContext & context, ScAddr const & scStruct)
-    : m_template(templ)
+  ScTemplateSearch(ScTemplate const & templ, ScMemoryContext & context, ScAddr const & scStruct)
+    : m_template(const_cast<ScTemplate &>(templ))
     , m_context(context)
     , m_struct(scStruct)
   {
@@ -26,24 +26,29 @@ public:
 
   void PrepareSearch()
   {
-    auto const & constructsWithConstBeginElement = m_template.m_orderedConstructions[(size_t)ScConstr3Type::FAE];
-    size_t priorityConstructIdx = -1;
-    size_t minOutputArcsCount = -1;
+    auto constructsWithConstBeginElement = m_template.m_orderedConstructions[(size_t)ScConstr3Type::FAE];
+    if (constructsWithConstBeginElement.empty())
+    {
+      constructsWithConstBeginElement = m_template.m_orderedConstructions[(size_t)ScConstr3Type::FAN];
+    }
+
+    sc_int32 priorityConstructIdx = -1;
+    sc_int32 minOutputArcsCount = -1;
     for (size_t const constructIdx : constructsWithConstBeginElement)
     {
       ScTemplateConstr3 const * construct = m_template.m_constructions[constructIdx];
-      size_t const count = m_context.GetElementOutputArcsCount(construct->GetValues()[0].m_addrValue);
+      auto const count = (sc_int32)m_context.GetElementOutputArcsCount(construct->GetValues()[0].m_addrValue);
 
       if (minOutputArcsCount == -1 || count < minOutputArcsCount)
       {
-        priorityConstructIdx = constructIdx;
-        minOutputArcsCount = count;
+        priorityConstructIdx = (sc_int32)constructIdx;
+        minOutputArcsCount = (sc_int32)count;
       }
     }
 
     if (priorityConstructIdx != -1)
     {
-      m_template.m_orderedConstructions[(size_t)ScConstr3Type::FAE].insert(priorityConstructIdx);
+      m_template.m_orderedConstructions[(size_t)ScConstr3Type::PFAE].insert(priorityConstructIdx);
     }
 
     for (auto const * construct : m_template.m_constructions)
@@ -55,7 +60,7 @@ public:
 
       for (auto * otherConstruct : m_template.m_constructions)
       {
-        auto & otherValues = otherConstruct->GetValues();
+        auto const & otherValues = otherConstruct->GetValues();
         ScTemplateItemValue const & otherItem1 = otherValues[0];
         ScTemplateItemValue const & otherItem2 = otherValues[1];
         ScTemplateItemValue const & otherItem3 = otherValues[2];
@@ -76,8 +81,8 @@ public:
 
           if (withItem1Equal || withItem2Equal || withItem3Equal)
           {
-            std::stringstream stream;
-            stream << item.m_replacementName << construct->m_index;
+            std::ostringstream stream{item.m_replacementName};
+            stream << construct->m_index;
 
             std::string const key = stream.str();
             auto const & found = m_itemsToConstructs.find(key);
@@ -230,8 +235,8 @@ public:
     if (value.m_replacementName.empty())
       return;
 
-    std::stringstream stream;
-    stream << value.m_replacementName << construct->m_index;
+    std::ostringstream stream{value.m_replacementName};
+    stream << construct->m_index;
 
     auto const & found = m_itemsToConstructs.find(stream.str());
     if (found != m_itemsToConstructs.cend())
@@ -297,7 +302,7 @@ public:
             constructValues[2].m_replacementName == otherConstructValues[2].m_replacementName);
   };
 
-  using UsedEdges = std::unordered_set<ScAddr, ScAddrHashFunc<uint32_t>>;
+  using UsedEdges = std::vector<std::unordered_set<ScAddr, ScAddrHashFunc<uint32_t>>>;
 
   void DoIterationOnNextEqualConstructions(
       ScTemplateGroupedConstructions const & constructs,
@@ -419,33 +424,37 @@ public:
     ScAddrVector const currentResultAddrs{resultAddrs};
     while (it->Next())
     {
-      ScAddr const & addr2 = it->Get(1);
-      if (checkedEdges.find(addr2) != checkedEdges.cend())
-      {
-        isLast = true;
-        isAllChildrenFinished = true;
-        continue;
-      }
-
-      if (isAllChildrenFinished && count == constructs.size())
-      {
-        count = 0;
-        checkedConstructs = std::unordered_set<size_t>{currentCheckedConstructs};
-        resultAddrs.assign(currentResultAddrs.cbegin(), currentResultAddrs.cend());
-      }
-
       ScAddr const & addr1 = it->Get(0);
+      ScAddr const & addr2 = it->Get(1);
       ScAddr const & addr3 = it->Get(2);
 
       // check construction for that it is in structure
       if (IsStructureValid() && (!IsInStructure(addr1) || !IsInStructure(addr2) || !IsInStructure(addr3)))
-        return;
+      {
+        for (size_t const constructIdx : constructs)
+        {
+          checkedEdges[constructIdx].insert(addr2);
+        }
+        continue;
+      }
 
       for (size_t const constructIdx : constructs)
       {
         construct = m_template.m_constructions[constructIdx];
 
-        if (checkedConstructs.find(construct->m_index) != checkedConstructs.cend())
+        if (checkedEdges[constructIdx].find(addr2) != checkedEdges[constructIdx].cend())
+        {
+          continue;
+        }
+
+        if (isAllChildrenFinished && count == constructs.size())
+        {
+          count = 0;
+          checkedConstructs = std::unordered_set<size_t>{currentCheckedConstructs};
+          resultAddrs.assign(currentResultAddrs.cbegin(), currentResultAddrs.cend());
+        }
+
+        if (checkedConstructs.find(constructIdx) != checkedConstructs.cend())
         {
           continue;
         }
@@ -461,12 +470,13 @@ public:
 
         {
           // don't use cycle to call this function
-          size_t const idx = construct->m_index * 3;
+          size_t idx = constructIdx * 3;
           UpdateResults(value1, addr1, idx, resultAddrs);
-          UpdateResults(value2, addr2, idx + 1, resultAddrs);
-          UpdateResults(value3, addr3, idx + 2, resultAddrs);
+          UpdateResults(value2, addr2, ++idx, resultAddrs);
+          UpdateResults(value3, addr3, ++idx, resultAddrs);
 
-          checkedConstructs.insert(construct->m_index);
+          checkedConstructs.insert(constructIdx);
+          checkedEdges[constructIdx].insert(addr2);
         }
 
         // find next depended on constructions and analyse result
@@ -487,7 +497,7 @@ public:
           isLast = isNoChild;
           if (!isChildFinished && !isLast)
           {
-            ClearResults(construct->m_index, resultAddrs, checkedConstructs);
+            ClearResults(constructIdx, resultAddrs, checkedConstructs);
             continue;
           }
 
@@ -505,7 +515,7 @@ public:
           isLast &= isNoChild;
           if (!isChildFinished && !isLast)
           {
-            ClearResults(construct->m_index, resultAddrs, checkedConstructs);
+            ClearResults(constructIdx, resultAddrs, checkedConstructs);
             continue;
           }
 
@@ -523,7 +533,7 @@ public:
           isLast &= isNoChild;
           if (!isChildFinished && !isLast)
           {
-            ClearResults(construct->m_index, resultAddrs, checkedConstructs);
+            ClearResults(constructIdx, resultAddrs, checkedConstructs);
             continue;
           }
 
@@ -532,8 +542,12 @@ public:
             //            std::cout << "succeed " << construct->m_index << " = {" << value1.m_replacementName << "}---{"
             //                      << value2.m_replacementName << "}---> {" << value3.m_replacementName << "}" <<
             //                      std::endl;
-            checkedEdges.insert(addr2);
             ++count;
+
+            for (size_t const idx : constructs)
+            {
+              checkedEdges[idx].insert(addr2);
+            }
             break;
           }
         }
@@ -547,10 +561,13 @@ public:
 
         if (checkedConstructs.size() == m_template.m_constructions.size())
         {
-          result.m_results.emplace_back(resultAddrs);
           if (m_callback)
           {
             m_callback(result[result.Size() - 1]);
+          }
+          else
+          {
+            result.m_results.emplace_back(resultAddrs);
           }
         }
       }
@@ -570,7 +587,7 @@ public:
       std::unordered_set<size_t> checkedConstructs;
       checkedConstructs.reserve(CalculateOneResultSize());
       UsedEdges checkedEdges;
-      checkedEdges.reserve(CalculateOneResultSize());
+      checkedEdges.resize(CalculateOneResultSize());
 
       bool isFinished = false;
       bool isLast = false;
@@ -615,7 +632,7 @@ private:
   std::map<std::string, ScTemplateGroupedConstructions> m_itemsToConstructs;
 };
 
-ScTemplate::Result ScTemplate::Search(ScMemoryContext & ctx, ScTemplateSearchResult & result)
+ScTemplate::Result ScTemplate::Search(ScMemoryContext & ctx, ScTemplateSearchResult & result) const
 {
   ScTemplateSearch search(*this, ctx, ScAddr());
   return search(result);
@@ -624,7 +641,7 @@ ScTemplate::Result ScTemplate::Search(ScMemoryContext & ctx, ScTemplateSearchRes
 ScTemplate::Result ScTemplate::SearchInStruct(
     ScMemoryContext & ctx,
     ScAddr const & scStruct,
-    ScTemplateSearchResult & result)
+    ScTemplateSearchResult & result) const
 {
   ScTemplateSearch search(*this, ctx, scStruct);
   return search(result);

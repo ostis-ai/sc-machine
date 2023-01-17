@@ -719,7 +719,8 @@ sc_addr sc_storage_arc_new_ext(
 
     // lock arcs to change output/input list
     sc_addr first_out_arc = beg_el->first_out_arc;
-    if (SC_ADDR_IS_NOT_EMPTY(first_out_arc)) {
+    if (SC_ADDR_IS_NOT_EMPTY(first_out_arc))
+    {
       r = sc_storage_element_lock_try(first_out_arc, s_max_storage_lock_attempts, &f_out_arc);
       if (f_out_arc == null_ptr)
         goto unlock;
