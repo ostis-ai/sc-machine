@@ -33,21 +33,21 @@ void shutdown()
 
 void successfulEraseElementsKB(ScMemoryContext & context)
 {
-  ScAddr testActionNode = context.CreateNode(ScType::NodeConst);
+  ScAddr const & testActionNode = context.CreateNode(ScType::NodeConst);
   context.HelperSetSystemIdtf("test_action_node", testActionNode);
   context.CreateEdge(ScType::EdgeAccessConstPosPerm, CoreKeynodes::question, testActionNode);
   context.CreateEdge(ScType::EdgeAccessConstPosPerm, EraseElementsKeynodes::action_erase_elements, testActionNode);
-  ScAddr erasableElementsSet = context.CreateNode(ScType::NodeConst);
-  ScAddr edge = context.CreateEdge(ScType::EdgeAccessConstPosPerm, testActionNode, erasableElementsSet);
+  ScAddr const & erasableElementsSet = context.CreateNode(ScType::NodeConst);
+  ScAddr const & edge = context.CreateEdge(ScType::EdgeAccessConstPosPerm, testActionNode, erasableElementsSet);
   context.CreateEdge(ScType::EdgeAccessConstPosPerm, CoreKeynodes::rrel_1, edge);
 
-  ScAddr conceptExample1 = context.CreateNode(ScType::NodeConstClass);
+  ScAddr const & conceptExample1 = context.CreateNode(ScType::NodeConstClass);
   context.HelperSetSystemIdtf("conceptExample1", conceptExample1);
-  ScAddr conceptExample2 = context.CreateNode(ScType::NodeConstClass);
-  ScAddr conceptExample3 = context.CreateNode(ScType::NodeConstClass);
-  ScAddr elementExample1 = context.CreateNode(ScType::NodeConst);
-  ScAddr elementExample2 = context.CreateNode(ScType::NodeConst);
-  ScAddr rrelExample1 = context.CreateNode(ScType::NodeConstRole);
+  ScAddr const & conceptExample2 = context.CreateNode(ScType::NodeConstClass);
+  ScAddr const & conceptExample3 = context.CreateNode(ScType::NodeConstClass);
+  ScAddr const & elementExample1 = context.CreateNode(ScType::NodeConst);
+  ScAddr const & elementExample2 = context.CreateNode(ScType::NodeConst);
+  ScAddr const & rrelExample1 = context.CreateNode(ScType::NodeConstRole);
   context.HelperSetSystemIdtf("rrelExample1", rrelExample1);
   
   context.CreateEdge(ScType::EdgeAccessConstPosPerm, erasableElementsSet, conceptExample1);
@@ -66,7 +66,7 @@ TEST_F(EraseElementsTest, successful_erase_elements)
   ScMemoryContext & context = *m_ctx;
   initialize();
   successfulEraseElementsKB(context);
-  ScAddr testActionNode = context.HelperFindBySystemIdtf("test_action_node");
+  ScAddr const & testActionNode = context.HelperFindBySystemIdtf("test_action_node");
   const std::string setAlias = "_set";
   const std::string elementAlias = "_element";
 
@@ -97,8 +97,8 @@ TEST_F(EraseElementsTest, successful_erase_elements)
     );
     ScTemplateSearchResult searchResult;
     context.HelperSearchTemplate(scTemplate, searchResult);
-    size_t searchResultSize = searchResult.Size();
-    for(size_t i = 0; i < searchResultSize; i++)
+    size_t const searchResultSize = searchResult.Size();
+    for(size_t i = 0; i < searchResultSize; ++i)
       EXPECT_TRUE(context.HelperCheckArc(EraseElementsKeynodes::unerasable_elements, searchResult[i][elementAlias], ScType::EdgeAccessConstPosPerm));
   }
 

@@ -24,26 +24,28 @@ SC_AGENT_IMPLEMENTATION(EraseElementsAgent)
 
   ScAddrVector elementsToErase;
   ScAddrVector answerElements;
-  ScIterator3Ptr iterator3 =
+  ScIterator3Ptr const iterator3 =
       ms_context->Iterator3(erasableElementsSet, ScType::EdgeAccessConstPosPerm, ScType::Unknown);
   while (iterator3->Next())
   {
-    ScAddr element = iterator3->Get(2);
+    ScAddr const & element = iterator3->Get(2);
 
     if (!m_memoryCtx.HelperCheckEdge(
             EraseElementsKeynodes::unerasable_elements, element, ScType::EdgeAccessConstPosPerm))
-      elementsToErase.push_back(element);
+    {
+      m_memoryCtx.EraseElement(element);
+    }
     else
+    {
       answerElements.push_back(element);
+    }
   }
-  for (ScAddr element : elementsToErase)
-    m_memoryCtx.EraseElement(element);
 
-  ScAddr answerSet = m_memoryCtx.CreateNode(ScType::NodeConst);
-  size_t answerSize = answerElements.size();
-  for (size_t i = 0; i < answerSize; i++)
+  ScAddr const & answerSet = m_memoryCtx.CreateNode(ScType::NodeConst);
+  size_t const answerSize = answerElements.size();
+  for (size_t i = 0; i < answerSize; ++i)
   {
-    ScAddr edge = m_memoryCtx.CreateEdge(ScType::EdgeAccessConstPosPerm, answerSet, answerElements[i]);
+    ScAddr const & edge = m_memoryCtx.CreateEdge(ScType::EdgeAccessConstPosPerm, answerSet, answerElements[i]);
     answerElements.push_back(edge);
   }
   answerElements.push_back(answerSet);
