@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Add reversed edges according to standart
+- Add `![]!` parsing to scs parser
 - Insert sc-keynodes and their system identifiers in global knowledge base during sc-memory initiation
 - Extend create elements by SCs in `sc-server` with outputStructure field
 - Write docs for system identifier set/get/find/resolve sc-memory API

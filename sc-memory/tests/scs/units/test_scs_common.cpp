@@ -209,14 +209,17 @@ TEST(scs_common, links)
       "a -> \"file://data.txt\";;"
       "b -> [x];;"
       "c -> _[];;"
-      "d -> [];;";
+      "d -> [];;"
+      "e -> ![lala]!;;"
+      "f -> ![]!;;"
+      "g -> [tra! tra!];;";
   scs::Parser parser;
 
   EXPECT_TRUE(parser.Parse(data));
 
   auto const & triples = parser.GetParsedTriples();
 
-  EXPECT_EQ(triples.size(), 4u);
+  EXPECT_EQ(triples.size(), 7u);
 
   EXPECT_EQ(parser.GetParsedElement(triples[0].m_target).GetType(), ScType::LinkConst);
   EXPECT_TRUE(parser.GetParsedElement(triples[0].m_target).IsURL());
@@ -225,6 +228,12 @@ TEST(scs_common, links)
   EXPECT_EQ(parser.GetParsedElement(triples[2].m_target).GetType(), ScType::LinkVar);
   EXPECT_EQ(parser.GetParsedElement(triples[3].m_target).GetType(), ScType::LinkConst);
   EXPECT_FALSE(parser.GetParsedElement(triples[3].m_target).IsURL());
+  EXPECT_EQ(parser.GetParsedElement(triples[4].m_target).GetType(), ScType::LinkClass);
+  EXPECT_EQ(parser.GetParsedElement(triples[4].m_target).GetValue(), "lala");
+  EXPECT_EQ(parser.GetParsedElement(triples[5].m_target).GetType(), ScType::LinkClass);
+  EXPECT_EQ(parser.GetParsedElement(triples[5].m_target).GetValue(), "");
+  EXPECT_EQ(parser.GetParsedElement(triples[6].m_target).GetType(), ScType::LinkConst);
+  EXPECT_EQ(parser.GetParsedElement(triples[6].m_target).GetValue(), "tra! tra!");
 }
 
 
@@ -288,6 +297,72 @@ TEST(scs_common, edges)
   }
 }
 
+TEST(scs_common, reversed_edges)
+{
+  std::string const data =
+      "x"
+      "< _y; <=_ y1; <-_ y2;"
+      "<|-_ y3; </-_ y4; <~_ y5; <|~_ y6;"
+      "</~_ y7;;";
+
+  scs::Parser parser;
+
+  EXPECT_TRUE(parser.Parse(data));
+
+  auto const & triples = parser.GetParsedTriples();
+  EXPECT_EQ(triples.size(), 8u);
+  {
+    auto const CheckEdgeType = [&triples, &parser](size_t index, ScType type) -> bool {
+      EXPECT_TRUE(index < triples.size());
+      return (parser.GetParsedElement(triples[index].m_edge).GetType() == type);
+    };
+
+    EXPECT_TRUE(CheckEdgeType(0, ScType::EdgeDCommon));
+    EXPECT_TRUE(CheckEdgeType(1, ScType::EdgeDCommonVar));
+    EXPECT_TRUE(CheckEdgeType(2, ScType::EdgeAccessVarPosPerm));
+    EXPECT_TRUE(CheckEdgeType(3, ScType::EdgeAccessVarNegPerm));
+    EXPECT_TRUE(CheckEdgeType(4, ScType::EdgeAccessVarFuzPerm));
+    EXPECT_TRUE(CheckEdgeType(5, ScType::EdgeAccessVarPosTemp));
+    EXPECT_TRUE(CheckEdgeType(6, ScType::EdgeAccessVarNegTemp));
+    EXPECT_TRUE(CheckEdgeType(7, ScType::EdgeAccessVarFuzTemp));
+  }
+}
+
+TEST(scs_common, var_edges_and_nodes)
+{
+  std::string const data =
+      "x"
+      "<-_y; <-_ y1; <- _y2; <-_ _y3;;";
+
+  std::string const errorData =
+      "x <- _ y3;;";
+
+  scs::Parser parser;
+
+  EXPECT_TRUE(parser.Parse(data));
+  EXPECT_FALSE(parser.Parse(errorData));
+
+  auto const & triples = parser.GetParsedTriples();
+  EXPECT_EQ(triples.size(), 4u);
+  {
+    auto const CheckEdgeType = [&triples, &parser](size_t index, ScType type) -> bool {
+      EXPECT_TRUE(index < triples.size());
+      return (parser.GetParsedElement(triples[index].m_edge).GetType() == type);
+    };
+
+    EXPECT_TRUE(CheckEdgeType(0, ScType::EdgeAccessVarPosPerm));
+    EXPECT_EQ(parser.GetParsedElement(triples[0].m_source).GetType(), ScType::NodeConst);
+
+    EXPECT_TRUE(CheckEdgeType(1, ScType::EdgeAccessVarPosPerm));
+    EXPECT_EQ(parser.GetParsedElement(triples[1].m_source).GetType(), ScType::NodeConst);
+
+    EXPECT_TRUE(CheckEdgeType(2, ScType::EdgeAccessConstPosPerm));
+    EXPECT_EQ(parser.GetParsedElement(triples[2].m_source).GetType(), ScType::NodeVar);
+
+    EXPECT_TRUE(CheckEdgeType(3, ScType::EdgeAccessVarPosPerm));
+    EXPECT_EQ(parser.GetParsedElement(triples[3].m_source).GetType(), ScType::NodeVar);
+  }
+}
 
 TEST(scs_common, type_error)
 {

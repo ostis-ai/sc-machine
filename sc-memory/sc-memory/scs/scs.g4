@@ -51,9 +51,9 @@ content returns [ElementHandle handle]
   : ('_' { $ctx->isVar = true; } )?
       c=CONTENT_BODY
     {
-      std::string const v = $ctx->c->getText();
+      std::string v = $ctx->c->getText();
       SC_ASSERT(v.size() > 1, ());
-      $ctx->handle = m_parser->ProcessContent(v.substr(1, v.size() - 2), $ctx->isVar);
+      $ctx->handle = m_parser->ProcessContent(v, $ctx->isVar);
     }
   ;
 
@@ -78,10 +78,10 @@ connector returns [std::string text]
     | '-|>' | '<|-' | '-/>' | '</-'
     | '~>' | '<~' | '~|>' | '<|~'
     | '~/>' | '</~' | '_<>' | '_>' | '_<'
-    | '_..>' | '_<..' | '_->' | '_<-'
-    | '_<=>' | '_=>' | '_<=' | '_-|>' | '_<|-'
-    | '_-/>' | '_</-' | '_~>' | '_<~'
-    | '_~|>' | '_<|~' | '_~/>' | '_</~' )
+    | '_..>' | '_<..' | '<.._' | '_->' | '_<-'| '<-_'
+    | '_<=>' | '_=>' | '_<=' |'<=_' | '_-|>' | '_<|-' | '<|-_'
+    | '_-/>' | '_</-' | '</-_' | '_~>' | '_<~' | '<~_'
+    | '_~|>' | '_<|~' | '<|~_' | '_~/>' | '_</~' | '</~_')
 
     {
       $ctx->text = $c->getText();
@@ -380,7 +380,9 @@ CONTOUR_END
 
 CONTENT_BODY
   : '[]'
+  | '![]!'
   | '[' CONTENT_SYBMOL_FIRST_END CONTENT_SYBMOL* ']'
+  | '![' CONTENT_SYBMOL_FIRST_END CONTENT_SYBMOL* ']!'
   ;
 
 LINK

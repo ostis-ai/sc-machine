@@ -489,11 +489,18 @@ ElementHandle Parser::ProcessConnector(std::string const & connector)
   return AppendElement(GenerateEdgeIdtf(), type, TypeResolver::IsConnectorReversed(connector));
 }
 
-ElementHandle Parser::ProcessContent(std::string const & content, bool isVar)
+ElementHandle Parser::ProcessContent(std::string & content, bool isVar)
 {
   ScType type = ScType::Link;
-
   type |= (isVar ? ScType::Var : ScType::Const);
+
+  if (content.find('!') == 0)
+  {
+    content = content.substr(1, content.size() - 2);
+    type = ScType::LinkClass;
+  }
+
+  content = content.substr(1, content.size() - 2);
 
   return AppendElement(GenerateLinkIdtf(), type, false, UnescapeContent(content));
 }
