@@ -411,7 +411,7 @@ TEST_F(ScTemplateSearchTest, result_deduplication)
   EXPECT_EQ(searchResult[0]["c"], genResult["c"]);
 }
 
-TEST_F(ScTemplateSearchTest, equal_constructions)
+TEST_F(ScTemplateSearchTest, EqualConstructions)
 {
   ScAddr const & begin = m_ctx->HelperResolveSystemIdtf("begin", ScType::NodeConstClass);
   ScAddr const & history = m_ctx->HelperResolveSystemIdtf("history", ScType::NodeConstClass);
@@ -453,4 +453,77 @@ TEST_F(ScTemplateSearchTest, equal_constructions)
   ScTemplateSearchResult searchResult;
   EXPECT_TRUE(m_ctx->HelperSearchTemplate(initVersionSearchTemplate, searchResult));
   EXPECT_TRUE(searchResult.Size() == 1);
+}
+
+TEST_F(ScTemplateSearchTest, StructureElements)
+{
+  SCsHelper helper(*m_ctx, std::make_shared<DummyFileInterface>());
+
+  ScAddr const & structureAddr = m_ctx->CreateNode(ScType::NodeConstStruct);
+  EXPECT_TRUE(structureAddr.IsValid());
+  EXPECT_TRUE(helper.GenerateBySCsText(
+      "test_node => test_relation: [];;"
+      "test_node => test_relation: [];;"
+      "test_node => test_relation: [];;"
+      "test_node => test_relation: [];;"
+      "test_node => test_relation: [];;"
+      "test_node => test_relation: [];;"
+      "test_node => test_relation: [];;",
+      structureAddr
+  ));
+  size_t const size = m_ctx->GetElementOutputArcsCount(structureAddr);
+  for (size_t i = 0; i < size; ++i)
+  {
+    EXPECT_TRUE(helper.GenerateBySCsText(
+        "test_node => test_relation: [];;"
+        "test_node => test_relation: [];;"
+    ));
+  }
+
+  ScAddr const & sourceAddr = m_ctx->HelperResolveSystemIdtf("test_node");
+  ScAddr const & targetAddr = m_ctx->CreateLink(ScType::LinkConst);
+  ScAddr const & relationAddr = m_ctx->HelperResolveSystemIdtf("test_relation");
+
+  ScTemplate templ;
+  templ.TripleWithRelation(
+      sourceAddr >> "_source",
+      ScType::EdgeDCommonVar >> "_edge",
+      targetAddr >> "_target",
+      ScType::EdgeAccessVarPosPerm >> "_rel_edge",
+      relationAddr >> "_relation");
+  templ.Triple(
+      structureAddr,
+      ScType::EdgeAccessVarPosPerm,
+      "_rel_edge");
+  templ.Triple(
+      structureAddr,
+      ScType::EdgeAccessVarPosPerm,
+      "_edge");
+  ScTemplateGenResult genResult;
+  EXPECT_TRUE(m_ctx->HelperGenTemplate(templ, genResult));
+
+  templ.Clear();
+  templ.Triple(
+      relationAddr >> "_relation",
+      ScType::EdgeAccessVarPosPerm >> "_rel_edge",
+      ScType::EdgeDCommonVar >> "_edge");
+  templ.Triple(
+      structureAddr,
+      ScType::EdgeAccessVarPosPerm,
+      "_rel_edge");
+  templ.Triple(
+      sourceAddr >> "_source",
+      "_edge",
+      targetAddr >> "_target");
+  templ.Triple(
+      structureAddr,
+      ScType::EdgeAccessVarPosPerm,
+      "_edge");
+  ScTemplateSearchResult searchResult;
+  EXPECT_TRUE(m_ctx->HelperSearchTemplate(templ, searchResult));
+  EXPECT_EQ(searchResult.Size(), 1u);
+
+  EXPECT_EQ(searchResult[0]["_source"], sourceAddr);
+  EXPECT_EQ(searchResult[0]["_target"], targetAddr);
+  EXPECT_EQ(searchResult[0]["_relation"], relationAddr);
 }
