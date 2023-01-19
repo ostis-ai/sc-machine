@@ -84,8 +84,6 @@ public:
     if (m_waitStartDelegate)
       m_waitStartDelegate();
 
-    SC_ASSERT(timeout_ms < 60000, ("Too big timeout (it should be less then a minute)"));
-
     return m_impl.Wait(timeout_ms, initializationFunction);
   }
 
