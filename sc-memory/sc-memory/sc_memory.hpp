@@ -356,7 +356,7 @@ public:
   _SC_EXTERN void HelperSearchTemplate(
       ScTemplate const & templ,
       ScTemplateSearchResultCallback const & callback,
-      ScTemplateSearchResultCheckCallback const & checkCallback);
+      ScTemplateSearchResultCheckCallback const & checkCallback = {});
   SC_DEPRECATED(
       0.7.1,
       "Use ScMemoryContext::HelperSearchTemplate(ScTemplate const & templ, ScTemplateSearchResultCallback const & "

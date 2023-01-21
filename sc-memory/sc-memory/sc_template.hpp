@@ -454,10 +454,29 @@ class ScTemplateSearchResultItem
   friend class ScTemplateSearchResult;
 
 public:
+  ScTemplateSearchResultItem()
+    : m_results(nullptr)
+    , m_replacements(nullptr)
+  {
+  }
+
   ScTemplateSearchResultItem(ScAddrVector const * results, ScTemplate::ReplacementsMap const * replacements)
     : m_results(results)
     , m_replacements(replacements)
   {
+  }
+
+  inline bool Get(std::string const & name, ScAddr & outAddr) const
+  {
+    auto const & it = m_replacements->find(name);
+    if (it != m_replacements->cend())
+    {
+      outAddr = (*m_results)[it->second];
+      return true;
+    }
+
+    outAddr = ScAddr::Empty;
+    return false;
   }
 
   inline ScAddr const & operator[](std::string const & name) const
@@ -469,6 +488,18 @@ public:
     }
 
     SC_THROW_EXCEPTION(utils::ExceptionInvalidParams, "Alias=" + name + " not found in replacements");
+  }
+
+  inline bool Get(size_t idx, ScAddr & outAddr) const
+  {
+    if (idx < Size())
+    {
+      outAddr = (*m_results)[idx];
+      return true;
+    }
+
+    outAddr = ScAddr::Empty;
+    return false;
   }
 
   inline ScAddr const & operator[](size_t idx) const
@@ -516,7 +547,13 @@ public:
     return Size() == 0;
   }
 
+  SC_DEPRECATED(0.7.1, "Use ScTemplateSearchResult::Get(size_t idx, ScTemplateSearchResultItem & outItem)")
   inline bool GetResultItemSafe(size_t idx, ScTemplateSearchResultItem & outItem) const
+  {
+    return Get(idx, outItem);
+  }
+
+  inline bool Get(size_t idx, ScTemplateSearchResultItem & outItem) const
   {
     if (idx < Size())
     {

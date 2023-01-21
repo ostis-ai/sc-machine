@@ -435,7 +435,7 @@ public:
 
       // check triple elements by structure belonging or predicate callback
       if ((IsStructureValid() && (!IsInStructure(addr1) || !IsInStructure(addr2) || !IsInStructure(addr3))) ||
-          (m_checkCallback && m_checkCallback(addr1, addr2, addr3)))
+          (m_checkCallback && !m_checkCallback(addr1, addr2, addr3)))
       {
         for (size_t const tripleIdx : triples)
         {
@@ -549,7 +549,7 @@ public:
         {
           if (m_callback)
           {
-            m_callback(result[result.Size() - 1]);
+            m_callback(ScTemplateSearchResultItem(&resultAddrs, &result.m_replacements));
           }
           else
           {
@@ -605,6 +605,8 @@ public:
   void operator()()
   {
     ScTemplateSearchResult result;
+    m_triplesOrderUsedEdges.resize(CalculateOneResultSize());
+
     DoIterations(result);
   }
 
