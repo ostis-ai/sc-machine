@@ -630,7 +630,7 @@ private:
 
 ScTemplate::Result ScTemplate::Search(ScMemoryContext & ctx, ScTemplateSearchResult & result) const
 {
-  ScTemplateSearch search(const_cast<ScTemplate &>(*this), ctx, ScAddr());
+  ScTemplateSearch search(const_cast<ScTemplate &>(*this), ctx, ScAddr::Empty);
   return search(result);
 }
 
@@ -639,7 +639,7 @@ void ScTemplate::Search(
     ScTemplateSearchResultCallback const & callback,
     ScTemplateSearchResultCheckCallback const & checkCallback) const
 {
-  ScTemplateSearch search(const_cast<ScTemplate &>(*this), ctx, ScAddr(), callback, checkCallback);
+  ScTemplateSearch search(const_cast<ScTemplate &>(*this), ctx, ScAddr::Empty, callback, checkCallback);
   search();
 }
 

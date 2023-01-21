@@ -399,6 +399,19 @@ class ScTemplateGenResult
 public:
   ScTemplateGenResult() = default;
 
+  inline bool Get(std::string const & name, ScAddr & outAddr) const
+  {
+    auto const & it = m_replacements.find(name);
+    if (it != m_replacements.cend())
+    {
+      outAddr = m_result[it->second];
+      return true;
+    }
+
+    outAddr = ScAddr::Empty;
+    return false;
+  }
+
   ScAddr const & operator[](std::string const & name) const
   {
     auto const & it = m_replacements.find(name);
@@ -415,15 +428,16 @@ public:
     SC_THROW_EXCEPTION(utils::ExceptionInvalidParams, "Alias=" + name + " not found in replacements");
   }
 
-  SC_DEPRECATED(0.3.0, "Use ScTemplateGenResult::Size instead")
-  inline size_t GetSize() const
+  inline bool Get(size_t idx, ScAddr & outAddr) const
   {
-    return m_result.size();
-  }
+    if (idx < Size())
+    {
+      outAddr = m_result[idx];
+      return true;
+    }
 
-  inline size_t Size() const
-  {
-    return m_result.size();
+    outAddr = ScAddr::Empty;
+    return false;
   }
 
   ScAddr const & operator[](size_t idx)
@@ -435,6 +449,17 @@ public:
 
     SC_THROW_EXCEPTION(
         utils::ExceptionInvalidParams, "Index=" + std::to_string(idx) + " must be < size=" + std::to_string(Size()));
+  }
+
+  SC_DEPRECATED(0.3.0, "Use ScTemplateGenResult::Size instead")
+  inline size_t GetSize() const
+  {
+    return m_result.size();
+  }
+
+  inline size_t Size() const
+  {
+    return m_result.size();
   }
 
   inline ScTemplate::ReplacementsMap const & GetReplacements() const

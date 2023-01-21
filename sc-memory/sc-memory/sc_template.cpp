@@ -91,18 +91,30 @@ ScTemplate & ScTemplate::Triple(
 
   if (!param2.m_replacementName.empty() &&
       (param2.m_replacementName == param1.m_replacementName || param2.m_replacementName == param3.m_replacementName))
+  {
     SC_THROW_EXCEPTION(utils::ExceptionInvalidParams, "You can't use equal replacement for an edge and source/target");
+  }
 
   ScTemplateTriple * triple = m_triples.back();
+
+  if (triple->m_values[1].IsFixed())
+  {
+    SC_THROW_EXCEPTION(utils::ExceptionInvalidParams, "You should to use variable types for edges in template");
+  }
+
   for (size_t i = 0; i < 3; ++i)
   {
     ScTemplateItemValue & value = triple->m_values[i];
 
     if (value.IsAssign() && value.m_typeValue.HasConstancyFlag() && !value.m_typeValue.IsVar())
+    {
       SC_THROW_EXCEPTION(utils::ExceptionInvalidParams, "You should to use variable types in template");
+    }
 
     if (value.IsAddr() && !value.m_addrValue.IsValid())
+    {
       SC_THROW_EXCEPTION(utils::ExceptionInvalidParams, "You can't use empty ScAddr");
+    }
 
     if (!value.m_replacementName.empty())
     {
