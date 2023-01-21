@@ -16,18 +16,18 @@ class ScTemplateGenerator
 public:
   ScTemplateGenerator(
       ScTemplate::ReplacementsMap const & replacements,
-      ScTemplate::ScTemplateTriplesVector const & constructions,
+      ScTemplate::ScTemplateTriplesVector const & triples,
       ScTemplateParams const & params,
       ScMemoryContext & context)
     : m_replacements(replacements)
-    , m_constructions(constructions)
+    , m_triples(triples)
     , m_params(params)
     , m_context(context)
   {
     // check if it is valid
-    for (const auto & constr : m_constructions)
+    for (const auto & triple : m_triples)
     {
-      auto values = constr->GetValues();
+      auto values = triple->GetValues();
       if (values[1].IsFixed())
         SC_THROW_EXCEPTION(
             utils::ExceptionInvalidParams, "You can't use fixed value for edge in triple for template generation");
@@ -50,28 +50,43 @@ public:
 
     ScMemoryContextEventsPendingGuard guard(m_context);
 
-    result.m_result.resize(m_constructions.size() * 3);
+    result.m_result.resize(m_triples.size() * 3);
     result.m_replacements = m_replacements;
 
     ScAddrVector createdElements;
     size_t resultIdx = 0;
     bool isError = false;
 
-    for (const auto & item : m_constructions)
+    for (const auto & item : m_triples)
     {
       auto const & values = item->GetValues();
 
       // check that the third argument isn't a command to generate edge
-      SC_ASSERT(!(values[2].m_itemType == ScTemplateItemValue::Type::Type && values[2].m_typeValue.IsEdge()), ());
+      if (values[2].m_itemType == ScTemplateItemValue::Type::Type && values[2].m_typeValue.IsEdge())
+      {
+        SC_THROW_EXCEPTION(utils::ExceptionInvalidParams, "Don't generate edge as the third item of triple");
+      };
       // check that second command is to generate edge
-      SC_ASSERT(values[1].m_itemType == ScTemplateItemValue::Type::Type && values[1].m_typeValue.IsEdge(), ());
+      if (!(values[1].m_itemType == ScTemplateItemValue::Type::Type && values[1].m_typeValue.IsEdge()))
+      {
+        SC_THROW_EXCEPTION(utils::ExceptionInvalidParams, "The second item of triple must have edge var type");
+      };
       // the second item couldn't be a replacement
-      SC_ASSERT(values[1].m_itemType != ScTemplateItemValue::Type::Replace, ());
+      if (values[1].m_itemType == ScTemplateItemValue::Type::Replace)
+      {
+        SC_THROW_EXCEPTION(utils::ExceptionInvalidParams, "The second item of triple couldn't be a replacement");
+      };
 
       ScAddr const addr1 = resolveAddr(values[0], result.m_result);
-      SC_ASSERT(addr1.IsValid(), ());
+      if (!addr1.IsValid())
+      {
+        SC_THROW_EXCEPTION(utils::ExceptionInvalidState, "The resolved first item is not valid");
+      }
       ScAddr const addr2 = resolveAddr(values[2], result.m_result);
-      SC_ASSERT(addr2.IsValid(), ());
+      if (!addr2.IsValid())
+      {
+        SC_THROW_EXCEPTION(utils::ExceptionInvalidState, "The resolved third item is not valid");
+      }
 
       if (!addr1.IsValid() || !addr2.IsValid())
       {
@@ -140,7 +155,6 @@ public:
       auto it = m_replacements.find(itemValue.m_replacementName);
       if (it != m_replacements.end())
       {
-        SC_ASSERT(it->second < resultAddrs.size(), ());
         return resultAddrs[it->second];
       }
     }
@@ -162,13 +176,13 @@ public:
   {
     for (auto const & it : m_params.m_values)
     {
-      ScTemplate::ReplacementsMap::const_iterator const itRepl = m_replacements.find(it.first);
+      auto const & itRepl = m_replacements.find(it.first);
 
       if (itRepl == m_replacements.end())
         return false;
 
-      ScTemplateTriple * constr = m_constructions[itRepl->second / 3];
-      ScType const & itemType = constr->GetValues()[itRepl->second % 3].m_typeValue;
+      ScTemplateTriple * triple = m_triples[itRepl->second / 3];
+      ScType const & itemType = triple->GetValues()[itRepl->second % 3].m_typeValue;
       /// TODO: check subtype of objects. Can't replace tuple with no tuple object
       if (itemType.HasConstancyFlag() && (!itemType.IsVar() || itemType.IsEdge()))
         return false;
@@ -179,7 +193,7 @@ public:
 
 private:
   ScTemplate::ReplacementsMap const & m_replacements;
-  ScTemplate::ScTemplateTriplesVector const & m_constructions;
+  ScTemplate::ScTemplateTriplesVector const & m_triples;
   ScTemplateParams const & m_params;
   ScMemoryContext & m_context;
   ScAddrVector m_createdElements;

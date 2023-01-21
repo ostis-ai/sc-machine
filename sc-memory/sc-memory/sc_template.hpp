@@ -101,18 +101,6 @@ struct ScTemplateItemValue
       m_replacementName = name;
   }
 
-  SC_DEPRECATED(0.3.0, "Use ScTemplateItemValue::isFixed instead")
-  bool CanBeAddr() const
-  {
-    return m_itemType == Type::Addr || m_itemType == Type::Replace;
-  }
-
-  SC_DEPRECATED(0.3.0, "Use ScTemplateItemValue::isAssign instead")
-  bool CanBeType() const
-  {
-    return m_itemType == Type::Type;
-  }
-
   Type m_itemType;
 
   ScAddr m_addrValue;
@@ -147,65 +135,9 @@ public:
     m_values[2] = param3;
   }
 
-  ScTemplateTriple(ScTemplateTriple const & other)
-    : m_index(other.m_index)
-    , m_isRequired(other.m_isRequired)
-  {
-    m_values[0] = other.m_values[0];
-    m_values[1] = other.m_values[1];
-    m_values[2] = other.m_values[2];
-  }
-
-  bool operator==(ScTemplateTriple const & other) const
-  {
-    return this->m_index == other.m_index;
-  }
-
   ItemsArray const & GetValues() const
   {
     return m_values;
-  }
-
-  void SetAddr(size_t idx, ScAddr const & addr)
-  {
-    m_values[idx].SetAddr(addr);
-  }
-
-  size_t CountFixed() const
-  {
-    return CountCommonT([](ScTemplateItemValue const & value) {
-      return value.IsFixed();
-    });
-  }
-
-  size_t CountAddrs() const
-  {
-    return CountCommonT([](ScTemplateItemValue const & value) {
-      return value.IsAddr();
-    });
-  }
-  size_t CountReplacements() const
-  {
-    return CountCommonT([](ScTemplateItemValue const & value) {
-      return value.IsReplacement();
-    });
-  }
-
-  template <typename Func>
-  size_t CountCommonT(Func f) const
-  {
-    size_t result = 0;
-    for (auto & v : m_values)
-    {
-      if (f(v))
-        ++result;
-    }
-    return result;
-  }
-
-  bool IsRequired() const
-  {
-    return m_isRequired == Flag::Required;
   }
 
   /* Store original index in template. Because when perform search or generation
@@ -255,7 +187,11 @@ public:
 
   _SC_EXTERN ScTemplateParams & Add(std::string const & varIdtf, ScAddr const & value)
   {
-    assert(m_values.find(varIdtf) == m_values.end());
+    if (m_values.find(varIdtf) != m_values.cend())
+    {
+      SC_THROW_EXCEPTION(utils::ExceptionInvalidParams, "Alias=" + varIdtf + " is invalid");
+    }
+
     m_values[varIdtf] = value;
     return *this;
   }
@@ -275,7 +211,7 @@ public:
   SC_DEPRECATED(0.4.0, "You should to use ScTemplateParams::IsEmpty")
   _SC_EXTERN bool empty() const
   {
-    return m_values.empty();
+    return IsEmpty();
   }
 
   _SC_EXTERN bool IsEmpty() const
@@ -452,7 +388,7 @@ protected:
   std::map<std::string, ScAddr> m_namesToAddrs;
   std::map<std::string, ScType> m_namesToTypes;
 
-  ScTemplateTripleType GetPriority(ScTemplateTriple * constr);
+  ScTemplateTripleType GetPriority(ScTemplateTriple * triple);
 };
 
 class ScTemplateGenResult
@@ -465,18 +401,18 @@ public:
 
   ScAddr const & operator[](std::string const & name) const
   {
-    auto const it = m_replacements.find(name);
-    if (it != m_replacements.end())
+    auto const & it = m_replacements.find(name);
+    if (it != m_replacements.cend())
     {
-      if (it->second >= m_result.size())
-        SC_THROW_EXCEPTION(utils::ExceptionInvalidState, "Invalid replacement " + name);
+      if (it->second < Size())
+      {
+        return m_result[it->second];
+      }
 
-      return m_result[it->second];
+      SC_THROW_EXCEPTION(utils::ExceptionInvalidParams, "Alias=" + name + " is invalid");
     }
-    else
-    {
-      SC_THROW_EXCEPTION(utils::ExceptionItemNotFound, "Can't find replacement " + name);
-    }
+
+    SC_THROW_EXCEPTION(utils::ExceptionInvalidParams, "Alias=" + name + " not found in replacements");
   }
 
   SC_DEPRECATED(0.3.0, "Use ScTemplateGenResult::Size instead")
@@ -490,10 +426,15 @@ public:
     return m_result.size();
   }
 
-  ScAddr const & operator[](size_t index)
+  ScAddr const & operator[](size_t idx)
   {
-    SC_ASSERT(index < Size(), ());
-    return m_result[index];
+    if (idx < Size())
+    {
+      return m_result[idx];
+    }
+
+    SC_THROW_EXCEPTION(
+        utils::ExceptionInvalidParams, "Index=" + std::to_string(idx) + " must be < size=" + std::to_string(Size()));
   }
 
   inline ScTemplate::ReplacementsMap const & GetReplacements() const
@@ -521,27 +462,34 @@ public:
 
   inline ScAddr const & operator[](std::string const & name) const
   {
-    auto const it = m_replacements->find(name);
-    SC_ASSERT(it != m_replacements->end(), ());
-    SC_ASSERT(it->second < m_results->size(), ());
-    return (*m_results)[it->second];
+    auto const & it = m_replacements->find(name);
+    if (it != m_replacements->cend())
+    {
+      return (*m_results)[it->second];
+    }
+
+    SC_THROW_EXCEPTION(utils::ExceptionInvalidParams, "Alias=" + name + " not found in replacements");
   }
 
-  inline ScAddr const & operator[](size_t index) const
+  inline ScAddr const & operator[](size_t idx) const
   {
-    SC_ASSERT(index < Size(), ());
-    return (*m_results)[index];
+    if (idx < Size())
+    {
+      return (*m_results)[idx];
+    }
+
+    SC_THROW_EXCEPTION(
+        utils::ExceptionInvalidParams, "Index=" + std::to_string(idx) + " must be < size=" + std::to_string(Size()));
   }
 
   inline bool Has(std::string const & name) const
   {
-    return (m_replacements->find(name) != m_replacements->end());
+    return m_replacements->find(name) != m_replacements->cend();
   }
 
   inline size_t Size() const
   {
-    SC_ASSERT(m_results != nullptr, ());
-    return m_results->size();
+    return m_results ? m_results->size() : 0;
   }
 
 protected:
@@ -570,7 +518,7 @@ public:
 
   inline bool GetResultItemSafe(size_t idx, ScTemplateSearchResultItem & outItem) const
   {
-    if (idx < m_results.size())
+    if (idx < Size())
     {
       outItem.m_replacements = &m_replacements;
       outItem.m_results = &(m_results[idx]);
@@ -582,12 +530,13 @@ public:
 
   inline ScTemplateSearchResultItem operator[](size_t idx) const
   {
-    if (idx >= m_results.size())
+    if (idx < Size())
     {
-      SC_THROW_EXCEPTION(utils::ExceptionInvalidParams, (idx >= m_results.size()));
+      return {&(m_results[idx]), &m_replacements};
     }
 
-    return {&(m_results[idx]), &m_replacements};
+    SC_THROW_EXCEPTION(
+        utils::ExceptionInvalidParams, "Index=" + std::to_string(idx) + " must be < size=" + std::to_string(Size()));
   }
 
   inline void Clear()

@@ -158,7 +158,10 @@ protected:
     for (auto const i : edges)
     {
       ObjectInfo const & edge = m_elements.at(i);
-      SC_ASSERT(edge.GetType().IsVar(), ());
+      if (!edge.GetType().IsVar())
+      {
+        SC_THROW_EXCEPTION(utils::ExceptionInvalidType, "Edge type must be var type");
+      }
 
       ObjectInfo const src = ReplaceWithParam(&m_elements.at(edge.GetSourceHash()));
       ObjectInfo const trg = ReplaceWithParam(&m_elements.at(edge.GetTargetHash()));

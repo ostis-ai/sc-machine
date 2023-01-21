@@ -61,8 +61,8 @@ ScTemplate & ScTemplate::operator()(
 
 void ScTemplate::Clear()
 {
-  for (auto * construct : m_triples)
-    delete construct;
+  for (auto * tripleuct : m_triples)
+    delete tripleuct;
   m_triples.clear();
 
   m_namesToAddrs.clear();
@@ -93,10 +93,10 @@ ScTemplate & ScTemplate::Triple(
       (param2.m_replacementName == param1.m_replacementName || param2.m_replacementName == param3.m_replacementName))
     SC_THROW_EXCEPTION(utils::ExceptionInvalidParams, "You can't use equal replacement for an edge and source/target");
 
-  ScTemplateTriple * constr3 = m_triples.back();
+  ScTemplateTriple * triple = m_triples.back();
   for (size_t i = 0; i < 3; ++i)
   {
-    ScTemplateItemValue & value = constr3->m_values[i];
+    ScTemplateItemValue & value = triple->m_values[i];
 
     if (value.IsAssign() && value.m_typeValue.HasConstancyFlag() && !value.m_typeValue.IsVar())
       SC_THROW_EXCEPTION(utils::ExceptionInvalidParams, "You should to use variable types in template");
@@ -133,17 +133,17 @@ ScTemplate & ScTemplate::Triple(
       /* Store type there, if replacement for any type.
        * That allows to use it before original type will be processed
        */
-      size_t const constrIdx = replPos / 3;
-      ScTemplateItemValue const & valueType = m_triples[constrIdx]->m_values[i];
+      size_t const tripleIdx = replPos / 3;
+      ScTemplateItemValue const & valueType = m_triples[tripleIdx]->m_values[i];
 
       if (valueType.IsType())
         value.m_typeValue = valueType.m_typeValue;
     }
   }
 
-  ScTemplateTripleType const priority = GetPriority(constr3);
+  ScTemplateTripleType const priority = GetPriority(triple);
   auto const pr = (size_t)priority;
-  m_orderedTriples[pr].insert(constr3->m_index);
+  m_orderedTriples[pr].insert(triple->m_index);
 
   return *this;
 }
@@ -174,11 +174,11 @@ ScTemplate & ScTemplate::TripleWithRelation(
   return *this;
 }
 
-inline ScTemplateTripleType ScTemplate::GetPriority(ScTemplateTriple * constr)
+inline ScTemplateTripleType ScTemplate::GetPriority(ScTemplateTriple * triple)
 {
-  ScTemplateItemValue const & item1 = constr->m_values[0];
-  ScTemplateItemValue const & item2 = constr->m_values[1];
-  ScTemplateItemValue const & item3 = constr->m_values[2];
+  ScTemplateItemValue const & item1 = triple->m_values[0];
+  ScTemplateItemValue const & item2 = triple->m_values[1];
+  ScTemplateItemValue const & item3 = triple->m_values[2];
 
   if (item2.IsFixed())
     return ScTemplateTripleType::AFA;
@@ -194,9 +194,9 @@ inline ScTemplateTripleType ScTemplate::GetPriority(ScTemplateTriple * constr)
     auto const & it = m_replacements.find(item3.m_replacementName);
     if (it != m_replacements.cend())
     {
-      size_t const constrIdx = it->second / 3;
-      if (constrIdx == constr->m_index ||
-          (constrIdx >= m_triples.size() && !m_triples[constrIdx]->m_values[1].m_typeValue.IsEdge()))
+      size_t const tripleIdx = it->second / 3;
+      if (tripleIdx == triple->m_index ||
+          (tripleIdx >= m_triples.size() && !m_triples[tripleIdx]->m_values[1].m_typeValue.IsEdge()))
       {
         return ScTemplateTripleType::FAE;
       }

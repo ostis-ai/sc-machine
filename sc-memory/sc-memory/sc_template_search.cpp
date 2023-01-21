@@ -336,6 +336,7 @@ public:
       ScTemplateGroupedTriples equalTriples;
       for (ScTemplateTriple * otherTriple : m_template.m_triples)
       {
+        // check if iterable triple is equal to current, not checked and not iterable with previous
         if (checkedTriples.find(otherTriple->m_index) == checkedTriples.cend() &&
             std::find_if(
                 currentIterableTriples.cbegin(),
@@ -417,6 +418,10 @@ public:
     ScTemplateItemValue value3 = values[2];
 
     ScIterator3Ptr const it = CreateIterator(value1, value2, value3, resultAddrs, result);
+    if (!it || !it->IsValid())
+    {
+      SC_THROW_EXCEPTION(utils::ExceptionInvalidState, "During search procedure has been chosen var triple");
+    }
 
     size_t count = 0;
 
@@ -439,6 +444,7 @@ public:
         continue;
       }
 
+      // check if edge is used for previous triples
       if (m_usedEdges.find(addr2) != m_usedEdges.cend())
       {
         continue;
@@ -448,11 +454,13 @@ public:
       {
         triple = m_template.m_triples[tripleIdx];
 
+        // check if edge is used for other equal triple
         if (m_triplesOrderUsedEdges[tripleIdx].find(addr2) != m_triplesOrderUsedEdges[tripleIdx].cend())
         {
           continue;
         }
 
+        // check if all equal triples found to make a new search result item
         if (isAllChildrenFinished && count == triples.size())
         {
           count = 0;
@@ -464,8 +472,6 @@ public:
         {
           continue;
         }
-
-        m_usedEdges.insert(addr2);
 
         values = triple->GetValues();
         value1 = values[0];
@@ -481,12 +487,15 @@ public:
 
           checkedTriples.insert(tripleIdx);
           m_triplesOrderUsedEdges[tripleIdx].insert(addr2);
+          m_usedEdges.insert(addr2);
         }
 
         // find next depended on triples and analyse result
         {
           bool isChildFinished = false;
           bool isNoChild = false;
+
+          // first of all check triples by edge, it is more effectively
           TryDoNextDependenceIteration(
               triple, value2, addr2, checkedTriples, resultAddrs, triples, isChildFinished, isNoChild);
           isAllChildrenFinished = isChildFinished;
@@ -517,10 +526,13 @@ public:
             continue;
           }
 
+          // all connected triples found
           if (isAllChildrenFinished)
           {
+            // current triple is checked
             ++count;
 
+            // current edge is busy for all equal triples
             for (size_t const idx : triples)
             {
               m_triplesOrderUsedEdges[idx].insert(addr2);
@@ -530,6 +542,7 @@ public:
         }
       }
 
+      // there are no next triples for current triple, it is last
       if (isLast & isAllChildrenFinished)
       {
         if (checkedTriples.size() == m_template.m_triples.size())
@@ -573,6 +586,7 @@ public:
       {
         DoStartIteration(equalTriples);
 
+        // TODO: Provide logic for template with more connectivity components than 1 in sc-template
         break;
       }
     }
