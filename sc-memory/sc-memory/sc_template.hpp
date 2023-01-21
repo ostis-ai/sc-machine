@@ -240,7 +240,16 @@ enum class ScTemplateTripleType : uint8_t
   ScConstr3TypeCount
 };
 
+enum class ScTemplateSearchRequest : uint8_t
+{
+  CONTINUE,
+  STOP,
+  ERROR
+};
+
 using ScTemplateSearchResultCallback = std::function<void(ScTemplateSearchResultItem const & resultItem)>;
+using ScTemplateSearchResultCallbackWithRequest =
+    std::function<ScTemplateSearchRequest(ScTemplateSearchResultItem const & resultItem)>;
 using ScTemplateSearchResultCheckCallback =
     std::function<bool(ScAddr const & beginAddr, ScAddr const & edgeAddr, ScAddr const & endAddr)>;
 
@@ -361,6 +370,10 @@ protected:
   void Search(
       ScMemoryContext & ctx,
       ScTemplateSearchResultCallback const & callback,
+      ScTemplateSearchResultCheckCallback const & checkCallback) const;
+  void Search(
+      ScMemoryContext & ctx,
+      ScTemplateSearchResultCallbackWithRequest const & callback,
       ScTemplateSearchResultCheckCallback const & checkCallback) const;
 
   SC_DEPRECATED(

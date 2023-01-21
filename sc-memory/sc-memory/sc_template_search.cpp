@@ -15,16 +15,39 @@
 class ScTemplateSearch
 {
 public:
+  ScTemplateSearch(ScTemplate & templ, ScMemoryContext & context, ScAddr const & structure)
+    : m_template(templ)
+    , m_context(context)
+    , m_structure(structure)
+  {
+    PrepareSearch();
+  }
+
   ScTemplateSearch(
       ScTemplate & templ,
       ScMemoryContext & context,
       ScAddr const & structure,
-      ScTemplateSearchResultCallback callback = {},
+      ScTemplateSearchResultCallback callback,
       ScTemplateSearchResultCheckCallback checkCallback = {})
     : m_template(templ)
     , m_context(context)
     , m_structure(structure)
     , m_callback(std::move(callback))
+    , m_checkCallback(std::move(checkCallback))
+  {
+    PrepareSearch();
+  }
+
+  ScTemplateSearch(
+      ScTemplate & templ,
+      ScMemoryContext & context,
+      ScAddr const & structure,
+      ScTemplateSearchResultCallbackWithRequest callback,
+      ScTemplateSearchResultCheckCallback checkCallback = {})
+    : m_template(templ)
+    , m_context(context)
+    , m_structure(structure)
+    , m_callbackWithRequest(std::move(callback))
     , m_checkCallback(std::move(checkCallback))
   {
     PrepareSearch();
@@ -396,12 +419,11 @@ public:
     };
 
     auto const & ClearResults =
-        [this](size_t tripleIdx, ScAddrVector & resultAddrs, std::unordered_set<size_t> & checkedTriples) {
+        [](size_t tripleIdx, ScAddrVector & resultAddrs, std::unordered_set<size_t> & checkedTriples) {
           checkedTriples.erase(tripleIdx);
 
           tripleIdx *= 3;
           resultAddrs[tripleIdx] = ScAddr::Empty;
-          m_usedEdges.erase(resultAddrs[++tripleIdx]);
           resultAddrs[tripleIdx] = ScAddr::Empty;
           resultAddrs[++tripleIdx] = ScAddr::Empty;
         };
@@ -427,7 +449,7 @@ public:
 
     std::unordered_set<size_t> const currentCheckedTriples{checkedTriples};
     ScAddrVector const currentResultAddrs{resultAddrs};
-    while (it->Next())
+    while (it->Next() && !isStopped)
     {
       ScAddr const & addr1 = it->Get(0);
       ScAddr const & addr2 = it->Get(1);
@@ -441,12 +463,6 @@ public:
         {
           m_triplesOrderUsedEdges[tripleIdx].insert(addr2);
         }
-        continue;
-      }
-
-      // check if edge is used for previous triples
-      if (m_usedEdges.find(addr2) != m_usedEdges.cend())
-      {
         continue;
       }
 
@@ -464,7 +480,7 @@ public:
         if (isAllChildrenFinished && count == triples.size())
         {
           count = 0;
-          checkedTriples = std::unordered_set<size_t>{currentCheckedTriples};
+          checkedTriples = {currentCheckedTriples};
           resultAddrs.assign(currentResultAddrs.cbegin(), currentResultAddrs.cend());
         }
 
@@ -487,7 +503,6 @@ public:
 
           checkedTriples.insert(tripleIdx);
           m_triplesOrderUsedEdges[tripleIdx].insert(addr2);
-          m_usedEdges.insert(addr2);
         }
 
         // find next depended on triples and analyse result
@@ -543,18 +558,34 @@ public:
       }
 
       // there are no next triples for current triple, it is last
-      if (isLast & isAllChildrenFinished)
+      if (isLast && isAllChildrenFinished && checkedTriples.size() == m_template.m_triples.size())
       {
-        if (checkedTriples.size() == m_template.m_triples.size())
+        if (m_callback)
         {
-          if (m_callback)
+          m_callback(ScTemplateSearchResultItem(&resultAddrs, &result.m_replacements));
+        }
+        else if (m_callbackWithRequest)
+        {
+          ScTemplateSearchRequest const & request =
+              m_callbackWithRequest(ScTemplateSearchResultItem(&resultAddrs, &result.m_replacements));
+          switch (request)
           {
-            m_callback(ScTemplateSearchResultItem(&resultAddrs, &result.m_replacements));
-          }
-          else
+          case ScTemplateSearchRequest::STOP:
           {
-            result.m_results.emplace_back(resultAddrs);
+            isStopped = true;
+            break;
           }
+          case ScTemplateSearchRequest::ERROR:
+          {
+            SC_THROW_EXCEPTION(utils::ExceptionInvalidState, "Requested error state during search");
+          }
+          default:
+            break;
+          }
+        }
+        else
+        {
+          result.m_results.emplace_back(resultAddrs);
         }
       }
     }
@@ -619,12 +650,13 @@ private:
   ScTemplate & m_template;
   ScMemoryContext & m_context;
 
+  bool isStopped = false;
   ScAddr const m_structure;
   ScTemplateSearchResultCallback m_callback;
+  ScTemplateSearchResultCallbackWithRequest m_callbackWithRequest;
   ScTemplateSearchResultCheckCallback m_checkCallback;
 
   ScTriplesOrderUsedEdges m_triplesOrderUsedEdges;
-  UsedEdges m_usedEdges;
   std::map<std::string, ScTemplateGroupedTriples> m_itemsToTriples;
 };
 
@@ -637,6 +669,15 @@ ScTemplate::Result ScTemplate::Search(ScMemoryContext & ctx, ScTemplateSearchRes
 void ScTemplate::Search(
     ScMemoryContext & ctx,
     ScTemplateSearchResultCallback const & callback,
+    ScTemplateSearchResultCheckCallback const & checkCallback) const
+{
+  ScTemplateSearch search(const_cast<ScTemplate &>(*this), ctx, ScAddr::Empty, callback, checkCallback);
+  search();
+}
+
+void ScTemplate::Search(
+    ScMemoryContext & ctx,
+    ScTemplateSearchResultCallbackWithRequest const & callback,
     ScTemplateSearchResultCheckCallback const & checkCallback) const
 {
   ScTemplateSearch search(const_cast<ScTemplate &>(*this), ctx, ScAddr::Empty, callback, checkCallback);

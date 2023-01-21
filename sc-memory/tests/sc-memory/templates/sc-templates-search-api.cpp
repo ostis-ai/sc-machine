@@ -190,3 +190,126 @@ TEST_F(ScTemplateSearchApiTest, SearchEmpty)
 
   EXPECT_EQ(count, 0u);
 }
+
+TEST_F(ScTemplateSearchApiTest, SearchWithStopRequest)
+{
+  ScAddr const addr1 = m_ctx->CreateNode(ScType::NodeConst);
+  EXPECT_TRUE(addr1.IsValid());
+  ScAddr const addr2 = m_ctx->CreateNode(ScType::NodeConstAbstract);
+  EXPECT_TRUE(addr2.IsValid());
+  ScAddr const edge1 = m_ctx->CreateEdge(ScType::EdgeAccessConstPosPerm, addr1, addr2);
+  EXPECT_TRUE(edge1.IsValid());
+  ScAddr const addr3 = m_ctx->CreateNode(ScType::NodeConstAbstract);
+  EXPECT_TRUE(addr2.IsValid());
+  ScAddr const edge2 = m_ctx->CreateEdge(ScType::EdgeAccessConstPosPerm, addr1, addr3);
+  EXPECT_TRUE(edge2.IsValid());
+
+  ScTemplate templ;
+  templ.Triple(
+      addr1 >> "_addr1",
+      ScType::EdgeAccessVarPosPerm >> "_edge",
+      ScType::Unknown >> "_addr2");
+
+  size_t count = 0;
+  m_ctx->HelperSmartSearchTemplate(templ, [&](ScTemplateSearchResultItem const & item) -> ScTemplateSearchRequest {
+    ScAddr foundAddr;
+
+    EXPECT_TRUE(item.Get(0, foundAddr));
+    EXPECT_EQ(foundAddr, addr1);
+    EXPECT_TRUE(item.Get("_addr1", foundAddr));
+    EXPECT_EQ(foundAddr, addr1);
+
+    EXPECT_TRUE(item.Get(1, foundAddr));
+    EXPECT_TRUE(item.Get("_edge", foundAddr));
+
+    EXPECT_TRUE(item.Get(2, foundAddr));
+    EXPECT_TRUE(item.Get("_addr2", foundAddr));
+
+    ++count;
+    return ScTemplateSearchRequest::STOP;
+  });
+
+  EXPECT_EQ(count, 1u);
+}
+
+TEST_F(ScTemplateSearchApiTest, SearchWithErrorRequest)
+{
+  ScAddr const addr1 = m_ctx->CreateNode(ScType::NodeConst);
+  EXPECT_TRUE(addr1.IsValid());
+  ScAddr const addr2 = m_ctx->CreateNode(ScType::NodeConstAbstract);
+  EXPECT_TRUE(addr2.IsValid());
+  ScAddr const edge1 = m_ctx->CreateEdge(ScType::EdgeAccessConstPosPerm, addr1, addr2);
+  EXPECT_TRUE(edge1.IsValid());
+  ScAddr const addr3 = m_ctx->CreateNode(ScType::NodeConstAbstract);
+  EXPECT_TRUE(addr2.IsValid());
+  ScAddr const edge2 = m_ctx->CreateEdge(ScType::EdgeAccessConstPosPerm, addr1, addr3);
+  EXPECT_TRUE(edge2.IsValid());
+
+  ScTemplate templ;
+  templ.Triple(
+      addr1 >> "_addr1",
+      ScType::EdgeAccessVarPosPerm >> "_edge",
+      ScType::Unknown >> "_addr2");
+
+  size_t count = 0;
+  EXPECT_THROW(m_ctx->HelperSmartSearchTemplate(templ, [&](ScTemplateSearchResultItem const & item) -> ScTemplateSearchRequest {
+    ScAddr foundAddr;
+
+    EXPECT_TRUE(item.Get(0, foundAddr));
+    EXPECT_EQ(foundAddr, addr1);
+    EXPECT_TRUE(item.Get("_addr1", foundAddr));
+    EXPECT_EQ(foundAddr, addr1);
+
+    EXPECT_TRUE(item.Get(1, foundAddr));
+    EXPECT_TRUE(item.Get("_edge", foundAddr));
+
+    EXPECT_TRUE(item.Get(2, foundAddr));
+    EXPECT_TRUE(item.Get("_addr2", foundAddr));
+
+    ++count;
+    return ScTemplateSearchRequest::ERROR;
+  }), utils::ExceptionInvalidState);
+
+  EXPECT_EQ(count, 1u);
+}
+
+TEST_F(ScTemplateSearchApiTest, SearchWithContinueRequest)
+{
+  ScAddr const addr1 = m_ctx->CreateNode(ScType::NodeConst);
+  EXPECT_TRUE(addr1.IsValid());
+  ScAddr const addr2 = m_ctx->CreateNode(ScType::NodeConstAbstract);
+  EXPECT_TRUE(addr2.IsValid());
+  ScAddr const edge1 = m_ctx->CreateEdge(ScType::EdgeAccessConstPosPerm, addr1, addr2);
+  EXPECT_TRUE(edge1.IsValid());
+  ScAddr const addr3 = m_ctx->CreateNode(ScType::NodeConstAbstract);
+  EXPECT_TRUE(addr2.IsValid());
+  ScAddr const edge2 = m_ctx->CreateEdge(ScType::EdgeAccessConstPosPerm, addr1, addr3);
+  EXPECT_TRUE(edge2.IsValid());
+
+  ScTemplate templ;
+  templ.Triple(
+      addr1 >> "_addr1",
+      ScType::EdgeAccessVarPosPerm >> "_edge",
+      ScType::Unknown >> "_addr2");
+
+  size_t count = 0;
+  m_ctx->HelperSmartSearchTemplate(templ, [&](ScTemplateSearchResultItem const & item) -> ScTemplateSearchRequest {
+    ScAddr foundAddr;
+
+    EXPECT_TRUE(item.Get(0, foundAddr));
+    EXPECT_EQ(foundAddr, addr1);
+    EXPECT_TRUE(item.Get("_addr1", foundAddr));
+    EXPECT_EQ(foundAddr, addr1);
+
+    EXPECT_TRUE(item.Get(1, foundAddr));
+    EXPECT_TRUE(item.Get("_edge", foundAddr));
+
+    EXPECT_TRUE(item.Get(2, foundAddr));
+    EXPECT_TRUE(item.Get("_addr2", foundAddr));
+
+    ++count;
+    return ScTemplateSearchRequest::CONTINUE;
+  });
+
+  EXPECT_EQ(count, 2u);
+}

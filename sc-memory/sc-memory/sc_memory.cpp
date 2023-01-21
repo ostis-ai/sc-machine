@@ -605,6 +605,14 @@ void ScMemoryContext::HelperSearchTemplate(
   templ.Search(*this, callback, checkCallback);
 }
 
+void ScMemoryContext::HelperSmartSearchTemplate(
+    ScTemplate const & templ,
+    ScTemplateSearchResultCallbackWithRequest const & callback,
+    ScTemplateSearchResultCheckCallback const & checkCallback)
+{
+  templ.Search(*this, callback, checkCallback);
+}
+
 ScTemplate::Result ScMemoryContext::HelperSearchTemplateInStruct(
     ScTemplate const & templ,
     ScAddr const & scStruct,
