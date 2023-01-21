@@ -16,7 +16,7 @@ class ScTemplateGenerator
 public:
   ScTemplateGenerator(
       ScTemplate::ReplacementsMap const & replacements,
-      ScTemplate::TemplateConstr3Vector const & constructions,
+      ScTemplate::ScTemplateTriplesVector const & constructions,
       ScTemplateParams const & params,
       ScMemoryContext & context)
     : m_replacements(replacements)
@@ -167,7 +167,7 @@ public:
       if (itRepl == m_replacements.end())
         return false;
 
-      ScTemplateConstr3 * constr = m_constructions[itRepl->second / 3];
+      ScTemplateTriple * constr = m_constructions[itRepl->second / 3];
       ScType const & itemType = constr->GetValues()[itRepl->second % 3].m_typeValue;
       /// TODO: check subtype of objects. Can't replace tuple with no tuple object
       if (itemType.HasConstancyFlag() && (!itemType.IsVar() || itemType.IsEdge()))
@@ -179,7 +179,7 @@ public:
 
 private:
   ScTemplate::ReplacementsMap const & m_replacements;
-  ScTemplate::TemplateConstr3Vector const & m_constructions;
+  ScTemplate::ScTemplateTriplesVector const & m_constructions;
   ScTemplateParams const & m_params;
   ScMemoryContext & m_context;
   ScAddrVector m_createdElements;
@@ -191,7 +191,7 @@ ScTemplate::Result ScTemplate::Generate(
     ScTemplateParams const & params,
     ScTemplateResultCode * errorCode) const
 {
-  ScTemplateGenerator gen(m_replacements, m_constructions, params, ctx);
+  ScTemplateGenerator gen(m_replacements, m_triples, params, ctx);
   ScTemplateResultCode resultCode = gen(result);
 
   if (errorCode)

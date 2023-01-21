@@ -33,10 +33,10 @@ ScTemplateItemValue operator>>(ScType const & value, std::string const & replNam
 
 ScTemplate::ScTemplate(bool forceOrder /* = false */)
 {
-  m_constructions.reserve(16);
+  m_triples.reserve(16);
 
-  auto const constr3TypeCount = (size_t)ScConstr3Type::ScConstr3TypeCount;
-  m_orderedConstructions.resize(constr3TypeCount);
+  auto const tripleTypeCount = (size_t)ScTemplateTripleType::ScConstr3TypeCount;
+  m_orderedTriples.resize(tripleTypeCount);
 }
 
 ScTemplate & ScTemplate::operator()(
@@ -61,18 +61,18 @@ ScTemplate & ScTemplate::operator()(
 
 void ScTemplate::Clear()
 {
-  for (auto * construct : m_constructions)
+  for (auto * construct : m_triples)
     delete construct;
-  m_constructions.clear();
+  m_triples.clear();
 
   m_namesToAddrs.clear();
-  m_orderedConstructions.clear();
-  m_orderedConstructions.resize((int)ScConstr3Type::ScConstr3TypeCount);
+  m_orderedTriples.clear();
+  m_orderedTriples.resize((size_t)ScTemplateTripleType::ScConstr3TypeCount);
 }
 
 bool ScTemplate::IsEmpty() const
 {
-  return m_constructions.empty();
+  return m_triples.empty();
 }
 
 bool ScTemplate::HasReplacement(std::string const & repl) const
@@ -86,14 +86,14 @@ ScTemplate & ScTemplate::Triple(
     ScTemplateItemValue const & param3,
     ScTemplate::TripleFlag isRequired /* = ScTemplate::TripleFlag::Required */)
 {
-  size_t const replPos = m_constructions.size() * 3;
-  m_constructions.emplace_back(new ScTemplateConstr3(param1, param2, param3, m_constructions.size(), isRequired));
+  size_t const replPos = m_triples.size() * 3;
+  m_triples.emplace_back(new ScTemplateTriple(param1, param2, param3, m_triples.size(), isRequired));
 
   if (!param2.m_replacementName.empty() &&
       (param2.m_replacementName == param1.m_replacementName || param2.m_replacementName == param3.m_replacementName))
     SC_THROW_EXCEPTION(utils::ExceptionInvalidParams, "You can't use equal replacement for an edge and source/target");
 
-  ScTemplateConstr3 * constr3 = m_constructions.back();
+  ScTemplateTriple * constr3 = m_triples.back();
   for (size_t i = 0; i < 3; ++i)
   {
     ScTemplateItemValue & value = constr3->m_values[i];
@@ -130,23 +130,20 @@ ScTemplate & ScTemplate::Triple(
           m_replacements.insert({value.m_replacementName, replPos + i});
       }
 
-      m_itemsNames.insert(value.m_replacementName);
-
       /* Store type there, if replacement for any type.
        * That allows to use it before original type will be processed
        */
       size_t const constrIdx = replPos / 3;
-      SC_ASSERT(constrIdx < m_constructions.size(), ());
-      ScTemplateItemValue const & valueType = m_constructions[constrIdx]->m_values[i];
+      ScTemplateItemValue const & valueType = m_triples[constrIdx]->m_values[i];
 
       if (valueType.IsType())
         value.m_typeValue = valueType.m_typeValue;
     }
   }
 
-  ScConstr3Type const priority = GetPriority(constr3);
-  size_t const pr = int(priority);
-  m_orderedConstructions[pr].insert(constr3->m_index);
+  ScTemplateTripleType const priority = GetPriority(constr3);
+  auto const pr = (size_t)priority;
+  m_orderedTriples[pr].insert(constr3->m_index);
 
   return *this;
 }
@@ -159,7 +156,7 @@ ScTemplate & ScTemplate::TripleWithRelation(
     ScTemplateItemValue const & param5,
     ScTemplate::TripleFlag isRequired /* = ScTemplate::TripleFlag::Required */)
 {
-  size_t const replPos = m_constructions.size() * 3;
+  size_t const replPos = m_triples.size() * 3;
 
   ScTemplateItemValue edgeCommonItem = param2;
 
@@ -177,20 +174,20 @@ ScTemplate & ScTemplate::TripleWithRelation(
   return *this;
 }
 
-inline ScConstr3Type ScTemplate::GetPriority(ScTemplateConstr3 * constr)
+inline ScTemplateTripleType ScTemplate::GetPriority(ScTemplateTriple * constr)
 {
   ScTemplateItemValue const & item1 = constr->m_values[0];
   ScTemplateItemValue const & item2 = constr->m_values[1];
   ScTemplateItemValue const & item3 = constr->m_values[2];
 
   if (item2.IsFixed())
-    return ScConstr3Type::AFA;
+    return ScTemplateTripleType::AFA;
 
   else if (item1.IsFixed() && item3.IsFixed())
-    return ScConstr3Type::FAF;
+    return ScTemplateTripleType::FAF;
 
   else if (item3.IsFixed())
-    return ScConstr3Type::AAF;
+    return ScTemplateTripleType::AAF;
 
   else if (item1.IsFixed() && (!item3.m_typeValue.IsEdge() && !item3.m_typeValue.IsUnknown()))
   {
@@ -199,16 +196,16 @@ inline ScConstr3Type ScTemplate::GetPriority(ScTemplateConstr3 * constr)
     {
       size_t const constrIdx = it->second / 3;
       if (constrIdx == constr->m_index ||
-          (constrIdx >= m_constructions.size() && !m_constructions[constrIdx]->m_values[1].m_typeValue.IsEdge()))
+          (constrIdx >= m_triples.size() && !m_triples[constrIdx]->m_values[1].m_typeValue.IsEdge()))
       {
-        return ScConstr3Type::FAE;
+        return ScTemplateTripleType::FAE;
       }
     }
   }
 
   if (item1.IsFixed())
-    return ScConstr3Type::FAN;
+    return ScTemplateTripleType::FAN;
 
   else
-    return ScConstr3Type::AAA;
+    return ScTemplateTripleType::AAA;
 }

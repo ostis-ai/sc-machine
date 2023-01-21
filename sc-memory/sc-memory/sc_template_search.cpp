@@ -10,62 +10,70 @@
 #include "sc_memory.hpp"
 
 #include <algorithm>
+#include <utility>
 
 class ScTemplateSearch
 {
 public:
-  ScTemplateSearch(ScTemplate const & templ, ScMemoryContext & context, ScAddr const & scStruct)
-    : m_template(const_cast<ScTemplate &>(templ))
+  ScTemplateSearch(
+      ScTemplate & templ,
+      ScMemoryContext & context,
+      ScAddr const & structure,
+      ScTemplateSearchResultCallback callback = {},
+      ScTemplateSearchResultCheckCallback checkCallback = {})
+    : m_template(templ)
     , m_context(context)
-    , m_struct(scStruct)
+    , m_structure(structure)
+    , m_callback(std::move(callback))
+    , m_checkCallback(std::move(checkCallback))
   {
     PrepareSearch();
   }
 
-  using ScTemplateGroupedConstructions = ScTemplate::ScTemplateGroupedConstructions;
+  using ScTemplateGroupedTriples = ScTemplate::ScTemplateGroupedTriples;
 
   void PrepareSearch()
   {
-    auto constructsWithConstBeginElement = m_template.m_orderedConstructions[(size_t)ScConstr3Type::FAE];
-    if (constructsWithConstBeginElement.empty())
+    auto triplesWithConstBeginElement = m_template.m_orderedTriples[(size_t)ScTemplateTripleType::FAE];
+    if (triplesWithConstBeginElement.empty())
     {
-      constructsWithConstBeginElement = m_template.m_orderedConstructions[(size_t)ScConstr3Type::FAN];
+      triplesWithConstBeginElement = m_template.m_orderedTriples[(size_t)ScTemplateTripleType::FAN];
     }
 
-    sc_int32 priorityConstructIdx = -1;
+    sc_int32 priorityTripleIdx = -1;
     sc_int32 minOutputArcsCount = -1;
-    for (size_t const constructIdx : constructsWithConstBeginElement)
+    for (size_t const tripleIdx : triplesWithConstBeginElement)
     {
-      ScTemplateConstr3 const * construct = m_template.m_constructions[constructIdx];
-      auto const count = (sc_int32)m_context.GetElementOutputArcsCount(construct->GetValues()[0].m_addrValue);
+      ScTemplateTriple const * triple = m_template.m_triples[tripleIdx];
+      auto const count = (sc_int32)m_context.GetElementOutputArcsCount(triple->GetValues()[0].m_addrValue);
 
       if (minOutputArcsCount == -1 || count < minOutputArcsCount)
       {
-        priorityConstructIdx = (sc_int32)constructIdx;
+        priorityTripleIdx = (sc_int32)tripleIdx;
         minOutputArcsCount = (sc_int32)count;
       }
     }
 
-    if (priorityConstructIdx != -1)
+    if (priorityTripleIdx != -1)
     {
-      m_template.m_orderedConstructions[(size_t)ScConstr3Type::PFAE].insert(priorityConstructIdx);
+      m_template.m_orderedTriples[(size_t)ScTemplateTripleType::PFAE].insert(priorityTripleIdx);
     }
 
-    for (auto const * construct : m_template.m_constructions)
+    for (auto const * triple : m_template.m_triples)
     {
-      auto & values = construct->GetValues();
+      auto & values = triple->GetValues();
       ScTemplateItemValue const & item1 = values[0];
       ScTemplateItemValue const & item2 = values[1];
       ScTemplateItemValue const & item3 = values[2];
 
-      for (auto * otherConstruct : m_template.m_constructions)
+      for (auto * otherTriple : m_template.m_triples)
       {
-        auto const & otherValues = otherConstruct->GetValues();
+        auto const & otherValues = otherTriple->GetValues();
         ScTemplateItemValue const & otherItem1 = otherValues[0];
         ScTemplateItemValue const & otherItem2 = otherValues[1];
         ScTemplateItemValue const & otherItem3 = otherValues[2];
 
-        if (construct->m_index == otherConstruct->m_index)
+        if (triple->m_index == otherTriple->m_index)
           continue;
 
         auto const TryAddDependence = [&](ScTemplateItemValue const & item,
@@ -82,14 +90,14 @@ public:
           if (withItem1Equal || withItem2Equal || withItem3Equal)
           {
             std::ostringstream stream{item.m_replacementName};
-            stream << construct->m_index;
+            stream << triple->m_index;
 
             std::string const key = stream.str();
-            auto const & found = m_itemsToConstructs.find(key);
-            if (found == m_itemsToConstructs.cend())
-              m_itemsToConstructs.insert({key, {otherConstruct->m_index}});
+            auto const & found = m_itemsToTriples.find(key);
+            if (found == m_itemsToTriples.cend())
+              m_itemsToTriples.insert({key, {otherTriple->m_index}});
             else
-              found->second.insert(otherConstruct->m_index);
+              found->second.insert(otherTriple->m_index);
           }
         };
 
@@ -102,12 +110,12 @@ public:
 
   inline bool IsStructureValid()
   {
-    return m_struct.IsValid();
+    return m_structure.IsValid();
   }
 
   inline bool IsInStructure(ScAddr const & addr)
   {
-    return m_context.HelperCheckEdge(m_struct, addr, ScType::EdgeAccessConstPosPerm);
+    return m_context.HelperCheckEdge(m_structure, addr, ScType::EdgeAccessConstPosPerm);
   }
 
   ScAddr const & ResolveAddr(
@@ -227,30 +235,30 @@ public:
     return {};
   }
 
-  void FindDependedConstruction(
+  void FindDependedTriple(
       ScTemplateItemValue const & value,
-      ScTemplateConstr3 const * construct,
-      ScTemplateGroupedConstructions & nextConstructs)
+      ScTemplateTriple const * triple,
+      ScTemplateGroupedTriples & nextTriples)
   {
     if (value.m_replacementName.empty())
       return;
 
     std::ostringstream stream{value.m_replacementName};
-    stream << construct->m_index;
+    stream << triple->m_index;
 
-    auto const & found = m_itemsToConstructs.find(stream.str());
-    if (found != m_itemsToConstructs.cend())
+    auto const & found = m_itemsToTriples.find(stream.str());
+    if (found != m_itemsToTriples.cend())
     {
-      nextConstructs = found->second;
+      nextTriples = found->second;
     }
   }
 
-  bool IsConstructsEqual(ScTemplateConstr3 const * construct, ScTemplateConstr3 const * otherConstruct)
+  bool IsTriplesEqual(ScTemplateTriple const * triple, ScTemplateTriple const * otherTriple)
   {
-    auto const & constructValues = construct->GetValues();
-    auto const & otherConstructValues = otherConstruct->GetValues();
+    auto const & tripleValues = triple->GetValues();
+    auto const & otherTripleValues = otherTriple->GetValues();
 
-    auto const & IsConstructsItemsEqual =
+    auto const & IsTriplesItemsEqual =
         [this](ScTemplateItemValue const & value, ScTemplateItemValue const & otherValue) -> bool {
       bool isEqual = value.m_typeValue == otherValue.m_typeValue;
       if (!isEqual)
@@ -295,20 +303,20 @@ public:
       return isEqual;
     };
 
-    return IsConstructsItemsEqual(constructValues[0], otherConstructValues[0]) &&
-           IsConstructsItemsEqual(constructValues[1], otherConstructValues[1]) &&
-           IsConstructsItemsEqual(constructValues[2], otherConstructValues[2]) &&
-           (constructValues[0].m_replacementName == otherConstructValues[0].m_replacementName ||
-            constructValues[2].m_replacementName == otherConstructValues[2].m_replacementName);
+    return IsTriplesItemsEqual(tripleValues[0], otherTripleValues[0]) &&
+           IsTriplesItemsEqual(tripleValues[1], otherTripleValues[1]) &&
+           IsTriplesItemsEqual(tripleValues[2], otherTripleValues[2]) &&
+           (tripleValues[0].m_replacementName == otherTripleValues[0].m_replacementName ||
+            tripleValues[2].m_replacementName == otherTripleValues[2].m_replacementName);
   };
 
-  using UsedEdges = std::vector<std::unordered_set<ScAddr, ScAddrHashFunc<uint32_t>>>;
+  using UsedEdges = std::unordered_set<ScAddr, ScAddrHashFunc<uint32_t>>;
+  using ScTriplesOrderUsedEdges = std::vector<UsedEdges>;
 
-  void DoIterationOnNextEqualConstructions(
-      ScTemplateGroupedConstructions const & constructs,
-      std::unordered_set<size_t> & checkedConstructs,
-      ScTemplateGroupedConstructions const & currentIterableConstructs,
-      UsedEdges & checkedEdges,
+  void DoIterationOnNextEqualTriples(
+      ScTemplateGroupedTriples const & triples,
+      std::unordered_set<size_t> & checkedTriples,
+      ScTemplateGroupedTriples const & currentIterableTriples,
       ScAddrVector & resultAddrs,
       ScTemplateSearchResult & result,
       bool & isFinished,
@@ -317,69 +325,60 @@ public:
     isLast = true;
     isFinished = true;
 
-    std::unordered_set<size_t> iteratedConstructs;
+    std::unordered_set<size_t> iteratedTriples;
 
-    for (size_t const idx : constructs)
+    for (size_t const idx : triples)
     {
-      ScTemplateConstr3 * construct = m_template.m_constructions[idx];
-      if (iteratedConstructs.find(construct->m_index) != iteratedConstructs.cend())
+      ScTemplateTriple * triple = m_template.m_triples[idx];
+      if (iteratedTriples.find(triple->m_index) != iteratedTriples.cend())
         continue;
 
-      ScTemplateGroupedConstructions equalConstructs;
-      for (ScTemplateConstr3 * otherConstruct : m_template.m_constructions)
+      ScTemplateGroupedTriples equalTriples;
+      for (ScTemplateTriple * otherTriple : m_template.m_triples)
       {
-        if (checkedConstructs.find(otherConstruct->m_index) == checkedConstructs.cend() &&
+        if (checkedTriples.find(otherTriple->m_index) == checkedTriples.cend() &&
             std::find_if(
-                currentIterableConstructs.cbegin(),
-                currentIterableConstructs.cend(),
+                currentIterableTriples.cbegin(),
+                currentIterableTriples.cend(),
                 [&](size_t const otherIdx) {
                   return idx == otherIdx;
-                }) == currentIterableConstructs.cend() &&
-            IsConstructsEqual(construct, otherConstruct))
+                }) == currentIterableTriples.cend() &&
+            IsTriplesEqual(triple, otherTriple))
         {
-          equalConstructs.insert(otherConstruct->m_index);
-          iteratedConstructs.insert(otherConstruct->m_index);
+          equalTriples.insert(otherTriple->m_index);
+          iteratedTriples.insert(otherTriple->m_index);
         }
       }
 
-      if (!equalConstructs.empty())
+      if (!equalTriples.empty())
       {
         isLast = false;
-        DoDependenceIteration(equalConstructs, checkedConstructs, checkedEdges, resultAddrs, result, isFinished);
+        DoDependenceIteration(equalTriples, checkedTriples, resultAddrs, result, isFinished);
       }
     }
   }
 
   void DoDependenceIteration(
-      ScTemplateGroupedConstructions const & constructs,
-      std::unordered_set<size_t> & checkedConstructs,
-      UsedEdges & checkedEdges,
+      ScTemplateGroupedTriples const & triples,
+      std::unordered_set<size_t> & checkedTriples,
       ScAddrVector & resultAddrs,
       ScTemplateSearchResult & result,
       bool & isFinished)
   {
     auto const & TryDoNextDependenceIteration = [this, &result](
-                                                    ScTemplateConstr3 const * construct,
+                                                    ScTemplateTriple const * triple,
                                                     ScTemplateItemValue const & item,
                                                     ScAddr const & itemAddr,
-                                                    std::unordered_set<size_t> & checkedConstructs,
-                                                    UsedEdges & checkedEdges,
+                                                    std::unordered_set<size_t> & checkedTriples,
                                                     ScAddrVector & resultAddrs,
-                                                    ScTemplateGroupedConstructions const & currentIterableConstructs,
+                                                    ScTemplateGroupedTriples const & currentIterableTriples,
                                                     bool & isFinished,
                                                     bool & isLast) {
-      ScTemplateGroupedConstructions nextConstructs;
-      FindDependedConstruction(item, construct, nextConstructs);
+      ScTemplateGroupedTriples nextTriples;
+      FindDependedTriple(item, triple, nextTriples);
 
-      DoIterationOnNextEqualConstructions(
-          nextConstructs,
-          checkedConstructs,
-          currentIterableConstructs,
-          checkedEdges,
-          resultAddrs,
-          result,
-          isFinished,
-          isLast);
+      DoIterationOnNextEqualTriples(
+          nextTriples, checkedTriples, currentIterableTriples, resultAddrs, result, isFinished, isLast);
     };
 
     auto const & UpdateResults = [&result](
@@ -396,21 +395,22 @@ public:
     };
 
     auto const & ClearResults =
-        [](size_t constructIdx, ScAddrVector & resultAddrs, std::unordered_set<size_t> & checkedConstructs) {
-          checkedConstructs.erase(constructIdx);
+        [this](size_t tripleIdx, ScAddrVector & resultAddrs, std::unordered_set<size_t> & checkedTriples) {
+          checkedTriples.erase(tripleIdx);
 
-          constructIdx *= 3;
-          resultAddrs[constructIdx] = ScAddr::Empty;
-          resultAddrs[++constructIdx] = ScAddr::Empty;
-          resultAddrs[++constructIdx] = ScAddr::Empty;
+          tripleIdx *= 3;
+          resultAddrs[tripleIdx] = ScAddr::Empty;
+          m_usedEdges.erase(resultAddrs[++tripleIdx]);
+          resultAddrs[tripleIdx] = ScAddr::Empty;
+          resultAddrs[++tripleIdx] = ScAddr::Empty;
         };
 
-    ScTemplateConstr3 * construct = m_template.m_constructions[*constructs.begin()];
+    ScTemplateTriple * triple = m_template.m_triples[*triples.begin()];
 
     bool isAllChildrenFinished = false;
     bool isLast = false;
 
-    auto values = construct->GetValues();
+    auto values = triple->GetValues();
 
     ScTemplateItemValue value1 = values[0];
     ScTemplateItemValue value2 = values[1];
@@ -420,7 +420,7 @@ public:
 
     size_t count = 0;
 
-    std::unordered_set<size_t> const currentCheckedConstructs{checkedConstructs};
+    std::unordered_set<size_t> const currentCheckedTriples{checkedTriples};
     ScAddrVector const currentResultAddrs{resultAddrs};
     while (it->Next())
     {
@@ -428,125 +428,102 @@ public:
       ScAddr const & addr2 = it->Get(1);
       ScAddr const & addr3 = it->Get(2);
 
-      // check construction for that it is in structure
-      if (IsStructureValid() && (!IsInStructure(addr1) || !IsInStructure(addr2) || !IsInStructure(addr3)))
+      // check triple elements by structure belonging or predicate callback
+      if ((IsStructureValid() && (!IsInStructure(addr1) || !IsInStructure(addr2) || !IsInStructure(addr3))) ||
+          (m_checkCallback && m_checkCallback(addr1, addr2, addr3)))
       {
-        for (size_t const constructIdx : constructs)
+        for (size_t const tripleIdx : triples)
         {
-          checkedEdges[constructIdx].insert(addr2);
+          m_triplesOrderUsedEdges[tripleIdx].insert(addr2);
         }
         continue;
       }
 
-      for (size_t const constructIdx : constructs)
+      if (m_usedEdges.find(addr2) != m_usedEdges.cend())
       {
-        construct = m_template.m_constructions[constructIdx];
+        continue;
+      }
 
-        if (checkedEdges[constructIdx].find(addr2) != checkedEdges[constructIdx].cend())
+      for (size_t const tripleIdx : triples)
+      {
+        triple = m_template.m_triples[tripleIdx];
+
+        if (m_triplesOrderUsedEdges[tripleIdx].find(addr2) != m_triplesOrderUsedEdges[tripleIdx].cend())
         {
           continue;
         }
 
-        if (isAllChildrenFinished && count == constructs.size())
+        if (isAllChildrenFinished && count == triples.size())
         {
           count = 0;
-          checkedConstructs = std::unordered_set<size_t>{currentCheckedConstructs};
+          checkedTriples = std::unordered_set<size_t>{currentCheckedTriples};
           resultAddrs.assign(currentResultAddrs.cbegin(), currentResultAddrs.cend());
         }
 
-        if (checkedConstructs.find(constructIdx) != checkedConstructs.cend())
+        if (checkedTriples.find(tripleIdx) != checkedTriples.cend())
         {
           continue;
         }
 
-        values = construct->GetValues();
+        m_usedEdges.insert(addr2);
+
+        values = triple->GetValues();
         value1 = values[0];
         value2 = values[1];
         value3 = values[2];
 
-        //        std::cout << construct->m_index << " = {" << value1.m_replacementName << "} ---{" <<
-        //        value2.m_replacementName
-        //                  << "}---> {" << value3.m_replacementName << "}" << std::endl;
-
         {
           // don't use cycle to call this function
-          size_t idx = constructIdx * 3;
+          size_t idx = tripleIdx * 3;
           UpdateResults(value1, addr1, idx, resultAddrs);
           UpdateResults(value2, addr2, ++idx, resultAddrs);
           UpdateResults(value3, addr3, ++idx, resultAddrs);
 
-          checkedConstructs.insert(constructIdx);
-          checkedEdges[constructIdx].insert(addr2);
+          checkedTriples.insert(tripleIdx);
+          m_triplesOrderUsedEdges[tripleIdx].insert(addr2);
         }
 
-        // find next depended on constructions and analyse result
+        // find next depended on triples and analyse result
         {
           bool isChildFinished = false;
           bool isNoChild = false;
           TryDoNextDependenceIteration(
-              construct,
-              value2,
-              addr2,
-              checkedConstructs,
-              checkedEdges,
-              resultAddrs,
-              constructs,
-              isChildFinished,
-              isNoChild);
+              triple, value2, addr2, checkedTriples, resultAddrs, triples, isChildFinished, isNoChild);
           isAllChildrenFinished = isChildFinished;
           isLast = isNoChild;
           if (!isChildFinished && !isLast)
           {
-            ClearResults(constructIdx, resultAddrs, checkedConstructs);
+            ClearResults(tripleIdx, resultAddrs, checkedTriples);
             continue;
           }
 
           TryDoNextDependenceIteration(
-              construct,
-              value1,
-              addr1,
-              checkedConstructs,
-              checkedEdges,
-              resultAddrs,
-              constructs,
-              isChildFinished,
-              isNoChild);
+              triple, value1, addr1, checkedTriples, resultAddrs, triples, isChildFinished, isNoChild);
           isAllChildrenFinished &= isChildFinished;
           isLast &= isNoChild;
           if (!isChildFinished && !isLast)
           {
-            ClearResults(constructIdx, resultAddrs, checkedConstructs);
+            ClearResults(tripleIdx, resultAddrs, checkedTriples);
             continue;
           }
 
           TryDoNextDependenceIteration(
-              construct,
-              value3,
-              addr3,
-              checkedConstructs,
-              checkedEdges,
-              resultAddrs,
-              constructs,
-              isChildFinished,
-              isNoChild);
+              triple, value3, addr3, checkedTriples, resultAddrs, triples, isChildFinished, isNoChild);
           isAllChildrenFinished &= isChildFinished;
           isLast &= isNoChild;
           if (!isChildFinished && !isLast)
           {
-            ClearResults(constructIdx, resultAddrs, checkedConstructs);
+            ClearResults(tripleIdx, resultAddrs, checkedTriples);
             continue;
           }
 
           if (isAllChildrenFinished)
           {
-            //            std::cout << "succeed " << construct->m_index << " = {" << value1.m_replacementName << "}---{"
-            //                      << value2.m_replacementName << "}---> {" << value3.m_replacementName << "}" <<
-            //                      std::endl;
             ++count;
 
-            for (size_t const idx : constructs)
+            for (size_t const idx : triples)
             {
-              checkedEdges[idx].insert(addr2);
+              m_triplesOrderUsedEdges[idx].insert(addr2);
             }
             break;
           }
@@ -555,11 +532,7 @@ public:
 
       if (isLast & isAllChildrenFinished)
       {
-        //        std::cout << "Found " << checkedConstructs.size() << " to achieve " <<
-        //        m_template.m_constructions.size()
-        //                  << std::endl;
-
-        if (checkedConstructs.size() == m_template.m_constructions.size())
+        if (checkedTriples.size() == m_template.m_triples.size())
         {
           if (m_callback)
           {
@@ -578,30 +551,27 @@ public:
 
   void DoIterations(ScTemplateSearchResult & result)
   {
-    if (m_template.m_constructions.empty())
+    if (m_template.m_triples.empty())
       return;
 
-    auto const & DoStartIteration = [this, &result](ScTemplateGroupedConstructions const & constructions) {
+    auto const & DoStartIteration = [this, &result](ScTemplateGroupedTriples const & triples) {
       std::vector<ScAddr> resultAddrs;
       resultAddrs.resize(CalculateOneResultSize());
-      std::unordered_set<size_t> checkedConstructs;
-      checkedConstructs.reserve(CalculateOneResultSize());
-      UsedEdges checkedEdges;
-      checkedEdges.resize(CalculateOneResultSize());
+      std::unordered_set<size_t> checkedTriples;
+      checkedTriples.reserve(CalculateOneResultSize());
 
       bool isFinished = false;
       bool isLast = false;
 
-      DoIterationOnNextEqualConstructions(
-          constructions, checkedConstructs, {}, checkedEdges, resultAddrs, result, isFinished, isLast);
+      DoIterationOnNextEqualTriples(triples, checkedTriples, {}, resultAddrs, result, isFinished, isLast);
     };
 
-    auto const & constructs = m_template.m_orderedConstructions;
-    for (ScTemplateGroupedConstructions const & equalConstructs : constructs)
+    auto const & triples = m_template.m_orderedTriples;
+    for (ScTemplateGroupedTriples const & equalTriples : triples)
     {
-      if (!equalConstructs.empty())
+      if (!equalTriples.empty())
       {
-        DoStartIteration(equalConstructs);
+        DoStartIteration(equalTriples);
 
         break;
       }
@@ -611,31 +581,50 @@ public:
   ScTemplate::Result operator()(ScTemplateSearchResult & result)
   {
     result.Clear();
-    m_callback = m_template.m_callback;
+    m_triplesOrderUsedEdges.resize(CalculateOneResultSize());
 
     DoIterations(result);
 
     return ScTemplate::Result(result.Size() > 0);
   }
 
+  void operator()()
+  {
+    ScTemplateSearchResult result;
+    DoIterations(result);
+  }
+
   size_t CalculateOneResultSize() const
   {
-    return m_template.m_constructions.size() * 3;
+    return m_template.m_triples.size() * 3;
   }
 
 private:
   ScTemplate & m_template;
   ScMemoryContext & m_context;
-  ScAddr const m_struct;
-  std::function<void(ScTemplateSearchResultItem const & resultItem)> m_callback;
 
-  std::map<std::string, ScTemplateGroupedConstructions> m_itemsToConstructs;
+  ScAddr const m_structure;
+  ScTemplateSearchResultCallback m_callback;
+  ScTemplateSearchResultCheckCallback m_checkCallback;
+
+  ScTriplesOrderUsedEdges m_triplesOrderUsedEdges;
+  UsedEdges m_usedEdges;
+  std::map<std::string, ScTemplateGroupedTriples> m_itemsToTriples;
 };
 
 ScTemplate::Result ScTemplate::Search(ScMemoryContext & ctx, ScTemplateSearchResult & result) const
 {
-  ScTemplateSearch search(*this, ctx, ScAddr());
+  ScTemplateSearch search(const_cast<ScTemplate &>(*this), ctx, ScAddr());
   return search(result);
+}
+
+void ScTemplate::Search(
+    ScMemoryContext & ctx,
+    ScTemplateSearchResultCallback const & callback,
+    ScTemplateSearchResultCheckCallback const & checkCallback) const
+{
+  ScTemplateSearch search(const_cast<ScTemplate &>(*this), ctx, ScAddr(), callback, checkCallback);
+  search();
 }
 
 ScTemplate::Result ScTemplate::SearchInStruct(
@@ -643,6 +632,6 @@ ScTemplate::Result ScTemplate::SearchInStruct(
     ScAddr const & scStruct,
     ScTemplateSearchResult & result) const
 {
-  ScTemplateSearch search(*this, ctx, scStruct);
+  ScTemplateSearch search(const_cast<ScTemplate &>(*this), ctx, scStruct);
   return search(result);
 }

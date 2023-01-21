@@ -120,7 +120,7 @@ struct ScTemplateItemValue
   std::string m_replacementName;
 };
 
-class ScTemplateConstr3
+class ScTemplateTriple
 {
   friend class ScTemplate;
 
@@ -133,7 +133,7 @@ public:
     NotRequired
   };
 
-  ScTemplateConstr3(
+  ScTemplateTriple(
       ScTemplateItemValue const & param1,
       ScTemplateItemValue const & param2,
       ScTemplateItemValue const & param3,
@@ -147,7 +147,7 @@ public:
     m_values[2] = param3;
   }
 
-  ScTemplateConstr3(ScTemplateConstr3 const & other)
+  ScTemplateTriple(ScTemplateTriple const & other)
     : m_index(other.m_index)
     , m_isRequired(other.m_isRequired)
   {
@@ -156,7 +156,7 @@ public:
     m_values[2] = other.m_values[2];
   }
 
-  bool operator==(ScTemplateConstr3 const & other) const
+  bool operator==(ScTemplateTriple const & other) const
   {
     return this->m_index == other.m_index;
   }
@@ -210,36 +210,13 @@ public:
 
   /* Store original index in template. Because when perform search or generation
    * we sort triples in suitable for operation order.
-   * Used to construct result
+   * Used to triple result
    */
   size_t m_index;
 
 protected:
   ItemsArray m_values;
   Flag m_isRequired;
-};
-
-template <typename HashType>
-struct ScTemplateConstr3HashFunc
-{
-  HashType operator()(ScTemplateConstr3 * constr);
-};
-
-template <>
-struct ScTemplateConstr3HashFunc<size_t>
-{
-  size_t operator()(ScTemplateConstr3 * constr) const
-  {
-    return constr->m_index;
-  }
-};
-
-struct ScTemplateConstr3EqualFunc
-{
-  bool operator()(ScTemplateConstr3 * a, ScTemplateConstr3 * b) const
-  {
-    return a->m_index == b->m_index;
-  }
 };
 
 _SC_EXTERN ScTemplateItemValue operator>>(ScAddr const & value, char const * replName);
@@ -313,7 +290,7 @@ protected:
   ParamsMap m_values;
 };
 
-enum class ScConstr3Type : uint8_t
+enum class ScTemplateTripleType : uint8_t
 {
   Foreground = 0,
   AFA = 1,
@@ -327,6 +304,10 @@ enum class ScConstr3Type : uint8_t
   ScConstr3TypeCount
 };
 
+using ScTemplateSearchResultCallback = std::function<void(ScTemplateSearchResultItem const & resultItem)>;
+using ScTemplateSearchResultCheckCallback =
+    std::function<bool(ScAddr const & beginAddr, ScAddr const & edgeAddr, ScAddr const & endAddr)>;
+
 class ScTemplate final
 {
   friend class ScMemoryContext;
@@ -336,7 +317,7 @@ class ScTemplate final
   friend class ScTemplateBuilderFromScs;
 
 public:
-  using TripleFlag = ScTemplateConstr3::Flag;
+  using TripleFlag = ScTemplateTriple::Flag;
 
   class Result
   {
@@ -367,7 +348,7 @@ public:
   ScTemplate & operator=(ScTemplate const & other) = delete;
 
   using ReplacementsMap = std::unordered_multimap<std::string, size_t>;
-  using TemplateConstr3Vector = std::vector<ScTemplateConstr3 *>;
+  using ScTemplateTriplesVector = std::vector<ScTemplateTriple *>;
 
   /*  If forceOrder flag is true, then search will be run in the same order,
    * that was used for a triples append
@@ -376,9 +357,9 @@ public:
 
   _SC_EXTERN ~ScTemplate()
   {
-    for (auto * construct : m_constructions)
-      delete construct;
-    m_constructions.clear();
+    for (auto * triple : m_triples)
+      delete triple;
+    m_triples.clear();
   }
 
   _SC_EXTERN ScTemplate & operator()(
@@ -400,7 +381,7 @@ public:
 
   _SC_EXTERN bool HasReplacement(std::string const & repl) const;
 
-  /** Add construction:
+  /** Add triple:
    *          param2
    * param1 ----------> param3
    */
@@ -436,7 +417,20 @@ protected:
       ScTemplateGenResult & result,
       ScTemplateParams const & params,
       ScTemplateResultCode * errorCode = nullptr) const;
+  SC_DEPRECATED(
+      0.7.1,
+      "Use ScTemplate::Search(ScMemoryContext & ctx, ScTemplateSearchResultCallback const & callback, "
+      "ScTemplateSearchResultCheckCallback const & checkCallback) instead.")
   Result Search(ScMemoryContext & ctx, ScTemplateSearchResult & result) const;
+  void Search(
+      ScMemoryContext & ctx,
+      ScTemplateSearchResultCallback const & callback,
+      ScTemplateSearchResultCheckCallback const & checkCallback) const;
+
+  SC_DEPRECATED(
+      0.7.1,
+      "Use ScTemplate::Search(ScMemoryContext & ctx, ScTemplateSearchResultCallback const & callback, "
+      "ScTemplateSearchResultCheckCallback const & checkCallback) instead.")
   Result SearchInStruct(ScMemoryContext & ctx, ScAddr const & scStruct, ScTemplateSearchResult & result) const;
 
   // Builds template based on template in sc-memory
@@ -450,17 +444,15 @@ protected:
 protected:
   // Store mapping of name to index in result vector
   ReplacementsMap m_replacements;
-  // Store construction (triples)
-  TemplateConstr3Vector m_constructions;
+  // Store triples
+  ScTemplateTriplesVector m_triples;
 
-  using ScTemplateGroupedConstructions = std::unordered_set<size_t>;
-  std::vector<ScTemplateGroupedConstructions> m_orderedConstructions;
-  std::unordered_set<std::string> m_itemsNames;
+  using ScTemplateGroupedTriples = std::unordered_set<size_t>;
+  std::vector<ScTemplateGroupedTriples> m_orderedTriples;
   std::map<std::string, ScAddr> m_namesToAddrs;
   std::map<std::string, ScType> m_namesToTypes;
-  std::function<void(ScTemplateSearchResultItem const & resultItem)> m_callback;
 
-  ScConstr3Type GetPriority(ScTemplateConstr3 * constr);
+  ScTemplateTripleType GetPriority(ScTemplateTriple * constr);
 };
 
 class ScTemplateGenResult
@@ -557,6 +549,10 @@ protected:
   ScTemplate::ReplacementsMap const * m_replacements;
 };
 
+SC_DEPRECATED(
+    0.7.1,
+    "Use ScMemoryContext::HelperSearchTemplate(ScTemplate const & templ, ScTemplateSearchResultCallback const & "
+    "callback, ScTemplateSearchResultCheckCallback const & checkCallback) instead.")
 class ScTemplateSearchResult
 {
   friend class ScTemplateSearch;
@@ -586,7 +582,11 @@ public:
 
   inline ScTemplateSearchResultItem operator[](size_t idx) const
   {
-    SC_ASSERT(idx < m_results.size(), ());
+    if (idx >= m_results.size())
+    {
+      SC_THROW_EXCEPTION(utils::ExceptionInvalidParams, (idx >= m_results.size()));
+    }
+
     return {&(m_results[idx]), &m_replacements};
   }
 

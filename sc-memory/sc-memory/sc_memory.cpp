@@ -597,13 +597,12 @@ ScTemplate::Result ScMemoryContext::HelperSearchTemplate(ScTemplate const & temp
   return templ.Search(*this, result);
 }
 
-ScTemplate::Result ScMemoryContext::HelperSearchTemplate(
+void ScMemoryContext::HelperSearchTemplate(
     ScTemplate const & templ,
-    std::function<void(ScTemplateSearchResultItem const & resultItem)> const & callback)
+    ScTemplateSearchResultCallback const & callback,
+    ScTemplateSearchResultCheckCallback const & checkCallback)
 {
-  const_cast<ScTemplate &>(templ).m_callback = callback;
-  ScTemplateSearchResult result;
-  return templ.Search(*this, result);
+  templ.Search(*this, callback, checkCallback);
 }
 
 ScTemplate::Result ScMemoryContext::HelperSearchTemplateInStruct(
@@ -611,16 +610,6 @@ ScTemplate::Result ScMemoryContext::HelperSearchTemplateInStruct(
     ScAddr const & scStruct,
     ScTemplateSearchResult & result)
 {
-  return templ.SearchInStruct(*this, scStruct, result);
-}
-
-ScTemplate::Result ScMemoryContext::HelperSearchTemplateInStruct(
-    ScTemplate const & templ,
-    ScAddr const & scStruct,
-    std::function<void(ScTemplateSearchResultItem const & resultItem)> const & callback)
-{
-  ScTemplateSearchResult result;
-  const_cast<ScTemplate &>(templ).m_callback = callback;
   return templ.SearchInStruct(*this, scStruct, result);
 }
 
