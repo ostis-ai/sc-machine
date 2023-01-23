@@ -224,7 +224,7 @@ sc_uint32 sc_storage_get_element_output_arcs_count(const sc_memory_context * ctx
   if (sc_storage_element_lock(addr, &el) != SC_RESULT_OK)
     return count;
 
-  count = el->output_arcs_count;
+  count = sc_atomic_int_get(&el->output_arcs_count);
 
   sc_storage_element_unlock(addr);
 
@@ -239,7 +239,7 @@ sc_uint32 sc_storage_get_element_input_arcs_count(const sc_memory_context * ctx,
   if (sc_storage_element_lock(addr, &el) != SC_RESULT_OK)
     return count;
 
-  count = el->input_arcs_count;
+  count = sc_atomic_int_get(&el->input_arcs_count);
 
   sc_storage_element_unlock(addr);
 
@@ -372,6 +372,7 @@ sc_result sc_storage_element_free(sc_memory_context * ctx, sc_addr addr)
       if ((el2 = g_hash_table_lookup(lock_table, p_addr)) == null_ptr)
       {
         STORAGE_CHECK_CALL(sc_storage_element_lock(el->arc.begin, &el2));
+        sc_atomic_int_add(&el2->output_arcs_count, -1);
         g_hash_table_insert(lock_table, p_addr, el2);
       }
 
@@ -380,6 +381,7 @@ sc_result sc_storage_element_free(sc_memory_context * ctx, sc_addr addr)
       {
         el2 = null_ptr;
         STORAGE_CHECK_CALL(sc_storage_element_lock(el->arc.end, &el2));
+        sc_atomic_int_add(&el2->input_arcs_count, -1);
         g_hash_table_insert(lock_table, p_addr, el2);
       }
 
@@ -725,7 +727,7 @@ sc_addr sc_storage_arc_new_ext(
       if (f_out_arc == null_ptr)
         goto unlock;
     }
-    ++beg_el->output_arcs_count;
+    sc_atomic_int_inc(&beg_el->output_arcs_count);
 
     sc_addr first_in_arc = end_el->first_in_arc;
     if (SC_ADDR_IS_NOT_EMPTY(first_in_arc))
@@ -734,7 +736,7 @@ sc_addr sc_storage_arc_new_ext(
       if (f_in_arc == null_ptr)
         goto unlock;
     }
-    ++end_el->input_arcs_count;
+    sc_atomic_int_inc(&end_el->input_arcs_count);
 
     // get new element
     tmp_el = sc_storage_append_el_into_segments(ctx, &addr);
