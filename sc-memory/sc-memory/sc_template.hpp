@@ -84,6 +84,8 @@ struct ScTemplateItemValue
     m_addrValue = addr;
     if (replName)
       m_replacementName = replName;
+    else if (m_replacementName.empty())
+      m_replacementName = std::to_string(addr.Hash());
   }
 
   void SetType(ScType const & type, char const * replName = nullptr)
@@ -125,10 +127,8 @@ public:
       ScTemplateItemValue const & param1,
       ScTemplateItemValue const & param2,
       ScTemplateItemValue const & param3,
-      size_t idx,
-      Flag isRequired)
-    : m_index(idx)
-    , m_isRequired(isRequired)
+      size_t index)
+    : m_index(index)
   {
     m_values[0] = param1;
     m_values[1] = param2;
@@ -140,16 +140,16 @@ public:
     return m_values;
   }
 
-  ScTemplateItemValue const & operator[](size_t idx) const
+  ScTemplateItemValue const & operator[](size_t index) const
   {
-    if (idx < m_values.size())
+    if (index < m_values.size())
     {
-      return m_values[idx];
+      return m_values[index];
     }
 
     SC_THROW_EXCEPTION(
         utils::ExceptionInvalidParams,
-        "Index=" + std::to_string(idx) + " must be < size=" + std::to_string(m_values.size()));
+        "Index=" + std::to_string(index) + " must be < size=" + std::to_string(m_values.size()));
   }
 
   /* Store original index in template. Because when perform search or generation
@@ -160,7 +160,6 @@ public:
 
 protected:
   ItemsArray m_values;
-  Flag m_isRequired;
 };
 
 _SC_EXTERN ScTemplateItemValue operator>>(ScAddr const & value, char const * replName);
@@ -241,13 +240,13 @@ protected:
 enum class ScTemplateTripleType : uint8_t
 {
   Foreground = 0,
-  AFA = 1,
-  FAF = 2,
-  AAF = 3,
-  PFAE = 4,
-  FAE = 5,
-  FAN = 6,
-  AAA = 7,
+  AFA = 1,   // _... -> _...
+  FAF = 2,   // ... _-> ...
+  AAF = 3,   // _... _-> ...
+  PFAE = 4,  // ... _-> ... or ... _-> _edge, triple with small count of output arcs for the first item element
+  FAE = 5,   // ... _-> ...
+  FAN = 6,   // ... _-> _edge
+  AAA = 7,   // _... _-> _...
 
   ScConstr3TypeCount
 };
@@ -322,16 +321,14 @@ public:
   _SC_EXTERN ScTemplate & operator()(
       ScTemplateItemValue const & param1,
       ScTemplateItemValue const & param2,
-      ScTemplateItemValue const & param3,
-      TripleFlag isRequired = TripleFlag::Required);
+      ScTemplateItemValue const & param3);
 
   _SC_EXTERN ScTemplate & operator()(
       ScTemplateItemValue const & param1,
       ScTemplateItemValue const & param2,
       ScTemplateItemValue const & param3,
       ScTemplateItemValue const & param4,
-      ScTemplateItemValue const & param5,
-      TripleFlag isRequired = TripleFlag::Required);
+      ScTemplateItemValue const & param5);
 
   _SC_EXTERN void Clear();
   _SC_EXTERN bool IsEmpty() const;
@@ -345,8 +342,7 @@ public:
   _SC_EXTERN ScTemplate & Triple(
       ScTemplateItemValue const & param1,
       ScTemplateItemValue const & param2,
-      ScTemplateItemValue const & param3,
-      TripleFlag isRequired = TripleFlag::Required);
+      ScTemplateItemValue const & param3);
 
   /** Adds template:
    *           param2
@@ -364,8 +360,7 @@ public:
       ScTemplateItemValue const & param2,
       ScTemplateItemValue const & param3,
       ScTemplateItemValue const & param4,
-      ScTemplateItemValue const & param5,
-      TripleFlag isRequired = TripleFlag::Required);
+      ScTemplateItemValue const & param5);
 
 protected:
   // Begin: calls by memory context
@@ -424,7 +419,12 @@ class ScTemplateGenResult
 public:
   ScTemplateGenResult() = default;
 
-  inline bool Get(std::string const & name, ScAddr & outAddr) const
+  /* Gets generated sc-element address by replacement `name`.
+   * @param name A replacement name of sc-element address
+   * @param outAddr[out] A found sc-element address by replacement `name`
+   * @returns true, if sc-element address found by replacement `name`, otherwise false
+   */
+  inline bool Get(std::string const & name, ScAddr & outAddr) const noexcept
   {
     auto const & it = m_replacements.find(name);
     if (it != m_replacements.cend())
@@ -437,7 +437,12 @@ public:
     return false;
   }
 
-  ScAddr const & operator[](std::string const & name) const
+  /* Gets generated sc-element address by replacement `name`.
+   * @param name A replacement name of sc-element address
+   * @returns Generated sc-element address.
+   * @throws utils::ExceptionInvalidParams if `name` is invalid or not found in replacements.
+   */
+  ScAddr const & operator[](std::string const & name) const noexcept(false)
   {
     auto const & it = m_replacements.find(name);
     if (it != m_replacements.cend())
@@ -453,11 +458,16 @@ public:
     SC_THROW_EXCEPTION(utils::ExceptionInvalidParams, "Alias=" + name + " not found in replacements");
   }
 
-  inline bool Get(size_t idx, ScAddr & outAddr) const
+  /* Gets generated sc-element address by `index` in triple.
+   * @param name A replacement name of sc-element address
+   * @param outAddr[out] A found sc-element address by `index` in triple
+   * @returns true, if sc-element address found by `index` in triple, otherwise false
+   */
+  inline bool Get(size_t index, ScAddr & outAddr) const noexcept
   {
-    if (idx < Size())
+    if (index < Size())
     {
-      outAddr = m_result[idx];
+      outAddr = m_result[index];
       return true;
     }
 
@@ -465,15 +475,20 @@ public:
     return false;
   }
 
-  ScAddr const & operator[](size_t idx) const
+  /* Gets generated sc-element address by `index` in triple.
+   * @param name A replacement name of sc-element address
+   * @returns Generated sc-element address.
+   * @throws utils::ExceptionInvalidParams if `index` < generated construction size.
+   */
+  ScAddr const & operator[](size_t index) const noexcept(false)
   {
-    if (idx < Size())
+    if (index < Size())
     {
-      return m_result[idx];
+      return m_result[index];
     }
 
     SC_THROW_EXCEPTION(
-        utils::ExceptionInvalidParams, "Index=" + std::to_string(idx) + " must be < size=" + std::to_string(Size()));
+        utils::ExceptionInvalidParams, "Index=" + std::to_string(index) + " must be < size=" + std::to_string(Size()));
   }
 
   SC_DEPRECATED(0.3.0, "Use ScTemplateGenResult::Size instead")
@@ -482,6 +497,7 @@ public:
     return m_result.size();
   }
 
+  //! Gets generated construction size
   inline size_t Size() const
   {
     return m_result.size();
@@ -516,7 +532,12 @@ public:
   {
   }
 
-  inline bool Get(std::string const & name, ScAddr & outAddr) const
+  /* Gets found sc-element address by replacement `name`.
+   * @param name A replacement name of sc-element address
+   * @param outAddr[out] A found sc-element address by replacement `name`
+   * @returns true, if sc-element address found by replacement `name`, otherwise false
+   */
+  inline bool Get(std::string const & name, ScAddr & outAddr) const noexcept
   {
     auto const & it = m_replacements->find(name);
     if (it != m_replacements->cend())
@@ -529,7 +550,12 @@ public:
     return false;
   }
 
-  inline ScAddr const & operator[](std::string const & name) const
+  /* Gets found sc-element address by replacement `name`.
+   * @param name A replacement name of sc-element address
+   * @returns Found sc-element address.
+   * @throws utils::ExceptionInvalidParams if `name` is invalid or not found in replacements.
+   */
+  inline ScAddr const & operator[](std::string const & name) const noexcept(false)
   {
     auto const & it = m_replacements->find(name);
     if (it != m_replacements->cend())
@@ -540,11 +566,16 @@ public:
     SC_THROW_EXCEPTION(utils::ExceptionInvalidParams, "Alias=" + name + " not found in replacements");
   }
 
-  inline bool Get(size_t idx, ScAddr & outAddr) const
+  /* Gets found sc-element address by `index` in triple.
+   * @param name A replacement name of sc-element address
+   * @param outAddr[out] A found sc-element address by `index` in triple
+   * @returns true, if sc-element address found by `index` in triple, otherwise false
+   */
+  inline bool Get(size_t index, ScAddr & outAddr) const noexcept
   {
-    if (idx < Size())
+    if (index < Size())
     {
-      outAddr = (*m_results)[idx];
+      outAddr = (*m_results)[index];
       return true;
     }
 
@@ -552,22 +583,29 @@ public:
     return false;
   }
 
-  inline ScAddr const & operator[](size_t idx) const
+  /* Gets found sc-element address by `index` in triple.
+   * @param name A replacement name of sc-element address
+   * @returns Found sc-element address.
+   * @throws utils::ExceptionInvalidParams if `index` < found construction size.
+   */
+  inline ScAddr const & operator[](size_t index) const noexcept(false)
   {
-    if (idx < Size())
+    if (index < Size())
     {
-      return (*m_results)[idx];
+      return (*m_results)[index];
     }
 
     SC_THROW_EXCEPTION(
-        utils::ExceptionInvalidParams, "Index=" + std::to_string(idx) + " must be < size=" + std::to_string(Size()));
+        utils::ExceptionInvalidParams, "Index=" + std::to_string(index) + " must be < size=" + std::to_string(Size()));
   }
 
+  //! Checks if replacement `name` exists in replacements
   inline bool Has(std::string const & name) const
   {
-    return m_replacements->find(name) != m_replacements->cend();
+    return m_replacements != nullptr && m_replacements->find(name) != m_replacements->cend();
   }
 
+  //! Gets found construction size
   inline size_t Size() const
   {
     return m_results ? m_results->size() : 0;
@@ -597,33 +635,33 @@ public:
     return Size() == 0;
   }
 
-  SC_DEPRECATED(0.7.1, "Use ScTemplateSearchResult::Get(size_t idx, ScTemplateSearchResultItem & outItem)")
-  inline bool GetResultItemSafe(size_t idx, ScTemplateSearchResultItem & outItem) const
+  SC_DEPRECATED(0.7.1, "Use ScTemplateSearchResult::Get(size_t index, ScTemplateSearchResultItem & outItem)")
+  inline bool GetResultItemSafe(size_t index, ScTemplateSearchResultItem & outItem) const
   {
-    return Get(idx, outItem);
+    return Get(index, outItem);
   }
 
-  inline bool Get(size_t idx, ScTemplateSearchResultItem & outItem) const
+  inline bool Get(size_t index, ScTemplateSearchResultItem & outItem) const
   {
-    if (idx < Size())
+    if (index < Size())
     {
       outItem.m_replacements = &m_replacements;
-      outItem.m_results = &(m_results[idx]);
+      outItem.m_results = &(m_results[index]);
       return true;
     }
 
     return false;
   }
 
-  inline ScTemplateSearchResultItem operator[](size_t idx) const
+  inline ScTemplateSearchResultItem operator[](size_t index) const
   {
-    if (idx < Size())
+    if (index < Size())
     {
-      return {&(m_results[idx]), &m_replacements};
+      return {&(m_results[index]), &m_replacements};
     }
 
     SC_THROW_EXCEPTION(
-        utils::ExceptionInvalidParams, "Index=" + std::to_string(idx) + " must be < size=" + std::to_string(Size()));
+        utils::ExceptionInvalidParams, "Index=" + std::to_string(index) + " must be < size=" + std::to_string(Size()));
   }
 
   inline void Clear()

@@ -229,7 +229,7 @@ private:
     {
       ScAddr replacedAddr;
       if (m_params.Get(templateItem->GetIdtf(), replacedAddr))
-        return CollectObjectInfo(replacedAddr);
+        return CollectObjectInfo(replacedAddr, templateItem->GetIdtf());
     }
     return *templateItem;
   }

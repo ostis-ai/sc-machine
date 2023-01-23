@@ -111,7 +111,9 @@ public:
   //! Check if element exists with specified addr
   _SC_EXTERN bool IsElement(ScAddr const & addr) const;
 
+  //! Returns count of element output arcs
   _SC_EXTERN size_t GetElementOutputArcsCount(ScAddr const & addr) const;
+  //! Returns count of element input arcs
   _SC_EXTERN size_t GetElementInputArcsCount(ScAddr const & addr) const;
 
   //! Erase element from sc-memory and returns true on success; otherwise returns false.
@@ -353,10 +355,85 @@ public:
       "Use ScMemoryContext::HelperSearchTemplate(ScTemplate const & templ, ScTemplateSearchResultCallback const & "
       "callback, ScTemplateSearchResultCheckCallback const & checkCallback) instead.")
   _SC_EXTERN ScTemplate::Result HelperSearchTemplate(ScTemplate const & templ, ScTemplateSearchResult & result);
+
+  /*
+   * Searches constructions by isomorphic search template and pass search result construction to `callback`
+   * lambda-function. If `checkCallback` passed, then all found constructions triples are filtered by `checkCallback`
+   * condition.
+   * @param templ A sc-template object to find constructions by it
+   * @param callback A lambda-function, callable when each construction triple was found
+   * @param checkCallback A lambda-function, that filters all found constructions triples
+   * @example
+   * \code
+   * ...
+   * ...
+   * ScAddr const & structureAddr = ctx.CreateNode(ScType::NodeConstStruct);
+   * ...
+   * ScAddr const & setAddr = ctx.CreateNode(ScType::NodeConst);
+   * ScTemplate templ;
+   * templ.Triple(
+   *  classAddr,
+   *  ScType::EdgeAccessVarPosPerm >> "_edge",
+   *  ScType::Unknown >> "_addr2"
+   * );
+   * m_ctx->HelperSearchTemplate(templ, [&ctx](ScTemplateSearchResultItem const & item) {
+   *  ctx.CreateEdge(ScType::EdgeAccessConstPosTemp, setAddr, item["_addr2"]);
+   * }, [&ctx](ScAddr const & beginAddr, ScAddr const & edgeAddr, ScAddr const & endAddr) -> bool
+   * {
+   *  return !ctx->HelperCheckEdge(structureAddr, edgeAddr, ScType::EdgeAccessConstPosPerm);
+   * });
+   * \endcode
+   * @throws utils::ExceptionInvalidState
+   */
   _SC_EXTERN void HelperSearchTemplate(
       ScTemplate const & templ,
       ScTemplateSearchResultCallback const & callback,
       ScTemplateSearchResultCheckCallback const & checkCallback = {});
+
+  /*
+   * Searches constructions by isomorphic search template and pass search result construction to `callback`
+   * lambda-function. Lambda-function `callback` must return a request command value to manage sc-template search:
+   *  - ScTemplateSearchRequest::CONTINUE,
+   *  - ScTemplateSearchRequest::STOP or
+   *  - ScTemplateSearchRequest::ERROR.
+   * When ScTemplateSearchRequest::CONTINUE returned sc-template search will be continued. If
+   * ScTemplateSearchRequest::STOP or ScTemplateSearchRequest::ERROR, then sc-template search stops. If sc-template
+   * search stopped by ScTemplateSearchRequest::ERROR, then HelperSmartSearchTemplate throws
+   * utils::ExceptionInvalidState.
+   * If `checkCallback` passed, then all found constructions triples are filtered by `checkCallback` condition.
+   * @param templ A sc-template object to find constructions by it
+   * @param callback A lambda-function, callable when each construction triple was found
+   * @param checkCallback A lambda-function, that filters all found constructions triples
+   * @example
+   * \code
+   * ...
+   * ...
+   * ScAddr const & structureAddr = ctx.CreateNode(ScType::NodeConstStruct);
+   * ...
+   * ScAddr const & setAddr = ctx.CreateNode(ScType::NodeConst);
+   * ScTemplate templ;
+   * templ.Triple(
+   *  classAddr,
+   *  ScType::EdgeAccessVarPosPerm >> "_edge",
+   *  ScType::Unknown >> "_addr2"
+   * );
+   * m_ctx->HelperSmartSearchTemplate(templ, [&ctx](ScTemplateSearchResultItem const & item) -> ScTemplateSearchRequest
+   * { if (!ctx->HelperCheckEdge(structureAddr, edgeAddr, ScType::EdgeAccessConstPosPerm))
+   *  {
+   *    if (ctx.CreateEdge(ScType::EdgeAccessConstPosTemp, setAddr, item["_addr2"]))
+   *    {
+   *      return ScTemplateSearchRequest::STOP;
+   *    }
+   *    else
+   *    {
+   *      return ScTemplateSearchRequest::ERROR;
+   *    }
+   *  }
+   *  return ScTemplateSearchRequest::CONTINUE;
+   * });
+   * \endcode
+   * @throws utils::ExceptionInvalidState
+   */
   _SC_EXTERN void HelperSmartSearchTemplate(
       ScTemplate const & templ,
       ScTemplateSearchResultCallbackWithRequest const & callback,

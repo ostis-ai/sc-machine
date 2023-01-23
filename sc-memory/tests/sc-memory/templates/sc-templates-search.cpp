@@ -382,7 +382,7 @@ TEST_F(ScTemplateSearchTest, result_deduplication)
    *   a -> b (* <- sc_node_material;; *);;
    *   a -> c;;
    *
-   *  We should get just one seach result, edge `a -> c` shouldn't appears twicely
+   *  We should get just one search result, edge `a -> c` shouldn't appears twicely
    */
   ScAddr const a = m_ctx->CreateNode(ScType::Node);
   EXPECT_TRUE(a.IsValid());
