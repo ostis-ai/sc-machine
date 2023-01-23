@@ -97,11 +97,6 @@ ScTemplate & ScTemplate::Triple(
 
   ScTemplateTriple * triple = m_triples.back();
 
-  if (triple->m_values[1].IsFixed())
-  {
-    SC_THROW_EXCEPTION(utils::ExceptionInvalidParams, "You should to use variable types for edges in template");
-  }
-
   for (size_t i = 0; i < 3; ++i)
   {
     ScTemplateItemValue & value = triple->m_values[i];

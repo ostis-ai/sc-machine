@@ -16,22 +16,6 @@ TEST_F(ScTemplateApiTest, TripleWithConstSourceType)
       ScType::Unknown >> "_addr2"), utils::ExceptionInvalidParams);
 }
 
-TEST_F(ScTemplateApiTest, TripleWithConstEdge)
-{
-  ScAddr const addr1 = m_ctx->CreateNode(ScType::NodeConst);
-  EXPECT_TRUE(addr1.IsValid());
-  ScAddr const addr2 = m_ctx->CreateNode(ScType::NodeConstAbstract);
-  EXPECT_TRUE(addr2.IsValid());
-  ScAddr const edge = m_ctx->CreateEdge(ScType::EdgeAccessConstPosPerm, addr1, addr2);
-  EXPECT_TRUE(edge.IsValid());
-
-  ScTemplate templ;
-  EXPECT_THROW(templ.Triple(
-      ScType::NodeVar >> "_addr1",
-      edge >> "_edge",
-      ScType::Unknown >> "_addr2"), utils::ExceptionInvalidParams);
-}
-
 TEST_F(ScTemplateApiTest, TripleWithSourceAndEdgeEqualNames)
 {
   ScTemplate templ;

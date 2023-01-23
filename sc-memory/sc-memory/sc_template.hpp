@@ -140,6 +140,18 @@ public:
     return m_values;
   }
 
+  ScTemplateItemValue const & operator[](size_t idx) const
+  {
+    if (idx < m_values.size())
+    {
+      return m_values[idx];
+    }
+
+    SC_THROW_EXCEPTION(
+        utils::ExceptionInvalidParams,
+        "Index=" + std::to_string(idx) + " must be < size=" + std::to_string(m_values.size()));
+  }
+
   /* Store original index in template. Because when perform search or generation
    * we sort triples in suitable for operation order.
    * Used to triple result
@@ -453,7 +465,7 @@ public:
     return false;
   }
 
-  ScAddr const & operator[](size_t idx)
+  ScAddr const & operator[](size_t idx) const
   {
     if (idx < Size())
     {
