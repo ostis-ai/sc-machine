@@ -386,3 +386,41 @@ TEST_F(ScTemplateCommonTest, a_a_a_a_f)
   EXPECT_EQ(res.Size(), 1u);
   EXPECT_EQ(res[0]["_x"], xAddr);
 }
+
+// TODO: Optimize sc-template search with very-very big templates
+TEST_F(ScTemplateCommonTest, DISABLED_BigTemplateSmoke)
+{
+  ScAddr const set1 = m_ctx->CreateNode(ScType::NodeConstClass);
+  ScAddr const rel = m_ctx->CreateNode(ScType::NodeConstNoRole);
+
+  static const size_t el_num = 1 << 12;
+  std::set<ScAddr, ScAddLessFunc> elements;
+  for (size_t i = 0; i < el_num; ++i)
+  {
+    ScAddr const a = m_ctx->CreateNode(ScType::NodeConst);
+    EXPECT_TRUE(a.IsValid());
+    elements.insert(a);
+  }
+
+  // create template for pending events check
+  ScTemplate templ;
+  for (auto const & a : elements)
+  {
+    templ.TripleWithRelation(
+        set1,
+        ScType::EdgeDCommonVar,
+        a >> "_el",
+        ScType::EdgeAccessVarPosPerm,
+        rel);
+  }
+
+  ScTemplateGenResult genResult;
+  EXPECT_TRUE(m_ctx->HelperGenTemplate(templ, genResult));
+
+  // ensure whole data created correctly
+  ScTemplateSearchResult searchResult;
+  EXPECT_TRUE(m_ctx->HelperSearchTemplate(templ, searchResult));
+
+  for (size_t i = 0; i < searchResult.Size(); ++i)
+    EXPECT_TRUE(elements.find(searchResult[i]["_el"]) != elements.end());
+}
