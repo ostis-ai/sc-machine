@@ -27,6 +27,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- `SCs-helper` doesn't return generated identifier links ([207](https://github.com/ostis-ai/sc-machine/issues/207))
 - No json string message parsing in `sc-server` ([190](https://github.com/ostis-ai/sc-machine/issues/190))
 - `SCs-parser` create structure twice
 - `SCs-parser` doesn't unite all generated elements into structure ([205](https://github.com/ostis-ai/sc-machine/issues/205))
