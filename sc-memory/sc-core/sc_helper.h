@@ -45,6 +45,21 @@ _SC_EXTERN sc_result sc_helper_find_element_by_system_identifier(
 _SC_EXTERN sc_result
 sc_helper_set_system_identifier(sc_memory_context * ctx, sc_addr addr, const sc_char * data, sc_uint32 len);
 
+/*! Setup new system identifier for specified sc-element
+ * @param addr sc-addr of sc-element to setup new system identifier
+ * @param data Buffer that contains system identifier for sc-element (must be an UTF-8 encoded)
+ * @param len Length of data buffer
+ * @param result_addrs Array contains the 2d, 3d and 4d of generated fiver
+ * @remarks If sc-element already has system identifier, then it would be replaced. If system identifier
+ * already used for another sc-element, then function returns SC_ERROR_INVALID_PARAMS
+ */
+_SC_EXTERN sc_result sc_helper_set_system_identifier_ext(
+    sc_memory_context * ctx,
+    sc_addr addr,
+    const sc_char * data,
+    sc_uint32 len,
+    sc_addr ** result_addrs);
+
 /*! Return sc-addr of system identifier for specified sc-element
  * @param el sc-addr of element to get it system identifier
  * @param sys_idtf_addr Pointer to found sc-addr of system identifier

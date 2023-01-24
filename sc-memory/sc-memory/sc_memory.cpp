@@ -457,9 +457,20 @@ ScAddr ScMemoryContext::HelperResolveSystemIdtf(std::string const & sysIdtf, ScT
 
 bool ScMemoryContext::HelperSetSystemIdtf(std::string const & sysIdtf, ScAddr const & addr)
 {
+  ScAddrVector resultAddrs;
+  return HelperSetSystemIdtf(sysIdtf, addr, resultAddrs);
+}
+
+bool ScMemoryContext::HelperSetSystemIdtf(std::string const & sysIdtf, ScAddr const & addr, ScAddrVector & resultAddrs)
+{
   SC_ASSERT(IsValid(), ());
-  return (
-      sc_helper_set_system_identifier(m_context, *addr, sysIdtf.c_str(), (sc_uint32)sysIdtf.size()) == SC_RESULT_OK);
+
+  auto * result = new sc_addr[3];
+  bool status = sc_helper_set_system_identifier_ext(
+                    m_context, *addr, sysIdtf.c_str(), (sc_uint32)sysIdtf.size(), &result) == SC_RESULT_OK;
+  resultAddrs = {ScAddr(result[0]), ScAddr(result[1]), ScAddr(result[2])};
+  delete[] result;
+  return status;
 }
 
 std::string ScMemoryContext::HelperGetSystemIdtf(ScAddr const & addr)

@@ -257,6 +257,8 @@ public:
   _SC_EXTERN ScAddr HelperResolveSystemIdtf(std::string const & sysIdtf, ScType const & type = ScType());
 
   _SC_EXTERN bool HelperSetSystemIdtf(std::string const & sysIdtf, ScAddr const & addr);
+
+  _SC_EXTERN bool HelperSetSystemIdtf(std::string const & sysIdtf, ScAddr const & addr, ScAddrVector & resultAddrs);
   _SC_EXTERN std::string HelperGetSystemIdtf(ScAddr const & addr);
 
   SC_DEPRECATED(0.3.0, "Use ScMemoryContext::HelperCheckEdge instead.")

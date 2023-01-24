@@ -364,3 +364,35 @@ TEST_F(SCsHelperTest, GenerateStructureAppendToStructure)
       2u // total 5 + 4 + 2 = 11 sc-elements
   );
 }
+
+TEST_F(SCsHelperTest, GenerateAppendIdtfsToStructure)
+{
+  SCsHelper helper(*m_ctx, std::make_shared<DummyFileInterface>());
+
+  ScAddr const outputStructure = m_ctx->CreateNode(ScType::NodeConstStruct);
+  EXPECT_TRUE(outputStructure.IsValid());
+
+  EXPECT_TRUE(helper.GenerateBySCsText(
+      "class_1 -> class_1_instance_1;;",
+      outputStructure
+  ));
+
+  ScTemplate templ;
+  EXPECT_TRUE(m_ctx->HelperBuildTemplate(
+      templ,
+      "class_1 _-> _class_1_instance_1;;"
+      "class_1 _=> nrel_system_identifier:: _[];;"
+      "_class_1_instance_1 _=> nrel_system_identifier:: _[];;"
+  ));
+
+  ScTemplateSearchResult result;
+  EXPECT_TRUE(m_ctx->HelperSearchTemplate(templ, result));
+  EXPECT_EQ(result.Size(), 1u);
+
+  result.ForEach([this, &outputStructure](ScTemplateSearchResultItem const & item) {
+    for (size_t i = 0; i < item.Size(); ++i)
+    {
+      EXPECT_TRUE(m_ctx->HelperCheckEdge(outputStructure, item[i], ScType::EdgeAccessConstPosPerm));
+    }
+  });
+}
