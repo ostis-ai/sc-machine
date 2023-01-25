@@ -21,6 +21,15 @@ extern "C"
 
 class ScMemoryContext;
 
+typedef struct _ScSystemIdentifierFiver
+{
+  ScAddr addr1;
+  ScAddr addr2;
+  ScAddr addr3;
+  ScAddr addr4;
+  ScAddr addr5;
+} ScSystemIdentifierFiver;
+
 class ScMemory
 {
   friend class ScMemoryContext;
@@ -242,7 +251,7 @@ public:
       fn(it->Get(0), it->Get(1), it->Get(2), it->Get(3), it->Get(4));
   }
 
-  /* Trying to resolve ScAddr by it system identifier. If element with specified identifier doesn't exist
+  /* Tries to resolve ScAddr by it system identifier. If element with specified identifier doesn't exist
    * and type is not empty, then it would be created with specified type.
    * Look at type parameter as ForceCreate flag, that contains type.
    * Important: Type should be any of ScType::Node...
@@ -254,9 +263,65 @@ public:
       std::string const & sysIdtf,
       ScAddr & outAddr,
       ScType const & type = ScType());
+
+  /*! Tries to resolve ScAddr by it system identifier. If element with specified identifier doesn't exist
+   * and type is not empty, then it would be created with specified type.
+   * Important: Type should be any of ScType::Node...
+   * @param sysIdtf System identifier of resolving sc-element address
+   * @param type Sc-type of resolving sc-element address
+   * @returns ScAddr of resolved sc-element address.
+   * @throws utils::ExceptionInvalidParams if resolving sc-element type is not ScType::Node subtype.
+   */
   _SC_EXTERN ScAddr HelperResolveSystemIdtf(std::string const & sysIdtf, ScType const & type = ScType());
 
+  /*! Tries to resolve ScAddr by it system identifier. If element with specified identifier doesn't exist
+   * and type is not empty, then it would be created with specified type.
+   * Important: Type should be any of ScType::Node...
+   * @param sysIdtf System identifier of resolving sc-element address
+   * @param type Sc-type of resolving sc-element address
+   * @param outFiver[out] The 1st, 2d, 3d, 4th, 5th sc-element addresses of system identifier fiver of resolved
+   * sc-element address with `sysIdtf`
+   *                              addr1 (resolved sc-element address)
+   *                addr4           |
+   *        addr5 --------------->  | addr2
+   *     (nrel_system_identifier)   |
+   *                              addr3 (system identifier sc-link)
+   * @returns true if sc-element address resolved.
+   * @throws utils::ExceptionInvalidParams if resolving sc-element type is not ScType::Node subtype.
+   */
+  _SC_EXTERN bool HelperResolveSystemIdtf(
+      std::string const & sysIdtf,
+      ScType const & type,
+      ScSystemIdentifierFiver & outFiver);
+
+  /*! Tries to set system identifier for sc-element ScAddr.
+   * @param sysIdtf System identifier to set for sc-element `addr`
+   * @param addr Sc-element address to set `sysIdtf` for it
+   * @returns false if `sysIdtf` set for other sc-element address.
+   */
   _SC_EXTERN bool HelperSetSystemIdtf(std::string const & sysIdtf, ScAddr const & addr);
+
+  /*! Tries to set system identifier for sc-element ScAddr.
+   * @param sysIdtf System identifier to set for sc-element `addr`
+   * @param addr Sc-element address to set `sysIdtf` for it
+   * @param outFiver[out] The 1st, 2d, 3d, 4th, 5th sc-element addresses of system identifier fiver of sc-element `addr`
+   * with set `sysIdtf`
+   *                              addr1 (`addr`)
+   *                addr4           |
+   *        addr5 --------------->  | addr2
+   *     (nrel_system_identifier)   |
+   *                              addr3 (system identifier sc-link)
+   * @returns false if `sysIdtf` set for other sc-element address.
+   */
+  _SC_EXTERN bool HelperSetSystemIdtf(
+      std::string const & sysIdtf,
+      ScAddr const & addr,
+      ScSystemIdentifierFiver & resultFiver);
+
+  /*! Tries to get system identifier for sc-element ScAddr.
+   * @param addr Sc-element address to get it system identifier
+   * @returns "" if system identifier doesn't exist for `addr`.
+   */
   _SC_EXTERN std::string HelperGetSystemIdtf(ScAddr const & addr);
 
   SC_DEPRECATED(0.3.0, "Use ScMemoryContext::HelperCheckEdge instead.")
@@ -266,6 +331,7 @@ public:
   SC_DEPRECATED(0.4.0, "Use ScMemoryContext::HelperFindBySystemIdtf(std::string const & sysIdtf) instead.")
   _SC_EXTERN bool HelperFindBySystemIdtf(std::string const & sysIdtf, ScAddr & outAddr);
   _SC_EXTERN ScAddr HelperFindBySystemIdtf(std::string const & sysIdtf);
+  _SC_EXTERN bool HelperFindBySystemIdtf(std::string const & sysIdtf, ScSystemIdentifierFiver & outFiver);
 
   _SC_EXTERN ScTemplate::Result HelperGenTemplate(
       ScTemplate const & templ,

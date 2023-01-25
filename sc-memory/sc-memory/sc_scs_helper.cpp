@@ -28,8 +28,21 @@ protected:
     , m_fileInterface(std::move(fileInterface))
     , m_outputStructure(outputStructure)
   {
+    m_kNrelSysIdtf = m_ctx.HelperResolveSystemIdtf("nrel_system_identifier", ScType::NodeConstNoRole);
+    if (!m_kNrelSysIdtf.IsValid())
+    {
+      SC_THROW_EXCEPTION(utils::ExceptionInvalidState, "Keynode `nrel_system_identifier` is not valid");
+    }
     m_kNrelSCsGlobalIdtf = m_ctx.HelperResolveSystemIdtf("nrel_scs_global_idtf", ScType::NodeConstNoRole);
-    SC_ASSERT(m_kNrelSCsGlobalIdtf.IsValid(), ());
+    if (!m_kNrelSCsGlobalIdtf.IsValid())
+    {
+      SC_THROW_EXCEPTION(utils::ExceptionInvalidState, "Keynode `nrel_scs_global_idtf` is not valid");
+    }
+
+    if (m_outputStructure.IsValid())
+    {
+      AppendToOutputStructure(m_kNrelSysIdtf, m_kNrelSCsGlobalIdtf);
+    }
   }
 
   void operator()(scs::Parser const & parser)
@@ -53,22 +66,23 @@ protected:
       auto const & edge = parser.GetParsedElement(t.m_edge);
       auto const & trg = parser.GetParsedElement(t.m_target);
 
-      ScAddr const srcAddr = ResolveElement(src);
-      ScAddr const trgAddr = ResolveElement(trg);
+      auto const & srcAddrResult = ResolveElement(src);
+      auto const & trgAddrResult = ResolveElement(trg);
 
-      SC_ASSERT(srcAddr.IsValid() && trgAddr.IsValid(), ());
       if (!edge.GetType().IsEdge())
       {
         SC_THROW_EXCEPTION(utils::ExceptionInvalidType, "Edge in triple has incorrect type");
       }
 
-      ScAddr const edgeAddr = m_ctx.CreateEdge(edge.GetType(), srcAddr, trgAddr);
+      ScAddr const edgeAddr = m_ctx.CreateEdge(edge.GetType(), srcAddrResult.first, trgAddrResult.first);
       SC_ASSERT(edgeAddr.IsValid(), ());
       m_idtfCache.insert(std::make_pair(edge.GetIdtf(), edgeAddr));
 
       if (m_outputStructure.IsValid())
       {
-        AppendToOutputStructure(srcAddr, edgeAddr, trgAddr);
+        AppendToOutputStructure(srcAddrResult.first, edgeAddr, trgAddrResult.first);
+        AppendToOutputStructure(srcAddrResult.second);
+        AppendToOutputStructure(trgAddrResult.second);
       }
     }
 
@@ -85,7 +99,7 @@ private:
   template <class... Args>
   void AppendToOutputStructure(Args const &... addrs)
   {
-    std::vector<ScAddr> addrVector{addrs...};
+    std::vector<ScAddr> const & addrVector{addrs...};
     for (ScAddr const & addr : addrVector)
     {
       if (!m_ctx.HelperCheckEdge(m_outputStructure, addr, ScType::EdgeAccessConstPosPerm))
@@ -95,9 +109,9 @@ private:
     }
   }
 
-  void SetSCsGlobalIdtf(std::string const & idtf, ScAddr const & addr)
+  ScAddrVector SetSCsGlobalIdtf(std::string const & idtf, ScAddr const & addr)
   {
-    SC_ASSERT(m_kNrelSCsGlobalIdtf.IsValid(), ());
+    SC_ASSERT(m_kNrelSCsGlobalIdtf.IsValid(), ("Keynode `nrel_scs_global_idtf` is not valid"));
 
     // Generate construction manually. To avoid recursive call of ScMemoryContextEventsPendingGuard
 
@@ -106,7 +120,9 @@ private:
     link.Set(idtf);
 
     ScAddr const edgeAddr = m_ctx.CreateEdge(ScType::EdgeDCommonConst, addr, linkAddr);
-    m_ctx.CreateEdge(ScType::EdgeAccessConstPosPerm, m_kNrelSCsGlobalIdtf, edgeAddr);
+    ScAddr const relAddr = m_ctx.CreateEdge(ScType::EdgeAccessConstPosPerm, m_kNrelSCsGlobalIdtf, edgeAddr);
+
+    return {linkAddr, edgeAddr, relAddr};
   }
 
   ScAddr FindBySCsGlobalIdtf(std::string const & idtf) const
@@ -139,39 +155,40 @@ private:
     return result;
   }
 
-  ScAddr ResolveElement(scs::ParsedElement const & el)
+  std::pair<ScAddr, ScAddrVector> ResolveElement(scs::ParsedElement const & el)
   {
-    ScAddr result;
+    ScAddrVector result;
+    ScAddr resultAddr;
     std::string const & idtf = el.GetIdtf();
     auto const it = m_idtfCache.find(idtf);
     if (it != m_idtfCache.end())
     {
-      result = it->second;
+      resultAddr = it->second;
     }
     else
     {
       // try to find existing
       if (el.GetVisibility() == scs::Visibility::System)
       {
-        result = m_ctx.HelperFindBySystemIdtf(el.GetIdtf());
+        resultAddr = m_ctx.HelperFindBySystemIdtf(el.GetIdtf());
       }
       else if (el.GetVisibility() == scs::Visibility::Global)
       {
-        result = FindBySCsGlobalIdtf(el.GetIdtf());
+        resultAddr = FindBySCsGlobalIdtf(el.GetIdtf());
       }
 
       // create new one
-      if (!result.IsValid())
+      if (!resultAddr.IsValid())
       {
         ScType const & type = el.GetType();
         if (type.IsNode())
         {
-          result = m_ctx.CreateNode(type);
+          resultAddr = m_ctx.CreateNode(type);
         }
         else if (type.IsLink())
         {
-          result = m_ctx.CreateLink(type);
-          SetupLinkContent(result, el);
+          resultAddr = m_ctx.CreateLink(type);
+          SetupLinkContent(resultAddr, el);
         }
         else
         {
@@ -181,22 +198,24 @@ private:
         // setup system identifier
         if (el.GetVisibility() == scs::Visibility::System)
         {
-          m_ctx.HelperSetSystemIdtf(el.GetIdtf(), result);
+          ScSystemIdentifierFiver fiver;
+          m_ctx.HelperSetSystemIdtf(el.GetIdtf(), resultAddr, fiver);
+          result = {fiver.addr2, fiver.addr3, fiver.addr4};
         }
         else if (el.GetVisibility() == scs::Visibility::Global)
         {
-          SetSCsGlobalIdtf(el.GetIdtf(), result);
+          result = SetSCsGlobalIdtf(el.GetIdtf(), resultAddr);
         }
       }
       else
       {
         ScType const & newType = el.GetType();
-        ScType const & oldType = m_ctx.GetElementType(result);
+        ScType const & oldType = m_ctx.GetElementType(resultAddr);
         if (newType != oldType)
         {
           if (oldType.CanExtendTo(newType))
           {
-            m_ctx.SetElementSubtype(result, *newType);
+            m_ctx.SetElementSubtype(resultAddr, *newType);
           }
           else if (!newType.CanExtendTo(oldType))
           {
@@ -205,13 +224,13 @@ private:
         }
       }
 
-      SC_ASSERT(result.IsValid(), ());
+      SC_ASSERT(resultAddr.IsValid(), ("Resolved addr is not valid"));
 
       // anyway save in cache
-      m_idtfCache.insert(std::make_pair(idtf, result));
+      m_idtfCache.insert(std::make_pair(idtf, resultAddr));
     }
 
-    return result;
+    return {resultAddr, result};
   }
 
   template <typename T>
@@ -299,6 +318,7 @@ private:
   ScAddr m_outputStructure;
 
   std::unordered_map<std::string, ScAddr> m_idtfCache;
+  ScAddr m_kNrelSysIdtf;
   ScAddr m_kNrelSCsGlobalIdtf;
 };
 

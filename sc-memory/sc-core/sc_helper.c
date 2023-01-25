@@ -167,11 +167,37 @@ sc_result sc_helper_check_system_identifier(const sc_char * data)
   return SC_RESULT_ERROR;
 }
 
+void sc_system_identifier_fiver_make_empty(sc_system_identifier_fiver * fiver)
+{
+  if (fiver == null_ptr)
+  {
+    return;
+  }
+
+  SC_ADDR_MAKE_EMPTY(fiver->addr1);
+  SC_ADDR_MAKE_EMPTY(fiver->addr2);
+  SC_ADDR_MAKE_EMPTY(fiver->addr3);
+  SC_ADDR_MAKE_EMPTY(fiver->addr4);
+  SC_ADDR_MAKE_EMPTY(fiver->addr5);
+}
+
 sc_result sc_helper_find_element_by_system_identifier(
     sc_memory_context const * ctx,
     const sc_char * data,
     sc_uint32 len,
     sc_addr * result_addr)
+{
+  sc_system_identifier_fiver fiver;
+  sc_result const result = sc_helper_find_element_by_system_identifier_ext(ctx, data, len, &fiver);
+  *result_addr = fiver.addr1;
+  return result;
+}
+
+sc_result sc_helper_find_element_by_system_identifier_ext(
+    sc_memory_context const * ctx,
+    const sc_char * data,
+    sc_uint32 len,
+    sc_system_identifier_fiver * out_fiver)
 {
   sc_assert(ctx != null_ptr);
   sc_assert(data != null_ptr);
@@ -181,7 +207,7 @@ sc_result sc_helper_find_element_by_system_identifier(
 
   sc_bool result = SC_FALSE;
   sc_stream * stream = null_ptr;
-  SC_ADDR_MAKE_EMPTY(*result_addr);
+  sc_system_identifier_fiver_make_empty(out_fiver);
 
   if (sc_helper_check_system_identifier(data) != SC_RESULT_OK)
   {
@@ -210,7 +236,12 @@ sc_result sc_helper_find_element_by_system_identifier(
         if (result == SC_FALSE)
         {
           result = SC_TRUE;
-          *result_addr = sc_iterator5_value(it, 0);
+          *out_fiver = (sc_system_identifier_fiver){
+              sc_iterator5_value(it, 0),
+              sc_iterator5_value(it, 1),
+              sc_iterator5_value(it, 2),
+              sc_iterator5_value(it, 3),
+              sc_iterator5_value(it, 4)};
         }
         else
         {
@@ -236,10 +267,21 @@ sc_result sc_helper_find_element_by_system_identifier(
 
 sc_result sc_helper_set_system_identifier(sc_memory_context * ctx, sc_addr addr, const sc_char * data, sc_uint32 len)
 {
+  return sc_helper_set_system_identifier_ext(ctx, addr, data, len, null_ptr);
+}
+
+sc_result sc_helper_set_system_identifier_ext(
+    sc_memory_context * ctx,
+    sc_addr addr,
+    const sc_char * data,
+    sc_uint32 len,
+    sc_system_identifier_fiver * out_fiver)
+{
   sc_assert(ctx != null_ptr);
 
   sc_assert(sc_keynodes != null_ptr);
 
+  sc_system_identifier_fiver_make_empty(out_fiver);
   if (sc_helper_check_system_identifier(data) != SC_RESULT_OK)
   {
     return SC_RESULT_ERROR;
@@ -273,10 +315,16 @@ sc_result sc_helper_set_system_identifier(sc_memory_context * ctx, sc_addr addr,
   if (SC_ADDR_IS_EMPTY(arc_addr))
     return SC_RESULT_ERROR;
 
-  arc_addr =
+  sc_addr const arc_to_arc_addr =
       sc_memory_arc_new(ctx, sc_type_arc_pos_const_perm, sc_keynodes[SC_KEYNODE_NREL_SYSTEM_IDENTIFIER], arc_addr);
   if (SC_ADDR_IS_EMPTY(arc_addr))
     return SC_RESULT_ERROR;
+
+  if (out_fiver != null_ptr)
+  {
+    *out_fiver = (sc_system_identifier_fiver){
+        addr, arc_addr, idtf_addr, arc_to_arc_addr, sc_keynodes[SC_KEYNODE_NREL_SYSTEM_IDENTIFIER]};
+  }
 
   return SC_RESULT_OK;
 }

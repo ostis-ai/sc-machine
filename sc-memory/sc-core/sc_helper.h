@@ -20,6 +20,17 @@ enum _sc_keynode
 
 typedef enum _sc_keynode sc_keynode;
 
+typedef struct _sc_system_identifier_fiver
+{
+  sc_addr addr1;
+  sc_addr addr2;
+  sc_addr addr3;
+  sc_addr addr4;
+  sc_addr addr5;
+} sc_system_identifier_fiver;
+
+void sc_system_identifier_fiver_make_empty(sc_system_identifier_fiver * fiver);
+
 /*! Finds sc-addr of element with specified system identifier
  * @param data Buffer that contains system identifier for sc-element (must be an UTF-8 encoded)
  * @param len Length of data buffer
@@ -35,6 +46,26 @@ _SC_EXTERN sc_result sc_helper_find_element_by_system_identifier(
     sc_uint32 len,
     sc_addr * result_addr);
 
+/*! Finds sc-addr of element with specified system identifier
+ * @param data Buffer that contains system identifier for sc-element (must be an UTF-8 encoded)
+ * @param len Length of data buffer
+ * @param out_fiver Structure contains the 1th, 2d, 3d, 4th and 5th sc-element address of generated fiver
+ *                          addr1 (found sc-element address)
+ *               addr4        |
+ *    addr5 --------------->  | addr3
+ * (nrel_system_identifier)   |
+ *                          addr3 (system identifier sc-link)
+ * @return If sc-element with specified system identifier found, then return SC_RESULT_OK and result_addr
+ * contains sc-addr of this one; otherwise return SC_RESULT_ERROR. If there are more then one sc-elements with
+ * specified system identifier, then return SC_RESULT_ERROR_INVALID_STATE, but result_addr will contains sc-addr
+ * of firstly found sc-element.
+ */
+_SC_EXTERN sc_result sc_helper_find_element_by_system_identifier_ext(
+    sc_memory_context const * ctx,
+    const sc_char * data,
+    sc_uint32 len,
+    sc_system_identifier_fiver * out_fiver);
+
 /*! Setup new system identifier for specified sc-element
  * @param addr sc-addr of sc-element to setup new system identifier
  * @param data Buffer that contains system identifier for sc-element (must be an UTF-8 encoded)
@@ -44,6 +75,26 @@ _SC_EXTERN sc_result sc_helper_find_element_by_system_identifier(
  */
 _SC_EXTERN sc_result
 sc_helper_set_system_identifier(sc_memory_context * ctx, sc_addr addr, const sc_char * data, sc_uint32 len);
+
+/*! Setup new system identifier for specified sc-element
+ * @param addr sc-addr of sc-element to setup new system identifier
+ * @param data Buffer that contains system identifier for sc-element (must be an UTF-8 encoded)
+ * @param len Length of data buffer
+ * @param out_fiver Structure contains the 1th, 2d, 3d, 4th and 5th sc-element address of generated fiver
+ *                          addr1 (`addr`)
+ *               addr4        |
+ *    addr5 --------------->  | addr3
+ * (nrel_system_identifier)   |
+ *                          addr3 (system identifier sc-link)
+ * @remarks If sc-element already has system identifier, then it would be replaced. If system identifier
+ * already used for another sc-element, then function returns SC_ERROR_INVALID_PARAMS
+ */
+_SC_EXTERN sc_result sc_helper_set_system_identifier_ext(
+    sc_memory_context * ctx,
+    sc_addr addr,
+    const sc_char * data,
+    sc_uint32 len,
+    sc_system_identifier_fiver * out_fiver);
 
 /*! Return sc-addr of system identifier for specified sc-element
  * @param el sc-addr of element to get it system identifier
