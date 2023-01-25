@@ -437,6 +437,7 @@ bool ScMemoryContext::HelperResolveSystemIdtf(
 ScAddr ScMemoryContext::HelperResolveSystemIdtf(std::string const & sysIdtf, ScType const & type /* = ScType()*/)
 {
   SC_ASSERT(IsValid(), ());
+
   ScAddr resultAddr = HelperFindBySystemIdtf(sysIdtf);
   if (!resultAddr.IsValid() && !type.IsUnknown())
   {
@@ -446,31 +447,61 @@ ScAddr ScMemoryContext::HelperResolveSystemIdtf(std::string const & sysIdtf, ScT
     }
 
     resultAddr = CreateNode(type);
-    if (resultAddr.IsValid())
+    if (resultAddr.IsValid() && !HelperSetSystemIdtf(sysIdtf, resultAddr))
     {
-      bool isSuccess = HelperSetSystemIdtf(sysIdtf, resultAddr);
-      SC_ASSERT(isSuccess, ());
+      EraseElement(resultAddr);
+      resultAddr = ScAddr::Empty;
     }
   }
   return resultAddr;
 }
 
-bool ScMemoryContext::HelperSetSystemIdtf(std::string const & sysIdtf, ScAddr const & addr)
-{
-  ScAddrVector resultAddrs;
-  return HelperSetSystemIdtf(sysIdtf, addr, resultAddrs);
-}
-
-bool ScMemoryContext::HelperSetSystemIdtf(std::string const & sysIdtf, ScAddr const & addr, ScAddrVector & resultAddrs)
+bool ScMemoryContext::HelperResolveSystemIdtf(
+    std::string const & sysIdtf,
+    ScType const & type,
+    ScSystemIdentifierFiver & outFiver)
 {
   SC_ASSERT(IsValid(), ());
 
-  auto * result = new sc_addr[3];
-  bool status = sc_helper_set_system_identifier_ext(
-                    m_context, *addr, sysIdtf.c_str(), (sc_uint32)sysIdtf.size(), &result) == SC_RESULT_OK;
-  resultAddrs = {ScAddr(result[0]), ScAddr(result[1]), ScAddr(result[2])};
-  delete[] result;
-  return status;
+  bool result = HelperFindBySystemIdtf(sysIdtf, outFiver);
+  if (!result && !type.IsUnknown())
+  {
+    if (!type.IsNode())
+    {
+      SC_THROW_EXCEPTION(utils::ExceptionInvalidParams, "You should provide any of ScType::Node... value as a type");
+    }
+
+    ScAddr const & resultAddr = CreateNode(type);
+    if (resultAddr.IsValid())
+    {
+      result = HelperSetSystemIdtf(sysIdtf, resultAddr, outFiver);
+      if (!result)
+      {
+        EraseElement(resultAddr);
+        sc_system_identifier_fiver_make_empty(&outFiver);
+      }
+    }
+  }
+
+  return result;
+}
+
+bool ScMemoryContext::HelperSetSystemIdtf(std::string const & sysIdtf, ScAddr const & addr)
+{
+  SC_ASSERT(IsValid(), ());
+
+  return sc_helper_set_system_identifier(m_context, *addr, sysIdtf.c_str(), (sc_uint32)sysIdtf.size()) == SC_RESULT_OK;
+}
+
+bool ScMemoryContext::HelperSetSystemIdtf(
+    std::string const & sysIdtf,
+    ScAddr const & addr,
+    ScSystemIdentifierFiver & outFiver)
+{
+  SC_ASSERT(IsValid(), ());
+
+  return sc_helper_set_system_identifier_ext(m_context, *addr, sysIdtf.c_str(), (sc_uint32)sysIdtf.size(), &outFiver) ==
+         SC_RESULT_OK;
 }
 
 std::string ScMemoryContext::HelperGetSystemIdtf(ScAddr const & addr)
@@ -520,6 +551,14 @@ ScAddr ScMemoryContext::HelperFindBySystemIdtf(std::string const & sysIdtf)
   sc_helper_find_element_by_system_identifier(
       m_context, sysIdtf.c_str(), (sc_uint32)sysIdtf.size(), &result.m_realAddr);
   return result;
+}
+
+bool ScMemoryContext::HelperFindBySystemIdtf(std::string const & sysIdtf, ScSystemIdentifierFiver & outFiver)
+{
+  SC_ASSERT(IsValid(), ());
+  return (
+      sc_helper_find_element_by_system_identifier_ext(
+          m_context, sysIdtf.c_str(), (sc_uint32)sysIdtf.size(), &outFiver) == SC_RESULT_OK);
 }
 
 ScTemplate::Result ScMemoryContext::HelperGenTemplate(

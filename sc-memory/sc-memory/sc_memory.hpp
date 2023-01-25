@@ -254,11 +254,21 @@ public:
       std::string const & sysIdtf,
       ScAddr & outAddr,
       ScType const & type = ScType());
+
+  using ScSystemIdentifierFiver = sc_system_identifier_fiver;
+
   _SC_EXTERN ScAddr HelperResolveSystemIdtf(std::string const & sysIdtf, ScType const & type = ScType());
+  _SC_EXTERN bool HelperResolveSystemIdtf(
+      std::string const & sysIdtf,
+      ScType const & type,
+      ScSystemIdentifierFiver & outFiver);
 
   _SC_EXTERN bool HelperSetSystemIdtf(std::string const & sysIdtf, ScAddr const & addr);
+  _SC_EXTERN bool HelperSetSystemIdtf(
+      std::string const & sysIdtf,
+      ScAddr const & addr,
+      ScSystemIdentifierFiver & resultFiver);
 
-  _SC_EXTERN bool HelperSetSystemIdtf(std::string const & sysIdtf, ScAddr const & addr, ScAddrVector & resultAddrs);
   _SC_EXTERN std::string HelperGetSystemIdtf(ScAddr const & addr);
 
   SC_DEPRECATED(0.3.0, "Use ScMemoryContext::HelperCheckEdge instead.")
@@ -268,6 +278,7 @@ public:
   SC_DEPRECATED(0.4.0, "Use ScMemoryContext::HelperFindBySystemIdtf(std::string const & sysIdtf) instead.")
   _SC_EXTERN bool HelperFindBySystemIdtf(std::string const & sysIdtf, ScAddr & outAddr);
   _SC_EXTERN ScAddr HelperFindBySystemIdtf(std::string const & sysIdtf);
+  _SC_EXTERN bool HelperFindBySystemIdtf(std::string const & sysIdtf, ScSystemIdentifierFiver & outFiver);
 
   _SC_EXTERN ScTemplate::Result HelperGenTemplate(
       ScTemplate const & templ,
