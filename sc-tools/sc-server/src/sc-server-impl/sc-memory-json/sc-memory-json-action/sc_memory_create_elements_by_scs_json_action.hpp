@@ -42,7 +42,7 @@ public:
       else
       {
         scs = atom["scs"].get<std::string>();
-        outputStructure = ScAddr(atom["outputStructure"].get<size_t>());
+        outputStructure = ScAddr(atom["output_structure"].get<size_t>());
       }
 
       if (m_helper == nullptr)

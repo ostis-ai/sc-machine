@@ -167,8 +167,8 @@ TEST_F(ScServerTest, CreateElementsBySCsUploadToStructure)
       0,
       "create_elements_by_scs",
       ScMemoryJsonPayload::array({
-          {{"scs", "concept_set -> set1;;"}, {"outputStructure", structure.Hash()}},
-          {{"scs", "concept_set ->;;"}, {"outputStructure", structure.Hash()}},
+          {{"scs", "concept_set -> set1;;"}, {"output_structure", structure.Hash()}},
+          {{"scs", "concept_set ->;;"}, {"output_structure", structure.Hash()}},
       }));
   EXPECT_TRUE(client.Send(payloadString));
 
