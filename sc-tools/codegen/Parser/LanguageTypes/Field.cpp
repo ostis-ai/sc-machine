@@ -86,6 +86,7 @@ void Field::GenerateResolveKeynodeCode(
   }
   outCode << ");";
   outCode << " result = result && " << displayName << ".IsValid();";
+  outCode << "if (outputStructure.IsValid()) ctx.CreateEdge(ScType::EdgeAccessConstPosPerm, outputStructure, " << displayName << ");";
 }
 
 std::string const & Field::GetDisplayName() const
