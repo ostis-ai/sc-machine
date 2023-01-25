@@ -29,9 +29,9 @@
 #  define SC_GENERATED_BODY_ITEMS(v) SC_COMBINE(ScFileID, _, __LINE__, v)
 #  define SC_GENERATED_BODY_INIT() \
   public: \
-    static bool InitGlobal() \
+    static bool InitGlobal(ScAddr const & outputStructure = ScAddr::Empty) \
     { \
-      return _InitStaticInternal(); \
+      return _InitStaticInternal(outputStructure); \
     } \
 \
   private: \
