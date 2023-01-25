@@ -21,6 +21,15 @@ extern "C"
 
 class ScMemoryContext;
 
+typedef struct _ScSystemIdentifierFiver
+{
+  ScAddr addr1;
+  ScAddr addr2;
+  ScAddr addr3;
+  ScAddr addr4;
+  ScAddr addr5;
+} ScSystemIdentifierFiver;
+
 class ScMemory
 {
   friend class ScMemoryContext;
@@ -254,8 +263,6 @@ public:
       std::string const & sysIdtf,
       ScAddr & outAddr,
       ScType const & type = ScType());
-
-  using ScSystemIdentifierFiver = sc_system_identifier_fiver;
 
   _SC_EXTERN ScAddr HelperResolveSystemIdtf(std::string const & sysIdtf, ScType const & type = ScType());
   _SC_EXTERN bool HelperResolveSystemIdtf(

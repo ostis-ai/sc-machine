@@ -198,9 +198,9 @@ private:
         // setup system identifier
         if (el.GetVisibility() == scs::Visibility::System)
         {
-          sc_system_identifier_fiver fiver;
+          ScSystemIdentifierFiver fiver;
           m_ctx.HelperSetSystemIdtf(el.GetIdtf(), resultAddr, fiver);
-          result = {ScAddr(fiver.addr2), ScAddr(fiver.addr3), ScAddr(fiver.addr4)};
+          result = {fiver.addr2, fiver.addr3, fiver.addr4};
         }
         else if (el.GetVisibility() == scs::Visibility::Global)
         {
