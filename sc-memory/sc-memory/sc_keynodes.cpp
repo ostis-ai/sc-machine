@@ -53,8 +53,19 @@ bool ScKeynodes::Init(bool force, sc_char const * init_memory_generated_structur
   if (ms_isInitialized && !force)
     return true;
 
-  bool result = ScKeynodes::InitGlobal();
   ScMemoryContext ctx(sc_access_lvl_make_min, "ScKeynodes::Init");
+
+  ScAddr initMemoryGeneratedStructure;
+  bool initMemoryGeneratedStructureValid = SC_FALSE;
+
+  if (init_memory_generated_structure != null_ptr)
+  {
+    initMemoryGeneratedStructure =
+        ctx.HelperResolveSystemIdtf(init_memory_generated_structure, ScType::NodeConstStruct);
+    initMemoryGeneratedStructureValid = initMemoryGeneratedStructure.IsValid();
+  }
+
+  bool result = ScKeynodes::InitGlobal(initMemoryGeneratedStructure);
 
   ScAddrVector const & keynodesAddrs = {
       kCommandStateAddr,
@@ -97,21 +108,6 @@ bool ScKeynodes::Init(bool force, sc_char const * init_memory_generated_structur
 
   ScAddrVector const & states = {kCommandFinishedAddr, kCommandInitiatedAddr, kCommandProgressedAddr};
 
-  ScAddr initMemoryGeneratedStructure;
-  bool initMemoryGeneratedStructureValid = SC_FALSE;
-
-  if (init_memory_generated_structure != null_ptr)
-  {
-    initMemoryGeneratedStructure =
-        ctx.HelperResolveSystemIdtf(init_memory_generated_structure, ScType::NodeConstStruct);
-    initMemoryGeneratedStructureValid = initMemoryGeneratedStructure.IsValid();
-
-    for (ScAddr const & keynodeAddr : keynodesAddrs)
-    {
-      ctx.CreateEdge(ScType::EdgeAccessConstPosPerm, initMemoryGeneratedStructure, keynodeAddr);
-    }
-  }
-
   // init sc_result set
   for (ScAddr const & resAddr : resultCodes)
   {
@@ -123,7 +119,6 @@ bool ScKeynodes::Init(bool force, sc_char const * init_memory_generated_structur
       if (result && initMemoryGeneratedStructureValid)
       {
         ctx.CreateEdge(ScType::EdgeAccessConstPosPerm, initMemoryGeneratedStructure, resEdge);
-        ctx.CreateEdge(ScType::EdgeAccessConstPosPerm, initMemoryGeneratedStructure, resAddr);
       }
     }
   }
@@ -148,7 +143,6 @@ bool ScKeynodes::Init(bool force, sc_char const * init_memory_generated_structur
     ScAddr const & commandStateEdge = ctx.CreateEdge(ScType::EdgeAccessConstPosPerm, kCommandStateAddr, st);
     if (initMemoryGeneratedStructureValid)
     {
-      ctx.CreateEdge(ScType::EdgeAccessConstPosPerm, initMemoryGeneratedStructure, st);
       ctx.CreateEdge(ScType::EdgeAccessConstPosPerm, initMemoryGeneratedStructure, commandStateEdge);
     }
     if (!commandStateEdge.IsValid())
@@ -163,7 +157,6 @@ bool ScKeynodes::Init(bool force, sc_char const * init_memory_generated_structur
       ScAddr const & binaryTypeEdge = ctx.CreateEdge(ScType::EdgeAccessConstPosPerm, kBinaryType, binaryType);
       if (initMemoryGeneratedStructureValid && binaryTypeEdge.IsValid())
       {
-        ctx.CreateEdge(ScType::EdgeAccessConstPosPerm, initMemoryGeneratedStructure, binaryType);
         ctx.CreateEdge(ScType::EdgeAccessConstPosPerm, initMemoryGeneratedStructure, binaryTypeEdge);
       }
     }

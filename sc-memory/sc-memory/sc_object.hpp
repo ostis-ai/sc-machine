@@ -7,6 +7,7 @@
 #pragma once
 
 #include "sc_defines.hpp"
+#include "sc_addr.hpp"
 
 /**
  * Base class for all objects that has meta data.
@@ -30,7 +31,7 @@ private:
   /** This method override genarates by code generator, and initialize all
    * meta data for this object. It calls from ScObject constructors
    */
-  virtual bool _InitInternal() = 0;
+  virtual bool _InitInternal(ScAddr const & outputStructure = ScAddr::Empty) = 0;
 
 private:
   bool m_isInitialized : 1;
