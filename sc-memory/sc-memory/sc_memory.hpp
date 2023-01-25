@@ -280,8 +280,12 @@ public:
    * @param sysIdtf System identifier of resolving sc-element address
    * @param type Sc-type of resolving sc-element address
    * @param outFiver[out] The 1st, 2d, 3d, 4th, 5th sc-element addresses of system identifier fiver of resolved
-   * sc-element address with `sysIdtf` addr1 (resolved sc-element address) addr4        | addr5 --------------->  |
-   * addr3 (nrel_system_identifier)   | addr3 (system identifier sc-link)
+   * sc-element address with `sysIdtf`
+   *                              addr1 (resolved sc-element address)
+   *                addr4           |
+   *        addr5 --------------->  | addr2
+   *     (nrel_system_identifier)   |
+   *                              addr3 (system identifier sc-link)
    * @returns true if sc-element address resolved.
    * @throws utils::ExceptionInvalidParams if resolving sc-element type is not ScType::Node subtype.
    */
@@ -301,8 +305,12 @@ public:
    * @param sysIdtf System identifier to set for sc-element `addr`
    * @param addr Sc-element address to set `sysIdtf` for it
    * @param outFiver[out] The 1st, 2d, 3d, 4th, 5th sc-element addresses of system identifier fiver of sc-element `addr`
-   * with set `sysIdtf` addr1 (`addr`) addr4        | addr5 --------------->  | addr3 (nrel_system_identifier)   | addr3
-   * (system identifier sc-link)
+   * with set `sysIdtf`
+   *                              addr1 (`addr`)
+   *                addr4           |
+   *        addr5 --------------->  | addr2
+   *     (nrel_system_identifier)   |
+   *                              addr3 (system identifier sc-link)
    * @returns false if `sysIdtf` set for other sc-element address.
    */
   _SC_EXTERN bool HelperSetSystemIdtf(

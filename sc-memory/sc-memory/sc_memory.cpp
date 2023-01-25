@@ -436,24 +436,9 @@ bool ScMemoryContext::HelperResolveSystemIdtf(
 
 ScAddr ScMemoryContext::HelperResolveSystemIdtf(std::string const & sysIdtf, ScType const & type /* = ScType()*/)
 {
-  SC_ASSERT(IsValid(), ());
-
-  ScAddr resultAddr = HelperFindBySystemIdtf(sysIdtf);
-  if (!resultAddr.IsValid() && !type.IsUnknown())
-  {
-    if (!type.IsNode())
-    {
-      SC_THROW_EXCEPTION(utils::ExceptionInvalidParams, "You should provide any of ScType::Node... value as a type");
-    }
-
-    resultAddr = CreateNode(type);
-    if (resultAddr.IsValid() && !HelperSetSystemIdtf(sysIdtf, resultAddr))
-    {
-      EraseElement(resultAddr);
-      resultAddr = ScAddr::Empty;
-    }
-  }
-  return resultAddr;
+  ScSystemIdentifierFiver outFiver;
+  HelperResolveSystemIdtf(sysIdtf, type, outFiver);
+  return outFiver.addr1;
 }
 
 bool ScMemoryContext::HelperResolveSystemIdtf(
