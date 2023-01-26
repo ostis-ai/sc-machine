@@ -9,10 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Insert sc-keynodes and their system identifiers in global knowledge base during sc-memory initiation
 - Extend create elements by SCs in `sc-server` with outputStructure field
 - Write docs for system identifier set/get/find/resolve sc-memory API
 - Extend set/get/find/resolve sc-memory API with out system identifier fiver parameters
-- Insert sc-keynodes in global knowledge base during sc-memory initiation 
 - CI for documentation build
 - Fix memory clear parameter reading from config file
 - Add output structure builder feature to config
@@ -30,6 +30,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- No inserting system identifiers of keynodes to output structure ([223](https://github.com/ostis-ai/sc-machine/issues/223))
 - `SCs-helper` doesn't return generated identifier links ([207](https://github.com/ostis-ai/sc-machine/issues/207))
 - No json string message parsing in `sc-server` ([190](https://github.com/ostis-ai/sc-machine/issues/190))
 - `SCs-parser` create structure twice

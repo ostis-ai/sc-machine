@@ -29,7 +29,8 @@ public:
 
 private:
   /** This method override genarates by code generator, and initialize all
-   * meta data for this object. It calls from ScObject constructors
+   *  meta data for this object, insert created object in output structure.
+   *  It calls from ScObject constructors
    */
   virtual bool _InitInternal(ScAddr const & outputStructure = ScAddr::Empty) = 0;
 
