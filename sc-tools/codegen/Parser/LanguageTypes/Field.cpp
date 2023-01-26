@@ -86,13 +86,13 @@ void Field::GenerateResolveKeynodeCode(
     outCode << ", fiver";
   }
   outCode << ");";
-  outCode << displayName << " = fiver.addr1;"; 
+  outCode << displayName << " = fiver.addr1;";
   outCode << " result = result && " << displayName << ".IsValid();";
   outCode << " if (outputStructure.IsValid()) {";
-  // Add addrs from ScSystemIdentifierFiver to output structure except addr5. Addr5 = nrel_system_identifier 
+  // Add addrs from ScSystemIdentifierFiver to output structure except addr5. Addr5 = nrel_system_identifier
   for (size_t i = 1; i <= 4; i++)
   {
-    outCode << "ctx.CreateEdge(ScType::EdgeAccessConstPosPerm, outputStructure, fiver.addr"<< i << ");";
+    outCode << "ctx.CreateEdge(ScType::EdgeAccessConstPosPerm, outputStructure, fiver.addr" << i << ");";
   }
   outCode << "};";
 }
