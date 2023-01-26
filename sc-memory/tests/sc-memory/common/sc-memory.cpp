@@ -24,6 +24,26 @@ void checkConnectionInStruct(
   };
 }
 
+bool checkKeynodeInStruct(
+    ScMemoryContext * m_ctx,
+    ScAddr const & keynodeAddr,
+    ScAddr const & kNrelSystemIdtf,
+    ScAddr const & structure)
+{
+  ScIterator5Ptr const it5 = m_ctx->Iterator5(
+      keynodeAddr, ScType::EdgeDCommonConst, ScType::LinkConst, ScType::EdgeAccessConstPosPerm, kNrelSystemIdtf);
+  bool result = it5->Next();
+  if (result)
+  {
+    for (size_t i = 0; i < 4; i++)
+    {
+      result &= m_ctx->HelperCheckEdge(structure, it5->Get(i), ScType::EdgeAccessConstPosPerm);
+    }
+  }
+
+  return result;
+}
+
 TEST_F(ScMemoryTest, LinkContent)
 {
   std::string str("test content string");
@@ -103,6 +123,8 @@ TEST_F(ScMemoryTestWithInitMemoryGeneratedStructure, TestInitMemoryGeneratedStru
 {
   ScAddr const & initMemoryGeneratedStructure = m_ctx->HelperFindBySystemIdtf("result_structure");
   EXPECT_TRUE(initMemoryGeneratedStructure.IsValid());
+  ScAddr const & kNrelSystemIdtf = m_ctx->HelperFindBySystemIdtf("nrel_system_identifier");
+  EXPECT_TRUE(kNrelSystemIdtf.IsValid());
   ScMemoryContext * context = m_ctx.get();
 
   ScAddrVector const & keynodesAddrs = {
@@ -154,7 +176,7 @@ TEST_F(ScMemoryTestWithInitMemoryGeneratedStructure, TestInitMemoryGeneratedStru
 
   for (ScAddr const & keynodeAddr : allKeynodes)
   {
-    EXPECT_TRUE(m_ctx->HelperCheckEdge(initMemoryGeneratedStructure, keynodeAddr, ScType::EdgeAccessConstPosPerm));
+    EXPECT_TRUE(checkKeynodeInStruct(context, keynodeAddr, kNrelSystemIdtf, initMemoryGeneratedStructure));
     std::for_each(
         allKeynodes.begin(),
         allKeynodes.end(),
