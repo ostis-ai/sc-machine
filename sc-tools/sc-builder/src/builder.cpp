@@ -90,7 +90,7 @@ bool Builder::Run(BuilderParams const & params, sc_memory_params const & memoryP
 
   if (m_params.m_resultStructureUpload)
   {
-    m_outputStructure = m_ctx->HelperResolveSystemIdtf(m_params.m_resultStructureSystemIdtf, ScType::NodeConstStruct);
+    ResolveOutputStructure();
   }
 
   // process founded files
@@ -147,6 +147,26 @@ bool Builder::Run(BuilderParams const & params, sc_memory_params const & memoryP
   ScMemory::Shutdown(true);
 
   return noErrors;
+}
+
+void Builder::ResolveOutputStructure()
+{
+  ScSystemIdentifierFiver fiver;
+  m_ctx->HelperResolveSystemIdtf(m_params.m_resultStructureSystemIdtf, ScType::NodeConstStruct, fiver);
+  m_outputStructure = fiver.addr1;
+
+  auto const & AddElementToStructure = [this](ScAddr const & addr)
+  {
+    if (!m_ctx->HelperCheckEdge(m_outputStructure, addr, ScType::EdgeAccessConstPosPerm))
+    {
+      m_ctx->CreateEdge(ScType::EdgeAccessConstPosPerm, m_outputStructure, addr);
+    }
+  };
+
+  AddElementToStructure(fiver.addr2);
+  AddElementToStructure(fiver.addr3);
+  AddElementToStructure(fiver.addr4);
+  AddElementToStructure(fiver.addr5);
 }
 
 bool Builder::ProcessFile(std::string const & fileName)
