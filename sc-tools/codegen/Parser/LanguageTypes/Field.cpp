@@ -43,10 +43,10 @@ std::string Field::GetForceType(MetaDataManager const & metaData)
   if (metaData.HasProperty(Props::ForceCreate))
   {
     std::string const value = metaData.GetNativeString(Props::ForceCreate);
-    return value.empty() ? "ScType::Node" : value;
+    return value.empty() ? "ScType::NodeConst" : value;
   }
 
-  return "";
+  return "ScType::NodeConst";
 }
 
 void Field::GenarateInitCode(std::stringstream & outCode) const
@@ -79,15 +79,22 @@ void Field::GenerateResolveKeynodeCode(
     std::string const & forceCreation,
     std::stringstream & outCode)
 {
-  outCode << displayName << " = ctx.HelperResolveSystemIdtf(\"" << sysIdtf << "\"";
+  outCode << "ctx.HelperResolveSystemIdtf(\"" << sysIdtf << "\"";
   if (!forceCreation.empty())
   {
     outCode << ", " << forceCreation;
+    outCode << ", fiver";
   }
   outCode << ");";
+  outCode << displayName << " = fiver.addr1;"; 
   outCode << " result = result && " << displayName << ".IsValid();";
-  outCode << "if (outputStructure.IsValid()) ctx.CreateEdge(ScType::EdgeAccessConstPosPerm, outputStructure, "
-          << displayName << ");";
+  outCode << " if (outputStructure.IsValid()) {";
+  // Add addrs from ScSystemIdentifierFiver to output structure except addr5. Addr5 = nrel_system_identifier 
+  for (size_t i = 1; i <= 4; i++)
+  {
+    outCode << "ctx.CreateEdge(ScType::EdgeAccessConstPosPerm, outputStructure, fiver.addr"<< i << ");";
+  }
+  outCode << "};";
 }
 
 std::string const & Field::GetDisplayName() const
