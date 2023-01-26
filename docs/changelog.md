@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Extend create elements by SCs in `sc-server` with outputStructure field
 - Write docs for system identifier set/get/find/resolve sc-memory API
 - Extend set/get/find/resolve sc-memory API with out system identifier fiver parameters
 - Insert sc-keynodes in global knowledge base during sc-memory initiation 

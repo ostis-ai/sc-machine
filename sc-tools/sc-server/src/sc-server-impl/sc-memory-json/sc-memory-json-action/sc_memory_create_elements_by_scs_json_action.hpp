@@ -33,7 +33,18 @@ public:
     sc_uint32 i = 0;
     for (auto & atom : requestPayload)
     {
-      std::string const & scs = atom.get<std::string>();
+      std::string scs;
+      ScAddr outputStructure;
+      if (atom.is_string())
+      {
+        scs = atom.get<std::string>();
+      }
+      else
+      {
+        scs = atom["scs"].get<std::string>();
+        outputStructure = ScAddr(atom["output_structure"].get<size_t>());
+      }
+
       if (m_helper == nullptr)
         m_helper = new SCsHelper{*context, std::make_shared<DummyFileInterface>()};
 
@@ -41,7 +52,7 @@ public:
 
       try
       {
-         m_helper->GenerateBySCsTextLazy(scs);
+         m_helper->GenerateBySCsTextLazy(scs, outputStructure);
          textGenResult = SC_TRUE;
       }
       catch (utils::ScException const & e)

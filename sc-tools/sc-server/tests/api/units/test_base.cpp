@@ -155,6 +155,65 @@ TEST_F(ScServerTest, CreateElementsBySCs)
   client.Stop();
 }
 
+TEST_F(ScServerTest, CreateElementsBySCsUploadToStructure)
+{
+  ScClient client;
+  EXPECT_TRUE(client.Connect(m_server->GetUri()));
+  client.Run();
+
+  ScAddr const structure = m_ctx->CreateNode(ScType::NodeConstStruct);
+
+  std::string const payloadString = ScMemoryJsonConverter::From(
+      0,
+      "create_elements_by_scs",
+      ScMemoryJsonPayload::array({
+          {{"scs", "concept_set -> set1;;"}, {"output_structure", structure.Hash()}},
+          {{"scs", "concept_set ->;;"}, {"output_structure", structure.Hash()}},
+      }));
+  EXPECT_TRUE(client.Send(payloadString));
+
+  auto const response = client.GetResponseMessage();
+  EXPECT_FALSE(response.is_null());
+  auto const & responsePayload = response["payload"];
+  EXPECT_FALSE(responsePayload.is_null());
+  EXPECT_FALSE(response["status"].get<sc_bool>());
+  EXPECT_FALSE(response["errors"][0]["message"].is_null());
+
+  ScSystemIdentifierFiver classSetSysIdtfFiver;
+  EXPECT_TRUE(m_ctx->HelperFindBySystemIdtf("concept_set", classSetSysIdtfFiver));
+  ScAddr const & classSet = classSetSysIdtfFiver.addr1;
+  EXPECT_TRUE(classSet.IsValid());
+
+  ScSystemIdentifierFiver set1SysIdtfFiver;
+  EXPECT_TRUE(m_ctx->HelperFindBySystemIdtf("set1", set1SysIdtfFiver));
+  ScAddr const & set1 = set1SysIdtfFiver.addr1;
+  EXPECT_TRUE(set1.IsValid());
+
+  ScIterator3Ptr it3 = m_ctx->Iterator3(classSet, ScType::EdgeAccessConstPosPerm, set1);
+  EXPECT_TRUE(it3->Next());
+  ScAddr const & edge = it3->Get(1);
+  EXPECT_TRUE(edge.IsValid());
+
+  EXPECT_TRUE(m_ctx->HelperCheckEdge(structure, classSet, ScType::EdgeAccessConstPosPerm));
+  EXPECT_TRUE(m_ctx->HelperCheckEdge(structure, set1, ScType::EdgeAccessConstPosPerm));
+  EXPECT_TRUE(m_ctx->HelperCheckEdge(structure, edge, ScType::EdgeAccessConstPosPerm));
+
+  EXPECT_TRUE(m_ctx->HelperCheckEdge(structure, classSetSysIdtfFiver.addr2, ScType::EdgeAccessConstPosPerm));
+  EXPECT_TRUE(m_ctx->HelperCheckEdge(structure, classSetSysIdtfFiver.addr3, ScType::EdgeAccessConstPosPerm));
+  EXPECT_TRUE(m_ctx->HelperCheckEdge(structure, classSetSysIdtfFiver.addr4, ScType::EdgeAccessConstPosPerm));
+  EXPECT_TRUE(m_ctx->HelperCheckEdge(structure, classSetSysIdtfFiver.addr5, ScType::EdgeAccessConstPosPerm));
+
+  EXPECT_TRUE(m_ctx->HelperCheckEdge(structure, set1SysIdtfFiver.addr2, ScType::EdgeAccessConstPosPerm));
+  EXPECT_TRUE(m_ctx->HelperCheckEdge(structure, set1SysIdtfFiver.addr3, ScType::EdgeAccessConstPosPerm));
+  EXPECT_TRUE(m_ctx->HelperCheckEdge(structure, set1SysIdtfFiver.addr4, ScType::EdgeAccessConstPosPerm));
+
+  EXPECT_TRUE(responsePayload[0].get<sc_bool>());
+
+  EXPECT_FALSE(responsePayload[1].get<sc_bool>());
+
+  client.Stop();
+}
+
 TEST_F(ScServerTest, CreateEmptyElementsBySCs)
 {
   ScClient client;
