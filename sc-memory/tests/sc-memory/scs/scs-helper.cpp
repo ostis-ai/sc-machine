@@ -328,6 +328,9 @@ TEST_F(SCsHelperTest, GenerateStructureAppendToStructure)
     outputStructure
   ));
 
+  ScAddr const & exampleStructure = m_ctx->HelperFindBySystemIdtf("example_structure");
+  EXPECT_EQ(m_ctx->GetElementType(exampleStructure), ScType::NodeConstStruct);
+
   auto const checkInStruct = [this, outputStructure](std::string const & scsText, size_t const expectedStructNum) {
     ScTemplate templ;
     EXPECT_TRUE(m_ctx->HelperBuildTemplate(templ, scsText));

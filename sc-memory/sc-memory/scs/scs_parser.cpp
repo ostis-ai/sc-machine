@@ -557,6 +557,9 @@ void Parser::ProcessContourEnd(ElementHandle const & contourHandle)
     ElementHandle const edge = ProcessConnector("->");
     ProcessTriple(contourHandle, edge, el);
   }
+
+  ParsedElement & srcEl = GetParsedElementRef(contourHandle);
+  srcEl.m_type = ScType::NodeConstStruct;
 }
 
 }  // namespace scs
