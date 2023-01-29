@@ -139,7 +139,10 @@ private:
         auto const & item1 = (*triple)[0];
 
         bool isFound = false;
-        if (item1.IsAddr() && faeTriples.find(triple->m_index) != faeTriples.cend())
+        auto const & found = m_template.m_namesToTypes.find(item1.m_replacementName);
+        if (m_cycledTriples.find(triple->m_index) == m_cycledTriples.cend() &&
+            ((found != m_template.m_namesToTypes.cend() && found->second == ScType::NodeVarStruct) ||
+             (item1.IsAddr() && faeTriples.find(triple->m_index) != faeTriples.cend())))
         {
           ScTemplateGroupedTriples checkedTriples;
           FindCycleWithFAATriple(item1, triple, triple, checkedTriples, isFound);
@@ -148,6 +151,19 @@ private:
         if (isFound)
         {
           std::string const & key = GetKey(triple, item1);
+          auto const & dependedTriples = m_itemsToTriples.find(key);
+
+          if (dependedTriples != m_itemsToTriples.cend())
+          {
+            for (size_t const dependedTripleIdx : dependedTriples->second)
+            {
+              if (IsTriplesEqual(triple, m_template.m_triples[dependedTripleIdx]))
+              {
+                m_cycledTriples.insert(dependedTripleIdx);
+              }
+            }
+          }
+
           m_cycledTriples.insert(triple->m_index);
         }
       }
@@ -195,10 +211,11 @@ private:
       return;
     }
 
-    auto const & FindCycleWithFAATripleByTripleItem = [this, &tripleToFind, &checkedTriples, &isFound](
+    auto const & FindCycleWithFAATripleByTripleItem = [this, &tripleToFind, &checkedTriples](
                                                           ScTemplateItemValue const & item,
                                                           ScTemplateTriple const * triple,
-                                                          ScTemplateItemValue const & previousItem) {
+                                                          ScTemplateItemValue const & previousItem,
+                                                          bool & isFound) {
       if (!item.m_replacementName.empty() && item.m_replacementName == previousItem.m_replacementName)
       {
         return;
@@ -235,9 +252,9 @@ private:
         auto const & items = otherTriple->GetValues();
         checkedTriples.insert(otherTripleIdx);
 
-        FindCycleWithFAATripleByTripleItem(items[0], otherTriple, item);
-        FindCycleWithFAATripleByTripleItem(items[1], otherTriple, item);
-        FindCycleWithFAATripleByTripleItem(items[2], otherTriple, item);
+        FindCycleWithFAATripleByTripleItem(items[0], otherTriple, item, isFound);
+        FindCycleWithFAATripleByTripleItem(items[1], otherTriple, item, isFound);
+        FindCycleWithFAATripleByTripleItem(items[2], otherTriple, item, isFound);
       }
     }
   }
@@ -452,7 +469,6 @@ private:
   };
 
   using UsedEdges = std::unordered_set<ScAddr, ScAddrHashFunc<uint32_t>>;
-  using ScTriplesOrderCheckedEdges = std::vector<UsedEdges>;
 
   void DoIterationOnNextEqualTriples(
       ScTemplateGroupedTriples const & triples,
@@ -500,6 +516,11 @@ private:
         isFinished = std::all_of(equalTriples.begin(), equalTriples.end(), [this, resultIdx](size_t const idx) {
           return m_resultCheckedTriples[resultIdx].find(idx) != m_resultCheckedTriples[resultIdx].cend();
         });
+
+        if (!isFinished)
+        {
+          break;
+        }
       }
     }
   }
@@ -544,7 +565,7 @@ private:
                                      ScAddr const & addr2,
                                      ScAddr const & addr3) {
       m_resultCheckedTriples[resultIdx].insert(triple->m_index);
-      m_triplesOrderUsedEdges[triple->m_index].insert(addr2);
+      m_usedEdges[resultIdx].insert(addr2);
 
       size_t itemIdx = triple->m_index * 3;
 
@@ -563,7 +584,7 @@ private:
 
       size_t itemIdx = tripleIdx * 3;
       resultAddrs[itemIdx] = ScAddr::Empty;
-      m_triplesOrderUsedEdges[tripleIdx].erase(resultAddrs[++itemIdx]);
+      m_usedEdges[resultIdx].erase(resultAddrs[++itemIdx]);
       resultAddrs[itemIdx] = ScAddr::Empty;
       resultAddrs[++itemIdx] = ScAddr::Empty;
     };
@@ -586,8 +607,9 @@ private:
     size_t notFinishedTriplesCount = 0;
     size_t finishedTriplesCount = 0;
 
-    std::unordered_set<size_t> const currentCheckedTriples{m_resultCheckedTriples[resultIdx]};
     ScAddrVector const currentResultAddrs{result.m_results[resultIdx]};
+    std::unordered_set<size_t> const currentCheckedTriples{m_resultCheckedTriples[resultIdx]};
+    UsedEdges currentUsedEdges{m_usedEdges[resultIdx]};
     while (it->Next() && !isStopped)
     {
       ScAddr const & addr1 = it->Get(0);
@@ -598,17 +620,12 @@ private:
       if ((IsStructureValid() && (!IsInStructure(addr1) || !IsInStructure(addr2) || !IsInStructure(addr3))) ||
           (m_checkCallback && !m_checkCallback(addr1, addr2, addr3)))
       {
-        for (size_t const tripleIdx : triples)
-        {
-          m_triplesOrderUsedEdges[tripleIdx].insert(addr2);
-        }
+        m_usedEdges[resultIdx].insert(addr2);
         continue;
       }
 
       // check if edge is used for other equal triple
-      if (std::any_of(triples.begin(), triples.end(), [this, &addr2](size_t const tripleIdx) {
-            return m_triplesOrderUsedEdges[tripleIdx].find(addr2) != m_triplesOrderUsedEdges[tripleIdx].cend();
-          }))
+      if (m_usedEdges[resultIdx].find(addr2) != m_usedEdges[resultIdx].cend())
       {
         continue;
       }
@@ -620,16 +637,18 @@ private:
         // check if all equal triples found to make a new search result item
         if (finishedTriplesCount == triples.size())
         {
-          ++resultIdx;
+          resultIdx = ++m_lastResultIdx;
           finishedTriplesCount = 0;
           result.m_results.emplace_back(currentResultAddrs);
           m_resultCheckedTriples.emplace_back(currentCheckedTriples);
+          m_usedEdges.emplace_back(currentUsedEdges);
         }
         else if (notFinishedTriplesCount == triples.size())
         {
           notFinishedTriplesCount = 0;
           result.m_results[resultIdx] = currentResultAddrs;
           m_resultCheckedTriples[resultIdx] = currentCheckedTriples;
+          m_usedEdges[resultIdx] = currentUsedEdges;
         }
 
         if (m_resultCheckedTriples[resultIdx].find(tripleIdx) != m_resultCheckedTriples[resultIdx].cend())
@@ -688,10 +707,7 @@ private:
             ++finishedTriplesCount;
 
             // current edge is busy for all equal triples
-            for (size_t const idx : triples)
-            {
-              m_triplesOrderUsedEdges[idx].insert(addr2);
-            }
+            m_usedEdges[resultIdx].insert(addr2);
             break;
           }
         }
@@ -747,6 +763,8 @@ private:
       result.m_results.reserve(16);
       result.m_results.emplace_back(newResult);
 
+      m_usedEdges.reserve(16);
+      m_usedEdges.emplace_back();
       m_resultCheckedTriples.reserve(16);
       m_resultCheckedTriples.emplace_back();
 
@@ -773,7 +791,6 @@ public:
   ScTemplate::Result operator()(ScTemplateSearchResult & result)
   {
     result.Clear();
-    m_triplesOrderUsedEdges.resize(CalculateOneResultSize());
 
     DoIterations(result);
 
@@ -791,7 +808,6 @@ public:
   void operator()()
   {
     ScTemplateSearchResult result;
-    m_triplesOrderUsedEdges.resize(CalculateOneResultSize());
 
     DoIterations(result);
   }
@@ -813,9 +829,10 @@ private:
 
   std::map<std::string, ScTemplateGroupedTriples> m_itemsToTriples;
   ScTemplateGroupedTriples m_cycledTriples;
-  ScTriplesOrderCheckedEdges m_triplesOrderUsedEdges;
+  std::vector<UsedEdges> m_usedEdges;
   std::vector<std::unordered_set<size_t>> m_resultCheckedTriples;
 
+  size_t m_lastResultIdx = 0;
   std::unordered_set<size_t> m_foundResults;
 };
 
