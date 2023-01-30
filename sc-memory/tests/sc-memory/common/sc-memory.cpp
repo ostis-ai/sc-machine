@@ -129,7 +129,7 @@ TEST_F(ScMemoryTest, LinkContentStringWithSpaces)
 
   EXPECT_TRUE(m_ctx->SetLinkContent(linkAddr, "content with spaces"));
   EXPECT_TRUE(m_ctx->GetLinkContent(linkAddr, str));
-  EXPECT_TRUE(str == "content with spaces");
+  EXPECT_EQ(str, "content with spaces");
 }
 
 TEST_F(ScMemoryTestWithInitMemoryGeneratedStructure, TestInitMemoryGeneratedStructure)

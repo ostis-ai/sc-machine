@@ -145,6 +145,12 @@ public:
     return SetLinkContent(addr, ScStreamMakeRead(value));
   }
 
+  bool GetLinkContent(ScAddr const & addr, std::string & typedContent)
+  {
+    ScStreamPtr const & ptr = GetLinkContent(addr);
+    return ptr != nullptr && ptr->IsValid() && ScStreamConverter::StreamToString(ptr, typedContent);
+  }
+
   _SC_EXTERN ScStreamPtr GetLinkContent(ScAddr const & addr);
   template <typename TContentType>
   bool GetLinkContent(ScAddr const & addr, TContentType & typedContent)
@@ -153,7 +159,7 @@ public:
     ScStreamPtr const & ptr = GetLinkContent(addr);
     if (ptr != nullptr && ptr->IsValid() && ScStreamConverter::StreamToString(ptr, content))
     {
-      std::stringstream streamString(content);
+      std::istringstream streamString{content};
       streamString >> typedContent;
 
       return SC_TRUE;
