@@ -35,6 +35,8 @@ public:
   bool Run(BuilderParams const & params, sc_memory_params const & memoryParams);
 
 protected:
+  void ResolveOutputStructure();
+
   bool ProcessFile(std::string const & filename);
 
   void CollectFiles(std::string const & path);

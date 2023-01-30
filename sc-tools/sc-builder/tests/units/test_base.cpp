@@ -67,7 +67,7 @@ TEST(ScBuilder, BuilderConfig)
 
   ScParams memoryParams{options, {}};
   memoryParams.insert({"repo_path", SC_BUILDER_REPO_PATH});
-  memoryParams.insert({"clear", "false"});
+  memoryParams.insert({"clear", {}});
 
   ScConfig configFile{config, {"repo_path"}};
 
@@ -95,6 +95,31 @@ TEST(ScBuilder, BuilderConfig)
     EXPECT_EQ(scParams.at("result_structure_upload") == "true" ? true : false, builderParams.m_resultStructureUpload);
     EXPECT_EQ(scParams.at("result_structure_system_idtf"), builderParams.m_resultStructureSystemIdtf);
   }
+
+  sc_memory_params newMemoryParams = memoryConfig.GetParams();
+  newMemoryParams.clear = false;
+  ScMemory::Initialize(newMemoryParams);
+
+  auto * context = new ScMemoryContext("check_context");
+
+  ScSystemIdentifierFiver fiver;
+  context->HelperFindBySystemIdtf(builderParams.m_resultStructureSystemIdtf, fiver);
+  ScAddr const & resultStructure = fiver.addr1;
+  EXPECT_TRUE(resultStructure.IsValid());
+
+  auto const & CheckInStructure = [&context, &resultStructure](ScAddr const & addr)
+  {
+    EXPECT_TRUE(context->HelperCheckEdge(resultStructure, addr, ScType::EdgeAccessConstPosPerm));
+  };
+
+  CheckInStructure(fiver.addr2);
+  CheckInStructure(fiver.addr3);
+  CheckInStructure(fiver.addr4);
+  CheckInStructure(fiver.addr5);
+
+  context->Destroy();
+  delete context;
+  ScMemory::Shutdown(false);
 }
 
 TEST_F(ScBuilderTest, Smoke)
