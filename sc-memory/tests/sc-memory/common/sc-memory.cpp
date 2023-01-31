@@ -119,6 +119,19 @@ TEST_F(ScMemoryTest, ResolveNodeWithRussianIdtf)
   EXPECT_EQ(m_ctx->HelperFindBySystemIdtf(englishIdtf), englishNode);
 }
 
+TEST_F(ScMemoryTest, LinkContentStringWithSpaces)
+{
+  ScAddr const linkAddr = m_ctx->CreateLink();
+  EXPECT_TRUE(linkAddr.IsValid());
+
+  std::string str;
+  EXPECT_FALSE(m_ctx->GetLinkContent(linkAddr, str));
+
+  EXPECT_TRUE(m_ctx->SetLinkContent(linkAddr, "content with spaces"));
+  EXPECT_TRUE(m_ctx->GetLinkContent(linkAddr, str));
+  EXPECT_EQ(str, "content with spaces");
+}
+
 TEST_F(ScMemoryTestWithInitMemoryGeneratedStructure, TestInitMemoryGeneratedStructure)
 {
   ScAddr const & initMemoryGeneratedStructure = m_ctx->HelperFindBySystemIdtf("result_structure");
