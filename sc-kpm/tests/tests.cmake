@@ -20,7 +20,7 @@ make_tests_from_folder(${CMAKE_CURRENT_LIST_DIR}/sc-agents
 
 make_tests_from_folder(${CMAKE_CURRENT_LIST_DIR}/sc-utils
     NAME sc-kpm-agent-common-utils-tests
-    DEPENDS sc-memory sc-agents-common sc-kpm-common sc-utils-test-agents
+    DEPENDS sc-memory sc-agents-common sc-kpm-common sc-utils-test-agents sc-utils sc-search
     INCLUDES ${SC_MEMORY_SRC} ${SC_KPM_SRC} ${SC_MEMORY_SRC}/tests/sc-memory/_test
 )
 
