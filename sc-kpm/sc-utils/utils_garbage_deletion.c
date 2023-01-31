@@ -4,8 +4,11 @@
  * (See accompanying file COPYING.MIT or copy at http://opensource.org/licenses/MIT)
  */
 
-#include "utils_garbage_deletion.h"
 #include "utils.h"
+#include "utils_garbage_deletion.h"
+#include "../sc-common/sc_keynodes.h"
+#include "utils_keynodes.h"
+#include "../sc-search/search_keynodes.h"
 
 sc_result agent_garbage_delete(const sc_event * event, sc_addr arg)
 {
@@ -15,32 +18,37 @@ sc_result agent_garbage_delete(const sc_event * event, sc_addr arg)
   /// all other agents must to add objects to the set sc_garbage
 
   sc_addr addr;
-  sc_type t;
+  sc_type type;
+  sc_addr set_addr;
+  sc_addr element_addr;
 
   if (sc_memory_get_arc_end(s_garbage_ctx, arg, &addr) != SC_RESULT_OK)
     return SC_RESULT_ERROR_INVALID_STATE;
 
-  if (sc_memory_get_element_type(s_garbage_ctx, addr, &t) != SC_RESULT_OK)
-    return SC_RESULT_ERROR_INVALID_STATE;
+  if (sc_helper_check_arc(s_default_ctx, keynode_question_erase_element, addr, sc_type_arc_pos_const_perm) == SC_FALSE)
+    return SC_RESULT_ERROR_INVALID_TYPE;
 
-  if (t & sc_type_node_struct)
-    return sc_memory_element_free(s_garbage_ctx, addr);
-  else
+  sc_iterator5 * get_set_it = sc_iterator5_f_a_a_a_f_new(
+      s_garbage_ctx, addr, sc_type_arc_pos_const_perm, sc_type_node, sc_type_arc_pos_const_perm, keynode_rrel_1);
+
+  if (sc_iterator5_next(get_set_it) == SC_FALSE)
+    return SC_RESULT_ERROR_INVALID_PARAMS;
+
+  set_addr = sc_iterator5_value(get_set_it, 2);
+
+  sc_iterator3 * set_it = sc_iterator3_f_a_a_new(s_garbage_ctx, set_addr, 0, 0);
+
+  while (sc_iterator3_next(set_it) == SC_TRUE)
   {
-    sc_uint32 count = 0;
-    sc_iterator3 * it = sc_iterator3_f_a_a_new(s_garbage_ctx, addr, 0, 0);
-    while (sc_iterator3_next(it) == SC_TRUE)
-      ++count;
-    sc_iterator3_free(it);
+    element_addr = sc_iterator3_value(set_it, 2);
 
-    it = sc_iterator3_a_a_f_new(s_garbage_ctx, 0, 0, addr);
-    while (sc_iterator3_next(it) == SC_TRUE)
-      ++count;
-    sc_iterator3_free(it);
+    if (SC_ADDR_IS_EQUAL(element_addr, addr))
+      continue;
 
-    if (count < 20)
-      sc_memory_element_free(s_garbage_ctx, addr);
+    sc_iterator3 * unerase_it = sc_iterator3_f_a_f_new(
+        s_garbage_ctx, keynode_init_memory_generated_structure, sc_type_arc_pos_const_perm, element_addr);
+    if (sc_iterator3_next(unerase_it) == SC_FALSE)
+      sc_memory_element_free(s_garbage_ctx, element_addr);
   }
-
   return SC_RESULT_OK;
 }

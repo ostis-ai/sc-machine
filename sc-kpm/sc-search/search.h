@@ -11,7 +11,7 @@
 
 extern sc_memory_context * s_default_ctx;
 
-_SC_EXT_EXTERN sc_result sc_module_initialize();
+_SC_EXT_EXTERN sc_result sc_module_initialize(sc_bool const init_memory_generated_upload, sc_char const * init_memory_generated_structure);
 
 _SC_EXT_EXTERN sc_result sc_module_shutdown();
 
