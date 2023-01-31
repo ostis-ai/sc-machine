@@ -55,7 +55,7 @@ gint sc_priority_great(gconstpointer a, gconstpointer b)
   return sc_priority_less(b, a);
 }
 
-sc_result sc_ext_initialize(const sc_char * ext_dir_path, const sc_char ** enabled_list)
+sc_result sc_ext_initialize(const sc_char * ext_dir_path, const sc_char ** enabled_list, const sc_bool init_memory_generated_upload, const sc_char * init_memory_generated_structure)
 {
   GDir * ext_dir = null_ptr;
   const sc_char * file_name = null_ptr;
@@ -170,7 +170,7 @@ sc_result sc_ext_initialize(const sc_char * ext_dir_path, const sc_char ** enabl
   {
     sc_module_info * module = (sc_module_info *)item->data;
     sc_message("Initialize module: %s", module->path);
-    if (module->init_func() != SC_RESULT_OK)
+    if (module->init_func( init_memory_generated_upload, init_memory_generated_structure) != SC_RESULT_OK)
     {
       sc_warning("Something happens, on module initialization: %s", module->path);
       module->shut_func();
