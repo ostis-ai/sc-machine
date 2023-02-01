@@ -23,6 +23,8 @@
 #include "sc-store/sc-base/sc_assert_utils.h"
 #include "sc-store/sc-base/sc_message.h"
 
+#include "sc_helper.h"
+
 sc_memory_context * s_memory_default_ctx = null_ptr;
 sc_uint16 s_context_id_last = 1;
 sc_uint32 s_context_id_count = 0;
@@ -73,13 +75,17 @@ sc_memory_context * sc_memory_initialize(const sc_memory_params * params)
     goto error;
   }
 
+  sc_addr init_memory_generated_structure;
+
+  if (params->init_memory_generated_upload)
+  {
+    sc_helper_resolve_system_identifier(
+        helper_ctx, params->init_memory_generated_structure, &init_memory_generated_structure);
+  }
+
   if (params->ext_path)
   {
-    if (sc_memory_init_ext(
-            params->ext_path,
-            params->enabled_exts,
-            params->init_memory_generated_upload,
-            params->init_memory_generated_structure) == SC_RESULT_OK)
+    if (sc_memory_init_ext(params->ext_path, params->enabled_exts, init_memory_generated_structure) == SC_RESULT_OK)
     {
       return s_memory_default_ctx;
     }
@@ -99,11 +105,10 @@ error:
 sc_result sc_memory_init_ext(
     sc_char const * ext_path,
     const sc_char ** enabled_list,
-    sc_bool const init_memory_generated_upload,
-    sc_char const * init_memory_generated_structure)
+    sc_addr const init_memory_generated_structure)
 {
   sc_result ext_res;
-  ext_res = sc_ext_initialize(ext_path, enabled_list, init_memory_generated_upload, init_memory_generated_structure);
+  ext_res = sc_ext_initialize(ext_path, enabled_list, init_memory_generated_structure);
 
   switch (ext_res)
   {

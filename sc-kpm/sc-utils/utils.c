@@ -14,11 +14,11 @@ sc_memory_context * s_garbage_ctx = 0;
 sc_event * event_garbage_deletion;
 
 _SC_EXT_EXTERN sc_result
-sc_module_initialize(sc_bool const init_memory_generated_upload, sc_char const * init_memory_generated_structure)
+sc_module_initialize_with_init_memory_generated_structure(sc_addr const init_memory_generated_structure)
 {
   s_garbage_ctx = sc_memory_context_new(sc_access_lvl_make_max);
 
-  if (utils_keynodes_initialize(init_memory_generated_upload, init_memory_generated_structure) != SC_RESULT_OK)
+  if (utils_keynodes_initialize(init_memory_generated_structure) != SC_RESULT_OK)
     return SC_RESULT_ERROR;
 
   if (search_keynodes_initialize(s_garbage_ctx) != SC_RESULT_OK)
