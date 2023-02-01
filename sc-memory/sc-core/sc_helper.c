@@ -162,8 +162,11 @@ sc_result sc_helper_check_system_identifier(const sc_char * data)
 
   if (regexec(&regex, data, 0, NULL, 0) == 0)
   {
+    regfree(&regex);
     return SC_RESULT_OK;
   }
+
+  regfree(&regex);
   return SC_RESULT_ERROR;
 }
 
