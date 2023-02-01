@@ -20,7 +20,8 @@ const sc_version required_version = {0, 1, 0, ""};
 sc_memory_context * s_default_ctx = 0;
 
 // ------------------- Module ------------------------------
-_SC_EXT_EXTERN sc_result sc_module_initialize(sc_bool const init_memory_generated_upload, sc_char const * init_memory_generated_structure)
+_SC_EXT_EXTERN sc_result
+sc_module_initialize(sc_bool const init_memory_generated_upload, sc_char const * init_memory_generated_structure)
 {
   s_default_ctx = sc_memory_context_new(sc_access_lvl_make_min);
 

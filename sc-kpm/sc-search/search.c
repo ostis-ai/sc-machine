@@ -27,7 +27,9 @@ sc_event * event_question_search_links_of_relation_connected_with_element;
 
 // --------------------- Module ------------------------
 
-sc_result sc_module_initialize(sc_bool const init_memory_generated_upload, sc_char const * init_memory_generated_structure)
+sc_result sc_module_initialize(
+    sc_bool const init_memory_generated_upload,
+    sc_char const * init_memory_generated_structure)
 {
   s_default_ctx = sc_memory_context_new(sc_access_lvl_make_min);
 
