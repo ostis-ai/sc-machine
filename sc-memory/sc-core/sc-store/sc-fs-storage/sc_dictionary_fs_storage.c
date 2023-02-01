@@ -426,7 +426,7 @@ void sc_fs_storage_write_node(sc_dictionary_node * node, void ** dest)
     return;
 
   sc_addr_hash * hashes = sc_list_to_hashes_array(content->node->data_list);
-  sc_uint8 hashes_size = content->node->data_list->size;
+  sc_uint32 hashes_size = content->node->data_list->size;
 
   sc_dc_node_access_lvl_make_no_read(content->node);
 
@@ -508,7 +508,7 @@ sc_bool sc_dictionary_fs_storage_fill()
   gsize bytes_num = 0;
   while (SC_TRUE)
   {
-    sc_uint8 hashes_size = 0;
+    sc_uint32 hashes_size = 0;
     if (g_io_channel_read_chars(in_file, (sc_char *)&hashes_size, sizeof(hashes_size), &bytes_num, null_ptr) !=
         G_IO_STATUS_NORMAL)
       break;
@@ -527,7 +527,7 @@ sc_bool sc_dictionary_fs_storage_fill()
     if (g_io_channel_read_chars(in_file, (sc_char *)string, string_size, &bytes_num, null_ptr) != G_IO_STATUS_NORMAL)
       break;
 
-    sc_uint8 i;
+    sc_uint32 i;
     for (i = 0; i < hashes_size; ++i)
     {
       if (hashes[i] == 0)
