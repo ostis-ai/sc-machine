@@ -26,8 +26,7 @@ _SC_EXTERN sc_memory_context * sc_memory_initialize(const sc_memory_params * par
 _SC_EXTERN sc_result sc_memory_init_ext(
     sc_char const * ext_path,
     const sc_char ** enabled_list,
-    sc_bool const init_memory_generated_upload,
-    sc_char const * init_memory_generated_structure);
+    sc_addr const init_memory_generated_structure);
 
 //! Shutdown sc-memory (save repository to file system)
 _SC_EXTERN void sc_memory_shutdown(sc_bool save_state);

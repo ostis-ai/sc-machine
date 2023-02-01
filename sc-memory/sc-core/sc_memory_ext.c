@@ -23,6 +23,7 @@ typedef struct _sc_module_info
   gchar * path;
   sc_uint32 priority;
   fModuleFunc init_func;
+  char * init_func_type;
   fModuleFunc shut_func;
 } sc_module_info;
 
@@ -58,8 +59,7 @@ gint sc_priority_great(gconstpointer a, gconstpointer b)
 sc_result sc_ext_initialize(
     const sc_char * ext_dir_path,
     const sc_char ** enabled_list,
-    const sc_bool init_memory_generated_upload,
-    const sc_char * init_memory_generated_structure)
+    sc_addr const init_memory_generated_structure)
 {
   GDir * ext_dir = null_ptr;
   const sc_char * file_name = null_ptr;
@@ -131,10 +131,19 @@ sc_result sc_ext_initialize(
     // skip non module files
     if (g_str_has_suffix(file_name, moduleSuffix) == SC_TRUE)
     {
-      if (g_module_symbol(mi->ptr, "sc_module_initialize", (gpointer *)&func) == SC_FALSE)
+      if (g_module_symbol(mi->ptr, "sc_module_initialize_with_init_memory_generated_structure", (gpointer *)&func) ==
+          SC_TRUE)
       {
-        sc_warning("Can't find 'sc_module_initialize' symbol in module: %s", mi->path);
-        goto clean;
+        mi->init_func_type = "sc_module_initialize_with_init_memory_generated_structure";
+      }
+      else
+      {
+        if (g_module_symbol(mi->ptr, "sc_module_initialize", (gpointer *)&func) == SC_FALSE)
+        {
+          sc_warning("Can't find any 'sc_module_initialize' symbol in module: %s", mi->path);
+          goto clean;
+        }
+        mi->init_func_type = "sc_module_initialize";
       }
       mi->init_func = func;
 
@@ -170,11 +179,21 @@ sc_result sc_ext_initialize(
 
   // initialize modules
   GList * item = modules_priority_list;
+  sc_result init_result = SC_RESULT_ERROR;
   while (item != null_ptr)
   {
     sc_module_info * module = (sc_module_info *)item->data;
     sc_message("Initialize module: %s", module->path);
-    if (module->init_func(init_memory_generated_upload, init_memory_generated_structure) != SC_RESULT_OK)
+    if (module->init_func_type == "sc_module_initialize_with_init_memory_generated_structure")
+    {
+      init_result = module->init_func(init_memory_generated_structure);
+    }
+    else
+    {
+      init_result = module->init_func();
+    }
+
+    if (init_result != SC_RESULT_OK)
     {
       sc_warning("Something happens, on module initialization: %s", module->path);
       module->shut_func();

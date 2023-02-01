@@ -22,8 +22,7 @@
 sc_result sc_ext_initialize(
     sc_char const * ext_path,
     const sc_char ** enabled_list,
-    sc_bool const init_memory_generated_upload,
-    sc_char const * init_memory_generated_structure);
+    sc_addr const init_memory_generated_structure);
 
 /*! Shutdown all loaded extensions
  */
