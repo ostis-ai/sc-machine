@@ -56,148 +56,183 @@ public:
   using ScTemplateGroupedTriples = ScTemplate::ScTemplateGroupedTriples;
 
 private:
+  /*!
+   * Prepares input sc-template to minimize search
+   */
   void PrepareSearch()
   {
-    auto const & SortTriplesWithConstBeginElement = [this]() {
-      auto triplesWithConstBeginElement = m_template.m_orderedTriples[(size_t)ScTemplateTripleType::FAE];
-      if (triplesWithConstBeginElement.empty())
-      {
-        triplesWithConstBeginElement = m_template.m_orderedTriples[(size_t)ScTemplateTripleType::FAN];
-      }
+    FindTripleWithMostMinimalOutputArcsForFirstItem();
+    SetUpDependenciesBetweenTriples();
+    RemoveCycledDependenciesBetweenTriples();
+  }
 
-      sc_int32 priorityTripleIdx = -1;
-      sc_int32 minOutputArcsCount = -1;
-      for (size_t const tripleIdx : triplesWithConstBeginElement)
-      {
-        ScTemplateTriple const * triple = m_template.m_triples[tripleIdx];
-        auto const count = (sc_int32)m_context.GetElementOutputArcsCount(triple->GetValues()[0].m_addrValue);
-
-        if (minOutputArcsCount == -1 || count < minOutputArcsCount)
-        {
-          priorityTripleIdx = (sc_int32)tripleIdx;
-          minOutputArcsCount = (sc_int32)count;
-        }
-      }
-
-      if (priorityTripleIdx != -1)
-      {
-        m_template.m_orderedTriples[(size_t)ScTemplateTripleType::PFAE].insert(priorityTripleIdx);
-      }
-    };
-
-    auto const & SaveDependenciesBetweenTriples = [this]() {
-      for (ScTemplateTriple const * triple : m_template.m_triples)
-      {
-        ScTemplateItemValue const & item1 = (*triple)[0];
-        ScTemplateItemValue const & item2 = (*triple)[1];
-        ScTemplateItemValue const & item3 = (*triple)[2];
-
-        for (ScTemplateTriple * otherTriple : m_template.m_triples)
-        {
-          ScTemplateItemValue const & otherItem1 = (*otherTriple)[0];
-          ScTemplateItemValue const & otherItem2 = (*otherTriple)[1];
-          ScTemplateItemValue const & otherItem3 = (*otherTriple)[2];
-
-          if (triple->m_index == otherTriple->m_index)
-            continue;
-
-          auto const & TryAddDependence = [this, &triple, &otherTriple](
-                                              ScTemplateItemValue const & item,
-                                              ScTemplateItemValue const & otherItem1,
-                                              ScTemplateItemValue const & otherItem2,
-                                              ScTemplateItemValue const & otherItem3) {
-            if (item.m_replacementName.empty())
-              return;
-
-            sc_bool const withItem1Equal = item.m_replacementName == otherItem1.m_replacementName;
-            sc_bool const withItem2Equal = item.m_replacementName == otherItem2.m_replacementName;
-            sc_bool const withItem3Equal = item.m_replacementName == otherItem3.m_replacementName;
-
-            if (withItem1Equal || withItem2Equal || withItem3Equal)
-            {
-              std::string const & key = GetKey(triple, item);
-              auto const & found = m_itemsToTriples.find(key);
-              if (found == m_itemsToTriples.cend())
-                m_itemsToTriples.insert({key, {otherTriple->m_index}});
-              else
-                found->second.insert(otherTriple->m_index);
-            }
-          };
-
-          TryAddDependence(item1, otherItem1, otherItem2, otherItem3);
-          TryAddDependence(item2, otherItem1, otherItem2, otherItem3);
-          TryAddDependence(item3, otherItem1, otherItem2, otherItem3);
-        }
-      }
-    };
-
-    auto const & RemoveCycledDependenciesBetweenTriples = [this]() {
-      auto const & faeTriples = m_template.m_orderedTriples[(size_t)ScTemplateTripleType::FAN];
-
-      for (ScTemplateTriple const * triple : m_template.m_triples)
-      {
-        auto const & item1 = (*triple)[0];
-
-        bool isFound = false;
-        auto const & found = m_template.m_namesToTypes.find(item1.m_replacementName);
-        if (m_cycledTriples.find(triple->m_index) == m_cycledTriples.cend() &&
-            ((found != m_template.m_namesToTypes.cend() && found->second == ScType::NodeVarStruct) ||
-             (item1.IsAddr() && faeTriples.find(triple->m_index) != faeTriples.cend())))
-        {
-          ScTemplateGroupedTriples checkedTriples;
-          FindCycleWithFAATriple(item1, triple, triple, checkedTriples, isFound);
-        }
-
-        if (isFound)
-        {
-          std::string const & key = GetKey(triple, item1);
-          auto const & dependedTriples = m_itemsToTriples.find(key);
-
-          if (dependedTriples != m_itemsToTriples.cend())
-          {
-            for (size_t const dependedTripleIdx : dependedTriples->second)
-            {
-              if (IsTriplesEqual(triple, m_template.m_triples[dependedTripleIdx]))
-              {
-                m_cycledTriples.insert(dependedTripleIdx);
-              }
-            }
-          }
-
-          m_cycledTriples.insert(triple->m_index);
-        }
-      }
-
-      for (size_t const idx : m_cycledTriples)
-      {
-        ScTemplateTriple * triple = m_template.m_triples[idx];
-        std::string const & key = GetKey(triple, (*triple)[0]);
-
-        auto const & found = m_itemsToTriples.find(key);
-        if (found != m_itemsToTriples.cend())
-        {
-          for (size_t const otherIdx : m_cycledTriples)
-          {
-            found->second.erase(otherIdx);
-          }
-        }
-      }
-    };
-
+  /*!
+   * Finds a triple among all triples that have the fixed first item, but not fixed other items,
+   * for which the minimum number of arcs goes out of the first item compared to the other triples.
+   */
+  void FindTripleWithMostMinimalOutputArcsForFirstItem()
+  {
+    auto triplesWithConstBeginElement = m_template.m_orderedTriples[(size_t)ScTemplateTripleType::FAE];
+    // if there are no triples with the no edge third item than sort triples with the edge third item
+    if (triplesWithConstBeginElement.empty())
     {
-      SortTriplesWithConstBeginElement();
-      SaveDependenciesBetweenTriples();
-      RemoveCycledDependenciesBetweenTriples();
+      triplesWithConstBeginElement = m_template.m_orderedTriples[(size_t)ScTemplateTripleType::FAN];
+    }
+
+    // find triple in which the first item address has the most minimal count of output arcs
+    sc_int32 priorityTripleIdx = -1;
+    sc_int32 minOutputArcsCount = -1;
+    for (size_t const tripleIdx : triplesWithConstBeginElement)
+    {
+      ScTemplateTriple const * triple = m_template.m_triples[tripleIdx];
+      auto const count = (sc_int32)m_context.GetElementOutputArcsCount(triple->GetValues()[0].m_addrValue);
+
+      if (minOutputArcsCount == -1 || count < minOutputArcsCount)
+      {
+        priorityTripleIdx = (sc_int32)tripleIdx;
+        minOutputArcsCount = (sc_int32)count;
+      }
+    }
+
+    // save triple in which the first item address has the most minimal count of output arcs in vector
+    // with more priority
+    if (priorityTripleIdx != -1)
+    {
+      m_template.m_orderedTriples[(size_t)ScTemplateTripleType::PFAE].insert(priorityTripleIdx);
     }
   }
 
-  static std::string GetKey(ScTemplateTriple const * triple, ScTemplateItemValue const & item)
+  /*!
+   * Find all dependencies between triples. Compares replacement name of each item of the triple
+   * with replacement name of each item of the other triple, and if they are equal, then adds
+   * dependencies between them.
+   * @note All triple items that have valid address must have replacement names to set up dependencies with them.
+   */
+  void SetUpDependenciesBetweenTriples()
   {
-    std::ostringstream stream;
-    stream << item.m_replacementName << triple->m_index;
+    auto const & AddDependenceFromTripleItemToOtherTriple = [this](
+                                                                ScTemplateTriple const * triple,
+                                                                ScTemplateItemValue const & tripleItem,
+                                                                ScTemplateTriple const * otherTriple) {
+      std::string const & key = GetKey(triple, tripleItem);
 
-    return stream.str();
-  }
+      auto const & found = m_itemsToTriples.find(key);
+      if (found == m_itemsToTriples.cend())
+        m_itemsToTriples.insert({key, {otherTriple->m_index}});
+      else
+        found->second.insert(otherTriple->m_index);
+    };
+
+    auto const & TryAddDependenceBetweenTriples = [&AddDependenceFromTripleItemToOtherTriple](
+                                                      ScTemplateTriple const * triple,
+                                                      ScTemplateItemValue const & tripleItem,
+                                                      ScTemplateTriple const * otherTriple,
+                                                      ScTemplateItemValue const & otherTripleItem1,
+                                                      ScTemplateItemValue const & otherTripleItem2,
+                                                      ScTemplateItemValue const & otherTripleItem3) {
+      // don't set up dependency with self
+      if (triple->m_index == otherTriple->m_index)
+        return;
+
+      // don't set up dependency if item of triple has empty replacement name
+      if (tripleItem.m_replacementName.empty())
+        return;
+
+      // check triple item name with other triple items names and dependencies
+      tripleItem.m_replacementName == otherTripleItem1.m_replacementName
+          ? AddDependenceFromTripleItemToOtherTriple(triple, tripleItem, otherTriple)
+          : (tripleItem.m_replacementName == otherTripleItem2.m_replacementName
+                 ? AddDependenceFromTripleItemToOtherTriple(triple, tripleItem, otherTriple)
+                 : (tripleItem.m_replacementName == otherTripleItem3.m_replacementName
+                        ? AddDependenceFromTripleItemToOtherTriple(triple, tripleItem, otherTriple)
+                        : (void)(null_ptr)));
+    };
+
+    for (ScTemplateTriple const * triple : m_template.m_triples)
+    {
+      ScTemplateItemValue const & item1 = (*triple)[0];
+      ScTemplateItemValue const & item2 = (*triple)[1];
+      ScTemplateItemValue const & item3 = (*triple)[2];
+
+      for (ScTemplateTriple const * otherTriple : m_template.m_triples)
+      {
+        ScTemplateItemValue const & otherItem1 = (*otherTriple)[0];
+        ScTemplateItemValue const & otherItem2 = (*otherTriple)[1];
+        ScTemplateItemValue const & otherItem3 = (*otherTriple)[2];
+
+        TryAddDependenceBetweenTriples(triple, item1, otherTriple, otherItem1, otherItem2, otherItem3);
+        TryAddDependenceBetweenTriples(triple, item2, otherTriple, otherItem1, otherItem2, otherItem3);
+        TryAddDependenceBetweenTriples(triple, item3, otherTriple, otherItem1, otherItem2, otherItem3);
+      }
+    }
+  };
+
+  void RemoveCycledDependenciesBetweenTriples()
+  {
+    auto const & CheckIfItemIsNodeVarStruct = [this](ScTemplateItemValue const & item) -> bool {
+      auto const & found = m_template.m_namesToTypes.find(item.m_replacementName);
+      return found != m_template.m_namesToTypes.cend() && found->second == ScType::NodeVarStruct;
+    };
+
+    auto const & faeTriples = m_template.m_orderedTriples[(size_t)ScTemplateTripleType::FAN];
+    auto const & CheckIfItemIsFixedAndOtherEdgeItemIsEdge =
+        [&faeTriples](size_t const tripleIdx, ScTemplateItemValue const & item) -> bool {
+      return item.IsAddr() && faeTriples.find(tripleIdx) != faeTriples.cend();
+    };
+
+    auto const & UpdateCycledTriples = [this](ScTemplateTriple const * triple, ScTemplateItemValue const & item) {
+      std::string const & key = GetKey(triple, item);
+      auto const & dependedTriples = m_itemsToTriples.find(key);
+
+      if (dependedTriples != m_itemsToTriples.cend())
+      {
+        for (size_t const dependedTripleIdx : dependedTriples->second)
+        {
+          if (IsTriplesEqual(triple, m_template.m_triples[dependedTripleIdx]))
+          {
+            m_cycledTriples.insert(dependedTripleIdx);
+          }
+        }
+      }
+
+      m_cycledTriples.insert(triple->m_index);
+    };
+
+    // save all triples that form cycles
+    for (ScTemplateTriple const * triple : m_template.m_triples)
+    {
+      ScTemplateItemValue const & item1 = (*triple)[0];
+
+      bool isFound = false;
+      if (m_cycledTriples.find(triple->m_index) == m_cycledTriples.cend() &&
+          (CheckIfItemIsNodeVarStruct(item1) || CheckIfItemIsFixedAndOtherEdgeItemIsEdge(triple->m_index, item1)))
+      {
+        ScTemplateGroupedTriples checkedTriples;
+        FindCycleWithFAATriple(item1, triple, triple, checkedTriples, isFound);
+      }
+
+      if (isFound)
+      {
+        UpdateCycledTriples(triple, item1);
+      }
+    }
+
+    // remove dependencies with all triples that form cycles
+    for (size_t const idx : m_cycledTriples)
+    {
+      ScTemplateTriple * triple = m_template.m_triples[idx];
+      std::string const & key = GetKey(triple, (*triple)[0]);
+
+      auto const & found = m_itemsToTriples.find(key);
+      if (found != m_itemsToTriples.cend())
+      {
+        for (size_t const otherIdx : m_cycledTriples)
+        {
+          found->second.erase(otherIdx);
+        }
+      }
+    }
+  };
 
   void FindCycleWithFAATriple(
       ScTemplateItemValue const & item,
@@ -206,25 +241,22 @@ private:
       ScTemplateGroupedTriples checkedTriples,
       bool & isFound)
   {
+    // no iterate more if cycle is found
     if (isFound)
-    {
       return;
-    }
 
     auto const & FindCycleWithFAATripleByTripleItem = [this, &tripleToFind, &checkedTriples](
                                                           ScTemplateItemValue const & item,
                                                           ScTemplateTriple const * triple,
                                                           ScTemplateItemValue const & previousItem,
                                                           bool & isFound) {
+      // no iterate back by the same item replacement name
       if (!item.m_replacementName.empty() && item.m_replacementName == previousItem.m_replacementName)
-      {
         return;
-      }
 
+      // no iterate back by the same item address
       if (item.m_addrValue.IsValid() && item.m_addrValue == previousItem.m_addrValue)
-      {
         return;
-      }
 
       FindCycleWithFAATriple(item, triple, tripleToFind, checkedTriples, isFound);
     };
@@ -243,21 +275,99 @@ private:
         break;
       }
 
+      // check if triple was passed in branch of sc-template
       if (checkedTriples.find(otherTripleIdx) != checkedTriples.cend())
-      {
         continue;
-      }
 
+      // iterate by all triple item
       {
-        auto const & items = otherTriple->GetValues();
         checkedTriples.insert(otherTripleIdx);
 
-        FindCycleWithFAATripleByTripleItem(items[0], otherTriple, item, isFound);
-        FindCycleWithFAATripleByTripleItem(items[1], otherTriple, item, isFound);
-        FindCycleWithFAATripleByTripleItem(items[2], otherTriple, item, isFound);
+        FindCycleWithFAATripleByTripleItem((*otherTriple)[0], otherTriple, item, isFound);
+        FindCycleWithFAATripleByTripleItem((*otherTriple)[1], otherTriple, item, isFound);
+        FindCycleWithFAATripleByTripleItem((*otherTriple)[2], otherTriple, item, isFound);
       }
     }
   }
+
+  //! Returns key - "${item replacement name}${triple index}"
+  static std::string GetKey(ScTemplateTriple const * triple, ScTemplateItemValue const & item)
+  {
+    std::ostringstream stream;
+    stream << item.m_replacementName << triple->m_index;
+    return stream.str();
+  }
+
+  void FindDependedTriple(
+      ScTemplateItemValue const & item,
+      ScTemplateTriple const * triple,
+      ScTemplateGroupedTriples & nextTriples)
+  {
+    if (item.m_replacementName.empty())
+      return;
+
+    std::string const & key = GetKey(triple, item);
+    auto const & found = m_itemsToTriples.find(key);
+    if (found != m_itemsToTriples.cend())
+    {
+      nextTriples = found->second;
+    }
+  }
+
+  bool IsTriplesEqual(
+      ScTemplateTriple const * triple,
+      ScTemplateTriple const * otherTriple,
+      std::string const & itemName = "")
+  {
+    if (triple->m_index == otherTriple->m_index)
+      return true;
+
+    auto const & tripleValues = triple->GetValues();
+    auto const & otherTripleValues = otherTriple->GetValues();
+
+    auto const & IsTriplesItemsEqual =
+        [this](ScTemplateItemValue const & item, ScTemplateItemValue const & otherItem) -> bool {
+      bool isEqual = item.m_typeValue == otherItem.m_typeValue;
+      if (!isEqual)
+      {
+        auto found = m_template.m_namesToTypes.find(item.m_replacementName);
+        if (found == m_template.m_namesToTypes.cend())
+        {
+          found = m_template.m_namesToTypes.find(item.m_replacementName);
+          if (found != m_template.m_namesToTypes.cend())
+            isEqual = item.m_typeValue == found->second;
+        }
+        else
+          isEqual = found->second == otherItem.m_typeValue;
+      }
+
+      if (isEqual)
+        isEqual = item.m_addrValue == otherItem.m_addrValue;
+
+      if (!isEqual)
+      {
+        auto found = m_template.m_namesToAddrs.find(item.m_replacementName);
+        if (found == m_template.m_namesToAddrs.cend())
+        {
+          found = m_template.m_namesToAddrs.find(item.m_replacementName);
+          if (found != m_template.m_namesToAddrs.cend())
+            isEqual = item.m_addrValue == found->second;
+        }
+        else
+          isEqual = found->second == otherItem.m_addrValue;
+      }
+
+      return isEqual;
+    };
+
+    return IsTriplesItemsEqual(tripleValues[0], otherTripleValues[0]) &&
+           IsTriplesItemsEqual(tripleValues[1], otherTripleValues[1]) &&
+           IsTriplesItemsEqual(tripleValues[2], otherTripleValues[2]) &&
+           ((tripleValues[0].m_replacementName == otherTripleValues[0].m_replacementName &&
+             (itemName.empty() || otherTripleValues[0].m_replacementName == itemName)) ||
+            (tripleValues[2].m_replacementName == otherTripleValues[2].m_replacementName &&
+             (itemName.empty() || otherTripleValues[0].m_replacementName == itemName)));
+  };
 
   inline bool IsStructureValid()
   {
@@ -274,6 +384,19 @@ private:
       ScAddrVector const & resultAddrs,
       ScTemplateSearchResult & result) const
   {
+    auto const & GetItemAddrInReplacements = [&resultAddrs,
+                                              &result](ScTemplateItemValue const & item) -> ScAddr const & {
+      auto const & it = result.m_replacements.equal_range(item.m_replacementName);
+      for (auto curIt = it.first; curIt != it.second; ++curIt)
+      {
+        ScAddr const & addr = resultAddrs[curIt->second];
+        if (addr.IsValid())
+          return addr;
+      }
+
+      return ScAddr::Empty;
+    };
+
     switch (item.m_itemType)
     {
     case ScTemplateItemValue::Type::Addr:
@@ -283,19 +406,13 @@ private:
 
     case ScTemplateItemValue::Type::Replace:
     {
-      auto const & it = result.m_replacements.equal_range(item.m_replacementName);
-      for (auto curIt = it.first; curIt != it.second; ++curIt)
-      {
-        ScAddr const & addr = resultAddrs[curIt->second];
-        if (addr.IsValid())
-          return addr;
-      }
+      ScAddr const & replacementAddr = GetItemAddrInReplacements(item);
+      if (replacementAddr.IsValid())
+        return replacementAddr;
 
       auto const & addrsIt = m_template.m_namesToAddrs.find(item.m_replacementName);
       if (addrsIt != m_template.m_namesToAddrs.cend())
-      {
         return addrsIt->second;
-      }
 
       return ScAddr::Empty;
     }
@@ -304,15 +421,7 @@ private:
     {
       if (!item.m_replacementName.empty())
       {
-        auto const & it = result.m_replacements.equal_range(item.m_replacementName);
-        for (auto curIt = it.first; curIt != it.second; ++curIt)
-        {
-          ScAddr const & addr = resultAddrs[curIt->second];
-          if (addr.IsValid())
-            return addr;
-        }
-
-        return ScAddr::Empty;
+        return GetItemAddrInReplacements(item);
       }
     }
 
@@ -330,11 +439,11 @@ private:
       ScAddrVector const & resultAddrs,
       ScTemplateSearchResult & result)
   {
-    ScAddr const addr1 = ResolveAddr(item1, resultAddrs, result);
-    ScAddr const addr2 = ResolveAddr(item2, resultAddrs, result);
-    ScAddr const addr3 = ResolveAddr(item3, resultAddrs, result);
+    ScAddr const & addr1 = ResolveAddr(item1, resultAddrs, result);
+    ScAddr const & addr2 = ResolveAddr(item2, resultAddrs, result);
+    ScAddr const & addr3 = ResolveAddr(item3, resultAddrs, result);
 
-    auto const PrepareType = [](ScType const & type) {
+    auto const & PrepareType = [](ScType const & type) {
       if (type.HasConstancyFlag())
         return type.UpConstType();
 
@@ -384,89 +493,6 @@ private:
 
     return {};
   }
-
-  void FindDependedTriple(
-      ScTemplateItemValue const & item,
-      ScTemplateTriple const * triple,
-      ScTemplateGroupedTriples & nextTriples)
-  {
-    if (item.m_replacementName.empty())
-      return;
-
-    std::string const & key = GetKey(triple, item);
-    auto const & found = m_itemsToTriples.find(key);
-    if (found != m_itemsToTriples.cend())
-    {
-      nextTriples = found->second;
-    }
-  }
-
-  bool IsTriplesEqual(
-      ScTemplateTriple const * triple,
-      ScTemplateTriple const * otherTriple,
-      std::string const & itemName = "")
-  {
-    if (triple->m_index == otherTriple->m_index)
-    {
-      return true;
-    }
-
-    auto const & tripleValues = triple->GetValues();
-    auto const & otherTripleValues = otherTriple->GetValues();
-
-    auto const & IsTriplesItemsEqual =
-        [this](ScTemplateItemValue const & item, ScTemplateItemValue const & otherItem) -> bool {
-      bool isEqual = item.m_typeValue == otherItem.m_typeValue;
-      if (!isEqual)
-      {
-        auto found = m_template.m_namesToTypes.find(item.m_replacementName);
-        if (found == m_template.m_namesToTypes.cend())
-        {
-          found = m_template.m_namesToTypes.find(item.m_replacementName);
-          if (found != m_template.m_namesToTypes.cend())
-          {
-            isEqual = item.m_typeValue == found->second;
-          }
-        }
-        else
-        {
-          isEqual = found->second == otherItem.m_typeValue;
-        }
-      }
-
-      if (isEqual)
-      {
-        isEqual = item.m_addrValue == otherItem.m_addrValue;
-      }
-
-      if (!isEqual)
-      {
-        auto found = m_template.m_namesToAddrs.find(item.m_replacementName);
-        if (found == m_template.m_namesToAddrs.cend())
-        {
-          found = m_template.m_namesToAddrs.find(item.m_replacementName);
-          if (found != m_template.m_namesToAddrs.cend())
-          {
-            isEqual = item.m_addrValue == found->second;
-          }
-        }
-        else
-        {
-          isEqual = found->second == otherItem.m_addrValue;
-        }
-      }
-
-      return isEqual;
-    };
-
-    return IsTriplesItemsEqual(tripleValues[0], otherTripleValues[0]) &&
-           IsTriplesItemsEqual(tripleValues[1], otherTripleValues[1]) &&
-           IsTriplesItemsEqual(tripleValues[2], otherTripleValues[2]) &&
-           ((tripleValues[0].m_replacementName == otherTripleValues[0].m_replacementName &&
-             (itemName.empty() || otherTripleValues[0].m_replacementName == itemName)) ||
-            (tripleValues[2].m_replacementName == otherTripleValues[2].m_replacementName &&
-             (itemName.empty() || otherTripleValues[0].m_replacementName == itemName)));
-  };
 
   using UsedEdges = std::unordered_set<ScAddr, ScAddrHashFunc<uint32_t>>;
 
@@ -558,36 +584,46 @@ private:
       result.m_replacements.insert({item.m_replacementName, elementNum});
     };
 
-    auto const & UpdateResults = [this, &UpdateItemResults, &result](
-                                     ScTemplateTriple * triple,
-                                     size_t const resultIdx,
-                                     ScAddr const & addr1,
-                                     ScAddr const & addr2,
-                                     ScAddr const & addr3) {
-      m_resultCheckedTriples[resultIdx].insert(triple->m_index);
-      m_usedEdges[resultIdx].insert(addr2);
+    auto const & UpdateResults =
+        [this, &UpdateItemResults, &result](
+            ScTemplateTriple * triple,
+            size_t const resultIdx,
+            ScAddr const & addr1,
+            ScAddr const & addr2,
+            ScAddr const & addr3,
+            std::unordered_map<ScAddr, std::array<ScAddr, 3>, ScAddrHashFunc<size_t>, ScAddLessFunc> & unusedTriples) {
+          m_resultCheckedTriples[resultIdx].insert(triple->m_index);
+          m_usedEdges[resultIdx].insert(addr2);
+          unusedTriples.erase(addr2);
 
-      size_t itemIdx = triple->m_index * 3;
+          size_t itemIdx = triple->m_index * 3;
 
-      for (size_t i = resultIdx; i < result.Size(); ++i)
-      {
-        ScAddrVector & resultAddrs = result.m_results[i];
+          for (size_t i = resultIdx; i < result.Size(); ++i)
+          {
+            ScAddrVector & resultAddrs = result.m_results[i];
 
-        UpdateItemResults((*triple)[0], addr1, itemIdx, resultAddrs);
-        UpdateItemResults((*triple)[1], addr2, itemIdx + 1, resultAddrs);
-        UpdateItemResults((*triple)[2], addr3, itemIdx + 2, resultAddrs);
-      }
-    };
+            UpdateItemResults((*triple)[0], addr1, itemIdx, resultAddrs);
+            UpdateItemResults((*triple)[1], addr2, itemIdx + 1, resultAddrs);
+            UpdateItemResults((*triple)[2], addr3, itemIdx + 2, resultAddrs);
+          }
+        };
 
-    auto const & ClearResults = [this](size_t const tripleIdx, size_t const resultIdx, ScAddrVector & resultAddrs) {
-      m_resultCheckedTriples[resultIdx].erase(tripleIdx);
+    auto const & ClearResults =
+        [this](
+            size_t const tripleIdx,
+            size_t const resultIdx,
+            ScAddrVector & resultAddrs,
+            std::unordered_map<ScAddr, std::array<ScAddr, 3>, ScAddrHashFunc<size_t>, ScAddLessFunc> & unusedTriples) {
+          m_resultCheckedTriples[resultIdx].erase(tripleIdx);
 
-      size_t itemIdx = tripleIdx * 3;
-      resultAddrs[itemIdx] = ScAddr::Empty;
-      m_usedEdges[resultIdx].erase(resultAddrs[++itemIdx]);
-      resultAddrs[itemIdx] = ScAddr::Empty;
-      resultAddrs[++itemIdx] = ScAddr::Empty;
-    };
+          size_t itemIdx = tripleIdx * 3;
+          unusedTriples.insert(
+              {resultAddrs[itemIdx], {resultAddrs[itemIdx], resultAddrs[itemIdx + 1], resultAddrs[itemIdx + 2]}});
+          resultAddrs[itemIdx] = ScAddr::Empty;
+          m_usedEdges[resultIdx].erase(resultAddrs[++itemIdx]);
+          resultAddrs[itemIdx] = ScAddr::Empty;
+          resultAddrs[++itemIdx] = ScAddr::Empty;
+        };
 
     ScTemplateTriple * triple = m_template.m_triples[*triples.begin()];
 
@@ -598,7 +634,7 @@ private:
     ScTemplateItemValue item2 = (*triple)[1];
     ScTemplateItemValue item3 = (*triple)[2];
 
-    ScIterator3Ptr const it = CreateIterator(item1, item2, item3, result.m_results[resultIdx], result);
+    ScIterator3Ptr it = CreateIterator(item1, item2, item3, result.m_results[resultIdx], result);
     if (!it || !it->IsValid())
     {
       SC_THROW_EXCEPTION(utils::ExceptionInvalidState, "During search procedure has been chosen var triple");
@@ -610,11 +646,27 @@ private:
     ScAddrVector const currentResultAddrs{result.m_results[resultIdx]};
     std::unordered_set<size_t> const currentCheckedTriples{m_resultCheckedTriples[resultIdx]};
     UsedEdges currentUsedEdges{m_usedEdges[resultIdx]};
-    while (it->Next() && !isStopped)
+    std::unordered_map<ScAddr, std::array<ScAddr, 3>, ScAddrHashFunc<size_t>, ScAddLessFunc> unusedTriples;
+    bool isItFound;
+    auto unusedTriplesIt = unusedTriples.cbegin();
+    while (((isItFound = it->Next()) || unusedTriplesIt != unusedTriples.cend()) && !isStopped)
     {
-      ScAddr const & addr1 = it->Get(0);
-      ScAddr const & addr2 = it->Get(1);
-      ScAddr const & addr3 = it->Get(2);
+      ScAddr addr1;
+      ScAddr addr2;
+      ScAddr addr3;
+
+      if (isItFound)
+      {
+        addr1 = it->Get(0);
+        addr2 = it->Get(1);
+        addr3 = it->Get(2);
+      }
+      else
+      {
+        addr1 = unusedTriplesIt->second[0];
+        addr2 = unusedTriplesIt->second[1];
+        addr3 = unusedTriplesIt->second[2];
+      }
 
       // check triple elements by structure belonging or predicate callback
       if ((IsStructureValid() && (!IsInStructure(addr1) || !IsInStructure(addr2) || !IsInStructure(addr3))) ||
@@ -662,7 +714,7 @@ private:
 
         // update data
         {
-          UpdateResults(triple, resultIdx, addr1, addr2, addr3);
+          UpdateResults(triple, resultIdx, addr1, addr2, addr3, unusedTriples);
         }
 
         // find next depended on triples and analyse result
@@ -676,7 +728,7 @@ private:
           isLast = isNoChild;
           if (!isChildFinished && !isLast)
           {
-            ClearResults(tripleIdx, resultIdx, result.m_results[resultIdx]);
+            ClearResults(tripleIdx, resultIdx, result.m_results[resultIdx], unusedTriples);
             ++notFinishedTriplesCount;
             continue;
           }
@@ -686,7 +738,7 @@ private:
           isLast &= isNoChild;
           if (!isChildFinished && !isLast)
           {
-            ClearResults(tripleIdx, resultIdx, result.m_results[resultIdx]);
+            ClearResults(tripleIdx, resultIdx, result.m_results[resultIdx], unusedTriples);
             ++notFinishedTriplesCount;
             continue;
           }
@@ -696,7 +748,7 @@ private:
           isLast &= isNoChild;
           if (!isChildFinished && !isLast)
           {
-            ClearResults(tripleIdx, resultIdx, result.m_results[resultIdx]);
+            ClearResults(tripleIdx, resultIdx, result.m_results[resultIdx], unusedTriples);
             ++notFinishedTriplesCount;
             continue;
           }
@@ -717,6 +769,11 @@ private:
       if (isLast && isAllChildrenFinished && m_resultCheckedTriples[resultIdx].size() == m_template.m_triples.size())
       {
         FormResult(result, resultIdx);
+      }
+
+      if (!isItFound)
+      {
+        ++unusedTriplesIt;
       }
     }
   }
@@ -781,7 +838,6 @@ private:
       {
         DoStartIteration(equalTriples);
 
-        // TODO: Provide logic for template with more connectivity components than 1 in sc-template
         break;
       }
     }
