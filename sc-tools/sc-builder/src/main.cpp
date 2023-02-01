@@ -52,7 +52,7 @@ try
 
   params.m_resultStructureUpload = memoryConfig.GetParams().init_memory_generated_upload;
   if (params.m_resultStructureUpload)
-    params.m_resultStructureSystemIdtf =  std::string(memoryConfig.GetParams().init_memory_generated_structure);
+    params.m_resultStructureSystemIdtf = std::string(memoryConfig.GetParams().init_memory_generated_structure);
 
   ScBuilderConfig builderConfig{ScConfig(config, {"repo_path", "log_file"}), std::move(params)};
 
