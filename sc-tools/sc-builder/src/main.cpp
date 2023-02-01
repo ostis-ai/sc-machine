@@ -48,13 +48,13 @@ try
   ScParams memoryParams{options, keys};
   memoryParams.insert({"repo_path", options[{"output_path", "o"}].second});
 
-  ScBuilderConfig builderConfig{ScConfig(config, {"repo_path", "log_file"}), std::move(params)};
-
-  memoryParams.insert(
-      {"init_memory_generated_upload", std::to_string(builderConfig.GetParams().m_resultStructureUpload)});
-  memoryParams.insert({"init_memory_generated_structure", builderConfig.GetParams().m_resultStructureSystemIdtf});
-
   ScMemoryConfig memoryConfig{config, {"repo_path", "log_file"}, std::move(memoryParams)};
+
+  params.m_resultStructureUpload = memoryConfig.GetParams().init_memory_generated_upload;
+  if (params.m_resultStructureUpload)
+    params.m_resultStructureSystemIdtf =  std::string(memoryConfig.GetParams().init_memory_generated_structure);
+
+  ScBuilderConfig builderConfig{ScConfig(config, {"repo_path", "log_file"}), std::move(params)};
 
   Builder builder;
   return builder.Run(builderConfig.GetParams(), memoryConfig.GetParams()) ? EXIT_SUCCESS : EXIT_FAILURE;
