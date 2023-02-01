@@ -75,7 +75,11 @@ sc_memory_context * sc_memory_initialize(const sc_memory_params * params)
 
   if (params->ext_path)
   {
-    if (sc_memory_init_ext(params->ext_path, params->enabled_exts, params->init_memory_generated_upload, params->init_memory_generated_structure) == SC_RESULT_OK)
+    if (sc_memory_init_ext(
+            params->ext_path,
+            params->enabled_exts,
+            params->init_memory_generated_upload,
+            params->init_memory_generated_structure) == SC_RESULT_OK)
     {
       return s_memory_default_ctx;
     }
@@ -92,7 +96,11 @@ error:
   return (s_memory_default_ctx = null_ptr);
 }
 
-sc_result sc_memory_init_ext(sc_char const * ext_path, const sc_char ** enabled_list, sc_bool const init_memory_generated_upload, sc_char const * init_memory_generated_structure)
+sc_result sc_memory_init_ext(
+    sc_char const * ext_path,
+    const sc_char ** enabled_list,
+    sc_bool const init_memory_generated_upload,
+    sc_char const * init_memory_generated_structure)
 {
   sc_result ext_res;
   ext_res = sc_ext_initialize(ext_path, enabled_list, init_memory_generated_upload, init_memory_generated_structure);
