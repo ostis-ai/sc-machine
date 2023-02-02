@@ -1,3 +1,4 @@
+[[1, 2, 3]] => nrel_system_identifier: [link_with_brackets];;
 
 "file://file.txt" => nrel_system_identifier:
     [test_content_file];;

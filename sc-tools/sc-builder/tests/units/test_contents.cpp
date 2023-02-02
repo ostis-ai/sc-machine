@@ -19,6 +19,20 @@ TEST_F(ScBuilderTest, file_relative)
   EXPECT_EQ(content, "file");
 }
 
+TEST_F(ScBuilderTest, content_with_brackets)
+{
+  /*
+    [[1, 2, 3]] => nrel_system_identifier: [link_with_brackets];;
+   */
+
+  ScAddr const linkAddr = m_ctx->HelperResolveSystemIdtf("link_with_brackets");
+  EXPECT_TRUE(linkAddr.IsValid());
+
+  ScLink link(*m_ctx, linkAddr);
+  std::string const content = link.GetAsString();
+  EXPECT_EQ(content, "[1, 2, 3]");
+}
+
 TEST_F(ScBuilderTest, file_relative_folder)
 {
   ScAddr const linkAddr = m_ctx->HelperResolveSystemIdtf("test_content_file_2");
