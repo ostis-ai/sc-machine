@@ -475,3 +475,39 @@ TEST_F(ScTemplateCommonTest, CycledTemplateSmoke)
   EXPECT_TRUE(m_ctx->HelperSearchTemplate(searchTempl, searchResult));
   EXPECT_EQ(searchResult.Size(), constrCount);
 }
+
+TEST_F(ScTemplateCommonTest, MultipleConnectivitiesTemplateSmoke)
+{
+  size_t const constrCount = 20;
+  std::unordered_map<ScAddr, ScAddr, ScAddrHashFunc<size_t>, ScAddLessFunc> cache;
+  for (size_t i = 0; i < constrCount; ++i)
+  {
+    ScAddr const & sourceNodeAddr = m_ctx->CreateNode(ScType::NodeConst);
+    ScAddr const & targetNodeAddr = m_ctx->CreateNode(ScType::NodeConst);
+
+    ScTemplate genTempl;
+    genTempl.Triple(
+        sourceNodeAddr,
+        ScType::EdgeAccessVarPosPerm,
+        targetNodeAddr
+    );
+    ScTemplateGenResult result;
+    m_ctx->HelperGenTemplate(genTempl, result);
+
+    cache.insert({sourceNodeAddr, targetNodeAddr});
+  }
+
+  ScTemplate searchTempl;
+  for (auto it : cache)
+  {
+    searchTempl.Triple(
+        it.first,
+        ScType::EdgeAccessVarPosPerm,
+        it.second
+    );
+  }
+
+  ScTemplateSearchResult searchResult;
+  EXPECT_TRUE(m_ctx->HelperSearchTemplate(searchTempl, searchResult));
+  EXPECT_EQ(searchResult.Size(), 1);
+}

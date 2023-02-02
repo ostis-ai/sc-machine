@@ -61,45 +61,10 @@ private:
    */
   void PrepareSearch()
   {
-    FindTripleWithMostMinimalOutputArcsForFirstItem();
     SetUpDependenciesBetweenTriples();
     RemoveCycledDependenciesBetweenTriples();
-  }
-
-  /*!
-   * Finds a triple among all triples that have the fixed first item, but not fixed other items,
-   * for which the minimum number of arcs goes out of the first item compared to the other triples.
-   */
-  void FindTripleWithMostMinimalOutputArcsForFirstItem()
-  {
-    auto triplesWithConstBeginElement = m_template.m_orderedTriples[(size_t)ScTemplateTripleType::FAE];
-    // if there are no triples with the no edge third item than sort triples with the edge third item
-    if (triplesWithConstBeginElement.empty())
-    {
-      triplesWithConstBeginElement = m_template.m_orderedTriples[(size_t)ScTemplateTripleType::FAN];
-    }
-
-    // find triple in which the first item address has the most minimal count of output arcs
-    sc_int32 priorityTripleIdx = -1;
-    sc_int32 minOutputArcsCount = -1;
-    for (size_t const tripleIdx : triplesWithConstBeginElement)
-    {
-      ScTemplateTriple const * triple = m_template.m_triples[tripleIdx];
-      auto const count = (sc_int32)m_context.GetElementOutputArcsCount(triple->GetValues()[0].m_addrValue);
-
-      if (minOutputArcsCount == -1 || count < minOutputArcsCount)
-      {
-        priorityTripleIdx = (sc_int32)tripleIdx;
-        minOutputArcsCount = (sc_int32)count;
-      }
-    }
-
-    // save triple in which the first item address has the most minimal count of output arcs in vector
-    // with more priority
-    if (priorityTripleIdx != -1)
-    {
-      m_template.m_orderedTriples[(size_t)ScTemplateTripleType::PFAE].insert(priorityTripleIdx);
-    }
+    FindConnectivityComponents();
+    FindTriplesWithMostMinimalArcsForFirstItem();
   }
 
   /*!
@@ -167,6 +132,9 @@ private:
     }
   };
 
+  /*!
+   * Finds triples that loop sc-template and eliminates transitions from them
+   */
   void RemoveCycledDependenciesBetweenTriples()
   {
     auto const & CheckIfItemIsNodeVarStruct = [this](ScTemplateItemValue const & item) -> bool {
@@ -182,8 +150,8 @@ private:
 
     auto const & UpdateCycledTriples = [this](ScTemplateTriple const * triple, ScTemplateItemValue const & item) {
       std::string const & key = GetKey(triple, item);
-      auto const & dependedTriples = m_itemsToTriples.find(key);
 
+      auto const & dependedTriples = m_itemsToTriples.find(key);
       if (dependedTriples != m_itemsToTriples.cend())
       {
         for (size_t const dependedTripleIdx : dependedTriples->second)
@@ -279,7 +247,7 @@ private:
       if (checkedTriples.find(otherTripleIdx) != checkedTriples.cend())
         continue;
 
-      // iterate by all triple item
+      // iterate by all triple items
       {
         checkedTriples.insert(otherTripleIdx);
 
@@ -290,11 +258,165 @@ private:
     }
   }
 
+  void FindConnectivityComponents()
+  {
+    ScTemplateGroupedTriples checkedTriples;
+
+    for (ScTemplateTriple const * triple : m_template.m_triples)
+    {
+      ScTemplateGroupedTriples connectivityComponentTriples;
+      FindConnectivityComponent(triple, checkedTriples, connectivityComponentTriples);
+
+      m_connectivityComponentsTriples.push_back(connectivityComponentTriples);
+    }
+  }
+
+  void FindConnectivityComponent(
+      ScTemplateTriple const * triple,
+      ScTemplateGroupedTriples & checkedTriples,
+      ScTemplateGroupedTriples & connectivityComponentTriples)
+  {
+    // check if triple was passed in branch of sc-template
+    if (checkedTriples.find(triple->m_index) != checkedTriples.cend())
+      return;
+
+    connectivityComponentTriples.insert(triple->m_index);
+
+    FindConnectivityComponentByItem((*triple)[0], triple, checkedTriples, connectivityComponentTriples);
+    FindConnectivityComponentByItem((*triple)[1], triple, checkedTriples, connectivityComponentTriples);
+    FindConnectivityComponentByItem((*triple)[2], triple, checkedTriples, connectivityComponentTriples);
+  }
+
+  void FindConnectivityComponentByItem(
+      ScTemplateItemValue const & item,
+      ScTemplateTriple const * triple,
+      ScTemplateGroupedTriples & checkedTriples,
+      ScTemplateGroupedTriples & connectivityComponentTriples)
+  {
+    ScTemplateGroupedTriples nextTriples;
+    FindDependedTriple(item, triple, nextTriples);
+
+    for (size_t const otherTripleIdx : nextTriples)
+    {
+      // check if triple was passed in branch of sc-template
+      if (checkedTriples.find(otherTripleIdx) != checkedTriples.cend())
+        continue;
+
+      // iterate by all triple items
+      {
+        checkedTriples.insert(otherTripleIdx);
+        connectivityComponentTriples.insert(otherTripleIdx);
+
+        ScTemplateTriple const * otherTriple = m_template.m_triples[otherTripleIdx];
+
+        FindConnectivityComponentByItem((*otherTriple)[0], otherTriple, checkedTriples, connectivityComponentTriples);
+        FindConnectivityComponentByItem((*otherTriple)[1], otherTriple, checkedTriples, connectivityComponentTriples);
+        FindConnectivityComponentByItem((*otherTriple)[2], otherTriple, checkedTriples, connectivityComponentTriples);
+      }
+    }
+  }
+
+  /*!
+   * Finds all connectivity component triples among all triples that have the fixed first item, but not fixed
+   * other items, for which the minimum number of arcs goes/incomes out of the first item compared to the other triples.
+   */
+  void FindTriplesWithMostMinimalArcsForFirstItem()
+  {
+    for (ScTemplateGroupedTriples const & connectivityComponentsTriples : m_connectivityComponentsTriples)
+    {
+      sc_int32 priorityTripleIdx = -1;
+      auto & afaTriples = m_template.m_orderedTriples[(size_t)ScTemplateTripleType::AFA];
+      if (!afaTriples.empty())
+      {
+        priorityTripleIdx = (sc_int32)*afaTriples.cbegin();
+      }
+
+      if (priorityTripleIdx == -1)
+      {
+        priorityTripleIdx = FindTripleWithMostMinimalInputArcsForFirstItem(connectivityComponentsTriples);
+        if (priorityTripleIdx == -1)
+        {
+          priorityTripleIdx = FindTripleWithMostMinimalOutputArcsForFirstItem(connectivityComponentsTriples);
+        }
+      }
+
+      // save triple in which the first item address has the most minimal count of input/output arcs in vector
+      // with more priority
+      if (priorityTripleIdx != -1)
+      {
+        m_connectivityComponentPriorityTriples.emplace_back(priorityTripleIdx);
+      }
+    }
+  }
+
+  sc_int32 FindTripleWithMostMinimalInputArcsForFirstItem(
+      ScTemplateGroupedTriples const & connectivityComponentsTriples)
+  {
+    auto triplesWithConstEndElement = m_template.m_orderedTriples[(size_t)ScTemplateTripleType::FAF];
+    if (triplesWithConstEndElement.empty())
+    {
+      triplesWithConstEndElement = m_template.m_orderedTriples[(size_t)ScTemplateTripleType::AAF];
+    }
+
+    // find triple in which the third item address has the most minimal count of input arcs
+    sc_int32 priorityTripleIdx = -1;
+    sc_int32 minInputArcsCount = -1;
+    for (size_t const tripleIdx : triplesWithConstEndElement)
+    {
+      ScTemplateTriple const * triple = m_template.m_triples[tripleIdx];
+      auto const count = (sc_int32)m_context.GetElementInputArcsCount(triple->GetValues()[2].m_addrValue);
+
+      // check if triple in connectivity component
+      if (connectivityComponentsTriples.find(tripleIdx) == connectivityComponentsTriples.cend())
+        continue;
+
+      if (minInputArcsCount == -1 || count < minInputArcsCount)
+      {
+        priorityTripleIdx = (sc_int32)tripleIdx;
+        minInputArcsCount = (sc_int32)count;
+      }
+    }
+
+    return priorityTripleIdx;
+  }
+
+  sc_int32 FindTripleWithMostMinimalOutputArcsForFirstItem(
+      ScTemplateGroupedTriples const & connectivityComponentsTriples)
+  {
+    auto triplesWithConstBeginElement = m_template.m_orderedTriples[(size_t)ScTemplateTripleType::FAE];
+    // if there are no triples with the no edge third item than sort triples with the edge third item
+    if (triplesWithConstBeginElement.empty())
+    {
+      triplesWithConstBeginElement = m_template.m_orderedTriples[(size_t)ScTemplateTripleType::FAN];
+    }
+
+    // find triple in which the first item address has the most minimal count of output arcs
+    sc_int32 priorityTripleIdx = -1;
+    sc_int32 minOutputArcsCount = -1;
+    for (size_t const tripleIdx : triplesWithConstBeginElement)
+    {
+      ScTemplateTriple const * triple = m_template.m_triples[tripleIdx];
+      auto const count = (sc_int32)m_context.GetElementOutputArcsCount(triple->GetValues()[0].m_addrValue);
+
+      // check if triple in connectivity component
+      if (connectivityComponentsTriples.find(tripleIdx) == connectivityComponentsTriples.cend())
+        continue;
+
+      if (minOutputArcsCount == -1 || count < minOutputArcsCount)
+      {
+        priorityTripleIdx = (sc_int32)tripleIdx;
+        minOutputArcsCount = (sc_int32)count;
+      }
+    }
+
+    return priorityTripleIdx;
+  }
+
   //! Returns key - "${item replacement name}${triple index}"
   static std::string GetKey(ScTemplateTriple const * triple, ScTemplateItemValue const & item)
   {
     std::ostringstream stream;
-    stream << item.m_replacementName << triple->m_index;
+    stream << item.m_replacementName << "_" << triple->m_index;
     return stream.str();
   }
 
@@ -593,7 +715,7 @@ private:
             ScAddr const & addr3,
             std::unordered_map<ScAddr, std::array<ScAddr, 3>, ScAddrHashFunc<size_t>, ScAddLessFunc> & unusedTriples) {
           m_resultCheckedTriples[resultIdx].insert(triple->m_index);
-          m_usedEdges[resultIdx].insert(addr2);
+          m_resultUsedEdges[resultIdx].insert(addr2);
           unusedTriples.erase(addr2);
 
           size_t itemIdx = triple->m_index * 3;
@@ -617,10 +739,12 @@ private:
           m_resultCheckedTriples[resultIdx].erase(tripleIdx);
 
           size_t itemIdx = tripleIdx * 3;
+
           unusedTriples.insert(
               {resultAddrs[itemIdx], {resultAddrs[itemIdx], resultAddrs[itemIdx + 1], resultAddrs[itemIdx + 2]}});
+
           resultAddrs[itemIdx] = ScAddr::Empty;
-          m_usedEdges[resultIdx].erase(resultAddrs[++itemIdx]);
+          m_resultUsedEdges[resultIdx].erase(resultAddrs[++itemIdx]);
           resultAddrs[itemIdx] = ScAddr::Empty;
           resultAddrs[++itemIdx] = ScAddr::Empty;
         };
@@ -643,9 +767,14 @@ private:
     size_t notFinishedTriplesCount = 0;
     size_t finishedTriplesCount = 0;
 
-    ScAddrVector const currentResultAddrs{result.m_results[resultIdx]};
-    std::unordered_set<size_t> const currentCheckedTriples{m_resultCheckedTriples[resultIdx]};
-    UsedEdges currentUsedEdges{m_usedEdges[resultIdx]};
+    ScAddrVector currentResultAddrs{result.m_results[resultIdx]};
+    std::unordered_set<size_t> currentCheckedTriples{m_resultCheckedTriples[resultIdx]};
+    UsedEdges currentUsedEdges{m_resultUsedEdges[resultIdx]};
+
+    ScAddrVector nextResultAddrs{result.m_results[resultIdx]};
+    std::unordered_set<size_t> nextCheckedTriples{m_resultCheckedTriples[resultIdx]};
+    UsedEdges nextUsedEdges{m_resultUsedEdges[resultIdx]};
+
     std::unordered_map<ScAddr, std::array<ScAddr, 3>, ScAddrHashFunc<size_t>, ScAddLessFunc> unusedTriples;
     bool isItFound;
     auto unusedTriplesIt = unusedTriples.cbegin();
@@ -672,12 +801,14 @@ private:
       if ((IsStructureValid() && (!IsInStructure(addr1) || !IsInStructure(addr2) || !IsInStructure(addr3))) ||
           (m_checkCallback && !m_checkCallback(addr1, addr2, addr3)))
       {
-        m_usedEdges[resultIdx].insert(addr2);
+        m_resultUsedEdges[resultIdx].insert(addr2);
         continue;
       }
 
       // check if edge is used for other equal triple
-      if (m_usedEdges[resultIdx].find(addr2) != m_usedEdges[resultIdx].cend())
+      if (std::any_of(m_resultUsedEdges.begin(), m_resultUsedEdges.end(), [&](UsedEdges const & edges) {
+            return edges.find(addr2) != edges.cend();
+          }))
       {
         continue;
       }
@@ -691,16 +822,22 @@ private:
         {
           resultIdx = ++m_lastResultIdx;
           finishedTriplesCount = 0;
-          result.m_results.emplace_back(currentResultAddrs);
-          m_resultCheckedTriples.emplace_back(currentCheckedTriples);
-          m_usedEdges.emplace_back(currentUsedEdges);
+          result.m_results.emplace_back(nextResultAddrs);
+          m_resultCheckedTriples.emplace_back(nextCheckedTriples);
+          m_resultUsedEdges.emplace_back(nextUsedEdges);
         }
-        else if (notFinishedTriplesCount == triples.size())
+        else
         {
-          notFinishedTriplesCount = 0;
           result.m_results[resultIdx] = currentResultAddrs;
           m_resultCheckedTriples[resultIdx] = currentCheckedTriples;
-          m_usedEdges[resultIdx] = currentUsedEdges;
+          m_resultUsedEdges[resultIdx] = currentUsedEdges;
+        }
+        if (notFinishedTriplesCount == triples.size())
+        {
+          notFinishedTriplesCount = 0;
+          currentResultAddrs = nextResultAddrs;
+          currentCheckedTriples = nextCheckedTriples;
+          currentUsedEdges = nextUsedEdges;
         }
 
         if (m_resultCheckedTriples[resultIdx].find(tripleIdx) != m_resultCheckedTriples[resultIdx].cend())
@@ -759,7 +896,13 @@ private:
             ++finishedTriplesCount;
 
             // current edge is busy for all equal triples
-            m_usedEdges[resultIdx].insert(addr2);
+            m_resultUsedEdges[resultIdx].insert(addr2);
+            m_usedEdges.insert(addr2);
+
+            currentResultAddrs = result.m_results[resultIdx];
+            currentCheckedTriples = m_resultCheckedTriples[resultIdx];
+            currentUsedEdges = m_resultUsedEdges[resultIdx];
+
             break;
           }
         }
@@ -814,32 +957,22 @@ private:
     if (m_template.m_triples.empty())
       return;
 
-    auto const & DoStartIteration = [this, &result](ScTemplateGroupedTriples const & triples) {
-      ScAddrVector newResult;
-      newResult.resize(CalculateOneResultSize());
-      result.m_results.reserve(16);
-      result.m_results.emplace_back(newResult);
+    ScAddrVector newResult;
+    newResult.resize(CalculateOneResultSize());
+    result.m_results.reserve(16);
+    result.m_results.emplace_back(newResult);
 
-      m_usedEdges.reserve(16);
-      m_usedEdges.emplace_back();
-      m_resultCheckedTriples.reserve(16);
-      m_resultCheckedTriples.emplace_back();
+    m_resultUsedEdges.reserve(16);
+    m_resultUsedEdges.emplace_back();
+    m_resultCheckedTriples.reserve(16);
+    m_resultCheckedTriples.emplace_back();
 
-      bool isFinished = false;
-      bool isLast = false;
+    bool isFinished = false;
+    bool isLast = false;
 
-      DoIterationOnNextEqualTriples(triples, "", 0, {}, result, isFinished, isLast);
-    };
-
-    auto const & triples = m_template.m_orderedTriples;
-    for (ScTemplateGroupedTriples const & equalTriples : triples)
+    for (size_t const tripleIdx : m_connectivityComponentPriorityTriples)
     {
-      if (!equalTriples.empty())
-      {
-        DoStartIteration(equalTriples);
-
-        break;
-      }
+      DoIterationOnNextEqualTriples({tripleIdx}, "", 0, {}, result, isFinished, isLast);
     }
   }
 
@@ -885,7 +1018,11 @@ private:
 
   std::map<std::string, ScTemplateGroupedTriples> m_itemsToTriples;
   ScTemplateGroupedTriples m_cycledTriples;
-  std::vector<UsedEdges> m_usedEdges;
+  std::vector<ScTemplateGroupedTriples> m_connectivityComponentsTriples;
+  std::vector<size_t> m_connectivityComponentPriorityTriples;
+
+  std::vector<UsedEdges> m_resultUsedEdges;
+  UsedEdges m_usedEdges;
   std::vector<std::unordered_set<size_t>> m_resultCheckedTriples;
 
   size_t m_lastResultIdx = 0;

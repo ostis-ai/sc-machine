@@ -239,14 +239,12 @@ protected:
 
 enum class ScTemplateTripleType : uint8_t
 {
-  Foreground = 0,
-  AFA = 1,   // _... -> _...
-  FAF = 2,   // ... _-> ...
-  AAF = 3,   // _... _-> ...
-  PFAE = 4,  // ... _-> ... or ... _-> _edge, triple with small count of output arcs for the first item element
-  FAE = 5,   // ... _-> ...
-  FAN = 6,   // ... _-> _edge
-  AAA = 7,   // _... _-> _...
+  AFA = 0,  // _... -> _...
+  FAF = 1,  // ... _-> ...
+  AAF = 2,  // _... _-> ...
+  FAE = 3,  // ... _-> ...
+  FAN = 4,  // ... _-> _edge
+  AAA = 5,  // _... _-> _...
 
   ScConstr3TypeCount
 };
@@ -273,8 +271,6 @@ class ScTemplate final
   friend class ScTemplateBuilderFromScs;
 
 public:
-  using TripleFlag = ScTemplateTriple::Flag;
-
   class Result
   {
   public:
@@ -306,9 +302,6 @@ public:
   using ReplacementsMap = std::unordered_multimap<std::string, size_t>;
   using ScTemplateTriplesVector = std::vector<ScTemplateTriple *>;
 
-  /*  If forceOrder flag is true, then search will be run in the same order,
-   * that was used for a triples append
-   */
   _SC_EXTERN explicit ScTemplate(bool forceOrder = false);
 
   _SC_EXTERN ~ScTemplate()
@@ -616,12 +609,13 @@ protected:
   ScTemplate::ReplacementsMap const * m_replacements;
 };
 
-SC_DEPRECATED(
-    0.7.1,
-    "Use ScMemoryContext::HelperSearchTemplate(ScTemplate const & templ, ScTemplateSearchResultCallback const & "
-    "callback, ScTemplateSearchResultCheckCallback const & checkCallback) instead.")
 class ScTemplateSearchResult
 {
+  SC_DEPRECATED(
+      0.8.0,
+      "Use ScMemoryContext::HelperSearchTemplate(ScTemplate const & templ, ScTemplateSearchResultCallback const & "
+      "callback, ScTemplateSearchResultCheckCallback const & checkCallback) instead.")
+
   friend class ScTemplateSearch;
 
 public:
