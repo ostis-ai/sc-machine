@@ -22,34 +22,42 @@ TypeResolver::MapType TypeResolver::ms_connectorToType = {
     {"<=", ScType::EdgeDCommonConst},
     {"_=>", ScType::EdgeDCommonVar},
     {"_<=", ScType::EdgeDCommonVar},
+    {"<=_", ScType::EdgeDCommonVar},
     {"->", ScType::EdgeAccessConstPosPerm},
     {"<-", ScType::EdgeAccessConstPosPerm},
     {"_->", ScType::EdgeAccessVarPosPerm},
+    {"<-_", ScType::EdgeAccessVarPosPerm},
     {"_<-", ScType::EdgeAccessVarPosPerm},
     {"-|>", ScType::EdgeAccessConstNegPerm},
     {"<|-", ScType::EdgeAccessConstNegPerm},
     {"_-|>", ScType::EdgeAccessVarNegPerm},
     {"_<|-", ScType::EdgeAccessVarNegPerm},
+    {"<|-_", ScType::EdgeAccessVarNegPerm},
     {"-/>", ScType::EdgeAccessConstFuzPerm},
     {"</-", ScType::EdgeAccessConstFuzPerm},
     {"_-/>", ScType::EdgeAccessVarFuzPerm},
     {"_</-", ScType::EdgeAccessVarFuzPerm},
+    {"</-_", ScType::EdgeAccessVarFuzPerm},
     {"~>", ScType::EdgeAccessConstPosTemp},
     {"<~", ScType::EdgeAccessConstPosTemp},
     {"_~>", ScType::EdgeAccessVarPosTemp},
     {"_<~", ScType::EdgeAccessVarPosTemp},
+    {"<~_", ScType::EdgeAccessVarPosTemp},
     {"~|>", ScType::EdgeAccessConstNegTemp},
     {"<|~", ScType::EdgeAccessConstNegTemp},
     {"_~|>", ScType::EdgeAccessVarNegTemp},
     {"_<|~", ScType::EdgeAccessVarNegTemp},
+    {"<|~_", ScType::EdgeAccessVarNegTemp},
     {"~/>", ScType::EdgeAccessConstFuzTemp},
     {"</~", ScType::EdgeAccessConstFuzTemp},
     {"_~/>", ScType::EdgeAccessVarFuzTemp},
-    {"_</~", ScType::EdgeAccessVarFuzTemp}};
+    {"_</~", ScType::EdgeAccessVarFuzTemp},
+    {"</~_", ScType::EdgeAccessVarFuzTemp}};
 
 TypeResolver::MapType TypeResolver::ms_keynodeToType = {
     {"sc_node", ScType::Node},
     {"sc_link", ScType::Link},
+    {"sc_link_class", ScType::LinkClass},
     {"sc_arc_common", ScType::EdgeDCommon},
     {"sc_edge_dcommon", ScType::EdgeDCommon},
     {"sc_edge", ScType::EdgeUCommon},
@@ -72,7 +80,7 @@ TypeResolver::MapType TypeResolver::ms_keynodeToType = {
     {"sc_node_not_binary_tuple", ScType::NodeTuple}};
 
 TypeResolver::IsType TypeResolver::ms_reversedConnectors =
-    {"<", "<..", "<=", "_<=", "<-", "_<-", "<|-", "_<|-", "</-", "_</-", "<~", "_<~", "<|~", "_<|~", "</~", "_</~"};
+    {"<", "<..", "<=", "_<=","<=_", "<-", "_<-","<-_", "<|-", "_<|-","<|-_", "</-", "_</-","</-_", "<~", "_<~","<~_", "<|~", "<|~_", "_<|~", "</~", "_</~", "</~_"};
 
 ScType const & TypeResolver::GetConnectorType(std::string const & connectorAlias)
 {

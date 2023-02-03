@@ -41,6 +41,7 @@ ScType const ScType::NodeVar(sc_type_node | sc_type_var);
 
 ScType const ScType::LinkConst(sc_type_link | sc_type_const);
 ScType const ScType::LinkVar(sc_type_link | sc_type_var);
+ScType const ScType::LinkClass(sc_type_link | sc_type_node_class);
 
 ScType const ScType::NodeStruct(sc_type_node | sc_type_node_struct);
 ScType const ScType::NodeTuple(sc_type_node | sc_type_node_tuple);
