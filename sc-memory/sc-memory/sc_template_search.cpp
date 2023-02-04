@@ -673,6 +673,8 @@ private:
     }
   }
 
+  using UnusedTriples = std::unordered_map<ScAddr, std::array<ScAddr, 3>, ScAddrHashFunc<size_t>, ScAddLessFunc>;
+
   void DoDependenceIteration(
       ScTemplateGroupedTriples const & triples,
       size_t resultIdx,
@@ -706,36 +708,32 @@ private:
       result.m_replacements.insert({item.m_replacementName, elementNum});
     };
 
-    auto const & UpdateResults =
-        [this, &UpdateItemResults, &result](
-            ScTemplateTriple * triple,
-            size_t const resultIdx,
-            ScAddr const & addr1,
-            ScAddr const & addr2,
-            ScAddr const & addr3,
-            std::unordered_map<ScAddr, std::array<ScAddr, 3>, ScAddrHashFunc<size_t>, ScAddLessFunc> & unusedTriples) {
-          m_resultCheckedTriples[resultIdx].insert(triple->m_index);
-          m_resultUsedEdges[resultIdx].insert(addr2);
-          unusedTriples.erase(addr2);
+    auto const & UpdateResults = [this, &UpdateItemResults, &result](
+                                     ScTemplateTriple * triple,
+                                     size_t const resultIdx,
+                                     ScAddr const & addr1,
+                                     ScAddr const & addr2,
+                                     ScAddr const & addr3,
+                                     UnusedTriples & unusedTriples) {
+      m_resultCheckedTriples[resultIdx].insert(triple->m_index);
+      m_resultUsedEdges[resultIdx].insert(addr2);
+      unusedTriples.erase(addr2);
 
-          size_t itemIdx = triple->m_index * 3;
+      size_t itemIdx = triple->m_index * 3;
 
-          for (size_t i = resultIdx; i < result.Size(); ++i)
-          {
-            ScAddrVector & resultAddrs = result.m_results[i];
+      for (size_t i = resultIdx; i < result.Size(); ++i)
+      {
+        ScAddrVector & resultAddrs = result.m_results[i];
 
-            UpdateItemResults((*triple)[0], addr1, itemIdx, resultAddrs);
-            UpdateItemResults((*triple)[1], addr2, itemIdx + 1, resultAddrs);
-            UpdateItemResults((*triple)[2], addr3, itemIdx + 2, resultAddrs);
-          }
-        };
+        UpdateItemResults((*triple)[0], addr1, itemIdx, resultAddrs);
+        UpdateItemResults((*triple)[1], addr2, itemIdx + 1, resultAddrs);
+        UpdateItemResults((*triple)[2], addr3, itemIdx + 2, resultAddrs);
+      }
+    };
 
     auto const & ClearResults =
         [this](
-            size_t const tripleIdx,
-            size_t const resultIdx,
-            ScAddrVector & resultAddrs,
-            std::unordered_map<ScAddr, std::array<ScAddr, 3>, ScAddrHashFunc<size_t>, ScAddLessFunc> & unusedTriples) {
+            size_t const tripleIdx, size_t const resultIdx, ScAddrVector & resultAddrs, UnusedTriples & unusedTriples) {
           m_resultCheckedTriples[resultIdx].erase(tripleIdx);
 
           size_t itemIdx = tripleIdx * 3;
@@ -749,9 +747,42 @@ private:
           resultAddrs[++itemIdx] = ScAddr::Empty;
         };
 
+    auto const & CheckTripleForVarTriple = [this, &result](
+                                               ScAddr const & addr1,
+                                               ScAddr const & addr2,
+                                               ScAddr const & addr3,
+                                               ScTemplateItemValue const & item1,
+                                               ScTemplateItemValue const & item2,
+                                               ScTemplateItemValue const & item3,
+                                               ScAddrVector & resultAddrs,
+                                               UnusedTriples & unusedTriples) {
+      ScAddr const & resolvedAddr1 = ResolveAddr(item1, resultAddrs, result);
+      if (resolvedAddr1.IsValid() && resolvedAddr1 != addr1)
+      {
+        unusedTriples.insert({addr2, {addr1, addr2, addr3}});
+        return false;
+      }
+
+      ScAddr const & resolvedAddr2 = ResolveAddr(item2, resultAddrs, result);
+      if (resolvedAddr2.IsValid() && resolvedAddr2 != addr2)
+      {
+        unusedTriples.insert({addr2, {addr1, addr2, addr3}});
+        return false;
+      }
+
+      ScAddr const & resolvedAddr3 = ResolveAddr(item3, resultAddrs, result);
+      if (resolvedAddr3.IsValid() && resolvedAddr3 != addr3)
+      {
+        unusedTriples.insert({addr2, {addr1, addr2, addr3}});
+        return false;
+      }
+
+      return true;
+    };
+
     ScTemplateTriple * triple = m_template.m_triples[*triples.begin()];
 
-    bool isAllChildrenFinished = false;
+    bool isAllChildrenFinished = true;
     bool isLast = false;
 
     ScTemplateItemValue item1 = (*triple)[0];
@@ -764,27 +795,32 @@ private:
       SC_THROW_EXCEPTION(utils::ExceptionInvalidState, "During search procedure has been chosen var triple");
     }
 
-    size_t notFinishedTriplesCount = 0;
-    size_t finishedTriplesCount = 0;
+    size_t unusedTriplesCount = 0;
+    size_t usedTriplesCount = 0;
+    size_t allUsedTriplesCountForIteratorCycle = 0;
 
     ScAddrVector currentResultAddrs{result.m_results[resultIdx]};
-    std::unordered_set<size_t> currentCheckedTriples{m_resultCheckedTriples[resultIdx]};
+    ScTemplateGroupedTriples currentCheckedTriples{m_resultCheckedTriples[resultIdx]};
     UsedEdges currentUsedEdges{m_resultUsedEdges[resultIdx]};
 
     ScAddrVector nextResultAddrs{result.m_results[resultIdx]};
-    std::unordered_set<size_t> nextCheckedTriples{m_resultCheckedTriples[resultIdx]};
+    ScTemplateGroupedTriples nextCheckedTriples{m_resultCheckedTriples[resultIdx]};
     UsedEdges nextUsedEdges{m_resultUsedEdges[resultIdx]};
 
-    std::unordered_map<ScAddr, std::array<ScAddr, 3>, ScAddrHashFunc<size_t>, ScAddLessFunc> unusedTriples;
-    bool isItFound;
-    auto unusedTriplesIt = unusedTriples.cbegin();
-    while (((isItFound = it->Next()) || unusedTriplesIt != unusedTriples.cend()) && !isStopped)
+    UnusedTriples restoreUnusedTriples;
+    UnusedTriples unusedTriples;
+
+    bool isIteratorNext = false;
+    bool isUnusedIteratorNext = false;
+    UnusedTriples::const_iterator unusedTriplesIt;
+    do
     {
       ScAddr addr1;
       ScAddr addr2;
       ScAddr addr3;
 
-      if (isItFound)
+      isIteratorNext = it->Next();
+      if (isIteratorNext)
       {
         addr1 = it->Get(0);
         addr2 = it->Get(1);
@@ -792,6 +828,34 @@ private:
       }
       else
       {
+        if (allUsedTriplesCountForIteratorCycle == 0)
+        {
+          break;
+        }
+
+        if (unusedTriplesIt == unusedTriples.cend())
+        {
+          isUnusedIteratorNext = false;
+        }
+
+        if (!isUnusedIteratorNext)
+        {
+          isUnusedIteratorNext = true;
+          allUsedTriplesCountForIteratorCycle = 0;
+          unusedTriples = restoreUnusedTriples;
+          restoreUnusedTriples.clear();
+          unusedTriplesIt = unusedTriples.cbegin();
+        }
+        else
+        {
+          ++unusedTriplesIt;
+        }
+
+        if (unusedTriplesIt == unusedTriples.cend())
+        {
+          break;
+        }
+
         addr1 = unusedTriplesIt->second[0];
         addr2 = unusedTriplesIt->second[1];
         addr3 = unusedTriplesIt->second[2];
@@ -818,23 +882,24 @@ private:
         triple = m_template.m_triples[tripleIdx];
 
         // check if all equal triples found to make a new search result item
-        if (finishedTriplesCount == triples.size())
+        if (usedTriplesCount == triples.size())
         {
           resultIdx = ++m_lastResultIdx;
-          finishedTriplesCount = 0;
+          ++allUsedTriplesCountForIteratorCycle;
+          usedTriplesCount = 0;
           result.m_results.emplace_back(nextResultAddrs);
           m_resultCheckedTriples.emplace_back(nextCheckedTriples);
           m_resultUsedEdges.emplace_back(nextUsedEdges);
         }
-        else
+        else if (!isAllChildrenFinished)
         {
           result.m_results[resultIdx] = currentResultAddrs;
           m_resultCheckedTriples[resultIdx] = currentCheckedTriples;
           m_resultUsedEdges[resultIdx] = currentUsedEdges;
         }
-        if (notFinishedTriplesCount == triples.size())
+        if (unusedTriplesCount == triples.size())
         {
-          notFinishedTriplesCount = 0;
+          unusedTriplesCount = 0;
           currentResultAddrs = nextResultAddrs;
           currentCheckedTriples = nextCheckedTriples;
           currentUsedEdges = nextUsedEdges;
@@ -845,13 +910,19 @@ private:
           continue;
         }
 
+        if (!CheckTripleForVarTriple(
+                addr1, addr2, addr3, item1, item2, item3, result.m_results[resultIdx], unusedTriples))
+        {
+          continue;
+        }
+
         item1 = (*triple)[0];
         item2 = (*triple)[1];
         item3 = (*triple)[2];
 
         // update data
         {
-          UpdateResults(triple, resultIdx, addr1, addr2, addr3, unusedTriples);
+          UpdateResults(triple, resultIdx, addr1, addr2, addr3, restoreUnusedTriples);
         }
 
         // find next depended on triples and analyse result
@@ -865,8 +936,8 @@ private:
           isLast = isNoChild;
           if (!isChildFinished && !isLast)
           {
-            ClearResults(tripleIdx, resultIdx, result.m_results[resultIdx], unusedTriples);
-            ++notFinishedTriplesCount;
+            ClearResults(tripleIdx, resultIdx, result.m_results[resultIdx], restoreUnusedTriples);
+            ++unusedTriplesCount;
             continue;
           }
 
@@ -875,8 +946,8 @@ private:
           isLast &= isNoChild;
           if (!isChildFinished && !isLast)
           {
-            ClearResults(tripleIdx, resultIdx, result.m_results[resultIdx], unusedTriples);
-            ++notFinishedTriplesCount;
+            ClearResults(tripleIdx, resultIdx, result.m_results[resultIdx], restoreUnusedTriples);
+            ++unusedTriplesCount;
             continue;
           }
 
@@ -885,15 +956,15 @@ private:
           isLast &= isNoChild;
           if (!isChildFinished && !isLast)
           {
-            ClearResults(tripleIdx, resultIdx, result.m_results[resultIdx], unusedTriples);
-            ++notFinishedTriplesCount;
+            ClearResults(tripleIdx, resultIdx, result.m_results[resultIdx], restoreUnusedTriples);
+            ++unusedTriplesCount;
             continue;
           }
 
           // all connected triples found
           if (isAllChildrenFinished)
           {
-            ++finishedTriplesCount;
+            ++usedTriplesCount;
 
             // current edge is busy for all equal triples
             m_resultUsedEdges[resultIdx].insert(addr2);
@@ -913,12 +984,7 @@ private:
       {
         FormResult(result, resultIdx);
       }
-
-      if (!isItFound)
-      {
-        ++unusedTriplesIt;
-      }
-    }
+    } while ((isIteratorNext || unusedTriplesIt != unusedTriples.cend()) && !isStopped);
   }
 
   void FormResult(ScTemplateSearchResult & result, size_t & resultIdx)
