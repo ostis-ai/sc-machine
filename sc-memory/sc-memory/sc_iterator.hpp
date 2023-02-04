@@ -16,7 +16,7 @@ extern "C"
 
 class ScMemoryContext;
 
-template <typename IterType>
+template <typename IterType, sc_uint8 tripleSize>
 class TIteratorBase
 {
 public:
@@ -35,6 +35,9 @@ public:
   //! Returns sc-addr of specified element in iterator result
   _SC_EXTERN virtual ScAddr Get(sc_uint8 idx) const = 0;
 
+  //! Returns sc-addr triple
+  _SC_EXTERN virtual std::array<ScAddr, tripleSize> Get() const = 0;
+
   //! Short form of Get
   inline ScAddr operator[](sc_uint8 idx) const
   {
@@ -45,8 +48,11 @@ protected:
   IterType * m_iterator;
 };
 
+using ScAddrTriple = std::array<ScAddr, 3>;
+using ScAddrFiver = std::array<ScAddr, 5>;
+
 template <typename ParamType1, typename ParamType2, typename ParamType3>
-class TIterator3 : public TIteratorBase<sc_iterator3>
+class TIterator3 : public TIteratorBase<sc_iterator3, 3>
 {
   friend class ScMemoryContext;
 
@@ -82,23 +88,28 @@ public:
     }
   }
 
-  _SC_EXTERN bool Next() const
+  _SC_EXTERN bool Next() const override
   {
     SC_ASSERT(IsValid(), ());
     return sc_iterator3_next(m_iterator) == SC_TRUE;
   }
 
-  _SC_EXTERN ScAddr Get(sc_uint8 idx) const
+  _SC_EXTERN ScAddr Get(sc_uint8 idx) const override
   {
     SC_ASSERT(idx < 3, ());
     SC_ASSERT(IsValid(), ());
     return ScAddr(sc_iterator3_value(m_iterator, idx));
   }
+
+  _SC_EXTERN ScAddrTriple Get() const override
+  {
+    return {sc_iterator3_value(m_iterator, 0), sc_iterator3_value(m_iterator, 1), sc_iterator3_value(m_iterator, 2)};
+  }
 };
 
 // ---------------------------
 template <typename ParamType1, typename ParamType2, typename ParamType3, typename ParamType4, typename ParamType5>
-class TIterator5 : public TIteratorBase<sc_iterator5>
+class TIterator5 : public TIteratorBase<sc_iterator5, 5>
 {
   friend class ScMemoryContext;
 
@@ -112,7 +123,7 @@ protected:
       ParamType5 const & p5);
 
 public:
-  _SC_EXTERN virtual ~TIterator5()
+  _SC_EXTERN ~TIterator5() override
   {
     Destroy();
   }
@@ -126,22 +137,33 @@ public:
     }
   }
 
-  _SC_EXTERN bool Next() const
+  _SC_EXTERN bool Next() const override
   {
     SC_ASSERT(IsValid(), ());
     return sc_iterator5_next(m_iterator) == SC_TRUE;
   }
 
-  _SC_EXTERN ScAddr Get(sc_uint8 idx) const
+  _SC_EXTERN ScAddr Get(sc_uint8 idx) const override
   {
     SC_ASSERT(idx < 5, ());
     SC_ASSERT(IsValid(), ());
     return ScAddr(sc_iterator5_value(m_iterator, idx));
   }
+
+  _SC_EXTERN ScAddrFiver Get() const override
+  {
+    return {
+        sc_iterator5_value(m_iterator, 0),
+        sc_iterator5_value(m_iterator, 1),
+        sc_iterator5_value(m_iterator, 2),
+        sc_iterator5_value(m_iterator, 3),
+        sc_iterator5_value(m_iterator, 4)};
+    ;
+  }
 };
 
-typedef TIteratorBase<sc_iterator3> ScIterator3Type;
-typedef TIteratorBase<sc_iterator5> ScIterator5Type;
+typedef TIteratorBase<sc_iterator3, 3> ScIterator3Type;
+typedef TIteratorBase<sc_iterator5, 5> ScIterator5Type;
 
 typedef std::shared_ptr<ScIterator3Type> ScIterator3Ptr;
 typedef std::shared_ptr<ScIterator5Type> ScIterator5Ptr;

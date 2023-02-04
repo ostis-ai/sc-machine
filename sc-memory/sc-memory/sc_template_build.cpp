@@ -166,7 +166,7 @@ protected:
       ObjectInfo const src = ReplaceWithParam(&m_elements.at(edge.GetSourceHash()));
       ObjectInfo const trg = ReplaceWithParam(&m_elements.at(edge.GetTargetHash()));
 
-      auto const & param = [&inTemplate](ObjectInfo const & obj) -> ScTemplateItemValue {
+      auto const & param = [&inTemplate](ObjectInfo const & obj) -> ScTemplateItem {
         return obj.GetType().IsConst()
                    ? obj.GetAddr() >> obj.GetIdtf()
                    : (inTemplate->HasReplacement(obj.GetIdtf()) ? obj.GetIdtf() : obj.GetType() >> obj.GetIdtf());

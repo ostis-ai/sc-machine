@@ -21,7 +21,7 @@ struct TestTemplParams
   {
   }
 
-  bool operator () (ScTemplateItemValue param1, ScTemplateItemValue param2, ScTemplateItemValue param3)
+  bool operator () (ScTemplateItem param1, ScTemplateItem param2, ScTemplateItem param3)
   {
     bool catched = false;
     try

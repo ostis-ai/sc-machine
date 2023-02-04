@@ -388,7 +388,7 @@ public:
   _SC_EXTERN void HelperSearchTemplate(
       ScTemplate const & templ,
       ScTemplateSearchResultCallback const & callback,
-      ScTemplateSearchResultCheckCallback const & checkCallback = {});
+      ScTemplateSearchResultFilterCallback const & checkCallback = {});
 
   /*
    * Searches constructions by isomorphic search template and pass search result construction to `callback`
@@ -437,7 +437,7 @@ public:
   _SC_EXTERN void HelperSmartSearchTemplate(
       ScTemplate const & templ,
       ScTemplateSearchResultCallbackWithRequest const & callback,
-      ScTemplateSearchResultCheckCallback const & checkCallback = {});
+      ScTemplateSearchResultFilterCallback const & checkCallback = {});
   SC_DEPRECATED(
       0.7.1,
       "Use ScMemoryContext::HelperSearchTemplate(ScTemplate const & templ, ScTemplateSearchResultCallback const & "

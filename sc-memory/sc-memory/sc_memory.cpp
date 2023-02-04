@@ -600,7 +600,7 @@ ScTemplate::Result ScMemoryContext::HelperSearchTemplate(ScTemplate const & temp
 void ScMemoryContext::HelperSearchTemplate(
     ScTemplate const & templ,
     ScTemplateSearchResultCallback const & callback,
-    ScTemplateSearchResultCheckCallback const & checkCallback)
+    ScTemplateSearchResultFilterCallback const & checkCallback)
 {
   templ.Search(*this, callback, checkCallback);
 }
@@ -608,7 +608,7 @@ void ScMemoryContext::HelperSearchTemplate(
 void ScMemoryContext::HelperSmartSearchTemplate(
     ScTemplate const & templ,
     ScTemplateSearchResultCallbackWithRequest const & callback,
-    ScTemplateSearchResultCheckCallback const & checkCallback)
+    ScTemplateSearchResultFilterCallback const & checkCallback)
 {
   templ.Search(*this, callback, checkCallback);
 }

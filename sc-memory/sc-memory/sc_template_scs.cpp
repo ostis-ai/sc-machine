@@ -40,7 +40,7 @@ protected:
     ScTemplate::Result result(true);
 
     auto const MakeTemplItem = [&passed, &keynodes, &result](
-                                   scs::ParsedElement const & el, ScTemplateItemValue & outValue) -> bool {
+                                   scs::ParsedElement const & el, ScTemplateItem & outValue) -> bool {
       std::string const & idtf = el.GetIdtf();
       bool const isUnnamed = scs::TypeResolver::IsUnnamed(idtf);
       bool const isPassed = (passed.find(idtf) != passed.end());
@@ -80,7 +80,7 @@ protected:
       scs::ParsedElement const & edge = m_parser.GetParsedElement(t.m_edge);
       scs::ParsedElement const & trg = m_parser.GetParsedElement(t.m_target);
 
-      ScTemplateItemValue srcItem, edgeItem, trgItem;
+      ScTemplateItem srcItem, edgeItem, trgItem;
 
       if (!MakeTemplItem(src, srcItem) || !MakeTemplItem(edge, edgeItem) || !MakeTemplItem(trg, trgItem))
       {
