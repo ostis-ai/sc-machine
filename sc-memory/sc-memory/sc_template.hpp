@@ -279,6 +279,8 @@ using ScTemplateSearchResultCallbackWithRequest =
     std::function<ScTemplateSearchRequest(ScTemplateSearchResultItem const & resultItem)>;
 using ScTemplateSearchResultFilterCallback =
     std::function<bool(ScTemplateSearchResultItem const & resultItem)>;
+using ScTemplateSearchResultCheckCallback =
+    std::function<bool(ScAddr const & addr)>;
 
 class ScTemplate final
 {
@@ -388,11 +390,13 @@ protected:
   void Search(
       ScMemoryContext & ctx,
       ScTemplateSearchResultCallback const & callback,
-      ScTemplateSearchResultFilterCallback const & filterCallback) const;
+      ScTemplateSearchResultFilterCallback const & filterCallback = {},
+      ScTemplateSearchResultCheckCallback const & checkCallback = {}) const;
   void Search(
       ScMemoryContext & ctx,
       ScTemplateSearchResultCallbackWithRequest const & callback,
-      ScTemplateSearchResultFilterCallback const & filterCallback) const;
+      ScTemplateSearchResultFilterCallback const & filterCallback = {},
+      ScTemplateSearchResultCheckCallback const & checkCallback = {}) const;
 
   SC_DEPRECATED(
       0.8.0,

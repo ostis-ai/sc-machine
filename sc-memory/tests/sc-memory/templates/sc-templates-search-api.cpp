@@ -136,12 +136,17 @@ TEST_F(ScTemplateSearchApiTest, SearchWithCallback)
 
 TEST_F(ScTemplateSearchApiTest, SearchWithCallbackAndCheck)
 {
-  ScAddr const addr1 = m_ctx->CreateNode(ScType::NodeConst);
+  ScAddr const & addr1 = m_ctx->CreateNode(ScType::NodeConst);
   EXPECT_TRUE(addr1.IsValid());
-  ScAddr const addr2 = m_ctx->CreateNode(ScType::NodeConstAbstract);
+  ScAddr const & addr2 = m_ctx->CreateNode(ScType::NodeConstAbstract);
   EXPECT_TRUE(addr2.IsValid());
-  ScAddr const edge = m_ctx->CreateEdge(ScType::EdgeAccessConstPosPerm, addr1, addr2);
+  ScAddr const & edge = m_ctx->CreateEdge(ScType::EdgeAccessConstPosPerm, addr1, addr2);
   EXPECT_TRUE(edge.IsValid());
+
+  ScAddr const & structureAddr = m_ctx->CreateNode(ScType::NodeConstStruct);
+  m_ctx->CreateEdge(ScType::EdgeAccessConstPosPerm, structureAddr, addr1);
+  m_ctx->CreateEdge(ScType::EdgeAccessConstPosPerm, structureAddr, addr2);
+  m_ctx->CreateEdge(ScType::EdgeAccessConstPosPerm, structureAddr, edge);
 
   ScTemplate templ;
   templ.Triple(
@@ -156,7 +161,6 @@ TEST_F(ScTemplateSearchApiTest, SearchWithCallbackAndCheck)
   {
     return !m_ctx->HelperCheckEdge(addr1, item["_addr2"], ScType::EdgeAccessConstPosPerm);
   });
-
   EXPECT_EQ(count, 0u);
 
   m_ctx->HelperSearchTemplate(templ, [&](ScTemplateSearchResultItem const & item) {
@@ -165,8 +169,59 @@ TEST_F(ScTemplateSearchApiTest, SearchWithCallbackAndCheck)
   {
     return m_ctx->HelperCheckEdge(addr1, item["_addr2"], ScType::EdgeAccessConstPosPerm);
   });
-
   EXPECT_EQ(count, 1u);
+  count = 0;
+
+  m_ctx->HelperSearchTemplate(templ, [&](ScTemplateSearchResultItem const & item) {
+    ++count;
+  }, [&](ScAddr const & addr) -> bool
+  {
+    return m_ctx->HelperCheckEdge(addr1, addr, ScType::EdgeAccessConstPosPerm);
+  });
+  EXPECT_EQ(count, 0u);
+
+  m_ctx->HelperSearchTemplate(templ, [&](ScTemplateSearchResultItem const & item) {
+    ++count;
+  }, [&](ScAddr const & addr) -> bool
+  {
+    return m_ctx->HelperCheckEdge(structureAddr, addr, ScType::EdgeAccessConstPosPerm);
+  });
+  EXPECT_EQ(count, 1u);
+  count = 0;
+
+  m_ctx->HelperSearchTemplate(templ, [&](ScTemplateSearchResultItem const & item) {
+    ++count;
+  }, [&](ScTemplateSearchResultItem const & item) -> bool
+  {
+    return m_ctx->HelperCheckEdge(addr1, item["_addr2"], ScType::EdgeAccessConstPosPerm);
+  }, [&](ScAddr const & addr) -> bool
+  {
+    return m_ctx->HelperCheckEdge(structureAddr, addr, ScType::EdgeAccessConstPosPerm);
+  });
+  EXPECT_EQ(count, 1u);
+  count = 0;
+
+  m_ctx->HelperSearchTemplate(templ, [&](ScTemplateSearchResultItem const & item) {
+    ++count;
+  }, [&](ScTemplateSearchResultItem const & item) -> bool
+  {
+    return !m_ctx->HelperCheckEdge(addr1, item["_addr2"], ScType::EdgeAccessConstPosPerm);
+  }, [&](ScAddr const & addr) -> bool
+  {
+    return m_ctx->HelperCheckEdge(structureAddr, addr, ScType::EdgeAccessConstPosPerm);
+  });
+  EXPECT_EQ(count, 0u);
+
+  m_ctx->HelperSearchTemplate(templ, [&](ScTemplateSearchResultItem const & item) {
+    ++count;
+  }, [&](ScTemplateSearchResultItem const & item) -> bool
+  {
+    return m_ctx->HelperCheckEdge(addr1, item["_addr2"], ScType::EdgeAccessConstPosPerm);
+  }, [&](ScAddr const & addr) -> bool
+  {
+    return !m_ctx->HelperCheckEdge(structureAddr, addr, ScType::EdgeAccessConstPosPerm);
+  });
+  EXPECT_EQ(count, 0u);
 }
 
 TEST_F(ScTemplateSearchApiTest, SearchVarTriple)

@@ -600,17 +600,35 @@ ScTemplate::Result ScMemoryContext::HelperSearchTemplate(ScTemplate const & temp
 void ScMemoryContext::HelperSearchTemplate(
     ScTemplate const & templ,
     ScTemplateSearchResultCallback const & callback,
-    ScTemplateSearchResultFilterCallback const & checkCallback)
+    ScTemplateSearchResultFilterCallback const & filterCallback,
+    ScTemplateSearchResultCheckCallback const & checkCallback)
 {
-  templ.Search(*this, callback, checkCallback);
+  templ.Search(*this, callback, filterCallback, checkCallback);
+}
+
+void ScMemoryContext::HelperSearchTemplate(
+    ScTemplate const & templ,
+    ScTemplateSearchResultCallback const & callback,
+    ScTemplateSearchResultCheckCallback const & checkCallback)
+{
+  templ.Search(*this, callback, {}, checkCallback);
 }
 
 void ScMemoryContext::HelperSmartSearchTemplate(
     ScTemplate const & templ,
     ScTemplateSearchResultCallbackWithRequest const & callback,
-    ScTemplateSearchResultFilterCallback const & checkCallback)
+    ScTemplateSearchResultFilterCallback const & filterCallback,
+    ScTemplateSearchResultCheckCallback const & checkCallback)
 {
-  templ.Search(*this, callback, checkCallback);
+  templ.Search(*this, callback, filterCallback, checkCallback);
+}
+
+void ScMemoryContext::HelperSmartSearchTemplate(
+    ScTemplate const & templ,
+    ScTemplateSearchResultCallbackWithRequest const & callback,
+    ScTemplateSearchResultCheckCallback const & checkCallback)
+{
+  templ.Search(*this, callback, {}, checkCallback);
 }
 
 ScTemplate::Result ScMemoryContext::HelperSearchTemplateInStruct(
