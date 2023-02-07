@@ -152,18 +152,18 @@ TEST_F(ScTemplateSearchApiTest, SearchWithCallbackAndCheck)
   size_t count = 0;
   m_ctx->HelperSearchTemplate(templ, [&](ScTemplateSearchResultItem const & item) {
     ++count;
-  }, [&](ScAddr const & beginAddr, ScAddr const & edgeAddr, ScAddr const & endAddr) -> bool
+  }, [&](ScTemplateSearchResultItem const & item) -> bool
   {
-    return !m_ctx->HelperCheckEdge(addr1, endAddr, ScType::EdgeAccessConstPosPerm);
+    return !m_ctx->HelperCheckEdge(addr1, item["_addr2"], ScType::EdgeAccessConstPosPerm);
   });
 
   EXPECT_EQ(count, 0u);
 
   m_ctx->HelperSearchTemplate(templ, [&](ScTemplateSearchResultItem const & item) {
     ++count;
-  }, [&](ScAddr const & beginAddr, ScAddr const & edgeAddr, ScAddr const & endAddr) -> bool
+  }, [&](ScTemplateSearchResultItem const & item) -> bool
   {
-    return m_ctx->HelperCheckEdge(addr1, endAddr, ScType::EdgeAccessConstPosPerm);
+    return m_ctx->HelperCheckEdge(addr1, item["_addr2"], ScType::EdgeAccessConstPosPerm);
   });
 
   EXPECT_EQ(count, 1u);

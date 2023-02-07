@@ -789,8 +789,7 @@ private:
 
       // check triple elements by structure belonging or predicate callback
       if ((IsStructureValid() && (!IsInStructure(replacementTriple[0]) || !IsInStructure(replacementTriple[1]) ||
-                                  !IsInStructure(replacementTriple[2]))) ||
-          (m_filterCallback && !m_filterCallback(replacementTriple[0], replacementTriple[1], replacementTriple[2])))
+                                  !IsInStructure(replacementTriple[2]))))
       {
         m_usedEdgesInReplacementConstructions[replacementConstructionIdx].insert(replacementTriple[1]);
         continue;
@@ -965,11 +964,15 @@ private:
           m_checkedTemplateTriplesInReplacementConstructions[replacementConstructionIdx].size() ==
               m_template.m_templateTriples.size())
       {
-//        std::cout << "Append [" << replacementConstructionIdx << "][" << templateTriple->m_index << "] = {"
-//            << (*templateTriple)[0].m_name << "} --{" << (*templateTriple)[1].m_name << "}--> {"
-//                  << (*templateTriple)[2].m_name << "}" << std::endl;
+        //        std::cout << "Append [" << replacementConstructionIdx << "][" << templateTriple->m_index << "] = {"
+        //            << (*templateTriple)[0].m_name << "} --{" << (*templateTriple)[1].m_name << "}--> {"
+        //                  << (*templateTriple)[2].m_name << "}" << std::endl;
 
-        AppendFoundReplacementConstruction(result, replacementConstructionIdx);
+        if (!m_filterCallback || m_filterCallback(ScTemplateSearchResultItem(&result.m_replacementConstructions[replacementConstructionIdx],
+                                           &result.m_templateItemsNamesToReplacementItemsPositions)))
+        {
+          AppendFoundReplacementConstruction(result, replacementConstructionIdx);
+        }
       }
     } while (isReplacementTriplesIteratorNext && !isStopped);
   }

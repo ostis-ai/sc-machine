@@ -278,7 +278,7 @@ using ScTemplateSearchResultCallback = std::function<void(ScTemplateSearchResult
 using ScTemplateSearchResultCallbackWithRequest =
     std::function<ScTemplateSearchRequest(ScTemplateSearchResultItem const & resultItem)>;
 using ScTemplateSearchResultFilterCallback =
-    std::function<bool(ScAddr const & beginAddr, ScAddr const & edgeAddr, ScAddr const & endAddr)>;
+    std::function<bool(ScTemplateSearchResultItem const & resultItem)>;
 
 class ScTemplate final
 {

@@ -351,18 +351,18 @@ public:
       ScTemplateParams const & params = ScTemplateParams::Empty,
       ScTemplateResultCode * resultCode = nullptr);
   SC_DEPRECATED(
-      0.7.1,
+      0.8.0,
       "Use ScMemoryContext::HelperSearchTemplate(ScTemplate const & templ, ScTemplateSearchResultCallback const & "
       "callback, ScTemplateSearchResultCheckCallback const & checkCallback) instead.")
   _SC_EXTERN ScTemplate::Result HelperSearchTemplate(ScTemplate const & templ, ScTemplateSearchResult & result);
 
-  /*
+  /*!
    * Searches constructions by isomorphic search template and pass search result construction to `callback`
-   * lambda-function. If `checkCallback` passed, then all found constructions triples are filtered by `checkCallback`
+   * lambda-function. If `filterCallback` passed, then all found constructions triples are filtered by `filterCallback`
    * condition.
    * @param templ A sc-template object to find constructions by it
    * @param callback A lambda-function, callable when each construction triple was found
-   * @param checkCallback A lambda-function, that filters all found constructions triples
+   * @param filterCallback A lambda-function, that filters all found constructions triples
    * @example
    * \code
    * ...
@@ -378,9 +378,9 @@ public:
    * );
    * m_ctx->HelperSearchTemplate(templ, [&ctx](ScTemplateSearchResultItem const & item) {
    *  ctx.CreateEdge(ScType::EdgeAccessConstPosTemp, setAddr, item["_addr2"]);
-   * }, [&ctx](ScAddr const & beginAddr, ScAddr const & edgeAddr, ScAddr const & endAddr) -> bool
+   * }, [&ctx](ScTemplateSearchResultItem const & item) -> bool
    * {
-   *  return !ctx->HelperCheckEdge(structureAddr, edgeAddr, ScType::EdgeAccessConstPosPerm);
+   *  return !ctx->HelperCheckEdge(structureAddr, item["_edge"], ScType::EdgeAccessConstPosPerm);
    * });
    * \endcode
    * @throws utils::ExceptionInvalidState
@@ -388,9 +388,9 @@ public:
   _SC_EXTERN void HelperSearchTemplate(
       ScTemplate const & templ,
       ScTemplateSearchResultCallback const & callback,
-      ScTemplateSearchResultFilterCallback const & checkCallback = {});
+      ScTemplateSearchResultFilterCallback const & filterCallback = {});
 
-  /*
+  /*!
    * Searches constructions by isomorphic search template and pass search result construction to `callback`
    * lambda-function. Lambda-function `callback` must return a request command value to manage sc-template search:
    *  - ScTemplateSearchRequest::CONTINUE,
@@ -400,10 +400,10 @@ public:
    * ScTemplateSearchRequest::STOP or ScTemplateSearchRequest::ERROR, then sc-template search stops. If sc-template
    * search stopped by ScTemplateSearchRequest::ERROR, then HelperSmartSearchTemplate throws
    * utils::ExceptionInvalidState.
-   * If `checkCallback` passed, then all found constructions triples are filtered by `checkCallback` condition.
+   * If `filterCallback` passed, then all found constructions triples are filtered by `filterCallback` condition.
    * @param templ A sc-template object to find constructions by it
    * @param callback A lambda-function, callable when each construction triple was found
-   * @param checkCallback A lambda-function, that filters all found constructions triples
+   * @param filterCallback A lambda-function, that filters all found constructions triples
    * @example
    * \code
    * ...
@@ -439,7 +439,7 @@ public:
       ScTemplateSearchResultCallbackWithRequest const & callback,
       ScTemplateSearchResultFilterCallback const & checkCallback = {});
   SC_DEPRECATED(
-      0.7.1,
+      0.8.0,
       "Use ScMemoryContext::HelperSearchTemplate(ScTemplate const & templ, ScTemplateSearchResultCallback const & "
       "callback, ScTemplateSearchResultCheckCallback const & checkCallback) instead.")
   _SC_EXTERN ScTemplate::Result HelperSearchTemplateInStruct(
