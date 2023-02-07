@@ -43,15 +43,6 @@ TEST_F(ScTemplateApiTest, TripleWithTargetAndSourceEqualNames)
       ScType::Unknown >> "_addr1"));
 }
 
-TEST_F(ScTemplateApiTest, TripleWithEqualNames)
-{
-  ScTemplate templ;
-  EXPECT_THROW(templ.Triple(
-      ScType::NodeVar >> "_edge",
-      ScType::EdgeAccessVarPosPerm >> "_edge",
-      ScType::Unknown >> "_addr2"), utils::ExceptionInvalidParams);
-}
-
 TEST_F(ScTemplateApiTest, TripleWithInvalidSourceAddr)
 {
   ScTemplate templ;

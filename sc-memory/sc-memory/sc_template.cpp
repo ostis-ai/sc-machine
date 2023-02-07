@@ -9,11 +9,13 @@
 
 #include <algorithm>
 
+SC_DEPRECATED(0.8.0, "Don't use alias for fixed sc-address")
 ScTemplateItem operator>>(ScAddr const & value, char const * replName)
 {
   return {value, replName};
 }
 
+SC_DEPRECATED(0.8.0, "Don't use alias for fixed sc-address")
 ScTemplateItem operator>>(ScAddr const & value, std::string const & replName)
 {
   return {value, replName.c_str()};
@@ -33,6 +35,7 @@ ScTemplateItem operator>>(ScType const & value, std::string const & replName)
 
 ScTemplate::ScTemplate(bool forceOrder /* = false */)
 {
+  SC_UNUSED(forceOrder);
   m_templateTriples.reserve(16);
 
   auto const tripleTypeCount = (size_t)ScTemplateTripleType::ScConstr3TypeCount;
@@ -89,9 +92,7 @@ ScTemplate & ScTemplate::Triple(
   m_templateTriples.emplace_back(new ScTemplateTriple(param1, param2, param3, m_templateTriples.size()));
 
   if (!param2.m_name.empty() && (param2.m_name == param1.m_name || param2.m_name == param3.m_name))
-  {
     SC_THROW_EXCEPTION(utils::ExceptionInvalidParams, "You can't use equal replacement for an edge and source/target");
-  }
 
   ScTemplateTriple * triple = m_templateTriples.back();
 
@@ -100,39 +101,29 @@ ScTemplate & ScTemplate::Triple(
     ScTemplateItem & value = triple->m_values[i];
 
     if (value.IsAssign() && value.m_typeValue.HasConstancyFlag() && !value.m_typeValue.IsVar())
-    {
       SC_THROW_EXCEPTION(utils::ExceptionInvalidParams, "You should to use variable types in template");
-    }
 
     if (value.IsAddr() && !value.m_addrValue.IsValid())
-    {
       SC_THROW_EXCEPTION(utils::ExceptionInvalidParams, "You can't use empty ScAddr");
-    }
 
     if (!value.m_name.empty())
     {
       if (value.IsAddr())
-      {
         m_templateItemsNamesToReplacementItemsAddrs[value.m_name] = value.m_addrValue;
-      }
       else
       {
         auto const & found = m_templateItemsNamesToReplacementItemsAddrs.find(value.m_name);
         if (found != m_templateItemsNamesToReplacementItemsAddrs.cend())
-        {
           value.SetAddr(found->second);
-        }
       }
 
       if (value.IsType())
-      {
         m_templateItemsNamesToTypes[value.m_name] = value.m_typeValue;
-      }
 
-      if (value.m_itemType != ScTemplateItem::Type::Replace)
+      if (!value.IsReplacement())
       {
         if (m_templateItemsNamesToReplacementItemsPositions.find(value.m_name) ==
-            m_templateItemsNamesToReplacementItemsPositions.end())
+            m_templateItemsNamesToReplacementItemsPositions.cend())
           m_templateItemsNamesToReplacementItemsPositions.insert({value.m_name, replPos + i});
       }
 
@@ -188,29 +179,23 @@ inline ScTemplateTripleType ScTemplate::GetPriority(ScTemplateTriple * triple)
   if (item2.IsFixed())
     return ScTemplateTripleType::AFA;
 
-  else if (item1.IsFixed() && item3.IsFixed())
+  if (item1.IsFixed() && item3.IsFixed())
     return ScTemplateTripleType::FAF;
 
-  else if (item3.IsFixed())
+  if (item3.IsFixed())
     return ScTemplateTripleType::AAF;
 
-  else if (item1.IsFixed() && (!item3.m_typeValue.IsEdge() && !item3.m_typeValue.IsUnknown()))
+  if (item1.IsFixed() && (!item3.m_typeValue.IsEdge() && !item3.m_typeValue.IsUnknown()))
   {
-    auto const & it = m_templateItemsNamesToReplacementItemsPositions.find(item3.m_name);
-    if (it != m_templateItemsNamesToReplacementItemsPositions.cend())
+    auto const & it = m_templateItemsNamesToTypes.find(item3.m_name);
+    if (it != m_templateItemsNamesToTypes.cend() && !it->second.IsEdge() && !it->second.IsUnknown())
     {
-      size_t const tripleIdx = it->second / 3;
-      if (tripleIdx == triple->m_index ||
-          (tripleIdx >= m_templateTriples.size() && !m_templateTriples[tripleIdx]->m_values[1].m_typeValue.IsEdge()))
-      {
-        return ScTemplateTripleType::FAE;
-      }
+      return ScTemplateTripleType::FAN;
     }
   }
 
   if (item1.IsFixed())
-    return ScTemplateTripleType::FAN;
+    return ScTemplateTripleType::FAE;
 
-  else
-    return ScTemplateTripleType::AAA;
+  return ScTemplateTripleType::AAA;
 }

@@ -372,7 +372,6 @@ sc_result sc_storage_element_free(sc_memory_context * ctx, sc_addr addr)
       if ((el2 = g_hash_table_lookup(lock_table, p_addr)) == null_ptr)
       {
         STORAGE_CHECK_CALL(sc_storage_element_lock(el->arc.begin, &el2));
-        sc_atomic_int_add(&el2->output_arcs_count, -1);
         g_hash_table_insert(lock_table, p_addr, el2);
       }
 
@@ -381,7 +380,6 @@ sc_result sc_storage_element_free(sc_memory_context * ctx, sc_addr addr)
       {
         el2 = null_ptr;
         STORAGE_CHECK_CALL(sc_storage_element_lock(el->arc.end, &el2));
-        sc_atomic_int_add(&el2->input_arcs_count, -1);
         g_hash_table_insert(lock_table, p_addr, el2);
       }
 
@@ -540,6 +538,7 @@ sc_result sc_storage_element_free(sc_memory_context * ctx, sc_addr addr)
       if (SC_ADDR_IS_EQUAL(addr, b_el->first_out_arc))
         b_el->first_out_arc = next_arc;
 
+      sc_atomic_int_add(&b_el->output_arcs_count, -1);
       sc_event_emit(ctx, el->arc.begin, b_el->flags.access_levels, SC_EVENT_REMOVE_OUTPUT_ARC, addr, el->arc.end);
 
       if (need_unlock)
@@ -575,6 +574,7 @@ sc_result sc_storage_element_free(sc_memory_context * ctx, sc_addr addr)
       if (SC_ADDR_IS_EQUAL(addr, e_el->first_in_arc))
         e_el->first_in_arc = next_arc;
 
+      sc_atomic_int_add(&e_el->input_arcs_count, -1);
       sc_event_emit(ctx, el->arc.end, e_el->flags.access_levels, SC_EVENT_REMOVE_INPUT_ARC, addr, el->arc.begin);
 
       if (need_unlock)
@@ -727,7 +727,6 @@ sc_addr sc_storage_arc_new_ext(
       if (f_out_arc == null_ptr)
         goto unlock;
     }
-    sc_atomic_int_inc(&beg_el->output_arcs_count);
 
     sc_addr first_in_arc = end_el->first_in_arc;
     if (SC_ADDR_IS_NOT_EMPTY(first_in_arc))
@@ -736,10 +735,11 @@ sc_addr sc_storage_arc_new_ext(
       if (f_in_arc == null_ptr)
         goto unlock;
     }
-    sc_atomic_int_inc(&end_el->input_arcs_count);
 
     // get new element
     tmp_el = sc_storage_append_el_into_segments(ctx, &addr);
+    sc_atomic_int_inc(&beg_el->output_arcs_count);
+    sc_atomic_int_inc(&end_el->input_arcs_count);
 
     tmp_el->flags.type = sc_flags_remove((type & sc_type_arc_mask) ? type : (sc_type_arc_common | type));
     tmp_el->arc.begin = beg;

@@ -20,32 +20,31 @@ template <typename IterType, sc_uint8 tripleSize>
 class TIteratorBase
 {
 public:
-  virtual ~TIteratorBase()
-  {
-  }
+  virtual ~TIteratorBase() = default;
 
   inline bool IsValid() const
   {
-    return m_iterator != 0;
+    return m_iterator != nullptr;
   }
 
   //! Returns false, if there are no more iterator results. It more results exists, then go to next one and returns true
   _SC_EXTERN virtual bool Next() const = 0;
 
   //! Returns sc-addr of specified element in iterator result
-  _SC_EXTERN virtual ScAddr Get(sc_uint8 idx) const = 0;
+  _SC_EXTERN virtual ScAddr Get(size_t index) const = 0;
 
   //! Returns sc-addr triple
   _SC_EXTERN virtual std::array<ScAddr, tripleSize> Get() const = 0;
 
   //! Short form of Get
-  inline ScAddr operator[](sc_uint8 idx) const
+  inline ScAddr operator[](size_t idx) const
   {
     return Get(idx);
   }
 
 protected:
   IterType * m_iterator;
+  size_t m_tripleSize = tripleSize;
 };
 
 using ScAddrTriple = std::array<ScAddr, 3>;
@@ -84,26 +83,33 @@ public:
     if (m_iterator)
     {
       sc_iterator3_free(m_iterator);
-      m_iterator = 0;
+      m_iterator = nullptr;
     }
   }
 
   _SC_EXTERN bool Next() const override
   {
-    SC_ASSERT(IsValid(), ());
+    SC_ASSERT(IsValid(), ("Not valid iterator object"));
     return sc_iterator3_next(m_iterator) == SC_TRUE;
   }
 
-  _SC_EXTERN ScAddr Get(sc_uint8 idx) const override
+  _SC_EXTERN ScAddr Get(size_t index) const override
   {
-    SC_ASSERT(idx < 3, ());
-    SC_ASSERT(IsValid(), ());
-    return ScAddr(sc_iterator3_value(m_iterator, idx));
+    SC_ASSERT(IsValid(), ("Not valid iterator object"));
+    if (index < m_tripleSize)
+    {
+      return ScAddr(sc_iterator3_value(m_iterator, index));
+    }
+
+    SC_THROW_EXCEPTION(
+        utils::ExceptionInvalidParams,
+        "Index=" + std::to_string(index) + " must be < size=" + std::to_string(m_tripleSize));
   }
 
   _SC_EXTERN ScAddrTriple Get() const override
   {
-    return {sc_iterator3_value(m_iterator, 0), sc_iterator3_value(m_iterator, 1), sc_iterator3_value(m_iterator, 2)};
+    SC_ASSERT(IsValid(), ("Not valid iterator object"));
+    return {Get(0), Get(1), Get(2)};
   }
 };
 
@@ -139,26 +145,27 @@ public:
 
   _SC_EXTERN bool Next() const override
   {
-    SC_ASSERT(IsValid(), ());
+    SC_ASSERT(IsValid(), ("Not valid iterator object"));
     return sc_iterator5_next(m_iterator) == SC_TRUE;
   }
 
-  _SC_EXTERN ScAddr Get(sc_uint8 idx) const override
+  _SC_EXTERN ScAddr Get(size_t index) const override
   {
-    SC_ASSERT(idx < 5, ());
-    SC_ASSERT(IsValid(), ());
-    return ScAddr(sc_iterator5_value(m_iterator, idx));
+    SC_ASSERT(IsValid(), ("Not valid iterator object"));
+    if (index < m_tripleSize)
+    {
+      return sc_iterator5_value(m_iterator, index);
+    }
+
+    SC_THROW_EXCEPTION(
+        utils::ExceptionInvalidParams,
+        "Index=" + std::to_string(index) + " must be < size=" + std::to_string(m_tripleSize));
   }
 
   _SC_EXTERN ScAddrFiver Get() const override
   {
-    return {
-        sc_iterator5_value(m_iterator, 0),
-        sc_iterator5_value(m_iterator, 1),
-        sc_iterator5_value(m_iterator, 2),
-        sc_iterator5_value(m_iterator, 3),
-        sc_iterator5_value(m_iterator, 4)};
-    ;
+    SC_ASSERT(IsValid(), ("Not valid iterator object"));
+    return {Get(0), Get(1), Get(2), Get(3), Get(4)};
   }
 };
 

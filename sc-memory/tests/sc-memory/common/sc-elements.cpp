@@ -92,3 +92,36 @@ TEST_F(ScMemoryTest, CreateDeleteCountEdges)
   EXPECT_EQ(ctx.GetElementOutputArcsCount(link), 0u);
   EXPECT_EQ(ctx.GetElementInputArcsCount(link), 2u);
 }
+
+TEST_F(ScMemoryTest, CreateDeleteCountEdges2)
+{
+  ScMemoryContext ctx(sc_access_lvl_make_min, "CreateDeleteCountEdges");
+
+  ScAddr const node = ctx.CreateNode(ScType::Const);
+  EXPECT_TRUE(node.IsValid());
+
+  ScAddr const link = ctx.CreateLink();
+  EXPECT_TRUE(link.IsValid());
+
+  EXPECT_EQ(ctx.GetElementOutputArcsCount(node), 0u);
+  EXPECT_EQ(ctx.GetElementInputArcsCount(node), 0u);
+  EXPECT_EQ(ctx.GetElementOutputArcsCount(link), 0u);
+  EXPECT_EQ(ctx.GetElementInputArcsCount(link), 0u);
+
+  ScAddr edge = ctx.CreateEdge(ScType::EdgeAccessConstPosPerm, node, link);
+
+  ScAddr const relation = ctx.CreateNode(ScType::NodeConstRole);
+  ScAddr edge2 = ctx.CreateEdge(ScType::EdgeAccessConstPosPerm, relation, edge);
+  EXPECT_EQ(ctx.GetElementOutputArcsCount(relation), 1u);
+  EXPECT_EQ(ctx.GetElementInputArcsCount(relation), 0u);
+  EXPECT_EQ(ctx.GetElementOutputArcsCount(edge), 0u);
+  EXPECT_EQ(ctx.GetElementInputArcsCount(edge), 1u);
+
+  EXPECT_TRUE(ctx.EraseElement(edge));
+  EXPECT_EQ(ctx.GetElementOutputArcsCount(node), 0u);
+  EXPECT_EQ(ctx.GetElementInputArcsCount(node), 0u);
+  EXPECT_EQ(ctx.GetElementOutputArcsCount(link), 0u);
+  EXPECT_EQ(ctx.GetElementInputArcsCount(link), 0u);
+  EXPECT_EQ(ctx.GetElementOutputArcsCount(relation), 0u);
+  EXPECT_EQ(ctx.GetElementInputArcsCount(relation), 0u);
+}

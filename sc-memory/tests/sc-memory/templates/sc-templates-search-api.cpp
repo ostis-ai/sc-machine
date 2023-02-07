@@ -134,6 +134,36 @@ TEST_F(ScTemplateSearchApiTest, SearchWithCallback)
   EXPECT_EQ(count, 1u);
 }
 
+TEST_F(ScTemplateSearchApiTest, SearchWithCallbackForLoop)
+{
+  ScAddr const addr1 = m_ctx->CreateNode(ScType::NodeConst);
+  EXPECT_TRUE(addr1.IsValid());
+  ScAddr const addr2 = m_ctx->CreateNode(ScType::NodeConstAbstract);
+  EXPECT_TRUE(addr2.IsValid());
+  ScAddr const edge = m_ctx->CreateEdge(ScType::EdgeAccessConstPosPerm, addr1, addr2);
+  EXPECT_TRUE(edge.IsValid());
+
+  ScTemplate templ;
+  templ.Triple(
+      addr1 >> "_addr1",
+      ScType::EdgeAccessVarPosPerm >> "_edge",
+      ScType::Unknown >> "_addr2");
+
+  size_t count = 0;
+  m_ctx->HelperSearchTemplate(templ, [&](ScTemplateSearchResultItem const & item) {
+    ScAddr foundAddr;
+
+    for (ScAddr const & addr : item)
+    {
+      EXPECT_TRUE(addr.IsValid());
+    }
+
+    ++count;
+  });
+
+  EXPECT_EQ(count, 1u);
+}
+
 TEST_F(ScTemplateSearchApiTest, SearchWithCallbackAndCheck)
 {
   ScAddr const & addr1 = m_ctx->CreateNode(ScType::NodeConst);
@@ -232,8 +262,11 @@ TEST_F(ScTemplateSearchApiTest, SearchVarTriple)
       ScType::EdgeAccessVarPosPerm >> "_edge",
       ScType::Unknown >> "_addr2");
 
-  EXPECT_THROW(m_ctx->HelperSearchTemplate(
-      templ, [&](ScTemplateSearchResultItem const & item) {}), utils::ExceptionInvalidState);
+  size_t count = 0;
+  m_ctx->HelperSearchTemplate(
+      templ, [&](ScTemplateSearchResultItem const & item) { ++count; });
+
+  EXPECT_EQ(count, 0u);
 }
 
 TEST_F(ScTemplateSearchApiTest, SearchEmpty)

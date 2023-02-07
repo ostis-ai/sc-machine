@@ -3,12 +3,11 @@
 #include "sc-memory/sc_memory.hpp"
 #include "sc-memory/sc_struct.hpp"
 
-#include "sc_test.hpp"
 #include "template_test_utils.hpp"
 
 using ScTemplateBuildTest = ScTemplateTest;
 
-TEST_F(ScTemplateBuildTest, double_attrs)
+TEST_F(ScTemplateBuildTest, DoubleAttributes)
 {
   /**
    * addr1 _-> addr3:: addr4:: _addr2;;
@@ -47,7 +46,7 @@ TEST_F(ScTemplateBuildTest, double_attrs)
 }
 
 
-TEST_F(ScTemplateBuildTest, edge_from_edge)
+TEST_F(ScTemplateBuildTest, EdgeFromEdgeToEdge)
 {
   /**
    * @edge1 = addr1 _-> _addr2;;

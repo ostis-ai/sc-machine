@@ -653,17 +653,17 @@ TEST_F(ScServerTest, SearchTemplate)
       {
           {
               {"type", "type"},
-              {"value", sc_type_node | sc_type_var},
+              {"value", *ScType::NodeVar},
               {"alias", "_src"},
           },
           {
               {"type", "type"},
-              {"value", sc_type_edge_common | sc_type_var},
+              {"value", *ScType::EdgeDCommonVar},
               {"alias", "_edge1"},
           },
           {
               {"type", "type"},
-              {"value", sc_type_link | sc_type_var},
+              {"value", *ScType::LinkVar},
               {"alias", "_trg"},
 
           },
@@ -675,7 +675,7 @@ TEST_F(ScServerTest, SearchTemplate)
           },
           {
               {"type", "type"},
-              {"value", sc_type_arc_pos_var_perm},
+              {"value", *ScType::EdgeAccessVarPosPerm},
               {"alias", "_edge2"},
           },
           {

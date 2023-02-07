@@ -7,7 +7,7 @@
 
 using ScTemplateSCsTest = ScTemplateTest;
 
-TEST_F(ScTemplateSCsTest, build_ok)
+TEST_F(ScTemplateSCsTest, BuildSuccessfull)
 {
   ScAddr const addr = m_ctx->CreateNode(ScType::NodeConst);
   EXPECT_TRUE(addr.IsValid());
@@ -18,14 +18,14 @@ TEST_F(ScTemplateSCsTest, build_ok)
   EXPECT_TRUE(m_ctx->HelperBuildTemplate(templ, data));
 }
 
-TEST_F(ScTemplateSCsTest, build_fail)
+TEST_F(ScTemplateSCsTest, BuildFail)
 {
   ScTemplate templ;
   char const * data = "_a _-> b";
   EXPECT_FALSE(m_ctx->HelperBuildTemplate(templ, data));
 }
 
-TEST_F(ScTemplateSCsTest, search)
+TEST_F(ScTemplateSCsTest, GenBuildSearch)
 {
   ScTemplate genTempl;
   genTempl.Triple(
@@ -55,7 +55,7 @@ TEST_F(ScTemplateSCsTest, search)
   EXPECT_EQ(searchResult[0]["b"], genResult["b"]);
 }
 
-TEST_F(ScTemplateSCsTest, generate)
+TEST_F(ScTemplateSCsTest, BuildGenerate)
 {
   ScAddr const cAddr = m_ctx->CreateNode(ScType::Node);
   EXPECT_TRUE(cAddr.IsValid());
@@ -83,7 +83,7 @@ TEST_F(ScTemplateSCsTest, generate)
   EXPECT_EQ(genResult["_b1"], searchResult[0]["_b1"]);
 }
 
-TEST_F(ScTemplateSCsTest, generate_and_search)
+TEST_F(ScTemplateSCsTest, GenerateSearch)
 {
   ScAddr const cAddr = m_ctx->CreateNode(ScType::Node);
   EXPECT_TRUE(cAddr.IsValid());
@@ -108,7 +108,7 @@ TEST_F(ScTemplateSCsTest, generate_and_search)
   EXPECT_EQ(genResult["_f1"], searchResult[0]["_f1"]);
 }
 
-TEST_F(ScTemplateSCsTest, idtf_does_not_exist)
+TEST_F(ScTemplateSCsTest, IdtfNotExist)
 {
   ScTemplate templ;
   ScTemplate::Result result = m_ctx->HelperBuildTemplate(templ, "non_existing_item _-> _z;;");

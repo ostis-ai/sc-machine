@@ -3,12 +3,11 @@
 #include "sc-memory/sc_memory.hpp"
 #include "sc-memory/sc_struct.hpp"
 
-#include "sc_test.hpp"
 #include "template_test_utils.hpp"
 
 using ScTemplateSearchInStructTest = ScTemplateTest;
 
-TEST_F(ScTemplateSearchInStructTest, search_in_struct)
+TEST_F(ScTemplateSearchInStructTest, SearchInStruct)
 {
   /**
    *   _y

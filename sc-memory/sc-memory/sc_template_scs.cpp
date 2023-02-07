@@ -24,7 +24,6 @@ public:
 
   ScTemplate::Result operator()(ScTemplate * templ)
   {
-    // mark template to don't force order of triples
     if (!m_parser.Parse(m_scsText))
       return ScTemplate::Result(false, m_parser.GetParseError());
 

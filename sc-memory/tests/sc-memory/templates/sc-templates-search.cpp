@@ -4,12 +4,11 @@
 #include "sc-memory/sc_memory.hpp"
 #include "sc-memory/sc_struct.hpp"
 
-#include "sc_test.hpp"
 #include "template_test_utils.hpp"
 
 using ScTemplateSearchTest = ScTemplateTest;
 
-TEST_F(ScTemplateSearchTest, search_1)
+TEST_F(ScTemplateSearchTest, SimpleSearch1)
 {
   /**			_y
    *			^
@@ -92,7 +91,7 @@ TEST_F(ScTemplateSearchTest, search_1)
   }
 }
 
-TEST_F(ScTemplateSearchTest, search_2)
+TEST_F(ScTemplateSearchTest, SimpleSearch2)
 {
   /** SCs:
    * addr => nrel_main_idtf: [] (* <- lang;; *);;
@@ -143,7 +142,7 @@ TEST_F(ScTemplateSearchTest, search_2)
   }
 }
 
-TEST_F(ScTemplateSearchTest, unknown_type)
+TEST_F(ScTemplateSearchTest, UnknownType)
 {
   // addr1 -> addr2;;
   ScAddr const addr1 = m_ctx->CreateNode(ScType::NodeConst);
@@ -167,7 +166,7 @@ TEST_F(ScTemplateSearchTest, unknown_type)
   EXPECT_EQ(res[0]["addr2"], addr2);
 }
 
-TEST_F(ScTemplateSearchTest, links_with_relation)
+TEST_F(ScTemplateSearchTest, LinkWithRelation)
 {
   /**
    * deviceAddr _<= nrel_installed_apps: _tuple;;
@@ -295,13 +294,13 @@ TEST_F(ScTemplateSearchTest, links_with_relation)
     auto const & d1 = foundData[i];
     auto const & d2 = data[i];
 
-    EXPECT_TRUE(d1.m_app == d2.m_app);
-    EXPECT_TRUE(d1.m_idtf == d2.m_idtf);
-    EXPECT_TRUE(d1.m_image == d2.m_image);
+    EXPECT_EQ(d1.m_app, d2.m_app);
+    EXPECT_EQ(d1.m_idtf, d2.m_idtf);
+    EXPECT_EQ(d1.m_image, d2.m_image);
   }
 }
 
-TEST_F(ScTemplateSearchTest, nodes_with_two_class)
+TEST_F(ScTemplateSearchTest, NodesWithTwoClasses)
 {
   /**
    * class1 _-> _element;;
@@ -376,7 +375,7 @@ TEST_F(ScTemplateSearchTest, nodes_with_two_class)
   }
 }
 
-TEST_F(ScTemplateSearchTest, result_deduplication)
+TEST_F(ScTemplateSearchTest, ResultDeduplication)
 {
   /**
    *   a -> b (* <- sc_node_material;; *);;
@@ -452,7 +451,7 @@ TEST_F(ScTemplateSearchTest, EqualConstructions)
 
   ScTemplateSearchResult searchResult;
   EXPECT_TRUE(m_ctx->HelperSearchTemplate(initVersionSearchTemplate, searchResult));
-  EXPECT_TRUE(searchResult.Size() == 1);
+  EXPECT_EQ(searchResult.Size(), 1u);
 }
 
 TEST_F(ScTemplateSearchTest, StructureElements)

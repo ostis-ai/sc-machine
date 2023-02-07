@@ -349,12 +349,15 @@ public:
       ScTemplate const & templ,
       ScTemplateGenResult & result,
       ScTemplateParams const & params = ScTemplateParams::Empty,
-      ScTemplateResultCode * resultCode = nullptr);
+      ScTemplateResultCode * resultCode = nullptr) noexcept(false);
   SC_DEPRECATED(
       0.8.0,
-      "Use ScMemoryContext::HelperSearchTemplate(ScTemplate const & templ, ScTemplateSearchResultCallback const & "
-      "callback, ScTemplateSearchResultCheckCallback const & checkCallback) instead.")
-  _SC_EXTERN ScTemplate::Result HelperSearchTemplate(ScTemplate const & templ, ScTemplateSearchResult & result);
+      "Use callback-based ScMemoryContext::HelperSearchTemplate(ScTemplate const & templ, "
+      "ScTemplateSearchResultCallback const & callback, ScTemplateSearchResultCheckCallback const & checkCallback) "
+      "instead.")
+  _SC_EXTERN ScTemplate::Result HelperSearchTemplate(
+      ScTemplate const & templ,
+      ScTemplateSearchResult & result) noexcept(false);
 
   /*!
    * Searches constructions by isomorphic search template and pass search result construction to `callback`
@@ -382,8 +385,7 @@ public:
    *  ctx.CreateEdge(ScType::EdgeAccessConstPosTemp, setAddr, item["_addr2"]);
    * }, [&ctx](ScTemplateSearchResultItem const & item) -> bool {
    *  return !ctx->HelperCheckEdge(structureAddr, item["_edge"], ScType::EdgeAccessConstPosPerm);
-   * },
-   * [&ctx](ScAddr const & addr) -> bool {
+   * }, [&ctx](ScAddr const & addr) -> bool {
    *  return ctx->HelperCheckEdge(modelAddr, addr, ScType::EdgeAccessConstPosPerm);
    * });
    * \endcode
@@ -393,18 +395,18 @@ public:
       ScTemplate const & templ,
       ScTemplateSearchResultCallback const & callback,
       ScTemplateSearchResultFilterCallback const & filterCallback = {},
-      ScTemplateSearchResultCheckCallback const & checkCallback = {});
+      ScTemplateSearchResultCheckCallback const & checkCallback = {}) noexcept(false);
 
   _SC_EXTERN void HelperSearchTemplate(
       ScTemplate const & templ,
       ScTemplateSearchResultCallback const & callback,
-      ScTemplateSearchResultCheckCallback const & checkCallback);
+      ScTemplateSearchResultCheckCallback const & checkCallback) noexcept(false);
 
   /*!
    * Searches constructions by isomorphic search template and pass search result construction to `callback`
    * lambda-function. Lambda-function `callback` must return a request command value to manage sc-template search:
    *  - ScTemplateSearchRequest::CONTINUE,
-   *  - ScTemplateSearchRequest::STOP or
+   *  - ScTemplateSearchRequest::STOP,
    *  - ScTemplateSearchRequest::ERROR.
    * When ScTemplateSearchRequest::CONTINUE returned sc-template search will be continued. If
    * ScTemplateSearchRequest::STOP or ScTemplateSearchRequest::ERROR, then sc-template search stops. If sc-template
@@ -429,18 +431,19 @@ public:
    *  ScType::Unknown >> "_addr2"
    * );
    * m_ctx->HelperSmartSearchTemplate(templ, [&ctx](ScTemplateSearchResultItem const & item) -> ScTemplateSearchRequest
-   * { if (!ctx->HelperCheckEdge(structureAddr, edgeAddr, ScType::EdgeAccessConstPosPerm))
-   *  {
-   *    if (ctx.CreateEdge(ScType::EdgeAccessConstPosTemp, setAddr, item["_addr2"]))
-   *    {
-   *      return ScTemplateSearchRequest::STOP;
-   *    }
-   *    else
-   *    {
-   *      return ScTemplateSearchRequest::ERROR;
-   *    }
-   *  }
-   *  return ScTemplateSearchRequest::CONTINUE;
+   * {
+   *   if (!ctx->HelperCheckEdge(structureAddr, edgeAddr, ScType::EdgeAccessConstPosPerm))
+   *   {
+   *     if (ctx.CreateEdge(ScType::EdgeAccessConstPosTemp, setAddr, item["_addr2"]))
+   *     {
+   *       return ScTemplateSearchRequest::STOP;
+   *     }
+   *     else
+   *     {
+   *       return ScTemplateSearchRequest::ERROR;
+   *     }
+   *   }
+   *   return ScTemplateSearchRequest::CONTINUE;
    * });
    * \endcode
    * @throws utils::ExceptionInvalidState
@@ -449,26 +452,27 @@ public:
       ScTemplate const & templ,
       ScTemplateSearchResultCallbackWithRequest const & callback,
       ScTemplateSearchResultFilterCallback const & filterCallback = {},
-      ScTemplateSearchResultCheckCallback const & checkCallback = {});
+      ScTemplateSearchResultCheckCallback const & checkCallback = {}) noexcept(false);
 
   _SC_EXTERN void HelperSmartSearchTemplate(
       ScTemplate const & templ,
       ScTemplateSearchResultCallbackWithRequest const & callback,
-      ScTemplateSearchResultCheckCallback const & checkCallback);
+      ScTemplateSearchResultCheckCallback const & checkCallback) noexcept(false);
 
   SC_DEPRECATED(
       0.8.0,
-      "Use ScMemoryContext::HelperSearchTemplate(ScTemplate const & templ, ScTemplateSearchResultCallback const & "
-      "callback, ScTemplateSearchResultCheckCallback const & checkCallback) instead.")
+      "Use callback-based ScMemoryContext::HelperSearchTemplate(ScTemplate const & templ, "
+      "ScTemplateSearchResultCallback const & callback, ScTemplateSearchResultCheckCallback const & checkCallback) "
+      "instead.")
   _SC_EXTERN ScTemplate::Result HelperSearchTemplateInStruct(
       ScTemplate const & templ,
       ScAddr const & scStruct,
-      ScTemplateSearchResult & result);
+      ScTemplateSearchResult & result) noexcept(false);
   _SC_EXTERN ScTemplate::Result HelperBuildTemplate(
       ScTemplate & templ,
       ScAddr const & templAddr,
-      const ScTemplateParams & params = ScTemplateParams());
-  _SC_EXTERN ScTemplate::Result HelperBuildTemplate(ScTemplate & templ, std::string const & scsText);
+      const ScTemplateParams & params = ScTemplateParams()) noexcept(false);
+  _SC_EXTERN ScTemplate::Result HelperBuildTemplate(ScTemplate & templ, std::string const & scsText) noexcept(false);
 
   _SC_EXTERN Stat CalculateStat() const;
 
