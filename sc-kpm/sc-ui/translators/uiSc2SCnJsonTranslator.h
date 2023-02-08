@@ -20,8 +20,10 @@ struct sScElementInfo
   sc_addr trgAddr;
   sScElementInfo * source;
   sScElementInfo * target;
+  sScElementInfo * structKeyword;
   tScElementInfoList outputArcs;
   tScElementInfoList inputArcs;
+  tScElementInfoList structureElements;
 
   bool isInTree;
 };
@@ -46,13 +48,13 @@ protected:
   void collectScElementsInfo();
 
   // Generate json for specified element
-  sc_json json(sScElementInfo * elInfo, int level);
+  sc_json json(sScElementInfo * elInfo, int level, bool isStruct);
 
   // Get childrens for specified element
-  sc_json getChildrens(sScElementInfo * elInfo, bool isFullLinkedNodes, int level);
+  sc_json getChildrens(sScElementInfo * elInfo, bool isFullLinkedNodes, int level, bool isStruct);
 
   // Get childrens by direction for specified arcs list
-  sc_json getChildrensByDirection(sScElementInfo::tScElementInfoList arcs, String direction);
+  sc_json getChildrensByDirection(sScElementInfo::tScElementInfoList arcs, String direction, bool isStruct);
 
   // Get base json information about specified element
   sc_json getBaseInfo(sScElementInfo * elInfo);
@@ -60,9 +62,13 @@ protected:
   // Group childrens by modifiers
   sc_json groupChildrensByModifier(sc_json childrens);
 
-  sc_json getJsonOfLinkedNodes(sc_json childrens, int level);
+  sc_json getJsonOfLinkedNodes(sc_json childrens, int level, bool isStruct);
 
   bool getLinkContent(sc_addr link_addr, String & content);
+
+  sScElementInfo * findStruct(sScElementInfo * elInfo);
+
+  sScElementInfo * findStructKeyword(sScElementInfo::tScElementInfoList structureElements);
 
 protected:
   //! List of keywords
@@ -72,6 +78,8 @@ protected:
   tScElemetsInfoMap mScElementsInfo;
   //! Pull of sc-elements information (used to prevent many memory allocations)
   sScElementInfo * mScElementsInfoPool;
+
+  sScElementInfo::tScElementInfoList structureElements;
   //max level of full discripted node
   const int maxLevel = 2;
 };
