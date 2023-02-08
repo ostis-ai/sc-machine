@@ -306,11 +306,6 @@ sc_json uiSc2SCnJsonTranslator::json(sScElementInfo * elInfo, int level = 0, boo
 sc_json uiSc2SCnJsonTranslator::getChildrens(sScElementInfo * elInfo, bool isFullLinkedNodes, int level = 1, bool isStruct = false)
 {
   sc_json childrens = sc_json::array();
-  if (elInfo->type & sc_type_node && elInfo->type & sc_type_node_tuple)
-  {
-    std::for_each(elInfo->outputArcs.begin(), elInfo->outputArcs.end(), [](sScElementInfo * el){ el->isInTree = false;});
-    std::for_each(elInfo->inputArcs.begin(), elInfo->inputArcs.end(), [](sScElementInfo * el){ el->isInTree = false;});
-  }
   sScElementInfo::tScElementInfoList outputArcs = elInfo->outputArcs;
   sScElementInfo::tScElementInfoList inputArcs = elInfo->inputArcs;
 
@@ -394,38 +389,38 @@ sc_json uiSc2SCnJsonTranslator::getBaseInfo(sScElementInfo * elInfo)
 
 sc_json uiSc2SCnJsonTranslator::groupChildrensByModifier(sc_json childrens)
 {
-  sc_json groupedChildrens = sc_json::array();
-  sc_json visited = sc_json::array();
+  sc_json groupedChildrens, visited, arcs, modifiers, linkedNodes, filtered = sc_json::array();
+  sc_json children, groupedChildren, modifier, modifierAddr;
   for (sc_json::iterator it = childrens.begin(); it != childrens.end(); ++it)
   {
     // check is element visited
-    sc_json children = *it;
+    children = *it;
     if (std::find(visited.begin(), visited.end(), children) != visited.end())
       continue;
 
-    sc_json groupedChildren;
-    sc_json arcs = sc_json::array();
-    sc_json modifiers = sc_json::array();
-    sc_json linkedNodes = sc_json::array();
+    groupedChildren = sc_json();
+    arcs = sc_json::array();
+    modifiers = sc_json::array();
+    linkedNodes = sc_json::array();
 
     //get modifier
     if (children["modifier"].is_null())
     {
       groupedChildren["arcs"][0] = children["arc"];
       groupedChildren["modifiers"] = sc_json();
-      sc_json linkedNode = children["linkedNode"];
-      groupedChildren["linkedNodes"][0] = linkedNode;
+      groupedChildren["linkedNodes"][0] = children["linkedNode"];
 
       groupedChildrens.push_back(groupedChildren);
       visited.push_back(children);
       continue;
     }
-    sc_json modifier = children["modifier"];
-    sc_json modifierAddr = modifier["addr"];
+    std::cout << children["modifier"].dump() << std::endl;
+    modifier = children["modifier"];
+    modifierAddr = modifier["addr"];
     modifier["modifierArcs"] = sc_json::array();
 
     // get elements with same modifiers
-    sc_json filtered = sc_json::array();
+    filtered = sc_json::array();
     std::copy_if(
       childrens.begin(),
       childrens.end(),
@@ -439,10 +434,7 @@ sc_json uiSc2SCnJsonTranslator::groupChildrensByModifier(sc_json childrens)
       arcs.push_back(fc["arc"]);
       modifier["modifierArcs"].push_back(fc["modifier"]["modifierArc"]);
       modifier.erase("modifierArc");
-
-      // get full json of linked node
-      sc_json linkedNode = fc["linkedNode"];
-      linkedNodes.push_back(linkedNode);
+      linkedNodes.push_back(fc["linkedNode"]);
 
       // set element as visited
       visited.push_back(fc);
@@ -462,30 +454,31 @@ sc_json uiSc2SCnJsonTranslator::groupChildrensByModifier(sc_json childrens)
 sc_json uiSc2SCnJsonTranslator::getJsonOfLinkedNodes(sc_json childrens, int level = 1, bool isStruct = false)
 {
   sc_json new_childrens = sc_json();
+  sc_json children, linkedNode;
+  sc_addr keynode_nrel_sc_text_translation, linkedNodeAddr;
+  sScElementInfo * linkedNodeInfo;
+  sc_helper_resolve_system_identifier(s_default_ctx,"nrel_sc_text_translation", &keynode_nrel_sc_text_translation);
+
   for (sc_json::const_iterator it = childrens.begin(); it != childrens.end(); ++it)
   {
-    sc_json children = *it;
+    children = *it;
+    if (!children["modifiers"].is_null() && children["modifiers"][0]["addr"] == SC_ADDR_LOCAL_TO_INT(keynode_nrel_sc_text_translation))
+    {
+      --level;
+    }
     for (size_t i = 0; i < children["linkedNodes"].size(); ++i)
     {
-      sc_json linkedNode = children["linkedNodes"][i];
-      sc_addr linkedNodeAddr;
+      linkedNode = children["linkedNodes"][i];
       linkedNodeAddr.seg = SC_ADDR_LOCAL_SEG_FROM_INT(linkedNode["addr"].get<int>());
       linkedNodeAddr.offset = SC_ADDR_LOCAL_OFFSET_FROM_INT(linkedNode["addr"].get<int>());
-      sScElementInfo * linkedNodeInfo = mScElementsInfo[linkedNodeAddr];
+      linkedNodeInfo = mScElementsInfo[linkedNodeAddr];
       if (!(linkedNodeInfo->type & sc_type_node_struct))
       {
         linkedNode = json(linkedNodeInfo, level, isStruct);
       }
-      //just for interface, remove
-      linkedNode["sourceNode"].is_null();
-      linkedNode["targetNode"].is_null();
-      linkedNode["struct"].is_null();
-      linkedNode["content"].is_null();
-      linkedNode["contentType"].is_null();
-      linkedNode["children"].is_null();
-      //
       children["linkedNodes"][i] = linkedNode;
     }
+
     new_childrens.push_back(children);
   }
   return new_childrens;
