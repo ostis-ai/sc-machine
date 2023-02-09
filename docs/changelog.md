@@ -6,6 +6,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+### Breaking changes
+- Now we use C++17 instead of C++14
 
 ### Added
 
@@ -25,6 +27,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- Move to C++17
 - Remove 1 minute assert in ScWait
 - Add language parameter for sc2scs-json-translator to get elements identifiers
 - Append to sc2scs-json elements main/system identifiers
