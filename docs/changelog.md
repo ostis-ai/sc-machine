@@ -32,6 +32,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- Fix hashes size in fs-storage ([45](https://github.com/ostis-ai/ostis-web-platform/issues/45))
 - GetLinkContent skip whitespaces in strings
 - No inserting system identifiers of keynodes to output structure ([223](https://github.com/ostis-ai/sc-machine/issues/223))
 - `SCs-helper` doesn't return generated identifier links ([207](https://github.com/ostis-ai/sc-machine/issues/207))
