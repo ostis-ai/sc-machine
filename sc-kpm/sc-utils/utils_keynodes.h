@@ -9,7 +9,7 @@
 
 #include "sc-core/sc_memory.h"
 
-extern sc_addr keynode_question_erase_element;
+extern sc_addr keynode_question_erase_elements;
 extern sc_addr keynode_init_memory_generated_structure;
 
 sc_result utils_keynodes_initialize(sc_addr const init_memory_generated_structure);

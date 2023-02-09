@@ -4,11 +4,11 @@
  * (See accompanying file COPYING.MIT or copy at http://opensource.org/licenses/MIT)
  */
 
-#ifndef _utils_garbage_deletion_h_
-#define _utils_garbage_deletion_h_
+#ifndef _utils_erase_elements_h_
+#define _utils_erase_elements_h_
 
 #include "sc-core/sc_memory_headers.h"
 
-sc_result agent_garbage_delete(const sc_event * event, sc_addr arg);
+sc_result agent_erase_elements(const sc_event * event, sc_addr arg);
 
 #endif
