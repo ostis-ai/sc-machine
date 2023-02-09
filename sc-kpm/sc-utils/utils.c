@@ -6,27 +6,32 @@
 
 #include "utils.h"
 #include "utils_keynodes.h"
-#include "utils_garbage_deletion.h"
+#include "utils_erase_elements.h"
 #include "../sc-search/search_keynodes.h"
 
-sc_memory_context * s_garbage_ctx = 0;
+sc_memory_context * s_erase_elements_ctx = 0;
 
-sc_event * event_garbage_deletion;
+sc_event * event_erase_elements;
 
 _SC_EXT_EXTERN sc_result
 sc_module_initialize_with_init_memory_generated_structure(sc_addr const init_memory_generated_structure)
 {
-  s_garbage_ctx = sc_memory_context_new(sc_access_lvl_make_max);
+  s_erase_elements_ctx = sc_memory_context_new(sc_access_lvl_make_max);
 
   if (utils_keynodes_initialize(init_memory_generated_structure) != SC_RESULT_OK)
     return SC_RESULT_ERROR;
 
-  if (search_keynodes_initialize(s_garbage_ctx) != SC_RESULT_OK)
+  if (search_keynodes_initialize(s_erase_elements_ctx) != SC_RESULT_OK)
     return SC_RESULT_ERROR;
 
-  event_garbage_deletion =
-      sc_event_new(s_garbage_ctx, keynode_question_initiated, SC_EVENT_ADD_OUTPUT_ARC, 0, agent_garbage_delete, 0);
-  if (event_garbage_deletion == null_ptr)
+  event_erase_elements = sc_event_new(
+      s_erase_elements_ctx,
+      keynode_question_initiated,
+      SC_EVENT_ADD_OUTPUT_ARC,
+      null_ptr,
+      agent_erase_elements,
+      null_ptr);
+  if (event_erase_elements == null_ptr)
     return SC_RESULT_ERROR;
 
   return SC_RESULT_OK;
@@ -41,10 +46,10 @@ _SC_EXT_EXTERN sc_result sc_module_shutdown()
 {
   sc_result res = SC_RESULT_OK;
 
-  if (event_garbage_deletion)
-    sc_event_destroy(event_garbage_deletion);
+  if (event_erase_elements)
+    sc_event_destroy(event_erase_elements);
 
-  sc_memory_context_free(s_garbage_ctx);
+  sc_memory_context_free(s_erase_elements_ctx);
 
   return res;
 }

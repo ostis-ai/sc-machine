@@ -8,7 +8,6 @@ extern "C"
 #include "sc-search/search_keynodes.h"
 #include "sc-search/search_agents.h"
 #include "sc-utils/utils_keynodes.h"
-#include "sc-utils/utils_garbage_deletion.h"
 }
 
 TEST_F(ScMemoryTest, agent_search_all_const_pos_output_arc)
