@@ -48,10 +48,10 @@ protected:
   void collectScElementsInfo();
 
   // Generate json for specified element
-  sc_json json(sScElementInfo * elInfo, int level, bool isStruct);
+  sc_json json(sScElementInfo * elInfo, int level = 0, bool isStruct = false);
 
   // Get childrens for specified element
-  sc_json getChildrens(sScElementInfo * elInfo, bool isFullLinkedNodes, int level, bool isStruct);
+  sc_json getChildrens(sScElementInfo * elInfo, bool isFullLinkedNodes, int level = 1, bool isStruct = false);
 
   // Get childrens by direction for specified arcs list
   sc_json getChildrensByDirection(sScElementInfo::tScElementInfoList arcs, String direction, bool isStruct);
@@ -62,15 +62,13 @@ protected:
   // Group childrens by modifiers
   sc_json groupChildrensByModifier(sc_json childrens);
 
-  sc_json getJsonOfLinkedNodes(sc_json childrens, int level, bool isStruct);
+  sc_json getJsonOfLinkedNodes(sc_json childrens, int level = 1, bool isStruct = false);
 
   bool getLinkContent(sc_addr link_addr, String & content);
 
-  sScElementInfo * findStruct(sScElementInfo * elInfo);
-
   sScElementInfo * findStructKeyword(sScElementInfo::tScElementInfoList structureElements);
 
-protected:
+private:
   //! List of keywords
   tScAddrList mKeywordsList;
   //! Collection of objects information
