@@ -57,8 +57,8 @@ gint sc_priority_great(gconstpointer a, gconstpointer b)
 }
 
 sc_result sc_ext_initialize(
-    const sc_char * ext_dir_path,
-    const sc_char ** enabled_list,
+    sc_char const * ext_dir_path,
+    sc_char const ** enabled_list,
     sc_addr const init_memory_generated_structure)
 {
   GDir * ext_dir = null_ptr;
@@ -184,7 +184,7 @@ sc_result sc_ext_initialize(
   {
     sc_module_info * module = (sc_module_info *)item->data;
     sc_message("Initialize module: %s", module->path);
-    if (module->init_func_type == "sc_module_initialize_with_init_memory_generated_structure")
+    if (strcmp(module->init_func_type, "sc_module_initialize_with_init_memory_generated_structure"))
     {
       init_result = module->init_func(init_memory_generated_structure);
     }

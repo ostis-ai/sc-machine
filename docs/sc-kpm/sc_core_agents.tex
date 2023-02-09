@@ -22,12 +22,24 @@
             \end{scnindent}
         \end{scnrelfromlist}
     \end{scnindent}
-    \scnitem{Реализация базового механизма сборки информационного мусора}
+    \scnitem{Реализация базового агента удаления множества sc-элементов}
     \begin{scnindent}
         \begin{scnrelfromlist}{используемый язык программирования}
             \scnitem{С}
         \end{scnrelfromlist}
-        \scntext{примечание}{Текущая реализация механизма сборки информационного мусора содержит один sc-агент, реагирующий на явное добавление какого-либо sc-элемента во множество \scnqqi{информационный мусор} и осуществляющий физическое удаление этого sc-элемента из sc-памяти}
+        \scniselement{атомарный sc-агент}
+        \begin{scnrelfromlist}{зависимости копонента}
+            \scnitem{Реализация sc-памяти}
+        \end{scnrelfromlist}
+        \scntext{адрес хранилища}{https://github.com/ostis-ai/sc-machine/tree/main/sc-kpm/sc-utils/utils\_garbage\_deletion.c}
+        \scntext{пояснение}{Текущая реализация агента осуществляет физическое удаление sc-элементов, принадлежащих входному множеству, из sc-памяти, если они не принадлежат согласованной части базы знаний.}
+        \scnrelfrom{пример входной конструкции}{\scnfileimage[15em]{../images/kpm/erase_elements_input.png}}
+        \begin{scnrelfromvector}{аргументы агента}
+            \scnitem{elements\_set}
+            \begin{scnindent}
+                \scntext{пояснение}{Множество элементов, которые будут удалены.}
+            \end{scnindent}
+        \end{scnrelfromvector}
     \end{scnindent}
     \scnitem{Реализация базового набора интерфейсных sc-агентов}
     \begin{scnindent}
