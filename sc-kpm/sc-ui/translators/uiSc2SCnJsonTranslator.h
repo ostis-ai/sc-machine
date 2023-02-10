@@ -16,8 +16,6 @@ struct sScElementInfo
 
   sc_type type;
   sc_addr addr;
-  sc_addr srcAddr;
-  sc_addr trgAddr;
   sScElementInfo * source;
   sScElementInfo * target;
   sScElementInfo * structKeyword;
@@ -54,29 +52,34 @@ protected:
   sc_json getChildrens(sScElementInfo * elInfo, bool isFullLinkedNodes, int level = 1, bool isStruct = false);
 
   // Get childrens by direction for specified arcs list
-  sc_json getChildrensByDirection(sScElementInfo::tScElementInfoList arcs, String direction, bool isStruct);
+  sc_json getChildrensByDirection(sScElementInfo::tScElementInfoList arcs, String direction, bool isStruct = false);
 
   // Get base json information about specified element
   sc_json getBaseInfo(sScElementInfo * elInfo);
-
-  // Group childrens by modifiers
-  sc_json groupChildrensByModifier(sc_json childrens);
 
   sc_json getJsonOfLinkedNodes(sc_json childrens, int level = 1, bool isStruct = false);
 
   bool getLinkContent(sc_addr link_addr, String & content);
 
   sScElementInfo * findStructKeyword(sScElementInfo::tScElementInfoList structureElements);
+  
+  sc_json getChildrenByModifierAddr(sScElementInfo * elInfo, sc_addr modifierAddr, bool isStruct = false);
+
+  sc_json getChildren(sScElementInfo * arcInfo, String direction, bool isStruct = false);
+
+  bool removeArcsByModifierAddrList(sScElementInfo * elInfo, tScAddrList modifierAddrList);
 
 private:
   //! List of keywords
   tScAddrList mKeywordsList;
+  //! List of modifiers to filter
+  tScAddrList mFiltersList;
   //! Collection of objects information
   typedef std::map<sc_addr, sScElementInfo *> tScElemetsInfoMap;
   tScElemetsInfoMap mScElementsInfo;
   //! Pull of sc-elements information (used to prevent many memory allocations)
   sScElementInfo * mScElementsInfoPool;
-
+  //! Store structure elements if keyword is struct to remove them from keyword childrens
   sScElementInfo::tScElementInfoList structureElements;
   //max level of full discripted node
   const int maxLevel = 2;
