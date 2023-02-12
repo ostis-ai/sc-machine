@@ -401,3 +401,37 @@ TEST_F(ScTemplateSearchApiTest, SearchWithContinueRequest)
 
   EXPECT_EQ(count, 2u);
 }
+
+TEST_F(ScTemplateSearchApiTest, SearchWithMetaVars)
+{
+  ScAddr const addr1 = m_ctx->CreateNode(ScType::NodeVar);
+  EXPECT_TRUE(addr1.IsValid());
+  ScAddr const addr2 = m_ctx->CreateNode(ScType::NodeVarAbstract);
+  EXPECT_TRUE(addr2.IsValid());
+  ScAddr const edge = m_ctx->CreateEdge(ScType::EdgeAccessVarPosPerm, addr1, addr2);
+  EXPECT_TRUE(edge.IsValid());
+
+  ScTemplate templ;
+  templ.Triple(
+      addr1 >> "_addr1",
+      ScType::EdgeAccessMetaVarPosPerm >> "_edge",
+      ScType::NodeMetaVarAbstract >> "_addr2");
+
+  ScTemplateSearchResult result;
+  EXPECT_TRUE(m_ctx->HelperSearchTemplate(templ, result));
+  EXPECT_EQ(result.Size(), 1u);
+
+  ScTemplateSearchResultItem const & item = result[0];
+
+  EXPECT_EQ(item[0], addr1);
+  EXPECT_EQ(item["_addr1"], addr1);
+  EXPECT_EQ(item[1], edge);
+  EXPECT_EQ(item["_edge"], edge);
+  EXPECT_EQ(item[2], addr2);
+  EXPECT_EQ(item["_addr2"], addr2);
+
+  EXPECT_TRUE(item.Has("_addr1"));
+  EXPECT_TRUE(item.Has("_edge"));
+  EXPECT_TRUE(item.Has("_addr2"));
+}
+
