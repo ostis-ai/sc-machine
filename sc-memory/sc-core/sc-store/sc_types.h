@@ -104,11 +104,10 @@ struct _sc_addr
     addr.seg = SC_ADDR_LOCAL_SEG_FROM_INT(hash); \
     addr.offset = SC_ADDR_LOCAL_OFFSET_FROM_INT(hash)
 
-typedef sc_uint16 sc_type;
+typedef sc_uint32 sc_type;
 
 // sc-element types
 #  define sc_type_node (sc_type)0x1
-#  define sc_type_link (sc_type)0x2
 #  define sc_type_edge_common (sc_type)0x4
 #  define sc_type_arc_common (sc_type)0x8
 #  define sc_type_arc_access (sc_type)0x10
@@ -116,6 +115,7 @@ typedef sc_uint16 sc_type;
 // sc-element constant
 #  define sc_type_const (sc_type)0x20
 #  define sc_type_var (sc_type)0x40
+#  define sc_type_metavar (sc_type)0x4000
 
 // sc-element positivity
 #  define sc_type_arc_pos (sc_type)0x80
@@ -123,32 +123,46 @@ typedef sc_uint16 sc_type;
 #  define sc_type_arc_fuz (sc_type)0x200
 
 // sc-element permanently
-#  define sc_type_arc_temp (sc_type)0x400
-#  define sc_type_arc_perm (sc_type)0x800
+#  define sc_type_temp (sc_type)0x400
+#  define sc_type_perm (sc_type)0x800
 
 // struct node types
-#  define sc_type_node_tuple (sc_type)(0x80)
-#  define sc_type_node_struct (sc_type)(0x100)
-#  define sc_type_node_role (sc_type)(0x200)
-#  define sc_type_node_norole (sc_type)(0x400)
-#  define sc_type_node_class (sc_type)(0x800)
-#  define sc_type_node_abstract (sc_type)(0x1000)
-#  define sc_type_node_material (sc_type)(0x2000)
+#  define sc_type_link (sc_type)0x2
+#  define sc_type_link_class (sc_type)0x8000
+#  define sc_type_node_tuple (sc_type)0x80
+#  define sc_type_node_struct (sc_type)0x100
+#  define sc_type_node_role (sc_type)0x200
+#  define sc_type_node_norole (sc_type)0x400
+#  define sc_type_node_class (sc_type)0x800
+#  define sc_type_node_superclass (sc_type)0x10000
+#  define sc_type_node_abstract (sc_type)0x1000
+#  define sc_type_node_material (sc_type)0x2000
+
+#  define sc_type_unknown \
+    (sc_type)(sc_type_node | sc_type_edge_common | sc_type_arc_common | sc_type_arc_access)
+#  define sc_type_connector \
+    (sc_type)(sc_type_edge_common | sc_type_arc_common | sc_type_arc_access)
+#  define sc_type_arc \
+    (sc_type)(sc_type_arc_common | sc_type_arc_access)
+
+#  define sc_type_arc_perm sc_type_perm
+#  define sc_type_arc_temp sc_type_temp
 
 #  define sc_type_arc_pos_const_perm (sc_type)(sc_type_arc_access | sc_type_const | sc_type_arc_pos | sc_type_arc_perm)
 #  define sc_type_arc_pos_var_perm (sc_type)(sc_type_arc_access | sc_type_var | sc_type_arc_pos | sc_type_arc_perm)
+#  define sc_type_arc_pos_metavar_perm (sc_type)(sc_type_arc_access | sc_type_metavar | sc_type_arc_pos | sc_type_arc_perm)
 
 // type mask
 #  define sc_type_element_mask \
     (sc_type)(sc_type_node | sc_type_link | sc_type_edge_common | sc_type_arc_common | sc_type_arc_access)
-#  define sc_type_constancy_mask (sc_type)(sc_type_const | sc_type_var)
+#  define sc_type_constancy_mask (sc_type)(sc_type_const | sc_type_var | sc_type_metavar)
 #  define sc_type_positivity_mask (sc_type)(sc_type_arc_pos | sc_type_arc_neg | sc_type_arc_fuz)
 #  define sc_type_permanency_mask (sc_type)(sc_type_arc_perm | sc_type_arc_temp)
 #  define sc_type_node_mask \
     (sc_type)( \
-        sc_type_node_tuple | sc_type_node_struct | sc_type_node_role | sc_type_node_norole | sc_type_node_class | \
-        sc_type_node_abstract | sc_type_node_material)
-#  define sc_type_arc_mask (sc_type)(sc_type_arc_access | sc_type_arc_common | sc_type_edge_common)
+        sc_type_link_class | sc_type_node_tuple | sc_type_node_struct | sc_type_node_role | sc_type_node_norole | sc_type_node_class | \
+        sc_type_node_superclass | sc_type_node_abstract | sc_type_node_material)
+#  define sc_type_arc_mask sc_type_connector
 
 // access levels
 #  define SC_ACCESS_LVL_MAX_VALUE 15

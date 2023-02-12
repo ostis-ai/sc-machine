@@ -183,14 +183,14 @@ private:
       if (!resultAddr.IsValid())
       {
         ScType const & type = el.GetType();
-        if (type.IsNode())
-        {
-          resultAddr = m_ctx.CreateNode(type);
-        }
-        else if (type.IsLink())
+        if (type.IsLink())
         {
           resultAddr = m_ctx.CreateLink(type);
           SetupLinkContent(resultAddr, el);
+        }
+        else if (type.IsNode())
+        {
+          resultAddr = m_ctx.CreateNode(type);
         }
         else
         {

@@ -73,6 +73,7 @@ sc_addr sc_storage_node_new(sc_memory_context const * ctx, sc_type type);
 /*! Create new sc-link
  * @return Return sc-addr of created sc-link or empty sc-addr if sc-link wasn't created
  */
+SC_DEPRECATED(0.8.0, "Use sc_addr sc_storage_node_new(const sc_memory_context * ctx, sc_type type) instead")
 sc_addr sc_storage_link_new(sc_memory_context const * ctx, sc_type type);
 
 /*! Create new sc-arc.
