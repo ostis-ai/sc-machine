@@ -31,8 +31,8 @@ ScType const ScType::NodeClass(sc_type_node | sc_type_node_class);
 ScType const ScType::NodeSuperClass(sc_type_node | sc_type_node_superclass);
 ScType const ScType::NodeAbstract(sc_type_node | sc_type_node_abstract);
 ScType const ScType::NodeMaterial(sc_type_node | sc_type_node_material);
-ScType const ScType::Link(sc_type_link);
-ScType const ScType::LinkClass(sc_type_link | sc_type_link_class);
+ScType const ScType::Link(sc_type_node | sc_type_link);
+ScType const ScType::LinkClass(sc_type_node | sc_type_link | sc_type_link_class);
 
 ScType const ScType::NodeConstStruct(sc_type_node | sc_type_const | sc_type_node_struct);
 ScType const ScType::NodeConstTuple(sc_type_node | sc_type_const | sc_type_node_tuple);
@@ -42,7 +42,7 @@ ScType const ScType::NodeConstClass(sc_type_node | sc_type_const | sc_type_node_
 ScType const ScType::NodeConstSuperClass(sc_type_node | sc_type_const | sc_type_node_superclass);
 ScType const ScType::NodeConstAbstract(sc_type_node | sc_type_const | sc_type_node_abstract);
 ScType const ScType::NodeConstMaterial(sc_type_node | sc_type_const | sc_type_node_material);
-ScType const ScType::LinkConst(sc_type_const | sc_type_link);
+ScType const ScType::LinkConst(sc_type_node | sc_type_const | sc_type_link);
 ScType const ScType::LinkConstClass(sc_type_node | sc_type_const | sc_type_link | sc_type_link_class);
 
 ScType const ScType::NodeVarStruct(sc_type_node | sc_type_var | sc_type_node_struct);
@@ -53,7 +53,7 @@ ScType const ScType::NodeVarClass(sc_type_node | sc_type_var | sc_type_node_clas
 ScType const ScType::NodeVarSuperClass(sc_type_node | sc_type_var | sc_type_node_superclass);
 ScType const ScType::NodeVarAbstract(sc_type_node | sc_type_var | sc_type_node_abstract);
 ScType const ScType::NodeVarMaterial(sc_type_node | sc_type_var | sc_type_node_material);
-ScType const ScType::LinkVar(sc_type_var | sc_type_link);
+ScType const ScType::LinkVar(sc_type_node | sc_type_var | sc_type_link);
 ScType const ScType::LinkVarClass(sc_type_node | sc_type_var | sc_type_link | sc_type_link_class);
 
 ScType const ScType::NodeMetaVarStruct(sc_type_node | sc_type_metavar | sc_type_node_struct);
@@ -98,7 +98,8 @@ ScType const ScType::NodeConstPermSuperClass(sc_type_node | sc_type_const | sc_t
 ScType const ScType::NodeConstPermAbstract(sc_type_node | sc_type_const | sc_type_perm | sc_type_node_abstract);
 ScType const ScType::NodeConstPermMaterial(sc_type_node | sc_type_const | sc_type_perm | sc_type_node_material);
 ScType const ScType::LinkConstPerm(sc_type_node | sc_type_const | sc_type_perm | sc_type_link);
-ScType const ScType::LinkConstPermClass(sc_type_node | sc_type_const | sc_type_perm | sc_type_link | sc_type_link_class);
+ScType const ScType::LinkConstPermClass(
+    sc_type_node | sc_type_const | sc_type_perm | sc_type_link | sc_type_link_class);
 
 ScType const ScType::NodeVarPermStruct(sc_type_node | sc_type_var | sc_type_perm | sc_type_node_struct);
 ScType const ScType::NodeVarPermTuple(sc_type_node | sc_type_var | sc_type_perm | sc_type_node_tuple);
@@ -120,7 +121,8 @@ ScType const ScType::NodeMetaVarPermSuperClass(sc_type_node | sc_type_metavar | 
 ScType const ScType::NodeMetaVarPermAbstract(sc_type_node | sc_type_metavar | sc_type_perm | sc_type_node_abstract);
 ScType const ScType::NodeMetaVarPermMaterial(sc_type_node | sc_type_metavar | sc_type_perm | sc_type_node_material);
 ScType const ScType::LinkMetaVarPerm(sc_type_node | sc_type_metavar | sc_type_perm | sc_type_link);
-ScType const ScType::LinkMetaVarPermClass(sc_type_node | sc_type_metavar | sc_type_perm | sc_type_link | sc_type_link_class);
+ScType const ScType::LinkMetaVarPermClass(
+    sc_type_node | sc_type_metavar | sc_type_perm | sc_type_link | sc_type_link_class);
 
 ScType const ScType::NodeConstTempStruct(sc_type_node | sc_type_const | sc_type_temp | sc_type_node_struct);
 ScType const ScType::NodeConstTempTuple(sc_type_node | sc_type_const | sc_type_temp | sc_type_node_tuple);
@@ -131,7 +133,8 @@ ScType const ScType::NodeConstTempSuperClass(sc_type_node | sc_type_const | sc_t
 ScType const ScType::NodeConstTempAbstract(sc_type_node | sc_type_const | sc_type_temp | sc_type_node_abstract);
 ScType const ScType::NodeConstTempMaterial(sc_type_node | sc_type_const | sc_type_temp | sc_type_node_material);
 ScType const ScType::LinkConstTemp(sc_type_node | sc_type_const | sc_type_temp | sc_type_link);
-ScType const ScType::LinkConstTempClass(sc_type_node | sc_type_const | sc_type_temp | sc_type_link | sc_type_link_class);
+ScType const ScType::LinkConstTempClass(
+    sc_type_node | sc_type_const | sc_type_temp | sc_type_link | sc_type_link_class);
 
 ScType const ScType::NodeVarTempStruct(sc_type_node | sc_type_var | sc_type_temp | sc_type_node_struct);
 ScType const ScType::NodeVarTempTuple(sc_type_node | sc_type_var | sc_type_temp | sc_type_node_tuple);
@@ -153,7 +156,8 @@ ScType const ScType::NodeMetaVarTempSuperClass(sc_type_node | sc_type_metavar | 
 ScType const ScType::NodeMetaVarTempAbstract(sc_type_node | sc_type_metavar | sc_type_temp | sc_type_node_abstract);
 ScType const ScType::NodeMetaVarTempMaterial(sc_type_node | sc_type_metavar | sc_type_temp | sc_type_node_material);
 ScType const ScType::LinkMetaVarTemp(sc_type_node | sc_type_metavar | sc_type_temp | sc_type_link);
-ScType const ScType::LinkMetaVarTempClass(sc_type_node | sc_type_metavar | sc_type_temp | sc_type_link | sc_type_link_class);
+ScType const ScType::LinkMetaVarTempClass(
+    sc_type_node | sc_type_metavar | sc_type_temp | sc_type_link | sc_type_link_class);
 
 ScType const ScType::Connector(sc_type_connector);
 ScType const ScType::Arc(sc_type_connector);
@@ -262,10 +266,16 @@ ScType const ScType::EdgeAccessVarPosTemp(sc_type_var | sc_type_arc_access | sc_
 ScType const ScType::EdgeAccessVarNegTemp(sc_type_var | sc_type_arc_access | sc_type_arc_temp | sc_type_arc_neg);
 ScType const ScType::EdgeAccessVarFuzTemp(sc_type_var | sc_type_arc_access | sc_type_arc_temp | sc_type_arc_fuz);
 
-ScType const ScType::EdgeAccessMetaVarPosPerm(sc_type_metavar | sc_type_arc_access | sc_type_arc_perm | sc_type_arc_pos);
-ScType const ScType::EdgeAccessMetaVarNegPerm(sc_type_metavar | sc_type_arc_access | sc_type_arc_perm | sc_type_arc_neg);
-ScType const ScType::EdgeAccessMetaVarFuzPerm(sc_type_metavar | sc_type_arc_access | sc_type_arc_perm | sc_type_arc_fuz);
+ScType const ScType::EdgeAccessMetaVarPosPerm(
+    sc_type_metavar | sc_type_arc_access | sc_type_arc_perm | sc_type_arc_pos);
+ScType const ScType::EdgeAccessMetaVarNegPerm(
+    sc_type_metavar | sc_type_arc_access | sc_type_arc_perm | sc_type_arc_neg);
+ScType const ScType::EdgeAccessMetaVarFuzPerm(
+    sc_type_metavar | sc_type_arc_access | sc_type_arc_perm | sc_type_arc_fuz);
 
-ScType const ScType::EdgeAccessMetaVarPosTemp(sc_type_metavar | sc_type_arc_access | sc_type_arc_temp | sc_type_arc_pos);
-ScType const ScType::EdgeAccessMetaVarNegTemp(sc_type_metavar | sc_type_arc_access | sc_type_arc_temp | sc_type_arc_neg);
-ScType const ScType::EdgeAccessMetaVarFuzTemp(sc_type_metavar | sc_type_arc_access | sc_type_arc_temp | sc_type_arc_fuz);
+ScType const ScType::EdgeAccessMetaVarPosTemp(
+    sc_type_metavar | sc_type_arc_access | sc_type_arc_temp | sc_type_arc_pos);
+ScType const ScType::EdgeAccessMetaVarNegTemp(
+    sc_type_metavar | sc_type_arc_access | sc_type_arc_temp | sc_type_arc_neg);
+ScType const ScType::EdgeAccessMetaVarFuzTemp(
+    sc_type_metavar | sc_type_arc_access | sc_type_arc_temp | sc_type_arc_fuz);

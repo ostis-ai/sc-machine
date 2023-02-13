@@ -204,7 +204,7 @@ ScAddr ScMemoryContext::CreateLink(ScType const & type /* = ScType::LinkConst */
         utils::ExceptionInvalidParams,
         "Specified type must be sc-link type. You should provide any of ScType::Link... value as a type");
 
-  return sc_memory_link_new2(m_context, type);
+  return sc_memory_node_new(m_context, type);
 }
 
 ScAddr ScMemoryContext::CreateEdge(ScType const & type, ScAddr const & addrBeg, ScAddr const & addrEnd)

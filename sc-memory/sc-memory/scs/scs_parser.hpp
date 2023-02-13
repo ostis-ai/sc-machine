@@ -133,7 +133,7 @@ protected:
   ElementHandle ProcessIdentifier(std::string const & name);
   ElementHandle ProcessIdentifierLevel1(std::string const & type, std::string const & name);
   ElementHandle ProcessConnector(std::string const & connector);
-  ElementHandle ProcessContent(std::string & content, ScType type);
+  ElementHandle ProcessContent(std::string content, ScType type);
   ElementHandle ProcessLink(std::string const & link);
   ElementHandle ProcessFileURL(std::string const & fileURL);
 

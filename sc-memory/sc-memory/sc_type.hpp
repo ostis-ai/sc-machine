@@ -55,11 +55,11 @@ public:
   }
   inline bool IsNode() const
   {
-    return (m_realType & sc_type_node) != 0;
+    return (m_realType & sc_type_node) == sc_type_node;
   }
   inline bool IsLink() const
   {
-    return (m_realType & sc_type_link) != 0;
+    return (m_realType & (sc_type_node | sc_type_link)) == (sc_type_node | sc_type_link);
   }
   inline bool IsConst() const
   {

@@ -185,7 +185,7 @@ private:
         ScType const & type = el.GetType();
         if (type.IsLink())
         {
-          resultAddr = m_ctx.CreateLink(type);
+          resultAddr = m_ctx.CreateNode(type);
           SetupLinkContent(resultAddr, el);
         }
         else if (type.IsNode())
@@ -226,7 +226,7 @@ private:
         }
       }
 
-      SC_ASSERT(resultAddr.IsValid(), ("Resolved addr is not valid"));
+      SC_ASSERT(resultAddr.IsValid(), "Resolved addr is not valid");
 
       // anyway save in cache
       m_idtfCache.insert(std::make_pair(idtf, resultAddr));

@@ -31,7 +31,7 @@ void uiTranslateFromSc::translate(const sc_addr & input_addr, const sc_addr & fo
   sc_stream * result_data_stream =
       sc_stream_memory_new(mOutputData.c_str(), (sc_uint)mOutputData.size(), SC_STREAM_FLAG_READ, SC_FALSE);
 
-  sc_addr result_addr = sc_memory_link_new(s_default_ctx);
+  sc_addr result_addr = sc_memory_node_new(s_default_ctx, sc_type_link | sc_type_const);
   sc_memory_set_link_content(s_default_ctx, result_addr, result_data_stream);
 
   sc_stream_free(result_data_stream);
