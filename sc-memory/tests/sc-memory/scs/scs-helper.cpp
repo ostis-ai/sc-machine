@@ -50,6 +50,32 @@ TEST_F(SCsHelperTest, GenerateBySCs)
   }
 }
 
+TEST_F(SCsHelperTest, GenerateBySCs2)
+{
+  std::vector<std::pair<std::string, std::string>> tests =
+      {
+          { "x -> y;;", "x _-> _y;;" },
+          { "x1 => nrel_x1: [test_content*];;", "x1 _=> nrel_x1:: _[];;" },
+          { "x2 ~> y2 (* <- z2;; *);;", "x2 _~> _y2 (* _<- _z2;; *);;" },
+          { "x3 <- y3 (* <- sc_node_class;; *);;", "sc_node_class -> _y3;; _y3 _-> x3;;" },
+          { "x1 _=> nrel_x1:: _[test_content*];;", "x1 __=> nrel_x1::: __[];;" },
+      };
+
+  for (auto const & t : tests)
+  {
+    SCsHelper helper(*m_ctx, std::make_shared<DummyFileInterface>());
+
+    EXPECT_TRUE(helper.GenerateBySCsText(t.first));
+
+    ScTemplate templ;
+    EXPECT_TRUE(m_ctx->HelperBuildTemplate(templ, t.second));
+
+    ScTemplateSearchResult result;
+    EXPECT_TRUE(m_ctx->HelperSearchTemplate(templ, result));
+    EXPECT_EQ(result.Size(), 1u);
+  }
+}
+
 TEST_F(SCsHelperTest, GenerateBySCs_FileURL)
 {
   std::string const data = "x -> \"file://test.scs\";;";

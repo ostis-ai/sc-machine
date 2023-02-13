@@ -19,7 +19,7 @@ tokens
 #define APPEND_ATTRS(__attrs, __edge) \
 for (auto const & _a : __attrs) \
 { \
-  ElementHandle const attrEdge = m_parser->ProcessConnector(_a.second ? "->" : "_->"); \
+  ElementHandle const attrEdge = m_parser->ProcessConnector(_a.second); \
   m_parser->ProcessTriple(_a.first, attrEdge, __edge); \
 }
 
@@ -45,13 +45,12 @@ public:
 }
 
 content returns [ElementHandle handle]
-  locals [ bool isVar = false;]
-  @init{ $ctx->isVar = false; }
-  : ('_' { $ctx->isVar = true; } )?
+  locals [ ScType type = ScType::Const;]
+  : ('_' { $ctx->type = ScType::Var; } | '__' { $ctx->type = ScType::MetaVar; })?
       c=CONTENT_BODY
     {
-      std::string v = $ctx->c->getText();
-      $ctx->handle = m_parser->ProcessContent(v, $ctx->isVar);
+      std::string const v = $ctx->c->getText();
+      $ctx->handle = m_parser->ProcessContent(v.substr(1, v.size() - 2), $ctx->type);
     }
   ;
 
@@ -76,11 +75,15 @@ connector returns [std::string text]
     | '-|>' | '<|-' | '-/>' | '</-'
     | '~>' | '<~' | '~|>' | '<|~'
     | '~/>' | '</~' | '_<>' | '_>' | '_<'
-    | '_..>' | '_<..' | '<.._' | '_->' | '_<-'| '<-_'
-    | '_<=>' | '_=>' | '_<=' |'<=_' | '_-|>' | '_<|-' | '<|-_'
-    | '_-/>' | '_</-' | '</-_' | '_~>' | '_<~' | '<~_'
-    | '_~|>' | '_<|~' | '<|~_' | '_~/>' | '_</~' | '</~_')
-
+    | '_..>' | '_<..' | '_->' | '_<-'
+    | '_<=>' | '_=>' | '_<=' | '_-|>' | '_<|-'
+    | '_-/>' | '_</-' | '_~>' | '_<~'
+    | '_~|>' | '_<|~' | '_~/>' | '_</~'
+    | '__<>' | '__>' | '__<'
+    | '__..>' | '__<..' | '__->' | '__<-'
+    | '__<=>' | '__=>' | '__<=' | '__-|>' | '__<|-'
+    | '__-/>' | '__</-' | '__~>' | '__<~'
+    | '__~|>' | '__<|~' | '__~/>' | '__</~' )
     {
       $ctx->text = $c->getText();
     }
@@ -333,14 +336,14 @@ sentence_lvl_common
     (';' sentence_lvl_4_list_item[$ctx->src->handle])*
   ;
 
-attr_list returns [std::vector<std::pair<ElementHandle, bool>> items]
+attr_list returns [std::vector<std::pair<ElementHandle, std::string>> items]
   @init { $items = {}; }
   : (
       ID_SYSTEM
       EDGE_ATTR
       {
         $ctx->items.emplace_back(m_parser->ProcessIdentifier($ID_SYSTEM->getText()),
-                                 scs::TypeResolver::IsEdgeAttrConst($EDGE_ATTR->getText()));
+                                 scs::TypeResolver::DefineEdgeAttrType($EDGE_ATTR->getText()));
       }
     )+
   ;
@@ -388,7 +391,8 @@ LINK
   
 EDGE_ATTR
   : ':'
-  | '::';
+  | '::'
+  | ':::';
 
 LINE_TERMINATOR
   : [\r\n\u2028\u2029] -> channel(HIDDEN)

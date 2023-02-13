@@ -58,7 +58,7 @@ protected:
         }
         else
         {
-          if (el.GetType().IsVar())
+          if (el.GetType().IsVar() || el.GetType().IsMetaVar())
           {
             outValue.SetType(el.GetType(), alias);
           }

@@ -40,7 +40,6 @@ ScTemplateItem operator>>(ScType const & value, std::string const & replName)
 
 ScTemplate::ScTemplate()
 {
-  SC_UNUSED(forceOrder);
   m_templateTriples.reserve(16);
 
   auto const tripleTypeCount = (size_t)ScTemplateTripleType::ScConstr3TypeCount;
@@ -115,7 +114,7 @@ ScTemplate & ScTemplate::Triple(
   {
     ScTemplateItem & item = triple->m_values[i];
 
-    if (item.IsAssign() && item.m_typeValue.HasConstancyFlag() && !item.m_typeValue.IsVar())
+    if (item.IsAssign() && item.m_typeValue.HasConstancyFlag() && (!item.m_typeValue.IsVar() && !item.m_typeValue.IsMetaVar()))
       SC_THROW_EXCEPTION(utils::ExceptionInvalidParams, "You should to use variable types in template");
 
     if (item.IsAddr() && !item.m_addrValue.IsValid())

@@ -38,7 +38,7 @@ public:
       bool isURL = false);
 
   _SC_EXTERN std::string const & GetIdtf() const;
-  _SC_EXTERN ScType const & GetType() const;
+  _SC_EXTERN ScType GetType() const;
 
   _SC_EXTERN Visibility GetVisibility() const;
 
@@ -133,7 +133,7 @@ protected:
   ElementHandle ProcessIdentifier(std::string const & name);
   ElementHandle ProcessIdentifierLevel1(std::string const & type, std::string const & name);
   ElementHandle ProcessConnector(std::string const & connector);
-  ElementHandle ProcessContent(std::string & content, bool isVar);
+  ElementHandle ProcessContent(std::string & content, ScType type);
   ElementHandle ProcessLink(std::string const & link);
   ElementHandle ProcessFileURL(std::string const & fileURL);
 

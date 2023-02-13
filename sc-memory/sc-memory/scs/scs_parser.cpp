@@ -154,14 +154,12 @@ Visibility ParsedElement::GetVisibility() const
   return m_visibility;
 }
 
-ScType const & ParsedElement::GetType() const
+ScType ParsedElement::GetType() const
 {
   if (!m_type.IsUnknown())
     return m_type;
 
-  static ScType defConst = ScType::NodeConst;
-  static ScType defVar = ScType::NodeVar;
-  return TypeResolver::IsConst(m_idtf) ? defConst : defVar;
+  return TypeResolver::GetType(m_idtf);
 }
 
 bool ParsedElement::IsReversed() const
@@ -413,14 +411,15 @@ ElementHandle Parser::ResolveAlias(std::string const & name)
 ElementHandle Parser::ProcessIdentifier(std::string const & name)
 {
   // resolve type of sc-element
-  ScType const type = TypeResolver::IsConst(name) ? ScType::NodeConst : ScType::NodeVar;
+  ScType type = ScType::Node;
+  type |= TypeResolver::GetType(name);
   return AppendElement(name, type);
 }
 
 ElementHandle Parser::ProcessIdentifierLevel1(std::string const & type, std::string const & name)
 {
   ScType elType = scs::TypeResolver::GetKeynodeType(type);
-  if (scs::TypeResolver::IsConst(name))
+  if (scs::TypeResolver::GetType(name))
   {
     elType |= ScType::Const;
   }
@@ -484,10 +483,9 @@ ElementHandle Parser::ProcessConnector(std::string const & connector)
   return AppendElement(GenerateEdgeIdtf(), type, TypeResolver::IsConnectorReversed(connector));
 }
 
-ElementHandle Parser::ProcessContent(std::string & content, bool isVar)
+ElementHandle Parser::ProcessContent(std::string & content, ScType type)
 {
-  ScType type = ScType::Link;
-  type |= (isVar ? ScType::Var : ScType::Const);
+  type |= ScType::Link;
 
   if (content.find('!') == 0)
   {

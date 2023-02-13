@@ -108,7 +108,7 @@ public:
     if (IsVar())
       return ScType((m_realType & ~sc_type_var) | sc_type_const);  // copied from asConst for maximum performance
     else if (IsMetaVar())
-      return ScType((m_realType & ~sc_type_metavar) | sc_type_const);  // copied from asVar for maximum performance
+      return ScType((m_realType & ~sc_type_metavar) | sc_type_var);  // copied from asVar for maximum performance
     else
       return ScType(m_realType | sc_type_const);
   }

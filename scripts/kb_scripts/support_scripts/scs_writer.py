@@ -42,7 +42,26 @@ NodeTypeSets = {
     "node/var/perm/role": ["sc_node_role_relation"],
     "node/var/perm/attribute": ["sc_node_role_relation"],
     "node/var/perm/relation": ["sc_node_norole_relation"],
-    "node/var/perm/group": ["sc_node_class"]
+    "node/var/perm/group": ["sc_node_class"],
+
+    "node/meta/general_node": ["sc_node"],
+    "node/meta/terminal": ["sc_node_abstract"],
+    "node/meta/struct": ["sc_node_struct"],
+    "node/meta/tuple": ["sc_node_tuple"],
+    "node/meta/role": ["sc_node_role_relation"],
+    "node/meta/attribute": ["sc_node_role_relation"],
+    "node/meta/relation": ["sc_node_norole_relation"],
+    "node/meta/group": ["sc_node_class"],
+
+    "node/meta/perm/general": ["sc_node"],
+    "node/meta/perm/general_node": ["sc_node"],
+    "node/meta/perm/terminal": ["sc_node_abstract"],
+    "node/meta/perm/struct": ["sc_node_struct"],
+    "node/meta/perm/tuple": ["sc_node_tuple"],
+    "node/meta/perm/role": ["sc_node_role_relation"],
+    "node/meta/perm/attribute": ["sc_node_role_relation"],
+    "node/meta/perm/relation": ["sc_node_norole_relation"],
+    "node/meta/perm/group": ["sc_node_class"]
 }
 
 UnsupportedNodeTypeSets = {
@@ -57,9 +76,9 @@ UnsupportedNodeTypeSets = {
     "node/const/temp/attribute": ["sc_node_role_relation_temp"],
     "node/const/temp/relation": ["sc_node_norole_relation_temp"],
     "node/const/temp/group": ["sc_node_class_temp"],
-    "node/const/temp/super_group": ["sc_node_super_group_temp"],
+    "node/const/temp/super_group": ["sc_node_super_class"],
 
-    "node/var/perm/super_group": ["sc_node_super_group"],
+    "node/var/perm/super_group": ["sc_node_super_class"],
 
     "node/var/temp/general": ["sc_node_temp"],
     "node/var/temp/general_node": ["sc_node_temp"],
@@ -72,27 +91,27 @@ UnsupportedNodeTypeSets = {
     "node/var/temp/group": ["sc_node_class_temp"],
     "node/var/temp/super_group": ["sc_node_super_group_temp"],
 
-    "node/meta/perm/general": ["sc_node_meta"],
-    "node/meta/perm/general_node": ["sc_node_meta"],
-    "node/meta/perm/terminal": ["sc_node_abstract_meta"],
-    "node/meta/perm/struct": ["sc_node_struct_meta"],
-    "node/meta/perm/tuple": ["sc_node_tuple_meta"],
-    "node/meta/perm/role": ["sc_node_role_relation_meta"],
-    "node/meta/perm/attribute": ["sc_node_role_relation_meta"],
-    "node/meta/perm/relation": ["sc_node_norole_relation_meta"],
-    "node/meta/perm/group": ["sc_node_class_meta"],
-    "node/meta/perm/super_group": ["sc_node_super_group_meta"],
+    "node/meta/perm/general": ["sc_node"],
+    "node/meta/perm/general_node": ["sc_node"],
+    "node/meta/perm/terminal": ["sc_node_abstract"],
+    "node/meta/perm/struct": ["sc_node_struct"],
+    "node/meta/perm/tuple": ["sc_node_tuple"],
+    "node/meta/perm/role": ["sc_node_role_relation"],
+    "node/meta/perm/attribute": ["sc_node_role_relation"],
+    "node/meta/perm/relation": ["sc_node_norole_relation"],
+    "node/meta/perm/group": ["sc_node_class"],
+    "node/meta/perm/super_group": ["sc_node_super_class"],
 
-    "node/meta/temp/general": ["sc_node_meta_temp"],
-    "node/meta/temp/general_node": ["sc_node_meta_temp"],
-    "node/meta/temp/terminal": ["sc_node_abstract_meta_temp"],
-    "node/meta/temp/struct": ["sc_node_struct_meta_temp"],
-    "node/meta/temp/tuple": ["sc_node_tuple_meta_temp"],
-    "node/meta/temp/role": ["sc_node_role_relation_meta_temp"],
-    "node/meta/temp/attribute": ["sc_node_role_relation_meta_temp"],
-    "node/meta/temp/relation": ["sc_node_norole_relation_meta_temp"],
-    "node/meta/temp/group": ["sc_node_class_meta_temp"],
-    "node/meta/temp/super_group": ["sc_node_super_group_meta_temp"],
+    "node/meta/temp/general": ["sc_node"],
+    "node/meta/temp/general_node": ["sc_node"],
+    "node/meta/temp/terminal": ["sc_node_abstract"],
+    "node/meta/temp/struct": ["sc_node_struct"],
+    "node/meta/temp/tuple": ["sc_node_tuple"],
+    "node/meta/temp/role": ["sc_node_role_relation"],
+    "node/meta/temp/attribute": ["sc_node_role_relation"],
+    "node/meta/temp/relation": ["sc_node_norole_relation"],
+    "node/meta/temp/group": ["sc_node_class"],
+    "node/meta/temp/super_group": ["sc_node_super_class"],
 }
 
 EdgeTypes = {
@@ -116,6 +135,15 @@ EdgeTypes = {
     "pair/var/neg/temp/orient/membership": "_~|>",
     "pair/var/pos/temp/orient/membership": "_~>",
 
+    "pair/meta/-/perm/noorien": "__<=>",
+    "pair/meta/-/perm/orient": "__=>",
+    "pair/meta/fuz/perm/orient/membership": "__-/>",
+    "pair/meta/neg/perm/orient/membership": "__-|>",
+    "pair/meta/pos/perm/orient/membership": "__->",
+    "pair/meta/fuz/temp/orient/membership": "__~/>",
+    "pair/meta/neg/temp/orient/membership": "__~|>",
+    "pair/meta/pos/temp/orient/membership": "__~>",
+
     "pair/-/-/-/orient": ">",
     "pair/-/-/-/noorient": "<>",
 
@@ -135,6 +163,13 @@ EdgeTypes = {
     "arc/var/fuz/temp": "_~/>",
     "arc/var/neg/temp": "_~|>",
 
+    "arc/meta/pos": "__->",
+    "arc/meta/fuz": "__-/>",
+    "arc/meta/neg": "__-|>",
+    "arc/meta/pos/temp": "__~>",
+    "arc/meta/fuz/temp": "__~/>",
+    "arc/meta/neg/temp": "__~|>",
+
     "pair/orient": ">",
     "pair/noorient": "<>",
 
@@ -143,8 +178,10 @@ EdgeTypes = {
     "pair/const/synonym": "<=>",
 
     "pair/var/orient": "_=>",
-    "pair/var/noorient": "_<=>"
+    "pair/var/noorient": "_<=>",
 
+    "pair/meta/orient": "__=>",
+    "pair/meta/noorient": "__<=>"
 }
 
 UnsupportedEdgeTypes = {
@@ -248,6 +285,7 @@ class SCsWriter:
     def correct_idtf(self, buffer, el):
         idtf = el["idtf"]
         is_var = self.is_variable(el["type"])
+        is_metavar = self.is_metavariable(el["type"])
 
         main_idtf = None
         if not re.match(r"^[0-9a-zA-Z_]*$", idtf):
@@ -260,11 +298,16 @@ class SCsWriter:
         if idtf is None or len(idtf) == 0:
             if is_var:
                 el["idtf"] = ".._el_{}".format(el["id"].replace("-", "_"))
+            elif is_metavar:
+                el["idtf"] = "..__el_{}".format(el["id"].replace("-", "_"))
             else:
                 el["idtf"] = "..el_{}".format(el["id"].replace("-", "_"))
         elif is_var:
             if not idtf.startswith("_"):
                 el["idtf"] = "_{}".format(idtf.replace("-", "_"))
+        elif is_metavar:
+            if not idtf.startswith("__"):
+                el["idtf"] = "__{}".format(idtf.replace("-", "_"))
         elif not is_var:
             if idtf.startswith("_"):
                 el["idtf"] = "{}".format(idtf[1:].replace("-", "_"))
@@ -286,6 +329,10 @@ class SCsWriter:
     @staticmethod
     def is_variable(el_type):
         return "/var/" in el_type
+
+    @staticmethod
+    def is_metavariable(el_type):
+        return "/meta/" in el_type
 
     @staticmethod
     def write_system_idtf(buffer, alias, idtf):
@@ -444,7 +491,7 @@ class SCsWriter:
             else:
                 buffer.write('{} = "{}";;\n'.format(alias, write_content))
         else:
-            is_var = "_" if self.is_variable(el["type"]) else ""
+            is_var = "__" if self.is_metavariable(el["type"]) else "_" if self.is_variable(el["type"]) else ""
             buffer.write('{} = {}[{}];;\n'.format(alias, is_var, write_content))
 
         idtf = el["idtf"]
