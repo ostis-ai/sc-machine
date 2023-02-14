@@ -12,6 +12,16 @@
 #include "glib.h"
 #include "glib/gstdio.h"
 
+sc_bool sc_fs_isdir(const sc_char * path)
+{
+  return g_file_test(path, G_FILE_TEST_IS_DIR);
+}
+
+sc_bool sc_fs_isfile(const sc_char * path)
+{
+  return g_file_test(path, G_FILE_TEST_IS_DIR);
+}
+
 void sc_fs_rmdir(const sc_char * path)
 {
   if (g_file_test(path, G_FILE_TEST_IS_DIR) == SC_FALSE)

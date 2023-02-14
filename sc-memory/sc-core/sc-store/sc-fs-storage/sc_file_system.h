@@ -9,6 +9,10 @@
 
 #include "../sc_types.h"
 
+sc_bool sc_fs_isdir(const sc_char * path);
+
+sc_bool sc_fs_isfile(const sc_char * path);
+
 void sc_fs_rmdir(const sc_char * path);
 
 sc_bool sc_fs_mkdirs(const sc_char * path);

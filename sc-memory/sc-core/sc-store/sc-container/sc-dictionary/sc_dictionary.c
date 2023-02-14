@@ -20,9 +20,6 @@ sc_bool sc_dictionary_initialize(
     sc_uint8 children_size,
     void (*char_to_int)(sc_char, sc_uint8 *, const sc_uint8 *))
 {
-  if (*dictionary != null_ptr)
-    return SC_FALSE;
-
   *dictionary = sc_mem_new(sc_dictionary, 1);
   (*dictionary)->size = children_size;
   (*dictionary)->root = _sc_dictionary_node_initialize(children_size);
@@ -48,7 +45,7 @@ inline sc_dictionary_node * _sc_dictionary_node_initialize(sc_uint8 children_siz
   sc_dictionary_node * node = sc_mem_new(sc_dictionary_node, 1);
   node->next = sc_mem_new(sc_dictionary_node *, children_size);
 
-  node->data_list = null_ptr;
+  node->data = null_ptr;
   node->offset = null_ptr;
   node->offset_size = 0;
 
@@ -61,8 +58,7 @@ void sc_dictionary_node_destroy(sc_dictionary_node * node, void ** args)
 {
   (void)args;
 
-  sc_list_destroy(node->data_list);
-  node->data_list = null_ptr;
+  node->data = null_ptr;
 
   sc_mem_free(node->next);
   node->next = null_ptr;
@@ -171,11 +167,7 @@ sc_dictionary_node * sc_dictionary_append(
     void * value)
 {
   sc_dictionary_node * node = sc_dictionary_append_to_node(dictionary, sc_string, size);
-
-  if (node->data_list == null_ptr)
-    sc_list_init(&node->data_list);
-
-  sc_list_push_back(node->data_list, value);
+  node->data = value;
   return node;
 }
 
@@ -228,7 +220,7 @@ sc_bool sc_dictionary_remove(
   sc_bool result = node != null_ptr;
   if (result == SC_TRUE)
   {
-    sc_list_remove_if(node->data_list, data, predicate);
+    sc_list_remove_if(node->data, data, predicate);
   }
 
   return result;
@@ -271,30 +263,16 @@ sc_bool sc_dictionary_is_in(const sc_dictionary * dictionary, const sc_char * sc
   const sc_dictionary_node * last =
       sc_dictionary_get_last_node_from_node(dictionary, dictionary->root, sc_string, sc_string_size);
 
-  return SC_DICTIONARY_NODE_IS_VALID(last) && last->data_list != null_ptr && last->data_list->size != 0;
+  return SC_DICTIONARY_NODE_IS_VALID(last);
 }
 
-void * sc_dictionary_get_first_data_from_node(
-    const sc_dictionary * dictionary,
-    const sc_dictionary_node * node,
-    const sc_char * sc_string,
-    const sc_uint32 sc_string_size)
-{
-  const sc_dictionary_node * last = sc_dictionary_get_last_node_from_node(dictionary, node, sc_string, sc_string_size);
-
-  if (SC_DICTIONARY_NODE_IS_VALID(last) && last->data_list != null_ptr && last->data_list->begin != null_ptr)
-    return last->data_list->begin->data;
-
-  return null_ptr;
-}
-
-sc_list * sc_dictionary_get(const sc_dictionary * dictionary, const sc_char * sc_string, const sc_uint32 sc_string_size)
+void * sc_dictionary_get(const sc_dictionary * dictionary, const sc_char * sc_string, const sc_uint32 sc_string_size)
 {
   const sc_dictionary_node * last =
       sc_dictionary_get_last_node_from_node(dictionary, dictionary->root, sc_string, sc_string_size);
 
   if (SC_DICTIONARY_NODE_IS_VALID(last))
-    return last->data_list;
+    return last->data;
 
   return null_ptr;
 }

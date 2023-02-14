@@ -8,7 +8,6 @@
 #define _sc_dictionary_h_
 
 #include "../../sc_types.h"
-#include "../sc-list/sc_list.h"
 
 #define SC_DC_NODE_ACCESS_LVL_RMASK 0b00000001
 #define SC_DC_NODE_ACCESS_LVL_WMASK 0b00000010
@@ -29,7 +28,7 @@ typedef struct _sc_dictionary_node
   struct _sc_dictionary_node ** next;  // a pointer to sc-dictionary node children pointers
   sc_char * offset;                    // a pointer to substring of node string
   sc_uint32 offset_size;               // size to substring of node string
-  sc_list * data_list;                 // data list
+  void * data;                 // data
   sc_uint8 mask;                       // mask for rights checking and memory optimization
 } sc_dictionary_node;
 
@@ -111,7 +110,7 @@ sc_bool sc_dictionary_is_in(const sc_dictionary * dictionary, const sc_char * sc
  * @param sc_string_size A string size
  * @returns Returns Data from a sc-dictionary node where string ends
  */
-void * sc_dictionary_get_first_data_from_node(
+void * const * sc_dictionary_get_first_data_from_node(
     const sc_dictionary * dictionary,
     const sc_dictionary_node * node,
     const sc_char * sc_string,
@@ -123,7 +122,7 @@ void * sc_dictionary_get_first_data_from_node(
  * @param sc_string_size A string size
  * @returns Returns Datas from a sc-dictionary node where string ends
  */
-sc_list * sc_dictionary_get(const sc_dictionary * dictionary, const sc_char * sc_string, sc_uint32 sc_string_size);
+void * sc_dictionary_get(const sc_dictionary * dictionary, const sc_char * sc_string, sc_uint32 sc_string_size);
 
 /*! Visits all sc-dictionary nodes and calls procedure with it and its data. A method completes down iterating visiting.
  * @param dictionary A sc-dictionary pointer

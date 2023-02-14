@@ -17,7 +17,7 @@
 sc_fs_storage * sc_fs_storage_build()
 {
   sc_fs_storage * storage = sc_mem_new(sc_fs_storage, 1);
-#ifdef SC_DICTIONARY_FS_STORAGE
+#ifndef SC_DICTIONARY_FS_STORAGE
   storage->initialize = sc_dictionary_fs_storage_initialize;
   storage->shutdown = sc_dictionary_fs_storage_shutdown;
   storage->fill = sc_dictionary_fs_storage_fill;

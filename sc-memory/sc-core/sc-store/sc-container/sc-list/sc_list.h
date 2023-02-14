@@ -69,6 +69,6 @@ sc_bool sc_list_remove_if(sc_list * list, void * data, sc_bool (*predicate)(void
  * @param list A sc-list pointer
  * @return Returns Iterator.
  */
-sc_iterator * sc_list_iterator(sc_list * list);
+sc_iterator * sc_list_iterator(sc_list const * list);
 
 #endif

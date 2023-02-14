@@ -12,7 +12,11 @@ make_tests_from_folder(${CMAKE_CURRENT_LIST_DIR}/containers
     INCLUDES ${SC_MEMORY_SRC} ${CMAKE_CURRENT_LIST_DIR}/_test
 )
 
-sc_codegen(sc-memory-containers-tests ${CMAKE_CURRENT_LIST_DIR}/containers)
+make_tests_from_folder(${CMAKE_CURRENT_LIST_DIR}/fs-storage
+    NAME sc-fs-storage-tests
+    DEPENDS sc-memory sc-core
+    INCLUDES ${SC_MEMORY_SRC} ${CMAKE_CURRENT_LIST_DIR}/_test
+)
 
 make_tests_from_folder(${CMAKE_CURRENT_LIST_DIR}/agents
     NAME sc-memory-agents-tests

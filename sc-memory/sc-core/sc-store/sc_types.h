@@ -25,6 +25,7 @@ typedef signed int sc_int32;
 typedef unsigned int sc_uint32;
 typedef long long sc_int64;
 typedef unsigned long long sc_uint64;
+typedef float sc_float;
 
 typedef unsigned long sc_ulong;
 typedef unsigned int sc_uint;

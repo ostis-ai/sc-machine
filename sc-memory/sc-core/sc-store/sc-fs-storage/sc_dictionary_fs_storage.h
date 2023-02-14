@@ -12,101 +12,48 @@
 #include "../sc_stream.h"
 
 #include "../sc-container/sc-dictionary/sc_dictionary.h"
+#include "../sc-container/sc-list/sc_list.h"
 
-typedef struct _sc_link_content
+typedef struct _sc_dictionary_fs_storage
 {
-  sc_dictionary_node * node;
-  sc_char * sc_string;
-  sc_uint32 string_size;
-} sc_link_content;
+  sc_char * path;
+  
+  sc_dictionary * terms_offsets_dictionary;
+  sc_char * terms_offsets_path;
 
-/*! Initialize sc-dictionary fs-storage in specified path
- * @param path Path to store on file system.
- */
-sc_bool sc_dictionary_fs_storage_initialize(const char * path);
+  sc_dictionary * string_offsets_link_hashes_dictionary;
+  sc_char * string_offsets_link_hashes_path;
 
-//! Shutdowns sc-dictionary fs-storage
-sc_bool sc_dictionary_fs_storage_shutdown();
+  sc_dictionary * link_hashes_string_offsets_dictionary;
+  sc_char * link_hashes_string_offsets_path;
 
-/// Save sc-dictionary fs-storage
-sc_bool sc_dictionary_fs_storage_save();
+  sc_char * terms_path;
+  sc_uint64 terms_size;
 
-/// Read and fill sc-dictionary fs-storage
-sc_bool sc_dictionary_fs_storage_fill();
+  sc_char * strings_path;
+  sc_uint64 strings_size;
+} sc_dictionary_fs_storage;
 
-/*! Appends sc-link to sc-dictionary by its string content.
- * @param element An appendable sc-link
- * @param addr An appendable sc-link addr
- * @param sc_string A key string
- * @param sc_string_size A key string size
- * @returns SC_TRUE, if link was added
- */
-sc_bool sc_dictionary_fs_storage_append_sc_link_content_string(
-    const sc_element * element,
-    sc_addr addr,
-    const sc_char * sc_string,
-    sc_uint32 sc_string_size);
+typedef enum _sc_dictionary_fs_storage_status
+{
+  SC_FS_STORAGE_OK,
 
-/*! Gets sc-links from sc-dictionary by it string content.
- * @param sc_string A key string
- * @param sc_string_size A key string size
- * @param[out] links A pointer to sc-links
- * @returns SC_TRUE, if sc-links exist.
- */
-sc_bool sc_dictionary_fs_storage_get_sc_links_by_content_string(
-    const sc_char * sc_string,
-    sc_uint32 sc_string_size,
-    sc_list ** links);
+  SC_FS_STORAGE_NO,
+  SC_FS_STORAGE_WRONG_PATH,
+  SC_FS_STORAGE_WRITE_ERROR,
+  SC_FS_STORAGE_READ_ERROR
+} sc_fs_storage_status;
 
-/*! Gets sc-links from sc-dictionary by it substring content.
- * @param sc_substring A key substring
- * @param sc_substring_size A key substring size
- * @param[out] links A pointer to sc-links
- * @param max_length_to_search_as_prefix Search by prefix as substring length <= max_length_to_search_as_prefix
- * @returns SC_TRUE, if sc-links exist.
- */
-sc_bool sc_dictionary_fs_storage_get_sc_links_by_content_substring(
-    const sc_char * sc_substr,
-    sc_uint32 sc_substring_size,
-    sc_list ** links,
-    sc_uint32 max_length_to_search_as_prefix);
+sc_fs_storage_status sc_dictionary_fs_storage_initialize(sc_dictionary_fs_storage ** storage, sc_char const * path);
 
-/*! Gets sc-strings from sc-dictionary by it substring content.
- * @param sc_substring A key substring
- * @param sc_substring_size A key substring size
- * @param[out] strings A pointer to sc-strings array
- * @param max_length_to_search_as_prefix Search by prefix as substring length <= max_length_to_search_as_prefix
- * @returns SC_TRUE, if sc-links exist.
- */
-sc_bool sc_dictionary_fs_storage_get_sc_links_contents_by_content_substring(
-    const sc_char * sc_substring,
-    sc_uint32 sc_substring_size,
-    sc_list ** strings,
-    sc_uint32 max_length_to_search_as_prefix);
+sc_fs_storage_status sc_dictionary_fs_storage_shutdown(sc_dictionary_fs_storage * storage);
 
-/*! Gets sc-link content.
- * @param addr A sc-link addr
- * @returns A sc-link-content node.
- */
-sc_link_content * sc_dictionary_fs_storage_get_sc_link_content(sc_addr addr);
+sc_fs_storage_status sc_dictionary_fs_storage_add_strings(sc_dictionary_fs_storage * storage, sc_list const * strings_link_hashes);
 
-/*! Gets sc-link content string with its size.
- * @param element A sc-link
- * @param addr A sc-link addr
- * @param[out] sc_string A content string
- * @param[out] sc_string_size A content string size
- */
-void sc_dictionary_fs_storage_get_sc_link_content_string_ext(
-    const sc_element * element,
-    sc_addr addr,
-    sc_char ** sc_string,
-    sc_uint32 * sc_string_size);
+sc_fs_storage_status sc_dictionary_fs_storage_get_strings(sc_dictionary_fs_storage * storage, sc_list const * terms, sc_list ** strings);
 
-/*! Removes sc-link content string from sc-dictionary.
- * @param element A sc-link element
- * @param addr A sc-link addr
- * @returns SC_TRUE, if such sc-link exists in sc-dictionary.
- */
-sc_bool sc_dictionary_fs_storage_remove_sc_link_content_string(const sc_element * element, sc_addr addr);
+sc_fs_storage_status sc_dictionary_fs_storage_load(sc_dictionary_fs_storage * storage);
 
-#endif
+sc_fs_storage_status sc_dictionary_fs_storage_save(sc_dictionary_fs_storage * storage);
+
+#endif //_sc_dictionary_fs_storage_h_

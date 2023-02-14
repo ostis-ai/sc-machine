@@ -66,9 +66,6 @@ sc_struct_node * sc_list_push(sc_list * list, sc_struct_node * node, void * data
   if (list == null_ptr)
     return null_ptr;
 
-  if (data == null_ptr)
-    return null_ptr;
-
   if (node == null_ptr)
   {
     list->begin = sc_struct_node_init(data);
@@ -182,7 +179,7 @@ sc_struct_node * sc_list_back(sc_list * list)
   return list->end->prev;
 }
 
-sc_iterator * sc_list_iterator(sc_list * list)
+sc_iterator * sc_list_iterator(sc_list const * list)
 {
   if (list == null_ptr)
     return null_ptr;
