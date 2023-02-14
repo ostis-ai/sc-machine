@@ -65,10 +65,10 @@ const sc_dictionary_node * sc_dictionary_get_last_node_from_node(
  * @param callable A callable object (procedure)
  * @param[out] dest A pointer to procedure result pointer
  */
-void sc_dictionary_visit_down_node_from_node(
+sc_bool sc_dictionary_visit_down_node_from_node(
     sc_dictionary * dictionary,
     sc_dictionary_node * node,
-    void (*callable)(sc_dictionary_node *, void **),
+    sc_bool (*callable)(sc_dictionary_node *, void **),
     void ** dest);
 
 /*! Visits all sc-dictionary nodes starting with specified node and calls procedure with it and its data. A method
@@ -78,10 +78,10 @@ void sc_dictionary_visit_down_node_from_node(
  * @param callable A callable object (procedure)
  * @param[out] dest A pointer to procedure result pointer
  */
-void sc_dictionary_visit_up_node_from_node(
+sc_bool sc_dictionary_visit_up_node_from_node(
     sc_dictionary * dictionary,
     sc_dictionary_node * node,
-    void (*callable)(sc_dictionary_node *, void **),
+    sc_bool (*callable)(sc_dictionary_node *, void **),
     void ** dest);
 
 #endif

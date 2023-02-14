@@ -28,7 +28,7 @@ sc_bool sc_dictionary_initialize(
   return SC_TRUE;
 }
 
-sc_bool sc_dictionary_destroy(sc_dictionary * dictionary, void (*node_destroy)(sc_dictionary_node *, void **))
+sc_bool sc_dictionary_destroy(sc_dictionary * dictionary, sc_bool (*node_destroy)(sc_dictionary_node *, void **))
 {
   if (dictionary == null_ptr)
     return SC_FALSE;
@@ -54,7 +54,7 @@ inline sc_dictionary_node * _sc_dictionary_node_initialize(sc_uint8 children_siz
   return node;
 }
 
-void sc_dictionary_node_destroy(sc_dictionary_node * node, void ** args)
+sc_bool sc_dictionary_node_destroy(sc_dictionary_node * node, void ** args)
 {
   (void)args;
 
@@ -68,6 +68,8 @@ void sc_dictionary_node_destroy(sc_dictionary_node * node, void ** args)
   node->offset_size = 0;
 
   sc_mem_free(node);
+
+  return SC_TRUE;
 }
 
 inline sc_dictionary_node * _sc_dictionary_get_next_node(
@@ -277,10 +279,10 @@ void * sc_dictionary_get(const sc_dictionary * dictionary, const sc_char * sc_st
   return null_ptr;
 }
 
-void sc_dictionary_visit_down_node_from_node(
+sc_bool sc_dictionary_visit_down_node_from_node(
     sc_dictionary * dictionary,
     sc_dictionary_node * node,
-    void (*callable)(sc_dictionary_node *, void **),
+    sc_bool (*callable)(sc_dictionary_node *, void **),
     void ** dest)
 {
   sc_uint8 i;
@@ -289,25 +291,29 @@ void sc_dictionary_visit_down_node_from_node(
     sc_dictionary_node * next = node->next[i];
     if (SC_DICTIONARY_NODE_IS_VALID(next))
     {
-      callable(next, dest);
+      if (!callable(next, dest))
+        return SC_FALSE;
 
-      sc_dictionary_visit_down_node_from_node(dictionary, next, callable, dest);
+      if (!sc_dictionary_visit_down_node_from_node(dictionary, next, callable, dest))
+        return SC_FALSE;
     }
   }
+
+  return SC_TRUE;
 }
 
-void sc_dictionary_visit_down_nodes(
+sc_bool sc_dictionary_visit_down_nodes(
     sc_dictionary * dictionary,
-    void (*callable)(sc_dictionary_node *, void **),
+    sc_bool (*callable)(sc_dictionary_node *, void **),
     void ** dest)
 {
-  sc_dictionary_visit_down_node_from_node(dictionary, dictionary->root, callable, dest);
+  return sc_dictionary_visit_down_node_from_node(dictionary, dictionary->root, callable, dest);
 }
 
-void sc_dictionary_visit_up_node_from_node(
+sc_bool sc_dictionary_visit_up_node_from_node(
     sc_dictionary * dictionary,
     sc_dictionary_node * node,
-    void (*callable)(sc_dictionary_node *, void **),
+    sc_bool (*callable)(sc_dictionary_node *, void **),
     void ** dest)
 {
   sc_uint8 i;
@@ -316,17 +322,21 @@ void sc_dictionary_visit_up_node_from_node(
     sc_dictionary_node * next = node->next[i];
     if (SC_DICTIONARY_NODE_IS_VALID(next))
     {
-      sc_dictionary_visit_up_node_from_node(dictionary, next, callable, dest);
+      if (!sc_dictionary_visit_up_node_from_node(dictionary, next, callable, dest))
+        return SC_FALSE;
 
-      callable(next, dest);
+      if (!callable(next, dest))
+        return SC_FALSE;
     }
   }
+
+  return SC_TRUE;
 }
 
-void sc_dictionary_visit_up_nodes(
+sc_bool sc_dictionary_visit_up_nodes(
     sc_dictionary * dictionary,
-    void (*callable)(sc_dictionary_node *, void **),
+    sc_bool (*callable)(sc_dictionary_node *, void **),
     void ** dest)
 {
-  sc_dictionary_visit_up_node_from_node(dictionary, dictionary->root, callable, dest);
+  return sc_dictionary_visit_up_node_from_node(dictionary, dictionary->root, callable, dest);
 }

@@ -17,7 +17,7 @@
 typedef struct _sc_dictionary_fs_storage
 {
   sc_char * path;
-  
+
   sc_dictionary * terms_offsets_dictionary;
   sc_char * terms_offsets_path;
 
@@ -48,12 +48,22 @@ sc_fs_storage_status sc_dictionary_fs_storage_initialize(sc_dictionary_fs_storag
 
 sc_fs_storage_status sc_dictionary_fs_storage_shutdown(sc_dictionary_fs_storage * storage);
 
-sc_fs_storage_status sc_dictionary_fs_storage_add_strings(sc_dictionary_fs_storage * storage, sc_list const * strings_link_hashes);
+sc_fs_storage_status sc_dictionary_fs_storage_link_strings(
+    sc_dictionary_fs_storage * storage,
+    sc_list const * strings_link_hashes);
 
-sc_fs_storage_status sc_dictionary_fs_storage_get_strings(sc_dictionary_fs_storage * storage, sc_list const * terms, sc_list ** strings);
+sc_fs_storage_status sc_dictionary_fs_storage_intersect_strings_by_terms(
+    sc_dictionary_fs_storage * storage,
+    sc_list const * terms,
+    sc_list ** strings);
+
+sc_fs_storage_status sc_dictionary_fs_storage_unite_strings_by_terms(
+    sc_dictionary_fs_storage * storage,
+    sc_list const * terms,
+    sc_list ** strings);
 
 sc_fs_storage_status sc_dictionary_fs_storage_load(sc_dictionary_fs_storage * storage);
 
 sc_fs_storage_status sc_dictionary_fs_storage_save(sc_dictionary_fs_storage * storage);
 
-#endif //_sc_dictionary_fs_storage_h_
+#endif  //_sc_dictionary_fs_storage_h_
