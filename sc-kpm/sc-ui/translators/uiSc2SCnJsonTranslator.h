@@ -40,7 +40,7 @@ public:
 
 protected:
   //! @copydoc uiTranslateFromSc::runImpl
-  void runImpl();
+  void runImpl() override;
 
   //! Collect information of trsnslated sc-elements and store it
   void collectScElementsInfo();
@@ -49,25 +49,21 @@ protected:
   sc_json json(sScElementInfo * elInfo, int level = 0, bool isStruct = false);
 
   // Get childrens for specified element
-  sc_json getChildrens(sScElementInfo * elInfo, bool isFullLinkedNodes, int level = 1, bool isStruct = false);
+  sc_json getChildrens(sScElementInfo * elInfo, bool isStruct = false);
 
   // Get childrens by direction for specified arcs list
-  sc_json getChildrensByDirection(sScElementInfo::tScElementInfoList arcs, String direction, bool isStruct = false);
+  sc_json getChildrensByDirection(sScElementInfo::tScElementInfoList arcs, String const & direction, bool isStruct = false);
 
   // Get base json information about specified element
   sc_json getBaseInfo(sScElementInfo * elInfo);
 
   sc_json getJsonOfLinkedNodes(sc_json childrens, int level = 1, bool isStruct = false);
 
-  bool getLinkContent(sc_addr link_addr, String & content);
+  static sScElementInfo * findStructKeyword(sScElementInfo::tScElementInfoList structureElements);
 
-  sScElementInfo * findStructKeyword(sScElementInfo::tScElementInfoList structureElements);
-  
   sc_json getChildrenByModifierAddr(sScElementInfo * elInfo, sc_addr modifierAddr, bool isStruct = false);
 
-  sc_json getChildren(sScElementInfo * arcInfo, String direction, bool isStruct = false);
-
-  bool removeArcsByModifierAddrList(sScElementInfo * elInfo, tScAddrList modifierAddrList);
+  sc_json getChildren(sScElementInfo * arcInfo, String  const & direction, bool isStruct = false);
 
 private:
   //! List of keywords

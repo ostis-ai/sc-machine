@@ -4,7 +4,8 @@
  * (See accompanying file COPYING.MIT or copy at http://opensource.org/licenses/MIT)
  */
 
-#include "uiPrecompiled.h"
+#include "sc-memory/sc_memory.hpp"
+
 #include "uiSc2SCnJsonTranslator.h"
 
 #include "uiTranslators.h"
@@ -19,14 +20,13 @@
 // };
 
 uiSc2SCnJsonTranslator::uiSc2SCnJsonTranslator()
-  : mScElementsInfoPool(0)
+ : mScElementsInfoPool(nullptr)
 {
 }
 
 uiSc2SCnJsonTranslator::~uiSc2SCnJsonTranslator()
 {
-  if (mScElementsInfoPool)
-    delete[] mScElementsInfoPool;
+  delete[] mScElementsInfoPool;
 }
 
 void uiSc2SCnJsonTranslator::runImpl()
@@ -63,11 +63,11 @@ void uiSc2SCnJsonTranslator::runImpl()
 
 void uiSc2SCnJsonTranslator::collectScElementsInfo()
 {
-  sc_uint32 elementsCount = (sc_uint32)mObjects.size();
+  sc_uint32 elementsCount = mObjects.size();
   mScElementsInfoPool = new sScElementInfo[elementsCount];
 
   sc_uint32 poolUsed = 0;
-  // first of all collect information about elements
+  // first collect information about elements
   tScAddrToScTypeMap::const_iterator it, itEnd = mObjects.end();
   for (it = mObjects.begin(); it != itEnd; ++it)
   {
@@ -80,7 +80,7 @@ void uiSc2SCnJsonTranslator::collectScElementsInfo()
     poolUsed++;
   }
 
-  // now we need to itarete all arcs and collect output/input arcs info
+  // now we need to iterate all arcs and collect output/input arcs info
   sc_type elType;
   sc_addr begAddr, endAddr, arcAddr;
   for (it = mObjects.begin(); it != itEnd; ++it)
@@ -98,11 +98,11 @@ void uiSc2SCnJsonTranslator::collectScElementsInfo()
     // get begin/end addrs
     if (sc_memory_get_arc_begin(s_default_ctx, arcAddr, &begAddr) != SC_RESULT_OK)
       continue;  // @todo process errors
-    if (isNeedToTranslate(begAddr) == false)
+    if (!isNeedToTranslate(begAddr))
       continue;
     if (sc_memory_get_arc_end(s_default_ctx, arcAddr, &endAddr) != SC_RESULT_OK)
       continue;  // @todo process errors
-    if (isNeedToTranslate(endAddr) == false)
+    if (!isNeedToTranslate(endAddr))
       continue;
 
     sScElementInfo * begInfo = mScElementsInfo[begAddr];
@@ -115,7 +115,7 @@ void uiSc2SCnJsonTranslator::collectScElementsInfo()
     elInfo->target = endInfo;
 
     // check if arc is not broken
-    if (begInfo == 0 || endInfo == 0)
+    if (begInfo == nullptr || endInfo == nullptr)
       continue;
     endInfo->inputArcs.push_back(mScElementsInfo[arcAddr]);
     begInfo->outputArcs.push_back(mScElementsInfo[arcAddr]);
@@ -169,7 +169,7 @@ sScElementInfo * uiSc2SCnJsonTranslator::findStructKeyword(sScElementInfo::tScEl
   {
     elements = structures;
   }
-  sScElementInfo::tScElementInfoList::const_iterator result =
+  auto result =
       std::max_element(elements.begin(), elements.end(), [](sScElementInfo * left, sScElementInfo * right) {
         return (left->outputArcs.size() + left->inputArcs.size()) <
                (right->outputArcs.size() + right->inputArcs.size());
@@ -182,8 +182,7 @@ sScElementInfo * uiSc2SCnJsonTranslator::findStructKeyword(sScElementInfo::tScEl
 sc_json uiSc2SCnJsonTranslator::json(sScElementInfo * elInfo, int level, bool isStruct)
 {
   sc_json result;
-  String content;
-  bool content_exists;
+  bool content_exists = false;
   bool isFullLinkedNodes = true;
 
   result = getBaseInfo(elInfo);
@@ -226,7 +225,15 @@ sc_json uiSc2SCnJsonTranslator::json(sScElementInfo * elInfo, int level, bool is
     }
     if (result["contentType"].is_null())
     {
-      content_exists = getLinkContent(elInfo->addr, content);
+      sc_stream * stream;
+      sc_memory_get_link_content(s_default_ctx, elInfo->addr, &stream);
+      if (stream != nullptr && ScStreamConverter::StreamToString(std::make_shared<ScStream>(stream), content))
+      {
+        std::istringstream streamString{ content };
+        streamString >> content;
+        content_exists = true;
+      }
+
       if (content_exists)
       {
         result["content"] = content;
@@ -247,7 +254,7 @@ sc_json uiSc2SCnJsonTranslator::json(sScElementInfo * elInfo, int level, bool is
     result["children"].insert(result["children"].end(), children.begin(), children.end());
     children = getChildrenByModifierAddr(elInfo, keynode_rrel_key_sc_element, isStruct);
     result["children"].insert(result["children"].end(), children.begin(), children.end());
-    children = getChildrens(elInfo, isFullLinkedNodes, level + 1, isStruct);
+    children = getChildrens(elInfo, isStruct);
     result["children"].insert(result["children"].end(), children.begin(), children.end());
     if (isFullLinkedNodes)
       result["children"] = getJsonOfLinkedNodes(result["children"], level + 1, isStruct);
@@ -256,7 +263,7 @@ sc_json uiSc2SCnJsonTranslator::json(sScElementInfo * elInfo, int level, bool is
   return result;
 }
 
-sc_json uiSc2SCnJsonTranslator::getChildrens(sScElementInfo * elInfo, bool isFullLinkedNodes, int level, bool isStruct)
+sc_json uiSc2SCnJsonTranslator::getChildrens(sScElementInfo * elInfo, bool isStruct)
 {
   sc_json childrens = sc_json::array();
   sScElementInfo::tScElementInfoList outputArcs = elInfo->outputArcs;
@@ -273,7 +280,7 @@ sc_json uiSc2SCnJsonTranslator::getChildrens(sScElementInfo * elInfo, bool isFul
 
 sc_json uiSc2SCnJsonTranslator::getChildrensByDirection(
     sScElementInfo::tScElementInfoList arcs,
-    String direction,
+    String const & direction,
     bool isStruct)
 {
   sc_json childrens = sc_json::array();
@@ -365,40 +372,15 @@ sc_json uiSc2SCnJsonTranslator::getJsonOfLinkedNodes(sc_json childrens, int leve
   return new_childrens;
 }
 
-bool uiSc2SCnJsonTranslator::getLinkContent(sc_addr link_addr, String & content)
-{
-  sc_stream * link_stream = nullptr;
-  sc_uint32 link_length = 0;
-  sc_uint32 read_bytes = 0;
-  sc_bool result = SC_FALSE;
-  sc_char buffer[32];
-
-  content = "";
-  if (sc_memory_get_link_content(s_default_ctx, link_addr, &link_stream) == SC_RESULT_OK)
-  {
-    sc_stream_get_length(link_stream, &link_length);
-    while (sc_stream_eof(link_stream) == SC_FALSE)
-    {
-      sc_stream_read_data(link_stream, buffer, 32, &read_bytes);
-      content.append(buffer, read_bytes);
-    }
-    sc_stream_free(link_stream);
-
-    result = SC_TRUE;
-  }
-
-  if (result == SC_FALSE)
-  {
-    content = "";
-    return SC_FALSE;
-  }
-
-  return result;
-}
-
 sc_json uiSc2SCnJsonTranslator::getBaseInfo(sScElementInfo * elInfo)
 {
   sc_json result;
+
+  if (!elInfo)
+  {
+    return result;
+  }
+
   result["addr"] = std::stoi(uiTranslateFromSc::buildId(elInfo->addr));
   String idtf;
   bool idtf_exists = ui_translate_get_identifier(elInfo->addr, mOutputLanguageAddr, idtf);
@@ -513,21 +495,22 @@ sc_json uiSc2SCnJsonTranslator::getChildrenByModifierAddr(sScElementInfo * elInf
   return childrens;
 }
 
-sc_json uiSc2SCnJsonTranslator::getChildren(sScElementInfo * arcInfo, String direction, bool isStruct)
+sc_json uiSc2SCnJsonTranslator::getChildren(sScElementInfo * arcInfo, String const & direction, bool isStruct)
 {
+  sc_json children;
+
   if (arcInfo->isInTree)
-    return sc_json();
+    return children;
   if (isStruct && (std::find(structureElements.begin(), structureElements.end(), arcInfo) == structureElements.end()))
-    return sc_json();
+    return children;
   arcInfo->isInTree = true;
 
-  sc_json children;
-  sScElementInfo * linkedNode;
-  if (direction.compare("right") == 0)
+  sScElementInfo * linkedNode = nullptr;
+  if (direction == "right")
   {
     linkedNode = arcInfo->target;
   }
-  else if (direction.compare("left") == 0)
+  else if (direction == "left")
   {
     linkedNode = arcInfo->source;
   }
@@ -537,7 +520,7 @@ sc_json uiSc2SCnJsonTranslator::getChildren(sScElementInfo * arcInfo, String dir
 
   sScElementInfo::tScElementInfoList modifiersList = arcInfo->inputArcs;
 
-  sScElementInfo::tScElementInfoList::const_iterator modifierIt = modifiersList.begin();
+ auto modifierIt = modifiersList.begin();
   sc_json modifier = sc_json();
   if (modifierIt != modifiersList.end() && !((*modifierIt)->isInTree))
   {
