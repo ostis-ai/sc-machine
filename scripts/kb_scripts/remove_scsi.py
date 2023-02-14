@@ -3,32 +3,32 @@ import os
 import re
 
 
-def remove_file_mentions(scsi_file, relative_path, buffer_file_list, tabulation_string) -> list:
-    for scsi_file_line in scsi_file:
-        if scsi_file_line.find(r'"file://') >= 0 and len(relative_path) > 0:
-            scsi_file_line = scsi_file_line[:scsi_file_line.find('//')+2] + \
-                         relative_path + scsi_file_line[scsi_file_line.find('//')+2:]
-        buffer_file_list.append(tabulation_string + scsi_file_line)
-    return buffer_file_list
+def process_scsi(scsi_file_path , structure_name) -> None:
+    # Try to optimize 
+    # Append structure name at the beginning of file and close structure at the end
+        with open(scsi_file_path, 'r', encoding='utf-8') as scsi_file:
+            content = scsi_file.read()
+        with open(scsi_file_path, "w", encoding='utf-8') as scsi_file:
+            scsi_file.seek(0, 0)
+            scsi_file.write(structure_name + " [*" + content + "*];;")
+
+	# Rename scsi file to content.scs
+        pre, _ = os.path.splitext(scsi_file.name)
+        os.rename(scsi_file.name, pre + "_content.scs")
 
 
 def process_file(scsi_file_paths, dir_path, buffer_file_list) -> list:
     for scsi_file_path in scsi_file_paths:
-        edit_line_list = scsi_file_path[0].split('^"file://')
-        tabulation_string = " " * len(edit_line_list[0])
-
-        buffer_file_list.append(edit_line_list[0] + '\n')
+        edit_line_list = scsi_file_path[0].split('[*^"file://')
+        # Get scsi file path
         scsi_path = edit_line_list[1].split('"*];;')[0]
 
         relative_path = ""
         if scsi_path.rfind('/') >= 0:
             relative_path = scsi_path[:scsi_path.rfind('/') + 1]
 
-        with open(os.path.join(dir_path, scsi_path), 'r', encoding='utf-8') as scsi_file:
-            buffer_file_list = remove_file_mentions(scsi_file, relative_path, buffer_file_list, tabulation_string)
+        process_scsi(os.path.join(dir_path, scsi_path), edit_line_list[0])
 
-        buffer_file_list.append("\n*];;\n")
-        os.remove(os.path.join(dir_path, scsi_path))
     return buffer_file_list
 
 
