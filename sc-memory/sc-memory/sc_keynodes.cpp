@@ -63,6 +63,14 @@ bool ScKeynodes::Init(bool force, sc_char const * init_memory_generated_structur
     initMemoryGeneratedStructure =
         ctx.HelperResolveSystemIdtf(init_memory_generated_structure, ScType::NodeConstStruct);
     initMemoryGeneratedStructureValid = initMemoryGeneratedStructure.IsValid();
+    if (initMemoryGeneratedStructureValid)
+    {
+      ScAddr kNrelSysIdtf = ctx.HelperResolveSystemIdtf("nrel_system_identifier", ScType::NodeConstNoRole);
+      if (!ctx.HelperCheckEdge(initMemoryGeneratedStructure, kNrelSysIdtf, ScType::EdgeAccessConstPosPerm))
+      {
+        ctx.CreateEdge(ScType::EdgeAccessConstPosPerm, initMemoryGeneratedStructure, kNrelSysIdtf);
+      }
+    }
   }
 
   bool result = ScKeynodes::InitGlobal(initMemoryGeneratedStructure);
