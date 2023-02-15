@@ -18,6 +18,7 @@ extern sc_addr keynode_nrel_user_answer_formats;
 extern sc_addr keynode_rrel_source_sc_construction;
 extern sc_addr keynode_rrel_user_lang;
 extern sc_addr keynode_rrel_output_format;
+extern sc_addr keynode_rrel_filter_list;
 
 extern sc_addr keynode_question_nrel_answer;
 extern sc_addr keynode_question_finished;
@@ -44,6 +45,10 @@ extern sc_addr keynode_format_scg_json;
 extern sc_addr keynode_format_scn_json;
 
 extern sc_addr keynode_system_element;
+
+extern sc_addr keynode_concept_scn_json_elements_order_set;
+extern sc_addr keynode_concept_scn_json_elements_filter_set;
+extern sc_addr keynode_nrel_scn_json_elements_base_order;
 
 #define RREL_ORDER_COUNT 10
 extern sc_addr ui_keynode_rrel_order[RREL_ORDER_COUNT];
