@@ -11,7 +11,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+<<<<<<< HEAD
 - Add sc-component-manager as submodule
+=======
+- Pre-commit code style checks
+>>>>>>> c1e51acc ([changelog] Update changelog)
 - Add reversed edges according to standart
 - Add `![]!` parsing to scs parser
 - Insert sc-keynodes and their system identifiers in global knowledge base during sc-memory initiation
