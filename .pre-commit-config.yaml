@@ -4,5 +4,10 @@ repos:
       - id: clang-format-check
         name: clang-format-check
         exclude: (generated/|thidrparty/|scs/|/json)
-        entry: scripts/ci/check-formatting.sh
+        entry: ./scripts/clang/format_code.sh
         language: script
+
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.4.0
+    hooks:
+    -   id: end-of-file-fixer
