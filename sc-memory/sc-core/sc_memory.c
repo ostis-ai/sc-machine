@@ -75,22 +75,6 @@ sc_memory_context * sc_memory_initialize(const sc_memory_params * params)
     goto error;
   }
 
-  sc_addr init_memory_generated_structure;
-
-  if (params->init_memory_generated_upload)
-  {
-    sc_helper_resolve_system_identifier(
-        helper_ctx, params->init_memory_generated_structure, &init_memory_generated_structure);
-  }
-
-  if (params->ext_path)
-  {
-    if (sc_memory_init_ext(params->ext_path, params->enabled_exts, init_memory_generated_structure) == SC_RESULT_OK)
-    {
-      return s_memory_default_ctx;
-    }
-  }
-
   return s_memory_default_ctx;
 
 error:
