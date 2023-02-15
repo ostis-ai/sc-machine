@@ -11,16 +11,33 @@
 #include "uiTranslators.h"
 #include "uiKeynodes.h"
 #include "uiUtils.h"
-#include <iostream>
 #include <algorithm>
-// #include <string_view>
+#include <string_view>
 
-// constexpr std::string_view SCN_TRANSLATOR_CONSTANTS [] ={
-
-// };
+namespace scnTranslatorConstants
+{
+constexpr std::string_view STRUCT = "struct";
+constexpr std::string_view SOURCE_NODE = "sourceNode";
+constexpr std::string_view TARGET_NODE = "targetNode";
+constexpr std::string_view CHILDREN = "children";
+constexpr std::string_view CONTENT = "content";
+constexpr std::string_view CONTENT_TYPE = "contentType";
+constexpr std::string_view MODIFIERS = "modifiers";
+constexpr std::string_view MODIFIER_ARCS = "modifierArcs";
+constexpr std::string_view RIGHT = "right";
+constexpr std::string_view LEFT = "left";
+constexpr std::string_view ADDR = "addr";
+constexpr std::string_view ARCS = "arcs";
+constexpr std::string_view LINKED_NODES = "linkedNodes";
+constexpr std::string_view IDTF = "idtf";
+constexpr std::string_view TYPE = "type";
+constexpr std::string_view DIRECTION = "direction";
+constexpr std::string_view FORMAT_TXT = "format_txt";
+constexpr std::string_view formats[] = {"format_html", "format_github_source_link", "format_pdf", "format_png"};
+};
 
 uiSc2SCnJsonTranslator::uiSc2SCnJsonTranslator()
- : mScElementsInfoPool(nullptr)
+  : mScElementsInfoPool(nullptr)
 {
 }
 
@@ -56,6 +73,8 @@ void uiSc2SCnJsonTranslator::runImpl()
   tScAddrList::iterator it, itEnd = mKeywordsList.end();
   for (it = mKeywordsList.begin(); it != itEnd; ++it)
   {
+    if (!mScElementsInfo[*it])
+      continue;
     result.insert(result.end(), json(mScElementsInfo[*it], 0, false));
   }
   mOutputData = result.dump();
@@ -108,8 +127,18 @@ void uiSc2SCnJsonTranslator::collectScElementsInfo()
     sScElementInfo * begInfo = mScElementsInfo[begAddr];
     sScElementInfo * endInfo = mScElementsInfo[endAddr];
 
-    // filter by modifiers
-    
+    // filter
+    if (std::any_of(mFiltersList.begin(), mFiltersList.end(), [begAddr](sc_addr modifier) {
+          return modifier == begAddr;
+        }))
+    {
+      if (endInfo->type & sc_type_arc_mask)
+      {
+        endInfo->source->outputArcs.remove(endInfo);
+        endInfo->target->inputArcs.remove(endInfo);
+      }
+      continue;
+    }
 
     elInfo->source = begInfo;
     elInfo->target = endInfo;
@@ -128,16 +157,33 @@ void uiSc2SCnJsonTranslator::collectScElementsInfo()
   for (keywordIt = mKeywordsList.begin(); keywordIt != keywordItEnd; ++keywordIt)
   {
     elInfo = mScElementsInfo[*keywordIt];
-    if (elInfo->type & sc_type_node_struct)
+    if (elInfo && elInfo->type & sc_type_node_struct)
     {
+      // get the key elements of the structure
+      sScElementInfo::tScElementInfoList keynodes;
+      std::copy_if(
+          elInfo->outputArcs.begin(), elInfo->outputArcs.end(), std::back_inserter(keynodes), [](sScElementInfo * arc) {
+            return std::find_if(arc->inputArcs.begin(), arc->inputArcs.end(), [](sScElementInfo * modifierArc) {
+                     return modifierArc->source->addr == keynode_rrel_key_sc_element;
+                   }) != arc->inputArcs.end();
+          });
+      std::transform(keynodes.cbegin(), keynodes.cend(), keynodes.begin(), [](sScElementInfo * arc) {
+        return arc->target;
+      });
+      // if there are no key elements, we do not collect structure elements
+      if (!keynodes.size())
+        continue;
+
       elItEnd = elInfo->outputArcs.end();
       for (elIt = elInfo->outputArcs.begin(); elIt != elItEnd;)
       {
+        // find structure elements by arc_pos_const_perm without modifiers
         if ((*elIt)->type & sc_type_arc_pos_const_perm && (*elIt)->inputArcs.empty())
         {
           structureElementIt = std::find((*elIt)->target->inputArcs.begin(), (*elIt)->target->inputArcs.end(), *elIt);
           if (structureElementIt != (*elIt)->target->inputArcs.end())
           {
+            // remove arc from source and target
             elInfo->structureElements.push_back((*elIt)->target);
             (*elIt)->target->inputArcs.erase(structureElementIt);
             elIt = elInfo->outputArcs.erase(elIt);
@@ -152,7 +198,8 @@ void uiSc2SCnJsonTranslator::collectScElementsInfo()
           ++elIt;
         }
       }
-      elInfo->structKeyword = findStructKeyword(elInfo->structureElements);
+      // get keyword from key elements
+      elInfo->structKeyword = findStructKeyword(keynodes);
     }
   }
 }
@@ -161,41 +208,39 @@ sScElementInfo * uiSc2SCnJsonTranslator::findStructKeyword(sScElementInfo::tScEl
 {
   sScElementInfo::tScElementInfoList structures;
   sScElementInfo::tScElementInfoList elements = structureElements;
+  // first try to find structures in key elements
   std::copy_if(
       structureElements.begin(), structureElements.end(), std::back_inserter(structures), [](sScElementInfo * el) {
         return el->type & sc_type_node_struct;
       });
   if (!structures.empty())
-  {
     elements = structures;
-  }
-  auto result =
-      std::max_element(elements.begin(), elements.end(), [](sScElementInfo * left, sScElementInfo * right) {
-        return (left->outputArcs.size() + left->inputArcs.size()) <
-               (right->outputArcs.size() + right->inputArcs.size());
-      });
+
+  auto result = std::max_element(elements.begin(), elements.end(), [](sScElementInfo * left, sScElementInfo * right) {
+    return (left->outputArcs.size() + left->inputArcs.size()) < (right->outputArcs.size() + right->inputArcs.size());
+  });
   if (result != elements.end())
     return *result;
+
   return nullptr;
 }
 
 sc_json uiSc2SCnJsonTranslator::json(sScElementInfo * elInfo, int level, bool isStruct)
 {
   sc_json result;
-  bool content_exists = false;
   bool isFullLinkedNodes = true;
 
   result = getBaseInfo(elInfo);
   if (!elInfo->structureElements.empty())
   {
     structureElements = elInfo->structureElements;
-    result["struct"] = json(elInfo->structKeyword, 0, true);
+    result[scnTranslatorConstants::STRUCT.data()] = json(elInfo->structKeyword, 0, true);
   }
   // if node is arc
   if (elInfo->type & sc_type_arc_mask)
   {
-    result["sourceNode"] = getBaseInfo(elInfo->source);
-    result["targetNode"] = getBaseInfo(elInfo->target);
+    result[scnTranslatorConstants::SOURCE_NODE.data()] = getBaseInfo(elInfo->source);
+    result[scnTranslatorConstants::TARGET_NODE.data()] = getBaseInfo(elInfo->target);
   }
   // if node is link
   if (elInfo->type & sc_type_link)
@@ -203,61 +248,50 @@ sc_json uiSc2SCnJsonTranslator::json(sScElementInfo * elInfo, int level, bool is
     isFullLinkedNodes = false;
     sc_addr format;
     String content;
-    sc_helper_resolve_system_identifier(s_default_ctx, "format_html", &format);
-    if (sc_helper_check_arc(s_default_ctx, elInfo->addr, format, sc_type_arc_common | sc_type_const) == SC_TRUE)
+    // get format of link
+    for (const std::string_view & formatStr : scnTranslatorConstants::formats)
     {
-      result["contentType"] = "format_html";
+      sc_helper_resolve_system_identifier(s_default_ctx, formatStr.data(), &format);
+      if (sc_helper_check_arc(s_default_ctx, elInfo->addr, format, sc_type_arc_common | sc_type_const) == SC_TRUE)
+      {
+        result[scnTranslatorConstants::CONTENT_TYPE.data()] = formatStr.data();
+        break;
+      }
     }
-    sc_helper_resolve_system_identifier(s_default_ctx, "format_github_source_link", &format);
-    if (sc_helper_check_arc(s_default_ctx, elInfo->addr, format, sc_type_arc_common | sc_type_const) == SC_TRUE)
-    {
-      result["contentType"] = "format_github_source_link";
-    }
-    sc_helper_resolve_system_identifier(s_default_ctx, "format_pdf", &format);
-    if (sc_helper_check_arc(s_default_ctx, elInfo->addr, format, sc_type_arc_common | sc_type_const) == SC_TRUE)
-    {
-      result["contentType"] = "format_pdf";
-    }
-    sc_helper_resolve_system_identifier(s_default_ctx, "format_png", &format);
-    if (sc_helper_check_arc(s_default_ctx, elInfo->addr, format, sc_type_arc_common | sc_type_const) == SC_TRUE)
-    {
-      result["contentType"] = "format_png";
-    }
-    if (result["contentType"].is_null())
+    // if the link has no format, then we get the content of the link
+    if (result[scnTranslatorConstants::CONTENT_TYPE.data()].is_null())
     {
       sc_stream * stream;
       sc_memory_get_link_content(s_default_ctx, elInfo->addr, &stream);
       if (stream != nullptr && ScStreamConverter::StreamToString(std::make_shared<ScStream>(stream), content))
       {
-        std::istringstream streamString{ content };
-        streamString >> content;
-        content_exists = true;
-      }
-
-      if (content_exists)
-      {
-        result["content"] = content;
+        result[scnTranslatorConstants::CONTENT.data()] = content;
       }
       else
       {
-        result["content"] = sc_json();
+        result[scnTranslatorConstants::CONTENT.data()] = sc_json();
       }
-      result["contentType"] = "format_txt";
+      result[scnTranslatorConstants::CONTENT_TYPE.data()] = scnTranslatorConstants::FORMAT_TXT.data();
     }
   }
+  // if the nesting level is not greater than the maximum or the element is not a tuple, get childrens
   if (level < maxLevel || (elInfo->type & sc_type_node && elInfo->type & sc_type_node_tuple))
   {
-    result["children"] = getChildrenByModifierAddr(elInfo, keynode_nrel_system_identifier, isStruct);
-    sc_json children = getChildrenByModifierAddr(elInfo, keynode_nrel_main_idtf, isStruct);
-    result["children"].insert(result["children"].end(), children.begin(), children.end());
-    children = getChildrenByModifierAddr(elInfo, keynode_nrel_idtf, isStruct);
-    result["children"].insert(result["children"].end(), children.begin(), children.end());
-    children = getChildrenByModifierAddr(elInfo, keynode_rrel_key_sc_element, isStruct);
-    result["children"].insert(result["children"].end(), children.begin(), children.end());
+    sc_json children;
+    result[scnTranslatorConstants::CHILDREN.data()] = sc_json::array();
+    // first get childrens from ordered list of modifiers
+    for (sc_addr modifier : mOrderList)
+    {
+      children = getChildrenByModifierAddr(elInfo, modifier, isStruct);
+      result[scnTranslatorConstants::CHILDREN.data()].insert(
+          result[scnTranslatorConstants::CHILDREN.data()].end(), children.begin(), children.end());
+    }
+    // than get the remaining childrens
     children = getChildrens(elInfo, isStruct);
-    result["children"].insert(result["children"].end(), children.begin(), children.end());
+    result[scnTranslatorConstants::CHILDREN.data()].insert(
+        result[scnTranslatorConstants::CHILDREN.data()].end(), children.begin(), children.end());
     if (isFullLinkedNodes)
-      result["children"] = getJsonOfLinkedNodes(result["children"], level + 1, isStruct);
+      getJsonOfLinkedNodes(result[scnTranslatorConstants::CHILDREN.data()], level + 1, isStruct);
   }
 
   return result;
@@ -269,10 +303,10 @@ sc_json uiSc2SCnJsonTranslator::getChildrens(sScElementInfo * elInfo, bool isStr
   sScElementInfo::tScElementInfoList outputArcs = elInfo->outputArcs;
   sScElementInfo::tScElementInfoList inputArcs = elInfo->inputArcs;
 
-  sc_json rightChildrens = getChildrensByDirection(outputArcs, "right", isStruct);
+  sc_json rightChildrens = getChildrensByDirection(outputArcs, scnTranslatorConstants::RIGHT.data(), isStruct);
   childrens.insert(childrens.end(), rightChildrens.begin(), rightChildrens.end());
 
-  sc_json leftChildrens = getChildrensByDirection(inputArcs, "left", isStruct);
+  sc_json leftChildrens = getChildrensByDirection(inputArcs, scnTranslatorConstants::LEFT.data(), isStruct);
   childrens.insert(childrens.end(), leftChildrens.begin(), leftChildrens.end());
 
   return childrens;
@@ -290,38 +324,25 @@ sc_json uiSc2SCnJsonTranslator::getChildrensByDirection(
     sc_json children = getChildren((*it), direction, isStruct);
     if (!children.is_null())
     {
-      if (!children["modifiers"][0].is_null())
+      if (!children[scnTranslatorConstants::MODIFIERS.data()][0].is_null())
       {
-        sc_json modifierAddr = children["modifiers"][0]["addr"];
+        // if modifier of children is not null try to find children with that modifier in result childrens array
+        sc_json modifierAddr =
+            children[scnTranslatorConstants::MODIFIERS.data()][0][scnTranslatorConstants::ADDR.data()];
         sc_json::iterator result = std::find_if(childrens.begin(), childrens.end(), [modifierAddr](sc_json c) {
-          return (!c["modifiers"].is_null() && modifierAddr == c["modifiers"][0]["addr"]);
+          return (
+              !c[scnTranslatorConstants::MODIFIERS.data()].is_null() &&
+              modifierAddr == c[scnTranslatorConstants::MODIFIERS.data()][0][scnTranslatorConstants::ADDR.data()]);
         });
+        // if such element is found then merge childrens
         if (result != childrens.end())
         {
-          if ((*result)["arcs"].is_null())
-          {
-            (*result)["arcs"] = children["arcs"];
-          }
-          else
-          {
-            (*result)["arcs"].push_back(children["arcs"][0]);
-          }
-          if ((*result)["linkedNodes"].is_null())
-          {
-            (*result)["linkedNodes"] = children["linkedNodes"];
-          }
-          else
-          {
-            (*result)["linkedNodes"].push_back(children["linkedNodes"][0]);
-          }
-          if ((*result)["modifiers"].is_null())
-          {
-            (*result)["modifiers"] = children["modifiers"];
-          }
-          else
-          {
-            (*result)["modifiers"][0]["modifierArcs"].push_back(children["modifiers"][0]["modifierArcs"][0]);
-          }
+          (*result)[scnTranslatorConstants::ARCS.data()].push_back(children[scnTranslatorConstants::ARCS.data()][0]);
+          (*result)[scnTranslatorConstants::LINKED_NODES.data()].push_back(
+              children[scnTranslatorConstants::LINKED_NODES.data()][0]);
+          (*result)[scnTranslatorConstants::MODIFIERS.data()][0][scnTranslatorConstants::MODIFIER_ARCS.data()]
+              .push_back(children[scnTranslatorConstants::MODIFIERS.data()][0]
+                                 [scnTranslatorConstants::MODIFIER_ARCS.data()][0]);
         }
         else
         {
@@ -330,7 +351,7 @@ sc_json uiSc2SCnJsonTranslator::getChildrensByDirection(
       }
       else
       {
-        children["modifiers"] = sc_json();
+        children[scnTranslatorConstants::MODIFIERS.data()] = sc_json();
         childrens.push_back(children);
       }
     }
@@ -338,61 +359,58 @@ sc_json uiSc2SCnJsonTranslator::getChildrensByDirection(
   return childrens;
 }
 
-sc_json uiSc2SCnJsonTranslator::getJsonOfLinkedNodes(sc_json childrens, int level, bool isStruct)
+void uiSc2SCnJsonTranslator::getJsonOfLinkedNodes(sc_json & childrens, int level, bool isStruct)
 {
-  sc_json new_childrens = sc_json();
   sc_json children, linkedNode;
   sc_addr keynode_nrel_sc_text_translation, linkedNodeAddr;
   sScElementInfo * linkedNodeInfo;
   sc_helper_resolve_system_identifier(s_default_ctx, "nrel_sc_text_translation", &keynode_nrel_sc_text_translation);
 
-  for (sc_json::const_iterator it = childrens.begin(); it != childrens.end(); ++it)
+  for (sc_json::iterator it = childrens.begin(); it != childrens.end(); ++it)
   {
     children = *it;
-    if (!children["modifiers"].is_null() &&
-        (children["modifiers"][0]["addr"] == SC_ADDR_LOCAL_TO_INT(keynode_nrel_sc_text_translation) || children["modifiers"][0]["addr"] == SC_ADDR_LOCAL_TO_INT(keynode_rrel_key_sc_element)))
+    // reduce level for rrel_key_sc_element and nrel_sc_text_translation arc nodes
+    if (!children[scnTranslatorConstants::MODIFIERS.data()].is_null() &&
+        (children[scnTranslatorConstants::MODIFIERS.data()][0][scnTranslatorConstants::ADDR.data()] ==
+             SC_ADDR_LOCAL_TO_INT(keynode_nrel_sc_text_translation) ||
+         children[scnTranslatorConstants::MODIFIERS.data()][0][scnTranslatorConstants::ADDR.data()] ==
+             SC_ADDR_LOCAL_TO_INT(keynode_rrel_key_sc_element)))
     {
       --level;
     }
-    for (size_t i = 0; i < children["linkedNodes"].size(); ++i)
+    for (size_t i = 0; i < children[scnTranslatorConstants::LINKED_NODES.data()].size(); ++i)
     {
-      linkedNode = children["linkedNodes"][i];
-      linkedNodeAddr.seg = SC_ADDR_LOCAL_SEG_FROM_INT(linkedNode["addr"].get<int>());
-      linkedNodeAddr.offset = SC_ADDR_LOCAL_OFFSET_FROM_INT(linkedNode["addr"].get<int>());
+      linkedNode = children[scnTranslatorConstants::LINKED_NODES.data()][i];
+      linkedNodeAddr.seg = SC_ADDR_LOCAL_SEG_FROM_INT(linkedNode[scnTranslatorConstants::ADDR.data()].get<int>());
+      linkedNodeAddr.offset = SC_ADDR_LOCAL_OFFSET_FROM_INT(linkedNode[scnTranslatorConstants::ADDR.data()].get<int>());
       linkedNodeInfo = mScElementsInfo[linkedNodeAddr];
       if (!(linkedNodeInfo->type & sc_type_node_struct))
-      {
         linkedNode = json(linkedNodeInfo, level, isStruct);
-      }
-      children["linkedNodes"][i] = linkedNode;
-    }
 
-    new_childrens.push_back(children);
+      children[scnTranslatorConstants::LINKED_NODES.data()][i] = linkedNode;
+    }
+    *it = children;
   }
-  return new_childrens;
 }
 
 sc_json uiSc2SCnJsonTranslator::getBaseInfo(sScElementInfo * elInfo)
 {
   sc_json result;
-
   if (!elInfo)
-  {
     return result;
-  }
 
-  result["addr"] = std::stoi(uiTranslateFromSc::buildId(elInfo->addr));
+  result[scnTranslatorConstants::ADDR.data()] = std::stoi(uiTranslateFromSc::buildId(elInfo->addr));
   String idtf;
   bool idtf_exists = ui_translate_get_identifier(elInfo->addr, mOutputLanguageAddr, idtf);
   if (idtf_exists)
   {
-    result["idtf"] = idtf;
+    result[scnTranslatorConstants::IDTF.data()] = idtf;
   }
   else
   {
-    result["idtf"] = sc_json();
+    result[scnTranslatorConstants::IDTF.data()] = sc_json();
   }
-  result["type"] = elInfo->type;
+  result[scnTranslatorConstants::TYPE.data()] = elInfo->type;
 
   return result;
 }
@@ -413,39 +431,42 @@ sc_json uiSc2SCnJsonTranslator::getChildrenByModifierAddr(sScElementInfo * elInf
       });
   for (sScElementInfo * arcInfo : filtered)
   {
-    sc_json children = getChildren(arcInfo, "right", isStruct);
+    sc_json children = getChildren(arcInfo, scnTranslatorConstants::RIGHT.data(), isStruct);
     if (!children.is_null())
     {
-      if (fullChildren["arcs"].is_null())
+      if (fullChildren[scnTranslatorConstants::ARCS.data()].is_null())
       {
-        fullChildren["arcs"] = children["arcs"];
+        fullChildren[scnTranslatorConstants::ARCS.data()] = children[scnTranslatorConstants::ARCS.data()];
       }
       else
       {
-        fullChildren["arcs"].push_back(children["arcs"][0]);
+        fullChildren[scnTranslatorConstants::ARCS.data()].push_back(children[scnTranslatorConstants::ARCS.data()][0]);
       }
-      if (fullChildren["linkedNodes"].is_null())
+      if (fullChildren[scnTranslatorConstants::LINKED_NODES.data()].is_null())
       {
-        fullChildren["linkedNodes"] = children["linkedNodes"];
-      }
-      else
-      {
-        fullChildren["linkedNodes"].push_back(children["linkedNodes"][0]);
-      }
-      if (fullChildren["modifiers"].is_null())
-      {
-        fullChildren["modifiers"] = children["modifiers"];
+        fullChildren[scnTranslatorConstants::LINKED_NODES.data()] =
+            children[scnTranslatorConstants::LINKED_NODES.data()];
       }
       else
       {
-        fullChildren["modifiers"][0]["modifierArcs"].push_back(children["modifiers"][0]["modifierArcs"][0]);
+        fullChildren[scnTranslatorConstants::LINKED_NODES.data()].push_back(
+            children[scnTranslatorConstants::LINKED_NODES.data()][0]);
+      }
+      if (fullChildren[scnTranslatorConstants::MODIFIERS.data()].is_null())
+      {
+        fullChildren[scnTranslatorConstants::MODIFIERS.data()] = children[scnTranslatorConstants::MODIFIERS.data()];
+      }
+      else
+      {
+        fullChildren[scnTranslatorConstants::MODIFIERS.data()][0][scnTranslatorConstants::MODIFIER_ARCS.data()]
+            .push_back(
+                children[scnTranslatorConstants::MODIFIERS.data()][0][scnTranslatorConstants::MODIFIER_ARCS.data()][0]);
       }
     }
   }
   if (!fullChildren.is_null())
-  {
     childrens.push_back(fullChildren);
-  }
+
   fullChildren = sc_json();
   filtered.clear();
   std::copy_if(
@@ -459,39 +480,45 @@ sc_json uiSc2SCnJsonTranslator::getChildrenByModifierAddr(sScElementInfo * elInf
       });
   for (sScElementInfo * arcInfo : filtered)
   {
-    sc_json children = getChildren(arcInfo, "left", isStruct);
+    sc_json children = getChildren(arcInfo, scnTranslatorConstants::LEFT.data(), isStruct);
     if (!children.is_null())
     {
-      if (fullChildren["arcs"].is_null())
+      if (fullChildren[scnTranslatorConstants::ARCS.data()].is_null())
       {
-        fullChildren["arcs"] = children["arcs"];
+        fullChildren[scnTranslatorConstants::ARCS.data()] = children[scnTranslatorConstants::ARCS.data()];
       }
       else
       {
-        fullChildren["arcs"].push_back(children["arcs"][0]);
+        fullChildren[scnTranslatorConstants::ARCS.data()].push_back(children[scnTranslatorConstants::ARCS.data()][0]);
       }
-      if (fullChildren["linkedNodes"].is_null())
+      if (fullChildren[scnTranslatorConstants::LINKED_NODES.data()].is_null())
       {
-        fullChildren["linkedNodes"] = children["linkedNodes"];
-      }
-      else
-      {
-        fullChildren["linkedNodes"].push_back(children["linkedNodes"][0]);
-      }
-      if (fullChildren["modifiers"].is_null())
-      {
-        fullChildren["modifiers"] = !children["modifiers"][0].is_null() ? children["modifiers"] : sc_json();
+        fullChildren[scnTranslatorConstants::LINKED_NODES.data()] =
+            children[scnTranslatorConstants::LINKED_NODES.data()];
       }
       else
       {
-        fullChildren["modifiers"][0]["modifierArcs"].push_back(children["modifiers"][0]["modifierArcs"][0]);
+        fullChildren[scnTranslatorConstants::LINKED_NODES.data()].push_back(
+            children[scnTranslatorConstants::LINKED_NODES.data()][0]);
+      }
+      if (fullChildren[scnTranslatorConstants::MODIFIERS.data()].is_null())
+      {
+        fullChildren[scnTranslatorConstants::MODIFIERS.data()] =
+            !children[scnTranslatorConstants::MODIFIERS.data()][0].is_null()
+                ? children[scnTranslatorConstants::MODIFIERS.data()]
+                : sc_json();
+      }
+      else
+      {
+        fullChildren[scnTranslatorConstants::MODIFIERS.data()][0][scnTranslatorConstants::MODIFIER_ARCS.data()]
+            .push_back(
+                children[scnTranslatorConstants::MODIFIERS.data()][0][scnTranslatorConstants::MODIFIER_ARCS.data()][0]);
       }
     }
   }
   if (!fullChildren.is_null())
-  {
     childrens.push_back(fullChildren);
-  }
+
   return childrens;
 }
 
@@ -499,40 +526,133 @@ sc_json uiSc2SCnJsonTranslator::getChildren(sScElementInfo * arcInfo, String con
 {
   sc_json children;
 
+  // skip if arc is already passed
   if (arcInfo->isInTree)
     return children;
+  // skip if arc is struct element
   if (isStruct && (std::find(structureElements.begin(), structureElements.end(), arcInfo) == structureElements.end()))
     return children;
   arcInfo->isInTree = true;
 
   sScElementInfo * linkedNode = nullptr;
-  if (direction == "right")
+  if (direction == scnTranslatorConstants::RIGHT.data())
   {
     linkedNode = arcInfo->target;
   }
-  else if (direction == "left")
+  else if (direction == scnTranslatorConstants::LEFT.data())
   {
     linkedNode = arcInfo->source;
   }
 
   sc_json arc = getBaseInfo(arcInfo);
-  arc["direction"] = direction;
+  arc[scnTranslatorConstants::DIRECTION.data()] = direction;
 
   sScElementInfo::tScElementInfoList modifiersList = arcInfo->inputArcs;
 
- auto modifierIt = modifiersList.begin();
+  auto modifierIt = modifiersList.begin();
   sc_json modifier = sc_json();
   if (modifierIt != modifiersList.end() && !((*modifierIt)->isInTree))
   {
     modifier = getBaseInfo((*modifierIt)->source);
-    modifier["modifierArcs"].push_back(getBaseInfo(*modifierIt));
+    modifier[scnTranslatorConstants::MODIFIER_ARCS.data()].push_back(getBaseInfo(*modifierIt));
     (*modifierIt)->isInTree = true;
   }
 
-  children["arcs"].push_back(arc);
-  children["modifiers"].push_back(modifier);
-  children["linkedNodes"].push_back(getBaseInfo(linkedNode));
+  children[scnTranslatorConstants::ARCS.data()].push_back(arc);
+  children[scnTranslatorConstants::MODIFIERS.data()].push_back(modifier);
+  children[scnTranslatorConstants::LINKED_NODES.data()].push_back(getBaseInfo(linkedNode));
   return children;
+}
+
+void uiSc2SCnJsonTranslator::resolveFilterList(sc_addr cmd_addr)
+{
+  // resolve filter list
+  sc_iterator3 * modifierIt;
+  sc_iterator5 * it = sc_iterator5_f_a_a_a_f_new(
+      s_default_ctx,
+      cmd_addr,
+      sc_type_arc_pos_const_perm,
+      sc_type_node | sc_type_const,
+      sc_type_arc_pos_const_perm,
+      keynode_rrel_filter_list);
+
+  while (sc_iterator5_next(it) == SC_TRUE)
+  {
+    modifierIt = sc_iterator3_f_a_a_new(
+        s_default_ctx, sc_iterator5_value(it, 2), sc_type_arc_pos_const_perm, sc_type_node | sc_type_const);
+    while (sc_iterator3_next(modifierIt) == SC_TRUE)
+    {
+      mFiltersList.push_back(sc_iterator3_value(modifierIt, 2));
+    }
+    sc_iterator3_free(modifierIt);
+  }
+
+  sc_iterator5_free(it);
+}
+
+void uiSc2SCnJsonTranslator::initFilterList()
+{
+  // init filter list
+  sc_iterator3 * it = sc_iterator3_f_a_a_new(
+      s_default_ctx,
+      keynode_concept_scn_json_elements_filter_set,
+      sc_type_arc_pos_const_perm,
+      sc_type_node | sc_type_const);
+
+  while (sc_iterator3_next(it) == SC_TRUE)
+  {
+    mFiltersList.push_back(sc_iterator3_value(it, 2));
+  }
+  sc_iterator3_free(it);
+}
+
+void uiSc2SCnJsonTranslator::initOrderList()
+{
+  sc_addr keynode_rrel_1, elementArc = {};
+  sc_iterator3 * elementIt;
+  sc_helper_resolve_system_identifier(s_default_ctx, "rrel_1", &keynode_rrel_1);
+  sc_iterator5 * it = sc_iterator5_f_a_a_a_f_new(
+      s_default_ctx,
+      keynode_concept_scn_json_elements_order_set,
+      sc_type_arc_pos_const_perm,
+      sc_type_node | sc_type_const,
+      sc_type_arc_pos_const_perm,
+      keynode_rrel_1);
+
+  if (sc_iterator5_next(it) == SC_TRUE)
+  {
+    mOrderList.push_back(sc_iterator5_value(it, 2));
+    elementArc = getNextElementArc(sc_iterator5_value(it, 1));
+    while (!SC_ADDR_IS_EMPTY(elementArc))
+    {
+      elementIt = sc_iterator3_f_f_a_new(
+          s_default_ctx, keynode_concept_scn_json_elements_order_set, elementArc, sc_type_node | sc_type_const);
+      if (sc_iterator3_next(elementIt) == SC_TRUE)
+      {
+        mOrderList.push_back(sc_iterator3_value(elementIt, 2));
+        elementArc = getNextElementArc(elementArc);
+      }
+      sc_iterator3_free(elementIt);
+    }
+  }
+  sc_iterator5_free(it);
+}
+
+sc_addr uiSc2SCnJsonTranslator::getNextElementArc(sc_addr elementArc)
+{
+  sc_addr result = {};
+  sc_iterator5 * nextIt = sc_iterator5_f_a_a_a_f_new(
+      s_default_ctx,
+      elementArc,
+      sc_type_arc_common | sc_type_const,
+      sc_type_arc_pos_const_perm,
+      sc_type_arc_pos_const_perm,
+      keynode_nrel_scn_json_elements_base_order);
+  if (sc_iterator5_next(nextIt) == SC_TRUE)
+    result = sc_iterator5_value(nextIt, 2);
+
+  sc_iterator5_free(nextIt);
+  return result;
 }
 
 // -------------------------------------
@@ -552,6 +672,9 @@ sc_result uiSc2SCnJsonTranslator::ui_translate_sc2scn(const sc_event * event, sc
   if (format_addr == keynode_format_scn_json)
   {
     uiSc2SCnJsonTranslator translator;
+    translator.initFilterList();
+    translator.initOrderList();
+    translator.resolveFilterList(cmd_addr);
     translator.translate(input_addr, format_addr, lang_addr);
   }
 
