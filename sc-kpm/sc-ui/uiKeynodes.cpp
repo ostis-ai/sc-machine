@@ -52,7 +52,6 @@ const char keynode_concept_scn_json_elements_order_set_str[] = "concept_scn_json
 const char keynode_concept_scn_json_elements_filter_set_str[] = "concept_scn_json_elements_filter_set";
 const char keynode_nrel_scn_json_elements_base_order_str[] = "nrel_scn_json_elements_base_order";
 
-
 sc_addr keynode_user;
 sc_addr keynode_command_translate_from_sc;
 sc_addr keynode_nrel_user_answer_formats;

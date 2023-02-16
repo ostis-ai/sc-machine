@@ -12,7 +12,7 @@
 
 struct sScElementInfo
 {
-  typedef std::list<sScElementInfo *> tScElementInfoList;
+  typedef std::unordered_set<sScElementInfo *> tScElementInfoList;
 
   sc_type type;
   sc_addr addr;
@@ -46,28 +46,32 @@ protected:
   void collectScElementsInfo();
 
   //! Generate json for specified element
-  sc_json json(sScElementInfo * elInfo, int level = 0, bool isStruct = false);
+  void json(sScElementInfo * elInfo, int level, bool isStruct, sc_json & result);
 
   //! Get childrens for specified element
-  sc_json getChildrens(sScElementInfo * elInfo, bool isStruct = false);
+  void getChildrens(sScElementInfo * elInfo, bool isStruct, sc_json & childrens);
 
   //! Get childrens by direction for specified arcs list
-  sc_json getChildrensByDirection(sScElementInfo::tScElementInfoList arcs, String const & direction, bool isStruct = false);
+  void getChildrensByDirection(
+      sScElementInfo::tScElementInfoList const & arcs,
+      String const & direction,
+      bool isStruct,
+      sc_json & childrens);
 
   //! Get base json information about specified element
-  sc_json getBaseInfo(sScElementInfo * elInfo);
+  void getBaseInfo(sScElementInfo * elInfo, sc_json & result);
 
   //! get full json of linked nodes for specified childrens
-  void getJsonOfLinkedNodes(sc_json &childrens, int level = 1, bool isStruct = false);
+  void getJsonOfLinkedNodes(sc_json & childrens, int level = 1, bool isStruct = false);
 
   //! Find struct keyword in specified elements list
-  static sScElementInfo * findStructKeyword(sScElementInfo::tScElementInfoList structureElements);
+  static sScElementInfo * findStructKeyword(sScElementInfo::tScElementInfoList const & structureElements);
 
   //! Get childrens for specified modifier
-  sc_json getChildrenByModifierAddr(sScElementInfo * elInfo, sc_addr modifierAddr, bool isStruct = false);
+  void getChildrenByModifierAddr(sScElementInfo * elInfo, sc_addr modifierAddr, bool isStruct, sc_json & childrens);
 
   //! Get json of arc
-  sc_json getChildren(sScElementInfo * arcInfo, String  const & direction, bool isStruct = false);
+  void getChildren(sScElementInfo * arcInfo, String const & direction, bool isStruct, sc_json & children);
 
   //! Resolve additional filter elements for specified cmd_addr
   void resolveFilterList(sc_addr);
@@ -83,9 +87,9 @@ protected:
 
 private:
   //! List of keywords
-  tScAddrList mKeywordsList;
+  tScAddrSet mKeywordsList;
   //! List of elements to filter
-  tScAddrList mFiltersList;
+  tScAddrSet mFiltersList;
   //! Ordered list of modifiers
   tScAddrList mOrderList;
   //! Collection of objects information
