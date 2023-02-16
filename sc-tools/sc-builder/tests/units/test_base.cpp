@@ -51,6 +51,9 @@ TEST(ScBuilder, RunStop)
     EXPECT_EQ(scParams.at("log_type"), scMemoryParams.log_type);
     EXPECT_EQ(scParams.at("log_file"), scMemoryParams.log_file);
     EXPECT_EQ(scParams.at("log_level"), scMemoryParams.log_level);
+    EXPECT_EQ(
+        scParams.at("init_memory_generated_upload") == "true" ? true : false, scMemoryParams.init_memory_generated_upload);
+    EXPECT_EQ(scParams.at("init_memory_generated_structure"), scMemoryParams.init_memory_generated_structure);
   }
 }
 
@@ -71,14 +74,20 @@ TEST(ScBuilder, BuilderConfig)
 
   ScConfig configFile{config, {"repo_path"}};
 
-  ScBuilderConfig builderConfig{configFile, std::move(params)};
   ScMemoryConfig memoryConfig{configFile, std::move(memoryParams)};
+
+  params.m_resultStructureUpload = memoryConfig.GetParams().init_memory_generated_upload;
+  params.m_resultStructureSystemIdtf =
+      params.m_resultStructureUpload ? std::string(memoryConfig.GetParams().init_memory_generated_structure) : "";
+
+  ScBuilderConfig builderConfig{configFile, std::move(params)};
 
   Builder builder;
   BuilderParams builderParams = builderConfig.GetParams();
   EXPECT_TRUE(builder.Run(builderParams, memoryConfig.GetParams()));
 
   std::string builderGroupName = "sc-builder";
+  std::string memoryGroupname = "sc-memory";
 
   ScParams scParams{options, {}};
   if (configFile.IsValid())
@@ -92,8 +101,18 @@ TEST(ScBuilder, BuilderConfig)
       scParams.insert({key, value});
     }
 
-    EXPECT_EQ(scParams.at("result_structure_upload") == "true" ? true : false, builderParams.m_resultStructureUpload);
-    EXPECT_EQ(scParams.at("result_structure_system_idtf"), builderParams.m_resultStructureSystemIdtf);
+    group = configFile[memoryGroupname];
+    for (auto const & key : *group)
+    {
+      std::string const & value = group[key];
+      std::stringstream stream;
+
+      scParams.insert({key, value});
+    }
+
+    EXPECT_EQ(
+        scParams.at("init_memory_generated_upload") == "true" ? true : false, builderParams.m_resultStructureUpload);
+    EXPECT_EQ(scParams.at("init_memory_generated_structure"), builderParams.m_resultStructureSystemIdtf);
   }
 
   sc_memory_params newMemoryParams = memoryConfig.GetParams();
@@ -107,8 +126,7 @@ TEST(ScBuilder, BuilderConfig)
   ScAddr const & resultStructure = fiver.addr1;
   EXPECT_TRUE(resultStructure.IsValid());
 
-  auto const & CheckInStructure = [&context, &resultStructure](ScAddr const & addr)
-  {
+  auto const & CheckInStructure = [&context, &resultStructure](ScAddr const & addr) {
     EXPECT_TRUE(context->HelperCheckEdge(resultStructure, addr, ScType::EdgeAccessConstPosPerm));
   };
 
