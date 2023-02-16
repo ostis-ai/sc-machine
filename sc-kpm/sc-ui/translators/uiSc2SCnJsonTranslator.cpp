@@ -80,7 +80,6 @@ void uiSc2SCnJsonTranslator::runImpl()
     results.push_back(result);
   }
   mOutputData = results.dump();
-  std::cout << mOutputData << std::endl;
 }
 
 void uiSc2SCnJsonTranslator::collectScElementsInfo()
