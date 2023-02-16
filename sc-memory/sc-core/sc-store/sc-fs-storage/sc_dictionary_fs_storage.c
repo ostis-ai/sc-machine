@@ -204,7 +204,8 @@ sc_bool sc_dictionary_fs_storage_get_sc_links_by_content(const sc_char * sc_stri
 
 void _sc_dictionary_fs_storage_update_links_list(sc_dictionary_node * node, void ** args)
 {
-  if (node->data_list != null_ptr)
+  sc_list * full_list = args[0];
+  if (node->data_list != null_ptr && full_list->size < 100)
   {
     sc_link_content * content = (sc_link_content *)node->data_list->begin->data;
 
@@ -219,8 +220,6 @@ void _sc_dictionary_fs_storage_update_links_list(sc_dictionary_node * node, void
         strlen(substring) > max_str_length_to_search_as_prefix && strstr(content->sc_string, substring) != null_ptr;
     if (is_prefix || is_substr)
     {
-      sc_list * full_list = args[0];
-
       sc_iterator * it = sc_list_iterator(content->node->data_list);
       while (sc_iterator_next(it))
         sc_list_push_back(full_list, sc_iterator_get(it));
@@ -261,7 +260,8 @@ sc_bool sc_dictionary_fs_storage_get_sc_links_by_content_substr(
 
 void _sc_dictionary_fs_storage_update_strings_list(sc_dictionary_node * node, void ** args)
 {
-  if (node->data_list != null_ptr)
+  sc_list * full_list = args[0];
+  if (node->data_list != null_ptr && full_list->size < 100)
   {
     sc_link_content * content = (sc_link_content *)node->data_list->begin->data;
 
@@ -276,7 +276,6 @@ void _sc_dictionary_fs_storage_update_strings_list(sc_dictionary_node * node, vo
         strlen(substring) > max_str_length_to_search_as_prefix && strstr(content->sc_string, substring) != null_ptr;
     if (is_prefix || is_substr)
     {
-      sc_list * full_list = args[0];
       sc_list_push_back(full_list, content->sc_string);
     }
   }
