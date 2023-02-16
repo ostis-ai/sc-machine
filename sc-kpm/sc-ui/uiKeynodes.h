@@ -29,6 +29,7 @@ extern sc_addr keynode_nrel_system_identifier;
 extern sc_addr keynode_nrel_main_idtf;
 extern sc_addr keynode_nrel_idtf;
 extern sc_addr keynode_rrel_key_sc_element;
+extern sc_addr keynode_nrel_sc_text_translation;
 
 extern sc_addr keynode_command_generate_instance;
 extern sc_addr keynode_command_initiated;

@@ -48,7 +48,7 @@ protected:
   sc_addr mOutputLanguageAddr;
 
   // Maps of elements to translate
-  tScAddrToScTypeMap mObjects;
+  tScAddrToScTypeMap mEdges;
 
   //! Output scs
   String mOutputData;
