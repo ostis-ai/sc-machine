@@ -173,6 +173,7 @@ void uiSc2SCnJsonTranslator::collectScElementsInfo()
       if (keynodes.empty())
         continue;
 
+      sScElementInfo::tScElementInfoList removableArcs;
       for (auto const & elInfoOutputArc : elInfo->outputArcs)
       {
         // find structure elements by arc_pos_const_perm without modifiers
@@ -185,9 +186,14 @@ void uiSc2SCnJsonTranslator::collectScElementsInfo()
           // remove arc from source and target
           elInfo->structureElements.insert(elInfoOutputArc->target);
           elInfoOutputArc->target->inputArcs.erase(structureElementIt);
-          elInfo->outputArcs.erase(elInfoOutputArc);
+          removableArcs.insert(elInfoOutputArc);
         }
       }
+      for (auto const & arc : removableArcs)
+      {
+        elInfo->outputArcs.erase(arc);
+      }
+
       // get keyword from key elements
       elInfo->structKeyword = findStructKeyword(keynodes);
     }
@@ -312,7 +318,9 @@ void uiSc2SCnJsonTranslator::getChildrensByDirection(
       sc_json const & modifierAddr = modifiers[0][scnTranslatorConstants::ADDR.data()];
       auto result = std::find_if(childrens.begin(), childrens.end(), [modifierAddr](sc_json const & c) {
         auto const & modifiers = c[scnTranslatorConstants::MODIFIERS.data()];
-        return (!modifiers.is_null() && modifierAddr == modifiers[0][scnTranslatorConstants::ADDR.data()]);
+        return (
+            !modifiers.is_null() && modifiers[0].contains(scnTranslatorConstants::ADDR.data()) &&
+            modifierAddr == modifiers[0][scnTranslatorConstants::ADDR.data()]);
       });
       // if such element is found then merge childrens
       if (result == childrens.end())
@@ -324,8 +332,12 @@ void uiSc2SCnJsonTranslator::getChildrensByDirection(
         (*result)[scnTranslatorConstants::ARCS.data()].push_back(children[scnTranslatorConstants::ARCS.data()][0]);
         (*result)[scnTranslatorConstants::LINKED_NODES.data()].push_back(
             children[scnTranslatorConstants::LINKED_NODES.data()][0]);
-        (*result)[scnTranslatorConstants::MODIFIERS.data()][0][scnTranslatorConstants::MODIFIER_ARCS.data()].push_back(
-            modifiers[0][scnTranslatorConstants::MODIFIER_ARCS.data()][0]);
+
+        if (!modifiers[0][scnTranslatorConstants::MODIFIER_ARCS.data()].empty())
+        {
+          (*result)[scnTranslatorConstants::MODIFIERS.data()][0][scnTranslatorConstants::MODIFIER_ARCS.data()]
+              .push_back(modifiers[0][scnTranslatorConstants::MODIFIER_ARCS.data()][0]);
+        }
       }
     }
   }
@@ -428,12 +440,19 @@ void uiSc2SCnJsonTranslator::getChildrenByModifierAddr(
     }
     if (fullChildren[scnTranslatorConstants::MODIFIERS.data()].is_null())
     {
-      fullChildren[scnTranslatorConstants::MODIFIERS.data()] = children[scnTranslatorConstants::MODIFIERS.data()];
+      fullChildren[scnTranslatorConstants::MODIFIERS.data()] =
+          !children[scnTranslatorConstants::MODIFIERS.data()][0].is_null()
+              ? children[scnTranslatorConstants::MODIFIERS.data()]
+              : sc_json();
     }
     else
     {
-      fullChildren[scnTranslatorConstants::MODIFIERS.data()][0][scnTranslatorConstants::MODIFIER_ARCS.data()].push_back(
-          children[scnTranslatorConstants::MODIFIERS.data()][0][scnTranslatorConstants::MODIFIER_ARCS.data()][0]);
+      if (!children[scnTranslatorConstants::MODIFIERS.data()][0][scnTranslatorConstants::MODIFIER_ARCS.data()].empty())
+      {
+        fullChildren[scnTranslatorConstants::MODIFIERS.data()][0][scnTranslatorConstants::MODIFIER_ARCS.data()]
+            .push_back(
+                children[scnTranslatorConstants::MODIFIERS.data()][0][scnTranslatorConstants::MODIFIER_ARCS.data()][0]);
+      }
     }
   }
   if (!fullChildren.is_null())
@@ -486,8 +505,12 @@ void uiSc2SCnJsonTranslator::getChildrenByModifierAddr(
     }
     else
     {
-      fullChildren[scnTranslatorConstants::MODIFIERS.data()][0][scnTranslatorConstants::MODIFIER_ARCS.data()].push_back(
-          children[scnTranslatorConstants::MODIFIERS.data()][0][scnTranslatorConstants::MODIFIER_ARCS.data()][0]);
+      if (!children[scnTranslatorConstants::MODIFIERS.data()][0][scnTranslatorConstants::MODIFIER_ARCS.data()].empty())
+      {
+        fullChildren[scnTranslatorConstants::MODIFIERS.data()][0][scnTranslatorConstants::MODIFIER_ARCS.data()]
+            .push_back(
+                children[scnTranslatorConstants::MODIFIERS.data()][0][scnTranslatorConstants::MODIFIER_ARCS.data()][0]);
+      }
     }
   }
   if (!fullChildren.is_null())
