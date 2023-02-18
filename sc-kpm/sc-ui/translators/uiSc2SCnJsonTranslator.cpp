@@ -36,9 +36,7 @@ constexpr std::string_view FORMAT_TXT = "format_txt";
 constexpr std::string_view formats[] = {"format_html", "format_github_source_link", "format_pdf", "format_png"};
 };  // namespace scnTranslatorConstants
 
-uiSc2SCnJsonTranslator::uiSc2SCnJsonTranslator()
-{
-}
+uiSc2SCnJsonTranslator::uiSc2SCnJsonTranslator() = default;
 
 uiSc2SCnJsonTranslator::~uiSc2SCnJsonTranslator()
 {
@@ -535,7 +533,8 @@ void uiSc2SCnJsonTranslator::getChild(
   }
 
   child[scnTranslatorConstants::ARCS.data()].push_back(arc);
-  child[scnTranslatorConstants::MODIFIERS.data()].push_back(modifier);
+  if (!modifier.is_null())
+    child[scnTranslatorConstants::MODIFIERS.data()].push_back(modifier);
   sc_json linkedNodeEl;
   getBaseInfo(linkedNode, linkedNodeEl);
   child[scnTranslatorConstants::LINKED_NODES.data()].push_back(linkedNodeEl);

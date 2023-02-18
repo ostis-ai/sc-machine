@@ -97,8 +97,6 @@ private:
   //! Collection of objects information
   typedef std::map<sc_addr, sScElementInfo *> tScElemetsInfoMap;
   tScElemetsInfoMap mScElementsInfo;
-  //! Pull of sc-elements information (used to prevent many memory allocations)
-  sScElementInfo * mScElementsInfoPool;
   //! Store structure elements if keyword is struct to remove them from keyword childrens
   sScElementInfo::tScElementInfoList structureElements;
   //! Max level of full discripted node
