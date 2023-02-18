@@ -48,30 +48,32 @@ protected:
   //! Generate json for specified element
   void json(sScElementInfo * elInfo, int level, bool isStruct, sc_json & result);
 
-  //! Get childrens for specified element
-  void getChildrens(sScElementInfo * elInfo, bool isStruct, sc_json & childrens);
+  //! Get children for specified element
+  void getChildren(sScElementInfo * elInfo, bool isStruct, sc_json & children);
 
-  //! Get childrens by direction for specified arcs list
-  void getChildrensByDirection(
+  //! Get children by direction for specified arcs list
+  void getChildrenByDirection(
       sScElementInfo::tScElementInfoList const & arcs,
       String const & direction,
       bool isStruct,
-      sc_json & childrens);
+      sc_json & children);
 
   //! Get base json information about specified element
   void getBaseInfo(sScElementInfo * elInfo, sc_json & result);
 
-  //! get full json of linked nodes for specified childrens
-  void getJsonOfLinkedNodes(sc_json & childrens, int level = 1, bool isStruct = false);
+  //! get full json of linked nodes for specified children
+  void getJsonOfLinkedNodes(sc_json & children, int level = 1, bool isStruct = false);
 
   //! Find struct keyword in specified elements list
   static sScElementInfo * findStructKeyword(sScElementInfo::tScElementInfoList const & structureElements);
 
-  //! Get childrens for specified modifier
-  void getChildrenByModifierAddr(sScElementInfo * elInfo, sc_addr modifierAddr, bool isStruct, sc_json & childrens);
+  //! Get children for specified modifier
+  void getChildrenByModifierAddr(sScElementInfo * elInfo, sc_addr modifierAddr, bool isStruct, sc_json & children);
+
+  void updateChildArcs(sScElementInfo::tScElementInfoList const & arcs, bool isStruct, sc_json & fullChild);
 
   //! Get json of arc
-  void getChildren(sScElementInfo * arcInfo, String const & direction, bool isStruct, sc_json & children);
+  void getChild(sScElementInfo * arcInfo, String const & direction, bool isStruct, sc_json & child);
 
   //! Resolve additional filter elements for specified cmd_addr
   void resolveFilterList(sc_addr);
