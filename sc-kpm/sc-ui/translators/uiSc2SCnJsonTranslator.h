@@ -64,6 +64,8 @@ protected:
   //! get full json of linked nodes for specified children
   void getJsonOfLinkedNodes(sc_json & children, int level = 1, bool isStruct = false);
 
+  sScElementInfo * resolveElementInfo(sc_addr const & addr, sc_type type = 0);
+
   //! Find struct keyword in specified elements list
   static sScElementInfo * findStructKeyword(sScElementInfo::tScElementInfoList const & structureElements);
 

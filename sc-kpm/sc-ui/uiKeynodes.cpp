@@ -31,6 +31,7 @@ const char keynode_nrel_system_identifier_str[] = "nrel_system_identifier";
 const char keynode_nrel_main_idtf_str[] = "nrel_main_idtf";
 const char keynode_nrel_idtf_str[] = "nrel_idtf";
 const char keynode_rrel_key_sc_element_str[] = "rrel_key_sc_element";
+const char keynode_nrel_sc_text_translation_str[] = "nrel_sc_text_translation";
 
 const char keynode_command_generate_instance_str[] = "ui_command_generate_instance";
 const char keynode_command_initiated_str[] = "ui_command_initiated";
@@ -69,6 +70,7 @@ sc_addr keynode_nrel_system_identifier;
 sc_addr keynode_nrel_main_idtf;
 sc_addr keynode_nrel_idtf;
 sc_addr keynode_rrel_key_sc_element;
+sc_addr keynode_nrel_sc_text_translation;
 
 sc_addr keynode_command_generate_instance;
 sc_addr keynode_command_initiated;
@@ -112,6 +114,7 @@ sc_bool initialize_keynodes(sc_addr const init_memory_generated_structure)
   RESOLVE_KEYNODE(s_default_ctx, keynode_nrel_main_idtf, init_memory_generated_structure);
   RESOLVE_KEYNODE(s_default_ctx, keynode_nrel_idtf, init_memory_generated_structure);
   RESOLVE_KEYNODE(s_default_ctx, keynode_rrel_key_sc_element, init_memory_generated_structure);
+  RESOLVE_KEYNODE(s_default_ctx, keynode_nrel_sc_text_translation, init_memory_generated_structure);
 
   RESOLVE_KEYNODE(s_default_ctx, keynode_command_generate_instance, init_memory_generated_structure);
   RESOLVE_KEYNODE(s_default_ctx, keynode_command_initiated, init_memory_generated_structure);

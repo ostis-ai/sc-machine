@@ -62,8 +62,8 @@ void uiSc2ScsTranslator::runImpl()
   sc_json triples = sc_json::array();
   tScAddrSet constrAddrs;
   // iterate all arcs and translate them
-  auto const itEnd = mObjects.cend();
-  for (auto it = mObjects.cbegin(); it != itEnd; ++it)
+  auto const itEnd = mEdges.cend();
+  for (auto it = mEdges.cbegin(); it != itEnd; ++it)
   {
     const sc_addr & arc_addr = it->first;
     sc_type arc_type = it->second;
@@ -87,13 +87,13 @@ void uiSc2ScsTranslator::runImpl()
       continue;  //! TODO logging
 
     sc_type beg_type, end_type;
-    auto itTmp = mObjects.find(arc_beg);
-    if (itTmp != mObjects.end())
+    auto itTmp = mEdges.find(arc_beg);
+    if (itTmp != mEdges.end())
       beg_type = itTmp->second;
     else
       sc_memory_get_element_type(s_default_ctx, arc_beg, &beg_type);
-    itTmp = mObjects.find(arc_end);
-    if (itTmp != mObjects.end())
+    itTmp = mEdges.find(arc_end);
+    if (itTmp != mEdges.end())
       end_type = itTmp->second;
     else
       sc_memory_get_element_type(s_default_ctx, arc_end, &end_type);

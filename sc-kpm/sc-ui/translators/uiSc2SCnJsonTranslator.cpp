@@ -78,36 +78,25 @@ void uiSc2SCnJsonTranslator::runImpl()
     results.push_back(result);
   }
   mOutputData = results.dump();
-  std::cout << mOutputData << std::endl;
 }
 
 void uiSc2SCnJsonTranslator::collectScElementsInfo()
 {
-  sc_uint32 elementsCount = mObjects.size();
-
   // first collect information about elements
-  for (auto const & it : mObjects)
+  for (auto const & it : mEdges)
   {
     if (mScElementsInfo.find(it.first) != mScElementsInfo.cend())
       continue;
 
-    auto * elInfo = new sScElementInfo();
-    elInfo->addr = it.first;
-    elInfo->type = it.second;
+    sScElementInfo * elInfo = resolveElementInfo(it.first, it.second);
     mScElementsInfo.insert({elInfo->addr, elInfo});
   }
 
   // now we need to iterate all arcs and collect output/input arcs info
   sc_type elType;
   sc_addr begAddr, endAddr, arcAddr;
-  for (auto const & it : mObjects)
+  for (auto const & it : mEdges)
   {
-    elType = it.second;
-
-    // skip nodes and links
-    if (!(elType & sc_type_arc_mask))
-      continue;
-
     arcAddr = it.first;
 
     sScElementInfo * elInfo = mScElementsInfo[arcAddr];
@@ -116,19 +105,11 @@ void uiSc2SCnJsonTranslator::collectScElementsInfo()
     // get begin/end addrs
     if (sc_memory_get_arc_begin(s_default_ctx, arcAddr, &begAddr) != SC_RESULT_OK)
       continue;  // @todo process errors
-    if (!isNeedToTranslate(begAddr))
-      continue;
     if (sc_memory_get_arc_end(s_default_ctx, arcAddr, &endAddr) != SC_RESULT_OK)
       continue;  // @todo process errors
-    if (!isNeedToTranslate(endAddr))
-      continue;
 
-    sScElementInfo * begInfo = mScElementsInfo[begAddr];
-    sScElementInfo * endInfo = mScElementsInfo[endAddr];
-
-    // check if arc is not broken
-    if (begInfo == nullptr || endInfo == nullptr)
-      continue;
+    sScElementInfo * begInfo = resolveElementInfo(begAddr);
+    sScElementInfo * endInfo = resolveElementInfo(endAddr);
 
     // filter
     if (std::any_of(mFiltersList.begin(), mFiltersList.end(), [begAddr](sc_addr const & modifier) {
@@ -155,8 +136,8 @@ void uiSc2SCnJsonTranslator::collectScElementsInfo()
   sScElementInfo * elInfo;
   for (auto const & keyword : mKeywordsList)
   {
-    elInfo = mScElementsInfo[keyword];
-    if (elInfo && elInfo->type & sc_type_node_struct)
+    elInfo = resolveElementInfo(keyword);
+    if (elInfo->type & sc_type_node_struct)
     {
       // get the key elements of the structure
       sScElementInfo::tScElementInfoList keynodes;
@@ -197,6 +178,23 @@ void uiSc2SCnJsonTranslator::collectScElementsInfo()
       elInfo->structKeyword = findStructKeyword(keynodes);
     }
   }
+}
+
+sScElementInfo * uiSc2SCnJsonTranslator::resolveElementInfo(sc_addr const & addr, sc_type type)
+{
+  sScElementInfo * elInfo = mScElementsInfo[addr];
+  if (elInfo)
+    return elInfo;
+
+  if (type == 0)
+    sc_memory_get_element_type(s_default_ctx, addr, &type);
+
+  elInfo = new sScElementInfo();
+  elInfo->addr = addr;
+  elInfo->type = type;
+  mScElementsInfo[addr] = elInfo;
+
+  return elInfo;
 }
 
 sScElementInfo * uiSc2SCnJsonTranslator::findStructKeyword(sScElementInfo::tScElementInfoList const & structureElements)
@@ -278,7 +276,7 @@ void uiSc2SCnJsonTranslator::json(sScElementInfo * elInfo, int level, bool isStr
     {
       getChildrenByModifierAddr(elInfo, modifier, isStruct, resultChildren);
     }
-    // than get the remaining children
+    // then get the remaining children
     getChildren(elInfo, isStruct, resultChildren);
     if (isFullLinkedNodes)
       getJsonOfLinkedNodes(resultChildren, level + 1, isStruct);
@@ -344,9 +342,6 @@ void uiSc2SCnJsonTranslator::getChildrenByDirection(
 
 void uiSc2SCnJsonTranslator::getJsonOfLinkedNodes(sc_json & children, int level, bool isStruct)
 {
-  sc_addr keynode_nrel_sc_text_translation;
-  sc_helper_resolve_system_identifier(s_default_ctx, "nrel_sc_text_translation", &keynode_nrel_sc_text_translation);
-
   for (auto & child : children)
   {
     // reduce level for rrel_key_sc_element and nrel_sc_text_translation arc nodes
@@ -514,6 +509,11 @@ void uiSc2SCnJsonTranslator::getChild(
   {
     linkedNode = arcInfo->source;
   }
+
+  // TODO: remove it after fix kb
+  if (linkedNode->isInTree)
+    return;
+  linkedNode->isInTree = true;
 
   sc_json arc;
   getBaseInfo(arcInfo, arc);

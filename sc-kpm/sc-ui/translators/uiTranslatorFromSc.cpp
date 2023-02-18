@@ -4,9 +4,10 @@
  * (See accompanying file COPYING.MIT or copy at http://opensource.org/licenses/MIT)
  */
 
-#include "uiPrecompiled.h"
 #include "uiTranslatorFromSc.h"
 #include "uiKeynodes.h"
+
+constexpr size_t MAX_TRIPLES_COUNT = 1000;
 
 uiTranslateFromSc::uiTranslateFromSc()
 {
@@ -47,7 +48,8 @@ void uiTranslateFromSc::translate(const sc_addr & input_addr, const sc_addr & fo
 void uiTranslateFromSc::collectObjects()
 {
   sc_iterator3 * it = sc_iterator3_f_a_a_new(s_default_ctx, mInputConstructionAddr, sc_type_arc_pos_const_perm, 0);
-  while (sc_iterator3_next(it) == SC_TRUE)
+  sc_uint32 i = 0;
+  while (sc_iterator3_next(it) == SC_TRUE && i++ != MAX_TRIPLES_COUNT)
   {
     sc_type el_type = 0;
     sc_addr addr = sc_iterator3_value(it, 2);
@@ -56,19 +58,22 @@ void uiTranslateFromSc::collectObjects()
     if (sc_memory_get_element_type(s_default_ctx, addr, &el_type) != SC_RESULT_OK)
       continue;
 
-    mObjects[addr] = el_type;
+    if (!(el_type & sc_type_arc_mask))
+      continue;
+
+    mEdges[addr] = el_type;
   }
   sc_iterator3_free(it);
 }
 
 bool uiTranslateFromSc::isNeedToTranslate(const sc_addr & addr) const
 {
-  return mObjects.find(addr) != mObjects.end();
+  return mEdges.find(addr) != mEdges.end();
 }
 
 String uiTranslateFromSc::buildId(const sc_addr & addr)
 {
-  uint32_t v = SC_ADDR_LOCAL_TO_INT(addr);
+  auto v = SC_ADDR_LOCAL_TO_INT(addr);
   StringStream ss;
   ss << v;
   return ss.str();
