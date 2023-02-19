@@ -112,7 +112,7 @@ void uiSc2SCnJsonTranslator::collectScElementsInfo()
           return modifier == begAddr;
         }))
     {
-      if (endInfo->type & sc_type_arc_mask)
+      if (endInfo->type & sc_type_arc_mask && endInfo->source && endInfo->target)
       {
         endInfo->source->outputArcs.erase(endInfo);
         endInfo->target->inputArcs.erase(endInfo);
