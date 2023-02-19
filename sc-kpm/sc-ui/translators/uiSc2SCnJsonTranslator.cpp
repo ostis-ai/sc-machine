@@ -355,7 +355,7 @@ void uiSc2SCnJsonTranslator::getJsonOfLinkedNodes(sc_json & children, int level,
       }
     }
 
-    auto const & linked_nodes = child[scnTranslatorConstants::LINKED_NODES.data()];
+    auto & linked_nodes = child[scnTranslatorConstants::LINKED_NODES.data()];
     for (size_t i = 0; i < linked_nodes.size(); ++i)
     {
       sc_json linkedNode = linked_nodes[i];
