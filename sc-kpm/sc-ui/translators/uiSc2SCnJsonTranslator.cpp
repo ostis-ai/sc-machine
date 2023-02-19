@@ -33,7 +33,10 @@ constexpr std::string_view IDTF = "idtf";
 constexpr std::string_view TYPE = "type";
 constexpr std::string_view DIRECTION = "direction";
 constexpr std::string_view FORMAT_TXT = "format_txt";
+constexpr std::string_view FORMAT_LARGE_TXT = "format_large_txt";
 constexpr std::string_view formats[] = {"format_html", "format_github_source_link", "format_pdf", "format_png"};
+
+constexpr size_t FORMAT_LARGE_TXT_SIZE = 100;
 };  // namespace scnTranslatorConstants
 
 uiSc2SCnJsonTranslator::uiSc2SCnJsonTranslator() = default;
@@ -252,13 +255,22 @@ void uiSc2SCnJsonTranslator::json(sScElementInfo * elInfo, int level, bool isStr
       sc_memory_get_link_content(s_default_ctx, elInfo->addr, &stream);
       if (stream != nullptr && ScStreamConverter::StreamToString(std::make_shared<ScStream>(stream), content))
       {
-        result[scnTranslatorConstants::CONTENT.data()] = content;
+        if (content.size() < scnTranslatorConstants::FORMAT_LARGE_TXT_SIZE)
+        {
+          result[scnTranslatorConstants::CONTENT.data()] = content;
+          contentType = scnTranslatorConstants::FORMAT_TXT.data();
+        }
+        else
+        {
+          result[scnTranslatorConstants::CONTENT.data()] = sc_json();
+          contentType = scnTranslatorConstants::FORMAT_LARGE_TXT.data();
+        }
       }
       else
       {
         result[scnTranslatorConstants::CONTENT.data()] = sc_json();
+        contentType = scnTranslatorConstants::FORMAT_TXT.data();
       }
-      contentType = scnTranslatorConstants::FORMAT_TXT.data();
     }
   }
   // if the nesting level is not greater than the maximum or the element is not a tuple, get children
@@ -505,11 +517,6 @@ void uiSc2SCnJsonTranslator::getChild(
     linkedNode = arcInfo->source;
   }
 
-  // TODO: remove it after fix kb
-  // if (linkedNode->isInTree)
-  //   return;
-  // linkedNode->isInTree = true;
-
   sc_json arc;
   getBaseInfo(arcInfo, arc);
   arc[scnTranslatorConstants::DIRECTION.data()] = direction;
@@ -579,7 +586,7 @@ void uiSc2SCnJsonTranslator::initFilterList()
 
 void uiSc2SCnJsonTranslator::initOrderList()
 {
-  sc_addr keynode_rrel_1, elementArc = {};
+  sc_addr keynode_rrel_1, elementArc;
   sc_iterator3 * elementIt;
   sc_helper_resolve_system_identifier(s_default_ctx, "rrel_1", &keynode_rrel_1);
   sc_iterator5 * it = sc_iterator5_f_a_a_a_f_new(
