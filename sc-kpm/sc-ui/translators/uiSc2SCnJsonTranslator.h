@@ -72,7 +72,7 @@ protected:
   //! Get children for specified modifier
   void getChildrenByModifierAddr(sScElementInfo * elInfo, sc_addr modifierAddr, bool isStruct, sc_json & children);
 
-  void updateChildArcs(sScElementInfo::tScElementInfoList const & arcs, bool isStruct, sc_json & fullChild);
+  void updateChildArcs(sScElementInfo::tScElementInfoList const & arcs, bool isStruct, sc_json & fullChild, String const & direction);
 
   //! Get json of arc
   void getChild(sScElementInfo * arcInfo, String const & direction, bool isStruct, sc_json & child);

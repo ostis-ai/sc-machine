@@ -93,7 +93,6 @@ void uiSc2SCnJsonTranslator::collectScElementsInfo()
   }
 
   // now we need to iterate all arcs and collect output/input arcs info
-  sc_type elType;
   sc_addr begAddr, endAddr, arcAddr;
   for (auto const & it : mEdges)
   {
@@ -397,12 +396,13 @@ void uiSc2SCnJsonTranslator::getBaseInfo(sScElementInfo * elInfo, sc_json & resu
 void uiSc2SCnJsonTranslator::updateChildArcs(
     sScElementInfo::tScElementInfoList const & arcs,
     bool isStruct,
-    sc_json & fullChild)
+    sc_json & fullChild,
+    String const & direction)
 {
   for (sScElementInfo * arcInfo : arcs)
   {
     sc_json child;
-    getChild(arcInfo, scnTranslatorConstants::RIGHT.data(), isStruct, child);
+    getChild(arcInfo, direction, isStruct, child);
     if (child.is_null())
       continue;
 
@@ -461,7 +461,7 @@ void uiSc2SCnJsonTranslator::getChildrenByModifierAddr(
   });
 
   sc_json fullChild;
-  updateChildArcs(filtered, isStruct, fullChild);
+  updateChildArcs(filtered, isStruct, fullChild, scnTranslatorConstants::RIGHT.data());
 
   if (!fullChild.is_null())
     children.push_back(fullChild);
@@ -480,7 +480,7 @@ void uiSc2SCnJsonTranslator::getChildrenByModifierAddr(
         }
       });
   fullChild = sc_json();
-  updateChildArcs(filtered, isStruct, fullChild);
+  updateChildArcs(filtered, isStruct, fullChild, scnTranslatorConstants::LEFT.data());
 
   if (!fullChild.is_null())
     children.push_back(fullChild);
@@ -511,9 +511,9 @@ void uiSc2SCnJsonTranslator::getChild(
   }
 
   // TODO: remove it after fix kb
-  if (linkedNode->isInTree)
-    return;
-  linkedNode->isInTree = true;
+  // if (linkedNode->isInTree)
+  //   return;
+  // linkedNode->isInTree = true;
 
   sc_json arc;
   getBaseInfo(arcInfo, arc);
