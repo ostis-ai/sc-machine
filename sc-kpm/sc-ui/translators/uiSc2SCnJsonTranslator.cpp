@@ -82,30 +82,24 @@ void uiSc2SCnJsonTranslator::runImpl()
 
 void uiSc2SCnJsonTranslator::collectScElementsInfo()
 {
+  // now we need to iterate all arcs and collect output/input arcs info
   // first collect information about elements
   for (auto const & it : mEdges)
   {
     if (mScElementsInfo.find(it.first) != mScElementsInfo.cend())
       continue;
 
-    sScElementInfo * elInfo = resolveElementInfo(it.first, it.second);
-    mScElementsInfo.insert({elInfo->addr, elInfo});
-  }
-
-  // now we need to iterate all arcs and collect output/input arcs info
-  sc_addr begAddr, endAddr, arcAddr;
-  for (auto const & it : mEdges)
-  {
-    arcAddr = it.first;
-
-    sScElementInfo * elInfo = mScElementsInfo[arcAddr];
-    elInfo->isInTree = false;
+    sc_addr const arcAddr = it.first;
 
     // get begin/end addrs
+    sc_addr begAddr;
     if (sc_memory_get_arc_begin(s_default_ctx, arcAddr, &begAddr) != SC_RESULT_OK)
       continue;  // @todo process errors
+    sc_addr endAddr;
     if (sc_memory_get_arc_end(s_default_ctx, arcAddr, &endAddr) != SC_RESULT_OK)
       continue;  // @todo process errors
+
+    sScElementInfo * elInfo = resolveElementInfo(it.first, it.second);
 
     sScElementInfo * begInfo = resolveElementInfo(begAddr);
     sScElementInfo * endInfo = resolveElementInfo(endAddr);
@@ -191,6 +185,7 @@ sScElementInfo * uiSc2SCnJsonTranslator::resolveElementInfo(sc_addr const & addr
   elInfo = new sScElementInfo();
   elInfo->addr = addr;
   elInfo->type = type;
+  elInfo->isInTree = false;
   mScElementsInfo[addr] = elInfo;
 
   return elInfo;
