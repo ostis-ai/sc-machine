@@ -75,6 +75,8 @@ struct ScAddLessFunc
   }
 };
 
+using ScAddrLessFunc = ScAddLessFunc;
+
 // hash functions
 template <typename HashType>
 struct ScAddrHashFunc
