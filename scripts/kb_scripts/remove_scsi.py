@@ -2,7 +2,7 @@ import sys
 import os
 import re
 
-
+# Migration script that transforms scsi to scs
 def process_scsi(scsi_file_path , structure_name) -> None:
     # Try to optimize 
     # Append structure name at the beginning of file and close structure at the end
@@ -10,7 +10,7 @@ def process_scsi(scsi_file_path , structure_name) -> None:
             content = scsi_file.read()
         with open(scsi_file_path, "w", encoding='utf-8') as scsi_file:
             scsi_file.seek(0, 0)
-            scsi_file.write(structure_name + " [*" + content + "*];;")
+            scsi_file.write(structure_name + " [*\n" + content + "\n*];;\n")
 
 	# Rename scsi file to content.scs
         pre, _ = os.path.splitext(scsi_file.name)
@@ -65,4 +65,4 @@ if __name__ == '__main__':
     if len(sys.argv) == 3:
         main(sys.argv[1])
     else:
-        print("invalid number of arguments, Please specify only the work directory")
+        print("Invalid number of arguments, please specify the work directory and log file")

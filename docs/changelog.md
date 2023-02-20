@@ -28,6 +28,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- Make scsi pre-processor migrations scrip
 - Move to C++17
 - Remove 1 minute assert in ScWait
 - Add language parameter for sc2scs-json-translator to get elements identifiers
