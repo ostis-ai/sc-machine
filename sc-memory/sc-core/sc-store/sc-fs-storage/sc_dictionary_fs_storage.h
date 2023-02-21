@@ -28,10 +28,10 @@ typedef struct _sc_dictionary_fs_storage
   sc_char * link_hashes_string_offsets_path;
 
   sc_char * terms_path;
-  sc_uint64 terms_size;
+  sc_uint64 last_term_offset;
 
   sc_char * strings_path;
-  sc_uint64 strings_size;
+  sc_uint64 last_string_offset;
 } sc_dictionary_fs_storage;
 
 typedef enum _sc_dictionary_fs_storage_status

@@ -10,45 +10,27 @@
 #  include "sc_dictionary_fs_storage_private.h"
 
 #  include "sc_file_system.h"
-
-#  include "../sc-base/sc_message.h"
-
-#  include <glib/gstdio.h>
-
 #  include "sc_io.h"
+
 #  include "../sc-container/sc-pair/sc_pair.h"
-
-#  define SC_FS_EXT ".scdb";
-
-sc_uint8 _sc_dictionary_children_size()
-{
-  sc_uint8 const max_sc_char = 255;
-  sc_uint8 const min_sc_char = 1;
-
-  return max_sc_char - min_sc_char + 1;
-}
-
-void _sc_char_to_sc_int(sc_char ch, sc_uint8 * ch_num, sc_uint8 const * mask)
-{
-  *ch_num = 128 + (sc_uint8)ch;
-}
-
-void _sc_init_db_path(sc_char const * path, sc_char const * postfix, sc_char ** out_path)
-{
-  sc_uint32 size = sc_str_len(path) + sc_str_len(postfix) + 2;
-  *out_path = sc_mem_new(sc_char, size + 1);
-  sc_str_printf(*out_path, size, "%s/%s", path, postfix);
-}
+#  include "../sc-base/sc_message.h"
 
 sc_fs_storage_status sc_dictionary_fs_storage_initialize(sc_dictionary_fs_storage ** storage, sc_char const * path)
 {
+  sc_message("Dictionary fs-storage: initialize");
   if (path == null_ptr)
+  {
+    sc_critical("Dictionary fs-storage: `path` is not correct");
     return SC_FS_STORAGE_WRONG_PATH;
+  }
 
   if (sc_fs_isdir(path) == SC_FALSE)
   {
     if (sc_fs_mkdirs(path) == SC_FALSE)
+    {
+      sc_critical("Dictionary fs-storage: `path` is not correct");
       return SC_FS_STORAGE_WRONG_PATH;
+    }
   }
 
   *storage = sc_mem_new(sc_dictionary_fs_storage, 1);
@@ -74,37 +56,16 @@ sc_fs_storage_status sc_dictionary_fs_storage_initialize(sc_dictionary_fs_storag
 
     static sc_char const * terms_postfix = "terms" SC_FS_EXT;
     _sc_init_db_path(path, terms_postfix, &(*storage)->terms_path);
-    (*storage)->terms_size = 0;
+    (*storage)->last_term_offset = 0;
 
     static sc_char const * strings_postfix = "strings" SC_FS_EXT;
     _sc_init_db_path(path, strings_postfix, &(*storage)->strings_path);
-    (*storage)->strings_size = 0;
+    (*storage)->last_string_offset = 0;
   }
+  sc_message("Dictionary fs-storage:");
+  sc_message("\tPath: %s", path);
 
   return SC_FS_STORAGE_OK;
-}
-
-sc_bool _sc_dictionary_fs_storage_node_destroy(sc_dictionary_node * node, void ** args)
-{
-  (void)args;
-
-  if (node->data != null_ptr)
-  {
-    sc_mem_free(((sc_list *)node->data)->begin->data);
-    sc_list_destroy(node->data);
-  }
-  node->data = null_ptr;
-
-  sc_mem_free(node->next);
-  node->next = null_ptr;
-
-  sc_mem_free(node->offset);
-  node->offset = null_ptr;
-  node->offset_size = 0;
-
-  sc_mem_free(node);
-
-  return SC_TRUE;
 }
 
 sc_fs_storage_status sc_dictionary_fs_storage_shutdown(sc_dictionary_fs_storage * storage)
@@ -112,6 +73,7 @@ sc_fs_storage_status sc_dictionary_fs_storage_shutdown(sc_dictionary_fs_storage 
   if (storage == null_ptr)
     return SC_FS_STORAGE_NO;
 
+  sc_message("Dictionary fs-storage: shutdown");
   {
     sc_mem_free(storage->path);
 
@@ -167,7 +129,7 @@ sc_fs_storage_status _sc_dictionary_fs_storage_write_strings(
     sc_pair const * pair = sc_iterator_get(it);
 
     sc_char * string_offset_str;
-    sc_uint64 const string_offset = storage->strings_size;
+    sc_uint64 const string_offset = storage->last_string_offset;
     {
       sc_int_to_str_int(string_offset, string_offset_str);
     }
@@ -203,62 +165,29 @@ sc_fs_storage_status _sc_dictionary_fs_storage_write_strings(
               SC_FS_IO_STATUS_NORMAL ||
           sizeof(size) != written_bytes)
       {
+        sc_critical("Dictionary fs-storage: error while `size` writing");
         sc_io_channel_shutdown(strings_channel, SC_TRUE, null_ptr);
         return SC_FS_STORAGE_WRITE_ERROR;
       }
 
-      storage->strings_size += written_bytes;
+      storage->last_string_offset += written_bytes;
 
       if (sc_io_channel_write_chars(strings_channel, string, size, &written_bytes, null_ptr) !=
               SC_FS_IO_STATUS_NORMAL ||
           size != written_bytes)
       {
+        sc_critical("Dictionary fs-storage: error while `string` writing");
         sc_io_channel_shutdown(strings_channel, SC_TRUE, null_ptr);
         return SC_FS_STORAGE_WRITE_ERROR;
       }
 
-      storage->strings_size += written_bytes;
+      storage->last_string_offset += written_bytes;
     }
   }
   sc_iterator_destroy(it);
   sc_io_channel_shutdown(strings_channel, SC_TRUE, null_ptr);
 
   return SC_FS_STORAGE_OK;
-}
-
-sc_list * _sc_dictionary_fs_storage_get_string_terms(sc_char const * string)
-{
-  static const sc_char delim[] = " ,.-\0()[]_";
-
-  sc_uint32 const size = sc_str_len(string);
-  sc_char copied_string[size + 1];
-  sc_mem_cpy(copied_string, string, size);
-  copied_string[size] = '\0';
-
-  sc_char * term = strtok(copied_string, delim);
-  sc_list * terms;
-  sc_list_init(&terms);
-  sc_dictionary * unique_terms;
-  sc_dictionary_initialize(&unique_terms, _sc_dictionary_children_size(), _sc_char_to_sc_int);
-  while (term != null_ptr)
-  {
-    sc_uint64 const term_length = sc_str_len(term);
-    sc_char * term_copy;
-    sc_str_cpy(term_copy, term, term_length);
-
-    if (sc_dictionary_is_in(unique_terms, term_copy, term_length))
-      sc_mem_free(term_copy);
-    else
-    {
-      sc_list_push_back(terms, term_copy);
-      sc_dictionary_append(unique_terms, term_copy, term_length, null_ptr);
-    }
-
-    term = strtok(null_ptr, delim);
-  }
-  sc_dictionary_destroy(unique_terms, sc_dictionary_node_destroy);
-
-  return terms;
 }
 
 void _sc_dictionary_fs_storage_get_strings_with_term(
@@ -339,26 +268,28 @@ sc_bool _sc_dictionary_fs_storage_pass_term_string_offset(sc_dictionary_node * n
 
     // cache term offset
     {
-      _sc_dictionary_fs_storage_append(storage->terms_offsets_dictionary, term, (void *)storage->terms_size);
+      _sc_dictionary_fs_storage_append(storage->terms_offsets_dictionary, term, (void *)storage->last_term_offset);
     }
 
     if (sc_io_channel_write_chars(channel, (sc_char *)&term_size, sizeof(sc_uint64), &written_bytes, null_ptr) !=
             SC_FS_IO_STATUS_NORMAL ||
         sizeof(sc_uint64) != written_bytes)
     {
+      sc_critical("Dictionary fs-storage: error while `term_size` writing");
       sc_io_channel_shutdown(channel, SC_TRUE, null_ptr);
       return SC_FALSE;
     }
-    storage->terms_size += written_bytes;
+    storage->last_term_offset += written_bytes;
 
     if (sc_io_channel_write_chars(channel, (sc_char *)term, term_size, &written_bytes, null_ptr) !=
             SC_FS_IO_STATUS_NORMAL ||
         term_size != written_bytes)
     {
+      sc_critical("Dictionary fs-storage: error while `term` writing");
       sc_io_channel_shutdown(channel, SC_TRUE, null_ptr);
       return SC_FALSE;
     }
-    storage->terms_size += written_bytes;
+    storage->last_term_offset += written_bytes;
 
     sc_uint64 const strings_with_term_count = ((sc_list *)node->data)->size - 1;
     if (sc_io_channel_write_chars(
@@ -366,10 +297,11 @@ sc_bool _sc_dictionary_fs_storage_pass_term_string_offset(sc_dictionary_node * n
             SC_FS_IO_STATUS_NORMAL ||
         sizeof(sc_uint64) != written_bytes)
     {
+      sc_critical("Dictionary fs-storage: error while `strings_with_term_count` writing");
       sc_io_channel_shutdown(channel, SC_TRUE, null_ptr);
       return SC_FALSE;
     }
-    storage->terms_size += written_bytes;
+    storage->last_term_offset += written_bytes;
 
     while (sc_iterator_next(data_it))
     {
@@ -378,10 +310,11 @@ sc_bool _sc_dictionary_fs_storage_pass_term_string_offset(sc_dictionary_node * n
               SC_FS_IO_STATUS_NORMAL ||
           sizeof(sc_uint64) != written_bytes)
       {
+        sc_critical("Dictionary fs-storage: error while `string_offset` writing");
         sc_io_channel_shutdown(channel, SC_TRUE, null_ptr);
         return SC_FALSE;
       }
-      storage->terms_size += written_bytes;
+      storage->last_term_offset += written_bytes;
     }
 
     sc_mem_free(term);
@@ -489,6 +422,7 @@ sc_fs_storage_status _sc_dictionary_fs_storage_read_string_offsets_by_term_offse
             SC_FS_IO_STATUS_NORMAL ||
         sizeof(sc_uint64) != read_bytes)
     {
+      sc_critical("Dictionary fs-storage: error while `term_size` reading");
       sc_io_channel_shutdown(terms_channel, SC_TRUE, null_ptr);
       return SC_FS_STORAGE_READ_ERROR;
     }
@@ -498,6 +432,7 @@ sc_fs_storage_status _sc_dictionary_fs_storage_read_string_offsets_by_term_offse
             SC_FS_IO_STATUS_NORMAL ||
         term_size != read_bytes)
     {
+      sc_critical("Dictionary fs-storage: error while `term` reading");
       sc_io_channel_shutdown(terms_channel, SC_TRUE, null_ptr);
       return SC_FS_STORAGE_READ_ERROR;
     }
@@ -508,6 +443,7 @@ sc_fs_storage_status _sc_dictionary_fs_storage_read_string_offsets_by_term_offse
             SC_FS_IO_STATUS_NORMAL ||
         sizeof(sc_uint64) != read_bytes)
     {
+      sc_critical("Dictionary fs-storage: error while `strings_with_term_count` reading");
       sc_io_channel_shutdown(terms_channel, SC_TRUE, null_ptr);
       return SC_FS_STORAGE_READ_ERROR;
     }
@@ -520,6 +456,7 @@ sc_fs_storage_status _sc_dictionary_fs_storage_read_string_offsets_by_term_offse
             SC_FS_IO_STATUS_NORMAL ||
         sizeof(sc_uint64) != read_bytes)
     {
+      sc_critical("Dictionary fs-storage: error while `string_offset` reading");
       sc_io_channel_shutdown(terms_channel, SC_TRUE, null_ptr);
       return SC_FS_STORAGE_READ_ERROR;
     }
@@ -551,7 +488,8 @@ sc_bool _sc_dictionary_fs_storage_get_string_by_term_offsets(sc_dictionary_node 
   if (size == 0 || list->size == size + 1)
   {
     sc_uint64 const string_offset = (sc_uint64)list->begin->next->data;
-    _sc_dictionary_fs_storage_read_strings_by_offsets(storage, string_offset, strings);
+    if (_sc_dictionary_fs_storage_read_strings_by_offsets(storage, string_offset, strings) != SC_FS_STORAGE_OK)
+      return SC_FALSE;
   }
 
   return SC_TRUE;
@@ -654,29 +592,34 @@ void _sc_dictionary_fs_storage_read_term_offsets(sc_dictionary_fs_storage * stor
   }
 }
 
-sc_fs_storage_status sc_dictionary_fs_storage_load(sc_dictionary_fs_storage * storage)
+sc_fs_storage_status _sc_dictionary_fs_storage_load_terms_offsets(sc_dictionary_fs_storage * storage)
 {
   sc_io_channel * terms_offsets_channel = sc_io_new_read_channel(storage->terms_offsets_path, null_ptr);
   if (terms_offsets_channel == null_ptr)
-    return SC_FS_STORAGE_OK;
+  {
+    sc_critical("Dictionary fs-storage: `terms_offsets_path` is not correct");
+    return SC_FS_STORAGE_READ_ERROR;
+  }
 
   sc_io_channel_set_encoding(terms_offsets_channel, null_ptr, null_ptr);
 
   sc_uint64 read_bytes = 0;
   if (sc_io_channel_read_chars(
-          terms_offsets_channel, (sc_char *)&storage->terms_size, sizeof(sc_uint64), &read_bytes, null_ptr) !=
+          terms_offsets_channel, (sc_char *)&storage->last_term_offset, sizeof(sc_uint64), &read_bytes, null_ptr) !=
           SC_FS_IO_STATUS_NORMAL ||
       sizeof(sc_uint64) != read_bytes)
   {
+    sc_critical("Dictionary fs-storage: error while `last_term_offset` reading");
     sc_io_channel_shutdown(terms_offsets_channel, SC_TRUE, null_ptr);
     return SC_FS_STORAGE_READ_ERROR;
   }
 
   if (sc_io_channel_read_chars(
-          terms_offsets_channel, (sc_char *)&storage->strings_size, sizeof(sc_uint64), &read_bytes, null_ptr) !=
+          terms_offsets_channel, (sc_char *)&storage->last_string_offset, sizeof(sc_uint64), &read_bytes, null_ptr) !=
           SC_FS_IO_STATUS_NORMAL ||
       sizeof(sc_uint64) != read_bytes)
   {
+    sc_critical("Dictionary fs-storage: error while `last_string_offset` reading");
     sc_io_channel_shutdown(terms_offsets_channel, SC_TRUE, null_ptr);
     return SC_FS_STORAGE_READ_ERROR;
   }
@@ -684,6 +627,21 @@ sc_fs_storage_status sc_dictionary_fs_storage_load(sc_dictionary_fs_storage * st
   _sc_dictionary_fs_storage_read_term_offsets(storage, terms_offsets_channel);
 
   sc_io_channel_shutdown(terms_offsets_channel, SC_TRUE, null_ptr);
+
+  sc_message("Dictionary fs-storage: `term - offsets` read");
+  return SC_FS_STORAGE_OK;
+}
+
+sc_fs_storage_status sc_dictionary_fs_storage_load(sc_dictionary_fs_storage * storage)
+{
+  sc_message("Dictionary fs-storage: load data");
+  sc_fs_storage_status status = _sc_dictionary_fs_storage_load_terms_offsets(storage);
+  if (status != SC_FS_STORAGE_OK)
+    return status;
+  sc_message("\tLast term offset: %lld", storage->last_term_offset);
+  sc_message("\tLast string offset: %lld", storage->last_string_offset);
+
+  sc_message("Dictionary fs-storage: all data loaded");
 
   return SC_FS_STORAGE_OK;
 }
@@ -708,6 +666,7 @@ sc_bool _sc_dictionary_fs_storage_write_term_offsets(sc_dictionary_node * node, 
             SC_FS_IO_STATUS_NORMAL ||
         sizeof(sc_uint64) != written_bytes)
     {
+      sc_critical("Dictionary fs-storage: error while `term_size` writing");
       sc_io_channel_shutdown(channel, SC_TRUE, null_ptr);
       sc_iterator_destroy(data_it);
       return SC_FALSE;
@@ -717,6 +676,7 @@ sc_bool _sc_dictionary_fs_storage_write_term_offsets(sc_dictionary_node * node, 
             SC_FS_IO_STATUS_NORMAL ||
         term_size != written_bytes)
     {
+      sc_critical("Dictionary fs-storage: error while `term` writing");
       sc_io_channel_shutdown(channel, SC_TRUE, null_ptr);
       sc_iterator_destroy(data_it);
       return SC_FALSE;
@@ -728,6 +688,7 @@ sc_bool _sc_dictionary_fs_storage_write_term_offsets(sc_dictionary_node * node, 
             SC_FS_IO_STATUS_NORMAL ||
         sizeof(sc_uint64) != written_bytes)
     {
+      sc_critical("Dictionary fs-storage: error while `term_offsets_count` writing");
       sc_io_channel_shutdown(channel, SC_TRUE, null_ptr);
       sc_iterator_destroy(data_it);
       return SC_FALSE;
@@ -735,12 +696,12 @@ sc_bool _sc_dictionary_fs_storage_write_term_offsets(sc_dictionary_node * node, 
 
     while (sc_iterator_next(data_it))
     {
-      sc_bool is = sizeof(sc_uint64) != written_bytes;
       sc_uint64 const term_offset = (sc_uint64)sc_iterator_get(data_it);
       if (sc_io_channel_write_chars(channel, (sc_char *)&term_offset, sizeof(term_offset), &written_bytes, null_ptr) !=
               SC_FS_IO_STATUS_NORMAL ||
           sizeof(sc_uint64) != written_bytes)
       {
+        sc_critical("Dictionary fs-storage: error while `term_offset` writing");
         sc_io_channel_shutdown(channel, SC_TRUE, null_ptr);
         sc_iterator_destroy(data_it);
         return SC_FALSE;
@@ -759,29 +720,32 @@ sc_fs_storage_status _sc_dictionary_fs_storage_save_term_offsets(sc_dictionary_f
 
   sc_uint64 written_bytes = 0;
   if (sc_io_channel_write_chars(
-          channel, (sc_char *)&storage->terms_size, sizeof(sc_uint64), &written_bytes, null_ptr) !=
+          channel, (sc_char *)&storage->last_term_offset, sizeof(sc_uint64), &written_bytes, null_ptr) !=
           SC_FS_IO_STATUS_NORMAL ||
       sizeof(sc_uint64) != written_bytes)
   {
+    sc_critical("Dictionary fs-storage: error while `last_term_offset` writing");
     sc_io_channel_shutdown(channel, SC_TRUE, null_ptr);
     return SC_FS_STORAGE_WRITE_ERROR;
   }
 
   if (sc_io_channel_write_chars(
-          channel, (sc_char *)&storage->strings_size, sizeof(sc_uint64), &written_bytes, null_ptr) !=
+          channel, (sc_char *)&storage->last_string_offset, sizeof(sc_uint64), &written_bytes, null_ptr) !=
           SC_FS_IO_STATUS_NORMAL ||
       sizeof(sc_uint64) != written_bytes)
   {
+    sc_critical("Dictionary fs-storage: error while `last_string_offset` writing");
     sc_io_channel_shutdown(channel, SC_TRUE, null_ptr);
     return SC_FS_STORAGE_WRITE_ERROR;
   }
 
   if (!sc_dictionary_visit_down_nodes(
-      storage->terms_offsets_dictionary, _sc_dictionary_fs_storage_write_term_offsets, (void **)&channel))
+          storage->terms_offsets_dictionary, _sc_dictionary_fs_storage_write_term_offsets, (void **)&channel))
     return SC_FS_STORAGE_WRITE_ERROR;
 
   sc_io_channel_shutdown(channel, SC_TRUE, null_ptr);
 
+  sc_message("Dictionary fs-storage: `term - offsets` written");
   return SC_FS_STORAGE_OK;
 }
 
@@ -806,6 +770,7 @@ sc_bool _sc_dictionary_fs_storage_write_string_offsets_link_hashes(sc_dictionary
             SC_FS_IO_STATUS_NORMAL ||
         sizeof(sc_uint64) != written_bytes)
     {
+      sc_critical("Dictionary fs-storage: error while `string_offset_size` writing");
       sc_io_channel_shutdown(channel, SC_TRUE, null_ptr);
       sc_iterator_destroy(data_it);
       return SC_FALSE;
@@ -815,6 +780,7 @@ sc_bool _sc_dictionary_fs_storage_write_string_offsets_link_hashes(sc_dictionary
             SC_FS_IO_STATUS_NORMAL ||
         string_offset_size != written_bytes)
     {
+      sc_critical("Dictionary fs-storage: error while `string_offset` writing");
       sc_io_channel_shutdown(channel, SC_TRUE, null_ptr);
       sc_iterator_destroy(data_it);
       return SC_FALSE;
@@ -826,6 +792,7 @@ sc_bool _sc_dictionary_fs_storage_write_string_offsets_link_hashes(sc_dictionary
             SC_FS_IO_STATUS_NORMAL ||
         sizeof(sc_uint64) != written_bytes)
     {
+      sc_critical("Dictionary fs-storage: error while `link_hashes_count` writing");
       sc_io_channel_shutdown(channel, SC_TRUE, null_ptr);
       sc_iterator_destroy(data_it);
       return SC_FALSE;
@@ -838,6 +805,7 @@ sc_bool _sc_dictionary_fs_storage_write_string_offsets_link_hashes(sc_dictionary
               SC_FS_IO_STATUS_NORMAL ||
           sizeof(sc_addr_hash) != written_bytes)
       {
+        sc_critical("Dictionary fs-storage: error while `link_hash` writing");
         sc_io_channel_shutdown(channel, SC_TRUE, null_ptr);
         sc_iterator_destroy(data_it);
         return SC_FALSE;
@@ -862,6 +830,7 @@ sc_fs_storage_status _sc_dictionary_fs_storage_save_string_offsets_link_hashes(s
 
   sc_io_channel_shutdown(channel, SC_TRUE, null_ptr);
 
+  sc_message("Dictionary fs-storage: `string offsets - link hashes` written");
   return SC_FS_STORAGE_OK;
 }
 
@@ -878,11 +847,13 @@ sc_fs_storage_status _sc_dictionary_fs_storage_save_link_hashes_string_offsets(s
 
   sc_io_channel_shutdown(channel, SC_TRUE, null_ptr);
 
+  sc_message("Dictionary fs-storage: `link hashes - string offsets` written");
   return SC_FS_STORAGE_OK;
 }
 
 sc_fs_storage_status sc_dictionary_fs_storage_save(sc_dictionary_fs_storage * storage)
 {
+  sc_message("Dictionary fs-storage: save data");
   sc_fs_storage_status status = _sc_dictionary_fs_storage_save_term_offsets(storage);
   if (status != SC_FS_STORAGE_OK)
     return status;
@@ -895,6 +866,7 @@ sc_fs_storage_status sc_dictionary_fs_storage_save(sc_dictionary_fs_storage * st
   if (status != SC_FS_STORAGE_OK)
     return status;
 
+  sc_message("Dictionary fs-storage: all data saved");
   return status;
 }
 
