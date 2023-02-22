@@ -24,10 +24,12 @@
 
 #define sc_str_len(string) strlen(string)
 
-#define sc_int_to_str_int(number, string) \
-  sc_uint32 length = (number == 0) ? 1 : snprintf(null_ptr, 0, "%llu", number); \
+#define sc_int_to_str_int(number, string, length) \
+  length = (number == 0) ? 1 : snprintf(null_ptr, 0, "%llu", number); \
   string = sc_mem_new(sc_char, length + 1); \
   gcvt(number, length, string)
+
+#define sc_str_int_to_int(string, number) number = atoi(string);
 
 #define sc_float_to_str_float(number, string) \
   sc_ulong digit_size = snprintf(NULL, 0, "%lu", (sc_ulong)number); \

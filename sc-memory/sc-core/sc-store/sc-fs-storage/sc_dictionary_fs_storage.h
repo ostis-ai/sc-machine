@@ -25,7 +25,6 @@ typedef struct _sc_dictionary_fs_storage
   sc_char * string_offsets_link_hashes_path;
 
   sc_dictionary * link_hashes_string_offsets_dictionary;
-  sc_char * link_hashes_string_offsets_path;
 
   sc_char * terms_path;
   sc_uint64 last_term_offset;
@@ -34,11 +33,18 @@ typedef struct _sc_dictionary_fs_storage
   sc_uint64 last_string_offset;
 } sc_dictionary_fs_storage;
 
+typedef struct _sc_link_hash_content
+{
+  sc_list * link_hashes;
+  sc_uint64 string_offset;
+} sc_link_hash_content;
+
 typedef enum _sc_dictionary_fs_storage_status
 {
   SC_FS_STORAGE_OK,
 
   SC_FS_STORAGE_NO,
+  SC_FS_STORAGE_NO_STRING,
   SC_FS_STORAGE_WRONG_PATH,
   SC_FS_STORAGE_WRITE_ERROR,
   SC_FS_STORAGE_READ_ERROR
@@ -61,6 +67,11 @@ sc_fs_storage_status sc_dictionary_fs_storage_unite_strings_by_terms(
     sc_dictionary_fs_storage * storage,
     sc_list const * terms,
     sc_list ** strings);
+
+sc_fs_storage_status sc_dictionary_fs_storage_get_string_by_link_hash(
+    sc_dictionary_fs_storage * storage,
+    sc_addr_hash const link_hash,
+    sc_char ** string);
 
 sc_fs_storage_status sc_dictionary_fs_storage_load(sc_dictionary_fs_storage * storage);
 

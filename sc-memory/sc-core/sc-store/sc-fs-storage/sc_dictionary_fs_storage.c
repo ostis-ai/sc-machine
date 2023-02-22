@@ -38,20 +38,14 @@ sc_fs_storage_status sc_dictionary_fs_storage_initialize(sc_dictionary_fs_storag
     sc_str_cpy((*storage)->path, path, sc_str_len(path));
 
     {
-      sc_dictionary_initialize(
-          &(*storage)->terms_offsets_dictionary, _sc_dictionary_children_size(), _sc_char_to_sc_int);
+      _sc_uchar_dictionary_initialize(&(*storage)->terms_offsets_dictionary);
       static sc_char const * term_string_offsets = "term_string_offsets" SC_FS_EXT;
       _sc_init_db_path(path, term_string_offsets, &(*storage)->terms_offsets_path);
 
-      sc_dictionary_initialize(
-          &(*storage)->string_offsets_link_hashes_dictionary, _sc_dictionary_children_size(), _sc_char_to_sc_int);
+      _sc_number_dictionary_initialize(&(*storage)->link_hashes_string_offsets_dictionary);
+      _sc_number_dictionary_initialize(&(*storage)->string_offsets_link_hashes_dictionary);
       static sc_char const * string_offsets_link_hashes = "string_offsets_link_hashes" SC_FS_EXT;
       _sc_init_db_path(path, string_offsets_link_hashes, &(*storage)->string_offsets_link_hashes_path);
-
-      sc_dictionary_initialize(
-          &(*storage)->link_hashes_string_offsets_dictionary, _sc_dictionary_children_size(), _sc_char_to_sc_int);
-      static sc_char const * link_hashes_string_offsets = "links_hashes_string_offset" SC_FS_EXT;
-      _sc_init_db_path(path, link_hashes_string_offsets, &(*storage)->link_hashes_string_offsets_path);
     }
 
     static sc_char const * terms_postfix = "terms" SC_FS_EXT;
@@ -71,7 +65,10 @@ sc_fs_storage_status sc_dictionary_fs_storage_initialize(sc_dictionary_fs_storag
 sc_fs_storage_status sc_dictionary_fs_storage_shutdown(sc_dictionary_fs_storage * storage)
 {
   if (storage == null_ptr)
+  {
+    sc_message("Dictionary fs-storage: empty");
     return SC_FS_STORAGE_NO;
+  }
 
   sc_message("Dictionary fs-storage: shutdown");
   {
@@ -81,11 +78,11 @@ sc_fs_storage_status sc_dictionary_fs_storage_shutdown(sc_dictionary_fs_storage 
       sc_dictionary_destroy(storage->terms_offsets_dictionary, _sc_dictionary_fs_storage_node_destroy);
       sc_mem_free(storage->terms_offsets_path);
 
-      sc_dictionary_destroy(storage->string_offsets_link_hashes_dictionary, _sc_dictionary_fs_storage_node_destroy);
+      sc_dictionary_destroy(
+          storage->link_hashes_string_offsets_dictionary, _sc_dictionary_fs_storage_string_node_destroy);
+      sc_dictionary_destroy(
+          storage->string_offsets_link_hashes_dictionary, _sc_dictionary_fs_storage_link_node_destroy);
       sc_mem_free(storage->string_offsets_link_hashes_path);
-
-      sc_dictionary_destroy(storage->link_hashes_string_offsets_dictionary, _sc_dictionary_fs_storage_node_destroy);
-      sc_mem_free(storage->link_hashes_string_offsets_path);
     }
 
     sc_mem_free(storage->terms_path);
@@ -96,20 +93,76 @@ sc_fs_storage_status sc_dictionary_fs_storage_shutdown(sc_dictionary_fs_storage 
   return SC_FS_STORAGE_OK;
 }
 
-void _sc_dictionary_fs_storage_append(sc_dictionary * dictionary, sc_char * key, void * data)
+void _sc_dictionary_fs_storage_append(sc_dictionary * dictionary, sc_char * key, sc_uint64 key_length, void * data)
 {
-  sc_uint32 const key_size = sc_str_len(key);
-  sc_list * list = sc_dictionary_get(dictionary, key, key_size);
+  sc_list * list = sc_dictionary_get(dictionary, key, key_length);
   if (list == null_ptr)
   {
     sc_list_init(&list);
-    sc_dictionary_append(dictionary, key, key_size, list);
+    sc_dictionary_append(dictionary, key, key_length, list);
     sc_char * copied_key;
-    sc_str_cpy(copied_key, key, key_size);
+    sc_str_cpy(copied_key, key, key_length);
     sc_list_push_back(list, copied_key);
   }
 
   sc_list_push_back(list, data);
+}
+
+sc_bool _sc_addr_hash_compare(void * addr_hash, void * other_addr_hash)
+{
+  return addr_hash == other_addr_hash;
+}
+
+void _sc_dictionary_fs_storage_append_link_string_unique(
+    sc_dictionary_fs_storage * storage,
+    sc_addr_hash const link_hash,
+    sc_uint64 const string_offset)
+{
+  sc_char * link_hash_str;
+  sc_uint64 link_hash_str_length;
+  sc_bool is_content_new;
+  sc_link_hash_content * content;
+  {
+    sc_int_to_str_int(link_hash, link_hash_str, link_hash_str_length);
+    content = sc_dictionary_get(storage->link_hashes_string_offsets_dictionary, link_hash_str, link_hash_str_length);
+    is_content_new = (content == null_ptr);
+    if (is_content_new)
+    {
+      content = sc_mem_new(sc_link_hash_content, 1);
+      sc_dictionary_append(
+          storage->link_hashes_string_offsets_dictionary, link_hash_str, link_hash_str_length, content);
+    }
+  }
+
+  sc_char * string_offset_str;
+  sc_uint64 string_offset_str_length;
+  sc_list * link_hashes;
+  {
+    sc_int_to_str_int(string_offset, string_offset_str, string_offset_str_length);
+    link_hashes =
+        sc_dictionary_get(storage->string_offsets_link_hashes_dictionary, string_offset_str, string_offset_str_length);
+    if (link_hashes == null_ptr)
+    {
+      sc_list_init(&link_hashes);
+      sc_dictionary_append(
+          storage->string_offsets_link_hashes_dictionary, string_offset_str, string_offset_str_length, link_hashes);
+    }
+  }
+
+  {
+    if (!is_content_new && content->link_hashes != link_hashes)
+      sc_list_remove_if(content->link_hashes, (void *)link_hash, _sc_addr_hash_compare);
+
+    if (content->link_hashes != link_hashes)
+    {
+      content->string_offset = string_offset + 1;
+      content->link_hashes = link_hashes;
+      sc_list_push_back(content->link_hashes, (void *)link_hash);
+    }
+  }
+
+  sc_mem_free(link_hash_str);
+  sc_mem_free(string_offset_str);
 }
 
 sc_fs_storage_status _sc_dictionary_fs_storage_write_strings(
@@ -122,32 +175,18 @@ sc_fs_storage_status _sc_dictionary_fs_storage_write_strings(
 
   sc_io_channel * strings_channel = sc_io_new_append_channel(storage->strings_path, null_ptr);
   sc_io_channel_set_encoding(strings_channel, null_ptr, null_ptr);
+  sc_io_channel_seek(strings_channel, storage->last_string_offset, SC_FS_IO_SEEK_SET, null_ptr);
 
   sc_iterator * it = sc_list_iterator((sc_list *)strings_link_hashes);
   while (sc_iterator_next(it))
   {
     sc_pair const * pair = sc_iterator_get(it);
-
-    sc_char * string_offset_str;
     sc_uint64 const string_offset = storage->last_string_offset;
-    {
-      sc_int_to_str_int(string_offset, string_offset_str);
-    }
-
-    sc_char * link_hash_str;
     sc_addr_hash const link_hash = (sc_addr_hash)pair->second;
-    {
-      sc_int_to_str_int(link_hash, link_hash_str);
-    }
 
     // cache string offset and link hash data
     {
-      _sc_dictionary_fs_storage_append(
-          storage->link_hashes_string_offsets_dictionary, string_offset_str, (void *)link_hash);
-      _sc_dictionary_fs_storage_append(
-          storage->link_hashes_string_offsets_dictionary, link_hash_str, (void *)string_offset);
-      sc_mem_free(string_offset_str);
-      sc_mem_free(link_hash_str);
+      _sc_dictionary_fs_storage_append_link_string_unique(storage, link_hash, string_offset);
     }
 
     // local cache string offset
@@ -220,7 +259,7 @@ sc_dictionary * _sc_dictionary_fs_storage_assign_terms_in_strings(
     sc_list const * string_offsets)
 {
   sc_dictionary * term_string_offsets_dictionary;
-  sc_dictionary_initialize(&term_string_offsets_dictionary, _sc_dictionary_children_size(), _sc_char_to_sc_int);
+  _sc_uchar_dictionary_initialize(&term_string_offsets_dictionary);
 
   sc_iterator * strings_link_hashes_it = sc_list_iterator(strings_link_hashes);
   sc_iterator * string_offsets_it = sc_list_iterator(string_offsets);
@@ -237,7 +276,7 @@ sc_dictionary * _sc_dictionary_fs_storage_assign_terms_in_strings(
     {
       sc_char * term = sc_iterator_get(term_it);
 
-      _sc_dictionary_fs_storage_append(term_string_offsets_dictionary, term, (void *)string_offset);
+      _sc_dictionary_fs_storage_append(term_string_offsets_dictionary, term, sc_str_len(term), (void *)string_offset);
       sc_mem_free(term);
     }
     sc_iterator_destroy(term_it);
@@ -268,7 +307,8 @@ sc_bool _sc_dictionary_fs_storage_pass_term_string_offset(sc_dictionary_node * n
 
     // cache term offset
     {
-      _sc_dictionary_fs_storage_append(storage->terms_offsets_dictionary, term, (void *)storage->last_term_offset);
+      _sc_dictionary_fs_storage_append(
+          storage->terms_offsets_dictionary, term, term_size, (void *)storage->last_term_offset);
     }
 
     if (sc_io_channel_write_chars(channel, (sc_char *)&term_size, sizeof(sc_uint64), &written_bytes, null_ptr) !=
@@ -368,10 +408,10 @@ sc_fs_storage_status sc_dictionary_fs_storage_link_strings(
   return status;
 }
 
-sc_fs_storage_status _sc_dictionary_fs_storage_read_strings_by_offsets(
+sc_fs_storage_status _sc_dictionary_fs_storage_read_string_by_offset(
     sc_dictionary_fs_storage * storage,
     sc_uint64 const string_offset,
-    sc_list * strings)
+    sc_char ** string)
 {
   sc_io_channel * strings_channel = sc_io_new_read_channel(storage->strings_path, null_ptr);
   sc_io_channel_set_encoding(strings_channel, null_ptr, null_ptr);
@@ -389,15 +429,14 @@ sc_fs_storage_status _sc_dictionary_fs_storage_read_strings_by_offsets(
       return SC_FS_STORAGE_READ_ERROR;
     }
 
-    sc_char * string = sc_mem_new(sc_char, string_size + 1);
-    if (sc_io_channel_read_chars(strings_channel, (sc_char *)string, string_size, &read_bytes, null_ptr) !=
+    *string = sc_mem_new(sc_char, string_size + 1);
+    if (sc_io_channel_read_chars(strings_channel, *string, string_size, &read_bytes, null_ptr) !=
             SC_FS_IO_STATUS_NORMAL ||
         string_size != read_bytes)
     {
       sc_io_channel_shutdown(strings_channel, SC_TRUE, null_ptr);
       return SC_FS_STORAGE_READ_ERROR;
     }
-    sc_list_push_back(strings, string);
   }
 
   sc_io_channel_shutdown(strings_channel, SC_TRUE, null_ptr);
@@ -462,11 +501,11 @@ sc_fs_storage_status _sc_dictionary_fs_storage_read_string_offsets_by_term_offse
     }
 
     sc_char * string_offset_str;
-    {
-      sc_int_to_str_int(string_offset, string_offset_str);
-    }
+    sc_uint64 string_offset_str_length;
+    sc_int_to_str_int(string_offset, string_offset_str, string_offset_str_length);
 
-    _sc_dictionary_fs_storage_append(string_offsets_dictionary, string_offset_str, (void *)string_offset);
+    _sc_dictionary_fs_storage_append(
+        string_offsets_dictionary, string_offset_str, string_offset_str_length, (void *)string_offset);
     sc_mem_free(string_offset_str);
   }
   sc_io_channel_shutdown(terms_channel, SC_TRUE, null_ptr);
@@ -488,8 +527,11 @@ sc_bool _sc_dictionary_fs_storage_get_string_by_term_offsets(sc_dictionary_node 
   if (size == 0 || list->size == size + 1)
   {
     sc_uint64 const string_offset = (sc_uint64)list->begin->next->data;
-    if (_sc_dictionary_fs_storage_read_strings_by_offsets(storage, string_offset, strings) != SC_FS_STORAGE_OK)
+    sc_char * string;
+    if (_sc_dictionary_fs_storage_read_string_by_offset(storage, string_offset, &string) != SC_FS_STORAGE_OK)
       return SC_FALSE;
+
+    sc_list_push_back(strings, string);
   }
 
   return SC_TRUE;
@@ -502,7 +544,7 @@ sc_fs_storage_status _sc_dictionary_fs_storage_get_strings_by_terms(
     sc_list ** strings)
 {
   sc_dictionary * term_offsets_dictionary;
-  sc_dictionary_initialize(&term_offsets_dictionary, _sc_dictionary_children_size(), _sc_char_to_sc_int);
+  _sc_uchar_dictionary_initialize(&term_offsets_dictionary);
   sc_iterator * term_it = sc_list_iterator((sc_list *)terms);
   while (sc_iterator_next(term_it))
   {
@@ -546,6 +588,34 @@ sc_fs_storage_status sc_dictionary_fs_storage_intersect_strings_by_terms(
   return _sc_dictionary_fs_storage_get_strings_by_terms(storage, terms, SC_TRUE, strings);
 }
 
+sc_fs_storage_status sc_dictionary_fs_storage_get_string_by_link_hash(
+    sc_dictionary_fs_storage * storage,
+    sc_addr_hash const link_hash,
+    sc_char ** string)
+{
+  sc_char * link_hash_str;
+  sc_uint64 link_hash_str_size;
+  sc_int_to_str_int(link_hash, link_hash_str, link_hash_str_size);
+  sc_link_hash_content * content =
+      sc_dictionary_get(storage->link_hashes_string_offsets_dictionary, link_hash_str, link_hash_str_size);
+  sc_mem_free(link_hash_str);
+
+  if (content == null_ptr)
+  {
+    *string = null_ptr;
+    return SC_FS_STORAGE_NO_STRING;
+  }
+
+  sc_uint64 const string_offset = (sc_uint64)content->string_offset - 1;
+  if (_sc_dictionary_fs_storage_read_string_by_offset(storage, string_offset, string) != SC_FS_STORAGE_OK)
+  {
+    *string = null_ptr;
+    return SC_FS_STORAGE_READ_ERROR;
+  }
+
+  return SC_FS_STORAGE_OK;
+}
+
 sc_fs_storage_status sc_dictionary_fs_storage_unite_strings_by_terms(
     sc_dictionary_fs_storage * storage,
     sc_list const * terms,
@@ -556,7 +626,6 @@ sc_fs_storage_status sc_dictionary_fs_storage_unite_strings_by_terms(
 
 void _sc_dictionary_fs_storage_read_term_offsets(sc_dictionary_fs_storage * storage, sc_io_channel * channel)
 {
-  // load terms
   sc_uint64 read_bytes = 0;
   while (SC_TRUE)
   {
@@ -586,7 +655,7 @@ void _sc_dictionary_fs_storage_read_term_offsets(sc_dictionary_fs_storage * stor
           sizeof(sc_uint64) != read_bytes)
         break;
 
-      _sc_dictionary_fs_storage_append(storage->terms_offsets_dictionary, term, (void *)term_offset);
+      _sc_dictionary_fs_storage_append(storage->terms_offsets_dictionary, term, term_size, (void *)term_offset);
       sc_mem_free(term);
     }
   }
@@ -632,6 +701,56 @@ sc_fs_storage_status _sc_dictionary_fs_storage_load_terms_offsets(sc_dictionary_
   return SC_FS_STORAGE_OK;
 }
 
+void _sc_dictionary_fs_storage_read_string_offsets_link_hashes(
+    sc_dictionary_fs_storage * storage,
+    sc_io_channel * channel)
+{
+  sc_uint64 read_bytes = 0;
+  while (SC_TRUE)
+  {
+    sc_uint64 string_offset;
+    if (sc_io_channel_read_chars(channel, (sc_char *)&string_offset, sizeof(sc_uint64), &read_bytes, null_ptr) !=
+            SC_FS_IO_STATUS_NORMAL ||
+        sizeof(sc_uint64) != read_bytes)
+      break;
+
+    sc_uint64 link_hashes_count;
+    if (sc_io_channel_read_chars(channel, (sc_char *)&link_hashes_count, sizeof(sc_uint64), &read_bytes, null_ptr) !=
+            SC_FS_IO_STATUS_NORMAL ||
+        sizeof(sc_uint64) != read_bytes)
+      break;
+
+    for (sc_uint64 i = 0; i < link_hashes_count; ++i)
+    {
+      sc_addr_hash link_hash;
+      if (sc_io_channel_read_chars(channel, (sc_char *)&link_hash, sizeof(sc_addr_hash), &read_bytes, null_ptr) !=
+              SC_FS_IO_STATUS_NORMAL ||
+          sizeof(sc_addr_hash) != read_bytes)
+        break;
+
+      _sc_dictionary_fs_storage_append_link_string_unique(storage, link_hash, string_offset);
+    }
+  }
+}
+
+sc_fs_storage_status _sc_dictionary_fs_storage_load_string_offsets_link_hashes(sc_dictionary_fs_storage * storage)
+{
+  sc_io_channel * channel = sc_io_new_read_channel(storage->string_offsets_link_hashes_path, null_ptr);
+  if (channel == null_ptr)
+  {
+    sc_critical("Dictionary fs-storage: `string_offsets_link_hashes_path` is not correct");
+    return SC_FS_STORAGE_READ_ERROR;
+  }
+  sc_io_channel_set_encoding(channel, null_ptr, null_ptr);
+
+  _sc_dictionary_fs_storage_read_string_offsets_link_hashes(storage, channel);
+
+  sc_io_channel_shutdown(channel, SC_TRUE, null_ptr);
+  sc_message("Dictionary fs-storage: `string offsets - link hashes` read");
+
+  return SC_FS_STORAGE_OK;
+}
+
 sc_fs_storage_status sc_dictionary_fs_storage_load(sc_dictionary_fs_storage * storage)
 {
   sc_message("Dictionary fs-storage: load data");
@@ -640,6 +759,10 @@ sc_fs_storage_status sc_dictionary_fs_storage_load(sc_dictionary_fs_storage * st
     return status;
   sc_message("\tLast term offset: %lld", storage->last_term_offset);
   sc_message("\tLast string offset: %lld", storage->last_string_offset);
+
+  status = _sc_dictionary_fs_storage_load_string_offsets_link_hashes(storage);
+  if (status != SC_FS_STORAGE_OK)
+    return status;
 
   sc_message("Dictionary fs-storage: all data loaded");
 
@@ -756,60 +879,43 @@ sc_bool _sc_dictionary_fs_storage_write_string_offsets_link_hashes(sc_dictionary
 
   sc_io_channel * channel = arguments[0];
 
-  sc_list * list = node->data;
-  sc_iterator * data_it = sc_list_iterator(list);
+  sc_link_hash_content * content = node->data;
+  sc_iterator * data_it = sc_list_iterator(content->link_hashes);
 
-  // save term in db
   sc_uint64 written_bytes = 0;
-  if (sc_iterator_next(data_it))
+  sc_uint64 const string_offset = content->string_offset - 1;
+  if (sc_io_channel_write_chars(channel, (sc_char *)&string_offset, sizeof(sc_uint64), &written_bytes, null_ptr) !=
+          SC_FS_IO_STATUS_NORMAL ||
+      sizeof(sc_uint64) != written_bytes)
   {
-    sc_char * string_offset = sc_iterator_get(data_it);
-    sc_uint64 const string_offset_size = sc_str_len(string_offset);
-    if (sc_io_channel_write_chars(
-            channel, (sc_char *)&string_offset_size, sizeof(sc_uint64), &written_bytes, null_ptr) !=
+    sc_critical("Dictionary fs-storage: error while `string_offset` writing");
+    sc_io_channel_shutdown(channel, SC_TRUE, null_ptr);
+    sc_iterator_destroy(data_it);
+    return SC_FALSE;
+  }
+
+  sc_uint64 const link_hashes_count = content->link_hashes->size;
+  if (sc_io_channel_write_chars(channel, (sc_char *)&link_hashes_count, sizeof(sc_uint64), &written_bytes, null_ptr) !=
+          SC_FS_IO_STATUS_NORMAL ||
+      sizeof(sc_uint64) != written_bytes)
+  {
+    sc_critical("Dictionary fs-storage: error while `link_hashes_count` writing");
+    sc_io_channel_shutdown(channel, SC_TRUE, null_ptr);
+    sc_iterator_destroy(data_it);
+    return SC_FALSE;
+  }
+
+  while (sc_iterator_next(data_it))
+  {
+    sc_addr_hash const link_hash = (sc_uint64)sc_iterator_get(data_it);
+    if (sc_io_channel_write_chars(channel, (sc_char *)&link_hash, sizeof(sc_addr_hash), &written_bytes, null_ptr) !=
             SC_FS_IO_STATUS_NORMAL ||
-        sizeof(sc_uint64) != written_bytes)
+        sizeof(sc_addr_hash) != written_bytes)
     {
-      sc_critical("Dictionary fs-storage: error while `string_offset_size` writing");
+      sc_critical("Dictionary fs-storage: error while `link_hash` writing");
       sc_io_channel_shutdown(channel, SC_TRUE, null_ptr);
       sc_iterator_destroy(data_it);
       return SC_FALSE;
-    }
-
-    if (sc_io_channel_write_chars(channel, (sc_char *)string_offset, string_offset_size, &written_bytes, null_ptr) !=
-            SC_FS_IO_STATUS_NORMAL ||
-        string_offset_size != written_bytes)
-    {
-      sc_critical("Dictionary fs-storage: error while `string_offset` writing");
-      sc_io_channel_shutdown(channel, SC_TRUE, null_ptr);
-      sc_iterator_destroy(data_it);
-      return SC_FALSE;
-    }
-
-    sc_uint64 const link_hashes_count = list->size - 1;
-    if (sc_io_channel_write_chars(
-            channel, (sc_char *)&link_hashes_count, sizeof(sc_uint64), &written_bytes, null_ptr) !=
-            SC_FS_IO_STATUS_NORMAL ||
-        sizeof(sc_uint64) != written_bytes)
-    {
-      sc_critical("Dictionary fs-storage: error while `link_hashes_count` writing");
-      sc_io_channel_shutdown(channel, SC_TRUE, null_ptr);
-      sc_iterator_destroy(data_it);
-      return SC_FALSE;
-    }
-
-    while (sc_iterator_next(data_it))
-    {
-      sc_addr_hash const link_hash = (sc_uint64)sc_iterator_get(data_it);
-      if (sc_io_channel_write_chars(channel, (sc_char *)&link_hash, sizeof(sc_addr_hash), &written_bytes, null_ptr) !=
-              SC_FS_IO_STATUS_NORMAL ||
-          sizeof(sc_addr_hash) != written_bytes)
-      {
-        sc_critical("Dictionary fs-storage: error while `link_hash` writing");
-        sc_io_channel_shutdown(channel, SC_TRUE, null_ptr);
-        sc_iterator_destroy(data_it);
-        return SC_FALSE;
-      }
     }
   }
   sc_iterator_destroy(data_it);
@@ -823,23 +929,6 @@ sc_fs_storage_status _sc_dictionary_fs_storage_save_string_offsets_link_hashes(s
   sc_io_channel_set_encoding(channel, null_ptr, null_ptr);
 
   if (!sc_dictionary_visit_down_nodes(
-          storage->string_offsets_link_hashes_dictionary,
-          _sc_dictionary_fs_storage_write_string_offsets_link_hashes,
-          (void **)&channel))
-    return SC_FS_STORAGE_WRITE_ERROR;
-
-  sc_io_channel_shutdown(channel, SC_TRUE, null_ptr);
-
-  sc_message("Dictionary fs-storage: `string offsets - link hashes` written");
-  return SC_FS_STORAGE_OK;
-}
-
-sc_fs_storage_status _sc_dictionary_fs_storage_save_link_hashes_string_offsets(sc_dictionary_fs_storage * storage)
-{
-  sc_io_channel * channel = sc_io_new_write_channel(storage->link_hashes_string_offsets_path, null_ptr);
-  sc_io_channel_set_encoding(channel, null_ptr, null_ptr);
-
-  if (!sc_dictionary_visit_down_nodes(
           storage->link_hashes_string_offsets_dictionary,
           _sc_dictionary_fs_storage_write_string_offsets_link_hashes,
           (void **)&channel))
@@ -847,7 +936,7 @@ sc_fs_storage_status _sc_dictionary_fs_storage_save_link_hashes_string_offsets(s
 
   sc_io_channel_shutdown(channel, SC_TRUE, null_ptr);
 
-  sc_message("Dictionary fs-storage: `link hashes - string offsets` written");
+  sc_message("Dictionary fs-storage: `string offsets - link hashes` written");
   return SC_FS_STORAGE_OK;
 }
 
@@ -859,10 +948,6 @@ sc_fs_storage_status sc_dictionary_fs_storage_save(sc_dictionary_fs_storage * st
     return status;
 
   status = _sc_dictionary_fs_storage_save_string_offsets_link_hashes(storage);
-  if (status != SC_FS_STORAGE_OK)
-    return status;
-
-  status = _sc_dictionary_fs_storage_save_link_hashes_string_offsets(storage);
   if (status != SC_FS_STORAGE_OK)
     return status;
 

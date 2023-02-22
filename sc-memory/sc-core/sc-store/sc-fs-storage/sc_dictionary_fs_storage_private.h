@@ -15,7 +15,7 @@
 
 #define SC_FS_EXT ".scdb";
 
-sc_uint8 _sc_dictionary_children_size()
+sc_uint8 _sc_uchar_dictionary_children_size()
 {
   sc_uint8 const max_sc_char = 255;
   sc_uint8 const min_sc_char = 1;
@@ -23,9 +23,34 @@ sc_uint8 _sc_dictionary_children_size()
   return max_sc_char - min_sc_char + 1;
 }
 
-void _sc_char_to_sc_int(sc_char ch, sc_uint8 * ch_num, sc_uint8 const * mask)
+void _sc_uchar_dictionary_sc_char_to_sc_int(sc_char ch, sc_uint8 * ch_num, sc_uint8 const * mask)
 {
   *ch_num = 128 + (sc_uint8)ch;
+}
+
+sc_bool _sc_uchar_dictionary_initialize(sc_dictionary ** dictionary)
+{
+  return sc_dictionary_initialize(
+      dictionary, _sc_uchar_dictionary_children_size(), _sc_uchar_dictionary_sc_char_to_sc_int);
+}
+
+sc_uint8 _sc_number_dictionary_children_size()
+{
+  sc_uint8 const max_sc_char = 9;
+  sc_uint8 const min_sc_char = 0;
+
+  return max_sc_char - min_sc_char + 1;
+}
+
+void _sc_number_dictionary_sc_char_to_sc_int(sc_char ch, sc_uint8 * ch_num, sc_uint8 const * mask)
+{
+  *ch_num = (sc_uint8)ch - '0';
+}
+
+sc_bool _sc_number_dictionary_initialize(sc_dictionary ** dictionary)
+{
+  return sc_dictionary_initialize(
+      dictionary, _sc_number_dictionary_children_size(), _sc_number_dictionary_sc_char_to_sc_int);
 }
 
 void _sc_init_db_path(sc_char const * path, sc_char const * postfix, sc_char ** out_path)
@@ -58,6 +83,52 @@ sc_bool _sc_dictionary_fs_storage_node_destroy(sc_dictionary_node * node, void *
   return SC_TRUE;
 }
 
+sc_bool _sc_dictionary_fs_storage_link_node_destroy(sc_dictionary_node * node, void ** args)
+{
+  (void)args;
+
+  sc_list * link_hashes = node->data;
+  if (link_hashes != null_ptr)
+  {
+    sc_list_destroy(link_hashes);
+  }
+  node->data = null_ptr;
+
+  sc_mem_free(node->next);
+  node->next = null_ptr;
+
+  sc_mem_free(node->offset);
+  node->offset = null_ptr;
+  node->offset_size = 0;
+
+  sc_mem_free(node);
+
+  return SC_TRUE;
+}
+
+sc_bool _sc_dictionary_fs_storage_string_node_destroy(sc_dictionary_node * node, void ** args)
+{
+  (void)args;
+
+  sc_link_hash_content * content = node->data;
+  if (content != null_ptr)
+  {
+    sc_mem_free(content);
+  }
+  node->data = null_ptr;
+
+  sc_mem_free(node->next);
+  node->next = null_ptr;
+
+  sc_mem_free(node->offset);
+  node->offset = null_ptr;
+  node->offset_size = 0;
+
+  sc_mem_free(node);
+
+  return SC_TRUE;
+}
+
 sc_list * _sc_dictionary_fs_storage_get_string_terms(sc_char const * string)
 {
   static const sc_char delim[] = " ,.-\0()[]_";
@@ -71,7 +142,7 @@ sc_list * _sc_dictionary_fs_storage_get_string_terms(sc_char const * string)
   sc_list * terms;
   sc_list_init(&terms);
   sc_dictionary * unique_terms;
-  sc_dictionary_initialize(&unique_terms, _sc_dictionary_children_size(), _sc_char_to_sc_int);
+  sc_dictionary_initialize(&unique_terms, _sc_uchar_dictionary_children_size(), _sc_uchar_dictionary_sc_char_to_sc_int);
   while (term != null_ptr)
   {
     sc_uint64 const term_length = sc_str_len(term);

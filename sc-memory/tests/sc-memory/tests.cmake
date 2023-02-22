@@ -14,8 +14,8 @@ make_tests_from_folder(${CMAKE_CURRENT_LIST_DIR}/containers
 
 make_tests_from_folder(${CMAKE_CURRENT_LIST_DIR}/fs-storage
     NAME sc-fs-storage-tests
-    DEPENDS sc-memory sc-core
-    INCLUDES ${SC_MEMORY_SRC} ${CMAKE_CURRENT_LIST_DIR}/_test
+    DEPENDS sc-memory sc-core ${GLIB2_LIBRARIES}
+    INCLUDES ${SC_MEMORY_SRC} ${CMAKE_CURRENT_LIST_DIR}/_test ${GLIB2_INCLUDE_DIRS}
 )
 
 if(${SC_CLANG_FORMAT_CODE})

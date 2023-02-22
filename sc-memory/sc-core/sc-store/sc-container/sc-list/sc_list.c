@@ -155,7 +155,11 @@ sc_bool sc_list_remove_if(sc_list * list, void * data, sc_bool (*predicate)(void
   }
 
   if (list->size == 0)
+  {
     list->begin = null_ptr;
+    sc_mem_free(list->end);
+    list->end = null_ptr;
+  }
 
   return is_removed;
 }
