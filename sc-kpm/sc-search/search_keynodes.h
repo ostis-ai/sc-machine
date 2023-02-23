@@ -48,6 +48,6 @@ extern sc_addr keynode_rrel_1;
 extern sc_addr keynode_rrel_2;
 
 //! Initialize keynodes that used by search module
-sc_result search_keynodes_initialize(const sc_memory_context * ctx);
+sc_result search_keynodes_initialize(sc_memory_context * ctx, sc_addr const init_memory_generated_structure);
 
 #endif

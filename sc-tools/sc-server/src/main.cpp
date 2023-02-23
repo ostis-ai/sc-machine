@@ -16,6 +16,20 @@
 
 #include "sc_server_factory.hpp"
 
+void PrintStartMessage()
+{
+  std::cout << "SC-SERVER USAGE\n\n"
+            << "--config|-c -- Path to configuration file\n"
+            << "--host|-h -- Sc-server host name, ip-address\n"
+            << "--port|-p -- Sc-server port\n"
+            << "--extensions_path|-e -- Path to directory with sc-memory extensions\n"
+            << "--repo_path|-r -- Path to kb.bin folder\n"
+            << "--verbose|-v -- Flag to don't save sc-memory state on exit\n"
+            << "--clear -- Flag to clear sc-memory on start\n"
+            << "--help -- Display this message\n"
+            << "--test|-t -- Flag to test sc-server, run and stop it\n\n";
+}
+
 sc_int main(sc_int argc, sc_char * argv[])
 try
 {
@@ -23,16 +37,7 @@ try
 
   if (options.Has({"help"}))
   {
-    std::cout << "SC-SERVER USAGE\n\n"
-              << "--config|-c -- Path to configuration file\n"
-              << "--host|-h -- Sc-server host name, ip-address\n"
-              << "--port|-p -- Sc-server port\n"
-              << "--extensions_path|-e -- Path to directory with sc-memory extensions\n"
-              << "--repo_path|-r -- Path to kb.bin folder\n"
-              << "--verbose|-v -- Flag to don't save sc-memory state on exit\n"
-              << "--clear -- Flag to clear sc-memory on start\n"
-              << "--help -- Display this message\n"
-              << "--test|-t -- Flag to test sc-server, run and stop it\n\n";
+    PrintStartMessage();
     return EXIT_SUCCESS;
   }
 
@@ -40,19 +45,16 @@ try
   if (options.Has({"config", "c"}))
     configFile = options[{"config", "c"}].second;
 
-  std::vector<std::vector<std::string>> keys = {{"host", "h"}, {"port", "p"}};
-  ScParams serverParams{options, keys};
+  ScParams serverParams{options, {{"host", "h"}, {"port", "p"}}};
 
-  std::vector<std::string> const pathKeys = {"repo_path", "extensions_path", "log_file"};
-  ScConfig config{configFile, pathKeys};
+  ScConfig config{configFile, {"repo_path", "extensions_path", "log_file"}};
   auto serverConfig = config["sc-server"];
   for (auto const & key : *serverConfig)
     serverParams.insert({key, serverConfig[key]});
 
-  keys = {{"extensions_path", "e"}, {"repo_path", "r"}, {"verbose", "v"}, {"clear"}};
-  ScParams memoryParams{options, keys};
+  ScParams memoryParams{options, {{"extensions_path", "e"}, {"repo_path", "r"}, {"verbose", "v"}, {"clear"}}};
 
-  ScMemoryConfig memoryConfig{config, std::move(memoryParams)};
+  ScMemoryConfig memoryConfig{config, memoryParams};
 
   sc_bool status = SC_FALSE;
   std::unique_ptr<ScServer> server;

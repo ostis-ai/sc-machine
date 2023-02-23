@@ -41,7 +41,7 @@ public:
     }
   }
 
-  ScParams(ScParams && object) noexcept
+  ScParams(ScParams const & object) noexcept
   {
     m_params = object.m_params;
   }
@@ -74,16 +74,17 @@ class ScMemoryConfig
 public:
   explicit ScMemoryConfig(
       std::string const & path,
-      std::vector<std::string> const & pathKeys,
-      ScParams params,
-      std::string groupName = "sc-memory")
-    : ScMemoryConfig(ScConfig(path, pathKeys), std::move(params), std::move(groupName))
+      std::unordered_set<std::string> const & pathKeys,
+      std::unordered_set<std::string> const & notUsedKeys,
+      ScParams const & params,
+      std::string const & groupName = "sc-memory")
+    : ScMemoryConfig(ScConfig(path, pathKeys, notUsedKeys), params, groupName)
   {
   }
 
-  explicit ScMemoryConfig(ScConfig const & config, ScParams params, std::string groupName = "sc-memory")
-    : m_groupName(std::move(groupName))
-    , m_params(std::move(params))
+  explicit ScMemoryConfig(ScConfig const & config, ScParams const & params, std::string groupName = "sc-memory")
+    : m_params(params)
+    , m_groupName(std::move(groupName))
   {
     if (config.IsValid())
     {
@@ -98,40 +99,49 @@ public:
     }
   }
 
+  sc_char const * GetStringByKey(std::string const & key, sc_char const defaultValue[] = nullptr)
+  {
+    return m_params.count(key) ? m_params.at(key).c_str() : (sc_char const *)defaultValue;
+  }
+
+  sc_int32 GetIntByKey(std::string const & key, sc_int32 const defaultValue = 0)
+  {
+    return m_params.count(key) ? std::stoi(m_params.at(key)) : defaultValue;
+  }
+
+  sc_bool GetBoolByKey(std::string const & key, sc_bool const defaultValue = SC_FALSE)
+  {
+    return m_params.count(key) ? (m_params.at(key) == "true" ? SC_TRUE : SC_FALSE) : defaultValue;
+  }
+
+  sc_bool HasKey(std::string const & key)
+  {
+    return m_params.count(key);
+  }
+
   sc_memory_params GetParams()
   {
     sc_version version = {
         SC_MACHINE_VERSION_MAJOR, SC_MACHINE_VERSION_MINOR, SC_MACHINE_VERSION_PATCH, SC_MACHINE_VERSION_SUFFIX};
 
     m_memoryParams.version = (sc_char const *)sc_version_string_new(&version);
-    m_memoryParams.clear = m_params.count("clear") ? SC_TRUE : SC_FALSE;
-    m_memoryParams.repo_path = m_params.at("repo_path").c_str();
-    m_memoryParams.ext_path =
-        m_params.count("extensions_path") ? m_params.at("extensions_path").c_str() : (sc_char const *)null_ptr;
+    m_memoryParams.clear = HasKey("clear");
+    m_memoryParams.repo_path = GetStringByKey("repo_path");
+    m_memoryParams.ext_path = GetStringByKey("extensions_path");
     m_memoryParams.enabled_exts = nullptr;
-    m_memoryParams.save_period =
-        m_params.count("save_period") ? std::stoi(m_params.at("save_period")) : DEFAULT_SAVE_PERIOD;
-    m_memoryParams.update_period =
-        m_params.count("update_period") ? std::stoi(m_params.at("update_period")) : DEFAULT_UPDATE_PERIOD;
 
-    m_memoryParams.log_type = m_params.count("log_type") ? m_params.at("log_type").c_str() : DEFAULT_LOG_TYPE;
-    m_memoryParams.log_file = m_params.count("log_file") ? m_params.at("log_file").c_str() : DEFAULT_LOG_FILE;
-    m_memoryParams.log_level = m_params.count("log_level") ? m_params.at("log_level").c_str() : DEFAULT_LOG_LEVEL;
+    m_memoryParams.max_threads = GetIntByKey("max_threads", DEFAULT_MAX_THREADS);
+    m_memoryParams.max_loaded_segments = GetIntByKey("max_loaded_segments", DEFAULT_MAX_LOADED_SEGMENTS);
 
-    m_memoryParams.max_threads =
-        m_params.count("max_threads") ? std::stoi(m_params.at("max_threads")) : DEFAULT_MAX_THREADS;
-    m_memoryParams.max_loaded_segments = m_params.count("max_loaded_segments")
-                                             ? std::stoi(m_params.at("max_loaded_segments"))
-                                             : DEFAULT_MAX_LOADED_SEGMENTS;
+    m_memoryParams.save_period = GetIntByKey("save_period", DEFAULT_SAVE_PERIOD);
+    m_memoryParams.update_period = GetIntByKey("update_period", DEFAULT_UPDATE_PERIOD);
 
-    m_memoryParams.init_memory_generated_upload =
-        m_params.count("init_memory_generated_upload")
-            ? (m_params.at("init_memory_generated_upload") == "true" ? SC_TRUE : SC_FALSE)
-            : SC_FALSE;
+    m_memoryParams.log_type = GetStringByKey("log_type", DEFAULT_LOG_TYPE);
+    m_memoryParams.log_file = GetStringByKey("log_file", DEFAULT_LOG_FILE);
+    m_memoryParams.log_level = GetStringByKey("log_level", DEFAULT_LOG_LEVEL);
 
-    m_memoryParams.init_memory_generated_structure = m_params.count("init_memory_generated_structure")
-                                                         ? m_params.at("init_memory_generated_structure").c_str()
-                                                         : (sc_char *)null_ptr;
+    m_memoryParams.init_memory_generated_upload = GetBoolByKey("init_memory_generated_upload");
+    m_memoryParams.init_memory_generated_structure = GetStringByKey("init_memory_generated_structure");
 
     return m_memoryParams;
   }
@@ -142,8 +152,8 @@ public:
   }
 
 private:
-  std::string m_groupName;
   ScParams m_params;
+  std::string m_groupName;
 
   sc_memory_params m_memoryParams{};
 };
