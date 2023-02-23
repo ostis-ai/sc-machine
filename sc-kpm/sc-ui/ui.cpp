@@ -20,11 +20,11 @@ const sc_version required_version = {0, 1, 0, ""};
 sc_memory_context * s_default_ctx = 0;
 
 // ------------------- Module ------------------------------
-_SC_EXT_EXTERN sc_result sc_module_initialize()
+_SC_EXT_EXTERN sc_result sc_module_initialize_with_init_memory_generated_structure(sc_addr const init_memory_generated_structure)
 {
   s_default_ctx = sc_memory_context_new(sc_access_lvl_make_min);
 
-  if (!initialize_keynodes())
+  if (!initialize_keynodes(init_memory_generated_structure))
   {
     g_warning("Some errors, while initialize ui keynodes");
     return SC_RESULT_ERROR;

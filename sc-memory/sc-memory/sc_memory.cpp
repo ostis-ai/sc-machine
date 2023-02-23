@@ -96,6 +96,8 @@ bool ScMemory::Initialize(sc_memory_params const & params)
   SC_LOG_INFO("Memory initialized");
 
   sc_addr init_memory_generated_structure;
+  sc_helper_resolve_system_identifier(
+      ms_globalContext, params.init_memory_generated_structure, &init_memory_generated_structure);
 
   if (params.ext_path)
   {
