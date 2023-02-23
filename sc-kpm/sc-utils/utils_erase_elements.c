@@ -36,7 +36,7 @@ sc_result agent_erase_elements(const sc_event * event, sc_addr arg)
 
   sc_addr set_addr = sc_iterator5_value(get_set_it, 2);
 
-  sc_iterator3 * set_it = sc_iterator3_f_a_a_new(s_erase_elements_ctx, set_addr, null_ptr, null_ptr);
+  sc_iterator3 * set_it = sc_iterator3_f_a_a_new(s_erase_elements_ctx, set_addr, 0, 0);
 
   while (sc_iterator3_next(set_it) == SC_TRUE)
   {
@@ -49,6 +49,18 @@ sc_result agent_erase_elements(const sc_event * event, sc_addr arg)
         s_erase_elements_ctx, keynode_init_memory_generated_structure, sc_type_arc_pos_const_perm, element_addr);
     if (sc_iterator3_next(unerase_it) == SC_TRUE)
       continue;
+
+    sc_type type;
+    sc_memory_get_element_type(s_erase_elements_ctx, element_addr, &type);
+    if (type & sc_type_arc_mask)
+    {
+      sc_addr begin_addr;
+      sc_memory_get_arc_begin(s_erase_elements_ctx, element_addr, &begin_addr);
+      if (SC_ADDR_IS_EQUAL(begin_addr, keynode_init_memory_generated_structure))
+      {
+        continue;
+      }
+    }
 
     sc_memory_element_free(s_erase_elements_ctx, element_addr);
   }

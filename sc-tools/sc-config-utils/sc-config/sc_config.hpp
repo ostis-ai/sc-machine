@@ -8,6 +8,8 @@
 
 #include <string>
 #include <vector>
+#include <unordered_set>
+#include <sstream>
 
 extern "C"
 {
@@ -23,43 +25,46 @@ public:
   explicit ScConfigGroup(
       sc_config * config,
       std::string configPath,
-      std::vector<std::string> pathKeys,
+      std::unordered_set<std::string> const & pathKeys,
+      std::unordered_set<std::string> const & notUsedKeys,
       std::string group);
 
   std::string operator[](std::string const & key) const;
 
-  std::vector<std::string> operator*() const;
+  std::unordered_set<std::string> operator*() const;
 
   ~ScConfigGroup() = default;
 
 private:
   sc_config * m_config;
   std::string m_configPath;
-  std::vector<std::string> m_pathKeys;
+  std::unordered_set<std::string> m_pathKeys;
+  std::unordered_set<std::string> m_notUsedKeys;
+
   std::string m_group;
-  std::vector<std::string> m_keys;
+  std::unordered_set<std::string> m_keys;
 };
 
 class ScConfig
 {
 public:
-  explicit ScConfig(std::string path, std::vector<std::string> paths = {});
+  explicit ScConfig(
+      std::string path,
+      std::unordered_set<std::string> const & pathKeys = {},
+      std::unordered_set<std::string> const & notUsedKeys = {});
 
   sc_bool IsValid() const;
 
   template <class Type>
   Type Get(std::string const & group, std::string const & key) const
   {
-    if (typeid(Type) == typeid(std::string) || typeid(Type) == typeid(sc_char *))
-      return sc_config_get_value_string(m_instance, group.c_str(), key.c_str());
-    else if (typeid(Type) == typeid(sc_int))
-      return sc_config_get_value_int(m_instance, group.c_str(), key.c_str());
-    else if (typeid(Type) == typeid(float))
-      return sc_config_get_value_float(m_instance, group.c_str(), key.c_str());
-    else if (typeid(Type) == typeid(sc_bool))
-      return sc_config_get_value_boolean(m_instance, group.c_str(), key.c_str());
-    else
-      return 0;
+    sc_char * value = sc_config_get_value_string(m_instance, group.c_str(), key.c_str());
+    std::stringstream stream;
+    stream << std::string(value);
+
+    Type targetValue;
+    stream >> targetValue;
+    return targetValue;
   }
 
   ScConfigGroup operator[](std::string const & group) const;
@@ -73,7 +78,9 @@ public:
 
 private:
   std::string m_path;
-  std::vector<std::string> m_pathKeys;
+  std::unordered_set<std::string> m_pathKeys;
+  std::unordered_set<std::string> m_notUsedKeys;
+
   sc_config * m_instance{};
 
   sc_bool m_result;

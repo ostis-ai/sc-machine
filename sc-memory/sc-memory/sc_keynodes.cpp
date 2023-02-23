@@ -75,18 +75,6 @@ bool ScKeynodes::Init(bool force, sc_char const * init_memory_generated_structur
 
   bool result = ScKeynodes::InitGlobal(initMemoryGeneratedStructure);
 
-  ScAddrVector const & keynodesAddrs = {
-      kCommandStateAddr,
-      kCommandInitiatedAddr,
-      kCommandProgressedAddr,
-      kCommandFinishedAddr,
-      kNrelResult,
-      kNrelCommonTemplate,
-      kNrelIdtf,
-      kNrelFormat,
-      kScResult,
-      kBinaryType};
-
   ScAddrVector const & resultCodes = {
       kScResultError,
       kScResultOk,

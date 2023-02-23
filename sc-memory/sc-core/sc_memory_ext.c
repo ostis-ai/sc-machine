@@ -184,7 +184,7 @@ sc_result sc_ext_initialize(
   {
     sc_module_info * module = (sc_module_info *)item->data;
     sc_message("Initialize module: %s", module->path);
-    if (strcmp(module->init_func_type, "sc_module_initialize_with_init_memory_generated_structure"))
+    if (strcmp(module->init_func_type, "sc_module_initialize_with_init_memory_generated_structure") == 0)
     {
       init_result = module->init_func(init_memory_generated_structure);
     }

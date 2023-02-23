@@ -80,37 +80,37 @@ sc_addr ui_keynode_rrel_order[RREL_ORDER_COUNT];
 sc_addr ui_keynode_arg[UI_ARG_COUNT];
 
 // -------------------------------------------------
-sc_bool initialize_keynodes()
+sc_bool initialize_keynodes(sc_addr const init_memory_generated_structure)
 {
-  RESOLVE_KEYNODE(s_default_ctx, keynode_user);
-  RESOLVE_KEYNODE(s_default_ctx, keynode_question_nrel_answer);
-  RESOLVE_KEYNODE(s_default_ctx, keynode_question_finished);
-  RESOLVE_KEYNODE(s_default_ctx, keynode_command_translate_from_sc);
-  RESOLVE_KEYNODE(s_default_ctx, keynode_nrel_authors);
-  RESOLVE_KEYNODE(s_default_ctx, keynode_nrel_user_answer_formats);
-  RESOLVE_KEYNODE(s_default_ctx, keynode_rrel_source_sc_construction);
-  RESOLVE_KEYNODE(s_default_ctx, keynode_rrel_output_format);
-  RESOLVE_KEYNODE(s_default_ctx, keynode_rrel_user_lang);
-  RESOLVE_KEYNODE(s_default_ctx, keynode_nrel_translation);
-  RESOLVE_KEYNODE(s_default_ctx, keynode_nrel_format);
-  RESOLVE_KEYNODE(s_default_ctx, keynode_nrel_system_identifier);
-  RESOLVE_KEYNODE(s_default_ctx, keynode_nrel_main_idtf);
+  RESOLVE_KEYNODE(s_default_ctx, keynode_user, init_memory_generated_structure);
+  RESOLVE_KEYNODE(s_default_ctx, keynode_question_nrel_answer, init_memory_generated_structure);
+  RESOLVE_KEYNODE(s_default_ctx, keynode_question_finished, init_memory_generated_structure);
+  RESOLVE_KEYNODE(s_default_ctx, keynode_command_translate_from_sc, init_memory_generated_structure);
+  RESOLVE_KEYNODE(s_default_ctx, keynode_nrel_authors, init_memory_generated_structure);
+  RESOLVE_KEYNODE(s_default_ctx, keynode_nrel_user_answer_formats, init_memory_generated_structure);
+  RESOLVE_KEYNODE(s_default_ctx, keynode_rrel_source_sc_construction, init_memory_generated_structure);
+  RESOLVE_KEYNODE(s_default_ctx, keynode_rrel_output_format, init_memory_generated_structure);
+  RESOLVE_KEYNODE(s_default_ctx, keynode_rrel_user_lang, init_memory_generated_structure);
+  RESOLVE_KEYNODE(s_default_ctx, keynode_nrel_translation, init_memory_generated_structure);
+  RESOLVE_KEYNODE(s_default_ctx, keynode_nrel_format, init_memory_generated_structure);
+  RESOLVE_KEYNODE(s_default_ctx, keynode_nrel_system_identifier, init_memory_generated_structure);
+  RESOLVE_KEYNODE(s_default_ctx, keynode_nrel_main_idtf, init_memory_generated_structure);
 
-  RESOLVE_KEYNODE(s_default_ctx, keynode_command_generate_instance);
-  RESOLVE_KEYNODE(s_default_ctx, keynode_command_initiated);
-  RESOLVE_KEYNODE(s_default_ctx, keynode_command_failed);
-  RESOLVE_KEYNODE(s_default_ctx, keynode_command_finished);
-  RESOLVE_KEYNODE(s_default_ctx, keynode_rrel_command_arguments);
-  RESOLVE_KEYNODE(s_default_ctx, keynode_rrel_command);
-  RESOLVE_KEYNODE(s_default_ctx, keynode_nrel_command_template);
-  RESOLVE_KEYNODE(s_default_ctx, keynode_nrel_command_result);
-  RESOLVE_KEYNODE(s_default_ctx, keynode_displayed_answer);
+  RESOLVE_KEYNODE(s_default_ctx, keynode_command_generate_instance, init_memory_generated_structure);
+  RESOLVE_KEYNODE(s_default_ctx, keynode_command_initiated, init_memory_generated_structure);
+  RESOLVE_KEYNODE(s_default_ctx, keynode_command_failed, init_memory_generated_structure);
+  RESOLVE_KEYNODE(s_default_ctx, keynode_command_finished, init_memory_generated_structure);
+  RESOLVE_KEYNODE(s_default_ctx, keynode_rrel_command_arguments, init_memory_generated_structure);
+  RESOLVE_KEYNODE(s_default_ctx, keynode_rrel_command, init_memory_generated_structure);
+  RESOLVE_KEYNODE(s_default_ctx, keynode_nrel_command_template, init_memory_generated_structure);
+  RESOLVE_KEYNODE(s_default_ctx, keynode_nrel_command_result, init_memory_generated_structure);
+  RESOLVE_KEYNODE(s_default_ctx, keynode_displayed_answer, init_memory_generated_structure);
 
-  RESOLVE_KEYNODE(s_default_ctx, keynode_format_scs_json);
-  RESOLVE_KEYNODE(s_default_ctx, keynode_format_scg_json);
-  RESOLVE_KEYNODE(s_default_ctx, keynode_format_scn_json);
+  RESOLVE_KEYNODE(s_default_ctx, keynode_format_scs_json, init_memory_generated_structure);
+  RESOLVE_KEYNODE(s_default_ctx, keynode_format_scg_json, init_memory_generated_structure);
+  RESOLVE_KEYNODE(s_default_ctx, keynode_format_scn_json, init_memory_generated_structure);
 
-  RESOLVE_KEYNODE(s_default_ctx, keynode_system_element);
+  RESOLVE_KEYNODE(s_default_ctx, keynode_system_element, init_memory_generated_structure);
 
   for (sc_uint32 i = 0; i < RREL_ORDER_COUNT; ++i)
   {

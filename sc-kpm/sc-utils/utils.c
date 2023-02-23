@@ -21,9 +21,6 @@ sc_module_initialize_with_init_memory_generated_structure(sc_addr const init_mem
   if (utils_keynodes_initialize(init_memory_generated_structure) != SC_RESULT_OK)
     return SC_RESULT_ERROR;
 
-  if (search_keynodes_initialize(s_erase_elements_ctx) != SC_RESULT_OK)
-    return SC_RESULT_ERROR;
-
   event_erase_elements = sc_event_new(
       s_erase_elements_ctx,
       keynode_question_initiated,
@@ -39,7 +36,7 @@ sc_module_initialize_with_init_memory_generated_structure(sc_addr const init_mem
 
 _SC_EXT_EXTERN sc_uint32 sc_module_load_priority()
 {
-  return 0;
+  return 1000;
 }
 
 _SC_EXT_EXTERN sc_result sc_module_shutdown()

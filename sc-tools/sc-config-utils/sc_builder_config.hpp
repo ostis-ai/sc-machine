@@ -14,9 +14,7 @@
 #include "sc-config/sc_config.hpp"
 
 #include "sc-core/sc_memory_params.h"
-
-#define DEFAULT_RESULT_STRUCTURE_MAIN_IDTF ""
-#define DEFAULT_RESULT_STRUCTURE_UPLOAD SC_FALSE
+#include "../sc-builder/src/builder.hpp"
 
 class ScBuilderConfig
 {
