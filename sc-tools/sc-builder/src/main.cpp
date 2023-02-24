@@ -58,7 +58,10 @@ try
   sc_memory_params const & formedMemoryParams = memoryConfig.GetParams();
   BuilderParams formedBuilderParams = builderConfig.GetParams();
   formedBuilderParams.m_resultStructureUpload = formedMemoryParams.init_memory_generated_upload;
-  formedBuilderParams.m_resultStructureSystemIdtf = formedMemoryParams.init_memory_generated_structure;
+  if (formedMemoryParams.init_memory_generated_structure != nullptr)
+  {
+    formedBuilderParams.m_resultStructureSystemIdtf = formedMemoryParams.init_memory_generated_structure;
+  }
 
   Builder builder;
   return builder.Run(formedBuilderParams, formedMemoryParams) ? EXIT_SUCCESS : EXIT_FAILURE;
