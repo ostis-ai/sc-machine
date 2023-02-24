@@ -111,8 +111,10 @@ sc_result search_keynodes_initialize(sc_memory_context * ctx, sc_addr const init
   RESOLVE_KEYNODE(ctx, keynode_question_all_identifiers, init_memory_generated_structure);
   RESOLVE_KEYNODE(ctx, keynode_question_all_identified_elements, init_memory_generated_structure);
   RESOLVE_KEYNODE(ctx, keynode_question_search_all_subclasses_in_quasybinary_relation, init_memory_generated_structure);
-  RESOLVE_KEYNODE(ctx, keynode_question_search_all_superclasses_in_quasybinary_relation, init_memory_generated_structure);
-  RESOLVE_KEYNODE(ctx, keynode_question_search_links_of_relation_connected_with_element, init_memory_generated_structure);
+  RESOLVE_KEYNODE(
+      ctx, keynode_question_search_all_superclasses_in_quasybinary_relation, init_memory_generated_structure);
+  RESOLVE_KEYNODE(
+      ctx, keynode_question_search_links_of_relation_connected_with_element, init_memory_generated_structure);
   RESOLVE_KEYNODE(ctx, keynode_question_search_full_pattern, init_memory_generated_structure);
 
   RESOLVE_KEYNODE(ctx, keynode_question_initiated, init_memory_generated_structure);
