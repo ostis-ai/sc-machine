@@ -14,8 +14,10 @@ TEST_F(ScMemoryTest, erase_elements_success)
 {
   sc_memory_context * context = sc_memory_context_new(sc_access_lvl_make_min);
 
-  search_keynodes_initialize(context);
   sc_addr const structAddr = sc_memory_node_new(context, sc_type_node_struct | sc_type_const);
+
+  search_keynodes_initialize(context, structAddr);
+
   sc_module_initialize_with_init_memory_generated_structure(structAddr);
 
   sc_event * event_erase_elements =
@@ -49,8 +51,9 @@ TEST_F(ScMemoryTest, erase_elements_from_init_struct)
 {
   sc_memory_context * context = sc_memory_context_new(sc_access_lvl_make_min);
 
-  search_keynodes_initialize(context);
   sc_addr const structAddr = sc_memory_node_new(context, sc_type_node_struct | sc_type_const);
+
+  search_keynodes_initialize(context, structAddr);
   sc_module_initialize_with_init_memory_generated_structure(structAddr);
 
   sc_event * event_erase_elements =
@@ -85,8 +88,9 @@ TEST_F(ScMemoryTest, erase_elements_self_erase)
 {
   sc_memory_context * context = sc_memory_context_new(sc_access_lvl_make_min);
 
-  search_keynodes_initialize(context);
   sc_addr const structAddr = sc_memory_node_new(context, sc_type_node_struct | sc_type_const);
+
+  search_keynodes_initialize(context, structAddr);
   sc_module_initialize_with_init_memory_generated_structure(structAddr);
 
   sc_event * event_erase_elements =
@@ -118,8 +122,9 @@ TEST_F(ScMemoryTest, erase_elements_set_node_erase)
 {
   sc_memory_context * context = sc_memory_context_new(sc_access_lvl_make_min);
 
-  search_keynodes_initialize(context);
   sc_addr const structAddr = sc_memory_node_new(context, sc_type_node_struct | sc_type_const);
+
+  search_keynodes_initialize(context, structAddr);
   sc_module_initialize_with_init_memory_generated_structure(structAddr);
 
   sc_event * event_erase_elements =
