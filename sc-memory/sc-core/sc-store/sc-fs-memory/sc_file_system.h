@@ -17,6 +17,8 @@ void sc_fs_rmdir(const sc_char * path);
 
 sc_bool sc_fs_mkdirs(const sc_char * path);
 
+void sc_fs_mkfile(sc_char const * path);
+
 void * sc_fs_open_tmp_file(const sc_char * path, sc_char ** tmp_file_name, sc_char * prefix);
 
 #endif

@@ -28,7 +28,7 @@ typedef struct _sc_dictionary_node
   struct _sc_dictionary_node ** next;  // a pointer to sc-dictionary node children pointers
   sc_char * offset;                    // a pointer to substring of node string
   sc_uint32 offset_size;               // size to substring of node string
-  void * data;                         // data
+  void * data;                         // storing data
   sc_uint8 mask;                       // mask for rights checking and memory optimization
 } sc_dictionary_node;
 
@@ -101,13 +101,13 @@ sc_bool sc_dictionary_remove(
  * @param sc_string_size A verifiable string size
  * @returns Returns SC_TRUE, if string starts in sc-dictionary node; otherwise return SC_FALSE.
  */
-sc_bool sc_dictionary_is_in(const sc_dictionary * dictionary, const sc_char * sc_string, sc_uint32 sc_string_size);
+sc_bool sc_dictionary_has(const sc_dictionary * dictionary, const sc_char * sc_string, sc_uint32 sc_string_size);
 
-/*! Gets datas from a terminal sc-dictionary node where string ends.
+/*! Gets data from a terminal sc-dictionary node where string ends.
  * @param dictionary A sc-dictionary pointer
- * @param sc_string A string to retrieve datas by it
+ * @param sc_string A string to retrieve data by it
  * @param sc_string_size A string size
- * @returns Returns Datas from a sc-dictionary node where string ends
+ * @returns Returns Data from a sc-dictionary node where string ends
  */
 void * sc_dictionary_get(const sc_dictionary * dictionary, const sc_char * sc_string, sc_uint32 sc_string_size);
 

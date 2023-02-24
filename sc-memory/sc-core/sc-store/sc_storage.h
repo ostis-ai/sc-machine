@@ -182,7 +182,7 @@ sc_result sc_storage_find_links_with_content_string(
 
 /*! Search sc-link addrs by specified data substring
  * @param stream Pointer to stream that contains data for search
- * @param result_addrs Pointer to result container of sc-links with specified data started with substring
+ * @param result_hashes Pointer to result container of sc-links with specified data started with substring
  * @param result_count Container for results count
  * @param max_length_to_search_as_prefix Search by prefix as substring length <= max_length_to_search_as_prefix
  * @return If sc-links with specified substring found, then sc-addrs of found link
@@ -193,7 +193,7 @@ sc_result sc_storage_find_links_with_content_string(
 sc_result sc_storage_find_links_by_content_substring(
     const sc_memory_context * ctx,
     const sc_stream * stream,
-    sc_list ** result_addrs,
+    sc_list ** result_hashes,
     sc_uint32 max_length_to_search_as_prefix);
 
 /*! Search sc-strings by specified substring

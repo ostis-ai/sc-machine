@@ -57,17 +57,11 @@ public:
 
       if (IsBinary(fullPath))
       {
-        std::string data = GetBinaryFileContent(fullPath);
-
-        data = ScBase64::Encode(reinterpret_cast<sc_uchar const *>(data.c_str()), data.size());
-        sc_char * rowData;
-        sc_str_cpy(rowData, (sc_pointer)data.c_str(), data.size());
-
-        return std::make_shared<ScStream>(rowData, data.size(), SC_STREAM_FLAG_READ);
+        return std::make_shared<ScStream>(fullPath.c_str(), fullPath.size(), SC_STREAM_FLAG_READ);
       }
       else
       {
-        return std::make_shared<ScStream>(fullPath, SC_STREAM_FLAG_READ);
+        return std::make_shared<ScStream>(fullPath.c_str(), fullPath.size(), SC_STREAM_FLAG_READ);
       }
     }
     else

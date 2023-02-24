@@ -4,16 +4,18 @@
  * (See accompanying file COPYING.MIT or copy at http://opensource.org/licenses/MIT)
  */
 
-#ifndef _sc_dictionary_fs_storage_private_h_
-#define _sc_dictionary_fs_storage_private_h_
+#ifndef _sc_dictionary_fs_memory_private_h_
+#define _sc_dictionary_fs_memory_private_h_
 
 #include "../sc_types.h"
 #include "../sc-base/sc_allocator.h"
 #include "../sc-container/sc-string/sc_string.h"
 
 #include "stdio.h"
+#include "sc_io.h"
 
 #define SC_FS_EXT ".scdb";
+#define INVALID_STRING_OFFSET LONG_MAX
 
 sc_uint8 _sc_uchar_dictionary_children_size()
 {
@@ -60,7 +62,7 @@ void _sc_init_db_path(sc_char const * path, sc_char const * postfix, sc_char ** 
   sc_str_printf(*out_path, size, "%s/%s", path, postfix);
 }
 
-sc_bool _sc_dictionary_fs_storage_node_destroy(sc_dictionary_node * node, void ** args)
+sc_bool _sc_dictionary_fs_memory_node_destroy(sc_dictionary_node * node, void ** args)
 {
   (void)args;
 
@@ -83,7 +85,7 @@ sc_bool _sc_dictionary_fs_storage_node_destroy(sc_dictionary_node * node, void *
   return SC_TRUE;
 }
 
-sc_bool _sc_dictionary_fs_storage_link_node_destroy(sc_dictionary_node * node, void ** args)
+sc_bool _sc_dictionary_fs_memory_link_node_destroy(sc_dictionary_node * node, void ** args)
 {
   (void)args;
 
@@ -106,7 +108,7 @@ sc_bool _sc_dictionary_fs_storage_link_node_destroy(sc_dictionary_node * node, v
   return SC_TRUE;
 }
 
-sc_bool _sc_dictionary_fs_storage_string_node_destroy(sc_dictionary_node * node, void ** args)
+sc_bool _sc_dictionary_fs_memory_string_node_destroy(sc_dictionary_node * node, void ** args)
 {
   (void)args;
 
@@ -129,9 +131,9 @@ sc_bool _sc_dictionary_fs_storage_string_node_destroy(sc_dictionary_node * node,
   return SC_TRUE;
 }
 
-sc_list * _sc_dictionary_fs_storage_get_string_terms(sc_char const * string)
+sc_list * _sc_dictionary_fs_memory_get_string_terms(sc_char const * string)
 {
-  static const sc_char delim[] = " ,.-\0()[]_";
+  static const sc_char delim[] = " ";
 
   sc_uint32 const size = sc_str_len(string);
   sc_char copied_string[size + 1];
@@ -146,13 +148,12 @@ sc_list * _sc_dictionary_fs_storage_get_string_terms(sc_char const * string)
   while (term != null_ptr)
   {
     sc_uint64 const term_length = sc_str_len(term);
-    sc_char * term_copy;
-    sc_str_cpy(term_copy, term, term_length);
 
-    if (sc_dictionary_is_in(unique_terms, term_copy, term_length))
-      sc_mem_free(term_copy);
-    else
+    if (!sc_dictionary_has(unique_terms, term, term_length))
     {
+      sc_char * term_copy;
+      sc_str_cpy(term_copy, term, term_length);
+
       sc_list_push_back(terms, term_copy);
       sc_dictionary_append(unique_terms, term_copy, term_length, null_ptr);
     }

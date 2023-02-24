@@ -260,7 +260,7 @@ const sc_dictionary_node * sc_dictionary_get_last_node_from_node(
   return null_ptr;
 }
 
-sc_bool sc_dictionary_is_in(const sc_dictionary * dictionary, const sc_char * sc_string, const sc_uint32 sc_string_size)
+sc_bool sc_dictionary_has(const sc_dictionary * dictionary, const sc_char * sc_string, sc_uint32 sc_string_size)
 {
   const sc_dictionary_node * last =
       sc_dictionary_get_last_node_from_node(dictionary, dictionary->root, sc_string, sc_string_size);

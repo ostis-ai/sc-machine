@@ -10,7 +10,7 @@
 #include "../../sc-base/sc_allocator.h"
 #include "../../sc_types.h"
 
-#define sc_string_empty(string) ({ sc_string = sc_mem_new(sc_char, 1); })
+#define sc_string_empty(string) ({ string = sc_mem_new(sc_char, 1); })
 
 #define sc_str_printf(out, size, format, ...) g_snprintf(out, size, format, __VA_ARGS__)
 

@@ -6,6 +6,7 @@
 
 #include "sc_file_system.h"
 
+#include "sc_io.h"
 #include "../sc-base/sc_assert_utils.h"
 #include "../sc-base/sc_message.h"
 
@@ -19,12 +20,12 @@ sc_bool sc_fs_isdir(const sc_char * path)
 
 sc_bool sc_fs_isfile(const sc_char * path)
 {
-  return g_file_test(path, G_FILE_TEST_IS_DIR);
+  return g_file_test(path, G_FILE_TEST_IS_REGULAR);
 }
 
 void sc_fs_rmdir(const sc_char * path)
 {
-  if (g_file_test(path, G_FILE_TEST_IS_DIR) == SC_FALSE)
+  if (sc_fs_isdir(path) == SC_FALSE)
     return;
 
   GDir * directory = g_dir_open(path, 0, 0);
@@ -37,12 +38,12 @@ void sc_fs_rmdir(const sc_char * path)
   {
     g_snprintf(tmp_path, MAX_PATH_LENGTH, "%s/%s", path, file);
 
-    if (g_file_test(tmp_path, G_FILE_TEST_IS_REGULAR) == SC_TRUE)
+    if (sc_fs_isfile(tmp_path) == SC_TRUE)
     {
       if (g_remove(tmp_path) == -1)
         sc_critical("Can't remove file: %s", tmp_path);
     }
-    else if (g_file_test(tmp_path, G_FILE_TEST_IS_DIR) == SC_TRUE)
+    else if (sc_fs_isdir(tmp_path) == SC_TRUE)
       sc_fs_rmdir(tmp_path);
 
     file = g_dir_read_name(directory);
@@ -65,10 +66,16 @@ sc_bool sc_fs_mkdirs(const sc_char * path)
   return SC_TRUE;
 }
 
+void sc_fs_mkfile(sc_char const * path)
+{
+  sc_io_channel * channel = sc_io_new_channel(path, "w+", null_ptr);
+  sc_io_channel_shutdown(channel, SC_TRUE, null_ptr);
+}
+
 void * sc_fs_open_tmp_file(const sc_char * path, sc_char ** tmp_file_name, sc_char * prefix)
 {
   *tmp_file_name = g_strdup_printf("%s/%s_%lu", path, prefix, (sc_ulong)g_get_real_time());
 
-  GIOChannel * result = g_io_channel_new_file(*tmp_file_name, "w", null_ptr);
+  sc_io_channel * result = sc_io_new_write_channel(*tmp_file_name, null_ptr);
   return result;
 }

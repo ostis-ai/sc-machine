@@ -20,18 +20,6 @@ struct _sc_arc_info
   sc_addr prev_in_arc;   // sc-addr of previous input arc in list
 };
 
-#ifdef SC_ROCKSDB_FS_STORAGE
-#  define SC_CHECKSUM_LEN 32  //(sizeof(sc_arc_info) - sizeof(sc_uint32))
-
-/*! Structure to store content information
- * Data field store checksum for data, that stores in specified sc-link.
- */
-struct _sc_content
-{
-  char data[SC_CHECKSUM_LEN];
-};
-#endif
-
 /* Structure to store information for sc-elements.
  * It used just for unify working with node and arc elements.
  * When you get that structure, you need to check it type and
@@ -97,15 +85,7 @@ struct _sc_element
   sc_uint32 input_arcs_count;
   sc_uint32 output_arcs_count;
 
-#ifdef SC_DICTIONARY_FS_STORAGE
   sc_arc_info arc;
-#elif SC_ROCKSDB_FS_STORAGE
-  union
-  {
-    sc_content content;
-    sc_arc_info arc;
-  };
-#endif
 };
 
 /// All functions must be called for locked sc-elements
