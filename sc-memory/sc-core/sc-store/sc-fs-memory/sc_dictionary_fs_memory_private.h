@@ -131,6 +131,21 @@ sc_bool _sc_dictionary_fs_memory_string_node_destroy(sc_dictionary_node * node, 
   return SC_TRUE;
 }
 
+sc_char * _sc_dictionary_fs_memory_get_first_term(sc_char const * string)
+{
+  static const sc_char delim[] = " ";
+
+  sc_uint32 const size = sc_str_len(string);
+  sc_char copied_string[size + 1];
+  sc_mem_cpy(copied_string, string, size);
+  copied_string[size] = '\0';
+
+  sc_char * term = strtok(copied_string, delim);
+  sc_char * copied_term;
+  sc_str_cpy(copied_term, term, sc_str_len(term));
+  return copied_term;
+}
+
 sc_list * _sc_dictionary_fs_memory_get_string_terms(sc_char const * string)
 {
   static const sc_char delim[] = " ";

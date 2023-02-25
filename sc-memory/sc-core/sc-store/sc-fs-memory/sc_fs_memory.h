@@ -79,20 +79,14 @@ sc_bool sc_fs_memory_shutdown(sc_segment ** segments, sc_bool save_segments);
  * @param string A key string
  * @param string_size A key string size
  */
-sc_bool sc_fs_memory_link_string(
-    sc_addr_hash link_hash,
-    sc_char const * string,
-    sc_uint32 string_size);
+sc_bool sc_fs_memory_link_string(sc_addr_hash link_hash, sc_char const * string, sc_uint32 string_size);
 
 /*! Gets sc-link content string with its size.
  * @param link_hash A sc-link hash
  * @param[out] string A content string
  * @param[out] string_size A content string size
  */
-sc_bool sc_fs_memory_get_string_by_link_hash(
-    sc_addr_hash link_hash,
-    sc_char ** string,
-    sc_uint32 * string_size);
+sc_bool sc_fs_memory_get_string_by_link_hash(sc_addr_hash link_hash, sc_char ** string, sc_uint32 * string_size);
 
 /*! Gets sc-link hashes from file system memory by it string content.
  * @param string A key string
@@ -100,10 +94,7 @@ sc_bool sc_fs_memory_get_string_by_link_hash(
  * @param[out] link_hashes A pointer to sc-link hashes
  * @returns SC_TRUE, if sc-link_hashes exist.
  */
-sc_bool sc_fs_memory_get_link_hashes_by_string(
-    sc_char const * string,
-    sc_uint32 string_size,
-    sc_list ** link_hashes);
+sc_bool sc_fs_memory_get_link_hashes_by_string(sc_char const * string, sc_uint32 string_size, sc_list ** link_hashes);
 
 /*! Gets sc-link hashes from file system memory by it substring content.
  * @param substring A key substring

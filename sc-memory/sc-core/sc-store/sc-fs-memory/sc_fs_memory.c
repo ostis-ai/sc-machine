@@ -83,26 +83,17 @@ sc_bool sc_fs_memory_shutdown(sc_segment ** segments, sc_bool save_segments)
   return SC_FALSE;
 }
 
-sc_bool sc_fs_memory_link_string(
-    sc_addr_hash const link_hash,
-    sc_char const * string,
-    sc_uint32 const string_size)
+sc_bool sc_fs_memory_link_string(sc_addr_hash const link_hash, sc_char const * string, sc_uint32 const string_size)
 {
   return !manager->link_string(manager->fs_memory, link_hash, string, string_size);
 }
 
-sc_bool sc_fs_memory_get_string_by_link_hash(
-    sc_addr_hash const link_hash,
-    sc_char ** string,
-    sc_uint32 * string_size)
+sc_bool sc_fs_memory_get_string_by_link_hash(sc_addr_hash const link_hash, sc_char ** string, sc_uint32 * string_size)
 {
   return !manager->get_string_by_link_hash(manager->fs_memory, link_hash, string, (sc_uint64 *)string_size);
 }
 
-sc_bool sc_fs_memory_get_link_hashes_by_string(
-    sc_char const * string,
-    sc_uint32 const string_size,
-    sc_list ** links)
+sc_bool sc_fs_memory_get_link_hashes_by_string(sc_char const * string, sc_uint32 const string_size, sc_list ** links)
 {
   return !manager->get_link_hashes_by_string(manager->fs_memory, string, string_size, links);
 }
@@ -113,8 +104,7 @@ sc_bool sc_fs_memory_get_link_hashes_by_substring(
     sc_list ** link_hashes,
     sc_uint32 max_length_to_search_as_prefix)
 {
-  return !manager->get_link_hashes_by_substring(manager->fs_memory,
-      substring, substring_size, link_hashes);
+  return !manager->get_link_hashes_by_substring(manager->fs_memory, substring, substring_size, link_hashes);
 }
 
 sc_bool sc_fs_memory_get_strings_by_substring(
@@ -128,7 +118,7 @@ sc_bool sc_fs_memory_get_strings_by_substring(
 
 sc_bool sc_fs_memory_remove_link_string(sc_addr_hash const link_hash)
 {
-  return SC_TRUE; //!manager->remove_link_string(manager->fs_memory, link_hash);
+  return SC_TRUE;  //! manager->remove_link_string(manager->fs_memory, link_hash);
 }
 
 // dictionary read, write and save methods

@@ -256,8 +256,8 @@ private:
   {
     if (el.IsURL())
     {
-       ScLink link(m_ctx, linkAddr);
-       link.Set(el.GetValue());
+      ScLink link(m_ctx, linkAddr);
+      link.Set(el.GetValue());
     }
     else
     {

@@ -19,7 +19,7 @@ typedef struct _sc_dictionary_fs_memory
   sc_char * path;
   sc_uint64 max_searchable_string_size;
 
-  sc_dictionary * terms_offsets_dictionary;
+  sc_dictionary * terms_string_offsets_dictionary;
   sc_char * terms_offsets_path;
 
   sc_dictionary * string_offsets_link_hashes_dictionary;
@@ -51,7 +51,9 @@ typedef enum _sc_dictionary_fs_memory_status
   SC_FS_MEMORY_READ_ERROR
 } sc_dictionary_fs_memory_status;
 
-sc_dictionary_fs_memory_status sc_dictionary_fs_memory_initialize(sc_dictionary_fs_memory ** memory, sc_char const * path);
+sc_dictionary_fs_memory_status sc_dictionary_fs_memory_initialize(
+    sc_dictionary_fs_memory ** memory,
+    sc_char const * path);
 
 sc_dictionary_fs_memory_status sc_dictionary_fs_memory_shutdown(sc_dictionary_fs_memory * memory);
 

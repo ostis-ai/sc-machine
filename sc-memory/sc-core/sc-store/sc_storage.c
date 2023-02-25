@@ -1112,7 +1112,8 @@ sc_result sc_storage_find_links_by_content_substring(
   if (string == null_ptr)
     sc_string_empty(string);
 
-  sc_result result = sc_fs_memory_get_link_hashes_by_substring(string, string_size, result_hashes, max_length_to_search_as_prefix);
+  sc_result result =
+      sc_fs_memory_get_link_hashes_by_substring(string, string_size, result_hashes, max_length_to_search_as_prefix);
   sc_mem_free(string);
 
   if (result != SC_RESULT_OK)
@@ -1140,7 +1141,8 @@ sc_result sc_storage_find_links_contents_by_content_substring(
   if (string == null_ptr)
     sc_string_empty(string);
 
-  sc_result result = sc_fs_memory_get_strings_by_substring(string, string_size, result_strings, max_length_to_search_as_prefix);
+  sc_result result =
+      sc_fs_memory_get_strings_by_substring(string, string_size, result_strings, max_length_to_search_as_prefix);
   sc_mem_free(string);
   if (result != SC_RESULT_OK)
     return SC_RESULT_ERROR;
