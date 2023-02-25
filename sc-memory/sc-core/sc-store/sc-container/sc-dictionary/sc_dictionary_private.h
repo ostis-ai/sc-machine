@@ -66,7 +66,7 @@ const sc_dictionary_node * sc_dictionary_get_last_node_from_node(
  * @param[out] dest A pointer to procedure result pointer
  */
 sc_bool sc_dictionary_visit_down_node_from_node(
-    sc_dictionary * dictionary,
+    sc_dictionary const * dictionary,
     sc_dictionary_node * node,
     sc_bool (*callable)(sc_dictionary_node *, void **),
     void ** dest);
@@ -79,7 +79,7 @@ sc_bool sc_dictionary_visit_down_node_from_node(
  * @param[out] dest A pointer to procedure result pointer
  */
 sc_bool sc_dictionary_visit_up_node_from_node(
-    sc_dictionary * dictionary,
+    sc_dictionary const * dictionary,
     sc_dictionary_node * node,
     sc_bool (*callable)(sc_dictionary_node *, void **),
     void ** dest);

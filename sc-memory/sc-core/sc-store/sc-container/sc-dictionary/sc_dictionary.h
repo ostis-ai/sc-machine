@@ -109,7 +109,14 @@ sc_bool sc_dictionary_has(const sc_dictionary * dictionary, const sc_char * sc_s
  * @param sc_string_size A string size
  * @returns Returns Data from a sc-dictionary node where string ends
  */
-void * sc_dictionary_get(const sc_dictionary * dictionary, const sc_char * sc_string, sc_uint32 sc_string_size);
+void * sc_dictionary_get_by_key(const sc_dictionary * dictionary, const sc_char * sc_string, sc_uint32 sc_string_size);
+
+void sc_dictionary_get_by_key_prefix(
+    const sc_dictionary * dictionary,
+    const sc_char * sc_string,
+    sc_uint32 sc_string_size,
+    sc_bool (*callable)(sc_dictionary_node *, void **),
+    void ** dest);
 
 /*! Visits all sc-dictionary nodes and calls procedure with it and its data. A method completes down iterating visiting.
  * @param dictionary A sc-dictionary pointer
@@ -117,7 +124,7 @@ void * sc_dictionary_get(const sc_dictionary * dictionary, const sc_char * sc_st
  * @param[out] dest A pointer to procedure result pointer
  */
 sc_bool sc_dictionary_visit_down_nodes(
-    sc_dictionary * dictionary,
+    sc_dictionary const * dictionary,
     sc_bool (*callable)(sc_dictionary_node *, void **),
     void ** dest);
 
@@ -127,7 +134,7 @@ sc_bool sc_dictionary_visit_down_nodes(
  * @param[out] dest A pointer to procedure result pointer
  */
 sc_bool sc_dictionary_visit_up_nodes(
-    sc_dictionary * dictionary,
+    sc_dictionary const * dictionary,
     sc_bool (*callable)(sc_dictionary_node *, void **),
     void ** dest);
 

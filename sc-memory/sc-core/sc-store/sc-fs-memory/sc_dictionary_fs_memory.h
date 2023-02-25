@@ -19,19 +19,16 @@ typedef struct _sc_dictionary_fs_memory
   sc_char * path;
   sc_uint64 max_searchable_string_size;
 
-  sc_dictionary * terms_string_offsets_dictionary;
-  sc_char * terms_offsets_path;
-
-  sc_dictionary * string_offsets_link_hashes_dictionary;
-  sc_char * string_offsets_link_hashes_path;
-
-  sc_dictionary * link_hashes_string_offsets_dictionary;
-
-  sc_char * terms_path;
-  sc_uint64 last_term_offset;
-
   sc_char * strings_path;
   sc_uint64 last_string_offset;
+
+  sc_dictionary * terms_string_offsets_dictionary;
+  sc_char * terms_string_offsets_path;
+
+  sc_dictionary * string_offsets_link_hashes_dictionary;
+  sc_dictionary * link_hashes_string_offsets_dictionary;
+  sc_char * string_offsets_link_hashes_path;
+
 } sc_dictionary_fs_memory;
 
 typedef struct _sc_link_hash_content
@@ -80,6 +77,12 @@ sc_dictionary_fs_memory_status sc_dictionary_fs_memory_get_link_hashes_by_substr
     sc_char const * string,
     sc_uint64 string_size,
     sc_list ** link_hashes);
+
+sc_dictionary_fs_memory_status sc_dictionary_fs_memory_get_strings_by_substring(
+    sc_dictionary_fs_memory const * memory,
+    sc_char const * string,
+    sc_uint64 string_size,
+    sc_list ** strings);
 
 sc_dictionary_fs_memory_status sc_dictionary_fs_memory_intersect_link_hashes_by_terms(
     sc_dictionary_fs_memory const * memory,

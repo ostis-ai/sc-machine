@@ -69,7 +69,7 @@ TEST_F(ScDictionaryTest, smoke)
             std::unordered_map<sc_char const *, sc_addr> const & toCheckNonExistence) {
     auto const checkExistence = [dictionary](sc_char const * string, sc_addr addr) {
       EXPECT_TRUE(sc_dictionary_has(dictionary, string, strlen(string)));
-      auto * list = (sc_list *)sc_dictionary_get(dictionary, string, strlen(string));
+      auto * list = (sc_list *)sc_dictionary_get_by_key(dictionary, string, strlen(string));
       sc_iterator * it = sc_list_iterator(list);
       EXPECT_TRUE(sc_iterator_next(it));
       EXPECT_TRUE(SC_ADDR_IS_EQUAL(*(sc_addr *)sc_iterator_get(it), addr));
@@ -86,7 +86,7 @@ TEST_F(ScDictionaryTest, smoke)
 
     auto const checkNonExistence = [dictionary](sc_char const * string, sc_addr addr) {
       EXPECT_FALSE(sc_dictionary_has(dictionary, string, strlen(string)));
-      auto * list = (sc_list *)sc_dictionary_get(dictionary, string, strlen(string));
+      auto * list = (sc_list *)sc_dictionary_get_by_key(dictionary, string, strlen(string));
       sc_iterator * it = sc_list_iterator(list);
       EXPECT_FALSE(sc_iterator_next(it));
       EXPECT_TRUE(it == nullptr || sc_iterator_destroy(it));
@@ -174,7 +174,7 @@ TEST_F(ScDictionaryTest, CorrespondenceCheck)
   EXPECT_TRUE(sc_dictionary_has(dictionary, str2, strlen(str2)));
   EXPECT_TRUE(sc_dictionary_has(dictionary, str1, strlen(str1)));
 
-  auto * list = (sc_list *)sc_dictionary_get(dictionary, str1, strlen(str1));
+  auto * list = (sc_list *)sc_dictionary_get_by_key(dictionary, str1, strlen(str1));
   sc_iterator * it = sc_list_iterator(list);
   while (sc_iterator_next(it))
   {
@@ -184,7 +184,7 @@ TEST_F(ScDictionaryTest, CorrespondenceCheck)
   }
   sc_iterator_destroy(it);
 
-  list = (sc_list *)sc_dictionary_get(dictionary, str2, strlen(str2));
+  list = (sc_list *)sc_dictionary_get_by_key(dictionary, str2, strlen(str2));
   it = sc_list_iterator(list);
   while (sc_iterator_next(it))
   {
@@ -194,7 +194,7 @@ TEST_F(ScDictionaryTest, CorrespondenceCheck)
   }
   sc_iterator_destroy(it);
 
-  list = (sc_list *)sc_dictionary_get(dictionary, str3, strlen(str3));
+  list = (sc_list *)sc_dictionary_get_by_key(dictionary, str3, strlen(str3));
   it = sc_list_iterator(list);
   while (sc_iterator_next(it))
   {
@@ -204,7 +204,7 @@ TEST_F(ScDictionaryTest, CorrespondenceCheck)
   }
   sc_iterator_destroy(it);
 
-  list = (sc_list *)sc_dictionary_get(dictionary, str4, strlen(str4));
+  list = (sc_list *)sc_dictionary_get_by_key(dictionary, str4, strlen(str4));
   it = sc_list_iterator(list);
   while (sc_iterator_next(it))
   {
@@ -214,7 +214,7 @@ TEST_F(ScDictionaryTest, CorrespondenceCheck)
   }
   sc_iterator_destroy(it);
 
-  list = (sc_list *)sc_dictionary_get(dictionary, str5, strlen(str5));
+  list = (sc_list *)sc_dictionary_get_by_key(dictionary, str5, strlen(str5));
   it = sc_list_iterator(list);
   while (sc_iterator_next(it))
   {
@@ -224,7 +224,7 @@ TEST_F(ScDictionaryTest, CorrespondenceCheck)
   }
   sc_iterator_destroy(it);
 
-  list = (sc_list *)sc_dictionary_get(dictionary, str6, strlen(str6));
+  list = (sc_list *)sc_dictionary_get_by_key(dictionary, str6, strlen(str6));
   it = sc_list_iterator(list);
   while (sc_iterator_next(it))
   {
