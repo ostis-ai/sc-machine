@@ -118,7 +118,7 @@ sc_bool sc_fs_memory_get_strings_by_substring(
 
 sc_bool sc_fs_memory_remove_link_string(sc_addr_hash const link_hash)
 {
-  return SC_TRUE;  //! manager->remove_link_string(manager->fs_memory, link_hash);
+  return !manager->unlink_string(manager->fs_memory, link_hash);
 }
 
 // dictionary read, write and save methods

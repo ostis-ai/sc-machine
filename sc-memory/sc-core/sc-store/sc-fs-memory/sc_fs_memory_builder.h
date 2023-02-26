@@ -26,7 +26,7 @@ sc_fs_memory_manager * sc_fs_memory_build()
   manager->get_link_hashes_by_substring = sc_dictionary_fs_memory_get_link_hashes_by_substring;
   manager->get_strings_by_substring = sc_dictionary_fs_memory_get_strings_by_substring;
   manager->get_string_by_link_hash = sc_dictionary_fs_memory_get_string_by_link_hash;
-  manager->remove_link_string = null_ptr;
+  manager->unlink_string = sc_dictionary_fs_memory_unlink_string;
 #endif
 
   return manager;

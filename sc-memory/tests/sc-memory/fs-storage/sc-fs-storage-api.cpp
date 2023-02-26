@@ -508,6 +508,57 @@ TEST(ScDictionaryFsMemoryTest, sc_dictionary_fs_memory_get_link_hashes_by_substr
   EXPECT_EQ(sc_dictionary_fs_memory_shutdown(memory), SC_FS_MEMORY_OK);
 }
 
+TEST(ScDictionaryFsMemoryTest, sc_dictionary_fs_memory_link_unlink_strings)
+{
+  sc_dictionary_fs_memory * memory;
+  EXPECT_EQ(sc_dictionary_fs_memory_initialize(&memory, SC_DICTIONARY_FS_MEMORY_PATH), SC_FS_MEMORY_OK);
+
+  {
+    sc_char string1[] = TEXT_EXAMPLE_1;
+    sc_addr_hash hash1 = 112;
+    EXPECT_EQ(sc_dictionary_fs_memory_link_string(memory, hash1, string1, sc_str_len(string1)), SC_FS_MEMORY_OK);
+
+    sc_char string2[] = TEXT_EXAMPLE_2;
+    sc_addr_hash hash2 = 518;
+    EXPECT_EQ(sc_dictionary_fs_memory_link_string(memory, hash2, string2, sc_str_len(string2)), SC_FS_MEMORY_OK);
+
+    sc_list * found_link_hashes;
+    EXPECT_EQ(
+        sc_dictionary_fs_memory_get_link_hashes_by_string(memory, string1, sc_str_len(string1), &found_link_hashes),
+        SC_FS_MEMORY_OK);
+    EXPECT_EQ(found_link_hashes->size, 1u);
+
+    sc_iterator * it = sc_list_iterator(found_link_hashes);
+    EXPECT_TRUE(sc_iterator_next(it));
+    EXPECT_EQ((sc_addr_hash)sc_iterator_get(it), hash1);
+    sc_iterator_destroy(it);
+    sc_list_destroy(found_link_hashes);
+
+    EXPECT_EQ(sc_dictionary_fs_memory_unlink_string(memory, hash1), SC_FS_MEMORY_OK);
+
+    EXPECT_EQ(
+        sc_dictionary_fs_memory_get_link_hashes_by_string(memory, string1, sc_str_len(string1), &found_link_hashes),
+        SC_FS_MEMORY_OK);
+    EXPECT_EQ(found_link_hashes->size, 0u);
+
+    it = sc_list_iterator(found_link_hashes);
+    EXPECT_FALSE(sc_iterator_next(it));
+    sc_iterator_destroy(it);
+    sc_list_destroy(found_link_hashes);
+
+    sc_char * found_string;
+    sc_uint64 found_string_size;
+    EXPECT_EQ(
+        sc_dictionary_fs_memory_get_string_by_link_hash(memory, hash1, &found_string, &found_string_size),
+        SC_FS_MEMORY_NO_STRING);
+
+    EXPECT_EQ(found_string, nullptr);
+    EXPECT_EQ(found_string_size, 0u);
+  }
+
+  EXPECT_EQ(sc_dictionary_fs_memory_shutdown(memory), SC_FS_MEMORY_OK);
+}
+
 TEST(ScDictionaryFsMemoryTest, sc_dictionary_fs_memory_intersect_strings_by_terms)
 {
   sc_dictionary_fs_memory * memory;

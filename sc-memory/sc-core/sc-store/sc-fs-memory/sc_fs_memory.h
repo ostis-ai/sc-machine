@@ -53,7 +53,7 @@ typedef struct _sc_fs_memory_manager
       sc_char const * substring,
       sc_uint64 const substring_size,
       sc_list ** strings);
-  sc_fs_memory_status (*remove_link_string)(sc_fs_memory const * memory, sc_addr_hash const link_hash);
+  sc_fs_memory_status (*unlink_string)(sc_fs_memory * memory, sc_addr_hash const link_hash);
 } sc_fs_memory_manager;
 
 typedef struct _sc_fs_memory_segments_header

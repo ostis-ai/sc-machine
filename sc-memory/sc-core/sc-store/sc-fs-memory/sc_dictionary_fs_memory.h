@@ -60,6 +60,10 @@ sc_dictionary_fs_memory_status sc_dictionary_fs_memory_link_string(
     sc_char const * string,
     sc_uint64 string_size);
 
+sc_dictionary_fs_memory_status sc_dictionary_fs_memory_unlink_string(
+    sc_dictionary_fs_memory * memory,
+    sc_addr_hash link_hash);
+
 sc_dictionary_fs_memory_status sc_dictionary_fs_memory_get_string_by_link_hash(
     sc_dictionary_fs_memory const * memory,
     sc_addr_hash link_hash,
