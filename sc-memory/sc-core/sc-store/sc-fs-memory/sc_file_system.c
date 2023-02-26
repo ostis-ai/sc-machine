@@ -12,6 +12,7 @@
 
 #include "glib.h"
 #include "glib/gstdio.h"
+#include "../sc-container/sc-string/sc_string.h"
 
 sc_bool sc_fs_isdir(const sc_char * path)
 {
@@ -66,10 +67,14 @@ sc_bool sc_fs_mkdirs(const sc_char * path)
   return SC_TRUE;
 }
 
-void sc_fs_mkfile(sc_char const * path)
+sc_bool sc_fs_mkfile(sc_char const * path)
 {
   sc_io_channel * channel = sc_io_new_channel(path, "w+", null_ptr);
+  if (channel == null_ptr)
+    return SC_FALSE;
+
   sc_io_channel_shutdown(channel, SC_TRUE, null_ptr);
+  return SC_TRUE;
 }
 
 void * sc_fs_open_tmp_file(const sc_char * path, sc_char ** tmp_file_name, sc_char * prefix)
@@ -78,4 +83,11 @@ void * sc_fs_open_tmp_file(const sc_char * path, sc_char ** tmp_file_name, sc_ch
 
   sc_io_channel * result = sc_io_new_write_channel(*tmp_file_name, null_ptr);
   return result;
+}
+
+void sc_fs_initialize_file_path(sc_char const * path, sc_char const * postfix, sc_char ** out_path)
+{
+  sc_uint32 size = sc_str_len(path) + sc_str_len(postfix) + 2;
+  *out_path = sc_mem_new(sc_char, size + 1);
+  sc_str_printf(*out_path, size, "%s/%s", path, postfix);
 }

@@ -152,26 +152,33 @@ result:
 
 sc_bool sc_storage_initialize(const char * path, sc_bool clear)
 {
-  segments = sc_mem_new(sc_segment *, SC_ADDR_SEG_MAX);
-
   sc_bool result = sc_fs_memory_initialize(path, clear);
   if (result == SC_FALSE)
     return SC_FALSE;
 
+  segments = sc_mem_new(sc_segment *, SC_ADDR_SEG_MAX);
+  memset(&(segments_cache[0]), 0, sizeof(sc_segment *) * SC_SEGMENT_CACHE_SIZE);
+
   if (clear == SC_FALSE)
   {
-    sc_fs_memory_read_from_path(segments, &segments_num);
+    if (sc_fs_memory_load(segments, &segments_num) != SC_TRUE)
+      return SC_FALSE;
   }
 
   is_initialized = SC_TRUE;
-  memset(&(segments_cache[0]), 0, sizeof(sc_segment *) * SC_SEGMENT_CACHE_SIZE);
-
   return SC_TRUE;
 }
 
-void sc_storage_shutdown(sc_bool save_state)
+sc_bool sc_storage_shutdown(sc_bool save_state)
 {
-  sc_fs_memory_shutdown(segments, save_state);
+  if (save_state == SC_TRUE)
+  {
+    if (sc_fs_memory_save(segments) == SC_FALSE)
+      return SC_FALSE;
+  }
+
+  if (sc_fs_memory_shutdown() == SC_FALSE)
+    return SC_FALSE;
 
   sc_uint idx;
   for (idx = 0; idx < SC_ADDR_SEG_MAX; idx++)
@@ -181,13 +188,13 @@ void sc_storage_shutdown(sc_bool save_state)
     sc_segment_free(segments[idx]);
   }
 
-  sc_message("Sc-memory: shutdown");
   sc_mem_free(segments);
   segments = null_ptr;
   segments_num = 0;
 
-  is_initialized = SC_FALSE;
   _sc_segment_cache_clear();
+  is_initialized = SC_FALSE;
+  return SC_TRUE;
 }
 
 sc_bool sc_storage_is_initialized()
@@ -499,7 +506,7 @@ sc_result sc_storage_element_free(sc_memory_context * ctx, sc_addr addr)
 
     if (el->flags.type & sc_type_link)
     {
-      sc_fs_memory_remove_link_string(SC_ADDR_LOCAL_TO_INT(addr));
+      sc_fs_memory_unlink_string(SC_ADDR_LOCAL_TO_INT(addr));
     }
     else if (el->flags.type & sc_type_arc_mask)
     {

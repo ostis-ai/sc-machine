@@ -7,6 +7,8 @@
 #ifndef _sc_string_h_
 #define _sc_string_h_
 
+#include <stdio.h>
+
 #include "../../sc-base/sc_allocator.h"
 #include "../../sc_types.h"
 

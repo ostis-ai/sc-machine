@@ -22,6 +22,7 @@ typedef enum _sc_dictionary_fs_memory_status sc_fs_memory_status;
 typedef struct _sc_fs_memory_manager
 {
   sc_fs_memory * fs_memory;
+  sc_char * segments_path;
 
   sc_fs_memory_status (*initialize)(sc_fs_memory ** memory, const sc_char * path);
   sc_fs_memory_status (*shutdown)(sc_fs_memory * memory);
@@ -72,7 +73,7 @@ typedef struct _sc_fs_memory_segments_header
 sc_bool sc_fs_memory_initialize(const sc_char * path, sc_bool clear);
 
 //! Shutdowns file system memory
-sc_bool sc_fs_memory_shutdown(sc_segment ** segments, sc_bool save_segments);
+sc_bool sc_fs_memory_shutdown();
 
 /*! Appends sc-link to file system memory by its string content.
  * @param link_hash An appendable sc-link hash
@@ -126,19 +127,9 @@ sc_bool sc_fs_memory_get_strings_by_substring(
  * @param link_hash A sc-link hash
  * @returns SC_TRUE, if such sc-string exists.
  */
-sc_bool sc_fs_memory_remove_link_string(sc_addr_hash link_hash);
+sc_bool sc_fs_memory_unlink_string(sc_addr_hash link_hash);
 
-/*! Loads segments from file system memory.
- * @param segments Pointer to segments array
- * @param segments_num Pointer to container for number of segments
- * It will be contain pointers to loaded segments.
- */
-sc_bool sc_fs_memory_read_from_path(sc_segment ** segments, sc_uint32 * segments_num);
-
-/*! Saves segments to file system memory.
- * @param segments Pointer to array that contains segment pointers to save.
- */
-sc_bool sc_fs_memory_write_to_path(sc_segment ** segments);
+sc_bool sc_fs_memory_load(sc_segment ** segments, sc_uint32 * segments_num);
 
 sc_bool sc_fs_memory_save(sc_segment ** segments);
 

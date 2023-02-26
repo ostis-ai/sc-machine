@@ -14,8 +14,6 @@
 #include "sc-store/sc_storage.h"
 #include "sc-store/sc_types.h"
 
-#include "sc-store/sc_event.h"
-
 #include "sc-store/sc_event/sc_event_private.h"
 #include "sc-store/sc-container/sc-dictionary/sc_dictionary.h"
 
@@ -33,57 +31,77 @@ GMutex s_concurrency_mutex;
 
 sc_memory_context * sc_memory_initialize(const sc_memory_params * params)
 {
-  g_log_set_always_fatal(G_LOG_LEVEL_CRITICAL);
+  sc_memory_info("Initialize components");
 
-  s_context_hash_table = g_hash_table_new(g_direct_hash, g_direct_equal);
-
-  sc_message("Sc-memory version: %s", params->version);
+  sc_memory_info("Version: %s", params->version);
   sc_message("\tClean memory on shutdown: %s", params->clear ? "On" : "Off");
   sc_message("\tRepo path: %s", params->repo_path);
   sc_message("\tExtension path: %s", params->ext_path);
   sc_message("\tSave period: %d", params->save_period);
   sc_message("\tUpdate period: %d", params->update_period);
 
-  sc_message("Sc-memory log:");
+  sc_memory_info("Logger:");
   sc_message("\tLog type: %s", params->log_type);
   sc_message("\tLog file: %s", params->log_file);
   sc_message("\tLog level: %s", params->log_level);
 
-  sc_message("Sc-memory configuration:");
+  sc_memory_info("Configuration:");
   sc_message("\tmax loaded segments: %d", params->max_loaded_segments);
   sc_message("\tmax threads: %d", params->max_threads);
   sc_message("\tsc-element size: %zd", sizeof(sc_element));
   sc_message("\tsc-string-node size: %zd", sizeof(sc_dictionary_node));
 
-  sc_message("Sc-memory build configuration:");
+  sc_memory_info("Build configuration:");
   sc_message("\tResult structure upload: %s", params->init_memory_generated_upload ? "On" : "Off");
   sc_message("\tInit memory generated structure: %s", params->init_memory_generated_structure);
 
-  if (sc_storage_initialize(params->repo_path, params->clear) != SC_TRUE)
-    return null_ptr;
+  if (sc_storage_initialize(params->repo_path, params->clear) == SC_FALSE)
+  {
+    sc_memory_error("Error while initialize sc-storage");
+    goto error;
+  }
 
+  s_context_hash_table = g_hash_table_new(g_direct_hash, g_direct_equal);
   s_memory_default_ctx = sc_memory_context_new(sc_access_lvl_make(SC_ACCESS_LVL_MAX_VALUE, SC_ACCESS_LVL_MAX_VALUE));
+
   sc_memory_context * helper_ctx =
       sc_memory_context_new(sc_access_lvl_make(SC_ACCESS_LVL_MIN_VALUE, SC_ACCESS_LVL_MAX_VALUE));
   if (sc_helper_init(helper_ctx) != SC_RESULT_OK)
+  {
+    sc_memory_context_free(helper_ctx);
+    sc_memory_error("Error while initialize sc-helper");
     goto error;
+  }
   sc_memory_context_free(helper_ctx);
 
   if (sc_events_initialize_ext(params->max_events_and_agents_threads) == SC_FALSE)
   {
-    sc_error("Error while initialize events module");
+    sc_memory_error("Error while initialize events module");
     goto error;
   }
 
+  sc_addr init_memory_generated_structure;
+  if (params->init_memory_generated_upload)
+    sc_helper_resolve_system_identifier(
+        s_memory_default_ctx, params->init_memory_generated_structure, &init_memory_generated_structure);
+  else
+    SC_ADDR_MAKE_EMPTY(init_memory_generated_structure);
+
+  if (sc_memory_init_ext(params->ext_path, params->enabled_exts, init_memory_generated_structure) != SC_RESULT_OK)
+  {
+    sc_memory_error("Error while initialize extensions");
+    goto error;
+  }
+
+  sc_memory_info("All components successfully initialized");
   return s_memory_default_ctx;
 
 error:
 {
-  if (helper_ctx != null_ptr)
-    sc_memory_context_free(helper_ctx);
   sc_memory_context_free(s_memory_default_ctx);
+  sc_memory_info("Components initialized with errors");
+  return null_ptr;
 }
-  return (s_memory_default_ctx = null_ptr);
 }
 
 sc_result sc_memory_init_ext(
@@ -91,21 +109,22 @@ sc_result sc_memory_init_ext(
     sc_char const ** enabled_list,
     sc_addr const init_memory_generated_structure)
 {
-  sc_result ext_res;
-  ext_res = sc_ext_initialize(ext_path, enabled_list, init_memory_generated_structure);
+  sc_memory_info("Initialize extensions");
+
+  sc_result const ext_res = sc_ext_initialize(ext_path, enabled_list, init_memory_generated_structure);
 
   switch (ext_res)
   {
   case SC_RESULT_OK:
-    sc_message("Modules initialization finished");
+    sc_memory_info("Extensions initialized");
     break;
 
   case SC_RESULT_ERROR_INVALID_PARAMS:
-    sc_warning("Extensions directory '%s' doesn't exist", ext_path);
+    sc_memory_warning("Extensions directory `%s` doesn't exist", ext_path);
     break;
 
   default:
-    sc_warning("Unknown error while initialize extensions");
+    sc_memory_warning("Unknown error while extensions initializing");
     break;
   }
 
@@ -114,14 +133,12 @@ sc_result sc_memory_init_ext(
 
 void sc_memory_shutdown(sc_bool save_state)
 {
+  sc_memory_info("Shutdown components");
+
   sc_events_stop_processing();
-
   sc_memory_shutdown_ext();
-
   sc_events_shutdown();
-
   sc_helper_shutdown();
-
   sc_storage_shutdown(save_state);
 
   sc_memory_context_free(s_memory_default_ctx);
@@ -132,6 +149,8 @@ void sc_memory_shutdown(sc_bool save_state)
   s_context_hash_table = null_ptr;
   s_context_id_last = 0;
   sc_assert(s_context_id_count == 0);
+
+  sc_memory_info("All components shutdown");
 }
 
 void sc_memory_shutdown_ext()

@@ -73,7 +73,7 @@ TEST_F(SCsHelperTest, GenerateBySCs_FileURL)
 
   ScLink const link(*m_ctx, linkAddr);
   EXPECT_EQ(link.DetermineType(), ScLink::Type::Custom);
-  EXPECT_EQ(link.GetAsString(), "content: file://test.scs");
+  EXPECT_EQ(link.GetAsString(), "file://test.scs");
 }
 
 TEST_F(SCsHelperTest, GenerateBySCs_Aliases)

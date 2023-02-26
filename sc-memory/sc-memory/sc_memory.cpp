@@ -93,25 +93,6 @@ bool ScMemory::Initialize(sc_memory_params const & params)
       false, params.init_memory_generated_upload ? params.init_memory_generated_structure : (sc_char *)null_ptr);
   ScAgentInit(true);
 
-  SC_LOG_INFO("Memory initialized");
-
-  sc_addr init_memory_generated_structure;
-
-  if (params.init_memory_generated_upload)
-  {
-    sc_helper_resolve_system_identifier(
-        ms_globalContext, params.init_memory_generated_structure, &init_memory_generated_structure);
-  }
-  else
-  {
-    SC_ADDR_MAKE_EMPTY(init_memory_generated_structure);
-  }
-
-  if (params.ext_path)
-  {
-    sc_memory_init_ext(params.ext_path, params.enabled_exts, init_memory_generated_structure);
-  }
-
   utils::ScLog::SetUp(params.log_type, params.log_file, params.log_level);
 
   return (ms_globalContext != nullptr);

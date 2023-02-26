@@ -32,7 +32,7 @@
 sc_bool sc_storage_initialize(const char * path, sc_bool clear);
 
 //! Shutdown sc storage
-void sc_storage_shutdown(sc_bool save_state);
+sc_bool sc_storage_shutdown(sc_bool save_state);
 
 //! Check if storage initialized
 sc_bool sc_storage_is_initialized();

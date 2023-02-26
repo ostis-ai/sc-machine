@@ -15,20 +15,15 @@
 #include "glib/gstdio.h"
 #include "../sc-base/sc_assert_utils.h"
 #include "../sc-base/sc_message.h"
+
 #include "sc_io.h"
+#include "sc_dictionary_fs_memory_private.h"
 
 sc_fs_memory_manager * manager;
-sc_char * repo_path = null_ptr;
-sc_char segments_path[MAX_PATH_LENGTH];
 
 sc_int32 _checksum_type()
 {
   return G_CHECKSUM_SHA512;
-}
-
-sc_uint8 _checksum_get_size()
-{
-  return (sc_uint8)g_checksum_type_get_length(_checksum_type());
 }
 
 // ----------------------------------------------
@@ -37,26 +32,26 @@ sc_bool sc_fs_memory_initialize(const sc_char * path, sc_bool clear)
 {
   manager = sc_fs_memory_build();
 
-  g_snprintf(segments_path, MAX_PATH_LENGTH, "%s/segments.scdb", path);
-  repo_path = g_strdup(path);
+  static sc_char const * segments_postfix = "segments" SC_FS_EXT;
+  sc_fs_initialize_file_path(path, segments_postfix, &manager->segments_path);
 
-  if (manager->initialize(&manager->fs_memory, repo_path))
+  if (manager->initialize(&manager->fs_memory, path) != SC_FS_MEMORY_OK)
     return SC_FALSE;
 
   // clear repository if it needs
   if (clear == SC_TRUE)
   {
-    sc_message("Sc-memory: clear memory");
-    if (g_file_test(segments_path, G_FILE_TEST_IS_REGULAR) && g_remove(segments_path) != 0)
+    sc_fs_memory_info("Clear sc-memory segments");
+    if (sc_fs_isfile(manager->segments_path) && g_remove(manager->segments_path) != 0)
     {
-      sc_critical("Sc-memory: can't remove segments file: %s", segments_path);
+      sc_fs_memory_error("Can't remove segments file: %s", manager->segments_path);
       return SC_FALSE;
     }
 
-    sc_message("Sc-memory: clear file memory");
-    if (manager->clear != null_ptr && manager->clear() != SC_RESULT_OK)
+    sc_fs_memory_info("Clear sc-fs-memory");
+    if (manager->clear != null_ptr && manager->clear() != SC_FS_MEMORY_OK)
     {
-      sc_critical("Sc-memory: can't clear file memory");
+      sc_fs_memory_error("Can't clear sc-fs-memory");
       return SC_FALSE;
     }
   }
@@ -64,20 +59,12 @@ sc_bool sc_fs_memory_initialize(const sc_char * path, sc_bool clear)
   return SC_TRUE;
 }
 
-sc_bool sc_fs_memory_shutdown(sc_segment ** segments, sc_bool save_segments)
+sc_bool sc_fs_memory_shutdown()
 {
-  if (save_segments == SC_TRUE)
-  {
-    sc_message("Sc-memory: write segments");
-    if (sc_fs_memory_save(segments))
-      return SC_FALSE;
-  }
-
-  if (manager->shutdown(manager->fs_memory))
+  if (manager->shutdown(manager->fs_memory) != SC_FS_MEMORY_OK)
     return SC_FALSE;
 
-  sc_mem_free(repo_path);
-
+  sc_mem_free(manager->segments_path);
   sc_mem_free(manager);
 
   return SC_FALSE;
@@ -85,17 +72,18 @@ sc_bool sc_fs_memory_shutdown(sc_segment ** segments, sc_bool save_segments)
 
 sc_bool sc_fs_memory_link_string(sc_addr_hash const link_hash, sc_char const * string, sc_uint32 const string_size)
 {
-  return !manager->link_string(manager->fs_memory, link_hash, string, string_size);
+  return manager->link_string(manager->fs_memory, link_hash, string, string_size) == SC_FS_MEMORY_OK;
 }
 
 sc_bool sc_fs_memory_get_string_by_link_hash(sc_addr_hash const link_hash, sc_char ** string, sc_uint32 * string_size)
 {
-  return !manager->get_string_by_link_hash(manager->fs_memory, link_hash, string, (sc_uint64 *)string_size);
+  return manager->get_string_by_link_hash(manager->fs_memory, link_hash, string, (sc_uint64 *)string_size) ==
+         SC_FS_MEMORY_OK;
 }
 
 sc_bool sc_fs_memory_get_link_hashes_by_string(sc_char const * string, sc_uint32 const string_size, sc_list ** links)
 {
-  return !manager->get_link_hashes_by_string(manager->fs_memory, string, string_size, links);
+  return manager->get_link_hashes_by_string(manager->fs_memory, string, string_size, links) == SC_FS_MEMORY_OK;
 }
 
 sc_bool sc_fs_memory_get_link_hashes_by_substring(
@@ -104,7 +92,8 @@ sc_bool sc_fs_memory_get_link_hashes_by_substring(
     sc_list ** link_hashes,
     sc_uint32 max_length_to_search_as_prefix)
 {
-  return !manager->get_link_hashes_by_substring(manager->fs_memory, substring, substring_size, link_hashes);
+  return manager->get_link_hashes_by_substring(manager->fs_memory, substring, substring_size, link_hashes) ==
+         SC_FS_MEMORY_OK;
 }
 
 sc_bool sc_fs_memory_get_strings_by_substring(
@@ -113,67 +102,64 @@ sc_bool sc_fs_memory_get_strings_by_substring(
     sc_list ** strings,
     sc_uint32 max_length_to_search_as_prefix)
 {
-  return !manager->get_strings_by_substring(manager->fs_memory, substring, substring_size, strings);
+  return manager->get_strings_by_substring(manager->fs_memory, substring, substring_size, strings) == SC_FS_MEMORY_OK;
 }
 
-sc_bool sc_fs_memory_remove_link_string(sc_addr_hash const link_hash)
+sc_bool sc_fs_memory_unlink_string(sc_addr_hash link_hash)
 {
-  return !manager->unlink_string(manager->fs_memory, link_hash);
+  return manager->unlink_string(manager->fs_memory, link_hash) == SC_FS_MEMORY_OK;
 }
 
 // dictionary read, write and save methods
-sc_bool sc_fs_memory_read_from_path(sc_segment ** segments, sc_uint32 * segments_num)
+sc_bool _sc_fs_memory_load_sc_memory_segments(sc_segment ** segments, sc_uint32 * segments_num)
 {
-  if (g_file_test(repo_path, G_FILE_TEST_IS_DIR) == SC_FALSE)
+  sc_fs_memory_info("Load sc-memory segments");
+  if (sc_fs_isfile(manager->segments_path) == SC_FALSE)
   {
-    sc_fs_mkdirs(repo_path);
-  }
-
-  if (g_file_test(segments_path, G_FILE_TEST_IS_REGULAR) == SC_FALSE)
-  {
-    sc_message("Sc-memory: there are no segments in %s", segments_path);
-    return SC_FALSE;
+    sc_fs_memory_info("There are no sc-memory segments in %s", manager->segments_path);
+    return SC_TRUE;
   }
 
   // open segments
   {
-    sc_io_channel * in_file = sc_io_new_read_channel(segments_path, null_ptr);
-    sc_bool is_valid = SC_TRUE;
-
-    if (in_file == null_ptr)
+    sc_io_channel * segments_channel = sc_io_new_read_channel(manager->segments_path, null_ptr);
+    if (segments_channel == null_ptr)
     {
-      sc_critical("Sc-memory: Can't open segments from: %s", segments_path);
+      sc_fs_memory_error("Can't open sc-memory segments from: %s", manager->segments_path);
       return SC_FALSE;
     }
 
-    if (sc_io_channel_set_encoding(in_file, null_ptr, null_ptr) != SC_FS_IO_STATUS_NORMAL)
+    sc_bool is_valid = SC_TRUE;
+
+    if (sc_io_channel_set_encoding(segments_channel, null_ptr, null_ptr) != SC_FS_IO_STATUS_NORMAL)
     {
-      sc_critical("Sc-memory: Can't setup encoding: %s", segments_path);
+      sc_fs_memory_error("Can't setup encoding: %s", manager->segments_path);
       return SC_FALSE;
     }
 
     gsize bytes_num = 0;
     sc_uint32 header_size = 0;
-    if ((g_io_channel_read_chars(in_file, (sc_char *)&header_size, sizeof(header_size), &bytes_num, null_ptr) !=
-         SC_FS_IO_STATUS_NORMAL) ||
-        (bytes_num != sizeof(header_size)))
+    if (sc_io_channel_read_chars(
+            segments_channel, (sc_char *)&header_size, sizeof(header_size), &bytes_num, null_ptr) !=
+            SC_FS_IO_STATUS_NORMAL ||
+        bytes_num != sizeof(header_size))
     {
-      sc_critical("Sc-memory: Can't read header size");
+      sc_fs_memory_error("Can't read header size");
       return SC_FALSE;
     }
 
     sc_fs_memory_segments_header header;
     if (header_size != sizeof(header))
     {
-      sc_critical("Sc-memory: invalid header size %d != %d", header_size, (int)sizeof(header));
+      sc_fs_memory_error("Invalid header size %d != %d", header_size, (int)sizeof(header));
       return SC_FALSE;
     }
 
-    if ((g_io_channel_read_chars(in_file, (sc_char *)&header, sizeof(header), &bytes_num, null_ptr) !=
-         SC_FS_IO_STATUS_NORMAL) ||
-        (bytes_num != sizeof(header)))
+    if (sc_io_channel_read_chars(segments_channel, (sc_char *)&header, sizeof(header), &bytes_num, null_ptr) !=
+            SC_FS_IO_STATUS_NORMAL ||
+        bytes_num != sizeof(header))
     {
-      sc_critical("Sc-memory: can't read header of segments: %s", segments_path);
+      sc_fs_memory_error("Can't read header of segments: %s", manager->segments_path);
       return SC_FALSE;
     }
 
@@ -182,7 +168,6 @@ sc_bool sc_fs_memory_read_from_path(sc_segment ** segments, sc_uint32 * segments
     GChecksum * checksum = null_ptr;
     /// TODO: Check version
     checksum = g_checksum_new(_checksum_type());
-    sc_assert(checksum);
 
     g_checksum_reset(checksum);
 
@@ -194,11 +179,12 @@ sc_bool sc_fs_memory_read_from_path(sc_segment ** segments, sc_uint32 * segments
       seg = sc_segment_new(i);
       segments[i] = seg;
 
-      g_io_channel_read_chars(in_file, (sc_char *)seg->elements, SC_SEG_ELEMENTS_SIZE_BYTE, &bytes_num, null_ptr);
+      sc_io_channel_read_chars(
+          segments_channel, (sc_char *)seg->elements, SC_SEG_ELEMENTS_SIZE_BYTE, &bytes_num, null_ptr);
       sc_segment_loaded(seg);
       if (bytes_num != SC_SEG_ELEMENTS_SIZE_BYTE)
       {
-        sc_critical("Sc-memory: error while read data for segment: %d", i);
+        sc_fs_memory_error("Error while read data for segment: %d", i);
         return SC_FALSE;
       }
       g_checksum_update(checksum, (sc_uchar *)seg->elements, SC_SEG_ELEMENTS_SIZE_BYTE);
@@ -226,45 +212,45 @@ sc_bool sc_fs_memory_read_from_path(sc_segment ** segments, sc_uint32 * segments
     }
 
     g_checksum_free(checksum);
-    g_io_channel_shutdown(in_file, SC_FALSE, null_ptr);
-    sc_mem_free(in_file);
+    sc_io_channel_shutdown(segments_channel, SC_FALSE, null_ptr);
 
     if (is_valid == SC_FALSE)
       return SC_FALSE;
   }
 
-  sc_message("Sc-memory: segments loaded: %u", *segments_num);
-
-  if (manager->load)
-  {
-    if (manager->load(manager->fs_memory))
-      return SC_FALSE;
-  }
-
+  sc_fs_memory_info("Sc-memory segments loaded: %u", *segments_num);
   return SC_TRUE;
 }
 
-sc_bool sc_fs_memory_write_to_path(sc_segment ** segments)
+sc_bool sc_fs_memory_load(sc_segment ** segments, sc_uint32 * segments_num)
 {
-  if (!sc_fs_isdir(repo_path))
+  sc_bool const sc_memory_result = _sc_fs_memory_load_sc_memory_segments(segments, segments_num);
+  sc_bool const sc_fs_memory_result = manager->load(manager->fs_memory) == SC_FS_MEMORY_OK;
+  return sc_memory_result && sc_fs_memory_result;
+}
+
+sc_bool _sc_fs_memory_save_sc_memory_segments(sc_segment ** segments)
+{
+  sc_fs_memory_info("Save sc-memory segments");
+
+  if (!sc_fs_isdir(manager->fs_memory->path))
   {
-    if (!sc_fs_mkdirs(repo_path))
+    if (!sc_fs_mkdirs(manager->fs_memory->path))
     {
-      sc_critical("Sc-memory: can't create a directory %s", repo_path);
+      sc_fs_memory_error("Can't create a directory %s", manager->fs_memory->path);
       return SC_FALSE;
     }
   }
 
   // create temporary file
-  gchar * tmp_filename = null_ptr;
-  void * output = sc_fs_open_tmp_file(repo_path, &tmp_filename, "segments");
+  sc_char * tmp_filename = null_ptr;
+  sc_io_channel * segments_channel = sc_fs_open_tmp_file(manager->fs_memory->path, &tmp_filename, "segments");
+  sc_io_channel_set_encoding(segments_channel, null_ptr, null_ptr);
 
   sc_fs_memory_segments_header header;
-  memset(&header, 0, sizeof(sc_fs_memory_segments_header));
+  sc_mem_set(&header, 0, sizeof(sc_fs_memory_segments_header));
   header.segments_num = 0;
   header.timestamp = g_get_real_time();
-
-  sc_io_channel_set_encoding(output, null_ptr, null_ptr);
 
   GChecksum * checksum = g_checksum_new(_checksum_type());
   g_checksum_reset(checksum);
@@ -285,18 +271,19 @@ sc_bool sc_fs_memory_write_to_path(sc_segment ** segments)
   g_checksum_get_digest(checksum, header.checksum, &bytes);
 
   sc_uint32 header_size = sizeof(header);
-  if (sc_io_channel_write_chars(output, (sc_char *)&header_size, sizeof(header_size), &bytes, null_ptr) !=
+  if (sc_io_channel_write_chars(segments_channel, (sc_char *)&header_size, sizeof(header_size), &bytes, null_ptr) !=
           SC_FS_IO_STATUS_NORMAL ||
       bytes != sizeof(header_size))
   {
-    sc_critical("Sc-memory: error while `header_size` writing");
+    sc_fs_memory_error("Error while attribute `header_size` writing");
     return SC_FALSE;
   }
 
-  if (g_io_channel_write_chars(output, (sc_char *)&header, header_size, &bytes, null_ptr) != SC_FS_IO_STATUS_NORMAL ||
+  if (sc_io_channel_write_chars(segments_channel, (sc_char *)&header, header_size, &bytes, null_ptr) !=
+          SC_FS_IO_STATUS_NORMAL ||
       bytes != header_size)
   {
-    sc_critical("Sc-memory: error while `header` writing");
+    sc_fs_memory_error("Error while attribute `header` writing");
     return SC_FALSE;
   }
 
@@ -304,21 +291,22 @@ sc_bool sc_fs_memory_write_to_path(sc_segment ** segments)
   {
     segment = segments[idx];
 
-    if (g_io_channel_write_chars(output, (sc_char *)segment->elements, SC_SEG_ELEMENTS_SIZE_BYTE, &bytes, null_ptr) !=
+    if (sc_io_channel_write_chars(
+            segments_channel, (sc_char *)segment->elements, SC_SEG_ELEMENTS_SIZE_BYTE, &bytes, null_ptr) !=
             SC_FS_IO_STATUS_NORMAL ||
         bytes != SC_SEG_ELEMENTS_SIZE_BYTE)
     {
-      sc_critical("Sc-memory: error while `segment->elements` writing");
+      sc_fs_memory_error("Error while attribute `segment->elements` writing");
       return SC_FALSE;
     }
   }
 
   // rename main file
-  if (g_file_test(tmp_filename, G_FILE_TEST_IS_REGULAR))
+  if (sc_fs_isfile(tmp_filename))
   {
-    if (g_rename(tmp_filename, segments_path) != 0)
+    if (g_rename(tmp_filename, manager->segments_path) != 0)
     {
-      sc_critical("Sc-memory: can't rename %s -> %s", tmp_filename, segments_path);
+      sc_fs_memory_error("Can't rename %s -> %s", tmp_filename, manager->segments_path);
       return SC_FALSE;
     }
   }
@@ -328,14 +316,15 @@ sc_bool sc_fs_memory_write_to_path(sc_segment ** segments)
   if (checksum != null_ptr)
     g_checksum_free(checksum);
 
-  sc_io_channel_shutdown(output, SC_TRUE, null_ptr);
+  sc_io_channel_shutdown(segments_channel, SC_TRUE, null_ptr);
 
+  sc_fs_memory_info("Sc-memory segments saved");
   return SC_TRUE;
 }
 
 sc_bool sc_fs_memory_save(sc_segment ** segments)
 {
-  sc_bool sc_memory_result = sc_fs_memory_write_to_path(segments);
-  sc_bool sc_fs_memory_result = !manager->save(manager->fs_memory);
+  sc_bool sc_memory_result = _sc_fs_memory_save_sc_memory_segments(segments);
+  sc_bool sc_fs_memory_result = manager->save(manager->fs_memory) == SC_FS_MEMORY_OK;
   return sc_memory_result && sc_fs_memory_result;
 }
