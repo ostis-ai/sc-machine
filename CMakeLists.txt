@@ -77,11 +77,8 @@ if(CCACHE_PROGRAM AND ${AUTO_CCACHE})
 endif()
 
 if(${SC_FILE_MEMORY} STREQUAL "Dictionary")
-    message("Build with sc-dictionary fs-storage")
-    add_definitions(-DSC_DICTIONARY_FS_STORAGE)
-elseif(${SC_FILE_MEMORY} STREQUAL "Rocksdb")
-    message("Build with sc-rocksdb fs-storage")
-    add_definitions(-DSC_ROCKSDB_FS_STORAGE)
+    message("Build with sc-dictionary fs-memory")
+    add_definitions(-DSC_DICTIONARY_FS_MEMORY)
 endif()
 
 # for multi-config builds (e.g. msvc)
