@@ -20,43 +20,43 @@ sc_dictionary_node * _sc_dictionary_get_next_node(
 /*! Appends a string to a sc-dictionary by a common prefix with another string started in sc-dictionary node, if such
  * exists.
  * @param dictionary A sc-dictionary pointer
- * @param sc_string An appendable string
- * @param size An appendable string size
+ * @param string An appendable string
+ * @param string_size An appendable string size
  * @returns Returns A sc-dictionary node where appended string is ended
  */
 sc_dictionary_node * sc_dictionary_append_to_node(
     sc_dictionary * dictionary,
-    const sc_char * sc_string,
-    sc_uint32 size);
+    const sc_char * string,
+    sc_uint32 string_size);
 
 /*! Removes a string from a sc-dictionary by a common prefix with another string started in sc-dictionary node, if such
  * exists. A common prefix doesn't remove form sc-dictionary if it contains in another string.
  * @param dictionary A sc-dictionary pointer
  * @param node A sc-dictionary node where common prefix may be started
- * @param sc_string A removable string
- * @param sc_string_size Removable string size
+ * @param string A removable string
+ * @param string_size Removable string size
  * @returns Returns A sc-dictionary node where removable string or its prefix starts
  * @note If string isn't in sc-dictionary then null_pointer will be returned
  */
 sc_dictionary_node * sc_dictionary_remove_from_node(
     sc_dictionary * dictionary,
     sc_dictionary_node * node,
-    const sc_char * sc_string,
-    sc_uint32 sc_string_size,
+    const sc_char * string,
+    sc_uint32 string_size,
     sc_uint32 index);
 
 /*! Gets a terminal sc-dictionary node where string ends.
  * @param dictionary A sc-dictionary pointer
  * @param node A sc-dictionary node where common prefix may be started
- * @param sc_string A string to retrieve data by it
- * @param sc_string_size A string size
+ * @param string A string to retrieve data by it
+ * @param string_size A string size
  * @returns Returns A sc-dictionary node where string ends
  */
 const sc_dictionary_node * sc_dictionary_get_last_node_from_node(
     const sc_dictionary * dictionary,
     const sc_dictionary_node * node,
-    const sc_char * sc_string,
-    sc_uint32 sc_string_size);
+    const sc_char * string,
+    sc_uint32 string_size);
 
 /*! Visits all sc-dictionary nodes starting with specified node and calls procedure with it and its data. A method
  * completes down iterating visiting.
