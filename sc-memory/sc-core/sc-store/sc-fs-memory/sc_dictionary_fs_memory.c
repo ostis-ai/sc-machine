@@ -544,6 +544,7 @@ sc_dictionary_fs_memory_status _sc_dictionary_fs_memory_get_link_hashes_by_strin
     sc_char const * string,
     sc_uint64 const string_size,
     sc_bool const is_substring,
+    sc_bool const to_search_as_prefix,
     sc_list const * string_offsets,
     sc_list ** link_hashes)
 {
@@ -600,7 +601,8 @@ sc_dictionary_fs_memory_status _sc_dictionary_fs_memory_get_link_hashes_by_strin
         return SC_FS_MEMORY_READ_ERROR;
       }
 
-      if ((is_substring && sc_str_find(other_string, string) == SC_FALSE) ||
+      if ((is_substring && ((to_search_as_prefix && sc_str_has_prefix(other_string, string) == SC_FALSE) ||
+                            (!to_search_as_prefix && sc_str_find(other_string, string) == SC_FALSE))) ||
           (!is_substring && sc_str_cmp(string, other_string) == SC_FALSE))
       {
         sc_mem_free(other_string);
@@ -625,111 +627,6 @@ sc_dictionary_fs_memory_status _sc_dictionary_fs_memory_get_link_hashes_by_strin
       sc_list_push_back(*link_hashes, link_hash);
     }
     sc_iterator_destroy(data_it);
-  }
-  sc_iterator_destroy(string_offset_it);
-
-  sc_io_channel_shutdown(strings_channel, SC_TRUE, null_ptr);
-
-  return SC_FS_MEMORY_OK;
-}
-
-sc_dictionary_fs_memory_status sc_dictionary_fs_memory_get_link_hashes_by_string_ext(
-    sc_dictionary_fs_memory const * memory,
-    sc_char const * string,
-    sc_uint64 const string_size,
-    sc_bool const is_substring,
-    sc_list ** link_hashes)
-{
-  sc_char * term = _sc_dictionary_fs_memory_get_first_term(string);
-  sc_list * string_offsets = _sc_dictionary_fs_memory_get_string_offsets_by_term(memory, term);
-  sc_mem_free(term);
-
-  sc_dictionary_fs_memory_status const status = _sc_dictionary_fs_memory_get_link_hashes_by_string_term(
-      memory, string, string_size, is_substring, string_offsets, link_hashes);
-  return status;
-}
-
-sc_dictionary_fs_memory_status sc_dictionary_fs_memory_get_link_hashes_by_string(
-    sc_dictionary_fs_memory const * memory,
-    sc_char const * string,
-    sc_uint64 const string_size,
-    sc_list ** link_hashes)
-{
-  return sc_dictionary_fs_memory_get_link_hashes_by_string_ext(memory, string, string_size, SC_FALSE, link_hashes);
-}
-
-sc_dictionary_fs_memory_status sc_dictionary_fs_memory_get_link_hashes_by_substring(
-    sc_dictionary_fs_memory const * memory,
-    sc_char const * string,
-    sc_uint64 const string_size,
-    sc_list ** link_hashes)
-{
-  return sc_dictionary_fs_memory_get_link_hashes_by_string_ext(memory, string, string_size, SC_TRUE, link_hashes);
-}
-
-sc_dictionary_fs_memory_status _sc_dictionary_fs_memory_get_strings_by_substring_term(
-    sc_dictionary_fs_memory const * memory,
-    sc_char const * string,
-    sc_uint64 const string_size,
-    sc_list const * string_offsets,
-    sc_list ** strings)
-{
-  sc_list_init(strings);
-
-  sc_io_channel * strings_channel = sc_io_new_read_channel(memory->strings_path, null_ptr);
-  if (strings_channel == null_ptr)
-  {
-    sc_fs_memory_error("Path `%s` doesn't exist", memory->strings_path);
-    return SC_FS_MEMORY_READ_ERROR;
-  }
-
-  sc_io_channel_set_encoding(strings_channel, null_ptr, null_ptr);
-
-  sc_iterator * string_offset_it = sc_list_iterator(string_offsets);
-  if (!sc_iterator_next(string_offset_it))
-    return SC_FS_MEMORY_READ_ERROR;
-
-  while (sc_iterator_next(string_offset_it))
-  {
-    sc_uint64 const string_offset = (sc_uint64)sc_iterator_get(string_offset_it);
-
-    // read string with size from fs-memory
-    sc_uint64 read_bytes;
-    sc_io_channel_seek(strings_channel, string_offset, SC_FS_IO_SEEK_SET, null_ptr);
-    {
-      sc_uint64 other_string_size;
-      if (sc_io_channel_read_chars(
-              strings_channel, (sc_char *)&other_string_size, sizeof(sc_uint64), &read_bytes, null_ptr) !=
-              SC_FS_IO_STATUS_NORMAL ||
-          sizeof(sc_uint64) != read_bytes)
-      {
-        sc_iterator_destroy(string_offset_it);
-        sc_io_channel_shutdown(strings_channel, SC_TRUE, null_ptr);
-        return SC_FS_MEMORY_READ_ERROR;
-      }
-
-      if (other_string_size < string_size)
-        continue;
-
-      sc_char * other_string = sc_mem_new(sc_char, other_string_size + 1);
-      if (sc_io_channel_read_chars(strings_channel, other_string, other_string_size, &read_bytes, null_ptr) !=
-              SC_FS_IO_STATUS_NORMAL ||
-          other_string_size != read_bytes)
-      {
-        sc_mem_free(other_string);
-        sc_iterator_destroy(string_offset_it);
-        sc_io_channel_shutdown(strings_channel, SC_TRUE, null_ptr);
-        return SC_FS_MEMORY_READ_ERROR;
-      }
-
-      if (sc_str_find(other_string, string) == SC_FALSE)
-      {
-        sc_mem_free(other_string);
-        continue;
-      }
-
-      sc_list_push_back(*strings, other_string);
-    }
   }
   sc_iterator_destroy(string_offset_it);
 
@@ -794,18 +691,140 @@ sc_list * _sc_dictionary_fs_memory_get_string_offsets_by_term_prefix(
   return string_offsets;
 }
 
+sc_dictionary_fs_memory_status sc_dictionary_fs_memory_get_link_hashes_by_string_ext(
+    sc_dictionary_fs_memory const * memory,
+    sc_char const * string,
+    sc_uint64 const string_size,
+    sc_bool const is_substring,
+    sc_bool const to_search_as_prefix,
+    sc_list ** link_hashes)
+{
+  sc_char * term = _sc_dictionary_fs_memory_get_first_term(string);
+  sc_list * string_offsets = null_ptr;
+  if (is_substring)
+    string_offsets = _sc_dictionary_fs_memory_get_string_offsets_by_term_prefix(memory, term);
+  else
+    string_offsets = _sc_dictionary_fs_memory_get_string_offsets_by_term(memory, term);
+  sc_mem_free(term);
+
+  sc_dictionary_fs_memory_status const status = _sc_dictionary_fs_memory_get_link_hashes_by_string_term(
+      memory, string, string_size, is_substring, to_search_as_prefix, string_offsets, link_hashes);
+
+  if (is_substring)
+    sc_list_destroy(string_offsets);
+
+  return status;
+}
+
+sc_dictionary_fs_memory_status sc_dictionary_fs_memory_get_link_hashes_by_string(
+    sc_dictionary_fs_memory const * memory,
+    sc_char const * string,
+    sc_uint64 const string_size,
+    sc_list ** link_hashes)
+{
+  return sc_dictionary_fs_memory_get_link_hashes_by_string_ext(
+      memory, string, string_size, SC_FALSE, SC_FALSE, link_hashes);
+}
+
+sc_dictionary_fs_memory_status sc_dictionary_fs_memory_get_link_hashes_by_substring(
+    sc_dictionary_fs_memory const * memory,
+    sc_char const * string,
+    sc_uint64 const string_size,
+    sc_uint32 const max_length_to_search_as_prefix,
+    sc_list ** link_hashes)
+{
+  return sc_dictionary_fs_memory_get_link_hashes_by_string_ext(
+      memory, string, string_size, SC_TRUE, string_size <= max_length_to_search_as_prefix, link_hashes);
+}
+
+sc_dictionary_fs_memory_status _sc_dictionary_fs_memory_get_strings_by_substring_term(
+    sc_dictionary_fs_memory const * memory,
+    sc_char const * string,
+    sc_uint64 const string_size,
+    sc_bool const to_search_as_prefix,
+    sc_list const * string_offsets,
+    sc_list ** strings)
+{
+  sc_list_init(strings);
+
+  sc_io_channel * strings_channel = sc_io_new_read_channel(memory->strings_path, null_ptr);
+  if (strings_channel == null_ptr)
+  {
+    sc_fs_memory_error("Path `%s` doesn't exist", memory->strings_path);
+    return SC_FS_MEMORY_READ_ERROR;
+  }
+
+  sc_io_channel_set_encoding(strings_channel, null_ptr, null_ptr);
+
+  sc_iterator * string_offset_it = sc_list_iterator(string_offsets);
+  if (!sc_iterator_next(string_offset_it))
+    return SC_FS_MEMORY_READ_ERROR;
+
+  while (sc_iterator_next(string_offset_it))
+  {
+    sc_uint64 const string_offset = (sc_uint64)sc_iterator_get(string_offset_it);
+
+    // read string with size from fs-memory
+    sc_uint64 read_bytes;
+    sc_io_channel_seek(strings_channel, string_offset, SC_FS_IO_SEEK_SET, null_ptr);
+    {
+      sc_uint64 other_string_size;
+      if (sc_io_channel_read_chars(
+              strings_channel, (sc_char *)&other_string_size, sizeof(sc_uint64), &read_bytes, null_ptr) !=
+              SC_FS_IO_STATUS_NORMAL ||
+          sizeof(sc_uint64) != read_bytes)
+      {
+        sc_iterator_destroy(string_offset_it);
+        sc_io_channel_shutdown(strings_channel, SC_TRUE, null_ptr);
+        return SC_FS_MEMORY_READ_ERROR;
+      }
+
+      if (other_string_size < string_size)
+        continue;
+
+      sc_char * other_string = sc_mem_new(sc_char, other_string_size + 1);
+      if (sc_io_channel_read_chars(strings_channel, other_string, other_string_size, &read_bytes, null_ptr) !=
+              SC_FS_IO_STATUS_NORMAL ||
+          other_string_size != read_bytes)
+      {
+        sc_mem_free(other_string);
+        sc_iterator_destroy(string_offset_it);
+        sc_io_channel_shutdown(strings_channel, SC_TRUE, null_ptr);
+        return SC_FS_MEMORY_READ_ERROR;
+      }
+
+      if ((to_search_as_prefix && sc_str_has_prefix(other_string, string) == SC_FALSE) ||
+          (!to_search_as_prefix && sc_str_find(other_string, string) == SC_FALSE))
+      {
+        sc_mem_free(other_string);
+        continue;
+      }
+
+      sc_list_push_back(*strings, other_string);
+    }
+  }
+  sc_iterator_destroy(string_offset_it);
+
+  sc_io_channel_shutdown(strings_channel, SC_TRUE, null_ptr);
+
+  return SC_FS_MEMORY_OK;
+}
+
 sc_dictionary_fs_memory_status sc_dictionary_fs_memory_get_strings_by_substring_ext(
     sc_dictionary_fs_memory const * memory,
     sc_char const * string,
     sc_uint64 const string_size,
+    sc_bool const to_search_as_prefix,
     sc_list ** strings)
 {
   sc_char * term = _sc_dictionary_fs_memory_get_first_term(string);
   sc_list * string_offsets = _sc_dictionary_fs_memory_get_string_offsets_by_term_prefix(memory, term);
   sc_mem_free(term);
 
-  sc_dictionary_fs_memory_status const status =
-      _sc_dictionary_fs_memory_get_strings_by_substring_term(memory, string, string_size, string_offsets, strings);
+  sc_dictionary_fs_memory_status const status = _sc_dictionary_fs_memory_get_strings_by_substring_term(
+      memory, string, string_size, to_search_as_prefix, string_offsets, strings);
+  sc_list_destroy(string_offsets);
+
   return status;
 }
 
@@ -813,9 +832,11 @@ sc_dictionary_fs_memory_status sc_dictionary_fs_memory_get_strings_by_substring(
     sc_dictionary_fs_memory const * memory,
     sc_char const * string,
     sc_uint64 const string_size,
+    sc_uint32 const max_length_to_search_as_prefix,
     sc_list ** strings)
 {
-  return sc_dictionary_fs_memory_get_strings_by_substring_ext(memory, string, string_size, strings);
+  return sc_dictionary_fs_memory_get_strings_by_substring_ext(
+      memory, string, string_size, string_size <= max_length_to_search_as_prefix, strings);
 }
 
 sc_bool _sc_dictionary_fs_memory_get_link_hashes_by_string_offsets(sc_dictionary_node * node, void ** arguments)

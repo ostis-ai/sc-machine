@@ -89,20 +89,22 @@ sc_bool sc_fs_memory_get_link_hashes_by_string(sc_char const * string, sc_uint32
 sc_bool sc_fs_memory_get_link_hashes_by_substring(
     sc_char const * substring,
     sc_uint32 const substring_size,
-    sc_list ** link_hashes,
-    sc_uint32 max_length_to_search_as_prefix)
+    sc_uint32 const max_length_to_search_as_prefix,
+    sc_list ** link_hashes)
 {
-  return manager->get_link_hashes_by_substring(manager->fs_memory, substring, substring_size, link_hashes) ==
+  return manager->get_link_hashes_by_substring(
+             manager->fs_memory, substring, substring_size, max_length_to_search_as_prefix, link_hashes) ==
          SC_FS_MEMORY_OK;
 }
 
 sc_bool sc_fs_memory_get_strings_by_substring(
     const sc_char * substring,
     const sc_uint32 substring_size,
-    sc_list ** strings,
-    sc_uint32 max_length_to_search_as_prefix)
+    sc_uint32 const max_length_to_search_as_prefix,
+    sc_list ** strings)
 {
-  return manager->get_strings_by_substring(manager->fs_memory, substring, substring_size, strings) == SC_FS_MEMORY_OK;
+  return manager->get_strings_by_substring(
+             manager->fs_memory, substring, substring_size, max_length_to_search_as_prefix, strings) == SC_FS_MEMORY_OK;
 }
 
 sc_bool sc_fs_memory_unlink_string(sc_addr_hash link_hash)

@@ -46,7 +46,7 @@ public:
       if (isRelative)
       {
         std::filesystem::path parentFullPath = std::filesystem::path(m_parentPath).parent_path();
-        fullPath = parentFullPath / std::string(match[3]);
+        fullPath = std::filesystem::absolute(parentFullPath / std::string(match[3]));
       }
       else
         fullPath = match[3];

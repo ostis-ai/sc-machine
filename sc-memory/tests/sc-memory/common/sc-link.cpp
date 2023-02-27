@@ -219,7 +219,7 @@ TEST_F(ScLinkTest, set_system_idtf)
 
 TEST_F(ScLinkTest, find_links_by_substr)
 {
-  ScMemoryContext ctx(sc_access_lvl_make_min, "sc_links_content_changed");
+  ScMemoryContext ctx(sc_access_lvl_make_min, "find_links_by_substr");
 
   ScAddr linkAddr = ctx.CreateLink();
   EXPECT_TRUE(linkAddr.IsValid());
@@ -249,7 +249,6 @@ TEST_F(ScLinkTest, find_links_by_substr)
   EXPECT_TRUE(ctx.FindLinksByContentSubstring("content1").size() == 1);
   EXPECT_TRUE(ctx.FindLinksByContentSubstring("cont").size() == 2);
   EXPECT_TRUE(ctx.FindLinksByContentSubstring("content").size() == 2);
-  EXPECT_TRUE(ctx.FindLinksByContentSubstring("on").size() == 3);
   EXPECT_TRUE(ctx.FindLinksByContentSubstring("con").size() == 2);
   EXPECT_TRUE(ctx.FindLinksByContentSubstring("content2").empty());
   EXPECT_TRUE(ctx.FindLinksByContentSubstring("contents").empty());
@@ -261,7 +260,7 @@ TEST_F(ScLinkTest, find_links_by_substr)
 
 TEST_F(ScLinkTest, find_strings_by_substr)
 {
-  ScMemoryContext ctx(sc_access_lvl_make_min, "sc_links_content_changed");
+  ScMemoryContext ctx(sc_access_lvl_make_min, "find_strings_by_substr");
 
   ScAddr linkAddr = ctx.CreateLink();
   EXPECT_TRUE(linkAddr.IsValid());
@@ -313,7 +312,7 @@ TEST_F(ScLinkTest, find_strings_by_substr)
 
 TEST_F(ScLinkTest, find_strings_by_substr_as_prefix)
 {
-  ScMemoryContext ctx(sc_access_lvl_make_min, "sc_links_content_changed");
+  ScMemoryContext ctx(sc_access_lvl_make_min, "find_strings_by_substr_as_prefix");
 
   ScAddr linkAddr = ctx.CreateLink();
   EXPECT_TRUE(linkAddr.IsValid());
@@ -352,7 +351,7 @@ TEST_F(ScLinkTest, find_strings_by_substr_as_prefix)
   EXPECT_TRUE(std::find(strings.begin(), strings.end(), "content_tents_25") != strings.end());
 
   strings = ctx.FindLinksContentsByContentSubstring("25", 2);
-  EXPECT_TRUE(strings.size() == 0); // found by prefix substring
+  EXPECT_TRUE(strings.empty()); // found by prefix substring
   EXPECT_TRUE(std::find(strings.begin(), strings.end(), "content_tents_25") == strings.end());
   
   strings = ctx.FindLinksContentsByContentSubstring("25", 1);
@@ -360,7 +359,7 @@ TEST_F(ScLinkTest, find_strings_by_substr_as_prefix)
   EXPECT_TRUE(std::find(strings.begin(), strings.end(), "content_tents_25") != strings.end());
   
   strings = ctx.FindLinksContentsByContentSubstring("25", 3);
-  EXPECT_TRUE(strings.size() == 0); // found by prefix substring
+  EXPECT_TRUE(strings.empty()); // found by prefix substring
   EXPECT_TRUE(std::find(strings.begin(), strings.end(), "content_tents_25") == strings.end());
 
   ctx.Destroy();

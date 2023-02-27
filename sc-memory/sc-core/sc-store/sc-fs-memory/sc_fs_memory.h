@@ -48,11 +48,13 @@ typedef struct _sc_fs_memory_manager
       sc_fs_memory const * memory,
       sc_char const * substring,
       sc_uint64 const substring_size,
+      sc_uint32 const max_length_to_search_as_prefix,
       sc_list ** link_hashes);
   sc_fs_memory_status (*get_strings_by_substring)(
       sc_fs_memory const * memory,
       sc_char const * substring,
       sc_uint64 const substring_size,
+      sc_uint32 const max_length_to_search_as_prefix,
       sc_list ** strings);
   sc_fs_memory_status (*unlink_string)(sc_fs_memory * memory, sc_addr_hash const link_hash);
 } sc_fs_memory_manager;
@@ -100,28 +102,28 @@ sc_bool sc_fs_memory_get_link_hashes_by_string(sc_char const * string, sc_uint32
 /*! Gets sc-link hashes from file system memory by it substring content.
  * @param substring A key substring
  * @param string_size A key string size
- * @param[out] link_hashes A pointer to sc-link hashes
  * @param max_length_to_search_as_prefix Search by prefix as substring length <= max_length_to_search_as_prefix
+ * @param[out] link_hashes A pointer to sc-link hashes
  * @returns SC_TRUE, if such sc-link hashes exist.
  */
 sc_bool sc_fs_memory_get_link_hashes_by_substring(
     const sc_char * substring,
     sc_uint32 substring_size,
-    sc_list ** link_hashes,
-    sc_uint32 max_length_to_search_as_prefix);
+    sc_uint32 max_length_to_search_as_prefix,
+    sc_list ** link_hashes);
 
 /*! Gets sc-strings from file system memory by it substring content.
  * @param substring A key substring
  * @param string_size A key string size
- * @param[out] strings A pointer to sc-strings array
  * @param max_length_to_search_as_prefix Search by prefix as substring length <= max_length_to_search_as_prefix
+ * @param[out] strings A pointer to sc-strings array
  * @returns SC_TRUE, if such sc-strings exist.
  */
 sc_bool sc_fs_memory_get_strings_by_substring(
     const sc_char * substring,
     sc_uint32 string_size,
-    sc_list ** strings,
-    sc_uint32 max_length_to_search_as_prefix);
+    sc_uint32 max_length_to_search_as_prefix,
+    sc_list ** strings);
 
 /*! Removes sc-link content string from file system memory.
  * @param link_hash A sc-link hash

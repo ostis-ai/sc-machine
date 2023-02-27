@@ -80,12 +80,14 @@ sc_dictionary_fs_memory_status sc_dictionary_fs_memory_get_link_hashes_by_substr
     sc_dictionary_fs_memory const * memory,
     sc_char const * string,
     sc_uint64 string_size,
+    sc_uint32 max_length_to_search_as_prefix,
     sc_list ** link_hashes);
 
 sc_dictionary_fs_memory_status sc_dictionary_fs_memory_get_strings_by_substring(
     sc_dictionary_fs_memory const * memory,
     sc_char const * string,
     sc_uint64 string_size,
+    sc_uint32 max_length_to_search_as_prefix,
     sc_list ** strings);
 
 sc_dictionary_fs_memory_status sc_dictionary_fs_memory_intersect_link_hashes_by_terms(
