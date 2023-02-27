@@ -16,7 +16,7 @@ sc_fs_memory_manager * sc_fs_memory_build()
 {
   sc_fs_memory_manager * manager = sc_mem_new(sc_fs_memory_manager, 1);
 #ifdef SC_DICTIONARY_FS_MEMORY
-  manager->initialize = sc_dictionary_fs_memory_initialize;
+  manager->initialize = sc_dictionary_fs_memory_initialize_ext;
   manager->shutdown = sc_dictionary_fs_memory_shutdown;
   manager->load = sc_dictionary_fs_memory_load;
   manager->save = sc_dictionary_fs_memory_save;

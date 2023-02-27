@@ -55,6 +55,7 @@ private:
 
   using MemoryContextList = std::list<ScMemoryContext const *>;
   static MemoryContextList ms_contexts;
+  static sc_memory_params m_params;
 };
 
 //! Class used to work with memory. It provides functions to create/erase elements

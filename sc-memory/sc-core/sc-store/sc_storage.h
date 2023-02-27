@@ -7,6 +7,8 @@
 #ifndef _sc_storage_h_
 #define _sc_storage_h_
 
+#include "../sc_memory_params.h"
+
 #include "sc_types.h"
 #include "sc_defines.h"
 #include "sc_stream.h"
@@ -25,14 +27,11 @@
     }
 #endif
 
-/*! Initialize sc storage in specified path
- * @param path Path to repository
- * @param clear Flag to clear initialize empty storage
- */
-sc_bool sc_storage_initialize(const char * path, sc_bool clear);
+//! Initialize sc storage in specified path
+sc_bool sc_storage_initialize(const sc_memory_params * params);
 
 //! Shutdown sc storage
-sc_bool sc_storage_shutdown(sc_bool save_state);
+sc_bool sc_storage_shutdown(sc_bool save_state, const sc_memory_params * params);
 
 //! Check if storage initialized
 sc_bool sc_storage_is_initialized();

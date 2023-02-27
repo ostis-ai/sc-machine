@@ -15,9 +15,12 @@
 #  include "sc_file_system.h"
 #  include "sc_io.h"
 
-sc_dictionary_fs_memory_status sc_dictionary_fs_memory_initialize(
+#  define DEFAULT_MAX_SEARCHABLE_STRING_SIZE 1000
+
+sc_dictionary_fs_memory_status sc_dictionary_fs_memory_initialize_ext(
     sc_dictionary_fs_memory ** memory,
-    sc_char const * path)
+    sc_char const * path,
+    sc_uint32 const max_searchable_string_size)
 {
   sc_fs_memory_info("Initialize");
   if (path == null_ptr)
@@ -38,7 +41,7 @@ sc_dictionary_fs_memory_status sc_dictionary_fs_memory_initialize(
   *memory = sc_mem_new(sc_dictionary_fs_memory, 1);
   {
     sc_str_cpy((*memory)->path, path, sc_str_len(path));
-    (*memory)->max_searchable_string_size = 1000;
+    (*memory)->max_searchable_string_size = max_searchable_string_size;
 
     {
       _sc_uchar_dictionary_initialize(&(*memory)->terms_string_offsets_dictionary);
@@ -58,7 +61,7 @@ sc_dictionary_fs_memory_status sc_dictionary_fs_memory_initialize(
   sc_fs_memory_info("Configuration:");
   sc_message("\tRepo path: %s", path);
   sc_message("\tSc-dictionary node size: %zd", sizeof(sc_dictionary_node));
-  sc_message("\tMax searchable string size: %s", path);
+  sc_message("\tMax searchable string size: %lld", (*memory)->max_searchable_string_size);
 
   sc_fs_memory_info("Successfully initialized");
 
@@ -69,6 +72,13 @@ error:
   sc_fs_memory_info("Initialized with errors");
   return SC_FS_MEMORY_WRONG_PATH;
 }
+}
+
+sc_dictionary_fs_memory_status sc_dictionary_fs_memory_initialize(
+    sc_dictionary_fs_memory ** memory,
+    sc_char const * path)
+{
+  return sc_dictionary_fs_memory_initialize_ext(memory, path, DEFAULT_MAX_SEARCHABLE_STRING_SIZE);
 }
 
 sc_dictionary_fs_memory_status sc_dictionary_fs_memory_shutdown(sc_dictionary_fs_memory * memory)

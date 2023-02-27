@@ -123,9 +123,14 @@ public:
     m_memoryParams.enabled_exts = nullptr;
 
     m_memoryParams.max_loaded_segments = GetIntByKey("max_loaded_segments", DEFAULT_MAX_LOADED_SEGMENTS);
+<<<<<<< HEAD
     m_memoryParams.max_threads = GetIntByKey("max_threads", DEFAULT_MAX_THREADS);
     m_memoryParams.max_events_and_agents_threads =
         GetIntByKey("max_events_and_agents_threads", DEFAULT_EVENTS_PROCESSORS);
+=======
+    m_memoryParams.max_searchable_string_size =
+        GetIntByKey("max_searchable_string_size", DEFAULT_MAX_SEARCHABLE_STRING_SIZE);
+>>>>>>> e58d72a0 ([memory][fs-memory] Provide params for fs-memory)
 
     m_memoryParams.save_period = GetIntByKey("save_period", DEFAULT_SAVE_PERIOD);
     m_memoryParams.update_period = GetIntByKey("update_period", DEFAULT_UPDATE_PERIOD);

@@ -28,14 +28,14 @@ sc_int32 _checksum_type()
 
 // ----------------------------------------------
 
-sc_bool sc_fs_memory_initialize(const sc_char * path, sc_bool clear)
+sc_bool sc_fs_memory_initialize(const sc_char * path, sc_uint32 const max_searchable_string_size, sc_bool clear)
 {
   manager = sc_fs_memory_build();
 
   static sc_char const * segments_postfix = "segments" SC_FS_EXT;
   sc_fs_initialize_file_path(path, segments_postfix, &manager->segments_path);
 
-  if (manager->initialize(&manager->fs_memory, path) != SC_FS_MEMORY_OK)
+  if (manager->initialize(&manager->fs_memory, path, max_searchable_string_size) != SC_FS_MEMORY_OK)
     return SC_FALSE;
 
   // clear repository if it needs

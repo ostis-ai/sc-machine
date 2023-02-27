@@ -150,16 +150,16 @@ result:
 
 // -----------------------------------------------------------------------------
 
-sc_bool sc_storage_initialize(const char * path, sc_bool clear)
+sc_bool sc_storage_initialize(const sc_memory_params * params)
 {
-  sc_bool result = sc_fs_memory_initialize(path, clear);
+  sc_bool result = sc_fs_memory_initialize(params->repo_path, params->max_searchable_string_size, params->clear);
   if (result == SC_FALSE)
     return SC_FALSE;
 
-  segments = sc_mem_new(sc_segment *, SC_ADDR_SEG_MAX);
+  segments = sc_mem_new(sc_segment *, params->max_loaded_segments);
   memset(&(segments_cache[0]), 0, sizeof(sc_segment *) * SC_SEGMENT_CACHE_SIZE);
 
-  if (clear == SC_FALSE)
+  if (params->clear == SC_FALSE)
   {
     if (sc_fs_memory_load(segments, &segments_num) != SC_TRUE)
       return SC_FALSE;
@@ -173,7 +173,7 @@ sc_bool sc_storage_initialize(const char * path, sc_bool clear)
   return SC_TRUE;
 }
 
-sc_bool sc_storage_shutdown(sc_bool save_state)
+sc_bool sc_storage_shutdown(sc_bool save_state, const sc_memory_params * params)
 {
   if (save_state == SC_TRUE)
   {
@@ -185,7 +185,7 @@ sc_bool sc_storage_shutdown(sc_bool save_state)
     return SC_FALSE;
 
   sc_uint idx;
-  for (idx = 0; idx < SC_ADDR_SEG_MAX; idx++)
+  for (idx = 0; idx < params->max_loaded_segments; idx++)
   {
     if (segments[idx] == null_ptr)
       continue;  // skip segments, that are not loaded

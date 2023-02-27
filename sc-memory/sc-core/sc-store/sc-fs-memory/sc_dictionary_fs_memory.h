@@ -52,6 +52,17 @@ typedef enum _sc_dictionary_fs_memory_status
 /*! Initialize sc-dictionary file system memory in specified path.
  * @param memory[out] A pointer to sc-memory instance
  * @param path Path to store on file system
+ * @param max_searchable_string_size Maximal size of strings that can be found by string/substring
+ * @returns SC_FS_MEMORY_OK, if file system memory initialized, or SC_FS_MEMORY_WRONG_PATH if path is not correct.
+ */
+sc_dictionary_fs_memory_status sc_dictionary_fs_memory_initialize_ext(
+    sc_dictionary_fs_memory ** memory,
+    sc_char const * path,
+    sc_uint32 max_searchable_string_size);
+
+/*! Initialize sc-dictionary file system memory in specified path.
+ * @param memory[out] A pointer to sc-memory instance
+ * @param path Path to store on file system
  * @returns SC_FS_MEMORY_OK, if file system memory initialized, or SC_FS_MEMORY_WRONG_PATH if path is not correct.
  */
 sc_dictionary_fs_memory_status sc_dictionary_fs_memory_initialize(

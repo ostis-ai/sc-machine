@@ -24,7 +24,7 @@ typedef struct _sc_fs_memory_manager
   sc_fs_memory * fs_memory;  // file system memory instance
   sc_char * segments_path;   // file path to sc-memory segments
 
-  sc_fs_memory_status (*initialize)(sc_fs_memory ** memory, const sc_char * path);
+  sc_fs_memory_status (*initialize)(sc_fs_memory ** memory, const sc_char * path, sc_uint32 max_searchable_string_size);
   sc_fs_memory_status (*shutdown)(sc_fs_memory * memory);
   sc_fs_memory_status (*clear)();
   sc_fs_memory_status (*load)(sc_fs_memory * memory);
@@ -70,10 +70,11 @@ typedef struct _sc_fs_memory_segments_header
 
 /*! Initialize file system memory in specified path.
  * @param path Path to store on file system
+ * @param max_searchable_string_size Maximal size of strings that can be found by string/substring
  * @param clear Flag to initialize empty memory
  * @returns SC_TRUE, if file system memory initialized.
  */
-sc_bool sc_fs_memory_initialize(const sc_char * path, sc_bool clear);
+sc_bool sc_fs_memory_initialize(const sc_char * path, sc_uint32 max_searchable_string_size, sc_bool clear);
 
 /*! Shutdowns file system memory.
  * @return SC_TRUE, if file system memory shutdown.
