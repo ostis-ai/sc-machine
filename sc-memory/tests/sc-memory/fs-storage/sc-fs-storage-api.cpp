@@ -448,7 +448,7 @@ TEST(ScDictionaryFsMemoryTest, sc_dictionary_fs_memory_get_link_hashes_by_string
   EXPECT_EQ(sc_dictionary_fs_memory_shutdown(memory), SC_FS_MEMORY_OK);
 }
 
-TEST(ScDictionaryFsMemoryTest, sc_dictionary_fs_memory_get_link_hashes_by_substring)
+TEST(ScDictionaryFsMemoryTest, sc_dictionary_fs_memory_get_link_hashes_by_substring_ext)
 {
   sc_dictionary_fs_memory * memory;
   EXPECT_EQ(sc_dictionary_fs_memory_initialize(&memory, SC_DICTIONARY_FS_MEMORY_PATH), SC_FS_MEMORY_OK);

@@ -21,8 +21,8 @@ typedef enum _sc_dictionary_fs_memory_status sc_fs_memory_status;
 
 typedef struct _sc_fs_memory_manager
 {
-  sc_fs_memory * fs_memory;
-  sc_char * segments_path;
+  sc_fs_memory * fs_memory;  // file system memory instance
+  sc_char * segments_path;   // file path to sc-memory segments
 
   sc_fs_memory_status (*initialize)(sc_fs_memory ** memory, const sc_char * path);
   sc_fs_memory_status (*shutdown)(sc_fs_memory * memory);
@@ -68,42 +68,53 @@ typedef struct _sc_fs_memory_segments_header
 
 } sc_fs_memory_segments_header;
 
-/*! Initialize file system memory in specified path
- * @param path Path to store on file system.
+/*! Initialize file system memory in specified path.
+ * @param path Path to store on file system
  * @param clear Flag to initialize empty memory
+ * @returns SC_TRUE, if file system memory initialized.
  */
 sc_bool sc_fs_memory_initialize(const sc_char * path, sc_bool clear);
 
-//! Shutdowns file system memory
+/*! Shutdowns file system memory.
+ * @return SC_TRUE, if file system memory shutdown.
+ */
 sc_bool sc_fs_memory_shutdown();
 
-/*! Appends sc-link to file system memory by its string content.
+/*! Appends sc-link hash to file system memory with its string content.
  * @param link_hash An appendable sc-link hash
- * @param string A key string
- * @param string_size A key string size
+ * @param string A sc-link string content
+ * @param string_size A sc-link string content size
+ * @returns SC_TRUE, if are no writing errors.
  */
 sc_bool sc_fs_memory_link_string(sc_addr_hash link_hash, sc_char const * string, sc_uint32 string_size);
 
-/*! Gets sc-link content string with its size.
+/*! Removes sc-link content string from file system memory.
  * @param link_hash A sc-link hash
- * @param[out] string A content string
- * @param[out] string_size A content string size
+ * @returns SC_TRUE, if such sc-string content exists.
+ */
+sc_bool sc_fs_memory_unlink_string(sc_addr_hash link_hash);
+
+/*! Gets sc-link content string with its size by sc-link hash.
+ * @param link_hash A sc-link hash
+ * @param[out] string A sc-link content string
+ * @param[out] string_size A sc-link content string size
+ * @returns SC_TRUE, if sc-link content exists.
  */
 sc_bool sc_fs_memory_get_string_by_link_hash(sc_addr_hash link_hash, sc_char ** string, sc_uint32 * string_size);
 
-/*! Gets sc-link hashes from file system memory by it string content.
- * @param string A key string
- * @param string_size A key string size
- * @param[out] link_hashes A pointer to sc-link hashes
- * @returns SC_TRUE, if sc-link_hashes exist.
+/*! Gets sc-link hashes from file system memory by its string content.
+ * @param string A sc-links content string
+ * @param string_size A sc-links content string size
+ * @param[out] link_hashes A pointer to sc-link hashes list
+ * @returns SC_TRUE, if sc-link hashes exist.
  */
 sc_bool sc_fs_memory_get_link_hashes_by_string(sc_char const * string, sc_uint32 string_size, sc_list ** link_hashes);
 
-/*! Gets sc-link hashes from file system memory by it substring content.
- * @param substring A key substring
- * @param string_size A key string size
+/*! Gets sc-link hashes from file system memory by its substring content.
+ * @param substring A sc-links content substring
+ * @param string_size A sc-links content substring size
  * @param max_length_to_search_as_prefix Search by prefix as substring length <= max_length_to_search_as_prefix
- * @param[out] link_hashes A pointer to sc-link hashes
+ * @param[out] link_hashes A pointer to sc-link hashes list
  * @returns SC_TRUE, if such sc-link hashes exist.
  */
 sc_bool sc_fs_memory_get_link_hashes_by_substring(
@@ -112,11 +123,11 @@ sc_bool sc_fs_memory_get_link_hashes_by_substring(
     sc_uint32 max_length_to_search_as_prefix,
     sc_list ** link_hashes);
 
-/*! Gets sc-strings from file system memory by it substring content.
- * @param substring A key substring
- * @param string_size A key string size
+/*! Gets sc-strings from file system memory by its substring content.
+ * @param substring A sc-strings content substring
+ * @param string_size A sc-strings content substring size
  * @param max_length_to_search_as_prefix Search by prefix as substring length <= max_length_to_search_as_prefix
- * @param[out] strings A pointer to sc-strings array
+ * @param[out] strings A pointer to sc-strings list
  * @returns SC_TRUE, if such sc-strings exist.
  */
 sc_bool sc_fs_memory_get_strings_by_substring(
@@ -125,14 +136,17 @@ sc_bool sc_fs_memory_get_strings_by_substring(
     sc_uint32 max_length_to_search_as_prefix,
     sc_list ** strings);
 
-/*! Removes sc-link content string from file system memory.
- * @param link_hash A sc-link hash
- * @returns SC_TRUE, if such sc-string exists.
+/*! Load file system memory from file system
+ * @param segments[out] A pointer to loadable sc-memory segments
+ * @param segments_num[out] A pointer to loadable sc-memory segments num
+ * @returns SC_TRUE, if file system loaded.
  */
-sc_bool sc_fs_memory_unlink_string(sc_addr_hash link_hash);
-
 sc_bool sc_fs_memory_load(sc_segment ** segments, sc_uint32 * segments_num);
 
+/*! Save file system memory to file system
+ * @param segments A pointer to savable sc-memory segments
+ * @returns SC_TRUE, if file system saved.
+ */
 sc_bool sc_fs_memory_save(sc_segment ** segments);
 
 #endif

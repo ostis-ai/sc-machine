@@ -246,10 +246,7 @@ sc_bool sc_dictionary_has(const sc_dictionary * dictionary, const sc_char * stri
   return SC_DICTIONARY_NODE_IS_VALID(last);
 }
 
-void * sc_dictionary_get_by_key(
-    const sc_dictionary * dictionary,
-    const sc_char * string,
-    const sc_uint32 string_size)
+void * sc_dictionary_get_by_key(const sc_dictionary * dictionary, const sc_char * string, const sc_uint32 string_size)
 {
   const sc_dictionary_node * last =
       sc_dictionary_get_last_node_from_node(dictionary, dictionary->root, string, string_size);
