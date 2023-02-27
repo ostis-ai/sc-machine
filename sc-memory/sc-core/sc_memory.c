@@ -80,19 +80,6 @@ sc_memory_context * sc_memory_initialize(const sc_memory_params * params)
     goto error;
   }
 
-  sc_addr init_memory_generated_structure;
-  if (params->init_memory_generated_upload)
-    sc_helper_resolve_system_identifier(
-        s_memory_default_ctx, params->init_memory_generated_structure, &init_memory_generated_structure);
-  else
-    SC_ADDR_MAKE_EMPTY(init_memory_generated_structure);
-
-  if (sc_memory_init_ext(params->ext_path, params->enabled_exts, init_memory_generated_structure) != SC_RESULT_OK)
-  {
-    sc_memory_error("Error while initialize extensions");
-    goto error;
-  }
-
   sc_memory_info("All components successfully initialized");
   return s_memory_default_ctx;
 

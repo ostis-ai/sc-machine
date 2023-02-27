@@ -448,7 +448,7 @@ TEST(ScDictionaryFsMemoryTest, sc_dictionary_fs_memory_get_link_hashes_by_string
   EXPECT_EQ(sc_dictionary_fs_memory_shutdown(memory), SC_FS_MEMORY_OK);
 }
 
-TEST(ScDictionaryFsMemoryTest, sc_dictionary_fs_memory_get_link_hashes_by_substring_ext)
+TEST(ScDictionaryFsMemoryTest, sc_dictionary_fs_memory_get_link_hashes_by_substring)
 {
   sc_dictionary_fs_memory * memory;
   EXPECT_EQ(sc_dictionary_fs_memory_initialize(&memory, SC_DICTIONARY_FS_MEMORY_PATH), SC_FS_MEMORY_OK);
@@ -503,6 +503,69 @@ TEST(ScDictionaryFsMemoryTest, sc_dictionary_fs_memory_get_link_hashes_by_substr
     EXPECT_EQ((sc_addr_hash)sc_iterator_get(it), hash2);
     sc_iterator_destroy(it);
     sc_list_destroy(found_link_hashes);
+  }
+
+  EXPECT_EQ(sc_dictionary_fs_memory_shutdown(memory), SC_FS_MEMORY_OK);
+}
+
+TEST(ScDictionaryFsMemoryTest, sc_dictionary_fs_memory_get_strings_by_substring)
+{
+  sc_dictionary_fs_memory * memory;
+  EXPECT_EQ(sc_dictionary_fs_memory_initialize(&memory, SC_DICTIONARY_FS_MEMORY_PATH), SC_FS_MEMORY_OK);
+
+  {
+    sc_char string1[] = TEXT_EXAMPLE_1;
+    sc_addr_hash hash1 = 112;
+    EXPECT_EQ(sc_dictionary_fs_memory_link_string(memory, hash1, string1, sc_str_len(string1)), SC_FS_MEMORY_OK);
+
+    sc_char string2[] = TEXT_EXAMPLE_2;
+    sc_addr_hash hash2 = 518;
+    EXPECT_EQ(sc_dictionary_fs_memory_link_string(memory, hash2, string2, sc_str_len(string2)), SC_FS_MEMORY_OK);
+
+    sc_list * found_strings;
+    sc_char substring1[] = "it";
+    EXPECT_EQ(
+        sc_dictionary_fs_memory_get_strings_by_substring(
+            memory, substring1, sc_str_len(substring1), &found_strings),
+        SC_FS_MEMORY_OK);
+    EXPECT_EQ(found_strings->size, 2u);
+
+    sc_iterator * it = sc_list_iterator(found_strings);
+    EXPECT_TRUE(sc_iterator_next(it));
+    EXPECT_TRUE(sc_str_cmp((sc_char *)sc_iterator_get(it), string1));
+    EXPECT_TRUE(sc_iterator_next(it));
+    EXPECT_TRUE(sc_str_cmp((sc_char *)sc_iterator_get(it), string2));
+    sc_iterator_destroy(it);
+    sc_list_clear(found_strings);
+    sc_list_destroy(found_strings);
+
+    sc_char substring2[] = "it is the first";
+    EXPECT_EQ(
+        sc_dictionary_fs_memory_get_strings_by_substring(
+            memory, substring2, sc_str_len(substring2), &found_strings),
+        SC_FS_MEMORY_OK);
+    EXPECT_EQ(found_strings->size, 1u);
+
+    it = sc_list_iterator(found_strings);
+    EXPECT_TRUE(sc_iterator_next(it));
+    EXPECT_TRUE(sc_str_cmp((sc_char *)sc_iterator_get(it), string1));
+    sc_iterator_destroy(it);
+    sc_list_clear(found_strings);
+    sc_list_destroy(found_strings);
+
+    sc_char substring3[] = "it is the second";
+    EXPECT_EQ(
+        sc_dictionary_fs_memory_get_strings_by_substring(
+            memory, substring3, sc_str_len(substring3), &found_strings),
+        SC_FS_MEMORY_OK);
+    EXPECT_EQ(found_strings->size, 1u);
+
+    it = sc_list_iterator(found_strings);
+    EXPECT_TRUE(sc_iterator_next(it));
+    EXPECT_TRUE(sc_str_cmp((sc_char *)sc_iterator_get(it), string2));
+    sc_iterator_destroy(it);
+    sc_list_clear(found_strings);
+    sc_list_destroy(found_strings);
   }
 
   EXPECT_EQ(sc_dictionary_fs_memory_shutdown(memory), SC_FS_MEMORY_OK);
@@ -565,11 +628,12 @@ TEST(ScDictionaryFsMemoryTest, sc_dictionary_fs_memory_intersect_strings_by_term
   EXPECT_EQ(sc_dictionary_fs_memory_initialize(&memory, SC_DICTIONARY_FS_MEMORY_PATH), SC_FS_MEMORY_OK);
 
   sc_char string1[] = TEXT_EXAMPLE_1;
-  sc_addr_hash hash = 112;
-  EXPECT_EQ(sc_dictionary_fs_memory_link_string(memory, hash, string1, sc_str_len(string1)), SC_FS_MEMORY_OK);
+  sc_addr_hash hash1 = 112;
+  EXPECT_EQ(sc_dictionary_fs_memory_link_string(memory, hash1, string1, sc_str_len(string1)), SC_FS_MEMORY_OK);
 
   sc_char string2[] = TEXT_EXAMPLE_2;
-  EXPECT_EQ(sc_dictionary_fs_memory_link_string(memory, hash, string2, sc_str_len(string2)), SC_FS_MEMORY_OK);
+  sc_addr_hash hash2 = 513;
+  EXPECT_EQ(sc_dictionary_fs_memory_link_string(memory, hash2, string2, sc_str_len(string2)), SC_FS_MEMORY_OK);
 
   sc_list * terms;
   sc_list_init(&terms);

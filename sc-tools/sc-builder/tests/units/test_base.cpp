@@ -74,7 +74,7 @@ TEST(ScBuilder, BuilderConfig)
 
   ScConfig configFile{config, {"repo_path"}};
 
-  ScMemoryConfig memoryConfig{configFile, std::move(memoryParams)};
+  ScMemoryConfig memoryConfig{configFile, memoryParams};
 
   params.m_resultStructureUpload = memoryConfig.GetParams().init_memory_generated_upload;
   params.m_resultStructureSystemIdtf =

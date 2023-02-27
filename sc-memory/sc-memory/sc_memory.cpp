@@ -89,9 +89,19 @@ bool ScMemory::Initialize(sc_memory_params const & params)
   if (ms_globalContext == nullptr)
     return false;
 
+  sc_addr init_memory_generated_structure;
+  if (params.init_memory_generated_upload)
+    sc_helper_resolve_system_identifier(
+        ms_globalContext, params.init_memory_generated_structure, &init_memory_generated_structure);
+  else
+    SC_ADDR_MAKE_EMPTY(init_memory_generated_structure);
+
   ScKeynodes::Init(
       false, params.init_memory_generated_upload ? params.init_memory_generated_structure : (sc_char *)null_ptr);
   ScAgentInit(true);
+
+  if (sc_memory_init_ext(params.ext_path, params.enabled_exts, init_memory_generated_structure) != SC_RESULT_OK)
+    return false;
 
   utils::ScLog::SetUp(params.log_type, params.log_file, params.log_level);
 

@@ -73,6 +73,7 @@ TEST(ScDictionaryTest, sc_dictionary_append_get_by_key_reset)
   EXPECT_EQ((sc_addr_hash)sc_dictionary_get_by_key(dictionary, string1, string1_size), hash1);
 
   hash1 = 216;
+  sc_dictionary_append(dictionary, string1, string1_size, (void *)hash1);
   EXPECT_EQ((sc_addr_hash)sc_dictionary_get_by_key(dictionary, string1, string1_size), hash1);
 
   EXPECT_TRUE(_test_sc_uchar_dictionary_destroy(dictionary));
