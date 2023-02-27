@@ -7,12 +7,15 @@
 #include "sc_file_system.h"
 
 #include "sc_io.h"
-#include "../sc-base/sc_assert_utils.h"
 #include "../sc-base/sc_message.h"
 
 #include "glib.h"
 #include "glib/gstdio.h"
 #include "../sc-container/sc-string/sc_string.h"
+#include "../sc_stream.h"
+#include "../sc_stream_file.h"
+
+#define SC_FS_FILE_COMMAND "file -b --mime-encoding "
 
 sc_bool sc_fs_isdir(const sc_char * path)
 {
@@ -30,7 +33,6 @@ void sc_fs_rmdir(const sc_char * path)
     return;
 
   GDir * directory = g_dir_open(path, 0, 0);
-  sc_assert(directory != null_ptr);
 
   // calculate files
   sc_char tmp_path[MAX_PATH_LENGTH];
@@ -90,4 +92,48 @@ void sc_fs_initialize_file_path(sc_char const * path, sc_char const * postfix, s
   sc_uint32 size = sc_str_len(path) + sc_str_len(postfix) + 2;
   *out_path = sc_mem_new(sc_char, size + 1);
   sc_str_printf(*out_path, size, "%s/%s", path, postfix);
+}
+
+sc_char * sc_fs_exec(sc_char * command)
+{
+  FILE * pipe = popen(command, "r");
+  if (!pipe)
+    return SC_FALSE;
+  sc_int32 buffer_size = 50;
+  sc_char buffer[buffer_size];
+  while (fgets(buffer, buffer_size, pipe) != null_ptr)
+    ;
+
+  pclose(pipe);
+
+  sc_char * char_result;
+  sc_str_cpy(char_result, buffer, sc_str_len(buffer));
+  return char_result;
+}
+
+sc_bool sc_fs_is_binary_file(sc_char file_path[])
+{
+  sc_char command_prefix[] = SC_FS_FILE_COMMAND;
+  sc_char * command;
+  sc_str_cpy(command, command_prefix, sc_str_len(command_prefix) + sc_str_len(file_path));
+  strcat(command, file_path);
+
+  sc_char * result = sc_fs_exec(command);
+  sc_mem_free(command);
+  sc_bool const is_binary_file = sc_str_has_prefix(result, "binary");
+  sc_mem_free(result);
+  return is_binary_file;
+}
+
+void sc_fs_get_file_content(sc_char const * file_path, sc_char ** content, sc_uint32 * content_size)
+{
+  sc_stream * stream = sc_stream_file_new(file_path, SC_STREAM_FLAG_READ);
+  if (stream == null_ptr)
+  {
+    *content = null_ptr;
+    *content_size = 0;
+  }
+
+  sc_stream_get_data(stream, content, content_size);
+  sc_stream_free(stream);
 }

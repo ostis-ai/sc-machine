@@ -10,13 +10,13 @@
 #include "sc-memory/sc_scs_helper.hpp"
 
 #include "sc-memory/utils/sc_base64.hpp"
-#include "sc-memory/utils/sc_exec.hpp"
 #include "sc-core/sc-store/sc-container/sc-string/sc_string.h"
 
 #include <boost/filesystem/path.hpp>
 
 #include <regex>
 #include <utility>
+#include <filesystem>
 
 namespace impl
 {
@@ -45,24 +45,16 @@ public:
       std::string fullPath;
       if (isRelative)
       {
-        boost::filesystem::path parentFullPath = boost::filesystem::path(m_parentPath).parent_path();
-        fullPath = (parentFullPath / std::string(match[3])).string();
+        std::filesystem::path parentFullPath = std::filesystem::path(m_parentPath).parent_path();
+        fullPath = parentFullPath / std::string(match[3]);
       }
       else
-      {
         fullPath = match[3];
-      }
 
       std::string const extension = fullPath.substr(fullPath.rfind('.'));
-
-      if (IsBinary(fullPath))
-      {
-        return std::make_shared<ScStream>(fullPath.c_str(), fullPath.size(), SC_STREAM_FLAG_READ);
-      }
-      else
-      {
-        return std::make_shared<ScStream>(fullPath.c_str(), fullPath.size(), SC_STREAM_FLAG_READ);
-      }
+      sc_char * copied;
+      sc_str_cpy(copied, fullPath.c_str(), fullPath.size());
+      return std::make_shared<ScStream>(copied, fullPath.size(), SC_STREAM_FLAG_READ);
     }
     else
     {
@@ -72,26 +64,6 @@ public:
 
 private:
   std::string m_parentPath;
-
-  static sc_bool IsBinary(std::string const & fullFilePath)
-  {
-    ScExec exec{{"file", "-b", "--mime-encoding", fullFilePath}};
-    std::string fileType;
-    exec >> fileType;
-
-    return fileType == "binary";
-  }
-
-  static std::string GetBinaryFileContent(std::string const & fullFilePath)
-  {
-    std::ifstream fin{fullFilePath, std::ios::in | std::ios::binary};
-    std::ostringstream oss;
-    oss << fin.rdbuf();
-    std::string data(oss.str());
-    fin.close();
-
-    return data;
-  }
 };
 
 } // namespace impl

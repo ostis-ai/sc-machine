@@ -256,8 +256,12 @@ private:
   {
     if (el.IsURL())
     {
-      ScLink link(m_ctx, linkAddr);
-      link.Set(el.GetValue());
+      ScStreamPtr stream = m_fileInterface->GetFileContent(el.GetValue());
+      if (stream)
+      {
+        ScLink link(m_ctx, linkAddr);
+        link.Set(stream);
+      }
     }
     else
     {

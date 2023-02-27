@@ -23,4 +23,10 @@ void * sc_fs_open_tmp_file(const sc_char * path, sc_char ** tmp_file_name, sc_ch
 
 void sc_fs_initialize_file_path(sc_char const * path, sc_char const * postfix, sc_char ** out_path);
 
+sc_char * sc_fs_exec(sc_char * command);
+
+sc_bool sc_fs_is_binary_file(sc_char filePath[]);
+
+void sc_fs_get_file_content(sc_char const * file_path, sc_char ** content, sc_uint32 * content_size);
+
 #endif

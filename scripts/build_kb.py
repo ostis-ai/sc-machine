@@ -146,8 +146,7 @@ def main(args: dict):
 
     copy_kb(conf[OUTPUT_PATH])
     prepare_kb(kb_to_prepare, conf[LOGFILE_PATH])
-    exitcode = build_kb(conf[OUTPUT_PATH], kb_to_prepare, conf[OSTIS_PATH],  abspath(args["config_file_path"]))
-    shutil.rmtree(kb_to_prepare)
+    exitcode = build_kb(conf[OUTPUT_PATH], kb_to_prepare, conf[OSTIS_PATH], abspath(args["config_file_path"]))
     # exit with non-null code in case sc-builder encountered an error
     exit(exitcode)
 

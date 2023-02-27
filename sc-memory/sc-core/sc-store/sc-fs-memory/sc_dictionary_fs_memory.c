@@ -484,6 +484,19 @@ sc_dictionary_fs_memory_status _sc_dictionary_fs_memory_read_string_by_offset(
   return SC_FS_MEMORY_OK;
 }
 
+void _sc_dictionary_fs_memory_read_file(sc_char * file_path, sc_char ** content, sc_uint32 * size)
+{
+  if (sc_fs_is_binary_file(file_path))
+  {
+    sc_char * data;
+    sc_fs_get_file_content(file_path, &data, size);
+    *content = g_base64_encode((sc_uchar *)data, *size);
+    sc_mem_free(data);
+  }
+  else
+    sc_fs_get_file_content(file_path, content, size);
+}
+
 sc_dictionary_fs_memory_status sc_dictionary_fs_memory_get_string_by_link_hash(
     sc_dictionary_fs_memory const * memory,
     sc_addr_hash const link_hash,
@@ -514,7 +527,15 @@ sc_dictionary_fs_memory_status sc_dictionary_fs_memory_get_string_by_link_hash(
     return SC_FS_MEMORY_READ_ERROR;
   }
 
-  *string_size = sc_str_len(*string);
+  if (sc_fs_isfile(*string))
+  {
+    sc_char * file_path = *string;
+    _sc_dictionary_fs_memory_read_file(file_path, string, (sc_uint32 *)string_size);
+    sc_mem_free(file_path);
+  }
+  else
+    *string_size = sc_str_len(*string);
+
   return SC_FS_MEMORY_OK;
 }
 
