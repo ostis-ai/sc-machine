@@ -111,7 +111,7 @@ sc_bool sc_dictionary_has(const sc_dictionary * dictionary, const sc_char * sc_s
  */
 void * sc_dictionary_get_by_key(const sc_dictionary * dictionary, const sc_char * sc_string, sc_uint32 sc_string_size);
 
-void sc_dictionary_get_by_key_prefix(
+sc_bool sc_dictionary_get_by_key_prefix(
     const sc_dictionary * dictionary,
     const sc_char * sc_string,
     sc_uint32 sc_string_size,

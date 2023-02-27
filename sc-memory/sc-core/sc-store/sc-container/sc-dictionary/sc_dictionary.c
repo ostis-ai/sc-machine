@@ -282,7 +282,7 @@ void * sc_dictionary_get_by_key(
   return null_ptr;
 }
 
-void sc_dictionary_get_by_key_prefix(
+sc_bool sc_dictionary_get_by_key_prefix(
     const sc_dictionary * dictionary,
     const sc_char * sc_string,
     const sc_uint32 sc_string_size,
@@ -292,8 +292,7 @@ void sc_dictionary_get_by_key_prefix(
   sc_dictionary_node * node = dictionary->root;
 
   sc_uint32 i = 0;
-  sc_uint32 string_size = sc_string_size;
-  while (i < string_size)
+  while (i < sc_string_size)
   {
     sc_dictionary_node * next = _sc_dictionary_get_next_node(dictionary, node, sc_string[i]);
     if (SC_DICTIONARY_NODE_IS_VALID(next) &&
@@ -306,8 +305,23 @@ void sc_dictionary_get_by_key_prefix(
       break;
   }
 
-  callable(node, dest);
-  sc_dictionary_visit_down_node_from_node(dictionary, node, callable, dest);
+  if (i == sc_string_size)
+    callable(node, dest);
+
+  sc_uint8 j;
+  for (j = 0; j < dictionary->size; ++j)
+  {
+    sc_dictionary_node * next = node->next[j];
+    if (SC_DICTIONARY_NODE_IS_VALID(next) && (i == sc_string_size || sc_str_has_prefix(next->offset, sc_string + i)))
+    {
+      if (!callable(next, dest))
+        return SC_FALSE;
+
+      if (!sc_dictionary_visit_down_node_from_node(dictionary, next, callable, dest))
+        return SC_FALSE;
+    }
+  }
+  return SC_TRUE;
 }
 
 sc_bool sc_dictionary_visit_down_node_from_node(
