@@ -24,14 +24,6 @@ jobs:
             cc: clang,
             cxx: clang++,
           }
-          - {
-            name: "Sanitizer for sc-rocksdb fs-storage - address",
-            os: ubuntu-latest,
-            file_memory: "Rocksdb",
-            sanitizer: "address",
-            cc: clang,
-            cxx: clang++,
-          }
 
     steps:
       - name: Checkout

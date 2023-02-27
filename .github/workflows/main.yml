@@ -16,13 +16,10 @@ jobs:
       fail-fast: false
       matrix:
         os: [macos-latest, ubuntu-20.04, ubuntu-22.04]
-        file_memory: ["Dictionary", "Rocksdb"]
+        file_memory: ["Dictionary"]
         build_type: ["Debug", "Release"]
         config:
           - { cc: "gcc", cxx: "g++" }
-        exclude:
-          - os: macos-latest
-            file_memory: "Rocksdb"
 
     steps:
       - name: Checkout
