@@ -59,15 +59,6 @@ typedef struct _sc_fs_memory_manager
   sc_fs_memory_status (*unlink_string)(sc_fs_memory * memory, sc_addr_hash const link_hash);
 } sc_fs_memory_manager;
 
-typedef struct _sc_fs_memory_segments_header
-{
-  sc_uint32 version;
-  sc_uint16 segments_num;
-  sc_uint64 timestamp;
-  sc_uint8 checksum[SC_STORAGE_SEG_CHECKSUM_SIZE];  // buffer size for sha 512
-
-} sc_fs_memory_segments_header;
-
 /*! Initialize file system memory in specified path.
  * @param path Path to store on file system
  * @param max_searchable_string_size Maximal size of strings that can be found by string/substring
@@ -146,8 +137,9 @@ sc_bool sc_fs_memory_load(sc_segment ** segments, sc_uint32 * segments_num);
 
 /*! Save file system memory to file system
  * @param segments A pointer to savable sc-memory segments
+ * @param segments_num A pointer to loadable sc-memory segments num
  * @returns SC_TRUE, if file system saved.
  */
-sc_bool sc_fs_memory_save(sc_segment ** segments);
+sc_bool sc_fs_memory_save(sc_segment ** segments, sc_uint32 segments_num);
 
 #endif

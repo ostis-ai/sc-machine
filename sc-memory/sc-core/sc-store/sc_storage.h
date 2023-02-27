@@ -31,7 +31,7 @@
 sc_bool sc_storage_initialize(const sc_memory_params * params);
 
 //! Shutdown sc storage
-sc_bool sc_storage_shutdown(sc_bool save_state, const sc_memory_params * params);
+sc_bool sc_storage_shutdown(sc_bool save_state);
 
 //! Check if storage initialized
 sc_bool sc_storage_is_initialized();

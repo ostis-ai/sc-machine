@@ -79,7 +79,7 @@ sc_bool sc_fs_mkfile(sc_char const * path)
   return SC_TRUE;
 }
 
-void * sc_fs_open_tmp_file(const sc_char * path, sc_char ** tmp_file_name, sc_char * prefix)
+void * sc_fs_new_tmp_write_channel(const sc_char * path, sc_char ** tmp_file_name, sc_char * prefix)
 {
   *tmp_file_name = g_strdup_printf("%s/%s_%lu", path, prefix, (sc_ulong)g_get_real_time());
 

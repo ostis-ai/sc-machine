@@ -129,7 +129,7 @@ sc_result sc_memory_init_ext(
   return ext_res;
 }
 
-void sc_memory_shutdown(sc_bool save_state, const sc_memory_params * params)
+void sc_memory_shutdown(sc_bool save_state)
 {
   sc_memory_info("Shutdown components");
 
@@ -137,7 +137,7 @@ void sc_memory_shutdown(sc_bool save_state, const sc_memory_params * params)
   sc_memory_shutdown_ext();
   sc_events_shutdown();
   sc_helper_shutdown();
-  sc_storage_shutdown(save_state, params);
+  sc_storage_shutdown(save_state);
 
   sc_memory_context_free(s_memory_default_ctx);
   s_memory_default_ctx = 0;

@@ -30,7 +30,7 @@ _SC_EXTERN sc_result sc_memory_init_ext(
     sc_addr const init_memory_generated_structure);
 
 //! Shutdown sc-memory (save repository to file system)
-_SC_EXTERN void sc_memory_shutdown(sc_bool save_state, const sc_memory_params * params);
+_SC_EXTERN void sc_memory_shutdown(sc_bool save_state);
 
 /*! Shutdown sc-memory extensions
  */

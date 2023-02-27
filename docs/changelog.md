@@ -11,7 +11,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- Tests for `IteratorUtils`
+- Tests for fs-memory
+- Intersect/unite search by strings in fs-memory
+- Search strings and link hashes by terms in fs-memory
+- File memory on file system, save strings in file system disks
 - Configure events and agents threads
 - Provide loop-ranged API method for sc-template search ([78](https://github.com/ostis-ai/sc-machine/issues/78))
 - Sc-template cycle preventing search
@@ -51,6 +54,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- Remove list to array translations in C API for fs-memory
+- Upload text and binary files in realtime by get API
+- Remove string lengths recount in fs-memory
+- Optimize int to string translation in fs-memory
 - Use iterators instead of sc-template in `getNextFromSet` util
 - Generalized docker_entrypoint.sh, this script can be used by external projects now
 - Now in tests all agents works in single thread

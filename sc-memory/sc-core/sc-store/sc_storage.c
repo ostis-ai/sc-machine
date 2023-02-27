@@ -157,7 +157,7 @@ sc_bool sc_storage_initialize(const sc_memory_params * params)
     return SC_FALSE;
 
   segments = sc_mem_new(sc_segment *, params->max_loaded_segments);
-  memset(&(segments_cache[0]), 0, sizeof(sc_segment *) * SC_SEGMENT_CACHE_SIZE);
+  memset(&*segments_cache, 0, sizeof(sc_segment *) * SC_SEGMENT_CACHE_SIZE);
 
   if (params->clear == SC_FALSE)
   {
@@ -173,11 +173,11 @@ sc_bool sc_storage_initialize(const sc_memory_params * params)
   return SC_TRUE;
 }
 
-sc_bool sc_storage_shutdown(sc_bool save_state, const sc_memory_params * params)
+sc_bool sc_storage_shutdown(sc_bool save_state)
 {
   if (save_state == SC_TRUE)
   {
-    if (sc_fs_memory_save(segments) == SC_FALSE)
+    if (sc_fs_memory_save(segments, segments_num) == SC_FALSE)
       return SC_FALSE;
   }
 
@@ -185,7 +185,7 @@ sc_bool sc_storage_shutdown(sc_bool save_state, const sc_memory_params * params)
     return SC_FALSE;
 
   sc_uint idx;
-  for (idx = 0; idx < params->max_loaded_segments; idx++)
+  for (idx = 0; idx < segments_num; idx++)
   {
     if (segments[idx] == null_ptr)
       continue;  // skip segments, that are not loaded
@@ -1305,7 +1305,7 @@ sc_result sc_storage_save(sc_memory_context const * ctx)
   g_mutex_lock(&s_mutex_free);
   g_mutex_lock(&s_mutex_save);
 
-  for (i = 0; i < SC_SEGMENT_MAX; ++i)
+  for (i = 0; i < segments_num; ++i)
   {
     seg = segments[i];
     if (seg == null_ptr)
@@ -1314,11 +1314,11 @@ sc_result sc_storage_save(sc_memory_context const * ctx)
     sc_segment_lock(seg);
   }
 
-  sc_fs_memory_save(segments);
+  sc_fs_memory_save(segments, segments_num);
 
   g_mutex_unlock(&s_mutex_free);
 
-  for (i = 0; i < SC_SEGMENT_MAX; ++i)
+  for (i = 0; i < segments_num; ++i)
   {
     seg = segments[i];
     if (seg == null_ptr)

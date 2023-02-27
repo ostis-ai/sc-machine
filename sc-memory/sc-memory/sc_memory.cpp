@@ -77,11 +77,9 @@ unsigned int gContextCounter;
 
 sc_memory_context * ScMemory::ms_globalContext = nullptr;
 ScMemory::MemoryContextList ScMemory::ms_contexts;
-sc_memory_params ScMemory::m_params;
 
 bool ScMemory::Initialize(sc_memory_params const & params)
 {
-  m_params = params;
   std::srand(unsigned(std::time(nullptr)));
   gContextCounter = 0;
 
@@ -123,7 +121,7 @@ void ScMemory::Shutdown(bool saveState /* = true */)
     SC_THROW_EXCEPTION(utils::ExceptionInvalidState, description.str());
   }
 
-  sc_memory_shutdown(saveState, &m_params);
+  sc_memory_shutdown(saveState);
   ms_globalContext = nullptr;
 
   g_log_set_default_handler(g_log_default_handler, nullptr);

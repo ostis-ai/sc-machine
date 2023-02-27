@@ -70,7 +70,7 @@ TEST(ScDictionaryFsMemoryTest, sc_dictionary_fs_memory_init_rm_shutdown_load)
 
   sc_fs_rmdir(SC_DICTIONARY_FS_MEMORY_PATH);
   EXPECT_EQ(sc_dictionary_fs_memory_initialize(&memory, SC_DICTIONARY_FS_MEMORY_PATH), SC_FS_MEMORY_OK);
-  EXPECT_EQ(sc_dictionary_fs_memory_load(memory), SC_FS_MEMORY_READ_ERROR);
+  EXPECT_EQ(sc_dictionary_fs_memory_load(memory), SC_FS_MEMORY_OK);
   EXPECT_EQ(sc_dictionary_fs_memory_save(memory), SC_FS_MEMORY_OK);
   EXPECT_EQ(sc_dictionary_fs_memory_shutdown(memory), SC_FS_MEMORY_OK);
 
@@ -258,7 +258,7 @@ TEST(ScDictionaryFsMemoryTest, sc_dictionary_fs_memory_get_string_by_link_hash_r
 
   sc_fs_rmdir(SC_DICTIONARY_FS_MEMORY_PATH);
   EXPECT_EQ(sc_dictionary_fs_memory_initialize(&memory, SC_DICTIONARY_FS_MEMORY_PATH), SC_FS_MEMORY_OK);
-  EXPECT_EQ(sc_dictionary_fs_memory_load(memory), SC_FS_MEMORY_READ_ERROR);
+  EXPECT_EQ(sc_dictionary_fs_memory_load(memory), SC_FS_MEMORY_OK);
 
   {
     sc_char * found_string;
