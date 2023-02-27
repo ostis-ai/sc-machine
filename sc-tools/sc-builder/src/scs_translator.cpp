@@ -54,7 +54,7 @@ public:
       std::string const extension = fullPath.substr(fullPath.rfind('.'));
       sc_char * copied;
       sc_str_cpy(copied, fullPath.c_str(), fullPath.size());
-      return std::make_shared<ScStream>(copied, fullPath.size(), SC_STREAM_FLAG_READ);
+      return std::make_shared<ScStream>(copied, fullPath.size(), SC_STREAM_FLAG_READ, SC_TRUE);
     }
     else
     {

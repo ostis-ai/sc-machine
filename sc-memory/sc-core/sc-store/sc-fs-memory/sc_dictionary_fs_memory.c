@@ -55,9 +55,10 @@ sc_dictionary_fs_memory_status sc_dictionary_fs_memory_initialize(
     static sc_char const * string_offsets_link_hashes = "string_offsets_link_hashes" SC_FS_EXT;
     sc_fs_initialize_file_path(path, string_offsets_link_hashes, &(*memory)->string_offsets_link_hashes_path);
   }
-  sc_fs_memory_info("Configuration: ");
-  sc_message("\tpath: %s", path);
-  sc_message("\tmax searchable string size: %s", path);
+  sc_fs_memory_info("Configuration:");
+  sc_message("\tRepo path: %s", path);
+  sc_message("\tSc-dictionary node size: %zd", sizeof(sc_dictionary_node));
+  sc_message("\tMax searchable string size: %s", path);
 
   sc_fs_memory_info("Successfully initialized");
 

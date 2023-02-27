@@ -35,8 +35,7 @@ sc_memory_context * sc_memory_initialize(const sc_memory_params * params)
 
   sc_memory_info("Version: %s", params->version);
   sc_message("\tClean memory on shutdown: %s", params->clear ? "On" : "Off");
-  sc_message("\tRepo path: %s", params->repo_path);
-  sc_message("\tExtension path: %s", params->ext_path);
+  sc_message("\tExtensions path: %s", params->ext_path);
   sc_message("\tSave period: %d", params->save_period);
   sc_message("\tUpdate period: %d", params->update_period);
 
@@ -49,7 +48,6 @@ sc_memory_context * sc_memory_initialize(const sc_memory_params * params)
   sc_message("\tmax loaded segments: %d", params->max_loaded_segments);
   sc_message("\tmax threads: %d", params->max_threads);
   sc_message("\tsc-element size: %zd", sizeof(sc_element));
-  sc_message("\tsc-string-node size: %zd", sizeof(sc_dictionary_node));
 
   sc_memory_info("Build configuration:");
   sc_message("\tResult structure upload: %s", params->init_memory_generated_upload ? "On" : "Off");
@@ -77,6 +75,19 @@ sc_memory_context * sc_memory_initialize(const sc_memory_params * params)
   if (sc_events_initialize_ext(params->max_events_and_agents_threads) == SC_FALSE)
   {
     sc_memory_error("Error while initialize events module");
+    goto error;
+  }
+
+  sc_addr init_memory_generated_structure;
+  if (params->init_memory_generated_upload)
+    sc_helper_resolve_system_identifier(
+        s_memory_default_ctx, params->init_memory_generated_structure, &init_memory_generated_structure);
+  else
+    SC_ADDR_MAKE_EMPTY(init_memory_generated_structure);
+
+  if (sc_memory_init_ext(params->ext_path, params->enabled_exts, init_memory_generated_structure) != SC_RESULT_OK)
+  {
+    sc_memory_error("Error while initialize extensions");
     goto error;
   }
 

@@ -525,8 +525,7 @@ TEST(ScDictionaryFsMemoryTest, sc_dictionary_fs_memory_get_strings_by_substring)
     sc_list * found_strings;
     sc_char substring1[] = "it";
     EXPECT_EQ(
-        sc_dictionary_fs_memory_get_strings_by_substring(
-            memory, substring1, sc_str_len(substring1), &found_strings),
+        sc_dictionary_fs_memory_get_strings_by_substring(memory, substring1, sc_str_len(substring1), &found_strings),
         SC_FS_MEMORY_OK);
     EXPECT_EQ(found_strings->size, 2u);
 
@@ -541,8 +540,7 @@ TEST(ScDictionaryFsMemoryTest, sc_dictionary_fs_memory_get_strings_by_substring)
 
     sc_char substring2[] = "it is the first";
     EXPECT_EQ(
-        sc_dictionary_fs_memory_get_strings_by_substring(
-            memory, substring2, sc_str_len(substring2), &found_strings),
+        sc_dictionary_fs_memory_get_strings_by_substring(memory, substring2, sc_str_len(substring2), &found_strings),
         SC_FS_MEMORY_OK);
     EXPECT_EQ(found_strings->size, 1u);
 
@@ -555,8 +553,7 @@ TEST(ScDictionaryFsMemoryTest, sc_dictionary_fs_memory_get_strings_by_substring)
 
     sc_char substring3[] = "it is the second";
     EXPECT_EQ(
-        sc_dictionary_fs_memory_get_strings_by_substring(
-            memory, substring3, sc_str_len(substring3), &found_strings),
+        sc_dictionary_fs_memory_get_strings_by_substring(memory, substring3, sc_str_len(substring3), &found_strings),
         SC_FS_MEMORY_OK);
     EXPECT_EQ(found_strings->size, 1u);
 

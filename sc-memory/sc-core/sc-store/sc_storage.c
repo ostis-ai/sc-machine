@@ -164,6 +164,10 @@ sc_bool sc_storage_initialize(const char * path, sc_bool clear)
     if (sc_fs_memory_load(segments, &segments_num) != SC_TRUE)
       return SC_FALSE;
   }
+  else
+  {
+    segments_num = 0;
+  }
 
   is_initialized = SC_TRUE;
   return SC_TRUE;

@@ -94,4 +94,3 @@ TEST_F(ScListTest, sc_list_iterator)
   sc_iterator_destroy(it);
   sc_list_destroy(list);
 }
-

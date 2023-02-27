@@ -65,8 +65,9 @@ TEST_F(ScMemoryTest, erase_elements_from_init_struct)
 
   sleep(2);
 
-  sc_iterator3 * it = sc_iterator3_f_a_f_new(context, setAddr, 0, testAddr);
+  sc_iterator3 * it = sc_iterator3_f_a_a_new(context, setAddr, 0, 0);
   EXPECT_TRUE(sc_iterator3_next(it));
+  EXPECT_FALSE(sc_iterator3_next(it));
   sc_iterator3_free(it);
 
   sc_memory_context_free(context);
@@ -103,7 +104,7 @@ TEST_F(ScMemoryTest, erase_elements_self_erase)
   sc_module_shutdown();
 }
 
-TEST_F(ScMemoryTest, erase_elements_set_node_erase)
+TEST_F(ScMemoryTest, erase_elements_erase_keynode)
 {
   sc_memory_context * context = sc_memory_context_new(sc_access_lvl_make_min);
 

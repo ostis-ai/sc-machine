@@ -22,7 +22,8 @@ void _test_sc_dictionary_addr_hashes_char_to_int(sc_char ch, sc_uint8 * ch_num, 
 
 sc_bool _test_sc_uchar_dictionary_initialize(sc_dictionary ** dictionary)
 {
-  return sc_dictionary_initialize(dictionary, _test_sc_dictionary_addr_hashes_children_size(), _test_sc_dictionary_addr_hashes_char_to_int);
+  return sc_dictionary_initialize(
+      dictionary, _test_sc_dictionary_addr_hashes_children_size(), _test_sc_dictionary_addr_hashes_char_to_int);
 }
 
 sc_bool _test_sc_uchar_dictionary_destroy(sc_dictionary * dictionary)
@@ -179,7 +180,8 @@ TEST(ScDictionaryTest, sc_dictionary_append_get_by_key_prefix)
 
   sc_list * hashes;
   sc_list_init(&hashes);
-  sc_dictionary_get_by_key_prefix(dictionary, search_string1, search_string1_size, _test_visit_nodes_by_key_prefix, (void **)&hashes);
+  sc_dictionary_get_by_key_prefix(
+      dictionary, search_string1, search_string1_size, _test_visit_nodes_by_key_prefix, (void **)&hashes);
   EXPECT_EQ(hashes->size, 3u);
 
   EXPECT_TRUE(sc_list_remove_if(hashes, (void *)hash1, _test_sc_hashes_compare));
@@ -192,7 +194,8 @@ TEST(ScDictionaryTest, sc_dictionary_append_get_by_key_prefix)
   sc_uint32 search_string2_size = sc_str_len(search_string2);
 
   sc_list_init(&hashes);
-  sc_dictionary_get_by_key_prefix(dictionary, search_string2, search_string2_size, _test_visit_nodes_by_key_prefix, (void **)&hashes);
+  sc_dictionary_get_by_key_prefix(
+      dictionary, search_string2, search_string2_size, _test_visit_nodes_by_key_prefix, (void **)&hashes);
   EXPECT_EQ(hashes->size, 2u);
 
   EXPECT_TRUE(sc_list_remove_if(hashes, (void *)hash1, _test_sc_hashes_compare));
@@ -205,7 +208,8 @@ TEST(ScDictionaryTest, sc_dictionary_append_get_by_key_prefix)
   sc_uint32 search_string3_size = sc_str_len(search_string2);
 
   sc_list_init(&hashes);
-  sc_dictionary_get_by_key_prefix(dictionary, search_string3, search_string3_size, _test_visit_nodes_by_key_prefix, (void **)&hashes);
+  sc_dictionary_get_by_key_prefix(
+      dictionary, search_string3, search_string3_size, _test_visit_nodes_by_key_prefix, (void **)&hashes);
   EXPECT_EQ(hashes->size, 1u);
 
   EXPECT_FALSE(sc_list_remove_if(hashes, (void *)hash1, _test_sc_hashes_compare));

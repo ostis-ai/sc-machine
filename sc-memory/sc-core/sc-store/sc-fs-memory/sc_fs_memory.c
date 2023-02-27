@@ -67,7 +67,7 @@ sc_bool sc_fs_memory_shutdown()
   sc_mem_free(manager->segments_path);
   sc_mem_free(manager);
 
-  return SC_FALSE;
+  return SC_TRUE;
 }
 
 sc_bool sc_fs_memory_link_string(sc_addr_hash const link_hash, sc_char const * string, sc_uint32 const string_size)
