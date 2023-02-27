@@ -12,8 +12,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 - Add sc-component-manager as submodule
 =======
+=======
+- Erase sc-elements agent
+- Transfer init memory generated structure to modules initialization
+- Possibility to skip keys defined in configs
+>>>>>>> 64bf2fe3 ([changelog][review] Update config with all features and fixes info)
 - Pre-commit code style checks
 >>>>>>> c1e51acc ([changelog] Update changelog)
 - Add reversed edges according to standart
@@ -42,6 +48,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- Creating sc-keynodes without defining type. Now they will be created with const node type.
+- Converting to string params from configs
 - Fix hashes size in fs-storage ([45](https://github.com/ostis-ai/ostis-web-platform/issues/45))
 - GetLinkContent skip whitespaces in strings
 - No inserting system identifiers of keynodes to output structure ([223](https://github.com/ostis-ai/sc-machine/issues/223))
@@ -53,6 +61,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add curl to installation script
 - Merging identifiers in sc-dictionary ([192](https://github.com/ostis-ai/sc-machine/issues/192))
 - Dependence order in var template search triples ([186](https://github.com/ostis-ai/sc-machine/issues/186))
+
+### Removed
+
+- Garbage deletion agent
 
 ## [0.7.0-Rebirth] - 12.10.2022
 
