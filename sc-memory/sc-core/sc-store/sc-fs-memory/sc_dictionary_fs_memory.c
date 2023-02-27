@@ -188,33 +188,6 @@ void _sc_dictionary_fs_memory_append_link_string_unique(
   sc_mem_free(string_offset_str);
 }
 
-void _sc_dictionary_fs_memory_get_string_offsets_by_terms(
-    sc_dictionary_fs_memory const * memory,
-    sc_list const * terms,
-    sc_dictionary ** term_string_offsets_dictionary)
-{
-  _sc_uchar_dictionary_initialize(term_string_offsets_dictionary);
-
-  sc_iterator * term_it = sc_list_iterator(terms);
-  while (sc_iterator_next(term_it))
-  {
-    sc_char const * term = sc_iterator_get(term_it);
-    sc_uint64 const term_size = sc_str_len(term);
-
-    sc_list * string_offsets = sc_dictionary_get_by_key(memory->terms_string_offsets_dictionary, term, term_size);
-    sc_iterator * string_offsets_it = sc_list_iterator(string_offsets);
-    if (!sc_iterator_next(string_offsets_it))
-    {
-      sc_iterator_destroy(string_offsets_it);
-      return;
-    }
-
-    sc_dictionary_append(*term_string_offsets_dictionary, term, term_size, string_offsets);
-    sc_iterator_destroy(string_offsets_it);
-  }
-  sc_iterator_destroy(term_it);
-}
-
 sc_list * _sc_dictionary_fs_memory_get_string_offsets_by_term(
     sc_dictionary_fs_memory const * memory,
     sc_char const * term)
@@ -882,13 +855,10 @@ sc_bool _sc_dictionary_fs_memory_get_link_hashes_by_string_offsets(sc_dictionary
   // unite or intersect link hashes from fs-memory
   if (size == 0 || list->size == size + 1)
   {
-    sc_uint64 const string_offset = (sc_uint64)list->begin->next->data;
-    sc_char * string_offset_str;
-    sc_uint64 string_offset_str_size;
-    sc_int_to_str_int(string_offset, string_offset_str, string_offset_str_size);
+    sc_char const * string_offset_str = list->begin->data;
 
     sc_list * data = sc_dictionary_get_by_key(
-        memory->string_offsets_link_hashes_dictionary, string_offset_str, string_offset_str_size);
+        memory->string_offsets_link_hashes_dictionary, string_offset_str, sc_str_len(string_offset_str));
     sc_iterator * data_it = sc_list_iterator(data);
     while (sc_iterator_next(data_it))
     {
@@ -901,6 +871,43 @@ sc_bool _sc_dictionary_fs_memory_get_link_hashes_by_string_offsets(sc_dictionary
   return SC_TRUE;
 }
 
+void _sc_dictionary_fs_memory_get_string_offsets_by_terms(
+    sc_dictionary_fs_memory const * memory,
+    sc_list const * terms,
+    sc_dictionary ** string_offsets_terms_dictionary)
+{
+  _sc_uchar_dictionary_initialize(string_offsets_terms_dictionary);
+
+  sc_iterator * term_it = sc_list_iterator(terms);
+  while (sc_iterator_next(term_it))
+  {
+    sc_char const * term = sc_iterator_get(term_it);
+    sc_uint64 const term_size = sc_str_len(term);
+
+    sc_list * string_offsets = sc_dictionary_get_by_key(memory->terms_string_offsets_dictionary, term, term_size);
+    sc_iterator * string_offsets_it = sc_list_iterator(string_offsets);
+    if (!sc_iterator_next(string_offsets_it))
+    {
+      sc_iterator_destroy(string_offsets_it);
+      return;
+    }
+
+    while (sc_iterator_next(string_offsets_it))
+    {
+      sc_uint64 const string_offset = (sc_uint64)sc_iterator_get(string_offsets_it);
+      sc_char * string_offset_str;
+      sc_uint64 string_offset_str_size;
+      sc_int_to_str_int(string_offset, string_offset_str, string_offset_str_size);
+
+      _sc_dictionary_fs_memory_append(
+          *string_offsets_terms_dictionary, string_offset_str, string_offset_str_size, (void *)term);
+      sc_mem_free(string_offset_str);
+    }
+    sc_iterator_destroy(string_offsets_it);
+  }
+  sc_iterator_destroy(term_it);
+}
+
 sc_dictionary_fs_memory_status _sc_dictionary_fs_memory_get_link_hashes_by_terms(
     sc_dictionary_fs_memory const * memory,
     sc_list const * terms,
@@ -911,17 +918,18 @@ sc_dictionary_fs_memory_status _sc_dictionary_fs_memory_get_link_hashes_by_terms
   if (terms->size == 0)
     return SC_FS_MEMORY_OK;
 
-  sc_dictionary * term_offsets_dictionary;
-  _sc_dictionary_fs_memory_get_string_offsets_by_terms(memory, terms, &term_offsets_dictionary);
+  sc_dictionary * string_offsets_terms_dictionary;
+  _sc_dictionary_fs_memory_get_string_offsets_by_terms(memory, terms, &string_offsets_terms_dictionary);
 
   void * arguments[3];
   arguments[0] = (void *)memory;
   arguments[1] = intersect ? (void *)(sc_uint64)terms->size : 0;
   arguments[2] = *link_hashes;
   sc_dictionary_fs_memory_status const status = sc_dictionary_visit_down_nodes(
-      term_offsets_dictionary, _sc_dictionary_fs_memory_get_link_hashes_by_string_offsets, arguments);
-  sc_dictionary_destroy(term_offsets_dictionary, _sc_dictionary_fs_memory_node_destroy) ? SC_FS_MEMORY_OK
-                                                                                        : SC_FS_MEMORY_READ_ERROR;
+      string_offsets_terms_dictionary, _sc_dictionary_fs_memory_get_link_hashes_by_string_offsets, arguments);
+  sc_dictionary_destroy(string_offsets_terms_dictionary, _sc_dictionary_fs_memory_node_destroy)
+      ? SC_FS_MEMORY_OK
+      : SC_FS_MEMORY_READ_ERROR;
   return status;
 }
 
@@ -954,7 +962,9 @@ sc_bool _sc_dictionary_fs_memory_get_string_by_string_offsets(sc_dictionary_node
   // unite or intersect strings from fs-memory
   if (size == 0 || list->size == size + 1)
   {
-    sc_uint64 const string_offset = (sc_uint64)list->begin->next->data;
+    sc_char * const string_offset_str = list->begin->data;
+    sc_uint64 string_offset;
+    sc_str_int_to_int(string_offset_str, string_offset);
     sc_char * string;
     if (_sc_dictionary_fs_memory_read_string_by_offset(memory, string_offset, &string) != SC_FS_MEMORY_OK)
       return SC_FALSE;
@@ -984,7 +994,7 @@ sc_dictionary_fs_memory_status _sc_dictionary_fs_memory_get_strings_by_terms(
   arguments[2] = *strings;
   sc_dictionary_visit_down_nodes(
       term_string_offsets_dictionary, _sc_dictionary_fs_memory_get_string_by_string_offsets, arguments);
-  sc_dictionary_destroy(term_string_offsets_dictionary, sc_dictionary_node_destroy);
+  sc_dictionary_destroy(term_string_offsets_dictionary, _sc_dictionary_fs_memory_node_destroy);
 
   return SC_FS_MEMORY_OK;
 }

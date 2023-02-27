@@ -850,3 +850,64 @@ TEST(ScDictionaryFsMemoryTest, sc_dictionary_fs_memory_init_add_save_shutdown_lo
   EXPECT_EQ(sc_dictionary_fs_memory_save(memory), SC_FS_MEMORY_OK);
   EXPECT_EQ(sc_dictionary_fs_memory_shutdown(memory), SC_FS_MEMORY_OK);
 }
+
+TEST(ScDictionaryFsMemoryTest, sc_dictionary_fs_memory_intersect_link_hashes_by_terms)
+{
+  sc_dictionary_fs_memory * memory;
+  EXPECT_EQ(sc_dictionary_fs_memory_initialize(&memory, SC_DICTIONARY_FS_MEMORY_PATH), SC_FS_MEMORY_OK);
+
+  sc_char string1[] = TEXT_EXAMPLE_1;
+  sc_addr_hash hash1 = 112;
+  EXPECT_EQ(sc_dictionary_fs_memory_link_string(memory, hash1, string1, sc_str_len(string1)), SC_FS_MEMORY_OK);
+
+  sc_char string2[] = TEXT_EXAMPLE_2;
+  sc_addr_hash hash2 = 513;
+  EXPECT_EQ(sc_dictionary_fs_memory_link_string(memory, hash2, string2, sc_str_len(string2)), SC_FS_MEMORY_OK);
+
+  sc_list * terms;
+  sc_list_init(&terms);
+  EXPECT_TRUE(sc_list_push_back(terms, (void *)"it"));
+  EXPECT_TRUE(sc_list_push_back(terms, (void *)"first"));
+  EXPECT_TRUE(sc_list_push_back(terms, (void *)"the"));
+
+  sc_list * found_link_hashes;
+  sc_dictionary_fs_memory_intersect_link_hashes_by_terms(memory, terms, &found_link_hashes);
+  sc_list_destroy(terms);
+
+  EXPECT_EQ(found_link_hashes->size, 1u);
+  EXPECT_EQ((sc_addr_hash)found_link_hashes->begin->data, hash1);
+  sc_list_destroy(found_link_hashes);
+
+  EXPECT_EQ(sc_dictionary_fs_memory_shutdown(memory), SC_FS_MEMORY_OK);
+}
+
+TEST(ScDictionaryFsMemoryTest, sc_dictionary_fs_memory_unite_link_hashes_by_terms)
+{
+  sc_dictionary_fs_memory * memory;
+  EXPECT_EQ(sc_dictionary_fs_memory_initialize(&memory, SC_DICTIONARY_FS_MEMORY_PATH), SC_FS_MEMORY_OK);
+
+  sc_char string1[] = TEXT_EXAMPLE_1;
+  sc_addr_hash hash1 = 112;
+  EXPECT_EQ(sc_dictionary_fs_memory_link_string(memory, hash1, string1, sc_str_len(string1)), SC_FS_MEMORY_OK);
+
+  sc_char string2[] = TEXT_EXAMPLE_2;
+  sc_addr_hash hash2 = 512;
+  EXPECT_EQ(sc_dictionary_fs_memory_link_string(memory, hash2, string2, sc_str_len(string2)), SC_FS_MEMORY_OK);
+
+  sc_list * terms;
+  sc_list_init(&terms);
+  EXPECT_TRUE(sc_list_push_back(terms, (void *)"it"));
+  EXPECT_TRUE(sc_list_push_back(terms, (void *)"first"));
+  EXPECT_TRUE(sc_list_push_back(terms, (void *)"the"));
+
+  sc_list * found_link_hashes;
+  sc_dictionary_fs_memory_unite_link_hashes_by_terms(memory, terms, &found_link_hashes);
+  sc_list_destroy(terms);
+
+  EXPECT_EQ(found_link_hashes->size, 2u);
+  EXPECT_EQ((sc_addr_hash)found_link_hashes->begin->data, hash1);
+  EXPECT_EQ((sc_addr_hash)found_link_hashes->begin->next->data, hash2);
+  sc_list_destroy(found_link_hashes);
+
+  EXPECT_EQ(sc_dictionary_fs_memory_shutdown(memory), SC_FS_MEMORY_OK);
+}
