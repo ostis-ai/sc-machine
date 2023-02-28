@@ -20,6 +20,7 @@ void _sc_common_add_to_init_generated_memory_structure(
       sc_iterator3_f_a_f_new(ctx, init_memory_generated_structure, sc_type_arc_pos_const_perm, keynode);
   if (sc_iterator3_next(it3) == SC_FALSE)
     sc_memory_arc_new(ctx, sc_type_arc_pos_const_perm, init_memory_generated_structure, keynode);
+  sc_iterator3_free(it3);
 }
 
 sc_result sc_common_resolve_keynode(

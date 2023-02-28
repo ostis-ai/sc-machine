@@ -34,4 +34,16 @@ void appendIntoAnswer(sc_addr answer, sc_addr el);
  */
 void finish_question(sc_addr question);
 
+/*!
+ * Append question into question_finished_successfully set.
+ * @param question sc-add of question node
+ */
+void finish_question_successfully(sc_memory_context * ctx, sc_addr question);
+
+/*!
+ * Append question into question_finished_unsuccessfully set.
+ * @param question sc-add of question node
+ */
+void finish_question_unsuccessfully(sc_memory_context * ctx, sc_addr question);
+
 #endif
