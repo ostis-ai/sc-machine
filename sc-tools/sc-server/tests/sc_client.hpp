@@ -16,7 +16,7 @@ class ScClient
 {
 public:
   ScClient()
-    : m_instance(new ScClientCore()), m_isNewMessage(SC_FALSE)
+    : m_instance(ScClientCore()), m_isNewMessage(SC_FALSE)
   {
     Initialize();
   }
@@ -24,24 +24,24 @@ public:
   sc_bool Connect(std::string const & uri)
   {
     ScClientErrorCode code;
-    m_connection = m_instance->get_connection(uri, code);
+    m_connection = m_instance.get_connection(uri, code);
 
     if (code.value())
       return SC_FALSE;
 
-    m_instance->connect(m_connection);
+    m_instance.connect(m_connection);
 
     return SC_TRUE;
   }
 
   void Run()
   {
-    m_thread = std::thread(&ScClientCore::run, &*m_instance);
+    m_thread = std::thread(&ScClientCore::run, &m_instance);
   }
 
   void Stop()
   {
-    m_instance->stop();
+    m_instance.stop();
     m_thread.join();
   }
 
@@ -50,7 +50,7 @@ public:
     std::this_thread::sleep_for(std::chrono::milliseconds(100));
 
     ScClientErrorCode code;
-    m_instance->send(m_connection, msg, ScServerMessageType::text, code);
+    m_instance.send(m_connection, msg, ScServerMessageType::text, code);
 
     return !code;
   }
@@ -72,13 +72,10 @@ public:
     return m_currentPayload;
   }
 
-  ~ScClient()
-  {
-    delete m_instance;
-  }
+  ~ScClient() = default;
 
 private:
-  ScClientCore * m_instance;
+  ScClientCore m_instance;
   ScClientConnection m_connection;
   std::thread m_thread;
 
@@ -87,11 +84,11 @@ private:
 
   void Initialize()
   {
-    m_instance->clear_access_channels(ScServerLogMessages::all);
-    m_instance->set_error_channels(ScServerLogErrors::all);
+    m_instance.clear_access_channels(ScServerLogMessages::all);
+    m_instance.set_error_channels(ScServerLogErrors::all);
 
-    m_instance->init_asio();
+    m_instance.init_asio();
 
-    m_instance->set_message_handler(bind(&ScClient::OnMessage, this, ::_1, ::_2));
+    m_instance.set_message_handler(bind(&ScClient::OnMessage, this, ::_1, ::_2));
   }
 };

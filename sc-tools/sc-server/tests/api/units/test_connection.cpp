@@ -110,12 +110,12 @@ void TEST_N_CONNECTIONS(std::unique_ptr<ScServer> const & server, size_t const a
             << " ms\n";
 }
 
-TEST_F(ScServerTest, DISABLED_OneHundredConnections)  // 206.55 ms
+TEST_F(ScServerTest, OneHundredConnections)  // 206.55 ms
 {
   TEST_N_CONNECTIONS(m_server, 100);
 }
 
-TEST_F(ScServerTest, DISABLED_OneThousandConnections)  // 2583.39 ms
+TEST_F(ScServerTest, OneThousandConnections)  // 2583.39 ms
 {
   TEST_N_CONNECTIONS(m_server, 1000);
 }
