@@ -87,11 +87,9 @@ void uiSc2SCnJsonTranslator::collectScElementsInfo()
 {
   // now we need to iterate all arcs and collect output/input arcs info
   // first collect information about elements
+  std::set<sc_addr> filtered;
   for (auto const & it : mEdges)
   {
-    if (mScElementsInfo.find(it.first) != mScElementsInfo.cend())
-      continue;
-
     sc_addr const arcAddr = it.first;
 
     // get begin/end addrs
@@ -102,29 +100,30 @@ void uiSc2SCnJsonTranslator::collectScElementsInfo()
     if (sc_memory_get_arc_end(s_default_ctx, arcAddr, &endAddr) != SC_RESULT_OK)
       continue;  // @todo process errors
 
-    sScElementInfo * elInfo = resolveElementInfo(it.first, it.second);
+    if (std::any_of(mFiltersList.cbegin(), mFiltersList.cend(), [begAddr](sc_addr const & modifier) {
+      return modifier == begAddr;
+    }))
+    {
+      filtered.insert(arcAddr);
+      filtered.insert(endAddr);
+    }
 
+    sScElementInfo * elInfo = resolveElementInfo(it.first, it.second);
     sScElementInfo * begInfo = resolveElementInfo(begAddr);
     sScElementInfo * endInfo = resolveElementInfo(endAddr);
 
-    // filter
-    if (std::any_of(mFiltersList.begin(), mFiltersList.end(), [begAddr](sc_addr const & modifier) {
-          return modifier == begAddr;
-        }))
-    {
-      if (endInfo->type & sc_type_arc_mask && endInfo->source && endInfo->target)
-      {
-        endInfo->source->outputArcs.erase(endInfo);
-        endInfo->target->inputArcs.erase(endInfo);
-      }
-      continue;
-    }
-
     elInfo->source = begInfo;
     elInfo->target = endInfo;
+  }
 
-    endInfo->inputArcs.insert(mScElementsInfo[arcAddr]);
-    begInfo->outputArcs.insert(mScElementsInfo[arcAddr]);
+  for (auto const & it : mEdges)
+  {
+    if (filtered.find(it.first) != filtered.cend())
+      continue;
+
+    sScElementInfo * edgeInfo = mScElementsInfo[it.first];
+    edgeInfo->source->outputArcs.insert(mScElementsInfo[it.first]);
+    edgeInfo->target->inputArcs.insert(mScElementsInfo[it.first]);
   }
 
   // find structures elements

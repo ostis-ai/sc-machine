@@ -40,6 +40,7 @@ void search_translation(sc_addr elem, sc_addr answer, sc_bool sys_off)
 
     appendIntoAnswer(answer, sc_iterator5_value(it5, 0));
     appendIntoAnswer(answer, sc_iterator5_value(it5, 1));
+    appendIntoAnswer(answer, sc_iterator5_value(it5, 2));
     appendIntoAnswer(answer, sc_iterator5_value(it5, 3));
 
     // iterate translation sc-links
