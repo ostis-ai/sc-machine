@@ -41,6 +41,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- Segfaults in test sc-client
 - Creating sc-keynodes without defining type. Now they will be created with const node type.
 - Converting to string params from configs
 - Fix hashes size in fs-storage ([45](https://github.com/ostis-ai/ostis-web-platform/issues/45))
