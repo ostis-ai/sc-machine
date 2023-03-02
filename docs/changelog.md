@@ -11,17 +11,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-<<<<<<< HEAD
-<<<<<<< HEAD
 - Add sc-component-manager as submodule
-=======
-=======
+- Save sc-memory by period in sc-server
+- Dump statistics by period in sc-server
 - Erase sc-elements agent
 - Transfer init memory generated structure to modules initialization
 - Possibility to skip keys defined in configs
->>>>>>> 64bf2fe3 ([changelog][review] Update config with all features and fixes info)
 - Pre-commit code style checks
->>>>>>> c1e51acc ([changelog] Update changelog)
 - Add reversed edges according to standart
 - Add `![]!` parsing to scs parser
 - Insert sc-keynodes and their system identifiers in global knowledge base during sc-memory initiation
