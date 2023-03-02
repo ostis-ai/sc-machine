@@ -419,16 +419,11 @@ void sc_fs_storage_write_node(sc_dictionary_node * node, void ** dest)
 
   sc_link_content * content = (sc_link_content *)node->data_list->begin->data;
 
-  if (!sc_dc_node_access_lvl_check_read(content->node))
-    return;
-
   if (content->node->data_list == null_ptr || content->node->data_list->size == 0)
     return;
 
   sc_addr_hash * hashes = sc_list_to_hashes_array(content->node->data_list);
   sc_uint32 hashes_size = content->node->data_list->size;
-
-  sc_dc_node_access_lvl_make_no_read(content->node);
 
   GIOChannel * strings_channel = dest[0];
   sc_assert(strings_channel != null_ptr);
