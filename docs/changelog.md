@@ -11,6 +11,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Save sc-memory by period in sc-server
+- Dump statistics by period in sc-server
 - Erase sc-elements agent
 - Transfer init memory generated structure to modules initialization
 - Possibility to skip keys defined in configs

@@ -260,6 +260,6 @@ void sc_storage_element_ref(sc_addr addr);
  */
 sc_bool sc_storage_element_unref(sc_addr addr);
 
-sc_result sc_storage_save();
+sc_result sc_storage_save(sc_memory_context const * ctx);
 
 #endif
