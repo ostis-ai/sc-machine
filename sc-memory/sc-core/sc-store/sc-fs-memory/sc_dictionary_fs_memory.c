@@ -69,6 +69,8 @@ sc_dictionary_fs_memory_status sc_dictionary_fs_memory_initialize_ext(
 
 error:
 {
+  if (memory != null_ptr)
+    *memory = null_ptr;
   sc_fs_memory_info("Initialized with errors");
   return SC_FS_MEMORY_WRONG_PATH;
 }
@@ -85,8 +87,7 @@ sc_dictionary_fs_memory_status sc_dictionary_fs_memory_shutdown(sc_dictionary_fs
 {
   if (memory == null_ptr)
   {
-    sc_fs_memory_info("Memory is empty");
-    sc_fs_memory_info("Nothing to shutdown");
+    sc_fs_memory_info("Memory is empty to shutdown");
     return SC_FS_MEMORY_NO;
   }
 
@@ -224,7 +225,7 @@ sc_dictionary_fs_memory_status _sc_dictionary_node_fs_memory_get_string_offset_b
               SC_FS_IO_STATUS_NORMAL ||
           sizeof(sc_uint64) != read_bytes)
       {
-        return SC_FALSE;
+        return SC_FS_MEMORY_READ_ERROR;
       }
 
       if (other_string_size != string_size)
@@ -487,6 +488,12 @@ sc_dictionary_fs_memory_status sc_dictionary_fs_memory_get_string_by_link_hash(
     sc_char ** string,
     sc_uint64 * string_size)
 {
+  if (memory == null_ptr)
+  {
+    sc_fs_memory_info("Memory is empty to get string by link hash");
+    return SC_FS_MEMORY_NO;
+  }
+
   sc_char * link_hash_str;
   sc_uint64 link_hash_str_size;
   sc_int_to_str_int(link_hash, link_hash_str, link_hash_str_size);
@@ -537,7 +544,6 @@ sc_dictionary_fs_memory_status _sc_dictionary_fs_memory_get_link_hashes_by_strin
   sc_io_channel * strings_channel = sc_io_new_read_channel(memory->strings_path, null_ptr);
   if (strings_channel == null_ptr)
   {
-    sc_io_channel_shutdown(strings_channel, SC_TRUE, null_ptr);
     sc_fs_memory_error("Path `%s` doesn't exist", memory->strings_path);
     return SC_FS_MEMORY_READ_ERROR;
   }
@@ -683,6 +689,12 @@ sc_dictionary_fs_memory_status sc_dictionary_fs_memory_get_link_hashes_by_string
     sc_bool const to_search_as_prefix,
     sc_list ** link_hashes)
 {
+  if (memory == null_ptr)
+  {
+    sc_fs_memory_info("Memory is empty to get link hashes by string");
+    return SC_FS_MEMORY_NO;
+  }
+
   sc_char * term = _sc_dictionary_fs_memory_get_first_term(string);
   sc_list * string_offsets = null_ptr;
   if (is_substring)
@@ -811,6 +823,12 @@ sc_dictionary_fs_memory_status _sc_dictionary_fs_memory_get_strings_by_substring
     sc_bool const to_search_as_prefix,
     sc_list ** strings)
 {
+  if (memory == null_ptr)
+  {
+    sc_fs_memory_info("Memory is empty to get link strings by substring");
+    return SC_FS_MEMORY_NO;
+  }
+
   sc_char * term = _sc_dictionary_fs_memory_get_first_term(string);
   sc_list * string_offsets = _sc_dictionary_fs_memory_get_string_offsets_by_term_prefix(memory, term);
   sc_mem_free(term);
@@ -914,6 +932,12 @@ sc_dictionary_fs_memory_status _sc_dictionary_fs_memory_get_link_hashes_by_terms
     sc_bool const intersect,
     sc_list ** link_hashes)
 {
+  if (memory == null_ptr)
+  {
+    sc_fs_memory_info("Memory is empty to get link hashes by terms");
+    return SC_FS_MEMORY_NO;
+  }
+
   sc_list_init(link_hashes);
   if (terms->size == 0)
     return SC_FS_MEMORY_OK;
@@ -981,6 +1005,12 @@ sc_dictionary_fs_memory_status _sc_dictionary_fs_memory_get_strings_by_terms(
     sc_bool const intersect,
     sc_list ** strings)
 {
+  if (memory == null_ptr)
+  {
+    sc_fs_memory_info("Memory is empty to get link strings by terms");
+    return SC_FS_MEMORY_NO;
+  }
+
   sc_list_init(strings);
   if (terms->size == 0)
     return SC_FS_MEMORY_OK;
@@ -1134,6 +1164,12 @@ sc_dictionary_fs_memory_status _sc_dictionary_fs_memory_load_string_offsets_link
 
 sc_dictionary_fs_memory_status sc_dictionary_fs_memory_load(sc_dictionary_fs_memory * memory)
 {
+  if (memory == null_ptr)
+  {
+    sc_fs_memory_info("Memory is empty to load dictionaries");
+    return SC_FS_MEMORY_NO;
+  }
+
   sc_fs_memory_info("Load sc-fs-memory dictionaries");
   sc_dictionary_fs_memory_status status = _sc_dictionary_fs_memory_load_terms_offsets(memory);
   if (status != SC_FS_MEMORY_OK && status != SC_FS_MEMORY_NO)
@@ -1327,6 +1363,12 @@ sc_dictionary_fs_memory_status _sc_dictionary_fs_memory_save_string_offsets_link
 
 sc_dictionary_fs_memory_status sc_dictionary_fs_memory_save(sc_dictionary_fs_memory const * memory)
 {
+  if (memory == null_ptr)
+  {
+    sc_fs_memory_info("Memory is empty to save dictionaries");
+    return SC_FS_MEMORY_NO;
+  }
+
   sc_fs_memory_info("Save sc-fs-memory dictionaries");
   sc_dictionary_fs_memory_status status = _sc_dictionary_fs_memory_save_term_string_offsets(memory);
   if (status != SC_FS_MEMORY_OK)

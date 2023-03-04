@@ -43,6 +43,43 @@ TEST(ScDictionaryFsMemoryTest, sc_dictionary_fs_memory_init_shutdown)
   EXPECT_EQ(sc_dictionary_fs_memory_shutdown(memory), SC_FS_MEMORY_OK);
 }
 
+TEST(ScDictionaryFsMemoryTest, sc_dictionary_fs_memory_init_shutdown_no_path)
+{
+  sc_dictionary_fs_memory * memory;
+  EXPECT_EQ(sc_dictionary_fs_memory_initialize(&memory, nullptr), SC_FS_MEMORY_WRONG_PATH);
+
+  EXPECT_EQ(sc_dictionary_fs_memory_shutdown(memory), SC_FS_MEMORY_NO);
+}
+
+TEST(ScDictionaryFsMemoryTest, sc_dictionary_fs_memory_init_shutdown_no_exist_path)
+{
+  sc_dictionary_fs_memory * memory;
+  EXPECT_EQ(sc_dictionary_fs_memory_initialize(&memory, ""), SC_FS_MEMORY_WRONG_PATH);
+
+  EXPECT_EQ(sc_dictionary_fs_memory_shutdown(memory), SC_FS_MEMORY_NO);
+}
+
+TEST(ScDictionaryFsMemoryTest, sc_dictionary_fs_memory_nullptr)
+{
+  sc_dictionary_fs_memory * memory;
+  EXPECT_EQ(sc_dictionary_fs_memory_initialize(&memory, ""), SC_FS_MEMORY_WRONG_PATH);
+  EXPECT_EQ(sc_dictionary_fs_memory_shutdown(memory), SC_FS_MEMORY_NO);
+  EXPECT_EQ(sc_dictionary_fs_memory_load(memory), SC_FS_MEMORY_NO);
+  EXPECT_EQ(sc_dictionary_fs_memory_save(memory), SC_FS_MEMORY_NO);
+  EXPECT_EQ(sc_dictionary_fs_memory_link_string(memory, 0, nullptr, 0), SC_FS_MEMORY_NO);
+  EXPECT_EQ(sc_dictionary_fs_memory_unlink_string(memory, 0), SC_FS_MEMORY_NO);
+  EXPECT_EQ(sc_dictionary_fs_memory_get_string_by_link_hash(memory, 0, nullptr, nullptr), SC_FS_MEMORY_NO);
+  EXPECT_EQ(sc_dictionary_fs_memory_get_link_hashes_by_string(memory, nullptr, 0, nullptr), SC_FS_MEMORY_NO);
+  EXPECT_EQ(sc_dictionary_fs_memory_get_link_hashes_by_substring(memory, nullptr, 0, nullptr), SC_FS_MEMORY_NO);
+  EXPECT_EQ(sc_dictionary_fs_memory_get_link_hashes_by_substring_ext(memory, nullptr, 0, 0, nullptr), SC_FS_MEMORY_NO);
+  EXPECT_EQ(sc_dictionary_fs_memory_get_strings_by_substring(memory, nullptr, 0, nullptr), SC_FS_MEMORY_NO);
+  EXPECT_EQ(sc_dictionary_fs_memory_get_strings_by_substring_ext(memory, nullptr, 0, 0, nullptr), SC_FS_MEMORY_NO);
+  EXPECT_EQ(sc_dictionary_fs_memory_intersect_link_hashes_by_terms(memory, nullptr, nullptr), SC_FS_MEMORY_NO);
+  EXPECT_EQ(sc_dictionary_fs_memory_unite_link_hashes_by_terms(memory, nullptr, nullptr), SC_FS_MEMORY_NO);
+  EXPECT_EQ(sc_dictionary_fs_memory_intersect_strings_by_terms(memory, nullptr, nullptr), SC_FS_MEMORY_NO);
+  EXPECT_EQ(sc_dictionary_fs_memory_unite_strings_by_terms(memory, nullptr, nullptr), SC_FS_MEMORY_NO);
+}
+
 TEST(ScDictionaryFsMemoryTest, sc_dictionary_fs_memory_init_save_shutdown_load)
 {
   sc_dictionary_fs_memory * memory;
@@ -158,6 +195,43 @@ TEST(ScDictionaryFsMemoryTest, sc_dictionary_fs_memory_get_string_by_link_hash_n
     sc_uint64 size;
     EXPECT_EQ(sc_dictionary_fs_memory_get_string_by_link_hash(memory, hash, &found_string, &size), SC_FS_MEMORY_OK);
     EXPECT_TRUE(sc_str_cmp(found_string, string1));
+    sc_mem_free(found_string);
+  }
+
+  EXPECT_EQ(sc_dictionary_fs_memory_shutdown(memory), SC_FS_MEMORY_OK);
+}
+
+TEST(ScDictionaryFsMemoryTest, sc_dictionary_fs_memory_get_string_by_link_hash_no_file)
+{
+  sc_dictionary_fs_memory * memory;
+  EXPECT_EQ(sc_dictionary_fs_memory_initialize(&memory, SC_DICTIONARY_FS_MEMORY_PATH), SC_FS_MEMORY_OK);
+
+  sc_addr_hash hash = 112;
+  {
+    sc_char * found_string;
+    sc_uint64 size;
+    EXPECT_EQ(
+        sc_dictionary_fs_memory_get_string_by_link_hash(memory, hash, &found_string, &size), SC_FS_MEMORY_NO_STRING);
+    EXPECT_EQ(found_string, nullptr);
+    sc_mem_free(found_string);
+  }
+  {
+    sc_char string1[] = TEXT_EXAMPLE_2;
+    EXPECT_EQ(sc_dictionary_fs_memory_link_string(memory, hash, string1, sc_str_len(string1)), SC_FS_MEMORY_OK);
+
+    sc_char * found_string;
+    sc_uint64 size;
+    EXPECT_EQ(sc_dictionary_fs_memory_get_string_by_link_hash(memory, hash, &found_string, &size), SC_FS_MEMORY_OK);
+    EXPECT_TRUE(sc_str_cmp(found_string, string1));
+    sc_mem_free(found_string);
+  }
+  {
+    sc_fs_rmdir(SC_DICTIONARY_FS_MEMORY_PATH);
+    sc_char * found_string;
+    sc_uint64 size;
+    EXPECT_EQ(
+        sc_dictionary_fs_memory_get_string_by_link_hash(memory, hash, &found_string, &size), SC_FS_MEMORY_READ_ERROR);
+    EXPECT_EQ(found_string, nullptr);
     sc_mem_free(found_string);
   }
 
@@ -364,6 +438,45 @@ TEST(ScDictionaryFsMemoryTest, sc_dictionary_fs_memory_get_link_hashes_by_string
     EXPECT_EQ(
         sc_dictionary_fs_memory_get_link_hashes_by_string(memory, string1, sc_str_len(string1), &found_link_hashes),
         SC_FS_MEMORY_OK);
+    EXPECT_EQ(found_link_hashes->size, 0u);
+
+    sc_iterator * it = sc_list_iterator(found_link_hashes);
+    EXPECT_FALSE(sc_iterator_next(it));
+    sc_iterator_destroy(it);
+    sc_list_destroy(found_link_hashes);
+  }
+
+  EXPECT_EQ(sc_dictionary_fs_memory_shutdown(memory), SC_FS_MEMORY_OK);
+}
+
+TEST(ScDictionaryFsMemoryTest, sc_dictionary_fs_memory_get_link_hashes_by_string_no_file)
+{
+  sc_dictionary_fs_memory * memory;
+  EXPECT_EQ(sc_dictionary_fs_memory_initialize(&memory, SC_DICTIONARY_FS_MEMORY_PATH), SC_FS_MEMORY_OK);
+
+  sc_char string1[] = TEXT_EXAMPLE_1;
+  sc_addr_hash hash1 = 112;
+  {
+    EXPECT_EQ(sc_dictionary_fs_memory_link_string(memory, hash1, string1, sc_str_len(string1)), SC_FS_MEMORY_OK);
+
+    sc_list * found_link_hashes;
+    EXPECT_EQ(
+        sc_dictionary_fs_memory_get_link_hashes_by_string(memory, string1, sc_str_len(string1), &found_link_hashes),
+        SC_FS_MEMORY_OK);
+    EXPECT_EQ(found_link_hashes->size, 1u);
+
+    sc_iterator * it = sc_list_iterator(found_link_hashes);
+    EXPECT_TRUE(sc_iterator_next(it));
+    EXPECT_EQ((sc_addr_hash)sc_iterator_get(it), hash1);
+    sc_iterator_destroy(it);
+    sc_list_destroy(found_link_hashes);
+  }
+  {
+    sc_fs_rmdir(SC_DICTIONARY_FS_MEMORY_PATH);
+    sc_list * found_link_hashes;
+    EXPECT_EQ(
+        sc_dictionary_fs_memory_get_link_hashes_by_string(memory, string1, sc_str_len(string1), &found_link_hashes),
+        SC_FS_MEMORY_READ_ERROR);
     EXPECT_EQ(found_link_hashes->size, 0u);
 
     sc_iterator * it = sc_list_iterator(found_link_hashes);
