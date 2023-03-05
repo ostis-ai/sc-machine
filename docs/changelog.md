@@ -50,6 +50,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- Generalized docker_entrypoint.sh, this script can be used by external projects now
 - Now in tests all agents works in single thread
 - Replace asserts in sc-template search and gen API by exceptions throwing
 - `ScsLoader::loadScsFile` return bool instead void
