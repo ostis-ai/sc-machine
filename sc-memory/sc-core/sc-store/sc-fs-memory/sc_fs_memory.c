@@ -35,7 +35,7 @@ sc_bool sc_fs_memory_initialize(const sc_char * path, sc_uint32 const max_search
   if (clear == SC_TRUE)
   {
     sc_fs_memory_info("Clear sc-memory segments");
-    if (sc_fs_isfile(manager->segments_path) && g_remove(manager->segments_path) != 0)
+    if (sc_fs_is_file(manager->segments_path) && g_remove(manager->segments_path) != 0)
     {
       sc_fs_memory_error("Can't remove segments file: %s", manager->segments_path);
       return SC_FALSE;
@@ -109,7 +109,7 @@ sc_bool sc_fs_memory_unlink_string(sc_addr_hash link_hash)
 sc_bool _sc_fs_memory_load_sc_memory_segments(sc_segment ** segments, sc_uint32 * segments_num)
 {
   sc_fs_memory_info("Load sc-memory segments");
-  if (sc_fs_isfile(manager->segments_path) == SC_FALSE)
+  if (sc_fs_is_file(manager->segments_path) == SC_FALSE)
   {
     sc_fs_memory_info("There are no sc-memory segments in %s", manager->segments_path);
     return SC_TRUE;
@@ -172,9 +172,9 @@ sc_bool _sc_fs_memory_save_sc_memory_segments(sc_segment ** segments, sc_uint32 
 {
   sc_fs_memory_info("Save sc-memory segments");
 
-  if (!sc_fs_isdir(manager->fs_memory->path))
+  if (!sc_fs_is_directory(manager->fs_memory->path))
   {
-    if (!sc_fs_mkdirs(manager->fs_memory->path))
+    if (!sc_fs_create_directory(manager->fs_memory->path))
     {
       sc_fs_memory_error("Can't create a directory %s", manager->fs_memory->path);
       return SC_FALSE;
@@ -211,7 +211,7 @@ sc_bool _sc_fs_memory_save_sc_memory_segments(sc_segment ** segments, sc_uint32 
   }
 
   // rename main file
-  if (sc_fs_isfile(tmp_filename))
+  if (sc_fs_is_file(tmp_filename))
   {
     if (g_rename(tmp_filename, manager->segments_path) != 0)
     {

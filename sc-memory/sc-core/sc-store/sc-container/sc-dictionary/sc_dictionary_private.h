@@ -29,22 +29,6 @@ sc_dictionary_node * sc_dictionary_append_to_node(
     const sc_char * string,
     sc_uint32 string_size);
 
-/*! Removes a string from a sc-dictionary by a common prefix with another string started in sc-dictionary node, if such
- * exists. A common prefix doesn't remove form sc-dictionary if it contains in another string.
- * @param dictionary A sc-dictionary pointer
- * @param node A sc-dictionary node where common prefix may be started
- * @param string A removable string
- * @param string_size Removable string size
- * @returns Returns A sc-dictionary node where removable string or its prefix starts
- * @note If string isn't in sc-dictionary then null_pointer will be returned
- */
-sc_dictionary_node * sc_dictionary_remove_from_node(
-    sc_dictionary * dictionary,
-    sc_dictionary_node * node,
-    const sc_char * string,
-    sc_uint32 string_size,
-    sc_uint32 index);
-
 /*! Gets a terminal sc-dictionary node where string ends.
  * @param dictionary A sc-dictionary pointer
  * @param node A sc-dictionary node where common prefix may be started

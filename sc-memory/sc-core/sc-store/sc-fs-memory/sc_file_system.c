@@ -17,22 +17,22 @@
 
 #define SC_FS_FILE_COMMAND "file -b --mime-encoding "
 
-sc_bool sc_fs_isdir(const sc_char * path)
+sc_bool sc_fs_is_directory(const sc_char * path)
 {
   return g_file_test(path, G_FILE_TEST_IS_DIR);
 }
 
-sc_bool sc_fs_isfile(const sc_char * path)
+sc_bool sc_fs_is_file(const sc_char * path)
 {
   return g_file_test(path, G_FILE_TEST_IS_REGULAR);
 }
 
-void sc_fs_rmdir(const sc_char * path)
+sc_bool sc_fs_remove_directory(const sc_char * path)
 {
-  if (sc_fs_isdir(path) == SC_FALSE)
-    return;
+  if (sc_fs_is_directory(path) == SC_FALSE)
+    return SC_FALSE;
 
-  GDir * directory = g_dir_open(path, 0, 0);
+  GDir * directory = g_dir_open(path, 0, null_ptr);
 
   // calculate files
   sc_char tmp_path[MAX_PATH_LENGTH];
@@ -41,25 +41,27 @@ void sc_fs_rmdir(const sc_char * path)
   {
     g_snprintf(tmp_path, MAX_PATH_LENGTH, "%s/%s", path, file);
 
-    if (sc_fs_isfile(tmp_path) == SC_TRUE)
+    if (sc_fs_is_file(tmp_path) == SC_TRUE)
     {
       if (g_remove(tmp_path) == -1)
-        sc_critical("Can't remove file: %s", tmp_path);
+        return SC_FALSE;
     }
-    else if (sc_fs_isdir(tmp_path) == SC_TRUE)
-      sc_fs_rmdir(tmp_path);
+    else if (sc_fs_is_directory(tmp_path) == SC_TRUE)
+      sc_fs_remove_directory(tmp_path);
 
     file = g_dir_read_name(directory);
   }
 
   g_dir_close(directory);
   g_rmdir(path);
+
+  return SC_TRUE;
 }
 
-sc_bool sc_fs_mkdirs(const sc_char * path)
+sc_bool sc_fs_create_directory(const sc_char * path)
 {
 #if SC_PLATFORM_LINUX || SC_PLATFORM_MAC
-  int const mode = 0755;
+  int const mode = 0777;
 #else
   int const mode = 0;
 #endif
@@ -69,8 +71,19 @@ sc_bool sc_fs_mkdirs(const sc_char * path)
   return SC_TRUE;
 }
 
-sc_bool sc_fs_mkfile(sc_char const * path)
+sc_bool sc_fs_remove_file(sc_char const * path)
 {
+  if (!sc_fs_is_file(path) || g_remove(path) == -1)
+    return SC_FALSE;
+
+  return SC_TRUE;
+}
+
+sc_bool sc_fs_create_file(sc_char const * path)
+{
+  if (path == null_ptr)
+    return SC_FALSE;
+
   sc_io_channel * channel = sc_io_new_channel(path, "w+", null_ptr);
   if (channel == null_ptr)
     return SC_FALSE;
@@ -94,11 +107,9 @@ void sc_fs_initialize_file_path(sc_char const * path, sc_char const * postfix, s
   sc_str_printf(*out_path, size, "%s/%s", path, postfix);
 }
 
-sc_char * sc_fs_exec(sc_char * command)
+sc_char * sc_fs_execute(sc_char const * command)
 {
   FILE * pipe = popen(command, "r");
-  if (!pipe)
-    return SC_FALSE;
   sc_int32 buffer_size = 50;
   sc_char buffer[buffer_size];
   while (fgets(buffer, buffer_size, pipe) != null_ptr)
@@ -111,14 +122,14 @@ sc_char * sc_fs_exec(sc_char * command)
   return char_result;
 }
 
-sc_bool sc_fs_is_binary_file(sc_char file_path[])
+sc_bool sc_fs_is_binary_file(sc_char const * file_path)
 {
   sc_char command_prefix[] = SC_FS_FILE_COMMAND;
   sc_char * command;
   sc_str_cpy(command, command_prefix, sc_str_len(command_prefix) + sc_str_len(file_path));
   strcat(command, file_path);
 
-  sc_char * result = sc_fs_exec(command);
+  sc_char * result = sc_fs_execute(command);
   sc_mem_free(command);
   sc_bool const is_binary_file = sc_str_has_prefix(result, "binary");
   sc_mem_free(result);
@@ -132,6 +143,7 @@ void sc_fs_get_file_content(sc_char const * file_path, sc_char ** content, sc_ui
   {
     *content = null_ptr;
     *content_size = 0;
+    return;
   }
 
   sc_stream_get_data(stream, content, content_size);

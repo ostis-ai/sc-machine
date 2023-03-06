@@ -105,7 +105,7 @@ TEST(ScDictionaryFsMemoryTest, sc_dictionary_fs_memory_init_rm_shutdown_load)
   EXPECT_EQ(sc_dictionary_fs_memory_save(memory), SC_FS_MEMORY_OK);
   EXPECT_EQ(sc_dictionary_fs_memory_shutdown(memory), SC_FS_MEMORY_OK);
 
-  sc_fs_rmdir(SC_DICTIONARY_FS_MEMORY_PATH);
+  sc_fs_remove_directory(SC_DICTIONARY_FS_MEMORY_PATH);
   EXPECT_EQ(sc_dictionary_fs_memory_initialize(&memory, SC_DICTIONARY_FS_MEMORY_PATH), SC_FS_MEMORY_OK);
   EXPECT_EQ(sc_dictionary_fs_memory_load(memory), SC_FS_MEMORY_OK);
   EXPECT_EQ(sc_dictionary_fs_memory_save(memory), SC_FS_MEMORY_OK);
@@ -226,7 +226,7 @@ TEST(ScDictionaryFsMemoryTest, sc_dictionary_fs_memory_get_string_by_link_hash_n
     sc_mem_free(found_string);
   }
   {
-    sc_fs_rmdir(SC_DICTIONARY_FS_MEMORY_PATH);
+    sc_fs_remove_directory(SC_DICTIONARY_FS_MEMORY_PATH);
     sc_char * found_string;
     sc_uint64 size;
     EXPECT_EQ(
@@ -330,7 +330,7 @@ TEST(ScDictionaryFsMemoryTest, sc_dictionary_fs_memory_get_string_by_link_hash_r
 
   EXPECT_EQ(sc_dictionary_fs_memory_shutdown(memory), SC_FS_MEMORY_OK);
 
-  sc_fs_rmdir(SC_DICTIONARY_FS_MEMORY_PATH);
+  sc_fs_remove_directory(SC_DICTIONARY_FS_MEMORY_PATH);
   EXPECT_EQ(sc_dictionary_fs_memory_initialize(&memory, SC_DICTIONARY_FS_MEMORY_PATH), SC_FS_MEMORY_OK);
   EXPECT_EQ(sc_dictionary_fs_memory_load(memory), SC_FS_MEMORY_OK);
 
@@ -472,7 +472,7 @@ TEST(ScDictionaryFsMemoryTest, sc_dictionary_fs_memory_get_link_hashes_by_string
     sc_list_destroy(found_link_hashes);
   }
   {
-    sc_fs_rmdir(SC_DICTIONARY_FS_MEMORY_PATH);
+    sc_fs_remove_directory(SC_DICTIONARY_FS_MEMORY_PATH);
     sc_list * found_link_hashes;
     EXPECT_EQ(
         sc_dictionary_fs_memory_get_link_hashes_by_string(memory, string1, sc_str_len(string1), &found_link_hashes),

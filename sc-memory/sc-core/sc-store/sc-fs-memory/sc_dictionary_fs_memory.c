@@ -29,9 +29,9 @@ sc_dictionary_fs_memory_status sc_dictionary_fs_memory_initialize_ext(
     goto error;
   }
 
-  if (sc_fs_isdir(path) == SC_FALSE)
+  if (sc_fs_is_directory(path) == SC_FALSE)
   {
-    if (sc_fs_mkdirs(path) == SC_FALSE)
+    if (sc_fs_create_directory(path) == SC_FALSE)
     {
       sc_fs_memory_error("Path `%s` is not correct", path);
       goto error;
@@ -280,8 +280,8 @@ sc_dictionary_fs_memory_status _sc_dictionary_fs_memory_write_string(
     sc_uint64 * string_offset,
     sc_bool * is_not_exist)
 {
-  if (sc_fs_isfile(memory->strings_path) == SC_FALSE)
-    sc_fs_mkfile(memory->strings_path);
+  if (sc_fs_is_file(memory->strings_path) == SC_FALSE)
+    sc_fs_create_file(memory->strings_path);
 
   sc_io_channel * strings_channel = sc_io_new_append_channel(memory->strings_path, null_ptr);
   sc_io_channel_set_encoding(strings_channel, null_ptr, null_ptr);
@@ -518,7 +518,7 @@ sc_dictionary_fs_memory_status sc_dictionary_fs_memory_get_string_by_link_hash(
     return SC_FS_MEMORY_READ_ERROR;
   }
 
-  if (sc_fs_isfile(*string))
+  if (sc_fs_is_file(*string))
   {
     sc_char * file_path = *string;
     _sc_dictionary_fs_memory_read_file(file_path, string, (sc_uint32 *)string_size);
@@ -1256,8 +1256,8 @@ error:
 
 sc_dictionary_fs_memory_status _sc_dictionary_fs_memory_save_term_string_offsets(sc_dictionary_fs_memory const * memory)
 {
-  if (sc_fs_isfile(memory->terms_string_offsets_path) == SC_FALSE)
-    sc_fs_mkfile(memory->terms_string_offsets_path);
+  if (sc_fs_is_file(memory->terms_string_offsets_path) == SC_FALSE)
+    sc_fs_create_file(memory->terms_string_offsets_path);
 
   sc_io_channel * channel = sc_io_new_write_channel(memory->terms_string_offsets_path, null_ptr);
   sc_io_channel_set_encoding(channel, null_ptr, null_ptr);
@@ -1341,8 +1341,8 @@ error:
 sc_dictionary_fs_memory_status _sc_dictionary_fs_memory_save_string_offsets_link_hashes(
     sc_dictionary_fs_memory const * memory)
 {
-  if (sc_fs_isfile(memory->string_offsets_link_hashes_path) == SC_FALSE)
-    sc_fs_mkfile(memory->string_offsets_link_hashes_path);
+  if (sc_fs_is_file(memory->string_offsets_link_hashes_path) == SC_FALSE)
+    sc_fs_create_file(memory->string_offsets_link_hashes_path);
 
   sc_io_channel * channel = sc_io_new_write_channel(memory->string_offsets_link_hashes_path, null_ptr);
   sc_io_channel_set_encoding(channel, null_ptr, null_ptr);

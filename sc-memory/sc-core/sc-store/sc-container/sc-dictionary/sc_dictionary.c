@@ -173,40 +173,6 @@ sc_dictionary_node * sc_dictionary_append(
   return node;
 }
 
-sc_dictionary_node * sc_dictionary_remove_from_node(
-    sc_dictionary * dictionary,
-    sc_dictionary_node * node,
-    const sc_char * string,
-    const sc_uint32 string_size,
-    sc_uint32 i)
-{
-  // check prefixes matching
-  if (i < string_size)
-  {
-    sc_uint8 num = 0;
-    dictionary->char_to_int(string[i], &num, &node->mask);
-    sc_dictionary_node * next = node->next[num];
-    if (SC_DICTIONARY_NODE_IS_VALID(node->next[num]) &&
-        (sc_str_has_prefix(string + i, next->offset) || sc_str_cmp(string + i, next->offset)))
-    {
-      sc_dictionary_node * removable =
-          sc_dictionary_remove_from_node(dictionary, next, string, string_size, i + next->offset_size);
-
-      if (SC_DICTIONARY_NODE_IS_VALID(next))
-        return removable;
-    }
-  }
-
-  // check suffixes matching
-  if (i == string_size &&
-      (node->offset == null_ptr || sc_str_cmp(node->offset, string + (string_size - node->offset_size))))
-  {
-    return node;
-  }
-
-  return null_ptr;
-}
-
 const sc_dictionary_node * sc_dictionary_get_last_node_from_node(
     const sc_dictionary * dictionary,
     const sc_dictionary_node * node,
