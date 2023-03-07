@@ -2,6 +2,7 @@
 
 extern "C"
 {
+#include "sc-core/sc-store/sc-base/sc_allocator.h"
 #include "sc-core/sc-store/sc-container/sc_struct_node.h"
 #include "sc-core/sc-store/sc-container/sc-list/sc_list.h"
 #include "sc-core/sc-store/sc-container/sc-iterator/sc_container_iterator.h"
@@ -43,7 +44,7 @@ TEST(ScListTest, sc_list)
   }
 
   EXPECT_TRUE(sc_list_pop_back(list) == nullptr);
-  free(values);
+  sc_mem_free(values);
   sc_list_destroy(list);
 }
 
@@ -105,7 +106,7 @@ TEST(ScListTest, sc_list_iterator)
   }
   EXPECT_TRUE(i == 255);
 
-  free(values);
+  sc_mem_free(values);
   sc_iterator_destroy(it);
   sc_list_destroy(list);
 }
