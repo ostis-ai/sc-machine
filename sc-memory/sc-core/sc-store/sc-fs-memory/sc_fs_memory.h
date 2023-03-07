@@ -7,16 +7,15 @@
 #ifndef _sc_fs_memory_h_
 #define _sc_fs_memory_h_
 
+#include "sc_fs_memory_status.h"
+
 #include "../sc_types.h"
 #include "../sc_defines.h"
 #include "../sc_stream.h"
 #include "../sc-container/sc-list/sc_list.h"
 
-#define SC_STORAGE_SEG_CHECKSUM_SIZE 64
-
 #ifdef SC_DICTIONARY_FS_MEMORY
 typedef struct _sc_dictionary_fs_memory sc_fs_memory;
-typedef enum _sc_dictionary_fs_memory_status sc_fs_memory_status;
 #endif
 
 typedef struct _sc_fs_memory_manager
@@ -26,7 +25,7 @@ typedef struct _sc_fs_memory_manager
 
   sc_fs_memory_status (*initialize)(sc_fs_memory ** memory, const sc_char * path, sc_uint32 max_searchable_string_size);
   sc_fs_memory_status (*shutdown)(sc_fs_memory * memory);
-  sc_fs_memory_status (*clear)();
+  sc_fs_memory_status (*clear)(sc_fs_memory const * memory);
   sc_fs_memory_status (*load)(sc_fs_memory * memory);
   sc_fs_memory_status (*save)(sc_fs_memory const * memory);
   sc_fs_memory_status (*link_string)(

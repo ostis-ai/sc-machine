@@ -35,18 +35,12 @@ sc_bool sc_fs_memory_initialize(const sc_char * path, sc_uint32 const max_search
   if (clear == SC_TRUE)
   {
     sc_fs_memory_info("Clear sc-memory segments");
-    if (sc_fs_is_file(manager->segments_path) && g_remove(manager->segments_path) != 0)
-    {
-      sc_fs_memory_error("Can't remove segments file: %s", manager->segments_path);
-      return SC_FALSE;
-    }
+    if (sc_fs_remove_file(manager->segments_path) == SC_FALSE)
+      sc_fs_memory_info("Can't remove segments file: %s", manager->segments_path);
 
     sc_fs_memory_info("Clear sc-fs-memory");
-    if (manager->clear != null_ptr && manager->clear() != SC_FS_MEMORY_OK)
-    {
-      sc_fs_memory_error("Can't clear sc-fs-memory");
-      return SC_FALSE;
-    }
+    if (manager->clear(manager->fs_memory) != SC_FS_MEMORY_OK)
+      sc_fs_memory_info("Can't clear sc-fs-memory");
   }
 
   return SC_TRUE;
@@ -111,6 +105,7 @@ sc_bool _sc_fs_memory_load_sc_memory_segments(sc_segment ** segments, sc_uint32 
   sc_fs_memory_info("Load sc-memory segments");
   if (sc_fs_is_file(manager->segments_path) == SC_FALSE)
   {
+    *segments_num = 0;
     sc_fs_memory_info("There are no sc-memory segments in %s", manager->segments_path);
     return SC_TRUE;
   }
@@ -118,11 +113,6 @@ sc_bool _sc_fs_memory_load_sc_memory_segments(sc_segment ** segments, sc_uint32 
   // open segments
   {
     sc_io_channel * segments_channel = sc_io_new_read_channel(manager->segments_path, null_ptr);
-    if (segments_channel == null_ptr)
-    {
-      sc_fs_memory_error("Can't open sc-memory segments from: %s", manager->segments_path);
-      return SC_FALSE;
-    }
     sc_io_channel_set_encoding(segments_channel, null_ptr, null_ptr);
 
     sc_uint64 read_bytes = 0;
@@ -130,6 +120,7 @@ sc_bool _sc_fs_memory_load_sc_memory_segments(sc_segment ** segments, sc_uint32 
             SC_FS_IO_STATUS_NORMAL ||
         read_bytes != sizeof(sc_uint32))
     {
+      *segments_num = 0;
       sc_fs_memory_error("Error while attribute `segments_num` reading");
       sc_io_channel_shutdown(segments_channel, SC_FALSE, null_ptr);
       return SC_FALSE;
@@ -174,11 +165,7 @@ sc_bool _sc_fs_memory_save_sc_memory_segments(sc_segment ** segments, sc_uint32 
 
   if (!sc_fs_is_directory(manager->fs_memory->path))
   {
-    if (!sc_fs_create_directory(manager->fs_memory->path))
-    {
-      sc_fs_memory_error("Can't create a directory %s", manager->fs_memory->path);
-      return SC_FALSE;
-    }
+    sc_fs_create_directory(manager->fs_memory->path);
   }
 
   // create temporary file
@@ -200,7 +187,8 @@ sc_bool _sc_fs_memory_save_sc_memory_segments(sc_segment ** segments, sc_uint32 
   {
     sc_segment const * segment = segments[idx];
 
-    if (sc_io_channel_write_chars(
+    if (segment == null_ptr ||
+        sc_io_channel_write_chars(
             segments_channel, (sc_char *)segment->elements, SC_SEG_ELEMENTS_SIZE_BYTE, &written_bytes, null_ptr) !=
             SC_FS_IO_STATUS_NORMAL ||
         written_bytes != SC_SEG_ELEMENTS_SIZE_BYTE)

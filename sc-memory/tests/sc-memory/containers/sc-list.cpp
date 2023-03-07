@@ -7,16 +7,12 @@ extern "C"
 #include "sc-core/sc-store/sc-container/sc-iterator/sc_container_iterator.h"
 }
 
-#include "sc_test.hpp"
-
 sc_bool scalar_compare(void * value, void * other)
 {
   return *(sc_uint8 *)value == *(sc_uint8 *)other;
 }
 
-using ScListTest = ScMemoryTest;
-
-TEST_F(ScListTest, sc_list)
+TEST(ScListTest, sc_list)
 {
   sc_list * list;
   sc_list_init(&list);
@@ -51,10 +47,26 @@ TEST_F(ScListTest, sc_list)
   sc_list_destroy(list);
 }
 
-TEST_F(ScListTest, sc_list_iterator)
+TEST(ScListTest, sc_list_null_ptr)
+{
+  EXPECT_FALSE(sc_list_init(nullptr));
+  EXPECT_FALSE(sc_list_destroy(nullptr));
+  EXPECT_FALSE(sc_list_clear(nullptr));
+  EXPECT_EQ(sc_list_push(nullptr, nullptr, nullptr), nullptr);
+  EXPECT_EQ(sc_list_push_back(nullptr, nullptr), nullptr);
+  EXPECT_EQ(sc_list_pop_back(nullptr), nullptr);
+  EXPECT_FALSE(sc_list_remove_if(nullptr, nullptr, nullptr));
+  EXPECT_FALSE(sc_list_remove_if(nullptr, nullptr, nullptr));
+  EXPECT_EQ(sc_list_front(nullptr), nullptr);
+  EXPECT_EQ(sc_list_back(nullptr), nullptr);
+}
+
+TEST(ScListTest, sc_list_iterator)
 {
   sc_list * list;
   sc_list_init(&list);
+  EXPECT_EQ(sc_list_front(list), nullptr);
+  EXPECT_EQ(sc_list_back(list), nullptr);
 
   sc_uint8 size = 10;
   auto * values = (sc_uint8 *)malloc(sizeof(sc_uint8) * size);
@@ -64,6 +76,9 @@ TEST_F(ScListTest, sc_list_iterator)
     values[i] = i;
     sc_list_push_back(list, (void *)(&values[i]));
   }
+
+  EXPECT_NE(sc_list_front(list), nullptr);
+  EXPECT_NE(sc_list_back(list), nullptr);
 
   i = 0;
   void * data;

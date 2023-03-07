@@ -95,7 +95,7 @@ sc_struct_node * sc_list_push(sc_list * list, sc_struct_node * node, void * data
 
 sc_struct_node * sc_list_push_back(sc_list * list, void * data)
 {
-  return sc_list_push(list, list->end ? list->end->prev : null_ptr, data);
+  return list ? sc_list_push(list, list->end ? list->end->prev : null_ptr, data) : null_ptr;
 }
 
 sc_struct_node * sc_list_pop_back(sc_list * list)

@@ -359,7 +359,7 @@ sc_dictionary_fs_memory_status sc_dictionary_fs_memory_link_string(
 {
   if (memory == null_ptr)
   {
-    sc_fs_memory_error("Memory is empty to link string");
+    sc_fs_memory_info("Memory is empty to link string");
     return SC_FS_MEMORY_NO;
   }
 
@@ -395,7 +395,7 @@ sc_dictionary_fs_memory_status sc_dictionary_fs_memory_unlink_string(
 {
   if (memory == null_ptr)
   {
-    sc_fs_memory_error("Memory is empty to unlink string");
+    sc_fs_memory_info("Memory is empty to unlink string");
     return SC_FS_MEMORY_NO;
   }
 
@@ -1380,6 +1380,25 @@ sc_dictionary_fs_memory_status sc_dictionary_fs_memory_save(sc_dictionary_fs_mem
 
   sc_fs_memory_info("All sc-fs-memory dictionaries saved");
   return status;
+}
+
+sc_dictionary_fs_memory_status sc_dictionary_fs_memory_clear(sc_dictionary_fs_memory const * memory)
+{
+  sc_fs_memory_info("Clear dictionaries");
+
+  if (memory == null_ptr)
+  {
+    sc_fs_memory_info("Memory is empty to clear dictionaries");
+    return SC_FS_MEMORY_NO;
+  }
+
+  if (sc_fs_remove_file(memory->strings_path) == SC_FALSE)
+    sc_fs_memory_info("Can't remove strings file: %s", memory->strings_path);
+
+  if (sc_fs_remove_file(memory->terms_string_offsets_path) == SC_FALSE)
+    sc_fs_memory_info("Can't remove terms strings offsets file: %s", memory->terms_string_offsets_path);
+
+  return SC_FS_MEMORY_OK;
 }
 
 #endif

@@ -65,6 +65,10 @@ sc_struct_node * sc_list_pop_back(sc_list * list);
  */
 sc_bool sc_list_remove_if(sc_list * list, void * data, sc_bool (*predicate)(void * data, void * other));
 
+sc_struct_node * sc_list_front(sc_list * list);
+
+sc_struct_node * sc_list_back(sc_list * list);
+
 /*! Gets sc-list forward-backward iterator.
  * @param list A sc-list pointer
  * @return Returns Iterator.

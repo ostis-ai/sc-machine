@@ -11,8 +11,12 @@
 #include "../sc_defines.h"
 #include "../sc_stream.h"
 
+#include "sc_fs_memory_status.h"
+
 #include "../sc-container/sc-dictionary/sc_dictionary.h"
 #include "../sc-container/sc-list/sc_list.h"
+
+typedef sc_fs_memory_status sc_dictionary_fs_memory_status;
 
 typedef struct _sc_dictionary_fs_memory
 {
@@ -37,17 +41,6 @@ typedef struct _sc_link_hash_content
   sc_list * link_hashes;
   sc_uint64 string_offset;
 } sc_link_hash_content;
-
-typedef enum _sc_dictionary_fs_memory_status
-{
-  SC_FS_MEMORY_OK = 0,
-
-  SC_FS_MEMORY_NO,  // no memory, it is null_ptr or not correct
-  SC_FS_MEMORY_NO_STRING,
-  SC_FS_MEMORY_WRONG_PATH,
-  SC_FS_MEMORY_WRITE_ERROR,
-  SC_FS_MEMORY_READ_ERROR
-} sc_dictionary_fs_memory_status;
 
 /*! Initialize sc-dictionary file system memory in specified path.
  * @param memory[out] A pointer to sc-memory instance
@@ -210,5 +203,11 @@ sc_dictionary_fs_memory_status sc_dictionary_fs_memory_load(sc_dictionary_fs_mem
  * @returns SC_FS_MEMORY_OK, if are no reading and writing errors.
  */
 sc_dictionary_fs_memory_status sc_dictionary_fs_memory_save(sc_dictionary_fs_memory const * memory);
+
+/*! Clear file system memory
+ * @param memory A pointer to sc-memory instance
+ * @returns SC_FS_MEMORY_OK, if are no reading and writing errors.
+ */
+sc_dictionary_fs_memory_status sc_dictionary_fs_memory_clear(sc_dictionary_fs_memory const * memory);
 
 #endif  //_sc_dictionary_fs_memory_h_

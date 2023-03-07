@@ -59,6 +59,7 @@ TEST(ScDictionaryTest, sc_dictionary_append_get_by_key)
   EXPECT_EQ((sc_addr_hash)sc_dictionary_get_by_key(dictionary, string1, string1_size), hash1);
 
   EXPECT_TRUE(_test_sc_uchar_dictionary_destroy(dictionary));
+  EXPECT_FALSE(_test_sc_uchar_dictionary_destroy(nullptr));
 }
 
 TEST(ScDictionaryTest, sc_dictionary_append_get_by_key_reset)
