@@ -77,26 +77,12 @@ void uiSc2ScsTranslator::runImpl()
     if (sc_memory_get_arc_begin(s_default_ctx, arc_addr, &arc_beg) != SC_RESULT_OK)
       continue;  //! TODO logging
 
-    if (isNeedToTranslate(arc_beg) == false)
-      continue;  //! TODO logging
-
     if (sc_memory_get_arc_end(s_default_ctx, arc_addr, &arc_end) != SC_RESULT_OK)
       continue;  //! TODO logging
 
-    if (isNeedToTranslate(arc_end) == false)
-      continue;  //! TODO logging
-
     sc_type beg_type, end_type;
-    auto itTmp = mEdges.find(arc_beg);
-    if (itTmp != mEdges.end())
-      beg_type = itTmp->second;
-    else
-      sc_memory_get_element_type(s_default_ctx, arc_beg, &beg_type);
-    itTmp = mEdges.find(arc_end);
-    if (itTmp != mEdges.end())
-      end_type = itTmp->second;
-    else
-      sc_memory_get_element_type(s_default_ctx, arc_end, &end_type);
+    sc_memory_get_element_type(s_default_ctx, arc_beg, &beg_type);
+    sc_memory_get_element_type(s_default_ctx, arc_end, &end_type);
 
     constrAddrs.insert(arc_beg);
     constrAddrs.insert(arc_end);
