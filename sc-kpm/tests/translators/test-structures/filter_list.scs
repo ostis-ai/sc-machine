@@ -1,0 +1,5 @@
+concept_scn_json_elements_filter_set <- sc_node_class;
+-> rrel_scp_const;
+-> nrel_format;
+-> nrel_translation;
+-> nrel_idtf;;
