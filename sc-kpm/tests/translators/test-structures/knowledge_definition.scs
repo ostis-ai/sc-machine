@@ -1,0 +1,26 @@
+answer_addr = [*
+	section_subjdomain_knowledges = [*
+sc_node_not_relation -> knowledge;;
+knowledge
+=> nrel_main_idtf:
+	[знание] 
+	(* <- lang_ru;; *);
+	[knowledge] 
+	(* <- lang_en;; *);
+<- rrel_key_sc_element:
+	...
+	(*
+		<- explanation;;
+		<= nrel_sc_text_translation:
+		...
+		(*
+		-> rrel_example:
+				[<p><b><sc_element sys_idtf  = "knowledge">знание</sc_element></b> - это стационарная знаковая конструкция, обладающая некоторой семантической целостностью.</p>]
+				(*
+				<- lang_ru;;
+				=> nrel_format: format_html;;
+				*);;
+		*);;
+	*);;
+*];;
+*];;

@@ -29,3 +29,12 @@ make_tests_from_folder(${CMAKE_CURRENT_LIST_DIR}/sc-utils
 )
 
 sc_codegen(sc-kpm-agent-common-utils-tests ${CMAKE_CURRENT_LIST_DIR}/sc-utils)
+
+
+make_tests_from_folder(${CMAKE_CURRENT_LIST_DIR}/translators
+    NAME sc-kpm-translators-tests
+    DEPENDS sc-memory sc-ui
+    INCLUDES ${SC_MEMORY_SRC} ${SC_KPM_SRC} ${SC_MEMORY_SRC}/tests/sc-memory/_test
+)
+
+add_definitions(-DSC_KPM_TEST_SRC_PATH="${CMAKE_CURRENT_LIST_DIR}")

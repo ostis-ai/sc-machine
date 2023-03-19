@@ -5,6 +5,7 @@
  */
 
 #include "sc-memory/sc_memory.hpp"
+#include "sc-memory/sc_stream.hpp"
 
 #include "uiSc2SCnJsonTranslator.h"
 
@@ -16,34 +17,34 @@
 
 namespace scnTranslatorConstants
 {
-constexpr std::string_view STRUCT = "struct";
-constexpr std::string_view SOURCE_NODE = "sourceNode";
-constexpr std::string_view TARGET_NODE = "targetNode";
-constexpr std::string_view CHILDREN = "children";
-constexpr std::string_view CONTENT = "content";
-constexpr std::string_view CONTENT_TYPE = "contentType";
-constexpr std::string_view MODIFIERS = "modifiers";
-constexpr std::string_view MODIFIER_ARCS = "modifierArcs";
-constexpr std::string_view RIGHT = "right";
-constexpr std::string_view LEFT = "left";
-constexpr std::string_view ADDR = "addr";
-constexpr std::string_view ARCS = "arcs";
-constexpr std::string_view LINKED_NODES = "linkedNodes";
-constexpr std::string_view IDTF = "idtf";
-constexpr std::string_view TYPE = "type";
-constexpr std::string_view DIRECTION = "direction";
-constexpr std::string_view FORMAT_TXT = "format_txt";
-constexpr std::string_view FORMAT_LARGE_TXT = "format_large_txt";
-constexpr std::string_view formats[] = {"format_html", "format_github_source_link", "format_pdf", "format_png"};
+static const std::string_view STRUCT{"struct"};
+static const std::string_view SOURCE_NODE{"sourceNode"};
+static const std::string_view TARGET_NODE{"targetNode"};
+static const std::string_view CHILDREN{"children"};
+static const std::string_view CONTENT{"content"};
+static const std::string_view CONTENT_TYPE{"contentType"};
+static const std::string_view MODIFIERS{"modifiers"};
+static const std::string_view MODIFIER_ARCS{"modifierArcs"};
+static const std::string_view RIGHT{"right"};
+static const std::string_view LEFT{"left"};
+static const std::string_view ADDR{"addr"};
+static const std::string_view ARCS{"arcs"};
+static const std::string_view LINKED_NODES{"linkedNodes"};
+static const std::string_view IDTF{"idtf"};
+static const std::string_view TYPE{"type"};
+static const std::string_view DIRECTION{"direction"};
+static const std::string_view FORMAT_TXT{"format_txt"};
+static const std::string_view FORMAT_LARGE_TXT{"format_large_txt"};
+static const std::string_view formats[]{"format_html", "format_github_source_link", "format_pdf", "format_png"};
 
-constexpr size_t FORMAT_LARGE_TXT_SIZE = 100;
+static const size_t FORMAT_LARGE_TXT_SIZE = 100;
 };  // namespace scnTranslatorConstants
 
 uiSc2SCnJsonTranslator::uiSc2SCnJsonTranslator() = default;
 
 uiSc2SCnJsonTranslator::~uiSc2SCnJsonTranslator()
 {
-  std::for_each(mScElementsInfo.begin(), mScElementsInfo.end(), [](auto & pair) {
+  std::for_each(mScElementsInfo.begin(), mScElementsInfo.end(), [](std::pair<sc_addr, sScElementInfo *> pair) {
     delete pair.second;
     pair.second = nullptr;
   });
@@ -101,8 +102,8 @@ void uiSc2SCnJsonTranslator::collectScElementsInfo()
       continue;  // @todo process errors
 
     if (std::any_of(mFiltersList.cbegin(), mFiltersList.cend(), [begAddr](sc_addr const & modifier) {
-      return modifier == begAddr;
-    }))
+          return modifier == begAddr;
+        }))
     {
       filtered.insert(arcAddr);
       filtered.insert(endAddr);
