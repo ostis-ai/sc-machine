@@ -101,8 +101,8 @@ void uiSc2SCnJsonTranslator::collectScElementsInfo()
       continue;  // @todo process errors
 
     if (std::any_of(mFiltersList.cbegin(), mFiltersList.cend(), [begAddr](sc_addr const & modifier) {
-      return modifier == begAddr;
-    }))
+          return modifier == begAddr;
+        }))
     {
       filtered.insert(arcAddr);
       filtered.insert(endAddr);
