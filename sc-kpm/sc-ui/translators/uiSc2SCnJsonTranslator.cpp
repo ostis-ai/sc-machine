@@ -16,25 +16,25 @@
 
 namespace scnTranslatorConstants
 {
-constexpr std::string_view STRUCT = "struct";
-constexpr std::string_view SOURCE_NODE = "sourceNode";
-constexpr std::string_view TARGET_NODE = "targetNode";
-constexpr std::string_view CHILDREN = "children";
-constexpr std::string_view CONTENT = "content";
-constexpr std::string_view CONTENT_TYPE = "contentType";
-constexpr std::string_view MODIFIERS = "modifiers";
-constexpr std::string_view MODIFIER_ARCS = "modifierArcs";
-constexpr std::string_view RIGHT = "right";
-constexpr std::string_view LEFT = "left";
-constexpr std::string_view ADDR = "addr";
-constexpr std::string_view ARCS = "arcs";
-constexpr std::string_view LINKED_NODES = "linkedNodes";
-constexpr std::string_view IDTF = "idtf";
-constexpr std::string_view TYPE = "type";
-constexpr std::string_view DIRECTION = "direction";
-constexpr std::string_view FORMAT_TXT = "format_txt";
-constexpr std::string_view FORMAT_LARGE_TXT = "format_large_txt";
-constexpr std::string_view formats[] = {"format_html", "format_github_source_link", "format_pdf", "format_png"};
+constexpr std::string_view STRUCT{"struct"};
+constexpr std::string_view SOURCE_NODE {"sourceNode"};
+constexpr std::string_view TARGET_NODE {"targetNode"};
+constexpr std::string_view CHILDREN {"children"};
+constexpr std::string_view CONTENT {"content"};
+constexpr std::string_view CONTENT_TYPE {"contentType"};
+constexpr std::string_view MODIFIERS {"modifiers"};
+constexpr std::string_view MODIFIER_ARCS {"modifierArcs"};
+constexpr std::string_view RIGHT {"right"};
+constexpr std::string_view LEFT {"left"};
+constexpr std::string_view ADDR {"addr"};
+constexpr std::string_view ARCS {"arcs"};
+constexpr std::string_view LINKED_NODES {"linkedNodes"};
+constexpr std::string_view IDTF {"idtf"};
+constexpr std::string_view TYPE {"type"};
+constexpr std::string_view DIRECTION {"direction"};
+constexpr std::string_view FORMAT_TXT {"format_txt"};
+constexpr std::string_view FORMAT_LARGE_TXT {"format_large_txt"};
+constexpr std::string_view formats[] {"format_html", "format_github_source_link", "format_pdf", "format_png"};
 
 constexpr size_t FORMAT_LARGE_TXT_SIZE = 100;
 };  // namespace scnTranslatorConstants
