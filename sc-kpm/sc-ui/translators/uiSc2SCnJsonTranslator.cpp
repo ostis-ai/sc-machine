@@ -16,34 +16,34 @@
 
 namespace scnTranslatorConstants
 {
-const std::string_view STRUCT{"struct"};
-const std::string_view SOURCE_NODE{"sourceNode"};
-const std::string_view TARGET_NODE{"targetNode"};
-const std::string_view CHILDREN{"children"};
-const std::string_view CONTENT{"content"};
-const std::string_view CONTENT_TYPE{"contentType"};
-const std::string_view MODIFIERS{"modifiers"};
-const std::string_view MODIFIER_ARCS{"modifierArcs"};
-const std::string_view RIGHT{"right"};
-const std::string_view LEFT{"left"};
-const std::string_view ADDR{"addr"};
-const std::string_view ARCS{"arcs"};
-const std::string_view LINKED_NODES{"linkedNodes"};
-const std::string_view IDTF{"idtf"};
-const std::string_view TYPE{"type"};
-const std::string_view DIRECTION{"direction"};
-const std::string_view FORMAT_TXT{"format_txt"};
-const std::string_view FORMAT_LARGE_TXT{"format_large_txt"};
-const std::string_view formats[]{"format_html", "format_github_source_link", "format_pdf", "format_png"};
+static const std::string_view STRUCT{"struct"};
+static const std::string_view SOURCE_NODE{"sourceNode"};
+static const std::string_view TARGET_NODE{"targetNode"};
+static const std::string_view CHILDREN{"children"};
+static const std::string_view CONTENT{"content"};
+static const std::string_view CONTENT_TYPE{"contentType"};
+static const std::string_view MODIFIERS{"modifiers"};
+static const std::string_view MODIFIER_ARCS{"modifierArcs"};
+static const std::string_view RIGHT{"right"};
+static const std::string_view LEFT{"left"};
+static const std::string_view ADDR{"addr"};
+static const std::string_view ARCS{"arcs"};
+static const std::string_view LINKED_NODES{"linkedNodes"};
+static const std::string_view IDTF{"idtf"};
+static const std::string_view TYPE{"type"};
+static const std::string_view DIRECTION{"direction"};
+static const std::string_view FORMAT_TXT{"format_txt"};
+static const std::string_view FORMAT_LARGE_TXT{"format_large_txt"};
+static const std::string_view formats[]{"format_html", "format_github_source_link", "format_pdf", "format_png"};
 
-const size_t FORMAT_LARGE_TXT_SIZE = 100;
+static const size_t FORMAT_LARGE_TXT_SIZE = 100;
 };  // namespace scnTranslatorConstants
 
 uiSc2SCnJsonTranslator::uiSc2SCnJsonTranslator() = default;
 
 uiSc2SCnJsonTranslator::~uiSc2SCnJsonTranslator()
 {
-  std::for_each(mScElementsInfo.begin(), mScElementsInfo.end(), [](auto & pair) {
+  std::for_each(mScElementsInfo.begin(), mScElementsInfo.end(), [](std::pair<sc_addr, sScElementInfo *> pair) {
     delete pair.second;
     pair.second = nullptr;
   });
