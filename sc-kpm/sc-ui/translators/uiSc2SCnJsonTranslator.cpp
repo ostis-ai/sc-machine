@@ -16,27 +16,27 @@
 
 namespace scnTranslatorConstants
 {
-constexpr std::string_view STRUCT{"struct"};
-constexpr std::string_view SOURCE_NODE{"sourceNode"};
-constexpr std::string_view TARGET_NODE{"targetNode"};
-constexpr std::string_view CHILDREN{"children"};
-constexpr std::string_view CONTENT{"content"};
-constexpr std::string_view CONTENT_TYPE{"contentType"};
-constexpr std::string_view MODIFIERS{"modifiers"};
-constexpr std::string_view MODIFIER_ARCS{"modifierArcs"};
-constexpr std::string_view RIGHT{"right"};
-constexpr std::string_view LEFT{"left"};
-constexpr std::string_view ADDR{"addr"};
-constexpr std::string_view ARCS{"arcs"};
-constexpr std::string_view LINKED_NODES{"linkedNodes"};
-constexpr std::string_view IDTF{"idtf"};
-constexpr std::string_view TYPE{"type"};
-constexpr std::string_view DIRECTION{"direction"};
-constexpr std::string_view FORMAT_TXT{"format_txt"};
-constexpr std::string_view FORMAT_LARGE_TXT{"format_large_txt"};
-constexpr std::string_view formats[]{"format_html", "format_github_source_link", "format_pdf", "format_png"};
+const std::string_view STRUCT{"struct"};
+const std::string_view SOURCE_NODE{"sourceNode"};
+const std::string_view TARGET_NODE{"targetNode"};
+const std::string_view CHILDREN{"children"};
+const std::string_view CONTENT{"content"};
+const std::string_view CONTENT_TYPE{"contentType"};
+const std::string_view MODIFIERS{"modifiers"};
+const std::string_view MODIFIER_ARCS{"modifierArcs"};
+const std::string_view RIGHT{"right"};
+const std::string_view LEFT{"left"};
+const std::string_view ADDR{"addr"};
+const std::string_view ARCS{"arcs"};
+const std::string_view LINKED_NODES{"linkedNodes"};
+const std::string_view IDTF{"idtf"};
+const std::string_view TYPE{"type"};
+const std::string_view DIRECTION{"direction"};
+const std::string_view FORMAT_TXT{"format_txt"};
+const std::string_view FORMAT_LARGE_TXT{"format_large_txt"};
+const std::string_view formats[]{"format_html", "format_github_source_link", "format_pdf", "format_png"};
 
-constexpr size_t FORMAT_LARGE_TXT_SIZE = 100;
+const size_t FORMAT_LARGE_TXT_SIZE = 100;
 };  // namespace scnTranslatorConstants
 
 uiSc2SCnJsonTranslator::uiSc2SCnJsonTranslator() = default;
