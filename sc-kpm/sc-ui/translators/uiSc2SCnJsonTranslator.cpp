@@ -5,6 +5,7 @@
  */
 
 #include "sc-memory/sc_memory.hpp"
+#include "sc-memory/sc_stream.hpp"
 
 #include "uiSc2SCnJsonTranslator.h"
 
