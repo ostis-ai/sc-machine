@@ -9,7 +9,7 @@
 #include "sc-memory/sc_memory.hpp"
 #include "scs_translator.hpp"
 
-void ScsLoader::loadScsFile(ScMemoryContext &context, const std::string &filename)
+bool ScsLoader::loadScsFile(ScMemoryContext &context, const std::string &filename)
 {
     SCsTranslator translator = SCsTranslator(context);
 
@@ -17,5 +17,5 @@ void ScsLoader::loadScsFile(ScMemoryContext &context, const std::string &filenam
     translateParams.m_fileName = filename;
     translateParams.m_autoFormatInfo = true;
 
-    translator.Translate(translateParams);
+    return translator.Translate(translateParams);
 }

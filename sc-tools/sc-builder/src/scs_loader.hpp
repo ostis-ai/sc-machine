@@ -9,5 +9,5 @@
 
 class ScsLoader {
 public:
-    void loadScsFile(ScMemoryContext & context, const std::string & filename);
+    bool loadScsFile(ScMemoryContext & context, const std::string & filename);
 };
