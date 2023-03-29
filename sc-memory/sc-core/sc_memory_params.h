@@ -9,6 +9,15 @@
 
 #include "sc-store/sc_types.h"
 
+#define DEFAULT_SAVE_PERIOD 32000
+#define DEFAULT_UPDATE_PERIOD 16000
+#define DEFAULT_MAX_THREADS 32
+#define DEFAULT_EVENTS_PROCESSORS 32
+#define DEFAULT_MAX_LOADED_SEGMENTS 1000
+#define DEFAULT_LOG_TYPE "Console"
+#define DEFAULT_LOG_FILE ""
+#define DEFAULT_LOG_LEVEL "Info"
+
 typedef struct _sc_memory_params
 {
   const sc_char * version;
@@ -25,6 +34,7 @@ typedef struct _sc_memory_params
 
   sc_uint32 max_loaded_segments;
   sc_uint8 max_threads;
+  sc_int32 events_processors;
 
   const sc_char * init_memory_generated_structure;
   sc_bool init_memory_generated_upload;

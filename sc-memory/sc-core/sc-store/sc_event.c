@@ -415,10 +415,15 @@ void sc_event_unlock(sc_event * evt)
 }
 
 // --------
+sc_bool sc_events_initialize_ext(sc_int32 const events_processors)
+{
+  event_queue = sc_event_queue_new_ext(events_processors);
+  return SC_TRUE;
+}
+
 sc_bool sc_events_initialize()
 {
-  event_queue = sc_event_queue_new();
-  return SC_TRUE;
+  return sc_events_initialize_ext((sc_int32)g_get_num_processors());
 }
 
 void sc_events_shutdown()

@@ -11,10 +11,6 @@
 #define DEFAULT_HOST "127.0.0.1"
 #define DEFAULT_PORT 8090
 
-#define DEFAULT_LOG_TYPE "Console"
-#define DEFAULT_LOG_FILE ""
-#define DEFAULT_LOG_LEVEL "Debug"
-
 ScServerImpl::ScServerImpl(sc_memory_params const & params)
   : ScServerImpl(DEFAULT_HOST, DEFAULT_PORT, DEFAULT_LOG_TYPE, DEFAULT_LOG_FILE, DEFAULT_LOG_LEVEL, SC_FALSE, params)
 {
