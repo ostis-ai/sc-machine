@@ -415,9 +415,9 @@ void sc_event_unlock(sc_event * evt)
 }
 
 // --------
-sc_bool sc_events_initialize_ext(sc_int32 const events_processors)
+sc_bool sc_events_initialize_ext(sc_int32 const max_events_and_agents_threads)
 {
-  event_queue = sc_event_queue_new_ext(events_processors);
+  event_queue = sc_event_queue_new_ext(max_events_and_agents_threads);
   return SC_TRUE;
 }
 

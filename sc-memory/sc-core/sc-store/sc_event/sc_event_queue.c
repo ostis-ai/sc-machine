@@ -50,19 +50,20 @@ void sc_event_pool_worker(gpointer data, gpointer user_data)
   sc_event_pool_worker_data_destroy(work_data);
 }
 
-sc_event_queue * sc_event_queue_new_ext(sc_int32 events_processors)
+sc_event_queue * sc_event_queue_new_ext(sc_int32 max_events_and_agents_threads)
 {
   sc_event_queue * queue = sc_mem_new(sc_event_queue, 1);
   queue->running = SC_TRUE;
   g_mutex_init(&queue->mutex);
 
-  events_processors = sc_max(1, sc_min(events_processors, (sc_int32)g_get_num_processors()));
+  max_events_and_agents_threads = sc_max(1, sc_min(max_events_and_agents_threads, (sc_int32)g_get_num_processors()));
   {
     sc_message("Sc-events configuration:");
-    sc_message("\tprocessors: %d", events_processors);
+    sc_message("\tprocessors: %d", max_events_and_agents_threads);
   }
 
-  queue->thread_pool = g_thread_pool_new(sc_event_pool_worker, null_ptr, events_processors, SC_FALSE, null_ptr);
+  queue->thread_pool =
+      g_thread_pool_new(sc_event_pool_worker, null_ptr, max_events_and_agents_threads, SC_FALSE, null_ptr);
 
   return queue;
 }

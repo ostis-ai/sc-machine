@@ -124,7 +124,8 @@ public:
 
     m_memoryParams.max_loaded_segments = GetIntByKey("max_loaded_segments", DEFAULT_MAX_LOADED_SEGMENTS);
     m_memoryParams.max_threads = GetIntByKey("max_threads", DEFAULT_MAX_THREADS);
-    m_memoryParams.events_processors = GetIntByKey("events_processors", DEFAULT_EVENTS_PROCESSORS);
+    m_memoryParams.max_events_and_agents_threads =
+        GetIntByKey("max_events_and_agents_threads", DEFAULT_EVENTS_PROCESSORS);
 
     m_memoryParams.save_period = GetIntByKey("save_period", DEFAULT_SAVE_PERIOD);
     m_memoryParams.update_period = GetIntByKey("update_period", DEFAULT_UPDATE_PERIOD);

@@ -34,7 +34,7 @@ typedef struct _sc_memory_params
 
   sc_uint32 max_loaded_segments;
   sc_uint8 max_threads;
-  sc_int32 events_processors;
+  sc_int32 max_events_and_agents_threads;
 
   const sc_char * init_memory_generated_structure;
   sc_bool init_memory_generated_upload;

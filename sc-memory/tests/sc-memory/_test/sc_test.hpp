@@ -32,7 +32,7 @@ protected:
     params.repo_path = "repo";
     params.log_level = "Debug";
 
-    params.events_processors = 1;
+    params.max_events_and_agents_threads = 1;
 
     ScMemory::LogMute();
     ScMemory::Initialize(params);
@@ -67,7 +67,7 @@ class ScMemoryTestWithInitMemoryGeneratedStructure : public ScMemoryTest
     params.repo_path = "repo";
     params.log_level = "Debug";
 
-    params.events_processors = 1;
+    params.max_events_and_agents_threads = 1;
 
     params.init_memory_generated_upload = SC_TRUE;
     params.init_memory_generated_structure = "result_structure";

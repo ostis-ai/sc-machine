@@ -3,7 +3,10 @@
 [sc-memory]
 # Maximum number of segments. By default: 65536
 max_loaded_segments = 1000
+# Maximum number of threads that can be used to access to sc-memory
 max_threads = 32
+# Maximum number of threads that can be used in events and agents handler
+max_events_and_agents_threads = 32
 
 # Period (in seconds) to save sc-memory stat
 save_period = 3600
