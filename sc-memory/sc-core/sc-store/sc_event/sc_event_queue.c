@@ -62,8 +62,7 @@ sc_event_queue * sc_event_queue_new_ext(sc_int32 events_processors)
     sc_message("\tprocessors: %d", events_processors);
   }
 
-  queue->thread_pool =
-      g_thread_pool_new(sc_event_pool_worker, null_ptr, events_processors, SC_FALSE, null_ptr);
+  queue->thread_pool = g_thread_pool_new(sc_event_pool_worker, null_ptr, events_processors, SC_FALSE, null_ptr);
 
   return queue;
 }
