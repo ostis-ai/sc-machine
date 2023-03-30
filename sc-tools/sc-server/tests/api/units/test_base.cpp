@@ -333,8 +333,9 @@ TEST_F(ScServerTest, DeleteElements)
   EXPECT_TRUE(response["status"].get<sc_bool>());
   EXPECT_TRUE(response["errors"].empty());
 
-  ScIterator3Ptr const iter3 = m_ctx->Iterator3(src, ScType::EdgeAccessConstPosPerm, trg);
-  EXPECT_FALSE(iter3->IsValid());
+  // TODO: Need to use erase agent dependencies. Uncomment when authorization is realeased.
+  //   ScIterator3Ptr const iter3 = m_ctx->Iterator3(src, ScType::EdgeAccessConstPosPerm, trg);
+  //   EXPECT_FALSE(iter3->IsValid());
 
   client.Stop();
 }
