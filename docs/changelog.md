@@ -33,6 +33,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- Delete elements endpoint uses erase elements agent
 - Update garbage deletion agent logic, add check if element belongs to init memory structure
 - Make scsi pre-processor migrations scrip
 - Move to C++17
