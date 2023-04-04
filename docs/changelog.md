@@ -23,7 +23,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Order triples by input/output edges count for triple items
 - Determined sc-template depth-first search
 - Sc-template safe API without exceptions handling
-- Insert sc-keynodes in global knowledge base during sc-memory initiation
 - Extend create elements by SCs in `sc-server` with outputStructure field
 - Write docs for system identifier set/get/find/resolve sc-memory API
 - Extend set/get/find/resolve sc-memory API with out system identifier fiver parameters
