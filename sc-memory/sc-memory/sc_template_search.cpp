@@ -329,7 +329,7 @@ private:
 
       if (priorityTripleIdx == -1)
       {
-        priorityTripleIdx = FindTripleWithMostMinimalInputArcsForFirstItem(connectivityComponentsTriples);
+        priorityTripleIdx = FindTripleWithMostMinimalInputArcsForThirdItem(connectivityComponentsTriples);
         if (priorityTripleIdx == -1)
         {
           priorityTripleIdx = FindTripleWithMostMinimalOutputArcsForFirstItem(connectivityComponentsTriples);
@@ -345,7 +345,7 @@ private:
     }
   }
 
-  sc_int32 FindTripleWithMostMinimalInputArcsForFirstItem(ScTemplateTriples const & connectivityComponentsTriples)
+  sc_int32 FindTripleWithMostMinimalInputArcsForThirdItem(ScTemplateTriples const & connectivityComponentsTriples)
   {
     auto triplesWithConstEndElement = m_template.m_priorityOrderedTemplateTriples[(size_t)ScTemplateTripleType::FAF];
     if (triplesWithConstEndElement.empty())
@@ -358,12 +358,12 @@ private:
     sc_int32 minInputArcsCount = -1;
     for (size_t const tripleIdx : triplesWithConstEndElement)
     {
-      ScTemplateTriple const * triple = m_template.m_templateTriples[tripleIdx];
-      auto const count = (sc_int32)m_context.GetElementInputArcsCount(triple->GetValues()[2].m_addrValue);
-
       // check if triple in connectivity component
       if (connectivityComponentsTriples.find(tripleIdx) == connectivityComponentsTriples.cend())
         continue;
+
+      ScTemplateTriple const * triple = m_template.m_templateTriples[tripleIdx];
+      auto const count = (sc_int32)m_context.GetElementInputArcsCount(triple->GetValues()[2].m_addrValue);
 
       if (minInputArcsCount == -1 || count < minInputArcsCount)
       {
@@ -389,12 +389,12 @@ private:
     sc_int32 minOutputArcsCount = -1;
     for (size_t const tripleIdx : triplesWithConstBeginElement)
     {
-      ScTemplateTriple const * triple = m_template.m_templateTriples[tripleIdx];
-      auto const count = (sc_int32)m_context.GetElementOutputArcsCount(triple->GetValues()[0].m_addrValue);
-
       // check if triple in connectivity component
       if (connectivityComponentsTriples.find(tripleIdx) == connectivityComponentsTriples.cend())
         continue;
+
+      ScTemplateTriple const * triple = m_template.m_templateTriples[tripleIdx];
+      auto const count = (sc_int32)m_context.GetElementOutputArcsCount(triple->GetValues()[0].m_addrValue);
 
       if (minOutputArcsCount == -1 || count < minOutputArcsCount)
       {
@@ -445,7 +445,7 @@ private:
         auto found = m_template.m_templateItemsNamesToTypes.find(item.m_name);
         if (found == m_template.m_templateItemsNamesToTypes.cend())
         {
-          found = m_template.m_templateItemsNamesToTypes.find(item.m_name);
+          found = m_template.m_templateItemsNamesToTypes.find(otherItem.m_name);
           if (found != m_template.m_templateItemsNamesToTypes.cend())
             isEqual = item.m_typeValue == found->second;
         }
@@ -461,7 +461,7 @@ private:
         auto found = m_template.m_templateItemsNamesToReplacementItemsAddrs.find(item.m_name);
         if (found == m_template.m_templateItemsNamesToReplacementItemsAddrs.cend())
         {
-          found = m_template.m_templateItemsNamesToReplacementItemsAddrs.find(item.m_name);
+          found = m_template.m_templateItemsNamesToReplacementItemsAddrs.find(otherItem.m_name);
           if (found != m_template.m_templateItemsNamesToReplacementItemsAddrs.cend())
             isEqual = item.m_addrValue == found->second;
         }
