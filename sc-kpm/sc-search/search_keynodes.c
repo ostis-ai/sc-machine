@@ -99,46 +99,48 @@ const char keynode_system_element_str[] = "system_element";
 const char keynode_sc_neighborhood_str[] = "semantic_neighbourhood";
 const char keynode_languages_str[] = "languages";
 
-sc_result search_keynodes_initialize(const sc_memory_context * ctx)
+sc_result search_keynodes_initialize(sc_memory_context * ctx, sc_addr const init_memory_generated_structure)
 {
-  RESOLVE_KEYNODE(ctx, keynode_question_all_output_const_pos_arc);
-  RESOLVE_KEYNODE(ctx, keynode_question_all_input_const_pos_arc);
-  RESOLVE_KEYNODE(ctx, keynode_question_all_output_const_pos_arc_with_rel);
-  RESOLVE_KEYNODE(ctx, keynode_question_all_input_const_pos_arc_with_rel);
-  RESOLVE_KEYNODE(ctx, keynode_question_full_semantic_neighborhood);
-  RESOLVE_KEYNODE(ctx, keynode_question_decomposition);
-  RESOLVE_KEYNODE(ctx, keynode_nrel_answer);
-  RESOLVE_KEYNODE(ctx, keynode_question_all_identifiers);
-  RESOLVE_KEYNODE(ctx, keynode_question_all_identified_elements);
-  RESOLVE_KEYNODE(ctx, keynode_question_search_all_subclasses_in_quasybinary_relation);
-  RESOLVE_KEYNODE(ctx, keynode_question_search_all_superclasses_in_quasybinary_relation);
-  RESOLVE_KEYNODE(ctx, keynode_question_search_links_of_relation_connected_with_element);
-  RESOLVE_KEYNODE(ctx, keynode_question_search_full_pattern);
+  RESOLVE_KEYNODE(ctx, keynode_question_all_output_const_pos_arc, init_memory_generated_structure);
+  RESOLVE_KEYNODE(ctx, keynode_question_all_input_const_pos_arc, init_memory_generated_structure);
+  RESOLVE_KEYNODE(ctx, keynode_question_all_output_const_pos_arc_with_rel, init_memory_generated_structure);
+  RESOLVE_KEYNODE(ctx, keynode_question_all_input_const_pos_arc_with_rel, init_memory_generated_structure);
+  RESOLVE_KEYNODE(ctx, keynode_question_full_semantic_neighborhood, init_memory_generated_structure);
+  RESOLVE_KEYNODE(ctx, keynode_question_decomposition, init_memory_generated_structure);
+  RESOLVE_KEYNODE(ctx, keynode_nrel_answer, init_memory_generated_structure);
+  RESOLVE_KEYNODE(ctx, keynode_question_all_identifiers, init_memory_generated_structure);
+  RESOLVE_KEYNODE(ctx, keynode_question_all_identified_elements, init_memory_generated_structure);
+  RESOLVE_KEYNODE(ctx, keynode_question_search_all_subclasses_in_quasybinary_relation, init_memory_generated_structure);
+  RESOLVE_KEYNODE(
+      ctx, keynode_question_search_all_superclasses_in_quasybinary_relation, init_memory_generated_structure);
+  RESOLVE_KEYNODE(
+      ctx, keynode_question_search_links_of_relation_connected_with_element, init_memory_generated_structure);
+  RESOLVE_KEYNODE(ctx, keynode_question_search_full_pattern, init_memory_generated_structure);
 
-  RESOLVE_KEYNODE(ctx, keynode_question_initiated);
-  RESOLVE_KEYNODE(ctx, keynode_question);
-  RESOLVE_KEYNODE(ctx, keynode_question_finished);
-  RESOLVE_KEYNODE(ctx, keynode_quasybinary_relation);
-  RESOLVE_KEYNODE(ctx, keynode_decomposition_relation);
-  RESOLVE_KEYNODE(ctx, keynode_taxonomy_relation);
-  RESOLVE_KEYNODE(ctx, keynode_identification_relation);
-  RESOLVE_KEYNODE(ctx, keynode_order_relation);
-  RESOLVE_KEYNODE(ctx, keynode_nonbinary_relation);
-  RESOLVE_KEYNODE(ctx, keynode_typical_sc_neighborhood);
-  RESOLVE_KEYNODE(ctx, keynode_sc_neighborhood);
+  RESOLVE_KEYNODE(ctx, keynode_question_initiated, init_memory_generated_structure);
+  RESOLVE_KEYNODE(ctx, keynode_question, init_memory_generated_structure);
+  RESOLVE_KEYNODE(ctx, keynode_question_finished, init_memory_generated_structure);
+  RESOLVE_KEYNODE(ctx, keynode_quasybinary_relation, init_memory_generated_structure);
+  RESOLVE_KEYNODE(ctx, keynode_decomposition_relation, init_memory_generated_structure);
+  RESOLVE_KEYNODE(ctx, keynode_taxonomy_relation, init_memory_generated_structure);
+  RESOLVE_KEYNODE(ctx, keynode_identification_relation, init_memory_generated_structure);
+  RESOLVE_KEYNODE(ctx, keynode_order_relation, init_memory_generated_structure);
+  RESOLVE_KEYNODE(ctx, keynode_nonbinary_relation, init_memory_generated_structure);
+  RESOLVE_KEYNODE(ctx, keynode_typical_sc_neighborhood, init_memory_generated_structure);
+  RESOLVE_KEYNODE(ctx, keynode_sc_neighborhood, init_memory_generated_structure);
 
-  RESOLVE_KEYNODE(ctx, keynode_rrel_1);
-  RESOLVE_KEYNODE(ctx, keynode_rrel_2);
+  RESOLVE_KEYNODE(ctx, keynode_rrel_1, init_memory_generated_structure);
+  RESOLVE_KEYNODE(ctx, keynode_rrel_2, init_memory_generated_structure);
 
-  RESOLVE_KEYNODE(ctx, keynode_nrel_identification);
-  RESOLVE_KEYNODE(ctx, keynode_nrel_translation);
-  RESOLVE_KEYNODE(ctx, keynode_nrel_main_idtf);
-  RESOLVE_KEYNODE(ctx, keynode_rrel_key_sc_element);
-  RESOLVE_KEYNODE(ctx, keynode_nrel_key_sc_element_base_order);
-  RESOLVE_KEYNODE(ctx, keynode_nrel_inclusion);
-  RESOLVE_KEYNODE(ctx, keynode_nrel_strict_inclusion);
-  RESOLVE_KEYNODE(ctx, keynode_system_element);
-  RESOLVE_KEYNODE(ctx, keynode_languages);
+  RESOLVE_KEYNODE(ctx, keynode_nrel_identification, init_memory_generated_structure);
+  RESOLVE_KEYNODE(ctx, keynode_nrel_translation, init_memory_generated_structure);
+  RESOLVE_KEYNODE(ctx, keynode_nrel_main_idtf, init_memory_generated_structure);
+  RESOLVE_KEYNODE(ctx, keynode_rrel_key_sc_element, init_memory_generated_structure);
+  RESOLVE_KEYNODE(ctx, keynode_nrel_key_sc_element_base_order, init_memory_generated_structure);
+  RESOLVE_KEYNODE(ctx, keynode_nrel_inclusion, init_memory_generated_structure);
+  RESOLVE_KEYNODE(ctx, keynode_nrel_strict_inclusion, init_memory_generated_structure);
+  RESOLVE_KEYNODE(ctx, keynode_system_element, init_memory_generated_structure);
+  RESOLVE_KEYNODE(ctx, keynode_languages, init_memory_generated_structure);
 
   return SC_RESULT_OK;
 }

@@ -28,6 +28,9 @@ public:
     : m_hostName(std::move(hostName))
     , m_port(port)
   {
+    m_updateStatisticsPeriod = params.update_period;
+    m_saveMemoryPeriod = params.save_period;
+
     m_instance = new ScServerCore();
     {
       LogMessage(ScServerLogMessages::app, "Sc-server socket data");
@@ -46,12 +49,14 @@ public:
     m_log = new ScServerLog(m_instance, logType, logFile, logLevel);
 
     ScMemory::Initialize(params);
+    m_context = new ScMemoryContext("sc-server");
 
     m_connections = new ScServerConnections();
   }
 
   void Run()
   {
+    m_isServerRun = SC_TRUE;
     m_instance->init_asio();
     m_instance->set_reuse_addr(SC_TRUE);
 
@@ -59,6 +64,10 @@ public:
 
     m_instance->listen({boost::asio::ip::address::from_string(m_hostName), sc_uint16(m_port)});
     m_instance->start_accept();
+
+    LogMessage(ScServerLogMessages::app, "Start lookup memory state");
+    m_updateStatisticsThread = std::thread(&ScServer::UpdateMemoryStatistics, &*this);
+    m_saveMemoryThread = std::thread(&ScServer::SaveMemory, &*this);
 
     LogMessage(ScServerLogMessages::app, "Start actions processing");
     m_actionsThread = std::thread(&ScServer::EmitActions, &*this);
@@ -69,6 +78,7 @@ public:
 
   void Stop()
   {
+    m_isServerRun = SC_FALSE;
     m_instance->stop_listening();
 
     AfterInitialize();
@@ -98,6 +108,12 @@ public:
       m_instance->stop();
       m_ioThread.join();
     }
+
+    if (m_updateStatisticsThread.joinable())
+      m_updateStatisticsThread.join();
+
+    if (m_saveMemoryThread.joinable())
+      m_saveMemoryThread.join();
   }
 
   void Shutdown()
@@ -107,6 +123,7 @@ public:
     delete m_connections;
     m_connections = nullptr;
 
+    delete m_context;
     ScMemory::Shutdown();
 
     LogMessage(ScServerLogMessages::app, "Shutdown sc-server");
@@ -176,8 +193,14 @@ public:
   }
 
 protected:
+  std::atomic<sc_bool> m_isServerRun = SC_FALSE;
   std::string m_hostName;
   ScServerPort m_port;
+
+  size_t m_updateStatisticsPeriod;
+  size_t m_saveMemoryPeriod;
+
+  ScMemoryContext * m_context;
 
   ScServerCore * m_instance;
   ScServerConnections * m_connections;
@@ -188,6 +211,54 @@ protected:
 
   virtual void AfterInitialize() = 0;
 
+  void Timer(std::function<void()> const & callback, size_t callTime)
+  {
+    size_t currentTime = 0;
+    size_t delta = 1;
+    while (m_isServerRun)
+    {
+      if (currentTime >= callTime)
+      {
+        callback();
+        currentTime = 0;
+      }
+
+      std::this_thread::sleep_for(std::chrono::milliseconds(delta * 1000));
+      currentTime += delta;
+    }
+  }
+
+  void UpdateMemoryStatistics()
+  {
+    auto const PrintLine = [](std::string const & name, uint32_t num, float percent) {
+      SC_LOG_INFO(name << ": " << num << " (" << percent << "%)");
+    };
+
+    auto const PrintStatistics = [this, PrintLine]() {
+      ScMemoryContext::Stat const & stats = m_context->CalculateStat();
+
+      SC_LOG_INFO("Statistics");
+      size_t const allElements = stats.GetAllNum();
+      PrintLine("Nodes", stats.m_nodesNum, float(stats.m_nodesNum) / float(allElements) * 100);
+      PrintLine("Edges", stats.m_edgesNum, float(stats.m_edgesNum) / float(allElements) * 100);
+      PrintLine("Links", stats.m_linksNum, float(stats.m_linksNum) / float(allElements) * 100);
+      SC_LOG_INFO("Total: " << allElements);
+    };
+
+    Timer([&PrintStatistics]() {
+      SC_LOG_INFO("Dump sc-memory statistics");
+      PrintStatistics();
+    }, m_saveMemoryPeriod);
+  }
+
+  void SaveMemory()
+  {
+    Timer([this]() {
+      SC_LOG_INFO("Save memory by period");
+      m_context->Save();
+    }, m_saveMemoryPeriod);
+  }
+
   virtual void OnOpen(ScServerConnectionHandle const & hdl) = 0;
 
   virtual void OnClose(ScServerConnectionHandle const & hdl) = 0;
@@ -195,6 +266,9 @@ protected:
   virtual void OnMessage(ScServerConnectionHandle const & hdl, ScServerMessage const & msg) = 0;
 
 private:
+  std::thread m_updateStatisticsThread;
+  std::thread m_saveMemoryThread;
+
   std::thread m_ioThread;
   std::thread m_actionsThread;
 };

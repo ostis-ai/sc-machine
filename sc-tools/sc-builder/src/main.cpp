@@ -11,20 +11,25 @@
 #include "sc_memory_config.hpp"
 #include "sc_builder_config.hpp"
 
+void PrintStartMessage()
+{
+  std::cout << "SC-BUILDER USAGE\n\n"
+            << "--config|-c -- Path to configuration file\n"
+            << "--input_path|-i -- Path to directory with sources\n"
+            << "--output_path|-o -- Path to output directory (repository)\n"
+            << "--auto_formats|-f -- Enable automatic formats info generation\n"
+            << "--clear -- Flag to clear sc-memory on start\n"
+            << "--help -- Display this message\n\n";
+}
+
 sc_int main(sc_int argc, sc_char * argv[])
 try
 {
   ScOptions options{argc, argv};
 
-  if (options.Has({"help"}) || !options.Has({"input_path", "i"}) || !options.Has({"output_path", "o"}))
+  if (options.Has({"help"}))
   {
-    std::cout << "SC-BUILDER USAGE\n\n"
-              << "--config|-c -- Path to configuration file\n"
-              << "--input_path|-i -- Path to directory with sources\n"
-              << "--output_path|-o -- Path to output directory (repository)\n"
-              << "--auto_formats|-f -- Enable automatic formats info generation\n"
-              << "--clear -- Flag to clear sc-memory on start\n"
-              << "--help -- Display this message\n\n";
+    PrintStartMessage();
     return EXIT_SUCCESS;
   }
 
@@ -38,26 +43,28 @@ try
   if (options.Has({"enabled_ext"}))
     params.m_enabledExtPath = options[{"enabled_ext"}].second;
 
-  params.m_autoFormatInfo = options.Has({"auto_formats", "f"}) ? SC_TRUE : SC_FALSE;
+  params.m_autoFormatInfo = options.Has({"auto_formats", "f"});
 
   std::string config;
   if (options.Has({"config", "c"}))
     config = options[{"config", "c"}].second;
 
-  std::vector<std::vector<std::string>> keys = {{"verbose", "v"}, {"clear"}};
-  ScParams memoryParams{options, keys};
-  memoryParams.insert({"repo_path", options[{"output_path", "o"}].second});
+  ScParams memoryParams{options, {{"verbose", "v"}, {"clear"}}};
+  memoryParams.insert({"repo_path", params.m_outputPath});
 
-  ScBuilderConfig builderConfig{ScConfig(config, {"repo_path", "log_file"}), std::move(params)};
+  ScMemoryConfig memoryConfig{config, {"repo_path", "log_file"}, {"extensions_path"}, memoryParams};
+  ScBuilderConfig builderConfig{ScConfig(config, {"repo_path", "log_file"}, {"extensions_path"}), params};
 
-  memoryParams.insert(
-      {"init_memory_generated_upload", std::to_string(builderConfig.GetParams().m_resultStructureUpload)});
-  memoryParams.insert({"init_memory_generated_structure", builderConfig.GetParams().m_resultStructureSystemIdtf});
-
-  ScMemoryConfig memoryConfig{config, {"repo_path", "log_file"}, std::move(memoryParams)};
+  sc_memory_params const & formedMemoryParams = memoryConfig.GetParams();
+  BuilderParams formedBuilderParams = builderConfig.GetParams();
+  formedBuilderParams.m_resultStructureUpload = formedMemoryParams.init_memory_generated_upload;
+  if (formedMemoryParams.init_memory_generated_structure != nullptr)
+  {
+    formedBuilderParams.m_resultStructureSystemIdtf = formedMemoryParams.init_memory_generated_structure;
+  }
 
   Builder builder;
-  return builder.Run(builderConfig.GetParams(), memoryConfig.GetParams()) ? EXIT_SUCCESS : EXIT_FAILURE;
+  return builder.Run(formedBuilderParams, formedMemoryParams) ? EXIT_SUCCESS : EXIT_FAILURE;
 }
 catch (utils::ScException const & ex)
 {

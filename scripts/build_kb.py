@@ -108,16 +108,14 @@ def prepare_kb(kb_to_prepare: str, logfile: str):
         exit(1)
 
 
-def build_kb(kb_bin_folder: str, kb_to_build: str, ostis_path: str):
+def build_kb(kb_bin_folder: str, kb_to_build: str, ostis_path: str, config_path: str):
     os.makedirs(kb_bin_folder, exist_ok=True)
     # call sc-builder with required parameters and return the exitcode of the command
-    return os.system(" ".join([join(ostis_path, "sc-builder"), "-f", "--clear", "-i", kb_to_build, "-o", kb_bin_folder]))
+    return os.system(" ".join([join(ostis_path, "sc-builder"), "-f", "--clear", "-i", kb_to_build, "-o", kb_bin_folder, "-c", config_path]))
 
 
 def main(args: dict):
     conf = parse_config(args["config_file_path"])
-
-
     # absolutize paths passed as flags
 
     # rewrite options which were given by flags
@@ -148,7 +146,7 @@ def main(args: dict):
 
     copy_kb(conf[OUTPUT_PATH])
     prepare_kb(kb_to_prepare, conf[LOGFILE_PATH])
-    exitcode = build_kb(conf[OUTPUT_PATH], kb_to_prepare, conf[OSTIS_PATH])
+    exitcode = build_kb(conf[OUTPUT_PATH], kb_to_prepare, conf[OSTIS_PATH],  abspath(args["config_file_path"]))
     shutil.rmtree(kb_to_prepare)
     # exit with non-null code in case sc-builder encountered an error
     exit(exitcode)

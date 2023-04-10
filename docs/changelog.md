@@ -12,6 +12,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - Add sc-component-manager as submodule
+- Save sc-memory by period in sc-server
+- Dump statistics by period in sc-server
+- Erase sc-elements agent
+- Transfer init memory generated structure to modules initialization
+- Possibility to skip keys defined in configs
+- Pre-commit code style checks
 - Add reversed edges according to standart
 - Add `![]!` parsing to scs parser
 - Insert sc-keynodes and their system identifiers in global knowledge base during sc-memory initiation
@@ -28,6 +34,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- Delete elements endpoint uses erase elements agent
+- Update garbage deletion agent logic, add check if element belongs to init memory structure
+- Make scsi pre-processor migrations scrip
 - Move to C++17
 - Remove 1 minute assert in ScWait
 - Add language parameter for sc2scs-json-translator to get elements identifiers
@@ -36,6 +45,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- Segfaults in test sc-client
+- Creating sc-keynodes without defining type. Now they will be created with const node type.
+- Converting to string params from configs
 - Fix hashes size in fs-storage ([45](https://github.com/ostis-ai/ostis-web-platform/issues/45))
 - GetLinkContent skip whitespaces in strings
 - No inserting system identifiers of keynodes to output structure ([223](https://github.com/ostis-ai/sc-machine/issues/223))
@@ -47,6 +59,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add curl to installation script
 - Merging identifiers in sc-dictionary ([192](https://github.com/ostis-ai/sc-machine/issues/192))
 - Dependence order in var template search triples ([186](https://github.com/ostis-ai/sc-machine/issues/186))
+
+### Removed
+
+- Garbage deletion agent
 
 ## [0.7.0-Rebirth] - 12.10.2022
 

@@ -19,7 +19,10 @@
  * @return If specified directory doesn't exist, then return SC_ERROR_INVALID_PARAMS. If
  * there are any other errors to load extensions, then return SC_ERROR
  */
-sc_result sc_ext_initialize(const sc_char * ext_dir_path, const sc_char ** enabled_list);
+sc_result sc_ext_initialize(
+    sc_char const * ext_path,
+    sc_char const ** enabled_list,
+    sc_addr const init_memory_generated_structure);
 
 /*! Shutdown all loaded extensions
  */

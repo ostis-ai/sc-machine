@@ -4,7 +4,8 @@
  * (See accompanying file COPYING.MIT or copy at http://opensource.org/licenses/MIT)
  */
 
-#include "gtest/gtest.h"
+#include <gtest/gtest.h>
+#include <filesystem>
 
 #include "sc_server_test.hpp"
 #include "../../sc_client.hpp"
@@ -29,7 +30,7 @@ TEST(ScServer, RunStop)
   ScParams memoryParams{options, {}};
   memoryParams.insert({"repo_path", SC_SERVER_REPO_PATH});
 
-  ScMemoryConfig memoryConfig{config, std::move(memoryParams)};
+  ScMemoryConfig memoryConfig{config, memoryParams};
 
   auto server = std::unique_ptr<ScServer>(new ScServerImpl(
       serverParams.at("host"),
@@ -110,12 +111,49 @@ void TEST_N_CONNECTIONS(std::unique_ptr<ScServer> const & server, size_t const a
             << " ms\n";
 }
 
-TEST_F(ScServerTest, DISABLED_OneHundredConnections)  // 206.55 ms
+TEST_F(ScServerTest, OneHundredConnections)  // 206.55 ms
 {
   TEST_N_CONNECTIONS(m_server, 100);
 }
 
-TEST_F(ScServerTest, DISABLED_OneThousandConnections)  // 2583.39 ms
+TEST_F(ScServerTest, OneThousandConnections)  // 2583.39 ms
 {
   TEST_N_CONNECTIONS(m_server, 1000);
+}
+
+TEST(ScServer, RunStopSaveUpdateStatistics)
+{
+  ScOptions options{1, nullptr};
+
+  std::string configFile = SC_SERVER_INI;
+
+  ScParams serverParams{options, {}};
+
+  ScConfig config{configFile, {}};
+  auto serverConfig = config["sc-server"];
+  for (auto const & key : *serverConfig)
+    serverParams.insert({key, serverConfig[key]});
+
+  ScParams memoryParams{options, {}};
+  memoryParams.insert({"repo_path", SC_SERVER_REPO_PATH});
+
+  ScMemoryConfig memoryConfig{config, memoryParams};
+
+  auto server = std::unique_ptr<ScServer>(new ScServerImpl(
+      serverParams.at("host"),
+      std::stoi(serverParams.at("port")),
+      serverParams.at("log_type"),
+      serverParams.at("log_file"),
+      serverParams.at("log_level"),
+      std::stoi(serverParams.at("sync_actions")),
+      memoryConfig.GetParams()));
+
+  server->Run();
+
+  auto const & previousScMemorySaveTime = std::filesystem::last_write_time(SC_SERVER_REPO_PATH "/segments.scdb");
+  sleep(7);
+  auto const & currentScMemorySaveTime = std::filesystem::last_write_time(SC_SERVER_REPO_PATH "/segments.scdb");
+  EXPECT_NE(previousScMemorySaveTime, currentScMemorySaveTime);
+
+  server->Stop();
 }

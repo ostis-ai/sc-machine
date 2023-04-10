@@ -4,18 +4,20 @@
  * (See accompanying file COPYING.MIT or copy at http://opensource.org/licenses/MIT)
  */
 
+#include "utils.h"
 #include "utils_keynodes.h"
 #include "../sc-common/sc_keynodes.h"
-#include "utils.h"
 #include <glib.h>
 
-const char keynode_sc_garbage_str[] = "sc_garbage";
+sc_addr keynode_question_erase_elements;
+sc_addr keynode_init_memory_generated_structure;
 
-sc_addr keynode_sc_garbage;
+const char keynode_question_erase_elements_str[] = "question_erase_elements";
 
-sc_result utils_keynodes_initialize()
+sc_result utils_keynodes_initialize(sc_addr const init_memory_generated_structure)
 {
-  RESOLVE_KEYNODE(s_default_ctx, keynode_sc_garbage);
+  RESOLVE_KEYNODE(s_erase_elements_ctx, keynode_question_erase_elements, init_memory_generated_structure);
+  keynode_init_memory_generated_structure = init_memory_generated_structure;
 
   return SC_RESULT_OK;
 }

@@ -49,6 +49,6 @@ extern sc_addr ui_keynode_rrel_order[RREL_ORDER_COUNT];
 extern sc_addr ui_keynode_arg[UI_ARG_COUNT];
 
 //! Initialize all keynodes, that will be used in extension
-sc_bool initialize_keynodes();
+sc_bool initialize_keynodes(sc_addr const init_memory_generated_structure);
 
 #endif
