@@ -8,7 +8,6 @@
 #define _uiSc2SCnJsonTranslator_h_
 
 #include "uiTranslatorFromSc.h"
-#include "uiTranslators.h"
 
 struct sScElementInfo
 {

@@ -5,13 +5,12 @@
  */
 
 #include "sc-memory/sc_memory.hpp"
-#include "sc-memory/sc_stream.hpp"
 
 #include "uiSc2SCnJsonTranslator.h"
 
+#include "uiPrecompiled.h"
 #include "uiTranslators.h"
-#include "uiKeynodes.h"
-#include "uiUtils.h"
+
 #include <algorithm>
 #include <string_view>
 
@@ -253,8 +252,21 @@ void uiSc2SCnJsonTranslator::json(sScElementInfo * elInfo, int level, bool isStr
     {
       sc_stream * stream;
       sc_memory_get_link_content(s_default_ctx, elInfo->addr, &stream);
-      if (stream != nullptr && ScStreamConverter::StreamToString(std::make_shared<ScStream>(stream), content))
+
+      sc_uint32 content_length = 0;
+      sc_uint32 read_bytes = 0;
+      sc_char buffer[scnTranslatorConstants::FORMAT_LARGE_TXT_SIZE];
+
+      if (sc_memory_get_link_content(s_default_ctx, elInfo->addr, &stream) == SC_RESULT_OK)
       {
+        sc_stream_get_length(stream, &content_length);
+        while (sc_stream_eof(stream) == SC_FALSE)
+        {
+          sc_stream_read_data(stream, buffer, scnTranslatorConstants::FORMAT_LARGE_TXT_SIZE, &read_bytes);
+          content.append(buffer, read_bytes);
+        }
+        sc_stream_free(stream);
+
         if (content.size() < scnTranslatorConstants::FORMAT_LARGE_TXT_SIZE)
         {
           result[scnTranslatorConstants::CONTENT.data()] = content;
