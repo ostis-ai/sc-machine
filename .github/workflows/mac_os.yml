@@ -2,7 +2,7 @@ name: Tests
 
 on:
   pull_request:
-    branches: [main]
+    branches: [mac_os_test]
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
@@ -15,7 +15,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [macos-latest, ubuntu-20.04, ubuntu-22.04]
+        os: [macos-latest]
         file_memory: ["Dictionary", "Rocksdb"]
         build_type: ["Debug", "Release"]
         config:
