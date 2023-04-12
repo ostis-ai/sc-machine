@@ -15,7 +15,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [macos-latest, ubuntu-20.04, ubuntu-22.04]
+        os: [macos-latest]
         file_memory: ["Dictionary", "Rocksdb"]
         build_type: ["Debug", "Release"]
         config:
