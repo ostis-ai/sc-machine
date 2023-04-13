@@ -98,33 +98,33 @@ ScTemplate & ScTemplate::Triple(
 
   for (size_t i = 0; i < 3; ++i)
   {
-    ScTemplateItem & value = triple->m_values[i];
+    ScTemplateItem & item = triple->m_values[i];
 
-    if (value.IsAssign() && value.m_typeValue.HasConstancyFlag() && !value.m_typeValue.IsVar())
+    if (item.IsAssign() && item.m_typeValue.HasConstancyFlag() && !item.m_typeValue.IsVar())
       SC_THROW_EXCEPTION(utils::ExceptionInvalidParams, "You should to use variable types in template");
 
-    if (value.IsAddr() && !value.m_addrValue.IsValid())
+    if (item.IsAddr() && !item.m_addrValue.IsValid())
       SC_THROW_EXCEPTION(utils::ExceptionInvalidParams, "You can't use empty ScAddr");
 
-    if (!value.m_name.empty())
+    if (!item.m_name.empty())
     {
-      if (value.IsAddr())
-        m_templateItemsNamesToReplacementItemsAddrs[value.m_name] = value.m_addrValue;
+      if (item.IsAddr())
+        m_templateItemsNamesToReplacementItemsAddrs[item.m_name] = item.m_addrValue;
       else
       {
-        auto const & found = m_templateItemsNamesToReplacementItemsAddrs.find(value.m_name);
+        auto const & found = m_templateItemsNamesToReplacementItemsAddrs.find(item.m_name);
         if (found != m_templateItemsNamesToReplacementItemsAddrs.cend())
-          value.SetAddr(found->second);
+          item.SetAddr(found->second);
       }
 
-      if (value.IsType())
-        m_templateItemsNamesToTypes[value.m_name] = value.m_typeValue;
+      if (item.IsType())
+        m_templateItemsNamesToTypes[item.m_name] = item.m_typeValue;
 
-      if (!value.IsReplacement())
+      if (!item.IsReplacement())
       {
-        if (m_templateItemsNamesToReplacementItemsPositions.find(value.m_name) ==
+        if (m_templateItemsNamesToReplacementItemsPositions.find(item.m_name) ==
             m_templateItemsNamesToReplacementItemsPositions.cend())
-          m_templateItemsNamesToReplacementItemsPositions.insert({value.m_name, replPos + i});
+          m_templateItemsNamesToReplacementItemsPositions.insert({item.m_name, replPos + i});
       }
 
       /* Store type there, if replacement for any type.
@@ -134,7 +134,7 @@ ScTemplate & ScTemplate::Triple(
       ScTemplateItem const & valueType = m_templateTriples[tripleIdx]->m_values[i];
 
       if (valueType.IsType())
-        value.m_typeValue = valueType.m_typeValue;
+        item.m_typeValue = valueType.m_typeValue;
     }
   }
 
@@ -185,13 +185,11 @@ inline ScTemplateTripleType ScTemplate::GetPriority(ScTemplateTriple * triple)
   if (item3.IsFixed())
     return ScTemplateTripleType::AAF;
 
-  if (item1.IsFixed() && (!item3.m_typeValue.IsEdge() && !item3.m_typeValue.IsUnknown()))
+  if (item1.IsFixed() && (!item3.m_typeValue.IsEdge() || item3.m_typeValue.IsUnknown()))
   {
     auto const & it = m_templateItemsNamesToTypes.find(item3.m_name);
     if (it != m_templateItemsNamesToTypes.cend() && !it->second.IsEdge() && !it->second.IsUnknown())
-    {
       return ScTemplateTripleType::FAN;
-    }
   }
 
   if (item1.IsFixed())

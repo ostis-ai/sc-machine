@@ -146,9 +146,7 @@ private:
         for (size_t const dependedTripleIdx : dependedTriples->second)
         {
           if (IsTriplesEqual(triple, m_template.m_templateTriples[dependedTripleIdx]))
-          {
             m_cycledTemplateTriples.insert(dependedTripleIdx);
-          }
         }
       }
 
@@ -323,17 +321,13 @@ private:
       sc_int32 priorityTripleIdx = -1;
       auto & afaTriples = m_template.m_priorityOrderedTemplateTriples[(size_t)ScTemplateTripleType::AFA];
       if (!afaTriples.empty())
-      {
         priorityTripleIdx = (sc_int32)*afaTriples.cbegin();
-      }
 
       if (priorityTripleIdx == -1)
       {
         priorityTripleIdx = FindTripleWithMostMinimalInputArcsForThirdItem(connectivityComponentsTriples);
         if (priorityTripleIdx == -1)
-        {
           priorityTripleIdx = FindTripleWithMostMinimalOutputArcsForFirstItem(connectivityComponentsTriples);
-        }
       }
 
       // save triple in which the first item address has the most minimal count of input/output arcs in vector
@@ -380,9 +374,7 @@ private:
     auto triplesWithConstBeginElement = m_template.m_priorityOrderedTemplateTriples[(size_t)ScTemplateTripleType::FAN];
     // if there are no triples with the no edge third item than sort triples with the edge third item
     if (triplesWithConstBeginElement.empty())
-    {
       triplesWithConstBeginElement = m_template.m_priorityOrderedTemplateTriples[(size_t)ScTemplateTripleType::FAE];
-    }
 
     // find triple in which the first item address has the most minimal count of output arcs
     sc_int32 priorityTripleIdx = -1;
@@ -422,9 +414,7 @@ private:
     std::string const & key = GetKey(triple, item);
     auto const & found = m_templateItemsNamesToDependedTemplateTriples.find(key);
     if (found != m_templateItemsNamesToDependedTemplateTriples.cend())
-    {
       nextTriples = found->second;
-    }
   }
 
   bool IsTriplesEqual(
@@ -498,10 +488,10 @@ private:
   {
     auto const & GetItemAddrInReplacements = [&replacementConstruction,
                                               &result](ScTemplateItem const & item) -> ScAddr const & {
-      auto const & it = result.m_templateItemsNamesToReplacementItemsPositions.equal_range(item.m_name);
-      for (auto curIt = it.first; curIt != it.second; ++curIt)
+      auto const & it = result.m_templateItemsNamesToReplacementItemsPositions.find(item.m_name);
+      if (it != result.m_templateItemsNamesToReplacementItemsPositions.cend())
       {
-        ScAddr const & addr = replacementConstruction[curIt->second];
+        ScAddr const & addr = replacementConstruction[it->second];
         if (addr.IsValid())
           return addr;
       }
@@ -563,9 +553,7 @@ private:
       {
         auto const & found = m_template.m_templateItemsNamesToTypes.find(item.m_name);
         if (found != m_template.m_templateItemsNamesToTypes.cend())
-        {
           type = found->second;
-        }
       }
 
       if (type.HasConstancyFlag())
@@ -579,41 +567,27 @@ private:
       if (!addr2.IsValid())
       {
         if (addr3.IsValid())  // F_A_F
-        {
           return m_context.Iterator3(addr1, PrepareType(item2), addr3);
-        }
         else  // F_A_A
-        {
           return m_context.Iterator3(addr1, PrepareType(item2), PrepareType(item3));
-        }
       }
       else
       {
         if (addr3.IsValid())  // F_F_F
-        {
           return m_context.Iterator3(addr1, addr2, addr3);
-        }
         else  // F_F_A
-        {
           return m_context.Iterator3(addr1, addr2, PrepareType(item3));
-        }
       }
     }
     else if (addr3.IsValid())
     {
       if (addr2.IsValid())  // A_F_F
-      {
         return m_context.Iterator3(PrepareType(item1), addr2, addr3);
-      }
       else  // A_A_F
-      {
         return m_context.Iterator3(PrepareType(item1), PrepareType(item2), addr3);
-      }
     }
     else if (addr2.IsValid() && !addr3.IsValid())  // A_F_A
-    {
       return m_context.Iterator3(PrepareType(item1), addr2, PrepareType(item3));
-    }
 
     return {};
   }
@@ -671,9 +645,7 @@ private:
             });
 
         if (!isFinished)
-        {
           break;
-        }
       }
     }
   }
@@ -723,9 +695,7 @@ private:
     ScIterator3Ptr it =
         CreateIterator(templateTriple, result.m_replacementConstructions[replacementConstructionIdx], result);
     if (!it || !it->IsValid())
-    {
       SC_THROW_EXCEPTION(utils::ExceptionInvalidState, "During search procedure has been chosen var triple");
-    }
 
     size_t checkedCurrentResultEqualTemplateTriplesCount = 0;
 
@@ -747,21 +717,18 @@ private:
         {
           ++copiedTemplateTriplesIterator;
           if (copiedTemplateTriplesIterator == templateTriples.cend())
-          {
             isTemplateTriplesIteratorNext = false;
-          }
         }
       }
       else
       {
+        // it is not universal sc-template search
         break;
       }
 
       auto & notUsedEdgesInCurrentTemplateTriple = m_notUsedEdgesInTemplateTriples[templateTriple->m_index];
       if (notUsedEdgesInCurrentTemplateTriple.find(replacementTriple[1]) != notUsedEdgesInCurrentTemplateTriple.cend())
-      {
         continue;
-      }
 
       bool isFoundInOtherTemplateTriples = false;
       for (size_t const otherTemplateTripleIdx : templateTriples)
@@ -777,18 +744,14 @@ private:
         }
       }
       if (isFoundInOtherTemplateTriples)
-      {
         continue;
-      }
 
       // check if edge is used for other equal triple
       auto & usedEdgesInCurrentReplacementConstruction =
           m_usedEdgesInReplacementConstructions[replacementConstructionIdx];
       if (usedEdgesInCurrentReplacementConstruction.find(replacementTriple[1]) !=
           usedEdgesInCurrentReplacementConstruction.cend())
-      {
         continue;
-      }
 
       // check triple elements by structure belonging or predicate callback
       if ((IsStructureValid() && (!IsInStructure(replacementTriple[0]) || !IsInStructure(replacementTriple[1]) ||
@@ -808,9 +771,7 @@ private:
           isTemplateTriplesIteratorNext = true;
         }
         else if (templateTriplesIterator != templateTriples.cend())
-        {
           ++templateTriplesIterator;
-        }
 
         // check if all equal triples found to make a new search result item
         if (checkedCurrentResultEqualTemplateTriplesCount == templateTriples.size())
@@ -849,9 +810,7 @@ private:
 
         if (checkedTemplateTriplesInCurrentReplacementConstruction.find(templateTripleIdx) !=
             checkedTemplateTriplesInCurrentReplacementConstruction.cend())
-        {
           continue;
-        }
 
         ScAddrVector & replacementConstruction = result.m_replacementConstructions[replacementConstructionIdx];
 
@@ -869,9 +828,7 @@ private:
         }
 
         if (!isFinished)
-        {
           continue;
-        }
 
         // update data
         {
@@ -916,10 +873,8 @@ private:
             {
               m_checkedTemplateTriplesInReplacementConstructions[replacementConstructionIdx].erase(
                   otherTemplateTripleIdx);
-              m_usedEdgesInTemplateTriples[otherTemplateTripleIdx].clear();
             }
             childrenTemplateTriples.clear();
-
             ClearResult(templateTripleIdx, replacementConstructionIdx, replacementConstruction);
             continue;
           }
@@ -947,9 +902,7 @@ private:
         if (!m_filterCallback || m_filterCallback(ScTemplateSearchResultItem(
                                      &result.m_replacementConstructions[replacementConstructionIdx],
                                      &result.m_templateItemsNamesToReplacementItemsPositions)))
-        {
           AppendFoundReplacementConstruction(result, replacementConstructionIdx);
-        }
       }
     } while (!isStopped);
   }
@@ -968,14 +921,13 @@ private:
           if (item.m_name.empty())
             return;
 
-          result.m_templateItemsNamesToReplacementItemsPositions.insert({item.m_name, elementNum});
+          result.m_templateItemsNamesToReplacementItemsPositions[item.m_name] = elementNum;
         };
 
     m_checkedTemplateTriplesInReplacementConstructions[replacementConstructionIdx].insert(templateTriple->m_index);
     m_usedEdgesInReplacementConstructions[replacementConstructionIdx].insert(replacementTriple[1]);
 
     size_t itemIdx = templateTriple->m_index * 3;
-
     for (size_t i = replacementConstructionIdx; i < result.Size(); ++i)
     {
       ScAddrVector & resultAddrs = result.m_replacementConstructions[i];
@@ -1029,20 +981,18 @@ private:
       }
     }
     else
-    {
       m_foundReplacementConstructions.insert(resultIdx);
-    }
   }
 
   void ReserveResult(size_t const replacementConstructionIdx, ScTemplateSearchResult & result)
   {
-    if (replacementConstructionIdx >= DEFAULT_RESULT_RESERVE_SIZE * m_resultReserveCount)
-    {
-      ++m_resultReserveCount;
-      result.m_replacementConstructions.reserve(DEFAULT_RESULT_RESERVE_SIZE * m_resultReserveCount);
-      m_checkedTemplateTriplesInReplacementConstructions.reserve(DEFAULT_RESULT_RESERVE_SIZE * m_resultReserveCount);
-      m_usedEdgesInReplacementConstructions.reserve(DEFAULT_RESULT_RESERVE_SIZE * m_resultReserveCount);
-    }
+    if (replacementConstructionIdx < DEFAULT_RESULT_RESERVE_SIZE * m_resultReserveCount)
+      return;
+
+    ++m_resultReserveCount;
+    result.m_replacementConstructions.reserve(DEFAULT_RESULT_RESERVE_SIZE * m_resultReserveCount);
+    m_checkedTemplateTriplesInReplacementConstructions.reserve(DEFAULT_RESULT_RESERVE_SIZE * m_resultReserveCount);
+    m_usedEdgesInReplacementConstructions.reserve(DEFAULT_RESULT_RESERVE_SIZE * m_resultReserveCount);
   }
 
   void DoIterations(ScTemplateSearchResult & result)

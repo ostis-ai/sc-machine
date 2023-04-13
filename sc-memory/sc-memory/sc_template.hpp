@@ -295,7 +295,7 @@ public:
 public:
   SC_DISALLOW_COPY_AND_MOVE(ScTemplate);
 
-  using ScTemplateItemsToReplacementsItemsPositions = std::unordered_multimap<std::string, size_t>;
+  using ScTemplateItemsToReplacementsItemsPositions = std::unordered_map<std::string, size_t>;
   using ScTemplateTriplesVector = std::vector<ScTemplateTriple *>;
 
   SC_DEPRECATED(0.8.0, "Now ScTemplate sorts itself effectively")
@@ -441,9 +441,7 @@ public:
     if (it != m_templateItemsNamesToReplacementItemsPositions.cend())
     {
       if (it->second < Size())
-      {
         return m_replacementConstruction[it->second];
-      }
 
       SC_THROW_EXCEPTION(utils::ExceptionInvalidParams, "Alias=" + name + " is invalid");
     }
@@ -476,9 +474,7 @@ public:
   ScAddr const & operator[](size_t index) const noexcept(false)
   {
     if (index < Size())
-    {
       return m_replacementConstruction[index];
-    }
 
     SC_THROW_EXCEPTION(
         utils::ExceptionInvalidParams, "Index=" + std::to_string(index) + " must be < size=" + std::to_string(Size()));
@@ -564,9 +560,7 @@ public:
   {
     auto const & it = m_templateItemsNamesToReplacementItemPositions->find(name);
     if (it != m_templateItemsNamesToReplacementItemPositions->cend())
-    {
       return (*m_replacementConstruction)[it->second];
-    }
 
     SC_THROW_EXCEPTION(utils::ExceptionInvalidParams, "Alias=" + name + " not found in replacements");
   }
@@ -596,9 +590,7 @@ public:
   inline ScAddr const & operator[](size_t index) const noexcept(false)
   {
     if (index < Size())
-    {
       return (*m_replacementConstruction)[index];
-    }
 
     SC_THROW_EXCEPTION(
         utils::ExceptionInvalidParams, "Index=" + std::to_string(index) + " must be < size=" + std::to_string(Size()));
@@ -674,9 +666,7 @@ public:
   inline ScTemplateSearchResultItem operator[](size_t index) const noexcept(false)
   {
     if (index < Size())
-    {
       return {&m_replacementConstructions[index], &m_templateItemsNamesToReplacementItemsPositions};
-    }
 
     SC_THROW_EXCEPTION(
         utils::ExceptionInvalidParams, "Index=" + std::to_string(index) + " must be < size=" + std::to_string(Size()));
