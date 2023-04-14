@@ -298,8 +298,10 @@ public:
   using ScTemplateItemsToReplacementsItemsPositions = std::unordered_map<std::string, size_t>;
   using ScTemplateTriplesVector = std::vector<ScTemplateTriple *>;
 
+  _SC_EXTERN explicit ScTemplate();
+
   SC_DEPRECATED(0.8.0, "Now ScTemplate sorts itself effectively")
-  _SC_EXTERN explicit ScTemplate(bool forceOrder = false);
+  _SC_EXTERN explicit ScTemplate(bool forceOrder);
 
   _SC_EXTERN ~ScTemplate()
   {
@@ -345,6 +347,18 @@ public:
    * Equal to two calls of triple, so this template add 6 items to result (NOT 5), to minimize
    * possible abuse, use result name mapping, and get result by names
    */
+  _SC_EXTERN ScTemplate & Fiver(
+      ScTemplateItem const & param1,
+      ScTemplateItem const & param2,
+      ScTemplateItem const & param3,
+      ScTemplateItem const & param4,
+      ScTemplateItem const & param5) noexcept(false);
+
+  SC_DEPRECATED(
+      0.4.0,
+      "Use ScTemplate::Fiver(ScTemplateItem const & param1, ScTemplateItem const & param2, "
+      "ScTemplateItem const & param3, ScTemplateItem const & param4, ScTemplateItem const & param5) "
+      "noexcept(false) instead.")
   _SC_EXTERN ScTemplate & TripleWithRelation(
       ScTemplateItem const & param1,
       ScTemplateItem const & param2,

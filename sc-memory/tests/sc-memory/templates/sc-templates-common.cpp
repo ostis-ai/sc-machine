@@ -478,7 +478,7 @@ TEST_F(ScTemplateCommonTest, CycledTemplateSmoke)
 TEST_F(ScTemplateCommonTest, MultipleConnectivitiesTemplateSmoke)
 {
   size_t const constrCount = 20;
-  std::unordered_map<ScAddr, ScAddr, ScAddrHashFunc<size_t>, ScAddLessFunc> cache;
+  std::map<ScAddr, ScAddr, ScAddLessFunc> cache;
   for (size_t i = 0; i < constrCount; ++i)
   {
     ScAddr const & sourceNodeAddr = m_ctx->CreateNode(ScType::NodeConst);

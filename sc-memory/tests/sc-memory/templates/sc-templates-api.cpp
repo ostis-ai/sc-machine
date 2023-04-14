@@ -60,3 +60,16 @@ TEST_F(ScTemplateApiTest, TripleWithInvalidTargetAddr)
       ScType::EdgeAccessVarPosPerm  >> "_edge",
       ScAddr::Empty >> "_addr2"), utils::ExceptionInvalidParams);
 }
+
+TEST_F(ScTemplateApiTest, FiverWithConstSourceType)
+{
+  ScTemplate templ;
+  EXPECT_THROW(
+      templ.Fiver(
+          ScType::NodeConst >> "_addr1",
+          ScType::EdgeAccessVarPosPerm >> "_edge",
+          ScType::Unknown >> "_addr2",
+          ScType::EdgeAccessVarPosPerm,
+          ScType::NodeVarNoRole >> "_relation"),
+      utils::ExceptionInvalidParams);
+}

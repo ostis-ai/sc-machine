@@ -33,13 +33,18 @@ ScTemplateItem operator>>(ScType const & value, std::string const & replName)
 
 // --------------------------------
 
-ScTemplate::ScTemplate(bool forceOrder /* = false */)
+ScTemplate::ScTemplate()
 {
-  SC_UNUSED(forceOrder);
   m_templateTriples.reserve(16);
 
   auto const tripleTypeCount = (size_t)ScTemplateTripleType::ScConstr3TypeCount;
   m_priorityOrderedTemplateTriples.resize(tripleTypeCount);
+}
+
+ScTemplate::ScTemplate(bool forceOrder)
+  : ScTemplate()
+{
+  SC_UNUSED(forceOrder);
 }
 
 ScTemplate & ScTemplate::operator()(
@@ -145,7 +150,7 @@ ScTemplate & ScTemplate::Triple(
   return *this;
 }
 
-ScTemplate & ScTemplate::TripleWithRelation(
+ScTemplate & ScTemplate::Fiver(
     ScTemplateItem const & param1,
     ScTemplateItem const & param2,
     ScTemplateItem const & param3,
@@ -168,6 +173,16 @@ ScTemplate & ScTemplate::TripleWithRelation(
   Triple(param5, param4, edgeCommonItem.m_name.c_str());
 
   return *this;
+}
+
+ScTemplate & ScTemplate::TripleWithRelation(
+    ScTemplateItem const & param1,
+    ScTemplateItem const & param2,
+    ScTemplateItem const & param3,
+    ScTemplateItem const & param4,
+    ScTemplateItem const & param5)
+{
+  return Fiver(param1, param2, param3, param4, param5);
 }
 
 inline ScTemplateTripleType ScTemplate::GetPriority(ScTemplateTriple * triple)

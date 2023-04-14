@@ -114,7 +114,7 @@ TEST_F(ScTemplateSearchTest, SimpleSearch2)
 
   // now check search
   ScTemplate templ;
-  templ.TripleWithRelation(
+  templ.Fiver(
     addr >> "_addr",
     ScType::EdgeDCommonVar >> "_edgeCommon",
     ScType::Link >> "_link",

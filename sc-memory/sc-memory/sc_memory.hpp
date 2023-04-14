@@ -360,7 +360,7 @@ public:
       ScTemplateSearchResult & result) noexcept(false);
 
   /*!
-   * Searches constructions by isomorphic search template and pass search result construction to `callback`
+   * Searches sc-constructions by isomorphic search template and pass search result construction to `callback`
    * lambda-function. If `filterCallback` passed, then all found constructions triples are filtered by `filterCallback`
    * condition.
    * @param templ A sc-template object to find constructions by it
@@ -389,7 +389,7 @@ public:
    *  return ctx->HelperCheckEdge(modelAddr, addr, ScType::EdgeAccessConstPosPerm);
    * });
    * \endcode
-   * @throws utils::ExceptionInvalidState
+   * @throws utils::ExceptionInvalidState if sc-template is not valid
    */
   _SC_EXTERN void HelperSearchTemplate(
       ScTemplate const & templ,
@@ -432,21 +432,16 @@ public:
    * );
    * m_ctx->HelperSmartSearchTemplate(templ, [&ctx](ScTemplateSearchResultItem const & item) -> ScTemplateSearchRequest
    * {
-   *   if (!ctx->HelperCheckEdge(structureAddr, edgeAddr, ScType::EdgeAccessConstPosPerm))
-   *   {
-   *     if (ctx.CreateEdge(ScType::EdgeAccessConstPosTemp, setAddr, item["_addr2"]))
-   *     {
-   *       return ScTemplateSearchRequest::STOP;
-   *     }
-   *     else
-   *     {
-   *       return ScTemplateSearchRequest::ERROR;
-   *     }
-   *   }
-   *   return ScTemplateSearchRequest::CONTINUE;
+   *   if (ctx->HelperCheckEdge(structureAddr, edgeAddr, ScType::EdgeAccessConstPosPerm))
+   *    return ScTemplateSearchRequest::CONTINUE;
+   *
+   *   if (ctx.CreateEdge(ScType::EdgeAccessConstPosTemp, setAddr, item["_addr2"]))
+   *    return ScTemplateSearchRequest::STOP;
+   *
+   *   return ScTemplateSearchRequest::ERROR;
    * });
    * \endcode
-   * @throws utils::ExceptionInvalidState
+   * @throws utils::ExceptionInvalidState if sc-template is not valid
    */
   _SC_EXTERN void HelperSmartSearchTemplate(
       ScTemplate const & templ,
