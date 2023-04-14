@@ -82,7 +82,7 @@ def copy_kb(output_path: str):
 
 
 def parse_config(path: str) -> dict:
-    config_dict = {REPO_FILE: '', OUTPUT_PATH: '', LOGFILE_PATH: '', OSTIS_PATH: abspath(join(os.path.dirname(os.path.realpath(__file__)), "../bin"))}
+    config_dict = {REPO_FILE: '', OUTPUT_PATH: '', LOGFILE_PATH: '', OSTIS_PATH: abspath(join(os.path.dirname(os.path.realpath(path)), "/bin"))}
     config = configparser.ConfigParser()
     if path is not None:
         config.read(path)
@@ -171,7 +171,7 @@ if __name__ == '__main__':
                              "priority than flags!)")
 
     parser.add_argument('-b', '--ostis_path', dest=OSTIS_PATH,
-                        help="Path to the compiled binaries of OSTIS system (../bin used by default)")
+                        help="Path to the compiled binaries of OSTIS system (<config_dir>/bin used by default)")
 
     args = parser.parse_args()
 
