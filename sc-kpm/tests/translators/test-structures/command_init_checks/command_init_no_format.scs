@@ -1,0 +1,20 @@
+system_element -> trans_cmd_addr;
+question_addr;
+answer_addr;
+lang_ru;
+ui_command_translate_from_sc;
+ui_rrel_source_sc_construction;
+ui_rrel_user_lang;
+ui_rrel_output_format;;
+@edge1 = (trans_cmd_addr -> answer_addr);;
+system_element -> @edge1;;
+system_element -> (ui_rrel_source_sc_construction-> @edge1);;
+@edge2 = (trans_cmd_addr -> lang_ru);;
+system_element -> @edge2;;
+system_element -> (ui_rrel_user_lang-> @edge2);;
+system_element -> (trans_cmd_addr <- ui_command_translate_from_sc);;
+question_addr => nrel_answer: answer_addr;;
+// question_addr -> hello;;
+// answer_addr = [*
+//     hello <- test;;
+// *];;

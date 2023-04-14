@@ -13,6 +13,7 @@
 using json = nlohmann::json;
 
 std::string const TEST_STRUCTURES_PATH = SC_KPM_TEST_SRC_PATH "/translators/test-structures/";
+std::string const COMMAND_INIT_CHECKS_PATH = TEST_STRUCTURES_PATH + "command_init_checks/";
 
 ScAddr findTranslation(ScMemoryContext & context, ScAddr const & constructionAddr)
 {
@@ -32,13 +33,13 @@ ScAddr findTranslation(ScMemoryContext & context, ScAddr const & constructionAdd
 
 ScAddr getTranslation(ScMemoryContext & context, ScAddr const & answerAddr)
 {
-  int const WAIT_TIME = 120;
+  int const WAIT_TIME = 2;
   int waitTime = 0;
   ScAddr translation = findTranslation(context, answerAddr);
   while (!translation.IsValid())
   {
-    sleep(5);
-    waitTime += 5;
+    sleep(1);
+    waitTime += 1;
     if (waitTime > WAIT_TIME)
     {
       return {};
@@ -84,7 +85,7 @@ TEST_F(ScMemoryTest, test_successfull_result)
   sc_module_initialize_with_init_memory_generated_structure(structAddr);
 
   SCsHelper helper(*m_ctx, std::make_shared<DummyFileInterface>());
-  EXPECT_TRUE(GenerateByFileURL(helper, TEST_STRUCTURES_PATH + "init_ui_translator.scs"));
+  EXPECT_TRUE(GenerateByFileURL(helper, COMMAND_INIT_CHECKS_PATH + "init_ui_translator.scs"));
   EXPECT_TRUE(GenerateByFileURL(helper, TEST_STRUCTURES_PATH + "section_subj_domain.scs"));
 
   ScAddr trans_cmd_addr = m_ctx->HelperResolveSystemIdtf("trans_cmd_addr");
@@ -109,13 +110,71 @@ TEST_F(ScMemoryTest, test_successfull_result)
   sc_module_shutdown();
 }
 
+TEST_F(ScMemoryTest, test_command_no_class)
+{
+  sc_addr const structAddr = sc_memory_node_new(m_ctx.get()->GetRealContext(), sc_type_node_struct | sc_type_const);
+  sc_module_initialize_with_init_memory_generated_structure(structAddr);
+
+  SCsHelper helper(*m_ctx, std::make_shared<DummyFileInterface>());
+  EXPECT_TRUE(GenerateByFileURL(helper, COMMAND_INIT_CHECKS_PATH + "command_init_no_class.scs"));
+  EXPECT_TRUE(GenerateByFileURL(helper, TEST_STRUCTURES_PATH + "section_subj_domain.scs"));
+
+  ScAddr trans_cmd_addr = m_ctx->HelperResolveSystemIdtf("trans_cmd_addr");
+  ScAddr answer_addr = m_ctx->HelperResolveSystemIdtf("answer_addr");
+
+  m_ctx->CreateEdge(ScType::EdgeAccessConstPosPerm, keynode_command_initiated, trans_cmd_addr);
+  ScAddr resultLink = getTranslation(*m_ctx, answer_addr);
+  EXPECT_FALSE(resultLink.IsValid());
+
+  sc_module_shutdown();
+}
+
+
+TEST_F(ScMemoryTest, test_command_no_lang)
+{
+  sc_addr const structAddr = sc_memory_node_new(m_ctx.get()->GetRealContext(), sc_type_node_struct | sc_type_const);
+  sc_module_initialize_with_init_memory_generated_structure(structAddr);
+
+  SCsHelper helper(*m_ctx, std::make_shared<DummyFileInterface>());
+  EXPECT_TRUE(GenerateByFileURL(helper, COMMAND_INIT_CHECKS_PATH + "command_init_no_lang.scs"));
+  EXPECT_TRUE(GenerateByFileURL(helper, TEST_STRUCTURES_PATH + "section_subj_domain.scs"));
+
+  ScAddr trans_cmd_addr = m_ctx->HelperResolveSystemIdtf("trans_cmd_addr");
+  ScAddr answer_addr = m_ctx->HelperResolveSystemIdtf("answer_addr");
+
+  m_ctx->CreateEdge(ScType::EdgeAccessConstPosPerm, keynode_command_initiated, trans_cmd_addr);
+  ScAddr resultLink = getTranslation(*m_ctx, answer_addr);
+  EXPECT_FALSE(resultLink.IsValid());
+
+  sc_module_shutdown();
+}
+
+TEST_F(ScMemoryTest, test_command_no_format)
+{
+  sc_addr const structAddr = sc_memory_node_new(m_ctx.get()->GetRealContext(), sc_type_node_struct | sc_type_const);
+  sc_module_initialize_with_init_memory_generated_structure(structAddr);
+
+  SCsHelper helper(*m_ctx, std::make_shared<DummyFileInterface>());
+  EXPECT_TRUE(GenerateByFileURL(helper, COMMAND_INIT_CHECKS_PATH + "command_init_no_format.scs"));
+  EXPECT_TRUE(GenerateByFileURL(helper, TEST_STRUCTURES_PATH + "section_subj_domain.scs"));
+
+  ScAddr trans_cmd_addr = m_ctx->HelperResolveSystemIdtf("trans_cmd_addr");
+  ScAddr answer_addr = m_ctx->HelperResolveSystemIdtf("answer_addr");
+
+  m_ctx->CreateEdge(ScType::EdgeAccessConstPosPerm, keynode_command_initiated, trans_cmd_addr);
+  ScAddr resultLink = getTranslation(*m_ctx, answer_addr);
+  EXPECT_FALSE(resultLink.IsValid());
+
+  sc_module_shutdown();
+}
+
 TEST_F(ScMemoryTest, test_struct_with_keynodes)
 {
   sc_addr const structAddr = sc_memory_node_new(m_ctx.get()->GetRealContext(), sc_type_node_struct | sc_type_const);
   sc_module_initialize_with_init_memory_generated_structure(structAddr);
 
   SCsHelper helper(*m_ctx, std::make_shared<DummyFileInterface>());
-  EXPECT_TRUE(GenerateByFileURL(helper, TEST_STRUCTURES_PATH + "init_ui_translator.scs"));
+  EXPECT_TRUE(GenerateByFileURL(helper, COMMAND_INIT_CHECKS_PATH + "init_ui_translator.scs"));
   EXPECT_TRUE(GenerateByFileURL(helper, TEST_STRUCTURES_PATH + "section_subj_domain.scs"));
   EXPECT_TRUE(GenerateByFileURL(helper, TEST_STRUCTURES_PATH + "subj_domain.scs"));
   EXPECT_TRUE(GenerateByFileURL(helper, TEST_STRUCTURES_PATH + "section_subj_domain_keynodes.scs"));
@@ -141,7 +200,7 @@ TEST_F(ScMemoryTest, test_with_definition)
   sc_module_initialize_with_init_memory_generated_structure(structAddr);
 
   SCsHelper helper(*m_ctx, std::make_shared<DummyFileInterface>());
-  EXPECT_TRUE(GenerateByFileURL(helper, TEST_STRUCTURES_PATH + "init_ui_translator.scs"));
+  EXPECT_TRUE(GenerateByFileURL(helper, COMMAND_INIT_CHECKS_PATH + "init_ui_translator.scs"));
   EXPECT_TRUE(GenerateByFileURL(helper, TEST_STRUCTURES_PATH + "section_subj_domain.scs"));
   EXPECT_TRUE(GenerateByFileURL(helper, TEST_STRUCTURES_PATH + "subj_domain.scs"));
   EXPECT_TRUE(GenerateByFileURL(helper, TEST_STRUCTURES_PATH + "section_subj_domain_keynodes.scs"));
@@ -168,7 +227,7 @@ TEST_F(ScMemoryTest, test_with_order_list)
   sc_module_initialize_with_init_memory_generated_structure(structAddr);
 
   SCsHelper helper(*m_ctx, std::make_shared<DummyFileInterface>());
-  EXPECT_TRUE(GenerateByFileURL(helper, TEST_STRUCTURES_PATH + "init_ui_translator.scs"));
+  EXPECT_TRUE(GenerateByFileURL(helper, COMMAND_INIT_CHECKS_PATH + "init_ui_translator.scs"));
   EXPECT_TRUE(GenerateByFileURL(helper, TEST_STRUCTURES_PATH + "section_subj_domain.scs"));
   EXPECT_TRUE(GenerateByFileURL(helper, TEST_STRUCTURES_PATH + "order_list.scs"));
 
@@ -200,7 +259,7 @@ TEST_F(ScMemoryTest, test_with_filter_list)
   sc_module_initialize_with_init_memory_generated_structure(structAddr);
 
   SCsHelper helper(*m_ctx, std::make_shared<DummyFileInterface>());
-  EXPECT_TRUE(GenerateByFileURL(helper, TEST_STRUCTURES_PATH + "init_ui_translator.scs"));
+  EXPECT_TRUE(GenerateByFileURL(helper, COMMAND_INIT_CHECKS_PATH + "init_ui_translator.scs"));
   EXPECT_TRUE(GenerateByFileURL(helper, TEST_STRUCTURES_PATH + "section_subj_domain.scs"));
   EXPECT_TRUE(GenerateByFileURL(helper, TEST_STRUCTURES_PATH + "filter_list.scs"));
 

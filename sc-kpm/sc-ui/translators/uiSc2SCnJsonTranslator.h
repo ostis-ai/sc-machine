@@ -10,18 +10,18 @@
 #include "uiTranslatorFromSc.h"
 #include "uiTranslators.h"
 
-struct sScElementInfo
+struct ScStructureElementInfo
 {
-  typedef std::unordered_set<sScElementInfo *> tScElementInfoList;
+  typedef std::unordered_set<ScStructureElementInfo *> ScStructureElementInfoList;
 
   sc_type type;
   sc_addr addr;
-  sScElementInfo * source;
-  sScElementInfo * target;
-  sScElementInfo * structKeyword;
-  tScElementInfoList outputArcs;
-  tScElementInfoList inputArcs;
-  tScElementInfoList structureElements;
+  ScStructureElementInfo * sourceInfo;
+  ScStructureElementInfo * targetInfo;
+  ScStructureElementInfo * structKeyword;
+  ScStructureElementInfoList outputArcs;
+  ScStructureElementInfoList inputArcs;
+  ScStructureElementInfoList structureElements;
 
   bool isInTree;
 };
@@ -43,68 +43,79 @@ protected:
   void runImpl() override;
 
   //! Collect information of translated sc-elements and store it
-  void collectScElementsInfo();
+  void CollectScStructureElementsInfo();
 
   //! Generate json for specified element
-  void json(sScElementInfo * elInfo, int level, bool isStruct, sc_json & result);
+  void ParseScnJsonSentence(ScStructureElementInfo * elInfo, int level, bool isStruct, sc_json & result);
+
+  //!
+  void ParseScnJsonArc(ScStructureElementInfo * elInfo, sc_json & result);
+
+  //!
+  void ParseScnJsonLink(ScStructureElementInfo * elInfo, sc_json & result);
 
   //! Get children for specified element
-  void getChildren(sScElementInfo * elInfo, bool isStruct, sc_json & children);
+  void ParseChildrenScnJson(ScStructureElementInfo * elInfo, bool isStruct, sc_json & children);
 
   //! Get children by direction for specified arcs list
-  void getChildrenByDirection(
-      sScElementInfo::tScElementInfoList const & arcs,
+  void ParseChildrenScnJsonByDirection(
+      ScStructureElementInfo::ScStructureElementInfoList const & arcs,
       String const & direction,
       bool isStruct,
       sc_json & children);
 
   //! Get base json information about specified element
-  void getBaseInfo(sScElementInfo * elInfo, sc_json & result);
+  void ParseScElementInfo(ScStructureElementInfo * elInfo, sc_json & result);
 
   //! get full json of linked nodes for specified children
-  void getJsonOfLinkedNodes(sc_json & children, int level = 1, bool isStruct = false);
+  void ParseLinkedNodesScnJson(sc_json & children, int level = 1, bool isStruct = false);
 
-  sScElementInfo * resolveElementInfo(sc_addr const & addr, sc_type type = 0);
+  ScStructureElementInfo * ResolveStructureElementInfo(sc_addr const & addr, sc_type type = 0);
 
   //! Find struct keyword in specified elements list
-  static sScElementInfo * findStructKeyword(sScElementInfo::tScElementInfoList const & structureElements);
+  static ScStructureElementInfo * FindStructureKeyword(
+      ScStructureElementInfo::ScStructureElementInfoList const & structureElements);
 
   //! Get children for specified modifier
-  void getChildrenByModifierAddr(sScElementInfo * elInfo, sc_addr modifierAddr, bool isStruct, sc_json & children);
+  void ParseChildrenScnJsonByModifier(
+      ScStructureElementInfo * elInfo,
+      sc_addr modifierAddr,
+      bool isStruct,
+      sc_json & children);
 
-  void updateChildArcs(
-      sScElementInfo::tScElementInfoList const & arcs,
+  void UpdateChildArcs(
+      ScStructureElementInfo::ScStructureElementInfoList const & arcs,
       bool isStruct,
       sc_json & fullChild,
       String const & direction);
 
   //! Get json of arc
-  void getChild(sScElementInfo * arcInfo, String const & direction, bool isStruct, sc_json & child);
+  void ParseScnJsonChild(ScStructureElementInfo * arcInfo, String const & direction, bool isStruct, sc_json & child);
 
   //! Resolve additional filter elements for specified cmd_addr
-  void resolveFilterList(sc_addr);
+  void ResolveFilterList(sc_addr);
 
   //! Get default ordered list of modifiers
-  void initOrderList();
+  void InitOrderList();
 
   //! Get next element from ordered set
-  sc_addr getNextElementArc(sc_addr elementArc);
+  sc_addr GetNextElementArc(sc_addr elementArc);
 
   //! Get default filter list
-  void initFilterList();
+  void InitFilterList();
 
 private:
   //! List of keywords
   tScAddrSet mKeywordsList;
   //! List of elements to filter
-  tScAddrSet mFiltersList;
+  tScAddrSet mFilterList;
   //! Ordered list of modifiers
   tScAddrList mOrderList;
   //! Collection of objects information
-  typedef std::map<sc_addr, sScElementInfo *> tScElemetsInfoMap;
-  tScElemetsInfoMap mScElementsInfo;
+  typedef std::map<sc_addr, ScStructureElementInfo *> tScElemetsInfoMap;
+  tScElemetsInfoMap mStructureElementsInfo;
   //! Store structure elements if keyword is struct to remove them from keyword childrens
-  sScElementInfo::tScElementInfoList structureElements;
+  ScStructureElementInfo::ScStructureElementInfoList structureElements;
   //! Max level of full discripted node
   const int maxLevel = 2;
 };
