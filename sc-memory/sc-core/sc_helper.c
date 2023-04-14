@@ -65,7 +65,7 @@ sc_result resolve_nrel_system_identifier(sc_memory_context const * ctx)
           {
             sc_iterator5_free(it);
             sc_stream_free(stream);
-            sc_error("There are more then one sc-elements with system identifier nrel_system_identifier");
+            sc_critical("There are more then one sc-elements with system identifier nrel_system_identifier");
 
             return SC_RESULT_ERROR;
           }
@@ -96,7 +96,7 @@ void _init_keynodes_str()
   for (i = 0; i < (sc_uint32)SC_KEYNODE_COUNT; ++i)
   {
     if (keynodes_str[(sc_keynode)i] == null_ptr)
-      sc_error("Error to create string representation of keynode: %d", i);
+      sc_critical("Error to create string representation of keynode: %d", i);
   }
 }
 

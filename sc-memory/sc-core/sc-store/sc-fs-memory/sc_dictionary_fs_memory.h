@@ -23,7 +23,8 @@ typedef struct _sc_dictionary_fs_memory
   sc_char * path;                        // path to all dictionary files
   sc_uint64 max_searchable_string_size;  // maximal size of strings that can be found by string/substring
 
-  sc_char * strings_path;        // path to dictionary file with strings and its offsets
+  sc_char * strings_path;  // path to dictionary file with strings and its offsets
+  void * strings_channel;
   sc_uint64 last_string_offset;  // last offset of string in 'string_path`
 
   sc_char * terms_string_offsets_path;              // path to dictionary file with terms and its strings offsets
@@ -51,6 +52,7 @@ typedef struct _sc_link_hash_content
 sc_dictionary_fs_memory_status sc_dictionary_fs_memory_initialize_ext(
     sc_dictionary_fs_memory ** memory,
     sc_char const * path,
+    sc_bool clear,
     sc_uint32 max_searchable_string_size);
 
 /*! Initialize sc-dictionary file system memory in specified path.
@@ -203,11 +205,5 @@ sc_dictionary_fs_memory_status sc_dictionary_fs_memory_load(sc_dictionary_fs_mem
  * @returns SC_FS_MEMORY_OK, if are no reading and writing errors.
  */
 sc_dictionary_fs_memory_status sc_dictionary_fs_memory_save(sc_dictionary_fs_memory const * memory);
-
-/*! Clear file system memory
- * @param memory A pointer to sc-memory instance
- * @returns SC_FS_MEMORY_OK, if are no reading and writing errors.
- */
-sc_dictionary_fs_memory_status sc_dictionary_fs_memory_clear(sc_dictionary_fs_memory const * memory);
 
 #endif  //_sc_dictionary_fs_memory_h_

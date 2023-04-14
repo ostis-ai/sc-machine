@@ -79,6 +79,8 @@ endif()
 if(${SC_FILE_MEMORY} STREQUAL "Dictionary")
     message("Build with sc-dictionary fs-memory")
     add_definitions(-DSC_DICTIONARY_FS_MEMORY)
+else()
+    message(FATAL_ERROR "File memory type is not set up, CMake will exit.")
 endif()
 
 # for multi-config builds (e.g. msvc)

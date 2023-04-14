@@ -25,7 +25,7 @@ typedef GIOChannel sc_io_channel;
 
 #define sc_io_new_read_channel(file_path, errors) sc_io_new_channel(file_path, "r", errors)
 
-#define sc_io_new_write_channel(file_path, errors) sc_io_new_channel(file_path, "w", errors)
+#define sc_io_new_write_channel(file_path, errors) sc_io_new_channel(file_path, "w+", errors)
 
 #define sc_io_channel_set_encoding(channel, encoding, errors) g_io_channel_set_encoding(channel, encoding, errors)
 

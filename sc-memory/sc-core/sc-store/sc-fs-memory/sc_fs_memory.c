@@ -26,9 +26,10 @@ sc_bool sc_fs_memory_initialize(const sc_char * path, sc_uint32 const max_search
   manager = sc_fs_memory_build();
 
   static sc_char const * segments_postfix = "segments" SC_FS_EXT;
-  sc_fs_initialize_file_path(path, segments_postfix, &manager->segments_path);
+  sc_fs_concat_path(path, segments_postfix, &manager->segments_path);
 
-  if (manager->initialize(&manager->fs_memory, path, max_searchable_string_size) != SC_FS_MEMORY_OK)
+  sc_fs_memory_info("Clear sc-fs-memory");
+  if (manager->initialize(&manager->fs_memory, path, clear, max_searchable_string_size) != SC_FS_MEMORY_OK)
     return SC_FALSE;
 
   // clear repository if it needs
@@ -37,10 +38,6 @@ sc_bool sc_fs_memory_initialize(const sc_char * path, sc_uint32 const max_search
     sc_fs_memory_info("Clear sc-memory segments");
     if (sc_fs_remove_file(manager->segments_path) == SC_FALSE)
       sc_fs_memory_info("Can't remove segments file: %s", manager->segments_path);
-
-    sc_fs_memory_info("Clear sc-fs-memory");
-    if (manager->clear(manager->fs_memory) != SC_FS_MEMORY_OK)
-      sc_fs_memory_info("Can't clear sc-fs-memory");
   }
 
   return SC_TRUE;
@@ -48,13 +45,12 @@ sc_bool sc_fs_memory_initialize(const sc_char * path, sc_uint32 const max_search
 
 sc_bool sc_fs_memory_shutdown()
 {
-  if (manager->shutdown(manager->fs_memory) != SC_FS_MEMORY_OK)
-    return SC_FALSE;
+  sc_bool const result = manager->shutdown(manager->fs_memory) == SC_FS_MEMORY_OK;
 
   sc_mem_free(manager->segments_path);
   sc_mem_free(manager);
 
-  return SC_TRUE;
+  return result;
 }
 
 sc_bool sc_fs_memory_link_string(sc_addr_hash const link_hash, sc_char const * string, sc_uint32 const string_size)
@@ -148,7 +144,7 @@ sc_bool _sc_fs_memory_load_sc_memory_segments(sc_segment ** segments, sc_uint32 
     sc_io_channel_shutdown(segments_channel, SC_FALSE, null_ptr);
   }
 
-  sc_fs_memory_info("Sc-memory segments loaded: %u", *segments_num);
+  sc_message("\tSc-memory segments: %u", *segments_num);
   return SC_TRUE;
 }
 
@@ -162,11 +158,6 @@ sc_bool sc_fs_memory_load(sc_segment ** segments, sc_uint32 * segments_num)
 sc_bool _sc_fs_memory_save_sc_memory_segments(sc_segment ** segments, sc_uint32 segments_num)
 {
   sc_fs_memory_info("Save sc-memory segments");
-
-  if (!sc_fs_is_directory(manager->fs_memory->path))
-  {
-    sc_fs_create_directory(manager->fs_memory->path);
-  }
 
   // create temporary file
   sc_char * tmp_filename;

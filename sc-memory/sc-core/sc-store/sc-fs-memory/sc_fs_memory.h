@@ -23,9 +23,9 @@ typedef struct _sc_fs_memory_manager
   sc_fs_memory * fs_memory;  // file system memory instance
   sc_char * segments_path;   // file path to sc-memory segments
 
-  sc_fs_memory_status (*initialize)(sc_fs_memory ** memory, const sc_char * path, sc_uint32 max_searchable_string_size);
+  sc_fs_memory_status (
+      *initialize)(sc_fs_memory ** memory, const sc_char * path, sc_bool clear, sc_uint32 max_searchable_string_size);
   sc_fs_memory_status (*shutdown)(sc_fs_memory * memory);
-  sc_fs_memory_status (*clear)(sc_fs_memory const * memory);
   sc_fs_memory_status (*load)(sc_fs_memory * memory);
   sc_fs_memory_status (*save)(sc_fs_memory const * memory);
   sc_fs_memory_status (*link_string)(

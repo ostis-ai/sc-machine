@@ -20,7 +20,6 @@ sc_fs_memory_manager * sc_fs_memory_build()
   manager->shutdown = sc_dictionary_fs_memory_shutdown;
   manager->load = sc_dictionary_fs_memory_load;
   manager->save = sc_dictionary_fs_memory_save;
-  manager->clear = sc_dictionary_fs_memory_clear;
   manager->link_string = sc_dictionary_fs_memory_link_string;
   manager->get_link_hashes_by_string = sc_dictionary_fs_memory_get_link_hashes_by_string;
   manager->get_link_hashes_by_substring = sc_dictionary_fs_memory_get_link_hashes_by_substring_ext;

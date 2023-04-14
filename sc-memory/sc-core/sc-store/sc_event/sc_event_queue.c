@@ -58,8 +58,8 @@ sc_event_queue * sc_event_queue_new_ext(sc_int32 max_events_and_agents_threads)
 
   max_events_and_agents_threads = sc_max(1, sc_min(max_events_and_agents_threads, (sc_int32)g_get_num_processors()));
   {
-    sc_message("Sc-events configuration:");
-    sc_message("\tprocessors: %d", max_events_and_agents_threads);
+    sc_message("[sc-events] Configuration:");
+    sc_message("\tMax events and agents threads: %d", max_events_and_agents_threads);
   }
 
   queue->thread_pool =

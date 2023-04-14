@@ -12,8 +12,6 @@
 #include "sc-memory/utils/sc_base64.hpp"
 #include "sc-core/sc-store/sc-container/sc-string/sc_string.h"
 
-#include <boost/filesystem/path.hpp>
-
 #include <regex>
 #include <utility>
 #include <filesystem>

@@ -45,9 +45,9 @@ sc_memory_context * sc_memory_initialize(const sc_memory_params * params)
   sc_message("\tLog level: %s", params->log_level);
 
   sc_memory_info("Configuration:");
-  sc_message("\tmax loaded segments: %d", params->max_loaded_segments);
-  sc_message("\tmax threads: %d", params->max_threads);
-  sc_message("\tsc-element size: %zd", sizeof(sc_element));
+  sc_message("\tMax loaded segments: %d", params->max_loaded_segments);
+  sc_message("\tMax threads: %d", params->max_threads);
+  sc_message("\tSc-element size: %zd", sizeof(sc_element));
 
   sc_memory_info("Build configuration:");
   sc_message("\tResult structure upload: %s", params->init_memory_generated_upload ? "On" : "Off");
