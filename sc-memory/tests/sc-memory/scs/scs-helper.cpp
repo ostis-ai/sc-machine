@@ -368,34 +368,147 @@ TEST_F(SCsHelperTest, GenerateStructureAppendToStructure)
   );
 }
 
-TEST_F(SCsHelperTest, GenerateAppendIdtfsToStructure)
+TEST_F(SCsHelperTest, FindTriplesSmoke)
 {
   SCsHelper helper(*m_ctx, std::make_shared<DummyFileInterface>());
 
-  ScAddr const outputStructure = m_ctx->CreateNode(ScType::NodeConstStruct);
-  EXPECT_TRUE(outputStructure.IsValid());
+  ScAddr const & outputStructureWithRuMainIdtf = m_ctx->CreateNode(ScType::NodeConstStruct);
+  EXPECT_TRUE(outputStructureWithRuMainIdtf.IsValid());
+  EXPECT_TRUE(helper.GenerateBySCsText(
+      "test_node => nrel_main_idtf: [] (* <- lang_ru;; *);;",
+      outputStructureWithRuMainIdtf
+  ));
+
+  ScAddr const & outputStructureWithEnMainIdtf = m_ctx->CreateNode(ScType::NodeConstStruct);
+  EXPECT_TRUE(outputStructureWithEnMainIdtf.IsValid());
+  EXPECT_TRUE(helper.GenerateBySCsText(
+      "test_node => nrel_main_idtf: [] (* <- lang_en;; *);;",
+      outputStructureWithEnMainIdtf
+  ));
+
+  ScAddr const & outputStructureWithRuIdtf = m_ctx->CreateNode(ScType::NodeConstStruct);
+  EXPECT_TRUE(outputStructureWithRuIdtf.IsValid());
+  EXPECT_TRUE(helper.GenerateBySCsText(
+      "test_node => nrel_idtf: [] (* <- lang_ru;; *);;",
+      outputStructureWithRuIdtf
+  ));
+
+  ScAddr const & outputStructureWithEnIdtf = m_ctx->CreateNode(ScType::NodeConstStruct);
+  EXPECT_TRUE(outputStructureWithEnIdtf.IsValid());
+  EXPECT_TRUE(helper.GenerateBySCsText(
+      "test_node => nrel_idtf: [] (* <- lang_en;; *);;",
+      outputStructureWithEnIdtf
+  ));
 
   EXPECT_TRUE(helper.GenerateBySCsText(
-      "class_1 -> class_1_instance_1;;",
-      outputStructure
+      "lang_ru -> [];;"
+      "lang_en -> [];;"
+      "test_node => identification: [] (* <- lang_ru;; *);;"
+      "test_node => identification: [] (* <- lang_en;; *);;"
   ));
 
   ScTemplate templ;
   EXPECT_TRUE(m_ctx->HelperBuildTemplate(
       templ,
-      "class_1 _-> _class_1_instance_1;;"
-      "class_1 _=> nrel_system_identifier:: _[];;"
-      "_class_1_instance_1 _=> nrel_system_identifier:: _[];;"
+      "test_node _=> nrel_main_idtf:: _[] (* _<- lang_ru;; *);;"
   ));
 
   ScTemplateSearchResult result;
   EXPECT_TRUE(m_ctx->HelperSearchTemplate(templ, result));
   EXPECT_EQ(result.Size(), 1u);
 
-  result.ForEach([this, &outputStructure](ScTemplateSearchResultItem const & item) {
+  result.ForEach([this, &outputStructureWithRuMainIdtf](ScTemplateSearchResultItem const & item) {
     for (size_t i = 0; i < item.Size(); ++i)
     {
-      EXPECT_TRUE(m_ctx->HelperCheckEdge(outputStructure, item[i], ScType::EdgeAccessConstPosPerm));
+      EXPECT_TRUE(m_ctx->HelperCheckEdge(outputStructureWithRuMainIdtf, item[i], ScType::EdgeAccessConstPosPerm));
+    }
+  });
+
+  result.Clear();
+  EXPECT_TRUE(m_ctx->HelperSearchTemplateInStruct(templ, outputStructureWithRuMainIdtf, result));
+  EXPECT_EQ(result.Size(), 1u);
+  result.ForEach([this, &outputStructureWithRuMainIdtf](ScTemplateSearchResultItem const & item) {
+    for (size_t i = 0; i < item.Size(); ++i)
+    {
+      EXPECT_TRUE(m_ctx->HelperCheckEdge(outputStructureWithRuMainIdtf, item[i], ScType::EdgeAccessConstPosPerm));
+    }
+  });
+
+  templ.Clear();
+  EXPECT_TRUE(m_ctx->HelperBuildTemplate(
+      templ,
+      "test_node _=> nrel_main_idtf:: _[] (* _<- lang_en;; *);;"
+  ));
+
+  result.Clear();
+  EXPECT_TRUE(m_ctx->HelperSearchTemplate(templ, result));
+  EXPECT_EQ(result.Size(), 1u);
+  result.ForEach([this, &outputStructureWithEnMainIdtf](ScTemplateSearchResultItem const & item) {
+    for (size_t i = 0; i < item.Size(); ++i)
+    {
+      EXPECT_TRUE(m_ctx->HelperCheckEdge(outputStructureWithEnMainIdtf, item[i], ScType::EdgeAccessConstPosPerm));
+    }
+  });
+
+  result.Clear();
+  EXPECT_TRUE(m_ctx->HelperSearchTemplateInStruct(templ, outputStructureWithEnMainIdtf, result));
+  EXPECT_EQ(result.Size(), 1u);
+  result.ForEach([this, &outputStructureWithEnMainIdtf](ScTemplateSearchResultItem const & item) {
+    for (size_t i = 0; i < item.Size(); ++i)
+    {
+      EXPECT_TRUE(m_ctx->HelperCheckEdge(outputStructureWithEnMainIdtf, item[i], ScType::EdgeAccessConstPosPerm));
+    }
+  });
+
+  templ.Clear();
+  EXPECT_TRUE(m_ctx->HelperBuildTemplate(
+      templ,
+      "test_node _=> nrel_idtf:: _[] (* _<- lang_ru;; *);;"
+  ));
+
+  result.Clear();
+  EXPECT_TRUE(m_ctx->HelperSearchTemplate(templ, result));
+  EXPECT_EQ(result.Size(), 1u);
+  result.ForEach([this, &outputStructureWithRuIdtf](ScTemplateSearchResultItem const & item) {
+    for (size_t i = 0; i < item.Size(); ++i)
+    {
+      EXPECT_TRUE(m_ctx->HelperCheckEdge(outputStructureWithRuIdtf, item[i], ScType::EdgeAccessConstPosPerm));
+    }
+  });
+
+  result.Clear();
+  EXPECT_TRUE(m_ctx->HelperSearchTemplateInStruct(templ, outputStructureWithRuIdtf, result));
+  EXPECT_EQ(result.Size(), 1u);
+  result.ForEach([this, &outputStructureWithRuIdtf](ScTemplateSearchResultItem const & item) {
+    for (size_t i = 0; i < item.Size(); ++i)
+    {
+      EXPECT_TRUE(m_ctx->HelperCheckEdge(outputStructureWithRuIdtf, item[i], ScType::EdgeAccessConstPosPerm));
+    }
+  });
+
+  templ.Clear();
+  EXPECT_TRUE(m_ctx->HelperBuildTemplate(
+      templ,
+      "test_node _=> nrel_idtf:: _[] (* _<- lang_en;; *);;"
+  ));
+
+  result.Clear();
+  EXPECT_TRUE(m_ctx->HelperSearchTemplate(templ, result));
+  EXPECT_EQ(result.Size(), 1u);
+  result.ForEach([this, &outputStructureWithEnIdtf](ScTemplateSearchResultItem const & item) {
+    for (size_t i = 0; i < item.Size(); ++i)
+    {
+      EXPECT_TRUE(m_ctx->HelperCheckEdge(outputStructureWithEnIdtf, item[i], ScType::EdgeAccessConstPosPerm));
+    }
+  });
+
+  result.Clear();
+  EXPECT_TRUE(m_ctx->HelperSearchTemplateInStruct(templ, outputStructureWithEnIdtf, result));
+  EXPECT_EQ(result.Size(), 1u);
+  result.ForEach([this, &outputStructureWithEnIdtf](ScTemplateSearchResultItem const & item) {
+    for (size_t i = 0; i < item.Size(); ++i)
+    {
+      EXPECT_TRUE(m_ctx->HelperCheckEdge(outputStructureWithEnIdtf, item[i], ScType::EdgeAccessConstPosPerm));
     }
   });
 }

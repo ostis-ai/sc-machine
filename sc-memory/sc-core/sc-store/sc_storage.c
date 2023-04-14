@@ -216,6 +216,36 @@ sc_bool sc_storage_is_element(const sc_memory_context * ctx, sc_addr addr)
   return res;
 }
 
+sc_uint32 sc_storage_get_element_output_arcs_count(const sc_memory_context * ctx, sc_addr addr)
+{
+  sc_element * el = null_ptr;
+  sc_uint32 count = 0;
+
+  if (sc_storage_element_lock(addr, &el) != SC_RESULT_OK)
+    return count;
+
+  count = sc_atomic_int_get(&el->output_arcs_count);
+
+  sc_storage_element_unlock(addr);
+
+  return count;
+}
+
+sc_uint32 sc_storage_get_element_input_arcs_count(const sc_memory_context * ctx, sc_addr addr)
+{
+  sc_element * el = null_ptr;
+  sc_uint32 count = 0;
+
+  if (sc_storage_element_lock(addr, &el) != SC_RESULT_OK)
+    return count;
+
+  count = sc_atomic_int_get(&el->input_arcs_count);
+
+  sc_storage_element_unlock(addr);
+
+  return count;
+}
+
 sc_element * sc_storage_append_el_into_segments(const sc_memory_context * ctx, sc_addr * addr)
 {
   sc_segment * seg = (sc_segment *)0x1;
@@ -237,6 +267,8 @@ sc_element * sc_storage_append_el_into_segments(const sc_memory_context * ctx, s
     {
       addr->seg = seg->num;
       el->flags.access_levels = sc_access_lvl_min(ctx->access_levels, el->flags.access_levels);
+      el->input_arcs_count = 0;
+      el->output_arcs_count = 0;
 
       sc_element_meta * meta = sc_segment_get_meta(seg, addr->offset);
       sc_assert(meta != null_ptr);
@@ -506,6 +538,7 @@ sc_result sc_storage_element_free(sc_memory_context * ctx, sc_addr addr)
       if (SC_ADDR_IS_EQUAL(addr, b_el->first_out_arc))
         b_el->first_out_arc = next_arc;
 
+      sc_atomic_int_add(&b_el->output_arcs_count, -1);
       sc_event_emit(ctx, el->arc.begin, b_el->flags.access_levels, SC_EVENT_REMOVE_OUTPUT_ARC, addr, el->arc.end);
 
       if (need_unlock)
@@ -541,6 +574,7 @@ sc_result sc_storage_element_free(sc_memory_context * ctx, sc_addr addr)
       if (SC_ADDR_IS_EQUAL(addr, e_el->first_in_arc))
         e_el->first_in_arc = next_arc;
 
+      sc_atomic_int_add(&e_el->input_arcs_count, -1);
       sc_event_emit(ctx, el->arc.end, e_el->flags.access_levels, SC_EVENT_REMOVE_INPUT_ARC, addr, el->arc.begin);
 
       if (need_unlock)
@@ -704,6 +738,8 @@ sc_addr sc_storage_arc_new_ext(
 
     // get new element
     tmp_el = sc_storage_append_el_into_segments(ctx, &addr);
+    sc_atomic_int_inc(&beg_el->output_arcs_count);
+    sc_atomic_int_inc(&end_el->input_arcs_count);
 
     tmp_el->flags.type = sc_flags_remove((type & sc_type_arc_mask) ? type : (sc_type_arc_common | type));
     tmp_el->arc.begin = beg;

@@ -12,7 +12,7 @@
 using ScTemplateRegressionTest = ScTemplateTest;
 
 // https://github.com/ostis-dev/sc-machine/issues/224
-TEST_F(ScTemplateRegressionTest, issue_224)
+TEST_F(ScTemplateRegressionTest, Issue224)
 {
   // create template in memory
   {
@@ -289,7 +289,7 @@ TEST_F(ScTemplateRegressionTest, issue_224)
 }
 
 // https://github.com/ostis-dev/sc-machine/issues/251
-TEST_F(ScTemplateRegressionTest, issue_251)
+TEST_F(ScTemplateRegressionTest, Issue251)
 {
   /**
    * k => rel: [] (* <- t;; *);;
@@ -336,7 +336,7 @@ TEST_F(ScTemplateRegressionTest, issue_251)
 }
 
 // https://github.com/ostis-dev/sc-machine/issues/295
-TEST_F(ScTemplateRegressionTest, issue_295)
+TEST_F(ScTemplateRegressionTest, Issue295)
 {
   /**
    * device_switch_multilevel _-> _x;;

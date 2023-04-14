@@ -255,6 +255,16 @@ sc_bool sc_memory_is_element(sc_memory_context const * ctx, sc_addr addr)
   return sc_storage_is_element(ctx, addr);
 }
 
+sc_uint32 sc_memory_get_element_output_arcs_count(sc_memory_context const * ctx, sc_addr addr)
+{
+  return sc_storage_get_element_output_arcs_count(ctx, addr);
+}
+
+sc_uint32 sc_memory_get_element_input_arcs_count(sc_memory_context const * ctx, sc_addr addr)
+{
+  return sc_storage_get_element_input_arcs_count(ctx, addr);
+}
+
 sc_result sc_memory_element_free(sc_memory_context * ctx, sc_addr addr)
 {
   return sc_storage_element_free(ctx, addr);

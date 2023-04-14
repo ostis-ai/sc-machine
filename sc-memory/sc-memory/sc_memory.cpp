@@ -254,6 +254,18 @@ bool ScMemoryContext::IsElement(ScAddr const & addr) const
   return (sc_memory_is_element(m_context, *addr) == SC_TRUE);
 }
 
+size_t ScMemoryContext::GetElementOutputArcsCount(ScAddr const & addr) const
+{
+  SC_ASSERT(IsValid(), ());
+  return sc_memory_get_element_output_arcs_count(m_context, *addr);
+}
+
+size_t ScMemoryContext::GetElementInputArcsCount(ScAddr const & addr) const
+{
+  SC_ASSERT(IsValid(), ());
+  return sc_memory_get_element_input_arcs_count(m_context, *addr);
+}
+
 bool ScMemoryContext::EraseElement(ScAddr const & addr)
 {
   SC_ASSERT(IsValid(), ());
@@ -583,6 +595,40 @@ ScTemplate::Result ScMemoryContext::HelperGenTemplate(
 ScTemplate::Result ScMemoryContext::HelperSearchTemplate(ScTemplate const & templ, ScTemplateSearchResult & result)
 {
   return templ.Search(*this, result);
+}
+
+void ScMemoryContext::HelperSearchTemplate(
+    ScTemplate const & templ,
+    ScTemplateSearchResultCallback const & callback,
+    ScTemplateSearchResultFilterCallback const & filterCallback,
+    ScTemplateSearchResultCheckCallback const & checkCallback)
+{
+  templ.Search(*this, callback, filterCallback, checkCallback);
+}
+
+void ScMemoryContext::HelperSearchTemplate(
+    ScTemplate const & templ,
+    ScTemplateSearchResultCallback const & callback,
+    ScTemplateSearchResultCheckCallback const & checkCallback)
+{
+  templ.Search(*this, callback, {}, checkCallback);
+}
+
+void ScMemoryContext::HelperSmartSearchTemplate(
+    ScTemplate const & templ,
+    ScTemplateSearchResultCallbackWithRequest const & callback,
+    ScTemplateSearchResultFilterCallback const & filterCallback,
+    ScTemplateSearchResultCheckCallback const & checkCallback)
+{
+  templ.Search(*this, callback, filterCallback, checkCallback);
+}
+
+void ScMemoryContext::HelperSmartSearchTemplate(
+    ScTemplate const & templ,
+    ScTemplateSearchResultCallbackWithRequest const & callback,
+    ScTemplateSearchResultCheckCallback const & checkCallback)
+{
+  templ.Search(*this, callback, {}, checkCallback);
 }
 
 ScTemplate::Result ScMemoryContext::HelperSearchTemplateInStruct(

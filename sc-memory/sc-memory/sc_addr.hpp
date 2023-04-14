@@ -32,7 +32,7 @@ public:
   static ScAddr const Empty;
 
   ScAddr();
-  explicit ScAddr(sc_addr const & addr);
+  ScAddr(sc_addr const & addr);
   explicit ScAddr(HashType const & hash);
 
   bool IsValid() const;

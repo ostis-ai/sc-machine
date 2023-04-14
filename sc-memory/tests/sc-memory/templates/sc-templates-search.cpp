@@ -4,12 +4,11 @@
 #include "sc-memory/sc_memory.hpp"
 #include "sc-memory/sc_struct.hpp"
 
-#include "sc_test.hpp"
 #include "template_test_utils.hpp"
 
 using ScTemplateSearchTest = ScTemplateTest;
 
-TEST_F(ScTemplateSearchTest, search_1)
+TEST_F(ScTemplateSearchTest, SimpleSearch1)
 {
   /**			_y
    *			^
@@ -92,7 +91,7 @@ TEST_F(ScTemplateSearchTest, search_1)
   }
 }
 
-TEST_F(ScTemplateSearchTest, search_2)
+TEST_F(ScTemplateSearchTest, SimpleSearch2)
 {
   /** SCs:
    * addr => nrel_main_idtf: [] (* <- lang;; *);;
@@ -115,7 +114,7 @@ TEST_F(ScTemplateSearchTest, search_2)
 
   // now check search
   ScTemplate templ;
-  templ.TripleWithRelation(
+  templ.Fiver(
     addr >> "_addr",
     ScType::EdgeDCommonVar >> "_edgeCommon",
     ScType::Link >> "_link",
@@ -143,7 +142,7 @@ TEST_F(ScTemplateSearchTest, search_2)
   }
 }
 
-TEST_F(ScTemplateSearchTest, unknown_type)
+TEST_F(ScTemplateSearchTest, UnknownType)
 {
   // addr1 -> addr2;;
   ScAddr const addr1 = m_ctx->CreateNode(ScType::NodeConst);
@@ -167,7 +166,7 @@ TEST_F(ScTemplateSearchTest, unknown_type)
   EXPECT_EQ(res[0]["addr2"], addr2);
 }
 
-TEST_F(ScTemplateSearchTest, links_with_relation)
+TEST_F(ScTemplateSearchTest, LinkWithRelation)
 {
   /**
    * deviceAddr _<= nrel_installed_apps: _tuple;;
@@ -301,13 +300,88 @@ TEST_F(ScTemplateSearchTest, links_with_relation)
   }
 }
 
-TEST_F(ScTemplateSearchTest, result_deduplication)
+TEST_F(ScTemplateSearchTest, NodesWithTwoClasses)
+{
+  /**
+   * class1 _-> _element;;
+   * class2 _-> _element;;
+   */
+
+  ScAddr const classAddr1 = m_ctx->CreateNode(ScType::NodeConstClass);
+  EXPECT_TRUE(classAddr1.IsValid());
+
+  ScAddr const classAddr2 = m_ctx->CreateNode(ScType::NodeConstClass);
+  EXPECT_TRUE(classAddr2.IsValid());
+
+  struct TestData
+  {
+    ScAddr m_addr;
+    ScAddr m_classEdge1;
+    ScAddr m_classEdge2;
+  };
+
+  std::vector<TestData> data(50);
+  for (auto & d : data)
+  {
+    d.m_addr = m_ctx->CreateNode(ScType::NodeConstAbstract);
+    EXPECT_TRUE(d.m_addr.IsValid());
+
+    d.m_classEdge1 = m_ctx->CreateEdge(ScType::EdgeAccessConstPosPerm, classAddr1, d.m_addr);
+    EXPECT_TRUE(d.m_classEdge1.IsValid());
+
+    d.m_classEdge2 = m_ctx->CreateEdge(ScType::EdgeAccessConstPosPerm, classAddr2, d.m_addr);
+    EXPECT_TRUE(d.m_classEdge2.IsValid());
+  }
+
+  ScTemplate templ;
+  templ.Triple(
+      classAddr1,
+      ScType::EdgeAccessVarPosPerm >> "_class_edge1",
+      ScType::NodeVar >> "_node");
+  templ.Triple(
+      classAddr2,
+      ScType::EdgeAccessVarPosPerm >> "_class_edge2",
+      "_node");
+
+  ScTemplateSearchResult searchRes;
+  EXPECT_TRUE(m_ctx->HelperSearchTemplate(templ, searchRes));
+
+  EXPECT_EQ(searchRes.Size(), data.size());
+  std::vector<TestData> foundData(data.size());
+  for (size_t i = 0; i < searchRes.Size(); ++i)
+  {
+    auto & d = foundData[i];
+
+    d.m_addr = searchRes[i]["_node"];
+    d.m_classEdge1 = searchRes[i]["_class_edge1"];
+    d.m_classEdge2 = searchRes[i]["_class_edge2"];
+  }
+
+  auto compare = [](TestData const & a, TestData const & b)
+  {
+    return (a.m_addr.Hash() < b.m_addr.Hash());
+  };
+  std::sort(data.begin(), data.end(), compare);
+  std::sort(foundData.begin(), foundData.end(), compare);
+
+  for (size_t i = 0; i < searchRes.Size(); ++i)
+  {
+    auto const & d1 = foundData[i];
+    auto const & d2 = data[i];
+
+    EXPECT_EQ(d1.m_addr, d2.m_addr);
+    EXPECT_EQ(d1.m_classEdge1, d2.m_classEdge1);
+    EXPECT_EQ(d1.m_classEdge2, d2.m_classEdge2);
+  }
+}
+
+TEST_F(ScTemplateSearchTest, ResultDeduplication)
 {
   /**
    *   a -> b (* <- sc_node_material;; *);;
    *   a -> c;;
    *
-   *  We should get just one seach result, edge `a -> c` shouldn't appears twicely
+   *  We should get just one search result, edge `a -> c` shouldn't appears twicely
    */
   ScAddr const a = m_ctx->CreateNode(ScType::Node);
   EXPECT_TRUE(a.IsValid());
@@ -334,4 +408,121 @@ TEST_F(ScTemplateSearchTest, result_deduplication)
   EXPECT_EQ(searchResult[0]["a"], genResult["a"]);
   EXPECT_EQ(searchResult[0]["b"], genResult["b"]);
   EXPECT_EQ(searchResult[0]["c"], genResult["c"]);
+}
+
+TEST_F(ScTemplateSearchTest, EqualConstructions)
+{
+  ScAddr const & begin = m_ctx->HelperResolveSystemIdtf("begin", ScType::NodeConstClass);
+  ScAddr const & history = m_ctx->HelperResolveSystemIdtf("history", ScType::NodeConstClass);
+  ScAddr const & nrel_changes_history = m_ctx->HelperResolveSystemIdtf("nrel_changes_history", ScType::NodeConstNoRole);
+  ScAddr const & nrel_model_version = m_ctx->HelperResolveSystemIdtf("nrel_model_version", ScType::NodeConstNoRole);
+
+  ScTemplate initVersionSearchTemplate;
+  initVersionSearchTemplate.Triple(
+      begin,
+      ScType::EdgeAccessVarPosPerm >> "_begin_date_parameter_access_arc",
+      ScType::NodeVarClass >> "_begin_date_parameter");
+  initVersionSearchTemplate.TripleWithRelation(
+      ScType::NodeVar >> "_unchanged_sd_version",
+      ScType::EdgeDCommonVar >> "_version_pair_arc",
+      ScType::NodeVar >> "_changed_sd_version",
+      ScType::EdgeAccessVarPosPerm >> "_begin_date_parameter_relation_access_arc",
+      "_begin_date_parameter");
+  initVersionSearchTemplate.Triple(
+      ScType::NodeVarStruct >> "_changes_history",
+      ScType::EdgeAccessVarPosPerm >> "_changes_history_access_arc",
+      "_version_pair_arc");
+  initVersionSearchTemplate.Triple(
+      history, ScType::EdgeAccessVarPosPerm >> "_history_access_arc", "_changes_history");
+  initVersionSearchTemplate.TripleWithRelation(
+      ScType::NodeVarStruct >> "_model_example",
+      ScType::EdgeDCommonVar >> "_changes_history_pair_arc",
+      "_changes_history",
+      ScType::EdgeAccessVarPosPerm >> "_nrel_changes_history_access_arc",
+      nrel_changes_history);
+  initVersionSearchTemplate.TripleWithRelation(
+      "_model_example",
+      ScType::EdgeDCommonVar >> "_nrel_model_version_pair_arc",
+      "_version_pair_arc",
+      ScType::EdgeAccessVarPosPerm >> "_nrel_model_version_access_arc",
+      nrel_model_version);
+  ScTemplateGenResult genResult;
+  EXPECT_TRUE(m_ctx->HelperGenTemplate(initVersionSearchTemplate, genResult));
+
+  ScTemplateSearchResult searchResult;
+  EXPECT_TRUE(m_ctx->HelperSearchTemplate(initVersionSearchTemplate, searchResult));
+  EXPECT_EQ(searchResult.Size(), 1u);
+}
+
+TEST_F(ScTemplateSearchTest, StructureElements)
+{
+  SCsHelper helper(*m_ctx, std::make_shared<DummyFileInterface>());
+
+  ScAddr const & structureAddr = m_ctx->CreateNode(ScType::NodeConstStruct);
+  EXPECT_TRUE(structureAddr.IsValid());
+  EXPECT_TRUE(helper.GenerateBySCsText(
+      "test_node => test_relation: [];;"
+      "test_node => test_relation: [];;"
+      "test_node => test_relation: [];;"
+      "test_node => test_relation: [];;"
+      "test_node => test_relation: [];;"
+      "test_node => test_relation: [];;"
+      "test_node => test_relation: [];;",
+      structureAddr
+  ));
+  size_t const size = m_ctx->GetElementOutputArcsCount(structureAddr);
+  for (size_t i = 0; i < size; ++i)
+  {
+    EXPECT_TRUE(helper.GenerateBySCsText(
+        "test_node => test_relation: [];;"
+        "test_node => test_relation: [];;"
+    ));
+  }
+
+  ScAddr const & sourceAddr = m_ctx->HelperResolveSystemIdtf("test_node");
+  ScAddr const & targetAddr = m_ctx->CreateLink(ScType::LinkConst);
+  ScAddr const & relationAddr = m_ctx->HelperResolveSystemIdtf("test_relation");
+
+  ScTemplate templ;
+  templ.TripleWithRelation(
+      sourceAddr >> "_source",
+      ScType::EdgeDCommonVar >> "_edge",
+      targetAddr >> "_target",
+      ScType::EdgeAccessVarPosPerm >> "_rel_edge",
+      relationAddr >> "_relation");
+  templ.Triple(
+      structureAddr,
+      ScType::EdgeAccessVarPosPerm,
+      "_rel_edge");
+  templ.Triple(
+      structureAddr,
+      ScType::EdgeAccessVarPosPerm,
+      "_edge");
+  ScTemplateGenResult genResult;
+  EXPECT_TRUE(m_ctx->HelperGenTemplate(templ, genResult));
+
+  templ.Clear();
+  templ.Triple(
+      relationAddr >> "_relation",
+      ScType::EdgeAccessVarPosPerm >> "_rel_edge",
+      ScType::EdgeDCommonVar >> "_edge");
+  templ.Triple(
+      structureAddr,
+      ScType::EdgeAccessVarPosPerm,
+      "_rel_edge");
+  templ.Triple(
+      sourceAddr >> "_source",
+      "_edge",
+      targetAddr >> "_target");
+  templ.Triple(
+      structureAddr,
+      ScType::EdgeAccessVarPosPerm,
+      "_edge");
+  ScTemplateSearchResult searchResult;
+  EXPECT_TRUE(m_ctx->HelperSearchTemplate(templ, searchResult));
+  EXPECT_EQ(searchResult.Size(), 1u);
+
+  EXPECT_EQ(searchResult[0]["_source"], sourceAddr);
+  EXPECT_EQ(searchResult[0]["_target"], targetAddr);
+  EXPECT_EQ(searchResult[0]["_relation"], relationAddr);
 }

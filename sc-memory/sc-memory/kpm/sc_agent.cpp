@@ -46,6 +46,7 @@ ScAgentAction::~ScAgentAction() = default;
 
 sc_result ScAgentAction::Run(ScAddr const & listenAddr, ScAddr const & edgeAddr, ScAddr const & otherAddr)
 {
+  SC_UNUSED(listenAddr);
   SC_UNUSED(otherAddr);
 
   ScAddr const cmdAddr = m_memoryCtx.GetEdgeTarget(edgeAddr);

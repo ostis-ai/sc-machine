@@ -104,9 +104,6 @@ protected:
 
   ScTemplate::Result operator()(ScTemplate * inTemplate)
   {
-    // mark template to don't force order of triples
-    inTemplate->m_isForceOrder = false;
-
     // TODO: add struct blocking
     ScAddrHashVector independentEdges;
     independentEdges.reserve(512);
@@ -161,12 +158,15 @@ protected:
     for (auto const i : edges)
     {
       ObjectInfo const & edge = m_elements.at(i);
-      SC_ASSERT(edge.GetType().IsVar(), ());
+      if (!edge.GetType().IsVar())
+      {
+        SC_THROW_EXCEPTION(utils::ExceptionInvalidType, "Edge type must be var type");
+      }
 
       ObjectInfo const src = ReplaceWithParam(&m_elements.at(edge.GetSourceHash()));
       ObjectInfo const trg = ReplaceWithParam(&m_elements.at(edge.GetTargetHash()));
 
-      auto const & param = [&inTemplate](ObjectInfo const & obj) -> ScTemplateItemValue {
+      auto const & param = [&inTemplate](ObjectInfo const & obj) -> ScTemplateItem {
         return obj.GetType().IsConst()
                    ? obj.GetAddr() >> obj.GetIdtf()
                    : (inTemplate->HasReplacement(obj.GetIdtf()) ? obj.GetIdtf() : obj.GetType() >> obj.GetIdtf());
@@ -229,7 +229,7 @@ private:
     {
       ScAddr replacedAddr;
       if (m_params.Get(templateItem->GetIdtf(), replacedAddr))
-        return CollectObjectInfo(replacedAddr);
+        return CollectObjectInfo(replacedAddr, templateItem->GetIdtf());
     }
     return *templateItem;
   }

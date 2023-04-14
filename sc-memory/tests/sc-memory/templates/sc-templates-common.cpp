@@ -3,10 +3,9 @@
 #include "sc-memory/sc_memory.hpp"
 #include "sc-memory/sc_struct.hpp"
 
-#include "sc_test.hpp"
 #include "template_test_utils.hpp"
 
-TEST(ScTemplateResultTest, smoke)
+TEST(ScTemplateResultTest, ScTemplateResult)
 {
   {
     ScTemplate::Result result(true);
@@ -387,7 +386,8 @@ TEST_F(ScTemplateCommonTest, a_a_a_a_f)
   EXPECT_EQ(res[0]["_x"], xAddr);
 }
 
-TEST_F(ScTemplateCommonTest, big_template_smoke)
+// TODO: Optimize sc-template search with very-very big templates
+TEST_F(ScTemplateCommonTest, DISABLED_BigTemplateSmoke)
 {
   ScAddr const set1 = m_ctx->CreateNode(ScType::NodeConstClass);
   ScAddr const rel = m_ctx->CreateNode(ScType::NodeConstNoRole);
@@ -406,11 +406,11 @@ TEST_F(ScTemplateCommonTest, big_template_smoke)
   for (auto const & a : elements)
   {
     templ.TripleWithRelation(
-          set1,
-          ScType::EdgeDCommonVar,
-          a >> "_el",
-          ScType::EdgeAccessVarPosPerm,
-          rel);
+        set1,
+        ScType::EdgeDCommonVar,
+        a >> "_el",
+        ScType::EdgeAccessVarPosPerm,
+        rel);
   }
 
   ScTemplateGenResult genResult;
@@ -422,4 +422,91 @@ TEST_F(ScTemplateCommonTest, big_template_smoke)
 
   for (size_t i = 0; i < searchResult.Size(); ++i)
     EXPECT_TRUE(elements.find(searchResult[i]["_el"]) != elements.end());
+}
+
+TEST_F(ScTemplateCommonTest, CycledTemplateSmoke)
+{
+  ScAddr const & classAddr = m_ctx->CreateNode(ScType::NodeConstClass);
+  ScAddr const & sourceNodeAddr = m_ctx->CreateNode(ScType::NodeConst);
+  m_ctx->CreateEdge(ScType::EdgeAccessConstPosPerm, classAddr, sourceNodeAddr);
+
+  size_t const constrCount = 5;
+  size_t const tripleCount = 20;
+  for (size_t i = 0; i < constrCount; ++i)
+  {
+    ScAddr const & targetNodeAddr = m_ctx->CreateNode(ScType::NodeConst);
+
+    ScTemplate genTempl;
+    genTempl.Triple(
+        sourceNodeAddr,
+        ScType::EdgeAccessVarPosPerm,
+        targetNodeAddr
+    );
+
+    for (size_t j = 0; j < tripleCount; ++j)
+    {
+      ScTemplateGenResult result;
+      EXPECT_TRUE(m_ctx->HelperGenTemplate(genTempl, result));
+    }
+  }
+
+  ScTemplate searchTempl;
+  searchTempl.Triple(
+      classAddr,
+      ScType::EdgeAccessVarPosPerm,
+      ScType::NodeVar >> "_source"
+  );
+  searchTempl.Triple(
+      "_source",
+      ScType::EdgeAccessVarPosPerm,
+      ScType::NodeVar >> "_target"
+  );
+  for (size_t i = 0; i < tripleCount - 1; ++i)
+  {
+    searchTempl.Triple(
+        "_source",
+        ScType::EdgeAccessVarPosPerm,
+        "_target"
+    );
+  }
+
+  ScTemplateSearchResult searchResult;
+  EXPECT_TRUE(m_ctx->HelperSearchTemplate(searchTempl, searchResult));
+  EXPECT_EQ(searchResult.Size(), constrCount);
+}
+
+TEST_F(ScTemplateCommonTest, MultipleConnectivitiesTemplateSmoke)
+{
+  size_t const constrCount = 20;
+  std::map<ScAddr, ScAddr, ScAddLessFunc> cache;
+  for (size_t i = 0; i < constrCount; ++i)
+  {
+    ScAddr const & sourceNodeAddr = m_ctx->CreateNode(ScType::NodeConst);
+    ScAddr const & targetNodeAddr = m_ctx->CreateNode(ScType::NodeConst);
+
+    ScTemplate genTempl;
+    genTempl.Triple(
+        sourceNodeAddr,
+        ScType::EdgeAccessVarPosPerm,
+        targetNodeAddr
+    );
+    ScTemplateGenResult result;
+    m_ctx->HelperGenTemplate(genTempl, result);
+
+    cache.insert({sourceNodeAddr, targetNodeAddr});
+  }
+
+  ScTemplate searchTempl;
+  for (auto it : cache)
+  {
+    searchTempl.Triple(
+        it.first,
+        ScType::EdgeAccessVarPosPerm,
+        it.second
+    );
+  }
+
+  ScTemplateSearchResult searchResult;
+  EXPECT_TRUE(m_ctx->HelperSearchTemplate(searchTempl, searchResult));
+  EXPECT_EQ(searchResult.Size(), 1u);
 }

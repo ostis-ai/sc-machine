@@ -1,71 +1,99 @@
-.._el_47459456
-  <- sc_node;;
-_triple
-  <- sc_node;;
-concept_future
-  <- sc_node_class;;
+class
+  <- sc_node_super_group;;
+
 concept_message
   <- sc_node_class;;
-rrel_x_object
-  <- sc_node_role_relation;;
-.._el_47445312
-  <- sc_node;;
-.._el_46500464
-  <- sc_node_tuple;;
-concept_d_message
-  <- sc_node_class;;
-_object
-  <- sc_node;;
-.._el_47587056
-  <- sc_node;;
-question
-  <- sc_node_class;;
-.._el_47444752
-  <- sc_node;;
-_planned_action
-  <- sc_node_class;;
-_subject
-  <- sc_node;;
-rrel_x_part
-  <- sc_node_role_relation;;
-nrel_inclusion
-  <- sc_node_norole_relation;;
-_msg
-  <- sc_node;;
-rrel_x_subject
-  <- sc_node_role_relation;;
-rrel_x_values
-  <- sc_node_role_relation;;
-rrel_x_values
-  <- sc_node_role_relation;;
-.._el_47458896
-  <- sc_node;;
-.._el_47535808
-  <- sc_node;;
+
 nrel_x_triples
   <- sc_node_norole_relation;;
+
+.._el_93913945952240
+  <- sc_node;;
+
+.._el_93913945989200
+  <- sc_node;;
+
+rrel_x_values
+  <- sc_node_role_relation;;
+
+rrel_x_values
+  <- sc_node_role_relation;;
+
+.._el_93913945987824
+  <- sc_node;;
+
+concept_future
+  <- sc_node_class;;
+
+_triple
+  <- sc_node;;
+
+nrel_inclusion
+  <- sc_node_norole_relation;;
+
+rrel_x_part
+  <- sc_node_role_relation;;
+
+_subject
+  <- sc_node;;
+
+rrel_x_subject
+  <- sc_node_role_relation;;
+
+_msg
+  <- sc_node;;
+
+rrel_x_object
+  <- sc_node_role_relation;;
+
+_object
+  <- sc_node;;
+
+concept_d_message
+  <- sc_node_class;;
+
+.._el_93913946025456
+  <- sc_node_tuple;;
+
+.._el_93913946006912
+  <- sc_node;;
+
+_planned_action
+  <- sc_node_class;;
+
+.._el_93913946007760
+  <- sc_node;;
+
+question
+  <- sc_node_class;;
+
+.._el_93913945934224
+  <- sc_node;;
+
 test_template_big = [*
-    @edge_42479184 = (.._el_47587056 _-> .._el_47458896);;
-    @edge_47598208 = (.._el_47535808 _-> _planned_action);;
-    @edge_47597184 = (concept_d_message _-> _msg);;
-    @edge_47602304 = (rrel_x_values _-> @edge_42479184);;
-    @edge_47605376 = (.._el_47458896 _-> _subject);;
-    @edge_47608448 = (.._el_46500464 _-> _triple);;
-    @edge_47607424 = (_triple _-> .._el_47587056);;
-    @edge_46377200 = (question _=> _planned_action);;
-    @edge_46403632 = (rrel_x_subject _-> @edge_47607424);;
-    @edge_47604352 = (.._el_47445312 _-> .._el_47459456);;
-    @edge_47609472 = (.._el_47444752 _-> .._el_47535808);;
-    @edge_47595136 = (_msg _=> .._el_46500464);;
-    @edge_46193728 = (_triple _-> .._el_47444752);;
-    @edge_47601280 = (concept_future _-> _msg);;
-    @edge_46434704 = (.._el_47459456 _-> _object);;
-    @edge_47596096 = (_triple _-> .._el_47445312);;
-    @edge_47593584 = (concept_message _-> _msg);;
-    @edge_46418096 = (rrel_x_values _-> @edge_47604352);;
-    @edge_47599232 = (nrel_inclusion _-> @edge_46377200);;
-    @edge_47606400 = (nrel_x_triples _-> @edge_47595136);;
-    @edge_47603328 = (rrel_x_part _-> @edge_46193728);;
-    @edge_46228768 = (rrel_x_values _-> @edge_47609472);;
-    @edge_47600256 = (rrel_x_object _-> @edge_47596096);;
+    @edge_93913944713616 = (class _-> concept_message);;
+    @edge_93913941915104 = (concept_message _-> _msg);;
+    @edge_93913946040064 = (_triple _-> .._el_93913946006912);;
+    @edge_93913946041984 = (.._el_93913945987824 _-> _object);;
+    @edge_93913946035104 = (concept_future _-> _msg);;
+    @edge_93913946046016 = (_triple _-> .._el_93913946007760);;
+    @edge_93913946041056 = (_msg _=> .._el_93913946025456);;
+    @edge_93913944073936 = (.._el_93913946007760 _-> .._el_93913945952240);;
+    @edge_93913946031600 = (.._el_93913946006912 _-> .._el_93913945987824);;
+    @edge_93913946036096 = (rrel_x_object _-> @edge_93913946040064);;
+    @edge_93913946044960 = (rrel_x_values _-> @edge_93913944073936);;
+    @edge_93913946033120 = (rrel_x_part _-> @edge_93913946046016);;
+    @edge_93913939908208 = (nrel_x_triples _-> @edge_93913946041056);;
+    @edge_93913946044032 = (question _=> _planned_action);;
+    @edge_93913939908656 = (_triple _-> .._el_93913945934224);;
+    @edge_93913944073696 = (.._el_93913946025456 _-> _triple);;
+    @edge_93913946038080 = (.._el_93913945952240 _-> _planned_action);;
+    @edge_93913946039072 = (concept_d_message _-> _msg);;
+    @edge_93913946043040 = (rrel_x_values _-> @edge_93913946031600);;
+    @edge_93913946037088 = (nrel_inclusion _-> @edge_93913946044032);;
+    @edge_93913939907168 = (.._el_93913945989200 _-> _subject);;
+    @edge_93913946047008 = (.._el_93913945934224 _-> .._el_93913945989200);;
+    @edge_93913944876048 = (rrel_x_subject _-> @edge_93913939908656);;
+    @edge_93913946034112 = (rrel_x_values _-> @edge_93913946047008);;
+
 *];;
