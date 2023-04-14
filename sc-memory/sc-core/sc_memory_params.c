@@ -6,14 +6,6 @@
 
 #include "sc_memory_params.h"
 
-#define DEFAULT_SAVE_PERIOD 32000
-#define DEFAULT_UPDATE_PERIOD 16000
-#define DEFAULT_MAX_THREADS 32
-#define DEFAULT_MAX_LOADED_SEGMENTS 1000
-#define DEFAULT_LOG_TYPE "Console"
-#define DEFAULT_LOG_FILE ""
-#define DEFAULT_LOG_LEVEL "Info"
-
 void sc_memory_params_clear(sc_memory_params * params)
 {
   params->version = (sc_char const *)null_ptr;
@@ -30,6 +22,7 @@ void sc_memory_params_clear(sc_memory_params * params)
 
   params->max_loaded_segments = DEFAULT_MAX_LOADED_SEGMENTS;
   params->max_threads = DEFAULT_MAX_THREADS;
+  params->max_events_and_agents_threads = DEFAULT_EVENTS_PROCESSORS;
 
   params->init_memory_generated_structure = (sc_char const *)null_ptr;
   params->init_memory_generated_upload = SC_FALSE;

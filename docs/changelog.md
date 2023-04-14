@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Configure events and agents threads
 - Provide loop-ranged API method for sc-template search ([78](https://github.com/ostis-ai/sc-machine/issues/78))
 - Sc-template cycle preventing search
 - Sc-template equal triples search
@@ -49,6 +50,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- Now in tests all agents works in single thread
 - Replace asserts in sc-template search and gen API by exceptions throwing
 - `ScsLoader::loadScsFile` return bool instead void
 - Delete elements endpoint uses erase elements agent

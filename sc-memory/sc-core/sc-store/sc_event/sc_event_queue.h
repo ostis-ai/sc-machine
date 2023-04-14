@@ -14,19 +14,13 @@ struct _sc_event_queue
 {
   GMutex mutex;
   sc_bool running;            // flag that determine if queue is running
-  GRecMutex proc_mutex;       // mutex to lock event for process
   GThreadPool * thread_pool;  // thread pool that used for a workers
 };
 
-struct _sc_event_queue_item
-{
-  sc_event * event;
-  sc_addr edge;
-  sc_addr other_el;
-};
-
 typedef struct _sc_event_queue sc_event_queue;
-typedef struct _sc_event_queue_item sc_event_queue_item;
+
+//! Create new sc-event queue with user processors number
+sc_event_queue * sc_event_queue_new_ext(sc_int32 max_events_and_agents_threads);
 
 //! Create new sc-event queue
 sc_event_queue * sc_event_queue_new();

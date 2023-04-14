@@ -45,6 +45,9 @@ struct _sc_event
   sc_access_levels access_levels;
 };
 
+//! Function to initialize sc-events module with user processors number
+sc_bool sc_events_initialize_ext(sc_int32 max_events_and_agents_threads);
+
 //! Function to initialize sc-events module
 sc_bool sc_events_initialize();
 

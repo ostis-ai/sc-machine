@@ -69,7 +69,7 @@ sc_memory_context * sc_memory_initialize(const sc_memory_params * params)
     goto error;
   sc_memory_context_free(helper_ctx);
 
-  if (sc_events_initialize() == SC_FALSE)
+  if (sc_events_initialize_ext(params->max_events_and_agents_threads) == SC_FALSE)
   {
     sc_error("Error while initialize events module");
     goto error;

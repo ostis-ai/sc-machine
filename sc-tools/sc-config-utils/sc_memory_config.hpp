@@ -17,14 +17,6 @@
 #include "sc-core/sc_memory_params.h"
 #include "sc-core/sc_memory_version.h"
 
-#define DEFAULT_SAVE_PERIOD 32000
-#define DEFAULT_UPDATE_PERIOD 16000
-#define DEFAULT_MAX_THREADS 32
-#define DEFAULT_MAX_LOADED_SEGMENTS 1000
-#define DEFAULT_LOG_TYPE "Console"
-#define DEFAULT_LOG_FILE ""
-#define DEFAULT_LOG_LEVEL "Info"
-
 class ScParams
 {
 public:
@@ -130,8 +122,10 @@ public:
     m_memoryParams.ext_path = GetStringByKey("extensions_path");
     m_memoryParams.enabled_exts = nullptr;
 
-    m_memoryParams.max_threads = GetIntByKey("max_threads", DEFAULT_MAX_THREADS);
     m_memoryParams.max_loaded_segments = GetIntByKey("max_loaded_segments", DEFAULT_MAX_LOADED_SEGMENTS);
+    m_memoryParams.max_threads = GetIntByKey("max_threads", DEFAULT_MAX_THREADS);
+    m_memoryParams.max_events_and_agents_threads =
+        GetIntByKey("max_events_and_agents_threads", DEFAULT_EVENTS_PROCESSORS);
 
     m_memoryParams.save_period = GetIntByKey("save_period", DEFAULT_SAVE_PERIOD);
     m_memoryParams.update_period = GetIntByKey("update_period", DEFAULT_UPDATE_PERIOD);
