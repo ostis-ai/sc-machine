@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Script for prepare and run sc-component manager
 - Add sc-component-manager as submodule
 - Save sc-memory by period in sc-server
 - Dump statistics by period in sc-server
