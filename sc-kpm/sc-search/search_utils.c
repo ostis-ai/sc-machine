@@ -8,6 +8,7 @@
 #include "search_keynodes.h"
 #include "search_defines.h"
 #include "search.h"
+#include "sc-core/sc-store/sc-base/sc_message.h"
 
 #include "sc-core/sc_helper.h"
 #include "sc-core/sc_memory_headers.h"
@@ -41,9 +42,18 @@ void appendIntoAnswer(sc_addr answer, sc_addr el)
 
 void finish_question(sc_addr question)
 {
-  sc_iterator3 * it = null_ptr;
   sc_addr arc;
 
   arc = sc_memory_arc_new(s_default_ctx, sc_type_arc_pos_const_perm, keynode_question_finished, question);
   SYSTEM_ELEMENT(arc);
+}
+
+void finish_question_successfully(sc_memory_context * ctx, sc_addr question)
+{
+  sc_memory_arc_new(ctx, sc_type_arc_pos_const_perm, keynode_question_finished_successfully, question);
+}
+
+void finish_question_unsuccessfully(sc_memory_context * ctx, sc_addr question)
+{
+  sc_memory_arc_new(ctx, sc_type_arc_pos_const_perm, keynode_question_finished_unsuccessfully, question);
 }

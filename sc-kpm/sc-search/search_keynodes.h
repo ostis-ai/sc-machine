@@ -32,6 +32,8 @@ extern sc_addr keynode_nonbinary_relation;
 extern sc_addr keynode_typical_sc_neighborhood;
 extern sc_addr keynode_sc_neighborhood;
 extern sc_addr keynode_question_finished;
+extern sc_addr keynode_question_finished_successfully;
+extern sc_addr keynode_question_finished_unsuccessfully;
 extern sc_addr keynode_question_initiated;
 extern sc_addr keynode_question;
 extern sc_addr keynode_nrel_identification;
