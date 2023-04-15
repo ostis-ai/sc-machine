@@ -227,19 +227,6 @@ struct _sc_stat
   sc_uint32 segments_count;
 };
 
-#  ifdef SC_ROCKSDB_FS_STORAGE
-// contents
-#    define SC_MAX_CHECKSUM_LEN 32
-//! Structure to store checksum information
-struct _sc_check_sum
-{
-  char data[SC_MAX_CHECKSUM_LEN];  // maximum checksum length
-  sc_uint8 len;                    // checksum length
-};
-#  endif
-
-typedef struct _sc_check_sum sc_check_sum;
-typedef struct _sc_content sc_content;
 #endif
 
 typedef struct _sc_arc sc_arc;

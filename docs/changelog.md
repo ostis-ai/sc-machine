@@ -169,6 +169,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Removed
 
+- Remove rocksdb
 - Remove find by substring logic from sc-dictionary
 - Remove legacy gwf-translator for 0.3.0 gwf sources from sc-builder
 - Remove legacy glib-based tests

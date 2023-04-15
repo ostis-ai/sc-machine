@@ -27,10 +27,6 @@ macro(sc_linux_target_dependencies)
     find_package(Boost 1.71 REQUIRED COMPONENTS filesystem system program_options)
     find_package(websocketpp REQUIRED 0.8.3)
 
-    if(${SC_FILE_MEMORY} MATCHES "Rocksdb")
-	    find_package(RocksDB REQUIRED)
-    endif()
-
     find_package(PkgConfig REQUIRED)
     pkg_search_module(GLIB2 REQUIRED glib-2.0)
     pkg_search_module(GLIB2_MODULE REQUIRED gmodule-2.0)
@@ -70,9 +66,6 @@ macro(sc_win_target_dependencies _PACKAGES_CONFIG _THIRDPARTY_PATH _BIN_PATH)
 
     set(GLIB_PATH "${PACKAGES_PATH}/glib.2.36.2.11/build/native")
     set(BOOST_PATH "${PACKAGES_PATH}/boost.${BOOST_VERSION}/lib/native")
-    if (${SC_FILE_MEMORY} MATCHES "Rocksdb")
-	    set(ROCKSDB_PATH "${SC_MACHINE_THIRDPARTY_PATH}/rocksdb")
-    endif()
 
     set(LIBCLANG_INCLUDE_DIRS "${_THIRDPARTY_PATH}/clang/include")
     set(LIBCLANG_LIBRARY "libclang")
@@ -83,11 +76,6 @@ macro(sc_win_target_dependencies _PACKAGES_CONFIG _THIRDPARTY_PATH _BIN_PATH)
     set(LIBCURL_RUNTIME_PATH "${LIBCURL_PATH}/bin")
     set(LIBCURL_INCLUDE_DIRS "${LIBCURL_PATH}/include")
     set(LIBCURL_LIBRARIES "${LIBCURL_PATH}/lib/libcurl.lib" "WSock32.lib" "Ws2_32.lib")
-
-    if(${SC_FILE_MEMORY} MATCHES "Rocksdb")
-	    set(RocksDB_INCLUDE_DIR "${ROCKSDB_PATH}/include")
-	    set(RocksDB_LIBRARIES "${ROCKSDB_PATH}/rocksdb-shared.lib")
-    endif()
 
     include_directories("${BOOST_PATH}/include" "${LIBCURL_INCLUDE_DIRS}")
 
@@ -121,7 +109,6 @@ macro(sc_win_target_dependencies _PACKAGES_CONFIG _THIRDPARTY_PATH _BIN_PATH)
         "${LIBCURL_RUNTIME_PATH}/libcurl.dll"
         "${LIBCURL_RUNTIME_PATH}/libeay32.dll"
         "${LIBCURL_RUNTIME_PATH}/ssleay32.dll"
-        "${ROCKSDB_PATH}/rocksdb-shared.dll"
     )
     file(COPY ${WIN_RUNTIME_LIBRARIES} DESTINATION "${_BIN_PATH}")
 endmacro()

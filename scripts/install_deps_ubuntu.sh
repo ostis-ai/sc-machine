@@ -6,10 +6,9 @@ APP_ROOT_PATH=$(cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && cd .. &
 function usage() {
     cat <<USAGE
 
-    Usage: $0 [--rocksdb] [--dev]
+    Usage: $0 [--dev]
 
     Options:
-        --rocksdb:      installs deps required for RocksDB storage backend
         --dev:          installs dependencies required to compile sc-machine
 USAGE
     exit 1
@@ -49,10 +48,6 @@ packagelist_dev=(
     python3-dev
 )
 
-packagelist_rocksdb=(
-librocksdb-dev
-)
-
 packages=() 
 packages+=(${packagelist_runtime[@]})
 
@@ -60,9 +55,6 @@ while [ "$1" != "" ]; do
     case $1 in
     --dev)
        packages+=(${packagelist_dev[@]})
-        ;;
-    --rocksdb)
-       packages+=(${packagelist_rocksdb[@]}) 
         ;;
     -h | --help)
         usage # show help

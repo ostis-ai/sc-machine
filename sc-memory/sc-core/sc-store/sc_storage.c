@@ -9,7 +9,6 @@
 #include "sc_defines.h"
 #include "sc_segment.h"
 #include "sc_element.h"
-#include "sc_link_helpers.h"
 #include "sc_event.h"
 #include "sc_stream_memory.h"
 
