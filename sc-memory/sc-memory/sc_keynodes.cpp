@@ -57,7 +57,6 @@ bool ScKeynodes::Init(bool force, sc_char const * init_memory_generated_structur
 
   ScAddr initMemoryGeneratedStructure;
   bool initMemoryGeneratedStructureValid = SC_FALSE;
-
   if (init_memory_generated_structure != null_ptr)
   {
     initMemoryGeneratedStructure =

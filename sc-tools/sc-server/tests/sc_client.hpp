@@ -47,7 +47,7 @@ public:
 
   sc_bool Send(std::string const & msg)
   {
-    std::this_thread::sleep_for(std::chrono::milliseconds(100));
+    std::this_thread::sleep_for(std::chrono::milliseconds(400));
 
     ScClientErrorCode code;
     m_instance.send(m_connection, msg, ScServerMessageType::text, code);

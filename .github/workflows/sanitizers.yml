@@ -24,14 +24,6 @@ jobs:
             cc: clang,
             cxx: clang++,
           }
-          - {
-            name: "Sanitizer for sc-rocksdb fs-storage - address",
-            os: ubuntu-latest,
-            file_memory: "Rocksdb",
-            sanitizer: "address",
-            cc: clang,
-            cxx: clang++,
-          }
 
     steps:
       - name: Checkout
@@ -41,7 +33,7 @@ jobs:
 
       - name: Install dependencies
         id: install_deps
-        run: scripts/install_deps_ubuntu.sh --dev --rocksdb
+        run: scripts/install_deps_ubuntu.sh --dev
 
       - name: Restore build caches
         uses: hendrikmuhs/ccache-action@v1.2

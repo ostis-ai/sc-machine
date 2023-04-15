@@ -13,8 +13,6 @@
 #  include <glib.h>
 #endif
 
-#define sc_error(...) g_error(__VA_ARGS__)
-
 #define sc_critical(...) g_critical(__VA_ARGS__)
 
 #define sc_warning(...) g_warning(__VA_ARGS__)

@@ -66,9 +66,6 @@ sc_struct_node * sc_list_push(sc_list * list, sc_struct_node * node, void * data
   if (list == null_ptr)
     return null_ptr;
 
-  if (data == null_ptr)
-    return null_ptr;
-
   if (node == null_ptr)
   {
     list->begin = sc_struct_node_init(data);
@@ -98,7 +95,7 @@ sc_struct_node * sc_list_push(sc_list * list, sc_struct_node * node, void * data
 
 sc_struct_node * sc_list_push_back(sc_list * list, void * data)
 {
-  return sc_list_push(list, list->end ? list->end->prev : null_ptr, data);
+  return list ? sc_list_push(list, list->end ? list->end->prev : null_ptr, data) : null_ptr;
 }
 
 sc_struct_node * sc_list_pop_back(sc_list * list)
@@ -158,7 +155,11 @@ sc_bool sc_list_remove_if(sc_list * list, void * data, sc_bool (*predicate)(void
   }
 
   if (list->size == 0)
+  {
     list->begin = null_ptr;
+    sc_mem_free(list->end);
+    list->end = null_ptr;
+  }
 
   return is_removed;
 }
@@ -182,7 +183,7 @@ sc_struct_node * sc_list_back(sc_list * list)
   return list->end->prev;
 }
 
-sc_iterator * sc_list_iterator(sc_list * list)
+sc_iterator * sc_list_iterator(sc_list const * list)
 {
   if (list == null_ptr)
     return null_ptr;

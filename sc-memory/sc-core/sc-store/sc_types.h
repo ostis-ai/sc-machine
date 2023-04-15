@@ -25,6 +25,7 @@ typedef signed int sc_int32;
 typedef unsigned int sc_uint32;
 typedef long long sc_int64;
 typedef unsigned long long sc_uint64;
+typedef float sc_float;
 
 typedef unsigned long sc_ulong;
 typedef unsigned int sc_uint;
@@ -96,6 +97,9 @@ struct _sc_addr
 #  define SC_ADDR_LOCAL_TO_INT(addr) (sc_uint32)(((addr).seg << 16) | ((addr).offset & 0xffff))
 #  define SC_ADDR_LOCAL_OFFSET_FROM_INT(v) (sc_uint16)((v)&0x0000ffff)
 #  define SC_ADDR_LOCAL_SEG_FROM_INT(v) SC_ADDR_LOCAL_OFFSET_FROM_INT(v >> 16)
+#  define SC_ADDR_LOCAL_FROM_INT(hash, addr) \
+    addr.seg = SC_ADDR_LOCAL_SEG_FROM_INT(hash); \
+    addr.offset = SC_ADDR_LOCAL_OFFSET_FROM_INT(hash)
 
 typedef sc_uint16 sc_type;
 
@@ -223,19 +227,6 @@ struct _sc_stat
   sc_uint32 segments_count;
 };
 
-#  ifdef SC_ROCKSDB_FS_STORAGE
-// contents
-#    define SC_MAX_CHECKSUM_LEN 32
-//! Structure to store checksum information
-struct _sc_check_sum
-{
-  char data[SC_MAX_CHECKSUM_LEN];  // maximum checksum length
-  sc_uint8 len;                    // checksum length
-};
-#  endif
-
-typedef struct _sc_check_sum sc_check_sum;
-typedef struct _sc_content sc_content;
 #endif
 
 typedef struct _sc_arc sc_arc;

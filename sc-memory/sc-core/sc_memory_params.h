@@ -14,6 +14,7 @@
 #define DEFAULT_MAX_THREADS 32
 #define DEFAULT_EVENTS_PROCESSORS 32
 #define DEFAULT_MAX_LOADED_SEGMENTS 1000
+#define DEFAULT_MAX_SEARCHABLE_STRING_SIZE 1000
 #define DEFAULT_LOG_TYPE "Console"
 #define DEFAULT_LOG_FILE ""
 #define DEFAULT_LOG_LEVEL "Info"
@@ -33,6 +34,7 @@ typedef struct _sc_memory_params
   const sc_char * log_level;
 
   sc_uint32 max_loaded_segments;
+  sc_uint32 max_searchable_string_size;
   sc_uint8 max_threads;
   sc_int32 max_events_and_agents_threads;
 

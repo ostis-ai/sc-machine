@@ -21,12 +21,11 @@ TEST(ScBuilder, RunStop)
 
   ScParams memoryParams{options, {}};
   memoryParams.insert({"repo_path", SC_BUILDER_REPO_PATH});
-  memoryParams.insert({"clear", "true"});
 
   ScConfig configFile{config, {"repo_path"}};
   std::string memoryGroupName = "sc-memory";
 
-  ScMemoryConfig memoryConfig{configFile, std::move(memoryParams)};
+  ScMemoryConfig memoryConfig{configFile, memoryParams};
 
   Builder builder;
   EXPECT_TRUE(builder.Run(params, memoryConfig.GetParams()));
@@ -74,7 +73,7 @@ TEST(ScBuilder, BuilderConfig)
 
   ScConfig configFile{config, {"repo_path"}};
 
-  ScMemoryConfig memoryConfig{configFile, std::move(memoryParams)};
+  ScMemoryConfig memoryConfig{configFile, memoryParams};
 
   params.m_resultStructureUpload = memoryConfig.GetParams().init_memory_generated_upload;
   params.m_resultStructureSystemIdtf =

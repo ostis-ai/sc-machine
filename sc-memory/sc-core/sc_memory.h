@@ -10,6 +10,7 @@
 #include "sc-store/sc_types.h"
 #include "sc-store/sc_stream.h"
 #include "sc_memory_params.h"
+#include "sc-store/sc-container/sc-list/sc_list.h"
 
 // Public functions that used by developer
 
@@ -171,25 +172,20 @@ _SC_EXTERN sc_result sc_memory_set_link_content(sc_memory_context * ctx, sc_addr
 _SC_EXTERN sc_result sc_memory_get_link_content(sc_memory_context const * ctx, sc_addr addr, sc_stream ** stream);
 
 /*! Search sc-link addrs by specified string
- * @param stream Pointert to stream that contains data for search
+ * @param stream Pointer to stream that contains data for search
  * @param result Pointer to result container
- * @param result_count Container for results count
  * @return If sc-links with specified string found, then sc-addrs of found link
  * writes into \p result array and function returns SC_RESULT_OK; otherwise \p result will contain
  * empty sc-addr and function returns SC_RESULT_OK. In any case \p result_count contains number of found
  * sc-addrs
  * @attention \p result array need to be free after usage
  */
-_SC_EXTERN sc_result sc_memory_find_links_with_content(
-    sc_memory_context const * ctx,
-    sc_stream const * stream,
-    sc_addr ** result,
-    sc_uint32 * result_count);
+_SC_EXTERN sc_result
+sc_memory_find_links_with_content_string(sc_memory_context const * ctx, sc_stream const * stream, sc_list ** result);
 
 /*! Search sc-link addrs by specified substring
  * @param stream Pointer to stream that contains data substring for search
  * @param result Pointer to result container of sc-links
- * @param result_count Container for results count
  * @param max_length_to_search_as_prefix Search by prefix as substring length <= max_length_to_search_as_prefix
  * @return If sc-links with specified substring found, then sc-addrs of found link
  * writes into \p result array and function returns SC_RESULT_OK; otherwise function returns SC_RESULT_OK.
@@ -199,14 +195,12 @@ _SC_EXTERN sc_result sc_memory_find_links_with_content(
 _SC_EXTERN sc_result sc_memory_find_links_by_content_substring(
     sc_memory_context const * ctx,
     sc_stream const * stream,
-    sc_addr ** result,
-    sc_uint32 * result_count,
+    sc_list ** result,
     sc_uint32 max_length_to_search_as_prefix);
 
 /*! Search sc-strings array by specified substring
  * @param stream Pointer to stream that contains data substring for search
  * @param result Pointer to result container of sc-strings
- * @param result_count Container for results count
  * @param max_length_to_search_as_prefix Search by prefix as substring length <= max_length_to_search_as_prefix
  * @return If sc-links with specified checksum found, then found strings
  * writes into \p result array and function returns SC_RESULT_OK; otherwise function returns SC_RESULT_OK.
@@ -216,8 +210,7 @@ _SC_EXTERN sc_result sc_memory_find_links_by_content_substring(
 _SC_EXTERN sc_result sc_memory_find_links_contents_by_content_substring(
     sc_memory_context const * ctx,
     sc_stream const * stream,
-    sc_char *** result,
-    sc_uint32 * result_count,
+    sc_list ** result,
     sc_uint32 max_length_to_search_as_prefix);
 
 /*! Free buffer allocated for links content find result

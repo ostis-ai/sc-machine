@@ -21,7 +21,7 @@ high space complexity by reinterpreting the original string as a long string in 
 
 A file storage and sc-dictionary are implemented by С language means. Together with the implementation of 
 the file storage and dictionary, support for the 
-[C dictionary API](https://github.com/ostis-ai/sc-machine/tree/main/sc-memory/sc-core/sc-store/sc-container/sc-dictionary/sc-dictionary.h)
+[C dictionary API](https://github.com/ostis-ai/sc-machine/tree/main/sc-memory/sc-core/sc-store/sc-container/sc-dictionary/sc_dictionary.h)
 is provided.
 
 Common API methods of sc-dictionary implementation and their description are represented in the next table:
@@ -33,51 +33,52 @@ Common API methods of sc-dictionary implementation and their description are rep
   </tr>
 
   <tr>
-    <td>sc_bool sc_dictionary_initialize(sc_dictionary ** dictionary)</td>
+    <td>sc_bool sc_dictionary_initialize(sc_dictionary ** dictionary, sc_uint8 children_size,
+        void (*char_to_int)(sc_char, sc_uint8 *, const sc_uint8 *))</td>
     <td>It initializes sc-dictionary tree structure with standard memory configuration. If a pointer to sc-dictionary had 
         been not <b>null_ptr</b> at the time of memory setup, then the method returns SC_FALSE.</td>
   </tr>
 
   <tr>
-    <td>sc_bool sc_dictionary_destroy(sc_dictionary * dictionary)</td>
+    <td>sc_bool sc_dictionary_destroy(sc_dictionary * dictionary, sc_bool (*node_destroy)(sc_dictionary_node *, void **))</td>
     <td>It destroys sc-dictionary tree structure, freeing memory for all nodes ib tree. If a pointer to sc-dictionary had 
         been <b>null_ptr</b> at the time of memory freeing, then the method returns SC_FALSE.</td>
   </tr>
 
   <tr>
-    <td>sc_dictionary_node * sc_dictionary_append(sc_dictionary * dictionary, sc_char * sc_string, sc_uint32 size, void * value)</td>
-    <td>It places data or data array by key string. Moreover, if earlier in the tree there was a string that has a common 
+    <td>sc_dictionary_node * sc_dictionary_append(sc_dictionary * dictionary, sc_char * string, sc_uint32 string_size, void * value)</td>
+    <td>It places data by key string. Moreover, if earlier in the tree there was a string that has a common 
         prefix with to append, then the rest of the original string is appended to the tree node at which this prefix ends.
         If other data stored by the original string, then it will be replaced by new one. The method return terminal node,
         in which has been stored data by key string.</td>
   </tr>
 
   <tr>
-    <td>sc_bool sc_dictionary_remove(sc_dictionary * dictionary, const sc_char * sc_string, void * data, sc_bool (*predicate)(void * data, void * other))</td>
-    <td>It removes data stored by predicate function from sc-dictionary. If sc-dictionary has not such key string, 
-        then method returns SC_FALSE.</td>
-  </tr>
-
-  <tr>
-    <td>sc_bool sc_dictionary_is_in(sc_dictionary * dictionary, const sc_char * sc_string)</td>
+    <td>sc_bool sc_dictionary_has(sc_dictionary * dictionary, const sc_char * string, sc_uint32 string_size)</td>
     <td>It checks for key existence in sc-dictionary. If sc-dictionary has not such key string, 
         then method returns SC_FALSE.</td>
   </tr>
 
   <tr>
-    <td>sc_list * sc_dictionary_get(sc_dictionary * dictionary, const sc_char * sc_string)</td>
-    <td>It gets data or data array by key string. If sc-dictionary has not such key string, 
-        then method returns empty sc-list.</td>
+    <td>void * sc_dictionary_get_by_key(sc_dictionary * dictionary, const sc_char * string, sc_uint32 string_size)</td>
+    <td>It gets data by key string. If sc-dictionary has not such key string, 
+        then method returns <b>null_ptr</b>.</td>
+  </tr>
+
+  <tr>
+    <td>sc_bool sc_dictionary_get_by_prefix(sc_dictionary * dictionary, const sc_char * string, sc_uint32 string_size, 
+        sc_bool (*callable)(sc_dictionary_node *, void **), void ** dest))</td>
+    <td>It visits data by key string prefix. It returns SC_FALSE if `callable` function returned SC_FALSE.</td>
   </tr>
 
   <tr>
     <td>void sc_dictionary_visit_down_nodes(sc_dictionary * dictionary, void (*callable)(sc_dictionary_node *, void **), void ** dest)</td>
-    <td>It visits up down all nodes and call specified routine for them. A result of procedure completion saves into 'dest'.</td>
+    <td>It visits up down all nodes and call specified routine for them. A result of procedure completion saves into `dest`.</td>
   </tr>
 
   <tr>
     <td>void sc_dictionary_visit_up_nodes(sc_dictionary * dictionary, void (*callable)(sc_dictionary_node *, void **), void ** dest)</td>
-    <td>It visits down up all nodes and call specified routine for them. A result of procedure completion saves into 'dest'.</td>
+    <td>It visits down up all nodes and call specified routine for them. A result of procedure completion saves into `dest`.</td>
   </tr>
 </table>
 
@@ -87,33 +88,44 @@ to store arrays of data. A sc-container-iterator is used to iterate on sc-list e
 ## Usage example
 
 ```cpp
-#include <stdio.h>
-
+extern "C"
+{
 #include "sc-container/sc-dictionary/sc_dictionary.h"
-#include "sc-container/sc-list/sc_list.h"
+#include "sc-container/sc-list/sc_list.h" 
+}
+
+sc_uint8 _sc_uchar_dictionary_children_size()
+{
+  sc_uint8 const max_sc_char = 255;
+  sc_uint8 const min_sc_char = 1;
+
+  return max_sc_char - min_sc_char + 1;
+}
+
+void _sc_uchar_dictionary_sc_char_to_sc_int(sc_char ch, sc_uint8 * ch_num, sc_uint8 const * mask)
+{
+  *ch_num = 128 + (sc_uint8)ch;
+}
+
+sc_bool _sc_uchar_dictionary_initialize(sc_dictionary ** dictionary)
+{
+  return sc_dictionary_initialize(
+      dictionary, _sc_uchar_dictionary_children_size(), _sc_uchar_dictionary_sc_char_to_sc_int);
+}
 
 int main()
 {
-  sc_dictionary * dict;
-  sc_dictionary_initialize(&dict);
+  sc_dictionary * dictionary;
+  _sc_uchar_dictionary_initialize(&dictionary);
   
-  sc_char * sc_string = "sc_dictionary";
-  sc_uint32 len = strlen(sc_string);
+  sc_char string[] = "sc-dictionary";
+  sc_uint32 const string_size = strlen(string);
   sc_uint8 value = 10;
-  sc_dictionary_append(sc_dictionary, sc_string, len, (void *)&value);
-  
-  sc_uint8 sum = 0;
-  sc_list * list = sc_dictionary_get(sc_string);
-  sc_iterator * it = sc_list_iterator(list);
-  while (sc_iterator_next(it))
-  {
-    sc_uint8 v = *((sc_uint8)sc_iterator_get(it));
-    sum += v;
-    std::cout << v << std::endl; 
-  }
-  sc_iterator_destroy(it);
-  
-  sc_dictionary_destroy(dict);
+  sc_dictionary_append(dictionary, string, string_size, (void *)value);
+
+  sc_uint8 const found_value = (sc_uint8)sc_dictionary_get_by_key(dictionary, string, string_size);
+
+  sc_dictionary_destroy(&dictionary, sc_dictionary_node_destroy);
   
   return 0;
 }

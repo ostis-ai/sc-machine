@@ -17,8 +17,6 @@ extern "C"
 #include <typeinfo>
 }
 
-using sc_list = GList;
-
 class ScConfigGroup
 {
 public:

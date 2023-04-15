@@ -8,11 +8,23 @@ sc_codegen(sc-memory-common-tests ${CMAKE_CURRENT_LIST_DIR}/common)
 
 make_tests_from_folder(${CMAKE_CURRENT_LIST_DIR}/containers
     NAME sc-memory-containers-tests
-    DEPENDS sc-memory sc-core
-    INCLUDES ${SC_MEMORY_SRC} ${CMAKE_CURRENT_LIST_DIR}/_test
+    DEPENDS sc-memory sc-core ${GLIB2_LIBRARIES}
+    INCLUDES ${SC_MEMORY_SRC} ${CMAKE_CURRENT_LIST_DIR}/_test ${GLIB2_INCLUDE_DIRS}
 )
 
-sc_codegen(sc-memory-containers-tests ${CMAKE_CURRENT_LIST_DIR}/containers)
+if(${SC_CLANG_FORMAT_CODE})
+    target_clangformat_setup(sc-memory-containers-tests)
+endif()
+
+make_tests_from_folder(${CMAKE_CURRENT_LIST_DIR}/fs-storage
+    NAME sc-fs-storage-tests
+    DEPENDS sc-memory sc-core ${GLIB2_LIBRARIES}
+    INCLUDES ${SC_MEMORY_SRC} ${CMAKE_CURRENT_LIST_DIR}/_test ${GLIB2_INCLUDE_DIRS}
+)
+
+if(${SC_CLANG_FORMAT_CODE})
+    target_clangformat_setup(sc-fs-storage-tests)
+endif()
 
 make_tests_from_folder(${CMAKE_CURRENT_LIST_DIR}/agents
     NAME sc-memory-agents-tests

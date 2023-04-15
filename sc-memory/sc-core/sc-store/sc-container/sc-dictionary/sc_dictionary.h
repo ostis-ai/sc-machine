@@ -8,7 +8,6 @@
 #define _sc_dictionary_h_
 
 #include "../../sc_types.h"
-#include "../sc-list/sc_list.h"
 
 #define SC_DC_NODE_ACCESS_LVL_RMASK 0b00000001
 #define SC_DC_NODE_ACCESS_LVL_WMASK 0b00000010
@@ -29,7 +28,7 @@ typedef struct _sc_dictionary_node
   struct _sc_dictionary_node ** next;  // a pointer to sc-dictionary node children pointers
   sc_char * offset;                    // a pointer to substring of node string
   sc_uint32 offset_size;               // size to substring of node string
-  sc_list * data_list;                 // data list
+  void * data;                         // storing data
   sc_uint8 mask;                       // mask for rights checking and memory optimization
 } sc_dictionary_node;
 
@@ -38,7 +37,7 @@ typedef struct _sc_dictionary
 {
   sc_dictionary_node * root;  // sc-dictionary tree root node
   sc_uint8 size;              // default sc-dictionary node children size
-  void (*char_to_int)(sc_char, sc_uint8 *, sc_uint8 *);
+  void (*char_to_int)(sc_char, sc_uint8 *, const sc_uint8 *);
 } sc_dictionary;
 
 /*! Initializes sc-dictionary
@@ -50,83 +49,75 @@ typedef struct _sc_dictionary
 sc_bool sc_dictionary_initialize(
     sc_dictionary ** dictionary,
     sc_uint8 children_size,
-    void (*char_to_int)(sc_char, sc_uint8 *, sc_uint8 *));
+    void (*char_to_int)(sc_char, sc_uint8 *, const sc_uint8 *));
 
 /*! Destroys a sc-dictionary
  * @param dictionary A sc-dictionary pointer to destroy
  * @param node_destroy A painter to sc-dictionary node destroy method that passes that node and additional args
  * @returns Returns SC_TRUE, if a sc-dictionary exists; otherwise return SC_FALSE.
  */
-sc_bool sc_dictionary_destroy(sc_dictionary * dictionary, void (*node_destroy)(sc_dictionary_node *, void **));
+sc_bool sc_dictionary_destroy(sc_dictionary * dictionary, sc_bool (*node_destroy)(sc_dictionary_node *, void **));
 
 /*! Destroys a sc-dictionary node
  * @param node A sc-dictionary node pointer to destroy
  * @param args An additional args used with node destroying
  */
-void sc_dictionary_node_destroy(sc_dictionary_node * node, void ** args);
+sc_bool sc_dictionary_node_destroy(sc_dictionary_node * node, void ** args);
 
 /*! Appends a string to a sc-dictionary by a common prefix with another string started in sc-dictionary node, if such
  * exists. In end sc-dictionary node stores pointer to data by string.
  * @param dictionary A sc-dictionary pointer where common prefix may be started
- * @param sc_string An appendable string
- * @param size An appendable string size
+ * @param string An appendable string
+ * @param string_size An appendable string size
  * @param data A pointer to data storing by appended string
  * @returns Returns A sc-dictionary node where appended string ends
  */
 sc_dictionary_node * sc_dictionary_append(
     sc_dictionary * dictionary,
-    const sc_char * sc_string,
-    sc_uint32 size,
+    const sc_char * string,
+    sc_uint32 string_size,
     void * data);
-
-/*! Removes data from a sc-dictionary by a common key, if such exists.
- * @param sc_dictionary A sc-dictionary where common prefix may be started
- * @param sc_string A key string
- * @param data A pointer to removable data
- * @param predicate A predicate function to delete data by it
- * @returns Returns If data was removed then function returns SC_TRUE; otherwise return SC_FALSE.
- * @note If a string isn't in sc-dictionary then SC_FALSE will be returned
- */
-sc_bool sc_dictionary_remove(
-    sc_dictionary * dictionary,
-    const sc_char * sc_string,
-    void * data,
-    sc_bool (*predicate)(void * data, void * other));
 
 /*! Checks, if a string is in a sc-dictionary by a common prefix with another string started in sc-dictionary
  * node, if such exists.
  * @param dictionary A sc-dictionary pointer
- * @param sc_string A verifiable string
+ * @param string A verifiable string
+ * @param string_size A verifiable string size
  * @returns Returns SC_TRUE, if string starts in sc-dictionary node; otherwise return SC_FALSE.
  */
-sc_bool sc_dictionary_is_in(sc_dictionary * dictionary, const sc_char * sc_string);
+sc_bool sc_dictionary_has(const sc_dictionary * dictionary, const sc_char * string, sc_uint32 string_size);
 
-/*! Gets first data from a terminal sc-dictionary node where string ends.
+/*! Gets data from a terminal sc-dictionary node where string ends.
  * @param dictionary A sc-dictionary pointer
- * @param node A sc-dictionary node where common prefix may be started
- * @param sc_string A string to retrieve data by it
+ * @param string A string to retrieve data by it
+ * @param string_size A string size
  * @returns Returns Data from a sc-dictionary node where string ends
  */
-void * sc_dictionary_get_first_data_from_node(
-    sc_dictionary * dictionary,
-    sc_dictionary_node * node,
-    const sc_char * sc_string);
+void * sc_dictionary_get_by_key(const sc_dictionary * dictionary, const sc_char * string, sc_uint32 string_size);
 
-/*! Gets datas from a terminal sc-dictionary node where string ends.
+/*! Visit data in sc-dictionary nodes where key prefix ends.
  * @param dictionary A sc-dictionary pointer
- * @param sc_string A string to retrieve datas by it
- * @returns Returns Datas from a sc-dictionary node where string ends
+ * @param string A string to retrieve data by it
+ * @param string_size A string size
+ * @param callable A callback to form result
+ * @param dest A callback params
+ * @returns Returns Data from a sc-dictionary node where string ends
  */
-sc_list * sc_dictionary_get(sc_dictionary * dictionary, const sc_char * sc_string);
+sc_bool sc_dictionary_get_by_key_prefix(
+    const sc_dictionary * dictionary,
+    const sc_char * string,
+    sc_uint32 string_size,
+    sc_bool (*callable)(sc_dictionary_node *, void **),
+    void ** dest);
 
 /*! Visits all sc-dictionary nodes and calls procedure with it and its data. A method completes down iterating visiting.
  * @param dictionary A sc-dictionary pointer
  * @param callable A callable object (procedure)
  * @param[out] dest A pointer to procedure result pointer
  */
-void sc_dictionary_visit_down_nodes(
-    sc_dictionary * dictionary,
-    void (*callable)(sc_dictionary_node *, void **),
+sc_bool sc_dictionary_visit_down_nodes(
+    sc_dictionary const * dictionary,
+    sc_bool (*callable)(sc_dictionary_node *, void **),
     void ** dest);
 
 /*! Visits all sc-dictionary nodes and calls procedure with it and its data. A method completes up iterating visiting.
@@ -134,9 +125,9 @@ void sc_dictionary_visit_down_nodes(
  * @param callable A callable object (procedure)
  * @param[out] dest A pointer to procedure result pointer
  */
-void sc_dictionary_visit_up_nodes(
-    sc_dictionary * dictionary,
-    void (*callable)(sc_dictionary_node *, void **),
+sc_bool sc_dictionary_visit_up_nodes(
+    sc_dictionary const * dictionary,
+    sc_bool (*callable)(sc_dictionary_node *, void **),
     void ** dest);
 
 #endif

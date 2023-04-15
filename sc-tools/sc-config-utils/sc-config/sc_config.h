@@ -13,7 +13,6 @@
 
 // Config, that contains all configuration options: ['<group>/<key>'] = <value>
 typedef GHashTable sc_config;
-typedef GList sc_list;
 
 #define sc_config_get_keys(config) g_hash_table_get_keys(config)
 #define sc_list_get_first(list) g_list_first(list)
@@ -37,7 +36,7 @@ void sc_config_shutdown(sc_config * config);
  * @param key Name of key to return value
  * @returns Returns the value associated with the key as string, or null if the key was not found of could not be
  * parsed.
- * @attention Returned value managed by sc_confing and shouldn't be freed
+ * @attention Returned value managed by sc_config and shouldn't be freed
  */
 
 _SC_EXTERN sc_char * sc_config_get_value_string(sc_config * config, sc_char const * group, sc_char const * key);

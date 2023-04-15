@@ -7,11 +7,6 @@ add_library(sc-core SHARED ${SOURCES})
 target_include_directories(sc-core PRIVATE ${GLIB2_INCLUDE_DIRS})
 target_link_libraries(sc-core ${GLIB2_LIBRARIES})
 
-if(${SC_FILE_MEMORY} MATCHES "Rocksdb")
-    target_include_directories(sc-core PRIVATE ${RocksDB_INCLUDE_DIR})
-    target_link_libraries(sc-core ${RocksDB_LIBRARIES})
-endif()
-
 if(${SC_COVERAGE})
     if (CMAKE_CXX_COMPILER_ID MATCHES "GNU")
 	    target_link_libraries(sc-core gcov)
