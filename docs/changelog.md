@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Tests for `IteratorUtils`
 - Configure events and agents threads
 - Provide loop-ranged API method for sc-template search ([78](https://github.com/ostis-ai/sc-machine/issues/78))
 - Sc-template cycle preventing search
@@ -50,6 +51,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- Use iterators instead of sc-template in `getNextFromSet` util
 - Generalized docker_entrypoint.sh, this script can be used by external projects now
 - Now in tests all agents works in single thread
 - Replace asserts in sc-template search and gen API by exceptions throwing
