@@ -36,7 +36,7 @@ function rebuild_kb() {
 }
 
 function start_server() {
-    if [ "$REBUILD_KB" -eq 1 ]; then
+    if [ -n "$REBUILD_KB" ] && [ "$REBUILD_KB" -eq 1 ]; then
         # this expands to $KB_PATH if it's non-null and expands to "/kb" otherwise.
         rebuild_kb "${KB_PATH:-"/kb"}"
     fi
