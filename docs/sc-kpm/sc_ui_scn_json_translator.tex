@@ -1,0 +1,201 @@
+\scnheader{SCn-JSON-код}
+\scnidtf{scn json}
+\scnidtf{scn (json)}
+\scnidtf{SCn JSON}
+\scnidtf{Метаязык, являющийся подмножеством языка JSON и обеспечивающий внешнее представление и структуризацию \textit{scn-текстов}, используемых ostis-системой в процессе своего функционирования и взаимодействия со внешней средой.}
+\scniselement{абстрактный язык}
+\scniselement{линейный язык}
+\scnsubset{JSON}
+\begin{scnreltolist}{разбиение}
+    \scnitem{scn-json-node}
+    \begin{scnindent}
+        \begin{scnreltolist}{разбиение}
+            \scnitem{scn-json-base-info}
+            \scnitem{scn-json-children}
+            \begin{scnindent}
+                \begin{scnreltolist}{разбиение}
+                    \scnitem{scn-json-linked-nodes}
+                    \begin{scnindent}
+                        \begin{scnreltolist}{разбиение}
+                            \scnitem{scn-json-node}
+                        \end{scnreltolist}
+                    \end{scnindent}
+                    \scnitem{scn-json-arcs}
+                    \begin{scnindent}
+                        \begin{scnreltolist}{разбиение}
+                            \scnitem{scn-json-arc}
+                        \end{scnreltolist}
+                    \end{scnindent}
+                    \scnitem{scn-json-modifiers}
+                    \begin{scnindent}
+                        \begin{scnreltolist}{разбиение}
+                            \scnitem{scn-json-modifier}
+                            \begin{scnindent}
+                                \begin{scnreltolist}{разбиение}
+                                    \scnitem{scn-json-base-info}
+                                    \scnitem{scn-json-modifier-arcs}
+                                    \begin{scnindent}
+                                        \begin{scnreltolist}{разбиение}
+                                            \scnitem{scn-json-arc}
+                                        \end{scnreltolist}
+                                    \end{scnindent}
+                                \end{scnreltolist}
+                            \end{scnindent}
+                        \end{scnreltolist}
+                    \end{scnindent}
+                \end{scnreltolist}
+            \end{scnindent}
+        \end{scnreltolist}
+    \end{scnindent}
+\end{scnreltolist}
+
+\scnheader{scn-json-node}
+\begin{scnrelfromlist}{поля объекта}
+    \scnitem{addr}
+    \scnitem{type}
+    \scnitem{itdf}
+    \scnitem{content}
+    \begin{scnindent}
+        \scntext{примечание}{Данное поле доступно если объект описывает sc-ссылку}
+    \end{scnindent}
+    \scnitem{contentType}
+    \begin{scnindent}
+        \scntext{примечание}{Данное поле доступно если объект описывает sc-ссылку}
+    \end{scnindent}
+    \scnitem{children}
+    \scnitem{struct}
+    \begin{scnindent}
+        \scntext{примечание}{Данное поле доступно если объект является sc-контуром, содержащим sc-контур}
+    \end{scnindent}
+\end{scnrelfromlist}
+\scnrelfrom{пример}{Пример описания узлов на scn-json-коде}
+\begin{scnindent}
+    \scneqimage[15em]{../images/kpm/node_example.png}
+    \scneqimage[15em]{../images/kpm/link_example.png}
+    \scneqimage[15em]{../images/kpm/struct_example.png}
+\end{scnindent}
+
+\scnheader{scn-json-base-info}
+\scnidtf{Базовая информация элементов scn json}
+\scntext{примечание}{Каждый объект имеет базовую информацию, описывающую sc-адрес, тип и идентификатор элемента}
+\begin{scnrelfromlist}{поля объекта}
+    \scnitem{addr}
+    \scnitem{type}
+    \scnitem{itdf}
+\end{scnrelfromlist}
+\scnrelfrom{пример}{Пример базовой информации элементов scn json на scn-json-коде}
+\begin{scnindent}
+    \scneqimage[15em]{../images/kpm/base_info_example.png}
+    \scntext{интерпретация}{Хэш sc-адреса элемента - 145278, тип элемента - 1057, идентификатор элемента - "базовая декомпозиция*"{}}
+\end{scnindent}
+
+\scnheader{scn-json-children}
+\scnidtf{Список связанных с родительским объектом узлов, их дуги и модификаторы}
+\scntext{примечание}{Данный список содержит объекты которые описывают тройки или пятерки при помощи 3-х списков дуг, модификаторов, связанных узловб сгруппированных по модификаторам}
+\scnrelfrom{пример}{Пример списка связанных с родительским объектом узлов, их дуг и модификаторов на scn-json-коде}
+\begin{scnindent}
+    \scneqimage[15em]{../images/kpm/children_example.png}
+\end{scnindent}
+
+\scnheader{scn-json-arcs}
+\scnidtf{Список дуг родительского элемента}
+\scnrelfrom{пример}{Пример списка дуг родительского элемента на scn-json-коде}
+\begin{scnindent}
+    \scneqimage[15em]{../images/kpm/arcs_example.png}
+\end{scnindent}
+
+\scnheader{scn-json-arc}
+\scnidtf{Дуга родительского элемента}
+\begin{scnrelfromlist}{поля объекта}
+    \scnitem{addr}
+    \scnitem{type}
+    \scnitem{itdf}
+    \scnitem{direction}
+\end{scnrelfromlist}
+\scnrelfrom{пример}{Пример дуги родительского элемента на scn-json-коде}
+\begin{scnindent}
+    \scneqimage[15em]{../images/kpm/arc_example.png}
+\end{scnindent}
+
+\scnheader{scn-json-modifiers}
+\scnidtf{Список модификаторов дуг родительского элемента}
+\scnrelfrom{пример}{Пример списка модификаторов дуг родительского элемента на scn-json-коде}
+\begin{scnindent}
+    \scneqimage[15em]{../images/kpm/modifiers_example.png}
+\end{scnindent}
+
+\scnheader{scn-json-modifier}
+\scnidtf{Модификтор дуг родительского элемента}
+\begin{scnrelfromlist}{поля объекта}
+    \scnitem{addr}
+    \scnitem{type}
+    \scnitem{itdf}
+    \scnitem{modifierArcs}
+\end{scnrelfromlist}
+\scnrelfrom{пример}{Пример модификтора дуг родительского элемента на scn-json-коде}
+\begin{scnindent}
+    \scneqimage[15em]{../images/kpm/modifier_example.png}
+\end{scnindent}
+
+\scnheader{scn-json-modifier-arcs}
+\scnidtf{Список дуг модификтора дуг родительского элемента}
+\scnrelfrom{пример}{Пример списка дуг модификатора дуг родительского элемента на scn-json-коде}
+\begin{scnindent}
+    \scneqimage[15em]{../images/kpm/modifier_arcs_example.png}
+\end{scnindent}
+
+\scnheader{scn-json-linked-nodes}
+\scnidtf{Список связанных узлов с родительским элементом}
+\scnrelfrom{пример}{Пример списка связанных узлов на scn-json-коде}
+\begin{scnindent}
+    \scneqimage[15em]{../images/kpm/linked_nodes_example.png}
+\end{scnindent}
+
+\scnheader{Реализация агента трансляции из внутреннего представления знаний в промежуточный транспортный формат scn (json)}
+\begin{scnrelfromlist}{используемый язык программирования}
+    \scnitem{C}
+    \scnitem{C++}
+\end{scnrelfromlist}
+\scniselement{атомарный sc-агент}
+\begin{scnrelfromlist}{}
+    \scnitem{Реализация sc-памяти}
+\end{scnrelfromlist}
+\scntext{адрес хранилища}{}
+\scntext{пояснение}{Текущая реализация агента осуществляет транлсяцию из внутреннего представления знаний в формат scn (json), позволяющий отобразить полученную структуру без допольнительных преобразований, в отличии от формата scs (json).}
+\scnrelfrom{пример входной конструкции}{\scnfileimage[15em]{../images/kpm/scn_json_translator_input.png}}
+\scnrelfrom{пример входной конструкции}{\scnfileimage[15em]{../images/kpm/scn_json_translator_input2.png}}
+\begin{scnrelfromlist}{аргументы агента}
+    \scnitem{question\_instance}
+    \begin{scnindent}
+        \scntext{пояснение}{действие, которое необходимо протранслировать, у которого есть ответ связанный отношением nrel\_answer}
+        \scntext{отношение аргумента}{исходная sc-конструкция'}
+    \end{scnindent}
+    \scnitem{format}
+    \begin{scnindent}
+        \scntext{пояснение}{формат в которой необходимо протранслировать, в данном случае формат scn (json)}
+        \scntext{отношение аргумента}{выходной формат'}
+    \end{scnindent}
+    \scnitem{lang}
+    \begin{scnindent}
+        \scntext{пояснение}{язык содержимого sc-ссылок и идентификаторов}
+        \scntext{отношение аргумента}{ui\_rrel\_user\_lang}
+    \end{scnindent}
+\end{scnrelfromlist}
+\begin{scnrelfromlist}{необязательные аргументы агента}
+    \scnitem{filter\_set}
+    \begin{scnindent}
+        \scntext{пояснение}{множество фильтрации (множество отношений, которые не нужно включать в результаты трансляции)}
+        \scntext{отношение аргумента}{ui\_rrel\_filter\_list}
+    \end{scnindent}
+\end{scnrelfromlist}
+
+Для установления порядка отношений и элементов, а также для фильтрации ненужных отношений в отображении для данной ostis-системы, можно задать \textit{множество порядка SCn JSON} и \textit{множество фильтрации SCn JSON}
+\scnheader{множество порядка SCn JSON}
+\scnidtf{Элементы множества порядка SCn JSON}
+\scntext{пояснение}{Элементы множества порядка SCn JSON - это множество элементов, с которых необходимо начинать трансляцию в формате scn (json), в заданном порядке.}
+\scnrelfrom{пример}{\scnfileimage[15em]{../images/kpm/concept_scn_json_elements_order_set_example.png}}
+
+\scnheader{множество фильтрации SCn JSON}
+\scnidtf{Элементы множества SCn JSON}
+\scntext{пояснение}{Элементы множества фильтрации SCn JSON - это множество элементов, которые необходимо удалить из трансляции в формате scn (json).}
+\scnrelfrom{пример}{\scnfileimage[15em]{../images/kpm/concept_scn_json_elements_filter_set_example.png}}
