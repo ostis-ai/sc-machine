@@ -1,12 +1,14 @@
 coverage:
   status:
     project:
-      default:
-        target: 75%
-        threshold: null
-    patch: false
-    changes: false
-  ignore:
-    - "*/utils/sc_console.*"
-    - "*/utils/sc_message.*"
-    - "*/utils/sc_progress.*"
+      default: # This can be anything, but it needs to exist as the name
+        # basic settings
+        target: auto
+        threshold: 5%
+        base: auto
+        # advanced settings
+        branches:
+          - main
+        if_ci_failed: error #success, failure, error, ignore
+        only_pulls: false
+        removed_code_behavior: off #removals_only, fully_covered_patch, adjust_base
