@@ -4,8 +4,6 @@
 
 #include "sc-memory/sc_memory.hpp"
 
-#include <memory>
-
 class ScMemoryTest : public testing::Test
 {
 protected:
@@ -23,7 +21,7 @@ protected:
     ScMemoryTest::Shutdown();
   }
 
-  void Initialize()
+  void Initialize(sc_uint32 max_events_and_agents_threads = DEFAULT_MAX_EVENTS_AND_AGENTS_THREADS, std::string const & result_structure = "")
   {
     sc_memory_params params;
     sc_memory_params_clear(&params);
@@ -32,7 +30,10 @@ protected:
     params.repo_path = "repo";
     params.log_level = "Debug";
 
-    params.max_events_and_agents_threads = 1;
+    params.max_events_and_agents_threads = max_events_and_agents_threads;
+
+    params.init_memory_generated_upload = !result_structure.empty();
+    params.init_memory_generated_structure = result_structure.c_str();
 
     ScMemory::LogMute();
     ScMemory::Initialize(params);
@@ -54,26 +55,16 @@ class ScMemoryTestWithInitMemoryGeneratedStructure : public ScMemoryTest
 {
   virtual void SetUp()
   {
-    ScMemoryTestWithInitMemoryGeneratedStructure::Initialize();
+    ScMemoryTestWithInitMemoryGeneratedStructure::Initialize(DEFAULT_MAX_EVENTS_AND_AGENTS_THREADS, "result_structure");
     m_ctx = std::make_unique<ScMemoryContext>(sc_access_lvl_make_min, "test");
   }
+};
 
-  void Initialize()
+class ScSingleThreadedMemoryTest : public ScMemoryTest
+{
+  virtual void SetUp()
   {
-    sc_memory_params params;
-    sc_memory_params_clear(&params);
-
-    params.clear = SC_TRUE;
-    params.repo_path = "repo";
-    params.log_level = "Debug";
-
-    params.max_events_and_agents_threads = 1;
-
-    params.init_memory_generated_upload = SC_TRUE;
-    params.init_memory_generated_structure = "result_structure";
-
-    ScMemory::LogMute();
-    ScMemory::Initialize(params);
-    ScMemory::LogUnmute();
+    ScSingleThreadedMemoryTest::Initialize(DEFAULT_MIN_EVENTS_AND_AGENTS_THREADS);
+    m_ctx = std::make_unique<ScMemoryContext>(sc_access_lvl_make_min, "test");
   }
 };

@@ -415,7 +415,7 @@ void sc_event_unlock(sc_event * evt)
 }
 
 // --------
-sc_bool sc_events_initialize_ext(sc_int32 const max_events_and_agents_threads)
+sc_bool sc_events_initialize_ext(sc_uint32 const max_events_and_agents_threads)
 {
   event_queue = sc_event_queue_new_ext(max_events_and_agents_threads);
   return SC_TRUE;
@@ -423,7 +423,7 @@ sc_bool sc_events_initialize_ext(sc_int32 const max_events_and_agents_threads)
 
 sc_bool sc_events_initialize()
 {
-  return sc_events_initialize_ext((sc_int32)g_get_num_processors());
+  return sc_events_initialize_ext(g_get_num_processors());
 }
 
 void sc_events_shutdown()

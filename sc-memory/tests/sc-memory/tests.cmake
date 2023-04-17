@@ -4,8 +4,6 @@ make_tests_from_folder(${CMAKE_CURRENT_LIST_DIR}/common
     INCLUDES ${SC_MEMORY_SRC} ${CMAKE_CURRENT_LIST_DIR}/_test
 )
 
-sc_codegen(sc-memory-common-tests ${CMAKE_CURRENT_LIST_DIR}/common)
-
 make_tests_from_folder(${CMAKE_CURRENT_LIST_DIR}/containers
     NAME sc-memory-containers-tests
     DEPENDS sc-memory sc-core ${GLIB2_LIBRARIES}

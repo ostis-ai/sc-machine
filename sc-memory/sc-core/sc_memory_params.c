@@ -24,7 +24,7 @@ void sc_memory_params_clear(sc_memory_params * params)
 
   params->max_loaded_segments = DEFAULT_MAX_LOADED_SEGMENTS;
   params->max_threads = DEFAULT_MAX_THREADS;
-  params->max_events_and_agents_threads = DEFAULT_EVENTS_PROCESSORS;
+  params->max_events_and_agents_threads = DEFAULT_MAX_EVENTS_AND_AGENTS_THREADS;
 
   params->init_memory_generated_structure = (sc_char const *)null_ptr;
   params->init_memory_generated_upload = SC_FALSE;
