@@ -48,7 +48,8 @@ ScAddr GenerationUtils::wrapInOrientedSet(
     const ScType & setType)
 {
   const size_t maxRrelCountExceeded = 10;
-  SC_ASSERT(addrVector.size() < maxRrelCountExceeded, ());
+  SC_ASSERT(addrVector.size() < maxRrelCountExceeded, ("Not create numerated set with more than 10 elements"));
+  SC_UNUSED(maxRrelCountExceeded);
 
   ScAddr set = ms_context->CreateNode(setType);
   for (size_t i = 0; i < addrVector.size(); ++i)

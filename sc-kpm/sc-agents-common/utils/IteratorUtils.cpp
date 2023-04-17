@@ -21,7 +21,8 @@ namespace utils
 ScAddr IteratorUtils::getRoleRelation(ScMemoryContext * ms_context, const size_t & index)
 {
   size_t minRrelCountExceeded = 1;
-  SC_ASSERT(index >= minRrelCountExceeded, ());
+  SC_ASSERT(index >= minRrelCountExceeded, ("Unable to create ordered role relation"));
+  SC_UNUSED(minRrelCountExceeded);
 
   auto relationIter = orderRelationsMap.find(index);
   if (relationIter == orderRelationsMap.end())

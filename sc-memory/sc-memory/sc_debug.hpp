@@ -129,8 +129,6 @@ public:
 #  define SC_ASSERT(_expr, _msg) ({ _ASSERT_IMPL(::utils::ExceptionAssert, _expr, _msg, __FILE__, __LINE__); })
 #else
 #  define SC_ASSERT(_expr, _msg) ((void)0)
-// will be removed use SC_ASSERT instead
-#  define ASSERT(_expr, _msg) ((void)0)
 #endif
 
 #define SC_CHECK_PARAM(_expr, _msg) \
