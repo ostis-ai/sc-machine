@@ -125,7 +125,7 @@ public:
     m_memoryParams.max_loaded_segments = GetIntByKey("max_loaded_segments", DEFAULT_MAX_LOADED_SEGMENTS);
     m_memoryParams.max_threads = GetIntByKey("max_threads", DEFAULT_MAX_THREADS);
     m_memoryParams.max_events_and_agents_threads =
-        GetIntByKey("max_events_and_agents_threads", DEFAULT_EVENTS_PROCESSORS);
+        GetIntByKey("max_events_and_agents_threads", DEFAULT_MAX_EVENTS_AND_AGENTS_THREADS);
     m_memoryParams.max_searchable_string_size =
         GetIntByKey("max_searchable_string_size", DEFAULT_MAX_SEARCHABLE_STRING_SIZE);
 
