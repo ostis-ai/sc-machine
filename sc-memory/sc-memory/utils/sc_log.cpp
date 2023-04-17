@@ -48,7 +48,7 @@ ScLog::ScLog()
   m_mode = Type::Info;
   m_output_mode = OutputType::Console;
 
-  SC_ASSERT(!ms_instance, ());
+  SC_ASSERT(!ms_instance, ("ScLog instance is not valid"));
   ms_instance = this;
 }
 
@@ -67,7 +67,7 @@ ScLog::ScLog(std::string const & logType, std::string const & logFile, std::stri
     Initialize(logFile);
   }
 
-  SC_ASSERT(!ms_instance, ());
+  SC_ASSERT(!ms_instance, ("ScLog instance is not valid"));
   ms_instance = this;
 }
 
@@ -80,7 +80,7 @@ ScLog::~ScLog()
 bool ScLog::Initialize(std::string const & logFile)
 {
   if (m_output_mode == OutputType::File)
-    m_fileStream.open(logFile, std::ofstream::out | std::ofstream::app);
+    m_fileStream.open(logFile, std::ofstream::out | std::ofstream::trunc);
 
   return m_fileStream.is_open();
 }
@@ -146,12 +146,12 @@ int ScLog::FindEnumElement(const std::string (&elements)[N], const std::string &
 {
   size_t size = N;
   int index = -1;
-  for (int i = 0; i < size; i++)
+  for (size_t i = 0; i < size; i++)
   {
     std::string mode = elements[i];
     if (externalValue == mode)
     {
-      index = i;
+      index = (int)i;
       break;
     }
   }

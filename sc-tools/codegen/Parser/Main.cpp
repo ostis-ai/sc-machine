@@ -61,7 +61,7 @@ void parse(std::string const & appName, boost::program_options::variables_map co
   {
     parser.Parse();
   }
-  catch (Exception e)
+  catch (Exception const & e)
   {
     std::cerr << "Error: " << e.GetDescription() << std::endl;
     parser.ResetCache();

@@ -127,7 +127,7 @@ void ReflectionParser::Parse()
         moduleFile = *it;
       }
     }
-    catch (Exception e)
+    catch (Exception const & e)
     {
       EMIT_ERROR(e.GetDescription() << " in " << *it);
     }
@@ -138,7 +138,7 @@ void ReflectionParser::Parse()
     if (!moduleFile.empty())
       ProcessFile(moduleFile, true);
   }
-  catch (Exception e)
+  catch (Exception const & e)
   {
     EMIT_ERROR(e.GetDescription() << " in " << moduleFile);
   }
@@ -233,7 +233,7 @@ bool ReflectionParser::ProcessFile(std::string const & fileName, bool inProcessM
     clang_disposeIndex(m_index);
     clang_disposeTranslationUnit(m_translationUnit);
   }
-  catch (Exception e)
+  catch (Exception const & e)
   {
     clang_disposeIndex(m_index);
     clang_disposeTranslationUnit(m_translationUnit);

@@ -36,11 +36,6 @@
 namespace
 {
 
-bool IsLevel1Idtf(std::string const & idtf)
-{
-  return (idtf.find('#') != std::string::npos);
-}
-
 std::string UnescapeContent(std::string const & content)
 {
   std::string result = content;
@@ -415,7 +410,6 @@ ElementHandle Parser::ResolveAlias(std::string const & name)
 ElementHandle Parser::ProcessIdentifier(std::string const & name)
 {
   // resolve type of sc-element
-  SC_ASSERT(!IsLevel1Idtf(name), ());
   ScType const type = TypeResolver::IsConst(name) ? ScType::NodeConst : ScType::NodeVar;
   return AppendElement(name, type);
 }
@@ -438,7 +432,7 @@ ElementHandle Parser::ProcessIdentifierLevel1(std::string const & type, std::str
 void Parser::ProcessTriple(ElementHandle const & source, ElementHandle const & edge, ElementHandle const & target)
 {
   ParsedElement const & edgeEl = GetParsedElement(edge);
-  SC_ASSERT(edgeEl.GetType().IsEdge(), ("edge has invalid type"));
+  SC_ASSERT(edgeEl.GetType().IsEdge(), ("Edge has invalid type"));
 
   auto addEdge = [this, &edgeEl](ElementHandle const & src, ElementHandle const & e, ElementHandle const & trg) {
     ParsedElement const & srcEl = GetParsedElement(src);
