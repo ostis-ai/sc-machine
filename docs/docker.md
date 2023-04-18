@@ -2,48 +2,31 @@
 
 All our releases are automatically uploaded to Docker Hub, so to start using our latest release it's enough to [have Docker installed and configured](https://docs.docker.com/get-started/) (**please note** that Docker from `snap` and Debian's/Ubuntu's repo are known to be broken, install using the official guide).
 
-To launch our image, you'll have to change the KB folder mounted in `docker-compose.yml` file (or put existing files in ./kb folder in the root of the project):
-
-```diff
-    volumes:
--      - ./kb:/kb
-+      - <path/to/your/kb>:/kb
-      - kb-binary:/kb.bin
-    environment:
-      # Use the commented env variable if you need to rebuild KB every startup.
--      #- "REBUILD_KB=1"
-+      - "REBUILD_KB=1"
--      - "KB_PATH=/kb/repo.path"
-      # Change this if you don't have repo.path in your KB
-+      - "KB_PATH=/kb"
-
-```
+### Launch
 
 ```sh
-docker compose run machine build #build KB
+docker compose run machine build #build KB (see below for details)
 docker compose up #launch server
 ```
 
-## Working with knowledge base in Docker
+Generally you would want to use a KB source folder alongside sc-machine. To do that, create a "kb" folder in the root of the project and place the KB sources in it. After that build it using the command described above (or enable autorebuild as shown below).
 
-We're using `./kb` as the default location for the KB files. KB location can be changed in `./docker-compose.yml`
-By default, KB rebuild is disabled, so you'll have to rebuild it manually. You can uncomment `KB_REBUILD=1` env variable in `docker-compose.yml` in case you need to rebuild KB on each relaunch. Running `docker compose run machine rebuild` is unnecessary in this case.
+Note: By default we expect you to place a [repo.path](./other/repofile.md) file inside the `./kb` folder, but in case you don't have one you can configure to build the folder itself by modifying the `.env` file:
 
-## Entrypoint
+```diff
++KB_PATH="/kb"
+```
 
-Our Docker image has two commands: `build` and `serve`. The former is used to build or update knowledge base, and the latter is used to launch `sc-server`.
+If you want to auto-rebuild the knowledge base on sc-server restart, you can also configure this behavior in the `.env` file:
 
-## Building KBs using Docker image
+```diff
++REBUILD_KB=1
+```
 
-One thing to note is that **we do not build KB on startup by default**.
+## docker_entrypoint.sh
 
-You can override this behavior in one of the following ways:
-Define `$REBUILD_KB` environment variable by adding `-e REBUILD_KB=1` to the `docker run` arguments. In this case, launching the image in `serve` mode will rebuild the KB automatically.
-
-You may also want to change the path to KB being built in case you mounted it in a different location (or if you're using a repo file). To do this, add `-e KB_PATH=</your/path>`.
-
-Another way to rebuild the KB without launching the server is to launch it in `build` mode. To do this, simply substitute `serve` by `build` in the command shown in [Using sc-machine inside Docker](#using-sc-machine-inside-docker) section.
+Our Docker entrypoint script has two commands: `build` and `serve`. The former is used to build or update knowledge base, and the latter is used to launch `sc-server`. You can use it in your own projects that use sc-server as the entrypoint. Don't forget to configure custom binary and knowledge base paths. Consult with the `docker-entrypoint.sh --help` for the full list of available flags.
 
 ## Rebuild image
 
-In case you want to run your own, customized version of `sc-machine` or you made some contributions that require changes to the image, use our `Dockerfile` to build a new version of the image. To rebuild the image, launch `docker build . -t ostis/sc-machine` in the root folder of this project.
+In case you want to run your own, changed version of `sc-machine` or you made some contributions that require changes to the image, use our `Dockerfile` to build a new version of the image. To rebuild the image, launch `docker build . -t ostis/sc-machine` in the root folder of this project. You'll be able to launch it using `docker compose up` afterwards.
