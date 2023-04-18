@@ -26,7 +26,7 @@ RUN --mount=type=cache,target=/ccache/ ./scripts/make_all.sh
 FROM base AS final
 
 COPY --from=builder /sc-machine/scripts /sc-machine/scripts 
-COPY --from=builder /sc-machine/config /sc-machine/config 
+COPY --from=builder /sc-machine/sc-machine.ini /sc-machine/sc-machine.ini 
 COPY --from=builder /sc-machine/bin /sc-machine/bin
 WORKDIR /sc-machine/scripts
 

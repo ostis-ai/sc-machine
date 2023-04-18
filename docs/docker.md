@@ -5,7 +5,7 @@ All our releases are automatically uploaded to Docker Hub, so to start using our
 ### Launch
 
 ```sh
-docker compose run machine build #build KB (see below for details)
+docker compose run --rm machine build #build KB (see below for details)
 docker compose up #launch server
 ```
 

@@ -68,18 +68,18 @@ SC-machine is a core of any OSTIS-system, so you can use a reference system name
 
   ```sh
   # build kb
-  docker run --rm -it -v <full path to kb sources>:/kb -v sc-machine_kb:/kb.bin ostis/sc-machine:latest build -c /sc-machine/config/sc-machine.ini -b /sc-machine/bin /kb
+  docker compose run --rm machine build
   # run sc-server
-  docker run --rm -it -v sc-machine_kb:/kb.bin -p 8090:8090 ostis/sc-machine:latest serve -c /sc-machine/config/sc-machine.ini -b /sc-machine/bin
+  docker compose up
   ```
 
 - Native
 
   ```sh
   #build kb
-  python3 scripts/build_kb.py -c config/sc-machine.ini -b bin <path to kb folder with SCs and SCg sources (or path to repo.path file)>
+  python3 scripts/build_kb.py -c ./sc-machine.ini -b bin <path to kb folder with SCs and SCg sources (or path to repo.path file)>
   #launch sc-server
-  ./bin/sc-server -c config/sc-machine.ini
+  ./bin/sc-server -c ./sc-machine.ini
   ```
 
 Most of these commands have a help page bundled inside, so if you have any questions or want to customize the command behavior, use `--help` flag to learn more about them.
