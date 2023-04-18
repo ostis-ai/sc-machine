@@ -67,6 +67,10 @@ SC-machine is a core of any OSTIS-system, so you can use a reference system name
 - Docker
 
   ```sh
+  # create empty KB sources folder
+  mkdir kb && cat "." > kb/repo.path
+  # note: at this stage you can move your KB sources to the ./kb folder
+  
   # build kb
   docker compose run --rm machine build
   # run sc-server
