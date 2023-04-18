@@ -16,7 +16,3 @@ system_element -> (ui_rrel_user_lang-> @edge2);;
 system_element -> @edge3;;
 system_element -> (ui_rrel_output_format-> @edge3);;
 question_addr => nrel_answer: answer_addr;;
-// question_addr -> hello;;
-// answer_addr = [*
-//     hello <- test;;
-// *];;

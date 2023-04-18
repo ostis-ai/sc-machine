@@ -46,29 +46,29 @@ protected:
   void CollectScStructureElementsInfo();
 
   //! Generate json for specified element
-  void ParseScnJsonSentence(ScStructureElementInfo * elInfo, int level, bool isStruct, sc_json & result);
+  void ParseScnJsonSentence(ScStructureElementInfo * elInfo, int level, bool isStruct, ScJson & result);
 
   //!
-  void ParseScnJsonArc(ScStructureElementInfo * elInfo, sc_json & result);
+  void ParseScnJsonArc(ScStructureElementInfo * elInfo, ScJson & result);
 
   //!
-  void ParseScnJsonLink(ScStructureElementInfo * elInfo, sc_json & result);
+  void ParseScnJsonLink(ScStructureElementInfo * elInfo, ScJson & result);
 
   //! Get children for specified element
-  void ParseChildrenScnJson(ScStructureElementInfo * elInfo, bool isStruct, sc_json & children);
+  void ParseChildrenScnJson(ScStructureElementInfo * elInfo, bool isStruct, ScJson & children);
 
   //! Get children by direction for specified arcs list
   void ParseChildrenScnJsonByDirection(
       ScStructureElementInfo::ScStructureElementInfoList const & arcs,
       String const & direction,
       bool isStruct,
-      sc_json & children);
+      ScJson & children);
 
   //! Get base json information about specified element
-  void ParseScElementInfo(ScStructureElementInfo * elInfo, sc_json & result);
+  void ParseScElementInfo(ScStructureElementInfo * elInfo, ScJson & result);
 
   //! get full json of linked nodes for specified children
-  void ParseLinkedNodesScnJson(sc_json & children, int level = 1, bool isStruct = false);
+  void ParseLinkedNodesScnJson(ScJson & children, int level = 1, bool isStruct = false);
 
   ScStructureElementInfo * ResolveStructureElementInfo(sc_addr const & addr, sc_type type = 0);
 
@@ -81,16 +81,16 @@ protected:
       ScStructureElementInfo * elInfo,
       sc_addr modifierAddr,
       bool isStruct,
-      sc_json & children);
+      ScJson & children);
 
   void UpdateChildArcs(
       ScStructureElementInfo::ScStructureElementInfoList const & arcs,
       bool isStruct,
-      sc_json & fullChild,
+      ScJson & fullChild,
       String const & direction);
 
   //! Get json of arc
-  void ParseScnJsonChild(ScStructureElementInfo * arcInfo, String const & direction, bool isStruct, sc_json & child);
+  void ParseScnJsonChild(ScStructureElementInfo * arcInfo, String const & direction, bool isStruct, ScJson & child);
 
   //! Resolve additional filter elements for specified cmd_addr
   void ResolveFilterList(sc_addr);

@@ -28,7 +28,7 @@ ScAddr findTranslation(ScMemoryContext & context, ScAddr const & constructionAdd
   context.HelperSearchTemplate(translationTemplate, result);
   if (!result.IsEmpty())
     return result[0]["_translation_link"];
-  return {};
+  return ScAddr::Empty;
 }
 
 ScAddr getTranslation(ScMemoryContext & context, ScAddr const & answerAddr)
@@ -42,7 +42,8 @@ ScAddr getTranslation(ScMemoryContext & context, ScAddr const & answerAddr)
     waitTime += 1;
     if (waitTime > WAIT_TIME)
     {
-      return {};
+      translation = ScAddr::Empty;
+      break;
     }
     translation = findTranslation(context, answerAddr);
   }

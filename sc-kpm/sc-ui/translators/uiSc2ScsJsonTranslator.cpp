@@ -22,9 +22,9 @@ uiSc2ScsTranslator::~uiSc2ScsTranslator()
 
 void uiSc2ScsTranslator::runImpl()
 {
-  sc_json result;
+  ScJson result;
 
-  sc_json keywords = sc_json::array();
+  ScJson keywords = ScJson::array();
   // get command arguments (keywords)
   sc_iterator5 * it5 = sc_iterator5_a_a_f_a_f_new(
       s_default_ctx,
@@ -47,7 +47,7 @@ void uiSc2ScsTranslator::runImpl()
       sc_type type;
       sc_memory_get_element_type(s_default_ctx, addr, &type);
 
-      sc_json keyword;
+      ScJson keyword;
       keyword["addr"] = uiSc2ScsTranslator::buildId(addr);
       keyword["type"] = type;
 
@@ -59,7 +59,7 @@ void uiSc2ScsTranslator::runImpl()
 
   result["keywords"] = keywords;
 
-  sc_json triples = sc_json::array();
+  ScJson triples = ScJson::array();
   tScAddrSet constrAddrs;
   // iterate all arcs and translate them
   auto const itEnd = mEdges.cend();
@@ -87,7 +87,7 @@ void uiSc2ScsTranslator::runImpl()
     constrAddrs.insert(arc_beg);
     constrAddrs.insert(arc_end);
 
-    sc_json triple = sc_json::array();
+    ScJson triple = ScJson::array();
     triple.push_back({{"addr", buildId(arc_beg)}, {"type", beg_type}});
     triple.push_back({{"addr", buildId(arc_addr)}, {"type", arc_type}});
     triple.push_back({{"addr", buildId(arc_end)}, {"type", end_type}});
@@ -99,11 +99,11 @@ void uiSc2ScsTranslator::runImpl()
 
   if (SC_ADDR_IS_EMPTY(mOutputLanguageAddr))
   {
-    result["identifiers"] = sc_json::array();
+    result["identifiers"] = ScJson::array();
   }
   else
   {
-    sc_json identifiers;
+    ScJson identifiers;
     auto constrItEnd = constrAddrs.cend();
     for (auto it = constrAddrs.cbegin(); it != constrItEnd; ++it)
     {
@@ -117,7 +117,7 @@ void uiSc2ScsTranslator::runImpl()
       }
       else
       {
-        identifiers[buildId(*it)] = sc_json();
+        identifiers[buildId(*it)] = ScJson();
       }
     }
 

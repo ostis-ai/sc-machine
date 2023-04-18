@@ -14,7 +14,3 @@ system_element -> @edge2;;
 system_element -> (ui_rrel_user_lang-> @edge2);;
 system_element -> (trans_cmd_addr <- ui_command_translate_from_sc);;
 question_addr => nrel_answer: answer_addr;;
-// question_addr -> hello;;
-// answer_addr = [*
-//     hello <- test;;
-// *];;

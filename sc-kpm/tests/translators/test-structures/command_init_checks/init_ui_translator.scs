@@ -18,7 +18,3 @@ system_element -> @edge3;;
 system_element -> (ui_rrel_output_format-> @edge3);;
 system_element -> (trans_cmd_addr <- ui_command_translate_from_sc);;
 question_addr => nrel_answer: answer_addr;;
-// question_addr -> hello;;
-// answer_addr = [*
-//     hello <- test;;
-// *];;
