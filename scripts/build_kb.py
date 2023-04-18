@@ -82,7 +82,7 @@ def copy_kb(output_path: str):
 
 
 def parse_config(path: str) -> dict:
-    config_dict = {REPO_FILE: '', OUTPUT_PATH: '', LOGFILE_PATH: '', OSTIS_PATH: abspath(join(os.path.dirname(os.path.realpath(path)), "/bin"))}
+    config_dict = {REPO_FILE: '', OUTPUT_PATH: '', LOGFILE_PATH: '', OSTIS_PATH: abspath(join(os.path.dirname(os.path.realpath(path)), "bin"))}
     config = configparser.ConfigParser()
     if path is not None:
         config.read(path)
