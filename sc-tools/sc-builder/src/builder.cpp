@@ -8,26 +8,57 @@
 #include "keynodes.hpp"
 #include "scs_translator.hpp"
 
-#include <boost/filesystem.hpp>
 #include <memory>
-#include <boost/algorithm/string.hpp>
+#include <unordered_set>
 
 #include <fstream>
-#include <unordered_set>
+#include <filesystem>
+
+#include <regex>
 
 namespace impl
 {
-std::unordered_set<std::string> gSupportedFormats = {"scs", "scsi"};
+std::unordered_set<std::string> gSupportedFormats = {"scs"};
 
-std::string NormalizeExt(std::string ext)
+void NormalizeExt(std::string & ext)
 {
   utils::StringUtils::ToLowerCase(ext);
-  return ext;
 }
 
-bool IsSupportedFormat(std::string const & fileExt)
+bool IsSourceFile(std::string const & filePath)
 {
-  return gSupportedFormats.find(NormalizeExt(fileExt)) != gSupportedFormats.end();
+  if (!std::filesystem::is_regular_file(filePath))
+    return false;
+
+  std::string ext = utils::StringUtils::GetFileExtension(filePath);
+  if (!ext.empty())
+    impl::NormalizeExt(ext);
+
+  return gSupportedFormats.find(ext) != gSupportedFormats.cend();
+}
+
+void NormalizePath(std::string const & repoDirectoryPath, std::string & path)
+{
+  utils::StringUtils::Trim(path);
+  std::stringstream stream;
+  stream << repoDirectoryPath << path;
+  path = stream.str();
+}
+
+bool IsSkipText(std::string const & string)
+{
+  return std::regex_match(string, std::regex("^\\s*$"))
+         || utils::StringUtils::StartsWith(string, "#", true);
+}
+
+bool IsExcludedPath(std::string const & path)
+{
+  return utils::StringUtils::StartsWith(path, "!", true);
+}
+
+std::string GetFileName(std::string const & path)
+{
+  return path.substr(0, path.rfind('/') + 1);
 }
 
 class ExtParser
@@ -56,14 +87,9 @@ public:
     m_params.push_back(nullptr);
   }
 
-  std::vector<const sc_char *> & GetParams()
-  {
-    return m_params;
-  }
-
 private:
-  std::vector<const sc_char *> m_params;
-  std::vector<std::string> m_names;
+  std::vector<const sc_char *> m_params{};
+  std::vector<std::string> m_names{};
 };
 
 }  // namespace impl
@@ -74,6 +100,7 @@ bool Builder::Run(BuilderParams const & params, sc_memory_params const & memoryP
 {
   m_params = params;
 
+  CollectExcludedPaths();
   CollectFiles();
 
   // initialize sc-memory
@@ -171,22 +198,9 @@ void Builder::ResolveOutputStructure()
 
 bool Builder::ProcessFile(std::string const & fileName)
 {
-  // get file extension
-  std::string const ext = utils::StringUtils::GetFileExtension(fileName);
-  if (ext.empty())
-  {
-    SC_THROW_EXCEPTION(utils::ExceptionInvalidState, "Can't determine file extension " << fileName);
-
-    return false;
-  }
-
-  std::shared_ptr<Translator> translator = CreateTranslator(ext);
+  std::shared_ptr<Translator> translator = CreateTranslator(fileName);
   if (!translator)
-  {
     SC_THROW_EXCEPTION(utils::ExceptionInvalidState, "Can't create translator for a file " << fileName);
-
-    return false;
-  }
 
   Translator::Params translateParams;
   translateParams.m_fileName = fileName;
@@ -197,39 +211,59 @@ bool Builder::ProcessFile(std::string const & fileName)
   return translator->Translate(translateParams);
 }
 
+void Builder::CollectExcludedPaths()
+{
+  m_excludedPaths.clear();
+
+  if (!std::filesystem::is_regular_file(m_params.m_inputPath))
+    return;
+
+  std::string const & repoDirectoryPath = impl::GetFileName(m_params.m_inputPath);
+
+  std::ifstream infile;
+  infile.open(m_params.m_inputPath.c_str());
+  if (!infile.is_open())
+    SC_THROW_EXCEPTION(utils::ExceptionInvalidState, "Can't open file: " << m_params.m_inputPath);
+
+  std::string path;
+  while (std::getline(infile, path))
+  {
+    if (!impl::IsExcludedPath(path))
+      continue;
+
+    path = path.substr(1);
+    impl::NormalizePath(repoDirectoryPath, path);
+
+    m_excludedPaths.insert(path);
+  }
+}
+
 void Builder::CollectFiles(std::string const & path)
 {
-  boost::filesystem::recursive_directory_iterator itEnd, it(path);
-  while (it != itEnd)
+  auto const & IsExcludedPath = [this](std::string const & filePath) -> bool {
+    return m_excludedPaths.find(filePath) != m_excludedPaths.cend();
+  };
+
+  if (IsExcludedPath(path))
+    return;
+
+  if (impl::IsSourceFile(path))
   {
-    if (!boost::filesystem::is_directory(*it))
-    {
-      boost::filesystem::path path = *it;
-      std::string const fileName = path.normalize().string();
-      std::string ext = utils::StringUtils::GetFileExtension(fileName);
-      utils::StringUtils::ToLowerCase(ext);
+    m_files.insert(path);
+    return;
+  }
 
-      if (impl::IsSupportedFormat(ext))
-        m_files.push_back(fileName);
-    }
-
-    try
+  auto const & items = std::filesystem::directory_iterator{path};
+  for (auto const & item : items)
+  {
+    std::string const sourcePath = item.path();
+    if (impl::IsSourceFile(sourcePath) && !IsExcludedPath(sourcePath))
     {
-      ++it;
+      m_files.insert(sourcePath);
     }
-    catch (std::exception & ex)
+    else if (std::filesystem::is_directory(sourcePath))
     {
-      std::cout << ex.what() << std::endl;
-      it.no_push();
-      try
-      {
-        ++it;
-      }
-      catch (...)
-      {
-        std::cout << ex.what() << std::endl;
-        return;
-      }
+      CollectFiles(sourcePath);
     }
   }
 }
@@ -237,49 +271,34 @@ void Builder::CollectFiles(std::string const & path)
 void Builder::CollectFiles()
 {
   m_files.clear();
-  if (boost::filesystem::is_directory(m_params.m_inputPath))
+
+  if (std::filesystem::is_directory(m_params.m_inputPath))
   {
     CollectFiles(m_params.m_inputPath);
   }
-  else if (boost::filesystem::is_regular_file(m_params.m_inputPath))
+  else if (std::filesystem::is_regular_file(m_params.m_inputPath))
   {
+    std::string const & repoDirectoryPath = impl::GetFileName(m_params.m_inputPath);
+
     std::ifstream infile;
     infile.open(m_params.m_inputPath.c_str());
-    if (infile.is_open())
-    {
-      std::string path;
-      while (std::getline(infile, path))
-      {
-        boost::trim(path);
-        if (utils::StringUtils::StartsWith(path, "#", true))
-          continue;
-
-        if (!path.empty())
-        {
-          if (boost::filesystem::is_directory(path))
-          {
-            CollectFiles(path);
-          }
-          else
-          {
-            SC_THROW_EXCEPTION(utils::ExceptionInvalidState, path << " isn't a directory");
-          }
-        }
-      }
-    }
-    else
-    {
+    if (!infile.is_open())
       SC_THROW_EXCEPTION(utils::ExceptionInvalidState, "Can't open file: " << m_params.m_inputPath);
+
+    std::string path;
+    while (std::getline(infile, path))
+    {
+      if (impl::IsSkipText(path) || impl::IsExcludedPath(path))
+        continue;
+
+      impl::NormalizePath(repoDirectoryPath, path);
+
+      CollectFiles(path);
     }
   }
 }
 
-std::shared_ptr<Translator> Builder::CreateTranslator(std::string const & fileExt)
+std::shared_ptr<Translator> Builder::CreateTranslator(std::string const & filePath)
 {
-  std::string const ext = impl::NormalizeExt(fileExt);
-
-  if (ext == "scs" || ext == "scsi")
-    return std::make_shared<SCsTranslator>(*m_ctx);
-
-  return {};
+  return impl::IsSourceFile(filePath) ? std::make_shared<SCsTranslator>(*m_ctx) : std::shared_ptr<Translator>();
 }

@@ -1,14 +1,9 @@
 import argparse
-from os.path import join, abspath, relpath, commonprefix, isdir, isfile, exists, dirname, basename, splitext
+from os.path import join, abspath, exists, isdir
 import os
-import shutil
-import re
+from shutil import rmtree
 import configparser
 
-REPO_FILE_EXT = ".path"
-paths = set()
-exclude_paths = set()
-exclude_patterns = frozenset([".git*"])
 # kb_scripts folder near this script by default
 kb_scripts_path = join(os.path.dirname(os.path.realpath(__file__)), "kb_scripts")
 
@@ -22,63 +17,6 @@ OUTPUT_PATH = "output_path"
 LOGFILE_PATH = "errors_file_path"
 CONFIG_PATH = "config_file_path"
 OSTIS_PATH = "ostis_path"
-
-def search_knowledge_bases(root_path: str):
-
-    if not exists(root_path):
-        print(root_path, "does not exist.")
-        exit(1)
-
-    elif splitext(root_path)[1] == REPO_FILE_EXT:
-        with open(join(root_path), 'r') as root_file:
-            for line in root_file.readlines():
-                # ignore comments and empty lines
-                line = line.replace('\n', '')
-                # note: with current implementation, line is considered a comment if it's the first character
-                # in the line
-                if line.startswith('#') or re.match(r"^\s*$", line):
-                    continue
-                elif line.startswith('!'):
-                    absolute_path = abspath(join(dirname(root_path), line[1:]))
-                    exclude_paths.add(absolute_path)
-                else:
-                    absolute_path = abspath(join(dirname(root_path), line))
-                    # ignore paths we've already checked
-                    if absolute_path not in paths:
-                        # recursively check each repo entry
-                        search_knowledge_bases(absolute_path)
-
-    else:
-        paths.add(root_path)
-
-
-# return a file/dir name if it shouldn't be copied (returns .git folder and paths inside exclude_paths)
-def ignore_files(directory, contents):
-    ignored_files = set()
-    # for each ignored path
-    for path in exclude_paths:
-        # check if a child of this folder is inside the excluded path
-        for f in contents:
-            if abspath(join(directory, f)) == path:
-                ignored_files.add(f)
-            # ignore glob patterns defined in exclude_patterns using shutil.ignore_patterns func factory
-            ignored_files.update(shutil.ignore_patterns(*exclude_patterns)(directory, contents))
-
-    # return a set of filenames that should be excluded
-    return ignored_files
-
-
-def copy_kb(output_path: str):
-    prepared_kb = join(output_path, "prepared_kb")
-    try:
-        common_prefix = commonprefix(list(paths))
-        for path in paths:
-            # removes the common part from paths and copies what's left to prepared_kb
-            # unless the file/folder is in excluded_paths 
-            shutil.copytree(path, join(prepared_kb, relpath(
-                path, common_prefix)), ignore=ignore_files, dirs_exist_ok=True)
-    except Exception as e:
-        print(e)
 
 
 def parse_config(path: str) -> dict:
@@ -130,7 +68,9 @@ def main(args: dict):
     print("args:", conf)
 
     if not exists(join(conf[OSTIS_PATH], "sc-builder")):
-        print("OSTIS binaries are not found. Check if the binary path exists and contains necessary files. You may have compiled the project in a non-default location (pass -b flag to override binary location) or didn't build the project successfully.")
+        print("OSTIS binaries are not found. Check if the binary path exists and contains necessary files. You may"
+              "have compiled the project in a non-default location (pass -b flag to override binary location) or "
+              "didn't build the project successfully.")
         exit(1)
 
     if isdir(conf["output_path"]):
@@ -138,17 +78,8 @@ def main(args: dict):
             if entry.is_file(): os.remove(entry.path)
             if entry.is_dir(): shutil.rmtree(entry.path)
 
-    search_knowledge_bases(conf[REPO_FILE])
-
-    if not paths:
-        print("No KBs were found")
-        exit(1)
-
-    copy_kb(conf[OUTPUT_PATH])
-
-    kb_to_prepare = join(conf["output_path"], "prepared_kb")
-    prepare_kb(kb_to_prepare, conf[LOGFILE_PATH])
-    exitcode = build_kb(conf[OUTPUT_PATH], kb_to_prepare, conf[OSTIS_PATH], abspath(args["config_file_path"]))
+    prepare_kb(conf[REPO_FILE], conf[LOGFILE_PATH])
+    exitcode = build_kb(conf[OUTPUT_PATH], conf[REPO_FILE], conf[OSTIS_PATH], abspath(args["config_file_path"]))
     # exit with non-null code in case sc-builder encountered an error
     exit(exitcode)
 

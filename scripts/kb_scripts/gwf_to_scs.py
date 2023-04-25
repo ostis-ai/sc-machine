@@ -5,6 +5,7 @@ from xml.etree.ElementTree import ParseError
 
 from termcolor import colored
 
+from support_scripts.repo_parser import parse_repo_path
 from support_scripts.gwf_parser import GWFParser
 from support_scripts.scs_writer import SCsWriter
 
@@ -18,14 +19,8 @@ class Gwf2SCs:
         self.errors = []
 
     @staticmethod
-    def collect_files(directory):
-        result = []
-
-        for root, _, files in os.walk(directory, topdown=False):
-            for f in files:
-                result.append(os.path.relpath(os.path.join(root, f), directory))
-
-        return result
+    def collect_files(repo_path):
+        return parse_repo_path(repo_path)
 
     def run(self, params):
         print('Convert GWF to SCs...')

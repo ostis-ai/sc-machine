@@ -39,13 +39,16 @@ protected:
 
   bool ProcessFile(std::string const & filename);
 
+  void CollectExcludedPaths();
+
   void CollectFiles(std::string const & path);
   void CollectFiles();
 
   std::shared_ptr<class Translator> CreateTranslator(std::string const & fileExt);
 
 private:
-  std::list<std::string> m_files;
+  std::unordered_set<std::string> m_excludedPaths;
+  std::unordered_set<std::string> m_files;
 
   BuilderParams m_params;
   ScAddr m_outputStructure;
