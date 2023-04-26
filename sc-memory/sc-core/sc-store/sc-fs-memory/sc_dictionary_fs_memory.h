@@ -11,20 +11,25 @@
 #include "../sc_defines.h"
 #include "../sc_stream.h"
 
-#include "sc_fs_memory_status.h"
-
 #include "../sc-container/sc-dictionary/sc_dictionary.h"
 #include "../sc-container/sc-list/sc_list.h"
+
+#include "sc_fs_memory_status.h"
+#include "../../sc_memory_params.h"
 
 typedef sc_fs_memory_status sc_dictionary_fs_memory_status;
 
 typedef struct _sc_dictionary_fs_memory
 {
-  sc_char * path;                        // path to all dictionary files
-  sc_uint64 max_searchable_string_size;  // maximal size of strings that can be found by string/substring
+  sc_char * path;  // path to all dictionary files
+  sc_bool clear;
 
-  sc_char * strings_path;  // path to dictionary file with strings and its offsets
-  void * strings_channel;
+  sc_uint16 max_strings_channels;
+  sc_uint32 max_strings_channel_size;
+  sc_uint32 max_searchable_string_size;  // maximal size of strings that can be found by string/substring
+  sc_char const * term_separators;
+
+  void ** strings_channels;
   sc_uint64 last_string_offset;  // last offset of string in 'string_path`
 
   sc_char * terms_string_offsets_path;              // path to dictionary file with terms and its strings offsets
@@ -45,15 +50,12 @@ typedef struct _sc_link_hash_content
 
 /*! Initialize sc-dictionary file system memory in specified path.
  * @param memory[out] A pointer to sc-memory instance
- * @param path Path to store on file system
- * @param max_searchable_string_size Maximal size of strings that can be found by string/substring
+ * @param params Memory configure params
  * @returns SC_FS_MEMORY_OK, if file system memory initialized, or SC_FS_MEMORY_WRONG_PATH if path is not correct.
  */
 sc_dictionary_fs_memory_status sc_dictionary_fs_memory_initialize_ext(
     sc_dictionary_fs_memory ** memory,
-    sc_char const * path,
-    sc_bool clear,
-    sc_uint32 max_searchable_string_size);
+    sc_memory_params const * params);
 
 /*! Initialize sc-dictionary file system memory in specified path.
  * @param memory[out] A pointer to sc-memory instance

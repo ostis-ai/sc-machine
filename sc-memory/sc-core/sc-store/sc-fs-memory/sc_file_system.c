@@ -71,19 +71,18 @@ void sc_fs_get_file_content(sc_char const * file_path, sc_char ** content, sc_ui
   sc_stream_free(stream);
 }
 
-sc_bool sc_fs_create_if_is_not_file(sc_char const * path)
-{
-  if (sc_fs_is_file(path) == SC_FALSE)
-    return sc_fs_create_file(path);
-
-  return SC_TRUE;
-}
-
 void sc_fs_concat_path(sc_char const * path, sc_char const * postfix, sc_char ** out_path)
 {
   sc_uint32 size = sc_str_len(path) + sc_str_len(postfix) + 2;
   *out_path = sc_mem_new(sc_char, size + 1);
   sc_str_printf(*out_path, size, "%s/%s", path, postfix);
+}
+
+void sc_fs_concat_path_ext(sc_char const * path, sc_char const * postfix, sc_char const * ext, sc_char ** out_path)
+{
+  sc_uint32 size = sc_str_len(path) + sc_str_len(postfix) + sc_str_len(ext) + 2;
+  *out_path = sc_mem_new(sc_char, size + 1);
+  sc_str_printf(*out_path, size, "%s/%s%s", path, postfix, ext);
 }
 
 sc_bool sc_fs_create_directory(sc_char const * path)

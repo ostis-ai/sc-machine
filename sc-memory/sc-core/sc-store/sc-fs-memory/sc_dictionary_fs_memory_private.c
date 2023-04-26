@@ -117,31 +117,40 @@ sc_bool _sc_dictionary_fs_memory_string_node_destroy(sc_dictionary_node * node, 
   return SC_TRUE;
 }
 
-sc_char * _sc_dictionary_fs_memory_get_first_term(sc_char const * string)
+sc_memory_params * _sc_dictionary_fs_memory_get_default_params(sc_char const * path, sc_bool clear)
 {
-  static const sc_char delim[] = " _";
+  sc_memory_params * params = sc_mem_new(sc_memory_params, 1);
+  params->repo_path = path;
+  params->clear = clear;
+  params->max_strings_channels = DEFAULT_MAX_STRINGS_CHANNELS;
+  params->max_strings_channel_size = DEFAULT_MAX_STRINGS_CHANNEL_SIZE;
+  params->max_searchable_string_size = DEFAULT_MAX_SEARCHABLE_STRING_SIZE;
+  params->term_separators = DEFAULT_TERM_SEPARATORS;
 
+  return params;
+}
+
+sc_char * _sc_dictionary_fs_memory_get_first_term(sc_char const * string, sc_char const * term_separators)
+{
   sc_uint32 const size = sc_str_len(string);
   sc_char copied_string[size + 1];
   sc_mem_cpy(copied_string, string, size);
   copied_string[size] = '\0';
 
-  sc_char * term = strtok(copied_string, delim);
+  sc_char * term = strtok(copied_string, term_separators);
   sc_char * copied_term;
   term == null_ptr ? sc_string_empty(copied_term) : sc_str_cpy(copied_term, term, sc_str_len(term));
   return copied_term;
 }
 
-sc_list * _sc_dictionary_fs_memory_get_string_terms(sc_char const * string)
+sc_list * _sc_dictionary_fs_memory_get_string_terms(sc_char const * string, sc_char const * term_separators)
 {
-  static const sc_char delim[] = " _";
-
   sc_uint32 const size = sc_str_len(string);
   sc_char copied_string[size + 1];
   sc_mem_cpy(copied_string, string, size);
   copied_string[size] = '\0';
 
-  sc_char * term = strtok(copied_string, delim);
+  sc_char * term = strtok(copied_string, term_separators);
   sc_list * terms;
   sc_list_init(&terms);
 
@@ -160,7 +169,7 @@ sc_list * _sc_dictionary_fs_memory_get_string_terms(sc_char const * string)
       sc_dictionary_append(unique_terms, term_copy, term_length, null_ptr);
     }
 
-    term = strtok(null_ptr, delim);
+    term = strtok(null_ptr, term_separators);
   }
   sc_dictionary_destroy(unique_terms, sc_dictionary_node_destroy);
 

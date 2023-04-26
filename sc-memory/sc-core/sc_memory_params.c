@@ -9,6 +9,7 @@
 void sc_memory_params_clear(sc_memory_params * params)
 {
   params->version = (sc_char const *)null_ptr;
+
   params->clear = SC_FALSE;
   params->repo_path = (sc_char const *)null_ptr;
   params->ext_path = (sc_char const *)null_ptr;
@@ -16,7 +17,6 @@ void sc_memory_params_clear(sc_memory_params * params)
 
   params->save_period = DEFAULT_SAVE_PERIOD;      // seconds
   params->update_period = DEFAULT_UPDATE_PERIOD;  // seconds
-  params->max_searchable_string_size = DEFAULT_MAX_SEARCHABLE_STRING_SIZE;
 
   params->log_type = DEFAULT_LOG_TYPE;
   params->log_file = DEFAULT_LOG_FILE;
@@ -28,4 +28,9 @@ void sc_memory_params_clear(sc_memory_params * params)
 
   params->init_memory_generated_structure = (sc_char const *)null_ptr;
   params->init_memory_generated_upload = SC_FALSE;
+
+  params->max_strings_channels = DEFAULT_MAX_STRINGS_CHANNELS;
+  params->max_strings_channel_size = DEFAULT_MAX_STRINGS_CHANNEL_SIZE;
+  params->max_searchable_string_size = DEFAULT_MAX_SEARCHABLE_STRING_SIZE;
+  params->term_separators = DEFAULT_TERM_SEPARATORS;
 }

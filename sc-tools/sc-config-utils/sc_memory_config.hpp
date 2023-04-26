@@ -83,8 +83,10 @@ public:
       ScConfigGroup group = config[m_groupName];
       for (auto const & key : *group)
       {
-        std::string const & value = group[key];
+        std::string value = group[key];
         std::stringstream stream;
+
+        value = value[0] == '\"' ? value.substr(1, value.length() - 2) : value;
 
         m_params.insert({key, value});
       }
@@ -117,6 +119,7 @@ public:
         SC_MACHINE_VERSION_MAJOR, SC_MACHINE_VERSION_MINOR, SC_MACHINE_VERSION_PATCH, SC_MACHINE_VERSION_SUFFIX};
 
     m_memoryParams.version = (sc_char const *)sc_version_string_new(&version);
+
     m_memoryParams.clear = HasKey("clear");
     m_memoryParams.repo_path = GetStringByKey("repo_path");
     m_memoryParams.ext_path = GetStringByKey("extensions_path");
@@ -126,8 +129,6 @@ public:
     m_memoryParams.max_threads = GetIntByKey("max_threads", DEFAULT_MAX_THREADS);
     m_memoryParams.max_events_and_agents_threads =
         GetIntByKey("max_events_and_agents_threads", DEFAULT_MAX_EVENTS_AND_AGENTS_THREADS);
-    m_memoryParams.max_searchable_string_size =
-        GetIntByKey("max_searchable_string_size", DEFAULT_MAX_SEARCHABLE_STRING_SIZE);
 
     m_memoryParams.save_period = GetIntByKey("save_period", DEFAULT_SAVE_PERIOD);
     m_memoryParams.update_period = GetIntByKey("update_period", DEFAULT_UPDATE_PERIOD);
@@ -138,6 +139,12 @@ public:
 
     m_memoryParams.init_memory_generated_upload = GetBoolByKey("init_memory_generated_upload");
     m_memoryParams.init_memory_generated_structure = GetStringByKey("init_memory_generated_structure");
+
+    m_memoryParams.max_strings_channels = GetIntByKey("max_strings_channels", DEFAULT_MAX_STRINGS_CHANNELS);
+    m_memoryParams.max_strings_channel_size = GetIntByKey("max_strings_channel_size", DEFAULT_MAX_STRINGS_CHANNEL_SIZE);
+    m_memoryParams.max_searchable_string_size =
+        GetIntByKey("max_searchable_string_size", DEFAULT_MAX_SEARCHABLE_STRING_SIZE);
+    m_memoryParams.term_separators = GetStringByKey("term_separators", DEFAULT_TERM_SEPARATORS);
 
     return m_memoryParams;
   }

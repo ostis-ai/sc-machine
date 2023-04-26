@@ -21,19 +21,19 @@
 
 sc_fs_memory_manager * manager;
 
-sc_bool sc_fs_memory_initialize(const sc_char * path, sc_uint32 const max_searchable_string_size, sc_bool clear)
+sc_bool sc_fs_memory_initialize_ext(sc_memory_params const * params)
 {
   manager = sc_fs_memory_build();
 
   static sc_char const * segments_postfix = "segments" SC_FS_EXT;
-  sc_fs_concat_path(path, segments_postfix, &manager->segments_path);
+  sc_fs_concat_path(params->repo_path, segments_postfix, &manager->segments_path);
 
   sc_fs_memory_info("Clear sc-fs-memory");
-  if (manager->initialize(&manager->fs_memory, path, clear, max_searchable_string_size) != SC_FS_MEMORY_OK)
+  if (manager->initialize(&manager->fs_memory, params) != SC_FS_MEMORY_OK)
     return SC_FALSE;
 
   // clear repository if it needs
-  if (clear == SC_TRUE)
+  if (params->clear == SC_TRUE)
   {
     sc_fs_memory_info("Clear sc-memory segments");
     if (sc_fs_remove_file(manager->segments_path) == SC_FALSE)
@@ -41,6 +41,14 @@ sc_bool sc_fs_memory_initialize(const sc_char * path, sc_uint32 const max_search
   }
 
   return SC_TRUE;
+}
+
+sc_bool sc_fs_memory_initialize(sc_char const * path, sc_bool clear)
+{
+  sc_memory_params * params = _sc_dictionary_fs_memory_get_default_params(path, clear);
+  sc_bool const status = sc_fs_memory_initialize_ext(params);
+  sc_mem_free(params);
+  return status;
 }
 
 sc_bool sc_fs_memory_shutdown()

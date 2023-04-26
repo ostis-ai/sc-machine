@@ -35,7 +35,7 @@ extern "C"
 #define TEXT_EXAMPLE_2 "it is the second string"
 
 #define SC_DICTIONARY_FS_MEMORY_PATH "fs-memory"
-#define SC_DICTIONARY_FS_MEMORY_STRINGS_PATH SC_DICTIONARY_FS_MEMORY_PATH "/strings.scdb"
+#define SC_DICTIONARY_FS_MEMORY_STRINGS_PATH SC_DICTIONARY_FS_MEMORY_PATH "/strings1.scdb"
 
 TEST(ScDictionaryFSMemoryTest, sc_dictionary_fs_memory_init_shutdown)
 {

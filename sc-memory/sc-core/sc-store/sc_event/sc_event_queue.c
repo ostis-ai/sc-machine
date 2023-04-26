@@ -56,7 +56,7 @@ sc_event_queue * sc_event_queue_new_ext(sc_uint32 max_events_and_agents_threads)
   queue->running = SC_TRUE;
   g_mutex_init(&queue->mutex);
 
-  max_events_and_agents_threads = sc_max(1, sc_min(max_events_and_agents_threads, g_get_num_processors()));
+  max_events_and_agents_threads = sc_boundary(max_events_and_agents_threads, 1, g_get_num_processors());
   {
     sc_message("[sc-events] Configuration:");
     sc_message("\tMax events and agents threads: %d", max_events_and_agents_threads);

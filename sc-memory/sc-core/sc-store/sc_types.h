@@ -39,6 +39,7 @@ typedef void * sc_pointer;
 
 #  define sc_min(a, b) ((a) < (b) ? (a) : (b))
 #  define sc_max(a, b) ((a) > (b) ? (a) : (b))
+#  define sc_boundary(x, a, b) sc_max(a, sc_min(x, b))
 
 // booleans
 #  define SC_FALSE 0

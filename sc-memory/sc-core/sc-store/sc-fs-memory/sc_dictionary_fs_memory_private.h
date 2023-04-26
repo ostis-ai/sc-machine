@@ -13,7 +13,9 @@
 #include "../sc-container/sc-list/sc_list.h"
 #include "../sc-container/sc-dictionary/sc_dictionary.h"
 
-#define SC_FS_EXT ".scdb";
+#include "../../sc_memory_params.h"
+
+#define SC_FS_EXT ".scdb"
 #define INVALID_STRING_OFFSET LONG_MAX
 
 #define SC_FS_MEMORY_PREFIX "[sc-fs-memory] "
@@ -30,8 +32,10 @@ sc_bool _sc_dictionary_fs_memory_link_node_destroy(sc_dictionary_node * node, vo
 
 sc_bool _sc_dictionary_fs_memory_string_node_destroy(sc_dictionary_node * node, void ** args);
 
-sc_char * _sc_dictionary_fs_memory_get_first_term(sc_char const * string);
+sc_memory_params * _sc_dictionary_fs_memory_get_default_params(sc_char const * path, sc_bool clear);
 
-sc_list * _sc_dictionary_fs_memory_get_string_terms(sc_char const * string);
+sc_char * _sc_dictionary_fs_memory_get_first_term(sc_char const * string, sc_char const * term_separators);
+
+sc_list * _sc_dictionary_fs_memory_get_string_terms(sc_char const * string, sc_char const * term_separators);
 
 #endif
