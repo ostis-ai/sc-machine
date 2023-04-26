@@ -1,5 +1,7 @@
+#!/usr/bin/env python3
+
 import argparse
-from os.path import join, abspath, relpath, commonprefix, isdir, isfile, exists, dirname, basename, splitext
+from os.path import join, abspath, relpath, commonprefix, isdir, exists, dirname, splitext
 import os
 import shutil
 import re
@@ -10,7 +12,8 @@ paths = set()
 exclude_paths = set()
 exclude_patterns = frozenset([".git*"])
 # kb_scripts folder near this script by default
-kb_scripts_path = join(os.path.dirname(os.path.realpath(__file__)), "kb_scripts")
+kb_scripts_path = join(os.path.dirname(
+    os.path.realpath(__file__)), "kb_scripts")
 
 prepare_scripts = [
     join(kb_scripts_path, 'remove_scsi.py'),
@@ -22,6 +25,7 @@ OUTPUT_PATH = "output_path"
 LOGFILE_PATH = "errors_file_path"
 CONFIG_PATH = "config_file_path"
 OSTIS_PATH = "ostis_path"
+
 
 def search_knowledge_bases(root_path: str):
 
@@ -61,8 +65,9 @@ def ignore_files(directory, contents):
         for f in contents:
             if abspath(join(directory, f)) == path:
                 ignored_files.add(f)
-            # ignore glob patterns defined in exclude_patterns using shutil.ignore_patterns func factory
-            ignored_files.update(shutil.ignore_patterns(*exclude_patterns)(directory, contents))
+            # ignore glob patterns defined in exclude_patterns using shutil.ignore_patterns
+            ignored_files.update(shutil.ignore_patterns(
+                *exclude_patterns)(directory, contents))
 
     # return a set of filenames that should be excluded
     return ignored_files
@@ -74,15 +79,16 @@ def copy_kb(output_path: str):
         common_prefix = commonprefix(list(paths))
         for path in paths:
             # removes the common part from paths and copies what's left to prepared_kb
-            # unless the file/folder is in excluded_paths 
+            # unless the file/folder is in excluded_paths
             shutil.copytree(path, join(prepared_kb, relpath(
                 path, common_prefix)), ignore=ignore_files, dirs_exist_ok=True)
-    except Exception as e:
-        print(e)
+    except Exception as exception:
+        print(exception)
 
 
 def parse_config(path: str) -> dict:
-    config_dict = {REPO_FILE: '', OUTPUT_PATH: '', LOGFILE_PATH: '', OSTIS_PATH: abspath(join(os.path.dirname(os.path.realpath(__file__)), "../bin"))}
+    config_dict = {REPO_FILE: '', OUTPUT_PATH: '', LOGFILE_PATH: '', OSTIS_PATH: abspath(
+        join(os.path.dirname(os.path.realpath(__file__)), "../bin"))}
     config = configparser.ConfigParser()
     if path is not None:
         config.read(path)
@@ -104,14 +110,16 @@ def prepare_kb(kb_to_prepare: str, logfile: str):
     for script in prepare_scripts:
         os.system('python3 ' + script + ' ' + kb_to_prepare + ' ' + logfile)
     if exists(logfile):
-        print("Error while executing prepare_kb scripts. Check " + logfile + " for logs")
+        print("Error while executing prepare_kb scripts. Check " +
+              logfile + " for logs")
         exit(1)
 
 
 def build_kb(kb_bin_folder: str, kb_to_build: str, ostis_path: str, config_path: str):
     os.makedirs(kb_bin_folder, exist_ok=True)
     # call sc-builder with required parameters and return the exitcode of the command
-    return os.system(" ".join([join(ostis_path, "sc-builder"), "-f", "--clear", "-i", kb_to_build, "-o", kb_bin_folder, "-c", config_path]))
+    return os.system(" ".join([join(ostis_path, "sc-builder"), "-f", "--clear", "-i",
+                               kb_to_build, "-o", kb_bin_folder, "-c", config_path]))
 
 
 def main(args: dict):
@@ -130,7 +138,11 @@ def main(args: dict):
     print("args:", conf)
 
     if not exists(join(conf[OSTIS_PATH], "sc-builder")):
-        print("OSTIS binaries are not found. Check if the binary path exists and contains necessary files. You may have compiled the project in a non-default location (pass -b flag to override binary location) or didn't build the project successfully.")
+        print("OSTIS binaries are not found."
+              "Check if the binary path exists and contains necessary files."
+              "You may have compiled the project in a non-default location"
+              "(pass -b flag to override binary location)"
+              "or didn't build the project successfully.")
         exit(1)
 
     # prepared_kb will appear in the same folder as kb.bin
@@ -146,7 +158,8 @@ def main(args: dict):
 
     copy_kb(conf[OUTPUT_PATH])
     prepare_kb(kb_to_prepare, conf[LOGFILE_PATH])
-    exitcode = build_kb(conf[OUTPUT_PATH], kb_to_prepare, conf[OSTIS_PATH],  abspath(args["config_file_path"]))
+    exitcode = build_kb(conf[OUTPUT_PATH], kb_to_prepare,
+                        conf[OSTIS_PATH],  abspath(args["config_file_path"]))
     shutil.rmtree(kb_to_prepare)
     # exit with non-null code in case sc-builder encountered an error
     exit(exitcode)
@@ -159,19 +172,21 @@ if __name__ == '__main__':
                         help="The entrypoint repo file. Folder paths in this file ")
 
     parser.add_argument('-o', '--output_path', dest=OUTPUT_PATH,
-                        help="Destination path - path where KB binaries will be stored. Taken from the config file "
-                             "unless overwritten by this flag.")
+                        help="Destination path - path where KB binaries will be stored."
+                             "Taken from the config file unless overwritten by this flag.")
 
     parser.add_argument('-l', '--log_file', dest=LOGFILE_PATH,
-                        help="Errors file path - in case of unsuccessful preparation, log will appear at this "
-                             "location. Taken from the config file unless overwritten by this flag.")
+                        help="Errors file path - in case of unsuccessful preparation,"
+                             "log will appear at this location. Taken from the config file"
+                             "unless overwritten by this flag.")
 
     parser.add_argument('-c', '--config', dest=CONFIG_PATH,
-                        help="Config file path - path to the sc-machine config file (Note: config file has lower "
-                             "priority than flags!)")
+                        help="Config file path - path to the sc-machine config file"
+                             "(Note: config file has lower priority than flags!)")
 
     parser.add_argument('-b', '--ostis_path', dest=OSTIS_PATH,
-                        help="Path to the compiled binaries of OSTIS system (../bin used by default)")
+                        help="Path to the compiled binaries of OSTIS system"
+                        "(../bin used by default)")
 
     args = parser.parse_args()
 
