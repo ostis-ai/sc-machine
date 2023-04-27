@@ -11,6 +11,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Configs for file memory string sections
+- Divide strings file into more small files with fixed size by requested configs
 - Configuration of docker-compose.yml using .env file
 - Script run_tests.sh
 - Tests for fs-memory
