@@ -83,9 +83,8 @@ bool ScTemplate::IsEmpty() const
 
 bool ScTemplate::HasReplacement(std::string const & repl) const
 {
-  return (
-      m_templateItemsNamesToReplacementItemsPositions.find(repl) !=
-      m_templateItemsNamesToReplacementItemsPositions.end());
+  return m_templateItemsNamesToReplacementItemsPositions.find(repl) !=
+         m_templateItemsNamesToReplacementItemsPositions.cend();
 }
 
 ScTemplate & ScTemplate::Triple(
@@ -127,8 +126,7 @@ ScTemplate & ScTemplate::Triple(
 
       if (!item.IsReplacement())
       {
-        if (m_templateItemsNamesToReplacementItemsPositions.find(item.m_name) ==
-            m_templateItemsNamesToReplacementItemsPositions.cend())
+        if (!HasReplacement(item.m_name))
           m_templateItemsNamesToReplacementItemsPositions.insert({item.m_name, replPos + i});
       }
 
@@ -150,7 +148,7 @@ ScTemplate & ScTemplate::Triple(
   return *this;
 }
 
-ScTemplate & ScTemplate::Fiver(
+ScTemplate & ScTemplate::Quintuple(
     ScTemplateItem const & param1,
     ScTemplateItem const & param2,
     ScTemplateItem const & param3,
@@ -170,7 +168,7 @@ ScTemplate & ScTemplate::Fiver(
   }
 
   Triple(param1, edgeCommonItem, param3);
-  Triple(param5, param4, edgeCommonItem.m_name.c_str());
+  Triple(param5, param4, edgeCommonItem.m_name);
 
   return *this;
 }
@@ -182,7 +180,7 @@ ScTemplate & ScTemplate::TripleWithRelation(
     ScTemplateItem const & param4,
     ScTemplateItem const & param5)
 {
-  return Fiver(param1, param2, param3, param4, param5);
+  return Quintuple(param1, param2, param3, param4, param5);
 }
 
 inline ScTemplateTripleType ScTemplate::GetPriority(ScTemplateTriple * triple)

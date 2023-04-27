@@ -114,12 +114,12 @@ TEST_F(ScTemplateSearchTest, SimpleSearch2)
 
   // now check search
   ScTemplate templ;
-  templ.Fiver(
-    addr >> "_addr",
-    ScType::EdgeDCommonVar >> "_edgeCommon",
-    ScType::Link >> "_link",
-    ScType::EdgeAccessVarPosPerm >> "_edgeAttr",
-    nrelMainIdtf >> "_nrelMainIdtf");
+  templ.Quintuple(
+      addr >> "_addr",
+      ScType::EdgeDCommonVar >> "_edgeCommon",
+      ScType::Link >> "_link",
+      ScType::EdgeAccessVarPosPerm >> "_edgeAttr",
+      nrelMainIdtf >> "_nrelMainIdtf");
 
   templ.Triple(
     lang >> "_lang",

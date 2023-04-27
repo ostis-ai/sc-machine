@@ -899,9 +899,10 @@ private:
           m_checkedTemplateTriplesInReplacementConstructions[replacementConstructionIdx].size() ==
               m_template.m_templateTriples.size())
       {
-        if (!m_filterCallback || m_filterCallback(ScTemplateSearchResultItem(
-                                     &result.m_replacementConstructions[replacementConstructionIdx],
-                                     &result.m_templateItemsNamesToReplacementItemsPositions)))
+        if (!m_filterCallback || m_filterCallback(
+                                     {*m_context,
+                                      &result.m_replacementConstructions[replacementConstructionIdx],
+                                      &result.m_templateItemsNamesToReplacementItemsPositions}))
           AppendFoundReplacementConstruction(result, replacementConstructionIdx);
       }
     } while (!isStopped);
@@ -958,13 +959,17 @@ private:
   {
     if (m_callback)
     {
-      m_callback(ScTemplateSearchResultItem(
-          &result.m_replacementConstructions[resultIdx], &result.m_templateItemsNamesToReplacementItemsPositions));
+      m_callback(
+          {*m_context,
+           &result.m_replacementConstructions[resultIdx],
+           &result.m_templateItemsNamesToReplacementItemsPositions});
     }
     else if (m_callbackWithRequest)
     {
-      ScTemplateSearchRequest const & request = m_callbackWithRequest(ScTemplateSearchResultItem(
-          &result.m_replacementConstructions[resultIdx], &result.m_templateItemsNamesToReplacementItemsPositions));
+      ScTemplateSearchRequest const & request = m_callbackWithRequest(
+          {*m_context,
+           &result.m_replacementConstructions[resultIdx],
+           &result.m_templateItemsNamesToReplacementItemsPositions});
       switch (request)
       {
       case ScTemplateSearchRequest::STOP:
@@ -1033,6 +1038,7 @@ public:
     {
       checkedResults.emplace_back(result.m_replacementConstructions[foundIdx]);
     }
+    result.m_context = *m_context;
     result.m_replacementConstructions.assign(checkedResults.cbegin(), checkedResults.cend());
 
     return ScTemplate::Result(result.Size() > 0);

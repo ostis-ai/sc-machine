@@ -65,17 +65,17 @@ public:
       if (values[2].m_itemType == ScTemplateItem::Type::Type && values[2].m_typeValue.IsEdge())
       {
         SC_THROW_EXCEPTION(utils::ExceptionInvalidParams, "Don't generate edge as the third item of triple");
-      };
+      }
       // check that second command is to generate edge
       if (!(values[1].m_itemType == ScTemplateItem::Type::Type && values[1].m_typeValue.IsEdge()))
       {
         SC_THROW_EXCEPTION(utils::ExceptionInvalidParams, "The second item of triple must have edge var type");
-      };
+      }
       // the second item couldn't be a replacement
       if (values[1].m_itemType == ScTemplateItem::Type::Replace)
       {
         SC_THROW_EXCEPTION(utils::ExceptionInvalidParams, "The second item of triple couldn't be a replacement");
-      };
+      }
 
       ScAddr const addr1 = resolveAddr(values[0], result.m_replacementConstruction);
       if (!addr1.IsValid())

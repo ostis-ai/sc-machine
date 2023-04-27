@@ -65,7 +65,7 @@ TEST_F(ScTemplateApiTest, FiverWithConstSourceType)
 {
   ScTemplate templ;
   EXPECT_THROW(
-      templ.Fiver(
+      templ.Quintuple(
           ScType::NodeConst >> "_addr1",
           ScType::EdgeAccessVarPosPerm >> "_edge",
           ScType::Unknown >> "_addr2",
