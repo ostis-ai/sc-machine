@@ -1152,3 +1152,83 @@ TEST(ScDictionaryFSMemoryTest, sc_dictionary_fs_memory_unite_link_hashes_by_term
 
   EXPECT_EQ(sc_dictionary_fs_memory_shutdown(memory), SC_FS_MEMORY_OK);
 }
+
+TEST(ScDictionaryFSMemoryTest, sc_dictionary_fs_memory_mutiple_link_strings)
+{
+  sc_memory_params params;
+  params.repo_path = SC_DICTIONARY_FS_MEMORY_PATH;
+  params.clear = SC_TRUE;
+  params.max_strings_channels = DEFAULT_MAX_STRINGS_CHANNELS;
+  params.max_strings_channel_size = DEFAULT_MAX_STRINGS_CHANNEL_SIZE;
+  params.max_searchable_string_size = DEFAULT_MAX_SEARCHABLE_STRING_SIZE;
+  params.term_separators = DEFAULT_TERM_SEPARATORS;
+
+  sc_dictionary_fs_memory * memory;
+  EXPECT_EQ(sc_dictionary_fs_memory_initialize_ext(&memory, &params), SC_FS_MEMORY_OK);
+
+  {
+    sc_char const string_template[] = "This is string number %llu";
+    sc_char string[50];
+
+    sc_uint64 const STRING_COUNT = 1000;
+    for (sc_uint64 hash = 0; hash < STRING_COUNT; ++hash)
+    {
+      sprintf(string, string_template, hash);
+
+      EXPECT_EQ(sc_dictionary_fs_memory_link_string(memory, hash, string, sc_str_len(string)), SC_FS_MEMORY_OK);
+    }
+
+    sc_char * found_string;
+    sc_uint64 size;
+    for (sc_uint64 hash = 0; hash < STRING_COUNT; ++hash)
+    {
+      sprintf(string, string_template, hash);
+
+      EXPECT_EQ(sc_dictionary_fs_memory_get_string_by_link_hash(memory, hash, &found_string, &size), SC_FS_MEMORY_OK);
+      EXPECT_TRUE(sc_str_cmp(found_string, string));
+      sc_mem_free(found_string);
+    }
+  }
+
+  EXPECT_EQ(sc_dictionary_fs_memory_shutdown(memory), SC_FS_MEMORY_OK);
+}
+
+TEST(ScDictionaryFSMemoryTest, sc_dictionary_fs_memory_mutiple_link_strings_with_optimized_config)
+{
+  sc_memory_params params;
+  params.repo_path = SC_DICTIONARY_FS_MEMORY_PATH;
+  params.clear = SC_TRUE;
+  params.max_strings_channels = DEFAULT_MAX_STRINGS_CHANNELS;
+  params.max_strings_channel_size = DEFAULT_MAX_STRINGS_CHANNEL_SIZE;
+  params.max_searchable_string_size = DEFAULT_MAX_SEARCHABLE_STRING_SIZE;
+  params.term_separators = "";
+
+  sc_dictionary_fs_memory * memory;
+  EXPECT_EQ(sc_dictionary_fs_memory_initialize_ext(&memory, &params), SC_FS_MEMORY_OK);
+
+  {
+    sc_char const string_template[] = "This is string number %llu";
+    sc_char string[50];
+
+    sc_uint64 const STRING_COUNT = 1000;
+    for (sc_uint64 hash = 0; hash < STRING_COUNT; ++hash)
+    {
+      sprintf(string, string_template, hash);
+
+      EXPECT_EQ(sc_dictionary_fs_memory_link_string(memory, hash, string, sc_str_len(string)), SC_FS_MEMORY_OK);
+    }
+
+    sc_char * found_string;
+    sc_uint64 size;
+    for (sc_uint64 hash = 0; hash < STRING_COUNT; ++hash)
+    {
+      sprintf(string, string_template, hash);
+
+      EXPECT_EQ(sc_dictionary_fs_memory_get_string_by_link_hash(memory, hash, &found_string, &size), SC_FS_MEMORY_OK);
+      EXPECT_TRUE(sc_str_cmp(found_string, string));
+      sc_mem_free(found_string);
+    }
+  }
+
+  EXPECT_EQ(sc_dictionary_fs_memory_shutdown(memory), SC_FS_MEMORY_OK);
+}
