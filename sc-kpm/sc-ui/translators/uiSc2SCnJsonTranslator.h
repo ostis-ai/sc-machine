@@ -8,91 +8,22 @@
 #define _uiSc2SCnJsonTranslator_h_
 
 #include "uiTranslatorFromSc.h"
+#include "uiTranslators.h"
 
-struct sScElementInfo
+struct ScStructureElementInfo
 {
-  typedef std::list<sScElementInfo *> tScElementInfoList;
-
-  typedef enum
-  {
-    VT_NODE,
-    VT_EDGE,
-    VT_SET,
-    VT_CONTOUR
-
-  } eVisualType;
+  typedef std::unordered_set<ScStructureElementInfo *> ScStructureElementInfoList;
 
   sc_type type;
   sc_addr addr;
-  sc_addr srcAddr;
-  sc_addr trgAddr;
-  sScElementInfo * source;
-  sScElementInfo * target;
-  tScElementInfoList outputArcs;
-  tScElementInfoList inputArcs;
+  ScStructureElementInfo * sourceInfo;
+  ScStructureElementInfo * targetInfo;
+  ScStructureElementInfo * structKeyword;
+  ScStructureElementInfoList outputArcs;
+  ScStructureElementInfoList inputArcs;
+  ScStructureElementInfoList structureElements;
 
-  eVisualType visualType;
-  bool isInSentenceTree;
-};
-
-class uiSCnSentenceNode
-{
-  typedef enum
-  {
-    ST_KEYWORD,
-    ST_PREDICATE,
-    ST_NODE
-  } eSentenceNodeType;
-
-public:
-  typedef std::list<uiSCnSentenceNode *> tSentenceNodeList;
-
-  //! Create keyword sentence node
-  explicit uiSCnSentenceNode(sScElementInfo * keywordEl);
-  virtual ~uiSCnSentenceNode();
-
-  //! Build tree based on keyword. This node must be a keyword
-  void buildTree();
-  //! Balance tree
-  void balance();
-  //! Generates json for specified tree
-  const String & json();
-
-  //! Append new child tree node to this one
-  uiSCnSentenceNode * createChildNode(eSentenceNodeType type);
-
-protected:
-  //! Destroy tree recursively
-  void destroyChilds();
-
-  //! Removes node from childs list
-  void _removeChildNode(uiSCnSentenceNode * child);
-  //! Appends new node to childs list
-  void _appendChildNode(uiSCnSentenceNode * child);
-  //! Check if specified tree node exists in child list of this one
-  bool _hasChildNode(uiSCnSentenceNode * child) const;
-
-private:
-  explicit uiSCnSentenceNode();
-
-  //! Create child predicate node
-  void _createChildPredicate(sScElementInfo * arc);
-
-private:
-  //! Pointer to parent sentence tree node
-  uiSCnSentenceNode * mParent;
-  //! Type of sentence tree node
-  eSentenceNodeType mType;
-  //! List of conotur article root nodes
-  tSentenceNodeList mContourSentences;
-  //! List of child set sentences
-  tSentenceNodeList mChildSetSentences;
-  //! List of child sentences
-  tSentenceNodeList mChildSentences;
-  //! Pointer to sc-element info
-  sScElementInfo * mElementInfo;
-  //! String that contains cache of generated json for tree
-  String mJSONData;
+  bool isInTree;
 };
 
 /*!
@@ -109,31 +40,84 @@ public:
 
 protected:
   //! @copydoc uiTranslateFromSc::runImpl
-  void runImpl();
+  void runImpl() override;
 
-  /*! Translate one sc-element semantic neighborhood
-   * @param addr sc-addr of sc-element to translate
-   * @param isKeyword Keyword flag
-   * @return Returns string that json representaion of sc-element
-   */
-  String translateElement(sc_addr addr, bool isKeyword);
+  //! Collect information of translated sc-elements and store it
+  void CollectScStructureElementsInfo();
 
-  //! Check if specified sc-element included in output construction
-  bool isInOutputConstruction(sc_addr addr) const;
+  //! Generate json for specified element
+  void ParseScnJsonSentence(ScStructureElementInfo * elInfo, int level, bool isStruct, ScJson & result);
 
-  //! Collect information of trsnslated sc-elements and store it
-  void collectScElementsInfo();
+  //!
+  void ParseScnJsonArc(ScStructureElementInfo * elInfo, ScJson & result);
 
-protected:
+  //!
+  void ParseScnJsonLink(ScStructureElementInfo * elInfo, ScJson & result);
+
+  //! Get children for specified element
+  void ParseChildrenScnJson(ScStructureElementInfo * elInfo, bool isStruct, ScJson & children);
+
+  //! Get children by direction for specified arcs list
+  void ParseChildrenScnJsonByDirection(
+      ScStructureElementInfo::ScStructureElementInfoList const & arcs,
+      String const & direction,
+      bool isStruct,
+      ScJson & children);
+
+  //! Get base json information about specified element
+  void ParseScElementInfo(ScStructureElementInfo * elInfo, ScJson & result);
+
+  //! get full json of linked nodes for specified children
+  void ParseLinkedNodesScnJson(ScJson & children, int level = 1, bool isStruct = false);
+
+  ScStructureElementInfo * ResolveStructureElementInfo(sc_addr const & addr, sc_type type = 0);
+
+  //! Find struct keyword in specified elements list
+  static ScStructureElementInfo * FindStructureKeyword(
+      ScStructureElementInfo::ScStructureElementInfoList const & structureElements);
+
+  //! Get children for specified modifier
+  void ParseChildrenScnJsonByModifier(
+      ScStructureElementInfo * elInfo,
+      sc_addr modifierAddr,
+      bool isStruct,
+      ScJson & children);
+
+  void UpdateChildArcs(
+      ScStructureElementInfo::ScStructureElementInfoList const & arcs,
+      bool isStruct,
+      ScJson & fullChild,
+      String const & direction);
+
+  //! Get json of arc
+  void ParseScnJsonChild(ScStructureElementInfo * arcInfo, String const & direction, bool isStruct, ScJson & child);
+
+  //! Resolve additional filter elements for specified cmd_addr
+  void ResolveFilterList(sc_addr);
+
+  //! Get default ordered list of modifiers
+  void InitOrderList();
+
+  //! Get next element from ordered set
+  sc_addr GetNextElementArc(sc_addr elementArc);
+
+  //! Get default filter list
+  void InitFilterList();
+
+private:
   //! List of keywords
-  tScAddrList mKeywordsList;
+  tScAddrSet mKeywordsList;
+  //! List of elements to filter
+  tScAddrSet mFilterList;
+  //! Ordered list of modifiers
+  tScAddrList mOrderList;
   //! Collection of objects information
-  typedef std::map<sc_addr, sScElementInfo *> tScElemetsInfoMap;
-  tScElemetsInfoMap mScElementsInfo;
-  //! Pull of sc-elements information (used to prevent many memory allocations)
-  sScElementInfo * mScElementsInfoPool;
-  //! List of articles root elements
-  uiSCnSentenceNode::tSentenceNodeList mRootSentences;
+  typedef std::map<sc_addr, ScStructureElementInfo *> tScElemetsInfoMap;
+  tScElemetsInfoMap mStructureElementsInfo;
+  //! Store structure elements if keyword is struct to remove them from keyword childrens
+  ScStructureElementInfo::ScStructureElementInfoList structureElements;
+  //! Max level of full discripted node
+  const int maxLevel = 2;
 };
 
 #endif  // _uiSc2SCnJsonTranslator_h_

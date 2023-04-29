@@ -147,7 +147,7 @@
 
 \scnhaselementrole{ключевой sc-элемент}{Правило, задающее синтаксис \textit{ответа на команду на SC-JSON-коде}}
 \begin{scnindent}
-	\scnrelboth{семантическая эквивалентность}{\scnfileimage[20em]{images/command\_answer}}
+	\scnrelboth{семантическая эквивалентность}{\scnfileimage[20em]{images/command_answer.png}}
 	\begin{scnindent}
 		\scniselement{Язык описания грамматики языков ANTLR}
 		\scntext{интерпретация}{Класс \textit{ответов на команды на SC-JSON-коде} включает \textit{ответ на команду создания sc-элементов}, \textit{ответ на команду получения соответствующих типов sc-элементов}, \textit{ответ на команду удаления sc-элементов}, \textit{ответ на команду обработки ключевых sc-элементов}, \textit{ответ на команду обработки содержимого файлов ostis-системы}, \textit{ответ на команду поиска sc-конструкций, изоморфных заданному sc-шаблону}, \textit{ответ на команду генерации sc-конструкции, изоморфной заданному sc-шаблону}, и \textit{ответ на команду обработки sc-событий}. В \textit{ответ на команду на SC-JSON-коде} включаются идентификатор соответствующей команды, статус обработки ответа и ответное сообщение.}
@@ -157,7 +157,7 @@
 
 \scnhaselement{Правило, задающее синтаксис \textit{команды создания sc-элементов}}
 \begin{scnindent}
-	\scnrelboth{семантическая эквивалентность}{\scnfileimage[50em]{images/create\_elements\_command}}
+	\scnrelboth{семантическая эквивалентность}{\scnfileimage[50em]{images/create_elements_command.pdf}}
 	\begin{scnindent}
 		\scniselement{Язык описания грамматики языков ANTLR}
 		\scntext{интерпретация}{В сообщении \textit{команды создания sc-элементов} представляется список описаний создаваемых sc-элементов. Такими sc-элементами могут быть sc-узел, sc-дуга, sc-ребро или файл ostis-системы. Тип sc-элемента указывается в паре с ключевым словом \scnqq{el}: для sc-узла sc-json-тип элемент представляется как \scnqq{node}, для sc-дуги и sc-ребра - \scnqq{edge}, для файла ostis-системы - \scnqq{link}. Метки типов sc-элементов уточняются в соответствующих им описаниях в сообщении команды в паре с ключевым словом \scnqq{type}. Если создаваемым sc-элементом является файл ostis-системы, то дополнительно указывается содержимое этого файла ostis-системы в паре с ключевым словом \scnqq{content}, если создаваемым sc-элементом является sc-дуга или sc-ребро, то указываются описания sc-элементов, из которых они выходят, и sc-элементов, в которые они входят. Описание таких sc-элементов состоят из двух пар: первая пара указывает на способ ассоциации с sc-элементом и представляется как \scnqq{addr} или \scnqq{idtf} или \scnqq{ref} в паре с ключевым словом \scnqq{type}, вторая пара - то, по чему происходит ассоциация с этим sc-элементом: его хэшу, системному идентификатору или номеру в массиве создаваемых sc-элементов - в паре с ключевым словом \scnqq{value}.}
@@ -167,7 +167,7 @@
 
 \scnhaselement{Правило, задающее синтаксис \textit{ответа на команду создания sc-элементов}}
 \begin{scnindent}
-	\scnrelboth{семантическая эквивалентность}{\scnfileimage[20em]{images/create\_elements\_command\_answer}}
+	\scnrelboth{семантическая эквивалентность}{\scnfileimage[20em]{images/create_elements_command_answer.png}}
 	\begin{scnindent}
 		\scniselement{Язык описания грамматики языков ANTLR}
 		\scntext{интерпретация}{Сообщением \textit{ответа на команду создания sc-элементов} является список хэшей созданных sc-элементов, соответствующих описаниям \textit{команды создания sc-элементов} со статусом 1, в случае успешной обработки команды.}
@@ -177,7 +177,7 @@
 
 \scnhaselement{Правило, задающее синтаксис \textit{команды создания sc-элементов по фрагменту SCs-текста}}
 \begin{scnindent}
-\scnrelboth{семантическая эквивалентность}{\scnfileimage[20em]{images/create\_elements\_by\_scs\_command}}
+\scnrelboth{семантическая эквивалентность}{\scnfileimage[20em]{images/create_elements_by_scs_command.png}}
 \begin{scnindent}
 \scniselement{Язык описания грамматики языков ANTLR}
 \scntext{интерпретация}{В списке описаний создаваемых sc-элементов сообщения этой команды вместо описания создаваемого отдельного sc-элемента указывается фрагмент SCs-текста.}
@@ -187,7 +187,7 @@
 
 \scnhaselement{Правило, задающее синтаксис \textit{ответа на команду создания sc-элементов по фрагменту SCs-текста}}
 \begin{scnindent}
-\scnrelboth{семантическая эквивалентность}{\scnfileimage[20em]{images/create\_elements\_by\_scs\_command\_answer}}
+\scnrelboth{семантическая эквивалентность}{\scnfileimage[20em]{images/create_elements_by_scs_command_answer.png}}
 \begin{scnindent}
 \scniselement{Язык описания грамматики языков ANTLR}
 \scntext{интерпретация}{Сообщением \textit{ответа на команду создания sc-элементов} является список результатов обработки переданных SCs-текстов. Нулевой статус говорит о том, что обработка соотвествующего SCs-текста завершилась безуспешно.}
@@ -197,7 +197,7 @@
 
 \scnhaselement{Правило, задающее синтаксис \textit{команды получения соответствующих типов sc-элементов}}
 \begin{scnindent}
-	\scnrelboth{семантическая эквивалентность}{\scnfileimage[15em]{images/check\_elements\_command}}
+	\scnrelboth{семантическая эквивалентность}{\scnfileimage[15em]{images/check_elements_command.png}}
 	\begin{scnindent}
 		\scniselement{Язык описания грамматики языков ANTLR}
 		\scntext{интерпретация}{Сообщением \textit{команды получения соответствующих типов sc-элементов} является списком хэшей sc-элементов, у которых необходимо получить синтаксические типы.}
@@ -207,7 +207,7 @@
 
 \scnhaselement{Правило, задающее синтаксис \textit{ответа на команду получения соответствующих типов sc-элементов}}
 \begin{scnindent}
-	\scnrelboth{семантическая эквивалентность}{\scnfileimage[20em]{images/check\_elements\_command\_answer}}
+	\scnrelboth{семантическая эквивалентность}{\scnfileimage[20em]{images/check_elements_command_answer.png}}
 	\begin{scnindent}
 		\scniselement{Язык описания грамматики языков ANTLR}
 		\scntext{интерпретация}{Сообщением \textit{ответа на команду получения соответствующих типов sc-элементов} является список типов проверенных sc-элементов, соответствующих описаниям \textit{команды получения соответствующих типов sc-элементов} со статусом 1, в случае успешной обработки команды.}
@@ -217,7 +217,7 @@
 
 \scnhaselement{Правило, задающее синтаксис \textit{команды удаления sc-элементов}}
 \begin{scnindent}
-	\scnrelboth{семантическая эквивалентность}{\scnfileimage[15em]{images/delete\_elements\_command}}
+	\scnrelboth{семантическая эквивалентность}{\scnfileimage[15em]{images/delete_elements_command.png}}
 	\begin{scnindent}
 		\scniselement{Язык описания грамматики языков ANTLR}
 		\scntext{интерпретация}{Сообщением \textit{команды удаления sc-элементов} является список хэшей sc-элементов, которые необходимо удалить из sc-памяти.}
@@ -227,7 +227,7 @@
 
 \scnhaselement{Правило, задающее синтаксис \textit{ответа на команду удаления sc-элементов}}
 \begin{scnindent}
-	\scnrelboth{семантическая эквивалентность}{\scnfileimage[20em]{images/delete\_elements\_command\_answer}}
+	\scnrelboth{семантическая эквивалентность}{\scnfileimage[20em]{images/delete_elements_command_answer.png}}
 	\begin{scnindent}
 		\scniselement{Язык описания грамматики языков ANTLR}
 		\scntext{интерпретация}{Сообщение \textit{ответа на команду удаления sc-элементов} является пустым со статусом 1, в случае успешной обработки команды.}
@@ -237,7 +237,7 @@
 
 \scnhaselement{Правило, задающее синтаксис \textit{команды обработки ключевых sc-элементов}}
 \begin{scnindent}
-	\scnrelboth{семантическая эквивалентность}{\scnfileimage[20em]{images/handle\_keynodes\_command}}
+	\scnrelboth{семантическая эквивалентность}{\scnfileimage[20em]{images/handle_keynodes_command.png}}
 	\begin{scnindent}
 	\scniselement{Язык описания грамматики языков ANTLR}
 	\scntext{интерпретация}{Сообщение \textit{команды обработки ключевых sc-элементов} может включать описание ключевых sc-элементов, которые необходимо найти и/или разрешить по их идентификаторам. Такое деление осуществляется с помощью подкоманд, содержащихся в сообщении команды. Идентификаторами подкоманд могут быть "find"{} и "resolve"{} соответственно, стоящие в паре с ключевым словом "command". Описание искомого sc-элемента команды "find"{} включает системный идентификатор sc-элемента, по которому необходимо найти этот sc-элемент, стоящий в паре с ключевым словом "idtf". Описание разрешаемого sc-элемента команды "resolve"{} включает системный идентификатор sc-элемента, по которому необходимо найти этот sc-элемент, либо в случае безуспешного поиска создать sc-элемент некоторого типа, указанного в его описании в паре с ключевым словом "elType"{}, и установить для него системный идентификатор, по которому была произведена попытка найти другой sc-элемент.}
@@ -247,7 +247,7 @@
 
 \scnhaselement{Правило, задающее синтаксис \textit{ответа на команду обработки ключевых sc-элементов}}
 \begin{scnindent}
-	\scnrelboth{семантическая эквивалентность}{\scnfileimage[20em]{images/handle\_keynodes\_command\_answer}}
+	\scnrelboth{семантическая эквивалентность}{\scnfileimage[20em]{images/handle_keynodes_command_answer.png}}
 	\begin{scnindent}
 	\scniselement{Язык описания грамматики языков ANTLR}
 	\scntext{интерпретация}{Сообщением \textit{ответа на команду обработки ключевых sc-элементов} является список хэшей sc-элементов, соответствующих описаниям \textit{команды обработки ключевых sc-элементов} со статусом 1, в случае успешной обработки команды.}
@@ -257,7 +257,7 @@
 
 \scnhaselement{Правило, задающее синтаксис \textit{команды обработки содержимого файлов ostis-системы}}
 \begin{scnindent}
-	\scnrelboth{семантическая эквивалентность}{\scnfileimage[30em]{images/handle\_link\_contents\_command}}
+	\scnrelboth{семантическая эквивалентность}{\scnfileimage[30em]{images/handle_link_contents_command.png}}
 	\begin{scnindent}
 		\scniselement{Язык описания грамматики языков ANTLR}
 		\scntext{интерпретация}{Сообщение \textit{команды обработки содержимого файлов ostis-системы} может включать описание ключевых файлов ostis-системы, которые необходимо найти по их содержимому или части этого содержимого, для которых необходимо установить содержимое разрешить и/или у которых необходимо получить содержимое. Как и в \textit{Правиле, задающее синтаксис команды обработки ключевых sc-элементов} деление осуществляется с помощью подкоманд, содержащихся в сообщении команды. Идентификаторами подкоманд могут быть \scnqq{find}, \scnqq{find\_by\_substr}, \scnqq{set} и \scnqq{get} соответственно, стоящие в паре с ключевым словом \scnqq{command}. В описаниях команд \scnqq{set} и \scnqq{get} указывается хэш файла ostis-системы в паре с ключевым словом \scnqq{addr}. В описаниях команд \scnqq{set}, \scnqq{find} и \scnqq{find\_by\_substr} указывается содержимое файла ostis-системы в паре с ключевым словом \scnqq{data}. Дополнительно в описании подкоманды \scnqq{set} указывается тип устанавливаемого содержимого файла ostis-системы.}
@@ -277,7 +277,7 @@
 
 \scnhaselement{Правило, задающее синтаксис \textit{команды поиска sc-конструкций, изоморфных заданному sc-шаблону}}
 \begin{scnindent}
-	\scnrelboth{семантическая эквивалентность}{\scnfileimage[20em]{images/search\_template\_command}}
+	\scnrelboth{семантическая эквивалентность}{\scnfileimage[20em]{images/search_template_command.png}}
 	\begin{scnindent}
 		\scniselement{Язык описания грамматики языков ANTLR}
 		\scnsubset{Правило, задающее синтаксис сообщения \textit{команды поиска sc-конструкций, изоморфных заданному sc-шаблону}, и \textit{команды генерации sc-конструкции, изоморфной заданному sc-шаблону}}
@@ -288,7 +288,7 @@
 
 \scnhaselement{Правило, задающее синтаксис \textit{ответа на команду поиска sc-конструкций, изоморфных заданному sc-шаблону}}
 \begin{scnindent}
-	\scnrelboth{семантическая эквивалентность}{\scnfileimage[15em]{images/search\_template\_command\_answer}}
+	\scnrelboth{семантическая эквивалентность}{\scnfileimage[15em]{images/search_template_command_answer.png}}
 	\begin{scnindent}
 		\scniselement{Язык описания грамматики языков ANTLR}
 		\scntext{интерпретация}{Сообщение \textit{ответа на команду поиска sc-конструкций, изоморфных заданному sc-шаблону} состоит из списка найденных sc-конструкций и отображения псевдонимов sc-элементов на их позиции в тройках sc-шаблона. Ответ имеет статус 1, в случае успешной обработки команды.}
@@ -298,7 +298,7 @@
 
 \scnhaselement{Правило, задающее синтаксис \textit{команды создания sc-конструкции, изоморфной заданному sc-шаблону}}
 \begin{scnindent}
-	\scnrelboth{семантическая эквивалентность}{\scnfileimage[20em]{images/generate\_template\_command}}
+	\scnrelboth{семантическая эквивалентность}{\scnfileimage[20em]{images/generate_template_command.png}}
 	\begin{scnindent}
 		\scniselement{Язык описания грамматики языков ANTLR}
 		\scnsubset{Правило, задающее синтаксис сообщения \textit{команды поиска sc-конструкций, изоморфных заданному sc-шаблону,} и \textit{команды генерации sc-конструкции, изоморфной заданному sc-шаблону}}
@@ -309,7 +309,7 @@
 
 \scnhaselement{Правило, задающее синтаксис \textit{ответа на команду создания sc-конструкции, изоморфной заданному sc-шаблону}}
 \begin{scnindent}
-	\scnrelboth{семантическая эквивалентность}{\scnfileimage[15em]{images/generate\_template\_command\_answer}}
+	\scnrelboth{семантическая эквивалентность}{\scnfileimage[15em]{images/generate_template_command_answer.png}}
 	\begin{scnindent}
 		\scniselement{Язык описания грамматики языков ANTLR}
 		\scntext{интерпретация}{Сообщение \textit{ответа на команду создания sc-конструкции, изоморфной заданному sc-шаблону} состоит из списка найденных sc-конструкций и отображения псевдонимов sc-элементов на их позиции в тройках sc-шаблона. Ответ имеет статус 1, в случае успешной обработки команды.}
@@ -319,7 +319,7 @@
 
 \scnhaselement{Правило, задающее синтаксис сообщения \textit{команды поиска sc-конструкций, изоморфных заданному sc-шаблону,} и \textit{команды создания sc-конструкции, изоморфной заданному sc-шаблону}}
 \begin{scnindent}
-	\scnrelboth{семантическая эквивалентность}{\scnfileimage[24em]{images/template\_message\_command}}
+	\scnrelboth{семантическая эквивалентность}{\scnfileimage[24em]{images/template_message_command.png}}
 	\begin{scnindent}
 		\scniselement{Язык описания грамматики языков ANTLR}
 		\scntext{интерпретация}{Сообщения \textit{команды поиска sc-конструкций, изоморфных заданному sc-шаблону,} и \textit{команды создания sc-конструкции, изоморфной заданному sc-шаблону} включают описание троек, необходимых для создания sc-шаблона поиска или генерации изоморфных sc-конструкций. Описание каждой тройки sc-шаблона включает описание sc-элементов этой тройки. Описания первого и третьего sc-элементов тройки должны всегда содержать хэш или тип в паре с ключевым словом \scnqq{value}. Если выбран тип, то в паре с ключевым словом \scnqq{type} указывается \scnqq{type}, если - хэш, то - \scnqq{addr}. Вторым sc-элементом тройки должна быть дуга, для которой всегда указывается тип в паре с ключевым словом \scnqq{value}. Для каждого sc-элемента тройки может указываться псевдоним в паре с \scnqq{alias}. Псевдоним представляет собой строку и может быть использован для ассоциации с sc-элементами в других тройках sc-шаблона, либо ассоциации со значениями переменных sc-шаблона, которые указываются в списке под ключевым словом \scnqq{params} и могут представлять собой либо хэш sc-элемента, либо его системный идентификатор. Таким образом, в некоторых случаях может отсутствовать необходимость указания хэша или типа sc-элемента. Также вместо списка описаний троек sc-шаблона, может указываться хэш или системный идентификатор sc-структуры, хранящейся в sc-памяти. хэш и системный идентификатор указываются в паре с ключевым словом \scnqq{value}.}
@@ -328,14 +328,14 @@
 
 \scnhaselement{Правило, задающее синтаксис \textit{команды обработки sc-событий}}
 \begin{scnindent}
-	\scnrelboth{семантическая эквивалентность}{\scnfileimage[15em]{images/handle\_events\_command}}
+	\scnrelboth{семантическая эквивалентность}{\scnfileimage[15em]{images/handle_events_command.png}}
 	\begin{scnindent}
 		\scniselement{Язык описания грамматики языков ANTLR}
 		\scntext{интерпретация}{Сообщение \textit{команды обработки sc-событий} может включать описание sc-элементов, по котором необходимо зарегистрировать или разрегистрировать sc-события. Идентификаторами подкоманд в описании команды могут быть \scnqq{create} и \scnqq{delete} соответственно, стоящие в паре с ключевым словом \scnqq{command}. Описание команды регистрации sс-cобытий \scnqq{create} представляет собой список описаний типов sc-событий и sc-элементов, по которым необходимо зарегистрировать sc-события. Описания sc-элементов включают хэши этих sc-элементов в парах с ключевым словом \scnqq{addr}. Описание команды разрегистрации sc-событий представляет собой список позиций sc-событий в очереди sc-событий, которые необходимо удалить из этой очереди sc-событий.}
 	\end{scnindent}
 	\scnsuperset{Правило, задающее синтаксис типов sc-событий}
 	\begin{scnindent}
-		\scnrelboth{семантическая эквивалентность}{\scnfileimage[12em]{images/sc\_event\_types}}
+		\scnrelboth{семантическая эквивалентность}{\scnfileimage[12em]{images/sc_event_types.png}}
 		\begin{scnindent}
 			\scniselement{Язык описания грамматики языков ANTLR}
 			\scntext{интерпретация}{Sc-событиями могут быть \textit{sc-события добавления выходящей дуги из sc-элемента (add\_outgoing\_edge)}, \textit{sc-события добавления входящей дуги в sc-элемент\\ (add\_ingoing\_edge)}, \textit{sc-события удаления выходящей дуги из sc-элемента\\ (remove\_outgoing\_edge)}, \textit{sc-события удаления входящей дуги в sc-элемент\\(remove\_ingoing\_edge)}, \textit{sc-события изменения содержимого файла ostis-системы\\ (content\_change)} и \textit{sc-события удаления sc-элемента (delete\_element)}.}
@@ -346,7 +346,7 @@
 
 \scnhaselement{Правило, задающее синтаксис \textit{ответа на команду обработки sc-событий}}
 \begin{scnindent}
-	\scnrelboth{семантическая эквивалентность}{\scnfileimage[15em]{images/handle\_events\_command\_answer}}
+	\scnrelboth{семантическая эквивалентность}{\scnfileimage[15em]{images/handle_events_command_answer.png}}
 	\begin{scnindent}
 		\scniselement{Язык описания грамматики языков ANTLR}
 		\scntext{интерпретация}{Сообщение \textit{ответа на команду обработки sc-событий} состоит из позиций зарегистрированных sc-событий в очереди. Успешным результатом \textit{команды обработки sc-событий} является статус 1.}
@@ -356,7 +356,7 @@
 
 \scnhaselement{Правило, задающее синтаксис \textit{ответа инициализации sc-события}}
 \begin{scnindent}
-    \scnrelboth{семантическая эквивалентность}{\scnfileimage[15em]{images/init\_event\_command\_answer}}
+    \scnrelboth{семантическая эквивалентность}{\scnfileimage[15em]{images/init_event_command_answer.png}}
     \begin{scnindent}
         \scniselement{Язык описания грамматики языков ANTLR}
         \scntext{интерпретация}{\textit{Ответ инициализации sc-события} возникает тогда и только тогда, когда в sc-памяти инициализируется соответствующее sc-событие. \textit{Ответ инициализации sc-события} всегда отсылается той клиентской системе, которая зарегистрировала это sc-событие. В сообщение \textit{ответа инициализации sc-события} включаются хэши тех sc-элементов, которые связаны с зарегистрированным sc-событием. Таким образом, если было зарегистрировано sc-событие выходящей sc-дуги, то в списке сообщения \textit{ответа инициализации sc-события} будут находится хэши трёх sc-элементов: хэш sc-элемента, который был подписан на sc-событие, хэш добавленной выходящей из него sc-дуги и хэш sc-элемента, являющегося концом этой sc-дуги.}
@@ -366,7 +366,7 @@
 
 \scnhaselement{Правило, задающее синтаксис \textit{синтаксических типов sc-элементов}}
 \begin{scnindent}
-    \scnrelboth{семантическая эквивалентность}{\scnfileimage[9em]{images/sc\_addr\_types}}
+    \scnrelboth{семантическая эквивалентность}{\scnfileimage[9em]{images/sc_addr_types.png}}
     \begin{scnindent}
     \scniselement{Язык описания грамматики языков ANTLR}
         \scntext{интерпретация}{\textit{Правило, задающее синтаксис синтаксических типов sc-элементов} включает \textit{Правило, задающее синтаксис синтаксических типов sc-узлов}, \textit{Правило, задающее синтаксис синтаксических типов sc-дуг}, \textit{Правило, задающее синтаксис синтаксических типов файлов ostis-системы}. Синтаксические типы sc-элементов представляются в виде целого числа и соответствуют программным синтаксическим типам, представляемым в sc-памяти.}
@@ -376,7 +376,7 @@
 
 \scnhaselement{Правило, задающее синтаксис \textit{синтаксических типов sc-узлов}}
 \begin{scnindent}
-    \scnrelboth{семантическая эквивалентность}{\scnfileimage[18em]{images/sc\_node\_types}}
+    \scnrelboth{семантическая эквивалентность}{\scnfileimage[18em]{images/sc_node_types.png}}
         \begin{scnindent}
             \scniselement{Язык описания грамматики языков ANTLR}
             \scntext{интерпретация}{\textit{Правило, задающее синтаксис синтаксических типов sc-узлов} описывает возможные синтаксические типы sc-узлов, интерпретируемые на стороне \textit{Серверной системы на основе Websocket, обеспечивающей доступ к sc-памяти платформы интерпретации sc-моделей при помощи команд SC-JSON-кода}.}
@@ -385,7 +385,7 @@
 
 \scnhaselement{Правило, задающее синтаксис \textit{синтаксических типов sc-дуг}}
 \begin{scnindent}
-    \scnrelboth{семантическая эквивалентность}{\scnfileimage[20em]{images/sc\_edge\_types}}
+    \scnrelboth{семантическая эквивалентность}{\scnfileimage[20em]{images/sc_edge_types.png}}
     \begin{scnindent}
         \scniselement{Язык описания грамматики языков ANTLR}
         \scntext{интерпретация}{\textit{Правило, задающее синтаксис синтаксических типов sc-дуг} описывает возможные синтаксические типы sc-дуг, в том числе и sc-рёбер, интерпретируемые на стороне \textit{Серверной системы на основе Websocket, обеспечивающей доступ к sc-памяти платформы интерпретации sc-моделей при помощи команд SC-JSON-кода}.}
@@ -394,7 +394,7 @@
 
 \scnhaselement{Правило, задающее синтаксис \textit{синтаксических типов файлов ostis-системы}}
 \begin{scnindent}
-    \scnrelboth{семантическая эквивалентность}{\scnfileimage[12em]{images/sc\_link\_types}}
+    \scnrelboth{семантическая эквивалентность}{\scnfileimage[12em]{images/sc_link_types.png}}
     \begin{scnindent}
         \scniselement{Язык описания грамматики языков ANTLR}
         \scntext{интерпретация}{\textit{Правило, задающее синтаксис синтаксических типов файлов ostis-системы} описывает возможные синтаксические типы файлов ostis-системы, интерпретируемые на стороне \textit{Серверной системы на основе Websocket, обеспечивающей доступ к sc-памяти платформы интерпретации sc-моделей при помощи команд SC-JSON-кода}.}
@@ -416,7 +416,7 @@
 \scnsubset{команда на SC-JSON-коде}
 \scnrelfrom{пример}{Пример команды создания sc-элементов}
 \begin{scnindent}
-    \scneqimage[12em]{images/create\_elements\_command\_example}
+    \scneqimage[12em]{images/create_elements_command_example.png}
     \scniselement{команда создания sc-элементов}
     \scnrelfrom{ответ}{Пример ответа на команду создания sc-элементов}
     \scntext{интерпретация}{Обработать команду создания sc-элементов: sc-узла с типом 1 (неуточняемого типа), файла ostis-системы с типом 2 (неуточняемого типа) и содержимым в виде числа с плавающей точкой 45.4 и sc-дуги типа 32 (константного типа) между sc-элементом, находящимся на нулевой позиции в массиве создаваемых sc-элементов, и sc-элементом, находящимся на первой позиции в том же самом массиве.}
@@ -429,7 +429,7 @@
 \scnsubset{ответ на команду на SC-JSON-коде}
 \scnrelfrom{пример}{Пример ответа на команду создания sc-элементов}
 \begin{scnindent}
-    \scneqimage[6em]{images/create\_elements\_command\_answer\_example}
+    \scneqimage[6em]{images/create_elements_command_answer_example.png}
     \scniselement{ответ на команду создания sc-элементов}
     \scntext{интерпретация}{Созданы sc-элементы с хэшами 323, 534 и 342 соответственно. Команда обработана успешно.}
 \end{scnindent}
@@ -439,7 +439,7 @@
 \scnsubset{команда на SC-JSON-коде}
 \scnrelfrom{пример}{Пример команды получения соответствующих типов sc-элементов}
 \begin{scnindent}
-    \scneqimage[12em]{images/check\_elements\_command\_example}
+    \scneqimage[12em]{images/check_elements_command_example.png}
     \scniselement{команда получения соответствующих типов sc-элементов}
     \scnrelfrom{ответ}{Пример ответа на команду получения соответствующих типов sc-элементов}
     \scntext{интерпретация}{Получить синтаксические типы sc-элементов с хэшами 885 и 1025.}
@@ -452,7 +452,7 @@
 \scnsubset{ответ на команду на SC-JSON-коде}
 \scnrelfrom{пример}{Пример ответа на команду получения соответствующих типов sc-элементов}
 \begin{scnindent}
-    \scneqimage[8em]{images/check\_elements\_command\_answer\_example}
+    \scneqimage[8em]{images/check_elements_command_answer_example.png}
     \scniselement{ответ на команду получения соответствующих типов sc-элементов}
     \scntext{интерпретация}{Типы sc-элементов 32 и 0 соответственно. Команда обработана успешно.}
 \end{scnindent}
@@ -463,7 +463,7 @@
 \scnsubset{команда на SC-JSON-коде}
 \scnrelfrom{пример}{Пример команды удаления sc-элементов}
 \begin{scnindent}
-    \scneqimage[12em]{images/delete\_elements\_command\_example}
+    \scneqimage[12em]{images/delete_elements_command_example.png}
     \scniselement{команда удаления sc-элементов}
     \scnrelfrom{ответ}{Пример ответа на команду удаления sc-элементов}
     \scntext{интерпретация}{Удалить sc-элементы с хэшами 885 и 1025.}
@@ -476,7 +476,7 @@
 \scnsubset{ответ на команду на SC-JSON-коде}
 \scnrelfrom{пример}{Пример ответа на команду удаления sc-элементов}
 \begin{scnindent}
-    \scneqimage[9em]{images/delete\_elements\_command\_answer\_example}
+    \scneqimage[9em]{images/delete_elements_command_answer_example.png}
     \scniselement{ответ на команду удаления sc-элементов}
     \scntext{интерпретация}{Sc-элементы были удалены из sc-памяти успешно.}
 \end{scnindent}
@@ -487,7 +487,7 @@
 \scnsubset{команда на SC-JSON-коде}
 \scnrelfrom{пример}{Пример команды обработки ключевых sc-элементов}
 \begin{scnindent}
-    \scneqimage[15em]{images/handle\_keynodes\_command\_example}
+    \scneqimage[15em]{images/handle_keynodes_command_example.png}
     \scniselement{команда обработки ключевых sc-элементов}
     \scnrelfrom{ответ}{Пример ответа на команду обработки ключевых sc-элементов}
     \scntext{интерпретация}{(1) Найти sc-элемент по системному идентификатору \scnqq{any\_system\_identifier}; (2) Разрешить sc-элемент с типом 1 (неуточняемого типа) по системному идентификатору \scnqq{any\_system\_identifier}.}
@@ -500,7 +500,7 @@
 \scnsubset{ответ на команду на SC-JSON-коде}
 \scnrelfrom{пример}{Пример ответа на команду обработки ключевых sc-элементов}
 \begin{scnindent}
-    \scneqimage[10em]{images/handle\_keynodes\_command\_answer\_example}
+    \scneqimage[10em]{images/handle_keynodes_command_answer_example.png}
     \scniselement{ответ на команду обработки ключевых sc-элементов}
     \scntext{интерпретация}{Ключевый sc-элемент с системным идентификатором \scnqq{any\_system\_identifier} не был найден, поэтому был создан. хэш нового ключевого sc-элемента - 128. Команда выполнена успешно.}
 \end{scnindent}
@@ -510,7 +510,7 @@
 \scnsubset{команда на SC-JSON-коде}
 \scnrelfrom{пример}{Пример команды обработки содержимого файлов ostis-системы}
 \begin{scnindent}
-    \scneqimage[12em]{images/handle\_link\_contents\_command\_example}
+    \scneqimage[12em]{images/handle_link_contents_command_example.png}
     \scniselement{команда обработки содержимого файлов ostis-системы}
     \scnrelfrom{ответ}{Пример ответа на команду обработки содержимого файлов ostis-системы}
     \scntext{интерпретация}{(1) Установить содержимое 67 типа \scnqq{int} в файл ostis-системы с хэшем 3123; (2) Получить содержимое файла ostis-системы с хэшем 232; (3) Найти файлы ostis-системы с содержимым \scnqq{exist}.}
@@ -523,7 +523,7 @@
 \scnsubset{ответ на команду на SC-JSON-коде}
 \scnrelfrom{пример}{Пример ответа на команду обработки содержимого файлов ostis-системы}
 \begin{scnindent}
-    \scneqimage[12em]{images/handle\_link\_contents\_command\_answer\_example}
+    \scneqimage[12em]{images/handle_link_contents_command_answer_example.png}
     \scniselement{ответ на команду обработки содержимого файлов ostis-системы}
     \scntext{интерпретация}{(1) Содержимое 67 типа \scnqq{int} было установлено успешно в файл ostis-системы с хэшем 3123; (2) Содержимое файла ostis-системы с хэшем 232 - число 67 целочисленного типа; (3) Файлы ostis-системы с содержимым \scnqq{exist}: 324 и 423.}
 \end{scnindent}
@@ -533,7 +533,7 @@
 \scnsubset{команда на SC-JSON-коде}
 \scnrelfrom{пример}{Пример команды поиска sc-конструкций, изоморфных заданному sc-шаблону}
 \begin{scnindent}
-    \scneqimage[15em]{images/search\_template\_command\_example}
+    \scneqimage[15em]{images/search_template_command_example.png}
     \scniselement{команда поиска sc-конструкций, изоморфных заданному sc-шаблону}
     \scnrelfrom{ответ}{Пример ответа на команду поиска sc-конструкций, изоморфных заданному sc-шаблону}
     \scntext{интерпретация}{Найти все такие тройки, в которых первым элементом является sc-элемент c хэшем 23123, третьим sc-элементом является файл ostis-системы неуточняемого константного типа c псевдонимом \scnqq{\_trg}, а вторым элементом - sc-дуга типа sc\_edge\_d\_common c псевдонимом \scnqq{\_edge1}, исходящая от sc-элемента c хэшем 23123 и входящая в файл ostis-системы с псевдонимом \scnqq{\_trg}, и найти все такие тройки, в которых первым элементом является sc-элемент c хэшем 231342, третьим элементов является sc-дуга под псевдонимом \scnqq{\_edge1}, а вторым элементом - sc-дуга типа sc\_edge\_access\_const\_pos\_perm, исходящая от sc-элемента c хэшем 231342 и входящая в sc-дугу \scnqq{\_edge1}. На место переменной с псевдонимом \scnqq{\_trg} подставить sc-элемент с хэшем 564.}
@@ -547,7 +547,7 @@
 \scnsubset{ответ на команду на SC-JSON-коде}
 \scnrelfrom{пример}{Пример ответа на команду поиска sc-конструкций, изоморфных заданному sc-шаблону}
 \begin{scnindent}
-    \scneqimage[24em]{images/search\_template\_command\_answer\_example}
+    \scneqimage[24em]{images/search_template_command_answer_example.png}
     \scniselement{ответ на команду поиска sc-конструкций, изоморфных заданному sc-шаблону}
     \scntext{интерпретация}{Найдена одна sc-конструкция, состоящая из двух троек. хэши sc-элементов в тройках: 23123, 4953, 564 и 231342, 533, 4953 соответственно их расположению в тройках. Команда выполнена успешно.}
     \end{scnindent}
@@ -558,7 +558,7 @@
 \scnsubset{команда на SC-JSON-коде}
 \scnrelfrom{пример}{Пример команды создания sc-конструкции, изоморфной заданному sc-шаблону}
 \begin{scnindent}
-    \scneqimage[15em]{images/generate\_template\_command\_example}
+    \scneqimage[15em]{images/generate_template_command_example.png}
     \scniselement{команда создания sc-конструкции, изоморфной заданному sc-шаблону}
     \scnrelfrom{ответ}{Пример ответа на команду создания sc-конструкции, изоморфной заданному sc-шаблону}
     \scntext{интерпретация}{Создать такую тройку, в которой первым элементом является sc-элемент c хэшем 589, третьим sc-элементом является sc-узел неуточняемого типа c псевдонимом \scnqq{\_trg}, а вторым элементом - sc-дуга типа sc\_edge\_d\_common c псевдонимом \scnqq{\_edge1}, исходящая от sc-элемента c хэшем 589 и входящая в sc-узел с псевдонимом \scnqq{\_trg}. На место переменной с псевдонимом \scnqq{\_trg} подставить sc-элемент с хэшем 332.}
@@ -571,7 +571,7 @@
 \scnsubset{ответ на команду на SC-JSON-коде}
 \scnrelfrom{пример}{Пример ответа на команду создания sc-конструкции, изоморфной заданному sc-шаблону}
 \begin{scnindent}
-    \scneqimage[15em]{images/generate\_template\_command\_answer\_example}
+    \scneqimage[15em]{images/generate_template_command_answer_example.png}
     \scniselement{ответ на команду создания sc-конструкции, изоморфной заданному sc-шаблону}
     \scntext{интерпретация}{Создана одна sc-конструкция, состоящая из одной тройки. хэши sc-элементов в тройке: 128, 589, 332 соответственно их расположению в тройках. Команда выполнена успешно.}
 \end{scnindent}
@@ -582,7 +582,7 @@
 \scnsubset{команда на SC-JSON-коде}
 \scnrelfrom{пример}{Пример команды обработки sc-событий}
 \begin{scnindent}
-    \scneqimage[15em]{images/handle\_events\_command\_example}
+    \scneqimage[15em]{images/handle_events_command_example.png}
     \scniselement{команда обработки sc-событий}
     \scnrelfrom{ответ}{Пример ответа на команду обработки sc-событий}
     \scntext{интерпретация}{(1) Зарегистрировать sc-событие типа \scnqq{add\_outgoing\_edge} по sc-элементу с хэшем 324; (2) Разрегистрировать sc-события с позициями sc-элементов 2, 4 и 5 соответственно.}
@@ -597,7 +597,7 @@
 \scnsuperset{SC-JSON-код}
 \scnrelfrom{пример}{Пример ответа на команду обработки sc-событий}
 \begin{scnindent}
-    \scneqimage[9em]{images/handle\_events\_command\_answer\_example}
+    \scneqimage[9em]{images/handle_events_command_answer_example.png}
     \scniselement{ответ на команду обработки sc-событий}
     \scntext{интерпретация}{(1) Sc-событие типа \scnqq{add\_outgoing\_edge} по sc-элементу с хэшем 324 было зарегистрировано успешно на 7-ой позиции очереди sc-событий; (2) Sc-события под позициями 2, 4, 5 удалены успешно.}
 \end{scnindent}
@@ -607,7 +607,7 @@
 \scnsubset{ответ на команду на SC-JSON-коде}
 \scnrelfrom{пример}{Пример ответа инициализации sc-события}
 \begin{scnindent}
-    \scneqimage[9em]{images/init\_event\_command\_answer\_example}
+    \scneqimage[9em]{images/init_event_command_answer_example.png}
     \scniselement{ответ инициализации sc-события}
     \scntext{интерпретация}{Sc-событие было инициализировано успешно: добавлена выходящая sc-дуга с хэшем 328 из зарегистрированного sc-элемента с хэшем 324 в sc-элемент c хэшем 35. Статус sc-события - 1.}
 \end{scnindent}

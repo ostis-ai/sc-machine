@@ -40,6 +40,7 @@ void search_translation(sc_addr elem, sc_addr answer, sc_bool sys_off)
 
     appendIntoAnswer(answer, sc_iterator5_value(it5, 0));
     appendIntoAnswer(answer, sc_iterator5_value(it5, 1));
+    appendIntoAnswer(answer, sc_iterator5_value(it5, 2));
     appendIntoAnswer(answer, sc_iterator5_value(it5, 3));
 
     // iterate translation sc-links
@@ -230,6 +231,49 @@ void search_typical_sc_neighborhood(sc_addr elem, sc_addr answer, sc_bool sys_of
   }
 }
 
+void search_element_identifiers(sc_addr el, sc_addr answer)
+{
+  sc_iterator3 * it2;
+  sc_iterator5 * it5;
+
+  // iterate all const arcs, that are no accessory, and go out from sc-element
+  it5 = sc_iterator5_f_a_a_a_a_new(
+      s_default_ctx,
+      el,
+      sc_type_arc_common | sc_type_const,
+      sc_type_link,
+      sc_type_arc_pos_const_perm,
+      sc_type_node | sc_type_const | sc_type_node_norole);
+  while (sc_iterator5_next(it5) == SC_TRUE)
+  {
+    // check if this relation is an identification
+    if (sc_helper_check_arc(
+            s_default_ctx, keynode_identification_relation, sc_iterator5_value(it5, 4), sc_type_arc_pos_const_perm) ==
+        SC_TRUE)
+    {
+      // iterate input arcs for sc-link
+      it2 = sc_iterator3_a_a_f_new(
+          s_default_ctx, sc_type_node | sc_type_const, sc_type_arc_pos_const_perm, sc_iterator5_value(it5, 2));
+      while (sc_iterator3_next(it2) == SC_TRUE)
+      {
+        if (sc_helper_check_arc(
+                s_default_ctx, keynode_languages, sc_iterator3_value(it2, 0), sc_type_arc_pos_const_perm) == SC_TRUE)
+        {
+          appendIntoAnswer(answer, sc_iterator3_value(it2, 0));
+          appendIntoAnswer(answer, sc_iterator3_value(it2, 1));
+        }
+      }
+      sc_iterator3_free(it2);
+
+      appendIntoAnswer(answer, sc_iterator5_value(it5, 1));
+      appendIntoAnswer(answer, sc_iterator5_value(it5, 2));
+      appendIntoAnswer(answer, sc_iterator5_value(it5, 3));
+      appendIntoAnswer(answer, sc_iterator5_value(it5, 4));
+    }
+  }
+  sc_iterator5_free(it5);
+}
+
 sc_result agent_search_full_semantic_neighborhood(const sc_event * event, sc_addr arg)
 {
   sc_addr question, answer;
@@ -253,13 +297,26 @@ sc_result agent_search_full_semantic_neighborhood(const sc_event * event, sc_add
   it1 = sc_iterator3_f_a_a_new(s_default_ctx, question, sc_type_arc_pos_const_perm, 0);
   if (sc_iterator3_next(it1) == SC_TRUE)
   {
-    if (IS_SYSTEM_ELEMENT(sc_iterator3_value(it1, 2)))
-      sys_off = SC_FALSE;
+    sc_addr const element = sc_iterator3_value(it1, 2);
 
-    appendIntoAnswer(answer, sc_iterator3_value(it1, 2));
+    appendIntoAnswer(answer, element);
 
-    search_translation(sc_iterator3_value(it1, 2), answer, sys_off);
-    search_arc_components(sc_iterator3_value(it1, 2), answer, sys_off);
+    search_translation(element, answer, sys_off);
+    search_arc_components(element, answer, sys_off);
+
+    sc_iterator3 * sysElementIt3 =
+        sc_iterator3_f_a_f_new(s_default_ctx, keynode_system_element, sc_type_arc_pos_const_perm, element);
+    if (sc_iterator3_next(sysElementIt3) == SC_TRUE)
+    {
+      appendIntoAnswer(answer, keynode_system_element);
+      appendIntoAnswer(answer, sc_iterator3_value(sysElementIt3, 1));
+
+      search_element_identifiers(element, answer);
+
+      connect_answer_to_question(question, answer);
+      finish_question(question);
+      return SC_RESULT_OK;
+    }
 
     // iterate input arcs
     it2 = sc_iterator3_a_a_f_new(s_default_ctx, 0, 0, sc_iterator3_value(it1, 2));

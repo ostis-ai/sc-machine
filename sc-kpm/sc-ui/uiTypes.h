@@ -43,7 +43,7 @@ typedef std::list<tScAddrPair> tScAddrPairList;
 typedef std::map<String, String> tStringStringMap;
 typedef std::unordered_set<sc_addr, _sc_addr_hash> tScAddrSet;
 
-typedef nlohmann::json sc_json;
+typedef nlohmann::json ScJson;
 
 // --- operators ---
 bool operator<(const sc_addr & addr1, const sc_addr & addr2);

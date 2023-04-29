@@ -1,4 +1,5 @@
 cmake_minimum_required(VERSION 2.8.12)
+set(CMAKE_CXX_STANDARD 17)
 project(sc-machine)
 site_name(www.ostis.net)
 cmake_policy(SET CMP0048 NEW)
@@ -95,6 +96,7 @@ sc_target_dependencies("${SC_MACHINE_ROOT}/packages.config.in" ${SC_MACHINE_THIR
 
 message("CMAKE_C_FLAGS: ${CMAKE_C_FLAGS}")
 message("CMAKE_CXX_FLAGS: ${CMAKE_CXX_FLAGS}")
+message("Compiler: ${CMAKE_CXX_COMPILER_ID} ${CMAKE_CXX_COMPILER_VERSION}, path: ${CMAKE_CXX_COMPILER}")
 
 add_subdirectory(${SC_MACHINE_ROOT}/thirdparty)
 

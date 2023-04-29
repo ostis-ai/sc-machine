@@ -1,0 +1,10 @@
+concept_scn_json_elements_order_set <- sc_node_class;;
+
+rrel_1 -> (concept_scn_json_elements_order_set -> nrel_system_identifier)
+(*
+    => nrel_scn_json_elements_base_order: (concept_scn_json_elements_order_set -> nrel_main_idtf)
+(*
+    => nrel_scn_json_elements_base_order: (concept_scn_json_elements_order_set -> nrel_idtf)
+(*
+    => nrel_scn_json_elements_base_order: (concept_scn_json_elements_order_set -> rrel_key_sc_element);;
+*);;*);;*);;

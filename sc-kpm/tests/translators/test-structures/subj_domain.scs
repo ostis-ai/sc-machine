@@ -1,0 +1,19 @@
+answer_addr = [*
+section_subjdomain_knowledges = [*
+subject_domain_of_knowledges
+=> nrel_main_idtf:
+	[Предметная область знаний] 
+	(* <- lang_ru;; *);
+	[Subject domain of knowledges]	
+	(* <- lang_en;; *);
+<- subject_domain;
+<- sc_node_struct;
+<- structure;
+<= nrel_primary_elements_class_private_subject_domain: subject_domain_of_structures;
+-> rrel_maximum_studied_object_class: knowledge;
+-> rrel_not_maximum_studied_object_class:
+	section;
+-> rrel_explored_relation:
+	nrel_metaknowledge;;
+*];;
+*];;
