@@ -78,6 +78,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- Not use system identifiers of vars in sc-template-build
 - Sc-template search by empty template ([65](https://github.com/ostis-ai/sc-machine/issues/65)))
 - Segfaults in test sc-client
 - Creating sc-keynodes without defining type. Now they will be created with const node type.
