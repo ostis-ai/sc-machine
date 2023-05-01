@@ -186,3 +186,19 @@ TEST_F(ScBuilderTest, TemplateWithVarTriplesSmall)
   ScTemplateSearchResult searchResult;
   EXPECT_TRUE(m_ctx->HelperSearchTemplate(checkTemplate, searchResult));
 }
+
+TEST_F(ScBuilderTest, TemplateWithVarTriplesSmall2)
+{
+  ScAddr const & checkTemplateStructure = m_ctx->HelperFindBySystemIdtf("test_template_small");
+
+  ScTemplateParams params;
+  ScAddr const & messageAddr = m_ctx->HelperFindBySystemIdtf("message");
+  params.Add("_message", messageAddr);
+
+  ScTemplate checkTemplate;
+  EXPECT_TRUE(m_ctx->HelperBuildTemplate(checkTemplate, checkTemplateStructure, params));
+
+  ScTemplateSearchResult searchResult;
+  EXPECT_TRUE(m_ctx->HelperSearchTemplate(checkTemplate, searchResult));
+  EXPECT_EQ(searchResult[0]["_message"], messageAddr);
+}
