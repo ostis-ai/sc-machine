@@ -21,6 +21,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Script for prepare and run sc-component manager
+- Add sc-component-manager as submodule
 - Add and get addresses by variable addresses in ScTemplateParams API
 - Check sc-types in sc-memory API sc-elements creation methods
 - Ability do not search for sc-links by substrings globally, passing config param `search_by_substring`
