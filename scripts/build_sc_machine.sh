@@ -18,12 +18,13 @@ function usage() {
   cat <<USAGE
 Usage: $(basename "$0") [OPTION]...
 
-Options:
-  -f, --force        full rebuild with the deleting of the $(relative "${BINARY_PATH}") and $(relative "${BUILD_PATH}") folders
-  -t, --tests        build in tests mode
-  -r, --release      build in release mode
-  --cmake-arg        add new argument into cmake build
-  -h, --help         display this help and exit
+  Options:
+    -f, --force               full rebuild with the deleting of the $(relative "${BINARY_PATH}") and $(relative "${BUILD_PATH}") folders
+    -t, --tests               build in tests mode
+    -r, --release             build in release mode
+    -cm, --component-manager  build sc-component manager
+    --cmake-arg               add new argument into cmake build
+    -h, --help                display this help and exit
 USAGE
   exit 0
 }
@@ -39,6 +40,9 @@ while [ "$1" != "" ]; do
       ;;
     "-r"|"--release" )
       build_release=1
+      ;;
+    "-cm"|"--component-manager" )
+      build_component_manager=1
       ;;
     "--cmake-arg" )
       shift 1
@@ -67,11 +71,13 @@ fi
 
 tests_mode="-DSC_BUILD_TESTS=ON"
 release_mode="-DCMAKE_BUILD_TYPE=Release"
+component_manager_mode="-DSC_COMPONENT_MANAGER=ON"
 
 stage "Build sc-machine"
 
 cd "${ROOT_CMAKE_PATH}"
-cmake -B "${BUILD_PATH}" "${ROOT_CMAKE_PATH}" ${build_tests:+${tests_mode}} ${build_release:+${release_mode}} "${outer_cmake_args[@]}"
+cmake -B "${BUILD_PATH}" "${ROOT_CMAKE_PATH}" \
+  ${build_tests:+${tests_mode}} ${build_release:+${release_mode}} ${build_component_manager:+${component_manager_mode}} "${outer_cmake_args[@]}"
 cmake --build "${BUILD_PATH}" -j"$(nproc)"
 
 stage "SC-machine built successfully"

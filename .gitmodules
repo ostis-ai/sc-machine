@@ -9,3 +9,7 @@
 [submodule "docs/scn"]
 	path = docs/scn
 	url = https://github.com/ostis-ai/scn-latex-plugin
+
+[submodule "sc-tools/sc-component-manager"]
+	path = sc-tools/sc-component-manager
+	url = https://github.com/ostis-ai/sc-component-manager.git
