@@ -23,7 +23,12 @@ sc_io_channel * _sc_dictionary_fs_memory_get_strings_channel_by_offset(
 {
   sc_uint64 const idx = strings_offset / memory->max_strings_channel_size;
   if (idx >= memory->max_strings_channels)
+  {
+    sc_fs_memory_info(
+        "Max strings channels is %llu. File memory is full. Please extends or swap file memory",
+        memory->max_strings_channels);
     return null_ptr;
+  }
 
   if (memory->strings_channels[idx] != null_ptr)
     return memory->strings_channels[idx];
@@ -490,7 +495,7 @@ sc_dictionary_fs_memory_status _sc_dictionary_fs_memory_read_string_by_offset(
     sc_char ** string)
 {
   sc_io_channel * strings_channel = _sc_dictionary_fs_memory_get_strings_channel_by_offset(memory, string_offset);
-  ;
+
   if (strings_channel == null_ptr)
   {
     sc_fs_memory_error("Path `%s` doesn't exist", "path");
@@ -1289,7 +1294,7 @@ error:
 {
   sc_iterator_destroy(data_it);
   return SC_FALSE;
-};
+}
 }
 
 sc_dictionary_fs_memory_status _sc_dictionary_fs_memory_save_term_string_offsets(sc_dictionary_fs_memory const * memory)
@@ -1370,7 +1375,7 @@ error:
 {
   sc_iterator_destroy(data_it);
   return SC_FALSE;
-};
+}
 }
 
 sc_dictionary_fs_memory_status _sc_dictionary_fs_memory_save_string_offsets_link_hashes(

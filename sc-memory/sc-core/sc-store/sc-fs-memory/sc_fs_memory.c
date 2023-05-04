@@ -9,7 +9,6 @@
 #include "sc_file_system.h"
 
 #include "../sc_segment.h"
-#include "../../sc_memory_version.h"
 #include "sc_fs_memory_builder.h"
 
 #include "glib/gstdio.h"
@@ -217,7 +216,7 @@ error:
   sc_mem_free(tmp_filename);
   sc_io_channel_shutdown(segments_channel, SC_TRUE, null_ptr);
   return SC_FALSE;
-};
+}
 }
 
 sc_bool sc_fs_memory_save(sc_segment ** segments, sc_uint32 const segments_num)

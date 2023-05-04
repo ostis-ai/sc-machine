@@ -34,9 +34,9 @@
 #define sc_int_to_str_int(number, string, length) \
   length = (number == 0) ? 1 : snprintf(null_ptr, 0, "%llu", number); \
   string = sc_mem_new(sc_char, length + 1); \
-  gcvt(number, length, string)
+  (void)gcvt(number, length, string)
 
-#define sc_str_int_to_int(string, number) number = atoi(string);
+#define sc_str_int_to_int(string, number) number = atoi(string)
 
 #define sc_str_find(str, substring) strstr(str, substring) != null_ptr
 
