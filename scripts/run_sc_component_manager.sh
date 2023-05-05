@@ -5,7 +5,7 @@ set -e
 APP_ROOT_PATH=$(cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && cd .. && pwd)
 INTERACTIVE_MODE=""
 
-while getopts 'c:b:' OPTION; do
+while getopts 'c:b:i' OPTION; do
   case "$OPTION" in
     c)
       CONFIG_PATH="$OPTARG"
@@ -32,5 +32,5 @@ if [ -z "$CONFIG_ABSOLUTE_PATH" ]; then
     exit 1
 fi
 
-$APP_ROOT_PATH/bin/sc-component-manager -c $CONFIG_ABSOLUTE_PATH $INTERACTIVE_MODE
+$APP_ROOT_PATH/bin/sc-component-manager -c $CONFIG_ABSOLUTE_PATH $INTERACTIVE_MODE $INTERACTIVE_MODE
 
