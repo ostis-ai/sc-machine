@@ -18,7 +18,7 @@ public:
   }
 
 protected:
-  ScJson m_errors;
+  ScJson m_errors = ScJson::array();
 
   void syntaxError(
       antlr4::Recognizer *,
