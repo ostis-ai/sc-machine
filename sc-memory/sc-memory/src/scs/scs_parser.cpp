@@ -309,6 +309,45 @@ bool Parser::Parse(std::string const & str)
   return result;
 }
 
+std::string Parser::BuildAST(std::string const & str)
+{
+  std::string fName;
+
+  antlr4::ANTLRInputStream input(str);
+  scsLexer lexer(&input);
+  antlr4::CommonTokenStream tokens(&lexer);
+  scsParser parser(&tokens);
+
+  ASTJsonListener astListener(parser);
+  parser.addParseListener(&astListener);
+
+  ASTErrorListener astErrorListener;
+  lexer.addErrorListener(&astErrorListener);
+  parser.addErrorListener(&astErrorListener);
+
+  parser.setParser(this);
+
+  try
+  {
+    parser.syntax();
+  }
+  catch (utils::ExceptionParseError const & e)
+  {
+    m_lastError = e.Message();
+  }
+
+  ScJson astJson;
+  astListener.buildAST(astJson);
+
+  astJson["errors"] = astErrorListener.getErrors();
+
+  parser.removeParseListener(&astListener);
+  lexer.removeErrorListener(&astErrorListener);
+  parser.removeErrorListener(&astErrorListener);
+
+  return astJson.dump();
+}
+
 ParsedElement & Parser::GetParsedElementRef(ElementHandle const & handle)
 {
   ParsedElementVector & container = GetContainerByElementVisibilityRef(handle.GetVisibility());
