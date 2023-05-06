@@ -122,6 +122,7 @@ public:
   _SC_EXTERN Parser();
 
   _SC_EXTERN bool Parse(std::string const & str);
+  _SC_EXTERN std::string BuildAST(std::string const & str);
   _SC_EXTERN ParsedElement const & GetParsedElement(ElementHandle const & handle) const;
   _SC_EXTERN TripleVector const & GetParsedTriples() const;
   _SC_EXTERN void ForEachTripleForGeneration(
