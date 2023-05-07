@@ -16,6 +16,14 @@ void ASTErrorListener::syntaxError(
   errorInfoJson["charPositionInLine"] = charPositionInLine;
   errorInfoJson["msg"] = msg;
 
+  ScJson positionJson;
+  positionJson["beginLine"] = token->getLine();
+  positionJson["beginIndex"] = token->getStartIndex();
+  positionJson["endLine"] = token->getLine();
+  positionJson["endIndex"] = token->getStopIndex();
+
+  errorInfoJson["position"] = positionJson;
+
   m_errors.push_back(errorInfoJson);
 }
 
