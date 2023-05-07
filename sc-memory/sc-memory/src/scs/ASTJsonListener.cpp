@@ -18,9 +18,9 @@ void ASTErrorListener::syntaxError(
 
   ScJson positionJson;
   positionJson["beginLine"] = token->getLine();
-  positionJson["beginIndex"] = token->getStartIndex();
+  positionJson["beginIndex"] = charPositionInLine;
   positionJson["endLine"] = token->getLine();
-  positionJson["endIndex"] = token->getStopIndex();
+  positionJson["endIndex"] = token->getText().size() + charPositionInLine;
 
   errorInfoJson["position"] = positionJson;
 
@@ -74,7 +74,7 @@ void ASTJsonListener::buildTokenStartInfo(antlr4::ParserRuleContext * ctx, ScJso
 {
   ScJson positionJson;
   positionJson["beginLine"] = ctx->getStart()->getLine();
-  positionJson["beginIndex"] = ctx->getStart()->getTokenIndex();
+  positionJson["beginIndex"] = ctx->getStart()->getCharPositionInLine();
 
   nodeInfo["ruleType"] = m_ruleNames[ctx->getRuleIndex()];
   nodeInfo["position"] = positionJson;
@@ -87,17 +87,17 @@ void ASTJsonListener::buildTokenStopInfo(antlr4::ParserRuleContext * ctx, ScJson
     return;
 
   nodeInfo["position"]["endLine"] = ctx->getStop()->getLine();
-  nodeInfo["position"]["endIndex"] = ctx->getStop()->getTokenIndex();
+  nodeInfo["position"]["endIndex"] = ctx->getStop()->getCharPositionInLine() + ctx->getStop()->getText().size();
 }
 
 void ASTJsonListener::enterEveryRule(antlr4::ParserRuleContext * ctx)
 {
   auto * node = new ASTNode();
 
-  if (m_ast == nullptr)
+  if (m_root == nullptr)
   {
     m_currentNode = node;
-    m_ast = node;
+    m_root = node;
     m_currentNode->parentNode = nullptr;
   }
   else
@@ -141,10 +141,8 @@ void visitAllASTNodes(ASTNode * node, ScJson & json)
 
 void ASTJsonListener::buildAST(ScJson & astJson)
 {
-  astJson = ScJson();
-  astJson["ruleType"] = "syntax";
-
-  visitAllASTNodes(m_ast, astJson["children"]);
+  astJson = m_root->info;
+  visitAllASTNodes(m_root, astJson["children"]);
 }
 
 void removeAllASTNodes(ASTNode * node)
@@ -158,9 +156,9 @@ void removeAllASTNodes(ASTNode * node)
 
 ASTJsonListener::~ASTJsonListener()
 {
-  removeAllASTNodes(m_ast);
-  delete m_ast;
-  m_ast = nullptr;
+  removeAllASTNodes(m_root);
+  delete m_root;
+  m_root = nullptr;
   m_currentNode = nullptr;
   m_parentNode = nullptr;
 }

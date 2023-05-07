@@ -85,7 +85,7 @@ protected:
   antlr4::Parser & m_parser;
   std::vector<std::string> const & m_ruleNames;
 
-  ASTNode * m_ast = nullptr;
+  ASTNode * m_root = nullptr;
   ASTNode * m_currentNode = nullptr;
   ASTNode * m_parentNode = nullptr;
 
