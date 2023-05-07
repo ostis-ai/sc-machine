@@ -8,6 +8,8 @@
 
 #include "sc-memory/sc_debug.hpp"
 
+#include "sc-memory/scs/ASTJsonListener.hpp"
+
 #if SC_PLATFORM_WIN32
 #endif
 
@@ -190,6 +192,7 @@ void ParsedElement::ResolveVisibility()
   if (m_idtf[0] == '.')
   {
     if (m_idtf.size() > 1 && m_idtf[1] == '.')
+    {
       m_visibility = Visibility::Local;
     else
       m_visibility = Visibility::Global;
@@ -336,10 +339,9 @@ std::string Parser::BuildAST(std::string const & str)
     m_lastError = e.Message();
   }
 
-  ScJson astJson;
-  astListener.buildAST(astJson);
-
-  astJson["errors"] = astErrorListener.getErrors();
+  ScJson parseResult;
+  astListener.buildAST(parseResult["root"]);
+  parseResult["errors"] = astErrorListener.getErrors();
 
   parser.removeParseListener(&astListener);
   lexer.removeErrorListener(&astErrorListener);
