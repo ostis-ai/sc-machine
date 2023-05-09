@@ -10,10 +10,9 @@
 
 class SCsTranslator : public Translator
 {
-
 public:
   explicit SCsTranslator(class ScMemoryContext & context);
-  virtual ~SCsTranslator() = default;
+  ~SCsTranslator() override = default;
 
   bool TranslateImpl(Params const & params) override;
 };

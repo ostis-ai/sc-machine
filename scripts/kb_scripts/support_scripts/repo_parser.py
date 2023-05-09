@@ -54,6 +54,9 @@ def collect_files(path: str, exclude_paths: Set[str], sources: Set[str]):
         sources.add(path)
         return
 
+    if not isdir(path):
+        return
+
     for source_path in os.listdir(path):
         source_path = join(path, source_path)
 

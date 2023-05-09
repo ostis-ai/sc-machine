@@ -7,6 +7,7 @@
 #pragma once
 
 #include "sc-memory/sc_memory.hpp"
+#include "translator.hpp"
 
 #include <list>
 #include <string>
@@ -30,27 +31,39 @@ struct BuilderParams
 class Builder
 {
 public:
+  static std::unordered_set<std::string> const m_supportedSourcesFormats;
+  static std::unordered_set<std::string> const m_supportedRepoPathFormats;
+
   Builder();
 
   bool Run(BuilderParams const & params, sc_memory_params const & memoryParams);
 
 protected:
-  void ResolveOutputStructure();
+  ScAddr ResolveOutputStructure();
 
-  bool ProcessFile(std::string const & filename);
+  bool BuildSources(std::unordered_set<std::string> const & buildSources, ScAddr const & outputStructure);
 
-  void CollectExcludedPaths();
+  bool ProcessFile(std::string const & filename, ScAddr const & outputStructure);
 
-  void CollectFiles(std::string const & path);
-  void CollectFiles();
+  bool IsSourceFile(std::string const & filePath) const;
+  bool IsRepoPathFile(std::string const & filePath) const;
 
-  std::shared_ptr<class Translator> CreateTranslator(std::string const & fileExt);
+  void ParseRepoPath(
+      std::string const & repoPath,
+      std::unordered_set<std::string> & excludedSources,
+      std::unordered_set<std::string> & checkSources) const;
+
+  void CollectBuildSources(
+      std::string const & path,
+      std::unordered_set<std::string> const & excludedSources,
+      std::unordered_set<std::string> & buildSources);
+  void CollectBuildSources(
+      std::unordered_set<std::string> const & excludedSources,
+      std::unordered_set<std::string> const & checkSources,
+      std::unordered_set<std::string> & buildSources);
 
 private:
-  std::unordered_set<std::string> m_excludedPaths;
-  std::unordered_set<std::string> m_files;
-
   BuilderParams m_params;
-  ScAddr m_outputStructure;
   std::unique_ptr<ScMemoryContext> m_ctx;
+  std::unordered_map<std::string, std::shared_ptr<Translator>> m_translators;
 };
