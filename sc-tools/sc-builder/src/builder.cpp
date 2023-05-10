@@ -27,7 +27,6 @@ void NormalizeExt(std::string & ext)
 
 void NormalizePath(std::string const & repoDirectoryPath, std::string & path)
 {
-  utils::StringUtils::Trim(path);
   std::stringstream stream;
   stream << repoDirectoryPath << path;
   path = stream.str();
@@ -53,7 +52,7 @@ bool IsDirectory(std::string const & path)
   return std::filesystem::is_directory(path);
 }
 
-std::string GetFileName(std::string const & path)
+std::string GetFileDirectory(std::string const & path)
 {
   return path.substr(0, path.rfind('/') + 1);
 }
@@ -65,8 +64,6 @@ std::string GetFileExtension(std::string const & path)
 }  // namespace impl
 
 Builder::Builder() = default;
-
-using Sources = std::unordered_set<std::string>;
 
 bool Builder::Run(BuilderParams const & params, sc_memory_params const & memoryParams)
 {
@@ -83,7 +80,7 @@ bool Builder::Run(BuilderParams const & params, sc_memory_params const & memoryP
   }
   Sources buildSources;
   ScConsole::PrintLine() << ScConsole::Color::Blue << "Collect all sources... ";
-  CollectBuildSources(excludedSources, checkSources, buildSources);
+  CollectBuildSources(m_params.m_inputPath, excludedSources, checkSources, buildSources);
 
   m_ctx = std::make_unique<ScMemoryContext>(sc_access_lvl_make_min, "Builder");
   m_translators = {{"scs", std::make_shared<SCsTranslator>(*m_ctx)}};
@@ -98,7 +95,7 @@ bool Builder::Run(BuilderParams const & params, sc_memory_params const & memoryP
   return status;
 }
 
-bool Builder::BuildSources(std::unordered_set<std::string> const & buildSources, ScAddr const & outputStructure)
+bool Builder::BuildSources(Sources const & buildSources, ScAddr const & outputStructure)
 {
   // process founded files
   bool status = true;
@@ -216,10 +213,7 @@ bool Builder::IsRepoPathFile(std::string const & filePath) const
   return Builder::m_supportedRepoPathFormats.find(ext) != m_supportedRepoPathFormats.cend();
 }
 
-void Builder::ParseRepoPath(
-    std::string const & repoPath,
-    std::unordered_set<std::string> & excludedSources,
-    std::unordered_set<std::string> & checkSources) const
+void Builder::ParseRepoPath(std::string const & repoPath, Sources & excludedSources, Sources & checkSources) const
 {
   if (!IsRepoPathFile(repoPath))
     SC_THROW_EXCEPTION(utils::ExceptionInvalidState, "Repo path file \"" << repoPath << "\" has invalid extension");
@@ -230,11 +224,13 @@ void Builder::ParseRepoPath(
     SC_THROW_EXCEPTION(utils::ExceptionInvalidState, "Can't open repo path file \"" << repoPath << "\"");
 
   std::string path;
-  std::string const & repoDirectoryPath = impl::GetFileName(repoPath);
+  std::string const & repoDirectoryPath = impl::GetFileDirectory(repoPath);
   while (std::getline(infile, path))
   {
     if (impl::IsSkipText(path))
       continue;
+
+    utils::StringUtils::Trim(path);
 
     if (impl::IsExcludedPath(path))
     {
@@ -253,12 +249,12 @@ void Builder::ParseRepoPath(
         checkSources.insert(path);
     }
   }
+
+  for (std::string const & source : excludedSources)
+    checkSources.erase(source);
 }
 
-void Builder::CollectBuildSources(
-    std::string const & path,
-    std::unordered_set<std::string> const & excludedSources,
-    std::unordered_set<std::string> & buildSources)
+void Builder::CollectBuildSources(std::string const & path, Sources const & excludedSources, Sources & buildSources)
 {
   auto const & IsExcludedPath = [&excludedSources](std::string const & filePath) -> bool {
     return excludedSources.find(filePath) != excludedSources.cend();
@@ -292,14 +288,15 @@ void Builder::CollectBuildSources(
 }
 
 void Builder::CollectBuildSources(
-    std::unordered_set<std::string> const & excludedSources,
-    std::unordered_set<std::string> const & checkSources,
-    std::unordered_set<std::string> & buildSources)
+    std::string const & path,
+    Sources const & excludedSources,
+    Sources const & checkSources,
+    Sources & buildSources)
 {
   buildSources.clear();
 
-  if (impl::IsDirectory(m_params.m_inputPath))
-    CollectBuildSources(m_params.m_inputPath, excludedSources, buildSources);
+  if (impl::IsDirectory(path))
+    CollectBuildSources(path, excludedSources, buildSources);
   else
   {
     for (std::string const & sourcesPath : checkSources)

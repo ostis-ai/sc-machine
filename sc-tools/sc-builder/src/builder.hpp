@@ -31,6 +31,8 @@ struct BuilderParams
 class Builder
 {
 public:
+  using Sources = std::unordered_set<std::string>;
+
   static std::unordered_set<std::string> const m_supportedSourcesFormats;
   static std::unordered_set<std::string> const m_supportedRepoPathFormats;
 
@@ -39,31 +41,25 @@ public:
   bool Run(BuilderParams const & params, sc_memory_params const & memoryParams);
 
 protected:
+  BuilderParams m_params;
+  std::unique_ptr<ScMemoryContext> m_ctx;
+  std::unordered_map<std::string, std::shared_ptr<Translator>> m_translators;
+
   ScAddr ResolveOutputStructure();
 
-  bool BuildSources(std::unordered_set<std::string> const & buildSources, ScAddr const & outputStructure);
+  bool BuildSources(Sources const & buildSources, ScAddr const & outputStructure);
 
   bool ProcessFile(std::string const & filename, ScAddr const & outputStructure);
 
   bool IsSourceFile(std::string const & filePath) const;
   bool IsRepoPathFile(std::string const & filePath) const;
 
-  void ParseRepoPath(
-      std::string const & repoPath,
-      std::unordered_set<std::string> & excludedSources,
-      std::unordered_set<std::string> & checkSources) const;
+  void ParseRepoPath(std::string const & repoPath, Sources & excludedSources, Sources & checkSources) const;
 
+  void CollectBuildSources(std::string const & path, Sources const & excludedSources, Sources & buildSources);
   void CollectBuildSources(
       std::string const & path,
-      std::unordered_set<std::string> const & excludedSources,
-      std::unordered_set<std::string> & buildSources);
-  void CollectBuildSources(
-      std::unordered_set<std::string> const & excludedSources,
-      std::unordered_set<std::string> const & checkSources,
-      std::unordered_set<std::string> & buildSources);
-
-private:
-  BuilderParams m_params;
-  std::unique_ptr<ScMemoryContext> m_ctx;
-  std::unordered_map<std::string, std::shared_ptr<Translator>> m_translators;
+      Sources const & excludedSources,
+      Sources const & checkSources,
+      Sources & buildSources);
 };
