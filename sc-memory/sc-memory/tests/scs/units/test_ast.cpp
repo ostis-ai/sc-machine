@@ -10,6 +10,8 @@
 
 #include "test_scs_utils.hpp"
 
+using ScJson = nlohmann::json;
+
 TEST(scs_ast, CorrectAST1)
 {
   sc_char const * data = "x -> y;;";
@@ -142,7 +144,7 @@ TEST(scs_ast, CorrectAST1)
       "ruleType": "syntax",
       "token": "<EOF>"
     }
-    })"_json.dump(), ast);
+    })"_json, ScJson::parse(ast));
 }
 
 TEST(scs_ast, CorrectAST2)
@@ -390,7 +392,7 @@ TEST(scs_ast, CorrectAST2)
       "ruleType": "syntax",
       "token": "<EOF>"
     }
-    })"_json.dump(), ast);
+    })"_json, ScJson::parse(ast));
 }
 
 TEST(scs_ast, IncorrectAST1)
@@ -454,7 +456,7 @@ TEST(scs_ast, IncorrectAST1)
       "ruleType": "syntax",
       "token": "<EOF>"
     }
-    })"_json.dump(), ast);
+    })"_json, ScJson::parse(ast));
 }
 
 TEST(scs_ast, IncorrectAST2)
@@ -618,7 +620,7 @@ TEST(scs_ast, IncorrectAST2)
       "ruleType": "syntax",
       "token": "<EOF>"
     }
-    })"_json.dump(), ast);
+    })"_json, ScJson::parse(ast));
 }
 
 TEST(scs_ast, IncorrectAST3)
@@ -800,5 +802,5 @@ TEST(scs_ast, IncorrectAST3)
       "ruleType": "syntax",
       "token": "<EOF>"
     }
-    })"_json.dump(), ast);
+    })"_json, ScJson::parse(ast));
 }
