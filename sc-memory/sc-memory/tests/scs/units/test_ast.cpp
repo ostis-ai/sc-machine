@@ -402,8 +402,6 @@ TEST(scs_ast, IncorrectAST1)
 
   EXPECT_EQ(R"({
     "errors": [{
-      "charPositionInLine": 1,
-      "line": 1,
       "msg": "no viable alternative at input 'x'",
       "position": {
         "beginIndex": 1,
@@ -468,14 +466,16 @@ TEST(scs_ast, IncorrectAST2)
 
   EXPECT_EQ(R"({
     "errors": [{
-      "charPositionInLine": 22,
-      "line": 1,
       "msg": "token recognition error at: ']'",
       "position": null,
-      "token": "Invalid token"
+      "position": {
+        "beginIndex": 22,
+        "beginLine": 1,
+        "endIndex": 22,
+        "endLine": 1
+      },
+      "token": null
     }, {
-      "charPositionInLine": 23,
-      "line": 1,
       "msg": "missing ';;' at '<EOF>'",
       "position": {
         "beginIndex": 23,
@@ -623,18 +623,39 @@ TEST(scs_ast, IncorrectAST2)
 
 TEST(scs_ast, IncorrectAST3)
 {
-  sc_char const * data = "x => nrel_idtf: adsa;;ж";
+  sc_char const * data = "x => nrel_idtf: adsa;;жоо";
 
   scs::Parser parser;
   std::string const & ast = parser.BuildAST(data);
 
   EXPECT_EQ(R"({
     "errors": [{
-      "charPositionInLine": 22,
-      "line": 1,
       "msg": "token recognition error at: 'ж'",
-      "position": null,
-      "token": "Invalid token"
+      "position": {
+        "beginIndex": 22,
+        "beginLine": 1,
+        "endIndex": 22,
+        "endLine": 1
+      },
+      "token": null
+    }, {
+      "msg": "token recognition error at: 'о'",
+      "position": {
+        "beginIndex": 23,
+        "beginLine": 1,
+        "endIndex": 23,
+        "endLine": 1
+      },
+      "token": null
+    }, {
+      "msg": "token recognition error at: 'о'",
+      "position": {
+        "beginIndex": 24,
+        "beginLine": 1,
+        "endIndex": 24,
+        "endLine": 1
+      },
+      "token": null
     }],
     "root": {
       "children": [{
@@ -773,7 +794,7 @@ TEST(scs_ast, IncorrectAST3)
       "position": {
         "beginIndex": 0,
         "beginLine": 1,
-        "endIndex": 28,
+        "endIndex": 30,
         "endLine": 1
       },
       "ruleType": "syntax",
