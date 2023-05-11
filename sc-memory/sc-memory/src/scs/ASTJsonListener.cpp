@@ -11,19 +11,15 @@ void ASTErrorListener::syntaxError(
     std::exception_ptr)
 {
   ScJson errorInfoJson;
-  errorInfoJson["token"] = token ? token->getText() : "Invalid token";
-  errorInfoJson["line"] = line;
-  errorInfoJson["charPositionInLine"] = charPositionInLine;
+  errorInfoJson["token"] = token ? ScJson(token->getText()) : ScJson();
   errorInfoJson["msg"] = msg;
 
   ScJson positionJson;
-  if (token != nullptr)
-  {
-    positionJson["beginLine"] = token->getLine();
-    positionJson["beginIndex"] = charPositionInLine;
-    positionJson["endLine"] = token->getLine();
-    positionJson["endIndex"] = token->getText().size() + charPositionInLine;
-  }
+  positionJson["beginLine"] = token == nullptr ? line : token->getLine();
+  positionJson["beginIndex"] = charPositionInLine;
+  positionJson["endLine"] = token == nullptr ? positionJson["beginLine"].get<size_t>() : token->getLine();
+  positionJson["endIndex"]
+      = token == nullptr ? positionJson["beginIndex"].get<size_t>() : token->getText().size() + charPositionInLine;
 
   errorInfoJson["position"] = positionJson;
 
