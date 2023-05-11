@@ -17,10 +17,13 @@ void ASTErrorListener::syntaxError(
   errorInfoJson["msg"] = msg;
 
   ScJson positionJson;
-  positionJson["beginLine"] = token->getLine();
-  positionJson["beginIndex"] = charPositionInLine;
-  positionJson["endLine"] = token->getLine();
-  positionJson["endIndex"] = token->getText().size() + charPositionInLine;
+  if (token != nullptr)
+  {
+    positionJson["beginLine"] = token->getLine();
+    positionJson["beginIndex"] = charPositionInLine;
+    positionJson["endLine"] = token->getLine();
+    positionJson["endIndex"] = token->getText().size() + charPositionInLine;
+  }
 
   errorInfoJson["position"] = positionJson;
 

@@ -12,229 +12,136 @@
 
 TEST(scs_ast, CorrectAST1)
 {
-  sc_char const * data = "sc_node_not_relation -> concept_wine;;\n"
-      "concept_wine=>nrel_idtf:[wine] (* <- lang_en;; *);;\n"
-      "concept_wine=>nrel_main_idtf:[вино] (* <- lang_ru;; *);;\n"
-      "\n"
-      "concept_wine<-rrel_key_sc_element:...\n"
-      "\t(*\n"
-      "\t<-definition;;=>nrel_main_idtf:[Опр.(вино)] (* <- lang_ru;; *);;<=nrel_sc_text_translation:...\n"
-      "\t(*\n"
-      "        ->[Вино  — слабоалкогольный напиток, получаемый брожением виноградного сока](* <- lang_ru;; *);;\n"
-      "\t*);;\n"
-      "\t\n"
-      "\t<=nrel_using_constants:...\n"
-      "\t(*\n"
-      "\t\t->concept_low_alcoholic_drink;;\n"
-      "                ->concept_juice;;\n"
-      "\n"
-      "\t*);;\n"
-      "\n"
-      "*);;\n"
-      "\n"
-      "\n"
-      "concept_wine<-rrel_key_sc_element:...\n"
-      "\t(*\n"
-      "\t\t<-illustration;;<=nrel_sc_text_translation:...\n"
-      "\t\t\t(*\n"
-      "\t\t\t    ->rrel_example: \"file://photo//wine.jpg\"\n"
-      "\t\t\t(*\n"
-      "\t\t=>nrel_format:format_jpg;;\n"
-      "\t\t*);;\n"
-      "\t*);;\n"
-      "*);;\n"
-      "\n"
-      "concept_wine<-rrel_key_sc_element:...\n"
-      "(*\n"
-      "\t->rrel_key_sc_element:nrel_beverage_strength;concept_wine;;\n"
-      "\t<-statement;;\n"
-      "\t=>nrel_main_idtf:[Утв.(Крепкость напитка*, вино)](* <- lang_ru;; *);;\n"
-      "\t<=nrel_sc_text_translation:...\n"
-      "\t(*\n"
-      "\t\t->rrel_example:[Процент содержания алкоголя : 9-22 %](* <- lang_ru;; *);;\n"
-      "\t*);;\n"
-      "*);;\n"
-      "\n"
-      "\n"
-      "concept_wine<-rrel_key_sc_element:...\n"
-      "(*\n"
-      "\t=>nrel_main_idtf:[Утв.(вино)](* <- lang_ru;; *);\n"
-      "        <=nrel_sc_text_translation:...\n"
-      "\t(*\n"
-      "        ->rrel_example:[У каждого сорта вина своя традиция распития](* <- lang_ru;; *);;\n"
-      "\t*);;\n"
-      "\t\n"
-      "\t<=nrel_using_constants:...\n"
-      "\t(*\n"
-      "                ->concept_drinking_tradition;;\n"
-      "\n"
-      "\t*);;\n"
-      "\n"
-      "*);;\n"
-      "\n"
-      "\n"
-      "concept_wine<-rrel_key_sc_element:...\n"
-      "(*\n"
-      "\t=>nrel_main_idtf:[Утв.(вино)](* <- lang_ru;; *);;\n"
-      "        <=nrel_sc_text_translation:...\n"
-      "\t(*\n"
-      "        ->rrel_example:[Вино получают из различных сортах винограда,отжимая сок и потом подвиргают брожению](* <- lang_ru;; *);;\n"
-      "\t*);;\n"
-      "\t\n"
-      "\t<=nrel_using_constants:...\n"
-      "\t(*\n"
-      "                ->nrel_spin;;\n"
-      "                ->concept_juice;;\n"
-      "                ->concept_grade;;\n"
-      "                ->nrel_fermentation;;\n"
-      "\n"
-      "\t*);;\n"
-      "\n"
-      "*);;\n"
-      "\n"
-      "concept_wine<-rrel_key_sc_element:...\n"
-      "(*\n"
-      "\t=>nrel_main_idtf:[Утв.(вино)](* <- lang_ru;; *);;\n"
-      "        <=nrel_sc_text_translation:...\n"
-      "\t(*\n"
-      "        ->rrel_example:[Одна из самых известных марок вина- Chateau Lafite Rothschild](* <- lang_ru;; *);;\n"
-      "\t*);;\n"
-      "\t\n"
-      "\n"
-      "*);;\n"
-      "\n"
-      "concept_wine<-rrel_key_sc_element:...\n"
-      "\t(*\n"
-      "\t\t<-illustration;;<=nrel_sc_text_translation:...\n"
-      "\t\t\t(*\n"
-      "\t\t\t    ->rrel_example: \"file://photo//famous//Chateau Lafite Rothschild.jpg\"\n"
-      "\t\t\t(*\n"
-      "\t\t=>nrel_format:format_jpeg;;\n"
-      "\t\t*);;\n"
-      "\t*);;\n"
-      "*);;\n"
-      "\n"
-      "concept_wine<=nrel_inclusion:concept_low_alcoholic_drink;;";
+  sc_char const * data = "x -> y;;";
 
   scs::Parser parser;
   std::string const & ast = parser.BuildAST(data);
 
   EXPECT_EQ(R"({
-    "children": [{
+    "errors": [],
+    "root": {
       "children": [{
         "children": [{
           "children": [{
             "children": [{
-              "children": [],
-              "position": {
-                "beginIndex": 2,
-                "beginLine": 1,
-                "endIndex": 2,
-                "endLine": 1
-              },
-              "ruleType": "connector",
-              "token": "->"
-            }, {
               "children": [{
-                "children": [{
-                  "children": [{
-                    "children": [],
-                    "position": {
-                      "beginIndex": 4,
-                      "beginLine": 1,
-                      "endIndex": 4,
-                      "endLine": 1
-                    },
-                    "ruleType": "idtf_system",
-                    "token": "y"
-                  }],
-                  "position": {
-                    "beginIndex": 4,
-                    "beginLine": 1,
-                    "endIndex": 4,
-                    "endLine": 1
-                  },
-                  "ruleType": "idtf_atomic"
-                }],
+                "children": [],
                 "position": {
-                  "beginIndex": 4,
+                  "beginIndex": 2,
                   "beginLine": 1,
                   "endIndex": 4,
                   "endLine": 1
                 },
-                "ruleType": "idtf_common"
+                "ruleType": "connector",
+                "token": "->"
+              }, {
+                "children": [{
+                  "children": [{
+                    "children": [{
+                      "children": [],
+                      "position": {
+                        "beginIndex": 5,
+                        "beginLine": 1,
+                        "endIndex": 6,
+                        "endLine": 1
+                      },
+                      "ruleType": "idtf_system",
+                      "token": "y"
+                    }],
+                    "position": {
+                      "beginIndex": 5,
+                      "beginLine": 1,
+                      "endIndex": 6,
+                      "endLine": 1
+                    },
+                    "ruleType": "idtf_atomic"
+                  }],
+                  "position": {
+                    "beginIndex": 5,
+                    "beginLine": 1,
+                    "endIndex": 6,
+                    "endLine": 1
+                  },
+                  "ruleType": "idtf_common"
+                }],
+                "position": {
+                  "beginIndex": 5,
+                  "beginLine": 1,
+                  "endIndex": 6,
+                  "endLine": 1
+                },
+                "ruleType": "idtf_list"
               }],
               "position": {
-                "beginIndex": 4,
+                "beginIndex": 2,
                 "beginLine": 1,
-                "endIndex": 4,
+                "endIndex": 6,
                 "endLine": 1
               },
-              "ruleType": "idtf_list"
-            }],
-            "position": {
-              "beginIndex": 2,
-              "beginLine": 1,
-              "endIndex": 4,
-              "endLine": 1
-            },
-            "ruleType": "sentence_lvl_4_list_item"
-          }, {
-            "children": [{
+              "ruleType": "sentence_lvl_4_list_item"
+            }, {
               "children": [{
-                "children": [],
+                "children": [{
+                  "children": [],
+                  "position": {
+                    "beginIndex": 0,
+                    "beginLine": 1,
+                    "endIndex": 1,
+                    "endLine": 1
+                  },
+                  "ruleType": "idtf_system",
+                  "token": "x"
+                }],
                 "position": {
                   "beginIndex": 0,
                   "beginLine": 1,
-                  "endIndex": 0,
+                  "endIndex": 1,
                   "endLine": 1
                 },
-                "ruleType": "idtf_system",
-                "token": "x"
+                "ruleType": "idtf_atomic"
               }],
               "position": {
                 "beginIndex": 0,
                 "beginLine": 1,
-                "endIndex": 0,
+                "endIndex": 1,
                 "endLine": 1
               },
-              "ruleType": "idtf_atomic"
+              "ruleType": "idtf_common"
             }],
             "position": {
               "beginIndex": 0,
               "beginLine": 1,
-              "endIndex": 0,
+              "endIndex": 6,
               "endLine": 1
             },
-            "ruleType": "idtf_common"
+            "ruleType": "sentence_lvl_common"
           }],
           "position": {
             "beginIndex": 0,
             "beginLine": 1,
-            "endIndex": 4,
+            "endIndex": 6,
             "endLine": 1
           },
-          "ruleType": "sentence_lvl_common"
+          "ruleType": "sentence"
         }],
         "position": {
           "beginIndex": 0,
           "beginLine": 1,
-          "endIndex": 4,
+          "endIndex": 8,
           "endLine": 1
         },
-        "ruleType": "sentence"
+        "ruleType": "sentence_wrap",
+        "token": ";;"
       }],
       "position": {
         "beginIndex": 0,
         "beginLine": 1,
-        "endIndex": 5,
+        "endIndex": 13,
         "endLine": 1
       },
-      "ruleType": "sentence_wrap",
-      "token": ";;"
-    }],
-    "errors": [],
-    "ruleType": "syntax"
+      "ruleType": "syntax",
+      "token": "<EOF>"
+    }
     })"_json.dump(), ast);
 }
 
@@ -246,215 +153,243 @@ TEST(scs_ast, CorrectAST2)
   std::string const & ast = parser.BuildAST(data);
 
   EXPECT_EQ(R"({
-    "children": [{
+    "errors": [],
+    "root": {
       "children": [{
         "children": [{
           "children": [{
             "children": [{
-              "children": [],
-              "position": {
-                "beginIndex": 2,
-                "beginLine": 1,
-                "endIndex": 2,
-                "endLine": 1
-              },
-              "ruleType": "connector",
-              "token": "->"
-            }, {
               "children": [{
+                "children": [],
+                "position": {
+                  "beginIndex": 2,
+                  "beginLine": 1,
+                  "endIndex": 4,
+                  "endLine": 1
+                },
+                "ruleType": "connector",
+                "token": "->"
+              }, {
                 "children": [{
                   "children": [{
                     "children": [{
+                      "children": [],
+                      "position": {
+                        "beginIndex": 5,
+                        "beginLine": 1,
+                        "endIndex": 7,
+                        "endLine": 1
+                      },
+                      "ruleType": "contour_begin",
+                      "token": "[*"
+                    }, {
                       "children": [{
                         "children": [{
                           "children": [{
-                            "children": [],
-                            "position": {
-                              "beginIndex": 8,
-                              "beginLine": 1,
-                              "endIndex": 8,
-                              "endLine": 1
-                            },
-                            "ruleType": "connector",
-                            "token": "_=>"
-                          }, {
                             "children": [{
                               "children": [{
                                 "children": [],
                                 "position": {
-                                  "beginIndex": 10,
+                                  "beginIndex": 8,
                                   "beginLine": 1,
-                                  "endIndex": 10,
+                                  "endIndex": 9,
                                   "endLine": 1
                                 },
-                                "ruleType": "content",
-                                "token": "[test*]"
+                                "ruleType": "idtf_system",
+                                "token": "y"
                               }],
+                              "position": {
+                                "beginIndex": 8,
+                                "beginLine": 1,
+                                "endIndex": 9,
+                                "endLine": 1
+                              },
+                              "ruleType": "idtf_atomic"
+                            }],
+                            "position": {
+                              "beginIndex": 8,
+                              "beginLine": 1,
+                              "endIndex": 9,
+                              "endLine": 1
+                            },
+                            "ruleType": "idtf_common"
+                          }, {
+                            "children": [{
+                              "children": [],
                               "position": {
                                 "beginIndex": 10,
                                 "beginLine": 1,
-                                "endIndex": 10,
+                                "endIndex": 13,
                                 "endLine": 1
                               },
-                              "ruleType": "idtf_common"
+                              "ruleType": "connector",
+                              "token": "_=>"
+                            }, {
+                              "children": [{
+                                "children": [{
+                                  "children": [],
+                                  "position": {
+                                    "beginIndex": 14,
+                                    "beginLine": 1,
+                                    "endIndex": 21,
+                                    "endLine": 1
+                                  },
+                                  "ruleType": "content",
+                                  "token": "[test*]"
+                                }],
+                                "position": {
+                                  "beginIndex": 14,
+                                  "beginLine": 1,
+                                  "endIndex": 21,
+                                  "endLine": 1
+                                },
+                                "ruleType": "idtf_common"
+                              }],
+                              "position": {
+                                "beginIndex": 14,
+                                "beginLine": 1,
+                                "endIndex": 21,
+                                "endLine": 1
+                              },
+                              "ruleType": "idtf_list"
                             }],
                             "position": {
                               "beginIndex": 10,
                               "beginLine": 1,
-                              "endIndex": 10,
+                              "endIndex": 21,
                               "endLine": 1
                             },
-                            "ruleType": "idtf_list"
+                            "ruleType": "sentence_lvl_4_list_item"
                           }],
                           "position": {
                             "beginIndex": 8,
                             "beginLine": 1,
-                            "endIndex": 10,
+                            "endIndex": 21,
                             "endLine": 1
                           },
-                          "ruleType": "sentence_lvl_4_list_item"
-                        }, {
-                          "children": [{
-                            "children": [{
-                              "children": [],
-                              "position": {
-                                "beginIndex": 6,
-                                "beginLine": 1,
-                                "endIndex": 6,
-                                "endLine": 1
-                              },
-                              "ruleType": "idtf_system",
-                              "token": "y"
-                            }],
-                            "position": {
-                              "beginIndex": 6,
-                              "beginLine": 1,
-                              "endIndex": 6,
-                              "endLine": 1
-                            },
-                            "ruleType": "idtf_atomic"
-                          }],
-                          "position": {
-                            "beginIndex": 6,
-                            "beginLine": 1,
-                            "endIndex": 6,
-                            "endLine": 1
-                          },
-                          "ruleType": "idtf_common"
+                          "ruleType": "sentence_lvl_common"
                         }],
                         "position": {
-                          "beginIndex": 6,
+                          "beginIndex": 8,
                           "beginLine": 1,
-                          "endIndex": 10,
+                          "endIndex": 21,
                           "endLine": 1
                         },
-                        "ruleType": "sentence_lvl_common"
+                        "ruleType": "sentence"
                       }],
                       "position": {
-                        "beginIndex": 6,
+                        "beginIndex": 8,
                         "beginLine": 1,
-                        "endIndex": 10,
+                        "endIndex": 23,
                         "endLine": 1
                       },
-                      "ruleType": "sentence"
+                      "ruleType": "sentence_wrap",
+                      "token": ";;"
+                    }, {
+                      "children": [],
+                      "position": {
+                        "beginIndex": 24,
+                        "beginLine": 1,
+                        "endIndex": 26,
+                        "endLine": 1
+                      },
+                      "ruleType": "contour_end",
+                      "token": "*]"
                     }],
                     "position": {
-                      "beginIndex": 6,
+                      "beginIndex": 5,
                       "beginLine": 1,
-                      "endIndex": 11,
+                      "endIndex": 26,
                       "endLine": 1
                     },
-                    "ruleType": "sentence_wrap",
-                    "token": ";;"
+                    "ruleType": "contour"
                   }],
                   "position": {
-                    "beginIndex": 4,
+                    "beginIndex": 5,
                     "beginLine": 1,
-                    "endIndex": 13,
+                    "endIndex": 26,
                     "endLine": 1
                   },
-                  "ruleType": "contour",
-                  "token": "*]"
+                  "ruleType": "idtf_common"
                 }],
                 "position": {
-                  "beginIndex": 4,
+                  "beginIndex": 5,
                   "beginLine": 1,
-                  "endIndex": 13,
+                  "endIndex": 26,
                   "endLine": 1
                 },
-                "ruleType": "idtf_common"
+                "ruleType": "idtf_list"
               }],
               "position": {
-                "beginIndex": 4,
+                "beginIndex": 2,
                 "beginLine": 1,
-                "endIndex": 13,
+                "endIndex": 26,
                 "endLine": 1
               },
-              "ruleType": "idtf_list"
-            }],
-            "position": {
-              "beginIndex": 2,
-              "beginLine": 1,
-              "endIndex": 13,
-              "endLine": 1
-            },
-            "ruleType": "sentence_lvl_4_list_item"
-          }, {
-            "children": [{
+              "ruleType": "sentence_lvl_4_list_item"
+            }, {
               "children": [{
-                "children": [],
+                "children": [{
+                  "children": [],
+                  "position": {
+                    "beginIndex": 0,
+                    "beginLine": 1,
+                    "endIndex": 1,
+                    "endLine": 1
+                  },
+                  "ruleType": "idtf_system",
+                  "token": "x"
+                }],
                 "position": {
                   "beginIndex": 0,
                   "beginLine": 1,
-                  "endIndex": 0,
+                  "endIndex": 1,
                   "endLine": 1
                 },
-                "ruleType": "idtf_system",
-                "token": "x"
+                "ruleType": "idtf_atomic"
               }],
               "position": {
                 "beginIndex": 0,
                 "beginLine": 1,
-                "endIndex": 0,
+                "endIndex": 1,
                 "endLine": 1
               },
-              "ruleType": "idtf_atomic"
+              "ruleType": "idtf_common"
             }],
             "position": {
               "beginIndex": 0,
               "beginLine": 1,
-              "endIndex": 0,
+              "endIndex": 26,
               "endLine": 1
             },
-            "ruleType": "idtf_common"
+            "ruleType": "sentence_lvl_common"
           }],
           "position": {
             "beginIndex": 0,
             "beginLine": 1,
-            "endIndex": 13,
+            "endIndex": 26,
             "endLine": 1
           },
-          "ruleType": "sentence_lvl_common"
+          "ruleType": "sentence"
         }],
         "position": {
           "beginIndex": 0,
           "beginLine": 1,
-          "endIndex": 13,
+          "endIndex": 28,
           "endLine": 1
         },
-        "ruleType": "sentence"
+        "ruleType": "sentence_wrap",
+        "token": ";;"
       }],
       "position": {
         "beginIndex": 0,
         "beginLine": 1,
-        "endIndex": 14,
+        "endIndex": 33,
         "endLine": 1
       },
-      "ruleType": "sentence_wrap",
-      "token": ";;"
-    }],
-    "errors": [],
-    "ruleType": "syntax"
+      "ruleType": "syntax",
+      "token": "<EOF>"
+    }
     })"_json.dump(), ast);
 }
 
@@ -466,46 +401,61 @@ TEST(scs_ast, IncorrectAST1)
   std::string const & ast = parser.BuildAST(data);
 
   EXPECT_EQ(R"({
-    "children": [{
-      "children": [{
-        "children": [],
-        "position": {
-          "beginIndex": 0,
-          "beginLine": 1
-        },
-        "ruleType": "sentence"
-      }],
-      "position": {
-        "beginIndex": 0,
-        "beginLine": 1
-      },
-      "ruleType": "sentence_wrap"
-    }, {
-      "children": [{
-        "children": [],
-        "position": {
-          "beginIndex": 0,
-          "beginLine": 1,
-          "endIndex": 0,
-          "endLine": 1
-        },
-        "ruleType": "sentence"
-      }],
-      "position": {
-        "beginIndex": 0,
-        "beginLine": 1,
-        "endIndex": 0,
-        "endLine": 1
-      },
-      "ruleType": "sentence_wrap"
-    }],
     "errors": [{
       "charPositionInLine": 1,
       "line": 1,
       "msg": "no viable alternative at input 'x'",
+      "position": {
+        "beginIndex": 1,
+        "beginLine": 1,
+        "endIndex": 6,
+        "endLine": 1
+      },
       "token": "<EOF>"
     }],
-    "ruleType": "syntax"
+    "root": {
+      "children": [{
+        "children": [{
+          "children": [],
+          "position": {
+            "beginIndex": 0,
+            "beginLine": 1
+          },
+          "ruleType": "sentence"
+        }],
+        "position": {
+          "beginIndex": 0,
+          "beginLine": 1
+        },
+        "ruleType": "sentence_wrap"
+      }, {
+        "children": [{
+          "children": [],
+          "position": {
+            "beginIndex": 0,
+            "beginLine": 1,
+            "endIndex": 1,
+            "endLine": 1
+          },
+          "ruleType": "sentence"
+        }],
+        "position": {
+          "beginIndex": 0,
+          "beginLine": 1,
+          "endIndex": 1,
+          "endLine": 1
+        },
+        "ruleType": "sentence_wrap"
+      }],
+      "position": {
+        "beginIndex": 0,
+        "beginLine": 1,
+        "endIndex": 6,
+        "endLine": 1
+      },
+      "ruleType": "syntax",
+      "token": "<EOF>"
+    }
     })"_json.dump(), ast);
 }
 
@@ -517,130 +467,317 @@ TEST(scs_ast, IncorrectAST2)
   std::string const & ast = parser.BuildAST(data);
 
   EXPECT_EQ(R"({
-    "children": [{
-      "children": [{
-        "children": [{
-          "children": [{
-            "children": [{
-              "children": [],
-              "position": {
-                "beginIndex": 2,
-                "beginLine": 1,
-                "endIndex": 2,
-                "endLine": 1
-              },
-              "ruleType": "connector",
-              "token": "=>"
-            }, {
-              "children": [],
-              "position": {
-                "beginIndex": 4,
-                "beginLine": 1,
-                "endIndex": 5,
-                "endLine": 1
-              },
-              "ruleType": "attr_list",
-              "token": ":"
-            }, {
-              "children": [{
-                "children": [{
-                  "children": [],
-                  "position": {
-                    "beginIndex": 7,
-                    "beginLine": 1,
-                    "endIndex": 7,
-                    "endLine": 1
-                  },
-                  "ruleType": "content",
-                  "token": "[text]"
-                }],
-                "position": {
-                  "beginIndex": 7,
-                  "beginLine": 1,
-                  "endIndex": 7,
-                  "endLine": 1
-                },
-                "ruleType": "idtf_common"
-              }],
-              "position": {
-                "beginIndex": 7,
-                "beginLine": 1,
-                "endIndex": 7,
-                "endLine": 1
-              },
-              "ruleType": "idtf_list"
-            }],
-            "position": {
-              "beginIndex": 2,
-              "beginLine": 1,
-              "endIndex": 7,
-              "endLine": 1
-            },
-            "ruleType": "sentence_lvl_4_list_item"
-          }, {
-            "children": [{
-              "children": [{
-                "children": [],
-                "position": {
-                  "beginIndex": 0,
-                  "beginLine": 1,
-                  "endIndex": 0,
-                  "endLine": 1
-                },
-                "ruleType": "idtf_system",
-                "token": "x"
-              }],
-              "position": {
-                "beginIndex": 0,
-                "beginLine": 1,
-                "endIndex": 0,
-                "endLine": 1
-              },
-              "ruleType": "idtf_atomic"
-            }],
-            "position": {
-              "beginIndex": 0,
-              "beginLine": 1,
-              "endIndex": 0,
-              "endLine": 1
-            },
-            "ruleType": "idtf_common"
-          }],
-          "position": {
-            "beginIndex": 0,
-            "beginLine": 1,
-            "endIndex": 7,
-            "endLine": 1
-          },
-          "ruleType": "sentence_lvl_common"
-        }],
-        "position": {
-          "beginIndex": 0,
-          "beginLine": 1,
-          "endIndex": 7,
-          "endLine": 1
-        },
-        "ruleType": "sentence"
-      }],
-      "position": {
-        "beginIndex": 0,
-        "beginLine": 1,
-        "endIndex": 7,
-        "endLine": 1
-      },
-      "ruleType": "sentence_wrap"
-    }],
     "errors": [{
       "charPositionInLine": 22,
       "line": 1,
       "msg": "token recognition error at: ']'",
+      "position": null,
       "token": "Invalid token"
     }, {
       "charPositionInLine": 23,
       "line": 1,
       "msg": "missing ';;' at '<EOF>'",
+      "position": {
+        "beginIndex": 23,
+        "beginLine": 1,
+        "endIndex": 28,
+        "endLine": 1
+      },
       "token": "<EOF>"
     }],
-    "ruleType": "syntax"
+    "root": {
+      "children": [{
+        "children": [{
+          "children": [{
+            "children": [{
+              "children": [{
+                "children": [],
+                "position": {
+                  "beginIndex": 2,
+                  "beginLine": 1,
+                  "endIndex": 4,
+                  "endLine": 1
+                },
+                "ruleType": "connector",
+                "token": "=>"
+              }, {
+                "children": [{
+                  "children": [],
+                  "position": {
+                    "beginIndex": 5,
+                    "beginLine": 1,
+                    "endIndex": 14,
+                    "endLine": 1
+                  },
+                  "ruleType": "idtf_system",
+                  "token": "nrel_idtf"
+                }],
+                "position": {
+                  "beginIndex": 5,
+                  "beginLine": 1,
+                  "endIndex": 15,
+                  "endLine": 1
+                },
+                "ruleType": "attr_list",
+                "token": ":"
+              }, {
+                "children": [{
+                  "children": [{
+                    "children": [],
+                    "position": {
+                      "beginIndex": 16,
+                      "beginLine": 1,
+                      "endIndex": 22,
+                      "endLine": 1
+                    },
+                    "ruleType": "content",
+                    "token": "[text]"
+                  }],
+                  "position": {
+                    "beginIndex": 16,
+                    "beginLine": 1,
+                    "endIndex": 22,
+                    "endLine": 1
+                  },
+                  "ruleType": "idtf_common"
+                }],
+                "position": {
+                  "beginIndex": 16,
+                  "beginLine": 1,
+                  "endIndex": 22,
+                  "endLine": 1
+                },
+                "ruleType": "idtf_list"
+              }],
+              "position": {
+                "beginIndex": 2,
+                "beginLine": 1,
+                "endIndex": 22,
+                "endLine": 1
+              },
+              "ruleType": "sentence_lvl_4_list_item"
+            }, {
+              "children": [{
+                "children": [{
+                  "children": [],
+                  "position": {
+                    "beginIndex": 0,
+                    "beginLine": 1,
+                    "endIndex": 1,
+                    "endLine": 1
+                  },
+                  "ruleType": "idtf_system",
+                  "token": "x"
+                }],
+                "position": {
+                  "beginIndex": 0,
+                  "beginLine": 1,
+                  "endIndex": 1,
+                  "endLine": 1
+                },
+                "ruleType": "idtf_atomic"
+              }],
+              "position": {
+                "beginIndex": 0,
+                "beginLine": 1,
+                "endIndex": 1,
+                "endLine": 1
+              },
+              "ruleType": "idtf_common"
+            }],
+            "position": {
+              "beginIndex": 0,
+              "beginLine": 1,
+              "endIndex": 22,
+              "endLine": 1
+            },
+            "ruleType": "sentence_lvl_common"
+          }],
+          "position": {
+            "beginIndex": 0,
+            "beginLine": 1,
+            "endIndex": 22,
+            "endLine": 1
+          },
+          "ruleType": "sentence"
+        }],
+        "position": {
+          "beginIndex": 0,
+          "beginLine": 1,
+          "endIndex": 22,
+          "endLine": 1
+        },
+        "ruleType": "sentence_wrap"
+      }],
+      "position": {
+        "beginIndex": 0,
+        "beginLine": 1,
+        "endIndex": 28,
+        "endLine": 1
+      },
+      "ruleType": "syntax",
+      "token": "<EOF>"
+    }
+    })"_json.dump(), ast);
+}
+
+TEST(scs_ast, IncorrectAST3)
+{
+  sc_char const * data = "x => nrel_idtf: adsa;;ж";
+
+  scs::Parser parser;
+  std::string const & ast = parser.BuildAST(data);
+
+  EXPECT_EQ(R"({
+    "errors": [{
+      "charPositionInLine": 22,
+      "line": 1,
+      "msg": "token recognition error at: 'ж'",
+      "position": null,
+      "token": "Invalid token"
+    }],
+    "root": {
+      "children": [{
+        "children": [{
+          "children": [{
+            "children": [{
+              "children": [{
+                "children": [],
+                "position": {
+                  "beginIndex": 2,
+                  "beginLine": 1,
+                  "endIndex": 4,
+                  "endLine": 1
+                },
+                "ruleType": "connector",
+                "token": "=>"
+              }, {
+                "children": [{
+                  "children": [],
+                  "position": {
+                    "beginIndex": 5,
+                    "beginLine": 1,
+                    "endIndex": 14,
+                    "endLine": 1
+                  },
+                  "ruleType": "idtf_system",
+                  "token": "nrel_idtf"
+                }],
+                "position": {
+                  "beginIndex": 5,
+                  "beginLine": 1,
+                  "endIndex": 15,
+                  "endLine": 1
+                },
+                "ruleType": "attr_list",
+                "token": ":"
+              }, {
+                "children": [{
+                  "children": [{
+                    "children": [{
+                      "children": [],
+                      "position": {
+                        "beginIndex": 16,
+                        "beginLine": 1,
+                        "endIndex": 20,
+                        "endLine": 1
+                      },
+                      "ruleType": "idtf_system",
+                      "token": "adsa"
+                    }],
+                    "position": {
+                      "beginIndex": 16,
+                      "beginLine": 1,
+                      "endIndex": 20,
+                      "endLine": 1
+                    },
+                    "ruleType": "idtf_atomic"
+                  }],
+                  "position": {
+                    "beginIndex": 16,
+                    "beginLine": 1,
+                    "endIndex": 20,
+                    "endLine": 1
+                  },
+                  "ruleType": "idtf_common"
+                }],
+                "position": {
+                  "beginIndex": 16,
+                  "beginLine": 1,
+                  "endIndex": 20,
+                  "endLine": 1
+                },
+                "ruleType": "idtf_list"
+              }],
+              "position": {
+                "beginIndex": 2,
+                "beginLine": 1,
+                "endIndex": 20,
+                "endLine": 1
+              },
+              "ruleType": "sentence_lvl_4_list_item"
+            }, {
+              "children": [{
+                "children": [{
+                  "children": [],
+                  "position": {
+                    "beginIndex": 0,
+                    "beginLine": 1,
+                    "endIndex": 1,
+                    "endLine": 1
+                  },
+                  "ruleType": "idtf_system",
+                  "token": "x"
+                }],
+                "position": {
+                  "beginIndex": 0,
+                  "beginLine": 1,
+                  "endIndex": 1,
+                  "endLine": 1
+                },
+                "ruleType": "idtf_atomic"
+              }],
+              "position": {
+                "beginIndex": 0,
+                "beginLine": 1,
+                "endIndex": 1,
+                "endLine": 1
+              },
+              "ruleType": "idtf_common"
+            }],
+            "position": {
+              "beginIndex": 0,
+              "beginLine": 1,
+              "endIndex": 20,
+              "endLine": 1
+            },
+            "ruleType": "sentence_lvl_common"
+          }],
+          "position": {
+            "beginIndex": 0,
+            "beginLine": 1,
+            "endIndex": 20,
+            "endLine": 1
+          },
+          "ruleType": "sentence"
+        }],
+        "position": {
+          "beginIndex": 0,
+          "beginLine": 1,
+          "endIndex": 22,
+          "endLine": 1
+        },
+        "ruleType": "sentence_wrap",
+        "token": ";;"
+      }],
+      "position": {
+        "beginIndex": 0,
+        "beginLine": 1,
+        "endIndex": 28,
+        "endLine": 1
+      },
+      "ruleType": "syntax",
+      "token": "<EOF>"
+    }
     })"_json.dump(), ast);
 }
