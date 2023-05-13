@@ -14,7 +14,7 @@ class ScSet
 public:
   _SC_EXTERN ScSet(class ScMemoryContext & ctx, ScAddr const & setAddr);
 
-  /* Append element into sc-set. If element already exist, then doesn't append it and return false; otherwise returns
+  /* Append element into sc-hash-map. If element already exist, then doesn't append it and return false; otherwise returns
    * true. */
   _SC_EXTERN bool Append(ScAddr const & elAddr);
   _SC_EXTERN bool Append(ScAddr const & elAddr, ScAddr const & attrAddr);

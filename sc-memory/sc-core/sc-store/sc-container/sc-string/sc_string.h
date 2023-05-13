@@ -31,10 +31,9 @@
 
 #define sc_str_len(string) strlen(string)
 
-#define sc_int_to_str_int(number, string, length) \
-  length = (number == 0) ? 1 : snprintf(null_ptr, 0, "%llu", number); \
-  string = sc_mem_new(sc_char, length + 1); \
-  (void)gcvt(number, length, string)
+#define sc_int_to_str_int(number, string, size) \
+  sprintf(string, "%llu", number); \
+  size = sc_str_len(string)
 
 #define sc_str_int_to_int(string, number) number = atoi(string)
 

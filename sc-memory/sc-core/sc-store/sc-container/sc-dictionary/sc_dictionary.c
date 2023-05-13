@@ -4,13 +4,15 @@
  * (See accompanying file COPYING.MIT or copy at http://opensource.org/licenses/MIT)
  */
 
-#include <ctype.h>
-
 #include "sc_dictionary.h"
 #include "sc_dictionary_private.h"
 
 #include "../../sc-base/sc_allocator.h"
 #include "../../sc-container/sc-string/sc_string.h"
+
+#define SC_DICTIONARY_NODE_BUCKET_SIZE 16
+#define SC_DICTIONARY_GET_BUCKET_NUM(num) ((num) / SC_DICTIONARY_NODE_BUCKET_SIZE)
+#define SC_DICTIONARY_GET_CHILD_NUM(num) ((num) % SC_DICTIONARY_NODE_BUCKET_SIZE)
 
 #define SC_DICTIONARY_NODE_IS_VALID(__node) ((__node) != null_ptr)
 #define SC_DICTIONARY_NODE_IS_NOT_VALID(__node) ((__node) == null_ptr)
@@ -28,36 +30,22 @@ sc_bool sc_dictionary_initialize(
   return SC_TRUE;
 }
 
-sc_bool sc_dictionary_destroy(sc_dictionary * dictionary, sc_bool (*node_destroy)(sc_dictionary_node *, void **))
-{
-  if (dictionary == null_ptr)
-    return SC_FALSE;
-
-  sc_dictionary_visit_up_nodes(dictionary, node_destroy, null_ptr);
-  node_destroy(dictionary->root, null_ptr);
-  sc_mem_free(dictionary);
-
-  return SC_TRUE;
-}
-
 inline sc_dictionary_node * _sc_dictionary_node_initialize(sc_uint8 children_size)
 {
   sc_dictionary_node * node = sc_mem_new(sc_dictionary_node, 1);
-  node->next = sc_mem_new(sc_dictionary_node *, children_size);
+
+  sc_uint64 const count = children_size / SC_DICTIONARY_NODE_BUCKET_SIZE + 1;
+  node->next = sc_mem_new(sc_dictionary_node **, count);
 
   node->data = null_ptr;
   node->offset = null_ptr;
   node->offset_size = 0;
 
-  sc_dc_node_access_lvl_make_read(node);
-
   return node;
 }
 
-sc_bool sc_dictionary_node_destroy(sc_dictionary_node * node, void ** args)
+void _sc_dictionary_node_destroy(sc_dictionary_node * node)
 {
-  (void)args;
-
   node->data = null_ptr;
 
   sc_mem_free(node->next);
@@ -68,71 +56,122 @@ sc_bool sc_dictionary_node_destroy(sc_dictionary_node * node, void ** args)
   node->offset_size = 0;
 
   sc_mem_free(node);
+}
+
+void _sc_dictionary_up_destroy_node(
+    sc_dictionary const * dictionary,
+    sc_dictionary_node * node,
+    void (*node_clear)(sc_dictionary_node *))
+{
+  sc_dictionary_node ** next_bucket = null_ptr;
+  for (sc_uint8 num = 0, prev_bucket_idx = 0; num < dictionary->size; ++num)
+  {
+    sc_uint64 const bucket_idx = SC_DICTIONARY_GET_BUCKET_NUM(num);
+    if (prev_bucket_idx != bucket_idx)
+      sc_mem_free(next_bucket);
+    prev_bucket_idx = bucket_idx;
+
+    next_bucket = node->next[bucket_idx];
+    if (SC_DICTIONARY_NODE_IS_NOT_VALID(next_bucket))
+      continue;
+
+    sc_uint64 const child_idx = SC_DICTIONARY_GET_CHILD_NUM(num);
+    sc_dictionary_node * next = next_bucket[child_idx];
+    if (SC_DICTIONARY_NODE_IS_NOT_VALID(next))
+      continue;
+
+    _sc_dictionary_up_destroy_node(dictionary, next, node_clear);
+
+    if (node_clear != null_ptr)
+      node_clear(next);
+    _sc_dictionary_node_destroy(next);
+  }
+
+  sc_mem_free(next_bucket);
+}
+
+sc_bool sc_dictionary_destroy(sc_dictionary * dictionary, void (*node_clear)(sc_dictionary_node *))
+{
+  if (dictionary == null_ptr)
+    return SC_FALSE;
+
+  _sc_dictionary_up_destroy_node(dictionary, dictionary->root, node_clear);
+
+  if (node_clear != null_ptr)
+    node_clear(dictionary->root);
+  _sc_dictionary_node_destroy(dictionary->root);
+
+  sc_mem_free(dictionary);
 
   return SC_TRUE;
 }
 
 inline sc_dictionary_node * _sc_dictionary_get_next_node(
-    const sc_dictionary * dictionary,
-    const sc_dictionary_node * node,
-    const sc_char ch)
+    sc_dictionary const * dictionary,
+    sc_dictionary_node const * node,
+    sc_char const ch)
 {
   sc_uint8 num;
   dictionary->char_to_int(ch, &num, &node->mask);
 
-  return node->next == null_ptr ? null_ptr : node->next[num];
+  sc_uint64 const bucket_idx = SC_DICTIONARY_GET_BUCKET_NUM(num);
+  sc_uint64 const child_idx = SC_DICTIONARY_GET_CHILD_NUM(num);
+
+  return node->next == null_ptr ? null_ptr : (node->next[bucket_idx] == null_ptr ? null_ptr : node->next[bucket_idx][child_idx]);
 }
 
-sc_dictionary_node * sc_dictionary_append_to_node(sc_dictionary * dictionary, const sc_char * string, sc_uint32 size)
+sc_dictionary_node * sc_dictionary_append_to_node(sc_dictionary * dictionary, sc_char const * string, sc_uint32 size)
 {
   sc_dictionary_node * node = dictionary->root;
-
-  sc_char ** string_ptr = sc_mem_new(sc_char *, 1);
-  *string_ptr = (sc_char *)string;
+  sc_char * string_ptr = (sc_char *)&*string;
 
   sc_uint32 i = 0;
   sc_uint32 saved_offset_size = size;
   while (i < size)
   {
     sc_uint8 num;
-    dictionary->char_to_int(**string_ptr, &num, &node->mask);
-    // define prefix
-    if (SC_DICTIONARY_NODE_IS_NOT_VALID(node->next[num]))
-    {
-      node->next[num] = _sc_dictionary_node_initialize(dictionary->size);
+    dictionary->char_to_int(*string_ptr, &num, &node->mask);
+    sc_uint64 bucket_idx = SC_DICTIONARY_GET_BUCKET_NUM(num);
+    sc_uint64 child_idx = SC_DICTIONARY_GET_CHILD_NUM(num);
 
-      sc_dictionary_node * temp = node->next[num];
+    if (SC_DICTIONARY_NODE_IS_NOT_VALID(node->next[bucket_idx]))
+      node->next[bucket_idx] = sc_mem_new(sc_dictionary_node *, SC_DICTIONARY_NODE_BUCKET_SIZE);
+
+    // define prefix
+    if (SC_DICTIONARY_NODE_IS_NOT_VALID(node->next[bucket_idx][child_idx]))
+    {
+      node->next[bucket_idx][child_idx] = _sc_dictionary_node_initialize(dictionary->size);
+
+      sc_dictionary_node * temp = node->next[bucket_idx][child_idx];
 
       temp->offset_size = size - i;
-      sc_str_cpy(temp->offset, *string_ptr, temp->offset_size);
+      sc_str_cpy(temp->offset, string_ptr, temp->offset_size);
 
       node = temp;
 
       break;
     }
     // visit next substring
-    else if (node->next[num]->offset != null_ptr)
+    else if (node->next[bucket_idx][child_idx]->offset != null_ptr)
     {
-      sc_dictionary_node * moving = node->next[num];
+      sc_dictionary_node * moving = node->next[bucket_idx][child_idx];
 
       sc_uint32 j = 0;
-      for (; i < size && j < moving->offset_size && tolower(moving->offset[j]) == tolower(**string_ptr);
-           ++i, ++j, ++*string_ptr)
+      for (; i < size && j < moving->offset_size && moving->offset[j] == *string_ptr; ++i, ++j, ++string_ptr)
         ;
 
       if (j != moving->offset_size)
       {
         saved_offset_size = moving->offset_size;
 
-        node->next[num] = _sc_dictionary_node_initialize(dictionary->size);
+        node->next[bucket_idx][child_idx] = _sc_dictionary_node_initialize(dictionary->size);
 
-        sc_dictionary_node * temp = node->next[num];
+        sc_dictionary_node * temp = node->next[bucket_idx][child_idx];
 
         temp->offset_size = j;
         sc_str_cpy(temp->offset, moving->offset, temp->offset_size);
       }
-
-      node = node->next[num];
+      node = node->next[bucket_idx][child_idx];
 
       // insert intermediate node for prefix end branching
       if (j < moving->offset_size)
@@ -140,10 +179,17 @@ sc_dictionary_node * sc_dictionary_append_to_node(sc_dictionary * dictionary, co
         sc_char * offset_ptr = &*(moving->offset + j);
 
         dictionary->char_to_int(*offset_ptr, &num, &node->mask);
-        sc_char * moving_offset_copy = moving->offset;
-        node->next[num] = &*moving;
+        bucket_idx = SC_DICTIONARY_GET_BUCKET_NUM(num);
+        child_idx = SC_DICTIONARY_GET_CHILD_NUM(num);
 
-        sc_dictionary_node * temp = node->next[num];
+        sc_char * moving_offset_copy = moving->offset;
+
+        if (SC_DICTIONARY_NODE_IS_NOT_VALID(node->next[bucket_idx]))
+          node->next[bucket_idx] = sc_mem_new(sc_dictionary_node *, SC_DICTIONARY_NODE_BUCKET_SIZE);
+
+        node->next[bucket_idx][child_idx] = &*moving;
+
+        sc_dictionary_node * temp = node->next[bucket_idx][child_idx];
 
         temp->offset_size = saved_offset_size - j;
         sc_str_cpy(temp->offset, offset_ptr, temp->offset_size);
@@ -152,13 +198,12 @@ sc_dictionary_node * sc_dictionary_append_to_node(sc_dictionary * dictionary, co
     }
     else
     {
-      node = node->next[num];
-      ++*string_ptr;
+      node = node->next[bucket_idx][child_idx];
+      ++string_ptr;
       ++i;
     }
   }
 
-  sc_mem_free(string_ptr);
   return node;
 }
 
@@ -249,11 +294,19 @@ sc_bool sc_dictionary_get_by_key_prefix(
   if (i == string_size)
     callable(node, dest);
 
-  sc_uint8 j;
-  for (j = 0; j < dictionary->size; ++j)
+  for (sc_uint8 num = 0; num < dictionary->size; ++num)
   {
-    sc_dictionary_node * next = node->next[j];
-    if (SC_DICTIONARY_NODE_IS_VALID(next) && (i == string_size || sc_str_has_prefix(next->offset, string + i)))
+    sc_uint64 const bucket_idx = SC_DICTIONARY_GET_BUCKET_NUM(num);
+    sc_dictionary_node ** next_bucket = node->next[bucket_idx];
+    if (SC_DICTIONARY_NODE_IS_NOT_VALID(next_bucket))
+      continue;
+
+    sc_uint64 const child_idx = SC_DICTIONARY_GET_CHILD_NUM(num);
+    sc_dictionary_node * next = next_bucket[child_idx];
+    if (SC_DICTIONARY_NODE_IS_NOT_VALID(next))
+      continue;
+
+    if (i == string_size || sc_str_has_prefix(next->offset, string + i))
     {
       if (!callable(next, dest))
         return SC_FALSE;
@@ -271,18 +324,23 @@ sc_bool sc_dictionary_visit_down_node_from_node(
     sc_bool (*callable)(sc_dictionary_node *, void **),
     void ** dest)
 {
-  sc_uint8 i;
-  for (i = 0; i < dictionary->size; ++i)
+  for (sc_uint8 num = 0; num < dictionary->size; ++num)
   {
-    sc_dictionary_node * next = node->next[i];
-    if (SC_DICTIONARY_NODE_IS_VALID(next))
-    {
-      if (!callable(next, dest))
-        return SC_FALSE;
+    sc_uint64 const bucket_idx = SC_DICTIONARY_GET_BUCKET_NUM(num);
+    sc_dictionary_node ** next_bucket = node->next[bucket_idx];
+    if (SC_DICTIONARY_NODE_IS_NOT_VALID(next_bucket))
+      continue;
 
-      if (!sc_dictionary_visit_down_node_from_node(dictionary, next, callable, dest))
-        return SC_FALSE;
-    }
+    sc_uint64 const child_idx = SC_DICTIONARY_GET_CHILD_NUM(num);
+    sc_dictionary_node * next = next_bucket[child_idx];
+    if (SC_DICTIONARY_NODE_IS_NOT_VALID(next))
+      continue;
+
+    if (!callable(next, dest))
+      return SC_FALSE;
+
+    if (!sc_dictionary_visit_down_node_from_node(dictionary, next, callable, dest))
+      return SC_FALSE;
   }
 
   return SC_TRUE;
@@ -302,18 +360,23 @@ sc_bool sc_dictionary_visit_up_node_from_node(
     sc_bool (*callable)(sc_dictionary_node *, void **),
     void ** dest)
 {
-  sc_uint8 i;
-  for (i = 0; i < dictionary->size; ++i)
+  for (sc_uint8 num = 0; num < dictionary->size; ++num)
   {
-    sc_dictionary_node * next = node->next[i];
-    if (SC_DICTIONARY_NODE_IS_VALID(next))
-    {
-      if (!sc_dictionary_visit_up_node_from_node(dictionary, next, callable, dest))
-        return SC_FALSE;
+    sc_uint64 const bucket_idx = SC_DICTIONARY_GET_BUCKET_NUM(num);
+    sc_dictionary_node ** next_bucket = node->next[bucket_idx];
+    if (SC_DICTIONARY_NODE_IS_NOT_VALID(next_bucket))
+      continue;
 
-      if (!callable(next, dest))
-        return SC_FALSE;
-    }
+    sc_uint64 const child_idx = SC_DICTIONARY_GET_CHILD_NUM(num);
+    sc_dictionary_node * next = next_bucket[child_idx];
+    if (SC_DICTIONARY_NODE_IS_NOT_VALID(next))
+      continue;
+
+    if (!sc_dictionary_visit_up_node_from_node(dictionary, next, callable, dest))
+      return SC_FALSE;
+
+    if (!callable(next, dest))
+      return SC_FALSE;
   }
 
   return SC_TRUE;

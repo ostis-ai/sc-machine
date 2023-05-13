@@ -26,11 +26,11 @@ sc_bool _sc_uchar_dictionary_initialize(sc_dictionary ** dictionary);
 
 sc_bool _sc_number_dictionary_initialize(sc_dictionary ** dictionary);
 
-sc_bool _sc_dictionary_fs_memory_node_destroy(sc_dictionary_node * node, void ** args);
+void _sc_dictionary_fs_memory_node_clear(sc_dictionary_node * node);
 
-sc_bool _sc_dictionary_fs_memory_link_node_destroy(sc_dictionary_node * node, void ** args);
+void _sc_dictionary_fs_memory_link_node_clear(sc_dictionary_node * node);
 
-sc_bool _sc_dictionary_fs_memory_string_node_destroy(sc_dictionary_node * node, void ** args);
+void _sc_dictionary_fs_memory_string_node_clear(sc_dictionary_node * node);
 
 sc_memory_params * _sc_dictionary_fs_memory_get_default_params(sc_char const * path, sc_bool clear);
 
