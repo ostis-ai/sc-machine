@@ -117,7 +117,8 @@ inline sc_dictionary_node * _sc_dictionary_get_next_node(
   sc_uint64 const bucket_idx = SC_DICTIONARY_GET_BUCKET_NUM(num);
   sc_uint64 const child_idx = SC_DICTIONARY_GET_CHILD_NUM(num);
 
-  return node->next == null_ptr ? null_ptr : (node->next[bucket_idx] == null_ptr ? null_ptr : node->next[bucket_idx][child_idx]);
+  return node->next == null_ptr ? null_ptr
+                                : (node->next[bucket_idx] == null_ptr ? null_ptr : node->next[bucket_idx][child_idx]);
 }
 
 sc_dictionary_node * sc_dictionary_append_to_node(sc_dictionary * dictionary, sc_char const * string, sc_uint32 size)

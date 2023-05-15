@@ -41,7 +41,7 @@ sc_io_channel * _sc_dictionary_fs_memory_get_strings_channel_by_offset(
   {
     sc_uint64 strings_channel_number_size;
     sc_int_to_str_int(idx + 1, strings_channel_number, strings_channel_number_size);
-    (void) strings_channel_number_size;
+    (void)strings_channel_number_size;
   }
   static sc_char const * strings_postfix = "strings";
   sc_char * strings_channel_name;
@@ -976,9 +976,8 @@ sc_dictionary_fs_memory_status _sc_dictionary_fs_memory_get_link_hashes_by_terms
   arguments[2] = *link_hashes;
   sc_dictionary_fs_memory_status const status = sc_dictionary_visit_down_nodes(
       string_offsets_terms_dictionary, _sc_dictionary_fs_memory_get_link_hashes_by_string_offsets, arguments);
-  sc_dictionary_destroy(string_offsets_terms_dictionary, _sc_dictionary_fs_memory_node_clear)
-      ? SC_FS_MEMORY_OK
-      : SC_FS_MEMORY_READ_ERROR;
+  sc_dictionary_destroy(string_offsets_terms_dictionary, _sc_dictionary_fs_memory_node_clear) ? SC_FS_MEMORY_OK
+                                                                                              : SC_FS_MEMORY_READ_ERROR;
   return status;
 }
 

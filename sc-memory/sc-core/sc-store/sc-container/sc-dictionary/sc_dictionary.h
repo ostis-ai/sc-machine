@@ -17,10 +17,10 @@
 typedef struct _sc_dictionary_node
 {
   struct _sc_dictionary_node *** next;  // a pointer to sc-dictionary node children pointers
-  sc_char * offset;                    // a pointer to substring of node string
-  sc_uint32 offset_size;               // size to substring of node string
-  void * data;                         // storing data
-  sc_uint8 mask;                       // mask for rights checking and memory optimization
+  sc_char * offset;                     // a pointer to substring of node string
+  sc_uint32 offset_size;                // size to substring of node string
+  void * data;                          // storing data
+  sc_uint8 mask;                        // mask for rights checking and memory optimization
 } sc_dictionary_node;
 
 //! A sc-dictionary structure node to store pairs of <string, object> type
