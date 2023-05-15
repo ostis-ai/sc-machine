@@ -35,7 +35,7 @@ sc_io_channel * _sc_dictionary_fs_memory_get_strings_channel_by_offset(
     return memory->strings_channels[idx];
 
   if (idx > 0 && memory->strings_channels[idx - 1] != null_ptr)
-    g_io_channel_flush(memory->strings_channels[idx - 1], null_ptr);
+    sc_io_channel_flush(memory->strings_channels[idx - 1], null_ptr);
 
   sc_char strings_channel_number[DEFAULT_STRING_INT_SIZE];
   {
