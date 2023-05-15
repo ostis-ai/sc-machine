@@ -167,9 +167,9 @@ _SC_EXTERN ScTemplateItem operator>>(ScAddr const & value, std::string const & r
 _SC_EXTERN ScTemplateItem operator>>(ScType const & value, char const * replName);
 _SC_EXTERN ScTemplateItem operator>>(ScType const & value, std::string const & replName);
 
-class ScTemplateGenResult;
+class ScTemplateResultItem;
 class ScTemplateSearchResult;
-class ScTemplateSearchResultItem;
+class ScTemplateResultItem;
 
 enum class ScTemplateResultCode : uint8_t
 {
@@ -248,10 +248,10 @@ enum class ScTemplateSearchRequest : uint8_t
   ERROR
 };
 
-using ScTemplateSearchResultCallback = std::function<void(ScTemplateSearchResultItem const & resultItem)>;
+using ScTemplateSearchResultCallback = std::function<void(ScTemplateResultItem const & resultItem)>;
 using ScTemplateSearchResultCallbackWithRequest =
-    std::function<ScTemplateSearchRequest(ScTemplateSearchResultItem const & resultItem)>;
-using ScTemplateSearchResultFilterCallback = std::function<bool(ScTemplateSearchResultItem const & resultItem)>;
+    std::function<ScTemplateSearchRequest(ScTemplateResultItem const & resultItem)>;
+using ScTemplateSearchResultFilterCallback = std::function<bool(ScTemplateResultItem const & resultItem)>;
 using ScTemplateSearchResultCheckCallback = std::function<bool(ScAddr const & addr)>;
 
 class ScTemplate final
@@ -365,7 +365,7 @@ protected:
   // Begin: calls by memory context
   Result Generate(
       ScMemoryContext & ctx,
-      ScTemplateGenResult & result,
+      ScTemplateResultItem & result,
       ScTemplateParams const & params,
       ScTemplateResultCode * errorCode = nullptr) const noexcept(false);
   SC_DEPRECATED(
@@ -413,123 +413,20 @@ protected:
   ScTemplateTripleType GetPriority(ScTemplateTriple * triple);
 };
 
-class ScTemplateGenResult
-{
-  friend class ScTemplateGenerator;
-  friend class ScSet;
-
-public:
-  ScTemplateGenResult() = default;
-
-  /* Gets generated sc-element address by replacement `name`.
-   * @param name A replacement name of sc-element address
-   * @param outAddr[out] A found sc-element address by replacement `name`
-   * @returns true, if sc-element address found by replacement `name`, otherwise false
-   */
-  inline bool Get(std::string const & name, ScAddr & outAddr) const noexcept
-  {
-    auto const & it = m_templateItemsNamesToReplacementItemsPositions.find(name);
-    if (it != m_templateItemsNamesToReplacementItemsPositions.cend())
-    {
-      outAddr = m_replacementConstruction[it->second];
-      return true;
-    }
-
-    outAddr = ScAddr::Empty;
-    return false;
-  }
-
-  /* Gets generated sc-element address by replacement `name`.
-   * @param name A replacement name of sc-element address
-   * @returns Generated sc-element address.
-   * @throws utils::ExceptionInvalidParams if `name` is invalid or not found in replacements.
-   */
-  ScAddr const & operator[](std::string const & name) const noexcept(false)
-  {
-    auto const & it = m_templateItemsNamesToReplacementItemsPositions.find(name);
-    if (it != m_templateItemsNamesToReplacementItemsPositions.cend())
-    {
-      if (it->second < Size())
-        return m_replacementConstruction[it->second];
-
-      SC_THROW_EXCEPTION(utils::ExceptionInvalidParams, "Alias=" + name + " is invalid");
-    }
-
-    SC_THROW_EXCEPTION(utils::ExceptionInvalidParams, "Alias=" + name + " not found in replacements");
-  }
-
-  /* Gets generated sc-element address by `index` in triple.
-   * @param name A replacement name of sc-element address
-   * @param outAddr[out] A found sc-element address by `index` in triple
-   * @returns true, if sc-element address found by `index` in triple, otherwise false
-   */
-  inline bool Get(size_t index, ScAddr & outAddr) const noexcept
-  {
-    if (index < Size())
-    {
-      outAddr = m_replacementConstruction[index];
-      return true;
-    }
-
-    outAddr = ScAddr::Empty;
-    return false;
-  }
-
-  /* Gets generated sc-element address by `index` in triple.
-   * @param name A replacement name of sc-element address
-   * @returns Generated sc-element address.
-   * @throws utils::ExceptionInvalidParams if `index` < generated construction size.
-   */
-  ScAddr const & operator[](size_t index) const noexcept(false)
-  {
-    if (index < Size())
-      return m_replacementConstruction[index];
-
-    SC_THROW_EXCEPTION(
-        utils::ExceptionInvalidParams, "Index=" + std::to_string(index) + " must be < size=" + std::to_string(Size()));
-  }
-
-  //! Gets generated construction size
-  inline size_t Size() const noexcept
-  {
-    return m_replacementConstruction.size();
-  }
-
-  ScAddrVector::const_iterator begin() const
-  {
-    return m_replacementConstruction.cbegin();
-  }
-
-  ScAddrVector::const_iterator end() const
-  {
-    return m_replacementConstruction.cend();
-  }
-
-  inline ScTemplate::ScTemplateItemsToReplacementsItemsPositions const & GetReplacements() const
-  {
-    return m_templateItemsNamesToReplacementItemsPositions;
-  }
-
-protected:
-  ScAddrVector m_replacementConstruction;
-
-  ScTemplate::ScTemplateItemsToReplacementsItemsPositions m_templateItemsNamesToReplacementItemsPositions;
-};
-
-class ScTemplateSearchResultItem
+class ScTemplateResultItem
 {
   friend class ScTemplateSearch;
   friend class ScTemplateSearchResult;
 
 public:
-  ScTemplateSearchResultItem()
+  ScTemplateResultItem()
     : m_context(nullptr)
     , m_replacementConstruction(nullptr)
     , m_templateItemsNamesToReplacementItemPositions(nullptr)
   {
   }
 
-  ScTemplateSearchResultItem(
+  ScTemplateResultItem(
       sc_memory_context const * context,
       ScAddrVector const * results,
       ScTemplate::ScTemplateItemsToReplacementsItemsPositions const * replacements)
@@ -679,13 +576,13 @@ public:
     return Size() == 0;
   }
 
-  SC_DEPRECATED(0.8.0, "Use ScTemplateSearchResult::Get(size_t index, ScTemplateSearchResultItem & outItem)")
-  inline bool GetResultItemSafe(size_t index, ScTemplateSearchResultItem & outItem) const noexcept
+  SC_DEPRECATED(0.8.0, "Use ScTemplateSearchResult::Get(size_t index, ScTemplateResultItem & outItem)")
+  inline bool GetResultItemSafe(size_t index, ScTemplateResultItem & outItem) const noexcept
   {
     return Get(index, outItem);
   }
 
-  inline bool Get(size_t index, ScTemplateSearchResultItem & outItem) const noexcept
+  inline bool Get(size_t index, ScTemplateResultItem & outItem) const noexcept
   {
     if (index < Size())
     {
@@ -698,7 +595,7 @@ public:
     return false;
   }
 
-  inline ScTemplateSearchResultItem operator[](size_t index) const noexcept(false)
+  inline ScTemplateResultItem operator[](size_t index) const noexcept(false)
   {
     if (index < Size())
       return {m_context, &m_replacementConstructions[index], &m_templateItemsNamesToReplacementItemsPositions};
@@ -722,7 +619,7 @@ public:
   void ForEach(FnT && f) noexcept
   {
     for (auto & res : m_replacementConstructions)
-      f(ScTemplateSearchResultItem{m_context, &res, &m_templateItemsNamesToReplacementItemsPositions});
+      f(ScTemplateResultItem{m_context, &res, &m_templateItemsNamesToReplacementItemsPositions});
   }
 
 protected:
@@ -732,3 +629,6 @@ protected:
   SearchResults m_replacementConstructions;
   ScTemplate::ScTemplateItemsToReplacementsItemsPositions m_templateItemsNamesToReplacementItemsPositions;
 };
+
+using ScTemplateGenResult = ScTemplateResultItem;
+using ScTemplateSearchResultItem = ScTemplateResultItem;
