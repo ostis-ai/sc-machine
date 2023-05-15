@@ -28,7 +28,7 @@ sc_bool _test_sc_uchar_dictionary_initialize(sc_dictionary ** dictionary)
 
 sc_bool _test_sc_uchar_dictionary_destroy(sc_dictionary * dictionary)
 {
-  return sc_dictionary_destroy(dictionary, sc_dictionary_node_destroy);
+  return sc_dictionary_destroy(dictionary, nullptr);
 }
 
 sc_bool _test_sc_hashes_compare(void * hash, void * other)

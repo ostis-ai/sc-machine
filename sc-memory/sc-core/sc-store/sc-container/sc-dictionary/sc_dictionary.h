@@ -9,27 +9,18 @@
 
 #include "../../sc_types.h"
 
-#define SC_DC_NODE_ACCESS_LVL_RMASK 0b00000001
-#define SC_DC_NODE_ACCESS_LVL_WMASK 0b00000010
-
-#define sc_dc_node_access_lvl_make_read(node) (node->mask |= SC_DC_NODE_ACCESS_LVL_RMASK)
-#define sc_dc_node_access_lvl_make_no_read(node) (node->mask &= ~SC_DC_NODE_ACCESS_LVL_RMASK)
-#define sc_dc_node_access_lvl_check_read(node) \
-  ((node->mask & SC_DC_NODE_ACCESS_LVL_RMASK) == SC_DC_NODE_ACCESS_LVL_RMASK)
-
-#define sc_dc_node_access_lvl_make_write(node) (node->mask |= SC_DC_NODE_ACCESS_LVL_WMASK)
-#define sc_dc_node_access_lvl_make_no_write(node) (node->mask &= ~SC_DC_NODE_ACCESS_LVL_WMASK)
-#define sc_dc_node_access_lvl_check_write(node) \
-  ((node->mask & SC_DC_NODE_ACCESS_LVL_WMASK) == SC_DC_NODE_ACCESS_LVL_WMASK)
+#define sc_dc_node_access_lvl_add_mask(node_mask, mask) ((node_mask) |= (mask))
+#define sc_dc_node_access_lvl_remove_mask(node_mask, mask) ((node_mask) &= ~(mask))
+#define sc_dc_node_access_lvl_check_mask(node_mask, mask) (((node_mask) & (mask)) == (mask))
 
 //! A sc-dictionary structure node to store prefixes
 typedef struct _sc_dictionary_node
 {
-  struct _sc_dictionary_node ** next;  // a pointer to sc-dictionary node children pointers
-  sc_char * offset;                    // a pointer to substring of node string
-  sc_uint32 offset_size;               // size to substring of node string
-  void * data;                         // storing data
-  sc_uint8 mask;                       // mask for rights checking and memory optimization
+  struct _sc_dictionary_node *** next;  // a pointer to sc-dictionary node children pointers
+  sc_char * offset;                     // a pointer to substring of node string
+  sc_uint32 offset_size;                // size to substring of node string
+  void * data;                          // storing data
+  sc_uint8 mask;                        // mask for rights checking and memory optimization
 } sc_dictionary_node;
 
 //! A sc-dictionary structure node to store pairs of <string, object> type
@@ -53,16 +44,10 @@ sc_bool sc_dictionary_initialize(
 
 /*! Destroys a sc-dictionary
  * @param dictionary A sc-dictionary pointer to destroy
- * @param node_destroy A painter to sc-dictionary node destroy method that passes that node and additional args
+ * @param node_destroy A painter to sc-dictionary node destroy method that passes that node to clear it
  * @returns Returns SC_TRUE, if a sc-dictionary exists; otherwise return SC_FALSE.
  */
-sc_bool sc_dictionary_destroy(sc_dictionary * dictionary, sc_bool (*node_destroy)(sc_dictionary_node *, void **));
-
-/*! Destroys a sc-dictionary node
- * @param node A sc-dictionary node pointer to destroy
- * @param args An additional args used with node destroying
- */
-sc_bool sc_dictionary_node_destroy(sc_dictionary_node * node, void ** args);
+sc_bool sc_dictionary_destroy(sc_dictionary * dictionary, void (*node_clear)(sc_dictionary_node *));
 
 /*! Appends a string to a sc-dictionary by a common prefix with another string started in sc-dictionary node, if such
  * exists. In end sc-dictionary node stores pointer to data by string.

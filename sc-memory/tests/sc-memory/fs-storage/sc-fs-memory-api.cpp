@@ -11,38 +11,37 @@ extern "C"
 
 #define SC_FS_MEMORY_PATH "fs-memory"
 #define SC_FS_MEMORY_SEGMENTS_PATH SC_FS_MEMORY_PATH "/segments.scdb"
-#define DEFAULT_MAX_SEARCHABLE_STRING_SIZE 1000
 
 TEST(ScFSMemoryTest, sc_fs_memory_initialize_shutdown)
 {
-  EXPECT_TRUE(sc_fs_memory_initialize(SC_FS_MEMORY_PATH, DEFAULT_MAX_SEARCHABLE_STRING_SIZE, SC_FALSE));
+  EXPECT_TRUE(sc_fs_memory_initialize(SC_FS_MEMORY_PATH, SC_FALSE));
   EXPECT_TRUE(sc_fs_memory_shutdown());
 
-  EXPECT_TRUE(sc_fs_memory_initialize(SC_FS_MEMORY_PATH, DEFAULT_MAX_SEARCHABLE_STRING_SIZE, SC_FALSE));
+  EXPECT_TRUE(sc_fs_memory_initialize(SC_FS_MEMORY_PATH, SC_FALSE));
   EXPECT_TRUE(sc_fs_memory_shutdown());
 }
 
 TEST(ScFSMemoryTest, sc_fs_memory_initialize_shutdown_invalid_path)
 {
-  EXPECT_FALSE(sc_fs_memory_initialize("", DEFAULT_MAX_SEARCHABLE_STRING_SIZE, SC_FALSE));
+  EXPECT_FALSE(sc_fs_memory_initialize("", SC_FALSE));
   EXPECT_FALSE(sc_fs_memory_shutdown());
 
-  EXPECT_FALSE(sc_fs_memory_initialize("", DEFAULT_MAX_SEARCHABLE_STRING_SIZE, SC_FALSE));
+  EXPECT_FALSE(sc_fs_memory_initialize("", SC_FALSE));
   EXPECT_FALSE(sc_fs_memory_shutdown());
 }
 
 TEST(ScFSMemoryTest, sc_fs_memory_initialize_shutdown_clear)
 {
-  EXPECT_TRUE(sc_fs_memory_initialize(SC_FS_MEMORY_PATH, DEFAULT_MAX_SEARCHABLE_STRING_SIZE, SC_TRUE));
+  EXPECT_TRUE(sc_fs_memory_initialize(SC_FS_MEMORY_PATH, SC_TRUE));
   EXPECT_TRUE(sc_fs_memory_shutdown());
 
-  EXPECT_TRUE(sc_fs_memory_initialize(SC_FS_MEMORY_PATH, DEFAULT_MAX_SEARCHABLE_STRING_SIZE, SC_TRUE));
+  EXPECT_TRUE(sc_fs_memory_initialize(SC_FS_MEMORY_PATH, SC_TRUE));
   EXPECT_TRUE(sc_fs_memory_shutdown());
 }
 
 TEST(ScFSMemoryTest, sc_fs_memory_save_load)
 {
-  EXPECT_TRUE(sc_fs_memory_initialize(SC_FS_MEMORY_PATH, DEFAULT_MAX_SEARCHABLE_STRING_SIZE, SC_TRUE));
+  EXPECT_TRUE(sc_fs_memory_initialize(SC_FS_MEMORY_PATH, SC_TRUE));
 
   sc_uint32 written_size = 2;
   sc_segment * segments[written_size];
@@ -67,7 +66,7 @@ TEST(ScFSMemoryTest, sc_fs_memory_save_load)
 
 TEST(ScFSMemoryTest, sc_fs_memory_save_load_save_invalid_file_read)
 {
-  EXPECT_TRUE(sc_fs_memory_initialize(SC_FS_MEMORY_PATH, DEFAULT_MAX_SEARCHABLE_STRING_SIZE, SC_TRUE));
+  EXPECT_TRUE(sc_fs_memory_initialize(SC_FS_MEMORY_PATH, SC_TRUE));
 
   sc_uint32 size = 2;
   sc_segment * segments[size];
@@ -86,7 +85,7 @@ TEST(ScFSMemoryTest, sc_fs_memory_save_load_save_invalid_file_read)
 
 TEST(ScFSMemoryTest, sc_fs_memory_save_load_save_invalid_segments_num_read)
 {
-  EXPECT_TRUE(sc_fs_memory_initialize(SC_FS_MEMORY_PATH, DEFAULT_MAX_SEARCHABLE_STRING_SIZE, SC_TRUE));
+  EXPECT_TRUE(sc_fs_memory_initialize(SC_FS_MEMORY_PATH, SC_TRUE));
 
   sc_uint32 size = 2;
   sc_segment * segments[size];
@@ -103,7 +102,7 @@ TEST(ScFSMemoryTest, sc_fs_memory_save_load_save_invalid_segments_num_read)
 
 TEST(ScFSMemoryTest, sc_fs_memory_save_load_save_invalid_segment_read)
 {
-  EXPECT_TRUE(sc_fs_memory_initialize(SC_FS_MEMORY_PATH, DEFAULT_MAX_SEARCHABLE_STRING_SIZE, SC_TRUE));
+  EXPECT_TRUE(sc_fs_memory_initialize(SC_FS_MEMORY_PATH, SC_TRUE));
 
   sc_uint32 size = 2;
   sc_segment * segments[size];
@@ -133,7 +132,7 @@ TEST(ScFSMemoryTest, sc_fs_memory_save_load_save_invalid_segment_read)
 
 TEST(ScFSMemoryTest, sc_fs_memory_save_load_save_invalid_file_write)
 {
-  EXPECT_TRUE(sc_fs_memory_initialize(SC_FS_MEMORY_PATH, DEFAULT_MAX_SEARCHABLE_STRING_SIZE, SC_TRUE));
+  EXPECT_TRUE(sc_fs_memory_initialize(SC_FS_MEMORY_PATH, SC_TRUE));
   EXPECT_TRUE(sc_fs_remove_directory(SC_FS_MEMORY_PATH));
 
   sc_uint32 size = 2;
@@ -150,7 +149,7 @@ TEST(ScFSMemoryTest, sc_fs_memory_save_load_save_invalid_file_write)
 
 TEST(ScFSMemoryTest, sc_fs_memory_save_load_save_invalid_segments_num_write)
 {
-  EXPECT_TRUE(sc_fs_memory_initialize(SC_FS_MEMORY_PATH, DEFAULT_MAX_SEARCHABLE_STRING_SIZE, SC_TRUE));
+  EXPECT_TRUE(sc_fs_memory_initialize(SC_FS_MEMORY_PATH, SC_TRUE));
 
   sc_uint32 size = 2;
   sc_segment * segments[size];
@@ -166,7 +165,7 @@ TEST(ScFSMemoryTest, sc_fs_memory_save_load_save_invalid_segments_num_write)
 
 TEST(ScFSMemoryTest, sc_fs_memory_save_load_save_invalid_segment_write)
 {
-  EXPECT_TRUE(sc_fs_memory_initialize(SC_FS_MEMORY_PATH, DEFAULT_MAX_SEARCHABLE_STRING_SIZE, SC_TRUE));
+  EXPECT_TRUE(sc_fs_memory_initialize(SC_FS_MEMORY_PATH, SC_TRUE));
 
   sc_uint32 size = 2;
   sc_segment * segments[size];

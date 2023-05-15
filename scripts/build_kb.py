@@ -133,10 +133,8 @@ def main(args: dict):
         print("OSTIS binaries are not found. Check if the binary path exists and contains necessary files. You may have compiled the project in a non-default location (pass -b flag to override binary location) or didn't build the project successfully.")
         exit(1)
 
-    # prepared_kb will appear in the same folder as kb.bin
-    kb_to_prepare = join(conf["output_path"], "prepared_kb")
-    if isdir(kb_to_prepare):
-        shutil.rmtree(kb_to_prepare)
+    if isdir(conf["output_path"]):
+        shutil.rmtree(conf["output_path"])
 
     search_knowledge_bases(conf[REPO_FILE])
 
@@ -145,6 +143,8 @@ def main(args: dict):
         exit(1)
 
     copy_kb(conf[OUTPUT_PATH])
+
+    kb_to_prepare = join(conf["output_path"], "prepared_kb")
     prepare_kb(kb_to_prepare, conf[LOGFILE_PATH])
     exitcode = build_kb(conf[OUTPUT_PATH], kb_to_prepare, conf[OSTIS_PATH], abspath(args["config_file_path"]))
     # exit with non-null code in case sc-builder encountered an error

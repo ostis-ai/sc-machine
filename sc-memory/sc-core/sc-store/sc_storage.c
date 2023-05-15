@@ -149,9 +149,9 @@ result:
 
 // -----------------------------------------------------------------------------
 
-sc_bool sc_storage_initialize(const sc_memory_params * params)
+sc_bool sc_storage_initialize(sc_memory_params const * params)
 {
-  sc_bool result = sc_fs_memory_initialize(params->repo_path, params->max_searchable_string_size, params->clear);
+  sc_bool result = sc_fs_memory_initialize_ext(params);
   if (result == SC_FALSE)
     return SC_FALSE;
 

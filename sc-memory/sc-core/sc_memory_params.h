@@ -15,32 +15,41 @@
 #define DEFAULT_MAX_EVENTS_AND_AGENTS_THREADS 32
 #define DEFAULT_MIN_EVENTS_AND_AGENTS_THREADS 1
 #define DEFAULT_MAX_LOADED_SEGMENTS 1000
-#define DEFAULT_MAX_SEARCHABLE_STRING_SIZE 1000
 #define DEFAULT_LOG_TYPE "Console"
 #define DEFAULT_LOG_FILE ""
 #define DEFAULT_LOG_LEVEL "Info"
+#define DEFAULT_MAX_STRINGS_CHANNELS 1000
+#define DEFAULT_MAX_STRINGS_CHANNEL_SIZE 100000
+#define DEFAULT_MAX_SEARCHABLE_STRING_SIZE 1000
+#define DEFAULT_TERM_SEPARATORS " _"
 
 typedef struct _sc_memory_params
 {
-  const sc_char * version;
-  sc_bool clear;
-  const sc_char * repo_path;
-  const sc_char * ext_path;
-  const sc_char ** enabled_exts;
-  sc_uint32 save_period;
-  sc_uint32 update_period;
+  sc_char const * version;
 
-  const sc_char * log_type;
-  const sc_char * log_file;
-  const sc_char * log_level;
+  sc_bool clear;
+  sc_char const * repo_path;
+  sc_char const * ext_path;
+  sc_char const ** enabled_exts;
 
   sc_uint32 max_loaded_segments;
-  sc_uint32 max_searchable_string_size;
   sc_uint8 max_threads;
   sc_uint32 max_events_and_agents_threads;
 
-  const sc_char * init_memory_generated_structure;
+  sc_uint32 save_period;
+  sc_uint32 update_period;
+
+  sc_char const * log_type;
+  sc_char const * log_file;
+  sc_char const * log_level;
+
+  sc_char const * init_memory_generated_structure;
   sc_bool init_memory_generated_upload;
+
+  sc_uint16 max_strings_channels;
+  sc_uint32 max_strings_channel_size;
+  sc_uint32 max_searchable_string_size;
+  sc_char const * term_separators;
 } sc_memory_params;
 
 _SC_EXTERN void sc_memory_params_clear(sc_memory_params * params);

@@ -268,7 +268,7 @@ sc_result sc_event_notify_element_deleted(sc_addr element)
   if (events_table == null_ptr)
     goto result;
 
-  // lookup for all registered to specified sc-element events
+  // sc_set_lookup for all registered to specified sc-element events
   element_events_list = (GSList *)g_hash_table_lookup(events_table, TABLE_KEY(element));
   if (element_events_list)
   {
@@ -339,7 +339,7 @@ sc_result sc_event_emit_impl(
   if (events_table == null_ptr)
     goto result;
 
-  // lookup for all registered to specified sc-element events
+  // sc_set_lookup for all registered to specified sc-element events
   element_events_list = (GSList *)g_hash_table_lookup(events_table, TABLE_KEY(el));
 
   while (element_events_list != null_ptr)

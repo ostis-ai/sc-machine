@@ -15,7 +15,6 @@
 #include "sc-store/sc_types.h"
 
 #include "sc-store/sc_event/sc_event_private.h"
-#include "sc-store/sc-container/sc-dictionary/sc_dictionary.h"
 
 #include "sc-store/sc-base/sc_allocator.h"
 #include "sc-store/sc-base/sc_assert_utils.h"
@@ -34,7 +33,7 @@ sc_memory_context * sc_memory_initialize(const sc_memory_params * params)
   sc_memory_info("Initialize components");
 
   sc_memory_info("Version: %s", params->version);
-  sc_message("\tClean memory on shutdown: %s", params->clear ? "On" : "Off");
+  sc_message("\tClean on initialize: %s", params->clear ? "On" : "Off");
   sc_message("\tExtensions path: %s", params->ext_path);
   sc_message("\tSave period: %d", params->save_period);
   sc_message("\tUpdate period: %d", params->update_period);

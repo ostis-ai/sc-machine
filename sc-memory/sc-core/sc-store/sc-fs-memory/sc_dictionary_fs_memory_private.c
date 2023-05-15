@@ -48,121 +48,99 @@ sc_bool _sc_number_dictionary_initialize(sc_dictionary ** dictionary)
       dictionary, _sc_number_dictionary_children_size(), _sc_number_dictionary_sc_char_to_sc_int);
 }
 
-sc_bool _sc_dictionary_fs_memory_node_destroy(sc_dictionary_node * node, void ** args)
+void _sc_dictionary_fs_memory_node_clear(sc_dictionary_node * node)
 {
-  (void)args;
+  if (node->data == null_ptr)
+    return;
 
-  if (node->data != null_ptr)
-  {
-    sc_mem_free(((sc_list *)node->data)->begin->data);
-    sc_list_destroy(node->data);
-  }
-  node->data = null_ptr;
-
-  sc_mem_free(node->next);
-  node->next = null_ptr;
-
-  sc_mem_free(node->offset);
-  node->offset = null_ptr;
-  node->offset_size = 0;
-
-  sc_mem_free(node);
-
-  return SC_TRUE;
+  sc_mem_free(((sc_list *)node->data)->begin->data);
+  sc_list_destroy(node->data);
 }
 
-sc_bool _sc_dictionary_fs_memory_link_node_destroy(sc_dictionary_node * node, void ** args)
+void _sc_dictionary_fs_memory_link_node_clear(sc_dictionary_node * node)
 {
-  (void)args;
-
   sc_list * link_hashes = node->data;
-  if (link_hashes != null_ptr)
-  {
-    sc_list_destroy(link_hashes);
-  }
-  node->data = null_ptr;
+  if (link_hashes == null_ptr)
+    return;
 
-  sc_mem_free(node->next);
-  node->next = null_ptr;
-
-  sc_mem_free(node->offset);
-  node->offset = null_ptr;
-  node->offset_size = 0;
-
-  sc_mem_free(node);
-
-  return SC_TRUE;
+  sc_list_destroy(link_hashes);
 }
 
-sc_bool _sc_dictionary_fs_memory_string_node_destroy(sc_dictionary_node * node, void ** args)
+void _sc_dictionary_fs_memory_string_node_clear(sc_dictionary_node * node)
 {
-  (void)args;
-
   void * content = node->data;
-  if (content != null_ptr)
-  {
-    sc_mem_free(content);
-  }
-  node->data = null_ptr;
+  if (content == null_ptr)
+    return;
 
-  sc_mem_free(node->next);
-  node->next = null_ptr;
-
-  sc_mem_free(node->offset);
-  node->offset = null_ptr;
-  node->offset_size = 0;
-
-  sc_mem_free(node);
-
-  return SC_TRUE;
+  sc_mem_free(content);
 }
 
-sc_char * _sc_dictionary_fs_memory_get_first_term(sc_char const * string)
+sc_memory_params * _sc_dictionary_fs_memory_get_default_params(sc_char const * path, sc_bool clear)
 {
-  static const sc_char delim[] = " _";
+  sc_memory_params * params = sc_mem_new(sc_memory_params, 1);
+  params->repo_path = path;
+  params->clear = clear;
+  params->max_strings_channels = DEFAULT_MAX_STRINGS_CHANNELS;
+  params->max_strings_channel_size = DEFAULT_MAX_STRINGS_CHANNEL_SIZE;
+  params->max_searchable_string_size = DEFAULT_MAX_SEARCHABLE_STRING_SIZE;
+  params->term_separators = DEFAULT_TERM_SEPARATORS;
 
+  return params;
+}
+
+sc_char * _sc_dictionary_fs_memory_get_first_term(sc_char const * string, sc_char const * term_separators)
+{
   sc_uint32 const size = sc_str_len(string);
   sc_char copied_string[size + 1];
   sc_mem_cpy(copied_string, string, size);
   copied_string[size] = '\0';
 
-  sc_char * term = strtok(copied_string, delim);
+  sc_char * term = strtok(copied_string, term_separators);
   sc_char * copied_term;
   term == null_ptr ? sc_string_empty(copied_term) : sc_str_cpy(copied_term, term, sc_str_len(term));
   return copied_term;
 }
 
-sc_list * _sc_dictionary_fs_memory_get_string_terms(sc_char const * string)
+sc_list * _sc_dictionary_fs_memory_get_string_terms(sc_char const * string, sc_char const * term_separators)
 {
-  static const sc_char delim[] = " _";
+  sc_uint64 const string_size = sc_str_len(string);
+  sc_char copied_string[string_size + 1];
+  sc_mem_cpy(copied_string, string, string_size);
+  copied_string[string_size] = '\0';
 
-  sc_uint32 const size = sc_str_len(string);
-  sc_char copied_string[size + 1];
-  sc_mem_cpy(copied_string, string, size);
-  copied_string[size] = '\0';
-
-  sc_char * term = strtok(copied_string, delim);
+  sc_char * term = strtok(copied_string, term_separators);
   sc_list * terms;
   sc_list_init(&terms);
 
-  sc_dictionary * unique_terms;
-  sc_dictionary_initialize(&unique_terms, _sc_uchar_dictionary_children_size(), _sc_uchar_dictionary_sc_char_to_sc_int);
-  while (term != null_ptr)
+  if (term != null_ptr && string_size != sc_str_len(term))
   {
-    sc_uint64 const term_length = sc_str_len(term);
-
-    if (!sc_dictionary_has(unique_terms, term, term_length))
+    sc_dictionary * unique_terms;
+    sc_dictionary_initialize(
+        &unique_terms, _sc_uchar_dictionary_children_size(), _sc_uchar_dictionary_sc_char_to_sc_int);
+    while (term != null_ptr)
     {
-      sc_char * term_copy;
-      sc_str_cpy(term_copy, term, term_length);
+      sc_uint64 const term_size = sc_str_len(term);
 
-      sc_list_push_back(terms, term_copy);
-      sc_dictionary_append(unique_terms, term_copy, term_length, null_ptr);
+      if (!sc_dictionary_has(unique_terms, term, term_size))
+      {
+        sc_char * term_copy;
+        sc_str_cpy(term_copy, term, term_size);
+
+        sc_list_push_back(terms, term_copy);
+        sc_dictionary_append(unique_terms, term_copy, term_size, null_ptr);
+      }
+
+      term = strtok(null_ptr, term_separators);
     }
-
-    term = strtok(null_ptr, delim);
+    sc_dictionary_destroy(unique_terms, null_ptr);
   }
-  sc_dictionary_destroy(unique_terms, sc_dictionary_node_destroy);
+  else if (term != null_ptr)
+  {
+    sc_char * term_copy;
+    sc_str_cpy(term_copy, term, sc_str_len(term));
+
+    sc_list_push_back(terms, term_copy);
+  }
 
   if (terms->size == 0)
   {
