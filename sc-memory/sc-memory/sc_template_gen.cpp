@@ -50,7 +50,7 @@ public:
 
     ScMemoryContextEventsPendingGuard guard(m_context);
 
-    result = {*m_context, new ScAddrVector(), &m_replacements};
+    result = {*m_context, &m_replacements};
     result.m_replacementConstruction->resize(m_triples.size() * 3);
 
     ScAddrVector createdElements;
@@ -183,13 +183,17 @@ public:
   {
     for (auto const & item : m_params.m_templateItemsToParams)
     {
-      ScAddr const & addr = m_context.HelperFindBySystemIdtf(item.first);
-      if (!addr.IsValid())
-        return false;
-
-      auto const & itRepl = m_replacements.find(std::to_string(addr.Hash()));
+      auto itRepl = m_replacements.find(item.first);
       if (itRepl == m_replacements.cend())
-        return false;
+      {
+        ScAddr const & addr = m_context.HelperFindBySystemIdtf(item.first);
+        if (!addr.IsValid())
+          return false;
+
+        itRepl = m_replacements.find(std::to_string(addr.Hash()));
+        if (itRepl == m_replacements.cend())
+          return false;
+      }
 
       ScTemplateTriple * triple = m_triples[itRepl->second / 3];
       ScType const & itemType = triple->GetValues()[itRepl->second % 3].m_typeValue;

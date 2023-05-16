@@ -230,3 +230,20 @@ ScAddr ScTemplateResultItem::GetAddrBySystemIdtf(std::string const & name) const
 
   return ScAddr::Empty;
 }
+
+std::string ScTemplateResultItem::GetSystemIdtfByAddr(ScAddr const & addr) const
+{
+  sc_addr _link_addr;
+  sc_helper_get_system_identifier_link(m_context, addr.GetRealAddr(), &_link_addr);
+  ScAddr linkAddr{_link_addr};
+  if (!linkAddr.IsValid())
+    return "";
+
+  sc_stream * stream;
+  sc_memory_get_link_content(m_context, _link_addr, &stream);
+
+  std::string idtf;
+  ScStreamConverter::StreamToString(std::make_shared<ScStream>(stream), idtf);
+
+  return idtf;
+}
