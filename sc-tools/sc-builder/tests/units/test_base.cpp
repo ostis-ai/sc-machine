@@ -217,7 +217,7 @@ TEST_F(ScBuilderTest, TemplateWithVarTriplesSmall3)
   ScAddr const & varAddr = m_ctx->HelperFindBySystemIdtf("_message");
 
   ScTemplate checkTemplate;
-  EXPECT_TRUE(m_ctx->HelperBuildTemplate(checkTemplate, checkTemplateStructure, params));
+  EXPECT_TRUE(m_ctx->HelperBuildTemplate(checkTemplate, checkTemplateStructure));
 
   ScTemplateGenResult genResult;
   EXPECT_TRUE(m_ctx->HelperGenTemplate(checkTemplate, genResult, params));

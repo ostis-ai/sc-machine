@@ -472,18 +472,10 @@ public:
    */
   inline bool Get(ScAddr const & varAddr, ScAddr & outAddr) const noexcept
   {
-    auto it = m_templateItemsNamesToReplacementItemPositions->find(std::to_string(varAddr.Hash()));
-    if (it != m_templateItemsNamesToReplacementItemPositions->cend())
+    ScAddr const & addr = GetAddrByVarAddr(varAddr);
+    if (addr.IsValid())
     {
-      outAddr = (*m_replacementConstruction)[it->second];
-      return true;
-    }
-
-    std::string const & varIdtf = GetSystemIdtfByAddr(varAddr);
-    it = m_templateItemsNamesToReplacementItemPositions->find(varIdtf);
-    if (it != m_templateItemsNamesToReplacementItemPositions->cend())
-    {
-      outAddr = (*m_replacementConstruction)[it->second];
+      outAddr = addr;
       return true;
     }
 
@@ -498,14 +490,9 @@ public:
    */
   inline ScAddr operator[](ScAddr const & varAddr) const noexcept(false)
   {
-    auto it = m_templateItemsNamesToReplacementItemPositions->find(std::to_string(varAddr.Hash()));
-    if (it != m_templateItemsNamesToReplacementItemPositions->cend())
-      return (*m_replacementConstruction)[it->second];
-
-    std::string const & varIdtf = GetSystemIdtfByAddr(varAddr);
-    it = m_templateItemsNamesToReplacementItemPositions->find(varIdtf);
-    if (it != m_templateItemsNamesToReplacementItemPositions->cend())
-      return (*m_replacementConstruction)[it->second];
+    ScAddr const & addr = GetAddrByVarAddr(varAddr);
+    if (addr.IsValid())
+      return addr;
 
     SC_THROW_EXCEPTION(utils::ExceptionInvalidParams, "Var=" << varAddr.Hash() << " not found in replacements");
   }
@@ -517,14 +504,7 @@ public:
    */
   inline bool Get(std::string const & name, ScAddr & outAddr) const noexcept
   {
-    auto const & it = m_templateItemsNamesToReplacementItemPositions->find(name);
-    if (it != m_templateItemsNamesToReplacementItemPositions->cend())
-    {
-      outAddr = (*m_replacementConstruction)[it->second];
-      return true;
-    }
-
-    ScAddr const & addr = GetAddrBySystemIdtf(name);
+    ScAddr const & addr = GetAddrByName(name);
     if (addr.IsValid())
     {
       outAddr = addr;
@@ -542,11 +522,7 @@ public:
    */
   inline ScAddr operator[](std::string const & name) const noexcept(false)
   {
-    auto it = m_templateItemsNamesToReplacementItemPositions->find(name);
-    if (it != m_templateItemsNamesToReplacementItemPositions->cend())
-      return (*m_replacementConstruction)[it->second];
-
-    ScAddr const & addr = GetAddrBySystemIdtf(name);
+    ScAddr const & addr = GetAddrByName(name);
     if (addr.IsValid())
       return addr;
 
@@ -586,9 +562,11 @@ public:
   //! Checks if replacement `name` exists in replacements
   inline bool Has(std::string const & name) const noexcept
   {
-    return m_templateItemsNamesToReplacementItemPositions != nullptr &&
-           m_templateItemsNamesToReplacementItemPositions->find(name) !=
-               m_templateItemsNamesToReplacementItemPositions->cend();
+    if (m_templateItemsNamesToReplacementItemPositions == nullptr)
+      return false;
+
+    ScAddr const & addr = GetAddrByName(name);
+    return addr.IsValid();
   }
 
   //! Gets found construction size
@@ -619,6 +597,37 @@ public:
   }
 
 protected:
+  ScAddr GetAddrByName(std::string const & name) const
+  {
+    auto it = m_templateItemsNamesToReplacementItemPositions->find(name);
+    if (it != m_templateItemsNamesToReplacementItemPositions->cend())
+      return (*m_replacementConstruction)[it->second];
+
+    ScAddr const & addr = GetAddrBySystemIdtf(name);
+    if (addr.IsValid())
+    {
+      it = m_templateItemsNamesToReplacementItemPositions->find(std::to_string(addr.Hash()));
+      if (it != m_templateItemsNamesToReplacementItemPositions->cend())
+        return (*m_replacementConstruction)[it->second];
+    }
+
+    return ScAddr::Empty;
+  }
+
+  ScAddr GetAddrByVarAddr(ScAddr const & varAddr) const
+  {
+    auto it = m_templateItemsNamesToReplacementItemPositions->find(std::to_string(varAddr.Hash()));
+    if (it != m_templateItemsNamesToReplacementItemPositions->cend())
+      return (*m_replacementConstruction)[it->second];
+
+    std::string const & varIdtf = GetSystemIdtfByAddr(varAddr);
+    it = m_templateItemsNamesToReplacementItemPositions->find(varIdtf);
+    if (it != m_templateItemsNamesToReplacementItemPositions->cend())
+      return (*m_replacementConstruction)[it->second];
+
+    return ScAddr::Empty;
+  }
+
   ScAddr GetAddrBySystemIdtf(std::string const & name) const;
 
   std::string GetSystemIdtfByAddr(ScAddr const & addr) const;

@@ -131,11 +131,13 @@ public:
     std::stringstream stream(itemValue.m_name);
     sc_addr_hash hash;
     stream >> hash;
-
-    if (!stream.good())
+    if (stream.fail() || !stream.eof())
       return ScAddr::Empty;
 
     ScAddr const & varAddr = ScAddr(hash);
+    if (!varAddr.IsValid() || !m_context.IsElement(varAddr))
+      return ScAddr::Empty;
+
     std::string const & name = m_context.HelperGetSystemIdtf(varAddr);
     m_params.Get(name, result);
 

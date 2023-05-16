@@ -220,15 +220,7 @@ ScAddr ScTemplateResultItem::GetAddrBySystemIdtf(std::string const & name) const
 {
   sc_addr _addr;
   sc_helper_find_element_by_system_identifier(m_context, name.c_str(), name.size(), &_addr);
-  ScAddr addr{_addr};
-  if (addr.IsValid())
-  {
-    auto const & it = m_templateItemsNamesToReplacementItemPositions->find(std::to_string(addr.Hash()));
-    if (it != m_templateItemsNamesToReplacementItemPositions->cend())
-      return (*m_replacementConstruction)[it->second];
-  }
-
-  return ScAddr::Empty;
+  return {_addr};
 }
 
 std::string ScTemplateResultItem::GetSystemIdtfByAddr(ScAddr const & addr) const
