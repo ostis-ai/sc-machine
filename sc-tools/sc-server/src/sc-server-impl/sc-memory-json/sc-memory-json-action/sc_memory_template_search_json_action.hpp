@@ -17,7 +17,6 @@ public:
     ScTemplateSearchResult result;
     auto const & pair = GetTemplate(context, requestPayload);
     context->HelperSearchTemplate(*pair.first, result);
-    delete pair.first;
 
     std::vector<std::vector<size_t>> hashesVectors;
     for (size_t i = 0; i < result.Size(); ++i)
@@ -31,6 +30,8 @@ public:
       hashesVectors.push_back(vector);
     }
 
-    return {{"aliases", result.GetReplacements()}, {"addrs", hashesVectors}};
+    ScMemoryJsonPayload const & resultPayload = {{"aliases", result.GetReplacements()}, {"addrs", hashesVectors}};
+    delete pair.first;
+    return resultPayload;
   }
 };
