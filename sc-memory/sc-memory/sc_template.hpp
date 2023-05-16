@@ -9,7 +9,6 @@
 #include <utility>
 #include <functional>
 
-#include "sc-core/sc_helper.h"
 #include "sc_addr.hpp"
 #include "sc_type.hpp"
 #include "sc_utils.hpp"
@@ -18,7 +17,6 @@ struct ScTemplateItem
 {
   enum class Type : uint8_t
   {
-    None,
     Type,
     Addr,
     Replace
@@ -350,7 +348,7 @@ public:
       ScTemplateItem const & param5) noexcept(false);
 
   SC_DEPRECATED(
-      0.4.0,
+      0.8.0,
       "Use ScTemplate::Quintuple(ScTemplateItem const & param1, ScTemplateItem const & param2, "
       "ScTemplateItem const & param3, ScTemplateItem const & param4, ScTemplateItem const & param5) "
       "noexcept(false) instead.")
@@ -415,6 +413,8 @@ protected:
 
 class ScTemplateResultItem
 {
+  friend class ScTemplateGenerator;
+  friend class ScSet;
   friend class ScTemplateSearch;
   friend class ScTemplateSearchResult;
 
@@ -431,7 +431,7 @@ public:
       ScAddrVector const * results,
       ScTemplate::ScTemplateItemsToReplacementsItemsPositions const * replacements)
     : m_context(context)
-    , m_replacementConstruction(results)
+    , m_replacementConstruction(const_cast<ScAddrVector *>(results))
     , m_templateItemsNamesToReplacementItemPositions(replacements)
   {
   }
@@ -534,27 +534,22 @@ public:
     return m_replacementConstruction->cend();
   }
 
-protected:
-  ScAddr GetAddrBySystemIdtf(std::string const & name) const
+  inline ScTemplate::ScTemplateItemsToReplacementsItemsPositions const & GetReplacements() const noexcept
   {
-    sc_addr _addr;
-    sc_helper_find_element_by_system_identifier(m_context, name.c_str(), name.size(), &_addr);
-    ScAddr addr{_addr};
-    if (addr.IsValid())
-    {
-      auto const & it = m_templateItemsNamesToReplacementItemPositions->find(std::to_string(addr.Hash()));
-      if (it != m_templateItemsNamesToReplacementItemPositions->cend())
-        return (*m_replacementConstruction)[it->second];
-    }
-
-    return ScAddr::Empty;
+    return *m_templateItemsNamesToReplacementItemPositions;
   }
+
+protected:
+  ScAddr GetAddrBySystemIdtf(std::string const & name) const;
 
   sc_memory_context const * m_context;
 
-  ScAddrVector const * m_replacementConstruction;
+  ScAddrVector * m_replacementConstruction;
   ScTemplate::ScTemplateItemsToReplacementsItemsPositions const * m_templateItemsNamesToReplacementItemPositions;
 };
+
+using ScTemplateGenResult = ScTemplateResultItem;
+using ScTemplateSearchResultItem = ScTemplateResultItem;
 
 class SC_DEPRECATED(
     0.8.0,
@@ -588,7 +583,7 @@ public:
     {
       outItem.m_context = m_context;
       outItem.m_templateItemsNamesToReplacementItemPositions = &m_templateItemsNamesToReplacementItemsPositions;
-      outItem.m_replacementConstruction = &(m_replacementConstructions[index]);
+      outItem.m_replacementConstruction = const_cast<ScAddrVector *>(&m_replacementConstructions[index]);
       return true;
     }
 
@@ -629,6 +624,3 @@ protected:
   SearchResults m_replacementConstructions;
   ScTemplate::ScTemplateItemsToReplacementsItemsPositions m_templateItemsNamesToReplacementItemsPositions;
 };
-
-using ScTemplateGenResult = ScTemplateResultItem;
-using ScTemplateSearchResultItem = ScTemplateResultItem;

@@ -4,10 +4,15 @@
  * (See accompanying file COPYING.MIT or copy at http://opensource.org/licenses/MIT)
  */
 
+#include <algorithm>
+
+extern "C"
+{
+#include "sc-core/sc_helper.h"
+}
+
 #include "sc_template.hpp"
 #include "sc_memory.hpp"
-
-#include <algorithm>
 
 SC_DEPRECATED(0.8.0, "Don't use alias for fixed sc-address")
 ScTemplateItem operator>>(ScAddr const & value, char const * replName)
@@ -209,4 +214,19 @@ inline ScTemplateTripleType ScTemplate::GetPriority(ScTemplateTriple * triple)
     return ScTemplateTripleType::FAE;
 
   return ScTemplateTripleType::AAA;
+}
+
+ScAddr ScTemplateResultItem::GetAddrBySystemIdtf(std::string const & name) const
+{
+  sc_addr _addr;
+  sc_helper_find_element_by_system_identifier(m_context, name.c_str(), name.size(), &_addr);
+  ScAddr addr{_addr};
+  if (addr.IsValid())
+  {
+    auto const & it = m_templateItemsNamesToReplacementItemPositions->find(std::to_string(addr.Hash()));
+    if (it != m_templateItemsNamesToReplacementItemPositions->cend())
+      return (*m_replacementConstruction)[it->second];
+  }
+
+  return ScAddr::Empty;
 }

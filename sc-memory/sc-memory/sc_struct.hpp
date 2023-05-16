@@ -24,7 +24,7 @@ public:
 
   /* Operator equal to append */
   _SC_EXTERN ScSet & operator<<(ScAddr const & elAddr);
-  _SC_EXTERN ScSet & operator<<(class ScTemplateGenResult const & res);
+  _SC_EXTERN ScSet & operator<<(class ScTemplateResultItem const & res);
 
   /* Operator equal to remove */
   _SC_EXTERN ScSet & operator>>(ScAddr const & elAddr);
