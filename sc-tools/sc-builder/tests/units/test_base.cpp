@@ -195,10 +195,40 @@ TEST_F(ScBuilderTest, TemplateWithVarTriplesSmall2)
   ScAddr const & messageAddr = m_ctx->HelperFindBySystemIdtf("message");
   params.Add("_message", messageAddr);
 
+  ScAddr const & varAddr = m_ctx->HelperFindBySystemIdtf("_message");
+
   ScTemplate checkTemplate;
   EXPECT_TRUE(m_ctx->HelperBuildTemplate(checkTemplate, checkTemplateStructure, params));
 
   ScTemplateSearchResult searchResult;
   EXPECT_TRUE(m_ctx->HelperSearchTemplate(checkTemplate, searchResult));
   EXPECT_EQ(searchResult[0]["_message"], messageAddr);
+  EXPECT_EQ(searchResult[0][varAddr], messageAddr);
+}
+
+TEST_F(ScBuilderTest, TemplateWithVarTriplesSmall3)
+{
+  ScAddr const & checkTemplateStructure = m_ctx->HelperFindBySystemIdtf("test_template_small");
+
+  ScTemplateParams params;
+  ScAddr const & messageAddr = m_ctx->HelperFindBySystemIdtf("message");
+  params.Add("_message", messageAddr);
+
+  ScAddr const & varAddr = m_ctx->HelperFindBySystemIdtf("_message");
+
+  ScTemplate checkTemplate;
+  EXPECT_TRUE(m_ctx->HelperBuildTemplate(checkTemplate, checkTemplateStructure, params));
+
+  ScTemplateGenResult genResult;
+  EXPECT_TRUE(m_ctx->HelperGenTemplate(checkTemplate, genResult, params));
+  EXPECT_EQ(genResult["_message"], messageAddr);
+  EXPECT_EQ(genResult[varAddr], messageAddr);
+
+  ScTemplateSearchResult searchResult;
+  EXPECT_TRUE(m_ctx->HelperSearchTemplate(checkTemplate, searchResult));
+  EXPECT_EQ(searchResult.Size(), 2u);
+  EXPECT_EQ(searchResult[0]["_message"], messageAddr);
+  EXPECT_EQ(searchResult[1]["_message"], messageAddr);
+  EXPECT_EQ(searchResult[0][varAddr], messageAddr);
+  EXPECT_EQ(searchResult[1][varAddr], messageAddr);
 }
