@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Get replacements in template result by variable address
 - Configs for file memory string sections
 - Divide strings file into more small files with fixed size by requested configs
 - Configuration of docker-compose.yml using .env file
@@ -58,6 +59,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- Unite ScTemplateGenResult and ScTemplateSearchResultItem into ScTemplateResultItem
 - Remove list to array translations in C API for fs-memory
 - Upload text and binary files in realtime by get API
 - Remove string lengths recount in fs-memory
@@ -78,6 +80,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- Tests for template build and gen with params
+- Aliases checking in build by scs
 - Not use system identifiers of vars in sc-template-build
 - Sc-template search by empty template ([65](https://github.com/ostis-ai/sc-machine/issues/65)))
 - Segfaults in test sc-client
@@ -97,6 +101,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Removed
 
+- Remove rocksdb
 - Garbage deletion agent
 
 ## [0.7.0-Rebirth] - 12.10.2022
@@ -174,7 +179,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Removed
 
-- Remove rocksdb
 - Remove find by substring logic from sc-dictionary
 - Remove legacy gwf-translator for 0.3.0 gwf sources from sc-builder
 - Remove legacy glib-based tests
