@@ -185,13 +185,13 @@ public:
 
   _SC_EXTERN ScTemplateParams & Add(std::string const & varIdtf, ScAddr const & value) noexcept(false)
   {
-    if (m_templateItemsToParams.find(varIdtf) != m_templateItemsToParams.cend())
+    if (m_templateItemsToParams.find(varIdtf) == m_templateItemsToParams.cend())
     {
-      SC_THROW_EXCEPTION(utils::ExceptionInvalidParams, "Alias=" + varIdtf + " is busy");
+      m_templateItemsToParams[varIdtf] = value;
+      return *this;
     }
 
-    m_templateItemsToParams[varIdtf] = value;
-    return *this;
+    SC_THROW_EXCEPTION(utils::ExceptionInvalidParams, "Alias=" + varIdtf + " is busy");
   }
 
   _SC_EXTERN bool Get(std::string const & varIdtf, ScAddr & outResult) const noexcept
@@ -569,6 +569,16 @@ public:
     return addr.IsValid();
   }
 
+  //! Checks if `varAddr` exists in replacements
+  inline bool Has(ScAddr const & varAddr) const noexcept
+  {
+    if (m_templateItemsNamesToReplacementItemPositions == nullptr)
+      return false;
+
+    ScAddr const & addr = GetAddrByVarAddr(varAddr);
+    return addr.IsValid();
+  }
+
   //! Gets found construction size
   inline size_t Size() const noexcept
   {
@@ -616,6 +626,9 @@ protected:
 
   ScAddr GetAddrByVarAddr(ScAddr const & varAddr) const
   {
+    if (!varAddr.IsValid())
+      return ScAddr::Empty;
+
     auto it = m_templateItemsNamesToReplacementItemPositions->find(std::to_string(varAddr.Hash()));
     if (it != m_templateItemsNamesToReplacementItemPositions->cend())
       return (*m_replacementConstruction)[it->second];
