@@ -34,23 +34,23 @@ typedef struct _sc_fs_memory_manager
       sc_char const * string,
       sc_uint64 const string_size);
   sc_fs_memory_status (*get_string_by_link_hash)(
-      sc_fs_memory const * memory,
+      sc_fs_memory * memory,
       sc_addr_hash const link_hash,
       sc_char ** string,
       sc_uint64 * string_size);
   sc_fs_memory_status (*get_link_hashes_by_string)(
-      sc_fs_memory const * memory,
+      sc_fs_memory * memory,
       sc_char const * string,
       sc_uint64 const string_size,
       sc_list ** link_hashes);
   sc_fs_memory_status (*get_link_hashes_by_substring)(
-      sc_fs_memory const * memory,
+      sc_fs_memory * memory,
       sc_char const * substring,
       sc_uint64 const substring_size,
       sc_uint32 const max_length_to_search_as_prefix,
       sc_list ** link_hashes);
   sc_fs_memory_status (*get_strings_by_substring)(
-      sc_fs_memory const * memory,
+      sc_fs_memory * memory,
       sc_char const * substring,
       sc_uint64 const substring_size,
       sc_uint32 const max_length_to_search_as_prefix,

@@ -108,6 +108,7 @@ sc_dictionary_fs_memory_status sc_dictionary_fs_memory_initialize_ext(
 
       (*memory)->strings_channels = (void **)sc_mem_new(sc_io_channel *, (*memory)->max_strings_channels);
       (*memory)->last_string_offset = 0;
+      sc_mutex_init(&(*memory)->rw_mutex);
     }
 
     _sc_number_dictionary_initialize(&(*memory)->link_hashes_string_offsets_dictionary);
@@ -170,6 +171,7 @@ sc_dictionary_fs_memory_status sc_dictionary_fs_memory_shutdown(sc_dictionary_fs
         sc_io_channel_shutdown(memory->strings_channels[i], SC_TRUE, null_ptr);
       }
       sc_mem_free(memory->strings_channels);
+      sc_mutex_destroy(&memory->rw_mutex);
     }
 
     sc_dictionary_destroy(memory->link_hashes_string_offsets_dictionary, _sc_dictionary_fs_memory_string_node_clear);
@@ -318,7 +320,7 @@ sc_dictionary_fs_memory_status _sc_dictionary_node_fs_memory_get_string_offset_b
 }
 
 sc_uint64 _sc_dictionary_fs_memory_get_string_offset_by_string(
-    sc_dictionary_fs_memory const * memory,
+    sc_dictionary_fs_memory * memory,
     sc_io_channel * strings_channel,
     sc_char const * string,
     sc_uint64 const string_size,
@@ -347,13 +349,18 @@ sc_dictionary_fs_memory_status _sc_dictionary_fs_memory_write_string(
 
   // find string if it exists in fs-memory
   if (string_size < memory->max_searchable_string_size)
+  {
+    sc_mutex_lock(&memory->rw_mutex);
     *string_offset = _sc_dictionary_fs_memory_get_string_offset_by_string(
         memory, strings_channel, string, string_size, string_terms->begin->data);
+    sc_mutex_unlock(&memory->rw_mutex);
+  }
 
   *is_not_exist = (*string_offset == INVALID_STRING_OFFSET);
   // save string in fs-memory
   if (*is_not_exist)
   {
+    sc_mutex_lock(&memory->rw_mutex);
     *string_offset = memory->last_string_offset;
 
     sc_uint64 const normalized_string_offset = _sc_dictionary_fs_memory_normalize_offset(memory, *string_offset);
@@ -365,7 +372,7 @@ sc_dictionary_fs_memory_status _sc_dictionary_fs_memory_write_string(
         sizeof(string_size) != written_bytes)
     {
       sc_fs_memory_error("Error while attribute `size` writing");
-      return SC_FS_MEMORY_WRITE_ERROR;
+      goto error;
     }
 
     memory->last_string_offset += written_bytes;
@@ -375,13 +382,18 @@ sc_dictionary_fs_memory_status _sc_dictionary_fs_memory_write_string(
         string_size != written_bytes)
     {
       sc_fs_memory_error("Error while attribute `string` writing");
-      return SC_FS_MEMORY_WRITE_ERROR;
+      goto error;
     }
 
     memory->last_string_offset += written_bytes;
+    sc_mutex_unlock(&memory->rw_mutex);
   }
 
   return SC_FS_MEMORY_OK;
+
+error:
+  sc_mutex_unlock(&memory->rw_mutex);
+  return SC_FS_MEMORY_WRITE_ERROR;
 }
 
 sc_dictionary_fs_memory_status _sc_dictionary_fs_memory_write_string_terms_string_offset(
@@ -530,7 +542,7 @@ void _sc_dictionary_fs_memory_read_file(sc_char * file_path, sc_char ** content,
 }
 
 sc_dictionary_fs_memory_status sc_dictionary_fs_memory_get_string_by_link_hash(
-    sc_dictionary_fs_memory const * memory,
+    sc_dictionary_fs_memory * memory,
     sc_addr_hash const link_hash,
     sc_char ** string,
     sc_uint64 * string_size)
@@ -555,8 +567,10 @@ sc_dictionary_fs_memory_status sc_dictionary_fs_memory_get_string_by_link_hash(
   }
 
   sc_uint64 const string_offset = (sc_uint64)content->string_offset - 1;
+  sc_mutex_lock(&memory->rw_mutex);
   sc_dictionary_fs_memory_status const status =
       _sc_dictionary_fs_memory_read_string_by_offset(memory, string_offset, string);
+  sc_mutex_unlock(&memory->rw_mutex);
   if (status != SC_FS_MEMORY_OK)
   {
     *string = null_ptr;
@@ -713,7 +727,7 @@ sc_list * _sc_dictionary_fs_memory_get_string_offsets_by_term_prefix(
 }
 
 sc_dictionary_fs_memory_status sc_dictionary_fs_memory_get_link_hashes_by_string_ext(
-    sc_dictionary_fs_memory const * memory,
+    sc_dictionary_fs_memory * memory,
     sc_char const * string,
     sc_uint64 const string_size,
     sc_bool const is_substring,
@@ -734,8 +748,10 @@ sc_dictionary_fs_memory_status sc_dictionary_fs_memory_get_link_hashes_by_string
     string_offsets = _sc_dictionary_fs_memory_get_string_offsets_by_term(memory, term);
   sc_mem_free(term);
 
+  sc_mutex_lock(&memory->rw_mutex);
   sc_dictionary_fs_memory_status const status = _sc_dictionary_fs_memory_get_link_hashes_by_string_term(
       memory, string, string_size, is_substring, to_search_as_prefix, string_offsets, link_hashes);
+  sc_mutex_unlock(&memory->rw_mutex);
 
   if (is_substring)
     sc_list_destroy(string_offsets);
@@ -744,7 +760,7 @@ sc_dictionary_fs_memory_status sc_dictionary_fs_memory_get_link_hashes_by_string
 }
 
 sc_dictionary_fs_memory_status sc_dictionary_fs_memory_get_link_hashes_by_string(
-    sc_dictionary_fs_memory const * memory,
+    sc_dictionary_fs_memory * memory,
     sc_char const * string,
     sc_uint64 const string_size,
     sc_list ** link_hashes)
@@ -754,7 +770,7 @@ sc_dictionary_fs_memory_status sc_dictionary_fs_memory_get_link_hashes_by_string
 }
 
 sc_dictionary_fs_memory_status sc_dictionary_fs_memory_get_link_hashes_by_substring_ext(
-    sc_dictionary_fs_memory const * memory,
+    sc_dictionary_fs_memory * memory,
     sc_char const * string,
     sc_uint64 string_size,
     sc_uint32 max_length_to_search_as_prefix,
@@ -765,7 +781,7 @@ sc_dictionary_fs_memory_status sc_dictionary_fs_memory_get_link_hashes_by_substr
 }
 
 sc_dictionary_fs_memory_status sc_dictionary_fs_memory_get_link_hashes_by_substring(
-    sc_dictionary_fs_memory const * memory,
+    sc_dictionary_fs_memory * memory,
     sc_char const * string,
     sc_uint64 string_size,
     sc_list ** link_hashes)
@@ -843,7 +859,7 @@ sc_dictionary_fs_memory_status _sc_dictionary_fs_memory_get_strings_by_substring
 }
 
 sc_dictionary_fs_memory_status _sc_dictionary_fs_memory_get_strings_by_substring_ext(
-    sc_dictionary_fs_memory const * memory,
+    sc_dictionary_fs_memory * memory,
     sc_char const * string,
     sc_uint64 const string_size,
     sc_bool const to_search_as_prefix,
@@ -859,15 +875,17 @@ sc_dictionary_fs_memory_status _sc_dictionary_fs_memory_get_strings_by_substring
   sc_list * string_offsets = _sc_dictionary_fs_memory_get_string_offsets_by_term_prefix(memory, term);
   sc_mem_free(term);
 
+  sc_mutex_lock(&memory->rw_mutex);
   sc_dictionary_fs_memory_status const status = _sc_dictionary_fs_memory_get_strings_by_substring_term(
       memory, string, string_size, to_search_as_prefix, string_offsets, strings);
+  sc_mutex_unlock(&memory->rw_mutex);
   sc_list_destroy(string_offsets);
 
   return status;
 }
 
 sc_dictionary_fs_memory_status sc_dictionary_fs_memory_get_strings_by_substring_ext(
-    sc_dictionary_fs_memory const * memory,
+    sc_dictionary_fs_memory * memory,
     sc_char const * string,
     sc_uint64 string_size,
     sc_uint32 max_length_to_search_as_prefix,
@@ -878,7 +896,7 @@ sc_dictionary_fs_memory_status sc_dictionary_fs_memory_get_strings_by_substring_
 }
 
 sc_dictionary_fs_memory_status sc_dictionary_fs_memory_get_strings_by_substring(
-    sc_dictionary_fs_memory const * memory,
+    sc_dictionary_fs_memory * memory,
     sc_char const * string,
     sc_uint64 string_size,
     sc_list ** strings)
@@ -1013,8 +1031,13 @@ sc_bool _sc_dictionary_fs_memory_get_string_by_string_offsets(sc_dictionary_node
     sc_char * const string_offset_str = list->begin->data;
     sc_uint64 string_offset;
     sc_str_int_to_int(string_offset_str, string_offset);
+
     sc_char * string;
-    if (_sc_dictionary_fs_memory_read_string_by_offset(memory, string_offset, &string) != SC_FS_MEMORY_OK)
+    sc_mutex_lock(&memory->rw_mutex);
+    sc_dictionary_fs_memory_status const status =
+        _sc_dictionary_fs_memory_read_string_by_offset(memory, string_offset, &string);
+    sc_mutex_unlock(&memory->rw_mutex);
+    if (status != SC_FS_MEMORY_OK)
       return SC_FALSE;
 
     sc_list_push_back(strings, string);

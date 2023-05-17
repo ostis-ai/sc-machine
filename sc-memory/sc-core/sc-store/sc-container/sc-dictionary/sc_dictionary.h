@@ -8,6 +8,7 @@
 #define _sc_dictionary_h_
 
 #include "../../sc_types.h"
+#include "../../sc-base/sc_mutex.h"
 
 #define sc_dc_node_access_lvl_add_mask(node_mask, mask) ((node_mask) |= (mask))
 #define sc_dc_node_access_lvl_remove_mask(node_mask, mask) ((node_mask) &= ~(mask))
@@ -29,6 +30,7 @@ typedef struct _sc_dictionary
   sc_dictionary_node * root;  // sc-dictionary tree root node
   sc_uint8 size;              // default sc-dictionary node children size
   void (*char_to_int)(sc_char, sc_uint8 *, const sc_uint8 *);
+  sc_mutex rw_mutex;
 } sc_dictionary;
 
 /*! Initializes sc-dictionary
@@ -78,7 +80,7 @@ sc_bool sc_dictionary_has(const sc_dictionary * dictionary, const sc_char * stri
  * @param string_size A string size
  * @returns Returns Data from a sc-dictionary node where string ends
  */
-void * sc_dictionary_get_by_key(const sc_dictionary * dictionary, const sc_char * string, sc_uint32 string_size);
+void * sc_dictionary_get_by_key(sc_dictionary * dictionary, const sc_char * string, sc_uint32 string_size);
 
 /*! Visit data in sc-dictionary nodes where key prefix ends.
  * @param dictionary A sc-dictionary pointer
@@ -89,7 +91,7 @@ void * sc_dictionary_get_by_key(const sc_dictionary * dictionary, const sc_char 
  * @returns Returns Data from a sc-dictionary node where string ends
  */
 sc_bool sc_dictionary_get_by_key_prefix(
-    const sc_dictionary * dictionary,
+    sc_dictionary * dictionary,
     const sc_char * string,
     sc_uint32 string_size,
     sc_bool (*callable)(sc_dictionary_node *, void **),
