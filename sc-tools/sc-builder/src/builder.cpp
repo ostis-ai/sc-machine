@@ -18,10 +18,10 @@ bool Builder::Run(BuilderParams const & params, sc_memory_params const & memoryP
 {
   m_params = params;
 
-  // initialize sc-memory
   ScMemory::Initialize(memoryParams);
 
-  ScRepoPathCollector::Sources excludedSources, checkSources;
+  ScRepoPathCollector::Sources excludedSources;
+  ScRepoPathCollector::Sources checkSources;
   if (m_collector.IsRepoPathFile(m_params.m_inputPath))
   {
     ScConsole::PrintLine() << ScConsole::Color::Blue << "Parse repo path file... ";

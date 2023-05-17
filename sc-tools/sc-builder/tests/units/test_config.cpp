@@ -1,3 +1,9 @@
+/*
+* This source file is part of an OSTIS project. For the latest info, see http://ostis.net
+* Distributed under the MIT License
+* (See accompanying file COPYING.MIT or copy at http://opensource.org/licenses/MIT)
+*/
+
 #include <gtest/gtest.h>
 
 #include "builder_test.hpp"
@@ -31,29 +37,25 @@ TEST(ScBuilder, RunStop)
   EXPECT_TRUE(builder.Run(params, memoryConfig.GetParams()));
 
   ScParams scParams{options, {}};
-  if (configFile.IsValid())
+  EXPECT_TRUE(configFile.IsValid());
+  ScConfigGroup group = configFile[memoryGroupName];
+  for (std::string const & key : *group)
   {
-    ScConfigGroup group = configFile[memoryGroupName];
-    for (auto const & key : *group)
-    {
-      std::string const & value = group[key];
-      std::stringstream stream;
-
-      scParams.insert({key, value});
-    }
-    sc_memory_params const scMemoryParams = memoryConfig.GetParams();
-
-    EXPECT_EQ((sc_uint32)std::stoi(scParams.at("max_loaded_segments")), scMemoryParams.max_loaded_segments);
-    EXPECT_EQ((sc_uint8)std::stoi(scParams.at("max_threads")), scMemoryParams.max_threads);
-    EXPECT_EQ((sc_uint32)std::stoi(scParams.at("save_period")), scMemoryParams.save_period);
-    EXPECT_EQ((sc_uint32)std::stoi(scParams.at("update_period")), scMemoryParams.update_period);
-    EXPECT_EQ(scParams.at("log_type"), scMemoryParams.log_type);
-    EXPECT_EQ(scParams.at("log_file"), scMemoryParams.log_file);
-    EXPECT_EQ(scParams.at("log_level"), scMemoryParams.log_level);
-    EXPECT_EQ(
-        scParams.at("init_memory_generated_upload") == "true" ? true : false, scMemoryParams.init_memory_generated_upload);
-    EXPECT_EQ(scParams.at("init_memory_generated_structure"), scMemoryParams.init_memory_generated_structure);
+    std::string const & value = group[key];
+    scParams.insert({key, value});
   }
+  sc_memory_params const scMemoryParams = memoryConfig.GetParams();
+
+  EXPECT_EQ((sc_uint32)std::stoi(scParams.at("max_loaded_segments")), scMemoryParams.max_loaded_segments);
+  EXPECT_EQ((sc_uint8)std::stoi(scParams.at("max_threads")), scMemoryParams.max_threads);
+  EXPECT_EQ((sc_uint32)std::stoi(scParams.at("save_period")), scMemoryParams.save_period);
+  EXPECT_EQ((sc_uint32)std::stoi(scParams.at("update_period")), scMemoryParams.update_period);
+  EXPECT_EQ(scParams.at("log_type"), scMemoryParams.log_type);
+  EXPECT_EQ(scParams.at("log_file"), scMemoryParams.log_file);
+  EXPECT_EQ(scParams.at("log_level"), scMemoryParams.log_level);
+  EXPECT_EQ(
+      scParams.at("init_memory_generated_upload") == "true" ? true : false, scMemoryParams.init_memory_generated_upload);
+  EXPECT_EQ(scParams.at("init_memory_generated_structure"), scMemoryParams.init_memory_generated_structure);
 }
 
 TEST(ScBuilder, BuilderConfig)
@@ -86,33 +88,27 @@ TEST(ScBuilder, BuilderConfig)
   EXPECT_TRUE(builder.Run(builderParams, memoryConfig.GetParams()));
 
   std::string builderGroupName = "sc-builder";
-  std::string memoryGroupname = "sc-memory";
+  std::string memoryGroupName = "sc-memory";
 
   ScParams scParams{options, {}};
-  if (configFile.IsValid())
+  EXPECT_TRUE(configFile.IsValid());
+  ScConfigGroup group = configFile[builderGroupName];
+  for (std::string const & key : *group)
   {
-    ScConfigGroup group = configFile[builderGroupName];
-    for (auto const & key : *group)
-    {
-      std::string const & value = group[key];
-      std::stringstream stream;
-
-      scParams.insert({key, value});
-    }
-
-    group = configFile[memoryGroupname];
-    for (auto const & key : *group)
-    {
-      std::string const & value = group[key];
-      std::stringstream stream;
-
-      scParams.insert({key, value});
-    }
-
-    EXPECT_EQ(
-        scParams.at("init_memory_generated_upload") == "true" ? true : false, builderParams.m_resultStructureUpload);
-    EXPECT_EQ(scParams.at("init_memory_generated_structure"), builderParams.m_resultStructureSystemIdtf);
+    std::string const & value = group[key];
+    scParams.insert({key, value});
   }
+
+  group = configFile[memoryGroupName];
+  for (std::string const & key : *group)
+  {
+    std::string const & value = group[key];
+    scParams.insert({key, value});
+  }
+
+  EXPECT_EQ(
+      scParams.at("init_memory_generated_upload") == "true" ? true : false, builderParams.m_resultStructureUpload);
+  EXPECT_EQ(scParams.at("init_memory_generated_structure"), builderParams.m_resultStructureSystemIdtf);
 
   sc_memory_params newMemoryParams = memoryConfig.GetParams();
   newMemoryParams.clear = false;
