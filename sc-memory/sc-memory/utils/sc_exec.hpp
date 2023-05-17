@@ -64,5 +64,5 @@ protected:
     std::string output;
   };
 
-  ScExecBuffer * m_buffer;
+  ScExecBuffer * m_buffer{};
 };

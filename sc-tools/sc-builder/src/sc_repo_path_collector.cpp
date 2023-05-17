@@ -11,7 +11,7 @@
 
 #include "sc-memory/sc_utils.hpp"
 
-std::unordered_set<std::string> const ScRepoPathCollector::m_supportedSourcesFormats = {"scs"};
+std::unordered_set<std::string> const ScRepoPathCollector::m_supportedSourcesFormats = {"scs", "gwf"};
 std::unordered_set<std::string> const ScRepoPathCollector::m_supportedRepoPathFormats = {"path"};
 
 namespace impl
@@ -79,9 +79,6 @@ bool ScRepoPathCollector::IsRepoPathFile(std::string const & filePath) const
     return false;
 
   std::string ext = GetFileExtension(filePath);
-  if (ext.empty())
-    impl::NormalizeExt(ext);
-
   return ScRepoPathCollector::m_supportedRepoPathFormats.find(ext) != m_supportedRepoPathFormats.cend();
 }
 

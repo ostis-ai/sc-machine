@@ -25,7 +25,7 @@ TEST_F(ScRepoPathCollectorTestAPI, IsSources)
   EXPECT_TRUE(collector.IsSourceFile(directory + "/kb.scs"));
   EXPECT_TRUE(collector.IsSourceFile(directory + "/rules.scs"));
   EXPECT_TRUE(collector.IsSourceFile(directory + "/specification.scs"));
-  EXPECT_FALSE(collector.IsSourceFile(directory + "/example.gwf"));
+  EXPECT_TRUE(collector.IsSourceFile(directory + "/example.gwf"));
   EXPECT_FALSE(collector.IsSourceFile(directory + "/invalid_file"));
 }
 
@@ -59,7 +59,7 @@ TEST_F(ScRepoPathCollectorTestAPI, SimpleRepo)
   ScRepoPathCollector::Sources buildSources;
   collector.CollectBuildSources(repoPath, excludedSources, checkSources, buildSources);
 
-  EXPECT_EQ(buildSources.size(), 12u);
+  EXPECT_EQ(buildSources.size(), 13u);
   EXPECT_EQ(buildSources.count(directory + "/child_repos/child_kb/samples/sample1.scs"), 1u);
   EXPECT_EQ(buildSources.count(directory + "/child_repos/child_kb/samples/sample2.scs"), 1u);
   EXPECT_EQ(buildSources.count(directory + "/child_repos/child_kb/samples/sample3.scs"), 1u);
@@ -72,6 +72,7 @@ TEST_F(ScRepoPathCollectorTestAPI, SimpleRepo)
   EXPECT_EQ(buildSources.count(directory + "/kb.scs"), 1u);
   EXPECT_EQ(buildSources.count(directory + "/rules.scs"), 1u);
   EXPECT_EQ(buildSources.count(directory + "/specification.scs"), 1u);
+  EXPECT_EQ(buildSources.count(directory + "/example.gwf"), 1u);
 }
 
 TEST_F(ScRepoPathCollectorTestAPI, RepeatedRepos)
@@ -92,7 +93,7 @@ TEST_F(ScRepoPathCollectorTestAPI, RepeatedRepos)
   ScRepoPathCollector::Sources buildSources;
   collector.CollectBuildSources(repoPath, excludedSources, checkSources, buildSources);
 
-  EXPECT_EQ(buildSources.size(), 12u);
+  EXPECT_EQ(buildSources.size(), 13u);
   EXPECT_EQ(buildSources.count(directory + "/child_repos/child_kb/samples/sample1.scs"), 1u);
   EXPECT_EQ(buildSources.count(directory + "/child_repos/child_kb/samples/sample2.scs"), 1u);
   EXPECT_EQ(buildSources.count(directory + "/child_repos/child_kb/samples/sample3.scs"), 1u);
@@ -105,6 +106,7 @@ TEST_F(ScRepoPathCollectorTestAPI, RepeatedRepos)
   EXPECT_EQ(buildSources.count(directory + "/kb.scs"), 1u);
   EXPECT_EQ(buildSources.count(directory + "/rules.scs"), 1u);
   EXPECT_EQ(buildSources.count(directory + "/specification.scs"), 1u);
+  EXPECT_EQ(buildSources.count(directory + "/example.gwf"), 1u);
 }
 
 TEST_F(ScRepoPathCollectorTestAPI, ExcludedRepos)
@@ -127,7 +129,7 @@ TEST_F(ScRepoPathCollectorTestAPI, ExcludedRepos)
   ScRepoPathCollector::Sources buildSources;
   collector.CollectBuildSources(repoPath, excludedSources, checkSources, buildSources);
 
-  EXPECT_EQ(buildSources.size(), 9u);
+  EXPECT_EQ(buildSources.size(), 10u);
   EXPECT_EQ(buildSources.count(directory + "/child_repos/child_kb/samples/sample1.scs"), 1u);
   EXPECT_EQ(buildSources.count(directory + "/child_repos/child_kb/samples/sample2.scs"), 1u);
   EXPECT_EQ(buildSources.count(directory + "/child_repos/child_kb/samples/sample3.scs"), 1u);
@@ -137,6 +139,7 @@ TEST_F(ScRepoPathCollectorTestAPI, ExcludedRepos)
   EXPECT_EQ(buildSources.count(directory + "/kb.scs"), 1u);
   EXPECT_EQ(buildSources.count(directory + "/rules.scs"), 1u);
   EXPECT_EQ(buildSources.count(directory + "/specification.scs"), 1u);
+  EXPECT_EQ(buildSources.count(directory + "/example.gwf"), 1u);
 }
 
 TEST_F(ScRepoPathCollectorTestAPI, NonTrimRepos)
@@ -159,7 +162,7 @@ TEST_F(ScRepoPathCollectorTestAPI, NonTrimRepos)
   ScRepoPathCollector::Sources buildSources;
   collector.CollectBuildSources(repoPath, excludedSources, checkSources, buildSources);
 
-  EXPECT_EQ(buildSources.size(), 9u);
+  EXPECT_EQ(buildSources.size(), 10u);
   EXPECT_EQ(buildSources.count(directory + "/child_repos/child_kb/samples/sample1.scs"), 1u);
   EXPECT_EQ(buildSources.count(directory + "/child_repos/child_kb/samples/sample2.scs"), 1u);
   EXPECT_EQ(buildSources.count(directory + "/child_repos/child_kb/samples/sample3.scs"), 1u);
@@ -169,6 +172,7 @@ TEST_F(ScRepoPathCollectorTestAPI, NonTrimRepos)
   EXPECT_EQ(buildSources.count(directory + "/kb.scs"), 1u);
   EXPECT_EQ(buildSources.count(directory + "/rules.scs"), 1u);
   EXPECT_EQ(buildSources.count(directory + "/specification.scs"), 1u);
+  EXPECT_EQ(buildSources.count(directory + "/example.gwf"), 1u);
 }
 
 TEST_F(ScRepoPathCollectorTestAPI, InvalidRepoPath)

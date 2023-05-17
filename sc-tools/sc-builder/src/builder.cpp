@@ -6,6 +6,7 @@
 
 #include "builder.hpp"
 #include "scs_translator.hpp"
+#include "gwf_translator.hpp"
 
 #include <memory>
 
@@ -44,7 +45,7 @@ bool Builder::Run(BuilderParams const & params, sc_memory_params const & memoryP
 
 bool Builder::BuildSources(ScRepoPathCollector::Sources const & buildSources, ScAddr const & outputStructure)
 {
-  m_translators = {{"scs", std::make_shared<SCsTranslator>(*m_ctx)}};
+  m_translators = {{"scs", std::make_shared<SCsTranslator>(*m_ctx)}, {"gwf", std::make_shared<GWFTranslator>(*m_ctx)}};
 
   // process founded files
   bool status = true;
@@ -64,7 +65,7 @@ bool Builder::BuildSources(ScRepoPathCollector::Sources const & buildSources, Sc
     catch (utils::ScException const & e)
     {
       ScConsole::PrintLine() << ScConsole::Color::Red << "failed";
-      ScConsole::PrintLine() << e.Message();
+      ScConsole::PrintLine() << ScConsole::Color::Red << e.Message();
       status = false;
       break;
     }

@@ -1,3 +1,8 @@
+configure_file(
+    "${CMAKE_CURRENT_LIST_DIR}/src/builder_defines.hpp.in"
+    "${CMAKE_CURRENT_LIST_DIR}/src/builder_defines.hpp"
+)
+
 file(GLOB_RECURSE SOURCES "src/*.cpp" "src/*.h" "src/*.hpp")
 
 list(REMOVE_ITEM SOURCES
