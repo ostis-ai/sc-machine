@@ -4,10 +4,15 @@
  * (See accompanying file COPYING.MIT or copy at http://opensource.org/licenses/MIT)
  */
 
+#include <algorithm>
+
+extern "C"
+{
+#include "sc-core/sc_helper.h"
+}
+
 #include "sc_template.hpp"
 #include "sc_memory.hpp"
-
-#include <algorithm>
 
 SC_DEPRECATED(0.8.0, "Don't use alias for fixed sc-address")
 ScTemplateItem operator>>(ScAddr const & value, char const * replName)
@@ -83,9 +88,8 @@ bool ScTemplate::IsEmpty() const
 
 bool ScTemplate::HasReplacement(std::string const & repl) const
 {
-  return (
-      m_templateItemsNamesToReplacementItemsPositions.find(repl) !=
-      m_templateItemsNamesToReplacementItemsPositions.end());
+  return m_templateItemsNamesToReplacementItemsPositions.find(repl) !=
+         m_templateItemsNamesToReplacementItemsPositions.cend();
 }
 
 ScTemplate & ScTemplate::Triple(
@@ -127,8 +131,7 @@ ScTemplate & ScTemplate::Triple(
 
       if (!item.IsReplacement())
       {
-        if (m_templateItemsNamesToReplacementItemsPositions.find(item.m_name) ==
-            m_templateItemsNamesToReplacementItemsPositions.cend())
+        if (!HasReplacement(item.m_name))
           m_templateItemsNamesToReplacementItemsPositions.insert({item.m_name, replPos + i});
       }
 
@@ -150,7 +153,7 @@ ScTemplate & ScTemplate::Triple(
   return *this;
 }
 
-ScTemplate & ScTemplate::Fiver(
+ScTemplate & ScTemplate::Quintuple(
     ScTemplateItem const & param1,
     ScTemplateItem const & param2,
     ScTemplateItem const & param3,
@@ -170,7 +173,7 @@ ScTemplate & ScTemplate::Fiver(
   }
 
   Triple(param1, edgeCommonItem, param3);
-  Triple(param5, param4, edgeCommonItem.m_name.c_str());
+  Triple(param5, param4, edgeCommonItem.m_name);
 
   return *this;
 }
@@ -182,7 +185,7 @@ ScTemplate & ScTemplate::TripleWithRelation(
     ScTemplateItem const & param4,
     ScTemplateItem const & param5)
 {
-  return Fiver(param1, param2, param3, param4, param5);
+  return Quintuple(param1, param2, param3, param4, param5);
 }
 
 inline ScTemplateTripleType ScTemplate::GetPriority(ScTemplateTriple * triple)
@@ -211,4 +214,28 @@ inline ScTemplateTripleType ScTemplate::GetPriority(ScTemplateTriple * triple)
     return ScTemplateTripleType::FAE;
 
   return ScTemplateTripleType::AAA;
+}
+
+ScAddr ScTemplateResultItem::GetAddrBySystemIdtf(std::string const & name) const
+{
+  sc_addr _addr;
+  sc_helper_find_element_by_system_identifier(m_context, name.c_str(), name.size(), &_addr);
+  return {_addr};
+}
+
+std::string ScTemplateResultItem::GetSystemIdtfByAddr(ScAddr const & addr) const
+{
+  sc_addr _link_addr;
+  sc_helper_get_system_identifier_link(m_context, addr.GetRealAddr(), &_link_addr);
+  ScAddr linkAddr{_link_addr};
+  if (!linkAddr.IsValid())
+    return "";
+
+  sc_stream * stream;
+  sc_memory_get_link_content(m_context, _link_addr, &stream);
+
+  std::string idtf;
+  ScStreamConverter::StreamToString(std::make_shared<ScStream>(stream), idtf);
+
+  return idtf;
 }

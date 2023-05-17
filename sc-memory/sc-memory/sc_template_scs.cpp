@@ -42,7 +42,7 @@ protected:
                                    scs::ParsedElement const & el, ScTemplateItem & outValue) -> bool {
       std::string const & idtf = el.GetIdtf();
       bool const isUnnamed = scs::TypeResolver::IsUnnamed(idtf);
-      bool const isPassed = (passed.find(idtf) != passed.end());
+      bool const isPassed = passed.find(idtf) != passed.cend();
 
       if (!isUnnamed && isPassed)
       {
@@ -70,6 +70,8 @@ protected:
         }
       }
 
+      passed.insert(idtf);
+
       return true;
     };
 
@@ -82,9 +84,7 @@ protected:
       ScTemplateItem srcItem, edgeItem, trgItem;
 
       if (!MakeTemplItem(src, srcItem) || !MakeTemplItem(edge, edgeItem) || !MakeTemplItem(trg, trgItem))
-      {
         break;
-      }
 
       templ->Triple(srcItem, edgeItem, trgItem);
     }

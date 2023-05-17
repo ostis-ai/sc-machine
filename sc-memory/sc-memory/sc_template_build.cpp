@@ -8,19 +8,20 @@
 #include "sc_memory.hpp"
 #include "sc_debug.hpp"
 
-#include <algorithm>
+#include <vector>
+#include <unordered_set>
+#include <unordered_map>
 #include <iostream>
-#include <utility>
 
 namespace
 {
 class ObjectInfo
 {
 public:
-  ObjectInfo(ScAddr const & inAddr, ScType const & inType, std::string inSysIdtf)
-    : m_addr(inAddr)
-    , m_type(inType)
-    , m_sysIdtf(std::move(inSysIdtf))
+  ObjectInfo(ScAddr const & addr, ScType const & type, std::string idtf)
+    : m_addr(addr)
+    , m_type(type)
+    , m_idtf(std::move(idtf))
     , m_srcHash(0)
     , m_trgHash(0)
   {
@@ -43,7 +44,7 @@ public:
 
   inline std::string const & GetIdtf() const
   {
-    return m_sysIdtf;
+    return m_idtf;
   }
 
   inline ScType const & GetType() const
@@ -79,7 +80,7 @@ public:
 private:
   ScAddr m_addr;
   ScType m_type;
-  std::string m_sysIdtf;
+  std::string m_idtf;
 
   ScAddr::HashType m_srcHash;
   ScAddr::HashType m_trgHash;
@@ -91,32 +92,39 @@ class ScTemplateBuilder
 {
   friend class ScTemplate;
   using EdgeDependenceMap = std::unordered_multimap<ScAddr::HashType, ScAddr::HashType>;
-  using ObjectToIdtfMap = std::map<ScAddr::HashType, ObjectInfo>;
-  using ScAddrHashVector = std::vector<ScAddr::HashType>;
+  using ObjectToIdtfMap = std::unordered_map<ScAddr::HashType, ObjectInfo>;
+  using ScAddrHashSet = std::set<ScAddr::HashType>;
 
 protected:
   ScTemplateBuilder(ScAddr const & inScTemplateAddr, ScMemoryContext & inCtx, ScTemplateParams const & params)
     : m_templateAddr(inScTemplateAddr)
     , m_context(inCtx)
-    , m_params(params)
   {
+    auto const & replacements = params.GetAll();
+    for (auto const & item : replacements)
+    {
+      ScAddr const & addr = m_context.HelperFindBySystemIdtf(item.first);
+      if (addr.IsValid())
+      {
+        ObjectInfo obj = CollectObjectInfo(item.second, std::to_string(addr.Hash()));
+        m_elements.insert({addr.Hash(), obj});
+      }
+    }
   }
 
   ScTemplate::Result operator()(ScTemplate * inTemplate)
   {
     // TODO: add struct blocking
-    ScAddrHashVector independentEdges;
-    independentEdges.reserve(512);
-
-    size_t index = 0;
-    ScIterator3Ptr iter = m_context.Iterator3(m_templateAddr, *ScType::EdgeAccessConstPosPerm, *ScType());
+    ScAddrHashSet independentEdges;
 
     // define edges set and independent edges set
+    ScIterator3Ptr iter = m_context.Iterator3(m_templateAddr, ScType::EdgeAccessConstPosPerm, ScType::Unknown);
     while (iter->Next())
     {
-      ScAddr const objAddr = iter->Get(2);
+      ScAddr const & objAddr = iter->Get(2);
 
-      ObjectInfo obj = CollectObjectInfo(objAddr, "..obj_" + std::to_string(index++));
+      auto const & it = m_elements.find(objAddr.Hash());
+      ObjectInfo obj = it == m_elements.cend() ? CollectObjectInfo(objAddr) : it->second;
       if (obj.IsUnknown())
         return ScTemplate::Result(false, "Can't determine type of ScElement");  // template corrupted
 
@@ -128,11 +136,7 @@ protected:
 
         ScType const srcType = m_context.GetElementType(objSrc), trgType = m_context.GetElementType(objTrg);
         if (!srcType.IsEdge() && !trgType.IsEdge())
-        {
-          auto const & it = std::find(independentEdges.begin(), independentEdges.end(), obj.GetHash());
-          if (it == independentEdges.end())
-            independentEdges.emplace_back(obj.GetHash());
-        }
+          independentEdges.insert(obj.GetHash());
         if (srcType.IsEdge())
           m_edgeDependenceMap.insert({obj.GetHash(), objSrc.Hash()});
         if (trgType.IsEdge())
@@ -143,36 +147,29 @@ protected:
     }
 
     // split edges set by their power
-    std::vector<ScAddrHashVector> powerDependentEdges;
+    std::vector<ScAddrHashSet> powerDependentEdges;
     powerDependentEdges.emplace_back(independentEdges);
     SplitEdgesByDependencePower(powerDependentEdges);
 
-    // make tuple of partitions set subsets
-    ScAddrHashVector edges;
-    edges.reserve(512);
     for (auto const & equalDependentEdges : powerDependentEdges)
-      for (auto const & edge : equalDependentEdges)
-        edges.emplace_back(edge);
-
-    // build template
-    for (auto const i : edges)
     {
-      ObjectInfo const & edge = m_elements.at(i);
-      if (!edge.GetType().IsVar())
+      for (ScAddr::HashType const & edgeHash : equalDependentEdges)
       {
-        SC_THROW_EXCEPTION(utils::ExceptionInvalidType, "Edge type must be var type");
+        ObjectInfo const & edge = m_elements.at(edgeHash);
+        if (!edge.GetType().IsVar())
+          SC_THROW_EXCEPTION(utils::ExceptionInvalidType, "Edge type must be var type");
+
+        ObjectInfo const & src = m_elements.at(edge.GetSourceHash());
+        ObjectInfo const & trg = m_elements.at(edge.GetTargetHash());
+
+        auto const & param = [&inTemplate](ObjectInfo const & obj) -> ScTemplateItem {
+          return obj.GetType().IsConst()
+                     ? obj.GetAddr() >> obj.GetIdtf()
+                     : (inTemplate->HasReplacement(obj.GetIdtf()) ? obj.GetIdtf() : obj.GetType() >> obj.GetIdtf());
+        };
+
+        inTemplate->Triple(param(src), edge.GetType() >> edge.GetIdtf(), param(trg));
       }
-
-      ObjectInfo const src = ReplaceWithParam(&m_elements.at(edge.GetSourceHash()));
-      ObjectInfo const trg = ReplaceWithParam(&m_elements.at(edge.GetTargetHash()));
-
-      auto const & param = [&inTemplate](ObjectInfo const & obj) -> ScTemplateItem {
-        return obj.GetType().IsConst()
-                   ? obj.GetAddr() >> obj.GetIdtf()
-                   : (inTemplate->HasReplacement(obj.GetIdtf()) ? obj.GetIdtf() : obj.GetType() >> obj.GetIdtf());
-      };
-
-      inTemplate->Triple(param(src), edge.GetType() >> edge.GetIdtf(), param(trg));
     }
 
     return ScTemplate::Result(true);
@@ -188,50 +185,33 @@ protected:
   EdgeDependenceMap m_edgeDependenceMap;
 
 private:
-  ObjectInfo CollectObjectInfo(ScAddr const & objAddr, std::string const & repl_idtf = "") const
+  ObjectInfo CollectObjectInfo(ScAddr const & objAddr, std::string objIdtf = "") const
   {
     ScType const objType = m_context.GetElementType(objAddr);
-    std::string objIdtf = m_context.HelperGetSystemIdtf(objAddr);
-
-    if (!repl_idtf.empty() && objIdtf.empty())
-      objIdtf = repl_idtf;
+    if (objIdtf.empty())
+      objIdtf = std::to_string(objAddr.Hash());
 
     return {objAddr, objType, objIdtf};
   }
 
-  void SplitEdgesByDependencePower(std::vector<ScAddrHashVector> & powerDependentEdges)
+  void SplitEdgesByDependencePower(std::vector<ScAddrHashSet> & powerDependentEdges)
   {
-    size_t size = powerDependentEdges.size();
-
     for (auto const & hPair : m_edgeDependenceMap)
     {
-      size_t power = GetEdgeDependencePower(hPair.first, hPair.second);
-      if (power >= powerDependentEdges.size())
+      size_t const power = GetEdgeDependencePower(hPair.first, hPair.second);
+      size_t size = powerDependentEdges.size();
+
+      if (power >= size)
       {
         while (size <= power)
         {
-          powerDependentEdges.emplace_back(ScAddrHashVector());
-          size++;
+          powerDependentEdges.emplace_back();
+          ++size;
         }
       }
 
-      auto const & equalDependentEdges = powerDependentEdges.at(power);
-      auto const & equalDependentEdgesIt =
-          std::find(equalDependentEdges.begin(), equalDependentEdges.end(), hPair.first);
-      if (equalDependentEdgesIt == equalDependentEdges.end())
-        powerDependentEdges.at(power).emplace_back(hPair.first);
+      powerDependentEdges.at(power).insert(hPair.first);
     }
-  }
-
-  ObjectInfo ReplaceWithParam(ObjectInfo const * templateItem) const
-  {
-    if (!templateItem->IsEdge())
-    {
-      ScAddr replacedAddr;
-      if (m_params.Get(templateItem->GetIdtf(), replacedAddr))
-        return CollectObjectInfo(replacedAddr, templateItem->GetIdtf());
-    }
-    return *templateItem;
   }
 
   // get edge dependence power from other edge
@@ -264,7 +244,7 @@ private:
 ScTemplate::Result ScTemplate::FromScTemplate(
     ScMemoryContext & ctx,
     ScAddr const & scTemplateAddr,
-    const ScTemplateParams & params)
+    ScTemplateParams const & params)
 {
   ScTemplateBuilder builder(scTemplateAddr, ctx, params);
   return builder(this);

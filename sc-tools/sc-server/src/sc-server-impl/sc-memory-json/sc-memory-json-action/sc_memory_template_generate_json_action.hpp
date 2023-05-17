@@ -15,14 +15,15 @@ public:
       ScMemoryContext * context, ScMemoryJsonPayload requestPayload, ScMemoryJsonPayload & errorsPayload) override
   {
     ScTemplateGenResult result;
-    auto const & pair = GetTemplate(context, requestPayload);
+    auto pair = GetTemplate(context, requestPayload);
     context->HelperGenTemplate(*pair.first, result, pair.second);
-    delete pair.first;
 
     std::vector<size_t> hashesVectors;
     for (size_t i = 0; i < result.Size(); ++i)
       hashesVectors.push_back(result[i].Hash());
 
-    return {{"aliases", result.GetReplacements()}, {"addrs", hashesVectors}};
+    ScMemoryJsonPayload const & resultPayload = {{"aliases", result.GetReplacements()}, {"addrs", hashesVectors}};
+    delete pair.first;
+    return resultPayload;
   }
 };

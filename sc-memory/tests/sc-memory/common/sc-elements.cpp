@@ -111,7 +111,7 @@ TEST_F(ScMemoryTest, CreateDeleteCountEdges2)
   ScAddr edge = ctx.CreateEdge(ScType::EdgeAccessConstPosPerm, node, link);
 
   ScAddr const relation = ctx.CreateNode(ScType::NodeConstRole);
-  ScAddr edge2 = ctx.CreateEdge(ScType::EdgeAccessConstPosPerm, relation, edge);
+  ctx.CreateEdge(ScType::EdgeAccessConstPosPerm, relation, edge);
   EXPECT_EQ(ctx.GetElementOutputArcsCount(relation), 1u);
   EXPECT_EQ(ctx.GetElementInputArcsCount(relation), 0u);
   EXPECT_EQ(ctx.GetElementOutputArcsCount(edge), 0u);

@@ -92,3 +92,43 @@ TEST_F(ScTemplateGenApiTest, GenEmptyTemplate)
   ScTemplateGenResult result;
   EXPECT_TRUE(m_ctx->HelperGenTemplate(templ, result));
 }
+
+TEST_F(ScTemplateGenApiTest, GenTripleWithFixedSecondEdge)
+{
+  ScAddr const & addr1 = m_ctx->CreateNode(ScType::NodeConst);
+  ScAddr const & addr2 = m_ctx->CreateNode(ScType::NodeConst);
+  ScAddr const & edgeAddr = m_ctx->CreateEdge(ScType::EdgeAccessConstPosPerm, addr1, addr2);
+
+  ScTemplate templ;
+  templ.Triple(
+      ScType::NodeVar >> "_addr1",
+      edgeAddr,
+      ScType::Unknown >> "_addr2");
+
+  ScTemplateGenResult result;
+  EXPECT_THROW(m_ctx->HelperGenTemplate(templ, result), utils::ExceptionInvalidParams);
+}
+
+TEST_F(ScTemplateGenApiTest, GenTripleWithTypedThirdEdge)
+{
+  ScTemplate templ;
+  templ.Triple(
+      ScType::NodeVar >> "_addr1",
+      ScType::EdgeAccessVarPosPerm,
+      ScType::EdgeAccessVarPosPerm >> "_addr2");
+
+  ScTemplateGenResult result;
+  EXPECT_THROW(m_ctx->HelperGenTemplate(templ, result), utils::ExceptionInvalidParams);
+}
+
+TEST_F(ScTemplateGenApiTest, GenTripleWithRefSecondEdge)
+{
+  ScTemplate templ;
+  templ.Triple(
+      ScType::NodeVar >> "_addr1",
+      "_edge",
+      ScType::NodeVar >> "_addr2");
+
+  ScTemplateGenResult result;
+  EXPECT_THROW(m_ctx->HelperGenTemplate(templ, result), utils::ExceptionInvalidParams);
+}

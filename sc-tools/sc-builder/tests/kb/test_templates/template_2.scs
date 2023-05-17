@@ -1,5 +1,5 @@
 @template = [*
-    message _=> nrel_test_relation:: _set;;
+    _message _=> nrel_test_relation:: _set;;
     _set _-> _structure;;
     _structure _-> _test_class;;
 *];;

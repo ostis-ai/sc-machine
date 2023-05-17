@@ -45,13 +45,13 @@ public:
 
   ScTemplateResultCode operator()(ScTemplateGenResult & result)
   {
-    if (!checkParams())
+    if (!CheckParams())
       return ScTemplateResultCode::InvalidParams;  /// TODO: Provide error
 
     ScMemoryContextEventsPendingGuard guard(m_context);
 
-    result.m_replacementConstruction.resize(m_triples.size() * 3);
-    result.m_templateItemsNamesToReplacementItemsPositions = m_replacements;
+    result = {*m_context, &m_replacements};
+    result.m_replacementConstruction->resize(m_triples.size() * 3);
 
     ScAddrVector createdElements;
     size_t resultIdx = 0;
@@ -63,30 +63,23 @@ public:
 
       // check that the third argument isn't a command to generate edge
       if (values[2].m_itemType == ScTemplateItem::Type::Type && values[2].m_typeValue.IsEdge())
-      {
         SC_THROW_EXCEPTION(utils::ExceptionInvalidParams, "Don't generate edge as the third item of triple");
-      };
+
       // check that second command is to generate edge
       if (!(values[1].m_itemType == ScTemplateItem::Type::Type && values[1].m_typeValue.IsEdge()))
-      {
         SC_THROW_EXCEPTION(utils::ExceptionInvalidParams, "The second item of triple must have edge var type");
-      };
+
       // the second item couldn't be a replacement
       if (values[1].m_itemType == ScTemplateItem::Type::Replace)
-      {
         SC_THROW_EXCEPTION(utils::ExceptionInvalidParams, "The second item of triple couldn't be a replacement");
-      };
 
-      ScAddr const addr1 = resolveAddr(values[0], result.m_replacementConstruction);
+      ScAddr const addr1 = ResolveAddr(values[0], *result.m_replacementConstruction);
       if (!addr1.IsValid())
-      {
         SC_THROW_EXCEPTION(utils::ExceptionInvalidState, "The resolved first item is not valid");
-      }
-      ScAddr const addr2 = resolveAddr(values[2], result.m_replacementConstruction);
+
+      ScAddr const addr2 = ResolveAddr(values[2], *result.m_replacementConstruction);
       if (!addr2.IsValid())
-      {
         SC_THROW_EXCEPTION(utils::ExceptionInvalidState, "The resolved third item is not valid");
-      }
 
       if (!addr1.IsValid() || !addr2.IsValid())
       {
@@ -101,31 +94,27 @@ public:
         break;
       }
 
-      result.m_replacementConstruction[resultIdx++] = addr1;
-      result.m_replacementConstruction[resultIdx++] = edge;
-      result.m_replacementConstruction[resultIdx++] = addr2;
+      (*result.m_replacementConstruction)[resultIdx++] = addr1;
+      (*result.m_replacementConstruction)[resultIdx++] = edge;
+      (*result.m_replacementConstruction)[resultIdx++] = addr2;
     }
 
     if (isError)
     {
-      cleanupCreated();
+      CleanupCreated();
       return ScTemplateResultCode::InternalError;
     }
 
     return ScTemplateResultCode::Success;
   }
 
-  ScAddr createNodeLink(ScType const & type)
+  ScAddr CreateNodeLink(ScType const & type)
   {
     ScAddr addr;
     if (type.IsNode())
-    {
       addr = m_context.CreateNode(type);
-    }
     else if (type.IsLink())
-    {
       addr = m_context.CreateLink();
-    }
 
     if (addr.IsValid())
       m_createdElements.push_back(addr);
@@ -133,15 +122,37 @@ public:
     return addr;
   }
 
-  ScAddr resolveAddr(ScTemplateItem const & itemValue, ScAddrVector const & resultAddrs)
+  ScAddr GetAddrFromParams(ScTemplateItem const & itemValue) const
+  {
+    ScAddr result;
+    if (m_params.Get(itemValue.m_name, result))
+      return result;
+
+    std::stringstream stream(itemValue.m_name);
+    sc_addr_hash hash;
+    stream >> hash;
+    if (stream.fail() || !stream.eof())
+      return ScAddr::Empty;
+
+    ScAddr const & varAddr = ScAddr(hash);
+    if (!varAddr.IsValid() || !m_context.IsElement(varAddr))
+      return ScAddr::Empty;
+
+    std::string const & name = m_context.HelperGetSystemIdtf(varAddr);
+    m_params.Get(name, result);
+
+    return result;
+  }
+
+  ScAddr ResolveAddr(ScTemplateItem const & itemValue, ScAddrVector const & resultAddrs)
   {
     /// TODO: improve speed, because not all time we need to replace by params
     // replace by value from params
     if (!m_params.IsEmpty() && !itemValue.m_name.empty())
     {
-      ScAddr result;
-      if (m_params.Get(itemValue.m_name, result))
-        return result;
+      ScAddr const & addr = GetAddrFromParams(itemValue);
+      if (addr.IsValid())
+        return addr;
     }
 
     switch (itemValue.m_itemType)
@@ -149,14 +160,12 @@ public:
     case ScTemplateItem::Type::Addr:
       return itemValue.m_addrValue;
     case ScTemplateItem::Type::Type:
-      return createNodeLink(itemValue.m_typeValue.UpConstType());
+      return CreateNodeLink(itemValue.m_typeValue.UpConstType());
     case ScTemplateItem::Type::Replace:
     {
       auto it = m_replacements.find(itemValue.m_name);
-      if (it != m_replacements.end())
-      {
+      if (it != m_replacements.cend())
         return resultAddrs[it->second];
-      }
     }
     default:
       break;
@@ -165,21 +174,28 @@ public:
     return {};
   }
 
-  void cleanupCreated()
+  void CleanupCreated()
   {
     for (auto & m_createdElement : m_createdElements)
       m_context.EraseElement(m_createdElement);
     m_createdElements.clear();
   }
 
-  bool checkParams() const
+  bool CheckParams() const
   {
-    for (auto const & it : m_params.m_templateItemsToParams)
+    for (auto const & item : m_params.m_templateItemsToParams)
     {
-      auto const & itRepl = m_replacements.find(it.first);
+      auto itRepl = m_replacements.find(item.first);
+      if (itRepl == m_replacements.cend())
+      {
+        ScAddr const & addr = m_context.HelperFindBySystemIdtf(item.first);
+        if (!addr.IsValid())
+          return false;
 
-      if (itRepl == m_replacements.end())
-        return false;
+        itRepl = m_replacements.find(std::to_string(addr.Hash()));
+        if (itRepl == m_replacements.cend())
+          return false;
+      }
 
       ScTemplateTriple * triple = m_triples[itRepl->second / 3];
       ScType const & itemType = triple->GetValues()[itRepl->second % 3].m_typeValue;

@@ -65,11 +65,11 @@ ScSet & ScSet::operator<<(ScAddr const & elAddr)
   return *this;
 }
 
-ScSet & ScSet::operator<<(ScTemplateGenResult const & res)
+ScSet & ScSet::operator<<(ScTemplateResultItem const & res)
 {
   size_t const res_num = res.Size();
   for (size_t i = 0; i < res_num; ++i)
-    Append(res.m_replacementConstruction[i]);
+    Append((*res.m_replacementConstruction)[i]);
 
   return *this;
 }
