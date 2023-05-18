@@ -107,6 +107,31 @@ BENCHMARK_TEMPLATE(BM_MemoryThreaded, TestCreateLink)
 ->Iterations(kLinkIters / 128)
 ->Unit(benchmark::TimeUnit::kMicrosecond);
 
+BENCHMARK_TEMPLATE(BM_MemoryThreaded, TestCreateSameLink)
+->Threads(2)
+->Iterations(kLinkIters / 2)
+->Unit(benchmark::TimeUnit::kMicrosecond);
+
+BENCHMARK_TEMPLATE(BM_MemoryThreaded, TestCreateSameLink)
+->Threads(4)
+->Iterations(kLinkIters / 4)
+->Unit(benchmark::TimeUnit::kMicrosecond);
+
+BENCHMARK_TEMPLATE(BM_MemoryThreaded, TestCreateSameLink)
+->Threads(8)
+->Iterations(kLinkIters / 8)
+->Unit(benchmark::TimeUnit::kMicrosecond);
+
+BENCHMARK_TEMPLATE(BM_MemoryThreaded, TestCreateSameLink)
+->Threads(16)
+->Iterations(kLinkIters / 64)
+->Unit(benchmark::TimeUnit::kMicrosecond);
+
+BENCHMARK_TEMPLATE(BM_MemoryThreaded, TestCreateSameLink)
+->Threads(32)
+->Iterations(kLinkIters / 128)
+->Unit(benchmark::TimeUnit::kMicrosecond);
+
 
 // ------------------------------------
 template <class BMType>
