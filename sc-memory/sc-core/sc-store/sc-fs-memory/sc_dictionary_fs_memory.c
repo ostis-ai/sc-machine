@@ -1132,6 +1132,7 @@ void _sc_dictionary_fs_memory_read_terms_string_offsets(sc_dictionary_fs_memory 
 
 sc_dictionary_fs_memory_status _sc_dictionary_fs_memory_load_terms_offsets(sc_dictionary_fs_memory * memory)
 {
+  sc_fs_memory_info("Load `term - offsets` dictionary from %s", memory->terms_string_offsets_path);
   sc_io_channel * terms_offsets_channel = sc_io_new_read_channel(memory->terms_string_offsets_path, null_ptr);
   if (terms_offsets_channel == null_ptr)
   {
@@ -1155,7 +1156,7 @@ sc_dictionary_fs_memory_status _sc_dictionary_fs_memory_load_terms_offsets(sc_di
 
   sc_io_channel_shutdown(terms_offsets_channel, SC_TRUE, null_ptr);
 
-  sc_fs_memory_info("Dictionary `term - offsets` read");
+  sc_fs_memory_info("Dictionary `term - offsets` loaded");
   return SC_FS_MEMORY_OK;
 }
 
@@ -1192,6 +1193,7 @@ void _sc_dictionary_fs_memory_read_string_offsets_link_hashes(sc_dictionary_fs_m
 sc_dictionary_fs_memory_status _sc_dictionary_fs_memory_load_string_offsets_link_hashes(
     sc_dictionary_fs_memory * memory)
 {
+  sc_fs_memory_info("Load `term - offsets` dictionary from %s", memory->string_offsets_link_hashes_path);
   sc_io_channel * channel = sc_io_new_read_channel(memory->string_offsets_link_hashes_path, null_ptr);
   if (channel == null_ptr)
   {
@@ -1203,7 +1205,74 @@ sc_dictionary_fs_memory_status _sc_dictionary_fs_memory_load_string_offsets_link
   _sc_dictionary_fs_memory_read_string_offsets_link_hashes(memory, channel);
 
   sc_io_channel_shutdown(channel, SC_TRUE, null_ptr);
-  sc_fs_memory_info("Dictionary `string offsets - link hashes` read");
+  sc_fs_memory_info("Dictionary `string offsets - link hashes` loaded");
+
+  return SC_FS_MEMORY_OK;
+}
+
+sc_fs_memory_status _sc_dictionary_fs_memory_load_deprecated_dictionaries(sc_dictionary_fs_memory * memory)
+{
+  sc_char * strings_path;
+  {
+    static sc_char const * strings_channel_name = "strings";
+    sc_fs_concat_path_ext(memory->path, strings_channel_name, SC_FS_EXT, &strings_path);
+  }
+
+  if (sc_fs_is_file(strings_path) == SC_FALSE)
+    return SC_FS_MEMORY_WRONG_PATH;
+
+  sc_fs_memory_warning("Load deprecated file memory dictionary from %s", strings_path);
+  sc_io_channel * channel = sc_io_new_read_channel(strings_path, null_ptr);
+  if (channel == null_ptr)
+  {
+    sc_fs_memory_error("Can't open strings from: %s", strings_path);
+    return SC_FS_MEMORY_WRONG_PATH;
+  }
+  sc_io_channel_set_encoding(channel, null_ptr, null_ptr);
+
+  sc_uint64 read_bytes = 0;
+  while (SC_TRUE)
+  {
+    sc_uint8 hashes_size = 0;
+    if (sc_io_channel_read_chars(channel, (sc_char *)&hashes_size, sizeof(hashes_size), &read_bytes, null_ptr) !=
+        SC_FS_IO_STATUS_NORMAL)
+      break;
+
+    sc_addr_hash * hashes = sc_mem_new(sc_addr_hash, hashes_size);
+    if (sc_io_channel_read_chars(
+            channel, (sc_char *)hashes, sizeof(sc_addr_hash) * hashes_size, &read_bytes, null_ptr) !=
+        SC_FS_IO_STATUS_NORMAL)
+      break;
+
+    sc_uint32 string_size = 0;
+    if (sc_io_channel_read_chars(channel, (sc_char *)&string_size, sizeof(string_size), &read_bytes, null_ptr) !=
+        SC_FS_IO_STATUS_NORMAL)
+      break;
+
+    sc_char * string = sc_mem_new(sc_char, string_size);
+    if (sc_io_channel_read_chars(channel, (sc_char *)string, string_size, &read_bytes, null_ptr) !=
+        SC_FS_IO_STATUS_NORMAL)
+      break;
+
+    sc_uint8 i;
+    for (i = 0; i < hashes_size; ++i)
+    {
+      if (hashes[i] == 0)
+        continue;
+
+      sc_dictionary_fs_memory_link_string(memory, hashes[i], string, string_size);
+    }
+
+    sc_mem_free(hashes);
+    sc_mem_free(string);
+  }
+
+  sc_io_channel_shutdown(channel, SC_FALSE, null_ptr);
+
+  sc_fs_remove_file(strings_path);
+  sc_mem_free(strings_path);
+
+  sc_fs_memory_warning("Deprecated file memory dictionary loaded");
 
   return SC_FS_MEMORY_OK;
 }
@@ -1217,7 +1286,10 @@ sc_dictionary_fs_memory_status sc_dictionary_fs_memory_load(sc_dictionary_fs_mem
   }
 
   sc_fs_memory_info("Load sc-fs-memory dictionaries");
-  _sc_dictionary_fs_memory_load_terms_offsets(memory);
+
+  if (_sc_dictionary_fs_memory_load_deprecated_dictionaries(memory) != SC_FS_MEMORY_OK)
+    _sc_dictionary_fs_memory_load_terms_offsets(memory);
+
   sc_message("\tLast string offset: %lld", memory->last_string_offset);
 
   _sc_dictionary_fs_memory_load_string_offsets_link_hashes(memory);
