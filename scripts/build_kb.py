@@ -134,7 +134,9 @@ def main(args: dict):
         exit(1)
 
     if isdir(conf["output_path"]):
-        shutil.rmtree(conf["output_path"])
+        for entry in os.scandir(conf["output_path"]):
+            if entry.is_file(): os.remove(entry.path)
+            if entry.is_dir(): shutil.rmtree(entry.path)
 
     search_knowledge_bases(conf[REPO_FILE])
 
