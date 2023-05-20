@@ -158,7 +158,6 @@ TEST(ScFSMemoryTest, sc_fs_memory_save_load_save_invalid_segment_read)
   sc_io_channel_shutdown(channel, SC_TRUE, nullptr);
 
   EXPECT_FALSE(sc_fs_memory_load(segments, &read_size));
-  sc_segment_free(segments[0]);
   EXPECT_TRUE(sc_fs_memory_shutdown());
 }
 

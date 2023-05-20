@@ -48,6 +48,7 @@ sc_bool sc_fs_copy_file(sc_char const * path, sc_char const * target_path)
     sc_uint64 string_size = 128;
     sc_char string[string_size + 1];
     GIOStatus const status = sc_io_channel_read_chars(read_channel, string, string_size, &read_bytes, null_ptr);
+    string[string_size] = '\0';
 
     if (sc_io_channel_write_chars(write_channel, string, read_bytes, &written_bytes, null_ptr) != SC_FS_IO_STATUS_NORMAL ||
       written_bytes != read_bytes)
@@ -147,7 +148,7 @@ sc_bool sc_fs_remove_directory(sc_char const * path)
   sc_char const * file = g_dir_read_name(directory);
   while (file != null_ptr)
   {
-    g_snprintf(tmp_path, MAX_PATH_LENGTH, "%s/%s", path, file);
+    sc_str_printf(tmp_path, MAX_PATH_LENGTH, "%s/%s", path, file);
 
     if (sc_fs_is_file(tmp_path) == SC_TRUE)
     {
