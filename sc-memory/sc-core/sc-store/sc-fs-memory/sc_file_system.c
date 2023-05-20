@@ -50,8 +50,9 @@ sc_bool sc_fs_copy_file(sc_char const * path, sc_char const * target_path)
     GIOStatus const status = sc_io_channel_read_chars(read_channel, string, string_size, &read_bytes, null_ptr);
     string[string_size] = '\0';
 
-    if (sc_io_channel_write_chars(write_channel, string, read_bytes, &written_bytes, null_ptr) != SC_FS_IO_STATUS_NORMAL ||
-      written_bytes != read_bytes)
+    if (sc_io_channel_write_chars(write_channel, string, read_bytes, &written_bytes, null_ptr) !=
+            SC_FS_IO_STATUS_NORMAL ||
+        written_bytes != read_bytes)
       goto error;
 
     if (status != SC_FS_IO_STATUS_NORMAL)
