@@ -8,6 +8,7 @@
 #define _sc_fs_memory_h_
 
 #include "sc_fs_memory_status.h"
+#include "sc_fs_memory_header.h"
 
 #include "../sc_types.h"
 #include "../sc_defines.h"
@@ -23,6 +24,9 @@ typedef struct _sc_fs_memory_manager
 {
   sc_fs_memory * fs_memory;  // file system memory instance
   sc_char * segments_path;   // file path to sc-memory segments
+
+  sc_version version;
+  sc_fs_memory_header header;
 
   sc_fs_memory_status (*initialize)(sc_fs_memory ** memory, sc_memory_params const * params);
   sc_fs_memory_status (*shutdown)(sc_fs_memory * memory);

@@ -115,10 +115,8 @@ public:
 
   sc_memory_params GetParams()
   {
-    sc_version version = {
+    m_memoryParams.version = {
         SC_MACHINE_VERSION_MAJOR, SC_MACHINE_VERSION_MINOR, SC_MACHINE_VERSION_PATCH, SC_MACHINE_VERSION_SUFFIX};
-
-    m_memoryParams.version = (sc_char const *)sc_version_string_new(&version);
 
     m_memoryParams.clear = HasKey("clear");
     m_memoryParams.repo_path = GetStringByKey("repo_path");
@@ -147,11 +145,6 @@ public:
     m_memoryParams.term_separators = GetStringByKey("term_separators", DEFAULT_TERM_SEPARATORS);
 
     return m_memoryParams;
-  }
-
-  ~ScMemoryConfig()
-  {
-    sc_version_string_free((sc_char *)m_memoryParams.version);
   }
 
 private:

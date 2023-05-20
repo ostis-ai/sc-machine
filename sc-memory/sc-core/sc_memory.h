@@ -213,10 +213,6 @@ _SC_EXTERN sc_result sc_memory_find_links_contents_by_content_substring(
     sc_list ** result,
     sc_uint32 max_length_to_search_as_prefix);
 
-/*! Free buffer allocated for links content find result
- */
-_SC_EXTERN void sc_memory_free_buff(sc_pointer buff);
-
 /*! Setup new access levele for sc-element. New access levels will be a minimum from context access levels and parameter
  * \b access_levels
  * @param addr sc-add of sc-element to change access levels

@@ -9,17 +9,13 @@
 
 #include "sc-store/sc_types.h"
 
-struct _sc_version
+typedef struct _sc_version
 {
   sc_uint8 major;
   sc_uint8 minor;
   sc_uint8 patch;
   const char * suffix;
-};
-
-typedef struct _sc_version sc_version;
-
-extern const sc_version SC_VERSION;
+} sc_version;
 
 /*! Function compares to versions @p a and @p b.
  * @returns If version @p a less then version @p b, then returns -1.

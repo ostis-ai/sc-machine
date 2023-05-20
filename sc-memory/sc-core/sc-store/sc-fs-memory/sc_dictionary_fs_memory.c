@@ -1249,7 +1249,7 @@ sc_fs_memory_status _sc_dictionary_fs_memory_load_deprecated_dictionaries(sc_dic
         SC_FS_IO_STATUS_NORMAL)
       break;
 
-    sc_char * string = sc_mem_new(sc_char, string_size);
+    sc_char * string = sc_mem_new(sc_char, string_size + 1);
     if (sc_io_channel_read_chars(channel, (sc_char *)string, string_size, &read_bytes, null_ptr) !=
         SC_FS_IO_STATUS_NORMAL)
       break;
