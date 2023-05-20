@@ -11,6 +11,8 @@
 
 sc_bool sc_fs_create_file(sc_char const * path);
 
+sc_bool sc_fs_copy_file(sc_char const * path, sc_char const * target_path);
+
 sc_bool sc_fs_remove_file(sc_char const * path);
 
 sc_bool sc_fs_is_file(sc_char const * path);

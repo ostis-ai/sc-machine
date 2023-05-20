@@ -22,12 +22,49 @@ sc_bool sc_fs_create_file(sc_char const * path)
   if (path == null_ptr)
     return SC_FALSE;
 
-  sc_io_channel * channel = sc_io_new_channel(path, "w+", null_ptr);
+  sc_io_channel * channel = sc_io_new_write_channel(path, null_ptr);
   if (channel == null_ptr)
     return SC_FALSE;
 
   sc_io_channel_shutdown(channel, SC_TRUE, null_ptr);
   return SC_TRUE;
+}
+
+sc_bool sc_fs_copy_file(sc_char const * path, sc_char const * target_path)
+{
+  sc_io_channel * read_channel = sc_io_new_read_channel(path, null_ptr);
+  if (read_channel == null_ptr)
+    return SC_FALSE;
+  sc_io_channel_set_encoding(read_channel, null_ptr, null_ptr);
+
+  sc_io_channel * write_channel = sc_io_new_write_channel(target_path, null_ptr);
+  if (write_channel == null_ptr)
+    return SC_FALSE;
+  sc_io_channel_set_encoding(write_channel, null_ptr, null_ptr);
+
+  sc_uint64 read_bytes, written_bytes;
+  while (SC_TRUE)
+  {
+    sc_uint64 string_size = 128;
+    sc_char string[string_size + 1];
+    GIOStatus const status = sc_io_channel_read_chars(read_channel, string, string_size, &read_bytes, null_ptr);
+
+    if (sc_io_channel_write_chars(write_channel, string, read_bytes, &written_bytes, null_ptr) != SC_FS_IO_STATUS_NORMAL ||
+      written_bytes != read_bytes)
+      goto error;
+
+    if (status != SC_FS_IO_STATUS_NORMAL)
+      break;
+  }
+
+  sc_io_channel_shutdown(read_channel, SC_TRUE, null_ptr);
+  sc_io_channel_shutdown(write_channel, SC_TRUE, null_ptr);
+  return SC_TRUE;
+
+error:
+  sc_io_channel_shutdown(read_channel, SC_TRUE, null_ptr);
+  sc_io_channel_shutdown(write_channel, SC_TRUE, null_ptr);
+  return SC_FALSE;
 }
 
 sc_bool sc_fs_remove_file(sc_char const * path)

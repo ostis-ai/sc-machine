@@ -1219,7 +1219,10 @@ sc_fs_memory_status _sc_dictionary_fs_memory_load_deprecated_dictionaries(sc_dic
   }
 
   if (sc_fs_is_file(strings_path) == SC_FALSE)
+  {
+    sc_mem_free(strings_path);
     return SC_FS_MEMORY_WRONG_PATH;
+  }
 
   sc_fs_memory_warning("Load deprecated file memory dictionary from %s", strings_path);
   sc_io_channel * channel = sc_io_new_read_channel(strings_path, null_ptr);
