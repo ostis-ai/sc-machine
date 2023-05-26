@@ -31,6 +31,7 @@ typedef struct _sc_dictionary_fs_memory
 
   void ** strings_channels;
   sc_uint64 last_string_offset;  // last offset of string in 'string_path`
+  sc_mutex rw_mutex;
 
   sc_char * terms_string_offsets_path;              // path to dictionary file with terms and its strings offsets
   sc_dictionary * terms_string_offsets_dictionary;  // dictionary instance with terms and its strings offsets
@@ -102,7 +103,7 @@ sc_dictionary_fs_memory_status sc_dictionary_fs_memory_unlink_string(
  * @returns SC_FS_MEMORY_OK, if are no reading and writing errors.
  */
 sc_dictionary_fs_memory_status sc_dictionary_fs_memory_get_string_by_link_hash(
-    sc_dictionary_fs_memory const * memory,
+    sc_dictionary_fs_memory * memory,
     sc_addr_hash link_hash,
     sc_char ** string,
     sc_uint64 * string_size);
@@ -115,7 +116,7 @@ sc_dictionary_fs_memory_status sc_dictionary_fs_memory_get_string_by_link_hash(
  * @returns SC_FS_MEMORY_OK, if are no reading and writing errors.
  */
 sc_dictionary_fs_memory_status sc_dictionary_fs_memory_get_link_hashes_by_string(
-    sc_dictionary_fs_memory const * memory,
+    sc_dictionary_fs_memory * memory,
     sc_char const * string,
     sc_uint64 string_size,
     sc_list ** link_hashes);
@@ -129,7 +130,7 @@ sc_dictionary_fs_memory_status sc_dictionary_fs_memory_get_link_hashes_by_string
  * @returns SC_FS_MEMORY_OK, if are no reading and writing errors.
  */
 sc_dictionary_fs_memory_status sc_dictionary_fs_memory_get_link_hashes_by_substring_ext(
-    sc_dictionary_fs_memory const * memory,
+    sc_dictionary_fs_memory * memory,
     sc_char const * string,
     sc_uint64 string_size,
     sc_uint32 max_length_to_search_as_prefix,
@@ -143,7 +144,7 @@ sc_dictionary_fs_memory_status sc_dictionary_fs_memory_get_link_hashes_by_substr
  * @returns SC_FS_MEMORY_OK, if are no reading and writing errors.
  */
 sc_dictionary_fs_memory_status sc_dictionary_fs_memory_get_link_hashes_by_substring(
-    sc_dictionary_fs_memory const * memory,
+    sc_dictionary_fs_memory * memory,
     sc_char const * string,
     sc_uint64 string_size,
     sc_list ** link_hashes);
@@ -157,7 +158,7 @@ sc_dictionary_fs_memory_status sc_dictionary_fs_memory_get_link_hashes_by_substr
  * @returns SC_FS_MEMORY_OK, if are no reading and writing errors.
  */
 sc_dictionary_fs_memory_status sc_dictionary_fs_memory_get_strings_by_substring_ext(
-    sc_dictionary_fs_memory const * memory,
+    sc_dictionary_fs_memory * memory,
     sc_char const * string,
     sc_uint64 string_size,
     sc_uint32 max_length_to_search_as_prefix,
@@ -171,7 +172,7 @@ sc_dictionary_fs_memory_status sc_dictionary_fs_memory_get_strings_by_substring_
  * @returns SC_FS_MEMORY_OK, if are no reading and writing errors.
  */
 sc_dictionary_fs_memory_status sc_dictionary_fs_memory_get_strings_by_substring(
-    sc_dictionary_fs_memory const * memory,
+    sc_dictionary_fs_memory * memory,
     sc_char const * string,
     sc_uint64 string_size,
     sc_list ** strings);

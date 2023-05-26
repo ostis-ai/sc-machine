@@ -18,6 +18,25 @@ public:
     ScAddr const addr = m_ctx->CreateLink();
 
     ScLink link(*m_ctx, addr);
-    link.Set(addr.Hash());
+    BENCHMARK_BUILTIN_EXPECT(link.Set(addr.Hash()), SC_TRUE);
+    BENCHMARK_BUILTIN_EXPECT(link.Get<sc_addr_hash>(), addr.Hash());
+    BENCHMARK_BUILTIN_EXPECT(m_ctx->FindLinksByContent(addr.Hash()).size(), 1u);
+    BENCHMARK_BUILTIN_EXPECT(m_ctx->FindLinksByContentSubstring(addr.Hash()).size(), 1u);
+    BENCHMARK_BUILTIN_EXPECT(m_ctx->FindLinksContentsByContentSubstring(addr.Hash()).size(), 1u);
+  }
+};
+
+class TestCreateSameLink : public TestMemory
+{
+public:
+  void Run()
+  {
+    ScAddr const addr = m_ctx->CreateLink();
+
+    ScLink link(*m_ctx, addr);
+    std::string const & content = "same content";
+    BENCHMARK_BUILTIN_EXPECT(link.Set(content), SC_TRUE);
+    BENCHMARK_BUILTIN_EXPECT(link.Get<std::string>() == content, SC_TRUE);
+    BENCHMARK_BUILTIN_EXPECT(m_ctx->FindLinksByContent(content).size(), SC_TRUE);
   }
 };

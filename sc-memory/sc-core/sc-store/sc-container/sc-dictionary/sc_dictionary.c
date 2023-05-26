@@ -26,6 +26,7 @@ sc_bool sc_dictionary_initialize(
   (*dictionary)->size = children_size;
   (*dictionary)->root = _sc_dictionary_node_initialize(children_size);
   (*dictionary)->char_to_int = char_to_int;
+  sc_mutex_init(&(*dictionary)->rw_mutex);
 
   return SC_TRUE;
 }
@@ -100,6 +101,8 @@ sc_bool sc_dictionary_destroy(sc_dictionary * dictionary, void (*node_clear)(sc_
   if (node_clear != null_ptr)
     node_clear(dictionary->root);
   _sc_dictionary_node_destroy(dictionary->root);
+
+  sc_mutex_destroy(&dictionary->rw_mutex);
 
   sc_mem_free(dictionary);
 
@@ -214,7 +217,10 @@ sc_dictionary_node * sc_dictionary_append(
     sc_uint32 size,
     void * value)
 {
+  sc_mutex_lock(&dictionary->rw_mutex);
   sc_dictionary_node * node = sc_dictionary_append_to_node(dictionary, string, size);
+  sc_mutex_unlock(&dictionary->rw_mutex);
+
   node->data = value;
   return node;
 }
@@ -258,7 +264,7 @@ sc_bool sc_dictionary_has(const sc_dictionary * dictionary, const sc_char * stri
   return SC_DICTIONARY_NODE_IS_VALID(last);
 }
 
-void * sc_dictionary_get_by_key(const sc_dictionary * dictionary, const sc_char * string, const sc_uint32 string_size)
+void * _sc_dictionary_get_by_key(sc_dictionary * dictionary, const sc_char * string, const sc_uint32 string_size)
 {
   const sc_dictionary_node * last =
       sc_dictionary_get_last_node_from_node(dictionary, dictionary->root, string, string_size);
@@ -269,7 +275,15 @@ void * sc_dictionary_get_by_key(const sc_dictionary * dictionary, const sc_char 
   return null_ptr;
 }
 
-sc_bool sc_dictionary_get_by_key_prefix(
+void * sc_dictionary_get_by_key(sc_dictionary * dictionary, const sc_char * string, const sc_uint32 string_size)
+{
+  sc_mutex_lock(&dictionary->rw_mutex);
+  void * result = _sc_dictionary_get_by_key(dictionary, string, string_size);
+  sc_mutex_unlock(&dictionary->rw_mutex);
+  return result;
+}
+
+sc_bool _sc_dictionary_get_by_key_prefix(
     const sc_dictionary * dictionary,
     const sc_char * string,
     const sc_uint32 string_size,
@@ -317,6 +331,19 @@ sc_bool sc_dictionary_get_by_key_prefix(
     }
   }
   return SC_TRUE;
+}
+
+sc_bool sc_dictionary_get_by_key_prefix(
+    sc_dictionary * dictionary,
+    const sc_char * string,
+    const sc_uint32 string_size,
+    sc_bool (*callable)(sc_dictionary_node *, void **),
+    void ** dest)
+{
+  sc_mutex_lock(&dictionary->rw_mutex);
+  sc_bool const status = _sc_dictionary_get_by_key_prefix(dictionary, string, string_size, callable, dest);
+  sc_mutex_unlock(&dictionary->rw_mutex);
+  return status;
 }
 
 sc_bool sc_dictionary_visit_down_node_from_node(
