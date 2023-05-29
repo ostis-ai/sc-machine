@@ -8,6 +8,7 @@
 #define _sc_memory_params_h_
 
 #include "sc-store/sc_types.h"
+#include "sc_memory_version.h"
 
 #define DEFAULT_SAVE_PERIOD 32000
 #define DEFAULT_UPDATE_PERIOD 16000
@@ -25,7 +26,7 @@
 
 typedef struct _sc_memory_params
 {
-  sc_char const * version;
+  sc_version version;
 
   sc_bool clear;
   sc_char const * repo_path;

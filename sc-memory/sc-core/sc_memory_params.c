@@ -8,7 +8,8 @@
 
 void sc_memory_params_clear(sc_memory_params * params)
 {
-  params->version = (sc_char const *)null_ptr;
+  params->version = (sc_version){
+      SC_MACHINE_VERSION_MAJOR, SC_MACHINE_VERSION_MINOR, SC_MACHINE_VERSION_PATCH, SC_MACHINE_VERSION_SUFFIX};
 
   params->clear = SC_FALSE;
   params->repo_path = (sc_char const *)null_ptr;

@@ -23,6 +23,7 @@ sc_fs_memory_manager * manager;
 sc_bool sc_fs_memory_initialize_ext(sc_memory_params const * params)
 {
   manager = sc_fs_memory_build();
+  manager->version = params->version;
 
   static sc_char const * segments_postfix = "segments" SC_FS_EXT;
   sc_fs_concat_path(params->repo_path, segments_postfix, &manager->segments_path);
@@ -105,7 +106,6 @@ sc_bool sc_fs_memory_unlink_string(sc_addr_hash link_hash)
 // dictionary read, write and save methods
 sc_bool _sc_fs_memory_load_sc_memory_segments(sc_segment ** segments, sc_uint32 * segments_num)
 {
-  sc_fs_memory_info("Load sc-memory segments");
   if (sc_fs_is_file(manager->segments_path) == SC_FALSE)
   {
     *segments_num = 0;
@@ -114,45 +114,89 @@ sc_bool _sc_fs_memory_load_sc_memory_segments(sc_segment ** segments, sc_uint32 
   }
 
   // open segments
-  {
-    sc_io_channel * segments_channel = sc_io_new_read_channel(manager->segments_path, null_ptr);
-    sc_io_channel_set_encoding(segments_channel, null_ptr, null_ptr);
+  sc_io_channel * segments_channel = sc_io_new_read_channel(manager->segments_path, null_ptr);
+  sc_io_channel_set_encoding(segments_channel, null_ptr, null_ptr);
 
-    sc_uint64 read_bytes = 0;
+  if (sc_fs_memory_header_read(segments_channel, &manager->header) != SC_FS_MEMORY_OK)
+    goto error;
+  *segments_num = manager->header.size;
+
+  // backward compatibility with version 0.7.0
+  sc_uint64 read_bytes = 0;
+  sc_bool is_no_deprecated_segments = *segments_num == 0;
+  if (is_no_deprecated_segments)
+    sc_fs_memory_info("Load sc-memory segments from %s", manager->segments_path);
+  else
+    sc_fs_memory_warning("Load deprecated sc-memory segments from %s", manager->segments_path);
+
+  static sc_uint32 const OLD_SC_ELEMENT_SIZE = 36;
+  sc_uint32 element_size = is_no_deprecated_segments ? sizeof(sc_element) : OLD_SC_ELEMENT_SIZE;
+  if (is_no_deprecated_segments)
+  {
     if (sc_io_channel_read_chars(segments_channel, (sc_char *)segments_num, sizeof(sc_uint32), &read_bytes, null_ptr) !=
             SC_FS_IO_STATUS_NORMAL ||
         read_bytes != sizeof(sc_uint32))
     {
       *segments_num = 0;
       sc_fs_memory_error("Error while attribute `segments_num` reading");
-      sc_io_channel_shutdown(segments_channel, SC_FALSE, null_ptr);
-      return SC_FALSE;
+      goto error;
     }
+  }
 
-    for (sc_uint32 i = 0; i < *segments_num; ++i)
+  sc_version read_version;
+  sc_version_from_int(manager->header.version, &read_version);
+  if (sc_version_compare(&manager->version, &read_version) == -1)
+  {
+    sc_char * version = sc_version_string_new(&read_version);
+    sc_fs_memory_error("Read sc-memory segments has incompatible version %s", version);
+    sc_version_string_free(version);
+    goto error;
+  }
+
+  for (sc_uint32 i = 0; i < *segments_num; ++i)
+  {
+    sc_uint32 const num = i;
+    sc_segment * seg = sc_segment_new(i);
+    segments[i] = seg;
+
+    for (sc_uint32 j = 0; j < SC_SEGMENT_ELEMENTS_COUNT; ++j)
     {
-      sc_uint32 const num = i;
-      sc_segment * seg = sc_segment_new(i);
-      segments[i] = seg;
-
       if (sc_io_channel_read_chars(
-              segments_channel, (sc_char *)seg->elements, SC_SEG_ELEMENTS_SIZE_BYTE, &read_bytes, null_ptr) !=
+              segments_channel, (sc_char *)&seg->elements[j], element_size, &read_bytes, null_ptr) !=
               SC_FS_IO_STATUS_NORMAL ||
-          read_bytes != SC_SEG_ELEMENTS_SIZE_BYTE)
+          read_bytes != element_size)
       {
         *segments_num = num;
-        sc_fs_memory_error("Error while segment %d reading", i);
-        sc_io_channel_shutdown(segments_channel, SC_FALSE, null_ptr);
-        return SC_FALSE;
+        sc_fs_memory_error("Error while sc-element %d in sc-segment %d reading", j, i);
+        goto error;
       }
-      sc_segment_loaded(seg);
-      i = num;
+
+      // needed for sc-template search
+      if (!is_no_deprecated_segments)
+      {
+        seg->elements[j].input_arcs_count = 1;
+        seg->elements[j].output_arcs_count = 1;
+      }
     }
-    sc_io_channel_shutdown(segments_channel, SC_FALSE, null_ptr);
+    sc_segment_loaded(seg);
+    i = num;
   }
+
+  sc_io_channel_shutdown(segments_channel, SC_FALSE, null_ptr);
+
+  if (is_no_deprecated_segments)
+    sc_fs_memory_info("Sc-memory segments loaded");
+  else
+    sc_fs_memory_warning("Deprecated sc-memory segments loaded");
 
   sc_message("\tSc-memory segments: %u", *segments_num);
   return SC_TRUE;
+
+error:
+{
+  sc_io_channel_shutdown(segments_channel, SC_FALSE, null_ptr);
+  return SC_FALSE;
+}
 }
 
 sc_bool sc_fs_memory_load(sc_segment ** segments, sc_uint32 * segments_num)
@@ -170,6 +214,12 @@ sc_bool _sc_fs_memory_save_sc_memory_segments(sc_segment ** segments, sc_uint32 
   sc_char * tmp_filename;
   sc_io_channel * segments_channel = sc_fs_new_tmp_write_channel(manager->fs_memory->path, &tmp_filename, "segments");
   sc_io_channel_set_encoding(segments_channel, null_ptr, null_ptr);
+
+  manager->header.size = 0;
+  manager->header.version = sc_version_to_int(&manager->version);
+  manager->header.timestamp = g_get_real_time();
+  if (sc_fs_memory_header_write(segments_channel, manager->header) != SC_FS_MEMORY_OK)
+    goto error;
 
   sc_uint64 written_bytes;
   if (sc_io_channel_write_chars(

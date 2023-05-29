@@ -20,6 +20,7 @@
 
 #define SC_FS_MEMORY_PREFIX "[sc-fs-memory] "
 #define sc_fs_memory_info(...) sc_message(SC_FS_MEMORY_PREFIX __VA_ARGS__)
+#define sc_fs_memory_warning(...) sc_warning(SC_FS_MEMORY_PREFIX __VA_ARGS__)
 #define sc_fs_memory_error(...) sc_critical(SC_FS_MEMORY_PREFIX __VA_ARGS__)
 
 sc_bool _sc_uchar_dictionary_initialize(sc_dictionary ** dictionary);

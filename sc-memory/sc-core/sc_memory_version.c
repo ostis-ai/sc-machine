@@ -11,8 +11,6 @@
 
 sc_int32 sc_version_compare(const sc_version * a, const sc_version * b)
 {
-  sc_assert(a && b);
-
   if (a->major < b->major)
     return -1;
   if (a->major > b->major)
@@ -41,19 +39,16 @@ char * sc_version_string_new(const sc_version * v)
 
 void sc_version_string_free(sc_char * str)
 {
-  sc_assert(str != null_ptr);
   sc_mem_free(str);
 }
 
 sc_uint32 sc_version_to_int(sc_version const * version)
 {
-  sc_assert(version != null_ptr);
   return (version->major << 16) | (version->minor << 8) | version->patch;
 }
 
 void sc_version_from_int(sc_uint32 value, sc_version * version)
 {
-  sc_assert(version != null_ptr);
   version->patch = value & 0xff;
   version->minor = value >> 8 & 0xff;
   version->major = value >> 16 & 0xff;

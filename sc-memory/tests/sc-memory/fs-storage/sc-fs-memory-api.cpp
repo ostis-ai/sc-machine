@@ -1,5 +1,7 @@
 #include <gtest/gtest.h>
 
+#include "test_defines.hpp"
+
 extern "C"
 {
 #include "sc-core/sc-store/sc-fs-memory/sc_file_system.h"
@@ -60,6 +62,36 @@ TEST(ScFSMemoryTest, sc_fs_memory_save_load)
   EXPECT_EQ(read_size, written_size);
   sc_segment_free(segments[0]);
   sc_segment_free(segments[1]);
+
+  EXPECT_TRUE(sc_fs_memory_shutdown());
+}
+
+TEST(ScFSMemoryTest, sc_fs_memory_save_load_deprecated_segments)
+{
+  EXPECT_TRUE(sc_fs_copy_file(
+      SC_DEPRECATED_DICTIONARY_FS_MEMORY_PATH "/test/segments.scdb",
+      SC_DEPRECATED_DICTIONARY_FS_MEMORY_PATH "/segments.scdb"));
+  EXPECT_TRUE(sc_fs_copy_file(
+      SC_DEPRECATED_DICTIONARY_FS_MEMORY_PATH "/test/strings.scdb",
+      SC_DEPRECATED_DICTIONARY_FS_MEMORY_PATH "/strings.scdb"));
+
+  EXPECT_TRUE(sc_fs_memory_initialize(SC_DEPRECATED_DICTIONARY_FS_MEMORY_PATH, SC_FALSE));
+
+  sc_uint32 written_size = 1;
+  sc_segment * segments[written_size];
+
+  sc_uint32 read_size;
+  EXPECT_TRUE(sc_fs_memory_load(segments, &read_size));
+  EXPECT_EQ(read_size, 1u);
+
+  EXPECT_TRUE(sc_fs_memory_save(segments, written_size));
+  for (sc_uint32 i = 0; i < read_size; ++i)
+    sc_segment_free(segments[i]);
+
+  EXPECT_TRUE(sc_fs_memory_load(segments, &read_size));
+  EXPECT_EQ(read_size, written_size);
+  for (sc_uint32 i = 0; i < read_size; ++i)
+    sc_segment_free(segments[i]);
 
   EXPECT_TRUE(sc_fs_memory_shutdown());
 }
@@ -126,7 +158,6 @@ TEST(ScFSMemoryTest, sc_fs_memory_save_load_save_invalid_segment_read)
   sc_io_channel_shutdown(channel, SC_TRUE, nullptr);
 
   EXPECT_FALSE(sc_fs_memory_load(segments, &read_size));
-  sc_segment_free(segments[0]);
   EXPECT_TRUE(sc_fs_memory_shutdown());
 }
 

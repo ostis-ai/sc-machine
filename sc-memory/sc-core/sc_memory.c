@@ -32,7 +32,10 @@ sc_memory_context * sc_memory_initialize(const sc_memory_params * params)
 {
   sc_memory_info("Initialize components");
 
-  sc_memory_info("Version: %s", params->version);
+  sc_char * string = sc_version_string_new(&params->version);
+  sc_memory_info("Version: %s", string);
+  sc_version_string_free(string);
+
   sc_message("\tClean on initialize: %s", params->clear ? "On" : "Off");
   sc_message("\tExtensions path: %s", params->ext_path);
   sc_message("\tSave period: %d", params->save_period);
@@ -208,7 +211,8 @@ void sc_memory_context_free(sc_memory_context * ctx)
 
 void sc_memory_context_free_impl(sc_memory_context * ctx)
 {
-  sc_assert(ctx != null_ptr);
+  if (ctx == null_ptr)
+    return;
 
   g_mutex_lock(&s_concurrency_mutex);
 
@@ -369,11 +373,6 @@ sc_result sc_memory_find_links_contents_by_content_substring(
     sc_uint32 max_length_to_search_as_prefix)
 {
   return sc_storage_find_links_contents_by_content_substring(ctx, stream, result, max_length_to_search_as_prefix);
-}
-
-void sc_memory_free_buff(sc_pointer buff)
-{
-  sc_mem_free(buff);
 }
 
 sc_result sc_memory_set_element_access_levels(

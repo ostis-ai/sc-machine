@@ -82,10 +82,10 @@ struct _sc_element
   sc_addr first_out_arc;
   sc_addr first_in_arc;
 
+  sc_arc_info arc;
+
   sc_uint32 input_arcs_count;
   sc_uint32 output_arcs_count;
-
-  sc_arc_info arc;
 };
 
 /// All functions must be called for locked sc-elements

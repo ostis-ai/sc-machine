@@ -8,9 +8,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 ### Breaking changes
 - Now we use C++17 instead of C++14
+- We support compatibility with old memory binaries
 
 ### Added
 
+- Support for deprecated memory binaries build in 0.7.0 version
 - Synchronize processes that works with file memory and sc-dictionary
 - Get replacements in template result by variable address
 - Configs for file memory string sections

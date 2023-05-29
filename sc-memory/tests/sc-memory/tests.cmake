@@ -24,6 +24,11 @@ if(${SC_CLANG_FORMAT_CODE})
     target_clangformat_setup(sc-fs-storage-tests)
 endif()
 
+configure_file(
+    "${CMAKE_CURRENT_LIST_DIR}/fs-storage/test_defines.hpp.in"
+    "${CMAKE_CURRENT_LIST_DIR}/fs-storage/test_defines.hpp"
+)
+
 make_tests_from_folder(${CMAKE_CURRENT_LIST_DIR}/agents
     NAME sc-memory-agents-tests
     DEPENDS sc-memory
@@ -49,12 +54,6 @@ make_tests_from_folder(${CMAKE_CURRENT_LIST_DIR}/templates
     DEPENDS sc-memory
     INCLUDES ${SC_MEMORY_SRC} ${CMAKE_CURRENT_LIST_DIR}/_test
 )
-
-configure_file(
-    "${CMAKE_CURRENT_LIST_DIR}/_test/test_defines.hpp.in"
-    "${CMAKE_CURRENT_LIST_DIR}/_test/test_defines.hpp"
-)
-
 
 make_tests_from_folder(${CMAKE_CURRENT_LIST_DIR}/codegen
     NAME sc-memory-codegen-tests
