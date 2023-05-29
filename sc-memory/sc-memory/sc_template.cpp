@@ -239,3 +239,36 @@ std::string ScTemplateResultItem::GetSystemIdtfByAddr(ScAddr const & addr) const
 
   return idtf;
 }
+
+ScTemplate::ScTemplateItemsToReplacementsItemsPositions ScTemplateSearchResult::GetReplacements() const noexcept
+{
+  ScTemplate::ScTemplateItemsToReplacementsItemsPositions replacementsItemsPositions;
+
+  for (auto const & item : m_templateItemsNamesToReplacementItemsPositions)
+  {
+    replacementsItemsPositions.insert(item);
+
+    std::stringstream ss(item.first);
+    sc_addr_hash hash;
+    ss >> hash;
+    if (ss.fail() || !ss.eof())
+      continue;
+
+    ScAddr const & varAddr = ScAddr(hash);
+    sc_addr _link_addr;
+    sc_helper_get_system_identifier_link(m_context, varAddr.GetRealAddr(), &_link_addr);
+    ScAddr linkAddr{_link_addr};
+    if (!linkAddr.IsValid() || !sc_memory_is_element(m_context, _link_addr))
+      continue;
+
+    sc_stream * stream;
+    sc_memory_get_link_content(m_context, _link_addr, &stream);
+
+    std::string idtf;
+    ScStreamConverter::StreamToString(std::make_shared<ScStream>(stream), idtf);
+
+    replacementsItemsPositions.insert({idtf, item.second});
+  }
+
+  return replacementsItemsPositions;
+}

@@ -12,6 +12,7 @@
 #include "sc_addr.hpp"
 #include "sc_type.hpp"
 #include "sc_utils.hpp"
+#include "sc_stream.hpp"
 
 struct ScTemplateItem
 {
@@ -710,10 +711,7 @@ public:
     m_templateItemsNamesToReplacementItemsPositions.clear();
   }
 
-  inline ScTemplate::ScTemplateItemsToReplacementsItemsPositions const & GetReplacements() const noexcept
-  {
-    return m_templateItemsNamesToReplacementItemsPositions;
-  }
+  ScTemplate::ScTemplateItemsToReplacementsItemsPositions GetReplacements() const noexcept;
 
   template <typename FnT>
   void ForEach(FnT && f) noexcept
