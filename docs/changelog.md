@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- View kb fragment in scn if it is keyword
 - Tests for repo-path parser and collector
 - Support for deprecated memory binaries build in 0.7.0 version
 - Synchronize processes that works with file memory and sc-dictionary
@@ -63,6 +64,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- Decrease wait time for sc-element referencing in iterators
 - Call gwf-translator in sc-builder
 - Move repo path parser from Python to C++ in sc-builder
 - Unite ScTemplateGenResult and ScTemplateSearchResultItem into ScTemplateResultItem
