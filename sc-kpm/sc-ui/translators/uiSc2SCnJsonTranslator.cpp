@@ -68,7 +68,26 @@ void uiSc2SCnJsonTranslator::runImpl()
     sc_iterator3 * it3 =
         sc_iterator3_f_a_a_new(s_default_ctx, sc_iterator5_value(it5, 0), sc_type_arc_pos_const_perm, 0);
     while (sc_iterator3_next(it3) == SC_TRUE)
-      mKeywordsList.insert(sc_iterator3_value(it3, 2));
+    {
+      sc_addr const keyword = sc_iterator3_value(it3, 2);
+      mKeywordsList.insert(keyword);
+
+      if (SC_ADDR_IS_EQUAL(mInputConstructionAddr, keyword))
+      {
+        sc_iterator3 * keywordEdgesIt3 = sc_iterator3_f_a_a_new(s_default_ctx, keyword, sc_type_arc_pos_const_perm, 0);
+        while (sc_iterator3_next(keywordEdgesIt3))
+        {
+          sc_addr const edge = sc_iterator3_value(keywordEdgesIt3, 1);
+          sc_type type;
+          if (sc_memory_get_element_type(s_default_ctx, edge, &type) != SC_RESULT_OK)
+            continue;
+
+          if (mEdges.count(edge) == 0)
+            mEdges.insert({edge, type});
+        }
+      }
+    }
+
     sc_iterator3_free(it3);
   }
   sc_iterator5_free(it5);
