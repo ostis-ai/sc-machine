@@ -901,8 +901,8 @@ private:
       {
         if (!m_filterCallback || m_filterCallback(
                                      {*m_context,
-                                      &result.m_replacementConstructions[replacementConstructionIdx],
-                                      &result.m_templateItemsNamesToReplacementItemsPositions}))
+                                      result.m_replacementConstructions[replacementConstructionIdx],
+                                      result.m_templateItemsNamesToReplacementItemsPositions}))
           AppendFoundReplacementConstruction(result, replacementConstructionIdx);
       }
     } while (!isStopped);
@@ -961,15 +961,15 @@ private:
     {
       m_callback(
           {*m_context,
-           &result.m_replacementConstructions[resultIdx],
-           &result.m_templateItemsNamesToReplacementItemsPositions});
+           result.m_replacementConstructions[resultIdx],
+           result.m_templateItemsNamesToReplacementItemsPositions});
     }
     else if (m_callbackWithRequest)
     {
       ScTemplateSearchRequest const & request = m_callbackWithRequest(
           {*m_context,
-           &result.m_replacementConstructions[resultIdx],
-           &result.m_templateItemsNamesToReplacementItemsPositions});
+           result.m_replacementConstructions[resultIdx],
+           result.m_templateItemsNamesToReplacementItemsPositions});
       switch (request)
       {
       case ScTemplateSearchRequest::STOP:
