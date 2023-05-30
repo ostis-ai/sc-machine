@@ -257,8 +257,7 @@ ScTemplate::ScTemplateItemsToReplacementsItemsPositions ScTemplateSearchResult::
     ScAddr const & varAddr = ScAddr(hash);
     sc_addr _link_addr;
     sc_helper_get_system_identifier_link(m_context, varAddr.GetRealAddr(), &_link_addr);
-    ScAddr linkAddr{_link_addr};
-    if (!linkAddr.IsValid() || !sc_memory_is_element(m_context, _link_addr))
+    if (SC_ADDR_IS_EMPTY(_link_addr) || !sc_memory_is_element(m_context, _link_addr))
       continue;
 
     sc_stream * stream;
