@@ -248,7 +248,6 @@ void uiSc2SCnJsonTranslator::ParseScnJsonArc(ScStructureElementInfo * elInfo, Sc
 
 void uiSc2SCnJsonTranslator::ParseScnJsonLink(ScStructureElementInfo * elInfo, ScJson & result)
 {
-  sc_addr format;
   String content;
   // get format of link
   ScJson & contentType = result[ScnTranslatorConstants::CONTENT_TYPE.data()];
@@ -264,8 +263,22 @@ void uiSc2SCnJsonTranslator::ParseScnJsonLink(ScStructureElementInfo * elInfo, S
     }
     else
     {
-      result[ScnTranslatorConstants::CONTENT.data()] = ScJson();
-      contentType = ScnTranslatorConstants::FORMAT_LARGE_TXT.data();
+      sc_addr format;
+      for (std::string_view const & formatStr : ScnTranslatorConstants::formats)
+      {
+        sc_helper_resolve_system_identifier(s_default_ctx, formatStr.data(), &format);
+        if (sc_helper_check_arc(s_default_ctx, elInfo->addr, format, sc_type_arc_common | sc_type_const) == SC_TRUE)
+        {
+          contentType = formatStr.data();
+          break;
+        }
+      }
+
+      if (contentType.is_null())
+      {
+        result[ScnTranslatorConstants::CONTENT.data()] = ScJson();
+        contentType = ScnTranslatorConstants::FORMAT_LARGE_TXT.data();
+      }
     }
   }
   else
