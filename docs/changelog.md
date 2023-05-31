@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Tests for repo-path parser and collector
 - Support for deprecated memory binaries build in 0.7.0 version
 - Synchronize processes that works with file memory and sc-dictionary
 - Get replacements in template result by variable address
@@ -62,6 +63,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- Call gwf-translator in sc-builder
+- Move repo path parser from Python to C++ in sc-builder
 - Unite ScTemplateGenResult and ScTemplateSearchResultItem into ScTemplateResultItem
 - Remove list to array translations in C API for fs-memory
 - Upload text and binary files in realtime by get API
@@ -83,6 +86,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- Trim paths in repo path
+- KB directory coping to prepare gwf and scsi sources 
 - Tests for template build and gen with params
 - Aliases checking in build by scs
 - Not use system identifiers of vars in sc-template-build
@@ -104,7 +109,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Removed
 
-- Remove rocksdb
+- Prepare kb step and `prepare_kb.py`
+- Rocksdb fs-memory
 - Garbage deletion agent
 
 ## [0.7.0-Rebirth] - 12.10.2022

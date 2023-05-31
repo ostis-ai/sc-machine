@@ -7,8 +7,9 @@
 #pragma once
 
 #include "sc-memory/sc_memory.hpp"
+#include "translator.hpp"
+#include "sc_repo_path_collector.hpp"
 
-#include <list>
 #include <string>
 
 struct BuilderParams
@@ -35,19 +36,16 @@ public:
   bool Run(BuilderParams const & params, sc_memory_params const & memoryParams);
 
 protected:
-  void ResolveOutputStructure();
-
-  bool ProcessFile(std::string const & filename);
-
-  void CollectFiles(std::string const & path);
-  void CollectFiles();
-
-  std::shared_ptr<class Translator> CreateTranslator(std::string const & fileExt);
-
-private:
-  std::list<std::string> m_files;
-
   BuilderParams m_params;
-  ScAddr m_outputStructure;
   std::unique_ptr<ScMemoryContext> m_ctx;
+  ScRepoPathCollector m_collector;
+  std::unordered_map<std::string, std::shared_ptr<Translator>> m_translators;
+
+  ScAddr ResolveOutputStructure();
+
+  bool BuildSources(ScRepoPathCollector::Sources const & buildSources, ScAddr const & outputStructure);
+
+  bool ProcessFile(std::string const & filename, ScAddr const & outputStructure);
+
+  void DumpStatistics();
 };

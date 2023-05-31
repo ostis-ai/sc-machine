@@ -4,10 +4,11 @@
  * (See accompanying file COPYING.MIT or copy at http://opensource.org/licenses/MIT)
  */
 
-#include <keynodes.generated.hpp>
 #include "utils.hpp"
+#include "sc-memory/sc_memory.hpp"
 
-class ScsLoader {
+class ScsLoader
+{
 public:
-    bool loadScsFile(ScMemoryContext & context, const std::string & filename);
+  bool loadScsFile(ScMemoryContext & context, const std::string & filename);
 };

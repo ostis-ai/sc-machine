@@ -1,9 +1,6 @@
 #!/bin/bash
 set -e # stop script execution if any errors are encountered
 
-# the path to the script directory. Used for relative paths
-SCRIPTS_PATH=$(cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd)
-
 # script help info
 function usage() {
     cat <<USAGE
@@ -16,7 +13,7 @@ function usage() {
         build <PATH>:       rebuilds KB from sources (provide absolute path to the source folder or repo.path file)
         serve <args>:       Starts sc-server. Arguments passed to this command will be redirected to sc-server binary. If no arguments were given, uses "-h 0.0.0.0" is given as default sc-server arguments. Add these settings yourself if you are planning to use custom arguments.
 
-        Setting REBUILD_KB environment variable inside the container will trigger a KB rebuild. Setting custom starting point for build_kb.py can be done using KB_PATH environment variable, "/kb" is used as a default KB_PATH.
+        Setting REBUILD_KB environment variable inside the container will trigger a KB rebuild. Setting custom starting point for sc-builder can be done using KB_PATH environment variable, "/kb" is used as a default KB_PATH.
         CONFIG_PATH and BINARY_PATH environment variables can provide the respective settings if the use of flags is undesirable.
 
 USAGE
@@ -25,10 +22,10 @@ USAGE
 
 function rebuild_kb() {
     if [ -e "$1" ]; then
-        python3 "$SCRIPTS_PATH/build_kb.py" -c "$CONFIG_PATH" -b "$BINARY_PATH" "$@"
+        "$BINARY_PATH"/sc-builder -f --clear -c "$CONFIG_PATH" -o kb.bin "$@"
     elif [ -e "$KB_PATH" ]; then
         echo "$KB_PATH is set as a KB path by the environment variable"
-        python3 "$SCRIPTS_PATH/build_kb.py" -c "$CONFIG_PATH" -b "$BINARY_PATH" "$KB_PATH"
+        "$BINARY_PATH"/sc-builder -f --clear -c "$CONFIG_PATH" -i "$KB_PATH" -o kb.bin
     else
         echo "Invalid KB source path provided."
         exit 1

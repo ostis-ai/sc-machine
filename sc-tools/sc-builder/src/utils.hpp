@@ -9,6 +9,7 @@
 #include "sc-memory/sc_debug.hpp"
 
 #define PARSE_ERROR(source, line, description) \
-{ \
-  SC_THROW_EXCEPTION(utils::ExceptionParseError, "Error: '" << description << "' in " << source << " at line " << line); \
-}
+  { \
+    SC_THROW_EXCEPTION( \
+        utils::ExceptionParseError, "Error: '" << description << "' in " << source << " at line " << line); \
+  }

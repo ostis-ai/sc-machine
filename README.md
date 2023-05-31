@@ -81,7 +81,7 @@ SC-machine is a core of any OSTIS-system, so you can use a reference system name
 
   ```sh
   #build kb
-  python3 scripts/build_kb.py -c ./sc-machine.ini -b bin <path to kb folder with SCs and SCg sources (or path to repo.path file)>
+  ./bin/sc-builder -f --clear -c ./sc-machine.ini -i <path to kb folder with SCs and SCg sources (or path to repo.path file)> -o <output path>
   #launch sc-server
   ./bin/sc-server -c ./sc-machine.ini
   ```

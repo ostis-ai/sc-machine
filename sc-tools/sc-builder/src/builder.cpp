@@ -5,68 +5,12 @@
  */
 
 #include "builder.hpp"
-#include "keynodes.hpp"
 #include "scs_translator.hpp"
+#include "gwf_translator.hpp"
 
-#include <boost/filesystem.hpp>
 #include <memory>
-#include <boost/algorithm/string.hpp>
 
 #include <fstream>
-#include <unordered_set>
-
-namespace impl
-{
-std::unordered_set<std::string> gSupportedFormats = {"scs", "scsi"};
-
-std::string NormalizeExt(std::string ext)
-{
-  utils::StringUtils::ToLowerCase(ext);
-  return ext;
-}
-
-bool IsSupportedFormat(std::string const & fileExt)
-{
-  return gSupportedFormats.find(NormalizeExt(fileExt)) != gSupportedFormats.end();
-}
-
-class ExtParser
-{
-public:
-  void operator()(std::string const & file_path)
-  {
-    if (!file_path.empty())
-    {
-      std::ifstream infile(file_path);
-      std::string line;
-      while (std::getline(infile, line))
-      {
-        if (line.empty())
-          continue;
-        m_names.emplace_back(line);
-      }
-
-      m_params.clear();
-      m_params.reserve(m_names.size() + 1);
-      for (auto const & v : m_names)
-        m_params.push_back(v.c_str());
-      m_params.push_back(nullptr);
-    }
-
-    m_params.push_back(nullptr);
-  }
-
-  std::vector<const sc_char *> & GetParams()
-  {
-    return m_params;
-  }
-
-private:
-  std::vector<const sc_char *> m_params;
-  std::vector<std::string> m_names;
-};
-
-}  // namespace impl
 
 Builder::Builder() = default;
 
@@ -74,48 +18,55 @@ bool Builder::Run(BuilderParams const & params, sc_memory_params const & memoryP
 {
   m_params = params;
 
-  CollectFiles();
-
-  // initialize sc-memory
-  bool noErrors = true;
-  impl::ExtParser extParser;
-  extParser(m_params.m_enabledExtPath);
-
   ScMemory::Initialize(memoryParams);
-  m_ctx = std::make_unique<ScMemoryContext>(sc_access_lvl_make_min, "Builder");
 
-  Keynodes::InitGlobal();
-
-  std::cout << "Build knowledge base from sources... " << std::endl;
-
-  if (m_params.m_resultStructureUpload)
+  ScRepoPathCollector::Sources excludedSources;
+  ScRepoPathCollector::Sources checkSources;
+  if (m_collector.IsRepoPathFile(m_params.m_inputPath))
   {
-    ResolveOutputStructure();
+    ScConsole::PrintLine() << ScConsole::Color::Blue << "Parse repo path file... ";
+    m_collector.ParseRepoPath(m_params.m_inputPath, excludedSources, checkSources);
   }
+  ScRepoPathCollector::Sources buildSources;
+  ScConsole::PrintLine() << ScConsole::Color::Blue << "Collect all sources... ";
+  m_collector.CollectBuildSources(m_params.m_inputPath, excludedSources, checkSources, buildSources);
+
+  m_ctx = std::make_unique<ScMemoryContext>(sc_access_lvl_make_min, "Builder");
+  ScAddr const & outputStructure = m_params.m_resultStructureUpload ? ResolveOutputStructure() : ScAddr::Empty;
+
+  ScConsole::PrintLine() << ScConsole::Color::Blue << "Build knowledge base from sources... ";
+  bool const status = BuildSources(buildSources, outputStructure);
+
+  m_ctx.reset();
+  ScMemory::Shutdown(true);
+
+  return status;
+}
+
+bool Builder::BuildSources(ScRepoPathCollector::Sources const & buildSources, ScAddr const & outputStructure)
+{
+  m_translators = {{"scs", std::make_shared<SCsTranslator>(*m_ctx)}, {"gwf", std::make_shared<GWFTranslator>(*m_ctx)}};
 
   // process founded files
+  bool status = true;
+
   size_t done = 0;
-  for (auto const & fileName : m_files)
+  for (auto const & fileName : buildSources)
   {
-    ScConsole::SetColor(ScConsole::Color::White);
-    std::cout << "[" << (++done) << "/" << m_files.size() << "]: ";
-    ScConsole::SetColor(ScConsole::Color::Grey);
-    std::cout << fileName << " - ";
+    ScConsole::Print() << ScConsole::Color::LightBlue << "[" << (++done) << "/" << buildSources.size() << "]: ";
+    ScConsole::Print() << ScConsole::Color::Grey << fileName << " - ";
 
     try
     {
-      ProcessFile(fileName);
+      ProcessFile(fileName, outputStructure);
 
-      ScConsole::SetColor(ScConsole::Color::Green);
-      std::cout << "ok" << std::endl;
+      ScConsole::PrintLine() << ScConsole::Color::Green << "ok";
     }
     catch (utils::ScException const & e)
     {
-      ScConsole::SetColor(ScConsole::Color::Red);
-      std::cout << "failed" << std::endl;
-      ScConsole::ResetColor();
-      std::cout << e.Message() << std::endl;
-      noErrors = false;
+      ScConsole::PrintLine() << ScConsole::Color::Red << "failed";
+      ScConsole::PrintLine() << ScConsole::Color::Red << e.Message();
+      status = false;
       break;
     }
   }
@@ -123,43 +74,22 @@ bool Builder::Run(BuilderParams const & params, sc_memory_params const & memoryP
   ScConsole::PrintLine() << ScConsole::Color::Green << "Clean state...";
   Translator::Clean(*m_ctx);
 
-  if (noErrors)
-  {
-    // print statistics
-    ScMemoryContext::Stat const stats = m_ctx->CalculateStat();
+  if (status)
+    DumpStatistics();
 
-    auto const allCount = stats.GetAllNum();
-
-    auto const printLine = [](std::string const & name, uint32_t num, float percent) {
-      ScConsole::PrintLine() << ScConsole::Color::LightBlue << name << ": " << ScConsole::Color::White << num << "("
-                             << percent << "%)";
-    };
-
-    ScConsole::PrintLine() << ScConsole::Color::White << "Statistics";
-    printLine("Nodes", stats.m_nodesNum, float(stats.m_nodesNum) / float(allCount) * 100);
-    printLine("Edges", stats.m_edgesNum, float(stats.m_edgesNum) / float(allCount) * 100);
-    printLine("Links", stats.m_linksNum, float(stats.m_linksNum) / float(allCount) * 100);
-    ScConsole::PrintLine() << ScConsole::Color::LightBlue << "Total: " << ScConsole::Color::White << stats.GetAllNum();
-  }
-
-  m_ctx.reset();
-
-  ScMemory::Shutdown(true);
-
-  return noErrors;
+  return status;
 }
 
-void Builder::ResolveOutputStructure()
+ScAddr Builder::ResolveOutputStructure()
 {
   ScSystemIdentifierFiver fiver;
   m_ctx->HelperResolveSystemIdtf(m_params.m_resultStructureSystemIdtf, ScType::NodeConstStruct, fiver);
-  m_outputStructure = fiver.addr1;
+  ScAddr const & outputStructure = fiver.addr1;
 
-  auto const & AddElementToStructure = [this](ScAddr const & addr)
-  {
-    if (!m_ctx->HelperCheckEdge(m_outputStructure, addr, ScType::EdgeAccessConstPosPerm))
+  auto const & AddElementToStructure = [this, &outputStructure](ScAddr const & addr) {
+    if (!m_ctx->HelperCheckEdge(outputStructure, addr, ScType::EdgeAccessConstPosPerm))
     {
-      m_ctx->CreateEdge(ScType::EdgeAccessConstPosPerm, m_outputStructure, addr);
+      m_ctx->CreateEdge(ScType::EdgeAccessConstPosPerm, outputStructure, addr);
     }
   };
 
@@ -167,119 +97,41 @@ void Builder::ResolveOutputStructure()
   AddElementToStructure(fiver.addr3);
   AddElementToStructure(fiver.addr4);
   AddElementToStructure(fiver.addr5);
+
+  return outputStructure;
 }
 
-bool Builder::ProcessFile(std::string const & fileName)
+bool Builder::ProcessFile(std::string const & fileName, ScAddr const & outputStructure)
 {
-  // get file extension
-  std::string const ext = utils::StringUtils::GetFileExtension(fileName);
-  if (ext.empty())
-  {
-    SC_THROW_EXCEPTION(utils::ExceptionInvalidState, "Can't determine file extension " << fileName);
-
-    return false;
-  }
-
-  std::shared_ptr<Translator> translator = CreateTranslator(ext);
-  if (!translator)
-  {
-    SC_THROW_EXCEPTION(utils::ExceptionInvalidState, "Can't create translator for a file " << fileName);
-
-    return false;
-  }
-
   Translator::Params translateParams;
   translateParams.m_fileName = fileName;
   translateParams.m_autoFormatInfo = m_params.m_autoFormatInfo;
-  translateParams.m_resultStructureUpload = m_params.m_resultStructureUpload;
-  translateParams.m_outputStructure = m_outputStructure;
+  translateParams.m_outputStructure = outputStructure;
 
-  return translator->Translate(translateParams);
+  std::string const & fileExt = m_collector.GetFileExtension(fileName);
+  auto const & it = m_translators.find(fileExt);
+  if (it == m_translators.cend())
+    SC_THROW_EXCEPTION(
+        utils::ExceptionInvalidState, "Not found translators for sources with extension \"" << fileExt << "\"");
+
+  return it->second->Translate(translateParams);
 }
 
-void Builder::CollectFiles(std::string const & path)
+void Builder::DumpStatistics()
 {
-  boost::filesystem::recursive_directory_iterator itEnd, it(path);
-  while (it != itEnd)
-  {
-    if (!boost::filesystem::is_directory(*it))
-    {
-      boost::filesystem::path path = *it;
-      std::string const fileName = path.normalize().string();
-      std::string ext = utils::StringUtils::GetFileExtension(fileName);
-      utils::StringUtils::ToLowerCase(ext);
+  // print statistics
+  ScMemoryContext::Stat const stats = m_ctx->CalculateStat();
 
-      if (impl::IsSupportedFormat(ext))
-        m_files.push_back(fileName);
-    }
+  auto const allCount = stats.GetAllNum();
 
-    try
-    {
-      ++it;
-    }
-    catch (std::exception & ex)
-    {
-      std::cout << ex.what() << std::endl;
-      it.no_push();
-      try
-      {
-        ++it;
-      }
-      catch (...)
-      {
-        std::cout << ex.what() << std::endl;
-        return;
-      }
-    }
-  }
-}
+  auto const printLine = [](std::string const & name, uint32_t num, float percent) {
+    ScConsole::PrintLine() << ScConsole::Color::LightBlue << name << ": " << ScConsole::Color::White << num << "("
+                           << percent << "%)";
+  };
 
-void Builder::CollectFiles()
-{
-  m_files.clear();
-  if (boost::filesystem::is_directory(m_params.m_inputPath))
-  {
-    CollectFiles(m_params.m_inputPath);
-  }
-  else if (boost::filesystem::is_regular_file(m_params.m_inputPath))
-  {
-    std::ifstream infile;
-    infile.open(m_params.m_inputPath.c_str());
-    if (infile.is_open())
-    {
-      std::string path;
-      while (std::getline(infile, path))
-      {
-        boost::trim(path);
-        if (utils::StringUtils::StartsWith(path, "#", true))
-          continue;
-
-        if (!path.empty())
-        {
-          if (boost::filesystem::is_directory(path))
-          {
-            CollectFiles(path);
-          }
-          else
-          {
-            SC_THROW_EXCEPTION(utils::ExceptionInvalidState, path << " isn't a directory");
-          }
-        }
-      }
-    }
-    else
-    {
-      SC_THROW_EXCEPTION(utils::ExceptionInvalidState, "Can't open file: " << m_params.m_inputPath);
-    }
-  }
-}
-
-std::shared_ptr<Translator> Builder::CreateTranslator(std::string const & fileExt)
-{
-  std::string const ext = impl::NormalizeExt(fileExt);
-
-  if (ext == "scs" || ext == "scsi")
-    return std::make_shared<SCsTranslator>(*m_ctx);
-
-  return {};
+  ScConsole::PrintLine() << ScConsole::Color::White << "Statistics";
+  printLine("Nodes", stats.m_nodesNum, float(stats.m_nodesNum) / float(allCount) * 100);
+  printLine("Edges", stats.m_edgesNum, float(stats.m_edgesNum) / float(allCount) * 100);
+  printLine("Links", stats.m_linksNum, float(stats.m_linksNum) / float(allCount) * 100);
+  ScConsole::PrintLine() << ScConsole::Color::LightBlue << "Total: " << ScConsole::Color::White << stats.GetAllNum();
 }

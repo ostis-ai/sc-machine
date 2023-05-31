@@ -11,11 +11,11 @@
 
 bool ScsLoader::loadScsFile(ScMemoryContext &context, const std::string &filename)
 {
-    SCsTranslator translator = SCsTranslator(context);
+  SCsTranslator translator = SCsTranslator(context);
 
-    Translator::Params translateParams;
-    translateParams.m_fileName = filename;
-    translateParams.m_autoFormatInfo = true;
+  Translator::Params translateParams;
+  translateParams.m_fileName = filename;
+  translateParams.m_autoFormatInfo = true;
 
-    return translator.Translate(translateParams);
+  return translator.Translate(translateParams);
 }

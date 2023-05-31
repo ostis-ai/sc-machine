@@ -13,19 +13,16 @@
 class Translator
 {
 public:
-
   struct Params
   {
     //! Name of file to translate
     std::string m_fileName;
     //! Flag to generate format information based on file extensions
     bool m_autoFormatInfo;
-    //! Flag to create result structure
-    bool m_resultStructureUpload;
     //! output structure
     ScAddr m_outputStructure;
   };
-      
+
   explicit Translator(class ScMemoryContext & context);
   virtual ~Translator() = default;
 
@@ -41,16 +38,8 @@ public:
   static void Clean(ScMemoryContext & ctx);
 
 protected:
-  /*! Generates format relation in sc-memory by file extension
-   * @param addr sc-addr of sc-link to create format relation
-   * @param ext File extension
-   */
-  void GenerateFormatInfo(ScAddr const & addr, std::string const & ext);
+  static void GetFileContent(std::string const & fileName, std::string & outContent);
 
-  void GetFileContent(std::string const & fileName, std::string & outContent);
-
-protected:
   //! Pointer to memory context
   class ScMemoryContext & m_ctx;
 };
-

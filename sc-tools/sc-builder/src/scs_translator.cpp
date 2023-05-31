@@ -9,7 +9,6 @@
 #include "sc-memory/sc_memory.hpp"
 #include "sc-memory/sc_scs_helper.hpp"
 
-#include "sc-memory/utils/sc_base64.hpp"
 #include "sc-core/sc-store/sc-container/sc-string/sc_string.h"
 
 #include <regex>
@@ -34,30 +33,25 @@ public:
     std::regex const pattern("(\\w+):(\\/{2,3})(.+)");
 
     std::smatch match;
+    if (!std::regex_match(fileURL, match, pattern))
+      SC_THROW_EXCEPTION(utils::ExceptionParseError, "Can't process file content by url " << fileURL);
 
-    if (std::regex_match(fileURL, match, pattern))
+    std::string const protocol = match[1];
+    bool const isRelative = (match[2] == "//");
+
+    std::string fullPath;
+    if (isRelative)
     {
-      std::string const protocol = match[1];
-      bool const isRelative = (match[2] == "//");
-
-      std::string fullPath;
-      if (isRelative)
-      {
-        std::filesystem::path parentFullPath = std::filesystem::path(m_parentPath).parent_path();
-        fullPath = std::filesystem::absolute(parentFullPath / std::string(match[3]));
-      }
-      else
-        fullPath = match[3];
-
-      std::string const extension = fullPath.substr(fullPath.rfind('.'));
-      sc_char * copied;
-      sc_str_cpy(copied, fullPath.c_str(), fullPath.size());
-      return std::make_shared<ScStream>(copied, fullPath.size(), SC_STREAM_FLAG_READ, SC_TRUE);
+      std::filesystem::path parentFullPath = std::filesystem::path(m_parentPath).parent_path();
+      fullPath = std::filesystem::absolute(parentFullPath / std::string(match[3]));
     }
     else
-    {
-      SC_THROW_EXCEPTION(utils::ExceptionParseError, "Can't process file content by url " << fileURL);
-    }
+      fullPath = match[3];
+
+    std::string const extension = utils::StringUtils::GetFileExtension(fullPath);
+    sc_char * copied;
+    sc_str_cpy(copied, fullPath.c_str(), fullPath.size());
+    return std::make_shared<ScStream>(copied, fullPath.size(), SC_STREAM_FLAG_READ, SC_TRUE);
   }
 
 private:
@@ -79,9 +73,7 @@ bool SCsTranslator::TranslateImpl(Params const & params)
   SCsHelper scs(m_ctx, std::make_shared<impl::FileProvider>(params.m_fileName));
 
   if (!scs.GenerateBySCsText(data, params.m_outputStructure))
-  {
     SC_THROW_EXCEPTION(utils::ExceptionParseError, scs.GetLastError());
-  }
 
   return true;
 }

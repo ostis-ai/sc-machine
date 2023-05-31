@@ -1,3 +1,8 @@
+configure_file(
+    "${CMAKE_CURRENT_LIST_DIR}/src/builder_defines.hpp.in"
+    "${CMAKE_CURRENT_LIST_DIR}/src/builder_defines.hpp"
+)
+
 file(GLOB_RECURSE SOURCES "src/*.cpp" "src/*.h" "src/*.hpp")
 
 list(REMOVE_ITEM SOURCES
@@ -15,10 +20,10 @@ target_link_libraries(sc-builder sc-builder-lib sc-config-utils)
 
 if(${SC_CLANG_FORMAT_CODE})
     target_clangformat_setup(sc-builder)
+    target_clangformat_setup(sc-builder-lib)
 endif()
 
 install_targets("/bin" sc-builder sc-builder-lib)
-sc_codegen(sc-builder-lib ${SC_BUILDER_SRC}/src)
 
 if(${SC_BUILD_TESTS})
     include(tests/tests.cmake)
