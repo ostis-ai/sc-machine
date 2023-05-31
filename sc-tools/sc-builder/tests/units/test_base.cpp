@@ -100,4 +100,8 @@ TEST_F(ScBuilderTest, TemplateWithVarTriplesSmall3)
   EXPECT_EQ(searchResult[1]["_message"], messageAddr);
   EXPECT_EQ(searchResult[0][varAddr], messageAddr);
   EXPECT_EQ(searchResult[1][varAddr], messageAddr);
+
+  auto const & replacements = searchResult.GetReplacements();
+  EXPECT_EQ(replacements.count("_message"), 1u);
+  EXPECT_EQ(replacements.count(std::to_string(varAddr.Hash())), 1u);
 }
