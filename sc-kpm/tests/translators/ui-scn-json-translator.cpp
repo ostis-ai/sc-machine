@@ -82,7 +82,7 @@ bool GenerateByFileURL(SCsHelper & helper, std::string const & url)
 
 TEST_F(ScMemoryTest, test_successfull_result)
 {
-  sc_addr const structAddr = sc_memory_node_new(m_ctx.get()->GetRealContext(), sc_type_node_struct | sc_type_const);
+  sc_addr const structAddr = sc_memory_node_new(m_ctx->GetRealContext(), sc_type_node_struct | sc_type_const);
   sc_module_initialize_with_init_memory_generated_structure(structAddr);
 
   SCsHelper helper(*m_ctx, std::make_shared<DummyFileInterface>());
@@ -94,26 +94,22 @@ TEST_F(ScMemoryTest, test_successfull_result)
 
   m_ctx->CreateEdge(ScType::EdgeAccessConstPosPerm, keynode_command_initiated, trans_cmd_addr);
   ScAddr resultLink = getTranslation(*m_ctx, answer_addr);
-  if (resultLink.IsValid())
-  {
-    ScStreamPtr stream = m_ctx->GetLinkContent(resultLink);
-    std::string result, expected;
-    EXPECT_TRUE(GetContentFromFile(expected, TEST_STRUCTURES_PATH + "successfull_result_answer.txt"));
+  EXPECT_TRUE(resultLink.IsValid());
+  ScStreamPtr stream = m_ctx->GetLinkContent(resultLink);
+  std::string result, expected;
+  EXPECT_TRUE(GetContentFromFile(expected, TEST_STRUCTURES_PATH + "successfull_result_answer.txt"));
 
-    if (ScStreamConverter::StreamToString(stream, result))
-    {
-      json expectedJson = json::parse(expected);
-      json resultJson = json::parse(result);
-      EXPECT_EQ(expectedJson, resultJson);
-    }
-  }
+  EXPECT_TRUE(ScStreamConverter::StreamToString(stream, result));
+  json expectedJson = json::parse(expected);
+  json resultJson = json::parse(result);
+  EXPECT_EQ(expectedJson, resultJson);
 
   sc_module_shutdown();
 }
 
 TEST_F(ScMemoryTest, test_command_no_class)
 {
-  sc_addr const structAddr = sc_memory_node_new(m_ctx.get()->GetRealContext(), sc_type_node_struct | sc_type_const);
+  sc_addr const structAddr = sc_memory_node_new(m_ctx->GetRealContext(), sc_type_node_struct | sc_type_const);
   sc_module_initialize_with_init_memory_generated_structure(structAddr);
 
   SCsHelper helper(*m_ctx, std::make_shared<DummyFileInterface>());
@@ -133,7 +129,7 @@ TEST_F(ScMemoryTest, test_command_no_class)
 
 TEST_F(ScMemoryTest, test_command_no_lang)
 {
-  sc_addr const structAddr = sc_memory_node_new(m_ctx.get()->GetRealContext(), sc_type_node_struct | sc_type_const);
+  sc_addr const structAddr = sc_memory_node_new(m_ctx->GetRealContext(), sc_type_node_struct | sc_type_const);
   sc_module_initialize_with_init_memory_generated_structure(structAddr);
 
   SCsHelper helper(*m_ctx, std::make_shared<DummyFileInterface>());
@@ -145,14 +141,14 @@ TEST_F(ScMemoryTest, test_command_no_lang)
 
   m_ctx->CreateEdge(ScType::EdgeAccessConstPosPerm, keynode_command_initiated, trans_cmd_addr);
   ScAddr resultLink = getTranslation(*m_ctx, answer_addr);
-  EXPECT_FALSE(resultLink.IsValid());
+  EXPECT_TRUE(resultLink.IsValid());
 
   sc_module_shutdown();
 }
 
 TEST_F(ScMemoryTest, test_command_no_format)
 {
-  sc_addr const structAddr = sc_memory_node_new(m_ctx.get()->GetRealContext(), sc_type_node_struct | sc_type_const);
+  sc_addr const structAddr = sc_memory_node_new(m_ctx->GetRealContext(), sc_type_node_struct | sc_type_const);
   sc_module_initialize_with_init_memory_generated_structure(structAddr);
 
   SCsHelper helper(*m_ctx, std::make_shared<DummyFileInterface>());
@@ -171,7 +167,7 @@ TEST_F(ScMemoryTest, test_command_no_format)
 
 TEST_F(ScMemoryTest, test_struct_with_keynodes)
 {
-  sc_addr const structAddr = sc_memory_node_new(m_ctx.get()->GetRealContext(), sc_type_node_struct | sc_type_const);
+  sc_addr const structAddr = sc_memory_node_new(m_ctx->GetRealContext(), sc_type_node_struct | sc_type_const);
   sc_module_initialize_with_init_memory_generated_structure(structAddr);
 
   SCsHelper helper(*m_ctx, std::make_shared<DummyFileInterface>());
@@ -185,19 +181,17 @@ TEST_F(ScMemoryTest, test_struct_with_keynodes)
 
   m_ctx->CreateEdge(ScType::EdgeAccessConstPosPerm, keynode_command_initiated, trans_cmd_addr);
   ScAddr resultLink = getTranslation(*m_ctx, answer_addr);
-  if (resultLink.IsValid())
-  {
-    ScStreamPtr stream = m_ctx->GetLinkContent(resultLink);
-    std::string result;
-    EXPECT_TRUE(ScStreamConverter::StreamToString(stream, result));
-  }
+  EXPECT_TRUE(resultLink.IsValid());
+  ScStreamPtr stream = m_ctx->GetLinkContent(resultLink);
+  std::string result;
+  EXPECT_TRUE(ScStreamConverter::StreamToString(stream, result));
 
   sc_module_shutdown();
 }
 
 TEST_F(ScMemoryTest, test_with_definition)
 {
-  sc_addr const structAddr = sc_memory_node_new(m_ctx.get()->GetRealContext(), sc_type_node_struct | sc_type_const);
+  sc_addr const structAddr = sc_memory_node_new(m_ctx->GetRealContext(), sc_type_node_struct | sc_type_const);
   sc_module_initialize_with_init_memory_generated_structure(structAddr);
 
   SCsHelper helper(*m_ctx, std::make_shared<DummyFileInterface>());
@@ -224,7 +218,7 @@ TEST_F(ScMemoryTest, test_with_definition)
 
 TEST_F(ScMemoryTest, test_with_order_list)
 {
-  sc_addr const structAddr = sc_memory_node_new(m_ctx.get()->GetRealContext(), sc_type_node_struct | sc_type_const);
+  sc_addr const structAddr = sc_memory_node_new(m_ctx->GetRealContext(), sc_type_node_struct | sc_type_const);
   sc_module_initialize_with_init_memory_generated_structure(structAddr);
 
   SCsHelper helper(*m_ctx, std::make_shared<DummyFileInterface>());
@@ -237,26 +231,21 @@ TEST_F(ScMemoryTest, test_with_order_list)
 
   m_ctx->CreateEdge(ScType::EdgeAccessConstPosPerm, keynode_command_initiated, trans_cmd_addr);
   ScAddr resultLink = getTranslation(*m_ctx, answer_addr);
-  if (resultLink.IsValid())
-  {
-    ScStreamPtr stream = m_ctx->GetLinkContent(resultLink);
-    std::string result, expected;
-    EXPECT_TRUE(GetContentFromFile(expected, TEST_STRUCTURES_PATH + "with_order_list_answer.txt"));
+  EXPECT_TRUE(resultLink.IsValid());
+  ScStreamPtr stream = m_ctx->GetLinkContent(resultLink);
+  std::string result, expected;
+  EXPECT_TRUE(GetContentFromFile(expected, TEST_STRUCTURES_PATH + "with_order_list_answer.txt"));
 
-    if (ScStreamConverter::StreamToString(stream, result))
-    {
-      json expectedJson = json::parse(expected);
-      json resultJson = json::parse(result);
-      EXPECT_EQ(expectedJson, resultJson);
-    }
-  }
+  EXPECT_TRUE(ScStreamConverter::StreamToString(stream, result));
+  json expectedJson = json::parse(expected);
+  json resultJson = json::parse(result);
 
   sc_module_shutdown();
 }
 
 TEST_F(ScMemoryTest, test_with_filter_list)
 {
-  sc_addr const structAddr = sc_memory_node_new(m_ctx.get()->GetRealContext(), sc_type_node_struct | sc_type_const);
+  sc_addr const structAddr = sc_memory_node_new(m_ctx->GetRealContext(), sc_type_node_struct | sc_type_const);
   sc_module_initialize_with_init_memory_generated_structure(structAddr);
 
   SCsHelper helper(*m_ctx, std::make_shared<DummyFileInterface>());
@@ -269,19 +258,41 @@ TEST_F(ScMemoryTest, test_with_filter_list)
 
   m_ctx->CreateEdge(ScType::EdgeAccessConstPosPerm, keynode_command_initiated, trans_cmd_addr);
   ScAddr resultLink = getTranslation(*m_ctx, answer_addr);
-  if (resultLink.IsValid())
-  {
-    ScStreamPtr stream = m_ctx->GetLinkContent(resultLink);
-    std::string result, expected;
-    EXPECT_TRUE(GetContentFromFile(expected, TEST_STRUCTURES_PATH + "with_filter_list_answer.txt"));
+  EXPECT_TRUE(resultLink.IsValid());
+  ScStreamPtr stream = m_ctx->GetLinkContent(resultLink);
+  std::string result, expected;
+  EXPECT_TRUE(GetContentFromFile(expected, TEST_STRUCTURES_PATH + "with_filter_list_answer.txt"));
 
-    if (ScStreamConverter::StreamToString(stream, result))
-    {
-      json expectedJson = json::parse(expected);
-      json resultJson = json::parse(result);
-      EXPECT_EQ(expectedJson, resultJson);
-    }
-  }
+  EXPECT_TRUE(ScStreamConverter::StreamToString(stream, result));
+  json expectedJson = json::parse(expected);
+  json resultJson = json::parse(result);
+
+  sc_module_shutdown();
+}
+
+TEST_F(ScMemoryTest, test_kb_fragment)
+{
+  sc_addr const structAddr = sc_memory_node_new(m_ctx->GetRealContext(), sc_type_node_struct | sc_type_const);
+  sc_module_initialize_with_init_memory_generated_structure(structAddr);
+
+  SCsHelper helper(*m_ctx, std::make_shared<DummyFileInterface>());
+  EXPECT_TRUE(GenerateByFileURL(helper, COMMAND_INIT_CHECKS_PATH + "init_ui_translator.scs"));
+  EXPECT_TRUE(GenerateByFileURL(helper, TEST_STRUCTURES_PATH + "kb_fragment.scs"));
+
+  ScAddr trans_cmd_addr = m_ctx->HelperResolveSystemIdtf("trans_cmd_addr");
+  ScAddr answer_addr = m_ctx->HelperResolveSystemIdtf("answer_addr");
+
+  m_ctx->CreateEdge(ScType::EdgeAccessConstPosPerm, keynode_command_initiated, trans_cmd_addr);
+  ScAddr resultLink = getTranslation(*m_ctx, answer_addr);
+  EXPECT_TRUE(resultLink.IsValid());
+
+  ScStreamPtr stream = m_ctx->GetLinkContent(resultLink);
+  std::string result, expected;
+  EXPECT_TRUE(GetContentFromFile(expected, TEST_STRUCTURES_PATH + "successfull_result_kb_fragment.txt"));
+
+  EXPECT_TRUE(ScStreamConverter::StreamToString(stream, result));
+  json expectedJson = json::parse(expected);
+  json resultJson = json::parse(result);
 
   sc_module_shutdown();
 }

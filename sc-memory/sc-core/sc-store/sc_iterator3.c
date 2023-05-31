@@ -202,7 +202,7 @@ sc_bool _sc_iterator_ref_element(const sc_memory_context * ctx, sc_addr addr)
   sc_element * el = null_ptr;
   sc_uint16 a = 0;
 
-  while (a < 1000)
+  while (a < 100)
   {
     STORAGE_CHECK_CALL(sc_storage_element_lock(addr, &el));
     if (el != null_ptr && sc_element_is_request_deletion(el) == SC_FALSE && el->flags.type != 0)
@@ -214,7 +214,7 @@ sc_bool _sc_iterator_ref_element(const sc_memory_context * ctx, sc_addr addr)
     STORAGE_CHECK_CALL(sc_storage_element_unlock(addr));
 
     a++;
-    g_usleep(1000);
+    g_usleep(10);
   }
 
   return SC_FALSE;

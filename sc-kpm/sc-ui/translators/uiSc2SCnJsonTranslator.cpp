@@ -68,7 +68,26 @@ void uiSc2SCnJsonTranslator::runImpl()
     sc_iterator3 * it3 =
         sc_iterator3_f_a_a_new(s_default_ctx, sc_iterator5_value(it5, 0), sc_type_arc_pos_const_perm, 0);
     while (sc_iterator3_next(it3) == SC_TRUE)
-      mKeywordsList.insert(sc_iterator3_value(it3, 2));
+    {
+      sc_addr const keyword = sc_iterator3_value(it3, 2);
+      mKeywordsList.insert(keyword);
+
+      if (SC_ADDR_IS_EQUAL(mInputConstructionAddr, keyword))
+      {
+        sc_iterator3 * keywordEdgesIt3 = sc_iterator3_f_a_a_new(s_default_ctx, keyword, sc_type_arc_pos_const_perm, 0);
+        while (sc_iterator3_next(keywordEdgesIt3))
+        {
+          sc_addr const edge = sc_iterator3_value(keywordEdgesIt3, 1);
+          sc_type type;
+          if (sc_memory_get_element_type(s_default_ctx, edge, &type) != SC_RESULT_OK)
+            continue;
+
+          if (mEdges.count(edge) == 0)
+            mEdges.insert({edge, type});
+        }
+      }
+    }
+
     sc_iterator3_free(it3);
   }
   sc_iterator5_free(it5);
@@ -229,42 +248,43 @@ void uiSc2SCnJsonTranslator::ParseScnJsonArc(ScStructureElementInfo * elInfo, Sc
 
 void uiSc2SCnJsonTranslator::ParseScnJsonLink(ScStructureElementInfo * elInfo, ScJson & result)
 {
-  sc_addr format;
   String content;
   // get format of link
   ScJson & contentType = result[ScnTranslatorConstants::CONTENT_TYPE.data()];
-  for (const std::string_view & formatStr : ScnTranslatorConstants::formats)
-  {
-    sc_helper_resolve_system_identifier(s_default_ctx, formatStr.data(), &format);
-    if (sc_helper_check_arc(s_default_ctx, elInfo->addr, format, sc_type_arc_common | sc_type_const) == SC_TRUE)
-    {
-      contentType = formatStr.data();
-      break;
-    }
-  }
   // if the link has no format, then we get the content of the link
-  if (contentType.is_null())
+  sc_stream * stream;
+  sc_memory_get_link_content(s_default_ctx, elInfo->addr, &stream);
+  if (stream != nullptr && ScStreamConverter::StreamToString(std::make_shared<ScStream>(stream), content))
   {
-    sc_stream * stream;
-    sc_memory_get_link_content(s_default_ctx, elInfo->addr, &stream);
-    if (stream != nullptr && ScStreamConverter::StreamToString(std::make_shared<ScStream>(stream), content))
+    if (content.size() < ScnTranslatorConstants::FORMAT_LARGE_TXT_SIZE)
     {
-      if (content.size() < ScnTranslatorConstants::FORMAT_LARGE_TXT_SIZE)
+      result[ScnTranslatorConstants::CONTENT.data()] = content;
+      contentType = ScnTranslatorConstants::FORMAT_TXT.data();
+    }
+    else
+    {
+      sc_addr format;
+      for (std::string_view const & formatStr : ScnTranslatorConstants::formats)
       {
-        result[ScnTranslatorConstants::CONTENT.data()] = content;
-        contentType = ScnTranslatorConstants::FORMAT_TXT.data();
+        sc_helper_resolve_system_identifier(s_default_ctx, formatStr.data(), &format);
+        if (sc_helper_check_arc(s_default_ctx, elInfo->addr, format, sc_type_arc_common | sc_type_const) == SC_TRUE)
+        {
+          contentType = formatStr.data();
+          break;
+        }
       }
-      else
+
+      if (contentType.is_null())
       {
         result[ScnTranslatorConstants::CONTENT.data()] = ScJson();
         contentType = ScnTranslatorConstants::FORMAT_LARGE_TXT.data();
       }
     }
-    else
-    {
-      result[ScnTranslatorConstants::CONTENT.data()] = ScJson();
-      contentType = ScnTranslatorConstants::FORMAT_TXT.data();
-    }
+  }
+  else
+  {
+    result[ScnTranslatorConstants::CONTENT.data()] = ScJson();
+    contentType = ScnTranslatorConstants::FORMAT_TXT.data();
   }
 }
 
