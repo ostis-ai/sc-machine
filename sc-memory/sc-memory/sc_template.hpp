@@ -416,29 +416,31 @@ class ScTemplateResultItem
 public:
   ScTemplateResultItem()
     : m_context(nullptr)
-    , m_replacementConstruction(nullptr)
-    , m_templateItemsNamesToReplacementItemPositions(nullptr)
   {
   }
 
   ScTemplateResultItem(
       sc_memory_context const * context,
-      ScAddrVector const * results,
-      ScTemplate::ScTemplateItemsToReplacementsItemsPositions const * replacements)
+      ScAddrVector results,
+      ScTemplate::ScTemplateItemsToReplacementsItemsPositions replacements)
     : m_context(context)
-    , m_replacementConstruction(const_cast<ScAddrVector *>(results))
-    , m_templateItemsNamesToReplacementItemPositions(replacements)
+    , m_replacementConstruction(std::move(results))
+    , m_templateItemsNamesToReplacementItemPositions(std::move(replacements))
   {
   }
 
   ScTemplateResultItem(
       sc_memory_context const * context,
-      ScTemplate::ScTemplateItemsToReplacementsItemsPositions const * replacements)
+      ScTemplate::ScTemplateItemsToReplacementsItemsPositions replacements)
     : m_context(context)
-    , m_replacementConstruction(new ScAddrVector())
-    , m_templateItemsNamesToReplacementItemPositions(replacements)
+    , m_templateItemsNamesToReplacementItemPositions(std::move(replacements))
   {
-    m_isOwner = true;
+  }
+
+  SC_DEPRECATED(0.8.0, "Use ScTemplateSearchResultItem::ScTemplateSearchResultItem() instead of")
+  ScTemplateResultItem(ScAddrVector * results, ScTemplate::ScTemplateItemsToReplacementsItemsPositions * replacements)
+    : m_context(nullptr)
+  {
   }
 
   ScTemplateResultItem(ScTemplateResultItem const & otherItem)
@@ -447,8 +449,6 @@ public:
           otherItem.m_replacementConstruction,
           otherItem.m_templateItemsNamesToReplacementItemPositions)
   {
-    m_isOwner = otherItem.m_isOwner;
-    const_cast<ScTemplateResultItem &>(otherItem).m_isOwner = false;
   }
 
   ScTemplateResultItem & operator=(ScTemplateResultItem const & otherItem)
@@ -457,10 +457,9 @@ public:
       return *this;
 
     m_context = otherItem.m_context;
-    m_replacementConstruction = otherItem.m_replacementConstruction;
+    m_replacementConstruction.assign(
+        otherItem.m_replacementConstruction.cbegin(), otherItem.m_replacementConstruction.cend());
     m_templateItemsNamesToReplacementItemPositions = otherItem.m_templateItemsNamesToReplacementItemPositions;
-    m_isOwner = otherItem.m_isOwner;
-    const_cast<ScTemplateResultItem &>(otherItem).m_isOwner = false;
 
     return *this;
   }
@@ -538,7 +537,7 @@ public:
   {
     if (index < Size())
     {
-      outAddr = (*m_replacementConstruction)[index];
+      outAddr = m_replacementConstruction[index];
       return true;
     }
 
@@ -554,7 +553,7 @@ public:
   inline ScAddr const & operator[](size_t index) const noexcept(false)
   {
     if (index < Size())
-      return (*m_replacementConstruction)[index];
+      return m_replacementConstruction[index];
 
     SC_THROW_EXCEPTION(utils::ExceptionInvalidParams, "Index=" << index << " must be < size=" << Size());
   }
@@ -562,9 +561,6 @@ public:
   //! Checks if replacement `name` exists in replacements
   inline bool Has(std::string const & name) const noexcept
   {
-    if (m_templateItemsNamesToReplacementItemPositions == nullptr)
-      return false;
-
     ScAddr const & addr = GetAddrByName(name);
     return addr.IsValid();
   }
@@ -572,9 +568,6 @@ public:
   //! Checks if `varAddr` exists in replacements
   inline bool Has(ScAddr const & varAddr) const noexcept
   {
-    if (m_templateItemsNamesToReplacementItemPositions == nullptr)
-      return false;
-
     ScAddr const & addr = GetAddrByVarAddr(varAddr);
     return addr.IsValid();
   }
@@ -582,43 +575,39 @@ public:
   //! Gets found construction size
   inline size_t Size() const noexcept
   {
-    return m_replacementConstruction ? m_replacementConstruction->size() : 0;
+    return m_replacementConstruction.size();
   }
 
   ScAddrVector::const_iterator begin() const
   {
-    return m_replacementConstruction->cbegin();
+    return m_replacementConstruction.cbegin();
   }
 
   ScAddrVector::const_iterator end() const
   {
-    return m_replacementConstruction->cend();
+    return m_replacementConstruction.cend();
   }
 
   inline ScTemplate::ScTemplateItemsToReplacementsItemsPositions const & GetReplacements() const noexcept
   {
-    return *m_templateItemsNamesToReplacementItemPositions;
+    return m_templateItemsNamesToReplacementItemPositions;
   }
 
-  ~ScTemplateResultItem()
-  {
-    if (m_isOwner)
-      delete m_replacementConstruction;
-  }
+  ~ScTemplateResultItem() = default;
 
 protected:
   ScAddr GetAddrByName(std::string const & name) const
   {
-    auto it = m_templateItemsNamesToReplacementItemPositions->find(name);
-    if (it != m_templateItemsNamesToReplacementItemPositions->cend())
-      return (*m_replacementConstruction)[it->second];
+    auto it = m_templateItemsNamesToReplacementItemPositions.find(name);
+    if (it != m_templateItemsNamesToReplacementItemPositions.cend())
+      return m_replacementConstruction[it->second];
 
     ScAddr const & addr = GetAddrBySystemIdtf(name);
     if (addr.IsValid())
     {
-      it = m_templateItemsNamesToReplacementItemPositions->find(std::to_string(addr.Hash()));
-      if (it != m_templateItemsNamesToReplacementItemPositions->cend())
-        return (*m_replacementConstruction)[it->second];
+      it = m_templateItemsNamesToReplacementItemPositions.find(std::to_string(addr.Hash()));
+      if (it != m_templateItemsNamesToReplacementItemPositions.cend())
+        return m_replacementConstruction[it->second];
     }
 
     return ScAddr::Empty;
@@ -629,14 +618,14 @@ protected:
     if (!varAddr.IsValid())
       return ScAddr::Empty;
 
-    auto it = m_templateItemsNamesToReplacementItemPositions->find(std::to_string(varAddr.Hash()));
-    if (it != m_templateItemsNamesToReplacementItemPositions->cend())
-      return (*m_replacementConstruction)[it->second];
+    auto it = m_templateItemsNamesToReplacementItemPositions.find(std::to_string(varAddr.Hash()));
+    if (it != m_templateItemsNamesToReplacementItemPositions.cend())
+      return m_replacementConstruction[it->second];
 
     std::string const & varIdtf = GetSystemIdtfByAddr(varAddr);
-    it = m_templateItemsNamesToReplacementItemPositions->find(varIdtf);
-    if (it != m_templateItemsNamesToReplacementItemPositions->cend())
-      return (*m_replacementConstruction)[it->second];
+    it = m_templateItemsNamesToReplacementItemPositions.find(varIdtf);
+    if (it != m_templateItemsNamesToReplacementItemPositions.cend())
+      return m_replacementConstruction[it->second];
 
     return ScAddr::Empty;
   }
@@ -647,11 +636,8 @@ protected:
 
   sc_memory_context const * m_context;
 
-  ScAddrVector * m_replacementConstruction;
-  ScTemplate::ScTemplateItemsToReplacementsItemsPositions const * m_templateItemsNamesToReplacementItemPositions;
-
-private:
-  bool m_isOwner = false;
+  ScAddrVector m_replacementConstruction;
+  ScTemplate::ScTemplateItemsToReplacementsItemsPositions m_templateItemsNamesToReplacementItemPositions;
 };
 
 using ScTemplateGenResult = ScTemplateResultItem;
@@ -688,8 +674,9 @@ public:
     if (index < Size())
     {
       outItem.m_context = m_context;
-      outItem.m_templateItemsNamesToReplacementItemPositions = &m_templateItemsNamesToReplacementItemsPositions;
-      outItem.m_replacementConstruction = const_cast<ScAddrVector *>(&m_replacementConstructions[index]);
+      outItem.m_templateItemsNamesToReplacementItemPositions = m_templateItemsNamesToReplacementItemsPositions;
+      outItem.m_replacementConstruction.assign(
+          m_replacementConstructions[index].cbegin(), m_replacementConstructions[index].cend());
       return true;
     }
 
@@ -699,7 +686,7 @@ public:
   inline ScTemplateResultItem operator[](size_t index) const noexcept(false)
   {
     if (index < Size())
-      return {m_context, &m_replacementConstructions[index], &m_templateItemsNamesToReplacementItemsPositions};
+      return {m_context, m_replacementConstructions[index], m_templateItemsNamesToReplacementItemsPositions};
 
     SC_THROW_EXCEPTION(utils::ExceptionInvalidParams, "Index=" << index << " must be < size=" << Size());
   }
@@ -719,7 +706,7 @@ public:
   void ForEach(FnT && f) noexcept
   {
     for (auto & res : m_replacementConstructions)
-      f(ScTemplateResultItem{m_context, &res, &m_templateItemsNamesToReplacementItemsPositions});
+      f(ScTemplateResultItem{m_context, res, m_templateItemsNamesToReplacementItemsPositions});
   }
 
 protected:

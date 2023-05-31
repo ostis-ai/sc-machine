@@ -50,8 +50,8 @@ public:
 
     ScMemoryContextEventsPendingGuard guard(m_context);
 
-    result = {*m_context, &m_replacements};
-    result.m_replacementConstruction->resize(m_triples.size() * 3);
+    result = {*m_context, m_replacements};
+    result.m_replacementConstruction.resize(m_triples.size() * 3);
 
     ScAddrVector createdElements;
     size_t resultIdx = 0;
@@ -73,11 +73,11 @@ public:
       if (values[1].m_itemType == ScTemplateItem::Type::Replace)
         SC_THROW_EXCEPTION(utils::ExceptionInvalidParams, "The second item of triple couldn't be a replacement");
 
-      ScAddr const addr1 = ResolveAddr(values[0], *result.m_replacementConstruction);
+      ScAddr const addr1 = ResolveAddr(values[0], result.m_replacementConstruction);
       if (!addr1.IsValid())
         SC_THROW_EXCEPTION(utils::ExceptionInvalidState, "The resolved first item is not valid");
 
-      ScAddr const addr2 = ResolveAddr(values[2], *result.m_replacementConstruction);
+      ScAddr const addr2 = ResolveAddr(values[2], result.m_replacementConstruction);
       if (!addr2.IsValid())
         SC_THROW_EXCEPTION(utils::ExceptionInvalidState, "The resolved third item is not valid");
 
@@ -94,9 +94,9 @@ public:
         break;
       }
 
-      (*result.m_replacementConstruction)[resultIdx++] = addr1;
-      (*result.m_replacementConstruction)[resultIdx++] = edge;
-      (*result.m_replacementConstruction)[resultIdx++] = addr2;
+      result.m_replacementConstruction[resultIdx++] = addr1;
+      result.m_replacementConstruction[resultIdx++] = edge;
+      result.m_replacementConstruction[resultIdx++] = addr2;
     }
 
     if (isError)
