@@ -24,10 +24,10 @@ ScServerImpl::ScServerImpl(
     std::string const & logLevel,
     sc_bool syncActions,
     sc_memory_params const & params)
-  : ScServer(host, port, logType, logFile, logLevel, params),
-  m_syncActions(syncActions),
-  m_actionsRun(SC_TRUE),
-  m_actions(new ScServerActions())
+  : ScServer(host, port, logType, logFile, logLevel, params)
+  , m_syncActions(syncActions)
+  , m_actionsRun(SC_TRUE)
+  , m_actions(new ScServerActions())
 {
 }
 

@@ -8,52 +8,18 @@
 
 #include "sc-memory/sc_event.hpp"
 
-#include "algorithm"
-
 class ScMemoryJsonEventsManager
 {
 public:
-  static ScMemoryJsonEventsManager * GetInstance()
-  {
-    if (m_instance == nullptr)
-      m_instance = new ScMemoryJsonEventsManager();
+  static ScMemoryJsonEventsManager * GetInstance();
 
-    return m_instance;
-  }
+  size_t Add(ScEvent * event);
 
-  size_t Add(ScEvent * event)
-  {
-    m_events.insert({counter, event});
-    return counter++;
-  }
+  size_t Next() const;
 
-  size_t Next() const
-  {
-    return counter;
-  }
+  ScEvent * Remove(size_t index);
 
-  ScEvent * Remove(size_t index)
-  {
-    auto const & it = m_events.find(index);
-    if (it != m_events.end())
-    {
-      auto const & pair = m_events.find(index);
-      auto * e = pair->second;
-      pair->second = nullptr;
-      return e;
-    }
-
-    return nullptr;
-  }
-
-  ~ScMemoryJsonEventsManager()
-  {
-    for (auto const & pair : m_events)
-      delete pair.second;
-    m_events.clear();
-
-    delete m_instance;
-  }
+  ~ScMemoryJsonEventsManager();
 
 private:
   static ScMemoryJsonEventsManager * m_instance;

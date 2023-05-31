@@ -14,7 +14,6 @@
 
 #include <regex>
 #include <utility>
-#include <glib.h>
 
 namespace impl
 {

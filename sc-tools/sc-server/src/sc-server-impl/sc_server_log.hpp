@@ -14,7 +14,10 @@ class ScServerLog
 {
 public:
   ScServerLog(
-      ScServerCore * server, std::string const & logType, std::string const & logFile, std::string const & logLevel)
+      ScServerCore * server,
+      std::string const & logType,
+      std::string const & logFile,
+      std::string const & logLevel)
     : m_server(server)
   {
     Initialize(logType, logFile, logLevel);

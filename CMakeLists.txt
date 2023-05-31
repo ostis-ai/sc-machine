@@ -92,7 +92,7 @@ foreach(OUTPUT_CONFIG ${CMAKE_CONFIGURATION_TYPES})
 endforeach(OUTPUT_CONFIG CMAKE_CONFIGURATION_TYPES)
 
 include("${SC_MACHINE_ROOT}/dependencies.cmake")
-sc_target_dependencies("${SC_MACHINE_ROOT}/packages.config.in" ${SC_MACHINE_THIRDPARTY_PATH} {$SC_MACHINE_BIN_PATH})
+sc_target_dependencies()
 
 message("CMAKE_C_FLAGS: ${CMAKE_C_FLAGS}")
 message("CMAKE_CXX_FLAGS: ${CMAKE_CXX_FLAGS}")

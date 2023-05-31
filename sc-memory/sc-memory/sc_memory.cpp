@@ -22,8 +22,6 @@ extern "C"
 #include <glib.h>
 }
 
-#define SC_BOOL(x) (x) ? SC_TRUE : SC_FALSE
-
 namespace
 {
 GMutex gContextMutex;

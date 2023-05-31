@@ -28,9 +28,6 @@ make_tests_from_folder(${CMAKE_CURRENT_LIST_DIR}/sc-utils
     INCLUDES ${SC_MEMORY_SRC} ${SC_KPM_SRC} ${SC_MEMORY_SRC}/tests/sc-memory/_test
 )
 
-sc_codegen(sc-kpm-agent-common-utils-tests ${CMAKE_CURRENT_LIST_DIR}/sc-utils)
-
-
 make_tests_from_folder(${CMAKE_CURRENT_LIST_DIR}/translators
     NAME sc-kpm-translators-tests
     DEPENDS sc-memory sc-ui

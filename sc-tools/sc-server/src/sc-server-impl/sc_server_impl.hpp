@@ -8,6 +8,8 @@
 
 #include "sc_server.hpp"
 
+#include "sc_server_action.hpp"
+
 using ScServerMutex = std::mutex;
 using ScServerUniqueLock = std::unique_lock<ScServerMutex>;
 using ScServerLock = std::lock_guard<ScServerMutex>;
