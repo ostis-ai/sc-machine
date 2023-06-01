@@ -36,8 +36,6 @@
 #include "atn/LexerPushModeAction.h"
 #include "atn/LexerTypeAction.h"
 
-#include "Exceptions.h"
-
 #include "atn/ATNSerializer.h"
 
 using namespace antlrcpp;

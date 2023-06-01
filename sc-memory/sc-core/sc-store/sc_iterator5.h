@@ -171,4 +171,4 @@ _SC_EXTERN sc_addr sc_iterator5_value(sc_iterator5 * it, sc_uint vid);
  */
 _SC_EXTERN void sc_iterator5_free(sc_iterator5 * it);
 
-#endif  // SC_ITERATOR5_H
+#endif // _sc_iterator5_h_

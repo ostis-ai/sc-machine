@@ -29,11 +29,11 @@ private:
 
 #ifndef EMIT_ERROR
 #  define EMIT_ERROR(__desc) \
-    { \
+    ({ \
       std::stringstream ss; \
       ss << __desc; \
       throw Exception(ss.str()); \
-    }
+    })
 #endif
 
 typedef std::list<std::string> tStringList;

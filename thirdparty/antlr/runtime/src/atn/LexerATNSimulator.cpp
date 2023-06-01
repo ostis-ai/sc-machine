@@ -3,7 +3,6 @@
  * can be found in the LICENSE.txt file in the project root.
  */
 
-#include "IntStream.h"
 #include "atn/OrderedATNConfigSet.h"
 #include "Token.h"
 #include "LexerNoViableAltException.h"
@@ -20,7 +19,6 @@
 #include "dfa/DFAState.h"
 #include "atn/LexerATNConfig.h"
 #include "atn/LexerActionExecutor.h"
-#include "atn/EmptyPredictionContext.h"
 
 #include "atn/LexerATNSimulator.h"
 

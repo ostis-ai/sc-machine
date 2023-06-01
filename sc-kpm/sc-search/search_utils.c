@@ -8,10 +8,8 @@
 #include "search_keynodes.h"
 #include "search_defines.h"
 #include "search.h"
-#include "sc-core/sc-store/sc-base/sc_message.h"
 
 #include "sc-core/sc_helper.h"
-#include "sc-core/sc_memory_headers.h"
 
 sc_addr create_answer_node()
 {

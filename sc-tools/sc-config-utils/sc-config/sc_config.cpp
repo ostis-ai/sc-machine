@@ -8,7 +8,6 @@
 
 #include <string>
 #include <utility>
-#include <algorithm>
 #include <unordered_set>
 
 extern "C"

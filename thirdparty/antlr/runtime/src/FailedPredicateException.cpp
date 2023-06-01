@@ -6,7 +6,6 @@
 #include "atn/ParserATNSimulator.h"
 #include "Parser.h"
 #include "atn/PredicateTransition.h"
-#include "atn/ATN.h"
 #include "atn/ATNState.h"
 #include "support/CPPUtils.h"
 

@@ -2,7 +2,6 @@
 
 #include "MetaDataConfig.hpp"
 
-#include "LanguageTypes/Class.hpp"
 #include "LanguageTypes/Field.hpp"
 
 Field::Field(Cursor const & cursor, Namespace const & currentNamespace)
@@ -15,27 +14,6 @@ Field::Field(Cursor const & cursor, Namespace const & currentNamespace)
   m_displayName = displayName.empty() ? m_name : displayName;
 
   m_metaData.Check();
-}
-
-bool Field::ShouldCompile() const
-{
-  return isAccessible();
-}
-
-bool Field::isAccessible() const
-{
-  bool const metaFlag = (m_accessModifier == CX_CXXPublic && !m_metaData.GetFlag(kMetaDisable));
-  return m_hasExplicitGetter || m_hasExplicitSetter || metaFlag;
-}
-
-bool Field::isGetterAccessible() const
-{
-  return m_hasExplicitGetter || (m_accessModifier == CX_CXXPublic);
-}
-
-bool Field::isSetterAccessible(void) const
-{
-  return m_hasExplicitSetter || (!m_isConst && m_accessModifier == CX_CXXPublic);
 }
 
 std::string Field::GetForceType(MetaDataManager const & metaData)

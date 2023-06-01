@@ -9,7 +9,6 @@
 #include "misc/IntervalSet.h"
 #include "RuleContext.h"
 #include "atn/DecisionState.h"
-#include "Recognizer.h"
 #include "atn/ATNType.h"
 #include "Exceptions.h"
 #include "support/CPPUtils.h"

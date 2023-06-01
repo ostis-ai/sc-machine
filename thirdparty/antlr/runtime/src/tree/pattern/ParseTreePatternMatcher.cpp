@@ -12,16 +12,13 @@
 #include "ParserRuleContext.h"
 #include "tree/pattern/RuleTagToken.h"
 #include "tree/pattern/TagChunk.h"
-#include "atn/ATN.h"
 #include "Lexer.h"
 #include "BailErrorStrategy.h"
 
 #include "ListTokenSource.h"
 #include "tree/pattern/TextChunk.h"
 #include "ANTLRInputStream.h"
-#include "support/Arrays.h"
 #include "Exceptions.h"
-#include "support/StringUtils.h"
 #include "support/CPPUtils.h"
 
 #include "tree/pattern/ParseTreePatternMatcher.h"

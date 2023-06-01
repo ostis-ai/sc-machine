@@ -6,7 +6,6 @@
 
 #include "sc_agent.hpp"
 
-#include "../sc_debug.hpp"
 #include "../sc_wait.hpp"
 
 namespace

@@ -5,7 +5,6 @@
 
 #include "misc/MurmurHash.h"
 #include "Lexer.h"
-#include "Exceptions.h"
 #include "Vocabulary.h"
 
 #include "misc/IntervalSet.h"

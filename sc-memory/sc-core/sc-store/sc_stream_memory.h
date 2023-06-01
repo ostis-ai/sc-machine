@@ -24,4 +24,4 @@ _SC_EXTERN sc_stream * sc_stream_memory_new(
     sc_uint8 flags,
     sc_bool data_owner);
 
-#endif  // SC_STREAM_MEMORY_H
+#endif // _sc_stream_memory_h_

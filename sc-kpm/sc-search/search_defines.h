@@ -14,4 +14,4 @@
 #define IS_SYSTEM_ELEMENT(el) \
   (sc_helper_check_arc(s_default_ctx, keynode_system_element, el, sc_type_arc_pos_const_perm) == SC_TRUE)
 
-#endif  // SEARCH_DEFINES_H
+#endif // _search_defines_h_

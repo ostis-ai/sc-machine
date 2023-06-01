@@ -10,7 +10,7 @@
 #include "utils_keynodes.h"
 #include "../sc-search/search_keynodes.h"
 #include "../sc-search/search_utils.h"
-#include "sc-core/sc-store/sc-base/sc_message.h"
+
 /*!
  *  Erase sc-elements from memory if they dont belong to init memory structure
  */

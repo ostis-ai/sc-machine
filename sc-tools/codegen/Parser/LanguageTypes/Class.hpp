@@ -42,7 +42,6 @@ public:
   void GenerateCodeStaticInit(std::stringstream & outCode) const;
 
   std::string GetGeneratedBodyLine() const;
-  std::string GetQualifiedName() const;
 
 protected:
   void GenerateFieldsInitCode(std::stringstream & outCode) const;
@@ -50,7 +49,6 @@ protected:
   void GenerateDeclarations(std::stringstream & outCode) const;
   void GenerateImpl(std::stringstream & outCode) const;
 
-  BaseClass const * GetBaseClass(std::string const & name) const;
   BaseClass const * GetBaseAgentClass() const;
 
 private:

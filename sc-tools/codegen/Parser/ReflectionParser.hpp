@@ -4,7 +4,6 @@
 
 #include "Cursor.hpp"
 
-#include "MacrosManager.hpp"
 #include "Cache.hpp"
 
 #include "LanguageTypes/Class.hpp"

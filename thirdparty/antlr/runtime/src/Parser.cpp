@@ -18,7 +18,6 @@
 #include "atn/RuleTransition.h"
 #include "atn/ATN.h"
 #include "Exceptions.h"
-#include "ANTLRErrorListener.h"
 #include "tree/pattern/ParseTreePattern.h"
 
 #include "atn/ProfilingATNSimulator.h"

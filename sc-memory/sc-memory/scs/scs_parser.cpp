@@ -6,10 +6,7 @@
 
 #include "sc-memory/scs/scs_parser.hpp"
 
-#include "sc-memory/sc_memory.hpp"
 #include "sc-memory/sc_debug.hpp"
-
-#include <limits>
 
 #if SC_PLATFORM_WIN32
 #endif

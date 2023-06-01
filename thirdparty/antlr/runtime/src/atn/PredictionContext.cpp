@@ -9,7 +9,6 @@
 #include "RuleContext.h"
 #include "ParserRuleContext.h"
 #include "atn/RuleTransition.h"
-#include "support/Arrays.h"
 #include "support/CPPUtils.h"
 
 #include "atn/PredictionContext.h"

@@ -26,7 +26,6 @@
 */
 
 #include "sc_base64.hpp"
-#include <iostream>
 
 namespace
 {

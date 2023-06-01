@@ -66,4 +66,4 @@ _SC_EXTERN sc_pointer sc_event_get_data(const sc_event * event);
 //! Returns sc-addr of sc-element where event subscribed
 _SC_EXTERN sc_addr sc_event_get_element(const sc_event * event);
 
-#endif  // SC_EVENT_H
+#endif // _sc_event_h_

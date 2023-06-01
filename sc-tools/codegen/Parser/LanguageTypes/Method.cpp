@@ -1,4 +1,3 @@
-#include "LanguageTypes/Class.hpp"
 #include "LanguageTypes/Method.hpp"
 
 #include "Cursor.hpp"

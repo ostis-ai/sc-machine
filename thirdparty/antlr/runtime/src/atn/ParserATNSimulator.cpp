@@ -27,10 +27,8 @@
 #include "atn/BlockEndState.h"
 
 #include "misc/Interval.h"
-#include "ANTLRErrorListener.h"
 
 #include "Vocabulary.h"
-#include "support/Arrays.h"
 
 #include "atn/ParserATNSimulator.h"
 

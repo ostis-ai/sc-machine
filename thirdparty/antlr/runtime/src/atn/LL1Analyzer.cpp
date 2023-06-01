@@ -8,11 +8,9 @@
 #include "atn/RuleTransition.h"
 #include "atn/SingletonPredictionContext.h"
 #include "atn/AbstractPredicateTransition.h"
-#include "atn/WildcardTransition.h"
 #include "atn/NotSetTransition.h"
 #include "misc/IntervalSet.h"
 #include "atn/ATNConfig.h"
-#include "atn/EmptyPredictionContext.h"
 
 #include "support/CPPUtils.h"
 

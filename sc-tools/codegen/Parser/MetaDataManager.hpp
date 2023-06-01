@@ -26,7 +26,7 @@ public:
 
   std::string GetNativeString(std::string const & key) const;
 
-  /** Check if metadata is valid. If there are any errors, then throw an exciption */
+  /** Check if metadata is valid. If there are any errors, then throw an exception */
   void Check() const;
 
 protected:

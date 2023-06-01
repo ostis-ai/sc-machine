@@ -4,7 +4,6 @@
  * (See accompanying file COPYING.MIT or copy at http://opensource.org/licenses/MIT)
  */
 
-#include <stdio.h>
 #include "sc_stream_memory.h"
 #include "sc_stream_private.h"
 

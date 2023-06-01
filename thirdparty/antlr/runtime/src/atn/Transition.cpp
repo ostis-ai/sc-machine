@@ -4,14 +4,11 @@
  */
 
 #include "Exceptions.h"
-#include "support/Arrays.h"
 
 #include "atn/Transition.h"
 
 using namespace antlr4;
 using namespace antlr4::atn;
-
-using namespace antlrcpp;
 
 const std::vector<std::string> Transition::serializationNames = {
   "INVALID", "EPSILON", "RANGE", "RULE", "PREDICATE", "ATOM", "ACTION", "SET", "NOT_SET", "WILDCARD", "PRECEDENCE"

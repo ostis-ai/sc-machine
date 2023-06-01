@@ -9,8 +9,6 @@ class Field final : public LanguageType
 public:
   Field(Cursor const & cursor, Namespace const & currentNamespace);
 
-  bool ShouldCompile() const;
-
   void GenarateInitCode(std::stringstream & outCode) const;
 
   static std::string GetForceType(MetaDataManager const & metaData);
@@ -26,11 +24,6 @@ public:
       std::stringstream & outCode);
 
   std::string const & GetDisplayName() const;
-
-private:
-  bool isAccessible() const;
-  bool isGetterAccessible() const;
-  bool isSetterAccessible() const;
 
 private:
   bool m_isConst;

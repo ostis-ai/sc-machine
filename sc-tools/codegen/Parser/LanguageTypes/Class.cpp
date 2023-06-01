@@ -6,8 +6,6 @@
 #include "Method.hpp"
 #include "Function.hpp"
 
-#include "../ReservedTypes.hpp"
-
 #include <boost/algorithm/string.hpp>
 
 BaseClass::BaseClass(const Cursor & cursor)
@@ -375,24 +373,6 @@ std::string Class::GetGeneratedBodyLine() const
   }
 
   EMIT_ERROR("Can't find " << Props::Body << " meta info");
-
-  return "";
-}
-
-std::string Class::GetQualifiedName() const
-{
-  return m_qualifiedName;
-}
-
-BaseClass const * Class::GetBaseClass(std::string const & name) const
-{
-  for (auto const & cl : m_baseClasses)
-  {
-    if (cl->name == name)
-      return cl.get();
-  }
-
-  return 0;
 }
 
 BaseClass const * Class::GetBaseAgentClass() const

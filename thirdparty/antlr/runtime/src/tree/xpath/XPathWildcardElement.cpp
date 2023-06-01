@@ -5,7 +5,6 @@
 
 #include "XPath.h"
 #include "tree/ParseTree.h"
-#include "tree/Trees.h"
 
 #include "XPathWildcardElement.h"
 

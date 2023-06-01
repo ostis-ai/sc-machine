@@ -8,7 +8,6 @@
 #include "IntStream.h"
 
 #include "support/StringUtils.h"
-#include "support/CPPUtils.h"
 
 #include "ANTLRInputStream.h"
 

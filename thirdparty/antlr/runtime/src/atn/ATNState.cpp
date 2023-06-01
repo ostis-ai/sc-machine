@@ -5,7 +5,6 @@
 
 #include "atn/ATN.h"
 #include "atn/Transition.h"
-#include "misc/IntervalSet.h"
 #include "support/CPPUtils.h"
 
 #include "atn/ATNState.h"

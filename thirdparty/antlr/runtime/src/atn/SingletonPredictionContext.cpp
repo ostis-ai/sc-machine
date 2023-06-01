@@ -3,8 +3,6 @@
  * can be found in the LICENSE.txt file in the project root.
  */
 
-#include "atn/EmptyPredictionContext.h"
-
 #include "atn/SingletonPredictionContext.h"
 
 using namespace antlr4::atn;
