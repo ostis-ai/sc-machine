@@ -12,7 +12,7 @@ target_include_directories(sc-kpm-common
 )
 
 add_dependencies(sc-kpm-common sc-core)
-target_link_libraries(sc-kpm-common PRIVATE sc-core ${GLIB2_LIBRARIES})
+target_link_libraries(sc-kpm-common sc-core ${GLIB2_LIBRARIES})
 target_compile_definitions(sc-kpm-common PUBLIC "-DSC_KPM_COMMON_SELF_BUILD")
 
 if(${SC_CLANG_FORMAT_CODE})
