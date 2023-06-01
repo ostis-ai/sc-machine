@@ -8,6 +8,7 @@ target_include_directories(sc-ui
     PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}
 )
 
+find_package(nlohmann_json)
 add_dependencies(sc-ui sc-memory sc-core sc-kpm-common)
 target_link_libraries(sc-ui PRIVATE sc-memory sc-kpm-common nlohmann_json::nlohmann_json)
 

@@ -7,9 +7,10 @@ list(REMOVE_ITEM SOURCES
     "${SC_SERVER_ROOT}/src/sc_server_factory.hpp"
 )
 
+find_package(nlohmann_json)
 add_library(sc-server-lib SHARED ${SOURCES})
 include_directories(${SC_MEMORY_SRC} ${SC_CONFIG_UTILS_SRC} ${GLIB2_INCLUDE_DIRS})
-target_link_libraries(sc-server-lib PRIVATE sc-memory nlohmann_json::nlohmann_json websocketpp::websocketpp)
+target_link_libraries(sc-server-lib PRIVATE sc-memory nlohmann_json::nlohmann_json)
 
 add_executable(sc-server
     "${CMAKE_CURRENT_SOURCE_DIR}/src/main.cpp"

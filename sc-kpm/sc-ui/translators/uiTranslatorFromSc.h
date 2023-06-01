@@ -54,4 +54,4 @@ protected:
   String mOutputData;
 };
 
-#endif // _uiTranslatorFromSc_h_
+#endif  // _uiTranslatorFromSc_h_
