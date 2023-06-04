@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Script for translation old format gwf to new format gwf
 - Ability do not search for sc-links by substrings globally, passing config param `search_by_substring`
 - Ability do not search for sc-links by strings locally, passing param in SetLinkContent `is_searchable`
 - Generalize all scripts for applied projects

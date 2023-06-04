@@ -40,5 +40,11 @@ Example of usage:
 ./bin/sc-builder -i ./kb -o ./kb.bin -c -s ./bin/config.ini -f -e ./bin/extension --enabled-ext ./config/build_ext.list
 ```
 
+## Troubleshooting
 
+If you have old format gwf files, you can run this script:
+```
+cd scripts/kb_scripts
+python3 old_to_new_gwf.py <path to input dir> <path to output dir>
+```
 
