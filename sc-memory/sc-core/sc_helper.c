@@ -335,6 +335,7 @@ sc_result sc_helper_set_system_identifier_ext(
 sc_result sc_helper_get_system_identifier_link(sc_memory_context const * ctx, sc_addr el, sc_addr * sys_idtf_addr)
 {
   sc_assert(ctx != null_ptr);
+  SC_ADDR_MAKE_EMPTY(*sys_idtf_addr);
 
   sc_iterator5 * it = null_ptr;
   sc_result result = SC_RESULT_ERROR;
