@@ -23,16 +23,16 @@ public:
     : m_groupName(std::move(groupName))
     , m_builderParams(std::move(params))
   {
-    if (config.IsValid())
-    {
-      ScConfigGroup group = config[m_groupName];
-      for (auto const & key : *group)
-      {
-        std::string const & value = group[key];
-        std::stringstream stream;
+    if (!config.IsValid())
+      return;
 
-        m_params.insert({key, value});
-      }
+    ScConfigGroup group = config[m_groupName];
+    for (auto const & key : *group)
+    {
+      std::string value = group[key];
+      value = !value.empty() && value[0] == '\"' ? value.substr(1, value.length() - 2) : value;
+
+      m_params.insert({key, value});
     }
   }
 
