@@ -18,7 +18,8 @@ bool Builder::Run(BuilderParams const & params, sc_memory_params const & memoryP
 {
   m_params = params;
 
-  ScMemory::Initialize(memoryParams);
+  if (!ScMemory::Initialize(memoryParams))
+    SC_THROW_EXCEPTION(utils::ExceptionInvalidState, "Error while sc-memory initialize");
 
   ScRepoPathCollector::Sources excludedSources;
   ScRepoPathCollector::Sources checkSources;

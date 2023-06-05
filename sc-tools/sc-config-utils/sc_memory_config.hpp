@@ -40,7 +40,7 @@ public:
 
   void insert(std::pair<std::string, std::string> const & pair)
   {
-    m_params.insert(pair);
+    m_params[pair.first] = pair.second;
   }
 
   std::string const & at(std::string const & key) const
@@ -78,18 +78,16 @@ public:
     : m_params(params)
     , m_groupName(std::move(groupName))
   {
-    if (config.IsValid())
+    if (!config.IsValid())
+      return;
+
+    ScConfigGroup group = config[m_groupName];
+    for (auto const & key : *group)
     {
-      ScConfigGroup group = config[m_groupName];
-      for (auto const & key : *group)
-      {
-        std::string value = group[key];
-        std::stringstream stream;
+      std::string value = group[key];
+      value = !value.empty() && value[0] == '\"' ? value.substr(1, value.length() - 2) : value;
 
-        value = value[0] == '\"' ? value.substr(1, value.length() - 2) : value;
-
-        m_params.insert({key, value});
-      }
+      m_params.insert({key, value});
     }
   }
 
