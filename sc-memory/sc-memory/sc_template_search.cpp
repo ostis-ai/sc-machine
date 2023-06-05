@@ -51,6 +51,9 @@ private:
    */
   void PrepareSearch()
   {
+    if (m_template.Size() == 1)
+      return;
+
     SetUpDependenciesBetweenTriples();
     RemoveCycledDependenciesBetweenTriples();
     FindConnectivityComponents();
@@ -1002,7 +1005,7 @@ private:
 
   void DoIterations(ScTemplateSearchResult & result)
   {
-    if (m_template.m_templateTriples.empty())
+    if (m_template.IsEmpty())
       return;
 
     ScAddrVector newResult;
@@ -1010,8 +1013,8 @@ private:
     result.m_replacementConstructions.reserve(DEFAULT_RESULT_RESERVE_SIZE);
     result.m_replacementConstructions.emplace_back(newResult);
 
-    m_notUsedEdgesInTemplateTriples.resize(m_template.m_templateTriples.size());
-    m_usedEdgesInTemplateTriples.resize(m_template.m_templateTriples.size());
+    m_notUsedEdgesInTemplateTriples.resize(m_template.Size());
+    m_usedEdgesInTemplateTriples.resize(m_template.Size());
     m_usedEdgesInReplacementConstructions.reserve(DEFAULT_RESULT_RESERVE_SIZE);
     m_usedEdgesInReplacementConstructions.emplace_back();
     m_checkedTemplateTriplesInReplacementConstructions.reserve(DEFAULT_RESULT_RESERVE_SIZE);
@@ -1022,8 +1025,9 @@ private:
     bool isFinished = false;
     bool isLast = false;
 
-    DoIterationOnNextEqualTriples(
-        m_connectivityComponentPriorityTemplateTriples, "", 0, {}, childrenTemplateTriples, result, isFinished, isLast);
+    auto const & startTriples = m_template.Size() == 1 ? ScTemplateTriples{m_template.m_templateTriples[0]->m_index}
+                                                       : m_connectivityComponentPriorityTemplateTriples;
+    DoIterationOnNextEqualTriples(startTriples, "", 0, {}, childrenTemplateTriples, result, isFinished, isLast);
   }
 
 public:
@@ -1052,7 +1056,7 @@ public:
 
   size_t CalculateOneResultSize() const
   {
-    return m_template.m_templateTriples.size() * 3;
+    return m_template.Size() * 3;
   }
 
 private:
