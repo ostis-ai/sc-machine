@@ -88,6 +88,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- Return empty sc_addr if not found by identifier in sc-helper
 - Trim paths in repo path
 - KB directory coping to prepare gwf and scsi sources 
 - Tests for template build and gen with params
