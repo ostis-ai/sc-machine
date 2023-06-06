@@ -12,6 +12,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Generalize all scripts
+- Script build_sc_machine with arguments
 - View kb fragment in scn if it is keyword
 - Tests for repo-path parser and collector
 - Support for deprecated memory binaries build in 0.7.0 version
@@ -79,7 +81,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Replace asserts in sc-template search and gen API by exceptions throwing
 - `ScsLoader::loadScsFile` return bool instead void
 - Update garbage deletion agent logic, add check if element belongs to init memory structure
-- Make scsi pre-processor migrations scrip
+- Make scsi pre-processor migrations script
 - Move to C++17
 - Remove 1 minute assert in ScWait
 - Add language parameter for sc2scs-json-translator to get elements identifiers
@@ -112,6 +114,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Removed
 
+- Windows files and cmake dependencies
 - Prepare kb step and `prepare_kb.py`
 - Rocksdb fs-memory
 - Garbage deletion agent
