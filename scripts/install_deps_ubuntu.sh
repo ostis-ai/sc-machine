@@ -1,7 +1,10 @@
 #!/bin/bash
 set -e
 
-APP_ROOT_PATH=$(cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && cd .. && pwd)
+if [[ -z ${SC_MACHINE_PATH+1} ]];
+then
+  source "$(cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd)"/set_vars.sh
+fi
 
 function usage() {
     cat <<USAGE
@@ -71,4 +74,6 @@ sudo apt-get install -y --no-install-recommends "${packages[@]}"
 sudo apt autoremove
 
 pip3 install wheel setuptools
-pip3 install -r "${APP_ROOT_PATH}"/requirements.txt
+pip3 install -r "${SC_MACHINE_PATH}/requirements.txt"
+
+cd "${WORKING_PATH}"

@@ -2,8 +2,7 @@
 
 - **Building**
     * [Linux](build/linux-build.md)
-    * [Windows](build/windows-build.md)
-    * [macOS](build/osx-build.md)
+    * [MacOS](build/osx-build.md)
     * [CMake flags](build/cmake-flags.md)
 - **Common**
     * [Config](other/config.md) - *description of a configuration file*
