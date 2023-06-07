@@ -28,7 +28,6 @@ sc_bool sc_fs_memory_initialize_ext(sc_memory_params const * params)
   static sc_char const * segments_postfix = "segments" SC_FS_EXT;
   sc_fs_concat_path(params->repo_path, segments_postfix, &manager->segments_path);
 
-  sc_fs_memory_info("Clear sc-fs-memory");
   if (manager->initialize(&manager->fs_memory, params) != SC_FS_MEMORY_OK)
     return SC_FALSE;
 

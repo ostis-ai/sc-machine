@@ -137,7 +137,7 @@ sc_bool sc_fs_create_directory(sc_char const * path)
   return SC_TRUE;
 }
 
-sc_bool sc_fs_remove_directory(sc_char const * path)
+sc_bool sc_fs_remove_directory_ext(sc_char const * path, sc_bool remove_root)
 {
   if (sc_fs_is_directory(path) == SC_FALSE)
     return SC_FALSE;
@@ -163,9 +163,15 @@ sc_bool sc_fs_remove_directory(sc_char const * path)
   }
 
   g_dir_close(directory);
-  g_rmdir(path);
+  if (remove_root)
+    g_rmdir(path);
 
   return SC_TRUE;
+}
+
+sc_bool sc_fs_remove_directory(sc_char const * path)
+{
+  return sc_fs_remove_directory_ext(path, SC_TRUE);
 }
 
 sc_bool sc_fs_is_directory(sc_char const * path)
