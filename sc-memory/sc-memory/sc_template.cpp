@@ -86,6 +86,11 @@ bool ScTemplate::IsEmpty() const
   return m_templateTriples.empty();
 }
 
+size_t ScTemplate::Size() const
+{
+  return m_templateTriples.size();
+}
+
 bool ScTemplate::HasReplacement(std::string const & repl) const
 {
   return m_templateItemsNamesToReplacementItemsPositions.find(repl) !=

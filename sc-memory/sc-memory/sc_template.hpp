@@ -314,6 +314,8 @@ public:
   _SC_EXTERN void Clear();
   _SC_EXTERN bool IsEmpty() const;
 
+  _SC_EXTERN size_t Size() const;
+
   _SC_EXTERN bool HasReplacement(std::string const & repl) const;
 
   /** Add triple:

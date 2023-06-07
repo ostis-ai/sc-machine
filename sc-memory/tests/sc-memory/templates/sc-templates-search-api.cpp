@@ -263,8 +263,8 @@ TEST_F(ScTemplateSearchApiTest, SearchVarTriple)
       ScType::Unknown >> "_addr2");
 
   size_t count = 0;
-  m_ctx->HelperSearchTemplate(
-      templ, [&](ScTemplateSearchResultItem const & item) { ++count; });
+  EXPECT_THROW(m_ctx->HelperSearchTemplate(
+      templ, [&](ScTemplateSearchResultItem const & item) { ++count; }), utils::ExceptionInvalidState);
 
   EXPECT_EQ(count, 0u);
 }
