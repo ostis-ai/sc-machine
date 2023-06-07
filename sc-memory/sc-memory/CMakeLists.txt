@@ -35,10 +35,12 @@ file(GLOB SOURCES CONFIGURE_DEPENDS
 )
 
 find_glib()
+find_package(nlohmann_json REQUIRED)
 
 add_library(sc-memory SHARED ${SOURCES} ${SOURCES_PARSER})
 target_link_libraries(sc-memory
     LINK_PRIVATE ${glib_LIBRARIES}
+    LINK_PRIVATE nlohmann_json::nlohmann_json
     LINK_PUBLIC sc-core
     LINK_PRIVATE antlr4_static
 )
