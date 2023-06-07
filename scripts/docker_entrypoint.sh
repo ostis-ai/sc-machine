@@ -1,5 +1,5 @@
-#!/bin/bash
-set -e # stop script execution if any errors are encountered
+#!/usr/bin/env bash
+set -eo pipefail # stop script execution if any errors are encountered
 
 # script help info
 function usage() {
