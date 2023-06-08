@@ -77,7 +77,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Now in tests all agents works in single thread
 - Replace asserts in sc-template search and gen API by exceptions throwing
 - `ScsLoader::loadScsFile` return bool instead void
-- Delete elements endpoint uses erase elements agent
 - Update garbage deletion agent logic, add check if element belongs to init memory structure
 - Make scsi pre-processor migrations scrip
 - Move to C++17
