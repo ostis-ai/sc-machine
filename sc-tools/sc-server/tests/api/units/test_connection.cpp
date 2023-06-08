@@ -150,9 +150,9 @@ TEST(ScServer, RunStopSaveUpdateStatistics)
 
   server->Run();
 
-  auto const & previousScMemorySaveTime = std::filesystem::last_write_time(SC_SERVER_REPO_PATH "/segments.scdb");
+  auto const & previousScMemorySaveTime = std::filesystem::last_write_time(SC_SERVER_REPO_PATH"/segments.scdb");
   sleep(7);
-  auto const & currentScMemorySaveTime = std::filesystem::last_write_time(SC_SERVER_REPO_PATH "/segments.scdb");
+  auto const & currentScMemorySaveTime = std::filesystem::last_write_time(SC_SERVER_REPO_PATH"/segments.scdb");
   EXPECT_NE(previousScMemorySaveTime, currentScMemorySaveTime);
 
   server->Stop();
