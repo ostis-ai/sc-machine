@@ -50,7 +50,8 @@ try
     config = options[{"config", "c"}].second;
 
   ScParams memoryParams{options, {{"verbose", "v"}, {"clear"}}};
-  memoryParams.insert({"repo_path", params.m_outputPath});
+  if (!params.m_outputPath.empty())
+    memoryParams.insert({"repo_path", params.m_outputPath});
 
   ScMemoryConfig memoryConfig{config, {"repo_path", "log_file"}, {"extensions_path"}, memoryParams};
   ScBuilderConfig builderConfig{ScConfig(config, {"repo_path", "log_file"}, {"extensions_path"}), params};

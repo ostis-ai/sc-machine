@@ -24,9 +24,16 @@ sc_bool sc_fs_memory_initialize_ext(sc_memory_params const * params)
 {
   manager = sc_fs_memory_build();
   manager->version = params->version;
+  manager->path = params->repo_path;
+
+  if (manager->path == null_ptr)
+  {
+    sc_fs_memory_error("Empty repo path to initialize memory");
+    return SC_FALSE;
+  }
 
   static sc_char const * segments_postfix = "segments" SC_FS_EXT;
-  sc_fs_concat_path(params->repo_path, segments_postfix, &manager->segments_path);
+  sc_fs_concat_path(manager->path, segments_postfix, &manager->segments_path);
 
   sc_fs_memory_info("Clear sc-fs-memory");
   if (manager->initialize(&manager->fs_memory, params) != SC_FS_MEMORY_OK)
@@ -271,6 +278,12 @@ error:
 
 sc_bool sc_fs_memory_save(sc_segment ** segments, sc_uint32 const segments_num)
 {
+  if (manager->path == null_ptr)
+  {
+    sc_fs_memory_error("Repo path is empty to save memory");
+    return SC_FALSE;
+  }
+
   sc_bool sc_memory_result = _sc_fs_memory_save_sc_memory_segments(segments, segments_num);
   sc_bool sc_fs_memory_result = manager->save(manager->fs_memory) == SC_FS_MEMORY_OK;
   return sc_memory_result && sc_fs_memory_result;

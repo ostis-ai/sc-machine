@@ -144,8 +144,8 @@ void sc_memory_shutdown(sc_bool save_state)
   sc_memory_context_free(s_memory_default_ctx);
   s_memory_default_ctx = 0;
 
-  /// todo: clear contexts
-  g_hash_table_destroy(s_context_hash_table);
+  if (s_context_hash_table)
+    g_hash_table_destroy(s_context_hash_table);
   s_context_hash_table = null_ptr;
   s_context_id_last = 0;
   sc_assert(s_context_id_count == 0);
@@ -217,7 +217,9 @@ void sc_memory_context_free_impl(sc_memory_context * ctx)
   g_mutex_lock(&s_concurrency_mutex);
 
   sc_memory_context * c = g_hash_table_lookup(s_context_hash_table, GINT_TO_POINTER(ctx->id));
-  sc_assert(c == ctx);
+  if (c == null_ptr)
+    return;
+
   g_hash_table_remove(s_context_hash_table, GINT_TO_POINTER(ctx->id));
   --s_context_id_count;
 

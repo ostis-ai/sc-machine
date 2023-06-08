@@ -46,14 +46,12 @@ try
     configFile = options[{"config", "c"}].second;
 
   ScParams serverParams{options, {{"host", "h"}, {"port", "p"}}};
-
   ScConfig config{configFile, {"repo_path", "extensions_path", "log_file"}};
   auto serverConfig = config["sc-server"];
   for (auto const & key : *serverConfig)
     serverParams.insert({key, serverConfig[key]});
 
   ScParams memoryParams{options, {{"extensions_path", "e"}, {"repo_path", "r"}, {"verbose", "v"}, {"clear"}}};
-
   ScMemoryConfig memoryConfig{config, memoryParams};
 
   sc_bool status = SC_FALSE;
@@ -67,7 +65,7 @@ try
   catch (utils::ScException const & e)
   {
     server->ClearLogOptions();
-    server->LogError(ScServerLogErrors::rerror, e.Description());
+    server->LogError(ScServerLogErrors::rerror, e.Message());
   }
   catch (std::exception const & e)
   {

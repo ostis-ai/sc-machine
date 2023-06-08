@@ -23,6 +23,7 @@ typedef struct _sc_dictionary_fs_memory sc_fs_memory;
 typedef struct _sc_fs_memory_manager
 {
   sc_fs_memory * fs_memory;  // file system memory instance
+  sc_char const * path;      // repo path
   sc_char * segments_path;   // file path to sc-memory segments
 
   sc_version version;
