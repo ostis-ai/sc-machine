@@ -11,12 +11,12 @@ std::unique_ptr<ScServer> ScServerFactory::ConfigureScServer(
     sc_memory_params memoryParams)
 {
   std::unique_ptr<ScServer> server = std::unique_ptr<ScServer>(new ScServerImpl(
-      serverParams.at("host"),
-      std::stoi(serverParams.at("port")),
+      serverParams.count("host") ? serverParams.at("host") : "127.0.0.1",
+      serverParams.count("port") ? std::stoi(serverParams.at("port")) : 8090,
       serverParams.at("log_type"),
       serverParams.at("log_file"),
       serverParams.at("log_level"),
-      std::stoi(serverParams.at("sync_actions")),
+      serverParams.count("sync_actions") ? std::stoi(serverParams.at("sync_actions")) : SC_FALSE,
       memoryParams));
 
   return server;

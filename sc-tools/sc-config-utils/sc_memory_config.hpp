@@ -40,7 +40,7 @@ public:
 
   void insert(std::pair<std::string, std::string> const & pair)
   {
-    m_params[pair.first] = pair.second;
+    m_params.insert(pair);
   }
 
   std::string const & at(std::string const & key) const

@@ -48,14 +48,18 @@ public:
     LogMessage(ScServerLogMessages::app, "Sc-server initialized");
     m_log = new ScServerLog(m_instance, logType, logFile, logLevel);
 
-    ScMemory::Initialize(params);
-    m_context = new ScMemoryContext("sc-server");
+    m_memoryState = ScMemory::Initialize(params);
+    if (m_memoryState)
+      m_context = new ScMemoryContext("sc-server");
 
     m_connections = new ScServerConnections();
   }
 
   void Run()
   {
+    if (!m_memoryState)
+      SC_THROW_EXCEPTION(utils::ExceptionInvalidState, "Sc-server sc-memory is invalid");
+
     m_isServerRun = SC_TRUE;
     m_instance->init_asio();
     m_instance->set_reuse_addr(SC_TRUE);
@@ -123,7 +127,10 @@ public:
     delete m_connections;
     m_connections = nullptr;
 
-    delete m_context;
+    if (m_memoryState)
+    {
+      delete m_context;
+    }
     ScMemory::Shutdown();
 
     LogMessage(ScServerLogMessages::app, "Shutdown sc-server");
@@ -200,6 +207,7 @@ protected:
   size_t m_updateStatisticsPeriod;
   size_t m_saveMemoryPeriod;
 
+  sc_bool m_memoryState;
   ScMemoryContext * m_context;
 
   ScServerCore * m_instance;

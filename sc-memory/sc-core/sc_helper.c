@@ -102,6 +102,9 @@ void _init_keynodes_str()
 
 void _destroy_keynodes_str()
 {
+  if (keynodes_str == null_ptr)
+    return;
+
   sc_uint32 i;
   for (i = 0; i < (sc_uint32)SC_KEYNODE_COUNT; ++i)
     sc_mem_free(keynodes_str[i]);

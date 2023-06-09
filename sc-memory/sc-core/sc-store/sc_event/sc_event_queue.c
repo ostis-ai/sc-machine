@@ -75,6 +75,9 @@ sc_event_queue * sc_event_queue_new()
 
 void sc_event_queue_stop_processing(sc_event_queue * queue)
 {
+  if (queue == null_ptr)
+    return;
+
   sc_bool is_running = SC_FALSE;
 
   g_mutex_lock(&queue->mutex);
@@ -91,6 +94,9 @@ void sc_event_queue_stop_processing(sc_event_queue * queue)
 
 void sc_event_queue_destroy_wait(sc_event_queue * queue)
 {
+  if (queue == null_ptr)
+    return;
+
   if (queue->thread_pool)
   {
     g_mutex_lock(&queue->mutex);

@@ -29,6 +29,9 @@ ScConfigGroup::ScConfigGroup(
   , m_notUsedKeys(notUsedKeys)
   , m_group(std::move(group))
 {
+  if (m_config == nullptr)
+    return;
+
   GList * keys = sc_config_get_keys(m_config);
 
   GList * element = sc_list_get_first(keys);
