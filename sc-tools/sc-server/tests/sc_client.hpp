@@ -42,6 +42,7 @@ public:
   void Stop()
   {
     m_instance.stop();
+    m_instance.stop_listening();
     m_thread.join();
   }
 

@@ -4,7 +4,6 @@
  * (See accompanying file COPYING.MIT or copy at http://opensource.org/licenses/MIT)
  */
 
-
 #pragma once
 
 #include "sc_memory_json_action.hpp"
@@ -26,7 +25,9 @@ class ScMemoryCreateElementsByScsJsonAction : public ScMemoryJsonAction
 {
 public:
   ScMemoryJsonPayload Complete(
-      ScMemoryContext * context, ScMemoryJsonPayload requestPayload, ScMemoryJsonPayload & errorsPayload) override
+      ScMemoryContext * context,
+      ScMemoryJsonPayload requestPayload,
+      ScMemoryJsonPayload & errorsPayload) override
   {
     ScMemoryJsonPayload responsePayload = ScMemoryJsonPayload::array({});
 
@@ -52,8 +53,8 @@ public:
 
       try
       {
-         m_helper->GenerateBySCsTextLazy(scs, outputStructure);
-         textGenResult = SC_TRUE;
+        m_helper->GenerateBySCsTextLazy(scs, outputStructure);
+        textGenResult = SC_TRUE;
       }
       catch (utils::ScException const & e)
       {

@@ -40,7 +40,8 @@ std::vector<ScMemoryJsonPayload> ScMemoryJsonHandler::ParseRequestMessage(std::s
 
 ScMemoryJsonPayload ScMemoryJsonHandler::JsonifyRequestMessage(std::string const & requestMessage)
 {
-  return ScMemoryJsonPayload::accept(requestMessage) ? ScMemoryJsonPayload::parse(requestMessage) : ScMemoryJsonPayload();
+  return ScMemoryJsonPayload::accept(requestMessage) ? ScMemoryJsonPayload::parse(requestMessage)
+                                                     : ScMemoryJsonPayload();
 }
 
 ScMemoryJsonPayload ScMemoryJsonHandler::ResponseRequestMessage(
@@ -90,5 +91,10 @@ ScMemoryJsonPayload ScMemoryJsonHandler::FormResponseMessage(
     ScMemoryJsonPayload const & errorsPayload,
     ScMemoryJsonPayload const & responsePayload)
 {
-  return ScMemoryJsonPayload({{"id", requestId}, {"event", event}, {"status", status}, {"errors", errorsPayload}, {"payload", responsePayload}});
+  return ScMemoryJsonPayload(
+      {{"id", requestId},
+       {"event", event},
+       {"status", status},
+       {"errors", errorsPayload},
+       {"payload", responsePayload}});
 }

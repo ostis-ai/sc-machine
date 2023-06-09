@@ -12,7 +12,9 @@ class ScMemoryTemplateGenerateJsonAction : public ScMemoryMakeTemplateJsonAction
 {
 public:
   ScMemoryJsonPayload Complete(
-      ScMemoryContext * context, ScMemoryJsonPayload requestPayload, ScMemoryJsonPayload & errorsPayload) override
+      ScMemoryContext * context,
+      ScMemoryJsonPayload requestPayload,
+      ScMemoryJsonPayload & errorsPayload) override
   {
     ScTemplateGenResult result;
     auto pair = GetTemplate(context, requestPayload);

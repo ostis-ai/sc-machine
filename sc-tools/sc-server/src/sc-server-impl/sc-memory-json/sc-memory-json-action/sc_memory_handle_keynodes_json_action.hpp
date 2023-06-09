@@ -12,7 +12,9 @@ class ScMemoryHandleKeynodesJsonAction : public ScMemoryJsonAction
 {
 public:
   ScMemoryJsonPayload Complete(
-      ScMemoryContext * context, ScMemoryJsonPayload requestPayload, ScMemoryJsonPayload & statusPayload) override
+      ScMemoryContext * context,
+      ScMemoryJsonPayload requestPayload,
+      ScMemoryJsonPayload & statusPayload) override
   {
     ScMemoryJsonPayload responsePayload;
 

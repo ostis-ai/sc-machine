@@ -94,12 +94,14 @@ sc_memory_context * sc_memory_initialize(const sc_memory_params * params)
   }
 
   sc_memory_info("All components successfully initialized");
+  sc_memory_info("Initialized");
   return s_memory_default_ctx;
 
 error:
 {
   sc_memory_context_free(s_memory_default_ctx);
   sc_memory_info("Components initialized with errors");
+  sc_memory_info("No initialized");
   return null_ptr;
 }
 }
@@ -151,6 +153,7 @@ void sc_memory_shutdown(sc_bool save_state)
   sc_assert(s_context_id_count == 0);
 
   sc_memory_info("All components shutdown");
+  sc_memory_info("Shutdown");
 }
 
 void sc_memory_shutdown_ext()
