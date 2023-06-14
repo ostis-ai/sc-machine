@@ -5,6 +5,7 @@
 extern "C"
 {
 #include "sc-core/sc-store/sc-fs-memory/sc_dictionary_fs_memory.h"
+#include "sc-core/sc-store/sc-fs-memory/sc_dictionary_fs_memory_private.h"
 #include "sc-core/sc-store/sc-fs-memory/sc_file_system.h"
 #include "sc-core/sc-store/sc-base/sc_allocator.h"
 #include "sc-core/sc-store/sc-container/sc-pair/sc_pair.h"
@@ -119,6 +120,26 @@ TEST(ScDictionaryFSMemoryTest, sc_dictionary_fs_memory_init_rm_shutdown_load)
   EXPECT_EQ(sc_dictionary_fs_memory_load(memory), SC_FS_MEMORY_OK);
   EXPECT_EQ(sc_dictionary_fs_memory_save(memory), SC_FS_MEMORY_OK);
   EXPECT_EQ(sc_dictionary_fs_memory_shutdown(memory), SC_FS_MEMORY_OK);
+}
+
+TEST(ScDictionaryFSMemoryTest, sc_dictionary_fs_memory_clear_init_shutdown_load)
+{
+  sc_memory_params * params = _sc_dictionary_fs_memory_get_default_params(SC_DICTIONARY_FS_MEMORY_PATH, SC_TRUE);
+  sc_dictionary_fs_memory * memory;
+  EXPECT_EQ(sc_dictionary_fs_memory_initialize(&memory, SC_DICTIONARY_FS_MEMORY_PATH), SC_FS_MEMORY_OK);
+  EXPECT_EQ(sc_dictionary_fs_memory_save(memory), SC_FS_MEMORY_OK);
+  EXPECT_EQ(sc_dictionary_fs_memory_shutdown(memory), SC_FS_MEMORY_OK);
+
+  EXPECT_EQ(sc_dictionary_fs_memory_initialize(&memory, SC_DICTIONARY_FS_MEMORY_PATH), SC_FS_MEMORY_OK);
+  EXPECT_EQ(sc_dictionary_fs_memory_load(memory), SC_FS_MEMORY_OK);
+  EXPECT_EQ(sc_dictionary_fs_memory_save(memory), SC_FS_MEMORY_OK);
+  EXPECT_EQ(sc_dictionary_fs_memory_shutdown(memory), SC_FS_MEMORY_OK);
+
+  EXPECT_EQ(sc_dictionary_fs_memory_initialize(&memory, SC_DICTIONARY_FS_MEMORY_PATH), SC_FS_MEMORY_OK);
+  EXPECT_EQ(sc_dictionary_fs_memory_load(memory), SC_FS_MEMORY_OK);
+  EXPECT_EQ(sc_dictionary_fs_memory_save(memory), SC_FS_MEMORY_OK);
+  EXPECT_EQ(sc_dictionary_fs_memory_shutdown(memory), SC_FS_MEMORY_OK);
+  sc_mem_free(params);
 }
 
 TEST(ScDictionaryFSMemoryTest, sc_dictionary_fs_memory_init_save_shutdown_load_deprecated_dictionary)

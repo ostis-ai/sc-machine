@@ -27,6 +27,8 @@ void sc_fs_concat_path_ext(sc_char const * path, sc_char const * postfix, sc_cha
 
 sc_bool sc_fs_create_directory(const sc_char * path);
 
+sc_bool sc_fs_remove_directory_ext(sc_char const * path, sc_bool remove_root);
+
 sc_bool sc_fs_remove_directory(const sc_char * path);
 
 sc_bool sc_fs_is_directory(const sc_char * path);

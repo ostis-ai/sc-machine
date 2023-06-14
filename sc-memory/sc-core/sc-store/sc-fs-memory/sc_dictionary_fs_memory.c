@@ -88,6 +88,10 @@ sc_dictionary_fs_memory_status sc_dictionary_fs_memory_initialize_ext(
       goto error;
     }
   }
+  else if (params->clear)
+  {
+    sc_fs_remove_directory_ext(path, SC_FALSE);
+  }
 
   *memory = sc_mem_new(sc_dictionary_fs_memory, 1);
   {
