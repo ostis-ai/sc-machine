@@ -10,6 +10,8 @@
 
 #include "sc-memory/scs/scs_types.hpp"
 
+#include "ASTJsonListener.hpp"
+
 #include <limits>
 #include <vector>
 #include <stack>
