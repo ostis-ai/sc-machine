@@ -34,9 +34,7 @@ public:
 
   ScServerConnections * GetConnections();
 
-  void SetMessageChannels(ScServerLogChannel channels);
-
-  void SetErrorChannels(ScServerLogChannel channels);
+  void SetChannels(ScServerLogLevel channels);
 
   void ClearChannels();
 
@@ -44,9 +42,7 @@ public:
 
   void ResetLogger(ScServerLogger * logger = nullptr);
 
-  void LogMessage(ScServerLogChannel channel, std::string const & message);
-
-  void LogError(ScServerLogChannel channel, std::string const & errorMessage);
+  void LogMessage(ScServerLogLevel channel, std::string const & message);
 
   void CloseConnection(ScServerConnectionHandle const & hdl, ScServerCloseCode code, std::string const & reason);
 

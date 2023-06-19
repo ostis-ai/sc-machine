@@ -43,8 +43,7 @@ protected:
 
     ScMemory::LogMute();
     m_server = std::make_unique<ScServerImpl>("127.0.0.1", 8865, SC_TRUE, params);
-    m_server->SetMessageChannels(ScServerLogMessages::all);
-    m_server->SetErrorChannels(ScServerLogErrors::all);
+    m_server->ClearChannels();
     m_server->Run();
     ScMemory::LogUnmute();
   }

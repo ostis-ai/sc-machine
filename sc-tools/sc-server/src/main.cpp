@@ -36,20 +36,21 @@ sc_bool RunServer(ScParams const & serverParams, ScMemoryConfig & memoryConfig, 
   try
   {
     server = ScServerFactory::ConfigureScServer(serverParams, memoryConfig.GetParams());
+    ScServerLogger * logger = ScServerFactory::ConfigureScServerLogger(server, serverParams);
     server->Run();
-    server->ResetLogger(ScServerFactory::ConfigureScServerLogger(server, serverParams));
+    server->ResetLogger(logger);
 
     status = SC_TRUE;
   }
   catch (utils::ScException const & e)
   {
     server->ResetLogger();
-    server->LogError(ScServerLogErrors::rerror, e.Message());
+    server->LogMessage(ScServerErrorLevel::error, e.Message());
   }
   catch (std::exception const & e)
   {
     server->ResetLogger();
-    server->LogError(ScServerLogErrors::rerror, e.what());
+    server->LogMessage(ScServerErrorLevel::error, e.what());
   }
 
   return status;
@@ -66,7 +67,7 @@ sc_bool StopServer(std::shared_ptr<ScServer> const & server)
   }
   catch (std::exception const & e)
   {
-    server->LogError(ScServerLogErrors::rerror, e.what());
+    server->LogMessage(ScServerErrorLevel::error, e.what());
   }
   return status;
 }

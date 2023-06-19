@@ -18,17 +18,19 @@ ScServerLoggerImpl::ScServerLoggerImpl(
 
 void ScServerLoggerImpl::Initialize(std::string logType, std::string logFile, std::string logLevel)
 {
+  m_server->LogMessage(ScServerErrorLevel::info, "Build logger");
+
   logType = DefineType(logType);
   logFile = DefineFile(logType, logFile);
   logLevel = DefineLevel(logLevel);
 
   {
-    m_server->LogMessage(ScServerLogMessages::app, "Logger:");
-    m_server->LogMessage(ScServerLogMessages::app, "\tLog type: " + logType);
+    m_server->LogMessage(ScServerErrorLevel::info, "Logger:");
+    m_server->LogMessage(ScServerErrorLevel::info, "\tLog type: " + logType);
     m_server->LogMessage(
-        ScServerLogMessages::app,
+        ScServerErrorLevel::info,
         "\tLog file: " + ((logType != SC_SERVER_FILE_TYPE || logFile.empty()) ? "No" : logFile));
-    m_server->LogMessage(ScServerLogMessages::app, "\tLog level: " + logLevel);
+    m_server->LogMessage(ScServerErrorLevel::info, "\tLog level: " + logLevel);
   }
 
   if (logFile.empty() == SC_FALSE)
@@ -43,13 +45,12 @@ void ScServerLoggerImpl::Initialize(std::string logType, std::string logFile, st
 
   m_server->ClearChannels();
 
+  ScServerLogLevel level = ScServerErrorLevel::error | ScServerErrorLevel::fatal | ScServerErrorLevel::warning;
   if (logLevel == SC_SERVER_DEBUG_LEVEL)
-    m_server->SetMessageChannels(ScServerLogMessages::all);
+    level |= (ScServerErrorLevel::debug | ScServerErrorLevel::info);
   else if (logLevel == SC_SERVER_INFO_LEVEL)
-    m_server->SetMessageChannels(ScServerLogMessages::app);
-  else if (logLevel == SC_SERVER_ERROR_LEVEL)
-    m_server->SetMessageChannels(ScServerLogMessages::fail);
-  m_server->SetErrorChannels(ScServerLogErrors::info);
+    level |= ScServerErrorLevel::info;
 
-  m_server->LogMessage(ScServerLogMessages::app, "Logger applied");
+  m_server->SetChannels(level);
+  m_server->LogMessage(ScServerErrorLevel::info, "Logger built");
 }

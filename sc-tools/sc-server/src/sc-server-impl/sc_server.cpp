@@ -19,19 +19,19 @@ ScServer::ScServer(std::string hostName, size_t port, sc_memory_params params)
 
   m_instance = new ScServerCore();
   ResetLogger();
-  LogMessage(ScServerLogMessages::app, "Initialize sc-server");
+  LogMessage(ScServerErrorLevel::info, "Initialize sc-server");
 
   m_updateStatisticsPeriod = params.update_period;
   m_saveMemoryPeriod = params.save_period;
 
   {
-    LogMessage(ScServerLogMessages::app, "Socket data:");
-    LogMessage(ScServerLogMessages::app, "\tHost name: " + m_hostName);
-    LogMessage(ScServerLogMessages::app, "\tPort: " + std::to_string(m_port));
+    LogMessage(ScServerErrorLevel::info, "Socket data:");
+    LogMessage(ScServerErrorLevel::info, "\tHost name: " + m_hostName);
+    LogMessage(ScServerErrorLevel::info, "\tPort: " + std::to_string(m_port));
   }
 
   m_connections = new ScServerConnections();
-  LogMessage(ScServerLogMessages::app, "Sc-server initialized");
+  LogMessage(ScServerErrorLevel::info, "Sc-server initialized");
 }
 
 void ScServer::Run()
@@ -49,24 +49,24 @@ void ScServer::Run()
   m_instance->listen({boost::asio::ip::address::from_string(m_hostName), sc_uint16(m_port)});
   m_instance->start_accept();
 
-  LogMessage(ScServerLogMessages::app, "Start lookup memory state");
+  LogMessage(ScServerErrorLevel::info, "Start lookup memory state");
   m_updateStatisticsThread = std::thread(&ScServer::UpdateMemoryStatistics, &*this);
   m_saveMemoryThread = std::thread(&ScServer::SaveMemory, &*this);
 
-  LogMessage(ScServerLogMessages::app, "Start actions processing");
+  LogMessage(ScServerErrorLevel::info, "Start actions processing");
   m_actionsThread = std::thread(&ScServer::EmitActions, &*this);
 
-  LogMessage(ScServerLogMessages::app, "Start input-output processing");
+  LogMessage(ScServerErrorLevel::info, "Start input-output processing");
   m_ioThread = std::thread(&ScServerCore::run, &*m_instance);
 
-  LogMessage(ScServerLogMessages::app, "All inner processes started");
-  LogMessage(ScServerLogMessages::app, "Sc-server run");
+  LogMessage(ScServerErrorLevel::info, "All inner processes started");
+  LogMessage(ScServerErrorLevel::info, "Sc-server run");
 }
 
 void ScServer::Stop()
 {
   m_isServerRun = SC_FALSE;
-  LogMessage(ScServerLogMessages::app, "Stop sc-server");
+  LogMessage(ScServerErrorLevel::info, "Stop sc-server");
   m_instance->stop();
 
   if (m_instance->is_listening())
@@ -76,13 +76,13 @@ void ScServer::Stop()
 
   if (m_actionsThread.joinable())
   {
-    LogMessage(ScServerLogMessages::app, "Stop actions processing");
+    LogMessage(ScServerErrorLevel::info, "Stop actions processing");
     m_actionsThread.join();
   }
 
   if (m_ioThread.joinable())
   {
-    LogMessage(ScServerLogMessages::app, "Stop input-output processing");
+    LogMessage(ScServerErrorLevel::info, "Stop input-output processing");
 
     for (auto & it : *m_connections)
     {
@@ -92,7 +92,7 @@ void ScServer::Stop()
       }
       catch (std::exception const & ex)
       {
-        LogError(ScServerLogErrors::devel, ex.what());
+        LogMessage(ScServerErrorLevel::error, ex.what());
       }
     }
 
@@ -106,19 +106,19 @@ void ScServer::Stop()
   if (m_saveMemoryThread.joinable())
     m_saveMemoryThread.join();
 
-  LogMessage(ScServerLogMessages::app, "All inner processes stopped");
-  LogMessage(ScServerLogMessages::app, "Sc-server stopped");
+  LogMessage(ScServerErrorLevel::info, "All inner processes stopped");
+  LogMessage(ScServerErrorLevel::info, "Sc-server stopped");
 }
 
 void ScServer::Shutdown()
 {
-  LogMessage(ScServerLogMessages::app, "Shutdown sc-server");
+  LogMessage(ScServerErrorLevel::info, "Shutdown sc-server");
 
-  LogMessage(ScServerLogMessages::app, "Clear connections");
+  LogMessage(ScServerErrorLevel::info, "Clear connections");
   delete m_connections;
   m_connections = nullptr;
 
-  LogMessage(ScServerLogMessages::app, "Sc-server shutdown");
+  LogMessage(ScServerErrorLevel::info, "Sc-server shutdown");
 
   delete m_instance;
   m_instance = nullptr;
@@ -143,24 +143,20 @@ void ScServer::Send(ScServerConnectionHandle const & hdl, std::string const & me
   m_instance->send(hdl, message, type);
 }
 
-void ScServer::SetMessageChannels(ScServerLogChannel channels)
-{
-  m_instance->set_access_channels(channels);
-}
-
-void ScServer::SetErrorChannels(ScServerLogChannel channels)
+void ScServer::SetChannels(ScServerLogLevel channels)
 {
   m_instance->set_error_channels(channels);
 }
 
 void ScServer::ClearChannels()
 {
-  m_instance->clear_access_channels(ScServerLogMessages::all);
-  m_instance->clear_error_channels(ScServerLogErrors::all);
+  m_instance->clear_access_channels(ScServerErrorLevel::all);
+  m_instance->clear_error_channels(ScServerErrorLevel::all);
 }
 
 void ScServer::ResetLogger(ScServerLogger * logger)
 {
+  LogMessage(ScServerErrorLevel::info, "Apply logger");
   if (m_logger)
   {
     delete m_logger;
@@ -170,28 +166,17 @@ void ScServer::ResetLogger(ScServerLogger * logger)
   m_logger = logger;
   if (m_logger)
   {
-    m_instance->get_alog().set_ostream(m_logger->GetStream());
     m_instance->get_elog().set_ostream(m_logger->GetStream());
   }
   else
   {
-    m_instance->get_alog().set_ostream();
     m_instance->get_elog().set_ostream();
   }
 }
 
-void ScServer::LogMessage(ScServerLogChannel channel, std::string const & message)
+void ScServer::LogMessage(ScServerLogLevel channel, std::string const & message)
 {
-  ScConsole::Output stream;
-  stream << ScConsole::Color::Grey;
-  m_instance->get_alog().write(channel, message);
-}
-
-void ScServer::LogError(ScServerLogChannel channel, std::string const & errorMessage)
-{
-  ScConsole::Output stream;
-  stream << ScConsole::Color::Red;
-  m_instance->get_elog().write(channel, errorMessage);
+  m_instance->get_elog().write(channel, message);
 }
 
 void ScServer::CloseConnection(

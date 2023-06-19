@@ -69,7 +69,7 @@ void ScServerImpl::EmitActions()
     }
     catch (std::exception const & e)
     {
-      LogError(ScServerLogErrors::devel, e.what());
+      LogMessage(ScServerErrorLevel::error, e.what());
     }
     delete action;
   }

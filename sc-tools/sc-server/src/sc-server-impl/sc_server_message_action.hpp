@@ -42,29 +42,29 @@ public:
     }
     catch (ScServerException const & e)
     {
-      m_server->LogError(ScServerLogErrors::library, e.m_msg);
+      m_server->LogMessage(ScServerErrorLevel::error, e.m_msg);
     }
     catch (utils::ScException const & e)
     {
-      m_server->LogError(ScServerLogErrors::library, e.Description());
+      m_server->LogMessage(ScServerErrorLevel::error, e.Description());
     }
   }
 
   void OnAction(ScServerConnectionHandle const & hdl, ScServerMessage const & msg)
   {
-    m_server->LogMessage(ScServerLogMessages::message_payload, "[request] " + msg->get_payload());
+    m_server->LogMessage(ScServerErrorLevel::debug, "[request] " + msg->get_payload());
     auto const & responseText = m_actionsHandler->Handle(hdl, msg->get_payload());
 
-    m_server->LogMessage(ScServerLogMessages::message_payload, "[response] " + responseText);
+    m_server->LogMessage(ScServerErrorLevel::debug, "[response] " + responseText);
     m_server->Send(hdl, responseText, ScServerMessageType::text);
   }
 
   void OnEvent(ScServerConnectionHandle const & hdl, ScServerMessage const & msg)
   {
-    m_server->LogMessage(ScServerLogMessages::message_payload, "[event] " + msg->get_payload());
+    m_server->LogMessage(ScServerErrorLevel::debug, "[event] " + msg->get_payload());
     auto const & responseText = m_eventsHandler->Handle(hdl, msg->get_payload());
 
-    m_server->LogMessage(ScServerLogMessages::message_payload, "[event response] " + responseText);
+    m_server->LogMessage(ScServerErrorLevel::debug, "[event response] " + responseText);
     m_server->Send(hdl, responseText, ScServerMessageType::text);
   }
 
@@ -81,13 +81,13 @@ public:
       delete context;
 
       response = "OK";
-      m_server->LogMessage(ScServerLogMessages::app, "I'm alive...");
+      m_server->LogMessage(ScServerErrorLevel::info, "I'm alive...");
     }
     catch (utils::ScException const & e)
     {
       SC_LOG_ERROR(e.Description());
       response = "NO";
-      m_server->LogMessage(ScServerLogMessages::app, "I've died...");
+      m_server->LogMessage(ScServerErrorLevel::info, "I've died...");
     }
 
     m_server->Send(hdl, response.dump(), ScServerMessageType::text);
