@@ -20,7 +20,8 @@ target_link_libraries(sc-server-lib sc-memory)
 target_link_libraries(sc-server sc-server-lib sc-config-utils)
 
 if(${SC_CLANG_FORMAT_CODE})
-    target_clangformat_setup(sc-server sc-server-lib)
+    target_clangformat_setup(sc-server-lib)
+    target_clangformat_setup(sc-server)
 endif()
 
 install_targets("/bin" sc-server sc-server-lib)

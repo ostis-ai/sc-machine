@@ -23,9 +23,6 @@ public:
   explicit ScServerImpl(
       std::string const & host,
       ScServerPort port,
-      std::string const & logType,
-      std::string const & logFile,
-      std::string const & logLevel,
       sc_bool syncActions,
       sc_memory_params const & params);
 

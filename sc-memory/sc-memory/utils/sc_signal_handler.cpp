@@ -60,7 +60,7 @@ ScSignalHandler::HandlerDelegate ScSignalHandler::m_onTerminate;
 
 void ScSignalHandler::Initialize()
 {
-  SC_LOG_INIT("Signal handler");
+  SC_LOG_INFO("Signal handler");
 #if SC_IS_PLATFORM_WIN32
   if (SetConsoleCtrlHandler((PHANDLER_ROUTINE)handlers::CtrlHandler, TRUE))
   {

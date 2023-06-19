@@ -13,7 +13,9 @@ class ScMemoryJsonAction
 {
 public:
   virtual ScMemoryJsonPayload Complete(
-      ScMemoryContext * context, ScMemoryJsonPayload requestPayload, ScMemoryJsonPayload & errorsPayload) = 0;
+      ScMemoryContext * context,
+      ScMemoryJsonPayload requestPayload,
+      ScMemoryJsonPayload & errorsPayload) = 0;
 
   virtual ~ScMemoryJsonAction() = default;
 };

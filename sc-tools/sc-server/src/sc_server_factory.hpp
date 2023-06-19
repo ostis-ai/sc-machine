@@ -12,5 +12,9 @@
 class ScServerFactory
 {
 public:
-  static std::unique_ptr<ScServer> ConfigureScServer(const ScParams & serverParams, sc_memory_params memoryParams);
+  static std::shared_ptr<ScServer> ConfigureScServer(ScParams const & serverParams, sc_memory_params memoryParams);
+
+  static ScServerLogger * ConfigureScServerLogger(
+      std::shared_ptr<ScServer> const & server,
+      ScParams const & serverParams);
 };

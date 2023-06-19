@@ -51,18 +51,18 @@ ScMemoryJsonPayload ScMemoryJsonEventsHandler::HandleCreate(
     ScMemoryJsonPayload & errorsPayload)
 {
   auto const & onEmitEvent = [](size_t id,
-                              ScServer * server,
-                              ScServerConnectionHandle const & handle,
-                              ScAddr const & addr,
-                              ScAddr const & edgeAddr,
-                              ScAddr const & otherAddr) -> sc_bool {
+                                ScServer * server,
+                                ScServerConnectionHandle const & handle,
+                                ScAddr const & addr,
+                                ScAddr const & edgeAddr,
+                                ScAddr const & otherAddr) -> sc_bool {
     ScMemoryJsonPayload const & responsePayload = {addr.Hash(), edgeAddr.Hash(), otherAddr.Hash()};
     ScMemoryJsonPayload const & errorsPayload = ScMemoryJsonPayload::object({});
     sc_bool const event = SC_TRUE;
     sc_bool const status = SC_TRUE;
 
-    ScMemoryJsonPayload const & responseTextJson
-        = FormResponseMessage(id, event, status, errorsPayload, responsePayload);
+    ScMemoryJsonPayload const & responseTextJson =
+        FormResponseMessage(id, event, status, errorsPayload, responsePayload);
     std::string const responseText = responseTextJson.dump();
 
     if (server != nullptr)

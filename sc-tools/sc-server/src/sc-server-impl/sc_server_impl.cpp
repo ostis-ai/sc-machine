@@ -12,22 +12,19 @@
 #define DEFAULT_PORT 8090
 
 ScServerImpl::ScServerImpl(sc_memory_params const & params)
-  : ScServerImpl(DEFAULT_HOST, DEFAULT_PORT, DEFAULT_LOG_TYPE, DEFAULT_LOG_FILE, DEFAULT_LOG_LEVEL, SC_FALSE, params)
+  : ScServerImpl(DEFAULT_HOST, DEFAULT_PORT, SC_FALSE, params)
 {
 }
 
 ScServerImpl::ScServerImpl(
     std::string const & host,
     ScServerPort port,
-    std::string const & logType,
-    std::string const & logFile,
-    std::string const & logLevel,
     sc_bool syncActions,
     sc_memory_params const & params)
-  : ScServer(host, port, logType, logFile, logLevel, params),
-  m_syncActions(syncActions),
-  m_actionsRun(SC_TRUE),
-  m_actions(new ScServerActions())
+  : ScServer(host, port, params)
+  , m_syncActions(syncActions)
+  , m_actionsRun(SC_TRUE)
+  , m_actions(new ScServerActions())
 {
 }
 
@@ -72,7 +69,7 @@ void ScServerImpl::EmitActions()
     }
     catch (std::exception const & e)
     {
-      LogError(ScServerLogErrors::devel, e.what());
+      LogMessage(ScServerErrorLevel::error, e.what());
     }
     delete action;
   }

@@ -38,7 +38,7 @@ ScMemoryJsonPayload ScMemoryJsonActionsHandler::HandleRequestPayload(
   if (it == m_actions.end())
   {
     errorsPayload = "Unsupported request type: " + requestType;
-    m_server->LogError(ScServerLogErrors::rerror, errorsPayload);
+    m_server->LogMessage(ScServerErrorLevel::error, errorsPayload);
     return responsePayload;
   }
 

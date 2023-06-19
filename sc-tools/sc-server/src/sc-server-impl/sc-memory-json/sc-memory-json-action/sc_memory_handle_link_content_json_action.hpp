@@ -16,12 +16,13 @@ class ScMemoryHandleLinkContentJsonAction : public ScMemoryJsonAction
 {
 public:
   ScMemoryJsonPayload Complete(
-      ScMemoryContext * context, ScMemoryJsonPayload requestPayload, ScMemoryJsonPayload & errorsPayload) override
+      ScMemoryContext * context,
+      ScMemoryJsonPayload requestPayload,
+      ScMemoryJsonPayload & errorsPayload) override
   {
     ScMemoryJsonPayload responsePayload;
 
-    auto const & process = [&context, &responsePayload, this](ScMemoryJsonPayload const & atom)
-    {
+    auto const & process = [&context, &responsePayload, this](ScMemoryJsonPayload const & atom) {
       std::string const & type = atom["command"].get<std::string>();
 
       if (type == "set")
@@ -124,14 +125,17 @@ private:
     return hashes;
   }
 
-  std::vector<std::string> FindLinksContentsByContentSubstring(ScMemoryContext * context, ScMemoryJsonPayload const & atom)
+  std::vector<std::string> FindLinksContentsByContentSubstring(
+      ScMemoryContext * context,
+      ScMemoryJsonPayload const & atom)
   {
     auto const & data = atom["data"];
     std::vector<std::string> vector;
     if (data.is_string())
       vector = context->FindLinksContentsByContentSubstring(data.get<std::string>(), maxLengthToSearchAsPrefix);
     else if (data.is_number_integer())
-      vector = context->FindLinksContentsByContentSubstring(std::to_string(data.get<sc_int>()), maxLengthToSearchAsPrefix);
+      vector =
+          context->FindLinksContentsByContentSubstring(std::to_string(data.get<sc_int>()), maxLengthToSearchAsPrefix);
     else if (data.is_number_float())
     {
       std::stringstream stream;

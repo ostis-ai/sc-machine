@@ -42,6 +42,8 @@ public:
   void Stop()
   {
     m_instance.stop();
+    if (m_instance.is_listening())
+      m_instance.stop_listening();
     m_thread.join();
   }
 
@@ -84,8 +86,8 @@ private:
 
   void Initialize()
   {
-    m_instance.clear_access_channels(ScServerLogMessages::all);
-    m_instance.set_error_channels(ScServerLogErrors::all);
+    m_instance.clear_access_channels(ScServerErrorLevel::all);
+    m_instance.set_error_channels(ScServerErrorLevel::all);
 
     m_instance.init_asio();
 

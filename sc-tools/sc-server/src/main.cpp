@@ -30,6 +30,48 @@ void PrintStartMessage()
             << "--test|-t -- Flag to test sc-server, run and stop it\n\n";
 }
 
+sc_bool RunServer(ScParams const & serverParams, ScMemoryConfig & memoryConfig, std::shared_ptr<ScServer> & server)
+{
+  sc_bool status = SC_FALSE;
+  try
+  {
+    server = ScServerFactory::ConfigureScServer(serverParams, memoryConfig.GetParams());
+    ScServerLogger * logger = ScServerFactory::ConfigureScServerLogger(server, serverParams);
+    server->Run();
+    server->ResetLogger(logger);
+
+    status = SC_TRUE;
+  }
+  catch (utils::ScException const & e)
+  {
+    server->ResetLogger();
+    server->LogMessage(ScServerErrorLevel::error, e.Message());
+  }
+  catch (std::exception const & e)
+  {
+    server->ResetLogger();
+    server->LogMessage(ScServerErrorLevel::error, e.what());
+  }
+
+  return status;
+}
+
+sc_bool StopServer(std::shared_ptr<ScServer> const & server)
+{
+  sc_bool status = SC_FALSE;
+  try
+  {
+    server->ResetLogger();
+    server->Stop();
+    status = SC_TRUE;
+  }
+  catch (std::exception const & e)
+  {
+    server->LogMessage(ScServerErrorLevel::error, e.what());
+  }
+  return status;
+}
+
 sc_int main(sc_int argc, sc_char * argv[])
 try
 {
@@ -54,41 +96,17 @@ try
   ScParams memoryParams{options, {{"extensions_path", "e"}, {"repo_path", "r"}, {"verbose", "v"}, {"clear"}}};
   ScMemoryConfig memoryConfig{config, memoryParams};
 
-  sc_bool status = SC_FALSE;
-  std::unique_ptr<ScServer> server;
-  try
-  {
-    server = ScServerFactory::ConfigureScServer(serverParams, memoryConfig.GetParams());
-    server->Run();
-    status = SC_TRUE;
-  }
-  catch (utils::ScException const & e)
-  {
-    server->ClearLogOptions();
-    server->LogError(ScServerLogErrors::rerror, e.Message());
-  }
-  catch (std::exception const & e)
-  {
-    server->ClearLogOptions();
-    server->LogError(ScServerLogErrors::rerror, e.what());
-  }
+  utils::ScSignalHandler::Initialize();
 
+  std::shared_ptr<ScServer> server;
+  sc_bool const status = RunServer(serverParams, memoryConfig, server);
   if (status == SC_FALSE)
   {
-    try
-    {
-      server->Stop();
-    }
-    catch (std::exception const & e)
-    {
-      server->LogError(ScServerLogErrors::rerror, e.what());
-    }
-
+    StopServer(server);
     return EXIT_FAILURE;
   }
 
   std::atomic_bool isRun = {!options.Has({"test", "t"})};
-  utils::ScSignalHandler::Initialize();
   utils::ScSignalHandler::m_onTerminate = [&isRun]() {
     isRun = SC_FALSE;
   };
@@ -98,9 +116,7 @@ try
     std::this_thread::sleep_for(std::chrono::milliseconds(1000));
   }
 
-  server->Stop();
-
-  return EXIT_SUCCESS;
+  return StopServer(server) ? EXIT_SUCCESS : EXIT_FAILURE;
 }
 catch (utils::ScException const & e)
 {

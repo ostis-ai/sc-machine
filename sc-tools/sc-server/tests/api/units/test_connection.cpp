@@ -35,9 +35,6 @@ TEST(ScServer, RunStop)
   auto server = std::unique_ptr<ScServer>(new ScServerImpl(
       serverParams.at("host"),
       std::stoi(serverParams.at("port")),
-      serverParams.at("log_type"),
-      serverParams.at("log_file"),
-      serverParams.at("log_level"),
       std::stoi(serverParams.at("sync_actions")),
       memoryConfig.GetParams()));
 
@@ -142,16 +139,13 @@ TEST(ScServer, RunStopSaveUpdateStatistics)
   auto server = std::unique_ptr<ScServer>(new ScServerImpl(
       serverParams.at("host"),
       std::stoi(serverParams.at("port")),
-      serverParams.at("log_type"),
-      serverParams.at("log_file"),
-      serverParams.at("log_level"),
       std::stoi(serverParams.at("sync_actions")),
       memoryConfig.GetParams()));
 
   server->Run();
 
   auto const & previousScMemorySaveTime = std::filesystem::last_write_time(SC_SERVER_REPO_PATH "/segments.scdb");
-  sleep(7);
+  sleep(10);
   auto const & currentScMemorySaveTime = std::filesystem::last_write_time(SC_SERVER_REPO_PATH "/segments.scdb");
   EXPECT_NE(previousScMemorySaveTime, currentScMemorySaveTime);
 
