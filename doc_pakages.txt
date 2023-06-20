@@ -1,6 +1,0 @@
-pygments
-markdown-include
-mkdocs-material
-mkdocs-cinder
-pymdown-extensions
-git+https://github.com/ostis-dev/scs-pygments-lexer.git

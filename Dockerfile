@@ -5,6 +5,7 @@ USER root
 
 #install runtime dependencies
 COPY scripts/install_deps_ubuntu.sh /tmp/sc-machine/scripts/install_deps_ubuntu.sh
+COPY scripts/set_vars.sh /tmp/sc-machine/scripts/set_vars.sh
 COPY requirements.txt /tmp/sc-machine/requirements.txt
 # tini is an init system to forward interrupt signals properly
 RUN apt update && apt install -y --no-install-recommends sudo tini && /tmp/sc-machine/scripts/install_deps_ubuntu.sh

@@ -1,7 +1,12 @@
 #!/usr/bin/env bash
-APP_ROOT_PATH=$(cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && cd .. && pwd)
+set -eo pipefail
 
-"${APP_ROOT_PATH}"/bin/sc-builder -i "${APP_ROOT_PATH}"/sc-tools/sc-builder/tests/kb -o "${APP_ROOT_PATH}"/bin/sc-builder-test-repo --clear -f
-"${APP_ROOT_PATH}"/bin/sc-builder -i "${APP_ROOT_PATH}"/sc-tools/sc-server/tests/kb -o "${APP_ROOT_PATH}"/bin/sc-server-test-repo --clear -f
+if [ -z "${BINARY_PATH}" ];
+then
+  source "$(cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd)"/set_vars.sh
+fi
 
-cd "${APP_ROOT_PATH}"/build && ctest -C Debug -V
+"${BINARY_PATH}/sc-builder" -i "${SC_MACHINE_PATH}/sc-tools/sc-builder/tests/kb" -o "${BINARY_PATH}/sc-builder-test-repo" --clear -f
+"${BINARY_PATH}/sc-builder" -i "${SC_MACHINE_PATH}/sc-tools/sc-server/tests/kb" -o "${BINARY_PATH}/sc-server-test-repo" --clear -f
+
+cd "${APP_ROOT_PATH}/build" && ctest -C Debug -V
