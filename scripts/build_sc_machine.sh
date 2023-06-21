@@ -4,7 +4,7 @@ set -eo pipefail
 CURRENT_DIR=$(cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd)
 source "${CURRENT_DIR}/formats.sh"
 
-if [ -z "${APP_ROOT_PATH}" ];
+if [[ -z "${PROBLEM_SOLVER_PATH}" || -z "${BUILD_PATH}" || -z "${BINARY_PATH}" ]];
 then
   source "${CURRENT_DIR}/set_vars.sh"
 fi
@@ -33,7 +33,7 @@ while [ "$1" != "" ]; do
       echo "Usage: $(basename "$0") [OPTION]..."
       echo
       echo "Options:"
-      echo "  -f, --force     full rebuild with the deleting of the $(relative "${APP_ROOT_PATH}/bin") and $(relative "${APP_ROOT_PATH}/build") folders"
+      echo "  -f, --force     full rebuild with the deleting of the $(relative "${BIN_PATH}") and $(relative "${BUILD_PATH}") folders"
       echo "  -t, --tests     build tests"
       echo "  -r, --release   release mode"
       echo "  -h, --help      display this help and exit"
@@ -52,15 +52,15 @@ stage "Build sc-machine"
 if ((build_force == 1));
 then
   stage "Clear latest build"
-	rm -rf "${APP_ROOT_PATH:?}/bin"
-	rm -rf "${APP_ROOT_PATH}/build"
-	find "${APP_ROOT_PATH}" -type d -name generated -exec rm -rf {} +
+  rm -rf "${BIN_PATH}"
+  rm -rf "${BUILD_PATH}"
+  find "${PROBLEM_SOLVER_PATH}" -type d -name generated -exec rm -rf {} +
 fi
 
 tests_appendix="-DSC_BUILD_TESTS=ON"
 release_mode_appendix="-DCMAKE_BUILD_TYPE=Release"
 
-cmake -B "${APP_ROOT_PATH}/build" "${APP_ROOT_PATH}" ${build_tests:+${tests_appendix}} ${release_mode:+${release_mode_appendix}} "$@"
-cmake --build "${APP_ROOT_PATH}/build" -j"$(nproc)"
+cmake -B "${BUILD_PATH}" "${PROBLEM_SOLVER_PATH}" ${build_tests:+${tests_appendix}} ${release_mode:+${release_mode_appendix}} "$@"
+cmake --build "${BUILD_PATH}" -j"$(nproc)"
 
 stage "SC-machine built successfully"
