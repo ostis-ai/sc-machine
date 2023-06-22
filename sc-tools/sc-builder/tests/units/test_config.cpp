@@ -12,7 +12,6 @@
 
 #include "sc_options.hpp"
 #include "sc_memory_config.hpp"
-#include "sc_builder_config.hpp"
 
 TEST(ScBuilder, RunStop)
 {
@@ -81,10 +80,8 @@ TEST(ScBuilder, BuilderConfig)
   params.m_resultStructureSystemIdtf =
       params.m_resultStructureUpload ? std::string(memoryConfig.GetParams().init_memory_generated_structure) : "";
 
-  ScBuilderConfig builderConfig{configFile, std::move(params)};
-
   Builder builder;
-  BuilderParams builderParams = builderConfig.GetParams();
+  BuilderParams builderParams;
   EXPECT_TRUE(builder.Run(builderParams, memoryConfig.GetParams()));
 
   std::string builderGroupName = "sc-builder";

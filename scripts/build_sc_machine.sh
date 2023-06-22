@@ -14,10 +14,6 @@ relative()
   realpath --relative-to="$(pwd)" "$1"
 }
 
-build_force=0
-build_tests=0
-release_mode=0
-
 while [ "$1" != "" ]; do
 	case $1 in
 		"-f"|"--force" )
