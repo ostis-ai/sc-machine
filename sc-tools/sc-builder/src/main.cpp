@@ -52,7 +52,7 @@ try
   if (!params.m_outputPath.empty())
     memoryParams.insert({"repo_path", params.m_outputPath});
 
-  ScConfig config{configPath,{"repo_path", "log_file", "input_path"}, {"extensions_path"}};
+  ScConfig config{configPath, {"repo_path", "log_file", "input_path"}, {"extensions_path"}};
   ScMemoryConfig memoryConfig{config, memoryParams};
 
   sc_memory_params const & formedMemoryParams = memoryConfig.GetParams();

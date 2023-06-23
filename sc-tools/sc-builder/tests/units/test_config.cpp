@@ -61,27 +61,25 @@ TEST(ScBuilder, BuilderConfig)
 {
   ScOptions options{1, nullptr};
 
-  BuilderParams params;
-  params.m_inputPath = SC_BUILDER_KB;
-  params.m_outputPath = SC_BUILDER_REPO_PATH;
-  params.m_autoFormatInfo = SC_TRUE;
+  BuilderParams builderParams;
+  builderParams.m_inputPath = SC_BUILDER_KB;
+  builderParams.m_outputPath = SC_BUILDER_REPO_PATH;
+  builderParams.m_autoFormatInfo = SC_TRUE;
 
   std::string config = SC_BUILDER_INI;
+  ScConfig configFile{config, {"repo_path"}};
 
   ScParams memoryParams{options, {}};
   memoryParams.insert({"repo_path", SC_BUILDER_REPO_PATH});
   memoryParams.insert({"clear", {}});
-
-  ScConfig configFile{config, {"repo_path"}};
-
   ScMemoryConfig memoryConfig{configFile, memoryParams};
 
-  params.m_resultStructureUpload = memoryConfig.GetParams().init_memory_generated_upload;
-  params.m_resultStructureSystemIdtf =
-      params.m_resultStructureUpload ? std::string(memoryConfig.GetParams().init_memory_generated_structure) : "";
+  sc_memory_params const memory_params = memoryConfig.GetParams();
+  builderParams.m_resultStructureUpload = memory_params.init_memory_generated_upload;
+  builderParams.m_resultStructureSystemIdtf =
+      builderParams.m_resultStructureUpload ? std::string(memory_params.init_memory_generated_structure) : "";
 
   Builder builder;
-  BuilderParams builderParams;
   EXPECT_TRUE(builder.Run(builderParams, memoryConfig.GetParams()));
 
   std::string builderGroupName = "sc-builder";
