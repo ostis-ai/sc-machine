@@ -22,8 +22,6 @@ extern "C"
 #include <glib.h>
 }
 
-#define SC_BOOL(x) (x) ? SC_TRUE : SC_FALSE
-
 namespace
 {
 GMutex gContextMutex;
@@ -335,11 +333,11 @@ ScAddr ScMemoryContext::GetArcEnd(ScAddr const & arcAddr) const
   return GetEdgeTarget(arcAddr);
 }
 
-bool ScMemoryContext::SetLinkContent(ScAddr const & addr, ScStreamPtr const & stream)
+bool ScMemoryContext::SetLinkContent(ScAddr const & addr, ScStreamPtr const & stream, bool isSearchable)
 {
   SC_ASSERT(IsValid(), ());
   SC_ASSERT(stream, ());
-  return sc_memory_set_link_content(m_context, *addr, stream->m_stream) == SC_RESULT_OK;
+  return sc_memory_set_link_content_ext(m_context, *addr, stream->m_stream, isSearchable) == SC_RESULT_OK;
 }
 
 ScStreamPtr ScMemoryContext::GetLinkContent(ScAddr const & addr)
@@ -642,9 +640,9 @@ ScMemoryContext::Stat ScMemoryContext::CalculateStat() const
   sc_memory_stat(m_context, &stat);
 
   Stat res{};
-  res.m_edgesNum = uint32_t(stat.arc_count);
-  res.m_linksNum = uint32_t(stat.link_count);
-  res.m_nodesNum = uint32_t(stat.node_count);
+  res.m_edgesNum = sc_uint64(stat.arc_count);
+  res.m_linksNum = sc_uint64(stat.link_count);
+  res.m_nodesNum = sc_uint64(stat.node_count);
 
   return res;
 }

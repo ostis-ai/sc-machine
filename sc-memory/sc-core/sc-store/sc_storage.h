@@ -153,6 +153,23 @@ sc_result sc_storage_get_arc_info(
  */
 sc_result sc_storage_set_link_content(sc_memory_context * ctx, sc_addr addr, const sc_stream * stream);
 
+/*! Setup content data for specified sc-link
+ * @param addr sc-addr of sc-link to setup content
+ * @param stream Pointer to stream
+ * @return If content of specified link changed without any errors, then return SC_OK; otherwise
+ * returns on of error codes:
+ * <ul>
+ * <li>SC_INVALID_TYPE - element with \p addr isn't a sc-link</li>
+ * <li>SC_ERROR_INVALID_PARAMS - element with specified \p addr doesn't exist
+ * <li>SC_ERROR - unknown error</li>
+ * </ul>
+ */
+sc_result sc_storage_set_link_content_ext(
+    sc_memory_context * ctx,
+    sc_addr addr,
+    const sc_stream * stream,
+    sc_bool is_searchable_string);
+
 /*! Returns content data from specified sc-link
  * @param addr sc-addr of sc-link to get content data
  * @param stream Pointer to returned data stream

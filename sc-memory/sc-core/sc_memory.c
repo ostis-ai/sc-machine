@@ -346,7 +346,16 @@ sc_result sc_memory_get_arc_info(
 
 sc_result sc_memory_set_link_content(sc_memory_context * ctx, sc_addr addr, const sc_stream * stream)
 {
-  return sc_storage_set_link_content(ctx, addr, stream);
+  return sc_memory_set_link_content_ext(ctx, addr, stream, SC_TRUE);
+}
+
+sc_result sc_memory_set_link_content_ext(
+    sc_memory_context * ctx,
+    sc_addr addr,
+    const sc_stream * stream,
+    sc_bool is_searchable_string)
+{
+  return sc_storage_set_link_content_ext(ctx, addr, stream, is_searchable_string);
 }
 
 sc_result sc_memory_get_link_content(sc_memory_context const * ctx, sc_addr addr, sc_stream ** stream)

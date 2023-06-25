@@ -63,11 +63,11 @@ class ScMemoryContext
 public:
   struct Stat
   {
-    uint32_t m_nodesNum;
-    uint32_t m_linksNum;
-    uint32_t m_edgesNum;
+    sc_uint64 m_nodesNum;
+    sc_uint64 m_linksNum;
+    sc_uint64 m_edgesNum;
 
-    uint32_t GetAllNum() const
+    sc_uint64 GetAllNum() const
     {
       return m_nodesNum + m_linksNum + m_edgesNum;
     }
@@ -144,11 +144,11 @@ public:
   SC_DEPRECATED(0.3.0, "Use ScMemoryContext::getEdgeTarget instead.")
   _SC_EXTERN ScAddr GetArcEnd(ScAddr const & arcAddr) const;
 
-  _SC_EXTERN bool SetLinkContent(ScAddr const & addr, ScStreamPtr const & stream);
+  _SC_EXTERN bool SetLinkContent(ScAddr const & addr, ScStreamPtr const & stream, bool isSearchable = true);
   template <typename TContentType>
-  bool SetLinkContent(ScAddr const & addr, TContentType const & value)
+  bool SetLinkContent(ScAddr const & addr, TContentType const & value, bool isSearchable = true)
   {
-    return SetLinkContent(addr, ScStreamMakeRead(value));
+    return SetLinkContent(addr, ScStreamMakeRead(value), isSearchable);
   }
 
   bool GetLinkContent(ScAddr const & addr, std::string & typedContent)

@@ -37,7 +37,8 @@ typedef struct _sc_fs_memory_manager
       sc_fs_memory * memory,
       sc_addr_hash const link_hash,
       sc_char const * string,
-      sc_uint64 const string_size);
+      sc_uint64 const string_size,
+      sc_bool is_searchable_string);
   sc_fs_memory_status (*get_string_by_link_hash)(
       sc_fs_memory * memory,
       sc_addr_hash const link_hash,
@@ -88,6 +89,18 @@ sc_bool sc_fs_memory_shutdown();
  * @returns SC_TRUE, if are no writing errors.
  */
 sc_bool sc_fs_memory_link_string(sc_addr_hash link_hash, sc_char const * string, sc_uint32 string_size);
+
+/*! Appends sc-link hash to file system memory with its string content.
+ * @param link_hash An appendable sc-link hash
+ * @param string A sc-link string content
+ * @param string_size A sc-link string content size
+ * @returns SC_TRUE, if are no writing errors.
+ */
+sc_bool sc_fs_memory_link_string_ext(
+    sc_addr_hash link_hash,
+    sc_char const * string,
+    sc_uint32 string_size,
+    sc_bool is_searchable_string);
 
 /*! Removes sc-link content string from file system memory.
  * @param link_hash A sc-link hash

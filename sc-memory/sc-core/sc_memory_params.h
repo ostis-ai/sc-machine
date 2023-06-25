@@ -23,6 +23,7 @@
 #define DEFAULT_MAX_STRINGS_CHANNEL_SIZE 100000
 #define DEFAULT_MAX_SEARCHABLE_STRING_SIZE 1000
 #define DEFAULT_TERM_SEPARATORS " _"
+#define DEFAULT_SEARCH_BY_SUBSTRING SC_TRUE
 
 typedef struct _sc_memory_params
 {
@@ -51,6 +52,7 @@ typedef struct _sc_memory_params
   sc_uint32 max_strings_channel_size;
   sc_uint32 max_searchable_string_size;
   sc_char const * term_separators;
+  sc_bool search_by_substring;
 } sc_memory_params;
 
 _SC_EXTERN void sc_memory_params_clear(sc_memory_params * params);
