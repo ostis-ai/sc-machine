@@ -12,6 +12,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Ability do not search for sc-links by substrings globally, passing config param
+- Ability do not search for sc-links by strings locally, passing param in SetLinkContent
 - Generalize all scripts
 - Script build_sc_machine with arguments
 - View kb fragment in scn if it is keyword
@@ -90,6 +92,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- Change memory statistics fields types from sc_uint32 to sc_uint64
 - Return empty sc_addr if not found by identifier in sc-helper
 - Trim paths in repo path
 - KB directory coping to prepare gwf and scsi sources 
