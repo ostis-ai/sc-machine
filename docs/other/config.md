@@ -27,6 +27,8 @@ max_searchable_string_size = 1000
 # Separators used to divide strings into tokens to find this strings by its tokens substrings. By default: " _"
 # If search by substring isn't needed, set this value to "" to increase maximum performance for strings linking and searching
 term_separators = " _" 
+# If search by substring isn't needed, set this value to "false" to increase maximum performance for strings linking
+search_by_substring = true
 
 [sc-server]
 # Sc-server socket data
