@@ -92,6 +92,7 @@ sc_dictionary_fs_memory_status sc_dictionary_fs_memory_link_string(
  * @param link_hash An appendable sc-link hash
  * @param string A sc-link string content
  * @param string_size A sc-link string content size
+ * @param is_searchable_string Ability to search for sc-links on this content string
  * @returns SC_FS_MEMORY_OK, if are no reading and writing errors.
  */
 sc_dictionary_fs_memory_status sc_dictionary_fs_memory_link_string_ext(

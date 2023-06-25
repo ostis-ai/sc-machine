@@ -156,6 +156,7 @@ sc_result sc_storage_set_link_content(sc_memory_context * ctx, sc_addr addr, con
 /*! Setup content data for specified sc-link
  * @param addr sc-addr of sc-link to setup content
  * @param stream Pointer to stream
+ * @param is_searchable_string Ability to search for sc-links on this content string
  * @return If content of specified link changed without any errors, then return SC_OK; otherwise
  * returns on of error codes:
  * <ul>

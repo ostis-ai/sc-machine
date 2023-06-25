@@ -144,11 +144,11 @@ public:
   SC_DEPRECATED(0.3.0, "Use ScMemoryContext::getEdgeTarget instead.")
   _SC_EXTERN ScAddr GetArcEnd(ScAddr const & arcAddr) const;
 
-  _SC_EXTERN bool SetLinkContent(ScAddr const & addr, ScStreamPtr const & stream, bool isSearchable = true);
+  _SC_EXTERN bool SetLinkContent(ScAddr const & addr, ScStreamPtr const & stream, bool isSearchableString = true);
   template <typename TContentType>
-  bool SetLinkContent(ScAddr const & addr, TContentType const & value, bool isSearchable = true)
+  bool SetLinkContent(ScAddr const & addr, TContentType const & value, bool isSearchableString = true)
   {
-    return SetLinkContent(addr, ScStreamMakeRead(value), isSearchable);
+    return SetLinkContent(addr, ScStreamMakeRead(value), isSearchableString);
   }
 
   bool GetLinkContent(ScAddr const & addr, std::string & typedContent)

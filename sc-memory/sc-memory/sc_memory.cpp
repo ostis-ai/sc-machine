@@ -333,11 +333,11 @@ ScAddr ScMemoryContext::GetArcEnd(ScAddr const & arcAddr) const
   return GetEdgeTarget(arcAddr);
 }
 
-bool ScMemoryContext::SetLinkContent(ScAddr const & addr, ScStreamPtr const & stream, bool isSearchable)
+bool ScMemoryContext::SetLinkContent(ScAddr const & addr, ScStreamPtr const & stream, bool isSearchableString)
 {
   SC_ASSERT(IsValid(), ());
   SC_ASSERT(stream, ());
-  return sc_memory_set_link_content_ext(m_context, *addr, stream->m_stream, isSearchable) == SC_RESULT_OK;
+  return sc_memory_set_link_content_ext(m_context, *addr, stream->m_stream, isSearchableString) == SC_RESULT_OK;
 }
 
 ScStreamPtr ScMemoryContext::GetLinkContent(ScAddr const & addr)

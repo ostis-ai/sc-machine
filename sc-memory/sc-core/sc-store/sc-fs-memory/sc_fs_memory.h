@@ -94,6 +94,7 @@ sc_bool sc_fs_memory_link_string(sc_addr_hash link_hash, sc_char const * string,
  * @param link_hash An appendable sc-link hash
  * @param string A sc-link string content
  * @param string_size A sc-link string content size
+ * @param is_searchable_string Ability to search for sc-links on this content string
  * @returns SC_TRUE, if are no writing errors.
  */
 sc_bool sc_fs_memory_link_string_ext(
