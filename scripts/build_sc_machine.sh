@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
-set -eo pipefail
+set -fexeo pipefail
 
 CURRENT_DIR=$(cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd)
 source "${CURRENT_DIR}/formats.sh"
 
-if [[ -z "${PROBLEM_SOLVER_PATH}" || -z "${BUILD_PATH}" || -z "${BINARY_PATH}" ]];
+if [[ -z "${ROOT_CMAKE_PATH}" || -z "${PROBLEM_SOLVER_PATH}" || -z "${BUILD_PATH}" || -z "${BINARY_PATH}" ]];
 then
   source "${CURRENT_DIR}/set_vars.sh"
 fi
@@ -29,6 +29,7 @@ USAGE
   exit 0
 }
 
+outer_definitions=()
 while [ "$1" != "" ]; do
 	case $1 in
 		"-f"|"--force" )
@@ -38,17 +39,24 @@ while [ "$1" != "" ]; do
 			build_tests=1
 			;;
     "-r"|"--release" )
-      release_mode=1
+      build_release=1
       ;;
-    "--add-options" )
+    "--add-options-info" )
       shift 1
-      additional_options=${1}
+      additional_options+=(${1})
+      ;;
+    "--add-definition" )
+      shift 1
+      outer_definitions+=("${1}")
       ;;
 	  "-h"|"--help" )
 	    usage
       exit 0
 			;;
     * )
+      echo -e "$(basename "$0"): unknown flag $1"
+      echo "Try '$(basename "$0") -h' for help"
+      exit 1
       ;;
 	esac
 	shift 1
@@ -64,11 +72,11 @@ then
   find "${PROBLEM_SOLVER_PATH}" -type d -name generated -exec rm -rf {} +
 fi
 
-tests_appendix="-DSC_BUILD_TESTS=ON"
-release_mode_appendix="-DCMAKE_BUILD_TYPE=Release"
+tests_mode="-DSC_BUILD_TESTS=ON"
+release_mode="-DCMAKE_BUILD_TYPE=Release"
 
-cd "${PROBLEM_SOLVER_PATH}"
-cmake -B "${BUILD_PATH}" "${PROBLEM_SOLVER_PATH}" ${build_tests:+${tests_appendix}} ${release_mode:+${release_mode_appendix}} "$@"
+cd "${ROOT_CMAKE_PATH}"
+cmake -B "${BUILD_PATH}" "${ROOT_CMAKE_PATH}" ${build_tests:+${tests_mode}} ${build_release:+${release_mode}} "${outer_definitions[@]}"
 cmake --build "${BUILD_PATH}" -j"$(nproc)"
 
 stage "SC-machine built successfully"
