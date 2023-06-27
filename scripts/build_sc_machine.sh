@@ -14,6 +14,21 @@ relative()
   realpath --relative-to="$(pwd)" "$1"
 }
 
+function usage() {
+  cat <<USAGE
+
+  Usage: $(basename "$0") [OPTION]...
+
+  Options:
+    -f, --force       full rebuild with the deleting of the $(relative "${BINARY_PATH}") and $(relative "${BUILD_PATH}") folders
+    -t, --tests       build tests
+    -r, --release     release mode
+    -h, --help        display this help and exit
+    ${additional_options}
+USAGE
+  exit 0
+}
+
 while [ "$1" != "" ]; do
 	case $1 in
 		"-f"|"--force" )
@@ -22,25 +37,21 @@ while [ "$1" != "" ]; do
 		"-t"|"--tests" )
 			build_tests=1
 			;;
-    "-r" | "--release" )
+    "-r"|"--release" )
       release_mode=1
       ;;
-	  "-h"|"--help")
-      echo "Usage: $(basename "$0") [OPTION]..."
-      echo
-      echo "Options:"
-      echo "  -f, --force     full rebuild with the deleting of the $(relative "${BIN_PATH}") and $(relative "${BUILD_PATH}") folders"
-      echo "  -t, --tests     build tests"
-      echo "  -r, --release   release mode"
-      echo "  -h, --help      display this help and exit"
+    "--add-options" )
+      shift 1
+      additional_options=${1}
+      ;;
+	  "-h"|"--help" )
+	    usage
       exit 0
 			;;
-    *)
-      echo -e "$(basename "$0"): unknown flag $1"
-      echo "Try '$(basename "$0") -h' for help"
-      exit 1
+    * )
+      ;;
 	esac
-	shift
+	shift 1
 done
 
 stage "Build sc-machine"
@@ -56,6 +67,7 @@ fi
 tests_appendix="-DSC_BUILD_TESTS=ON"
 release_mode_appendix="-DCMAKE_BUILD_TYPE=Release"
 
+cd "${PROBLEM_SOLVER_PATH}"
 cmake -B "${BUILD_PATH}" "${PROBLEM_SOLVER_PATH}" ${build_tests:+${tests_appendix}} ${release_mode:+${release_mode_appendix}} "$@"
 cmake --build "${BUILD_PATH}" -j"$(nproc)"
 
