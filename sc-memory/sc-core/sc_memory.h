@@ -153,9 +153,25 @@ _SC_EXTERN sc_result sc_memory_get_arc_info(
  * <li>SC_RESULT_INVALID_TYPE - element with \p addr isn't a sc-link</li>
  * <li>SC_RESULT_ERROR - unknown error</li>
  * </ul>
-
  */
 _SC_EXTERN sc_result sc_memory_set_link_content(sc_memory_context * ctx, sc_addr addr, sc_stream const * stream);
+
+/*! Setup content data for specified sc-link
+ * @param addr sc-addr of sc-link to setup content
+ * @param stream Pointer to stream
+ * @param is_searchable_string Ability to search for sc-links on this content string
+ * @return If content of specified link changed without any errors, then return SC_RESULT_OK; otherwise
+ * returns on of error codes:
+ * <ul>
+ * <li>SC_RESULT_INVALID_TYPE - element with \p addr isn't a sc-link</li>
+ * <li>SC_RESULT_ERROR - unknown error</li>
+ * </ul>
+ */
+_SC_EXTERN sc_result sc_memory_set_link_content_ext(
+    sc_memory_context * ctx,
+    sc_addr addr,
+    const sc_stream * stream,
+    sc_bool is_searchable_string);
 
 /*! Returns content of specified sc-link
  * @param addr sc-addr of sc-link to return content data

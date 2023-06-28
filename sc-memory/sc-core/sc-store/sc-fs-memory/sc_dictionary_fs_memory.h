@@ -28,6 +28,7 @@ typedef struct _sc_dictionary_fs_memory
   sc_uint32 max_strings_channel_size;
   sc_uint32 max_searchable_string_size;  // maximal size of strings that can be found by string/substring
   sc_char const * term_separators;
+  sc_bool search_by_substring;
 
   void ** strings_channels;
   sc_uint64 last_string_offset;  // last offset of string in 'string_path`
@@ -85,6 +86,21 @@ sc_dictionary_fs_memory_status sc_dictionary_fs_memory_link_string(
     sc_addr_hash link_hash,
     sc_char const * string,
     sc_uint64 string_size);
+
+/*! Appends sc-link hash to file system memory with its string content.
+ * @param memory A pointer to sc-memory instance
+ * @param link_hash An appendable sc-link hash
+ * @param string A sc-link string content
+ * @param string_size A sc-link string content size
+ * @param is_searchable_string Ability to search for sc-links on this content string
+ * @returns SC_FS_MEMORY_OK, if are no reading and writing errors.
+ */
+sc_dictionary_fs_memory_status sc_dictionary_fs_memory_link_string_ext(
+    sc_dictionary_fs_memory * memory,
+    sc_addr_hash link_hash,
+    sc_char const * string,
+    sc_uint64 string_size,
+    sc_bool is_searchable_string);
 
 /*! Removes sc-link content string from file system memory.
  * @param memory A pointer to sc-memory instance

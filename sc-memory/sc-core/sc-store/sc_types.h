@@ -220,12 +220,12 @@ enum _sc_event_type
 // structure to store statistics info
 struct _sc_stat
 {
-  sc_uint32 node_count;  // amount of all sc-nodes stored in memory
-  sc_uint32 arc_count;   // amount of all sc-arcs stored in memory
-  sc_uint32 link_count;  // amount of all sc-links stored in memory
+  sc_uint64 node_count;  // amount of all sc-nodes stored in memory
+  sc_uint64 arc_count;   // amount of all sc-arcs stored in memory
+  sc_uint64 link_count;  // amount of all sc-links stored in memory
 
-  sc_uint32 empty_count;  // amount of empty sc-element cells
-  sc_uint32 segments_count;
+  sc_uint64 empty_count;  // amount of empty sc-element cells
+  sc_uint64 segments_count;
 };
 
 #endif

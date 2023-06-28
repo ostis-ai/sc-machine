@@ -69,7 +69,17 @@ sc_bool sc_fs_memory_shutdown()
 
 sc_bool sc_fs_memory_link_string(sc_addr_hash const link_hash, sc_char const * string, sc_uint32 const string_size)
 {
-  return manager->link_string(manager->fs_memory, link_hash, string, string_size) == SC_FS_MEMORY_OK;
+  return manager->link_string(manager->fs_memory, link_hash, string, string_size, SC_TRUE) == SC_FS_MEMORY_OK;
+}
+
+sc_bool sc_fs_memory_link_string_ext(
+    sc_addr_hash const link_hash,
+    sc_char const * string,
+    sc_uint32 const string_size,
+    sc_bool is_searchable_string)
+{
+  return manager->link_string(manager->fs_memory, link_hash, string, string_size, is_searchable_string) ==
+         SC_FS_MEMORY_OK;
 }
 
 sc_bool sc_fs_memory_get_string_by_link_hash(sc_addr_hash const link_hash, sc_char ** string, sc_uint32 * string_size)

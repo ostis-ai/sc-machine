@@ -34,4 +34,5 @@ void sc_memory_params_clear(sc_memory_params * params)
   params->max_strings_channel_size = DEFAULT_MAX_STRINGS_CHANNEL_SIZE;
   params->max_searchable_string_size = DEFAULT_MAX_SEARCHABLE_STRING_SIZE;
   params->term_separators = DEFAULT_TERM_SEPARATORS;
+  params->search_by_substring = DEFAULT_SEARCH_BY_SUBSTRING;
 }

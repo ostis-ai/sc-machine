@@ -104,6 +104,7 @@ sc_dictionary_fs_memory_status sc_dictionary_fs_memory_initialize_ext(
       (*memory)->max_strings_channel_size = sc_boundary(params->max_strings_channel_size, 1000, SC_MAXUINT32);
       (*memory)->max_searchable_string_size = sc_boundary(params->max_searchable_string_size, 10, 100000);
       (*memory)->term_separators = params->term_separators;
+      (*memory)->search_by_substring = params->search_by_substring;
     }
     {
       _sc_uchar_dictionary_initialize(&(*memory)->terms_string_offsets_dictionary);
@@ -344,6 +345,7 @@ sc_dictionary_fs_memory_status _sc_dictionary_fs_memory_write_string(
     sc_char const * string,
     sc_uint64 const string_size,
     sc_list const * string_terms,
+    sc_bool is_searchable_string,
     sc_uint64 * string_offset,
     sc_bool * is_not_exist)
 {
@@ -352,7 +354,7 @@ sc_dictionary_fs_memory_status _sc_dictionary_fs_memory_write_string(
   *string_offset = INVALID_STRING_OFFSET;
 
   // find string if it exists in fs-memory
-  if (string_size < memory->max_searchable_string_size)
+  if (is_searchable_string)
   {
     sc_mutex_lock(&memory->rw_mutex);
     *string_offset = _sc_dictionary_fs_memory_get_string_offset_by_string(
@@ -416,7 +418,8 @@ sc_dictionary_fs_memory_status _sc_dictionary_fs_memory_write_string_terms_strin
       _sc_dictionary_fs_memory_append(memory->terms_string_offsets_dictionary, term, term_size, (void *)string_offset);
     }
 
-    sc_mem_free(term);
+    if (!memory->search_by_substring)
+      break;
   }
   sc_iterator_destroy(term_it);
 
@@ -429,21 +432,32 @@ sc_dictionary_fs_memory_status sc_dictionary_fs_memory_link_string(
     sc_char const * string,
     sc_uint64 const string_size)
 {
+  return sc_dictionary_fs_memory_link_string_ext(memory, link_hash, string, string_size, SC_TRUE);
+}
+
+sc_dictionary_fs_memory_status sc_dictionary_fs_memory_link_string_ext(
+    sc_dictionary_fs_memory * memory,
+    sc_addr_hash const link_hash,
+    sc_char const * string,
+    sc_uint64 const string_size,
+    sc_bool is_searchable_string)
+{
   if (memory == null_ptr)
   {
     sc_fs_memory_info("Memory is empty to link string");
     return SC_FS_MEMORY_NO;
   }
 
+  is_searchable_string &= string_size < memory->max_searchable_string_size;
   sc_list * string_terms = null_ptr;
   // don't divide into terms big strings if you don't need to search them
-  if (string_size < memory->max_searchable_string_size)
+  if (is_searchable_string)
     string_terms = _sc_dictionary_fs_memory_get_string_terms(string, memory->term_separators);
 
   sc_bool is_not_exist = SC_TRUE;
   sc_uint64 string_offset;
   sc_dictionary_fs_memory_status status = _sc_dictionary_fs_memory_write_string(
-      memory, link_hash, string, string_size, string_terms, &string_offset, &is_not_exist);
+      memory, link_hash, string, string_size, string_terms, is_searchable_string, &string_offset, &is_not_exist);
   if (status != SC_FS_MEMORY_OK)
     return status;
 
@@ -452,10 +466,9 @@ sc_dictionary_fs_memory_status sc_dictionary_fs_memory_link_string(
     _sc_dictionary_fs_memory_append_link_string_unique(memory, link_hash, string_offset);
   }
 
-  if (is_not_exist && string_size < memory->max_searchable_string_size)
+  if (is_searchable_string && is_not_exist)
     status = _sc_dictionary_fs_memory_write_string_terms_string_offset(memory, string_offset, string_terms);
-  else
-    sc_list_clear(string_terms);
+  sc_list_clear(string_terms);
   sc_list_destroy(string_terms);
 
   return status;
