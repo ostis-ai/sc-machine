@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-set -fexeo pipefail
+set -eo pipefail
 
 CURRENT_DIR=$(cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd)
 source "${CURRENT_DIR}/formats.sh"
@@ -43,7 +43,7 @@ while [ "$1" != "" ]; do
       ;;
     "--add-options-info" )
       shift 1
-      additional_options+=(${1})
+      additional_options+=("${1}")
       ;;
     "--add-definition" )
       shift 1
