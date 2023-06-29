@@ -20,16 +20,16 @@ function usage() {
   Usage: $(basename "$0") [OPTION]...
 
   Options:
-    -f, --force       full rebuild with the deleting of the $(relative "${BINARY_PATH}") and $(relative "${BUILD_PATH}") folders
-    -t, --tests       build tests
-    -r, --release     release mode
-    -h, --help        display this help and exit
-    ${additional_options}
+    -f, --force        full rebuild with the deleting of the $(relative "${BINARY_PATH}") and $(relative "${BUILD_PATH}") folders
+    -t, --tests        build in tests mode
+    -r, --release      build in release mode
+    --cmake-arg        add new argument into cmake build
+    -h, --help         display this help and exit
 USAGE
   exit 0
 }
 
-outer_definitions=()
+outer_cmake_args=()
 while [ "$1" != "" ]; do
 	case $1 in
 		"-f"|"--force" )
@@ -41,13 +41,9 @@ while [ "$1" != "" ]; do
     "-r"|"--release" )
       build_release=1
       ;;
-    "--add-options-info" )
+    "--cmake-arg" )
       shift 1
-      additional_options+=("${1}")
-      ;;
-    "--add-definition" )
-      shift 1
-      outer_definitions+=("${1}")
+      outer_cmake_args+=("${1}")
       ;;
 	  "-h"|"--help" )
 	    usage
@@ -55,14 +51,12 @@ while [ "$1" != "" ]; do
 			;;
     * )
       echo -e "$(basename "$0"): unknown flag $1"
-      echo "Try '$(basename "$0") -h' for help"
-      exit 1
+      echo "Try '$0 -h' for help"
+      exit 2
       ;;
 	esac
 	shift 1
 done
-
-stage "Build sc-machine"
 
 if ((build_force == 1));
 then
@@ -75,8 +69,10 @@ fi
 tests_mode="-DSC_BUILD_TESTS=ON"
 release_mode="-DCMAKE_BUILD_TYPE=Release"
 
+stage "Build sc-machine"
+
 cd "${ROOT_CMAKE_PATH}"
-cmake -B "${BUILD_PATH}" "${ROOT_CMAKE_PATH}" ${build_tests:+${tests_mode}} ${build_release:+${release_mode}} "${outer_definitions[@]}"
+cmake -B "${BUILD_PATH}" "${ROOT_CMAKE_PATH}" ${build_tests:+${tests_mode}} ${build_release:+${release_mode}} "${outer_cmake_args[@]}"
 cmake --build "${BUILD_PATH}" -j"$(nproc)"
 
 stage "SC-machine built successfully"
