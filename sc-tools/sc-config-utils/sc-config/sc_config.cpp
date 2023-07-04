@@ -54,11 +54,13 @@ ScConfigGroup::ScConfigGroup(
 
 std::string ScConfigGroup::operator[](std::string const & key) const
 {
-  std::string const & value = sc_config_get_value_string(m_config, m_group.c_str(), key.c_str());
+  sc_char * value = sc_config_get_value_string(m_config, m_group.c_str(), key.c_str());
+  if (value == nullptr)
+    return "";
+
   std::stringstream stream;
 
   auto const & it = m_pathKeys.find(key);
-
   if (it == m_pathKeys.cend())
     return value;
 

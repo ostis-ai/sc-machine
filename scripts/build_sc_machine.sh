@@ -4,7 +4,7 @@ set -eo pipefail
 CURRENT_DIR=$(cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd)
 source "${CURRENT_DIR}/formats.sh"
 
-if [[ -z "${PROBLEM_SOLVER_PATH}" || -z "${BUILD_PATH}" || -z "${BINARY_PATH}" ]];
+if [[ -z "${ROOT_CMAKE_PATH}" || -z "${PROBLEM_SOLVER_PATH}" || -z "${BUILD_PATH}" || -z "${BINARY_PATH}" ]];
 then
   source "${CURRENT_DIR}/set_vars.sh"
 fi
@@ -14,10 +14,22 @@ relative()
   realpath --relative-to="$(pwd)" "$1"
 }
 
-build_force=0
-build_tests=0
-release_mode=0
+function usage() {
+  cat <<USAGE
 
+  Usage: $(basename "$0") [OPTION]...
+
+  Options:
+    -f, --force        full rebuild with the deleting of the $(relative "${BINARY_PATH}") and $(relative "${BUILD_PATH}") folders
+    -t, --tests        build in tests mode
+    -r, --release      build in release mode
+    --cmake-arg        add new argument into cmake build
+    -h, --help         display this help and exit
+USAGE
+  exit 0
+}
+
+outer_cmake_args=()
 while [ "$1" != "" ]; do
 	case $1 in
 		"-f"|"--force" )
@@ -26,28 +38,25 @@ while [ "$1" != "" ]; do
 		"-t"|"--tests" )
 			build_tests=1
 			;;
-    "-r" | "--release" )
-      release_mode=1
+    "-r"|"--release" )
+      build_release=1
       ;;
-	  "-h"|"--help")
-      echo "Usage: $(basename "$0") [OPTION]..."
-      echo
-      echo "Options:"
-      echo "  -f, --force     full rebuild with the deleting of the $(relative "${BIN_PATH}") and $(relative "${BUILD_PATH}") folders"
-      echo "  -t, --tests     build tests"
-      echo "  -r, --release   release mode"
-      echo "  -h, --help      display this help and exit"
+    "--cmake-arg" )
+      shift 1
+      outer_cmake_args+=("${1}")
+      ;;
+	  "-h"|"--help" )
+	    usage
       exit 0
 			;;
-    *)
+    * )
       echo -e "$(basename "$0"): unknown flag $1"
-      echo "Try '$(basename "$0") -h' for help"
-      exit 1
+      echo "Try '$0 -h' for help"
+      exit 2
+      ;;
 	esac
-	shift
+	shift 1
 done
-
-stage "Build sc-machine"
 
 if ((build_force == 1));
 then
@@ -57,10 +66,13 @@ then
   find "${PROBLEM_SOLVER_PATH}" -type d -name generated -exec rm -rf {} +
 fi
 
-tests_appendix="-DSC_BUILD_TESTS=ON"
-release_mode_appendix="-DCMAKE_BUILD_TYPE=Release"
+tests_mode="-DSC_BUILD_TESTS=ON"
+release_mode="-DCMAKE_BUILD_TYPE=Release"
 
-cmake -B "${BUILD_PATH}" "${PROBLEM_SOLVER_PATH}" ${build_tests:+${tests_appendix}} ${release_mode:+${release_mode_appendix}} "$@"
+stage "Build sc-machine"
+
+cd "${ROOT_CMAKE_PATH}"
+cmake -B "${BUILD_PATH}" "${ROOT_CMAKE_PATH}" ${build_tests:+${tests_mode}} ${build_release:+${release_mode}} "${outer_cmake_args[@]}"
 cmake --build "${BUILD_PATH}" -j"$(nproc)"
 
 stage "SC-machine built successfully"

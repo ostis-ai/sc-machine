@@ -9,7 +9,6 @@
 #include <iostream>
 
 #include "sc_memory_config.hpp"
-#include "sc_builder_config.hpp"
 
 void PrintStartMessage()
 {
@@ -45,27 +44,27 @@ try
 
   params.m_autoFormatInfo = options.Has({"auto_formats", "f"});
 
-  std::string config;
+  std::string configPath;
   if (options.Has({"config", "c"}))
-    config = options[{"config", "c"}].second;
+    configPath = options[{"config", "c"}].second;
 
   ScParams memoryParams{options, {{"verbose", "v"}, {"clear"}}};
   if (!params.m_outputPath.empty())
     memoryParams.insert({"repo_path", params.m_outputPath});
 
-  ScMemoryConfig memoryConfig{config, {"repo_path", "log_file"}, {"extensions_path"}, memoryParams};
-  ScBuilderConfig builderConfig{ScConfig(config, {"repo_path", "log_file"}, {"extensions_path"}), params};
+  ScConfig config{configPath, {"repo_path", "log_file", "input_path"}, {"extensions_path"}};
+  ScMemoryConfig memoryConfig{config, memoryParams};
 
   sc_memory_params const & formedMemoryParams = memoryConfig.GetParams();
-  BuilderParams formedBuilderParams = builderConfig.GetParams();
-  formedBuilderParams.m_resultStructureUpload = formedMemoryParams.init_memory_generated_upload;
+  if (params.m_inputPath.empty())
+    params.m_inputPath = config["sc-builder"]["input_path"];
+
+  params.m_resultStructureUpload = formedMemoryParams.init_memory_generated_upload;
   if (formedMemoryParams.init_memory_generated_structure != nullptr)
-  {
-    formedBuilderParams.m_resultStructureSystemIdtf = formedMemoryParams.init_memory_generated_structure;
-  }
+    params.m_resultStructureSystemIdtf = formedMemoryParams.init_memory_generated_structure;
 
   Builder builder;
-  return builder.Run(formedBuilderParams, formedMemoryParams) ? EXIT_SUCCESS : EXIT_FAILURE;
+  return builder.Run(params, formedMemoryParams) ? EXIT_SUCCESS : EXIT_FAILURE;
 }
 catch (utils::ScException const & ex)
 {
