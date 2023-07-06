@@ -12,25 +12,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- Ability do not search for sc-links by substrings globally, passing config param
-- Ability do not search for sc-links by strings locally, passing param in SetLinkContent
-- Generalize all scripts
-- Script build_sc_machine with arguments
+- Ability do not search for sc-links by substrings globally, passing config param `search_by_substring`
+- Ability do not search for sc-links by strings locally, passing param in SetLinkContent `is_searchable`
+- Generalize all scripts for applied projects
+- Script `build_sc_machine.sh` with arguments `-f` `-t` and `-r` instead of `make_all.sh`
 - View kb fragment in scn if it is keyword
-- Tests for repo-path parser and collector
+- Tests for repo-path parser and sources collector in `sc-builder`
 - Support for deprecated memory binaries build in 0.7.0 version
 - Synchronize processes that works with file memory and sc-dictionary
-- Get replacements in template result by variable address
-- Configs for file memory string sections
-- Divide strings file into more small files with fixed size by requested configs
+- Get replacements in template result by variable addresses
+- Divide strings file into more small files with fixed size by requested configs `max_strings_channels` and `max_strings_channel_size`
 - Configuration of docker-compose.yml using .env file
-- Script run_tests.sh
-- Tests for fs-memory
-- Intersect/unite search by strings in fs-memory
-- Search strings and link hashes by terms in fs-memory
+- Script `run_tests.sh`
+- Full tests for file memory API
+- Intersect/unite search sc-links by strings and substrings in file memory
+- Search strings and sc-link hashes by terms in file memory
 - File memory on file system, save strings in file system disks
-- Configure events and agents threads
-- Provide loop-ranged API method for sc-template search ([78](https://github.com/ostis-ai/sc-machine/issues/78))
+- Configure events and agents threads in sc-memory, passing config param `max_events_and_agents_threads`
+- Loop-ranged API method for sc-template search ([78](https://github.com/ostis-ai/sc-machine/issues/78))
+- Full tests for sc-template API
 - Sc-template cycle preventing search
 - Sc-template equal triples search
 - Sc-template search API to get and use constructions step by step
@@ -46,25 +46,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Write docs for system identifier set/get/find/resolve sc-memory API
 - Extend set/get/find/resolve sc-memory API with out system identifier fiver parameters
 - Insert sc-keynodes in global knowledge base during sc-memory initiation
-- Save sc-memory by period in sc-server
-- Dump statistics by period in sc-server
-- Erase sc-elements agent
-- Transfer init memory generated structure to modules initialization
-- Possibility to skip keys defined in configs
-- Pre-commit code style checks
+- Save sc-memory by period in sc-server, passing config param `save_period` in seconds
+- Dump statistics by period in sc-server, passing config param `update_period` in seconds
+- Agent for erasing sc-elements not belonging to the global structure `init_memory_generated_structure`
+- Transfer init memory generated structure to modules initialization, passing config params `init_memory_generated_upload` and `init_memory_generated_structure`
+- Possibility to skip keys defined in .ini config file in ScConfig
+- Pre-commit code style checks for C++ and Python
 - Add reversed edges according to standart
-- Add `![]!` parsing to scs parser
+- Sc-links classes `![]!` in SCs
 - Insert sc-keynodes and their system identifiers in global knowledge base during sc-memory initiation
 - Extend create elements by SCs in `sc-server` with outputStructure field
 - Write docs for system identifier set/get/find/resolve sc-memory API
-- Extend set/get/find/resolve sc-memory API with out system identifier fiver parameters
+- Extend set/get/find/resolve sc-memory API with outer system identifier fiver parameters
 - CI for documentation build
-- Fix memory clear parameter reading from config file
 - Add output structure builder feature to config
 - Add validation of system identifier
 - Append generated elements by `SCs-helper` into requested output structure
 - Oriented sets representation (<a, ..., b>) in SCs
-- Build docs in SCn format
+- Build docs in SCn format separately from `ostis-web-platform`
 
 ### Changed
 
@@ -73,19 +72,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Call gwf-translator in sc-builder
 - Move repo path parser from Python to C++ in sc-builder
 - Unite ScTemplateGenResult and ScTemplateSearchResultItem into ScTemplateResultItem
-- Remove list to array translations in C API for fs-memory
+- Remove list to array translations in C API for file memory
 - Upload text and binary files in realtime by get API
-- Remove string lengths recount in fs-memory
-- Optimize int to string translation in fs-memory
+- Remove string lengths recount in file memory
+- Optimize int to string translation in file memory
 - Use iterators instead of sc-template in `getNextFromSet` util
-- Generalized docker_entrypoint.sh, this script can be used by external projects now
+- Generalized `docker_entrypoint.sh`, this script can be used by external projects now
 - Now in tests all agents works in single thread
 - Replace asserts in sc-template search and gen API by exceptions throwing
 - `ScsLoader::loadScsFile` return bool instead void
 - Update garbage deletion agent logic, add check if element belongs to init memory structure
 - Make scsi pre-processor migrations script
 - Move to C++17
-- Remove 1 minute assert in ScWait
+- Remove 1 minute assert in `ScWait`
 - Add language parameter for sc2scs-json-translator to get elements identifiers
 - Append to sc2scs-json elements main/system identifiers
 - Replace row strings by nlohmann-json in sc2scs-json-translator
@@ -93,13 +92,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - Change memory statistics fields types from sc_uint32 to sc_uint64
-- Return empty sc_addr if not found by identifier in sc-helper
-- Trim paths in repo path
+- Return empty sc_addr if not found by identifier in `sc-helper`
+- Build kb script doesn't ignore whitespace ([239](https://github.com/ostis-ai/sc-machine/issues/239))
+- Docker entrypoint throws integer expression expected ([267](https://github.com/ostis-ai/sc-machine/issues/267))
 - KB directory coping to prepare gwf and scsi sources 
 - Tests for template build and gen with params
 - Aliases checking in build by scs
 - Not use system identifiers of vars in sc-template-build
-- Sc-template search by empty template ([65](https://github.com/ostis-ai/sc-machine/issues/65)))
+- Sc-template search by empty template ([65](https://github.com/ostis-ai/sc-machine/issues/65))
 - Segfaults in test sc-client
 - Creating sc-keynodes without defining type. Now they will be created with const node type.
 - Converting to string params from configs
@@ -107,11 +107,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - GetLinkContent skip whitespaces in strings
 - No inserting system identifiers of keynodes to output structure ([223](https://github.com/ostis-ai/sc-machine/issues/223))
 - `SCs-helper` doesn't return generated identifier links ([207](https://github.com/ostis-ai/sc-machine/issues/207))
-- No json string message parsing in `sc-server` ([190](https://github.com/ostis-ai/sc-machine/issues/190))
+- No json string message parsing in `sc-server` (WebSocket request dumps sc-machine) ([190](https://github.com/ostis-ai/sc-machine/issues/190))
+- SCs-file dumps kb-builder by WebSocket ([189](https://github.com/ostis-ai/sc-machine/issues/189))
 - `SCs-parser` create structure twice
 - `SCs-parser` doesn't unite all generated elements into structure ([205](https://github.com/ostis-ai/sc-machine/issues/205))
-- Link deletion ([193](https://github.com/ostis-ai/sc-machine/issues/193)
+- Link deletion ([193](https://github.com/ostis-ai/sc-machine/issues/193))
 - Add curl to installation script
+- Fix memory clear parameter reading from .ini config file
 - Merging identifiers in sc-dictionary ([192](https://github.com/ostis-ai/sc-machine/issues/192))
 - Dependence order in var template search triples ([186](https://github.com/ostis-ai/sc-machine/issues/186))
 
@@ -119,7 +121,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Windows files and cmake dependencies
 - Prepare kb step and `prepare_kb.py`
-- Rocksdb fs-memory
+- Rocksdb file memory
 - Garbage deletion agent
 
 ## [0.7.0-Rebirth] - 12.10.2022
