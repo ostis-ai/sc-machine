@@ -21,7 +21,7 @@ ENTRYPOINT ["/bin/bash"]
 FROM devdeps as builder
 WORKDIR /sc-machine
 COPY . .
-RUN --mount=type=cache,target=/ccache/ ./scripts/make_all.sh
+RUN --mount=type=cache,target=/ccache/ ./scripts/build_sc_machine.sh -r
 
 #Gathering all artifacts together
 FROM base AS final
