@@ -1,10 +1,46 @@
 #include <gtest/gtest.h>
 
-#include "sc-memory/sc_link.hpp"
 #include "sc-memory/sc_memory.hpp"
 #include <algorithm>
 
 #include "sc_test.hpp"
+
+TEST_F(ScMemoryTest, ScMemory)
+{
+  EXPECT_TRUE(ScMemory::IsInitialized());
+  EXPECT_TRUE(m_ctx->IsValid());
+}
+
+TEST_F(ScMemoryTest, CreateElements)
+{
+  ScAddr const & nodeAddr = m_ctx->CreateNode(ScType::NodeConst);
+  EXPECT_TRUE(nodeAddr.IsValid());
+  EXPECT_TRUE(m_ctx->IsElement(nodeAddr));
+
+  ScAddr const & linkAddr = m_ctx->CreateLink(ScType::LinkConst);
+  EXPECT_TRUE(linkAddr.IsValid());
+  EXPECT_TRUE(m_ctx->IsElement(linkAddr));
+
+  ScAddr const & edgeAddr = m_ctx->CreateEdge(ScType::EdgeAccess, nodeAddr, linkAddr);
+  EXPECT_TRUE(edgeAddr.IsValid());
+  EXPECT_TRUE(m_ctx->IsElement(edgeAddr));
+}
+
+TEST_F(ScMemoryTest, CreateElementsWithInvalidTypes)
+{
+  EXPECT_THROW(m_ctx->CreateNode(ScType::EdgeAccess), utils::ExceptionInvalidParams);
+  EXPECT_THROW(m_ctx->CreateLink(ScType::NodeConst), utils::ExceptionInvalidParams);
+
+  ScAddr const & nodeAddr = m_ctx->CreateNode(ScType::NodeConst);
+  EXPECT_TRUE(nodeAddr.IsValid());
+  EXPECT_TRUE(m_ctx->IsElement(nodeAddr));
+
+  ScAddr const & linkAddr = m_ctx->CreateLink(ScType::LinkConst);
+  EXPECT_TRUE(linkAddr.IsValid());
+  EXPECT_TRUE(m_ctx->IsElement(linkAddr));
+
+  EXPECT_THROW(m_ctx->CreateEdge(ScType::NodeConst, nodeAddr, linkAddr), utils::ExceptionInvalidParams);
+}
 
 TEST_F(ScMemoryTest, SetGetFindSystemIdentifier)
 {

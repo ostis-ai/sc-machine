@@ -116,16 +116,12 @@ ScAddr ScAgentAction::CreateCommand(ScMemoryContext & ctx, ScAddr const & cmdCla
         utils::ExceptionInvalidParams,
         "You should use <= " + std::to_string(ScKeynodes::GetRrelIndexNum()) + " params");
 
-  SC_ASSERT(cmdClassAddr.IsValid(), ());
-
   ScAddr const cmdInstanceAddr = ctx.CreateNode(ScType::NodeConst);
-  SC_ASSERT(cmdInstanceAddr.IsValid(), ());
   ctx.CreateEdge(ScType::EdgeAccessConstPosPerm, cmdClassAddr, cmdInstanceAddr);
 
   for (size_t i = 0; i < params.size(); ++i)
   {
     ScAddr const edgeCommon = ctx.CreateEdge(ScType::EdgeAccessConstPosPerm, cmdInstanceAddr, params[i]);
-    SC_ASSERT(edgeCommon.IsValid(), ());
     ctx.CreateEdge(ScType::EdgeAccessConstPosPerm, ScKeynodes::GetRrelIndex(i), edgeCommon);
   }
 
@@ -134,7 +130,7 @@ ScAddr ScAgentAction::CreateCommand(ScMemoryContext & ctx, ScAddr const & cmdCla
 
 bool ScAgentAction::InitiateCommand(ScMemoryContext & ctx, ScAddr const & cmdAddr)
 {
-  // TODO: add blocks (locks) to prevent adding command to initiated set twicely
+  // TODO: add blocks (locks) to prevent adding command to initiated set twice
 
   // check if command is in progress
   if (ctx.HelperCheckEdge(ScKeynodes::kCommandProgressedAddr, cmdAddr, ScType::EdgeAccessConstPosTemp))
@@ -193,7 +189,7 @@ ScAddr ScAgentAction::GetCommandResultCodeAddr(ScMemoryContext & ctx, ScAddr con
   if (!ctx.HelperSearchTemplate(templ, searchResult))
     return {};
 
-  SC_ASSERT(searchResult.Size() == 1, ());
+  SC_ASSERT(searchResult.Size() == 1, "");
   return searchResult[0]["result_class"];
 }
 

@@ -69,6 +69,8 @@ void _logPrintHandler(gchar const * log_domain, GLogLevelFlags log_level, gchar 
 
 unsigned int gContextCounter;
 
+#define CHECK_CONTEXT SC_ASSERT(IsValid(), "Used context is invalid. Make sure that it's initialized")
+
 }  // namespace
 
 // ------------------
@@ -108,7 +110,6 @@ void ScMemory::Shutdown(bool saveState /* = true */)
   sc_memory_shutdown_ext();
 
   ScKeynodes::Shutdown();
-
   if (!ms_contexts.empty())
   {
     std::stringstream description;
@@ -139,7 +140,7 @@ void ScMemory::LogUnmute()
 
 void ScMemory::RegisterContext(ScMemoryContext const * ctx)
 {
-  assert(!HasMemoryContext(ctx));
+  SC_ASSERT(!HasMemoryContext(ctx), "Specified context is already registered. You can't register it twice");
 
   ContextMutexLock lock;
   ms_contexts.push_back(ctx);
@@ -147,7 +148,7 @@ void ScMemory::RegisterContext(ScMemoryContext const * ctx)
 
 void ScMemory::UnregisterContext(ScMemoryContext const * ctx)
 {
-  assert(HasMemoryContext(ctx));
+  SC_ASSERT(HasMemoryContext(ctx), "Specified context must be registered to unregister it");
 
   ContextMutexLock lock;
   for (auto it = ms_contexts.begin(); it != ms_contexts.end(); ++it)
@@ -229,68 +230,78 @@ bool ScMemoryContext::IsValid() const
 
 bool ScMemoryContext::IsElement(ScAddr const & addr) const
 {
-  SC_ASSERT(IsValid(), ());
+  CHECK_CONTEXT;
   return (sc_memory_is_element(m_context, *addr) == SC_TRUE);
 }
 
 size_t ScMemoryContext::GetElementOutputArcsCount(ScAddr const & addr) const
 {
-  SC_ASSERT(IsValid(), ());
+  CHECK_CONTEXT;
   return sc_memory_get_element_output_arcs_count(m_context, *addr);
 }
 
 size_t ScMemoryContext::GetElementInputArcsCount(ScAddr const & addr) const
 {
-  SC_ASSERT(IsValid(), ());
+  CHECK_CONTEXT;
   return sc_memory_get_element_input_arcs_count(m_context, *addr);
 }
 
 bool ScMemoryContext::EraseElement(ScAddr const & addr)
 {
-  SC_ASSERT(IsValid(), ());
+  CHECK_CONTEXT;
   return sc_memory_element_free(m_context, *addr) == SC_RESULT_OK;
 }
 
 ScAddr ScMemoryContext::CreateNode(ScType const & type)
 {
-  SC_ASSERT(IsValid(), ());
-  return ScAddr(sc_memory_node_new(m_context, *type));
+  CHECK_CONTEXT;
+  if (type.IsEdge())  // needed to create ScType::Unknown, ScType::Const... elements
+    SC_THROW_EXCEPTION(
+        utils::ExceptionInvalidParams,
+        "Specified type must be sc-node type. You should provide any of ScType::Node... value as a type");
+
+  return sc_memory_node_new(m_context, *type);
 }
 
 ScAddr ScMemoryContext::CreateLink(ScType const & type /* = ScType::LinkConst */)
 {
-  SC_ASSERT(type == ScType::LinkConst || type == ScType::LinkVar, ());
-  SC_ASSERT(IsValid(), ());
-  return ScAddr(sc_memory_link_new2(m_context, type.IsConst()));
-}
+  CHECK_CONTEXT;
+  if (!type.IsLink())
+    SC_THROW_EXCEPTION(
+        utils::ExceptionInvalidParams,
+        "Specified type must be sc-link type. You should provide any of ScType::Link... value as a type");
 
-ScAddr ScMemoryContext::CreateArc(sc_type type, ScAddr const & addrBeg, ScAddr const & addrEnd)
-{
-  return CreateEdge(ScType(type), addrBeg, addrEnd);
+  return sc_memory_link_new2(m_context, type.IsConst());
 }
 
 ScAddr ScMemoryContext::CreateEdge(ScType const & type, ScAddr const & addrBeg, ScAddr const & addrEnd)
 {
-  SC_ASSERT(IsValid(), ());
-  return ScAddr(sc_memory_arc_new(m_context, *type, *addrBeg, *addrEnd));
+  CHECK_CONTEXT;
+  if (!type.IsEdge())
+    SC_THROW_EXCEPTION(
+        utils::ExceptionInvalidParams,
+        "Specified type must be sc-connector type. You should provide any of ScType::Edge... value as a type");
+
+  return sc_memory_arc_new(m_context, *type, *addrBeg, *addrEnd);
 }
 
 ScType ScMemoryContext::GetElementType(ScAddr const & addr) const
 {
-  SC_ASSERT(IsValid(), ());
+  CHECK_CONTEXT;
   sc_type type = 0;
   return (sc_memory_get_element_type(m_context, *addr, &type) == SC_RESULT_OK) ? ScType(type) : ScType(0);
 }
 
 bool ScMemoryContext::SetElementSubtype(ScAddr const & addr, sc_type subtype)
 {
-  SC_ASSERT(IsValid(), ());
+  CHECK_CONTEXT;
   return sc_memory_change_element_subtype(m_context, *addr, subtype) == SC_RESULT_OK;
 }
 
 ScAddr ScMemoryContext::GetEdgeSource(ScAddr const & edgeAddr) const
 {
-  SC_ASSERT(IsValid(), ());
+  CHECK_CONTEXT;
+
   ScAddr addr;
   if (sc_memory_get_arc_begin(m_context, *edgeAddr, &addr.m_realAddr) != SC_RESULT_OK)
     addr.Reset();
@@ -300,7 +311,8 @@ ScAddr ScMemoryContext::GetEdgeSource(ScAddr const & edgeAddr) const
 
 ScAddr ScMemoryContext::GetEdgeTarget(ScAddr const & edgeAddr) const
 {
-  SC_ASSERT(IsValid(), ());
+  CHECK_CONTEXT;
+
   ScAddr addr;
   if (sc_memory_get_arc_end(m_context, *edgeAddr, &addr.m_realAddr) != SC_RESULT_OK)
     addr.Reset();
@@ -310,7 +322,8 @@ ScAddr ScMemoryContext::GetEdgeTarget(ScAddr const & edgeAddr) const
 
 bool ScMemoryContext::GetEdgeInfo(ScAddr const & edgeAddr, ScAddr & outSourceAddr, ScAddr & outTargetAddr) const
 {
-  SC_ASSERT(IsValid(), ());
+  CHECK_CONTEXT;
+
   if (sc_memory_get_arc_info(m_context, *edgeAddr, &outSourceAddr.m_realAddr, &outTargetAddr.m_realAddr) !=
       SC_RESULT_OK)
   {
@@ -323,26 +336,18 @@ bool ScMemoryContext::GetEdgeInfo(ScAddr const & edgeAddr, ScAddr & outSourceAdd
   return true;
 }
 
-ScAddr ScMemoryContext::GetArcBegin(ScAddr const & arcAddr) const
+bool ScMemoryContext::SetLinkContent(ScAddr const & addr, ScStreamPtr const & stream)
 {
-  return GetEdgeSource(arcAddr);
-}
+  CHECK_CONTEXT;
+  if (!stream)
+    SC_THROW_EXCEPTION(utils::ExceptionInvalidParams, "Specified stream is invalid");
 
-ScAddr ScMemoryContext::GetArcEnd(ScAddr const & arcAddr) const
-{
-  return GetEdgeTarget(arcAddr);
-}
-
-bool ScMemoryContext::SetLinkContent(ScAddr const & addr, ScStreamPtr const & stream, bool isSearchableString)
-{
-  SC_ASSERT(IsValid(), ());
-  SC_ASSERT(stream, ());
-  return sc_memory_set_link_content_ext(m_context, *addr, stream->m_stream, isSearchableString) == SC_RESULT_OK;
+  return sc_memory_set_link_content(m_context, *addr, stream->m_stream) == SC_RESULT_OK;
 }
 
 ScStreamPtr ScMemoryContext::GetLinkContent(ScAddr const & addr)
 {
-  SC_ASSERT(IsValid(), ());
+  CHECK_CONTEXT;
 
   sc_stream * s = nullptr;
   if (sc_memory_get_link_content(m_context, *addr, &s) != SC_RESULT_OK || s == nullptr)
@@ -351,17 +356,11 @@ ScStreamPtr ScMemoryContext::GetLinkContent(ScAddr const & addr)
   return std::make_shared<ScStream>(s);
 }
 
-bool ScMemoryContext::FindLinksByContent(ScStreamPtr const & stream, ScAddrVector & found)
-{
-  found = FindLinksByContent(stream);
-  return !found.empty();
-}
-
 ScAddrVector ScMemoryContext::FindLinksByContent(ScStreamPtr const & stream)
 {
-  SC_ASSERT(IsValid(), ());
-  ScAddrVector contents;
+  CHECK_CONTEXT;
 
+  ScAddrVector contents;
   sc_list * result = nullptr;
 
   sc_stream * str = stream->m_stream;
@@ -382,9 +381,9 @@ ScAddrVector ScMemoryContext::FindLinksByContent(ScStreamPtr const & stream)
 
 ScAddrVector ScMemoryContext::FindLinksByContentSubstring(ScStreamPtr const & stream, size_t maxLengthToSearchAsPrefix)
 {
-  SC_ASSERT(IsValid(), ());
-  ScAddrVector contents;
+  CHECK_CONTEXT;
 
+  ScAddrVector contents;
   sc_list * result = nullptr;
 
   sc_stream * str = stream->m_stream;
@@ -407,9 +406,9 @@ std::vector<std::string> ScMemoryContext::FindLinksContentsByContentSubstring(
     ScStreamPtr const & stream,
     size_t maxLengthToSearchAsPrefix)
 {
-  SC_ASSERT(IsValid(), ());
-  std::vector<std::string> contents;
+  CHECK_CONTEXT;
 
+  std::vector<std::string> contents;
   sc_list * result = nullptr;
 
   sc_stream * str = stream->m_stream;
@@ -432,21 +431,14 @@ std::vector<std::string> ScMemoryContext::FindLinksContentsByContentSubstring(
 
 bool ScMemoryContext::Save()
 {
-  SC_ASSERT(IsValid(), ());
-  return (sc_memory_save(m_context) == SC_RESULT_OK);
-}
-
-bool ScMemoryContext::HelperResolveSystemIdtf(
-    std::string const & sysIdtf,
-    ScAddr & outAddr,
-    ScType const & type /* = ScType()*/)
-{
-  outAddr = HelperResolveSystemIdtf(sysIdtf, type);
-  return outAddr.IsValid();
+  CHECK_CONTEXT;
+  return sc_memory_save(m_context) == SC_RESULT_OK;
 }
 
 ScAddr ScMemoryContext::HelperResolveSystemIdtf(std::string const & sysIdtf, ScType const & type /* = ScType()*/)
 {
+  CHECK_CONTEXT;
+
   ScSystemIdentifierFiver outFiver;
   HelperResolveSystemIdtf(sysIdtf, type, outFiver);
   return outFiver.addr1;
@@ -457,15 +449,15 @@ bool ScMemoryContext::HelperResolveSystemIdtf(
     ScType const & type,
     ScSystemIdentifierFiver & outFiver)
 {
-  SC_ASSERT(IsValid(), ());
+  CHECK_CONTEXT;
 
   bool result = HelperFindBySystemIdtf(sysIdtf, outFiver);
   if (!result && !type.IsUnknown())
   {
     if (!type.IsNode())
-    {
-      SC_THROW_EXCEPTION(utils::ExceptionInvalidParams, "You should provide any of ScType::Node... value as a type");
-    }
+      SC_THROW_EXCEPTION(
+          utils::ExceptionInvalidParams,
+          "Specified type must be sc-node type. You should provide any of ScType::Node... value as a type");
 
     ScAddr const & resultAddr = CreateNode(type);
     if (resultAddr.IsValid())
@@ -484,8 +476,7 @@ bool ScMemoryContext::HelperResolveSystemIdtf(
 
 bool ScMemoryContext::HelperSetSystemIdtf(std::string const & sysIdtf, ScAddr const & addr)
 {
-  SC_ASSERT(IsValid(), ());
-
+  CHECK_CONTEXT;
   return sc_helper_set_system_identifier(m_context, *addr, sysIdtf.c_str(), (sc_uint32)sysIdtf.size()) == SC_RESULT_OK;
 }
 
@@ -494,7 +485,7 @@ bool ScMemoryContext::HelperSetSystemIdtf(
     ScAddr const & addr,
     ScSystemIdentifierFiver & outFiver)
 {
-  SC_ASSERT(IsValid(), ());
+  CHECK_CONTEXT;
 
   sc_system_identifier_fiver fiver;
   bool status = sc_helper_set_system_identifier_ext(
@@ -506,7 +497,8 @@ bool ScMemoryContext::HelperSetSystemIdtf(
 
 std::string ScMemoryContext::HelperGetSystemIdtf(ScAddr const & addr)
 {
-  SC_ASSERT(IsValid(), ());
+  CHECK_CONTEXT;
+
   ScAddr idtfLink;
   if (sc_helper_get_system_identifier_link(m_context, *addr, &idtfLink.m_realAddr) == SC_RESULT_OK)
   {
@@ -525,29 +517,24 @@ std::string ScMemoryContext::HelperGetSystemIdtf(ScAddr const & addr)
   return {};
 }
 
-bool ScMemoryContext::HelperCheckArc(ScAddr const & begin, ScAddr end, sc_type arcType)
-{
-  return HelperCheckEdge(begin, end, ScType(arcType));
-}
-
 bool ScMemoryContext::HelperCheckEdge(ScAddr const & begin, ScAddr end, ScType const & edgeType)
 {
-  SC_ASSERT(IsValid(), ());
-  return (sc_helper_check_arc(m_context, *begin, *end, *edgeType) == SC_RESULT_OK);
+  CHECK_CONTEXT;
+  return sc_helper_check_arc(m_context, *begin, *end, *edgeType) == SC_RESULT_OK;
 }
 
 bool ScMemoryContext::HelperFindBySystemIdtf(std::string const & sysIdtf, ScAddr & outAddr)
 {
-  SC_ASSERT(IsValid(), ());
-  return (
-      sc_helper_find_element_by_system_identifier(
-          m_context, sysIdtf.c_str(), (sc_uint32)sysIdtf.size(), &outAddr.m_realAddr) == SC_RESULT_OK);
+  CHECK_CONTEXT;
+  return sc_helper_find_element_by_system_identifier(
+             m_context, sysIdtf.c_str(), (sc_uint32)sysIdtf.size(), &outAddr.m_realAddr) == SC_RESULT_OK;
 }
 
 ScAddr ScMemoryContext::HelperFindBySystemIdtf(std::string const & sysIdtf)
 {
+  CHECK_CONTEXT;
+
   ScAddr result;
-  SC_ASSERT(IsValid(), ());
   sc_helper_find_element_by_system_identifier(
       m_context, sysIdtf.c_str(), (sc_uint32)sysIdtf.size(), &result.m_realAddr);
   return result;
@@ -555,7 +542,7 @@ ScAddr ScMemoryContext::HelperFindBySystemIdtf(std::string const & sysIdtf)
 
 bool ScMemoryContext::HelperFindBySystemIdtf(std::string const & sysIdtf, ScSystemIdentifierFiver & outFiver)
 {
-  SC_ASSERT(IsValid(), ());
+  CHECK_CONTEXT;
 
   sc_system_identifier_fiver fiver;
   bool status = sc_helper_find_element_by_system_identifier_ext(
@@ -571,11 +558,13 @@ ScTemplate::Result ScMemoryContext::HelperGenTemplate(
     ScTemplateParams const & params,
     ScTemplateResultCode * resultCode)
 {
+  CHECK_CONTEXT;
   return templ.Generate(*this, result, params, resultCode);
 }
 
 ScTemplate::Result ScMemoryContext::HelperSearchTemplate(ScTemplate const & templ, ScTemplateSearchResult & result)
 {
+  CHECK_CONTEXT;
   return templ.Search(*this, result);
 }
 
@@ -585,6 +574,7 @@ void ScMemoryContext::HelperSearchTemplate(
     ScTemplateSearchResultFilterCallback const & filterCallback,
     ScTemplateSearchResultCheckCallback const & checkCallback)
 {
+  CHECK_CONTEXT;
   templ.Search(*this, callback, filterCallback, checkCallback);
 }
 
@@ -593,6 +583,7 @@ void ScMemoryContext::HelperSearchTemplate(
     ScTemplateSearchResultCallback const & callback,
     ScTemplateSearchResultCheckCallback const & checkCallback)
 {
+  CHECK_CONTEXT;
   templ.Search(*this, callback, {}, checkCallback);
 }
 
@@ -602,6 +593,7 @@ void ScMemoryContext::HelperSmartSearchTemplate(
     ScTemplateSearchResultFilterCallback const & filterCallback,
     ScTemplateSearchResultCheckCallback const & checkCallback)
 {
+  CHECK_CONTEXT;
   templ.Search(*this, callback, filterCallback, checkCallback);
 }
 
@@ -610,6 +602,7 @@ void ScMemoryContext::HelperSmartSearchTemplate(
     ScTemplateSearchResultCallbackWithRequest const & callback,
     ScTemplateSearchResultCheckCallback const & checkCallback)
 {
+  CHECK_CONTEXT;
   templ.Search(*this, callback, {}, checkCallback);
 }
 
@@ -618,6 +611,7 @@ ScTemplate::Result ScMemoryContext::HelperSearchTemplateInStruct(
     ScAddr const & scStruct,
     ScTemplateSearchResult & result)
 {
+  CHECK_CONTEXT;
   return templ.SearchInStruct(*this, scStruct, result);
 }
 
@@ -626,23 +620,27 @@ ScTemplate::Result ScMemoryContext::HelperBuildTemplate(
     ScAddr const & templAddr,
     ScTemplateParams const & params)
 {
+  CHECK_CONTEXT;
   return templ.FromScTemplate(*this, templAddr, params);
 }
 
 ScTemplate::Result ScMemoryContext::HelperBuildTemplate(ScTemplate & templ, std::string const & scsText)
 {
+  CHECK_CONTEXT;
   return templ.FromScs(*this, scsText);
 }
 
-ScMemoryContext::Stat ScMemoryContext::CalculateStat() const
+ScMemoryContext::ScMemoryStatistics ScMemoryContext::CalculateStat() const
 {
+  CHECK_CONTEXT;
+
   sc_stat stat;
   sc_memory_stat(m_context, &stat);
 
-  Stat res{};
-  res.m_edgesNum = sc_uint64(stat.arc_count);
-  res.m_linksNum = sc_uint64(stat.link_count);
-  res.m_nodesNum = sc_uint64(stat.node_count);
+  ScMemoryStatistics res{};
+  res.m_edgesNum = uint32_t(stat.arc_count);
+  res.m_linksNum = uint32_t(stat.link_count);
+  res.m_nodesNum = uint32_t(stat.node_count);
 
   return res;
 }

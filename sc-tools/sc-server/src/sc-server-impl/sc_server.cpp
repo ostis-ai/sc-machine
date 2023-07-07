@@ -216,7 +216,7 @@ void ScServer::UpdateMemoryStatistics()
   };
 
   auto const PrintStatistics = [this, PrintLine]() {
-    ScMemoryContext::Stat const & stats = m_context->CalculateStat();
+    ScMemoryContext::ScMemoryStatistics const & stats = m_context->CalculateStat();
 
     SC_LOG_INFO("Statistics");
     size_t const allElements = stats.GetAllNum();

@@ -181,7 +181,11 @@ bool ParsedElement::IsURL() const
 
 void ParsedElement::ResolveVisibility()
 {
-  SC_ASSERT(m_idtf.size() > 0, ());
+  if (m_idtf.empty())
+  {
+    m_visibility = Visibility::System;
+    return;
+  }
 
   // fast way
   if (m_idtf[0] == '.')
@@ -221,7 +225,6 @@ ElementHandle::ElementHandle(ElementID id, bool isLocal)
 
 ElementID ElementHandle::operator*() const
 {
-  SC_ASSERT(IsValid(), ());
   return m_id;
 }
 
@@ -478,8 +481,6 @@ void Parser::ProcessAssign(std::string const & alias, ElementHandle const & valu
 ElementHandle Parser::ProcessConnector(std::string const & connector)
 {
   ScType const type = TypeResolver::GetConnectorType(connector);
-  SC_ASSERT(type.IsEdge(), ());
-
   return AppendElement(GenerateEdgeIdtf(), type, TypeResolver::IsConnectorReversed(connector));
 }
 
@@ -522,9 +523,6 @@ void Parser::ProcessContourBegin()
 
 void Parser::ProcessContourEnd(ElementHandle const & contourHandle)
 {
-  SC_ASSERT(!m_contourElementsStack.empty(), ());
-  SC_ASSERT(!m_contourTriplesStack.empty(), ());
-
   size_t const last = m_parsedElements.size();
   size_t const lastLocal = m_parsedElementsLocal.size();
   size_t const lastTriple = m_parsedTriples.size();

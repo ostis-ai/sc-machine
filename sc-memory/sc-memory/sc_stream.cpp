@@ -6,6 +6,11 @@
 
 #include "sc_stream.hpp"
 
+namespace
+{
+#define CHECK_STREAM SC_ASSERT(IsValid(), "Used stream is invalid. Make sure that it's initialized")
+}  // namespace
+
 ScStream::ScStream()
   : m_stream(nullptr)
 {
@@ -54,7 +59,8 @@ bool ScStream::IsValid() const
 
 bool ScStream::Read(sc_char * buff, size_t buffLen, size_t & readBytes) const
 {
-  SC_ASSERT(IsValid(), ());
+  CHECK_STREAM;
+
   sc_uint32 readBytesNum = 0;
   bool const res = sc_stream_read_data(m_stream, buff, static_cast<sc_uint32>(buffLen), &readBytesNum) == SC_RESULT_OK;
   readBytes = (size_t)readBytesNum;
@@ -63,7 +69,8 @@ bool ScStream::Read(sc_char * buff, size_t buffLen, size_t & readBytes) const
 
 bool ScStream::Write(sc_char * data, size_t dataLen, size_t & writtenBytes)
 {
-  SC_ASSERT(IsValid(), ());
+  CHECK_STREAM;
+
   sc_uint32 writtenBytesNum = 0;
   bool res = sc_stream_write_data(m_stream, data, static_cast<sc_uint32>(dataLen), &writtenBytesNum) == SC_RESULT_OK;
   writtenBytes = (size_t)writtenBytesNum;
@@ -72,19 +79,20 @@ bool ScStream::Write(sc_char * data, size_t dataLen, size_t & writtenBytes)
 
 bool ScStream::Seek(sc_stream_seek_origin origin, size_t offset)
 {
-  SC_ASSERT(IsValid(), ());
+  CHECK_STREAM;
   return sc_stream_seek(m_stream, origin, static_cast<sc_uint32>(offset)) == SC_RESULT_OK;
 }
 
 bool ScStream::Eof() const
 {
-  SC_ASSERT(IsValid(), ());
+  CHECK_STREAM;
   return (sc_stream_eof(m_stream) == SC_TRUE);
 }
 
 size_t ScStream::Size() const
 {
-  SC_ASSERT(IsValid(), ());
+  CHECK_STREAM;
+
   sc_uint32 len;
   if (sc_stream_get_length(m_stream, &len) != SC_RESULT_OK)
     len = 0;
@@ -94,7 +102,8 @@ size_t ScStream::Size() const
 
 size_t ScStream::Pos() const
 {
-  SC_ASSERT(IsValid(), ());
+  CHECK_STREAM;
+
   sc_uint32 pos;
   if (sc_stream_get_position(m_stream, &pos) != SC_RESULT_OK)
     pos = 0;
@@ -104,7 +113,7 @@ size_t ScStream::Pos() const
 
 bool ScStream::HasFlag(sc_uint8 flag)
 {
-  SC_ASSERT(IsValid(), ());
+  CHECK_STREAM;
   return (sc_stream_check_flag(m_stream, flag) == SC_TRUE);
 }
 

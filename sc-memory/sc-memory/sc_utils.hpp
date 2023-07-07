@@ -17,7 +17,6 @@
 #include <memory.h>
 
 // Got it there: https://github.com/mapsme/omim/blob/136f12af3adde05623008f71d07bb996fe5801a5/base/macros.hpp
-#define ARRAY_SIZE(X) sizeof(::my::impl::ArraySize(X))
 
 #define SC_DISALLOW_COPY(className) \
   className(className const &) = delete; \
@@ -47,7 +46,6 @@ public:
 
   inline uint32_t Unref()
   {
-    SC_ASSERT(m_refCount > 0, ());
     --m_refCount;
 
     return m_refCount;
