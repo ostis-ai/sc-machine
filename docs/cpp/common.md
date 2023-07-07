@@ -80,7 +80,7 @@ ScAddr const linkAddr1 = sc::SetRelationValue(ctx, el, relAddr1, value1);
 uint32_t const value2 = 57;
 ScAddr const linkAddr2 = sc::SetRelationValue(ctx, el, relAddr1, value2);
 
-SC_ASSERT(linkAddr1 == linkAddr2, ()); // should be valid (ScAddr of link doesn't changed)
+SC_ASSERT(linkAddr1 == linkAddr2, ""); // should be valid (ScAddr of link doesn't changed)
 
 ```
 

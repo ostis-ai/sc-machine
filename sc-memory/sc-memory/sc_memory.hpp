@@ -138,7 +138,7 @@ public:
   _SC_EXTERN ScAddr GetEdgeTarget(ScAddr const & edgeAddr) const;
   _SC_EXTERN bool GetEdgeInfo(ScAddr const & edgeAddr, ScAddr & outSourceAddr, ScAddr & outTargetAddr) const;
 
-  _SC_EXTERN bool SetLinkContent(ScAddr const & addr, ScStreamPtr const & stream);
+  _SC_EXTERN bool SetLinkContent(ScAddr const & addr, ScStreamPtr const & stream, bool isSearchableString = true);
   template <typename TContentType>
   bool SetLinkContent(ScAddr const & addr, TContentType const & value, bool isSearchableString = true)
   {

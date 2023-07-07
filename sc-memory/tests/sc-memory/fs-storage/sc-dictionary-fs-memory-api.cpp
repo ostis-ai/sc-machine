@@ -498,11 +498,15 @@ TEST(ScDictionaryFSMemoryTest, sc_dictionary_fs_memory_get_link_hashes_by_not_se
   {
     sc_char string1[] = TEXT_EXAMPLE_1;
     sc_addr_hash hash1 = 112;
-    EXPECT_EQ(sc_dictionary_fs_memory_link_string_ext(memory, hash1, string1, sc_str_len(string1), SC_FALSE), SC_FS_MEMORY_OK);
+    EXPECT_EQ(
+        sc_dictionary_fs_memory_link_string_ext(memory, hash1, string1, sc_str_len(string1), SC_FALSE),
+        SC_FS_MEMORY_OK);
 
     sc_char string2[] = TEXT_EXAMPLE_2;
     sc_addr_hash hash2 = 518;
-    EXPECT_EQ(sc_dictionary_fs_memory_link_string_ext(memory, hash2, string2, sc_str_len(string2), SC_FALSE), SC_FS_MEMORY_OK);
+    EXPECT_EQ(
+        sc_dictionary_fs_memory_link_string_ext(memory, hash2, string2, sc_str_len(string2), SC_FALSE),
+        SC_FS_MEMORY_OK);
 
     sc_list * found_link_hashes;
     EXPECT_EQ(

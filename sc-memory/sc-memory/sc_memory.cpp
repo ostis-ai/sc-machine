@@ -336,13 +336,13 @@ bool ScMemoryContext::GetEdgeInfo(ScAddr const & edgeAddr, ScAddr & outSourceAdd
   return true;
 }
 
-bool ScMemoryContext::SetLinkContent(ScAddr const & addr, ScStreamPtr const & stream)
+bool ScMemoryContext::SetLinkContent(ScAddr const & addr, ScStreamPtr const & stream, bool isSearchableString)
 {
   CHECK_CONTEXT;
   if (!stream)
     SC_THROW_EXCEPTION(utils::ExceptionInvalidParams, "Specified stream is invalid");
 
-  return sc_memory_set_link_content(m_context, *addr, stream->m_stream) == SC_RESULT_OK;
+  return sc_memory_set_link_content_ext(m_context, *addr, stream->m_stream, isSearchableString) == SC_RESULT_OK;
 }
 
 ScStreamPtr ScMemoryContext::GetLinkContent(ScAddr const & addr)
