@@ -61,7 +61,7 @@ private:
 class ScMemoryContext
 {
 public:
-  struct Stat
+  struct ScMemoryStatistics
   {
     sc_uint64 m_nodesNum;
     sc_uint64 m_linksNum;
@@ -72,6 +72,8 @@ public:
       return m_nodesNum + m_linksNum + m_edgesNum;
     }
   };
+
+  using Stat = ScMemoryStatistics;
 
 public:
   _SC_EXTERN explicit ScMemoryContext(sc_uint8 accessLevels, std::string const & name = "");
@@ -122,9 +124,6 @@ public:
   _SC_EXTERN ScAddr CreateNode(ScType const & type);
   _SC_EXTERN ScAddr CreateLink(ScType const & type = ScType::LinkConst);
 
-  SC_DEPRECATED(0.3.0, "Use ScMemoryContext::createEdge instead.")
-  _SC_EXTERN ScAddr CreateArc(sc_type type, ScAddr const & addrBeg, ScAddr const & addrEnd);
-
   _SC_EXTERN ScAddr CreateEdge(ScType const & type, ScAddr const & addrBeg, ScAddr const & addrEnd);
 
   //! Returns type of sc-element. If there are any error, then returns ScType::Unknown
@@ -139,11 +138,6 @@ public:
   _SC_EXTERN ScAddr GetEdgeTarget(ScAddr const & edgeAddr) const;
   _SC_EXTERN bool GetEdgeInfo(ScAddr const & edgeAddr, ScAddr & outSourceAddr, ScAddr & outTargetAddr) const;
 
-  SC_DEPRECATED(0.3.0, "Use ScMemoryContext::getEdgeSource instead.")
-  _SC_EXTERN ScAddr GetArcBegin(ScAddr const & arcAddr) const;
-  SC_DEPRECATED(0.3.0, "Use ScMemoryContext::getEdgeTarget instead.")
-  _SC_EXTERN ScAddr GetArcEnd(ScAddr const & arcAddr) const;
-
   _SC_EXTERN bool SetLinkContent(ScAddr const & addr, ScStreamPtr const & stream, bool isSearchableString = true);
   template <typename TContentType>
   bool SetLinkContent(ScAddr const & addr, TContentType const & value, bool isSearchableString = true)
@@ -151,7 +145,7 @@ public:
     return SetLinkContent(addr, ScStreamMakeRead(value), isSearchableString);
   }
 
-  bool GetLinkContent(ScAddr const & addr, std::string & typedContent)
+  _SC_EXTERN bool GetLinkContent(ScAddr const & addr, std::string & typedContent)
   {
     ScStreamPtr const & ptr = GetLinkContent(addr);
     return ptr != nullptr && ptr->IsValid() && ScStreamConverter::StreamToString(ptr, typedContent);
@@ -174,9 +168,6 @@ public:
     return SC_FALSE;
   }
 
-  //! Returns true, if any links found
-  SC_DEPRECATED(0.6.0, "Use `ScAddrList FindLinksByContent(ScStreamPtr const & stream)` instead.")
-  _SC_EXTERN bool FindLinksByContent(ScStreamPtr const & stream, ScAddrVector & found);
   _SC_EXTERN ScAddrVector FindLinksByContent(ScStreamPtr const & stream);
   template <typename TContentType>
   ScAddrVector FindLinksByContent(TContentType const & value)
@@ -263,19 +254,6 @@ public:
       fn(it->Get(0), it->Get(1), it->Get(2), it->Get(3), it->Get(4));
   }
 
-  /* Tries to resolve ScAddr by it system identifier. If element with specified identifier doesn't exist
-   * and type is not empty, then it would be created with specified type.
-   * Look at type parameter as ForceCreate flag, that contains type.
-   * Important: Type should be any of ScType::Node...
-   */
-  SC_DEPRECATED(
-      0.4.0,
-      "Use should use ScMemoryContext::HelperResolveSystemIdtf(std::string const & sysIdtf, ScType const & type)")
-  _SC_EXTERN bool HelperResolveSystemIdtf(
-      std::string const & sysIdtf,
-      ScAddr & outAddr,
-      ScType const & type = ScType());
-
   /*! Tries to resolve ScAddr by it system identifier. If element with specified identifier doesn't exist
    * and type is not empty, then it would be created with specified type.
    * Important: Type should be any of ScType::Node...
@@ -336,11 +314,8 @@ public:
    */
   _SC_EXTERN std::string HelperGetSystemIdtf(ScAddr const & addr);
 
-  SC_DEPRECATED(0.3.0, "Use ScMemoryContext::HelperCheckEdge instead.")
-  _SC_EXTERN bool HelperCheckArc(ScAddr const & begin, ScAddr end, sc_type arcType);
   _SC_EXTERN bool HelperCheckEdge(ScAddr const & begin, ScAddr end, ScType const & edgeType);
 
-  SC_DEPRECATED(0.4.0, "Use ScMemoryContext::HelperFindBySystemIdtf(std::string const & sysIdtf) instead.")
   _SC_EXTERN bool HelperFindBySystemIdtf(std::string const & sysIdtf, ScAddr & outAddr);
   _SC_EXTERN ScAddr HelperFindBySystemIdtf(std::string const & sysIdtf);
   _SC_EXTERN bool HelperFindBySystemIdtf(std::string const & sysIdtf, ScSystemIdentifierFiver & outFiver);
@@ -469,7 +444,7 @@ public:
       const ScTemplateParams & params = ScTemplateParams()) noexcept(false);
   _SC_EXTERN ScTemplate::Result HelperBuildTemplate(ScTemplate & templ, std::string const & scsText) noexcept(false);
 
-  _SC_EXTERN Stat CalculateStat() const;
+  _SC_EXTERN ScMemoryStatistics CalculateStat() const;
 
 private:
   sc_memory_context * m_context;

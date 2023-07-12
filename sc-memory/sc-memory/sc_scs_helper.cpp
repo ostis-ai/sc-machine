@@ -75,7 +75,6 @@ protected:
       }
 
       ScAddr const edgeAddr = m_ctx.CreateEdge(edge.GetType(), srcAddrResult.first, trgAddrResult.first);
-      SC_ASSERT(edgeAddr.IsValid(), ());
       m_idtfCache.insert(std::make_pair(edge.GetIdtf(), edgeAddr));
 
       if (m_outputStructure.IsValid())
@@ -111,7 +110,7 @@ private:
 
   ScAddrVector SetSCsGlobalIdtf(std::string const & idtf, ScAddr const & addr)
   {
-    SC_ASSERT(m_kNrelSCsGlobalIdtf.IsValid(), ("Keynode `nrel_scs_global_idtf` is not valid"));
+    SC_ASSERT(m_kNrelSCsGlobalIdtf.IsValid(), "Keynode `nrel_scs_global_idtf` is invalid");
 
     // Generate construction manually. To avoid recursive call of ScMemoryContextEventsPendingGuard
 
@@ -127,7 +126,7 @@ private:
 
   ScAddr FindBySCsGlobalIdtf(std::string const & idtf) const
   {
-    SC_ASSERT(m_kNrelSCsGlobalIdtf.IsValid(), ());
+    SC_ASSERT(m_kNrelSCsGlobalIdtf.IsValid(), "Keynode `nrel_scs_global_idtf` is invalid");
 
     ScAddr result;
 
@@ -271,7 +270,7 @@ private:
       std::smatch result;
       if (std::regex_match(el.GetValue(), result, rNumber))
       {
-        SC_ASSERT(result.size() == 3, ());
+        SC_ASSERT(result.size() == 3, "Invalid link content format");
 
         std::string const type = result[1];
         std::string const value = result[2];

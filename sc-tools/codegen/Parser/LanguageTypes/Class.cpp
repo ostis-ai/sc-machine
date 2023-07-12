@@ -286,8 +286,10 @@ void Class::GenerateDeclarations(std::stringstream & outCode) const
     // register/unregister
     outCode << "\\\n	static void RegisterHandler()";
     outCode << "\\\n	{";
-    outCode << "\\\n		SC_ASSERT(!ms_event.get(), ());";
-    outCode << "\\\n		SC_ASSERT(!ms_context.get(), ());";
+    outCode << "\\\n		SC_ASSERT(!ms_event.get(), "
+               ");";
+    outCode << "\\\n		SC_ASSERT(!ms_context.get(), "
+               ");";
     outCode << "\\\n		ms_context.reset(new ScMemoryContext(sc_access_lvl_make_min, \"handler_" << m_displayName
             << "\"));";
     outCode << "\\\n		ms_event.reset(new ScEvent(*ms_context, " << listenAddr << ", " << eventType << ", &"

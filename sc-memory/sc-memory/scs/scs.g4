@@ -34,7 +34,6 @@ for (auto const & _a : __attrs) \
 public:
   void setParser(scs::Parser * parser)
   {
-    SC_ASSERT(parser, ());
     m_parser = parser;
   }
 
@@ -52,7 +51,6 @@ content returns [ElementHandle handle]
       c=CONTENT_BODY
     {
       std::string v = $ctx->c->getText();
-      SC_ASSERT(v.size() > 1, ());
       $ctx->handle = m_parser->ProcessContent(v, $ctx->isVar);
     }
   ;
@@ -264,7 +262,6 @@ idtf_url returns [ElementHandle handle]
   : LINK
     {
       std::string const value = $LINK->getText();
-      SC_ASSERT(value.size() > 1, ());
       $ctx->handle = m_parser->ProcessFileURL(value.substr(1, value.size() - 2));
     }
   ;

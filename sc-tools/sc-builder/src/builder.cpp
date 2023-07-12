@@ -121,7 +121,7 @@ bool Builder::ProcessFile(std::string const & fileName, ScAddr const & outputStr
 void Builder::DumpStatistics()
 {
   // print statistics
-  ScMemoryContext::Stat const stats = m_ctx->CalculateStat();
+  ScMemoryContext::ScMemoryStatistics const stats = m_ctx->CalculateStat();
 
   auto const allCount = stats.GetAllNum();
 

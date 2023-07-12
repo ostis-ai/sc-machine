@@ -101,7 +101,8 @@ bool TypeResolver::IsConnectorReversed(std::string const & connectorAlias)
 
 bool TypeResolver::IsConst(std::string const & idtf)
 {
-  SC_ASSERT(!idtf.empty(), ());
+  if (idtf.empty())
+    return true;
 
   size_t const n = idtf.size() - 1;
   size_t i = 0;

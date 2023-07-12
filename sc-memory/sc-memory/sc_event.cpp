@@ -69,7 +69,6 @@ void ScEvent::RemoveDelegate()
 sc_result ScEvent::Handler(sc_event const * evt, sc_addr edge, sc_addr other_el)
 {
   ScEvent * eventObj = (ScEvent *)sc_event_get_data(evt);
-  SC_ASSERT(eventObj != nullptr, ());
 
   if (eventObj->m_delegate)
   {
@@ -83,7 +82,6 @@ sc_result ScEvent::Handler(sc_event const * evt, sc_addr edge, sc_addr other_el)
 sc_result ScEvent::HandlerDelete(sc_event const * evt)
 {
   ScEvent * eventObj = (ScEvent *)sc_event_get_data(evt);
-  SC_ASSERT(eventObj != nullptr, ());
 
   utils::ScLockScope(eventObj->m_lock);
   if (eventObj->m_event)

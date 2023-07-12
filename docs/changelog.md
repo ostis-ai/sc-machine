@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Check sc-types in sc-memory API sc-elements creation methods
 - Ability do not search for sc-links by substrings globally, passing config param `search_by_substring`
 - Ability do not search for sc-links by strings locally, passing param in SetLinkContent `is_searchable`
 - Generalize all scripts for applied projects
@@ -67,6 +68,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- Replace asserts in sc-memory API by exceptions throwing
 - Refactor sc-server logs
 - Decrease wait time for sc-element referencing in iterators
 - Call gwf-translator in sc-builder
@@ -91,6 +93,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- Create sc-links with ScType::Link type in Debug mode
 - Change memory statistics fields types from sc_uint32 to sc_uint64
 - Return empty sc_addr if not found by identifier in `sc-helper`
 - Build kb script doesn't ignore whitespace ([239](https://github.com/ostis-ai/sc-machine/issues/239))

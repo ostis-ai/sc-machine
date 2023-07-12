@@ -126,7 +126,7 @@ public:
   })
 
 #if SC_DEBUG_MODE
-#  define SC_ASSERT(_expr, _msg) ({ _ASSERT_IMPL(::utils::ExceptionAssert, _expr, _msg, __FILE__, __LINE__); })
+#  define SC_ASSERT(_expr, _msg) ({ _ASSERT_IMPL(::utils::ExceptionAssert, _expr, (_msg), __FILE__, __LINE__); })
 #else
 #  define SC_ASSERT(_expr, _msg) ((void)0)
 #endif
