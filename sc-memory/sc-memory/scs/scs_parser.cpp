@@ -306,6 +306,44 @@ bool Parser::Parse(std::string const & str)
   return result;
 }
 
+std::string Parser::BuildAST(std::string const & str)
+{
+  std::string fName;
+
+  antlr4::ANTLRInputStream input(str);
+  scsLexer lexer(&input);
+  antlr4::CommonTokenStream tokens(&lexer);
+  scsParser parser(&tokens);
+
+  ASTJsonListener astListener(parser);
+  parser.addParseListener(&astListener);
+
+  ASTErrorListener astErrorListener;
+  lexer.addErrorListener(&astErrorListener);
+  parser.addErrorListener(&astErrorListener);
+
+  parser.setParser(this);
+
+  try
+  {
+    parser.syntax();
+  }
+  catch (utils::ExceptionParseError const & e)
+  {
+    m_lastError = e.Message();
+  }
+
+  ScJson parseResult;
+  astListener.buildAST(parseResult["root"]);
+  parseResult["errors"] = astErrorListener.getErrors();
+
+  parser.removeParseListener(&astListener);
+  lexer.removeErrorListener(&astErrorListener);
+  parser.removeErrorListener(&astErrorListener);
+
+  return parseResult.dump();
+}
+
 ParsedElement & Parser::GetParsedElementRef(ElementHandle const & elID)
 {
   auto & container = (elID.IsLocal() ? m_parsedElementsLocal : m_parsedElements);

@@ -55,16 +55,24 @@ content returns [ElementHandle handle]
     }
   ;
 
+contour_begin
+  : CONTOUR_BEGIN
+  ;
+
+contour_end
+  : CONTOUR_END
+  ;
+
 contour[ElementHandle contourHandle = ElementHandle()]
   returns [ElementHandle handle]
-  : CONTOUR_BEGIN
+  : contour_begin
     {
       $ctx->handle = $contourHandle.IsValid() ? $contourHandle : m_parser->ProcessEmptyContour();
       m_parser->ProcessContourBegin();
     }
     ( (sentence_wrap
 	| (sentence_lvl_4_list_item[$ctx->handle] ';;'))* )
-    CONTOUR_END
+    contour_end
     {
       m_parser->ProcessContourEnd($ctx->handle);
     }
@@ -336,10 +344,10 @@ sentence_lvl_common
 attr_list returns [std::vector<std::pair<ElementHandle, bool>> items]
   @init { $items = {}; }
   : (
-      ID_SYSTEM
+      id=idtf_system
       EDGE_ATTR
       {
-        $ctx->items.emplace_back(m_parser->ProcessIdentifier($ID_SYSTEM->getText()),
+        $ctx->items.emplace_back(m_parser->ProcessIdentifier($ctx->id->getText()),
                                  scs::TypeResolver::IsEdgeAttrConst($EDGE_ATTR->getText()));
       }
     )+

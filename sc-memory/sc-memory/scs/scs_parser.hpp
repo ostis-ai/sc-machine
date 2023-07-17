@@ -10,6 +10,8 @@
 
 #include "sc-memory/scs/scs_types.hpp"
 
+#include "ASTJsonListener.hpp"
+
 #include <limits>
 #include <stack>
 
@@ -112,6 +114,7 @@ public:
   _SC_EXTERN Parser();
 
   _SC_EXTERN bool Parse(std::string const & str);
+  _SC_EXTERN std::string BuildAST(std::string const & str);
   _SC_EXTERN ParsedElement const & GetParsedElement(ElementHandle const & elID) const;
   _SC_EXTERN TripleVector const & GetParsedTriples() const;
   _SC_EXTERN std::string const & GetParseError() const;
