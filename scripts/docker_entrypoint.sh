@@ -22,7 +22,7 @@ USAGE
 
 function rebuild_kb() {
     if [ -e "$1" ]; then
-        "$BINARY_PATH"/sc-builder -f --clear -c "$CONFIG_PATH" "$@"
+        "$BINARY_PATH"/sc-builder -f --clear -c "$CONFIG_PATH" -i "$@"
     elif [ -e "$KB_PATH" ]; then
         echo "$KB_PATH is set as a KB path by the environment variable"
         "$BINARY_PATH"/sc-builder -f --clear -c "$CONFIG_PATH" -i "$KB_PATH"
