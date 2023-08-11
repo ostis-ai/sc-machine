@@ -5,7 +5,7 @@
 [![license](https://img.shields.io/badge/License-MIT-yellow.svg)](COPYING.MIT)
 [![docker](https://img.shields.io/docker/v/ostis/sc-machine?arch=amd64&label=Docker&logo=Docker&sort=date)](https://hub.docker.com/r/ostis/sc-machine)
 
-Short version: **SC-machine** is a software package that emulates semantic computer behaviour. It uses agent-based approach to to process knowledge graphs.
+Short version: **SC-machine** is a software package that emulates semantic computer behaviour. It uses agent-based approach to process knowledge graphs.
 
 SC-machine stores and processes knowledge graphs represented in the SC-code (language of the universal knowledge representation). Theoretical basis of SC-machine is provided by the [**OSTIS Technology**](https://github.com/ostis-ai/ostis-project).
 
@@ -50,7 +50,7 @@ Both declarative (data, data structures, documentation, tasks specification, etc
 
 ## Quick start
 
-SC-machine is a core of any OSTIS-system, so you can use a reference system named [OSTIS Web platform](https://github.com/ostis-ai/ostis-web-platform) to get it up and running quickly.
+SC-machine is a core of any ostis-system, so you can use a reference system named [OSTIS Web platform](https://github.com/ostis-ai/ostis-web-platform) to get it up and running quickly.
 
 ## Installation
 

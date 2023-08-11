@@ -40,6 +40,5 @@ git rebase --abort
 
 To setup `pre-commit` hook run:
 ```shell
-cd sc-machine
 pre-commit install
 ```

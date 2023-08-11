@@ -1,9 +1,8 @@
 ## Clone
 
 ```sh
-git clone https://github.com/ostis-ai/sc-machine.git
+git clone https://github.com/ostis-ai/sc-machine.git --recursive
 cd sc-machine
-git submodule update --init --recursive
 ```
 
 ## Install dependencies
@@ -11,16 +10,12 @@ git submodule update --init --recursive
 Note: you will need [Homebrew](https://docs.brew.sh/Installation) installed and configured on your Mac.
 
 ```sh
-cd scripts
-./install_deps_macOS.sh
-cd ..
-pip3 install -r requirements.txt
+./scripts/install_deps_macOS.sh
 ```
 
 ## Build
 
 ```sh
-cd sc-machine
 cmake -B build -DCMAKE_BUILD_TYPE=Release # use Debug for debug build
 cmake --build build -j$(nproc)
 ```
