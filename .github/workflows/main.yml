@@ -27,15 +27,9 @@ jobs:
         with:
           submodules: recursive
 
-      - name: Install dependencies (MacOS)
-        if: startswith(matrix.os, 'macos')
+      - name: Install dependencies
         run: |
-          scripts/install_deps_macOS.sh
-          pip3 install --user -r requirements.txt
-
-      - name: Install dependencies (Ubuntu)
-        if: startswith(matrix.os, 'ubuntu')
-        run: scripts/install_deps_ubuntu.sh --dev
+          scripts/install_dependencies.sh --dev
 
       - name: Restore build caches
         uses: hendrikmuhs/ccache-action@v1.2

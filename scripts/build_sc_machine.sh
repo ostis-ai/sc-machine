@@ -16,15 +16,14 @@ relative()
 
 function usage() {
   cat <<USAGE
+Usage: $(basename "$0") [OPTION]...
 
-  Usage: $(basename "$0") [OPTION]...
-
-  Options:
-    -f, --force        full rebuild with the deleting of the $(relative "${BINARY_PATH}") and $(relative "${BUILD_PATH}") folders
-    -t, --tests        build in tests mode
-    -r, --release      build in release mode
-    --cmake-arg        add new argument into cmake build
-    -h, --help         display this help and exit
+Options:
+  -f, --force        full rebuild with the deleting of the $(relative "${BINARY_PATH}") and $(relative "${BUILD_PATH}") folders
+  -t, --tests        build in tests mode
+  -r, --release      build in release mode
+  --cmake-arg        add new argument into cmake build
+  -h, --help         display this help and exit
 USAGE
   exit 0
 }
@@ -32,12 +31,12 @@ USAGE
 outer_cmake_args=()
 while [ "$1" != "" ]; do
 	case $1 in
-		"-f"|"--force" )
-			build_force=1
-			;;
-		"-t"|"--tests" )
-			build_tests=1
-			;;
+    "-f"|"--force" )
+      build_force=1
+      ;;
+    "-t"|"--tests" )
+      build_tests=1
+      ;;
     "-r"|"--release" )
       build_release=1
       ;;
