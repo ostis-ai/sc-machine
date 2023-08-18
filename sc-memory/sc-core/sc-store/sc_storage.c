@@ -1318,8 +1318,6 @@ sc_result sc_storage_save(sc_memory_context const * ctx)
     seg = segments[i];
     if (seg == null_ptr)
       continue;
-
-    sc_segment_lock(seg);
   }
 
   sc_fs_memory_save(segments, segments_num);
@@ -1331,8 +1329,6 @@ sc_result sc_storage_save(sc_memory_context const * ctx)
     seg = segments[i];
     if (seg == null_ptr)
       continue;
-
-    sc_segment_unlock(seg);
   }
 
   g_mutex_unlock(&s_mutex_save);
@@ -1372,23 +1368,8 @@ sc_bool _sc_storage_ref_common(sc_addr addr, int dir)
 
 void sc_storage_element_ref(sc_addr addr)
 {
-  _sc_storage_ref_common(addr, 1);
 }
 
 sc_bool sc_storage_element_unref(sc_addr addr)
 {
-  sc_bool const no_refs = _sc_storage_ref_common(addr, -1);
-  if (no_refs == SC_TRUE)
-  {
-    sc_element * el = null_ptr;
-    if (sc_storage_element_lock(addr, &el) != SC_RESULT_OK)
-      sc_critical("Invalid state of sc-element");
-
-    sc_storage_erase_element_from_segment(addr);
-    _sc_segment_cache_append(sc_atomic_pointer_get((void **)&segments[addr.seg]));
-
-    sc_storage_element_unlock(addr);
-  }
-
-  return no_refs;
 }

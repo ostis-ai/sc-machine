@@ -114,8 +114,6 @@ void sc_segment_collect_elements_stat(sc_segment * seg, sc_stat * stat)
   sc_int32 i;
   for (i = 0; i < SC_CONCURRENCY_LEVEL; ++i)
   {
-    sc_segment_section * section = &seg->sections[i];
-    sc_segment_section_lock(section);
     sc_int32 j = i;
     while (j < SC_SEGMENT_ELEMENTS_COUNT)
     {
@@ -135,16 +133,11 @@ void sc_segment_collect_elements_stat(sc_segment * seg, sc_stat * stat)
 
       j += SC_CONCURRENCY_LEVEL;
     }
-    sc_segment_section_unlock(section);
   }
 }
 
 sc_element_meta * sc_segment_get_meta(sc_segment * seg, sc_addr_offset offset)
 {
-  sc_assert(seg != null_ptr);
-  sc_assert(seg->sections[offset % SC_CONCURRENCY_LEVEL].thread_lock == sc_thread());
-  sc_assert(offset < SC_SEGMENT_ELEMENTS_COUNT);
-
   return &seg->meta[offset];
 }
 
@@ -229,27 +222,18 @@ sc_element * sc_segment_lock_empty_element(sc_memory_context const * ctx, sc_seg
 sc_element * sc_segment_lock_element(sc_segment * seg, sc_addr_offset offset)
 {
   sc_assert(offset < SC_SEGMENT_ELEMENTS_COUNT && seg != null_ptr);
-  sc_segment_section * section = &seg->sections[offset % SC_CONCURRENCY_LEVEL];
-  sc_segment_section_lock(section);
   return &seg->elements[offset];
 }
 
 sc_element * sc_segment_lock_element_try(sc_segment * seg, sc_addr_offset offset, sc_uint16 max_attempts)
 {
   sc_assert(offset < SC_SEGMENT_ELEMENTS_COUNT && seg != null_ptr);
-  sc_segment_section * section = &seg->sections[offset % SC_CONCURRENCY_LEVEL];
-
-  if (sc_segment_section_lock_try(section, max_attempts) == SC_TRUE)
-    return &seg->elements[offset];
-
-  return null_ptr;
+  return &seg->elements[offset];
 }
 
 void sc_segment_unlock_element(sc_segment * seg, sc_addr_offset offset)
 {
   sc_assert(offset < SC_SEGMENT_ELEMENTS_COUNT && seg != null_ptr);
-  sc_segment_section * section = &seg->sections[offset % SC_CONCURRENCY_LEVEL];
-  sc_segment_section_unlock(section);
 }
 
 void sc_segment_section_lock(sc_segment_section * section)
