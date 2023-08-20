@@ -16,6 +16,7 @@
 #include "../sc_memory_private.h"
 #include "sc-fs-memory/sc_fs_memory.h"
 
+#include "sc-base/sc_mutex.h"
 #include "sc-base/sc_allocator.h"
 #include "sc-base/sc_atomic.h"
 #include "sc-base/sc_assert_utils.h"
@@ -115,7 +116,7 @@ sc_segment * _sc_segment_cache_get(const sc_memory_context * ctx)
 {
   _sc_segment_cache_lock(ctx);
 
-  g_mutex_lock(&s_mutex_save);
+  sc_mutex_lock(&s_mutex_save);
 
   sc_segment * seg = null_ptr;
   if (sc_atomic_int_get(&segments_cache_count) > 0)
@@ -141,7 +142,7 @@ sc_segment * _sc_segment_cache_get(const sc_memory_context * ctx)
 result:
 {
   _sc_segment_cache_unlock(ctx);
-  g_mutex_unlock(&s_mutex_save);
+  sc_mutex_unlock(&s_mutex_save);
 }
 
   return seg;
@@ -316,20 +317,20 @@ sc_result sc_storage_element_free(sc_memory_context * ctx, sc_addr addr)
   GSList * remove_list = null_ptr;
   sc_result result = SC_RESULT_OK;
 
-  g_mutex_lock(&s_mutex_free);
+  sc_mutex_lock(&s_mutex_free);
 
   // the first we need to collect and lock all elements
   sc_element * el = null_ptr;
   if (sc_storage_element_lock(addr, &el) != SC_RESULT_OK)
   {
-    g_mutex_unlock(&s_mutex_free);
+    sc_mutex_unlock(&s_mutex_free);
     return SC_RESULT_ERROR;
   }
 
   sc_assert(el != null_ptr);
   if (el->flags.type == 0 || el->flags.type & sc_flag_request_deletion)
   {
-    g_mutex_unlock(&s_mutex_free);
+    sc_mutex_unlock(&s_mutex_free);
     sc_storage_element_unlock(addr);
     return SC_RESULT_ERROR;
   }
@@ -610,7 +611,7 @@ unlock:
     sc_storage_element_unlock(addr);
   }
 
-  g_mutex_unlock(&s_mutex_free);
+  sc_mutex_unlock(&s_mutex_free);
 
   g_slist_free(remove_list);
   g_hash_table_destroy(remove_table);
@@ -1203,13 +1204,6 @@ sc_result sc_storage_get_access_levels(const sc_memory_context * ctx, sc_addr ad
   if (sc_storage_element_lock(addr, &el) != SC_RESULT_OK)
     return SC_RESULT_ERROR;
 
-  if (sc_access_lvl_check_read(ctx->access_levels, el->flags.access_levels))
-  {
-    *result = el->flags.access_levels;
-  }
-  else
-    r = SC_RESULT_ERROR_NO_READ_RIGHTS;
-
   STORAGE_CHECK_CALL(sc_storage_element_unlock(addr));
   return r;
 }
@@ -1310,8 +1304,8 @@ sc_result sc_storage_save(sc_memory_context const * ctx)
   sc_uint32 i;
 
   // synchronize with free
-  g_mutex_lock(&s_mutex_free);
-  g_mutex_lock(&s_mutex_save);
+  sc_mutex_lock(&s_mutex_free);
+  sc_mutex_lock(&s_mutex_save);
 
   for (i = 0; i < segments_num; ++i)
   {
@@ -1322,7 +1316,7 @@ sc_result sc_storage_save(sc_memory_context const * ctx)
 
   sc_fs_memory_save(segments, segments_num);
 
-  g_mutex_unlock(&s_mutex_free);
+  sc_mutex_unlock(&s_mutex_free);
 
   for (i = 0; i < segments_num; ++i)
   {
@@ -1331,7 +1325,7 @@ sc_result sc_storage_save(sc_memory_context const * ctx)
       continue;
   }
 
-  g_mutex_unlock(&s_mutex_save);
+  sc_mutex_unlock(&s_mutex_save);
 
   return SC_RESULT_OK;
 }

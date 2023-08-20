@@ -64,7 +64,7 @@ class ScSingleThreadedMemoryTest : public ScMemoryTest
 {
   virtual void SetUp()
   {
-    ScSingleThreadedMemoryTest::Initialize(DEFAULT_MIN_EVENTS_AND_AGENTS_THREADS);
+    ScSingleThreadedMemoryTest::Initialize(DEFAULT_MAX_EVENTS_AND_AGENTS_THREADS);
     m_ctx = std::make_unique<ScMemoryContext>(sc_access_lvl_make_min, "test");
   }
 };

@@ -139,11 +139,7 @@ sc_event * sc_event_new(
   if (SC_ADDR_IS_EMPTY(el))
     return null_ptr;
 
-  sc_access_levels levels;
   sc_event * event = null_ptr;
-  if (sc_storage_get_access_levels(ctx, el, &levels) != SC_RESULT_OK ||
-      !sc_access_lvl_check_read(ctx->access_levels, levels))
-    return null_ptr;
 
   sc_storage_element_ref(el);
 
@@ -180,11 +176,7 @@ sc_event * sc_event_new_ex(
   if (SC_ADDR_IS_EMPTY(el))
     return null_ptr;
 
-  sc_access_levels levels;
   sc_event * event = null_ptr;
-  if (sc_storage_get_access_levels(ctx, el, &levels) != SC_RESULT_OK ||
-      !sc_access_lvl_check_read(ctx->access_levels, levels))
-    return null_ptr;
 
   sc_storage_element_ref(el);
 
@@ -333,7 +325,7 @@ sc_result sc_event_emit_impl(
 
   sc_assert(SC_ADDR_IS_NOT_EMPTY(el));
 
-  EVENTS_TABLE_LOCK;
+  //EVENTS_TABLE_LOCK;
 
   // if table is empty, then do nothing
   if (events_table == null_ptr)
@@ -346,7 +338,7 @@ sc_result sc_event_emit_impl(
   {
     event = (sc_event *)element_events_list->data;
 
-    if (event->type == type && sc_access_lvl_check_read(event->access_levels, el_access) &&
+    if (event->type == type &&
         _sc_event_try_emit(event) == SC_TRUE)
     {
       sc_assert(event->callback != null_ptr || event->callback_ex != null_ptr);
@@ -358,7 +350,7 @@ sc_result sc_event_emit_impl(
 
 result:
 {
-  EVENTS_TABLE_UNLOCK;
+  //EVENTS_TABLE_UNLOCK;
 }
 
   return SC_RESULT_OK;

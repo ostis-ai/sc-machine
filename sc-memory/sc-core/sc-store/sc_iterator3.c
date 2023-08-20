@@ -19,10 +19,6 @@ sc_iterator3 * sc_iterator3_f_a_a_new(const sc_memory_context * ctx, sc_addr el,
   sc_access_levels levels;
   sc_iterator_param p1, p2, p3;
 
-  if (sc_storage_get_access_levels(ctx, el, &levels) != SC_RESULT_OK ||
-      !sc_access_lvl_check_read(ctx->access_levels, levels))
-    return null_ptr;
-
   p1.is_type = SC_FALSE;
   p1.addr = el;
 
@@ -40,10 +36,6 @@ sc_iterator3 * sc_iterator3_a_a_f_new(const sc_memory_context * ctx, sc_type beg
   sc_access_levels levels;
   sc_iterator_param p1, p2, p3;
 
-  if (sc_storage_get_access_levels(ctx, el, &levels) != SC_RESULT_OK ||
-      !sc_access_lvl_check_read(ctx->access_levels, levels))
-    return null_ptr;
-
   p1.is_type = SC_TRUE;
   p1.type = beg_type;
 
@@ -58,15 +50,6 @@ sc_iterator3 * sc_iterator3_a_a_f_new(const sc_memory_context * ctx, sc_type beg
 
 sc_iterator3 * sc_iterator3_f_a_f_new(const sc_memory_context * ctx, sc_addr el_beg, sc_type arc_type, sc_addr el_end)
 {
-  sc_access_levels levels;
-  if (sc_storage_get_access_levels(ctx, el_beg, &levels) != SC_RESULT_OK ||
-      !sc_access_lvl_check_read(ctx->access_levels, levels) ||
-      sc_storage_get_access_levels(ctx, el_end, &levels) != SC_RESULT_OK ||
-      !sc_access_lvl_check_read(ctx->access_levels, levels))
-  {
-    return null_ptr;
-  }
-
   sc_iterator_param p1, p2, p3;
 
   p1.is_type = SC_FALSE;
@@ -87,13 +70,6 @@ sc_iterator3 * sc_iterator3_a_f_a_new(
     sc_addr arc_addr,
     sc_type end_type)
 {
-  sc_access_levels levels;
-  if (sc_storage_get_access_levels(ctx, arc_addr, &levels) != SC_RESULT_OK ||
-      !sc_access_lvl_check_read(ctx->access_levels, levels))
-  {
-    return null_ptr;
-  }
-
   sc_iterator_param p1, p2, p3;
 
   p1.is_type = SC_TRUE;
@@ -114,15 +90,6 @@ sc_iterator3 * sc_iterator3_f_f_a_new(
     sc_addr edge_addr,
     sc_type end_type)
 {
-  sc_access_levels levels;
-  if (sc_storage_get_access_levels(ctx, beg_addr, &levels) != SC_RESULT_OK ||
-      !sc_access_lvl_check_read(ctx->access_levels, levels) ||
-      sc_storage_get_access_levels(ctx, edge_addr, &levels) != SC_RESULT_OK ||
-      !sc_access_lvl_check_read(ctx->access_levels, levels))
-  {
-    return null_ptr;
-  }
-
   sc_iterator_param p1, p2, p3;
 
   p1.is_type = SC_FALSE;
@@ -143,15 +110,6 @@ sc_iterator3 * sc_iterator3_a_f_f_new(
     sc_addr edge_addr,
     sc_addr end_addr)
 {
-  sc_access_levels levels;
-  if (sc_storage_get_access_levels(ctx, end_addr, &levels) != SC_RESULT_OK ||
-      !sc_access_lvl_check_read(ctx->access_levels, levels) ||
-      sc_storage_get_access_levels(ctx, edge_addr, &levels) != SC_RESULT_OK ||
-      !sc_access_lvl_check_read(ctx->access_levels, levels))
-  {
-    return null_ptr;
-  }
-
   sc_iterator_param p1, p2, p3;
 
   p1.is_type = SC_TRUE;
@@ -172,17 +130,6 @@ sc_iterator3 * sc_iterator3_f_f_f_new(
     sc_addr edge_addr,
     sc_addr end_addr)
 {
-  sc_access_levels levels;
-  if (sc_storage_get_access_levels(ctx, beg_addr, &levels) != SC_RESULT_OK ||
-      !sc_access_lvl_check_read(ctx->access_levels, levels) ||
-      sc_storage_get_access_levels(ctx, end_addr, &levels) != SC_RESULT_OK ||
-      !sc_access_lvl_check_read(ctx->access_levels, levels) ||
-      sc_storage_get_access_levels(ctx, edge_addr, &levels) != SC_RESULT_OK ||
-      !sc_access_lvl_check_read(ctx->access_levels, levels))
-  {
-    return null_ptr;
-  }
-
   sc_iterator_param p1, p2, p3;
 
   p1.is_type = SC_FALSE;
@@ -235,53 +182,49 @@ sc_iterator3 * sc_iterator3_new(
   switch (type)
   {
   case sc_iterator3_f_a_a:
-    if (p1.is_type || !p2.is_type || !p3.is_type || _sc_iterator_ref_element(ctx, p1.addr) != SC_TRUE)
+    if (p1.is_type || !p2.is_type || !p3.is_type)
     {
       return null_ptr;
     }
     break;
 
   case sc_iterator3_a_a_f:
-    if (!p1.is_type || !p2.is_type || p3.is_type || _sc_iterator_ref_element(ctx, p3.addr) != SC_TRUE)
+    if (!p1.is_type || !p2.is_type || p3.is_type)
     {
       return null_ptr;
     }
     break;
 
   case sc_iterator3_f_a_f:
-    if (p1.is_type || !p2.is_type || p3.is_type || _sc_iterator_ref_element(ctx, p1.addr) != SC_TRUE ||
-        _sc_iterator_ref_element(ctx, p3.addr) != SC_TRUE)
+    if (p1.is_type || !p2.is_type || p3.is_type)
     {
       return null_ptr;
     }
     break;
 
   case sc_iterator3_a_f_a:
-    if (!p1.is_type || p2.is_type || !p3.is_type || _sc_iterator_ref_element(ctx, p2.addr) != SC_TRUE)
+    if (!p1.is_type || p2.is_type || !p3.is_type)
     {
       return null_ptr;
     }
     break;
 
   case sc_iterator3_f_f_a:
-    if (p1.is_type || p2.is_type || !p3.is_type || _sc_iterator_ref_element(ctx, p1.addr) != SC_TRUE ||
-        _sc_iterator_ref_element(ctx, p2.addr) != SC_TRUE)
+    if (p1.is_type || p2.is_type || !p3.is_type)
     {
       return null_ptr;
     }
     break;
 
   case sc_iterator3_a_f_f:
-    if (!p1.is_type || p2.is_type || p3.is_type || _sc_iterator_ref_element(ctx, p2.addr) != SC_TRUE ||
-        _sc_iterator_ref_element(ctx, p3.addr) != SC_TRUE)
+    if (!p1.is_type || p2.is_type || p3.is_type)
     {
       return null_ptr;
     }
     break;
 
   case sc_iterator3_f_f_f:
-    if (p1.is_type || p2.is_type || p3.is_type || _sc_iterator_ref_element(ctx, p1.addr) != SC_TRUE ||
-        _sc_iterator_ref_element(ctx, p2.addr) != SC_TRUE || _sc_iterator_ref_element(ctx, p3.addr) != SC_TRUE)
+    if (p1.is_type || p2.is_type || p3.is_type)
     {
       return null_ptr;
     }
@@ -407,10 +350,6 @@ sc_bool _sc_iterator3_f_a_a_next(sc_iterator3 * it)
     {
       sc_addr arc_end = el->arc.end;
       sc_type arc_type = el->flags.type;
-      sc_access_levels arc_access = el->flags.access_levels;
-      sc_access_levels end_access;
-      if (sc_storage_get_access_levels(it->ctx, arc_end, &end_access) != SC_RESULT_OK)
-        end_access = sc_access_lvl_make_max;
 
       STORAGE_CHECK_CALL(sc_storage_element_unlock(arc_addr));
 
@@ -418,9 +357,7 @@ sc_bool _sc_iterator3_f_a_a_next(sc_iterator3 * it)
       sc_storage_get_element_type(it->ctx, arc_end, &el_type);
 
       if (sc_iterator_compare_type(arc_type, it->params[1].type) &&
-          sc_iterator_compare_type(el_type, it->params[2].type) &&
-          sc_access_lvl_check_read(it->ctx->access_levels, arc_access) &&
-          sc_access_lvl_check_read(it->ctx->access_levels, end_access))
+          sc_iterator_compare_type(el_type, it->params[2].type))
       {
         // store found result
         it->results[1] = arc_addr;
@@ -486,12 +423,10 @@ sc_bool _sc_iterator3_f_a_f_next(sc_iterator3 * it)
     {
       sc_type arc_type = el->flags.type;
       sc_addr arc_begin = el->arc.begin;
-      sc_access_levels arc_access = el->flags.access_levels;
 
       STORAGE_CHECK_CALL(sc_storage_element_unlock(arc_addr));
 
-      if (SC_ADDR_IS_EQUAL(it->params[0].addr, arc_begin) && sc_iterator_compare_type(arc_type, it->params[1].type) &&
-          sc_access_lvl_check_read(it->ctx->access_levels, arc_access))
+      if (SC_ADDR_IS_EQUAL(it->params[0].addr, arc_begin) && sc_iterator_compare_type(arc_type, it->params[1].type))
       {
         // store found result
         it->results[1] = arc_addr;
@@ -553,10 +488,6 @@ sc_bool _sc_iterator3_a_a_f_next(sc_iterator3 * it)
     {
       sc_type arc_type = el->flags.type;
       sc_addr arc_begin = el->arc.begin;
-      sc_access_levels arc_access = el->flags.access_levels;
-      sc_access_levels begin_access;
-      if (sc_storage_get_access_levels(it->ctx, arc_begin, &begin_access) != SC_RESULT_OK)
-        begin_access = sc_access_lvl_make_max;
 
       STORAGE_CHECK_CALL(sc_storage_element_unlock(arc_addr));
 
@@ -564,9 +495,7 @@ sc_bool _sc_iterator3_a_a_f_next(sc_iterator3 * it)
       sc_storage_get_element_type(it->ctx, arc_begin, &el_type);
 
       if (sc_iterator_compare_type(arc_type, it->params[1].type) &&
-          sc_iterator_compare_type(el_type, it->params[0].type) &&
-          sc_access_lvl_check_read(it->ctx->access_levels, arc_access) &&
-          sc_access_lvl_check_read(it->ctx->access_levels, begin_access))
+          sc_iterator_compare_type(el_type, it->params[0].type))
       {
         // store found result
         it->results[1] = arc_addr;
