@@ -21,6 +21,7 @@
 #include "sc-store/sc-base/sc_message.h"
 
 #include "sc_helper.h"
+#include "sc-store/sc-base/sc_mutex.h"
 
 sc_memory_context * s_memory_default_ctx = null_ptr;
 sc_uint16 s_context_id_last = 1;
