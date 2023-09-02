@@ -192,18 +192,45 @@ public:
       return *this;
     }
 
-    SC_THROW_EXCEPTION(utils::ExceptionInvalidParams, "Alias=" + varIdtf + " is busy");
+    SC_THROW_EXCEPTION(utils::ExceptionInvalidParams, "Alias=" << varIdtf << " already has value");
   }
 
-  _SC_EXTERN bool Get(std::string const & varIdtf, ScAddr & outResult) const noexcept
+  _SC_EXTERN ScTemplateParams & Add(ScAddr const & varAddr, ScAddr const & value) noexcept(false)
+  {
+    std::string const & varAddrHashStr = std::to_string(varAddr.Hash());
+    if (m_templateItemsToParams.find(varAddrHashStr) == m_templateItemsToParams.cend())
+    {
+      m_templateItemsToParams[varAddrHashStr] = value;
+      return *this;
+    }
+
+    SC_THROW_EXCEPTION(utils::ExceptionInvalidParams, "Var=" << varAddrHashStr << " already has value");
+  }
+
+  _SC_EXTERN bool Get(std::string const & varIdtf, ScAddr & outAddr) const noexcept
   {
     auto const it = m_templateItemsToParams.find(varIdtf);
     if (it != m_templateItemsToParams.cend())
     {
-      outResult = it->second;
+      outAddr = it->second;
       return true;
     }
 
+    outAddr = ScAddr::Empty;
+    return false;
+  }
+
+  _SC_EXTERN bool Get(ScAddr const & varAddr, ScAddr & outAddr) const noexcept
+  {
+    std::string const & varAddrHashStr = std::to_string(varAddr.Hash());
+    auto const it = m_templateItemsToParams.find(varAddrHashStr);
+    if (it != m_templateItemsToParams.cend())
+    {
+      outAddr = it->second;
+      return true;
+    }
+
+    outAddr = ScAddr::Empty;
     return false;
   }
 
