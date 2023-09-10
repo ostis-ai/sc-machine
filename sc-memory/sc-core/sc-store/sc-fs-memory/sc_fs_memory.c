@@ -194,7 +194,6 @@ sc_bool _sc_fs_memory_load_sc_memory_segments(sc_segment ** segments, sc_uint32 
         seg->elements[j].output_arcs_count = 1;
       }
     }
-    sc_segment_loaded(seg);
     i = num;
   }
 

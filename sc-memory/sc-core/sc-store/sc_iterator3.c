@@ -10,13 +10,11 @@
 #include "../sc_memory_private.h"
 
 #include "sc-base/sc_allocator.h"
-#include "sc-base/sc_assert_utils.h"
 
 const sc_uint32 s_max_iterator_lock_attempts = 10;
 
 sc_iterator3 * sc_iterator3_f_a_a_new(const sc_memory_context * ctx, sc_addr el, sc_type arc_type, sc_type end_type)
 {
-  sc_access_levels levels;
   sc_iterator_param p1, p2, p3;
 
   p1.is_type = SC_FALSE;
@@ -33,7 +31,6 @@ sc_iterator3 * sc_iterator3_f_a_a_new(const sc_memory_context * ctx, sc_addr el,
 
 sc_iterator3 * sc_iterator3_a_a_f_new(const sc_memory_context * ctx, sc_type beg_type, sc_type arc_type, sc_addr el)
 {
-  sc_access_levels levels;
   sc_iterator_param p1, p2, p3;
 
   p1.is_type = SC_TRUE;
@@ -144,29 +141,6 @@ sc_iterator3 * sc_iterator3_f_f_f_new(
   return sc_iterator3_new(ctx, sc_iterator3_f_f_f, p1, p2, p3);
 }
 
-sc_bool _sc_iterator_ref_element(const sc_memory_context * ctx, sc_addr addr)
-{
-  sc_element * el = null_ptr;
-  sc_uint16 a = 0;
-
-  while (a < 100)
-  {
-    STORAGE_CHECK_CALL(sc_storage_element_lock(addr, &el));
-    if (el != null_ptr && sc_element_is_request_deletion(el) == SC_FALSE && el->flags.type != 0)
-    {
-      sc_storage_element_ref(addr);
-      STORAGE_CHECK_CALL(sc_storage_element_unlock(addr));
-      return SC_TRUE;
-    }
-    STORAGE_CHECK_CALL(sc_storage_element_unlock(addr));
-
-    a++;
-    g_usleep(10);
-  }
-
-  return SC_FALSE;
-}
-
 sc_iterator3 * sc_iterator3_new(
     const sc_memory_context * ctx,
     sc_iterator3_type type,
@@ -256,44 +230,7 @@ void sc_iterator3_free(sc_iterator3 * it)
   {
     sc_element * el = null_ptr;
     STORAGE_CHECK_CALL(sc_storage_element_lock(it->results[1], &el));
-    sc_assert(el != null_ptr);
-    sc_storage_element_unref(it->results[1]);
     STORAGE_CHECK_CALL(sc_storage_element_unlock(it->results[1]));
-  }
-  switch (it->type)
-  {
-  case sc_iterator3_f_a_a:
-    sc_storage_element_unref(it->params[0].addr);
-    break;
-
-  case sc_iterator3_a_a_f:
-    sc_storage_element_unref(it->params[2].addr);
-    break;
-
-  case sc_iterator3_f_a_f:
-    sc_storage_element_unref(it->params[0].addr);
-    sc_storage_element_unref(it->params[2].addr);
-    break;
-
-  case sc_iterator3_a_f_a:
-    sc_storage_element_unref(it->params[1].addr);
-    break;
-  case sc_iterator3_f_f_a:
-    sc_storage_element_unref(it->params[0].addr);
-    sc_storage_element_unref(it->params[1].addr);
-    break;
-  case sc_iterator3_a_f_f:
-    sc_storage_element_unref(it->params[1].addr);
-    sc_storage_element_unref(it->params[2].addr);
-    break;
-  case sc_iterator3_f_f_f:
-    sc_storage_element_unref(it->params[0].addr);
-    sc_storage_element_unref(it->params[1].addr);
-    sc_storage_element_unref(it->params[2].addr);
-    break;
-
-  default:
-    break;
   }
 
   sc_mem_free(it);
@@ -301,8 +238,6 @@ void sc_iterator3_free(sc_iterator3 * it)
 
 sc_bool sc_iterator_param_compare(sc_element * el, sc_addr addr, sc_iterator_param param)
 {
-  sc_assert(el != null_ptr);
-
   if (param.is_type)
     return el->flags.type & param.type;
   else
@@ -321,7 +256,6 @@ sc_bool _sc_iterator3_f_a_a_next(sc_iterator3 * it)
   {
     sc_element * el = null_ptr;
     STORAGE_CHECK_CALL(sc_storage_element_lock(it->params[0].addr, &el));
-    sc_assert(el != null_ptr);
     arc_addr = el->first_out_arc;
     STORAGE_CHECK_CALL(sc_storage_element_unlock(it->params[0].addr));
   }
@@ -329,9 +263,7 @@ sc_bool _sc_iterator3_f_a_a_next(sc_iterator3 * it)
   {
     sc_element * el = null_ptr;
     STORAGE_CHECK_CALL(sc_storage_element_lock(it->results[1], &el));
-    sc_assert(el != null_ptr);
     arc_addr = el->arc.next_out_arc;
-    sc_storage_element_unref(it->results[1]);
     STORAGE_CHECK_CALL(sc_storage_element_unlock(it->results[1]));
   }
 
@@ -340,10 +272,7 @@ sc_bool _sc_iterator3_f_a_a_next(sc_iterator3 * it)
   {
     sc_element * el = null_ptr;
     // lock required elements to prevent deadlock with deletion
-    while (el == null_ptr)
-      STORAGE_CHECK_CALL(sc_storage_element_lock_try(arc_addr, s_max_iterator_lock_attempts, &el));
-
-    sc_storage_element_ref(arc_addr);
+    STORAGE_CHECK_CALL(sc_storage_element_lock_try(arc_addr, s_max_iterator_lock_attempts, &el));
 
     sc_addr next_out_arc = el->arc.next_out_arc;
     if (sc_element_is_request_deletion(el) == SC_FALSE)
@@ -368,7 +297,6 @@ sc_bool _sc_iterator3_f_a_a_next(sc_iterator3 * it)
     }
     else
     {
-      sc_storage_element_unref(arc_addr);
       STORAGE_CHECK_CALL(sc_storage_element_unlock(arc_addr));
     }
 
@@ -395,7 +323,6 @@ sc_bool _sc_iterator3_f_a_f_next(sc_iterator3 * it)
   {
     sc_element * el = null_ptr;
     STORAGE_CHECK_CALL(sc_storage_element_lock(it->params[2].addr, &el));
-    sc_assert(el != null_ptr);
     arc_addr = el->first_in_arc;
     STORAGE_CHECK_CALL(sc_storage_element_unlock(it->params[2].addr));
   }
@@ -403,9 +330,7 @@ sc_bool _sc_iterator3_f_a_f_next(sc_iterator3 * it)
   {
     sc_element * el = null_ptr;
     STORAGE_CHECK_CALL(sc_storage_element_lock(it->results[1], &el));
-    sc_assert(el != null_ptr);
     arc_addr = el->arc.next_in_arc;
-    sc_storage_element_unref(it->results[1]);
     STORAGE_CHECK_CALL(sc_storage_element_unlock(it->results[1]));
   }
 
@@ -413,10 +338,7 @@ sc_bool _sc_iterator3_f_a_f_next(sc_iterator3 * it)
   while (SC_ADDR_IS_NOT_EMPTY(arc_addr))
   {
     sc_element * el = null_ptr;
-    while (el == null_ptr)
-      STORAGE_CHECK_CALL(sc_storage_element_lock_try(arc_addr, s_max_iterator_lock_attempts, &el));
-
-    sc_storage_element_ref(arc_addr);
+    STORAGE_CHECK_CALL(sc_storage_element_lock_try(arc_addr, s_max_iterator_lock_attempts, &el));
 
     sc_addr next_in_arc = el->arc.next_in_arc;
     if (sc_element_is_request_deletion(el) == SC_FALSE)
@@ -435,7 +357,6 @@ sc_bool _sc_iterator3_f_a_f_next(sc_iterator3 * it)
     }
     else
     {
-      sc_storage_element_unref(arc_addr);
       STORAGE_CHECK_CALL(sc_storage_element_unlock(arc_addr));
     }
 
@@ -460,7 +381,6 @@ sc_bool _sc_iterator3_a_a_f_next(sc_iterator3 * it)
   {
     sc_element * el = null_ptr;
     STORAGE_CHECK_CALL(sc_storage_element_lock(it->params[2].addr, &el));
-    sc_assert(el != null_ptr);
     arc_addr = el->first_in_arc;
     STORAGE_CHECK_CALL(sc_storage_element_unlock(it->params[2].addr));
   }
@@ -468,9 +388,7 @@ sc_bool _sc_iterator3_a_a_f_next(sc_iterator3 * it)
   {
     sc_element * el = null_ptr;
     STORAGE_CHECK_CALL(sc_storage_element_lock(it->results[1], &el));
-    sc_assert(el != null_ptr);
     arc_addr = el->arc.next_in_arc;
-    sc_storage_element_unref(it->results[1]);
     STORAGE_CHECK_CALL(sc_storage_element_unlock(it->results[1]));
   }
 
@@ -478,10 +396,7 @@ sc_bool _sc_iterator3_a_a_f_next(sc_iterator3 * it)
   while (SC_ADDR_IS_NOT_EMPTY(arc_addr))
   {
     sc_element * el = null_ptr;
-    while (el == null_ptr)
-      STORAGE_CHECK_CALL(sc_storage_element_lock_try(arc_addr, s_max_iterator_lock_attempts, &el));
-
-    sc_storage_element_ref(arc_addr);
+    STORAGE_CHECK_CALL(sc_storage_element_lock_try(arc_addr, s_max_iterator_lock_attempts, &el));
 
     sc_addr next_in_arc = el->arc.next_in_arc;
     if (sc_element_is_request_deletion(el) == SC_FALSE)
@@ -506,7 +421,6 @@ sc_bool _sc_iterator3_a_a_f_next(sc_iterator3 * it)
     }
     else
     {
-      sc_storage_element_unref(arc_addr);
       STORAGE_CHECK_CALL(sc_storage_element_unlock(arc_addr));
     }
 
@@ -528,7 +442,6 @@ sc_bool _sc_iterator3_a_f_a_next(sc_iterator3 * it)
 
     sc_element * arc_el = null_ptr;
     STORAGE_CHECK_CALL(sc_storage_element_lock(it->params[1].addr, &arc_el));
-    sc_assert(arc_el != null_ptr);
     it->results[0] = arc_el->arc.begin;
     it->results[2] = arc_el->arc.end;
     STORAGE_CHECK_CALL(sc_storage_element_unlock(it->params[1].addr));
@@ -548,7 +461,6 @@ sc_bool _sc_iterator3_f_f_a_next(sc_iterator3 * it)
 
     sc_element * edge_el = null_ptr;
     STORAGE_CHECK_CALL(sc_storage_element_lock(it->params[1].addr, &edge_el));
-    sc_assert(edge_el != null_ptr);
     if (SC_ADDR_IS_EQUAL(it->params[0].addr, edge_el->arc.begin))
     {
       result = SC_TRUE;
@@ -573,7 +485,6 @@ sc_bool _sc_iterator3_a_f_f_next(sc_iterator3 * it)
 
     sc_element * edge_el = null_ptr;
     STORAGE_CHECK_CALL(sc_storage_element_lock(it->params[1].addr, &edge_el));
-    sc_assert(edge_el != null_ptr);
     if (SC_ADDR_IS_EQUAL(it->params[2].addr, edge_el->arc.end))
     {
       result = SC_TRUE;
@@ -598,7 +509,6 @@ sc_bool _sc_iterator3_f_f_f_next(sc_iterator3 * it)
 
     sc_element * edge_el = null_ptr;
     STORAGE_CHECK_CALL(sc_storage_element_lock(it->params[1].addr, &edge_el));
-    sc_assert(edge_el != null_ptr);
     if (SC_ADDR_IS_EQUAL(it->params[0].addr, edge_el->arc.begin) &&
         SC_ADDR_IS_EQUAL(it->params[2].addr, edge_el->arc.end))
     {
@@ -652,9 +562,6 @@ sc_bool sc_iterator3_next(sc_iterator3 * it)
 
 sc_addr sc_iterator3_value(sc_iterator3 * it, sc_uint vid)
 {
-  sc_assert(it != null_ptr);
-  sc_assert(vid < 3);
-
   return it->results[vid];
 }
 

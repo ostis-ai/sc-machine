@@ -5,10 +5,8 @@
  */
 
 #include "sc_iterator.h"
-#include "sc_storage.h"
 
 #include "sc-base/sc_allocator.h"
-#include "sc-base/sc_assert_utils.h"
 
 sc_iterator5 * sc_iterator5_new(
     const sc_memory_context * ctx,
@@ -551,8 +549,5 @@ sc_bool sc_iterator5_next(sc_iterator5 * it)
 
 sc_addr sc_iterator5_value(sc_iterator5 * it, sc_uint vid)
 {
-  sc_assert(it != null_ptr);
-  sc_assert(vid < 5);
-
   return it->results[vid];
 }

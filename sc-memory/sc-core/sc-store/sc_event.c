@@ -134,14 +134,10 @@ sc_event * sc_event_new(
     fEventCallback callback,
     fDeleteCallback delete_callback)
 {
-  sc_assert(callback != null_ptr);
-
   if (SC_ADDR_IS_EMPTY(el))
     return null_ptr;
 
   sc_event * event = null_ptr;
-
-  sc_storage_element_ref(el);
 
   event = sc_mem_new(sc_event, 1);
   event->element = el;
@@ -171,14 +167,10 @@ sc_event * sc_event_new_ex(
     fEventCallbackEx callback,
     fDeleteCallback delete_callback)
 {
-  sc_assert(callback != null_ptr);
-
   if (SC_ADDR_IS_EMPTY(el))
     return null_ptr;
 
   sc_event * event = null_ptr;
-
-  sc_storage_element_ref(el);
 
   event = sc_mem_new(sc_event, 1);
   event->element = el;
@@ -233,7 +225,6 @@ unref:
     sc_uint32 const refs = evt->ref_count;
     if (refs == SC_EVENT_REQUEST_DESTROY)  // no refs
     {
-      sc_storage_element_unref(evt->element);
       if (evt->delete_callback != null_ptr)
         evt->delete_callback(evt);
 
@@ -341,7 +332,6 @@ sc_result sc_event_emit_impl(
     if (event->type == type &&
         _sc_event_try_emit(event) == SC_TRUE)
     {
-      sc_assert(event->callback != null_ptr || event->callback_ex != null_ptr);
       sc_event_queue_append(event_queue, event, edge, other_el);
     }
 
@@ -358,19 +348,16 @@ result:
 
 sc_event_type sc_event_get_type(const sc_event * event)
 {
-  sc_assert(event != null_ptr);
   return event->type;
 }
 
 sc_pointer sc_event_get_data(const sc_event * event)
 {
-  sc_assert(event != null_ptr);
   return event->data;
 }
 
 sc_addr sc_event_get_element(const sc_event * event)
 {
-  sc_assert(event != null_ptr);
   return event->element;
 }
 

@@ -13,19 +13,21 @@
 #include "sc_defines.h"
 #include "sc_stream.h"
 #include "sc-container/sc-list/sc_list.h"
+#include "sc-base/sc_mutex.h"
 
 #if SC_DEBUG_MODE
-#  define STORAGE_CHECK_CALL(x) \
-    ({ \
-      sc_result __r = x; \
-      sc_assert(__r == SC_RESULT_OK); \
-    })
+#  define STORAGE_CHECK_CALL(x) x
 #else
-#  define STORAGE_CHECK_CALL(x) \
-    { \
-      x; \
-    }
+#  define STORAGE_CHECK_CALL(x) x
 #endif
+
+typedef struct
+{
+  sc_segment ** segments;
+  sc_uint32 segments_count;
+  sc_uint32 max_segments_count;
+  sc_rec_mutex rw_mutex;
+} sc_storage;
 
 //! Initialize sc storage in specified path
 sc_bool sc_storage_initialize(const sc_memory_params * params);
@@ -228,25 +230,6 @@ sc_result sc_storage_find_links_contents_by_content_substring(
     sc_list ** result_strings,
     sc_uint32 max_length_to_search_as_prefix);
 
-/*! Setup new access levels to sc-element. New access levels will be a minimum from context access levels and parameter
- * \b access_levels
- * @param addr sc-addr of sc-element to change access levels
- * @param access_levels new access levels
- * @param new_value new value of access levels for sc-element. This parameter can be NULL
- * @return Returns SC_RESULT_OK, when access level changed; otherwise it returns error code
- */
-sc_result sc_storage_set_access_levels(
-    sc_memory_context const * ctx,
-    sc_addr addr,
-    sc_access_levels access_levels,
-    sc_access_levels * new_value);
-
-//! Get access levels of sc-element
-sc_result sc_storage_get_access_levels(sc_memory_context const * ctx, sc_addr addr, sc_access_levels * result);
-
-//! Returns number of segments
-sc_uint sc_storage_get_segments_count();
-
 /*! Get statistics information about elements
  * @param stat Pointer to structure that store statistic
  * @return If statistics info collect without any errors, then return SC_OK;
@@ -254,11 +237,7 @@ sc_uint sc_storage_get_segments_count();
  */
 sc_result sc_storage_get_elements_stat(sc_stat * stat);
 
-sc_result sc_storage_erase_element_from_segment(sc_addr addr);
-
 // ----- Locks -----
-//! Returns pointer to sc-element metainfo
-sc_element_meta * sc_storage_get_element_meta(sc_addr addr);
 //! Locks specified sc-element. Pointer to locked sc-element stores in el
 sc_result sc_storage_element_lock(sc_addr addr, sc_element ** el);
 //! Try to lock sc-element by maximum attempts. If element wasn't locked and there are no errors, then el pointer will
@@ -266,15 +245,6 @@ sc_result sc_storage_element_lock(sc_addr addr, sc_element ** el);
 sc_result sc_storage_element_lock_try(sc_addr addr, sc_uint16 max_attempts, sc_element ** el);
 //! Unlocks specified sc-element
 sc_result sc_storage_element_unlock(sc_addr addr);
-
-//! Adds reference to a specified sc-element
-void sc_storage_element_ref(sc_addr addr);
-/*! Removes reference from a specified sc-element
- * @param addr sc_addr of element to remove reference
- * @return If last reference removed from sc-element, then elements cell frees and this function returns SC_TRUE;
- * otherwise - returns SC_FALSE and element is still alive. DO NOT work with this sc-element if function returns SC_TRUE
- */
-sc_bool sc_storage_element_unref(sc_addr addr);
 
 sc_result sc_storage_save(sc_memory_context const * ctx);
 

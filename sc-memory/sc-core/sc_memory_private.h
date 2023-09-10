@@ -9,6 +9,7 @@
 
 #include "sc-store/sc_element.h"
 #include "sc-store/sc_types.h"
+#include "sc-store/sc-base/sc_message.h"
 
 #include <glib.h>
 

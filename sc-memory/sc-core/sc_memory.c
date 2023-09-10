@@ -17,11 +17,9 @@
 #include "sc-store/sc_event/sc_event_private.h"
 
 #include "sc-store/sc-base/sc_allocator.h"
-#include "sc-store/sc-base/sc_assert_utils.h"
 #include "sc-store/sc-base/sc_message.h"
 
 #include "sc_helper.h"
-#include "sc-store/sc-base/sc_mutex.h"
 
 sc_memory_context * s_memory_default_ctx = null_ptr;
 sc_uint16 s_context_id_last = 1;
@@ -151,7 +149,6 @@ void sc_memory_shutdown(sc_bool save_state)
     g_hash_table_destroy(s_context_hash_table);
   s_context_hash_table = null_ptr;
   s_context_id_last = 0;
-  sc_assert(s_context_id_count == 0);
 
   sc_memory_info("All components shutdown");
   sc_memory_info("Shutdown");
@@ -170,7 +167,7 @@ sc_memory_context * sc_memory_context_new(sc_uint8 levels)
 sc_memory_context * sc_memory_context_new_impl(sc_uint8 levels)
 {
   sc_memory_context * ctx = sc_mem_new(sc_memory_context, 1);
-  sc_uint32 index = 0;
+  sc_uint32 index;
 
   ctx->access_levels = levels;
 
@@ -234,20 +231,17 @@ void sc_memory_context_free_impl(sc_memory_context * ctx)
 
 void sc_memory_context_pending_begin(sc_memory_context * ctx)
 {
-  sc_assert((ctx->flags & SC_CONTEXT_FLAG_PENDING_EVENTS) == 0);
   ctx->flags |= SC_CONTEXT_FLAG_PENDING_EVENTS;
 }
 
 void sc_memory_context_pending_end(sc_memory_context * ctx)
 {
-  sc_assert((ctx->flags & SC_CONTEXT_FLAG_PENDING_EVENTS) != 0);
   ctx->flags = ctx->flags & (~SC_CONTEXT_FLAG_PENDING_EVENTS);
   sc_memory_context_emit_events(ctx);
 }
 
 void sc_memory_context_pend_event(sc_memory_context * ctx, sc_event_emit_params * params)
 {
-  sc_assert((ctx->flags & SC_CONTEXT_FLAG_PENDING_EVENTS) != 0);
   ctx->pend_events = g_slist_append(ctx->pend_events, params);
 }
 
@@ -256,7 +250,6 @@ void sc_memory_context_emit_events(sc_memory_context * ctx)
   GSList * item = null_ptr;
   sc_event_emit_params * evt_params = null_ptr;
 
-  sc_assert((ctx->flags & SC_CONTEXT_FLAG_PENDING_EVENTS) == 0);
   while (ctx->pend_events)
   {
     item = ctx->pend_events;
@@ -388,20 +381,6 @@ sc_result sc_memory_find_links_contents_by_content_substring(
     sc_uint32 max_length_to_search_as_prefix)
 {
   return sc_storage_find_links_contents_by_content_substring(ctx, stream, result, max_length_to_search_as_prefix);
-}
-
-sc_result sc_memory_set_element_access_levels(
-    sc_memory_context const * ctx,
-    sc_addr addr,
-    sc_access_levels access_levels,
-    sc_access_levels * new_value)
-{
-  return sc_storage_set_access_levels(ctx, addr, access_levels, new_value);
-}
-
-sc_result sc_memory_get_element_access_levels(sc_memory_context const * ctx, sc_addr addr, sc_access_levels * result)
-{
-  return sc_storage_get_access_levels(ctx, addr, result);
 }
 
 sc_result sc_memory_stat(sc_memory_context const * ctx, sc_stat * stat)

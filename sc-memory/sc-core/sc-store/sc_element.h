@@ -47,32 +47,10 @@ struct _sc_arc_info
  * }
  */
 
-struct _sc_element_locks
-{
-  sc_uint8 out_inp : 1;
-  sc_uint8 del : 1;
-  sc_uint8 change : 1;
-  sc_uint8 read : 1;
-};
-
-#define SC_ELID_REFS_MASK 0xffff
-#define SC_IT_REFS_MASK (0xffff << 16)
-
 struct _sc_element_flags
 {
   sc_type type;
   sc_access_levels access_levels;
-};
-
-struct _sc_element_meta
-{
-  union
-  {
-    sc_element_locks locks;  // bits access
-    sc_uint8 locks_data;     // one byte
-  };
-
-  sc_uint32 ref_count;
 };
 
 struct _sc_element
