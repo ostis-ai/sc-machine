@@ -23,6 +23,16 @@ typedef GMutex sc_mutex;
 
 #define sc_mutex_destroy(mutex) g_mutex_clear(mutex)
 
+typedef GRecMutex sc_rec_mutex;
+
+#define sc_rec_mutex_init(mutex) g_rec_mutex_init(mutex)
+
+#define sc_rec_mutex_lock(mutex) g_rec_mutex_lock(mutex)
+
+#define sc_rec_mutex_unlock(mutex) g_rec_mutex_unlock(mutex)
+
+#define sc_rec_mutex_destroy(mutex) g_rec_mutex_clear(mutex)
+
 #undef GLIB
 
 #endif

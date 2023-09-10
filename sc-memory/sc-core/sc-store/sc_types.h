@@ -153,12 +153,6 @@ typedef sc_uint16 sc_type;
 #  define sc_flag_link_self_container (0x8000)
 #  define sc_flags_remove(x) ((x) & ~(sc_flag_request_deletion | sc_flag_link_self_container))
 
-// locks
-#  define sc_lock_out_in 0x1
-#  define sc_lock_del 0x2
-#  define sc_lock_change 0x4
-#  define sc_lock_read 0x8
-
 // access levels
 #  define SC_ACCESS_LVL_MAX_VALUE 15
 #  define SC_ACCESS_LVL_MIN_VALUE 0
@@ -223,9 +217,6 @@ struct _sc_stat
   sc_uint64 node_count;  // amount of all sc-nodes stored in memory
   sc_uint64 arc_count;   // amount of all sc-arcs stored in memory
   sc_uint64 link_count;  // amount of all sc-links stored in memory
-
-  sc_uint64 empty_count;  // amount of empty sc-element cells
-  sc_uint64 segments_count;
 };
 
 #endif
@@ -233,15 +224,11 @@ struct _sc_stat
 typedef struct _sc_arc sc_arc;
 typedef struct _sc_arc_info sc_arc_info;
 typedef sc_uint8 sc_access_levels;
-typedef struct _sc_element_locks sc_element_locks;
 typedef struct _sc_element_flags sc_element_flags;
-typedef struct _sc_element_refs sc_element_refs;
 typedef struct _sc_memory_context sc_memory_context;
-typedef struct _sc_element_meta sc_element_meta;
 typedef struct _sc_element sc_element;
 typedef struct _sc_segment sc_segment;
 typedef struct _sc_addr sc_addr;
-typedef struct _sc_elements_stat sc_elements_stat;
 typedef struct _sc_iterator_param sc_iterator_param;
 typedef struct _sc_iterator3 sc_iterator3;
 typedef struct _sc_iterator5 sc_iterator5;
