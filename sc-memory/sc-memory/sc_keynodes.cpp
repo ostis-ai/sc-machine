@@ -189,14 +189,9 @@ ScAddr const & ScKeynodes::GetResultCodeAddr(sc_result resCode)
     return kScResultInvalidState;
   case SC_RESULT_ERROR_NOT_FOUND:
     return kScResultErrorNotFound;
-  case SC_RESULT_ERROR_NO_WRITE_RIGHTS:
-    return kScResultErrorNoWriteRights;
-  case SC_RESULT_ERROR_NO_READ_RIGHTS:
-    return kScResultErrorNoReadRights;
-
   default:
-    return kScResultError;
-  };
+    break;
+  }
 
   return kScResultError;
 }
@@ -222,10 +217,6 @@ sc_result ScKeynodes::GetResultCodeByAddr(ScAddr const & resultClassAddr)
     return SC_RESULT_ERROR_INVALID_STATE;
   else if (resultClassAddr == kScResultErrorNotFound)
     return SC_RESULT_ERROR_NOT_FOUND;
-  else if (resultClassAddr == kScResultErrorNoWriteRights)
-    return SC_RESULT_ERROR_NO_WRITE_RIGHTS;
-  else if (resultClassAddr == kScResultErrorNoReadRights)
-    return SC_RESULT_ERROR_NO_READ_RIGHTS;
 
   return SC_RESULT_UNKNOWN;
 }

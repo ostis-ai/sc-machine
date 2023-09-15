@@ -79,12 +79,10 @@ sc_memory_context * sc_memory_initialize(const sc_memory_params * params)
     goto error;
   }
 
-  sc_addr init_memory_generated_structure;
+  sc_addr init_memory_generated_structure = SC_ADDR_EMPTY;
   if (params->init_memory_generated_upload)
     sc_helper_resolve_system_identifier(
         s_memory_default_ctx, params->init_memory_generated_structure, &init_memory_generated_structure);
-  else
-    SC_ADDR_MAKE_EMPTY(init_memory_generated_structure);
 
   if (sc_memory_init_ext(params->ext_path, params->enabled_exts, init_memory_generated_structure) != SC_RESULT_OK)
   {
@@ -240,12 +238,12 @@ void sc_memory_context_pending_end(sc_memory_context * ctx)
   sc_memory_context_emit_events(ctx);
 }
 
-void sc_memory_context_pend_event(sc_memory_context * ctx, sc_event_emit_params * params)
+void sc_memory_context_pend_event(sc_memory_context const * ctx, sc_event_emit_params * params)
 {
-  ctx->pend_events = g_slist_append(ctx->pend_events, params);
+  ((sc_memory_context *)ctx)->pend_events = g_slist_append(ctx->pend_events, params);
 }
 
-void sc_memory_context_emit_events(sc_memory_context * ctx)
+void sc_memory_context_emit_events(sc_memory_context const * ctx)
 {
   GSList * item = null_ptr;
   sc_event_emit_params * evt_params = null_ptr;
@@ -260,7 +258,7 @@ void sc_memory_context_emit_events(sc_memory_context * ctx)
 
     sc_mem_free(evt_params);
 
-    ctx->pend_events = g_slist_delete_link(ctx->pend_events, ctx->pend_events);
+    ((sc_memory_context *)ctx)->pend_events = g_slist_delete_link(ctx->pend_events, ctx->pend_events);
   }
 }
 
@@ -338,13 +336,13 @@ sc_result sc_memory_get_arc_info(
   return sc_storage_get_arc_info(ctx, addr, result_start_addr, result_end_addr);
 }
 
-sc_result sc_memory_set_link_content(sc_memory_context * ctx, sc_addr addr, const sc_stream * stream)
+sc_result sc_memory_set_link_content(sc_memory_context const * ctx, sc_addr addr, const sc_stream * stream)
 {
   return sc_memory_set_link_content_ext(ctx, addr, stream, SC_TRUE);
 }
 
 sc_result sc_memory_set_link_content_ext(
-    sc_memory_context * ctx,
+    sc_memory_context const * ctx,
     sc_addr addr,
     const sc_stream * stream,
     sc_bool is_searchable_string)

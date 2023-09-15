@@ -59,10 +59,10 @@ void sc_memory_context_free_impl(sc_memory_context * ctx);
  * @param params Pointer to event emit parameters. Context take ownership
  * on this pointer, so you doesn't need to care about it memory free
  */
-void sc_memory_context_pend_event(sc_memory_context * ctx, sc_event_emit_params * params);
+void sc_memory_context_pend_event(sc_memory_context const * ctx, sc_event_emit_params * params);
 
 /*! Emit all pended events
  */
-void sc_memory_context_emit_events(sc_memory_context * ctx);
+void sc_memory_context_emit_events(sc_memory_context const * ctx);
 
 #endif

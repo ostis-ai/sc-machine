@@ -73,6 +73,4 @@ TEST_F(ScAgentTest, AgentResult_Codes)
   CheckValue(SC_RESULT_ERROR_IO);
   CheckValue(SC_RESULT_ERROR_INVALID_STATE);
   CheckValue(SC_RESULT_ERROR_NOT_FOUND);
-  CheckValue(SC_RESULT_ERROR_NO_WRITE_RIGHTS);
-  CheckValue(SC_RESULT_ERROR_NO_READ_RIGHTS);
 }

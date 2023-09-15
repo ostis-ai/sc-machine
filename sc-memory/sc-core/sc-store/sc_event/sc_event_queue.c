@@ -34,11 +34,6 @@ void sc_event_pool_worker_data_destroy(sc_event_pool_worker_data * data)
   sc_mem_free(data);
 }
 
-// Added variables for synchronization
-static GMutex count_mutex;
-static GCond all_threads_done_cond;
-static int active_thread_count = 0;
-
 void sc_event_pool_worker(gpointer data, gpointer user_data)
 {
   sc_event_pool_worker_data * work_data = (sc_event_pool_worker_data *)data;
@@ -54,13 +49,6 @@ void sc_event_pool_worker(gpointer data, gpointer user_data)
 
   sc_event_unref(work_data->evt);
   sc_event_pool_worker_data_destroy(work_data);
-
-  // Decrease the count of active threads and signal if all threads are done
-  g_mutex_lock(&count_mutex);
-  active_thread_count--;
-  if (active_thread_count == 0)
-    g_cond_signal(&all_threads_done_cond);
-  g_mutex_unlock(&count_mutex);
 }
 
 sc_event_queue * sc_event_queue_new_ext(sc_uint32 max_events_and_agents_threads)
@@ -114,19 +102,10 @@ void sc_event_queue_destroy_wait(sc_event_queue * queue)
   {
     g_mutex_lock(&queue->mutex);
 
-    // Increase the count of active threads
-    active_thread_count += g_thread_pool_unprocessed(queue->thread_pool);
-
     g_thread_pool_free(queue->thread_pool, SC_FALSE, SC_TRUE);
     queue->thread_pool = null_ptr;
     g_mutex_unlock(&queue->mutex);
   }
-
-  // Wait for all threads to be done
-  g_mutex_lock(&count_mutex);
-  while (active_thread_count > 0)
-    g_cond_wait(&all_threads_done_cond, &count_mutex);
-  g_mutex_unlock(&count_mutex);
 
   sc_mem_free(queue);
 }

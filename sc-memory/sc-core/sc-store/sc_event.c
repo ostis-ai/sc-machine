@@ -9,7 +9,6 @@
 #include "sc_event/sc_event_private.h"
 #include "sc_event/sc_event_queue.h"
 
-#include "sc_storage.h"
 #include "../sc_memory_private.h"
 
 #include "sc-base/sc_allocator.h"
@@ -62,7 +61,6 @@ sc_result insert_event_into_table(sc_event * event)
 sc_result remove_event_from_table(sc_event * event)
 {
   GSList * element_events_list = null_ptr;
-  sc_assert(events_table != null_ptr);
 
   EVENTS_TABLE_LOCK;
 
@@ -108,7 +106,6 @@ sc_bool _sc_event_try_emit(sc_event * evt)
   }
   else
   {
-    sc_assert(evt->ref_count < SC_EVENT_REF_COUNT_MASK);
     evt->ref_count++;
   }
 
@@ -150,11 +147,7 @@ sc_event * sc_event_new(
   event->access_levels = ctx->access_levels;
 
   // register created event
-  if (insert_event_into_table(event) != SC_RESULT_OK)
-  {
-    sc_mem_free(event);
-    return null_ptr;
-  }
+  insert_event_into_table(event);
 
   return event;
 }
@@ -183,11 +176,7 @@ sc_event * sc_event_new_ex(
   event->access_levels = ctx->access_levels;
 
   // register created event
-  if (insert_event_into_table(event) != SC_RESULT_OK)
-  {
-    sc_mem_free(event);
-    return null_ptr;
-  }
+  insert_event_into_table(event);
 
   return event;
 }
@@ -280,7 +269,7 @@ result:
 }
 
 sc_result sc_event_emit(
-    sc_memory_context * ctx,
+    sc_memory_context const * ctx,
     sc_addr el,
     sc_access_levels el_access,
     sc_event_type type,
@@ -346,17 +335,17 @@ result:
   return SC_RESULT_OK;
 }
 
-sc_event_type sc_event_get_type(const sc_event * event)
+sc_event_type sc_event_get_type(sc_event const * event)
 {
   return event->type;
 }
 
-sc_pointer sc_event_get_data(const sc_event * event)
+sc_pointer sc_event_get_data(sc_event const * event)
 {
   return event->data;
 }
 
-sc_addr sc_event_get_element(const sc_event * event)
+sc_addr sc_event_get_element(sc_event const * event)
 {
   return event->element;
 }
