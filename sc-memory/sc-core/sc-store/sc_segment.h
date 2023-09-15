@@ -40,7 +40,7 @@ void sc_segment_collect_elements_stat(sc_segment * seg, sc_stat * stat);
  * @param offset Offset of element to lock
  * @returns Returns pointer to locked sc-element
  */
-sc_element * sc_segment_lock_element(sc_segment * seg, sc_addr_offset offset);
+sc_element * sc_segment_get_element_by_offset(sc_segment * seg, sc_addr_offset offset);
 
 //! Try to lock sc-element with maximum attempts
 sc_element * sc_segment_lock_element_try(sc_segment * seg, sc_addr_offset offset, sc_uint16 max_attempts);

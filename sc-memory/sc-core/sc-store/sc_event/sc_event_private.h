@@ -77,7 +77,7 @@ sc_result sc_event_notify_element_deleted(sc_addr element);
  * @return If event emitted without any errors, then return SC_OK; otherwise return SC_ERROR code
  */
 sc_result sc_event_emit(
-    sc_memory_context * ctx,
+    sc_memory_context const * ctx,
     sc_addr el,
     sc_access_levels el_access,
     sc_event_type type,

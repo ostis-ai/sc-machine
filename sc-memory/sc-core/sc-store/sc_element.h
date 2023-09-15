@@ -66,10 +66,4 @@ struct _sc_element
   sc_uint32 output_arcs_count;
 };
 
-/// All functions must be called for locked sc-elements
-void sc_element_set_type(sc_element * element, sc_type type);
-
-sc_bool sc_element_is_request_deletion(sc_element * element);
-sc_bool sc_element_is_valid(sc_element * element);
-
 #endif

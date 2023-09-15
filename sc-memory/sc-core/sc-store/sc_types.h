@@ -9,8 +9,6 @@
 
 #  include "sc_defines.h"
 #  include <memory.h>
-#  include <stdlib.h>
-#  include <string.h>
 
 #  ifndef null_ptr
 #    define null_ptr ((void *)0)
@@ -81,10 +79,11 @@ struct _sc_addr
 
 //! Make sc-addr empty
 #  define SC_ADDR_MAKE_EMPTY(addr) \
-    ({ \
-      (addr).seg = 0; \
-      (addr).offset = 0; \
-    })
+    (addr).seg = 0; \
+    (addr).offset = 0
+
+# define SC_ADDR_EMPTY (sc_addr) {0, 0}
+
 //! Check if specified sc-addr is empty
 #  define SC_ADDR_IS_EMPTY(addr) (((addr).seg == 0) && ((addr).offset == 0))
 #  define SC_ADDR_IS_NOT_EMPTY(addr) (!SC_ADDR_IS_EMPTY(addr))
@@ -148,15 +147,11 @@ typedef sc_uint16 sc_type;
         sc_type_node_abstract | sc_type_node_material)
 #  define sc_type_arc_mask (sc_type)(sc_type_arc_access | sc_type_arc_common | sc_type_edge_common)
 
-// just for internal usage
-#  define sc_flag_request_deletion (0x4000)
-#  define sc_flag_link_self_container (0x8000)
-#  define sc_flags_remove(x) ((x) & ~(sc_flag_request_deletion | sc_flag_link_self_container))
-
 // access levels
 #  define SC_ACCESS_LVL_MAX_VALUE 15
 #  define SC_ACCESS_LVL_MIN_VALUE 0
 
+#  define SC_ACCESS_LVL_ELEMENT_EXIST 0x1
 #  define SC_ACCESS_LVL_RMASK 0xf0
 #  define SC_ACCESS_LVL_WMASK 0x0f
 
@@ -189,14 +184,14 @@ enum _sc_result
   SC_RESULT_ERROR_IO,               // input/output error
   SC_RESULT_ERROR_INVALID_STATE,    // invalid state of processed object
   SC_RESULT_ERROR_NOT_FOUND,        // item not found
-  SC_RESULT_ERROR_NO_WRITE_RIGHTS,  // no rights to change or delete object
-  SC_RESULT_ERROR_NO_READ_RIGHTS,   // no rights to read object
   SC_RESULT_NO,                     // no any result
   SC_RESULT_UNKNOWN,                // result unknown
+  SC_RESULT_ERROR_ADDR_IS_NOT_VALID,
+  SC_RESULT_ERROR_ELEMENT_IS_NOT_CONNECTOR,
+  SC_RESULT_ERROR_ELEMENT_IS_NOT_LINK,
 
   // add atomic types before
   SC_RESULT_COUNT,  // number of result types
-  SC_RESULT_ERROR_NO_RIGHTS = SC_RESULT_ERROR_NO_WRITE_RIGHTS | SC_RESULT_ERROR_NO_READ_RIGHTS
 };
 
 // events

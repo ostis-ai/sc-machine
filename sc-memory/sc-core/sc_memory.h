@@ -18,7 +18,7 @@
  * @param params Pointer to initialization parameters
  * @returns Returns pointer to created sc-memory context
  */
-_SC_EXTERN sc_memory_context * sc_memory_initialize(const sc_memory_params * params);
+_SC_EXTERN sc_memory_context * sc_memory_initialize(sc_memory_params const * params);
 
 /*! Initialize sc-memory extensions in specified directory
  * @param enabled_list Null terminated list of extensions names, that should be loaded. If it's a null value, then all
@@ -154,7 +154,7 @@ _SC_EXTERN sc_result sc_memory_get_arc_info(
  * <li>SC_RESULT_ERROR - unknown error</li>
  * </ul>
  */
-_SC_EXTERN sc_result sc_memory_set_link_content(sc_memory_context * ctx, sc_addr addr, sc_stream const * stream);
+_SC_EXTERN sc_result sc_memory_set_link_content(sc_memory_context const * ctx, sc_addr addr, sc_stream const * stream);
 
 /*! Setup content data for specified sc-link
  * @param addr sc-addr of sc-link to setup content
@@ -168,7 +168,7 @@ _SC_EXTERN sc_result sc_memory_set_link_content(sc_memory_context * ctx, sc_addr
  * </ul>
  */
 _SC_EXTERN sc_result sc_memory_set_link_content_ext(
-    sc_memory_context * ctx,
+    sc_memory_context const * ctx,
     sc_addr addr,
     const sc_stream * stream,
     sc_bool is_searchable_string);

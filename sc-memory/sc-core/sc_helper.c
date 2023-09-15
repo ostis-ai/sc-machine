@@ -350,8 +350,6 @@ sc_result sc_helper_get_system_identifier_link(sc_memory_context const * ctx, sc
       sc_type_link,
       sc_type_arc_pos_const_perm,
       sc_keynodes[SC_KEYNODE_NREL_SYSTEM_IDENTIFIER]);
-  sc_assert(it != null_ptr);
-
   while (sc_iterator5_next(it) == SC_TRUE)
   {
     *sys_idtf_addr = sc_iterator5_value(it, 2);
