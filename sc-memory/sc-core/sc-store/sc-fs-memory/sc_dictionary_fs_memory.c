@@ -652,7 +652,6 @@ sc_dictionary_fs_memory_status _sc_dictionary_fs_memory_get_link_hashes_by_strin
     sc_uint64 const normalized_string_offset = _sc_dictionary_fs_memory_normalize_offset(memory, string_offset);
     sc_io_channel_seek(strings_channel, normalized_string_offset, SC_FS_IO_SEEK_SET, null_ptr);
     {
-
       sc_uint64 other_string_size;
       if (sc_io_channel_read_chars(
               strings_channel, (sc_char *)&other_string_size, sizeof(sc_uint64), &read_bytes, null_ptr) !=
