@@ -269,7 +269,7 @@ sc_result sc_storage_element_free(sc_memory_context const * ctx, sc_addr addr)
       if (SC_ADDR_IS_NOT_EMPTY(next_arc))
       {
         sc_element * next_el_arc;
-        result = sc_storage_get_element_by_addr(prev_arc, &next_el_arc);
+        result = sc_storage_get_element_by_addr(next_arc, &next_el_arc);
         if (result != SC_RESULT_OK)
           goto error;
 
@@ -304,7 +304,7 @@ sc_result sc_storage_element_free(sc_memory_context const * ctx, sc_addr addr)
       if (SC_ADDR_IS_NOT_EMPTY(next_arc))
       {
         sc_element * next_el_arc;
-        result = sc_storage_get_element_by_addr(prev_arc, &next_el_arc);
+        result = sc_storage_get_element_by_addr(next_arc, &next_el_arc);
         if (result != SC_RESULT_OK)
           goto error;
 
