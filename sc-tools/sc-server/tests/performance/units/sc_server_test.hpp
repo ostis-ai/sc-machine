@@ -32,7 +32,7 @@ public:
     std::mt19937 generator(random_device());
 
     m_server = std::make_unique<ScServerImpl>(
-        "127.0.0.1", distribution(generator), "File", "test-sc-server-bench.log", "Error", SC_TRUE, params);
+        "127.0.0.1", distribution(generator), SC_TRUE, params);
     m_server->ClearChannels();
     m_server->Run();
 
