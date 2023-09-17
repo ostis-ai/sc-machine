@@ -165,7 +165,7 @@ sc_bool test_agent_has_result(sc_memory_context * context, sc_addr const questio
   return result;
 }
 
-TEST_F(ScSingleThreadedMemoryTest, agents_parallel_work1)
+TEST_F(ScMemoryTest, agents_parallel_work1)
 {
   sc_memory_context * context = sc_memory_context_new(sc_access_lvl_make_min);
 
@@ -196,7 +196,7 @@ TEST_F(ScSingleThreadedMemoryTest, agents_parallel_work1)
   sc_module_shutdown();
 }
 
-TEST_F(ScSingleThreadedMemoryTest, agents_parallel_work2)
+TEST_F(ScMemoryTest, agents_parallel_work2)
 {
   sc_memory_context * context = sc_memory_context_new(sc_access_lvl_make_min);
 
