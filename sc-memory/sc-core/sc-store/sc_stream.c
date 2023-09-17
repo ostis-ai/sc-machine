@@ -140,7 +140,7 @@ sc_bool sc_stream_get_data(const sc_stream * stream, sc_char ** data, sc_uint32 
   }
 
   *data = sc_mem_new(sc_char, length + 1);
-  if (sc_stream_read_data(stream, *data, length, (sc_uint32 *)size) == SC_RESULT_ERROR)
+  if (sc_stream_read_data(stream, *data, length, size) == SC_RESULT_ERROR)
     return SC_FALSE;
 
   if (length != *size)

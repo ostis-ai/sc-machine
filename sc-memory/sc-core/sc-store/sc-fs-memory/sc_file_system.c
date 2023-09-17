@@ -96,7 +96,7 @@ sc_bool sc_fs_is_binary_file(sc_char const * file_path)
   return is_binary_file;
 }
 
-void sc_fs_get_file_content(sc_char const * file_path, sc_char ** content, sc_uint64 * content_size)
+void sc_fs_get_file_content(sc_char const * file_path, sc_char ** content, sc_uint32 * content_size)
 {
   sc_stream * stream = sc_stream_file_new(file_path, SC_STREAM_FLAG_READ);
   if (stream == null_ptr)
@@ -106,7 +106,7 @@ void sc_fs_get_file_content(sc_char const * file_path, sc_char ** content, sc_ui
     return;
   }
 
-  sc_stream_get_data(stream, content, (sc_uint32 *)content_size);
+  sc_stream_get_data(stream, content, content_size);
   sc_stream_free(stream);
 }
 

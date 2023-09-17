@@ -19,7 +19,7 @@ sc_bool sc_fs_is_file(sc_char const * path);
 
 sc_bool sc_fs_is_binary_file(sc_char const * file_path);
 
-void sc_fs_get_file_content(sc_char const * file_path, sc_char ** content, sc_uint64 * content_size);
+void sc_fs_get_file_content(sc_char const * file_path, sc_char ** content, sc_uint32 * content_size);
 
 void sc_fs_concat_path(sc_char const * path, sc_char const * postfix, sc_char ** out_path);
 
