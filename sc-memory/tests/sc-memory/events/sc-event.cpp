@@ -192,6 +192,32 @@ TEST_F(ScEventTest, events_lock)
     m_ctx->CreateEdge(ScType::EdgeAccessConstPosPerm, node, node2);
 }
 
+TEST_F(ScEventTest, parallel)
+{
+  ScAddr const node = m_ctx->CreateNode(ScType::NodeConst);
+  ScAddr const node2 = m_ctx->CreateNode(ScType::NodeConst);
+
+  ScEventAddOutputEdge evt(*m_ctx, node,
+    [](ScAddr const & addr, ScAddr const &, ScAddr const & target)
+  {
+    bool result = false;
+    ScMemoryContext localCtx(sc_access_lvl_make_min);
+    ScIterator3Ptr it = localCtx.Iterator3(addr, ScType::EdgeAccessConstPosPerm, ScType::Unknown);
+    while (it->Next())
+     result = true;
+
+    for (size_t i = 0; i < 10000; i++)
+      localCtx.CreateEdge(ScType::EdgeAccessConstPosPerm, addr, target);
+
+    EXPECT_TRUE(result);
+
+    return result;
+  });
+
+  for (size_t i = 0; i < 10000; i++)
+    m_ctx->CreateEdge(ScType::EdgeAccessConstPosPerm, node, node2);
+}
+
 // TODO: Fix deadlocks in sc-memory
 TEST_F(ScEventTest, pend_events)
 {

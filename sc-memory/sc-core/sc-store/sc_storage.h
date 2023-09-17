@@ -13,20 +13,14 @@
 #include "sc_defines.h"
 #include "sc_stream.h"
 #include "sc-container/sc-list/sc_list.h"
-#include "sc-base/sc_mutex.h"
-
-#if SC_DEBUG_MODE
-#  define STORAGE_CHECK_CALL(x) x
-#else
-#  define STORAGE_CHECK_CALL(x) x
-#endif
+#include "sc-base/sc_monitor.h"
 
 typedef struct
 {
   sc_segment ** segments;
   sc_uint32 segments_count;
   sc_uint32 max_segments_count;
-  sc_rec_mutex rw_mutex;
+  sc_monitor_table monitors_table;
 } sc_storage;
 
 //! Initialize sc storage in specified path
@@ -37,6 +31,8 @@ sc_bool sc_storage_shutdown(sc_bool save_state);
 
 //! Check if storage initialized
 sc_bool sc_storage_is_initialized();
+
+sc_storage * sc_storage_get();
 
 /*! Append sc-element to segments pool
  * @param addr Pointer to sc-addr structure, that will contains sc-addr of appended sc-element
@@ -240,6 +236,8 @@ sc_result sc_storage_get_elements_stat(sc_stat * stat);
 // ----- Locks -----
 //! Locks specified sc-element. Pointer to locked sc-element stores in el
 sc_result sc_storage_get_element_by_addr(sc_addr addr, sc_element ** el);
+
+sc_result sc_storage_try_get_element_by_addr(sc_addr addr, sc_element ** el);
 
 sc_result sc_storage_remove_element_by_addr(sc_addr addr);
 

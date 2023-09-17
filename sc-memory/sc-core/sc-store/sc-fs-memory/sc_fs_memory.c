@@ -194,6 +194,16 @@ sc_bool _sc_fs_memory_load_sc_memory_segments(sc_segment ** segments, sc_uint32 
         seg->elements[j].output_arcs_count = 1;
       }
     }
+
+    if (sc_io_channel_read_chars(
+            segments_channel, (sc_char *)&seg->elements_count, sizeof(sc_uint32), &read_bytes, null_ptr) !=
+            SC_FS_IO_STATUS_NORMAL ||
+        read_bytes != sizeof(sc_uint32))
+    {
+      sc_fs_memory_error("Error while sc-segment %d reading", i);
+      goto error;
+    }
+
     i = num;
   }
 
@@ -257,6 +267,15 @@ sc_bool _sc_fs_memory_save_sc_memory_segments(sc_segment ** segments, sc_uint32 
         written_bytes != SC_SEG_ELEMENTS_SIZE_BYTE)
     {
       sc_fs_memory_error("Error while attribute `segment->elements` writing");
+      goto error;
+    }
+
+    if (sc_io_channel_write_chars(
+            segments_channel, (sc_char *)&segment->elements_count, sizeof(sc_uint32), &written_bytes, null_ptr) !=
+            SC_FS_IO_STATUS_NORMAL ||
+        written_bytes != sizeof(sc_uint32))
+    {
+      sc_fs_memory_error("Error while attribute `segment->elements_count` writing");
       goto error;
     }
   }

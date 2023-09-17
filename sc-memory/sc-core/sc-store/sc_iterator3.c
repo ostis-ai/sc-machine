@@ -225,11 +225,14 @@ sc_bool _sc_iterator3_f_a_a_next(sc_iterator3 * it)
   sc_addr arc_addr = SC_ADDR_EMPTY;
   sc_result result;
 
+  sc_monitor * monitor = sc_monitor_get_monitor_for_addr(&sc_storage_get()->monitors_table, it->results[0]);
+  sc_monitor_start_read(monitor);
+
   // try to find first output arc
   sc_element * el = null_ptr;
   if (SC_ADDR_IS_EMPTY(it->results[1]))
   {
-    result = sc_storage_get_element_by_addr(it->params[0].addr, &el);
+    result = sc_storage_try_get_element_by_addr(it->results[0], &el);
     if (result != SC_RESULT_OK)
       goto error;
 
@@ -277,15 +280,14 @@ sc_bool _sc_iterator3_f_a_a_next(sc_iterator3 * it)
     arc_addr = next_out_arc;
   }
 
+error:
+  sc_monitor_end_read(monitor);
   it->finished = SC_TRUE;
   return SC_FALSE;
 
 success:
+  sc_monitor_end_read(monitor);
   return SC_TRUE;
-
-error:
-  it->finished = SC_TRUE;
-  return SC_FALSE;
 }
 
 sc_bool _sc_iterator3_f_a_f_next(sc_iterator3 * it)
@@ -296,11 +298,17 @@ sc_bool _sc_iterator3_f_a_f_next(sc_iterator3 * it)
   sc_addr arc_addr = SC_ADDR_EMPTY;
   sc_result result;
 
+  sc_monitor * end_monitor = sc_monitor_get_monitor_for_addr(&sc_storage_get()->monitors_table, it->results[2]);
+  sc_monitor_start_read(end_monitor);
+
+  sc_monitor * beg_monitor = sc_monitor_get_monitor_for_addr(&sc_storage_get()->monitors_table, it->results[0]);
+  sc_monitor_start_read(beg_monitor);
+
   // try to find first input arc
   sc_element * el = null_ptr;
   if (SC_ADDR_IS_EMPTY(it->results[1]))
   {
-    result = sc_storage_get_element_by_addr(it->params[2].addr, &el);
+    result = sc_storage_try_get_element_by_addr(it->results[2], &el);
     if (result != SC_RESULT_OK)
       goto error;
 
@@ -339,15 +347,16 @@ sc_bool _sc_iterator3_f_a_f_next(sc_iterator3 * it)
     arc_addr = next_in_arc;
   }
 
+error:
+  sc_monitor_end_read(end_monitor);
+  sc_monitor_end_read(beg_monitor);
   it->finished = SC_TRUE;
   return SC_FALSE;
 
 success:
+  sc_monitor_end_read(end_monitor);
+  sc_monitor_end_read(beg_monitor);
   return SC_TRUE;
-
-error:
-  it->finished = SC_TRUE;
-  return SC_FALSE;
 }
 
 sc_bool _sc_iterator3_a_a_f_next(sc_iterator3 * it)
@@ -357,11 +366,14 @@ sc_bool _sc_iterator3_a_a_f_next(sc_iterator3 * it)
   sc_addr arc_addr = SC_ADDR_EMPTY;
   sc_result result;
 
+  sc_monitor * monitor = sc_monitor_get_monitor_for_addr(&sc_storage_get()->monitors_table, it->results[2]);
+  sc_monitor_start_read(monitor);
+
   // try to find first input arc
   sc_element * el = null_ptr;
   if (SC_ADDR_IS_EMPTY(it->results[1]))
   {
-    result = sc_storage_get_element_by_addr(it->params[2].addr, &el);
+    result = sc_storage_try_get_element_by_addr(it->results[2], &el);
     if (result != SC_RESULT_OK)
       goto error;
 
@@ -406,33 +418,37 @@ sc_bool _sc_iterator3_a_a_f_next(sc_iterator3 * it)
     arc_addr = next_in_arc;
   }
 
+error:
+  sc_monitor_end_read(monitor);
   it->finished = SC_TRUE;
   return SC_FALSE;
 
 success:
+  sc_monitor_end_read(monitor);
   return SC_TRUE;
-
-error:
-  it->finished = SC_TRUE;
-  return SC_FALSE;
 }
 
 sc_bool _sc_iterator3_a_f_a_next(sc_iterator3 * it)
 {
   it->results[1] = it->params[1].addr;
 
+  sc_monitor * monitor = sc_monitor_get_monitor_for_addr(&sc_storage_get()->monitors_table, it->results[1]);
+  sc_monitor_start_read(monitor);
+
   sc_element * arc_el;
-  sc_result result = sc_storage_get_element_by_addr(it->results[1], &arc_el);
+  sc_result result = sc_storage_try_get_element_by_addr(it->results[1], &arc_el);
   if (result != SC_RESULT_OK)
     goto error;
 
   it->results[0] = arc_el->arc.begin;
   it->results[2] = arc_el->arc.end;
 
+  sc_monitor_end_read(monitor);
   it->finished = SC_TRUE;
   return SC_TRUE;
 
 error:
+  sc_monitor_end_read(monitor);
   it->finished = SC_TRUE;
   return SC_FALSE;
 }
