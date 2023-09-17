@@ -238,7 +238,7 @@ sc_result sc_storage_element_free(sc_memory_context const * ctx, sc_addr addr)
   GHashTableIter iter;
   g_hash_table_iter_init(&iter, remove_table);
   gpointer key, value;
-  while (g_hash_table_iter_next(&iter, &key, &value) == TRUE)
+  while (g_hash_table_iter_next(&iter, &key, &value) == SC_TRUE)
   {
     el = value;
     sc_uint32 uint_addr = GPOINTER_TO_UINT(key);
@@ -278,10 +278,8 @@ sc_result sc_storage_element_free(sc_memory_context const * ctx, sc_addr addr)
 
       sc_element * b_el;
       result = sc_storage_get_element_by_addr(el->arc.begin, &b_el);
-      if (result != SC_RESULT_OK)
-        goto error;
 
-      if (SC_ADDR_IS_EQUAL(addr, b_el->first_out_arc))
+      if (result == SC_RESULT_OK && SC_ADDR_IS_EQUAL(addr, b_el->first_out_arc))
         b_el->first_out_arc = next_arc;
 
       sc_atomic_int_add(&b_el->output_arcs_count, -1);
@@ -313,10 +311,8 @@ sc_result sc_storage_element_free(sc_memory_context const * ctx, sc_addr addr)
 
       sc_element * e_el;
       result = sc_storage_get_element_by_addr(el->arc.end, &e_el);
-      if (result != SC_RESULT_OK)
-        goto error;
 
-      if (SC_ADDR_IS_EQUAL(addr, e_el->first_in_arc))
+      if (result == SC_RESULT_OK && SC_ADDR_IS_EQUAL(addr, e_el->first_in_arc))
         e_el->first_in_arc = next_arc;
 
       sc_atomic_int_add(&e_el->input_arcs_count, -1);
@@ -331,10 +327,10 @@ sc_result sc_storage_element_free(sc_memory_context const * ctx, sc_addr addr)
     sc_storage_remove_element_by_addr(addr);
   }
 
+  result = SC_RESULT_OK;
+error:
   g_slist_free(remove_list);
   g_hash_table_destroy(remove_table);
-
-error:
   return result;
 }
 
