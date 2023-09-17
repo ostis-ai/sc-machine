@@ -48,6 +48,16 @@ void sc_monitor_init(sc_monitor * monitor)
   monitor->active_writer = 0;
 }
 
+void sc_monitor_destroy(sc_monitor * monitor)
+{
+  sc_mutex_destroy(&monitor->rw_mutex);
+  sc_cond_destroy(&monitor->reader_condition);
+  sc_cond_destroy(&monitor->writer_condition);
+  monitor->active_readers = 0;
+  monitor->waiting_writers = 0;
+  monitor->active_writer = 0;
+}
+
 void sc_monitor_start_read(sc_monitor * monitor)
 {
   sc_mutex_lock(&monitor->rw_mutex);

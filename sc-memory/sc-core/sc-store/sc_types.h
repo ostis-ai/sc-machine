@@ -82,7 +82,11 @@ struct _sc_addr
     (addr).seg = 0; \
     (addr).offset = 0
 
-# define SC_ADDR_EMPTY (sc_addr) {0, 0}
+#  define SC_ADDR_EMPTY \
+    (sc_addr) \
+    { \
+      0, 0 \
+    }
 
 //! Check if specified sc-addr is empty
 #  define SC_ADDR_IS_EMPTY(addr) (((addr).seg == 0) && ((addr).offset == 0))
@@ -176,16 +180,16 @@ typedef sc_uint16 sc_type;
 enum _sc_result
 {
   // SC_RESULT_ERROR should be 0 anytime
-  SC_RESULT_ERROR = 0,              // unknown error
-                                    // SC_RESULT_OK should be 1 anytime
-  SC_RESULT_OK = 1,                 // no any error
-  SC_RESULT_ERROR_INVALID_PARAMS,   // invalid function parameters error
-  SC_RESULT_ERROR_INVALID_TYPE,     // invalid type error
-  SC_RESULT_ERROR_IO,               // input/output error
-  SC_RESULT_ERROR_INVALID_STATE,    // invalid state of processed object
-  SC_RESULT_ERROR_NOT_FOUND,        // item not found
-  SC_RESULT_NO,                     // no any result
-  SC_RESULT_UNKNOWN,                // result unknown
+  SC_RESULT_ERROR = 0,             // unknown error
+                                   // SC_RESULT_OK should be 1 anytime
+  SC_RESULT_OK = 1,                // no any error
+  SC_RESULT_ERROR_INVALID_PARAMS,  // invalid function parameters error
+  SC_RESULT_ERROR_INVALID_TYPE,    // invalid type error
+  SC_RESULT_ERROR_IO,              // input/output error
+  SC_RESULT_ERROR_INVALID_STATE,   // invalid state of processed object
+  SC_RESULT_ERROR_NOT_FOUND,       // item not found
+  SC_RESULT_NO,                    // no any result
+  SC_RESULT_UNKNOWN,               // result unknown
   SC_RESULT_ERROR_ADDR_IS_NOT_VALID,
   SC_RESULT_ERROR_ELEMENT_IS_NOT_CONNECTOR,
   SC_RESULT_ERROR_ELEMENT_IS_NOT_LINK,

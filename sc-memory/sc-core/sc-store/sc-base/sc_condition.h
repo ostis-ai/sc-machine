@@ -23,6 +23,8 @@ typedef GCond sc_condition;
 
 #define sc_cond_broadcast(condition) g_cond_broadcast(condition)
 
+#define sc_cond_destroy(condition) g_cond_clear(condition)
+
 #undef GLIB
 
 #endif

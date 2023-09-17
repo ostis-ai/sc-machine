@@ -266,8 +266,7 @@ sc_bool _sc_iterator3_f_a_a_next(sc_iterator3 * it)
     if (result != SC_RESULT_OK)
       goto error;
 
-    if (sc_iterator_compare_type(arc_type, it->params[1].type) &&
-        sc_iterator_compare_type(el_type, it->params[2].type))
+    if (sc_iterator_compare_type(arc_type, it->params[1].type) && sc_iterator_compare_type(el_type, it->params[2].type))
     {
       // store found result
       it->results[1] = arc_addr;
@@ -404,8 +403,7 @@ sc_bool _sc_iterator3_a_a_f_next(sc_iterator3 * it)
     sc_type el_type = 0;
     sc_storage_get_element_type(it->ctx, arc_begin, &el_type);
 
-    if (sc_iterator_compare_type(arc_type, it->params[1].type) &&
-        sc_iterator_compare_type(el_type, it->params[0].type))
+    if (sc_iterator_compare_type(arc_type, it->params[1].type) && sc_iterator_compare_type(el_type, it->params[0].type))
     {
       // store found result
       it->results[1] = arc_addr;

@@ -134,8 +134,7 @@ sc_element * sc_storage_append_el_into_segments(sc_memory_context const * ctx, s
     if (storage->segments_count == storage->max_segments_count)
     {
       sc_memory_error(
-          "Max segments count is %d. SC-memory is full. Please extends or swap sc-memory",
-          storage->max_segments_count);
+          "Max segments count is %d. SC-memory is full. Please extends or swap sc-memory", storage->max_segments_count);
       goto error;
     }
 
@@ -235,14 +234,10 @@ sc_result sc_storage_element_free(sc_memory_context const * ctx, sc_addr addr)
 
   if (el->flags.type & sc_type_link)
     sc_fs_memory_unlink_string(SC_ADDR_LOCAL_TO_INT(addr));
-  else if (el->flags.type & sc_type_arc_access) {
+  else if (el->flags.type & sc_type_arc_access)
+  {
     sc_event_emit(
-        ctx,
-        el->arc.begin,
-        el->flags.access_levels,
-        SC_EVENT_REMOVE_OUTPUT_ARC,
-        SC_ADDR_EMPTY,
-        el->arc.begin);
+        ctx, el->arc.begin, el->flags.access_levels, SC_EVENT_REMOVE_OUTPUT_ARC, SC_ADDR_EMPTY, el->arc.begin);
 
     sc_element * target;
     result = sc_storage_get_element_by_addr(el->arc.end, &target);
@@ -251,13 +246,7 @@ sc_result sc_storage_element_free(sc_memory_context const * ctx, sc_addr addr)
 
     sc_atomic_int_add(&target->input_arcs_count, -1);
 
-    sc_event_emit(
-        ctx,
-        el->arc.end,
-        el->flags.access_levels,
-        SC_EVENT_REMOVE_INPUT_ARC,
-        SC_ADDR_EMPTY,
-        el->arc.begin);
+    sc_event_emit(ctx, el->arc.end, el->flags.access_levels, SC_EVENT_REMOVE_INPUT_ARC, SC_ADDR_EMPTY, el->arc.begin);
 
     sc_element * source;
     result = sc_storage_get_element_by_addr(el->arc.begin, &source);
@@ -267,8 +256,7 @@ sc_result sc_storage_element_free(sc_memory_context const * ctx, sc_addr addr)
     sc_atomic_int_add(&source->output_arcs_count, -1);
   }
 
-  sc_event_emit(
-      ctx, addr, el->flags.access_levels, SC_EVENT_REMOVE_ELEMENT, SC_ADDR_EMPTY, SC_ADDR_EMPTY);
+  sc_event_emit(ctx, addr, el->flags.access_levels, SC_EVENT_REMOVE_ELEMENT, SC_ADDR_EMPTY, SC_ADDR_EMPTY);
 
   // remove registered events before deletion
   sc_event_notify_element_deleted(connector_addr);
@@ -329,8 +317,8 @@ sc_addr sc_storage_arc_new_ext(
   if (SC_ADDR_IS_EMPTY(beg) || SC_ADDR_IS_EMPTY(end))
     return addr;
 
-  sc_element * beg_el = null_ptr, * end_el = null_ptr;
-  sc_element * f_out_arc = null_ptr, * f_in_arc = null_ptr;
+  sc_element *beg_el = null_ptr, *end_el = null_ptr;
+  sc_element *f_out_arc = null_ptr, *f_in_arc = null_ptr;
   sc_element * tmp_el = null_ptr;
 
   // try to lock begin and end elements
@@ -658,8 +646,7 @@ sc_result sc_storage_find_links_contents_by_content_substring(
   if (string == null_ptr)
     sc_string_empty(string);
 
-  result =
-      sc_fs_memory_get_strings_by_substring(string, string_size, max_length_to_search_as_prefix, result_strings);
+  result = sc_fs_memory_get_strings_by_substring(string, string_size, max_length_to_search_as_prefix, result_strings);
   sc_mem_free(string);
 
 error:
