@@ -237,6 +237,10 @@ sc_result sc_helper_find_element_by_system_identifier_ext(
           addr,
           sc_type_arc_pos_const_perm,
           sc_keynodes[SC_KEYNODE_NREL_SYSTEM_IDENTIFIER]);
+      if (SC_ADDR_IS_EQUAL(addr, ((sc_addr){2, 23186}))) {
+        int a = 5;
+        a += 5;
+      }
       if (sc_iterator5_next(it))
       {
         if (result == SC_FALSE)

@@ -31,6 +31,7 @@ sc_bool sc_storage_initialize(sc_memory_params const * params)
   storage->max_segments_count = params->max_loaded_segments;
   storage->segments_count = 0;
   storage->segments = sc_mem_new(sc_segment *, params->max_loaded_segments);
+  sc_monitor_global_init(&storage->monitors_table);
 
   if (params->clear == SC_FALSE)
   {
@@ -59,6 +60,7 @@ sc_bool sc_storage_shutdown(sc_bool save_state)
     sc_segment_free(storage->segments[idx]);
   }
 
+  sc_monitor_global_destroy(&storage->monitors_table);
   sc_mem_free(storage->segments);
   sc_mem_free(storage);
   storage = null_ptr;
@@ -69,6 +71,11 @@ sc_bool sc_storage_shutdown(sc_bool save_state)
 sc_bool sc_storage_is_initialized()
 {
   return storage != null_ptr;
+}
+
+sc_storage * sc_storage_get()
+{
+  return storage;
 }
 
 sc_bool sc_storage_is_element(sc_memory_context const * ctx, sc_addr addr)
@@ -116,6 +123,9 @@ sc_element * sc_storage_append_el_into_segments(sc_memory_context const * ctx, s
   *addr = SC_ADDR_EMPTY;
   sc_element * element = null_ptr;
 
+  sc_monitor * monitor = sc_monitor_get_monitor_for_addr(&storage->monitors_table, SC_ADDR_EMPTY);
+  sc_monitor_start_write(monitor);
+
   sc_uint32 last_segment_idx = storage->segments_count - 1;
   sc_bool is_empty_storage = storage->segments_count == 0;
   sc_segment * segment = is_empty_storage ? null_ptr : storage->segments[last_segment_idx];
@@ -135,8 +145,10 @@ sc_element * sc_storage_append_el_into_segments(sc_memory_context const * ctx, s
 
   element = &segment->elements[segment->elements_count];
   element->flags.access_levels |= SC_ACCESS_LVL_ELEMENT_EXIST;
-  sc_atomic_int_add(&segment->elements_count, 1);
+  ++segment->elements_count;
   *addr = (sc_addr){segment->num, sc_atomic_int_get(&segment->elements_count)};
+
+  sc_monitor_end_write(monitor);
 
 error:
   return element;
@@ -278,9 +290,7 @@ sc_addr sc_storage_node_new_ext(const sc_memory_context * ctx, sc_type type, sc_
 
   sc_element * locked_el = sc_storage_append_el_into_segments(ctx, &addr);
   if (locked_el != null_ptr)
-  {
     locked_el->flags.type = sc_type_node | type;
-  }
 
   return addr;
 }
@@ -296,9 +306,7 @@ sc_addr sc_storage_link_new_ext(sc_memory_context const * ctx, sc_access_levels 
 
   sc_element * locked_el = sc_storage_append_el_into_segments(ctx, &addr);
   if (locked_el != null_ptr)
-  {
     locked_el->flags.type = sc_type_link | (is_const ? sc_type_const : sc_type_var);
-  }
 
   return addr;
 }
@@ -307,9 +315,6 @@ sc_addr sc_storage_arc_new(sc_memory_context const * ctx, sc_type type, sc_addr 
 {
   return sc_storage_arc_new_ext(ctx, type, beg, end, ctx->access_levels);
 }
-
-
-static pthread_mutex_t arc_mutex = PTHREAD_MUTEX_INITIALIZER;
 
 sc_addr sc_storage_arc_new_ext(
     sc_memory_context const * ctx,
@@ -337,10 +342,20 @@ sc_addr sc_storage_arc_new_ext(
   if (result != SC_RESULT_OK)
     goto error;
 
+  sc_monitor * beg_monitor = sc_monitor_get_monitor_for_addr(&storage->monitors_table, beg);
+  sc_monitor_start_write(beg_monitor);
+
   // lock arcs to change output/input list
   sc_addr first_out_arc = beg_el->first_out_arc;
   if (SC_ADDR_IS_NOT_EMPTY(first_out_arc))
     sc_storage_get_element_by_addr(first_out_arc, &f_out_arc);
+
+  sc_monitor * end_monitor;
+  if (SC_ADDR_IS_NOT_EQUAL(beg, end))
+  {
+    end_monitor = sc_monitor_get_monitor_for_addr(&storage->monitors_table, end);
+    sc_monitor_start_write(end_monitor);
+  }
 
   sc_addr first_in_arc = end_el->first_in_arc;
   if (SC_ADDR_IS_NOT_EMPTY(first_in_arc))
@@ -372,6 +387,10 @@ sc_addr sc_storage_arc_new_ext(
   // set our arc as first output/input at begin/end elements
   beg_el->first_out_arc = addr;
   end_el->first_in_arc = addr;
+
+  sc_monitor_end_write(beg_monitor);
+  if (SC_ADDR_IS_NOT_EQUAL(beg, end))
+    sc_monitor_end_write(end_monitor);
 
 error:
   return addr;
@@ -592,8 +611,8 @@ error:
 }
 
 sc_result sc_storage_find_links_by_content_substring(
-    const sc_memory_context * ctx,
-    const sc_stream * stream,
+    sc_memory_context const * ctx,
+    sc_stream const * stream,
     sc_list ** result_hashes,
     sc_uint32 max_length_to_search_as_prefix)
 {
@@ -671,6 +690,38 @@ sc_result sc_storage_get_element_by_addr(sc_addr addr, sc_element ** el)
     result = SC_RESULT_ERROR_ADDR_IS_NOT_VALID;
   }
 
+  sc_monitor * monitor = sc_monitor_get_monitor_for_addr(&storage->monitors_table, addr);
+  sc_monitor_start_read(monitor);
+
+  sc_segment * segment = sc_atomic_pointer_get((void **)&storage->segments[addr.seg]);
+  if (segment == null_ptr)
+  {
+    *el = null_ptr;
+    result = SC_RESULT_ERROR_ADDR_IS_NOT_VALID;
+  }
+
+  *el = sc_segment_get_element_by_offset(segment, addr.offset);
+  if (((*el)->flags.access_levels & SC_ACCESS_LVL_ELEMENT_EXIST) == 0)
+  {
+    *el = null_ptr;
+    result = SC_RESULT_ERROR_ADDR_IS_NOT_VALID;
+  }
+
+  sc_monitor_end_read(monitor);
+
+  return result;
+}
+
+sc_result sc_storage_try_get_element_by_addr(sc_addr addr, sc_element ** el)
+{
+  sc_result result = SC_RESULT_OK;
+
+  if (SC_ADDR_IS_EMPTY(addr) || addr.seg >= storage->max_segments_count || addr.offset > SC_SEGMENT_ELEMENTS_COUNT)
+  {
+    *el = null_ptr;
+    result = SC_RESULT_ERROR_ADDR_IS_NOT_VALID;
+  }
+
   sc_segment * segment = sc_atomic_pointer_get((void **)&storage->segments[addr.seg]);
   if (segment == null_ptr)
   {
@@ -695,7 +746,12 @@ sc_result sc_storage_remove_element_by_addr(sc_addr addr)
   if (SC_ADDR_IS_EMPTY(addr) || addr.seg >= storage->max_segments_count || addr.offset > SC_SEGMENT_ELEMENTS_COUNT)
     result = SC_RESULT_ERROR_ADDR_IS_NOT_VALID;
 
+  sc_monitor * monitor = sc_monitor_get_monitor_for_addr(&storage->monitors_table, addr);
+  sc_monitor_start_write(monitor);
+
   storage->segments[addr.seg]->elements[addr.offset - 1] = (sc_element){};
+
+  sc_monitor_end_write(monitor);
 
   return result;
 }
