@@ -20,7 +20,7 @@
 struct _sc_segment
 {
   sc_element elements[SC_SEGMENT_ELEMENTS_COUNT];
-  sc_addr_seg num;  // number of this segment in memory
+  sc_addr_seg num;           // number of this segment in memory
   sc_uint32 elements_count;  // number of sc-element in the segment
 };
 

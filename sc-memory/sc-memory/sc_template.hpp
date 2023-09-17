@@ -184,18 +184,6 @@ public:
 
   ScTemplateParams() = default;
 
-  _SC_EXTERN ScTemplateParams & Add(ScAddr const & varAddr, ScAddr const & value) noexcept(false)
-  {
-    std::string const & hash = std::to_string(varAddr.Hash());
-    if (m_templateItemsToParams.find(hash) == m_templateItemsToParams.cend())
-    {
-      m_templateItemsToParams[hash] = value;
-      return *this;
-    }
-
-    SC_THROW_EXCEPTION(utils::ExceptionInvalidParams, "Var=" + hash + " is busy");
-  }
-
   _SC_EXTERN ScTemplateParams & Add(std::string const & varIdtf, ScAddr const & value) noexcept(false)
   {
     if (m_templateItemsToParams.find(varIdtf) == m_templateItemsToParams.cend())
