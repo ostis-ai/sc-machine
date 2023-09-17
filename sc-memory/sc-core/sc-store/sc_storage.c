@@ -347,9 +347,12 @@ sc_addr sc_storage_node_new_ext(const sc_memory_context * ctx, sc_type type, sc_
 {
   sc_addr addr = SC_ADDR_EMPTY;
 
-  sc_element * locked_el = sc_storage_append_el_into_segments(ctx, &addr);
-  if (locked_el != null_ptr)
-    locked_el->flags.type = sc_type_node | type;
+  sc_element * element = sc_storage_append_el_into_segments(ctx, &addr);
+  if (element != null_ptr)
+  {
+    element->flags.type = sc_type_node | type;
+    element->flags.access_levels |= access_levels;
+  }
 
   return addr;
 }
@@ -363,9 +366,12 @@ sc_addr sc_storage_link_new_ext(sc_memory_context const * ctx, sc_access_levels 
 {
   sc_addr addr = SC_ADDR_EMPTY;
 
-  sc_element * locked_el = sc_storage_append_el_into_segments(ctx, &addr);
-  if (locked_el != null_ptr)
-    locked_el->flags.type = sc_type_link | (is_const ? sc_type_const : sc_type_var);
+  sc_element * element = sc_storage_append_el_into_segments(ctx, &addr);
+  if (element != null_ptr)
+  {
+    element->flags.type = sc_type_link | (is_const ? sc_type_const : sc_type_var);
+    element->flags.access_levels |= access_levels;
+  }
 
   return addr;
 }
@@ -426,12 +432,13 @@ sc_addr sc_storage_arc_new_ext(
   sc_atomic_int_inc(&end_el->input_arcs_count);
 
   tmp_el->flags.type = (type & sc_type_arc_mask) ? type : (sc_type_arc_common | type);
+  tmp_el->flags.access_levels |= access_levels;
   tmp_el->arc.begin = beg;
   tmp_el->arc.end = end;
 
   // emit events
-  sc_event_emit(ctx, beg, 0, SC_EVENT_ADD_OUTPUT_ARC, addr, end);
-  sc_event_emit(ctx, end, 0, SC_EVENT_ADD_INPUT_ARC, addr, beg);
+  sc_event_emit(ctx, beg, beg_el->flags.access_levels, SC_EVENT_ADD_OUTPUT_ARC, addr, end);
+  sc_event_emit(ctx, end, beg_el->flags.access_levels, SC_EVENT_ADD_INPUT_ARC, addr, beg);
 
   // set next output arc for our created arc
   tmp_el->arc.next_out_arc = first_out_arc;
