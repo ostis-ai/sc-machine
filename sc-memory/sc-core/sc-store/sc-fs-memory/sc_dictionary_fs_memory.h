@@ -33,6 +33,7 @@ typedef struct _sc_dictionary_fs_memory
   void ** strings_channels;
   sc_uint64 last_string_offset;  // last offset of string in 'string_path`
   sc_monitor monitor;
+  sc_mutex r_mutex;
 
   sc_char * terms_string_offsets_path;              // path to dictionary file with terms and its strings offsets
   sc_dictionary * terms_string_offsets_dictionary;  // dictionary instance with terms and its strings offsets
