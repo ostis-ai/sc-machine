@@ -218,7 +218,6 @@ TEST_F(ScEventTest, parallel)
     m_ctx->CreateEdge(ScType::EdgeAccessConstPosPerm, node, node2);
 }
 
-// TODO: Fix deadlocks in sc-memory
 TEST_F(ScEventTest, pend_events)
 {
   /* Main idea of test: create two sets with N elements, and add edges to relations.

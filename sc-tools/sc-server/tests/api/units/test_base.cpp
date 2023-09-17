@@ -334,7 +334,7 @@ TEST_F(ScServerTest, DeleteElements)
   EXPECT_TRUE(response["errors"].empty());
 
   ScIterator3Ptr const iter3 = m_ctx->Iterator3(src, ScType::EdgeAccessConstPosPerm, trg);
-  EXPECT_FALSE(iter3->IsValid());
+  EXPECT_FALSE(iter3->Next());
 
   client.Stop();
 }

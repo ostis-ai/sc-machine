@@ -4,7 +4,6 @@
  * (See accompanying file COPYING.MIT or copy at http://opensource.org/licenses/MIT)
  */
 
-#include <stdio.h>
 #include "sc_stream_memory.h"
 #include "sc_stream_private.h"
 
@@ -22,10 +21,10 @@ struct _sc_memory_buffer
 
 typedef struct _sc_memory_buffer sc_memory_buffer;
 
-sc_result sc_stream_memory_read(const sc_stream * stream, sc_char * data, sc_uint32 length, sc_uint32 * bytes_read)
+sc_result sc_stream_memory_read(sc_stream const * stream, sc_char * data, sc_uint32 length, sc_uint32 * bytes_read)
 {
+  sc_assert(stream != null_ptr);
   sc_memory_buffer * buffer = (sc_memory_buffer *)stream->handler;
-  sc_assert(buffer != null_ptr);
 
   if (buffer->size == 0)
     return SC_RESULT_ERROR;
@@ -41,15 +40,15 @@ sc_result sc_stream_memory_read(const sc_stream * stream, sc_char * data, sc_uin
   return SC_RESULT_OK;
 }
 
-sc_result sc_stream_memory_write(const sc_stream * stream, sc_char * data, sc_uint32 length, sc_uint32 * bytes_written)
+sc_result sc_stream_memory_write(sc_stream const * stream, sc_char * data, sc_uint32 length, sc_uint32 * bytes_written)
 {
   return SC_RESULT_ERROR;
 }
 
-sc_result sc_stream_memory_seek(const sc_stream * stream, sc_stream_seek_origin origin, sc_uint32 offset)
+sc_result sc_stream_memory_seek(sc_stream const * stream, sc_stream_seek_origin origin, sc_uint32 offset)
 {
+  sc_assert(stream != null_ptr);
   sc_memory_buffer * buffer = (sc_memory_buffer *)stream->handler;
-  sc_assert(buffer != null_ptr);
 
   switch (origin)
   {
@@ -75,36 +74,33 @@ sc_result sc_stream_memory_seek(const sc_stream * stream, sc_stream_seek_origin 
   return SC_RESULT_OK;
 }
 
-sc_result sc_stream_memory_tell(const sc_stream * stream, sc_uint32 * position)
+sc_result sc_stream_memory_tell(sc_stream const * stream, sc_uint32 * position)
 {
+  sc_assert(stream != null_ptr);
   sc_memory_buffer * buffer = (sc_memory_buffer *)stream->handler;
-  sc_assert(buffer != null_ptr);
 
   *position = buffer->pos;
 
   return SC_RESULT_OK;
 }
 
-sc_result sc_stream_memory_free_handler(const sc_stream * stream)
+sc_result sc_stream_memory_free_handler(sc_stream const * stream)
 {
+  sc_assert(stream != null_ptr);
   sc_memory_buffer * buffer = (sc_memory_buffer *)stream->handler;
-  sc_assert(buffer != null_ptr);
 
   if (buffer->data_owner == SC_TRUE)
-  {
-    sc_assert(buffer->data != null_ptr);
     sc_mem_free(buffer->data);
-  }
 
   sc_mem_free(buffer);
 
   return SC_RESULT_OK;
 }
 
-sc_bool sc_stream_memory_eof(const sc_stream * stream)
+sc_bool sc_stream_memory_eof(sc_stream const * stream)
 {
+  sc_assert(stream != null_ptr);
   sc_memory_buffer * buffer = (sc_memory_buffer *)stream->handler;
-  sc_assert(buffer != null_ptr);
 
   if (buffer->pos == buffer->size)
     return SC_TRUE;
@@ -112,16 +108,15 @@ sc_bool sc_stream_memory_eof(const sc_stream * stream)
   return SC_FALSE;
 }
 
-sc_stream * sc_stream_memory_new(const sc_char * buffer, sc_uint buffer_size, sc_uint8 flags, sc_bool data_owner)
+sc_stream * sc_stream_memory_new(sc_char const * buffer, sc_uint buffer_size, sc_uint8 flags, sc_bool data_owner)
 {
+  sc_assert(buffer != null_ptr);
+
   if (flags & SC_STREAM_FLAG_WRITE || flags & SC_STREAM_FLAG_APPEND)
   {
     sc_message("Memory stream doesn't support SC_STREAM_APPEND and SC_STREAM_WRITE flags");
     return null_ptr;
   }
-
-  sc_assert(flags & SC_STREAM_FLAG_READ);
-  sc_assert(buffer != null_ptr);
 
   sc_memory_buffer * data_buffer = sc_mem_new(sc_memory_buffer, 1);
 

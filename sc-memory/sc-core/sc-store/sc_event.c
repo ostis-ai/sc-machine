@@ -13,12 +13,12 @@
 
 #include "sc-base/sc_allocator.h"
 #include "sc-base/sc_atomic.h"
-#include "sc-base/sc_assert_utils.h"
 #include "sc-base/sc_message.h"
+#include "sc-base/sc_mutex.h"
 
-GMutex events_table_mutex;
-#define EVENTS_TABLE_LOCK g_mutex_lock(&events_table_mutex)
-#define EVENTS_TABLE_UNLOCK g_mutex_unlock(&events_table_mutex)
+sc_mutex events_table_mutex;
+#define EVENTS_TABLE_LOCK sc_mutex_lock(&events_table_mutex)
+#define EVENTS_TABLE_UNLOCK sc_mutex_unlock(&events_table_mutex)
 
 #define TABLE_KEY(__Addr) GUINT_TO_POINTER(SC_ADDR_LOCAL_TO_INT(__Addr))
 
@@ -74,13 +74,9 @@ sc_result remove_event_from_table(sc_event * event)
   // remove event from list of events for specified sc-element
   element_events_list = g_slist_remove(element_events_list, (gconstpointer)event);
   if (element_events_list == null_ptr)
-  {
     g_hash_table_remove(events_table, TABLE_KEY(event->element));
-  }
   else
-  {
     g_hash_table_insert(events_table, TABLE_KEY(event->element), (gpointer)element_events_list);
-  }
 
   // if there are no more events in table, then delete it
   if (g_hash_table_size(events_table) == 0)
@@ -101,13 +97,9 @@ sc_bool _sc_event_try_emit(sc_event * evt)
   sc_event_lock(evt);
 
   if (evt->ref_count & SC_EVENT_REQUEST_DESTROY)
-  {
     res = SC_FALSE;
-  }
   else
-  {
     evt->ref_count++;
-  }
 
   sc_event_unlock(evt);
   return res;
@@ -261,9 +253,7 @@ sc_result sc_event_notify_element_deleted(sc_addr element)
   }
 
 result:
-{
   EVENTS_TABLE_UNLOCK;
-}
 
   return SC_RESULT_OK;
 }
@@ -303,9 +293,10 @@ sc_result sc_event_emit_impl(
   GSList * element_events_list = null_ptr;
   sc_event * event = null_ptr;
 
-  sc_assert(SC_ADDR_IS_NOT_EMPTY(el));
+  if (SC_ADDR_IS_EMPTY(el))
+    return SC_RESULT_ERROR_ADDR_IS_NOT_VALID;
 
-  // EVENTS_TABLE_LOCK;
+  EVENTS_TABLE_LOCK;
 
   // if table is empty, then do nothing
   if (events_table == null_ptr)
@@ -319,16 +310,14 @@ sc_result sc_event_emit_impl(
     event = (sc_event *)element_events_list->data;
 
     if (event->type == type && _sc_event_try_emit(event) == SC_TRUE)
-    {
       sc_event_queue_append(event_queue, event, edge, other_el);
-    }
 
     element_events_list = element_events_list->next;
   }
 
 result:
 {
-  // EVENTS_TABLE_UNLOCK;
+  EVENTS_TABLE_UNLOCK;
 }
 
   return SC_RESULT_OK;
@@ -361,13 +350,9 @@ void sc_event_lock(sc_event * evt)
     if ((locked_thread != null_ptr) ||
         sc_atomic_pointer_compare_and_exchange((void **)&evt->thread_lock, (void *)locked_thread, (void *)thread) ==
             SC_FALSE)
-    {
       g_usleep(rand() % 10);
-    }
     else
-    {
       break;
-    }
   }
 }
 
@@ -376,7 +361,7 @@ void sc_event_unlock(sc_event * evt)
   sc_pointer thread = sc_thread();
   sc_memory_context * locked_thread = sc_atomic_pointer_get((void **)&evt->thread_lock);
   if (locked_thread != thread)
-    sc_critical("Invalid state of event lock");
+    sc_warning("Invalid state of event lock");
 
   sc_atomic_pointer_set((void **)&evt->thread_lock, null_ptr);
 }
