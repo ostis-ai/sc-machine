@@ -155,6 +155,9 @@ error:
 
 sc_result sc_storage_element_free(sc_memory_context const * ctx, sc_addr addr)
 {
+  GHashTable * remove_table = null_ptr;
+  GSList * remove_list = null_ptr;
+
   sc_result result;
 
   // the first we need to collect and lock all elements
@@ -163,107 +166,171 @@ sc_result sc_storage_element_free(sc_memory_context const * ctx, sc_addr addr)
   if (result != SC_RESULT_OK)
     goto error;
 
-  // Iterate all connectors for deleted element and append them into remove_list
-  sc_addr connector_addr = el->first_out_arc;
-  while (SC_ADDR_IS_NOT_EMPTY(connector_addr))
+  remove_table = g_hash_table_new(g_direct_hash, g_direct_equal);
+  g_hash_table_insert(remove_table, GUINT_TO_POINTER(SC_ADDR_LOCAL_TO_INT(addr)), el);
+
+  remove_list = g_slist_append(remove_list, GUINT_TO_POINTER(SC_ADDR_LOCAL_TO_INT(addr)));
+  while (remove_list != null_ptr)
   {
-    sc_element * connector;
-    result = sc_storage_get_element_by_addr(connector_addr, &connector);
+    // get sc-addr for removing
+    sc_uint32 addr_int = GPOINTER_TO_UINT(remove_list->data);
+    sc_addr _addr;
+    _addr.seg = SC_ADDR_LOCAL_SEG_FROM_INT(addr_int);
+    _addr.offset = SC_ADDR_LOCAL_OFFSET_FROM_INT(addr_int);
+
+    gpointer p_addr = GUINT_TO_POINTER(addr_int);
+
+    // go to next sc-addr in list
+    remove_list = g_slist_delete_link(remove_list, remove_list);
+
+    result = sc_storage_get_element_by_addr(_addr, &el);
     if (result != SC_RESULT_OK)
       goto error;
 
-    sc_event_emit(
-        ctx,
-        connector->arc.begin,
-        connector->flags.access_levels,
-        SC_EVENT_REMOVE_OUTPUT_ARC,
-        SC_ADDR_EMPTY,
-        connector->arc.begin);
+    g_hash_table_insert(remove_table, p_addr, el);
 
-    sc_element * target;
-    result = sc_storage_get_element_by_addr(connector->arc.end, &target);
-    if (result != SC_RESULT_OK)
-      goto error;
+    // Iterate all connectors for deleted element and append them into remove_list
+    _addr = el->first_out_arc;
+    while (SC_ADDR_IS_NOT_EMPTY(_addr))
+    {
+      p_addr = GUINT_TO_POINTER(SC_ADDR_LOCAL_TO_INT(_addr));
+      sc_element * el2 = g_hash_table_lookup(remove_table, p_addr);
 
-    sc_atomic_int_add(&target->input_arcs_count, -1);
+      if (el2 == null_ptr)
+      {
+        result = sc_storage_get_element_by_addr(_addr, &el2);
+        if (result != SC_RESULT_OK)
+          goto error;
 
-    sc_event_emit(
-        ctx, connector_addr, connector->flags.access_levels, SC_EVENT_REMOVE_ELEMENT, SC_ADDR_EMPTY, SC_ADDR_EMPTY);
+        g_hash_table_insert(remove_table, p_addr, el2);
+
+        remove_list = g_slist_append(remove_list, p_addr);
+      }
+
+      _addr = el2->arc.next_out_arc;
+    }
+
+    _addr = el->first_in_arc;
+    while (SC_ADDR_IS_NOT_EMPTY(_addr))
+    {
+      p_addr = GUINT_TO_POINTER(SC_ADDR_LOCAL_TO_INT(_addr));
+      sc_element * el2 = g_hash_table_lookup(remove_table, p_addr);
+
+      if (el2 == null_ptr)
+      {
+        result = sc_storage_get_element_by_addr(_addr, &el2);
+        if (result != SC_RESULT_OK)
+          goto error;
+
+        g_hash_table_insert(remove_table, p_addr, el2);
+
+        remove_list = g_slist_append(remove_list, p_addr);
+      }
+
+      _addr = el2->arc.next_in_arc;
+    }
+
+    // clean temp addr
+    SC_ADDR_MAKE_EMPTY(_addr);
+  }
+
+  // now we need to erase all elements
+  GHashTableIter iter;
+  g_hash_table_iter_init(&iter, remove_table);
+  gpointer key, value;
+  while (g_hash_table_iter_next(&iter, &key, &value) == SC_TRUE)
+  {
+    el = value;
+    sc_uint32 uint_addr = GPOINTER_TO_UINT(key);
+    gpointer p_addr;
+    addr.offset = SC_ADDR_LOCAL_OFFSET_FROM_INT(uint_addr);
+    addr.seg = SC_ADDR_LOCAL_SEG_FROM_INT(uint_addr);
+
+    if (el->flags.type & sc_type_link)
+    {
+      sc_fs_memory_unlink_string(SC_ADDR_LOCAL_TO_INT(addr));
+    }
+    else if (el->flags.type & sc_type_arc_mask)
+    {
+      // output arcs
+      sc_addr prev_arc = el->arc.prev_out_arc;
+      sc_addr next_arc = el->arc.next_out_arc;
+
+      if (SC_ADDR_IS_NOT_EMPTY(prev_arc))
+      {
+        sc_element * prev_el_arc;
+        result = sc_storage_get_element_by_addr(prev_arc, &prev_el_arc);
+        if (result != SC_RESULT_OK)
+          goto error;
+
+        prev_el_arc->arc.next_out_arc = next_arc;
+      }
+
+      if (SC_ADDR_IS_NOT_EMPTY(next_arc))
+      {
+        sc_element * next_el_arc;
+        result = sc_storage_get_element_by_addr(next_arc, &next_el_arc);
+        if (result != SC_RESULT_OK)
+          goto error;
+
+        next_el_arc->arc.prev_out_arc = prev_arc;
+      }
+
+      sc_element * b_el;
+      result = sc_storage_get_element_by_addr(el->arc.begin, &b_el);
+
+      if (result == SC_RESULT_OK && SC_ADDR_IS_EQUAL(addr, b_el->first_out_arc))
+        b_el->first_out_arc = next_arc;
+
+      sc_atomic_int_add(&b_el->output_arcs_count, -1);
+      sc_event_emit(ctx, el->arc.begin, b_el->flags.access_levels, SC_EVENT_REMOVE_OUTPUT_ARC, addr, el->arc.end);
+
+      // input arcs
+      prev_arc = el->arc.prev_in_arc;
+      next_arc = el->arc.next_in_arc;
+
+      if (SC_ADDR_IS_NOT_EMPTY(prev_arc))
+      {
+        sc_element * prev_el_arc;
+        result = sc_storage_get_element_by_addr(prev_arc, &prev_el_arc);
+        if (result != SC_RESULT_OK)
+          goto error;
+
+        prev_el_arc->arc.next_in_arc = next_arc;
+      }
+
+      if (SC_ADDR_IS_NOT_EMPTY(next_arc))
+      {
+        sc_element * next_el_arc;
+        result = sc_storage_get_element_by_addr(next_arc, &next_el_arc);
+        if (result != SC_RESULT_OK)
+          goto error;
+
+        next_el_arc->arc.prev_in_arc = prev_arc;
+      }
+
+      sc_element * e_el;
+      result = sc_storage_get_element_by_addr(el->arc.end, &e_el);
+
+      if (result == SC_RESULT_OK && SC_ADDR_IS_EQUAL(addr, e_el->first_in_arc))
+        e_el->first_in_arc = next_arc;
+
+      sc_atomic_int_add(&e_el->input_arcs_count, -1);
+      sc_event_emit(ctx, el->arc.end, e_el->flags.access_levels, SC_EVENT_REMOVE_INPUT_ARC, addr, el->arc.begin);
+    }
+
+    sc_event_emit(ctx, addr, el->flags.access_levels, SC_EVENT_REMOVE_ELEMENT, SC_ADDR_EMPTY, SC_ADDR_EMPTY);
 
     // remove registered events before deletion
-    sc_event_notify_element_deleted(connector_addr);
+    sc_event_notify_element_deleted(addr);
 
-    sc_storage_remove_element_by_addr(connector_addr);
-
-    connector_addr = connector->arc.next_out_arc;
+    sc_storage_remove_element_by_addr(addr);
   }
 
-  connector_addr = el->first_in_arc;
-  while (SC_ADDR_IS_NOT_EMPTY(connector_addr))
-  {
-    sc_element * connector;
-    result = sc_storage_get_element_by_addr(connector_addr, &connector);
-    if (result != SC_RESULT_OK)
-      goto error;
-
-    sc_event_emit(
-        ctx,
-        connector->arc.end,
-        connector->flags.access_levels,
-        SC_EVENT_REMOVE_INPUT_ARC,
-        SC_ADDR_EMPTY,
-        connector->arc.begin);
-
-    sc_element * source;
-    result = sc_storage_get_element_by_addr(connector->arc.begin, &source);
-    if (result != SC_RESULT_OK)
-      goto error;
-
-    sc_atomic_int_add(&source->output_arcs_count, -1);
-
-    sc_event_emit(
-        ctx, connector_addr, connector->flags.access_levels, SC_EVENT_REMOVE_ELEMENT, SC_ADDR_EMPTY, SC_ADDR_EMPTY);
-
-    // remove registered events before deletion
-    sc_event_notify_element_deleted(connector_addr);
-
-    sc_storage_remove_element_by_addr(connector_addr);
-
-    connector_addr = connector->arc.next_in_arc;
-  }
-
-  if (el->flags.type & sc_type_link)
-    sc_fs_memory_unlink_string(SC_ADDR_LOCAL_TO_INT(addr));
-  else if (el->flags.type & sc_type_arc_access)
-  {
-    sc_event_emit(
-        ctx, el->arc.begin, el->flags.access_levels, SC_EVENT_REMOVE_OUTPUT_ARC, SC_ADDR_EMPTY, el->arc.begin);
-
-    sc_element * target;
-    result = sc_storage_get_element_by_addr(el->arc.end, &target);
-    if (result != SC_RESULT_OK)
-      goto error;
-
-    sc_atomic_int_add(&target->input_arcs_count, -1);
-
-    sc_event_emit(ctx, el->arc.end, el->flags.access_levels, SC_EVENT_REMOVE_INPUT_ARC, SC_ADDR_EMPTY, el->arc.begin);
-
-    sc_element * source;
-    result = sc_storage_get_element_by_addr(el->arc.begin, &source);
-    if (result != SC_RESULT_OK)
-      goto error;
-
-    sc_atomic_int_add(&source->output_arcs_count, -1);
-  }
-
-  sc_event_emit(ctx, addr, el->flags.access_levels, SC_EVENT_REMOVE_ELEMENT, SC_ADDR_EMPTY, SC_ADDR_EMPTY);
-
-  // remove registered events before deletion
-  sc_event_notify_element_deleted(connector_addr);
-
-  sc_storage_remove_element_by_addr(addr);
-
+  result = SC_RESULT_OK;
 error:
+  g_slist_free(remove_list);
+  g_hash_table_destroy(remove_table);
   return result;
 }
 
@@ -276,9 +343,12 @@ sc_addr sc_storage_node_new_ext(const sc_memory_context * ctx, sc_type type, sc_
 {
   sc_addr addr = SC_ADDR_EMPTY;
 
-  sc_element * locked_el = sc_storage_append_el_into_segments(ctx, &addr);
-  if (locked_el != null_ptr)
-    locked_el->flags.type = sc_type_node | type;
+  sc_element * element = sc_storage_append_el_into_segments(ctx, &addr);
+  if (element != null_ptr)
+  {
+    element->flags.type = sc_type_node | type;
+    element->flags.access_levels |= access_levels;
+  }
 
   return addr;
 }
@@ -292,9 +362,12 @@ sc_addr sc_storage_link_new_ext(sc_memory_context const * ctx, sc_access_levels 
 {
   sc_addr addr = SC_ADDR_EMPTY;
 
-  sc_element * locked_el = sc_storage_append_el_into_segments(ctx, &addr);
-  if (locked_el != null_ptr)
-    locked_el->flags.type = sc_type_link | (is_const ? sc_type_const : sc_type_var);
+  sc_element * element = sc_storage_append_el_into_segments(ctx, &addr);
+  if (element != null_ptr)
+  {
+    element->flags.type = sc_type_link | (is_const ? sc_type_const : sc_type_var);
+    element->flags.access_levels |= access_levels;
+  }
 
   return addr;
 }
@@ -355,12 +428,13 @@ sc_addr sc_storage_arc_new_ext(
   sc_atomic_int_inc(&end_el->input_arcs_count);
 
   tmp_el->flags.type = (type & sc_type_arc_mask) ? type : (sc_type_arc_common | type);
+  tmp_el->flags.access_levels |= access_levels;
   tmp_el->arc.begin = beg;
   tmp_el->arc.end = end;
 
   // emit events
-  sc_event_emit(ctx, beg, 0, SC_EVENT_ADD_OUTPUT_ARC, addr, end);
-  sc_event_emit(ctx, end, 0, SC_EVENT_ADD_INPUT_ARC, addr, beg);
+  sc_event_emit(ctx, beg, beg_el->flags.access_levels, SC_EVENT_ADD_OUTPUT_ARC, addr, end);
+  sc_event_emit(ctx, end, beg_el->flags.access_levels, SC_EVENT_ADD_INPUT_ARC, addr, beg);
 
   // set next output arc for our created arc
   tmp_el->arc.next_out_arc = first_out_arc;
@@ -669,77 +743,71 @@ sc_result sc_storage_get_elements_stat(sc_stat * stat)
 
 sc_result sc_storage_get_element_by_addr(sc_addr addr, sc_element ** el)
 {
-  sc_result result = SC_RESULT_OK;
+  *el = null_ptr;
+  sc_result result = SC_RESULT_ERROR_ADDR_IS_NOT_VALID;
 
   if (SC_ADDR_IS_EMPTY(addr) || addr.seg >= storage->max_segments_count || addr.offset > SC_SEGMENT_ELEMENTS_COUNT)
-  {
-    *el = null_ptr;
-    result = SC_RESULT_ERROR_ADDR_IS_NOT_VALID;
-  }
+    goto error;
 
   sc_monitor * monitor = sc_monitor_get_monitor_for_addr(&storage->monitors_table, addr);
   sc_monitor_start_read(monitor);
 
   sc_segment * segment = sc_atomic_pointer_get((void **)&storage->segments[addr.seg]);
   if (segment == null_ptr)
-  {
-    *el = null_ptr;
-    result = SC_RESULT_ERROR_ADDR_IS_NOT_VALID;
-  }
+    goto error;
 
   *el = sc_segment_get_element_by_offset(segment, addr.offset);
   if (((*el)->flags.access_levels & SC_ACCESS_LVL_ELEMENT_EXIST) == 0)
-  {
-    *el = null_ptr;
-    result = SC_RESULT_ERROR_ADDR_IS_NOT_VALID;
-  }
+    goto error;
 
   sc_monitor_end_read(monitor);
 
+  result = SC_RESULT_OK;
+error:
   return result;
 }
 
 sc_result sc_storage_try_get_element_by_addr(sc_addr addr, sc_element ** el)
 {
-  sc_result result = SC_RESULT_OK;
+  *el = null_ptr;
+  sc_result result = SC_RESULT_ERROR_ADDR_IS_NOT_VALID;
 
   if (SC_ADDR_IS_EMPTY(addr) || addr.seg >= storage->max_segments_count || addr.offset > SC_SEGMENT_ELEMENTS_COUNT)
-  {
-    *el = null_ptr;
-    result = SC_RESULT_ERROR_ADDR_IS_NOT_VALID;
-  }
+    goto error;
 
   sc_segment * segment = sc_atomic_pointer_get((void **)&storage->segments[addr.seg]);
   if (segment == null_ptr)
-  {
-    *el = null_ptr;
-    result = SC_RESULT_ERROR_ADDR_IS_NOT_VALID;
-  }
+    goto error;
 
   *el = sc_segment_get_element_by_offset(segment, addr.offset);
   if (((*el)->flags.access_levels & SC_ACCESS_LVL_ELEMENT_EXIST) == 0)
-  {
-    *el = null_ptr;
-    result = SC_RESULT_ERROR_ADDR_IS_NOT_VALID;
-  }
+    goto error;
 
+  result = SC_RESULT_OK;
+error:
   return result;
 }
 
 sc_result sc_storage_remove_element_by_addr(sc_addr addr)
 {
-  sc_result result = SC_RESULT_OK;
+  sc_result result = SC_RESULT_ERROR_ADDR_IS_NOT_VALID;
 
   if (SC_ADDR_IS_EMPTY(addr) || addr.seg >= storage->max_segments_count || addr.offset > SC_SEGMENT_ELEMENTS_COUNT)
-    result = SC_RESULT_ERROR_ADDR_IS_NOT_VALID;
+    goto error;
 
   sc_monitor * monitor = sc_monitor_get_monitor_for_addr(&storage->monitors_table, addr);
   sc_monitor_start_write(monitor);
 
-  storage->segments[addr.seg]->elements[addr.offset - 1] = (sc_element){};
+  sc_segment * segment = sc_atomic_pointer_get((void **)&storage->segments[addr.seg]);
+  if (segment == null_ptr)
+    goto error;
+
+  segment->elements[addr.offset - 1] = (sc_element){};
 
   sc_monitor_end_write(monitor);
 
+  result = SC_RESULT_OK;
+error:
   return result;
 }
 

@@ -300,8 +300,12 @@ sc_bool _sc_iterator3_f_a_f_next(sc_iterator3 * it)
   sc_monitor * end_monitor = sc_monitor_get_monitor_for_addr(&sc_storage_get()->monitors_table, it->results[2]);
   sc_monitor_start_read(end_monitor);
 
-  sc_monitor * beg_monitor = sc_monitor_get_monitor_for_addr(&sc_storage_get()->monitors_table, it->results[0]);
-  sc_monitor_start_read(beg_monitor);
+  sc_monitor * beg_monitor;
+  if (SC_ADDR_IS_NOT_EQUAL(it->results[2], it->results[0]))
+  {
+    beg_monitor = sc_monitor_get_monitor_for_addr(&sc_storage_get()->monitors_table, it->results[0]);
+    sc_monitor_start_read(beg_monitor);
+  }
 
   // try to find first input arc
   sc_element * el = null_ptr;
@@ -348,13 +352,15 @@ sc_bool _sc_iterator3_f_a_f_next(sc_iterator3 * it)
 
 error:
   sc_monitor_end_read(end_monitor);
-  sc_monitor_end_read(beg_monitor);
+  if (SC_ADDR_IS_NOT_EQUAL(it->results[2], it->results[0]))
+    sc_monitor_end_read(beg_monitor);
   it->finished = SC_TRUE;
   return SC_FALSE;
 
 success:
   sc_monitor_end_read(end_monitor);
-  sc_monitor_end_read(beg_monitor);
+  if (SC_ADDR_IS_NOT_EQUAL(it->results[2], it->results[0]))
+    sc_monitor_end_read(beg_monitor);
   return SC_TRUE;
 }
 

@@ -79,7 +79,7 @@ TEST(ScFileSystemTest, sc_file_system_read_binary_file)
   sc_io_channel_shutdown(file, SC_TRUE, nullptr);
 
   sc_char * content;
-  sc_uint64 content_size;
+  sc_uint32 content_size;
   sc_fs_get_file_content(path, &content, &content_size);
   EXPECT_TRUE(sc_str_cmp(content, "$\u0010"));
   sc_mem_free(content);
@@ -89,7 +89,7 @@ TEST(ScFileSystemTest, sc_file_system_read_invalid_file)
 {
   sc_char const path[] = "";
   sc_char * content;
-  sc_uint64 content_size;
+  sc_uint32 content_size;
   sc_fs_get_file_content(path, &content, &content_size);
   EXPECT_EQ(content, nullptr);
   sc_fs_get_file_content(nullptr, &content, &content_size);

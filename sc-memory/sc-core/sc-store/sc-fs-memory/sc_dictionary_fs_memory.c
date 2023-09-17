@@ -559,7 +559,7 @@ error:
   return SC_FS_MEMORY_READ_ERROR;
 }
 
-void _sc_dictionary_fs_memory_read_file(sc_char * file_path, sc_char ** content, sc_uint64 * size)
+void _sc_dictionary_fs_memory_read_file(sc_char * file_path, sc_char ** content, sc_uint32 * size)
 {
   if (sc_fs_is_binary_file(file_path))
   {
@@ -610,7 +610,7 @@ sc_dictionary_fs_memory_status sc_dictionary_fs_memory_get_string_by_link_hash(
   if ((sc_str_find(*string, ".") || sc_str_find(*string, "/")) && sc_fs_is_file(*string))
   {
     sc_char * file_path = *string;
-    _sc_dictionary_fs_memory_read_file(file_path, string, string_size);
+    _sc_dictionary_fs_memory_read_file(file_path, string, (sc_uint32 *)string_size);
     sc_mem_free(file_path);
   }
 
