@@ -12,7 +12,6 @@
 #include "sc_fs_memory_builder.h"
 
 #include "glib/gstdio.h"
-#include "../sc-base/sc_assert_utils.h"
 #include "../sc-base/sc_message.h"
 
 #include "sc_io.h"
