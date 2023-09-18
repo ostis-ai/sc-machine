@@ -8,11 +8,11 @@
 #define _sc_event_queue_h_
 
 #include "../sc_types.h"
-#include <glib.h>
+#include "../sc-base/sc_mutex.h"
 
 struct _sc_event_queue
 {
-  GMutex mutex;
+  sc_mutex mutex;
   sc_bool running;            // flag that determine if queue is running
   GThreadPool * thread_pool;  // thread pool that used for a workers
 };
@@ -21,9 +21,6 @@ typedef struct _sc_event_queue sc_event_queue;
 
 //! Create new sc-event queue with user processors number
 sc_event_queue * sc_event_queue_new_ext(sc_uint32 max_events_and_agents_threads);
-
-//! Create new sc-event queue
-sc_event_queue * sc_event_queue_new();
 
 //! Stop events processing
 void sc_event_queue_stop_processing(sc_event_queue * queue);

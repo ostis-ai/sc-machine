@@ -5,6 +5,8 @@
  */
 
 #include "sc_event.hpp"
+
+#include <utility>
 #include "sc_utils.hpp"
 #include "sc_addr.hpp"
 #include "sc_memory.hpp"
@@ -39,7 +41,6 @@ sc_event_type ConvertEventType(ScEvent::Type type)
   }
 
   SC_THROW_EXCEPTION(utils::ExceptionNotImplemented, "Unsupported event type " + std::to_string(int(type)));
-  return SC_EVENT_UNKNOWN;
 }
 
 }  // namespace
@@ -50,7 +51,7 @@ ScEvent::ScEvent(
     Type eventType,
     ScEvent::DelegateFunc func /*= DelegateFunc()*/)
 {
-  m_delegate = func;
+  m_delegate = std::move(func);
   m_event = sc_event_new_ex(
       *ctx, *addr, ConvertEventType(eventType), (sc_pointer)this, &ScEvent::Handler, &ScEvent::HandlerDelete);
 }
