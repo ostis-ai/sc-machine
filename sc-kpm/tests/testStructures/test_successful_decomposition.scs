@@ -1,0 +1,78 @@
+nrel_section_base_order
+<- sc_node_norole_relation;;
+
+test_action_node <- question; action_get_decomposition;
+-> rrel_1: knowledge_base_IMS;
+-> rrel_3: lang_ru;;
+
+test_action_node2 <- question; action_get_decomposition;
+-> rrel_1: knowledge_base_IMS;
+-> rrel_2: [2];
+-> rrel_3: lang_ru;;
+
+knowledge_base_IMS
+=> nrel_main_idtf:
+    [База знаний IMS]
+    (* <- lang_ru;; *);
+=> nrel_main_idtf:
+    [Knowledge base IMS]
+    (* <- lang_en;; *);
+
+<- entities_interface_internet_bank;
+<- not_enough_formed_structure;
+<- sc_model_of_knowledge_base;
+
+<= nrel_entity_decomposition: knowledge_base_IMS_decomposition;;
+
+@arc1 = (knowledge_base_IMS_decomposition -> rrel_1: section_OSTIS_technology);;
+@arc2 = (knowledge_base_IMS_decomposition -> context_technology_OSTIS_and_Metasystem_IMS_in_the_Global_knowledge_base);;
+@arc1 => nrel_basic_sequence: @arc2;;
+@arc3 = (knowledge_base_IMS_decomposition -> section_project_OSTIS_perspectives_current_state_history_of_evolution_and_use);;
+@arc2 => nrel_basic_sequence: @arc3;;
+rrel_last ~> @arc3;;
+
+section_OSTIS_technology <= nrel_entity_decomposition: section_OSTIS_technology_decomposition;;
+
+@arc4 = (section_OSTIS_technology_decomposition -> rrel_1: doc_IMS);;
+@arc5 = (section_OSTIS_technology_decomposition -> history_and_current_processes_of_use_IMS);;
+@arc4 => nrel_basic_sequence: @arc5;;
+@arc6 = (section_OSTIS_technology_decomposition -> section_project_IMS_history_and_development_programme);;
+@arc5 => nrel_basic_sequence: @arc6;;
+rrel_last ~> @arc6;;
+
+context_technology_OSTIS_and_Metasystem_IMS_in_the_Global_knowledge_base <= nrel_entity_decomposition: context_technology_OSTIS_and_Metasystem_IMS_in_the_Global_knowledge_base_decomposition;;
+
+@arc7 = (context_technology_OSTIS_and_Metasystem_IMS_in_the_Global_knowledge_base_decomposition -> rrel_1: doc_IMS);;
+@arc8 = (context_technology_OSTIS_and_Metasystem_IMS_in_the_Global_knowledge_base_decomposition -> history_and_current_processes_of_use_IMS);;
+@arc7 => nrel_basic_sequence: @arc8;;
+@arc9 = (context_technology_OSTIS_and_Metasystem_IMS_in_the_Global_knowledge_base_decomposition -> section_project_IMS_history_and_development_programme);;
+@arc8 => nrel_basic_sequence: @arc9;;
+rrel_last ~> @arc9;;
+
+section_project_OSTIS_perspectives_current_state_history_of_evolution_and_use <= nrel_entity_decomposition: section_project_OSTIS_perspectives_current_state_history_of_evolution_and_use_decomposition;;
+
+@arc10 = (section_project_OSTIS_perspectives_current_state_history_of_evolution_and_use_decomposition -> rrel_1: doc_IMS);;
+@arc11 = (section_project_OSTIS_perspectives_current_state_history_of_evolution_and_use_decomposition -> history_and_current_processes_of_use_IMS);;
+@arc10 => nrel_basic_sequence: @arc11;;
+@arc12 = (section_project_OSTIS_perspectives_current_state_history_of_evolution_and_use_decomposition -> section_project_IMS_history_and_development_programme);;
+@arc11 => nrel_basic_sequence: @arc12;;
+rrel_last ~> @arc12;;
+
+section_OSTIS_technology
+	=> nrel_main_idtf: [section_OSTIS_technology]
+						(* <- lang_ru;; *);;
+doc_IMS
+	=> nrel_main_idtf: [doc_IMS]
+						(* <- lang_ru;; *);;
+history_and_current_processes_of_use_IMS
+	=> nrel_main_idtf: [history_and_current_processes_of_use_IMS]
+						(* <- lang_ru;; *);;
+section_project_IMS_history_and_development_programme
+	=> nrel_main_idtf: [section_project_IMS_history_and_development_programme]
+						(* <- lang_ru;; *);;
+context_technology_OSTIS_and_Metasystem_IMS_in_the_Global_knowledge_base
+	=> nrel_main_idtf: [context_technology_OSTIS_and_Metasystem_IMS_in_the_Global_knowledge_base]
+						(* <- lang_ru;; *);;
+section_project_OSTIS_perspectives_current_state_history_of_evolution_and_use
+	=> nrel_main_idtf: [section_project_OSTIS_perspectives_current_state_history_of_evolution_and_use]
+						(* <- lang_ru;; *);;

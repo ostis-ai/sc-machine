@@ -1,14 +1,20 @@
+set(SC_SEARCH_SRC "${CMAKE_CURRENT_LIST_DIR}")
+
 file(GLOB_RECURSE SOURCES "*.c" "*.cpp" "*.h" "*.hpp")
 
-add_library(sc-search SHARED ${SOURCES})
-
-target_include_directories(sc-search
-    PRIVATE ${SC_MEMORY_SRC}
-    PRIVATE ${GLIB2_INCLUDE_DIRS}
-    PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}
+include_directories(
+	${CMAKE_CURRENT_SOURCE_DIR}
+	${SC_KPM_SRC}
+    ${SC_MEMORY_SRC}
+    ${GLIB2_INCLUDE_DIRS}
 )
-add_dependencies(sc-search sc-memory sc-kpm-common)
-target_link_libraries(sc-search sc-kpm-common)
+
+find_package(nlohmann_json 3.2.0 REQUIRED)
+add_library(sc-search SHARED ${SOURCES})
+target_link_libraries(sc-search sc-agents-common sc-kpm-common sc-memory nlohmann_json::nlohmann_json)
+
+sc_codegen_ex(sc-search ${SC_SEARCH_SRC} "${SC_SEARCH_SRC}/generated")
+target_compile_definitions(sc-search PRIVATE "-DSC_SEARCH_SELF_BUILD")
 
 if(${SC_CLANG_FORMAT_CODE})
     target_clangformat_setup(sc-search)

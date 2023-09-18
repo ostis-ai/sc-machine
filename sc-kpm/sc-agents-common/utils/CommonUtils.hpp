@@ -68,6 +68,8 @@ public:
   static size_t getSetPower(ScMemoryContext * ms_context, const ScAddr & set);
 
   static bool isEmpty(ScMemoryContext * ms_context, const ScAddr & set);
+
+  static std::string getScWebAddr(ScAddr const & scAddr);
 };
 
 }  // namespace utils

@@ -14,9 +14,17 @@ sc_codegen_ex(sc-utils-test-agents ${SC_UTILS_TEST_AGENTS_SRC} ${SC_UTILS_TEST_A
 
 make_tests_from_folder(${CMAKE_CURRENT_LIST_DIR}/sc-agents
     NAME sc-kpm-core-agents-tests
-    DEPENDS sc-memory sc-search
-    INCLUDES ${SC_MEMORY_SRC} ${SC_KPM_SRC} ${SC_MEMORY_SRC}/tests/sc-memory/_test
+    DEPENDS sc-memory sc-search sc-builder-lib
+    INCLUDES ${SC_MEMORY_SRC} ${SC_KPM_SRC} ${SC_MEMORY_SRC}/tests/sc-memory/_test ${SC_MACHINE_ROOT}/sc-tools
 )
+
+#DEPENDS sc-memory sc-search sc-builder-lib
+#INCLUDES ${SC_MEMORY_SRC} ${SC_KPM_SRC} ${SC_MEMORY_SRC}/tests/sc-memory/_test ${SC_MACHINE_ROOT}/sc-tools/sc-builder
+
+message(3. ${SC_MEMORY_SRC})
+message(4. ${SC_KPM_SRC})
+message(5. ${SC_MEMORY_SRC}/tests/sc-memory/_test)
+message(6. ${SC_MACHINE_ROOT}/sc-tools/sc-builder)
 
 if(${SC_CLANG_FORMAT_CODE})
     target_clangformat_setup(sc-kpm-core-agents-tests)
