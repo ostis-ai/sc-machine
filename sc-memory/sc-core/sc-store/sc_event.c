@@ -177,8 +177,6 @@ sc_result sc_event_destroy(sc_event * evt)
 
 sc_result sc_event_notify_element_deleted(sc_addr element)
 {
-  EVENTS_TABLE_LOCK;
-
   GSList * element_events_list = null_ptr;
   sc_event * evt = null_ptr;
 
@@ -187,10 +185,15 @@ sc_result sc_event_notify_element_deleted(sc_addr element)
     goto result;
 
   // sc_set_lookup for all registered to specified sc-element events
+  EVENTS_TABLE_LOCK;
   element_events_list = (GSList *)g_hash_table_lookup(events_table, TABLE_KEY(element));
+  EVENTS_TABLE_UNLOCK;
+
   if (element_events_list)
   {
+    EVENTS_TABLE_LOCK;
     g_hash_table_remove(events_table, TABLE_KEY(element));
+    EVENTS_TABLE_UNLOCK;
 
     while (element_events_list != null_ptr)
     {
@@ -205,8 +208,6 @@ sc_result sc_event_notify_element_deleted(sc_addr element)
   }
 
 result:
-  EVENTS_TABLE_UNLOCK;
-
   return SC_RESULT_OK;
 }
 
