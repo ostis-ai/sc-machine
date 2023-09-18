@@ -167,8 +167,6 @@ sc_result sc_event_destroy(sc_event * evt)
 
   sc_monitor_end_write(&evt->monitor);
 
-  sc_monitor_destroy(&evt->monitor);
-
   sc_mem_free(evt);
   evt = null_ptr;
 
@@ -269,9 +267,7 @@ sc_result sc_event_emit_impl(
   }
 
 result:
-{
   EVENTS_TABLE_UNLOCK;
-}
 
   return SC_RESULT_OK;
 }
