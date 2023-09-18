@@ -6,13 +6,13 @@
 
 #include "sc_event.h"
 
+#include "sc_storage.h"
 #include "sc_event/sc_event_private.h"
 #include "sc_event/sc_event_queue.h"
 
 #include "../sc_memory_private.h"
 
 #include "sc-base/sc_allocator.h"
-#include "sc-base/sc_message.h"
 #include "sc-base/sc_mutex.h"
 
 sc_mutex events_table_mutex;
@@ -262,10 +262,8 @@ sc_result sc_event_emit_impl(
   {
     event = (sc_event *)element_events_list->data;
 
-    sc_monitor_start_read(&event->monitor);
     if (event->type == type)
       sc_event_queue_append(event_queue, event, edge, other_el);
-    sc_monitor_end_read(&event->monitor);
 
     element_events_list = element_events_list->next;
   }
