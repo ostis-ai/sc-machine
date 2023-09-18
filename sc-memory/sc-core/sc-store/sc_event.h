@@ -52,13 +52,9 @@ _SC_EXTERN sc_event * sc_event_new_ex(
 
 /*! Destroys specified sc-event
  * @param event Pointer to sc-event, that need to be destroyed
- * @return If event destroyed correctly, then return SC_OK; otherwise return SC_ERROR code.
+ * @return If event destroyed correctly, then return SC_RESULT_OK; otherwise return SC_RESULT_ERROR code.
  */
 _SC_EXTERN sc_result sc_event_destroy(sc_event * event);
-
-/*! Returns type of specified sc-event
- */
-_SC_EXTERN sc_event_type sc_event_get_type(sc_event const * event);
 
 //! Returns data of specified sc-event
 _SC_EXTERN sc_pointer sc_event_get_data(sc_event const * event);

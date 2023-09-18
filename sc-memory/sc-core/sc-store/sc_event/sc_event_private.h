@@ -9,6 +9,7 @@
 
 #include "../sc_event.h"
 #include "../sc_types.h"
+#include "../sc-base/sc_monitor.h"
 
 /* Events life cycle:
  * - create event - set reference count to 1
@@ -19,7 +20,6 @@
  */
 
 #define SC_EVENT_REQUEST_DESTROY (1 << 31)
-#define SC_EVENT_REF_COUNT_MASK (~SC_EVENT_REQUEST_DESTROY)
 
 /*! Structure that contains information about event
  */
@@ -37,19 +37,14 @@ struct _sc_event
   fEventCallbackEx callback_ex;
   //! Pointer to callback function, that calls, when subscribed sc-element deleted
   fDeleteCallback delete_callback;
-  //! Reference count (just references from queue). The highest bit used for SC_EVENT_REQUEST_DESTROY
+  sc_monitor monitor;
   volatile sc_uint32 ref_count;
-  //! Context lock
-  volatile sc_pointer thread_lock;
   //! Access levels
   sc_access_levels access_levels;
 };
 
 //! Function to initialize sc-events module with user processors number
 sc_bool sc_events_initialize_ext(sc_uint32 max_events_and_agents_threads);
-
-//! Function to initialize sc-events module
-sc_bool sc_events_initialize();
 
 //! Function to shutdown sc-events module
 void sc_events_shutdown();
@@ -93,16 +88,5 @@ sc_result sc_event_emit_impl(
     sc_event_type type,
     sc_addr edge,
     sc_addr other_el);
-
-/* Remove reference from event.
- * Remove reference from an event
- */
-sc_bool sc_event_unref(sc_event * evt);
-
-/* Lock sc-event by context
- */
-void sc_event_lock(sc_event * evt);
-
-void sc_event_unlock(sc_event * evt);
 
 #endif

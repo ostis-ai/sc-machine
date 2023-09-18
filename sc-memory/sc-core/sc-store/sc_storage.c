@@ -247,9 +247,7 @@ sc_result sc_storage_element_free(sc_memory_context const * ctx, sc_addr addr)
     addr.seg = SC_ADDR_LOCAL_SEG_FROM_INT(uint_addr);
 
     if (el->flags.type & sc_type_link)
-    {
       sc_fs_memory_unlink_string(SC_ADDR_LOCAL_TO_INT(addr));
-    }
     else if (el->flags.type & sc_type_arc_mask)
     {
       // output arcs
