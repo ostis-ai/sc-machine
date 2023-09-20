@@ -10,6 +10,7 @@
 #include "sc-store/sc_element.h"
 #include "sc-store/sc_types.h"
 #include "sc-store/sc-base/sc_message.h"
+#include "sc-store/sc-base/sc_monitor.h"
 
 #include <glib.h>
 
@@ -25,6 +26,7 @@ struct _sc_event_emit_params
   sc_event_type type;
   sc_addr edge;
   sc_addr other_el;
+  sc_monitor monitor;
 };
 
 typedef struct _sc_event_emit_params sc_event_emit_params;

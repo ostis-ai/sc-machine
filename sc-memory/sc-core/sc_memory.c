@@ -256,7 +256,9 @@ void sc_memory_context_emit_events(sc_memory_context const * ctx)
     sc_event_emit_impl(
         ctx, evt_params->el, evt_params->el_access, evt_params->type, evt_params->edge, evt_params->other_el);
 
+    sc_monitor_start_write(&evt_params->monitor);
     sc_mem_free(evt_params);
+    sc_monitor_end_write(&evt_params->monitor);
 
     ((sc_memory_context *)ctx)->pend_events = g_slist_delete_link(ctx->pend_events, ctx->pend_events);
   }
