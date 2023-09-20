@@ -247,14 +247,16 @@ sc_result sc_event_emit_impl(
   if (SC_ADDR_IS_EMPTY(el))
     return SC_RESULT_ERROR_ADDR_IS_NOT_VALID;
 
-  EVENTS_TABLE_LOCK;
-
   // if table is empty, then do nothing
   if (events_table == null_ptr)
     goto result;
 
+  EVENTS_TABLE_LOCK;
+
   // sc_set_lookup for all registered to specified sc-element events
   element_events_list = (GSList *)g_hash_table_lookup(events_table, TABLE_KEY(el));
+
+  EVENTS_TABLE_UNLOCK;
 
   while (element_events_list != null_ptr)
   {
@@ -267,8 +269,6 @@ sc_result sc_event_emit_impl(
   }
 
 result:
-  EVENTS_TABLE_UNLOCK;
-
   return SC_RESULT_OK;
 }
 
