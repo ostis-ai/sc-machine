@@ -15,19 +15,21 @@ sc_segment * sc_segment_new(sc_addr_seg num)
 {
   sc_segment * segment = sc_mem_new(sc_segment, 1);
   segment->num = num;
-  segment->elements_count = 0;
+  segment->last_element_offset = 0;
+  sc_list_init(&segment->empty_element_offsets);
 
   return segment;
 }
 
 void sc_segment_free(sc_segment * segment)
 {
+  sc_list_destroy(segment->empty_element_offsets);
   sc_mem_free(segment);
 }
 
 void sc_segment_collect_elements_stat(sc_segment * seg, sc_stat * stat)
 {
-  for (sc_int32 i = 0; i < seg->elements_count; ++i)
+  for (sc_int32 i = 0; i < seg->last_element_offset; ++i)
   {
     sc_type type = seg->elements[i].flags.type;
     if (type & sc_type_node)

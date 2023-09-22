@@ -8,7 +8,6 @@
 #  define _sc_types_h_
 
 #  include "sc_defines.h"
-#  include <memory.h>
 
 #  ifndef null_ptr
 #    define null_ptr ((void *)0)
@@ -235,5 +234,3 @@ typedef struct _sc_event sc_event;
 typedef enum _sc_result sc_result;
 typedef enum _sc_event_type sc_event_type;
 typedef struct _sc_stat sc_stat;
-
-#define sc_thread() (sc_pointer) g_thread_self()

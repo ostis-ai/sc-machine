@@ -25,7 +25,7 @@ typedef struct
 typedef struct
 {
   sc_mutex rw_mutex;      // Mutex for data protection
-  GHashTable * monitors;  // Hash table storing monitors_table for each identifier;
+  GHashTable * monitors;  // Hash table storing addr_monitors_table for each identifier;
 } sc_monitor_table;
 
 void sc_monitor_global_init(sc_monitor_table * table);

@@ -106,16 +106,24 @@ sc_struct_node * sc_list_pop_back(sc_list * list)
   if (list->size == 0)
     return null_ptr;
 
-  sc_struct_node * temp = list->end->prev;
+  sc_struct_node * node_to_remove = list->end->prev;
 
-  if (list->end->prev->prev != null_ptr)
-    list->end->prev->prev->next = list->end;
+  if (node_to_remove->prev != null_ptr)
+    node_to_remove->prev->next = list->end;
+  else
+  {
+    // Only one item in the list
+    list->begin = null_ptr;
+  }
 
-  list->end->prev = list->end->prev->prev;
+  list->end->prev = node_to_remove->prev;
 
   --list->size;
 
-  return temp;
+  node_to_remove->prev = null_ptr;
+  node_to_remove->next = null_ptr;
+
+  return node_to_remove;
 }
 
 sc_bool sc_list_remove_if(sc_list * list, void * data, sc_bool (*predicate)(void * data, void * other))
