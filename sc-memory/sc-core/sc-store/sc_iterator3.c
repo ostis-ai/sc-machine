@@ -225,7 +225,7 @@ sc_bool _sc_iterator3_f_a_a_next(sc_iterator3 * it)
   sc_addr arc_addr = SC_ADDR_EMPTY;
   sc_result result;
 
-  sc_monitor * monitor = sc_monitor_get_monitor_for_addr(&sc_storage_get()->monitors_table, it->results[0]);
+  sc_monitor * monitor = sc_monitor_get_monitor_for_addr(&sc_storage_get()->addr_monitors_table, it->results[0]);
   sc_monitor_start_read(monitor);
 
   // try to find first output arc
@@ -297,13 +297,13 @@ sc_bool _sc_iterator3_f_a_f_next(sc_iterator3 * it)
   sc_addr arc_addr = SC_ADDR_EMPTY;
   sc_result result;
 
-  sc_monitor * end_monitor = sc_monitor_get_monitor_for_addr(&sc_storage_get()->monitors_table, it->results[2]);
+  sc_monitor * end_monitor = sc_monitor_get_monitor_for_addr(&sc_storage_get()->addr_monitors_table, it->results[2]);
   sc_monitor_start_read(end_monitor);
 
   sc_monitor * beg_monitor;
   if (SC_ADDR_IS_NOT_EQUAL(it->results[2], it->results[0]))
   {
-    beg_monitor = sc_monitor_get_monitor_for_addr(&sc_storage_get()->monitors_table, it->results[0]);
+    beg_monitor = sc_monitor_get_monitor_for_addr(&sc_storage_get()->addr_monitors_table, it->results[0]);
     sc_monitor_start_read(beg_monitor);
   }
 
@@ -371,7 +371,7 @@ sc_bool _sc_iterator3_a_a_f_next(sc_iterator3 * it)
   sc_addr arc_addr = SC_ADDR_EMPTY;
   sc_result result;
 
-  sc_monitor * monitor = sc_monitor_get_monitor_for_addr(&sc_storage_get()->monitors_table, it->results[2]);
+  sc_monitor * monitor = sc_monitor_get_monitor_for_addr(&sc_storage_get()->addr_monitors_table, it->results[2]);
   sc_monitor_start_read(monitor);
 
   // try to find first input arc
@@ -436,7 +436,7 @@ sc_bool _sc_iterator3_a_f_a_next(sc_iterator3 * it)
 {
   it->results[1] = it->params[1].addr;
 
-  sc_monitor * monitor = sc_monitor_get_monitor_for_addr(&sc_storage_get()->monitors_table, it->results[1]);
+  sc_monitor * monitor = sc_monitor_get_monitor_for_addr(&sc_storage_get()->addr_monitors_table, it->results[1]);
   sc_monitor_start_read(monitor);
 
   sc_element * arc_el;

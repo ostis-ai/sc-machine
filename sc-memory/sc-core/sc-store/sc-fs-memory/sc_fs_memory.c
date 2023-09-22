@@ -197,7 +197,7 @@ sc_bool _sc_fs_memory_load_sc_memory_segments(sc_segment ** segments, sc_uint32 
     if (is_no_deprecated_segments)
     {
       if (sc_io_channel_read_chars(
-              segments_channel, (sc_char *)&seg->elements_count, sizeof(sc_uint32), &read_bytes, null_ptr) !=
+              segments_channel, (sc_char *)&seg->last_element_offset, sizeof(sc_uint32), &read_bytes, null_ptr) !=
               SC_FS_IO_STATUS_NORMAL ||
           read_bytes != sizeof(sc_uint32))
       {
@@ -273,11 +273,11 @@ sc_bool _sc_fs_memory_save_sc_memory_segments(sc_segment ** segments, sc_uint32 
     }
 
     if (sc_io_channel_write_chars(
-            segments_channel, (sc_char *)&segment->elements_count, sizeof(sc_uint32), &written_bytes, null_ptr) !=
+            segments_channel, (sc_char *)&segment->last_element_offset, sizeof(sc_uint32), &written_bytes, null_ptr) !=
             SC_FS_IO_STATUS_NORMAL ||
         written_bytes != sizeof(sc_uint32))
     {
-      sc_fs_memory_error("Error while attribute `segment->elements_count` writing");
+      sc_fs_memory_error("Error while attribute `segment->last_element_offset` writing");
       goto error;
     }
   }
