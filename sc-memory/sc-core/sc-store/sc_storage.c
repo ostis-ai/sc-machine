@@ -18,7 +18,6 @@
 #include "sc-base/sc_allocator.h"
 #include "sc-base/sc_atomic.h"
 #include "sc-container/sc-string/sc_string.h"
-#include "sc-container/sc-pair/sc_pair.h"
 
 sc_storage * storage;
 
@@ -32,7 +31,7 @@ sc_bool sc_storage_initialize(sc_memory_params const * params)
   storage->max_segments_count = params->max_loaded_segments;
   storage->segments_count = 0;
   storage->segments = sc_mem_new(sc_segment *, params->max_loaded_segments);
-  sc_list_init(&storage->empty_elements);
+  sc_list_init(&storage->empty_segments);
   sc_monitor_init(&storage->segments_monitor);
   sc_monitor_global_init(&storage->addr_monitors_table);
 
@@ -63,11 +62,10 @@ sc_bool sc_storage_shutdown(sc_bool save_state)
     sc_segment_free(storage->segments[idx]);
   }
 
-  sc_list_clear(storage->empty_elements);
-  sc_list_destroy(storage->empty_elements);
+  sc_mem_free(storage->segments);
+  sc_list_destroy(storage->empty_segments);
   sc_monitor_destroy(&storage->segments_monitor);
   sc_monitor_global_destroy(&storage->addr_monitors_table);
-  sc_mem_free(storage->segments);
   sc_mem_free(storage);
   storage = null_ptr;
 
@@ -90,6 +88,82 @@ sc_bool sc_storage_is_element(sc_memory_context const * ctx, sc_addr addr)
   sc_result result = sc_storage_get_element_by_addr(addr, &el);
 
   return result == SC_RESULT_OK;
+}
+
+sc_result sc_storage_get_element_by_addr(sc_addr addr, sc_element ** el)
+{
+  *el = null_ptr;
+  sc_result result = SC_RESULT_ERROR_ADDR_IS_NOT_VALID;
+
+  sc_monitor * monitor = sc_monitor_get_monitor_for_addr(&storage->addr_monitors_table, addr);
+  sc_monitor_start_read(monitor);
+
+  if (SC_ADDR_IS_EMPTY(addr) || addr.seg >= storage->max_segments_count || addr.offset > SC_SEGMENT_ELEMENTS_COUNT)
+    goto error;
+
+  sc_segment * segment = storage->segments[addr.seg];
+  if (segment == null_ptr)
+    goto error;
+
+  *el = sc_segment_get_element_by_offset(segment, addr.offset);
+  if (((*el)->flags.access_levels & SC_ACCESS_LVL_ELEMENT_EXIST) == 0)
+    goto error;
+
+  result = SC_RESULT_OK;
+error:
+  sc_monitor_end_read(monitor);
+  return result;
+}
+
+sc_result sc_storage_try_get_element_by_addr(sc_addr addr, sc_element ** el)
+{
+  *el = null_ptr;
+  sc_result result = SC_RESULT_ERROR_ADDR_IS_NOT_VALID;
+
+  if (SC_ADDR_IS_EMPTY(addr) || addr.seg >= storage->max_segments_count || addr.offset > SC_SEGMENT_ELEMENTS_COUNT)
+    goto error;
+
+  sc_segment * segment = storage->segments[addr.seg];
+  if (segment == null_ptr)
+    goto error;
+
+  *el = sc_segment_get_element_by_offset(segment, addr.offset);
+  if (((*el)->flags.access_levels & SC_ACCESS_LVL_ELEMENT_EXIST) == 0)
+    goto error;
+
+  result = SC_RESULT_OK;
+error:
+  return result;
+}
+
+sc_result sc_storage_remove_element_by_addr(sc_addr addr)
+{
+  sc_result result = SC_RESULT_ERROR_ADDR_IS_NOT_VALID;
+
+  sc_monitor * monitor = sc_monitor_get_monitor_for_addr(&storage->addr_monitors_table, addr);
+  sc_monitor_start_write(monitor);
+
+  if (SC_ADDR_IS_EMPTY(addr) || addr.seg >= storage->max_segments_count || addr.offset > SC_SEGMENT_ELEMENTS_COUNT)
+    goto error;
+
+  sc_segment * segment = sc_atomic_pointer_get((void **)&storage->segments[addr.seg]);
+  if (segment == null_ptr)
+    goto error;
+
+  segment->elements[addr.offset - 1] = (sc_element){};
+  sc_monitor_end_write(monitor);
+
+  sc_monitor_start_write(&storage->segments_monitor);
+  if (segment->empty_element_offsets->size == 0)
+    sc_list_push_back(storage->empty_segments, (void *)(sc_uint64)addr.seg);
+  sc_list_push_back(segment->empty_element_offsets, (void *)(sc_uint64)addr.offset);
+  sc_monitor_end_write(&storage->segments_monitor);
+
+  result = SC_RESULT_OK;
+  return result;
+error:
+  sc_monitor_end_write(monitor);
+  return result;
 }
 
 sc_uint32 sc_storage_get_element_output_arcs_count(sc_memory_context const * ctx, sc_addr addr)
@@ -126,11 +200,17 @@ error:
 
 sc_element * _sc_storage_get_old_empty_element(sc_addr * addr)
 {
-  sc_pair * cached_addr = (sc_pair *)(sc_list_pop_back(storage->empty_elements)->data);
+  sc_uint16 segment_num = (sc_uint16)(sc_uint64)sc_list_back(storage->empty_segments)->data;
+  sc_segment * segment = storage->segments[segment_num];
 
-  *addr = (sc_addr){(sc_uint16)(sc_uint64)cached_addr->first, (sc_uint16)(sc_uint64)cached_addr->second};
+  if (segment->empty_element_offsets->size == 1)
+    sc_mem_free(sc_list_pop_back(storage->empty_segments));
 
-  sc_segment * segment = sc_atomic_pointer_get((void **)&storage->segments[addr->seg]);
+  sc_struct_node * node = sc_list_pop_back(segment->empty_element_offsets);
+  sc_uint64 element_offset = (sc_uint16)(sc_uint64)node->data;
+  sc_mem_free(node);
+
+  *addr = (sc_addr){segment_num, element_offset};
   sc_element * element = sc_segment_get_element_by_offset(segment, addr->offset);
 
   return element;
@@ -179,7 +259,7 @@ sc_element * sc_storage_append_el_into_segments(sc_memory_context const * ctx, s
 
   sc_monitor_start_write(&storage->segments_monitor);
 
-  if (storage->empty_elements->size > 0)
+  if (storage->empty_segments->size > 0)
     element = _sc_storage_get_old_empty_element(addr);
   else
     element = _sc_storage_get_new_empty_element(addr);
@@ -778,79 +858,6 @@ sc_result sc_storage_get_elements_stat(sc_stat * stat)
   }
 
   return SC_TRUE;
-}
-
-sc_result sc_storage_get_element_by_addr(sc_addr addr, sc_element ** el)
-{
-  *el = null_ptr;
-  sc_result result = SC_RESULT_ERROR_ADDR_IS_NOT_VALID;
-
-  if (SC_ADDR_IS_EMPTY(addr) || addr.seg >= storage->max_segments_count || addr.offset > SC_SEGMENT_ELEMENTS_COUNT)
-    goto error;
-
-  sc_monitor * monitor = sc_monitor_get_monitor_for_addr(&storage->addr_monitors_table, addr);
-  sc_monitor_start_read(monitor);
-
-  sc_segment * segment = sc_atomic_pointer_get((void **)&storage->segments[addr.seg]);
-  if (segment == null_ptr)
-    goto error;
-
-  *el = sc_segment_get_element_by_offset(segment, addr.offset);
-  if (((*el)->flags.access_levels & SC_ACCESS_LVL_ELEMENT_EXIST) == 0)
-    goto error;
-
-  sc_monitor_end_read(monitor);
-
-  result = SC_RESULT_OK;
-error:
-  return result;
-}
-
-sc_result sc_storage_try_get_element_by_addr(sc_addr addr, sc_element ** el)
-{
-  *el = null_ptr;
-  sc_result result = SC_RESULT_ERROR_ADDR_IS_NOT_VALID;
-
-  if (SC_ADDR_IS_EMPTY(addr) || addr.seg >= storage->max_segments_count || addr.offset > SC_SEGMENT_ELEMENTS_COUNT)
-    goto error;
-
-  sc_segment * segment = sc_atomic_pointer_get((void **)&storage->segments[addr.seg]);
-  if (segment == null_ptr)
-    goto error;
-
-  *el = sc_segment_get_element_by_offset(segment, addr.offset);
-  if (((*el)->flags.access_levels & SC_ACCESS_LVL_ELEMENT_EXIST) == 0)
-    goto error;
-
-  result = SC_RESULT_OK;
-error:
-  return result;
-}
-
-sc_result sc_storage_remove_element_by_addr(sc_addr addr)
-{
-  sc_result result = SC_RESULT_ERROR_ADDR_IS_NOT_VALID;
-
-  if (SC_ADDR_IS_EMPTY(addr) || addr.seg >= storage->max_segments_count || addr.offset > SC_SEGMENT_ELEMENTS_COUNT)
-    goto error;
-
-  sc_monitor * monitor = sc_monitor_get_monitor_for_addr(&storage->addr_monitors_table, addr);
-  sc_monitor_start_write(monitor);
-
-  sc_segment * segment = sc_atomic_pointer_get((void **)&storage->segments[addr.seg]);
-  if (segment == null_ptr)
-    goto error;
-
-  segment->elements[addr.offset - 1] = (sc_element){};
-  sc_monitor_end_write(monitor);
-
-  sc_monitor_start_write(&storage->segments_monitor);
-  sc_list_push_back(storage->empty_elements, sc_make_pair((void *)(sc_uint64)addr.seg, (void *)(sc_uint64)addr.offset));
-  sc_monitor_end_write(&storage->segments_monitor);
-
-  result = SC_RESULT_OK;
-error:
-  return result;
 }
 
 sc_result sc_storage_save(sc_memory_context const * ctx)

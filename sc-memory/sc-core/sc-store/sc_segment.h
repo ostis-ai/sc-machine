@@ -10,8 +10,7 @@
 #include "sc_types.h"
 #include "sc_defines.h"
 #include "sc_element.h"
-
-#include <glib.h>
+#include "sc-container/sc-list/sc_list.h"
 
 #define SC_SEG_ELEMENTS_SIZE_BYTE (sizeof(sc_element) * SC_SEGMENT_ELEMENTS_COUNT)
 
@@ -22,6 +21,7 @@ struct _sc_segment
   sc_element elements[SC_SEGMENT_ELEMENTS_COUNT];
   sc_addr_seg num;                // number of this segment in memory
   sc_uint32 last_element_offset;  // number of sc-element in the segment
+  sc_list * empty_element_offsets;
 };
 
 /*! Create new segment with specified size.
@@ -41,14 +41,5 @@ void sc_segment_collect_elements_stat(sc_segment * seg, sc_stat * stat);
  * @returns Returns pointer to locked sc-element
  */
 sc_element * sc_segment_get_element_by_offset(sc_segment * seg, sc_addr_offset offset);
-
-//! Try to lock sc-element with maximum attempts
-sc_element * sc_segment_lock_element_try(sc_segment * seg, sc_addr_offset offset, sc_uint16 max_attempts);
-
-/*! Function to unlock specified element in segment
- * @param seg Pointer to segment for element unlocking
- * @param offset Offset of sc-element in segment
- */
-void sc_segment_unlock_element(sc_segment * seg, sc_addr_offset offset);
 
 #endif

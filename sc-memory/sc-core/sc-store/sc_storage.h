@@ -20,7 +20,7 @@ typedef struct
   sc_segment ** segments;
   sc_uint32 segments_count;
   sc_uint32 max_segments_count;
-  sc_list * empty_elements;
+  sc_list * empty_segments;
   sc_monitor_table addr_monitors_table;
   sc_monitor segments_monitor;
 } sc_storage;

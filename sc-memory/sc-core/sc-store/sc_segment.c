@@ -16,12 +16,14 @@ sc_segment * sc_segment_new(sc_addr_seg num)
   sc_segment * segment = sc_mem_new(sc_segment, 1);
   segment->num = num;
   segment->last_element_offset = 0;
+  sc_list_init(&segment->empty_element_offsets);
 
   return segment;
 }
 
 void sc_segment_free(sc_segment * segment)
 {
+  sc_list_destroy(segment->empty_element_offsets);
   sc_mem_free(segment);
 }
 
