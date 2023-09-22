@@ -453,7 +453,7 @@ error:
   return result;
 }
 
-sc_addr sc_storage_node_new(const sc_memory_context * ctx, sc_type type)
+sc_addr sc_storage_node_new(sc_memory_context const * ctx, sc_type type)
 {
   return sc_storage_node_new_ext(ctx, type, ctx->access_levels);
 }
