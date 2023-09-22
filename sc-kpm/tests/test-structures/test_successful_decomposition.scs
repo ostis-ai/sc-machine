@@ -8,6 +8,12 @@ test_action_node <- question; action_get_decomposition;
 test_action_node2 <- question; action_get_decomposition;
 -> rrel_1: knowledge_base_IMS;
 -> rrel_2: [2];
+-> rrel_3: lang_ru;
+-> rrel_4: nrel_section_decomposition;;
+
+test_action_node3 <- question; action_get_decomposition;
+-> rrel_1: knowledge_base_IMS;
+-> rrel_2: [2];
 -> rrel_3: lang_ru;;
 
 knowledge_base_IMS
@@ -22,7 +28,7 @@ knowledge_base_IMS
 <- not_enough_formed_structure;
 <- sc_model_of_knowledge_base;
 
-<= nrel_entity_decomposition: knowledge_base_IMS_decomposition;;
+<= nrel_section_decomposition: knowledge_base_IMS_decomposition;;
 
 @arc1 = (knowledge_base_IMS_decomposition -> rrel_1: section_OSTIS_technology);;
 @arc2 = (knowledge_base_IMS_decomposition -> context_technology_OSTIS_and_Metasystem_IMS_in_the_Global_knowledge_base);;
@@ -31,7 +37,7 @@ knowledge_base_IMS
 @arc2 => nrel_basic_sequence: @arc3;;
 rrel_last ~> @arc3;;
 
-section_OSTIS_technology <= nrel_entity_decomposition: section_OSTIS_technology_decomposition;;
+section_OSTIS_technology <= nrel_section_decomposition: section_OSTIS_technology_decomposition;;
 
 @arc4 = (section_OSTIS_technology_decomposition -> rrel_1: doc_IMS);;
 @arc5 = (section_OSTIS_technology_decomposition -> history_and_current_processes_of_use_IMS);;
@@ -40,7 +46,7 @@ section_OSTIS_technology <= nrel_entity_decomposition: section_OSTIS_technology_
 @arc5 => nrel_basic_sequence: @arc6;;
 rrel_last ~> @arc6;;
 
-context_technology_OSTIS_and_Metasystem_IMS_in_the_Global_knowledge_base <= nrel_entity_decomposition: context_technology_OSTIS_and_Metasystem_IMS_in_the_Global_knowledge_base_decomposition;;
+context_technology_OSTIS_and_Metasystem_IMS_in_the_Global_knowledge_base <= nrel_section_decomposition: context_technology_OSTIS_and_Metasystem_IMS_in_the_Global_knowledge_base_decomposition;;
 
 @arc7 = (context_technology_OSTIS_and_Metasystem_IMS_in_the_Global_knowledge_base_decomposition -> rrel_1: doc_IMS);;
 @arc8 = (context_technology_OSTIS_and_Metasystem_IMS_in_the_Global_knowledge_base_decomposition -> history_and_current_processes_of_use_IMS);;
@@ -49,7 +55,7 @@ context_technology_OSTIS_and_Metasystem_IMS_in_the_Global_knowledge_base <= nrel
 @arc8 => nrel_basic_sequence: @arc9;;
 rrel_last ~> @arc9;;
 
-section_project_OSTIS_perspectives_current_state_history_of_evolution_and_use <= nrel_entity_decomposition: section_project_OSTIS_perspectives_current_state_history_of_evolution_and_use_decomposition;;
+section_project_OSTIS_perspectives_current_state_history_of_evolution_and_use <= nrel_section_decomposition: section_project_OSTIS_perspectives_current_state_history_of_evolution_and_use_decomposition;;
 
 @arc10 = (section_project_OSTIS_perspectives_current_state_history_of_evolution_and_use_decomposition -> rrel_1: doc_IMS);;
 @arc11 = (section_project_OSTIS_perspectives_current_state_history_of_evolution_and_use_decomposition -> history_and_current_processes_of_use_IMS);;

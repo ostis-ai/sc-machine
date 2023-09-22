@@ -69,7 +69,7 @@ public:
 
   static bool isEmpty(ScMemoryContext * ms_context, const ScAddr & set);
 
-  static std::string getScWebAddr(ScAddr const & scAddr);
+  static std::string getAddrHashString(ScAddr const & scAddr);
 };
 
 }  // namespace utils

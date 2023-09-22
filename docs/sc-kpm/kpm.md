@@ -372,9 +372,10 @@ It is an agent that get decomposition of subject domain in JSON format
 
 **Parameters:**
 
-1. `subjDomain` - subject domain node.
-2. `level` - link that stores decomposition level (unnecessary parameter, by default value of `level` parameter is `1`);
-3. `lang` - language node.
+1. `subjDomain` - subject domain node;
+1. `level` - link that stores decomposition level (unnecessary parameter, by default value of `level` parameter is `1`);
+1. `lang` - language node;
+1. `relation of decomposition` - relation node by which an entity is decomposed.
 
 **Example:**
 

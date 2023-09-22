@@ -12,13 +12,13 @@
 
 #include "sc-agents-common/keynodes/coreKeynodes.hpp"
 
-#include "ScSearchGetDecompositionAgent.generated.hpp"
+#include "GetDecompositionAgent.generated.hpp"
 
 using json = nlohmann::json;
 
 namespace scSearch
 {
-class ScSearchGetDecompositionAgent : public ScAgent
+class GetDecompositionAgent : public ScAgent
 {
   SC_CLASS(Agent, Event(scAgentsCommon::CoreKeynodes::question_initiated, ScEvent::Type::AddOutputEdge))
   SC_GENERATED_BODY()
@@ -26,9 +26,9 @@ class ScSearchGetDecompositionAgent : public ScAgent
 private:
   bool checkActionClass(ScAddr const & actionNode);
 
-  ScAddrVector getDecomposition(ScAddr const &);
+  json getJSONDecomposition(ScAddrVector const &, size_t, ScAddr const &, ScAddr const &);
 
-  json getJSONDecomposition(ScAddrVector const &, int, ScAddr const &);
+  static ScAddrVector getDecomposition(ScAddr const &, ScAddr const &);
 };
 
-} //scSearch
+}  // namespace scSearch

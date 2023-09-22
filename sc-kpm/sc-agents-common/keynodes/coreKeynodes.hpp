@@ -64,6 +64,9 @@ public:
   SC_PROPERTY(Keynode("rrel_3"), ForceCreate)
   static ScAddr rrel_3;
 
+  SC_PROPERTY(Keynode("rrel_4"), ForceCreate)
+  static ScAddr rrel_4;
+
   SC_PROPERTY(Keynode("rrel_last_added_sc_element"), ForceCreate)
   static ScAddr rrel_last_added_sc_element;
 
@@ -93,6 +96,11 @@ public:
 
   SC_PROPERTY(Keynode("nrel_basic_sequence"), ForceCreate)
   static ScAddr nrel_basic_sequence;
-};
 
-}  // namespace scAgentsCommon
+  SC_PROPERTY(Keynode("action_get_decomposition"), ForceCreate)
+  static ScAddr action_get_decomposition;
+
+  SC_PROPERTY(Keynode("nrel_section_decomposition"), ForceCreate)
+  static ScAddr nrel_section_decomposition;
+};
+};  // namespace scAgentsCommon

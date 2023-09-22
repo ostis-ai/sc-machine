@@ -173,7 +173,7 @@ bool CommonUtils::isEmpty(ScMemoryContext * ms_context, const ScAddr & set)
   return !iterator3->Next();
 }
 
-std::string CommonUtils::getScWebAddr(ScAddr const & scAddr)
+std::string CommonUtils::getAddrHashString(ScAddr const & scAddr)
 {
   return std::to_string(SC_ADDR_LOCAL_TO_INT(scAddr.GetRealAddr()));
 }
