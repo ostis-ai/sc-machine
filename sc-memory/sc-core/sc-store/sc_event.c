@@ -37,7 +37,7 @@ sc_result insert_event_into_table(sc_event * event)
 {
   GSList * element_events_list = null_ptr;
 
-  sc_monitor_start_write(&events_table_monitor);
+  sc_monitor_acquire_write(&events_table_monitor);
 
   // the first, if table doesn't exist, then create it
   if (events_table == null_ptr)
@@ -48,7 +48,7 @@ sc_result insert_event_into_table(sc_event * event)
   element_events_list = g_slist_append(element_events_list, (gpointer)event);
   g_hash_table_insert(events_table, TABLE_KEY(event->element), (gpointer)element_events_list);
 
-  sc_monitor_end_write(&events_table_monitor);
+  sc_monitor_release_write(&events_table_monitor);
 
   return SC_RESULT_OK;
 }
@@ -58,7 +58,7 @@ sc_result remove_event_from_table(sc_event * event)
 {
   GSList * element_events_list = null_ptr;
 
-  sc_monitor_start_write(&events_table_monitor);
+  sc_monitor_acquire_write(&events_table_monitor);
 
   element_events_list = (GSList *)g_hash_table_lookup(events_table, TABLE_KEY(event->element));
   if (element_events_list == null_ptr)
@@ -78,10 +78,10 @@ sc_result remove_event_from_table(sc_event * event)
     events_table = null_ptr;
   }
 
-  sc_monitor_end_write(&events_table_monitor);
+  sc_monitor_release_write(&events_table_monitor);
   return SC_RESULT_OK;
 error:
-  sc_monitor_end_write(&events_table_monitor);
+  sc_monitor_release_write(&events_table_monitor);
   return SC_RESULT_ERROR_INVALID_PARAMS;
 }
 
@@ -144,11 +144,11 @@ sc_event * sc_event_new_ex(
 
 sc_result sc_event_destroy(sc_event * evt)
 {
-  sc_monitor_start_write(&evt->monitor);
+  sc_monitor_acquire_write(&evt->monitor);
 
   if (remove_event_from_table(evt) != SC_RESULT_OK)
   {
-    sc_monitor_end_write(&evt->monitor);
+    sc_monitor_release_write(&evt->monitor);
     return SC_RESULT_ERROR;
   }
 
@@ -162,7 +162,7 @@ sc_result sc_event_destroy(sc_event * evt)
   evt->data = null_ptr;
   evt->access_levels = 0;
 
-  sc_monitor_end_write(&evt->monitor);
+  sc_monitor_release_write(&evt->monitor);
 
   sc_mem_free(evt);
   evt = null_ptr;
@@ -180,15 +180,15 @@ sc_result sc_event_notify_element_deleted(sc_addr element)
     goto result;
 
   // sc_set_lookup for all registered to specified sc-element events
-  sc_monitor_start_read(&events_table_monitor);
+  sc_monitor_acquire_read(&events_table_monitor);
   element_events_list = (GSList *)g_hash_table_lookup(events_table, TABLE_KEY(element));
-  sc_monitor_end_read(&events_table_monitor);
+  sc_monitor_release_read(&events_table_monitor);
 
   if (element_events_list)
   {
-    sc_monitor_start_write(&events_table_monitor);
+    sc_monitor_acquire_write(&events_table_monitor);
     g_hash_table_remove(events_table, TABLE_KEY(element));
-    sc_monitor_end_write(&events_table_monitor);
+    sc_monitor_release_write(&events_table_monitor);
 
     while (element_events_list != null_ptr)
     {
@@ -222,7 +222,6 @@ sc_result sc_event_emit(
     params->type = type;
     params->edge = edge;
     params->other_el = other_el;
-    sc_monitor_init(&params->monitor);
 
     sc_memory_context_pend_event(ctx, params);
     return SC_RESULT_OK;
@@ -250,9 +249,9 @@ sc_result sc_event_emit_impl(
     goto result;
 
   // sc_set_lookup for all registered to specified sc-element events
-  sc_monitor_start_read(&events_table_monitor);
+  sc_monitor_acquire_read(&events_table_monitor);
   element_events_list = (GSList *)g_hash_table_lookup(events_table, TABLE_KEY(el));
-  sc_monitor_end_read(&events_table_monitor);
+  sc_monitor_release_read(&events_table_monitor);
 
   while (element_events_list != null_ptr)
   {

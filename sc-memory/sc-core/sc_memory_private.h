@@ -26,7 +26,6 @@ struct _sc_event_emit_params
   sc_event_type type;
   sc_addr edge;
   sc_addr other_el;
-  sc_monitor monitor;
 };
 
 typedef struct _sc_event_emit_params sc_event_emit_params;
@@ -39,6 +38,7 @@ struct _sc_memory_context
   sc_access_levels access_levels;
   sc_uint8 flags;
   GSList * pend_events;
+  sc_monitor monitor;
 };
 
 extern sc_memory_context * s_memory_default_ctx;

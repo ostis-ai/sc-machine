@@ -226,13 +226,13 @@ sc_bool _sc_iterator3_f_a_a_next(sc_iterator3 * it)
   sc_result result;
 
   sc_monitor * monitor = sc_monitor_get_monitor_for_addr(&sc_storage_get()->addr_monitors_table, it->results[0]);
-  sc_monitor_start_read(monitor);
+  sc_monitor_acquire_read(monitor);
 
   // try to find first output arc
   sc_element * el = null_ptr;
   if (SC_ADDR_IS_EMPTY(it->results[1]))
   {
-    result = sc_storage_try_get_element_by_addr(it->results[0], &el);
+    result = sc_storage_get_element_by_addr(it->results[0], &el);
     if (result != SC_RESULT_OK)
       goto error;
 
@@ -250,7 +250,6 @@ sc_bool _sc_iterator3_f_a_a_next(sc_iterator3 * it)
   // iterate through output arcs
   while (SC_ADDR_IS_NOT_EMPTY(arc_addr))
   {
-    // lock required elements to prevent deadlock with deletion
     result = sc_storage_get_element_by_addr(arc_addr, &el);
     if (result != SC_RESULT_OK)
       goto error;
@@ -280,12 +279,12 @@ sc_bool _sc_iterator3_f_a_a_next(sc_iterator3 * it)
   }
 
 error:
-  sc_monitor_end_read(monitor);
+  sc_monitor_release_read(monitor);
   it->finished = SC_TRUE;
   return SC_FALSE;
 
 success:
-  sc_monitor_end_read(monitor);
+  sc_monitor_release_read(monitor);
   return SC_TRUE;
 }
 
@@ -297,21 +296,15 @@ sc_bool _sc_iterator3_f_a_f_next(sc_iterator3 * it)
   sc_addr arc_addr = SC_ADDR_EMPTY;
   sc_result result;
 
+  sc_monitor * beg_monitor = sc_monitor_get_monitor_for_addr(&sc_storage_get()->addr_monitors_table, it->results[0]);
   sc_monitor * end_monitor = sc_monitor_get_monitor_for_addr(&sc_storage_get()->addr_monitors_table, it->results[2]);
-  sc_monitor_start_read(end_monitor);
-
-  sc_monitor * beg_monitor;
-  if (SC_ADDR_IS_NOT_EQUAL(it->results[2], it->results[0]))
-  {
-    beg_monitor = sc_monitor_get_monitor_for_addr(&sc_storage_get()->addr_monitors_table, it->results[0]);
-    sc_monitor_start_read(beg_monitor);
-  }
+  sc_monitor_acquire_read_n(2, beg_monitor, end_monitor);
 
   // try to find first input arc
   sc_element * el = null_ptr;
   if (SC_ADDR_IS_EMPTY(it->results[1]))
   {
-    result = sc_storage_try_get_element_by_addr(it->results[2], &el);
+    result = sc_storage_get_element_by_addr(it->results[2], &el);
     if (result != SC_RESULT_OK)
       goto error;
 
@@ -351,16 +344,12 @@ sc_bool _sc_iterator3_f_a_f_next(sc_iterator3 * it)
   }
 
 error:
-  sc_monitor_end_read(end_monitor);
-  if (SC_ADDR_IS_NOT_EQUAL(it->results[2], it->results[0]))
-    sc_monitor_end_read(beg_monitor);
+  sc_monitor_release_read_n(2, beg_monitor, end_monitor);
   it->finished = SC_TRUE;
   return SC_FALSE;
 
 success:
-  sc_monitor_end_read(end_monitor);
-  if (SC_ADDR_IS_NOT_EQUAL(it->results[2], it->results[0]))
-    sc_monitor_end_read(beg_monitor);
+  sc_monitor_release_read_n(2, beg_monitor, end_monitor);
   return SC_TRUE;
 }
 
@@ -372,13 +361,13 @@ sc_bool _sc_iterator3_a_a_f_next(sc_iterator3 * it)
   sc_result result;
 
   sc_monitor * monitor = sc_monitor_get_monitor_for_addr(&sc_storage_get()->addr_monitors_table, it->results[2]);
-  sc_monitor_start_read(monitor);
+  sc_monitor_acquire_read(monitor);
 
   // try to find first input arc
   sc_element * el = null_ptr;
   if (SC_ADDR_IS_EMPTY(it->results[1]))
   {
-    result = sc_storage_try_get_element_by_addr(it->results[2], &el);
+    result = sc_storage_get_element_by_addr(it->results[2], &el);
     if (result != SC_RESULT_OK)
       goto error;
 
@@ -423,12 +412,12 @@ sc_bool _sc_iterator3_a_a_f_next(sc_iterator3 * it)
   }
 
 error:
-  sc_monitor_end_read(monitor);
+  sc_monitor_release_read(monitor);
   it->finished = SC_TRUE;
   return SC_FALSE;
 
 success:
-  sc_monitor_end_read(monitor);
+  sc_monitor_release_read(monitor);
   return SC_TRUE;
 }
 
@@ -437,22 +426,22 @@ sc_bool _sc_iterator3_a_f_a_next(sc_iterator3 * it)
   it->results[1] = it->params[1].addr;
 
   sc_monitor * monitor = sc_monitor_get_monitor_for_addr(&sc_storage_get()->addr_monitors_table, it->results[1]);
-  sc_monitor_start_read(monitor);
+  sc_monitor_acquire_read(monitor);
 
   sc_element * arc_el;
-  sc_result result = sc_storage_try_get_element_by_addr(it->results[1], &arc_el);
+  sc_result result = sc_storage_get_element_by_addr(it->results[1], &arc_el);
   if (result != SC_RESULT_OK)
     goto error;
 
   it->results[0] = arc_el->arc.begin;
   it->results[2] = arc_el->arc.end;
 
-  sc_monitor_end_read(monitor);
+  sc_monitor_release_read(monitor);
   it->finished = SC_TRUE;
   return SC_TRUE;
 
 error:
-  sc_monitor_end_read(monitor);
+  sc_monitor_release_read(monitor);
   it->finished = SC_TRUE;
   return SC_FALSE;
 }

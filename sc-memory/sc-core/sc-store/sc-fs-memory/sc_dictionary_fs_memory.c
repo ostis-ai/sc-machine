@@ -34,7 +34,7 @@ sc_io_channel * _sc_dictionary_fs_memory_get_strings_channel_by_offset(
   if (memory->strings_channels[idx] != null_ptr)
     return memory->strings_channels[idx];
 
-  sc_monitor_start_write(&memory->monitor);
+  sc_monitor_acquire_write(&memory->monitor);
 
   if (idx > 0 && memory->strings_channels[idx - 1] != null_ptr)
     sc_io_channel_flush(memory->strings_channels[idx - 1], null_ptr);
@@ -61,7 +61,7 @@ sc_io_channel * _sc_dictionary_fs_memory_get_strings_channel_by_offset(
   sc_mem_free(strings_path);
   sc_io_channel_set_encoding(memory->strings_channels[idx], null_ptr, null_ptr);
 
-  sc_monitor_end_write(&memory->monitor);
+  sc_monitor_release_write(&memory->monitor);
 
   return memory->strings_channels[idx];
 }
@@ -357,7 +357,7 @@ sc_dictionary_fs_memory_status _sc_dictionary_fs_memory_write_string(
       _sc_dictionary_fs_memory_get_strings_channel_by_offset(memory, memory->last_string_offset);
   *string_offset = INVALID_STRING_OFFSET;
 
-  sc_monitor_start_write(&memory->monitor);
+  sc_monitor_acquire_write(&memory->monitor);
 
   // find string if it exists in fs-memory
   if (is_searchable_string)
@@ -397,11 +397,11 @@ sc_dictionary_fs_memory_status _sc_dictionary_fs_memory_write_string(
     memory->last_string_offset += written_bytes;
   }
 
-  sc_monitor_end_write(&memory->monitor);
+  sc_monitor_release_write(&memory->monitor);
   return SC_FS_MEMORY_OK;
 
 error:
-  sc_monitor_end_write(&memory->monitor);
+  sc_monitor_release_write(&memory->monitor);
   return SC_FS_MEMORY_WRITE_ERROR;
 }
 
@@ -487,7 +487,7 @@ sc_dictionary_fs_memory_status sc_dictionary_fs_memory_unlink_string(
     return SC_FS_MEMORY_NO;
   }
 
-  sc_monitor_start_write(&memory->monitor);
+  sc_monitor_acquire_write(&memory->monitor);
 
   sc_char link_hash_str[DEFAULT_STRING_INT_SIZE];
   sc_uint64 link_hash_str_size;
@@ -507,7 +507,7 @@ sc_dictionary_fs_memory_status sc_dictionary_fs_memory_unlink_string(
   // set empty link
   sc_dictionary_append(memory->link_hashes_string_offsets_dictionary, link_hash_str, link_hash_str_size, null_ptr);
 
-  sc_monitor_end_write(&memory->monitor);
+  sc_monitor_release_write(&memory->monitor);
 
   return SC_FS_MEMORY_OK;
 }
@@ -524,7 +524,7 @@ sc_dictionary_fs_memory_status _sc_dictionary_fs_memory_read_string_by_offset(
     return SC_FS_MEMORY_READ_ERROR;
   }
 
-  sc_monitor_start_write(&memory->monitor);
+  sc_monitor_acquire_write(&memory->monitor);
 
   // read string with size from fs-memory
   sc_uint64 read_bytes;
@@ -551,11 +551,11 @@ sc_dictionary_fs_memory_status _sc_dictionary_fs_memory_read_string_by_offset(
     }
   }
 
-  sc_monitor_end_write(&memory->monitor);
+  sc_monitor_release_write(&memory->monitor);
   return SC_FS_MEMORY_OK;
 
 error:
-  sc_monitor_end_write(&memory->monitor);
+  sc_monitor_release_write(&memory->monitor);
   return SC_FS_MEMORY_READ_ERROR;
 }
 
@@ -645,7 +645,7 @@ sc_dictionary_fs_memory_status _sc_dictionary_fs_memory_get_link_hashes_by_strin
       return SC_FS_MEMORY_READ_ERROR;
     }
 
-    sc_monitor_start_write(&memory->monitor);
+    sc_monitor_acquire_write(&memory->monitor);
 
     // read string with size from fs-memory
     sc_uint64 read_bytes;
@@ -698,14 +698,14 @@ sc_dictionary_fs_memory_status _sc_dictionary_fs_memory_get_link_hashes_by_strin
     sc_iterator_destroy(data_it);
 
   cont:
-    sc_monitor_end_write(&memory->monitor);
+    sc_monitor_release_write(&memory->monitor);
   }
   sc_iterator_destroy(string_offset_it);
 
   return SC_FS_MEMORY_OK;
 
 error:
-  sc_monitor_end_write(&memory->monitor);
+  sc_monitor_release_write(&memory->monitor);
   return SC_FS_MEMORY_READ_ERROR;
 }
 
@@ -851,7 +851,7 @@ sc_dictionary_fs_memory_status _sc_dictionary_fs_memory_get_strings_by_substring
       return SC_FS_MEMORY_READ_ERROR;
     }
 
-    sc_monitor_start_write(&memory->monitor);
+    sc_monitor_acquire_write(&memory->monitor);
 
     // read string with size from fs-memory
     sc_uint64 read_bytes;
@@ -892,14 +892,14 @@ sc_dictionary_fs_memory_status _sc_dictionary_fs_memory_get_strings_by_substring
     }
 
   cont:
-    sc_monitor_end_write(&memory->monitor);
+    sc_monitor_release_write(&memory->monitor);
   }
   sc_iterator_destroy(string_offset_it);
 
   return SC_FS_MEMORY_OK;
 
 error:
-  sc_monitor_end_write(&memory->monitor);
+  sc_monitor_release_write(&memory->monitor);
   return SC_FS_MEMORY_READ_ERROR;
 }
 

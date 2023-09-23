@@ -239,7 +239,7 @@ sc_result sc_storage_get_elements_stat(sc_stat * stat);
 //! Locks specified sc-element. Pointer to locked sc-element stores in el
 sc_result sc_storage_get_element_by_addr(sc_addr addr, sc_element ** el);
 
-sc_result sc_storage_try_get_element_by_addr(sc_addr addr, sc_element ** el);
+sc_result sc_storage_get_element_by_addr(sc_addr addr, sc_element ** el);
 
 sc_result sc_storage_remove_element_by_addr(sc_addr addr);
 

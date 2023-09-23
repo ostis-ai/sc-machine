@@ -217,9 +217,9 @@ sc_dictionary_node * sc_dictionary_append(
     sc_uint32 size,
     void * value)
 {
-  sc_monitor_start_write(&dictionary->monitor);
+  sc_monitor_acquire_write(&dictionary->monitor);
   sc_dictionary_node * node = sc_dictionary_append_to_node(dictionary, string, size);
-  sc_monitor_end_write(&dictionary->monitor);
+  sc_monitor_release_write(&dictionary->monitor);
 
   node->data = value;
   return node;
@@ -277,9 +277,9 @@ void * _sc_dictionary_get_by_key(sc_dictionary * dictionary, const sc_char * str
 
 void * sc_dictionary_get_by_key(sc_dictionary * dictionary, const sc_char * string, const sc_uint32 string_size)
 {
-  sc_monitor_start_read(&dictionary->monitor);
+  sc_monitor_acquire_read(&dictionary->monitor);
   void * result = _sc_dictionary_get_by_key(dictionary, string, string_size);
-  sc_monitor_end_read(&dictionary->monitor);
+  sc_monitor_release_read(&dictionary->monitor);
   return result;
 }
 
@@ -340,9 +340,9 @@ sc_bool sc_dictionary_get_by_key_prefix(
     sc_bool (*callable)(sc_dictionary_node *, void **),
     void ** dest)
 {
-  sc_monitor_start_read(&dictionary->monitor);
+  sc_monitor_acquire_read(&dictionary->monitor);
   sc_bool const status = _sc_dictionary_get_by_key_prefix(dictionary, string, string_size, callable, dest);
-  sc_monitor_end_read(&dictionary->monitor);
+  sc_monitor_release_read(&dictionary->monitor);
   return status;
 }
 
@@ -379,9 +379,9 @@ sc_bool sc_dictionary_visit_down_nodes(
     sc_bool (*callable)(sc_dictionary_node *, void **),
     void ** dest)
 {
-  sc_monitor_start_read(&dictionary->monitor);
+  sc_monitor_acquire_read(&dictionary->monitor);
   sc_bool status = sc_dictionary_visit_down_node_from_node(dictionary, dictionary->root, callable, dest);
-  sc_monitor_end_read(&dictionary->monitor);
+  sc_monitor_release_read(&dictionary->monitor);
   return status;
 }
 
@@ -418,8 +418,8 @@ sc_bool sc_dictionary_visit_up_nodes(
     sc_bool (*callable)(sc_dictionary_node *, void **),
     void ** dest)
 {
-  sc_monitor_start_read(&dictionary->monitor);
+  sc_monitor_acquire_read(&dictionary->monitor);
   sc_bool status = sc_dictionary_visit_up_node_from_node(dictionary, dictionary->root, callable, dest);
-  sc_monitor_end_read(&dictionary->monitor);
+  sc_monitor_release_read(&dictionary->monitor);
   return status;
 }

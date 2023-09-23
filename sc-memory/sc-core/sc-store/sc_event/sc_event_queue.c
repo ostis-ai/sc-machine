@@ -37,14 +37,14 @@ void sc_event_pool_worker(gpointer data, gpointer user_data)
 {
   sc_event_pool_worker_data * work_data = (sc_event_pool_worker_data *)data;
 
-  sc_monitor_start_read(&work_data->evt->monitor);
+  sc_monitor_acquire_read(&work_data->evt->monitor);
 
   if (work_data->evt->callback != null_ptr)
     work_data->evt->callback(work_data->evt, work_data->edge_addr);
   else if (work_data->evt->callback_ex != null_ptr)
     work_data->evt->callback_ex(work_data->evt, work_data->edge_addr, work_data->other_addr);
 
-  sc_monitor_end_read(&work_data->evt->monitor);
+  sc_monitor_release_read(&work_data->evt->monitor);
 
   sc_event_pool_worker_data_destroy(work_data);
 }

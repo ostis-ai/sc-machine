@@ -25,7 +25,7 @@ sc_memory_context * s_memory_default_ctx = null_ptr;
 sc_uint16 s_context_id_last = 1;
 sc_uint32 s_context_id_count = 0;
 GHashTable * s_context_hash_table = null_ptr;
-GMutex s_concurrency_mutex;
+sc_mutex s_concurrency_mutex;
 
 sc_memory_context * sc_memory_initialize(const sc_memory_params * params)
 {
@@ -170,7 +170,7 @@ sc_memory_context * sc_memory_context_new_impl(sc_uint8 levels)
   ctx->access_levels = levels;
 
   // setup concurrency id
-  g_mutex_lock(&s_concurrency_mutex);
+  sc_mutex_lock(&s_concurrency_mutex);
   if (s_context_id_count >= G_MAXUINT32)
     goto error;
 
@@ -182,6 +182,8 @@ sc_memory_context * sc_memory_context_new_impl(sc_uint8 levels)
   if (index != s_context_id_last)
   {
     ctx->id = index;
+    sc_monitor_init(&ctx->monitor);
+
     s_context_id_last = index;
     g_hash_table_insert(s_context_hash_table, GINT_TO_POINTER(ctx->id), (gpointer)ctx);
   }
@@ -198,7 +200,7 @@ error:
 }
 
 result:
-  g_mutex_unlock(&s_concurrency_mutex);
+  sc_mutex_unlock(&s_concurrency_mutex);
 
   return ctx;
 }
@@ -213,34 +215,41 @@ void sc_memory_context_free_impl(sc_memory_context * ctx)
   if (ctx == null_ptr)
     return;
 
-  g_mutex_lock(&s_concurrency_mutex);
+  sc_mutex_lock(&s_concurrency_mutex);
 
   sc_memory_context * c = g_hash_table_lookup(s_context_hash_table, GINT_TO_POINTER(ctx->id));
   if (c == null_ptr)
     return;
 
+  sc_monitor_destroy(&ctx->monitor);
   g_hash_table_remove(s_context_hash_table, GINT_TO_POINTER(ctx->id));
   --s_context_id_count;
 
-  g_mutex_unlock(&s_concurrency_mutex);
+  sc_mutex_unlock(&s_concurrency_mutex);
 
   sc_mem_free(ctx);
 }
 
 void sc_memory_context_pending_begin(sc_memory_context * ctx)
 {
+  sc_monitor_acquire_write(&ctx->monitor);
   ctx->flags |= SC_CONTEXT_FLAG_PENDING_EVENTS;
+  sc_monitor_release_write(&ctx->monitor);
 }
 
 void sc_memory_context_pending_end(sc_memory_context * ctx)
 {
+  sc_monitor_acquire_write(&ctx->monitor);
   ctx->flags = ctx->flags & (~SC_CONTEXT_FLAG_PENDING_EVENTS);
   sc_memory_context_emit_events(ctx);
+  sc_monitor_release_write(&ctx->monitor);
 }
 
 void sc_memory_context_pend_event(sc_memory_context const * ctx, sc_event_emit_params * params)
 {
+  sc_monitor_acquire_write((sc_monitor *)&ctx->monitor);
   ((sc_memory_context *)ctx)->pend_events = g_slist_append(ctx->pend_events, params);
+  sc_monitor_release_write((sc_monitor *)&ctx->monitor);
 }
 
 void sc_memory_context_emit_events(sc_memory_context const * ctx)
@@ -256,9 +265,7 @@ void sc_memory_context_emit_events(sc_memory_context const * ctx)
     sc_event_emit_impl(
         ctx, evt_params->el, evt_params->el_access, evt_params->type, evt_params->edge, evt_params->other_el);
 
-    sc_monitor_start_write(&evt_params->monitor);
     sc_mem_free(evt_params);
-    sc_monitor_end_write(&evt_params->monitor);
 
     ((sc_memory_context *)ctx)->pend_events = g_slist_delete_link(ctx->pend_events, ctx->pend_events);
   }
