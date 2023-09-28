@@ -17,6 +17,8 @@ void sc_queue_init(sc_queue ** queue)
 
 void sc_queue_destroy(sc_queue * queue)
 {
+  while (queue->begin)
+    sc_queue_pop(queue);
   sc_mem_free(queue);
 }
 

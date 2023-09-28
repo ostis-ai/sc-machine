@@ -12,6 +12,7 @@
 #include "sc_thread.h"
 
 #include "../sc_types.h"
+#include "../sc-container/sc-hash-table/sc_hash_table.h"
 #include "../sc-container/sc-queue/sc_queue.h"
 
 typedef struct
@@ -28,8 +29,8 @@ typedef struct
 
 typedef struct
 {
-  sc_mutex rw_mutex;      // Mutex for data protection
-  GHashTable * monitors;  // Hash table storing addr_monitors_table for each identifier;
+  sc_mutex rw_mutex;         // Mutex for data protection
+  sc_hash_table * monitors;  // Hash table storing addr_monitors_table for each identifier;
   sc_uint32 global_monitor_id_counter;
 } sc_monitor_table;
 

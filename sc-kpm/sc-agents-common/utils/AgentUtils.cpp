@@ -91,15 +91,21 @@ bool AgentUtils::applyAction(
   return applyAction(ms_context, actionNode, waitTime);
 }
 
-bool AgentUtils::applyAction(ScMemoryContext * ms_context, const ScAddr & actionNode, const sc_uint32 & waitTime)
+bool AgentUtils::applyAction(
+    ScMemoryContext * ms_context,
+    const ScAddr & actionNode,
+    const sc_uint32 & waitTime,
+    ScAddr onEventClassAddr)
 {
+  if (!onEventClassAddr.IsValid())
+    onEventClassAddr = scAgentsCommon::CoreKeynodes::question_initiated;
+
   auto check = [](ScAddr const & listenAddr, ScAddr const & edgeAddr, ScAddr const & otherAddr) {
     return otherAddr == scAgentsCommon::CoreKeynodes::question_finished;
   };
 
-  auto initialize = [ms_context, actionNode]() {
-    ms_context->CreateEdge(
-        ScType::EdgeAccessConstPosPerm, scAgentsCommon::CoreKeynodes::question_initiated, actionNode);
+  auto initialize = [ms_context, onEventClassAddr, actionNode]() {
+    ms_context->CreateEdge(ScType::EdgeAccessConstPosPerm, onEventClassAddr, actionNode);
   };
 
   ScWaitCondition<ScEventAddInputEdge> waiter(*ms_context, actionNode, SC_WAIT_CHECK(check));

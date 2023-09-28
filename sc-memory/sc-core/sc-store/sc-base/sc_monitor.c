@@ -15,14 +15,15 @@ void _sc_monitor_destroy(void * monitor)
 
 void _sc_monitor_global_init(sc_monitor_table * table)
 {
-  table->monitors = g_hash_table_new_full(g_direct_hash, g_direct_equal, null_ptr, _sc_monitor_destroy);
+  table->monitors = sc_hash_table_init(
+      sc_hash_table_default_hash_func, sc_hash_table_default_equal_func, null_ptr, _sc_monitor_destroy);
   sc_mutex_init(&table->rw_mutex);
   table->global_monitor_id_counter = 0;
 }
 
 void _sc_monitor_global_destroy(sc_monitor_table * table)
 {
-  g_hash_table_destroy(table->monitors);
+  sc_hash_table_destroy(table->monitors);
   sc_mutex_destroy(&table->rw_mutex);
   table->global_monitor_id_counter = 0;
 }
@@ -31,15 +32,15 @@ sc_monitor * sc_monitor_get_monitor_for_addr(sc_monitor_table * table, sc_addr a
 {
   sc_mutex_lock(&table->rw_mutex);
 
-  gpointer key = (gpointer)(sc_uint64)SC_ADDR_LOCAL_TO_INT(addr);
-  sc_monitor * monitor = (sc_monitor *)g_hash_table_lookup(table->monitors, key);
+  sc_pointer key = (sc_pointer)(sc_uint64)SC_ADDR_LOCAL_TO_INT(addr);
+  sc_monitor * monitor = (sc_monitor *)sc_hash_table_get(table->monitors, key);
 
   if (monitor == null_ptr)
   {
     monitor = sc_mem_new(sc_monitor, 1);
     sc_monitor_init(monitor);
     monitor->id = table->global_monitor_id_counter++;
-    g_hash_table_insert(table->monitors, key, monitor);
+    sc_hash_table_insert(table->monitors, key, monitor);
   }
 
   sc_mutex_unlock(&table->rw_mutex);
@@ -67,8 +68,6 @@ void sc_monitor_destroy(sc_monitor * monitor)
   monitor->waiting_writers = 0;
   monitor->active_writer = 0;
   monitor->id = 0;
-  while (!sc_queue_empty(monitor->queue))
-    ;
   sc_queue_destroy(monitor->queue);
 }
 

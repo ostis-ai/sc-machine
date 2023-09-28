@@ -14,6 +14,9 @@
 #  include <memory.h>
 #endif
 
+typedef gpointer sc_pointer;
+typedef gconstpointer sc_const_pointer;
+
 #define sc_mem_new(struct_type, n_structs) g_new0(struct_type, n_structs)
 
 #define sc_mem_set(pointer, constant, n_structs) memset(pointer, constant, n_structs)

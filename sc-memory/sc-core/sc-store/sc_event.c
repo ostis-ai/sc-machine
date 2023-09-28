@@ -18,7 +18,7 @@
 #define TABLE_KEY(__Addr) GUINT_TO_POINTER(SC_ADDR_LOCAL_TO_INT(__Addr))
 
 // Pointer to hash table that contains events
-GHashTable * events_table = null_ptr;
+sc_hash_table * events_table = null_ptr;
 sc_event_queue * event_queue = null_ptr;
 sc_monitor events_table_monitor;
 
@@ -35,21 +35,21 @@ gboolean events_table_equal_func(gconstpointer a, gconstpointer b)
 //! Inserts specified event into events table
 sc_result insert_event_into_table(sc_event * event)
 {
-  GSList * element_events_list = null_ptr;
+  sc_hash_table_list * element_events_list = null_ptr;
 
   // the first, if table doesn't exist, then create it
   if (events_table == null_ptr)
   {
-    events_table = g_hash_table_new(events_table_hash_func, events_table_equal_func);
+    events_table = sc_hash_table_init(events_table_hash_func, events_table_equal_func, null_ptr, null_ptr);
     sc_monitor_init(&events_table_monitor);
   }
 
   sc_monitor_acquire_write(&events_table_monitor);
 
   // if there are no events for specified sc-element, then create new events list
-  element_events_list = (GSList *)g_hash_table_lookup(events_table, TABLE_KEY(event->element));
-  element_events_list = g_slist_append(element_events_list, (gpointer)event);
-  g_hash_table_insert(events_table, TABLE_KEY(event->element), (gpointer)element_events_list);
+  element_events_list = (sc_hash_table_list *)sc_hash_table_get(events_table, TABLE_KEY(event->element));
+  element_events_list = sc_hash_table_list_append(element_events_list, (sc_pointer)event);
+  sc_hash_table_insert(events_table, TABLE_KEY(event->element), (sc_pointer)element_events_list);
 
   sc_monitor_release_write(&events_table_monitor);
 
@@ -59,25 +59,25 @@ sc_result insert_event_into_table(sc_event * event)
 //! Remove specified sc-event from events table
 sc_result remove_event_from_table(sc_event * event)
 {
-  GSList * element_events_list = null_ptr;
+  sc_hash_table_list * element_events_list = null_ptr;
 
   sc_monitor_acquire_write(&events_table_monitor);
 
-  element_events_list = (GSList *)g_hash_table_lookup(events_table, TABLE_KEY(event->element));
+  element_events_list = (sc_hash_table_list *)sc_hash_table_get(events_table, TABLE_KEY(event->element));
   if (element_events_list == null_ptr)
     goto error;
 
   // remove event from list of events for specified sc-element
-  element_events_list = g_slist_remove(element_events_list, (gconstpointer)event);
+  element_events_list = sc_hash_table_list_remove(element_events_list, (sc_const_pointer)event);
   if (element_events_list == null_ptr)
-    g_hash_table_remove(events_table, TABLE_KEY(event->element));
+    sc_hash_table_remove(events_table, TABLE_KEY(event->element));
   else
-    g_hash_table_insert(events_table, TABLE_KEY(event->element), (gpointer)element_events_list);
+    sc_hash_table_insert(events_table, TABLE_KEY(event->element), (sc_pointer)element_events_list);
 
   // if there are no more events in table, then delete it
-  if (g_hash_table_size(events_table) == 0)
+  if (sc_hash_table_size(events_table) == 0)
   {
-    g_hash_table_destroy(events_table);
+    sc_hash_table_destroy(events_table);
     events_table = null_ptr;
   }
 
@@ -224,7 +224,7 @@ unref:
 
 sc_result sc_event_notify_element_deleted(sc_addr element)
 {
-  GSList * element_events_list = null_ptr;
+  sc_hash_table_list * element_events_list = null_ptr;
   sc_event * evt = null_ptr;
 
   // do nothing, if there are no registered events
@@ -234,13 +234,13 @@ sc_result sc_event_notify_element_deleted(sc_addr element)
   // sc_set_lookup for all registered to specified sc-element events
   sc_monitor_acquire_read(&events_table_monitor);
   if (events_table != null_ptr)
-    element_events_list = (GSList *)g_hash_table_lookup(events_table, TABLE_KEY(element));
+    element_events_list = (sc_hash_table_list *)sc_hash_table_get(events_table, TABLE_KEY(element));
   sc_monitor_release_read(&events_table_monitor);
 
   if (element_events_list != null_ptr)
   {
     sc_monitor_acquire_write(&events_table_monitor);
-    g_hash_table_remove(events_table, TABLE_KEY(element));
+    sc_hash_table_remove(events_table, TABLE_KEY(element));
     sc_monitor_release_write(&events_table_monitor);
 
     while (element_events_list != null_ptr)
@@ -252,9 +252,9 @@ sc_result sc_event_notify_element_deleted(sc_addr element)
       evt->ref_count |= SC_EVENT_REQUEST_DESTROY;
       sc_monitor_release_write(&evt->monitor);
 
-      element_events_list = g_slist_delete_link(element_events_list, element_events_list);
+      element_events_list = sc_hash_table_list_remove_sublist(element_events_list, element_events_list);
     }
-    g_slist_free(element_events_list);
+    sc_hash_table_list_destroy(element_events_list);
   }
 
 result:
@@ -293,7 +293,7 @@ sc_result sc_event_emit_impl(
     sc_addr edge,
     sc_addr other_el)
 {
-  GSList * element_events_list = null_ptr;
+  sc_hash_table_list * element_events_list = null_ptr;
   sc_event * event = null_ptr;
 
   if (SC_ADDR_IS_EMPTY(el))
@@ -306,7 +306,7 @@ sc_result sc_event_emit_impl(
   // sc_set_lookup for all registered to specified sc-element events
   sc_monitor_acquire_read(&events_table_monitor);
   if (events_table != null_ptr)
-    element_events_list = (GSList *)g_hash_table_lookup(events_table, TABLE_KEY(el));
+    element_events_list = (sc_hash_table_list *)sc_hash_table_get(events_table, TABLE_KEY(el));
   sc_monitor_release_read(&events_table_monitor);
 
   while (element_events_list != null_ptr)
