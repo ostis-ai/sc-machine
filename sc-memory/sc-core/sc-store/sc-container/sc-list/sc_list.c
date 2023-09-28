@@ -98,6 +98,34 @@ sc_struct_node * sc_list_push_back(sc_list * list, void * data)
   return list ? sc_list_push(list, list->end ? list->end->prev : null_ptr, data) : null_ptr;
 }
 
+sc_struct_node * sc_list_pop_front(sc_list * list)
+{
+  if (list == null_ptr)
+    return null_ptr;
+
+  if (list->size == 0)
+    return null_ptr;
+
+  sc_struct_node * node_to_remove = list->begin;
+
+  if (node_to_remove->next != null_ptr)
+    node_to_remove->next->prev = null_ptr;
+  else
+  {
+    // Only one item in the list
+    list->end = null_ptr;
+  }
+
+  list->begin = node_to_remove->next;
+
+  --list->size;
+
+  node_to_remove->prev = null_ptr;
+  node_to_remove->next = null_ptr;
+
+  return node_to_remove;
+}
+
 sc_struct_node * sc_list_pop_back(sc_list * list)
 {
   if (list == null_ptr)
@@ -178,6 +206,17 @@ sc_struct_node * sc_list_front(sc_list * list)
     return null_ptr;
 
   return list->begin;
+}
+
+void * sc_list_front_data(sc_list * list)
+{
+  if (list == null_ptr)
+    return null_ptr;
+
+  if (list->begin == null_ptr)
+    return null_ptr;
+
+  return list->begin->data;
 }
 
 sc_struct_node * sc_list_back(sc_list * list)

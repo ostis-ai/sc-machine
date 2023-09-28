@@ -24,6 +24,10 @@ typedef sc_result (*fEventCallback)(sc_event const * event, sc_addr arg);
 //! Delete listened element callback function type
 typedef sc_result (*fDeleteCallback)(sc_event const * event);
 
+sc_bool sc_event_ref(sc_event * evt);
+
+void sc_event_unref(sc_event * evt);
+
 /*! Subscribe for events from specified sc-element
  * @param el sc-addr of subscribed sc-element events
  * @param type Type of listening sc-events

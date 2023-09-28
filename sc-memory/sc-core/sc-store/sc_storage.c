@@ -33,7 +33,7 @@ sc_bool sc_storage_initialize(sc_memory_params const * params)
   storage->segments = sc_mem_new(sc_segment *, params->max_loaded_segments);
   sc_list_init(&storage->empty_segments);
   sc_monitor_init(&storage->segments_monitor);
-  sc_monitor_global_init(&storage->addr_monitors_table);
+  _sc_monitor_global_init(&storage->addr_monitors_table);
 
   if (params->clear == SC_FALSE)
   {
@@ -65,7 +65,7 @@ sc_bool sc_storage_shutdown(sc_bool save_state)
   sc_mem_free(storage->segments);
   sc_list_destroy(storage->empty_segments);
   sc_monitor_destroy(&storage->segments_monitor);
-  sc_monitor_global_destroy(&storage->addr_monitors_table);
+  _sc_monitor_global_destroy(&storage->addr_monitors_table);
   sc_mem_free(storage);
   storage = null_ptr;
 

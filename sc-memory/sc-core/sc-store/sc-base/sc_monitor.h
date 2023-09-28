@@ -9,8 +9,10 @@
 
 #include "sc_mutex.h"
 #include "sc_condition.h"
+#include "sc_thread.h"
 
 #include "../sc_types.h"
+#include "../sc-container/sc-queue/sc_queue.h"
 
 typedef struct
 {
@@ -20,6 +22,7 @@ typedef struct
   sc_uint32 active_readers;       // Number of readers currently accessing the data
   sc_uint32 waiting_writers;      // Number of writers waiting to write
   sc_uint32 active_writer;        // Flag to indicate if a writer is writing
+  sc_queue * queue;
   sc_uint32 id;
 } sc_monitor;
 
@@ -30,9 +33,22 @@ typedef struct
   sc_uint32 global_monitor_id_counter;
 } sc_monitor_table;
 
-void sc_monitor_global_init(sc_monitor_table * table);
+typedef enum
+{
+  READER,
+  WRITER
+} sc_request_type;
 
-void sc_monitor_global_destroy(sc_monitor_table * table);
+typedef struct
+{
+  sc_thread * thread;
+  sc_request_type type;
+  sc_condition condition;
+} sc_request;
+
+void _sc_monitor_global_init(sc_monitor_table * table);
+
+void _sc_monitor_global_destroy(sc_monitor_table * table);
 
 sc_monitor * sc_monitor_get_monitor_for_addr(sc_monitor_table * table, sc_addr addr);
 

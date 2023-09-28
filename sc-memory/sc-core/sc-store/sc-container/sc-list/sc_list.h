@@ -53,6 +53,12 @@ sc_struct_node * sc_list_push(sc_list * list, sc_struct_node * node, void * data
  */
 sc_struct_node * sc_list_push_back(sc_list * list, void * data);
 
+/*! Pops first node from sc-list.
+ * @param list A sc-list pointer
+ * @returns Returns Popped node.
+ */
+sc_struct_node * sc_list_pop_front(sc_list * list);
+
 /*! Pops last node from sc-list.
  * @param list A sc-list pointer
  * @returns Returns Popped node.
@@ -66,6 +72,8 @@ sc_struct_node * sc_list_pop_back(sc_list * list);
 sc_bool sc_list_remove_if(sc_list * list, void * data, sc_bool (*predicate)(void * data, void * other));
 
 sc_struct_node * sc_list_front(sc_list * list);
+
+void * sc_list_front_data(sc_list * list);
 
 sc_struct_node * sc_list_back(sc_list * list);
 
