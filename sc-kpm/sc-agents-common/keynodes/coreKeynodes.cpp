@@ -33,5 +33,4 @@ ScAddr CoreKeynodes::rrel_main_key_sc_element;
 ScAddr CoreKeynodes::cardinality;
 ScAddr CoreKeynodes::lang_ru;
 ScAddr CoreKeynodes::nrel_basic_sequence;
-
 }  // namespace scAgentsCommon
