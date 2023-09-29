@@ -37,7 +37,6 @@ void sc_event_unref(sc_event * evt);
  * @return Returns pointer to created sc-event
  * @remarks Callback functions can be called from any thread, so they need to be a thread safe
  */
-SC_DEPRECATED("0.3.0", "Use sc_event_new_ex instead of this function. This function will be removed in next release.")
 _SC_EXTERN sc_event * sc_event_new(
     sc_memory_context const * ctx,
     sc_addr el,

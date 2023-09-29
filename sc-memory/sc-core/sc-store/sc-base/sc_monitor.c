@@ -51,8 +51,6 @@ sc_monitor * sc_monitor_get_monitor_for_addr(sc_monitor_table * table, sc_addr a
 void sc_monitor_init(sc_monitor * monitor)
 {
   sc_mutex_init(&monitor->rw_mutex);
-  sc_cond_init(&monitor->reader_condition);
-  sc_cond_init(&monitor->writer_condition);
   monitor->active_readers = 0;
   monitor->active_writer = 0;
   sc_queue_init(&monitor->queue);
@@ -61,8 +59,6 @@ void sc_monitor_init(sc_monitor * monitor)
 void sc_monitor_destroy(sc_monitor * monitor)
 {
   sc_mutex_destroy(&monitor->rw_mutex);
-  sc_cond_destroy(&monitor->reader_condition);
-  sc_cond_destroy(&monitor->writer_condition);
   monitor->active_readers = 0;
   monitor->active_writer = 0;
   monitor->id = 0;
