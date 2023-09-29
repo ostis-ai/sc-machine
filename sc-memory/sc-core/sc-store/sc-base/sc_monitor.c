@@ -54,7 +54,6 @@ void sc_monitor_init(sc_monitor * monitor)
   sc_cond_init(&monitor->reader_condition);
   sc_cond_init(&monitor->writer_condition);
   monitor->active_readers = 0;
-  monitor->waiting_writers = 0;
   monitor->active_writer = 0;
   sc_queue_init(&monitor->queue);
 }
@@ -65,7 +64,6 @@ void sc_monitor_destroy(sc_monitor * monitor)
   sc_cond_destroy(&monitor->reader_condition);
   sc_cond_destroy(&monitor->writer_condition);
   monitor->active_readers = 0;
-  monitor->waiting_writers = 0;
   monitor->active_writer = 0;
   monitor->id = 0;
   sc_queue_destroy(monitor->queue);

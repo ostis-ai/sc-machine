@@ -141,38 +141,6 @@ error:
   return result;
 }
 
-sc_uint32 sc_storage_get_element_output_arcs_count(sc_memory_context const * ctx, sc_addr addr)
-{
-  sc_uint32 count = 0;
-  sc_result result;
-
-  sc_element * el = null_ptr;
-  result = sc_storage_get_element_by_addr(addr, &el);
-  if (result != SC_RESULT_OK)
-    goto error;
-
-  count = sc_atomic_int_get(&el->output_arcs_count);
-
-error:
-  return count;
-}
-
-sc_uint32 sc_storage_get_element_input_arcs_count(sc_memory_context const * ctx, sc_addr addr)
-{
-  sc_uint32 count = 0;
-  sc_result result;
-
-  sc_element * el = null_ptr;
-  result = sc_storage_get_element_by_addr(addr, &el);
-  if (result != SC_RESULT_OK)
-    goto error;
-
-  count = sc_atomic_int_get(&el->input_arcs_count);
-
-error:
-  return count;
-}
-
 sc_element * _sc_storage_get_old_empty_element(sc_addr * addr)
 {
   sc_uint16 segment_num = (sc_uint16)(sc_uint64)sc_list_back(storage->empty_segments)->data;
@@ -546,6 +514,47 @@ error:
   return addr;
 }
 
+sc_uint32 sc_storage_get_element_output_arcs_count(sc_memory_context const * ctx, sc_addr addr)
+{
+  sc_uint32 count = 0;
+  sc_result result;
+
+  sc_monitor * monitor = sc_monitor_get_monitor_for_addr(&storage->addr_monitors_table, addr);
+  sc_monitor_acquire_read(monitor);
+
+  sc_element * el = null_ptr;
+  result = sc_storage_get_element_by_addr(addr, &el);
+  if (result != SC_RESULT_OK)
+    goto error;
+
+  count = el->output_arcs_count;
+
+  sc_monitor_release_read(monitor);
+error:
+  return count;
+}
+
+sc_uint32 sc_storage_get_element_input_arcs_count(sc_memory_context const * ctx, sc_addr addr)
+{
+  sc_uint32 count = 0;
+  sc_result result;
+
+  sc_monitor * monitor = sc_monitor_get_monitor_for_addr(&storage->addr_monitors_table, addr);
+  sc_monitor_acquire_read(monitor);
+
+  sc_element * el = null_ptr;
+  result = sc_storage_get_element_by_addr(addr, &el);
+  if (result != SC_RESULT_OK)
+    goto error;
+
+  count = el->input_arcs_count;
+
+  sc_monitor_release_read(monitor);
+
+error:
+  return count;
+}
+
 sc_result sc_storage_get_element_type(sc_memory_context const * ctx, sc_addr addr, sc_type * type)
 {
   sc_result result;
@@ -840,36 +849,27 @@ sc_result sc_storage_get_elements_stat(sc_stat * stat)
 {
   sc_mem_set(stat, 0, sizeof(sc_stat));
 
+  sc_monitor_acquire_read(&storage->segments_monitor);
+
   sc_int32 i;
-  for (i = 0; i < sc_atomic_int_get(&storage->segments_count); ++i)
+  for (i = 0; i < storage->segments_count; ++i)
   {
     sc_segment * seg = storage->segments[i];
     sc_segment_collect_elements_stat(seg, stat);
   }
 
-  return SC_TRUE;
+  sc_monitor_release_read(&storage->segments_monitor);
+
+  return SC_RESULT_OK;
 }
 
 sc_result sc_storage_save(sc_memory_context const * ctx)
 {
-  sc_segment * seg = null_ptr;
-  sc_uint32 i;
-
-  for (i = 0; i < sc_atomic_int_get(&storage->segments_count); ++i)
-  {
-    seg = storage->segments[i];
-    if (seg == null_ptr)
-      continue;
-  }
+  sc_monitor_acquire_read(&storage->segments_monitor);
 
   sc_fs_memory_save(storage->segments, storage->segments_count);
 
-  for (i = 0; i < sc_atomic_int_get(&storage->segments_count); ++i)
-  {
-    seg = storage->segments[i];
-    if (seg == null_ptr)
-      continue;
-  }
+  sc_monitor_release_read(&storage->segments_monitor);
 
   return SC_RESULT_OK;
 }

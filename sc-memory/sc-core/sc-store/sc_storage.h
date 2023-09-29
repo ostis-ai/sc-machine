@@ -50,15 +50,6 @@ sc_element * sc_storage_append_el_into_segments(sc_memory_context const * ctx, s
  */
 sc_bool sc_storage_is_element(sc_memory_context const * ctx, sc_addr addr);
 
-sc_uint32 sc_storage_get_element_output_arcs_count(sc_memory_context const * ctx, sc_addr addr);
-
-sc_uint32 sc_storage_get_element_input_arcs_count(sc_memory_context const * ctx, sc_addr addr);
-
-/*! Create new sc-element in storage.
- * Only for internal usage.
- */
-sc_addr sc_storage_element_new_access(sc_memory_context const * ctx, sc_type type, sc_access_levels access_levels);
-
 /*! Remove sc-element from storage
  * @param addr sc-addr of element to erase
  * @return If input params are correct and element erased, then return SC_OK;
@@ -99,6 +90,10 @@ sc_addr sc_storage_arc_new_ext(
     sc_addr beg,
     sc_addr end,
     sc_access_levels access_levels);
+
+sc_uint32 sc_storage_get_element_output_arcs_count(sc_memory_context const * ctx, sc_addr addr);
+
+sc_uint32 sc_storage_get_element_input_arcs_count(sc_memory_context const * ctx, sc_addr addr);
 
 /*! Get type of sc-element with specified sc-addr
  * @param addr sc-addr of element to get type

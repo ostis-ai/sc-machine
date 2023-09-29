@@ -20,18 +20,18 @@ typedef struct
   sc_mutex rw_mutex;              // Mutex for data protection
   sc_condition writer_condition;  // Condition variable for writers
   sc_condition reader_condition;  // Condition variable for readers
+  sc_queue * queue;               // Queue of writers and readers
   sc_uint32 active_readers;       // Number of readers currently accessing the data
   sc_uint32 waiting_writers;      // Number of writers waiting to write
   sc_uint32 active_writer;        // Flag to indicate if a writer is writing
-  sc_queue * queue;
-  sc_uint32 id;
+  sc_uint32 id;                   // Unique identifier of monitor
 } sc_monitor;
 
 typedef struct
 {
-  sc_mutex rw_mutex;         // Mutex for data protection
-  sc_hash_table * monitors;  // Hash table storing addr_monitors_table for each identifier;
-  sc_uint32 global_monitor_id_counter;
+  sc_hash_table * monitors;             // Hash table storing addr_monitors_table for each identifier;
+  sc_uint32 global_monitor_id_counter;  // Monitors count
+  sc_mutex rw_mutex;                    // Mutex for data protection
 } sc_monitor_table;
 
 typedef enum
