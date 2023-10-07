@@ -356,7 +356,7 @@ ALIAS_SYMBOLS
   ;
 
 fragment CONTENT_ESCAPED
-  : '\\' ('[' | ']' | '\\')
+  : '\\' ('[' | ']' | '\\' | '*' )
   ;
 
 fragment CONTENT_SYBMOL
