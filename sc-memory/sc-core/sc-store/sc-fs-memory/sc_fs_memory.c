@@ -148,7 +148,8 @@ sc_bool _sc_fs_memory_load_sc_memory_segments(sc_segment ** segments, sc_addr_se
   sc_uint32 element_size = is_no_deprecated_segments ? sizeof(sc_element) : OLD_SC_ELEMENT_SIZE;
   if (is_no_deprecated_segments)
   {
-    if (sc_io_channel_read_chars(segments_channel, (sc_char *)segments_num, sizeof(sc_addr_seg), &read_bytes, null_ptr) !=
+    if (sc_io_channel_read_chars(
+            segments_channel, (sc_char *)segments_num, sizeof(sc_addr_seg), &read_bytes, null_ptr) !=
             SC_FS_IO_STATUS_NORMAL ||
         read_bytes != sizeof(sc_addr_seg))
     {
@@ -260,26 +261,38 @@ sc_bool _sc_fs_memory_save_sc_memory_segments(sc_segment ** segments, sc_addr_se
 
   for (sc_addr_seg idx = 0; idx < segments_num; ++idx)
   {
-    sc_segment const * segment = segments[idx];
+    sc_segment * segment = segments[idx];
+    if (segment == null_ptr)
+    {
+      sc_fs_memory_error("Error while attribute `segment` writing");
+      goto error;
+    }
 
-    if (segment == null_ptr ||
-        sc_io_channel_write_chars(
+    sc_monitor_acquire_read(&segment->monitor);
+
+    if (sc_io_channel_write_chars(
             segments_channel, (sc_char *)segment->elements, SC_SEG_ELEMENTS_SIZE_BYTE, &written_bytes, null_ptr) !=
             SC_FS_IO_STATUS_NORMAL ||
         written_bytes != SC_SEG_ELEMENTS_SIZE_BYTE)
     {
       sc_fs_memory_error("Error while attribute `segment->elements` writing");
-      goto error;
+      goto segment_save_error;
     }
 
     if (sc_io_channel_write_chars(
-            segments_channel, (sc_char *)&segment->last_engaged_offset, sizeof(sc_addr_offset), &written_bytes, null_ptr) !=
-            SC_FS_IO_STATUS_NORMAL ||
+            segments_channel,
+            (sc_char *)&segment->last_engaged_offset,
+            sizeof(sc_addr_offset),
+            &written_bytes,
+            null_ptr) != SC_FS_IO_STATUS_NORMAL ||
         written_bytes != sizeof(sc_addr_offset))
     {
       sc_fs_memory_error("Error while attribute `segment->last_element_offset` writing");
-      goto error;
+      goto segment_save_error;
     }
+
+  segment_save_error:
+    sc_monitor_release_read(&segment->monitor);
   }
 
   // rename main file

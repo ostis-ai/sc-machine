@@ -124,8 +124,8 @@ sc_bool sc_monitor_try_acquire_write(sc_monitor * monitor)
   sc_cond_init(&current_request->condition);
   sc_queue_push(monitor->queue, current_request);
 
-  sc_bool const result
-      = sc_queue_front(monitor->queue) != current_request || monitor->active_writer || monitor->active_readers > 0;
+  sc_bool const result =
+      sc_queue_front(monitor->queue) != current_request || monitor->active_writer || monitor->active_readers > 0;
   sc_mem_free(sc_queue_pop(monitor->queue));
 
   if (!result)

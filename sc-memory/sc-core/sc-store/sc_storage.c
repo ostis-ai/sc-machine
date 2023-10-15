@@ -22,26 +22,26 @@ sc_storage * storage;
 
 sc_bool sc_storage_initialize(sc_memory_params const * params)
 {
-  sc_bool result = sc_fs_memory_initialize_ext(params);
-  if (result == SC_FALSE)
+  if (sc_fs_memory_initialize_ext(params) == SC_FALSE)
     return SC_FALSE;
 
   storage = sc_mem_new(sc_storage, 1);
   storage->max_segments_count = params->max_loaded_segments;
   storage->segments_count = 0;
   storage->segments = sc_mem_new(sc_segment *, params->max_loaded_segments);
-  sc_list_init(&storage->no_fully_engaged_segments);
   sc_list_init(&storage->segments_with_released_elements);
   sc_monitor_init(&storage->segments_monitor);
   _sc_monitor_global_init(&storage->addr_monitors_table);
 
+  sc_result result = SC_TRUE;
   if (params->clear == SC_FALSE)
   {
-    if (sc_fs_memory_load(storage->segments, &storage->segments_count) != SC_TRUE)
-      return SC_FALSE;
+    sc_monitor_acquire_write(&storage->segments_monitor);
+    result = sc_fs_memory_load(storage->segments, &storage->segments_count);
+    sc_monitor_release_write(&storage->segments_monitor);
   }
 
-  return SC_TRUE;
+  return result;
 }
 
 sc_bool sc_storage_shutdown(sc_bool save_state)
@@ -55,15 +55,19 @@ sc_bool sc_storage_shutdown(sc_bool save_state)
   if (sc_fs_memory_shutdown() == SC_FALSE)
     return SC_FALSE;
 
-  for (sc_uint32 idx = 0; idx < storage->segments_count; idx++)
+  sc_monitor_acquire_write(&storage->segments_monitor);
+
+  for (sc_addr_seg idx = 0; idx < storage->segments_count; idx++)
   {
-    if (storage->segments[idx] == null_ptr)
-      continue;  // skip segments, that are not loaded
-    sc_segment_free(storage->segments[idx]);
+    sc_segment * segment = storage->segments[idx];
+    if (segment == null_ptr)
+      continue;
+    sc_segment_free(segment);
   }
 
+  sc_monitor_release_write(&storage->segments_monitor);
+
   sc_mem_free(storage->segments);
-  sc_list_destroy(storage->no_fully_engaged_segments);
   sc_list_destroy(storage->segments_with_released_elements);
   sc_monitor_destroy(&storage->segments_monitor);
   _sc_monitor_global_destroy(&storage->addr_monitors_table);
@@ -104,7 +108,7 @@ sc_result sc_storage_get_element_by_addr(sc_addr addr, sc_element ** el)
     goto error;
 
   *el = sc_segment_get_element_by_offset(segment, addr.offset);
-  if (((*el)->flags.access_levels & SC_ACCESS_LVL_ELEMENT_EXIST) == 0)
+  if (((*el)->flags.access_levels & SC_ACCESS_LVL_ELEMENT_EXIST) != SC_ACCESS_LVL_ELEMENT_EXIST)
     goto error;
 
   result = SC_RESULT_OK;
@@ -177,7 +181,7 @@ sc_segment * _sc_storage_get_last_free_segment()
   if (storage->segments_count == 0)
     goto error;
 
-  sc_uint32 last_segment_idx = storage->segments_count - 1;
+  sc_addr_seg last_segment_idx = storage->segments_count - 1;
   segment = storage->segments[last_segment_idx];
   if (segment->last_engaged_offset == SC_SEGMENT_ELEMENTS_COUNT)
   {
@@ -249,8 +253,8 @@ sc_element * sc_storage_append_el_into_segments(sc_memory_context const * ctx, s
 
 sc_result sc_storage_element_free(sc_memory_context const * ctx, sc_addr addr)
 {
-  GHashTable * remove_table = null_ptr;
-  GSList * remove_list = null_ptr;
+  sc_hash_table * remove_table = null_ptr;
+  sc_hash_table_list * remove_list = null_ptr;
 
   sc_result result;
 
@@ -260,35 +264,35 @@ sc_result sc_storage_element_free(sc_memory_context const * ctx, sc_addr addr)
   if (result != SC_RESULT_OK)
     goto error;
 
-  remove_table = g_hash_table_new(g_direct_hash, g_direct_equal);
-  g_hash_table_insert(remove_table, GUINT_TO_POINTER(SC_ADDR_LOCAL_TO_INT(addr)), el);
+  remove_table = sc_hash_table_init(g_direct_hash, g_direct_equal, null_ptr, null_ptr);
+  sc_hash_table_insert(remove_table, GUINT_TO_POINTER(SC_ADDR_LOCAL_TO_INT(addr)), el);
 
-  remove_list = g_slist_append(remove_list, GUINT_TO_POINTER(SC_ADDR_LOCAL_TO_INT(addr)));
+  remove_list = sc_hash_table_list_append(remove_list, GUINT_TO_POINTER(SC_ADDR_LOCAL_TO_INT(addr)));
   while (remove_list != null_ptr)
   {
     // get sc-addr for removing
-    sc_uint32 addr_int = GPOINTER_TO_UINT(remove_list->data);
+    sc_addr_hash addr_int = GPOINTER_TO_UINT(remove_list->data);
     sc_addr _addr;
     _addr.seg = SC_ADDR_LOCAL_SEG_FROM_INT(addr_int);
     _addr.offset = SC_ADDR_LOCAL_OFFSET_FROM_INT(addr_int);
 
-    gpointer p_addr = GUINT_TO_POINTER(addr_int);
+    sc_pointer p_addr = GUINT_TO_POINTER(addr_int);
 
     // go to next sc-addr in list
-    remove_list = g_slist_delete_link(remove_list, remove_list);
+    remove_list = sc_hash_table_list_remove_sublist(remove_list, remove_list);
 
     result = sc_storage_get_element_by_addr(_addr, &el);
     if (result != SC_RESULT_OK)
       goto error;
 
-    g_hash_table_insert(remove_table, p_addr, el);
+    sc_hash_table_insert(remove_table, p_addr, el);
 
     // Iterate all connectors for deleted element and append them into remove_list
     _addr = el->first_out_arc;
     while (SC_ADDR_IS_NOT_EMPTY(_addr))
     {
       p_addr = GUINT_TO_POINTER(SC_ADDR_LOCAL_TO_INT(_addr));
-      sc_element * el2 = g_hash_table_lookup(remove_table, p_addr);
+      sc_element * el2 = sc_hash_table_get(remove_table, p_addr);
 
       if (el2 == null_ptr)
       {
@@ -296,9 +300,9 @@ sc_result sc_storage_element_free(sc_memory_context const * ctx, sc_addr addr)
         if (result != SC_RESULT_OK)
           goto error;
 
-        g_hash_table_insert(remove_table, p_addr, el2);
+        sc_hash_table_insert(remove_table, p_addr, el2);
 
-        remove_list = g_slist_append(remove_list, p_addr);
+        remove_list = sc_hash_table_list_append(remove_list, p_addr);
       }
 
       _addr = el2->arc.next_out_arc;
@@ -308,7 +312,7 @@ sc_result sc_storage_element_free(sc_memory_context const * ctx, sc_addr addr)
     while (SC_ADDR_IS_NOT_EMPTY(_addr))
     {
       p_addr = GUINT_TO_POINTER(SC_ADDR_LOCAL_TO_INT(_addr));
-      sc_element * el2 = g_hash_table_lookup(remove_table, p_addr);
+      sc_element * el2 = sc_hash_table_get(remove_table, p_addr);
 
       if (el2 == null_ptr)
       {
@@ -316,9 +320,9 @@ sc_result sc_storage_element_free(sc_memory_context const * ctx, sc_addr addr)
         if (result != SC_RESULT_OK)
           goto error;
 
-        g_hash_table_insert(remove_table, p_addr, el2);
+        sc_hash_table_insert(remove_table, p_addr, el2);
 
-        remove_list = g_slist_append(remove_list, p_addr);
+        remove_list = sc_hash_table_list_append(remove_list, p_addr);
       }
 
       _addr = el2->arc.next_in_arc;
@@ -331,12 +335,12 @@ sc_result sc_storage_element_free(sc_memory_context const * ctx, sc_addr addr)
   // now we need to erase all elements
   GHashTableIter iter;
   g_hash_table_iter_init(&iter, remove_table);
-  gpointer key, value;
+  sc_pointer key, value;
   while (g_hash_table_iter_next(&iter, &key, &value) == SC_TRUE)
   {
     el = value;
-    sc_uint32 uint_addr = GPOINTER_TO_UINT(key);
-    gpointer p_addr;
+    sc_addr_hash uint_addr = GPOINTER_TO_UINT(key);
+    sc_pointer p_addr;
     addr.offset = SC_ADDR_LOCAL_OFFSET_FROM_INT(uint_addr);
     addr.seg = SC_ADDR_LOCAL_SEG_FROM_INT(uint_addr);
 
@@ -424,9 +428,9 @@ sc_result sc_storage_element_free(sc_memory_context const * ctx, sc_addr addr)
   result = SC_RESULT_OK;
 error:
   if (remove_list != null_ptr)
-    g_slist_free(remove_list);
+    sc_hash_table_list_destroy(remove_list);
   if (remove_table != null_ptr)
-    g_hash_table_destroy(remove_table);
+    sc_hash_table_destroy(remove_table);
   return result;
 }
 
@@ -882,26 +886,22 @@ sc_result sc_storage_get_elements_stat(sc_stat * stat)
   sc_mem_set(stat, 0, sizeof(sc_stat));
 
   sc_monitor_acquire_read(&storage->segments_monitor);
-
-  sc_int32 i;
-  for (i = 0; i < storage->segments_count; ++i)
-  {
-    sc_segment * seg = storage->segments[i];
-    sc_segment_collect_elements_stat(seg, stat);
-  }
-
+  sc_addr_seg count = storage->segments_count;
   sc_monitor_release_read(&storage->segments_monitor);
+
+  for (sc_addr_seg i = 0; i < storage->segments_count; ++i)
+  {
+    sc_segment * segment = storage->segments[i];
+
+    sc_monitor_acquire_read(&segment->monitor);
+    sc_segment_collect_elements_stat(segment, stat);
+    sc_monitor_release_read(&segment->monitor);
+  }
 
   return SC_RESULT_OK;
 }
 
 sc_result sc_storage_save(sc_memory_context const * ctx)
 {
-  sc_monitor_acquire_read(&storage->segments_monitor);
-
-  sc_fs_memory_save(storage->segments, storage->segments_count);
-
-  sc_monitor_release_read(&storage->segments_monitor);
-
-  return SC_RESULT_OK;
+  return sc_fs_memory_save(storage->segments, storage->segments_count) ? SC_RESULT_OK : SC_RESULT_ERROR;
 }
