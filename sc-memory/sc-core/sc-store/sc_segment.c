@@ -50,5 +50,5 @@ void sc_segment_collect_elements_stat(sc_segment * seg, sc_stat * stat)
 
 sc_element * sc_segment_get_element_by_offset(sc_segment * seg, sc_addr_offset offset)
 {
-  return &seg->elements[offset - 1];
+  return &seg->elements[offset];
 }

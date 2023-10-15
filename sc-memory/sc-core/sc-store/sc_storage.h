@@ -20,9 +20,9 @@ typedef struct
   sc_segment ** segments;
   sc_addr_seg segments_count;
   sc_addr_seg max_segments_count;
+  sc_addr_seg last_released_segment;
   sc_hash_table * processes_segments_table;
   sc_queue * no_fully_engaged_segments;
-  sc_list * segments_with_released_elements;
   sc_monitor_table addr_monitors_table;
   sc_monitor segments_monitor;
 } sc_storage;

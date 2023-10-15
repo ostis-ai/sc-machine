@@ -28,10 +28,10 @@ sc_bool sc_storage_initialize(sc_memory_params const * params)
   storage = sc_mem_new(sc_storage, 1);
   storage->max_segments_count = params->max_loaded_segments;
   storage->segments_count = 0;
+  storage->last_released_segment = 0;
   storage->segments = sc_mem_new(sc_segment *, params->max_loaded_segments);
   storage->processes_segments_table = sc_hash_table_init(g_direct_hash, g_direct_equal, null_ptr, null_ptr);
   sc_queue_init(&storage->no_fully_engaged_segments);
-  sc_list_init(&storage->segments_with_released_elements);
   sc_monitor_init(&storage->segments_monitor);
   _sc_monitor_global_init(&storage->addr_monitors_table);
 
@@ -39,7 +39,7 @@ sc_bool sc_storage_initialize(sc_memory_params const * params)
   if (params->clear == SC_FALSE)
   {
     sc_monitor_acquire_write(&storage->segments_monitor);
-    result = sc_fs_memory_load(storage->segments, &storage->segments_count);
+    result = sc_fs_memory_load(storage);
     sc_monitor_release_write(&storage->segments_monitor);
   }
 
@@ -50,7 +50,7 @@ sc_bool sc_storage_shutdown(sc_bool save_state)
 {
   if (save_state == SC_TRUE)
   {
-    if (sc_fs_memory_save(storage->segments, storage->segments_count) == SC_FALSE)
+    if (sc_fs_memory_save(storage) == SC_FALSE)
       return SC_FALSE;
   }
 
@@ -72,7 +72,6 @@ sc_bool sc_storage_shutdown(sc_bool save_state)
   sc_mem_free(storage->segments);
   sc_hash_table_destroy(storage->processes_segments_table);
   sc_queue_destroy(storage->no_fully_engaged_segments);
-  sc_list_destroy(storage->segments_with_released_elements);
   sc_monitor_destroy(&storage->segments_monitor);
   _sc_monitor_global_destroy(&storage->addr_monitors_table);
   sc_mem_free(storage);
@@ -104,7 +103,7 @@ sc_result sc_storage_get_element_by_addr(sc_addr addr, sc_element ** el)
   *el = null_ptr;
   sc_result result = SC_RESULT_ERROR_ADDR_IS_NOT_VALID;
 
-  if (SC_ADDR_IS_EMPTY(addr) || addr.seg >= storage->max_segments_count || addr.offset > SC_SEGMENT_ELEMENTS_COUNT)
+  if (addr.offset == 0 || addr.seg >= storage->max_segments_count || addr.offset > SC_SEGMENT_ELEMENTS_COUNT)
     goto error;
 
   sc_segment * segment = storage->segments[addr.seg];
@@ -134,13 +133,13 @@ sc_result sc_storage_remove_element_by_addr(sc_addr addr)
   if (segment == null_ptr)
     goto error;
 
-  segment->elements[addr.offset - 1] = (sc_element){(sc_element_flags){.type = segment->last_released_offset}};
+  segment->elements[addr.offset] = (sc_element){(sc_element_flags){.type = segment->last_released_offset}};
   sc_monitor_release_write(monitor);
 
   sc_monitor_acquire_write(&storage->segments_monitor);
 
   if (segment->last_released_offset == 0)
-    sc_list_push_back(storage->segments_with_released_elements, (void *)(sc_uint64)addr.seg);
+    storage->last_released_segment = segment->elements[0].flags.type;
 
   segment->last_released_offset = addr.offset;
 
@@ -157,19 +156,22 @@ sc_element * _sc_storage_get_released_element(sc_addr * addr)
 {
   sc_monitor_acquire_write(&storage->segments_monitor);
 
-  sc_addr_seg const segment_num = (sc_addr_seg)(sc_uint64)sc_list_back(storage->segments_with_released_elements)->data;
+  sc_addr_seg const segment_num = storage->last_released_segment;
   sc_segment * segment = storage->segments[segment_num];
 
   sc_addr_offset const element_offset = segment->last_released_offset;
-  sc_element * element = &segment->elements[element_offset - 1];
+  sc_element * element = &segment->elements[element_offset];
   segment->last_released_offset = element->flags.type;
+  element->flags.type = 0;
 
   if (segment->last_released_offset == 0)
-    sc_mem_free(sc_list_pop_back(storage->segments_with_released_elements));
+  {
+    storage->last_released_segment = segment->elements[0].flags.type;
+    segment->elements[0].flags.type = 0;
+  }
 
   sc_monitor_release_write(&storage->segments_monitor);
 
-  element->flags.type = 0;
   (*addr) = (sc_addr){segment_num, element_offset};
 
   return element;
@@ -255,9 +257,8 @@ sc_element * _sc_storage_get_new_element(sc_addr * addr)
 
   sc_monitor_acquire_write(&segment->monitor);
 
-  sc_addr_offset const element_offset = segment->last_engaged_offset;
+  sc_addr_offset const element_offset = ++segment->last_engaged_offset;
   element = &segment->elements[element_offset];
-  ++segment->last_engaged_offset;
 
   sc_monitor_release_write(&segment->monitor);
 
@@ -272,10 +273,10 @@ sc_element * sc_storage_append_el_into_segments(sc_memory_context const * ctx, s
   *addr = SC_ADDR_EMPTY;
   sc_element * element = null_ptr;
 
-  if (storage->segments_with_released_elements->size > 0)
-    element = _sc_storage_get_released_element(addr);
-  else
+  if (storage->last_released_segment == 0)
     element = _sc_storage_get_new_element(addr);
+  else
+    element = _sc_storage_get_released_element(addr);
 
   if (element != null_ptr)
     element->flags.access_levels |= SC_ACCESS_LVL_ELEMENT_EXIST;
@@ -935,5 +936,5 @@ sc_result sc_storage_get_elements_stat(sc_stat * stat)
 
 sc_result sc_storage_save(sc_memory_context const * ctx)
 {
-  return sc_fs_memory_save(storage->segments, storage->segments_count) ? SC_RESULT_OK : SC_RESULT_ERROR;
+  return sc_fs_memory_save(storage) ? SC_RESULT_OK : SC_RESULT_ERROR;
 }

@@ -15,6 +15,7 @@
 #include "../sc_stream.h"
 #include "../sc-container/sc-list/sc_list.h"
 #include "../../sc_memory_params.h"
+#include "../sc_storage.h"
 
 #ifdef SC_DICTIONARY_FS_MEMORY
 typedef struct _sc_dictionary_fs_memory sc_fs_memory;
@@ -152,17 +153,13 @@ sc_bool sc_fs_memory_get_strings_by_substring(
     sc_list ** strings);
 
 /*! Load file system memory from file system
- * @param segments[out] A pointer to loadable sc-memory segments
- * @param segments_num[out] A pointer to loadable sc-memory segments num
  * @returns SC_TRUE, if file system loaded.
  */
-sc_bool sc_fs_memory_load(sc_segment ** segments, sc_addr_seg * segments_num);
+sc_bool sc_fs_memory_load(sc_storage * storage);
 
 /*! Save file system memory to file system
- * @param segments A pointer to savable sc-memory segments
- * @param segments_num A pointer to loadable sc-memory segments num
  * @returns SC_TRUE, if file system saved.
  */
-sc_bool sc_fs_memory_save(sc_segment ** segments, sc_addr_seg segments_num);
+sc_bool sc_fs_memory_save(sc_storage * storage);
 
 #endif
