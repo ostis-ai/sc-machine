@@ -65,6 +65,8 @@ sc_struct_node * sc_list_pop_front(sc_list * list);
  */
 sc_struct_node * sc_list_pop_back(sc_list * list);
 
+void * sc_list_pop_back_value(sc_list * list);
+
 /*! Removes node from sc-list if predicate for values is SC_TRUE.
  * @param list A sc-list pointer
  * @returns Returns Popped node.

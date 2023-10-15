@@ -157,6 +157,14 @@ sc_struct_node * sc_list_pop_back(sc_list * list)
   return node_to_remove;
 }
 
+void * sc_list_pop_back_value(sc_list * list)
+{
+  sc_struct_node * node = sc_list_pop_back(list);
+  void * data = node->data;
+  sc_mem_free(node);
+  return data;
+}
+
 sc_bool sc_list_remove_if(sc_list * list, void * data, sc_bool (*predicate)(void * data, void * other))
 {
   if (list == null_ptr)

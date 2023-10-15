@@ -17,6 +17,7 @@
 #include "units/template_search_smoke.hpp"
 
 #include <atomic>
+#include <chrono>
 
 template <class BMType>
 void BM_MemoryThreaded(benchmark::State & state)
@@ -26,6 +27,7 @@ void BM_MemoryThreaded(benchmark::State & state)
   if (state.thread_index() == 0)
     test.Initialize();
 
+  auto start = std::chrono::high_resolution_clock::now();
   uint32_t iterations = 0;
   for (auto t : state)
   {
@@ -40,6 +42,12 @@ void BM_MemoryThreaded(benchmark::State & state)
     test.Run();
     ++iterations;
   }
+  auto end = std::chrono::high_resolution_clock::now();
+  std::chrono::duration<double, std::milli> elapsed = end - start;
+  std::stringstream stream;
+  stream << state.max_iterations << " " << elapsed.count();
+  std::cout << stream.str() << std::endl;
+
   state.counters["rate"] = benchmark::Counter(iterations, benchmark::Counter::kIsRate);
   if (state.thread_index() == 0)
   {
@@ -50,8 +58,7 @@ void BM_MemoryThreaded(benchmark::State & state)
   {
     test.DestroyContext();
     ctxNum.fetch_add(-1);
-  }
-}
+  }}
 
 int constexpr kNodeIters = 1000000;
 
