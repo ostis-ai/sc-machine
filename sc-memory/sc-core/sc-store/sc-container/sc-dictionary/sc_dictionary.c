@@ -225,12 +225,14 @@ sc_dictionary_node * sc_dictionary_append(
   return node;
 }
 
-const sc_dictionary_node * sc_dictionary_get_last_node_from_node(
-    const sc_dictionary * dictionary,
-    const sc_dictionary_node * node,
-    const sc_char * string,
-    const sc_uint32 string_size)
+sc_dictionary_node const * sc_dictionary_get_last_node_from_node(
+    sc_dictionary * dictionary,
+    sc_dictionary_node const * node,
+    sc_char const * string,
+    sc_uint32 const string_size)
 {
+  sc_monitor_acquire_read(&dictionary->monitor);
+
   // check prefixes matching
   sc_uint32 i = 0;
   while (i < string_size)
@@ -247,16 +249,17 @@ const sc_dictionary_node * sc_dictionary_get_last_node_from_node(
   }
 
   // check suffixes matching
+  sc_dictionary_node const * result_node = null_ptr;
   if (i == string_size &&
       (node->offset == null_ptr || sc_str_cmp(node->offset, string + (string_size - node->offset_size))))
-  {
-    return node;
-  }
+    result_node = node;
 
-  return null_ptr;
+  sc_monitor_release_read(&dictionary->monitor);
+
+  return result_node;
 }
 
-sc_bool sc_dictionary_has(const sc_dictionary * dictionary, const sc_char * string, sc_uint32 string_size)
+sc_bool sc_dictionary_has(sc_dictionary * dictionary, const sc_char * string, sc_uint32 string_size)
 {
   const sc_dictionary_node * last =
       sc_dictionary_get_last_node_from_node(dictionary, dictionary->root, string, string_size);
@@ -277,16 +280,13 @@ void * _sc_dictionary_get_by_key(sc_dictionary * dictionary, const sc_char * str
 
 void * sc_dictionary_get_by_key(sc_dictionary * dictionary, const sc_char * string, const sc_uint32 string_size)
 {
-  sc_monitor_acquire_read(&dictionary->monitor);
-  void * result = _sc_dictionary_get_by_key(dictionary, string, string_size);
-  sc_monitor_release_read(&dictionary->monitor);
-  return result;
+  return _sc_dictionary_get_by_key(dictionary, string, string_size);
 }
 
 sc_bool _sc_dictionary_get_by_key_prefix(
-    const sc_dictionary * dictionary,
-    const sc_char * string,
-    const sc_uint32 string_size,
+    sc_dictionary * dictionary,
+    sc_char const * string,
+    sc_uint32 const string_size,
     sc_bool (*callable)(sc_dictionary_node *, void **),
     void ** dest)
 {

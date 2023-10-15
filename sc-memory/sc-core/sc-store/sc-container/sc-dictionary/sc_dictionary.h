@@ -72,7 +72,7 @@ sc_dictionary_node * sc_dictionary_append(
  * @param string_size A verifiable string size
  * @returns Returns SC_TRUE, if string starts in sc-dictionary node; otherwise return SC_FALSE.
  */
-sc_bool sc_dictionary_has(const sc_dictionary * dictionary, const sc_char * string, sc_uint32 string_size);
+sc_bool sc_dictionary_has(sc_dictionary * dictionary, const sc_char * string, sc_uint32 string_size);
 
 /*! Gets data from a terminal sc-dictionary node where string ends.
  * @param dictionary A sc-dictionary pointer

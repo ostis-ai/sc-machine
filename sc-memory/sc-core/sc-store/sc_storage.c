@@ -103,7 +103,7 @@ sc_result sc_storage_get_element_by_addr(sc_addr addr, sc_element ** el)
   *el = null_ptr;
   sc_result result = SC_RESULT_ERROR_ADDR_IS_NOT_VALID;
 
-  if (addr.offset == 0 || addr.seg >= storage->max_segments_count || addr.offset > SC_SEGMENT_ELEMENTS_COUNT)
+  if (addr.offset == 0 || addr.seg >= storage->max_segments_count || addr.offset >= SC_SEGMENT_ELEMENTS_COUNT)
     goto error;
 
   sc_segment * segment = storage->segments[addr.seg];
@@ -126,7 +126,7 @@ sc_result sc_storage_remove_element_by_addr(sc_addr addr)
   sc_monitor * monitor = sc_monitor_get_monitor_for_addr(&storage->addr_monitors_table, addr);
   sc_monitor_acquire_write(monitor);
 
-  if (SC_ADDR_IS_EMPTY(addr) || addr.seg >= storage->max_segments_count || addr.offset > SC_SEGMENT_ELEMENTS_COUNT)
+  if (SC_ADDR_IS_EMPTY(addr) || addr.seg >= storage->max_segments_count || addr.offset >= SC_SEGMENT_ELEMENTS_COUNT)
     goto error;
 
   sc_segment * segment = storage->segments[addr.seg];
@@ -203,7 +203,7 @@ sc_segment * _sc_storage_get_no_fully_engaged_segment()
   do
   {
     segment = (sc_segment *)sc_queue_front(storage->no_fully_engaged_segments);
-  } while (segment->last_engaged_offset == SC_SEGMENT_ELEMENTS_COUNT);
+  } while (segment->last_engaged_offset + 1 == SC_SEGMENT_ELEMENTS_COUNT);
 
 error:
   return segment;
@@ -218,32 +218,57 @@ sc_segment * _sc_storage_get_segment()
   segment = (sc_segment *)sc_hash_table_get(storage->processes_segments_table, thread);
   sc_monitor_release_read(&storage->segments_monitor);
 
-  sc_addr_offset offset;
+  sc_addr_offset last_engaged_offset;
+  sc_addr_offset last_released_offset;
   if (segment != null_ptr)
   {
     sc_monitor_acquire_read(&segment->monitor);
-    offset = segment->last_engaged_offset;
+    last_engaged_offset = segment->last_engaged_offset;
+    last_released_offset = segment->last_released_offset;
     sc_monitor_release_read(&segment->monitor);
   }
 
-  if (segment == null_ptr || offset == SC_SEGMENT_ELEMENTS_COUNT)
+  if (segment == null_ptr || last_engaged_offset + 1 == SC_SEGMENT_ELEMENTS_COUNT)
   {
-    sc_monitor_acquire_write(&storage->segments_monitor);
+    if (segment != null_ptr && last_released_offset != 0)
+    {
+      sc_monitor_acquire_write(&segment->monitor);
 
-    segment = _sc_storage_get_new_segment();
-    if (segment == null_ptr)
-      segment = _sc_storage_get_no_fully_engaged_segment();
+      sc_element * element = &segment->elements[segment->last_released_offset];
+      segment->last_released_offset = element->flags.type;
+      element->flags.type = 0;
+      last_released_offset = segment->last_released_offset;
 
-    if (segment == null_ptr)
-      goto error;
+      sc_monitor_release_write(&segment->monitor);
 
-    sc_queue_push(storage->no_fully_engaged_segments, segment);
-    sc_hash_table_insert(storage->processes_segments_table, thread, segment);
+      if (last_released_offset == 0)
+      {
+        sc_monitor_acquire_write(&storage->segments_monitor);
 
-    sc_monitor_release_write(&storage->segments_monitor);
+        storage->last_released_segment = segment->elements[0].flags.type;
+        segment->elements[0].flags.type = 0;
+
+        sc_monitor_release_write(&storage->segments_monitor);
+      }
+    }
+    else
+    {
+      sc_monitor_acquire_write(&storage->segments_monitor);
+
+      segment = _sc_storage_get_new_segment();
+      if (segment == null_ptr)
+        segment = _sc_storage_get_no_fully_engaged_segment();
+
+      if (segment != null_ptr)
+      {
+        sc_queue_push(storage->no_fully_engaged_segments, segment);
+        sc_hash_table_insert(storage->processes_segments_table, thread, segment);
+      }
+
+      sc_monitor_release_write(&storage->segments_monitor);
+    }
   }
 
-error:
   return segment;
 }
 
@@ -273,9 +298,8 @@ sc_element * sc_storage_append_el_into_segments(sc_memory_context const * ctx, s
   *addr = SC_ADDR_EMPTY;
   sc_element * element = null_ptr;
 
-  if (storage->last_released_segment == 0)
-    element = _sc_storage_get_new_element(addr);
-  else
+  element = _sc_storage_get_new_element(addr);
+  if (element == null_ptr)
     element = _sc_storage_get_released_element(addr);
 
   if (element != null_ptr)

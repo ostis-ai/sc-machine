@@ -45,8 +45,8 @@ void BM_MemoryThreaded(benchmark::State & state)
   auto end = std::chrono::high_resolution_clock::now();
   std::chrono::duration<double, std::milli> elapsed = end - start;
   std::stringstream stream;
-  stream << state.max_iterations << " " << elapsed.count();
-  std::cout << stream.str() << std::endl;
+  stream << state.max_iterations << " " << elapsed.count() << std::endl;
+  std::cout << stream.str();
 
   state.counters["rate"] = benchmark::Counter(iterations, benchmark::Counter::kIsRate);
   if (state.thread_index() == 0)
