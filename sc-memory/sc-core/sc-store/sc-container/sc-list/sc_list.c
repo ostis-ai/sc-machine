@@ -137,14 +137,17 @@ sc_struct_node * sc_list_pop_back(sc_list * list)
   sc_struct_node * node_to_remove = list->end->prev;
 
   if (node_to_remove->prev != null_ptr)
+  {
     node_to_remove->prev->next = list->end;
+    list->end->prev = node_to_remove->prev;
+  }
   else
   {
     // Only one item in the list
     list->begin = null_ptr;
+    sc_mem_free(list->end);
+    list->end = null_ptr;
   }
-
-  list->end->prev = node_to_remove->prev;
 
   --list->size;
 

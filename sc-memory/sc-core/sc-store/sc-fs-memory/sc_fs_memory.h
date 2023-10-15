@@ -156,13 +156,13 @@ sc_bool sc_fs_memory_get_strings_by_substring(
  * @param segments_num[out] A pointer to loadable sc-memory segments num
  * @returns SC_TRUE, if file system loaded.
  */
-sc_bool sc_fs_memory_load(sc_segment ** segments, sc_uint32 * segments_num);
+sc_bool sc_fs_memory_load(sc_segment ** segments, sc_addr_seg * segments_num);
 
 /*! Save file system memory to file system
  * @param segments A pointer to savable sc-memory segments
  * @param segments_num A pointer to loadable sc-memory segments num
  * @returns SC_TRUE, if file system saved.
  */
-sc_bool sc_fs_memory_save(sc_segment ** segments, sc_uint32 segments_num);
+sc_bool sc_fs_memory_save(sc_segment ** segments, sc_addr_seg segments_num);
 
 #endif

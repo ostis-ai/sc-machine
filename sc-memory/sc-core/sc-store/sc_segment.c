@@ -15,23 +15,28 @@ sc_segment * sc_segment_new(sc_addr_seg num)
 {
   sc_segment * segment = sc_mem_new(sc_segment, 1);
   segment->num = num;
-  segment->last_element_offset = 0;
-  sc_list_init(&segment->empty_element_offsets);
+  segment->last_engaged_offset = 0;
+  segment->last_released_offset = 0;
+  sc_monitor_init(&segment->monitor);
 
   return segment;
 }
 
 void sc_segment_free(sc_segment * segment)
 {
-  sc_list_destroy(segment->empty_element_offsets);
+  sc_monitor_destroy(&segment->monitor);
   sc_mem_free(segment);
 }
 
 void sc_segment_collect_elements_stat(sc_segment * seg, sc_stat * stat)
 {
-  for (sc_int32 i = 0; i < seg->last_element_offset; ++i)
+  for (sc_addr_offset i = 0; i < seg->last_engaged_offset; ++i)
   {
-    sc_type type = seg->elements[i].flags.type;
+    sc_element element = seg->elements[i];
+    if ((element.flags.access_levels & SC_ACCESS_LVL_ELEMENT_EXIST) == 0)
+      continue;
+
+    sc_type type = element.flags.type;
     if (type & sc_type_node)
       stat->node_count++;
     else if (type & sc_type_link)

@@ -11,6 +11,7 @@
 #include "sc_defines.h"
 #include "sc_element.h"
 #include "sc-container/sc-list/sc_list.h"
+#include "sc-base/sc_monitor.h"
 
 #define SC_SEG_ELEMENTS_SIZE_BYTE (sizeof(sc_element) * SC_SEGMENT_ELEMENTS_COUNT)
 
@@ -19,9 +20,10 @@
 struct _sc_segment
 {
   sc_element elements[SC_SEGMENT_ELEMENTS_COUNT];
-  sc_addr_seg num;                // number of this segment in memory
-  sc_uint32 last_element_offset;  // number of sc-element in the segment
-  sc_list * empty_element_offsets;
+  sc_addr_seg num;                     // number of this segment in memory
+  sc_addr_offset last_engaged_offset;  // number of sc-element in the segment
+  sc_addr_offset last_released_offset;
+  sc_monitor monitor;
 };
 
 /*! Create new segment with specified size.

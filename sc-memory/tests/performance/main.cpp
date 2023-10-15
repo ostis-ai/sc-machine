@@ -56,6 +56,11 @@ void BM_MemoryThreaded(benchmark::State & state)
 int constexpr kNodeIters = 1000000;
 
 BENCHMARK_TEMPLATE(BM_MemoryThreaded, TestCreateNode)
+->Threads(1)
+->Iterations(kNodeIters)
+->Unit(benchmark::TimeUnit::kMicrosecond);
+
+BENCHMARK_TEMPLATE(BM_MemoryThreaded, TestCreateNode)
 ->Threads(2)
 ->Iterations(kNodeIters / 2)
 ->Unit(benchmark::TimeUnit::kMicrosecond);

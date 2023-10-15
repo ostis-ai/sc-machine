@@ -45,10 +45,10 @@ TEST(ScFSMemoryTest, sc_fs_memory_save_load)
 {
   EXPECT_TRUE(sc_fs_memory_initialize(SC_FS_MEMORY_PATH, SC_TRUE));
 
-  sc_uint32 written_size = 2;
+  sc_addr_seg written_size = 2;
   sc_segment * segments[written_size];
 
-  sc_uint32 read_size;
+  sc_addr_seg read_size;
   EXPECT_TRUE(sc_fs_memory_load(segments, &read_size));
   EXPECT_EQ(read_size, 0u);
 
@@ -77,20 +77,20 @@ TEST(ScFSMemoryTest, sc_fs_memory_save_load_deprecated_segments)
 
   EXPECT_TRUE(sc_fs_memory_initialize(SC_DEPRECATED_DICTIONARY_FS_MEMORY_PATH, SC_FALSE));
 
-  sc_uint32 written_size = 1;
+  sc_addr_seg written_size = 1;
   sc_segment * segments[written_size];
 
-  sc_uint32 read_size;
+  sc_addr_seg read_size;
   EXPECT_TRUE(sc_fs_memory_load(segments, &read_size));
   EXPECT_EQ(read_size, 1u);
 
   EXPECT_TRUE(sc_fs_memory_save(segments, written_size));
-  for (sc_uint32 i = 0; i < read_size; ++i)
+  for (sc_addr_seg i = 0; i < read_size; ++i)
     sc_segment_free(segments[i]);
 
   EXPECT_TRUE(sc_fs_memory_load(segments, &read_size));
   EXPECT_EQ(read_size, written_size);
-  for (sc_uint32 i = 0; i < read_size; ++i)
+  for (sc_addr_seg i = 0; i < read_size; ++i)
     sc_segment_free(segments[i]);
 
   EXPECT_TRUE(sc_fs_memory_shutdown());
@@ -100,10 +100,10 @@ TEST(ScFSMemoryTest, sc_fs_memory_save_load_save_invalid_file_read)
 {
   EXPECT_TRUE(sc_fs_memory_initialize(SC_FS_MEMORY_PATH, SC_TRUE));
 
-  sc_uint32 size = 2;
+  sc_addr_seg size = 2;
   sc_segment * segments[size];
 
-  sc_uint32 read_size;
+  sc_addr_seg read_size;
   EXPECT_TRUE(sc_fs_memory_load(segments, &read_size));
   EXPECT_EQ(read_size, 0u);
 
@@ -119,10 +119,10 @@ TEST(ScFSMemoryTest, sc_fs_memory_save_load_save_invalid_segments_num_read)
 {
   EXPECT_TRUE(sc_fs_memory_initialize(SC_FS_MEMORY_PATH, SC_TRUE));
 
-  sc_uint32 size = 2;
+  sc_addr_seg size = 2;
   sc_segment * segments[size];
 
-  sc_uint32 read_size;
+  sc_addr_seg read_size;
   EXPECT_TRUE(sc_fs_memory_load(segments, &read_size));
   EXPECT_EQ(read_size, 0u);
 
@@ -136,22 +136,22 @@ TEST(ScFSMemoryTest, sc_fs_memory_save_load_save_invalid_segment_read)
 {
   EXPECT_TRUE(sc_fs_memory_initialize(SC_FS_MEMORY_PATH, SC_TRUE));
 
-  sc_uint32 size = 2;
+  sc_addr_seg size = 2;
   sc_segment * segments[size];
 
-  sc_uint32 read_size;
+  sc_addr_seg read_size;
   EXPECT_TRUE(sc_fs_memory_load(segments, &read_size));
   EXPECT_EQ(read_size, 0u);
 
   sc_io_channel * channel = sc_io_new_write_channel(SC_FS_MEMORY_SEGMENTS_PATH, nullptr);
   EXPECT_NE(channel, nullptr);
-  sc_uint32 const segments_num = 2;
+  sc_addr_seg const segments_num = 2;
   sc_uint64 written_bytes;
   EXPECT_EQ(
-      sc_io_channel_write_chars(channel, &segments_num, sizeof(sc_uint32), &written_bytes, nullptr),
+      sc_io_channel_write_chars(channel, &segments_num, sizeof(sc_addr_seg), &written_bytes, nullptr),
       SC_FS_IO_STATUS_NORMAL);
   sc_char const invalid_segment[] = "segment";
-  sc_uint32 const invalid_segment_size = sc_str_len(invalid_segment);
+  sc_addr_seg const invalid_segment_size = sc_str_len(invalid_segment);
   EXPECT_EQ(
       sc_io_channel_write_chars(channel, invalid_segment, invalid_segment_size, &written_bytes, nullptr),
       SC_FS_IO_STATUS_NORMAL);
@@ -166,14 +166,14 @@ TEST(ScFSMemoryTest, sc_fs_memory_save_load_save_invalid_file_write)
   EXPECT_TRUE(sc_fs_memory_initialize(SC_FS_MEMORY_PATH, SC_TRUE));
   EXPECT_TRUE(sc_fs_remove_directory(SC_FS_MEMORY_PATH));
 
-  sc_uint32 size = 2;
+  sc_addr_seg size = 2;
   sc_segment * segments[size];
   segments[0] = nullptr;
   segments[1] = nullptr;
 
   EXPECT_FALSE(sc_fs_memory_save(segments, size));
 
-  sc_uint32 read_size;
+  sc_addr_seg read_size;
   EXPECT_TRUE(sc_fs_memory_load(segments, &read_size));
   EXPECT_TRUE(sc_fs_memory_shutdown());
 }
@@ -182,14 +182,14 @@ TEST(ScFSMemoryTest, sc_fs_memory_save_load_save_invalid_segments_num_write)
 {
   EXPECT_TRUE(sc_fs_memory_initialize(SC_FS_MEMORY_PATH, SC_TRUE));
 
-  sc_uint32 size = 2;
+  sc_addr_seg size = 2;
   sc_segment * segments[size];
   segments[0] = nullptr;
   segments[1] = nullptr;
 
   EXPECT_FALSE(sc_fs_memory_save(segments, *(sc_uint64 *)"invalid_size"));
 
-  sc_uint32 read_size;
+  sc_addr_seg read_size;
   EXPECT_TRUE(sc_fs_memory_load(segments, &read_size));
   EXPECT_TRUE(sc_fs_memory_shutdown());
 }
@@ -198,14 +198,14 @@ TEST(ScFSMemoryTest, sc_fs_memory_save_load_save_invalid_segment_write)
 {
   EXPECT_TRUE(sc_fs_memory_initialize(SC_FS_MEMORY_PATH, SC_TRUE));
 
-  sc_uint32 size = 2;
+  sc_addr_seg size = 2;
   sc_segment * segments[size];
   segments[0] = nullptr;
   segments[1] = nullptr;
 
   EXPECT_FALSE(sc_fs_memory_save(segments, size));
 
-  sc_uint32 read_size;
+  sc_addr_seg read_size;
   EXPECT_TRUE(sc_fs_memory_load(segments, &read_size));
   EXPECT_TRUE(sc_fs_memory_shutdown());
 }
