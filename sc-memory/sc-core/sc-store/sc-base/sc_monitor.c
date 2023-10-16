@@ -119,17 +119,7 @@ sc_bool sc_monitor_try_acquire_write(sc_monitor * monitor)
 {
   sc_mutex_lock(&monitor->rw_mutex);
 
-  sc_request * current_request = sc_mem_new(sc_request, 1);
-  *current_request = (sc_request){.thread = sc_thread_self(), .type = WRITER};
-  sc_cond_init(&current_request->condition);
-  sc_queue_push(monitor->queue, current_request);
-
-  sc_bool const result =
-      sc_queue_front(monitor->queue) != current_request || monitor->active_writer || monitor->active_readers > 0;
-  sc_mem_free(sc_queue_pop(monitor->queue));
-
-  if (!result)
-    monitor->active_writer = 1;
+  sc_bool const result = monitor->active_writer || monitor->active_readers > 0;
 
   sc_mutex_unlock(&monitor->rw_mutex);
   return !result;

@@ -73,6 +73,11 @@ BENCHMARK_TEMPLATE(BM_MemoryThreaded, TestCreateNode)
 ->Unit(benchmark::TimeUnit::kMicrosecond);
 
 BENCHMARK_TEMPLATE(BM_MemoryThreaded, TestCreateNode)
+->Threads(3)
+->Iterations(kNodeIters / 3)
+->Unit(benchmark::TimeUnit::kMicrosecond);
+
+BENCHMARK_TEMPLATE(BM_MemoryThreaded, TestCreateNode)
 ->Threads(4)
 ->Iterations(kNodeIters / 4)
 ->Unit(benchmark::TimeUnit::kMicrosecond);
