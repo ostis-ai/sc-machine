@@ -9,15 +9,17 @@
 
 #include "../sc_types.h"
 #include "../sc-base/sc_mutex.h"
+#include "../sc-container/sc-hash-table/sc_hash_table.h"
+#include "../sc-base/sc_monitor.h"
 
-struct _sc_event_queue
+typedef struct
 {
-  sc_mutex mutex;
-  sc_bool running;            // flag that determine if queue is running
   GThreadPool * thread_pool;  // thread pool that used for a workers
-};
-
-typedef struct _sc_event_queue sc_event_queue;
+  sc_hash_table * processes_segments_table;
+  sc_monitor monitor;
+  sc_monitor processes_monitor;
+  sc_bool running;  // flag that determine if queue is running
+} sc_event_queue;
 
 //! Create new sc-event queue with user processors number
 sc_event_queue * sc_event_queue_new_ext(sc_uint32 max_events_and_agents_threads);

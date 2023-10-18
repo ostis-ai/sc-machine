@@ -14,15 +14,16 @@
 #include "sc_stream.h"
 #include "sc-container/sc-list/sc_list.h"
 #include "sc-base/sc_monitor.h"
+#include "sc_event/sc_event_queue.h"
 
 typedef struct
 {
   sc_segment ** segments;
   sc_addr_seg segments_count;
   sc_addr_seg max_segments_count;
-  sc_addr_seg last_released_segment;
-  sc_hash_table * processes_segments_table;
-  sc_queue * no_fully_engaged_segments;
+  sc_addr_seg last_not_engaged_segment_num;
+  sc_addr_seg last_released_segment_num;
+  sc_event_queue * event_queue;
   sc_monitor_table addr_monitors_table;
   sc_monitor segments_monitor;
 } sc_storage;
@@ -44,6 +45,10 @@ sc_storage * sc_storage_get();
  * @note Returned sc-element is locked
  */
 sc_element * sc_storage_append_el_into_segments(sc_memory_context const * ctx, sc_addr * addr);
+
+void sc_storage_start_new_process();
+
+void sc_storage_end_new_process();
 
 /*! Check if sc-element with specified sc-addr exist
  * @param addr sc-addr of element

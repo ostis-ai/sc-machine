@@ -19,7 +19,6 @@
 
 // Pointer to hash table that contains events
 sc_hash_table * events_table = null_ptr;
-sc_event_queue * event_queue = null_ptr;
 sc_monitor events_table_monitor;
 
 guint events_table_hash_func(gconstpointer pointer)
@@ -314,7 +313,7 @@ sc_result sc_event_emit_impl(
     event = (sc_event *)element_events_list->data;
 
     if (event->type == type && sc_event_ref(event) == SC_TRUE)
-      sc_event_queue_append(event_queue, event, edge, other_el);
+      sc_event_queue_append(sc_storage_get()->event_queue, event, edge, other_el);
 
     element_events_list = element_events_list->next;
   }
@@ -334,19 +333,17 @@ sc_addr sc_event_get_element(sc_event const * event)
 }
 
 // --------
-sc_bool sc_events_initialize_ext(sc_uint32 const max_events_and_agents_threads)
+sc_event_queue * sc_events_initialize_ext(sc_uint32 const max_events_and_agents_threads)
 {
-  event_queue = sc_event_queue_new_ext(max_events_and_agents_threads);
-  return SC_TRUE;
+  return sc_event_queue_new_ext(max_events_and_agents_threads);
 }
 
-void sc_events_shutdown()
+void sc_events_shutdown(sc_event_queue * event_queue)
 {
   sc_event_queue_destroy_wait(event_queue);
-  event_queue = null_ptr;
 }
 
-void sc_events_stop_processing()
+void sc_events_stop_processing(sc_event_queue * event_queue)
 {
   sc_event_queue_stop_processing(event_queue);
 }

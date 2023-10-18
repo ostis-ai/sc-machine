@@ -115,16 +115,6 @@ void sc_monitor_acquire_write(sc_monitor * monitor)
   sc_mutex_unlock(&monitor->rw_mutex);
 }
 
-sc_bool sc_monitor_try_acquire_write(sc_monitor * monitor)
-{
-  sc_mutex_lock(&monitor->rw_mutex);
-
-  sc_bool const result = monitor->active_writer || monitor->active_readers > 0;
-
-  sc_mutex_unlock(&monitor->rw_mutex);
-  return !result;
-}
-
 void sc_monitor_release_write(sc_monitor * monitor)
 {
   sc_mutex_lock(&monitor->rw_mutex);

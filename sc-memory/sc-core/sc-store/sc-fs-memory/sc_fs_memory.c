@@ -159,12 +159,28 @@ sc_bool _sc_fs_memory_load_sc_memory_segments(sc_storage * storage)
     }
 
     if (sc_io_channel_read_chars(
-            segments_channel, (sc_char *)&storage->last_released_segment, sizeof(sc_addr_seg), &read_bytes, null_ptr) !=
-            SC_FS_IO_STATUS_NORMAL ||
+            segments_channel,
+            (sc_char *)&storage->last_not_engaged_segment_num,
+            sizeof(sc_addr_seg),
+            &read_bytes,
+            null_ptr) != SC_FS_IO_STATUS_NORMAL ||
         read_bytes != sizeof(sc_addr_seg))
     {
-      storage->last_released_segment = 0;
-      sc_fs_memory_error("Error while attribute `storage->last_released_segment` reading");
+      storage->last_not_engaged_segment_num = 0;
+      sc_fs_memory_error("Error while attribute `storage->last_not_engaged_segment_num` reading");
+      goto error;
+    }
+
+    if (sc_io_channel_read_chars(
+            segments_channel,
+            (sc_char *)&storage->last_released_segment_num,
+            sizeof(sc_addr_seg),
+            &read_bytes,
+            null_ptr) != SC_FS_IO_STATUS_NORMAL ||
+        read_bytes != sizeof(sc_addr_seg))
+    {
+      storage->last_released_segment_num = 0;
+      sc_fs_memory_error("Error while attribute `storage->last_released_segment_num` reading");
       goto error;
     }
   }
@@ -280,13 +296,25 @@ sc_bool _sc_fs_memory_save_sc_memory_segments(sc_storage * storage)
 
   if (sc_io_channel_write_chars(
           segments_channel,
-          (sc_char *)&storage->last_released_segment,
+          (sc_char *)&storage->last_not_engaged_segment_num,
           sizeof(sc_addr_seg),
           &written_bytes,
           null_ptr) != SC_FS_IO_STATUS_NORMAL ||
       written_bytes != sizeof(sc_addr_seg))
   {
-    sc_fs_memory_error("Error while attribute `storage->last_released_segment` writing");
+    sc_fs_memory_error("Error while attribute `storage->last_not_engaged_segment_num` writing");
+    goto error;
+  }
+
+  if (sc_io_channel_write_chars(
+          segments_channel,
+          (sc_char *)&storage->last_released_segment_num,
+          sizeof(sc_addr_seg),
+          &written_bytes,
+          null_ptr) != SC_FS_IO_STATUS_NORMAL ||
+      written_bytes != sizeof(sc_addr_seg))
+  {
+    sc_fs_memory_error("Error while attribute `storage->last_released_segment_num` writing");
     goto error;
   }
 

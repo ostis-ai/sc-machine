@@ -73,12 +73,6 @@ sc_memory_context * sc_memory_initialize(const sc_memory_params * params)
   }
   sc_memory_context_free(helper_ctx);
 
-  if (sc_events_initialize_ext(params->max_events_and_agents_threads) == SC_FALSE)
-  {
-    sc_memory_error("Error while initialize events module");
-    goto error;
-  }
-
   sc_addr init_memory_generated_structure = SC_ADDR_EMPTY;
   if (params->init_memory_generated_upload)
     sc_helper_resolve_system_identifier(
@@ -134,9 +128,7 @@ void sc_memory_shutdown(sc_bool save_state)
 {
   sc_memory_info("Shutdown components");
 
-  sc_events_stop_processing();
   sc_memory_shutdown_ext();
-  sc_events_shutdown();
   sc_helper_shutdown();
   sc_storage_shutdown(save_state);
 

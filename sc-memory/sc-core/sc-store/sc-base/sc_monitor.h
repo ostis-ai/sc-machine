@@ -94,8 +94,6 @@ _SC_EXTERN void sc_monitor_release_read(sc_monitor * monitor);
  */
 _SC_EXTERN void sc_monitor_acquire_write(sc_monitor * monitor);
 
-_SC_EXTERN sc_bool sc_monitor_try_acquire_write(sc_monitor * monitor);
-
 /*! Releases a write lock from the specified monitor
  * @param monitor Pointer to the sc_monitor
  */

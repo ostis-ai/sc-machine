@@ -10,6 +10,7 @@
 
 #include "../sc-base/sc_allocator.h"
 #include "../sc-base/sc_message.h"
+#include "../sc_storage.h"
 
 typedef struct
 {
@@ -33,9 +34,11 @@ void sc_event_pool_worker_data_destroy(sc_event_pool_worker_data * data)
   sc_mem_free(data);
 }
 
-void sc_event_pool_worker(gpointer data, gpointer user_data)
+void sc_event_pool_worker(sc_pointer data, sc_pointer user_data)
 {
   sc_event_pool_worker_data * work_data = (sc_event_pool_worker_data *)data;
+
+  sc_storage_start_new_process();
 
   if (work_data->evt->callback != null_ptr)
     work_data->evt->callback(work_data->evt, work_data->edge_addr);
@@ -44,14 +47,18 @@ void sc_event_pool_worker(gpointer data, gpointer user_data)
 
   sc_event_unref(work_data->evt);
 
+  sc_storage_end_new_process();
+
   sc_event_pool_worker_data_destroy(work_data);
 }
 
 sc_event_queue * sc_event_queue_new_ext(sc_uint32 max_events_and_agents_threads)
 {
   sc_event_queue * queue = sc_mem_new(sc_event_queue, 1);
+  queue->processes_segments_table = sc_hash_table_init(g_direct_hash, g_direct_equal, null_ptr, null_ptr);
+  sc_monitor_init(&queue->monitor);
+  sc_monitor_init(&queue->processes_monitor);
   queue->running = SC_TRUE;
-  sc_mutex_init(&queue->mutex);
 
   max_events_and_agents_threads = sc_boundary(max_events_and_agents_threads, 1, g_get_num_processors());
   {
@@ -60,7 +67,7 @@ sc_event_queue * sc_event_queue_new_ext(sc_uint32 max_events_and_agents_threads)
   }
 
   queue->thread_pool =
-      g_thread_pool_new(sc_event_pool_worker, null_ptr, (sc_int32)max_events_and_agents_threads, SC_FALSE, null_ptr);
+      g_thread_pool_new(sc_event_pool_worker, queue, (sc_int32)max_events_and_agents_threads, SC_FALSE, null_ptr);
 
   return queue;
 }
@@ -72,15 +79,15 @@ void sc_event_queue_stop_processing(sc_event_queue * queue)
 
   sc_bool is_running = SC_FALSE;
 
-  sc_mutex_lock(&queue->mutex);
+  sc_monitor_acquire_read(&queue->monitor);
   is_running = queue->running;
-  sc_mutex_unlock(&queue->mutex);
+  sc_monitor_release_read(&queue->monitor);
 
   if (is_running)
   {
-    sc_mutex_lock(&queue->mutex);
+    sc_monitor_acquire_write(&queue->monitor);
     queue->running = SC_FALSE;
-    sc_mutex_unlock(&queue->mutex);
+    sc_monitor_release_write(&queue->monitor);
   }
 }
 
@@ -89,27 +96,36 @@ void sc_event_queue_destroy_wait(sc_event_queue * queue)
   if (queue == null_ptr)
     return;
 
-  if (queue->thread_pool)
-  {
-    sc_mutex_lock(&queue->mutex);
+  sc_monitor_acquire_write(&queue->monitor);
 
-    g_thread_pool_free(queue->thread_pool, SC_FALSE, SC_TRUE);
-    queue->thread_pool = null_ptr;
-    sc_mutex_unlock(&queue->mutex);
+  if (queue->processes_segments_table)
+  {
+    sc_hash_table_destroy(queue->processes_segments_table);
+    queue->processes_segments_table = null_ptr;
   }
 
-  sc_mutex_destroy(&queue->mutex);
+  if (queue->thread_pool)
+  {
+    g_thread_pool_free(queue->thread_pool, SC_FALSE, SC_TRUE);
+    queue->thread_pool = null_ptr;
+  }
 
+  sc_monitor_release_write(&queue->monitor);
+
+  sc_monitor_destroy(&queue->monitor);
+  sc_monitor_destroy(&queue->processes_monitor);
   sc_mem_free(queue);
 }
 
 void sc_event_queue_append(sc_event_queue * queue, sc_event * evt, sc_addr edge, sc_addr other_el)
 {
-  if (queue->running == SC_TRUE)
-  {
-    sc_mutex_lock(&queue->mutex);
-    sc_event_pool_worker_data * data = sc_event_pool_worker_data_new(evt, edge, other_el);
-    g_thread_pool_push(queue->thread_pool, data, null_ptr);
-    sc_mutex_unlock(&queue->mutex);
-  }
+  if (queue == null_ptr || queue->running == SC_FALSE)
+    return;
+
+  sc_monitor_acquire_write(&queue->monitor);
+
+  sc_event_pool_worker_data * data = sc_event_pool_worker_data_new(evt, edge, other_el);
+  g_thread_pool_push(queue->thread_pool, data, null_ptr);
+
+  sc_monitor_release_write(&queue->monitor);
 }

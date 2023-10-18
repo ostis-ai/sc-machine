@@ -8,6 +8,12 @@
 
 #include "sc_server_action_defines.hpp"
 
+extern "C"
+{
+#include "sc-core/sc-store/sc_storage.h"
+#include "sc-core/sc-store/sc-base/sc_thread.h"
+}
+
 #define DEFAULT_HOST "127.0.0.1"
 #define DEFAULT_PORT 8090
 
@@ -109,7 +115,13 @@ void ScServerImpl::OnMessage(ScServerConnectionHandle const & hdl, ScServerMessa
     m_actionCond.notify_one();
   }
   else
+  {
+    sc_storage_start_new_process();
+
     ScServerMessageAction(this, hdl, msg).Emit();
+
+    sc_storage_end_new_process();
+  }
 }
 
 void ScServerImpl::OnEvent(ScServerConnectionHandle const & hdl, std::string const & msg)
