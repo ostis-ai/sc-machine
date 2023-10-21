@@ -1530,6 +1530,8 @@ sc_dictionary_fs_memory_status sc_dictionary_fs_memory_save(sc_dictionary_fs_mem
   if (status != SC_FS_MEMORY_OK)
     return status;
 
+  sc_message("\tLast string offset: %lld", memory->last_string_offset);
+
   sc_fs_memory_info("All sc-fs-memory dictionaries saved");
   return status;
 }

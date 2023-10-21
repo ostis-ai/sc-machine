@@ -29,36 +29,24 @@ sc_mutex s_concurrency_mutex;
 
 sc_memory_context * sc_memory_initialize(const sc_memory_params * params)
 {
-  sc_memory_info("Initialize components");
+  sc_memory_info("Initialize");
 
   sc_char * string = sc_version_string_new(&params->version);
   sc_memory_info("Version: %s", string);
   sc_version_string_free(string);
-
-  sc_message("\tClean on initialize: %s", params->clear ? "On" : "Off");
-  sc_message("\tExtensions path: %s", params->ext_path);
-  sc_message("\tSave period: %d", params->save_period);
-  sc_message("\tUpdate period: %d", params->update_period);
 
   sc_memory_info("Logger:");
   sc_message("\tLog type: %s", params->log_type);
   sc_message("\tLog file: %s", params->log_file);
   sc_message("\tLog level: %s", params->log_level);
 
-  sc_memory_info("Configuration:");
-  sc_message("\tMax loaded segments: %d", params->max_loaded_segments);
-  sc_message("\tMax threads: %d", params->max_threads);
-  sc_message("\tSc-element size: %zd", sizeof(sc_element));
-
-  sc_memory_info("Build configuration:");
-  sc_message("\tResult structure upload: %s", params->init_memory_generated_upload ? "On" : "Off");
-  sc_message("\tInit memory generated structure: %s", params->init_memory_generated_structure);
-
   if (sc_storage_initialize(params) == SC_FALSE)
   {
     sc_memory_error("Error while initialize sc-storage");
     goto error;
   }
+
+  sc_storage_start_new_process();
 
   s_context_hash_table = g_hash_table_new(g_direct_hash, g_direct_equal);
   s_memory_default_ctx = sc_memory_context_new(sc_access_lvl_make(SC_ACCESS_LVL_MAX_VALUE, SC_ACCESS_LVL_MAX_VALUE));
@@ -73,6 +61,11 @@ sc_memory_context * sc_memory_initialize(const sc_memory_params * params)
   }
   sc_memory_context_free(helper_ctx);
 
+  sc_memory_info("Build configuration:");
+  sc_message("\tResult structure upload: %s", params->init_memory_generated_upload ? "On" : "Off");
+  sc_message("\tInit memory generated structure: %s", params->init_memory_generated_structure);
+  sc_message("\tExtensions path: %s", params->ext_path);
+
   sc_addr init_memory_generated_structure = SC_ADDR_EMPTY;
   if (params->init_memory_generated_upload)
     sc_helper_resolve_system_identifier(
@@ -84,15 +77,17 @@ sc_memory_context * sc_memory_initialize(const sc_memory_params * params)
     goto error;
   }
 
-  sc_memory_info("All components successfully initialized");
-  sc_memory_info("Initialized");
+  sc_storage_end_new_process();
+
+  sc_memory_info("Successfully initialized");
   return s_memory_default_ctx;
 
 error:
 {
+  sc_storage_end_new_process();
+
   sc_memory_context_free(s_memory_default_ctx);
-  sc_memory_info("Components initialized with errors");
-  sc_memory_info("No initialized");
+  sc_memory_info("Initialized with errors");
   return null_ptr;
 }
 }
@@ -126,7 +121,7 @@ sc_result sc_memory_init_ext(
 
 void sc_memory_shutdown(sc_bool save_state)
 {
-  sc_memory_info("Shutdown components");
+  sc_memory_info("Shutdown");
 
   sc_memory_shutdown_ext();
   sc_helper_shutdown();
@@ -140,7 +135,6 @@ void sc_memory_shutdown(sc_bool save_state)
   s_context_hash_table = null_ptr;
   s_context_id_last = 0;
 
-  sc_memory_info("All components shutdown");
   sc_memory_info("Shutdown");
 }
 
