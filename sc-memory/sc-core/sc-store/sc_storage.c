@@ -523,9 +523,9 @@ sc_result sc_storage_element_free(sc_memory_context const * ctx, sc_addr addr)
 
       --e_el->input_arcs_count;
 
-      sc_event_emit(ctx, el->arc.end, e_el->flags.access_levels, SC_EVENT_REMOVE_INPUT_ARC, addr, el->arc.begin);
-
       sc_monitor_release_write_n(3, monitor, beg_monitor, end_monitor);
+
+      sc_event_emit(ctx, el->arc.end, e_el->flags.access_levels, SC_EVENT_REMOVE_INPUT_ARC, addr, el->arc.begin);
     }
 
     sc_event_emit(ctx, addr, el->flags.access_levels, SC_EVENT_REMOVE_ELEMENT, SC_ADDR_EMPTY, SC_ADDR_EMPTY);
