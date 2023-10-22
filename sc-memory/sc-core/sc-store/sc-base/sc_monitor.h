@@ -65,6 +65,8 @@ _SC_EXTERN void _sc_monitor_global_destroy(sc_monitor_table * table);
  */
 _SC_EXTERN sc_monitor * sc_monitor_get_monitor_for_addr(sc_monitor_table * table, sc_addr addr);
 
+_SC_EXTERN sc_monitor * sc_monitor_get_monitor_from_table(sc_monitor_table * table, sc_pointer key);
+
 /*! Initializes a monitor instance
  * @param monitor Pointer to the sc_monitor to be initialized
  * @remarks This function prepares the monitor for use

@@ -30,9 +30,14 @@ void _sc_monitor_global_destroy(sc_monitor_table * table)
 
 sc_monitor * sc_monitor_get_monitor_for_addr(sc_monitor_table * table, sc_addr addr)
 {
+  sc_pointer key = (sc_pointer)(sc_uint64)SC_ADDR_LOCAL_TO_INT(addr);
+  return sc_monitor_get_monitor_from_table(table, key);
+}
+
+sc_monitor * sc_monitor_get_monitor_from_table(sc_monitor_table * table, sc_pointer key)
+{
   sc_mutex_lock(&table->rw_mutex);
 
-  sc_pointer key = (sc_pointer)(sc_uint64)SC_ADDR_LOCAL_TO_INT(addr);
   sc_monitor * monitor = (sc_monitor *)sc_hash_table_get(table->monitors, key);
 
   if (monitor == null_ptr)

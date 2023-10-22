@@ -37,15 +37,15 @@ sc_io_channel * _sc_dictionary_fs_memory_get_strings_channel_by_offset(
   if (memory->strings_channels[idx] != null_ptr)
   {
     sc_monitor_acquire_read(&memory->monitor);
-    (*channel_monitor) = sc_hash_table_get(memory->strings_channels_monitors, (sc_pointer)idx);
+    *channel_monitor = sc_monitor_get_monitor_from_table(&memory->strings_channels_monitors_table, (sc_pointer)idx);
     sc_monitor_release_read(&memory->monitor);
     return memory->strings_channels[idx];
   }
 
-  sc_monitor_acquire_write(&memory->monitor);
-
+  sc_monitor_acquire_read(&memory->monitor);
   if (idx > 0 && memory->strings_channels[idx - 1] != null_ptr)
     sc_io_channel_flush(memory->strings_channels[idx - 1], null_ptr);
+  sc_monitor_release_read(&memory->monitor);
 
   sc_char strings_channel_number[DEFAULT_STRING_INT_SIZE];
   {
@@ -62,18 +62,20 @@ sc_io_channel * _sc_dictionary_fs_memory_get_strings_channel_by_offset(
   sc_fs_concat_path_ext(memory->path, strings_channel_name, SC_FS_EXT, &strings_path);
   sc_mem_free(strings_channel_name);
 
-  if (sc_fs_is_file(strings_path) == SC_FALSE || memory->clear == SC_TRUE)
+  sc_bool is_path = sc_fs_is_file(strings_path);
+
+  sc_monitor_acquire_write(&memory->monitor);
+
+  if (is_path == SC_FALSE || memory->clear == SC_TRUE)
     memory->strings_channels[idx] = sc_io_new_write_channel(strings_path, null_ptr);
   else
     memory->strings_channels[idx] = sc_io_new_append_channel(strings_path, null_ptr);
-  sc_mem_free(strings_path);
   sc_io_channel_set_encoding(memory->strings_channels[idx], null_ptr, null_ptr);
 
-  (*channel_monitor) = sc_mem_new(sc_monitor, 1);
-  sc_monitor_init(*channel_monitor);
-  sc_hash_table_insert(memory->strings_channels_monitors, (sc_pointer)idx, *channel_monitor);
-
+  *channel_monitor = sc_monitor_get_monitor_from_table(&memory->strings_channels_monitors_table, (sc_pointer)idx);
   sc_monitor_release_write(&memory->monitor);
+
+  sc_mem_free(strings_path);
 
   return memory->strings_channels[idx];
 }
@@ -134,8 +136,7 @@ sc_dictionary_fs_memory_status sc_dictionary_fs_memory_initialize_ext(
       sc_fs_concat_path((*memory)->path, term_string_offsets, &(*memory)->terms_string_offsets_path);
 
       (*memory)->strings_channels = (void **)sc_mem_new(sc_io_channel *, (*memory)->max_strings_channels);
-      (*memory)->strings_channels_monitors =
-          sc_hash_table_init(g_direct_hash, g_direct_equal, null_ptr, _sc_monitor_destroy_func);
+      _sc_monitor_global_init(&(*memory)->strings_channels_monitors_table);
       (*memory)->last_string_offset = 0;
       sc_monitor_init(&(*memory)->monitor);
     }
@@ -200,7 +201,7 @@ sc_dictionary_fs_memory_status sc_dictionary_fs_memory_shutdown(sc_dictionary_fs
         sc_io_channel_shutdown(memory->strings_channels[i], SC_TRUE, null_ptr);
       }
       sc_mem_free(memory->strings_channels);
-      sc_hash_table_destroy(memory->strings_channels_monitors);
+      _sc_monitor_global_destroy(&memory->strings_channels_monitors_table);
       sc_monitor_destroy(&memory->monitor);
     }
 
@@ -312,7 +313,6 @@ sc_dictionary_fs_memory_status _sc_dictionary_node_fs_memory_get_string_offset_b
     return SC_FS_MEMORY_READ_ERROR;
   }
 
-  sc_monitor_acquire_write(channel_monitor);
   while (sc_iterator_next(string_offset_it))
   {
     sc_uint64 const string_offset = (sc_uint64)sc_iterator_get(string_offset_it);
@@ -347,12 +347,10 @@ sc_dictionary_fs_memory_status _sc_dictionary_node_fs_memory_get_string_offset_b
     break;
   }
 
-  sc_monitor_release_write(channel_monitor);
   sc_iterator_destroy(string_offset_it);
   return SC_FS_MEMORY_OK;
 
 error:
-  sc_monitor_release_write(channel_monitor);
   sc_iterator_destroy(string_offset_it);
   return SC_FS_MEMORY_READ_ERROR;
 }
@@ -390,6 +388,7 @@ sc_dictionary_fs_memory_status _sc_dictionary_fs_memory_write_string(
   if (strings_channel == null_ptr)
     return SC_FS_MEMORY_WRITE_ERROR;
 
+  sc_monitor_acquire_write_n(2, &memory->monitor, channel_monitor);
   // find string if it exists in fs-memory
   if (is_searchable_string)
   {
@@ -401,7 +400,6 @@ sc_dictionary_fs_memory_status _sc_dictionary_fs_memory_write_string(
   // save string in fs-memory
   if (*is_not_exist)
   {
-    sc_monitor_acquire_write(&memory->monitor);
     *string_offset = memory->last_string_offset;
 
     sc_uint64 const normalized_string_offset = _sc_dictionary_fs_memory_normalize_offset(memory, *string_offset);
@@ -427,13 +425,13 @@ sc_dictionary_fs_memory_status _sc_dictionary_fs_memory_write_string(
     }
 
     memory->last_string_offset += written_bytes;
-    sc_monitor_release_write(&memory->monitor);
   }
 
+  sc_monitor_release_write_n(2, &memory->monitor, channel_monitor);
   return SC_FS_MEMORY_OK;
 
 error:
-  sc_monitor_release_write(&memory->monitor);
+  sc_monitor_release_write_n(2, &memory->monitor, channel_monitor);
   return SC_FS_MEMORY_WRITE_ERROR;
 }
 
