@@ -32,8 +32,8 @@ public:
   }
 
 private:
-  static std::mutex m_mutex;
   static ScAddrList m_elements;
+  static std::mutex m_mutex;
 };
 
 ScAddrList TestRemoveDiffElements::m_elements;

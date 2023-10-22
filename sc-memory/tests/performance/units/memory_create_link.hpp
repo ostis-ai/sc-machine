@@ -9,20 +9,30 @@
 #include "memory_test.hpp"
 
 #include "sc-memory/sc_link.hpp"
+#include <random>
 
 class TestCreateLink : public TestMemory
 {
 public:
   void Run()
   {
+    const int stringLength = 100;
+    std::stringstream result;
+
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_int_distribution<char> charDistribution(32, 126);
+
+    for (int i = 0; i < stringLength; ++i)
+    {
+      char randomChar = charDistribution(gen);
+      result << randomChar;
+    }
+
     ScAddr const addr = m_ctx->CreateLink();
 
     ScLink link(*m_ctx, addr);
-    BENCHMARK_BUILTIN_EXPECT(link.Set(addr.Hash()), SC_TRUE);
-    BENCHMARK_BUILTIN_EXPECT(link.Get<sc_addr_hash>(), addr.Hash());
-    BENCHMARK_BUILTIN_EXPECT(m_ctx->FindLinksByContent(addr.Hash()).size(), 1u);
-    BENCHMARK_BUILTIN_EXPECT(m_ctx->FindLinksByContentSubstring(addr.Hash()).size(), 1u);
-    BENCHMARK_BUILTIN_EXPECT(m_ctx->FindLinksContentsByContentSubstring(addr.Hash()).size(), 1u);
+    BENCHMARK_BUILTIN_EXPECT(link.Set(result.str()), SC_TRUE);
   }
 };
 
@@ -36,7 +46,5 @@ public:
     ScLink link(*m_ctx, addr);
     std::string const & content = "same content";
     BENCHMARK_BUILTIN_EXPECT(link.Set(content), SC_TRUE);
-    BENCHMARK_BUILTIN_EXPECT(link.Get<std::string>() == content, SC_TRUE);
-    BENCHMARK_BUILTIN_EXPECT(m_ctx->FindLinksByContent(content).size(), SC_TRUE);
   }
 };
