@@ -62,6 +62,9 @@ TEST(ScFSMemoryTest, sc_fs_memory_save_load)
   sc_segment_free(storage->segments[0]);
   sc_segment_free(storage->segments[1]);
 
+  sc_mem_free(storage->segments);
+  sc_mem_free(storage);
+
   EXPECT_TRUE(sc_fs_memory_shutdown());
 }
 
@@ -90,6 +93,9 @@ TEST(ScFSMemoryTest, sc_fs_memory_save_load_deprecated_segments)
   for (sc_addr_seg i = 0; i < storage->segments_count; ++i)
     sc_segment_free(storage->segments[i]);
 
+  sc_mem_free(storage->segments);
+  sc_mem_free(storage);
+
   EXPECT_TRUE(sc_fs_memory_shutdown());
 }
 
@@ -108,6 +114,10 @@ TEST(ScFSMemoryTest, sc_fs_memory_save_load_save_invalid_file_read)
   EXPECT_TRUE(sc_fs_remove_file(SC_FS_MEMORY_SEGMENTS_PATH));
 
   EXPECT_TRUE(sc_fs_memory_load(storage));
+
+  sc_mem_free(storage->segments);
+  sc_mem_free(storage);
+
   EXPECT_TRUE(sc_fs_memory_shutdown());
 }
 
@@ -124,6 +134,10 @@ TEST(ScFSMemoryTest, sc_fs_memory_save_load_save_invalid_segments_num_read)
   EXPECT_TRUE(sc_fs_create_file(SC_FS_MEMORY_SEGMENTS_PATH));
 
   EXPECT_FALSE(sc_fs_memory_load(storage));
+
+  sc_mem_free(storage->segments);
+  sc_mem_free(storage);
+
   EXPECT_TRUE(sc_fs_memory_shutdown());
 }
 
@@ -152,6 +166,10 @@ TEST(ScFSMemoryTest, sc_fs_memory_save_load_save_invalid_segment_read)
   sc_io_channel_shutdown(channel, SC_TRUE, nullptr);
 
   EXPECT_FALSE(sc_fs_memory_load(storage));
+
+  sc_mem_free(storage->segments);
+  sc_mem_free(storage);
+
   EXPECT_TRUE(sc_fs_memory_shutdown());
 }
 
@@ -168,6 +186,10 @@ TEST(ScFSMemoryTest, sc_fs_memory_save_load_save_invalid_file_write)
 
   EXPECT_FALSE(sc_fs_memory_save(storage));
   EXPECT_TRUE(sc_fs_memory_load(storage));
+
+  sc_mem_free(storage->segments);
+  sc_mem_free(storage);
+
   EXPECT_TRUE(sc_fs_memory_shutdown());
 }
 
@@ -183,6 +205,10 @@ TEST(ScFSMemoryTest, sc_fs_memory_save_load_save_invalid_segments_num_write)
 
   EXPECT_FALSE(sc_fs_memory_save(storage));
   EXPECT_TRUE(sc_fs_memory_load(storage));
+
+  sc_mem_free(storage->segments);
+  sc_mem_free(storage);
+
   EXPECT_TRUE(sc_fs_memory_shutdown());
 }
 
@@ -198,5 +224,9 @@ TEST(ScFSMemoryTest, sc_fs_memory_save_load_save_invalid_segment_write)
 
   EXPECT_FALSE(sc_fs_memory_save(storage));
   EXPECT_TRUE(sc_fs_memory_load(storage));
+
+  sc_mem_free(storage->segments);
+  sc_mem_free(storage);
+
   EXPECT_TRUE(sc_fs_memory_shutdown());
 }
