@@ -180,10 +180,10 @@ void AgentUtils::finishAgentWork(ScMemoryContext * ms_context, const ScAddr & qu
 {
   SC_CHECK_PARAM(questionNode, ("Invalid question node address"));
 
-  ms_context->CreateEdge(ScType::EdgeAccessConstPosPerm, CoreKeynodes::question_finished, questionNode);
   ScAddr statusNode =
       isSuccess ? CoreKeynodes::question_finished_successfully : CoreKeynodes::question_finished_unsuccessfully;
   ms_context->CreateEdge(ScType::EdgeAccessConstPosPerm, statusNode, questionNode);
+  ms_context->CreateEdge(ScType::EdgeAccessConstPosPerm, CoreKeynodes::question_finished, questionNode);
 }
 
 }  // namespace utils
