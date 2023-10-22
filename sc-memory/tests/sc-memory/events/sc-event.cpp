@@ -192,7 +192,7 @@ TEST_F(ScEventTest, events_lock)
     m_ctx->CreateEdge(ScType::EdgeAccessConstPosPerm, node, node2);
 }
 
-TEST_F(ScEventTest, parallel)
+TEST_F(ScEventTest, parallel_create_edges)
 {
   ScAddr const node = m_ctx->CreateNode(ScType::NodeConst);
   ScAddr const node2 = m_ctx->CreateNode(ScType::NodeConst);
@@ -212,6 +212,26 @@ TEST_F(ScEventTest, parallel)
     EXPECT_TRUE(result);
 
     return result;
+  });
+
+  for (size_t i = 0; i < 10000; i++)
+    m_ctx->CreateEdge(ScType::EdgeAccessConstPosPerm, node, node2);
+}
+
+TEST_F(ScEventTest, parallel_create_remove_edges)
+{
+  ScAddr const node = m_ctx->CreateNode(ScType::NodeConst);
+  ScAddr const node2 = m_ctx->CreateNode(ScType::NodeConst);
+
+  ScEventAddOutputEdge evt(*m_ctx, node,
+    [](ScAddr const & addr, ScAddr const &, ScAddr const & target)
+  {
+    ScMemoryContext localCtx(sc_access_lvl_make_min);
+    ScIterator3Ptr it = localCtx.Iterator3(addr, ScType::EdgeAccessConstPosPerm, ScType::Unknown);
+    while (it->Next())
+     localCtx.EraseElement(it->Get(1));
+
+    return SC_RESULT_OK;
   });
 
   for (size_t i = 0; i < 10000; i++)

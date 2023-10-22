@@ -406,7 +406,10 @@ sc_result sc_storage_element_free(sc_memory_context const * ctx, sc_addr addr)
 
     result = sc_storage_get_element_by_addr(_addr, &el);
     if (result != SC_RESULT_OK)
-      goto error;
+      continue;
+
+    sc_monitor * monitor = sc_monitor_get_monitor_for_addr(&storage->addr_monitors_table, _addr);
+    sc_monitor_acquire_read(monitor);
 
     sc_hash_table_insert(remove_table, p_addr, el);
 
@@ -415,13 +418,13 @@ sc_result sc_storage_element_free(sc_memory_context const * ctx, sc_addr addr)
     while (SC_ADDR_IS_NOT_EMPTY(_addr))
     {
       p_addr = GUINT_TO_POINTER(SC_ADDR_LOCAL_TO_INT(_addr));
-      sc_element * el2 = sc_hash_table_get(remove_table, p_addr);
 
+      sc_element * el2 = sc_hash_table_get(remove_table, p_addr);
       if (el2 == null_ptr)
       {
         result = sc_storage_get_element_by_addr(_addr, &el2);
         if (result != SC_RESULT_OK)
-          goto error;
+          break;
 
         sc_hash_table_insert(remove_table, p_addr, el2);
 
@@ -435,13 +438,13 @@ sc_result sc_storage_element_free(sc_memory_context const * ctx, sc_addr addr)
     while (SC_ADDR_IS_NOT_EMPTY(_addr))
     {
       p_addr = GUINT_TO_POINTER(SC_ADDR_LOCAL_TO_INT(_addr));
-      sc_element * el2 = sc_hash_table_get(remove_table, p_addr);
 
+      sc_element * el2 = sc_hash_table_get(remove_table, p_addr);
       if (el2 == null_ptr)
       {
         result = sc_storage_get_element_by_addr(_addr, &el2);
         if (result != SC_RESULT_OK)
-          goto error;
+          break;
 
         sc_hash_table_insert(remove_table, p_addr, el2);
 
@@ -451,8 +454,7 @@ sc_result sc_storage_element_free(sc_memory_context const * ctx, sc_addr addr)
       _addr = el2->arc.next_in_arc;
     }
 
-    // clean temp addr
-    SC_ADDR_MAKE_EMPTY(_addr);
+    sc_monitor_release_read(monitor);
   }
 
   // now we need to erase all elements
@@ -502,11 +504,12 @@ sc_result sc_storage_element_free(sc_memory_context const * ctx, sc_addr addr)
       sc_element * b_el;
       result = sc_storage_get_element_by_addr(el->arc.begin, &b_el);
       if (result == SC_RESULT_OK && SC_ADDR_IS_EQUAL(addr, b_el->first_out_arc))
+      {
         b_el->first_out_arc = next_arc;
+        --b_el->output_arcs_count;
 
-      --b_el->output_arcs_count;
-
-      sc_event_emit(ctx, el->arc.begin, b_el->flags.access_levels, SC_EVENT_REMOVE_OUTPUT_ARC, addr, el->arc.end);
+        sc_event_emit(ctx, el->arc.begin, b_el->flags.access_levels, SC_EVENT_REMOVE_OUTPUT_ARC, addr, el->arc.end);
+      }
 
       // input arcs
       prev_arc = el->arc.prev_in_arc;
@@ -531,13 +534,14 @@ sc_result sc_storage_element_free(sc_memory_context const * ctx, sc_addr addr)
       sc_element * e_el;
       result = sc_storage_get_element_by_addr(el->arc.end, &e_el);
       if (result == SC_RESULT_OK && SC_ADDR_IS_EQUAL(addr, e_el->first_in_arc))
+      {
         e_el->first_in_arc = next_arc;
+        --e_el->input_arcs_count;
 
-      --e_el->input_arcs_count;
+        sc_event_emit(ctx, el->arc.end, e_el->flags.access_levels, SC_EVENT_REMOVE_INPUT_ARC, addr, el->arc.begin);
+      }
 
       sc_monitor_release_write_n(3, monitor, beg_monitor, end_monitor);
-
-      sc_event_emit(ctx, el->arc.end, e_el->flags.access_levels, SC_EVENT_REMOVE_INPUT_ARC, addr, el->arc.begin);
     }
 
     sc_event_emit(ctx, addr, el->flags.access_levels, SC_EVENT_REMOVE_ELEMENT, SC_ADDR_EMPTY, SC_ADDR_EMPTY);
@@ -688,8 +692,8 @@ sc_uint32 sc_storage_get_element_output_arcs_count(sc_memory_context const * ctx
 
   count = el->output_arcs_count;
 
-  sc_monitor_release_read(monitor);
 error:
+  sc_monitor_release_read(monitor);
   return count;
 }
 
@@ -708,9 +712,8 @@ sc_uint32 sc_storage_get_element_input_arcs_count(sc_memory_context const * ctx,
 
   count = el->input_arcs_count;
 
-  sc_monitor_release_read(monitor);
-
 error:
+  sc_monitor_release_read(monitor);
   return count;
 }
 
