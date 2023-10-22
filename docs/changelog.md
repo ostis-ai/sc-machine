@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - List items semicolons for sc.s-contours
 - Internal sentences after sc.s-contour assignment
+- The success of finishing the action is marked first and only then that it was finished
 
 ## [0.8.0-Fusion] - 24.09.2023
 
