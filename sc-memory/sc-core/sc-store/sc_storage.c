@@ -116,7 +116,8 @@ sc_result sc_storage_get_element_by_addr(sc_addr addr, sc_element ** el)
   *el = null_ptr;
   sc_result result = SC_RESULT_ERROR_ADDR_IS_NOT_VALID;
 
-  if (addr.offset == 0 || addr.seg >= storage->max_segments_count || addr.offset >= SC_SEGMENT_ELEMENTS_COUNT)
+  if (storage == null_ptr || addr.offset == 0 || addr.seg >= storage->max_segments_count ||
+      addr.offset >= SC_SEGMENT_ELEMENTS_COUNT)
     goto error;
 
   sc_segment * segment = storage->segments[addr.seg];
