@@ -31,7 +31,7 @@ void _sc_monitor_global_destroy(sc_monitor_table * table)
 sc_monitor * sc_monitor_get_monitor_for_addr(sc_monitor_table * table, sc_addr addr)
 {
   sc_pointer key = (sc_pointer)(sc_uint64)SC_ADDR_LOCAL_TO_INT(addr);
-  return sc_monitor_get_monitor_from_table(table, key);
+  return key == null_ptr ? null_ptr : sc_monitor_get_monitor_from_table(table, key);
 }
 
 sc_monitor * sc_monitor_get_monitor_from_table(sc_monitor_table * table, sc_pointer key)
@@ -72,6 +72,9 @@ void sc_monitor_destroy(sc_monitor * monitor)
 
 void sc_monitor_acquire_read(sc_monitor * monitor)
 {
+  if (monitor == null_ptr)
+    return;
+
   sc_mutex_lock(&monitor->rw_mutex);
 
   sc_request * current_request = sc_mem_new(sc_request, 1);
@@ -90,6 +93,9 @@ void sc_monitor_acquire_read(sc_monitor * monitor)
 
 void sc_monitor_release_read(sc_monitor * monitor)
 {
+  if (monitor == null_ptr)
+    return;
+
   sc_mutex_lock(&monitor->rw_mutex);
 
   --monitor->active_readers;
@@ -104,6 +110,9 @@ void sc_monitor_release_read(sc_monitor * monitor)
 
 void sc_monitor_acquire_write(sc_monitor * monitor)
 {
+  if (monitor == null_ptr)
+    return;
+
   sc_mutex_lock(&monitor->rw_mutex);
 
   sc_request * current_request = sc_mem_new(sc_request, 1);
@@ -122,6 +131,9 @@ void sc_monitor_acquire_write(sc_monitor * monitor)
 
 void sc_monitor_release_write(sc_monitor * monitor)
 {
+  if (monitor == null_ptr)
+    return;
+
   sc_mutex_lock(&monitor->rw_mutex);
 
   monitor->active_writer = 0;
@@ -149,6 +161,9 @@ void sc_monitor_acquire_read_n(sc_uint32 n, ...)
   for (sc_uint32 i = 0; i < n; ++i)
   {
     sc_monitor * temp = va_arg(args, sc_monitor *);
+    if (temp == null_ptr)
+      continue;
+
     sc_uint32 j;
     for (j = 0; j < unique_count; ++j)
     {
@@ -178,6 +193,9 @@ void sc_monitor_release_read_n(sc_uint32 n, ...)
   for (sc_uint32 i = 0; i < n; ++i)
   {
     sc_monitor * temp = va_arg(args, sc_monitor *);
+    if (temp == null_ptr)
+      continue;
+
     sc_uint32 j;
     for (j = 0; j < unique_count; ++j)
     {
@@ -207,6 +225,9 @@ void sc_monitor_acquire_write_n(sc_uint32 n, ...)
   for (sc_uint32 i = 0; i < n; ++i)
   {
     sc_monitor * temp = va_arg(args, sc_monitor *);
+    if (temp == null_ptr)
+      continue;
+
     sc_uint32 j;
     for (j = 0; j < unique_count; ++j)
     {
@@ -236,6 +257,9 @@ void sc_monitor_release_write_n(sc_uint32 n, ...)
   for (sc_uint32 i = 0; i < n; ++i)
   {
     sc_monitor * temp = va_arg(args, sc_monitor *);
+    if (temp == null_ptr)
+      continue;
+
     sc_uint32 j;
     for (j = 0; j < unique_count; ++j)
     {

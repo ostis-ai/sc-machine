@@ -225,6 +225,8 @@ sc_bool _sc_iterator3_f_a_a_next(sc_iterator3 * it)
   sc_addr arc_addr = SC_ADDR_EMPTY;
   sc_result result;
 
+  sc_monitor * arc_monitor = null_ptr;
+
   sc_monitor * monitor = sc_monitor_get_monitor_for_addr(&sc_storage_get()->addr_monitors_table, it->results[0]);
   sc_monitor_acquire_read(monitor);
 
@@ -240,25 +242,52 @@ sc_bool _sc_iterator3_f_a_a_next(sc_iterator3 * it)
   }
   else
   {
+    sc_bool const is_not_same = SC_ADDR_IS_NOT_EQUAL(it->results[0], it->results[1]);
+    if (is_not_same)
+    {
+      arc_monitor = sc_monitor_get_monitor_for_addr(&sc_storage_get()->addr_monitors_table, it->results[1]);
+      sc_monitor_acquire_read(arc_monitor);
+    }
+
     result = sc_storage_get_element_by_addr(it->results[1], &el);
     if (result != SC_RESULT_OK)
+    {
+      sc_monitor_release_read(arc_monitor);
       goto error;
+    }
 
     arc_addr = el->arc.next_out_arc;
+
+    if (is_not_same)
+      sc_monitor_release_read(arc_monitor);
   }
 
   // iterate through output arcs
   while (SC_ADDR_IS_NOT_EMPTY(arc_addr))
   {
+    sc_bool const is_not_same = SC_ADDR_IS_NOT_EQUAL(it->results[0], arc_addr);
+    if (is_not_same)
+    {
+      arc_monitor = sc_monitor_get_monitor_for_addr(&sc_storage_get()->addr_monitors_table, arc_addr);
+      sc_monitor_acquire_read(arc_monitor);
+    }
+
     result = sc_storage_get_element_by_addr(arc_addr, &el);
     if (result != SC_RESULT_OK)
+    {
+      if (is_not_same)
+        sc_monitor_release_read(arc_monitor);
       goto error;
+    }
 
     sc_addr next_out_arc = el->arc.next_out_arc;
     // add check addr
 
     sc_addr arc_end = el->arc.end;
     sc_type arc_type = el->flags.type;
+
+    if (is_not_same)
+      sc_monitor_release_read(arc_monitor);
 
     sc_type el_type;
     result = sc_storage_get_element_type(it->ctx, arc_end, &el_type);
@@ -296,6 +325,8 @@ sc_bool _sc_iterator3_f_a_f_next(sc_iterator3 * it)
   sc_addr arc_addr = SC_ADDR_EMPTY;
   sc_result result;
 
+  sc_monitor * arc_monitor = null_ptr;
+
   sc_monitor * beg_monitor = sc_monitor_get_monitor_for_addr(&sc_storage_get()->addr_monitors_table, it->results[0]);
   sc_monitor * end_monitor = sc_monitor_get_monitor_for_addr(&sc_storage_get()->addr_monitors_table, it->results[2]);
   sc_monitor_acquire_read_n(2, beg_monitor, end_monitor);
@@ -312,25 +343,53 @@ sc_bool _sc_iterator3_f_a_f_next(sc_iterator3 * it)
   }
   else
   {
+    sc_bool const is_not_same =
+        SC_ADDR_IS_NOT_EQUAL(it->results[0], it->results[1]) && SC_ADDR_IS_NOT_EQUAL(it->results[2], it->results[1]);
+    if (is_not_same)
+    {
+      arc_monitor = sc_monitor_get_monitor_for_addr(&sc_storage_get()->addr_monitors_table, it->results[1]);
+      sc_monitor_acquire_read(arc_monitor);
+    }
+
     result = sc_storage_get_element_by_addr(it->results[1], &el);
     if (result != SC_RESULT_OK)
+    {
+      sc_monitor_release_read(arc_monitor);
       goto error;
+    }
 
     arc_addr = el->arc.next_in_arc;
+
+    if (is_not_same)
+      sc_monitor_release_read(arc_monitor);
   }
 
   // trying to find input arc, that created before iterator, and wasn't deleted
   while (SC_ADDR_IS_NOT_EMPTY(arc_addr))
   {
+    sc_bool const is_not_same =
+        SC_ADDR_IS_NOT_EQUAL(it->results[0], arc_addr) && SC_ADDR_IS_NOT_EQUAL(it->results[2], arc_addr);
+    if (is_not_same)
+    {
+      arc_monitor = sc_monitor_get_monitor_for_addr(&sc_storage_get()->addr_monitors_table, arc_addr);
+      sc_monitor_acquire_read(arc_monitor);
+    }
+
     result = sc_storage_get_element_by_addr(arc_addr, &el);
     if (result != SC_RESULT_OK)
+    {
+      if (is_not_same)
+        sc_monitor_release_read(arc_monitor);
       goto error;
+    }
 
     sc_addr next_in_arc = el->arc.next_in_arc;
-    // add check addr
 
     sc_type arc_type = el->flags.type;
     sc_addr arc_begin = el->arc.begin;
+
+    if (is_not_same)
+      sc_monitor_release_read(arc_monitor);
 
     if (SC_ADDR_IS_EQUAL(it->params[0].addr, arc_begin) && sc_iterator_compare_type(arc_type, it->params[1].type))
     {
@@ -360,6 +419,8 @@ sc_bool _sc_iterator3_a_a_f_next(sc_iterator3 * it)
   sc_addr arc_addr = SC_ADDR_EMPTY;
   sc_result result;
 
+  sc_monitor * arc_monitor;
+
   sc_monitor * monitor = sc_monitor_get_monitor_for_addr(&sc_storage_get()->addr_monitors_table, it->results[2]);
   sc_monitor_acquire_read(monitor);
 
@@ -375,25 +436,51 @@ sc_bool _sc_iterator3_a_a_f_next(sc_iterator3 * it)
   }
   else
   {
+    sc_bool const is_not_same = SC_ADDR_IS_NOT_EQUAL(it->results[2], it->results[1]);
+    if (is_not_same)
+    {
+      arc_monitor = sc_monitor_get_monitor_for_addr(&sc_storage_get()->addr_monitors_table, it->results[1]);
+      sc_monitor_acquire_read(arc_monitor);
+    }
+
     result = sc_storage_get_element_by_addr(it->results[1], &el);
     if (result != SC_RESULT_OK)
+    {
+      sc_monitor_release_read(arc_monitor);
       goto error;
+    }
 
     arc_addr = el->arc.next_in_arc;
+
+    if (is_not_same)
+      sc_monitor_release_read(arc_monitor);
   }
 
   // trying to find input arc, that created before iterator, and wasn't deleted
   while (SC_ADDR_IS_NOT_EMPTY(arc_addr))
   {
+    sc_bool const is_not_same = SC_ADDR_IS_NOT_EQUAL(it->results[2], arc_addr);
+    if (is_not_same)
+    {
+      arc_monitor = sc_monitor_get_monitor_for_addr(&sc_storage_get()->addr_monitors_table, arc_addr);
+      sc_monitor_acquire_read(arc_monitor);
+    }
+
     result = sc_storage_get_element_by_addr(arc_addr, &el);
     if (result != SC_RESULT_OK)
+    {
+      if (is_not_same)
+        sc_monitor_release_read(arc_monitor);
       goto error;
+    }
 
     sc_addr next_in_arc = el->arc.next_in_arc;
-    // add check addr
 
     sc_type arc_type = el->flags.type;
     sc_addr arc_begin = el->arc.begin;
+
+    if (is_not_same)
+      sc_monitor_release_read(arc_monitor);
 
     sc_type el_type = 0;
     sc_storage_get_element_type(it->ctx, arc_begin, &el_type);
