@@ -38,23 +38,38 @@ void sc_event_pool_worker(sc_pointer data, sc_pointer user_data)
 {
   sc_event_pool_worker_data * work_data = (sc_event_pool_worker_data *)data;
 
+  sc_event * event = work_data->evt;
+  if (event == null_ptr)
+    goto destroy;
+
+  sc_monitor_acquire_read(&event->monitor);
+  if (event->ref_count == SC_EVENT_REQUEST_DESTROY)
+  {
+    sc_monitor_release_read(&event->monitor);
+    goto destroy;
+  }
+
+  fEventCallback callback = event->callback;
+  fEventCallbackEx callbackEx = event->callback_ex;
+  sc_monitor_release_read(&event->monitor);
+
   sc_storage_start_new_process();
 
-  if (work_data->evt->callback != null_ptr)
-    work_data->evt->callback(work_data->evt, work_data->edge_addr);
-  else if (work_data->evt->callback_ex != null_ptr)
-    work_data->evt->callback_ex(work_data->evt, work_data->edge_addr, work_data->other_addr);
-
-  sc_event_unref(work_data->evt);
+  if (callback != null_ptr)
+    callback(event, work_data->edge_addr);
+  else if (callbackEx != null_ptr)
+    callbackEx(event, work_data->edge_addr, work_data->other_addr);
 
   sc_storage_end_new_process();
 
+destroy:
   sc_event_pool_worker_data_destroy(work_data);
 }
 
 sc_event_queue * sc_event_queue_new_ext(sc_uint32 max_events_and_agents_threads)
 {
   sc_event_queue * queue = sc_mem_new(sc_event_queue, 1);
+  sc_queue_init(&queue->deletable_events);
   queue->processes_segments_table = sc_hash_table_init(g_direct_hash, g_direct_equal, null_ptr, null_ptr);
   sc_monitor_init(&queue->monitor);
   sc_monitor_init(&queue->processes_monitor);
@@ -110,10 +125,18 @@ void sc_event_queue_destroy_wait(sc_event_queue * queue)
     queue->thread_pool = null_ptr;
   }
 
+  while (!sc_queue_empty(queue->deletable_events))
+  {
+    sc_event * event = sc_queue_pop(queue->deletable_events);
+    sc_monitor_destroy(&event->monitor);
+    sc_mem_free(event);
+  }
+  sc_queue_destroy(queue->deletable_events);
+
   sc_monitor_release_write(&queue->monitor);
 
-  sc_monitor_destroy(&queue->monitor);
   sc_monitor_destroy(&queue->processes_monitor);
+  sc_monitor_destroy(&queue->monitor);
   sc_mem_free(queue);
 }
 
@@ -123,6 +146,13 @@ void sc_event_queue_append(sc_event_queue * queue, sc_event * evt, sc_addr edge,
     return;
 
   sc_monitor_acquire_write(&queue->monitor);
+
+  sc_bool is_running = queue->running;
+  if (is_running == SC_FALSE)
+  {
+    sc_monitor_release_write(&queue->monitor);
+    return;
+  }
 
   sc_event_pool_worker_data * data = sc_event_pool_worker_data_new(evt, edge, other_el);
   g_thread_pool_push(queue->thread_pool, data, null_ptr);

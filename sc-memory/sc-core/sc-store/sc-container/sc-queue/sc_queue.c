@@ -28,7 +28,7 @@ void sc_queue_push(sc_queue * queue, void * data)
   new_node->data = data;
   new_node->next = null_ptr;
 
-  if (!queue->begin)
+  if (!queue->begin || !queue->end)
   {
     queue->begin = new_node;
     queue->end = new_node;

@@ -15,6 +15,7 @@
 typedef struct
 {
   GThreadPool * thread_pool;  // thread pool that used for a workers
+  sc_queue * deletable_events;
   sc_hash_table * processes_segments_table;
   sc_monitor monitor;
   sc_monitor processes_monitor;

@@ -19,21 +19,21 @@
 
 extern "C"
 {
-#include <glib.h>
+#include "sc-core/sc-store/sc-base/sc_mutex.h"
 }
 
 namespace
 {
-GMutex gContextMutex;
+sc_mutex gContextMutex;
 struct ContextMutexLock
 {
   ContextMutexLock()
   {
-    g_mutex_lock(&gContextMutex);
+    sc_mutex_lock(&gContextMutex);
   }
   ~ContextMutexLock()
   {
-    g_mutex_unlock(&gContextMutex);
+    sc_mutex_unlock(&gContextMutex);
   }
 };
 
@@ -110,17 +110,9 @@ void ScMemory::Shutdown(bool saveState /* = true */)
   sc_memory_shutdown_ext();
 
   ScKeynodes::Shutdown();
-  if (!ms_contexts.empty())
-  {
-    std::stringstream description;
-    description << "There are " << ms_contexts.size() << " contexts, wasn't destroyed, before Memory::shutdown:";
-    for (auto const * ctx : ms_contexts)
-      description << "\t\n" << ctx->GetName();
-
-    SC_THROW_EXCEPTION(utils::ExceptionInvalidState, description.str());
-  }
 
   sc_memory_shutdown(saveState);
+
   ms_globalContext = nullptr;
 
   g_log_set_default_handler(g_log_default_handler, nullptr);
@@ -181,7 +173,7 @@ ScMemoryContext::ScMemoryContext(sc_uint8 accessLevels, std::string const & name
   if (name.empty())
   {
     std::stringstream ss;
-    ss << "Context_" << gContextCounter;
+    ss << "Context_" << ++gContextCounter;
     m_name = ss.str();
   }
   else
