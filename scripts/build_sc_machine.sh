@@ -60,7 +60,7 @@ done
 if ((build_force == 1));
 then
   stage "Clear latest build"
-  rm -rf "${BIN_PATH}"
+  rm -rf "${BINARY_PATH}"
   rm -rf "${BUILD_PATH}"
   find "${PROBLEM_SOLVER_PATH}" -type d -name generated -exec rm -rf {} +
 fi
