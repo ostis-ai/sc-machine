@@ -69,22 +69,31 @@ void ScEvent::RemoveDelegate()
 
 sc_result ScEvent::Handler(sc_event const * evt, sc_addr edge, sc_addr other_el)
 {
-  ScEvent * eventObj = (ScEvent *)sc_event_get_data(evt);
+  auto * eventObj = (ScEvent *)sc_event_get_data(evt);
+  sc_result result = SC_RESULT_ERROR;
 
   if (eventObj->m_delegate)
   {
-    return eventObj->m_delegate(ScAddr(sc_event_get_element(evt)), ScAddr(edge), ScAddr(other_el)) ? SC_RESULT_OK
-                                                                                                   : SC_RESULT_ERROR;
+    try
+    {
+      result = eventObj->m_delegate(ScAddr(sc_event_get_element(evt)), ScAddr(edge), ScAddr(other_el))
+                   ? SC_RESULT_OK
+                   : SC_RESULT_ERROR;
+    }
+    catch (utils::ScException & e)
+    {
+      SC_LOG_ERROR("Uncaught exception: " << e.Message());
+    }
   }
 
-  return SC_RESULT_ERROR;
+  return result;
 }
 
 sc_result ScEvent::HandlerDelete(sc_event const * evt)
 {
-  ScEvent * eventObj = (ScEvent *)sc_event_get_data(evt);
+  auto * eventObj = (ScEvent *)sc_event_get_data(evt);
 
-  utils::ScLockScope(eventObj->m_lock);
+  utils::ScLockScope lock(eventObj->m_lock);
   if (eventObj->m_event)
     eventObj->m_event = nullptr;
 

@@ -76,10 +76,10 @@ sc_addr sc_storage_node_new_ext(sc_memory_context const * ctx, sc_type type, sc_
 /*! Create new sc-link
  * @return Return sc-addr of created sc-link or empty sc-addr if sc-link wasn't created
  */
-sc_addr sc_storage_link_new(sc_memory_context const * ctx, sc_bool is_const);
+sc_addr sc_storage_link_new(sc_memory_context const * ctx, sc_type type);
 
 //! Create sc-link with specified access levels
-sc_addr sc_storage_link_new_ext(sc_memory_context const * ctx, sc_access_levels access_levels, sc_bool is_const);
+sc_addr sc_storage_link_new_ext(sc_memory_context const * ctx, sc_access_levels access_levels, sc_type type);
 
 /*! Create new sc-arc.
  * @param type Type of new sc-arc

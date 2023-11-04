@@ -112,12 +112,15 @@ void sc_event_queue_destroy_wait(sc_event_queue * queue)
     return;
 
   sc_monitor_acquire_write(&queue->monitor);
+  sc_monitor_acquire_write(&queue->processes_monitor);
 
   if (queue->processes_segments_table)
   {
     sc_hash_table_destroy(queue->processes_segments_table);
     queue->processes_segments_table = null_ptr;
   }
+
+  sc_monitor_release_write(&queue->processes_monitor);
 
   if (queue->thread_pool)
   {

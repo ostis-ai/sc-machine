@@ -178,10 +178,13 @@ sc_result sc_event_destroy(sc_event * evt)
   evt->data = null_ptr;
   evt->access_levels = 0;
 
-  sc_monitor_acquire_write(&sc_storage_get()->event_queue->monitor);
-  sc_queue_push(sc_storage_get()->event_queue->deletable_events, evt);
-  sc_monitor_release_write(&sc_storage_get()->event_queue->monitor);
-
+  sc_storage * storage = sc_storage_get();
+  if (storage != null_ptr)
+  {
+    sc_monitor_acquire_write(&storage->event_queue->monitor);
+    sc_queue_push(storage->event_queue->deletable_events, evt);
+    sc_monitor_release_write(&storage->event_queue->monitor);
+  }
   sc_monitor_release_write(&evt->monitor);
 
   return SC_RESULT_OK;

@@ -90,7 +90,7 @@ _SC_EXTERN sc_addr sc_memory_node_new(sc_memory_context const * ctx, sc_type typ
 
 //! Create new sc-link
 _SC_EXTERN sc_addr sc_memory_link_new(sc_memory_context const * ctx);
-_SC_EXTERN sc_addr sc_memory_link_new2(sc_memory_context const * ctx, sc_bool is_const);
+_SC_EXTERN sc_addr sc_memory_link_new2(sc_memory_context const * ctx, sc_type type);
 
 /*! Create new sc-arc.
  * @param type Type of new sc-arc

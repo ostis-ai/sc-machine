@@ -95,7 +95,7 @@ bool ScMemory::Initialize(sc_memory_params const & params)
 
   utils::ScLog::SetUp(params.log_type, params.log_file, params.log_level);
 
-  return (ms_globalContext != nullptr);
+  return ms_globalContext != nullptr;
 }
 
 bool ScMemory::IsInitialized()
@@ -263,7 +263,7 @@ ScAddr ScMemoryContext::CreateLink(ScType const & type /* = ScType::LinkConst */
         utils::ExceptionInvalidParams,
         "Specified type must be sc-link type. You should provide any of ScType::Link... value as a type");
 
-  return sc_memory_link_new2(m_context, type.IsConst());
+  return sc_memory_link_new2(m_context, type);
 }
 
 ScAddr ScMemoryContext::CreateEdge(ScType const & type, ScAddr const & addrBeg, ScAddr const & addrEnd)
@@ -281,7 +281,7 @@ ScType ScMemoryContext::GetElementType(ScAddr const & addr) const
 {
   CHECK_CONTEXT;
   sc_type type = 0;
-  return (sc_memory_get_element_type(m_context, *addr, &type) == SC_RESULT_OK) ? ScType(type) : ScType(0);
+  return sc_memory_get_element_type(m_context, *addr, &type) == SC_RESULT_OK ? ScType(type) : ScType(0);
 }
 
 bool ScMemoryContext::SetElementSubtype(ScAddr const & addr, sc_type subtype)

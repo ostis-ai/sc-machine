@@ -137,11 +137,13 @@ void sc_memory_shutdown(sc_bool save_state)
   sc_memory_shutdown_ext();
   sc_helper_shutdown();
 
+  sc_storage_shutdown(save_state);
+
   sc_memory_context_free(s_memory_default_ctx);
-  s_memory_default_ctx = 0;
   s_memory_default_ctx = null_ptr;
 
-  if (memory->context_hash_table)
+  sc_memory_info("Clear contexts");
+  if (memory->context_hash_table != null_ptr)
   {
     sc_monitor_acquire_read(&memory->context_monitor);
     sc_uint32 context_count = sc_hash_table_size(memory->context_hash_table);
@@ -149,24 +151,15 @@ void sc_memory_shutdown(sc_bool save_state)
     if (context_count > 0)
       sc_memory_warning("There are %d contexts, wasn't destroyed before sc-memory shutdown", context_count);
 
-    while (context_count > 0)
-    {
-      sc_monitor_acquire_read(&memory->context_monitor);
-      context_count = sc_hash_table_size(memory->context_hash_table);
-      sc_monitor_release_read(&memory->context_monitor);
-    }
-
     sc_monitor_acquire_write(&memory->context_monitor);
     sc_hash_table_destroy(memory->context_hash_table);
+    memory->context_hash_table = null_ptr;
     sc_monitor_release_write(&memory->context_monitor);
   }
 
   sc_monitor_destroy(&memory->context_monitor);
-  memory->last_context_id = 0;
   sc_mem_free(memory);
   memory = null_ptr;
-
-  sc_storage_shutdown(save_state);
 
   sc_memory_info("Shutdown");
 }
@@ -183,6 +176,9 @@ sc_memory_context * sc_memory_context_new(sc_uint8 levels)
 
 sc_memory_context * sc_memory_context_new_impl(sc_uint8 levels)
 {
+  if (memory == null_ptr)
+    return null_ptr;
+
   sc_memory_context * ctx = sc_mem_new(sc_memory_context, 1);
   sc_uint32 index;
 
@@ -191,6 +187,9 @@ sc_memory_context * sc_memory_context_new_impl(sc_uint8 levels)
   // setup concurrency id
   sc_monitor_acquire_write(&memory->context_monitor);
   if (memory->context_count >= G_MAXUINT32)
+    goto error;
+
+  if (memory->context_hash_table == null_ptr)
     goto error;
 
   index = (memory->last_context_id + 1) % G_MAXUINT32;
@@ -236,14 +235,18 @@ void sc_memory_context_free_impl(sc_memory_context * ctx)
 
   sc_monitor_acquire_write(&memory->context_monitor);
 
+  if (memory->context_hash_table == null_ptr)
+    goto error;
+
   sc_memory_context * context = sc_hash_table_get(memory->context_hash_table, GINT_TO_POINTER(ctx->id));
   if (context == null_ptr)
-    return;
+    goto error;
 
   sc_monitor_destroy(&ctx->monitor);
   sc_hash_table_remove(memory->context_hash_table, GINT_TO_POINTER(ctx->id));
   --memory->context_count;
 
+error:
   sc_monitor_release_write(&memory->context_monitor);
 
   sc_mem_free(ctx);
@@ -322,12 +325,12 @@ sc_addr sc_memory_node_new(const sc_memory_context * ctx, sc_type type)
 
 sc_addr sc_memory_link_new(sc_memory_context const * ctx)
 {
-  return sc_memory_link_new2(ctx, SC_TRUE);
+  return sc_memory_link_new2(ctx, sc_type_const);
 }
 
-sc_addr sc_memory_link_new2(sc_memory_context const * ctx, sc_bool is_const)
+sc_addr sc_memory_link_new2(sc_memory_context const * ctx, sc_type type)
 {
-  return sc_storage_link_new(ctx, is_const);
+  return sc_storage_link_new(ctx, type);
 }
 
 sc_addr sc_memory_arc_new(sc_memory_context * ctx, sc_type type, sc_addr beg, sc_addr end)

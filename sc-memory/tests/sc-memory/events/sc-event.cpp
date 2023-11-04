@@ -10,6 +10,77 @@
 #include <thread>
 #include <mutex>
 
+TEST(ScEventQueueTest, EventsQueueDestroy)
+{
+  sc_memory_params params;
+  sc_memory_params_clear(&params);
+  params.clear = SC_TRUE;
+  params.repo_path = "repo";
+  params.log_level = "Debug";
+
+  ScMemory::Initialize(params);
+
+  ScMemoryContext ctx(sc_access_lvl_make_min);
+
+  ScAddr const node = ctx.CreateNode(ScType::NodeConst);
+  ScAddr const node2 = ctx.CreateNode(ScType::NodeConst);
+  ScAddr const node3 = ctx.CreateNode(ScType::NodeConst);
+
+  size_t count = 10;
+
+  ScEventAddOutputEdge evt(ctx, node,
+    [node, node2, count](ScAddr const & addr, ScAddr const &, ScAddr const &)
+  {
+    bool result = false;
+    ScMemoryContext localCtx(sc_access_lvl_make_min);
+    ScIterator3Ptr it = localCtx.Iterator3(addr, ScType::EdgeAccessConstPosPerm, ScType::Unknown);
+    while (it->Next())
+      result = true;
+
+    EXPECT_TRUE(result);
+
+    for (size_t i = 0; i < count; ++i)
+      localCtx.CreateEdge(ScType::EdgeAccessConstPosPerm, node2, node);
+    return result;
+  });
+
+  ScEventAddOutputEdge evt2(ctx, node2,
+    [node3, node2, count](ScAddr const & addr, ScAddr const &, ScAddr const &)
+  {
+    bool result = false;
+    ScMemoryContext localCtx(sc_access_lvl_make_min);
+    ScIterator3Ptr it = localCtx.Iterator3(addr, ScType::EdgeAccessConstPosPerm, ScType::Unknown);
+    while (it->Next())
+      result = true;
+
+    EXPECT_TRUE(result);
+    for (size_t i = 0; i < count; ++i)
+      localCtx.CreateEdge(ScType::EdgeAccessConstPosPerm, node3, node2);
+
+    return result;
+  });
+
+  ScEventAddOutputEdge evt3(ctx, node3,
+  [](ScAddr const & addr, ScAddr const &, ScAddr const &)
+  {
+    bool result = false;
+    ScMemoryContext localCtx(sc_access_lvl_make_min);
+    ScIterator3Ptr it = localCtx.Iterator3(addr, ScType::EdgeAccessConstPosPerm, ScType::Unknown);
+    while (it->Next())
+      result = true;
+
+    EXPECT_TRUE(result);
+
+    return result;
+  });
+
+  for (size_t i = 0; i < count; ++i)
+    ctx.CreateEdge(ScType::EdgeAccessConstPosPerm, node, node2);
+
+  ctx.Destroy();
+  ScMemory::Shutdown();
+}
+
 namespace
 {
 const double kTestTimeout = 5.0;
@@ -157,7 +228,7 @@ TEST_F(ScEventTest, destroy_order)
   ScAddr const node = m_ctx->CreateNode(ScType::Unknown);
   EXPECT_TRUE(node.IsValid());
 
-  ScEventAddOutputEdge * evt = new ScEventAddOutputEdge(*m_ctx, node,
+  auto * evt = new ScEventAddOutputEdge(*m_ctx, node,
     [](ScAddr const &, ScAddr const &, ScAddr const &)
   {
     return true;
