@@ -118,7 +118,7 @@ sc_bool sc_fs_memory_unlink_string(sc_addr_hash link_hash)
   return manager->unlink_string(manager->fs_memory, link_hash) == SC_FS_MEMORY_OK;
 }
 
-// dictionary read, write and save methods
+// read, write and save methods
 sc_bool _sc_fs_memory_load_sc_memory_segments(sc_storage * storage)
 {
   if (sc_fs_is_file(manager->segments_path) == SC_FALSE)

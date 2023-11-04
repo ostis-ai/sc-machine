@@ -14,12 +14,13 @@
 
 typedef struct
 {
-  GThreadPool * thread_pool;  // thread pool that used for a workers
-  sc_queue * deletable_events;
   sc_hash_table * processes_segments_table;
-  sc_monitor monitor;
   sc_monitor processes_monitor;
-  sc_bool running;  // flag that determine if queue is running
+  sc_queue * deletable_events;  // events needed to be deleted after sc-memory shutdown
+  sc_bool running;              // flag that determine if queue is running
+  sc_monitor destroy_monitor;
+  GThreadPool * thread_pool;  // thread pool that used for a workers
+  sc_monitor pool_monitor;
 } sc_event_queue;
 
 //! Create new sc-event queue with user processors number

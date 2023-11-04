@@ -32,7 +32,7 @@ struct _sc_memory
 };
 
 sc_memory * memory = null_ptr;
-sc_memory_context * s_memory_default_ctx;
+sc_memory_context * s_memory_default_ctx = null_ptr;
 
 sc_memory_context * sc_memory_initialize(sc_memory_params const * params)
 {
@@ -98,6 +98,7 @@ error:
   sc_storage_end_new_process();
 
   sc_memory_context_free(s_memory_default_ctx);
+  s_memory_default_ctx = null_ptr;
   sc_memory_info("Initialized with errors");
   return null_ptr;
 }

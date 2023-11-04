@@ -55,6 +55,8 @@ _SC_EXTERN sc_event * sc_event_new_ex(
  */
 _SC_EXTERN sc_result sc_event_destroy(sc_event * event);
 
+_SC_EXTERN sc_bool sc_event_is_deletable(sc_event const * event);
+
 //! Returns data of specified sc-event
 _SC_EXTERN sc_pointer sc_event_get_data(sc_event const * event);
 

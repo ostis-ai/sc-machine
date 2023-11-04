@@ -5,7 +5,7 @@
 #include "sc_test.hpp"
 
 
-TEST_F(ScMemoryTest, elements)
+TEST_F(ScMemoryTest, Elements)
 {
   ScMemoryContext ctx(sc_access_lvl_make_min, "elements");
 
@@ -46,6 +46,17 @@ TEST_F(ScMemoryTest, elements)
   EXPECT_TRUE(ctx.EraseElement(node));
   EXPECT_TRUE(ctx.IsElement(link));
   EXPECT_FALSE(ctx.IsElement(node));
+  EXPECT_FALSE(ctx.IsElement(edge));
+}
+
+TEST_F(ScMemoryTest, InvalidElements)
+{
+  ScMemoryContext ctx(sc_access_lvl_make_min, "elements");
+
+  ScAddr const node{454545454455444};
+  EXPECT_FALSE(ctx.IsElement(node));
+
+  ScAddr const edge{454};
   EXPECT_FALSE(ctx.IsElement(edge));
 }
 
@@ -124,4 +135,104 @@ TEST_F(ScMemoryTest, CreateDeleteCountEdges2)
   EXPECT_EQ(ctx.GetElementInputArcsCount(link), 0u);
   EXPECT_EQ(ctx.GetElementOutputArcsCount(relation), 0u);
   EXPECT_EQ(ctx.GetElementInputArcsCount(relation), 0u);
+}
+
+TEST(SmallScMemoryTest, FullMemory)
+{
+  sc_memory_params params;
+  sc_memory_params_clear(&params);
+
+  params.clear = SC_TRUE;
+  params.repo_path = "repo";
+  params.log_level = "Debug";
+
+  params.max_loaded_segments = 1;
+
+  ScMemory::LogMute();
+  ScMemory::Initialize(params);
+  ScMemory::LogUnmute();
+
+  ScMemoryContext ctx(sc_access_lvl_make_min);
+
+  ScAddrList addrs;
+
+  size_t count = SC_SEGMENT_ELEMENTS_COUNT / 3;
+  for (size_t i = 0; i < count; ++i)
+  {
+    ScAddr const node = ctx.CreateNode(ScType::Const);
+    if (!node.IsValid() && !ctx.IsElement(node))
+      break;
+
+    ScAddr const link = ctx.CreateLink();
+    if (!link.IsValid() && !ctx.IsElement(link))
+      break;
+
+    ScAddr const edge = ctx.CreateEdge(ScType::EdgeAccessConstPosPerm, node, link);
+    if (!edge.IsValid() && !ctx.IsElement(edge))
+      break;
+    addrs.push_back(edge);
+  }
+
+  count = addrs.size();
+  for (size_t i = 0; i < count; ++i)
+  {
+    ScAddr addr = addrs.back();
+    ctx.EraseElement(addr);
+    addrs.pop_back();
+  }
+
+  for (size_t i = 0; i < count; ++i)
+  {
+    ScAddr const node = ctx.CreateNode(ScType::Const);
+    EXPECT_TRUE(node.IsValid());
+    EXPECT_TRUE(ctx.IsElement(node));
+  }
+
+  ScAddr const node = ctx.CreateNode(ScType::Const);
+  EXPECT_FALSE(node.IsValid());
+  EXPECT_FALSE(ctx.IsElement(node));
+
+  ctx.Destroy();
+  ScMemory::LogMute();
+  ScMemory::Shutdown();
+  ScMemory::LogUnmute();
+}
+
+TEST(SmallScMemoryTest, EmptyMemory)
+{
+  sc_memory_params params;
+  sc_memory_params_clear(&params);
+
+  params.clear = SC_TRUE;
+  params.repo_path = "repo";
+  params.log_level = "Debug";
+
+  params.max_loaded_segments = 0;
+
+  ScMemory::LogMute();
+  ScMemory::Initialize(params);
+  ScMemory::LogUnmute();
+
+  ScMemoryContext ctx(sc_access_lvl_make_min);
+
+  ScAddrList addrs;
+
+  size_t count = SC_SEGMENT_ELEMENTS_COUNT / 3;
+  for (size_t i = 0; i < count; ++i)
+  {
+    ScAddr const node = ctx.CreateNode(ScType::Const);
+    if (!node.IsValid() && !ctx.IsElement(node))
+      break;
+  }
+
+  EXPECT_EQ(addrs.size(), 0u);
+
+  ScAddr const node = ctx.CreateNode(ScType::Const);
+  EXPECT_FALSE(node.IsValid());
+  EXPECT_FALSE(ctx.IsElement(node));
+
+  ctx.Destroy();
+  ScMemory::LogMute();
+  ScMemory::Shutdown();
+  ScMemory::LogUnmute();
 }

@@ -13,6 +13,11 @@
 
 #include "utils/sc_log.hpp"
 
+extern "C"
+{
+#include "sc-core/sc-store/sc-base/sc_monitor.h"
+}
+
 // Should be equal to C values
 
 namespace
@@ -67,25 +72,30 @@ void ScEvent::RemoveDelegate()
   m_delegate = DelegateFunc();
 }
 
-sc_result ScEvent::Handler(sc_event const * evt, sc_addr edge, sc_addr other_el)
+sc_result ScEvent::Handler(sc_event const * event, sc_addr edge, sc_addr other_el)
 {
-  auto * eventObj = (ScEvent *)sc_event_get_data(evt);
   sc_result result = SC_RESULT_ERROR;
 
-  if (eventObj->m_delegate)
+  auto * eventObj = (ScEvent *)sc_event_get_data(event);
+
+  if (eventObj == nullptr)
+    return result;
+
+  DelegateFunc delegateFunc = eventObj->m_delegate;
+  if (delegateFunc == nullptr)
+    goto result;
+
+  try
   {
-    try
-    {
-      result = eventObj->m_delegate(ScAddr(sc_event_get_element(evt)), ScAddr(edge), ScAddr(other_el))
-                   ? SC_RESULT_OK
-                   : SC_RESULT_ERROR;
-    }
-    catch (utils::ScException & e)
-    {
-      SC_LOG_ERROR("Uncaught exception: " << e.Message());
-    }
+    result = delegateFunc(ScAddr(sc_event_get_element(event)), ScAddr(edge), ScAddr(other_el)) ? SC_RESULT_OK
+                                                                                               : SC_RESULT_ERROR;
+  }
+  catch (utils::ScException & e)
+  {
+    SC_LOG_ERROR("Uncaught exception: " << e.Message());
   }
 
+result:
   return result;
 }
 
@@ -95,7 +105,10 @@ sc_result ScEvent::HandlerDelete(sc_event const * evt)
 
   utils::ScLockScope lock(eventObj->m_lock);
   if (eventObj->m_event)
+  {
+    eventObj->m_delegate = nullptr;
     eventObj->m_event = nullptr;
+  }
 
   return SC_RESULT_OK;
 }

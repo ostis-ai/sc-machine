@@ -11,7 +11,6 @@
 
 #include "../sc_event.h"
 #include "../sc_types.h"
-#include "../sc-base/sc_monitor.h"
 
 /* Events life cycle:
  * - create event - set reference count to 1

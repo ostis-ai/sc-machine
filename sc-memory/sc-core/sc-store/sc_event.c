@@ -87,19 +87,6 @@ error:
   return SC_RESULT_ERROR_INVALID_PARAMS;
 }
 
-sc_bool sc_event_ref(sc_event * evt)
-{
-  sc_bool res = SC_TRUE;
-
-  sc_monitor_acquire_read(&evt->monitor);
-
-  if (evt->ref_count & SC_EVENT_REQUEST_DESTROY)
-    res = SC_FALSE;
-
-  sc_monitor_release_read(&evt->monitor);
-  return res;
-}
-
 sc_event * sc_event_new(
     sc_memory_context const * ctx,
     sc_addr el,
@@ -181,9 +168,9 @@ sc_result sc_event_destroy(sc_event * evt)
   sc_storage * storage = sc_storage_get();
   if (storage != null_ptr)
   {
-    sc_monitor_acquire_write(&storage->event_queue->monitor);
+    sc_monitor_acquire_write(&storage->event_queue->pool_monitor);
     sc_queue_push(storage->event_queue->deletable_events, evt);
-    sc_monitor_release_write(&storage->event_queue->monitor);
+    sc_monitor_release_write(&storage->event_queue->pool_monitor);
   }
   sc_monitor_release_write(&evt->monitor);
 
@@ -220,9 +207,9 @@ sc_result sc_event_notify_element_deleted(sc_addr element)
       // mark event for deletion
       sc_monitor_acquire_write(&event->monitor);
 
-      sc_monitor_acquire_write(&sc_storage_get()->event_queue->monitor);
+      sc_monitor_acquire_write(&sc_storage_get()->event_queue->pool_monitor);
       sc_queue_push(sc_storage_get()->event_queue->deletable_events, event);
-      sc_monitor_release_write(&sc_storage_get()->event_queue->monitor);
+      sc_monitor_release_write(&sc_storage_get()->event_queue->pool_monitor);
 
       sc_monitor_release_write(&event->monitor);
 
@@ -287,7 +274,7 @@ sc_result sc_event_emit_impl(
   {
     event = (sc_event *)element_events_list->data;
 
-    if (event->type == type && sc_event_ref(event) == SC_TRUE)
+    if (event->type == type)
       sc_event_queue_append(sc_storage_get()->event_queue, event, edge, other_el);
 
     element_events_list = element_events_list->next;
@@ -295,6 +282,11 @@ sc_result sc_event_emit_impl(
 
 result:
   return SC_RESULT_OK;
+}
+
+sc_bool sc_event_is_deletable(sc_event const * event)
+{
+  return event->ref_count == SC_EVENT_REQUEST_DESTROY;
 }
 
 sc_pointer sc_event_get_data(sc_event const * event)

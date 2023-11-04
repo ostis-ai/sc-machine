@@ -62,6 +62,7 @@ sc_bool sc_storage_shutdown(sc_bool save_state)
 {
   sc_events_stop_processing(storage->event_queue);
   sc_events_shutdown(storage->event_queue);
+  storage->event_queue = null_ptr;
 
   if (save_state == SC_TRUE)
   {
@@ -168,7 +169,7 @@ error:
 sc_segment * _sc_storage_get_new_segment(sc_thread * thread)
 {
   sc_segment * segment = null_ptr;
-  if (storage->segments_count + 1 == storage->max_segments_count)
+  if (storage->segments_count == storage->max_segments_count)
     goto error;
 
   segment = storage->segments[storage->segments_count] = sc_segment_new(storage->segments_count);
@@ -320,15 +321,25 @@ error:
 
 sc_element * _sc_storage_get_released_element(sc_addr * addr)
 {
+  sc_segment * segment = null_ptr;
+  sc_element * element = null_ptr;
+  sc_addr_offset element_offset = 0;
+
   sc_monitor_acquire_write(&storage->segments_monitor);
 
   sc_addr_seg const segment_num = storage->last_released_segment_num;
-  sc_segment * segment = storage->segments[segment_num];
+  if (storage->last_released_segment_num >= storage->max_segments_count)
+    goto error;
 
-  sc_addr_offset const element_offset = segment->last_released_offset;
-  sc_element * element = &segment->elements[element_offset];
-  segment->last_released_offset = element->flags.type;
-  element->flags.type = 0;
+  segment = storage->segments[segment_num];
+
+  element_offset = segment->last_released_offset;
+  if (segment->last_released_offset != 0)
+  {
+    element = &segment->elements[element_offset];
+    segment->last_released_offset = element->flags.type;
+    element->flags.type = 0;
+  }
 
   if (segment->last_released_offset == 0)
   {
@@ -336,6 +347,7 @@ sc_element * _sc_storage_get_released_element(sc_addr * addr)
     segment->elements[0].flags.type = 0;
   }
 
+error:
   sc_monitor_release_write(&storage->segments_monitor);
 
   (*addr) = (sc_addr){segment_num, element_offset};
