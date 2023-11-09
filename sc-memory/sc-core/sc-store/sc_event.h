@@ -9,6 +9,8 @@
 
 #include "sc_types.h"
 
+typedef struct _sc_event_registration_manager sc_event_registration_manager;
+
 /*! Event callback function type.
  * It takes 3 parameters:
  * - pointer to emitted event description
@@ -23,6 +25,10 @@ typedef sc_result (*fEventCallback)(sc_event const * event, sc_addr arg);
 
 //! Delete listened element callback function type
 typedef sc_result (*fDeleteCallback)(sc_event const * event);
+
+void sc_event_registration_manager_initialize(sc_event_registration_manager ** manager);
+
+void sc_event_registration_manager_shutdown(sc_event_registration_manager * manager);
 
 /*! Subscribe for events from specified sc-element
  * @param el sc-addr of subscribed sc-element events

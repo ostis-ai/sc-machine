@@ -38,13 +38,6 @@ struct _sc_arc_info
  *
  * All arcs have next_arc and prev_arc addr's. Each element store addr of begin and end arcs.
  * Arc values: next_out_arc and next_in_arc store next arcs in output and input arcs list.
- * So if you need to iterate all output arcs for specified element, then you need to use such code:
- * sc_element *arc = sc_storage_get_element(el->first_output_arc);
- * while (!addr_empty(arc->incident->next_out_arc))
- * {
- *     <you code>
- *     arc = sc_storage_get_element(arc->incident->next_out_arc);
- * }
  */
 
 struct _sc_element_flags

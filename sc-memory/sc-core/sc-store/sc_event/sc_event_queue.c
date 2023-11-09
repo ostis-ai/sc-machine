@@ -17,11 +17,14 @@ typedef struct
   sc_event * evt;
   sc_addr edge_addr;
   sc_addr other_addr;
-} sc_event_pool_worker_data;
+} sc_event_emission_pool_worker_data;
 
-sc_event_pool_worker_data * sc_event_pool_worker_data_new(sc_event * evt, sc_addr edge_addr, sc_addr other_addr)
+sc_event_emission_pool_worker_data * _sc_event_emission_pool_worker_data_new(
+    sc_event * evt,
+    sc_addr edge_addr,
+    sc_addr other_addr)
 {
-  sc_event_pool_worker_data * data = sc_mem_new(sc_event_pool_worker_data, 1);
+  sc_event_emission_pool_worker_data * data = sc_mem_new(sc_event_emission_pool_worker_data, 1);
   data->evt = evt;
   data->edge_addr = edge_addr;
   data->other_addr = other_addr;
@@ -29,15 +32,15 @@ sc_event_pool_worker_data * sc_event_pool_worker_data_new(sc_event * evt, sc_add
   return data;
 }
 
-void sc_event_pool_worker_data_destroy(sc_event_pool_worker_data * data)
+void _sc_event_emission_pool_worker_data_destroy(sc_event_emission_pool_worker_data * data)
 {
   sc_mem_free(data);
 }
 
-void sc_event_pool_worker(sc_pointer data, sc_pointer user_data)
+void _sc_event_emission_pool_worker(sc_pointer data, sc_pointer user_data)
 {
-  sc_event_pool_worker_data * work_data = (sc_event_pool_worker_data *)data;
-  sc_event_queue * queue = user_data;
+  sc_event_emission_pool_worker_data * work_data = (sc_event_emission_pool_worker_data *)data;
+  sc_event_emission_manager * queue = user_data;
 
   sc_event * event = work_data->evt;
   if (event == null_ptr)
@@ -72,15 +75,13 @@ void sc_event_pool_worker(sc_pointer data, sc_pointer user_data)
 end:
   sc_monitor_release_read(&queue->destroy_monitor);
 destroy:
-  sc_event_pool_worker_data_destroy(work_data);
+  _sc_event_emission_pool_worker_data_destroy(work_data);
 }
 
-sc_event_queue * sc_event_queue_new_ext(sc_uint32 max_events_and_agents_threads)
+void sc_event_emission_manager_initialize(sc_event_emission_manager ** manager, sc_uint32 max_events_and_agents_threads)
 {
-  sc_event_queue * queue = sc_mem_new(sc_event_queue, 1);
-  queue->processes_segments_table = sc_hash_table_init(g_direct_hash, g_direct_equal, null_ptr, null_ptr);
-  sc_monitor_init(&queue->processes_monitor);
-  sc_queue_init(&queue->deletable_events);
+  *manager = sc_mem_new(sc_event_emission_manager, 1);
+  sc_queue_init(&(*manager)->deletable_events);
 
   max_events_and_agents_threads = sc_boundary(max_events_and_agents_threads, 1, g_get_num_processors());
   {
@@ -88,81 +89,68 @@ sc_event_queue * sc_event_queue_new_ext(sc_uint32 max_events_and_agents_threads)
     sc_message("\tMax events and agents threads: %d", max_events_and_agents_threads);
   }
 
-  queue->running = SC_TRUE;
-  sc_monitor_init(&queue->destroy_monitor);
+  (*manager)->running = SC_TRUE;
+  sc_monitor_init(&(*manager)->destroy_monitor);
 
-  sc_monitor_init(&queue->pool_monitor);
-  queue->thread_pool =
-      g_thread_pool_new(sc_event_pool_worker, queue, (sc_int32)max_events_and_agents_threads, SC_FALSE, null_ptr);
-
-  return queue;
+  sc_monitor_init(&(*manager)->pool_monitor);
+  (*manager)->thread_pool = g_thread_pool_new(
+      _sc_event_emission_pool_worker, *manager, (sc_int32)max_events_and_agents_threads, SC_FALSE, null_ptr);
 }
 
-void sc_event_queue_stop_processing(sc_event_queue * queue)
+void sc_event_emission_manager_stop(sc_event_emission_manager * manager)
 {
-  if (queue == null_ptr)
+  if (manager == null_ptr)
     return;
 
   sc_bool is_running = SC_FALSE;
 
-  sc_monitor_acquire_read(&queue->destroy_monitor);
-  is_running = queue->running;
-  sc_monitor_release_read(&queue->destroy_monitor);
+  sc_monitor_acquire_read(&manager->destroy_monitor);
+  is_running = manager->running;
+  sc_monitor_release_read(&manager->destroy_monitor);
 
   if (is_running)
   {
-    sc_monitor_acquire_write(&queue->destroy_monitor);
-    queue->running = SC_FALSE;
-    sc_monitor_release_write(&queue->destroy_monitor);
+    sc_monitor_acquire_write(&manager->destroy_monitor);
+    manager->running = SC_FALSE;
+    sc_monitor_release_write(&manager->destroy_monitor);
   }
 }
 
-void sc_event_queue_destroy_wait(sc_event_queue * queue)
+void sc_event_emission_manager_shutdown(sc_event_emission_manager * manager)
 {
-  if (queue == null_ptr)
+  if (manager == null_ptr)
     return;
 
-  sc_monitor_acquire_write(&queue->pool_monitor);
-  sc_monitor_acquire_write(&queue->processes_monitor);
-
-  if (queue->processes_segments_table)
+  sc_monitor_acquire_write(&manager->pool_monitor);
+  if (manager->thread_pool)
   {
-    sc_hash_table_destroy(queue->processes_segments_table);
-    queue->processes_segments_table = null_ptr;
+    g_thread_pool_free(manager->thread_pool, SC_FALSE, SC_TRUE);
+    manager->thread_pool = null_ptr;
   }
 
-  sc_monitor_release_write(&queue->processes_monitor);
-
-  if (queue->thread_pool)
+  while (!sc_queue_empty(manager->deletable_events))
   {
-    g_thread_pool_free(queue->thread_pool, SC_FALSE, SC_TRUE);
-    queue->thread_pool = null_ptr;
-  }
-
-  while (!sc_queue_empty(queue->deletable_events))
-  {
-    sc_event * event = sc_queue_pop(queue->deletable_events);
+    sc_event * event = sc_queue_pop(manager->deletable_events);
     sc_monitor_destroy(&event->monitor);
     sc_mem_free(event);
   }
-  sc_queue_destroy(queue->deletable_events);
+  sc_queue_destroy(manager->deletable_events);
 
-  sc_monitor_release_write(&queue->pool_monitor);
+  sc_monitor_release_write(&manager->pool_monitor);
 
-  sc_monitor_destroy(&queue->processes_monitor);
-  sc_monitor_destroy(&queue->pool_monitor);
-  sc_monitor_destroy(&queue->destroy_monitor);
-  sc_mem_free(queue);
+  sc_monitor_destroy(&manager->pool_monitor);
+  sc_monitor_destroy(&manager->destroy_monitor);
+  sc_mem_free(manager);
 }
 
-void sc_event_queue_append(sc_event_queue * queue, sc_event * evt, sc_addr edge, sc_addr other_el)
+void _sc_event_emission_manager_add(sc_event_emission_manager * manager, sc_event * evt, sc_addr edge, sc_addr other_el)
 {
-  if (queue == null_ptr)
+  if (manager == null_ptr)
     return;
 
-  sc_event_pool_worker_data * data = sc_event_pool_worker_data_new(evt, edge, other_el);
+  sc_event_emission_pool_worker_data * data = _sc_event_emission_pool_worker_data_new(evt, edge, other_el);
 
-  sc_monitor_acquire_write(&queue->pool_monitor);
-  g_thread_pool_push(queue->thread_pool, data, null_ptr);
-  sc_monitor_release_write(&queue->pool_monitor);
+  sc_monitor_acquire_write(&manager->pool_monitor);
+  g_thread_pool_push(manager->thread_pool, data, null_ptr);
+  sc_monitor_release_write(&manager->pool_monitor);
 }

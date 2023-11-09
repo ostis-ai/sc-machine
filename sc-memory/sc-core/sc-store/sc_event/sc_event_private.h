@@ -12,14 +12,6 @@
 #include "../sc_event.h"
 #include "../sc_types.h"
 
-/* Events life cycle:
- * - create event - set reference count to 1
- * - emit event - if there are no SC_EVENT_REQUEST_DESTROY flag, then ref sc_event and add it into pending queue
- * - destroy event - wait set flag SC_EVENT_REQUEST_DESTROY and wait until
- *   all pending calls of this event would be processed (ref count == 1).
- *   After that destroy event.
- */
-
 #define SC_EVENT_REQUEST_DESTROY (1 << 31)
 
 /*! Structure that contains information about event
@@ -39,20 +31,10 @@ struct _sc_event
   //! Pointer to callback function, that calls, when subscribed sc-element deleted
   fDeleteCallback delete_callback;
   sc_monitor monitor;
-  volatile sc_uint32 ref_count;
+  sc_uint32 ref_count;
   //! Access levels
   sc_access_levels access_levels;
 };
-
-//! Function to initialize sc-events module with user processors number
-sc_event_queue * sc_events_initialize_ext(sc_uint32 max_events_and_agents_threads);
-
-//! Function to shutdown sc-events module
-void sc_events_shutdown(sc_event_queue * event_queue);
-
-//! Waits while all emitted events will be processed, then returns. After calling that function all new emitted events
-//! will be ignored
-void sc_events_stop_processing(sc_event_queue * event_queue);
 
 /*! Notify about sc-element deletion.
  * @param element sc-addr of deleted sc-element

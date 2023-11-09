@@ -15,6 +15,7 @@
 #include "sc-container/sc-list/sc_list.h"
 #include "sc-base/sc_monitor.h"
 #include "sc_event/sc_event_queue.h"
+#include "sc_event.h"
 
 typedef struct
 {
@@ -23,9 +24,12 @@ typedef struct
   sc_addr_seg max_segments_count;
   sc_addr_seg last_not_engaged_segment_num;
   sc_addr_seg last_released_segment_num;
-  sc_event_queue * event_queue;
-  sc_monitor_table addr_monitors_table;
   sc_monitor segments_monitor;
+  sc_monitor_table addr_monitors_table;
+  sc_hash_table * processes_segments_table;
+  sc_monitor processes_monitor;
+  sc_event_emission_manager * events_emission_manager;
+  sc_event_registration_manager * events_registration_manager;
 } sc_storage;
 
 //! Initialize sc storage in specified path
@@ -38,6 +42,10 @@ sc_bool sc_storage_shutdown(sc_bool save_state);
 sc_bool sc_storage_is_initialized();
 
 sc_storage * sc_storage_get();
+
+sc_event_emission_manager * sc_storage_get_event_emission_manager();
+
+sc_event_registration_manager * sc_storage_get_event_registration_manager();
 
 /*! Append sc-element to segments pool
  * @param addr Pointer to sc-addr structure, that will contains sc-addr of appended sc-element

@@ -45,6 +45,9 @@ sc_bool sc_storage_initialize(sc_memory_params const * params)
   sc_message("\tUpdate period: %d", params->update_period);
   sc_message("\tClean on initialize: %s", params->clear ? "On" : "Off");
 
+  storage->processes_segments_table = sc_hash_table_init(g_direct_hash, g_direct_equal, null_ptr, null_ptr);
+  sc_monitor_init(&storage->processes_monitor);
+
   sc_result result = SC_TRUE;
   if (params->clear == SC_FALSE)
   {
@@ -53,16 +56,19 @@ sc_bool sc_storage_initialize(sc_memory_params const * params)
     sc_monitor_release_write(&storage->segments_monitor);
   }
 
-  storage->event_queue = sc_events_initialize_ext(params->max_events_and_agents_threads);
+  sc_event_registration_manager_initialize(&storage->events_registration_manager);
+  sc_event_emission_manager_initialize(&storage->events_emission_manager, params->max_events_and_agents_threads);
 
   return result;
 }
 
 sc_bool sc_storage_shutdown(sc_bool save_state)
 {
-  sc_events_stop_processing(storage->event_queue);
-  sc_events_shutdown(storage->event_queue);
-  storage->event_queue = null_ptr;
+  sc_event_emission_manager_stop(storage->events_emission_manager);
+  sc_event_emission_manager_shutdown(storage->events_emission_manager);
+  storage->events_emission_manager = null_ptr;
+  sc_event_registration_manager_shutdown(storage->events_registration_manager);
+  storage->events_registration_manager = null_ptr;
 
   if (save_state == SC_TRUE)
   {
@@ -72,6 +78,17 @@ sc_bool sc_storage_shutdown(sc_bool save_state)
 
   if (sc_fs_memory_shutdown() == SC_FALSE)
     return SC_FALSE;
+
+  sc_monitor_acquire_write(&storage->processes_monitor);
+
+  if (storage->processes_segments_table != null_ptr)
+  {
+    sc_hash_table_destroy(storage->processes_segments_table);
+    storage->processes_segments_table = null_ptr;
+  }
+
+  sc_monitor_release_write(&storage->processes_monitor);
+  sc_monitor_destroy(&storage->processes_monitor);
 
   sc_monitor_acquire_write(&storage->segments_monitor);
 
@@ -102,6 +119,16 @@ sc_bool sc_storage_is_initialized()
 sc_storage * sc_storage_get()
 {
   return storage;
+}
+
+sc_event_emission_manager * sc_storage_get_event_emission_manager()
+{
+  return storage ? storage->events_emission_manager : null_ptr;
+}
+
+sc_event_registration_manager * sc_storage_get_event_registration_manager()
+{
+  return storage ? storage->events_registration_manager : null_ptr;
 }
 
 sc_bool sc_storage_is_element(sc_memory_context const * ctx, sc_addr addr)
@@ -201,7 +228,7 @@ error:
 
 sc_segment * _sc_storage_get_next_segment(sc_thread * thread)
 {
-  sc_monitor_acquire_write(&storage->event_queue->processes_monitor);
+  sc_monitor_acquire_write(&storage->processes_monitor);
 
   sc_segment * segment = null_ptr;
   sc_addr_seg const segment_num = storage->last_not_engaged_segment_num;
@@ -217,7 +244,7 @@ sc_segment * _sc_storage_get_next_segment(sc_thread * thread)
     sc_monitor_release_write(&storage->segments_monitor);
   }
 
-  sc_monitor_release_write(&storage->event_queue->processes_monitor);
+  sc_monitor_release_write(&storage->processes_monitor);
 
   if (segment == null_ptr)
   {
@@ -232,10 +259,10 @@ sc_segment * _sc_storage_get_next_segment(sc_thread * thread)
 
   if (segment != null_ptr)
   {
-    sc_monitor_acquire_write(&storage->event_queue->processes_monitor);
-    if (storage->event_queue->processes_segments_table != null_ptr)
-      sc_hash_table_insert(storage->event_queue->processes_segments_table, thread, segment);
-    sc_monitor_release_write(&storage->event_queue->processes_monitor);
+    sc_monitor_acquire_write(&storage->processes_monitor);
+    if (storage->processes_segments_table != null_ptr)
+      sc_hash_table_insert(storage->processes_segments_table, thread, segment);
+    sc_monitor_release_write(&storage->processes_monitor);
   }
 
   return segment;
@@ -248,10 +275,10 @@ void _sc_storage_get_segment(sc_segment ** segment_ptr, sc_bool * released)
   sc_segment * segment = null_ptr;
 
   sc_thread * thread = sc_thread_self();
-  sc_monitor_acquire_read(&storage->event_queue->processes_monitor);
-  if (storage->event_queue->processes_segments_table != null_ptr)
-    segment = (sc_segment *)sc_hash_table_get(storage->event_queue->processes_segments_table, thread);
-  sc_monitor_release_read(&storage->event_queue->processes_monitor);
+  sc_monitor_acquire_read(&storage->processes_monitor);
+  if (storage->processes_segments_table != null_ptr)
+    segment = (sc_segment *)sc_hash_table_get(storage->processes_segments_table, thread);
+  sc_monitor_release_read(&storage->processes_monitor);
 
   if (segment == null_ptr)
     segment = _sc_storage_get_next_segment(thread);
@@ -296,9 +323,9 @@ sc_element * _sc_storage_get_next_element(sc_addr * addr)
 
     if (segment->last_released_offset == 0)
     {
-      sc_monitor_acquire_write(&storage->event_queue->processes_monitor);
+      sc_monitor_acquire_write(&storage->processes_monitor);
       storage->last_released_segment_num = segment->elements[0].flags.type;
-      sc_monitor_release_write(&storage->event_queue->processes_monitor);
+      sc_monitor_release_write(&storage->processes_monitor);
 
       segment->elements[0].flags.type = 0;
     }
@@ -373,24 +400,24 @@ sc_element * sc_storage_append_el_into_segments(sc_memory_context const * ctx, s
 void sc_storage_start_new_process()
 {
   sc_thread * thread = sc_thread_self();
-  sc_monitor_acquire_write(&storage->event_queue->processes_monitor);
-  if (storage->event_queue->processes_segments_table == null_ptr)
+  sc_monitor_acquire_write(&storage->processes_monitor);
+  if (storage->processes_segments_table == null_ptr)
     goto end;
 
-  sc_hash_table_insert(storage->event_queue->processes_segments_table, thread, null_ptr);
+  sc_hash_table_insert(storage->processes_segments_table, thread, null_ptr);
 
 end:
-  sc_monitor_release_write(&storage->event_queue->processes_monitor);
+  sc_monitor_release_write(&storage->processes_monitor);
 }
 
 void sc_storage_end_new_process()
 {
   sc_thread * thread = sc_thread_self();
-  sc_monitor_acquire_write(&storage->event_queue->processes_monitor);
-  if (storage->event_queue->processes_segments_table == null_ptr)
+  sc_monitor_acquire_write(&storage->processes_monitor);
+  if (storage->processes_segments_table == null_ptr)
     goto end;
 
-  sc_segment * segment = sc_hash_table_get(storage->event_queue->processes_segments_table, thread);
+  sc_segment * segment = sc_hash_table_get(storage->processes_segments_table, thread);
   if (segment != null_ptr)
   {
     sc_addr_seg const segment_num = storage->last_not_engaged_segment_num;
@@ -399,10 +426,10 @@ void sc_storage_end_new_process()
     sc_monitor_release_write(&segment->monitor);
     storage->last_not_engaged_segment_num = segment->num;
   }
-  sc_hash_table_remove(storage->event_queue->processes_segments_table, thread);
+  sc_hash_table_remove(storage->processes_segments_table, thread);
 
 end:
-  sc_monitor_release_write(&storage->event_queue->processes_monitor);
+  sc_monitor_release_write(&storage->processes_monitor);
 }
 
 sc_result sc_storage_element_free(sc_memory_context const * ctx, sc_addr addr)
