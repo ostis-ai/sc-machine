@@ -65,6 +65,10 @@ void sc_storage_end_new_process();
  */
 sc_bool sc_storage_is_element(sc_memory_context const * ctx, sc_addr addr);
 
+sc_result sc_storage_get_element_by_addr(sc_addr addr, sc_element ** el);
+
+sc_result sc_storage_remove_element_by_addr(sc_addr addr);
+
 /*! Remove sc-element from storage
  * @param addr sc-addr of element to erase
  * @return If input params are correct and element erased, then return SC_OK;
@@ -78,16 +82,10 @@ sc_result sc_storage_element_free(sc_memory_context const * ctx, sc_addr addr);
  */
 sc_addr sc_storage_node_new(sc_memory_context const * ctx, sc_type type);
 
-//! Create new sc-node with specified access level
-sc_addr sc_storage_node_new_ext(sc_memory_context const * ctx, sc_type type, sc_access_levels access_levels);
-
 /*! Create new sc-link
  * @return Return sc-addr of created sc-link or empty sc-addr if sc-link wasn't created
  */
 sc_addr sc_storage_link_new(sc_memory_context const * ctx, sc_type type);
-
-//! Create sc-link with specified access levels
-sc_addr sc_storage_link_new_ext(sc_memory_context const * ctx, sc_access_levels access_levels, sc_type type);
 
 /*! Create new sc-arc.
  * @param type Type of new sc-arc
@@ -97,14 +95,6 @@ sc_addr sc_storage_link_new_ext(sc_memory_context const * ctx, sc_access_levels 
  * @return Return sc-addr of created sc-arc or empty sc-addr if sc-arc wasn't created
  */
 sc_addr sc_storage_arc_new(sc_memory_context const * ctx, sc_type type, sc_addr beg, sc_addr end);
-
-//! Create new sc-arc with specified access levels
-sc_addr sc_storage_arc_new_ext(
-    sc_memory_context const * ctx,
-    sc_type type,
-    sc_addr beg,
-    sc_addr end,
-    sc_access_levels access_levels);
 
 sc_uint32 sc_storage_get_element_output_arcs_count(sc_memory_context const * ctx, sc_addr addr);
 
@@ -153,19 +143,6 @@ sc_result sc_storage_get_arc_info(
 /*! Setup content data for specified sc-link
  * @param addr sc-addr of sc-link to setup content
  * @param stream Pointer to stream
- * @return If content of specified link changed without any errors, then return SC_OK; otherwise
- * returns on of error codes:
- * <ul>
- * <li>SC_INVALID_TYPE - element with \p addr isn't a sc-link</li>
- * <li>SC_ERROR_INVALID_PARAMS - element with specified \p addr doesn't exist
- * <li>SC_ERROR - unknown error</li>
- * </ul>
- */
-sc_result sc_storage_set_link_content(sc_memory_context const * ctx, sc_addr addr, sc_stream const * stream);
-
-/*! Setup content data for specified sc-link
- * @param addr sc-addr of sc-link to setup content
- * @param stream Pointer to stream
  * @param is_searchable_string Ability to search for sc-links on this content string
  * @return If content of specified link changed without any errors, then return SC_OK; otherwise
  * returns on of error codes:
@@ -175,7 +152,7 @@ sc_result sc_storage_set_link_content(sc_memory_context const * ctx, sc_addr add
  * <li>SC_ERROR - unknown error</li>
  * </ul>
  */
-sc_result sc_storage_set_link_content_ext(
+sc_result sc_storage_set_link_content(
     sc_memory_context const * ctx,
     sc_addr addr,
     sc_stream const * stream,
@@ -244,14 +221,6 @@ sc_result sc_storage_find_links_contents_by_content_substring(
  * otherwise return SC_ERROR
  */
 sc_result sc_storage_get_elements_stat(sc_stat * stat);
-
-// ----- Locks -----
-//! Locks specified sc-element. Pointer to locked sc-element stores in el
-sc_result sc_storage_get_element_by_addr(sc_addr addr, sc_element ** el);
-
-sc_result sc_storage_get_element_by_addr(sc_addr addr, sc_element ** el);
-
-sc_result sc_storage_remove_element_by_addr(sc_addr addr);
 
 sc_result sc_storage_save(sc_memory_context const * ctx);
 

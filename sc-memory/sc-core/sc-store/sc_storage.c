@@ -182,6 +182,7 @@ sc_result sc_storage_remove_element_by_addr(sc_addr addr)
   {
     sc_monitor_acquire_write(&storage->segments_monitor);
     storage->last_released_segment_num = segment->elements[0].flags.type;
+    segment->elements[0].flags.type = 0;
     sc_monitor_release_write(&storage->segments_monitor);
   }
 
@@ -228,34 +229,28 @@ error:
 
 sc_segment * _sc_storage_get_next_segment(sc_thread * thread)
 {
-  sc_monitor_acquire_write(&storage->processes_monitor);
+  sc_monitor_acquire_write(&storage->segments_monitor);
 
   sc_segment * segment = null_ptr;
   sc_addr_seg const segment_num = storage->last_not_engaged_segment_num;
   if (segment_num != 0)
   {
-    sc_monitor_acquire_write(&storage->segments_monitor);
     segment = storage->segments[segment_num];
     if (segment != null_ptr)
     {
       storage->last_not_engaged_segment_num = segment->elements[0].flags.access_levels;
       segment->elements[0].flags.access_levels = 0;
     }
-    sc_monitor_release_write(&storage->segments_monitor);
   }
-
-  sc_monitor_release_write(&storage->processes_monitor);
 
   if (segment == null_ptr)
   {
-    sc_monitor_acquire_write(&storage->segments_monitor);
-
     segment = _sc_storage_get_new_segment(thread);
     if (segment == null_ptr)
       segment = _sc_storage_get_last_free_segment();
-
-    sc_monitor_release_write(&storage->segments_monitor);
   }
+
+  sc_monitor_release_write(&storage->segments_monitor);
 
   if (segment != null_ptr)
   {
@@ -323,14 +318,13 @@ sc_element * _sc_storage_get_next_element(sc_addr * addr)
 
     if (segment->last_released_offset == 0)
     {
-      sc_monitor_acquire_write(&storage->processes_monitor);
+      sc_monitor_acquire_write(&storage->segments_monitor);
       storage->last_released_segment_num = segment->elements[0].flags.type;
-      sc_monitor_release_write(&storage->processes_monitor);
-
       segment->elements[0].flags.type = 0;
+      sc_monitor_release_write(&storage->segments_monitor);
     }
 
-    (*addr) = (sc_addr){segment->num, element_offset};
+    *addr = (sc_addr){segment->num, element_offset};
   }
   else
   {
@@ -420,11 +414,13 @@ void sc_storage_end_new_process()
   sc_segment * segment = sc_hash_table_get(storage->processes_segments_table, thread);
   if (segment != null_ptr)
   {
+    sc_monitor_acquire_write(&storage->segments_monitor);
+
     sc_addr_seg const segment_num = storage->last_not_engaged_segment_num;
-    sc_monitor_acquire_write(&segment->monitor);
     segment->elements[0].flags.access_levels = segment_num;
-    sc_monitor_release_write(&segment->monitor);
     storage->last_not_engaged_segment_num = segment->num;
+
+    sc_monitor_release_write(&storage->segments_monitor);
   }
   sc_hash_table_remove(storage->processes_segments_table, thread);
 
@@ -644,53 +640,27 @@ error:
 
 sc_addr sc_storage_node_new(sc_memory_context const * ctx, sc_type type)
 {
-  return sc_storage_node_new_ext(ctx, type, ctx->access_levels);
-}
-
-sc_addr sc_storage_node_new_ext(sc_memory_context const * ctx, sc_type type, sc_access_levels access_levels)
-{
   sc_addr addr = SC_ADDR_EMPTY;
 
   sc_element * element = sc_storage_append_el_into_segments(ctx, &addr);
   if (element != null_ptr)
-  {
     element->flags.type = sc_type_node | type;
-    element->flags.access_levels |= access_levels;
-  }
 
   return addr;
 }
 
 sc_addr sc_storage_link_new(sc_memory_context const * ctx, sc_type type)
 {
-  return sc_storage_link_new_ext(ctx, ctx->access_levels, type);
-}
-
-sc_addr sc_storage_link_new_ext(sc_memory_context const * ctx, sc_access_levels access_levels, sc_type type)
-{
   sc_addr addr = SC_ADDR_EMPTY;
 
   sc_element * element = sc_storage_append_el_into_segments(ctx, &addr);
   if (element != null_ptr)
-  {
     element->flags.type = sc_type_link | type;
-    element->flags.access_levels |= access_levels;
-  }
 
   return addr;
 }
 
 sc_addr sc_storage_arc_new(sc_memory_context const * ctx, sc_type type, sc_addr beg, sc_addr end)
-{
-  return sc_storage_arc_new_ext(ctx, type, beg, end, ctx->access_levels);
-}
-
-sc_addr sc_storage_arc_new_ext(
-    sc_memory_context const * ctx,
-    sc_type type,
-    sc_addr beg,
-    sc_addr end,
-    sc_access_levels access_levels)
 {
   sc_addr addr = SC_ADDR_EMPTY;
   sc_result result;
@@ -703,7 +673,6 @@ sc_addr sc_storage_arc_new_ext(
 
   sc_element * tmp_el = sc_storage_append_el_into_segments(ctx, &addr);
   tmp_el->flags.type = (type & sc_type_arc_mask) ? type : (sc_type_arc_common | type);
-  tmp_el->flags.access_levels |= access_levels;
 
   // try to lock begin and end elements
   sc_monitor * beg_monitor = sc_monitor_get_monitor_for_addr(&storage->addr_monitors_table, beg);
@@ -942,12 +911,7 @@ error:
   return result;
 }
 
-sc_result sc_storage_set_link_content(sc_memory_context const * ctx, sc_addr addr, const sc_stream * stream)
-{
-  return sc_storage_set_link_content_ext(ctx, addr, stream, SC_TRUE);
-}
-
-sc_result sc_storage_set_link_content_ext(
+sc_result sc_storage_set_link_content(
     sc_memory_context const * ctx,
     sc_addr addr,
     sc_stream const * stream,
@@ -956,35 +920,45 @@ sc_result sc_storage_set_link_content_ext(
   sc_result result;
 
   sc_element * el = null_ptr;
-  result = sc_storage_get_element_by_addr(addr, &el);
-  if (result != SC_RESULT_OK)
-    goto error;
-
-  if ((el->flags.type & sc_type_link) == 0)
-  {
-    result = SC_RESULT_ERROR_ELEMENT_IS_NOT_LINK;
-    goto error;
-  }
 
   sc_char * string = null_ptr;
   sc_uint32 string_size = 0;
   if (sc_stream_get_data(stream, &string, &string_size) == SC_FALSE)
   {
-    result = SC_RESULT_ERROR_IO;
-    goto error;
+    sc_mem_free(string);
+    return SC_RESULT_ERROR_IO;
   }
 
   if (string == null_ptr)
     sc_string_empty(string);
 
+  sc_monitor * monitor = sc_monitor_get_monitor_for_addr(&storage->addr_monitors_table, addr);
+  sc_monitor_acquire_write(monitor);
+
+  result = sc_storage_get_element_by_addr(addr, &el);
+  if (result != SC_RESULT_OK)
+    goto error;
+
+  if ((el->flags.type & sc_type_link) != sc_type_link)
+  {
+    result = SC_RESULT_ERROR_ELEMENT_IS_NOT_LINK;
+    goto error;
+  }
+
   sc_fs_memory_link_string_ext(SC_ADDR_LOCAL_TO_INT(addr), string, string_size, is_searchable_string);
-  sc_mem_free(string);
 
   sc_addr empty;
   SC_ADDR_MAKE_EMPTY(empty);
   sc_event_emit(ctx, addr, el->flags.access_levels, SC_EVENT_CONTENT_CHANGED, empty, empty);
 
+  sc_monitor_release_write(monitor);
+  sc_mem_free(string);
+
+  return SC_RESULT_OK;
 error:
+  sc_monitor_release_write(monitor);
+  sc_mem_free(string);
+
   return result;
 }
 
@@ -994,19 +968,25 @@ sc_result sc_storage_get_link_content(sc_memory_context const * ctx, sc_addr add
   sc_result result;
 
   sc_element * el = null_ptr;
+
+  sc_monitor * monitor = sc_monitor_get_monitor_for_addr(&storage->addr_monitors_table, addr);
+  sc_monitor_acquire_read(monitor);
+
   result = sc_storage_get_element_by_addr(addr, &el);
   if (result != SC_RESULT_OK)
     goto error;
 
-  if (!(el->flags.type & sc_type_link))
+  if ((el->flags.type & sc_type_link) != sc_type_link)
   {
     result = SC_RESULT_ERROR_INVALID_TYPE;
     goto error;
   }
 
-  sc_uint32 string_size = 0;
   sc_char * string = null_ptr;
+  sc_uint32 string_size = 0;
   sc_fs_memory_get_string_by_link_hash(SC_ADDR_LOCAL_TO_INT(addr), &string, &string_size);
+
+  sc_monitor_release_read(monitor);
 
   if (string == null_ptr)
     sc_string_empty(string);
@@ -1014,8 +994,11 @@ sc_result sc_storage_get_link_content(sc_memory_context const * ctx, sc_addr add
   *stream = sc_stream_memory_new(string, string_size, SC_STREAM_FLAG_READ, SC_TRUE);
 
   return SC_RESULT_OK;
-
 error:
+  sc_monitor_release_read(monitor);
+
+  *stream = null_ptr;
+
   return result;
 }
 
@@ -1077,8 +1060,8 @@ error:
 }
 
 sc_result sc_storage_find_links_contents_by_content_substring(
-    const sc_memory_context * ctx,
-    const sc_stream * stream,
+    sc_memory_context const * ctx,
+    sc_stream const * stream,
     sc_list ** result_strings,
     sc_uint32 max_length_to_search_as_prefix)
 {

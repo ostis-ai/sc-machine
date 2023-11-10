@@ -5,30 +5,21 @@
  */
 
 #include "sc_memory.h"
-#include "sc_memory_private.h"
 #include "sc_memory_params.h"
 
-#include "sc_memory_ext.h"
-#include "sc_helper_private.h"
+#include "sc-store/sc_types.h"
+#include "sc-store/sc-base/sc_allocator.h"
 
 #include "sc-store/sc_storage.h"
-#include "sc-store/sc_types.h"
-
-#include "sc-store/sc_event/sc_event_private.h"
-
-#include "sc-store/sc-base/sc_allocator.h"
-#include "sc-store/sc-base/sc_message.h"
-#include "sc-store/sc-base/sc_monitor.h"
-#include "sc-store/sc-container/sc-hash-table/sc_hash_table.h"
-
+#include "sc_memory_private.h"
+#include "sc_memory_context_manager.h"
 #include "sc_helper.h"
+#include "sc_helper_private.h"
+#include "sc_memory_ext.h"
 
 struct _sc_memory
 {
-  sc_hash_table * context_hash_table;
-  sc_uint32 last_context_id;
-  sc_uint32 context_count;
-  sc_monitor context_monitor;
+  sc_memory_context_manager * context_manager;
 };
 
 sc_memory * memory = null_ptr;
@@ -53,24 +44,17 @@ sc_memory_context * sc_memory_initialize(sc_memory_params const * params)
     goto error;
   }
 
+  memory = sc_mem_new(sc_memory, 1);
+
   sc_storage_start_new_process();
 
-  memory = sc_mem_new(sc_memory, 1);
-  memory->context_hash_table = sc_hash_table_init(g_direct_hash, g_direct_equal, null_ptr, null_ptr);
-  memory->last_context_id = 0;
-  memory->context_count = 0;
-  sc_monitor_init(&memory->context_monitor);
-  s_memory_default_ctx = sc_memory_context_new(sc_access_lvl_make(SC_ACCESS_LVL_MAX_VALUE, SC_ACCESS_LVL_MAX_VALUE));
+  _sc_memory_context_manager_initialize(&memory->context_manager);
 
-  sc_memory_context * helper_ctx =
-      sc_memory_context_new(sc_access_lvl_make(SC_ACCESS_LVL_MIN_VALUE, SC_ACCESS_LVL_MAX_VALUE));
-  if (sc_helper_init(helper_ctx) != SC_RESULT_OK)
+  if (sc_helper_init(s_memory_default_ctx) != SC_RESULT_OK)
   {
-    sc_memory_context_free(helper_ctx);
     sc_memory_error("Error while initialize sc-helper");
     goto error;
   }
-  sc_memory_context_free(helper_ctx);
 
   sc_memory_info("Build configuration:");
   sc_message("\tResult structure upload: %s", params->init_memory_generated_upload ? "On" : "Off");
@@ -89,19 +73,14 @@ sc_memory_context * sc_memory_initialize(sc_memory_params const * params)
   }
 
   sc_storage_end_new_process();
-
   sc_memory_info("Successfully initialized");
   return s_memory_default_ctx;
 
 error:
-{
   sc_storage_end_new_process();
-
-  sc_memory_context_free(s_memory_default_ctx);
   s_memory_default_ctx = null_ptr;
   sc_memory_info("Initialized with errors");
   return null_ptr;
-}
 }
 
 sc_result sc_memory_init_ext(
@@ -140,25 +119,9 @@ void sc_memory_shutdown(sc_bool save_state)
 
   sc_storage_shutdown(save_state);
 
-  sc_memory_context_free(s_memory_default_ctx);
-  s_memory_default_ctx = null_ptr;
+  _sc_memory_context_manager_shutdown(memory->context_manager);
+  memory->context_manager = null_ptr;
 
-  sc_memory_info("Clear contexts");
-  if (memory->context_hash_table != null_ptr)
-  {
-    sc_monitor_acquire_read(&memory->context_monitor);
-    sc_uint32 context_count = sc_hash_table_size(memory->context_hash_table);
-    sc_monitor_release_read(&memory->context_monitor);
-    if (context_count > 0)
-      sc_memory_warning("There are %d contexts, wasn't destroyed before sc-memory shutdown", context_count);
-
-    sc_monitor_acquire_write(&memory->context_monitor);
-    sc_hash_table_destroy(memory->context_hash_table);
-    memory->context_hash_table = null_ptr;
-    sc_monitor_release_write(&memory->context_monitor);
-  }
-
-  sc_monitor_destroy(&memory->context_monitor);
   sc_mem_free(memory);
   memory = null_ptr;
 
@@ -170,128 +133,24 @@ void sc_memory_shutdown_ext()
   sc_ext_shutdown();
 }
 
-sc_memory_context * sc_memory_context_new(sc_uint8 levels)
+sc_memory_context * sc_memory_context_new(sc_access_levels levels)
 {
-  return sc_memory_context_new_impl(levels);
-}
-
-sc_memory_context * sc_memory_context_new_impl(sc_uint8 levels)
-{
-  if (memory == null_ptr)
-    return null_ptr;
-
-  sc_memory_context * ctx = sc_mem_new(sc_memory_context, 1);
-  sc_uint32 index;
-
-  ctx->access_levels = levels;
-
-  // setup concurrency id
-  sc_monitor_acquire_write(&memory->context_monitor);
-  if (memory->context_count >= G_MAXUINT32)
-    goto error;
-
-  if (memory->context_hash_table == null_ptr)
-    goto error;
-
-  index = (memory->last_context_id + 1) % G_MAXUINT32;
-  while (index == 0 ||
-         (index != memory->last_context_id && sc_hash_table_get(memory->context_hash_table, GINT_TO_POINTER(index))))
-    index = (index + 1) % G_MAXUINT32;
-
-  if (index != memory->last_context_id)
-  {
-    ctx->id = index;
-    sc_monitor_init(&ctx->monitor);
-
-    memory->last_context_id = index;
-    sc_hash_table_insert(memory->context_hash_table, GINT_TO_POINTER(ctx->id), (sc_pointer)ctx);
-  }
-  else
-    goto error;
-
-  ++memory->context_count;
-  goto result;
-
-error:
-{
-  sc_mem_free(ctx);
-  ctx = null_ptr;
-}
-
-result:
-  sc_monitor_release_write(&memory->context_monitor);
-
-  return ctx;
+  return _sc_memory_context_new_impl(memory->context_manager, levels);
 }
 
 void sc_memory_context_free(sc_memory_context * ctx)
 {
-  sc_memory_context_free_impl(ctx);
-}
-
-void sc_memory_context_free_impl(sc_memory_context * ctx)
-{
-  if (ctx == null_ptr)
-    return;
-
-  sc_monitor_acquire_write(&memory->context_monitor);
-
-  if (memory->context_hash_table == null_ptr)
-    goto error;
-
-  sc_memory_context * context = sc_hash_table_get(memory->context_hash_table, GINT_TO_POINTER(ctx->id));
-  if (context == null_ptr)
-    goto error;
-
-  sc_monitor_destroy(&ctx->monitor);
-  sc_hash_table_remove(memory->context_hash_table, GINT_TO_POINTER(ctx->id));
-  --memory->context_count;
-
-error:
-  sc_monitor_release_write(&memory->context_monitor);
-
-  sc_mem_free(ctx);
+  _sc_memory_context_free_impl(memory->context_manager, ctx);
 }
 
 void sc_memory_context_pending_begin(sc_memory_context * ctx)
 {
-  sc_monitor_acquire_write(&ctx->monitor);
-  ctx->flags |= SC_CONTEXT_FLAG_PENDING_EVENTS;
-  sc_monitor_release_write(&ctx->monitor);
+  _sc_memory_context_pending_begin(ctx);
 }
 
 void sc_memory_context_pending_end(sc_memory_context * ctx)
 {
-  sc_monitor_acquire_write(&ctx->monitor);
-  ctx->flags = ctx->flags & (~SC_CONTEXT_FLAG_PENDING_EVENTS);
-  sc_memory_context_emit_events(ctx);
-  sc_monitor_release_write(&ctx->monitor);
-}
-
-void sc_memory_context_pend_event(sc_memory_context const * ctx, sc_event_emit_params * params)
-{
-  sc_monitor_acquire_write((sc_monitor *)&ctx->monitor);
-  ((sc_memory_context *)ctx)->pend_events = g_slist_append(ctx->pend_events, params);
-  sc_monitor_release_write((sc_monitor *)&ctx->monitor);
-}
-
-void sc_memory_context_emit_events(sc_memory_context const * ctx)
-{
-  GSList * item = null_ptr;
-  sc_event_emit_params * evt_params = null_ptr;
-
-  while (ctx->pend_events)
-  {
-    item = ctx->pend_events;
-    evt_params = (sc_event_emit_params *)item->data;
-
-    sc_event_emit_impl(
-        ctx, evt_params->el, evt_params->el_access, evt_params->type, evt_params->edge, evt_params->other_el);
-
-    sc_mem_free(evt_params);
-
-    ((sc_memory_context *)ctx)->pend_events = g_slist_delete_link(ctx->pend_events, ctx->pend_events);
-  }
+  _sc_memory_context_pending_end(ctx);
 }
 
 sc_bool sc_memory_is_initialized()
@@ -319,7 +178,7 @@ sc_result sc_memory_element_free(sc_memory_context * ctx, sc_addr addr)
   return sc_storage_element_free(ctx, addr);
 }
 
-sc_addr sc_memory_node_new(const sc_memory_context * ctx, sc_type type)
+sc_addr sc_memory_node_new(sc_memory_context const * ctx, sc_type type)
 {
   return sc_storage_node_new(ctx, type);
 }
@@ -368,7 +227,7 @@ sc_result sc_memory_get_arc_info(
   return sc_storage_get_arc_info(ctx, addr, result_start_addr, result_end_addr);
 }
 
-sc_result sc_memory_set_link_content(sc_memory_context const * ctx, sc_addr addr, const sc_stream * stream)
+sc_result sc_memory_set_link_content(sc_memory_context const * ctx, sc_addr addr, sc_stream const * stream)
 {
   return sc_memory_set_link_content_ext(ctx, addr, stream, SC_TRUE);
 }
@@ -376,10 +235,10 @@ sc_result sc_memory_set_link_content(sc_memory_context const * ctx, sc_addr addr
 sc_result sc_memory_set_link_content_ext(
     sc_memory_context const * ctx,
     sc_addr addr,
-    const sc_stream * stream,
+    sc_stream const * stream,
     sc_bool is_searchable_string)
 {
-  return sc_storage_set_link_content_ext(ctx, addr, stream, is_searchable_string);
+  return sc_storage_set_link_content(ctx, addr, stream, is_searchable_string);
 }
 
 sc_result sc_memory_get_link_content(sc_memory_context const * ctx, sc_addr addr, sc_stream ** stream)

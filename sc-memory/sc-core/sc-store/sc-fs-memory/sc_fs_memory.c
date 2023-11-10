@@ -83,8 +83,10 @@ sc_bool sc_fs_memory_link_string_ext(
 
 sc_bool sc_fs_memory_get_string_by_link_hash(sc_addr_hash const link_hash, sc_char ** string, sc_uint32 * string_size)
 {
-  return manager->get_string_by_link_hash(manager->fs_memory, link_hash, string, (sc_uint64 *)string_size) ==
-         SC_FS_MEMORY_OK;
+  sc_uint64 size;
+  sc_bool result = manager->get_string_by_link_hash(manager->fs_memory, link_hash, string, &size) == SC_FS_MEMORY_OK;
+  *string_size = size;
+  return result;
 }
 
 sc_bool sc_fs_memory_get_link_hashes_by_string(sc_char const * string, sc_uint32 const string_size, sc_list ** links)

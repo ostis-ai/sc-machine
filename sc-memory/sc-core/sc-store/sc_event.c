@@ -10,7 +10,7 @@
 #include "sc_event/sc_event_private.h"
 #include "sc_event/sc_event_queue.h"
 
-#include "../sc_memory_private.h"
+#include "../sc_memory_context_manager.h"
 
 #include "sc-base/sc_allocator.h"
 #include "sc-base/sc_mutex.h"
@@ -127,8 +127,8 @@ sc_event * sc_event_new(
   event->delete_callback = delete_callback;
   event->data = data;
   event->ref_count = 1;
+  event->access_levels = 0;
   sc_monitor_init(&event->monitor);
-  event->access_levels = ctx->access_levels;
 
   // register created event
   sc_event_registration_manager * manager = sc_storage_get_event_registration_manager();
@@ -157,8 +157,8 @@ sc_event * sc_event_new_ex(
   event->delete_callback = delete_callback;
   event->data = data;
   event->ref_count = 1;
+  event->access_levels = 0;
   sc_monitor_init(&event->monitor);
-  event->access_levels = ctx->access_levels;
 
   // register created event
   sc_event_registration_manager * manager = sc_storage_get_event_registration_manager();
@@ -259,16 +259,9 @@ sc_result sc_event_emit(
     sc_addr edge,
     sc_addr other_el)
 {
-  if (ctx->flags & SC_CONTEXT_FLAG_PENDING_EVENTS)
+  if (_sc_memory_context_is_pending(ctx))
   {
-    sc_event_emit_params * params = sc_mem_new(sc_event_emit_params, 1);
-    params->el = el;
-    params->el_access = el_access;
-    params->type = type;
-    params->edge = edge;
-    params->other_el = other_el;
-
-    sc_memory_context_pend_event(ctx, params);
+    _sc_memory_context_pend_event(ctx, type, el, edge, other_el);
     return SC_RESULT_OK;
   }
 
