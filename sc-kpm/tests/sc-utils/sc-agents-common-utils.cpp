@@ -12,6 +12,8 @@
 
 #include "tests/test-agents/FinishActionTestAgent.hpp"
 
+using namespace scUtilsTestAgents;
+
 TEST_F(ScMemoryTest, wrapInOrientedSetBySequenceRelation)
 {
   std::string const data =
@@ -32,7 +34,6 @@ TEST_F(ScMemoryTest, wrapInOrientedSetBySequenceRelation)
   EXPECT_TRUE(thirdMessage.IsValid());
   suggestions.insert(suggestions.end(), {firstMessage, secondMessage, thirdMessage});
 
-  scAgentsCommon::CoreKeynodes::InitGlobal();
   ScAddr orientedSet = utils::GenerationUtils::wrapInOrientedSetBySequenceRelation(&*m_ctx, suggestions);
 
   std::string const FIRST_MESSAGE_EDGE_ALIAS = "_first_message_edge";
@@ -68,8 +69,6 @@ TEST_F(ScMemoryTest, wrapInOrientedSetBySequenceRelation)
 
 TEST_F(ScMemoryTest, formActionNode)
 {
-  scAgentsCommon::CoreKeynodes::InitGlobal();
-
   ScAddr actionClass = m_ctx->CreateNode(ScType::NodeConstClass);
   ScAddrVector params = {m_ctx->CreateNode(ScType::NodeConst), m_ctx->CreateNode(ScType::NodeConst)};
 
@@ -100,8 +99,7 @@ TEST_F(ScMemoryTest, formActionNode)
 
 TEST_F(ScMemoryTest, getActionResultIfExistForGeneratedAction)
 {
-  scAgentsCommon::CoreKeynodes::InitGlobal();
-  SC_AGENT_REGISTER(scUtilsTestAgents::FinishActionTestAgent)
+  SC_AGENT_REGISTER(FinishActionTestAgent, scAgentsCommon::CoreKeynodes::question_initiated);
 
   ScAddr actionClass = m_ctx->CreateNode(ScType::NodeConstClass);
   ScAddrVector params = {m_ctx->CreateNode(ScType::NodeConst), m_ctx->CreateNode(ScType::NodeConst)};
@@ -126,13 +124,12 @@ TEST_F(ScMemoryTest, getActionResultIfExistForGeneratedAction)
 
   EXPECT_TRUE(generatedActionSearchResult.Size() == 1);
 
-  SC_AGENT_UNREGISTER(scUtilsTestAgents::FinishActionTestAgent)
+  SC_AGENT_UNREGISTER(FinishActionTestAgent);
 }
 
 TEST_F(ScMemoryTest, getActionResultIfExistForExistingAction)
 {
-  scAgentsCommon::CoreKeynodes::InitGlobal();
-  SC_AGENT_REGISTER(scUtilsTestAgents::FinishActionTestAgent)
+  SC_AGENT_REGISTER(FinishActionTestAgent, scAgentsCommon::CoreKeynodes::question_initiated);
 
   ScAddr actionNode = m_ctx->CreateNode(ScType::NodeConst);
 
@@ -153,13 +150,12 @@ TEST_F(ScMemoryTest, getActionResultIfExistForExistingAction)
 
   EXPECT_TRUE(generatedActionSearchResult.Size() == 1);
 
-  SC_AGENT_UNREGISTER(scUtilsTestAgents::FinishActionTestAgent)
+  SC_AGENT_UNREGISTER(FinishActionTestAgent);
 }
 
 TEST_F(ScMemoryTest, applyGeneratedAction)
 {
-  scAgentsCommon::CoreKeynodes::InitGlobal();
-  SC_AGENT_REGISTER(scUtilsTestAgents::FinishActionTestAgent)
+  SC_AGENT_REGISTER(FinishActionTestAgent, scAgentsCommon::CoreKeynodes::question_initiated);
 
   ScAddr actionClass = m_ctx->CreateNode(ScType::NodeConstClass);
   ScAddrVector params = {m_ctx->CreateNode(ScType::NodeConst), m_ctx->CreateNode(ScType::NodeConst)};
@@ -189,13 +185,12 @@ TEST_F(ScMemoryTest, applyGeneratedAction)
 
   EXPECT_TRUE(generatedActionSearchResult.Size() == 1);
 
-  SC_AGENT_UNREGISTER(scUtilsTestAgents::FinishActionTestAgent)
+  SC_AGENT_UNREGISTER(FinishActionTestAgent);
 }
 
 TEST_F(ScMemoryTest, applyExistingAction)
 {
-  scAgentsCommon::CoreKeynodes::InitGlobal();
-  SC_AGENT_REGISTER(scUtilsTestAgents::FinishActionTestAgent)
+  SC_AGENT_REGISTER(FinishActionTestAgent, scAgentsCommon::CoreKeynodes::question_initiated);
 
   ScAddr actionNode = m_ctx->CreateNode(ScType::NodeConst);
 
@@ -204,5 +199,5 @@ TEST_F(ScMemoryTest, applyExistingAction)
   EXPECT_TRUE(m_ctx->HelperCheckEdge(
       scAgentsCommon::CoreKeynodes::action_finished, actionNode, ScType::EdgeAccessConstPosPerm));
 
-  SC_AGENT_UNREGISTER(scUtilsTestAgents::FinishActionTestAgent)
+  SC_AGENT_UNREGISTER(FinishActionTestAgent);
 }

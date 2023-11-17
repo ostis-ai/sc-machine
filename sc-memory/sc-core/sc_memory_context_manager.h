@@ -10,6 +10,8 @@
 #include "sc-store/sc_element.h"
 
 #include "sc-store/sc_types.h"
+#include "sc-store/sc_event/sc_event_types.h"
+
 #include "sc-store/sc-base/sc_message.h"
 #include "sc-store/sc-base/sc_monitor.h"
 

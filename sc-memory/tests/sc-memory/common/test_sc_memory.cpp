@@ -141,14 +141,6 @@ TEST_F(ScMemoryTestWithInitMemoryGeneratedStructure, TestInitMemoryGeneratedStru
   ScMemoryContext * context = m_ctx.get();
 
   ScAddrVector const & keynodesAddrs = {
-      ScKeynodes::kCommandStateAddr,
-      ScKeynodes::kCommandInitiatedAddr,
-      ScKeynodes::kCommandProgressedAddr,
-      ScKeynodes::kCommandFinishedAddr,
-      ScKeynodes::kNrelResult,
-      ScKeynodes::kNrelCommonTemplate,
-      ScKeynodes::kNrelIdtf,
-      ScKeynodes::kNrelFormat,
       ScKeynodes::kScResult,
       ScKeynodes::kBinaryType};
 

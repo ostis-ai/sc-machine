@@ -55,7 +55,7 @@ private:
   uint32_t m_refCount;
 };
 
-#define SHARED_PTR_TYPE(__type) using __type##Ptr = std::shared_ptr<__type>;
+#define SHARED_PTR_TYPE(__type) using __type##Ptr = std::shared_ptr<__type>
 
 class MemoryBuffer
 {
@@ -144,8 +144,8 @@ public:
   }
 };
 
-SHARED_PTR_TYPE(MemoryBuffer)
-SHARED_PTR_TYPE(MemoryBufferSafe)
+SHARED_PTR_TYPE(MemoryBuffer);
+SHARED_PTR_TYPE(MemoryBufferSafe);
 
 namespace utils
 {

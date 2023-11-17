@@ -29,7 +29,14 @@ private:
   ScMemoryContext * m_context;
   ScMemoryJsonEventsManager * m_manager;
 
-  static std::map<std::string, ScEvent::Type> events;
+  std::map<std::string, ScEvent::Type> events = {
+      {"add_outgoing_edge", ScEvent::Type::AddOutputEdge},
+      {"add_ingoing_edge", ScEvent::Type::AddInputEdge},
+      {"remove_outgoing_edge", ScEvent::Type::RemoveOutputEdge},
+      {"remove_ingoing_edge", ScEvent::Type::RemoveInputEdge},
+      {"content_change", ScEvent::Type::ChangeContent},
+      {"delete_element", ScEvent::Type::RemoveElement},
+  };
 
   ScMemoryJsonPayload HandleRequestPayload(
       ScServerSessionId const & sessionId,

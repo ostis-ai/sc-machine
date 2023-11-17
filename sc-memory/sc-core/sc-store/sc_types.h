@@ -222,18 +222,6 @@ enum _sc_result
   SC_RESULT_COUNT,  // number of result types
 };
 
-// events
-enum _sc_event_type
-{
-  SC_EVENT_UNKNOWN = -1,
-  SC_EVENT_ADD_OUTPUT_ARC = 0,
-  SC_EVENT_ADD_INPUT_ARC = 1,
-  SC_EVENT_REMOVE_OUTPUT_ARC = 2,
-  SC_EVENT_REMOVE_INPUT_ARC = 3,
-  SC_EVENT_REMOVE_ELEMENT = 4,
-  SC_EVENT_CONTENT_CHANGED = 5
-};
-
 // structure to store statistics info
 struct _sc_stat
 {
@@ -258,5 +246,4 @@ typedef struct _sc_iterator3 sc_iterator3;
 typedef struct _sc_iterator5 sc_iterator5;
 typedef struct _sc_event sc_event;
 typedef enum _sc_result sc_result;
-typedef enum _sc_event_type sc_event_type;
 typedef struct _sc_stat sc_stat;

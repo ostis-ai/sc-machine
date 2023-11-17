@@ -20,45 +20,22 @@ extern "C"
 
 // Should be equal to C values
 
-namespace
-{
-sc_event_type ConvertEventType(ScEvent::Type type)
-{
-  switch (type)
-  {
-  case ScEvent::Type::AddOutputEdge:
-    return SC_EVENT_ADD_OUTPUT_ARC;
-
-  case ScEvent::Type::AddInputEdge:
-    return SC_EVENT_ADD_INPUT_ARC;
-
-  case ScEvent::Type::RemoveOutputEdge:
-    return SC_EVENT_REMOVE_OUTPUT_ARC;
-
-  case ScEvent::Type::RemoveInputEdge:
-    return SC_EVENT_REMOVE_INPUT_ARC;
-
-  case ScEvent::Type::EraseElement:
-    return SC_EVENT_REMOVE_ELEMENT;
-
-  case ScEvent::Type::ContentChanged:
-    return SC_EVENT_CONTENT_CHANGED;
-  }
-
-  SC_THROW_EXCEPTION(utils::ExceptionNotImplemented, "Unsupported event type " + std::to_string(int(type)));
-}
-
-}  // namespace
+ScEvent::Type const ScEvent::Type::Unknown(sc_event_unknown);
+ScEvent::Type const ScEvent::Type::AddInputEdge(sc_event_add_input_arc);
+ScEvent::Type const ScEvent::Type::AddOutputEdge(sc_event_add_output_arc);
+ScEvent::Type const ScEvent::Type::RemoveInputEdge(sc_event_remove_input_arc);
+ScEvent::Type const ScEvent::Type::RemoveOutputEdge(sc_event_remove_output_arc);
+ScEvent::Type const ScEvent::Type::RemoveElement(sc_event_remove_element);
+ScEvent::Type const ScEvent::Type::ChangeContent(sc_event_change_content);
 
 ScEvent::ScEvent(
     ScMemoryContext const & ctx,
     ScAddr const & addr,
-    Type eventType,
-    ScEvent::DelegateFunc func /*= DelegateFunc()*/)
+    Type const & eventType,
+    ScEvent::DelegateFunc const & func /*= DelegateFunc()*/)
 {
   m_delegate = std::move(func);
-  m_event = sc_event_new_ex(
-      *ctx, *addr, ConvertEventType(eventType), (sc_pointer)this, &ScEvent::Handler, &ScEvent::HandlerDelete);
+  m_event = sc_event_new_ex(*ctx, *addr, eventType, (sc_pointer)this, &ScEvent::Handler, &ScEvent::HandlerDelete);
 }
 
 ScEvent::ScEvent(

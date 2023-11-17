@@ -38,11 +38,10 @@ TEST_F(ScEventTest, threading_smoke)
       ScEvent::Type::AddInputEdge,
       ScEvent::Type::RemoveOutputEdge,
       ScEvent::Type::RemoveInputEdge,
-      ScEvent::Type::EraseElement,
-      ScEvent::Type::ContentChanged};
+      ScEvent::Type::RemoveElement,
+      ScEvent::Type::ChangeContent};
 
-  auto const randNode = [&nodes]()
-  {
+  auto const randNode = [&nodes]() {
     return nodes[std::rand() % nodes.size()];
   };
 
@@ -58,7 +57,7 @@ TEST_F(ScEventTest, threading_smoke)
         {
           evtCount++;
           return true;
-        });
+          });
   }
 
   ScTimer timer;
