@@ -7,7 +7,7 @@
 #ifndef _sc_event_h_
 #define _sc_event_h_
 
-#include "sc_event/sc_event_types.h"
+#include "sc-event/sc_event_types.h"
 
 typedef struct _sc_event_registration_manager sc_event_registration_manager;
 
