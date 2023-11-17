@@ -95,7 +95,7 @@ TEST_F(ScAgentTest, FormActionAnswer)
   ScAddr const & addr1 = context->CreateNode(ScType::NodeConst);
   ScAddr const & addr2 = context->CreateNode(ScType::NodeConst);
 
-  ScAddr const & structAddr = context->FormStructure({addr1, addr2});
+  ScAddr structAddr = context->FormStructure({addr1, addr2});
 
   context->FormActionAnswer(actionAddr, structAddr);
 
@@ -106,7 +106,7 @@ TEST_F(ScAgentTest, FormActionAnswer)
   context->HelperSearchTemplate(templ, result);
 
   EXPECT_EQ(result.Size(), 1u);
-  ScAddr const & gottenStructAddr = result[0][2];
+  ScAddr gottenStructAddr = result[0][2];
   EXPECT_EQ(gottenStructAddr, structAddr);
 
   for (auto const & addr : {addr1, addr2})
