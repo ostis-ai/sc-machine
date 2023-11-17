@@ -3,15 +3,17 @@
 #include "sc-memory/kpm/sc_agent.hpp"
 #include "sc-agents-common/keynodes/coreKeynodes.hpp"
 
-#include "FinishActionTestAgent.generated.hpp"
-
 namespace scUtilsTestAgents
 {
 
-class FinishActionTestAgent : public ScAgent
+class FinishActionTestAgent : public ScAgent<ScEvent::Type::AddInputEdge>
 {
-  SC_CLASS(Agent, Event(scAgentsCommon::CoreKeynodes::question_initiated, ScEvent::Type::AddOutputEdge))
-  SC_GENERATED_BODY()
+public:
+  SC_AGENT_BODY(ATestAddInputEdge);
+
+  sc_result OnEvent(ScAddr const & listenAddr, ScAddr const & edgeAddr, ScAddr const & otherAddr) override;
+
+  static ScKeynodeClass const msAgentKeynode;
 };
 
 }  // namespace scUtilsTestAgents

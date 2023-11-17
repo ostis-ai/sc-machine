@@ -10,6 +10,7 @@
 #include "sc_utils.hpp"
 
 #include "utils/sc_lock.hpp"
+#include "sc-core/sc-store/sc_event/sc_event_types.h"
 
 #include <functional>
 
@@ -18,27 +19,86 @@
 class ScEvent
 {
 public:
-  using DelegateFunc = std::function<bool(ScAddr const &, ScAddr const &, ScAddr const &)>;
+  using DelegateFunc = std::function<sc_result(ScAddr const &, ScAddr const &, ScAddr const &)>;
 
-  enum class Type : uint8_t
+  class Type
   {
-    AddOutputEdge = 0,
-    AddInputEdge,
-    RemoveOutputEdge,
-    RemoveInputEdge,
-    EraseElement,
-    ContentChanged
+  public:
+    sc_event_type m_realType;
+
+    explicit Type(sc_event_type type)
+      : m_realType(type)
+    {
+    }
+
+    Type(Type const & otherType)
+      : Type(otherType.m_realType)
+    {
+    }
+
+    inline sc_event_type operator*() const
+    {
+      return m_realType;
+    }
+
+    Type & operator()(Type const & other)
+    {
+      m_realType |= other.m_realType;
+      return *this;
+    }
+
+    inline sc_bool operator==(Type const & other) const
+    {
+      return (m_realType == other.m_realType);
+    }
+    inline sc_bool operator!=(Type const & other) const
+    {
+      return (m_realType != other.m_realType);
+    }
+
+    inline Type operator|(Type const & other) const
+    {
+      return Type(m_realType | other.m_realType);
+    }
+    inline Type operator&(Type const & other) const
+    {
+      return Type(m_realType & other.m_realType);
+    }
+
+    inline Type & operator|=(Type const & other)
+    {
+      m_realType |= other.m_realType;
+      return *this;
+    }
+    inline Type & operator&=(Type const & other)
+    {
+      m_realType &= other.m_realType;
+      return *this;
+    }
+
+    operator sc_event_type() const
+    {
+      return m_realType;
+    }
+
+    static Type const Unknown;
+    static Type const AddInputEdge;
+    static Type const AddOutputEdge;
+    static Type const RemoveInputEdge;
+    static Type const RemoveOutputEdge;
+    static Type const RemoveElement;
+    static Type const ChangeContent;
   };
 
   explicit _SC_EXTERN ScEvent(
       class ScMemoryContext const & ctx,
-      const ScAddr & addr,
-      Type eventType,
-      DelegateFunc func = DelegateFunc());
+      ScAddr const & addr,
+      Type const & eventType,
+      DelegateFunc const & func = DelegateFunc());
   virtual _SC_EXTERN ~ScEvent();
 
   // Don't allow copying of events
-  ScEvent(const ScEvent & other) = delete;
+  ScEvent(ScEvent const & other) = delete;
 
   /* Set specified function as a delegate that will be calls on event emit */
   template <typename FuncT>
@@ -66,7 +126,7 @@ class ScEventAddOutputEdge final : public ScEvent
   friend class ScMemoryContext;
 
 public:
-  _SC_EXTERN ScEventAddOutputEdge(const ScMemoryContext & ctx, const ScAddr & addr, ScEvent::DelegateFunc func)
+  _SC_EXTERN ScEventAddOutputEdge(ScMemoryContext const & ctx, const ScAddr & addr, ScEvent::DelegateFunc const & func)
     : ScEvent(ctx, addr, ScEvent::Type::AddOutputEdge, func)
   {
   }
@@ -77,7 +137,7 @@ class ScEventAddInputEdge final : public ScEvent
   friend class ScMemoryContext;
 
 public:
-  _SC_EXTERN ScEventAddInputEdge(const ScMemoryContext & ctx, const ScAddr & addr, ScEvent::DelegateFunc func)
+  _SC_EXTERN ScEventAddInputEdge(ScMemoryContext const & ctx, const ScAddr & addr, ScEvent::DelegateFunc const & func)
     : ScEvent(ctx, addr, ScEvent::Type::AddInputEdge, func)
   {
   }
@@ -88,7 +148,10 @@ class ScEventRemoveOutputEdge final : public ScEvent
   friend class ScMemoryContext;
 
 public:
-  _SC_EXTERN ScEventRemoveOutputEdge(const ScMemoryContext & ctx, const ScAddr & addr, ScEvent::DelegateFunc func)
+  _SC_EXTERN ScEventRemoveOutputEdge(
+      ScMemoryContext const & ctx,
+      const ScAddr & addr,
+      ScEvent::DelegateFunc const & func)
     : ScEvent(ctx, addr, ScEvent::Type::RemoveOutputEdge, func)
   {
   }
@@ -99,7 +162,10 @@ class ScEventRemoveInputEdge final : public ScEvent
   friend class ScMemoryContext;
 
 public:
-  _SC_EXTERN ScEventRemoveInputEdge(const ScMemoryContext & ctx, const ScAddr & addr, ScEvent::DelegateFunc func)
+  _SC_EXTERN ScEventRemoveInputEdge(
+      ScMemoryContext const & ctx,
+      const ScAddr & addr,
+      ScEvent::DelegateFunc const & func)
     : ScEvent(ctx, addr, ScEvent::Type::RemoveInputEdge, func)
   {
   }
@@ -110,8 +176,8 @@ class ScEventEraseElement final : public ScEvent
   friend class ScMemoryContext;
 
 public:
-  _SC_EXTERN ScEventEraseElement(const ScMemoryContext & ctx, const ScAddr & addr, ScEvent::DelegateFunc func)
-    : ScEvent(ctx, addr, ScEvent::Type::EraseElement, func)
+  _SC_EXTERN ScEventEraseElement(ScMemoryContext const & ctx, const ScAddr & addr, ScEvent::DelegateFunc const & func)
+    : ScEvent(ctx, addr, ScEvent::Type::RemoveElement, func)
   {
   }
 };
@@ -121,8 +187,8 @@ class ScEventContentChanged final : public ScEvent
   friend class ScMemoryContext;
 
 public:
-  _SC_EXTERN ScEventContentChanged(const ScMemoryContext & ctx, const ScAddr & addr, ScEvent::DelegateFunc func)
-    : ScEvent(ctx, addr, ScEvent::Type::ContentChanged, func)
+  _SC_EXTERN ScEventContentChanged(ScMemoryContext const & ctx, const ScAddr & addr, ScEvent::DelegateFunc const & func)
+    : ScEvent(ctx, addr, ScEvent::Type::ChangeContent, func)
   {
   }
 };

@@ -25,7 +25,6 @@ if(${SC_CLANG_FORMAT_CODE})
 endif()
 
 install_targets("/bin" sc-server sc-server-lib)
-sc_codegen(sc-server-lib ${SC_SERVER_ROOT}/src)
 
 configure_file(
     "${SC_SERVER_ROOT}/tests/test_defines.hpp.in"

@@ -46,15 +46,11 @@ elseif(${UNIX})
     )
 endif(${WIN32})
 
-sc_codegen_ex(sc-memory ${CMAKE_CURRENT_SOURCE_DIR} "${CMAKE_CURRENT_SOURCE_DIR}/generated")
 add_dependencies(sc-memory 
     sc-core
-    sc-code-generator
     antlr4_static
     SCsParser
 )
-
-target_compile_definitions(sc-memory PRIVATE "-DSC_MEMORY_SELF_BUILD")
 
 if(${SC_CLANG_FORMAT_CODE})
     target_clangformat_setup(sc-memory)
