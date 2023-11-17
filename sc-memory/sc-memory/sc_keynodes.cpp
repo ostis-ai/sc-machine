@@ -72,7 +72,12 @@ sc_result ScKeynodes::Initialize(std::string const & initMemoryGeneratedStructur
     result = result && resAddr.IsValid();
     if (!ctx.HelperCheckEdge(kScResult, resAddr, ScType::EdgeAccessConstPosPerm))
     {
-      result = result && ctx.CreateEdge(ScType::EdgeAccessConstPosPerm, kScResult, resAddr).IsValid();
+      ScAddr const & edge = ctx.CreateEdge(ScType::EdgeAccessConstPosPerm, kScResult, resAddr);
+      result = result && edge.IsValid();
+
+      if (initMemoryGeneratedStructureAddr.IsValid() &&
+          !ctx.CreateEdge(ScType::EdgeAccessConstPosPerm, initMemoryGeneratedStructureAddr, edge).IsValid())
+        result = SC_FALSE;
     }
   }
 
