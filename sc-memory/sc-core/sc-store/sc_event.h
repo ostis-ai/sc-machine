@@ -55,6 +55,15 @@ _SC_EXTERN sc_event * sc_event_new_ex(
     fEventCallbackEx callback,
     fDeleteCallback delete_callback);
 
+_SC_EXTERN sc_event * sc_event_new_ex2(
+    sc_memory_context const * ctx,
+    sc_addr * addrs,
+    sc_uint32 addrs_count,
+    sc_event_type type,
+    sc_pointer data,
+    fEventCallbackEx callback,
+    fDeleteCallback delete_callback);
+
 /*! Destroys specified sc-event
  * @param event Pointer to sc-event, that need to be destroyed
  * @return If event destroyed correctly, then return SC_RESULT_OK; otherwise return SC_RESULT_ERROR code.

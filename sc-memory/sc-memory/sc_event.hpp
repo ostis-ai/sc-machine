@@ -95,6 +95,11 @@ public:
       ScAddr const & addr,
       Type const & eventType,
       DelegateFunc const & func = DelegateFunc());
+  explicit _SC_EXTERN ScEvent(
+      class ScMemoryContext const & ctx,
+      ScAddrVector const & addrs,
+      Type const & eventType,
+      DelegateFunc const & func = DelegateFunc());
   virtual _SC_EXTERN ~ScEvent();
 
   // Don't allow copying of events

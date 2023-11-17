@@ -47,6 +47,8 @@ ScKeynodeClass const ScKeynodes::kBinaryUInt64("binary_uint64");
 ScKeynodeClass const ScKeynodes::kBinaryString("binary_string");
 ScKeynodeClass const ScKeynodes::kBinaryCustom("binary_custom");
 
+ScKeynodeClass const ScKeynodes::kEmptyClass;
+
 sc_result ScKeynodes::Initialize()
 {
   return Initialize("");
