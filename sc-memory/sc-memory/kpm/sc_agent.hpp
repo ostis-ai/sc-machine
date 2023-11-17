@@ -29,15 +29,17 @@ class _SC_EXTERN ScAgentAbstract : public ScObject
 public:
   SC_AGENT_BODY(ScAgentAbstract)
 
-  _SC_EXTERN explicit ScAgentAbstract(ScEvent::Type const & type, sc_uint8 accessLvl = sc_access_lvl_make_max)
+  _SC_EXTERN explicit ScAgentAbstract(
+      ScEvent::Type const & type,
+      ScKeynodeClass const & actionClass,
+      sc_uint8 accessLvl = sc_access_lvl_make_max)
     : m_eventType(type)
-    , m_memoryCtx(new ScAgentContext(accessLvl, "ScAgentContext")){};
+    , m_actionClass(actionClass)
+    , m_memoryCtx(ScAgentContext(accessLvl, "ScAgentContext")){};
 
   _SC_EXTERN ~ScAgentAbstract() override
   {
-    m_memoryCtx->Destroy();
-    delete m_memoryCtx;
-    m_memoryCtx = nullptr;
+    m_memoryCtx.Destroy();
   }
 
   /*! @details It will be called, if the event the agent is subscribed to has been initialized. In this method,
@@ -113,7 +115,8 @@ public:
 
 protected:
   ScEvent::Type m_eventType = ScEvent::Type::Unknown;
-  mutable ScAgentContext * m_memoryCtx;
+  ScKeynodeClass m_actionClass;
+  mutable ScAgentContext m_memoryCtx;
 
   std::list<ScEvent *> m_events;
 
@@ -136,112 +139,112 @@ protected:
 };
 
 /*!
-* @class An abstract class to implement agents
-* @details The `sc_result OnEvent(ScAddr const & listenAddr, ScAddr const & edgeAddr, ScAddr const & otherAddr)`
-* procedure should be implemented in the child class. You can also override methods `void OnSuccess(ScAddr const &
-* listenAddr, ScAddr const & edgeAddr, ScAddr const & otherAddr)`, `void OnUnsuccess(ScAddr const & listenAddr,
-* ScAddr const & edgeAddr, ScAddr const & otherAddr)` and `void OnError(ScAddr const & listenAddr, ScAddr const &
-* edgeAddr, ScAddr const & otherAddr, sc_result errorCode)`. They are executed depending on the agent error code
-* returned in the function `OnEvent`.
-* @example
-* File sc_syntactic_analysis_agent.hpp:
-* \code
-* #include "sc-memory/kpm/sc_agent.hpp"
-*
-* #include "nlp-module/keynodes/sc_nlp_keynodes.hpp"
-* #include "nlp-module/agents/sc_syntactic_analysis_agent.hpp"
-*
-* #include "nlp-module/analyser/sc_syntactic_analyser.hpp"
-*
-* namespace nlp
-* {
-*
-* template <ScEvent::Type const & type>
-* class ScSyntacticAnalysisAgent : public ScAgent<type>
-* {
-* public:
-*   SC_AGENT_BODY(ScSyntacticAnalysisAgent)
-*
-*   ScSyntacticAnalysisAgent()
-*     : m_analyser(new nlp::ScSyntacticAnalyser(m_memoryCtx))
-*   {
-*   }
-*
-*   sc_result OnEvent(ScAddr const & listenAddr, ScAddr const & edgeAddr, ScAddr const & otherAddr) override
-*   {
-*      ScAddr const textAddr = m_memoryCtx->GetArgument(otherAddr, 1);
-*      if (textAddr.IsValid() == SC_FALSE)
-*      {
-*         SC_LOG_ERROR("Invalid text link addr");
-*         return SC_RESULT_ERROR_INVALID_PARAMS;
-*      }
-*
-*      try
-*      {
-*        ScAddr const lexemeTreeAddr = m_analyser->Analyse(textAddr);
-*      }
-*      catch(utils::ScException const & e)
-*      {
-*        SC_LOG_ERROR("Error occurred: " + e.Description());
-*        return SC_RESULT_ERROR_INVALID_STATE;
-*      }
-*
-*      if (lexemeTreeAddr.IsValid())
-*      {
-*        SC_LOG_INFO("Lexeme tree has been formed");
-*        ScAddr const & answerAddr = m_memoryCtx->FormStructure({ lexemeTreeAddr });
-*        m_memoryCtx->FormAnswer(otherAddr, answerAddr);
-*        return SC_RESULT_OK;
-*      }
-*
-*      SC_LOG_INFO("Lexeme tree hasn't been formed");
-*      return SC_RESULT_NO;
-*   }
-*
-*   void OnSuccess(ScAddr const & listenAddr, ScAddr const & edgeAddr, ScAddr const & otherAddr) override
-*   {
-*      delete m_memoryCtx->InitializeEvent<ScEvent::Type::AddOutputEdge>(
-*          nlp::ScNLPKeynodes::kSyntacticSynthesizeAction,
-           [this]() -> {
-              ScAddr const & addr = m_memoryCtx->CreateNode(ScType::NodeConst);
-              m_memoryCtx->CreateEdge(
-                ScType::EdgeAccessConstPosPerm, nlp::ScNLPKeynodes::kSyntacticSynthesizeAction, addr);
-           },
-           [this](ScAddr const & listenAddr, ScAddr const & edgeAddr, ScAddr const & otherAddr) -> sc_result {
-              return ms_context->HelperCheckEdge(nlp::ScNLPKeynodes::k, edgeAddr, ScType::EdgeAccessConstPosPerm)
-              ? SC_RESULT_OK
-              : SC_RESULT_NO;
-           }
-       )->Wait(10000);
-*   }
-* };
-*
-* private:
-*   nlp::ScSyntacticAnalyser * m_analyser;
-* }
-* \endcode
-* @note This class is an API to implement your own agent classes.
-*/
-template <ScEvent::Type const & type>
+ * @class An abstract class to implement agents
+ * @details The `sc_result OnEvent(ScAddr const & listenAddr, ScAddr const & edgeAddr, ScAddr const & otherAddr)`
+ * procedure should be implemented in the child class. You can also override methods `void OnSuccess(ScAddr const &
+ * listenAddr, ScAddr const & edgeAddr, ScAddr const & otherAddr)`, `void OnUnsuccess(ScAddr const & listenAddr,
+ * ScAddr const & edgeAddr, ScAddr const & otherAddr)` and `void OnError(ScAddr const & listenAddr, ScAddr const &
+ * edgeAddr, ScAddr const & otherAddr, sc_result errorCode)`. They are executed depending on the agent error code
+ * returned in the function `OnEvent`.
+ * @example
+ * File sc_syntactic_analysis_agent.hpp:
+ * \code
+ * #include "sc-memory/kpm/sc_agent.hpp"
+ *
+ * #include "nlp-module/keynodes/sc_nlp_keynodes.hpp"
+ * #include "nlp-module/agents/sc_syntactic_analysis_agent.hpp"
+ *
+ * #include "nlp-module/analyser/sc_syntactic_analyser.hpp"
+ *
+ * namespace nlp
+ * {
+ *
+ * template <ScEvent::Type const & type>
+ * class ScSyntacticAnalysisAgent : public ScAgent<type, ScKeynodes::kQuestionInitiated>
+ * {
+ * public:
+ *   SC_AGENT_BODY(ScSyntacticAnalysisAgent)
+ *
+ *   ScSyntacticAnalysisAgent()
+ *     : m_analyser(new nlp::ScSyntacticAnalyser(m_memoryCtx))
+ *   {
+ *   }
+ *
+ *   sc_result OnEvent(ScAddr const & listenAddr, ScAddr const & edgeAddr, ScAddr const & otherAddr) override
+ *   {
+ *      ScAddr const textAddr = m_memoryCtx.GetArgument(otherAddr, 1);
+ *      if (textAddr.IsValid() == SC_FALSE)
+ *      {
+ *         SC_LOG_ERROR("Invalid text link addr");
+ *         return SC_RESULT_ERROR_INVALID_PARAMS;
+ *      }
+ *
+ *      try
+ *      {
+ *        ScAddr const lexemeTreeAddr = m_analyser->Analyse(textAddr);
+ *      }
+ *      catch(utils::ScException const & e)
+ *      {
+ *        SC_LOG_ERROR("Error occurred: " + e.Description());
+ *        return SC_RESULT_ERROR_INVALID_STATE;
+ *      }
+ *
+ *      if (lexemeTreeAddr.IsValid())
+ *      {
+ *        SC_LOG_INFO("Lexeme tree has been formed");
+ *        ScAddr const & answerAddr = m_memoryCtx->FormStructure({ lexemeTreeAddr });
+ *        m_memoryCtx.FormAnswer(otherAddr, answerAddr);
+ *        return SC_RESULT_OK;
+ *      }
+ *
+ *      SC_LOG_INFO("Lexeme tree hasn't been formed");
+ *      return SC_RESULT_NO;
+ *   }
+ *
+ *   void OnSuccess(ScAddr const & listenAddr, ScAddr const & edgeAddr, ScAddr const & otherAddr) override
+ *   {
+ *      delete m_memoryCtx->InitializeEvent<ScEvent::Type::AddOutputEdge>(
+ *          nlp::ScNLPKeynodes::kSyntacticSynthesizeAction,
+ *          [this]() -> {
+ *             ScAddr const & addr = m_memoryCtx.CreateNode(ScType::NodeConst);
+ *             m_memoryCtx.CreateEdge(
+ *              ScType::EdgeAccessConstPosPerm, nlp::ScNLPKeynodes::kSyntacticSynthesizeAction, addr);
+ *          },
+ *          [this](ScAddr const & listenAddr, ScAddr const & edgeAddr, ScAddr const & otherAddr) -> sc_result {
+ *             return m_memoryCtx.HelperCheckEdge(nlp::ScNLPKeynodes::k, edgeAddr, ScType::EdgeAccessConstPosPerm)
+ *             ? SC_RESULT_OK
+ *             : SC_RESULT_NO;
+ *          }
+ *      )->Wait(10000);
+ *   }
+ * };
+ *
+ * private:
+ *   nlp::ScSyntacticAnalyser * m_analyser;
+ * }
+ * \endcode
+ * @note This class is an API to implement your own agent classes.
+ */
+template <ScEvent::Type const & type, ScKeynodeClass const & actionClass = ScKeynodes::kEmptyClass>
 class _SC_EXTERN ScAgent : public ScAgentAbstract
 {
 public:
   _SC_EXTERN explicit ScAgent()
-    : ScAgentAbstract(type)
+    : ScAgentAbstract(type, actionClass)
   {
   }
 
   _SC_EXTERN ScAgentAbstract * Register(ScAddrVector const & addrs) override
   {
     for (auto const & addr : addrs)
-      m_events.push_back(new ScEvent(*m_memoryCtx, addr, m_eventType, GetCallback()));
+      m_events.push_back(new ScEvent(m_memoryCtx, addr, m_eventType, GetCallback()));
 
     return this;
   }
 
   _SC_EXTERN ScAgentAbstract * Register(ScAddr const & addr) override
   {
-    m_events.push_back(new ScEvent(*m_memoryCtx, addr, m_eventType, GetCallback()));
+    m_events.push_back(new ScEvent(m_memoryCtx, addr, m_eventType, GetCallback()));
 
     return this;
   }
@@ -261,25 +264,29 @@ protected:
   _SC_EXTERN ScEvent::DelegateFunc GetCallback() override
   {
     return [this](ScAddr const & addr, ScAddr const & edgeAddr, ScAddr const & otherAddr) -> sc_result {
+      if (m_actionClass.IsValid() &&
+          !m_memoryCtx.HelperCheckEdge(m_actionClass, otherAddr, ScType::EdgeAccessConstPosPerm))
+        return SC_RESULT_ERROR;
+
       sc_result result = OnEvent(addr, edgeAddr, otherAddr);
 
       // finish agent
       if (result == SC_RESULT_OK)
       {
         OnSuccess(addr, edgeAddr, otherAddr);
-        m_memoryCtx->CreateEdge(ScType::EdgeAccessConstPosPerm, ScKeynodes::kQuestionFinishedSuccessfully, otherAddr);
+        m_memoryCtx.CreateEdge(ScType::EdgeAccessConstPosPerm, ScKeynodes::kQuestionFinishedSuccessfully, otherAddr);
       }
       else if (result == SC_RESULT_NO)
       {
         OnUnsuccess(addr, edgeAddr, otherAddr);
-        m_memoryCtx->CreateEdge(ScType::EdgeAccessConstPosPerm, ScKeynodes::kQuestionFinishedUnsuccessfully, otherAddr);
+        m_memoryCtx.CreateEdge(ScType::EdgeAccessConstPosPerm, ScKeynodes::kQuestionFinishedUnsuccessfully, otherAddr);
       }
       else
       {
         OnError(addr, edgeAddr, otherAddr, result);
-        m_memoryCtx->CreateEdge(ScType::EdgeAccessConstPosPerm, ScKeynodes::kQuestionFinishedWithError, otherAddr);
+        m_memoryCtx.CreateEdge(ScType::EdgeAccessConstPosPerm, ScKeynodes::kQuestionFinishedWithError, otherAddr);
       }
-      m_memoryCtx->CreateEdge(ScType::EdgeAccessConstPosPerm, ScKeynodes::kQuestionFinished, otherAddr);
+      m_memoryCtx.CreateEdge(ScType::EdgeAccessConstPosPerm, ScKeynodes::kQuestionFinished, otherAddr);
 
       return result;
     };

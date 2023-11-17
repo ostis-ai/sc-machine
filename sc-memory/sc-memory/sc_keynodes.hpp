@@ -116,6 +116,11 @@ protected:
 class ScKeynodeClass : public ScKeynode<sc_type_node | sc_type_const | sc_type_node_class>
 {
 public:
+  explicit ScKeynodeClass()
+    : ScKeynode(SC_ADDR_EMPTY)
+  {
+  }
+
   explicit ScKeynodeClass(std::string const & sysIdtf)
     : ScKeynode(sysIdtf)
   {
@@ -257,4 +262,6 @@ public:
   _SC_EXTERN static ScKeynodeClass const kBinaryUInt64;
   _SC_EXTERN static ScKeynodeClass const kBinaryString;
   _SC_EXTERN static ScKeynodeClass const kBinaryCustom;
+
+  _SC_EXTERN static ScKeynodeClass const kEmptyClass;
 };

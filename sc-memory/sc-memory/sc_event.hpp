@@ -12,7 +12,7 @@
 #include "sc_utils.hpp"
 
 #include "utils/sc_lock.hpp"
-#include "sc-core/sc-store/sc_event/sc_event_types.h"
+#include "sc-core/sc-store/sc-event/sc_event_types.h"
 
 /* Base class for sc-events
  */
@@ -101,7 +101,7 @@ public:
       class ScMemoryContext const & ctx,
       ScAddr const & addr,
       Type const &  eventType,
-      DelegateFuncWithUserAddr const &  func = DelegateFuncWithUserAddr());
+      DelegateFuncWithUserAddr const & func = DelegateFuncWithUserAddr());
   virtual _SC_EXTERN ~ScEvent();
 
   // Don't allow copying of events
