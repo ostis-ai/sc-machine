@@ -674,7 +674,9 @@ sc_dictionary_fs_memory_status sc_dictionary_fs_memory_get_string_by_link_hash(
   if ((sc_str_find(*string, ".") || sc_str_find(*string, "/")) && sc_fs_is_file(*string))
   {
     sc_char * file_path = *string;
-    _sc_dictionary_fs_memory_read_file(file_path, string, (sc_uint32 *)string_size);
+    sc_uint32 size;
+    _sc_dictionary_fs_memory_read_file(file_path, string, &size);
+    *string_size = size;
     sc_mem_free(file_path);
   }
 

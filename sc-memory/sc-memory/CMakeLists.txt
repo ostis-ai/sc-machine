@@ -36,7 +36,11 @@ target_include_directories(sc-memory
     PRIVATE ${SC_MACHINE_ANTRL_DIR}/runtime/src
 )
 
-sc_codegen_ex(sc-memory ${CMAKE_CURRENT_SOURCE_DIR} "${CMAKE_CURRENT_SOURCE_DIR}/generated")
+add_dependencies(sc-memory 
+    sc-core
+    antlr4_static
+    SCsParser
+)
 
 if(${SC_CLANG_FORMAT_CODE})
     target_clangformat_setup(sc-memory)

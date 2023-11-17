@@ -17,8 +17,6 @@ macro(sc_target_dependencies)
     elseif(${WIN32})
         message(SEND_ERROR "sc-machine isn't supported on Windows OS.")
     endif(${UNIX})
-
-    include("${CMAKE_MODULE_PATH}/codegen.cmake")
 endmacro()
 
 macro(sc_linux_target_dependencies)

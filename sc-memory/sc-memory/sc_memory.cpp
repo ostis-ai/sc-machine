@@ -83,11 +83,7 @@ bool ScMemory::Initialize(sc_memory_params const & params)
   if (ctx == nullptr)
     return false;
 
-  ScKeynodes::Init(
-      ms_globalContext,
-      false,
-      params.init_memory_generated_upload ? params.init_memory_generated_structure : (sc_char *)nullptr);
-  ScAgentInit(true);
+  ScKeynodes().Initialize(params.init_memory_generated_upload ? params.init_memory_generated_structure : "");
 
   utils::ScLog::SetUp(params.log_type, params.log_file, params.log_level);
 
@@ -103,7 +99,7 @@ bool ScMemory::Shutdown(bool saveState /* = true */)
 {
   utils::ScLog::SetUp("Console", "", "Info");
 
-  ScKeynodes::Shutdown();
+  ScKeynodes().Shutdown();
 
   sc_bool result = sc_memory_shutdown(saveState);
 

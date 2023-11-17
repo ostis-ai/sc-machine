@@ -122,7 +122,6 @@ bool ScLink::_DetermineTypeEdgeImpl(ScAddr & outEdge, ScAddr & outType) const
   ScTemplateSearchResult res;
   if (m_ctx.HelperSearchTemplate(templ, res))
   {
-    SC_ASSERT(res.Size() == 1, ("Invalid state of knowledge base"));
     outType = res[0]["_type"];
     outEdge = res[0]["_edge"];
     return true;

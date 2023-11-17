@@ -6,38 +6,25 @@
 
 #pragma once
 
-#include "sc_defines.hpp"
-#include "sc_addr.hpp"
-#include "sc_memory.hpp"
+#include <string>
+
+#include "sc_type.hpp"
 
 /**
  * Base class for all objects that has meta data.
  * If you override it, then call any constructor of ScObject
  * in your custom constructors
  */
-class _SC_EXTERN ScObject
+class ScObject
 {
-protected:
-  explicit ScObject();
-  virtual ~ScObject();
-
-  ScObject(ScObject const & other) = delete;
-  ScObject & operator=(ScObject const & other);
-
 public:
-  /// TODO: Need mechanism to call that function automatically after object construction
-  bool Init();
+  _SC_EXTERN ScObject & operator=(ScObject const & other) = default;
 
-private:
-  /** This method override generates by code generator, and initialize all
-   *  meta data for this object, insert created object in output structure.
-   *  It calls from ScObject constructors
-   */
-  virtual bool _InitInternal(ScAddr const & outputStructure = ScAddr::Empty) = 0;
+  _SC_EXTERN virtual ~ScObject() = default;
 
-  virtual bool _InitInternal(ScMemoryContext & context, ScAddr const & outputStructure = ScAddr::Empty) = 0;
+  _SC_EXTERN virtual std::string GetName() = 0;
 
-private:
-  bool m_isInitialized : 1;
-  bool m_initResult : 1;
+  _SC_EXTERN virtual sc_result Initialize() = 0;
+  _SC_EXTERN virtual sc_result Initialize(std::string const & initMemoryGeneratedStructure = "") = 0;
+  _SC_EXTERN virtual sc_result Shutdown() = 0;
 };

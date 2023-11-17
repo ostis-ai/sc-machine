@@ -6,17 +6,8 @@
 
 #pragma once
 
-#include <sc-memory/sc_memory.hpp>
-#include <sc-memory/sc_module.hpp>
+#include "sc-memory/kpm/sc_module.hpp"
 
-#include "sc_agents_common.generated.hpp"
+#include "sc-agents-common/keynodes/coreKeynodes.hpp"
 
-class SCAgentsCommonModule : public ScModule
-{
-  SC_CLASS(LoadOrder(50))
-  SC_GENERATED_BODY()
-
-  virtual sc_result InitializeImpl() override;
-
-  virtual sc_result ShutdownImpl() override;
-};
+SC_MODULE(ScAgentsCommonModule)->Keynodes(new scAgentsCommon::CoreKeynodes());

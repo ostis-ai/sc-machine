@@ -22,7 +22,6 @@ TEST_F(ScMemoryTest, getNextFromSet)
 
   SCsHelper helper(*m_ctx, std::make_shared<DummyFileInterface>());
   EXPECT_TRUE(helper.GenerateBySCsText(data));
-  EXPECT_TRUE(scAgentsCommon::CoreKeynodes::InitGlobal());
 
   ScAddr const & set = m_ctx->HelperFindBySystemIdtf("set");
   EXPECT_TRUE(set.IsValid());
@@ -51,7 +50,6 @@ TEST_F(ScMemoryTest, getNextFromSetDouble)
 
   SCsHelper helper(*m_ctx, std::make_shared<DummyFileInterface>());
   EXPECT_TRUE(helper.GenerateBySCsText(data));
-  EXPECT_TRUE(scAgentsCommon::CoreKeynodes::InitGlobal());
 
   ScAddr const & set = m_ctx->HelperFindBySystemIdtf("set");
   EXPECT_TRUE(set.IsValid());
@@ -82,7 +80,6 @@ TEST_F(ScMemoryTest, getNextFromSetNoSequence)
 
   SCsHelper helper(*m_ctx, std::make_shared<DummyFileInterface>());
   EXPECT_TRUE(helper.GenerateBySCsText(data));
-  EXPECT_TRUE(scAgentsCommon::CoreKeynodes::InitGlobal());
 
   ScAddr const & set = m_ctx->HelperFindBySystemIdtf("set");
   EXPECT_TRUE(set.IsValid());

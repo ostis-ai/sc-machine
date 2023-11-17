@@ -6,150 +6,291 @@
 
 #pragma once
 
-#include "../sc_object.hpp"
-#include "../sc_memory.hpp"
-#include "../sc_keynodes.hpp"
+#include "sc-memory/sc_object.hpp"
+#include "sc-memory/sc_keynodes.hpp"
 
-#include "../utils/sc_log.hpp"
+#include "sc_agent_context.hpp"
 
-#include "../generated/sc_agent.generated.hpp"
+#include "sc-memory/utils/sc_log.hpp"
 
-/* Call this function before agent module usage.
- * If module initialized, then returns true; otherwise returns false
+/// Defines `std::string GetName()` method for agent class. It is used in sc-memory logging.
+#define SC_AGENT_BODY(__AgentName__) \
+  std::string GetName() override \
+  { \
+    return #__AgentName__; \
+  }
+
+/*!
+ * @interface An interface for agents classes
+ * @note This class is an API to implement your own registration API of agents.
  */
-_SC_EXTERN bool ScAgentInit(bool force = false);
-
-class ScAgent : public ScObject
+class _SC_EXTERN ScAgentAbstract : public ScObject
 {
-  SC_CLASS()
-  SC_GENERATED_BODY()
-
 public:
-  _SC_EXTERN explicit ScAgent(ScAddr const & userAddr);
-  _SC_EXTERN virtual ~ScAgent();
+  SC_AGENT_BODY(ScAgentAbstract)
 
-protected:
-  virtual sc_result Run(ScAddr const & listenAddr, ScAddr const & edgeAddr, ScAddr const & otherAddr) = 0;
+  _SC_EXTERN explicit ScAgentAbstract(ScEvent::Type const & type, sc_uint8 accessLvl = sc_access_lvl_make_max)
+    : m_eventType(type)
+    , m_memoryCtx(new ScAgentContext(accessLvl, "ScAgentContext")){};
 
-protected:
-  mutable ScMemoryContext m_memoryCtx;
-};
-
-class ScAgentAction : public ScAgent
-{
-  friend class ScAgentRunner;
-
-  SC_CLASS()
-  SC_GENERATED_BODY()
-
-public:
-  enum class State : uint8_t
+  _SC_EXTERN ~ScAgentAbstract() override
   {
-    Unknown = 0,
-    Initiated,
-    Progress,
-    Finished
-  };
+    m_memoryCtx->Destroy();
+    delete m_memoryCtx;
+    m_memoryCtx = nullptr;
+  }
 
-  _SC_EXTERN explicit ScAgentAction(ScAddr const & cmdClassAddr, ScAddr const & userAddr);
-  _SC_EXTERN virtual ~ScAgentAction();
+  /*! @details It will be called, if the event the agent is subscribed to has been initialized. In this method,
+   * the logic implemented by the agent starts running. Depending on the event type, the number of valid arguments to
+   * this method changes.
+   * @param[in] listenAddr An address of a subscripting element (can be empty address)
+   * @param[in] edgeAddr An address of an edge element that come in or from subscripting element (can be empty address)
+   * @param[in] otherAddr An address of the element incident to the edge (can be empty address)
+   * @param[out] answerAddr An answer structure addr
+   * @return sc_result A status code of agent on it finish
+   */
+  _SC_EXTERN virtual sc_result OnEvent(
+      ScAddr const & listenAddr,
+      ScAddr const & edgeAddr,
+      ScAddr const & otherAddr) = 0;
+
+  _SC_EXTERN ScEvent::Type GetEventType()
+  {
+    return m_eventType;
+  }
+
+  /*! Registers agent instance on subscripting addresses
+   * @param addrs A vector of subscripting addresses
+   * @return A pointer to agent instance
+   */
+  _SC_EXTERN virtual ScAgentAbstract * Register(ScAddrVector const & addrs) = 0;
+
+  /*! Registers agent instance on subscripting address
+   * @param addr A subscripting address
+   * @return A pointer to agent instance
+   */
+  _SC_EXTERN virtual ScAgentAbstract * Register(ScAddr const & addr) = 0;
+
+  /*! Unregisters agent instance on all subscripting address
+   * @return A pointer to agent instance
+   */
+  _SC_EXTERN virtual ScAgentAbstract * Unregister() = 0;
+
+  /*! Complete defined logic if agent is finished successfully (SC_RESULT_OK)
+   * @param listenAddr An address of a subscripting element
+   * @param edgeAddr An address of an edge element that come in or from subscripting element
+   * @param otherAddr An address of the element incident to the edge
+   * @return A pointer to agent instance
+   */
+  _SC_EXTERN virtual void OnSuccess(ScAddr const & addr, ScAddr const & edgeAddr, ScAddr const & otherAddr)
+  {
+  }
+
+  /*! Complete defined logic if agent is finished unsuccessfully (SC_RESULT_NO)
+   * @param listenAddr An address of a subscripting element
+   * @param edgeAddr An address of an edge element that come in or from subscripting element
+   * @param otherAddr An address of the element incident to the edge
+   * @return A pointer to agent instance
+   */
+  _SC_EXTERN virtual void OnUnsuccess(ScAddr const & addr, ScAddr const & edgeAddr, ScAddr const & otherAddr)
+  {
+  }
+
+  /*! Complete defined logic if agent is finished with error
+   * @param listenAddr An addr of a subscripting element
+   * @param edgeAddr An addr of an edge element that come in or from subscripting element
+   * @param otherAddr An address of the element incident to the edge
+   * @param errorCode An error code of agent
+   * @return A pointer to agent instance
+   */
+  _SC_EXTERN virtual void OnError(
+      ScAddr const & addr,
+      ScAddr const & edgeAddr,
+      ScAddr const & otherAddr,
+      sc_result errorCode)
+  {
+  }
 
 protected:
-  _SC_EXTERN virtual sc_result Run(ScAddr const & listenAddr, ScAddr const & edgeAddr, ScAddr const & otherAddr)
-      override;
+  ScEvent::Type m_eventType = ScEvent::Type::Unknown;
+  mutable ScAgentContext * m_memoryCtx;
 
-  _SC_EXTERN ScAddr GetParam(ScAddr const & cmdAddr, ScAddr const & relationAddr, ScType const & paramType) const;
-  /* This funtion returns parameter by index. It's equal to call
-   * GetParam(cmdAddr, realtionAddr, ScType()), where realtionAddr is
-   * an ScAddr of 'rrel_<index + 1>' relation
-   */
-  _SC_EXTERN ScAddr GetParam(ScAddr const & cmdAddr, size_t index) const;
+  std::list<ScEvent *> m_events;
 
-  _SC_EXTERN virtual sc_result RunImpl(ScAddr const & requestAddr, ScAddr const & resultAddr) = 0;
+  _SC_EXTERN sc_result Initialize() override
+  {
+    return SC_RESULT_OK;
+  }
 
-public:
-  static _SC_EXTERN ScAddr const & GetCommandInitiatedAddr();
-  static _SC_EXTERN ScAddr const & GetCommandFinishedAddr();
-  static _SC_EXTERN ScAddr const & GetNrelResultAddr();
+  _SC_EXTERN sc_result Initialize(std::string const & initMemoryGeneratedStructure) override
+  {
+    return SC_RESULT_OK;
+  }
 
-  /* Create instance of specified command with arguments
-   * cmdClassAddr - node that designate command class
-   * For each parameter from params would be added attribute rrel_<i + 1>, where
-   * i is an index of parameter in vector. Maximum size of params is 10.
-   * Returns ScAddr of created command instance. If addr is not valid, then
-   * command isn't created
-   */
-  static _SC_EXTERN ScAddr
-  CreateCommand(ScMemoryContext & ctx, ScAddr const & cmdClassAddr, ScAddrVector const & params);
+  _SC_EXTERN sc_result Shutdown() override
+  {
+    return SC_RESULT_OK;
+  }
 
-  /* Init specified command.
-   * cmdAddr - ScAddr of command instance
-   * Returns true, when command initiated; otherwise returns false
-   */
-  static _SC_EXTERN bool InitiateCommand(ScMemoryContext & ctx, ScAddr const & cmdAddr);
-
-  /* Initiate command and wait until it would be finished
-   * cmdAddr - ScAddr of command instance to initiate
-   * waitTimeOutMS - timeout for a waiting (milliseconds)
-   * Returns true, if command initiated and finished; otherwise returns false (wait timeout)
-   */
-  static _SC_EXTERN bool InitiateCommandWait(
-      ScMemoryContext & ctx,
-      ScAddr const & cmdAddr,
-      uint32_t waitTimeOutMS = 5000);
-
-  /* Returns ScAddr of result structure of specified command
-   */
-  static _SC_EXTERN ScAddr GetCommandResultAddr(ScMemoryContext & ctx, ScAddr const & cmdAddr);
-
-  /* Returns result code of specified command
-   * If command still hasn't result (possible not finished), then return
-   * SC_RESULT_UNKNOWN. Be attentive, SC_RESULT_UNKNOWN is not a guarantee, that
-   * process isn't finished. It could be finished with that result.
-   */
-  static _SC_EXTERN sc_result GetCommandResultCode(ScMemoryContext & ctx, ScAddr const & cmdAddr);
-
-  /* Same as GetCommandResultCode, but returns ScAddr of result code set.
-   * If it can't be determined, then return empty value
-   */
-  static _SC_EXTERN ScAddr GetCommandResultCodeAddr(ScMemoryContext & ctx, ScAddr const & cmdAddr);
-
-  /* Returns state of specified command
-   */
-  static _SC_EXTERN State GetCommandState(ScMemoryContext & ctx, ScAddr const & cmdAddr);
-
-  /* Returns true, if specified command included into set of finished commands
-   */
-  static _SC_EXTERN bool IsCommandFinished(ScMemoryContext & ctx, ScAddr const & cmdAddr);
-
-  /* Returns true, if specified command included into set of initiated commands
-   */
-  static _SC_EXTERN bool IsCommandInitiated(ScMemoryContext & ctx, ScAddr const & cmdAddr);
-
-  /* Returns true, if specified command included into set of in-progress commands
-   */
-  static _SC_EXTERN bool IsCommandInProgress(ScMemoryContext & ctx, ScAddr const & cmdAddr);
-
-private:
-  ScAddr m_cmdClassAddr;
-
-private:
+  _SC_EXTERN virtual ScEvent::DelegateFunc GetCallback() = 0;
 };
 
-#define AGENT_NAME_TYPE(__Name__) __Name__##Type
-#define AGENT_NAME_CLASS(__Name__) __Name__##_Agent
-#define AGENT_NAME_INST(__Name__) __Name__ /*##(__LINE__)##(__FILE__)*/
+/*!
+* @class An abstract class to implement agents
+* @details The `sc_result OnEvent(ScAddr const & listenAddr, ScAddr const & edgeAddr, ScAddr const & otherAddr)`
+* procedure should be implemented in the child class. You can also override methods `void OnSuccess(ScAddr const &
+* listenAddr, ScAddr const & edgeAddr, ScAddr const & otherAddr)`, `void OnUnsuccess(ScAddr const & listenAddr,
+* ScAddr const & edgeAddr, ScAddr const & otherAddr)` and `void OnError(ScAddr const & listenAddr, ScAddr const &
+* edgeAddr, ScAddr const & otherAddr, sc_result errorCode)`. They are executed depending on the agent error code
+* returned in the function `OnEvent`.
+* @example
+* File sc_syntactic_analysis_agent.hpp:
+* \code
+* #include "sc-memory/kpm/sc_agent.hpp"
+*
+* #include "nlp-module/keynodes/sc_nlp_keynodes.hpp"
+* #include "nlp-module/agents/sc_syntactic_analysis_agent.hpp"
+*
+* #include "nlp-module/analyser/sc_syntactic_analyser.hpp"
+*
+* namespace nlp
+* {
+*
+* template <ScEvent::Type const & type>
+* class ScSyntacticAnalysisAgent : public ScAgent<type>
+* {
+* public:
+*   SC_AGENT_BODY(ScSyntacticAnalysisAgent)
+*
+*   ScSyntacticAnalysisAgent()
+*     : m_analyser(new nlp::ScSyntacticAnalyser(m_memoryCtx))
+*   {
+*   }
+*
+*   sc_result OnEvent(ScAddr const & listenAddr, ScAddr const & edgeAddr, ScAddr const & otherAddr) override
+*   {
+*      ScAddr const textAddr = m_memoryCtx->GetArgument(otherAddr, 1);
+*      if (textAddr.IsValid() == SC_FALSE)
+*      {
+*         SC_LOG_ERROR("Invalid text link addr");
+*         return SC_RESULT_ERROR_INVALID_PARAMS;
+*      }
+*
+*      try
+*      {
+*        ScAddr const lexemeTreeAddr = m_analyser->Analyse(textAddr);
+*      }
+*      catch(utils::ScException const & e)
+*      {
+*        SC_LOG_ERROR("Error occurred: " + e.Description());
+*        return SC_RESULT_ERROR_INVALID_STATE;
+*      }
+*
+*      if (lexemeTreeAddr.IsValid())
+*      {
+*        SC_LOG_INFO("Lexeme tree has been formed");
+*        ScAddr const & answerAddr = m_memoryCtx->FormStructure({ lexemeTreeAddr });
+*        m_memoryCtx->FormAnswer(otherAddr, answerAddr);
+*        return SC_RESULT_OK;
+*      }
+*
+*      SC_LOG_INFO("Lexeme tree hasn't been formed");
+*      return SC_RESULT_NO;
+*   }
+*
+*   void OnSuccess(ScAddr const & listenAddr, ScAddr const & edgeAddr, ScAddr const & otherAddr) override
+*   {
+*      delete m_memoryCtx->InitializeEvent<ScEvent::Type::AddOutputEdge>(
+*          nlp::ScNLPKeynodes::kSyntacticSynthesizeAction,
+           [this]() -> {
+              ScAddr const & addr = m_memoryCtx->CreateNode(ScType::NodeConst);
+              m_memoryCtx->CreateEdge(
+                ScType::EdgeAccessConstPosPerm, nlp::ScNLPKeynodes::kSyntacticSynthesizeAction, addr);
+           },
+           [this](ScAddr const & listenAddr, ScAddr const & edgeAddr, ScAddr const & otherAddr) -> sc_result {
+              return ms_context->HelperCheckEdge(nlp::ScNLPKeynodes::k, edgeAddr, ScType::EdgeAccessConstPosPerm)
+              ? SC_RESULT_OK
+              : SC_RESULT_NO;
+           }
+       )->Wait(10000);
+*   }
+* };
+*
+* private:
+*   nlp::ScSyntacticAnalyser * m_analyser;
+* }
+* \endcode
+* @note This class is an API to implement your own agent classes.
+*/
+template <ScEvent::Type const & type>
+class _SC_EXTERN ScAgent : public ScAgentAbstract
+{
+public:
+  _SC_EXTERN explicit ScAgent()
+    : ScAgentAbstract(type)
+  {
+  }
+
+  _SC_EXTERN ScAgentAbstract * Register(ScAddrVector const & addrs) override
+  {
+    for (auto const & addr : addrs)
+      m_events.push_back(new ScEvent(*m_memoryCtx, addr, m_eventType, GetCallback()));
+
+    return this;
+  }
+
+  _SC_EXTERN ScAgentAbstract * Register(ScAddr const & addr) override
+  {
+    m_events.push_back(new ScEvent(*m_memoryCtx, addr, m_eventType, GetCallback()));
+
+    return this;
+  }
+
+  _SC_EXTERN ScAgentAbstract * Unregister() override
+  {
+    for (auto * event : m_events)
+    {
+      delete event;
+    }
+
+    m_events.clear();
+    return this;
+  }
+
+protected:
+  _SC_EXTERN ScEvent::DelegateFunc GetCallback() override
+  {
+    return [this](ScAddr const & addr, ScAddr const & edgeAddr, ScAddr const & otherAddr) -> sc_result {
+      sc_result result = OnEvent(addr, edgeAddr, otherAddr);
+
+      // finish agent
+      if (result == SC_RESULT_OK)
+      {
+        OnSuccess(addr, edgeAddr, otherAddr);
+        m_memoryCtx->CreateEdge(ScType::EdgeAccessConstPosPerm, ScKeynodes::kQuestionFinishedSuccessfully, otherAddr);
+      }
+      else if (result == SC_RESULT_NO)
+      {
+        OnUnsuccess(addr, edgeAddr, otherAddr);
+        m_memoryCtx->CreateEdge(ScType::EdgeAccessConstPosPerm, ScKeynodes::kQuestionFinishedUnsuccessfully, otherAddr);
+      }
+      else
+      {
+        OnError(addr, edgeAddr, otherAddr, result);
+        m_memoryCtx->CreateEdge(ScType::EdgeAccessConstPosPerm, ScKeynodes::kQuestionFinishedWithError, otherAddr);
+      }
+      m_memoryCtx->CreateEdge(ScType::EdgeAccessConstPosPerm, ScKeynodes::kQuestionFinished, otherAddr);
+
+      return result;
+    };
+  }
+};
+
+#define SC_AGENT_REGISTER(__AgentName__, __Addrs__) \
+  __AgentName__ __AgentName__##Instance; \
+  __AgentName__##Instance.Register(__Addrs__)
+
+#define SC_AGENT_UNREGISTER(__AgentName__) __AgentName__##Instance.Unregister()
 
 #define SC_AGENT_IMPLEMENTATION(__AgentName__) \
-  SC_COMBINE(ScFileID, _, __AgentName__, _impl) \
-  sc_result __AgentName__::Run(ScAddr const & listenAddr, ScAddr const & edgeAddr, ScAddr const & otherAddr)
-
-#define SC_AGENT_ACTION_IMPLEMENTATION(__AgentName__) \
-  SC_COMBINE(ScFileID, _, __AgentName__, _impl) \
-  sc_result __AgentName__::RunImpl(ScAddr const & requestAddr, ScAddr const & resultAddr)
-
-#define SC_AGENT_REGISTER(__AgentName__) \
-  SC_OBJECT_INIT_GLOBAL_CALL(__AgentName__) \
-  __AgentName__::RegisterHandler();
-
-#define SC_AGENT_UNREGISTER(__AgentName__) __AgentName__::UnregisterHandler();
+  sc_result __AgentName__::OnEvent(ScAddr const & listenAddr, ScAddr const & edgeAddr, ScAddr const & otherAddr)

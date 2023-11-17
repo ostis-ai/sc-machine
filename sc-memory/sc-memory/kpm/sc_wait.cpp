@@ -5,14 +5,14 @@
  */
 
 #include "sc_wait.hpp"
-#include "kpm/sc_agent.hpp"
+#include "sc_agent.hpp"
 
 ScWaitActionFinished::ScWaitActionFinished(ScMemoryContext const & ctx, ScAddr const & actionAddr)
   : ScWaitEvent<ScEventAddInputEdge>(ctx, actionAddr)
 {
 }
 
-bool ScWaitActionFinished::OnEventImpl(ScAddr const & listenAddr, ScAddr const & edgeAddr, ScAddr const & otherAddr)
+sc_result ScWaitActionFinished::OnEvent(ScAddr const & listenAddr, ScAddr const & edgeAddr, ScAddr const & otherAddr)
 {
-  return (otherAddr == ScAgentAction::GetCommandFinishedAddr());
+  return otherAddr == ScKeynodes::kQuestionFinished ? SC_RESULT_OK : SC_RESULT_NO;
 }
