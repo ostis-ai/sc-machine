@@ -103,7 +103,7 @@ bool AgentUtils::applyAction(
     onEventClassAddr = scAgentsCommon::CoreKeynodes::question_initiated;
 
   auto check = [](ScAddr const & listenAddr, ScAddr const & edgeAddr, ScAddr const & otherAddr) {
-    return otherAddr == scAgentsCommon::CoreKeynodes::question_finished ? SC_RESULT_OK : SC_RESULT_NO;
+    return otherAddr == scAgentsCommon::CoreKeynodes::question_finished ? SC_RESULT_OK : SC_RESULT_ERROR;
   };
 
   auto initialize = [ms_context, onEventClassAddr, actionNode]() {
@@ -111,7 +111,8 @@ bool AgentUtils::applyAction(
   };
 
   ScWaitCondition<ScEventAddInputEdge> waiter(*ms_context, actionNode, check);
-  return waiter.Wait(waitTime, initialize);
+  initialize();
+  return waiter.Wait(waitTime);
 }
 
 ScAddr AgentUtils::initAgentAndWaitResult(

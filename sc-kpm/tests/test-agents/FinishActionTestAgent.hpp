@@ -6,10 +6,10 @@
 namespace scUtilsTestAgents
 {
 
-class FinishActionTestAgent : public ScAgent<ScEvent::Type::AddInputEdge>
+class FinishActionTestAgent : public ScAgent<ScEvent::Type::AddOutputEdge>
 {
 public:
-  SC_AGENT_BODY(ATestAddInputEdge);
+  SC_AGENT_BODY(FinishActionTestAgent);
 
   sc_result OnEvent(ScAddr const & listenAddr, ScAddr const & edgeAddr, ScAddr const & otherAddr) override;
 
