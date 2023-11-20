@@ -5,7 +5,7 @@ set -e
 APP_ROOT_PATH=$(cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && cd .. && pwd)
 INTERACTIVE_MODE=""
 
-while getopts 'c:b:' OPTION; do
+while getopts 'c:b:i:h' OPTION; do
   case "$OPTION" in
     c)
       CONFIG_PATH="$OPTARG"
@@ -19,7 +19,7 @@ while getopts 'c:b:' OPTION; do
       INTERACTIVE_MODE="-i"
       ;;
     h)
-      echo "script usage: $(basename \$0) [-c CONFIG_PATH] [-b KB_SRC_PATH]" >&2
+      echo "script usage: $(basename \$0) [-c CONFIG_PATH] [-b KB_SRC_PATH] [-i]" >&2
       exit 1
       ;;
   esac
