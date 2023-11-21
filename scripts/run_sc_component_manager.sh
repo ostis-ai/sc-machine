@@ -5,7 +5,7 @@ set -e
 APP_ROOT_PATH=$(cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && cd .. && pwd)
 INTERACTIVE_MODE=""
 
-while getopts 'c:b:i:h' OPTION; do
+while getopts 'c:b:ih' OPTION; do
   case "$OPTION" in
     c)
       CONFIG_PATH="$OPTARG"
