@@ -2,6 +2,11 @@
 
 #include "sc-memory/sc_memory.hpp"
 
+extern "C"
+{
+#include "sc-core/sc-store/sc_storage.h"
+}
+
 #include "sc_test.hpp"
 
 
@@ -230,6 +235,47 @@ TEST(SmallScMemoryTest, EmptyMemory)
   ScAddr const node = ctx.CreateNode(ScType::Const);
   EXPECT_FALSE(node.IsValid());
   EXPECT_FALSE(ctx.IsElement(node));
+
+  ctx.Destroy();
+  ScMemory::LogMute();
+  ScMemory::Shutdown();
+  ScMemory::LogUnmute();
+}
+
+TEST(SmallScMemoryTest, DistributedMemory)
+{
+  sc_memory_params params;
+  sc_memory_params_clear(&params);
+
+  params.clear = SC_TRUE;
+  params.repo_path = "repo";
+  params.log_level = "Debug";
+
+  params.max_loaded_segments = 1;
+
+  ScMemory::LogMute();
+  ScMemory::Initialize(params);
+  ScMemory::LogUnmute();
+
+  ScMemoryContext ctx(sc_access_lvl_make_min);
+
+  sc_storage_start_new_process();
+  ScAddr node = ctx.CreateNode(ScType::Const);
+  EXPECT_TRUE(ctx.IsElement(node));
+  node = ctx.CreateNode(ScType::Const);
+  EXPECT_TRUE(ctx.IsElement(node));
+  EXPECT_TRUE(ctx.EraseElement(node));
+  EXPECT_FALSE(ctx.IsElement(node));
+  node = ctx.CreateNode(ScType::Const);
+  EXPECT_TRUE(ctx.IsElement(node));
+  sc_storage_end_new_process();
+
+  sc_storage_start_new_process();
+  node = ctx.CreateNode(ScType::Const);
+  EXPECT_TRUE(ctx.IsElement(node));
+  EXPECT_TRUE(ctx.EraseElement(node));
+  EXPECT_FALSE(ctx.IsElement(node));
+  sc_storage_end_new_process();
 
   ctx.Destroy();
   ScMemory::LogMute();

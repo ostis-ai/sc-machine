@@ -144,11 +144,11 @@ sc_result sc_storage_get_element_by_addr(sc_addr addr, sc_element ** el)
   *el = null_ptr;
   sc_result result = SC_RESULT_ERROR_ADDR_IS_NOT_VALID;
 
-  if (storage == null_ptr || addr.offset == 0 || addr.seg >= storage->max_segments_count ||
-      addr.offset >= SC_SEGMENT_ELEMENTS_COUNT)
+  if (storage == null_ptr || addr.seg == 0 || addr.offset == 0 || addr.seg > storage->max_segments_count ||
+      addr.offset > SC_SEGMENT_ELEMENTS_COUNT)
     goto error;
 
-  sc_segment * segment = storage->segments[addr.seg];
+  sc_segment * segment = storage->segments[addr.seg - 1];
   if (segment == null_ptr)
     goto error;
 
@@ -161,15 +161,16 @@ error:
   return result;
 }
 
-sc_result sc_storage_remove_element_by_addr(sc_addr addr)
+sc_result sc_storage_free_element(sc_addr addr)
 {
   sc_result result = SC_RESULT_ERROR_ADDR_IS_NOT_VALID;
 
-  if (SC_ADDR_IS_EMPTY(addr) || addr.seg >= storage->max_segments_count || addr.offset >= SC_SEGMENT_ELEMENTS_COUNT)
+  if (SC_ADDR_IS_EMPTY(addr) || addr.seg == 0 || addr.offset == 0 || addr.seg > storage->max_segments_count ||
+      addr.offset > SC_SEGMENT_ELEMENTS_COUNT)
     goto error;
 
   sc_monitor_acquire_read(&storage->segments_monitor);
-  sc_segment * segment = storage->segments[addr.seg];
+  sc_segment * segment = storage->segments[addr.seg - 1];
   sc_monitor_release_read(&storage->segments_monitor);
   if (segment == null_ptr)
     goto error;
@@ -177,21 +178,37 @@ sc_result sc_storage_remove_element_by_addr(sc_addr addr)
   sc_monitor_acquire_write(&segment->monitor);
   sc_addr_offset const last_released_offset = segment->last_released_offset;
   segment->elements[addr.offset] = (sc_element){(sc_element_flags){.type = last_released_offset}};
+  segment->last_released_offset = addr.offset;
+  sc_monitor_release_write(&segment->monitor);
 
   if (last_released_offset == 0)
   {
     sc_monitor_acquire_write(&storage->segments_monitor);
-    storage->last_released_segment_num = segment->elements[0].flags.type;
-    segment->elements[0].flags.type = 0;
+    segment->elements[0].flags.type = storage->last_released_segment_num;
+    storage->last_released_segment_num = segment->num;
     sc_monitor_release_write(&storage->segments_monitor);
   }
-
-  segment->last_released_offset = addr.offset;
-  sc_monitor_release_write(&segment->monitor);
 
   result = SC_RESULT_OK;
 error:
   return result;
+}
+
+sc_segment * _sc_storage_get_last_not_engaged_segment()
+{
+  sc_addr_seg const segment_num = storage->last_not_engaged_segment_num;
+
+  sc_segment * segment = null_ptr;
+  if (segment_num != 0)
+    segment = storage->segments[segment_num - 1];
+
+  if (segment != null_ptr)
+  {
+    storage->last_not_engaged_segment_num = segment->elements[0].flags.access_levels;
+    segment->elements[0].flags.access_levels = 0;
+  }
+
+  return segment;
 }
 
 sc_segment * _sc_storage_get_new_segment(sc_thread * thread)
@@ -200,7 +217,7 @@ sc_segment * _sc_storage_get_new_segment(sc_thread * thread)
   if (storage->segments_count == storage->max_segments_count)
     goto error;
 
-  segment = storage->segments[storage->segments_count] = sc_segment_new(storage->segments_count);
+  segment = storage->segments[storage->segments_count] = sc_segment_new(storage->segments_count + 1);
   ++storage->segments_count;
 
 error:
@@ -227,112 +244,92 @@ error:
   return segment;
 }
 
-sc_segment * _sc_storage_get_next_segment(sc_thread * thread)
+void _sc_storage_check_segment_type(sc_segment ** segment, sc_bool * released)
 {
-  sc_monitor_acquire_write(&storage->segments_monitor);
+  sc_monitor_acquire_read(&(*segment)->monitor);
+  sc_addr_offset last_released_offset = (*segment)->last_released_offset;
+  sc_addr_offset last_engaged_offset = (*segment)->last_engaged_offset;
+  sc_monitor_release_read(&(*segment)->monitor);
 
-  sc_segment * segment = null_ptr;
-  sc_addr_seg const segment_num = storage->last_not_engaged_segment_num;
-  if (segment_num != 0)
-  {
-    segment = storage->segments[segment_num];
-    if (segment != null_ptr)
-    {
-      storage->last_not_engaged_segment_num = segment->elements[0].flags.access_levels;
-      segment->elements[0].flags.access_levels = 0;
-    }
-  }
-
-  if (segment == null_ptr)
-  {
-    segment = _sc_storage_get_new_segment(thread);
-    if (segment == null_ptr)
-      segment = _sc_storage_get_last_free_segment();
-  }
-
-  sc_monitor_release_write(&storage->segments_monitor);
-
-  if (segment != null_ptr)
-  {
-    sc_monitor_acquire_write(&storage->processes_monitor);
-    if (storage->processes_segments_table != null_ptr)
-      sc_hash_table_insert(storage->processes_segments_table, thread, segment);
-    sc_monitor_release_write(&storage->processes_monitor);
-  }
-
-  return segment;
+  if (last_released_offset != 0)
+    *released = SC_TRUE;
+  else if (last_engaged_offset + 1 == SC_SEGMENT_ELEMENTS_COUNT)
+    *segment = null_ptr;
 }
 
 void _sc_storage_get_segment(sc_segment ** segment_ptr, sc_bool * released)
 {
   *segment_ptr = null_ptr;
   *released = SC_FALSE;
-  sc_segment * segment = null_ptr;
-
   sc_thread * thread = sc_thread_self();
+
   sc_monitor_acquire_read(&storage->processes_monitor);
+
+  sc_segment * segment = null_ptr;
   if (storage->processes_segments_table != null_ptr)
     segment = (sc_segment *)sc_hash_table_get(storage->processes_segments_table, thread);
+
   sc_monitor_release_read(&storage->processes_monitor);
 
-  if (segment == null_ptr)
-    segment = _sc_storage_get_next_segment(thread);
-  else
-  {
-    sc_monitor_acquire_read(&segment->monitor);
-    sc_addr_offset last_engaged_offset = segment->last_engaged_offset;
-    sc_addr_offset last_released_offset = segment->last_released_offset;
-    sc_monitor_release_read(&segment->monitor);
+  if (segment != null_ptr)
+    _sc_storage_check_segment_type(&segment, released);
 
-    if (last_released_offset != 0)
-      *released = SC_TRUE;
-    else if (last_engaged_offset + 1 == SC_SEGMENT_ELEMENTS_COUNT)
-      segment = _sc_storage_get_next_segment(thread);
+  if (segment == null_ptr)
+  {
+    sc_monitor_acquire_write(&storage->processes_monitor);
+    sc_monitor_acquire_write(&storage->segments_monitor);
+
+    segment = _sc_storage_get_last_not_engaged_segment();
+    if (segment == null_ptr)
+    {
+      segment = _sc_storage_get_new_segment(thread);
+      if (segment == null_ptr)
+        segment = _sc_storage_get_last_free_segment();
+    }
+
+    if (segment != null_ptr)
+    {
+      if (storage->processes_segments_table != null_ptr)
+        sc_hash_table_insert(storage->processes_segments_table, thread, segment);
+    }
+
+    sc_monitor_release_write(&storage->segments_monitor);
+    sc_monitor_release_write(&storage->processes_monitor);
+
+    if (segment != null_ptr)
+      _sc_storage_check_segment_type(&segment, released);
   }
 
   *segment_ptr = segment;
 }
 
-sc_element * _sc_storage_get_next_element(sc_addr * addr)
+sc_element * _sc_storage_get_element(sc_addr * addr)
 {
   sc_element * element = null_ptr;
+  sc_addr_offset element_offset;
 
   sc_segment * segment;
   sc_bool released;
   _sc_storage_get_segment(&segment, &released);
   if (segment == null_ptr)
-  {
-    sc_memory_error(
-        "Max segments count is %d. SC-memory is full. Please, extends or swap sc-memory", storage->max_segments_count);
     goto error;
-  }
 
   sc_monitor_acquire_write(&segment->monitor);
 
   if (released)
   {
-    sc_addr_offset const element_offset = segment->last_released_offset;
+    element_offset = segment->last_released_offset;
     element = &segment->elements[element_offset];
     segment->last_released_offset = element->flags.type;
     element->flags.type = 0;
-
-    if (segment->last_released_offset == 0)
-    {
-      sc_monitor_acquire_write(&storage->segments_monitor);
-      storage->last_released_segment_num = segment->elements[0].flags.type;
-      segment->elements[0].flags.type = 0;
-      sc_monitor_release_write(&storage->segments_monitor);
-    }
-
-    *addr = (sc_addr){segment->num, element_offset};
   }
   else
   {
-    sc_addr_offset const element_offset = ++segment->last_engaged_offset;
+    element_offset = ++segment->last_engaged_offset;
     element = &segment->elements[element_offset];
-
-    *addr = (sc_addr){segment->num, segment->last_engaged_offset};
   }
+
+  *addr = (sc_addr){segment->num, element_offset};
 
   sc_monitor_release_write(&segment->monitor);
 
@@ -348,14 +345,24 @@ sc_element * _sc_storage_get_released_element(sc_addr * addr)
 
   sc_monitor_acquire_write(&storage->segments_monitor);
 
-  sc_addr_seg const segment_num = storage->last_released_segment_num;
-  if (storage->last_released_segment_num >= storage->max_segments_count)
+  sc_addr_seg segment_num = 0;
+new_segment:
+{
+  segment_num = storage->last_released_segment_num;
+  if (segment_num == 0 || segment_num > storage->max_segments_count)
     goto error;
+}
 
-  segment = storage->segments[segment_num];
+  segment = storage->segments[segment_num - 1];
 
   element_offset = segment->last_released_offset;
-  if (segment->last_released_offset != 0)
+  if (segment->last_released_offset == 0)
+  {
+    storage->last_released_segment_num = segment->elements[0].flags.type;
+    segment->elements[0].flags.type = 0;
+    goto new_segment;
+  }
+  else
   {
     element = &segment->elements[element_offset];
     segment->last_released_offset = element->flags.type;
@@ -371,19 +378,25 @@ sc_element * _sc_storage_get_released_element(sc_addr * addr)
 error:
   sc_monitor_release_write(&storage->segments_monitor);
 
-  (*addr) = (sc_addr){segment_num, element_offset};
+  *addr = (sc_addr){segment_num, element_offset};
 
   return element;
 }
 
-sc_element * sc_storage_append_el_into_segments(sc_memory_context const * ctx, sc_addr * addr)
+sc_element * sc_storage_allocate_new_element(sc_memory_context const * ctx, sc_addr * addr)
 {
   *addr = SC_ADDR_EMPTY;
   sc_element * element = null_ptr;
 
-  element = _sc_storage_get_next_element(addr);
+  element = _sc_storage_get_element(addr);
   if (element == null_ptr)
+  {
     element = _sc_storage_get_released_element(addr);
+    if (element == null_ptr)
+      sc_memory_error(
+          "Max segments count is %d. SC-memory is full. Please, extends or swap sc-memory",
+          storage->max_segments_count);
+  }
 
   if (element != null_ptr)
     element->flags.access_levels |= SC_ACCESS_LVL_ELEMENT_EXIST;
@@ -412,17 +425,18 @@ void sc_storage_end_new_process()
     goto end;
 
   sc_segment * segment = sc_hash_table_get(storage->processes_segments_table, thread);
-  if (segment != null_ptr)
+  if (segment != null_ptr &&
+      (segment->last_engaged_offset + 1 != SC_SEGMENT_ELEMENTS_COUNT || segment->last_released_offset != 0))
   {
     sc_monitor_acquire_write(&storage->segments_monitor);
 
-    sc_addr_seg const segment_num = storage->last_not_engaged_segment_num;
-    segment->elements[0].flags.access_levels = segment_num;
+    sc_addr_seg const last_not_engaged_segment_num = storage->last_not_engaged_segment_num;
+    segment->elements[0].flags.access_levels = last_not_engaged_segment_num;
     storage->last_not_engaged_segment_num = segment->num;
 
     sc_monitor_release_write(&storage->segments_monitor);
   }
-  sc_hash_table_remove(storage->processes_segments_table, thread);
+  sc_hash_table_insert(storage->processes_segments_table, thread, null_ptr);
 
 end:
   sc_monitor_release_write(&storage->processes_monitor);
@@ -432,7 +446,6 @@ sc_result sc_storage_element_free(sc_memory_context const * ctx, sc_addr addr)
 {
   sc_result result;
 
-  // the first we need to collect and lock all elements
   sc_element * el = null_ptr;
   result = sc_storage_get_element_by_addr(addr, &el);
   if (result != SC_RESULT_OK)
@@ -623,7 +636,7 @@ sc_result sc_storage_element_free(sc_memory_context const * ctx, sc_addr addr)
 
     sc_event_emit(ctx, addr, element->flags.access_levels, SC_EVENT_REMOVE_ELEMENT, SC_ADDR_EMPTY, SC_ADDR_EMPTY);
 
-    sc_storage_remove_element_by_addr(addr);
+    sc_storage_free_element(addr);
 
     sc_monitor_release_write(monitor);
 
@@ -642,7 +655,7 @@ sc_addr sc_storage_node_new(sc_memory_context const * ctx, sc_type type)
 {
   sc_addr addr = SC_ADDR_EMPTY;
 
-  sc_element * element = sc_storage_append_el_into_segments(ctx, &addr);
+  sc_element * element = sc_storage_allocate_new_element(ctx, &addr);
   if (element != null_ptr)
     element->flags.type = sc_type_node | type;
 
@@ -653,7 +666,7 @@ sc_addr sc_storage_link_new(sc_memory_context const * ctx, sc_type type)
 {
   sc_addr addr = SC_ADDR_EMPTY;
 
-  sc_element * element = sc_storage_append_el_into_segments(ctx, &addr);
+  sc_element * element = sc_storage_allocate_new_element(ctx, &addr);
   if (element != null_ptr)
     element->flags.type = sc_type_link | type;
 
@@ -671,7 +684,10 @@ sc_addr sc_storage_arc_new(sc_memory_context const * ctx, sc_type type, sc_addr 
   sc_element *beg_el = null_ptr, *end_el = null_ptr;
   sc_element *f_out_arc = null_ptr, *f_in_arc = null_ptr;
 
-  sc_element * tmp_el = sc_storage_append_el_into_segments(ctx, &addr);
+  sc_element * tmp_el = sc_storage_allocate_new_element(ctx, &addr);
+  if (tmp_el == null_ptr)
+    return addr;
+
   tmp_el->flags.type = (type & sc_type_arc_mask) ? type : (sc_type_arc_common | type);
 
   // try to lock begin and end elements
@@ -737,7 +753,7 @@ sc_addr sc_storage_arc_new(sc_memory_context const * ctx, sc_type type, sc_addr 
 
   return addr;
 error:
-  sc_storage_remove_element_by_addr(addr);
+  sc_storage_free_element(addr);
   sc_monitor_release_write_n(2, beg_monitor, end_monitor);
   return SC_ADDR_EMPTY;
 }

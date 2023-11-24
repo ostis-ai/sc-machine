@@ -200,7 +200,7 @@ sc_bool _sc_fs_memory_load_sc_memory_segments(sc_storage * storage)
   for (sc_addr_seg i = 0; i < storage->segments_count; ++i)
   {
     sc_addr_seg const num = i;
-    sc_segment * seg = sc_segment_new(i);
+    sc_segment * seg = sc_segment_new(i + 1);
     storage->segments[i] = seg;
 
     for (sc_addr_seg j = 0; j < SC_SEGMENT_ELEMENTS_COUNT; ++j)

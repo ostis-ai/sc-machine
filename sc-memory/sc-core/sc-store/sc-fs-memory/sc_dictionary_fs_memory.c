@@ -34,18 +34,19 @@ sc_io_channel * _sc_dictionary_fs_memory_get_strings_channel_by_offset(
     return null_ptr;
   }
 
-  if (memory->strings_channels[idx] != null_ptr)
+  sc_monitor_acquire_read(&memory->monitor);
+  sc_io_channel * channel = memory->strings_channels[idx];
+  sc_monitor_release_read(&memory->monitor);
+  if (channel != null_ptr)
   {
-    sc_monitor_acquire_read(&memory->monitor);
     *channel_monitor = sc_monitor_get_monitor_from_table(&memory->strings_channels_monitors_table, (sc_pointer)idx);
-    sc_monitor_release_read(&memory->monitor);
-    return memory->strings_channels[idx];
+    return channel;
   }
 
-  sc_monitor_acquire_read(&memory->monitor);
-  if (idx > 0 && memory->strings_channels[idx - 1] != null_ptr)
-    sc_io_channel_flush(memory->strings_channels[idx - 1], null_ptr);
-  sc_monitor_release_read(&memory->monitor);
+  //  sc_monitor_acquire_read(&memory->monitor);
+  //  if (idx > 0 && memory->strings_channels[idx - 1] != null_ptr)
+  //    sc_io_channel_flush(memory->strings_channels[idx - 1], null_ptr);
+  //  sc_monitor_release_read(&memory->monitor);
 
   sc_char strings_channel_number[DEFAULT_STRING_INT_SIZE];
   {
@@ -72,24 +73,22 @@ sc_io_channel * _sc_dictionary_fs_memory_get_strings_channel_by_offset(
     memory->strings_channels[idx] = sc_io_new_append_channel(strings_path, null_ptr);
   sc_io_channel_set_encoding(memory->strings_channels[idx], null_ptr, null_ptr);
 
-  *channel_monitor = sc_monitor_get_monitor_from_table(&memory->strings_channels_monitors_table, (sc_pointer)idx);
   sc_monitor_release_write(&memory->monitor);
+  *channel_monitor = sc_monitor_get_monitor_from_table(&memory->strings_channels_monitors_table, (sc_pointer)idx);
 
   sc_mem_free(strings_path);
 
-  return memory->strings_channels[idx];
+  sc_monitor_acquire_read(&memory->monitor);
+  channel = memory->strings_channels[idx];
+  sc_monitor_release_read(&memory->monitor);
+
+  return channel;
 }
 
 sc_uint64 _sc_dictionary_fs_memory_normalize_offset(sc_dictionary_fs_memory const * memory, sc_uint64 strings_offset)
 {
   sc_uint64 const channel_idx = strings_offset / memory->max_strings_channel_size;
   return strings_offset - memory->max_strings_channel_size * channel_idx;
-}
-
-void _sc_monitor_destroy_func(void * monitor)
-{
-  sc_monitor_destroy((sc_monitor *)monitor);
-  sc_mem_free(monitor);
 }
 
 sc_dictionary_fs_memory_status sc_dictionary_fs_memory_initialize_ext(
@@ -390,7 +389,8 @@ sc_dictionary_fs_memory_status _sc_dictionary_fs_memory_write_string(
   if (strings_channel == null_ptr)
     return SC_FS_MEMORY_WRITE_ERROR;
 
-  sc_monitor_acquire_write_n(2, &memory->monitor, channel_monitor);
+  sc_monitor_acquire_write(&memory->monitor);
+  sc_monitor_acquire_write(channel_monitor);
   // find string if it exists in fs-memory
   if (is_searchable_string)
   {
@@ -429,11 +429,13 @@ sc_dictionary_fs_memory_status _sc_dictionary_fs_memory_write_string(
     memory->last_string_offset += written_bytes;
   }
 
-  sc_monitor_release_write_n(2, &memory->monitor, channel_monitor);
+  sc_monitor_release_write(channel_monitor);
+  sc_monitor_release_write(&memory->monitor);
   return SC_FS_MEMORY_OK;
 
 error:
-  sc_monitor_release_write_n(2, &memory->monitor, channel_monitor);
+  sc_monitor_release_write(channel_monitor);
+  sc_monitor_release_write(&memory->monitor);
   return SC_FS_MEMORY_WRITE_ERROR;
 }
 

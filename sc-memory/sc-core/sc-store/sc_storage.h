@@ -52,7 +52,7 @@ sc_event_registration_manager * sc_storage_get_event_registration_manager();
  * @return Return pointer to created sc-element data. If sc-element wasn't appended, then return 0.
  * @note Returned sc-element is locked
  */
-sc_element * sc_storage_append_el_into_segments(sc_memory_context const * ctx, sc_addr * addr);
+sc_element * sc_storage_allocate_new_element(sc_memory_context const * ctx, sc_addr * addr);
 
 void sc_storage_start_new_process();
 
@@ -67,7 +67,7 @@ sc_bool sc_storage_is_element(sc_memory_context const * ctx, sc_addr addr);
 
 sc_result sc_storage_get_element_by_addr(sc_addr addr, sc_element ** el);
 
-sc_result sc_storage_remove_element_by_addr(sc_addr addr);
+sc_result sc_storage_free_element(sc_addr addr);
 
 /*! Remove sc-element from storage
  * @param addr sc-addr of element to erase

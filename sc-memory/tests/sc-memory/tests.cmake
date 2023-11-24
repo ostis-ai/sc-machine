@@ -1,7 +1,7 @@
 make_tests_from_folder(${CMAKE_CURRENT_LIST_DIR}/common
     NAME sc-memory-common-tests
-    DEPENDS sc-memory
-    INCLUDES ${SC_MEMORY_SRC} ${CMAKE_CURRENT_LIST_DIR}/_test
+    DEPENDS sc-memory sc-core ${GLIB2_LIBRARIES}
+    INCLUDES ${SC_MEMORY_SRC} ${CMAKE_CURRENT_LIST_DIR}/_test ${GLIB2_INCLUDE_DIRS}
 )
 
 make_tests_from_folder(${CMAKE_CURRENT_LIST_DIR}/containers
