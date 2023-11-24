@@ -1,8 +1,6 @@
 set(SC_CONFIG_UTILS_SRC ${SC_TOOLS_SRC}/sc-config-utils)
 set(SC_BUILDER_SRC ${SC_TOOLS_SRC}/sc-builder)
 
-option(SC_COMPONENT_MANAGER "Sc-component-manager support" OFF)
-
 add_subdirectory(codegen)
 add_subdirectory(sc-config-utils)
 add_subdirectory(sc-server)
