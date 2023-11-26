@@ -7,11 +7,7 @@
 #ifndef _sc_condition_h_
 #define _sc_condition_h_
 
-#define GLIB
-
-#ifdef GLIB
-#  include <glib.h>
-#endif
+#include <glib.h>
 
 typedef GCond sc_condition;
 
@@ -24,7 +20,5 @@ typedef GCond sc_condition;
 #define sc_cond_broadcast(condition) g_cond_broadcast(condition)
 
 #define sc_cond_destroy(condition) g_cond_clear(condition)
-
-#undef GLIB
 
 #endif

@@ -4,8 +4,21 @@
  * (See accompanying file COPYING.MIT or copy at http://opensource.org/licenses/MIT)
  */
 
-#include "sc_allocator.h"
 #include "sc_monitor.h"
+#include "sc_allocator.h"
+
+typedef enum
+{
+  READER,
+  WRITER
+} sc_request_type;
+
+struct _sc_request
+{
+  sc_thread * thread;      // Thread instance of writer or reader
+  sc_request_type type;    // READER or WRITER
+  sc_condition condition;  // Condition variable of writer or reader
+};
 
 void _sc_monitor_destroy(void * monitor)
 {

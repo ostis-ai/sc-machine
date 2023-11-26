@@ -23,6 +23,32 @@
 #define sc_fs_memory_warning(...) sc_warning(SC_FS_MEMORY_PREFIX __VA_ARGS__)
 #define sc_fs_memory_error(...) sc_critical(SC_FS_MEMORY_PREFIX __VA_ARGS__)
 
+struct _sc_dictionary_fs_memory
+{
+  sc_char * path;  // path to all dictionary files
+  sc_bool clear;
+
+  sc_uint16 max_strings_channels;
+  sc_uint32 max_strings_channel_size;
+  sc_uint32 max_searchable_string_size;  // maximal size of strings that can be found by string/substring
+  sc_char const * term_separators;
+  sc_bool search_by_substring;
+
+  void ** strings_channels;
+  sc_monitor_table strings_channels_monitors_table;
+  sc_uint64 last_string_offset;  // last offset of string in 'string_path`
+  sc_monitor monitor;
+
+  sc_char * terms_string_offsets_path;              // path to dictionary file with terms and its strings offsets
+  sc_dictionary * terms_string_offsets_dictionary;  // dictionary instance with terms and its strings offsets
+
+  sc_char * string_offsets_link_hashes_path;  // path to dictionary file with strings offsets and its link hashes
+  sc_dictionary *
+      string_offsets_link_hashes_dictionary;  // dictionary instance with strings offsets and its link hashes
+  sc_dictionary *
+      link_hashes_string_offsets_dictionary;  // dictionary instance with link hashes and its strings offsets
+};
+
 sc_bool _sc_uchar_dictionary_initialize(sc_dictionary ** dictionary);
 
 sc_bool _sc_number_dictionary_initialize(sc_dictionary ** dictionary);

@@ -7,12 +7,8 @@
 #ifndef _sc_allocator_h_
 #define _sc_allocator_h_
 
-#define GLIB
-
-#ifdef GLIB
-#  include <glib.h>
-#  include <memory.h>
-#endif
+#include <glib.h>
+#include <memory.h>
 
 typedef gpointer sc_pointer;
 typedef gconstpointer sc_const_pointer;
@@ -24,7 +20,5 @@ typedef gconstpointer sc_const_pointer;
 #define sc_mem_cpy(source, dest, n_structs) memcpy(source, dest, n_structs)
 
 #define sc_mem_free(pointer) g_free(pointer)
-
-#undef GLIB
 
 #endif

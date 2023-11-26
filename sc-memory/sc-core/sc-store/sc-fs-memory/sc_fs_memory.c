@@ -4,18 +4,16 @@
  * (See accompanying file COPYING.MIT or copy at http://opensource.org/licenses/MIT)
  */
 
+#include <glib/gstdio.h>
 #include "sc_fs_memory.h"
-
-#include "sc_file_system.h"
-
-#include "../sc_segment.h"
 #include "sc_fs_memory_builder.h"
 
-#include "glib/gstdio.h"
-#include "../sc-base/sc_message.h"
+#include "sc_file_system.h"
+#include "sc_dictionary_fs_memory_private.h"
+#include "../sc_storage_private.h"
+#include "../sc_segment.h"
 
 #include "sc_io.h"
-#include "sc_dictionary_fs_memory_private.h"
 
 sc_fs_memory_manager * manager;
 
@@ -375,7 +373,7 @@ sc_bool _sc_fs_memory_save_sc_memory_segments(sc_storage * storage)
   // rename main file
   if (sc_fs_is_file(tmp_filename))
   {
-    if (g_rename(tmp_filename, manager->segments_path) != 0)
+    if (sc_fs_rename_file(tmp_filename, manager->segments_path) == SC_FALSE)
     {
       sc_fs_memory_error("Can't rename %s -> %s", tmp_filename, manager->segments_path);
       goto error;

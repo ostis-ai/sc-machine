@@ -18,6 +18,12 @@
 #  define DEFAULT_STRING_INT_SIZE 20
 #  define DEFAULT_MAX_SEARCHABLE_STRING_SIZE 1000
 
+typedef struct
+{
+  sc_list * link_hashes;
+  sc_uint64 string_offset;
+} sc_link_hash_content;
+
 sc_io_channel * _sc_dictionary_fs_memory_get_strings_channel_by_offset(
     sc_dictionary_fs_memory * memory,
     sc_uint64 strings_offset,
@@ -43,10 +49,10 @@ sc_io_channel * _sc_dictionary_fs_memory_get_strings_channel_by_offset(
     return channel;
   }
 
-  //  sc_monitor_acquire_read(&memory->monitor);
-  //  if (idx > 0 && memory->strings_channels[idx - 1] != null_ptr)
-  //    sc_io_channel_flush(memory->strings_channels[idx - 1], null_ptr);
-  //  sc_monitor_release_read(&memory->monitor);
+  sc_monitor_acquire_read(&memory->monitor);
+  if (idx > 0 && memory->strings_channels[idx - 1] != null_ptr)
+    sc_io_channel_flush(memory->strings_channels[idx - 1], null_ptr);
+  sc_monitor_release_read(&memory->monitor);
 
   sc_char strings_channel_number[DEFAULT_STRING_INT_SIZE];
   {

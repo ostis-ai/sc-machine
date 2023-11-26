@@ -9,7 +9,7 @@
 #include "sc-base/sc_allocator.h"
 
 sc_iterator5 * sc_iterator5_new(
-    const sc_memory_context * ctx,
+    sc_memory_context const * ctx,
     sc_iterator5_type type,
     sc_iterator_param p1,
     sc_iterator_param p2,
@@ -109,7 +109,7 @@ sc_iterator5 * sc_iterator5_new(
 }
 
 sc_iterator5 * sc_iterator5_f_a_a_a_f_new(
-    const sc_memory_context * ctx,
+    sc_memory_context const * ctx,
     sc_addr p1,
     sc_type p2,
     sc_type p3,
@@ -132,7 +132,7 @@ sc_iterator5 * sc_iterator5_f_a_a_a_f_new(
 }
 
 sc_iterator5 * sc_iterator5_a_a_f_a_f_new(
-    const sc_memory_context * ctx,
+    sc_memory_context const * ctx,
     sc_type p1,
     sc_type p2,
     sc_addr p3,
@@ -155,7 +155,7 @@ sc_iterator5 * sc_iterator5_a_a_f_a_f_new(
 }
 
 sc_iterator5 * sc_iterator5_f_a_f_a_f_new(
-    const sc_memory_context * ctx,
+    sc_memory_context const * ctx,
     sc_addr p1,
     sc_type p2,
     sc_addr p3,
@@ -178,7 +178,7 @@ sc_iterator5 * sc_iterator5_f_a_f_a_f_new(
 }
 
 sc_iterator5 * sc_iterator5_f_a_f_a_a_new(
-    const sc_memory_context * ctx,
+    sc_memory_context const * ctx,
     sc_addr p1,
     sc_type p2,
     sc_addr p3,
@@ -201,7 +201,7 @@ sc_iterator5 * sc_iterator5_f_a_f_a_a_new(
 }
 
 sc_iterator5 * sc_iterator5_f_a_a_a_a_new(
-    const sc_memory_context * ctx,
+    sc_memory_context const * ctx,
     sc_addr p1,
     sc_type p2,
     sc_type p3,
@@ -224,7 +224,7 @@ sc_iterator5 * sc_iterator5_f_a_a_a_a_new(
 }
 
 sc_iterator5 * sc_iterator5_a_a_f_a_a_new(
-    const sc_memory_context * ctx,
+    sc_memory_context const * ctx,
     sc_type p1,
     sc_type p2,
     sc_addr p3,

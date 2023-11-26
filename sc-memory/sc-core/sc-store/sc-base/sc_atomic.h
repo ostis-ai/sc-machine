@@ -7,11 +7,7 @@
 #ifndef _sc_atomic_h_
 #define _sc_atomic_h_
 
-#define GLIB
-
-#ifdef GLIB
-#  include <glib.h>
-#endif
+#include <glib.h>
 
 #define sc_atomic_int_get(atomic) g_atomic_int_get(atomic)
 
@@ -46,7 +42,5 @@
 #define sc_atomic_pointer_or(atomic, val) g_atomic_pointer_or(atomic, val)
 
 #define sc_atomic_pointer_xor(atomic, val) g_atomic_pointer_xor(atomic, val)
-
-#undef GLIB
 
 #endif

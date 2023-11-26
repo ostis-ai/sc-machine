@@ -77,6 +77,11 @@ sc_bool sc_fs_remove_file(sc_char const * path)
   return SC_TRUE;
 }
 
+sc_bool sc_fs_rename_file(sc_char const * old_path, sc_char const * new_path)
+{
+  return g_rename(old_path, new_path) == 0;
+}
+
 sc_bool sc_fs_is_file(sc_char const * path)
 {
   return g_file_test(path, G_FILE_TEST_IS_REGULAR);

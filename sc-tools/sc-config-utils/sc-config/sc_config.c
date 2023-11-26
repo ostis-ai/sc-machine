@@ -66,8 +66,11 @@ void sc_config_shutdown(sc_config * config)
 
 sc_char * sc_config_get_value_string(sc_config * config, sc_char const * group, sc_char const * key)
 {
+  if (config == null_ptr)
+    return null_ptr;
+
   sc_char * hash_key = value_table_create_hash_key(group, key);
-  const void * res = g_hash_table_lookup(config, hash_key);
+  void const * res = g_hash_table_lookup(config, hash_key);
   g_free(hash_key);
   return (sc_char *)res;
 }

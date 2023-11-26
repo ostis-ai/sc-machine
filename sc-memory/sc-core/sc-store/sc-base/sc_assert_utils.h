@@ -7,14 +7,8 @@
 #ifndef _sc_assert_h_
 #define _sc_assert_h_
 
-#define GLIB
-
-#ifdef GLIB
-#  include <glib.h>
-#endif
+#include <glib.h>
 
 #define sc_assert(expr) g_assert(expr)
-
-#undef GLIB
 
 #endif

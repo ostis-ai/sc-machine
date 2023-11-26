@@ -7,18 +7,12 @@
 #ifndef _sc_message_h_
 #define _sc_message_h_
 
-#define GLIB
-
-#ifdef GLIB
-#  include <glib.h>
-#endif
+#include <glib.h>
 
 #define sc_critical(...) g_critical(__VA_ARGS__)
 
 #define sc_warning(...) g_warning(__VA_ARGS__)
 
 #define sc_message(...) g_message(__VA_ARGS__)
-
-#undef GLIB
 
 #endif

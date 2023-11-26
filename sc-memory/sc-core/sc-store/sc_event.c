@@ -7,8 +7,8 @@
 #include "sc_event.h"
 
 #include "sc_storage.h"
-#include "sc_event/sc_event_private.h"
-#include "sc_event/sc_event_queue.h"
+#include "sc-event/sc_event_private.h"
+#include "sc-event/sc_event_queue.h"
 
 #include "../sc_memory_context_manager.h"
 

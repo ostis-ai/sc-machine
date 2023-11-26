@@ -10,7 +10,7 @@
 
 #include "sc_memory.h"
 #include "sc_memory_private.h"
-#include "sc-store/sc_event/sc_event_private.h"
+#include "sc-store/sc-event/sc_event_private.h"
 
 struct _sc_memory_context_manager
 {

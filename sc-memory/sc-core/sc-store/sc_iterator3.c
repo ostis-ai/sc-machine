@@ -7,6 +7,7 @@
 #include "sc_iterator.h"
 #include "sc_element.h"
 #include "sc_storage.h"
+#include "sc_storage_private.h"
 
 #include "sc-base/sc_allocator.h"
 

@@ -9,7 +9,7 @@
 #include "sc-store/sc-base/sc_allocator.h"
 #include "sc-store/sc-base/sc_assert_utils.h"
 
-sc_int32 sc_version_compare(const sc_version * a, const sc_version * b)
+sc_int32 sc_version_compare(sc_version const * a, sc_version const * b)
 {
   if (a->major < b->major)
     return -1;
@@ -29,7 +29,7 @@ sc_int32 sc_version_compare(const sc_version * a, const sc_version * b)
   return 0;
 }
 
-char * sc_version_string_new(const sc_version * v)
+char * sc_version_string_new(sc_version const * v)
 {
   if (v->suffix != null_ptr)
     return g_strdup_printf("%u.%u.%u %s", v->major, v->minor, v->patch, v->suffix);

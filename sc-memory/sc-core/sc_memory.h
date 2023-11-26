@@ -7,10 +7,10 @@
 #ifndef _sc_memory_h_
 #define _sc_memory_h_
 
-#include "sc-store/sc_types.h"
-#include "sc-store/sc_stream.h"
 #include "sc_memory_params.h"
 
+#include "sc-store/sc_types.h"
+#include "sc-store/sc_stream.h"
 #include "sc-store/sc-container/sc-list/sc_list.h"
 
 typedef struct _sc_memory sc_memory;

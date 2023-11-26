@@ -9,6 +9,7 @@ extern "C"
 #include "sc-core/sc-store/sc-fs-memory/sc_io.h"
 #include "sc-core/sc-store/sc-container/sc-string/sc_string.h"
 #include "sc-core/sc-store/sc_segment.h"
+#include "sc-core/sc-store/sc_storage_private.h"
 }
 
 #define SC_FS_MEMORY_PATH "fs-memory"

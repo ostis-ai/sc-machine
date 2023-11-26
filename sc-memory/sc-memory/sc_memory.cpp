@@ -27,7 +27,11 @@ namespace
 
 bool isLogMuted = false;
 
-void _logPrintHandler(sc_char const * log_domain, GLogLevelFlags log_level, sc_char const * message, gpointer user_data)
+void _logPrintHandler(
+    sc_char const * log_domain,
+    GLogLevelFlags log_level,
+    sc_char const * message,
+    sc_pointer user_data)
 {
   if (isLogMuted)
     return;

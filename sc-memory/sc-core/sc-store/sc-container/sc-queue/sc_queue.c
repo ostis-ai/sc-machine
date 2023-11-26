@@ -8,6 +8,18 @@
 
 #include "../../sc-base/sc_allocator.h"
 
+struct _sc_queue_node
+{
+  void * data;
+  struct _sc_queue_node * next;
+};
+
+struct _sc_queue
+{
+  sc_queue_node * begin;
+  sc_queue_node * end;
+};
+
 void sc_queue_init(sc_queue ** queue)
 {
   *queue = sc_mem_new(sc_queue, 1);

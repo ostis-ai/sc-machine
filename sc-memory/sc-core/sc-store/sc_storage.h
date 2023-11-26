@@ -7,30 +7,18 @@
 #ifndef _sc_storage_h_
 #define _sc_storage_h_
 
+#include "sc_defines.h"
+#include "sc-event/sc_event_queue.h"
+#include "sc_event.h"
 #include "../sc_memory_params.h"
 
 #include "sc_types.h"
-#include "sc_defines.h"
 #include "sc_stream.h"
+
 #include "sc-container/sc-list/sc_list.h"
 #include "sc-base/sc_monitor.h"
-#include "sc_event/sc_event_queue.h"
-#include "sc_event.h"
 
-typedef struct
-{
-  sc_segment ** segments;
-  sc_addr_seg segments_count;
-  sc_addr_seg max_segments_count;
-  sc_addr_seg last_not_engaged_segment_num;
-  sc_addr_seg last_released_segment_num;
-  sc_monitor segments_monitor;
-  sc_monitor_table addr_monitors_table;
-  sc_hash_table * processes_segments_table;
-  sc_monitor processes_monitor;
-  sc_event_emission_manager * events_emission_manager;
-  sc_event_registration_manager * events_registration_manager;
-} sc_storage;
+typedef struct _sc_storage sc_storage;
 
 //! Initialize sc storage in specified path
 sc_bool sc_storage_initialize(sc_memory_params const * params);

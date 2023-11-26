@@ -17,12 +17,11 @@
 
 typedef struct
 {
-  sc_mutex rw_mutex;          // Mutex for data protection
-  sc_queue * queue;           // Queue of writers and readers
-  sc_uint32 active_readers;   // Number of readers currently accessing the data
-  sc_uint32 waiting_writers;  // Number of writers waiting to write
-  sc_uint32 active_writer;    // Flag to indicate if a writer is writing
-  sc_uint32 id;               // Unique identifier of monitor
+  sc_mutex rw_mutex;         // Mutex for data protection
+  sc_queue * queue;          // Queue of writers and readers
+  sc_uint32 active_readers;  // Number of readers currently accessing the data
+  sc_uint32 active_writer;   // Flag to indicate if a writer is writing
+  sc_uint32 id;              // Unique identifier of monitor
 } sc_monitor;
 
 typedef struct
@@ -32,18 +31,7 @@ typedef struct
   sc_mutex rw_mutex;                    // Mutex for data protection
 } sc_monitor_table;
 
-typedef enum
-{
-  READER,
-  WRITER
-} sc_request_type;
-
-typedef struct
-{
-  sc_thread * thread;      // Thread instance of writer or reader
-  sc_request_type type;    // READER or WRITER
-  sc_condition condition;  // Condition variable of writer or reader
-} sc_request;
+typedef struct _sc_request sc_request;
 
 /*! Initializes the global monitor table
  * @param table Pointer to the sc_monitor_table to be initialized

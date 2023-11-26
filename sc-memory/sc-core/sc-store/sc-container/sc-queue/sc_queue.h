@@ -12,17 +12,8 @@
 #include "../sc_struct_node.h"
 #include "../sc-iterator/sc_container_iterator.h"
 
-typedef struct sc_queue_node
-{
-  void * data;
-  struct sc_queue_node * next;
-} sc_queue_node;
-
-typedef struct
-{
-  sc_queue_node * begin;
-  sc_queue_node * end;
-} sc_queue;
+typedef struct _sc_queue_node sc_queue_node;
+typedef struct _sc_queue sc_queue;
 
 // Initialize the queue
 void sc_queue_init(sc_queue ** queue);

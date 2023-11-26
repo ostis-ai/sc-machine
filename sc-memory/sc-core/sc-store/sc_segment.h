@@ -36,12 +36,4 @@ void sc_segment_free(sc_segment * segment);
 //! Collects segment elements statistics
 void sc_segment_collect_elements_stat(sc_segment * seg, sc_stat * stat);
 
-// ---------------------- locks --------------------------
-/*! Function to lock specified element in segment
- * @param seg Pointer to segment to lock element
- * @param offset Offset of element to lock
- * @returns Returns pointer to locked sc-element
- */
-sc_element * sc_segment_get_element_by_offset(sc_segment * seg, sc_addr_offset offset);
-
 #endif

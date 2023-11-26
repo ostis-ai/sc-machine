@@ -5,15 +5,15 @@
  */
 
 #include "sc_storage.h"
+#include "sc_storage_private.h"
 
 #include "sc_segment.h"
 #include "sc_element.h"
-#include "sc_stream_memory.h"
-
-#include "sc_event/sc_event_private.h"
-#include "../sc_memory_private.h"
 #include "sc-fs-memory/sc_fs_memory.h"
+#include "sc-event/sc_event_private.h"
+#include "../sc_memory_private.h"
 
+#include "sc_stream_memory.h"
 #include "sc-base/sc_mutex.h"
 #include "sc-base/sc_allocator.h"
 #include "sc-container/sc-string/sc_string.h"
@@ -152,7 +152,7 @@ sc_result sc_storage_get_element_by_addr(sc_addr addr, sc_element ** el)
   if (segment == null_ptr)
     goto error;
 
-  *el = sc_segment_get_element_by_offset(segment, addr.offset);
+  *el = &segment->elements[addr.offset];
   if (((*el)->flags.access_levels & SC_ACCESS_LVL_ELEMENT_EXIST) != SC_ACCESS_LVL_ELEMENT_EXIST)
     goto error;
 
@@ -406,6 +406,9 @@ sc_element * sc_storage_allocate_new_element(sc_memory_context const * ctx, sc_a
 
 void sc_storage_start_new_process()
 {
+  if (storage == null_ptr)
+    return;
+
   sc_thread * thread = sc_thread_self();
   sc_monitor_acquire_write(&storage->processes_monitor);
   if (storage->processes_segments_table == null_ptr)
@@ -419,6 +422,9 @@ end:
 
 void sc_storage_end_new_process()
 {
+  if (storage == null_ptr)
+    return;
+
   sc_thread * thread = sc_thread_self();
   sc_monitor_acquire_write(&storage->processes_monitor);
   if (storage->processes_segments_table == null_ptr)
