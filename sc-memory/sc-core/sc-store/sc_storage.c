@@ -20,10 +20,10 @@
 
 sc_storage * storage;
 
-sc_bool sc_storage_initialize(sc_memory_params const * params)
+sc_result sc_storage_initialize(sc_memory_params const * params)
 {
-  if (sc_fs_memory_initialize_ext(params) == SC_FALSE)
-    return SC_FALSE;
+  if (sc_fs_memory_initialize_ext(params) != SC_FS_MEMORY_OK)
+    return SC_RESULT_ERROR;
 
   storage = sc_mem_new(sc_storage, 1);
   storage->max_segments_count = params->max_loaded_segments;
@@ -52,7 +52,7 @@ sc_bool sc_storage_initialize(sc_memory_params const * params)
   if (params->clear == SC_FALSE)
   {
     sc_monitor_acquire_write(&storage->segments_monitor);
-    result = sc_fs_memory_load(storage);
+    result = sc_fs_memory_load(storage) == SC_FS_MEMORY_OK;
     sc_monitor_release_write(&storage->segments_monitor);
   }
 
@@ -62,8 +62,11 @@ sc_bool sc_storage_initialize(sc_memory_params const * params)
   return result;
 }
 
-sc_bool sc_storage_shutdown(sc_bool save_state)
+sc_result sc_storage_shutdown(sc_bool save_state)
 {
+  if (storage == null_ptr)
+    return SC_RESULT_NO;
+
   sc_event_emission_manager_stop(storage->events_emission_manager);
   sc_event_emission_manager_shutdown(storage->events_emission_manager);
   storage->events_emission_manager = null_ptr;
@@ -72,12 +75,12 @@ sc_bool sc_storage_shutdown(sc_bool save_state)
 
   if (save_state == SC_TRUE)
   {
-    if (sc_fs_memory_save(storage) == SC_FALSE)
-      return SC_FALSE;
+    if (sc_fs_memory_save(storage) != SC_FS_MEMORY_OK)
+      return SC_RESULT_ERROR;
   }
 
-  if (sc_fs_memory_shutdown() == SC_FALSE)
-    return SC_FALSE;
+  if (sc_fs_memory_shutdown() != SC_FS_MEMORY_OK)
+    return SC_RESULT_ERROR;
 
   sc_monitor_acquire_write(&storage->processes_monitor);
 
@@ -108,7 +111,7 @@ sc_bool sc_storage_shutdown(sc_bool save_state)
   sc_mem_free(storage);
   storage = null_ptr;
 
-  return SC_TRUE;
+  return SC_RESULT_OK;
 }
 
 sc_bool sc_storage_is_initialized()
@@ -967,7 +970,9 @@ sc_result sc_storage_set_link_content(
     goto error;
   }
 
-  sc_fs_memory_link_string_ext(SC_ADDR_LOCAL_TO_INT(addr), string, string_size, is_searchable_string);
+  if (sc_fs_memory_link_string_ext(SC_ADDR_LOCAL_TO_INT(addr), string, string_size, is_searchable_string) !=
+      SC_FS_MEMORY_OK)
+    goto error;
 
   sc_addr empty;
   SC_ADDR_MAKE_EMPTY(empty);
@@ -1006,7 +1011,8 @@ sc_result sc_storage_get_link_content(sc_memory_context const * ctx, sc_addr add
 
   sc_char * string = null_ptr;
   sc_uint32 string_size = 0;
-  sc_fs_memory_get_string_by_link_hash(SC_ADDR_LOCAL_TO_INT(addr), &string, &string_size);
+  if (sc_fs_memory_get_string_by_link_hash(SC_ADDR_LOCAL_TO_INT(addr), &string, &string_size) != SC_FS_MEMORY_OK)
+    goto error;
 
   sc_monitor_release_read(monitor);
 
@@ -1030,7 +1036,7 @@ sc_result sc_storage_find_links_with_content_string(
     sc_list ** result_hashes)
 {
   *result_hashes = null_ptr;
-  sc_result result;
+  sc_result result = SC_RESULT_OK;
 
   sc_char * string = null_ptr;
   sc_uint32 string_size = 0;
@@ -1046,7 +1052,9 @@ sc_result sc_storage_find_links_with_content_string(
     sc_string_empty(string);
   }
 
-  result = sc_fs_memory_get_link_hashes_by_string(string, string_size, result_hashes);
+  if (sc_fs_memory_get_link_hashes_by_string(string, string_size, result_hashes) != SC_FS_MEMORY_OK)
+    result = SC_RESULT_ERROR;
+
   sc_mem_free(string);
 
 error:
@@ -1060,7 +1068,7 @@ sc_result sc_storage_find_links_by_content_substring(
     sc_uint32 max_length_to_search_as_prefix)
 {
   *result_hashes = null_ptr;
-  sc_result result;
+  sc_result result = SC_RESULT_OK;
 
   sc_char * string = null_ptr;
   sc_uint32 string_size = 0;
@@ -1073,8 +1081,10 @@ sc_result sc_storage_find_links_by_content_substring(
   if (string == null_ptr)
     sc_string_empty(string);
 
-  result =
-      sc_fs_memory_get_link_hashes_by_substring(string, string_size, max_length_to_search_as_prefix, result_hashes);
+  if (sc_fs_memory_get_link_hashes_by_substring(string, string_size, max_length_to_search_as_prefix, result_hashes) !=
+      SC_FS_MEMORY_OK)
+    result = SC_RESULT_ERROR;
+
   sc_mem_free(string);
 
 error:
@@ -1088,7 +1098,7 @@ sc_result sc_storage_find_links_contents_by_content_substring(
     sc_uint32 max_length_to_search_as_prefix)
 {
   *result_strings = null_ptr;
-  sc_result result;
+  sc_result result = SC_RESULT_OK;
 
   sc_char * string = null_ptr;
   sc_uint32 string_size = 0;
@@ -1101,7 +1111,9 @@ sc_result sc_storage_find_links_contents_by_content_substring(
   if (string == null_ptr)
     sc_string_empty(string);
 
-  result = sc_fs_memory_get_strings_by_substring(string, string_size, max_length_to_search_as_prefix, result_strings);
+  if (sc_fs_memory_get_strings_by_substring(string, string_size, max_length_to_search_as_prefix, result_strings) !=
+      SC_FS_MEMORY_OK)
+    result = SC_RESULT_ERROR;
   sc_mem_free(string);
 
 error:
@@ -1130,5 +1142,5 @@ sc_result sc_storage_get_elements_stat(sc_stat * stat)
 
 sc_result sc_storage_save(sc_memory_context const * ctx)
 {
-  return sc_fs_memory_save(storage) ? SC_RESULT_OK : SC_RESULT_ERROR;
+  return sc_fs_memory_save(storage) == SC_FS_MEMORY_OK ? SC_RESULT_OK : SC_RESULT_ERROR;
 }

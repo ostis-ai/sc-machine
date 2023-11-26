@@ -63,6 +63,62 @@ TEST_F(ScMemoryTest, InvalidElements)
 
   ScAddr const edge{454};
   EXPECT_FALSE(ctx.IsElement(edge));
+
+  EXPECT_FALSE(ctx.EraseElement(node));
+  EXPECT_FALSE(ctx.GetEdgeSource(node).IsValid());
+  EXPECT_FALSE(ctx.CreateEdge(ScType::EdgeAccessConstPosPerm, node, node).IsValid());
+  EXPECT_FALSE(ctx.GetEdgeTarget(node).IsValid());
+  EXPECT_FALSE(ctx.SetElementSubtype(node, ScType::NodeConst));
+  EXPECT_FALSE(ctx.GetLinkContent(node)->IsValid());
+  EXPECT_FALSE(ctx.SetLinkContent(node, ""));
+  EXPECT_FALSE(ctx.HelperSetSystemIdtf("identifier", node));
+  EXPECT_EQ(ctx.GetElementOutputArcsCount(node), 0u);
+  EXPECT_EQ(ctx.GetElementInputArcsCount(node), 0u);
+
+  EXPECT_FALSE(ctx.EraseElement(edge));
+  EXPECT_FALSE(ctx.GetEdgeSource(edge).IsValid());
+  EXPECT_FALSE(ctx.CreateEdge(ScType::EdgeAccessConstPosPerm, edge, edge).IsValid());
+  EXPECT_FALSE(ctx.GetEdgeTarget(edge).IsValid());
+  EXPECT_FALSE(ctx.SetElementSubtype(edge, ScType::NodeConst));
+  EXPECT_FALSE(ctx.GetLinkContent(edge)->IsValid());
+  EXPECT_FALSE(ctx.SetLinkContent(edge, ""));
+  EXPECT_FALSE(ctx.HelperSetSystemIdtf("identifier", edge));
+  EXPECT_EQ(ctx.GetElementOutputArcsCount(edge), 0u);
+  EXPECT_EQ(ctx.GetElementInputArcsCount(edge), 0u);
+
+  EXPECT_FALSE(ctx.EraseElement(ScAddr::Empty));
+  EXPECT_FALSE(ctx.CreateEdge(ScType::EdgeAccessConstPosPerm, ScAddr::Empty, ScAddr::Empty).IsValid());
+  EXPECT_FALSE(ctx.GetEdgeSource(ScAddr::Empty).IsValid());
+  EXPECT_FALSE(ctx.GetEdgeTarget(ScAddr::Empty).IsValid());
+  EXPECT_FALSE(ctx.SetElementSubtype(ScAddr::Empty, ScType::NodeConst));
+  EXPECT_FALSE(ctx.GetLinkContent(ScAddr::Empty)->IsValid());
+  EXPECT_FALSE(ctx.SetLinkContent(ScAddr::Empty, ""));
+  EXPECT_FALSE(ctx.HelperSetSystemIdtf("identifier", ScAddr::Empty));
+  EXPECT_EQ(ctx.GetElementOutputArcsCount(ScAddr::Empty), 0u);
+  EXPECT_EQ(ctx.GetElementInputArcsCount(ScAddr::Empty), 0u);
+}
+
+TEST_F(ScMemoryTest, NotEdge)
+{
+  ScMemoryContext ctx(sc_access_lvl_make_min, "elements");
+
+  ScAddr const node = ctx.CreateNode(ScType::NodeConst);
+  EXPECT_FALSE(ctx.GetEdgeSource(node).IsValid());
+  EXPECT_FALSE(ctx.GetEdgeTarget(node).IsValid());
+  ScAddr srcAddr, trgAddr;
+  EXPECT_FALSE(ctx.GetEdgeInfo(node, srcAddr, trgAddr));
+  EXPECT_FALSE(srcAddr.IsValid());
+  EXPECT_FALSE(trgAddr.IsValid());
+}
+
+TEST_F(ScMemoryTest, NotLink)
+{
+  ScMemoryContext ctx(sc_access_lvl_make_min, "elements");
+
+  ScAddr const node = ctx.CreateNode(ScType::NodeConst);
+  EXPECT_FALSE(ctx.GetLinkContent(node)->IsValid());
+  EXPECT_FALSE(ctx.SetLinkContent(node, ""));
+  EXPECT_FALSE(ctx.GetLinkContent(node)->IsValid());
 }
 
 TEST_F(ScMemoryTest, CreateDeleteCountEdges)
@@ -216,6 +272,7 @@ TEST(SmallScMemoryTest, EmptyMemory)
 
   ScMemory::LogMute();
   ScMemory::Initialize(params);
+  EXPECT_TRUE(sc_storage_is_initialized());
   ScMemory::LogUnmute();
 
   ScMemoryContext ctx(sc_access_lvl_make_min);

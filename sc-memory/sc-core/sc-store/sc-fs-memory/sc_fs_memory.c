@@ -4,7 +4,6 @@
  * (See accompanying file COPYING.MIT or copy at http://opensource.org/licenses/MIT)
  */
 
-#include <glib/gstdio.h>
 #include "sc_fs_memory.h"
 #include "sc_fs_memory_builder.h"
 
@@ -17,7 +16,7 @@
 
 sc_fs_memory_manager * manager;
 
-sc_bool sc_fs_memory_initialize_ext(sc_memory_params const * params)
+sc_fs_memory_status sc_fs_memory_initialize_ext(sc_memory_params const * params)
 {
   manager = sc_fs_memory_build();
   manager->version = params->version;
@@ -26,14 +25,14 @@ sc_bool sc_fs_memory_initialize_ext(sc_memory_params const * params)
   if (manager->path == null_ptr)
   {
     sc_fs_memory_error("Empty repo path to initialize memory");
-    return SC_FALSE;
+    return SC_FS_MEMORY_NO;
   }
 
   static sc_char const * segments_postfix = "segments" SC_FS_EXT;
   sc_fs_concat_path(manager->path, segments_postfix, &manager->segments_path);
 
   if (manager->initialize(&manager->fs_memory, params) != SC_FS_MEMORY_OK)
-    return SC_FALSE;
+    return SC_FS_MEMORY_NO;
 
   // clear repository if it needs
   if (params->clear == SC_TRUE)
@@ -43,89 +42,94 @@ sc_bool sc_fs_memory_initialize_ext(sc_memory_params const * params)
       sc_fs_memory_info("Can't remove segments file: %s", manager->segments_path);
   }
 
-  return SC_TRUE;
+  return SC_FS_MEMORY_OK;
 }
 
-sc_bool sc_fs_memory_initialize(sc_char const * path, sc_bool clear)
+sc_fs_memory_status sc_fs_memory_initialize(sc_char const * path, sc_bool clear)
 {
   sc_memory_params * params = _sc_dictionary_fs_memory_get_default_params(path, clear);
-  sc_bool const status = sc_fs_memory_initialize_ext(params);
+  sc_fs_memory_status const status = sc_fs_memory_initialize_ext(params);
   sc_mem_free(params);
   return status;
 }
 
-sc_bool sc_fs_memory_shutdown()
+sc_fs_memory_status sc_fs_memory_shutdown()
 {
-  sc_bool const result = manager->shutdown(manager->fs_memory) == SC_FS_MEMORY_OK;
-
+  sc_fs_memory_status const result = manager->shutdown(manager->fs_memory);
   sc_mem_free(manager->segments_path);
   sc_mem_free(manager);
-
   return result;
 }
 
-sc_bool sc_fs_memory_link_string(sc_addr_hash const link_hash, sc_char const * string, sc_uint32 const string_size)
+sc_fs_memory_status sc_fs_memory_link_string(
+    sc_addr_hash const link_hash,
+    sc_char const * string,
+    sc_uint32 const string_size)
 {
-  return manager->link_string(manager->fs_memory, link_hash, string, string_size, SC_TRUE) == SC_FS_MEMORY_OK;
+  return manager->link_string(manager->fs_memory, link_hash, string, string_size, SC_TRUE);
 }
 
-sc_bool sc_fs_memory_link_string_ext(
+sc_fs_memory_status sc_fs_memory_link_string_ext(
     sc_addr_hash const link_hash,
     sc_char const * string,
     sc_uint32 const string_size,
     sc_bool is_searchable_string)
 {
-  return manager->link_string(manager->fs_memory, link_hash, string, string_size, is_searchable_string) ==
-         SC_FS_MEMORY_OK;
+  return manager->link_string(manager->fs_memory, link_hash, string, string_size, is_searchable_string);
 }
 
-sc_bool sc_fs_memory_get_string_by_link_hash(sc_addr_hash const link_hash, sc_char ** string, sc_uint32 * string_size)
+sc_fs_memory_status sc_fs_memory_get_string_by_link_hash(
+    sc_addr_hash const link_hash,
+    sc_char ** string,
+    sc_uint32 * string_size)
 {
   sc_uint64 size;
-  sc_bool result = manager->get_string_by_link_hash(manager->fs_memory, link_hash, string, &size) == SC_FS_MEMORY_OK;
+  sc_fs_memory_status result = manager->get_string_by_link_hash(manager->fs_memory, link_hash, string, &size);
   *string_size = size;
   return result;
 }
 
-sc_bool sc_fs_memory_get_link_hashes_by_string(sc_char const * string, sc_uint32 const string_size, sc_list ** links)
+sc_fs_memory_status sc_fs_memory_get_link_hashes_by_string(
+    sc_char const * string,
+    sc_uint32 const string_size,
+    sc_list ** links)
 {
-  return manager->get_link_hashes_by_string(manager->fs_memory, string, string_size, links) == SC_FS_MEMORY_OK;
+  return manager->get_link_hashes_by_string(manager->fs_memory, string, string_size, links);
 }
 
-sc_bool sc_fs_memory_get_link_hashes_by_substring(
+sc_fs_memory_status sc_fs_memory_get_link_hashes_by_substring(
     sc_char const * substring,
     sc_uint32 const substring_size,
     sc_uint32 const max_length_to_search_as_prefix,
     sc_list ** link_hashes)
 {
   return manager->get_link_hashes_by_substring(
-             manager->fs_memory, substring, substring_size, max_length_to_search_as_prefix, link_hashes) ==
-         SC_FS_MEMORY_OK;
+      manager->fs_memory, substring, substring_size, max_length_to_search_as_prefix, link_hashes);
 }
 
-sc_bool sc_fs_memory_get_strings_by_substring(
+sc_fs_memory_status sc_fs_memory_get_strings_by_substring(
     const sc_char * substring,
     const sc_uint32 substring_size,
     sc_uint32 const max_length_to_search_as_prefix,
     sc_list ** strings)
 {
   return manager->get_strings_by_substring(
-             manager->fs_memory, substring, substring_size, max_length_to_search_as_prefix, strings) == SC_FS_MEMORY_OK;
+      manager->fs_memory, substring, substring_size, max_length_to_search_as_prefix, strings);
 }
 
-sc_bool sc_fs_memory_unlink_string(sc_addr_hash link_hash)
+sc_fs_memory_status sc_fs_memory_unlink_string(sc_addr_hash link_hash)
 {
-  return manager->unlink_string(manager->fs_memory, link_hash) == SC_FS_MEMORY_OK;
+  return manager->unlink_string(manager->fs_memory, link_hash);
 }
 
 // read, write and save methods
-sc_bool _sc_fs_memory_load_sc_memory_segments(sc_storage * storage)
+sc_fs_memory_status _sc_fs_memory_load_sc_memory_segments(sc_storage * storage)
 {
   if (sc_fs_is_file(manager->segments_path) == SC_FALSE)
   {
     storage->segments_count = 0;
     sc_fs_memory_info("There are no sc-memory segments in %s", manager->segments_path);
-    return SC_TRUE;
+    return SC_FS_MEMORY_OK;
   }
 
   // open segments
@@ -257,23 +261,26 @@ sc_bool _sc_fs_memory_load_sc_memory_segments(sc_storage * storage)
   else
     sc_fs_memory_warning("Deprecated sc-memory segments loaded");
 
-  return SC_TRUE;
+  return SC_FS_MEMORY_OK;
 
 error:
 {
   sc_io_channel_shutdown(segments_channel, SC_FALSE, null_ptr);
-  return SC_FALSE;
+  return SC_FS_MEMORY_READ_ERROR;
 }
 }
 
-sc_bool sc_fs_memory_load(sc_storage * storage)
+sc_fs_memory_status sc_fs_memory_load(sc_storage * storage)
 {
-  sc_bool const sc_memory_result = _sc_fs_memory_load_sc_memory_segments(storage);
-  sc_bool const sc_fs_memory_result = manager->load(manager->fs_memory) == SC_FS_MEMORY_OK;
-  return sc_memory_result && sc_fs_memory_result;
+  if (_sc_fs_memory_load_sc_memory_segments(storage) != SC_FS_MEMORY_OK)
+    return SC_FS_MEMORY_READ_ERROR;
+  if (manager->load(manager->fs_memory) != SC_FS_MEMORY_OK)
+    return SC_FS_MEMORY_READ_ERROR;
+
+  return SC_FS_MEMORY_OK;
 }
 
-sc_bool _sc_fs_memory_save_sc_memory_segments(sc_storage * storage)
+sc_fs_memory_status _sc_fs_memory_save_sc_memory_segments(sc_storage * storage)
 {
   sc_fs_memory_info("Save sc-memory segments");
 
@@ -388,25 +395,28 @@ sc_bool _sc_fs_memory_save_sc_memory_segments(sc_storage * storage)
   sc_mem_free(tmp_filename);
   sc_io_channel_shutdown(segments_channel, SC_TRUE, null_ptr);
   sc_fs_memory_info("Sc-memory segments saved");
-  return SC_TRUE;
+  return SC_FS_MEMORY_OK;
 
 error:
 {
   sc_mem_free(tmp_filename);
   sc_io_channel_shutdown(segments_channel, SC_TRUE, null_ptr);
-  return SC_FALSE;
+  return SC_FS_MEMORY_WRITE_ERROR;
 }
 }
 
-sc_bool sc_fs_memory_save(sc_storage * storage)
+sc_fs_memory_status sc_fs_memory_save(sc_storage * storage)
 {
   if (manager->path == null_ptr)
   {
     sc_fs_memory_error("Repo path is empty to save memory");
-    return SC_FALSE;
+    return SC_FS_MEMORY_NO;
   }
 
-  sc_bool sc_memory_result = _sc_fs_memory_save_sc_memory_segments(storage);
-  sc_bool sc_fs_memory_result = manager->save(manager->fs_memory) == SC_FS_MEMORY_OK;
-  return sc_memory_result && sc_fs_memory_result;
+  if (_sc_fs_memory_save_sc_memory_segments(storage) != SC_FS_MEMORY_OK)
+    return SC_FS_MEMORY_WRITE_ERROR;
+  if (manager->save(manager->fs_memory) != SC_FS_MEMORY_OK)
+    return SC_FS_MEMORY_WRITE_ERROR;
+
+  return SC_FS_MEMORY_OK;
 }

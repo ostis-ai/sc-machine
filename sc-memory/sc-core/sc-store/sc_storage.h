@@ -21,10 +21,10 @@
 typedef struct _sc_storage sc_storage;
 
 //! Initialize sc storage in specified path
-sc_bool sc_storage_initialize(sc_memory_params const * params);
+sc_result sc_storage_initialize(sc_memory_params const * params);
 
 //! Shutdown sc storage
-sc_bool sc_storage_shutdown(sc_bool save_state);
+sc_result sc_storage_shutdown(sc_bool save_state);
 
 //! Check if storage initialized
 sc_bool sc_storage_is_initialized();

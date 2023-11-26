@@ -38,7 +38,7 @@ sc_memory_context * sc_memory_initialize(sc_memory_params const * params)
   sc_message("\tLog file: %s", params->log_file);
   sc_message("\tLog level: %s", params->log_level);
 
-  if (sc_storage_initialize(params) == SC_FALSE)
+  if (sc_storage_initialize(params) != SC_RESULT_OK)
   {
     sc_memory_error("Error while initialize sc-storage");
     goto error;
@@ -110,14 +110,18 @@ sc_result sc_memory_init_ext(
   return ext_res;
 }
 
-void sc_memory_shutdown(sc_bool save_state)
+sc_result sc_memory_shutdown(sc_bool save_state)
 {
   sc_memory_info("Shutdown");
 
   sc_memory_shutdown_ext();
   sc_helper_shutdown();
 
-  sc_storage_shutdown(save_state);
+  if (sc_storage_shutdown(save_state) != SC_RESULT_OK)
+    return SC_RESULT_ERROR;
+
+  if (memory == null_ptr)
+    return SC_RESULT_ERROR;
 
   _sc_memory_context_manager_shutdown(memory->context_manager);
   memory->context_manager = null_ptr;
@@ -126,6 +130,8 @@ void sc_memory_shutdown(sc_bool save_state)
   memory = null_ptr;
 
   sc_memory_info("Shutdown");
+
+  return SC_RESULT_OK;
 }
 
 void sc_memory_shutdown_ext()

@@ -38,7 +38,7 @@ public:
   //! Returns true, on memory initialized; otherwise returns false
   _SC_EXTERN static bool Initialize(sc_memory_params const & params);
   _SC_EXTERN static bool IsInitialized();
-  _SC_EXTERN static void Shutdown(bool saveState = true);
+  _SC_EXTERN static bool Shutdown(bool saveState = true);
 
   _SC_EXTERN static void LogMute();
   _SC_EXTERN static void LogUnmute();
@@ -66,7 +66,7 @@ public:
   using Stat = ScMemoryStatistics;
 
 public:
-  _SC_EXTERN explicit ScMemoryContext(sc_uint8 accessLevels, std::string const & name = "");
+  _SC_EXTERN explicit ScMemoryContext(sc_uint8 accessLevels, std::string name = "");
   _SC_EXTERN explicit ScMemoryContext(std::string const & name);
   _SC_EXTERN ~ScMemoryContext();
 

@@ -16,6 +16,7 @@
 #include <cstdlib>
 #include <ctime>
 #include <iostream>
+#include <utility>
 
 extern "C"
 {
@@ -91,17 +92,18 @@ bool ScMemory::IsInitialized()
   return ms_globalContext != nullptr;
 }
 
-void ScMemory::Shutdown(bool saveState /* = true */)
+bool ScMemory::Shutdown(bool saveState /* = true */)
 {
   utils::ScLog::SetUp("Console", "", "Info");
 
   ScKeynodes::Shutdown();
 
-  sc_memory_shutdown(saveState);
+  sc_bool result = sc_memory_shutdown(saveState);
 
   ms_globalContext = nullptr;
 
   g_log_set_default_handler(g_log_default_handler, nullptr);
+  return result;
 }
 
 void ScMemory::LogMute()
@@ -118,9 +120,9 @@ void ScMemory::LogUnmute()
 
 // ---------------
 
-ScMemoryContext::ScMemoryContext(sc_uint8 accessLevels, std::string const & name)
+ScMemoryContext::ScMemoryContext(sc_uint8 accessLevels, std::string name)
   : m_context(nullptr)
-  , m_name(name)
+  , m_name(std::move(name))
 {
   m_context = sc_memory_context_new(accessLevels);
 }
@@ -282,7 +284,7 @@ ScStreamPtr ScMemoryContext::GetLinkContent(ScAddr const & addr)
 
   sc_stream * s = nullptr;
   if (sc_memory_get_link_content(m_context, *addr, &s) != SC_RESULT_OK || s == nullptr)
-    return {};
+    return std::make_shared<ScStream>(nullptr);
 
   return std::make_shared<ScStream>(s);
 }

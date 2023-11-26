@@ -17,56 +17,56 @@ extern "C"
 
 TEST(ScFSMemoryTest, sc_fs_memory_initialize_shutdown)
 {
-  EXPECT_TRUE(sc_fs_memory_initialize(SC_FS_MEMORY_PATH, SC_FALSE));
-  EXPECT_TRUE(sc_fs_memory_shutdown());
+  EXPECT_EQ(sc_fs_memory_initialize(SC_FS_MEMORY_PATH, SC_FALSE), SC_FS_MEMORY_OK);
+  EXPECT_EQ(sc_fs_memory_shutdown(), SC_FS_MEMORY_OK);
 
-  EXPECT_TRUE(sc_fs_memory_initialize(SC_FS_MEMORY_PATH, SC_FALSE));
-  EXPECT_TRUE(sc_fs_memory_shutdown());
+  EXPECT_EQ(sc_fs_memory_initialize(SC_FS_MEMORY_PATH, SC_FALSE), SC_FS_MEMORY_OK);
+  EXPECT_EQ(sc_fs_memory_shutdown(), SC_FS_MEMORY_OK);
 }
 
 TEST(ScFSMemoryTest, sc_fs_memory_initialize_shutdown_invalid_path)
 {
-  EXPECT_FALSE(sc_fs_memory_initialize("", SC_FALSE));
-  EXPECT_FALSE(sc_fs_memory_shutdown());
+  EXPECT_EQ(sc_fs_memory_initialize("", SC_FALSE), SC_FS_MEMORY_NO);
+  EXPECT_EQ(sc_fs_memory_shutdown(), SC_FS_MEMORY_NO);
 
-  EXPECT_FALSE(sc_fs_memory_initialize("", SC_FALSE));
-  EXPECT_FALSE(sc_fs_memory_shutdown());
+  EXPECT_EQ(sc_fs_memory_initialize("", SC_FALSE), SC_FS_MEMORY_NO);
+  EXPECT_EQ(sc_fs_memory_shutdown(), SC_FS_MEMORY_NO);
 }
 
 TEST(ScFSMemoryTest, sc_fs_memory_initialize_shutdown_clear)
 {
-  EXPECT_TRUE(sc_fs_memory_initialize(SC_FS_MEMORY_PATH, SC_TRUE));
-  EXPECT_TRUE(sc_fs_memory_shutdown());
+  EXPECT_EQ(sc_fs_memory_initialize(SC_FS_MEMORY_PATH, SC_TRUE), SC_FS_MEMORY_OK);
+  EXPECT_EQ(sc_fs_memory_shutdown(), SC_FS_MEMORY_OK);
 
-  EXPECT_TRUE(sc_fs_memory_initialize(SC_FS_MEMORY_PATH, SC_TRUE));
-  EXPECT_TRUE(sc_fs_memory_shutdown());
+  EXPECT_EQ(sc_fs_memory_initialize(SC_FS_MEMORY_PATH, SC_TRUE), SC_FS_MEMORY_OK);
+  EXPECT_EQ(sc_fs_memory_shutdown(), SC_FS_MEMORY_OK);
 }
 
 TEST(ScFSMemoryTest, sc_fs_memory_save_load)
 {
-  EXPECT_TRUE(sc_fs_memory_initialize(SC_FS_MEMORY_PATH, SC_TRUE));
+  EXPECT_EQ(sc_fs_memory_initialize(SC_FS_MEMORY_PATH, SC_TRUE), SC_FS_MEMORY_OK);
 
   sc_storage * storage = sc_mem_new(sc_storage, 1);
   storage->segments = sc_mem_new(sc_segment *, 2);
 
-  EXPECT_TRUE(sc_fs_memory_load(storage));
+  EXPECT_EQ(sc_fs_memory_load(storage), SC_FS_MEMORY_OK);
   EXPECT_EQ(storage->segments_count, 0u);
 
   storage->segments_count = 2;
   storage->segments[0] = sc_segment_new(0);
   storage->segments[1] = sc_segment_new(1);
-  EXPECT_TRUE(sc_fs_memory_save(storage));
+  EXPECT_EQ(sc_fs_memory_save(storage), SC_FS_MEMORY_OK);
   sc_segment_free(storage->segments[0]);
   sc_segment_free(storage->segments[1]);
 
-  EXPECT_TRUE(sc_fs_memory_load(storage));
+  EXPECT_EQ(sc_fs_memory_load(storage), SC_FS_MEMORY_OK);
   sc_segment_free(storage->segments[0]);
   sc_segment_free(storage->segments[1]);
 
   sc_mem_free(storage->segments);
   sc_mem_free(storage);
 
-  EXPECT_TRUE(sc_fs_memory_shutdown());
+  EXPECT_EQ(sc_fs_memory_shutdown(), SC_FS_MEMORY_OK);
 }
 
 TEST(ScFSMemoryTest, sc_fs_memory_save_load_deprecated_segments)
@@ -78,78 +78,78 @@ TEST(ScFSMemoryTest, sc_fs_memory_save_load_deprecated_segments)
       SC_DEPRECATED_DICTIONARY_FS_MEMORY_PATH "/test/strings.scdb",
       SC_DEPRECATED_DICTIONARY_FS_MEMORY_PATH "/strings.scdb"));
 
-  EXPECT_TRUE(sc_fs_memory_initialize(SC_DEPRECATED_DICTIONARY_FS_MEMORY_PATH, SC_FALSE));
+  EXPECT_EQ(sc_fs_memory_initialize(SC_DEPRECATED_DICTIONARY_FS_MEMORY_PATH, SC_FALSE), SC_FS_MEMORY_OK);
 
   sc_storage * storage = sc_mem_new(sc_storage, 1);
   storage->segments = sc_mem_new(sc_segment *, 1);
 
-  EXPECT_TRUE(sc_fs_memory_load(storage));
+  EXPECT_EQ(sc_fs_memory_load(storage), SC_FS_MEMORY_OK);
   EXPECT_EQ(storage->segments_count, 1u);
 
-  EXPECT_TRUE(sc_fs_memory_save(storage));
+  EXPECT_EQ(sc_fs_memory_save(storage), SC_FS_MEMORY_OK);
   for (sc_addr_seg i = 0; i < storage->segments_count; ++i)
     sc_segment_free(storage->segments[i]);
 
-  EXPECT_TRUE(sc_fs_memory_load(storage));
+  EXPECT_EQ(sc_fs_memory_load(storage), SC_FS_MEMORY_OK);
   for (sc_addr_seg i = 0; i < storage->segments_count; ++i)
     sc_segment_free(storage->segments[i]);
 
   sc_mem_free(storage->segments);
   sc_mem_free(storage);
 
-  EXPECT_TRUE(sc_fs_memory_shutdown());
+  EXPECT_EQ(sc_fs_memory_shutdown(), SC_FS_MEMORY_OK);
 }
 
 TEST(ScFSMemoryTest, sc_fs_memory_save_load_save_invalid_file_read)
 {
-  EXPECT_TRUE(sc_fs_memory_initialize(SC_FS_MEMORY_PATH, SC_TRUE));
+  EXPECT_EQ(sc_fs_memory_initialize(SC_FS_MEMORY_PATH, SC_TRUE), SC_FS_MEMORY_OK);
 
   sc_storage * storage = sc_mem_new(sc_storage, 1);
   storage->segments = sc_mem_new(sc_segment *, 2);
 
-  EXPECT_TRUE(sc_fs_memory_load(storage));
+  EXPECT_EQ(sc_fs_memory_load(storage), SC_FS_MEMORY_OK);
   EXPECT_EQ(storage->segments_count, 0u);
 
   EXPECT_TRUE(sc_fs_create_file(SC_FS_MEMORY_SEGMENTS_PATH));
-  EXPECT_FALSE(sc_fs_memory_load(storage));
+  EXPECT_EQ(sc_fs_memory_load(storage), SC_FS_MEMORY_READ_ERROR);
   EXPECT_TRUE(sc_fs_remove_file(SC_FS_MEMORY_SEGMENTS_PATH));
 
-  EXPECT_TRUE(sc_fs_memory_load(storage));
+  EXPECT_EQ(sc_fs_memory_load(storage), SC_FS_MEMORY_OK);
 
   sc_mem_free(storage->segments);
   sc_mem_free(storage);
 
-  EXPECT_TRUE(sc_fs_memory_shutdown());
+  EXPECT_EQ(sc_fs_memory_shutdown(), SC_FS_MEMORY_OK);
 }
 
 TEST(ScFSMemoryTest, sc_fs_memory_save_load_save_invalid_segments_num_read)
 {
-  EXPECT_TRUE(sc_fs_memory_initialize(SC_FS_MEMORY_PATH, SC_TRUE));
+  EXPECT_EQ(sc_fs_memory_initialize(SC_FS_MEMORY_PATH, SC_TRUE), SC_FS_MEMORY_OK);
 
   sc_storage * storage = sc_mem_new(sc_storage, 1);
   storage->segments = sc_mem_new(sc_segment *, 2);
 
-  EXPECT_TRUE(sc_fs_memory_load(storage));
+  EXPECT_EQ(sc_fs_memory_load(storage), SC_FS_MEMORY_OK);
   EXPECT_EQ(storage->segments_count, 0u);
 
   EXPECT_TRUE(sc_fs_create_file(SC_FS_MEMORY_SEGMENTS_PATH));
 
-  EXPECT_FALSE(sc_fs_memory_load(storage));
+  EXPECT_EQ(sc_fs_memory_load(storage), SC_FS_MEMORY_READ_ERROR);
 
   sc_mem_free(storage->segments);
   sc_mem_free(storage);
 
-  EXPECT_TRUE(sc_fs_memory_shutdown());
+  EXPECT_EQ(sc_fs_memory_shutdown(), SC_FS_MEMORY_OK);
 }
 
 TEST(ScFSMemoryTest, sc_fs_memory_save_load_save_invalid_segment_read)
 {
-  EXPECT_TRUE(sc_fs_memory_initialize(SC_FS_MEMORY_PATH, SC_TRUE));
+  EXPECT_EQ(sc_fs_memory_initialize(SC_FS_MEMORY_PATH, SC_TRUE), SC_FS_MEMORY_OK);
 
   sc_storage * storage = sc_mem_new(sc_storage, 1);
   storage->segments = sc_mem_new(sc_segment *, 2);
 
-  EXPECT_TRUE(sc_fs_memory_load(storage));
+  EXPECT_EQ(sc_fs_memory_load(storage), SC_FS_MEMORY_OK);
   EXPECT_EQ(storage->segments_count, 0u);
 
   sc_io_channel * channel = sc_io_new_write_channel(SC_FS_MEMORY_SEGMENTS_PATH, nullptr);
@@ -166,17 +166,17 @@ TEST(ScFSMemoryTest, sc_fs_memory_save_load_save_invalid_segment_read)
       SC_FS_IO_STATUS_NORMAL);
   sc_io_channel_shutdown(channel, SC_TRUE, nullptr);
 
-  EXPECT_FALSE(sc_fs_memory_load(storage));
+  EXPECT_EQ(sc_fs_memory_load(storage), SC_FS_MEMORY_READ_ERROR);
 
   sc_mem_free(storage->segments);
   sc_mem_free(storage);
 
-  EXPECT_TRUE(sc_fs_memory_shutdown());
+  EXPECT_EQ(sc_fs_memory_shutdown(), SC_FS_MEMORY_OK);
 }
 
 TEST(ScFSMemoryTest, sc_fs_memory_save_load_save_invalid_file_write)
 {
-  EXPECT_TRUE(sc_fs_memory_initialize(SC_FS_MEMORY_PATH, SC_TRUE));
+  EXPECT_EQ(sc_fs_memory_initialize(SC_FS_MEMORY_PATH, SC_TRUE), SC_FS_MEMORY_OK);
   EXPECT_TRUE(sc_fs_remove_directory(SC_FS_MEMORY_PATH));
 
   sc_storage * storage = sc_mem_new(sc_storage, 1);
@@ -185,18 +185,18 @@ TEST(ScFSMemoryTest, sc_fs_memory_save_load_save_invalid_file_write)
   storage->segments[1] = nullptr;
   storage->segments_count = 2;
 
-  EXPECT_FALSE(sc_fs_memory_save(storage));
-  EXPECT_TRUE(sc_fs_memory_load(storage));
+  EXPECT_EQ(sc_fs_memory_save(storage), SC_FS_MEMORY_WRITE_ERROR);
+  EXPECT_EQ(sc_fs_memory_load(storage), SC_FS_MEMORY_OK);
 
   sc_mem_free(storage->segments);
   sc_mem_free(storage);
 
-  EXPECT_TRUE(sc_fs_memory_shutdown());
+  EXPECT_EQ(sc_fs_memory_shutdown(), SC_FS_MEMORY_OK);
 }
 
 TEST(ScFSMemoryTest, sc_fs_memory_save_load_save_invalid_segments_num_write)
 {
-  EXPECT_TRUE(sc_fs_memory_initialize(SC_FS_MEMORY_PATH, SC_TRUE));
+  EXPECT_EQ(sc_fs_memory_initialize(SC_FS_MEMORY_PATH, SC_TRUE), SC_FS_MEMORY_OK);
 
   sc_storage * storage = sc_mem_new(sc_storage, 1);
   storage->segments = sc_mem_new(sc_segment *, 2);
@@ -204,18 +204,18 @@ TEST(ScFSMemoryTest, sc_fs_memory_save_load_save_invalid_segments_num_write)
   storage->segments[1] = nullptr;
   storage->segments_count = *(sc_uint64 *)"invalid_size";
 
-  EXPECT_FALSE(sc_fs_memory_save(storage));
-  EXPECT_TRUE(sc_fs_memory_load(storage));
+  EXPECT_EQ(sc_fs_memory_save(storage), SC_FS_MEMORY_WRITE_ERROR);
+  EXPECT_EQ(sc_fs_memory_load(storage), SC_FS_MEMORY_OK);
 
   sc_mem_free(storage->segments);
   sc_mem_free(storage);
 
-  EXPECT_TRUE(sc_fs_memory_shutdown());
+  EXPECT_EQ(sc_fs_memory_shutdown(), SC_FS_MEMORY_OK);
 }
 
 TEST(ScFSMemoryTest, sc_fs_memory_save_load_save_invalid_segment_write)
 {
-  EXPECT_TRUE(sc_fs_memory_initialize(SC_FS_MEMORY_PATH, SC_TRUE));
+  EXPECT_EQ(sc_fs_memory_initialize(SC_FS_MEMORY_PATH, SC_TRUE), SC_FS_MEMORY_OK);
 
   sc_storage * storage = sc_mem_new(sc_storage, 1);
   storage->segments = sc_mem_new(sc_segment *, 2);
@@ -223,11 +223,11 @@ TEST(ScFSMemoryTest, sc_fs_memory_save_load_save_invalid_segment_write)
   storage->segments[1] = nullptr;
   storage->segments_count = 2;
 
-  EXPECT_FALSE(sc_fs_memory_save(storage));
-  EXPECT_TRUE(sc_fs_memory_load(storage));
+  EXPECT_EQ(sc_fs_memory_save(storage), SC_FS_MEMORY_WRITE_ERROR);
+  EXPECT_EQ(sc_fs_memory_load(storage), SC_FS_MEMORY_OK);
 
   sc_mem_free(storage->segments);
   sc_mem_free(storage);
 
-  EXPECT_TRUE(sc_fs_memory_shutdown());
+  EXPECT_EQ(sc_fs_memory_shutdown(), SC_FS_MEMORY_OK);
 }
