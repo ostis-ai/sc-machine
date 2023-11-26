@@ -7,8 +7,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Monitors for processes and thread synchronization
+- Monitors tables for sc-addresses monitors and sc-event monitors
+- Distribution of sc-segments by active processes and threads
+- Internal sc-storage sc-segment-built-in lists for not engaged and freed sc-elements
+- Clarify events managers for sc-storage: pick out subscription and emission managers
+- Clarify context manager for sc-memory
+- Common secured interface for sc-memory
+
 ### Fixed
 
+- All deadlocks and segfaults in sc-storage, sc-events and fs-memory
+- Processes and thread starvation
+- Active waiting during sc-events deletion
 - List items semicolons for sc.s-contours
 - Internal sentences after sc.s-contour assignment
 - The success of finishing the action is marked first and only then that it was finished
