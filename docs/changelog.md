@@ -19,16 +19,29 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
-- All deadlocks and segfaults in sc-storage, sc-events and fs-memory
+- sc-machine crashes when trying to view a picture in sc-web ([311](https://github.com/ostis-ai/sc-machine/issues/311))
+- No tests for ScMemory::Initialize(sc_memory_params) with different parameters ([216](https://github.com/ostis-ai/sc-machine/issues/216))
+- Too big number in websocket request crusher sc-server ([309](https://github.com/ostis-ai/sc-machine/issues/309))
+- Handle crush errors ([63](https://github.com/ostis-ai/sc-machine/issues/63))
+- Usage of invalid addresses after rerun failed sc-server ([79](https://github.com/ostis-ai/sc-machine/issues/79))
+- Invalid addrs crushes sc-iterator methods usages ([66](https://github.com/ostis-ai/sc-machine/issues/66))
+- All deadlocks and segfaults in sc-storage, sc-events and fs-memory ([111](https://github.com/ostis-ai/sc-machine/issues/111))
 - Processes and thread starvation
 - Active waiting during sc-events deletion
 - List items semicolons for sc.s-contours
 - Internal sentences after sc.s-contour assignment
 - The success of finishing the action is marked first and only then that it was finished
 
+### Removed
+
+- Runtime asserts usage in sc-storage
+- Atomic operations usage in sc-storage
+- Locks usage in sc-storage
+
 ## [0.8.0-Fusion] - 24.09.2023
 
 ### Breaking changes
+
 - Now we use C++17 instead of C++14
 - We support compatibility with old memory binaries
 

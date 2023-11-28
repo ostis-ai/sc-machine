@@ -485,7 +485,6 @@ sc_result sc_storage_element_free(sc_memory_context const * ctx, sc_addr addr)
     sc_monitor * monitor = sc_monitor_get_monitor_for_addr(&storage->addr_monitors_table, _addr);
     sc_monitor_acquire_read(monitor);
 
-    // Iterate all connectors for deleted element and append them into iter_list
     _addr = el->first_out_arc;
     while (SC_ADDR_IS_NOT_EMPTY(_addr))
     {
