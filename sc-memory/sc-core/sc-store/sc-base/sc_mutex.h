@@ -4,14 +4,10 @@
  * (See accompanying file COPYING.MIT or copy at http://opensource.org/licenses/MIT)
  */
 
-#ifndef _sc_atomic_h_
-#define _sc_atomic_h_
+#ifndef _sc_mutex_h_
+#define _sc_mutex_h_
 
-#define GLIB
-
-#ifdef GLIB
-#  include <glib.h>
-#endif
+#include <glib.h>
 
 typedef GMutex sc_mutex;
 
@@ -22,7 +18,5 @@ typedef GMutex sc_mutex;
 #define sc_mutex_unlock(mutex) g_mutex_unlock(mutex)
 
 #define sc_mutex_destroy(mutex) g_mutex_clear(mutex)
-
-#undef GLIB
 
 #endif

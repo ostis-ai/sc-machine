@@ -42,7 +42,7 @@ void sc_system_identifier_fiver_make_empty(sc_system_identifier_fiver * fiver);
  */
 _SC_EXTERN sc_result sc_helper_find_element_by_system_identifier(
     sc_memory_context const * ctx,
-    const sc_char * data,
+    sc_char const * data,
     sc_uint32 len,
     sc_addr * result_addr);
 
@@ -62,7 +62,7 @@ _SC_EXTERN sc_result sc_helper_find_element_by_system_identifier(
  */
 _SC_EXTERN sc_result sc_helper_find_element_by_system_identifier_ext(
     sc_memory_context const * ctx,
-    const sc_char * data,
+    sc_char const * data,
     sc_uint32 len,
     sc_system_identifier_fiver * out_fiver);
 
@@ -74,7 +74,7 @@ _SC_EXTERN sc_result sc_helper_find_element_by_system_identifier_ext(
  * already used for another sc-element, then function returns SC_ERROR_INVALID_PARAMS
  */
 _SC_EXTERN sc_result
-sc_helper_set_system_identifier(sc_memory_context * ctx, sc_addr addr, const sc_char * data, sc_uint32 len);
+sc_helper_set_system_identifier(sc_memory_context * ctx, sc_addr addr, sc_char const * data, sc_uint32 len);
 
 /*! Setup new system identifier for specified sc-element
  * @param addr sc-addr of sc-element to setup new system identifier
@@ -92,7 +92,7 @@ sc_helper_set_system_identifier(sc_memory_context * ctx, sc_addr addr, const sc_
 _SC_EXTERN sc_result sc_helper_set_system_identifier_ext(
     sc_memory_context * ctx,
     sc_addr addr,
-    const sc_char * data,
+    sc_char const * data,
     sc_uint32 len,
     sc_system_identifier_fiver * out_fiver);
 
@@ -118,7 +118,7 @@ _SC_EXTERN sc_result sc_helper_get_keynode(sc_memory_context const * ctx, sc_key
  * @return If sc-element was founded, then return SC_TRUE; otherwise return SC_FALSE.
  */
 _SC_EXTERN sc_bool
-sc_helper_resolve_system_identifier(sc_memory_context const * ctx, const char * system_idtf, sc_addr * result);
+sc_helper_resolve_system_identifier(sc_memory_context * ctx, sc_char const * system_idtf, sc_addr * result);
 
 /*! Check if specified arc type exist between two objects
  * @param beg_el sc-addr of begin element
@@ -133,5 +133,6 @@ _SC_EXTERN sc_bool sc_helper_check_arc(sc_memory_context const * ctx, sc_addr be
  * @param data system identifier
  * @return If system identifier is valid, then return SC_TRUE; otherwise return SC_FALSE.
  */
-_SC_EXTERN sc_result sc_helper_check_system_identifier(const sc_char * data);
+_SC_EXTERN sc_result sc_helper_check_system_identifier(sc_char const * data);
+
 #endif  // _sc_helper_h_

@@ -44,7 +44,7 @@ public:
   {
   }
 
-  explicit ScType(RealType type) noexcept
+  ScType(RealType type) noexcept
     : m_realType(type)
   {
   }

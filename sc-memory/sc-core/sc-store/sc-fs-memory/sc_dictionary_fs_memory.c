@@ -18,10 +18,19 @@
 #  define DEFAULT_STRING_INT_SIZE 20
 #  define DEFAULT_MAX_SEARCHABLE_STRING_SIZE 1000
 
-sc_io_channel * _sc_dictionary_fs_memory_get_strings_channel_by_offset(
-    sc_dictionary_fs_memory const * memory,
-    sc_uint64 strings_offset)
+typedef struct
 {
+  sc_list * link_hashes;
+  sc_uint64 string_offset;
+} sc_link_hash_content;
+
+sc_io_channel * _sc_dictionary_fs_memory_get_strings_channel_by_offset(
+    sc_dictionary_fs_memory * memory,
+    sc_uint64 strings_offset,
+    sc_monitor ** channel_monitor)
+{
+  *channel_monitor = null_ptr;
+
   sc_uint64 const idx = strings_offset / memory->max_strings_channel_size;
   if (idx >= memory->max_strings_channels)
   {
@@ -31,11 +40,19 @@ sc_io_channel * _sc_dictionary_fs_memory_get_strings_channel_by_offset(
     return null_ptr;
   }
 
-  if (memory->strings_channels[idx] != null_ptr)
-    return memory->strings_channels[idx];
+  sc_monitor_acquire_read(&memory->monitor);
+  sc_io_channel * channel = memory->strings_channels[idx];
+  sc_monitor_release_read(&memory->monitor);
+  if (channel != null_ptr)
+  {
+    *channel_monitor = sc_monitor_get_monitor_from_table(&memory->strings_channels_monitors_table, (sc_pointer)idx);
+    return channel;
+  }
 
+  sc_monitor_acquire_read(&memory->monitor);
   if (idx > 0 && memory->strings_channels[idx - 1] != null_ptr)
     sc_io_channel_flush(memory->strings_channels[idx - 1], null_ptr);
+  sc_monitor_release_read(&memory->monitor);
 
   sc_char strings_channel_number[DEFAULT_STRING_INT_SIZE];
   {
@@ -52,14 +69,26 @@ sc_io_channel * _sc_dictionary_fs_memory_get_strings_channel_by_offset(
   sc_fs_concat_path_ext(memory->path, strings_channel_name, SC_FS_EXT, &strings_path);
   sc_mem_free(strings_channel_name);
 
-  if (sc_fs_is_file(strings_path) == SC_FALSE || memory->clear == SC_TRUE)
+  sc_bool is_path = sc_fs_is_file(strings_path);
+
+  sc_monitor_acquire_write(&memory->monitor);
+
+  if (is_path == SC_FALSE || memory->clear == SC_TRUE)
     memory->strings_channels[idx] = sc_io_new_write_channel(strings_path, null_ptr);
   else
     memory->strings_channels[idx] = sc_io_new_append_channel(strings_path, null_ptr);
-  sc_mem_free(strings_path);
   sc_io_channel_set_encoding(memory->strings_channels[idx], null_ptr, null_ptr);
 
-  return memory->strings_channels[idx];
+  sc_monitor_release_write(&memory->monitor);
+  *channel_monitor = sc_monitor_get_monitor_from_table(&memory->strings_channels_monitors_table, (sc_pointer)idx);
+
+  sc_mem_free(strings_path);
+
+  sc_monitor_acquire_read(&memory->monitor);
+  channel = memory->strings_channels[idx];
+  sc_monitor_release_read(&memory->monitor);
+
+  return channel;
 }
 
 sc_uint64 _sc_dictionary_fs_memory_normalize_offset(sc_dictionary_fs_memory const * memory, sc_uint64 strings_offset)
@@ -112,8 +141,9 @@ sc_dictionary_fs_memory_status sc_dictionary_fs_memory_initialize_ext(
       sc_fs_concat_path((*memory)->path, term_string_offsets, &(*memory)->terms_string_offsets_path);
 
       (*memory)->strings_channels = (void **)sc_mem_new(sc_io_channel *, (*memory)->max_strings_channels);
+      _sc_monitor_global_init(&(*memory)->strings_channels_monitors_table);
       (*memory)->last_string_offset = 0;
-      sc_mutex_init(&(*memory)->rw_mutex);
+      sc_monitor_init(&(*memory)->monitor);
     }
 
     _sc_number_dictionary_initialize(&(*memory)->link_hashes_string_offsets_dictionary);
@@ -122,8 +152,10 @@ sc_dictionary_fs_memory_status sc_dictionary_fs_memory_initialize_ext(
     sc_fs_concat_path((*memory)->path, string_offsets_link_hashes, &(*memory)->string_offsets_link_hashes_path);
   }
   sc_fs_memory_info("Configuration:");
-  sc_message("\tRepo path: %s", (*memory)->path);
   sc_message("\tSc-dictionary node size: %zd", sizeof(sc_dictionary_node));
+  sc_message("\tSc-dictionary size: %zd", sizeof(sc_dictionary));
+  sc_message("\tSc-fs-memory size: %zd", sizeof(sc_dictionary_fs_memory));
+  sc_message("\tRepo path: %s", (*memory)->path);
   sc_message("\tClean on initialize: %s", (*memory)->clear ? "On" : "Off");
 
   sc_fs_memory_info("Index configuration:");
@@ -176,7 +208,8 @@ sc_dictionary_fs_memory_status sc_dictionary_fs_memory_shutdown(sc_dictionary_fs
         sc_io_channel_shutdown(memory->strings_channels[i], SC_TRUE, null_ptr);
       }
       sc_mem_free(memory->strings_channels);
-      sc_mutex_destroy(&memory->rw_mutex);
+      _sc_monitor_global_destroy(&memory->strings_channels_monitors_table);
+      sc_monitor_destroy(&memory->monitor);
     }
 
     sc_dictionary_destroy(memory->link_hashes_string_offsets_dictionary, _sc_dictionary_fs_memory_string_node_clear);
@@ -272,8 +305,9 @@ sc_list * _sc_dictionary_fs_memory_get_string_offsets_by_term(
 }
 
 sc_dictionary_fs_memory_status _sc_dictionary_node_fs_memory_get_string_offset_by_string(
-    sc_dictionary_fs_memory const * memory,
+    sc_dictionary_fs_memory * memory,
     sc_io_channel * strings_channel,
+    sc_monitor * channel_monitor,
     sc_char const * string,
     sc_uint64 const string_size,
     sc_list const * string_offsets,
@@ -300,7 +334,7 @@ sc_dictionary_fs_memory_status _sc_dictionary_node_fs_memory_get_string_offset_b
               strings_channel, (sc_char *)&other_string_size, sizeof(sc_uint64), &read_bytes, null_ptr) !=
               SC_FS_IO_STATUS_NORMAL ||
           sizeof(sc_uint64) != read_bytes)
-        return SC_FS_MEMORY_READ_ERROR;
+        goto error;
 
       if (other_string_size != string_size)
         continue;
@@ -309,7 +343,7 @@ sc_dictionary_fs_memory_status _sc_dictionary_node_fs_memory_get_string_offset_b
       if (sc_io_channel_read_chars(strings_channel, other_string, other_string_size, &read_bytes, null_ptr) !=
               SC_FS_IO_STATUS_NORMAL ||
           other_string_size != read_bytes)
-        return SC_FS_MEMORY_READ_ERROR;
+        goto error;
       other_string[other_string_size] = '\0';
 
       if (sc_str_cmp(string, other_string) == SC_FALSE)
@@ -319,14 +353,19 @@ sc_dictionary_fs_memory_status _sc_dictionary_node_fs_memory_get_string_offset_b
     *found_string_offset = string_offset;
     break;
   }
-  sc_iterator_destroy(string_offset_it);
 
+  sc_iterator_destroy(string_offset_it);
   return SC_FS_MEMORY_OK;
+
+error:
+  sc_iterator_destroy(string_offset_it);
+  return SC_FS_MEMORY_READ_ERROR;
 }
 
 sc_uint64 _sc_dictionary_fs_memory_get_string_offset_by_string(
     sc_dictionary_fs_memory * memory,
     sc_io_channel * strings_channel,
+    sc_monitor * channel_monitor,
     sc_char const * string,
     sc_uint64 const string_size,
     sc_char const * term)
@@ -335,7 +374,7 @@ sc_uint64 _sc_dictionary_fs_memory_get_string_offset_by_string(
 
   sc_uint64 string_offset = INVALID_STRING_OFFSET;
   _sc_dictionary_node_fs_memory_get_string_offset_by_string(
-      memory, strings_channel, string, string_size, string_offsets, &string_offset);
+      memory, strings_channel, channel_monitor, string, string_size, string_offsets, &string_offset);
   return string_offset;
 }
 
@@ -349,24 +388,26 @@ sc_dictionary_fs_memory_status _sc_dictionary_fs_memory_write_string(
     sc_uint64 * string_offset,
     sc_bool * is_not_exist)
 {
+  sc_monitor * channel_monitor;
   sc_io_channel * strings_channel =
-      _sc_dictionary_fs_memory_get_strings_channel_by_offset(memory, memory->last_string_offset);
+      _sc_dictionary_fs_memory_get_strings_channel_by_offset(memory, memory->last_string_offset, &channel_monitor);
   *string_offset = INVALID_STRING_OFFSET;
+  if (strings_channel == null_ptr)
+    return SC_FS_MEMORY_WRITE_ERROR;
 
+  sc_monitor_acquire_write(&memory->monitor);
+  sc_monitor_acquire_write(channel_monitor);
   // find string if it exists in fs-memory
   if (is_searchable_string)
   {
-    sc_mutex_lock(&memory->rw_mutex);
     *string_offset = _sc_dictionary_fs_memory_get_string_offset_by_string(
-        memory, strings_channel, string, string_size, string_terms->begin->data);
-    sc_mutex_unlock(&memory->rw_mutex);
+        memory, strings_channel, channel_monitor, string, string_size, string_terms->begin->data);
   }
 
   *is_not_exist = (*string_offset == INVALID_STRING_OFFSET);
   // save string in fs-memory
   if (*is_not_exist)
   {
-    sc_mutex_lock(&memory->rw_mutex);
     *string_offset = memory->last_string_offset;
 
     sc_uint64 const normalized_string_offset = _sc_dictionary_fs_memory_normalize_offset(memory, *string_offset);
@@ -392,13 +433,15 @@ sc_dictionary_fs_memory_status _sc_dictionary_fs_memory_write_string(
     }
 
     memory->last_string_offset += written_bytes;
-    sc_mutex_unlock(&memory->rw_mutex);
   }
 
+  sc_monitor_release_write(channel_monitor);
+  sc_monitor_release_write(&memory->monitor);
   return SC_FS_MEMORY_OK;
 
 error:
-  sc_mutex_unlock(&memory->rw_mutex);
+  sc_monitor_release_write(channel_monitor);
+  sc_monitor_release_write(&memory->monitor);
   return SC_FS_MEMORY_WRITE_ERROR;
 }
 
@@ -484,6 +527,8 @@ sc_dictionary_fs_memory_status sc_dictionary_fs_memory_unlink_string(
     return SC_FS_MEMORY_NO;
   }
 
+  sc_monitor_acquire_write(&memory->monitor);
+
   sc_char link_hash_str[DEFAULT_STRING_INT_SIZE];
   sc_uint64 link_hash_str_size;
   sc_int_to_str_int(link_hash, link_hash_str, link_hash_str_size);
@@ -502,15 +547,19 @@ sc_dictionary_fs_memory_status sc_dictionary_fs_memory_unlink_string(
   // set empty link
   sc_dictionary_append(memory->link_hashes_string_offsets_dictionary, link_hash_str, link_hash_str_size, null_ptr);
 
+  sc_monitor_release_write(&memory->monitor);
+
   return SC_FS_MEMORY_OK;
 }
 
 sc_dictionary_fs_memory_status _sc_dictionary_fs_memory_read_string_by_offset(
-    sc_dictionary_fs_memory const * memory,
+    sc_dictionary_fs_memory * memory,
     sc_uint64 const string_offset,
     sc_char ** string)
 {
-  sc_io_channel * strings_channel = _sc_dictionary_fs_memory_get_strings_channel_by_offset(memory, string_offset);
+  sc_monitor * channel_monitor;
+  sc_io_channel * strings_channel =
+      _sc_dictionary_fs_memory_get_strings_channel_by_offset(memory, string_offset, &channel_monitor);
   if (strings_channel == null_ptr)
   {
     sc_fs_memory_error("Path `%s` doesn't exist", "path");
@@ -520,6 +569,7 @@ sc_dictionary_fs_memory_status _sc_dictionary_fs_memory_read_string_by_offset(
   // read string with size from fs-memory
   sc_uint64 read_bytes;
   sc_uint64 const normalized_string_offset = _sc_dictionary_fs_memory_normalize_offset(memory, string_offset);
+  sc_monitor_acquire_write(channel_monitor);
   sc_io_channel_seek(strings_channel, normalized_string_offset, SC_FS_IO_SEEK_SET, null_ptr);
   {
     sc_uint64 string_size;
@@ -528,7 +578,7 @@ sc_dictionary_fs_memory_status _sc_dictionary_fs_memory_read_string_by_offset(
         sizeof(sc_uint64) != read_bytes)
     {
       *string = null_ptr;
-      return SC_FS_MEMORY_READ_ERROR;
+      goto error;
     }
 
     *string = sc_mem_new(sc_char, string_size + 1);
@@ -536,16 +586,21 @@ sc_dictionary_fs_memory_status _sc_dictionary_fs_memory_read_string_by_offset(
             SC_FS_IO_STATUS_NORMAL ||
         string_size != read_bytes)
     {
-      sc_mem_free(string);
+      sc_mem_free(*string);
       *string = null_ptr;
-      return SC_FS_MEMORY_READ_ERROR;
+      goto error;
     }
   }
 
+  sc_monitor_release_write(channel_monitor);
   return SC_FS_MEMORY_OK;
+
+error:
+  sc_monitor_release_write(channel_monitor);
+  return SC_FS_MEMORY_READ_ERROR;
 }
 
-void _sc_dictionary_fs_memory_read_file(sc_char * file_path, sc_char ** content, sc_uint64 * size)
+void _sc_dictionary_fs_memory_read_file(sc_char * file_path, sc_char ** content, sc_uint32 * size)
 {
   if (sc_fs_is_binary_file(file_path))
   {
@@ -584,10 +639,8 @@ sc_dictionary_fs_memory_status sc_dictionary_fs_memory_get_string_by_link_hash(
   }
 
   sc_uint64 const string_offset = (sc_uint64)content->string_offset - 1;
-  sc_mutex_lock(&memory->rw_mutex);
   sc_dictionary_fs_memory_status const status =
       _sc_dictionary_fs_memory_read_string_by_offset(memory, string_offset, string);
-  sc_mutex_unlock(&memory->rw_mutex);
   if (status != SC_FS_MEMORY_OK)
   {
     *string = null_ptr;
@@ -598,7 +651,7 @@ sc_dictionary_fs_memory_status sc_dictionary_fs_memory_get_string_by_link_hash(
   if ((sc_str_find(*string, ".") || sc_str_find(*string, "/")) && sc_fs_is_file(*string))
   {
     sc_char * file_path = *string;
-    _sc_dictionary_fs_memory_read_file(file_path, string, string_size);
+    _sc_dictionary_fs_memory_read_file(file_path, string, (sc_uint32 *)string_size);
     sc_mem_free(file_path);
   }
 
@@ -608,7 +661,7 @@ sc_dictionary_fs_memory_status sc_dictionary_fs_memory_get_string_by_link_hash(
 }
 
 sc_dictionary_fs_memory_status _sc_dictionary_fs_memory_get_link_hashes_by_string_term(
-    sc_dictionary_fs_memory const * memory,
+    sc_dictionary_fs_memory * memory,
     sc_char const * string,
     sc_uint64 const string_size,
     sc_bool const is_substring,
@@ -622,11 +675,13 @@ sc_dictionary_fs_memory_status _sc_dictionary_fs_memory_get_link_hashes_by_strin
   if (!sc_iterator_next(string_offset_it))
     return SC_FS_MEMORY_READ_ERROR;
 
+  sc_monitor * channel_monitor;
   while (sc_iterator_next(string_offset_it))
   {
     sc_uint64 const string_offset = (sc_uint64)sc_iterator_get(string_offset_it);
 
-    sc_io_channel * strings_channel = _sc_dictionary_fs_memory_get_strings_channel_by_offset(memory, string_offset);
+    sc_io_channel * strings_channel =
+        _sc_dictionary_fs_memory_get_strings_channel_by_offset(memory, string_offset, &channel_monitor);
     if (strings_channel == null_ptr)
     {
       sc_fs_memory_error("Path `%s` doesn't exist", "path");
@@ -636,6 +691,9 @@ sc_dictionary_fs_memory_status _sc_dictionary_fs_memory_get_link_hashes_by_strin
     // read string with size from fs-memory
     sc_uint64 read_bytes;
     sc_uint64 const normalized_string_offset = _sc_dictionary_fs_memory_normalize_offset(memory, string_offset);
+
+    sc_bool go_to_next = SC_FALSE;
+    sc_monitor_acquire_write(channel_monitor);
     sc_io_channel_seek(strings_channel, normalized_string_offset, SC_FS_IO_SEEK_SET, null_ptr);
     {
       sc_uint64 other_string_size;
@@ -643,30 +701,36 @@ sc_dictionary_fs_memory_status _sc_dictionary_fs_memory_get_link_hashes_by_strin
               strings_channel, (sc_char *)&other_string_size, sizeof(sc_uint64), &read_bytes, null_ptr) !=
               SC_FS_IO_STATUS_NORMAL ||
           sizeof(sc_uint64) != read_bytes)
-      {
-        sc_iterator_destroy(string_offset_it);
-        return SC_FS_MEMORY_READ_ERROR;
-      }
+        goto error;
 
       // optimize needed string search
       if ((is_substring && other_string_size < string_size) || (!is_substring && other_string_size != string_size))
-        continue;
+      {
+        go_to_next = SC_TRUE;
+        goto cont;
+      }
 
       sc_char other_string[other_string_size + 1];
       if (sc_io_channel_read_chars(strings_channel, other_string, other_string_size, &read_bytes, null_ptr) !=
               SC_FS_IO_STATUS_NORMAL ||
           other_string_size != read_bytes)
-      {
-        sc_iterator_destroy(string_offset_it);
-        return SC_FS_MEMORY_READ_ERROR;
-      }
+        goto error;
+
       other_string[other_string_size] = '\0';
 
       if ((is_substring && ((to_search_as_prefix && sc_str_has_prefix(other_string, string) == SC_FALSE) ||
                             (!to_search_as_prefix && sc_str_find(other_string, string) == SC_FALSE))) ||
           (!is_substring && sc_str_cmp(string, other_string) == SC_FALSE))
-        continue;
+      {
+        go_to_next = SC_TRUE;
+        goto cont;
+      }
     }
+
+  cont:
+    sc_monitor_release_write(channel_monitor);
+    if (go_to_next)
+      continue;
 
     sc_char string_offset_str[DEFAULT_STRING_INT_SIZE];
     sc_uint64 string_offset_str_size;
@@ -686,6 +750,11 @@ sc_dictionary_fs_memory_status _sc_dictionary_fs_memory_get_link_hashes_by_strin
   sc_iterator_destroy(string_offset_it);
 
   return SC_FS_MEMORY_OK;
+
+error:
+  sc_monitor_release_write(channel_monitor);
+  sc_iterator_destroy(string_offset_it);
+  return SC_FS_MEMORY_READ_ERROR;
 }
 
 sc_bool _sc_dictionary_fs_memory_visit_string_offsets_by_term_prefix(sc_dictionary_node * node, void ** arguments)
@@ -765,10 +834,8 @@ sc_dictionary_fs_memory_status sc_dictionary_fs_memory_get_link_hashes_by_string
     string_offsets = _sc_dictionary_fs_memory_get_string_offsets_by_term(memory, term);
   sc_mem_free(term);
 
-  sc_mutex_lock(&memory->rw_mutex);
   sc_dictionary_fs_memory_status const status = _sc_dictionary_fs_memory_get_link_hashes_by_string_term(
       memory, string, string_size, is_substring, to_search_as_prefix, string_offsets, link_hashes);
-  sc_mutex_unlock(&memory->rw_mutex);
 
   if (is_substring)
     sc_list_destroy(string_offsets);
@@ -808,7 +875,7 @@ sc_dictionary_fs_memory_status sc_dictionary_fs_memory_get_link_hashes_by_substr
 }
 
 sc_dictionary_fs_memory_status _sc_dictionary_fs_memory_get_strings_by_substring_term(
-    sc_dictionary_fs_memory const * memory,
+    sc_dictionary_fs_memory * memory,
     sc_char const * string,
     sc_uint64 const string_size,
     sc_bool const to_search_as_prefix,
@@ -821,11 +888,13 @@ sc_dictionary_fs_memory_status _sc_dictionary_fs_memory_get_strings_by_substring
   if (!sc_iterator_next(string_offset_it))
     return SC_FS_MEMORY_READ_ERROR;
 
+  sc_monitor * channel_monitor;
   while (sc_iterator_next(string_offset_it))
   {
     sc_uint64 const string_offset = (sc_uint64)sc_iterator_get(string_offset_it);
 
-    sc_io_channel * strings_channel = _sc_dictionary_fs_memory_get_strings_channel_by_offset(memory, string_offset);
+    sc_io_channel * strings_channel =
+        _sc_dictionary_fs_memory_get_strings_channel_by_offset(memory, string_offset, &channel_monitor);
     if (strings_channel == null_ptr)
     {
       sc_fs_memory_error("Path `%s` doesn't exist", "path");
@@ -835,6 +904,9 @@ sc_dictionary_fs_memory_status _sc_dictionary_fs_memory_get_strings_by_substring
     // read string with size from fs-memory
     sc_uint64 read_bytes;
     sc_uint64 const normalized_string_offset = _sc_dictionary_fs_memory_normalize_offset(memory, string_offset);
+
+    sc_bool go_to_next = SC_FALSE;
+    sc_monitor_acquire_write(channel_monitor);
     sc_io_channel_seek(strings_channel, normalized_string_offset, SC_FS_IO_SEEK_SET, null_ptr);
     {
       sc_uint64 other_string_size;
@@ -842,13 +914,13 @@ sc_dictionary_fs_memory_status _sc_dictionary_fs_memory_get_strings_by_substring
               strings_channel, (sc_char *)&other_string_size, sizeof(sc_uint64), &read_bytes, null_ptr) !=
               SC_FS_IO_STATUS_NORMAL ||
           sizeof(sc_uint64) != read_bytes)
-      {
-        sc_iterator_destroy(string_offset_it);
-        return SC_FS_MEMORY_READ_ERROR;
-      }
+        goto error;
 
       if (other_string_size < string_size)
-        continue;
+      {
+        go_to_next = SC_TRUE;
+        goto cont;
+      }
 
       sc_char * other_string = sc_mem_new(sc_char, other_string_size + 1);
       if (sc_io_channel_read_chars(strings_channel, other_string, other_string_size, &read_bytes, null_ptr) !=
@@ -856,16 +928,21 @@ sc_dictionary_fs_memory_status _sc_dictionary_fs_memory_get_strings_by_substring
           other_string_size != read_bytes)
       {
         sc_mem_free(other_string);
-        sc_iterator_destroy(string_offset_it);
-        return SC_FS_MEMORY_READ_ERROR;
+        goto error;
       }
 
       if ((to_search_as_prefix && sc_str_has_prefix(other_string, string) == SC_FALSE) ||
           (!to_search_as_prefix && sc_str_find(other_string, string) == SC_FALSE))
       {
         sc_mem_free(other_string);
-        continue;
+        go_to_next = SC_TRUE;
+        goto cont;
       }
+
+    cont:
+      sc_monitor_release_write(channel_monitor);
+      if (go_to_next)
+        continue;
 
       sc_list_push_back(*strings, other_string);
     }
@@ -873,6 +950,11 @@ sc_dictionary_fs_memory_status _sc_dictionary_fs_memory_get_strings_by_substring
   sc_iterator_destroy(string_offset_it);
 
   return SC_FS_MEMORY_OK;
+
+error:
+  sc_monitor_release_write(channel_monitor);
+  sc_iterator_destroy(string_offset_it);
+  return SC_FS_MEMORY_READ_ERROR;
 }
 
 sc_dictionary_fs_memory_status _sc_dictionary_fs_memory_get_strings_by_substring_ext(
@@ -892,10 +974,8 @@ sc_dictionary_fs_memory_status _sc_dictionary_fs_memory_get_strings_by_substring
   sc_list * string_offsets = _sc_dictionary_fs_memory_get_string_offsets_by_term_prefix(memory, term);
   sc_mem_free(term);
 
-  sc_mutex_lock(&memory->rw_mutex);
   sc_dictionary_fs_memory_status const status = _sc_dictionary_fs_memory_get_strings_by_substring_term(
       memory, string, string_size, to_search_as_prefix, string_offsets, strings);
-  sc_mutex_unlock(&memory->rw_mutex);
   sc_list_destroy(string_offsets);
 
   return status;
@@ -1050,10 +1130,8 @@ sc_bool _sc_dictionary_fs_memory_get_string_by_string_offsets(sc_dictionary_node
     sc_str_int_to_int(string_offset_str, string_offset);
 
     sc_char * string;
-    sc_mutex_lock(&memory->rw_mutex);
     sc_dictionary_fs_memory_status const status =
         _sc_dictionary_fs_memory_read_string_by_offset(memory, string_offset, &string);
-    sc_mutex_unlock(&memory->rw_mutex);
     if (status != SC_FS_MEMORY_OK)
       return SC_FALSE;
 
@@ -1505,6 +1583,8 @@ sc_dictionary_fs_memory_status sc_dictionary_fs_memory_save(sc_dictionary_fs_mem
   status = _sc_dictionary_fs_memory_save_string_offsets_link_hashes(memory);
   if (status != SC_FS_MEMORY_OK)
     return status;
+
+  sc_message("\tLast string offset: %lld", memory->last_string_offset);
 
   sc_fs_memory_info("All sc-fs-memory dictionaries saved");
   return status;

@@ -7,19 +7,12 @@
 #ifndef _sc_event_private_h_
 #define _sc_event_private_h_
 
+#include "sc_event_queue.h"
+
 #include "../sc_event.h"
 #include "../sc_types.h"
 
-/* Events life cycle:
- * - create event - set reference count to 1
- * - emit event - if there are no SC_EVENT_REQUEST_DESTROY flag, then ref sc_event and add it into pending queue
- * - destroy event - wait set flag SC_EVENT_REQUEST_DESTROY and wait until
- *   all pending calls of this event would be processed (ref count == 1).
- *   After that destroy event.
- */
-
 #define SC_EVENT_REQUEST_DESTROY (1 << 31)
-#define SC_EVENT_REF_COUNT_MASK (~SC_EVENT_REQUEST_DESTROY)
 
 /*! Structure that contains information about event
  */
@@ -37,26 +30,11 @@ struct _sc_event
   fEventCallbackEx callback_ex;
   //! Pointer to callback function, that calls, when subscribed sc-element deleted
   fDeleteCallback delete_callback;
-  //! Reference count (just references from queue). The highest bit used for SC_EVENT_REQUEST_DESTROY
-  volatile sc_uint32 ref_count;
-  //! Context lock
-  volatile sc_pointer thread_lock;
+  sc_monitor monitor;
+  sc_uint32 ref_count;
   //! Access levels
   sc_access_levels access_levels;
 };
-
-//! Function to initialize sc-events module with user processors number
-sc_bool sc_events_initialize_ext(sc_uint32 max_events_and_agents_threads);
-
-//! Function to initialize sc-events module
-sc_bool sc_events_initialize();
-
-//! Function to shutdown sc-events module
-void sc_events_shutdown();
-
-//! Waits while all emitted events will be processed, then returns. After calling that function all new emitted events
-//! will be ignored
-void sc_events_stop_processing();
 
 /*! Notify about sc-element deletion.
  * @param element sc-addr of deleted sc-element
@@ -77,7 +55,7 @@ sc_result sc_event_notify_element_deleted(sc_addr element);
  * @return If event emitted without any errors, then return SC_OK; otherwise return SC_ERROR code
  */
 sc_result sc_event_emit(
-    sc_memory_context * ctx,
+    sc_memory_context const * ctx,
     sc_addr el,
     sc_access_levels el_access,
     sc_event_type type,
@@ -93,16 +71,5 @@ sc_result sc_event_emit_impl(
     sc_event_type type,
     sc_addr edge,
     sc_addr other_el);
-
-/* Remove reference from event.
- * Remove reference from an event
- */
-sc_bool sc_event_unref(sc_event * evt);
-
-/* Lock sc-event by context
- */
-void sc_event_lock(sc_event * evt);
-
-void sc_event_unlock(sc_event * evt);
 
 #endif

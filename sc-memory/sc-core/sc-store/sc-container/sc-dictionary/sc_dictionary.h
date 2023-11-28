@@ -8,7 +8,7 @@
 #define _sc_dictionary_h_
 
 #include "../../sc_types.h"
-#include "../../sc-base/sc_mutex.h"
+#include "../../sc-base/sc_monitor.h"
 
 #define sc_dc_node_access_lvl_add_mask(node_mask, mask) ((node_mask) |= (mask))
 #define sc_dc_node_access_lvl_remove_mask(node_mask, mask) ((node_mask) &= ~(mask))
@@ -30,7 +30,7 @@ typedef struct _sc_dictionary
   sc_dictionary_node * root;  // sc-dictionary tree root node
   sc_uint8 size;              // default sc-dictionary node children size
   void (*char_to_int)(sc_char, sc_uint8 *, const sc_uint8 *);
-  sc_mutex rw_mutex;
+  sc_monitor monitor;
 } sc_dictionary;
 
 /*! Initializes sc-dictionary
@@ -72,7 +72,7 @@ sc_dictionary_node * sc_dictionary_append(
  * @param string_size A verifiable string size
  * @returns Returns SC_TRUE, if string starts in sc-dictionary node; otherwise return SC_FALSE.
  */
-sc_bool sc_dictionary_has(const sc_dictionary * dictionary, const sc_char * string, sc_uint32 string_size);
+sc_bool sc_dictionary_has(sc_dictionary * dictionary, const sc_char * string, sc_uint32 string_size);
 
 /*! Gets data from a terminal sc-dictionary node where string ends.
  * @param dictionary A sc-dictionary pointer
@@ -103,7 +103,7 @@ sc_bool sc_dictionary_get_by_key_prefix(
  * @param[out] dest A pointer to procedure result pointer
  */
 sc_bool sc_dictionary_visit_down_nodes(
-    sc_dictionary const * dictionary,
+    sc_dictionary * dictionary,
     sc_bool (*callable)(sc_dictionary_node *, void **),
     void ** dest);
 
@@ -113,7 +113,7 @@ sc_bool sc_dictionary_visit_down_nodes(
  * @param[out] dest A pointer to procedure result pointer
  */
 sc_bool sc_dictionary_visit_up_nodes(
-    sc_dictionary const * dictionary,
+    sc_dictionary * dictionary,
     sc_bool (*callable)(sc_dictionary_node *, void **),
     void ** dest);
 

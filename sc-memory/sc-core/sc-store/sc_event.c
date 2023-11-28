@@ -6,26 +6,24 @@
 
 #include "sc_event.h"
 
-#include "sc_event/sc_event_private.h"
-#include "sc_event/sc_event_queue.h"
-
 #include "sc_storage.h"
-#include "../sc_memory_private.h"
+#include "sc-event/sc_event_private.h"
+#include "sc-event/sc_event_queue.h"
+
+#include "../sc_memory_context_manager.h"
 
 #include "sc-base/sc_allocator.h"
-#include "sc-base/sc_atomic.h"
-#include "sc-base/sc_assert_utils.h"
-#include "sc-base/sc_message.h"
+#include "sc-base/sc_mutex.h"
 
-GMutex events_table_mutex;
-#define EVENTS_TABLE_LOCK g_mutex_lock(&events_table_mutex)
-#define EVENTS_TABLE_UNLOCK g_mutex_unlock(&events_table_mutex)
+struct _sc_event_registration_manager
+{
+  sc_hash_table * events_table;
+  sc_monitor events_table_monitor;
+};
 
 #define TABLE_KEY(__Addr) GUINT_TO_POINTER(SC_ADDR_LOCAL_TO_INT(__Addr))
 
 // Pointer to hash table that contains events
-GHashTable * events_table = null_ptr;
-sc_event_queue * event_queue = null_ptr;
 
 guint events_table_hash_func(gconstpointer pointer)
 {
@@ -38,94 +36,77 @@ gboolean events_table_equal_func(gconstpointer a, gconstpointer b)
 }
 
 //! Inserts specified event into events table
-sc_result insert_event_into_table(sc_event * event)
+sc_result _sc_event_registration_manager_add(sc_event_registration_manager * manager, sc_event * event)
 {
-  GSList * element_events_list = null_ptr;
+  sc_hash_table_list * element_events_list = null_ptr;
 
-  EVENTS_TABLE_LOCK;
+  // the first, if table doesn't exist, then return error
+  if (manager == null_ptr)
+    return SC_RESULT_NO;
 
-  // the first, if table doesn't exist, then create it
-  if (events_table == null_ptr)
-    events_table = g_hash_table_new(events_table_hash_func, events_table_equal_func);
+  sc_monitor_acquire_write(&manager->events_table_monitor);
+
+  if (manager->events_table == null_ptr)
+  {
+    sc_monitor_release_write(&manager->events_table_monitor);
+    return SC_RESULT_NO;
+  }
 
   // if there are no events for specified sc-element, then create new events list
-  element_events_list = (GSList *)g_hash_table_lookup(events_table, TABLE_KEY(event->element));
-  element_events_list = g_slist_append(element_events_list, (gpointer)event);
-  g_hash_table_insert(events_table, TABLE_KEY(event->element), (gpointer)element_events_list);
+  element_events_list = (sc_hash_table_list *)sc_hash_table_get(manager->events_table, TABLE_KEY(event->element));
+  element_events_list = sc_hash_table_list_append(element_events_list, (sc_pointer)event);
+  sc_hash_table_insert(manager->events_table, TABLE_KEY(event->element), (sc_pointer)element_events_list);
 
-  EVENTS_TABLE_UNLOCK;
+  sc_monitor_release_write(&manager->events_table_monitor);
 
   return SC_RESULT_OK;
 }
 
 //! Remove specified sc-event from events table
-sc_result remove_event_from_table(sc_event * event)
+sc_result _sc_event_registration_manager_remove(sc_event_registration_manager * manager, sc_event * event)
 {
-  GSList * element_events_list = null_ptr;
-  sc_assert(events_table != null_ptr);
+  sc_hash_table_list * element_events_list = null_ptr;
 
-  EVENTS_TABLE_LOCK;
+  // the first, if table doesn't exist, then return error
+  if (manager == null_ptr)
+    return SC_RESULT_NO;
 
-  element_events_list = (GSList *)g_hash_table_lookup(events_table, TABLE_KEY(event->element));
+  sc_monitor_acquire_write(&manager->events_table_monitor);
+  element_events_list = (sc_hash_table_list *)sc_hash_table_get(manager->events_table, TABLE_KEY(event->element));
   if (element_events_list == null_ptr)
-  {
-    EVENTS_TABLE_UNLOCK;
-    return SC_RESULT_ERROR_INVALID_PARAMS;
-  }
+    goto error;
+
+  if (manager->events_table == null_ptr)
+    goto error;
 
   // remove event from list of events for specified sc-element
-  element_events_list = g_slist_remove(element_events_list, (gconstpointer)event);
+  element_events_list = sc_hash_table_list_remove(element_events_list, (sc_const_pointer)event);
   if (element_events_list == null_ptr)
-  {
-    g_hash_table_remove(events_table, TABLE_KEY(event->element));
-  }
+    sc_hash_table_remove(manager->events_table, TABLE_KEY(event->element));
   else
-  {
-    g_hash_table_insert(events_table, TABLE_KEY(event->element), (gpointer)element_events_list);
-  }
+    sc_hash_table_insert(manager->events_table, TABLE_KEY(event->element), (sc_pointer)element_events_list);
 
-  // if there are no more events in table, then delete it
-  if (g_hash_table_size(events_table) == 0)
-  {
-    g_hash_table_destroy(events_table);
-    events_table = null_ptr;
-  }
-
-  EVENTS_TABLE_UNLOCK;
+  sc_monitor_release_write(&manager->events_table_monitor);
   return SC_RESULT_OK;
+error:
+  sc_monitor_release_write(&manager->events_table_monitor);
+  return SC_RESULT_ERROR_INVALID_PARAMS;
 }
 
-/// -----------------------------------------
-sc_bool _sc_event_try_emit(sc_event * evt)
+void sc_event_registration_manager_initialize(sc_event_registration_manager ** manager)
 {
-  sc_bool res = SC_TRUE;
-
-  sc_event_lock(evt);
-
-  if (evt->ref_count & SC_EVENT_REQUEST_DESTROY)
-  {
-    res = SC_FALSE;
-  }
-  else
-  {
-    sc_assert(evt->ref_count < SC_EVENT_REF_COUNT_MASK);
-    evt->ref_count++;
-  }
-
-  sc_event_unlock(evt);
-  return res;
+  (*manager) = sc_mem_new(sc_event_registration_manager, 1);
+  (*manager)->events_table = sc_hash_table_init(events_table_hash_func, events_table_equal_func, null_ptr, null_ptr);
+  sc_monitor_init(&(*manager)->events_table_monitor);
 }
 
-sc_bool sc_event_unref(sc_event * evt)
+void sc_event_registration_manager_shutdown(sc_event_registration_manager * manager)
 {
-  sc_event_lock(evt);
-  --evt->ref_count;
-  sc_event_unlock(evt);
-
-  return SC_FALSE;
+  sc_monitor_destroy(&manager->events_table_monitor);
+  sc_hash_table_destroy(manager->events_table);
+  sc_mem_free(manager);
 }
 
-// TODO: remove in 0.4.0
 sc_event * sc_event_new(
     sc_memory_context const * ctx,
     sc_addr el,
@@ -134,18 +115,10 @@ sc_event * sc_event_new(
     fEventCallback callback,
     fDeleteCallback delete_callback)
 {
-  sc_assert(callback != null_ptr);
-
   if (SC_ADDR_IS_EMPTY(el))
     return null_ptr;
 
-  sc_access_levels levels;
   sc_event * event = null_ptr;
-  if (sc_storage_get_access_levels(ctx, el, &levels) != SC_RESULT_OK ||
-      !sc_access_lvl_check_read(ctx->access_levels, levels))
-    return null_ptr;
-
-  sc_storage_element_ref(el);
 
   event = sc_mem_new(sc_event, 1);
   event->element = el;
@@ -153,16 +126,13 @@ sc_event * sc_event_new(
   event->callback = callback;
   event->delete_callback = delete_callback;
   event->data = data;
-  event->thread_lock = null_ptr;
   event->ref_count = 1;
-  event->access_levels = ctx->access_levels;
+  event->access_levels = 0;
+  sc_monitor_init(&event->monitor);
 
   // register created event
-  if (insert_event_into_table(event) != SC_RESULT_OK)
-  {
-    sc_mem_free(event);
-    return null_ptr;
-  }
+  sc_event_registration_manager * manager = sc_storage_get_event_registration_manager();
+  _sc_event_registration_manager_add(manager, event);
 
   return event;
 }
@@ -175,18 +145,10 @@ sc_event * sc_event_new_ex(
     fEventCallbackEx callback,
     fDeleteCallback delete_callback)
 {
-  sc_assert(callback != null_ptr);
-
   if (SC_ADDR_IS_EMPTY(el))
     return null_ptr;
 
-  sc_access_levels levels;
   sc_event * event = null_ptr;
-  if (sc_storage_get_access_levels(ctx, el, &levels) != SC_RESULT_OK ||
-      !sc_access_lvl_check_read(ctx->access_levels, levels))
-    return null_ptr;
-
-  sc_storage_element_ref(el);
 
   event = sc_mem_new(sc_event, 1);
   event->element = el;
@@ -194,126 +156,112 @@ sc_event * sc_event_new_ex(
   event->callback_ex = callback;
   event->delete_callback = delete_callback;
   event->data = data;
-  event->thread_lock = null_ptr;
   event->ref_count = 1;
-  event->access_levels = ctx->access_levels;
+  event->access_levels = 0;
+  sc_monitor_init(&event->monitor);
 
   // register created event
-  if (insert_event_into_table(event) != SC_RESULT_OK)
-  {
-    sc_mem_free(event);
-    return null_ptr;
-  }
+  sc_event_registration_manager * manager = sc_storage_get_event_registration_manager();
+  _sc_event_registration_manager_add(manager, event);
 
   return event;
 }
 
-sc_result sc_event_destroy(sc_event * evt)
+sc_result sc_event_destroy(sc_event * event)
 {
-  sc_event_lock(evt);
-  if (evt->ref_count & SC_EVENT_REQUEST_DESTROY)
-  {
-    sc_event_unlock(evt);
-    goto unref;
-  }
+  sc_event_registration_manager * registration_manager = sc_storage_get_event_registration_manager();
+  sc_event_emission_manager * emission_manager = sc_storage_get_event_emission_manager();
 
-  if (remove_event_from_table(evt) != SC_RESULT_OK)
+  sc_monitor_acquire_write(&event->monitor);
+  if (_sc_event_registration_manager_remove(registration_manager, event) != SC_RESULT_OK)
   {
-    sc_event_unlock(evt);
+    sc_monitor_release_write(&event->monitor);
     return SC_RESULT_ERROR;
   }
 
-  evt->ref_count |= SC_EVENT_REQUEST_DESTROY;
-  evt->callback = null_ptr;
-  evt->callback_ex = null_ptr;
-  evt->delete_callback = null_ptr;
-  sc_event_unlock(evt);
+  if (event->delete_callback != null_ptr)
+    event->delete_callback(event);
 
-unref:
-{
-  sc_event_unref(evt);
-}
+  event->ref_count = SC_EVENT_REQUEST_DESTROY;
+  event->element = SC_ADDR_EMPTY;
+  event->type = 0;
+  event->callback_ex = null_ptr;
+  event->delete_callback = null_ptr;
+  event->data = null_ptr;
+  event->access_levels = 0;
 
-  // wait while will be available for destroy
-  while (SC_TRUE)
+  sc_storage * storage = sc_storage_get();
+  if (storage != null_ptr)
   {
-    sc_event_lock(evt);
-    sc_uint32 const refs = evt->ref_count;
-    if (refs == SC_EVENT_REQUEST_DESTROY)  // no refs
-    {
-      sc_storage_element_unref(evt->element);
-      if (evt->delete_callback != null_ptr)
-        evt->delete_callback(evt);
-
-      sc_event_unlock(evt);
-      sc_mem_free(evt);
-      break;
-    }
-    sc_event_unlock(evt);
-
-    g_usleep(10000);
+    sc_monitor_acquire_write(&emission_manager->pool_monitor);
+    sc_queue_push(emission_manager->deletable_events, event);
+    sc_monitor_release_write(&emission_manager->pool_monitor);
   }
+  sc_monitor_release_write(&event->monitor);
 
   return SC_RESULT_OK;
 }
 
 sc_result sc_event_notify_element_deleted(sc_addr element)
 {
-  EVENTS_TABLE_LOCK;
+  sc_hash_table_list * element_events_list = null_ptr;
+  sc_event * event = null_ptr;
 
-  GSList * element_events_list = null_ptr;
-  sc_event * evt = null_ptr;
+  sc_event_registration_manager * registration_manager = sc_storage_get_event_registration_manager();
+  sc_event_emission_manager * emission_manager = sc_storage_get_event_emission_manager();
 
   // do nothing, if there are no registered events
-  if (events_table == null_ptr)
+  if (registration_manager == null_ptr || registration_manager->events_table == null_ptr)
     goto result;
 
   // sc_set_lookup for all registered to specified sc-element events
-  element_events_list = (GSList *)g_hash_table_lookup(events_table, TABLE_KEY(element));
-  if (element_events_list)
+  if (registration_manager != null_ptr)
   {
-    g_hash_table_remove(events_table, TABLE_KEY(element));
+    sc_monitor_acquire_read(&registration_manager->events_table_monitor);
+    element_events_list =
+        (sc_hash_table_list *)sc_hash_table_get(registration_manager->events_table, TABLE_KEY(element));
+    sc_monitor_release_read(&registration_manager->events_table_monitor);
+  }
+
+  if (element_events_list != null_ptr)
+  {
+    sc_monitor_acquire_write(&registration_manager->events_table_monitor);
+    sc_hash_table_remove(registration_manager->events_table, TABLE_KEY(element));
+    sc_monitor_release_write(&registration_manager->events_table_monitor);
 
     while (element_events_list != null_ptr)
     {
-      evt = (sc_event *)element_events_list->data;
+      event = (sc_event *)element_events_list->data;
 
       // mark event for deletion
-      sc_event_lock(evt);
-      evt->ref_count |= SC_EVENT_REQUEST_DESTROY;
-      sc_event_unlock(evt);
+      sc_monitor_acquire_write(&event->monitor);
 
-      element_events_list = g_slist_delete_link(element_events_list, element_events_list);
+      sc_monitor_acquire_write(&emission_manager->pool_monitor);
+      sc_queue_push(emission_manager->deletable_events, event);
+      sc_monitor_release_write(&emission_manager->pool_monitor);
+
+      sc_monitor_release_write(&event->monitor);
+
+      element_events_list = sc_hash_table_list_remove_sublist(element_events_list, element_events_list);
     }
-    g_slist_free(element_events_list);
+    sc_hash_table_list_destroy(element_events_list);
   }
 
 result:
-{
-  EVENTS_TABLE_UNLOCK;
-}
-
   return SC_RESULT_OK;
 }
 
 sc_result sc_event_emit(
-    sc_memory_context * ctx,
+    sc_memory_context const * ctx,
     sc_addr el,
     sc_access_levels el_access,
     sc_event_type type,
     sc_addr edge,
     sc_addr other_el)
 {
-  if (ctx->flags & SC_CONTEXT_FLAG_PENDING_EVENTS)
+  if (_sc_memory_context_is_pending(ctx))
   {
-    sc_event_emit_params * params = sc_mem_new(sc_event_emit_params, 1);
-    params->el = el;
-    params->el_access = el_access;
-    params->type = type;
-    params->edge = edge;
-    params->other_el = other_el;
-
-    sc_memory_context_pend_event(ctx, params);
+    _sc_memory_context_pend_event(ctx, type, el, edge, other_el);
     return SC_RESULT_OK;
   }
 
@@ -328,111 +276,50 @@ sc_result sc_event_emit_impl(
     sc_addr edge,
     sc_addr other_el)
 {
-  GSList * element_events_list = null_ptr;
+  sc_hash_table_list * element_events_list = null_ptr;
   sc_event * event = null_ptr;
 
-  sc_assert(SC_ADDR_IS_NOT_EMPTY(el));
+  if (SC_ADDR_IS_EMPTY(el))
+    return SC_RESULT_ERROR_ADDR_IS_NOT_VALID;
 
-  EVENTS_TABLE_LOCK;
+  sc_event_registration_manager * manager = sc_storage_get_event_registration_manager();
+  sc_event_emission_manager * events_queue = sc_storage_get_event_emission_manager();
 
   // if table is empty, then do nothing
-  if (events_table == null_ptr)
+  if (manager == null_ptr || manager->events_table == null_ptr)
     goto result;
 
   // sc_set_lookup for all registered to specified sc-element events
-  element_events_list = (GSList *)g_hash_table_lookup(events_table, TABLE_KEY(el));
+  sc_monitor_acquire_read(&manager->events_table_monitor);
+  if (manager != null_ptr)
+    element_events_list = (sc_hash_table_list *)sc_hash_table_get(manager->events_table, TABLE_KEY(el));
+  sc_monitor_release_read(&manager->events_table_monitor);
 
   while (element_events_list != null_ptr)
   {
     event = (sc_event *)element_events_list->data;
 
-    if (event->type == type && sc_access_lvl_check_read(event->access_levels, el_access) &&
-        _sc_event_try_emit(event) == SC_TRUE)
-    {
-      sc_assert(event->callback != null_ptr || event->callback_ex != null_ptr);
-      sc_event_queue_append(event_queue, event, edge, other_el);
-    }
+    if (event->type == type)
+      _sc_event_emission_manager_add(events_queue, event, edge, other_el);
 
     element_events_list = element_events_list->next;
   }
 
 result:
-{
-  EVENTS_TABLE_UNLOCK;
-}
-
   return SC_RESULT_OK;
 }
 
-sc_event_type sc_event_get_type(const sc_event * event)
+sc_bool sc_event_is_deletable(sc_event const * event)
 {
-  sc_assert(event != null_ptr);
-  return event->type;
+  return event->ref_count == SC_EVENT_REQUEST_DESTROY;
 }
 
-sc_pointer sc_event_get_data(const sc_event * event)
+sc_pointer sc_event_get_data(sc_event const * event)
 {
-  sc_assert(event != null_ptr);
   return event->data;
 }
 
-sc_addr sc_event_get_element(const sc_event * event)
+sc_addr sc_event_get_element(sc_event const * event)
 {
-  sc_assert(event != null_ptr);
   return event->element;
-}
-
-void sc_event_lock(sc_event * evt)
-{
-  sc_pointer thread = sc_thread();
-  while (SC_TRUE)
-  {
-    sc_memory_context * locked_thread = sc_atomic_pointer_get((void **)&evt->thread_lock);
-    if (locked_thread == thread)
-      return;
-
-    if ((locked_thread != null_ptr) ||
-        sc_atomic_pointer_compare_and_exchange((void **)&evt->thread_lock, (void *)locked_thread, (void *)thread) ==
-            SC_FALSE)
-    {
-      g_usleep(rand() % 10);
-    }
-    else
-    {
-      break;
-    }
-  }
-}
-
-void sc_event_unlock(sc_event * evt)
-{
-  sc_pointer thread = sc_thread();
-  sc_memory_context * locked_thread = sc_atomic_pointer_get((void **)&evt->thread_lock);
-  if (locked_thread != thread)
-    sc_critical("Invalid state of event lock");
-
-  sc_atomic_pointer_set((void **)&evt->thread_lock, null_ptr);
-}
-
-// --------
-sc_bool sc_events_initialize_ext(sc_uint32 const max_events_and_agents_threads)
-{
-  event_queue = sc_event_queue_new_ext(max_events_and_agents_threads);
-  return SC_TRUE;
-}
-
-sc_bool sc_events_initialize()
-{
-  return sc_events_initialize_ext(g_get_num_processors());
-}
-
-void sc_events_shutdown()
-{
-  sc_event_queue_destroy_wait(event_queue);
-  event_queue = null_ptr;
-}
-
-void sc_events_stop_processing()
-{
-  sc_event_queue_stop_processing(event_queue);
 }

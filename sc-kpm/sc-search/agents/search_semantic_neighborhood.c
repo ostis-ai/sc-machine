@@ -315,8 +315,10 @@ sc_result agent_search_full_semantic_neighborhood(const sc_event * event, sc_add
 
       connect_answer_to_question(question, answer);
       finish_question(question);
+      sc_iterator3_free(sysElementIt3);
       return SC_RESULT_OK;
     }
+    sc_iterator3_free(sysElementIt3);
 
     // iterate input arcs
     it2 = sc_iterator3_a_a_f_new(s_default_ctx, 0, 0, sc_iterator3_value(it1, 2));

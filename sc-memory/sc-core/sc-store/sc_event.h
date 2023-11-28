@@ -9,6 +9,8 @@
 
 #include "sc_types.h"
 
+typedef struct _sc_event_registration_manager sc_event_registration_manager;
+
 /*! Event callback function type.
  * It takes 3 parameters:
  * - pointer to emitted event description
@@ -16,13 +18,17 @@
  * - sc-addr of another end of added/remove edge
  * So it can be empty.
  */
-typedef sc_result (*fEventCallbackEx)(const sc_event * event, sc_addr arg, sc_addr other_el);
+typedef sc_result (*fEventCallbackEx)(sc_event const * event, sc_addr arg, sc_addr other_el);
 
 /// Backward compatibility
-typedef sc_result (*fEventCallback)(const sc_event * event, sc_addr arg);
+typedef sc_result (*fEventCallback)(sc_event const * event, sc_addr arg);
 
 //! Delete listened element callback function type
-typedef sc_result (*fDeleteCallback)(const sc_event * event);
+typedef sc_result (*fDeleteCallback)(sc_event const * event);
+
+void sc_event_registration_manager_initialize(sc_event_registration_manager ** manager);
+
+void sc_event_registration_manager_shutdown(sc_event_registration_manager * manager);
 
 /*! Subscribe for events from specified sc-element
  * @param el sc-addr of subscribed sc-element events
@@ -33,7 +39,6 @@ typedef sc_result (*fDeleteCallback)(const sc_event * event);
  * @return Returns pointer to created sc-event
  * @remarks Callback functions can be called from any thread, so they need to be a thread safe
  */
-SC_DEPRECATED("0.3.0", "Use sc_event_new_ex instead of this function. This function will be removed in next release.")
 _SC_EXTERN sc_event * sc_event_new(
     sc_memory_context const * ctx,
     sc_addr el,
@@ -52,18 +57,16 @@ _SC_EXTERN sc_event * sc_event_new_ex(
 
 /*! Destroys specified sc-event
  * @param event Pointer to sc-event, that need to be destroyed
- * @return If event destroyed correctly, then return SC_OK; otherwise return SC_ERROR code.
+ * @return If event destroyed correctly, then return SC_RESULT_OK; otherwise return SC_RESULT_ERROR code.
  */
 _SC_EXTERN sc_result sc_event_destroy(sc_event * event);
 
-/*! Returns type of specified sc-event
- */
-_SC_EXTERN sc_event_type sc_event_get_type(const sc_event * event);
+_SC_EXTERN sc_bool sc_event_is_deletable(sc_event const * event);
 
 //! Returns data of specified sc-event
-_SC_EXTERN sc_pointer sc_event_get_data(const sc_event * event);
+_SC_EXTERN sc_pointer sc_event_get_data(sc_event const * event);
 
 //! Returns sc-addr of sc-element where event subscribed
-_SC_EXTERN sc_addr sc_event_get_element(const sc_event * event);
+_SC_EXTERN sc_addr sc_event_get_element(sc_event const * event);
 
 #endif  // SC_EVENT_H

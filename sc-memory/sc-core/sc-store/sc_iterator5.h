@@ -29,14 +29,13 @@ struct _sc_iterator5
   sc_addr results[5];             // results array (same size as params)
   sc_iterator3 * it_main;         // iterator of main arc
   sc_iterator3 * it_attr;         // iterator of attribute arc
-  sc_uint32 time_stamp;           // iterator time stamp
-  const sc_memory_context * ctx;  // pointer to used memory context
+  sc_memory_context const * ctx;  // pointer to used memory context
 };
 
 typedef struct _sc_iterator5 sc_iterator5;
 
 _SC_EXTERN sc_iterator5 * sc_iterator5_new(
-    const sc_memory_context * ctx,
+    sc_memory_context const * ctx,
     sc_iterator5_type type,
     sc_iterator_param p1,
     sc_iterator_param p2,
@@ -55,7 +54,7 @@ _SC_EXTERN sc_iterator5 * sc_iterator5_new(
  * sc-iterator-3, then return 0
  */
 _SC_EXTERN sc_iterator5 * sc_iterator5_a_a_f_a_f_new(
-    const sc_memory_context * ctx,
+    sc_memory_context const * ctx,
     sc_type p1,
     sc_type p2,
     sc_addr p3,
@@ -73,7 +72,7 @@ _SC_EXTERN sc_iterator5 * sc_iterator5_a_a_f_a_f_new(
  * sc-iterator-3, then return 0
  */
 _SC_EXTERN sc_iterator5 * sc_iterator5_f_a_a_a_f_new(
-    const sc_memory_context * ctx,
+    sc_memory_context const * ctx,
     sc_addr p1,
     sc_type p2,
     sc_type p3,
@@ -91,7 +90,7 @@ _SC_EXTERN sc_iterator5 * sc_iterator5_f_a_a_a_f_new(
  * sc-iterator-3, then return 0
  */
 _SC_EXTERN sc_iterator5 * sc_iterator5_f_a_f_a_f_new(
-    const sc_memory_context * ctx,
+    sc_memory_context const * ctx,
     sc_addr p1,
     sc_type p2,
     sc_addr p3,
@@ -109,7 +108,7 @@ _SC_EXTERN sc_iterator5 * sc_iterator5_f_a_f_a_f_new(
  * sc-iterator-3, then return 0
  */
 _SC_EXTERN sc_iterator5 * sc_iterator5_f_a_f_a_a_new(
-    const sc_memory_context * ctx,
+    sc_memory_context const * ctx,
     sc_addr p1,
     sc_type p2,
     sc_addr p3,
@@ -127,7 +126,7 @@ _SC_EXTERN sc_iterator5 * sc_iterator5_f_a_f_a_a_new(
  * sc-iterator-3, then return 0
  */
 _SC_EXTERN sc_iterator5 * sc_iterator5_f_a_a_a_a_new(
-    const sc_memory_context * ctx,
+    sc_memory_context const * ctx,
     sc_addr p1,
     sc_type p2,
     sc_type p3,
@@ -145,7 +144,7 @@ _SC_EXTERN sc_iterator5 * sc_iterator5_f_a_a_a_a_new(
  * sc-iterator-3, then return 0
  */
 _SC_EXTERN sc_iterator5 * sc_iterator5_a_a_f_a_a_new(
-    const sc_memory_context * ctx,
+    sc_memory_context const * ctx,
     sc_type p1,
     sc_type p2,
     sc_addr p3,

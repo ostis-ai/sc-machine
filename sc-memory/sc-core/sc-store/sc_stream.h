@@ -58,7 +58,7 @@ _SC_EXTERN sc_result sc_stream_free(sc_stream * stream);
  * @return If data has been read without any errors, then return SC_OK; otherwise return SC_ERROR
  */
 _SC_EXTERN sc_result
-sc_stream_read_data(const sc_stream * stream, sc_char * data, sc_uint32 data_len, sc_uint32 * read_bytes);
+sc_stream_read_data(sc_stream const * stream, sc_char * data, sc_uint32 data_len, sc_uint32 * read_bytes);
 
 /*! Write data into stream
  * @param stream Stream pointer to write data
@@ -68,7 +68,7 @@ sc_stream_read_data(const sc_stream * stream, sc_char * data, sc_uint32 data_len
  * @return If data has been written without any errors, then return SC_OK; otherwise return SC_ERROR
  */
 _SC_EXTERN sc_result
-sc_stream_write_data(const sc_stream * stream, sc_char * data, sc_uint32 data_len, sc_uint32 * written_bytes);
+sc_stream_write_data(sc_stream const * stream, sc_char * data, sc_uint32 data_len, sc_uint32 * written_bytes);
 
 /*! Sets the position indicator associated with the stream to a new position
  * @param stream Stream pointer to change position
@@ -76,34 +76,34 @@ sc_stream_write_data(const sc_stream * stream, sc_char * data, sc_uint32 data_le
  * @param offset Offset in bytes
  * @return If position changed without any errors, then return SC_OK; otherwise return SC_ERROR
  */
-_SC_EXTERN sc_result sc_stream_seek(const sc_stream * stream, sc_stream_seek_origin seek_origin, sc_uint32 offset);
+_SC_EXTERN sc_result sc_stream_seek(sc_stream const * stream, sc_stream_seek_origin seek_origin, sc_uint32 offset);
 
 /*! Check if stream points into the end position
  * @param stream Stream pointer to check
  * @return If stream points into the end position, then return SC_TRUE; otherwise return SC_FALSE
  */
-_SC_EXTERN sc_bool sc_stream_eof(const sc_stream * stream);
+_SC_EXTERN sc_bool sc_stream_eof(sc_stream const * stream);
 
 /*! Returns length of stream in bytes.
  * @param stream Stream pointer to get size
  * @param length Pointer to result container
  * @return If correct length returned, then return SC_OK; otherwise return SC_ERROR
  */
-_SC_EXTERN sc_result sc_stream_get_length(const sc_stream * stream, sc_uint32 * length);
+_SC_EXTERN sc_result sc_stream_get_length(sc_stream const * stream, sc_uint32 * length);
 
 /*! Returns current position in stream
  * @param stream Stream pointer to get position
  * @param position Pointer to result container
  * @return If correct position returned, then return SC_OK; otherwise return SC_ERROR
  */
-_SC_EXTERN sc_result sc_stream_get_position(const sc_stream * stream, sc_uint32 * position);
+_SC_EXTERN sc_result sc_stream_get_position(sc_stream const * stream, sc_uint32 * position);
 
 /*! Check if specified data stream supports specified \p flag
  * @param stream Pointer to data stream for checking
  * @param flag Data stream flag to check
  * @return If specified \p flag is supported by \p stream, then return SC_TRUE; otherwise return SC_FALSE
  */
-_SC_EXTERN sc_bool sc_stream_check_flag(const sc_stream * stream, sc_uint8 flag);
+_SC_EXTERN sc_bool sc_stream_check_flag(sc_stream const * stream, sc_uint8 flag);
 
 /*! Check and get data from stream
  * @param stream Stream pointer to read data
@@ -111,6 +111,6 @@ _SC_EXTERN sc_bool sc_stream_check_flag(const sc_stream * stream, sc_uint8 flag)
  * @param size Size of data buffer
  * @return If data has been read without any errors, then return SC_OK; otherwise return SC_ERROR
  */
-_SC_EXTERN sc_bool sc_stream_get_data(const sc_stream * stream, sc_char ** data, sc_uint32 * size);
+_SC_EXTERN sc_bool sc_stream_get_data(sc_stream const * stream, sc_char ** data, sc_uint32 * size);
 
 #endif

@@ -38,41 +38,12 @@ struct _sc_arc_info
  *
  * All arcs have next_arc and prev_arc addr's. Each element store addr of begin and end arcs.
  * Arc values: next_out_arc and next_in_arc store next arcs in output and input arcs list.
- * So if you need to iterate all output arcs for specified element, then you need to use such code:
- * sc_element *arc = sc_storage_get_element(el->first_output_arc);
- * while (!addr_empty(arc->incident->next_out_arc))
- * {
- *     <you code>
- *     arc = sc_storage_get_element(arc->incident->next_out_arc);
- * }
  */
-
-struct _sc_element_locks
-{
-  sc_uint8 out_inp : 1;
-  sc_uint8 del : 1;
-  sc_uint8 change : 1;
-  sc_uint8 read : 1;
-};
-
-#define SC_ELID_REFS_MASK 0xffff
-#define SC_IT_REFS_MASK (0xffff << 16)
 
 struct _sc_element_flags
 {
   sc_type type;
   sc_access_levels access_levels;
-};
-
-struct _sc_element_meta
-{
-  union
-  {
-    sc_element_locks locks;  // bits access
-    sc_uint8 locks_data;     // one byte
-  };
-
-  sc_uint32 ref_count;
 };
 
 struct _sc_element
@@ -87,11 +58,5 @@ struct _sc_element
   sc_uint32 input_arcs_count;
   sc_uint32 output_arcs_count;
 };
-
-/// All functions must be called for locked sc-elements
-void sc_element_set_type(sc_element * element, sc_type type);
-
-sc_bool sc_element_is_request_deletion(sc_element * element);
-sc_bool sc_element_is_valid(sc_element * element);
 
 #endif

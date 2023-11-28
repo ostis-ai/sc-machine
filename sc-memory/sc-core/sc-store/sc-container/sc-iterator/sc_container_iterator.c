@@ -8,6 +8,13 @@
 
 #include "../../sc-base/sc_allocator.h"
 
+struct _sc_iterator
+{
+  sc_struct_node * begin;    // a start iterating element
+  sc_struct_node * end;      // a finite iterating element
+  sc_struct_node * current;  // a current iterating element
+};
+
 sc_iterator * sc_iterator_init(sc_struct_node * begin, sc_struct_node * end)
 {
   sc_iterator * it = sc_mem_new(sc_iterator, 1);

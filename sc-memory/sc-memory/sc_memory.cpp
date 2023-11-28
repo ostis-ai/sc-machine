@@ -16,32 +16,25 @@
 #include <cstdlib>
 #include <ctime>
 #include <iostream>
+#include <utility>
 
 extern "C"
 {
-#include <glib.h>
+#include "glib.h"
 }
 
 namespace
 {
-GMutex gContextMutex;
-struct ContextMutexLock
-{
-  ContextMutexLock()
-  {
-    g_mutex_lock(&gContextMutex);
-  }
-  ~ContextMutexLock()
-  {
-    g_mutex_unlock(&gContextMutex);
-  }
-};
 
-bool gIsLogMuted = false;
+bool isLogMuted = false;
 
-void _logPrintHandler(gchar const * log_domain, GLogLevelFlags log_level, gchar const * message, gpointer user_data)
+void _logPrintHandler(
+    sc_char const * log_domain,
+    GLogLevelFlags log_level,
+    sc_char const * message,
+    sc_pointer user_data)
 {
-  if (gIsLogMuted)
+  if (isLogMuted)
     return;
 
   std::string stype;
@@ -67,8 +60,6 @@ void _logPrintHandler(gchar const * log_domain, GLogLevelFlags log_level, gchar 
   }
 }
 
-unsigned int gContextCounter;
-
 #define CHECK_CONTEXT SC_ASSERT(IsValid(), "Used context is invalid. Make sure that it's initialized")
 
 }  // namespace
@@ -76,12 +67,10 @@ unsigned int gContextCounter;
 // ------------------
 
 sc_memory_context * ScMemory::ms_globalContext = nullptr;
-ScMemory::MemoryContextList ScMemory::ms_contexts;
 
 bool ScMemory::Initialize(sc_memory_params const & params)
 {
   std::srand(unsigned(std::time(nullptr)));
-  gContextCounter = 0;
 
   g_log_set_default_handler(_logPrintHandler, nullptr);
 
@@ -95,7 +84,7 @@ bool ScMemory::Initialize(sc_memory_params const & params)
 
   utils::ScLog::SetUp(params.log_type, params.log_file, params.log_level);
 
-  return (ms_globalContext != nullptr);
+  return ms_globalContext != nullptr;
 }
 
 bool ScMemory::IsInitialized()
@@ -103,93 +92,39 @@ bool ScMemory::IsInitialized()
   return ms_globalContext != nullptr;
 }
 
-void ScMemory::Shutdown(bool saveState /* = true */)
+bool ScMemory::Shutdown(bool saveState /* = true */)
 {
   utils::ScLog::SetUp("Console", "", "Info");
 
-  sc_memory_shutdown_ext();
-
   ScKeynodes::Shutdown();
-  if (!ms_contexts.empty())
-  {
-    std::stringstream description;
-    description << "There are " << ms_contexts.size() << " contexts, wasn't destroyed, before Memory::shutdown:";
-    for (auto const * ctx : ms_contexts)
-      description << "\t\n" << ctx->GetName();
 
-    SC_THROW_EXCEPTION(utils::ExceptionInvalidState, description.str());
-  }
+  sc_bool result = sc_memory_shutdown(saveState);
 
-  sc_memory_shutdown(saveState);
   ms_globalContext = nullptr;
 
   g_log_set_default_handler(g_log_default_handler, nullptr);
+  return result;
 }
 
 void ScMemory::LogMute()
 {
-  gIsLogMuted = true;
+  isLogMuted = true;
   utils::ScLog::GetInstance()->SetMuted(true);
 }
 
 void ScMemory::LogUnmute()
 {
-  gIsLogMuted = false;
+  isLogMuted = false;
   utils::ScLog::GetInstance()->SetMuted(false);
-}
-
-void ScMemory::RegisterContext(ScMemoryContext const * ctx)
-{
-  SC_ASSERT(!HasMemoryContext(ctx), "Specified context is already registered. You can't register it twice");
-
-  ContextMutexLock lock;
-  ms_contexts.push_back(ctx);
-}
-
-void ScMemory::UnregisterContext(ScMemoryContext const * ctx)
-{
-  SC_ASSERT(HasMemoryContext(ctx), "Specified context must be registered to unregister it");
-
-  ContextMutexLock lock;
-  for (auto it = ms_contexts.begin(); it != ms_contexts.end(); ++it)
-  {
-    if (*it == ctx)
-    {
-      ms_contexts.erase(it);
-      return;
-    }
-  }
-}
-
-bool ScMemory::HasMemoryContext(ScMemoryContext const * ctx)
-{
-  ContextMutexLock lock;
-  for (auto const it : ms_contexts)
-  {
-    if (it == ctx)
-      return true;
-  }
-  return false;
 }
 
 // ---------------
 
-ScMemoryContext::ScMemoryContext(sc_uint8 accessLevels, std::string const & name)
+ScMemoryContext::ScMemoryContext(sc_uint8 accessLevels, std::string name)
   : m_context(nullptr)
+  , m_name(std::move(name))
 {
   m_context = sc_memory_context_new(accessLevels);
-  if (name.empty())
-  {
-    std::stringstream ss;
-    ss << "Context_" << gContextCounter;
-    m_name = ss.str();
-  }
-  else
-  {
-    m_name = name;
-  }
-
-  ScMemory::RegisterContext(this);
 }
 
 ScMemoryContext::ScMemoryContext(std::string const & name)
@@ -206,8 +141,6 @@ void ScMemoryContext::Destroy()
 {
   if (m_context)
   {
-    ScMemory::UnregisterContext(this);
-
     sc_memory_context_free(m_context);
     m_context = nullptr;
   }
@@ -231,7 +164,7 @@ bool ScMemoryContext::IsValid() const
 bool ScMemoryContext::IsElement(ScAddr const & addr) const
 {
   CHECK_CONTEXT;
-  return (sc_memory_is_element(m_context, *addr) == SC_TRUE);
+  return sc_memory_is_element(m_context, *addr) == SC_TRUE;
 }
 
 size_t ScMemoryContext::GetElementOutputArcsCount(ScAddr const & addr) const
@@ -271,7 +204,7 @@ ScAddr ScMemoryContext::CreateLink(ScType const & type /* = ScType::LinkConst */
         utils::ExceptionInvalidParams,
         "Specified type must be sc-link type. You should provide any of ScType::Link... value as a type");
 
-  return sc_memory_link_new2(m_context, type.IsConst());
+  return sc_memory_link_new2(m_context, type);
 }
 
 ScAddr ScMemoryContext::CreateEdge(ScType const & type, ScAddr const & addrBeg, ScAddr const & addrEnd)
@@ -289,7 +222,7 @@ ScType ScMemoryContext::GetElementType(ScAddr const & addr) const
 {
   CHECK_CONTEXT;
   sc_type type = 0;
-  return (sc_memory_get_element_type(m_context, *addr, &type) == SC_RESULT_OK) ? ScType(type) : ScType(0);
+  return sc_memory_get_element_type(m_context, *addr, &type) == SC_RESULT_OK ? ScType(type) : ScType(0);
 }
 
 bool ScMemoryContext::SetElementSubtype(ScAddr const & addr, sc_type subtype)
@@ -351,7 +284,7 @@ ScStreamPtr ScMemoryContext::GetLinkContent(ScAddr const & addr)
 
   sc_stream * s = nullptr;
   if (sc_memory_get_link_content(m_context, *addr, &s) != SC_RESULT_OK || s == nullptr)
-    return {};
+    return std::make_shared<ScStream>(nullptr);
 
   return std::make_shared<ScStream>(s);
 }

@@ -2,6 +2,7 @@
 
 #include "sc-memory/sc_memory.hpp"
 #include "sc-memory/utils/sc_base64.hpp"
+#include "sc-memory/utils/sc_progress.hpp"
 
 TEST(ScStringUtils, Base64)
 {
@@ -113,4 +114,11 @@ TEST(StringUtils, ParseNumbers)
     EXPECT_TRUE(utils::StringUtils::ParseNumber("64", resultUint64));
     EXPECT_EQ(resultUint64, 64u);
   }
+}
+
+TEST(StringUtils, Progress)
+{
+  utils::ScProgress progress("Start", 10, 1);
+  for (size_t i = 0; i < 10; ++i)
+    progress.PrintStatus(i);
 }

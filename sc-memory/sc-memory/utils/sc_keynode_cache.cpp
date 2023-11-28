@@ -18,18 +18,16 @@ ScKeynodeCache::ScKeynodeCache(ScMemoryContext & ctx)
 ScAddr const & ScKeynodeCache::GetKeynode(std::string const & idtf)
 {
   auto const it = m_cache.find(idtf);
-  if (it == m_cache.end())
+  if (it == m_cache.cend())
   {
     ScAddr const addr = m_ctx.HelperResolveSystemIdtf(idtf);
     if (addr.IsValid())
     {
       auto const it_insert = m_cache.insert(std::make_pair(idtf, addr));
-      SC_CHECK(it_insert.second, ());
       return it_insert.first->second;
     }
 
-    static ScAddr const empty;
-    return empty;
+    return ScAddr::Empty;
   }
 
   return it->second;

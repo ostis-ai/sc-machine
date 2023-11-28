@@ -26,7 +26,7 @@ sc_bool sc_dictionary_initialize(
   (*dictionary)->size = children_size;
   (*dictionary)->root = _sc_dictionary_node_initialize(children_size);
   (*dictionary)->char_to_int = char_to_int;
-  sc_mutex_init(&(*dictionary)->rw_mutex);
+  sc_monitor_init(&(*dictionary)->monitor);
 
   return SC_TRUE;
 }
@@ -102,7 +102,7 @@ sc_bool sc_dictionary_destroy(sc_dictionary * dictionary, void (*node_clear)(sc_
     node_clear(dictionary->root);
   _sc_dictionary_node_destroy(dictionary->root);
 
-  sc_mutex_destroy(&dictionary->rw_mutex);
+  sc_monitor_destroy(&dictionary->monitor);
 
   sc_mem_free(dictionary);
 
@@ -217,20 +217,22 @@ sc_dictionary_node * sc_dictionary_append(
     sc_uint32 size,
     void * value)
 {
-  sc_mutex_lock(&dictionary->rw_mutex);
+  sc_monitor_acquire_write(&dictionary->monitor);
   sc_dictionary_node * node = sc_dictionary_append_to_node(dictionary, string, size);
-  sc_mutex_unlock(&dictionary->rw_mutex);
+  sc_monitor_release_write(&dictionary->monitor);
 
   node->data = value;
   return node;
 }
 
-const sc_dictionary_node * sc_dictionary_get_last_node_from_node(
-    const sc_dictionary * dictionary,
-    const sc_dictionary_node * node,
-    const sc_char * string,
-    const sc_uint32 string_size)
+sc_dictionary_node const * sc_dictionary_get_last_node_from_node(
+    sc_dictionary * dictionary,
+    sc_dictionary_node const * node,
+    sc_char const * string,
+    sc_uint32 const string_size)
 {
+  sc_monitor_acquire_read(&dictionary->monitor);
+
   // check prefixes matching
   sc_uint32 i = 0;
   while (i < string_size)
@@ -247,16 +249,17 @@ const sc_dictionary_node * sc_dictionary_get_last_node_from_node(
   }
 
   // check suffixes matching
+  sc_dictionary_node const * result_node = null_ptr;
   if (i == string_size &&
       (node->offset == null_ptr || sc_str_cmp(node->offset, string + (string_size - node->offset_size))))
-  {
-    return node;
-  }
+    result_node = node;
 
-  return null_ptr;
+  sc_monitor_release_read(&dictionary->monitor);
+
+  return result_node;
 }
 
-sc_bool sc_dictionary_has(const sc_dictionary * dictionary, const sc_char * string, sc_uint32 string_size)
+sc_bool sc_dictionary_has(sc_dictionary * dictionary, const sc_char * string, sc_uint32 string_size)
 {
   const sc_dictionary_node * last =
       sc_dictionary_get_last_node_from_node(dictionary, dictionary->root, string, string_size);
@@ -277,16 +280,13 @@ void * _sc_dictionary_get_by_key(sc_dictionary * dictionary, const sc_char * str
 
 void * sc_dictionary_get_by_key(sc_dictionary * dictionary, const sc_char * string, const sc_uint32 string_size)
 {
-  sc_mutex_lock(&dictionary->rw_mutex);
-  void * result = _sc_dictionary_get_by_key(dictionary, string, string_size);
-  sc_mutex_unlock(&dictionary->rw_mutex);
-  return result;
+  return _sc_dictionary_get_by_key(dictionary, string, string_size);
 }
 
 sc_bool _sc_dictionary_get_by_key_prefix(
-    const sc_dictionary * dictionary,
-    const sc_char * string,
-    const sc_uint32 string_size,
+    sc_dictionary * dictionary,
+    sc_char const * string,
+    sc_uint32 const string_size,
     sc_bool (*callable)(sc_dictionary_node *, void **),
     void ** dest)
 {
@@ -340,9 +340,9 @@ sc_bool sc_dictionary_get_by_key_prefix(
     sc_bool (*callable)(sc_dictionary_node *, void **),
     void ** dest)
 {
-  sc_mutex_lock(&dictionary->rw_mutex);
+  sc_monitor_acquire_read(&dictionary->monitor);
   sc_bool const status = _sc_dictionary_get_by_key_prefix(dictionary, string, string_size, callable, dest);
-  sc_mutex_unlock(&dictionary->rw_mutex);
+  sc_monitor_release_read(&dictionary->monitor);
   return status;
 }
 
@@ -375,11 +375,14 @@ sc_bool sc_dictionary_visit_down_node_from_node(
 }
 
 sc_bool sc_dictionary_visit_down_nodes(
-    sc_dictionary const * dictionary,
+    sc_dictionary * dictionary,
     sc_bool (*callable)(sc_dictionary_node *, void **),
     void ** dest)
 {
-  return sc_dictionary_visit_down_node_from_node(dictionary, dictionary->root, callable, dest);
+  sc_monitor_acquire_read(&dictionary->monitor);
+  sc_bool status = sc_dictionary_visit_down_node_from_node(dictionary, dictionary->root, callable, dest);
+  sc_monitor_release_read(&dictionary->monitor);
+  return status;
 }
 
 sc_bool sc_dictionary_visit_up_node_from_node(
@@ -411,9 +414,12 @@ sc_bool sc_dictionary_visit_up_node_from_node(
 }
 
 sc_bool sc_dictionary_visit_up_nodes(
-    sc_dictionary const * dictionary,
+    sc_dictionary * dictionary,
     sc_bool (*callable)(sc_dictionary_node *, void **),
     void ** dest)
 {
-  return sc_dictionary_visit_up_node_from_node(dictionary, dictionary->root, callable, dest);
+  sc_monitor_acquire_read(&dictionary->monitor);
+  sc_bool status = sc_dictionary_visit_up_node_from_node(dictionary, dictionary->root, callable, dest);
+  sc_monitor_release_read(&dictionary->monitor);
+  return status;
 }

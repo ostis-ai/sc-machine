@@ -8,9 +8,6 @@
 #  define _sc_types_h_
 
 #  include "sc_defines.h"
-#  include <memory.h>
-#  include <stdlib.h>
-#  include <string.h>
 
 #  ifndef null_ptr
 #    define null_ptr ((void *)0)
@@ -81,10 +78,15 @@ struct _sc_addr
 
 //! Make sc-addr empty
 #  define SC_ADDR_MAKE_EMPTY(addr) \
-    ({ \
-      (addr).seg = 0; \
-      (addr).offset = 0; \
-    })
+    (addr).seg = 0; \
+    (addr).offset = 0
+
+#  define SC_ADDR_EMPTY \
+    (sc_addr) \
+    { \
+      0, 0 \
+    }
+
 //! Check if specified sc-addr is empty
 #  define SC_ADDR_IS_EMPTY(addr) (((addr).seg == 0) && ((addr).offset == 0))
 #  define SC_ADDR_IS_NOT_EMPTY(addr) (!SC_ADDR_IS_EMPTY(addr))
@@ -148,21 +150,11 @@ typedef sc_uint16 sc_type;
         sc_type_node_abstract | sc_type_node_material)
 #  define sc_type_arc_mask (sc_type)(sc_type_arc_access | sc_type_arc_common | sc_type_edge_common)
 
-// just for internal usage
-#  define sc_flag_request_deletion (0x4000)
-#  define sc_flag_link_self_container (0x8000)
-#  define sc_flags_remove(x) ((x) & ~(sc_flag_request_deletion | sc_flag_link_self_container))
-
-// locks
-#  define sc_lock_out_in 0x1
-#  define sc_lock_del 0x2
-#  define sc_lock_change 0x4
-#  define sc_lock_read 0x8
-
 // access levels
 #  define SC_ACCESS_LVL_MAX_VALUE 15
 #  define SC_ACCESS_LVL_MIN_VALUE 0
 
+#  define SC_ACCESS_LVL_ELEMENT_EXIST 0x2
 #  define SC_ACCESS_LVL_RMASK 0xf0
 #  define SC_ACCESS_LVL_WMASK 0x0f
 
@@ -187,22 +179,22 @@ typedef sc_uint16 sc_type;
 enum _sc_result
 {
   // SC_RESULT_ERROR should be 0 anytime
-  SC_RESULT_ERROR = 0,              // unknown error
-                                    // SC_RESULT_OK should be 1 anytime
-  SC_RESULT_OK = 1,                 // no any error
-  SC_RESULT_ERROR_INVALID_PARAMS,   // invalid function parameters error
-  SC_RESULT_ERROR_INVALID_TYPE,     // invalid type error
-  SC_RESULT_ERROR_IO,               // input/output error
-  SC_RESULT_ERROR_INVALID_STATE,    // invalid state of processed object
-  SC_RESULT_ERROR_NOT_FOUND,        // item not found
-  SC_RESULT_ERROR_NO_WRITE_RIGHTS,  // no rights to change or delete object
-  SC_RESULT_ERROR_NO_READ_RIGHTS,   // no rights to read object
-  SC_RESULT_NO,                     // no any result
-  SC_RESULT_UNKNOWN,                // result unknown
+  SC_RESULT_ERROR = 0,             // unknown error
+                                   // SC_RESULT_OK should be 1 anytime
+  SC_RESULT_OK = 1,                // no any error
+  SC_RESULT_ERROR_INVALID_PARAMS,  // invalid function parameters error
+  SC_RESULT_ERROR_INVALID_TYPE,    // invalid type error
+  SC_RESULT_ERROR_IO,              // input/output error
+  SC_RESULT_ERROR_INVALID_STATE,   // invalid state of processed object
+  SC_RESULT_ERROR_NOT_FOUND,       // item not found
+  SC_RESULT_NO,                    // no any result
+  SC_RESULT_UNKNOWN,               // result unknown
+  SC_RESULT_ERROR_ADDR_IS_NOT_VALID,
+  SC_RESULT_ERROR_ELEMENT_IS_NOT_CONNECTOR,
+  SC_RESULT_ERROR_ELEMENT_IS_NOT_LINK,
 
   // add atomic types before
   SC_RESULT_COUNT,  // number of result types
-  SC_RESULT_ERROR_NO_RIGHTS = SC_RESULT_ERROR_NO_WRITE_RIGHTS | SC_RESULT_ERROR_NO_READ_RIGHTS
 };
 
 // events
@@ -223,9 +215,6 @@ struct _sc_stat
   sc_uint64 node_count;  // amount of all sc-nodes stored in memory
   sc_uint64 arc_count;   // amount of all sc-arcs stored in memory
   sc_uint64 link_count;  // amount of all sc-links stored in memory
-
-  sc_uint64 empty_count;  // amount of empty sc-element cells
-  sc_uint64 segments_count;
 };
 
 #endif
@@ -233,15 +222,11 @@ struct _sc_stat
 typedef struct _sc_arc sc_arc;
 typedef struct _sc_arc_info sc_arc_info;
 typedef sc_uint8 sc_access_levels;
-typedef struct _sc_element_locks sc_element_locks;
 typedef struct _sc_element_flags sc_element_flags;
-typedef struct _sc_element_refs sc_element_refs;
 typedef struct _sc_memory_context sc_memory_context;
-typedef struct _sc_element_meta sc_element_meta;
 typedef struct _sc_element sc_element;
 typedef struct _sc_segment sc_segment;
 typedef struct _sc_addr sc_addr;
-typedef struct _sc_elements_stat sc_elements_stat;
 typedef struct _sc_iterator_param sc_iterator_param;
 typedef struct _sc_iterator3 sc_iterator3;
 typedef struct _sc_iterator5 sc_iterator5;
@@ -249,5 +234,3 @@ typedef struct _sc_event sc_event;
 typedef enum _sc_result sc_result;
 typedef enum _sc_event_type sc_event_type;
 typedef struct _sc_stat sc_stat;
-
-#define sc_thread() (sc_pointer) g_thread_self()

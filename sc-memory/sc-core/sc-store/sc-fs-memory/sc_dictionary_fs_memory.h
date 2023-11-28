@@ -7,6 +7,9 @@
 #ifndef _sc_dictionary_fs_memory_h_
 #define _sc_dictionary_fs_memory_h_
 
+#include "sc_fs_memory_status.h"
+#include "../../sc_memory_params.h"
+
 #include "../sc_types.h"
 #include "../sc_defines.h"
 #include "../sc_stream.h"
@@ -14,41 +17,9 @@
 #include "../sc-container/sc-dictionary/sc_dictionary.h"
 #include "../sc-container/sc-list/sc_list.h"
 
-#include "sc_fs_memory_status.h"
-#include "../../sc_memory_params.h"
-
+typedef struct _sc_dictionary_fs_memory sc_dictionary_fs_memory;
+typedef struct _sc_dictionary_fs_memory sc_dictionary_fs_memory;
 typedef sc_fs_memory_status sc_dictionary_fs_memory_status;
-
-typedef struct _sc_dictionary_fs_memory
-{
-  sc_char * path;  // path to all dictionary files
-  sc_bool clear;
-
-  sc_uint16 max_strings_channels;
-  sc_uint32 max_strings_channel_size;
-  sc_uint32 max_searchable_string_size;  // maximal size of strings that can be found by string/substring
-  sc_char const * term_separators;
-  sc_bool search_by_substring;
-
-  void ** strings_channels;
-  sc_uint64 last_string_offset;  // last offset of string in 'string_path`
-  sc_mutex rw_mutex;
-
-  sc_char * terms_string_offsets_path;              // path to dictionary file with terms and its strings offsets
-  sc_dictionary * terms_string_offsets_dictionary;  // dictionary instance with terms and its strings offsets
-
-  sc_char * string_offsets_link_hashes_path;  // path to dictionary file with strings offsets and its link hashes
-  sc_dictionary *
-      string_offsets_link_hashes_dictionary;  // dictionary instance with strings offsets and its link hashes
-  sc_dictionary *
-      link_hashes_string_offsets_dictionary;  // dictionary instance with link hashes and its strings offsets
-} sc_dictionary_fs_memory;
-
-typedef struct _sc_link_hash_content
-{
-  sc_list * link_hashes;
-  sc_uint64 string_offset;
-} sc_link_hash_content;
 
 /*! Initialize sc-dictionary file system memory in specified path.
  * @param memory[out] A pointer to sc-memory instance

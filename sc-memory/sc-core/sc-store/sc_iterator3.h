@@ -45,7 +45,7 @@ struct _sc_iterator3
   sc_iterator3_type type;         // iterator type (search template)
   sc_iterator_param params[3];    // parameters array
   sc_addr results[3];             // results array (same size as params)
-  const sc_memory_context * ctx;  // pointer to used memory context
+  sc_memory_context const * ctx;  // pointer to used memory context
   sc_bool finished;
 };
 
@@ -93,7 +93,7 @@ _SC_EXTERN sc_iterator3 * sc_iterator3_a_f_a_new(
     sc_addr arc_addr,
     sc_type end_type);
 
-// Requried for clean template search algorithm
+// Required for clean template search algorithm
 _SC_EXTERN sc_iterator3 * sc_iterator3_f_f_a_new(
     sc_memory_context const * ctx,
     sc_addr beg_addr,

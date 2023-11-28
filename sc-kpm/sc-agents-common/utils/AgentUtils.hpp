@@ -25,7 +25,8 @@ public:
   static bool applyAction(
       ScMemoryContext * ms_context,
       const ScAddr & actionNode,
-      const sc_uint32 & waitTime = DEFAULT_WAIT_TIME);
+      const sc_uint32 & waitTime = DEFAULT_WAIT_TIME,
+      ScAddr onEventClassAddr = ScAddr::Empty);
 
   SC_DEPRECATED(
       0.7.0,

@@ -50,6 +50,8 @@ TEST_F(ScIterator3Test, f_a_f)
   EXPECT_EQ(iter3->Get(0), m_source);
   EXPECT_EQ(iter3->Get(1), m_edge);
   EXPECT_EQ(iter3->Get(2), m_target);
+
+  EXPECT_FALSE(iter3->Next());
 }
 
 
@@ -61,6 +63,8 @@ TEST_F(ScIterator3Test, f_a_a)
   EXPECT_EQ(iter3->Get(0), m_source);
   EXPECT_EQ(iter3->Get(1), m_edge);
   EXPECT_EQ(iter3->Get(2), m_target);
+
+  EXPECT_FALSE(iter3->Next());
 }
 
 TEST_F(ScIterator3Test, a_a_f)
@@ -71,6 +75,8 @@ TEST_F(ScIterator3Test, a_a_f)
   EXPECT_EQ(iter3->Get(0), m_source);
   EXPECT_EQ(iter3->Get(1), m_edge);
   EXPECT_EQ(iter3->Get(2), m_target);
+
+  EXPECT_FALSE(iter3->Next());
 }
 
 TEST_F(ScIterator3Test, a_f_a)
@@ -81,4 +87,42 @@ TEST_F(ScIterator3Test, a_f_a)
   EXPECT_EQ(iter3->Get(0), m_source);
   EXPECT_EQ(iter3->Get(1), m_edge);
   EXPECT_EQ(iter3->Get(2), m_target);
+
+  EXPECT_FALSE(iter3->Next());
+}
+
+TEST_F(ScIterator3Test, f_f_a)
+{
+  ScIterator3Ptr const iter3 = m_ctx->Iterator3(m_source, m_edge, sc_type_node);
+  EXPECT_TRUE(iter3->Next());
+
+  EXPECT_EQ(iter3->Get(0), m_source);
+  EXPECT_EQ(iter3->Get(1), m_edge);
+  EXPECT_EQ(iter3->Get(2), m_target);
+
+  EXPECT_FALSE(iter3->Next());
+}
+
+TEST_F(ScIterator3Test, a_f_f)
+{
+  ScIterator3Ptr const iter3 = m_ctx->Iterator3(sc_type_node, m_edge, m_target);
+  EXPECT_TRUE(iter3->Next());
+
+  EXPECT_EQ(iter3->Get(0), m_source);
+  EXPECT_EQ(iter3->Get(1), m_edge);
+  EXPECT_EQ(iter3->Get(2), m_target);
+
+  EXPECT_FALSE(iter3->Next());
+}
+
+TEST_F(ScIterator3Test, f_f_f)
+{
+  ScIterator3Ptr const iter3 = m_ctx->Iterator3(m_source, m_edge, m_target);
+  EXPECT_TRUE(iter3->Next());
+
+  EXPECT_EQ(iter3->Get(0), m_source);
+  EXPECT_EQ(iter3->Get(1), m_edge);
+  EXPECT_EQ(iter3->Get(2), m_target);
+
+  EXPECT_FALSE(iter3->Next());
 }

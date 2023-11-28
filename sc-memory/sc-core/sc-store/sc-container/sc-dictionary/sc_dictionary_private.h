@@ -13,8 +13,8 @@
 sc_dictionary_node * _sc_dictionary_node_initialize(sc_uint8 children_size);
 
 sc_dictionary_node * _sc_dictionary_get_next_node(
-    const sc_dictionary * dictionary,
-    const sc_dictionary_node * node,
+    sc_dictionary const * dictionary,
+    sc_dictionary_node const * node,
     sc_char ch);
 
 /*! Appends a string to a sc-dictionary by a common prefix with another string started in sc-dictionary node, if such
@@ -26,7 +26,7 @@ sc_dictionary_node * _sc_dictionary_get_next_node(
  */
 sc_dictionary_node * sc_dictionary_append_to_node(
     sc_dictionary * dictionary,
-    const sc_char * string,
+    sc_char const * string,
     sc_uint32 string_size);
 
 /*! Gets a terminal sc-dictionary node where string ends.
@@ -36,10 +36,10 @@ sc_dictionary_node * sc_dictionary_append_to_node(
  * @param string_size A string size
  * @returns Returns A sc-dictionary node where string ends
  */
-const sc_dictionary_node * sc_dictionary_get_last_node_from_node(
-    const sc_dictionary * dictionary,
-    const sc_dictionary_node * node,
-    const sc_char * string,
+sc_dictionary_node const * sc_dictionary_get_last_node_from_node(
+    sc_dictionary * dictionary,
+    sc_dictionary_node const * node,
+    sc_char const * string,
     sc_uint32 string_size);
 
 /*! Visits all sc-dictionary nodes starting with specified node and calls procedure with it and its data. A method

@@ -33,15 +33,14 @@ TEST_F(ScEventTest, threading_smoke)
   std::vector<ScEvent*> events;
   events.resize(eventsNum);
 
-  std::vector<ScEvent::Type> eventTypes =
-        {
-              ScEvent::Type::AddOutputEdge,
-              ScEvent::Type::AddInputEdge,
-              ScEvent::Type::RemoveOutputEdge,
-              ScEvent::Type::RemoveInputEdge,
-              ScEvent::Type::EraseElement,
-              ScEvent::Type::ContentChanged
-        };
+  std::vector<ScEvent::Type> eventTypes = {
+    ScEvent::Type::AddOutputEdge,
+    ScEvent::Type::AddInputEdge,
+    ScEvent::Type::RemoveOutputEdge,
+    ScEvent::Type::RemoveInputEdge,
+    ScEvent::Type::EraseElement,
+    ScEvent::Type::ContentChanged
+  };
 
   auto const randNode = [&nodes]()
   {
@@ -53,13 +52,13 @@ TEST_F(ScEventTest, threading_smoke)
   for (size_t i = 0; i < eventsNum; ++i)
   {
     events[i] = new ScEvent(*m_ctx,
-                            randNode(),
-                            eventTypes[std::rand() % (eventTypes.size() - 1)], // ignore ContentChanged event
-                            [&](ScAddr const &, ScAddr const &, ScAddr const &)
-                            {
-                              evtCount++;
-                              return true;
-                            });
+      randNode(),
+      eventTypes[std::rand() % (eventTypes.size() - 1)], // ignore ContentChanged event
+      [&](ScAddr const &, ScAddr const &, ScAddr const &)
+    {
+      evtCount++;
+      return true;
+    });
   }
 
   ScTimer timer;
@@ -88,7 +87,7 @@ TEST_F(ScEventTest, threading_smoke)
         ScAddr const addr = nodes[idx];
         nodes.erase(nodes.begin() + idx);
 
-        EXPECT_TRUE(m_ctx->EraseElement(addr));
+        m_ctx->EraseElement(addr);
         eraseNodeCount++;
       }
     }

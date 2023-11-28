@@ -20,7 +20,7 @@ public:
 
   _SC_EXTERN static void Initialize();
 
-  // handler for Ctcl+C and Ctrl + Break
+  // handler for Ctrl+C and Ctrl + Break
   _SC_EXTERN static HandlerDelegate m_onTerminate;
 };
 

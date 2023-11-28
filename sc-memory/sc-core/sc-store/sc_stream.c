@@ -75,9 +75,9 @@ sc_bool sc_stream_eof(const sc_stream * stream)
 
 sc_result sc_stream_get_length(const sc_stream * stream, sc_uint32 * length)
 {
-  sc_uint32 old_pos = 0;
-
   sc_assert(stream != null_ptr);
+
+  sc_uint32 old_pos = 0;
 
   if (stream->tell_func == null_ptr || stream->seek_func == null_ptr)
     return SC_RESULT_ERROR;
@@ -125,6 +125,7 @@ sc_bool sc_stream_check_flag(const sc_stream * stream, sc_uint8 flag)
 
 sc_bool sc_stream_get_data(const sc_stream * stream, sc_char ** data, sc_uint32 * size)
 {
+  sc_assert(stream != null_ptr);
   sc_stream_seek(stream, SC_STREAM_SEEK_SET, 0);
 
   sc_uint32 length = 0;
@@ -139,7 +140,7 @@ sc_bool sc_stream_get_data(const sc_stream * stream, sc_char ** data, sc_uint32 
   }
 
   *data = sc_mem_new(sc_char, length + 1);
-  if (sc_stream_read_data(stream, *data, length, (sc_uint32 *)size) == SC_RESULT_ERROR)
+  if (sc_stream_read_data(stream, *data, length, size) == SC_RESULT_ERROR)
     return SC_FALSE;
 
   if (length != *size)

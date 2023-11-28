@@ -7,10 +7,13 @@
 #ifndef _sc_memory_h_
 #define _sc_memory_h_
 
+#include "sc_memory_params.h"
+
 #include "sc-store/sc_types.h"
 #include "sc-store/sc_stream.h"
-#include "sc_memory_params.h"
 #include "sc-store/sc-container/sc-list/sc_list.h"
+
+typedef struct _sc_memory sc_memory;
 
 // Public functions that used by developer
 
@@ -18,7 +21,7 @@
  * @param params Pointer to initialization parameters
  * @returns Returns pointer to created sc-memory context
  */
-_SC_EXTERN sc_memory_context * sc_memory_initialize(const sc_memory_params * params);
+_SC_EXTERN sc_memory_context * sc_memory_initialize(sc_memory_params const * params);
 
 /*! Initialize sc-memory extensions in specified directory
  * @param enabled_list Null terminated list of extensions names, that should be loaded. If it's a null value, then all
@@ -30,7 +33,7 @@ _SC_EXTERN sc_result sc_memory_init_ext(
     sc_addr const init_memory_generated_structure);
 
 //! Shutdown sc-memory (save repository to file system)
-_SC_EXTERN void sc_memory_shutdown(sc_bool save_state);
+_SC_EXTERN sc_result sc_memory_shutdown(sc_bool save_state);
 
 /*! Shutdown sc-memory extensions
  */
@@ -87,7 +90,7 @@ _SC_EXTERN sc_addr sc_memory_node_new(sc_memory_context const * ctx, sc_type typ
 
 //! Create new sc-link
 _SC_EXTERN sc_addr sc_memory_link_new(sc_memory_context const * ctx);
-_SC_EXTERN sc_addr sc_memory_link_new2(sc_memory_context const * ctx, sc_bool is_const);
+_SC_EXTERN sc_addr sc_memory_link_new2(sc_memory_context const * ctx, sc_type type);
 
 /*! Create new sc-arc.
  * @param type Type of new sc-arc
@@ -154,7 +157,7 @@ _SC_EXTERN sc_result sc_memory_get_arc_info(
  * <li>SC_RESULT_ERROR - unknown error</li>
  * </ul>
  */
-_SC_EXTERN sc_result sc_memory_set_link_content(sc_memory_context * ctx, sc_addr addr, sc_stream const * stream);
+_SC_EXTERN sc_result sc_memory_set_link_content(sc_memory_context const * ctx, sc_addr addr, sc_stream const * stream);
 
 /*! Setup content data for specified sc-link
  * @param addr sc-addr of sc-link to setup content
@@ -168,7 +171,7 @@ _SC_EXTERN sc_result sc_memory_set_link_content(sc_memory_context * ctx, sc_addr
  * </ul>
  */
 _SC_EXTERN sc_result sc_memory_set_link_content_ext(
-    sc_memory_context * ctx,
+    sc_memory_context const * ctx,
     sc_addr addr,
     const sc_stream * stream,
     sc_bool is_searchable_string);
@@ -228,27 +231,6 @@ _SC_EXTERN sc_result sc_memory_find_links_contents_by_content_substring(
     sc_stream const * stream,
     sc_list ** result,
     sc_uint32 max_length_to_search_as_prefix);
-
-/*! Setup new access levele for sc-element. New access levels will be a minimum from context access levels and parameter
- * \b access_levels
- * @param addr sc-add of sc-element to change access levels
- * @param access_levels New access levels
- * @param new_value Pointer to structure that contains new value of access levels. This pointer can be a NULL.
- */
-_SC_EXTERN sc_result sc_memory_set_element_access_levels(
-    sc_memory_context const * ctx,
-    sc_addr addr,
-    sc_access_levels access_levels,
-    sc_access_levels * new_value);
-
-/*! Get access levels of sc-element
- * @param addr sc-addr of sc-element to get access levels
- * @param result Pointer to container for result
- *
- * @return If access levele returned in \b result, then return SC_RESULT_OK; otherwise returns error code
- */
-_SC_EXTERN sc_result
-sc_memory_get_element_access_levels(sc_memory_context const * ctx, sc_addr addr, sc_access_levels * result);
 
 /*! Collect statistic information about current state of sc-memory
  * @param stat Pointer to structure, that will contains statistics info

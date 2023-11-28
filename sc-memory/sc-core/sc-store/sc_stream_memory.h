@@ -19,7 +19,7 @@
  * @return Returns stream pointer if the stream was successfully created, or NULL if an error occurred
  */
 _SC_EXTERN sc_stream * sc_stream_memory_new(
-    const sc_char * buffer,
+    sc_char const * buffer,
     sc_uint buffer_size,
     sc_uint8 flags,
     sc_bool data_owner);

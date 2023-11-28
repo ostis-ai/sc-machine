@@ -38,23 +38,13 @@ public:
   //! Returns true, on memory initialized; otherwise returns false
   _SC_EXTERN static bool Initialize(sc_memory_params const & params);
   _SC_EXTERN static bool IsInitialized();
-  _SC_EXTERN static void Shutdown(bool saveState = true);
+  _SC_EXTERN static bool Shutdown(bool saveState = true);
 
   _SC_EXTERN static void LogMute();
   _SC_EXTERN static void LogUnmute();
 
-protected:
-  static void RegisterContext(ScMemoryContext const * ctx);
-  static void UnregisterContext(ScMemoryContext const * ctx);
-
-private:
-  static bool HasMemoryContext(ScMemoryContext const * ctx);
-
 private:
   static sc_memory_context * ms_globalContext;
-
-  using MemoryContextList = std::list<ScMemoryContext const *>;
-  static MemoryContextList ms_contexts;
 };
 
 //! Class used to work with memory. It provides functions to create/erase elements
@@ -76,7 +66,7 @@ public:
   using Stat = ScMemoryStatistics;
 
 public:
-  _SC_EXTERN explicit ScMemoryContext(sc_uint8 accessLevels, std::string const & name = "");
+  _SC_EXTERN explicit ScMemoryContext(sc_uint8 accessLevels, std::string name = "");
   _SC_EXTERN explicit ScMemoryContext(std::string const & name);
   _SC_EXTERN ~ScMemoryContext();
 
@@ -88,7 +78,7 @@ public:
   {
     return m_context;
   }
-  sc_memory_context const * GetRealContext() const
+  [[nodiscard]] sc_memory_context const * GetRealContext() const
   {
     return m_context;
   }
@@ -102,7 +92,6 @@ public:
   //! End events pending mode
   void EndEventsPending();
 
-  // returns copy, because of Python wrapper
   std::string const & GetName() const
   {
     return m_name;
@@ -444,7 +433,7 @@ public:
       const ScTemplateParams & params = ScTemplateParams()) noexcept(false);
   _SC_EXTERN ScTemplate::Result HelperBuildTemplate(ScTemplate & templ, std::string const & scsText) noexcept(false);
 
-  _SC_EXTERN ScMemoryStatistics CalculateStat() const;
+  _SC_EXTERN [[nodiscard]] ScMemoryStatistics CalculateStat() const;
 
 private:
   sc_memory_context * m_context;

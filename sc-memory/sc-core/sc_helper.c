@@ -11,8 +11,10 @@
 #include "regex.h"
 
 #include "sc-store/sc-base/sc_allocator.h"
-#include "sc-store/sc-base/sc_assert_utils.h"
 #include "sc-store/sc-base/sc_message.h"
+
+#include "sc_memory_private.h"
+#include "sc-store/sc-container/sc-string/sc_string.h"
 
 // sc-helper initialization flag
 sc_bool sc_helper_is_initialized = SC_FALSE;
@@ -65,7 +67,7 @@ sc_result resolve_nrel_system_identifier(sc_memory_context const * ctx)
           {
             sc_iterator5_free(it);
             sc_stream_free(stream);
-            sc_critical("There are more then one sc-elements with system identifier nrel_system_identifier");
+            sc_memory_error("There are more then one sc-elements with system identifier nrel_system_identifier");
 
             return SC_RESULT_ERROR;
           }
@@ -96,7 +98,7 @@ void _init_keynodes_str()
   for (i = 0; i < (sc_uint32)SC_KEYNODE_COUNT; ++i)
   {
     if (keynodes_str[(sc_keynode)i] == null_ptr)
-      sc_critical("Error to create string representation of keynode: %d", i);
+      sc_memory_error("Error to create string representation of keynode: %d", i);
   }
 }
 
@@ -114,7 +116,7 @@ void _destroy_keynodes_str()
 
 sc_result sc_helper_init(sc_memory_context * ctx)
 {
-  sc_message("Initialize sc-helper");
+  sc_memory_info("Initialize sc-helper");
 
   _init_keynodes_str();
 
@@ -122,7 +124,7 @@ sc_result sc_helper_init(sc_memory_context * ctx)
 
   if (resolve_nrel_system_identifier(ctx) != SC_RESULT_OK)
   {
-    sc_message("Can't resolve nrel_system_identifier node. Create the last one");
+    sc_memory_info("Can't resolve nrel_system_identifier node. Create the last one");
 
     sc_addr addr = sc_memory_node_new(ctx, sc_type_const | sc_type_node_norole);
     sc_addr link = sc_memory_link_new(ctx);
@@ -151,7 +153,7 @@ sc_result sc_helper_init(sc_memory_context * ctx)
 
 void sc_helper_shutdown()
 {
-  sc_message("Shutdown sc-helper");
+  sc_memory_info("Shutdown sc-helper");
 
   sc_mem_free(sc_keynodes);
   _destroy_keynodes_str();
@@ -175,9 +177,7 @@ sc_result sc_helper_check_system_identifier(const sc_char * data)
 void sc_system_identifier_fiver_make_empty(sc_system_identifier_fiver * fiver)
 {
   if (fiver == null_ptr)
-  {
     return;
-  }
 
   SC_ADDR_MAKE_EMPTY(fiver->addr1);
   SC_ADDR_MAKE_EMPTY(fiver->addr2);
@@ -188,7 +188,7 @@ void sc_system_identifier_fiver_make_empty(sc_system_identifier_fiver * fiver)
 
 sc_result sc_helper_find_element_by_system_identifier(
     sc_memory_context const * ctx,
-    const sc_char * data,
+    sc_char const * data,
     sc_uint32 len,
     sc_addr * result_addr)
 {
@@ -200,24 +200,17 @@ sc_result sc_helper_find_element_by_system_identifier(
 
 sc_result sc_helper_find_element_by_system_identifier_ext(
     sc_memory_context const * ctx,
-    const sc_char * data,
+    sc_char const * data,
     sc_uint32 len,
     sc_system_identifier_fiver * out_fiver)
 {
-  sc_assert(ctx != null_ptr);
-  sc_assert(data != null_ptr);
-
-  sc_assert(sc_helper_is_initialized == SC_TRUE);
-  sc_assert(sc_keynodes != null_ptr);
-
   sc_bool result = SC_FALSE;
   sc_stream * stream = null_ptr;
   sc_system_identifier_fiver_make_empty(out_fiver);
 
   if (sc_helper_check_system_identifier(data) != SC_RESULT_OK)
-  {
     return SC_RESULT_ERROR;
-  }
+
   // try to find sc-link with that contains system identifier value
   sc_list * addrs;
   stream = sc_stream_memory_new(data, sizeof(sc_char) * len, SC_STREAM_FLAG_READ, SC_FALSE);
@@ -279,19 +272,13 @@ sc_result sc_helper_set_system_identifier(sc_memory_context * ctx, sc_addr addr,
 sc_result sc_helper_set_system_identifier_ext(
     sc_memory_context * ctx,
     sc_addr addr,
-    const sc_char * data,
+    sc_char const * data,
     sc_uint32 len,
     sc_system_identifier_fiver * out_fiver)
 {
-  sc_assert(ctx != null_ptr);
-
-  sc_assert(sc_keynodes != null_ptr);
-
   sc_system_identifier_fiver_make_empty(out_fiver);
   if (sc_helper_check_system_identifier(data) != SC_RESULT_OK)
-  {
     return SC_RESULT_ERROR;
-  }
 
   sc_stream * stream = null_ptr;
   sc_addr idtf_addr, arc_addr;
@@ -337,8 +324,7 @@ sc_result sc_helper_set_system_identifier_ext(
 
 sc_result sc_helper_get_system_identifier_link(sc_memory_context const * ctx, sc_addr el, sc_addr * sys_idtf_addr)
 {
-  sc_assert(ctx != null_ptr);
-  SC_ADDR_MAKE_EMPTY(*sys_idtf_addr);
+  *sys_idtf_addr = SC_ADDR_EMPTY;
 
   sc_iterator5 * it = null_ptr;
   sc_result result = SC_RESULT_ERROR;
@@ -350,12 +336,11 @@ sc_result sc_helper_get_system_identifier_link(sc_memory_context const * ctx, sc
       sc_type_link,
       sc_type_arc_pos_const_perm,
       sc_keynodes[SC_KEYNODE_NREL_SYSTEM_IDENTIFIER]);
-  sc_assert(it != null_ptr);
-
   while (sc_iterator5_next(it) == SC_TRUE)
   {
     *sys_idtf_addr = sc_iterator5_value(it, 2);
     result = SC_RESULT_OK;
+    break;
   }
 
   sc_iterator5_free(it);
@@ -365,9 +350,9 @@ sc_result sc_helper_get_system_identifier_link(sc_memory_context const * ctx, sc
 
 sc_result sc_helper_get_keynode(sc_memory_context const * ctx, sc_keynode keynode, sc_addr * keynode_addr)
 {
-  sc_assert(ctx != null_ptr);
+  *keynode_addr = SC_ADDR_EMPTY;
 
-  if ((sc_helper_is_initialized == SC_FALSE) || (sc_keynodes == null_ptr))
+  if (ctx == null_ptr || sc_helper_is_initialized == SC_FALSE || sc_keynodes == null_ptr)
     return SC_RESULT_ERROR;
 
   *keynode_addr = sc_keynodes[(sc_uint32)keynode];
@@ -375,25 +360,29 @@ sc_result sc_helper_get_keynode(sc_memory_context const * ctx, sc_keynode keynod
   return SC_RESULT_OK;
 }
 
-sc_bool sc_helper_resolve_system_identifier(sc_memory_context const * ctx, const char * system_idtf, sc_addr * result)
+sc_bool sc_helper_resolve_system_identifier(sc_memory_context * ctx, sc_char const * system_idtf, sc_addr * result)
 {
-  sc_assert(ctx != null_ptr);
+  *result = SC_ADDR_EMPTY;
 
-  if (system_idtf == null_ptr)
+  if (ctx == null_ptr || system_idtf == null_ptr)
+    return SC_FALSE;
+
+  sc_uint32 const string_size = sc_str_len(system_idtf);
+  if (sc_helper_find_element_by_system_identifier(ctx, system_idtf, string_size, result) != SC_RESULT_OK)
   {
-    g_warning("Error while trying to convert %s to utf-8", system_idtf);
-    return SC_FALSE;
-  }
+    *result = sc_memory_node_new(ctx, sc_type_node | sc_type_const);
 
-  if (sc_helper_find_element_by_system_identifier(ctx, system_idtf, strlen(system_idtf), result) != SC_RESULT_OK)
-    return SC_FALSE;
+    sc_system_identifier_fiver fiver;
+    sc_helper_set_system_identifier_ext(ctx, *result, system_idtf, string_size, &fiver);
+  }
 
   return SC_TRUE;
 }
 
 sc_bool sc_helper_check_arc(sc_memory_context const * ctx, sc_addr beg_el, sc_addr end_el, sc_type arc_type)
 {
-  sc_assert(ctx != null_ptr);
+  if (ctx == null_ptr)
+    return SC_FALSE;
 
   sc_iterator3 * it = null_ptr;
   sc_bool res = SC_FALSE;

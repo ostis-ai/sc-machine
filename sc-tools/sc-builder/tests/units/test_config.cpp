@@ -57,6 +57,20 @@ TEST(ScBuilder, RunStop)
   EXPECT_EQ(scParams.at("init_memory_generated_structure"), scMemoryParams.init_memory_generated_structure);
 }
 
+TEST(ScBuilder, InvalidConfig)
+{
+  ScOptions options{1, nullptr};
+
+  BuilderParams params;
+
+  ScParams memoryParams{options, {}};
+  ScConfig configFile{"", {}};
+  ScMemoryConfig memoryConfig{configFile, memoryParams};
+
+  Builder builder;
+  EXPECT_THROW(builder.Run(params, memoryConfig.GetParams()), utils::ScException);
+}
+
 TEST(ScBuilder, BuilderConfig)
 {
   ScOptions options{1, nullptr};

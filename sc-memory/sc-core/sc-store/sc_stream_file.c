@@ -15,8 +15,8 @@
 
 #define SC_STREAM_FILE_FD_CHECK(stream) \
   ({ \
-    FILE * fd = (FILE *)stream->handler; \
     sc_assert(stream != null_ptr); \
+    FILE * fd = (FILE *)stream->handler; \
     if (fd == null_ptr) \
     { \
       sc_message("File handler is null"); \
@@ -24,7 +24,7 @@
     } \
   })
 
-sc_result sc_stream_file_read(const sc_stream * stream, sc_char * data, sc_uint32 length, sc_uint32 * bytes_read)
+sc_result sc_stream_file_read(sc_stream const * stream, sc_char * data, sc_uint32 length, sc_uint32 * bytes_read)
 {
   SC_STREAM_FILE_FD_CHECK(stream);
 
@@ -32,7 +32,7 @@ sc_result sc_stream_file_read(const sc_stream * stream, sc_char * data, sc_uint3
   return SC_RESULT_OK;
 }
 
-sc_result sc_stream_file_write(const sc_stream * stream, sc_char * data, sc_uint32 length, sc_uint32 * bytes_written)
+sc_result sc_stream_file_write(sc_stream const * stream, sc_char * data, sc_uint32 length, sc_uint32 * bytes_written)
 {
   SC_STREAM_FILE_FD_CHECK(stream);
 
@@ -44,7 +44,7 @@ sc_result sc_stream_file_write(const sc_stream * stream, sc_char * data, sc_uint
   return SC_RESULT_OK;
 }
 
-sc_result sc_stream_file_seek(const sc_stream * stream, sc_stream_seek_origin origin, sc_uint32 offset)
+sc_result sc_stream_file_seek(sc_stream const * stream, sc_stream_seek_origin origin, sc_uint32 offset)
 {
   sc_int32 whence = 0;
   SC_STREAM_FILE_FD_CHECK(stream);
@@ -70,14 +70,14 @@ sc_result sc_stream_file_seek(const sc_stream * stream, sc_stream_seek_origin or
   return SC_RESULT_ERROR;
 }
 
-sc_result sc_stream_file_tell(const sc_stream * stream, sc_uint32 * position)
+sc_result sc_stream_file_tell(sc_stream const * stream, sc_uint32 * position)
 {
   SC_STREAM_FILE_FD_CHECK(stream);
   *position = ftell(stream->handler);
   return SC_RESULT_OK;
 }
 
-sc_result sc_stream_file_free_handler(const sc_stream * stream)
+sc_result sc_stream_file_free_handler(sc_stream const * stream)
 {
   SC_STREAM_FILE_FD_CHECK(stream);
   if (fclose(stream->handler) == 0)
@@ -86,7 +86,7 @@ sc_result sc_stream_file_free_handler(const sc_stream * stream)
   return SC_RESULT_ERROR;
 }
 
-sc_bool sc_stream_file_eof(const sc_stream * stream)
+sc_bool sc_stream_file_eof(sc_stream const * stream)
 {
   SC_STREAM_FILE_FD_CHECK(stream);
 

@@ -27,5 +27,7 @@ public:
   }
 
 private:
-  ScAddrVector m_nodes;
+  static ScAddrVector m_nodes;
 };
+
+ScAddrVector TestCreateEdge::m_nodes;
