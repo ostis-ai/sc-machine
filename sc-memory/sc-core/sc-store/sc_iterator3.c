@@ -140,7 +140,7 @@ sc_iterator3 * sc_iterator3_f_f_f_new(
 }
 
 sc_iterator3 * sc_iterator3_new(
-    const sc_memory_context * ctx,
+    sc_memory_context const * ctx,
     sc_iterator3_type type,
     sc_iterator_param p1,
     sc_iterator_param p2,
@@ -219,6 +219,11 @@ void sc_iterator3_free(sc_iterator3 * it)
   sc_mem_free(it);
 }
 
+sc_addr _sc_iterator3_get_other_edge_incident_element(sc_element * el, sc_addr incident_element)
+{
+  return SC_ADDR_IS_EQUAL(incident_element, el->arc.end) ? el->arc.begin : el->arc.end;
+}
+
 sc_bool _sc_iterator3_f_a_a_next(sc_iterator3 * it)
 {
   it->results[0] = it->params[0].addr;
@@ -284,8 +289,10 @@ sc_bool _sc_iterator3_f_a_a_next(sc_iterator3 * it)
     sc_addr next_out_arc = el->arc.next_out_arc;
     // add check addr
 
-    sc_addr arc_end = el->arc.end;
     sc_type arc_type = el->flags.type;
+    sc_addr arc_end = (el->flags.type & sc_type_edge_common) == sc_type_edge_common
+                          ? _sc_iterator3_get_other_edge_incident_element(el, it->results[0])
+                          : el->arc.end;
 
     if (is_not_same)
       sc_monitor_release_read(arc_monitor);
@@ -387,12 +394,16 @@ sc_bool _sc_iterator3_f_a_f_next(sc_iterator3 * it)
     sc_addr next_in_arc = el->arc.next_in_arc;
 
     sc_type arc_type = el->flags.type;
-    sc_addr arc_begin = el->arc.begin;
+
+    sc_bool is_begin_same =
+        (el->flags.type & sc_type_edge_common) == sc_type_edge_common
+            ? SC_ADDR_IS_EQUAL(it->results[0], el->arc.begin) || SC_ADDR_IS_EQUAL(it->results[0], el->arc.end)
+            : SC_ADDR_IS_EQUAL(it->results[0], el->arc.begin);
 
     if (is_not_same)
       sc_monitor_release_read(arc_monitor);
 
-    if (SC_ADDR_IS_EQUAL(it->params[0].addr, arc_begin) && sc_iterator_compare_type(arc_type, it->params[1].type))
+    if (is_begin_same && sc_iterator_compare_type(arc_type, it->params[1].type))
     {
       // store found result
       it->results[1] = arc_addr;
@@ -478,7 +489,9 @@ sc_bool _sc_iterator3_a_a_f_next(sc_iterator3 * it)
     sc_addr next_in_arc = el->arc.next_in_arc;
 
     sc_type arc_type = el->flags.type;
-    sc_addr arc_begin = el->arc.begin;
+    sc_addr arc_begin = (el->flags.type & sc_type_edge_common) == sc_type_edge_common
+                            ? _sc_iterator3_get_other_edge_incident_element(el, it->results[2])
+                            : el->arc.begin;
 
     if (is_not_same)
       sc_monitor_release_read(arc_monitor);
@@ -536,23 +549,42 @@ error:
 
 sc_bool _sc_iterator3_f_f_a_next(sc_iterator3 * it)
 {
+  it->results[0] = it->params[0].addr;
   it->results[1] = it->params[1].addr;
 
-  sc_element * edge_el;
-  sc_result result = sc_storage_get_element_by_addr(it->results[1], &edge_el);
+  sc_monitor * monitor = sc_monitor_get_monitor_for_addr(&sc_storage_get()->addr_monitors_table, it->results[1]);
+  sc_monitor_acquire_read(monitor);
+
+  sc_element * el;
+  sc_result result = sc_storage_get_element_by_addr(it->results[1], &el);
   if (result != SC_RESULT_OK)
     goto error;
 
-  if (SC_ADDR_IS_NOT_EQUAL(it->params[0].addr, edge_el->arc.begin))
-    goto error;
+  sc_addr arc_begin;
+  if ((el->flags.type & sc_type_edge_common) == sc_type_edge_common)
+  {
+    if (SC_ADDR_IS_NOT_EQUAL(it->params[0].addr, el->arc.begin) &&
+        SC_ADDR_IS_NOT_EQUAL(it->params[0].addr, el->arc.end))
+      goto error;
 
-  it->results[0] = edge_el->arc.begin;
-  it->results[2] = edge_el->arc.end;
+    arc_begin = _sc_iterator3_get_other_edge_incident_element(el, it->results[0]);
+  }
+  else
+  {
+    if (SC_ADDR_IS_NOT_EQUAL(it->params[0].addr, el->arc.begin))
+      goto error;
 
+    arc_begin = el->arc.end;
+  }
+
+  it->results[2] = arc_begin;
+
+  sc_monitor_release_read(monitor);
   it->finished = SC_TRUE;
   return SC_TRUE;
 
 error:
+  sc_monitor_release_read(monitor);
   it->finished = SC_TRUE;
   return SC_FALSE;
 }
@@ -560,86 +592,136 @@ error:
 sc_bool _sc_iterator3_a_f_f_next(sc_iterator3 * it)
 {
   it->results[1] = it->params[1].addr;
+  it->results[2] = it->params[2].addr;
 
-  sc_element * edge_el;
-  sc_result result = sc_storage_get_element_by_addr(it->results[1], &edge_el);
+  sc_monitor * monitor = sc_monitor_get_monitor_for_addr(&sc_storage_get()->addr_monitors_table, it->results[1]);
+  sc_monitor_acquire_read(monitor);
+
+  sc_element * el;
+  sc_result result = sc_storage_get_element_by_addr(it->results[1], &el);
   if (result != SC_RESULT_OK)
     goto error;
 
-  if (SC_ADDR_IS_NOT_EQUAL(it->params[2].addr, edge_el->arc.end))
-    goto error;
+  sc_addr arc_begin;
+  if ((el->flags.type & sc_type_edge_common) == sc_type_edge_common)
+  {
+    if (SC_ADDR_IS_NOT_EQUAL(it->params[2].addr, el->arc.begin) &&
+        SC_ADDR_IS_NOT_EQUAL(it->params[2].addr, el->arc.end))
+      goto error;
 
-  it->results[0] = edge_el->arc.begin;
-  it->results[2] = edge_el->arc.end;
+    arc_begin = _sc_iterator3_get_other_edge_incident_element(el, it->results[2]);
+  }
+  else
+  {
+    if (SC_ADDR_IS_NOT_EQUAL(it->params[2].addr, el->arc.end))
+      goto error;
 
+    arc_begin = el->arc.begin;
+  }
+
+  it->results[0] = arc_begin;
+
+  sc_monitor_release_read(monitor);
   it->finished = SC_TRUE;
   return SC_TRUE;
 
 error:
+  sc_monitor_release_read(monitor);
   it->finished = SC_TRUE;
   return SC_FALSE;
 }
 
 sc_bool _sc_iterator3_f_f_f_next(sc_iterator3 * it)
 {
+  it->results[0] = it->params[0].addr;
   it->results[1] = it->params[1].addr;
+  it->results[2] = it->params[2].addr;
 
-  sc_element * edge_el;
-  sc_result result = sc_storage_get_element_by_addr(it->results[1], &edge_el);
+  sc_monitor * monitor = sc_monitor_get_monitor_for_addr(&sc_storage_get()->addr_monitors_table, it->results[1]);
+  sc_monitor_acquire_read(monitor);
+
+  sc_element * el;
+  sc_result result = sc_storage_get_element_by_addr(it->results[1], &el);
   if (result != SC_RESULT_OK)
     goto error;
 
-  if (SC_ADDR_IS_NOT_EQUAL(it->params[0].addr, edge_el->arc.begin))
-    goto error;
+  if ((el->flags.type & sc_type_edge_common) == sc_type_edge_common)
+  {
+    if (SC_ADDR_IS_NOT_EQUAL(it->params[0].addr, el->arc.begin) &&
+        SC_ADDR_IS_NOT_EQUAL(it->params[0].addr, el->arc.end))
+      goto error;
 
-  it->results[0] = edge_el->arc.begin;
+    if (SC_ADDR_IS_NOT_EQUAL(it->params[2].addr, el->arc.begin) &&
+        SC_ADDR_IS_NOT_EQUAL(it->params[2].addr, el->arc.end))
+      goto error;
+  }
+  else
+  {
+    if (SC_ADDR_IS_NOT_EQUAL(it->params[0].addr, el->arc.begin))
+      goto error;
 
-  if (SC_ADDR_IS_NOT_EQUAL(it->params[2].addr, edge_el->arc.end))
-    goto error;
+    if (SC_ADDR_IS_NOT_EQUAL(it->params[2].addr, el->arc.end))
+      goto error;
+  }
 
-  it->results[2] = edge_el->arc.end;
-
+  sc_monitor_release_read(monitor);
   it->finished = SC_TRUE;
   return SC_TRUE;
 
 error:
+  sc_monitor_release_read(monitor);
   it->finished = SC_TRUE;
   return SC_FALSE;
 }
 
 sc_bool sc_iterator3_next(sc_iterator3 * it)
 {
-  if ((it == null_ptr) || (it->finished == SC_TRUE))
-    return SC_FALSE;
+  sc_bool result = SC_FALSE;
+  if (it == null_ptr || it->finished == SC_TRUE)
+    return result;
 
   switch (it->type)
   {
   case sc_iterator3_f_a_a:
-    return _sc_iterator3_f_a_a_next(it);
+    result = _sc_iterator3_f_a_a_next(it);
+    break;
 
   case sc_iterator3_f_a_f:
-    return _sc_iterator3_f_a_f_next(it);
+    result = _sc_iterator3_f_a_f_next(it);
+    break;
 
   case sc_iterator3_a_a_f:
-    return _sc_iterator3_a_a_f_next(it);
+    result = _sc_iterator3_a_a_f_next(it);
+    break;
 
   case sc_iterator3_a_f_a:
-    return _sc_iterator3_a_f_a_next(it);
+    result = _sc_iterator3_a_f_a_next(it);
+    break;
 
   case sc_iterator3_f_f_a:
-    return _sc_iterator3_f_f_a_next(it);
+    result = _sc_iterator3_f_f_a_next(it);
+    break;
 
   case sc_iterator3_a_f_f:
-    return _sc_iterator3_a_f_f_next(it);
+    result = _sc_iterator3_a_f_f_next(it);
+    break;
 
   case sc_iterator3_f_f_f:
-    return _sc_iterator3_f_f_f_next(it);
+    result = _sc_iterator3_f_f_f_next(it);
+    break;
 
   default:
     break;
   }
 
-  return SC_FALSE;
+  if (result == SC_FALSE)
+  {
+    it->results[0] = SC_ADDR_EMPTY;
+    it->results[1] = SC_ADDR_EMPTY;
+    it->results[2] = SC_ADDR_EMPTY;
+  }
+
+  return result;
 }
 
 sc_addr sc_iterator3_value(sc_iterator3 * it, sc_uint vid)
