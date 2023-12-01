@@ -97,9 +97,7 @@ public:
   {
     SC_ASSERT(IsValid(), ("Not valid iterator object"));
     if (index < m_tripleSize)
-    {
       return ScAddr(sc_iterator3_value(m_iterator, index));
-    }
 
     SC_THROW_EXCEPTION(
         utils::ExceptionInvalidParams,
@@ -153,9 +151,7 @@ public:
   {
     SC_ASSERT(IsValid(), ("Not valid iterator object"));
     if (index < m_tripleSize)
-    {
       return sc_iterator5_value(m_iterator, index);
-    }
 
     SC_THROW_EXCEPTION(
         utils::ExceptionInvalidParams,

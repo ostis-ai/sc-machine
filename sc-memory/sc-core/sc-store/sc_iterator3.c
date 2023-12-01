@@ -678,7 +678,13 @@ sc_bool sc_iterator3_next(sc_iterator3 * it)
 {
   sc_bool result = SC_FALSE;
   if (it == null_ptr || it->finished == SC_TRUE)
+  {
+    it->results[0] = SC_ADDR_EMPTY;
+    it->results[1] = SC_ADDR_EMPTY;
+    it->results[2] = SC_ADDR_EMPTY;
+
     return result;
+  }
 
   switch (it->type)
   {
@@ -724,9 +730,12 @@ sc_bool sc_iterator3_next(sc_iterator3 * it)
   return result;
 }
 
-sc_addr sc_iterator3_value(sc_iterator3 * it, sc_uint vid)
+sc_addr sc_iterator3_value(sc_iterator3 * it, sc_uint index)
 {
-  return it->results[vid];
+  if (index < 3)
+    return it->results[index];
+
+  return SC_ADDR_EMPTY;
 }
 
 sc_bool sc_iterator_compare_type(sc_type el_type, sc_type it_type)
