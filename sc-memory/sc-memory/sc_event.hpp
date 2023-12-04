@@ -10,7 +10,7 @@
 #include "sc_utils.hpp"
 
 #include "utils/sc_lock.hpp"
-#include "sc-core/sc-store/sc_event/sc_event_types.h"
+#include "sc-core/sc-store/sc-event/sc_event_types.h"
 
 #include <functional>
 
