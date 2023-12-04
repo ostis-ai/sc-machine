@@ -45,7 +45,7 @@ public:
       }
       else if (element == "link")
       {
-        created = context->CreateLink(type);
+        created = context->CreateNode(type);
         ScLink link{*context, created};
 
         auto const & content = atom["content"];
