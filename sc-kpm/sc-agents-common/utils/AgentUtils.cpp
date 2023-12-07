@@ -132,7 +132,7 @@ ScAddr AgentUtils::getActionResultIfExists(
   ScAddr actionNode = formActionNode(ms_context, actionClass, params);
 
   ScAddr result;
-  if (applyAction(ms_context, actionNode))
+  if (applyAction(ms_context, actionNode, waitTime))
     result = IteratorUtils::getAnyByOutRelation(ms_context, actionNode, CoreKeynodes::nrel_answer);
 
   return result;
@@ -146,7 +146,7 @@ ScAddr AgentUtils::getActionResultIfExists(
   SC_CHECK_PARAM(actionNode, ("Invalid action node address"));
 
   ScAddr result;
-  if (applyAction(ms_context, actionNode))
+  if (applyAction(ms_context, actionNode, waitTime))
     result = IteratorUtils::getAnyByOutRelation(ms_context, actionNode, CoreKeynodes::nrel_answer);
 
   return result;
