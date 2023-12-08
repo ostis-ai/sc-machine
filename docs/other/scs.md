@@ -4,6 +4,7 @@ SCs-code - is a text representation of SC-code. Whole text consist of sentences,
 separated by `;;` symbols.
 
 #### Comments
+
 You can use C-style comments in SCs text:
 ```scs
 // one line comment
@@ -14,6 +15,7 @@ fruit -> apple;
 ```
 
 #### Link to files
+
 To make an `sc-link` into specified file you can use special type identifier:
 ```
 "file://<file name>"
@@ -23,6 +25,7 @@ To make an `sc-link` into specified file you can use special type identifier:
 * `"file:///<file_name>"` - is an absolute path to a file.
 
 #### Names
+
 There are some tricks with object names:
 
 * `...` - is an unnamed object;
@@ -84,7 +87,7 @@ Identifier of `subject`, `predicate`, `object` build with rule:
 Where `type` - is an element type specification. It can be one of possible values:
 
 * `sc_node` - equal to ![SCg-node](../images/scg/scg_node.png);
-* `sc_link` - equal to ![SCg-link](../images/scg/scg_link.png);
+* `sc_link` - equal to ![SCg-link](../images/scg/scg_link_const.png);
 * `sc_edge_dcommon` - equal to ![SCg-edge](../images/scg/scg_edge_common_orient.png);
 * `sc_edge_ucommon` - equal to ![SCg-edge](../images/scg/scg_edge_common.png);
 * `sc_edge_main` - equal to ![SCg-edge](../images/scg/scg_edge_const_pos_perm.png);
@@ -195,11 +198,11 @@ Where `<edge>` can be on of values:
     <td><img src="../../images/scg/scg_edge_var_neg_perm.png"></img></td>
   </tr>
   <tr>
-    <td>`</-` or `-/>`</td>
+    <td>`<<i></i>/-` or `-/>`</td>
     <td><img src="../../images/scg/scg_edge_const_fuz_perm.png"></img></td>
   </tr>
   <tr>
-    <td>`_</-` or `_-/>`</td>
+    <td>`_<<i></i>/-` or `_-/>`</td>
     <td><img src="../../images/scg/scg_edge_var_fuz_perm.png"></img></td>
   </tr>
   <tr>
@@ -219,11 +222,11 @@ Where `<edge>` can be on of values:
     <td><img src="../../images/scg/scg_edge_var_neg_temp.png"></img></td>
   </tr>
   <tr>
-    <td>`</~` or `~/>`</td>
+    <td>`<<i></i>/~` or `~/>`</td>
     <td><img src="../../images/scg/scg_edge_const_fuz_temp.png"></img></td>
   </tr>
   <tr>
-    <td>`_</~` or `_~/>`</td>
+    <td>`_<<i></i>/~` or `_~/>`</td>
     <td><img src="../../images/scg/scg_edge_var_fuz_temp.png"></img></td>
   </tr>
 </table>
@@ -265,7 +268,7 @@ So that allows to simplify usage of an edge as a source or target of another one
   </tr>
 
   <tr>
-    <td width="50%"><scg src="../../images/scs/scs_example_level_1_2.gwf"></scg></td>
+    <td width="50%"><img src="../../images/scs/scs_example_level_1_2.png"></img></td>
     <td>
       <pre>
         <code class="js hljs javascript">
@@ -276,7 +279,7 @@ nrel_image -> (fruit => "file://apple.png");;
   </tr>
 
   <tr>
-    <td><scg src="../../images/scs/scs_example_level_2.gwf"></scg></td>
+    <td><img src="../../images/scs/scs_example_level_2.png"></img></td>
     <td>
       <pre>
         <code class="js hljs javascript">
@@ -287,7 +290,7 @@ d -> (c -> (a -> b));;
   </tr>
 
   <tr>
-    <td><scg src="../../images/scs/scs_example_level_2_2.gwf"></scg></td>
+    <td><img src="../../images/scs/scs_example_level_2_2.png"></img></td>
     <td>
       <pre>
         <code class="js hljs javascript">
@@ -339,6 +342,7 @@ c _-> (a -> b);;
 <hr/>
 
 **Examples**
+
 <table>
   <tr>
     <th>SCg construction</th>
@@ -350,7 +354,7 @@ c _-> (a -> b);;
     <td>
       <pre>
         <code class="js hljs javascript">
-apple => nrel_image: "file://apple.png";;
+          apple => nrel_image: "file://apple.png";;
         </code>
       </pre>
     </td>
@@ -364,7 +368,7 @@ apple => nrel_image: "file://apple.png";;
       </div>
       <pre>
         <code class="js hljs javascript">
-a -> c: d:: b;;
+          a -> c: d:: b;;
         </code>
       </pre>
     </td>
@@ -395,6 +399,7 @@ Another words, this level of SCs text, allows to use source element one time.
 <hr/>
 
 **Examples**
+
 <table>
   <tr>
     <th>SCg construction</th>
@@ -402,11 +407,11 @@ Another words, this level of SCs text, allows to use source element one time.
   </tr>
 
   <tr>
-    <td><scg src="../../images/scs/scs_example_level_1.gwf"></scg></td>
+    <td><img src="../../images/scs/scs_example_level_1.png"></img></td>
     <td>
       <pre>
         <code class="js hljs javascript">
-fruit -> apple;
+      fruit -> apple;
       -> banana;;
         </code>
       </pre>
@@ -414,18 +419,18 @@ fruit -> apple;
   <tr>
 
   <tr>
-    <td><scg src="../../images/scs/scs_example_level_4.gwf"></scg></td>
+    <td><img src="../../images/scs/scs_example_level_4.png"></img></td>
     <td>
       <pre>
         <code class="js hljs javascript">
-a -> c: d: b;
-  -> e;
-  -> g: f;;
+        a -> c: d: b;
+        -> e;
+        -> g: f;;
         </code>
       </pre>
     </td>
   </tr>
-<table>
+</table>
 
 ### SCs level 5
 
@@ -449,19 +454,23 @@ Look at the examples, to understand how it works:
   
   <tr>
     <td>
-      <pre><code class="js hljs javascript">
+      <pre>
+        <code class="js hljs javascript">
 set -> attr: item;;
 item -> subitem;;
-        </code></pre>
+          </code>
+        </pre>
     </td>
     <td>
-      <pre><code class="js hljs javascript">
+      <pre>
+        <code class="js hljs javascript">
 set
   -> attr: item 
     (*
       -> subitem;;
     *);;
-      </code></pre>
+        </code>
+      </pre>
     </td>
     <td>
     This is a simple example, that allow to make an <code>SCs-text</code> more readable and useful. In this case text has a sublevels, that allow 
@@ -499,7 +508,8 @@ set
 
   <tr>
     <td>
-      <pre><code class="js hljs javascript">
+      <pre>
+        <code class="js hljs javascript">
 @en_idtf = [sc-element];;
 @ru_idtf = [sc-элемент];;
 @en_idtf <- lang_en;;
@@ -508,10 +518,12 @@ sc_element
   => nrel_main_idtf: 
     @en_idtf;
     @ru_idtf;;
-      </code></pre>
+        </code>
+      </pre>
     </td>
     <td>
-      <pre><code class="js hljs javascript">
+      <pre>
+        <code class="js hljs javascript">
 sc_element
   => nrel_main_idtf:
     [sc-element]
@@ -519,7 +531,8 @@ sc_element
   => nrel_main_idtf:
     [sc-элемент]
     (* <- lang_ru;; *);;
-        </code></pre>
+        </code>
+      </pre>
     </td>
     <td>
     This type of syntax is very useful, when you need to specify some meta information on <code>sc-link</code>'s.
@@ -546,11 +559,13 @@ by using this feature. There are all possible cases:
       <td>`string`</td>
       <td>You can write any string that you wish inside <code>[ ... ]</code> alias</td>
       <td>
-        <pre><code class="js hljs javascript">
+        <pre>
+          <code class="js hljs javascript">
 x -> [any string];;
 x -> [this is a 
  multiline text];;
-        </code></pre>
+          </code>
+        </pre>
       </td>
     </tr>
     <tr>
@@ -595,9 +610,11 @@ struct -> set; item; @edge_alias;;
         </code></pre>
       </td>
       <td>
-        <pre><code class="js hljs javascript">
+        <pre>
+          <code class="js hljs javascript">
 @struct = [ set -> item;; ];;
-        </code></pre>
+          </code>
+        </pre>
       </td>
     </tr>
   </table>
@@ -626,29 +643,34 @@ struct -> set; item; @edge_alias;;
 
   <tr>
     <td>
-      <pre><code class="js hljs javascript">
+      <pre>
+        <code class="js hljs javascript">
 set
   <- sc_node_tuple;
   -> element1;
   -> attr2: element2;
   -> element3;;
-      </code></pre>
+        </code>
+      </pre>
     </td>
     <td>
-      <pre><code class="js hljs javascript">
+      <pre>
+        <code class="js hljs javascript">
 @set = {
   element1;
   attr2: element2;
   element3 // no semicolon
 };;
-      </code></pre>
+        </code>
+      </pre>
     </td>
     <td>Using set looks much cleaner. You can use even attributes on it</td>
   </tr>
   
   <tr>
     <td>
-      <pre><code class="js hljs javascript">
+      <pre>
+        <code class="js hljs javascript">
 meta_set 
   <- sc_node_tuple;
   -> set1;
@@ -672,10 +694,12 @@ set3
 element 
   => nrel_relation:
     set3;;
-      </code></pre>
+        </code>
+      </pre>
     </td>
     <td>
-      <pre><code class="js hljs javascript">
+      <pre>
+        <code class="js hljs javascript">
 @meta_set = {
   {
     element1;
@@ -693,7 +717,8 @@ element
   {
     element10
   };;
-      </code></pre>
+        </code>
+      </pre>
     </td>
     <td>You can use set alias inside any other complex aliases and triples.</td>
   </tr>
@@ -707,7 +732,7 @@ There are a list of element type keynodes, that can be used to specify type of a
 | Keynode                           | Equal sc-type                       | Equal SCg-element
 | --------------------------------- | ----------------------------------- | --------------
 | sc_node                           | ScType::Node                        | ![SCg-edge](../images/scg/scg_node.png)
-| sc_link                           | ScType::Link                        | ![SCg-edge](../images/scg/scg_link.png)
+| sc_link                           | ScType::Link                        | ![SCg-edge](../images/scg/scg_link_const.png)
 | sc_edge_dcommon                   | ScType::EdgeDCommon                 | ![SCg-edge](../images/scg/scg_edge_common_orient.png)
 | sc_edge_ucommon                   | ScType::EdgeUCommon                 | ![SCg-edge](../images/scg/scg_edge_common.png)
 | sc_edge_main                      | ScType::EdgeAccessConstPosPerm      | ![SCg-edge](../images/scg/scg_edge_const_pos_perm.png)
@@ -717,7 +742,6 @@ There are a list of element type keynodes, that can be used to specify type of a
 | sc_node_role_relation             | ScType::NodeRole                    | ![SCg-edge](../images/scg/scg_node_const_role.png) ![SCg-edge](../images/scg/scg_node_var_role.png)
 | sc_node_norole_relation           | ScType::NodeNoRole                  | ![SCg-edge](../images/scg/scg_node_const_norole.png) ![SCg-edge](../images/scg/scg_node_var_norole.png)
 | sc_node_class                     | ScType::NodeClass                   | ![SCg-edge](../images/scg/scg_node_const_class.png) ![SCg-edge](../images/scg/scg_node_var_class.png)
-| sc_node_abstract                  | ScType::NodeAbstract                | ![SCg-edge](../images/scg/scg_node_const_abstract.png) ![SCg-edge](../images/scg/scg_node_var_abstract.png)
 | sc_node_material                  | ScType::NodeMaterial                | ![SCg-edge](../images/scg/scg_node_const_material.png) ![SCg-edge](../images/scg/scg_node_var_material.png)
 
 There are old keynodes, that used for backward compatibility:
@@ -746,7 +770,7 @@ a _-> _b;;
 _b <- sc_node_material;;
       </pre>
     </td>
-    <td><scg src="../images/scs_keynodes_old_example_1.gwf"></scg></td>
+    <td><img src="../images/scs_keynodes_old_example_1.png"></img></td>
   </tr>
   <tr>
     <td>
@@ -755,6 +779,6 @@ _x => nrel_y: t;;
 nrel_y <- sc_node_norole_relation;;
       </pre>
     </td>
-    <td><scg src="../images/scs_keynodes_old_example_2.gwf"></scg></td>
+    <td><img src="../images/scs_keynodes_old_example_2.png"></img></td>
   </tr>
 </table>
