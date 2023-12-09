@@ -14,9 +14,9 @@
 #include "../sc_memory_private.h"
 
 #include "sc_stream_memory.h"
-#include "sc-base/sc_mutex.h"
 #include "sc-base/sc_allocator.h"
 #include "sc-container/sc-string/sc_string.h"
+#include "sc-base/sc_assert_utils.h"
 
 sc_storage * storage;
 
@@ -168,8 +168,8 @@ sc_result sc_storage_free_element(sc_addr addr)
 {
   sc_result result = SC_RESULT_ERROR_ADDR_IS_NOT_VALID;
 
-  if (SC_ADDR_IS_EMPTY(addr) || addr.seg == 0 || addr.offset == 0 || addr.seg > storage->max_segments_count ||
-      addr.offset > SC_SEGMENT_ELEMENTS_COUNT)
+  sc_element * element;
+  if (sc_storage_get_element_by_addr(addr, &element) != SC_RESULT_OK)
     goto error;
 
   sc_monitor_acquire_read(&storage->segments_monitor);
@@ -214,7 +214,7 @@ sc_segment * _sc_storage_get_last_not_engaged_segment()
   return segment;
 }
 
-sc_segment * _sc_storage_get_new_segment(sc_thread * thread)
+sc_segment * _sc_storage_get_new_segment()
 {
   sc_segment * segment = null_ptr;
   if (storage->segments_count == storage->max_segments_count)
@@ -285,7 +285,7 @@ void _sc_storage_get_segment(sc_segment ** segment_ptr, sc_bool * released)
     segment = _sc_storage_get_last_not_engaged_segment();
     if (segment == null_ptr)
     {
-      segment = _sc_storage_get_new_segment(thread);
+      segment = _sc_storage_get_new_segment();
       if (segment == null_ptr)
         segment = _sc_storage_get_last_free_segment();
     }
@@ -538,20 +538,31 @@ sc_result sc_storage_element_free(sc_memory_context const * ctx, sc_addr addr)
     addr.offset = SC_ADDR_LOCAL_OFFSET_FROM_INT(addr_int);
 
     sc_monitor * monitor = sc_monitor_get_monitor_for_addr(&storage->addr_monitors_table, addr);
+    sc_monitor_acquire_write(monitor);
 
     sc_element * element;
     result = sc_storage_get_element_by_addr(addr, &element);
-    if (result != SC_RESULT_OK)
-      continue;
-
-    if (element->flags.type & sc_type_link)
-      sc_fs_memory_unlink_string(SC_ADDR_LOCAL_TO_INT(addr));
-    else if (element->flags.type & sc_type_arc_mask)
+    if (result != SC_RESULT_OK ||
+        (element->flags.access_levels & SC_ACCESS_LVL_REQUEST_DELETION) == SC_ACCESS_LVL_REQUEST_DELETION)
     {
+      sc_monitor_release_write(monitor);
+      continue;
+    }
+
+    element->flags.access_levels |= SC_ACCESS_LVL_REQUEST_DELETION;
+    sc_type type = element->flags.type;
+
+    sc_monitor_release_write(monitor);
+
+    if (type & sc_type_link)
+      sc_fs_memory_unlink_string(SC_ADDR_LOCAL_TO_INT(addr));
+    else if (type & sc_type_arc_mask)
+    {
+      sc_bool const is_edge = type & sc_type_edge_common;
+
       sc_addr begin_addr = element->arc.begin;
       sc_addr end_addr = element->arc.end;
 
-      sc_bool const is_edge = element->flags.type & sc_type_edge_common;
       sc_bool const is_not_loop = SC_ADDR_IS_NOT_EQUAL(begin_addr, end_addr);
 
       sc_monitor * beg_monitor = sc_monitor_get_monitor_for_addr(&storage->addr_monitors_table, begin_addr);
@@ -610,7 +621,12 @@ sc_result sc_storage_element_free(sc_memory_context const * ctx, sc_addr addr)
         --b_el->output_arcs_count;
 
         if (is_edge && is_not_loop)
+        {
+          if (SC_ADDR_IS_EQUAL(addr, b_el->first_in_arc))
+            b_el->first_in_arc = next_in_arc;
+
           --b_el->input_arcs_count;
+        }
       }
 
       sc_event_emit(ctx, begin_addr, element->flags.access_levels, SC_EVENT_REMOVE_OUTPUT_ARC, addr, end_addr);
@@ -641,7 +657,12 @@ sc_result sc_storage_element_free(sc_memory_context const * ctx, sc_addr addr)
         --e_el->input_arcs_count;
 
         if (is_edge && is_not_loop)
+        {
+          if (SC_ADDR_IS_EQUAL(addr, e_el->first_out_arc))
+            e_el->first_out_arc = next_out_arc;
+
           --e_el->output_arcs_count;
+        }
       }
 
       sc_event_emit(ctx, end_addr, element->flags.access_levels, SC_EVENT_REMOVE_INPUT_ARC, addr, begin_addr);
@@ -653,8 +674,8 @@ sc_result sc_storage_element_free(sc_memory_context const * ctx, sc_addr addr)
 
     sc_event_emit(ctx, addr, element->flags.access_levels, SC_EVENT_REMOVE_ELEMENT, SC_ADDR_EMPTY, SC_ADDR_EMPTY);
 
+    sc_monitor_acquire_write(monitor);
     sc_storage_free_element(addr);
-
     sc_monitor_release_write(monitor);
 
     // remove registered events before deletion

@@ -154,6 +154,7 @@ typedef sc_uint16 sc_type;
 #  define SC_ACCESS_LVL_MAX_VALUE 15
 #  define SC_ACCESS_LVL_MIN_VALUE 0
 
+#  define SC_ACCESS_LVL_REQUEST_DELETION 0x1
 #  define SC_ACCESS_LVL_ELEMENT_EXIST 0x2
 #  define SC_ACCESS_LVL_RMASK 0xf0
 #  define SC_ACCESS_LVL_WMASK 0x0f

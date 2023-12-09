@@ -258,7 +258,8 @@ sc_bool _sc_iterator3_f_a_a_next(sc_iterator3 * it)
     result = sc_storage_get_element_by_addr(it->results[1], &el);
     if (result != SC_RESULT_OK)
     {
-      sc_monitor_release_read(arc_monitor);
+      if (is_not_same)
+        sc_monitor_release_read(arc_monitor);
       goto error;
     }
 
@@ -362,7 +363,8 @@ sc_bool _sc_iterator3_f_a_f_next(sc_iterator3 * it)
     result = sc_storage_get_element_by_addr(it->results[1], &el);
     if (result != SC_RESULT_OK)
     {
-      sc_monitor_release_read(arc_monitor);
+      if (is_not_same)
+        sc_monitor_release_read(arc_monitor);
       goto error;
     }
 
@@ -458,7 +460,8 @@ sc_bool _sc_iterator3_a_a_f_next(sc_iterator3 * it)
     result = sc_storage_get_element_by_addr(it->results[1], &el);
     if (result != SC_RESULT_OK)
     {
-      sc_monitor_release_read(arc_monitor);
+      if (is_not_same)
+        sc_monitor_release_read(arc_monitor);
       goto error;
     }
 
