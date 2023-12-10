@@ -83,7 +83,7 @@ TEST_F(ScTemplateGenApiTest, GenTripleWithUnkownTarget)
       ScType::Unknown >> "_addr2");
 
   ScTemplateGenResult result;
-  EXPECT_THROW(m_ctx->HelperGenTemplate(templ, result), utils::ExceptionInvalidState);
+  EXPECT_TRUE(m_ctx->HelperGenTemplate(templ, result));
 }
 
 TEST_F(ScTemplateGenApiTest, GenEmptyTemplate)

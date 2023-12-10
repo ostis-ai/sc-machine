@@ -110,11 +110,7 @@ public:
 
   ScAddr CreateNodeLink(ScType const & type)
   {
-    ScAddr addr;
-    if (type.IsNode())
-      addr = m_context.CreateNode(type);
-    else if (type.IsLink())
-      addr = m_context.CreateLink();
+    ScAddr addr = m_context.CreateNode(type);
 
     if (addr.IsValid())
       m_createdElements.push_back(addr);

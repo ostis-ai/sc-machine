@@ -8,24 +8,33 @@
 TEST(ScTypeTest, nodes)
 {
   EXPECT_TRUE(ScType::Node.IsNode());
+  EXPECT_FALSE(ScType::Node.IsLink());
+  EXPECT_TRUE(ScType::Link.IsNode());
+  EXPECT_TRUE(ScType::Link.IsLink());
 
   EXPECT_TRUE(ScType::NodeConst.IsNode());
   EXPECT_TRUE(ScType::NodeConstAbstract.IsNode());
   EXPECT_TRUE(ScType::NodeConstClass.IsNode());
+  EXPECT_TRUE(ScType::NodeConstSuperClass.IsNode());
   EXPECT_TRUE(ScType::NodeConstMaterial.IsNode());
   EXPECT_TRUE(ScType::NodeConstNoRole.IsNode());
   EXPECT_TRUE(ScType::NodeConstRole.IsNode());
   EXPECT_TRUE(ScType::NodeConstStruct.IsNode());
   EXPECT_TRUE(ScType::NodeConstTuple.IsNode());
+  EXPECT_TRUE(ScType::LinkConst.IsNode());
+  EXPECT_TRUE(ScType::LinkConstClass.IsNode());
 
   EXPECT_TRUE(ScType::NodeVar.IsNode());
   EXPECT_TRUE(ScType::NodeVarAbstract.IsNode());
   EXPECT_TRUE(ScType::NodeVarClass.IsNode());
+  EXPECT_TRUE(ScType::NodeVarSuperClass.IsNode());
   EXPECT_TRUE(ScType::NodeVarMaterial.IsNode());
   EXPECT_TRUE(ScType::NodeVarNoRole.IsNode());
   EXPECT_TRUE(ScType::NodeVarRole.IsNode());
   EXPECT_TRUE(ScType::NodeVarStruct.IsNode());
   EXPECT_TRUE(ScType::NodeVarTuple.IsNode());
+  EXPECT_TRUE(ScType::LinkVar.IsNode());
+  EXPECT_TRUE(ScType::LinkVarClass.IsNode());
 }
 
 TEST(ScTypeTest, constancy)

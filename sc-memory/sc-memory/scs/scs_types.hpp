@@ -19,8 +19,8 @@ public:
   static ScType const & GetKeynodeType(std::string const & keynodeAlias);
 
   static bool IsConnectorReversed(std::string const & connectorAlias);
-  static bool IsConst(std::string const & idtf);
-  static bool IsEdgeAttrConst(std::string const & attr);
+  static ScType GetType(std::string const & idtf);
+  static std::string DefineEdgeAttrType(std::string const & attr);
   static bool IsKeynodeType(std::string const & alias);
   static bool IsUnnamed(std::string const & alias);
 
@@ -31,5 +31,6 @@ private:
   static MapType ms_keynodeToType;
   static MapType ms_connectorToType;
   static IsType ms_reversedConnectors;
+  static std::map<std::string, std::string> ms_edgeAttrToEdge;
 };
 }  // namespace scs

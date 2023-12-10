@@ -127,7 +127,7 @@ sc_result sc_helper_init(sc_memory_context * ctx)
     sc_memory_info("Can't resolve nrel_system_identifier node. Create the last one");
 
     sc_addr addr = sc_memory_node_new(ctx, sc_type_const | sc_type_node_norole);
-    sc_addr link = sc_memory_link_new(ctx);
+    sc_addr link = sc_memory_node_new(ctx, sc_type_link | sc_type_const);
 
     sc_stream * stream = sc_stream_memory_new(
         keynodes_str[SC_KEYNODE_NREL_SYSTEM_IDENTIFIER],
@@ -293,7 +293,7 @@ sc_result sc_helper_set_system_identifier_ext(
   }
 
   // if there are no elements with specified system identifier, then we can use it
-  idtf_addr = sc_memory_link_new(ctx);
+  idtf_addr = sc_memory_node_new(ctx, sc_type_link | sc_type_const);
   if (sc_memory_set_link_content(ctx, idtf_addr, stream) != SC_RESULT_OK)
   {
     sc_stream_free(stream);
