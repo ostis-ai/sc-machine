@@ -547,7 +547,10 @@ sc_bool sc_iterator5_next(sc_iterator5 * it)
   return SC_FALSE;
 }
 
-sc_addr sc_iterator5_value(sc_iterator5 * it, sc_uint vid)
+sc_addr sc_iterator5_value(sc_iterator5 * it, sc_uint index)
 {
-  return it->results[vid];
+  if (index < 5)
+    return it->results[index];
+
+  return SC_ADDR_EMPTY;
 }

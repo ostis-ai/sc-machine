@@ -510,3 +510,80 @@ TEST_F(ScTemplateCommonTest, MultipleConnectivitiesTemplateSmoke)
   EXPECT_TRUE(m_ctx->HelperSearchTemplate(searchTempl, searchResult));
   EXPECT_EQ(searchResult.Size(), 1u);
 }
+
+TEST_F(ScTemplateCommonTest, EdgesTemplateSmoke)
+{
+  ScAddr const & sourceNodeAddr = m_ctx->CreateNode(ScType::NodeConst);
+  ScAddr const & targetNodeAddr = m_ctx->CreateNode(ScType::NodeConst);
+
+  ScTemplate genTempl;
+  genTempl.Triple(
+      sourceNodeAddr,
+      ScType::EdgeUCommonVar,
+      targetNodeAddr
+  );
+
+  ScTemplateGenResult result;
+  EXPECT_TRUE(m_ctx->HelperGenTemplate(genTempl, result));
+
+  ScTemplate searchTempl;
+  searchTempl.Triple(
+      sourceNodeAddr,
+      ScType::EdgeUCommonVar,
+      ScType::NodeVar >> "_target"
+  );
+
+  ScTemplateSearchResult searchResult;
+  EXPECT_TRUE(m_ctx->HelperSearchTemplate(searchTempl, searchResult));
+  EXPECT_EQ(searchResult.Size(), 1u);
+  EXPECT_EQ(searchResult[0]["_target"], targetNodeAddr);
+
+  searchTempl.Clear();
+  searchTempl.Triple(
+      targetNodeAddr,
+      ScType::EdgeUCommonVar,
+      ScType::NodeVar >> "_target"
+  );
+
+  EXPECT_TRUE(m_ctx->HelperSearchTemplate(searchTempl, searchResult));
+  EXPECT_EQ(searchResult.Size(), 1u);
+  EXPECT_EQ(searchResult[0]["_target"], sourceNodeAddr);
+}
+
+TEST_F(ScTemplateCommonTest, CycledEdgesTemplateSmoke)
+{
+  ScAddr const & sourceNodeAddr = m_ctx->CreateNode(ScType::NodeConst);
+
+  ScTemplate genTempl;
+  genTempl.Triple(
+      sourceNodeAddr,
+      ScType::EdgeUCommonVar,
+      sourceNodeAddr
+  );
+
+  ScTemplateGenResult result;
+  EXPECT_TRUE(m_ctx->HelperGenTemplate(genTempl, result));
+
+  ScTemplate searchTempl;
+  searchTempl.Triple(
+      sourceNodeAddr,
+      ScType::EdgeUCommonVar,
+      ScType::NodeVar >> "_target"
+  );
+
+  ScTemplateSearchResult searchResult;
+  EXPECT_TRUE(m_ctx->HelperSearchTemplate(searchTempl, searchResult));
+  EXPECT_EQ(searchResult.Size(), 1u);
+  EXPECT_EQ(searchResult[0]["_target"], sourceNodeAddr);
+
+  searchTempl.Clear();
+  searchTempl.Triple(
+      ScType::NodeVar >> "_source",
+      ScType::EdgeUCommonVar,
+      sourceNodeAddr
+  );
+
+  EXPECT_TRUE(m_ctx->HelperSearchTemplate(searchTempl, searchResult));
+  EXPECT_EQ(searchResult.Size(), 1u);
+  EXPECT_EQ(searchResult[0]["_source"], sourceNodeAddr);
+}

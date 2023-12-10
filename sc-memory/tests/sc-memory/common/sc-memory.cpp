@@ -21,7 +21,7 @@ void checkConnectionInStruct(
       SC_LOG_ERROR(
           "Edge between %s" + m_ctx->HelperGetSystemIdtf(keynodeAddr) + " and %s" +
           m_ctx->HelperGetSystemIdtf(otherKeynodeAddr) + " doesn't belong to struct");
-  };
+  }
 }
 
 bool checkKeynodeInStruct(

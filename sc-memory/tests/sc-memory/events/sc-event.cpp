@@ -309,6 +309,24 @@ TEST_F(ScEventTest, parallel_create_remove_edges)
     m_ctx->CreateEdge(ScType::EdgeAccessConstPosPerm, node, node2);
 }
 
+TEST_F(ScEventTest, parallel_create_remove_edges2)
+{
+  ScAddr const node = m_ctx->CreateNode(ScType::NodeConst);
+  ScAddr const node2 = m_ctx->CreateNode(ScType::NodeConst);
+
+  ScEventAddOutputEdge evt(*m_ctx, node,
+  [](ScAddr const & addr, ScAddr const & edge, ScAddr const & target)
+  {
+    ScMemoryContext localCtx(sc_access_lvl_make_min);
+    localCtx.EraseElement(edge);
+
+    return SC_RESULT_OK;
+  });
+
+  for (size_t i = 0; i < 10000; i++)
+    m_ctx->CreateEdge(ScType::EdgeAccessConstPosPerm, node, node2);
+}
+
 TEST_F(ScEventTest, pend_events)
 {
   /* Main idea of test: create two sets with N elements, and add edges to relations.
