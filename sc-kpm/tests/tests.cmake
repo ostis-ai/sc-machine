@@ -22,6 +22,16 @@ if(${SC_CLANG_FORMAT_CODE})
     target_clangformat_setup(sc-kpm-core-agents-tests)
 endif()
 
+make_tests_from_folder(${CMAKE_CURRENT_LIST_DIR}/sc-agents-common-tests
+    NAME sc_agents_common_tests
+    DEPENDS sc-memory sc-agents-common sc-kpm-common sc-builder-lib
+    INCLUDES ${SC_MEMORY_SRC} ${SC_KPM_SRC} ${SC_MEMORY_SRC}/tests/sc-memory/_test ${SC_MACHINE_ROOT}/sc-tools
+)
+
+if(${SC_CLANG_FORMAT_CODE})
+    target_clangformat_setup(sc_agents_common_tests)
+endif()
+
 make_tests_from_folder(${CMAKE_CURRENT_LIST_DIR}/sc-utils
     NAME sc-kpm-agent-common-utils-tests
     DEPENDS sc-memory sc-agents-common sc-kpm-common sc-utils-test-agents sc-utils sc-search

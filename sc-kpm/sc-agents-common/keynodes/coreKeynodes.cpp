@@ -23,6 +23,7 @@ ScAddr CoreKeynodes::nrel_equal_strings;
 ScAddr CoreKeynodes::rrel_1;
 ScAddr CoreKeynodes::rrel_2;
 ScAddr CoreKeynodes::rrel_3;
+ScAddr CoreKeynodes::rrel_4;
 ScAddr CoreKeynodes::rrel_last_added_sc_element;
 ScAddr CoreKeynodes::number;
 ScAddr CoreKeynodes::nrel_equal_numbers;
@@ -33,5 +34,7 @@ ScAddr CoreKeynodes::rrel_main_key_sc_element;
 ScAddr CoreKeynodes::cardinality;
 ScAddr CoreKeynodes::lang_ru;
 ScAddr CoreKeynodes::nrel_basic_sequence;
+ScAddr CoreKeynodes::action_get_decomposition;
+ScAddr CoreKeynodes::nrel_section_decomposition;
 
 }  // namespace scAgentsCommon

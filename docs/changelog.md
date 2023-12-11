@@ -16,6 +16,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Clarify events managers for sc-storage: pick out subscription and emission managers
 - Clarify context manager for sc-memory
 - Common secured interface for sc-memory
+- GetDecompositionAgent
 
 ### Fixed
 
