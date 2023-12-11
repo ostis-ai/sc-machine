@@ -251,7 +251,7 @@ class SCsWriter:
 
         main_idtf = None
         if not re.match(r"^[0-9a-zA-Z_]*$", system_idtf):
-            if re.match(r"^[0-9a-zA-Z_а-яА-Я*' ]*$", system_idtf):
+            if re.match(r"^[0-9a-zA-Z_а-яёА-ЯЁ*' ]*$", system_idtf):
                 main_idtf = system_idtf
 
             system_idtf = None
