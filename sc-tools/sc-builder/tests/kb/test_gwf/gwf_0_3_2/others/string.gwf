@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<GWF version="2.0">
+    <staticSector>
+        <node type="node/const/general_node" idtf="" shapeColor="0" id="115553120" parent="0" x="488" y="370" haveBus="false" idtf_pos="0">
+            <content type="1" mime_type="content/term" content_visibility="true" file_name=""><![CDATA[Старый]]></content>
+        </node>
+    </staticSector>
+</GWF>

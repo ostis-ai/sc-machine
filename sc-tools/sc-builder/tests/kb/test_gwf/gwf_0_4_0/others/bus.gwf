@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<GWF version="2.0">
+    <staticSector>
+        <node type="node/const/perm/general" idtf="" shapeColor="0" id="2837957862880" parent="0" x="145" y="208" haveBus="true" idtf_pos="0">
+            <content type="0" mime_type="" content_visibility="false" file_name=""/>
+        </node>
+        <bus type="bus" idtf="" shapeColor="0" id="2837983353248" parent="0" owner="2837957862880" b_x="145" b_y="217.5" e_x="145" e_y="623">
+            <points/>
+        </bus>
+    </staticSector>
+</GWF>
