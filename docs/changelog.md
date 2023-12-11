@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Support for gwf <0.4.0
 - Monitors for processes and thread synchronization
 - Monitors tables for sc-addresses monitors and sc-event monitors
 - Distribution of sc-segments by active processes and threads
