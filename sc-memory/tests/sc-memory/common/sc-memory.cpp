@@ -19,7 +19,7 @@ void checkConnectionInStruct(
     EXPECT_TRUE(checkEdge);
     if (checkEdge == SC_FALSE)
       SC_LOG_ERROR(
-          "Edge between %s" + m_ctx->HelperGetSystemIdtf(keynodeAddr) + " and %s" +
+          "Edge between " + m_ctx->HelperGetSystemIdtf(keynodeAddr) + " and " +
           m_ctx->HelperGetSystemIdtf(otherKeynodeAddr) + " doesn't belong to struct");
   }
 }
@@ -141,14 +141,6 @@ TEST_F(ScMemoryTestWithInitMemoryGeneratedStructure, TestInitMemoryGeneratedStru
   ScMemoryContext * context = m_ctx.get();
 
   ScAddrVector const & keynodesAddrs = {
-      ScKeynodes::kCommandStateAddr,
-      ScKeynodes::kCommandInitiatedAddr,
-      ScKeynodes::kCommandProgressedAddr,
-      ScKeynodes::kCommandFinishedAddr,
-      ScKeynodes::kNrelResult,
-      ScKeynodes::kNrelCommonTemplate,
-      ScKeynodes::kNrelIdtf,
-      ScKeynodes::kNrelFormat,
       ScKeynodes::kScResult,
       ScKeynodes::kBinaryType};
 
@@ -161,9 +153,7 @@ TEST_F(ScMemoryTestWithInitMemoryGeneratedStructure, TestInitMemoryGeneratedStru
       ScKeynodes::kScResultErrorInvalidType,
       ScKeynodes::kScResultErrorIO,
       ScKeynodes::kScResultInvalidState,
-      ScKeynodes::kScResultErrorNotFound,
-      ScKeynodes::kScResultErrorNoWriteRights,
-      ScKeynodes::kScResultErrorNoReadRights};
+      ScKeynodes::kScResultErrorNotFound};
 
   ScAddrVector const & binaryTypes = {
       ScKeynodes::kBinaryDouble,

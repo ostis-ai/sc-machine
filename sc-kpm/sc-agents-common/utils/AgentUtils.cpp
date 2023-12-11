@@ -6,7 +6,7 @@
 
 #include "AgentUtils.hpp"
 
-#include <sc-memory/sc_wait.hpp>
+#include <sc-memory/kpm/sc_wait.hpp>
 
 #include "IteratorUtils.hpp"
 #include "GenerationUtils.hpp"
@@ -45,10 +45,12 @@ bool AgentUtils::waitAgentResult(ScMemoryContext * ms_context, const ScAddr & qu
 {
   SC_CHECK_PARAM(questionNode, ("Invalid question node address"));
 
-  auto check = [ms_context](ScAddr const & listenAddr, ScAddr const & edgeAddr, ScAddr const & otherAddr) {
-    return ms_context->HelperCheckEdge(CoreKeynodes::nrel_answer, edgeAddr, ScType::EdgeAccessConstPosPerm);
+  auto check = [ms_context](ScAddr const & listenAddr, ScAddr const & edgeAddr, ScAddr const & otherAddr) -> sc_result {
+    return ms_context->HelperCheckEdge(CoreKeynodes::nrel_answer, edgeAddr, ScType::EdgeAccessConstPosPerm)
+               ? SC_RESULT_OK
+               : SC_RESULT_NO;
   };
-  ScWaitCondition<ScEventAddOutputEdge> waiter(*ms_context, questionNode, SC_WAIT_CHECK(check));
+  ScWaitCondition<ScEventAddOutputEdge> waiter(*ms_context, questionNode, check);
   return waiter.Wait(waitTime);
 }
 
@@ -101,15 +103,16 @@ bool AgentUtils::applyAction(
     onEventClassAddr = scAgentsCommon::CoreKeynodes::question_initiated;
 
   auto check = [](ScAddr const & listenAddr, ScAddr const & edgeAddr, ScAddr const & otherAddr) {
-    return otherAddr == scAgentsCommon::CoreKeynodes::question_finished;
+    return otherAddr == scAgentsCommon::CoreKeynodes::question_finished ? SC_RESULT_OK : SC_RESULT_ERROR;
   };
 
   auto initialize = [ms_context, onEventClassAddr, actionNode]() {
     ms_context->CreateEdge(ScType::EdgeAccessConstPosPerm, onEventClassAddr, actionNode);
   };
 
-  ScWaitCondition<ScEventAddInputEdge> waiter(*ms_context, actionNode, SC_WAIT_CHECK(check));
-  return waiter.Wait(waitTime, initialize);
+  ScWaitCondition<ScEventAddInputEdge> waiter(*ms_context, actionNode, check);
+  initialize();
+  return waiter.Wait(waitTime);
 }
 
 ScAddr AgentUtils::initAgentAndWaitResult(

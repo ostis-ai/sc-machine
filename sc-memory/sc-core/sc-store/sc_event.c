@@ -53,9 +53,9 @@ sc_result _sc_event_registration_manager_add(sc_event_registration_manager * man
   }
 
   // if there are no events for specified sc-element, then create new events list
-  element_events_list = (sc_hash_table_list *)sc_hash_table_get(manager->events_table, TABLE_KEY(event->element));
+  element_events_list = (sc_hash_table_list *)sc_hash_table_get(manager->events_table, TABLE_KEY(event->addr));
   element_events_list = sc_hash_table_list_append(element_events_list, (sc_pointer)event);
-  sc_hash_table_insert(manager->events_table, TABLE_KEY(event->element), (sc_pointer)element_events_list);
+  sc_hash_table_insert(manager->events_table, TABLE_KEY(event->addr), (sc_pointer)element_events_list);
 
   sc_monitor_release_write(&manager->events_table_monitor);
 
@@ -72,7 +72,7 @@ sc_result _sc_event_registration_manager_remove(sc_event_registration_manager * 
     return SC_RESULT_NO;
 
   sc_monitor_acquire_write(&manager->events_table_monitor);
-  element_events_list = (sc_hash_table_list *)sc_hash_table_get(manager->events_table, TABLE_KEY(event->element));
+  element_events_list = (sc_hash_table_list *)sc_hash_table_get(manager->events_table, TABLE_KEY(event->addr));
   if (element_events_list == null_ptr)
     goto error;
 
@@ -82,9 +82,9 @@ sc_result _sc_event_registration_manager_remove(sc_event_registration_manager * 
   // remove event from list of events for specified sc-element
   element_events_list = sc_hash_table_list_remove(element_events_list, (sc_const_pointer)event);
   if (element_events_list == null_ptr)
-    sc_hash_table_remove(manager->events_table, TABLE_KEY(event->element));
+    sc_hash_table_remove(manager->events_table, TABLE_KEY(event->addr));
   else
-    sc_hash_table_insert(manager->events_table, TABLE_KEY(event->element), (sc_pointer)element_events_list);
+    sc_hash_table_insert(manager->events_table, TABLE_KEY(event->addr), (sc_pointer)element_events_list);
 
   sc_monitor_release_write(&manager->events_table_monitor);
   return SC_RESULT_OK;
@@ -121,7 +121,7 @@ sc_event * sc_event_new(
   sc_event * event = null_ptr;
 
   event = sc_mem_new(sc_event, 1);
-  event->element = el;
+  event->addr = el;
   event->type = type;
   event->callback = callback;
   event->delete_callback = delete_callback;
@@ -151,7 +151,7 @@ sc_event * sc_event_new_ex(
   sc_event * event = null_ptr;
 
   event = sc_mem_new(sc_event, 1);
-  event->element = el;
+  event->addr = el;
   event->type = type;
   event->callback_ex = callback;
   event->delete_callback = delete_callback;
@@ -183,7 +183,7 @@ sc_result sc_event_destroy(sc_event * event)
     event->delete_callback(event);
 
   event->ref_count = SC_EVENT_REQUEST_DESTROY;
-  event->element = SC_ADDR_EMPTY;
+  event->addr = SC_ADDR_EMPTY;
   event->type = 0;
   event->callback_ex = null_ptr;
   event->delete_callback = null_ptr;
@@ -299,7 +299,7 @@ sc_result sc_event_emit_impl(
   {
     event = (sc_event *)element_events_list->data;
 
-    if (event->type == type)
+    if ((event->type & type) == type)
       _sc_event_emission_manager_add(events_queue, event, edge, other_el);
 
     element_events_list = element_events_list->next;
@@ -321,5 +321,5 @@ sc_pointer sc_event_get_data(sc_event const * event)
 
 sc_addr sc_event_get_element(sc_event const * event)
 {
-  return event->element;
+  return event->addr;
 }

@@ -7,7 +7,7 @@
 #ifndef _sc_event_h_
 #define _sc_event_h_
 
-#include "sc_types.h"
+#include "sc-event/sc_event_types.h"
 
 typedef struct _sc_event_registration_manager sc_event_registration_manager;
 
@@ -50,6 +50,15 @@ _SC_EXTERN sc_event * sc_event_new(
 _SC_EXTERN sc_event * sc_event_new_ex(
     sc_memory_context const * ctx,
     sc_addr el,
+    sc_event_type type,
+    sc_pointer data,
+    fEventCallbackEx callback,
+    fDeleteCallback delete_callback);
+
+_SC_EXTERN sc_event * sc_event_new_ex2(
+    sc_memory_context const * ctx,
+    sc_addr * addrs,
+    sc_uint32 addrs_count,
     sc_event_type type,
     sc_pointer data,
     fEventCallbackEx callback,

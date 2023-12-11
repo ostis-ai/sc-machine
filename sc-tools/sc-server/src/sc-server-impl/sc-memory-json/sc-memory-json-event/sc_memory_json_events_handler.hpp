@@ -34,8 +34,8 @@ private:
       {"add_ingoing_edge", ScEvent::Type::AddInputEdge},
       {"remove_outgoing_edge", ScEvent::Type::RemoveOutputEdge},
       {"remove_ingoing_edge", ScEvent::Type::RemoveInputEdge},
-      {"content_change", ScEvent::Type::ContentChanged},
-      {"delete_element", ScEvent::Type::EraseElement},
+      {"content_change", ScEvent::Type::ChangeContent},
+      {"delete_element", ScEvent::Type::RemoveElement},
   };
 
   ScMemoryJsonPayload HandleRequestPayload(
