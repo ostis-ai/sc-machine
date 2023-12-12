@@ -20,6 +20,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- Parse contours identifiers by gwf2scs-translator
 - Symmetric sc-edges search
 - sc-machine crashes when trying to view a picture in sc-web ([311](https://github.com/ostis-ai/sc-machine/issues/311))
 - No tests for ScMemory::Initialize(sc_memory_params) with different parameters ([216](https://github.com/ostis-ai/sc-machine/issues/216))

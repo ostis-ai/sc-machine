@@ -246,28 +246,27 @@ class SCsWriter:
         self.write_edges(buffer, edges_queue, elements)
 
     def correct_idtf(self, buffer, el):
-        idtf = el["idtf"]
+        system_idtf = el["idtf"]
         is_var = self.is_variable(el["type"])
 
         main_idtf = None
-        if not re.match(r"^[0-9a-zA-Z_]*$", idtf):
-            idtf = ""
-            if re.match(r"^[0-9a-zA-Z_*'.. ]*$", idtf):
-                main_idtf = el["idtf"]
-            else:
-                self.add_error("Identifier `{}` should match expression `^[0-9a-zA-Z_]*$`".format(idtf))
+        if not re.match(r"^[0-9a-zA-Z_]*$", system_idtf):
+            if re.match(r"^[0-9a-zA-Z_а-яёА-ЯЁ*' ]*$", system_idtf):
+                main_idtf = system_idtf
 
-        if idtf is None or len(idtf) == 0:
+            system_idtf = None
+
+        if system_idtf is None or len(system_idtf) == 0:
             if is_var:
                 el["idtf"] = ".._el_{}".format(el["id"].replace("-", "_"))
             else:
                 el["idtf"] = "..el_{}".format(el["id"].replace("-", "_"))
         elif is_var:
-            if not idtf.startswith("_"):
-                el["idtf"] = "_{}".format(idtf.replace("-", "_"))
+            if not system_idtf.startswith("_"):
+                el["idtf"] = "_{}".format(system_idtf.replace("-", "_"))
         elif not is_var:
-            if idtf.startswith("_"):
-                el["idtf"] = "{}".format(idtf[1:].replace("-", "_"))
+            if system_idtf.startswith("_"):
+                el["idtf"] = "{}".format(system_idtf[1:].replace("-", "_"))
 
         if main_idtf is not None:
             if main_idtf.startswith("["):
@@ -361,7 +360,7 @@ class SCsWriter:
                     self.add_error("Can't find target element with id {}".format(e["target"]))
                     continue
 
-                self.add_error("Wasn't able to create edge: {}->{}".format(src_el["idtf"], trg_el["idtf"]))
+                self.add_error("Wasn't able to create edge: {} -> {}".format(src_el["idtf"], trg_el["idtf"]))
 
     def write_contour(self, buffer, el, elements, nested_level):
         el_id = el["id"]
