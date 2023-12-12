@@ -35,6 +35,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Internal sentences after sc.s-contour assignment
 - The success of finishing the action is marked first and only then that it was finished
 - Finish agent wait time
+- SC.g-elements images in docs
 
 ### Removed
 

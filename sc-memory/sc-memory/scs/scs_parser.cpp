@@ -15,7 +15,6 @@
 #endif
 
 #if SC_DEBUG_MODE
-/// TODO: @deniskoronchik: make as cmake parameter
 #  define SCS_DEBUG_TOKEN 1
 #endif
 

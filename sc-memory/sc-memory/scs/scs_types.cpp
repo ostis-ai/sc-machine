@@ -52,32 +52,40 @@ TypeResolver::MapType TypeResolver::ms_connectorToType = {
     {"</~", ScType::EdgeAccessConstFuzTemp},
     {"_~/>", ScType::EdgeAccessVarFuzTemp},
     {"_</~", ScType::EdgeAccessVarFuzTemp},
-    {"</~_", ScType::EdgeAccessVarFuzTemp}};
+    {"</~_", ScType::EdgeAccessVarFuzTemp}
+};
 
+// TODO: divide into const and var types
 TypeResolver::MapType TypeResolver::ms_keynodeToType = {
     {"sc_node", ScType::Node},
+
     {"sc_link", ScType::Link},
     {"sc_link_class", ScType::LinkClass},
-    {"sc_arc_common", ScType::EdgeDCommon},
+
+    {"sc_arc_common", ScType::EdgeDCommon}, // backward compatibility
     {"sc_edge_dcommon", ScType::EdgeDCommon},
-    {"sc_edge", ScType::EdgeUCommon},
+
+    {"sc_edge", ScType::EdgeUCommon}, // backward compatibility
     {"sc_edge_ucommon", ScType::EdgeUCommon},
-    {"sc_arc_main", ScType::EdgeAccessConstPosPerm},
+
+    {"sc_arc_main", ScType::EdgeAccessConstPosPerm}, // backward compatibility
     {"sc_edge_main", ScType::EdgeAccessConstPosPerm},
-    {"sc_arc_access", ScType::EdgeAccess},
+
+    {"sc_arc_access", ScType::EdgeAccess}, // backward compatibility
     {"sc_edge_access", ScType::EdgeAccess},
 
-    {"sc_node_tuple", ScType::NodeTuple},
+    {"sc_node_tuple", ScType::NodeTuple}, // backward compatibility
+    {"sc_node_not_binary_tuple", ScType::NodeTuple},
+
     {"sc_node_struct", ScType::NodeStruct},
     {"sc_node_role_relation", ScType::NodeRole},
     {"sc_node_norole_relation", ScType::NodeNoRole},
-    {"sc_node_class", ScType::NodeClass},
-    {"sc_node_abstract", ScType::NodeAbstract},
+    {"sc_node_abstract", ScType::NodeAbstract}, // TODO: remove it
     {"sc_node_material", ScType::NodeMaterial},
 
-    // backward compatibility
-    {"sc_node_not_relation", ScType::NodeClass},
-    {"sc_node_not_binary_tuple", ScType::NodeTuple}};
+    {"sc_node_not_relation", ScType::NodeClass}, // backward compatibility
+    {"sc_node_class", ScType::NodeClass},
+};
 
 TypeResolver::IsType TypeResolver::ms_reversedConnectors =
     {"<", "<..", "<=", "_<=","<=_", "<-", "_<-","<-_", "<|-", "_<|-","<|-_", "</-", "_</-","</-_", "<~", "_<~","<~_", "<|~", "<|~_", "_<|~", "</~", "_</~", "</~_"};
