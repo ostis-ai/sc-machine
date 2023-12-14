@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<GWF version="2.0">
+    <staticSector>
+        <node type="node/const/perm/tuple" idtf="" shapeColor="193" id="2837956771120" parent="0" x="388" y="390" haveBus="false" idtf_pos="0">
+            <content type="0" mime_type="" content_visibility="false" file_name=""/>
+        </node>
+    </staticSector>
+</GWF>

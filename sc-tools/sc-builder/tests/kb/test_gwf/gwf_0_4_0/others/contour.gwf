@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<GWF version="2.0">
+    <staticSector>
+        <contour type="contour/const/perm" idtf="" shapeColor="0" id="2837983355360" parent="0">
+            <points>
+                <point x="200" y="175"/>
+                <point x="478" y="176"/>
+                <point x="481" y="405"/>
+                <point x="201" y="404"/>
+            </points>
+        </contour>
+    </staticSector>
+</GWF>

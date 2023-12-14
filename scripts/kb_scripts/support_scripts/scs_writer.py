@@ -2,7 +2,6 @@ import re
 from os import path
 
 NodeTypeSets = {
-
     "node/-/-/not_define": ["sc_node"],
     "node/-/not_define": ["sc_node"],
 
@@ -25,6 +24,16 @@ NodeTypeSets = {
     "node/const/perm/relation": ["sc_node_norole_relation"],
     "node/const/perm/group": ["sc_node_class"],
 
+    "node/const/temp/general": ["sc_node"],
+    "node/const/temp/general_node": ["sc_node"],
+    "node/const/temp/terminal": ["sc_node_abstract"],
+    "node/const/temp/struct": ["sc_node_struct"],
+    "node/const/temp/tuple": ["sc_node_tuple"],
+    "node/const/temp/role": ["sc_node_role_relation"],
+    "node/const/temp/attribute": ["sc_node_role_relation"],
+    "node/const/temp/relation": ["sc_node_norole_relation"],
+    "node/const/temp/group": ["sc_node_class"],
+
     "node/var/general_node": ["sc_node"],
     "node/var/terminal": ["sc_node_abstract"],
     "node/var/struct": ["sc_node_struct"],
@@ -42,7 +51,37 @@ NodeTypeSets = {
     "node/var/perm/role": ["sc_node_role_relation"],
     "node/var/perm/attribute": ["sc_node_role_relation"],
     "node/var/perm/relation": ["sc_node_norole_relation"],
-    "node/var/perm/group": ["sc_node_class"]
+    "node/var/perm/group": ["sc_node_class"],
+
+    "node/var/temp/general": ["sc_node"],
+    "node/var/temp/general_node": ["sc_node"],
+    "node/var/temp/terminal": ["sc_node_abstract"],
+    "node/var/temp/struct": ["sc_node_struct"],
+    "node/var/temp/tuple": ["sc_node_tuple"],
+    "node/var/temp/role": ["sc_node_role_relation"],
+    "node/var/temp/attribute": ["sc_node_role_relation"],
+    "node/var/temp/relation": ["sc_node_norole_relation"],
+    "node/var/temp/group": ["sc_node_class"],
+}
+
+BackwardNodeTypes = {
+    "node/-/not_define": "node/-/-/not_define",
+    "node/var/symmetry": "node/var/perm/tuple",
+    "node/const/general_node": "node/const/perm/general",
+    "node/const/relation": "node/const/perm/relation",
+    "node/const/attribute": "node/const/perm/role",
+    "node/const/nopredmet": "node/const/perm/struct",
+    "node/const/material": "node/const/perm/terminal",
+    "node/const/asymmetry": "node/const/perm/tuple",
+    "node/var/general_node": "node/var/perm/general",
+    "node/var/relation": "node/var/perm/relation",
+    "node/var/attribute": "node/var/perm/role",
+    "node/var/nopredmet": "node/var/perm/struct",
+    "node/var/material": "node/var/perm/terminal",
+    "node/const/predmet": "node/const/temp/struct",
+    "node/const/group": "node/const/perm/group",
+    "node/var/predmet": "node/var/temp/struct",
+    "node/var/group": "node/var/perm/group",
 }
 
 UnsupportedNodeTypeSets = {
@@ -145,6 +184,28 @@ EdgeTypes = {
     "pair/var/orient": "_=>",
     "pair/var/noorient": "_<=>"
 
+}
+
+BackwardEdgeTypes = {
+    "pair/const/synonym": "pair/const/-/perm/noorien",
+    "pair/const/orient": "pair/const/-/perm/orient",
+    "arc/const/fuz": "pair/const/fuz/perm/orient/membership",
+    "arc/const/fuz/temp": "pair/const/fuz/temp/orient/membership",
+    "arc/const/neg": "pair/const/neg/perm/orient/membership",
+    "arc/const/neg/temp": "pair/const/neg/temp/orient/membership",
+    "arc/const/pos": "pair/const/pos/perm/orient/membership",
+    "arc/const/pos/temp": "pair/const/pos/temp/orient/membership",
+    "pair/var/noorient": "pair/-/-/-/noorient",
+    "pair/var/orient": "pair/-/-/-/orient",
+    "arc/var/fuz": "pair/var/fuz/perm/orient/membership",
+    "arc/var/fuz/temp": "pair/var/fuz/temp/orient/membership",
+    "arc/var/neg": "pair/var/neg/perm/orient/membership",
+    "arc/var/neg/temp": "pair/var/neg/temp/orient/membership",
+    "arc/var/pos": "pair/var/-/perm/noorien",
+    "arc/var/pos/temp": "pair/var/pos/temp/orient/membership",
+    "pair/noorient": "pair/-/-/-/noorient",
+    "pair/orient": "pair/-/-/-/orient",
+    "arc/-/-": "pair/-/-/-/orient",
 }
 
 UnsupportedEdgeTypes = {
@@ -322,7 +383,9 @@ class SCsWriter:
                 edge_type = e["type"]
                 is_unsupported = False
                 try:
-                    symbol = EdgeTypes[edge_type]
+                    symbol = EdgeTypes.get(edge_type)
+                    if symbol is None:
+                        symbol = EdgeTypes[BackwardEdgeTypes[edge_type]]
                 except KeyError:
                     try:
                         scs_edge_type = UnsupportedEdgeTypes[edge_type]
@@ -377,7 +440,9 @@ class SCsWriter:
             idtf = el["idtf"]
 
             try:
-                node_set = NodeTypeSets[el_type]
+                node_set = NodeTypeSets.get(el_type)
+                if node_set is None:
+                    node_set = NodeTypeSets[BackwardNodeTypes[el_type]]
                 buffer.write(idtf)
 
                 for s in node_set:
