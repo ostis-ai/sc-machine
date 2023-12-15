@@ -26,10 +26,7 @@ sc_result agent_erase_elements(const sc_event * event, sc_addr arg)
 
   if (sc_helper_check_arc(
           s_erase_elements_ctx, keynode_question_erase_elements, question_addr, sc_type_arc_pos_const_perm) == SC_FALSE)
-  {
-    finish_question_unsuccessfully(s_erase_elements_ctx, question_addr);
     return SC_RESULT_ERROR_INVALID_TYPE;
-  }
 
   sc_iterator5 * get_set_it = sc_iterator5_f_a_a_a_f_new(
       s_erase_elements_ctx,
