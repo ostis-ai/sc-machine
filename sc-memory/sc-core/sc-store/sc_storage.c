@@ -199,17 +199,21 @@ error:
 
 sc_segment * _sc_storage_get_last_not_engaged_segment()
 {
-  sc_addr_seg const segment_num = storage->last_not_engaged_segment_num;
-
   sc_segment * segment = null_ptr;
-  if (segment_num != 0)
-    segment = storage->segments[segment_num - 1];
+  sc_addr_seg segment_num;
 
-  if (segment != null_ptr)
+  do
   {
-    storage->last_not_engaged_segment_num = segment->elements[0].flags.access_levels;
-    segment->elements[0].flags.access_levels = 0;
-  }
+    segment_num = storage->last_not_engaged_segment_num;
+    segment = segment_num == 0 ? null_ptr : storage->segments[segment_num - 1];
+
+    if (segment != null_ptr)
+    {
+      storage->last_not_engaged_segment_num = segment->elements[0].flags.access_levels;
+      segment->elements[0].flags.access_levels = 0;
+    }
+  } while (segment != null_ptr &&
+           (segment->last_engaged_offset + 1 == SC_SEGMENT_ELEMENTS_COUNT && segment->last_released_offset == 0));
 
   return segment;
 }
