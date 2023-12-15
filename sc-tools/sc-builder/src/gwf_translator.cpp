@@ -24,7 +24,7 @@ GWFTranslator::GWFTranslator(ScMemoryContext & context)
 
 std::string GWFTranslator::ConvertToSCsPath(std::string const & path) const
 {
-  return path.substr(0, path.rfind('.') + 1) + "scs";
+  return path + ".scs";
 }
 
 bool GWFTranslator::ErrorsExist(std::string const & path) const

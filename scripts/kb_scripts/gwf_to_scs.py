@@ -19,7 +19,7 @@ class Gwf2SCs:
         elements = {}
         error = Gwf2SCs.parse_gwf(file, elements)
         if error is None:
-            errors = self.convert_to_scs(os.path.splitext(file)[0] + Gwf2SCs.SCS_FORMAT, elements)
+            errors = self.convert_to_scs(file + Gwf2SCs.SCS_FORMAT, elements)
             if len(errors) != 0:
                 for error in errors:
                     self.log_error(file, error)
