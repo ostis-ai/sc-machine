@@ -46,6 +46,9 @@ public:
   SC_PROPERTY(Keynode("nrel_main_idtf"), ForceCreate)
   static ScAddr nrel_main_idtf;
 
+  SC_PROPERTY(Keynode("nrel_system_identifier"), ForceCreate)
+  static ScAddr nrel_system_identifier;
+
   SC_PROPERTY(Keynode("nrel_lexicographically_more"), ForceCreate)
   static ScAddr nrel_lexicographically_more;
 

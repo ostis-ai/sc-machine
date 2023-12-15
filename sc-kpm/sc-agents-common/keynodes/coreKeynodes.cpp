@@ -17,6 +17,7 @@ ScAddr CoreKeynodes::nrel_answer;
 ScAddr CoreKeynodes::nrel_inclusion;
 ScAddr CoreKeynodes::nrel_idtf;
 ScAddr CoreKeynodes::nrel_main_idtf;
+ScAddr CoreKeynodes::nrel_system_identifier;
 ScAddr CoreKeynodes::nrel_lexicographically_more;
 ScAddr CoreKeynodes::nrel_lexicographically_less;
 ScAddr CoreKeynodes::nrel_equal_strings;
