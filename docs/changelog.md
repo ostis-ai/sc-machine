@@ -21,6 +21,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- Behavior of the agent_erase_elements on not his action classes
 - Deleting existing and translated .scs sources with the same name
 - Parse contours identifiers by gwf2scs-translator
 - Symmetric sc-edges search
