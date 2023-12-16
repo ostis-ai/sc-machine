@@ -112,15 +112,13 @@ public:
   {
     ScStreamPtr const stream = m_ctx.GetLinkContent(m_addr);
 
-    // Check for empty content.
-    if (!stream)
-      return Type();
+    // Check for invalid address.
+    if (!stream || !stream->IsValid())
+      SC_THROW_EXCEPTION(utils::ExceptionInvalidParams, "Invalid sc-address to get content value");
 
     Type result;
     if (!Stream2Value(stream, result))
-    {
       SC_THROW_EXCEPTION(utils::ExceptionCritical, "Failed to get the value of " + std::to_string(m_addr.Hash()));
-    }
 
     return result;
   }

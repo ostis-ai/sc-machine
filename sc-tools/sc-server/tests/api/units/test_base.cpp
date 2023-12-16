@@ -468,6 +468,194 @@ TEST_F(ScServerTest, HandleContent)
   client.Stop();
 }
 
+TEST_F(ScServerTest, SetContentForNode)
+{
+  ScClient client;
+  EXPECT_TRUE(client.Connect(m_server->GetUri()));
+  client.Run();
+
+  ScAddr const nodeAddr = m_ctx->CreateNode(ScType::NodeConst);
+
+  std::string const payloadString = ScMemoryJsonConverter::From(
+      0,
+      "content",
+      ScMemoryJsonPayload::array({
+          {
+              {"command", "set"},
+              {"type", "string"},
+              {"data", "some content"},
+              {"addr", nodeAddr.Hash()},
+          },
+      }));
+  EXPECT_TRUE(client.Send(payloadString));
+
+  auto const response = client.GetResponseMessage();
+  EXPECT_FALSE(response.is_null());
+  auto const & responsePayload = response["payload"];
+  EXPECT_FALSE(responsePayload.is_null());
+  EXPECT_TRUE(response["status"].get<sc_bool>());
+  EXPECT_TRUE(response["errors"].empty());
+
+  EXPECT_FALSE(responsePayload[0].get<sc_bool>());
+
+  client.Stop();
+}
+
+TEST_F(ScServerTest, SetContentForEdge)
+{
+  ScClient client;
+  EXPECT_TRUE(client.Connect(m_server->GetUri()));
+  client.Run();
+
+  ScAddr const nodeAddr1 = m_ctx->CreateNode(ScType::NodeConst);
+  ScAddr const nodeAddr2 = m_ctx->CreateNode(ScType::NodeConst);
+  ScAddr const edgeAddr = m_ctx->CreateEdge(ScType::EdgeAccessConstPosPerm, nodeAddr1, nodeAddr2);
+
+  std::string const payloadString = ScMemoryJsonConverter::From(
+      0,
+      "content",
+      ScMemoryJsonPayload::array({
+          {
+              {"command", "set"},
+              {"type", "string"},
+              {"data", "some content"},
+              {"addr", edgeAddr.Hash()},
+          },
+      }));
+  EXPECT_TRUE(client.Send(payloadString));
+
+  auto const response = client.GetResponseMessage();
+  EXPECT_FALSE(response.is_null());
+  auto const & responsePayload = response["payload"];
+  EXPECT_FALSE(responsePayload.is_null());
+  EXPECT_TRUE(response["status"].get<sc_bool>());
+  EXPECT_TRUE(response["errors"].empty());
+
+  EXPECT_FALSE(responsePayload[0].get<sc_bool>());
+
+  client.Stop();
+}
+
+TEST_F(ScServerTest, SetContentForInvalidLink)
+{
+  ScClient client;
+  EXPECT_TRUE(client.Connect(m_server->GetUri()));
+  client.Run();
+
+  std::string const payloadString = ScMemoryJsonConverter::From(
+      0,
+      "content",
+      ScMemoryJsonPayload::array({
+          {
+              {"command", "set"},
+              {"type", "string"},
+              {"data", "some content"},
+              {"addr", 3},
+          },
+      }));
+  EXPECT_TRUE(client.Send(payloadString));
+
+  auto const response = client.GetResponseMessage();
+  EXPECT_FALSE(response.is_null());
+  auto const & responsePayload = response["payload"];
+  EXPECT_TRUE(responsePayload.is_null());
+  EXPECT_FALSE(response["status"].get<sc_bool>());
+  EXPECT_FALSE(response["errors"].empty());
+
+  client.Stop();
+}
+
+TEST_F(ScServerTest, GetContentForNode)
+{
+  ScClient client;
+  EXPECT_TRUE(client.Connect(m_server->GetUri()));
+  client.Run();
+
+  ScAddr const nodeAddr = m_ctx->CreateNode(ScType::NodeConst);
+
+  std::string const payloadString = ScMemoryJsonConverter::From(
+      0,
+      "content",
+      ScMemoryJsonPayload::array({
+          {
+              {"command", "get"},
+              {"addr", nodeAddr.Hash()},
+          },
+      }));
+  EXPECT_TRUE(client.Send(payloadString));
+
+  auto const response = client.GetResponseMessage();
+  EXPECT_FALSE(response.is_null());
+  auto const & responsePayload = response["payload"];
+  EXPECT_FALSE(responsePayload.is_null());
+  EXPECT_TRUE(response["status"].get<sc_bool>());
+  EXPECT_TRUE(response["errors"].empty());
+
+  EXPECT_TRUE(responsePayload[0]["value"].get<std::string>().empty());
+
+  client.Stop();
+}
+
+TEST_F(ScServerTest, GetContentForEdge)
+{
+  ScClient client;
+  EXPECT_TRUE(client.Connect(m_server->GetUri()));
+  client.Run();
+
+  ScAddr const nodeAddr1 = m_ctx->CreateNode(ScType::NodeConst);
+  ScAddr const nodeAddr2 = m_ctx->CreateNode(ScType::NodeConst);
+  ScAddr const edgeAddr = m_ctx->CreateEdge(ScType::EdgeAccessConstPosPerm, nodeAddr1, nodeAddr2);
+
+  std::string const payloadString = ScMemoryJsonConverter::From(
+      0,
+      "content",
+      ScMemoryJsonPayload::array({
+          {
+              {"command", "get"},
+              {"addr", edgeAddr.Hash()},
+          },
+      }));
+  EXPECT_TRUE(client.Send(payloadString));
+
+  auto const response = client.GetResponseMessage();
+  EXPECT_FALSE(response.is_null());
+  auto const & responsePayload = response["payload"];
+  EXPECT_FALSE(responsePayload.is_null());
+  EXPECT_TRUE(response["status"].get<sc_bool>());
+  EXPECT_TRUE(response["errors"].empty());
+
+  EXPECT_TRUE(responsePayload[0]["value"].get<std::string>().empty());
+
+  client.Stop();
+}
+
+TEST_F(ScServerTest, GetContentForInvalidLink)
+{
+  ScClient client;
+  EXPECT_TRUE(client.Connect(m_server->GetUri()));
+  client.Run();
+
+  std::string const payloadString = ScMemoryJsonConverter::From(
+      0,
+      "content",
+      ScMemoryJsonPayload::array({
+          {
+              {"command", "get"},
+              {"addr", 3},
+          },
+      }));
+  EXPECT_TRUE(client.Send(payloadString));
+
+  auto const response = client.GetResponseMessage();
+  EXPECT_FALSE(response.is_null());
+  auto const & responsePayload = response["payload"];
+  EXPECT_TRUE(responsePayload.is_null());
+  EXPECT_FALSE(response["status"].get<sc_bool>());
+  EXPECT_FALSE(response["errors"].empty());
+
+  client.Stop();
+}
+
 TEST_F(ScServerTest, HandleContentOld)
 {
   ScClient client;
