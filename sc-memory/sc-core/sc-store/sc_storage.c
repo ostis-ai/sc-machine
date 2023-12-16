@@ -1021,7 +1021,10 @@ sc_result sc_storage_set_link_content(
 
   if (sc_fs_memory_link_string_ext(SC_ADDR_LOCAL_TO_INT(addr), string, string_size, is_searchable_string) !=
       SC_FS_MEMORY_OK)
+  {
+    result = SC_RESULT_ERROR_IO;
     goto error;
+  }
 
   sc_addr empty;
   SC_ADDR_MAKE_EMPTY(empty);
@@ -1044,6 +1047,8 @@ sc_result sc_storage_get_link_content(sc_memory_context const * ctx, sc_addr add
   sc_result result;
 
   sc_element * el = null_ptr;
+  sc_char * string = null_ptr;
+  sc_uint32 string_size = 0;
 
   sc_monitor * monitor = sc_monitor_get_monitor_for_addr(&storage->addr_monitors_table, addr);
   sc_monitor_acquire_read(monitor);
@@ -1052,16 +1057,11 @@ sc_result sc_storage_get_link_content(sc_memory_context const * ctx, sc_addr add
   if (result != SC_RESULT_OK)
     goto error;
 
-  if ((el->flags.type & sc_type_link) != sc_type_link)
+  if ((el->flags.type & sc_type_link) == sc_type_link)
   {
-    result = SC_RESULT_ERROR_INVALID_TYPE;
-    goto error;
+    if (sc_fs_memory_get_string_by_link_hash(SC_ADDR_LOCAL_TO_INT(addr), &string, &string_size) != SC_FS_MEMORY_OK)
+      goto error;
   }
-
-  sc_char * string = null_ptr;
-  sc_uint32 string_size = 0;
-  if (sc_fs_memory_get_string_by_link_hash(SC_ADDR_LOCAL_TO_INT(addr), &string, &string_size) != SC_FS_MEMORY_OK)
-    goto error;
 
   sc_monitor_release_read(monitor);
 

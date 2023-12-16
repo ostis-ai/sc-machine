@@ -272,10 +272,24 @@ bool ScMemoryContext::GetEdgeInfo(ScAddr const & edgeAddr, ScAddr & outSourceAdd
 bool ScMemoryContext::SetLinkContent(ScAddr const & addr, ScStreamPtr const & stream, bool isSearchableString)
 {
   CHECK_CONTEXT;
-  if (!stream)
+  if (!stream || !stream->IsValid())
     SC_THROW_EXCEPTION(utils::ExceptionInvalidParams, "Specified stream is invalid");
 
-  return sc_memory_set_link_content_ext(m_context, *addr, stream->m_stream, isSearchableString) == SC_RESULT_OK;
+  sc_result result = sc_memory_set_link_content_ext(m_context, *addr, stream->m_stream, isSearchableString);
+
+  switch (result)
+  {
+    case SC_RESULT_ERROR_ADDR_IS_NOT_VALID:
+      SC_THROW_EXCEPTION(utils::ExceptionInvalidParams, "Specified sc-address is invalid to set content");
+
+    case SC_RESULT_ERROR_ELEMENT_IS_NOT_LINK:
+      SC_THROW_EXCEPTION(utils::ExceptionInvalidParams, "Specified sc-element is not sc-link to set content");
+
+    default:
+      break;
+  }
+
+  return result == SC_RESULT_OK;
 }
 
 ScStreamPtr ScMemoryContext::GetLinkContent(ScAddr const & addr)
@@ -283,7 +297,7 @@ ScStreamPtr ScMemoryContext::GetLinkContent(ScAddr const & addr)
   CHECK_CONTEXT;
 
   sc_stream * s = nullptr;
-  if (sc_memory_get_link_content(m_context, *addr, &s) != SC_RESULT_OK || s == nullptr)
+  if (sc_memory_get_link_content(m_context, *addr, &s) != SC_RESULT_OK && s == nullptr)
     return std::make_shared<ScStream>(nullptr);
 
   return std::make_shared<ScStream>(s);
