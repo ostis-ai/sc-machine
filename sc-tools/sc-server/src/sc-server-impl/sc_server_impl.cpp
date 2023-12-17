@@ -11,6 +11,7 @@
 extern "C"
 {
 #include "sc-core/sc-store/sc_storage.h"
+#include "sc-core/sc-store/sc_storage_private.h"
 #include "sc-core/sc-store/sc-base/sc_thread.h"
 }
 

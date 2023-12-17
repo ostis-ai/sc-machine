@@ -7,7 +7,7 @@
 /*!
  * @file sc_memory.h
  *
- * @brief This file contains the API for managing sc-memory.
+ * @brief This file contains the C API for managing sc-memory.
  */
 
 #ifndef _sc_memory_h_
