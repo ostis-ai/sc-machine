@@ -7,7 +7,15 @@
 /*!
  * @file sc_storage.h
  *
- * @brief This file contains the C API for managing the sc-storage.
+ * @brief This file contains the core C API for managing the sc-memory.
+ *
+ * This API include core methods for managing sc-memory:
+ * - methods for initialize, save and shutdown sc-memory,
+ * - methods for create elements in sc-memory,
+ * - methods for get basic information about sc-elements,
+ * - method for delete elements from sc-memory,
+ * - methods for set/get content for/from sc-links,
+ * - methods for search sc-links by contents,
  */
 
 #ifndef _sc_storage_h_
@@ -92,11 +100,9 @@ sc_bool sc_storage_is_element(sc_memory_context const * ctx, sc_addr addr);
  *
  * This function frees the memory occupied by a sc-element identified by the provided
  * sc-addr, along with all the connected elements (input/output sc-connectors) related to it.
- * The operation result is stored in the provided pointer to sc-result.
  *
  * @param ctx A pointer to the sc-memory context that manages the operation.
  * @param addr The sc-addr of the sc-element to be freed.
- * @param result Pointer to a variable that will store the result of the operation.
  *
  * @return Returns SC_RESULT_OK if the operation executed successfully.
  *
@@ -105,8 +111,7 @@ sc_bool sc_storage_is_element(sc_memory_context const * ctx, sc_addr addr);
  *
  * Possible values for the result:
  * @retval SC_RESULT_OK The function executed successfully.
- * @retval SC_RESULT_ERROR_ELEMENT_IS_NOT_CONNECTOR The specified sc-addr does not represent a valid sc-element.
- * @retval SC_RESULT_ERROR_FULL_MEMORY Unable to allocate memory for the new sc-element.
+ * @retval SC_RESULT_ERROR_ELEMENT_IS_NOT_CONNECTOR The specified sc-addr does not represent a sc-connector.
  * @retval SC_RESULT_ERROR_ADDR_IS_NOT_VALID The specified sc-addr is not valid.
  */
 sc_result sc_storage_element_free(sc_memory_context const * ctx, sc_addr addr);
@@ -131,7 +136,7 @@ sc_result sc_storage_element_free(sc_memory_context const * ctx, sc_addr addr);
 sc_addr sc_storage_node_new(sc_memory_context const * ctx, sc_type type);
 
 /*!
- * @brief Creates a new sc-node with the specified type and returns the result of the operation.
+ * @brief Creates a new sc-node with the specified type.
  *
  * This function creates a new sc-node with the specified type and returns
  * its sc-addr. The result of the operation is stored in the provided pointer
@@ -174,7 +179,7 @@ sc_addr sc_storage_node_new_ext(sc_memory_context const * ctx, sc_type type, sc_
 sc_addr sc_storage_link_new(sc_memory_context const * ctx, sc_type type);
 
 /*!
- * @brief Creates a new sc-link with the specified type and returns the result of the operation.
+ * @brief Creates a new sc-link with the specified type.
  *
  * This function creates a new sc-link with the specified type and returns
  * its sc-addr. The result of the operation is stored in the provided pointer
@@ -220,7 +225,7 @@ sc_addr sc_storage_link_new_ext(sc_memory_context const * ctx, sc_type type, sc_
 sc_addr sc_storage_arc_new(sc_memory_context const * ctx, sc_type type, sc_addr beg, sc_addr end);
 
 /*!
- * @brief Creates a new sc-connector
+ * @brief Creates a new sc-connector with the specified type.
  *
  * This function creates a new sc-connector with the specified type, connecting the given
  * begin and end sc-elements. The type must be an arc type (e.g., sc_type_arc_common,
@@ -271,7 +276,6 @@ sc_addr sc_storage_arc_new_ext(
  *
  * @note The caller is responsible for handling any errors indicated by the result value.
  *
- * @retval 0 The function encountered an error, and the count value is not valid.
  * @retval sc_uint32 The count of output connectors for the specified sc-element.
  *
  * Possible values for the `result` parameter:
@@ -297,7 +301,6 @@ sc_uint32 sc_storage_get_element_output_arcs_count(sc_memory_context const * ctx
  * @note The caller is responsible for handling any errors indicated by the result value.
  * @note This function is thread-safe.
  *
- * @retval 0 The function encountered an error, and the count value is not valid.
  * @retval sc_uint32 The count of input sc-connectors for the specified sc-element.
  *
  * Possible values for the `result` parameter:
@@ -314,7 +317,7 @@ sc_uint32 sc_storage_get_element_input_arcs_count(sc_memory_context const * ctx,
  *
  * @param ctx A pointer to the sc-memory context that manages the operation.
  * @param addr The sc-addr of the sc-element for which to retrieve the type.
- * @param type Pointer to a variable that will store the result (type) of the operation.
+ * @param result Pointer to a variable that will store the result of the operation.
  *             It can be NULL if the result is not needed.
  *
  * @return Returns the result of the operation. If successful, the function returns
@@ -514,11 +517,15 @@ sc_result sc_storage_get_link_content(sc_memory_context const * ctx, sc_addr add
  *
  * @param ctx A pointer to the sc-memory context that manages the operation.
  * @param stream The stream containing the search string.
- * @param result_hashes Pointer to a variable that will store the result (sc-list)
- *                      of the operation. It can be NULL if the result is not needed.
- *
- * @param Valid sc-list The list containing the hash values of sc-links with content
+ * @param result_addrs The list containing the hash values of sc-links with content
  *                      matching the specified string.
+ *
+ * @return Returns an sc_result indicating the success or failure of the operation.
+ * Possible result values:
+ * @retval SC_RESULT_OK: The operation was successful. Sc-links was found by content.
+ * @retval SC_RESULT_NO_STRING: The operation was unsuccessful. Sc-links wasn't found by content.
+ * @retval SC_RESULT_ERROR_STREAM_IO: An error occurred during stream I/O.
+ * @retval SC_RESULT_ERROR_FILE_MEMORY_IO: An error occurred during file memory I/O.
  *
  * @note This function is thread-safe.
  */
@@ -536,13 +543,16 @@ sc_result sc_storage_find_links_with_content_string(
  *
  * @param ctx A pointer to the sc-memory context that manages the operation.
  * @param stream The stream containing the search substring.
- * @param result_hashes Pointer to a variable that will store the result (sc-list)
- *                      of the operation. It can be NULL if the result is not needed.
+ * @param result_addrs The list containing the hash values of sc-links with content
+ *                      containing the specified substring.
  * @param max_length_to_search_as_prefix The maximum length of the substring to search
  *                                       as a prefix. Set to 0 for a standard substring search.
  *
- * @param Valid sc-list The list containing the hash values of sc-links with content
- *                      containing the specified substring.
+ * @return Returns an sc_result indicating the success or failure of the operation.
+ * Possible result values:
+ * @retval SC_RESULT_OK: The operation was successful. Sc-links was found by content substring.
+ * @retval SC_RESULT_NO_STRING: The operation was unsuccessful. Sc-links wasn't found by content substring.
+ * @retval SC_RESULT_ERROR_STREAM_IO: An error occurred during stream I/O.
  *
  * @note This function is thread-safe.
  */
@@ -561,13 +571,18 @@ sc_result sc_storage_find_links_by_content_substring(
  *
  * @param ctx A pointer to the sc-memory context that manages the operation.
  * @param stream The stream containing the search substring.
- * @param result_strings Pointer to a variable that will store the result (sc-list)
- *                       of the operation. It can be NULL if the result is not needed.
+ * @param result_strings The list containing the content strings of sc-links with content
+ *                      containing the specified substring.
  * @param max_length_to_search_as_prefix The maximum length of the substring to search
  *                                       as a prefix. Set to 0 for a standard substring search.
  *
- * @param Valid sc-list The list containing the content strings of sc-links with content
- *                      containing the specified substring.
+ * @return Returns an sc_result indicating the success or failure of the operation.
+ * Possible result values:
+ * @retval SC_RESULT_OK: The operation was successful. Sc-links contents was found by content substring.
+ * @retval SC_RESULT_NO_STRING: The operation was unsuccessful. Sc-links contents wasn't found by content substring.
+ * @retval SC_RESULT_ERROR_STREAM_IO: An error occurred during stream I/O.
+ * @retval SC_RESULT_ERROR_FILE_MEMORY_IO: An error occurred during file memory I/O.
+ *
  * @note This function is thread-safe.
  */
 sc_result sc_storage_find_links_contents_by_content_substring(

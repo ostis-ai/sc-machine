@@ -15,7 +15,7 @@ TEST_F(ScMemoryTest, Elements)
 {
   ScMemoryContext ctx(sc_access_lvl_make_min, "elements");
 
-  ScAddr const node = ctx.CreateNode(ScType::Const);
+  ScAddr const node = ctx.CreateNode(ScType::NodeConst);
   EXPECT_TRUE(node.IsValid());
 
   ScAddr const link = ctx.CreateLink();

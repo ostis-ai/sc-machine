@@ -8,23 +8,19 @@
 #include "search_keynodes.h"
 #include "search_defines.h"
 #include "search.h"
-#include "sc-core/sc-store/sc-base/sc_message.h"
 
 #include "sc-core/sc_helper.h"
-#include "sc-core/sc_memory_headers.h"
 
 sc_addr create_answer_node()
 {
-  sc_addr res = sc_memory_node_new(s_default_ctx, sc_type_const);
+  sc_addr res = sc_memory_node_new(s_default_ctx, sc_type_node | sc_type_const);
   SYSTEM_ELEMENT(res);
   return res;
 }
 
 void connect_answer_to_question(sc_addr question, sc_addr answer)
 {
-  sc_addr arc;
-
-  arc = sc_memory_arc_new(s_default_ctx, sc_type_arc_common | sc_type_const, question, answer);
+  sc_addr arc = sc_memory_arc_new(s_default_ctx, sc_type_arc_common | sc_type_const, question, answer);
   SYSTEM_ELEMENT(arc);
   arc = sc_memory_arc_new(s_default_ctx, sc_type_arc_pos_const_perm, keynode_nrel_answer, arc);
   SYSTEM_ELEMENT(arc);

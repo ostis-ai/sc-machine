@@ -11,8 +11,8 @@ protected:
   {
     ScMemoryTest::SetUp();
 
-    m_source = m_ctx->CreateNode(ScType::Const);
-    m_target = m_ctx->CreateNode(ScType::Var);
+    m_source = m_ctx->CreateNode(ScType::NodeConst);
+    m_target = m_ctx->CreateNode(ScType::NodeVar);
     m_edge = m_ctx->CreateEdge(ScType::EdgeAccessConstPosPerm, m_source, m_target);
 
     ASSERT_TRUE(m_source.IsValid());
@@ -178,8 +178,8 @@ protected:
   {
     ScMemoryTest::SetUp();
 
-    m_source = m_ctx->CreateNode(ScType::Const);
-    m_target = m_ctx->CreateNode(ScType::Var);
+    m_source = m_ctx->CreateNode(ScType::NodeConst);
+    m_target = m_ctx->CreateNode(ScType::NodeVar);
     m_edge = m_ctx->CreateEdge(ScType::EdgeUCommonConst, m_source, m_target);
 
     ASSERT_TRUE(m_source.IsValid());
@@ -397,7 +397,7 @@ protected:
   {
     ScMemoryTest::SetUp();
 
-    m_source = m_ctx->CreateNode(ScType::Const);
+    m_source = m_ctx->CreateNode(ScType::NodeConst);
     m_target = m_source;
     m_edge = m_ctx->CreateEdge(ScType::EdgeUCommonConst, m_source, m_target);
 
