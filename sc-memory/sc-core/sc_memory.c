@@ -11,6 +11,7 @@
 #include "sc-store/sc-base/sc_allocator.h"
 
 #include "sc-store/sc_storage.h"
+#include "sc-store/sc_storage_private.h"
 #include "sc_memory_private.h"
 #include "sc_memory_context_manager.h"
 #include "sc_helper.h"
@@ -211,13 +212,13 @@ sc_addr sc_memory_link_new_ext(sc_memory_context const * ctx, sc_type type, sc_r
   return sc_storage_link_new_ext(ctx, type, result);
 }
 
-sc_addr sc_memory_arc_new(sc_memory_context * ctx, sc_type type, sc_addr beg, sc_addr end)
+sc_addr sc_memory_arc_new(sc_memory_context const * ctx, sc_type type, sc_addr beg, sc_addr end)
 {
   sc_result result;
   return sc_memory_arc_new_ext(ctx, type, beg, end, &result);
 }
 
-sc_addr sc_memory_arc_new_ext(sc_memory_context * ctx, sc_type type, sc_addr beg, sc_addr end, sc_result * result)
+sc_addr sc_memory_arc_new_ext(sc_memory_context const * ctx, sc_type type, sc_addr beg, sc_addr end, sc_result * result)
 {
   return sc_storage_arc_new_ext(ctx, type, beg, end, result);
 }
