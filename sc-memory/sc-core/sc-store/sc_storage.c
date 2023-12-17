@@ -690,29 +690,57 @@ error:
 
 sc_addr sc_storage_node_new(sc_memory_context const * ctx, sc_type type)
 {
+  sc_result result;
+  return sc_storage_node_new_ext(ctx, type, &result);
+}
+
+sc_addr sc_storage_node_new_ext(sc_memory_context const * ctx, sc_type type, sc_result * result)
+{
   sc_addr addr = SC_ADDR_EMPTY;
 
   if ((type & sc_type_arc_mask) != 0)
+  {
+    *result = SC_RESULT_ERROR_ELEMENT_IS_NOT_NODE;
     return addr;
+  }
 
   sc_element * element = sc_storage_allocate_new_element(ctx, &addr);
-  if (element != null_ptr)
-    element->flags.type = sc_type_node | type;
+  if (element == null_ptr)
+  {
+    *result = SC_RESULT_ERROR_FULL_MEMORY;
+    return addr;
+  }
 
+  element->flags.type = sc_type_node | type;
+  *result = SC_RESULT_OK;
   return addr;
 }
 
 sc_addr sc_storage_link_new(sc_memory_context const * ctx, sc_type type)
 {
+  sc_result result;
+  return sc_storage_link_new_ext(ctx, type, &result);
+}
+
+sc_addr sc_storage_link_new_ext(sc_memory_context const * ctx, sc_type type, sc_result * result)
+{
   sc_addr addr = SC_ADDR_EMPTY;
 
   if ((type & sc_type_link) == 0)
+  {
+    *result = SC_RESULT_ERROR_ELEMENT_IS_NOT_LINK;
     return addr;
+  }
 
   sc_element * element = sc_storage_allocate_new_element(ctx, &addr);
-  if (element != null_ptr)
-    element->flags.type = sc_type_link | type;
+  if (element == null_ptr)
+  {
+    *result = SC_RESULT_ERROR_FULL_MEMORY;
+    return addr;
+  }
 
+  element->flags.type = sc_type_link | type;
+  *result = SC_RESULT_OK;
   return addr;
 }
 
@@ -796,7 +824,10 @@ sc_addr sc_storage_arc_new_ext(
 
   sc_element * arc_el = sc_storage_allocate_new_element(ctx, &arc_addr);
   if (arc_el == null_ptr)
+  {
+    *result = SC_RESULT_ERROR_FULL_MEMORY;
     return arc_addr;
+  }
 
   arc_el->flags.type = type;
   arc_el->arc.begin = beg_addr;
@@ -834,6 +865,7 @@ sc_addr sc_storage_arc_new_ext(
 
   sc_monitor_release_write_n(2, beg_monitor, end_monitor);
 
+  *result = SC_RESULT_OK;
   return arc_addr;
 error:
   sc_storage_free_element(arc_addr);
@@ -841,17 +873,16 @@ error:
   return SC_ADDR_EMPTY;
 }
 
-sc_uint32 sc_storage_get_element_output_arcs_count(sc_memory_context const * ctx, sc_addr addr)
+sc_uint32 sc_storage_get_element_output_arcs_count(sc_memory_context const * ctx, sc_addr addr, sc_result * result)
 {
   sc_uint32 count = 0;
-  sc_result result;
 
   sc_monitor * monitor = sc_monitor_get_monitor_for_addr(&storage->addr_monitors_table, addr);
   sc_monitor_acquire_read(monitor);
 
   sc_element * el = null_ptr;
-  result = sc_storage_get_element_by_addr(addr, &el);
-  if (result != SC_RESULT_OK)
+  *result = sc_storage_get_element_by_addr(addr, &el);
+  if (*result != SC_RESULT_OK)
     goto error;
 
   count = el->output_arcs_count;
@@ -861,17 +892,16 @@ error:
   return count;
 }
 
-sc_uint32 sc_storage_get_element_input_arcs_count(sc_memory_context const * ctx, sc_addr addr)
+sc_uint32 sc_storage_get_element_input_arcs_count(sc_memory_context const * ctx, sc_addr addr, sc_result * result)
 {
   sc_uint32 count = 0;
-  sc_result result;
 
   sc_monitor * monitor = sc_monitor_get_monitor_for_addr(&storage->addr_monitors_table, addr);
   sc_monitor_acquire_read(monitor);
 
   sc_element * el = null_ptr;
-  result = sc_storage_get_element_by_addr(addr, &el);
-  if (result != SC_RESULT_OK)
+  *result = sc_storage_get_element_by_addr(addr, &el);
+  if (*result != SC_RESULT_OK)
     goto error;
 
   count = el->input_arcs_count;

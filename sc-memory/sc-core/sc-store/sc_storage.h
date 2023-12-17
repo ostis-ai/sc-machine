@@ -70,10 +70,14 @@ sc_result sc_storage_element_free(sc_memory_context const * ctx, sc_addr addr);
  */
 sc_addr sc_storage_node_new(sc_memory_context const * ctx, sc_type type);
 
+sc_addr sc_storage_node_new_ext(sc_memory_context const * ctx, sc_type type, sc_result * result);
+
 /*! Create new sc-link
  * @return Return sc-addr of created sc-link or empty sc-addr if sc-link wasn't created
  */
 sc_addr sc_storage_link_new(sc_memory_context const * ctx, sc_type type);
+
+sc_addr sc_storage_link_new_ext(sc_memory_context const * ctx, sc_type type, sc_result * result);
 
 /*! Create new sc-arc.
  * @param type Type of new sc-arc
@@ -91,9 +95,9 @@ sc_addr sc_storage_arc_new_ext(
     sc_addr end_addr,
     sc_result * result);
 
-sc_uint32 sc_storage_get_element_output_arcs_count(sc_memory_context const * ctx, sc_addr addr);
+sc_uint32 sc_storage_get_element_output_arcs_count(sc_memory_context const * ctx, sc_addr addr, sc_result * result);
 
-sc_uint32 sc_storage_get_element_input_arcs_count(sc_memory_context const * ctx, sc_addr addr);
+sc_uint32 sc_storage_get_element_input_arcs_count(sc_memory_context const * ctx, sc_addr addr, sc_result * result);
 
 /*! Get type of sc-element with specified sc-addr
  * @param addr sc-addr of element to get type
