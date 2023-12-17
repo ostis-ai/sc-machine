@@ -102,6 +102,9 @@ _SC_EXTERN sc_addr sc_memory_link_new2(sc_memory_context const * ctx, sc_type ty
  */
 _SC_EXTERN sc_addr sc_memory_arc_new(sc_memory_context * ctx, sc_type type, sc_addr beg, sc_addr end);
 
+_SC_EXTERN sc_addr
+sc_memory_arc_new_ext(sc_memory_context * ctx, sc_type type, sc_addr beg, sc_addr end, sc_result * result);
+
 /*! Get type of sc-element with specified sc-addr
  * @param addr sc-addr of element to get type
  * @param result Pointer to result container

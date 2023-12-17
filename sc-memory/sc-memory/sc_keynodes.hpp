@@ -79,20 +79,17 @@ public:
   SC_PROPERTY(Keynode("sc_result_error_invalid_type"), ForceCreate(ScType::NodeConstClass))
   _SC_EXTERN static ScAddr kScResultErrorInvalidType;
 
-  SC_PROPERTY(Keynode("sc_result_error_io"), ForceCreate(ScType::NodeConstClass))
-  _SC_EXTERN static ScAddr kScResultErrorIO;
-
   SC_PROPERTY(Keynode("sc_result_invalid_state"), ForceCreate(ScType::NodeConstClass))
   _SC_EXTERN static ScAddr kScResultInvalidState;
 
   SC_PROPERTY(Keynode("sc_result_error_not_found"), ForceCreate(ScType::NodeConstClass))
   _SC_EXTERN static ScAddr kScResultErrorNotFound;
 
-  SC_PROPERTY(Keynode("sc_result_error_no_write_rights"), ForceCreate(ScType::NodeConstClass))
-  _SC_EXTERN static ScAddr kScResultErrorNoWriteRights;
+  SC_PROPERTY(Keynode("sc_result_error_stream_io"), ForceCreate(ScType::NodeConstClass))
+  _SC_EXTERN static ScAddr kScResultErrorStreamIO;
 
-  SC_PROPERTY(Keynode("sc_result_error_no_read_rights"), ForceCreate(ScType::NodeConstClass))
-  _SC_EXTERN static ScAddr kScResultErrorNoReadRights;
+  SC_PROPERTY(Keynode("sc_result_error_file_memory_io"), ForceCreate(ScType::NodeConstClass))
+  _SC_EXTERN static ScAddr kScResultErrorFileMemoryIO;
 
   // binary types
   SC_PROPERTY(Keynode("binary_type"), ForceCreate(ScType::NodeConstClass))

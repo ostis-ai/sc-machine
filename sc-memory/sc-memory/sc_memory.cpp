@@ -188,6 +188,7 @@ bool ScMemoryContext::EraseElement(ScAddr const & addr)
 ScAddr ScMemoryContext::CreateNode(ScType const & type)
 {
   CHECK_CONTEXT;
+
   if (type.IsEdge())  // needed to create ScType::Unknown, ScType::Const... elements
     SC_THROW_EXCEPTION(
         utils::ExceptionInvalidParams,
@@ -199,6 +200,7 @@ ScAddr ScMemoryContext::CreateNode(ScType const & type)
 ScAddr ScMemoryContext::CreateLink(ScType const & type /* = ScType::LinkConst */)
 {
   CHECK_CONTEXT;
+
   if (!type.IsLink())
     SC_THROW_EXCEPTION(
         utils::ExceptionInvalidParams,
@@ -210,25 +212,52 @@ ScAddr ScMemoryContext::CreateLink(ScType const & type /* = ScType::LinkConst */
 ScAddr ScMemoryContext::CreateEdge(ScType const & type, ScAddr const & addrBeg, ScAddr const & addrEnd)
 {
   CHECK_CONTEXT;
-  if (!type.IsEdge())
+
+  sc_result result;
+  sc_addr const addr = sc_memory_arc_new_ext(m_context, *type, *addrBeg, *addrEnd, &result);
+
+  switch (result)
+  {
+  case SC_RESULT_ERROR_ADDR_IS_NOT_VALID:
+    SC_THROW_EXCEPTION(
+        utils::ExceptionInvalidParams,
+        "Specified source or target sc-element sc-address is invalid to create sc-connector");
+
+  case SC_RESULT_ERROR_ELEMENT_IS_NOT_CONNECTOR:
     SC_THROW_EXCEPTION(
         utils::ExceptionInvalidParams,
         "Specified type must be sc-connector type. You should provide any of ScType::Edge... value as a type");
 
-  return sc_memory_arc_new(m_context, *type, *addrBeg, *addrEnd);
+  default:
+    break;
+  }
+
+  return addr;
 }
 
 ScType ScMemoryContext::GetElementType(ScAddr const & addr) const
 {
   CHECK_CONTEXT;
+
   sc_type type = 0;
-  return sc_memory_get_element_type(m_context, *addr, &type) == SC_RESULT_OK ? ScType(type) : ScType(0);
+  sc_result const result = sc_memory_get_element_type(m_context, *addr, &type);
+
+  if (result == SC_RESULT_ERROR_ADDR_IS_NOT_VALID)
+    SC_THROW_EXCEPTION(utils::ExceptionInvalidParams, "Specified sc-element sc-address is invalid to get sc-type");
+
+  return ScType{type};
 }
 
 bool ScMemoryContext::SetElementSubtype(ScAddr const & addr, sc_type subtype)
 {
   CHECK_CONTEXT;
-  return sc_memory_change_element_subtype(m_context, *addr, subtype) == SC_RESULT_OK;
+
+  sc_result const result = sc_memory_change_element_subtype(m_context, *addr, subtype);
+
+  if (result == SC_RESULT_ERROR_ADDR_IS_NOT_VALID)
+    SC_THROW_EXCEPTION(utils::ExceptionInvalidParams, "Specified sc-element sc-address is invalid to set sc-type");
+
+  return result == SC_RESULT_OK;
 }
 
 ScAddr ScMemoryContext::GetEdgeSource(ScAddr const & edgeAddr) const
@@ -236,7 +265,24 @@ ScAddr ScMemoryContext::GetEdgeSource(ScAddr const & edgeAddr) const
   CHECK_CONTEXT;
 
   ScAddr addr;
-  if (sc_memory_get_arc_begin(m_context, *edgeAddr, &addr.m_realAddr) != SC_RESULT_OK)
+  sc_result const result = sc_memory_get_arc_begin(m_context, *edgeAddr, &addr.m_realAddr);
+
+  switch (result)
+  {
+  case SC_RESULT_ERROR_ADDR_IS_NOT_VALID:
+    SC_THROW_EXCEPTION(
+        utils::ExceptionInvalidParams,
+        "Specified sc-connector sc-address is invalid to get incident source sc-element");
+
+  case SC_RESULT_ERROR_ELEMENT_IS_NOT_CONNECTOR:
+    SC_THROW_EXCEPTION(
+        utils::ExceptionInvalidParams, "Specified sc-element is not sc-connector to get incident source sc-element");
+
+  default:
+    break;
+  }
+
+  if (result != SC_RESULT_OK)
     addr.Reset();
 
   return addr;
@@ -247,7 +293,24 @@ ScAddr ScMemoryContext::GetEdgeTarget(ScAddr const & edgeAddr) const
   CHECK_CONTEXT;
 
   ScAddr addr;
-  if (sc_memory_get_arc_end(m_context, *edgeAddr, &addr.m_realAddr) != SC_RESULT_OK)
+  sc_result const result = sc_memory_get_arc_end(m_context, *edgeAddr, &addr.m_realAddr);
+
+  switch (result)
+  {
+  case SC_RESULT_ERROR_ADDR_IS_NOT_VALID:
+    SC_THROW_EXCEPTION(
+        utils::ExceptionInvalidParams,
+        "Specified sc-connector sc-address is invalid to get incident target sc-element");
+
+  case SC_RESULT_ERROR_ELEMENT_IS_NOT_CONNECTOR:
+    SC_THROW_EXCEPTION(
+        utils::ExceptionInvalidParams, "Specified sc-element is not sc-connector to get incident target sc-element");
+
+  default:
+    break;
+  }
+
+  if (result != SC_RESULT_OK)
     addr.Reset();
 
   return addr;
@@ -257,8 +320,24 @@ bool ScMemoryContext::GetEdgeInfo(ScAddr const & edgeAddr, ScAddr & outSourceAdd
 {
   CHECK_CONTEXT;
 
-  if (sc_memory_get_arc_info(m_context, *edgeAddr, &outSourceAddr.m_realAddr, &outTargetAddr.m_realAddr) !=
-      SC_RESULT_OK)
+  sc_result const result =
+      sc_memory_get_arc_info(m_context, *edgeAddr, &outSourceAddr.m_realAddr, &outTargetAddr.m_realAddr);
+
+  switch (result)
+  {
+  case SC_RESULT_ERROR_ADDR_IS_NOT_VALID:
+    SC_THROW_EXCEPTION(
+        utils::ExceptionInvalidParams, "Specified sc-connector sc-address is invalid to get incident sc-elements");
+
+  case SC_RESULT_ERROR_ELEMENT_IS_NOT_CONNECTOR:
+    SC_THROW_EXCEPTION(
+        utils::ExceptionInvalidParams, "Specified sc-element is not sc-connector to get incident sc-elements");
+
+  default:
+    break;
+  }
+
+  if (result != SC_RESULT_OK)
   {
     outSourceAddr.Reset();
     outTargetAddr.Reset();
@@ -272,24 +351,31 @@ bool ScMemoryContext::GetEdgeInfo(ScAddr const & edgeAddr, ScAddr & outSourceAdd
 bool ScMemoryContext::SetLinkContent(ScAddr const & addr, ScStreamPtr const & stream, bool isSearchableString)
 {
   CHECK_CONTEXT;
-  if (!stream || !stream->IsValid())
-    SC_THROW_EXCEPTION(utils::ExceptionInvalidParams, "Specified stream is invalid");
 
-  sc_result result = sc_memory_set_link_content_ext(m_context, *addr, stream->m_stream, isSearchableString);
+  if (!stream || !stream->IsValid())
+    SC_THROW_EXCEPTION(utils::ExceptionInvalidParams, "Specified stream is invalid to set content");
+
+  sc_result const result = sc_memory_set_link_content_ext(m_context, *addr, stream->m_stream, isSearchableString);
 
   switch (result)
   {
-    case SC_RESULT_ERROR_ADDR_IS_NOT_VALID:
-      SC_THROW_EXCEPTION(utils::ExceptionInvalidParams, "Specified sc-address is invalid to set content");
+  case SC_RESULT_ERROR_ADDR_IS_NOT_VALID:
+    SC_THROW_EXCEPTION(utils::ExceptionInvalidParams, "Specified sc-address is invalid to set content");
 
-    case SC_RESULT_ERROR_ELEMENT_IS_NOT_LINK:
-      SC_THROW_EXCEPTION(utils::ExceptionInvalidParams, "Specified sc-element is not sc-link to set content");
+  case SC_RESULT_ERROR_ELEMENT_IS_NOT_LINK:
+    SC_THROW_EXCEPTION(utils::ExceptionInvalidParams, "Specified sc-element is not sc-link to set content");
 
-    default:
-      break;
+  case SC_RESULT_ERROR_STREAM_IO:
+    SC_THROW_EXCEPTION(utils::ExceptionInvalidParams, "Specified sc-stream data is invalid to set content");
+
+  case SC_RESULT_ERROR_FILE_MEMORY_IO:
+    SC_THROW_EXCEPTION(utils::ExceptionInvalidState, "File memory state is invalid to set content");
+
+  default:
+    break;
   }
 
-  return result == SC_RESULT_OK;
+  return true;
 }
 
 ScStreamPtr ScMemoryContext::GetLinkContent(ScAddr const & addr)
@@ -297,8 +383,22 @@ ScStreamPtr ScMemoryContext::GetLinkContent(ScAddr const & addr)
   CHECK_CONTEXT;
 
   sc_stream * s = nullptr;
-  if (sc_memory_get_link_content(m_context, *addr, &s) != SC_RESULT_OK && s == nullptr)
-    return std::make_shared<ScStream>(nullptr);
+  sc_result const result = sc_memory_get_link_content(m_context, *addr, &s);
+
+  switch (result)
+  {
+  case SC_RESULT_ERROR_ADDR_IS_NOT_VALID:
+    SC_THROW_EXCEPTION(utils::ExceptionInvalidParams, "Specified sc-address is invalid to get content");
+
+  case SC_RESULT_ERROR_ELEMENT_IS_NOT_LINK:
+    SC_THROW_EXCEPTION(utils::ExceptionInvalidParams, "Specified sc-element is not sc-link to get content");
+
+  case SC_RESULT_ERROR_FILE_MEMORY_IO:
+    SC_THROW_EXCEPTION(utils::ExceptionInvalidState, "File memory state is invalid to get content");
+
+  default:
+    break;
+  }
 
   return std::make_shared<ScStream>(s);
 }
@@ -308,20 +408,32 @@ ScAddrVector ScMemoryContext::FindLinksByContent(ScStreamPtr const & stream)
   CHECK_CONTEXT;
 
   ScAddrVector contents;
-  sc_list * result = nullptr;
+  sc_list * found_links = nullptr;
 
   sc_stream * str = stream->m_stream;
-  if (sc_memory_find_links_with_content_string(m_context, str, &result) == SC_RESULT_OK)
+  sc_result const result = sc_memory_find_links_with_content_string(m_context, str, &found_links);
+
+  switch (result)
   {
-    sc_iterator * it = sc_list_iterator(result);
-    while (sc_iterator_next(it))
-    {
-      auto addr_hash = (sc_addr_hash)sc_iterator_get(it);
-      contents.emplace_back(addr_hash);
-    }
-    sc_iterator_destroy(it);
+  case SC_RESULT_ERROR_STREAM_IO:
+    SC_THROW_EXCEPTION(
+        utils::ExceptionInvalidParams, "Specified sc-stream data is invalid to find sc-links by content");
+
+  case SC_RESULT_ERROR_FILE_MEMORY_IO:
+    SC_THROW_EXCEPTION(utils::ExceptionInvalidState, "File memory state is invalid to find sc-links by content");
+
+  default:
+    break;
   }
-  sc_list_destroy(result);
+
+  sc_iterator * it = sc_list_iterator(found_links);
+  while (sc_iterator_next(it))
+  {
+    auto addr_hash = (sc_addr_hash)sc_iterator_get(it);
+    contents.emplace_back(addr_hash);
+  }
+  sc_iterator_destroy(it);
+  sc_list_destroy(found_links);
 
   return contents;
 }
@@ -331,20 +443,34 @@ ScAddrVector ScMemoryContext::FindLinksByContentSubstring(ScStreamPtr const & st
   CHECK_CONTEXT;
 
   ScAddrVector contents;
-  sc_list * result = nullptr;
+  sc_list * found_links = nullptr;
 
   sc_stream * str = stream->m_stream;
-  if (sc_memory_find_links_by_content_substring(m_context, str, &result, maxLengthToSearchAsPrefix) == SC_RESULT_OK)
+  sc_result const result =
+      sc_memory_find_links_by_content_substring(m_context, str, &found_links, maxLengthToSearchAsPrefix);
+
+  switch (result)
   {
-    sc_iterator * it = sc_list_iterator(result);
-    while (sc_iterator_next(it))
-    {
-      auto addr_hash = (sc_addr_hash)sc_iterator_get(it);
-      contents.emplace_back(addr_hash);
-    }
-    sc_iterator_destroy(it);
+  case SC_RESULT_ERROR_STREAM_IO:
+    SC_THROW_EXCEPTION(
+        utils::ExceptionInvalidParams, "Specified sc-stream data is invalid to find sc-links by content substring");
+
+  case SC_RESULT_ERROR_FILE_MEMORY_IO:
+    SC_THROW_EXCEPTION(
+        utils::ExceptionInvalidState, "File memory state is invalid to find sc-links by content substring");
+
+  default:
+    break;
   }
-  sc_list_destroy(result);
+
+  sc_iterator * it = sc_list_iterator(found_links);
+  while (sc_iterator_next(it))
+  {
+    auto addr_hash = (sc_addr_hash)sc_iterator_get(it);
+    contents.emplace_back(addr_hash);
+  }
+  sc_iterator_destroy(it);
+  sc_list_destroy(found_links);
 
   return contents;
 }
@@ -356,22 +482,35 @@ std::vector<std::string> ScMemoryContext::FindLinksContentsByContentSubstring(
   CHECK_CONTEXT;
 
   std::vector<std::string> contents;
-  sc_list * result = nullptr;
+  sc_list * found_strings = nullptr;
 
   sc_stream * str = stream->m_stream;
-  if (sc_memory_find_links_contents_by_content_substring(m_context, str, &result, maxLengthToSearchAsPrefix) ==
-      SC_RESULT_OK)
+  sc_result const result =
+      sc_memory_find_links_contents_by_content_substring(m_context, str, &found_strings, maxLengthToSearchAsPrefix);
+
+  switch (result)
   {
-    sc_iterator * it = sc_list_iterator(result);
-    while (sc_iterator_next(it))
-    {
-      auto string = (sc_char *)sc_iterator_get(it);
-      contents.emplace_back(string);
-      free(string);
-    }
-    sc_iterator_destroy(it);
+  case SC_RESULT_ERROR_STREAM_IO:
+    SC_THROW_EXCEPTION(
+        utils::ExceptionInvalidParams, "Specified sc-stream data is invalid to find strings by content substring");
+
+  case SC_RESULT_ERROR_FILE_MEMORY_IO:
+    SC_THROW_EXCEPTION(
+        utils::ExceptionInvalidState, "File memory state is invalid to find strings by content substring");
+
+  default:
+    break;
   }
-  sc_list_destroy(result);
+
+  sc_iterator * it = sc_list_iterator(found_strings);
+  while (sc_iterator_next(it))
+  {
+    auto string = (sc_char *)sc_iterator_get(it);
+    contents.emplace_back(string);
+    free(string);
+  }
+  sc_iterator_destroy(it);
+  sc_list_destroy(found_strings);
 
   return contents;
 }
@@ -399,24 +538,19 @@ bool ScMemoryContext::HelperResolveSystemIdtf(
   CHECK_CONTEXT;
 
   bool result = HelperFindBySystemIdtf(sysIdtf, outFiver);
-  if (!result && !type.IsUnknown())
-  {
-    if (!type.IsNode())
-      SC_THROW_EXCEPTION(
-          utils::ExceptionInvalidParams,
-          "Specified type must be sc-node type. You should provide any of ScType::Node... value as a type");
+  if (result)
+    return result;
 
-    ScAddr const & resultAddr = CreateNode(type);
-    if (resultAddr.IsValid())
-    {
-      result = HelperSetSystemIdtf(sysIdtf, resultAddr, outFiver);
-      if (!result)
-      {
-        EraseElement(resultAddr);
-        outFiver = (ScSystemIdentifierFiver){ScAddr::Empty, ScAddr::Empty, ScAddr::Empty, ScAddr::Empty, ScAddr::Empty};
-      }
-    }
-  }
+  if (type.IsUnknown())
+    return false;
+
+  ScAddr const & resultAddr = CreateNode(type);
+  result = HelperSetSystemIdtf(sysIdtf, resultAddr, outFiver);
+  if (result)
+    return result;
+
+  EraseElement(resultAddr);
+  outFiver = (ScSystemIdentifierFiver){ScAddr::Empty, ScAddr::Empty, ScAddr::Empty, ScAddr::Empty, ScAddr::Empty};
 
   return result;
 }
@@ -424,7 +558,25 @@ bool ScMemoryContext::HelperResolveSystemIdtf(
 bool ScMemoryContext::HelperSetSystemIdtf(std::string const & sysIdtf, ScAddr const & addr)
 {
   CHECK_CONTEXT;
-  return sc_helper_set_system_identifier(m_context, *addr, sysIdtf.c_str(), (sc_uint32)sysIdtf.size()) == SC_RESULT_OK;
+  sc_result const result =
+      sc_helper_set_system_identifier(m_context, *addr, sysIdtf.c_str(), (sc_uint32)sysIdtf.size());
+
+  switch (result)
+  {
+  case SC_RESULT_ERROR_ADDR_IS_NOT_VALID:
+    SC_THROW_EXCEPTION(utils::ExceptionInvalidParams, "Specified sc-address is invalid to set system identifier");
+
+  case SC_RESULT_ERROR_INVALID_SYSTEM_IDENTIFIER:
+    SC_THROW_EXCEPTION(utils::ExceptionInvalidParams, "Specified system identifier is invalid");
+
+  case SC_RESULT_ERROR_FILE_MEMORY_IO:
+    SC_THROW_EXCEPTION(utils::ExceptionInvalidState, "File memory state is invalid to set system identifier");
+
+  default:
+    break;
+  }
+
+  return result == SC_RESULT_OK;
 }
 
 bool ScMemoryContext::HelperSetSystemIdtf(
@@ -435,11 +587,28 @@ bool ScMemoryContext::HelperSetSystemIdtf(
   CHECK_CONTEXT;
 
   sc_system_identifier_fiver fiver;
-  bool status = sc_helper_set_system_identifier_ext(
-                    m_context, *addr, sysIdtf.c_str(), (sc_uint32)sysIdtf.size(), &fiver) == SC_RESULT_OK;
+  sc_result const result =
+      sc_helper_set_system_identifier_ext(m_context, *addr, sysIdtf.c_str(), (sc_uint32)sysIdtf.size(), &fiver);
+
+  switch (result)
+  {
+  case SC_RESULT_ERROR_ADDR_IS_NOT_VALID:
+    SC_THROW_EXCEPTION(utils::ExceptionInvalidParams, "Specified sc-address is invalid to set system identifier");
+
+  case SC_RESULT_ERROR_INVALID_SYSTEM_IDENTIFIER:
+    SC_THROW_EXCEPTION(utils::ExceptionInvalidParams, "Specified system identifier is invalid");
+
+  case SC_RESULT_ERROR_FILE_MEMORY_IO:
+    SC_THROW_EXCEPTION(utils::ExceptionInvalidState, "File memory state is invalid to set system identifier");
+
+  default:
+    break;
+  }
+
   outFiver = (ScSystemIdentifierFiver){
       ScAddr(fiver.addr1), ScAddr(fiver.addr2), ScAddr(fiver.addr3), ScAddr(fiver.addr4), ScAddr(fiver.addr5)};
-  return status;
+
+  return result == SC_RESULT_OK;
 }
 
 std::string ScMemoryContext::HelperGetSystemIdtf(ScAddr const & addr)
@@ -447,21 +616,22 @@ std::string ScMemoryContext::HelperGetSystemIdtf(ScAddr const & addr)
   CHECK_CONTEXT;
 
   ScAddr idtfLink;
-  if (sc_helper_get_system_identifier_link(m_context, *addr, &idtfLink.m_realAddr) == SC_RESULT_OK)
+  sc_result result = sc_helper_get_system_identifier_link(m_context, *addr, &idtfLink.m_realAddr);
+  if (result == SC_RESULT_ERROR_ADDR_IS_NOT_VALID)
+    SC_THROW_EXCEPTION(utils::ExceptionInvalidParams, "Specified sc-address is invalid to get system identifier");
+
+  std::string string;
+  if (result == SC_RESULT_NO)
+    return string;
+
+  ScStreamPtr stream = GetLinkContent(idtfLink);
+  if (stream && stream->IsValid())
   {
-    if (idtfLink.IsValid())
-    {
-      ScStreamPtr stream = GetLinkContent(idtfLink);
-      if (stream)
-      {
-        std::string result;
-        if (ScStreamConverter::StreamToString(stream, result))
-          return result;
-      }
-    }
+    if (ScStreamConverter::StreamToString(stream, string))
+      return string;
   }
 
-  return {};
+  return string;
 }
 
 bool ScMemoryContext::HelperCheckEdge(ScAddr const & begin, ScAddr end, ScType const & edgeType)
@@ -473,18 +643,48 @@ bool ScMemoryContext::HelperCheckEdge(ScAddr const & begin, ScAddr end, ScType c
 bool ScMemoryContext::HelperFindBySystemIdtf(std::string const & sysIdtf, ScAddr & outAddr)
 {
   CHECK_CONTEXT;
-  return sc_helper_find_element_by_system_identifier(
-             m_context, sysIdtf.c_str(), (sc_uint32)sysIdtf.size(), &outAddr.m_realAddr) == SC_RESULT_OK;
+
+  sc_result const result = sc_helper_find_element_by_system_identifier(
+      m_context, sysIdtf.c_str(), (sc_uint32)sysIdtf.size(), &outAddr.m_realAddr);
+
+  switch (result)
+  {
+  case SC_RESULT_ERROR_INVALID_SYSTEM_IDENTIFIER:
+    SC_THROW_EXCEPTION(utils::ExceptionInvalidParams, "Specified system identifier is invalid");
+
+  case SC_RESULT_ERROR_FILE_MEMORY_IO:
+    SC_THROW_EXCEPTION(
+        utils::ExceptionInvalidState, "File memory state is invalid to find sc-element by system identifier");
+
+  default:
+    break;
+  }
+
+  return true;
 }
 
 ScAddr ScMemoryContext::HelperFindBySystemIdtf(std::string const & sysIdtf)
 {
   CHECK_CONTEXT;
 
-  ScAddr result;
-  sc_helper_find_element_by_system_identifier(
-      m_context, sysIdtf.c_str(), (sc_uint32)sysIdtf.size(), &result.m_realAddr);
-  return result;
+  ScAddr resultAddr;
+  sc_result const result = sc_helper_find_element_by_system_identifier(
+      m_context, sysIdtf.c_str(), (sc_uint32)sysIdtf.size(), &resultAddr.m_realAddr);
+
+  switch (result)
+  {
+  case SC_RESULT_ERROR_INVALID_SYSTEM_IDENTIFIER:
+    SC_THROW_EXCEPTION(utils::ExceptionInvalidParams, "Specified system identifier is invalid");
+
+  case SC_RESULT_ERROR_FILE_MEMORY_IO:
+    SC_THROW_EXCEPTION(
+        utils::ExceptionInvalidState, "File memory state is invalid to find sc-element by system identifier");
+
+  default:
+    break;
+  }
+
+  return resultAddr;
 }
 
 bool ScMemoryContext::HelperFindBySystemIdtf(std::string const & sysIdtf, ScSystemIdentifierFiver & outFiver)
@@ -492,11 +692,25 @@ bool ScMemoryContext::HelperFindBySystemIdtf(std::string const & sysIdtf, ScSyst
   CHECK_CONTEXT;
 
   sc_system_identifier_fiver fiver;
-  bool status = sc_helper_find_element_by_system_identifier_ext(
-                    m_context, sysIdtf.c_str(), (sc_uint32)sysIdtf.size(), &fiver) == SC_RESULT_OK;
+  sc_result const result =
+      sc_helper_find_element_by_system_identifier_ext(m_context, sysIdtf.c_str(), (sc_uint32)sysIdtf.size(), &fiver);
+
+  switch (result)
+  {
+  case SC_RESULT_ERROR_INVALID_SYSTEM_IDENTIFIER:
+    SC_THROW_EXCEPTION(utils::ExceptionInvalidParams, "Specified system identifier is invalid");
+
+  case SC_RESULT_ERROR_FILE_MEMORY_IO:
+    SC_THROW_EXCEPTION(
+        utils::ExceptionInvalidState, "File memory state is invalid to find sc-element by system identifier");
+
+  default:
+    break;
+  }
+
   outFiver = (ScSystemIdentifierFiver){
       ScAddr(fiver.addr1), ScAddr(fiver.addr2), ScAddr(fiver.addr3), ScAddr(fiver.addr4), ScAddr(fiver.addr5)};
-  return status;
+  return result == SC_RESULT_OK;
 }
 
 ScTemplate::Result ScMemoryContext::HelperGenTemplate(

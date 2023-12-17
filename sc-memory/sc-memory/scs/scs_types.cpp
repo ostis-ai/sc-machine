@@ -93,18 +93,18 @@ TypeResolver::IsType TypeResolver::ms_reversedConnectors =
 ScType const & TypeResolver::GetConnectorType(std::string const & connectorAlias)
 {
   auto const it = ms_connectorToType.find(connectorAlias);
-  return (it != ms_connectorToType.end()) ? it->second : ScType::Unknown;
+  return it != ms_connectorToType.cend() ? it->second : ScType::Unknown;
 }
 
 ScType const & TypeResolver::GetKeynodeType(std::string const & keynodeAlias)
 {
   auto const it = ms_keynodeToType.find(keynodeAlias);
-  return (it != ms_keynodeToType.end()) ? it->second : ScType::Unknown;
+  return it != ms_keynodeToType.cend() ? it->second : ScType::Unknown;
 }
 
 bool TypeResolver::IsConnectorReversed(std::string const & connectorAlias)
 {
-  return (ms_reversedConnectors.find(connectorAlias) != ms_reversedConnectors.end());
+  return ms_reversedConnectors.find(connectorAlias) != ms_reversedConnectors.cend();
 }
 
 bool TypeResolver::IsConst(std::string const & idtf)
@@ -117,22 +117,22 @@ bool TypeResolver::IsConst(std::string const & idtf)
   while ((idtf[i] == '.') && (i < n))
     ++i;
 
-  return (idtf[i] != '_');
+  return idtf[i] != '_';
 }
 
 bool TypeResolver::IsEdgeAttrConst(std::string const & attr)
 {
-  return (attr == ":");
+  return attr == ":";
 }
 
 bool TypeResolver::IsKeynodeType(std::string const & alias)
 {
-  return (ms_keynodeToType.find(alias) != ms_keynodeToType.end());
+  return ms_keynodeToType.find(alias) != ms_keynodeToType.cend();
 }
 
 bool TypeResolver::IsUnnamed(std::string const & alias)
 {
-  return (alias == "...");
+  return alias == "..." || alias == "_...";
 }
 
 }  // namespace scs

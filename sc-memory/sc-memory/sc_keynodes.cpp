@@ -28,11 +28,10 @@ ScAddr ScKeynodes::kScResultUnknown;
 ScAddr ScKeynodes::kScResultError;
 ScAddr ScKeynodes::kScResultErrorInvalidParams;
 ScAddr ScKeynodes::kScResultErrorInvalidType;
-ScAddr ScKeynodes::kScResultErrorIO;
 ScAddr ScKeynodes::kScResultInvalidState;
 ScAddr ScKeynodes::kScResultErrorNotFound;
-ScAddr ScKeynodes::kScResultErrorNoWriteRights;
-ScAddr ScKeynodes::kScResultErrorNoReadRights;
+ScAddr ScKeynodes::kScResultErrorStreamIO;
+ScAddr ScKeynodes::kScResultErrorFileMemoryIO;
 
 ScAddr ScKeynodes::kBinaryType;
 ScAddr ScKeynodes::kBinaryFloat;
@@ -79,11 +78,10 @@ bool ScKeynodes::Init(bool force, sc_char const * init_memory_generated_structur
       kScResultOk,
       kScResultErrorInvalidParams,
       kScResultErrorInvalidType,
-      kScResultErrorIO,
       kScResultInvalidState,
       kScResultErrorNotFound,
-      kScResultErrorNoWriteRights,
-      kScResultErrorNoReadRights,
+      kScResultErrorStreamIO,
+      kScResultErrorFileMemoryIO,
       kScResultNo,
       kScResultUnknown};
 
@@ -125,7 +123,6 @@ bool ScKeynodes::Init(bool force, sc_char const * init_memory_generated_structur
     item = ctx.HelperResolveSystemIdtf("rrel_" + std::to_string(i + 1), ScType::NodeConstRole);
     if (!item.IsValid())
       result = false;
-    SC_ASSERT(item.IsValid(), ("Keynode `rrel_" + std::to_string(i + 1) + "` is not valid"));
     if (initMemoryGeneratedStructureValid)
     {
       ctx.CreateEdge(ScType::EdgeAccessConstPosPerm, initMemoryGeneratedStructure, item);
@@ -183,12 +180,14 @@ ScAddr const & ScKeynodes::GetResultCodeAddr(sc_result resCode)
     return kScResultErrorInvalidParams;
   case SC_RESULT_ERROR_INVALID_TYPE:
     return kScResultErrorInvalidType;
-  case SC_RESULT_ERROR_IO:
-    return kScResultErrorIO;
   case SC_RESULT_ERROR_INVALID_STATE:
     return kScResultInvalidState;
   case SC_RESULT_ERROR_NOT_FOUND:
     return kScResultErrorNotFound;
+  case SC_RESULT_ERROR_STREAM_IO:
+    return kScResultErrorStreamIO;
+  case SC_RESULT_ERROR_FILE_MEMORY_IO:
+    return kScResultErrorFileMemoryIO;
   default:
     break;
   }
@@ -211,12 +210,14 @@ sc_result ScKeynodes::GetResultCodeByAddr(ScAddr const & resultClassAddr)
     return SC_RESULT_ERROR_INVALID_PARAMS;
   else if (resultClassAddr == kScResultErrorInvalidType)
     return SC_RESULT_ERROR_INVALID_TYPE;
-  else if (resultClassAddr == kScResultErrorIO)
-    return SC_RESULT_ERROR_IO;
   else if (resultClassAddr == kScResultInvalidState)
     return SC_RESULT_ERROR_INVALID_STATE;
   else if (resultClassAddr == kScResultErrorNotFound)
     return SC_RESULT_ERROR_NOT_FOUND;
+  else if (resultClassAddr == kScResultErrorStreamIO)
+    return SC_RESULT_ERROR_STREAM_IO;
+  else if (resultClassAddr == kScResultErrorFileMemoryIO)
+    return SC_RESULT_ERROR_FILE_MEMORY_IO;
 
   return SC_RESULT_UNKNOWN;
 }
