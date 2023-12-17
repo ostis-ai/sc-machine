@@ -16,9 +16,6 @@
 #include "sc_memory_private.h"
 #include "sc-store/sc-container/sc-string/sc_string.h"
 
-// sc-helper initialization flag
-sc_bool sc_helper_is_initialized = SC_FALSE;
-
 sc_char ** keynodes_str = null_ptr;
 sc_addr * sc_keynodes = null_ptr;
 
@@ -30,72 +27,74 @@ sc_result resolve_nrel_system_identifier(sc_memory_context const * ctx)
       SC_STREAM_FLAG_READ,
       SC_FALSE);
 
-  sc_bool result = SC_FALSE;
-
   // try to find nrel_system_identifier strings
-  sc_list * addrs = null_ptr;
-  if (sc_memory_find_links_with_content_string(ctx, stream, &addrs) == SC_RESULT_OK)
+  sc_list * found_links = null_ptr;
+  sc_result result = sc_memory_find_links_with_content_string(ctx, stream, &found_links);
+  if (result != SC_RESULT_OK)
+    goto error;
+
+  sc_bool system_idtf_addr_is_found = SC_FALSE;
+  sc_iterator * system_idtf_addr_it = sc_list_iterator(found_links);
+  while (sc_iterator_next(system_idtf_addr_it))
   {
-    sc_iterator * addrs_it = sc_list_iterator(addrs);
-    while (sc_iterator_next(addrs_it))
+    sc_addr_hash addr_hash = (sc_addr_hash)sc_iterator_get(system_idtf_addr_it);
+    sc_addr addr;
+    SC_ADDR_LOCAL_FROM_INT(addr_hash, addr);
+
+    sc_iterator5 * it = sc_iterator5_a_a_f_a_a_new(
+        ctx,
+        sc_type_node | sc_type_const | sc_type_node_norole,
+        sc_type_arc_common | sc_type_const,
+        addr,
+        sc_type_arc_pos_const_perm,
+        sc_type_const | sc_type_node | sc_type_node_norole);
+
+    while (sc_iterator5_next(it))
     {
-      sc_addr_hash addr_hash = (sc_addr_hash)sc_iterator_get(addrs_it);
-      sc_addr addr;
-      SC_ADDR_LOCAL_FROM_INT(addr_hash, addr);
-
-      sc_iterator5 * it = sc_iterator5_a_a_f_a_a_new(
-          ctx,
-          sc_type_node | sc_type_const | sc_type_node_norole,
-          sc_type_arc_common | sc_type_const,
-          addr,
-          sc_type_arc_pos_const_perm,
-          sc_type_const | sc_type_node | sc_type_node_norole);
-
-      while (sc_iterator5_next(it))
+      sc_addr addr1 = sc_iterator5_value(it, 0);
+      sc_addr addr2 = sc_iterator5_value(it, 4);
+      // compare begin sc-element and attribute, they must be equivalent
+      if (SC_ADDR_IS_EQUAL(addr1, addr2))
       {
-        sc_addr addr1 = sc_iterator5_value(it, 0);
-        sc_addr addr2 = sc_iterator5_value(it, 4);
-        // compare begin sc-element and attribute, they must be equivalent
-        if (SC_ADDR_IS_EQUAL(addr1, addr2))
+        if (system_idtf_addr_is_found == SC_FALSE)
         {
-          if (result == SC_FALSE)
-          {
-            sc_keynodes[SC_KEYNODE_NREL_SYSTEM_IDENTIFIER] = addr1;
-            result = SC_TRUE;
-          }
-          else
-          {
-            sc_iterator5_free(it);
-            sc_stream_free(stream);
-            sc_memory_error("There are more then one sc-elements with system identifier nrel_system_identifier");
-
-            return SC_RESULT_ERROR;
-          }
+          sc_keynodes[SC_KEYNODE_NREL_SYSTEM_IDENTIFIER] = addr1;
+          system_idtf_addr_is_found = SC_TRUE;
+        }
+        else
+        {
+          sc_memory_error("There are more then one sc-element with system identifier `nrel_system_identifier`");
+          result = SC_RESULT_ERROR_DUPLICATED_SYSTEM_IDENTIFIER;
+          sc_iterator5_free(it);
+          sc_iterator_destroy(system_idtf_addr_it);
+          goto error;
         }
       }
-
-      sc_iterator5_free(it);
     }
 
-    sc_iterator_destroy(addrs_it);
+    sc_iterator5_free(it);
   }
+  sc_iterator_destroy(system_idtf_addr_it);
 
-  sc_list_destroy(addrs);
+  sc_list_destroy(found_links);
   sc_stream_free(stream);
 
-  return result == SC_TRUE ? SC_RESULT_OK : SC_RESULT_ERROR;
+  return system_idtf_addr_is_found ? SC_RESULT_OK : SC_RESULT_NO;
+
+error:
+  sc_list_destroy(found_links);
+  sc_stream_free(stream);
+
+  return result;
 }
 
 void _init_keynodes_str()
 {
-  gsize bytes_read = 0, bytes_written = 0;
-  keynodes_str = sc_mem_new(gchar *, SC_KEYNODE_COUNT);
-  keynodes_str[SC_KEYNODE_NREL_SYSTEM_IDENTIFIER] =
-      g_locale_to_utf8("nrel_system_identifier", -1, &bytes_read, &bytes_written, 0);
+  keynodes_str = sc_mem_new(sc_char *, SC_KEYNODE_COUNT);
+  keynodes_str[SC_KEYNODE_NREL_SYSTEM_IDENTIFIER] = "nrel_system_identifier";
 
   // check for errors
-  sc_uint32 i;
-  for (i = 0; i < (sc_uint32)SC_KEYNODE_COUNT; ++i)
+  for (sc_uint32 i = 0; i < (sc_uint32)SC_KEYNODE_COUNT; ++i)
   {
     if (keynodes_str[(sc_keynode)i] == null_ptr)
       sc_memory_error("Error to create string representation of keynode: %d", i);
@@ -106,10 +105,6 @@ void _destroy_keynodes_str()
 {
   if (keynodes_str == null_ptr)
     return;
-
-  sc_uint32 i;
-  for (i = 0; i < (sc_uint32)SC_KEYNODE_COUNT; ++i)
-    sc_mem_free(keynodes_str[i]);
 
   sc_mem_free(keynodes_str);
 }
@@ -122,33 +117,38 @@ sc_result sc_helper_init(sc_memory_context * ctx)
 
   sc_keynodes = sc_mem_new(sc_addr, SC_KEYNODE_COUNT);
 
-  if (resolve_nrel_system_identifier(ctx) != SC_RESULT_OK)
+  sc_result result = resolve_nrel_system_identifier(ctx);
+  if (result != SC_RESULT_OK && result != SC_RESULT_NO)
+    goto finish;
+
+  if (result == SC_RESULT_OK)
+    goto finish;
+
+  sc_memory_info("Can't resolve nrel_system_identifier node. Create the last one");
+
+  sc_addr addr = sc_memory_node_new(ctx, sc_type_node | sc_type_const | sc_type_node_norole);
+  sc_addr link = sc_memory_link_new(ctx);
+
+  sc_stream * stream = sc_stream_memory_new(
+      keynodes_str[SC_KEYNODE_NREL_SYSTEM_IDENTIFIER],
+      (sc_uint)(sizeof(sc_uchar) * strlen(keynodes_str[SC_KEYNODE_NREL_SYSTEM_IDENTIFIER])),
+      SC_STREAM_FLAG_READ,
+      SC_FALSE);
+  result = sc_memory_set_link_content(ctx, link, stream);
+  if (result != SC_RESULT_OK)
   {
-    sc_memory_info("Can't resolve nrel_system_identifier node. Create the last one");
-
-    sc_addr addr = sc_memory_node_new(ctx, sc_type_const | sc_type_node_norole);
-    sc_addr link = sc_memory_link_new(ctx);
-
-    sc_stream * stream = sc_stream_memory_new(
-        keynodes_str[SC_KEYNODE_NREL_SYSTEM_IDENTIFIER],
-        (sc_uint)(sizeof(sc_uchar) * strlen(keynodes_str[SC_KEYNODE_NREL_SYSTEM_IDENTIFIER])),
-        SC_STREAM_FLAG_READ,
-        SC_FALSE);
-    if (sc_memory_set_link_content(ctx, link, stream) != SC_RESULT_OK)
-    {
-      sc_stream_free(stream);
-      return SC_RESULT_ERROR;
-    }
     sc_stream_free(stream);
-
-    sc_addr arc = sc_memory_arc_new(ctx, sc_type_arc_common | sc_type_const, addr, link);
-    sc_memory_arc_new(ctx, sc_type_arc_pos_const_perm, addr, arc);
-    sc_keynodes[SC_KEYNODE_NREL_SYSTEM_IDENTIFIER] = addr;
+    goto finish;
   }
 
-  sc_helper_is_initialized = SC_TRUE;
+  sc_stream_free(stream);
 
-  return SC_RESULT_OK;
+  sc_addr arc = sc_memory_arc_new(ctx, sc_type_arc_common | sc_type_const, addr, link);
+  sc_memory_arc_new(ctx, sc_type_arc_pos_const_perm, addr, arc);
+  sc_keynodes[SC_KEYNODE_NREL_SYSTEM_IDENTIFIER] = addr;
+
+finish:
+  return result;
 }
 
 void sc_helper_shutdown()
@@ -171,7 +171,7 @@ sc_result sc_helper_check_system_identifier(const sc_char * data)
   }
 
   regfree(&regex);
-  return SC_RESULT_ERROR;
+  return SC_RESULT_ERROR_INVALID_SYSTEM_IDENTIFIER;
 }
 
 void sc_system_identifier_fiver_make_empty(sc_system_identifier_fiver * fiver)
@@ -204,64 +204,62 @@ sc_result sc_helper_find_element_by_system_identifier_ext(
     sc_uint32 len,
     sc_system_identifier_fiver * out_fiver)
 {
-  sc_bool result = SC_FALSE;
   sc_stream * stream = null_ptr;
   sc_system_identifier_fiver_make_empty(out_fiver);
 
-  if (sc_helper_check_system_identifier(data) != SC_RESULT_OK)
-    return SC_RESULT_ERROR;
+  sc_result result = sc_helper_check_system_identifier(data);
+  if (result != SC_RESULT_OK)
+    goto error;
+
+  sc_list * found_links;
+  stream = sc_stream_memory_new(data, sizeof(sc_char) * len, SC_STREAM_FLAG_READ, SC_FALSE);
 
   // try to find sc-link with that contains system identifier value
-  sc_list * addrs;
-  stream = sc_stream_memory_new(data, sizeof(sc_char) * len, SC_STREAM_FLAG_READ, SC_FALSE);
-  if (sc_memory_find_links_with_content_string(ctx, stream, &addrs) == SC_RESULT_OK)
+  result = sc_memory_find_links_with_content_string(ctx, stream, &found_links);
+  if (result != SC_RESULT_OK)
+    goto error;
+
+  sc_iterator * links_it = sc_list_iterator(found_links);
+  while (sc_iterator_next(links_it))
   {
-    sc_iterator * addrs_it = sc_list_iterator(addrs);
-    while (sc_iterator_next(addrs_it))
+    sc_addr_hash addr_hash = (sc_addr_hash)sc_iterator_get(links_it);
+    sc_addr addr;
+    SC_ADDR_LOCAL_FROM_INT(addr_hash, addr);
+
+    sc_iterator5 * it = sc_iterator5_a_a_f_a_f_new(
+        ctx,
+        0,
+        sc_type_arc_common | sc_type_const,
+        addr,
+        sc_type_arc_pos_const_perm,
+        sc_keynodes[SC_KEYNODE_NREL_SYSTEM_IDENTIFIER]);
+    if (sc_iterator5_next(it))
     {
-      sc_addr_hash addr_hash = (sc_addr_hash)sc_iterator_get(addrs_it);
-      sc_addr addr;
-      SC_ADDR_LOCAL_FROM_INT(addr_hash, addr);
-
-      sc_iterator5 * it = sc_iterator5_a_a_f_a_f_new(
-          ctx,
-          0,
-          sc_type_arc_common | sc_type_const,
-          addr,
-          sc_type_arc_pos_const_perm,
-          sc_keynodes[SC_KEYNODE_NREL_SYSTEM_IDENTIFIER]);
-      if (sc_iterator5_next(it))
-      {
-        if (result == SC_FALSE)
-        {
-          result = SC_TRUE;
-          *out_fiver = (sc_system_identifier_fiver){
-              sc_iterator5_value(it, 0),
-              sc_iterator5_value(it, 1),
-              sc_iterator5_value(it, 2),
-              sc_iterator5_value(it, 3),
-              sc_iterator5_value(it, 4)};
-        }
-        else
-        {
-          // don't forget to free allocated memory before return error
-          sc_iterator5_free(it);
-          sc_stream_free(stream);
-
-          return SC_RESULT_ERROR_INVALID_STATE;
-        }
-      }
+      result = SC_TRUE;
+      *out_fiver = (sc_system_identifier_fiver){
+          sc_iterator5_value(it, 0),
+          sc_iterator5_value(it, 1),
+          sc_iterator5_value(it, 2),
+          sc_iterator5_value(it, 3),
+          sc_iterator5_value(it, 4)};
 
       sc_iterator5_free(it);
+      sc_iterator_destroy(links_it);
+
+      goto success;
     }
 
-    sc_iterator_destroy(addrs_it);
+    sc_iterator5_free(it);
   }
+  sc_iterator_destroy(links_it);
 
+  result = SC_RESULT_NO;
+success:
   sc_stream_free(stream);
-  sc_list_destroy(addrs);
+  sc_list_destroy(found_links);
 
-  return result == SC_TRUE ? SC_RESULT_OK : SC_RESULT_ERROR;
+error:
+  return result;
 }
 
 sc_result sc_helper_set_system_identifier(sc_memory_context * ctx, sc_addr addr, const sc_char * data, sc_uint32 len)
@@ -277,49 +275,58 @@ sc_result sc_helper_set_system_identifier_ext(
     sc_system_identifier_fiver * out_fiver)
 {
   sc_system_identifier_fiver_make_empty(out_fiver);
-  if (sc_helper_check_system_identifier(data) != SC_RESULT_OK)
-    return SC_RESULT_ERROR;
+
+  sc_result result = sc_helper_check_system_identifier(data);
+  if (result != SC_RESULT_OK)
+    goto error;
 
   sc_stream * stream = null_ptr;
-  sc_addr idtf_addr, arc_addr;
-  SC_ADDR_MAKE_EMPTY(idtf_addr);
+  sc_addr idtf_addr = SC_ADDR_EMPTY;
 
   // check if specified system identifier already used
   stream = sc_stream_memory_new(data, sizeof(sc_char) * len, SC_STREAM_FLAG_READ, SC_FALSE);
-  if (sc_helper_find_element_by_system_identifier(ctx, data, len, &idtf_addr) == SC_RESULT_OK)
+  result = sc_helper_find_element_by_system_identifier(ctx, data, len, &idtf_addr);
+  if (result == SC_RESULT_OK)
   {
     sc_stream_free(stream);
-    return SC_RESULT_ERROR;
+    result = SC_RESULT_ERROR_DUPLICATED_SYSTEM_IDENTIFIER;
+    goto error;
   }
 
   // if there are no elements with specified system identifier, then we can use it
   idtf_addr = sc_memory_link_new(ctx);
-  if (sc_memory_set_link_content(ctx, idtf_addr, stream) != SC_RESULT_OK)
+  result = sc_memory_set_link_content(ctx, idtf_addr, stream);
+  if (result != SC_RESULT_OK)
   {
     sc_stream_free(stream);
-    return SC_RESULT_ERROR;
+    goto error;
   }
 
   // we doesn't need link data anymore
   sc_stream_free(stream);
 
   // setup new system identifier
-  arc_addr = sc_memory_arc_new(ctx, sc_type_arc_common | sc_type_const, addr, idtf_addr);
+  sc_addr arc_addr = sc_memory_arc_new(ctx, sc_type_arc_common | sc_type_const, addr, idtf_addr);
   if (SC_ADDR_IS_EMPTY(arc_addr))
-    return SC_RESULT_ERROR;
+  {
+    result = SC_RESULT_ERROR_ADDR_IS_NOT_VALID;
+    goto error;
+  }
 
   sc_addr const arc_to_arc_addr =
       sc_memory_arc_new(ctx, sc_type_arc_pos_const_perm, sc_keynodes[SC_KEYNODE_NREL_SYSTEM_IDENTIFIER], arc_addr);
   if (SC_ADDR_IS_EMPTY(arc_addr))
-    return SC_RESULT_ERROR;
-
-  if (out_fiver != null_ptr)
   {
-    *out_fiver = (sc_system_identifier_fiver){
-        addr, arc_addr, idtf_addr, arc_to_arc_addr, sc_keynodes[SC_KEYNODE_NREL_SYSTEM_IDENTIFIER]};
+    result = SC_RESULT_ERROR_ADDR_IS_NOT_VALID;
+    goto error;
   }
 
-  return SC_RESULT_OK;
+  if (out_fiver != null_ptr)
+    *out_fiver = (sc_system_identifier_fiver){
+        addr, arc_addr, idtf_addr, arc_to_arc_addr, sc_keynodes[SC_KEYNODE_NREL_SYSTEM_IDENTIFIER]};
+
+error:
+  return result;
 }
 
 sc_result sc_helper_get_system_identifier_link(sc_memory_context const * ctx, sc_addr el, sc_addr * sys_idtf_addr)
@@ -327,20 +334,19 @@ sc_result sc_helper_get_system_identifier_link(sc_memory_context const * ctx, sc
   *sys_idtf_addr = SC_ADDR_EMPTY;
 
   sc_iterator5 * it = null_ptr;
-  sc_result result = SC_RESULT_ERROR;
+  sc_result result = SC_RESULT_NO;
 
   it = sc_iterator5_f_a_a_a_f_new(
       ctx,
       el,
       sc_type_arc_common | sc_type_const,
-      sc_type_link,
+      sc_type_link | sc_type_const,
       sc_type_arc_pos_const_perm,
       sc_keynodes[SC_KEYNODE_NREL_SYSTEM_IDENTIFIER]);
-  while (sc_iterator5_next(it) == SC_TRUE)
+  if (sc_iterator5_next(it))
   {
     *sys_idtf_addr = sc_iterator5_value(it, 2);
     result = SC_RESULT_OK;
-    break;
   }
 
   sc_iterator5_free(it);
@@ -348,42 +354,35 @@ sc_result sc_helper_get_system_identifier_link(sc_memory_context const * ctx, sc
   return result;
 }
 
-sc_result sc_helper_get_keynode(sc_memory_context const * ctx, sc_keynode keynode, sc_addr * keynode_addr)
+sc_bool sc_helper_resolve_system_identifier(sc_memory_context * ctx, sc_char const * system_idtf, sc_addr * result_addr)
 {
-  *keynode_addr = SC_ADDR_EMPTY;
-
-  if (ctx == null_ptr || sc_helper_is_initialized == SC_FALSE || sc_keynodes == null_ptr)
-    return SC_RESULT_ERROR;
-
-  *keynode_addr = sc_keynodes[(sc_uint32)keynode];
-
-  return SC_RESULT_OK;
-}
-
-sc_bool sc_helper_resolve_system_identifier(sc_memory_context * ctx, sc_char const * system_idtf, sc_addr * result)
-{
-  *result = SC_ADDR_EMPTY;
+  *result_addr = SC_ADDR_EMPTY;
 
   if (ctx == null_ptr || system_idtf == null_ptr)
     return SC_FALSE;
 
   sc_uint32 const string_size = sc_str_len(system_idtf);
-  if (sc_helper_find_element_by_system_identifier(ctx, system_idtf, string_size, result) != SC_RESULT_OK)
-  {
-    *result = sc_memory_node_new(ctx, sc_type_node | sc_type_const);
+  sc_result result = sc_helper_find_element_by_system_identifier(ctx, system_idtf, string_size, result_addr);
+  if (result != SC_RESULT_OK && result != SC_RESULT_NO)
+    goto error;
 
-    sc_system_identifier_fiver fiver;
-    sc_helper_set_system_identifier_ext(ctx, *result, system_idtf, string_size, &fiver);
-  }
+  if (result == SC_RESULT_OK)
+    return SC_TRUE;
+
+  *result_addr = sc_memory_node_new(ctx, sc_type_node | sc_type_const);
+
+  sc_system_identifier_fiver fiver;
+  result = sc_helper_set_system_identifier_ext(ctx, *result_addr, system_idtf, string_size, &fiver);
+  if (result != SC_RESULT_OK)
+    goto error;
 
   return SC_TRUE;
+error:
+  return SC_FALSE;
 }
 
 sc_bool sc_helper_check_arc(sc_memory_context const * ctx, sc_addr beg_el, sc_addr end_el, sc_type arc_type)
 {
-  if (ctx == null_ptr)
-    return SC_FALSE;
-
   sc_iterator3 * it = null_ptr;
   sc_bool res = SC_FALSE;
 

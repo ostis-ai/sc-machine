@@ -70,7 +70,7 @@ TEST_F(ScAgentTest, AgentResult_Codes)
   CheckValue(SC_RESULT_OK);
   CheckValue(SC_RESULT_ERROR_INVALID_PARAMS);
   CheckValue(SC_RESULT_ERROR_INVALID_TYPE);
-  CheckValue(SC_RESULT_ERROR_IO);
   CheckValue(SC_RESULT_ERROR_INVALID_STATE);
   CheckValue(SC_RESULT_ERROR_NOT_FOUND);
+  CheckValue(SC_RESULT_ERROR_STREAM_IO);
 }

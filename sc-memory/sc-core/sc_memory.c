@@ -191,7 +191,7 @@ sc_addr sc_memory_node_new(sc_memory_context const * ctx, sc_type type)
 
 sc_addr sc_memory_link_new(sc_memory_context const * ctx)
 {
-  return sc_memory_link_new2(ctx, sc_type_const);
+  return sc_memory_link_new2(ctx, sc_type_link | sc_type_const);
 }
 
 sc_addr sc_memory_link_new2(sc_memory_context const * ctx, sc_type type)
@@ -201,7 +201,13 @@ sc_addr sc_memory_link_new2(sc_memory_context const * ctx, sc_type type)
 
 sc_addr sc_memory_arc_new(sc_memory_context * ctx, sc_type type, sc_addr beg, sc_addr end)
 {
-  return sc_storage_arc_new(ctx, type, beg, end);
+  sc_result result;
+  return sc_memory_arc_new_ext(ctx, type, beg, end, &result);
+}
+
+sc_addr sc_memory_arc_new_ext(sc_memory_context * ctx, sc_type type, sc_addr beg, sc_addr end, sc_result * result)
+{
+  return sc_storage_arc_new_ext(ctx, type, beg, end, result);
 }
 
 sc_result sc_memory_get_element_type(sc_memory_context const * ctx, sc_addr addr, sc_type * result)

@@ -692,6 +692,9 @@ sc_addr sc_storage_node_new(sc_memory_context const * ctx, sc_type type)
 {
   sc_addr addr = SC_ADDR_EMPTY;
 
+  if ((type & sc_type_arc_mask) != 0)
+    return addr;
+
   sc_element * element = sc_storage_allocate_new_element(ctx, &addr);
   if (element != null_ptr)
     element->flags.type = sc_type_node | type;
@@ -702,6 +705,9 @@ sc_addr sc_storage_node_new(sc_memory_context const * ctx, sc_type type)
 sc_addr sc_storage_link_new(sc_memory_context const * ctx, sc_type type)
 {
   sc_addr addr = SC_ADDR_EMPTY;
+
+  if ((type & sc_type_link) == 0)
+    return addr;
 
   sc_element * element = sc_storage_allocate_new_element(ctx, &addr);
   if (element != null_ptr)
@@ -761,11 +767,30 @@ void _sc_storage_make_elements_incident_to_arc(
 
 sc_addr sc_storage_arc_new(sc_memory_context const * ctx, sc_type type, sc_addr beg_addr, sc_addr end_addr)
 {
-  sc_addr arc_addr = SC_ADDR_EMPTY;
   sc_result result;
+  return sc_storage_arc_new_ext(ctx, type, beg_addr, end_addr, &result);
+}
+
+sc_addr sc_storage_arc_new_ext(
+    sc_memory_context const * ctx,
+    sc_type type,
+    sc_addr beg_addr,
+    sc_addr end_addr,
+    sc_result * result)
+{
+  sc_addr arc_addr = SC_ADDR_EMPTY;
+
+  if ((type & sc_type_arc_mask) == 0)
+  {
+    *result = SC_RESULT_ERROR_ELEMENT_IS_NOT_CONNECTOR;
+    return arc_addr;
+  }
 
   if (SC_ADDR_IS_EMPTY(beg_addr) || SC_ADDR_IS_EMPTY(end_addr))
+  {
+    *result = SC_RESULT_ERROR_ADDR_IS_NOT_VALID;
     return arc_addr;
+  }
 
   sc_element *beg_el = null_ptr, *end_el = null_ptr;
 
@@ -785,12 +810,12 @@ sc_addr sc_storage_arc_new(sc_memory_context const * ctx, sc_type type, sc_addr 
   sc_monitor * end_monitor = sc_monitor_get_monitor_for_addr(&storage->addr_monitors_table, end_addr);
   sc_monitor_acquire_write_n(2, beg_monitor, end_monitor);
 
-  result = sc_storage_get_element_by_addr(beg_addr, &beg_el);
-  if (result != SC_RESULT_OK)
+  *result = sc_storage_get_element_by_addr(beg_addr, &beg_el);
+  if (*result != SC_RESULT_OK)
     goto error;
 
-  result = sc_storage_get_element_by_addr(end_addr, &end_el);
-  if (result != SC_RESULT_OK)
+  *result = sc_storage_get_element_by_addr(end_addr, &end_el);
+  if (*result != SC_RESULT_OK)
     goto error;
 
   // lock arcs to change output/input list
@@ -1000,7 +1025,7 @@ sc_result sc_storage_set_link_content(
   if (sc_stream_get_data(stream, &string, &string_size) == SC_FALSE)
   {
     sc_mem_free(string);
-    return SC_RESULT_ERROR_IO;
+    return SC_RESULT_ERROR_STREAM_IO;
   }
 
   if (string == null_ptr)
@@ -1022,7 +1047,7 @@ sc_result sc_storage_set_link_content(
   if (sc_fs_memory_link_string_ext(SC_ADDR_LOCAL_TO_INT(addr), string, string_size, is_searchable_string) !=
       SC_FS_MEMORY_OK)
   {
-    result = SC_RESULT_ERROR_IO;
+    result = SC_RESULT_ERROR_FILE_MEMORY_IO;
     goto error;
   }
 
@@ -1057,10 +1082,18 @@ sc_result sc_storage_get_link_content(sc_memory_context const * ctx, sc_addr add
   if (result != SC_RESULT_OK)
     goto error;
 
-  if ((el->flags.type & sc_type_link) == sc_type_link)
+  if ((el->flags.type & sc_type_link) != sc_type_link)
   {
-    if (sc_fs_memory_get_string_by_link_hash(SC_ADDR_LOCAL_TO_INT(addr), &string, &string_size) != SC_FS_MEMORY_OK)
-      goto error;
+    result = SC_RESULT_ERROR_ELEMENT_IS_NOT_LINK;
+    goto error;
+  }
+
+  sc_fs_memory_status const fs_memory_status =
+      sc_fs_memory_get_string_by_link_hash(SC_ADDR_LOCAL_TO_INT(addr), &string, &string_size);
+  if (fs_memory_status != SC_FS_MEMORY_OK && fs_memory_status != SC_FS_MEMORY_NO_STRING)
+  {
+    result = SC_RESULT_ERROR_FILE_MEMORY_IO;
+    goto error;
   }
 
   sc_monitor_release_read(monitor);
@@ -1091,7 +1124,7 @@ sc_result sc_storage_find_links_with_content_string(
   sc_uint32 string_size = 0;
   if (sc_stream_get_data(stream, &string, &string_size) != SC_TRUE)
   {
-    result = SC_RESULT_ERROR_IO;
+    result = SC_RESULT_ERROR_STREAM_IO;
     goto error;
   }
 
@@ -1101,8 +1134,10 @@ sc_result sc_storage_find_links_with_content_string(
     sc_string_empty(string);
   }
 
-  if (sc_fs_memory_get_link_hashes_by_string(string, string_size, result_hashes) != SC_FS_MEMORY_OK)
-    result = SC_RESULT_ERROR;
+  sc_fs_memory_status const fs_memory_status =
+      sc_fs_memory_get_link_hashes_by_string(string, string_size, result_hashes);
+  if (fs_memory_status != SC_FS_MEMORY_OK && fs_memory_status != SC_FS_MEMORY_NO_STRING)
+    result = SC_RESULT_ERROR_FILE_MEMORY_IO;
 
   sc_mem_free(string);
 
@@ -1123,16 +1158,17 @@ sc_result sc_storage_find_links_by_content_substring(
   sc_uint32 string_size = 0;
   if (sc_stream_get_data(stream, &string, &string_size) != SC_TRUE)
   {
-    result = SC_RESULT_ERROR_IO;
+    result = SC_RESULT_ERROR_STREAM_IO;
     goto error;
   }
 
   if (string == null_ptr)
     sc_string_empty(string);
 
-  if (sc_fs_memory_get_link_hashes_by_substring(string, string_size, max_length_to_search_as_prefix, result_hashes) !=
-      SC_FS_MEMORY_OK)
-    result = SC_RESULT_ERROR;
+  sc_fs_memory_status const fs_memory_status =
+      sc_fs_memory_get_link_hashes_by_substring(string, string_size, max_length_to_search_as_prefix, result_hashes);
+  if (fs_memory_status != SC_FS_MEMORY_OK && fs_memory_status != SC_FS_MEMORY_NO_STRING)
+    result = SC_RESULT_ERROR_FILE_MEMORY_IO;
 
   sc_mem_free(string);
 
@@ -1153,16 +1189,17 @@ sc_result sc_storage_find_links_contents_by_content_substring(
   sc_uint32 string_size = 0;
   if (sc_stream_get_data(stream, &string, &string_size) != SC_TRUE)
   {
-    result = SC_RESULT_ERROR_IO;
+    result = SC_RESULT_ERROR_STREAM_IO;
     goto error;
   }
 
   if (string == null_ptr)
     sc_string_empty(string);
 
-  if (sc_fs_memory_get_strings_by_substring(string, string_size, max_length_to_search_as_prefix, result_strings) !=
-      SC_FS_MEMORY_OK)
-    result = SC_RESULT_ERROR;
+  sc_fs_memory_status const fs_memory_status =
+      sc_fs_memory_get_strings_by_substring(string, string_size, max_length_to_search_as_prefix, result_strings);
+  if (fs_memory_status != SC_FS_MEMORY_OK && fs_memory_status != SC_FS_MEMORY_NO_STRING)
+    result = SC_RESULT_ERROR_FILE_MEMORY_IO;
   sc_mem_free(string);
 
 error:

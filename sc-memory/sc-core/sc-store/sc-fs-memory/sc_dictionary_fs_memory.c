@@ -673,7 +673,7 @@ sc_dictionary_fs_memory_status _sc_dictionary_fs_memory_get_link_hashes_by_strin
 
   sc_iterator * string_offset_it = sc_list_iterator(string_offsets);
   if (!sc_iterator_next(string_offset_it))
-    return SC_FS_MEMORY_READ_ERROR;
+    return SC_FS_MEMORY_NO_STRING;
 
   sc_monitor * channel_monitor;
   while (sc_iterator_next(string_offset_it))

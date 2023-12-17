@@ -84,6 +84,13 @@ sc_addr sc_storage_link_new(sc_memory_context const * ctx, sc_type type);
  */
 sc_addr sc_storage_arc_new(sc_memory_context const * ctx, sc_type type, sc_addr beg, sc_addr end);
 
+sc_addr sc_storage_arc_new_ext(
+    sc_memory_context const * ctx,
+    sc_type type,
+    sc_addr beg_addr,
+    sc_addr end_addr,
+    sc_result * result);
+
 sc_uint32 sc_storage_get_element_output_arcs_count(sc_memory_context const * ctx, sc_addr addr);
 
 sc_uint32 sc_storage_get_element_input_arcs_count(sc_memory_context const * ctx, sc_addr addr);

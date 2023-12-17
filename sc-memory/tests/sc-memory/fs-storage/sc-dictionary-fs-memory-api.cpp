@@ -511,13 +511,13 @@ TEST(ScDictionaryFSMemoryTest, sc_dictionary_fs_memory_get_link_hashes_by_not_se
     sc_list * found_link_hashes;
     EXPECT_EQ(
         sc_dictionary_fs_memory_get_link_hashes_by_string(memory, string1, sc_str_len(string1), &found_link_hashes),
-        SC_FS_MEMORY_READ_ERROR);
+        SC_FS_MEMORY_NO_STRING);
     EXPECT_EQ(found_link_hashes->size, 0u);
     sc_list_destroy(found_link_hashes);
 
     EXPECT_EQ(
         sc_dictionary_fs_memory_get_link_hashes_by_string(memory, string2, sc_str_len(string2), &found_link_hashes),
-        SC_FS_MEMORY_READ_ERROR);
+        SC_FS_MEMORY_NO_STRING);
     EXPECT_EQ(found_link_hashes->size, 0u);
     sc_list_destroy(found_link_hashes);
 

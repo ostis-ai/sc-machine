@@ -492,11 +492,9 @@ TEST_F(ScServerTest, SetContentForNode)
   auto const response = client.GetResponseMessage();
   EXPECT_FALSE(response.is_null());
   auto const & responsePayload = response["payload"];
-  EXPECT_FALSE(responsePayload.is_null());
-  EXPECT_TRUE(response["status"].get<sc_bool>());
-  EXPECT_TRUE(response["errors"].empty());
-
-  EXPECT_FALSE(responsePayload[0].get<sc_bool>());
+  EXPECT_TRUE(responsePayload.is_null());
+  EXPECT_FALSE(response["status"].get<sc_bool>());
+  EXPECT_FALSE(response["errors"].empty());
 
   client.Stop();
 }
@@ -527,11 +525,9 @@ TEST_F(ScServerTest, SetContentForEdge)
   auto const response = client.GetResponseMessage();
   EXPECT_FALSE(response.is_null());
   auto const & responsePayload = response["payload"];
-  EXPECT_FALSE(responsePayload.is_null());
-  EXPECT_TRUE(response["status"].get<sc_bool>());
-  EXPECT_TRUE(response["errors"].empty());
-
-  EXPECT_FALSE(responsePayload[0].get<sc_bool>());
+  EXPECT_TRUE(responsePayload.is_null());
+  EXPECT_FALSE(response["status"].get<sc_bool>());
+  EXPECT_FALSE(response["errors"].empty());
 
   client.Stop();
 }
@@ -550,7 +546,7 @@ TEST_F(ScServerTest, SetContentForInvalidLink)
               {"command", "set"},
               {"type", "string"},
               {"data", "some content"},
-              {"addr", 3},
+              {"addr", 999999999},
           },
       }));
   EXPECT_TRUE(client.Send(payloadString));
@@ -587,11 +583,9 @@ TEST_F(ScServerTest, GetContentForNode)
   auto const response = client.GetResponseMessage();
   EXPECT_FALSE(response.is_null());
   auto const & responsePayload = response["payload"];
-  EXPECT_FALSE(responsePayload.is_null());
-  EXPECT_TRUE(response["status"].get<sc_bool>());
-  EXPECT_TRUE(response["errors"].empty());
-
-  EXPECT_TRUE(responsePayload[0]["value"].get<std::string>().empty());
+  EXPECT_TRUE(responsePayload.is_null());
+  EXPECT_FALSE(response["status"].get<sc_bool>());
+  EXPECT_FALSE(response["errors"].empty());
 
   client.Stop();
 }
@@ -620,11 +614,9 @@ TEST_F(ScServerTest, GetContentForEdge)
   auto const response = client.GetResponseMessage();
   EXPECT_FALSE(response.is_null());
   auto const & responsePayload = response["payload"];
-  EXPECT_FALSE(responsePayload.is_null());
-  EXPECT_TRUE(response["status"].get<sc_bool>());
-  EXPECT_TRUE(response["errors"].empty());
-
-  EXPECT_TRUE(responsePayload[0]["value"].get<std::string>().empty());
+  EXPECT_TRUE(responsePayload.is_null());
+  EXPECT_FALSE(response["status"].get<sc_bool>());
+  EXPECT_FALSE(response["errors"].empty());
 
   client.Stop();
 }
@@ -641,7 +633,7 @@ TEST_F(ScServerTest, GetContentForInvalidLink)
       ScMemoryJsonPayload::array({
           {
               {"command", "get"},
-              {"addr", 3},
+              {"addr", 999999999},
           },
       }));
   EXPECT_TRUE(client.Send(payloadString));

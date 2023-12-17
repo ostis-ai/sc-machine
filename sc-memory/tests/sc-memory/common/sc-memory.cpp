@@ -103,15 +103,15 @@ TEST_F(ScMemoryTest, LinkContentStringApi)
 
   EXPECT_TRUE(m_ctx->SetLinkContent(linkAddr1, "content"));
   EXPECT_TRUE(m_ctx->GetLinkContent(linkAddr1, str));
-  EXPECT_TRUE(str == "content");
+  EXPECT_EQ(str, "content");
 }
 
 TEST_F(ScMemoryTest, ResolveNodeWithRussianIdtf)
 {
   std::string russianIdtf = "узел";
   ScAddr russianNode = m_ctx->CreateNode(ScType::NodeConstClass);
-  EXPECT_FALSE(m_ctx->HelperSetSystemIdtf(russianIdtf, russianNode));
-  EXPECT_FALSE(m_ctx->HelperFindBySystemIdtf(russianIdtf, russianNode));
+  EXPECT_THROW(m_ctx->HelperSetSystemIdtf(russianIdtf, russianNode), utils::ExceptionInvalidParams);
+  EXPECT_THROW(m_ctx->HelperFindBySystemIdtf(russianIdtf, russianNode), utils::ExceptionInvalidParams);
 
   std::string englishIdtf = "russianNode";
   ScAddr englishNode = m_ctx->CreateNode(ScType::NodeConstClass);
@@ -159,11 +159,10 @@ TEST_F(ScMemoryTestWithInitMemoryGeneratedStructure, TestInitMemoryGeneratedStru
       ScKeynodes::kScResultError,
       ScKeynodes::kScResultErrorInvalidParams,
       ScKeynodes::kScResultErrorInvalidType,
-      ScKeynodes::kScResultErrorIO,
       ScKeynodes::kScResultInvalidState,
       ScKeynodes::kScResultErrorNotFound,
-      ScKeynodes::kScResultErrorNoWriteRights,
-      ScKeynodes::kScResultErrorNoReadRights};
+      ScKeynodes::kScResultErrorStreamIO,
+  };
 
   ScAddrVector const & binaryTypes = {
       ScKeynodes::kBinaryDouble,

@@ -104,14 +104,6 @@ _SC_EXTERN sc_result sc_helper_set_system_identifier_ext(
 _SC_EXTERN sc_result
 sc_helper_get_system_identifier_link(sc_memory_context const * ctx, sc_addr el, sc_addr * sys_idtf_addr);
 
-/*! Returns sc-addr of specified sc-keynode
- * @param keynode Code of specified sc-keynode
- * @param keynode_addr Pointer to structure, that contains keynode sc-addr
- * @return If specified keynode exist, then return SC_OK and keynode_addr contains sc-addr of this one;
- * otherwise return SC_ERROR
- */
-_SC_EXTERN sc_result sc_helper_get_keynode(sc_memory_context const * ctx, sc_keynode keynode, sc_addr * keynode_addr);
-
 /*! Resolve sc-elemen by specified string system identifier
  * @param system_idtf String that represents system identifier (it will be converted into utf-8)
  * @param result Pointer to result sc-addr container
