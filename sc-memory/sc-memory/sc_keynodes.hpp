@@ -67,9 +67,6 @@ public:
   SC_PROPERTY(Keynode("sc_result_no"), ForceCreate(ScType::NodeConstClass))
   _SC_EXTERN static ScAddr kScResultNo;
 
-  SC_PROPERTY(Keynode("sc_result_unknown"), ForceCreate(ScType::NodeConstClass))
-  _SC_EXTERN static ScAddr kScResultUnknown;
-
   SC_PROPERTY(Keynode("sc_result_error"), ForceCreate(ScType::NodeConstClass))
   _SC_EXTERN static ScAddr kScResultError;
 
@@ -85,11 +82,35 @@ public:
   SC_PROPERTY(Keynode("sc_result_error_not_found"), ForceCreate(ScType::NodeConstClass))
   _SC_EXTERN static ScAddr kScResultErrorNotFound;
 
-  SC_PROPERTY(Keynode("sc_result_error_stream_io"), ForceCreate(ScType::NodeConstClass))
-  _SC_EXTERN static ScAddr kScResultErrorStreamIO;
+  SC_PROPERTY(Keynode("sc_result_error_full_memory"), ForceCreate(ScType::NodeConstClass))
+  _SC_EXTERN static ScAddr kScResultErrorFullMemory;
+
+  SC_PROPERTY(Keynode("sc_result_error_element_addr_is_not_valid"), ForceCreate(ScType::NodeConstClass))
+  _SC_EXTERN static ScAddr kScResultErrorAddrIsNotValid;
+
+  SC_PROPERTY(Keynode("sc_result_error_element_is_not_node"), ForceCreate(ScType::NodeConstClass))
+  _SC_EXTERN static ScAddr kScResultErrorElementIsNotNode;
+
+  SC_PROPERTY(Keynode("sc_result_error_element_is_not_link"), ForceCreate(ScType::NodeConstClass))
+  _SC_EXTERN static ScAddr kScResultErrorElementIsNotLink;
+
+  SC_PROPERTY(Keynode("sc_result_error_element_is_not_connector"), ForceCreate(ScType::NodeConstClass))
+  _SC_EXTERN static ScAddr kScResultErrorElementIsNotConnector;
 
   SC_PROPERTY(Keynode("sc_result_error_file_memory_io"), ForceCreate(ScType::NodeConstClass))
   _SC_EXTERN static ScAddr kScResultErrorFileMemoryIO;
+
+  SC_PROPERTY(Keynode("sc_result_error_stream_io"), ForceCreate(ScType::NodeConstClass))
+  _SC_EXTERN static ScAddr kScResultErrorStreamIO;
+
+  SC_PROPERTY(Keynode("sc_result_error_invalid_system_identifier"), ForceCreate(ScType::NodeConstClass))
+  _SC_EXTERN static ScAddr kScResultErrorInvalidSystemIdentifier;
+
+  SC_PROPERTY(Keynode("sc_result_error_duplicated_system_identifier"), ForceCreate(ScType::NodeConstClass))
+  _SC_EXTERN static ScAddr kScResultErrorDuplicatedSystemIdentifier;
+
+  SC_PROPERTY(Keynode("sc_result_unknown"), ForceCreate(ScType::NodeConstClass))
+  _SC_EXTERN static ScAddr kScResultUnknown;
 
   // binary types
   SC_PROPERTY(Keynode("binary_type"), ForceCreate(ScType::NodeConstClass))
