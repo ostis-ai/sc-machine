@@ -677,18 +677,18 @@ std::string ScMemoryContext::HelperGetSystemIdtf(ScAddr const & addr)
     SC_THROW_EXCEPTION(
         utils::ExceptionInvalidParams, "Specified sc-element sc-address is invalid to get system identifier");
 
-  std::string string;
+  std::string systemIdtf;
   if (result == SC_RESULT_NO)
-    return string;
+    return systemIdtf;
 
   ScStreamPtr stream = GetLinkContent(idtfLink);
   if (stream && stream->IsValid())
   {
-    if (ScStreamConverter::StreamToString(stream, string))
-      return string;
+    if (ScStreamConverter::StreamToString(stream, systemIdtf))
+      return systemIdtf;
   }
 
-  return string;
+  return systemIdtf;
 }
 
 bool ScMemoryContext::HelperCheckEdge(ScAddr const & begin, ScAddr end, ScType const & edgeType)

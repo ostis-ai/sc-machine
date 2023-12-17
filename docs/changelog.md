@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Breaking changes
+
+- All methods in C++ API for managing sc-memory throws exceptions if passed params are not valid or memory state is not valid
+- All methods in C API for managing sc-memory returns error codes if passed params are not valid or memory state is not valid
+
 ### Added
 
 - Divide params errors handling and memory state handling
