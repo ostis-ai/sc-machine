@@ -11,6 +11,7 @@
 #include "../sc-base/sc_allocator.h"
 #include "../sc-base/sc_message.h"
 #include "../sc_storage.h"
+#include "../sc_storage_private.h"
 
 typedef struct
 {

@@ -4,6 +4,12 @@
  * (See accompanying file COPYING.MIT or copy at http://opensource.org/licenses/MIT)
  */
 
+/*!
+ * @file sc_storage.h
+ *
+ * @brief This file contains the API for managing the sc-storage.
+ */
+
 #ifndef _sc_storage_h_
 #define _sc_storage_h_
 
@@ -20,74 +26,228 @@
 
 typedef struct _sc_storage sc_storage;
 
-//! Initialize sc storage in specified path
+/*!
+ * @brief Initializes the sc-storage with the provided parameters.
+ *
+ * This function initializes the sc-storage based on the specified parameters.
+ * It allocates memory for the storage structure, sets up necessary data structures,
+ * and optionally loads the state from persistent storage.
+ *
+ * @param params A pointer to the sc-memory parameters used to configure the sc-storage.
+ *
+ * @return Returns SC_RESULT_OK if the initialization is successful, and an error code otherwise.
+ *
+ * @note The caller is responsible for handling any errors indicated by the result value.
+ *
+ * Possible values for the result:
+ * @retval SC_RESULT_OK The function executed successfully.
+ * @retval SC_RESULT_ERROR An error occurred during initialization.
+ *
+ * @see sc_storage_shutdown
+ */
 sc_result sc_storage_initialize(sc_memory_params const * params);
 
-//! Shutdown sc storage
+/*!
+ * @brief Shuts down the sc-storage.
+ *
+ * This function shuts down the sc-storage. If the save_state parameter is set to SC_TRUE,
+ * it saves the current state to persistent storage before shutting down. The function releases
+ * all allocated resources and stops the background threads associated with the storage.
+ *
+ * @param save_state Specifies whether to save the current state to persistent storage before shutting down.
+ *
+ * @return Returns SC_RESULT_OK if the shutdown is successful, and an error code otherwise.
+ *
+ * @note The caller is responsible for handling any errors indicated by the result value.
+ *
+ * Possible values for the result:
+ * @retval SC_RESULT_OK The function executed successfully.
+ * @retval SC_RESULT_ERROR An error occurred during shutdown.
+ *
+ * @see sc_storage_initialize
+ */
 sc_result sc_storage_shutdown(sc_bool save_state);
 
 //! Check if storage initialized
 sc_bool sc_storage_is_initialized();
 
-sc_storage * sc_storage_get();
-
-sc_event_emission_manager * sc_storage_get_event_emission_manager();
-
-sc_event_registration_manager * sc_storage_get_event_registration_manager();
-
-/*! Append sc-element to segments pool
- * @param addr Pointer to sc-addr structure, that will contains sc-addr of appended sc-element
- * @return Return pointer to created sc-element data. If sc-element wasn't appended, then return 0.
- * @note Returned sc-element is locked
- */
-sc_element * sc_storage_allocate_new_element(sc_memory_context const * ctx, sc_addr * addr);
-
-void sc_storage_start_new_process();
-
-void sc_storage_end_new_process();
-
-/*! Check if sc-element with specified sc-addr exist
- * @param addr sc-addr of element
- * @return Returns SC_TRUE, if sc-element with \p addr exist; otherwise return false.
- * If element deleted, then return SC_FALSE.
+/*!
+ * @brief Checks if the specified sc-addr represents a valid sc-element.
+ *
+ * This function checks if the specified sc-addr represents a valid sc-element
+ * in the given sc-memory context.
+ *
+ * @param ctx A pointer to the sc-memory context that manages the operation.
+ * @param addr The sc-addr to be checked.
+ *
+ * @return Returns SC_TRUE if the specified sc-addr represents a valid sc-element,
+ *         and SC_FALSE otherwise.
+ *
+ * @note This function is thread-safe.
  */
 sc_bool sc_storage_is_element(sc_memory_context const * ctx, sc_addr addr);
 
-sc_result sc_storage_get_element_by_addr(sc_addr addr, sc_element ** el);
-
-sc_result sc_storage_free_element(sc_addr addr);
-
-/*! Remove sc-element from storage
- * @param addr sc-addr of element to erase
- * @return If input params are correct and element erased, then return SC_OK;
- * otherwise return SC_ERROR
+/*!
+ * @brief Frees the memory occupied by a sc-element and all connected elements.
+ *
+ * This function frees the memory occupied by a sc-element identified by the provided
+ * sc-addr, along with all the connected elements (input/output sc-connectors) related to it.
+ * The operation result is stored in the provided pointer to sc-result.
+ *
+ * @param ctx A pointer to the sc-memory context that manages the operation.
+ * @param addr The sc-addr of the sc-element to be freed.
+ * @param result Pointer to a variable that will store the result of the operation.
+ *
+ * @return Returns SC_RESULT_OK if the operation executed successfully.
+ *
+ * @note The caller is responsible for handling any errors indicated by the result value.
+ * @note This function is thread-safe.
+ *
+ * Possible values for the result:
+ * @retval SC_RESULT_OK The function executed successfully.
+ * @retval SC_RESULT_ERROR_ELEMENT_IS_NOT_CONNECTOR The specified sc-addr does not represent a valid sc-element.
+ * @retval SC_RESULT_ERROR_FULL_MEMORY Unable to allocate memory for the new sc-element.
+ * @retval SC_RESULT_ERROR_ADDR_IS_NOT_VALID The specified sc-addr is not valid.
  */
 sc_result sc_storage_element_free(sc_memory_context const * ctx, sc_addr addr);
 
-/*! Create new sc-node
- * @param type Type of new sc-node
- * @return Return sc-addr of created sc-node or empty sc-addr if sc-node wasn't created
+/*!
+ * @brief Creates a new sc-node with the specified type.
+ *
+ * This function creates a new sc-node with the specified type and returns
+ * its sc-addr. The result of the operation is not explicitly returned.
+ *
+ * @param ctx A pointer to the sc-memory context that manages the operation.
+ * @param type Type of the new sc-node.
+ *
+ * @return Returns the sc-addr of the created sc-node or an empty sc-addr if the sc-node
+ *         wasn't created successfully.
+ *
+ * @note This function is a convenience wrapper around `sc_storage_node_new_ext`, where
+ *       the result of the operation is not explicitly returned. Use this function
+ *       when the result is not needed.
+ * @note This function is thread-safe.
  */
 sc_addr sc_storage_node_new(sc_memory_context const * ctx, sc_type type);
 
+/*!
+ * @brief Creates a new sc-node with the specified type and returns the result of the operation.
+ *
+ * This function creates a new sc-node with the specified type and returns
+ * its sc-addr. The result of the operation is stored in the provided pointer
+ * to sc-result.
+ *
+ * @param ctx A pointer to the sc-memory context that manages the operation.
+ * @param type Type of the new sc-node.
+ * @param result Pointer to a variable that will store the result of the operation.
+ *
+ * @return Returns the sc-addr of the created sc-node or an empty sc-addr if the sc-node
+ *         wasn't created successfully.
+ *
+ * @note The caller is responsible for handling any errors indicated by the result value.
+ * @note This function is thread-safe.
+ *
+ * Possible values for the result:
+ * @retval SC_RESULT_OK The function executed successfully.
+ * @retval SC_RESULT_ERROR_ELEMENT_IS_NOT_NODE The specified sc-type is not valid for a sc-node.
+ * @retval SC_RESULT_ERROR_FULL_MEMORY Unable to allocate memory for the new sc-node.
+ */
 sc_addr sc_storage_node_new_ext(sc_memory_context const * ctx, sc_type type, sc_result * result);
 
-/*! Create new sc-link
- * @return Return sc-addr of created sc-link or empty sc-addr if sc-link wasn't created
+/*!
+ * @brief Creates a new sc-link with the specified type.
+ *
+ * This function creates a new sc-link with the specified type and returns
+ * its sc-addr. The result of the operation is not explicitly returned.
+ *
+ * @param ctx A pointer to the sc-memory context that manages the operation.
+ * @param type Type of the new sc-link.
+ *
+ * @return Returns the sc-addr of the created sc-link or an empty sc-addr if the sc-link
+ *         wasn't created successfully.
+ *
+ * @note This function is a convenience wrapper around `sc_storage_link_new_ext`, where
+ *       the result of the operation is not explicitly returned. Use this function
+ *       when the result is not needed.
+ * @note This function is thread-safe.
  */
 sc_addr sc_storage_link_new(sc_memory_context const * ctx, sc_type type);
 
+/*!
+ * @brief Creates a new sc-link with the specified type and returns the result of the operation.
+ *
+ * This function creates a new sc-link with the specified type and returns
+ * its sc-addr. The result of the operation is stored in the provided pointer
+ * to sc-result.
+ *
+ * @param ctx A pointer to the sc-memory context that manages the operation.
+ * @param type Type of the new sc-link.
+ * @param result Pointer to a variable that will store the result of the operation.
+ *
+ * @return Returns the sc-addr of the created sc-link or an empty sc-addr if the sc-link
+ *         wasn't created successfully.
+ *
+ * @note The caller is responsible for handling any errors indicated by the result value.
+ * @note This function is thread-safe.
+ *
+ * Possible values for the result:
+ * @retval SC_RESULT_OK The function executed successfully.
+ * @retval SC_RESULT_ERROR_ELEMENT_IS_NOT_LINK The specified sc-type is not valid for a sc-link.
+ * @retval SC_RESULT_ERROR_FULL_MEMORY Unable to allocate memory for the new sc-link.
+ */
 sc_addr sc_storage_link_new_ext(sc_memory_context const * ctx, sc_type type, sc_result * result);
 
-/*! Create new sc-arc.
- * @param type Type of new sc-arc
- * @param beg sc-addr of begin sc-element
- * @param end sc-addr of end sc-element
+/*!
+ * @brief Creates a new sc-connector between two sc-elements with the specified type.
  *
- * @return Return sc-addr of created sc-arc or empty sc-addr if sc-arc wasn't created
+ * This function creates a new sc-connector with the specified type between the
+ * specified begin and end sc-elements, and returns its sc-addr. The result
+ * of the operation is not explicitly returned.
+ *
+ * @param ctx A pointer to the sc-memory context that manages the operation.
+ * @param type Type of the new sc-arc.
+ * @param beg_addr The sc-addr of the begin sc-element.
+ * @param end_addr The sc-addr of the end sc-element.
+ *
+ * @return Returns the sc-addr of the created sc-connector or an empty sc-addr if the
+ *         sc-connector wasn't created successfully.
+ *
+ * @note This function is a convenience wrapper around `sc_storage_arc_new_ext`,
+ *       where the result of the operation is not explicitly returned. Use this
+ *       function when the result is not needed.
+ * @note This function is thread-safe.
  */
 sc_addr sc_storage_arc_new(sc_memory_context const * ctx, sc_type type, sc_addr beg, sc_addr end);
 
+/*!
+ * @brief Creates a new sc-connector
+ *
+ * This function creates a new sc-connector with the specified type, connecting the given
+ * begin and end sc-elements. The type must be an arc type (e.g., sc_type_arc_common,
+ * sc_type_arc_pos_const_perm), and the begin and end sc-elements must be valid sc-addrs.
+ *
+ * @param ctx A pointer to the sc-memory context that manages the operation.
+ * @param type Type of the new sc-connector.
+ * @param beg_addr sc-addr of the begin sc-element.
+ * @param end_addr sc-addr of the end sc-element.
+ * @param result Pointer to a variable that will store the result of the operation.
+ *               It can be NULL if the result is not needed.
+ *
+ * @return Returns the sc-addr of the created sc-connector if successful, or SC_ADDR_EMPTY if
+ *         the sc-connector creation fails.
+ *
+ * @note The caller is responsible for handling any errors indicated by the result value.
+ *
+ * @retval SC_ADDR_EMPTY The sc-connector creation failed, and the returned sc-addr is empty.
+ * @retval Valid sc-addr The sc-connector was successfully created, and the returned sc-addr
+ *                        is the identifier of the newly created sc-connector.
+ *
+ * Possible values for the `result` parameter:
+ * @retval SC_RESULT_OK The function executed successfully.
+ * @retval SC_RESULT_ERROR_ELEMENT_IS_NOT_CONNECTOR The specified type is not a valid sc-connector type.
+ * @retval SC_RESULT_ERROR_ADDR_IS_NOT_VALID Either the begin or end sc-addr is not valid.
+ * @retval SC_RESULT_ERROR_FULL_MEMORY Memory allocation for the new sc-connector failed.
+ */
 sc_addr sc_storage_arc_new_ext(
     sc_memory_context const * ctx,
     sc_type type,
@@ -95,43 +255,187 @@ sc_addr sc_storage_arc_new_ext(
     sc_addr end_addr,
     sc_result * result);
 
+/*!
+ * @brief Retrieves the count of output connectors for the specified sc-element.
+ *
+ * This function retrieves the count of output connectors for the sc-element with the specified
+ * sc-addr. The result is stored in the provided pointer to sc-uint32.
+ *
+ * @param ctx A pointer to the sc-memory context that manages the operation.
+ * @param addr The sc-addr of the sc-element for which to retrieve the output connectors count.
+ * @param result Pointer to a variable that will store the result of the operation.
+ *               It can be NULL if the result is not needed.
+ *
+ * @return Returns the count of output connectors for the sc-element. If an error occurs,
+ *         the function returns 0, and the result value is set accordingly.
+ *
+ * @note The caller is responsible for handling any errors indicated by the result value.
+ *
+ * @retval 0 The function encountered an error, and the count value is not valid.
+ * @retval sc_uint32 The count of output connectors for the specified sc-element.
+ *
+ * Possible values for the `result` parameter:
+ * @retval SC_RESULT_OK The function executed successfully.
+ * @retval SC_RESULT_ERROR_ADDR_IS_NOT_VALID The specified sc-addr is not valid.
+ */
 sc_uint32 sc_storage_get_element_output_arcs_count(sc_memory_context const * ctx, sc_addr addr, sc_result * result);
 
+/*!
+ * @brief Retrieves the count of input sc-connectors for the specified sc-element.
+ *
+ * This function retrieves the count of input sc-connectors for the sc-element with the specified
+ * sc-addr. The result is stored in the provided pointer to sc-uint32.
+ *
+ * @param ctx A pointer to the sc-memory context that manages the operation.
+ * @param addr The sc-addr of the sc-element for which to retrieve the input sc-connectors count.
+ * @param result Pointer to a variable that will store the result of the operation.
+ *               It can be NULL if the result is not needed.
+ *
+ * @return Returns the count of input sc-connectors for the sc-element. If an error occurs,
+ *         the function returns 0, and the result value is set accordingly.
+ *
+ * @note The caller is responsible for handling any errors indicated by the result value.
+ * @note This function is thread-safe.
+ *
+ * @retval 0 The function encountered an error, and the count value is not valid.
+ * @retval sc_uint32 The count of input sc-connectors for the specified sc-element.
+ *
+ * Possible values for the `result` parameter:
+ * @retval SC_RESULT_OK The function executed successfully.
+ * @retval SC_RESULT_ERROR_ADDR_IS_NOT_VALID The specified sc-addr is not valid.
+ */
 sc_uint32 sc_storage_get_element_input_arcs_count(sc_memory_context const * ctx, sc_addr addr, sc_result * result);
 
-/*! Get type of sc-element with specified sc-addr
- * @param addr sc-addr of element to get type
- * @param result Pointer to result container
- * @return If input params are correct and type resolved, then return SC_OK;
- * otherwise return SC_ERROR
+/*!
+ * @brief Retrieves the type of the specified sc-element.
+ *
+ * This function retrieves the type of the sc-element with the specified sc-addr.
+ * The result is stored in the provided pointer to sc-type.
+ *
+ * @param ctx A pointer to the sc-memory context that manages the operation.
+ * @param addr The sc-addr of the sc-element for which to retrieve the type.
+ * @param type Pointer to a variable that will store the result (type) of the operation.
+ *             It can be NULL if the result is not needed.
+ *
+ * @return Returns the result of the operation. If successful, the function returns
+ *         SC_RESULT_OK, and the type value is set accordingly. If an error occurs,
+ *         the function returns an error code, and the type value is not valid.
+ *
+ * @note The caller is responsible for handling any errors indicated by the result value.
+ * @note This function is thread-safe.
+ *
+ * Possible values for the `result` parameter:
+ * @retval SC_RESULT_OK The function executed successfully.
+ * @retval SC_RESULT_ERROR_ADDR_IS_NOT_VALID The specified sc-addr is not valid.
+ *
+ * @retval Valid sc-type The type of the specified sc-element.
  */
 sc_result sc_storage_get_element_type(sc_memory_context const * ctx, sc_addr addr, sc_type * result);
 
-/*! Change element subtype
- * @param addr sc-addr of element to set new subtype
- * @param type New type of sc-element
- * @return If type changed, then returns SC_RESULT_OK; otherwise returns SC_RESULT_ERROR
+/*!
+ * @brief Changes the subtype of the specified sc-element.
+ *
+ * This function changes the subtype of the sc-element with the specified sc-addr
+ * to the specified type. The provided type should have the same base element type
+ * (e.g., sc_type_node, sc_type_link) as the current type of the sc-element.
+ *
+ * @param ctx A pointer to the sc-memory context that manages the operation.
+ * @param addr The sc-addr of the sc-element for which to change the subtype.
+ * @param type The new subtype to assign to the sc-element.
+ *
+ * @return Returns the result of the operation. If successful, the function returns
+ *         SC_RESULT_OK. If an error occurs, the function returns an error code.
+ *
+ * @note The caller is responsible for handling any errors indicated by the result value.
+ * @note This function is thread-safe.
+ *
+ * Possible values for the result:
+ * @retval SC_RESULT_OK The function executed successfully.
+ * @retval SC_RESULT_ERROR_ADDR_IS_NOT_VALID The specified sc-addr is not valid.
+ * @retval SC_RESULT_ERROR_INVALID_PARAMS The provided type is not a valid subtype for the sc-element.
  */
 sc_result sc_storage_change_element_subtype(sc_memory_context const * ctx, sc_addr addr, sc_type type);
 
-/*! Returns sc-addr of begin element of specified arc
- * @param addr sc-addr of arc to get begin element
- * @param result Pointer to result container
- * @return If input params are correct and begin element resolved, then return SC_OK.
- * If element with specified addr isn't an arc, then return SC_INVALID_TYPE
+/*!
+ * @brief Retrieves the begin sc-addr of the specified sc-arc.
+ *
+ * This function retrieves the begin sc-addr of the specified sc-connector with the provided
+ * sc-addr. The result is stored in the provided pointer to sc-addr.
+ *
+ * @param ctx A pointer to the sc-memory context that manages the operation.
+ * @param addr The sc-addr of the sc-connector for which to retrieve the begin sc-addr.
+ * @param result_begin_addr Pointer to a variable that will store the result (begin sc-addr)
+ *                          of the operation. It can be NULL if the result is not needed.
+ *
+ * @return Returns the result of the operation. If successful, the function returns
+ *         SC_RESULT_OK, and the begin sc-addr value is set accordingly. If an error occurs,
+ *         the function returns an error code, and the begin sc-addr value is not valid.
+ *
+ * @note The caller is responsible for handling any errors indicated by the result value.
+ * @note This function is thread-safe.
+ *
+ * Possible values for the result:
+ * @retval SC_RESULT_OK The function executed successfully.
+ * @retval SC_RESULT_ERROR_ADDR_IS_NOT_VALID The specified sc-addr is not valid.
+ * @retval SC_RESULT_ERROR_ELEMENT_IS_NOT_CONNECTOR The specified sc-addr does not represent a valid sc-arc.
+ *
+ * @retval Valid sc-addr The begin sc-addr of the specified sc-arc.
  */
-sc_result sc_storage_get_arc_begin(sc_memory_context const * ctx, sc_addr addr, sc_addr * result);
+sc_result sc_storage_get_arc_begin(sc_memory_context const * ctx, sc_addr addr, sc_addr * result_begin_addr);
 
-/*! Returns sc-addr of end element of specified arc
- * @param addr sc-addr of arc to get end element
- * @param result Pointer to result container
- * @return If input params are correct and end element resolved, then return SC_OK.
- * If element with specified addr isn't an arc, then return SC_INVALID_TYPE
+/*!
+ * @brief Retrieves the end sc-addr of the specified sc-arc.
+ *
+ * This function retrieves the end sc-addr of the specified sc-connector with the provided
+ * sc-addr. The result is stored in the provided pointer to sc-addr.
+ *
+ * @param ctx A pointer to the sc-memory context that manages the operation.
+ * @param addr The sc-addr of the sc-connector for which to retrieve the end sc-addr.
+ * @param result_end_addr Pointer to a variable that will store the result (end sc-addr)
+ *                        of the operation. It can be NULL if the result is not needed.
+ *
+ * @return Returns the result of the operation. If successful, the function returns
+ *         SC_RESULT_OK, and the end sc-addr value is set accordingly. If an error occurs,
+ *         the function returns an error code, and the end sc-addr value is not valid.
+ *
+ * @note The caller is responsible for handling any errors indicated by the result value.
+ * @note This function is thread-safe.
+ *
+ * Possible values for the result:
+ * @retval SC_RESULT_OK The function executed successfully.
+ * @retval SC_RESULT_ERROR_ADDR_IS_NOT_VALID The specified sc-addr is not valid.
+ * @retval SC_RESULT_ERROR_ELEMENT_IS_NOT_CONNECTOR The specified sc-addr does not represent a valid sc-arc.
+ *
+ * @retval Valid sc-addr The end sc-addr of the specified sc-arc.
  */
-sc_result sc_storage_get_arc_end(sc_memory_context const * ctx, sc_addr addr, sc_addr * result);
+sc_result sc_storage_get_arc_end(sc_memory_context const * ctx, sc_addr addr, sc_addr * result_end_addr);
 
-/*! Like a sc_storage_get_arc_begin and sc_storage_get_arc_end call
- * @see sc_storage_get_arc_begin, @see sc_storage_get_arc_end
+/*!
+ * @brief Retrieves the begin and end sc-addrs of the specified sc-arc.
+ *
+ * This function retrieves both the begin and end sc-addrs of the specified sc-arc
+ * with the provided sc-addr. The results are stored in the provided pointers to sc-addr.
+ *
+ * @param ctx A pointer to the sc-memory context that manages the operation.
+ * @param addr The sc-addr of the sc-connector for which to retrieve the begin and end sc-addrs.
+ * @param result_begin_addr Pointer to a variable that will store the result (begin sc-addr)
+ *                          of the operation. It can be NULL if the result is not needed.
+ * @param result_end_addr Pointer to a variable that will store the result (end sc-addr)
+ *                        of the operation. It can be NULL if the result is not needed.
+ *
+ * @return Returns the result of the operation. If successful, the function returns
+ *         SC_RESULT_OK, and the begin and end sc-addrs are set accordingly.
+ *         If an error occurs, the function returns an error code, and the sc-addrs are not valid.
+ *
+ * @note The caller is responsible for handling any errors indicated by the result value.
+ * @note This function is thread-safe.
+ *
+ * Possible values for the result:
+ * @retval SC_RESULT_OK The function executed successfully.
+ * @retval SC_RESULT_ERROR_ADDR_IS_NOT_VALID The specified sc-addr is not valid.
+ * @retval SC_RESULT_ERROR_ELEMENT_IS_NOT_CONNECTOR The specified sc-addr does not represent a valid sc-arc.
+ *
+ * @retval Valid sc-addr The begin and end sc-addrs of the specified sc-arc.
  */
 sc_result sc_storage_get_arc_info(
     sc_memory_context const * ctx,
@@ -139,17 +443,32 @@ sc_result sc_storage_get_arc_info(
     sc_addr * result_begin_addr,
     sc_addr * result_end_addr);
 
-/*! Setup content data for specified sc-link
- * @param addr sc-addr of sc-link to setup content
- * @param stream Pointer to stream
- * @param is_searchable_string Ability to search for sc-links on this content string
- * @return If content of specified link changed without any errors, then return SC_OK; otherwise
- * returns on of error codes:
- * <ul>
- * <li>SC_INVALID_TYPE - element with \p addr isn't a sc-link</li>
- * <li>SC_ERROR_INVALID_PARAMS - element with specified \p addr doesn't exist
- * <li>SC_ERROR - unknown error</li>
- * </ul>
+/*!
+ * @brief Sets the content of the specified sc-link.
+ *
+ * This function sets the content of the sc-link with the specified sc-addr using the
+ * data from the provided stream. The stream is expected to contain the content data
+ * to be associated with the sc-link.
+ *
+ * @param ctx A pointer to the sc-memory context that manages the operation.
+ * @param addr The sc-addr of the sc-link for which to set the content.
+ * @param stream The stream containing the content data to be associated with the sc-link.
+ * @param is_searchable_string A boolean indicating whether the content should be treated
+ *                             as a searchable string. If SC_TRUE, the content will be processed
+ *                             as a searchable string; otherwise, it will be treated as raw data.
+ *
+ * @return Returns the result of the operation. If successful, the function returns
+ *         SC_RESULT_OK. If an error occurs, the function returns an error code.
+ *
+ * @note The caller is responsible for handling any errors indicated by the result value.
+ * @note This function is thread-safe.
+ *
+ * Possible values for the result:
+ * @retval SC_RESULT_OK The function executed successfully.
+ * @retval SC_RESULT_ERROR_ADDR_IS_NOT_VALID The specified sc-addr is not valid.
+ * @retval SC_RESULT_ERROR_ELEMENT_IS_NOT_LINK The specified sc-addr does not represent a valid sc-link.
+ * @retval SC_RESULT_ERROR_STREAM_IO Error occurred while processing the stream.
+ * @retval SC_RESULT_ERROR_FILE_MEMORY_IO Error occurred during file/memory operations.
  */
 sc_result sc_storage_set_link_content(
     sc_memory_context const * ctx,
@@ -157,41 +476,75 @@ sc_result sc_storage_set_link_content(
     sc_stream const * stream,
     sc_bool is_searchable_string);
 
-/*! Returns content data from specified sc-link
- * @param addr sc-addr of sc-link to get content data
- * @param stream Pointer to returned data stream
- * @return If content of specified link returned without any errors, then return SC_OK; otherwise
- * returns on of error codes:
- * <ul>
- * <li>SC_INVALID_TYPE - element with \p addr isn't a sc-link</li>
- * <li>SC_ERROR_INVALID_PARAMS - element with specified \p addr doesn't exist
- * <li>SC_ERROR - unknown error</li>
- * </ul>
+/*!
+ * @brief Retrieves the content of the specified sc-link as a stream.
+ *
+ * This function retrieves the content of the sc-link with the specified sc-addr
+ * as a stream. The stream contains the content data associated with the sc-link.
+ *
+ * @param ctx A pointer to the sc-memory context that manages the operation.
+ * @param addr The sc-addr of the sc-link for which to retrieve the content.
+ * @param stream Pointer to a variable that will store the result (stream)
+ *               of the operation. It can be NULL if the result is not needed.
+ *
+ * @return Returns the result of the operation. If successful, the function returns
+ *         SC_RESULT_OK, and the stream value is set accordingly. If an error occurs,
+ *         the function returns an error code, and the stream value is not valid.
+ *
+ * @note The caller is responsible for handling any errors indicated by the result value.
+ * @note This function is thread-safe.
+ *
+ * Possible values for the result:
+ * @retval SC_RESULT_OK The function executed successfully.
+ * @retval SC_RESULT_ERROR_ADDR_IS_NOT_VALID The specified sc-addr is not valid.
+ * @retval SC_RESULT_ERROR_ELEMENT_IS_NOT_LINK The specified sc-addr does not represent a valid sc-link.
+ * @retval SC_RESULT_ERROR_STREAM_IO Error occurred while processing the stream.
+ * @retval SC_RESULT_ERROR_FILE_MEMORY_IO Error occurred during file/memory operations.
+ *
+ * @retval Valid sc-stream The stream containing the content data of the specified sc-link.
  */
 sc_result sc_storage_get_link_content(sc_memory_context const * ctx, sc_addr addr, sc_stream ** stream);
 
-/*! Search sc-link addrs by specified data
- * @param stream Pointer to stream that contains data for search
- * @param result_addrs Pointer to result container
- * @return If sc-links with specified content found, then sc-addrs of found link
- * writes into \p result array and function returns SC_OK; otherwise \p function returns SC_OK.
- * In any case \p result_count contains number of found sc-addrs.
- * @attention \p result array need to be free after usage
+/*!
+ * @brief Finds sc-links with content matching the specified string.
+ *
+ * This function searches for sc-links with content that matches the provided
+ * string. The result is stored in the provided pointer to sc-list, containing
+ * the hash values of the sc-links that match the search criteria.
+ *
+ * @param ctx A pointer to the sc-memory context that manages the operation.
+ * @param stream The stream containing the search string.
+ * @param result_hashes Pointer to a variable that will store the result (sc-list)
+ *                      of the operation. It can be NULL if the result is not needed.
+ *
+ * @param Valid sc-list The list containing the hash values of sc-links with content
+ *                      matching the specified string.
+ *
+ * @note This function is thread-safe.
  */
 sc_result sc_storage_find_links_with_content_string(
     sc_memory_context const * ctx,
     sc_stream const * stream,
     sc_list ** result_addrs);
 
-/*! Search sc-link addrs by specified data substring
- * @param stream Pointer to stream that contains data for search
- * @param result_hashes Pointer to result container of sc-links with specified data started with substring
- * @param result_count Container for results count
- * @param max_length_to_search_as_prefix Search by prefix as substring length <= max_length_to_search_as_prefix
- * @return If sc-links with specified substring found, then sc-addrs of found link
- * writes into \p result array and function returns SC_RESULT_OK; otherwise function returns SC_RESULT_OK.
- * In any case \p result_count contains number of found sc-addrs.
- * @attention \p result array need to be free after usage
+/*!
+ * @brief Finds sc-links with content containing the specified substring.
+ *
+ * This function searches for sc-links with content that contains the specified
+ * substring. The result is stored in the provided pointer to sc-list, containing
+ * the hash values of the sc-links that match the search criteria.
+ *
+ * @param ctx A pointer to the sc-memory context that manages the operation.
+ * @param stream The stream containing the search substring.
+ * @param result_hashes Pointer to a variable that will store the result (sc-list)
+ *                      of the operation. It can be NULL if the result is not needed.
+ * @param max_length_to_search_as_prefix The maximum length of the substring to search
+ *                                       as a prefix. Set to 0 for a standard substring search.
+ *
+ * @param Valid sc-list The list containing the hash values of sc-links with content
+ *                      containing the specified substring.
+ *
+ * @note This function is thread-safe.
  */
 sc_result sc_storage_find_links_by_content_substring(
     sc_memory_context const * ctx,
@@ -199,14 +552,23 @@ sc_result sc_storage_find_links_by_content_substring(
     sc_list ** result_hashes,
     sc_uint32 max_length_to_search_as_prefix);
 
-/*! Search sc-strings by specified substring
- * @param stream Pointer to stream that contains data for search
- * @param result_strings Pointer to result container of sc-strings with substring
- * @param max_length_to_search_as_prefix Search by prefix as substring length <= max_length_to_search_as_prefix
- * @return If sc-strings with specified substring found, then they
- * writes into \p result array and function returns SC_RESULT_OK; otherwise function returns SC_RESULT_OK.
- * In any case \p result_count contains number of found sc-strings.
- * @attention \p result array need to be free after usage
+/*!
+ * @brief Finds sc-link contents containing the specified substring.
+ *
+ * This function searches for sc-link contents that contain the specified
+ * substring. The result is stored in the provided pointer to sc-list,
+ * containing the content strings of the sc-links that match the search criteria.
+ *
+ * @param ctx A pointer to the sc-memory context that manages the operation.
+ * @param stream The stream containing the search substring.
+ * @param result_strings Pointer to a variable that will store the result (sc-list)
+ *                       of the operation. It can be NULL if the result is not needed.
+ * @param max_length_to_search_as_prefix The maximum length of the substring to search
+ *                                       as a prefix. Set to 0 for a standard substring search.
+ *
+ * @param Valid sc-list The list containing the content strings of sc-links with content
+ *                      containing the specified substring.
+ * @note This function is thread-safe.
  */
 sc_result sc_storage_find_links_contents_by_content_substring(
     sc_memory_context const * ctx,
@@ -214,13 +576,38 @@ sc_result sc_storage_find_links_contents_by_content_substring(
     sc_list ** result_strings,
     sc_uint32 max_length_to_search_as_prefix);
 
-/*! Get statistics information about elements
- * @param stat Pointer to structure that store statistic
- * @return If statistics info collect without any errors, then return SC_OK;
- * otherwise return SC_ERROR
+/*!
+ * @brief Retrieves statistics for sc-storage elements.
+ *
+ * This function retrieves statistics for SC-storage elements, including the count
+ * of various types of elements (nodes, links, arcs) and their total size in bytes.
+ *
+ * @param stat Pointer to the `sc_stat` structure where the statistics will be stored.
+ *             It should be pre-allocated by the caller.
+ *
+ * @return Returns the result of the operation. If successful, it returns SC_RESULT_OK.
+ *         If an error occurs during the retrieval of statistics, an appropriate error code is returned.
+ *
+ * @note The caller is responsible for allocating and passing a valid `sc_stat` structure
+ *       to store the retrieved statistics.
+ * @note This function is thread-safe.
  */
 sc_result sc_storage_get_elements_stat(sc_stat * stat);
 
+/*!
+ * @brief Saves the current state of the sc-storage to persistent storage.
+ *
+ * This function triggers the saving of the current state of the sc-storage
+ * to persistent storage. It utilizes the file system memory to store the data.
+ *
+ * @param ctx A pointer to the sc-memory context that manages the operation.
+ *
+ * @return Returns the result of the operation. If successful, it returns SC_RESULT_OK.
+ *         If an error occurs during the saving process, an appropriate error code is returned.
+ *
+ * @note The caller is responsible for handling any errors indicated by the result value.
+ * @note This function is thread-safe.
+ */
 sc_result sc_storage_save(sc_memory_context const * ctx);
 
 #endif
