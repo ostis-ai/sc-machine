@@ -65,37 +65,53 @@ TEST_F(ScMemoryTest, InvalidElements)
   EXPECT_FALSE(ctx.IsElement(edge));
 
   EXPECT_FALSE(ctx.EraseElement(node));
-  EXPECT_THROW(ctx.GetEdgeSource(node), utils::ExceptionInvalidParams);
   EXPECT_THROW(ctx.CreateEdge(ScType::EdgeAccessConstPosPerm, node, node), utils::ExceptionInvalidParams);
+  EXPECT_THROW(ctx.GetEdgeSource(node), utils::ExceptionInvalidParams);
   EXPECT_THROW(ctx.GetEdgeTarget(node), utils::ExceptionInvalidParams);
+  ScAddr sourceAddr, targetAddr;
+  EXPECT_THROW(ctx.GetEdgeInfo(node, sourceAddr, targetAddr), utils::ExceptionInvalidParams);
+  EXPECT_THROW(ctx.GetElementType(node), utils::ExceptionInvalidParams);
   EXPECT_THROW(ctx.SetElementSubtype(node, ScType::NodeConst), utils::ExceptionInvalidParams);
   EXPECT_THROW(ctx.GetLinkContent(node), utils::ExceptionInvalidParams);
   EXPECT_THROW(ctx.SetLinkContent(node, ""), utils::ExceptionInvalidParams);
+  EXPECT_THROW(ctx.SetLinkContent(node, ScStreamPtr()), utils::ExceptionInvalidParams);
   EXPECT_THROW(ctx.HelperSetSystemIdtf("identifier", node), utils::ExceptionInvalidParams);
-  EXPECT_EQ(ctx.GetElementOutputArcsCount(node), 0u);
-  EXPECT_EQ(ctx.GetElementInputArcsCount(node), 0u);
+  EXPECT_THROW(ctx.GetElementOutputArcsCount(node), utils::ExceptionInvalidParams);
+  EXPECT_THROW(ctx.GetElementInputArcsCount(node), utils::ExceptionInvalidParams);
 
   EXPECT_FALSE(ctx.EraseElement(edge));
-  EXPECT_THROW(ctx.GetEdgeSource(edge), utils::ExceptionInvalidParams);
   EXPECT_THROW(ctx.CreateEdge(ScType::EdgeAccessConstPosPerm, edge, edge), utils::ExceptionInvalidParams);
+  EXPECT_THROW(ctx.GetEdgeSource(edge), utils::ExceptionInvalidParams);
   EXPECT_THROW(ctx.GetEdgeTarget(edge), utils::ExceptionInvalidParams);
+  EXPECT_THROW(ctx.GetEdgeInfo(edge, sourceAddr, targetAddr), utils::ExceptionInvalidParams);
+  EXPECT_THROW(ctx.GetElementType(edge), utils::ExceptionInvalidParams);
   EXPECT_THROW(ctx.SetElementSubtype(edge, ScType::NodeConst), utils::ExceptionInvalidParams);
   EXPECT_THROW(ctx.GetLinkContent(edge), utils::ExceptionInvalidParams);
   EXPECT_THROW(ctx.SetLinkContent(edge, ""), utils::ExceptionInvalidParams);
+  EXPECT_THROW(ctx.SetLinkContent(edge, ScStreamPtr()), utils::ExceptionInvalidParams);
   EXPECT_THROW(ctx.HelperSetSystemIdtf("identifier", edge), utils::ExceptionInvalidParams);
-  EXPECT_EQ(ctx.GetElementOutputArcsCount(edge), 0u);
-  EXPECT_EQ(ctx.GetElementInputArcsCount(edge), 0u);
+  EXPECT_THROW(ctx.GetElementOutputArcsCount(edge), utils::ExceptionInvalidParams);
+  EXPECT_THROW(ctx.GetElementInputArcsCount(edge), utils::ExceptionInvalidParams);
 
   EXPECT_FALSE(ctx.EraseElement(ScAddr::Empty));
   EXPECT_THROW(ctx.CreateEdge(ScType::EdgeAccessConstPosPerm, ScAddr::Empty, ScAddr::Empty), utils::ExceptionInvalidParams);
   EXPECT_THROW(ctx.GetEdgeSource(ScAddr::Empty), utils::ExceptionInvalidParams);
   EXPECT_THROW(ctx.GetEdgeTarget(ScAddr::Empty), utils::ExceptionInvalidParams);
+  EXPECT_THROW(ctx.GetEdgeInfo(ScAddr::Empty, sourceAddr, targetAddr), utils::ExceptionInvalidParams);
+  EXPECT_THROW(ctx.GetElementType(ScAddr::Empty), utils::ExceptionInvalidParams);
   EXPECT_THROW(ctx.SetElementSubtype(ScAddr::Empty, ScType::NodeConst), utils::ExceptionInvalidParams);
-  EXPECT_THROW(ctx.GetLinkContent(ScAddr::Empty)->IsValid(), utils::ExceptionInvalidParams);
+  EXPECT_THROW(ctx.GetLinkContent(ScAddr::Empty), utils::ExceptionInvalidParams);
   EXPECT_THROW(ctx.SetLinkContent(ScAddr::Empty, ""), utils::ExceptionInvalidParams);
+  EXPECT_THROW(ctx.SetLinkContent(ScAddr::Empty, ScStreamPtr()), utils::ExceptionInvalidParams);
   EXPECT_THROW(ctx.HelperSetSystemIdtf("identifier", ScAddr::Empty), utils::ExceptionInvalidParams);
-  EXPECT_EQ(ctx.GetElementOutputArcsCount(ScAddr::Empty), 0u);
-  EXPECT_EQ(ctx.GetElementInputArcsCount(ScAddr::Empty), 0u);
+  EXPECT_THROW(ctx.GetElementOutputArcsCount(ScAddr::Empty), utils::ExceptionInvalidParams);
+  EXPECT_THROW(ctx.GetElementInputArcsCount(ScAddr::Empty), utils::ExceptionInvalidParams);
+
+  EXPECT_THROW(ctx.HelperResolveSystemIdtf("****"), utils::ExceptionInvalidParams);
+  EXPECT_THROW(ctx.HelperFindBySystemIdtf("****"), utils::ExceptionInvalidParams);
+  EXPECT_THROW(ctx.FindLinksByContent(ScStreamPtr()), utils::ExceptionInvalidParams);
+  EXPECT_THROW(ctx.FindLinksByContentSubstring(ScStreamPtr()), utils::ExceptionInvalidParams);
+  EXPECT_THROW(ctx.FindLinksContentsByContentSubstring(ScStreamPtr()), utils::ExceptionInvalidParams);
 }
 
 TEST_F(ScMemoryTest, NotEdge)
@@ -273,21 +289,25 @@ TEST(SmallScMemoryTest, FullMemory)
   ScAddrList addrs;
 
   size_t count = SC_SEGMENT_ELEMENTS_COUNT / 3;
-  for (size_t i = 0; i < count; ++i)
+  try
   {
-    ScAddr const node = ctx.CreateNode(ScType::Const);
-    if (!node.IsValid() && !ctx.IsElement(node))
-      break;
+    for (size_t i = 0; i < count; ++i)
+    {
+      ScAddr const node = ctx.CreateNode(ScType::Const);
+      if (!node.IsValid() && !ctx.IsElement(node))
+        break;
 
-    ScAddr const link = ctx.CreateLink();
-    if (!link.IsValid() && !ctx.IsElement(link))
-      break;
+      ScAddr const link = ctx.CreateLink();
+      if (!link.IsValid() && !ctx.IsElement(link))
+        break;
 
-    ScAddr const edge = ctx.CreateEdge(ScType::EdgeAccessConstPosPerm, node, link);
-    if (!edge.IsValid() && !ctx.IsElement(edge))
-      break;
-    addrs.push_back(edge);
+      ScAddr const edge = ctx.CreateEdge(ScType::EdgeAccessConstPosPerm, node, link);
+      if (!edge.IsValid() && !ctx.IsElement(edge))
+        break;
+      addrs.push_back(edge);
+    }
   }
+  catch (...) {}
 
   count = addrs.size();
   for (size_t i = 0; i < count; ++i)
@@ -304,9 +324,7 @@ TEST(SmallScMemoryTest, FullMemory)
     EXPECT_TRUE(ctx.IsElement(node));
   }
 
-  ScAddr const node = ctx.CreateNode(ScType::Const);
-  EXPECT_FALSE(node.IsValid());
-  EXPECT_FALSE(ctx.IsElement(node));
+  EXPECT_THROW(ctx.CreateNode(ScType::Const), utils::ExceptionCritical);
 
   ctx.Destroy();
   ScMemory::LogMute();
@@ -332,21 +350,8 @@ TEST(SmallScMemoryTest, EmptyMemory)
 
   ScMemoryContext ctx(sc_access_lvl_make_min);
 
-  ScAddrList addrs;
-
-  size_t count = SC_SEGMENT_ELEMENTS_COUNT / 3;
-  for (size_t i = 0; i < count; ++i)
-  {
-    ScAddr const node = ctx.CreateNode(ScType::Const);
-    if (!node.IsValid() && !ctx.IsElement(node))
-      break;
-  }
-
-  EXPECT_EQ(addrs.size(), 0u);
-
-  ScAddr const node = ctx.CreateNode(ScType::Const);
-  EXPECT_FALSE(node.IsValid());
-  EXPECT_FALSE(ctx.IsElement(node));
+  EXPECT_THROW(ctx.CreateNode(ScType::Const), utils::ExceptionCritical);
+  EXPECT_THROW(ctx.CreateNode(ScType::Const), utils::ExceptionCritical);
 
   ctx.Destroy();
   ScMemory::LogMute();
