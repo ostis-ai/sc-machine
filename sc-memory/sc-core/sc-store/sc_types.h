@@ -183,12 +183,11 @@ enum _sc_result
   SC_RESULT_ERROR = 0,             // unknown error
                                    // SC_RESULT_OK should be 1 anytime
   SC_RESULT_OK = 1,                // no any error
+  SC_RESULT_NO,                    // no any result
   SC_RESULT_ERROR_INVALID_PARAMS,  // invalid function parameters error
   SC_RESULT_ERROR_INVALID_TYPE,    // invalid type error
   SC_RESULT_ERROR_INVALID_STATE,   // invalid state of processed object
   SC_RESULT_ERROR_NOT_FOUND,       // item not found
-  SC_RESULT_NO,                    // no any result
-  SC_RESULT_UNKNOWN,               // result unknown
   SC_RESULT_ERROR_FULL_MEMORY,
   SC_RESULT_ERROR_FILE_MEMORY_IO,
   SC_RESULT_ERROR_ADDR_IS_NOT_VALID,
@@ -198,6 +197,7 @@ enum _sc_result
   SC_RESULT_ERROR_STREAM_IO,
   SC_RESULT_ERROR_INVALID_SYSTEM_IDENTIFIER,
   SC_RESULT_ERROR_DUPLICATED_SYSTEM_IDENTIFIER,
+  SC_RESULT_UNKNOWN,  // result unknown
 
   // add atomic types before
   SC_RESULT_COUNT,  // number of result types
