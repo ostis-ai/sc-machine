@@ -7,7 +7,7 @@
 /*!
  * @file sc_storage.h
  *
- * @brief This file contains the API for managing the sc-storage.
+ * @brief This file contains the C API for managing the sc-storage.
  */
 
 #ifndef _sc_storage_h_
