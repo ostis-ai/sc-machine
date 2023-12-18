@@ -199,17 +199,21 @@ error:
 
 sc_segment * _sc_storage_get_last_not_engaged_segment()
 {
-  sc_addr_seg const segment_num = storage->last_not_engaged_segment_num;
-
   sc_segment * segment = null_ptr;
-  if (segment_num != 0)
-    segment = storage->segments[segment_num - 1];
+  sc_addr_seg segment_num;
 
-  if (segment != null_ptr)
+  do
   {
-    storage->last_not_engaged_segment_num = segment->elements[0].flags.access_levels;
-    segment->elements[0].flags.access_levels = 0;
-  }
+    segment_num = storage->last_not_engaged_segment_num;
+    segment = segment_num == 0 ? null_ptr : storage->segments[segment_num - 1];
+
+    if (segment != null_ptr)
+    {
+      storage->last_not_engaged_segment_num = segment->elements[0].flags.access_levels;
+      segment->elements[0].flags.access_levels = 0;
+    }
+  } while (segment != null_ptr &&
+           (segment->last_engaged_offset + 1 == SC_SEGMENT_ELEMENTS_COUNT && segment->last_released_offset == 0));
 
   return segment;
 }
@@ -247,7 +251,7 @@ error:
   return segment;
 }
 
-void _sc_storage_check_segment_type(sc_segment ** segment, sc_bool * released)
+void _sc_storage_check_segment_type(sc_segment ** segment)
 {
   sc_monitor_acquire_read(&(*segment)->monitor);
   sc_addr_offset last_released_offset = (*segment)->last_released_offset;
@@ -255,27 +259,25 @@ void _sc_storage_check_segment_type(sc_segment ** segment, sc_bool * released)
   sc_monitor_release_read(&(*segment)->monitor);
 
   if (last_released_offset != 0)
-    *released = SC_TRUE;
+    return;
   else if (last_engaged_offset + 1 == SC_SEGMENT_ELEMENTS_COUNT)
     *segment = null_ptr;
 }
 
-void _sc_storage_get_segment(sc_segment ** segment_ptr, sc_bool * released)
+sc_segment * _sc_storage_get_segment()
 {
-  *segment_ptr = null_ptr;
-  *released = SC_FALSE;
+  sc_segment * segment = null_ptr;
   sc_thread * thread = sc_thread_self();
 
   sc_monitor_acquire_read(&storage->processes_monitor);
 
-  sc_segment * segment = null_ptr;
   if (storage->processes_segments_table != null_ptr)
     segment = (sc_segment *)sc_hash_table_get(storage->processes_segments_table, thread);
 
   sc_monitor_release_read(&storage->processes_monitor);
 
   if (segment != null_ptr)
-    _sc_storage_check_segment_type(&segment, released);
+    _sc_storage_check_segment_type(&segment);
 
   if (segment == null_ptr)
   {
@@ -298,12 +300,9 @@ void _sc_storage_get_segment(sc_segment ** segment_ptr, sc_bool * released)
 
     sc_monitor_release_write(&storage->segments_monitor);
     sc_monitor_release_write(&storage->processes_monitor);
-
-    if (segment != null_ptr)
-      _sc_storage_check_segment_type(&segment, released);
   }
 
-  *segment_ptr = segment;
+  return segment;
 }
 
 sc_element * _sc_storage_get_element(sc_addr * addr)
@@ -311,28 +310,28 @@ sc_element * _sc_storage_get_element(sc_addr * addr)
   sc_element * element = null_ptr;
   sc_addr_offset element_offset;
 
-  sc_segment * segment;
-  sc_bool released;
-  _sc_storage_get_segment(&segment, &released);
+  sc_segment * segment = _sc_storage_get_segment();
   if (segment == null_ptr)
     goto error;
 
   sc_monitor_acquire_write(&segment->monitor);
 
-  if (released)
+  if (segment->last_engaged_offset + 1 != SC_SEGMENT_ELEMENTS_COUNT)
+  {
+    element_offset = ++segment->last_engaged_offset;
+    element = &segment->elements[element_offset];
+
+    *addr = (sc_addr){segment->num, element_offset};
+  }
+  else if (segment->last_released_offset != 0)
   {
     element_offset = segment->last_released_offset;
     element = &segment->elements[element_offset];
     segment->last_released_offset = element->flags.type;
     element->flags.type = 0;
-  }
-  else
-  {
-    element_offset = ++segment->last_engaged_offset;
-    element = &segment->elements[element_offset];
-  }
 
-  *addr = (sc_addr){segment->num, element_offset};
+    *addr = (sc_addr){segment->num, element_offset};
+  }
 
   sc_monitor_release_write(&segment->monitor);
 
@@ -1178,7 +1177,7 @@ sc_result sc_storage_get_elements_stat(sc_stat * stat)
   sc_addr_seg count = storage->segments_count;
   sc_monitor_release_read(&storage->segments_monitor);
 
-  for (sc_addr_seg i = 0; i < storage->segments_count; ++i)
+  for (sc_addr_seg i = 0; i < count; ++i)
   {
     sc_segment * segment = storage->segments[i];
 
