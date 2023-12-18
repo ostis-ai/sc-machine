@@ -109,6 +109,19 @@ sc_bool ScServerImpl::IsWorkable()
   return m_actions->empty() == SC_FALSE;
 }
 
+sc_bool ScServerImpl::CheckConnectionHandle(ScServerConnectionHandle const & hdl)
+{
+  sc_bool isAuthorized;
+  {
+    ScServerLock guard(m_actionLock);
+    ScAddr const & sessionAddr = m_connections->at(hdl);
+    isAuthorized = m_authorizedUserProcesses.find(sessionAddr) != m_authorizedUserProcesses.cend();
+  }
+  m_actionCond.notify_one();
+
+  return isAuthorized;
+}
+
 void ScServerImpl::OnOpen(ScServerConnectionHandle const & hdl)
 {
   {

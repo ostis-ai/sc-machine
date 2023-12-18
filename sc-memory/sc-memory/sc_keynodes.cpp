@@ -13,6 +13,7 @@ std::array<ScAddr, kKeynodeRrelListNum> kKeynodeRrelList;
 bool ScKeynodes::ms_isInitialized = false;
 
 ScAddr ScKeynodes::kProcess;
+ScAddr ScKeynodes::kUserProcess;
 ScAddr ScKeynodes::kAuthorizedUserProcess;
 
 ScAddr ScKeynodes::kCommandStateAddr;

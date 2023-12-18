@@ -36,6 +36,8 @@ public:
 
   ScServerConnections * GetConnections();
 
+  virtual sc_bool CheckConnectionHandle(ScServerConnectionHandle const & hdl) = 0;
+
   void SetChannels(ScServerLogLevel channels);
 
   void ClearChannels();

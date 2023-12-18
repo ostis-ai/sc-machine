@@ -27,18 +27,30 @@ public:
     m_eventsHandler = new ScMemoryJsonEventsHandler(server);
   }
 
+  void HandleEmit()
+  {
+    std::string messageType = GetMessageType(m_msg);
+
+    if (IsHealthCheck(messageType))
+    {
+      OnHealthCheck(m_hdl, m_msg);
+      return;
+    }
+
+    if (!m_server->CheckConnectionHandle(m_hdl))
+
+
+    if (IsEvent(messageType))
+      OnEvent(m_hdl, m_msg);
+    else
+      OnAction(m_hdl, m_msg);
+  }
+
   void Emit() override
   {
     try
     {
-      std::string messageType = GetMessageType(m_msg);
-
-      if (IsHealthCheck(messageType))
-        OnHealthCheck(m_hdl, m_msg);
-      else if (IsEvent(messageType))
-        OnEvent(m_hdl, m_msg);
-      else
-        OnAction(m_hdl, m_msg);
+      HandleEmit();
     }
     catch (ScServerException const & e)
     {
