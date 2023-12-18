@@ -37,8 +37,11 @@ protected:
   sc_bool m_parallelActions;
 
   std::atomic<sc_bool> m_actionsRun;
-
   ScServerActions * m_actions;
+
+  ScEvent * m_authorizeUserProcessSubscription;
+  ScEvent * m_unauthorizeUserProcessSubscription;
+  std::set<ScAddr, ScAddrLessFunc> m_authorizedUserProcesses;
 
   void Initialize() override;
 

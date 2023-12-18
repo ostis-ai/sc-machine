@@ -22,6 +22,8 @@ public:
 
   void Emit() override
   {
+    ScAddr const & sessionAddr = m_server->GetConnections()->at(m_hdl);
+    m_server->m_context->EraseElement(sessionAddr);
     m_server->GetConnections()->erase(m_hdl);
   }
 

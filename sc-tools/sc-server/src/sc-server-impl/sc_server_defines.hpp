@@ -16,7 +16,7 @@
 
 using ScServerPort = size_t;
 using ScServerConnectionHandle = websocketpp::connection_hdl;
-using ScServerConnections = std::set<ScServerConnectionHandle, std::owner_less<ScServerConnectionHandle>>;
+using ScServerConnections = std::map<ScServerConnectionHandle, ScAddr, std::owner_less<ScServerConnectionHandle>>;
 
 using ScServerLogLevel = websocketpp::log::level;
 using ScServerDefaultErrorLogLevel = websocketpp::log::elevel;

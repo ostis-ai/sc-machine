@@ -22,7 +22,9 @@ public:
 
   void Emit() override
   {
-    m_server->GetConnections()->insert(m_hdl);
+    ScAddr const & sessionAddr = m_server->m_context->CreateNode(ScType::NodeConst);
+    m_server->m_context->CreateEdge(ScType::EdgeAccessConstPosTemp, ScKeynodes::kUserProcess, sessionAddr);
+    m_server->GetConnections()->insert({m_hdl, sessionAddr});
   }
 
   ~ScServerConnectAction() override = default;

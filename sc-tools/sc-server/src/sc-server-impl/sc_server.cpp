@@ -6,8 +6,6 @@
 
 #include "sc_server.hpp"
 
-#include <utility>
-
 ScServer::ScServer(std::string hostName, size_t port, sc_memory_params params)
   : m_hostName(std::move(hostName))
   , m_port(port)
@@ -81,7 +79,7 @@ void ScServer::Stop()
     {
       try
       {
-        m_instance->close(it, websocketpp::close::status::normal, "Sc-server is finishing work");
+        m_instance->close(it.first, websocketpp::close::status::normal, "Sc-server is finishing work");
       }
       catch (std::exception const & ex)
       {

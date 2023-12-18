@@ -29,6 +29,33 @@ ScServerImpl::ScServerImpl(
 
 void ScServerImpl::Initialize()
 {
+  auto const & onProcessAuthorized =
+      [this](ScAddr const & addr, ScAddr const & edgeAddr, ScAddr const & otherAddr) -> sc_bool {
+    {
+      ScServerLock guard(m_actionLock);
+      m_authorizedUserProcesses.insert(otherAddr);
+    }
+    m_actionCond.notify_one();
+
+    return SC_TRUE;
+  };
+
+  auto const & onProcessUnauthorized =
+      [this](ScAddr const & addr, ScAddr const & edgeAddr, ScAddr const & otherAddr) -> sc_bool {
+    {
+      ScServerLock guard(m_actionLock);
+      m_authorizedUserProcesses.erase(otherAddr);
+    }
+    m_actionCond.notify_one();
+
+    return SC_TRUE;
+  };
+
+  m_authorizeUserProcessSubscription =
+      new ScEventAddOutputEdge(*m_context, ScKeynodes::kAuthorizedUserProcess, onProcessAuthorized);
+  m_unauthorizeUserProcessSubscription =
+      new ScEventRemoveOutputEdge(*m_context, ScKeynodes::kAuthorizedUserProcess, onProcessUnauthorized);
+
   m_instance->set_open_handler(bind(&ScServerImpl::OnOpen, this, ::_1));
   m_instance->set_close_handler(bind(&ScServerImpl::OnClose, this, ::_1));
   m_instance->set_message_handler(bind(&ScServerImpl::OnMessage, this, ::_1, ::_2));
@@ -41,6 +68,9 @@ void ScServerImpl::AfterInitialize()
 
   m_actionsRun = SC_FALSE;
   m_actionCond.notify_one();
+
+  delete m_authorizeUserProcessSubscription;
+  delete m_unauthorizeUserProcessSubscription;
 }
 
 void ScServerImpl::EmitActions()
