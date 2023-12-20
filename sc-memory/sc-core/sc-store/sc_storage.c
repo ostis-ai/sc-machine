@@ -711,7 +711,7 @@ sc_addr sc_storage_node_new_ext(sc_memory_context const * ctx, sc_type type, sc_
     return addr;
   }
 
-  element->flags.type = type;
+  element->flags.type = sc_type_node | type;
   *result = SC_RESULT_OK;
   return addr;
 }
@@ -739,7 +739,7 @@ sc_addr sc_storage_link_new_ext(sc_memory_context const * ctx, sc_type type, sc_
     return addr;
   }
 
-  element->flags.type = type;
+  element->flags.type = sc_type_link | type;
   *result = SC_RESULT_OK;
   return addr;
 }
