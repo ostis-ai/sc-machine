@@ -263,7 +263,10 @@ sc_bool _sc_iterator3_f_a_a_next(sc_iterator3 * it)
       goto error;
     }
 
-    arc_addr = el->arc.next_out_arc;
+    arc_addr =
+        (el->flags.type & sc_type_edge_common) == sc_type_edge_common
+            ? SC_ADDR_IS_EQUAL(it->results[0], el->arc.end) ? el->arc.next_end_out_arc : el->arc.next_begin_out_arc
+            : el->arc.next_begin_out_arc;
 
     if (is_not_same)
       sc_monitor_release_read(arc_monitor);
@@ -287,8 +290,10 @@ sc_bool _sc_iterator3_f_a_a_next(sc_iterator3 * it)
       goto error;
     }
 
-    sc_addr next_out_arc = el->arc.next_out_arc;
-    // add check addr
+    sc_addr next_out_arc =
+        (el->flags.type & sc_type_edge_common) == sc_type_edge_common
+            ? SC_ADDR_IS_EQUAL(it->results[0], el->arc.end) ? el->arc.next_end_out_arc : el->arc.next_begin_out_arc
+            : el->arc.next_begin_out_arc;
 
     sc_type arc_type = el->flags.type;
     sc_addr arc_end = (el->flags.type & sc_type_edge_common) == sc_type_edge_common
@@ -368,7 +373,9 @@ sc_bool _sc_iterator3_f_a_f_next(sc_iterator3 * it)
       goto error;
     }
 
-    arc_addr = el->arc.next_in_arc;
+    arc_addr = (el->flags.type & sc_type_edge_common) == sc_type_edge_common
+                   ? SC_ADDR_IS_EQUAL(it->results[2], el->arc.end) ? el->arc.next_end_in_arc : el->arc.next_begin_in_arc
+                   : el->arc.next_end_in_arc;
 
     if (is_not_same)
       sc_monitor_release_read(arc_monitor);
@@ -393,7 +400,10 @@ sc_bool _sc_iterator3_f_a_f_next(sc_iterator3 * it)
       goto error;
     }
 
-    sc_addr next_in_arc = el->arc.next_in_arc;
+    sc_addr next_in_arc =
+        (el->flags.type & sc_type_edge_common) == sc_type_edge_common
+            ? SC_ADDR_IS_EQUAL(it->results[2], el->arc.end) ? el->arc.next_end_in_arc : el->arc.next_begin_in_arc
+            : el->arc.next_end_in_arc;
 
     sc_type arc_type = el->flags.type;
 
@@ -465,7 +475,9 @@ sc_bool _sc_iterator3_a_a_f_next(sc_iterator3 * it)
       goto error;
     }
 
-    arc_addr = el->arc.next_in_arc;
+    arc_addr = (el->flags.type & sc_type_edge_common) == sc_type_edge_common
+                   ? SC_ADDR_IS_EQUAL(it->results[2], el->arc.end) ? el->arc.next_end_in_arc : el->arc.next_begin_in_arc
+                   : el->arc.next_end_in_arc;
 
     if (is_not_same)
       sc_monitor_release_read(arc_monitor);
@@ -489,7 +501,10 @@ sc_bool _sc_iterator3_a_a_f_next(sc_iterator3 * it)
       goto error;
     }
 
-    sc_addr next_in_arc = el->arc.next_in_arc;
+    sc_addr next_in_arc =
+        (el->flags.type & sc_type_edge_common) == sc_type_edge_common
+            ? SC_ADDR_IS_EQUAL(it->results[2], el->arc.end) ? el->arc.next_end_in_arc : el->arc.next_begin_in_arc
+            : el->arc.next_end_in_arc;
 
     sc_type arc_type = el->flags.type;
     sc_addr arc_begin = (el->flags.type & sc_type_edge_common) == sc_type_edge_common
