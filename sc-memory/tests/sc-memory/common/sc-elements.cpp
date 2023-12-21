@@ -270,6 +270,33 @@ TEST_F(ScMemoryTest, CreateDeleteCountEdges)
   EXPECT_EQ(ctx.GetElementInputArcsCount(link), 1u);
 }
 
+TEST_F(ScMemoryTest, CreateEdges)
+{
+  ScMemoryContext ctx(sc_access_lvl_make_min, "CreateEdges");
+
+  ScAddr const nodeAddr = ctx.CreateNode(ScType::NodeConst);
+  EXPECT_TRUE(nodeAddr.IsValid());
+  ScAddr const classAddr = ctx.CreateNode(ScType::NodeConstClass);
+  EXPECT_TRUE(classAddr.IsValid());
+  ScAddr const arcAddr1 = ctx.CreateEdge(ScType::EdgeAccessConstPosPerm, classAddr, nodeAddr);
+  EXPECT_TRUE(arcAddr1.IsValid());
+
+  ScAddr const linkAddr = ctx.CreateLink(ScType::LinkConst);
+  EXPECT_TRUE(linkAddr.IsValid());
+  ScAddr const classLinkAddr = ctx.CreateLink(ScType::LinkClass);
+  EXPECT_TRUE(classLinkAddr.IsValid());
+  ScAddr const arcAddr2 = ctx.CreateEdge(ScType::EdgeAccessConstPosPerm, classLinkAddr, linkAddr);
+  EXPECT_TRUE(arcAddr2.IsValid());
+
+  ScAddr const edgeAddr = ctx.CreateEdge(ScType::EdgeUCommonConst, nodeAddr, linkAddr);
+  EXPECT_TRUE(edgeAddr.IsValid());
+
+  EXPECT_TRUE(ctx.HelperCheckEdge(classAddr, nodeAddr, ScType::EdgeAccessConstPosPerm));
+  EXPECT_TRUE(ctx.HelperCheckEdge(classLinkAddr, linkAddr, ScType::EdgeAccessConstPosPerm));
+  EXPECT_TRUE(ctx.HelperCheckEdge(nodeAddr, linkAddr, ScType::EdgeUCommonConst));
+  EXPECT_TRUE(ctx.HelperCheckEdge(linkAddr, nodeAddr, ScType::EdgeUCommonConst));
+}
+
 TEST(SmallScMemoryTest, FullMemory)
 {
   sc_memory_params params;

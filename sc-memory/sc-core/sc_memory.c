@@ -142,11 +142,17 @@ void sc_memory_shutdown_ext()
 
 sc_memory_context * sc_memory_context_new(sc_access_levels levels)
 {
+  if (memory == null_ptr)
+    return null_ptr;
+
   return _sc_memory_context_new_impl(memory->context_manager, levels);
 }
 
 void sc_memory_context_free(sc_memory_context * ctx)
 {
+  if (memory == null_ptr)
+    return;
+
   _sc_memory_context_free_impl(memory->context_manager, ctx);
 }
 
