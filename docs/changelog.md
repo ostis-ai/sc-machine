@@ -11,6 +11,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - All methods in C++ API for managing sc-memory throws exceptions if passed params are not valid or memory state is not valid
 - All methods in C API for managing sc-memory returns error codes if passed params are not valid or memory state is not valid
+- Removed deprecated sc-utils in 0.6.0, 0.7.0 and 0.8.0
+- Removed deprecated make_all.sh
 
 ### Added
 
@@ -28,6 +30,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- Warnings for GNU compilers
+- Warnings in sc-machine about deprecated methods
 - Behavior of the agent_erase_elements on not his action classes
 - Deleting existing and translated .scs sources with the same name
 - Parse contours identifiers by gwf2scs-translator
@@ -47,8 +51,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Finish agent wait time
 - SC.g-elements images in docs
 
+### Deprecated
+
+- Method `getLinkContent` in sc-utils 
+
 ### Removed
 
+- Deprecated sc-utils in 0.6.0, 0.7.0 and 0.8.0
+- Deprecated make_all.sh
 - Runtime asserts usage in sc-storage
 - Atomic operations usage in sc-storage
 - Locks usage in sc-storage
