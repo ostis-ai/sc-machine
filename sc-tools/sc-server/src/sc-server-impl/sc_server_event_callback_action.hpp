@@ -15,8 +15,8 @@
 class ScServerEventCallbackAction : public ScServerAction
 {
 public:
-  ScServerEventCallbackAction(ScServer * server, ScServerConnectionHandle hdl, std::string msg)
-    : ScServerAction(std::move(hdl))
+  ScServerEventCallbackAction(ScServer * server, ScServerUserProcessId userProcessId, std::string msg)
+    : ScServerAction(std::move(userProcessId))
     , m_server(server)
     , m_msg(std::move(msg))
   {
@@ -25,7 +25,7 @@ public:
   void Emit() override
   {
     if (m_server != nullptr)
-      m_server->Send(m_hdl, m_msg, ScServerMessageType::text);
+      m_server->Send(m_userProcessId, m_msg, ScServerMessageType::text);
   }
 
   ~ScServerEventCallbackAction() override = default;

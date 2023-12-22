@@ -39,7 +39,7 @@ private:
   };
 
   ScMemoryJsonPayload HandleRequestPayload(
-      ScServerConnectionHandle const & hdl,
+      ScServerUserProcessId const & userProcessId,
       std::string const & requestType,
       ScMemoryJsonPayload const & requestPayload,
       ScMemoryJsonPayload & errorsPayload,
@@ -47,12 +47,12 @@ private:
       sc_bool & isEvent) override;
 
   ScMemoryJsonPayload HandleCreate(
-      ScServerConnectionHandle const & hdl,
+      ScServerUserProcessId const & userProcessId,
       ScMemoryJsonPayload const & message,
       ScMemoryJsonPayload & errorsPayload);
 
   ScMemoryJsonPayload HandleDelete(
-      ScServerConnectionHandle const & hdl,
+      ScServerUserProcessId const & userProcessId,
       ScMemoryJsonPayload const & message,
       ScMemoryJsonPayload & errorsPayload);
 };

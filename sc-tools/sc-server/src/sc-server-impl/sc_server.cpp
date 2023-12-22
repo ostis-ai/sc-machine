@@ -25,7 +25,7 @@ ScServer::ScServer(std::string hostName, size_t port, sc_memory_params params)
     LogMessage(ScServerErrorLevel::info, "\tPort: " + std::to_string(m_port));
   }
 
-  m_connections = new ScServerConnections();
+  m_connections = new ScServerUserProcesses();
   LogMessage(ScServerErrorLevel::info, "Sc-server initialized");
 }
 
@@ -118,14 +118,14 @@ std::string ScServer::GetUri()
   return "ws://" + m_hostName + ":" + std::to_string(m_port);
 }
 
-ScServerConnections * ScServer::GetConnections()
+ScServerUserProcesses * ScServer::GetConnections()
 {
   return m_connections;
 }
 
-void ScServer::Send(ScServerConnectionHandle const & hdl, std::string const & message, ScServerMessageType type)
+void ScServer::Send(ScServerUserProcessId const & userProcessId, std::string const & message, ScServerMessageType type)
 {
-  m_instance->send(hdl, message, type);
+  m_instance->send(userProcessId, message, type);
 }
 
 void ScServer::SetChannels(ScServerLogLevel channels)
@@ -165,11 +165,11 @@ void ScServer::LogMessage(ScServerLogLevel channel, std::string const & message)
 }
 
 void ScServer::CloseConnection(
-    ScServerConnectionHandle const & hdl,
+    ScServerUserProcessId const & userProcessId,
     ScServerCloseCode const code,
     std::string const & reason)
 {
-  m_instance->close(hdl, code, reason);
+  m_instance->close(userProcessId, code, reason);
 }
 
 ScServer::~ScServer()

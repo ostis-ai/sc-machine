@@ -109,12 +109,12 @@ sc_bool ScServerImpl::IsWorkable()
   return m_actions->empty() == SC_FALSE;
 }
 
-sc_bool ScServerImpl::CheckConnectionHandle(ScServerConnectionHandle const & hdl)
+sc_bool ScServerImpl::CheckIfUserProcessAuthorized(ScServerUserProcessId const & userProcessId)
 {
   sc_bool isAuthorized;
   {
     ScServerLock guard(m_actionLock);
-    ScAddr const & sessionAddr = m_connections->at(hdl);
+    ScAddr const & sessionAddr = m_connections->at(userProcessId);
     isAuthorized = m_authorizedUserProcesses.find(sessionAddr) != m_authorizedUserProcesses.cend();
   }
   m_actionCond.notify_one();
@@ -122,31 +122,31 @@ sc_bool ScServerImpl::CheckConnectionHandle(ScServerConnectionHandle const & hdl
   return isAuthorized;
 }
 
-void ScServerImpl::OnOpen(ScServerConnectionHandle const & hdl)
+void ScServerImpl::OnOpen(ScServerUserProcessId const & userProcessId)
 {
   {
     ScServerLock guard(m_actionLock);
-    m_actions->push(new ScServerConnectAction(this, hdl));
+    m_actions->push(new ScServerConnectAction(this, userProcessId));
   }
   m_actionCond.notify_one();
 }
 
-void ScServerImpl::OnClose(ScServerConnectionHandle const & hdl)
+void ScServerImpl::OnClose(ScServerUserProcessId const & userProcessId)
 {
   {
     ScServerLock guard(m_actionLock);
-    m_actions->push(new ScServerDisconnectAction(this, hdl));
+    m_actions->push(new ScServerDisconnectAction(this, userProcessId));
   }
   m_actionCond.notify_one();
 }
 
-void ScServerImpl::OnMessage(ScServerConnectionHandle const & hdl, ScServerMessage const & msg)
+void ScServerImpl::OnMessage(ScServerUserProcessId const & userProcessId, ScServerMessage const & msg)
 {
   if (m_parallelActions == SC_FALSE)
   {
     {
       ScServerLock guard(m_actionLock);
-      m_actions->push(new ScServerMessageAction(this, hdl, msg));
+      m_actions->push(new ScServerMessageAction(this, userProcessId, msg));
     }
     m_actionCond.notify_one();
   }
@@ -154,17 +154,17 @@ void ScServerImpl::OnMessage(ScServerConnectionHandle const & hdl, ScServerMessa
   {
     sc_storage_start_new_process();
 
-    ScServerMessageAction(this, hdl, msg).Emit();
+    ScServerMessageAction(this, userProcessId, msg).Emit();
 
     sc_storage_end_new_process();
   }
 }
 
-void ScServerImpl::OnEvent(ScServerConnectionHandle const & hdl, std::string const & msg)
+void ScServerImpl::OnEvent(ScServerUserProcessId const & userProcessId, std::string const & msg)
 {
   {
     ScServerLock guard(m_actionLock);
-    m_actions->push(new ScServerEventCallbackAction(this, hdl, msg));
+    m_actions->push(new ScServerEventCallbackAction(this, userProcessId, msg));
   }
   m_actionCond.notify_one();
 }

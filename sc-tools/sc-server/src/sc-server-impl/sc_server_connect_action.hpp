@@ -14,8 +14,8 @@
 class ScServerConnectAction : public ScServerAction
 {
 public:
-  ScServerConnectAction(ScServer * server, ScServerConnectionHandle hdl)
-    : ScServerAction(std::move(hdl))
+  ScServerConnectAction(ScServer * server, ScServerUserProcessId userProcessId)
+    : ScServerAction(std::move(userProcessId))
     , m_server(server)
   {
   }
@@ -24,7 +24,7 @@ public:
   {
     ScAddr const & sessionAddr = m_server->m_context->CreateNode(ScType::NodeConst);
     m_server->m_context->CreateEdge(ScType::EdgeAccessConstPosTemp, ScKeynodes::kUserProcess, sessionAddr);
-    m_server->GetConnections()->insert({m_hdl, sessionAddr});
+    m_server->GetConnections()->insert({m_userProcessId, sessionAddr});
   }
 
   ~ScServerConnectAction() override = default;

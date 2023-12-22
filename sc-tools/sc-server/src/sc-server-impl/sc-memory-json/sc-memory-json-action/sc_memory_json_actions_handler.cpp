@@ -23,7 +23,7 @@ ScMemoryJsonActionsHandler::~ScMemoryJsonActionsHandler()
 }
 
 ScMemoryJsonPayload ScMemoryJsonActionsHandler::HandleRequestPayload(
-    ScServerConnectionHandle const & hdl,
+    ScServerUserProcessId const & userProcessId,
     std::string const & requestType,
     ScMemoryJsonPayload const & requestPayload,
     ScMemoryJsonPayload & errorsPayload,

@@ -22,7 +22,7 @@ private:
   ScMemoryContext * m_context;
 
   ScMemoryJsonPayload HandleRequestPayload(
-      ScServerConnectionHandle const & hdl,
+      ScServerUserProcessId const & userProcessId,
       std::string const & requestType,
       ScMemoryJsonPayload const & requestPayload,
       ScMemoryJsonPayload & errorsPayload,

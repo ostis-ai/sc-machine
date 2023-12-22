@@ -18,8 +18,8 @@
 class ScServerMessageAction : public ScServerAction
 {
 public:
-  ScServerMessageAction(ScServer * server, ScServerConnectionHandle hdl, ScServerMessage msg)
-    : ScServerAction(std::move(hdl))
+  ScServerMessageAction(ScServer * server, ScServerUserProcessId userProcessId, ScServerMessage msg)
+    : ScServerAction(std::move(userProcessId))
     , m_server(server)
     , m_msg(std::move(msg))
   {
@@ -29,21 +29,16 @@ public:
 
   void HandleEmit()
   {
-    std::string messageType = GetMessageType(m_msg);
+    std::string const & messageType = GetMessageType(m_msg);
 
     if (IsHealthCheck(messageType))
     {
-      OnHealthCheck(m_hdl, m_msg);
-      return;
+      OnHealthCheck(m_userProcessId, m_msg);
     }
-
-    if (!m_server->CheckConnectionHandle(m_hdl))
-
-
-    if (IsEvent(messageType))
-      OnEvent(m_hdl, m_msg);
     else
-      OnAction(m_hdl, m_msg);
+    {
+      OnMessage(messageType, m_userProcessId, m_msg);
+    }
   }
 
   void Emit() override
@@ -62,25 +57,47 @@ public:
     }
   }
 
-  void OnAction(ScServerConnectionHandle const & hdl, ScServerMessage const & msg)
+  void OnMessage(
+      std::string const & messageType,
+      ScServerUserProcessId const & userProcessId,
+      ScServerMessage const & msg)
+  {
+    if (m_server->CheckIfUserProcessAuthorized(m_userProcessId))
+    {
+      if (IsEvent(messageType))
+        OnEvent(m_userProcessId, m_msg);
+      else
+        OnAction(m_userProcessId, m_msg);
+    }
+    else
+    {
+      m_server->LogMessage(ScServerErrorLevel::debug, "[request] " + msg->get_payload());
+
+      std::string const & responseText = "User process not authorized. Please, complete authorization";
+      m_server->LogMessage(ScServerErrorLevel::debug, "[response] " + responseText);
+      m_server->Send(userProcessId, responseText, ScServerMessageType::text);
+    }
+  }
+
+  void OnAction(ScServerUserProcessId const & userProcessId, ScServerMessage const & msg)
   {
     m_server->LogMessage(ScServerErrorLevel::debug, "[request] " + msg->get_payload());
-    auto const & responseText = m_actionsHandler->Handle(hdl, msg->get_payload());
+    auto const & responseText = m_actionsHandler->Handle(userProcessId, msg->get_payload());
 
     m_server->LogMessage(ScServerErrorLevel::debug, "[response] " + responseText);
-    m_server->Send(hdl, responseText, ScServerMessageType::text);
+    m_server->Send(userProcessId, responseText, ScServerMessageType::text);
   }
 
-  void OnEvent(ScServerConnectionHandle const & hdl, ScServerMessage const & msg)
+  void OnEvent(ScServerUserProcessId const & userProcessId, ScServerMessage const & msg)
   {
     m_server->LogMessage(ScServerErrorLevel::debug, "[event] " + msg->get_payload());
-    auto const & responseText = m_eventsHandler->Handle(hdl, msg->get_payload());
+    auto const & responseText = m_eventsHandler->Handle(userProcessId, msg->get_payload());
 
     m_server->LogMessage(ScServerErrorLevel::debug, "[event response] " + responseText);
-    m_server->Send(hdl, responseText, ScServerMessageType::text);
+    m_server->Send(userProcessId, responseText, ScServerMessageType::text);
   }
 
-  void OnHealthCheck(ScServerConnectionHandle const & hdl, ScServerMessage const & msg)
+  void OnHealthCheck(ScServerUserProcessId const & userProcessId, ScServerMessage const & msg)
   {
     ScMemoryJsonPayload response;
     try
@@ -102,8 +119,8 @@ public:
       m_server->LogMessage(ScServerErrorLevel::info, "I've died...");
     }
 
-    m_server->Send(hdl, response.dump(), ScServerMessageType::text);
-    m_server->CloseConnection(hdl, websocketpp::close::status::normal, "Status checked");
+    m_server->Send(userProcessId, response.dump(), ScServerMessageType::text);
+    m_server->CloseConnection(userProcessId, websocketpp::close::status::normal, "Status checked");
   }
 
   ~ScServerMessageAction() override

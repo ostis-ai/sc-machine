@@ -14,17 +14,17 @@
 class ScServerDisconnectAction : public ScServerAction
 {
 public:
-  ScServerDisconnectAction(ScServer * server, ScServerConnectionHandle hdl)
-    : ScServerAction(std::move(hdl))
+  ScServerDisconnectAction(ScServer * server, ScServerUserProcessId userProcessId)
+    : ScServerAction(std::move(userProcessId))
     , m_server(server)
   {
   }
 
   void Emit() override
   {
-    ScAddr const & sessionAddr = m_server->GetConnections()->at(m_hdl);
+    ScAddr const & sessionAddr = m_server->GetConnections()->at(m_userProcessId);
     m_server->m_context->EraseElement(sessionAddr);
-    m_server->GetConnections()->erase(m_hdl);
+    m_server->GetConnections()->erase(m_userProcessId);
   }
 
   ~ScServerDisconnectAction() override = default;

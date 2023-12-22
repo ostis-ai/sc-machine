@@ -28,7 +28,7 @@ public:
 
   sc_bool IsWorkable() override;
 
-  sc_bool CheckConnectionHandle(ScServerConnectionHandle const & hdl) override;
+  sc_bool CheckIfUserProcessAuthorized(ScServerUserProcessId const & userProcessId) override;
 
   ~ScServerImpl() override;
 
@@ -49,11 +49,11 @@ protected:
 
   void AfterInitialize() override;
 
-  void OnOpen(ScServerConnectionHandle const & hdl) override;
+  void OnOpen(ScServerUserProcessId const & userProcessId) override;
 
-  void OnClose(ScServerConnectionHandle const & hdl) override;
+  void OnClose(ScServerUserProcessId const & userProcessId) override;
 
-  void OnMessage(ScServerConnectionHandle const & hdl, ScServerMessage const & msg) override;
+  void OnMessage(ScServerUserProcessId const & userProcessId, ScServerMessage const & msg) override;
 
-  void OnEvent(ScServerConnectionHandle const & hdl, std::string const & msg) override;
+  void OnEvent(ScServerUserProcessId const & userProcessId, std::string const & msg) override;
 };

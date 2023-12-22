@@ -6,7 +6,7 @@
 
 #include "sc_memory_json_handler.hpp"
 
-std::string ScMemoryJsonHandler::Handle(ScServerConnectionHandle const & hdl, std::string const & requestMessage)
+std::string ScMemoryJsonHandler::Handle(ScServerUserProcessId const & userProcessId, std::string const & requestMessage)
 {
   std::vector<ScMemoryJsonPayload> requestData = ParseRequestMessage(requestMessage);
   if (requestData.empty())
@@ -16,7 +16,7 @@ std::string ScMemoryJsonHandler::Handle(ScServerConnectionHandle const & hdl, st
   ScMemoryJsonPayload const & requestPayload = requestData.at(1);
   size_t const & requestId = requestData.at(2).get<size_t>();
 
-  return ResponseRequestMessage(hdl, requestId, requestType, requestPayload).dump();
+  return ResponseRequestMessage(userProcessId, requestId, requestType, requestPayload).dump();
 }
 
 std::vector<ScMemoryJsonPayload> ScMemoryJsonHandler::ParseRequestMessage(std::string const & requestMessage)
@@ -45,7 +45,7 @@ ScMemoryJsonPayload ScMemoryJsonHandler::JsonifyRequestMessage(std::string const
 }
 
 ScMemoryJsonPayload ScMemoryJsonHandler::ResponseRequestMessage(
-    ScServerConnectionHandle const & hdl,
+    ScServerUserProcessId const & userProcessId,
     size_t const requestId,
     std::string const & requestType,
     ScMemoryJsonPayload const & requestPayload)
@@ -57,7 +57,7 @@ ScMemoryJsonPayload ScMemoryJsonHandler::ResponseRequestMessage(
   ScMemoryJsonPayload errorsPayload = ScMemoryJsonPayload::array({});
   try
   {
-    responsePayload = HandleRequestPayload(hdl, requestType, requestPayload, errorsPayload, status, isEvent);
+    responsePayload = HandleRequestPayload(userProcessId, requestType, requestPayload, errorsPayload, status, isEvent);
   }
   catch (ScServerException const & e)
   {

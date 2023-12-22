@@ -34,23 +34,23 @@ public:
 
   std::string GetUri();
 
-  ScServerConnections * GetConnections();
+  ScServerUserProcesses * GetConnections();
 
-  virtual sc_bool CheckConnectionHandle(ScServerConnectionHandle const & hdl) = 0;
+  virtual sc_bool CheckIfUserProcessAuthorized(ScServerUserProcessId const & userProcessId) = 0;
 
   void SetChannels(ScServerLogLevel channels);
 
   void ClearChannels();
 
-  void Send(ScServerConnectionHandle const & hdl, std::string const & message, ScServerMessageType type);
+  void Send(ScServerUserProcessId const & userProcessId, std::string const & message, ScServerMessageType type);
 
   void ResetLogger(ScServerLogger * logger = nullptr);
 
   void LogMessage(ScServerLogLevel channel, std::string const & message);
 
-  void CloseConnection(ScServerConnectionHandle const & hdl, ScServerCloseCode code, std::string const & reason);
+  void CloseConnection(ScServerUserProcessId const & userProcessId, ScServerCloseCode code, std::string const & reason);
 
-  virtual void OnEvent(ScServerConnectionHandle const & hdl, std::string const & msg) = 0;
+  virtual void OnEvent(ScServerUserProcessId const & userProcessId, std::string const & msg) = 0;
 
   virtual ~ScServer();
 
@@ -63,17 +63,17 @@ protected:
 
   ScServerLogger * m_logger;
   ScServerCore * m_instance;
-  ScServerConnections * m_connections;
+  ScServerUserProcesses * m_connections;
 
   virtual void Initialize() = 0;
 
   virtual void AfterInitialize() = 0;
 
-  virtual void OnOpen(ScServerConnectionHandle const & hdl) = 0;
+  virtual void OnOpen(ScServerUserProcessId const & userProcessId) = 0;
 
-  virtual void OnClose(ScServerConnectionHandle const & hdl) = 0;
+  virtual void OnClose(ScServerUserProcessId const & userProcessId) = 0;
 
-  virtual void OnMessage(ScServerConnectionHandle const & hdl, ScServerMessage const & msg) = 0;
+  virtual void OnMessage(ScServerUserProcessId const & userProcessId, ScServerMessage const & msg) = 0;
 
 private:
   std::thread m_ioThread;
