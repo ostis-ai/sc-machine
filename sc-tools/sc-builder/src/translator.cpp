@@ -39,7 +39,7 @@ void Translator::Clean(ScMemoryContext & ctx)
   }
 
   ScTemplate templ;
-  templ.TripleWithRelation(
+  templ.Quintuple(
       ScType::Unknown,
       ScType::EdgeDCommonVar,
       ScType::Link >> "_link",

@@ -12,81 +12,43 @@
 #include "GenerationUtils.hpp"
 #include "keynodes/coreKeynodes.hpp"
 
-using namespace std;
 using namespace scAgentsCommon;
 
 namespace utils
 {
 bool CommonUtils::checkType(ScMemoryContext * ms_context, const ScAddr & element, ScType scType)
 {
-  SC_CHECK_PARAM(element, ("Invalid element address"));
+  SC_CHECK_PARAM(element, "Invalid element address passed to `checkType`");
 
   ScType elementType = ms_context->GetElementType(element);
   return (elementType & scType) == scType;
 }
 
-int CommonUtils::readInt(ScMemoryContext * ms_context, const ScAddr & scLink)
+std::string CommonUtils::getLinkContent(ScMemoryContext * ms_context, const ScAddr & scLink)
 {
-  SC_CHECK_PARAM(scLink, ("Invalid number node address"));
+  SC_CHECK_PARAM(scLink, "Invalid link address passed to `getLinkContent`");
 
+  std::string result;
   const ScStreamPtr stream = ms_context->GetLinkContent(scLink);
   if (stream->IsValid())
   {
-    string str;
+    std::string str;
     if (ScStreamConverter::StreamToString(stream, str))
     {
-      stringstream streamString(str);
-      int result;
-      streamString >> result;
-      return result;
-    }
-  }
-  return -1;
-}
-
-int CommonUtils::readNumber(ScMemoryContext * ms_context, const ScAddr & number)
-{
-  SC_CHECK_PARAM(number, ("Invalid number node address"));
-
-  ScAddr scLink = IteratorUtils::getAnyByOutRelation(ms_context, number, CoreKeynodes::nrel_idtf);
-  return readInt(ms_context, scLink);
-}
-
-string CommonUtils::readString(ScMemoryContext * ms_context, const ScAddr & scLink)
-{
-  return getLinkContent(ms_context, scLink);
-}
-
-string CommonUtils::getLinkContent(ScMemoryContext * ms_context, const ScAddr & scLink)
-{
-  SC_CHECK_PARAM(scLink, ("Invalid link address"));
-
-  string result;
-  const ScStreamPtr stream = ms_context->GetLinkContent(scLink);
-  if (stream->IsValid())
-  {
-    string str;
-    if (ScStreamConverter::StreamToString(stream, str))
-    {
-      stringstream streamString(str);
+      std::stringstream streamString(str);
       result = streamString.str();
     }
   }
   return result;
 }
 
-string CommonUtils::getIdtfValue(ScMemoryContext * ms_context, const ScAddr & node, const ScAddr & idtfRelation)
-{
-  return getIdtf(ms_context, node, idtfRelation);
-}
-
-string CommonUtils::getIdtf(
+std::string CommonUtils::getIdtf(
     ScMemoryContext * ms_context,
     const ScAddr & node,
     const ScAddr & idtfRelation,
     const ScAddrVector & linkClasses)
 {
-  string value;
+  std::string value;
   ScAddr scLink;
   if (linkClasses.empty())
     scLink = IteratorUtils::getAnyByOutRelation(ms_context, node, idtfRelation);
@@ -111,11 +73,14 @@ string CommonUtils::getIdtf(
   }
 
   if (scLink.IsValid())
-    value = CommonUtils::getLinkContent(ms_context, scLink);
+    ms_context->GetLinkContent(scLink, value);
   return value;
 }
 
-string CommonUtils::getMainIdtf(ScMemoryContext * ms_context, const ScAddr & node, const ScAddrVector & linkClasses)
+std::string CommonUtils::getMainIdtf(
+    ScMemoryContext * ms_context,
+    const ScAddr & node,
+    const ScAddrVector & linkClasses)
 {
   ScAddr mainIdtfNode = CoreKeynodes::nrel_main_idtf;
   return getIdtf(ms_context, node, mainIdtfNode, linkClasses);
@@ -125,11 +90,11 @@ void CommonUtils::setIdtf(
     ScMemoryContext * ms_context,
     const ScAddr & node,
     const ScAddr & relation,
-    const string & identifier,
+    const std::string & identifier,
     const ScAddrVector & linkClasses)
 {
   ScAddr link = ms_context->CreateLink();
-  shared_ptr<ScStream> identifierStream = ScStreamConverter::StreamFromString(identifier);
+  ScStreamPtr identifierStream = ScStreamConverter::StreamFromString(identifier);
   ms_context->SetLinkContent(link, identifierStream);
   for (ScAddr linkClass : linkClasses)
   {
@@ -142,21 +107,16 @@ void CommonUtils::setIdtf(
 void CommonUtils::setMainIdtf(
     ScMemoryContext * ms_context,
     const ScAddr & node,
-    const string & identifier,
+    const std::string & identifier,
     const ScAddrVector & linkClasses)
 {
   ScAddr mainIdtfNode = CoreKeynodes::nrel_main_idtf;
   setIdtf(ms_context, node, mainIdtfNode, identifier, linkClasses);
 }
 
-int CommonUtils::getPowerOfSet(ScMemoryContext * ms_context, const ScAddr & set)
-{
-  return (int)getSetPower(ms_context, set);
-}
-
 size_t CommonUtils::getSetPower(ScMemoryContext * ms_context, const ScAddr & set)
 {
-  SC_CHECK_PARAM(set, ("Invalid set address"));
+  SC_CHECK_PARAM(set, "Invalid set address passed to `getSetPower`");
 
   int power = 0;
   ScIterator3Ptr iterator3 = ms_context->Iterator3(set, ScType::EdgeAccessConstPosPerm, ScType::Unknown);
@@ -167,7 +127,7 @@ size_t CommonUtils::getSetPower(ScMemoryContext * ms_context, const ScAddr & set
 
 bool CommonUtils::isEmpty(ScMemoryContext * ms_context, const ScAddr & set)
 {
-  SC_CHECK_PARAM(set, ("Invalid set address"));
+  SC_CHECK_PARAM(set, "Invalid set address to `isEmpty`");
 
   ScIterator3Ptr iterator3 = ms_context->Iterator3(set, ScType::EdgeAccessConstPosPerm, ScType::Unknown);
   return !iterator3->Next();

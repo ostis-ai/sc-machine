@@ -40,20 +40,20 @@ TEST_F(ScMemoryTest, wrapInOrientedSetBySequenceRelation)
   std::string const THIRD_MESSAGE_EDGE_ALIAS = "_third_message_edge";
 
   ScTemplate findTemplate;
-  findTemplate.TripleWithRelation(
+  findTemplate.Quintuple(
       orientedSet,
       ScType::EdgeAccessVarPosPerm >> FIRST_MESSAGE_EDGE_ALIAS,
       firstMessage,
       ScType::EdgeAccessVarPosPerm,
       scAgentsCommon::CoreKeynodes::rrel_1);
-  findTemplate.TripleWithRelation(
+  findTemplate.Quintuple(
       FIRST_MESSAGE_EDGE_ALIAS,
       ScType::EdgeDCommonVar,
       ScType::EdgeAccessVarPosPerm >> SECOND_MESSAGE_EDGE_ALIAS,
       ScType::EdgeAccessVarPosPerm,
       scAgentsCommon::CoreKeynodes::nrel_basic_sequence);
   findTemplate.Triple(orientedSet, SECOND_MESSAGE_EDGE_ALIAS, secondMessage);
-  findTemplate.TripleWithRelation(
+  findTemplate.Quintuple(
       SECOND_MESSAGE_EDGE_ALIAS,
       ScType::EdgeDCommonVar,
       ScType::EdgeAccessVarPosPerm >> THIRD_MESSAGE_EDGE_ALIAS,
@@ -80,13 +80,13 @@ TEST_F(ScMemoryTest, formActionNode)
 
   ScTemplate generatedActionTemplate;
   generatedActionTemplate.Triple(actionClass, ScType::EdgeAccessVarPosPerm, ScType::NodeVar >> actionAlias);
-  generatedActionTemplate.TripleWithRelation(
+  generatedActionTemplate.Quintuple(
       actionAlias,
       ScType::EdgeAccessVarPosPerm,
       params[0],
       ScType::EdgeAccessVarPosPerm,
       scAgentsCommon::CoreKeynodes::rrel_1);
-  generatedActionTemplate.TripleWithRelation(
+  generatedActionTemplate.Quintuple(
       actionAlias,
       ScType::EdgeAccessVarPosPerm,
       params[1],
@@ -106,7 +106,7 @@ TEST_F(ScMemoryTest, getActionResultIfExistForGeneratedAction)
   ScAddr actionClass = m_ctx->CreateNode(ScType::NodeConstClass);
   ScAddrVector params = {m_ctx->CreateNode(ScType::NodeConst), m_ctx->CreateNode(ScType::NodeConst)};
 
-  ScAddr const & answerNode = utils::AgentUtils::getActionResultIfExists(m_ctx.get(), actionClass, params);
+  ScAddr const & answerNode = utils::AgentUtils::applyActionAndGetResultIfExists(m_ctx.get(), actionClass, params);
   EXPECT_TRUE(answerNode.IsValid());
 
   std::string const actionAlias = "_action";
@@ -115,7 +115,7 @@ TEST_F(ScMemoryTest, getActionResultIfExistForGeneratedAction)
   generatedActionTemplate.Triple(actionClass, ScType::EdgeAccessVarPosPerm, ScType::NodeVar >> actionAlias);
   generatedActionTemplate.Triple(
       scAgentsCommon::CoreKeynodes::question_finished, ScType::EdgeAccessVarPosPerm, actionAlias);
-  generatedActionTemplate.TripleWithRelation(
+  generatedActionTemplate.Quintuple(
       actionAlias,
       ScType::EdgeDCommonVar,
       answerNode,
@@ -136,11 +136,11 @@ TEST_F(ScMemoryTest, getActionResultIfExistForExistingAction)
 
   ScAddr actionNode = m_ctx->CreateNode(ScType::NodeConst);
 
-  ScAddr const & answerNode = utils::AgentUtils::getActionResultIfExists(m_ctx.get(), actionNode);
+  ScAddr const & answerNode = utils::AgentUtils::applyActionAndGetResultIfExists(m_ctx.get(), actionNode);
   EXPECT_TRUE(answerNode.IsValid());
 
   ScTemplate generatedActionTemplate;
-  generatedActionTemplate.TripleWithRelation(
+  generatedActionTemplate.Quintuple(
       actionNode,
       ScType::EdgeDCommonVar,
       answerNode,
@@ -172,13 +172,13 @@ TEST_F(ScMemoryTest, applyGeneratedAction)
   generatedActionTemplate.Triple(actionClass, ScType::EdgeAccessVarPosPerm, ScType::NodeVar >> actionAlias);
   generatedActionTemplate.Triple(
       scAgentsCommon::CoreKeynodes::question_finished, ScType::EdgeAccessVarPosPerm, actionAlias);
-  generatedActionTemplate.TripleWithRelation(
+  generatedActionTemplate.Quintuple(
       actionAlias,
       ScType::EdgeAccessVarPosPerm,
       params[0],
       ScType::EdgeAccessVarPosPerm,
       scAgentsCommon::CoreKeynodes::rrel_1);
-  generatedActionTemplate.TripleWithRelation(
+  generatedActionTemplate.Quintuple(
       actionAlias,
       ScType::EdgeAccessVarPosPerm,
       params[1],

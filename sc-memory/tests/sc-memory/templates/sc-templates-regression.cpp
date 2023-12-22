@@ -314,7 +314,7 @@ TEST_F(ScTemplateRegressionTest, Issue251)
   // create template for a search
   ScTemplate templ;
 
-  templ.TripleWithRelation(
+  templ.Quintuple(
     kAddr,
     ScType::EdgeDCommonVar,
     ScType::Link >> "_link",

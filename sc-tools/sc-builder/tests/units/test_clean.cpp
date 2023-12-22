@@ -16,7 +16,7 @@ TEST_F(ScBuilderTest, clean_global_idtfs)
   EXPECT_TRUE(nrelSCsIdtf.IsValid());
 
   ScTemplate templ;
-  templ.TripleWithRelation(
+  templ.Quintuple(
     ScType::Unknown,
     ScType::EdgeDCommonVar,
     ScType::Link >> "_link",

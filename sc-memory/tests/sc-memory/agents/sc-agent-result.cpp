@@ -38,12 +38,11 @@ TEST_F(ScAgentTest, ATestResultOk)
     EXPECT_TRUE(edge.IsValid());
 
     ScWaitActionFinished waiter(ctx, cmdAddr);
-    waiter.SetOnWaitStartDelegate([&cmdAddr]()
-                                  {
-                                    ScMemoryContext ctxLocal(sc_access_lvl_make_min, "ATestResultOk_init");
-                                    ScAgentAction::InitiateCommand(ctxLocal, cmdAddr);
-                                  });
-    EXPECT_TRUE(waiter.Wait());
+    EXPECT_TRUE(waiter.Wait(5000, [&cmdAddr]()
+                            {
+                              ScMemoryContext ctxLocal(sc_access_lvl_make_min, "ATestResultOk_init");
+                              ScAgentAction::InitiateCommand(ctxLocal, cmdAddr);
+                            }));
 
     // check result
     EXPECT_EQ(ScAgentAction::GetCommandResultCode(ctx, cmdAddr), SC_RESULT_OK);

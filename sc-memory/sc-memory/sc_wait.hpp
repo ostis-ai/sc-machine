@@ -67,16 +67,6 @@ public:
     m_impl.Resolve();
   }
 
-  SC_DEPRECATED(
-      0.7.0,
-      "Use Wait"
-      "(uint32_t timeout_ms = 5000, DelegateFunc const & initializationFunction = []() -> void {})"
-      " with passing function into it instead of.")
-  void SetOnWaitStartDelegate(DelegateFunc const & startDelegate)
-  {
-    m_waitStartDelegate = startDelegate;
-  }
-
   bool Wait(
       uint32_t timeout_ms = 5000,
       DelegateFunc const & initializationFunction = []() -> void {})

@@ -132,7 +132,8 @@ public:
 #endif
 
 #define SC_CHECK_PARAM(_expr, _msg) \
-  ({ _ASSERT_IMPL(::utils::ExceptionInvalidParams, (_expr).IsValid(), _msg, __FILE__, __LINE__); })
+  if (!(_expr).IsValid()) \
+  SC_THROW_EXCEPTION(utils::ExceptionInvalidParams, _msg)
 
 #define _CHECK_IMPL(_expr, _msg, _name) \
   do \

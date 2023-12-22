@@ -6,7 +6,7 @@ ScAddr ResolveRelationTuple(ScMemoryContext & ctx, ScAddr const & elAddr, ScAddr
 {
   ScTemplate templ;
 
-  templ.TripleWithRelation(
+  templ.Quintuple(
       ScType::NodeVarTuple >> "_tuple", ScType::EdgeDCommonVar, elAddr, ScType::EdgeAccessVarPosPerm, relAddr);
 
   ScTemplateSearchResult searchRes;

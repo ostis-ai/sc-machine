@@ -11,7 +11,6 @@
 #include "keynodes/coreKeynodes.hpp"
 #include "IteratorUtils.hpp"
 
-using namespace std;
 using namespace scAgentsCommon;
 
 std::map<size_t, ScAddr> orderRelationsMap;
@@ -21,36 +20,28 @@ namespace utils
 ScAddr IteratorUtils::getRoleRelation(ScMemoryContext * ms_context, const size_t & index)
 {
   size_t minRrelCountExceeded = 1;
-  SC_ASSERT(index >= minRrelCountExceeded, ("Unable to create ordered role relation"));
+  if (index < minRrelCountExceeded)
+    SC_THROW_EXCEPTION(
+        utils::ExceptionInvalidParams,
+        "Unable to create role relation with order number " << index << ". Minimum order number is "
+                                                            << minRrelCountExceeded);
   SC_UNUSED(minRrelCountExceeded);
 
   auto relationIter = orderRelationsMap.find(index);
   if (relationIter == orderRelationsMap.end())
   {
-    ScAddr relation = ms_context->HelperResolveSystemIdtf("rrel_" + to_string(index), ScType::NodeConstRole);
+    ScAddr relation = ms_context->HelperResolveSystemIdtf("rrel_" + std::to_string(index), ScType::NodeConstRole);
     orderRelationsMap.insert({index, relation});
     return relation;
   }
   // @todo: Implement common memory for tests with caching
   // return relationIter->second;
-  return ms_context->HelperResolveSystemIdtf("rrel_" + to_string(index), ScType::NodeConstRole);
-}
-
-ScAddr IteratorUtils::getFirstFromSet(ScMemoryContext * ms_context, const ScAddr & set, bool getStrictlyFirst)
-{
-  if (getStrictlyFirst)
-  {
-    return getAnyByOutRelation(ms_context, set, CoreKeynodes::rrel_1);
-  }
-  else
-  {
-    return getAnyFromSet(ms_context, set);
-  }
+  return ms_context->HelperResolveSystemIdtf("rrel_" + std::to_string(index), ScType::NodeConstRole);
 }
 
 ScAddr IteratorUtils::getAnyFromSet(ScMemoryContext * ms_context, const ScAddr & set)
 {
-  SC_CHECK_PARAM(set, ("Invalid set address"));
+  SC_CHECK_PARAM(set, "Invalid set address passed to `getAnyFromSet`");
 
   ScIterator3Ptr iterator3 = ms_context->Iterator3(set, ScType::EdgeAccessConstPosPerm, ScType::Unknown);
   if (iterator3->Next())
@@ -66,9 +57,9 @@ ScAddr IteratorUtils::getNextFromSet(
     const ScAddr & previous,
     const ScAddr & sequenceRelation)
 {
-  SC_CHECK_PARAM(set, ("Invalid set address"));
-  SC_CHECK_PARAM(previous, ("Invalid previous element address"));
-  SC_CHECK_PARAM(sequenceRelation, ("Invalid sequence relation address"));
+  SC_CHECK_PARAM(set, "Invalid set address passed to `getNextFromSet`");
+  SC_CHECK_PARAM(previous, "Invalid previous element address passed to `getNextFromSet`");
+  SC_CHECK_PARAM(sequenceRelation, "Invalid sequence relation address passed to `getNextFromSet`");
 
   ScAddr nextElement;
   ScIterator3Ptr const & previousElementIterator = ms_context->Iterator3(set, ScType::EdgeAccessConstPosPerm, previous);
@@ -88,7 +79,7 @@ ScAddr IteratorUtils::getNextFromSet(
 
 ScAddrVector IteratorUtils::getAllWithType(ScMemoryContext * ms_context, const ScAddr & set, ScType scType)
 {
-  SC_CHECK_PARAM(set, ("Invalid set address"));
+  SC_CHECK_PARAM(set, "Invalid set address passed to `getAllWithType`");
 
   ScAddrVector elementList;
   ScIterator3Ptr iterator3 = ms_context->Iterator3(set, ScType::EdgeAccessConstPosPerm, scType);
@@ -105,8 +96,8 @@ ScAddrVector IteratorUtils::getAllByRelation(
     const ScAddr & relation,
     bool isBeginNode)
 {
-  SC_CHECK_PARAM(node, ("Invalid node address"));
-  SC_CHECK_PARAM(relation, ("Invalid relation address"));
+  SC_CHECK_PARAM(node, "Invalid node address passed to `getAllByRelation`");
+  SC_CHECK_PARAM(relation, "Invalid relation address passed to `getAllByRelation`");
 
   ScAddrVector elementList;
   ScIterator5Ptr iterator5 = IteratorUtils::getIterator5(ms_context, node, relation, isBeginNode);
@@ -125,15 +116,10 @@ ScAddrVector IteratorUtils::getAllByInRelation(
   return getAllByRelation(ms_context, node, relation, false);
 }
 
-ScAddr IteratorUtils::getFirstByInRelation(ScMemoryContext * ms_context, const ScAddr & node, const ScAddr & relation)
-{
-  return getAnyByInRelation(ms_context, node, relation);
-}
-
 ScAddr IteratorUtils::getAnyByInRelation(ScMemoryContext * ms_context, const ScAddr & node, const ScAddr & relation)
 {
-  SC_CHECK_PARAM(node, ("Invalid node address"));
-  SC_CHECK_PARAM(relation, ("Invalid relation address"));
+  SC_CHECK_PARAM(node, "Invalid node address passed to `getAnyByInRelation`");
+  SC_CHECK_PARAM(relation, "Invalid relation address passed to `getAnyByInRelation`");
 
   ScIterator5Ptr iterator5 = IteratorUtils::getIterator5(ms_context, node, relation, false);
   if (iterator5->Next())
@@ -141,11 +127,6 @@ ScAddr IteratorUtils::getAnyByInRelation(ScMemoryContext * ms_context, const ScA
     return iterator5->Get(0);
   }
   return {};
-}
-
-ScAddr IteratorUtils::getFirstByOutRelation(ScMemoryContext * ms_context, const ScAddr & node, const ScAddr & relation)
-{
-  return getAnyByOutRelation(ms_context, node, relation);
 }
 
 ScAddrVector IteratorUtils::getAllByOutRelation(
@@ -158,8 +139,8 @@ ScAddrVector IteratorUtils::getAllByOutRelation(
 
 ScAddr IteratorUtils::getAnyByOutRelation(ScMemoryContext * ms_context, const ScAddr & node, const ScAddr & relation)
 {
-  SC_CHECK_PARAM(node, ("Invalid node address"));
-  SC_CHECK_PARAM(relation, ("Invalid relation address"));
+  SC_CHECK_PARAM(node, "Invalid node address passed to `getAnyByOutRelation`");
+  SC_CHECK_PARAM(relation, "Invalid relation address passed to `getAnyByOutRelation`");
 
   ScIterator5Ptr iterator5 = IteratorUtils::getIterator5(ms_context, node, relation);
   if (iterator5->Next())
@@ -175,8 +156,8 @@ ScIterator5Ptr IteratorUtils::getIterator5(
     ScAddr const & relation,
     bool const isBeginNode)
 {
-  SC_CHECK_PARAM(node, ("Invalid node address"));
-  SC_CHECK_PARAM(relation, ("Invalid relation address"));
+  SC_CHECK_PARAM(node, "Invalid node address passed to `getIterator5`");
+  SC_CHECK_PARAM(relation, "Invalid relation address passed to `getIterator5`");
 
   ScIterator5Ptr iterator5;
   if (isBeginNode)

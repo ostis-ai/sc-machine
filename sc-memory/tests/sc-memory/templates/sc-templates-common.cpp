@@ -141,7 +141,7 @@ TEST_F(ScTemplateCommonTest, search)
   }
 }
 
-TEST_F(ScTemplateCommonTest, searchTripleWithRelation)
+TEST_F(ScTemplateCommonTest, searchQuintuple)
 {
   ScAddr const addr1 = m_ctx->CreateNode(ScType::NodeConst);
   EXPECT_TRUE(addr1.IsValid());
@@ -160,7 +160,7 @@ TEST_F(ScTemplateCommonTest, searchTripleWithRelation)
 
   {
     ScTemplate templ;
-    templ.TripleWithRelation(
+    templ.Quintuple(
           addr1,
           ScType::EdgeAccessVarPosPerm,
           ScType::NodeVar,
@@ -175,7 +175,7 @@ TEST_F(ScTemplateCommonTest, searchTripleWithRelation)
   {
     ScTemplate templ;
 
-    templ.TripleWithRelation(
+    templ.Quintuple(
           addr1 >> "1",
           ScType::EdgeAccessVarPosPerm >> "2",
           ScType::NodeVar >> "3",
@@ -372,7 +372,7 @@ TEST_F(ScTemplateCommonTest, a_a_a_a_f)
   EXPECT_TRUE(xAddr.IsValid());
 
   ScTemplate templ;
-  templ.TripleWithRelation(
+  templ.Quintuple(
         ScType::Unknown >> "_x",
         ScType::EdgeDCommonVar,
         ScType::Link,
@@ -405,7 +405,7 @@ TEST_F(ScTemplateCommonTest, DISABLED_BigTemplateSmoke)
   ScTemplate templ;
   for (auto const & a : elements)
   {
-    templ.TripleWithRelation(
+    templ.Quintuple(
         set1,
         ScType::EdgeDCommonVar,
         a >> "_el",

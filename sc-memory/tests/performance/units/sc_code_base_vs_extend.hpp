@@ -23,7 +23,7 @@ public:
       m_ctx->CreateEdge(ScType::EdgeAccessConstPosPerm, attr, edge);
     }
 
-    m_templ.TripleWithRelation(
+    m_templ.Quintuple(
           node,
           ScType::EdgeDCommonVar,
           ScType::NodeVarAbstract,
@@ -63,7 +63,7 @@ public:
       m_ctx->CreateEdge(ScType::EdgeAccessConstPosPerm, attr, edge);
     }
 
-    m_templ.TripleWithRelation(
+    m_templ.Quintuple(
           node >> "_node",
           ScType::EdgeDCommonVar >> "_edge",
           ScType::NodeVarAbstract >> "_trg",

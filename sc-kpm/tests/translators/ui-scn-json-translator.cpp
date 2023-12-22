@@ -18,7 +18,7 @@ std::string const COMMAND_INIT_CHECKS_PATH = TEST_STRUCTURES_PATH + "command_ini
 ScAddr findTranslation(ScMemoryContext & context, ScAddr const & constructionAddr)
 {
   ScTemplate translationTemplate;
-  translationTemplate.TripleWithRelation(
+  translationTemplate.Quintuple(
       constructionAddr,
       ScType::EdgeDCommonVar,
       ScType::LinkVar >> "_translation_link",

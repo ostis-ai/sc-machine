@@ -38,10 +38,9 @@ TEST_F(ScAgentTest, action_emit)
   SC_CHECK(cmd.IsValid(), ());
 
   ScWaitActionFinished waiter(*m_ctx, cmd);
-  waiter.SetOnWaitStartDelegate([&]() {
+  waiter.Wait(5000, [&]() {
     ScAgentAction::InitiateCommand(*m_ctx, cmd);
   });
-  waiter.Wait();
   SC_CHECK_EQUAL(ScAgentAction::GetCommandResultCode(*m_ctx, cmd), SC_RESULT_OK, ());
 
   SC_AGENT_UNREGISTER(ATestActionEmit);

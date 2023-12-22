@@ -14,7 +14,6 @@
 
 #include <regex>
 #include <utility>
-#include <glib.h>
 
 namespace impl
 {
@@ -135,7 +134,7 @@ private:
     {
       ScTemplate templ;
 
-      templ.TripleWithRelation(
+      templ.Quintuple(
           ScType::Unknown >> "_el", ScType::EdgeDCommonVar, addr, ScType::EdgeAccessVarPosPerm, m_kNrelSCsGlobalIdtf);
 
       ScTemplateSearchResult searchResult;

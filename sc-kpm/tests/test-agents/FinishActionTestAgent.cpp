@@ -5,7 +5,7 @@ using namespace scUtilsTestAgents;
 SC_AGENT_IMPLEMENTATION(FinishActionTestAgent)
 {
   ScTemplate actionDescriptionTemplate;
-  actionDescriptionTemplate.TripleWithRelation(
+  actionDescriptionTemplate.Quintuple(
       otherAddr, ScType::EdgeDCommonVar, ScType::NodeVarStruct, ScType::EdgeAccessVarPosPerm, scAgentsCommon::CoreKeynodes::nrel_answer);
   actionDescriptionTemplate.Triple(
       scAgentsCommon::CoreKeynodes::question_finished, ScType::EdgeAccessVarPosPerm, otherAddr);

@@ -242,7 +242,7 @@ TEST_F(ScTemplateSearchTest, LinkWithRelation)
 
 
   ScTemplate templ;
-  templ.TripleWithRelation(
+  templ.Quintuple(
     ScType::NodeVarTuple >> "_tuple",
     ScType::EdgeDCommonVar,
     deviceAddr,
@@ -254,14 +254,14 @@ TEST_F(ScTemplateSearchTest, LinkWithRelation)
     ScType::EdgeAccessVarPosPerm,
     ScType::NodeVar >> "_app");
 
-  templ.TripleWithRelation(
+  templ.Quintuple(
     "_app",
     ScType::EdgeDCommonVar,
     ScType::Link >> "_idtf",
     ScType::EdgeAccessVarPosPerm,
     nrelIdtf);
 
-  templ.TripleWithRelation(
+  templ.Quintuple(
       "_app",
       ScType::EdgeDCommonVar,
       ScType::Link >> "_image",
@@ -422,7 +422,7 @@ TEST_F(ScTemplateSearchTest, EqualConstructions)
       begin,
       ScType::EdgeAccessVarPosPerm >> "_begin_date_parameter_access_arc",
       ScType::NodeVarClass >> "_begin_date_parameter");
-  initVersionSearchTemplate.TripleWithRelation(
+  initVersionSearchTemplate.Quintuple(
       ScType::NodeVar >> "_unchanged_sd_version",
       ScType::EdgeDCommonVar >> "_version_pair_arc",
       ScType::NodeVar >> "_changed_sd_version",
@@ -434,13 +434,13 @@ TEST_F(ScTemplateSearchTest, EqualConstructions)
       "_version_pair_arc");
   initVersionSearchTemplate.Triple(
       history, ScType::EdgeAccessVarPosPerm >> "_history_access_arc", "_changes_history");
-  initVersionSearchTemplate.TripleWithRelation(
+  initVersionSearchTemplate.Quintuple(
       ScType::NodeVarStruct >> "_model_example",
       ScType::EdgeDCommonVar >> "_changes_history_pair_arc",
       "_changes_history",
       ScType::EdgeAccessVarPosPerm >> "_nrel_changes_history_access_arc",
       nrel_changes_history);
-  initVersionSearchTemplate.TripleWithRelation(
+  initVersionSearchTemplate.Quintuple(
       "_model_example",
       ScType::EdgeDCommonVar >> "_nrel_model_version_pair_arc",
       "_version_pair_arc",
@@ -484,7 +484,7 @@ TEST_F(ScTemplateSearchTest, StructureElements)
   ScAddr const & relationAddr = m_ctx->HelperResolveSystemIdtf("test_relation");
 
   ScTemplate templ;
-  templ.TripleWithRelation(
+  templ.Quintuple(
       sourceAddr >> "_source",
       ScType::EdgeDCommonVar >> "_edge",
       targetAddr >> "_target",

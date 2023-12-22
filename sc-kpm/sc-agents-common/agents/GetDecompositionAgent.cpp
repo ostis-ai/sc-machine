@@ -40,7 +40,7 @@ SC_AGENT_IMPLEMENTATION(GetDecompositionAgent)
     return SC_RESULT_ERROR_INVALID_PARAMS;
   }
   if (m_memoryCtx.IsElement(levelAddr))
-    level = stoi(CommonUtils::getLinkContent(&m_memoryCtx, levelAddr));
+    m_memoryCtx.GetLinkContent(levelAddr, level);
   if (!m_memoryCtx.IsElement(langAddr))
   {
     SC_LOG_ERROR("GetDecompositionAgent: language node not found.");
