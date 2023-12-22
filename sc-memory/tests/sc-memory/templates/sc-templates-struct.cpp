@@ -115,7 +115,9 @@ TEST_F(ScTemplateSearchInStructTest, SearchInStruct)
 
   {
     ScTemplateSearchResult result;
+    SC_PRAGMA_DISABLE_DEPRECATION_WARNINGS_BEGIN
     EXPECT_TRUE(m_ctx->HelperSearchTemplateInStruct(templ, *testStruct, result));
+    SC_PRAGMA_DISABLE_DEPRECATION_WARNINGS_END
 
     EXPECT_EQ(result.Size(), 2u);
     for (uint32_t i = 0; i < result.Size(); ++i)

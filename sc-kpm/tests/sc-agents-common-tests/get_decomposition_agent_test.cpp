@@ -63,10 +63,12 @@ TEST_F(GetDecompositionTest, successful_decomposition)
   EXPECT_TRUE(it5->Next());
   ScIterator3Ptr it3 = context.Iterator3(it5->Get(2), ScType::EdgeAccessConstPosPerm, ScType::Link);
   EXPECT_TRUE(it3->Next());
-  json decomposition = json::parse(utils::CommonUtils::getLinkContent(&context, it3->Get(2)));
+  std::string content;
+  context.GetLinkContent(it3->Get(2), content);
+  json decomposition = json::parse(content);
   json temp;
   auto & beginValue = decomposition.begin().value();
-  string idtf = beginValue["idtf"];
+  std::string idtf = beginValue["idtf"];
   temp[idtf] = getDecompositionIdList(beginValue["decomposition"]);
   json testJson = getTestJSON();
   EXPECT_EQ(temp, getTestJSON());
@@ -84,7 +86,7 @@ TEST_F(GetDecompositionTest, successful_decomposition_without_decomposition)
   checkSuccessfulDecomposition(*m_ctx, "test_action_node3");
 }
 
-void checkSuccessfulDecomposition(ScMemoryContext & m_ctx, string const & test_node_name)
+void checkSuccessfulDecomposition(ScMemoryContext & m_ctx, std::string const & test_node_name)
 {
   ScMemoryContext & context = m_ctx;
   initialize();
@@ -101,9 +103,11 @@ void checkSuccessfulDecomposition(ScMemoryContext & m_ctx, string const & test_n
   EXPECT_TRUE(it5->Next());
   ScIterator3Ptr it3 = context.Iterator3(it5->Get(2), ScType::EdgeAccessConstPosPerm, ScType::Link);
   EXPECT_TRUE(it3->Next());
-  json decomposition = json::parse(utils::CommonUtils::getLinkContent(&context, it3->Get(2)));
+  std::string content;
+  context.GetLinkContent(it3->Get(2), content);
+  json decomposition = json::parse(content);
   json temp;
-  string idtf = decomposition.begin().value()["idtf"];
+  std::string idtf = decomposition.begin().value()["idtf"];
   temp[idtf] = getDecompositionIdList(decomposition.begin().value()["decomposition"], 2);
   json testJson = getTestJSON(2);
   EXPECT_EQ(temp, getTestJSON(2));
@@ -116,7 +120,7 @@ json getDecompositionIdList(json const & answerDecomposition, int level)
   json decomposition;
   for (auto element : answerDecomposition)
   {
-    string idtf = element["idtf"];
+    std::string idtf = element["idtf"];
     if (level != 1)
       decomposition[idtf] = getDecompositionIdList(element["decomposition"], level - 1);
     else

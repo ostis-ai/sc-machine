@@ -15,7 +15,7 @@ TEST_F(ScCommonTemplTest, ResolveRelationTuple)
   ScAddr const tuple = sc::ResolveRelationTuple(*m_ctx, el, relAddr);
   {
     ScTemplate templ;
-    templ.TripleWithRelation(
+    templ.Quintuple(
       ScType::NodeVarTuple >> "_tuple",
       ScType::EdgeDCommonVar,
       el,
@@ -41,7 +41,7 @@ TEST_F(ScCommonTemplTest, SetRelationValue)
   ScAddr const linkAddr1 = sc::SetRelationValue(*m_ctx, el, relAddr1, value1);
 
   ScTemplate templ;
-  templ.TripleWithRelation(
+  templ.Quintuple(
     el,
     ScType::EdgeDCommonVar,
     ScType::Link >> "_link",

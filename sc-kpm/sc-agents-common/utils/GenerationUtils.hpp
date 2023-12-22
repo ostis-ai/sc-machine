@@ -12,8 +12,6 @@
 #include <sc-memory/sc_addr.hpp>
 #include <sc-memory/sc_iterator.hpp>
 
-using namespace std;
-
 namespace utils
 {
 class GenerationUtils

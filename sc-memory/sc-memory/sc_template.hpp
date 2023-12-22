@@ -372,18 +372,6 @@ public:
       ScTemplateItem const & param4,
       ScTemplateItem const & param5) noexcept(false);
 
-  SC_DEPRECATED(
-      0.8.0,
-      "Use ScTemplate::Quintuple(ScTemplateItem const & param1, ScTemplateItem const & param2, "
-      "ScTemplateItem const & param3, ScTemplateItem const & param4, ScTemplateItem const & param5) "
-      "noexcept(false) instead.")
-  _SC_EXTERN ScTemplate & TripleWithRelation(
-      ScTemplateItem const & param1,
-      ScTemplateItem const & param2,
-      ScTemplateItem const & param3,
-      ScTemplateItem const & param4,
-      ScTemplateItem const & param5) noexcept(false);
-
 protected:
   // Begin: calls by memory context
   Result Generate(
@@ -391,10 +379,7 @@ protected:
       ScTemplateResultItem & result,
       ScTemplateParams const & params,
       ScTemplateResultCode * errorCode = nullptr) const noexcept(false);
-  SC_DEPRECATED(
-      0.8.0,
-      "Use ScTemplate::Search(ScMemoryContext & ctx, ScTemplateSearchResultCallback const & callback, "
-      "ScTemplateSearchResultCheckCallback const & checkCallback) instead.")
+
   Result Search(ScMemoryContext & ctx, ScTemplateSearchResult & result) const noexcept(false);
   void Search(
       ScMemoryContext & ctx,
@@ -464,12 +449,6 @@ public:
       ScTemplate::ScTemplateItemsToReplacementsItemsPositions replacements)
     : m_context(context)
     , m_templateItemsNamesToReplacementItemPositions(std::move(replacements))
-  {
-  }
-
-  SC_DEPRECATED(0.8.0, "Use ScTemplateSearchResultItem::ScTemplateSearchResultItem() instead of")
-  ScTemplateResultItem(ScAddrVector * results, ScTemplate::ScTemplateItemsToReplacementsItemsPositions * replacements)
-    : m_context(nullptr)
   {
   }
 
@@ -673,10 +652,7 @@ protected:
 using ScTemplateGenResult = ScTemplateResultItem;
 using ScTemplateSearchResultItem = ScTemplateResultItem;
 
-class SC_DEPRECATED(
-    0.8.0,
-    "Use callback-based ScMemoryContext::HelperSearchTemplate(ScTemplate const & templ, ScTemplateSearchResultCallback "
-    "const & callback, ScTemplateSearchResultCheckCallback const & checkCallback) instead.") ScTemplateSearchResult
+class ScTemplateSearchResult
 {
   friend class ScTemplateSearch;
 
@@ -691,12 +667,6 @@ public:
   inline bool IsEmpty() const
   {
     return Size() == 0;
-  }
-
-  SC_DEPRECATED(0.8.0, "Use ScTemplateSearchResult::Get(size_t index, ScTemplateResultItem & outItem)")
-  inline bool GetResultItemSafe(size_t index, ScTemplateResultItem & outItem) const noexcept
-  {
-    return Get(index, outItem);
   }
 
   inline bool Get(size_t index, ScTemplateResultItem & outItem) const noexcept

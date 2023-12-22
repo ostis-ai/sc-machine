@@ -19,7 +19,7 @@ std::string GetIdtf(ScMemoryContext & ctx, ScAddr const& addr)
   EXPECT_TRUE(nrelIdtf.IsValid());
 
   ScTemplate templ;
-  templ.TripleWithRelation(
+  templ.Quintuple(
     addr,
     ScType::EdgeDCommonVar,
     ScType::Link >> "_link",
@@ -37,7 +37,7 @@ std::string GetIdtf(ScMemoryContext & ctx, ScAddr const& addr)
   EXPECT_TRUE(link.IsType<std::string>());
 
   return link.Get<std::string>();
-};
+}
 
 } // namespace
 

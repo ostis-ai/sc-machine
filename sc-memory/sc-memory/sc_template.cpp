@@ -67,7 +67,7 @@ ScTemplate & ScTemplate::operator()(
     ScTemplateItem const & param4,
     ScTemplateItem const & param5)
 {
-  return TripleWithRelation(param1, param2, param3, param4, param5);
+  return Quintuple(param1, param2, param3, param4, param5);
 }
 
 void ScTemplate::Clear()
@@ -181,16 +181,6 @@ ScTemplate & ScTemplate::Quintuple(
   Triple(param5, param4, edgeCommonItem.m_name);
 
   return *this;
-}
-
-ScTemplate & ScTemplate::TripleWithRelation(
-    ScTemplateItem const & param1,
-    ScTemplateItem const & param2,
-    ScTemplateItem const & param3,
-    ScTemplateItem const & param4,
-    ScTemplateItem const & param5)
-{
-  return Quintuple(param1, param2, param3, param4, param5);
 }
 
 inline ScTemplateTripleType ScTemplate::GetPriority(ScTemplateTriple * triple)

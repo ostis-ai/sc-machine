@@ -70,11 +70,9 @@ TEST_F(ScWaitTest, valid)
 {
   WaitTestData data(m_addr);
   ScWaitEvent<ScEventAddInputEdge> waiter(*m_ctx, m_addr);
-  waiter.SetOnWaitStartDelegate([&data]() {
+  EXPECT_TRUE(waiter.Wait(5000, [&data]() {
     EmitEvent(data);
-  });
-
-  EXPECT_TRUE(waiter.Wait());
+  }));
   EXPECT_TRUE(data.m_isDone);
 }
 
@@ -92,12 +90,9 @@ TEST_F(ScWaitTest, CondValid)
     return true;
   });
 
-  waiter.SetOnWaitStartDelegate([&data]()
-  {
+  EXPECT_TRUE(waiter.Wait(5000, [&data]() {
     EmitEvent(data);
-  });
-
-  EXPECT_TRUE(waiter.Wait());
+  }));
   EXPECT_TRUE(data.m_isDone);
 }
 
@@ -111,11 +106,9 @@ TEST_F(ScWaitTest, CondValidFalse)
     return false;
   });
 
-  waiter.SetOnWaitStartDelegate([&data]() {
+  EXPECT_FALSE(waiter.Wait(2000, [&data]() {
     EmitEvent(data);
-  });
-
-  EXPECT_FALSE(waiter.Wait(2000));
+  }));
   EXPECT_TRUE(data.m_isDone);
 }
 
@@ -124,11 +117,10 @@ TEST_F(ScWaitTest, ActionFinishedViaWaitStartDelegate)
   WaitTestData data(m_addr, ScAgentAction::GetCommandFinishedAddr());
 
   ScWaitActionFinished waiter(*m_ctx, m_addr);
-  waiter.SetOnWaitStartDelegate([&data]() {
-    EmitEvent(data);
-  });
 
-  EXPECT_TRUE(waiter.Wait());
+  EXPECT_TRUE(waiter.Wait(5000, [&data]() {
+    EmitEvent(data);
+  }));
   EXPECT_TRUE(data.m_isDone);
 }
 

@@ -348,7 +348,7 @@ TEST_F(ScEventTest, pend_events)
   ScTemplate templ;
   for (auto const & a : elements)
   {
-    templ.TripleWithRelation(
+    templ.Quintuple(
       set1,
       ScType::EdgeDCommonVar,
       a >> "_el",
@@ -367,7 +367,7 @@ TEST_F(ScEventTest, pend_events)
     size_t testNum = el_num / step - 1;
     for (size_t i = 0; i < testNum; ++i)
     {
-      checkTempl->TripleWithRelation(
+      checkTempl->Quintuple(
         set1,
         ScType::EdgeDCommonVar,
         elements[i * step] >> "_el",

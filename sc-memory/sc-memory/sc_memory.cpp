@@ -20,8 +20,10 @@
 
 extern "C"
 {
-#include "glib.h"
+#include <glib.h>
 }
+
+SC_PRAGMA_DISABLE_DEPRECATION_WARNINGS_BEGIN
 
 namespace
 {
@@ -772,7 +774,7 @@ bool ScMemoryContext::HelperFindBySystemIdtf(std::string const & sysIdtf, ScSyst
 
 ScTemplate::Result ScMemoryContext::HelperGenTemplate(
     ScTemplate const & templ,
-    ScTemplateGenResult & result,
+    ScTemplateResultItem & result,
     ScTemplateParams const & params,
     ScTemplateResultCode * resultCode)
 {
@@ -862,3 +864,5 @@ ScMemoryContext::ScMemoryStatistics ScMemoryContext::CalculateStat() const
 
   return res;
 }
+
+SC_PRAGMA_DISABLE_DEPRECATION_WARNINGS_END

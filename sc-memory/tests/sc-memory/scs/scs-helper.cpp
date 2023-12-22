@@ -25,6 +25,8 @@ public:
 
 using SCsHelperTest = ScMemoryTest;
 
+SC_PRAGMA_DISABLE_DEPRECATION_WARNINGS_BEGIN
+
 TEST_F(SCsHelperTest, GenerateBySCs)
 {
   std::vector<std::pair<std::string, std::string>> tests =
@@ -512,3 +514,5 @@ TEST_F(SCsHelperTest, FindTriplesSmoke)
     }
   });
 }
+
+SC_PRAGMA_DISABLE_DEPRECATION_WARNINGS_END

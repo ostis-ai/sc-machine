@@ -23,8 +23,7 @@ ScAddr SetRelationValue(ScMemoryContext & ctx, ScAddr const & elAddr, ScAddr con
 {
   ScTemplate templ;
 
-  templ.TripleWithRelation(
-      elAddr, ScType::EdgeDCommonVar, ScType::Link >> "_link", ScType::EdgeAccessVarPosPerm, relAddr);
+  templ.Quintuple(elAddr, ScType::EdgeDCommonVar, ScType::Link >> "_link", ScType::EdgeAccessVarPosPerm, relAddr);
 
   ScAddr linkAddr;
   ScTemplateSearchResult res;

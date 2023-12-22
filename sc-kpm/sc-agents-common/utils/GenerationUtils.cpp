@@ -15,7 +15,6 @@
 #include "CommonUtils.hpp"
 
 using namespace scAgentsCommon;
-using namespace std;
 
 namespace utils
 {

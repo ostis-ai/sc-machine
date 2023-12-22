@@ -44,9 +44,8 @@
 // -------------- Deprecation ---------------
 #if (SC_COMPILER == SC_COMPILER_MSVC)
 
-//__declspec(deprecated(__Message))// "Update you code to newest API version " #__Version " or later."))
 #  define _SC_DEPRECATED_IMPL(__Version, __Message) \
-    __declspec(deprecated(__Message " Update you code to newest API version " #__Version " or later."))
+    __declspec(deprecated(__Message " Update you code to the newest API version " #__Version " or later."))
 
 #  define PRAGMA_DISABLE_DEPRECATION_WARNINGS \
     __pragma(warning(push)) __pragma(warning(disable : 4995)) __pragma(warning(disable : 4996))
@@ -56,10 +55,23 @@
 #elif (SC_COMPILER == SC_COMPILER_CLANG)
 
 #  define _SC_DEPRECATED_IMPL(__Version, __Message) \
-    __attribute__((deprecated(__Message "Update you code to newest API version " #__Version " or later.")))
+    __attribute__((deprecated(__Message " Update you code to the newest API version " #__Version " or later.")))
+
+#  define SC_PRAGMA_DISABLE_DEPRECATION_WARNINGS_BEGIN \
+    _Pragma("CLANG diagnostic push") _Pragma("CLANG diagnostic ignored \"-Wdeprecated-declarations\"")
+
+#  define SC_PRAGMA_DISABLE_DEPRECATION_WARNINGS_END _Pragma("CLANG diagnostic pop")
 
 #elif (SC_COMPILER == SC_COMPILER_GNU)
-#  define _SC_DEPRECATED_IMPL(__Version, __Message)
+
+#  define _SC_DEPRECATED_IMPL(__Version, __Message) \
+    __attribute__((deprecated(__Message " Update you code to the newest API version " #__Version " or later.")))
+
+#  define SC_PRAGMA_DISABLE_DEPRECATION_WARNINGS_BEGIN \
+    _Pragma("GCC diagnostic push") _Pragma("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
+
+#  define SC_PRAGMA_DISABLE_DEPRECATION_WARNINGS_END _Pragma("GCC diagnostic pop")
+
 #else
 #  define _SC_DEPRECATED_IMPL(__Version, __Message)
 #endif
