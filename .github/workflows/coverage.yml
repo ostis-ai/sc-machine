@@ -64,7 +64,7 @@ jobs:
         run: scripts/ci/export-coverage.sh
 
       - name: Upload coverage report to CodeCov
-        uses: codecov/codecov-action@v2
+        uses: codecov/codecov-action@v3
         with:
           directory: ${{github.workspace}}/build
           files: coverage.info
