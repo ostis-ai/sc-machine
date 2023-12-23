@@ -1,12 +1,25 @@
 coverage:
+  precision: 2
+  round: down
+  range: "80...95"
   status:
     project:
       default:
-        target: 75%
-        threshold: null
-    patch: false
-    changes: false
-  ignore:
-    - "*/utils/sc_console.*"
-    - "*/utils/sc_message.*"
-    - "*/utils/sc_progress.*"
+        target: auto
+
+comment:
+  layout: "header, diff, changes, sunburst, uncovered"
+  behavior: default
+  require_changes: false
+
+parsers:
+  gcov:
+    branch_detection:
+      conditional: yes
+
+ignore:
+  - "sc-kpm"
+  - "*/utils/sc_console.*"
+  - "*/utils/sc_message.*"
+  - "*/utils/sc_progress.*"
+  - "*/tests/*"
