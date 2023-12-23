@@ -145,7 +145,16 @@ sc_memory_context * sc_memory_context_new(sc_access_levels levels)
   if (memory == null_ptr)
     return null_ptr;
 
-  return _sc_memory_context_new_impl(memory->context_manager, levels);
+  sc_addr process_addr = sc_memory_node_new(s_memory_default_ctx, sc_type_node | sc_type_const);
+  return _sc_memory_context_new_impl(memory->context_manager, process_addr);
+}
+
+sc_memory_context * sc_memory_context_resolve(sc_addr process_addr)
+{
+  if (memory == null_ptr)
+    return null_ptr;
+
+  return _sc_memory_context_resolve_impl(memory->context_manager, process_addr);
 }
 
 void sc_memory_context_free(sc_memory_context * ctx)

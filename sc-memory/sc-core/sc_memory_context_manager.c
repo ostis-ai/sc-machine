@@ -15,7 +15,6 @@
 struct _sc_memory_context_manager
 {
   sc_hash_table * context_hash_table;
-  sc_uint32 last_context_id;
   sc_uint32 context_count;
   sc_monitor context_monitor;
 };
@@ -31,7 +30,7 @@ struct _sc_event_emit_params
 
 struct _sc_memory_context
 {
-  sc_uint32 id;
+  sc_addr process_addr;
   sc_access_levels access_levels;
   sc_uint8 flags;
   sc_hash_table_list * pend_events;
@@ -46,7 +45,6 @@ void _sc_memory_context_manager_initialize(sc_memory_context_manager ** manager)
 
   *manager = sc_mem_new(sc_memory_context_manager, 1);
   (*manager)->context_hash_table = sc_hash_table_init(g_direct_hash, g_direct_equal, null_ptr, null_ptr);
-  (*manager)->last_context_id = 0;
   (*manager)->context_count = 0;
   sc_monitor_init(&(*manager)->context_monitor);
 
@@ -79,44 +77,30 @@ void _sc_memory_context_manager_shutdown(sc_memory_context_manager * manager)
   sc_mem_free(manager);
 }
 
-sc_memory_context * _sc_memory_context_new(sc_memory_context_manager * manager)
+sc_memory_context * _sc_memory_context_new_impl(sc_memory_context_manager * manager, sc_addr process_addr)
 {
-  sc_memory_context * ctx = sc_mem_new(sc_memory_context, 1);
-  sc_uint32 index;
+  if (manager == null_ptr)
+    return null_ptr;
 
-  // setup concurrency id
+  sc_memory_context * ctx = sc_mem_new(sc_memory_context, 1);
+
   sc_monitor_acquire_write(&manager->context_monitor);
-  if (manager->context_count >= G_MAXUINT32)
-    goto error;
 
   if (manager->context_hash_table == null_ptr)
     goto error;
 
-  index = (manager->last_context_id + 1) % G_MAXUINT32;
-  while (
-      index == 0
-      || (index != manager->last_context_id && sc_hash_table_get(manager->context_hash_table, GINT_TO_POINTER(index))))
-    index = (index + 1) % G_MAXUINT32;
+  sc_monitor_init(&ctx->monitor);
+  ctx->process_addr = process_addr;
 
-  if (index != manager->last_context_id)
-  {
-    ctx->id = index;
-    sc_monitor_init(&ctx->monitor);
-
-    manager->last_context_id = index;
-    sc_hash_table_insert(manager->context_hash_table, GINT_TO_POINTER(ctx->id), (sc_pointer)ctx);
-  }
-  else
-    goto error;
+  sc_hash_table_insert(
+      manager->context_hash_table, GINT_TO_POINTER(SC_ADDR_LOCAL_TO_INT(process_addr)), (sc_pointer)ctx);
 
   ++manager->context_count;
   goto result;
 
 error:
-{
   sc_mem_free(ctx);
   ctx = null_ptr;
-}
 
 result:
   sc_monitor_release_write(&manager->context_monitor);
@@ -124,16 +108,34 @@ result:
   return ctx;
 }
 
-sc_memory_context * _sc_memory_context_new_impl(sc_memory_context_manager * manager, sc_access_levels levels)
+sc_memory_context * _sc_memory_context_get_impl(sc_memory_context_manager * manager, sc_addr process_addr)
 {
   if (manager == null_ptr)
     return null_ptr;
 
-  sc_memory_context * ctx = _sc_memory_context_new(manager);
-  if (ctx == null_ptr)
+  sc_memory_context * ctx = null_ptr;
+
+  sc_monitor_acquire_read(&manager->context_monitor);
+
+  if (manager->context_hash_table == null_ptr)
+    goto error;
+
+  ctx = sc_hash_table_get(manager->context_hash_table, GINT_TO_POINTER(SC_ADDR_LOCAL_TO_INT(process_addr)));
+
+error:
+  sc_monitor_release_read(&manager->context_monitor);
+
+  return ctx;
+}
+
+sc_memory_context * _sc_memory_context_resolve_impl(sc_memory_context_manager * manager, sc_addr process_addr)
+{
+  if (manager == null_ptr)
     return null_ptr;
 
-  ctx->access_levels = levels;
+  sc_memory_context * ctx = _sc_memory_context_get_impl(manager, process_addr);
+  if (ctx == null_ptr)
+    ctx = _sc_memory_context_new_impl(manager, process_addr);
 
   return ctx;
 }
@@ -148,12 +150,13 @@ void _sc_memory_context_free_impl(sc_memory_context_manager * manager, sc_memory
   if (manager->context_hash_table == null_ptr)
     goto error;
 
-  sc_memory_context * context = sc_hash_table_get(manager->context_hash_table, GINT_TO_POINTER(ctx->id));
+  sc_memory_context * context =
+      sc_hash_table_get(manager->context_hash_table, GINT_TO_POINTER(SC_ADDR_LOCAL_TO_INT(ctx->process_addr)));
   if (context == null_ptr)
     goto error;
 
   sc_monitor_destroy(&ctx->monitor);
-  sc_hash_table_remove(manager->context_hash_table, GINT_TO_POINTER(ctx->id));
+  sc_hash_table_remove(manager->context_hash_table, GINT_TO_POINTER(SC_ADDR_LOCAL_TO_INT(ctx->process_addr)));
   --manager->context_count;
 
 error:

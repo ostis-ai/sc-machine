@@ -28,12 +28,13 @@ void _sc_memory_context_manager_shutdown(sc_memory_context_manager * manager);
  * context creation, then function returns 0
  * @note Do not use one context in different threads.
  */
-sc_memory_context * _sc_memory_context_new_impl(sc_memory_context_manager * manager, sc_access_levels levels);
+sc_memory_context * _sc_memory_context_new_impl(sc_memory_context_manager * manager, sc_addr process_addr);
+
+sc_memory_context * _sc_memory_context_resolve_impl(sc_memory_context_manager * manager, sc_addr process_addr);
 
 /*! Function that destroys created memory context. You can use that function
  * just for contexts, that were created with @see sc_memory_context_new
  */
-
 void _sc_memory_context_free_impl(sc_memory_context_manager * manager, sc_memory_context * ctx);
 
 sc_bool _sc_memory_context_is_pending(sc_memory_context const * ctx);

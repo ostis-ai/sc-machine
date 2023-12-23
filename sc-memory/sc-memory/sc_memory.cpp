@@ -121,14 +121,18 @@ void ScMemory::LogUnmute()
 // ---------------
 
 ScMemoryContext::ScMemoryContext(sc_uint8 accessLevels, std::string name)
-  : m_context(nullptr)
+  : m_context(sc_memory_context_new(accessLevels))
   , m_name(std::move(name))
 {
-  m_context = sc_memory_context_new(accessLevels);
 }
 
 ScMemoryContext::ScMemoryContext(std::string const & name)
   : ScMemoryContext(sc_access_lvl_make_min, name)
+{
+}
+
+ScMemoryContext::ScMemoryContext(ScAddr const & processAddr)
+  : m_context(sc_memory_context_resolve(*processAddr))
 {
 }
 
@@ -148,11 +152,13 @@ void ScMemoryContext::Destroy()
 
 void ScMemoryContext::BeingEventsPending()
 {
+  CHECK_CONTEXT;
   sc_memory_context_pending_begin(m_context);
 }
 
 void ScMemoryContext::EndEventsPending()
 {
+  CHECK_CONTEXT;
   sc_memory_context_pending_end(m_context);
 }
 

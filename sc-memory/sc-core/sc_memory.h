@@ -107,6 +107,8 @@ _SC_EXTERN void sc_memory_shutdown_ext();
  */
 _SC_EXTERN sc_memory_context * sc_memory_context_new(sc_uint8 levels);
 
+_SC_EXTERN sc_memory_context * sc_memory_context_resolve(sc_addr process_addr);
+
 /*!
  * @brief Destroys the created memory context.
  *

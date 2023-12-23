@@ -100,8 +100,11 @@ public:
   };
 
 public:
+  SC_DEPRECATED(0.10.0, "Use ScMemoryContext(ScAddr const & processAddr) instead of. It will be removed in 0.11.0.")
   _SC_EXTERN explicit ScMemoryContext(sc_uint8 accessLevels, std::string name = "");
+  SC_DEPRECATED(0.10.0, "Use ScMemoryContext(ScAddr const & processAddr) instead of. It will be removed in 0.11.0.")
   _SC_EXTERN explicit ScMemoryContext(std::string const & name);
+  _SC_EXTERN explicit ScMemoryContext(ScAddr const & processAddr);
   _SC_EXTERN ~ScMemoryContext();
 
   // Disable object copying
@@ -127,6 +130,7 @@ public:
   //! End events pending mode
   _SC_EXTERN void EndEventsPending();
 
+  SC_DEPRECATED(0.10.0, "It will be removed in 0.11.0.")
   _SC_EXTERN std::string const & GetName() const
   {
     return m_name;
