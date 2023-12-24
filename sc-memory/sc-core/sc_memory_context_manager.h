@@ -45,6 +45,8 @@ sc_memory_context * _sc_memory_context_resolve_impl_ext(
  */
 void _sc_memory_context_free_impl(sc_memory_context_manager * manager, sc_memory_context * ctx);
 
+sc_bool _sc_memory_context_is_authorized(sc_memory_context_manager * manager, sc_memory_context const * ctx);
+
 sc_bool _sc_memory_context_is_pending(sc_memory_context const * ctx);
 
 void _sc_memory_context_pending_begin(sc_memory_context * ctx);

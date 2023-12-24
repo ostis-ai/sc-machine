@@ -21,6 +21,7 @@ struct _sc_memory_context_manager
   sc_addr concept_authorized_user_addr;
   sc_event * on_authorized_user_subscription;
   sc_event * on_unauthorized_user_subscription;
+  sc_bool user_mode;
 };
 
 struct _sc_event_emit_params
@@ -44,6 +45,7 @@ struct _sc_memory_context
 
 #define SC_CONTEXT_FLAG_PENDING_EVENTS 0x1
 
+#define SC_CONTEXT_ACCESS_LEVEL_FULL 0xff
 #define SC_CONTEXT_ACCESS_LEVEL_AUTHORIZED 0x1
 
 sc_result _sc_memory_context_manager_on_authorized_user(sc_event const * event, sc_addr arc_addr, sc_addr other_addr)
@@ -86,8 +88,10 @@ void _sc_memory_context_manager_initialize(sc_memory_context_manager ** manager,
   (*manager)->context_hash_table = sc_hash_table_init(g_direct_hash, g_direct_equal, null_ptr, null_ptr);
   (*manager)->context_count = 0;
   sc_monitor_init(&(*manager)->context_monitor);
+  (*manager)->user_mode = SC_FALSE;
 
   s_memory_default_ctx = sc_memory_context_new(my_self_addr);
+  s_memory_default_ctx->access_levels = SC_CONTEXT_ACCESS_LEVEL_FULL;
 }
 
 void _sc_memory_context_manager_register_user_events(sc_memory_context_manager * manager)
@@ -156,6 +160,8 @@ sc_memory_context * _sc_memory_context_new_impl(sc_memory_context_manager * mana
   ctx->ref_count = 0;
   ctx->access_levels = 0;
 
+  sc_hash_table_insert(
+      manager->context_hash_table, GINT_TO_POINTER(SC_ADDR_LOCAL_TO_INT(ctx->user_addr)), (sc_pointer)ctx);
   ++manager->context_count;
   goto result;
 
@@ -248,6 +254,19 @@ void _sc_memory_context_free_impl(sc_memory_context_manager * manager, sc_memory
   sc_mem_free(ctx);
 error:
   sc_monitor_release_write(&manager->context_monitor);
+}
+
+sc_bool _sc_memory_context_is_authorized(sc_memory_context_manager * manager, sc_memory_context const * ctx)
+{
+  if (manager->user_mode == SC_FALSE)
+    return SC_TRUE;
+
+  sc_monitor_acquire_read((sc_monitor *)&ctx->monitor);
+  sc_access_levels access_levels = ctx->access_levels;
+  sc_monitor_release_read((sc_monitor *)&ctx->monitor);
+
+  sc_bool is_authorized = (access_levels & SC_CONTEXT_ACCESS_LEVEL_AUTHORIZED) == SC_CONTEXT_ACCESS_LEVEL_AUTHORIZED;
+  return is_authorized;
 }
 
 sc_bool _sc_memory_context_is_pending(sc_memory_context const * ctx)
