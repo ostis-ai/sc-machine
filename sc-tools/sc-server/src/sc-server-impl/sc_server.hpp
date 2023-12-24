@@ -34,23 +34,25 @@ public:
 
   std::string GetUri();
 
-  ScServerUserProcesses * GetConnections();
+  void AddSessionContext(ScServerSessionId const & sessionId, ScMemoryContext * sessionCtx);
 
-  virtual sc_bool CheckIfUserProcessAuthorized(ScServerUserProcessId const & userProcessId) = 0;
+  ScMemoryContext * PopSessionContext(ScServerSessionId const & sessionId);
+
+  ScMemoryContext * GetSessionContext(ScServerSessionId const & sessionId);
 
   void SetChannels(ScServerLogLevel channels);
 
   void ClearChannels();
 
-  void Send(ScServerUserProcessId const & userProcessId, std::string const & message, ScServerMessageType type);
+  void Send(ScServerSessionId const & sessionId, std::string const & message, ScServerMessageType type);
 
   void ResetLogger(ScServerLogger * logger = nullptr);
 
   void LogMessage(ScServerLogLevel channel, std::string const & message);
 
-  void CloseConnection(ScServerUserProcessId const & userProcessId, ScServerCloseCode code, std::string const & reason);
+  void CloseConnection(ScServerSessionId const & sessionId, ScServerCloseCode code, std::string const & reason);
 
-  virtual void OnEvent(ScServerUserProcessId const & userProcessId, std::string const & msg) = 0;
+  virtual void OnEvent(ScServerSessionId const & sessionId, std::string const & msg) = 0;
 
   virtual ~ScServer();
 
@@ -63,17 +65,17 @@ protected:
 
   ScServerLogger * m_logger;
   ScServerCore * m_instance;
-  ScServerUserProcesses * m_connections;
+  ScServerSessionContexts * m_connections;
 
   virtual void Initialize() = 0;
 
   virtual void AfterInitialize() = 0;
 
-  virtual void OnOpen(ScServerUserProcessId const & userProcessId) = 0;
+  virtual void OnOpen(ScServerSessionId const & sessionId) = 0;
 
-  virtual void OnClose(ScServerUserProcessId const & userProcessId) = 0;
+  virtual void OnClose(ScServerSessionId const & sessionId) = 0;
 
-  virtual void OnMessage(ScServerUserProcessId const & userProcessId, ScServerMessage const & msg) = 0;
+  virtual void OnMessage(ScServerSessionId const & sessionId, ScServerMessage const & msg) = 0;
 
 private:
   std::thread m_ioThread;

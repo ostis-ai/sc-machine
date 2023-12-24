@@ -20,7 +20,7 @@ TEST(ScEventQueueTest, EventsQueueDestroy)
 
   ScMemory::Initialize(params);
 
-  ScMemoryContext ctx(sc_access_lvl_make_min);
+  ScMemoryContext ctx("my_self");
 
   ScAddr const node = ctx.CreateNode(ScType::NodeConst);
   ScAddr const node2 = ctx.CreateNode(ScType::NodeConst);
@@ -34,7 +34,7 @@ TEST(ScEventQueueTest, EventsQueueDestroy)
       [node, node2, count](ScAddr const & addr, ScAddr const &, ScAddr const &)
       {
         bool result = false;
-        ScMemoryContext localCtx(sc_access_lvl_make_min);
+        ScMemoryContext localCtx("test_process");
         ScIterator3Ptr it = localCtx.Iterator3(addr, ScType::EdgeAccessConstPosPerm, ScType::Unknown);
         while (it->Next())
           result = true;
@@ -52,7 +52,7 @@ TEST(ScEventQueueTest, EventsQueueDestroy)
       [node3, node2, count](ScAddr const & addr, ScAddr const &, ScAddr const &)
       {
         bool result = false;
-        ScMemoryContext localCtx(sc_access_lvl_make_min);
+        ScMemoryContext localCtx("test_process");
         ScIterator3Ptr it = localCtx.Iterator3(addr, ScType::EdgeAccessConstPosPerm, ScType::Unknown);
         while (it->Next())
           result = true;
@@ -70,7 +70,7 @@ TEST(ScEventQueueTest, EventsQueueDestroy)
       [](ScAddr const & addr, ScAddr const &, ScAddr const &)
       {
         bool result = false;
-        ScMemoryContext localCtx(sc_access_lvl_make_min);
+        ScMemoryContext localCtx("test_process");
         ScIterator3Ptr it = localCtx.Iterator3(addr, ScType::EdgeAccessConstPosPerm, ScType::Unknown);
         while (it->Next())
           result = true;
@@ -260,7 +260,7 @@ TEST_F(ScEventTest, events_lock)
       [](ScAddr const & addr, ScAddr const &, ScAddr const &)
       {
         bool result = false;
-        ScMemoryContext localCtx(sc_access_lvl_make_min);
+        ScMemoryContext localCtx("test_process");
         ScIterator3Ptr it = localCtx.Iterator3(addr, ScType::EdgeAccessConstPosPerm, ScType::Unknown);
         while (it->Next())
           result = true;
@@ -285,7 +285,7 @@ TEST_F(ScEventTest, parallel_create_edges)
       [](ScAddr const & addr, ScAddr const &, ScAddr const & target)
       {
         bool result = false;
-        ScMemoryContext localCtx(sc_access_lvl_make_min);
+        ScMemoryContext localCtx("test_process");
         ScIterator3Ptr it = localCtx.Iterator3(addr, ScType::EdgeAccessConstPosPerm, ScType::Unknown);
         while (it->Next())
           result = true;
@@ -312,7 +312,7 @@ TEST_F(ScEventTest, parallel_create_remove_edges)
       node,
       [](ScAddr const & addr, ScAddr const &, ScAddr const & target)
       {
-        ScMemoryContext localCtx(sc_access_lvl_make_min);
+        ScMemoryContext localCtx("test_process");
         ScIterator3Ptr it = localCtx.Iterator3(addr, ScType::EdgeAccessConstPosPerm, ScType::Unknown);
         while (it->Next())
           localCtx.EraseElement(it->Get(1));
@@ -334,7 +334,7 @@ TEST_F(ScEventTest, parallel_create_remove_edges2)
       node,
       [](ScAddr const & addr, ScAddr const & edge, ScAddr const & target)
       {
-        ScMemoryContext localCtx(sc_access_lvl_make_min);
+        ScMemoryContext localCtx("test_process");
         localCtx.EraseElement(edge);
 
         return SC_RESULT_OK;
@@ -385,7 +385,7 @@ TEST_F(ScEventTest, pend_events)
               set1, ScType::EdgeDCommonVar, elements[i * step] >> "_el", ScType::EdgeAccessVarPosPerm, rel);
         }
 
-        ScMemoryContext localCtx(sc_access_lvl_make_min);
+        ScMemoryContext localCtx("test_process");
 
         ScTemplateSearchResult res;
         EXPECT_TRUE(localCtx.HelperSearchTemplate(*checkTempl, res));

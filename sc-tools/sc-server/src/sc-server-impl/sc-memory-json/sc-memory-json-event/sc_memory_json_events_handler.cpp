@@ -6,21 +6,26 @@
 
 #include "sc_memory_json_events_handler.hpp"
 
-ScMemoryJsonEventsHandler::ScMemoryJsonEventsHandler(ScServer * server)
+std::map<std::string, ScEvent::Type> ScMemoryJsonEventsHandler::events = {
+    {"add_outgoing_edge", ScEvent::Type::AddOutputEdge},
+    {"add_ingoing_edge", ScEvent::Type::AddInputEdge},
+    {"remove_outgoing_edge", ScEvent::Type::RemoveOutputEdge},
+    {"remove_ingoing_edge", ScEvent::Type::RemoveInputEdge},
+    {"content_change", ScEvent::Type::ContentChanged},
+    {"delete_element", ScEvent::Type::EraseElement},
+};
+
+ScMemoryJsonEventsHandler::ScMemoryJsonEventsHandler(ScServer * server, ScMemoryContext * processCtx)
   : ScMemoryJsonHandler(server)
+  , m_context(processCtx)
+  , m_manager(ScMemoryJsonEventsManager::GetInstance())
 {
-  m_context = new ScMemoryContext("sc-json-socket-events-handler");
-  m_manager = ScMemoryJsonEventsManager::GetInstance();
 }
 
-ScMemoryJsonEventsHandler::~ScMemoryJsonEventsHandler()
-{
-  m_context->Destroy();
-  delete m_context;
-}
+ScMemoryJsonEventsHandler::~ScMemoryJsonEventsHandler() = default;
 
 ScMemoryJsonPayload ScMemoryJsonEventsHandler::HandleRequestPayload(
-    ScServerUserProcessId const & userProcessId,
+    ScServerSessionId const & sessionId,
     std::string const & requestType,
     ScMemoryJsonPayload const & requestPayload,
     ScMemoryJsonPayload & errorsPayload,
@@ -34,9 +39,9 @@ ScMemoryJsonPayload ScMemoryJsonEventsHandler::HandleRequestPayload(
 
   ScMemoryJsonPayload responsePayload;
   if (requestPayload.find("create") != requestPayload.cend())
-    responsePayload = HandleCreate(userProcessId, requestPayload["create"], errorsPayload);
+    responsePayload = HandleCreate(sessionId, requestPayload["create"], errorsPayload);
   else if (requestPayload.find("delete") != requestPayload.cend())
-    responsePayload = HandleDelete(userProcessId, requestPayload["delete"], errorsPayload);
+    responsePayload = HandleDelete(sessionId, requestPayload["delete"], errorsPayload);
   else
     errorsPayload = "Unknown event request";
 
@@ -46,13 +51,13 @@ ScMemoryJsonPayload ScMemoryJsonEventsHandler::HandleRequestPayload(
 }
 
 ScMemoryJsonPayload ScMemoryJsonEventsHandler::HandleCreate(
-    ScServerUserProcessId const & userProcessId,
+    ScServerSessionId const & sessionId,
     ScMemoryJsonPayload const & message,
     ScMemoryJsonPayload & errorsPayload)
 {
   auto const & onEmitEvent = [](size_t id,
                                 ScServer * server,
-                                ScServerUserProcessId const & handle,
+                                ScServerSessionId const & handle,
                                 ScAddr const & addr,
                                 ScAddr const & edgeAddr,
                                 ScAddr const & otherAddr) -> sc_bool
@@ -82,10 +87,7 @@ ScMemoryJsonPayload ScMemoryJsonEventsHandler::HandleCreate(
     if (it != events.end())
     {
       auto * event = new ScEvent(
-          *m_context,
-          addr,
-          it->second,
-          bind(onEmitEvent, m_manager->Next(), m_server, userProcessId, ::_1, ::_2, ::_3));
+          *m_context, addr, it->second, bind(onEmitEvent, m_manager->Next(), m_server, sessionId, ::_1, ::_2, ::_3));
       responsePayload.push_back(m_manager->Add(event));
     }
   }
@@ -94,11 +96,11 @@ ScMemoryJsonPayload ScMemoryJsonEventsHandler::HandleCreate(
 }
 
 ScMemoryJsonPayload ScMemoryJsonEventsHandler::HandleDelete(
-    ScServerUserProcessId const & userProcessId,
+    ScServerSessionId const & sessionId,
     ScMemoryJsonPayload const & message,
     ScMemoryJsonPayload & errorsPayload)
 {
-  SC_UNUSED(userProcessId);
+  SC_UNUSED(sessionId);
 
   for (auto & atom : message)
     delete m_manager->Remove(atom.get<size_t>());

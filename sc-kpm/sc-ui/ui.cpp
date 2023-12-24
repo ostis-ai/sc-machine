@@ -4,7 +4,6 @@
  * (See accompanying file COPYING.MIT or copy at http://opensource.org/licenses/MIT)
  */
 
-#include "uiPrecompiled.h"
 #include "ui.h"
 
 #include "uiTranslators.h"
@@ -16,14 +15,13 @@ extern "C"
 #include <glib.h>
 }
 
-const sc_version required_version = {0, 1, 0, ""};
-sc_memory_context * s_default_ctx = 0;
+sc_memory_context * s_default_ctx = nullptr;
 
 // ------------------- Module ------------------------------
 _SC_EXT_EXTERN sc_result
 sc_module_initialize_with_init_memory_generated_structure(sc_addr const init_memory_generated_structure)
 {
-  s_default_ctx = sc_memory_context_new(sc_access_lvl_make_min);
+  s_default_ctx = sc_memory_context_new_ext("my_self");
 
   if (!initialize_keynodes(init_memory_generated_structure))
   {

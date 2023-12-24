@@ -23,6 +23,7 @@ private:
 public:
   // Just for internal usage
   static _SC_EXTERN bool Init(
+      ScMemoryContext * context,
       bool force = false,
       sc_char const * init_memory_generated_structure = (sc_char *)null_ptr);
   static void Shutdown();
@@ -33,14 +34,8 @@ public:
   static _SC_EXTERN ScAddr const & GetRrelIndex(size_t idx);
   static _SC_EXTERN size_t GetRrelIndexNum();
 
-  SC_PROPERTY(Keynode("process"), ForceCreate(ScType::NodeConstClass))
-  _SC_EXTERN static ScAddr kProcess;
-
-  SC_PROPERTY(Keynode("user_process"), ForceCreate(ScType::NodeConstClass))
-  _SC_EXTERN static ScAddr kUserProcess;
-
-  SC_PROPERTY(Keynode("authorized_user_process"), ForceCreate(ScType::NodeConstClass))
-  _SC_EXTERN static ScAddr kAuthorizedUserProcess;
+  SC_PROPERTY(Keynode("my_self"), ForceCreate(ScType::NodeConst))
+  _SC_EXTERN static ScAddr kMySelf;
 
   SC_PROPERTY(Keynode("command_state"), ForceCreate(ScType::NodeConstClass))
   _SC_EXTERN static ScAddr kCommandStateAddr;

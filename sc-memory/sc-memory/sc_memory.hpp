@@ -80,7 +80,7 @@ public:
   _SC_EXTERN static void LogUnmute();
 
 private:
-  static sc_memory_context * ms_globalContext;
+  static ScMemoryContext * ms_globalContext;
 };
 
 //! Class used to work with memory. It provides functions to create/retrieve/erase sc-elements
@@ -100,18 +100,16 @@ public:
   };
 
 public:
-  SC_DEPRECATED(0.10.0, "Use ScMemoryContext(ScAddr const & processAddr) instead of. It will be removed in 0.11.0.")
-  _SC_EXTERN explicit ScMemoryContext(sc_uint8 accessLevels, std::string name = "");
-  SC_DEPRECATED(0.10.0, "Use ScMemoryContext(ScAddr const & processAddr) instead of. It will be removed in 0.11.0.")
   _SC_EXTERN explicit ScMemoryContext(std::string const & name);
   _SC_EXTERN explicit ScMemoryContext(ScAddr const & processAddr);
+  _SC_EXTERN explicit ScMemoryContext(sc_memory_context * context);
   _SC_EXTERN ~ScMemoryContext();
 
   // Disable object copying
   ScMemoryContext(ScMemoryContext const & other) = delete;
   ScMemoryContext & operator=(ScMemoryContext const & other) = delete;
 
-  _SC_EXTERN sc_memory_context const * operator*() const
+  _SC_EXTERN sc_memory_context * operator*() const
   {
     return m_context;
   }

@@ -12,7 +12,7 @@ extern "C"
 
 TEST_F(ScMemoryTest, agent_search_all_const_pos_output_arc)
 {
-  sc_memory_context * context = sc_memory_context_new(sc_access_lvl_make_min);
+  sc_memory_context * context = m_ctx->GetRealContext();
   sc_addr init_memory_generated_structure;
   SC_ADDR_MAKE_EMPTY(init_memory_generated_structure);
 
@@ -53,14 +53,12 @@ TEST_F(ScMemoryTest, agent_search_all_const_pos_output_arc)
   EXPECT_TRUE(sc_iterator3_next(it3));
   sc_iterator3_free(it3);
 
-  sc_memory_context_free(context);
-
   sc_module_shutdown();
 }
 
 TEST_F(ScMemoryTest, agent_search_all_const_pos_output_arc_with_rel)
 {
-  sc_memory_context * context = sc_memory_context_new(sc_access_lvl_make_min);
+  sc_memory_context * context = m_ctx->GetRealContext();
 
   sc_addr init_memory_generated_structure;
   SC_ADDR_MAKE_EMPTY(init_memory_generated_structure);
@@ -109,14 +107,12 @@ TEST_F(ScMemoryTest, agent_search_all_const_pos_output_arc_with_rel)
   EXPECT_TRUE(sc_iterator3_next(it3));
   sc_iterator3_free(it3);
 
-  sc_memory_context_free(context);
-
   sc_module_shutdown();
 }
 
 TEST_F(ScMemoryTest, agent_search_all_const_pos_input_arc)
 {
-  sc_memory_context * context = sc_memory_context_new(sc_access_lvl_make_min);
+  sc_memory_context * context = m_ctx->GetRealContext();
 
   sc_addr init_memory_generated_structure;
   SC_ADDR_MAKE_EMPTY(init_memory_generated_structure);
@@ -161,14 +157,12 @@ TEST_F(ScMemoryTest, agent_search_all_const_pos_input_arc)
   EXPECT_TRUE(sc_iterator3_next(it3));
   sc_iterator3_free(it3);
 
-  sc_memory_context_free(context);
-
   sc_module_shutdown();
 }
 
 TEST_F(ScMemoryTest, agent_search_all_const_pos_input_arc_with_rel)
 {
-  sc_memory_context * context = sc_memory_context_new(sc_access_lvl_make_min);
+  sc_memory_context * context = m_ctx->GetRealContext();
 
   sc_addr init_memory_generated_structure;
   SC_ADDR_MAKE_EMPTY(init_memory_generated_structure);
@@ -217,14 +211,12 @@ TEST_F(ScMemoryTest, agent_search_all_const_pos_input_arc_with_rel)
   EXPECT_TRUE(sc_iterator3_next(it3));
   sc_iterator3_free(it3);
 
-  sc_memory_context_free(context);
-
   sc_module_shutdown();
 }
 
 TEST_F(ScMemoryTest, agent_search_all_identifiers)
 {
-  sc_memory_context * context = sc_memory_context_new(sc_access_lvl_make_min);
+  sc_memory_context * context = m_ctx->GetRealContext();
 
   sc_addr init_memory_generated_structure;
   SC_ADDR_MAKE_EMPTY(init_memory_generated_structure);
@@ -269,14 +261,12 @@ TEST_F(ScMemoryTest, agent_search_all_identifiers)
   EXPECT_TRUE(sc_iterator3_next(it3));
   sc_iterator3_free(it3);
 
-  sc_memory_context_free(context);
-
   sc_module_shutdown();
 }
 
 TEST_F(ScMemoryTest, agent_search_all_identified_elements)
 {
-  sc_memory_context * context = sc_memory_context_new(sc_access_lvl_make_min);
+  sc_memory_context * context = m_ctx->GetRealContext();
 
   sc_addr init_memory_generated_structure;
   SC_ADDR_MAKE_EMPTY(init_memory_generated_structure);
@@ -323,14 +313,12 @@ TEST_F(ScMemoryTest, agent_search_all_identified_elements)
   EXPECT_TRUE(sc_iterator3_next(it3));
   sc_iterator3_free(it3);
 
-  sc_memory_context_free(context);
-
   sc_module_shutdown();
 }
 
 TEST_F(ScMemoryTest, agent_search_full_semantic_neighborhood)
 {
-  sc_memory_context * context = sc_memory_context_new(sc_access_lvl_make_min);
+  sc_memory_context * context = m_ctx->GetRealContext();
 
   sc_addr init_memory_generated_structure;
   SC_ADDR_MAKE_EMPTY(init_memory_generated_structure);
@@ -414,14 +402,12 @@ TEST_F(ScMemoryTest, agent_search_full_semantic_neighborhood)
   EXPECT_TRUE(sc_iterator3_next(it3));
   sc_iterator3_free(it3);
 
-  sc_memory_context_free(context);
-
   sc_module_shutdown();
 }
 
 TEST_F(ScMemoryTest, agent_search_links_of_relation_connected_with_element)
 {
-  sc_memory_context * context = sc_memory_context_new(sc_access_lvl_make_min);
+  sc_memory_context * context = m_ctx->GetRealContext();
 
   sc_addr init_memory_generated_structure;
   SC_ADDR_MAKE_EMPTY(init_memory_generated_structure);
@@ -505,14 +491,12 @@ TEST_F(ScMemoryTest, agent_search_links_of_relation_connected_with_element)
   EXPECT_TRUE(sc_iterator3_next(it3));
   sc_iterator3_free(it3);
 
-  sc_memory_context_free(context);
-
   sc_module_shutdown();
 }
 
 TEST_F(ScMemoryTest, agent_search_decomposition)
 {
-  sc_memory_context * context = sc_memory_context_new(sc_access_lvl_make_min);
+  sc_memory_context * context = m_ctx->GetRealContext();
 
   sc_addr init_memory_generated_structure;
   SC_ADDR_MAKE_EMPTY(init_memory_generated_structure);
@@ -565,8 +549,6 @@ TEST_F(ScMemoryTest, agent_search_decomposition)
   EXPECT_TRUE(sc_iterator3_next(it3));
   EXPECT_TRUE(sc_iterator3_next(it3));
   sc_iterator3_free(it3);
-
-  sc_memory_context_free(context);
 
   sc_module_shutdown();
 }

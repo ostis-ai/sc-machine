@@ -11,8 +11,8 @@
 class ScServerAction
 {
 public:
-  explicit ScServerAction(ScServerUserProcessId userProcessId)
-    : m_userProcessId(std::move(userProcessId))
+  explicit ScServerAction(ScServerSessionId sessionId)
+    : m_sessionId(std::move(sessionId))
   {
   }
 
@@ -21,5 +21,5 @@ public:
   virtual ~ScServerAction() = default;
 
 protected:
-  ScServerUserProcessId m_userProcessId;
+  ScServerSessionId m_sessionId;
 };

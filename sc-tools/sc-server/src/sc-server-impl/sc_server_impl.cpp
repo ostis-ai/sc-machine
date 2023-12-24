@@ -29,33 +29,6 @@ ScServerImpl::ScServerImpl(
 
 void ScServerImpl::Initialize()
 {
-  auto const & onProcessAuthorized =
-      [this](ScAddr const & addr, ScAddr const & edgeAddr, ScAddr const & otherAddr) -> sc_bool {
-    {
-      ScServerLock guard(m_actionLock);
-      m_authorizedUserProcesses.insert(otherAddr);
-    }
-    m_actionCond.notify_one();
-
-    return SC_TRUE;
-  };
-
-  auto const & onProcessUnauthorized =
-      [this](ScAddr const & addr, ScAddr const & edgeAddr, ScAddr const & otherAddr) -> sc_bool {
-    {
-      ScServerLock guard(m_actionLock);
-      m_authorizedUserProcesses.erase(otherAddr);
-    }
-    m_actionCond.notify_one();
-
-    return SC_TRUE;
-  };
-
-  m_authorizeUserProcessSubscription =
-      new ScEventAddOutputEdge(*m_context, ScKeynodes::kAuthorizedUserProcess, onProcessAuthorized);
-  m_unauthorizeUserProcessSubscription =
-      new ScEventRemoveOutputEdge(*m_context, ScKeynodes::kAuthorizedUserProcess, onProcessUnauthorized);
-
   m_instance->set_open_handler(bind(&ScServerImpl::OnOpen, this, ::_1));
   m_instance->set_close_handler(bind(&ScServerImpl::OnClose, this, ::_1));
   m_instance->set_message_handler(bind(&ScServerImpl::OnMessage, this, ::_1, ::_2));
@@ -68,9 +41,6 @@ void ScServerImpl::AfterInitialize()
 
   m_actionsRun = SC_FALSE;
   m_actionCond.notify_one();
-
-  delete m_authorizeUserProcessSubscription;
-  delete m_unauthorizeUserProcessSubscription;
 }
 
 void ScServerImpl::EmitActions()
@@ -109,44 +79,38 @@ sc_bool ScServerImpl::IsWorkable()
   return m_actions->empty() == SC_FALSE;
 }
 
-sc_bool ScServerImpl::CheckIfUserProcessAuthorized(ScServerUserProcessId const & userProcessId)
+void ScServerImpl::OnOpen(ScServerSessionId const & sessionId)
 {
-  sc_bool isAuthorized;
+  auto session = m_instance->get_con_from_hdl(sessionId);
+  std::string const & resourceData = session->get_resource();
+
+  auto * action = new ScServerConnectAction(this, sessionId, resourceData);
   {
     ScServerLock guard(m_actionLock);
-    ScAddr const & sessionAddr = m_connections->at(userProcessId);
-    isAuthorized = m_authorizedUserProcesses.find(sessionAddr) != m_authorizedUserProcesses.cend();
-  }
-  m_actionCond.notify_one();
-
-  return isAuthorized;
-}
-
-void ScServerImpl::OnOpen(ScServerUserProcessId const & userProcessId)
-{
-  {
-    ScServerLock guard(m_actionLock);
-    m_actions->push(new ScServerConnectAction(this, userProcessId));
+    m_actions->push(action);
   }
   m_actionCond.notify_one();
 }
 
-void ScServerImpl::OnClose(ScServerUserProcessId const & userProcessId)
+void ScServerImpl::OnClose(ScServerSessionId const & sessionId)
 {
+  auto * action = new ScServerDisconnectAction(this, sessionId);
   {
     ScServerLock guard(m_actionLock);
-    m_actions->push(new ScServerDisconnectAction(this, userProcessId));
+    m_actions->push(action);
   }
   m_actionCond.notify_one();
 }
 
-void ScServerImpl::OnMessage(ScServerUserProcessId const & userProcessId, ScServerMessage const & msg)
+void ScServerImpl::OnMessage(ScServerSessionId const & sessionId, ScServerMessage const & msg)
 {
+  auto * action = new ScServerMessageAction(this, sessionId, msg);
+
   if (m_parallelActions == SC_FALSE)
   {
     {
       ScServerLock guard(m_actionLock);
-      m_actions->push(new ScServerMessageAction(this, userProcessId, msg));
+      m_actions->push(action);
     }
     m_actionCond.notify_one();
   }
@@ -154,17 +118,17 @@ void ScServerImpl::OnMessage(ScServerUserProcessId const & userProcessId, ScServ
   {
     sc_storage_start_new_process();
 
-    ScServerMessageAction(this, userProcessId, msg).Emit();
+    action->Emit();
 
     sc_storage_end_new_process();
   }
 }
 
-void ScServerImpl::OnEvent(ScServerUserProcessId const & userProcessId, std::string const & msg)
+void ScServerImpl::OnEvent(ScServerSessionId const & sessionId, std::string const & msg)
 {
   {
     ScServerLock guard(m_actionLock);
-    m_actions->push(new ScServerEventCallbackAction(this, userProcessId, msg));
+    m_actions->push(new ScServerEventCallbackAction(this, sessionId, msg));
   }
   m_actionCond.notify_one();
 }

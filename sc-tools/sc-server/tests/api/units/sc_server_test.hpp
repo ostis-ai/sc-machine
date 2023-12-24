@@ -22,7 +22,7 @@ protected:
   void SetUp() override
   {
     Initialize();
-    m_ctx = std::make_unique<ScMemoryContext>(sc_access_lvl_make_min, "sc_server_test");
+    m_ctx = std::make_unique<ScMemoryContext>("sc_server_test");
   }
 
   void TearDown() override

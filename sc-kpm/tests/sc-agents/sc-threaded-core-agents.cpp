@@ -167,7 +167,7 @@ sc_bool test_agent_has_result(sc_memory_context * context, sc_addr const questio
 
 TEST_F(ScMemoryTest, agents_parallel_work1)
 {
-  sc_memory_context * context = sc_memory_context_new(sc_access_lvl_make_min);
+  sc_memory_context * context = m_ctx->GetRealContext();
 
   sc_addr init_memory_generated_structure;
   SC_ADDR_MAKE_EMPTY(init_memory_generated_structure);
@@ -191,14 +191,12 @@ TEST_F(ScMemoryTest, agents_parallel_work1)
   EXPECT_TRUE(test_agent_finished(context, question_addr4));
   EXPECT_TRUE(test_agent_has_result(context, question_addr4));
 
-  sc_memory_context_free(context);
-
   sc_module_shutdown();
 }
 
 TEST_F(ScMemoryTest, agents_parallel_work2)
 {
-  sc_memory_context * context = sc_memory_context_new(sc_access_lvl_make_min);
+  sc_memory_context * context = m_ctx->GetRealContext();
 
   sc_addr init_memory_generated_structure;
   SC_ADDR_MAKE_EMPTY(init_memory_generated_structure);
@@ -230,8 +228,6 @@ TEST_F(ScMemoryTest, agents_parallel_work2)
   EXPECT_TRUE(test_agent_has_result(context, question_addr6));
   EXPECT_TRUE(test_agent_finished(context, question_addr7));
   EXPECT_TRUE(test_agent_has_result(context, question_addr7));
-
-  sc_memory_context_free(context);
 
   sc_module_shutdown();
 }

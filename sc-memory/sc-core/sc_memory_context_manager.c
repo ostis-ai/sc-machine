@@ -30,7 +30,7 @@ struct _sc_event_emit_params
 
 struct _sc_memory_context
 {
-  sc_addr process_addr;
+  sc_addr user_addr;
   sc_access_levels access_levels;
   sc_uint8 flags;
   sc_hash_table_list * pend_events;
@@ -39,7 +39,7 @@ struct _sc_memory_context
 
 #define SC_CONTEXT_FLAG_PENDING_EVENTS 0x1
 
-void _sc_memory_context_manager_initialize(sc_memory_context_manager ** manager)
+void _sc_memory_context_manager_initialize(sc_memory_context_manager ** manager, sc_addr my_self_addr)
 {
   sc_memory_info("Initialize context manager");
 
@@ -48,7 +48,7 @@ void _sc_memory_context_manager_initialize(sc_memory_context_manager ** manager)
   (*manager)->context_count = 0;
   sc_monitor_init(&(*manager)->context_monitor);
 
-  s_memory_default_ctx = sc_memory_context_new(sc_access_lvl_make_min);
+  s_memory_default_ctx = sc_memory_context_new(my_self_addr);
 }
 
 void _sc_memory_context_manager_shutdown(sc_memory_context_manager * manager)
@@ -77,7 +77,7 @@ void _sc_memory_context_manager_shutdown(sc_memory_context_manager * manager)
   sc_mem_free(manager);
 }
 
-sc_memory_context * _sc_memory_context_new_impl(sc_memory_context_manager * manager, sc_addr process_addr)
+sc_memory_context * _sc_memory_context_new_impl(sc_memory_context_manager * manager, sc_addr user_addr)
 {
   if (manager == null_ptr)
     return null_ptr;
@@ -90,10 +90,8 @@ sc_memory_context * _sc_memory_context_new_impl(sc_memory_context_manager * mana
     goto error;
 
   sc_monitor_init(&ctx->monitor);
-  ctx->process_addr = process_addr;
-
-  sc_hash_table_insert(
-      manager->context_hash_table, GINT_TO_POINTER(SC_ADDR_LOCAL_TO_INT(process_addr)), (sc_pointer)ctx);
+  ctx->user_addr = user_addr;
+  ctx->access_levels = 0;
 
   ++manager->context_count;
   goto result;
@@ -108,38 +106,6 @@ result:
   return ctx;
 }
 
-sc_memory_context * _sc_memory_context_get_impl(sc_memory_context_manager * manager, sc_addr process_addr)
-{
-  if (manager == null_ptr)
-    return null_ptr;
-
-  sc_memory_context * ctx = null_ptr;
-
-  sc_monitor_acquire_read(&manager->context_monitor);
-
-  if (manager->context_hash_table == null_ptr)
-    goto error;
-
-  ctx = sc_hash_table_get(manager->context_hash_table, GINT_TO_POINTER(SC_ADDR_LOCAL_TO_INT(process_addr)));
-
-error:
-  sc_monitor_release_read(&manager->context_monitor);
-
-  return ctx;
-}
-
-sc_memory_context * _sc_memory_context_resolve_impl(sc_memory_context_manager * manager, sc_addr process_addr)
-{
-  if (manager == null_ptr)
-    return null_ptr;
-
-  sc_memory_context * ctx = _sc_memory_context_get_impl(manager, process_addr);
-  if (ctx == null_ptr)
-    ctx = _sc_memory_context_new_impl(manager, process_addr);
-
-  return ctx;
-}
-
 void _sc_memory_context_free_impl(sc_memory_context_manager * manager, sc_memory_context * ctx)
 {
   if (ctx == null_ptr)
@@ -150,19 +116,13 @@ void _sc_memory_context_free_impl(sc_memory_context_manager * manager, sc_memory
   if (manager->context_hash_table == null_ptr)
     goto error;
 
-  sc_memory_context * context =
-      sc_hash_table_get(manager->context_hash_table, GINT_TO_POINTER(SC_ADDR_LOCAL_TO_INT(ctx->process_addr)));
-  if (context == null_ptr)
-    goto error;
-
   sc_monitor_destroy(&ctx->monitor);
-  sc_hash_table_remove(manager->context_hash_table, GINT_TO_POINTER(SC_ADDR_LOCAL_TO_INT(ctx->process_addr)));
+  sc_hash_table_remove(manager->context_hash_table, GINT_TO_POINTER(SC_ADDR_LOCAL_TO_INT(ctx->user_addr)));
   --manager->context_count;
 
+  sc_mem_free(ctx);
 error:
   sc_monitor_release_write(&manager->context_monitor);
-
-  sc_mem_free(ctx);
 }
 
 sc_bool _sc_memory_context_is_pending(sc_memory_context const * ctx)

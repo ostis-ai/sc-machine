@@ -6,6 +6,8 @@
 
 #include "sc_server.hpp"
 
+#include "sc-memory/sc_keynodes.hpp"
+
 ScServer::ScServer(std::string hostName, size_t port, sc_memory_params params)
   : m_hostName(std::move(hostName))
   , m_port(port)
@@ -13,7 +15,7 @@ ScServer::ScServer(std::string hostName, size_t port, sc_memory_params params)
 {
   m_memoryState = ScMemory::Initialize(params);
   if (m_memoryState)
-    m_context = new ScMemoryContext("sc-server");
+    m_context = new ScMemoryContext(ScKeynodes::kMySelf);
 
   m_instance = new ScServerCore();
   ResetLogger();
@@ -25,7 +27,7 @@ ScServer::ScServer(std::string hostName, size_t port, sc_memory_params params)
     LogMessage(ScServerErrorLevel::info, "\tPort: " + std::to_string(m_port));
   }
 
-  m_connections = new ScServerUserProcesses();
+  m_connections = new ScServerSessionContexts();
   LogMessage(ScServerErrorLevel::info, "Sc-server initialized");
 }
 
@@ -118,14 +120,26 @@ std::string ScServer::GetUri()
   return "ws://" + m_hostName + ":" + std::to_string(m_port);
 }
 
-ScServerUserProcesses * ScServer::GetConnections()
+void ScServer::AddSessionContext(ScServerSessionId const & sessionId, ScMemoryContext * sessionCtx)
 {
-  return m_connections;
+  m_connections->insert({sessionId, sessionCtx});
 }
 
-void ScServer::Send(ScServerUserProcessId const & userProcessId, std::string const & message, ScServerMessageType type)
+ScMemoryContext * ScServer::PopSessionContext(ScServerSessionId const & sessionId)
 {
-  m_instance->send(userProcessId, message, type);
+  ScMemoryContext * sessionCtx = m_connections->at(sessionId);
+  m_connections->erase(sessionId);
+  return sessionCtx;
+}
+
+ScMemoryContext * ScServer::GetSessionContext(ScServerSessionId const & sessionId)
+{
+  return m_connections->at(sessionId);
+}
+
+void ScServer::Send(ScServerSessionId const & sessionId, std::string const & message, ScServerMessageType type)
+{
+  m_instance->send(sessionId, message, type);
 }
 
 void ScServer::SetChannels(ScServerLogLevel channels)
@@ -165,11 +179,11 @@ void ScServer::LogMessage(ScServerLogLevel channel, std::string const & message)
 }
 
 void ScServer::CloseConnection(
-    ScServerUserProcessId const & userProcessId,
+    ScServerSessionId const & sessionId,
     ScServerCloseCode const code,
     std::string const & reason)
 {
-  m_instance->close(userProcessId, code, reason);
+  m_instance->close(sessionId, code, reason);
 }
 
 ScServer::~ScServer()

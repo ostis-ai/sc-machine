@@ -27,16 +27,16 @@ bool ScAgentInit(bool force /* = false */)
   return gInitializeResult;
 }
 
-ScAgent::ScAgent(char const * name, sc_uint8 accessLvl)
-  : m_memoryCtx(accessLvl, name)
+ScAgent::ScAgent(sc_char const * name)
+  : m_memoryCtx(name)
 {
 }
 
 ScAgent::~ScAgent() = default;
 
 // ---------------------------
-ScAgentAction::ScAgentAction(ScAddr const & cmdClassAddr, char const * name, sc_uint8 accessLvl)
-  : ScAgent(name, accessLvl)
+ScAgentAction::ScAgentAction(ScAddr const & cmdClassAddr, sc_char const * name)
+  : ScAgent(name)
   , m_cmdClassAddr(cmdClassAddr)
 
 {
@@ -57,9 +57,7 @@ sc_result ScAgentAction::Run(ScAddr const & listenAddr, ScAddr const & edgeAddr,
       m_memoryCtx.EraseElement(edgeAddr);
       ScAddr progressAddr =
           m_memoryCtx.CreateEdge(ScType::EdgeAccessConstPosTemp, ScKeynodes::kCommandProgressedAddr, cmdAddr);
-      assert(progressAddr.IsValid());
       ScAddr resultAddr = m_memoryCtx.CreateNode(ScType::NodeConstStruct);
-      assert(resultAddr.IsValid());
 
       sc_result const resCode = RunImpl(cmdAddr, resultAddr);
 

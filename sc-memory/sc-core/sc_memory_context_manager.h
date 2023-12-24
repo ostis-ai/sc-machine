@@ -18,7 +18,7 @@ typedef struct _sc_event_emit_params sc_event_emit_params;
 
 extern sc_memory_context * s_memory_default_ctx;
 
-void _sc_memory_context_manager_initialize(sc_memory_context_manager ** manager);
+void _sc_memory_context_manager_initialize(sc_memory_context_manager ** manager, sc_addr my_self_addr);
 
 void _sc_memory_context_manager_shutdown(sc_memory_context_manager * manager);
 
@@ -29,8 +29,6 @@ void _sc_memory_context_manager_shutdown(sc_memory_context_manager * manager);
  * @note Do not use one context in different threads.
  */
 sc_memory_context * _sc_memory_context_new_impl(sc_memory_context_manager * manager, sc_addr process_addr);
-
-sc_memory_context * _sc_memory_context_resolve_impl(sc_memory_context_manager * manager, sc_addr process_addr);
 
 /*! Function that destroys created memory context. You can use that function
  * just for contexts, that were created with @see sc_memory_context_new

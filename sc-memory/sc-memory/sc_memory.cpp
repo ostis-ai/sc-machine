@@ -36,6 +36,9 @@ void _logPrintHandler(
     sc_char const * message,
     sc_pointer user_data)
 {
+  SC_UNUSED(log_domain);
+  SC_UNUSED(user_data);
+
   if (isLogMuted)
     return;
 
@@ -68,18 +71,23 @@ void _logPrintHandler(
 
 // ------------------
 
-sc_memory_context * ScMemory::ms_globalContext = nullptr;
+ScMemoryContext * ScMemory::ms_globalContext = nullptr;
 
 bool ScMemory::Initialize(sc_memory_params const & params)
 {
   g_log_set_default_handler(_logPrintHandler, nullptr);
 
-  ms_globalContext = sc_memory_initialize(&params);
-  if (ms_globalContext == nullptr)
+  ms_globalContext = nullptr;
+  sc_memory_context * ctx = sc_memory_initialize(&params);
+  if (ctx == nullptr)
     return false;
 
+  ms_globalContext = new ScMemoryContext(ctx);
+
   ScKeynodes::Init(
-      false, params.init_memory_generated_upload ? params.init_memory_generated_structure : (sc_char *)null_ptr);
+      ms_globalContext,
+      false,
+      params.init_memory_generated_upload ? params.init_memory_generated_structure : (sc_char *)nullptr);
   ScAgentInit(true);
 
   utils::ScLog::SetUp(params.log_type, params.log_file, params.log_level);
@@ -100,6 +108,7 @@ bool ScMemory::Shutdown(bool saveState /* = true */)
 
   sc_bool result = sc_memory_shutdown(saveState);
 
+  delete ms_globalContext;
   ms_globalContext = nullptr;
 
   g_log_set_default_handler(g_log_default_handler, nullptr);
@@ -120,19 +129,18 @@ void ScMemory::LogUnmute()
 
 // ---------------
 
-ScMemoryContext::ScMemoryContext(sc_uint8 accessLevels, std::string name)
-  : m_context(sc_memory_context_new(accessLevels))
-  , m_name(std::move(name))
-{
-}
-
 ScMemoryContext::ScMemoryContext(std::string const & name)
-  : ScMemoryContext(sc_access_lvl_make_min, name)
+  : m_context(sc_memory_context_new_ext(name.c_str()))
 {
 }
 
 ScMemoryContext::ScMemoryContext(ScAddr const & processAddr)
-  : m_context(sc_memory_context_resolve(*processAddr))
+  : m_context(sc_memory_context_new(*processAddr))
+{
+}
+
+ScMemoryContext::ScMemoryContext(sc_memory_context * context)
+  : m_context(context)
 {
 }
 

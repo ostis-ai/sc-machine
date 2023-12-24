@@ -9,8 +9,6 @@
 #include "uiKeynodes.h"
 #include "uiDefines.h"
 
-#include <stdio.h>
-
 // -------------------- Events ----------------------
 sc_event * event_ui_start_answer_translation = 0;
 sc_event * event_ui_command_generate_instance = 0;

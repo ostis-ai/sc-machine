@@ -21,7 +21,7 @@
 class ScMemoryJsonEventsHandler : public ScMemoryJsonHandler
 {
 public:
-  explicit ScMemoryJsonEventsHandler(ScServer * server);
+  explicit ScMemoryJsonEventsHandler(ScServer * server, ScMemoryContext * processCtx);
 
   ~ScMemoryJsonEventsHandler() override;
 
@@ -29,17 +29,10 @@ private:
   ScMemoryContext * m_context;
   ScMemoryJsonEventsManager * m_manager;
 
-  std::map<std::string, ScEvent::Type> events = {
-      {"add_outgoing_edge", ScEvent::Type::AddOutputEdge},
-      {"add_ingoing_edge", ScEvent::Type::AddInputEdge},
-      {"remove_outgoing_edge", ScEvent::Type::RemoveOutputEdge},
-      {"remove_ingoing_edge", ScEvent::Type::RemoveInputEdge},
-      {"content_change", ScEvent::Type::ContentChanged},
-      {"delete_element", ScEvent::Type::EraseElement},
-  };
+  static std::map<std::string, ScEvent::Type> events;
 
   ScMemoryJsonPayload HandleRequestPayload(
-      ScServerUserProcessId const & userProcessId,
+      ScServerSessionId const & sessionId,
       std::string const & requestType,
       ScMemoryJsonPayload const & requestPayload,
       ScMemoryJsonPayload & errorsPayload,
@@ -47,12 +40,12 @@ private:
       sc_bool & isEvent) override;
 
   ScMemoryJsonPayload HandleCreate(
-      ScServerUserProcessId const & userProcessId,
+      ScServerSessionId const & sessionId,
       ScMemoryJsonPayload const & message,
       ScMemoryJsonPayload & errorsPayload);
 
   ScMemoryJsonPayload HandleDelete(
-      ScServerUserProcessId const & userProcessId,
+      ScServerSessionId const & sessionId,
       ScMemoryJsonPayload const & message,
       ScMemoryJsonPayload & errorsPayload);
 };

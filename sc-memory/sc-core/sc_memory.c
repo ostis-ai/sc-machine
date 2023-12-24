@@ -9,6 +9,7 @@
 
 #include "sc-store/sc_types.h"
 #include "sc-store/sc-base/sc_allocator.h"
+#include "sc-store/sc-container/sc-string/sc_string.h"
 
 #include "sc-store/sc_storage.h"
 #include "sc-store/sc_storage_private.h"
@@ -20,6 +21,8 @@
 
 struct _sc_memory
 {
+  sc_addr my_self_addr;
+  sc_char * my_self_system_idtf;
   sc_memory_context_manager * context_manager;
 };
 
@@ -41,6 +44,7 @@ sc_memory_context * sc_memory_initialize(sc_memory_params const * params)
 
   if (sc_storage_initialize(params) != SC_RESULT_OK)
   {
+    s_memory_default_ctx = null_ptr;
     sc_memory_error("Error while initialize sc-storage");
     goto error;
   }
@@ -49,13 +53,18 @@ sc_memory_context * sc_memory_initialize(sc_memory_params const * params)
 
   sc_storage_start_new_process();
 
-  _sc_memory_context_manager_initialize(&memory->context_manager);
+  memory->my_self_addr = sc_storage_node_new(null_ptr, sc_type_node | sc_type_const);
+  _sc_memory_context_manager_initialize(&memory->context_manager, memory->my_self_addr);
 
   if (sc_helper_init(s_memory_default_ctx) != SC_RESULT_OK)
   {
     sc_memory_error("Error while initialize sc-helper");
     goto error;
   }
+
+  memory->my_self_system_idtf = "my_self";
+  sc_helper_set_system_identifier(
+      s_memory_default_ctx, memory->my_self_addr, memory->my_self_system_idtf, sc_str_len(memory->my_self_system_idtf));
 
   sc_memory_info("Build configuration:");
   sc_message("\tResult structure upload: %s", params->init_memory_generated_upload ? "On" : "Off");
@@ -79,7 +88,6 @@ sc_memory_context * sc_memory_initialize(sc_memory_params const * params)
 
 error:
   sc_storage_end_new_process();
-  s_memory_default_ctx = null_ptr;
   sc_memory_info("Initialized with errors");
   return null_ptr;
 }
@@ -140,21 +148,21 @@ void sc_memory_shutdown_ext()
   sc_ext_shutdown();
 }
 
-sc_memory_context * sc_memory_context_new(sc_access_levels levels)
+sc_memory_context * sc_memory_context_new(sc_addr user_addr)
 {
   if (memory == null_ptr)
     return null_ptr;
 
-  sc_addr process_addr = sc_memory_node_new(s_memory_default_ctx, sc_type_node | sc_type_const);
-  return _sc_memory_context_new_impl(memory->context_manager, process_addr);
+  return _sc_memory_context_new_impl(memory->context_manager, user_addr);
 }
 
-sc_memory_context * sc_memory_context_resolve(sc_addr process_addr)
+sc_memory_context * sc_memory_context_new_ext(sc_char const * user_system_idtf)
 {
-  if (memory == null_ptr)
+  sc_addr user_addr;
+  if (sc_helper_resolve_system_identifier(s_memory_default_ctx, user_system_idtf, &user_addr) != SC_TRUE)
     return null_ptr;
 
-  return _sc_memory_context_resolve_impl(memory->context_manager, process_addr);
+  return sc_memory_context_new(user_addr);
 }
 
 void sc_memory_context_free(sc_memory_context * ctx)

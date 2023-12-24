@@ -6,8 +6,6 @@
 #include "Method.hpp"
 #include "Function.hpp"
 
-#include "../ReservedTypes.hpp"
-
 #include <boost/algorithm/string.hpp>
 
 BaseClass::BaseClass(Cursor const & cursor)
@@ -24,7 +22,7 @@ Class::Class(Cursor const & cursor, Namespace const & currentNamespace)
   : LanguageType(cursor, currentNamespace)
   , m_name(cursor.GetDisplayName())
   , m_qualifiedName(cursor.GetType().GetDisplayName())
-  , m_parser(0)
+  , m_parser(nullptr)
 {
   m_isScObject = false;
   m_displayName = cursor.GetSpelling();
@@ -96,7 +94,7 @@ Class::Class(Cursor const & cursor, Namespace const & currentNamespace)
   m_metaData.Check();
 }
 
-bool Class::ShouldGenerate(void) const
+bool Class::ShouldGenerate() const
 {
   return m_isScObject;
 }
@@ -145,7 +143,7 @@ void Class::GenerateCode(std::string const & fileId, std::stringstream & outCode
 #define _GENERATE_INIT_CODE(FuncName, Method, PreModifier, PostModifier) \
   outCode << PreModifier << " bool " << FuncName << "(ScAddr const & outputStructure = ScAddr::Empty) " \
           << PostModifier << " \\\n{ \\\n"; \
-  outCode << "    ScMemoryContext ctx(sc_access_lvl_make_min, \"" << m_name << "::" << FuncName << "\"); \\\n"; \
+  outCode << "    ScMemoryContext ctx(\"my_self\"); \\\n"; \
   outCode << "    ScSystemIdentifierQuintuple fiver; \\\n"; \
   outCode << "    bool result = true; \\\n"; \
   Method(outCode); \
@@ -223,9 +221,7 @@ void Class::GenerateDeclarations(std::stringstream & outCode) const
 
       outCode << "\\\nprotected: ";
       outCode << "\\\n\t" << constrCode;
-      outCode << m_displayName
-              << "(ScAddr const & cmdClassAddr, char const * name, sc_uint8 accessLvl) : Super(cmdClassAddr, name, "
-                 "accessLvl) {}";
+      outCode << m_displayName << "(ScAddr const & cmdClassAddr, char const * name) : Super(cmdClassAddr, name) {}";
     }
     else
     {
@@ -255,7 +251,7 @@ void Class::GenerateDeclarations(std::stringstream & outCode) const
       // default constructor for a handler
       outCode << "\\\nprotected: ";
       outCode << "\\\n	" << constrCode;
-      outCode << m_displayName << "(char const * name, sc_uint8 accessLvl) : Super(name, accessLvl) {}";
+      outCode << m_displayName << "(char const * name) : Super(name) {}";
       outCode << "\\\n	virtual sc_result Run(ScAddr const & listenAddr, ScAddr const & edgeAddr, ScAddr const & "
                  "otherAddr) override; ";
     }
@@ -277,8 +273,7 @@ void Class::GenerateDeclarations(std::stringstream & outCode) const
     outCode << "\\\n	static bool handler_emit"
             << "(ScAddr const & addr, ScAddr const & edgeAddr, ScAddr const & otherAddr)";
     outCode << "\\\n	{";
-    outCode << "\\\n		" << m_displayName << " Instance(" << instConstructParams << "\"" << m_displayName
-            << "\", sc_access_lvl_make_min);";
+    outCode << "\\\n		" << m_displayName << " Instance(" << instConstructParams << "\"" << m_displayName << "\");";
     outCode << "\\\n		"
             << "return Instance.Run(addr, edgeAddr, otherAddr) == SC_RESULT_OK;";
     outCode << "\\\n	}";
@@ -286,8 +281,7 @@ void Class::GenerateDeclarations(std::stringstream & outCode) const
     // register/unregister
     outCode << "\\\n	static void RegisterHandler()";
     outCode << "\\\n	{";
-    outCode << "\\\n		ms_context.reset(new ScMemoryContext(sc_access_lvl_make_min, \"handler_" << m_displayName
-            << "\"));";
+    outCode << "\\\n		ms_context.reset(new ScMemoryContext(\"my_self\"));";
     outCode << "\\\n		ms_event.reset(new ScEvent(*ms_context, " << listenAddr << ", " << eventType << ", &"
             << m_displayName << "::handler_emit"
             << "));";
@@ -323,12 +317,6 @@ void Class::GenerateDeclarations(std::stringstream & outCode) const
     outCode << "\\\npublic:";
     outCode << "\\\n	sc_result InitializeGenerated()";
     outCode << "\\\n	{";
-    outCode << "\\\n		if (!ScKeynodes::Init())";
-    outCode << "\\\n			return SC_RESULT_ERROR;";
-
-    outCode << "\\\n		if (!ScAgentInit(false))";
-    outCode << "\\\n			return SC_RESULT_ERROR;";
-
     outCode << "\\\n		return InitializeImpl();";
     outCode << "\\\n	}";
 
@@ -373,8 +361,6 @@ std::string Class::GetGeneratedBodyLine() const
   }
 
   EMIT_ERROR("Can't find " << Props::Body << " meta info");
-
-  return "";
 }
 
 std::string Class::GetQualifiedName() const
@@ -390,7 +376,7 @@ BaseClass const * Class::GetBaseClass(std::string const & name) const
       return cl.get();
   }
 
-  return 0;
+  return nullptr;
 }
 
 BaseClass const * Class::GetBaseAgentClass() const
@@ -401,5 +387,5 @@ BaseClass const * Class::GetBaseAgentClass() const
       return cl.get();
   }
 
-  return 0;
+  return nullptr;
 }

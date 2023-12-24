@@ -105,9 +105,9 @@ _SC_EXTERN void sc_memory_shutdown_ext();
  * @note Do not use one context in different threads.
  * @see sc_memory_context_free
  */
-_SC_EXTERN sc_memory_context * sc_memory_context_new(sc_uint8 levels);
+_SC_EXTERN sc_memory_context * sc_memory_context_new(sc_addr process_addr);
 
-_SC_EXTERN sc_memory_context * sc_memory_context_resolve(sc_addr process_addr);
+_SC_EXTERN sc_memory_context * sc_memory_context_new_ext(sc_char const * process_system_idtf);
 
 /*!
  * @brief Destroys the created memory context.

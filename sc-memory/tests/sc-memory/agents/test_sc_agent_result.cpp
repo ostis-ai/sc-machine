@@ -26,7 +26,7 @@ TEST_F(ScAgentTest, ATestResultOk)
 
     SC_AGENT_REGISTER(ATestResultOk);
 
-    ScMemoryContext ctx(sc_access_lvl_make_min, "ATestResultOk");
+    ScMemoryContext ctx("ATestResultOk");
 
     ScAddr const cmdAddr = ctx.CreateNode(ScType::NodeConst);
     EXPECT_TRUE(cmdAddr.IsValid());
@@ -39,7 +39,7 @@ TEST_F(ScAgentTest, ATestResultOk)
         5000,
         [&cmdAddr]()
         {
-          ScMemoryContext ctxLocal(sc_access_lvl_make_min, "ATestResultOk_init");
+          ScMemoryContext ctxLocal("ATestResultOk_init");
           ScAgentAction::InitiateCommand(ctxLocal, cmdAddr);
         }));
 

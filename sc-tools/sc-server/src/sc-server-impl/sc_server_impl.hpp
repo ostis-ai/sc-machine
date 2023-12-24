@@ -28,8 +28,6 @@ public:
 
   sc_bool IsWorkable() override;
 
-  sc_bool CheckIfUserProcessAuthorized(ScServerUserProcessId const & userProcessId) override;
-
   ~ScServerImpl() override;
 
 protected:
@@ -41,19 +39,15 @@ protected:
   std::atomic<sc_bool> m_actionsRun;
   ScServerActions * m_actions;
 
-  ScEvent * m_authorizeUserProcessSubscription;
-  ScEvent * m_unauthorizeUserProcessSubscription;
-  std::set<ScAddr, ScAddrLessFunc> m_authorizedUserProcesses;
-
   void Initialize() override;
 
   void AfterInitialize() override;
 
-  void OnOpen(ScServerUserProcessId const & userProcessId) override;
+  void OnOpen(ScServerSessionId const & sessionId) override;
 
-  void OnClose(ScServerUserProcessId const & userProcessId) override;
+  void OnClose(ScServerSessionId const & sessionId) override;
 
-  void OnMessage(ScServerUserProcessId const & userProcessId, ScServerMessage const & msg) override;
+  void OnMessage(ScServerSessionId const & sessionId, ScServerMessage const & msg) override;
 
-  void OnEvent(ScServerUserProcessId const & userProcessId, std::string const & msg) override;
+  void OnEvent(ScServerSessionId const & sessionId, std::string const & msg) override;
 };

@@ -25,7 +25,7 @@ class ScAgent : public ScObject
   SC_GENERATED_BODY()
 
 public:
-  _SC_EXTERN explicit ScAgent(char const * name, sc_uint8 accessLvl = sc_access_lvl_make_max);
+  _SC_EXTERN explicit ScAgent(sc_char const * name);
   _SC_EXTERN virtual ~ScAgent();
 
 protected:
@@ -51,10 +51,7 @@ public:
     Finished
   };
 
-  _SC_EXTERN explicit ScAgentAction(
-      ScAddr const & cmdClassAddr,
-      char const * name,
-      sc_uint8 accessLvl = sc_access_lvl_make_max);
+  _SC_EXTERN explicit ScAgentAction(ScAddr const & cmdClassAddr, sc_char const * name);
   _SC_EXTERN virtual ~ScAgentAction();
 
 protected:

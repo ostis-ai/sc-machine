@@ -10,7 +10,7 @@ protected:
   virtual void SetUp()
   {
     ScMemoryTest::Initialize();
-    m_ctx = std::make_unique<ScMemoryContext>(sc_access_lvl_make_min, "test");
+    m_ctx = std::make_unique<ScMemoryContext>("test");
   }
 
   virtual void TearDown()
@@ -59,7 +59,7 @@ class ScMemoryTestWithInitMemoryGeneratedStructure : public ScMemoryTest
   virtual void SetUp()
   {
     ScMemoryTestWithInitMemoryGeneratedStructure::Initialize(DEFAULT_MAX_EVENTS_AND_AGENTS_THREADS, "result_structure");
-    m_ctx = std::make_unique<ScMemoryContext>(sc_access_lvl_make_min, "test");
+    m_ctx = std::make_unique<ScMemoryContext>("test");
   }
 };
 
@@ -68,6 +68,6 @@ class ScSingleThreadedMemoryTest : public ScMemoryTest
   virtual void SetUp()
   {
     ScSingleThreadedMemoryTest::Initialize(DEFAULT_MAX_EVENTS_AND_AGENTS_THREADS);
-    m_ctx = std::make_unique<ScMemoryContext>(sc_access_lvl_make_min, "test");
+    m_ctx = std::make_unique<ScMemoryContext>("test");
   }
 };
