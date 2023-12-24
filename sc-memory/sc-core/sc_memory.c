@@ -66,6 +66,8 @@ sc_memory_context * sc_memory_initialize(sc_memory_params const * params)
   sc_helper_set_system_identifier(
       s_memory_default_ctx, memory->my_self_addr, memory->my_self_system_idtf, sc_str_len(memory->my_self_system_idtf));
 
+  _sc_memory_context_manager_register_user_events(memory->context_manager);
+
   sc_memory_info("Build configuration:");
   sc_message("\tResult structure upload: %s", params->init_memory_generated_upload ? "On" : "Off");
   sc_message("\tInit memory generated structure: %s", params->init_memory_generated_structure);
@@ -153,16 +155,15 @@ sc_memory_context * sc_memory_context_new(sc_addr user_addr)
   if (memory == null_ptr)
     return null_ptr;
 
-  return _sc_memory_context_new_impl(memory->context_manager, user_addr);
+  return _sc_memory_context_resolve_impl(memory->context_manager, user_addr);
 }
 
 sc_memory_context * sc_memory_context_new_ext(sc_char const * user_system_idtf)
 {
-  sc_addr user_addr;
-  if (sc_helper_resolve_system_identifier(s_memory_default_ctx, user_system_idtf, &user_addr) != SC_TRUE)
+  if (memory == null_ptr)
     return null_ptr;
 
-  return sc_memory_context_new(user_addr);
+  return _sc_memory_context_resolve_impl_ext(memory->context_manager, user_system_idtf);
 }
 
 void sc_memory_context_free(sc_memory_context * ctx)

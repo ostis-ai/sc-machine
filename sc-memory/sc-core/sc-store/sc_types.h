@@ -13,6 +13,8 @@
 #    define null_ptr ((void *)0)
 #  endif
 
+#  define sc_unused(object) (void)object
+
 // base types
 typedef signed char sc_int8;
 typedef unsigned char sc_uint8;

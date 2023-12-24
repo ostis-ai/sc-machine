@@ -11,12 +11,16 @@
 #include "sc_memory.h"
 #include "sc_memory_private.h"
 #include "sc-store/sc-event/sc_event_private.h"
+#include "sc_helper.h"
 
 struct _sc_memory_context_manager
 {
   sc_hash_table * context_hash_table;
   sc_uint32 context_count;
   sc_monitor context_monitor;
+  sc_addr concept_authorized_user_addr;
+  sc_event * on_authorized_user_subscription;
+  sc_event * on_unauthorized_user_subscription;
 };
 
 struct _sc_event_emit_params
@@ -31,6 +35,7 @@ struct _sc_event_emit_params
 struct _sc_memory_context
 {
   sc_addr user_addr;
+  sc_uint32 ref_count;
   sc_access_levels access_levels;
   sc_uint8 flags;
   sc_hash_table_list * pend_events;
@@ -38,6 +43,40 @@ struct _sc_memory_context
 };
 
 #define SC_CONTEXT_FLAG_PENDING_EVENTS 0x1
+
+#define SC_CONTEXT_ACCESS_LEVEL_AUTHORIZED 0x1
+
+sc_result _sc_memory_context_manager_on_authorized_user(sc_event const * event, sc_addr arc_addr, sc_addr other_addr)
+{
+  sc_unused(&arc_addr);
+
+  sc_memory_context_manager * manager = sc_event_get_data(event);
+  sc_memory_context * ctx = _sc_memory_context_get_impl(manager, other_addr);
+  if (ctx == null_ptr)
+    return SC_RESULT_NO;
+
+  sc_monitor_acquire_write(&ctx->monitor);
+  ctx->access_levels |= SC_CONTEXT_ACCESS_LEVEL_AUTHORIZED;
+  sc_monitor_release_write(&ctx->monitor);
+
+  return SC_RESULT_OK;
+}
+
+sc_result _sc_memory_context_manager_on_unauthorized_user(sc_event const * event, sc_addr arc_addr, sc_addr other_addr)
+{
+  sc_unused(&arc_addr);
+
+  sc_memory_context_manager * manager = sc_event_get_data(event);
+  sc_memory_context * ctx = _sc_memory_context_get_impl(manager, other_addr);
+  if (ctx == null_ptr)
+    return SC_RESULT_NO;
+
+  sc_monitor_acquire_write(&ctx->monitor);
+  ctx->access_levels &= ~SC_CONTEXT_ACCESS_LEVEL_AUTHORIZED;
+  sc_monitor_release_write(&ctx->monitor);
+
+  return SC_RESULT_OK;
+}
 
 void _sc_memory_context_manager_initialize(sc_memory_context_manager ** manager, sc_addr my_self_addr)
 {
@@ -49,6 +88,26 @@ void _sc_memory_context_manager_initialize(sc_memory_context_manager ** manager,
   sc_monitor_init(&(*manager)->context_monitor);
 
   s_memory_default_ctx = sc_memory_context_new(my_self_addr);
+}
+
+void _sc_memory_context_manager_register_user_events(sc_memory_context_manager * manager)
+{
+  sc_helper_resolve_system_identifier(
+      s_memory_default_ctx, "concept_authorized_user", &manager->concept_authorized_user_addr);
+  manager->on_authorized_user_subscription = sc_event_new_ex(
+      s_memory_default_ctx,
+      manager->concept_authorized_user_addr,
+      SC_EVENT_ADD_OUTPUT_ARC,
+      manager,
+      _sc_memory_context_manager_on_authorized_user,
+      null_ptr);
+  manager->on_unauthorized_user_subscription = sc_event_new_ex(
+      s_memory_default_ctx,
+      manager->concept_authorized_user_addr,
+      SC_EVENT_REMOVE_OUTPUT_ARC,
+      manager,
+      _sc_memory_context_manager_on_unauthorized_user,
+      null_ptr);
 }
 
 void _sc_memory_context_manager_shutdown(sc_memory_context_manager * manager)
@@ -74,6 +133,9 @@ void _sc_memory_context_manager_shutdown(sc_memory_context_manager * manager)
 
   sc_monitor_destroy(&manager->context_monitor);
 
+  sc_event_destroy(manager->on_authorized_user_subscription);
+  sc_event_destroy(manager->on_unauthorized_user_subscription);
+
   sc_mem_free(manager);
 }
 
@@ -91,6 +153,7 @@ sc_memory_context * _sc_memory_context_new_impl(sc_memory_context_manager * mana
 
   sc_monitor_init(&ctx->monitor);
   ctx->user_addr = user_addr;
+  ctx->ref_count = 0;
   ctx->access_levels = 0;
 
   ++manager->context_count;
@@ -106,6 +169,61 @@ result:
   return ctx;
 }
 
+sc_memory_context * _sc_memory_context_get_impl(sc_memory_context_manager * manager, sc_addr user_addr)
+{
+  if (manager == null_ptr)
+    return null_ptr;
+
+  sc_memory_context * ctx = null_ptr;
+
+  sc_monitor_acquire_read(&manager->context_monitor);
+
+  if (manager->context_hash_table == null_ptr)
+    goto error;
+
+  ctx = sc_hash_table_get(manager->context_hash_table, GINT_TO_POINTER(SC_ADDR_LOCAL_TO_INT(user_addr)));
+
+error:
+  sc_monitor_release_read(&manager->context_monitor);
+
+  return ctx;
+}
+
+sc_memory_context * _sc_memory_context_resolve_impl(sc_memory_context_manager * manager, sc_addr user_addr)
+{
+  if (manager == null_ptr)
+    return null_ptr;
+
+  sc_memory_context * ctx = _sc_memory_context_get_impl(manager, user_addr);
+  if (ctx == null_ptr)
+    ctx = _sc_memory_context_new_impl(manager, user_addr);
+
+  if (ctx == null_ptr)
+    return ctx;
+
+  sc_monitor_acquire_write(&ctx->monitor);
+  ++ctx->ref_count;
+  sc_monitor_release_write(&ctx->monitor);
+
+  return ctx;
+}
+
+sc_memory_context * _sc_memory_context_resolve_impl_ext(
+    sc_memory_context_manager * manager,
+    sc_char const * user_system_idtf)
+{
+  sc_addr user_addr;
+
+  sc_monitor_acquire_write(&manager->context_monitor);
+  sc_bool result = sc_helper_resolve_system_identifier(s_memory_default_ctx, user_system_idtf, &user_addr);
+  sc_monitor_release_write(&manager->context_monitor);
+
+  if (result != SC_TRUE)
+    return null_ptr;
+
+  return _sc_memory_context_resolve_impl(manager, user_addr);
+}
+
 void _sc_memory_context_free_impl(sc_memory_context_manager * manager, sc_memory_context * ctx)
 {
   if (ctx == null_ptr)
@@ -114,6 +232,13 @@ void _sc_memory_context_free_impl(sc_memory_context_manager * manager, sc_memory
   sc_monitor_acquire_write(&manager->context_monitor);
 
   if (manager->context_hash_table == null_ptr)
+    goto error;
+
+  sc_monitor_acquire_write(&ctx->monitor);
+  sc_uint32 ref_count = --ctx->ref_count;
+  sc_monitor_release_write(&ctx->monitor);
+
+  if (ref_count > 0)
     goto error;
 
   sc_monitor_destroy(&ctx->monitor);
@@ -186,7 +311,7 @@ void _sc_memory_context_pending_begin(sc_memory_context * ctx)
 void _sc_memory_context_pending_end(sc_memory_context * ctx)
 {
   sc_monitor_acquire_write(&ctx->monitor);
-  ctx->flags = ctx->flags & (~SC_CONTEXT_FLAG_PENDING_EVENTS);
+  ctx->flags &= ~SC_CONTEXT_FLAG_PENDING_EVENTS;
   _sc_memory_context_emit_events(ctx);
   sc_monitor_release_write(&ctx->monitor);
 }

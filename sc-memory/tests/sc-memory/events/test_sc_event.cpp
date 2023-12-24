@@ -386,6 +386,7 @@ TEST_F(ScEventTest, pend_events)
         }
 
         ScMemoryContext localCtx("test_process");
+        EXPECT_TRUE(localCtx.IsValid());
 
         ScTemplateSearchResult res;
         EXPECT_TRUE(localCtx.HelperSearchTemplate(*checkTempl, res));

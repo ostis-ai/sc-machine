@@ -128,12 +128,6 @@ public:
   //! End events pending mode
   _SC_EXTERN void EndEventsPending();
 
-  SC_DEPRECATED(0.10.0, "It will be removed in 0.11.0.")
-  _SC_EXTERN std::string const & GetName() const
-  {
-    return m_name;
-  }
-
   /*!
    * @brief Checks if the sc-memory context is valid.
    *

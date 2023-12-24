@@ -20,6 +20,8 @@ extern sc_memory_context * s_memory_default_ctx;
 
 void _sc_memory_context_manager_initialize(sc_memory_context_manager ** manager, sc_addr my_self_addr);
 
+void _sc_memory_context_manager_register_user_events(sc_memory_context_manager * manager);
+
 void _sc_memory_context_manager_shutdown(sc_memory_context_manager * manager);
 
 /*! Function that create memory context with specified params
@@ -29,6 +31,14 @@ void _sc_memory_context_manager_shutdown(sc_memory_context_manager * manager);
  * @note Do not use one context in different threads.
  */
 sc_memory_context * _sc_memory_context_new_impl(sc_memory_context_manager * manager, sc_addr process_addr);
+
+sc_memory_context * _sc_memory_context_get_impl(sc_memory_context_manager * manager, sc_addr user_addr);
+
+sc_memory_context * _sc_memory_context_resolve_impl(sc_memory_context_manager * manager, sc_addr user_addr);
+
+sc_memory_context * _sc_memory_context_resolve_impl_ext(
+    sc_memory_context_manager * manager,
+    sc_char const * user_system_idtf);
 
 /*! Function that destroys created memory context. You can use that function
  * just for contexts, that were created with @see sc_memory_context_new
