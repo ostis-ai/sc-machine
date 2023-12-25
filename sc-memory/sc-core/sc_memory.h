@@ -60,10 +60,8 @@ _SC_EXTERN sc_memory_context * sc_memory_initialize(sc_memory_params const * par
  * @note The caller is responsible for handling any errors and ensuring proper shutdown
  *       of the initialized extensions.
  */
-_SC_EXTERN sc_result sc_memory_init_ext(
-    sc_char const * ext_path,
-    sc_char const ** enabled_list,
-    sc_addr const init_memory_generated_structure);
+_SC_EXTERN sc_result
+sc_memory_init_ext(sc_char const * ext_path, sc_char const ** enabled_list, sc_addr init_memory_generated_structure);
 
 /*!
  * @brief Shuts down the sc-memory subsystem.
@@ -91,6 +89,8 @@ _SC_EXTERN sc_result sc_memory_shutdown(sc_bool save_state);
  *       before shutting down the sc-memory subsystem.
  */
 _SC_EXTERN void sc_memory_shutdown_ext();
+
+void * sc_memory_get_context_manager();
 
 /*!
  * @brief Creates a new memory context with specified access levels.

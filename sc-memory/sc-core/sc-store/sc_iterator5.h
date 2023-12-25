@@ -177,6 +177,8 @@ _SC_EXTERN sc_iterator5 * sc_iterator5_a_a_a_a_f_new(
  */
 _SC_EXTERN sc_bool sc_iterator5_next(sc_iterator5 * it);
 
+_SC_EXTERN sc_bool sc_iterator5_next_ext(sc_iterator5 * it, sc_result * result);
+
 /*! Get iterator value
  * @param it Pointer to iterator for getting value
  * @param vid Value id (can't be more that 5 for sc-iterator5)

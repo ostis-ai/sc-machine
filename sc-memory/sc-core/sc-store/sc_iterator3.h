@@ -138,6 +138,8 @@ _SC_EXTERN void sc_iterator3_free(sc_iterator3 * it);
  */
 _SC_EXTERN sc_bool sc_iterator3_next(sc_iterator3 * it);
 
+_SC_EXTERN sc_bool sc_iterator3_next_ext(sc_iterator3 * it, sc_result * result);
+
 /*! Get iterator value
  * @param it Pointer to iterator for getting value
  * @param vid Value id (can't be more that 3 for sc-iterator3)

@@ -20,7 +20,7 @@
  */
 typedef struct
 {
-  sc_event * event;    ///< Pointer to the sc-event associated with the worker.
+  sc_event * event;  ///< Pointer to the sc-event associated with the worker.
   sc_addr user_addr;
   sc_addr edge_addr;   ///< sc_addr representing the edge associated with the event.
   sc_addr other_addr;  ///< sc_addr representing the other element associated with the event.

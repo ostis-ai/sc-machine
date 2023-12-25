@@ -97,7 +97,7 @@ error:
 sc_result sc_memory_init_ext(
     sc_char const * ext_path,
     sc_char const ** enabled_list,
-    sc_addr const init_memory_generated_structure)
+    sc_addr init_memory_generated_structure)
 {
   sc_memory_info("Initialize extensions");
 
@@ -150,6 +150,11 @@ void sc_memory_shutdown_ext()
   sc_ext_shutdown();
 }
 
+void * sc_memory_get_context_manager()
+{
+  return memory->context_manager;
+}
+
 sc_memory_context * sc_memory_context_new(sc_addr user_addr)
 {
   if (memory == null_ptr)
@@ -191,9 +196,6 @@ sc_bool sc_memory_is_initialized()
 
 sc_bool sc_memory_is_element(sc_memory_context const * ctx, sc_addr addr)
 {
-  if (_sc_memory_context_is_authorized(memory->context_manager, ctx) == SC_FALSE)
-    return SC_RESULT_ERROR_SC_MEMORY_CONTEXT_IS_NOT_AUTHORIZED;
-
   return sc_storage_is_element(ctx, addr);
 }
 
