@@ -58,6 +58,7 @@ void sc_event_emission_manager_shutdown(sc_event_emission_manager * manager);
 void _sc_event_emission_manager_add(
     sc_event_emission_manager * manager,
     sc_event * event,
+    sc_addr user_addr,
     sc_addr edge,
     sc_addr other_el);
 

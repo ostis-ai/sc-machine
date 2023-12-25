@@ -21,6 +21,7 @@
 typedef struct
 {
   sc_event * event;    ///< Pointer to the sc-event associated with the worker.
+  sc_addr user_addr;
   sc_addr edge_addr;   ///< sc_addr representing the edge associated with the event.
   sc_addr other_addr;  ///< sc_addr representing the other element associated with the event.
 } sc_event_emission_pool_worker_data;
@@ -33,11 +34,13 @@ typedef struct
  */
 sc_event_emission_pool_worker_data * _sc_event_emission_pool_worker_data_new(
     sc_event * event,
+    sc_addr user_addr,
     sc_addr edge_addr,
     sc_addr other_addr)
 {
   sc_event_emission_pool_worker_data * data = sc_mem_new(sc_event_emission_pool_worker_data, 1);
   data->event = event;
+  data->user_addr = user_addr;
   data->edge_addr = edge_addr;
   data->other_addr = other_addr;
 
@@ -79,6 +82,7 @@ void _sc_event_emission_pool_worker(sc_pointer data, sc_pointer user_data)
 
   sc_event_callback callback = event->callback;
   sc_event_callback_ext callback_ext = event->callback_ext;
+  sc_event_callback_ext2 callback_ext2 = event->callback_ext2;
 
   sc_storage_start_new_process();
 
@@ -86,6 +90,8 @@ void _sc_event_emission_pool_worker(sc_pointer data, sc_pointer user_data)
     callback(event, work_data->edge_addr);
   else if (callback_ext != null_ptr)
     callback_ext(event, work_data->edge_addr, work_data->other_addr);
+  else if (callback_ext2 != null_ptr)
+    callback_ext2(event, work_data->user_addr, work_data->edge_addr, work_data->other_addr);
 
   sc_storage_end_new_process();
 
@@ -176,13 +182,14 @@ void sc_event_emission_manager_shutdown(sc_event_emission_manager * manager)
 void _sc_event_emission_manager_add(
     sc_event_emission_manager * manager,
     sc_event * event,
+    sc_addr user_addr,
     sc_addr edge,
     sc_addr other_el)
 {
   if (manager == null_ptr)
     return;
 
-  sc_event_emission_pool_worker_data * data = _sc_event_emission_pool_worker_data_new(event, edge, other_el);
+  sc_event_emission_pool_worker_data * data = _sc_event_emission_pool_worker_data_new(event, user_addr, edge, other_el);
 
   sc_monitor_acquire_write(&manager->pool_monitor);
   g_thread_pool_push(manager->thread_pool, data, null_ptr);

@@ -19,6 +19,7 @@ class ScEvent
 {
 public:
   using DelegateFunc = std::function<bool(ScAddr const &, ScAddr const &, ScAddr const &)>;
+  using DelegateFuncExt = std::function<bool(ScAddr const &, ScAddr const &, ScAddr const &, ScAddr const &)>;
 
   enum class Type : uint8_t
   {
@@ -35,6 +36,11 @@ public:
       ScAddr const & addr,
       Type eventType,
       DelegateFunc func = DelegateFunc());
+  explicit _SC_EXTERN ScEvent(
+      class ScMemoryContext const & ctx,
+      ScAddr const & addr,
+      Type eventType,
+      DelegateFuncExt func = DelegateFuncExt());
   virtual _SC_EXTERN ~ScEvent();
 
   // Don't allow copying of events
@@ -50,12 +56,14 @@ public:
   void RemoveDelegate();
 
 protected:
-  static sc_result Handler(sc_event const * evt, sc_addr edge, sc_addr other_el);
-  static sc_result HandlerDelete(sc_event const * evt);
+  static sc_result Handler(sc_event const * event, sc_addr edge_addr, sc_addr other_addr);
+  static sc_result Handler(sc_event const * event, sc_addr user_addr, sc_addr edge_addr, sc_addr other_addr);
+  static sc_result HandlerDelete(sc_event const * event);
 
 private:
   sc_event * m_event;
   DelegateFunc m_delegate;
+  DelegateFuncExt m_delegateExt;
   utils::ScLock m_lock;
 };
 

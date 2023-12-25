@@ -6,7 +6,6 @@
 
 #include "sc_agent.hpp"
 
-#include "../sc_debug.hpp"
 #include "../sc_wait.hpp"
 
 namespace
@@ -27,16 +26,16 @@ bool ScAgentInit(bool force /* = false */)
   return gInitializeResult;
 }
 
-ScAgent::ScAgent(sc_char const * name)
-  : m_memoryCtx(name)
+ScAgent::ScAgent(ScAddr const & userAddr)
+  : m_memoryCtx(userAddr)
 {
 }
 
 ScAgent::~ScAgent() = default;
 
 // ---------------------------
-ScAgentAction::ScAgentAction(ScAddr const & cmdClassAddr, sc_char const * name)
-  : ScAgent(name)
+ScAgentAction::ScAgentAction(ScAddr const & cmdClassAddr, ScAddr const & userAddr)
+  : ScAgent(userAddr)
   , m_cmdClassAddr(cmdClassAddr)
 
 {
@@ -216,7 +215,7 @@ ScAgentAction::State ScAgentAction::GetCommandState(ScMemoryContext & ctx, ScAdd
   return State::Unknown;
 }
 
-bool ScAgentAction::IsCommandFishined(ScMemoryContext & ctx, ScAddr const & cmdAddr)
+bool ScAgentAction::IsCommandFinished(ScMemoryContext & ctx, ScAddr const & cmdAddr)
 {
   return GetCommandState(ctx, cmdAddr) == State::Finished;
 }

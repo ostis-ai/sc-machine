@@ -143,7 +143,15 @@ void Class::GenerateCode(std::string const & fileId, std::stringstream & outCode
 #define _GENERATE_INIT_CODE(FuncName, Method, PreModifier, PostModifier) \
   outCode << PreModifier << " bool " << FuncName << "(ScAddr const & outputStructure = ScAddr::Empty) " \
           << PostModifier << " \\\n{ \\\n"; \
-  outCode << "    ScMemoryContext ctx(\"my_self\"); \\\n"; \
+  outCode << "    ScMemoryContext context(\"my_self\"); \\\n"; \
+  outCode << "    ScSystemIdentifierQuintuple fiver; \\\n"; \
+  outCode << "    bool result = true; \\\n"; \
+  Method(outCode); \
+  outCode << "    return result; \\\n"; \
+  outCode << "}\\\n"; \
+  outCode << PreModifier << " bool " << FuncName \
+          << "(ScMemoryContext & context, ScAddr const & outputStructure = ScAddr::Empty) " << PostModifier \
+          << " \\\n{ \\\n"; \
   outCode << "    ScSystemIdentifierQuintuple fiver; \\\n"; \
   outCode << "    bool result = true; \\\n"; \
   Method(outCode); \
@@ -221,7 +229,8 @@ void Class::GenerateDeclarations(std::stringstream & outCode) const
 
       outCode << "\\\nprotected: ";
       outCode << "\\\n\t" << constrCode;
-      outCode << m_displayName << "(ScAddr const & cmdClassAddr, char const * name) : Super(cmdClassAddr, name) {}";
+      outCode << m_displayName
+              << "(ScAddr const & cmdClassAddr, ScAddr const & userAddr) : Super(cmdClassAddr, userAddr) {}";
     }
     else
     {
@@ -251,14 +260,13 @@ void Class::GenerateDeclarations(std::stringstream & outCode) const
       // default constructor for a handler
       outCode << "\\\nprotected: ";
       outCode << "\\\n	" << constrCode;
-      outCode << m_displayName << "(char const * name) : Super(name) {}";
+      outCode << m_displayName << "(ScAddr const & userAddr) : Super(userAddr) {}";
       outCode << "\\\n	virtual sc_result Run(ScAddr const & listenAddr, ScAddr const & edgeAddr, ScAddr const & "
                  "otherAddr) override; ";
     }
 
     outCode << "\\\nprivate:";
     outCode << "\\\n	static std::unique_ptr<ScEvent> ms_event;";
-    outCode << "\\\n    static std::unique_ptr<ScMemoryContext> ms_context;";
     if (isActionAgent)
     {
       outCode << "\\\n	static ScAddr ms_cmdClass_" << m_displayName << ";";
@@ -271,9 +279,9 @@ void Class::GenerateDeclarations(std::stringstream & outCode) const
       outCode << "\\\n  static ScAddr const & GetCommandClassAddr() { return ms_cmdClass_" << m_displayName << "; }";
     }
     outCode << "\\\n	static bool handler_emit"
-            << "(ScAddr const & addr, ScAddr const & edgeAddr, ScAddr const & otherAddr)";
+            << "(ScAddr const & userAddr, ScAddr const & addr, ScAddr const & edgeAddr, ScAddr const & otherAddr)";
     outCode << "\\\n	{";
-    outCode << "\\\n		" << m_displayName << " Instance(" << instConstructParams << "\"" << m_displayName << "\");";
+    outCode << "\\\n		" << m_displayName << " Instance(" << instConstructParams << "userAddr);";
     outCode << "\\\n		"
             << "return Instance.Run(addr, edgeAddr, otherAddr) == SC_RESULT_OK;";
     outCode << "\\\n	}";
@@ -281,8 +289,8 @@ void Class::GenerateDeclarations(std::stringstream & outCode) const
     // register/unregister
     outCode << "\\\n	static void RegisterHandler()";
     outCode << "\\\n	{";
-    outCode << "\\\n		ms_context.reset(new ScMemoryContext(\"my_self\"));";
-    outCode << "\\\n		ms_event.reset(new ScEvent(*ms_context, " << listenAddr << ", " << eventType << ", &"
+    outCode << "\\\n		ScMemoryContext ms_context = ScMemoryContext(\"my_self\");";
+    outCode << "\\\n		ms_event.reset(new ScEvent(ms_context, " << listenAddr << ", " << eventType << ", &"
             << m_displayName << "::handler_emit"
             << "));";
     outCode << "\\\n        if (ms_event.get())";
@@ -309,7 +317,6 @@ void Class::GenerateDeclarations(std::stringstream & outCode) const
     outCode << "\\\n	static void UnregisterHandler()";
     outCode << "\\\n	{";
     outCode << "\\\n		ms_event.reset();";
-    outCode << "\\\n		ms_context.reset();";
     outCode << "\\\n	}";
   }
   else if (IsModule())  // overrides for modules
@@ -341,7 +348,6 @@ void Class::GenerateImpl(std::stringstream & outCode) const
   if (IsAgent())
   {
     outCode << "\\\nstd::unique_ptr<ScEvent> " << m_displayName << "::ms_event;";
-    outCode << "\\\nstd::unique_ptr<ScMemoryContext> " << m_displayName << "::ms_context;";
     if (IsActionAgent())
     {
       outCode << "\\\nScAddr " << m_displayName << "::ms_cmdClass_" << m_displayName << ";";

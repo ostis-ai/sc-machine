@@ -12,6 +12,7 @@
 #include "sc-event/sc_event_queue.h"
 
 #include "../sc_memory_context_manager.h"
+#include "../sc_memory_context_private.h"
 
 #include "sc-base/sc_allocator.h"
 #include "sc-base/sc_mutex.h"
@@ -139,6 +140,7 @@ sc_event * sc_event_new(
   event->type = type;
   event->callback = callback;
   event->callback_ext = null_ptr;
+  event->callback_ext2 = null_ptr;
   event->delete_callback = delete_callback;
   event->data = data;
   event->ref_count = 1;
@@ -170,6 +172,39 @@ sc_event * sc_event_new_ex(
   event->type = type;
   event->callback = null_ptr;
   event->callback_ext = callback;
+  event->callback_ext2 = null_ptr;
+  event->delete_callback = delete_callback;
+  event->data = data;
+  event->ref_count = 1;
+  event->access_levels = 0;
+  sc_monitor_init(&event->monitor);
+
+  // register created event
+  sc_event_registration_manager * manager = sc_storage_get_event_registration_manager();
+  _sc_event_registration_manager_add(manager, event);
+
+  return event;
+}
+
+sc_event * sc_event_new_ext2(
+    sc_memory_context const * ctx,
+    sc_addr subscription_addr,
+    sc_event_type type,
+    sc_pointer data,
+    sc_event_callback_ext2 callback,
+    sc_event_delete_function delete_callback)
+{
+  if (SC_ADDR_IS_EMPTY(subscription_addr))
+    return null_ptr;
+
+  sc_event * event = null_ptr;
+
+  event = sc_mem_new(sc_event, 1);
+  event->subscription_addr = subscription_addr;
+  event->type = type;
+  event->callback = null_ptr;
+  event->callback_ext = null_ptr;
+  event->callback_ext2 = callback;
   event->delete_callback = delete_callback;
   event->data = data;
   event->ref_count = 1;
@@ -206,6 +241,7 @@ sc_result sc_event_destroy(sc_event * event)
   event->type = 0;
   event->callback = null_ptr;
   event->callback_ext = null_ptr;
+  event->callback_ext2 = null_ptr;
   event->delete_callback = null_ptr;
   event->data = null_ptr;
   event->access_levels = 0;
@@ -320,7 +356,7 @@ sc_result sc_event_emit_impl(
     event = (sc_event *)element_events_list->data;
 
     if (event->type == type)
-      _sc_event_emission_manager_add(emission_manager, event, edge, other_el);
+      _sc_event_emission_manager_add(emission_manager, event, ctx->user_addr, edge, other_el);
 
     element_events_list = element_events_list->next;
   }

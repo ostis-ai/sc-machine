@@ -87,7 +87,10 @@ ScMemoryJsonPayload ScMemoryJsonEventsHandler::HandleCreate(
     if (it != events.end())
     {
       auto * event = new ScEvent(
-          *m_context, addr, it->second, bind(onEmitEvent, m_manager->Next(), m_server, sessionId, ::_1, ::_2, ::_3));
+          *m_context,
+          addr,
+          it->second,
+          (ScEvent::DelegateFunc)bind(onEmitEvent, m_manager->Next(), m_server, sessionId, ::_1, ::_2, ::_3));
       responsePayload.push_back(m_manager->Add(event));
     }
   }

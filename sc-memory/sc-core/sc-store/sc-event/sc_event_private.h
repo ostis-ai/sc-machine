@@ -28,6 +28,7 @@ struct _sc_event
   sc_event_callback callback;
   //! Pointer to callback function, that calls on event emit
   sc_event_callback_ext callback_ext;
+  sc_event_callback_ext2 callback_ext2;
   //! Pointer to callback function, that calls, when subscribed sc-element deleted
   sc_event_delete_function delete_callback;
   sc_monitor monitor;
@@ -46,11 +47,11 @@ sc_result sc_event_notify_element_deleted(sc_addr element);
 /*! Emit event with \p type for sc-element \p subscription_addr with argument \p arg.
  * If \ctx is in a pending mode, then event will be pend for emit
  * @param ctx pointer to context, that emits event
- * @param el sc-addr of element that emitting event
- * @param el_access Access level of \p subscription_addr
+ * @param subscription_addr sc-addr of element that emitting event
+ * @param subscription_addr_access Access level of \p subscription_addr
  * @param type Emitting event type
  * @param edge sc-addr of added/remove edge (just for specified events)
- * @param other_el sc-addr of the second element of edge. If \p subscription_addr is a source, then \p other_addr is a
+ * @param other_addr sc-addr of the second element of edge. If \p subscription_addr is a source, then \p other_addr is a
  * target. If \p subscription_addr is a target, then \p other_addr is a source.
  * @return If event emitted without any errors, then return SC_OK; otherwise return SC_ERROR code
  */

@@ -5,6 +5,7 @@
  */
 
 #include "sc_memory_context_manager.h"
+#include "sc_memory_context_private.h"
 
 #include "sc-store/sc-base/sc_allocator.h"
 
@@ -27,20 +28,9 @@ struct _sc_memory_context_manager
 struct _sc_event_emit_params
 {
   sc_addr subscription_addr;
-  sc_access_levels subscription_addr_access;
   sc_event_type type;
   sc_addr edge_addr;
   sc_addr other_addr;
-};
-
-struct _sc_memory_context
-{
-  sc_addr user_addr;
-  sc_uint32 ref_count;
-  sc_access_levels access_levels;
-  sc_uint8 flags;
-  sc_hash_table_list * pend_events;
-  sc_monitor monitor;
 };
 
 #define SC_CONTEXT_FLAG_PENDING_EVENTS 0x1
@@ -287,7 +277,6 @@ void _sc_memory_context_pend_event(
   sc_event_emit_params * params = sc_mem_new(sc_event_emit_params, 1);
   params->type = type;
   params->subscription_addr = element;
-  params->subscription_addr_access = sc_access_lvl_make_max;
   params->edge_addr = edge;
   params->other_addr = other_element;
 
@@ -309,11 +298,10 @@ void _sc_memory_context_emit_events(sc_memory_context const * ctx)
     sc_event_emit_impl(
         ctx,
         evt_params->subscription_addr,
-        evt_params->subscription_addr_access,
         evt_params->type,
+        ctx->access_levels,
         evt_params->edge_addr,
         evt_params->other_addr);
-
     sc_mem_free(evt_params);
 
     ((sc_memory_context *)ctx)->pend_events = g_slist_delete_link(ctx->pend_events, ctx->pend_events);

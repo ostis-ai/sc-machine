@@ -28,7 +28,7 @@ private:
 
   json getJSONDecomposition(ScAddrVector const &, size_t, ScAddr const &, ScAddr const &);
 
-  static ScAddrVector getDecomposition(ScAddr const &, ScAddr const &);
+  ScAddrVector getDecomposition(ScAddr const &, ScAddr const &);
 };
 
 }  // namespace scSearch
