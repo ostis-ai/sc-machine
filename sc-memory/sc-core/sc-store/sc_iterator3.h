@@ -138,6 +138,12 @@ _SC_EXTERN void sc_iterator3_free(sc_iterator3 * it);
  */
 _SC_EXTERN sc_bool sc_iterator3_next(sc_iterator3 * it);
 
+/*! Go to next iterator result
+ * @param it Pointer to iterator that we need to go next result
+ * @param result Pointer to error caused during search
+ * @return Return SC_TRUE, if iterator moved to new results; otherwise return SC_FALSE.
+ * example: while(sc_iterator_next(it)) { <your code> }
+ */
 _SC_EXTERN sc_bool sc_iterator3_next_ext(sc_iterator3 * it, sc_result * result);
 
 /*! Get iterator value

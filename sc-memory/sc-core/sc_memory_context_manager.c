@@ -14,25 +14,31 @@
 #include "sc-store/sc-event/sc_event_private.h"
 #include "sc_helper.h"
 
+/*! Structure representing a memory context manager.
+ * @note This structure manages memory contexts and user authorizations in the sc-memory.
+ */
 struct _sc_memory_context_manager
 {
-  sc_hash_table * context_hash_table;
-  sc_uint32 context_count;
-  sc_monitor context_monitor;
-  sc_addr concept_authorized_user_addr;
-  sc_addr concept_action_subject_addr;
-  sc_hash_table * authorized_users_access_levels;
-  sc_event * on_authorized_user_subscription;
-  sc_event * on_unauthorized_user_subscription;
-  sc_bool user_mode;
+  sc_hash_table * context_hash_table;              ///< Hash table storing memory contexts based on user addresses.
+  sc_uint32 context_count;                         ///< Number of currently active memory contexts.
+  sc_monitor context_monitor;                      ///< Monitor for synchronizing access to the context manager.
+  sc_addr concept_authorized_user_addr;            ///< sc_addr representing the concept node for authorized users.
+  sc_addr concept_action_subject_addr;             ///< sc_addr representing the concept node for action subjects.
+  sc_hash_table * authorized_users_access_levels;  ///< Hash table storing access levels for authorized users.
+  sc_event * on_authorized_user_subscription;      ///< Event subscription for authorized user events.
+  sc_event * on_unauthorized_user_subscription;    ///< Event subscription for unauthorized user events.
+  sc_bool user_mode;  ///< Boolean indicating whether the system is in user mode (SC_TRUE) or not (SC_FALSE).
 };
 
+/*! Structure representing parameters for emitting an event.
+ * @note This structure holds the parameters required for emitting an event in a memory context.
+ */
 struct _sc_event_emit_params
 {
-  sc_addr subscription_addr;
-  sc_event_type type;
-  sc_addr edge_addr;
-  sc_addr other_addr;
+  sc_addr subscription_addr;  ///< sc_addr representing the subscription associated with the event.
+  sc_event_type type;         ///< Type of the event to be emitted.
+  sc_addr edge_addr;          ///< sc-address representing the edge associated with the event.
+  sc_addr other_addr;         ///< sc-address representing the other element associated with the event.
 };
 
 #define SC_CONTEXT_FLAG_PENDING_EVENTS 0x1
@@ -65,6 +71,14 @@ struct _sc_event_emit_params
       GINT_TO_POINTER(SC_ADDR_LOCAL_TO_INT(_user_addr)), \
       GINT_TO_POINTER(levels))
 
+/*! Function that creates a memory context for an authorized user with specified parameters.
+ * @param event Pointer to the sc_event triggering the context creation.
+ * @param arc_addr Unused parameter (placeholder for sc_addr of the sc_type_arc_pos_const_temp type).
+ * @param user_addr sc_addr representing the authorized user for whom the context is created.
+ * @returns Returns an sc_result code indicating the success or failure of the operation (SC_RESULT_OK on success).
+ * @note This function is called in response to an sc_event and is responsible for creating a new memory context
+ * for an authorized user and establishing a connection between the user and the context.
+ */
 sc_result _sc_memory_context_manager_on_authorized_user(sc_event const * event, sc_addr arc_addr, sc_addr user_addr)
 {
   sc_unused(&arc_addr);
@@ -89,6 +103,14 @@ sc_result _sc_memory_context_manager_on_authorized_user(sc_event const * event, 
   return SC_RESULT_OK;
 }
 
+/*! Function that handles the removal of authorization for a user and its associated memory context.
+ * @param event Pointer to the sc_event triggering the context removal.
+ * @param arc_addr Unused parameter (placeholder for sc_addr of the sc_type_arc_pos_const_temp type).
+ * @param user_addr sc_addr representing the user whose authorization is being revoked.
+ * @returns Returns an sc_result code indicating the success or failure of the operation (SC_RESULT_OK on success).
+ * @note This function is called in response to an sc_event and is responsible for removing authorization
+ * for a user and its associated memory context.
+ */
 sc_result _sc_memory_context_manager_on_unauthorized_user(sc_event const * event, sc_addr arc_addr, sc_addr user_addr)
 {
   sc_unused(&arc_addr);
@@ -349,8 +371,8 @@ void _sc_memory_context_emit_events(sc_memory_context const * ctx)
     sc_event_emit_impl(
         ctx,
         evt_params->subscription_addr,
-        evt_params->type,
         ctx->access_levels,
+        evt_params->type,
         evt_params->edge_addr,
         evt_params->other_addr);
     sc_mem_free(evt_params);

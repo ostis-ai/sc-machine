@@ -64,7 +64,7 @@ typedef struct
   sc_char const * init_memory_generated_structure;  ///< Initial sc-memory generated structure system identifier.
   sc_bool init_memory_generated_upload;  ///< Boolean indicating whether to upload the initial generated structure.
 
-  sc_bool user_mode;
+  sc_bool user_mode;  ///< Boolean indicating whether the sc-memory is in user mode.
 
   sc_uint16 max_strings_channels;        ///< Maximum number of string channels.
   sc_uint32 max_strings_channel_size;    ///< Maximum size of a string channel.
