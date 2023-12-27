@@ -520,31 +520,47 @@ sc_bool _sc_iterator5_a_a_f_a_a_next(sc_iterator5 * it)
 
 sc_bool sc_iterator5_next(sc_iterator5 * it)
 {
+  sc_bool status = SC_FALSE;
   if (it == null_ptr)
-    return SC_FALSE;
+    return status;
 
   switch (it->type)
   {
   case sc_iterator5_f_a_a_a_f:
-    return _sc_iterator5_f_a_a_a_f_next(it);
+    status = _sc_iterator5_f_a_a_a_f_next(it);
+    break;
 
   case sc_iterator5_a_a_f_a_f:
-    return _sc_iterator5_a_a_f_a_f_next(it);
+    status = _sc_iterator5_a_a_f_a_f_next(it);
+    break;
 
   case sc_iterator5_f_a_f_a_f:
-    return _sc_iterator5_f_a_f_a_f_next(it);
+    status = _sc_iterator5_f_a_f_a_f_next(it);
+    break;
 
   case sc_iterator5_f_a_f_a_a:
-    return _sc_iterator5_f_a_f_a_a_next(it);
+    status = _sc_iterator5_f_a_f_a_a_next(it);
+    break;
 
   case sc_iterator5_f_a_a_a_a:
-    return _sc_iterator5_f_a_a_a_a_next(it);
+    status = _sc_iterator5_f_a_a_a_a_next(it);
+    break;
 
   case sc_iterator5_a_a_f_a_a:
-    return _sc_iterator5_a_a_f_a_a_next(it);
+    status = _sc_iterator5_a_a_f_a_a_next(it);
+    break;
   }
 
-  return SC_FALSE;
+  if (status == SC_FALSE)
+  {
+    it->results[0] = SC_ADDR_EMPTY;
+    it->results[1] = SC_ADDR_EMPTY;
+    it->results[2] = SC_ADDR_EMPTY;
+    it->results[3] = SC_ADDR_EMPTY;
+    it->results[4] = SC_ADDR_EMPTY;
+  }
+
+  return status;
 }
 
 sc_addr sc_iterator5_value(sc_iterator5 * it, sc_uint index)
