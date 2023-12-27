@@ -6,10 +6,7 @@
 
 #include "sc-memory/scs/scs_parser.hpp"
 
-#include "sc-memory/sc_memory.hpp"
 #include "sc-memory/sc_debug.hpp"
-
-#include <limits>
 
 #if SC_PLATFORM_WIN32
 #endif
@@ -375,7 +372,7 @@ ElementHandle Parser::AppendElement(
     std::string const & value /* = "" */,
     bool isURL /* = false */)
 {
-  SC_CHECK_GREAT(idtf.size(), 0, ());
+  SC_CHECK_GREAT(idtf.size(), 0, "Element identifier is empty");
   if (TypeResolver::IsUnnamed(idtf))
     idtf = GenerateNodeIdtf();
 

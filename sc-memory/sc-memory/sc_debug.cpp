@@ -18,12 +18,12 @@ ScException::ScException(std::string description, std::string msg)
 
 ScException::~ScException() noexcept = default;
 
-const sc_char * ScException::Description() const noexcept
+sc_char const * ScException::Description() const noexcept
 {
   return m_description.c_str();
 }
 
-const sc_char * ScException::Message() const noexcept
+sc_char const * ScException::Message() const noexcept
 {
   return m_msg.c_str();
 }

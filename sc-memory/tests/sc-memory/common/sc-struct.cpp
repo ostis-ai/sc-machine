@@ -39,7 +39,7 @@ TEST_F(ScStructTest, common)
   ScAddr const attrAddr = m_ctx->CreateNode(ScType::NodeConstRole);
   EXPECT_TRUE(attrAddr.IsValid());
 
-  SC_CHECK(st.Append(addr1, attrAddr), ());
+  EXPECT_TRUE(st.Append(addr1, attrAddr));
   ScIterator5Ptr iter5 = m_ctx->Iterator5(
       structAddr,
       ScType::EdgeAccessConstPosPerm,
