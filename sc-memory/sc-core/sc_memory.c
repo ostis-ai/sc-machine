@@ -128,6 +128,9 @@ sc_result sc_memory_shutdown(sc_bool save_state)
   sc_memory_shutdown_ext();
   sc_helper_shutdown();
 
+  if (memory != null_ptr)
+    _sc_memory_context_manager_unregister_user_events(memory->context_manager);
+
   if (sc_storage_shutdown(save_state) != SC_RESULT_OK)
     return SC_RESULT_ERROR;
 
@@ -202,7 +205,10 @@ sc_bool sc_memory_is_element(sc_memory_context const * ctx, sc_addr addr)
 sc_uint32 sc_memory_get_element_output_arcs_count(sc_memory_context const * ctx, sc_addr addr, sc_result * result)
 {
   if (_sc_memory_context_is_authorized(memory->context_manager, ctx) == SC_FALSE)
-    return SC_RESULT_ERROR_SC_MEMORY_CONTEXT_IS_NOT_AUTHORIZED;
+  {
+    *result = SC_RESULT_ERROR_SC_MEMORY_CONTEXT_IS_NOT_AUTHORIZED;
+    return 0;
+  }
 
   return sc_storage_get_element_output_arcs_count(ctx, addr, result);
 }
@@ -210,7 +216,10 @@ sc_uint32 sc_memory_get_element_output_arcs_count(sc_memory_context const * ctx,
 sc_uint32 sc_memory_get_element_input_arcs_count(sc_memory_context const * ctx, sc_addr addr, sc_result * result)
 {
   if (_sc_memory_context_is_authorized(memory->context_manager, ctx) == SC_FALSE)
-    return SC_RESULT_ERROR_SC_MEMORY_CONTEXT_IS_NOT_AUTHORIZED;
+  {
+    *result = SC_RESULT_ERROR_SC_MEMORY_CONTEXT_IS_NOT_AUTHORIZED;
+    return 0;
+  }
 
   return sc_storage_get_element_input_arcs_count(ctx, addr, result);
 }

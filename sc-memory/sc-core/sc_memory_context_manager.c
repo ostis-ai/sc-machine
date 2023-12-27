@@ -20,6 +20,8 @@ struct _sc_memory_context_manager
   sc_uint32 context_count;
   sc_monitor context_monitor;
   sc_addr concept_authorized_user_addr;
+  sc_addr concept_action_subject_addr;
+  sc_hash_table * registered_users;
   sc_event * on_authorized_user_subscription;
   sc_event * on_unauthorized_user_subscription;
   sc_bool user_mode;
@@ -45,11 +47,20 @@ sc_result _sc_memory_context_manager_on_authorized_user(sc_event const * event, 
   sc_memory_context_manager * manager = sc_event_get_data(event);
   sc_memory_context * ctx = _sc_memory_context_get_impl(manager, other_addr);
   if (ctx == null_ptr)
-    return SC_RESULT_NO;
+  {
+    sc_hash_table_insert(
+        manager->registered_users, GINT_TO_POINTER(SC_ADDR_LOCAL_TO_INT(other_addr)), (sc_pointer)SC_TRUE);
+    sc_memory_arc_new(
+        s_memory_default_ctx, sc_type_arc_pos_const_temp, manager->concept_action_subject_addr, other_addr);
+
+    return SC_RESULT_OK;
+  }
 
   sc_monitor_acquire_write(&ctx->monitor);
   ctx->access_levels |= SC_CONTEXT_ACCESS_LEVEL_AUTHORIZED;
   sc_monitor_release_write(&ctx->monitor);
+
+  sc_memory_arc_new(s_memory_default_ctx, sc_type_arc_pos_const_temp, manager->concept_action_subject_addr, other_addr);
 
   return SC_RESULT_OK;
 }
@@ -61,7 +72,10 @@ sc_result _sc_memory_context_manager_on_unauthorized_user(sc_event const * event
   sc_memory_context_manager * manager = sc_event_get_data(event);
   sc_memory_context * ctx = _sc_memory_context_get_impl(manager, other_addr);
   if (ctx == null_ptr)
-    return SC_RESULT_NO;
+  {
+    sc_hash_table_remove(manager->registered_users, GINT_TO_POINTER(SC_ADDR_LOCAL_TO_INT(other_addr)));
+    return SC_RESULT_OK;
+  }
 
   sc_monitor_acquire_write(&ctx->monitor);
   ctx->access_levels &= ~SC_CONTEXT_ACCESS_LEVEL_AUTHORIZED;
@@ -82,6 +96,7 @@ void _sc_memory_context_manager_initialize(
   (*manager)->context_count = 0;
   sc_monitor_init(&(*manager)->context_monitor);
   (*manager)->user_mode = user_mode;
+  (*manager)->registered_users = sc_hash_table_init(g_direct_hash, g_direct_equal, null_ptr, null_ptr);
 
   s_memory_default_ctx = sc_memory_context_new(my_self_addr);
   s_memory_default_ctx->access_levels = SC_CONTEXT_ACCESS_LEVEL_FULL;
@@ -91,6 +106,9 @@ void _sc_memory_context_manager_register_user_events(sc_memory_context_manager *
 {
   sc_helper_resolve_system_identifier(
       s_memory_default_ctx, "concept_authorized_user", &manager->concept_authorized_user_addr);
+  sc_helper_resolve_system_identifier(
+      s_memory_default_ctx, "concept_action_subject_addr", &manager->concept_action_subject_addr);
+
   manager->on_authorized_user_subscription = sc_event_new_ex(
       s_memory_default_ctx,
       manager->concept_authorized_user_addr,
@@ -105,6 +123,12 @@ void _sc_memory_context_manager_register_user_events(sc_memory_context_manager *
       manager,
       _sc_memory_context_manager_on_unauthorized_user,
       null_ptr);
+}
+
+void _sc_memory_context_manager_unregister_user_events(sc_memory_context_manager * manager)
+{
+  sc_event_destroy(manager->on_authorized_user_subscription);
+  sc_event_destroy(manager->on_unauthorized_user_subscription);
 }
 
 void _sc_memory_context_manager_shutdown(sc_memory_context_manager * manager)
@@ -130,8 +154,7 @@ void _sc_memory_context_manager_shutdown(sc_memory_context_manager * manager)
 
   sc_monitor_destroy(&manager->context_monitor);
 
-  sc_event_destroy(manager->on_authorized_user_subscription);
-  sc_event_destroy(manager->on_unauthorized_user_subscription);
+  sc_hash_table_destroy(manager->registered_users);
 
   sc_mem_free(manager);
 }
@@ -151,7 +174,10 @@ sc_memory_context * _sc_memory_context_new_impl(sc_memory_context_manager * mana
   sc_monitor_init(&ctx->monitor);
   ctx->user_addr = user_addr;
   ctx->ref_count = 0;
-  ctx->access_levels = 0;
+
+  sc_bool is_registered =
+      (sc_uint64)sc_hash_table_get(manager->registered_users, GINT_TO_POINTER(SC_ADDR_LOCAL_TO_INT(ctx->user_addr)));
+  ctx->access_levels = is_registered == SC_TRUE ? SC_CONTEXT_ACCESS_LEVEL_AUTHORIZED : 0;
 
   sc_hash_table_insert(
       manager->context_hash_table, GINT_TO_POINTER(SC_ADDR_LOCAL_TO_INT(ctx->user_addr)), (sc_pointer)ctx);

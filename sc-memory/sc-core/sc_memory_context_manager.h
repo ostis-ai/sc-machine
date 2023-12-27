@@ -25,6 +25,8 @@ void _sc_memory_context_manager_initialize(
 
 void _sc_memory_context_manager_register_user_events(sc_memory_context_manager * manager);
 
+void _sc_memory_context_manager_unregister_user_events(sc_memory_context_manager * manager);
+
 void _sc_memory_context_manager_shutdown(sc_memory_context_manager * manager);
 
 /*! Function that create memory context with specified params

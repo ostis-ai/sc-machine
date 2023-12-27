@@ -232,7 +232,20 @@ size_t ScMemoryContext::GetElementInputArcsCount(ScAddr const & addr) const
 bool ScMemoryContext::EraseElement(ScAddr const & addr)
 {
   CHECK_CONTEXT;
-  return sc_memory_element_free(m_context, *addr) == SC_RESULT_OK;
+
+  sc_result const result = sc_memory_element_free(m_context, *addr);
+
+  switch (result)
+  {
+  case SC_RESULT_ERROR_SC_MEMORY_CONTEXT_IS_NOT_AUTHORIZED:
+    SC_THROW_EXCEPTION(
+        utils::ExceptionInvalidState, "Not able to erase element due sc-memory context is not authorized");
+
+  default:
+    break;
+  }
+
+  return result == SC_RESULT_OK;
 }
 
 ScAddr ScMemoryContext::CreateNode(ScType const & type)
@@ -725,6 +738,10 @@ bool ScMemoryContext::HelperSetSystemIdtf(std::string const & sysIdtf, ScAddr co
   case SC_RESULT_ERROR_FILE_MEMORY_IO:
     SC_THROW_EXCEPTION(utils::ExceptionInvalidState, "File memory state is invalid to set system identifier");
 
+  case SC_RESULT_ERROR_SC_MEMORY_CONTEXT_IS_NOT_AUTHORIZED:
+    SC_THROW_EXCEPTION(
+        utils::ExceptionInvalidState, "Not able to set system identifier due sc-memory context is not authorized");
+
   default:
     break;
   }
@@ -807,7 +824,21 @@ std::string ScMemoryContext::HelperGetSystemIdtf(ScAddr const & addr)
 bool ScMemoryContext::HelperCheckEdge(ScAddr const & begin, ScAddr end, ScType const & edgeType)
 {
   CHECK_CONTEXT;
-  return sc_helper_check_arc(m_context, *begin, *end, *edgeType) == SC_RESULT_OK;
+
+  sc_result result;
+  sc_bool status = sc_helper_check_arc_ext(m_context, *begin, *end, *edgeType, &result);
+
+  switch (result)
+  {
+  case SC_RESULT_ERROR_SC_MEMORY_CONTEXT_IS_NOT_AUTHORIZED:
+    SC_THROW_EXCEPTION(
+        utils::ExceptionInvalidState, "Not able to check connector due sc-memory context is not authorized");
+
+  default:
+    break;
+  }
+
+  return status;
 }
 
 bool ScMemoryContext::HelperFindBySystemIdtf(std::string const & sysIdtf, ScAddr & outAddr)

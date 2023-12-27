@@ -383,16 +383,27 @@ error:
 
 sc_bool sc_helper_check_arc(sc_memory_context const * ctx, sc_addr beg_el, sc_addr end_el, sc_type arc_type)
 {
+  sc_result result;
+  return sc_helper_check_arc_ext(ctx, beg_el, end_el, arc_type, &result);
+}
+
+sc_bool sc_helper_check_arc_ext(
+    sc_memory_context const * ctx,
+    sc_addr beg_el,
+    sc_addr end_el,
+    sc_type arc_type,
+    sc_result * result)
+{
   sc_iterator3 * it = null_ptr;
-  sc_bool res = SC_FALSE;
+  sc_bool status = SC_FALSE;
 
   it = sc_iterator3_f_a_f_new(ctx, beg_el, arc_type, end_el);
   if (it == null_ptr)
     return SC_FALSE;
 
-  if (sc_iterator3_next(it) == SC_TRUE)
-    res = SC_TRUE;
+  if (sc_iterator3_next_ext(it, result) == SC_TRUE)
+    status = SC_TRUE;
 
   sc_iterator3_free(it);
-  return res;
+  return status;
 }
