@@ -25,34 +25,37 @@
 #define DEFAULT_TERM_SEPARATORS " _"
 #define DEFAULT_SEARCH_BY_SUBSTRING SC_TRUE
 
-typedef struct _sc_memory_params
+/*! Structure representing parameters for configuring the sc-memory.
+ * @note This structure holds various configuration parameters that control the behavior of the sc-memory.
+ */
+typedef struct
 {
-  sc_version version;
+  sc_version version;  ///< Version information for the sc-machine.
 
-  sc_bool clear;
-  sc_char const * repo_path;
-  sc_char const * ext_path;
-  sc_char const ** enabled_exts;
+  sc_bool clear;                  ///< Boolean indicating whether to clear existing data during initialization.
+  sc_char const * repo_path;      ///< Path to the binaries directory.
+  sc_char const * ext_path;       ///< Path to the extensions directory.
+  sc_char const ** enabled_exts;  ///< Array of enabled extensions.
 
-  sc_uint32 max_loaded_segments;
-  sc_uint8 max_threads;
-  sc_uint32 max_events_and_agents_threads;
+  sc_uint32 max_loaded_segments;            ///< Maximum number of loaded segments.
+  sc_uint8 max_threads;                     ///< Maximum number of threads for parallel processing (not implemented).
+  sc_uint32 max_events_and_agents_threads;  ///< Maximum number of threads for events and agents processing.
 
-  sc_uint32 save_period;
-  sc_uint32 update_period;
+  sc_uint32 save_period;    ///< Period (in seconds) for automatic saving of the sc-memory state.
+  sc_uint32 update_period;  ///< Period (in seconds) for dumping statistics of the sc-memory state.
 
-  sc_char const * log_type;
-  sc_char const * log_file;
-  sc_char const * log_level;
+  sc_char const * log_type;   ///< Type of logging (e.g., "console", "file").
+  sc_char const * log_file;   ///< Path to the log file (if log_type is "file").
+  sc_char const * log_level;  ///< Log level (e.g., "error", "warning", "info", "debug").
 
-  sc_char const * init_memory_generated_structure;
-  sc_bool init_memory_generated_upload;
+  sc_char const * init_memory_generated_structure;  ///< Initial sc-memory generated structure system identifier.
+  sc_bool init_memory_generated_upload;  ///< Boolean indicating whether to upload the initial generated structure.
 
-  sc_uint16 max_strings_channels;
-  sc_uint32 max_strings_channel_size;
-  sc_uint32 max_searchable_string_size;
-  sc_char const * term_separators;
-  sc_bool search_by_substring;
+  sc_uint16 max_strings_channels;        ///< Maximum number of string channels.
+  sc_uint32 max_strings_channel_size;    ///< Maximum size of a string channel.
+  sc_uint32 max_searchable_string_size;  ///< Maximum size of a searchable string.
+  sc_char const * term_separators;       ///< String containing term separators used in string operations.
+  sc_bool search_by_substring;           ///< Boolean indicating whether to allow searching by substring.
 } sc_memory_params;
 
 _SC_EXTERN void sc_memory_params_clear(sc_memory_params * params);
