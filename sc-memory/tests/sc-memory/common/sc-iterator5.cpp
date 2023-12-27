@@ -69,6 +69,14 @@ TEST_F(ScIterator5Test, a_a_f_a_a)
   EXPECT_EQ(iter5->Get(2), m_target);
   EXPECT_EQ(iter5->Get(3), m_attrEdge);
   EXPECT_EQ(iter5->Get(4), m_attr);
+
+  EXPECT_FALSE(iter5->Next());
+
+  EXPECT_EQ(iter5->Get(0), ScAddr::Empty);
+  EXPECT_EQ(iter5->Get(1), ScAddr::Empty);
+  EXPECT_EQ(iter5->Get(2), ScAddr::Empty);
+  EXPECT_EQ(iter5->Get(3), ScAddr::Empty);
+  EXPECT_EQ(iter5->Get(4), ScAddr::Empty);
 }
 
 TEST_F(ScIterator5Test, a_a_f_a_f)
@@ -87,6 +95,14 @@ TEST_F(ScIterator5Test, a_a_f_a_f)
   EXPECT_EQ(iter5->Get(2), m_target);
   EXPECT_EQ(iter5->Get(3), m_attrEdge);
   EXPECT_EQ(iter5->Get(4), m_attr);
+
+  EXPECT_FALSE(iter5->Next());
+
+  EXPECT_EQ(iter5->Get(0), ScAddr::Empty);
+  EXPECT_EQ(iter5->Get(1), ScAddr::Empty);
+  EXPECT_EQ(iter5->Get(2), ScAddr::Empty);
+  EXPECT_EQ(iter5->Get(3), ScAddr::Empty);
+  EXPECT_EQ(iter5->Get(4), ScAddr::Empty);
 }
 
 TEST_F(ScIterator5Test, f_a_a_a_a)
@@ -105,6 +121,14 @@ TEST_F(ScIterator5Test, f_a_a_a_a)
   EXPECT_EQ(iter5->Get(2), m_target);
   EXPECT_EQ(iter5->Get(3), m_attrEdge);
   EXPECT_EQ(iter5->Get(4), m_attr);
+
+  EXPECT_FALSE(iter5->Next());
+
+  EXPECT_EQ(iter5->Get(0), ScAddr::Empty);
+  EXPECT_EQ(iter5->Get(1), ScAddr::Empty);
+  EXPECT_EQ(iter5->Get(2), ScAddr::Empty);
+  EXPECT_EQ(iter5->Get(3), ScAddr::Empty);
+  EXPECT_EQ(iter5->Get(4), ScAddr::Empty);
 }
 
 TEST_F(ScIterator5Test, f_a_a_a_f)
@@ -123,6 +147,14 @@ TEST_F(ScIterator5Test, f_a_a_a_f)
   EXPECT_EQ(iter5->Get(2), m_target);
   EXPECT_EQ(iter5->Get(3), m_attrEdge);
   EXPECT_EQ(iter5->Get(4), m_attr);
+
+  EXPECT_FALSE(iter5->Next());
+
+  EXPECT_EQ(iter5->Get(0), ScAddr::Empty);
+  EXPECT_EQ(iter5->Get(1), ScAddr::Empty);
+  EXPECT_EQ(iter5->Get(2), ScAddr::Empty);
+  EXPECT_EQ(iter5->Get(3), ScAddr::Empty);
+  EXPECT_EQ(iter5->Get(4), ScAddr::Empty);
 }
 
 TEST_F(ScIterator5Test, f_a_f_a_a)
@@ -141,6 +173,14 @@ TEST_F(ScIterator5Test, f_a_f_a_a)
   EXPECT_EQ(iter5->Get(2), m_target);
   EXPECT_EQ(iter5->Get(3), m_attrEdge);
   EXPECT_EQ(iter5->Get(4), m_attr);
+
+  EXPECT_FALSE(iter5->Next());
+
+  EXPECT_EQ(iter5->Get(0), ScAddr::Empty);
+  EXPECT_EQ(iter5->Get(1), ScAddr::Empty);
+  EXPECT_EQ(iter5->Get(2), ScAddr::Empty);
+  EXPECT_EQ(iter5->Get(3), ScAddr::Empty);
+  EXPECT_EQ(iter5->Get(4), ScAddr::Empty);
 }
 
 TEST_F(ScIterator5Test, f_a_f_a_f)
@@ -159,4 +199,12 @@ TEST_F(ScIterator5Test, f_a_f_a_f)
   EXPECT_EQ(iter5->Get(2), m_target);
   EXPECT_EQ(iter5->Get(3), m_attrEdge);
   EXPECT_EQ(iter5->Get(4), m_attr);
+
+  EXPECT_FALSE(iter5->Next());
+
+  EXPECT_EQ(iter5->Get(0), ScAddr::Empty);
+  EXPECT_EQ(iter5->Get(1), ScAddr::Empty);
+  EXPECT_EQ(iter5->Get(2), ScAddr::Empty);
+  EXPECT_EQ(iter5->Get(3), ScAddr::Empty);
+  EXPECT_EQ(iter5->Get(4), ScAddr::Empty);
 }
