@@ -420,7 +420,7 @@ bool ScMemoryContext::SetLinkContent(ScAddr const & addr, ScStreamPtr const & st
     break;
   }
 
-  return true;
+  return result == SC_RESULT_OK;
 }
 
 ScStreamPtr ScMemoryContext::GetLinkContent(ScAddr const & addr)
@@ -719,7 +719,7 @@ bool ScMemoryContext::HelperFindBySystemIdtf(std::string const & sysIdtf, ScAddr
     break;
   }
 
-  return true;
+  return result == SC_RESULT_OK;
 }
 
 ScAddr ScMemoryContext::HelperFindBySystemIdtf(std::string const & sysIdtf)
