@@ -13,37 +13,53 @@
 #include "../sc_storage.h"
 #include "../sc_storage_private.h"
 
+/*! Structure representing data for a worker in the event emission pool.
+ * @note This structure holds information required for processing events in a worker thread.
+ */
 typedef struct
 {
-  sc_event * evt;
-  sc_addr edge_addr;
-  sc_addr other_addr;
+  sc_event * event;    ///< Pointer to the sc-event associated with the worker.
+  sc_addr edge_addr;   ///< sc_addr representing the edge associated with the event.
+  sc_addr other_addr;  ///< sc_addr representing the other element associated with the event.
 } sc_event_emission_pool_worker_data;
 
+/*! Function that creates a new instance of sc_event_emission_pool_worker_data.
+ * @param event Pointer to the sc-event associated with the worker.
+ * @param edge_addr sc_addr representing the edge associated with the event.
+ * @param other_addr sc_addr representing the other element associated with the event.
+ * @returns Returns a pointer to the newly created sc_event_emission_pool_worker_data.
+ */
 sc_event_emission_pool_worker_data * _sc_event_emission_pool_worker_data_new(
-    sc_event * evt,
+    sc_event * event,
     sc_addr edge_addr,
     sc_addr other_addr)
 {
   sc_event_emission_pool_worker_data * data = sc_mem_new(sc_event_emission_pool_worker_data, 1);
-  data->evt = evt;
+  data->event = event;
   data->edge_addr = edge_addr;
   data->other_addr = other_addr;
 
   return data;
 }
 
+/*! Function that destroys an instance of sc_event_emission_pool_worker_data.
+ * @param data Pointer to the sc_event_emission_pool_worker_data to be destroyed.
+ */
 void _sc_event_emission_pool_worker_data_destroy(sc_event_emission_pool_worker_data * data)
 {
   sc_mem_free(data);
 }
 
+/*! Function that represents the work performed by a worker in the event emission pool.
+ * @param data Pointer to the sc_event_emission_pool_worker_data containing information about the work.
+ * @param user_data Pointer to the sc_event_emission_manager managing the event emission.
+ */
 void _sc_event_emission_pool_worker(sc_pointer data, sc_pointer user_data)
 {
   sc_event_emission_pool_worker_data * work_data = (sc_event_emission_pool_worker_data *)data;
   sc_event_emission_manager * queue = user_data;
 
-  sc_event * event = work_data->evt;
+  sc_event * event = work_data->event;
   if (event == null_ptr)
     goto destroy;
 
@@ -59,15 +75,15 @@ void _sc_event_emission_pool_worker(sc_pointer data, sc_pointer user_data)
     goto end;
   }
 
-  fEventCallback callback = event->callback;
-  fEventCallbackEx callbackEx = event->callback_ex;
+  sc_event_callback callback = event->callback;
+  sc_event_callback_ext callback_ext = event->callback_ext;
 
   sc_storage_start_new_process();
 
   if (callback != null_ptr)
     callback(event, work_data->edge_addr);
-  else if (callbackEx != null_ptr)
-    callbackEx(event, work_data->edge_addr, work_data->other_addr);
+  else if (callback_ext != null_ptr)
+    callback_ext(event, work_data->edge_addr, work_data->other_addr);
 
   sc_storage_end_new_process();
 
@@ -144,12 +160,16 @@ void sc_event_emission_manager_shutdown(sc_event_emission_manager * manager)
   sc_mem_free(manager);
 }
 
-void _sc_event_emission_manager_add(sc_event_emission_manager * manager, sc_event * evt, sc_addr edge, sc_addr other_el)
+void _sc_event_emission_manager_add(
+    sc_event_emission_manager * manager,
+    sc_event * event,
+    sc_addr edge,
+    sc_addr other_el)
 {
   if (manager == null_ptr)
     return;
 
-  sc_event_emission_pool_worker_data * data = _sc_event_emission_pool_worker_data_new(evt, edge, other_el);
+  sc_event_emission_pool_worker_data * data = _sc_event_emission_pool_worker_data_new(event, edge, other_el);
 
   sc_monitor_acquire_write(&manager->pool_monitor);
   g_thread_pool_push(manager->thread_pool, data, null_ptr);
