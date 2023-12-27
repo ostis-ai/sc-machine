@@ -54,7 +54,7 @@ sc_memory_context * sc_memory_initialize(sc_memory_params const * params)
   sc_storage_start_new_process();
 
   memory->my_self_addr = sc_storage_node_new(null_ptr, sc_type_node | sc_type_const);
-  _sc_memory_context_manager_initialize(&memory->context_manager, memory->my_self_addr);
+  _sc_memory_context_manager_initialize(&memory->context_manager, memory->my_self_addr, params->user_mode);
 
   if (sc_helper_init(s_memory_default_ctx) != SC_RESULT_OK)
   {

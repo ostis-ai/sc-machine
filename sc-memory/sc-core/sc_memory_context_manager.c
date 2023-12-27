@@ -70,7 +70,10 @@ sc_result _sc_memory_context_manager_on_unauthorized_user(sc_event const * event
   return SC_RESULT_OK;
 }
 
-void _sc_memory_context_manager_initialize(sc_memory_context_manager ** manager, sc_addr my_self_addr)
+void _sc_memory_context_manager_initialize(
+    sc_memory_context_manager ** manager,
+    sc_addr my_self_addr,
+    sc_bool user_mode)
 {
   sc_memory_info("Initialize context manager");
 
@@ -78,7 +81,7 @@ void _sc_memory_context_manager_initialize(sc_memory_context_manager ** manager,
   (*manager)->context_hash_table = sc_hash_table_init(g_direct_hash, g_direct_equal, null_ptr, null_ptr);
   (*manager)->context_count = 0;
   sc_monitor_init(&(*manager)->context_monitor);
-  (*manager)->user_mode = SC_FALSE;
+  (*manager)->user_mode = user_mode;
 
   s_memory_default_ctx = sc_memory_context_new(my_self_addr);
   s_memory_default_ctx->access_levels = SC_CONTEXT_ACCESS_LEVEL_FULL;

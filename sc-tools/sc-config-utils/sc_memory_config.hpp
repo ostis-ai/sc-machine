@@ -161,6 +161,8 @@ public:
     m_memoryParams.init_memory_generated_upload = GetBoolByKey("init_memory_generated_upload");
     m_memoryParams.init_memory_generated_structure = GetStringByKey("init_memory_generated_structure");
 
+    m_memoryParams.user_mode = GetBoolByKey("user_mode");
+
     m_memoryParams.max_strings_channels = GetIntByKey("max_strings_channels", DEFAULT_MAX_STRINGS_CHANNELS);
     m_memoryParams.max_strings_channel_size = GetIntByKey("max_strings_channel_size", DEFAULT_MAX_STRINGS_CHANNEL_SIZE);
     m_memoryParams.max_searchable_string_size =

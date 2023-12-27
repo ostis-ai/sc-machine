@@ -18,7 +18,10 @@ typedef struct _sc_event_emit_params sc_event_emit_params;
 
 extern sc_memory_context * s_memory_default_ctx;
 
-void _sc_memory_context_manager_initialize(sc_memory_context_manager ** manager, sc_addr my_self_addr);
+void _sc_memory_context_manager_initialize(
+    sc_memory_context_manager ** manager,
+    sc_addr my_self_addr,
+    sc_bool user_mode);
 
 void _sc_memory_context_manager_register_user_events(sc_memory_context_manager * manager);
 
