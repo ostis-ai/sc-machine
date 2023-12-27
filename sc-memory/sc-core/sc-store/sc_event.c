@@ -16,10 +16,13 @@
 #include "sc-base/sc_allocator.h"
 #include "sc-base/sc_mutex.h"
 
+/*! Structure representing an sc-event registration manager.
+ * @note This structure manages the registration and removal of sc-events associated with sc-elements.
+ */
 struct _sc_event_registration_manager
 {
-  sc_hash_table * events_table;
-  sc_monitor events_table_monitor;
+  sc_hash_table * events_table;     ///< Hash table containing registered events.
+  sc_monitor events_table_monitor;  ///< Monitor for synchronizing access to the events table.
 };
 
 #define TABLE_KEY(__Addr) GUINT_TO_POINTER(SC_ADDR_LOCAL_TO_INT(__Addr))
@@ -36,7 +39,11 @@ gboolean events_table_equal_func(gconstpointer a, gconstpointer b)
   return (a == b);
 }
 
-//! Inserts specified event into events table
+/*! Adds the specified sc-event to the registration manager's events table.
+ * @param manager Pointer to the sc-event registration manager.
+ * @param event Pointer to the sc-event to be added.
+ * @return Returns SC_RESULT_OK if the operation is successful, SC_RESULT_NO otherwise.
+ */
 sc_result _sc_event_registration_manager_add(sc_event_registration_manager * manager, sc_event * event)
 {
   sc_hash_table_list * element_events_list = null_ptr;
@@ -54,16 +61,21 @@ sc_result _sc_event_registration_manager_add(sc_event_registration_manager * man
   }
 
   // if there are no events for specified sc-element, then create new events list
-  element_events_list = (sc_hash_table_list *)sc_hash_table_get(manager->events_table, TABLE_KEY(event->element));
+  element_events_list =
+      (sc_hash_table_list *)sc_hash_table_get(manager->events_table, TABLE_KEY(event->subscription_addr));
   element_events_list = sc_hash_table_list_append(element_events_list, (sc_pointer)event);
-  sc_hash_table_insert(manager->events_table, TABLE_KEY(event->element), (sc_pointer)element_events_list);
+  sc_hash_table_insert(manager->events_table, TABLE_KEY(event->subscription_addr), (sc_pointer)element_events_list);
 
   sc_monitor_release_write(&manager->events_table_monitor);
 
   return SC_RESULT_OK;
 }
 
-//! Remove specified sc-event from events table
+/*! Removes the specified sc-event from the registration manager's events table.
+ * @param manager Pointer to the sc-event registration manager.
+ * @param event Pointer to the sc-event to be removed.
+ * @return Returns SC_RESULT_OK if the operation is successful, SC_RESULT_ERROR_INVALID_PARAMS otherwise.
+ */
 sc_result _sc_event_registration_manager_remove(sc_event_registration_manager * manager, sc_event * event)
 {
   sc_hash_table_list * element_events_list = null_ptr;
@@ -73,7 +85,8 @@ sc_result _sc_event_registration_manager_remove(sc_event_registration_manager * 
     return SC_RESULT_NO;
 
   sc_monitor_acquire_write(&manager->events_table_monitor);
-  element_events_list = (sc_hash_table_list *)sc_hash_table_get(manager->events_table, TABLE_KEY(event->element));
+  element_events_list =
+      (sc_hash_table_list *)sc_hash_table_get(manager->events_table, TABLE_KEY(event->subscription_addr));
   if (element_events_list == null_ptr)
     goto error;
 
@@ -83,9 +96,9 @@ sc_result _sc_event_registration_manager_remove(sc_event_registration_manager * 
   // remove event from list of events for specified sc-element
   element_events_list = sc_hash_table_list_remove(element_events_list, (sc_const_pointer)event);
   if (element_events_list == null_ptr)
-    sc_hash_table_remove(manager->events_table, TABLE_KEY(event->element));
+    sc_hash_table_remove(manager->events_table, TABLE_KEY(event->subscription_addr));
   else
-    sc_hash_table_insert(manager->events_table, TABLE_KEY(event->element), (sc_pointer)element_events_list);
+    sc_hash_table_insert(manager->events_table, TABLE_KEY(event->subscription_addr), (sc_pointer)element_events_list);
 
   sc_monitor_release_write(&manager->events_table_monitor);
   return SC_RESULT_OK;
@@ -110,21 +123,22 @@ void sc_event_registration_manager_shutdown(sc_event_registration_manager * mana
 
 sc_event * sc_event_new(
     sc_memory_context const * ctx,
-    sc_addr el,
+    sc_addr subscription_addr,
     sc_event_type type,
     sc_pointer data,
-    fEventCallback callback,
-    fDeleteCallback delete_callback)
+    sc_event_callback callback,
+    sc_event_delete_function delete_callback)
 {
-  if (SC_ADDR_IS_EMPTY(el))
+  if (SC_ADDR_IS_EMPTY(subscription_addr))
     return null_ptr;
 
   sc_event * event = null_ptr;
 
   event = sc_mem_new(sc_event, 1);
-  event->element = el;
+  event->subscription_addr = subscription_addr;
   event->type = type;
   event->callback = callback;
+  event->callback_ext = null_ptr;
   event->delete_callback = delete_callback;
   event->data = data;
   event->ref_count = 1;
@@ -140,21 +154,22 @@ sc_event * sc_event_new(
 
 sc_event * sc_event_new_ex(
     sc_memory_context const * ctx,
-    sc_addr el,
+    sc_addr subscription_addr,
     sc_event_type type,
     sc_pointer data,
-    fEventCallbackEx callback,
-    fDeleteCallback delete_callback)
+    sc_event_callback_ext callback,
+    sc_event_delete_function delete_callback)
 {
-  if (SC_ADDR_IS_EMPTY(el))
+  if (SC_ADDR_IS_EMPTY(subscription_addr))
     return null_ptr;
 
   sc_event * event = null_ptr;
 
   event = sc_mem_new(sc_event, 1);
-  event->element = el;
+  event->subscription_addr = subscription_addr;
   event->type = type;
-  event->callback_ex = callback;
+  event->callback = null_ptr;
+  event->callback_ext = callback;
   event->delete_callback = delete_callback;
   event->data = data;
   event->ref_count = 1;
@@ -170,6 +185,9 @@ sc_event * sc_event_new_ex(
 
 sc_result sc_event_destroy(sc_event * event)
 {
+  if (event == null_ptr)
+    return SC_RESULT_NO;
+
   sc_event_registration_manager * registration_manager = sc_storage_get_event_registration_manager();
   sc_event_emission_manager * emission_manager = sc_storage_get_event_emission_manager();
 
@@ -184,9 +202,10 @@ sc_result sc_event_destroy(sc_event * event)
     event->delete_callback(event);
 
   event->ref_count = SC_EVENT_REQUEST_DESTROY;
-  event->element = SC_ADDR_EMPTY;
+  event->subscription_addr = SC_ADDR_EMPTY;
   event->type = 0;
-  event->callback_ex = null_ptr;
+  event->callback = null_ptr;
+  event->callback_ext = null_ptr;
   event->delete_callback = null_ptr;
   event->data = null_ptr;
   event->access_levels = 0;
@@ -283,25 +302,25 @@ sc_result sc_event_emit_impl(
   if (SC_ADDR_IS_EMPTY(el))
     return SC_RESULT_ERROR_ADDR_IS_NOT_VALID;
 
-  sc_event_registration_manager * manager = sc_storage_get_event_registration_manager();
-  sc_event_emission_manager * events_queue = sc_storage_get_event_emission_manager();
+  sc_event_registration_manager * registration_manager = sc_storage_get_event_registration_manager();
+  sc_event_emission_manager * emission_manager = sc_storage_get_event_emission_manager();
 
   // if table is empty, then do nothing
-  if (manager == null_ptr || manager->events_table == null_ptr)
+  if (registration_manager == null_ptr || registration_manager->events_table == null_ptr)
     goto result;
 
   // sc_set_lookup for all registered to specified sc-element events
-  sc_monitor_acquire_read(&manager->events_table_monitor);
-  if (manager != null_ptr)
-    element_events_list = (sc_hash_table_list *)sc_hash_table_get(manager->events_table, TABLE_KEY(el));
-  sc_monitor_release_read(&manager->events_table_monitor);
+  sc_monitor_acquire_read(&registration_manager->events_table_monitor);
+  if (registration_manager != null_ptr)
+    element_events_list = (sc_hash_table_list *)sc_hash_table_get(registration_manager->events_table, TABLE_KEY(el));
+  sc_monitor_release_read(&registration_manager->events_table_monitor);
 
   while (element_events_list != null_ptr)
   {
     event = (sc_event *)element_events_list->data;
 
     if (event->type == type)
-      _sc_event_emission_manager_add(events_queue, event, edge, other_el);
+      _sc_event_emission_manager_add(emission_manager, event, edge, other_el);
 
     element_events_list = element_events_list->next;
   }
@@ -322,5 +341,5 @@ sc_pointer sc_event_get_data(sc_event const * event)
 
 sc_addr sc_event_get_element(sc_event const * event)
 {
-  return event->element;
+  return event->subscription_addr;
 }
