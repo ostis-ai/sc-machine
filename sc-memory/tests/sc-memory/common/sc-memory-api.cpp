@@ -106,6 +106,9 @@ TEST_F(ScMemoryTest, ResolveGetSystemIdentifierWithOutFiver)
   ScSystemIdentifierFiver foundFiver;
   EXPECT_TRUE(m_ctx->HelperFindBySystemIdtf("test_node", foundFiver));
 
+  ScAddr addr;
+  EXPECT_FALSE(m_ctx->HelperFindBySystemIdtf("test_node1", addr));
+
   EXPECT_EQ(resolveFiver.addr1, foundFiver.addr1);
   EXPECT_EQ(resolveFiver.addr2, foundFiver.addr2);
   EXPECT_EQ(resolveFiver.addr3, foundFiver.addr3);
