@@ -24,16 +24,16 @@ TEST_F(ScServerTest, CreateElements)
       "create_elements",
       ScMemoryJsonPayload::array({
           {
-              {"subscription_addr", "node"},
+              {"el", "node"},
               {"type", sc_type_node | sc_type_const},
           },
           {
-              {"subscription_addr", "link"},
+              {"el", "link"},
               {"type", sc_type_link | sc_type_const},
               {"content", "edge_end"},
           },
           {
-              {"subscription_addr", "edge"},
+              {"el", "edge"},
               {"src",
                {
                    {"type", "ref"},
@@ -47,12 +47,12 @@ TEST_F(ScServerTest, CreateElements)
               {"type", sc_type_arc_pos_const_perm},
           },
           {
-              {"subscription_addr", "link"},
+              {"el", "link"},
               {"type", sc_type_link | sc_type_const},
               {"content", 100},
           },
           {
-              {"subscription_addr", "link"},
+              {"el", "link"},
               {"type", sc_type_link | sc_type_const},
               {"content", 100.0f},
           },

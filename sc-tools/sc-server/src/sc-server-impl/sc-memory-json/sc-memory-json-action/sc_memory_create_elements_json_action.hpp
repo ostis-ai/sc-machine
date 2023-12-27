@@ -31,7 +31,7 @@ public:
 
     for (auto & atom : requestPayload)
     {
-      std::string const & element = atom["subscription_addr"].get<std::string>();
+      std::string const & element = atom["el"].get<std::string>();
       ScType const & type = ScType(atom["type"].get<size_t>());
 
       ScAddr created;
