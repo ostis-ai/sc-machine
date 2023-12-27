@@ -50,8 +50,8 @@ sc_result sc_event_notify_element_deleted(sc_addr element);
  * @param el_access Access level of \p subscription_addr
  * @param type Emitting event type
  * @param edge sc-addr of added/remove edge (just for specified events)
- * @param other_el sc-addr of the second element of edge. If \p subscription_addr is a source, then \p other_el is a
- * target. If \p subscription_addr is a target, then \p other_el is a source.
+ * @param other_el sc-addr of the second element of edge. If \p subscription_addr is a source, then \p other_addr is a
+ * target. If \p subscription_addr is a target, then \p other_addr is a source.
  * @return If event emitted without any errors, then return SC_OK; otherwise return SC_ERROR code
  */
 sc_result sc_event_emit(

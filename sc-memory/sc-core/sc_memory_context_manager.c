@@ -22,11 +22,11 @@ struct _sc_memory_context_manager
 
 struct _sc_event_emit_params
 {
-  sc_addr el;
-  sc_access_levels el_access;
+  sc_addr subscription_addr;
+  sc_access_levels subscription_addr_access;
   sc_event_type type;
-  sc_addr edge;
-  sc_addr other_el;
+  sc_addr edge_addr;
+  sc_addr other_addr;
 };
 
 struct _sc_memory_context
@@ -178,10 +178,10 @@ void _sc_memory_context_pend_event(
 {
   sc_event_emit_params * params = sc_mem_new(sc_event_emit_params, 1);
   params->type = type;
-  params->el = element;
-  params->el_access = sc_access_lvl_make_max;
-  params->edge = edge;
-  params->other_el = other_element;
+  params->subscription_addr = element;
+  params->subscription_addr_access = sc_access_lvl_make_max;
+  params->edge_addr = edge;
+  params->other_addr = other_element;
 
   sc_monitor_acquire_write((sc_monitor *)&ctx->monitor);
   ((sc_memory_context *)ctx)->pend_events = g_slist_append(ctx->pend_events, params);
@@ -199,7 +199,12 @@ void _sc_memory_context_emit_events(sc_memory_context const * ctx)
     evt_params = (sc_event_emit_params *)item->data;
 
     sc_event_emit_impl(
-        ctx, evt_params->el, evt_params->el_access, evt_params->type, evt_params->edge, evt_params->other_el);
+        ctx,
+        evt_params->subscription_addr,
+        evt_params->subscription_addr_access,
+        evt_params->type,
+        evt_params->edge_addr,
+        evt_params->other_addr);
 
     sc_mem_free(evt_params);
 
