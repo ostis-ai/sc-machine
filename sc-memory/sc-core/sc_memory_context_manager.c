@@ -21,7 +21,7 @@ struct _sc_memory_context_manager
   sc_monitor context_monitor;
   sc_addr concept_authorized_user_addr;
   sc_addr concept_action_subject_addr;
-  sc_hash_table * registered_users;
+  sc_hash_table * authorized_users_access_levels;
   sc_event * on_authorized_user_subscription;
   sc_event * on_unauthorized_user_subscription;
   sc_bool user_mode;
@@ -40,45 +40,69 @@ struct _sc_event_emit_params
 #define SC_CONTEXT_ACCESS_LEVEL_FULL 0xff
 #define SC_CONTEXT_ACCESS_LEVEL_AUTHORIZED 0x1
 
-sc_result _sc_memory_context_manager_on_authorized_user(sc_event const * event, sc_addr arc_addr, sc_addr other_addr)
+#define sc_context_add_context_access_levels(_access_levels, _adding_levels) _access_levels |= _adding_levels
+
+#define sc_context_remove_context_access_levels(_access_levels, _adding_levels) _access_levels &= ~_adding_levels
+
+#define sc_context_check_context_access_levels(_access_levels, _checking_levels) \
+  ((_access_levels) & (_checking_levels)) == _checking_levels
+
+#define _sc_context_add_user_access_levels(_user_addr, _adding_levels) \
+  sc_access_levels levels = (sc_uint64)sc_hash_table_get( \
+      manager->authorized_users_access_levels, GINT_TO_POINTER(SC_ADDR_LOCAL_TO_INT(_user_addr))); \
+  levels |= (_adding_levels); \
+  sc_hash_table_insert( \
+      manager->authorized_users_access_levels, \
+      GINT_TO_POINTER(SC_ADDR_LOCAL_TO_INT(_user_addr)), \
+      GINT_TO_POINTER(levels))
+
+#define _sc_context_remove_user_access_levels(_user_addr, _adding_levels) \
+  sc_access_levels levels = (sc_uint64)sc_hash_table_get( \
+      manager->authorized_users_access_levels, GINT_TO_POINTER(SC_ADDR_LOCAL_TO_INT(_user_addr))); \
+  levels &= ~(_adding_levels); \
+  sc_hash_table_insert( \
+      manager->authorized_users_access_levels, \
+      GINT_TO_POINTER(SC_ADDR_LOCAL_TO_INT(_user_addr)), \
+      GINT_TO_POINTER(levels))
+
+sc_result _sc_memory_context_manager_on_authorized_user(sc_event const * event, sc_addr arc_addr, sc_addr user_addr)
 {
   sc_unused(&arc_addr);
 
   sc_memory_context_manager * manager = sc_event_get_data(event);
-  sc_memory_context * ctx = _sc_memory_context_get_impl(manager, other_addr);
+  sc_memory_context * ctx = _sc_memory_context_get_impl(manager, user_addr);
   if (ctx == null_ptr)
   {
-    sc_hash_table_insert(
-        manager->registered_users, GINT_TO_POINTER(SC_ADDR_LOCAL_TO_INT(other_addr)), (sc_pointer)SC_TRUE);
+    _sc_context_add_user_access_levels(user_addr, SC_CONTEXT_ACCESS_LEVEL_AUTHORIZED);
     sc_memory_arc_new(
-        s_memory_default_ctx, sc_type_arc_pos_const_temp, manager->concept_action_subject_addr, other_addr);
+        s_memory_default_ctx, sc_type_arc_pos_const_temp, manager->concept_action_subject_addr, user_addr);
 
     return SC_RESULT_OK;
   }
 
   sc_monitor_acquire_write(&ctx->monitor);
-  ctx->access_levels |= SC_CONTEXT_ACCESS_LEVEL_AUTHORIZED;
+  sc_context_add_context_access_levels(ctx->access_levels, SC_CONTEXT_ACCESS_LEVEL_AUTHORIZED);
   sc_monitor_release_write(&ctx->monitor);
 
-  sc_memory_arc_new(s_memory_default_ctx, sc_type_arc_pos_const_temp, manager->concept_action_subject_addr, other_addr);
+  sc_memory_arc_new(s_memory_default_ctx, sc_type_arc_pos_const_temp, manager->concept_action_subject_addr, user_addr);
 
   return SC_RESULT_OK;
 }
 
-sc_result _sc_memory_context_manager_on_unauthorized_user(sc_event const * event, sc_addr arc_addr, sc_addr other_addr)
+sc_result _sc_memory_context_manager_on_unauthorized_user(sc_event const * event, sc_addr arc_addr, sc_addr user_addr)
 {
   sc_unused(&arc_addr);
 
   sc_memory_context_manager * manager = sc_event_get_data(event);
-  sc_memory_context * ctx = _sc_memory_context_get_impl(manager, other_addr);
+  sc_memory_context * ctx = _sc_memory_context_get_impl(manager, user_addr);
   if (ctx == null_ptr)
   {
-    sc_hash_table_remove(manager->registered_users, GINT_TO_POINTER(SC_ADDR_LOCAL_TO_INT(other_addr)));
+    _sc_context_remove_user_access_levels(user_addr, SC_CONTEXT_ACCESS_LEVEL_AUTHORIZED);
     return SC_RESULT_OK;
   }
 
   sc_monitor_acquire_write(&ctx->monitor);
-  ctx->access_levels &= ~SC_CONTEXT_ACCESS_LEVEL_AUTHORIZED;
+  sc_context_remove_context_access_levels(ctx->access_levels, SC_CONTEXT_ACCESS_LEVEL_AUTHORIZED);
   sc_monitor_release_write(&ctx->monitor);
 
   return SC_RESULT_OK;
@@ -96,7 +120,7 @@ void _sc_memory_context_manager_initialize(
   (*manager)->context_count = 0;
   sc_monitor_init(&(*manager)->context_monitor);
   (*manager)->user_mode = user_mode;
-  (*manager)->registered_users = sc_hash_table_init(g_direct_hash, g_direct_equal, null_ptr, null_ptr);
+  (*manager)->authorized_users_access_levels = sc_hash_table_init(g_direct_hash, g_direct_equal, null_ptr, null_ptr);
 
   s_memory_default_ctx = sc_memory_context_new(my_self_addr);
   s_memory_default_ctx->access_levels = SC_CONTEXT_ACCESS_LEVEL_FULL;
@@ -154,7 +178,7 @@ void _sc_memory_context_manager_shutdown(sc_memory_context_manager * manager)
 
   sc_monitor_destroy(&manager->context_monitor);
 
-  sc_hash_table_destroy(manager->registered_users);
+  sc_hash_table_destroy(manager->authorized_users_access_levels);
 
   sc_mem_free(manager);
 }
@@ -174,10 +198,8 @@ sc_memory_context * _sc_memory_context_new_impl(sc_memory_context_manager * mana
   sc_monitor_init(&ctx->monitor);
   ctx->user_addr = user_addr;
   ctx->ref_count = 0;
-
-  sc_bool is_registered =
-      (sc_uint64)sc_hash_table_get(manager->registered_users, GINT_TO_POINTER(SC_ADDR_LOCAL_TO_INT(ctx->user_addr)));
-  ctx->access_levels = is_registered == SC_TRUE ? SC_CONTEXT_ACCESS_LEVEL_AUTHORIZED : 0;
+  ctx->access_levels = (sc_uint64)sc_hash_table_get(
+      manager->authorized_users_access_levels, GINT_TO_POINTER(SC_ADDR_LOCAL_TO_INT(ctx->user_addr)));
 
   sc_hash_table_insert(
       manager->context_hash_table, GINT_TO_POINTER(SC_ADDR_LOCAL_TO_INT(ctx->user_addr)), (sc_pointer)ctx);
@@ -284,7 +306,7 @@ sc_bool _sc_memory_context_is_authorized(sc_memory_context_manager * manager, sc
   sc_access_levels access_levels = ctx->access_levels;
   sc_monitor_release_read((sc_monitor *)&ctx->monitor);
 
-  sc_bool is_authorized = (access_levels & SC_CONTEXT_ACCESS_LEVEL_AUTHORIZED) == SC_CONTEXT_ACCESS_LEVEL_AUTHORIZED;
+  sc_bool is_authorized = sc_context_check_context_access_levels(access_levels, SC_CONTEXT_ACCESS_LEVEL_AUTHORIZED);
   return is_authorized;
 }
 

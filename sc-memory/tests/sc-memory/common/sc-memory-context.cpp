@@ -130,6 +130,60 @@ TEST_F(ScMemoryTestWithUserMode, CreateElementsByAuthorizedUserCreatedAfter)
     std::this_thread::sleep_for(std::chrono::milliseconds(10));
 }
 
+TEST_F(ScMemoryTestWithUserMode, SeveralCreateElementsByAuthorizedUserCreatedAfter)
+{
+  ScAddr const & conceptActionSubjectAddr = m_ctx->HelperFindBySystemIdtf("concept_action_subject_addr");
+
+  std::atomic_bool isChecked = false;
+  ScEventAddOutputEdge event(*m_ctx, conceptActionSubjectAddr,
+    [&isChecked](ScAddr const & addr, ScAddr const & edgeAddr, ScAddr const & userAddr)
+  {
+    ScMemoryContext userContext{userAddr};
+    ScAddr const & testNodeAddr = userContext.CreateNode(ScType::NodeConst);
+    EXPECT_TRUE(userContext.IsElement(testNodeAddr));
+
+    ScAddr const & testLinkAddr = userContext.CreateLink(ScType::LinkConst);
+    EXPECT_TRUE(userContext.IsElement(testLinkAddr));
+
+    ScAddr const & testArcAddr = userContext.CreateEdge(ScType::EdgeAccessConstPosTemp, testNodeAddr, testLinkAddr);
+    EXPECT_TRUE(userContext.IsElement(testArcAddr));
+
+    isChecked = true;
+
+    return true;
+  });
+
+  ScAddr const & userAddr = m_ctx->CreateNode(ScType::NodeConst);
+  ScAddr const & conceptAuthorizedUserAddr = m_ctx->HelperFindBySystemIdtf("concept_authorized_user");
+  m_ctx->CreateEdge(ScType::EdgeAccessConstPosTemp, conceptAuthorizedUserAddr, userAddr);
+
+  while (!isChecked.load())
+    std::this_thread::sleep_for(std::chrono::milliseconds(10));
+
+  {
+    ScMemoryContext userContext{userAddr};
+    ScAddr const & testNodeAddr = userContext.CreateNode(ScType::NodeConst);
+    EXPECT_TRUE(userContext.IsElement(testNodeAddr));
+
+    ScAddr const & testLinkAddr = userContext.CreateLink(ScType::LinkConst);
+    EXPECT_TRUE(userContext.IsElement(testLinkAddr));
+
+    ScAddr const & testArcAddr = userContext.CreateEdge(ScType::EdgeAccessConstPosTemp, testNodeAddr, testLinkAddr);
+    EXPECT_TRUE(userContext.IsElement(testArcAddr));
+  }
+  {
+    ScMemoryContext userContext{userAddr};
+    ScAddr const & testNodeAddr = userContext.CreateNode(ScType::NodeConst);
+    EXPECT_TRUE(userContext.IsElement(testNodeAddr));
+
+    ScAddr const & testLinkAddr = userContext.CreateLink(ScType::LinkConst);
+    EXPECT_TRUE(userContext.IsElement(testLinkAddr));
+
+    ScAddr const & testArcAddr = userContext.CreateEdge(ScType::EdgeAccessConstPosTemp, testNodeAddr, testLinkAddr);
+    EXPECT_TRUE(userContext.IsElement(testArcAddr));
+  }
+}
+
 TEST_F(ScMemoryTestWithUserMode, CreateElementsByAuthorizedUserCreatedBeforeAndUnathorizedAfter)
 {
   ScAddr const & userAddr = m_ctx->CreateNode(ScType::NodeConst);
