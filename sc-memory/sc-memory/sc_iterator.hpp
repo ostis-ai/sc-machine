@@ -14,6 +14,11 @@ extern "C"
 #include "sc-core/sc_memory_headers.h"
 }
 
+namespace
+{
+#define CHECK_ITERATOR SC_CHECK(IsValid(), "Used iterator is invalid. Make sure that it's initialized");
+}  // namespace
+
 class ScMemoryContext;
 
 template <typename IterType, sc_uint8 tripleSize>
@@ -89,13 +94,15 @@ public:
 
   _SC_EXTERN bool Next() const override
   {
-    SC_ASSERT(IsValid(), ("Not valid iterator object"));
+    CHECK_ITERATOR;
+
     return sc_iterator3_next(m_iterator) == SC_TRUE;
   }
 
   _SC_EXTERN ScAddr Get(size_t index) const override
   {
-    SC_ASSERT(IsValid(), ("Not valid iterator object"));
+    CHECK_ITERATOR;
+
     if (index < m_tripleSize)
       return ScAddr(sc_iterator3_value(m_iterator, index));
 
@@ -106,7 +113,8 @@ public:
 
   _SC_EXTERN ScAddrTriple Get() const override
   {
-    SC_ASSERT(IsValid(), ("Not valid iterator object"));
+    CHECK_ITERATOR;
+
     return {Get(0), Get(1), Get(2)};
   }
 };
@@ -143,13 +151,15 @@ public:
 
   _SC_EXTERN bool Next() const override
   {
-    SC_ASSERT(IsValid(), ("Not valid iterator object"));
+    CHECK_ITERATOR;
+
     return sc_iterator5_next(m_iterator) == SC_TRUE;
   }
 
   _SC_EXTERN ScAddr Get(size_t index) const override
   {
-    SC_ASSERT(IsValid(), ("Not valid iterator object"));
+    CHECK_ITERATOR;
+
     if (index < m_tripleSize)
       return sc_iterator5_value(m_iterator, index);
 
@@ -160,7 +170,8 @@ public:
 
   _SC_EXTERN ScAddrFiver Get() const override
   {
-    SC_ASSERT(IsValid(), ("Not valid iterator object"));
+    CHECK_ITERATOR;
+
     return {Get(0), Get(1), Get(2), Get(3), Get(4)};
   }
 };

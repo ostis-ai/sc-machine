@@ -136,102 +136,40 @@ public:
   SC_THROW_EXCEPTION(utils::ExceptionInvalidParams, _msg)
 
 #define _CHECK_IMPL(_expr, _msg, _name) \
-  do \
-  { \
-    if (_expr) \
+  ({ \
+    if (!_expr) \
     { \
+      std::string _message = ::utils::impl::Message(_name "(" #_expr ")", _msg); \
+      SC_THROW_EXCEPTION(::utils::ExceptionAssert, _message); \
     } \
-    else \
-    { \
-      std::string _message = ::utils::impl::Message(std::string(_name) + "(" #_expr ")", ::utils::impl::Message _msg); \
-      THROW_EXCEPTION(::utils::ExceptionAssert, _message, __FILE__, __LINE__); \
-    } \
-  } while (false);  // stop runtime
+  })
 
 #define SC_CHECK(_expr, _msg) _CHECK_IMPL(_expr, _msg, "CHECK")
 #define SC_CHECK_NOT(_expr, _msg) _CHECK_IMPL(!_expr, _msg, "CHECK_NOT")
 #define SC_CHECK_EQUAL(_a, _b, _msg) \
-  do \
-  { \
-    if ((_a) == (_b)) \
-    { \
-    } \
-    else \
-    { \
-      std::string _message = \
-          ::utils::impl::Message(std::string("SC_CHECK_EQUAL") + "(" #_a " == " #_b ")", ::utils::impl::Message _msg); \
-      THROW_EXCEPTION(::utils::ExceptionAssert, _message, __FILE__, __LINE__); \
-    } \
-  } while (false);  // stop runtime
-
-#define SC_CHECK_NOT_EQUAL(_a, _b, _msg) \
-  do \
-  { \
+  ({ \
     if ((_a) != (_b)) \
     { \
+      std::string _message = ::utils::impl::Message(std::string("SC_CHECK_EQUAL") + "(" #_a " == " #_b ")", _msg); \
+      SC_THROW_EXCEPTION(::utils::ExceptionAssert, _message); \
     } \
-    else \
+  })
+
+#define SC_CHECK_NOT_EQUAL(_a, _b, _msg) \
+  ({ \
+    if ((_a) == (_b)) \
     { \
-      std::string _message = ::utils::impl::Message( \
-          std::string("SC_CHECK_NOT_EQUAL") + "(" #_a " != " #_b ")", ::utils::impl::Message _msg); \
-      THROW_EXCEPTION(::utils::ExceptionAssert, _message, __FILE__, __LINE__); \
+      std::string _message = ::utils::impl::Message(std::string("SC_CHECK_NOT_EQUAL") + "(" #_a " != " #_b ")", _msg); \
+      SC_THROW_EXCEPTION(::utils::ExceptionAssert, _message); \
     } \
-  } while (false);  // stop runtime
+  })
 
 #define SC_CHECK_GREAT(_a, _b, _msg) \
-  do \
-  { \
-    if ((_a) > (_b)) \
+  ({ \
+    if ((_a) == (_b)) \
     { \
+      std::string _message = ::utils::impl::Message(std::string("SC_CHECK_NOT_EQUAL") + "(" #_a " == " #_b ")", _msg); \
+      SC_THROW_EXCEPTION(::utils::ExceptionAssert, _message); \
     } \
-    else \
-    { \
-      std::string _message = \
-          ::utils::impl::Message(std::string("SC_CHECK_GREAT") + "(" #_a " > " #_b ")", ::utils::impl::Message _msg); \
-      THROW_EXCEPTION(::utils::ExceptionAssert, _message, __FILE__, __LINE__); \
-    } \
-  } while (false);  // stop runtime
-
-#define SC_CHECK_GREAT_EQ(_a, _b, _msg) \
-  do \
-  { \
-    if ((_a) >= (_b)) \
-    { \
-    } \
-    else \
-    { \
-      std::string _message = ::utils::impl::Message( \
-          std::string("SC_CHECK_GREAT_EQ") + "(" #_a " >= " #_b ")", ::utils::impl::Message _msg); \
-      THROW_EXCEPTION(::utils::ExceptionAssert, _message, __FILE__, __LINE__); \
-    } \
-  } while (false);  // stop runtime
-
-#define SC_CHECK_LESS(_a, _b, _msg) \
-  do \
-  { \
-    if ((_a) < (_b)) \
-    { \
-    } \
-    else \
-    { \
-      std::string _message = \
-          ::utils::impl::Message(std::string("SC_CHECK_LESS") + "(" #_a " < " #_b ")", ::utils::impl::Message _msg); \
-      THROW_EXCEPTION(::utils::ExceptionAssert, _message, __FILE__, __LINE__); \
-    } \
-  } while (false);  // stop runtime
-
-#define SC_CHECK_LESS_EQ(_a, _b, _msg) \
-  do \
-  { \
-    if ((_a) <= (_b)) \
-    { \
-    } \
-    else \
-    { \
-      std::string _message = ::utils::impl::Message( \
-          std::string("SC_CHECK_LESS_EQ") + "(" #_a " <= " #_b ")", ::utils::impl::Message _msg); \
-      THROW_EXCEPTION(::utils::ExceptionAssert, _message, __FILE__, __LINE__); \
-    } \
-  } while (false);  // stop runtime
-
+  })
 }  // namespace utils

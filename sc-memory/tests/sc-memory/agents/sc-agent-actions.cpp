@@ -35,13 +35,13 @@ TEST_F(ScAgentTest, action_emit)
     ATestActionEmit::GetCommandClassAddr(),
     { ATestActionEmit::ms_keynodeParam1, ATestActionEmit::ms_keynodeParam2 });
 
-  SC_CHECK(cmd.IsValid(), ());
+  EXPECT_TRUE(cmd.IsValid());
 
   ScWaitActionFinished waiter(*m_ctx, cmd);
   waiter.Wait(5000, [&]() {
     ScAgentAction::InitiateCommand(*m_ctx, cmd);
   });
-  SC_CHECK_EQUAL(ScAgentAction::GetCommandResultCode(*m_ctx, cmd), SC_RESULT_OK, ());
+  EXPECT_EQ(ScAgentAction::GetCommandResultCode(*m_ctx, cmd), SC_RESULT_OK);
 
   SC_AGENT_UNREGISTER(ATestActionEmit);
 }
