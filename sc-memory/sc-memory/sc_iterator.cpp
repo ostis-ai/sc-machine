@@ -281,3 +281,15 @@ TIterator5<ScType, ScType, ScAddr, ScType, ScType>::TIterator5(
 {
   m_iterator = sc_iterator5_a_a_f_a_a_new(*context, p1, p2, *p3, p4, p5);
 }
+
+template <>
+TIterator5<ScType, ScType, ScType, ScType, ScAddr>::TIterator5(
+    ScMemoryContext const & context,
+    ScType const & p1,
+    ScType const & p2,
+    ScType const & p3,
+    ScType const & p4,
+    ScAddr const & p5)
+{
+  m_iterator = sc_iterator5_a_a_a_a_f_new(*context, p1, p2, p3, p4, *p5);
+}

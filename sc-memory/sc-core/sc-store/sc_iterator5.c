@@ -44,6 +44,10 @@ sc_iterator5 * sc_iterator5_new(
     if (!p1.is_type || !p2.is_type || p3.is_type || !p4.is_type || !p5.is_type)
       return null_ptr;
     break;
+  case sc_iterator5_a_a_a_a_f:
+    if (!p1.is_type || !p2.is_type || !p3.is_type || !p4.is_type || p5.is_type)
+      return null_ptr;
+    break;
   default:
     return null_ptr;
   }
@@ -97,12 +101,14 @@ sc_iterator5 * sc_iterator5_new(
     it->it_attr = null_ptr;
     it->results[0] = p1.addr;
     break;
-  }
-
-  if (it->it_main == null_ptr)
-  {
+  case sc_iterator5_a_a_a_a_f:
+    it->it_main = null_ptr;
+    it->it_attr = sc_iterator3_f_a_a_new(ctx, p5.addr, p4.type, p2.type);
+    it->results[4] = p5.addr;
+    break;
+  default:
     sc_mem_free(it);
-    it = 0;
+    it = null_ptr;
   }
 
   return it;
@@ -244,6 +250,29 @@ sc_iterator5 * sc_iterator5_a_a_f_a_a_new(
   _p5.type = p5;
 
   return sc_iterator5_new(ctx, sc_iterator5_a_a_f_a_a, _p1, _p2, _p3, _p4, _p5);
+}
+
+sc_iterator5 * sc_iterator5_a_a_a_a_f_new(
+    sc_memory_context const * ctx,
+    sc_type p1,
+    sc_type p2,
+    sc_type p3,
+    sc_type p4,
+    sc_addr p5)
+{
+  sc_iterator_param _p1, _p2, _p3, _p4, _p5;
+  _p1.is_type = SC_TRUE;
+  _p1.type = p1;
+  _p2.is_type = SC_TRUE;
+  _p2.type = p2;
+  _p3.is_type = SC_TRUE;
+  _p3.type = p3;
+  _p4.is_type = SC_TRUE;
+  _p4.type = p4;
+  _p5.is_type = SC_FALSE;
+  _p5.addr = p5;
+
+  return sc_iterator5_new(ctx, sc_iterator5_a_a_a_a_f, _p1, _p2, _p3, _p4, _p5);
 }
 
 void sc_iterator5_free(sc_iterator5 * it)
@@ -518,6 +547,52 @@ sc_bool _sc_iterator5_a_a_f_a_a_next(sc_iterator5 * it)
   }
 }
 
+sc_bool _sc_iterator5_a_a_a_a_f_next(sc_iterator5 * it)
+{
+  SC_ADDR_MAKE_EMPTY(it->results[0]);
+  SC_ADDR_MAKE_EMPTY(it->results[1]);
+  SC_ADDR_MAKE_EMPTY(it->results[2]);
+  SC_ADDR_MAKE_EMPTY(it->results[3]);
+
+  if (it->it_main != null_ptr && sc_iterator3_next(it->it_main))
+  {
+    it->results[0] = it->it_main->results[0];
+    it->results[1] = it->it_main->results[1];
+    it->results[2] = it->it_main->results[2];
+    it->results[3] = it->it_attr->results[1];
+    return SC_TRUE;
+  }
+  else
+  {
+    if (it->it_main != null_ptr)
+    {
+      sc_iterator3_free(it->it_main);
+      it->it_main = null_ptr;
+    }
+
+    while (it->it_main == null_ptr || !sc_iterator3_next(it->it_main))
+    {
+      if (it->it_main != null_ptr)
+      {
+        sc_iterator3_free(it->it_main);
+        it->it_main = null_ptr;
+      }
+
+      if (!sc_iterator3_next(it->it_attr))
+        return SC_FALSE;
+
+      it->it_main = sc_iterator3_a_f_a_new(it->ctx, it->params[0].type, it->it_attr->results[2], it->params[2].type);
+      if (it->it_main == null_ptr)
+        return SC_FALSE;
+    }
+    it->results[0] = it->it_main->results[0];
+    it->results[1] = it->it_main->results[1];
+    it->results[2] = it->it_main->results[2];
+    it->results[3] = it->it_attr->results[1];
+    return SC_TRUE;
+  }
+}
+
 sc_bool sc_iterator5_next(sc_iterator5 * it)
 {
   sc_bool status = SC_FALSE;
@@ -548,6 +623,10 @@ sc_bool sc_iterator5_next(sc_iterator5 * it)
 
   case sc_iterator5_a_a_f_a_a:
     status = _sc_iterator5_a_a_f_a_a_next(it);
+    break;
+
+  case sc_iterator5_a_a_a_a_f:
+    status = _sc_iterator5_a_a_a_a_f_next(it);
     break;
   }
 

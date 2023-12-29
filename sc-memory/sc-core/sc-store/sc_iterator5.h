@@ -17,7 +17,8 @@ typedef enum
   sc_iterator5_f_a_f_a_f,
   sc_iterator5_f_a_f_a_a,
   sc_iterator5_f_a_a_a_a,
-  sc_iterator5_a_a_f_a_a
+  sc_iterator5_a_a_f_a_a,
+  sc_iterator5_a_a_a_a_f
 } sc_iterator5_type;
 
 /*! Structure to store iterator information
@@ -48,8 +49,8 @@ _SC_EXTERN sc_iterator5 * sc_iterator5_new(
  * @param p1 First element type
  * @param p2 Second element type
  * @param p3 sc-addr of third element in construction
- * @param p4 4th element type
- * @param p5 sc-addr of 5th element in construction
+ * @param p4 Fourth element type
+ * @param p5 sc-addr of Fifth element in construction
  * @return Pointer to created iterator. If parameters invalid for specified iterator type, or type is not a
  * sc-iterator-3, then return 0
  */
@@ -67,7 +68,7 @@ _SC_EXTERN sc_iterator5 * sc_iterator5_a_a_f_a_f_new(
  * @param p2 Second element type
  * @param p3 Third element type
  * @param p4 4-th element type
- * @param p5 sc-addr of 5th element in construction
+ * @param p5 sc-addr of Fifth element in construction
  * @return Pointer to created iterator. If parameters invalid for specified iterator type, or type is not a
  * sc-iterator-3, then return 0
  */
@@ -85,7 +86,7 @@ _SC_EXTERN sc_iterator5 * sc_iterator5_f_a_a_a_f_new(
  * @param p2 Second element type
  * @param p3 sc-addr of third element in construction
  * @param p4 4-th element type
- * @param p5 sc-addr of 5th element in construction
+ * @param p5 sc-addr of Fifth element in construction
  * @return Pointer to created iterator. If parameters invalid for specified iterator type, or type is not a
  * sc-iterator-3, then return 0
  */
@@ -150,6 +151,24 @@ _SC_EXTERN sc_iterator5 * sc_iterator5_a_a_f_a_a_new(
     sc_addr p3,
     sc_type p4,
     sc_type p5);
+
+/*! Create new sc-iterator5
+ * @param type Iterator type (search template)
+ * @param p1 First element type
+ * @param p2 Second element type
+ * @param p3 Third element type
+ * @param p4 Fourth element type
+ * @param p5 sc-addr of Fifth element in construction
+ * @return Pointer to created iterator. If parameters invalid for specified iterator type, or type is not a
+ * sc-iterator-3, then return 0
+ */
+_SC_EXTERN sc_iterator5 * sc_iterator5_a_a_a_a_f_new(
+    sc_memory_context const * ctx,
+    sc_type p1,
+    sc_type p2,
+    sc_type p3,
+    sc_type p4,
+    sc_addr p5);
 
 /*! Go to next iterator result
  * @param it Pointer to iterator that we need to go next result
