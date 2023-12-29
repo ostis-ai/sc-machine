@@ -403,3 +403,25 @@ TEST_F(ScIterator5CoreTest, sc_iterator5_a_a_f_a_f)
 
   sc_iterator5_free(it);
 }
+
+TEST_F(ScIterator5CoreTest, sc_iterator5_a_a_a_a_f)
+{
+  sc_iterator5 * it = sc_iterator5_a_a_a_a_f_new(
+      **m_ctx, sc_type_node | sc_type_const, sc_type_arc_pos_const_perm, sc_type_link | sc_type_const, sc_type_arc_pos_const_perm, m_attr);
+  EXPECT_NE(it, nullptr);
+  EXPECT_TRUE(sc_iterator5_next(it));
+
+  EXPECT_TRUE(SC_ADDR_IS_EQUAL(sc_iterator5_value(it, 0), m_source));
+  EXPECT_TRUE(SC_ADDR_IS_EQUAL(sc_iterator5_value(it, 1), m_edge));
+  EXPECT_TRUE(SC_ADDR_IS_EQUAL(sc_iterator5_value(it, 2), m_target));
+  EXPECT_TRUE(SC_ADDR_IS_EQUAL(sc_iterator5_value(it, 3), m_attrEdge));
+  EXPECT_TRUE(SC_ADDR_IS_EQUAL(sc_iterator5_value(it, 4), m_attr));
+
+  EXPECT_FALSE(sc_iterator5_next(it));
+
+  EXPECT_TRUE(SC_ADDR_IS_EMPTY(sc_iterator5_value(it, 0)));
+  EXPECT_TRUE(SC_ADDR_IS_EMPTY(sc_iterator5_value(it, 1)));
+  EXPECT_TRUE(SC_ADDR_IS_EMPTY(sc_iterator5_value(it, 2)));
+
+  sc_iterator5_free(it);
+}
