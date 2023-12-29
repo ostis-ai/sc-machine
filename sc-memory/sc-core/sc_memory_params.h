@@ -44,9 +44,9 @@ typedef struct
   sc_uint32 save_period;    ///< Period (in seconds) for automatic saving of the sc-memory state.
   sc_uint32 update_period;  ///< Period (in seconds) for dumping statistics of the sc-memory state.
 
-  sc_char const * log_type;   ///< Type of logging (e.g., "console", "file").
-  sc_char const * log_file;   ///< Path to the log file (if log_type is "file").
-  sc_char const * log_level;  ///< Log level (e.g., "error", "warning", "info", "debug").
+  sc_char const * log_type;   ///< Type of logging (e.g., "Console", "File").
+  sc_char const * log_file;   ///< Path to the log file (if log_type is "File").
+  sc_char const * log_level;  ///< Log level (e.g., "Error", "Info", "Debug").
 
   sc_char const * init_memory_generated_structure;  ///< Initial sc-memory generated structure system identifier.
   sc_bool init_memory_generated_upload;  ///< Boolean indicating whether to upload the initial generated structure.

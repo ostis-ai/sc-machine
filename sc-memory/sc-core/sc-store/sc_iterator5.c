@@ -565,6 +565,9 @@ sc_bool sc_iterator5_next(sc_iterator5 * it)
 
 sc_addr sc_iterator5_value(sc_iterator5 * it, sc_uint index)
 {
+  if (it == null_ptr)
+    return SC_ADDR_EMPTY;
+
   if (index < 5)
     return it->results[index];
 
