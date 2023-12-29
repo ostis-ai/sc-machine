@@ -16,6 +16,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Iterator5 AAAAF
 - Divide params errors handling and memory state handling
 - Provide errors and exceptions information into C and C++ sc-memory API
 - Support for gwf <0.4.0
