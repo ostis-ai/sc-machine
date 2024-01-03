@@ -86,12 +86,12 @@ Identifier of `subject`, `predicate`, `object` build with rule:
 
 Where `type` - is an element type specification. It can be one of possible values:
 
-* `sc_node` - equal to ![SCg-node](../images/scg/scg_node.png);
-* `sc_link` - equal to ![SCg-link](../images/scg/scg_link_const.png);
-* `sc_edge_dcommon` - equal to ![SCg-edge](../images/scg/scg_edge_common_orient.png);
-* `sc_edge_ucommon` - equal to ![SCg-edge](../images/scg/scg_edge_common.png);
-* `sc_edge_main` - equal to ![SCg-edge](../images/scg/scg_edge_const_pos_perm.png);
-* `sc_edge_access` - equal to ![SCg-edge](../images/scg/scg_edge_access.png).
+* `sc_node` - equal to ![SCg-node](images/scg/scg_node.png);
+* `sc_link` - equal to ![SCg-link](images/scg/scg_link_const.png);
+* `sc_edge_dcommon` - equal to ![SCg-edge](images/scg/scg_edge_common_orient.png);
+* `sc_edge_ucommon` - equal to ![SCg-edge](images/scg/scg_edge_common.png);
+* `sc_edge_main` - equal to ![SCg-edge](images/scg/scg_edge_const_pos_perm.png);
+* `sc_edge_access` - equal to ![SCg-edge](images/scg/scg_edge_access.png).
 
 <hr/>
 
@@ -104,7 +104,7 @@ Where `type` - is an element type specification. It can be one of possible value
   </tr>
 
   <tr>
-    <td><scg src="../../images/scs/scs_example_level_1.gwf"></scg></td>
+    <td><scg src="images/scs/scs_example_level_1.gwf"></scg></td>
     <td>
       <pre>
         <code class="js hljs javascript">
@@ -118,7 +118,7 @@ sc_node#fruit | sc_edge_main#... | sc_node#banana;;
   </tr>
 
   <tr>
-    <td width="50%"><scg src="../../images/scs/scs_example_level_1_2.gwf"></scg></td>
+    <td width="50%"><scg src="images/scs/scs_example_level_1_2.gwf"></scg></td>
     <td>
       <pre>
         <code class="js hljs javascript">
@@ -155,79 +155,79 @@ Where `<edge>` can be on of values:
   </tr>
   <tr>
     <td>`<` or `>`</td>
-    <td><img src="../../images/scg/scg_edge_common_orient.png"></img></td>
+    <td><img src="images/scg/scg_edge_common_orient.png"></img></td>
   </tr>
   <tr>
     <td>`<>`</td>
-    <td><img src="../../images/scg/scg_edge_common.png"></img></td>
+    <td><img src="images/scg/scg_edge_common.png"></img></td>
   </tr>
   <tr>
     <td>`<..` or `..>`</td>
-    <td><img src="../../images/scg/scg_edge_access.png"></img></td>
+    <td><img src="images/scg/scg_edge_access.png"></img></td>
   </tr>
   <tr>
     <td>`<=>`</td>
-    <td><img src="../../images/scg/scg_edge_const_common.png"></img></td>
+    <td><img src="images/scg/scg_edge_const_common.png"></img></td>
   </tr>
   <tr>
     <td>`_<=>`</td>
-    <td><img src="../../images/scg/scg_edge_var_common.png"></img></td>
+    <td><img src="images/scg/scg_edge_var_common.png"></img></td>
   </tr>
   <tr>
     <td>`<=` or `=>`</td>
-    <td><img src="../../images/scg/scg_edge_const_common_orient.png"></img></td>
+    <td><img src="images/scg/scg_edge_const_common_orient.png"></img></td>
   </tr>
   <tr>
     <td>`_<=` or `_=>`</td>
-    <td><img src="../../images/scg/scg_edge_var_common_orient.png"></img></td>
+    <td><img src="images/scg/scg_edge_var_common_orient.png"></img></td>
   </tr>
   <tr>
     <td>`<-` or `->`</td>
-    <td><img src="../../images/scg/scg_edge_const_pos_perm.png"></img></td>
+    <td><img src="images/scg/scg_edge_const_pos_perm.png"></img></td>
   </tr>
   <tr>
     <td>`_<-` or `_->`</td>
-    <td><img src="../../images/scg/scg_edge_var_pos_perm.png"></img></td>
+    <td><img src="images/scg/scg_edge_var_pos_perm.png"></img></td>
   </tr>
   <tr>
     <td>`<|-` or `-|>`</td>
-    <td><img src="../../images/scg/scg_edge_const_neg_perm.png"></img></td>
+    <td><img src="images/scg/scg_edge_const_neg_perm.png"></img></td>
   </tr>
   <tr>
     <td>`_<|-` or `_-|>`</td>
-    <td><img src="../../images/scg/scg_edge_var_neg_perm.png"></img></td>
+    <td><img src="images/scg/scg_edge_var_neg_perm.png"></img></td>
   </tr>
   <tr>
     <td>`<<i></i>/-` or `-/>`</td>
-    <td><img src="../../images/scg/scg_edge_const_fuz_perm.png"></img></td>
+    <td><img src="images/scg/scg_edge_const_fuz_perm.png"></img></td>
   </tr>
   <tr>
     <td>`_<<i></i>/-` or `_-/>`</td>
-    <td><img src="../../images/scg/scg_edge_var_fuz_perm.png"></img></td>
+    <td><img src="images/scg/scg_edge_var_fuz_perm.png"></img></td>
   </tr>
   <tr>
     <td>`<~` or `~>`</td>
-    <td><img src="../../images/scg/scg_edge_const_pos_temp.png"></img></td>
+    <td><img src="images/scg/scg_edge_const_pos_temp.png"></img></td>
   </tr>
   <tr>
     <td>`_<~` or `_~>`</td>
-    <td><img src="../../images/scg/scg_edge_var_pos_temp.png"></img></td>
+    <td><img src="images/scg/scg_edge_var_pos_temp.png"></img></td>
   </tr>
   <tr>
     <td>`<|~` or `~|>`</td>
-    <td><img src="../../images/scg/scg_edge_const_neg_temp.png"></img></td>
+    <td><img src="images/scg/scg_edge_const_neg_temp.png"></img></td>
   </tr>
   <tr>
     <td>`_<|~` or `_~|>`</td>
-    <td><img src="../../images/scg/scg_edge_var_neg_temp.png"></img></td>
+    <td><img src="images/scg/scg_edge_var_neg_temp.png"></img></td>
   </tr>
   <tr>
     <td>`<<i></i>/~` or `~/>`</td>
-    <td><img src="../../images/scg/scg_edge_const_fuz_temp.png"></img></td>
+    <td><img src="images/scg/scg_edge_const_fuz_temp.png"></img></td>
   </tr>
   <tr>
     <td>`_<<i></i>/~` or `_~/>`</td>
-    <td><img src="../../images/scg/scg_edge_var_fuz_temp.png"></img></td>
+    <td><img src="images/scg/scg_edge_var_fuz_temp.png"></img></td>
   </tr>
 </table>
 
@@ -240,7 +240,7 @@ Where `<edge>` can be on of values:
   </tr>
 
   <tr>
-    <td><scg src="../../images/scs/scs_example_level_1.gwf"></scg></td>
+    <td><scg src="images/scs/scs_example_level_1.gwf"></scg></td>
     <td>
       <pre>
         <code class="js hljs javascript">
@@ -268,7 +268,7 @@ So that allows to simplify usage of an edge as a source or target of another one
   </tr>
 
   <tr>
-    <td width="50%"><img src="../../images/scs/scs_example_level_1_2.png"></img></td>
+    <td width="50%"><img src="images/scs/scs_example_level_1_2.png"></img></td>
     <td>
       <pre>
         <code class="js hljs javascript">
@@ -279,7 +279,7 @@ nrel_image -> (fruit => "file://apple.png");;
   </tr>
 
   <tr>
-    <td><img src="../../images/scs/scs_example_level_2.png"></img></td>
+    <td><img src="images/scs/scs_example_level_2.png"></img></td>
     <td>
       <pre>
         <code class="js hljs javascript">
@@ -290,7 +290,7 @@ d -> (c -> (a -> b));;
   </tr>
 
   <tr>
-    <td><img src="../../images/scs/scs_example_level_2_2.png"></img></td>
+    <td><img src="images/scs/scs_example_level_2_2.png"></img></td>
     <td>
       <pre>
         <code class="js hljs javascript">
@@ -305,7 +305,7 @@ d -> (c -> (a -> b));;
 ### SCs level 3
 
 This level of SCs-text allows to minimize symbols to represent constructions like this one:
-<scg src="../../images/scs/scs_example_level_3.gwf"></scg>
+<scg src="images/scs/scs_example_level_3.gwf"></scg>
 
 ```scs
 c -> (a -> b);;
@@ -350,7 +350,7 @@ c _-> (a -> b);;
   </tr>
 
   <tr>
-    <td><scg src="../../images/scs/scs_example_level_1_2.gwf"></scg></td>
+    <td><scg src="images/scs/scs_example_level_1_2.gwf"></scg></td>
     <td>
       <pre>
         <code class="js hljs javascript">
@@ -361,7 +361,7 @@ c _-> (a -> b);;
   </tr>
 
   <tr>
-    <td><scg src="../../images/scs/scs_example_level_3_2.gwf"></scg></td>
+    <td><scg src="images/scs/scs_example_level_3_2.gwf"></scg></td>
     <td>
       <div class="note">
         <b>Note</b>: it is possible to use any number of <code>:</code>, <code>::</code> in one sentence.
@@ -407,7 +407,7 @@ Another words, this level of SCs text, allows to use source element one time.
   </tr>
 
   <tr>
-    <td><img src="../../images/scs/scs_example_level_1.png"></img></td>
+    <td><img src="images/scs/scs_example_level_1.png"></img></td>
     <td>
       <pre>
         <code class="js hljs javascript">
@@ -419,7 +419,7 @@ Another words, this level of SCs text, allows to use source element one time.
   <tr>
 
   <tr>
-    <td><img src="../../images/scs/scs_example_level_4.png"></img></td>
+    <td><img src="images/scs/scs_example_level_4.png"></img></td>
     <td>
       <pre>
         <code class="js hljs javascript">
@@ -731,18 +731,18 @@ There are a list of element type keynodes, that can be used to specify type of a
 
 | Keynode                           | Equal sc-type                       | Equal SCg-element
 | --------------------------------- | ----------------------------------- | --------------
-| sc_node                           | ScType::Node                        | ![SCg-edge](../images/scg/scg_node.png)
-| sc_link                           | ScType::Link                        | ![SCg-edge](../images/scg/scg_link_const.png)
-| sc_edge_dcommon                   | ScType::EdgeDCommon                 | ![SCg-edge](../images/scg/scg_edge_common_orient.png)
-| sc_edge_ucommon                   | ScType::EdgeUCommon                 | ![SCg-edge](../images/scg/scg_edge_common.png)
-| sc_edge_main                      | ScType::EdgeAccessConstPosPerm      | ![SCg-edge](../images/scg/scg_edge_const_pos_perm.png)
-| sc_edge_access                    | ScType::EdgeAccess                  | ![SCg-edge](../images/scg/scg_edge_access.png)
-| sc_node_tuple                     | ScType::NodeTuple                   | ![SCg-edge](../images/scg/scg_node_const_tuple.png) ![SCg-edge](../images/scg/scg_node_var_tuple.png)
-| sc_node_struct                    | ScType::NodeStruct                  | ![SCg-edge](../images/scg/scg_node_const_struct.png) ![SCg-edge](../images/scg/scg_node_var_struct.png)
-| sc_node_role_relation             | ScType::NodeRole                    | ![SCg-edge](../images/scg/scg_node_const_role.png) ![SCg-edge](../images/scg/scg_node_var_role.png)
-| sc_node_norole_relation           | ScType::NodeNoRole                  | ![SCg-edge](../images/scg/scg_node_const_norole.png) ![SCg-edge](../images/scg/scg_node_var_norole.png)
-| sc_node_class                     | ScType::NodeClass                   | ![SCg-edge](../images/scg/scg_node_const_class.png) ![SCg-edge](../images/scg/scg_node_var_class.png)
-| sc_node_material                  | ScType::NodeMaterial                | ![SCg-edge](../images/scg/scg_node_const_material.png) ![SCg-edge](../images/scg/scg_node_var_material.png)
+| sc_node                           | ScType::Node                        | ![SCg-edge](images/scg/scg_node.png)
+| sc_link                           | ScType::Link                        | ![SCg-edge](images/scg/scg_link_const.png)
+| sc_edge_dcommon                   | ScType::EdgeDCommon                 | ![SCg-edge](images/scg/scg_edge_common_orient.png)
+| sc_edge_ucommon                   | ScType::EdgeUCommon                 | ![SCg-edge](images/scg/scg_edge_common.png)
+| sc_edge_main                      | ScType::EdgeAccessConstPosPerm      | ![SCg-edge](images/scg/scg_edge_const_pos_perm.png)
+| sc_edge_access                    | ScType::EdgeAccess                  | ![SCg-edge](images/scg/scg_edge_access.png)
+| sc_node_tuple                     | ScType::NodeTuple                   | ![SCg-edge](images/scg/scg_node_const_tuple.png) ![SCg-edge](images/scg/scg_node_var_tuple.png)
+| sc_node_struct                    | ScType::NodeStruct                  | ![SCg-edge](images/scg/scg_node_const_struct.png) ![SCg-edge](images/scg/scg_node_var_struct.png)
+| sc_node_role_relation             | ScType::NodeRole                    | ![SCg-edge](images/scg/scg_node_const_role.png) ![SCg-edge](images/scg/scg_node_var_role.png)
+| sc_node_norole_relation           | ScType::NodeNoRole                  | ![SCg-edge](images/scg/scg_node_const_norole.png) ![SCg-edge](images/scg/scg_node_var_norole.png)
+| sc_node_class                     | ScType::NodeClass                   | ![SCg-edge](images/scg/scg_node_const_class.png) ![SCg-edge](images/scg/scg_node_var_class.png)
+| sc_node_material                  | ScType::NodeMaterial                | ![SCg-edge](images/scg/scg_node_const_material.png) ![SCg-edge](images/scg/scg_node_var_material.png)
 
 There are old keynodes, that used for backward compatibility:
 
@@ -770,7 +770,7 @@ a _-> _b;;
 _b <- sc_node_material;;
       </pre>
     </td>
-    <td><img src="../images/scs_keynodes_old_example_1.png"></img></td>
+    <td><img src="images/scs_keynodes_old_example_1.png"></img></td>
   </tr>
   <tr>
     <td>
@@ -779,6 +779,6 @@ _x => nrel_y: t;;
 nrel_y <- sc_node_norole_relation;;
       </pre>
     </td>
-    <td><img src="../images/scs_keynodes_old_example_2.png"></img></td>
+    <td><img src="images/scs_keynodes_old_example_2.png"></img></td>
   </tr>
 </table>

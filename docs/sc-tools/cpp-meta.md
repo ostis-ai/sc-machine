@@ -198,7 +198,7 @@ static ScAddr m_node;
 1. How to include one `MyObject` into `OtherObject`
 ```cpp
 /* In CPP file you should include header file for object, that implemented in this file
- * For example in file MyObject.cpp we should make order
+ * For example in file MyObject.api we should make order
  */
 #include "otherObject.hpp"
 #include "otherObject2.hpp"

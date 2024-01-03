@@ -12,25 +12,21 @@ nav:
   - Build:
       - Build on Linux: build/linux-build.md
       - Build on OSX: build/osx-build.md
-      - CMake Flags: build/cmake-flags.md
+      - CMake flags: build/cmake-flags.md
+      - Configuration file: build/config.md
+  - API:
+      - C++ API: sc-memory/api/cpp-api.md
+      - C++ Agents: sc-memory/api/cpp-agents.md
+      - sc-element types: sc-memory/api/sc-element-types.md
+      - SCs language: scs/scs.md
+  - Tools:
+      - Knowledge Base Builder: sc-tools/kb-builder.md
+      - Knowledge Base repo file: sc-tools/kb-repo-file.md
+      - Meta programming: sc-tools/cpp-meta.md
   - Development:
       - Git-workflow: dev/git-workflow.md
       - Codestyle: dev/codestyle.md
       - Dev container: dev/devcontainer.md
-  - Common:
-      - Element types: cpp/el_types.md
-      - Configuration files: other/config.md
-      - SCs language: other/scs.md
-      - KB repo file: other/repofile.md
-  - API:
-      - Meta programming: cpp/cpp-meta.md
-      - Agents: sc-kpm/kpm.md
-      - Template: sc-search/templates.md
-      - Common: cpp/common.md
-      - File storage:
-          - Sc-dictionary-based file storage: storage/sc-dictionary.md
-  - Tools:
-      - Builder: sc-tools/kb_builder.md
   - License: license.md
   - Changelog: changelog.md
   - Thirdparty: thirdparty.md
