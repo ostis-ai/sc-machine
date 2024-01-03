@@ -62,7 +62,7 @@ void _logPrintHandler(
   }
 }
 
-#define CHECK_CONTEXT SC_ASSERT(IsValid(), "Used context is invalid. Make sure that it's initialized")
+#define CHECK_CONTEXT SC_CHECK(IsValid(), "Used context is invalid. Make sure that it's initialized")
 
 }  // namespace
 
@@ -72,8 +72,6 @@ sc_memory_context * ScMemory::ms_globalContext = nullptr;
 
 bool ScMemory::Initialize(sc_memory_params const & params)
 {
-  std::srand(unsigned(std::time(nullptr)));
-
   g_log_set_default_handler(_logPrintHandler, nullptr);
 
   ms_globalContext = sc_memory_initialize(&params);

@@ -1,5 +1,5 @@
 /*
-   base64.cpp and base64.h
+   base64.api and base64.h
 
    Copyright (C) 2004-2008 René Nyffenegger
 

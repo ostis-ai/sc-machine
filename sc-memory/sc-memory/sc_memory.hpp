@@ -90,13 +90,11 @@ public:
     sc_uint64 m_linksNum;
     sc_uint64 m_edgesNum;
 
-    sc_uint64 GetAllNum() const
+    [[nodiscard]] sc_uint64 GetAllNum() const
     {
       return m_nodesNum + m_linksNum + m_edgesNum;
     }
   };
-
-  using Stat = ScMemoryStatistics;
 
 public:
   _SC_EXTERN explicit ScMemoryContext(sc_uint8 accessLevels, std::string name = "");
@@ -125,7 +123,7 @@ public:
   //! End events pending mode
   _SC_EXTERN void EndEventsPending();
 
-  _SC_EXTERN std::string const & GetName() const
+  _SC_EXTERN [[nodiscard]] std::string const & GetName() const
   {
     return m_name;
   }
@@ -137,7 +135,6 @@ public:
    *
    * @return Returns true if the sc-memory context is valid; otherwise, returns false.
    *
-   * @example
    * @code
    * ScMemoryContext ctx;
    * if (ctx.IsValid()) {
@@ -147,7 +144,7 @@ public:
    * }
    * @endcode
    */
-  _SC_EXTERN bool IsValid() const;
+  _SC_EXTERN [[nodiscard]] bool IsValid() const;
 
   /*!
    * @brief Checks if an sc-element exists with the specified address.
@@ -157,7 +154,6 @@ public:
    * @param addr The sc-address to check for existence.
    * @return Returns true if the sc-element exists; otherwise, returns false.
    *
-   * @example
    * @code
    * ScMemoryContext ctx;
    * ScAddr elementAddr = ctx.CreateNode(ScType::NodeConst);
@@ -168,7 +164,7 @@ public:
    * }
    * @endcode
    */
-  _SC_EXTERN bool IsElement(ScAddr const & addr) const;
+  _SC_EXTERN [[nodiscard]] bool IsElement(ScAddr const & addr) const;
 
   /*!
    * @brief Returns the count of output arcs for a specified sc-element.
@@ -179,7 +175,6 @@ public:
    * @return Returns the count of output arcs for the specified sc-element.
    * @throws ExceptionInvalidParams if the specified sc-address is invalid.
    *
-   * @example
    * @code
    * ScMemoryContext ctx;
    * ScAddr elementAddr = ctx.CreateNode(ScType::NodeConst);
@@ -187,7 +182,7 @@ public:
    * std::cout << "Output Arcs Count: " << outputArcsCount << std::endl;
    * @endcode
    */
-  _SC_EXTERN size_t GetElementOutputArcsCount(ScAddr const & addr) const noexcept(false);
+  _SC_EXTERN [[nodiscard]] size_t GetElementOutputArcsCount(ScAddr const & addr) const noexcept(false);
 
   /*!
    * @brief Returns the count of input arcs for a specified sc-element.
@@ -198,7 +193,6 @@ public:
    * @return Returns the count of input arcs for the specified sc-element.
    * @throws ExceptionInvalidParams if the specified sc-address is invalid.
    *
-   * @example
    * @code
    * ScMemoryContext ctx;
    * ScAddr elementAddr = ctx.CreateNode(ScType::NodeConst);
@@ -206,7 +200,7 @@ public:
    * std::cout << "Input Arcs Count: " << inputArcsCount << std::endl;
    * @endcode
    */
-  _SC_EXTERN size_t GetElementInputArcsCount(ScAddr const & addr) const noexcept(false);
+  _SC_EXTERN [[nodiscard]] size_t GetElementInputArcsCount(ScAddr const & addr) const noexcept(false);
 
   /*!
    * @brief Erases an sc-element from the sc-memory.
@@ -216,7 +210,6 @@ public:
    * @param addr The sc-address of the sc-element to erase.
    * @return Returns true if the sc-element was successfully erased; otherwise, returns false.
    *
-   * @example
    * @code
    * ScMemoryContext ctx;
    * ScAddr elementAddr = ctx.CreateNode(ScType::NodeConst);
@@ -254,7 +247,6 @@ public:
    * @return Returns the sc-address of the newly created sc-link.
    * @throws ExceptionInvalidParams if the specified type is not a valid sc-link type or if sc-memory is full.
    *
-   * @example
    * @code
    * ScMemoryContext ctx;
    * ScAddr linkAddr = ctx.CreateLink();
@@ -273,7 +265,6 @@ public:
    * @return Returns the sc-address of the newly created sc-connector.
    * @throws ExceptionInvalidParams if the specified source or target sc-address is invalid or if sc-memory is full.
    *
-   * @example
    * @code
    * ScMemoryContext ctx;
    * ScAddr sourceNode = ctx.CreateNode(ScType::NodeConst);
@@ -292,7 +283,6 @@ public:
    * @return Returns the type of the specified sc-element.
    * @throws ExceptionInvalidParams if the specified sc-address is invalid.
    *
-   * @example
    * @code
    * ScMemoryContext ctx;
    * ScAddr elementAddr = ctx.CreateNode(ScType::NodeConst);
@@ -300,7 +290,7 @@ public:
    * std::cout << "Element Type: " << elementType.GetName() << std::endl;
    * @endcode
    */
-  _SC_EXTERN ScType GetElementType(ScAddr const & addr) const noexcept(false);
+  _SC_EXTERN [[nodiscard]] ScType GetElementType(ScAddr const & addr) const noexcept(false);
 
   /*!
    * @brief Changes the subtype of an sc-element.
@@ -312,7 +302,6 @@ public:
    * @return Returns true if the subtype was successfully changed; otherwise, returns false.
    * @throws ExceptionInvalidParams if the specified sc-address is invalid.
    *
-   * @example
    * @code
    * ScMemoryContext ctx;
    * ScAddr elementAddr = ctx.CreateNode(ScType::NodeConst);
@@ -334,7 +323,6 @@ public:
    * @return Returns the sc-address of the source sc-element.
    * @throws ExceptionInvalidParams if the specified sc-connector address is invalid.
    *
-   * @example
    * @code
    * ScMemoryContext ctx;
    * ScAddr sourceNode = ctx.CreateNode(ScType::NodeConst);
@@ -343,7 +331,7 @@ public:
    * ScAddr sourceElement = ctx.GetEdgeSource(edgeAddr);
    * @endcode
    */
-  _SC_EXTERN ScAddr GetEdgeSource(ScAddr const & edgeAddr) const noexcept(false);
+  _SC_EXTERN [[nodiscard]] ScAddr GetEdgeSource(ScAddr const & edgeAddr) const noexcept(false);
 
   /*!
    * @brief Returns the target sc-element of an sc-connector.
@@ -354,7 +342,6 @@ public:
    * @return Returns the sc-address of the target sc-element.
    * @throws ExceptionInvalidParams if the specified sc-connector address is invalid.
    *
-   * @example
    * @code
    * ScMemoryContext ctx;
    * ScAddr sourceNode = ctx.CreateNode(ScType::NodeConst);
@@ -363,7 +350,7 @@ public:
    * ScAddr targetElement = ctx.GetEdgeTarget(edgeAddr);
    * @endcode
    */
-  _SC_EXTERN ScAddr GetEdgeTarget(ScAddr const & edgeAddr) const noexcept(false);
+  _SC_EXTERN [[nodiscard]] ScAddr GetEdgeTarget(ScAddr const & edgeAddr) const noexcept(false);
 
   /*!
    * @brief Returns the source and target sc-elements of an sc-connector.
@@ -376,7 +363,6 @@ public:
    * @return Returns true if the information was successfully retrieved; otherwise, returns false.
    * @throws ExceptionInvalidParams if the specified sc-connector address is invalid.
    *
-   * @example
    * @code
    * ScMemoryContext ctx;
    * ScAddr sourceNode = ctx.CreateNode(ScType::NodeConst);
@@ -422,7 +408,6 @@ public:
    * @throws ExceptionInvalidParams if the specified sc-address or stream is invalid.
    * @throws ExceptionInvalidState if the file memory state is invalid.
    *
-   * @example
    * @code
    * ScMemoryContext ctx;
    * ScAddr linkAddr = ctx.CreateLink(ScType::LinkConst);
@@ -433,7 +418,6 @@ public:
    * }
    * @endcode
    *
-   * @example
    * @code
    * ScMemoryContext ctx;
    * ScAddr linkAddr = ctx.CreateLink(ScType::LinkConst);
@@ -460,7 +444,6 @@ public:
    * @return Returns true if the content was successfully retrieved; otherwise, returns false.
    * @throws ExceptionInvalidParams if the specified sc-address is invalid.
    *
-   * @example
    * @code
    * ScMemoryContext ctx;
    * ScAddr linkAddr = ctx.CreateLink(ScType::LinkConst);
@@ -500,7 +483,6 @@ public:
    * @throws ExceptionInvalidParams if the specified sc-address is invalid.
    * @throws ExceptionInvalidState if the file memory state is invalid.
    *
-   * @example
    * @code
    * ScMemoryContext ctx;
    * ScAddr linkAddr = ctx.CreateLink(ScType::LinkConst);
@@ -512,7 +494,6 @@ public:
    * }
    * @endcode
    *
-   * @example
    * @code
    * ScMemoryContext ctx;
    * ScAddr linkAddr = ctx.CreateLink(ScType::LinkConst);
@@ -562,7 +543,6 @@ public:
    * @throws ExceptionInvalidParams if the specified stream is invalid.
    * @throws ExceptionInvalidState if the file memory state is invalid.
    *
-   * @example
    * @code
    * ScMemoryContext ctx;
    * ScAddrVector const & linkAddrsVector = ctx.FindLinksByContent("my node");
@@ -589,7 +569,6 @@ public:
    * @throws ExceptionInvalidParams if the specified stream is invalid.
    * @throws ExceptionInvalidState if the file memory state is invalid.
    *
-   * @example
    * @code
    * ScMemoryContext ctx;
    * ScAddrVector const & linkAddrsVector = ctx.FindLinksByContentSubstring("my");
@@ -631,7 +610,6 @@ public:
    * @throws ExceptionInvalidParams if the specified stream is invalid.
    * @throws ExceptionInvalidState if the file memory state is invalid.
    *
-   * @example
    * @code
    * ScMemoryContext ctx;
    *  std::vector<std::string> const & linkContentVector = ctx.FindLinksByContentSubstring("my");
@@ -778,7 +756,6 @@ public:
    * @return Returns true if the specified edge exists; otherwise, returns false.
    * @throws ExceptionInvalidState if the sc-memory context is not valid.
    *
-   * @example
    * @code
    * ScMemoryContext ctx;
    * ScAddr node1 = ctx.CreateNode(ScType::NodeConst);
@@ -803,7 +780,6 @@ public:
    * or resolving sc-element type is not ScType::Node subtype
    * @throws ExceptionInvalidState if the sc-memory context is not valid or in an invalid state.
    *
-   * @example
    * @code
    * ScMemoryContext ctx;
    * ScAddr resolvedAddr = ctx.HelperResolveSystemIdtf("example_identifier", ScType::NodeConstClass);
@@ -832,7 +808,6 @@ public:
               or resolving sc-element type is not ScType::Node subtype.
    * @throws ExceptionInvalidState if the sc-memory context is not valid or in an invalid state.
    *
-   * @example
    * @code
    * ScMemoryContext ctx;
    * ScSystemIdentifierFiver resultFiver;
@@ -851,7 +826,6 @@ public:
    * @throws utils::ExceptionInvalidParams if the specified sc-address is invalid
    * @throws ExceptionInvalidState if the sc-memory context is not valid or in an invalid state.
    *
-   * @example
    * @code
    * ScMemoryContext ctx;
    * ScAddr elementAddr = ctx.CreateNode(ScType::NodeConst);
@@ -874,7 +848,6 @@ public:
    * @throws utils::ExceptionInvalidParams if the specified sc-address is invalid
    * @throws ExceptionInvalidState if the sc-memory context is not valid or in an invalid state.
    *
-   * @example
    * @code
    * ScMemoryContext ctx;
    * ScAddr elementAddr = ctx.CreateNode(ScType::NodeConst);
@@ -893,7 +866,6 @@ public:
    * @throws utils::ExceptionInvalidParams if the specified sc-address is invalid
    * @throws ExceptionInvalidState if the sc-memory context is not valid or in an invalid state.
    *
-   * @example
    * @code
    * ScMemoryContext ctx;
    * ScAddr elementAddr = ctx.CreateNode(ScType::NodeConst);
@@ -915,7 +887,6 @@ public:
    * @throws ExceptionInvalidParams if the specified system identifier is invalid.
    * @throws ExceptionInvalidState if the sc-memory context is not valid or in an invalid state.
    *
-   * @example
    * @code
    * ScMemoryContext ctx;
    * ScAddr resultAddr;
@@ -935,7 +906,6 @@ public:
    * @throws ExceptionInvalidParams if the specified system identifier is invalid.
    * @throws ExceptionInvalidState if the sc-memory context is not valid or in an invalid state.
    *
-   * @example
    * @code
    * ScMemoryContext ctx;
    * ScAddr resultAddr = ctx.HelperFindBySystemIdtf("example_identifier");
@@ -956,7 +926,6 @@ public:
    * @throws ExceptionInvalidParams if the specified system identifier is invalid.
    * @throws ExceptionInvalidState if the sc-memory context is not valid or in an invalid state.
    *
-   * @example
    * @code
    * ScMemoryContext ctx;
    * ScSystemIdentifierFiver resultFiver;
@@ -975,7 +944,6 @@ public:
    * @return Returns true if the construction is generated; otherwise, returns false. It is the same as `resultCode`.
    * @throws utils::ExceptionInvalidState if sc-template is not valid
    *
-   * @example
    * @code
    * ...
    * ...
@@ -1009,7 +977,6 @@ public:
    * @note Use this method if expected searchable sc-constructions vector is not big. If it is very big, please, use one
    * of callback-based HelperSearchTemplate.
    *
-   * @example
    * @code
    * ...
    * ...
@@ -1046,7 +1013,6 @@ public:
    * @return Returns true if the sc-constructions are found; otherwise, returns false.
    * @throws utils::ExceptionInvalidState if sc-template is not valid
    *
-   * @example
    * @code
    * ...
    * ...
@@ -1098,7 +1064,6 @@ public:
    * @return Returns true if the sc-constructions are found; otherwise, returns false.
    * @throws utils::ExceptionInvalidState if sc-template is not valid
    *
-   * @example
    * @code
    * ...
    * ...
@@ -1153,7 +1118,6 @@ public:
    * @return Returns true if the sc-template is built; otherwise, returns false.
    * @throws utils::ExceptionInvalidState if sc-template is not valid
    *
-   * @example
    * @code
    * ...
    * ...
@@ -1176,7 +1140,6 @@ public:
    * @return Returns true if the sc-template is built; otherwise, returns false.
    * @throws utils::ExceptionInvalidState if sc-template is not valid
    *
-   * @example
    * @code
    * ...
    * ...
