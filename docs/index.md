@@ -6,9 +6,13 @@
     * [CMake Flags](build/cmake-flags.md)
     * [Configuration File](build/config.md) - *description of a configuration file*
 - **API**
-    * [C++ API](sc-memory/api/cpp-api.md) - *C++ API documentation of sc-memory with examples*
-    * [C++ Agents](sc-kpm/kpm.md) - *C++ Agents documentation with examples*
-    * [sc-element types](sc-memory/api/sc-element-types.md) - *detailed description of supported element types*
+    * C++ API
+        * [Core C++ API](sc-memory/api/cpp/core/api.md)
+        * Extended C++ API:
+            * [ScHelper C++ API](sc-memory/api/cpp/extended/helper-api.md)
+            * [ScTemplate C++ API](sc-memory/api/cpp/extended/template-api.md)
+        * [C++ Agents](sc-memory/api/cpp/agents.md)
+    * [Sc-element types](sc-memory/api/sc-element-types.md) - *detailed description of supported element types*
     * [SCs Language](scs/scs.md) - *documentation on SCs Language with examples*
 - **Tools**
     * [Knowledge Base builder](sc-tools/kb-builder.md)
