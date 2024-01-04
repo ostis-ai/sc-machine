@@ -1,23 +1,23 @@
 # Documentation
 
 - **Build**
-    * [Build on Linux](build/linux-build.md)
-    * [Build on OSX](build/osx-build.md)
-    * [CMake Flags](build/cmake-flags.md)
-    * [Configuration File](build/config.md) - *description of a configuration file*
+    * [Build on Linux](build/linux-build.md) - *installation manual of sc-machine on Linux-based systems*
+    * [Build on OSX](build/osx-build.md) - *installation manual of sc-machine on OSX-based systems*
+    * [CMake Flags](build/cmake-flags.md) - *description of CMake flags using to configure sc-machine*
+    * [Configuration File](build/config.md) - *description of a configuration file of sc-machine*
 - **API**
     * C++ API
-        * [Core C++ API](sc-memory/api/cpp/core/api.md)
-        * Extended C++ API:
-            * [ScHelper C++ API](sc-memory/api/cpp/extended/helper-api.md)
-            * [ScTemplate C++ API](sc-memory/api/cpp/extended/template-api.md)
-        * [C++ Agents API](sc-memory/api/cpp/agents.md)
+        * [C++ Core API](sc-memory/api/cpp/core/api.md) - *documentation of C++ core API for creating, retrieving and erasing sc-elements in sc-memory*
+        * C++ Extended API: - *documentation of C++ extended API for manipulating with system identifiers of sc-elements and large graphs*
+            * [ScHelper C++ API](sc-memory/api/cpp/extended/helper-api.md) - *documentation of C++ extended API for manipulating with system identifiers of sc-elements*
+            * [ScTemplate C++ API](sc-memory/api/cpp/extended/template-api.md) - *documentation of C++ extended API for creating and retrieving large graphs*
+        * [C++ Agents API](sc-memory/api/cpp/agents.md) - *documentation of C++ Agents API for creating sc-agents*
     * [Sc-element types](sc-memory/api/sc-element-types.md) - *detailed description of supported element types*
     * [SCs Language](scs/scs.md) - *documentation on SCs Language with examples*
 - **Tools**
-    * [Knowledge Base builder](sc-tools/kb-builder.md)
-    * [Knowledge Base repo file](sc-tools/kb-repo-file.md)
+    * [Knowledge Base builder](sc-tools/kb-builder.md) - *description of options of sc-builder for knowledge base sources*
+    * [Knowledge Base repo file](sc-tools/kb-repo-file.md) - *description of configuration of knowledge base sources*
     * [Meta programming](sc-tools/cpp-meta.md) - *documentation of meta programming language*
 - **Development**
-    * [Git workflow](dev/git-workflow.md)
-    * [Codestyle](dev/codestyle.md)
+    * [Git workflow](dev/git-workflow.md) - *guide for those who wants to make contribution into sc-machine*
+    * [Codestyle](dev/codestyle.md) - *guide for those who wants to write code for sc-machine*

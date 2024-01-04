@@ -1,8 +1,8 @@
-# **Core API**
+# **C++ Core API**
 
 > This documentation is correct for only versions of sc-machine that >= 0.9.0.
 
-The API provides core functionality for creating, manipulating, retrieving and erasing sc-elements in sc-memory.
+The API provides core functionality for creating, retrieving and erasing sc-elements in sc-memory.
 This sc-memory is designed to represent knowledge in a structured and graph-based manner.
 
 A sc-memory consists of sc-elements. Sc-elements can be grouped into sc-constructions (semantic graphs or knowledge graphs). 
