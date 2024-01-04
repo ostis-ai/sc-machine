@@ -88,7 +88,7 @@ sc_result MyModule::ShutdownImpl()
 }
 ```
 
-## ScAgent
+## **ScAgent**
 
 To create sc-agent implementation you need:
 
@@ -397,7 +397,7 @@ ScEventContentChanged evt(ctx, addr, callback);
   </tr>
 </table>
 
-## ScWait
+## **ScWait**
 
 This type of objects used to wait until some event emits. It usually used, when on of an `ScAgent` want to wait result
 of another one. There are next kind of `ScWait` objects:
