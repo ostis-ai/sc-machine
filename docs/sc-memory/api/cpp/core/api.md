@@ -24,7 +24,7 @@ ScAddr elementAddr2 = // some call of the API method 2
 bool const isAddrsEqual = elementAddr1 == elementAddr2;
 ```
 
-### **ScMemoryContext**
+## **ScMemoryContext**
 
 It is a class provided all API methods for creating, manipulating, retrieving and erasing sc-elements in sc-memory.
 It refers to set of attributes and rights of some subject of action in sc-memory (user or agent) that are used in 
@@ -310,3 +310,5 @@ Described methods are part of Core C++ API of sc-memory. You can see and use Ext
 - [ScHelper C++ API](../extended/helper-api.md) to manipulate with system identifiers of sc-elements; 
 - [ScTemplate C++ API](../extended/template-api.md), providing functionality for creating, manipulating and retrieving 
 large graph structures.
+
+## **FAQ**

@@ -11,7 +11,7 @@
         * Extended C++ API:
             * [ScHelper C++ API](sc-memory/api/cpp/extended/helper-api.md)
             * [ScTemplate C++ API](sc-memory/api/cpp/extended/template-api.md)
-        * [C++ Agents](sc-memory/api/cpp/agents.md)
+        * [C++ Agents API](sc-memory/api/cpp/agents.md)
     * [Sc-element types](sc-memory/api/sc-element-types.md) - *detailed description of supported element types*
     * [SCs Language](scs/scs.md) - *documentation on SCs Language with examples*
 - **Tools**

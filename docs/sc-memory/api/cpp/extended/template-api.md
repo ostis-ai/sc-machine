@@ -28,7 +28,7 @@ There are possible 3 types of simple sc-templates:
 
 There are some methods available for `ScTemplate` class:
 
-* `triple` - method that adds triple sc-construction into sc-template. There are some examples of using this function to
+* `Triple` - method that adds triple sc-construction into sc-template. There are some examples of using this function to
   produce simple sc-templates:
 
 <table>
@@ -156,12 +156,14 @@ templ.Triple(
 Also, you can generate sc-templates using [SCs-code](../../../../scs/scs.md). Example code:
 
 ```cpp
+...
 ScTemplate templ; 
 sc_char const * data = 
   "_set"
   "  _<- concept_set;"
   "  _<- concept_binary_set;;";
 ctx.HelperBuildTemplate(templ, data);
+...
 ```
 
 During sc-template building all constants will be resolved by their system identifier (in
@@ -173,6 +175,6 @@ example: `concept_set`, `concept_binary_set`), so in result `templ` will be cont
 
 ## **ScTemplateSearch**
 
-Search algorithm trying to find all possible variants of specified construction. It uses any constants (
-available `ScAddr`'s from parameters to find equal sc-constructions in sc-memory).
+Search algorithm trying to find all possible variants of specified construction. It uses any constants (available 
+`ScAddr`'s from parameters to find equal sc-constructions in sc-memory).
 

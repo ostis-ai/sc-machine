@@ -4,16 +4,18 @@ There is a code generator that allows to create some common code by using metada
 For example if you run it for a file `text.h` it would produce a file `text.generated.h`
 
 To make a metadata for you code you can use this set of macros:
-* **SC_CLASS** - allows you to specify metadata for a class;
-* **SC_GENERATED_BODY** - macros that need to be used after **SC_CLASS**, because it would be replaced in during compilation time with generated declaration for this class;
-* **SC_PROPERTY** - allows to specify metadata for members of a class (including static members).
 
-> You should to specify **SC_CLASS** and **SC_GENERATED_BODY** for all child classes of *ScObject*
+* `SC_CLASS` allows you to specify metadata for a class;
+* `SC_GENERATED_BODY` is a macro that need to be used after **SC_CLASS**, because it would be replaced in during 
+compilation time with generated declaration for this class;
+* `SC_PROPERTY` allows to specify metadata for members of a class (including static members).
+
+> You should to specify **SC_CLASS** and **SC_GENERATED_BODY** for all child classes of *ScObject*.
 
 ## Syntax
 There is a syntax rule that used for a metadata specification:
 ```
-[<PropertyName> [ (<PropertyValue>, <PropertyValue>, ...) ] ], …
+[<PropertyName> [ (<PropertyValue>, <PropertyValue>, ...) ] ], ...
 ```
 
 For example:
@@ -37,7 +39,7 @@ class AWhoAreYouAgent : public ScAgentAction
 {
  SC_CLASS(Agent, CmdClass("command_who_are_you"))
  SC_GENERATED_BODY()
-};
+}
 ```
 
 ## Classes
@@ -45,8 +47,8 @@ Table of available properties of class metadata (**SC_CLASS**):
 
 <table>
   <tr>
-    <th>Property</td>
-    <th>Description</td>
+    <th>Property</th>
+    <th>Description</th>
   </tr>
   <tr>
     <td><strong>Agent</strong></td>
@@ -64,12 +66,12 @@ Table of available properties of class metadata (**SC_CLASS**):
       <li>System identifier of command class.</li>
     </ul>
     <hr/>
-    <pre><code class="cpp hljs">
+    <pre><code class="cpp">
 class AAddContentAgent : public ScAgentAction
 {
  SC_CLASS(Agent, CmdClass("command_add_content"))
  SC_GENERATED_BODY()
-};
+}
     </code></pre>
     </td>
   </tr>
@@ -93,12 +95,12 @@ class AAddContentAgent : public ScAgentAction
         <li>SC_EVENT_CONTENT_CHANGED</li>
       </ul>
       <hr/>
-      <pre><code class="cpp hljs">
+      <pre><code class="cpp">
 class ANewPeriodicalActionAgent : public ScAgent
 {
- SC_CLASS(Agent, Event(msActionPeriodical, SC_EVENT_ADD_OUTPUT_ARC))
- SC_GENERATED_BODY()
-};
+  SC_CLASS(Agent, Event(msActionPeriodical, SC_EVENT_ADD_OUTPUT_ARC))
+  SC_GENERATED_BODY()
+}
       </code></pre>
     </td>
   </tr>
@@ -113,15 +115,15 @@ class ANewPeriodicalActionAgent : public ScAgent
       </ul>
       System loads modules by ascending order. If two module has an equal load order, then they can load in any order (relative to each other).
       <hr/>
-      <pre><code class="cpp hljs">
+      <pre><code class="cpp">
 class nlModule : public ScModule
 {
- SC_CLASS(LoadOrder(11))
- SC_GENERATED_BODY()
+  SC_CLASS(LoadOrder(11))
+  SC_GENERATED_BODY()
 
- sc_result initializeImpl();
- sc_result shutdownImpl();
-};
+  sc_result initializeImpl();
+  sc_result shutdownImpl();
+}
       </code></pre>
     </td>
   </tr>
@@ -129,7 +131,7 @@ class nlModule : public ScModule
 
 
 ## Members
-Table of available properties of class members metadata (**SC_PROPERTY**):
+Table of available properties of class members metadata `SC_PROPERTY`:
 <table>
 
   <tr>
@@ -147,7 +149,7 @@ Table of available properties of class members metadata (**SC_PROPERTY**):
       Specify that this member is a keynode. After module starts, this member will contains <strong>ScAddr</strong> of specified sc-element or invalid <strong>ScAddr</strong> if sc-element not found. Just add <strong>ForceCreate</strong> to create sc-element in case when it didn't found.
       <br/>You can use this property just for members that has <strong>ScAddr</strong> type.
       <hr/>
-      <pre><code class="cpp hljs">
+      <pre><code class="cpp">
 SC_PROPERTY(Keynode("device"), ForceCreate)
 static ScAddr m_device;
       </code></pre>
@@ -178,9 +180,9 @@ ScTemplate m_testTemplate;
       <ul>
         <li>[<strong>optional</strong>] type of sc-element. Any value from `ScType::Node...`</li>
       </ul>
-      <br/>Used just with <strong>Keynode</strong> property. Using of this property force sc-element creation, if it didn't found by system identifier.
+      <br/>Used just with <strong>Keynode</strong> property. Using of this property force sc-element creation, if it didn't find by system identifier.
       <hr/>
-      <pre><code class="cpp hljs">
+      <pre><code class="cpp">
 SC_PROPERTY(Keynode("device"), ForceCreate(ScType::NodeConstClass))
 static ScAddr m_device;
 
@@ -189,7 +191,6 @@ static ScAddr m_node;
       </code></pre>
     </td>
   </tr>
-
 </table>
 
 
@@ -206,7 +207,7 @@ static ScAddr m_node;
 
 #include "myObject.hpp"
 
-// other includes (that doesn't contains ScObject derived classes)
+// other includes (that doesn't contain ScObject derived classes)
 ...
 
 // Implementation
