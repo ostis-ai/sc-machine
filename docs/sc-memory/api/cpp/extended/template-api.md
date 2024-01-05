@@ -1,5 +1,7 @@
 # **ScTemplate API**
 
+> This documentation is correct for only versions of sc-machine that >= 0.9.0.
+
 Sc-templates is a very powerful mechanism to work with semantic network (graph). You can generate and search any
 constructions using sc-templates.
 
@@ -11,8 +13,8 @@ common [information about sc-element types](../../sc-element-types.md).
 Let use `f` symbols for constant parameter of sc-template. Let use `a` symbol for a variable parameter of sc-template. 
 Then sc-template to search all output sc-connectors from specified sc-element will be a triple:
 
-* where the first element is known `f`;
-* second and the third elements need to be found `a`.
+* where the first sc-element is known `f`;
+* second and the third sc-elements need to be found `a`.
 
 There are possible 3 types of triple sc-templates:
 
@@ -61,7 +63,7 @@ templ.Triple(
 );
 </code></pre>
       <br/>This triple sc-template is used to traverse output edges from specified sc-element.
-      <br/>There <code>param1</code> is a known sc-address of sc-element. It must be a valid (use <code>IsElement</code> method to check). Where <code>_param2</code> and <code>_param3</code> are sc-types for compare by search engine. When search engine will traverse output edges from <code>param1</code>. Construction will be added into traverse result, where output sc-connector from <code>param1</code>, will suitable to specified type <code>_param2</code>, and type of target element of this edge will be sutable for a type <code>_param3</code>.
+      <br/>There <code>param1</code> is a known sc-address of sc-element. It must be a valid (use <code>IsElement</code> method to check). Where <code>_param2</code> and <code>_param3</code> are sc-types for compare by search engine. When search engine will traverse output edges from <code>param1</code>. Construction will be added into traverse result, where output sc-connector from <code>param1</code>, will suitable to specified type <code>_param2</code>, and type of target sc-element of this edge will be sutable for a type <code>_param3</code>.
       <br/>You can use any sc-type of <code>_param3</code> (including edges) depending on sc-construction you want to find. But <code>_param2</code> should be any sc-type of variable edge.
     </td>
   </tr>
@@ -258,7 +260,7 @@ templ.Quintuple(
   </tr>
 </table>
 
-When sc-template search engine works, it tries to traverse graph by simple (triple) sc-template in order they specified. For
+When sc-template search engine works, it tries to traverse graph by simple (triple or quintuple) sc-template in order they specified. For
 example, we need to check if specified sc-element (`_set`) is included into `concept_set` class and `concept_binary_relation` class:
 
 <scg src="../images/templates/template_example_2.gwf"></scg>
@@ -266,9 +268,12 @@ example, we need to check if specified sc-element (`_set`) is included into `con
 Code that generates equal sc-template.
 
 ```cpp
-ScAddr conceptSetAddr, conceptBinaryRelationAddr;
 ...
+// Find key concepts that should be used in sc-template.
+ScAddr const & conceptSetAddr = ctx.HelperFindBySystemIdtf("concept_set");
+ScAddr const & conceptBinaryRelationAddr = ctx.HelperFindBySystemIdtf("concept_binary_relation");
 
+// Create sc-template and add triples into this sc-template.
 ScTemplate templ;
 templ.Triple(
   conceptSetAddr,    // sc-address of concept set node
@@ -280,69 +285,249 @@ templ.Triple(
   ScType::EdgeAccessVarPosPerm,
   "_set"
 );
+..
 ```
 
-In code, you can see a construction `ScType::NodeVar >> "_set"` - this is a naming for a sc-template element.
-It allows to set name for a specified sc-element in sc-template, and use it many times in different triples. You can see,
-that in the second triple we use this name `"_set"`. That means, that we need to place search result from a
+In code, you can see a construction `ScType::NodeVar >> "_set"` - this is a naming for a sc-template sc-element.
+It allows to set alias for a specified sc-element in sc-template, and use it many times in different triples. You can see,
+that in the second triple we use this alias `"_set"`. That means, that we need to place search result from a
 first triple into the second. So the second triple is a `f_a_f` style triple.
 
-So if you want to use the same element `_x` in different triples, and you doesn't know it `ScAddr`, then just use two
+So if you want to use the same sc-element `_x` in different triples, and you doesn't know it `ScAddr`, then just use two
 main rules:
 
-* Set name of this element in a first occurrence of this element in sc-template triples. You need to use `>>` operator to
-  do this (see code below, last element of first triple).
-* When you need to use named element in next triples, then just use it name instead of `ScType` or `ScAddr` (see code
-  below, first element if second triple).
+* Set alias of this sc-element in a first occurrence of this sc-element in sc-template triples. You need to use `>>` operator to
+  do this (see code below, last sc-element of first triple).
+* When you need to use aliased sc-element in next triples, then just use it alias instead of `ScType` or `ScAddr` (see code
+  below, first sc-element if second triple).
 
 **Example code with naming**
 
 ```cpp
-ScTemplateTempl;
+...
+ScTemplate templ;
 templ.Triple(
   anyAddr, // sc-address of known sc-element
   ScType::EdgeAccessVarPosPerm,  // type of unknown edge
-  ScType::NodeVar >> "_x"  // type and name for an unknown sc-element
+  ScType::NodeVar >> "_x"  // type and alias for an unknown sc-element
 );
 templ.Triple(
-  "_x",  // say that is the same element as the last on in a previous triple
+  "_x",  // say that is the same sc-element as the last on in a previous triple
   ScType::EdgeAccessVarPosPerm,  // type of unknown edge
   ScType::NodeVar  // type of unknown sc-element
 );
+...
+```
+
+Inside a program object of a sc-template all its constructions are represented as triples.
+
+### **HasReplacement**
+
+To check that sc-template has an aliased sc-element you can use the method `HasReplacement`.
+
+```cpp
+...
+ScTemplate templ;
+templ.Triple(
+  anyAddr,
+  ScType::EdgeAccessVarPosPerm,
+  ScType::NodeVar >> "_x"
+);
+bool const hasAliasX = templ.HasReplacement("_x");
+// It must be equal to `SC_TRUE`.
+...
+```
+
+### **Size**
+
+To get count of triples in sc-template, use the method `Size`. It may be useful if your program can choose optimal for 
+manipulating sc-template.
+
+```cpp
+ScTemplate templ;
+templ.Triple(
+  anyAddr, // sc-address of known sc-element
+  ScType::EdgeAccessVarPosPerm,  // type of unknown edge
+  ScType::NodeVar >> "_x"  // type and alias for an unknown sc-element
+);
+templ.Triple(
+  "_x",  // say that is the same sc-element as the last on in a previous triple
+  ScType::EdgeAccessVarPosPerm,  // type of unknown edge
+  ScType::NodeVar  // type of unknown sc-element
+);
+
+size_t const tripleCount = templ.Size();
+// It must be equal to `2`.
+...
+```
+
+### **IsEmpty**
+
+If sometimes you need to sc-template can be empty you don't have to add any constructions into it. But you should know
+that result of generation by this sc-template is always `SC_TRUE` and result of searching by this sc-template is always
+`SC_FALSE`. To check that sc-template is empty use the method `IsEmpty`.
+
+```cpp
+...
+ScTemplate templ;
+bool const isEmpty = templ.IsEmpty();
+// It must be equal to `SC_TRUE`.
+...
 ```
 
 ## **ScTemplateBuild**
 
-Also, you can generate sc-templates using [SCs-code](../../../../scs/scs.md).
+Also, you can build sc-templates using [SCs-code](../../../../scs/scs.md).
 
 ```cpp
 ...
-ScTemplate templ; 
+// Describe your sc-template on SCs-code.
 sc_char const * data = 
   "_set"
   "  _<- concept_set;"
   "  _<- concept_binary_set;;";
-ctx.HelperBuildTemplate(templ, data);
+
+// Build program object by this sc-template.
+ScTemplate templ;
+bool const isTemplateBuilt = ctx.HelperBuildTemplate(templ, data);
+// It must be equal to `SC_TRUE`.
 ...
 ```
 
 During sc-template building all constants will be resolved by their system identifier (in
-example: `concept_set`, `concept_binary_set`), so in result `templ` will be contained sc-template:
+example: `concept_set`, `concept_binary_set`), so in result `templ` will contain sc-template:
 
 <scg src="../images/templates/template_example_2.gwf"></scg>
 
-Or you can it when specifying valid sc-address of some sc-template in sc-memory.
+Or you can it by specifying valid sc-address of some sc-template in sc-memory.
 
 ```cpp
 ...
+// Find by system identifier your sc-template in sc-memory.
 ScAddr const & templAddr = ctx.HelperFindBySystemIdtf("my_template");
 
+// Build program object by this sc-template.
 ScTemplate templ;
-ctx.HelperBuildTemplate(templ, templAddr);
+bool const isTemplateBuilt = ctx.HelperBuildTemplate(templ, templAddr);
+// It must be equal to `SC_TRUE`.
 ...
 ```
 
 ## **ScTemplateParams**
+
+You can replace existing sc-variables in sc-templates by your ones. To provide different replacements for sc-variables 
+in different cases there is class `ScTemplateParams`. It stores a map between sc-variables and specified values (replacements).
+
+```cpp
+...
+ScTemplateParams params;
+...
+```
+
+### **Add**
+
+You can add replacement for sc-variable by specifying system identifier of this sc-variable if sc-template is built from
+SCs-code.
+
+```cpp
+...
+// Describe your sc-template on SCs-code.
+sc_char const * data = 
+  "_set"
+  "  _<- concept_set;"
+  "  _<- concept_binary_set;;";
+
+// Create replacement in sc-memory.
+ScAddr const & setAddr = ctx.CreateNode(ScType::NodeConst);
+// Also you can find some replacement from sc-memory.
+
+// Define replacements for sc-variables in sc-template.
+ScTemplateParams params;
+params.Add("_set", setAddr);
+
+// Build program object by this sc-template, specifying replacements.
+ScTemplate templ;
+ctx.HelperBuildTemplate(templ, data, params);
+...
+```
+
+Or you can add replacement for sc-variable by specifying sc-address of this sc-variable if sc-template is built from 
+sc-address of sc-structure in sc-memory.
+
+```cpp
+...
+// Find by system identifier your sc-template in sc-memory.
+ScAddr const & templAddr = ctx.HelperFindBySystemIdtf("my_template");
+
+// Find by system identifier sc-address of sc-variable in your sc-template.
+ScAddr const & setVarAddr = ctx.HelperFindBySystemIdtf("_set");
+
+// Create replacement in sc-memory.
+ScAddr const & setAddr = ctx.CreateNode(ScType::NodeConst);
+// Also you can find some replacement from sc-memory.
+
+// Define replacements for sc-variables in sc-template.
+ScTemplateParams params;
+params.Add(setVarAddr, setAddr);
+
+// Build program object by this sc-template, specifying replacements.
+ScTemplate templ;
+ctx.HelperBuildTemplate(templ, templAddr, params);
+...
+```
+
+### **Get**
+
+Sometimes you need to check if there is replacement in params yet. You can do it using the method `Get`. It works with
+system identifiers and sc-addresses of sc-variables also.
+
+```cpp
+...
+// Create replacement in sc-memory.
+ScAddr const & setAddr = ctx.CreateNode(ScType::NodeConst);
+// Also you can find some replacement from sc-memory.
+
+// Define replacements for sc-variables in sc-template.
+ScTemplateParams params;
+params.Add("_set", setAddr);
+
+ScAddr const & replAddr = params.Get("_set");
+// It must be equal to `setAddr`.
+...
+```
+
+```cpp
+...
+// Find by system identifier sc-address of sc-variable in your sc-template.
+ScAddr const & setVarAddr = ctx.HelperFindBySystemIdtf("_set");
+
+// Create replacement in sc-memory.
+ScAddr const & setAddr = ctx.CreateNode(ScType::NodeConst);
+// Also you can find some replacement from sc-memory.
+
+// Define replacements for sc-variables in sc-template.
+ScTemplateParams params;
+params.Add(setVarAddr, setAddr);
+
+ScAddr const & replAddr = params.Get(setVarAddr);
+// It must be equal to `setAddr`.
+...
+```
+
+> Note: If there are no replacements by specified system identifier or sc-address of sc-variable of sc-template then the 
+> method `Get` will return empty sc-address.
+
+### **IsEmpty**
+
+To check that replacements map is empty use the method `IsEmpty`.
+
+```cpp
+...
+ScTemplateParams params;
+bool const isEmpty = params.IsEmpty();
+// It must be equal to `SC_TRUE`.
+...
+```
 
 ## **HelperGenTemplate**
 
@@ -355,6 +540,7 @@ Use sc-template to generate large graphs in sc-memory.
 // sc-template from SCs-code or sc-memory into program representation.
 ScTemplateResultItem result;
 bool const isGeneratedByTemplate = ctx.HelperGenTemplate(templ, result);
+// Sc-elements sc-addresses of generated sc-construction may be gotten from `result`.
 ...
 ```
 
@@ -362,6 +548,87 @@ bool const isGeneratedByTemplate = ctx.HelperGenTemplate(templ, result);
 > sc-variables. Otherwise, this method can throw `utils::ExceptionInvalidParams` with description of this error.
 
 ## **ScTemplateResultItem**
+
+It is a class that stores information about sc-construction.
+
+### **Safe Get**
+
+You can get sc-addresses of sc-elements of generated sc-construction by system identifier or sc-address of sc-variable 
+in sc-template. To do it safely (without throwing exceptions if there are no replacements by specified system identifier 
+or sc-address of sc-variable of sc-template) use the methods `Get` and provide result of replacement as out parameter in
+this method.
+
+```cpp
+...
+ScTemplate templ;
+templ.Triple(
+  conceptSetAddr,
+  ScType::EdgeAccessVarPosPerm,
+  ScType::NodeVar >> "_x"
+);
+
+ScTemplateResultItem result;
+bool const isGeneratedByTemplate = ctx.HelperGenTemplate(templ, result);
+
+ScAddr setAddr;
+bool replExist = result.Get("_x", setAddr);
+// It must be equal to `SC_TRUE`.
+
+bool replExist = result.Get("_y", setAddr);
+// It must be equal to `SC_FALSE`.
+...
+```
+
+### **Get**
+
+If you want to catch exceptions, if there are no replacements by specified system identifier or sc-address of sc-variable 
+of sc-template, use the method `Get` and get replacement as result of this method. Then this method will catch 
+`utils::ExceptionInvalidParams` with description of error.
+
+```cpp
+...
+ScTemplate templ;
+templ.Triple(
+  conceptSetAddr,
+  ScType::EdgeAccessVarPosPerm,
+  ScType::NodeVar >> "_x"
+);
+
+ScTemplateResultItem result;
+bool const isGeneratedByTemplate = ctx.HelperGenTemplate(templ, result);
+
+ScAddr setAddr = result.Get("_x");
+
+setAddr = result.Get("_y", setAddr);
+// It will throw the exception `utils::ExceptionInvalidParams`.
+...
+```
+
+### **Has**
+
+To check that there is replacement by specified system identifier or sc-address of sc-variable of sc-template, use the
+method `Has`.
+
+```cpp
+...
+ScTemplate templ;
+templ.Triple(
+  conceptSetAddr,
+  ScType::EdgeAccessVarPosPerm,
+  ScType::NodeVar >> "_x"
+);
+
+ScTemplateResultItem result;
+bool const isGeneratedByTemplate = ctx.HelperGenTemplate(templ, result);
+
+bool const replExist = result.Has("_x");
+// It must be equal to `replExist`.
+...
+```
+
+### **Size**
+
+To get 
 
 ## **HelperSearchTemplate**
 
@@ -383,6 +650,20 @@ bool const isFoundByTemplate = ctx.HelperSearchTemplate(templ, result);
 > sc-variables. Otherwise, this method can throw `utils::ExceptionInvalidParams` with description of this error.
 
 ## **ScTemplateSearchResult**
+
+### **Safe Get**
+
+### **Get**
+
+### **Has**
+
+### **Size**
+
+### **GetReplacements**
+
+### **Clear**
+
+### **ForEach**
 
 ## **HelperSmartSearchTemplate**
 
