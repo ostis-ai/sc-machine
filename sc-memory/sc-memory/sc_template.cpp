@@ -46,12 +46,6 @@ ScTemplate::ScTemplate()
   m_priorityOrderedTemplateTriples.resize(tripleTypeCount);
 }
 
-ScTemplate::ScTemplate(bool forceOrder)
-  : ScTemplate()
-{
-  SC_UNUSED(forceOrder);
-}
-
 ScTemplate & ScTemplate::operator()(
     ScTemplateItem const & param1,
     ScTemplateItem const & param2,

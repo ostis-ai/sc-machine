@@ -32,7 +32,9 @@ public:
       hashesVectors.push_back(vector);
     }
 
+    SC_PRAGMA_DISABLE_DEPRECATION_WARNINGS_BEGIN
     ScMemoryJsonPayload const & resultPayload = {{"aliases", result.GetReplacements()}, {"addrs", hashesVectors}};
+    SC_PRAGMA_DISABLE_DEPRECATION_WARNINGS_END
     delete pair.first;
     return resultPayload;
   }

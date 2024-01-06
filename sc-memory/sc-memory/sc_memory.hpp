@@ -90,7 +90,7 @@ public:
     sc_uint64 m_linksNum;
     sc_uint64 m_edgesNum;
 
-    [[nodiscard]] sc_uint64 GetAllNum() const
+    sc_uint64 GetAllNum() const
     {
       return m_nodesNum + m_linksNum + m_edgesNum;
     }
@@ -109,7 +109,7 @@ public:
   {
     return m_context;
   }
-  _SC_EXTERN [[nodiscard]] sc_memory_context const * GetRealContext() const
+  _SC_EXTERN sc_memory_context const * GetRealContext() const
   {
     return m_context;
   }
@@ -123,7 +123,7 @@ public:
   //! End events pending mode
   _SC_EXTERN void EndEventsPending();
 
-  _SC_EXTERN [[nodiscard]] std::string const & GetName() const
+  _SC_EXTERN std::string const & GetName() const
   {
     return m_name;
   }
@@ -144,7 +144,7 @@ public:
    * }
    * @endcode
    */
-  _SC_EXTERN [[nodiscard]] bool IsValid() const;
+  _SC_EXTERN bool IsValid() const;
 
   /*!
    * @brief Checks if an sc-element exists with the specified address.
@@ -164,7 +164,7 @@ public:
    * }
    * @endcode
    */
-  _SC_EXTERN [[nodiscard]] bool IsElement(ScAddr const & addr) const;
+  _SC_EXTERN bool IsElement(ScAddr const & addr) const;
 
   /*!
    * @brief Returns the count of output arcs for a specified sc-element.
@@ -182,7 +182,7 @@ public:
    * std::cout << "Output Arcs Count: " << outputArcsCount << std::endl;
    * @endcode
    */
-  _SC_EXTERN [[nodiscard]] size_t GetElementOutputArcsCount(ScAddr const & addr) const noexcept(false);
+  _SC_EXTERN size_t GetElementOutputArcsCount(ScAddr const & addr) const noexcept(false);
 
   /*!
    * @brief Returns the count of input arcs for a specified sc-element.
@@ -200,7 +200,7 @@ public:
    * std::cout << "Input Arcs Count: " << inputArcsCount << std::endl;
    * @endcode
    */
-  _SC_EXTERN [[nodiscard]] size_t GetElementInputArcsCount(ScAddr const & addr) const noexcept(false);
+  _SC_EXTERN size_t GetElementInputArcsCount(ScAddr const & addr) const noexcept(false);
 
   /*!
    * @brief Erases an sc-element from the sc-memory.
@@ -290,7 +290,7 @@ public:
    * std::cout << "Element Type: " << elementType.GetName() << std::endl;
    * @endcode
    */
-  _SC_EXTERN [[nodiscard]] ScType GetElementType(ScAddr const & addr) const noexcept(false);
+  _SC_EXTERN ScType GetElementType(ScAddr const & addr) const noexcept(false);
 
   /*!
    * @brief Changes the subtype of an sc-element.
@@ -331,7 +331,7 @@ public:
    * ScAddr sourceElement = ctx.GetEdgeSource(edgeAddr);
    * @endcode
    */
-  _SC_EXTERN [[nodiscard]] ScAddr GetEdgeSource(ScAddr const & edgeAddr) const noexcept(false);
+  _SC_EXTERN ScAddr GetEdgeSource(ScAddr const & edgeAddr) const noexcept(false);
 
   /*!
    * @brief Returns the target sc-element of an sc-connector.
@@ -350,7 +350,7 @@ public:
    * ScAddr targetElement = ctx.GetEdgeTarget(edgeAddr);
    * @endcode
    */
-  _SC_EXTERN [[nodiscard]] ScAddr GetEdgeTarget(ScAddr const & edgeAddr) const noexcept(false);
+  _SC_EXTERN ScAddr GetEdgeTarget(ScAddr const & edgeAddr) const noexcept(false);
 
   /*!
    * @brief Returns the source and target sc-elements of an sc-connector.
@@ -991,8 +991,9 @@ public:
    * m_ctx->HelperSearchTemplate(templ, result);
    *
    * // iterate by all result sc-constructions
-   * for (ScTemplateResultItem const & item : result)
+   * for (size_t i = 0; i < result.Size(); ++i)
    * {
+   *   ScTemplateResultItem const & item = result[i];
    *   // handle each result sc-construction sc-elements
    *   m_ctx->IsElement(item["_addr2"])
    * }
@@ -1052,9 +1053,9 @@ public:
    *  - ScTemplateSearchRequest::CONTINUE,
    *  - ScTemplateSearchRequest::STOP,
    *  - ScTemplateSearchRequest::ERROR.
-   * When ScTemplateSearchRequest::CONTINUE returned sc-template search will be continued. If
-   * ScTemplateSearchRequest::STOP or ScTemplateSearchRequest::ERROR, then sc-template search stops. If sc-template
-   * search stopped by ScTemplateSearchRequest::ERROR, then HelperSmartSearchTemplate throws
+   * When ScTemplateSearchRequest::CONTINUE returns, sc-template search will be continued. If
+   * ScTemplateSearchRequest::STOP or ScTemplateSearchRequest::ERROR returns, then sc-template search stops.
+   * If sc-template search stopped by ScTemplateSearchRequest::ERROR, then HelperSmartSearchTemplate thrown
    * utils::ExceptionInvalidState.
    * If `filterCallback` passed, then all found sc-constructions triples are filtered by `filterCallback` condition.
    * @param templ A sc-template object to find sc-constructions by it
@@ -1078,6 +1079,7 @@ public:
    * );
    * m_ctx->HelperSmartSearchTemplate(templ, [&ctx](ScTemplateSearchResultItem const & item) -> ScTemplateSearchRequest
    * {
+   *   ScAddr const & edgeAddr = item["_edge"];
    *   if (ctx->HelperCheckEdge(structureAddr, edgeAddr, ScType::EdgeAccessConstPosPerm))
    *    return ScTemplateSearchRequest::CONTINUE;
    *
@@ -1144,14 +1146,14 @@ public:
    * ...
    * ...
    * ScTemplate templ;
-   * std::string const scsTempl = "[* concept_set _-> _var;; *];;";
+   * std::string const scsTempl = "concept_set _-> _var;;";
    * m_ctx->HelperBuildTemplate(templ, scsTempl);
    * ...
    * @endcode
    */
   _SC_EXTERN ScTemplate::Result HelperBuildTemplate(ScTemplate & templ, std::string const & scsText) noexcept(false);
 
-  _SC_EXTERN [[nodiscard]] ScMemoryStatistics CalculateStat() const;
+  _SC_EXTERN ScMemoryStatistics CalculateStat() const;
 
 private:
   sc_memory_context * m_context;

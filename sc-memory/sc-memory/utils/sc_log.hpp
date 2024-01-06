@@ -23,7 +23,7 @@ protected:
   _SC_EXTERN ~ScLog();
 
 public:
-  // should be synced with kTypeToStr in api
+  // should be synced with kTypeToStr in cpp
   enum class Type : uint8_t
   {
     Debug = 0,
