@@ -265,13 +265,14 @@ example, we need to check if specified sc-element (`_set`) is included into `con
 
 <scg src="../images/templates/template_example_2.gwf"></scg>
 
-Code that generates equal sc-template.
+There is example code that generates equal sc-template.
 
 ```cpp
 ...
 // Find key concepts that should be used in sc-template.
 ScAddr const & conceptSetAddr = ctx.HelperFindBySystemIdtf("concept_set");
-ScAddr const & conceptBinaryRelationAddr = ctx.HelperFindBySystemIdtf("concept_binary_relation");
+ScAddr const & conceptBinaryRelationAddr 
+    = ctx.HelperFindBySystemIdtf("concept_binary_relation");
 
 // Create sc-template and add triples into this sc-template.
 ScTemplate templ;
@@ -301,7 +302,7 @@ main rules:
 * When you need to use aliased sc-element in next triples, then just use it alias instead of `ScType` or `ScAddr` (see code
   below, first sc-element if second triple).
 
-**Example code with naming**
+There is the example code with naming.
 
 ```cpp
 ...
@@ -531,7 +532,7 @@ bool const isEmpty = params.IsEmpty();
 
 ## **HelperGenTemplate**
 
-Use sc-template to generate large graphs in sc-memory.
+Use sc-template to generate large graphs in sc-memory and get replacements from result.
 
 ```cpp
 ...
@@ -540,7 +541,8 @@ Use sc-template to generate large graphs in sc-memory.
 // sc-template from SCs-code or sc-memory into program representation.
 ScTemplateResultItem result;
 bool const isGeneratedByTemplate = ctx.HelperGenTemplate(templ, result);
-// Sc-elements sc-addresses of generated sc-construction may be gotten from `result`.
+// Sc-elements sc-addresses of generated sc-construction may be gotten from 
+// `result`.
 ...
 ```
 
@@ -606,7 +608,7 @@ setAddr = result.Get("_y", setAddr);
 
 ### **Has**
 
-To check that there is replacement by specified system identifier or sc-address of sc-variable of sc-template, use the
+To check that there is replacement by specified system identifier or sc-address of sc-variable of sc-template use the
 method `Has`.
 
 ```cpp
@@ -626,9 +628,56 @@ bool const replExist = result.Has("_x");
 ...
 ```
 
+### **operator[]**
+
+To get all replacements in result you can use the `operator[]`. It returns replacement by index of sc-variable in 
+sc-template. If there is no sc-variable with specified index this method will catch the exception 
+`utils::ExceptionInvalidParams` with description of the error.
+
+```cpp
+...
+ScTemplate templ;
+templ.Triple(
+  conceptSetAddr,
+  ScType::EdgeAccessVarPosPerm,
+  ScType::NodeVar >> "_x"
+);
+
+ScTemplateResultItem result;
+bool const isGeneratedByTemplate = ctx.HelperGenTemplate(templ, result);
+
+ScAddr const & setAddr = result[2];
+// It is equal to `result.Get("_x")`.
+...
+```
+
 ### **Size**
 
-To get 
+If you want to iterate by all replacement in the result you need to know size of this result.
+
+```cpp
+...
+ScTemplate templ;
+templ.Triple(
+  conceptSetAddr,
+  ScType::EdgeAccessVarPosPerm,
+  ScType::NodeVar >> "_x"
+);
+
+ScTemplateResultItem result;
+bool const isGeneratedByTemplate = ctx.HelperGenTemplate(templ, result);
+
+// Iterate by all replacements in result.
+for (size_t i = 0; i < result.Size(); ++i)
+{
+  ScAddr const & addr = result[i];
+  // Implement your code to handle replacements.
+}
+...
+```
+
+> Note: The method `Size` returns summary count of indexes of replacements in each triple in sc-template. If there are 
+> `2` triples in sc-template, then there are `2 * 3 = 6` different indexes of replacements in sc-template.
 
 ## **HelperSearchTemplate**
 
@@ -643,6 +692,7 @@ sc-addresses from parameters to find equal sc-constructions in sc-memory).
 // sc-template from SCs-code or sc-memory into program representation.
 ScTemplateSearchResult result;
 bool const isFoundByTemplate = ctx.HelperSearchTemplate(templ, result);
+// Program representation of sc-constructions in `ScTemplateResultItem` may be gotten from `result`.
 ...
 ```
 
@@ -651,15 +701,40 @@ bool const isFoundByTemplate = ctx.HelperSearchTemplate(templ, result);
 
 ## **ScTemplateSearchResult**
 
+It is a class that stores in information about sc-constructions represented in `ScTemplateResultItem`.
+An object of class `ScTemplateSearchResult` can be referred to a vector of objects of class `ScTemplateResultItem`.
+
 ### **Safe Get**
+
+To get object of class `ScTemplateResultItem` you can use the method `Get`. If you want to get objects safely, use the
+method `Get` and provide `ScTemplateResultItem as out parameter in this method.
+
+```cpp
+...
+ScTemplate templ;
+templ.Triple(
+  conceptSetAddr,
+  ScType::EdgeAccessVarPosPerm,
+  ScType::NodeVar >> "_x"
+);
+
+ScTemplateSearchResult result;
+bool const isFoundByTemplate = ctx.HelperSearchTemplate(templ, result);
+
+ScAddr setAddr;
+bool replExist = result.Get("_x", setAddr);
+// It must be equal to `SC_TRUE`.
+
+bool replExist = result.Get("_y", setAddr);
+// It must be equal to `SC_FALSE`.
+...
+```
 
 ### **Get**
 
 ### **Has**
 
 ### **Size**
-
-### **GetReplacements**
 
 ### **Clear**
 

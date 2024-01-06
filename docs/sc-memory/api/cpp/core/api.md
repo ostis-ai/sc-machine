@@ -32,7 +32,8 @@ during API methods completion.
 
 ```cpp
 ...
-// To create such context use constructor of ScMemoryContext providing system identifier of subject of action.
+// To create such context use constructor of ScMemoryContext 
+// providing system identifier of subject of action.
 ScMemoryContext ctx{"my_name"};
 // After you can use this object to call any API methods.
 ```
@@ -69,8 +70,10 @@ ScAddr const & linkAddr = ctx.CreateLink(ScType::LinkConst);
 
 ```cpp
 ...
-// Create sc-arc between sc-node and sc-link and get sc-address in sc-memory of it.
-ScAddr const & arcAddr = ctx.CreateEdge(ScType::EdgeAccessConstPosPerm, nodeAddr, linkAddr);
+// Create sc-arc between sc-node and sc-link and get sc-address in 
+// sc-memory of it.
+ScAddr const & arcAddr = ctx.CreateEdge(
+    ScType::EdgeAccessConstPosPerm, nodeAddr, linkAddr);
 // Specified sc-type must be one of ScType::Edge... type.
 ```
 
@@ -151,7 +154,8 @@ ScIterator3Ptr it3 = ctx.Iterator3(
 while (it3->Next())
 {
   // To get values use `it3->Get(index)`, where index in range [0; 2]. 
-  // It returns `SC_TRUE`, if the next appropriate construction is found, otherwise `SC_FALSE`.
+  // It returns `SC_TRUE`, if the next appropriate construction is found, 
+  // otherwise `SC_FALSE`.
   ... // Write your code to handle found sc-construction.
 }
 ```
@@ -161,7 +165,8 @@ while (it3->Next())
 ```cpp
 ...
 // Create sc-iterator for searching all sc-node sc-addresses, 
-// which pairs with sc-element with address `setAddr` belong to the relation with sc-address `nrelDecompositionAddr`.
+// which pairs with sc-element with address `setAddr` belong to the relation 
+// with sc-address `nrelDecompositionAddr`.
 ScIterator5Ptr it5 = ctx.Iterator5(
         setAddr,
         ScType::EdgeDCommonConst,
@@ -169,7 +174,8 @@ ScIterator5Ptr it5 = ctx.Iterator5(
         ScType::EdgeAccessConstPosPerm,
         nrelDecompositionAddr);
 // Use `it5-Next()` to go to the next appropriate by condition sc-construction. 
-// It returns `SC_TRUE`, if the next appropriate construction is found, otherwise `SC_FALSE`.
+// It returns `SC_TRUE`, if the next appropriate construction is found, 
+// otherwise `SC_FALSE`.
 while (it5->Next())
 {
   // To get values use `it5->Get(index)`, where index in range [0; 4].
@@ -206,14 +212,19 @@ ctx.ForEachIter3(
 ```cpp
 ...
 // Create callback-based sc-iterator for searching all sc-node sc-addresses, 
-// which pairs with sc-element with address `setAddr` belong to the relation with sc-address `nrelDecompositionAddr`.
+// which pairs with sc-element with address `setAddr` belong to the relation 
+// with sc-address `nrelDecompositionAddr`.
 ctx.ForEachIter5(
   setAddr,
   ScType::EdgeDCommonConst,
   ScType::NodeConst,
   ScType::EdgeAccessConstPosPerm,
   nrelDecompositionAddr
-  [] (ScAddr const & srcAddr, ScAddr const & edgeAddr, ScAddr const & trgAddr, ScAddr const & edgeAttrAddr, ScAddr const & attrAddr)
+  [] (ScAddr const & srcAddr, 
+      ScAddr const & edgeAddr, 
+      ScAddr const & trgAddr, 
+      ScAddr const & edgeAttrAddr, 
+      ScAddr const & attrAddr)
 {
   // srcAddr equal to the 0th value of sc-iterator
   // edgeAddr equal to the 1st value of sc-iterator
