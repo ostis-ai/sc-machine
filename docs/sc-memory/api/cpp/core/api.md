@@ -322,4 +322,4 @@ Described methods are part of Core C++ API of sc-memory. You can see and use Ext
 - [ScTemplate C++ API](../extended/template-api.md), providing functionality for creating, manipulating and retrieving 
 large graph structures.
 
-## **FAQ**
+## **Frequently Asked Questions**

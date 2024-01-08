@@ -939,4 +939,20 @@ m_ctx->HelperSmartSearchTemplate(templ, [&ctx](
 });
 ...
 ```
-## **FQA**
+
+## **Frequently Asked Questions**
+
+- [What's the best way to describe sc-templates for search? By sc-template C++ API or on the SC-code?](#what-is-the-best-way-to-describe-sc-templates-for-search-by-sc-template-c-api-or-on-the-sc-code)
+- [Which is better: searching by sc-template or by iterator?]()
+
+### **What is the best way to describe sc-templates for search? By sc-template C++ API or on the SC-code?**
+
+The description of sc-templates in the knowledge base encourages the use of reflection for them. The sc-templates 
+described in the knowledge base can be easily expanded and improved. However, sc-templates presented through the API 
+do not require preprocessing (translation from the knowledge base), so the speed of the program used by such 
+sc-templates may be higher if the sc-templates have significant size.
+
+### **Which is better: searching by sc-template or by iterator?**
+
+In all cases sc-iterator is faster the searching by sc-template. If you want to search large sc-constructions, then don't
+search they by one large sc-template, divide it into certain sc-templates or use sc-iterators instead of.
