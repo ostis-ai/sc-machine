@@ -12,7 +12,7 @@
             * [ScHelper C++ API](sc-memory/api/cpp/extended/helper-api.md) - *documentation of C++ extended API for manipulating with system identifiers of sc-elements*
             * [ScTemplate C++ API](sc-memory/api/cpp/extended/template-api.md) - *documentation of C++ extended API for creating and retrieving large graphs*
         * [C++ Agents API](sc-memory/api/cpp/agents.md) - *documentation of C++ Agents API for creating sc-agents*
-    * [Sc-element types](sc-memory/api/sc-element-types.md) - *detailed description of supported element types*
+    * [Sc-element types](scs/sc-element-types.md) - *detailed description of supported element types*
     * [SCs Language](scs/scs.md) - *documentation on SCs Language with examples*
 - **Tools**
     * [Knowledge Base builder](sc-tools/kb-builder.md) - *description of options of sc-builder for knowledge base sources*

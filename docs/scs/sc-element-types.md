@@ -1,4 +1,4 @@
-<table width="70%">
+<table>
   <tr>
     <th>Graphical (SCg)</th>
     <th>C</th>

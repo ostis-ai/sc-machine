@@ -21,7 +21,7 @@ nav:
               - ScHelper API: sc-memory/api/cpp/extended/helper-api.md
               - ScTemplate API: sc-memory/api/cpp/extended/template-api.md
           - C++ Agents API: sc-memory/api/cpp/agents.md
-      - Sc-element types: sc-memory/api/sc-element-types.md
+      - Sc-element types: scs/sc-element-types.md
       - SCs language: scs/scs.md
   - Tools:
       - Knowledge Base Builder: sc-tools/kb-builder.md

@@ -1,6 +1,8 @@
 # **ScTemplate API**
 
-> This documentation is correct for only versions of sc-machine that >= 0.9.0.
+!!! warning 
+    This documentation is correct for only versions of sc-machine that >= 0.9.0.
+---
 
 Sc-templates is a very powerful mechanism to work with semantic network (graph). You can generate and search any
 constructions using sc-templates. In the follow picture sc-template and isomorphic sc-construction are shown.
@@ -10,7 +12,7 @@ constructions using sc-templates. In the follow picture sc-template and isomorph
 ## **ScTemplate**
 
 The class to work with sc-templates in C++ API. Before reading this paragraph you need to read
-common [information about sc-element types](../../sc-element-types.md).
+common [information about sc-element types](../../../../scs/sc-element-types.md).
 
 Let use `f` symbols for constant parameter of sc-template. Let use `a` symbol for a variable parameter of sc-template. 
 Then sc-template to search all output sc-connectors from specified sc-element will be a triple:
@@ -517,8 +519,9 @@ ScAddr const & replAddr = params.Get(setVarAddr);
 ...
 ```
 
-> Note: If there are no replacements by specified system identifier or sc-address of sc-variable of sc-template then the 
-> method `Get` will return empty sc-address.
+!!! note
+    If there are no replacements by specified system identifier or sc-address of sc-variable of sc-template then the 
+    method `Get` will return empty sc-address.
 
 ### **IsEmpty**
 
@@ -548,8 +551,9 @@ bool const isGeneratedByTemplate = ctx.HelperGenTemplate(templ, result);
 ...
 ```
 
-> Note: Remember, that sc-template must contain only valid sc-address of sc-elements and all sc-connectors in it must be
-> sc-variables. Otherwise, this method can throw `utils::ExceptionInvalidParams` with description of this error.
+!!! note 
+    Remember, that sc-template must contain only valid sc-address of sc-elements and all sc-connectors in it must be
+    sc-variables. Otherwise, this method can throw `utils::ExceptionInvalidParams` with description of this error.
 
 ## **ScTemplateResultItem**
 
@@ -678,8 +682,9 @@ for (size_t i = 0; i < result.Size(); ++i)
 ...
 ```
 
-> Note: The method `Size` returns summary count of indexes of replacements in each triple in sc-template. If there are 
-> `2` triples in sc-template, then there are `2 * 3 = 6` different indexes of replacements in sc-template.
+!!! note
+    The method `Size` returns summary count of indexes of replacements in each triple in sc-template. If there are 
+    `2` triples in sc-template, then there are `2 * 3 = 6` different indexes of replacements in sc-template.
 
 ## **HelperSearchTemplate**
 
@@ -699,8 +704,9 @@ bool const isFoundByTemplate = ctx.HelperSearchTemplate(templ, result);
 ...
 ```
 
-> Note: Remember, that sc-template must contain only valid sc-address of sc-elements and all sc-connectors in it must be
-> sc-variables. Otherwise, this method can throw `utils::ExceptionInvalidParams` with description of this error.
+!!! note 
+    Remember, that sc-template must contain only valid sc-address of sc-elements and all sc-connectors in it must be
+    sc-variables. Otherwise, this method can throw `utils::ExceptionInvalidParams` with description of this error.
 
 ## **ScTemplateSearchResult**
 
