@@ -1,6 +1,8 @@
 # **C++ Core API**
 
-> This documentation is correct for only versions of sc-machine that >= 0.9.0.
+!!! warning
+    This documentation is correct for only versions of sc-machine that >= 0.9.0.
+---
 
 The API provides core functionality for creating, retrieving and erasing sc-elements in sc-memory.
 This sc-memory is designed to represent knowledge in a structured and graph-based manner.
@@ -38,8 +40,9 @@ ScMemoryContext ctx{"my_name"};
 // After you can use this object to call any API methods.
 ```
 
-> Note: Don't use constructor of ScMemoryContext, providing sc_access_levels argument. It can be unsafe. It will be 
-> deleted in the further versions of sc-machine. 
+!!! note
+    Don't use constructor of ScMemoryContext, providing sc_access_levels argument. It can be unsafe. It will be 
+    deleted in the further versions of sc-machine. 
 
 ### **CreateNode**
 
@@ -63,8 +66,9 @@ ScAddr const & linkAddr = ctx.CreateLink(ScType::LinkConst);
 // Specified sc-type must be one of ScType::Link... type.
 ```
 
-> Note: Now all sc-links are not sc-nodes. It can be fixed in the further versions of sc-machine. But you can use 
-> the method `CreateNode` to create sc-links.
+!!! note
+    Now all sc-links are not sc-nodes. It can be fixed in the further versions of sc-machine. But you can use 
+    the method `CreateNode` to create sc-links.
 
 ### **CreateEdge**
 
@@ -80,7 +84,8 @@ ScAddr const & arcAddr = ctx.CreateEdge(
 If specified sc-addresses of source and target sc-elements are not valid, then the method throws exception
 `utils::ExceptionInvalidParams` with description that some of specified sc-addresses is not valid.
 
-> Note: Although this method is called incorrectly and may be misleading, but you can create any sc-connectors using it.
+!!! note
+    Although this method is called incorrectly and may be misleading, but you can create any sc-connectors using it.
 
 ### **IsElement**
 
@@ -95,8 +100,9 @@ bool const isLinkValid = ctx.IsElement(linkAddr);
 bool const isEdgeValid = ctx.IsElement(arcAddr);
 ```
 
-> Note: You can check if specified sc-address is not empty calling from this sc-address object method `IsValid`.
-> But it is preferable to use `IsElement`, it checks if provided sc-address exists and valid in sc-memory. 
+!!! note
+    You can check if specified sc-address is not empty calling from this sc-address object method `IsValid`.
+    But it is preferable to use `IsElement`, it checks if provided sc-address exists and valid in sc-memory. 
 
 ### **GetElementType**
 
@@ -186,7 +192,8 @@ while (it5->Next())
 Second approach allows you to iterate 3-element and 5-element constructions with less code, and suitable when
 you need to iterate all results.
 
-> Note: Use next methods if you need to iterate all results. Because it more clearly.
+!!! note
+    Use next methods if you need to iterate all results. Because it more clearly.
 
 ### **ForEachIter3**
 
@@ -267,7 +274,8 @@ ctx.SetLinkContent(linkAddr2, 10f);
 ...
 ```
 
-> Note: Don't use result boolean value, it doesn't mean nothing.
+!!! note
+    Don't use result boolean value, it doesn't mean anything.
 
 ### **GetLinkContent**
 
@@ -287,8 +295,9 @@ bool const numericContentExist = ctx.GetLinkContent(linkAddr1, numericContent);
 ...
 ```
 
-> Note: You can set empty content into sc-link, but it means that this sc-link has content and this method for this 
-> sc-link returns `SC_TRUE`.
+!!! note
+    You can set empty content into sc-link, but it means that this sc-link has content and this method for this 
+    sc-link returns `SC_TRUE`.
 
 ### **FindLinksByContent**
 

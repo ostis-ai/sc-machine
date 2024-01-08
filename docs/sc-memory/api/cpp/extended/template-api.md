@@ -946,6 +946,8 @@ m_ctx->HelperSmartSearchTemplate(templ, [&ctx](
 ...
 ```
 
+--- 
+
 ## **Frequently Asked Questions**
 
 - [What's the best way to describe sc-templates for search? By sc-template C++ API or on the SC-code?](#what-is-the-best-way-to-describe-sc-templates-for-search-by-sc-template-c-api-or-on-the-sc-code)

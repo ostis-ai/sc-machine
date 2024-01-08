@@ -1,7 +1,9 @@
 # **C++ Agents API**
 
-> This documentation is correct for only versions of sc-machine that >= 0.9.0.
- 
+!!! warning
+    This documentation is correct for only versions of sc-machine that >= 0.9.0.
+--- 
+
 This API provides functionality to implement sc-agents on C++.
 
 Each sc-agent on C++ refers to program entity that performs actions in sc-memory and can be called only by emission of
@@ -234,7 +236,8 @@ Each event constructor takes 3 parameters:
   (`bool func(ScAddr const & listenAddr, ScAddr const & edgeAddr, ScAddr const & otherAddr)`).
   Description of parameters for this function you can see in table below (for each event type).
 
-> Note: Callback function will be called in another thread!
+!!! note
+    Callback function will be called in another thread!
 
 The table of description (parameters of callback function named on pictures, if there are no parameter name on picture,
 then it's would have an empty value):
@@ -441,5 +444,7 @@ ScWaitActionFinished waiter(ctx, commandAddr);
 waiter.Wait();
 ...
 ```
+
+--- 
 
 ## **Frequently Asked Questions**
