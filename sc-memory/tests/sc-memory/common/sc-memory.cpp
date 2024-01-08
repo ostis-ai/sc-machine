@@ -196,4 +196,4 @@ TEST_F(ScMemoryTestWithInitMemoryGeneratedStructure, TestInitMemoryGeneratedStru
           checkConnectionInStruct(context, keynodeAddr, otherKeynodeAddr, initMemoryGeneratedStructure);
         });
   }
-};
+}
