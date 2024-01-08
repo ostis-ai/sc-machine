@@ -3,7 +3,9 @@
 > This documentation is correct for only versions of sc-machine that >= 0.9.0.
 
 Sc-templates is a very powerful mechanism to work with semantic network (graph). You can generate and search any
-constructions using sc-templates.
+constructions using sc-templates. In the follow picture sc-template and isomorphic sc-construction are shown.
+
+<scg src="../images/templates/template_example_1.gwf"></scg>
 
 ## **ScTemplate**
 
@@ -335,7 +337,7 @@ templ.Triple(
   ScType::NodeVar >> "_x"
 );
 bool const hasAliasX = templ.HasReplacement("_x");
-// It must be equal to `SC_TRUE`.
+// The value of `hasAliasX` be equal to `SC_TRUE`.
 ...
 ```
 
@@ -358,7 +360,7 @@ templ.Triple(
 );
 
 size_t const tripleCount = templ.Size();
-// It must be equal to `2`.
+// The triple count must be equal to `2`.
 ...
 ```
 
@@ -372,7 +374,7 @@ that result of generation by this sc-template is always `SC_TRUE` and result of 
 ...
 ScTemplate templ;
 bool const isEmpty = templ.IsEmpty();
-// It must be equal to `SC_TRUE`.
+// The value of `isEmpty` be equal to `SC_TRUE`.
 ...
 ```
 
@@ -391,7 +393,7 @@ sc_char const * data =
 // Build program object by this sc-template.
 ScTemplate templ;
 bool const isTemplateBuilt = ctx.HelperBuildTemplate(templ, data);
-// It must be equal to `SC_TRUE`.
+// The value of `isTemplateBuilt` must be equal to `SC_TRUE`.
 ...
 ```
 
@@ -410,7 +412,7 @@ ScAddr const & templAddr = ctx.HelperFindBySystemIdtf("my_template");
 // Build program object by this sc-template.
 ScTemplate templ;
 bool const isTemplateBuilt = ctx.HelperBuildTemplate(templ, templAddr);
-// It must be equal to `SC_TRUE`.
+// The value of `isTemplateBuilt` must be equal to `SC_TRUE`.
 ...
 ```
 
@@ -493,7 +495,7 @@ ScTemplateParams params;
 params.Add("_set", setAddr);
 
 ScAddr const & replAddr = params.Get("_set");
-// It must be equal to `setAddr`.
+// The value of `replAddr` be equal to value of `setAddr`.
 ...
 ```
 
@@ -511,7 +513,7 @@ ScTemplateParams params;
 params.Add(setVarAddr, setAddr);
 
 ScAddr const & replAddr = params.Get(setVarAddr);
-// It must be equal to `setAddr`.
+// The value of `replAddr` be equal to value of `setAddr`.
 ...
 ```
 
@@ -526,7 +528,7 @@ To check that replacements map is empty use the method `IsEmpty`.
 ...
 ScTemplateParams params;
 bool const isEmpty = params.IsEmpty();
-// It must be equal to `SC_TRUE`.
+// The value of `isEmpty` be equal to `SC_TRUE`.
 ...
 ```
 
@@ -574,17 +576,17 @@ bool const isGeneratedByTemplate = ctx.HelperGenTemplate(templ, result);
 
 ScAddr setAddr;
 bool replExist = result.Get("_x", setAddr);
-// It must be equal to `SC_TRUE`.
+// The value of `replExist` be equal to `SC_TRUE`.
 
 bool replExist = result.Get("_y", setAddr);
-// It must be equal to `SC_FALSE`.
+// The value of `replExist` be equal to `SC_FALSE`.
 ...
 ```
 
 ### **Get**
 
 If you want to catch exceptions, if there are no replacements by specified system identifier or sc-address of sc-variable 
-of sc-template, use the method `Get` and get replacement as result of this method. Then this method will catch 
+of sc-template, use the method `Get` and get replacement as result of this method. Then this method will throw 
 `utils::ExceptionInvalidParams` with description of error.
 
 ```cpp
@@ -624,14 +626,14 @@ ScTemplateResultItem result;
 bool const isGeneratedByTemplate = ctx.HelperGenTemplate(templ, result);
 
 bool const replExist = result.Has("_x");
-// It must be equal to `replExist`.
+// The value of `replExist` be equal to `SC_TRUE`.
 ...
 ```
 
 ### **operator[]**
 
 To get all replacements in result you can use the `operator[]`. It returns replacement by index of sc-variable in 
-sc-template. If there is no sc-variable with specified index this method will catch the exception 
+sc-template. If there is no sc-variable with specified index this method will throw the exception 
 `utils::ExceptionInvalidParams` with description of the error.
 
 ```cpp
@@ -653,7 +655,7 @@ ScAddr const & setAddr = result[2];
 
 ### **Size**
 
-If you want to iterate by all replacement in the result you need to know size of this result.
+If you want to iterate all replacement in the result you need to know size of this result.
 
 ```cpp
 ...
@@ -692,7 +694,8 @@ sc-addresses from parameters to find equal sc-constructions in sc-memory).
 // sc-template from SCs-code or sc-memory into program representation.
 ScTemplateSearchResult result;
 bool const isFoundByTemplate = ctx.HelperSearchTemplate(templ, result);
-// Program representation of sc-constructions in `ScTemplateResultItem` may be gotten from `result`.
+// Program representation of sc-constructions in `ScTemplateResultItem` 
+// may be gotten from `result`.
 ...
 ```
 
@@ -707,7 +710,7 @@ An object of class `ScTemplateSearchResult` can be referred to a vector of objec
 ### **Safe Get**
 
 To get object of class `ScTemplateResultItem` you can use the method `Get`. If you want to get objects safely, use the
-method `Get` and provide `ScTemplateResultItem as out parameter in this method.
+method `Get` and provide `ScTemplateResultItem` as out parameter in this method.
 
 ```cpp
 ...
@@ -717,29 +720,223 @@ templ.Triple(
   ScType::EdgeAccessVarPosPerm,
   ScType::NodeVar >> "_x"
 );
+// There is one sc-construction that is isomorphic this sc-template.
 
 ScTemplateSearchResult result;
 bool const isFoundByTemplate = ctx.HelperSearchTemplate(templ, result);
 
-ScAddr setAddr;
-bool replExist = result.Get("_x", setAddr);
-// It must be equal to `SC_TRUE`.
+ScTemplateResultItem item;
+bool constrExist = result.Get(0, item);
+// The value of `constrExist` be equal to `SC_TRUE`.
 
-bool replExist = result.Get("_y", setAddr);
-// It must be equal to `SC_FALSE`.
+constrExist = result.Get(1, item);
+// The value of `constrExist` be equal to `SC_FALSE` and item is not valid.
 ...
 ```
 
 ### **Get**
 
-### **Has**
+If you want to catch exceptions use the method `Get` and get result as return value. If there is no sc-construction with 
+specified index this method will throw the exception utils::ExceptionInvalidParams with description of the error.
+
+```cpp
+...
+ScTemplate templ;
+templ.Triple(
+  conceptSetAddr,
+  ScType::EdgeAccessVarPosPerm,
+  ScType::NodeVar >> "_x"
+);
+// There is one sc-construction that is isomorphic this sc-template.
+
+ScTemplateSearchResult result;
+bool const isFoundByTemplate = ctx.HelperSearchTemplate(templ, result);
+
+ScTemplateResultItem item = result.Get(0);
+// It is a valid item.
+
+item = result.Get(1);
+// It throws `utils::ExceptionInvalidParams`.
+...
+```
+
+### **operator[]**
+
+Also, you can use the method `operator[]` to do this. If there is no sc-construction with specified index this method 
+will throw the exception utils::ExceptionInvalidParams with description of the error.
+
+```cpp
+...
+ScTemplate templ;
+templ.Triple(
+  conceptSetAddr,
+  ScType::EdgeAccessVarPosPerm,
+  ScType::NodeVar >> "_x"
+);
+// There is one sc-construction that is isomorphic this sc-template.
+
+ScTemplateSearchResult result;
+bool const isFoundByTemplate = ctx.HelperSearchTemplate(templ, result);
+
+ScTemplateResultItem item = result[0];
+// It is a valid item.
+
+item = result[1];
+// It throws `utils::ExceptionInvalidParams`.
+...
+```
 
 ### **Size**
 
+To get count of found sc-constructions by sc-template you can use the method `Size`.
+
+```cpp
+...
+ScTemplate templ;
+templ.Triple(
+  conceptSetAddr,
+  ScType::EdgeAccessVarPosPerm,
+  ScType::NodeVar >> "_x"
+);
+// There is one sc-construction that is isomorphic this sc-template.
+
+ScTemplateSearchResult result;
+bool const isFoundByTemplate = ctx.HelperSearchTemplate(templ, result);
+
+size_t const count = result.Size();
+// The value of `count` be equal to `1`.
+...
+```
+
+### **IsEmpty**
+
+To check if found result is empty use the method `IsEmpty`.
+
+```cpp
+...
+ScTemplate templ;
+templ.Triple(
+  conceptSetAddr,
+  ScType::EdgeAccessVarPosPerm,
+  ScType::NodeVar >> "_x"
+);
+// There is one sc-construction that is isomorphic this sc-template.
+
+ScTemplateSearchResult result;
+bool const isFoundByTemplate = ctx.HelperSearchTemplate(templ, result);
+
+bool const count = result.IsEmpty();
+// The value of `count` be equal to `SC_FALSE`.
+...
+```
+
 ### **Clear**
+
+To clear all information about found sc-constructions use the method `Clear`.
+
+```cpp
+...
+ScTemplate templ;
+templ.Triple(
+  conceptSetAddr,
+  ScType::EdgeAccessVarPosPerm,
+  ScType::NodeVar >> "_x"
+);
+// There is one sc-construction that is isomorphic this sc-template.
+
+ScTemplateSearchResult result;
+bool const isFoundByTemplate = ctx.HelperSearchTemplate(templ, result);
+
+result.Clear();
+// After that `result` does not contain any information about sc-constructions.
+...
+```
 
 ### **ForEach**
 
+To iterate all program objects of found sc-constructions by sc-template you can use for-each cycle.
+
+```cpp
+...
+ScTemplate templ;
+templ.Triple(
+  conceptSetAddr,
+  ScType::EdgeAccessVarPosPerm,
+  ScType::NodeVar >> "_x"
+);
+// There is one sc-construction that is isomorphic this sc-template.
+
+ScTemplateSearchResult result;
+bool const isFoundByTemplate = ctx.HelperSearchTemplate(templ, result);
+
+for (size_t i = 0; i < result.Size(); ++i)
+{
+  ScTemplateResultItem const & item = result.Get(i);
+  // Implement logic to handle found sc-constructions.
+}
+...
+```
+
+Or you can use the method `ForEach` to do this.
+
+```cpp
+...
+ScTemplate templ;
+templ.Triple(
+  conceptSetAddr,
+  ScType::EdgeAccessVarPosPerm,
+  ScType::NodeVar >> "_x"
+);
+// There is one sc-construction that is isomorphic this sc-template.
+
+ScTemplateSearchResult result;
+bool const isFoundByTemplate = ctx.HelperSearchTemplate(templ, result);
+
+result.ForEach([](ScTemplateResultItem const & item) {
+  // Implement logic to handle found sc-constructions.
+});
+...
+```
+
 ## **HelperSmartSearchTemplate**
 
+This method searches constructions by isomorphic sc-template and pass found sc-constructions to `callback` 
+lambda-function. Lambda-function `callback` must return a request command value to manage sc-template search:
+
+- ScTemplateSearchRequest::CONTINUE,
+- ScTemplateSearchRequest::STOP,
+- ScTemplateSearchRequest::ERROR.
+
+When ScTemplateSearchRequest::CONTINUE returns, sc-template search will be continued. If ScTemplateSearchRequest::STOP 
+or ScTemplateSearchRequest::ERROR returns, then sc-template search stops. If sc-template search stopped by 
+ScTemplateSearchRequest::ERROR, then HelperSmartSearchTemplate thrown utils::ExceptionInvalidState. If `filterCallback` 
+passed, then all found sc-constructions triples are filtered by `filterCallback` condition.
+
+```cpp
+...
+ScAddr const & structureAddr = ctx.HelperFindBySystemIdtf("my_structure");
+ScAddr const & setAddr = ctx.HelperFindBySystemIdtf("my_set");
+ScAddr const & classAddr = ctx.HelperFindBySystemIdtf("my_class");
+
+ScTemplate templ;
+templ.Triple(
+  classAddr,
+  ScType::EdgeAccessVarPosPerm >> "_edge",
+  ScType::Unknown >> "_addr2"
+);
+m_ctx->HelperSmartSearchTemplate(templ, [&ctx](
+    ScTemplateSearchResultItem const & item) -> ScTemplateSearchRequest 
+{
+  ScAddr const & edgeAddr = item["_edge"];
+  if (ctx->HelperCheckEdge(
+      structureAddr, edgeAddr, ScType::EdgeAccessConstPosPerm))   
+    return ScTemplateSearchRequest::CONTINUE;
+
+  if (ctx.CreateEdge(ScType::EdgeAccessConstPosTemp, setAddr, item["_addr2"]))
+    return ScTemplateSearchRequest::STOP;
+
+  return ScTemplateSearchRequest::ERROR;
+});
+...
+```
 ## **FQA**
