@@ -538,7 +538,7 @@ sc_dictionary_fs_memory_status sc_dictionary_fs_memory_unlink_string(
     sc_link_hash_content * link_hash_content =
         sc_dictionary_get_by_key(memory->link_hashes_string_offsets_dictionary, link_hash_str, link_hash_str_size);
     if (link_hash_content == null_ptr)
-      return SC_FS_MEMORY_OK;
+      goto result;
 
     sc_list_remove_if(link_hash_content->link_hashes, (void *)link_hash, _sc_addr_hash_compare);
     sc_mem_free(link_hash_content);
@@ -547,6 +547,7 @@ sc_dictionary_fs_memory_status sc_dictionary_fs_memory_unlink_string(
   // set empty link
   sc_dictionary_append(memory->link_hashes_string_offsets_dictionary, link_hash_str, link_hash_str_size, null_ptr);
 
+result:
   sc_monitor_release_write(&memory->monitor);
 
   return SC_FS_MEMORY_OK;
