@@ -1,3 +1,7 @@
+!!! warning
+    This documentation is correct for only versions of sc-machine that >= 0.9.0.
+---
+
 ### Common
 
 SCs-code - is a text representation of SC-code. Whole text consist of sentences, that
@@ -88,8 +92,8 @@ Where `type` - is an element type specification. It can be one of possible value
 
 * `sc_node` - equal to ![SCg-node](images/scg/scg_node.png);
 * `sc_link` - equal to ![SCg-link](images/scg/scg_link_const.png);
-* `sc_edge_dcommon` - equal to ![SCg-node](images/scg/scg_edge_common_orient.png);
-* `sc_edge_ucommon` - equal to ![SCg-node](images/scg/scg_edge_common.png);
+* `sc_edge_dcommon` - equal to ![SCg-node](images/scg/scg_edge_const_common_orient.png);
+* `sc_edge_ucommon` - equal to ![SCg-node](images/scg/scg_edge_const_common.png);
 * `sc_edge_main` - equal to ![SCg-node](images/scg/scg_edge_const_pos_perm.png);
 * `sc_edge_access` - equal to ![SCg-node](images/scg/scg_edge_access.png).
 

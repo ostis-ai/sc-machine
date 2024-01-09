@@ -1,3 +1,7 @@
+!!! warning
+    This documentation is correct for only versions of sc-machine that >= 0.9.0.
+---
+
 <table>
   <tr>
     <th>Graphical (SCg)</th>
