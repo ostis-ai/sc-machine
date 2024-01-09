@@ -123,6 +123,22 @@ ScType const & linkType = ctx.GetElementType(linkAddr);
 ScType const & arcType = ctx.GetElementType(arcAddr);
 ```
 
+### **SetElementSubtype**
+
+You can change semantic sc-type of sc-element. Use the method `SetElementSubtype` and provide semantic sc-type for
+syntactic sc-type for sc-element.
+
+```cpp
+...
+// Create sc-node and get sc-address in sc-memory of it.
+ScAddr const & nodeAddr = ctx.CreateNode(ScType::Node);
+bool const isSubtypeElementChanged = ctx.SetElementSubtype(node, ScType::NodeConst);
+// The value of `isSubtypeElementChanged` must be equal to `SC_TRUE`.
+```
+
+!!! note
+    Don't use this method to change syntactic sc-type for sc-element. It is misleading.
+
 ### **GetEdgeInfo**
 
 To get incident (source and target) sc-elements you can use methods `GetEdgeInfo`, `GetEdgeSource` and `GetEdgeTarget`.
