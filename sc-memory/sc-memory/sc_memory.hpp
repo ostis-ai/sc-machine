@@ -34,7 +34,10 @@ typedef struct
   ScAddr addr3;
   ScAddr addr4;
   ScAddr addr5;
-} ScSystemIdentifierFiver;
+} ScSystemIdentifierQuintuple;
+
+SC_DEPRECATED(0.9.0, "Use ScSystemIdentifierQuintuple instead of. It will be removed in 0.10.0")
+typedef ScSystemIdentifierQuintuple ScSystemIdentifierFiver;
 
 class ScMemory
 {
@@ -810,14 +813,14 @@ public:
    *
    * @code
    * ScMemoryContext ctx;
-   * ScSystemIdentifierFiver resultFiver;
+   * ScSystemIdentifierQuintuple resultFiver;
    * bool success = ctx.HelperResolveSystemIdtf("example_identifier", ScType::NodeConstClass, resultFiver);
    * @endcode
    */
   _SC_EXTERN bool HelperResolveSystemIdtf(
       std::string const & sysIdtf,
       ScType const & type,
-      ScSystemIdentifierFiver & outFiver) noexcept(false);
+      ScSystemIdentifierQuintuple & outFiver) noexcept(false);
 
   /*! Tries to set system identifier for sc-element ScAddr.
    * @param sysIdtf System identifier to set for sc-element `addr`
@@ -851,14 +854,14 @@ public:
    * @code
    * ScMemoryContext ctx;
    * ScAddr elementAddr = ctx.CreateNode(ScType::NodeConst);
-   * ScSystemIdentifierFiver resultFiver;
+   * ScSystemIdentifierQuintuple resultFiver;
    * bool success = ctx.HelperSetSystemIdtf("example_identifier", elementAddr, resultFiver);
    * @endcode
    */
   _SC_EXTERN bool HelperSetSystemIdtf(
       std::string const & sysIdtf,
       ScAddr const & addr,
-      ScSystemIdentifierFiver & resultFiver) noexcept(false);
+      ScSystemIdentifierQuintuple & resultFiver) noexcept(false);
 
   /*! Tries to get system identifier for sc-element ScAddr.
    * @param addr Sc-element address to get it system identifier
@@ -928,11 +931,11 @@ public:
    *
    * @code
    * ScMemoryContext ctx;
-   * ScSystemIdentifierFiver resultFiver;
+   * ScSystemIdentifierQuintuple resultFiver;
    * bool found = ctx.HelperFindBySystemIdtf("example_identifier", resultFiver);
    * @endcode
    */
-  _SC_EXTERN bool HelperFindBySystemIdtf(std::string const & sysIdtf, ScSystemIdentifierFiver & outFiver) noexcept(
+  _SC_EXTERN bool HelperFindBySystemIdtf(std::string const & sysIdtf, ScSystemIdentifierQuintuple & outFiver) noexcept(
       false);
 
   /*!

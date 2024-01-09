@@ -125,7 +125,7 @@ TEST(ScBuilder, BuilderConfig)
 
   auto * context = new ScMemoryContext("check_context");
 
-  ScSystemIdentifierFiver fiver;
+  ScSystemIdentifierQuintuple fiver;
   context->HelperFindBySystemIdtf(builderParams.m_resultStructureSystemIdtf, fiver);
   ScAddr const & resultStructure = fiver.addr1;
   EXPECT_TRUE(resultStructure.IsValid());

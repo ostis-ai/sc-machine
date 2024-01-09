@@ -579,7 +579,7 @@ ScAddr ScMemoryContext::HelperResolveSystemIdtf(std::string const & sysIdtf, ScT
 {
   CHECK_CONTEXT;
 
-  ScSystemIdentifierFiver outFiver;
+  ScSystemIdentifierQuintuple outFiver;
   HelperResolveSystemIdtf(sysIdtf, type, outFiver);
   return outFiver.addr1;
 }
@@ -587,7 +587,7 @@ ScAddr ScMemoryContext::HelperResolveSystemIdtf(std::string const & sysIdtf, ScT
 bool ScMemoryContext::HelperResolveSystemIdtf(
     std::string const & sysIdtf,
     ScType const & type,
-    ScSystemIdentifierFiver & outFiver)
+    ScSystemIdentifierQuintuple & outFiver)
 {
   CHECK_CONTEXT;
 
@@ -604,7 +604,7 @@ bool ScMemoryContext::HelperResolveSystemIdtf(
     return result;
 
   EraseElement(resultAddr);
-  outFiver = (ScSystemIdentifierFiver){ScAddr::Empty, ScAddr::Empty, ScAddr::Empty, ScAddr::Empty, ScAddr::Empty};
+  outFiver = (ScSystemIdentifierQuintuple){ScAddr::Empty, ScAddr::Empty, ScAddr::Empty, ScAddr::Empty, ScAddr::Empty};
 
   return result;
 }
@@ -637,7 +637,7 @@ bool ScMemoryContext::HelperSetSystemIdtf(std::string const & sysIdtf, ScAddr co
 bool ScMemoryContext::HelperSetSystemIdtf(
     std::string const & sysIdtf,
     ScAddr const & addr,
-    ScSystemIdentifierFiver & outFiver)
+    ScSystemIdentifierQuintuple & outFiver)
 {
   CHECK_CONTEXT;
 
@@ -661,7 +661,7 @@ bool ScMemoryContext::HelperSetSystemIdtf(
     break;
   }
 
-  outFiver = (ScSystemIdentifierFiver){
+  outFiver = (ScSystemIdentifierQuintuple){
       ScAddr(fiver.addr1), ScAddr(fiver.addr2), ScAddr(fiver.addr3), ScAddr(fiver.addr4), ScAddr(fiver.addr5)};
 
   return result == SC_RESULT_OK;
@@ -744,7 +744,7 @@ ScAddr ScMemoryContext::HelperFindBySystemIdtf(std::string const & sysIdtf)
   return resultAddr;
 }
 
-bool ScMemoryContext::HelperFindBySystemIdtf(std::string const & sysIdtf, ScSystemIdentifierFiver & outFiver)
+bool ScMemoryContext::HelperFindBySystemIdtf(std::string const & sysIdtf, ScSystemIdentifierQuintuple & outFiver)
 {
   CHECK_CONTEXT;
 
@@ -765,7 +765,7 @@ bool ScMemoryContext::HelperFindBySystemIdtf(std::string const & sysIdtf, ScSyst
     break;
   }
 
-  outFiver = (ScSystemIdentifierFiver){
+  outFiver = (ScSystemIdentifierQuintuple){
       ScAddr(fiver.addr1), ScAddr(fiver.addr2), ScAddr(fiver.addr3), ScAddr(fiver.addr4), ScAddr(fiver.addr5)};
   return result == SC_RESULT_OK;
 }

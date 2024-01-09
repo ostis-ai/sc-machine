@@ -55,11 +55,11 @@ TEST_F(ScMemoryTest, SetGetFindSystemIdentifierWithOutFiver)
 {
   ScAddr const & addr = m_ctx->CreateNode(ScType::NodeConst);
 
-  ScSystemIdentifierFiver setFiver;
+  ScSystemIdentifierQuintuple setFiver;
   EXPECT_TRUE(m_ctx->HelperSetSystemIdtf("test_node", addr, setFiver));
   EXPECT_EQ(m_ctx->HelperGetSystemIdtf(addr), "test_node");
 
-  ScSystemIdentifierFiver foundFiver;
+  ScSystemIdentifierQuintuple foundFiver;
   EXPECT_TRUE(m_ctx->HelperFindBySystemIdtf("test_node", foundFiver));
 
   EXPECT_EQ(setFiver.addr1, foundFiver.addr1);
@@ -97,13 +97,13 @@ TEST_F(ScMemoryTest, ResolveGetSystemIdentifier)
 
 TEST_F(ScMemoryTest, ResolveGetSystemIdentifierWithOutFiver)
 {
-  ScSystemIdentifierFiver resolveFiver;
+  ScSystemIdentifierQuintuple resolveFiver;
   EXPECT_TRUE(m_ctx->HelperResolveSystemIdtf("test_node", ScType::NodeConst, resolveFiver));
 
   EXPECT_EQ(m_ctx->HelperGetSystemIdtf(resolveFiver.addr1), "test_node");
   EXPECT_EQ(m_ctx->HelperFindBySystemIdtf("test_node"), resolveFiver.addr1);
 
-  ScSystemIdentifierFiver foundFiver;
+  ScSystemIdentifierQuintuple foundFiver;
   EXPECT_TRUE(m_ctx->HelperFindBySystemIdtf("test_node", foundFiver));
 
   ScAddr addr;
