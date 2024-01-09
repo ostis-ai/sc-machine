@@ -16,7 +16,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- ScTemplate replacement presence check using varAddr 
+- Full md docs for sc-memory API on C++ with examples
+- ScTemplate replacement presence check using varAddr
 - Iterator5 AAAAF
 - Divide params errors handling and memory state handling
 - Provide errors and exceptions information into C and C++ sc-memory API
@@ -32,6 +33,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- Script scg.min.js styles handling for sc.g-element types of KBE >0.4.0
+- Sc.g-elements images in docs
 - Support recursive curl braces in SCs-code level 2
 - Support semantic sc-types for sc-node in SCs-code level 1
 - Support sc-links for SCs-code level 1
@@ -55,7 +58,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Internal sentences after sc.s-contour assignment
 - The success of finishing the action is marked first and only then that it was finished
 - Finish agent wait time
-- SC.g-elements images in docs
 
 ### Deprecated
 
