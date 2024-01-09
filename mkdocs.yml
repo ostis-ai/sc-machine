@@ -21,6 +21,11 @@ nav:
               - ScHelper API: sc-memory/api/cpp/extended/helper-api.md
               - ScTemplate API: sc-memory/api/cpp/extended/template-api.md
           - C++ Agents API: sc-memory/api/cpp/agents.md
+      - Python API:
+          - Python Core API: https://github.com/ostis-ai/py-sc-client
+          - Python Extended API: https://github.com/ostis-ai/py-sc-kpm
+      - TypeScript API:
+          - TypeScript Core API: https://github.com/ostis-ai/ts-sc-client
       - Sc-element types: scs/sc-element-types.md
       - SCs language: scs/scs.md
   - Tools:
