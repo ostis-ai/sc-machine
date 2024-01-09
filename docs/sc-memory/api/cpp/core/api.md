@@ -14,6 +14,12 @@ semantic sc-types. Sc-connectors are divided into non-oriented sc-connectors (sc
 sc-connectors. All these attributes of sc-elements and sc-element structures are hidden from user, but you can get 
 these features using this API.
 
+!!! note
+    All API methods are thread-safe.
+
+!!! note
+    To include this API provide `#include <sc-memory/sc_memory.hpp>` in your hpp source.
+
 ## **ScAddr**
 
 Each sc-element has a sc-address with which you can obtain information about this sc-element.
@@ -332,3 +338,28 @@ Described methods are part of Core C++ API of sc-memory. You can see and use Ext
 large graph structures.
 
 ## **Frequently Asked Questions**
+
+- [What different between ScType::EdgeDCommonConst and ScType::EdgeAccessConstPosPerm?](#what-different-between-sctypeedgedcommonconst-and-sctypeedgeaccessconstposperm)
+- [How I can specify empty ScAddr?](#how-i-can-specify-empty-scaddr)
+
+### **What different between ScType::EdgeDCommonConst and ScType::EdgeAccessConstPosPerm?**
+
+`ScType::EdgeDCommonConst` is a sc-type of sc-arc that connects two sc-elements in some relation.
+`ScType::EdgeAccessConstPosPerm` is a sc-type of sc-arc that denotes access of target sc-element to source sc-element.
+The sc-arc with sc-type `ScType::EdgeDCommonConst` between some two sc-elements can be transformed to sc-node to which 
+this two sc-elements belong.
+
+### **How I can specify empty ScAddr?**
+
+Empty `ScAddr` is the sc-address that has hash that equals to `0`.
+
+```cpp
+...
+ScAddr addr;
+// Here `addr` is empty.
+
+myFunc(addr);
+// or
+myFunc(ScAddr::Empty);
+...
+```

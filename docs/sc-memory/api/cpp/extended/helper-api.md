@@ -23,6 +23,9 @@ There is a quintuple of sc-node with its system identifier.
 
 <scg src="../images/helper/system_identifier_example_1.gwf"></scg>
 
+!!! note
+    To include this API provide `#include <sc-memory/sc_memory.hpp>` in your hpp source.
+
 ## **HelperSetSystemIdtf**
 
 To set system identifier for some sc-node or sc-link, use the method `HelperSetSystemIdtf`. If passed system identifier
@@ -191,3 +194,10 @@ ScAddr const & nrelSystemIdtfAddr = quintuple.addr5;
 --- 
 
 ## **Frequently Asked Questions**
+
+- [Can I specify empty system identifier for sc-element?](#can-i-specify-empty-system-identifier-for-sc-element)
+
+### **Can I specify empty system identifier for sc-element?**
+
+You can not specify empty system identifier for sc-element. All system identifiers must satisfy the regular 
+pattern "([a-z]|[A-Z]|'_'|'.'|[0-9])+".

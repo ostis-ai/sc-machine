@@ -9,6 +9,9 @@ constructions using sc-templates. In the follow picture sc-template and isomorph
 
 <scg src="../images/templates/template_example_1.gwf"></scg>
 
+!!! note
+    To include this API provide `#include <sc-memory/sc_memory.hpp>` in your hpp source.
+
 ## **ScTemplate**
 
 The class to work with sc-templates in C++ API. Before reading this paragraph you need to read
