@@ -16,7 +16,7 @@ sc_event * event_erase_elements;
 _SC_EXT_EXTERN sc_result
 sc_module_initialize_with_init_memory_generated_structure(sc_addr const init_memory_generated_structure)
 {
-  s_erase_elements_ctx = sc_memory_context_new_ext("my_self");
+  s_erase_elements_ctx = sc_memory_context_new_ext(SC_ADDR_EMPTY);
 
   if (utils_keynodes_initialize(init_memory_generated_structure) != SC_RESULT_OK)
     return SC_RESULT_ERROR;

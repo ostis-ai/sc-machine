@@ -32,7 +32,7 @@ bool Builder::Run(BuilderParams const & params, sc_memory_params const & memoryP
   ScConsole::PrintLine() << ScConsole::Color::Blue << "Collect all sources... ";
   m_collector.CollectBuildSources(m_params.m_inputPath, excludedSources, checkSources, buildSources);
 
-  m_ctx = std::make_unique<ScMemoryContext>("test");
+  m_ctx = std::make_unique<ScMemoryContext>();
   ScAddr const & outputStructure = m_params.m_resultStructureUpload ? ResolveOutputStructure() : ScAddr::Empty;
 
   ScConsole::PrintLine() << ScConsole::Color::Blue << "Build knowledge base from sources... ";

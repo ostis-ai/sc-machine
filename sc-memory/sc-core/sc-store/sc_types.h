@@ -156,6 +156,14 @@ typedef sc_uint16 sc_type;
 #  define SC_ACCESS_LVL_REQUEST_DELETION 0x1
 #  define SC_ACCESS_LVL_ELEMENT_EXIST 0x2
 
+#  define SC_ACCESS_LVL_MAX_VALUE 15
+#  define SC_ACCESS_LVL_MIN_VALUE 0
+
+#  define sc_access_lvl_make(read, write) (sc_uint8)((write) | ((read) << 4))
+
+#  define sc_access_lvl_make_max sc_access_lvl_make(SC_ACCESS_LVL_MAX_VALUE, SC_ACCESS_LVL_MAX_VALUE)
+#  define sc_access_lvl_make_min sc_access_lvl_make(SC_ACCESS_LVL_MIN_VALUE, SC_ACCESS_LVL_MIN_VALUE)
+
 // results
 enum _sc_result
 {

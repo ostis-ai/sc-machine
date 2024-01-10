@@ -140,7 +140,7 @@ sc_event * sc_event_new(
   event->type = type;
   event->callback = callback;
   event->callback_ext = null_ptr;
-  event->callback_ext2 = null_ptr;
+  event->callback_with_user = null_ptr;
   event->delete_callback = delete_callback;
   event->data = data;
   event->ref_count = 1;
@@ -172,7 +172,7 @@ sc_event * sc_event_new_ex(
   event->type = type;
   event->callback = null_ptr;
   event->callback_ext = callback;
-  event->callback_ext2 = null_ptr;
+  event->callback_with_user = null_ptr;
   event->delete_callback = delete_callback;
   event->data = data;
   event->ref_count = 1;
@@ -186,12 +186,12 @@ sc_event * sc_event_new_ex(
   return event;
 }
 
-sc_event * sc_event_new_ext2(
+sc_event * sc_event_with_user_new(
     sc_memory_context const * ctx,
     sc_addr subscription_addr,
     sc_event_type type,
     sc_pointer data,
-    sc_event_callback_ext2 callback,
+    sc_event_callback_with_user callback,
     sc_event_delete_function delete_callback)
 {
   if (SC_ADDR_IS_EMPTY(subscription_addr))
@@ -204,7 +204,7 @@ sc_event * sc_event_new_ext2(
   event->type = type;
   event->callback = null_ptr;
   event->callback_ext = null_ptr;
-  event->callback_ext2 = callback;
+  event->callback_with_user = callback;
   event->delete_callback = delete_callback;
   event->data = data;
   event->ref_count = 1;
@@ -241,7 +241,7 @@ sc_result sc_event_destroy(sc_event * event)
   event->type = 0;
   event->callback = null_ptr;
   event->callback_ext = null_ptr;
-  event->callback_ext2 = null_ptr;
+  event->callback_with_user = null_ptr;
   event->delete_callback = null_ptr;
   event->data = null_ptr;
   event->access_levels = 0;

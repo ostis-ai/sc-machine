@@ -68,7 +68,7 @@ ScEvent::ScEvent(
     DelegateFuncExt func /*= DelegateFuncExt()*/)
 {
   m_delegateExt = std::move(func);
-  m_event = sc_event_new_ext2(
+  m_event = sc_event_with_user_new(
       *ctx, *addr, ConvertEventType(eventType), (sc_pointer)this, &ScEvent::Handler, &ScEvent::HandlerDelete);
 }
 

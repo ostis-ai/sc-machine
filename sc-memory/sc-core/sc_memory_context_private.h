@@ -23,4 +23,13 @@ struct _sc_memory_context
   sc_monitor monitor;                ///< Monitor for synchronizing access to the memory context.
 };
 
+/*!
+ * @brief Retrieves the sc-memory context manager.
+ *
+ * @returns Returns a pointer to the sc-memory context manager.
+ *
+ * @note This function returns the sc-memory context manager, which manages memory contexts and user authorizations.
+ */
+_SC_EXTERN void * sc_memory_get_context_manager();
+
 #endif

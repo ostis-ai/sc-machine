@@ -143,7 +143,7 @@ void Class::GenerateCode(std::string const & fileId, std::stringstream & outCode
 #define _GENERATE_INIT_CODE(FuncName, Method, PreModifier, PostModifier) \
   outCode << PreModifier << " bool " << FuncName << "(ScAddr const & outputStructure = ScAddr::Empty) " \
           << PostModifier << " \\\n{ \\\n"; \
-  outCode << "    ScMemoryContext context(\"my_self\"); \\\n"; \
+  outCode << "    ScMemoryContext context; \\\n"; \
   outCode << "    ScSystemIdentifierQuintuple fiver; \\\n"; \
   outCode << "    bool result = true; \\\n"; \
   Method(outCode); \
@@ -289,7 +289,7 @@ void Class::GenerateDeclarations(std::stringstream & outCode) const
     // register/unregister
     outCode << "\\\n	static void RegisterHandler()";
     outCode << "\\\n	{";
-    outCode << "\\\n		ScMemoryContext ms_context = ScMemoryContext(\"my_self\");";
+    outCode << "\\\n		ScMemoryContext ms_context;";
     outCode << "\\\n		ms_event.reset(new ScEvent(ms_context, " << listenAddr << ", " << eventType << ", &"
             << m_displayName << "::handler_emit"
             << "));";

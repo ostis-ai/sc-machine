@@ -29,7 +29,7 @@ sc_event * event_question_search_links_of_relation_connected_with_element;
 
 sc_result sc_module_initialize_with_init_memory_generated_structure(sc_addr const init_memory_generated_structure)
 {
-  s_default_ctx = sc_memory_context_new_ext("my_self");
+  s_default_ctx = sc_memory_context_new_ext(SC_ADDR_EMPTY);
 
   if (search_keynodes_initialize(s_default_ctx, init_memory_generated_structure) != SC_RESULT_OK)
     return SC_RESULT_ERROR;

@@ -10,7 +10,7 @@
 
 TEST_F(ScBuilderTest, Smoke)
 {
-  ScMemoryContext ctx("Builder_Base");
+  ScMemoryContext ctx;
 
   std::string const scsData =
       "base"

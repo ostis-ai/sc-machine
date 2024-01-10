@@ -8,16 +8,7 @@
 
 #include "sc_memory_json_action_defines.hpp"
 
-std::map<std::string, ScMemoryJsonAction *> ScMemoryJsonActionsHandler::m_actions = {
-    {"keynodes", new ScMemoryHandleKeynodesJsonAction()},
-    {"create_elements", new ScMemoryCreateElementsJsonAction()},
-    {"create_elements_by_scs", new ScMemoryCreateElementsByScsJsonAction()},
-    {"check_elements", new ScMemoryCheckElementsJsonAction()},
-    {"delete_elements", new ScMemoryDeleteElementsJsonAction()},
-    {"search_template", new ScMemoryTemplateSearchJsonAction()},
-    {"generate_template", new ScMemoryTemplateGenerateJsonAction()},
-    {"content", new ScMemoryHandleLinkContentJsonAction()},
-};
+std::map<std::string, ScMemoryJsonAction *> ScMemoryJsonActionsHandler::m_actions;
 
 ScMemoryJsonActionsHandler::ScMemoryJsonActionsHandler(ScServer * server, ScMemoryContext * processCtx)
   : ScMemoryJsonHandler(server)
@@ -26,6 +17,26 @@ ScMemoryJsonActionsHandler::ScMemoryJsonActionsHandler(ScServer * server, ScMemo
 }
 
 ScMemoryJsonActionsHandler::~ScMemoryJsonActionsHandler() = default;
+
+void ScMemoryJsonActionsHandler::InitializeActionClasses()
+{
+  m_actions = {
+      {"keynodes", new ScMemoryHandleKeynodesJsonAction()},
+      {"create_elements", new ScMemoryCreateElementsJsonAction()},
+      {"create_elements_by_scs", new ScMemoryCreateElementsByScsJsonAction()},
+      {"check_elements", new ScMemoryCheckElementsJsonAction()},
+      {"delete_elements", new ScMemoryDeleteElementsJsonAction()},
+      {"search_template", new ScMemoryTemplateSearchJsonAction()},
+      {"generate_template", new ScMemoryTemplateGenerateJsonAction()},
+      {"content", new ScMemoryHandleLinkContentJsonAction()},
+  };
+}
+
+void ScMemoryJsonActionsHandler::ClearActionClasses()
+{
+  for (auto const & it : m_actions)
+    delete it.second;
+}
 
 ScMemoryJsonPayload ScMemoryJsonActionsHandler::HandleRequestPayload(
     ScServerSessionId const & sessionId,

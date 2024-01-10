@@ -26,7 +26,7 @@ using ScLinkTest = ScMemoryTest;
 
 TEST_F(ScLinkTest, common)
 {
-  ScMemoryContext ctx("sc_link_common");
+  ScMemoryContext ctx;
 
   TestType<std::string>(ctx, "test_string_value");
   TestType<double>(ctx, 5.0);
@@ -43,7 +43,7 @@ TEST_F(ScLinkTest, common)
 
 TEST_F(ScLinkTest, reuse)
 {
-  ScMemoryContext ctx("sc_link_reuse");
+  ScMemoryContext ctx;
 
   std::string const str = "test_string_value_2";
   ScAddr const linkAddr = ctx.CreateLink();
@@ -65,7 +65,7 @@ TEST_F(ScLinkTest, reuse)
 
 TEST_F(ScLinkTest, as_string)
 {
-  ScMemoryContext ctx("sc_link_as_string");
+  ScMemoryContext ctx;
 
   ScAddr const linkAddr = ctx.CreateLink();
   EXPECT_TRUE(linkAddr.IsValid());
@@ -108,7 +108,7 @@ TEST_F(ScLinkTest, as_string)
 
 TEST_F(ScLinkTest, operations)
 {
-  ScMemoryContext ctx("sc_links_operations");
+  ScMemoryContext ctx;
 
   ScAddr formulaAddr = ctx.CreateNode(ScType::NodeConst);
   EXPECT_TRUE(ctx.HelperSetSystemIdtf("atomic_formula", formulaAddr));
@@ -129,7 +129,7 @@ TEST_F(ScLinkTest, operations)
 
 TEST_F(ScLinkTest, smoke)
 {
-  ScMemoryContext ctx("sc_links_smoke");
+  ScMemoryContext ctx;
 
   ScAddr formulaAddr = ctx.CreateNode(ScType::NodeConst);
   EXPECT_TRUE(ctx.HelperSetSystemIdtf("atomic_formula", formulaAddr));
@@ -178,7 +178,7 @@ TEST_F(ScLinkTest, smoke)
 
 TEST_F(ScLinkTest, content_changed)
 {
-  ScMemoryContext ctx("sc_links_content_changed");
+  ScMemoryContext ctx;
 
   ScAddr linkAddr = ctx.CreateLink();
   EXPECT_TRUE(linkAddr.IsValid());
@@ -207,7 +207,7 @@ TEST_F(ScLinkTest, content_changed)
 
 TEST_F(ScLinkTest, set_system_idtf)
 {
-  ScMemoryContext ctx("sc_links_set_system_idtf");
+  ScMemoryContext ctx;
 
   ScAddr timestamp = ctx.CreateNode(ScType::NodeConstClass);
   EXPECT_TRUE(ctx.HelperSetSystemIdtf("2022.03.21 16:07:47", timestamp));
@@ -227,7 +227,7 @@ TEST_F(ScLinkTest, set_system_idtf)
 
 TEST_F(ScLinkTest, find_links_by_substr)
 {
-  ScMemoryContext ctx("find_links_by_substr");
+  ScMemoryContext ctx;
 
   ScAddr linkAddr = ctx.CreateLink();
   EXPECT_TRUE(linkAddr.IsValid());
@@ -267,7 +267,7 @@ TEST_F(ScLinkTest, find_links_by_substr)
 
 TEST_F(ScLinkTest, find_strings_by_substr)
 {
-  ScMemoryContext ctx("find_strings_by_substr");
+  ScMemoryContext ctx;
 
   ScAddr linkAddr = ctx.CreateLink();
   EXPECT_TRUE(linkAddr.IsValid());
@@ -319,7 +319,7 @@ TEST_F(ScLinkTest, find_strings_by_substr)
 
 TEST_F(ScLinkTest, find_strings_by_substr_as_prefix)
 {
-  ScMemoryContext ctx("find_strings_by_substr_as_prefix");
+  ScMemoryContext ctx;
 
   ScAddr linkAddr = ctx.CreateLink();
   EXPECT_TRUE(linkAddr.IsValid());
@@ -374,7 +374,7 @@ TEST_F(ScLinkTest, find_strings_by_substr_as_prefix)
 
 TEST_F(ScLinkTest, links_deletion)
 {
-  ScMemoryContext ctx("links_deletion");
+  ScMemoryContext ctx;
 
   ScAddr const & linkAddr1 = ctx.CreateLink(ScType::LinkConst);
   EXPECT_TRUE(linkAddr1.IsValid());
@@ -397,7 +397,7 @@ TEST_F(ScLinkTest, links_deletion)
 
 TEST_F(ScLinkTest, link_deletion_repeteded)
 {
-  ScMemoryContext ctx("link_deletion_repeated");
+  ScMemoryContext ctx;
 
   ScAddr const & linkAddr1 = ctx.CreateLink(ScType::LinkConst);
   EXPECT_TRUE(linkAddr1.IsValid());
@@ -415,7 +415,7 @@ TEST_F(ScLinkTest, link_deletion_repeteded)
 
 TEST_F(ScLinkTest, empty_link_deletion)
 {
-  ScMemoryContext ctx("empty_link_deletion");
+  ScMemoryContext ctx;
 
   ScAddr const & linkAddr1 = ctx.CreateLink(ScType::LinkConst);
   EXPECT_TRUE(linkAddr1.IsValid());

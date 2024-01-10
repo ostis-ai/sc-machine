@@ -36,7 +36,7 @@ public:
 
   void InitContext()
   {
-    m_ctx = std::make_unique<ScMemoryContext>("test");
+    m_ctx = std::make_unique<ScMemoryContext>();
   }
 
   void DestroyContext()

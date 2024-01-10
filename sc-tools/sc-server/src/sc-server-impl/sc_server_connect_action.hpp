@@ -68,20 +68,16 @@ public:
     if (params.empty())
       return userAddr;
 
-    if (params.find("user_addr") != params.cend())
+    std::string const & userAddrKey = "user_addr";
+    if (params.find(userAddrKey) != params.cend())
     {
-      std::string const & userAddrHashString = params.at("user_addr");
+      std::string const & userAddrHashString = params.at(userAddrKey);
 
       ScAddr::HashType userAddrHash;
       std::stringstream stream;
       stream << userAddrHashString;
       stream >> userAddrHash;
       userAddr = ScAddr{userAddrHash};
-    }
-    else if (params.find("user_system_idtf") != params.cend())
-    {
-      std::string const & userSystemIdtf = params.at("user_addr");
-      userAddr = m_server->m_context->HelperFindBySystemIdtf(userSystemIdtf);
     }
 
     return userAddr;

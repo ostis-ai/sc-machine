@@ -18,6 +18,10 @@ public:
 
   ~ScMemoryJsonActionsHandler() override;
 
+  static void InitializeActionClasses();
+
+  static void ClearActionClasses();
+
 private:
   ScMemoryContext * m_context;
 

@@ -14,7 +14,7 @@ protected:
   virtual void SetUp()
   {
     ScBuilderTest::Initialize();
-    m_ctx = std::make_unique<ScMemoryContext>("builder_test");
+    m_ctx = std::make_unique<ScMemoryContext>();
   }
 
   virtual void TearDown()

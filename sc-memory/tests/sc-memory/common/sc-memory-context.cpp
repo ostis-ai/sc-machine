@@ -1,25 +1,25 @@
 #include <gtest/gtest.h>
 
-#include <algorithm>
 #include <thread>
 
 #include "sc-memory/sc_memory.hpp"
 
 #include "sc_test.hpp"
 
-TEST_F(ScMemoryTestWithUserMode, CreateEraseElementsByUnauthorizedUser)
+TEST_F(ScMemoryTestWithUserMode, CreateEraseElementsByUnauthenticatedUser)
 {
   ScAddr const & userAddr = m_ctx->CreateNode(ScType::NodeConst);
 
   ScMemoryContext userContext{userAddr};
   EXPECT_THROW(userContext.CreateNode(ScType::NodeConst), utils::ExceptionInvalidState);
   EXPECT_THROW(userContext.CreateLink(ScType::LinkConst), utils::ExceptionInvalidState);
-  EXPECT_THROW(userContext.CreateEdge(ScType::EdgeAccessConstPosTemp, userAddr, userAddr), utils::ExceptionInvalidState);
+  EXPECT_THROW(
+      userContext.CreateEdge(ScType::EdgeAccessConstPosTemp, userAddr, userAddr), utils::ExceptionInvalidState);
 
   EXPECT_THROW(userContext.EraseElement(userAddr), utils::ExceptionInvalidState);
 }
 
-TEST_F(ScMemoryTestWithUserMode, HandleElementsByUnauthorizedUser)
+TEST_F(ScMemoryTestWithUserMode, HandleElementsByUnauthenticatedUser)
 {
   ScAddr const & userAddr = m_ctx->CreateNode(ScType::NodeConst);
   ScAddr const & edgeAddr = m_ctx->CreateEdge(ScType::EdgeAccessConstPosTemp, userAddr, userAddr);
@@ -35,7 +35,7 @@ TEST_F(ScMemoryTestWithUserMode, HandleElementsByUnauthorizedUser)
   EXPECT_THROW(userContext.SetElementSubtype(userAddr, ScType::NodeConst), utils::ExceptionInvalidState);
 }
 
-TEST_F(ScMemoryTestWithUserMode, HandleLinkContentByUnauthorizedUser)
+TEST_F(ScMemoryTestWithUserMode, HandleLinkContentByUnauthenticatedUser)
 {
   ScAddr const & userAddr = m_ctx->CreateNode(ScType::NodeConst);
   ScAddr const & linkAddr = m_ctx->CreateLink();
@@ -51,7 +51,7 @@ TEST_F(ScMemoryTestWithUserMode, HandleLinkContentByUnauthorizedUser)
   EXPECT_THROW(userContext.HelperResolveSystemIdtf("test"), utils::ExceptionInvalidState);
 }
 
-TEST_F(ScMemoryTestWithUserMode, IterateElementByUnathorizedUser)
+TEST_F(ScMemoryTestWithUserMode, IterateElementByUnathenticatedUser)
 {
   ScAddr const & userAddr = m_ctx->CreateNode(ScType::NodeConst);
 
@@ -63,21 +63,22 @@ TEST_F(ScMemoryTestWithUserMode, IterateElementByUnathorizedUser)
       userAddr, ScType::EdgeAccessConstPosTemp, ScType::Unknown, ScType::EdgeAccessConstPosTemp, ScType::NodeConstRole);
   EXPECT_THROW(it5->Next(), utils::ExceptionInvalidState);
 
-  EXPECT_THROW(userContext.HelperCheckEdge(
-                   userAddr, userAddr, ScType::EdgeAccessConstPosTemp), utils::ExceptionInvalidState);
+  EXPECT_THROW(
+      userContext.HelperCheckEdge(userAddr, userAddr, ScType::EdgeAccessConstPosTemp), utils::ExceptionInvalidState);
 }
 
-TEST_F(ScMemoryTestWithUserMode, CreateElementsByAuthorizedUserCreatedBefore)
+TEST_F(ScMemoryTestWithUserMode, CreateElementsByAuthenticatedUserCreatedBefore)
 {
   ScAddr const & userAddr = m_ctx->CreateNode(ScType::NodeConst);
   ScMemoryContext userContext{userAddr};
 
-  ScAddr const & conceptActionSubjectAddr = m_ctx->HelperFindBySystemIdtf("concept_action_subject_addr");
+  ScAddr const & conceptAuthenticatedUserAddr = m_ctx->HelperFindBySystemIdtf("concept_authenticated_user");
 
-  std::atomic_bool isAuthorized = false;
-  ScEventAddOutputEdge event(*m_ctx, conceptActionSubjectAddr,
-    [&userContext, &isAuthorized](ScAddr const & addr, ScAddr const & edgeAddr, ScAddr const & userAddr)
-  {
+  std::atomic_bool isAuthenticated = false;
+  ScEventAddOutputEdge event(
+      *m_ctx,
+      conceptAuthenticatedUserAddr,
+      [&userContext, &isAuthenticated](ScAddr const & addr, ScAddr const & edgeAddr, ScAddr const & userAddr) {
     ScAddr const & testNodeAddr = userContext.CreateNode(ScType::NodeConst);
     EXPECT_TRUE(userContext.IsElement(testNodeAddr));
 
@@ -87,26 +88,28 @@ TEST_F(ScMemoryTestWithUserMode, CreateElementsByAuthorizedUserCreatedBefore)
     ScAddr const & testArcAddr = userContext.CreateEdge(ScType::EdgeAccessConstPosTemp, testNodeAddr, testLinkAddr);
     EXPECT_TRUE(userContext.IsElement(testArcAddr));
 
-    isAuthorized = true;
+    isAuthenticated = true;
 
     return true;
-  });
+      });
 
-  ScAddr const & conceptAuthorizedUserAddr = m_ctx->HelperFindBySystemIdtf("concept_authorized_user");
-  m_ctx->CreateEdge(ScType::EdgeAccessConstPosTemp, conceptAuthorizedUserAddr, userAddr);
+  ScAddr const & conceptAuthenticationRequestUserAddr =
+      m_ctx->HelperFindBySystemIdtf("concept_authentication_request_user");
+  m_ctx->CreateEdge(ScType::EdgeAccessConstPosTemp, conceptAuthenticationRequestUserAddr, userAddr);
 
-  while (!isAuthorized.load())
+  while (!isAuthenticated.load())
     std::this_thread::sleep_for(std::chrono::milliseconds(10));
 }
 
-TEST_F(ScMemoryTestWithUserMode, CreateElementsByAuthorizedUserCreatedAfter)
+TEST_F(ScMemoryTestWithUserMode, CreateElementsByAuthenticatedUserCreatedAfter)
 {
-  ScAddr const & conceptActionSubjectAddr = m_ctx->HelperFindBySystemIdtf("concept_action_subject_addr");
+  ScAddr const & conceptAuthenticatedUserAddr = m_ctx->HelperFindBySystemIdtf("concept_authenticated_user");
 
   std::atomic_bool isChecked = false;
-  ScEventAddOutputEdge event(*m_ctx, conceptActionSubjectAddr,
-    [&isChecked](ScAddr const & addr, ScAddr const & edgeAddr, ScAddr const & userAddr)
-  {
+  ScEventAddOutputEdge event(
+      *m_ctx,
+      conceptAuthenticatedUserAddr,
+      [&isChecked](ScAddr const & addr, ScAddr const & edgeAddr, ScAddr const & userAddr) {
     ScMemoryContext userContext{userAddr};
     ScAddr const & testNodeAddr = userContext.CreateNode(ScType::NodeConst);
     EXPECT_TRUE(userContext.IsElement(testNodeAddr));
@@ -120,24 +123,26 @@ TEST_F(ScMemoryTestWithUserMode, CreateElementsByAuthorizedUserCreatedAfter)
     isChecked = true;
 
     return true;
-  });
+      });
 
   ScAddr const & userAddr = m_ctx->CreateNode(ScType::NodeConst);
-  ScAddr const & conceptAuthorizedUserAddr = m_ctx->HelperFindBySystemIdtf("concept_authorized_user");
-  m_ctx->CreateEdge(ScType::EdgeAccessConstPosTemp, conceptAuthorizedUserAddr, userAddr);
+  ScAddr const & conceptAuthenticationRequestUserAddr =
+      m_ctx->HelperFindBySystemIdtf("concept_authentication_request_user");
+  m_ctx->CreateEdge(ScType::EdgeAccessConstPosTemp, conceptAuthenticationRequestUserAddr, userAddr);
 
   while (!isChecked.load())
     std::this_thread::sleep_for(std::chrono::milliseconds(10));
 }
 
-TEST_F(ScMemoryTestWithUserMode, SeveralCreateElementsByAuthorizedUserCreatedAfter)
+TEST_F(ScMemoryTestWithUserMode, SeveralCreateElementsByAuthenticatedUserCreatedAfter)
 {
-  ScAddr const & conceptActionSubjectAddr = m_ctx->HelperFindBySystemIdtf("concept_action_subject_addr");
+  ScAddr const & conceptAuthenticatedUserAddr = m_ctx->HelperFindBySystemIdtf("concept_authenticated_user");
 
   std::atomic_bool isChecked = false;
-  ScEventAddOutputEdge event(*m_ctx, conceptActionSubjectAddr,
-    [&isChecked](ScAddr const & addr, ScAddr const & edgeAddr, ScAddr const & userAddr)
-  {
+  ScEventAddOutputEdge event(
+      *m_ctx,
+      conceptAuthenticatedUserAddr,
+      [&isChecked](ScAddr const & addr, ScAddr const & edgeAddr, ScAddr const & userAddr) {
     ScMemoryContext userContext{userAddr};
     ScAddr const & testNodeAddr = userContext.CreateNode(ScType::NodeConst);
     EXPECT_TRUE(userContext.IsElement(testNodeAddr));
@@ -151,11 +156,12 @@ TEST_F(ScMemoryTestWithUserMode, SeveralCreateElementsByAuthorizedUserCreatedAft
     isChecked = true;
 
     return true;
-  });
+      });
 
   ScAddr const & userAddr = m_ctx->CreateNode(ScType::NodeConst);
-  ScAddr const & conceptAuthorizedUserAddr = m_ctx->HelperFindBySystemIdtf("concept_authorized_user");
-  m_ctx->CreateEdge(ScType::EdgeAccessConstPosTemp, conceptAuthorizedUserAddr, userAddr);
+  ScAddr const & conceptAuthenticationRequestUserAddr =
+      m_ctx->HelperFindBySystemIdtf("concept_authentication_request_user");
+  m_ctx->CreateEdge(ScType::EdgeAccessConstPosTemp, conceptAuthenticationRequestUserAddr, userAddr);
 
   while (!isChecked.load())
     std::this_thread::sleep_for(std::chrono::milliseconds(10));
@@ -184,17 +190,18 @@ TEST_F(ScMemoryTestWithUserMode, SeveralCreateElementsByAuthorizedUserCreatedAft
   }
 }
 
-TEST_F(ScMemoryTestWithUserMode, CreateElementsByAuthorizedUserCreatedBeforeAndUnathorizedAfter)
+TEST_F(ScMemoryTestWithUserMode, CreateElementsByAuthenticatedUserCreatedBeforeAndUnauthenticatedAfter)
 {
   ScAddr const & userAddr = m_ctx->CreateNode(ScType::NodeConst);
   ScMemoryContext userContext{userAddr};
 
-  ScAddr const & conceptActionSubjectAddr = m_ctx->HelperFindBySystemIdtf("concept_action_subject_addr");
+  ScAddr const & conceptAuthenticatedUserAddr = m_ctx->HelperFindBySystemIdtf("concept_authenticated_user");
 
-  std::atomic_bool isAuthorized = false;
-  ScEventAddOutputEdge event(*m_ctx, conceptActionSubjectAddr,
-    [&userContext, &isAuthorized](ScAddr const & addr, ScAddr const & edgeAddr, ScAddr const & userAddr)
-  {
+  std::atomic_bool isAuthenticated = false;
+  ScEventAddOutputEdge event(
+      *m_ctx,
+      conceptAuthenticatedUserAddr,
+      [&userContext, &isAuthenticated](ScAddr const & addr, ScAddr const & edgeAddr, ScAddr const & userAddr) {
     ScAddr const & testNodeAddr = userContext.CreateNode(ScType::NodeConst);
     EXPECT_TRUE(userContext.IsElement(testNodeAddr));
 
@@ -204,31 +211,34 @@ TEST_F(ScMemoryTestWithUserMode, CreateElementsByAuthorizedUserCreatedBeforeAndU
     ScAddr const & testArcAddr = userContext.CreateEdge(ScType::EdgeAccessConstPosTemp, testNodeAddr, testLinkAddr);
     EXPECT_TRUE(userContext.IsElement(testArcAddr));
 
-    isAuthorized = true;
+    isAuthenticated = true;
 
     return true;
-  });
+      });
 
-  ScAddr const & conceptAuthorizedUserAddr = m_ctx->HelperFindBySystemIdtf("concept_authorized_user");
-  ScAddr const & authEdgeAddr = m_ctx->CreateEdge(ScType::EdgeAccessConstPosTemp, conceptAuthorizedUserAddr, userAddr);
+  ScAddr const & conceptAuthenticationRequestUserAddr =
+      m_ctx->HelperFindBySystemIdtf("concept_authentication_request_user");
+  ScAddr const & authEdgeAddr =
+      m_ctx->CreateEdge(ScType::EdgeAccessConstPosTemp, conceptAuthenticationRequestUserAddr, userAddr);
 
-  while (!isAuthorized.load())
+  while (!isAuthenticated.load())
     std::this_thread::sleep_for(std::chrono::milliseconds(10));
 
-  ScEventRemoveOutputEdge event2(*m_ctx, conceptAuthorizedUserAddr,
-    [&userContext, &isAuthorized](ScAddr const & addr, ScAddr const & edgeAddr, ScAddr const & userAddr)
-  {
+  ScEventRemoveOutputEdge event2(
+      *m_ctx,
+      conceptAuthenticationRequestUserAddr,
+      [&userContext, &isAuthenticated](ScAddr const & addr, ScAddr const & edgeAddr, ScAddr const & userAddr) {
     EXPECT_THROW(userContext.CreateNode(ScType::NodeConst), utils::ExceptionInvalidState);
     EXPECT_THROW(userContext.CreateLink(ScType::LinkConst), utils::ExceptionInvalidState);
     EXPECT_THROW(userContext.CreateEdge(ScType::EdgeAccessConstPosTemp, addr, userAddr), utils::ExceptionInvalidState);
 
-    isAuthorized = false;
+    isAuthenticated = false;
 
     return true;
-  });
+      });
 
   m_ctx->EraseElement(authEdgeAddr);
 
-  while (isAuthorized.load())
+  while (isAuthenticated.load())
     std::this_thread::sleep_for(std::chrono::milliseconds(10));
 }

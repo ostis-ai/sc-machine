@@ -79,7 +79,7 @@ public:
   _SC_EXTERN static void LogMute();
   _SC_EXTERN static void LogUnmute();
 
-private:
+protected:
   static ScMemoryContext * ms_globalContext;
 };
 
@@ -100,8 +100,17 @@ public:
   };
 
 public:
+  SC_DEPRECATED(
+      0.10.0,
+      "Don't use this method for creating sc-memory context. Use one with `userAddr` params instead of. "
+      "This function will be deleted in 0.11.0")
+  _SC_EXTERN explicit ScMemoryContext(sc_uint8 accessLevels, std::string const & name = "");
+  SC_DEPRECATED(
+      0.10.0,
+      "Don't use this method for creating sc-memory context. Use one with `userAddr` params instead of. "
+      "This function will be deleted in 0.11.0")
   _SC_EXTERN explicit ScMemoryContext(std::string const & name);
-  _SC_EXTERN explicit ScMemoryContext(ScAddr const & processAddr);
+  _SC_EXTERN explicit ScMemoryContext(ScAddr const & userAddr = ScAddr::Empty);
   _SC_EXTERN explicit ScMemoryContext(sc_memory_context * context);
   _SC_EXTERN ~ScMemoryContext();
 
@@ -114,7 +123,7 @@ public:
     return m_context;
   }
 
-  _SC_EXTERN sc_memory_context const * GetRealContext() const
+  _SC_EXTERN sc_memory_context * GetRealContext() const
   {
     return m_context;
   }

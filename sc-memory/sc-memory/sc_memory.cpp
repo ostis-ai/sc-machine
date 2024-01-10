@@ -129,13 +129,21 @@ void ScMemory::LogUnmute()
 
 // ---------------
 
-ScMemoryContext::ScMemoryContext(std::string const & name)
-  : m_context(sc_memory_context_new_ext(name.c_str()))
+ScMemoryContext::ScMemoryContext(sc_uint8 accessLevels, std::string const & name)
+  : m_context(sc_memory_context_new_ext(*ScAddr::Empty))
 {
+  SC_UNUSED(accessLevels);
+  SC_UNUSED(name);
 }
 
-ScMemoryContext::ScMemoryContext(ScAddr const & processAddr)
-  : m_context(sc_memory_context_new(*processAddr))
+ScMemoryContext::ScMemoryContext(std::string const & name)
+  : m_context(sc_memory_context_new_ext(*ScAddr::Empty))
+{
+  SC_UNUSED(name);
+}
+
+ScMemoryContext::ScMemoryContext(ScAddr const & userAddr)
+  : m_context(sc_memory_context_new_ext(*userAddr))
 {
 }
 

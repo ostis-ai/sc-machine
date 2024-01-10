@@ -105,7 +105,7 @@ void TestUnsuccessfulCreateElements(std::unique_ptr<ScMemoryContext> const & ctx
   EXPECT_FALSE(response["errors"].empty());
 }
 
-TEST_F(ScServerTestWithUserMode, CreateElementsByUnauthorizedUser)
+TEST_F(ScServerTestWithUserMode, CreateElementsByUnauthenticatedUser)
 {
   ScClient client;
 
@@ -118,13 +118,13 @@ TEST_F(ScServerTestWithUserMode, CreateElementsByUnauthorizedUser)
   client.Stop();
 }
 
-TEST_F(ScServerTestWithUserMode, CreateElementsByAuthorizedUser)
+TEST_F(ScServerTestWithUserMode, CreateElementsByAuthenticatedUser)
 {
   ScClient client;
 
   ScAddr const & userAddr = m_ctx->CreateNode(ScType::NodeConst);
-  ScAddr const & conceptAuthorizedUserAddr = m_ctx->HelperFindBySystemIdtf("concept_authorized_user");
-  m_ctx->CreateEdge(ScType::EdgeAccessConstPosTemp, conceptAuthorizedUserAddr, userAddr);
+  ScAddr const & conceptAuthenticatedUserAddr = m_ctx->HelperFindBySystemIdtf("concept_authentication_request_user");
+  m_ctx->CreateEdge(ScType::EdgeAccessConstPosTemp, conceptAuthenticatedUserAddr, userAddr);
 
   EXPECT_TRUE(client.Connect(m_server->GetUri() + "/?user_addr=" + std::to_string(userAddr.Hash())));
   client.Run();
@@ -133,26 +133,11 @@ TEST_F(ScServerTestWithUserMode, CreateElementsByAuthorizedUser)
   client.Stop();
 }
 
-TEST_F(ScServerTestWithUserMode, CreateElementsByAuthorizedUser2)
-{
-  ScClient client;
-
-  ScAddr const & userAddr = m_ctx->HelperResolveSystemIdtf("test_user", ScType::NodeConst);
-  ScAddr const & conceptAuthorizedUserAddr = m_ctx->HelperFindBySystemIdtf("concept_authorized_user");
-  m_ctx->CreateEdge(ScType::EdgeAccessConstPosTemp, conceptAuthorizedUserAddr, userAddr);
-
-  EXPECT_TRUE(client.Connect(m_server->GetUri() + "/?user_addr=test_user"));
-  client.Run();
-  TestRequestCreateElements(client);
-  TestCheckSuccessfulCreateElements(m_ctx, client);
-  client.Stop();
-}
-
-TEST_F(ScServerTestWithUserMode, CreateElementsByAuthorizedUserWithReconnect)
+TEST_F(ScServerTestWithUserMode, CreateElementsByAuthenticatedUserWithReconnect)
 {
   ScAddr const & userAddr = m_ctx->CreateNode(ScType::NodeConst);
-  ScAddr const & conceptAuthorizedUserAddr = m_ctx->HelperFindBySystemIdtf("concept_authorized_user");
-  m_ctx->CreateEdge(ScType::EdgeAccessConstPosTemp, conceptAuthorizedUserAddr, userAddr);
+  ScAddr const & conceptAuthenticatedUserAddr = m_ctx->HelperFindBySystemIdtf("concept_authentication_request_user");
+  m_ctx->CreateEdge(ScType::EdgeAccessConstPosTemp, conceptAuthenticatedUserAddr, userAddr);
 
   {
     ScClient client;

@@ -78,7 +78,7 @@ bool ScKeynodes::Init(ScMemoryContext * context, bool force, sc_char const * ini
     }
   }
 
-  bool result = ScKeynodes::InitGlobal(initMemoryGeneratedStructure);
+  bool result = ScKeynodes::InitGlobal(*context, initMemoryGeneratedStructure);
 
   ScAddrVector const & resultCodes = {
       kScResultNo,

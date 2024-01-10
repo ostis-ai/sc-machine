@@ -28,7 +28,7 @@ struct _sc_event
   sc_event_callback callback;
   //! Pointer to callback function, that calls on event emit
   sc_event_callback_ext callback_ext;
-  sc_event_callback_ext2 callback_ext2;
+  sc_event_callback_with_user callback_with_user;
   //! Pointer to callback function, that calls, when subscribed sc-element deleted
   sc_event_delete_function delete_callback;
   sc_monitor monitor;

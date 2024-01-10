@@ -160,7 +160,7 @@ TEST(ScBuilder, BuilderConfig)
   newMemoryParams.clear = false;
   ScMemory::Initialize(newMemoryParams);
 
-  auto * context = new ScMemoryContext("check_context");
+  auto * context = new ScMemoryContext();
 
   ScSystemIdentifierQuintuple fiver;
   context->HelperFindBySystemIdtf(builderParams.m_resultStructureSystemIdtf, fiver);

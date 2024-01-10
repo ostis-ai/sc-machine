@@ -60,8 +60,10 @@ _SC_EXTERN sc_memory_context * sc_memory_initialize(sc_memory_params const * par
  * @note The caller is responsible for handling any errors and ensuring proper shutdown
  *       of the initialized extensions.
  */
-_SC_EXTERN sc_result
-sc_memory_init_ext(sc_char const * ext_path, sc_char const ** enabled_list, sc_addr init_memory_generated_structure);
+_SC_EXTERN sc_result sc_memory_init_ext(
+    sc_char const * ext_path,
+    sc_char const ** enabled_list,
+    sc_addr const init_memory_generated_structure);
 
 /*!
  * @brief Shuts down the sc-memory subsystem.
@@ -91,13 +93,22 @@ _SC_EXTERN sc_result sc_memory_shutdown(sc_bool save_state);
 _SC_EXTERN void sc_memory_shutdown_ext();
 
 /*!
- * @brief Retrieves the sc-memory context manager.
+ * @brief Creates a new memory context with specified access levels.
  *
- * @returns Returns a pointer to the sc-memory context manager.
+ * This function creates a new sc-memory context with the specified access levels.
  *
- * @note This function returns the sc-memory context manager, which manages memory contexts and user authorizations.
+ * @param levels Access levels, created using the `sc_access_level_make` macro.
+ *
+ * @return Returns a pointer to the created memory context. If there were any errors during
+ * context creation, the function returns NULL.
+ *
+ * @see sc_memory_context_free
  */
-_SC_EXTERN void * sc_memory_get_context_manager();
+SC_DEPRECATED(
+    0.10.0,
+    "Don't use this method for creating sc-memory context. Use one with `user_addr` params instead of. "
+    "This function will be deleted in 0.11.0")
+_SC_EXTERN sc_memory_context * sc_memory_context_new(sc_uint8 levels);
 
 /*!
  * Creates a new sc-memory context for a specified user.
@@ -107,25 +118,15 @@ _SC_EXTERN void * sc_memory_get_context_manager();
  * @returns Returns a pointer to the newly created sc-memory context. If an error occurs, returns null_ptr.
  *
  * @note This function creates a new SC-memory context for the specified user, resolving it from the context manager.
+ *
+ * @see sc_memory_context_free
  */
-_SC_EXTERN sc_memory_context * sc_memory_context_new(sc_addr process_addr);
-
-/*!
- * Creates a new sc-memory context for a specified user by system identifier.
- *
- * @param user_system_idtf System identifier of the user for whom the context is created.
- *
- * @returns Returns a pointer to the newly created sc-memory context. If an error occurs, returns null_ptr.
- *
- * @note This function creates a new sc-memory context for the specified user by system identifier,
- * resolving it from the context manager.
- */
-_SC_EXTERN sc_memory_context * sc_memory_context_new_ext(sc_char const * process_system_idtf);
+_SC_EXTERN sc_memory_context * sc_memory_context_new_ext(sc_addr user_addr);
 
 /*!
  * Frees an sc-memory context.
  *
- * This function destroys the memory context that was created using `sc_memory_context_new`.
+ * This function destroys the memory context that was created using `sc_memory_context_new_ext`.
  *
  * @param ctx Pointer to the sc-memory context to be freed.
  *

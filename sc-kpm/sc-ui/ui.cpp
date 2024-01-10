@@ -21,7 +21,7 @@ sc_memory_context * s_default_ctx = nullptr;
 _SC_EXT_EXTERN sc_result
 sc_module_initialize_with_init_memory_generated_structure(sc_addr const init_memory_generated_structure)
 {
-  s_default_ctx = sc_memory_context_new_ext("my_self");
+  s_default_ctx = sc_memory_context_new_ext(SC_ADDR_EMPTY);
 
   if (!initialize_keynodes(init_memory_generated_structure))
   {

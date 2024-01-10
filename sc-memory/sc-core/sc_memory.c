@@ -21,8 +21,7 @@
 
 struct _sc_memory
 {
-  sc_addr my_self_addr;
-  sc_char * my_self_system_idtf;
+  sc_addr myself_addr;
   sc_memory_context_manager * context_manager;
 };
 
@@ -53,8 +52,8 @@ sc_memory_context * sc_memory_initialize(sc_memory_params const * params)
 
   sc_storage_start_new_process();
 
-  memory->my_self_addr = sc_storage_node_new(null_ptr, sc_type_node | sc_type_const);
-  _sc_memory_context_manager_initialize(&memory->context_manager, memory->my_self_addr, params->user_mode);
+  memory->myself_addr = sc_storage_node_new(null_ptr, sc_type_node | sc_type_const);
+  _sc_memory_context_manager_initialize(&memory->context_manager, memory->myself_addr, params->user_mode);
 
   if (sc_helper_init(s_memory_default_ctx) != SC_RESULT_OK)
   {
@@ -62,9 +61,9 @@ sc_memory_context * sc_memory_initialize(sc_memory_params const * params)
     goto error;
   }
 
-  memory->my_self_system_idtf = "my_self";
+  sc_char * const myself_system_idtf = "myself";
   sc_helper_set_system_identifier(
-      s_memory_default_ctx, memory->my_self_addr, memory->my_self_system_idtf, sc_str_len(memory->my_self_system_idtf));
+      s_memory_default_ctx, memory->myself_addr, myself_system_idtf, sc_str_len(myself_system_idtf));
 
   _sc_memory_context_manager_register_user_events(memory->context_manager);
 
@@ -97,7 +96,7 @@ error:
 sc_result sc_memory_init_ext(
     sc_char const * ext_path,
     sc_char const ** enabled_list,
-    sc_addr init_memory_generated_structure)
+    sc_addr const init_memory_generated_structure)
 {
   sc_memory_info("Initialize extensions");
 
@@ -158,20 +157,12 @@ void * sc_memory_get_context_manager()
   return memory->context_manager;
 }
 
-sc_memory_context * sc_memory_context_new(sc_addr user_addr)
+sc_memory_context * sc_memory_context_new_ext(sc_addr user_addr)
 {
   if (memory == null_ptr)
     return null_ptr;
 
   return _sc_memory_context_resolve_impl(memory->context_manager, user_addr);
-}
-
-sc_memory_context * sc_memory_context_new_ext(sc_char const * user_system_idtf)
-{
-  if (memory == null_ptr)
-    return null_ptr;
-
-  return _sc_memory_context_resolve_impl_ext(memory->context_manager, user_system_idtf);
 }
 
 void sc_memory_context_free(sc_memory_context * ctx)
@@ -204,7 +195,7 @@ sc_bool sc_memory_is_element(sc_memory_context const * ctx, sc_addr addr)
 
 sc_uint32 sc_memory_get_element_output_arcs_count(sc_memory_context const * ctx, sc_addr addr, sc_result * result)
 {
-  if (_sc_memory_context_is_authorized(memory->context_manager, ctx) == SC_FALSE)
+  if (_sc_memory_context_is_authenticated(memory->context_manager, ctx) == SC_FALSE)
   {
     *result = SC_RESULT_ERROR_SC_MEMORY_CONTEXT_IS_NOT_AUTHORIZED;
     return 0;
@@ -215,7 +206,7 @@ sc_uint32 sc_memory_get_element_output_arcs_count(sc_memory_context const * ctx,
 
 sc_uint32 sc_memory_get_element_input_arcs_count(sc_memory_context const * ctx, sc_addr addr, sc_result * result)
 {
-  if (_sc_memory_context_is_authorized(memory->context_manager, ctx) == SC_FALSE)
+  if (_sc_memory_context_is_authenticated(memory->context_manager, ctx) == SC_FALSE)
   {
     *result = SC_RESULT_ERROR_SC_MEMORY_CONTEXT_IS_NOT_AUTHORIZED;
     return 0;
@@ -226,7 +217,7 @@ sc_uint32 sc_memory_get_element_input_arcs_count(sc_memory_context const * ctx, 
 
 sc_result sc_memory_element_free(sc_memory_context * ctx, sc_addr addr)
 {
-  if (_sc_memory_context_is_authorized(memory->context_manager, ctx) == SC_FALSE)
+  if (_sc_memory_context_is_authenticated(memory->context_manager, ctx) == SC_FALSE)
     return SC_RESULT_ERROR_SC_MEMORY_CONTEXT_IS_NOT_AUTHORIZED;
 
   return sc_storage_element_free(ctx, addr);
@@ -240,7 +231,7 @@ sc_addr sc_memory_node_new(sc_memory_context const * ctx, sc_type type)
 
 sc_addr sc_memory_node_new_ext(sc_memory_context const * ctx, sc_type type, sc_result * result)
 {
-  if (_sc_memory_context_is_authorized(memory->context_manager, ctx) == SC_FALSE)
+  if (_sc_memory_context_is_authenticated(memory->context_manager, ctx) == SC_FALSE)
   {
     *result = SC_RESULT_ERROR_SC_MEMORY_CONTEXT_IS_NOT_AUTHORIZED;
     return SC_ADDR_EMPTY;
@@ -262,7 +253,7 @@ sc_addr sc_memory_link_new2(sc_memory_context const * ctx, sc_type type)
 
 sc_addr sc_memory_link_new_ext(sc_memory_context const * ctx, sc_type type, sc_result * result)
 {
-  if (_sc_memory_context_is_authorized(memory->context_manager, ctx) == SC_FALSE)
+  if (_sc_memory_context_is_authenticated(memory->context_manager, ctx) == SC_FALSE)
   {
     *result = SC_RESULT_ERROR_SC_MEMORY_CONTEXT_IS_NOT_AUTHORIZED;
     return SC_ADDR_EMPTY;
@@ -279,7 +270,7 @@ sc_addr sc_memory_arc_new(sc_memory_context const * ctx, sc_type type, sc_addr b
 
 sc_addr sc_memory_arc_new_ext(sc_memory_context const * ctx, sc_type type, sc_addr beg, sc_addr end, sc_result * result)
 {
-  if (_sc_memory_context_is_authorized(memory->context_manager, ctx) == SC_FALSE)
+  if (_sc_memory_context_is_authenticated(memory->context_manager, ctx) == SC_FALSE)
   {
     *result = SC_RESULT_ERROR_SC_MEMORY_CONTEXT_IS_NOT_AUTHORIZED;
     return SC_ADDR_EMPTY;
@@ -290,7 +281,7 @@ sc_addr sc_memory_arc_new_ext(sc_memory_context const * ctx, sc_type type, sc_ad
 
 sc_result sc_memory_get_element_type(sc_memory_context const * ctx, sc_addr addr, sc_type * result)
 {
-  if (_sc_memory_context_is_authorized(memory->context_manager, ctx) == SC_FALSE)
+  if (_sc_memory_context_is_authenticated(memory->context_manager, ctx) == SC_FALSE)
     return SC_RESULT_ERROR_SC_MEMORY_CONTEXT_IS_NOT_AUTHORIZED;
 
   return sc_storage_get_element_type(ctx, addr, result);
@@ -298,7 +289,7 @@ sc_result sc_memory_get_element_type(sc_memory_context const * ctx, sc_addr addr
 
 sc_result sc_memory_change_element_subtype(sc_memory_context const * ctx, sc_addr addr, sc_type type)
 {
-  if (_sc_memory_context_is_authorized(memory->context_manager, ctx) == SC_FALSE)
+  if (_sc_memory_context_is_authenticated(memory->context_manager, ctx) == SC_FALSE)
     return SC_RESULT_ERROR_SC_MEMORY_CONTEXT_IS_NOT_AUTHORIZED;
 
   return sc_storage_change_element_subtype(ctx, addr, type);
@@ -306,7 +297,7 @@ sc_result sc_memory_change_element_subtype(sc_memory_context const * ctx, sc_add
 
 sc_result sc_memory_get_arc_begin(sc_memory_context const * ctx, sc_addr addr, sc_addr * result)
 {
-  if (_sc_memory_context_is_authorized(memory->context_manager, ctx) == SC_FALSE)
+  if (_sc_memory_context_is_authenticated(memory->context_manager, ctx) == SC_FALSE)
     return SC_RESULT_ERROR_SC_MEMORY_CONTEXT_IS_NOT_AUTHORIZED;
 
   return sc_storage_get_arc_begin(ctx, addr, result);
@@ -314,7 +305,7 @@ sc_result sc_memory_get_arc_begin(sc_memory_context const * ctx, sc_addr addr, s
 
 sc_result sc_memory_get_arc_end(sc_memory_context const * ctx, sc_addr addr, sc_addr * result)
 {
-  if (_sc_memory_context_is_authorized(memory->context_manager, ctx) == SC_FALSE)
+  if (_sc_memory_context_is_authenticated(memory->context_manager, ctx) == SC_FALSE)
     return SC_RESULT_ERROR_SC_MEMORY_CONTEXT_IS_NOT_AUTHORIZED;
 
   return sc_storage_get_arc_end(ctx, addr, result);
@@ -326,7 +317,7 @@ sc_result sc_memory_get_arc_info(
     sc_addr * result_start_addr,
     sc_addr * result_end_addr)
 {
-  if (_sc_memory_context_is_authorized(memory->context_manager, ctx) == SC_FALSE)
+  if (_sc_memory_context_is_authenticated(memory->context_manager, ctx) == SC_FALSE)
     return SC_RESULT_ERROR_SC_MEMORY_CONTEXT_IS_NOT_AUTHORIZED;
 
   return sc_storage_get_arc_info(ctx, addr, result_start_addr, result_end_addr);
@@ -343,7 +334,7 @@ sc_result sc_memory_set_link_content_ext(
     sc_stream const * stream,
     sc_bool is_searchable_string)
 {
-  if (_sc_memory_context_is_authorized(memory->context_manager, ctx) == SC_FALSE)
+  if (_sc_memory_context_is_authenticated(memory->context_manager, ctx) == SC_FALSE)
     return SC_RESULT_ERROR_SC_MEMORY_CONTEXT_IS_NOT_AUTHORIZED;
 
   return sc_storage_set_link_content(ctx, addr, stream, is_searchable_string);
@@ -351,7 +342,7 @@ sc_result sc_memory_set_link_content_ext(
 
 sc_result sc_memory_get_link_content(sc_memory_context const * ctx, sc_addr addr, sc_stream ** stream)
 {
-  if (_sc_memory_context_is_authorized(memory->context_manager, ctx) == SC_FALSE)
+  if (_sc_memory_context_is_authenticated(memory->context_manager, ctx) == SC_FALSE)
     return SC_RESULT_ERROR_SC_MEMORY_CONTEXT_IS_NOT_AUTHORIZED;
 
   return sc_storage_get_link_content(ctx, addr, stream);
@@ -362,7 +353,7 @@ sc_result sc_memory_find_links_with_content_string(
     sc_stream const * stream,
     sc_list ** result)
 {
-  if (_sc_memory_context_is_authorized(memory->context_manager, ctx) == SC_FALSE)
+  if (_sc_memory_context_is_authenticated(memory->context_manager, ctx) == SC_FALSE)
     return SC_RESULT_ERROR_SC_MEMORY_CONTEXT_IS_NOT_AUTHORIZED;
 
   return sc_storage_find_links_with_content_string(ctx, stream, result);
@@ -374,7 +365,7 @@ sc_result sc_memory_find_links_by_content_substring(
     sc_list ** result,
     sc_uint32 max_length_to_search_as_prefix)
 {
-  if (_sc_memory_context_is_authorized(memory->context_manager, ctx) == SC_FALSE)
+  if (_sc_memory_context_is_authenticated(memory->context_manager, ctx) == SC_FALSE)
     return SC_RESULT_ERROR_SC_MEMORY_CONTEXT_IS_NOT_AUTHORIZED;
 
   return sc_storage_find_links_by_content_substring(ctx, stream, result, max_length_to_search_as_prefix);
@@ -386,7 +377,7 @@ sc_result sc_memory_find_links_contents_by_content_substring(
     sc_list ** result,
     sc_uint32 max_length_to_search_as_prefix)
 {
-  if (_sc_memory_context_is_authorized(memory->context_manager, ctx) == SC_FALSE)
+  if (_sc_memory_context_is_authenticated(memory->context_manager, ctx) == SC_FALSE)
     return SC_RESULT_ERROR_SC_MEMORY_CONTEXT_IS_NOT_AUTHORIZED;
 
   return sc_storage_find_links_contents_by_content_substring(ctx, stream, result, max_length_to_search_as_prefix);
@@ -394,7 +385,7 @@ sc_result sc_memory_find_links_contents_by_content_substring(
 
 sc_result sc_memory_stat(sc_memory_context const * ctx, sc_stat * stat)
 {
-  if (_sc_memory_context_is_authorized(memory->context_manager, ctx) == SC_FALSE)
+  if (_sc_memory_context_is_authenticated(memory->context_manager, ctx) == SC_FALSE)
     return SC_RESULT_ERROR_SC_MEMORY_CONTEXT_IS_NOT_AUTHORIZED;
 
   return sc_storage_get_elements_stat(stat);
@@ -402,7 +393,7 @@ sc_result sc_memory_stat(sc_memory_context const * ctx, sc_stat * stat)
 
 sc_result sc_memory_save(sc_memory_context const * ctx)
 {
-  if (_sc_memory_context_is_authorized(memory->context_manager, ctx) == SC_FALSE)
+  if (_sc_memory_context_is_authenticated(memory->context_manager, ctx) == SC_FALSE)
     return SC_RESULT_ERROR_SC_MEMORY_CONTEXT_IS_NOT_AUTHORIZED;
 
   return sc_storage_save(ctx);

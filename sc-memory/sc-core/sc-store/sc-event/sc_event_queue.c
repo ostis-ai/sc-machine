@@ -20,8 +20,8 @@
  */
 typedef struct
 {
-  sc_event * event;  ///< Pointer to the sc-event associated with the worker.
-  sc_addr user_addr;
+  sc_event * event;    ///< Pointer to the sc-event associated with the worker.
+  sc_addr user_addr;   ///< sc_addr representing user that initiated this sc-event
   sc_addr edge_addr;   ///< sc_addr representing the edge associated with the event.
   sc_addr other_addr;  ///< sc_addr representing the other element associated with the event.
 } sc_event_emission_pool_worker_data;
@@ -82,7 +82,7 @@ void _sc_event_emission_pool_worker(sc_pointer data, sc_pointer user_data)
 
   sc_event_callback callback = event->callback;
   sc_event_callback_ext callback_ext = event->callback_ext;
-  sc_event_callback_ext2 callback_ext2 = event->callback_ext2;
+  sc_event_callback_with_user callback_ext2 = event->callback_with_user;
 
   sc_storage_start_new_process();
 

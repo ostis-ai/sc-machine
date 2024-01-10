@@ -29,6 +29,8 @@ ScServerImpl::ScServerImpl(
 
 void ScServerImpl::Initialize()
 {
+  ScMemoryJsonActionsHandler::InitializeActionClasses();
+
   m_instance->set_open_handler(bind(&ScServerImpl::OnOpen, this, ::_1));
   m_instance->set_close_handler(bind(&ScServerImpl::OnClose, this, ::_1));
   m_instance->set_message_handler(bind(&ScServerImpl::OnMessage, this, ::_1, ::_2));
@@ -41,6 +43,8 @@ void ScServerImpl::AfterInitialize()
 
   m_actionsRun = SC_FALSE;
   m_actionCond.notify_one();
+
+  ScMemoryJsonActionsHandler::ClearActionClasses();
 }
 
 void ScServerImpl::EmitActions()

@@ -5,11 +5,12 @@
  */
 
 #include "sc_iterator.h"
+
 #include "sc_element.h"
 #include "sc_storage.h"
 #include "sc_storage_private.h"
-#include "../sc_memory.h"
 #include "../sc_memory_context_manager.h"
+#include "../sc_memory_context_private.h"
 
 #include "sc-base/sc_allocator.h"
 
@@ -715,7 +716,7 @@ sc_bool sc_iterator3_next_ext(sc_iterator3 * it, sc_result * result)
     return status;
   }
 
-  if (_sc_memory_context_is_authorized(sc_memory_get_context_manager(), it->ctx) == SC_FALSE)
+  if (_sc_memory_context_is_authenticated(sc_memory_get_context_manager(), it->ctx) == SC_FALSE)
   {
     *result = SC_RESULT_ERROR_SC_MEMORY_CONTEXT_IS_NOT_AUTHORIZED;
     return status;

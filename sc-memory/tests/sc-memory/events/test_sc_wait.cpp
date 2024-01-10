@@ -27,7 +27,7 @@ struct WaitTestData
 
 void EmitEvent(WaitTestData & data)
 {
-  ScMemoryContext ctx("EmitEvent");
+  ScMemoryContext ctx;
 
   ScAddr const node = data.m_addrFrom.IsValid() ? data.m_addrFrom : ctx.CreateNode(ScType::NodeConst);
   ScAddr const edge = ctx.CreateEdge(ScType::EdgeAccessConstPosPerm, node, data.m_addr);

@@ -6,9 +6,10 @@
 
 #pragma once
 
-#include "gtest/gtest.h"
+#include <gtest/gtest.h>
 
 #include "sc-memory/sc_memory.hpp"
+#include "sc-memory/sc_keynodes.hpp"
 
 #include "../../test_defines.hpp"
 
@@ -22,7 +23,7 @@ protected:
   void SetUp() override
   {
     Initialize();
-    m_ctx = std::make_unique<ScMemoryContext>("sc_server_test");
+    m_ctx = std::make_unique<ScMemoryContext>();
   }
 
   void TearDown() override
@@ -86,6 +87,6 @@ class ScServerTestWithUserMode : public ScServerTest
   void SetUp() override
   {
     ScServerTestWithUserMode::InitializeWithUserMode();
-    m_ctx = std::make_unique<ScMemoryContext>("my_self");
+    m_ctx = std::make_unique<ScMemoryContext>(ScKeynodes::kMySelf);
   }
 };

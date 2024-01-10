@@ -24,7 +24,7 @@ public:
     ScMemory::LogMute();
     ScMemory::Initialize(params);
 
-    m_ctx = std::make_unique<ScMemoryContext>("test");
+    m_ctx = std::make_unique<ScMemoryContext>();
 
     Setup(constrCount);
   }
