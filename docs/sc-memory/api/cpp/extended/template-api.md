@@ -5,7 +5,7 @@
 ---
 
 Sc-templates is a very powerful mechanism to work with semantic network (graph). You can generate and search any
-constructions using sc-templates. In the follow picture sc-template and isomorphic sc-construction are shown.
+constructions using sc-templates. In the following picture the sc-template and the isomorphic sc-construction are shown.
 
 <scg src="../images/templates/template_example_1.gwf"></scg>
 
@@ -277,9 +277,9 @@ There is example code that generates equal sc-template.
 ```cpp
 ...
 // Find key concepts that should be used in sc-template.
-ScAddr const & conceptSetAddr = ctx.HelperFindBySystemIdtf("concept_set");
+ScAddr const & conceptSetAddr = context.HelperFindBySystemIdtf("concept_set");
 ScAddr const & conceptBinaryRelationAddr 
-    = ctx.HelperFindBySystemIdtf("concept_binary_relation");
+    = context.HelperFindBySystemIdtf("concept_binary_relation");
 
 // Create sc-template and add triples into this sc-template.
 ScTemplate templ;
@@ -316,13 +316,13 @@ There is the example code with naming.
 ScTemplate templ;
 templ.Triple(
   anyAddr, // sc-address of known sc-element
-  ScType::EdgeAccessVarPosPerm,  // type of unknown edge
+  ScType::EdgeAccessVarPosPerm,  // type of unknown sc-edge
   ScType::NodeVar >> "_x"  // type and alias for an unknown sc-element
 );
 templ.Triple(
   "_x",  // say that is the same sc-element as the last on in a previous triple
-  ScType::EdgeAccessVarPosPerm,  // type of unknown edge
-  ScType::NodeVar  // type of unknown sc-element
+  ScType::EdgeAccessVarPosPerm,  // type of unknown sc-edge
+  ScType::NodeVar  // type of unknown sc-node
 );
 ...
 ```
@@ -355,13 +355,13 @@ manipulating sc-template.
 ScTemplate templ;
 templ.Triple(
   anyAddr, // sc-address of known sc-element
-  ScType::EdgeAccessVarPosPerm,  // type of unknown edge
+  ScType::EdgeAccessVarPosPerm,  // type of unknown sc-edge
   ScType::NodeVar >> "_x"  // type and alias for an unknown sc-element
 );
 templ.Triple(
   "_x",  // say that is the same sc-element as the last on in a previous triple
-  ScType::EdgeAccessVarPosPerm,  // type of unknown edge
-  ScType::NodeVar  // type of unknown sc-element
+  ScType::EdgeAccessVarPosPerm,  // type of unknown sc-edge
+  ScType::NodeVar  // type of unknown sc-node
 );
 
 size_t const tripleCount = templ.Size();
@@ -371,7 +371,7 @@ size_t const tripleCount = templ.Size();
 
 ### **IsEmpty**
 
-If sometimes you need to sc-template can be empty you don't have to add any constructions into it. But you should know
+If you need sc-template to be empty you don't have to add any constructions into it. But you should know
 that result of generation by this sc-template is always `SC_TRUE` and result of searching by this sc-template is always
 `SC_FALSE`. To check that sc-template is empty use the method `IsEmpty`.
 
@@ -397,7 +397,7 @@ sc_char const * data =
 
 // Build program object by this sc-template.
 ScTemplate templ;
-bool const isTemplateBuilt = ctx.HelperBuildTemplate(templ, data);
+bool const isTemplateBuilt = context.HelperBuildTemplate(templ, data);
 // The value of `isTemplateBuilt` must be equal to `SC_TRUE`.
 ...
 ```
@@ -412,11 +412,11 @@ Or you can it by specifying valid sc-address of some sc-template in sc-memory.
 ```cpp
 ...
 // Find by system identifier your sc-template in sc-memory.
-ScAddr const & templAddr = ctx.HelperFindBySystemIdtf("my_template");
+ScAddr const & templAddr = context.HelperFindBySystemIdtf("my_template");
 
 // Build program object by this sc-template.
 ScTemplate templ;
-bool const isTemplateBuilt = ctx.HelperBuildTemplate(templ, templAddr);
+bool const isTemplateBuilt = context.HelperBuildTemplate(templ, templAddr);
 // The value of `isTemplateBuilt` must be equal to `SC_TRUE`.
 ...
 ```
@@ -446,7 +446,7 @@ sc_char const * data =
   "  _<- concept_binary_set;;";
 
 // Create replacement in sc-memory.
-ScAddr const & setAddr = ctx.CreateNode(ScType::NodeConst);
+ScAddr const & setAddr = context.CreateNode(ScType::NodeConst);
 // Also you can find some replacement from sc-memory.
 
 // Define replacements for sc-variables in sc-template.
@@ -455,7 +455,7 @@ params.Add("_set", setAddr);
 
 // Build program object by this sc-template, specifying replacements.
 ScTemplate templ;
-ctx.HelperBuildTemplate(templ, data, params);
+context.HelperBuildTemplate(templ, data, params);
 ...
 ```
 
@@ -465,13 +465,13 @@ sc-address of sc-structure in sc-memory.
 ```cpp
 ...
 // Find by system identifier your sc-template in sc-memory.
-ScAddr const & templAddr = ctx.HelperFindBySystemIdtf("my_template");
+ScAddr const & templAddr = context.HelperFindBySystemIdtf("my_template");
 
 // Find by system identifier sc-address of sc-variable in your sc-template.
-ScAddr const & setVarAddr = ctx.HelperFindBySystemIdtf("_set");
+ScAddr const & setVarAddr = context.HelperFindBySystemIdtf("_set");
 
 // Create replacement in sc-memory.
-ScAddr const & setAddr = ctx.CreateNode(ScType::NodeConst);
+ScAddr const & setAddr = context.CreateNode(ScType::NodeConst);
 // Also you can find some replacement from sc-memory.
 
 // Define replacements for sc-variables in sc-template.
@@ -480,7 +480,7 @@ params.Add(setVarAddr, setAddr);
 
 // Build program object by this sc-template, specifying replacements.
 ScTemplate templ;
-ctx.HelperBuildTemplate(templ, templAddr, params);
+context.HelperBuildTemplate(templ, templAddr, params);
 ...
 ```
 
@@ -492,7 +492,7 @@ system identifiers and sc-addresses of sc-variables also.
 ```cpp
 ...
 // Create replacement in sc-memory.
-ScAddr const & setAddr = ctx.CreateNode(ScType::NodeConst);
+ScAddr const & setAddr = context.CreateNode(ScType::NodeConst);
 // Also you can find some replacement from sc-memory.
 
 // Define replacements for sc-variables in sc-template.
@@ -507,10 +507,10 @@ ScAddr const & replAddr = params.Get("_set");
 ```cpp
 ...
 // Find by system identifier sc-address of sc-variable in your sc-template.
-ScAddr const & setVarAddr = ctx.HelperFindBySystemIdtf("_set");
+ScAddr const & setVarAddr = context.HelperFindBySystemIdtf("_set");
 
 // Create replacement in sc-memory.
-ScAddr const & setAddr = ctx.CreateNode(ScType::NodeConst);
+ScAddr const & setAddr = context.CreateNode(ScType::NodeConst);
 // Also you can find some replacement from sc-memory.
 
 // Define replacements for sc-variables in sc-template.
@@ -540,7 +540,7 @@ bool const isEmpty = params.IsEmpty();
 
 ## **HelperGenTemplate**
 
-Use sc-template to generate large graphs in sc-memory and get replacements from result.
+Use sc-template to generate graphs in sc-memory and get replacements from result.
 
 ```cpp
 ...
@@ -548,7 +548,7 @@ Use sc-template to generate large graphs in sc-memory and get replacements from 
 // You can use `ScTemplate` methods or method ScTemplateBuild to translate 
 // sc-template from SCs-code or sc-memory into program representation.
 ScTemplateResultItem result;
-bool const isGeneratedByTemplate = ctx.HelperGenTemplate(templ, result);
+bool const isGeneratedByTemplate = context.HelperGenTemplate(templ, result);
 // Sc-elements sc-addresses of generated sc-construction may be gotten from 
 // `result`.
 ...
@@ -579,7 +579,7 @@ templ.Triple(
 );
 
 ScTemplateResultItem result;
-bool const isGeneratedByTemplate = ctx.HelperGenTemplate(templ, result);
+bool const isGeneratedByTemplate = context.HelperGenTemplate(templ, result);
 
 ScAddr setAddr;
 bool replExist = result.Get("_x", setAddr);
@@ -606,7 +606,7 @@ templ.Triple(
 );
 
 ScTemplateResultItem result;
-bool const isGeneratedByTemplate = ctx.HelperGenTemplate(templ, result);
+bool const isGeneratedByTemplate = context.HelperGenTemplate(templ, result);
 
 ScAddr setAddr = result.Get("_x");
 
@@ -630,7 +630,7 @@ templ.Triple(
 );
 
 ScTemplateResultItem result;
-bool const isGeneratedByTemplate = ctx.HelperGenTemplate(templ, result);
+bool const isGeneratedByTemplate = context.HelperGenTemplate(templ, result);
 
 bool const replExist = result.Has("_x");
 // The value of `replExist` be equal to `SC_TRUE`.
@@ -653,7 +653,7 @@ templ.Triple(
 );
 
 ScTemplateResultItem result;
-bool const isGeneratedByTemplate = ctx.HelperGenTemplate(templ, result);
+bool const isGeneratedByTemplate = context.HelperGenTemplate(templ, result);
 
 ScAddr const & setAddr = result[2];
 // It is equal to `result.Get("_x")`.
@@ -674,7 +674,7 @@ templ.Triple(
 );
 
 ScTemplateResultItem result;
-bool const isGeneratedByTemplate = ctx.HelperGenTemplate(templ, result);
+bool const isGeneratedByTemplate = context.HelperGenTemplate(templ, result);
 
 // Iterate by all replacements in result.
 for (size_t i = 0; i < result.Size(); ++i)
@@ -701,7 +701,7 @@ sc-addresses from parameters to find equal sc-constructions in sc-memory).
 // You can use `ScTemplate` methods or method ScTemplateBuild to translate 
 // sc-template from SCs-code or sc-memory into program representation.
 ScTemplateSearchResult result;
-bool const isFoundByTemplate = ctx.HelperSearchTemplate(templ, result);
+bool const isFoundByTemplate = context.HelperSearchTemplate(templ, result);
 // Program representation of sc-constructions in `ScTemplateResultItem` 
 // may be gotten from `result`.
 ...
@@ -732,7 +732,7 @@ templ.Triple(
 // There is one sc-construction that is isomorphic this sc-template.
 
 ScTemplateSearchResult result;
-bool const isFoundByTemplate = ctx.HelperSearchTemplate(templ, result);
+bool const isFoundByTemplate = context.HelperSearchTemplate(templ, result);
 
 ScTemplateResultItem item;
 bool constrExist = result.Get(0, item);
@@ -759,7 +759,7 @@ templ.Triple(
 // There is one sc-construction that is isomorphic this sc-template.
 
 ScTemplateSearchResult result;
-bool const isFoundByTemplate = ctx.HelperSearchTemplate(templ, result);
+bool const isFoundByTemplate = context.HelperSearchTemplate(templ, result);
 
 ScTemplateResultItem item = result.Get(0);
 // It is a valid item.
@@ -785,7 +785,7 @@ templ.Triple(
 // There is one sc-construction that is isomorphic this sc-template.
 
 ScTemplateSearchResult result;
-bool const isFoundByTemplate = ctx.HelperSearchTemplate(templ, result);
+bool const isFoundByTemplate = context.HelperSearchTemplate(templ, result);
 
 ScTemplateResultItem item = result[0];
 // It is a valid item.
@@ -810,7 +810,7 @@ templ.Triple(
 // There is one sc-construction that is isomorphic this sc-template.
 
 ScTemplateSearchResult result;
-bool const isFoundByTemplate = ctx.HelperSearchTemplate(templ, result);
+bool const isFoundByTemplate = context.HelperSearchTemplate(templ, result);
 
 size_t const count = result.Size();
 // The value of `count` be equal to `1`.
@@ -832,7 +832,7 @@ templ.Triple(
 // There is one sc-construction that is isomorphic this sc-template.
 
 ScTemplateSearchResult result;
-bool const isFoundByTemplate = ctx.HelperSearchTemplate(templ, result);
+bool const isFoundByTemplate = context.HelperSearchTemplate(templ, result);
 
 bool const count = result.IsEmpty();
 // The value of `count` be equal to `SC_FALSE`.
@@ -854,7 +854,7 @@ templ.Triple(
 // There is one sc-construction that is isomorphic this sc-template.
 
 ScTemplateSearchResult result;
-bool const isFoundByTemplate = ctx.HelperSearchTemplate(templ, result);
+bool const isFoundByTemplate = context.HelperSearchTemplate(templ, result);
 
 result.Clear();
 // After that `result` does not contain any information about sc-constructions.
@@ -876,7 +876,7 @@ templ.Triple(
 // There is one sc-construction that is isomorphic this sc-template.
 
 ScTemplateSearchResult result;
-bool const isFoundByTemplate = ctx.HelperSearchTemplate(templ, result);
+bool const isFoundByTemplate = context.HelperSearchTemplate(templ, result);
 
 for (size_t i = 0; i < result.Size(); ++i)
 {
@@ -899,7 +899,7 @@ templ.Triple(
 // There is one sc-construction that is isomorphic this sc-template.
 
 ScTemplateSearchResult result;
-bool const isFoundByTemplate = ctx.HelperSearchTemplate(templ, result);
+bool const isFoundByTemplate = context.HelperSearchTemplate(templ, result);
 
 result.ForEach([](ScTemplateResultItem const & item) {
   // Implement logic to handle found sc-constructions.
@@ -923,9 +923,9 @@ passed, then all found sc-constructions triples are filtered by `filterCallback`
 
 ```cpp
 ...
-ScAddr const & structureAddr = ctx.HelperFindBySystemIdtf("my_structure");
-ScAddr const & setAddr = ctx.HelperFindBySystemIdtf("my_set");
-ScAddr const & classAddr = ctx.HelperFindBySystemIdtf("my_class");
+ScAddr const & structureAddr = context.HelperFindBySystemIdtf("my_structure");
+ScAddr const & setAddr = context.HelperFindBySystemIdtf("my_set");
+ScAddr const & classAddr = context.HelperFindBySystemIdtf("my_class");
 
 ScTemplate templ;
 templ.Triple(
@@ -933,15 +933,16 @@ templ.Triple(
   ScType::EdgeAccessVarPosPerm >> "_edge",
   ScType::Unknown >> "_addr2"
 );
-m_ctx->HelperSmartSearchTemplate(templ, [&ctx](
+m_context->HelperSmartSearchTemplate(templ, [&context](
     ScTemplateSearchResultItem const & item) -> ScTemplateSearchRequest 
 {
   ScAddr const & edgeAddr = item["_edge"];
-  if (ctx->HelperCheckEdge(
+  if (context->HelperCheckEdge(
       structureAddr, edgeAddr, ScType::EdgeAccessConstPosPerm))   
     return ScTemplateSearchRequest::CONTINUE;
 
-  if (ctx.CreateEdge(ScType::EdgeAccessConstPosTemp, setAddr, item["_addr2"]))
+  if (context.CreateEdge(
+      ScType::EdgeAccessConstPosTemp, setAddr, item["_addr2"]))
     return ScTemplateSearchRequest::STOP;
 
   return ScTemplateSearchRequest::ERROR;
@@ -966,4 +967,4 @@ sc-templates may be higher if the sc-templates have significant size.
 ### **Which is better: searching by sc-template or by iterator?**
 
 In all cases sc-iterator is faster the searching by sc-template. If you want to search large sc-constructions, then don't
-search they by one large sc-template, divide it into certain sc-templates or use sc-iterators instead of.
+search they by one large sc-template, divide it into certain sc-templates or use sc-iterators instead of sc-template.

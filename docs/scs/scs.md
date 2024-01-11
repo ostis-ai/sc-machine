@@ -78,9 +78,9 @@ You can use alias for any sc-element by using `=` operator. There are some examp
 
 ### SCs level 1
 
-SCs-code level 1 - is a simple representation of SC-code. It represents it
+SCs-code level 1 is a simple representation of SC-code. It represents SC-texts
 with just simple triples. Each triple contains `subject`, `predicate`, `object`
-that are split by `|` symbol. Line `subject | predicate | object;;` is a sentence.
+that are split by `|` symbol. Line `sc_node#subject | sc_edge_access#predicate | sc_node#object;;` is a sentence.
 
 Identifier of `subject`, `predicate`, `object` build with rule:
 
@@ -88,7 +88,7 @@ Identifier of `subject`, `predicate`, `object` build with rule:
 <type>#<identifier>
 ```
 
-Where `type` - is an element type specification. It can be one of possible values:
+Where `type` is an element type specification. It can be one of possible values:
 
 * `sc_node` - equal to ![SCg-node](images/scg/scg_node.png);
 * `sc_link` - equal to ![SCg-link](images/scg/scg_link_const.png);
@@ -113,9 +113,9 @@ Where `type` - is an element type specification. It can be one of possible value
       <pre>
         <code class="js hljs javascript">
 // append set of apples into fruit set
-sc_node#fruit | sc_edge_main#... | sc_node#apple;;
+sc_node#fruit | sc_edge_main#..edge | sc_node#apple;;
 // append set of bananas into fruit set
-sc_node#fruit | sc_edge_main#... | sc_node#banana;;
+sc_node#fruit | sc_edge_main#..edge | sc_node#banana;;
         </code>
       </pre>
     </td>
@@ -126,10 +126,10 @@ sc_node#fruit | sc_edge_main#... | sc_node#banana;;
     <td>
       <pre>
         <code class="js hljs javascript">
-sc_node#apple | sc_edge_dcommon#..e | "file://apple.png";;
+sc_node#apple | sc_edge_dcommon#..common_edge | "file://apple.png";;
 /*append edge from nrel_image relation into
   edge between apple set and it's image*/
-sc_node#nrel_image | sc_edge_main#... | sc_edge_dcommon#..e;;
+sc_node#nrel_image | sc_edge_main#..access_edge | sc_edge_dcommon#..common_edge;;
         </code>
       </pre>
     </td>
@@ -327,7 +327,7 @@ For this example it would be like this:
 a -> c: b;;
 ```
 
-In case, when output edge from `c` is an variable, then use `::` splitter instead of `:`:
+In case, when output edge from `c` is a variable, then use `::` splitter instead of `:`:
 
 ```scs
 a -> c:: b;;

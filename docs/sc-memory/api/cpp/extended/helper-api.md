@@ -35,10 +35,10 @@ description of the error. If passed system identifier is already used for other 
 
 ```cpp
 ...
-ScAddr const & nodeAddr = ctx.CreateNode(ScType::NodeConst);
+ScAddr const & nodeAddr = context.CreateNode(ScType::NodeConst);
 
 bool const & isSystemIdentifierSet 
-    = ctx.HelperSetSystemIdtf("my_node", nodeAddr);
+    = context.HelperSetSystemIdtf("my_node", nodeAddr);
 // The value of `isSystemIdentifierSet` must be equal to `SC_TRUE`.
 ...
 ```
@@ -47,11 +47,11 @@ If you want to get creating quintuple you can provide variable of type `ScSystem
 
 ```cpp
 ...
-ScAddr const & nodeAddr = ctx.CreateNode(ScType::NodeConst);
+ScAddr const & nodeAddr = context.CreateNode(ScType::NodeConst);
 
 ScSystemIdentifierQuintuple quintuple;
 bool const & isSystemIdentifierSet 
-    = ctx.HelperSetSystemIdtf("my_node", nodeAddr, quintuple);
+    = context.HelperSetSystemIdtf("my_node", nodeAddr, quintuple);
 ScAddr const & myNodeAddr = quintuple.addr1;
 // The value of `myNodeAddr` must be equal to the value of `nodeAddr`.
 ScAddr const & arcToSystemIdtfLinkAddr = quintuple.addr2;
@@ -76,13 +76,13 @@ identifier then the method will return empty string.
 
 ```cpp
 ...
-ScAddr const & nodeAddr = ctx.CreateNode(ScType::NodeConst);
+ScAddr const & nodeAddr = context.CreateNode(ScType::NodeConst);
 
 bool const & isSystemIdentifierSet 
-    = ctx.HelperSetSystemIdtf("my_node", nodeAddr);
+    = context.HelperSetSystemIdtf("my_node", nodeAddr);
 // The value of `isSystemIdentifierSet` must be equal to `SC_TRUE`.
 
-std::string const & systemIdtf = ctx.HelperGetSystemIdtf(nodeAddr);
+std::string const & systemIdtf = context.HelperGetSystemIdtf(nodeAddr);
 // The value of `systemIdtf` must be equal to `"my_node"`.
 ...
 ```
@@ -94,24 +94,24 @@ You can find sc-element by its system identifier. For this use the method `Helpe
 
 ```cpp
 ...
-ScAddr const & nodeAddr = ctx.CreateNode(ScType::NodeConst);
+ScAddr const & nodeAddr = context.CreateNode(ScType::NodeConst);
 
 bool const & isSystemIdentifierSet 
-    = ctx.HelperSetSystemIdtf("my_node", nodeAddr);
+    = context.HelperSetSystemIdtf("my_node", nodeAddr);
 // The value of `isSystemIdentifierSet` must be equal to `SC_TRUE`.
 
 ScAddr resultAddr;
 bool const & isElementWithSystemIdtfFound 
-    = ctx.HelperFindBySystemIdtf("my_node", resultAddr);
+    = context.HelperFindBySystemIdtf("my_node", resultAddr);
 // The value of `isElementWithSystemIdtfFound` must be equal to `SC_TRUE` 
 // and the value of `resultAddr` must be equal to the value of `nodeAddr`.
 
 // Or use the another definition of this method.
-resultAddr = ctx.HelperFindBySystemIdtf("my_node");
+resultAddr = context.HelperFindBySystemIdtf("my_node");
 // The value of `resultAddr` must be equal to the value of `nodeAddr`.
 
 // Or use the another definition of this method.
-resultAddr = ctx.HelperFindBySystemIdtf("not_my_node");
+resultAddr = context.HelperFindBySystemIdtf("not_my_node");
 // The value of `resultAddr` must be invalid.
 ...
 ```
@@ -121,15 +121,15 @@ If you want to find quintuple sc-element with its system identifier you can prov
 
 ```cpp
 ...
-ScAddr const & nodeAddr = ctx.CreateNode(ScType::NodeConst);
+ScAddr const & nodeAddr = context.CreateNode(ScType::NodeConst);
 
 bool const & isSystemIdentifierSet 
-    = ctx.HelperSetSystemIdtf("my_node", nodeAddr);
+    = context.HelperSetSystemIdtf("my_node", nodeAddr);
 // The value of `isSystemIdentifierSet` must be equal to `SC_TRUE`.
 
 ScSystemIdentifierQuintuple quintuple;
 bool const & isElementWithSystemIdtfFound 
-    = ctx.HelperFindBySystemIdtf("my_node", quintuple);
+    = context.HelperFindBySystemIdtf("my_node", quintuple);
 ScAddr const & myNodeAddr = quintuple.addr1;
 // The value of `myNodeAddr` must be equal to the value of `nodeAddr`.
 ScAddr const & arcToSystemIdtfLinkAddr = quintuple.addr2;
@@ -173,7 +173,7 @@ If you want to resolve quintuple sc-element with its system identifier you can p
 ...
 ScSystemIdentifierQuintuple quintuple;
 bool const & isSystemIdentifierResolved 
-    = ctx.HelperResolveSystemIdtf("my_node", ScType::NodeConst, quintuple);
+    = context.HelperResolveSystemIdtf("my_node", ScType::NodeConst, quintuple);
 ScAddr const & myNodeAddr = quintuple.addr1;
 // The sc-address of resolved sc-node by provided system identifier.
 ScAddr const & arcToSystemIdtfLinkAddr = quintuple.addr2;

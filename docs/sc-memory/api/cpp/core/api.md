@@ -42,7 +42,7 @@ during API methods completion.
 ...
 // To create such context use constructor of ScMemoryContext 
 // providing system identifier of subject of action.
-ScMemoryContext ctx{"my_name"};
+ScMemoryContext context{"my_name"};
 // After you can use this object to call any API methods.
 ```
 
@@ -59,7 +59,7 @@ not valid, then a method throws the exception `utils::ExceptionInvalidParams` wi
 ```cpp
 ...
 // Create sc-node and get sc-address in sc-memory of it.
-ScAddr const & nodeAddr = ctx.CreateNode(ScType::NodeConst);
+ScAddr const & nodeAddr = context.CreateNode(ScType::NodeConst);
 // Specified sc-type must be one of ScType::Node... type.
 ```
 
@@ -68,7 +68,7 @@ ScAddr const & nodeAddr = ctx.CreateNode(ScType::NodeConst);
 ```cpp
 ...
 // Create sc-link and get sc-address in sc-memory of it.
-ScAddr const & linkAddr = ctx.CreateLink(ScType::LinkConst);
+ScAddr const & linkAddr = context.CreateLink(ScType::LinkConst);
 // Specified sc-type must be one of ScType::Link... type.
 ```
 
@@ -82,7 +82,7 @@ ScAddr const & linkAddr = ctx.CreateLink(ScType::LinkConst);
 ...
 // Create sc-arc between sc-node and sc-link and get sc-address in 
 // sc-memory of it.
-ScAddr const & arcAddr = ctx.CreateEdge(
+ScAddr const & arcAddr = context.CreateEdge(
     ScType::EdgeAccessConstPosPerm, nodeAddr, linkAddr);
 // Specified sc-type must be one of ScType::Edge... type.
 ```
@@ -101,9 +101,9 @@ sc-address that exists in sc-memory and that corresponds some sc-element in it.
 ```cpp
 ...
 // Check if all created sc-elements are valid.
-bool const isNodeValid = ctx.IsElement(nodeAddr);
-bool const isLinkValid = ctx.IsElement(linkAddr);
-bool const isEdgeValid = ctx.IsElement(arcAddr);
+bool const isNodeValid = context.IsElement(nodeAddr);
+bool const isLinkValid = context.IsElement(linkAddr);
+bool const isEdgeValid = context.IsElement(arcAddr);
 ```
 
 !!! note
@@ -118,9 +118,9 @@ throws exception `utils::ExceptionInvalidParams` with description that specified
 ```cpp
 ...
 // Get created sc-elements sc-types.
-ScType const & nodeType = ctx.GetElementType(nodeAddr);
-ScType const & linkType = ctx.GetElementType(linkAddr);
-ScType const & arcType = ctx.GetElementType(arcAddr);
+ScType const & nodeType = context.GetElementType(nodeAddr);
+ScType const & linkType = context.GetElementType(linkAddr);
+ScType const & arcType = context.GetElementType(arcAddr);
 ```
 
 ### **SetElementSubtype**
@@ -131,8 +131,9 @@ syntactic sc-type for sc-element.
 ```cpp
 ...
 // Create sc-node and get sc-address in sc-memory of it.
-ScAddr const & nodeAddr = ctx.CreateNode(ScType::Node);
-bool const isSubtypeElementChanged = ctx.SetElementSubtype(node, ScType::NodeConst);
+ScAddr const & nodeAddr = context.CreateNode(ScType::Node);
+bool const isSubtypeElementChanged 
+    = context.SetElementSubtype(node, ScType::NodeConst);
 // The value of `isSubtypeElementChanged` must be equal to `SC_TRUE`.
 ```
 
@@ -149,14 +150,14 @@ that specified sc-address of sc-connector is not valid.
 ...
 // Get sc-arc incident sc-elements.
 ScAddr sourceAddr, targetAddr;
-ctx.GetEdgeInfo(arcAddr, sourceAddr, targetAddr);
+context.GetEdgeInfo(arcAddr, sourceAddr, targetAddr);
 // The sc-address `sourceAddr` must be equal to the sc-address `nodeAddr` 
 // and the sc-address `targetAddr` must be equal to the sc-address `linkAddr`.
 ...
 // Or get sc-arc incident source and target sc-elements separately.
-ScAddr const & sourceAddr = ctx.GetEdgeSource(arcAddr);
+ScAddr const & sourceAddr = context.GetEdgeSource(arcAddr);
 // The sc-address `sourceAddr` must be equal to the sc-address `nodeAddr`.
-ScAddr const & targetAddr = ctx.GetEdgeTarget(arcAddr);
+ScAddr const & targetAddr = context.GetEdgeTarget(arcAddr);
 // The sc-address `targetAddr` must be equal to the sc-address `linkAddr`.
 ```
 
@@ -174,7 +175,7 @@ First approach to use simple while loop. It suitable, when you need to break thi
 ...
 // Create sc-iterator for searching all sc-element sc-addresses 
 // with unknown sc-type belonging to sc-set with sc-address `setAddr`.
-ScIterator3Ptr it3 = ctx.Iterator3(
+ScIterator3Ptr it3 = context.Iterator3(
             setAddr,
             ScType::EdgeAccessConstPosPerm,
             ScType::Unknown);
@@ -195,7 +196,7 @@ while (it3->Next())
 // Create sc-iterator for searching all sc-node sc-addresses, 
 // which pairs with sc-element with address `setAddr` belong to the relation 
 // with sc-address `nrelDecompositionAddr`.
-ScIterator5Ptr it5 = ctx.Iterator5(
+ScIterator5Ptr it5 = context.Iterator5(
         setAddr,
         ScType::EdgeDCommonConst,
         ScType::NodeConst,
@@ -223,7 +224,7 @@ you need to iterate all results.
 ...
 // Create callback-based sc-iterator for searching all sc-element sc-addresses 
 // with unknown sc-type belonging to sc-set with sc-address `setAddr`.
-ctx.ForEachIter3(
+context.ForEachIter3(
     setAddr,
     ScType::EdgeAccessConstPosPerm,
     ScType::Unknown,
@@ -243,7 +244,7 @@ ctx.ForEachIter3(
 // Create callback-based sc-iterator for searching all sc-node sc-addresses, 
 // which pairs with sc-element with address `setAddr` belong to the relation 
 // with sc-address `nrelDecompositionAddr`.
-ctx.ForEachIter5(
+context.ForEachIter5(
   setAddr,
   ScType::EdgeDCommonConst,
   ScType::NodeConst,
@@ -271,9 +272,9 @@ All sc-elements can be erasing from sc-memory. For this you can use the method `
 ```cpp
 ...
 // Erase all created sc-elements.
-bool const isNodeErased = ctx.EraseElement(nodeAddr);
+bool const isNodeErased = context.EraseElement(nodeAddr);
 // The sc-elements with sc-addresses `nodeAddr` and `arcAddr` must be deleted.
-bool const isArcErased = ctx.EraseElement(arcAddr);
+bool const isArcErased = context.EraseElement(arcAddr);
 // The sc-element with sc-address `targetAddr` must be deleted.
 ```
 
@@ -286,13 +287,13 @@ the previous content from this sc-link. If specified sc-address is not valid, th
 
 ```cpp
 ...
-ScAddr const & linkAddr1 = ctx.CreateLink(ScType::LinkConst);
+ScAddr const & linkAddr1 = context.CreateLink(ScType::LinkConst);
 // Set string content into created sc-link.
-ctx.SetLinkContent(linkAddr1, "my content");
+context.SetLinkContent(linkAddr1, "my content");
 
-ScAddr const & linkAddr2 = ctx.CreateLink(ScType::LinkConst);
+ScAddr const & linkAddr2 = context.CreateLink(ScType::LinkConst);
 // Set numeric content into created sc-link.
-ctx.SetLinkContent(linkAddr2, 10f);
+context.SetLinkContent(linkAddr2, 10f);
 ...
 ```
 
@@ -309,11 +310,11 @@ will be empty.
 ...
 // Get string content from sc-link.
 std::string stringContent;
-bool const stringContentExist = ctx.GetLinkContent(linkAddr1, stringContent);
+bool const stringContentExist = context.GetLinkContent(linkAddr1, stringContent);
 
 // Get numeric content from sc-link.
 float numericContent;
-bool const numericContentExist = ctx.GetLinkContent(linkAddr1, numericContent);
+bool const numericContentExist = context.GetLinkContent(linkAddr1, numericContent);
 ...
 ```
 
@@ -328,11 +329,11 @@ You can find sc-links by its content. For this use the method `FindLinksByConten
 ```cpp
 ...
 // Find sc-links with specified string content.
-ScAddrVector const & linkAddrs1 = ctx.FindLinksByContent("my content");
+ScAddrVector const & linkAddrs1 = context.FindLinksByContent("my content");
 // The vector `linkAddrs1` must contain sc-address `linkAddr1`.
 
 // Find sc-links with specified numeric content.
-ScAddrVector const & linkAddrs2 = ctx.FindLinksByContent(10f);
+ScAddrVector const & linkAddrs2 = context.FindLinksByContent(10f);
 // The vector `linkAddrs2` must contain sc-address `linkAddr2`.
 ```
 
@@ -343,7 +344,7 @@ And you can find sc-links by its content substring. For this use the method `Fin
 ```cpp
 ...
 // Find sc-links with specified string content substring.
-ScAddrVector const & linkAddrs1 = ctx.FindLinksByContentSubstring("my cont");
+ScAddrVector const & linkAddrs1 = context.FindLinksByContentSubstring("my cont");
 // The vector `linkAddrs1` must contain sc-address `linkAddr1`.
 ```
 
@@ -355,10 +356,10 @@ large graph structures.
 
 ## **Frequently Asked Questions**
 
-- [What different between ScType::EdgeDCommonConst and ScType::EdgeAccessConstPosPerm?](#what-different-between-sctypeedgedcommonconst-and-sctypeedgeaccessconstposperm)
+- [What is the difference between ScType::EdgeDCommonConst and ScType::EdgeAccessConstPosPerm?](#what-is-the-difference-between-sctypeedgedcommonconst-and-sctypeedgeaccessconstposperm)
 - [How I can specify empty ScAddr?](#how-i-can-specify-empty-scaddr)
 
-### **What different between ScType::EdgeDCommonConst and ScType::EdgeAccessConstPosPerm?**
+### **What is the difference between ScType::EdgeDCommonConst and ScType::EdgeAccessConstPosPerm?**
 
 `ScType::EdgeDCommonConst` is a sc-type of sc-arc that connects two sc-elements in some relation.
 `ScType::EdgeAccessConstPosPerm` is a sc-type of sc-arc that denotes access of target sc-element to source sc-element.

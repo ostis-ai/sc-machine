@@ -125,19 +125,19 @@ set(HEADERS
 
 #include "my_agent.generated.hpp"
 
-// Use namespaces to user can import in his code only needed sc-agents.
+// Use namespaces to avoid conflicts in names and provide modularity in your code.
 namespace myAgents
 {
 
 class MyAgent : public ScAgent
 {
-  // Specify sc-event on which this sc-agent will be called.
+  // Specify action class and sc-event type on which this sc-agent will be called.
   SC_CLASS(
       Agent, 
-      Event(ScKeynodes::question_initiated, ScEvent::Type::AddOutputEdge)
+      Event(ScKeynodes::my_action_class, ScEvent::Type::AddOutputEdge)
   )
   // This sc-agent can be called if sc-connector is created from sc-element 
-  // with sc-address `ScKeynodes::question_initiated`.
+  // with sc-address `ScKeynodes::my_action_class` to some action.
   SC_GENERATED_BODY()
 }
 
@@ -154,6 +154,7 @@ class MyAgent : public ScAgent
 namespace myAgents
 {
 
+// my_action_class -> ...;;
 SC_AGENT_IMPLEMENTATION(MyAgent)
 {
   // Implement sc-agent logic here. 
@@ -213,8 +214,8 @@ sc_result MyModule::ShutdownImpl()
 
 * You can implement more than one `ScAgent` class in on source/header file;
 * Don't use any other memory contexts instead of `m_memoryCtx` in `ScAgent` implementation;
-* You need always include `<you_header>.generated.hpp` file into your header, if you have any metadata.
-  This include must be a last one in a file.
+* You need always include `<you_header>.generated.hpp` file into your header, to link your sc-agent code with generated 
+metadata. This include must be the last one in a file.
 
 ## **ScEvent**
 
@@ -230,7 +231,7 @@ specified event types:
 
 Each event constructor takes 3 parameters:
 
-* `ctx` - `ScMemoryContext` that will be used to work with event;
+* `context` - `ScMemoryContext` that will be used to work with event;
 * `addr` - `ScAddr` of sc-element that need to be listened for a specified event;
 * `func` - delegate to a callback function, that will be called on each event emit
   (`bool func(ScAddr const & listenAddr, ScAddr const & edgeAddr, ScAddr const & otherAddr)`).
@@ -260,7 +261,7 @@ auto const callback = [](ScAddr const & listenAddr,
                          ScAddr const & edgeAddr,
                          ScAddr const & otherAddr)
 {
-    // listenAddr - sc-address of source sc=element
+    // listenAddr - sc-address of source sc-element
     //  (listen it in sc-event)
     // edgeAddr - sc-address of added output sc-connector
     // otherAddr - sc-address of target element of added 
@@ -268,7 +269,7 @@ auto const callback = [](ScAddr const & listenAddr,
     ...
     return SC_TRUE; // if failed, then return SC_FALSE
 };
-ScEventAddOutputEdge event(ctx, addr, callback);
+ScEventAddOutputEdge event(context, addr, callback);
       </code></pre>
     </td>
   </tr>
@@ -294,7 +295,7 @@ auto const callback = [](ScAddr const & listenAddr,
     ...
     return SC_TRUE; // if failed, then return SC_FALSE
 };
-ScEventAddInputEdge event(ctx, addr, callback);
+ScEventAddInputEdge event(context, addr, callback);
       </code></pre>
     </td>
   </tr>
@@ -320,7 +321,7 @@ auto const callback = [](ScAddr const & listenAddr,
     ...
     return SC_TRUE; // if failed, then return SC_FALSE
 };
-ScEventRemoveOutputEdge event(ctx, addr, callback);
+ScEventRemoveOutputEdge event(context, addr, callback);
       </code></pre>
     </td>
   </tr>
@@ -346,7 +347,7 @@ auto const callback = [](ScAddr const & listenAddr,
     ...
     return SC_TRUE; // if failed, then return SC_FALSE
 };
-ScEventRemoveOutputEdge event(ctx, addr, callback);
+ScEventRemoveOutputEdge event(context, addr, callback);
       </code></pre>
     </td>
   </tr>
@@ -369,7 +370,7 @@ auto const callback = [](ScAddr const & listenAddr,
   ...
   return SC_TRUE; // if failed, then return SC_FALSE
 };
-ScEventEraseElement event(ctx, addr, callback);
+ScEventEraseElement event(context, addr, callback);
     </code></pre>
     </td>
   </tr>
@@ -394,7 +395,7 @@ auto const callback = [](ScAddr const & listenAddr,
   ...
   return SC_TRUE; // if failed, then return SC_FALSE
 };
-ScEventContentChanged evt(ctx, addr, callback);
+ScEventContentChanged evt(context, addr, callback);
       </code></pre>
     </td>
   </tr>
@@ -402,7 +403,7 @@ ScEventContentChanged evt(ctx, addr, callback);
 
 ## **ScWait**
 
-This type of objects used to wait until some event emits. It usually used, when on of an `ScAgent` want to wait result
+This type of objects is used to wait until some event emits. It usually used, when one of an `ScAgent` wants to wait result
 of another one. There are next kind of `ScWait` objects:
 
 * `ScWait`- lock run flow until simple event emits. You can see the list of these events in the Class properties table (
@@ -416,7 +417,7 @@ There are some examples of usage for specified `ScWait` objects:
 * Wait input sc-connector into sc-element with `addr`:
 
 ```cpp
-ScWait<ScEventAddInputEdge> waiter(ctx, addr);
+ScWait<ScEventAddInputEdge> waiter(context, addr);
 waiter.Wait();
 ```
 
@@ -427,11 +428,14 @@ auto const check = [](ScAddr const & listenAddr,
                       ScAddr const & edgeAddr,
                       ScAddr const & otherAddr)
 {
-  ... // Check condition there
-  return SC_FALSE; // Return SC_TRUE or SC_TRUE depending on condition
+  ... // Check condition here.
+  // Return SC_TRUE or SC_FALSE depending on condition.
+  return SC_FALSE;
 };
-ScWaitCondition<ScEventAddInputEdge> waiter(ctx, addr, SC_WAIT_CHECK(check));
-waiter.Wait(10000); // Provide wait time value
+ScWaitCondition<ScEventAddInputEdge> waiter(context, addr, SC_WAIT_CHECK(check));
+// Provide wait time value.
+waiter.Wait(10000);
+// By default, wait time value is 5000.
 ```
 
 There are some yet implemented most common waiters:
@@ -440,7 +444,7 @@ There are some yet implemented most common waiters:
 
 ```cpp
 ...
-ScWaitActionFinished waiter(ctx, commandAddr);
+ScWaitActionFinished waiter(context, commandAddr);
 waiter.Wait();
 ...
 ```
