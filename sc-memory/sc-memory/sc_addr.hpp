@@ -43,7 +43,6 @@ public:
   ScRealAddr const & operator*() const;
   HashType Hash() const;
 
-  /// TODO: remove and replace by operator * ()
   ScRealAddr const & GetRealAddr() const;
 
 protected:
@@ -67,15 +66,13 @@ struct RealAddrLessFunc
   }
 };
 
-struct ScAddLessFunc
+struct ScAddrLessFunc
 {
   bool operator()(ScAddr const & a, ScAddr const & b) const
   {
     return RealAddrLessFunc()(*a, *b);
   }
 };
-
-using ScAddrLessFunc = ScAddLessFunc;
 
 // hash functions
 template <typename HashType>

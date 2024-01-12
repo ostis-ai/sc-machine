@@ -179,12 +179,12 @@ TEST_F(ScServerTest, CreateElementsBySCsUploadToStructure)
   EXPECT_FALSE(response["status"].get<sc_bool>());
   EXPECT_FALSE(response["errors"][0]["message"].is_null());
 
-  ScSystemIdentifierFiver classSetSysIdtfFiver;
+  ScSystemIdentifierQuintuple classSetSysIdtfFiver;
   EXPECT_TRUE(m_ctx->HelperFindBySystemIdtf("concept_set", classSetSysIdtfFiver));
   ScAddr const & classSet = classSetSysIdtfFiver.addr1;
   EXPECT_TRUE(classSet.IsValid());
 
-  ScSystemIdentifierFiver set1SysIdtfFiver;
+  ScSystemIdentifierQuintuple set1SysIdtfFiver;
   EXPECT_TRUE(m_ctx->HelperFindBySystemIdtf("set1", set1SysIdtfFiver));
   ScAddr const & set1 = set1SysIdtfFiver.addr1;
   EXPECT_TRUE(set1.IsValid());

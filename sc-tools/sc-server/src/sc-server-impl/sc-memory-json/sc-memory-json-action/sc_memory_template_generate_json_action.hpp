@@ -24,7 +24,9 @@ public:
     for (size_t i = 0; i < result.Size(); ++i)
       hashesVectors.push_back(result[i].Hash());
 
+    SC_PRAGMA_DISABLE_DEPRECATION_WARNINGS_BEGIN
     ScMemoryJsonPayload const & resultPayload = {{"aliases", result.GetReplacements()}, {"addrs", hashesVectors}};
+    SC_PRAGMA_DISABLE_DEPRECATION_WARNINGS_END
     delete pair.first;
     return resultPayload;
   }

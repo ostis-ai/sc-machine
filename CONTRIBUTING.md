@@ -34,7 +34,7 @@ Possible tags:
   * `[git]` - changes in `git` configuration;
   * `[cmake]` - changes in `cmake` build system.
 
-Each commit in Pull request should be an atomic. Another word implement or fix one feature. For example:
+Each commit in Pull Request should be an atomic. Another word implement or fix one feature. For example:
 <pre>
 Last commit
 ...

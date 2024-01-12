@@ -100,7 +100,9 @@ protected:
     : m_templateAddr(inScTemplateAddr)
     , m_context(inCtx)
   {
+    SC_PRAGMA_DISABLE_DEPRECATION_WARNINGS_BEGIN
     auto const & replacements = params.GetAll();
+    SC_PRAGMA_DISABLE_DEPRECATION_WARNINGS_END
     for (auto const & item : replacements)
     {
       ScAddr const & addr = m_context.HelperFindBySystemIdtf(item.first);

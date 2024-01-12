@@ -28,17 +28,17 @@ struct ScTemplateItem
     m_itemType = Type::Type;
   }
 
-  ScTemplateItem(ScAddr const & addr, char const * replName = nullptr)
+  ScTemplateItem(ScAddr const & addr, sc_char const * replName = nullptr)
   {
     SetAddr(addr, replName);
   }
 
-  ScTemplateItem(ScType const & type, char const * replName = nullptr)
+  ScTemplateItem(ScType const & type, sc_char const * replName = nullptr)
   {
     SetType(type, replName);
   }
 
-  ScTemplateItem(char const * name)
+  ScTemplateItem(sc_char const * name)
   {
     SetReplacement(name);
   }
@@ -73,7 +73,7 @@ struct ScTemplateItem
     return m_itemType == Type::Type;
   }
 
-  void SetAddr(ScAddr const & addr, char const * replName = nullptr)
+  void SetAddr(ScAddr const & addr, sc_char const * replName = nullptr)
   {
     m_itemType = Type::Addr;
     m_addrValue = addr;
@@ -83,7 +83,7 @@ struct ScTemplateItem
       m_name = std::to_string(addr.Hash());
   }
 
-  void SetType(ScType const & type, char const * replName = nullptr)
+  void SetType(ScType const & type, sc_char const * replName = nullptr)
   {
     m_itemType = Type::Type;
     m_typeValue = type;
@@ -91,7 +91,7 @@ struct ScTemplateItem
       m_name = replName;
   }
 
-  void SetReplacement(char const * name)
+  void SetReplacement(sc_char const * name)
   {
     m_itemType = Type::Replace;
     if (name)
@@ -156,14 +156,13 @@ protected:
   ScTemplateTripleItems m_values;
 };
 
-_SC_EXTERN ScTemplateItem operator>>(ScAddr const & value, char const * replName);
+_SC_EXTERN ScTemplateItem operator>>(ScAddr const & value, sc_char const * replName);
 _SC_EXTERN ScTemplateItem operator>>(ScAddr const & value, std::string const & replName);
-_SC_EXTERN ScTemplateItem operator>>(ScType const & value, char const * replName);
+_SC_EXTERN ScTemplateItem operator>>(ScType const & value, sc_char const * replName);
 _SC_EXTERN ScTemplateItem operator>>(ScType const & value, std::string const & replName);
 
 class ScTemplateResultItem;
 class ScTemplateSearchResult;
-class ScTemplateResultItem;
 
 enum class ScTemplateResultCode : uint8_t
 {
@@ -234,6 +233,7 @@ public:
     return false;
   }
 
+  SC_DEPRECATED(0.9.0, "Don't use this method, it is dangerous. It will be removed in 0.10.0.")
   _SC_EXTERN ScTemplateItemsToParams GetAll() const
   {
     return m_templateItemsToParams;
@@ -315,9 +315,6 @@ public:
   using ScTemplateTriplesVector = std::vector<ScTemplateTriple *>;
 
   _SC_EXTERN explicit ScTemplate();
-
-  SC_DEPRECATED(0.8.0, "Now ScTemplate sorts itself effectively")
-  _SC_EXTERN explicit ScTemplate(bool forceOrder);
 
   _SC_EXTERN ~ScTemplate()
   {
@@ -536,7 +533,7 @@ public:
     if (addr.IsValid())
       return addr;
 
-    SC_THROW_EXCEPTION(utils::ExceptionInvalidParams, "Alias=" << name << " not found in replacements");
+    SC_THROW_EXCEPTION(utils::ExceptionInvalidParams, "Alias=`" << name << "` not found in replacements");
   }
 
   /* Gets found sc-element address by `index` in triple.
@@ -599,6 +596,7 @@ public:
     return m_replacementConstruction.cend();
   }
 
+  SC_DEPRECATED(0.9.0, "Don't use this method, it is dangerous. It will be removed in 0.10.0.")
   inline ScTemplate::ScTemplateItemsToReplacementsItemsPositions const & GetReplacements() const noexcept
   {
     return m_templateItemsNamesToReplacementItemPositions;
@@ -699,6 +697,7 @@ public:
     m_templateItemsNamesToReplacementItemsPositions.clear();
   }
 
+  SC_DEPRECATED(0.9.0, "Don't use this method, it is dangerous. It will be removed in 0.10.0.")
   ScTemplate::ScTemplateItemsToReplacementsItemsPositions GetReplacements() const noexcept;
 
   template <typename FnT>

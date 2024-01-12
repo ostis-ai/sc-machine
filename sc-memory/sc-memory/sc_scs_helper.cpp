@@ -168,7 +168,7 @@ private:
       // try to find existing
       if (el.GetVisibility() == scs::Visibility::System)
       {
-        ScSystemIdentifierFiver fiver;
+        ScSystemIdentifierQuintuple fiver;
         m_ctx.HelperFindBySystemIdtf(el.GetIdtf(), fiver);
         resultAddr = fiver.addr1;
         result = {fiver.addr2, fiver.addr3, fiver.addr4};
@@ -199,7 +199,7 @@ private:
         // setup system identifier
         if (el.GetVisibility() == scs::Visibility::System)
         {
-          ScSystemIdentifierFiver fiver;
+          ScSystemIdentifierQuintuple fiver;
           m_ctx.HelperSetSystemIdtf(el.GetIdtf(), resultAddr, fiver);
           result = {fiver.addr2, fiver.addr3, fiver.addr4};
         }

@@ -83,7 +83,7 @@ bool Builder::BuildSources(ScRepoPathCollector::Sources const & buildSources, Sc
 
 ScAddr Builder::ResolveOutputStructure()
 {
-  ScSystemIdentifierFiver fiver;
+  ScSystemIdentifierQuintuple fiver;
   m_ctx->HelperResolveSystemIdtf(m_params.m_resultStructureSystemIdtf, ScType::NodeConstStruct, fiver);
   ScAddr const & outputStructure = fiver.addr1;
 

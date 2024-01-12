@@ -393,7 +393,7 @@ TEST_F(ScTemplateCommonTest, DISABLED_BigTemplateSmoke)
   ScAddr const rel = m_ctx->CreateNode(ScType::NodeConstNoRole);
 
   static const size_t el_num = 1 << 12;
-  std::set<ScAddr, ScAddLessFunc> elements;
+  std::set<ScAddr, ScAddrLessFunc> elements;
   for (size_t i = 0; i < el_num; ++i)
   {
     ScAddr const a = m_ctx->CreateNode(ScType::NodeConst);
@@ -478,7 +478,7 @@ TEST_F(ScTemplateCommonTest, CycledTemplateSmoke)
 TEST_F(ScTemplateCommonTest, MultipleConnectivitiesTemplateSmoke)
 {
   size_t const constrCount = 20;
-  std::map<ScAddr, ScAddr, ScAddLessFunc> cache;
+  std::map<ScAddr, ScAddr, ScAddrLessFunc> cache;
   for (size_t i = 0; i < constrCount; ++i)
   {
     ScAddr const & sourceNodeAddr = m_ctx->CreateNode(ScType::NodeConst);
