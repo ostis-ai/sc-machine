@@ -16,6 +16,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- ScTemplate replacement presence check using varAddr 
 - Iterator5 AAAAF
 - Divide params errors handling and memory state handling
 - Provide errors and exceptions information into C and C++ sc-memory API
@@ -31,6 +32,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- HelperBuildTemplate with params that have varAddr replacements
 - Warnings for GNU compilers
 - Warnings in sc-machine about deprecated methods
 - Behavior of the agent_erase_elements on not his action classes
