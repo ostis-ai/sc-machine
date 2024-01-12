@@ -8,8 +8,8 @@
     <th>C</th>
     <th>C++</th>
     <th>SCs</th>
-    <th>10</th>
-    <th>16</th>
+    <th>10-based NS</th>
+    <th>16-based NS</th>
   </tr>
 
   <tr>
@@ -22,12 +22,30 @@
   </tr>
 
   <tr>
+    <td></td>
+    <td>sc_type_const</td>
+    <td>ScType::Const</td>
+    <td></td>
+    <td>32</td>
+    <td>0x20</td>
+  </tr>
+
+  <tr>
+    <td></td>
+    <td>sc_type_var</td>
+    <td>ScType::Var</td>
+    <td></td>
+    <td>64</td>
+    <td>0x40</td>
+  </tr>
+
+  <tr>
     <td><img src="../images/scg/scg_node_const.png"></img></td>
     <td>sc_type_node | sc_type_const</td>
     <td>ScType::NodeConst</td>
     <td></td>
-    <td>32</td>
-    <td>0x20</td>
+    <td>33</td>
+    <td>0x21</td>
   </tr>
 
   <tr>
@@ -35,8 +53,8 @@
     <td>sc_type_node | sc_type_var</td>
     <td>ScType::NodeVar</td>
     <td></td>
-    <td>64</td>
-    <td>0x40</td>
+    <td>65</td>
+    <td>0x41</td>
   </tr>
 
   <tr>
@@ -44,8 +62,8 @@
     <td>sc_type_node | sc_type_node_tuple</td>
     <td>ScType::NodeTuple</td>
     <td>sc_node_tuple</td>
-    <td>128</td>
-    <td>0x80</td>
+    <td>129</td>
+    <td>0x81</td>
   </tr>
 
   <tr>
@@ -53,8 +71,8 @@
     <td>sc_type_node | sc_type_const | sc_type_node_tuple</td>
     <td>ScType::NodeConstTuple</td>
     <td>sc_node_tuple <br> sc_node_not_binary_tuple</td>
-    <td>160</td>
-    <td>0xA0</td>
+    <td>161</td>
+    <td>0xA1</td>
   </tr>
 
   <tr>
@@ -62,17 +80,17 @@
     <td>sc_type_node | sc_type_var | sc_type_node_tuple</td>
     <td>ScType::NodeVarTuple</td>
     <td></td>
-    <td>192</td>
-    <td>0xC0</td>
+    <td>193</td>
+    <td>0xC1</td>
   </tr>
 
   <tr>
     <td></td>
-    <td>sc_type_node_struct | sc_type_node</td>
+    <td>sc_type_node | sc_type_node_struct</td>
     <td>ScType::NodeStruct</td>
     <td>sc_node_struct</td>
-    <td>256</td>
-    <td>0x100</td>
+    <td>257</td>
+    <td>0x101</td>
   </tr>
 
   <tr>
@@ -80,8 +98,8 @@
     <td>sc_type_node | sc_type_const | sc_type_node_struct</td>
     <td>ScType::NodeConstStruct</td>
     <td>sc_node_struct</td>
-    <td>288</td>
-    <td>0x120</td>
+    <td>289</td>
+    <td>0x121</td>
   </tr>
 
   <tr>
@@ -89,8 +107,8 @@
     <td>sc_type_node | sc_type_var | sc_type_node_struct</td>
     <td>ScType::NodeVarStruct</td>
     <td></td>
-    <td>320</td>
-    <td>0x140</td>
+    <td>321</td>
+    <td>0x141</td>
   </tr>
 
   <tr>
@@ -98,8 +116,8 @@
     <td>sc_type_node | sc_type_node_role</td>
     <td>ScType::NodeRole</td>
     <td>sc_node_role_relation</td>
-    <td>512</td>
-    <td>0x200</td>
+    <td>513</td>
+    <td>0x201</td>
   </tr>
 
   <tr>
@@ -107,8 +125,8 @@
     <td>sc_type_node | sc_type_const | sc_type_node_role</td>
     <td>ScType::NodeConstRole</td>
     <td>sc_node_role_relation</td>
-    <td>544</td>
-    <td>0x220</td>
+    <td>545</td>
+    <td>0x221</td>
   </tr>
 
   <tr>
@@ -116,8 +134,8 @@
     <td>sc_type_node | sc_type_var | sc_type_node_role</td>
     <td>ScType::NodeVarRole</td>
     <td></td>
-    <td>576</td>
-    <td>0x240</td>
+    <td>577</td>
+    <td>0x241</td>
   </tr>
 
   <tr>
@@ -125,8 +143,8 @@
     <td>sc_type_node | sc_type_node_norole</td>
     <td>ScType::NodeNorole</td>
     <td>sc_node_norole_relation</td>
-    <td>1024</td>
-    <td>0x400</td>
+    <td>1025</td>
+    <td>0x401</td>
   </tr>
 
   <tr>
@@ -134,8 +152,8 @@
     <td>sc_type_node | sc_type_const | sc_type_node_norole</td>
     <td>ScType::NodeConstNorole</td>
     <td>sc_node_norole_relation</td>
-    <td>1056</td>
-    <td>0x420</td>
+    <td>1057</td>
+    <td>0x421</td>
   </tr>
 
   <tr>
@@ -143,8 +161,8 @@
     <td>sc_type_node | sc_type_var | sc_type_node_norole</td>
     <td>ScType::NodeVarNorole</td>
     <td></td>
-    <td>1088</td>
-    <td>0x440</td>
+    <td>1089</td>
+    <td>0x441</td>
   </tr>
 
   <tr>
@@ -152,8 +170,8 @@
     <td>sc_type_node | sc_type_node_class</td>
     <td>ScType::NodeClass</td>
     <td>sc_node_class</td>
-    <td>2048</td>
-    <td>0x800</td>
+    <td>2049</td>
+    <td>0x801</td>
   </tr>
 
   <tr>
@@ -161,8 +179,8 @@
     <td>sc_type_node | sc_type_const | sc_type_node_class</td>
     <td>ScType::NodeConstClass</td>
     <td>sc_node_class <br> sc_node_not_relation</td>
-    <td>2080</td>
-    <td>0x820</td>
+    <td>2089</td>
+    <td>0x821</td>
   </tr>
 
   <tr>
@@ -170,8 +188,8 @@
     <td>sc_type_node | sc_type_var | sc_type_node_class</td>
     <td>ScType::NodeVarClass</td>
     <td></td>
-    <td>2112</td>
-    <td>0x840</td>
+    <td>2113</td>
+    <td>0x841</td>
   </tr>
 
   <tr>
@@ -179,8 +197,8 @@
     <td>sc_type_node | sc_type_node_material</td>
     <td>ScType::NodeMaterial</td>
     <td>sc_node_material</td>
-    <td>8192</td>
-    <td>0x2000</td>
+    <td>8191</td>
+    <td>0x2001</td>
   </tr>
 
   <tr>
@@ -188,8 +206,8 @@
     <td>sc_type_node | sc_type_const | sc_type_node_material</td>
     <td>ScType::NodeConstMaterial</td>
     <td>sc_node_material</td>
-    <td>8224</td>
-    <td>0x2020</td>
+    <td>8225</td>
+    <td>0x2021</td>
   </tr>
 
   <tr>
@@ -197,8 +215,8 @@
     <td>sc_type_node | sc_type_var | sc_type_node_material</td>
     <td>ScType::NodeVarMaterial</td>
     <td></td>
-    <td>8256</td>
-    <td>0x2040</td>
+    <td>8257</td>
+    <td>0x2041</td>
   </tr>
 
   <tr>
