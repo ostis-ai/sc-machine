@@ -1,12 +1,12 @@
-# Sc-builder
+# SC-builder
 
-Sc-builder tool allows to build knowledge base from sources. You can find it in a `bin` directory.
+SC-builder tool allows to build knowledge base from sources. You can find it in a `bin` directory.
 There are options of this tool:
 
 <pre>
 ./bin/sc-builder --help
 
-Builder usage:
+SC-builder usage:
 
   --config|-c arg           Path to configuration .ini file
   --input_path|-i arg       Path to directory with sources
