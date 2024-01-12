@@ -1,9 +1,11 @@
-
 "file://file.txt" => nrel_system_identifier:
     [test_content_file];;
 
 "file://contents/file.txt" => nrel_system_identifier:
     [test_content_file_2];;
+
+"file://contents/file.txt" | sc_edge_dcommon#..common_edge | [test_content_file_3];;
+sc_node#nrel_system_identifier | sc_edge_main#..edge | sc_edge_dcommon#..common_edge;;
 
 [string] => nrel_system_identifier:
     [test_content_string];;

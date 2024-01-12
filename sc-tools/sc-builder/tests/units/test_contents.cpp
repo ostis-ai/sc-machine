@@ -35,6 +35,16 @@ TEST_F(ScBuilderTest, file_relative_folder)
   EXPECT_EQ(content, "contents/file");
 }
 
+TEST_F(ScBuilderTest, file_relative_folder_scs_level_1)
+{
+  ScAddr const linkAddr = m_ctx->HelperResolveSystemIdtf("test_content_file_3");
+  EXPECT_TRUE(linkAddr.IsValid());
+
+  ScLink link(*m_ctx, linkAddr);
+  std::string const content = link.GetAsString();
+  EXPECT_EQ(content, "contents/file");
+}
+
 template <typename ValueT>
 void CheckBinaryContent(ScMemoryContext & ctx, std::string const & sysIdtf, ValueT value)
 {
