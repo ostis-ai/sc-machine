@@ -21,15 +21,15 @@ sc_module_initialize_with_init_memory_generated_structure(sc_addr const init_mem
   if (utils_keynodes_initialize(init_memory_generated_structure) != SC_RESULT_OK)
     return SC_RESULT_ERROR;
 
-  event_erase_elements = sc_event_new(
-      s_erase_elements_ctx,
-      keynode_question_initiated,
-      SC_EVENT_ADD_OUTPUT_ARC,
-      null_ptr,
-      agent_erase_elements,
-      null_ptr);
-  if (event_erase_elements == null_ptr)
-    return SC_RESULT_ERROR;
+//  event_erase_elements = sc_event_new(
+//      s_erase_elements_ctx,
+//      keynode_question_initiated,
+//      SC_EVENT_ADD_OUTPUT_ARC,
+//      null_ptr,
+//      agent_erase_elements,
+//      null_ptr);
+//  if (event_erase_elements == null_ptr)
+//    return SC_RESULT_ERROR;
 
   return SC_RESULT_OK;
 }
@@ -43,8 +43,8 @@ _SC_EXT_EXTERN sc_result sc_module_shutdown()
 {
   sc_result res = SC_RESULT_OK;
 
-  if (event_erase_elements)
-    sc_event_destroy(event_erase_elements);
+//  if (event_erase_elements)
+//    sc_event_destroy(event_erase_elements);
 
   sc_memory_context_free(s_erase_elements_ctx);
 
