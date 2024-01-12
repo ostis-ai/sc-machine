@@ -32,6 +32,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- Support recursive curl braces in SCs-code level 2
 - Support semantic sc-types for sc-node in SCs-code level 1
 - Support sc-links for SCs-code level 1
 - HelperBuildTemplate with params that have varAddr replacements
