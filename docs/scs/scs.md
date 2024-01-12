@@ -90,7 +90,7 @@ Identifier of `subject`, `predicate`, `object` build with rule:
 
 Where `type` is an element type specification. It can be one of possible values:
 
-* `sc_node` - equal to ![SCg-node](images/scg/scg_node.png);
+* `sc_node` - equal to ![SCg-node](images/scg/scg_node_const.png);
 * `sc_link` - equal to ![SCg-link](images/scg/scg_link_const.png);
 * `sc_edge_dcommon` - equal to ![SCg-node](images/scg/scg_edge_const_common_orient.png);
 * `sc_edge_ucommon` - equal to ![SCg-node](images/scg/scg_edge_const_common.png);
@@ -113,9 +113,13 @@ Where `type` is an element type specification. It can be one of possible values:
       <pre>
         <code class="js hljs javascript">
 // append set of apples into fruit set
-sc_node#fruit | sc_edge_main#..edge | sc_node#apple;;
+sc_node#fruit
+  | sc_edge_main#..edge 
+  | sc_node#apple;;
 // append set of bananas into fruit set
-sc_node#fruit | sc_edge_main#..edge | sc_node#banana;;
+sc_node#fruit
+  | sc_edge_main#..edge
+  | sc_node#banana;;
         </code>
       </pre>
     </td>
@@ -126,10 +130,14 @@ sc_node#fruit | sc_edge_main#..edge | sc_node#banana;;
     <td>
       <pre>
         <code class="js hljs javascript">
-sc_node#apple | sc_edge_dcommon#..common_edge | "file://apple.png";;
+sc_node#apple 
+  | sc_edge_dcommon#..common_edge 
+  | "file://apple.png";;
 /*append edge from nrel_image relation into
   edge between apple set and it's image*/
-sc_node_norole_relation#nrel_image | sc_edge_main#..access_edge | sc_edge_dcommon#..common_edge;;
+sc_node_norole_relation#nrel_image 
+  | sc_edge_main#..access_edge 
+  | sc_edge_dcommon#..common_edge;;
         </code>
       </pre>
     </td>
@@ -372,7 +380,7 @@ apple => nrel_image: "file://apple.png";;
       </div>
       <pre>
         <code class="js hljs javascript">
-a -> c: d:: b;;
+a <=> c: d:: b;;
         </code>
       </pre>
     </td>
@@ -776,31 +784,31 @@ nrel_basic_sequence
 
 There are a list of element type keynodes, that can be used to specify type of sc-element:
 
-| Keynode                           | Equal sc-type                       | Equal sc.g-element
-| --------------------------------- | ----------------------------------- | --------------
-| sc_node                           | ScType::Node                        | ![sc.g-edge](images/scg/scg_node.png)
-| sc_link                           | ScType::Link                        | ![sc.g-edge](images/scg/scg_link_const.png)
-| sc_edge_dcommon                   | ScType::EdgeDCommon                 | ![sc.g-edge](images/scg/scg_edge_common_orient.png)
-| sc_edge_ucommon                   | ScType::EdgeUCommon                 | ![sc.g-edge](images/scg/scg_edge_common.png)
-| sc_edge_main                      | ScType::EdgeAccessConstPosPerm      | ![sc.g-edge](images/scg/scg_edge_const_pos_perm.png)
-| sc_edge_access                    | ScType::EdgeAccess                  | ![sc.g-edge](images/scg/scg_edge_access.png)
-| sc_node_tuple                     | ScType::NodeTuple                   | ![sc.g-edge](images/scg/scg_node_const_tuple.png) ![sc.g-edge](images/scg/scg_node_var_tuple.png)
-| sc_node_struct                    | ScType::NodeStruct                  | ![sc.g-edge](images/scg/scg_node_const_struct.png) ![sc.g-edge](images/scg/scg_node_var_struct.png)
-| sc_node_role_relation             | ScType::NodeRole                    | ![sc.g-edge](images/scg/scg_node_const_role.png) ![sc.g-edge](images/scg/scg_node_var_role.png)
-| sc_node_norole_relation           | ScType::NodeNoRole                  | ![sc.g-edge](images/scg/scg_node_const_norole.png) ![sc.g-edge](images/scg/scg_node_var_norole.png)
-| sc_node_class                     | ScType::NodeClass                   | ![sc.g-edge](images/scg/scg_node_const_class.png) ![sc.g-edge](images/scg/scg_node_var_class.png)
-| sc_node_material                  | ScType::NodeMaterial                | ![sc.g-edge](images/scg/scg_node_const_material.png) ![sc.g-edge](images/scg/scg_node_var_material.png)
+| Keynode                           | Equal sc-type                  | Equal sc.g-element
+| --------------------------------- |--------------------------------| --------------
+| sc_node                           | ScType::NodeConst              | ![sc.g-edge](images/scg/scg_node_const.png)
+| sc_link                           | ScType::LinkConst              | ![sc.g-edge](images/scg/scg_link_const.png)
+| sc_edge_dcommon                   | ScType::EdgeDCommonConst       | ![sc.g-edge](images/scg/scg_edge_const_common_orient.png)
+| sc_edge_ucommon                   | ScType::EdgeUCommonConst       | ![sc.g-edge](images/scg/scg_edge_const_common.png)
+| sc_edge_main                      | ScType::EdgeAccessConstPosPerm | ![sc.g-edge](images/scg/scg_edge_const_pos_perm.png)
+| sc_edge_access                    | ScType::EdgeAccess             | ![sc.g-edge](images/scg/scg_edge_access.png)
+| sc_node_tuple                     | ScType::NodeTuple              | ![sc.g-edge](images/scg/scg_node_const_tuple.png) ![sc.g-edge](images/scg/scg_node_var_tuple.png)
+| sc_node_struct                    | ScType::NodeStruct             | ![sc.g-edge](images/scg/scg_node_const_struct.png) ![sc.g-edge](images/scg/scg_node_var_struct.png)
+| sc_node_role_relation             | ScType::NodeRole               | ![sc.g-edge](images/scg/scg_node_const_role.png) ![sc.g-edge](images/scg/scg_node_var_role.png)
+| sc_node_norole_relation           | ScType::NodeNoRole             | ![sc.g-edge](images/scg/scg_node_const_norole.png) ![sc.g-edge](images/scg/scg_node_var_norole.png)
+| sc_node_class                     | ScType::NodeClass              | ![sc.g-edge](images/scg/scg_node_const_class.png) ![sc.g-edge](images/scg/scg_node_var_class.png)
+| sc_node_material                  | ScType::NodeMaterial           | ![sc.g-edge](images/scg/scg_node_const_material.png) ![sc.g-edge](images/scg/scg_node_var_material.png)
 
 There are old keynodes, that used for backward compatibility:
 
-| Keynode                   | Equal sc-type | New keynode |
-| ------------------------- | ------------- | ----------- |
+| Keynode                   | Equal sc-type                  | New keynode |
+| ------------------------- |--------------------------------| ----------- |
 | sc_arc_main               | ScType::EdgeAccessConstPosPerm | sc_edge_main |
-| sc_edge                   | ScType::EdgeUCommon | sc_edge_ucommon |
-| sc_arc_common             | ScType::EdgeDCommon | sc_edge_dcommon |
-| sc_arc_access             | ScType::EdgeAccess  | sc_edge_access |
-| sc_node_not_relation      | ScType::NodeClass | sc_node_class |
-| sc_node_not_binary_tuple  | ScType::NodeTuple | sc_node_tuple |
+| sc_edge                   | ScType::EdgeUCommonConst       | sc_edge_ucommon |
+| sc_arc_common             | ScType::EdgeDCommonConst       | sc_edge_dcommon |
+| sc_arc_access             | ScType::EdgeAccess             | sc_edge_access |
+| sc_node_not_relation      | ScType::NodeConstClass         | sc_node_class |
+| sc_node_not_binary_tuple  | ScType::NodeConstTuple         | sc_node_tuple |
 
 There is an example of usage:
 

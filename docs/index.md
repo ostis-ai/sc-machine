@@ -8,7 +8,7 @@
 - **API**
     * C++ API - *documentation of C++ API provided by sc-machine*
         * [C++ Core API](sc-memory/api/cpp/core/api.md) - *documentation of C++ core API for creating, retrieving and erasing sc-elements in sc-memory*
-        * C++ Extended API: - *documentation of C++ extended API for manipulating with system identifiers of sc-elements and large graphs*
+        * C++ Extended API: - *documentation of C++ extended API for manipulating with system identifiers of sc-elements and sc-templates*
             * [ScHelper C++ API](sc-memory/api/cpp/extended/helper-api.md) - *documentation of C++ extended API for manipulating with system identifiers of sc-elements*
             * [ScTemplate C++ API](sc-memory/api/cpp/extended/template-api.md) - *documentation of C++ extended API for creating and retrieving graphs (it is very useful when you want to work big sc-constructions)*
         * [C++ Agents API](sc-memory/api/cpp/agents.md) - *documentation of C++ Agents API for creating sc-agents*
