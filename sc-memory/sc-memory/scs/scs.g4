@@ -140,7 +140,19 @@ sentence_assign_contour
     
 idtf_lvl1_preffix returns [std::string text]
   : type=('sc_node'
+  | 'sc_node_tuple'
+  | 'sc_node_not_binary_tuple'
+  | 'sc_node_struct'
+  | 'sc_node_role_relation'
+  | 'sc_node_norole_relation'
+  | 'sc_node_abstract'
+  | 'sc_node_material'
+  | 'sc_node_not_relation'
+  | 'sc_node_class'
+
   | 'sc_link'
+  | 'sc_link_class'
+
   | 'sc_edge_dcommon'
   | 'sc_edge_ucommon'
   | 'sc_edge_main'
@@ -165,8 +177,9 @@ idtf_lvl1_value returns [ElementHandle handle]
   ;
     
 idtf_lvl1 returns [ElementHandle handle]
-  : idtf_lvl1_value { $ctx->handle = $idtf_lvl1_value.handle; }
-  // | LINK
+  : id=idtf_lvl1_value { $ctx->handle = $ctx->id->handle; }
+  | cn=content { $ctx->handle = $ctx->cn->handle; }
+  | u=idtf_url { $ctx->handle = $ctx->u->handle; }
   ;
 
 idtf_edge returns [ElementHandle handle]
