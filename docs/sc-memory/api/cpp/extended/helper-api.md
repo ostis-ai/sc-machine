@@ -14,7 +14,7 @@ numbers, underscores and dashes. Thus, it is most appropriate to form the system
 the main English one by replacing all characters not included in the alphabet described above with the character “_”.
 
 !!! note
-    All system identifiers must satisfy the regular pattern "([a-z]|[A-Z]|'_'|'.'|[0-9])+".
+    All system identifiers must satisfy the regular pattern `([a-z]|[A-Z]|'_'|'.'|[0-9])+`.
 
 !!! note
     Now only sc-nodes and sc-links can have system identifiers.
@@ -200,4 +200,4 @@ ScAddr const & nrelSystemIdtfAddr = quintuple.addr5;
 ### **Can I specify empty system identifier for sc-element?**
 
 You can not specify empty system identifier for sc-element. All system identifiers must satisfy the regular 
-pattern "([a-z]|[A-Z]|'_'|'.'|[0-9])+".
+pattern `([a-z]|[A-Z]|'_'|'.'|[0-9])+`.

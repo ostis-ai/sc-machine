@@ -310,11 +310,13 @@ will be empty.
 ...
 // Get string content from sc-link.
 std::string stringContent;
-bool const stringContentExist = context.GetLinkContent(linkAddr1, stringContent);
+bool const stringContentExist 
+  = context.GetLinkContent(linkAddr1, stringContent);
 
 // Get numeric content from sc-link.
 float numericContent;
-bool const numericContentExist = context.GetLinkContent(linkAddr1, numericContent);
+bool const numericContentExist 
+  = context.GetLinkContent(linkAddr1, numericContent);
 ...
 ```
 
@@ -344,7 +346,8 @@ And you can find sc-links by its content substring. For this use the method `Fin
 ```cpp
 ...
 // Find sc-links with specified string content substring.
-ScAddrVector const & linkAddrs1 = context.FindLinksByContentSubstring("my cont");
+ScAddrVector const & linkAddrs1 
+  = context.FindLinksByContentSubstring("my cont");
 // The vector `linkAddrs1` must contain sc-address `linkAddr1`.
 ```
 
