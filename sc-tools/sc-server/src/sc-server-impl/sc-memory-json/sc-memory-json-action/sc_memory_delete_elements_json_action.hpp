@@ -16,11 +16,11 @@ public:
       ScMemoryJsonPayload requestPayload,
       ScMemoryJsonPayload & errorsPayload) override
   {
-    for (auto & hash : requestPayload)
-    {
-      ScAddr const addr{hash.get<size_t>()};
-      context->EraseElement(addr);
-    }
+//    for (auto & hash : requestPayload)
+//    {
+//      ScAddr const addr{hash.get<size_t>()};
+//      context->EraseElement(addr);
+//    }
 
     return {SC_TRUE};
   }
