@@ -345,6 +345,8 @@ public:
 
   _SC_EXTERN bool HasReplacement(std::string const & repl) const;
 
+  _SC_EXTERN bool HasReplacement(ScAddr const & replAddr) const;
+
   /** Add triple:
    *          param2
    * param1 ----------> param3

@@ -86,11 +86,12 @@ TEST_F(ScBuilderTest, SearchTemplateWithVarAddrSubstituteInParams)
 
   ScTemplate checkTemplate;
   EXPECT_TRUE(m_ctx->HelperBuildTemplate(checkTemplate, checkTemplateStructure, params));
+  EXPECT_FALSE(checkTemplate.HasReplacement(varAddr));
 
   ScTemplateSearchResult searchResult;
   EXPECT_TRUE(m_ctx->HelperSearchTemplate(checkTemplate, searchResult));
-  EXPECT_EQ(searchResult[0]["_message"], messageAddr);
-  EXPECT_EQ(searchResult[0][varAddr], messageAddr);
+  EXPECT_THROW(searchResult[0]["_message"], utils::ExceptionInvalidParams);
+  EXPECT_THROW(searchResult[0][varAddr], utils::ExceptionInvalidParams);
 }
 
 TEST_F(ScBuilderTest, TemplateWithVarTriplesSmall3)

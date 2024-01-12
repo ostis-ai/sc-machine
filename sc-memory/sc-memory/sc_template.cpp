@@ -97,6 +97,12 @@ bool ScTemplate::HasReplacement(std::string const & repl) const
          m_templateItemsNamesToReplacementItemsPositions.cend();
 }
 
+bool ScTemplate::HasReplacement(ScAddr const & replAddr) const
+{
+  return m_templateItemsNamesToReplacementItemsPositions.find(std::to_string(replAddr.Hash())) !=
+         m_templateItemsNamesToReplacementItemsPositions.cend();
+}
+
 ScTemplate & ScTemplate::Triple(
     ScTemplateItem const & param1,
     ScTemplateItem const & param2,

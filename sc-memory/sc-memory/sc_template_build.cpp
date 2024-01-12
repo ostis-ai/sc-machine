@@ -109,6 +109,15 @@ protected:
         ObjectInfo obj = CollectObjectInfo(item.second, std::to_string(addr.Hash()));
         m_elements.insert({addr.Hash(), obj});
       }
+      else
+      {
+        ObjectInfo obj = CollectObjectInfo(item.second, std::to_string(item.second.Hash()));
+        std::stringstream ss(item.first);
+        sc_addr_hash hash;
+        ss >> hash;
+        ScAddr const & varNode = ScAddr(hash);
+        m_elements.insert({varNode.Hash(), obj});
+      }
     }
   }
 
