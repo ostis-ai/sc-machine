@@ -32,6 +32,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- Support semantic sc-types for sc-node in SCs-code level 1
+- Support sc-links for SCs-code level 1
 - HelperBuildTemplate with params that have varAddr replacements
 - Warnings for GNU compilers
 - Warnings in sc-machine about deprecated methods
