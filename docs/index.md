@@ -25,5 +25,6 @@
     * [Websocket server](sc-tools/sc-server.md) - *description of options of sc-server for communication with sc-memory through network*
     * [Meta Programming](sc-tools/cpp-meta.md) - *documentation of meta programming language*
 - **Development**
-    * [Git workflow](dev/git-workflow.md) - *guide for those who wants to make contribution into sc-machine*
+    * [Git Workflow](dev/git-workflow.md) - *guide for those who wants to make contribution into sc-machine*
     * [Codestyle](dev/codestyle.md) - *guide for those who wants to write code for sc-machine*
+    * [Dev container](dev/devcontainer.md) - *guide for those who wants to develop sc-machine via docker*
