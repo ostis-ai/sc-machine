@@ -361,6 +361,7 @@ large graph structures.
 
 - [What is the difference between ScType::EdgeDCommonConst and ScType::EdgeAccessConstPosPerm?](#what-is-the-difference-between-sctypeedgedcommonconst-and-sctypeedgeaccessconstposperm)
 - [How I can specify empty ScAddr?](#how-i-can-specify-empty-scaddr)
+- [Why `SC_TRUE` and `SC_FALSE` are used instead of `true` and `false`?](#why-sc_true-and-sc_false-are-used-instead-of-true-and-false)
 
 ### **What is the difference between ScType::EdgeDCommonConst and ScType::EdgeAccessConstPosPerm?**
 
@@ -383,3 +384,8 @@ myFunc(addr);
 myFunc(ScAddr::Empty);
 ...
 ```
+
+### **Why `SC_TRUE` and `SC_FALSE` are used instead of `true` and `false`?**
+
+We try to override standard types. In the future, it allows you to replace types. For example, you have `sc_char` that
+override `char` and you want to use more symbols using `wchar_t` instead of. To do it you can replace `char` by `wchar_t`.
