@@ -183,14 +183,14 @@ idtf_lvl1 returns [ElementHandle handle]
   ;
 
 idtf_edge returns [ElementHandle handle]
-  : '(' src=idtf_atomic
+  : '(' (src=idtf_atomic | se=idtf_edge)
         c=connector attrs=attr_list?
-        trg=idtf_atomic
+        (trg=idtf_atomic | te=idtf_edge)
     ')'
-
     {
       ElementHandle const edge = m_parser->ProcessConnector($ctx->c->text);
-      m_parser->ProcessTriple($ctx->src->handle, edge, $ctx->trg->handle);
+      m_parser->ProcessTriple(
+        $ctx->src ? $ctx->src->handle : $ctx->se->handle, edge, $ctx->trg ? $ctx->trg->handle : $ctx->te->handle);
 
       // append attributes
       if ($ctx->attrs != nullptr)
