@@ -2,14 +2,14 @@
     This documentation is correct for only versions of sc-machine that >= 0.9.0.
 ---
 
-### Common
+### **Common**
 
 SCs-code - is a text representation of SC-code. Whole text consist of sentences, that
 separated by `;;` symbols.
 
-#### Comments
+#### **Comments**
 
-You can use C-style comments in SCs text:
+You can use C-style comments in sc.s-text:
 ```scs
 // one line comment
 fruit -> apple;
@@ -18,7 +18,7 @@ fruit -> apple;
  */
 ```
 
-#### Link to files
+#### **Link to files**
 
 To make an `sc-link` into specified file you can use special type identifier:
 ```
@@ -28,14 +28,14 @@ To make an `sc-link` into specified file you can use special type identifier:
 * `"file://<file name>"` - is a relative path to a file. According to a file, where it used;
 * `"file:///<file_name>"` - is an absolute path to a file.
 
-#### Names
+#### **Names**
 
 There are some tricks with object names:
 
 * `...` - is an unnamed object;
 * `_<object name>` - all object names, that starts with symbol `_` represents a variable type of objects.
 
-Objects identifier visibility. By default all objects with name `x` are visible anywhere.
+Objects identifier visibility. By default, all objects with name `x` are visible anywhere.
 After translating it into memory this object will have a **system identifier** equal to `x`.
 So if you use `x` in different *scs* files, then you designate the same object in them
 (would be the same element in a knowledge base).
@@ -64,7 +64,7 @@ You can use alias for any sc-element by using `=` operator. There are some examp
 @link_alias = [];;
 @element_alias = element_idtf;;
 @edge_alias = (c -> b);;
-@alias_to_alias = @other_alias;;
+@alias_to_alias = @element_alias;;
 ```
 
 !!! warning
@@ -74,9 +74,9 @@ You can use alias for any sc-element by using `=` operator. There are some examp
 --- 
 
 !!! note
-    SCs-code is splitted into levels. Each level allows to minimize number of string symbols to represent the same structures.
+    SCs-code is split into levels. Each level allows to minimize number of string symbols to represent the same structures.
 
-### SCs level 1
+### **SCs-code level 1**
 
 SCs-code level 1 is a simple representation of SC-code. It represents SC-texts
 with just simple triples. Each triple contains `subject`, `predicate`, `object`
@@ -104,7 +104,7 @@ Where `type` is an element type specification. It can be one of possible values:
 <table>
   <tr>
     <th>SCg construction</th>
-    <th>Equal SCs-level 1 text</th>
+    <th>Equal SCs-code level 1 text</th>
   </tr>
 
   <tr>
@@ -129,19 +129,19 @@ sc_node#fruit | sc_edge_main#..edge | sc_node#banana;;
 sc_node#apple | sc_edge_dcommon#..common_edge | "file://apple.png";;
 /*append edge from nrel_image relation into
   edge between apple set and it's image*/
-sc_node#nrel_image | sc_edge_main#..access_edge | sc_edge_dcommon#..common_edge;;
+sc_node_norole_relation#nrel_image | sc_edge_main#..access_edge | sc_edge_dcommon#..common_edge;;
         </code>
       </pre>
     </td>
   </tr>
 </table>
 
-SCs-level 1 allows you to represent any kind of SC-code construction. It's a low-level
+SCs-code level 1 allows you to represent any kind of SC-code construction. It's a low-level
 representation and commonly used as a transport format, that is very simple for parsing.
 
-### SCs level 2
+### **SCs-code level 2**
 
-This level of SCs-text add two new features:
+This level of SCs-code add two new features:
 
 * using of extended alphabet of edges;
 * using of compound identifiers of an edges.
@@ -154,8 +154,8 @@ On this level you can make sentences by rule:
 Where `<edge>` can be on of values:
 <table>
   <tr>
-    <th>SCs</th>
-    <th>SCg equivalent</th>
+    <th>SCs-code</th>
+    <th>SCg-code equivalent</th>
   </tr>
   <tr>
     <td>`<` or `>`</td>
@@ -240,7 +240,7 @@ Where `<edge>` can be on of values:
 <table>
   <tr>
     <th>SCg construction</th>
-    <th>Equal SCs-level 2 text</th>
+    <th>Equal SCs-code level 2 text</th>
   </tr>
 
   <tr>
@@ -258,7 +258,7 @@ banana <- fruit;;
 </table>
 
 <hr/>
-Compound identifier of an edge builds as a sentence in SCs-level 2, but without
+Compound identifier of an edge builds as a sentence in SCs-code level 2, but without
 `;;` separator and inside brackets `()`: `(<element> <edge> <element>)`.
 So that allows to simplify usage of an edge as a source or target of another one.
 
@@ -268,7 +268,7 @@ So that allows to simplify usage of an edge as a source or target of another one
 <table>
   <tr>
     <th>SCg construction</th>
-    <th>Equal SCs-level 2 text</th>
+    <th>Equal SCs-code level 2 text</th>
   </tr>
 
   <tr>
@@ -306,9 +306,9 @@ d -> (c -> (a -> b));;
 
 </table>
 
-### SCs level 3
+### SCs-code level 3
 
-This level of SCs-text allows to minimize symbols to represent constructions like this one:
+This level of SCs-code allows to minimize symbols to represent constructions like this one:
 <scg src="../images/scs/scs_example_level_3.gwf"></scg>
 
 ```scs
@@ -350,7 +350,7 @@ c _-> (a -> b);;
 <table>
   <tr>
     <th>SCg construction</th>
-    <th>Equal SCs-level 3 text</th>
+    <th>Equal SCs-code level 3 text</th>
   </tr>
 
   <tr>
@@ -358,7 +358,7 @@ c _-> (a -> b);;
     <td>
       <pre>
         <code class="js hljs javascript">
-          apple => nrel_image: "file://apple.png";;
+apple => nrel_image: "file://apple.png";;
         </code>
       </pre>
     </td>
@@ -372,17 +372,17 @@ c _-> (a -> b);;
       </div>
       <pre>
         <code class="js hljs javascript">
-          a -> c: d:: b;;
+a -> c: d:: b;;
         </code>
       </pre>
     </td>
   </tr>
 </table>
 
-### SCs level 4
+### **SCs-code level 4**
 
-This level of SCs-text allows to combine many setences with one element into one.
-For that pupropses used ';' symbol. So if we have some sentences like:
+This level of SCs-code allows to combine many sentences with one element into one.
+For that purposes used ';' symbol. So if we have some sentences like:
 
 ```scs
 x -> y;;
@@ -398,7 +398,7 @@ x -> y;
   => h: r;;
 ```
 
-In other words, this level of SCs text allows to use source element one time.
+In other words, this level of SCs-code allows to use source element one time.
 
 <hr/>
 
@@ -406,8 +406,8 @@ In other words, this level of SCs text allows to use source element one time.
 
 <table>
   <tr>
-    <th>SCg construction</th>
-    <th>Equal SCs-level 4 text</th>
+    <th>SCg-code</th>
+    <th>Equal SCs-code level 4 text</th>
   </tr>
 
   <tr>
@@ -415,8 +415,8 @@ In other words, this level of SCs text allows to use source element one time.
     <td>
       <pre>
         <code class="js hljs javascript">
-      fruit -> apple;
-      -> banana;;
+fruit -> apple;
+  -> banana;;
         </code>
       </pre>
     </td>
@@ -427,32 +427,33 @@ In other words, this level of SCs text allows to use source element one time.
     <td>
       <pre>
         <code class="js hljs javascript">
-        a -> c: d: b;
-        -> e;
-        -> g: f;;
+a -> c: d: b;
+  -> e;
+  -> g: f;;
         </code>
       </pre>
     </td>
   </tr>
 </table>
 
-### SCs level 5
+### **SCs-code level 5**
 
-Internal sentences added to `SCs-text` on this level. They are wrapped by `(* ... *)` brackets.
+Internal sentences added to SCs-code on this level. They are wrapped by `(* ... *)` brackets.
 This type of sentences allow to describe connections of an element inplace.
 You can place these internal sentences after `object` element in triple (`subject -> object (* ... *);;`), but before `;;` separator.
 You can use level `2-4` sentences inside this one. But there is a just one rule: 
 
 !!! note ""
-    You doesn't need to specify start element for each sentece. Because object (for which internal sentece builds) is going to be a subject for all internal sentences 
+    You doesn't need to specify start element for each sentence. Because object (for which internal sentence builds) 
+    is going to be a subject for all internal sentences 
 
 Look at the examples, to understand how it works:
 
 
 <table>
   <tr>
-    <th>SCs-level 2-4</th>
-    <th>SCs-level 5</th>
+    <th>SCs-code level 2-4</th>
+    <th>SCs-code level 5</th>
     <th>Description</th>
   </tr>
   
@@ -477,7 +478,7 @@ set
       </pre>
     </td>
     <td>
-    This is a simple example, that allow to make an <code>SCs-text</code> more readable and useful. In this case text has a sublevels, that allow 
+    This is a simple example, that allow to make an sc.s-text more readable and useful. In this case text has a sublevels, that allows
     to read it faster.
     </td>
   </tr>
@@ -506,7 +507,7 @@ set
       </pre>
     </td>
     <td>
-    You can use as more as you need sentences in <code>(* *)</code>, but all of them should be separated by <code>;;</code>.
+    You can use as much as you need sentences in <code>(* *)</code>, but all of them should be separated by <code>;;</code>.
     </td>
   </tr>
 
@@ -547,9 +548,9 @@ sc_element
   
 </table>
 
-### SCs level 6
+### **SCs-code level 6**
 
-There are some new complex aliases, that adds by this level of `SCs-text`:
+There are some new complex aliases, that adds by this level of SCs-code:
 
 * `[...]` - this is a short representation of `sc-link` with a content. You can create `sc-link` with a specified content
 by using this feature. There are all possible cases:
@@ -597,13 +598,13 @@ x -> [^"uint: 781236"];;
     </tr>
 </table>
 
-* `[* ... *]` this is a short representation of <code>sc-structure</code>. You can use just <code>SCs-text</code> inside these brackets.
+* `[* ... *]` this is a short representation of <code>sc-structure</code>. You can use just sc.s-text inside these brackets.
   So these brackets will designate an <code>sc-structure</code> (<code>sc-node</code> with a type <code>sc_node_struct</code>). All elements inside
   brackets will have ingoing edge (type <code>sc_edge_main</code>) from that <code>sc-node</code>.
   <table>
     <tr>
-      <th>SCs-text level 2-5</th>
-      <th>SCs-text level 6</th>
+      <th>SCs-code level 2-5</th>
+      <th>SCs-code level 6</th>
     </tr>
 
     <tr>
@@ -616,32 +617,44 @@ struct -> set; item; @edge_alias;;
       <td>
         <pre>
           <code class="js hljs javascript">
-@struct = [ set -> item;; ];;
+@struct = [* set -> item;; *];;
           </code>
         </pre>
       </td>
     </tr>
   </table>
 
-!!! important "Thats important"
-    `SCs-text` inside `[* ... *]` has the same rules and semantic, like it will be in a separated file
+!!! important "That's important"
+    Sс.s-text inside `[* ... *]` has the same rules and semantic, like it will be in a separated file
 
-* `{ ... }` this is a short representation of set. This feature allow to make sets in very fast way.
+* `{ ... }` is a short representation of non-oriented set. This feature allow to make sets in very fast way.
   Syntax looks like:
   
   ```scs
-  @set = {
+  @non_oriented_set = {
     element1;
     attr2: element2;
     ...
     last_element // no semicolon after last element
-  }
+  >;;
+  ```
+
+* `< ... >` is a short representation of oriented set. This feature allow to make sets in very fast way.
+  Syntax looks like:
+
+  ```scs
+  @oriented_set = <
+    element1;
+    attr2: element2;
+    ...
+    last_element // no semicolon after last element
+  >;;
   ```
 
 <table>
   <tr>
-    <th>SCs-text level 2-5</th>
-    <th>SCs-text level 6</th>
+    <th>SCs-code level 2-5</th>
+    <th>SCs-code level 6</th>
     <th>Comments</th>
   </tr>
 
@@ -668,7 +681,7 @@ set
         </code>
       </pre>
     </td>
-    <td>Using set looks much cleaner. You can use even attributes on it</td>
+    <td>Using set looks much cleaner. You can use even attributes on it.</td>
   </tr>
   
   <tr>
@@ -726,14 +739,44 @@ element
     </td>
     <td>You can use set alias inside any other complex aliases and triples.</td>
   </tr>
+
+  <tr>
+    <td>
+      <pre>
+        <code class="js hljs javascript">
+set
+  <- sc_node_tuple;;
+
+@first_arc 
+  = (set -> rrel_1: element1);;
+@second_arc 
+  = (set -> element2);;
+
+nrel_basic_sequence
+  -> (@first_arc => @second_arc);;
+        </code>
+      </pre>
+    </td>
+    <td>
+      <pre>
+        <code class="js hljs javascript">
+@set = <
+  element1;
+  element2 // no semicolon
+>;;
+        </code>
+      </pre>
+    </td>
+    <td>Using set looks much cleaner. You can use even attributes on it.</td>
+  </tr>
 </table>
 
 
-### Keynodes
+### **Keynodes**
 
-There are a list of element type keynodes, that can be used to specify type of an element:
+There are a list of element type keynodes, that can be used to specify type of sc-element:
 
-| Keynode                           | Equal sc-type                       | Equal SCg-element
+| Keynode                           | Equal sc-type                       | Equal sc.g-element
 | --------------------------------- | ----------------------------------- | --------------
 | sc_node                           | ScType::Node                        | ![sc.g-edge](images/scg/scg_node.png)
 | sc_link                           | ScType::Link                        | ![sc.g-edge](images/scg/scg_link_const.png)
@@ -786,3 +829,17 @@ nrel_y <- sc_node_norole_relation;;
     <td><scg src="../images/scs_keynodes_old_example_2.gwf"></scg></td>
   </tr>
 </table>
+
+## **Frequently Asked Questions**
+
+- [What SCs-code level is recommended to use?](#what-scs-code-level-is-recommended-to-use)
+- [Can I combine different levels in one SCs file?](#can-i-combine-different-levels-in-one-scs-file)
+
+### **What SCs-code level is recommended to use?**
+
+The first levels of SCs-code have minimal syntax, so it is simple to handle sc.s-text of these levels. But last levels of
+SCs-code allow you to make sc.s-text it more compact, but these levels of SCs-code have more complicated syntax.
+
+### **Can I combine different levels in one SCs file?**
+
+All levels of SCs-code can be combined. Usually it is useful to use 4-6 levels if you use 2-3 levels.

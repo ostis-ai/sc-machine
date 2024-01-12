@@ -10,7 +10,7 @@
         * [C++ Core API](sc-memory/api/cpp/core/api.md) - *documentation of C++ core API for creating, retrieving and erasing sc-elements in sc-memory*
         * C++ Extended API: - *documentation of C++ extended API for manipulating with system identifiers of sc-elements and large graphs*
             * [ScHelper C++ API](sc-memory/api/cpp/extended/helper-api.md) - *documentation of C++ extended API for manipulating with system identifiers of sc-elements*
-            * [ScTemplate C++ API](sc-memory/api/cpp/extended/template-api.md) - *documentation of C++ extended API for creating and retrieving large graphs*
+            * [ScTemplate C++ API](sc-memory/api/cpp/extended/template-api.md) - *documentation of C++ extended API for creating and retrieving graphs (it is very useful when you want to work big sc-constructions)*
         * [C++ Agents API](sc-memory/api/cpp/agents.md) - *documentation of C++ Agents API for creating sc-agents*
     * Python API - *documentation of Python API provided by py-sc-client*
         * [Python Core API](https://github.com/ostis-ai/py-sc-client) - *documentation of Python core API for creating, retrieving and erasing sc-elements and sc-events in sc-memory*

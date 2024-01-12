@@ -137,7 +137,7 @@ class MyAgent : public ScAgent
       Event(ScKeynodes::my_action_class, ScEvent::Type::AddOutputEdge)
   )
   // This sc-agent can be called if sc-connector is created from sc-element 
-  // with sc-address `ScKeynodes::my_action_class` to some action.
+  // with sc-address `ScKeynodes::my_action_class` to some sc-element.
   SC_GENERATED_BODY()
 }
 
